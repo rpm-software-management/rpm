@@ -32,7 +32,7 @@ static int verifyHeader(char * prefix, Header h, int verifyFlags) {
 			&count)) {
 	for (i = 0; i < count; i++) {
 	    if ((rc = rpmVerifyFile(prefix, h, i, &verifyResult, omitMask)) != 0) {
-		printf("missing    %s\n", fileList[i]);
+		fprintf(stdout, _("missing    %s\n"), fileList[i]);
 	    } else {
 		size = md5 = link = mtime = mode = ".";
 		user = group = rdev = ".";
@@ -57,7 +57,7 @@ static int verifyHeader(char * prefix, Header h, int verifyFlags) {
 		if (verifyResult & RPMVERIFY_MODE)
 		    mode = "M";
 
-		printf("%s%s%s%s%s%s%s%s %c %s\n",
+		fprintf(stdout, "%s%s%s%s%s%s%s%s %c %s\n",
 		       size, mode, md5, rdev, link, user, group, mtime, 
 		       fileFlagsList[i] & RPMFILE_CONFIG ? 'c' : ' ', 
 		       fileList[i]);
@@ -88,17 +88,17 @@ static int verifyDependencies(rpmdb db, Header h) {
 	headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
 	headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
 	headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
-	printf(_("Unsatisfied dependencies for %s-%s-%s: "), name, version, 
-		release);
+	fprintf(stdout, _("Unsatisfied dependencies for %s-%s-%s: "),
+		name, version, release);
 	for (i = 0; i < numConflicts; i++) {
-	    if (i) printf(", ");
-	    printf("%s", conflicts[i].needsName);
+	    if (i) fprintf(stdout, ", ");
+	    fprintf(stdout, "%s", conflicts[i].needsName);
 	    if (conflicts[i].needsFlags) {
 		printDepFlags(stdout, conflicts[i].needsVersion, 
 			      conflicts[i].needsFlags);
 	    }
 	}
-	printf("\n");
+	fprintf(stdout, "\n");
 	rpmdepFreeConflicts(conflicts, numConflicts);
 	return 1;
     }
@@ -130,7 +130,7 @@ static int verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
     for (i = 0; i < matches.count; i++) {
 	if (matches.recs[i].recOffset == 0)
 	    continue;
-	rpmMessage(RPMMESS_DEBUG, "verifying record number %d\n",
+	rpmMessage(RPMMESS_DEBUG, _("verifying record number %d\n"),
 		matches.recs[i].recOffset);
 	    
 	h = rpmdbGetRecord(db, matches.recs[i].recOffset);
@@ -212,7 +212,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 			    headerFree(h);
 			    break;
 			case 1:
-			    fprintf(stderr, "%s is not an RPM\n", arg);
+			    fprintf(stderr, _("%s is not an RPM\n"), arg);
 		    }
 		}
 			

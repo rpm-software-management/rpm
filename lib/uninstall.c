@@ -133,7 +133,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 
 	    if (!headerGetEntry(sech, RPMTAG_FILENAMES, &type, 
 			  (void **) &secFileList, &secFileCount)) {
-		rpmError(RPMERR_DBCORRUPT, "package %s contains no files",
+		rpmError(RPMERR_DBCORRUPT, _("package %s contains no files"),
 		      name);
 		headerFree(sech);
 		rc = 1;
@@ -146,7 +146,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 		   implement --justdb properly, and chose to leave this stuff
 		   out. */
 		rpmMessage(RPMMESS_DEBUG, 
-			    "package is missing FILESTATES\n");
+			    _("package is missing FILESTATES\n"));
 		secFileStatesList = alloca(secFileCount);
 		memset(secFileStatesList, RPMFILE_STATE_NOTINSTALLED,
 			secFileCount);
@@ -156,27 +156,27 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 		     (void **) &secFileMd5List, &secFileCount);
 	}
 
-	rpmMessage(RPMMESS_DEBUG, "file %s is shared\n",
+	rpmMessage(RPMMESS_DEBUG, _("file %s is shared\n"),
 		fileList[sharedList[i].mainFileNumber]);
 	
 	switch (secFileStatesList[sharedList[i].secFileNumber]) {
 	  case RPMFILE_STATE_REPLACED:
-	    rpmMessage(RPMMESS_DEBUG, "     file has already been replaced\n");
+	    rpmMessage(RPMMESS_DEBUG, _("     file has already been replaced\n"));
 	    break;
 
 	  case RPMFILE_STATE_NOTINSTALLED:
-	    rpmMessage(RPMMESS_DEBUG, "     file was never installed\n");
+	    rpmMessage(RPMMESS_DEBUG, _("     file was never installed\n"));
 	    break;
     
 	  case RPMFILE_STATE_NETSHARED:
-	    rpmMessage(RPMMESS_DEBUG, "     file is netshared (so don't touch it)\n");
+	    rpmMessage(RPMMESS_DEBUG, _("     file is netshared (so don't touch it)\n"));
 	    fileActions[sharedList[i].mainFileNumber] = KEEP;
 	    break;
     
 	  case RPMFILE_STATE_NORMAL:
 	    if (!strcmp(fileMd5List[sharedList[i].mainFileNumber],
 			secFileMd5List[sharedList[i].secFileNumber])) {
-		rpmMessage(RPMMESS_DEBUG, "    file is truely shared - saving\n");
+		rpmMessage(RPMMESS_DEBUG, _("    file is truely shared - saving\n"));
 	    }
 	    fileActions[sharedList[i].mainFileNumber] = KEEP;
 	    break;
@@ -215,7 +215,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 
     h = rpmdbGetRecord(db, offset);
     if (!h) {
-	rpmError(RPMERR_DBCORRUPT, "cannot read header at %d for uninstall",
+	rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for uninstall"),
 	      offset);
 	return 1;
     }
@@ -226,7 +226,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     /* when we run scripts, we pass an argument which is the number of 
        versions of this package that will be installed when we are finished */
     if (rpmdbFindPackage(db, name, &matches)) {
-	rpmError(RPMERR_DBCORRUPT, "cannot read packages named %s for uninstall",
+	rpmError(RPMERR_DBCORRUPT, _("cannot read packages named %s for uninstall"),
 	      name);
 	return 1;
     }
@@ -254,7 +254,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 	}
     }
     
-    rpmMessage(RPMMESS_DEBUG, "will remove files test = %d\n", 
+    rpmMessage(RPMMESS_DEBUG, _("will remove files test = %d\n"), 
 		flags & RPMUNINSTALL_TEST);
     if (!(flags & RPMUNINSTALL_JUSTDB) &&
 	headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
@@ -276,7 +276,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 	    /* This shouldn't happen, but some versions of RPM didn't
 	       implement --justdb properly, and chose to leave this stuff
 	       out. */
-	    rpmMessage(RPMMESS_DEBUG, "package is missing FILESTATES\n");
+	    rpmMessage(RPMMESS_DEBUG, _("package is missing FILESTATES\n"));
 	    fileStatesList = alloca(fileCount);
 	    memset(fileStatesList, RPMFILE_STATE_NOTINSTALLED,
 		    fileCount);
@@ -302,7 +302,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 		for (i = 0; i < fileCount; i++) 
 		if (!strncmp(fileList[i], *nsp, j) &&
 		    (fileList[i][j] == '\0' || fileList[i][j] == '/')) {
-		    rpmMessage(RPMMESS_DEBUG, "%s has a netshared override\n",
+		    rpmMessage(RPMMESS_DEBUG, _("%s has a netshared override\n"),
 				fileList[i]);
 		    fileActions[i] = KEEP;
 		}
@@ -340,7 +340,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     }
 
     if (!(flags & RPMUNINSTALL_TEST)) {
-	rpmMessage(RPMMESS_DEBUG, "running postuninstall script (if any)\n");
+	rpmMessage(RPMMESS_DEBUG, _("running postuninstall script (if any)\n"));
 	runInstScript(prefix, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG, scriptArg, 
 		      flags & RPMUNINSTALL_NOSCRIPTS, 0);
     }
@@ -354,7 +354,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 
     headerFree(h);
 
-    rpmMessage(RPMMESS_DEBUG, "removing database entry\n");
+    rpmMessage(RPMMESS_DEBUG, _("removing database entry\n"));
     if (!(flags & RPMUNINSTALL_TEST))
 	rpmdbRemove(db, offset, 0);
 
@@ -548,13 +548,13 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	
     switch (state) {
       case RPMFILE_STATE_REPLACED:
-	rpmMessage(RPMMESS_DEBUG, "%s has already been replaced\n", file);
+	rpmMessage(RPMMESS_DEBUG, _("%s has already been replaced\n"), file);
 	break;
 
       case RPMFILE_STATE_NORMAL:
 	if ((action == REMOVE) && (flags & RPMFILE_CONFIG)) {
 	    /* if it's a config file, we may not want to remove it */
-	    rpmMessage(RPMMESS_DEBUG, "finding md5sum of %s\n", file);
+	    rpmMessage(RPMMESS_DEBUG, _("finding md5sum of %s\n"), file);
 	    if (brokenMd5)
 		rc = mdfileBroken(file, currentMd5);
 	    else
@@ -562,14 +562,14 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 
 	    if (mdfile(file, currentMd5)) 
 		rpmMessage(RPMMESS_DEBUG, 
-				"    failed - assuming file removed\n");
+				_("    failed - assuming file removed\n"));
 	    else {
 		if (strcmp(currentMd5, md5)) {
-		    rpmMessage(RPMMESS_DEBUG, "    file changed - will save\n");
+		    rpmMessage(RPMMESS_DEBUG, _("    file changed - will save\n"));
 		    action = BACKUP;
 		} else {
 		    rpmMessage(RPMMESS_DEBUG, 
-				"    file unchanged - will remove\n");
+				_("    file unchanged - will remove\n"));
 		}
 	    }
 	}
@@ -577,11 +577,11 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	switch (action) {
 
 	  case KEEP:
-	    rpmMessage(RPMMESS_DEBUG, "keeping %s\n", file);
+	    rpmMessage(RPMMESS_DEBUG, _("keeping %s\n"), file);
 	    break;
 
 	  case BACKUP:
-	    rpmMessage(RPMMESS_DEBUG, "saving %s as %s.rpmsave\n", file, file);
+	    rpmMessage(RPMMESS_DEBUG, _("saving %s as %s.rpmsave\n"), file, file);
 	    if (!test) {
 		newfile = alloca(strlen(file) + 20);
 		strcpy(newfile, file);
@@ -595,7 +595,7 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	    break;
 
 	  case REMOVE:
-	    rpmMessage(RPMMESS_DEBUG, "%s - removing\n", file);
+	    rpmMessage(RPMMESS_DEBUG, _("%s - removing\n"), file);
 	    if (S_ISDIR(mode)) {
 		if (!test) {
 		    if (rmdir(file)) {

@@ -69,10 +69,10 @@ int rpmReadSignature(int fd, Header *header, short sig_type)
     
     switch (sig_type) {
       case RPMSIG_NONE:
-	rpmMessage(RPMMESS_DEBUG, "No signature\n");
+	rpmMessage(RPMMESS_DEBUG, _("No signature\n"));
 	break;
       case RPMSIG_PGP262_1024:
-	rpmMessage(RPMMESS_DEBUG, "Old PGP signature\n");
+	rpmMessage(RPMMESS_DEBUG, _("Old PGP signature\n"));
 	/* These are always 256 bytes */
 	if (timedRead(fd, buf, 256) != 256) {
 	    return 1;
@@ -89,7 +89,7 @@ int rpmReadSignature(int fd, Header *header, short sig_type)
 	return 1;
 	break;
       case RPMSIG_HEADERSIG:
-	rpmMessage(RPMMESS_DEBUG, "New Header signature\n");
+	rpmMessage(RPMMESS_DEBUG, _("New Header signature\n"));
 	/* This is a new style signature */
 	h = headerRead(fd, HEADER_MAGIC_YES);
 	if (! h) {
@@ -97,8 +97,8 @@ int rpmReadSignature(int fd, Header *header, short sig_type)
 	}
 	sigSize = headerSizeof(h, HEADER_MAGIC_YES);
 	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
-	rpmMessage(RPMMESS_DEBUG, "Signature size: %d\n", sigSize);
-	rpmMessage(RPMMESS_DEBUG, "Signature pad : %d\n", pad);
+	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
+	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
 	if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type, (void **)&archSize, &count)) {
 	    headerFree(h);
 	    return 1;
@@ -135,8 +135,8 @@ int rpmWriteSignature(int fd, Header header)
     sigSize = headerSizeof(header, HEADER_MAGIC_YES);
     pad = (8 - (sigSize % 8)) % 8;
     if (pad) {
-	rpmMessage(RPMMESS_DEBUG, "Signature size: %d\n", sigSize);
-	rpmMessage(RPMMESS_DEBUG, "Signature pad : %d\n", pad);
+	rpmMessage(RPMMESS_DEBUG, _("Signature size: %d\n"), sigSize);
+	rpmMessage(RPMMESS_DEBUG, _("Signature pad : %d\n"), pad);
 	memset(buf, 0, pad);
 	write(fd, buf, pad);
     }
@@ -231,7 +231,7 @@ static int makePGPSignature(char *file, void **sig, int_32 *size,
     }
 
     *size = statbuf.st_size;
-    rpmMessage(RPMMESS_DEBUG, "PGP sig size: %d\n", *size);
+    rpmMessage(RPMMESS_DEBUG, _("PGP sig size: %d\n"), *size);
     *sig = malloc(*size);
     
     fd = open(sigfile, O_RDONLY);
@@ -245,7 +245,7 @@ static int makePGPSignature(char *file, void **sig, int_32 *size,
     close(fd);
     unlink(sigfile);
 
-    rpmMessage(RPMMESS_DEBUG, "Got %d bytes of PGP sig\n", *size);
+    rpmMessage(RPMMESS_DEBUG, _("Got %d bytes of PGP sig\n"), *size);
     
     return 0;
 }
@@ -260,13 +260,13 @@ static int checkSize(int fd, int size, int sigsize)
     if (S_ISREG(statbuf.st_mode)) {
 	headerArchiveSize = statbuf.st_size - sizeof(struct rpmlead) - sigsize;
 
-	rpmMessage(RPMMESS_DEBUG, "sigsize         : %d\n", sigsize);
-	rpmMessage(RPMMESS_DEBUG, "Header + Archive: %d\n", headerArchiveSize);
-	rpmMessage(RPMMESS_DEBUG, "expected size   : %d\n", size);
+	rpmMessage(RPMMESS_DEBUG, _("sigsize         : %d\n"), sigsize);
+	rpmMessage(RPMMESS_DEBUG, _("Header + Archive: %d\n"), headerArchiveSize);
+	rpmMessage(RPMMESS_DEBUG, _("expected size   : %d\n"), size);
 
 	return size - headerArchiveSize;
     } else {
-	rpmMessage(RPMMESS_DEBUG, "file is not regular -- skipping size check\n");
+	rpmMessage(RPMMESS_DEBUG, _("file is not regular -- skipping size check\n"));
 	return 0;
     }
 }
@@ -380,7 +380,7 @@ static int verifyPGPSignature(char *datafile, void *sig,
 	       "+batchmode=on", "+verbose=0",
 	       sigfile, datafile,
 	       NULL);
-	printf("exec failed!\n");
+	fprintf(stderr, _("exec failed!\n"));
 	rpmError(RPMERR_EXEC, 
 		 _("Could not run pgp.  Use --nopgp to skip PGP checks."));
 	_exit(RPMERR_EXEC);

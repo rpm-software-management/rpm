@@ -42,7 +42,7 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
 
     dbpath = rpmGetVar(RPMVAR_DBPATH);
     if (!dbpath) {
-	rpmMessage(RPMMESS_DEBUG, "no dbpath has been set");
+	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
 	return 1;
     }
 
@@ -55,7 +55,7 @@ int rpmdbInit (char * prefix, int perms) {
 
     dbpath = rpmGetVar(RPMVAR_DBPATH);
     if (!dbpath) {
-	rpmMessage(RPMMESS_DEBUG, "no dbpath has been set");
+	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
 	return 1;
     }
 
@@ -110,7 +110,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     strcpy(filename, prefix); 
     strcat(filename, dbpath);
 
-    rpmMessage(RPMMESS_DEBUG, "opening database in %s\n", filename);
+    rpmMessage(RPMMESS_DEBUG, _("opening database in %s\n"), filename);
 
     strcat(filename, "packages.rpm");
 
@@ -317,21 +317,21 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     if (!headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count)) {
 	rpmError(RPMERR_DBCORRUPT, _("package has no name"));
     } else {
-	rpmMessage(RPMMESS_DEBUG, "removing name index\n");
+	rpmMessage(RPMMESS_DEBUG, _("removing name index\n"));
 	removeIndexEntry(db->nameIndex, name, rec, tolerant, "name index");
     }
 
     if (!headerGetEntry(h, RPMTAG_GROUP, &type, (void **) &group, &count)) {
-	rpmMessage(RPMMESS_DEBUG, "package has no group\n");
+	rpmMessage(RPMMESS_DEBUG, _("package has no group\n"));
     } else {
-	rpmMessage(RPMMESS_DEBUG, "removing group index\n");
+	rpmMessage(RPMMESS_DEBUG, _("removing group index\n"));
 	removeIndexEntry(db->groupIndex, group, rec, tolerant, "group index");
     }
 
     if (headerGetEntry(h, RPMTAG_PROVIDES, &type, (void **) &providesList, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
-	    rpmMessage(RPMMESS_DEBUG, "removing provides index for %s\n", 
+	    rpmMessage(RPMMESS_DEBUG, _("removing provides index for %s\n"), 
 		    providesList[i]);
 	    removeIndexEntry(db->providesIndex, providesList[i], rec, tolerant, 
 			     "providesfile index");
@@ -346,7 +346,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 	   as they should just indicate duplicated requirements. */
 
 	for (i = 0; i < count; i++) {
-	    rpmMessage(RPMMESS_DEBUG, "removing requiredby index for %s\n", 
+	    rpmMessage(RPMMESS_DEBUG, _("removing requiredby index for %s\n"), 
 		    requiredbyList[i]);
 	    removeIndexEntry(db->requiredbyIndex, requiredbyList[i], rec, 
 			     1, "requiredby index");
@@ -358,7 +358,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 	 &count)) {
 	/* triggerList often contains duplicates */
 	for (i = 0; i < count; i++) {
-	    rpmMessage(RPMMESS_DEBUG, "removing trigger index for %s\n", 
+	    rpmMessage(RPMMESS_DEBUG, _("removing trigger index for %s\n"), 
 		       triggerList[i]);
 	    removeIndexEntry(db->triggerIndex, triggerList[i], rec, 
 			     1, "trigger index");
@@ -369,7 +369,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     if (headerGetEntry(h, RPMTAG_CONFLICTNAME, &type, (void **) &conflictList, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
-	    rpmMessage(RPMMESS_DEBUG, "removing conflict index for %s\n", 
+	    rpmMessage(RPMMESS_DEBUG, _("removing conflict index for %s\n"), 
 		    conflictList[i]);
 	    removeIndexEntry(db->conflictsIndex, conflictList[i], rec, 
 			     tolerant, "conflict index");
@@ -380,14 +380,14 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
-	    rpmMessage(RPMMESS_DEBUG, "removing file index for %s\n", fileList[i]);
+	    rpmMessage(RPMMESS_DEBUG, _("removing file index for %s\n"), fileList[i]);
 	    rec.fileNumber = i;
 	    removeIndexEntry(db->fileIndex, fileList[i], rec, tolerant, 
 			     "file index");
 	}
 	free(fileList);
     } else {
-	rpmMessage(RPMMESS_DEBUG, "package has no files\n");
+	rpmMessage(RPMMESS_DEBUG, _("package has no files\n"));
     }
 
     faFree(db->pkgs, offset);
@@ -533,7 +533,7 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
     headerFree(oldHeader);
 
     if (oldSize != headerSizeof(newHeader, HEADER_MAGIC_NO)) {
-	rpmMessage(RPMMESS_DEBUG, "header changed size!");
+	rpmMessage(RPMMESS_DEBUG, _("header changed size!"));
 	if (rpmdbRemove(db, offset, 1))
 	    return 1;
 

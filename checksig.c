@@ -21,7 +21,7 @@ int doReSign(int add, char *passPhrase, char **argv)
     
     while (*argv) {
 	rpm = *argv++;
-	printf("%s:\n", rpm);
+	fprintf(stdout, "%s:\n", rpm);
 	if ((fd = open(rpm, O_RDONLY, 0644)) < 0) {
 	    fprintf(stderr, _("%s: Open failed\n"), rpm);
 	    exit(1);
@@ -84,7 +84,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 
 	/* Generate the signature */
 	sigtype = rpmLookupSignatureType();
-	rpmMessage(RPMMESS_VERBOSE, "Generating signature: %d\n", sigtype);
+	rpmMessage(RPMMESS_VERBOSE, _("Generating signature: %d\n"), sigtype);
 	if (add != ADD_SIGNATURE) {
 	    sig = rpmNewSignature();
 	    rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
@@ -281,14 +281,14 @@ int doCheckSig(int flags, char **argv)
 	    if (rpmIsVerbose()) {
 		fprintf(stderr, "%s", buffer);
 	    } else {
-		fprintf(stderr, "%sNOT OK%s\n", buffer,
+		fprintf(stderr, "%s%s%s\n", buffer, _("NOT OK"),
 			missingKeys ? _(" (MISSING KEYS)") : "");
 	    }
 	} else {
 	    if (rpmIsVerbose()) {
-		printf("%s", buffer);
+		fprintf(stdout, "%s", buffer);
 	    } else {
-		printf("%sOK%s\n", buffer,
+		fprintf(stdout, "%s%s%s\n", buffer, _("OK"),
 		       missingKeys ? _(" (MISSING KEYS)") : "");
 	    }
 	}

@@ -2,6 +2,7 @@
 
 #include "system.h"
 
+#include "intl.h"
 #include "rpmbuild.h"
 
 static uid_t uids[1024];
@@ -31,7 +32,7 @@ char *getUname(uid_t uid)
 
     /* XXX - This is the other hard coded limit */
     if (x == 1024) {
-	fprintf(stderr, "RPMERR_INTERNAL: Hit limit in getUname()\n");
+	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getUname()\n"));
 	exit(RPMERR_INTERNAL);
     }
     
@@ -65,7 +66,7 @@ char *getUnameS(char *uname)
 
     /* XXX - This is the other hard coded limit */
     if (x == 1024) {
-	fprintf(stderr, "RPMERR_INTERNAL: Hit limit in getUname()\n");
+	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getUname()\n"));
 	exit(RPMERR_INTERNAL);
     }
     
@@ -100,7 +101,7 @@ char *getGname(gid_t gid)
 
     /* XXX - This is the other hard coded limit */
     if (x == 1024) {
-	fprintf(stderr, "RPMERR_INTERNAL: Hit limit in getGname()\n");
+	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getGname()\n"));
 	exit(RPMERR_INTERNAL);
     }
     
@@ -134,7 +135,7 @@ char *getGnameS(char *gname)
 
     /* XXX - This is the other hard coded limit */
     if (x == 1024) {
-	fprintf(stderr, "RPMERR_INTERNAL: Hit limit in getGname()\n");
+	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getGname()\n"));
 	exit(RPMERR_INTERNAL);
     }
     
@@ -172,7 +173,7 @@ char *buildHost(void)
 	if ((hbn = gethostbyname(hostname))) {
 	    strcpy(hostname, hbn->h_name);
 	} else {
-	    rpmMessage(RPMMESS_WARNING, "Could not canonicalize hostname: %s\n",
+	    rpmMessage(RPMMESS_WARNING, _("Could not canonicalize hostname: %s\n"),
 		    hostname);
 	}
 	gotit = 1;

@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include "intl.h"
 #include "rpmbuild.h"
 
 int parseBuildInstallClean(Spec spec, int parsePart)
@@ -24,7 +25,7 @@ int parseBuildInstallClean(Spec spec, int parsePart)
     }
     
     if (*sbp) {
-	rpmError(RPMERR_BADSPEC, "line %d: second %s", spec->lineNum, name);
+	rpmError(RPMERR_BADSPEC, _("line %d: second %s"), spec->lineNum, name);
 	return RPMERR_BADSPEC;
     }
     

@@ -663,7 +663,7 @@ void headerDump(Header h, FILE *f, int flags,
 		}
 		break;
 	    default:
-		fprintf(stderr, "Data type %d not supprted\n", 
+		fprintf(stderr, _("Data type %d not supprted\n"), 
 			(int) p->info.type);
 		exit(1);
 	    }
@@ -875,7 +875,7 @@ static int dataLength(int_32 type, void * p, int_32 count, int onDisk) {
 	    break;
 	}
         /* This should not be allowed */
-	fprintf(stderr, "grabData() RPM_STRING_TYPE count must be 1.\n");
+	fprintf(stderr, _("grabData() RPM_STRING_TYPE count must be 1.\n"));
 	exit(1);
 
       case RPM_STRING_ARRAY_TYPE:
@@ -905,7 +905,7 @@ static int dataLength(int_32 type, void * p, int_32 count, int onDisk) {
 	if (typeSizes[type] != -1)
 	    length = typeSizes[type] * count;
 	else {
-	    fprintf(stderr, "Data type %d not supported\n", (int) type);
+	    fprintf(stderr, _("Data type %d not supported\n"), (int) type);
 	    exit(1);
 	}
     }
@@ -964,7 +964,7 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     h->sorted = 0;
 
     if (c <= 0) {
-	fprintf(stderr, "Bad count for headerAddEntry(): %d\n", (int) c);
+	fprintf(stderr, _("Bad count for headerAddEntry(): %d\n"), (int) c);
 	exit(1);
     }
 

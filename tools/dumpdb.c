@@ -1,7 +1,7 @@
 #include "system.h"
 
-#include "rpmlib.h"
 #include "intl.h"
+#include "rpmlib.h"
 
 int main(int argc, char ** argv)
 {
@@ -16,12 +16,12 @@ int main(int argc, char ** argv)
     if (argc == 2) {
 	dspBlockNum = atoi(argv[1]);
     } else if (argc != 1) {
-	fprintf(stderr, "dumpdb <block num>\n");
+	fprintf(stderr, _("dumpdb <block num>\n"));
 	exit(1);
     }
 
     if (rpmdbOpen("", &db, O_RDONLY, 0644)) {
-	fprintf(stderr, "cannot open /var/lib/rpm/packages.rpm\n");
+	fprintf(stderr, _("cannot open /var/lib/rpm/packages.rpm\n"));
 	exit(1);
     }
 
@@ -32,12 +32,12 @@ int main(int argc, char ** argv)
 	if (!dspBlockNum || dspBlockNum == blockNum) {
 	    h = rpmdbGetRecord(db, offset);
 	    if (!h) {
-		fprintf(stderr, "headerRead failed\n");
+		fprintf(stderr, _("headerRead failed\n"));
 		exit(1);
 	    }
 	  
 	    headerDump(h, stdout, 1, rpmTagTable);
-	    printf("Offset: %d\n", offset);
+	    fprintf(stdout, "Offset: %d\n", offset);
 	    headerFree(h);
 	}
     
@@ -50,5 +50,3 @@ int main(int argc, char ** argv)
 
     return 0;
 }
-
-  

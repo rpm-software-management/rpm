@@ -14,17 +14,23 @@ NLSPACKAGE = rpm
 
 CATALOGS = cz.mo de.mo fi.mo fr.mo pt_BR.mo ru.mo sr.mo sv.mo tr.mo
 
-POTFILES  = $(topsrcdir)/rpm.c 		$(topsrcdir)/query.c 		\
-	$(topsrcdir)/install.c 		$(topsrcdir)/verify.c 		\
-	$(topsrcdir)/checksig.c 	$(topsrcdir)/url.c		\
-	$(topsrcdir)/ftp.c 	        	                  	\
-	$(topsrcdir)/lib/uninstall.c	$(topsrcdir)/lib/rpmdb.c	\
-	$(topsrcdir)/lib/signature.c	$(topsrcdir)/lib/dbindex.c	\
-	$(topsrcdir)/lib/depends.c	$(topsrcdir)/lib/formats.c	\
-	$(topsrcdir)/lib/fs.c		$(topsrcdir)/lib/header.c	\
-	$(topsrcdir)/lib/lookup.c	$(topsrcdir)/lib/rebuilddb.c	\
-	$(topsrcdir)/lib/messages.c	$(topsrcdir)/lib/package.c	\
-	$(topsrcdir)/lib/rpmlead.c	$(topsrcdir)/lib/rpmrc.c
+POTFILES  = \
+	../build.c ../checksig.c ../convertdb.c ../ftp.c \
+	../install.c ../oldrpmdb.c ../query.c ../rpm-qo.c \
+	../rpm.c ../rpm2cpio.c ../url.c ../verify.c	\
+	../build/build.c ../build/files.c ../build/misc.c ../build/myftw.c \
+	../build/names.c ../build/pack.c ../build/parseBuildInstallClean.c \
+	../build/parseChangelog.c ../build/parseDescription.c \
+	../build/parseFiles.c ../build/parsePreamble.c ../build/parsePrep.c \
+	../build/parseReqs.c ../build/parseScript.c ../build/parseSpec.c \
+	../build/reqprov.c ../build/rpminject.c ../build/spec.c \
+	../lib/cpio.c ../lib/dbindex.c ../lib/depends.c ../lib/falloc.c \
+	../lib/formats.c ../lib/fs.c ../lib/header.c ../lib/install.c \
+	../lib/lookup.c ../lib/macro.c ../lib/md5.c ../lib/md5sum.c \
+	../lib/messages.c ../lib/misc.c ../lib/oldheader.c ../lib/package.c \
+	../lib/rebuilddb.c ../lib/rpmdb.c ../lib/rpmerr.c ../lib/rpmlead.c \
+	../lib/rpmrc.c ../lib/signature.c ../lib/stringbuf.c ../lib/tagtable.c \
+	../lib/tread.c ../lib/uninstall.c ../lib/verify.c
 
 all: $(NLSPACKAGE).pot $(CATALOGS)
 
@@ -37,17 +43,17 @@ $(NLSPACKAGE).pot: $(POTFILES)
 	    mv $(NLSPACKAGE).po $(NLSPACKAGE).pot; \
 	fi
 
-
 update-po: Makefile
 	@$(MAKE) $(NLSPACKAGE).pot
 	@catalogs='$(CATALOGS)'; \
 	for cat in $$catalogs; do \
 		lang=`echo $$cat | sed 's/.mo//'`; \
-		if msgmerge $$lang.po $(NLSPACKAGE).pot  > $$lang.pox ; then \
-			echo "msgmerge of $$lang succeeded" ; \
+		if $(MSGMERGE) $$lang.po $(NLSPACKAGE).pot > $$lang.pox ; then \
+			echo "$(MSGMERGE) of $$lang succeeded" ; \
+			mv $$lang.pox $$lang.po ; \
 		else \
-			echo "msgmerge of $$lang failed" ; \
-			rm -f $$lang.pot ; \
+			echo "$(MSGMERGE) of $$lang failed" ; \
+			rm -f $$lang.pox ; \
 		fi \
 	done
 

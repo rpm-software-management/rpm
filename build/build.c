@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include "intl.h"
 #include "rpmbuild.h"
 
 #ifdef	DYING
@@ -92,7 +93,7 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     if (makeTempFile(NULL, &scriptName, &fd) ||
 	fchmod(fd, 0600) < 0 ||
 	(f = fdopen(fd, "w")) == NULL) {
-	    rpmError(RPMERR_SCRIPT, "Unable to open temp file");
+	    rpmError(RPMERR_SCRIPT, _("Unable to open temp file"));
 	    return RPMERR_SCRIPT;
     }
     
@@ -129,11 +130,11 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
 	return 0;
     }
     
-    rpmMessage(RPMMESS_NORMAL, "Executing: %s\n", name);
+    rpmMessage(RPMMESS_NORMAL, _("Executing: %s\n"), name);
     if (!(pid = fork())) {
 	buildShell = rpmGetVar(RPMVAR_BUILDSHELL);
 	execl(buildShell, buildShell, "-e", scriptName, scriptName, NULL);
-	rpmError(RPMERR_SCRIPT, "Exec of %s failed (%s)",
+	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s)"),
 		 scriptName, name);
 	unlink(scriptName);
 	FREE(scriptName);
@@ -141,7 +142,7 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
     }
     wait(&status);
     if (! WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_SCRIPT, "Bad exit status from %s (%s)",
+	rpmError(RPMERR_SCRIPT, _("Bad exit status from %s (%s)"),
 		 scriptName, name);
 #if HACK
 	unlink(scriptName);

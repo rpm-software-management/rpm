@@ -39,7 +39,7 @@ enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
 static void argerror(char * desc);
 
 static void argerror(char * desc) {
-    fprintf(stderr, "rpm: %s\n", desc);
+    fprintf(stderr, _("rpm: %s\n"), desc);
     exit(1);
 }
 
@@ -51,65 +51,65 @@ int build(char *arg, int buildAmount, char *passPhrase,
 	  char *buildRootOverride);
 
 void printVersion(void) {
-    printf(_("RPM version %s\n"), version);
+    fprintf(stdout, _("RPM version %s\n"), version);
 }
 
 void printBanner(void) {
-    puts(_("Copyright (C) 1995 - Red Hat Software"));
-    puts(_("This may be freely redistributed under the terms of the GNU "
-	   "Public License"));
+    fputs(_("Copyright (C) 1995 - Red Hat Software"), stdout);
+    fputs(_("This may be freely redistributed under the terms of the GNU "
+	   "Public License"), stdout);
 }
 
 void printUsage(void) {
     printVersion();
     printBanner();
-    puts("");
+    fputs("", stdout);
 
-    puts(_("usage: rpm {--help}"));
-    puts(_("       rpm {--version}"));
-    puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
-    puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
-    puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
-    puts(_("                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"));
-    puts(_("                        [--provides] [--dump] [--dbpath <dir>] [targets]"));
-    puts(_("       rpm {--querytags}"));
+    fputs(_("usage: rpm {--help}"), stdout);
+    fputs(_("       rpm {--version}"), stdout);
+    fputs(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"), stdout);
+    fputs(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"), stdout);
+    fputs(_("                        [--whatprovides] [--whatrequires] [--requires]"), stdout);
+    fputs(_("                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"), stdout);
+    fputs(_("                        [--provides] [--dump] [--dbpath <dir>] [targets]"), stdout);
+    fputs(_("       rpm {--querytags}"), stdout);
 }
 
 void printHelp(void) {
     printVersion();
     printBanner();
-    puts(_(""));
+    fputs(_(""), stdout);
 
-    puts(_("usage:"));
-    puts(_("   --help		- print this message"));
-    puts(_("   --version	- print the version of rpm being used"));
-    puts(_("   all modes support the following arguments:"));
-    puts(_("       -v		      - be a little more verbose"));
-    puts(_("       -vv	              - be incredibly verbose (for debugging)"));
-    puts(_("   -q                   - query mode"));
-    puts(_("      --queryformat <s>   - use s as the header format (implies -i)"));
-    puts(_("      Package specification options:"));
-    puts(_("        -a                - query all packages"));
-    puts(_("        -f <file>+        - query package owning <file>"));
-    puts(_("        -F                - like -f, but read file names from stdin"));
-    puts(_("        -p <packagefile>+ - query (uninstalled) package <packagefile>"));
-    puts(_("        -P                - like -p, but read package names from stdin"));
-    puts(_("	   --whatprovides <i> - query packages which provide <i> capability"));
-    puts(_("	   --whatrequires <i> - query packages which require <i> capability"));
-    puts(_("      Information selection options:"));
-    puts(_("        -i                - display package information"));
-    puts(_("        -l                - display package file list"));
-    puts(_("        -s                - show file states (implies -l)"));
-    puts(_("        -d                - list only documentation files (implies -l)"));
-    puts(_("        -c                - list only configuration files (implies -l)"));
-    puts(_("        --dump            - show all verifiable information for each file"));
-    puts(_("                            (must be used with -l, -c, or -d)"));
-    puts(_("        --provides        - list capabilbities package provides"));
-    puts(_("        --requires"));
-    puts(_("        -R                - list package dependencies"));
-    puts(_("        --scripts         - print the various [un]install scripts"));
-    puts(_(""));
-    puts(_("    --querytags         - list the tags that can be used in a query format"));
+    fputs(_("usage:"), stdout);
+    fputs(_("   --help		- print this message"), stdout);
+    fputs(_("   --version	- print the version of rpm being used"), stdout);
+    fputs(_("   all modes support the following arguments:"), stdout);
+    fputs(_("       -v		      - be a little more verbose"), stdout);
+    fputs(_("       -vv	              - be incredibly verbose (for debugging)"), stdout);
+    fputs(_("   -q                   - query mode"), stdout);
+    fputs(_("      --queryformat <s>   - use s as the header format (implies -i)"), stdout);
+    fputs(_("      Package specification options:"), stdout);
+    fputs(_("        -a                - query all packages"), stdout);
+    fputs(_("        -f <file>+        - query package owning <file>"), stdout);
+    fputs(_("        -F                - like -f, but read file names from stdin"), stdout);
+    fputs(_("        -p <packagefile>+ - query (uninstalled) package <packagefile>"), stdout);
+    fputs(_("        -P                - like -p, but read package names from stdin"), stdout);
+    fputs(_("	   --whatprovides <i> - query packages which provide <i> capability"), stdout);
+    fputs(_("	   --whatrequires <i> - query packages which require <i> capability"), stdout);
+    fputs(_("      Information selection options:"), stdout);
+    fputs(_("        -i                - display package information"), stdout);
+    fputs(_("        -l                - display package file list"), stdout);
+    fputs(_("        -s                - show file states (implies -l)"), stdout);
+    fputs(_("        -d                - list only documentation files (implies -l)"), stdout);
+    fputs(_("        -c                - list only configuration files (implies -l)"), stdout);
+    fputs(_("        --dump            - show all verifiable information for each file"), stdout);
+    fputs(_("                            (must be used with -l, -c, or -d)"), stdout);
+    fputs(_("        --provides        - list capabilbities package provides"), stdout);
+    fputs(_("        --requires"), stdout);
+    fputs(_("        -R                - list package dependencies"), stdout);
+    fputs(_("        --scripts         - print the various [un]install scripts"), stdout);
+    fputs(_(""), stdout);
+    fputs(_("    --querytags         - list the tags that can be used in a query format"), stdout);
 }
 
 int main(int argc, char ** argv) {

@@ -9,7 +9,9 @@
 #ifdef DEBUG_MACROS
 #define rpmError fprintf
 #define RPMERR_BADSPEC stderr
+#define	_(x)	x
 #else
+#include "intl.h"
 #include "rpmlib.h"
 #endif
 
@@ -109,7 +111,7 @@ dumpMacroTable(MacroContext *mc)
 		fprintf(stderr, "\n");
 		nactive++;
 	}
-	fprintf(stderr, "======================== active %d empty %d\n",
+	fprintf(stderr, _("======================== active %d empty %d\n"),
 		nactive, nempty);
 }
 
@@ -196,7 +198,7 @@ printMacro(MacroBuf *mb, const char *s, const char *se)
 	int choplen;
 
 	if (s >= se) {	/* XXX just in case */
-		fprintf(stderr, "%3d>%*s(empty)", mb->depth,
+		fprintf(stderr, _("%3d>%*s(empty)"), mb->depth,
 			(2 * mb->depth + 1), "");
 		return;
 	}
@@ -231,7 +233,7 @@ printExpansion(MacroBuf *mb, const char *t, const char *te)
 	int choplen;
 
 	if (!(te > t)) {
-		fprintf(stderr, "%3d<%*s(empty)\n", mb->depth, (2 * mb->depth + 1), "");
+		fprintf(stderr, _("%3d<%*s(empty)\n"), mb->depth, (2 * mb->depth + 1), "");
 		return;
 	}
 
@@ -404,7 +406,7 @@ doDefine(MacroBuf *mb, const char *se, int level, int expandbody)
 	SKIPBLANK(s, c);
 	if (c == '{') {	/* XXX permit silent {...} grouping */
 		if ((se = matchchar(s, c, '}')) == NULL) {
-			rpmError(RPMERR_BADSPEC, "Macro %%%s has unterminated body", n);
+			rpmError(RPMERR_BADSPEC, _("Macro %%%s has unterminated body"), n);
 			se = s;	/* XXX W2DO? */
 			return se;
 		}
@@ -430,23 +432,23 @@ doDefine(MacroBuf *mb, const char *se, int level, int expandbody)
 
 	/* Names must start with alphabetic or _ and be at least 3 chars */
 	if (!((c = *n) && (isalpha(c) || c == '_') && (ne - n) > 2)) {
-		rpmError(RPMERR_BADSPEC, "Macro %%%s has illegal name (%%define)", n);
+		rpmError(RPMERR_BADSPEC, _("Macro %%%s has illegal name (%%define)"), n);
 		return se;
 	}
 
 	/* Options must be terminated with ')' */
 	if (o && oc != ')') {
-		rpmError(RPMERR_BADSPEC, "Macro %%%s has unterminated opts", n);
+		rpmError(RPMERR_BADSPEC, _("Macro %%%s has unterminated opts"), n);
 		return se;
 	}
 
 	if ((be - b) < 1) {
-		rpmError(RPMERR_BADSPEC, "Macro %%%s has empty body", n);
+		rpmError(RPMERR_BADSPEC, _("Macro %%%s has empty body"), n);
 		return se;
 	}
 
 	if (expandbody && expandU(mb, b, (&buf[sizeof(buf)] - b))) {
-		rpmError(RPMERR_BADSPEC, "Macro %%%s failed to expand", n);
+		rpmError(RPMERR_BADSPEC, _("Macro %%%s failed to expand"), n);
 		return se;
 	}
 
@@ -471,7 +473,7 @@ doUndefine(MacroContext *mc, const char *se)
 
 	/* Names must start with alphabetic or _ and be at least 3 chars */
 	if (!((c = *n) && (isalpha(c) || c == '_') && (ne - n) > 2)) {
-		rpmError(RPMERR_BADSPEC, "Macro %%%s has illegal name (%%undefine)", n);
+		rpmError(RPMERR_BADSPEC, _("Macro %%%s has illegal name (%%undefine)"), n);
 		return se;
 	}
 
@@ -542,7 +544,7 @@ freeArgs(MacroBuf *mb)
 			; /* XXX skip test for %# %* %0 */
 		} else if (!skiptest && me->used <= 0) {
 #if NOTYET
-			rpmError(RPMERR_BADSPEC, "Macro %%%s (%s) was not used below level %d",
+			rpmError(RPMERR_BADSPEC, _("Macro %%%s (%s) was not used below level %d"),
 				me->name, me->body, me->level);
 #endif
 		}
@@ -625,7 +627,7 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
     optc++;	/* XXX count argv[0] too */
     while((c = getopt(argc, (char **)argv, opts)) != -1) {
 	if (!(c != '?' && (o = strchr(opts, c)))) {
-		rpmError(RPMERR_BADSPEC, "Unknown option %c in %s(%s)",
+		rpmError(RPMERR_BADSPEC, _("Unknown option %c in %s(%s)"),
 			c, me->name, opts);
 		return se;
 	}
@@ -787,7 +789,7 @@ expandMacro(MacroBuf *mb)
     int chkexist;
 
     if (++mb->depth > max_macro_depth) {
-	rpmError(RPMERR_BADSPEC, "Recursion depth(%d) greater than max(%d)",
+	rpmError(RPMERR_BADSPEC, _("Recursion depth(%d) greater than max(%d)"),
 		mb->depth, max_macro_depth);
 	mb->depth--;
 	mb->expand_trace = 1;
@@ -843,7 +845,7 @@ expandMacro(MacroBuf *mb)
 		break;
 	case '(':		/* %(...) shell escape */
 		if ((se = matchchar(s, c, ')')) == NULL) {
-			rpmError(RPMERR_BADSPEC, "Unterminated %c: %s", c, s);
+			rpmError(RPMERR_BADSPEC, _("Unterminated %c: %s"), c, s);
 			rc = 1;
 			continue;
 		}
@@ -859,7 +861,7 @@ expandMacro(MacroBuf *mb)
 		break;
 	case '{':		/* %{...}/%{...:...} substitution */
 		if ((se = matchchar(s, c, '}')) == NULL) {
-			rpmError(RPMERR_BADSPEC, "Unterminated %c: %s", c, s);
+			rpmError(RPMERR_BADSPEC, _("Unterminated %c: %s"), c, s);
 			rc = 1;
 			continue;
 		}
@@ -888,7 +890,7 @@ expandMacro(MacroBuf *mb)
 	fn = (fe - f);
 	gn = (ge - g);
 	if (fn <= 0) {
-		rpmError(RPMERR_BADSPEC, "Empty token");
+		rpmError(RPMERR_BADSPEC, _("Empty token"));
 		s = se;
 		continue;
 	}
@@ -1010,7 +1012,7 @@ expandMacro(MacroBuf *mb)
 		c = '%';	/* XXX only need to save % */
 		SAVECHAR(mb, c);
 #else
-		rpmError(RPMERR_BADSPEC, "Macro %%%.*s not found, skipping", fn, f);
+		rpmError(RPMERR_BADSPEC, _("Macro %%%.*s not found, skipping"), fn, f);
 		s = se;
 #endif
 		continue;
@@ -1082,7 +1084,7 @@ expandMacros(void *spec, MacroContext *mc, char *s, size_t slen)
 	rc = expandMacro(mb);
 
 	if (mb->nb <= 0)
-		rpmError(RPMERR_BADSPEC, "Target buffer overflow");
+		rpmError(RPMERR_BADSPEC, _("Target buffer overflow"));
 
 	tbuf[slen] = '\0';	/* XXX just in case */
 	strncpy(s, tbuf, (slen - mb->nb + 1));
@@ -1196,7 +1198,7 @@ int isCompressed(char *file, int *compressed)
     *compressed = COMPRESSED_NOT;
 
     if ((fd = open(file, O_RDONLY)) < 0) {
-	rpmError(RPMERR_BADSPEC, "File %s: %s", file, strerror(errno));
+	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, strerror(errno));
 	return 1;
     }
     nb = read(fd, magic, sizeof(magic));
@@ -1204,10 +1206,10 @@ int isCompressed(char *file, int *compressed)
     close(fd);
 
     if (nb < 0) {
-	rpmError(RPMERR_BADSPEC, "File %s: %s", file, strerror(rderrno));
+	rpmError(RPMERR_BADSPEC, _("File %s: %s"), file, strerror(rderrno));
 	return 1;
     } else if (nb < sizeof(magic)) {
-	rpmError(RPMERR_BADSPEC, "File %s is smaller than %d bytes",
+	rpmError(RPMERR_BADSPEC, _("File %s is smaller than %d bytes"),
 		file, sizeof(magic));
 	return 0;
     }

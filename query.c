@@ -54,7 +54,7 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
     headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
 
     if (!queryFormat && !queryFlags) {
-	printf("%s-%s-%s\n", name, version, release);
+	fprintf(stdout, "%s-%s-%s\n", name, version, release);
     } else {
 	if (queryFormat)
 	    queryHeader(h, queryFormat);
@@ -62,7 +62,7 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 	if (queryFlags & QUERY_FOR_LIST) {
 	    if (!headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 		 &count)) {
-		puts(_("(contains no files)"));
+		fputs(_("(contains no files)"), stdout);
 	    } else {
 		if (!headerGetEntry(h, RPMTAG_FILESTATES, &type, 
 			 (void **) &fileStatesList, &count)) {
@@ -114,50 +114,50 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 			    if (fileStatesList) {
 				switch (fileStatesList[i]) {
 				  case RPMFILE_STATE_NORMAL:
-				    fputs("normal        ", stdout); break;
+				    fputs(_("normal        "), stdout); break;
 				  case RPMFILE_STATE_REPLACED:
-				    fputs("replaced      ", stdout); break;
+				    fputs(_("replaced      "), stdout); break;
 				  case RPMFILE_STATE_NETSHARED:
-				    fputs("net shared    ", stdout); break;
+				    fputs(_("net shared    "), stdout); break;
 				  case RPMFILE_STATE_NOTINSTALLED:
-				    fputs("not installed ", stdout); break;
+				    fputs(_("not installed "), stdout); break;
 				  default:
-				    printf("(unknown %3d) ", 
+				    fprintf(stdout, _("(unknown %3d) "), 
 					  fileStatesList[i]);
 				}
 			    } else {
-				fputs(    "(no state)    ", stdout);
+				fputs(    _("(no state)    "), stdout);
 			    }
 			}
 			    
 			if (queryFlags & QUERY_FOR_DUMPFILES) {
-			    printf("%s %d %d %s 0%o ", fileList[i],
+			    fprintf(stdout, "%s %d %d %s 0%o ", fileList[i],
 				   fileSizeList[i], fileMTimeList[i],
 				   fileMD5List[i], fileModeList[i]);
 
 			    if (fileOwnerList)
-				printf("%s %s", fileOwnerList[i], 
+				fprintf(stdout, "%s %s", fileOwnerList[i], 
 						fileGroupList[i]);
 			    else if (fileUIDList)
-				printf("%d %d", fileUIDList[i], 
+				fprintf(stdout, "%d %d", fileUIDList[i], 
 						fileGIDList[i]);
 			    else {
-				rpmError(RPMERR_INTERNAL, "package has "
-					"neither file owner or id lists");
+				rpmError(RPMERR_INTERNAL, _("package has "
+					"neither file owner or id lists"));
 			    }
 
-			    printf(" %s %s %d ", 
+			    fprintf(stdout, " %s %s %d ", 
 				 fileFlagsList[i] & RPMFILE_CONFIG ? "1" : "0",
 				 fileFlagsList[i] & RPMFILE_DOC ? "1" : "0",
 				 fileRdevList[i]);
 
 			    if (strlen(fileLinktoList[i]))
-				printf("%s\n", fileLinktoList[i]);
+				fprintf(stdout, "%s\n", fileLinktoList[i]);
 			    else
-				printf("X\n");
+				fprintf(stdout, "X\n");
 
 			} else if (!rpmIsVerbose()) {
-			    puts(fileList[i]);
+			    fputs(fileList[i], stdout);
 			} else if (fileOwnerList) 
 			    printFileInfo(fileList[i], fileSizeList[i],
 					  fileModeList[i], fileMTimeList[i],
@@ -171,8 +171,8 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 					  NULL, fileUIDList[i], 
 					  fileGIDList[i], fileLinktoList[i]);
 			} else {
-			    rpmError(RPMERR_INTERNAL, "package has "
-				    "neither file owner or id lists");
+			    rpmError(RPMERR_INTERNAL, _("package has "
+				    "neither file owner or id lists"));
 			}
 		    }
 		}
@@ -300,7 +300,7 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
     else
 	strftime(timefield, sizeof(timefield) - 1, "%b %d  %Y", tstruct);
 
-    printf("%s %8s %8s %10s %s %s\n", perms, ownerfield, groupfield, 
+    fprintf(stdout, "%s %8s %8s %10s %s %s\n", perms, ownerfield, groupfield, 
 		sizefield, timefield, namefield);
 }
 
@@ -311,7 +311,7 @@ static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags,
 
     for (i = 0; i < matches.count; i++) {
 	if (matches.recs[i].recOffset) {
-	    rpmMessage(RPMMESS_DEBUG, "querying record number %d\n",
+	    rpmMessage(RPMMESS_DEBUG, _("querying record number %d\n"),
 			matches.recs[i].recOffset);
 	    
 	    h = rpmdbGetRecord(db, matches.recs[i].recOffset);
@@ -537,12 +537,12 @@ void queryPrintTags(void) {
     struct headerSprintfExtension * ext = rpmHeaderFormats;
 
     for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
-	printf("%s\n", t->name + 7);
+	fprintf(stdout, "%s\n", t->name + 7);
     }
 
     while (ext->name) {
 	if (ext->type == HEADER_EXT_TAG)
-	    printf("%s\n", ext->name + 7), ext++;
+	    fprintf(stdout, "%s\n", ext->name + 7), ext++;
 	else if (ext->type == HEADER_EXT_MORE)
 	    ext = ext->u.more;
 	else

@@ -110,14 +110,14 @@ static int urlFtpLogin(char * url, char ** fileNamePtr) {
     int port;
     int ftpconn;
    
-    rpmMessage(RPMMESS_DEBUG, "getting %s via anonymous ftp\n", url);
+    rpmMessage(RPMMESS_DEBUG, _("getting %s via anonymous ftp\n"), url);
 
     buf = alloca(strlen(url) + 1);
     strcpy(buf, url);
 
     urlFtpSplit(buf, &userName, &password, &machineName, &fileName);
 
-    rpmMessage(RPMMESS_DEBUG, "logging into %s as %s, pw %s\n", machineName,
+    rpmMessage(RPMMESS_DEBUG, _("logging into %s as %s, pw %s\n"), machineName,
 		userName ? userName : "ftp", 
 		password ? password : "(username)");
 
@@ -153,7 +153,7 @@ int urlGetFd(char * url, struct urlContext * context) {
     char * fileName;
     int fd;
 
-    rpmMessage(RPMMESS_DEBUG, "getting %s via anonymous ftp\n", url);
+    rpmMessage(RPMMESS_DEBUG, _("getting %s via anonymous ftp\n"), url);
 
     if ((context->ftpControl = urlFtpLogin(url, &fileName)) < 0) 
 	return context->ftpControl;
@@ -179,7 +179,7 @@ int urlGetFile(char * url, char * dest) {
     int rc;
     int fd;
 
-    rpmMessage(RPMMESS_DEBUG, "getting %s via anonymous ftp\n", url);
+    rpmMessage(RPMMESS_DEBUG, _("getting %s via anonymous ftp\n"), url);
 
     if ((ftpconn = urlFtpLogin(url, &fileName)) < 0) return ftpconn;
 

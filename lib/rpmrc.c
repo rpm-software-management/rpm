@@ -1074,8 +1074,8 @@ static void getMachineInfo(int type, char ** name, int * num) {
 	if (name) *name = current[type];
 
 	if (tables[currTables[type]].hasCanon) {
-	    rpmMessage(RPMMESS_WARNING, "Unknown system: %s\n", current[type]);
-	    rpmMessage(RPMMESS_WARNING, "Please contact rpm-list@redhat.com\n");
+	    rpmMessage(RPMMESS_WARNING, _("Unknown system: %s\n"), current[type]);
+	    rpmMessage(RPMMESS_WARNING, _("Please contact rpm-list@redhat.com\n"));
 	}
     }
 }

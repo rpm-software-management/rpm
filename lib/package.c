@@ -48,13 +48,13 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
     }
 
     if (lead->major == 1) {
-	rpmMessage(RPMMESS_DEBUG, "package is a version one package!\n");
+	rpmMessage(RPMMESS_DEBUG, _("package is a version one package!\n"));
 
 	if (lead->type == RPMLEAD_SOURCE) {
-	    rpmMessage(RPMMESS_DEBUG, "old style source package -- "
-			"I'll do my best\n");
+	    rpmMessage(RPMMESS_DEBUG, _("old style source package -- "
+			"I'll do my best\n"));
 	    oldLead->archiveOffset = ntohl(oldLead->archiveOffset);
-	    rpmMessage(RPMMESS_DEBUG, "archive offset is %d\n", 
+	    rpmMessage(RPMMESS_DEBUG, _("archive offset is %d\n"), 
 			oldLead->archiveOffset);
 	    lseek(fd, oldLead->archiveOffset, SEEK_SET);
 	    
@@ -64,7 +64,7 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
 
 	    *hdr = NULL;
 	} else {
-	    rpmMessage(RPMMESS_DEBUG, "old style binary package\n");
+	    rpmMessage(RPMMESS_DEBUG, _("old style binary package\n"));
 	    readOldHeader(fd, hdr, &isSource);
 	    arch = lead->archnum;
 	    headerAddEntry(*hdr, RPMTAG_ARCH, RPM_INT8_TYPE, &arch, 1);

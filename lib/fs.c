@@ -73,7 +73,7 @@ static int getFilesystemList(void) {
 	filesystems[i].mntPoint = fsnames[i];
 	
 	if (stat(filesystems[i].mntPoint, &sb)) {
-	    rpmError(RPMERR_STAT, "failed to stat %s: %s", fsnames[i],
+	    rpmError(RPMERR_STAT, _("failed to stat %s: %s"), fsnames[i],
 			strerror(errno));
 
 	    for (i = 0; i < num; i++)
@@ -235,7 +235,7 @@ int rpmGetFilesystemUsage(char ** fileList, int_32 * fssizes, int numFiles,
 	    chptr = dirName + strlen(dirName) - 1;
 	    while (stat(dirName, &sb)) {
 		if (errno != ENOENT) {
-		    rpmError(RPMERR_STAT, "failed to stat %s: %s", buf,
+		    rpmError(RPMERR_STAT, _("failed to stat %s: %s"), buf,
 				strerror(errno));
 		    free(usages);
 		    return 1;
@@ -256,7 +256,7 @@ int rpmGetFilesystemUsage(char ** fileList, int_32 * fssizes, int numFiles,
 
 		if (j == numFilesystems) {
 		    rpmError(RPMERR_BADDEV, 
-				"file %s is on an unknown device", buf);
+				_("file %s is on an unknown device"), buf);
 		    free(usages);
 		    return 1;
 		}

@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include "falloc.h"
+#include "intl.h"
 
 #define FA_MAGIC      0x02050920
 
@@ -124,8 +125,8 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	if (read(fa->fd, &header, sizeof(header)) != sizeof(header)) return 0;
 
 	if (!header.isFree) {
-	    fprintf(stderr, "free list corrupt (%d)- contact "
-			"support@redhat.com\n", nextFreeBlock);
+	    fprintf(stderr, _("free list corrupt (%d)- contact "
+			"support@redhat.com\n"), nextFreeBlock);
 	    exit(1);
 	}
 

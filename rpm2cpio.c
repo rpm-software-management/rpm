@@ -2,6 +2,7 @@
 
 #include "system.h"
 
+#include "intl.h"
 #include "rpmlib.h"
 
 char *zlib_err [] = {
@@ -35,10 +36,10 @@ int main(int argc, char **argv)
 
     rc = rpmReadPackageHeader(fd, &hd, &isSource, NULL, NULL);
     if (rc == 1) {
-	fprintf(stderr, "argument is not an RPM package\n");
+	fprintf(stderr, _("argument is not an RPM package\n"));
 	exit(1);
     } else if (rc) {
-	fprintf(stderr, "error reading header from package\n");
+	fprintf(stderr, _("error reading header from package\n"));
 	exit(1);
     }
 

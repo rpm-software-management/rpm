@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include "intl.h"
 #include "rpmlib.h"
 
 void main(int argc, char **argv)
@@ -24,29 +25,29 @@ void main(int argc, char **argv)
     headerAddEntry(h, RPMTAG_VENDOR, RPM_CHAR_TYPE, ca, strlen(ca));
     headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE, i32a, 3);
 
-    printf("Original = %d\n", headerSizeof(h));
+    fprintf(stdout, "Original = %d\n", headerSizeof(h));
     fd = open("test.out", O_WRONLY|O_CREAT);
     headerWrite(fd, h);
     close(fd);
     h2 = headerCopy(h);
-    printf("Copy     = %d\n", headerSizeof(h2));
+    fprintf(stdout, "Copy     = %d\n", headerSizeof(h2));
 
     fd = open("test.out", O_RDONLY);
     h3 = headerRead(fd);
     close(fd);
    
-    printf("From disk    = %d\n", headerSizeof(h3));
+    fprintf(stdout, "From disk    = %d\n", headerSizeof(h3));
     h4 = headerCopy(h3);
-    printf("Copy of disk = %d\n", headerSizeof(h4));
+    fprintf(stdout, "Copy of disk = %d\n", headerSizeof(h4));
    
-    printf("=====================\n");
-    printf("Original\n");
+    fprintf(stdout, "=====================\n");
+    fprintf(stdout, "Original\n");
     headerDump(h, stdout, 1);
-    printf("=====================\n");
-    printf("From disk\n");
+    fprintf(stdout, "=====================\n");
+    fprintf(stdout, "From disk\n");
     headerDump(h3, stdout, 1);
-    printf("=====================\n");
-    printf("Copy of disk\n");
+    fprintf(stdout, "=====================\n");
+    fprintf(stdout, "Copy of disk\n");
     headerDump(h4, stdout, 1);
 
 #if 0

@@ -2,6 +2,7 @@
 
 #include <signal.h>
 
+#include "intl.h"
 #include "rpmbuild.h"
 #include "buildio.h"
 
@@ -137,8 +138,8 @@ int packageBinaries(Spec spec)
 	if (binRpm == NULL) {
 	    headerGetEntry(pkg->header, RPMTAG_NAME, NULL,
 			   (void **)&name, NULL);
-	    rpmError(RPMERR_BADFILENAME, "Could not generate output "
-		     "filename for package %s: %s\n", name, errorString);
+	    rpmError(RPMERR_BADFILENAME, _("Could not generate output "
+		     "filename for package %s: %s\n"), name, errorString);
 	    return RPMERR_BADFILENAME;
 	}
 	strcpy(fileName, "%{_rpmdir}/");
@@ -187,7 +188,7 @@ int writeRPM(Header header, char *fileName, int type,
     
     /* Write the header */
     if (makeTempFile(NULL, &sigtarget, &fd)) {
-	rpmError(RPMERR_CREATE, "Unable to open temp file");
+	rpmError(RPMERR_CREATE, _("Unable to open temp file"));
 	return RPMERR_CREATE;
     }
     headerWrite(fd, header, HEADER_MAGIC_YES);
@@ -198,7 +199,7 @@ int writeRPM(Header header, char *fileName, int type,
     } else if (csa->cpioFdIn >= 0) {
 	rc = cpio_copy(fd, csa);
     } else {
-	rpmError(RPMERR_CREATE, "Bad CSA data");
+	rpmError(RPMERR_CREATE, _("Bad CSA data"));
 	rc = RPMERR_BADARG;
     }
     if (rc != 0) {
@@ -221,7 +222,7 @@ int writeRPM(Header header, char *fileName, int type,
     /* Open the output file */
     unlink(fileName);
     if ((fd = open(fileName, O_WRONLY|O_CREAT|O_TRUNC, 0644)) == -1) {
-	rpmError(RPMERR_CREATE, "Could not open %s\n", fileName);
+	rpmError(RPMERR_CREATE, _("Could not open %s\n"), fileName);
 	unlink(sigtarget);
 	free(sigtarget);
 	return RPMERR_CREATE;
@@ -253,7 +254,7 @@ int writeRPM(Header header, char *fileName, int type,
     lead.signature_type = RPMSIG_HEADERSIG;  /* New-style signature */
     strncpy(lead.name, buf, sizeof(lead.name));
     if (writeLead(fd, &lead)) {
-	rpmError(RPMERR_NOSPACE, "Unable to write package: %s",
+	rpmError(RPMERR_NOSPACE, _("Unable to write package: %s"),
 		 strerror(errno));
 	close(fd);
 	unlink(sigtarget);
@@ -269,7 +270,7 @@ int writeRPM(Header header, char *fileName, int type,
     rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
     rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
     if (sigtype > 0) {
-	rpmMessage(RPMMESS_NORMAL, "Generating signature: %d\n", sigtype);
+	rpmMessage(RPMMESS_NORMAL, _("Generating signature: %d\n"), sigtype);
 	rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
     }
     if ((rc = rpmWriteSignature(fd, sig))) {
@@ -286,7 +287,7 @@ int writeRPM(Header header, char *fileName, int type,
     ifd = open(sigtarget, O_RDONLY);
     while ((count = read(ifd, buf, sizeof(buf))) > 0) {
 	if (count == -1) {
-	    rpmError(RPMERR_READERROR, "Unable to read sigtarget: %s",
+	    rpmError(RPMERR_READERROR, _("Unable to read sigtarget: %s"),
 		     strerror(errno));
 	    close(ifd);
 	    close(fd);
@@ -296,7 +297,7 @@ int writeRPM(Header header, char *fileName, int type,
 	    return RPMERR_READERROR;
 	}
 	if (write(fd, buf, count) < 0) {
-	    rpmError(RPMERR_NOSPACE, "Unable to write package: %s",
+	    rpmError(RPMERR_NOSPACE, _("Unable to write package: %s"),
 		     strerror(errno));
 	    close(ifd);
 	    close(fd);
@@ -311,7 +312,7 @@ int writeRPM(Header header, char *fileName, int type,
     unlink(sigtarget);
     free(sigtarget);
 
-    rpmMessage(RPMMESS_NORMAL, "Wrote: %s\n", fileName);
+    rpmMessage(RPMMESS_NORMAL, _("Wrote: %s\n"), fileName);
 
     return 0;
 }
@@ -329,10 +330,10 @@ static int cpio_gzip(int fdo, CSA_t *csa) {
 
     if (rc) {
 	if (rc & CPIO_CHECK_ERRNO)
-	    rpmError(RPMERR_CPIO, "cpio failed on file %s: %s",
+	    rpmError(RPMERR_CPIO, _("cpio failed on file %s: %s"),
 		     failedFile, strerror(errno));
 	else
-	    rpmError(RPMERR_CPIO, "cpio failed on file %s: %d",
+	    rpmError(RPMERR_CPIO, _("cpio failed on file %s: %d"),
 		     failedFile, rc);
 	return 1;
     }
@@ -346,14 +347,14 @@ static int cpio_copy(int fdo, CSA_t *csa) {
 
     while((nb = read(csa->cpioFdIn, buf, sizeof(buf))) > 0) {
 	if (write(fdo, buf, nb) != nb) {
-	    rpmError(RPMERR_CPIO, "cpio_copy write failed: %s",
+	    rpmError(RPMERR_CPIO, _("cpio_copy write failed: %s"),
 		strerror(errno));
 	    return 1;
 	}
 	csa->cpioArchiveSize += nb;
     }
     if (nb < 0) {
-	rpmError(RPMERR_CPIO, "cpio_copy read failed: %s", strerror(errno));
+	rpmError(RPMERR_CPIO, _("cpio_copy read failed: %s"), strerror(errno));
 	return 1;
     }
     return 0;
@@ -376,7 +377,7 @@ static StringBuf addFileToTagAux(Spec spec, char *file, StringBuf sb)
     }
     while (fgets(buf, sizeof(buf), f)) {
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
-	    rpmError(RPMERR_BADSPEC, "line: %s", buf);
+	    rpmError(RPMERR_BADSPEC, _("line: %s"), buf);
 	    return NULL;
 	}
 	appendStringBuf(sb, buf);
@@ -432,28 +433,28 @@ static int processScriptFiles(Spec spec, Package pkg)
     if (pkg->preInFile) {
 	if (addFileToTag(spec, pkg->preInFile, pkg->header, RPMTAG_PREIN)) {
 	    rpmError(RPMERR_BADFILENAME,
-		     "Could not open PreIn file: %s", pkg->preInFile);
+		     _("Could not open PreIn file: %s"), pkg->preInFile);
 	    return RPMERR_BADFILENAME;
 	}
     }
     if (pkg->preUnFile) {
 	if (addFileToTag(spec, pkg->preUnFile, pkg->header, RPMTAG_PREUN)) {
 	    rpmError(RPMERR_BADFILENAME,
-		     "Could not open PreUn file: %s", pkg->preUnFile);
+		     _("Could not open PreUn file: %s"), pkg->preUnFile);
 	    return RPMERR_BADFILENAME;
 	}
     }
     if (pkg->postInFile) {
 	if (addFileToTag(spec, pkg->postInFile, pkg->header, RPMTAG_POSTIN)) {
 	    rpmError(RPMERR_BADFILENAME,
-		     "Could not open PostIn file: %s", pkg->postInFile);
+		     _("Could not open PostIn file: %s"), pkg->postInFile);
 	    return RPMERR_BADFILENAME;
 	}
     }
     if (pkg->postUnFile) {
 	if (addFileToTag(spec, pkg->postUnFile, pkg->header, RPMTAG_POSTUN)) {
 	    rpmError(RPMERR_BADFILENAME,
-		     "Could not open PostUn file: %s", pkg->postUnFile);
+		     _("Could not open PostUn file: %s"), pkg->postUnFile);
 	    return RPMERR_BADFILENAME;
 	}
     }
@@ -461,7 +462,7 @@ static int processScriptFiles(Spec spec, Package pkg)
 	if (addFileToTag(spec, pkg->verifyFile, pkg->header,
 			 RPMTAG_VERIFYSCRIPT)) {
 	    rpmError(RPMERR_BADFILENAME,
-		     "Could not open VerifyScript file: %s", pkg->verifyFile);
+		     _("Could not open VerifyScript file: %s"), pkg->verifyFile);
 	    return RPMERR_BADFILENAME;
 	}
     }
@@ -477,7 +478,7 @@ static int processScriptFiles(Spec spec, Package pkg)
 	    if (addFileToArrayTag(spec, p->fileName, pkg->header,
 				  RPMTAG_TRIGGERSCRIPTS)) {
 		rpmError(RPMERR_BADFILENAME,
-			 "Could not open Trigger script file: %s",
+			 _("Could not open Trigger script file: %s"),
 			 p->fileName);
 		return RPMERR_BADFILENAME;
 	    }

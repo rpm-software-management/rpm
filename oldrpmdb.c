@@ -451,14 +451,14 @@ int oldrpmdbGetPackageInfo(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel labe
 
     labelstr = oldrpmdbLabelToLabelstr(label, 0);
 
-    rpmMessage(RPMMESS_DEBUG, "pulling %s from database\n", labelstr);
+    rpmMessage(RPMMESS_DEBUG, _("pulling %s from database\n"), labelstr);
 
     key.dptr = labelstr;
     key.dsize = strlen(labelstr);
     
     rec = gdbm_fetch(oldrpmdb->packages, key);
     if (!rec.dptr) {
-	rpmError(RPMERR_OLDDBCORRUPT, "package not found in database");
+	rpmError(RPMERR_OLDDBCORRUPT, _("package not found in database"));
 	return 1;
     }
 
@@ -519,7 +519,7 @@ int oldrpmdbGetPackageInfo(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel labe
     if (!pinfo->distribution) pinfo->distribution = strdup("");
     if (!pinfo->copyright) {
 	pinfo->copyright = strdup("");
-	printf("no copyright!\n");
+	fprintf(stdout, _("no copyright!\n"));
     }
 
     pinfo->files = malloc(sizeof(struct oldrpmFileInfo) * pinfo->fileCount);

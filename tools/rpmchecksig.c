@@ -29,12 +29,12 @@ int main(int argc, char **argv)
     readLead(fd, &lead);
     rpmReadSignature(fd, lead.signature_type, (void **) &sig);
     res = verifySignature(fd, lead.signature_type, sig, result, 1);
-    printf("%s", result);
+    fprintf(stdout, "%s", result);
     if (res) {
-	printf("Signature OK.\n");
+	fprintf(stdout, "Signature OK.\n");
 	return 0;
     } else {
-	printf("Signature NOT OK!\n");
+	fprintf(stdout, "Signature NOT OK!\n");
 	return 1;
     }
 }

@@ -2,6 +2,7 @@
 
 #include "rpmlib.h"
 
+#include "intl.h"
 #include "md5.h"
 #include "misc.h"
 #include "install.h"
@@ -167,8 +168,8 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
 	    if (uidList[filenum] != sb.st_uid)
 		*result |= RPMVERIFY_GROUP;
 	} else {
-	    rpmError(RPMERR_INTERNAL, "package lacks both user name and id "
-		  "lists (this should never happen)");
+	    rpmError(RPMERR_INTERNAL, _("package lacks both user name and id "
+		  "lists (this should never happen)"));
 	    *result |= RPMVERIFY_GROUP;
 	}
     }
@@ -185,8 +186,8 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result,
 	    if (gidList[filenum] != sb.st_gid)
 		*result |= RPMVERIFY_GROUP;
 	} else {
-	    rpmError(RPMERR_INTERNAL, "package lacks both group name and id "
-		     "lists (this should never happen)");
+	    rpmError(RPMERR_INTERNAL, _("package lacks both group name and id "
+		     "lists (this should never happen)"));
 	    *result |= RPMVERIFY_GROUP;
 	}
     }

@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     rpmReadSignature(fd, &sig, lead.signature_type);
     switch (lead.signature_type) {
       case RPMSIG_NONE:
-	fprintf(stderr, "No signature available.\n");
+	fprintf(stderr, _("No signature available.\n"));
 	break;
       default:
 	rpmWriteSignature(1, sig);

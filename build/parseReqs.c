@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include "intl.h"
 #include "rpmbuild.h"
 
 static struct ReqComp {
@@ -42,7 +43,7 @@ int parseRequiresConflicts(Spec spec, Package pkg, char *field,
 	if (tag == RPMTAG_CONFLICTFLAGS) {
 	    if (req[0] == '/') {
 		rpmError(RPMERR_BADSPEC,
-			 "line %d: No file names in Conflicts: %s",
+			 _("line %d: No file names in Conflicts: %s"),
 			 spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
@@ -73,13 +74,13 @@ int parseRequiresConflicts(Spec spec, Package pkg, char *field,
 	    if (rc->token) {
 		if (req[0] == '/') {
 		    rpmError(RPMERR_BADSPEC,
-			     "line %d: No versions on file names in %s: %s",
+			     _("line %d: No versions on file names in %s: %s"),
 			     spec->lineNum, name, spec->line);
 		    return RPMERR_BADSPEC;
 		}
 		if (tag == RPMTAG_PREREQ) {
 		    rpmError(RPMERR_BADSPEC,
-			     "line %d: No versions in PreReq: %s",
+			     _("line %d: No versions in PreReq: %s"),
 			     spec->lineNum, spec->line);
 		    return RPMERR_BADSPEC;
 		}
@@ -91,7 +92,7 @@ int parseRequiresConflicts(Spec spec, Package pkg, char *field,
 
 	if ((flags & RPMSENSE_SENSEMASK) && !version) {
 	    rpmError(RPMERR_BADSPEC,
-		     "line %d: Version required in %s: %s",
+		     _("line %d: Version required in %s: %s"),
 		     spec->lineNum, name, spec->line);
 	    return RPMERR_BADSPEC;
 	}
@@ -119,7 +120,15 @@ int parseProvidesObsoletes(Spec spec, Package pkg, char *field, int tag)
     while ((prov = strtok(line, " ,\t\n"))) {
 	if (prov[0] == '/') {
 	    rpmError(RPMERR_BADSPEC,
-		     "line %d: No file names in %s: %s",
+		     _("line %d: No file names in %s: %s"),
+		     spec->lineNum,
+		     (tag == RPMTAG_PROVIDES) ? "Provides" : "Obsoletes",
+		     spec->line);
+	    return RPMERR_BADSPEC;
+	}
+	if (!(isalnum(prov[0]) || prov[0] == '_')) {
+	    rpmError(RPMERR_BADSPEC,
+		     _("line %d: %s: tokens must begin with alpha-numeric: %s"),
 		     spec->lineNum,
 		     (tag == RPMTAG_PROVIDES) ? "Provides" : "Obsoletes",
 		     spec->line);

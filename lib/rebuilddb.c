@@ -12,7 +12,7 @@ int rpmdbRebuild(char * rootdir) {
     Header h;
     int failed = 0;
 
-    rpmMessage(RPMMESS_DEBUG, "rebuilding database in rootdir %s\n", rootdir);
+    rpmMessage(RPMMESS_DEBUG, _("rebuilding database in rootdir %s\n"), rootdir);
 
     dbpath = rpmGetVar(RPMVAR_DBPATH);
     if (!dbpath) {
@@ -28,7 +28,7 @@ int rpmdbRebuild(char * rootdir) {
 	      newdbpath);
     }
 
-    rpmMessage(RPMMESS_DEBUG, "creating directory: %s\n", newdbpath);
+    rpmMessage(RPMMESS_DEBUG, _("creating directory: %s\n"), newdbpath);
     if (mkdir(newdbpath, 0755)) {
 	rpmError(RPMERR_MKDIR, _("error creating directory %s: %s"),
 	      newdbpath, strerror(errno));
@@ -36,12 +36,12 @@ int rpmdbRebuild(char * rootdir) {
 
     sprintf(newdbpath, "%s/rebuilddb.%d", dbpath, (int) getpid());
 
-    rpmMessage(RPMMESS_DEBUG, "opening old database\n");
+    rpmMessage(RPMMESS_DEBUG, _("opening old database\n"));
     if (openDatabase(rootdir, dbpath, &olddb, O_RDONLY, 0644, 0)) {
 	return 1;
     }
 
-    rpmMessage(RPMMESS_DEBUG, "opening new database\n");
+    rpmMessage(RPMMESS_DEBUG, _("opening new database\n"));
     if (openDatabase(rootdir, newdbpath, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
 	return 1;
     }
@@ -79,21 +79,21 @@ int rpmdbRebuild(char * rootdir) {
     rpmdbClose(newdb);
 
     if (failed) {
-	rpmMessage(RPMMESS_NORMAL, "failed to rebuild database; original database "
-		"remains in place\n");
+	rpmMessage(RPMMESS_NORMAL, _("failed to rebuild database; original database "
+		"remains in place\n"));
 
 	rpmdbRemoveDatabase(rootdir, newdbpath);
 	return 1;
     } else {
 	if (rpmdbMoveDatabase(rootdir, newdbpath, dbpath)) {
-	    rpmMessage(RPMMESS_ERROR, "failed to replace old database with new "
-			"database!\n");
-	    rpmMessage(RPMMESS_ERROR, "replaces files in %s with files from %s "
-			"to recover", dbpath, newdbpath);
+	    rpmMessage(RPMMESS_ERROR, _("failed to replace old database with new "
+			"database!\n"));
+	    rpmMessage(RPMMESS_ERROR, _("replaces files in %s with files from %s "
+			"to recover"), dbpath, newdbpath);
 	    return 1;
 	}
 	if (rmdir(newdbpath))
-	    rpmMessage(RPMERR_RMDIR, "failed to remove %s: %s\n",
+	    rpmMessage(RPMERR_RMDIR, _("failed to remove %s: %s\n"),
 			newdbpath, strerror(errno));
     }
 

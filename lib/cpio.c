@@ -1,5 +1,6 @@
 #include "system.h"
 
+#include "intl.h"
 #include "cpio.h"
 
 #define CPIO_NEWC_MAGIC	"070701"
@@ -521,7 +522,8 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 
     do {
 	if ((rc = getNextHeader(cfd, &ch))) {
-	    printf("error %d reading header: %s\n", rc, strerror(errno));
+	    fprintf(stderr, _("error %d reading header: %s\n"),
+		rc, strerror(errno));
 	    exit(1);
 	}
 

@@ -393,22 +393,22 @@ slurp(const char *file, char **ibufp, size_t *nbp)
 	*nbp = 0;
 
     if (stat(file, &sb) < 0) {
-	fprintf(stderr, "stat(%s): %s\n", file, strerror(errno));
+	fprintf(stderr, _("stat(%s): %s\n"), file, strerror(errno));
 	return 1;
     }
 
     nb = sb.st_size + 1;
     if ((ibuf = (char *)malloc(nb)) == NULL) {
-	fprintf(stderr, "malloc(%d)\n", nb);
+	fprintf(stderr, _("malloc(%d)\n"), nb);
 	return 2;
     }
 
     if ((fd = open(file, O_RDONLY)) < 0) {
-	fprintf(stderr, "open(%s): %s\n", file, strerror(errno));
+	fprintf(stderr, _("open(%s): %s\n"), file, strerror(errno));
 	return 3;
     }
     if ((nb = read(fd, ibuf, nb)) != sb.st_size) {
-	fprintf(stderr, "read(%s): %s\n", file, strerror(errno));
+	fprintf(stderr, _("read(%s): %s\n"), file, strerror(errno));
 	return 4;
     }
     close(fd);
@@ -496,7 +496,7 @@ DPRINTF(100, ("================ %s\n", file));
 		SKIPWHITE;
 		s = se;
 		if (!(isalpha(c) || c == '#')) {
-			fprintf(stderr, "non-alpha char at \"%.20s\"\n", se);
+			fprintf(stderr, _("non-alpha char at \"%.20s\"\n"), se);
 			NEXTLINE;
 			break;
 		}
@@ -521,7 +521,7 @@ DPRINTF(100, ("%.*s\n", (int)(se-s), s));
 				fe = f;
 				while (*fe && !strchr(": \t", *fe)) fe++;
 				if (*fe != ':') {
-					fprintf(stderr, "malformed #: xref at \"%.60s\"\n", s);
+					fprintf(stderr, _("malformed #: xref at \"%.60s\"\n"), s);
 					break;
 				}
 				*fe++ = '\0';
@@ -566,7 +566,7 @@ DPRINTF(100, ("%.*s\n", (int)(se-s), s));
 			}
 		}
 		if (kw == NULL || kw->name == NULL) {
-			fprintf(stderr, "unknown keyword at \"%.20s\"\n", se);
+			fprintf(stderr, _("unknown keyword at \"%.20s\"\n"), se);
 			NEXTLINE;
 			break;
 		}
@@ -578,7 +578,7 @@ DPRINTF(100, ("%.*s", (int)(se-s), s));
 		if (kw->haslang && *se == '(') {
 			while ((c = *se) && c != ')') se++;
 			if (c != ')') {
-				fprintf(stderr, "unclosed paren at \"%.20s\"\n", s);
+				fprintf(stderr, _("unclosed paren at \"%.20s\"\n"), s);
 				se = s;
 				NEXTLINE;
 				break;
@@ -596,7 +596,7 @@ DPRINTF(100, ("\n"));
 
 		SKIPWHITE;
 		if (*se != '"') {
-			fprintf(stderr, "missing string at \"%.20s\"\n", s);
+			fprintf(stderr, _("missing string at \"%.20s\"\n"), s);
 			se = s;
 			NEXTLINE;
 			break;
@@ -606,7 +606,7 @@ DPRINTF(100, ("\n"));
 	case 2:		/* "...." */
 		SKIPWHITE;
 		if (c != '"') {
-			fprintf(stderr, "not a string at \"%.20s\"\n", s);
+			fprintf(stderr, _("not a string at \"%.20s\"\n"), s);
 			NEXTLINE;
 			break;
 		}
@@ -617,7 +617,7 @@ DPRINTF(100, ("\n"));
 			s = se;
 			s++;	/* skip open quote */
 			if ((se = matchchar(s, c, c)) == NULL) {
-				fprintf(stderr, "missing close %c at \"%.20s\"\n", c, s);
+				fprintf(stderr, _("missing close %c at \"%.20s\"\n"), c, s);
 				se = s;
 				NEXTLINE;
 				break;
@@ -679,13 +679,13 @@ readRPM(char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs, CSA_t *
     DPRINTF(99, ("readRPM(\"%s\",%p,%p,%p,%p)\n", fileName, specp, lead, sigs, csa));
 
     if (fileName != NULL && (fdi = open(fileName, O_RDONLY, 0644)) < 0) {
-	fprintf(stderr, "readRPM: open %s: %s\n", fileName, strerror(errno));
+	fprintf(stderr, _("readRPM: open %s: %s\n"), fileName, strerror(errno));
 	exit(1);
     }
 
     /* Get copy of lead */
     if ((rc = read(fdi, lead, sizeof(*lead))) != sizeof(*lead)) {
-	fprintf(stderr, "readRPM: read %s: %s\n", fileName, strerror(errno));
+	fprintf(stderr, _("readRPM: read %s: %s\n"), fileName, strerror(errno));
 	exit(1);
     }
     lseek(fdi, 0, SEEK_SET);	/* XXX FIXME: EPIPE */
@@ -846,13 +846,13 @@ rpmgettext(int fd, const char *file, FILE *ofp)
 		    strcpy(op, ".tran");
 
 	    if ((ofp = fopen(fno, "w")) == NULL) {
-		fprintf(stderr, "Can't open %s\n", fno);
+		fprintf(stderr, _("Can't open %s\n"), fno);
 		return 4;
 	    }
 	}
 
 	if ((fd = open(fni, O_RDONLY, 0644)) < 0) {
-	    fprintf(stderr, "rpmgettext: open %s: %s\n", fni, strerror(errno));
+	    fprintf(stderr, _("rpmgettext: open %s: %s\n"), fni, strerror(errno));
 	    return 2;
 	}
 
@@ -902,7 +902,7 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 	    /* Find the text after the name-version-release */
 	    if ((fe = strrchr(f, '-')) == NULL ||
 		(fe = strchr(fe, '.')) == NULL) {
-		fprintf(stderr, "skipping malformed xref \"%s\"\n", fn);
+		fprintf(stderr, _("skipping malformed xref \"%s\"\n"), fn);
 		continue;
 	    }
 	    fe++;	/* skip . */
