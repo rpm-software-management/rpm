@@ -22,6 +22,7 @@
 	   expand %# just like %{#} (and with same value as shell analogues).
 	   macro defaults for *, 0, and # if no args specified.
 	   getopt on non-linux requires optind to be saved/restored.
+	- fix: don't remove file until last occurence in transaction (#4291).
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

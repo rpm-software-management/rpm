@@ -820,14 +820,14 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 
 	im = intMatches + start;
 
-	/* Find the end of the set of files matched in this package. */
+	/* Find the end of the set of matched files in this package. */
 	for (end = start + 1; end < numIntMatches; end++) {
 	    if (im->rec.recOffset != intMatches[end].rec.recOffset)
 		break;
 	}
 	num = end - start;
 
-	/* Compute fingerprints for each file match in this package */
+	/* Compute fingerprints for each file match in this package. */
 	h = rpmdbGetRecord(db, im->rec.recOffset);
 	if (!h) {
 	    free(intMatches);
@@ -849,7 +849,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	    free(fl);
 	}
 
-	/* Add (recnum,filenum) to list for fingerprint matches */
+	/* Add db (recnum,filenum) to list for fingerprint matches. */
 	for (i = 0; i < num; i++) {
 	    j = im[i].fpNum;
 	    if (FP_EQUAL(fps[i], fpList[j]))

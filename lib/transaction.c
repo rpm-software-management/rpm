@@ -661,8 +661,10 @@ static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
 	otherFileNum = shared->otherFileNum;
 	fileNum = shared->pkgFileNum;
 
-	if (otherStates[otherFileNum] == RPMFILE_STATE_NORMAL)
-	    fi->actions[fileNum] = FA_SKIP;
+	if (otherStates[otherFileNum] != RPMFILE_STATE_NORMAL)
+	    continue;
+
+	fi->actions[fileNum] = FA_SKIP;
     }
 
     headerFree(h);
@@ -674,16 +676,14 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 			   rpmProblemSet probs, struct diskspaceInfo * dsl)
 {
     int i, j;
-    struct fileInfo ** recs;
-    int numRecs;
-    int otherPkgNum, otherFileNum;
-    struct stat sb;
-    char mdsum[50];
-    int rc;
     struct diskspaceInfo * ds = NULL;
     uint_32 fixupSize = 0;
   
     for (i = 0; i < fi->fc; i++) {
+	int otherPkgNum, otherFileNum;
+	struct fileInfo ** recs;
+	int numRecs;
+
 	if (fi->actions[i] == FA_SKIP || fi->actions[i] == FA_SKIPNSTATE)
 	    continue;
 
@@ -704,8 +704,10 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 
 	otherFileNum = -1;			/* keep gcc quiet */
 	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
+#if XXX_REMOVED_PACKAGES_LAST
 	    if (recs[otherPkgNum]->type != TR_ADDED)
 		continue;
+#endif
 
 	    /* TESTME: there are more efficient searches in the world... */
 	    for (otherFileNum = 0; otherFileNum < recs[otherPkgNum]->fc;
@@ -719,17 +721,17 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 
 	switch (fi->type) {
 	case TR_ADDED:
-	  if (otherPkgNum < 0) {
-	    if (fi->actions[i] == FA_UNKNOWN) {
-		if ((fi->fflags[i] & RPMFILE_CONFIG) &&
-			    !lstat(fi->fl[i], &sb)) {
+	    if (otherPkgNum < 0) {
+		struct stat sb;
+		if (fi->actions[i] != FA_UNKNOWN)
+		    break;
+		if ((fi->fflags[i] & RPMFILE_CONFIG) && !lstat(fi->fl[i], &sb))
 		    fi->actions[i] = (fi->fflags[i] & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_BACKUP;
-		} else {
+		else
 		    fi->actions[i] = FA_CREATE;
-		}
+		break;
 	    }
-	  } else {
 	    if (probs && filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
 			recs[otherPkgNum]->fmd5s[otherFileNum],
 			recs[otherPkgNum]->flinks[otherFileNum],
@@ -746,29 +748,34 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	       file handling choice we already made, which may very
 	       well be exactly right. What about noreplace files?? */
 	    fi->actions[i] = FA_CREATE;
-	  }
-	  break;
+	    break;
 	case TR_REMOVED:
-	  if (otherPkgNum >= 0) {
-	    fi->actions[i] = FA_SKIP;
-	  } else {
-	    if (fi->actions[i] != FA_SKIP && fi->actions[i] != FA_SKIPNSTATE &&
-			fi->fstates[i] == RPMFILE_STATE_NORMAL ) {
-		if (S_ISREG(fi->fmodes[i]) &&
-			    (fi->fflags[i] & RPMFILE_CONFIG)) {
-		    rc = mdfile(fi->fl[i], mdsum);
-		    if (!rc && strcmp(fi->fmd5s[i], mdsum)) {
-			fi->actions[i] = FA_BACKUP;
-		    } else {
-			/* FIXME: config files may need to be saved */
-			fi->actions[i] = FA_REMOVE;
-		    }
-		} else {
-		    fi->actions[i] = FA_REMOVE;
+	    if (otherPkgNum >= 0) {
+#if XXX_REMOVED_PACKAGES_LAST
+		fi->actions[i] = FA_SKIP;
+		break;
+#else
+		recs[otherPkgNum]->actions[otherFileNum] = FA_SKIP;
+#endif
+	    }
+	    if (fi->actions[i] == FA_SKIP || fi->actions[i] == FA_SKIPNSTATE)
+		break;
+	    if (fi->fstates[i] != RPMFILE_STATE_NORMAL)
+		break;
+	    if (!(S_ISREG(fi->fmodes[i]) && (fi->fflags[i] & RPMFILE_CONFIG))) {
+		fi->actions[i] = FA_REMOVE;
+		break;
+	    }
+		
+	    {	char mdsum[50];
+		if (!mdfile(fi->fl[i], mdsum) && strcmp(fi->fmd5s[i], mdsum)) {
+		    fi->actions[i] = FA_BACKUP;
+		    break;
 		}
 	    }
-	  }
-	  break;
+	    /* FIXME: config files may need to be saved */
+	    fi->actions[i] = FA_REMOVE;
+	    break;
 	}
 
 	if (ds) {
@@ -1057,7 +1064,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, NULL,
 			       &fileCount))
 		totalFileCount += fileCount;
-	    headerFree(h);	/* XXX ==> LEAK */
+	    headerFree(h);
 	}
     }
 
@@ -1191,7 +1198,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     NOTIFY((NULL, RPMCALLBACK_TRANS_START, 6, flEntries, NULL, notifyData));
 
     /* ===============================================
-     * Identify shared files:
+     * Compute file disposition for each package in transaction set.
      */
     for (fi = flList; (fi - flList) < flEntries; fi++) {
 	int knownBad;
@@ -1199,23 +1206,25 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	NOTIFY((NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
 	       NULL, notifyData));
 
+	/* Extract file info for all files in this package from the database. */
 	matches = malloc(sizeof(*matches) * fi->fc);
 	if (rpmdbFindFpList(ts->db, fi->fps, matches, fi->fc)) return 1;
 
-	/* Count number of shared files in this package. */
 	numShared = 0;
 	for (i = 0; i < fi->fc; i++)
 	    numShared += matches[i].count;
 
-	/* Build sorted shared file info list for this package. */
+	/* Build sorted file info list for this package. */
 	shared = sharedList = malloc(sizeof(*sharedList) * (numShared + 1));
-	knownBad = 0;
 	for (i = 0; i < fi->fc; i++) {
-	    /* Take care not to mark files as replaced in packages that will
-	       have been removed before we got here. */
+	    /*
+	     * Take care not to mark files as replaced in packages that will
+	     * have been removed before we will get here.
+	     */
 	    for (j = 0; j < matches[i].count; j++) {
 		int k, ro;
 		ro = matches[i].recs[j].recOffset;
+		knownBad = 0;
 		for (k = 0; ro != knownBad && k < ts->orderCount; k++) {
 		    switch (ts->order[k].type) {
 		    case TR_REMOVED:
@@ -1239,36 +1248,40 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	shared->otherPkg = -1;
 	free(matches);
 
+	/* Sort file info by other package index (otherPkg) */
 	qsort(sharedList, numShared, sizeof(*shared), sharedCmp);
 
-	/* Deal with files shared between packages. */
+	/* For all files from this package that are in the database ... */
 	for (i = 0; i < numShared; i = nexti) {
 	    int beingRemoved;
 
-	    /* Find the start of the next package with shared files. */
+	    shared = sharedList + i;
+
+	    /* Find the end of the files in the other package. */
 	    for (nexti = i + 1; nexti < numShared; nexti++) {
-		if (sharedList[nexti].otherPkg != sharedList[i].otherPkg)
+		if (sharedList[nexti].otherPkg != shared->otherPkg)
 		    break;
 	    }
 
-	    /* Is this package being removed? */
+	    /* Is this file from a package being removed? */
+	    beingRemoved = 0;
 	    for (j = 0; j < ts->numRemovedPackages; j++) {
-		if (ts->removedPackages[j] == sharedList[i].otherPkg)
-		    break;
+		if (ts->removedPackages[j] != shared->otherPkg)
+		    continue;
+		beingRemoved = 1;
+		break;
 	    }
-	    beingRemoved = (j < ts->numRemovedPackages);
 
-	    /* Special handling for all shared files from this package */
+	    /* Determine the fate of each file. */
 	    switch (fi->type) {
 	    case TR_ADDED:
-		handleInstInstalledFiles(fi, ts->db, sharedList + i, nexti - i,
-			 !(beingRemoved ||
-				(ignoreSet & RPMPROB_FILTER_REPLACEOLDFILES)),
+		handleInstInstalledFiles(fi, ts->db, shared, nexti - i,
+		!(beingRemoved || (ignoreSet & RPMPROB_FILTER_REPLACEOLDFILES)),
 			 probs);
 		break;
 	    case TR_REMOVED:
 		if (!beingRemoved)
-		    handleRmvdInstalledFiles(fi, ts->db, sharedList + i, nexti - i);
+		    handleRmvdInstalledFiles(fi, ts->db, shared, nexti - i);
 		break;
 	    }
 	}
