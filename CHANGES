@@ -20,6 +20,7 @@
 	- added rpmrc "provides" tag to allow easy fulfillment of 
 	  automatically generated dependencies
 	- look for random() in libm if it can't be found be default
+	- fixed problems in Solaris's autodeps stuff (Eric Mumpower)
 
 2.4.2 -> 2.4.3:
 	- implemented install time prerequisites
