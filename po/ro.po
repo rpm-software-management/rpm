@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-05-28 12:01-0400\n"
+"POT-Creation-Date: 2002-06-04 17:50-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -2493,97 +2493,97 @@ msgstr ""
 msgid "is needed by"
 msgstr ""
 
-#: lib/rpmrc.c:191
+#: lib/rpmrc.c:198
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:194
+#: lib/rpmrc.c:201
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:348
+#: lib/rpmrc.c:355
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:353
+#: lib/rpmrc.c:360
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:361
+#: lib/rpmrc.c:368
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr ""
 
-#: lib/rpmrc.c:398
+#: lib/rpmrc.c:405
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:403
+#: lib/rpmrc.c:410
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr ""
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:573
+#: lib/rpmrc.c:580
 #, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr ""
 
-#: lib/rpmrc.c:611
+#: lib/rpmrc.c:618
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:628 lib/rpmrc.c:702
+#: lib/rpmrc.c:635 lib/rpmrc.c:709
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:645 lib/rpmrc.c:667
+#: lib/rpmrc.c:652 lib/rpmrc.c:674
 #, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr ""
 
-#: lib/rpmrc.c:654
+#: lib/rpmrc.c:661
 #, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:694
+#: lib/rpmrc.c:701
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:761
+#: lib/rpmrc.c:768
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:1386
+#: lib/rpmrc.c:1507
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1387
+#: lib/rpmrc.c:1508
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/rpmrc.c:1612
+#: lib/rpmrc.c:1733
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1617
+#: lib/rpmrc.c:1738
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1634
+#: lib/rpmrc.c:1755
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr ""
@@ -2744,12 +2744,12 @@ msgstr ""
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/verify.c:284
+#: lib/verify.c:285
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:380
+#: lib/verify.c:381
 #, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr ""

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-05-28 12:01-0400\n"
+"POT-Creation-Date: 2002-06-04 17:50-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2622,97 +2622,97 @@ msgstr " koliduje s %s-%s-%s\n"
 msgid "is needed by"
 msgstr " je vy¾adované %s-%s-%s\n"
 
-#: lib/rpmrc.c:191
+#: lib/rpmrc.c:198
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "chýbajúce druhé ':' na %s:%d"
 
-#: lib/rpmrc.c:194
+#: lib/rpmrc.c:201
 #, fuzzy, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "chýba názov architektúry na %s:%d"
 
-#: lib/rpmrc.c:348
+#: lib/rpmrc.c:355
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Neúplný riadok údajov na %s:%d"
 
-#: lib/rpmrc.c:353
+#: lib/rpmrc.c:360
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Priveµa argumentov v riadku údajov na %s:%d"
 
-#: lib/rpmrc.c:361
+#: lib/rpmrc.c:368
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Chybné èíslo arch/os: %s (%s:%d)"
 
-#: lib/rpmrc.c:398
+#: lib/rpmrc.c:405
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Neúplný implicitný riadok na %s:%d"
 
-#: lib/rpmrc.c:403
+#: lib/rpmrc.c:410
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Priveµa argumentov v implicitnom riadku na %s:%d"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:573
+#: lib/rpmrc.c:580
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Nie je mo¾né preèíta» %s: %s."
 
-#: lib/rpmrc.c:611
+#: lib/rpmrc.c:618
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "chýbajúca ':' na %s:%d"
 
-#: lib/rpmrc.c:628 lib/rpmrc.c:702
+#: lib/rpmrc.c:635 lib/rpmrc.c:709
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "chýbajúci argument pre %s na %s:%d"
 
-#: lib/rpmrc.c:645 lib/rpmrc.c:667
+#: lib/rpmrc.c:652 lib/rpmrc.c:674
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "expanzia %s zlyhala na %s:%d \"%s\""
 
-#: lib/rpmrc.c:654
+#: lib/rpmrc.c:661
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "nie je mo¾né otvori» %s na %s:%d"
 
-#: lib/rpmrc.c:694
+#: lib/rpmrc.c:701
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "chýbajúca architektúra pre %s na %s:%d"
 
-#: lib/rpmrc.c:761
+#: lib/rpmrc.c:768
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "chybná voµba '%s' na %s:%d"
 
-#: lib/rpmrc.c:1386
+#: lib/rpmrc.c:1507
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznámy systém: %s\n"
 
-#: lib/rpmrc.c:1387
+#: lib/rpmrc.c:1508
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Kontaktujte prosím rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1612
+#: lib/rpmrc.c:1733
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "Nie je mo¾né expandova» %s"
 
-#: lib/rpmrc.c:1617
+#: lib/rpmrc.c:1738
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1634
+#: lib/rpmrc.c:1755
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie je mo¾né otvori» %s pre èítanie: %s."
@@ -2883,12 +2883,12 @@ msgstr "%s vynechané kvôli príznaku missingok\n"
 msgid "excluding directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/verify.c:284
+#: lib/verify.c:285
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "chýbajúce    %s\n"
 
-#: lib/verify.c:380
+#: lib/verify.c:381
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "

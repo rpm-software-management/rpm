@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-05-28 12:01-0400\n"
+"POT-Creation-Date: 2002-06-04 17:50-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2754,100 +2754,100 @@ msgstr " steht im Konflikt mit %s-%s-%s\n"
 msgid "is needed by"
 msgstr " wird von %s-%s-%s gebraucht\n"
 
-#: lib/rpmrc.c:191
+#: lib/rpmrc.c:198
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "fehlendes zweites ':' bei %s:%d"
 
-#: lib/rpmrc.c:194
+#: lib/rpmrc.c:201
 #, fuzzy, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "fehlender Name cer Architektur bei %s:%d"
 
-#: lib/rpmrc.c:348
+#: lib/rpmrc.c:355
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Unvollständige Datenzeile bei %s:%d"
 
-#: lib/rpmrc.c:353
+#: lib/rpmrc.c:360
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Zu viele Argumente in der Datenzeile bei %s:%d"
 
-#: lib/rpmrc.c:361
+#: lib/rpmrc.c:368
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Unzureichende arch/os Zahl: %s (%s:%d)"
 
-#: lib/rpmrc.c:398
+#: lib/rpmrc.c:405
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Unvollständige Standardzeile bei %s:%d"
 
-#: lib/rpmrc.c:403
+#: lib/rpmrc.c:410
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Zu viele Argumente in der Standardzeile bei %s:%d"
 
 # , c-format
 #. XXX Feof(fd)
-#: lib/rpmrc.c:573
+#: lib/rpmrc.c:580
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: lib/rpmrc.c:611
+#: lib/rpmrc.c:618
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "fehlender ':' bei %s:%d"
 
-#: lib/rpmrc.c:628 lib/rpmrc.c:702
+#: lib/rpmrc.c:635 lib/rpmrc.c:709
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "fehlendes Argument für %s bei %s:%d"
 
 # , c-format
-#: lib/rpmrc.c:645 lib/rpmrc.c:667
+#: lib/rpmrc.c:652 lib/rpmrc.c:674
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/rpmrc.c:654
+#: lib/rpmrc.c:661
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/rpmrc.c:694
+#: lib/rpmrc.c:701
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "fehlende Architektur für %s bei %s:%d"
 
-#: lib/rpmrc.c:761
+#: lib/rpmrc.c:768
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "unzureichende Option '%s' bei %s:%d"
 
-#: lib/rpmrc.c:1386
+#: lib/rpmrc.c:1507
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1387
+#: lib/rpmrc.c:1508
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/rpmrc.c:1612
+#: lib/rpmrc.c:1733
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: lib/rpmrc.c:1617
+#: lib/rpmrc.c:1738
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmrc.c:1634
+#: lib/rpmrc.c:1755
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Datei %s kann nicht zum Lesen geöffnet werden: %s."
@@ -3019,12 +3019,12 @@ msgstr ""
 msgid "excluding directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/verify.c:284
+#: lib/verify.c:285
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "fehlende { nach %{"
 
-#: lib/verify.c:380
+#: lib/verify.c:381
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "Nicht erfüllte Abhängigkeiten von %s-%s-%s: "

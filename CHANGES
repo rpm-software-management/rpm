@@ -126,6 +126,7 @@
 	- python: separate {add,del}Macro methods, prepare for macro dictionary.
 	- i18n: copy current production PO files to top-of-stack.
 	- python: include rpmdb module, renamed from bsddb3.
+	- use /etc/rpm/platform (if it exists), rather than uname(2), for arch.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-05-28 12:01-0400\n"
+"POT-Creation-Date: 2002-06-04 17:50-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -2673,97 +2673,97 @@ msgstr " %s-%s-%s と競合します\n"
 msgid "is needed by"
 msgstr "は %s-%s-%s に必要とされています\n"
 
-#: lib/rpmrc.c:191
+#: lib/rpmrc.c:198
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "2番目の ':' がありません(%s:%d で)"
 
-#: lib/rpmrc.c:194
+#: lib/rpmrc.c:201
 #, fuzzy, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "%s:%d にアーキテクチャ名がありません"
 
-#: lib/rpmrc.c:348
+#: lib/rpmrc.c:355
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "%s:%d でデータ行が不完全です"
 
-#: lib/rpmrc.c:353
+#: lib/rpmrc.c:360
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "%s:%d でデータ行に引数が多すぎます"
 
-#: lib/rpmrc.c:361
+#: lib/rpmrc.c:368
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "不正な arch/os 番号: %s (%s:%d)"
 
-#: lib/rpmrc.c:398
+#: lib/rpmrc.c:405
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "%s:%d で不完全なデフォルト行"
 
-#: lib/rpmrc.c:403
+#: lib/rpmrc.c:410
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "%s:%d でデフォルト行は引数が多すぎます"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:573
+#: lib/rpmrc.c:580
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "%s を読むのに失敗: $s。"
 
-#: lib/rpmrc.c:611
+#: lib/rpmrc.c:618
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "%s:%d で ':' がありません"
 
-#: lib/rpmrc.c:628 lib/rpmrc.c:702
+#: lib/rpmrc.c:635 lib/rpmrc.c:709
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "%s の引数がありません %s:%d"
 
-#: lib/rpmrc.c:645 lib/rpmrc.c:667
+#: lib/rpmrc.c:652 lib/rpmrc.c:674
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%s の伸張失敗 %s:%d \"%s\""
 
-#: lib/rpmrc.c:654
+#: lib/rpmrc.c:661
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "%s をオープンできません  %s:%d"
 
-#: lib/rpmrc.c:694
+#: lib/rpmrc.c:701
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "%s 用のアーキテクチャが見つかりません %s:%d"
 
-#: lib/rpmrc.c:761
+#: lib/rpmrc.c:768
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "'%s' の不正なオープン %s:%d"
 
-#: lib/rpmrc.c:1386
+#: lib/rpmrc.c:1507
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "不明なシステム: %s\n"
 
-#: lib/rpmrc.c:1387
+#: lib/rpmrc.c:1508
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "rpm-list@redhat.com に連絡を下さい\n"
 
-#: lib/rpmrc.c:1612
+#: lib/rpmrc.c:1733
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "伸張できません %s"
 
-#: lib/rpmrc.c:1617
+#: lib/rpmrc.c:1738
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1634
+#: lib/rpmrc.c:1755
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "読み込むために %s をオープンできません: %s。"
@@ -2935,12 +2935,12 @@ msgstr "%s は missingok フラグのためスキップします\n"
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/verify.c:284
+#: lib/verify.c:285
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "%s が見つかりません\n"
 
-#: lib/verify.c:380
+#: lib/verify.c:381
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"

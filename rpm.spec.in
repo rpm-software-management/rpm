@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.21
+Release: 0.22
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -516,6 +516,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jun  4 2002 Jeff Johnson <jbj@redhat.com>
+- use /etc/rpm/platform (if it exists), rather than uname(2), for arch.
+
 * Mon Jun  3 2002 Jeff Johnson <jbj@redhat.com>
 - python: include rpmdb module, renamed from bsddb3.
 

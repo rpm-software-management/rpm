@@ -26,6 +26,13 @@ static const char *defrcfiles = LIBRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc";
 /*@observer@*/ /*@checked@*/
 const char * macrofiles = MACROFILES;
 
+/*@unchecked@*/
+static const char * platform = "/etc/rpm/platform";
+/*@unchecked@*/
+static const char ** platpat = NULL;
+/*@unchecked@*/
+static int nplatpat = 0;
+
 typedef /*@owned@*/ const char * cptr_t;
 
 typedef struct machCacheEntry_s {
@@ -769,6 +776,100 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 }
 /*@=usedef@*/
 
+
+/**
+ */
+static int rpmPlatform(const char * platform)
+{
+    char *cpu = NULL, *vendor = NULL, *os = NULL, *gnu = NULL;
+    char * b = NULL;
+    ssize_t blen = 0;
+    int init_platform = 0;
+    char * p, * pe;
+    int rc;
+
+    rc = rpmioSlurp(platform, &b, &blen);
+
+    if (rc || b == NULL || blen <= 0) {
+	rc = -1;
+	goto exit;
+    }
+
+    p = b;
+    for (pe = p; p && *p; p = pe) {
+	pe = strchr(p, '\n');
+	if (pe)
+	    *pe++ = '\0';
+
+	while (*p && isspace(*p))
+	    p++;
+	if (*p == '\0' || *p == '#')
+	    continue;
+
+	if (init_platform) {
+	    char * t = p + strlen(p);
+
+	    while (--t > p && isspace(*t))
+		*t = '\0';
+	    if (t > p) {
+		platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
+		platpat[nplatpat] = xstrdup(p);
+		nplatpat++;
+		platpat[nplatpat] = NULL;
+	    }
+	    continue;
+	}
+
+	cpu = p;
+	vendor = "unknown";
+	os = "unknown";
+	gnu = NULL;
+	while (*p && !(*p == '-' || isspace(*p)))
+	    p++;
+	if (*p != '\0') *p++ = '\0';
+
+	vendor = p;
+	while (*p && !(*p == '-' || isspace(*p)))
+	    p++;
+	if (*p != '-') {
+	    if (*p != '\0') *p++ = '\0';
+	    os = vendor;
+	    vendor = "unknown";
+	} else {
+	    if (*p != '\0') *p++ = '\0';
+
+	    os = p;
+	    while (*p && !(*p == '-' || isspace(*p)))
+		p++;
+	    if (*p == '-') {
+		*p++ = '\0';
+
+		gnu = p;
+		while (*p && !(*p == '-' || isspace(*p)))
+		    p++;
+	    }
+	    if (*p != '\0') *p++ = '\0';
+	}
+
+	addMacro(NULL, "_host_cpu", NULL, cpu, -1);
+	addMacro(NULL, "_host_vendor", NULL, vendor, -1);
+	addMacro(NULL, "_host_os", NULL, os, -1);
+
+	platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
+	platpat[nplatpat] = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}", (gnu && *gnu ? "-" : NULL), gnu, NULL);
+	nplatpat++;
+	platpat[nplatpat] = NULL;
+	
+	init_platform++;
+    }
+    rc = (init_platform ? 0 : -1);
+
+exit:
+    b = _free(b);
+    return rc;
+}
+
+
 #	if defined(__linux__) && defined(__i386__)
 #include <setjmp.h>
 #include <signal.h>
@@ -932,6 +1033,8 @@ static void mfspr_ill(int notused)
 }
 #endif
 
+/**
+ */
 static void defaultMachine(/*@out@*/ const char ** arch,
 		/*@out@*/ const char ** os)
 	/*@globals fileSystem@*/
@@ -943,7 +1046,24 @@ static void defaultMachine(/*@out@*/ const char ** arch,
     canonEntry canon;
     int rc;
 
-    if (!gotDefaults) {
+    while (!gotDefaults) {
+	if (!rpmPlatform(platform)) {
+	    const char * s;
+	    s = rpmExpand("%{_host_cpu}", NULL);
+	    if (s) {
+		strncpy(un.machine, s, sizeof(un.machine));
+		un.machine[sizeof(un.machine)-1] = '\0';
+		s = _free(s);
+	    }
+	    s = rpmExpand("%{_host_os}", NULL);
+	    if (s) {
+		strncpy(un.sysname, s, sizeof(un.sysname));
+		un.sysname[sizeof(un.sysname)-1] = '\0';
+		s = _free(s);
+	    }
+	    gotDefaults = 1;
+	    break;
+	}
 	rc = uname(&un);
 	if (rc < 0) return;
 
@@ -1177,6 +1297,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	if (canon)
 	    strcpy(un.sysname, canon->short_name);
 	gotDefaults = 1;
+	break;
     }
 
     if (arch) *arch = un.machine;
