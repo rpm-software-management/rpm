@@ -12,6 +12,7 @@ struct sharedFile {
 
 int findSharedFiles(rpmdb db, int offset, char ** fileList, int fileCount,
 		    struct sharedFile ** listPtr, int * listCountPtr);
-int runScript(char * prefix, Header h, int tag, int dontRunScripts);
+int runScript(char * prefix, Header h, int tag, int dontRunScripts,
+	      int upgrade);
 
 #endif

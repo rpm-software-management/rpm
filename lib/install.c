@@ -263,7 +263,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     }
 
     message(MESS_DEBUG, "running preinstall script (if any)\n");
-    if (runScript(prefix, h, RPMTAG_PREIN, flags & INSTALL_NOSCRIPTS)) {
+    if (runScript(prefix, h, RPMTAG_PREIN, flags & INSTALL_NOSCRIPTS,
+		  flags & INSTALL_UPGRADE)) {
 	free(fileList);
 	if (replacedList) free(replacedList);
 	return 2;
@@ -419,7 +420,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 
     message(MESS_DEBUG, "running postinstall script (if any)\n");
 
-    if (runScript(prefix, h, RPMTAG_POSTIN, flags & INSTALL_NOSCRIPTS)) {
+    if (runScript(prefix, h, RPMTAG_POSTIN, flags & INSTALL_NOSCRIPTS,
+		  flags & INSTALL_UPGRADE)) {
 	return 2;
     }
 
@@ -427,7 +429,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	message(MESS_DEBUG, "removing old versions of package\n");
 	intptr = oldVersions;
 	while (*intptr) {
-	    rpmRemovePackage(prefix, db, *intptr, 0);
+	    rpmRemovePackage(prefix, db, *intptr, 1, 0);
 	    intptr++;
 	}
     }
