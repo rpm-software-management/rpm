@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.6
+Release: 0.7
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -184,10 +184,10 @@ fi
 # for f in elflint file ld nm readelf size strip; do
 #  rm -rf .%{__prefix}/bin/$f
 # done
-# for f in dwarf.h elf-knowledge.h fmagic gelf.h libasm.h libdwarf.h libebl.h libelf.h nlist.h; do
+# for f in elfutils; do
 #  rm -rf .%{__prefix}/include/$f
 # done
-# for f in libasm libdwarf libebl libelf libfmagic libld; do
+# for f in libebl elfutils; do
 #  rm -rf .%{__prefix}/lib/${f}*
 # done
 # rm -f .%{__prefix}/share/man/man1/file.1*
@@ -482,6 +482,9 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Nov  9 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.7
+- add _javadir/_javadocdir/_javaclasspath macros.
+
 * Fri Nov  8 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.6
 - fix: /dev/initctl has not MD5 segfault (#76718).
 - rpm.8: gpg uses GNUPGHOME, not GPGPATH (#76691).
