@@ -1923,7 +1923,8 @@ int ufdClose( /*@only@*/ void * cookie)
 
 	/* XXX Why not (u->urltype == URL_IS_HTTP) ??? */
 	/* XXX Why not (u->urltype == URL_IS_HTTPS) ??? */
-	if (u->scheme != NULL && !strcmp(u->scheme, "http")) {
+	if (u->scheme != NULL && !strncmp(u->scheme, "http", sizeof("http")-1))
+	{
 	    if (fd->wr_chunked) {
 		int rc;
 	    /* XXX HTTP PUT requires terminating 0 length chunk. */
@@ -2759,7 +2760,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 	    if (fd->nfps > 0 && fpno == -1 &&
 		fd->fps[fd->nfps-1].io == ufdio &&
 		fd->fps[fd->nfps-1].fp == fp &&
-		fd->fps[fd->nfps-1].fdno >= 0)
+		(fd->fps[fd->nfps-1].fdno >= 0 || fd->req != NULL))
 	    {
 		if (fp)
 		    rc = fflush(fp);
@@ -3038,7 +3039,7 @@ fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
 if (_rpmio_debug)
 fprintf(stderr, "*** Fopen ufdio path %s fmode %s\n", path, fmode);
 	    fd = ufdOpen(path, flags, perms);
-	    if (fd == NULL || fdFileno(fd) < 0)
+	    if (fd == NULL || !(fdFileno(fd) >= 0 || fd->req != NULL))
 		return fd;
 	    break;
 	default:
@@ -3049,7 +3050,7 @@ fprintf(stderr, "*** Fopen WTFO path %s fmode %s\n", path, fmode);
 	}
 
 	/* XXX persistent HTTP/1.1 returns the previously opened fp */
-	if (isHTTP && ((fp = fdGetFp(fd)) != NULL) && ((fdno = fdGetFdno(fd)) >= 0))
+	if (isHTTP && ((fp = fdGetFp(fd)) != NULL) && ((fdno = fdGetFdno(fd)) >= 0 || fd->req != NULL))
 	{
 	    /*@+voidabstract@*/
 	    fdPush(fd, fpio, fp, fileno(fp));	/* Push fpio onto stack */

@@ -668,7 +668,7 @@ static int my_result(const char * msg, int ret, FILE * fp)
     if (fp == NULL)
 	fp = stderr;
     if (msg != NULL)
-	fprintf(fp, "%s:", msg);
+	fprintf(fp, "*** %s: ", msg);
 #ifdef	HACK
     fprintf(fp, "%s: %s\n", my_retstrerror(ret), ne_get_error(sess));
 #else
@@ -771,10 +771,11 @@ fprintf(stderr, "-> %s", req);
 if (_dav_debug)
 fprintf(stderr, "*** davReq(%p,%s,\"%s\") sess %p req %p rc %d\n", ctrl, httpCmd, httpArg, u->sess, ctrl->req, rc);
 
-#ifdef	NOTYET
-    if (rc == 0)
-	ctrl = fdLink(ctrl, "open data (httpReq)");
-#endif
+    /* HACK: error path refcnts probably goofy here. */
+    if (rc == 0) {
+	ctrl = fdLink(ctrl, "open ctrl (davReq)");
+	ctrl = fdLink(ctrl, "open data (davReq)");
+    }
 
     return rc;
 }
@@ -803,24 +804,25 @@ fprintf(stderr, "*** davOpen(%s,0x%x,0%o,%p)\n", url, flags, mode, uret);
 	goto exit;
 
     if (u->ctrl == NULL)
-	u->ctrl = fdNew("persist ctrl (httpOpen)");
+	u->ctrl = fdNew("persist ctrl (davOpen)");
     if (u->ctrl->nrefs > 2 && u->data == NULL)
-	u->data = fdNew("persist data (httpOpen)");
+	u->data = fdNew("persist data (davOpen)");
 
     if (u->ctrl->url == NULL)
-	fd = fdLink(u->ctrl, "grab ctrl (httpOpen persist ctrl)");
+	fd = fdLink(u->ctrl, "grab ctrl (davOpen persist ctrl)");
     else if (u->data->url == NULL)
-	fd = fdLink(u->data, "grab ctrl (httpOpen persist data)");
+	fd = fdLink(u->data, "grab ctrl (davOpen persist data)");
     else
-	fd = fdNew("grab ctrl (httpOpen)");
+	fd = fdNew("grab ctrl (davOpen)");
 
     if (fd) {
 	fdSetIo(fd, ufdio);
 	fd->ftpFileDoneNeeded = 0;
 	fd->rd_timeoutsecs = httpTimeoutSecs;
 	fd->contentLength = fd->bytesRemain = -1;
-	fd->url = urlLink(u, "url (httpOpen)");
-	fd = fdLink(fd, "grab data (httpOpen)");
+	fd->url = urlLink(u, "url (davOpen)");
+	fd = fdLink(fd, "grab data (davOpen)");
+assert(urlType == URL_IS_HTTPS);
 	fd->urlType = urlType;	/* URL_IS_HTTPS */
     }
 
