@@ -114,12 +114,168 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     return NULL;
 }
 
-rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
+/*@unchecked@*/ /*@observer@*/
+static const char * beehiveToken = "redhatbuilddependency";
+
+/**
+ * Return archScore filter boolean.
+ * @param arch		beehive arch score token
+ * @returns		0 == false, 1 == true
+ */
+static int archFilter(const char * arch)
+	/*@*/
 {
+    static int oneshot = 0;
+    int negate = 0;	/* assume no negation. */
+    int rc = 0;		/* assume arch does not apply */
+
+    if (*arch == '!') {
+	negate = 1;
+	arch++;
+    }
+    if (*arch == '=') {
+	const char * myarch = NULL;
+	arch++;
+
+	if (oneshot <= 0) {
+	    rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
+	    rpmSetMachine(NULL, NULL);
+	    oneshot++;
+	}
+	rpmGetMachine(&myarch, NULL);
+	if (myarch != NULL) {
+	    if (negate)
+		rc = (!strcmp(arch, myarch) ? 0 : 1);
+	    else
+		rc = (!strcmp(arch, myarch) ? 1 : 0);
+/*@-modfilesys@*/
+if (_rpmds_debug < 0)
+fprintf(stderr, "=== strcmp(\"%s\", \"%s\") negate %d rc %d\n", arch, myarch, negate, rc);
+/*@=modfilesys@*/
+	}
+    } else {
+	int archScore = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
+	if (negate)
+	    rc = (archScore > 0 ? 0 : 1);
+	else
+	    rc = (archScore > 0 ? 1 : 0);
+/*@-modfilesys@*/
+if (_rpmds_debug < 0)
+fprintf(stderr, "=== archScore(\"%s\") %d negate %d rc %d\n", arch, archScore, negate, rc);
+/*@=modfilesys@*/
+    }
+    return rc;
+}
+
+/**
+ * Filter dependency set, removing "foo(bar,i386,=s390,!sparcv8)" wrapper.
+ * @param ds		dependency set
+ * @param token		namespace string
+ * @returns		filtered dependency set
+ */
+static rpmds rpmdsFilter(/*@returned@*/ rpmds ds,
+		/*@null@*/ const char * token)
+	/*@modifies ds @*/
+{
+    size_t toklen;
+    rpmds fds;
+    int i;
+
+    if (ds == NULL || token == NULL || *token == '\0')
+	return ds;
+
+    toklen = strlen(token);
+    fds = rpmdsLink(ds, ds->Type);
+    fds = rpmdsInit(ds);
+    if (fds != NULL)
+    while ((i = rpmdsNext(fds)) >= 0) {
+	const char * N = rpmdsN(fds);
+	const char * gN;
+	const char * f, * fe;
+	const char * g, * ge;
+	size_t len;
+	int ignore;
+	int state;
+	char buf[1024+1];
+	int nb;
+
+	if (N == NULL)
+	    continue;
+	len = strlen(N);
+	if (len < (toklen + (sizeof("()")-1)))
+	    continue;
+	if (strncmp(N, token, toklen))
+	    continue;
+	if (*(f = N + toklen) != '(')
+	    continue;
+	if (*(fe = N + len - 1) != ')')
+	    continue;
+/*@-modfilesys@*/
+if (_rpmds_debug < 0)
+fprintf(stderr, "*** f \"%s\"\n", f);
+/*@=modfilesys@*/
+	g = f + 1;
+	state = 0;
+	gN = NULL;
+	ignore = 1;	/* assume depedency will be skipped. */
+	for (ge = (char *) g; ge < fe; g = ++ge) {
+	    while (ge < fe && *ge != ':')
+		ge++;
+
+	    nb = (ge - g);
+	    if (nb < 0 || nb > (sizeof(buf)-1))
+		nb = sizeof(buf) - 1;
+	    (void) strncpy(buf, g, nb);
+	    buf[nb] = '\0';
+	    switch (state) {
+	    case 0:		/* g is unwrapped N */
+		gN = xstrdup(buf);
+		/*@switchbreak@*/ break;
+	    default:		/* g is next arch score token. */
+		/* arch score tokens are compared assuming || */
+		if (archFilter(buf))
+		    ignore = 0;
+		/*@switchbreak@*/ break;
+	    }
+	    state++;
+	}
+	if (ignore) {
+	    int Count = rpmdsCount(fds);
+/*@-modfilesys@*/
+if (_rpmds_debug < 0)
+fprintf(stderr, "***   deleting N[%d:%d] = \"%s\"\n", i, Count, N);
+/*@=modfilesys@*/
+	    if (i < (Count - 1)) {
+		memcpy((fds->N + i), (fds->N + i + 1), (Count - (i+1)) * sizeof(*fds->N));
+		memcpy((fds->EVR + i), (fds->EVR + i + 1), (Count - (i+1)) * sizeof(*fds->EVR));
+		memcpy((fds->Flags + i), (fds->Flags + i + 1), (Count - (i+1)) * sizeof(*fds->Flags));
+	 	fds->i--;
+	    }
+	    fds->Count--;
+	} else if (gN != NULL) {
+	    char * t = (char *) N;
+	    strcpy(t, gN);
+/*@-modfilesys@*/
+if (_rpmds_debug < 0)
+fprintf(stderr, "*** unwrapping N[%d] = \"%s\"\n", i, N);
+/*@=modfilesys@*/
+	}
+	gN = _free(gN);
+    }
+    fds = rpmdsFree(fds);
+
+    return ds;
+}
+
+rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
+{
+    int scareMem = (flags & 0x1);
+    int nofilter = (flags & 0x2);
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
     rpmTag tagBT = RPMTAG_BUILDTIME;
-    int_32 BTt, * BTp;
+    rpmTagType BTt;
+    int_32 * BTp;
     rpmTag tagEVR, tagF;
     rpmds ds = NULL;
     const char * Type;
@@ -193,8 +349,13 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 
 exit:
     /*@-nullstate@*/ /* FIX: ds->Flags may be NULL */
-    return rpmdsLink(ds, (ds ? ds->Type : NULL));
+    ds = rpmdsLink(ds, (ds ? ds->Type : NULL));
     /*@=nullstate@*/
+
+    if (!nofilter)
+	ds = rpmdsFilter(ds, beehiveToken);
+
+    return ds;
 }
 
 char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
@@ -967,7 +1128,7 @@ void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
 
 int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 {
-    int scareMem = 1;
+    int scareMem = 0;
     rpmds provides = NULL;
     int result = 0;
 

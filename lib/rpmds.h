@@ -110,11 +110,11 @@ rpmds rpmdsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmds ds)
  * @deprecated Only scareMem = 0 will be permitted.
  * @param h		header
  * @param tagN		type of dependency
- * @param scareMem	Use pointers to refcounted header memory?
+ * @param flags		scareMem(0x1), nofilter(0x2)
  * @return		new dependency set
  */
 /*@null@*/
-rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
+rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	/*@modifies h @*/;
 
 /**

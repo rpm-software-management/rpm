@@ -211,11 +211,16 @@ rpmds_richcompare(rpmdsObject * a, rpmdsObject * b, int op)
 
     switch (op) {
     case Py_NE:
-    case Py_EQ:
+	/* XXX map ranges overlap boolean onto '!=' python syntax. */
 	rc = rpmdsCompare(a->ds, b->ds);
-	if (op == Py_NE)
-	    rc = 1 - rc;
+	rc = (rc < 0 ? -1 : (rc == 0 ? 1 : 0));
 	break;
+    case Py_LT:
+    case Py_LE:
+    case Py_GT:
+    case Py_GE:
+    case Py_EQ:
+	/*@fallthrough@*/
     default:
 	rc = -1;
 	break;
