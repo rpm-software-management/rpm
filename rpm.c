@@ -148,10 +148,13 @@ void build(char * arg, int buildAmount) {
     }
 
     f = fopen(specfile, "r");
-    if ((s = parseSpec(f, specfile))) {
+    s = parseSpec(f, specfile);
+    fclose(f);
+    if (s) {
 	if (doBuild(s, buildAmount)) {
 	    fprintf(stderr, "Build failed.\n");
 	}
+        freeSpec(s);
     } else {
 	/* Spec parse failed -- could be Exclude: Exclusive: */
 	if (errCode() == RPMERR_BADARCH) {
@@ -160,8 +163,6 @@ void build(char * arg, int buildAmount) {
 	    fprintf(stderr, "Build failed.\n");
 	}
     }
-    freeSpec(s);
-    fclose(f);
 }
 
 int main(int argc, char ** argv) {
