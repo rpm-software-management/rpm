@@ -28,6 +28,10 @@ typedef enum fileStage_e {
     FSM_UNDO	=  5,
     FSM_COMMIT	=  6,
 
+    FSM_INSTALL =  7,
+    FSM_ERASE	=  8,
+    FSM_BUILD	=  9,
+
     FSM_CREATE	=  _fi(17),
     FSM_MAP	=  _fi(18),
     FSM_MKDIRS	=  _fi(19),
@@ -237,7 +241,7 @@ int pkgActions(const rpmTransactionSet ts, TFI_t fi, fileStage a);
  * @return		0 on success
  */
 int fsmSetup(FSM_t fsm, const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
-                const char ** failedFile);
+	unsigned int * archiveSize, const char ** failedFile);
 
 /**
  * @return		0 on success

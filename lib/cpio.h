@@ -88,15 +88,11 @@ int cpioInstallArchive(FSM_t fsm)
 /** \ingroup payload
  * The RPM internal equivalent of the command line "cpio -o".
  *
- * @param ts		transaction set
- * @param fi		transaction element file info
- * @param cfd		file handle
- * @retval failedFile	(malloc'd) file name that caused failure (if any)
+ * @param fsm		file state machine data
  * @return		0 on success
  */
-int cpioBuildArchive(const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
-		unsigned int * archiveSize, /*@out@*/ const char ** failedFile)
-	/*@modifies fileSystem, cfd, *archiveSize, *failedFile @*/;
+int cpioBuildArchive(FSM_t fsm)
+	/*@modifies fileSystem, fsm @*/;
 
 /** \ingroup payload
  * Return formatted error message on payload handling failure.

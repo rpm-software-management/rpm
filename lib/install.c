@@ -438,7 +438,7 @@ static int installArchive(const rpmTransactionSet ts, TFI_t fi, int allFiles)
 	cfd = Fdopen(fdDup(Fileno(alp->fd)), rpmio_flags);
 	cfd = fdLink(cfd, "persist (installArchive");
 
-	rc = fsmSetup(fi->fsm, ts, fi, cfd, &failedFile);
+	rc = fsmSetup(fi->fsm, ts, fi, cfd, NULL, &failedFile);
 	rc = cpioInstallArchive(fi->fsm);
 	saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	Fclose(cfd);
@@ -540,7 +540,7 @@ static int installSources(const rpmTransactionSet ts, TFI_t fi,
 		if (fi->fflags[i] & RPMFILE_SPECFILE) break;
 
     if (i == fi->fc) {
-	/* find the spec file by name */
+	/* Find the spec file by name. */
 	for (i = 0; i < fi->fc; i++) {
 	    const char * t = fi->apath[i];
 	    t += strlen(fi->apath[i]) - 5;
@@ -685,6 +685,10 @@ int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     for (i = 0; i < fi->fc; i++) {
 	fi->fuids[i] = fi->uid;
 	fi->fgids[i] = fi->gid;
+    }
+
+    for (i = 0; i < fi->fc; i++) {
+	fi->actions[i] = FA_CREATE;
     }
 
     rpmBuildFileList(fi->h, &fi->apath, NULL);

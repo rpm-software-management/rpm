@@ -41,6 +41,7 @@ static int cpio_doio(FD_t fdo, Header h, CSA_t * csa, const char * fmodeMacro)
     const char * rootDir = "/";
     rpmdb rpmdb = NULL;
     rpmTransactionSet ts = rpmtransCreateSet(rpmdb, rootDir);
+    TFI_t fi = csa->cpioList;
     const char *fmode = rpmExpand(fmodeMacro, NULL);
     const char *failedFile = NULL;
     FD_t cfd;
@@ -50,15 +51,19 @@ static int cpio_doio(FD_t fdo, Header h, CSA_t * csa, const char * fmodeMacro)
 	fmode = xstrdup("w9.gzdio");
     (void) Fflush(fdo);
     cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
-    rc = cpioBuildArchive(ts, csa->cpioList, cfd,
-			  &csa->cpioArchiveSize, &failedFile);
+
+    rc = fsmSetup(fi->fsm, ts, fi, cfd, &csa->cpioArchiveSize, &failedFile);
+    rc = cpioBuildArchive(fi->fsm);
+
+    Fclose(cfd);
+    (void) fsmTeardown(fi->fsm);
+
     if (rc) {
 	rpmError(RPMERR_CPIO, _("create archive failed on file %s: %s\n"),
 		failedFile, cpioStrerror(rc));
       rc = 1;
     }
 
-    Fclose(cfd);
     if (failedFile)
 	free((void *)failedFile);
     free((void *)fmode);

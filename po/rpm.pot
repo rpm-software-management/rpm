@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-02-01 18:39-0500\n"
+"POT-Creation-Date: 2001-02-02 09:58-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1472,7 +1472,7 @@ msgstr ""
 msgid "no tar files given for build"
 msgstr ""
 
-#: build/build.c:114 build/pack.c:377
+#: build/build.c:114 build/pack.c:387
 msgid "Unable to open temp file.\n"
 msgstr ""
 
@@ -1662,7 +1662,7 @@ msgstr ""
 msgid "Could not open %%files file %s: %s\n"
 msgstr ""
 
-#: build/files.c:1461 build/pack.c:113
+#: build/files.c:1461 build/pack.c:123
 #, c-format
 msgid "line: %s\n"
 msgstr ""
@@ -1729,126 +1729,126 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: build/pack.c:56
+#: build/pack.c:67
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:79
+#: build/pack.c:89
 #, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr ""
 
-#: build/pack.c:86
+#: build/pack.c:96
 #, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr ""
 
-#: build/pack.c:170
+#: build/pack.c:180
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr ""
 
-#: build/pack.c:177
+#: build/pack.c:187
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr ""
 
-#: build/pack.c:184
+#: build/pack.c:194
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr ""
 
-#: build/pack.c:191
+#: build/pack.c:201
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr ""
 
-#: build/pack.c:199
+#: build/pack.c:209
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr ""
 
-#: build/pack.c:214
+#: build/pack.c:224
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr ""
 
-#: build/pack.c:240
+#: build/pack.c:250
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:250
+#: build/pack.c:260
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: build/pack.c:271
+#: build/pack.c:281
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: build/pack.c:277
+#: build/pack.c:287
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:389
+#: build/pack.c:399
 msgid "Bad CSA data\n"
-msgstr ""
-
-#: build/pack.c:430
-#, c-format
-msgid "Generating signature: %d\n"
 msgstr ""
 
 #: build/pack.c:440
 #, c-format
+msgid "Generating signature: %d\n"
+msgstr ""
+
+#: build/pack.c:450
+#, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:477
+#: build/pack.c:487
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
 
-#: build/pack.c:492
+#: build/pack.c:502
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr ""
 
-#: build/pack.c:502
+#: build/pack.c:512
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:516
+#: build/pack.c:526
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:526
+#: build/pack.c:536
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:532
+#: build/pack.c:542
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:559
+#: build/pack.c:569
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:624
+#: build/pack.c:634
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:641
+#: build/pack.c:651
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -2185,89 +2185,89 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:305
-msgid "========= Directories not explictly included in package:\n"
-msgstr ""
-
-#: lib/cpio.c:307
-#, c-format
-msgid "%9d %s\n"
-msgstr ""
-
-#: lib/cpio.c:450 lib/install.c:829
+#: lib/cpio.c:343 lib/install.c:833
 #, c-format
 msgid "   file: %s%s action: %s\n"
 msgstr ""
 
-#: lib/cpio.c:485
+#: lib/cpio.c:378
 #, c-format
 msgid "%s: cannot remove %s - directory not empty\n"
 msgstr ""
 
-#: lib/cpio.c:490
+#: lib/cpio.c:383
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:501
+#: lib/cpio.c:394
 #, c-format
 msgid "%s removal of %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:516
+#: lib/cpio.c:409
 #, c-format
 msgid "%s: %s saved as %s\n"
 msgstr ""
 
-#: lib/cpio.c:522
+#: lib/cpio.c:415
 #, c-format
 msgid "%s rename of %s to %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:890
+#: lib/cpio.c:508
+msgid "========= Directories not explictly included in package:\n"
+msgstr ""
+
+#: lib/cpio.c:510
+#, c-format
+msgid "%9d %s\n"
+msgstr ""
+
+#: lib/cpio.c:861
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/cpio.c:1414
+#: lib/cpio.c:1391
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
 
-#: lib/cpio.c:2162
+#: lib/cpio.c:2124
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:2165
+#: lib/cpio.c:2127
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:2166
+#: lib/cpio.c:2128
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:2187
+#: lib/cpio.c:2149
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:2188
+#: lib/cpio.c:2150
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:2189
+#: lib/cpio.c:2151
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:2190
+#: lib/cpio.c:2152
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:2191
+#: lib/cpio.c:2153
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:2200
+#: lib/cpio.c:2162
 msgid " failed - "
 msgstr ""
 
@@ -2677,17 +2677,17 @@ msgstr ""
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/install.c:718 lib/uninstall.c:24
+#: lib/install.c:722 lib/uninstall.c:24
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/install.c:785 lib/install.c:886 lib/uninstall.c:62 lib/uninstall.c:83
+#: lib/install.c:789 lib/install.c:890 lib/uninstall.c:62 lib/uninstall.c:83
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
 
-#: lib/install.c:792
+#: lib/install.c:796
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
