@@ -1,8 +1,6 @@
 #include "system.h"
 
-#if !defined(ALLPERMS)
-#define	ALLPERMS	07777
-#endif
+#define	MYALLPERMS	07777
 
 #include <regex.h>
 #include <signal.h>	/* getOutputFrom() */
@@ -421,7 +419,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
     if (ar->ar_fmodestr && !isAttrDefault(ar->ar_fmodestr)) {
 	unsigned int ui;
 	x = sscanf(ar->ar_fmodestr, "%o", &ui);
-	if ((x == 0) || (ar->ar_fmode & ~ALLPERMS)) {
+	if ((x == 0) || (ar->ar_fmode & ~MYALLPERMS)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad %s() mode spec: %s"), name, buf);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
@@ -433,7 +431,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
     if (ar->ar_dmodestr && !isAttrDefault(ar->ar_dmodestr)) {
 	unsigned int ui;
 	x = sscanf(ar->ar_dmodestr, "%o", &ui);
-	if ((x == 0) || (ar->ar_dmode & ~ALLPERMS)) {
+	if ((x == 0) || (ar->ar_dmode & ~MYALLPERMS)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad %s() dirmode spec: %s"), name, buf);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
