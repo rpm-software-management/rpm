@@ -497,7 +497,7 @@ exit 0
 %changelog
 * Mon Nov 22 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.5
 - sparcv8: optflags changed to -mtune=ultrasparc (#140420).
-- add Requires: neon-devel.
+- add BuildRequires: neon-devel.
 
 * Fri Nov 19 2004 Jeff Johnson <jbj@jbj.org> 4.4-0.4
 - remove noNeon runtime switch, http through neon only.
