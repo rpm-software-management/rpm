@@ -219,6 +219,9 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Fri Mar 31 2000 Jeff Johnson <jbj@redhat.com>
+- try for db3 DB_INIT_CDB model.
+
 * Fri Mar 24 2000 Jeff Johnson <jbj@redhat.com>
 - use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
 - configure.in fiddles for BSD systems (Patrick Schoo).
