@@ -71,8 +71,7 @@
 #define INSTALL_REPLACEPKG	(1 << 0)
 #define INSTALL_REPLACEFILES	(1 << 1)
 #define INSTALL_TEST		(1 << 2)
-#define INSTALL_PRINTLABEL	(1 << 3)
-#define INSTALL_UPGRADE		(1 << 4)
+#define INSTALL_UPGRADE		(1 << 3)
 
 #define VERIFY_NONE             0
 #define VERIFY_MD5              (1 << 0)
@@ -139,7 +138,7 @@ int rpmdbFindPackage(rpmdb db, char * name, dbIndexSet * matches);
 
 int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile);
 int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, 
-		      notifyFunction notify);
+		      notifyFunction notify, char * labelFormat);
 int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test);
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 int rpmdbAdd(rpmdb db, Header dbentry);
