@@ -169,7 +169,7 @@ fi
 %{__prefix}/lib/rpm/mkinstalldirs
 %{__prefix}/lib/rpm/rpmdb
 %{__prefix}/lib/rpm/rpm[eiukqv]
-%{__prefix}/lib/rpm/rpmpopt
+%{__prefix}/lib/rpm/rpmpopt*
 %{__prefix}/lib/rpm/rpmrc
 %{__prefix}/lib/rpm/vpkg-provides.sh
 %{__prefix}/lib/rpm/vpkg-provides2.sh

@@ -8,7 +8,7 @@ EXTRA_DIST = CHANGES CREDITS GROUPS README.amiga INSTALL \
 	gendiff installplatform platform* \
 	po/*.in po/*.po po/rpm.pot \
 	python/*.am python/*.in python/*.c python/*.h python/testit \
-	rpm.magic rpmpopt* rpmqv.c rpm.spec
+	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.spec
 
 EXTRA_PROGRAMS = rpmconvert
 
@@ -40,9 +40,12 @@ noinst_PROGRAMS =	@BUILD_RPMCONVERT@
 
 pkglibdir =		@RPMCONFIGDIR@
 pkglib_PROGRAMS =	rpmb rpmdb rpmi rpmk rpmq
-pkglib_DATA =		rpmrc rpmpopt macros
+pkglib_DATA =		rpmrc rpmpopt-$(VERSION) macros
 pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
 			config.guess config.sub
+
+rpmpopt-$(VERSION): rpmpopt
+	cp $< $@
 
 noinst_HEADERS = \
 	acconfig.h	build.h		system.h
