@@ -15,6 +15,7 @@
 	- eliminate find-requirements on libNoVersion (Red Hat linux only).
 	- add new-fangled requires on "libc.so.6(GLIBC_2.1)" (sparc-linux only).
 	- MiNT port (Guido Flohr <gufl0000@stud.uni-sb.de>).
+	- fix: --rebuilddb with --root dinna remove directory (Michael Andres).
 
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected (Shing-Gene Yung).

@@ -9,6 +9,7 @@ int rpmdbRebuild(const char * rootdir) {
     rpmdb olddb, newdb;
     const char * dbpath = NULL;
     const char * newdbpath = NULL;
+    const char * newrootdbpath = NULL;
     int recnum; 
     Header h;
     int failed = 0;
@@ -24,22 +25,19 @@ int rpmdbRebuild(const char * rootdir) {
     }
 
     sprintf(tfn, "rebuilddb.%d", (int) getpid());
-    newdbpath = rpmGetPath(rootdir, dbpath, tfn, NULL);
+    newrootdbpath = rpmGetPath(rootdir, dbpath, tfn, NULL);
+    newdbpath = newrootdbpath + strlen(rootdir);
 
-    if (!access(newdbpath, F_OK)) {
+    if (!access(newrootdbpath, F_OK)) {
 	rpmError(RPMERR_MKDIR, _("temporary database %s already exists"),
-	      newdbpath);
+	      newrootdbpath);
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("creating directory: %s\n"), newdbpath);
-    if (mkdir(newdbpath, 0755)) {
+    rpmMessage(RPMMESS_DEBUG, _("creating directory: %s\n"), newrootdbpath);
+    if (mkdir(newrootdbpath, 0755)) {
 	rpmError(RPMERR_MKDIR, _("error creating directory %s: %s"),
-	      newdbpath, strerror(errno));
+	      newrootdbpath, strerror(errno));
     }
-
-    /* XXX WTFO? */
-    xfree(newdbpath);
-    newdbpath = rpmGetPath(dbpath, tfn, NULL);
 
     rpmMessage(RPMMESS_DEBUG, _("opening old database\n"));
     if (openDatabase(rootdir, dbpath, &olddb, O_RDONLY, 0644, 
@@ -104,15 +102,15 @@ int rpmdbRebuild(const char * rootdir) {
 	    rc = 1;
 	    goto exit;
 	}
-	if (rmdir(newdbpath))
+	if (rmdir(newrootdbpath))
 	    rpmMessage(RPMMESS_ERROR, _("failed to remove directory %s: %s\n"),
-			newdbpath, strerror(errno));
+			newrootdbpath, strerror(errno));
     }
     rc = 0;
 
 exit:
     if (dbpath)		xfree(dbpath);
-    if (newdbpath)	xfree(newdbpath);
+    if (newrootdbpath)	xfree(newrootdbpath);
 
     return rc;
 }
