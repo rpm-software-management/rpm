@@ -348,7 +348,7 @@ static int build(char *arg, int buildAmount, char *passPhrase,
     if (fromTarball) {
 	specDir = rpmGetVar(RPMVAR_SPECDIR);
 	tmpSpecFile = alloca(1024);
-	sprintf(tmpSpecFile, "%s/rpm-spec-file-%d", specDir, getpid());
+	sprintf(tmpSpecFile, "%s/rpm-spec-file-%d", specDir, (int) getpid());
 
 	cmd = alloca(strlen(arg) + 50 + strlen(tmpSpecFile));
 	sprintf(cmd, "gunzip < %s | tar xOvf - \\*.spec 2>&1 > %s", arg,
@@ -635,7 +635,7 @@ int main(int argc, char ** argv) {
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_UNINSTALL;
-	    rpmMessage(RPMMESS_ERROR, _("-u and --uninstall are depricated and no"
+	    rpmMessage(RPMMESS_ERROR, _("-u and --uninstall are deprecated and no"
 		    " longer work.\n"));
 	    rpmMessage(RPMMESS_ERROR, _("Use -e or --erase instead.\n"));
 	    exit(1);
