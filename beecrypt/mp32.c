@@ -912,6 +912,8 @@ void mp32rshift(register uint32 xsize, register uint32* xdata, uint32 count)
 }
 #endif
 
+/* try an alternate version here, with descending sizes */
+/* also integrate lszcnt and rshift properly into one function */
 #ifndef ASM_MP32GCD_W
 /**
  * mp32gcd_w

@@ -78,12 +78,12 @@ extern "C" {
 
 /**
  */
-extern BEEDLLAPI const randomGenerator fips186prng;
+extern BEECRYPTAPI const randomGenerator fips186prng;
 
 /**
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int fips186Setup  (fips186Param* fp)
 	/*@modifies fp */;
 /*@=exportlocal@*/
@@ -91,7 +91,7 @@ int fips186Setup  (fips186Param* fp)
 /**
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int fips186Seed   (fips186Param* fp, const uint32* data, int size)
 	/*@modifies fp */;
 /*@=exportlocal@*/
@@ -99,7 +99,7 @@ int fips186Seed   (fips186Param* fp, const uint32* data, int size)
 /**
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int fips186Next   (fips186Param* fp, uint32* data, int size)
 	/*@modifies fp, data */;
 /*@=exportlocal@*/
@@ -107,7 +107,7 @@ int fips186Next   (fips186Param* fp, uint32* data, int size)
 /**
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int fips186Cleanup(fips186Param* fp)
 	/*@modifies fp */;
 /*@=exportlocal@*/

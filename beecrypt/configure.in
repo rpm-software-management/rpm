@@ -5,7 +5,7 @@ AC_INIT()
 AC_CANONICAL_SYSTEM
 
 dnl Automake
-AM_INIT_AUTOMAKE(beecrypt, 2.1.0)
+AM_INIT_AUTOMAKE(beecrypt, 2.2.0)
 AM_CONFIG_HEADER(config.gnu.h)
 AM_DISABLE_STATIC
 AC_LIBTOOL_WIN32_DLL
@@ -140,7 +140,13 @@ EOF
           if test -d "$ac_cv_java_include" ; then
             ac_cv_java_headers=yes
           else
-            ac_cv_java_include="$java_home"/../include
+            case $target_os in
+            darwin*)
+              ac_cv_java_include="$java_home"/../../../Headers
+              ;;
+            *)
+              ac_cv_java_include="$java_home"/../include
+            esac
             if test -d "$ac_cv_java_include" ; then
               ac_cv_java_headers=yes
             else
@@ -502,6 +508,8 @@ if test "$ac_with_javaglue" = yes ; then
   case $target_os in
   cygwin*)
     CFLAGS="$CFLAGS -I$ac_cv_java_include"/win32
+    ;;
+  darwin*)
     ;;
   linux*)
     CFLAGS="$CFLAGS -I$ac_cv_java_include"/linux

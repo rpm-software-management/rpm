@@ -40,7 +40,7 @@ extern "C" {
  * @param tmp		buffer to pad
  * @return		buffer with pad added
  */
-BEEDLLAPI /*@only@*/ /*@null@*/ /*@unused@*/
+BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
 memchunk* pkcs5Pad  (int blockbytes, /*@only@*/ /*@null@*/ memchunk* tmp)
 	/*@*/;
 
@@ -50,7 +50,7 @@ memchunk* pkcs5Pad  (int blockbytes, /*@only@*/ /*@null@*/ memchunk* tmp)
  * @param tmp		buffer to unpad
  * @return		buffer with pad removed
  */
-BEEDLLAPI /*@only@*/ /*@null@*/
+BEECRYPTAPI /*@only@*/ /*@null@*/
 memchunk* pkcs5Unpad(int blockbytes, /*@returned@*/ /*@null@*/ memchunk* tmp)
 	/*@modifies tmp */;
 
@@ -60,7 +60,7 @@ memchunk* pkcs5Unpad(int blockbytes, /*@returned@*/ /*@null@*/ memchunk* tmp)
  * @param tmp		buffer to pad
  * @return		copy of buffer with pad added
  */
-BEEDLLAPI /*@only@*/ /*@null@*/
+BEECRYPTAPI /*@only@*/ /*@null@*/
 memchunk* pkcs5PadCopy  (int blockbytes, const memchunk* src)
 	/*@*/;
 
@@ -70,7 +70,7 @@ memchunk* pkcs5PadCopy  (int blockbytes, const memchunk* src)
  * @param tmp		buffer to unpad
  * @return		copy of buffer with pad removed
  */
-BEEDLLAPI /*@only@*/ /*@null@*/ /*@unused@*/
+BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
 memchunk* pkcs5UnpadCopy(int blockbytes, const memchunk* src)
 	/*@*/;
 

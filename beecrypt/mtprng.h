@@ -75,12 +75,12 @@ extern "C" {
 
 /**
  */
-extern BEEDLLAPI const randomGenerator mtprng;
+extern BEECRYPTAPI const randomGenerator mtprng;
 
 /**
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int mtprngSetup  (mtprngParam* mp)
 	/*@modifies mp @*/;
 /*@=exportlocal@*/
@@ -88,7 +88,7 @@ int mtprngSetup  (mtprngParam* mp)
 /**
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int mtprngSeed   (mtprngParam* mp, const uint32* data, int size)
 	/*@modifies mp @*/;
 /*@=exportlocal@*/
@@ -96,7 +96,7 @@ int mtprngSeed   (mtprngParam* mp, const uint32* data, int size)
 /**
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int mtprngNext   (mtprngParam* mp, uint32* data, int size)
 	/*@modifies mp, data @*/;
 /*@=exportlocal@*/
@@ -104,7 +104,7 @@ int mtprngNext   (mtprngParam* mp, uint32* data, int size)
 /**
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int mtprngCleanup(mtprngParam* mp)
 	/*@modifies mp @*/;
 /*@=exportlocal@*/

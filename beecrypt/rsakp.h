@@ -50,25 +50,25 @@ extern "C" {
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 	/*@modifies kp, rgc @*/;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int rsakpInit(rsakp* kp)
 	/*@modifies kp @*/;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int rsakpFree(rsakp* kp)
 	/*@modifies kp @*/;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int rsakpCopy(rsakp* dst, const rsakp* src)
 	/*@modifies dst @*/;
 

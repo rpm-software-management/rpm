@@ -41,21 +41,26 @@ extern "C" {
 
 /**
  */
-BEEDLLAPI /*@only@*/ /*@null@*/
+BEECRYPTAPI /*@only@*/ /*@null@*/
 memchunk* memchunkAlloc(int size)
 	/*@*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 /*@unused@*/ void memchunkFree(/*@only@*/ /*@null@*/memchunk* m)
 	/*@*/;
 
 /**
  */
-BEEDLLAPI /*@only@*/ /*@null@*/
+BEECRYPTAPI /*@only@*/ /*@null@*/
 memchunk* memchunkResize(/*@only@*/ /*@null@*/memchunk* m, int size)
 	/*@*/;
+
+/**
+ */
+BEECRYPTAPI /*@only@*/ /*@null@*/
+memchunk*	memchunkClone(const memchunk* m);
 
 #ifdef __cplusplus
 }

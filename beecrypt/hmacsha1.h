@@ -46,12 +46,12 @@ extern "C" {
 
 /** \ingroup HMAC_sha1_m
  */
-extern BEEDLLAPI const keyedHashFunction hmacsha1;
+extern BEECRYPTAPI const keyedHashFunction hmacsha1;
 
 /** \ingroup HMAC_sha1_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int hmacsha1Setup (hmacsha1Param* sp, const uint32* key, int keybits)
 	/*@globals sha1 @*/
 	/*@modifies sp @*/;
@@ -60,7 +60,7 @@ int hmacsha1Setup (hmacsha1Param* sp, const uint32* key, int keybits)
 /** \ingroup HMAC_sha1_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int hmacsha1Reset (hmacsha1Param* sp)
 	/*@globals sha1 @*/
 	/*@modifies sp @*/;
@@ -69,7 +69,7 @@ int hmacsha1Reset (hmacsha1Param* sp)
 /** \ingroup HMAC_sha1_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int hmacsha1Update(hmacsha1Param* sp, const byte* data, int size)
 	/*@globals sha1 @*/
 	/*@modifies sp @*/;
@@ -78,7 +78,7 @@ int hmacsha1Update(hmacsha1Param* sp, const byte* data, int size)
 /** \ingroup HMAC_sha1_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int hmacsha1Digest(hmacsha1Param* sp, uint32* data)
 	/*@globals sha1 @*/
 	/*@modifies sp, data @*/;

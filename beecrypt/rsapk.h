@@ -44,19 +44,19 @@ extern "C" {
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int rsapkInit(rsapk* pk)
 	/*@modifies pk @*/;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int rsapkFree(rsapk* pk)
 	/*@modifies pk @*/;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int rsapkCopy(rsapk* dst, const rsapk* src)
 	/*@modifies dst @*/;
 

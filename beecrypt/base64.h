@@ -66,7 +66,7 @@ extern "C" {
  * @param ns		no. bytes of data (0 uses strlen(data))
  * @return		(malloc'd) base64 string
  */
-BEEDLLAPI /*@only@*/ /*@null@*/ /*@unused@*/
+BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
 char * b64encode (const void * data, int ns)
 	/*@*/;
 
@@ -77,9 +77,19 @@ char * b64encode (const void * data, int ns)
  * @retval lenp		address of no. bytes of binary data
  * @return		0 on success, 1: s == NULL, 2: bad length, 3: bad char
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int b64decode (const char * s, /*@out@*/ void ** datap, /*@out@*/ int *lenp)
 	/*@modifies *datap, *lenp @*/;
+
+/**
+ */
+BEECRYPTAPI /*@only@*/ /*@null@*/ /*@unused@*/
+char*		b64enc(const memchunk*);
+
+/**
+ */
+BEECRYPTAPI /*@unused@*/
+memchunk*	b64dec(const char*);
 
 #ifdef __cplusplus
 }

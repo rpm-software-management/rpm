@@ -43,7 +43,7 @@ extern "C" {
  * @param src		plaintext block
  * @return		0 on success, -1 on failure
  */
-BEEDLLAPI
+BEECRYPTAPI
 int blockEncrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, /*@out@*/ uint32* dst, const uint32* src)
 	/*@modifies bp, dst @*/;
 
@@ -56,7 +56,7 @@ int blockEncrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, i
  * @param src		ciphertext block
  * @return		0 on success, -1 on failure
  */
-BEEDLLAPI
+BEECRYPTAPI
 int blockDecrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, /*@out@*/ uint32* dst, const uint32* src)
 	/*@modifies bp, dst @*/;
 

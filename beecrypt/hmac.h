@@ -44,25 +44,25 @@ extern "C" {
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 int hmacSetup (hmacParam* hp, const hashFunction* hash, hashFunctionParam* param, const uint32* key, int keybits)
 	/*@modifies hp */;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 int hmacReset (hmacParam* hp, const hashFunction* hash, hashFunctionParam* param)
 	/*@modifies hp */;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 int hmacUpdate(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param, const byte* data, int size)
 	/*@modifies hp */;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 int hmacDigest(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param, /*@out@*/ uint32* data)
 	/*@modifies hp, data */;
 

@@ -33,6 +33,7 @@
 
 
 C_FUNCTION_BEGIN(mp32zero)
+LABEL(mp32zero)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -43,10 +44,11 @@ C_FUNCTION_BEGIN(mp32zero)
 
 	popl %edi
 	ret
-C_FUNCTION_END(mp32zero, .Lmp32zero_size)
+C_FUNCTION_END(mp32zero, LOCAL(mp32zero_size))
 
 
 C_FUNCTION_BEGIN(mp32fill)
+LABEL(mp32fill)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -57,31 +59,32 @@ C_FUNCTION_BEGIN(mp32fill)
 
 	popl %edi
 	ret
-C_FUNCTION_END(mp32fill, .Lmp32fill_size)
+C_FUNCTION_END(mp32fill, LOCAL(mp32fill_size))
 
 
-#if 0	/* BROKEN! */
 C_FUNCTION_BEGIN(mp32even)
-	mov 4(%esp),%ecx
-	mov 8(%esp),%eax
-	mov 4(%esp,%ecx,4),%eax
-	not %eax
-	and %eax,1
+LABEL(mp32even)
+	movl 4(%esp),%ecx
+	movl 8(%esp),%eax
+	movl -4(%eax,%ecx,4),%eax
+	notl %eax
+	andl $1,%eax
 	ret
-C_FUNCTION_END(mp32even, .Lmp32even_size)
+C_FUNCTION_END(mp32even, LOCAL(mp32even_size))
 
 
 C_FUNCTION_BEGIN(mp32odd)
-	mov 4(%esp),%ecx
-	mov 8(%esp),%eax
-	mov 4(%esp,%ecx,4),%eax
-	and %eax,1
+LABEL(mp32odd)
+	movl 4(%esp),%ecx
+	movl 8(%esp),%eax
+	movl -4(%eax,%ecx,4),%eax
+	andl $1,%eax
 	ret
-C_FUNCTION_END(mp32odd, .Lmp32odd_size)
-#endif
+C_FUNCTION_END(mp32odd, LOCAL(mp32odd_size))
 
 
 C_FUNCTION_BEGIN(mp32addw)
+LABEL(mp32addw)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -92,25 +95,26 @@ C_FUNCTION_BEGIN(mp32addw)
 	leal -4(%edi,%ecx,4),%edi
 	addl %eax,(%edi)
 	decl %ecx
-	jz .Lmp32addw_skip
+	jz LOCAL(mp32addw_skip)
 	leal -4(%edi),%edi
 
 	.align 4
-.Lmp32addw_loop:
+LOCAL(mp32addw_loop):
 	adcl %edx,(%edi)
 	leal -4(%edi),%edi
 	decl %ecx
-	jnz .Lmp32addw_loop
-.Lmp32addw_skip:
+	jnz LOCAL(mp32addw_loop)
+LOCAL(mp32addw_skip):
 	sbbl %eax,%eax
 	negl %eax
 
 	popl %edi
 	ret
-C_FUNCTION_END(mp32addw, .Lmp32addw_size)
+C_FUNCTION_END(mp32addw, LOCAL(mp32addw_size))
 
 
 C_FUNCTION_BEGIN(mp32subw)
+LABEL(mp32subw)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -121,24 +125,25 @@ C_FUNCTION_BEGIN(mp32subw)
 	leal -4(%edi,%ecx,4),%edi
 	subl %eax,(%edi)
 	decl %ecx
-	jz .Lmp32subw_skip
+	jz LOCAL(mp32subw_skip)
 	leal -4(%edi),%edi
 
 	.align 4
-.Lmp32subw_loop:
+LOCAL(mp32subw_loop):
 	sbbl %edx,(%edi)
 	leal -4(%edi),%edi
 	decl %ecx
-	jnz .Lmp32subw_loop
-.Lmp32subw_skip:
+	jnz LOCAL(mp32subw_loop)
+LOCAL(mp32subw_skip):
 	sbbl %eax,%eax
 	negl %eax
 	popl %edi
 	ret
-C_FUNCTION_END(mp32subw, .Lmp32subw_size)
+C_FUNCTION_END(mp32subw, LOCAL(mp32subw_size))
 
 
 C_FUNCTION_BEGIN(mp32add)
+LABEL(mp32add)
 	pushl %edi
 	pushl %esi
 
@@ -150,11 +155,11 @@ C_FUNCTION_BEGIN(mp32add)
 	decl %ecx
 
 	.align 4
-.Lmp32add_loop:
+LOCAL(mp32add_loop):
 	movl (%esi,%ecx,4),%eax
 	adcl %eax,(%edi,%ecx,4)
 	decl %ecx
-	jns .Lmp32add_loop
+	jns LOCAL(mp32add_loop)
 
 	sbbl %eax,%eax
 	negl %eax
@@ -162,10 +167,11 @@ C_FUNCTION_BEGIN(mp32add)
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mp32add, .Lmp32add_size)
+C_FUNCTION_END(mp32add, LOCAL(mp32add_size))
 
 
 C_FUNCTION_BEGIN(mp32sub)
+LABEL(mp32sub)
 	pushl %edi
 	pushl %esi
 
@@ -177,21 +183,22 @@ C_FUNCTION_BEGIN(mp32sub)
 	decl %ecx
 
 	.align 4
-.Lmp32sub_loop:
+LOCAL(mp32sub_loop):
 	movl (%esi,%ecx,4),%eax
 	sbbl %eax,(%edi,%ecx,4)
 	decl %ecx
-	jns .Lmp32sub_loop
+	jns LOCAL(mp32sub_loop)
 
 	sbbl %eax,%eax
 	negl %eax
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mp32sub, .Lmp32sub_size)
+C_FUNCTION_END(mp32sub, LOCAL(mp32sub_size))
 
 
 C_FUNCTION_BEGIN(mp32divtwo)
+LABEL(mp32divtwo)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -202,17 +209,18 @@ C_FUNCTION_BEGIN(mp32divtwo)
 	clc
 
 	.align 4
-.Lmp32divtwo_loop:
+LOCAL(mp32divtwo_loop):
 	rcrl $1,(%edi,%ecx,4)
 	inc %ecx
-	jnz .Lmp32divtwo_loop
+	jnz LOCAL(mp32divtwo_loop)
 
 	popl %edi
 	ret
-C_FUNCTION_END(mp32divtwo, .Lmp32divtwo_size)
+C_FUNCTION_END(mp32divtwo, LOCAL(mp32divtwo_size))
 
 
 C_FUNCTION_BEGIN(mp32multwo)
+LABEL(mp32multwo)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -222,20 +230,21 @@ C_FUNCTION_BEGIN(mp32multwo)
 	decl %ecx
 
 	.align 4
-.Lmp32multwo_loop:
+LOCAL(mp32multwo_loop):
 	rcll $1,(%edi,%ecx,4)
 	decl %ecx 
-	jns .Lmp32multwo_loop
+	jns LOCAL(mp32multwo_loop)
 
 	sbbl %eax,%eax
 	negl %eax
 
 	popl %edi
 	ret
-C_FUNCTION_END(mp32multwo, .Lmp32multwo_size)
+C_FUNCTION_END(mp32multwo, LOCAL(mp32multwo_size))
 
 
 C_FUNCTION_BEGIN(mp32setmul)
+LABEL(mp32setmul)
 	pushl %edi
 	pushl %esi
 	pushl %ebx
@@ -250,7 +259,7 @@ C_FUNCTION_BEGIN(mp32setmul)
 	decl %ecx
 
 	.align 4
-.Lmp32setmul_loop:
+LOCAL(mp32setmul_loop):
 	movl %edx,%ebx
 	movl (%esi,%ecx,4),%eax
 	mull %ebp
@@ -258,7 +267,7 @@ C_FUNCTION_BEGIN(mp32setmul)
 	adcl $0,%edx
 	movl %eax,(%edi,%ecx,4)
 	decl %ecx
-	jns .Lmp32setmul_loop
+	jns LOCAL(mp32setmul_loop)
 
 	movl %edx,%eax
 
@@ -267,10 +276,11 @@ C_FUNCTION_BEGIN(mp32setmul)
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mp32setmul, .Lmp32setmul_size)
+C_FUNCTION_END(mp32setmul, LOCAL(mp32setmul_size))
 
 
 C_FUNCTION_BEGIN(mp32addmul)
+LABEL(mp32addmul)
 	pushl %edi
 	pushl %esi
 	pushl %ebx
@@ -285,7 +295,7 @@ C_FUNCTION_BEGIN(mp32addmul)
 	decl %ecx
 
 	.align 4
-.Lmp32addmul_loop:
+LOCAL(mp32addmul_loop):
 	movl %edx,%ebx
 	movl (%esi,%ecx,4),%eax
 	mull %ebp
@@ -295,7 +305,7 @@ C_FUNCTION_BEGIN(mp32addmul)
 	adcl $0,%edx
 	movl %eax,(%edi,%ecx,4)
 	decl %ecx
-	jns .Lmp32addmul_loop
+	jns LOCAL(mp32addmul_loop)
 
 	movl %edx,%eax
 
@@ -304,10 +314,11 @@ C_FUNCTION_BEGIN(mp32addmul)
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mp32addmul, .Lmp32addmul_size)
+C_FUNCTION_END(mp32addmul, LOCAL(mp32addmul_size))
 
 
 C_FUNCTION_BEGIN(mp32addsqrtrc)
+LABEL(mp32addsqrtrc)
 	pushl %edi
 	pushl %esi
 	pushl %ebx
@@ -320,7 +331,7 @@ C_FUNCTION_BEGIN(mp32addsqrtrc)
 	decl %ecx
 
 	.align 4
-.Lmp32addsqrtrc_loop:
+LOCAL(mp32addsqrtrc_loop):
 	movl (%esi,%ecx,4),%eax
 	mull %eax
 	addl %ebx,%eax
@@ -330,7 +341,7 @@ C_FUNCTION_BEGIN(mp32addsqrtrc)
 	sbbl %ebx,%ebx
 	negl %ebx
 	decl %ecx
-	jns .Lmp32addsqrtrc_loop
+	jns LOCAL(mp32addsqrtrc_loop)
 
 	movl %ebx,%eax
 
@@ -338,4 +349,4 @@ C_FUNCTION_BEGIN(mp32addsqrtrc)
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mp32addsqrtrc, .Lmp32addsqrtrc_size)
+C_FUNCTION_END(mp32addsqrtrc, LOCAL(mp32addsqrtrc_size))

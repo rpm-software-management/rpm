@@ -46,55 +46,55 @@ extern "C" {
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32nzero(/*@out@*/ mp32number* n)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32nsize(mp32number* n, uint32 size)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 void mp32ninit(mp32number* n, uint32 size, const uint32* data)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32nfree(mp32number* n)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32ncopy(/*@out@*/ mp32number* n, const mp32number* copy)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32nwipe(mp32number* n)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32nset   (mp32number* n, uint32 size, /*@null@*/ const uint32* data)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32nsetw  (mp32number* n, uint32 val)
 	/*@modifies n->size, n->data @*/;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 void mp32nsethex(mp32number* n, const char* hex)
 	/*@modifies n->size, n->data @*/;
 

@@ -65,7 +65,7 @@ extern "C" {
  * Return the number of entropy sources available.
  * @return		number of entropy sources available
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int entropySourceCount(void)
 	/*@*/;
 
@@ -74,7 +74,7 @@ int entropySourceCount(void)
  * @param index		entropy source index
  * @return		entropy source pointer (or NULL)
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const entropySource* entropySourceGet(int index)
 	/*@*/;
 
@@ -84,7 +84,7 @@ const entropySource* entropySourceGet(int index)
  * @return		entropy source pointer (or NULL)
  */
 /*@-exportlocal@*/
-BEEDLLAPI /*@observer@*/ /*@null@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/
 const entropySource* entropySourceFind(const char* name)
 	/*@*/;
 /*@=exportlocal@*/
@@ -95,7 +95,7 @@ const entropySource* entropySourceFind(const char* name)
  * entropy source. Otherwise, use the 1st entry in the internal table.
  * @return		entropy source pointer (or NULL)
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const entropySource* entropySourceDefault(void)
 	/*@*/;
 
@@ -106,7 +106,7 @@ const entropySource* entropySourceDefault(void)
  * @param size		no. of ints of data
  * @return		0 on success, -1 on failure
  */
-BEEDLLAPI
+BEECRYPTAPI
 int entropyGatherNext(uint32* data, int size)
 	/*@*/;
 
@@ -196,7 +196,7 @@ extern "C" {
  * Return the number of generators available.
  * @return		number of generators available
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int randomGeneratorCount(void)
 	/*@*/;
 
@@ -205,7 +205,7 @@ int randomGeneratorCount(void)
  * @param index		generator index
  * @return		generator pointer (or NULL)
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const randomGenerator* randomGeneratorGet(int index)
 	/*@*/;
 
@@ -215,7 +215,7 @@ const randomGenerator* randomGeneratorGet(int index)
  * @return		generator pointer (or NULL)
  */
 /*@-exportlocal@*/
-BEEDLLAPI /*@observer@*/ /*@null@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/
 const randomGenerator* randomGeneratorFind(const char* name)
 	/*@*/;
 /*@=exportlocal@*/
@@ -226,7 +226,7 @@ const randomGenerator* randomGeneratorFind(const char* name)
  * generator. Otherwise, use "fips186prng".
  * @return		generator pointer
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const randomGenerator* randomGeneratorDefault(void)
 	/*@*/;
 
@@ -250,18 +250,22 @@ extern "C" {
 /** \ingroup PRNG_m
  * Initialize a randomGenerator instance.
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int randomGeneratorContextInit(randomGeneratorContext* ctxt, /*@observer@*/ /*@dependent@*/ const randomGenerator* rng)
 	/*@modifies ctxt->rng, ctxt->param @*/;
 
 /** \ingroup PRNG_m
  * Destroy a randomGenerator instance.
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int randomGeneratorContextFree(/*@special@*/ randomGeneratorContext* ctxt)
 	/*@uses ctxt->rng @*/
 	/*@releases ctxt->param @*/
 	/*@modifies ctxt->rng, ctxt->param @*/;
+
+BEECRYPTAPI /*@unused@*/
+int randomGeneratorContextNext(randomGeneratorContext* ctxt, /*@out@*/ uint32* data, int size)
+	/*@modifies ctxt->param, *data @*/;
 
 #ifdef __cplusplus
 }
@@ -273,7 +277,7 @@ int randomGeneratorContextFree(/*@special@*/ randomGeneratorContext* ctxt)
 
 /** \ingroup HASH_m
  */
-BEEDLLAPI
+BEECRYPTAPI
 typedef void hashFunctionParam;
 
 /** \ingroup HASH_m
@@ -336,7 +340,7 @@ extern "C" {
  * Return the number of hash functions available.
  * @return		number of hash functions available
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int hashFunctionCount(void)
 	/*@*/;
 
@@ -345,7 +349,7 @@ int hashFunctionCount(void)
  * @param index		hash function index
  * @return		hash function pointer (or NULL)
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const hashFunction* hashFunctionGet(int index)
 	/*@*/;
 
@@ -355,7 +359,7 @@ const hashFunction* hashFunctionGet(int index)
  * @return		hash function pointer (or NULL)
  */
 /*@-exportlocal@*/
-BEEDLLAPI /*@observer@*/ /*@null@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/
 const hashFunction* hashFunctionFind(const char* name)
 	/*@*/;
 /*@=exportlocal@*/
@@ -366,7 +370,7 @@ const hashFunction* hashFunctionFind(const char* name)
  * hash function. Otherwise, use "sha1".
  * @return		hash function pointer (or NULL)
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const hashFunction* hashFunctionDefault(void)
 	/*@*/;
 
@@ -390,51 +394,51 @@ extern "C" {
 /** \ingroup HASH_m
  * Initialize a hashFunction instance.
  */
-BEEDLLAPI
+BEECRYPTAPI
 int hashFunctionContextInit(hashFunctionContext* ctxt, /*@observer@*/ /*@dependent@*/ const hashFunction* hash)
 	/*@modifies ctxt->algo, ctxt->param */;
 
 /** \ingroup HASH_m
  * Destroy a hashFunction instance.
  */
-BEEDLLAPI
+BEECRYPTAPI
 int hashFunctionContextFree(/*@special@*/ hashFunctionContext* ctxt)
 	/*@releases ctxt->param @*/
 	/*@modifies ctxt->algo, ctxt->param */;
 
 /** \ingroup HASH_m
  */
-BEEDLLAPI
+BEECRYPTAPI
 int hashFunctionContextReset(hashFunctionContext* ctxt)
 	/*@modifies ctxt */;
 
 /** \ingroup HASH_m
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int hashFunctionContextUpdate(hashFunctionContext* ctxt, const byte* data, int size)
 	/*@modifies ctxt */;
 
 /** \ingroup HASH_m
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int hashFunctionContextUpdateMC(hashFunctionContext* ctxt, const memchunk* m)
 	/*@modifies ctxt */;
 
 /** \ingroup HASH_m
  */
-BEEDLLAPI
+BEECRYPTAPI
 int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mp32number* n)
 	/*@modifies ctxt */;
 
 /** \ingroup HASH_m
  */
-BEEDLLAPI
+BEECRYPTAPI
 int hashFunctionContextDigest(hashFunctionContext* ctxt, mp32number* dig)
 	/*@modifies ctxt, *dig */;
 
 /** \ingroup HASH_m
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mp32number* match)
 	/*@modifies ctxt */;
 
@@ -529,7 +533,7 @@ extern "C" {
  * Return the number of keyed hash functions available.
  * @return		number of keyed hash functions available
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int keyedHashFunctionCount(void)
 	/*@*/;
 
@@ -538,7 +542,7 @@ int keyedHashFunctionCount(void)
  * @param index		keyed hash function index
  * @return		keyed hash function pointer (or NULL)
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const keyedHashFunction* keyedHashFunctionGet(int index)
 	/*@*/;
 
@@ -548,7 +552,7 @@ const keyedHashFunction* keyedHashFunctionGet(int index)
  * @return		keyed hash function pointer (or NULL)
  */
 /*@-exportlocal@*/
-BEEDLLAPI /*@observer@*/ /*@null@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/
 const keyedHashFunction* keyedHashFunctionFind(const char* name)
 	/*@*/;
 /*@=exportlocal@*/
@@ -559,7 +563,7 @@ const keyedHashFunction* keyedHashFunctionFind(const char* name)
  * hash function. Otherwise, use "hmacsha1".
  * @return		keyed hash function pointer
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const keyedHashFunction* keyedHashFunctionDefault(void)
 	/*@*/;
 
@@ -583,14 +587,14 @@ extern "C" {
 /** \ingroup HMAC_m
  * Initialize a keyedHashFunction instance.
  */
-BEEDLLAPI
+BEECRYPTAPI
 int keyedHashFunctionContextInit(keyedHashFunctionContext* ctxt, /*@observer@*/ /*@dependent@*/ const keyedHashFunction* mac)
 	/*@modifies ctxt->algo, ctxt->param @*/;
 
 /** \ingroup HMAC_m
  * Destroy a keyedHashFunction instance.
  */
-BEEDLLAPI
+BEECRYPTAPI
 int keyedHashFunctionContextFree(/*@special@*/ keyedHashFunctionContext* ctxt)
 	/*@uses ctxt->algo @*/
 	/*@releases ctxt->param @*/
@@ -598,43 +602,43 @@ int keyedHashFunctionContextFree(/*@special@*/ keyedHashFunctionContext* ctxt)
 
 /** \ingroup HMAC_m
  */
-BEEDLLAPI
+BEECRYPTAPI
 int keyedHashFunctionContextSetup(keyedHashFunctionContext* ctxt, const uint32* key, int keybits)
 	/*@modifies ctxt @*/;
 
 /** \ingroup HMAC_m
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int keyedHashFunctionContextReset(keyedHashFunctionContext* ctxt)
 	/*@modifies ctxt @*/;
 
 /** \ingroup HMAC_m
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int keyedHashFunctionContextUpdate(keyedHashFunctionContext* ctxt, const byte* data, int size)
 	/*@modifies ctxt @*/;
 
 /** \ingroup HMAC_m
  */
-BEEDLLAPI
+BEECRYPTAPI
 int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext* ctxt, const memchunk* m)
 	/*@modifies ctxt @*/;
 
 /** \ingroup HMAC_m
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mp32number* n)
 	/*@modifies ctxt @*/;
 
 /** \ingroup HMAC_m
  */
-BEEDLLAPI
+BEECRYPTAPI
 int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, mp32number* dig)
 	/*@modifies ctxt, *dig @*/;
 
 /** \ingroup HMAC_m
  */
-BEEDLLAPI
+BEECRYPTAPI
 int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mp32number* match)
 	/*@modifies ctxt @*/;
 
@@ -774,7 +778,7 @@ extern "C" {
  * Return the number of blockciphers available.
  * @return		number of blockciphers available
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int blockCipherCount(void)
 	/*@*/;
 
@@ -783,7 +787,7 @@ int blockCipherCount(void)
  * @param index		blockcipher index
  * @return		blockcipher pointer (or NULL)
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const blockCipher* blockCipherGet(int index)
 	/*@*/;
 
@@ -793,7 +797,7 @@ const blockCipher* blockCipherGet(int index)
  * @return		blockcipher pointer (or NULL)
  */
 /*@-exportlocal@*/
-BEEDLLAPI /*@observer@*/ /*@null@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/
 const blockCipher* blockCipherFind(const char* name)
 	/*@*/;
 /*@=exportlocal@*/
@@ -804,7 +808,7 @@ const blockCipher* blockCipherFind(const char* name)
  * Otherwise, use "blowfish".
  * @return		blockcipher pointer
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
+BEECRYPTAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const blockCipher* blockCipherDefault(void)
 	/*@*/;
 
@@ -828,26 +832,26 @@ extern "C" {
 /** \ingroup BC_m
  * Initialize a blockCipher instance.
  */
-BEEDLLAPI
+BEECRYPTAPI
 int blockCipherContextInit(blockCipherContext* ctxt, /*@observer@*/ /*@dependent@*/ const blockCipher* ciph)
 	/*@modifies ctxt->algo, ctxt->param @*/;
 
 /** \ingroup BC_m
  */
-BEEDLLAPI
+BEECRYPTAPI
 int blockCipherContextSetup(blockCipherContext* ctxt, const uint32* key, int keybits, cipherOperation op)
 	/*@modifies ctxt @*/;
 
 /** \ingroup BC_m
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int blockCipherContextSetIV(blockCipherContext* ctxt, const uint32* iv)
 	/*@modifies ctxt @*/;
 
 /** \ingroup BC_m
  * Destroy a blockCipher instance.
  */
-BEEDLLAPI
+BEECRYPTAPI
 int blockCipherContextFree(/*@special@*/ blockCipherContext* ctxt)
 	/*@releases ctxt->param @*/
 	/*@modifies ctxt->algo, ctxt->param @*/;

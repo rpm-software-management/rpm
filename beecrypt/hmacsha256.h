@@ -46,12 +46,12 @@ extern "C" {
 
 /** \ingroup HMAC_sha256_m
  */
-/*@observer@*/ /*@checkedstrict@*/ extern BEEDLLAPI const keyedHashFunction hmacsha256;
+/*@observer@*/ /*@checkedstrict@*/ extern BEECRYPTAPI const keyedHashFunction hmacsha256;
 
 /** \ingroup HMAC_sha256_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int hmacsha256Setup (hmacsha256Param* sp, const uint32* key, int keybits)
 	/*@globals sha256 @*/
 	/*@modifies sp @*/;
@@ -60,7 +60,7 @@ int hmacsha256Setup (hmacsha256Param* sp, const uint32* key, int keybits)
 /** \ingroup HMAC_sha256_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int hmacsha256Reset (hmacsha256Param* sp)
 	/*@globals sha256 @*/
 	/*@modifies sp @*/;
@@ -69,7 +69,7 @@ int hmacsha256Reset (hmacsha256Param* sp)
 /** \ingroup HMAC_sha256_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int hmacsha256Update(hmacsha256Param* sp, const byte* data, int size)
 	/*@globals sha256 @*/
 	/*@modifies sp @*/;
@@ -78,7 +78,7 @@ int hmacsha256Update(hmacsha256Param* sp, const byte* data, int size)
 /** \ingroup HMAC_sha256_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int hmacsha256Digest(hmacsha256Param* sp, uint32* data)
 	/*@globals sha256 @*/
 	/*@modifies sp, data @*/;

@@ -36,19 +36,19 @@ extern "C" {
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int rsapri   (const rsakp* kp, const mp32number* m, mp32number* c)
 	/*@modifies c */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 	/*@modifies c */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int rsavrfy  (const rsapk* pk, const mp32number* m, const mp32number* c)
 	/*@*/;
 

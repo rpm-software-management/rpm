@@ -29,12 +29,14 @@
 #include "mp32barrett.h"
 #include "dhaes.h"
 #include "dlkp.h"
+#include "dsa.h"
 #include "elgamal.h"
 #include "fips180.h"
 #include "hmacmd5.h"
 #include "md5.h"
 #include "rsa.h"
 #include "sha256.h"
+#include "mp32.h"
 
 #if HAVE_STDLIB_H
 # include <stdlib.h>
@@ -113,6 +115,40 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 
 	mp32nfree(&y);
 
+	return rc;
+}
+
+/*@unused@*/ static int testVectorDSA(const dlkp_p* keypair)
+	/*@*/
+{
+	int rc = 0;
+
+	randomGeneratorContext rngc;
+
+	/*@-nullpass -modobserver @*/
+	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
+	/*@=nullpass =modobserver @*/
+	{
+		mp32number digest, r, s;
+
+		mp32nzero(&digest);
+		mp32nzero(&r);
+		mp32nzero(&s);
+
+		mp32nsize(&digest, 5);
+
+		rngc.rng->next(rngc.param, digest.data, digest.size);
+
+		dsasign(&keypair->param.p, &keypair->param.q, &keypair->param.g, &rngc, &digest, &keypair->x, &r, &s);
+
+		rc = dsavrfy(&keypair->param.p, &keypair->param.q, &keypair->param.g, &digest, &keypair->y, &r, &s);
+
+		mp32nfree(&digest);
+		mp32nfree(&r);
+		mp32nfree(&s);
+
+		randomGeneratorContextFree(&rngc);
+	}
 	return rc;
 }
 
@@ -300,19 +336,6 @@ static int testVectorDHAES(const dlkp_p* keypair)
 	}
 	return -1;
 }
-
-#if 0
-/*@unused@*/ static int testVectorDSA(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{
-	int rc = 0;
-
-	randomGeneratorContext rngc;
-
-	return rc;
-}
-#endif
 
 /*@unused@*/ static int testVectorDLDP(void)
 	/*@*/
@@ -732,61 +755,104 @@ static void testExpMods(void)
 		printf("random generator setup problem\n");
 }
 
-static void testDLParams(void)
+static void testDLAlgorithms(void)
 	/*@globals fileSystem, internalState */
 	/*@modifies fileSystem, internalState */
 {
-	randomGeneratorContext rc;
+	randomGeneratorContext rngc;
+	mp32number hm, r, s;
 	dldp_p dp;
+	dlkp_p kp;
 
 	memset(&rc, 0, sizeof(randomGeneratorContext));
 	memset(&dp, 0, sizeof(dldp_p));
 
+	mp32nzero(&hm);
+	mp32nzero(&r);
+	mp32nzero(&s);
+
+	dldp_pInit(&dp);
+	dlkp_pInit(&kp);
+
 	/*@-nullpass -modobserver @*/
-	if (randomGeneratorContextInit(&rc, randomGeneratorDefault()) == 0)
+	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
 	/*@=nullpass =modobserver @*/
 	{
+		int i;
+
 		#if HAVE_TIME_H
 		double ttime;
 		clock_t tstart, tstop;
 		#endif
-		printf("Generating P (768 bits) Q (512 bits) G with order Q\n");
+		printf("Generating P (1024 bits) Q (160 bits) G with order Q\n");
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
-		(void) dldp_pgoqMake(&dp, &rc, 768 >> 5, 512 >> 5, 1);
+		(void) dldp_pgoqMake(&dp, &rngc, 1024 >> 5, 160 >> 5, 1);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		printf("  done in %.3f seconds\n", ttime);
 		#endif
-		printf("P = "); (void) fflush(stdout); mp32println(dp.p.size, dp.p.modl);
-		printf("Q = "); (void) fflush(stdout); mp32println(dp.q.size, dp.q.modl);
-		printf("G = "); (void) fflush(stdout); mp32println(dp.g.size, dp.g.data);
-		(void) dldp_pFree(&dp);
 
-		printf("Generating P (768 bits) Q (512 bits) G with order (P-1)\n");
+		dlkp_pInit(&kp);
+		printf("Generating keypair\n");
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
-
-		/*@-usereleased -compdef @*/ /* annotate dldp_pgonMake correctly */
-		(void) dldp_pgonMake(&dp, &rc, 768 >> 5, 512 >> 5);
+		dlkp_pPair(&kp, &rngc, &dp);
 		#if HAVE_TIME_H
 		tstop = clock();
 		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
 		printf("  done in %.3f seconds\n", ttime);
 		#endif
-		printf("P = "); (void) fflush(stdout); mp32println(dp.p.size, dp.p.modl);
-		printf("Q = "); (void) fflush(stdout); mp32println(dp.q.size, dp.q.modl);
-		printf("G = "); (void) fflush(stdout); mp32println(dp.g.size, dp.g.data);
-		printf("N = "); (void) fflush(stdout); mp32println(dp.n.size, dp.n.modl);
-		(void) dldp_pFree(&dp);
-		/*@=usereleased =compdef @*/
 
-		/*@-modobserver@*/
-		(void) randomGeneratorContextFree(&rc);
-		/*@=modobserver@*/
+		mp32nsize(&hm, 5);
+		rngc.rng->next(rngc.param, hm.data, hm.size);
+		
+		printf("DSA signing (%d bits)\n", kp.param.p.size << 5);
+		#if HAVE_TIME_H
+		tstart = clock();
+		#endif
+		for (i = 0; i < 100; i++)
+		{
+			dsasign(&kp.param.p, &kp.param.q, &kp.param.g, &rngc, &hm, &kp.x, &r, &s);
+		}
+        #if HAVE_TIME_H
+        tstop = clock();
+        ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
+        printf("  100x in %.3f seconds\n", ttime);
+        #endif
+
+		printf("DSA verification (%d bits)\n", kp.param.p.size << 5);
+		#if HAVE_TIME_H
+		tstart = clock();
+		#endif
+		for (i = 0; i < 100; i++)
+		{
+			dsavrfy(&kp.param.p, &kp.param.q, &kp.param.g, &hm, &kp.y, &r, &s);
+		}
+		#if HAVE_TIME_H
+		tstop = clock();
+		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
+		printf("  100x in %.3f seconds\n", ttime);
+		#endif
+		(void) dlkp_pFree(&kp);
+		(void) dldp_pFree(&dp);
+
+		printf("Generating P (1024 bits) Q (768 bits) G with order (P-1)\n");
+		#if HAVE_TIME_H
+		tstart = clock();
+		#endif
+		(void) dldp_pgonMake(&dp, &rngc, 1024 >> 5, 768 >> 5);
+		#if HAVE_TIME_H
+		tstop = clock();
+		ttime = ((double)(tstop - tstart)) / CLOCKS_PER_SEC;
+		printf("  done in %.3f seconds\n", ttime);
+		#endif
+		(void) dldp_pFree(&dp);
+
+		(void) randomGeneratorContextFree(&rngc);
 	}
 }
 
@@ -826,6 +892,11 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 
 	if (testVectorExpMod(&keypair))
 		printf("ExpMod works!\n");
+	else
+		exit(1);
+
+	if (testVectorDSA(&keypair))
+		printf("DSA works!\n");
 	else
 		exit(1);
 
@@ -930,7 +1001,8 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	testBlockCiphers();
 	testHashFunctions();
 	testExpMods();
-	testDLParams();
+	testDLAlgorithms();
+
 	/*@=modnomods@*/
 
 	if (testVectorMD5())

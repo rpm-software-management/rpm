@@ -47,29 +47,29 @@ extern "C" {
 
 /** \ingroup HASH_sha1_m
  */
-extern BEEDLLAPI const hashFunction sha1;
+extern BEECRYPTAPI const hashFunction sha1;
 
 /** \ingroup HASH_sha1_m
  */
-BEEDLLAPI
+BEECRYPTAPI
 void sha1Process(sha1Param* p)
 	/*@modifies p */;
 
 /** \ingroup HASH_sha1_m
  */
-BEEDLLAPI
+BEECRYPTAPI
 int  sha1Reset  (sha1Param* p)
 	/*@modifies p */;
 
 /** \ingroup HASH_sha1_m
  */
-BEEDLLAPI
+BEECRYPTAPI
 int  sha1Update (sha1Param* p, const byte* data, int size)
 	/*@modifies p */;
 
 /** \ingroup HASH_sha1_m
  */
-BEEDLLAPI
+BEECRYPTAPI
 int  sha1Digest (sha1Param* p, /*@out@*/ uint32* data)
 	/*@modifies p, data */;
 

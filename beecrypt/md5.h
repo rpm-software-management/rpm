@@ -46,12 +46,12 @@ extern "C" {
 
 /** \ingroup HASH_md5_m
  */
-extern BEEDLLAPI const hashFunction md5;
+extern BEECRYPTAPI const hashFunction md5;
 
 /** \ingroup HASH_md5_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 void md5Process(md5Param* p)
 	/*@modifies p @*/;
 /*@=exportlocal@*/
@@ -59,7 +59,7 @@ void md5Process(md5Param* p)
 /** \ingroup HASH_md5_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int md5Reset   (md5Param* p)
 	/*@modifies p @*/;
 /*@=exportlocal@*/
@@ -67,7 +67,7 @@ int md5Reset   (md5Param* p)
 /** \ingroup HASH_md5_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int md5Update  (md5Param* p, const byte* data, int size)
 	/*@modifies p @*/;
 /*@=exportlocal@*/
@@ -75,7 +75,7 @@ int md5Update  (md5Param* p, const byte* data, int size)
 /** \ingroup HASH_md5_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int md5Digest  (md5Param* p, /*@out@*/ uint32* data)
 	/*@modifies p, data @*/;
 /*@=exportlocal@*/

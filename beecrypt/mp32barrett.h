@@ -44,19 +44,19 @@ extern "C" {
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32bzero(/*@out@*/ mp32barrett* b)
 	/*@modifies b->size, b->modl, b->mu @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32binit(mp32barrett* b, uint32 size)
 	/*@modifies b->size, b->modl, b->mu @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32bfree(/*@special@*/ mp32barrett* b)
 	/*@uses b->size, b->modl @*/
 	/*@releases b->modl @*/
@@ -64,100 +64,100 @@ void mp32bfree(/*@special@*/ mp32barrett* b)
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32bcopy(mp32barrett* b, const mp32barrett* copy)
 	/*@modifies b->size, b->modl, b->mu @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32bset(mp32barrett* b, uint32 size, const uint32* data)
 	/*@modifies b->size, b->modl, b->mu @*/;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 void mp32bsethex(mp32barrett* b, const char* hex)
 	/*@modifies b->size, b->modl, b->mu @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32bsubone(const mp32barrett* b, uint32* result)
 	/*@modifies result @*/;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 void mp32bneg(const mp32barrett* b, const uint32* xdata, uint32* result)
 	/*@modifies result @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32bmu_w(mp32barrett* b, /*@out@*/ uint32* wksp)
 	/*@modifies b->size, b->modl, b->mu, wksp @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32brnd_w   (const mp32barrett* b, randomGeneratorContext* rc, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
 	/*@modifies result, wksp @*/;
 
 /**
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 void mp32brndodd_w(const mp32barrett* b, randomGeneratorContext* rc, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
 	/*@modifies result, wksp @*/;
 /*@=exportlocal@*/
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32brndinv_w(const mp32barrett* b, randomGeneratorContext* rc, /*@out@*/ uint32* result, /*@out@*/ uint32* inverse, /*@out@*/ uint32* wksp)
 	/*@modifies result, inverse, wksp @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32bmod_w(const mp32barrett* b, const uint32* xdata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
 	/*@modifies result, wksp @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32baddmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
 	/*@modifies result, wksp @*/;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 void mp32bsubmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
 	/*@modifies result, wksp @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32bmulmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32 ysize, const uint32* ydata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
 	/*@modifies result, wksp @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32bsqrmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
 	/*@modifies result, wksp @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32bpowmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32 psize, const uint32* pdata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
 	/*@modifies result, wksp @*/;
 
 /**
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 void mp32bpowmodsld_w(const mp32barrett* b, const uint32* slide, uint32 psize, const uint32* pdata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
 	/*@globals internalState @*/
 	/*@modifies result, wksp, internalState @*/;
@@ -165,13 +165,13 @@ void mp32bpowmodsld_w(const mp32barrett* b, const uint32* slide, uint32 psize, c
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32btwopowmod_w(const mp32barrett* b, uint32 psize, const uint32* pdata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
 	/*@modifies result, wksp @*/;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 int  mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
 	/*@modifies result, wksp @*/;
 
@@ -180,53 +180,53 @@ int  mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, /*@out@
  * @todo Simultaneous multiple exponentiation, for use in dsa and elgamal
  * signature verification.
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 void mp32bsm2powmod(const mp32barrett* b, const uint32*, const uint32*, const uint32*, const uint32*);
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 void mp32bsm3powmod(const mp32barrett* b, const uint32*, const uint32*, const uint32*, const uint32*, const uint32*, const uint32*);
 #endif	/* NOTYET */
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int  mp32bpprime_w(const mp32barrett* b, randomGeneratorContext* rc, int t, /*@out@*/ uint32* wksp)
 	/*@modifies wksp @*/;
 
 /**
  * @note Takes mp32number as parameter.
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32bnrnd(const mp32barrett* b, randomGeneratorContext* rc, mp32number* result)
 	/*@modifies result @*/;
 
 /**
  * @note Takes mp32number as parameter.
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 void mp32bnmulmod(const mp32barrett* b, const mp32number* x, const mp32number* y, mp32number* result)
 	/*@modifies result @*/;
 
 /**
  * @note Takes mp32number as parameter.
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 void mp32bnsqrmod(const mp32barrett* b, const mp32number* x, mp32number* result)
 	/*@modifies result @*/;
 
 /**
  * @note Takes mp32number as parameter.
  */
-BEEDLLAPI
+BEECRYPTAPI
 void mp32bnpowmod   (const mp32barrett* b, const mp32number* x, const mp32number* pow, mp32number* y)
 	/*@modifies y @*/;
 
 /**
  * @note Takes mp32number as parameter.
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 void mp32bnpowmodsld(const mp32barrett* b, const uint32* slide, const mp32number* pow, mp32number* y)
 	/*@modifies y @*/;
 

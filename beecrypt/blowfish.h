@@ -49,12 +49,12 @@ extern "C" {
 
 /** \ingroup BC_blowfish_m
  */
-extern const BEEDLLAPI blockCipher blowfish;
+extern const BEECRYPTAPI blockCipher blowfish;
 
 /** \ingroup BC_blowfish_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int blowfishSetup  (blowfishParam* bp, const uint32* key, int keybits, cipherOperation op)
 	/*@modifies bp */;
 /*@=exportlocal@*/
@@ -62,7 +62,7 @@ int blowfishSetup  (blowfishParam* bp, const uint32* key, int keybits, cipherOpe
 /** \ingroup BC_blowfish_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int blowfishSetIV  (blowfishParam* bp, const uint32* iv)
 	/*@modifies bp */;
 /*@=exportlocal@*/
@@ -70,7 +70,7 @@ int blowfishSetIV  (blowfishParam* bp, const uint32* iv)
 /** \ingroup BC_blowfish_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int blowfishEncrypt(blowfishParam* bp, uint32* dst, const uint32* src)
 	/*@modifies bp, dst */;
 /*@=exportlocal@*/
@@ -78,7 +78,7 @@ int blowfishEncrypt(blowfishParam* bp, uint32* dst, const uint32* src)
 /** \ingroup BC_blowfish_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int blowfishDecrypt(blowfishParam* bp, uint32* dst, const uint32* src)
 	/*@modifies bp, dst */;
 /*@=exportlocal@*/
@@ -86,7 +86,7 @@ int blowfishDecrypt(blowfishParam* bp, uint32* dst, const uint32* src)
 /** \ingroup BC_blowfish_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int blowfishECBEncrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src)
 	/*@modifies bp, dst */;
 /*@=exportlocal@*/
@@ -94,7 +94,7 @@ int blowfishECBEncrypt(blowfishParam* bp, int count, uint32* dst, const uint32* 
 /** \ingroup BC_blowfish_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int blowfishECBDecrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src)
 	/*@modifies bp, dst */;
 /*@=exportlocal@*/
@@ -102,7 +102,7 @@ int blowfishECBDecrypt(blowfishParam* bp, int count, uint32* dst, const uint32* 
 /** \ingroup BC_blowfish_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int blowfishCBCEncrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src)
 	/*@modifies bp, dst */;
 /*@=exportlocal@*/
@@ -110,7 +110,7 @@ int blowfishCBCEncrypt(blowfishParam* bp, int count, uint32* dst, const uint32* 
 /** \ingroup BC_blowfish_m
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int blowfishCBCDecrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src)
 	/*@modifies bp, dst */;
 /*@=exportlocal@*/

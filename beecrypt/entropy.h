@@ -39,16 +39,16 @@ extern "C" {
 #endif
 
 #if WIN32
-BEEDLLAPI
+BEECRYPTAPI
 int entropy_provider_setup(HINSTANCE);
-BEEDLLAPI
+BEECRYPTAPI
 int entropy_provider_cleanup(void);
 
-BEEDLLAPI
+BEECRYPTAPI
 int entropy_wavein(uint32* data, int size);
-BEEDLLAPI
+BEECRYPTAPI
 int entropy_console(uint32* data, int size);
-BEEDLLAPI
+BEECRYPTAPI
 int entropy_wincrypt(uint32* data, int size);
 #else
 

@@ -132,134 +132,134 @@ extern "C" {
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int encodeByte(javabyte b, /*@out@*/ byte* data)
 	/*@modifies data */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int encodeShort(javashort s, /*@out@*/ byte* data)
 	/*@modifies data */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int encodeInt(javaint i, /*@out@*/ byte* data)
 	/*@modifies data */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int encodeLong(javalong l, /*@out@*/ byte* data)
 	/*@modifies data */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int encodeChar(javachar c, /*@out@*/ byte* data)
 	/*@modifies data */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int encodeFloat(javafloat f, /*@out@*/ byte* data)
 	/*@modifies data */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int encodeDouble(javadouble d, /*@out@*/ byte* data)
 	/*@modifies data */;
 
 /**
  */
-BEEDLLAPI
+BEECRYPTAPI
 int encodeInts(const javaint* i, /*@out@*/ byte* data, int count)
 	/*@modifies data */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int encodeIntsPartial(const javaint* i, /*@out@*/ byte* data, int bytecount)
 	/*@modifies data */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int encodeChars(const javachar* c, /*@out@*/ byte* data, int count)
 	/*@modifies data */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int decodeByte(/*@out@*/ javabyte* b, const byte* data)
 	/*@modifies b */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int decodeShort(/*@out@*/ javashort* s, const byte* data)
 	/*@modifies s */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int decodeInt(/*@out@*/ javaint* i, const byte* data)
 	/*@modifies i */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int decodeLong(/*@out@*/ javalong* l, const byte* data)
 	/*@modifies l */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int decodeChar(/*@out@*/ javachar* c, const byte* data)
 	/*@modifies c */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int decodeFloat(/*@out@*/ javafloat* f, const byte* data)
 	/*@modifies f */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int decodeDouble(/*@out@*/ javadouble* d, const byte* data)
 	/*@modifies d */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int decodeInts(/*@out@*/ javaint* i, const byte* data, int count)
 	/*@modifies i */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int decodeIntsPartial(/*@out@*/ javaint* i, const byte* data, int bytecount)
 	/*@modifies i */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int decodeChars(/*@out@*/ javachar* c, const byte* data, int count)
 	/*@modifies c */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int writeByte(javabyte b, FILE* ofp)
 	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int writeShort(javashort s, FILE* ofp)
 	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
@@ -267,7 +267,7 @@ int writeShort(javashort s, FILE* ofp)
 /**
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int writeInt(javaint i, FILE* ofp)
 	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
@@ -275,7 +275,7 @@ int writeInt(javaint i, FILE* ofp)
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int writeLong(javalong l, FILE* ofp)
 	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
@@ -283,7 +283,7 @@ int writeLong(javalong l, FILE* ofp)
 /**
  */
 /*@-exportlocal@*/
-BEEDLLAPI
+BEECRYPTAPI
 int writeChar(javachar c, FILE* ofp)
 	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
@@ -291,63 +291,63 @@ int writeChar(javachar c, FILE* ofp)
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int writeInts(const javaint* i, FILE* ofp, int count)
 	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int writeChars(const javachar* c, FILE* ofp, int count)
 	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int readByte(/*@out@*/ javabyte* b, FILE* ifp)
 	/*@globals fileSystem @*/
 	/*@modifies b, ifp, fileSystem */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int readShort(/*@out@*/ javashort* s, FILE* ifp)
 	/*@globals fileSystem @*/
 	/*@modifies s, ifp, fileSystem */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int readInt(/*@out@*/ javaint* i, FILE* ifp)
 	/*@globals fileSystem @*/
 	/*@modifies i, ifp, fileSystem */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int readLong(/*@out@*/ javalong* l, FILE* ifp)
 	/*@globals fileSystem @*/
 	/*@modifies l, ifp, fileSystem */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int readChar(/*@out@*/ javachar* c, FILE* ifp)
 	/*@globals fileSystem @*/
 	/*@modifies c, ifp, fileSystem */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int readInts(/*@out@*/ javaint* i, FILE* ifp, int count)
 	/*@globals fileSystem @*/
 	/*@modifies i, ifp, fileSystem */;
 
 /**
  */
-BEEDLLAPI /*@unused@*/
+BEECRYPTAPI /*@unused@*/
 int readChars(/*@out@*/ javachar* c, FILE* ifp, int count)
 	/*@globals fileSystem @*/
 	/*@modifies c, ifp, fileSystem */;
