@@ -8,8 +8,9 @@
 #include <rpmmacro.h>
 
 struct fsinfo {
-    /*@only@*/ const char * mntPoint;
-    dev_t dev;
+/*@only@*/ const char * mntPoint;	/*!< path to mount point. */
+    dev_t dev;				/*!< devno for mount point. */
+    int rdonly;				/*!< is mount point read only? */
 };
 
 /*@only@*/ /*@null@*/ static struct fsinfo * filesystems = NULL;
@@ -45,12 +46,18 @@ void freeFilesystems(void)
  */
 int mntctl(int command, int size, char *buffer);
 
+/**
+ * Get information for mounted file systems.
+ * @todo determine rdonly for non-linux file systems.
+ * @return		0 on success, 1 on error
+ */
 static int getFilesystemList(void)
 {
     int size;
     void * buf;
     struct vmount * vm;
     struct stat sb;
+    int rdonly = 0;
     int num;
     int fsnameLength;
     int i;
@@ -100,6 +107,7 @@ static int getFilesystemList(void)
 	}
 	
 	filesystems[i].dev = sb.st_dev;
+	filesystems[i].rdonly = rdonly;
 
 	/* goto the next vmount structure: */
 	vm = (struct vmount *)((char *)vm + vm->vmt_length);
@@ -113,12 +121,18 @@ static int getFilesystemList(void)
 
 #else	/* HAVE_MNTCTL */
 
+/**
+ * Get information for mounted file systems.
+ * @todo determine rdonly for non-linux file systems.
+ * @return		0 on success, 1 on error
+ */
 static int getFilesystemList(void)
 {
     int numAlloced = 10;
     struct stat sb;
     int i;
-    char * mntdir;
+    const char * mntdir;
+    int rdonly = 0;
 #   if GETMNTENT_ONE || GETMNTENT_TWO
     our_mntent item;
     FILE * mtab;
@@ -149,8 +163,12 @@ static int getFilesystemList(void)
 	    /* this is Linux */
 	    our_mntent * itemptr = getmntent(mtab);
 	    if (!itemptr) break;
-	    item = *itemptr;
+	    item = *itemptr;	/* structure assignment */
 	    mntdir = item.our_mntdir;
+#if defined(MNTOPT_RO)
+	    if (hasmntopt(itemptr, MNTOPT_RO) != NULL)
+		rdonly = 1;
+#endif
 #	elif GETMNTENT_TWO
 	    /* Solaris, maybe others */
 	    if (getmntent(mtab, &item)) break;
@@ -177,6 +195,7 @@ static int getFilesystemList(void)
 
 	filesystems[numFilesystems-1].dev = sb.st_dev;
 	filesystems[numFilesystems-1].mntPoint = xstrdup(mntdir);
+	filesystems[numFilesystems-1].rdonly = rdonly;
     }
 
 #   if GETMNTENT_ONE || GETMNTENT_TWO
@@ -187,6 +206,7 @@ static int getFilesystemList(void)
 
     filesystems[numFilesystems].dev = 0;
     filesystems[numFilesystems].mntPoint = NULL;
+    filesystems[numFilesystems].rdonly = 0;
 
     fsnames = xcalloc((numFilesystems + 1), sizeof(*fsnames));
     for (i = 0; i < numFilesystems; i++)

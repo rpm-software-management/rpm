@@ -147,6 +147,13 @@ const char * rpmProblemString(rpmProblem prob)
 			prob->str1);
 	break;
 
+      case RPMPROB_DISKNODES:
+	sprintf(buf, _("installing package %s-%s-%s needs %ld inodes on the %s"
+		       " filesystem"), name, version, release, 
+			prob->ulong1,
+			prob->str1);
+	break;
+
       case RPMPROB_BADPRETRANS:
 	sprintf(buf, _("package %s-%s-%s pre-transaction syscall(s): %s failed: %s"),
 			name, version, release, 

@@ -742,9 +742,7 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 	if (i < fileCount) {
 	    char *t = alloca(strlen(realSpecDir) +
 			 strlen(files[i].cpioPath) + 5);
-	    strcpy(t, realSpecDir);
-	    strcat(t, "/");
-	    strcat(t, files[i].cpioPath);
+	    (void)stpcpy(stpcpy(stpcpy(t,realSpecDir), "/"), files[i].cpioPath);
 	    files[i].relativePath = t;
 	    specFileIndex = i;
 	} else {
@@ -785,14 +783,10 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 	   different filesystems, but we only do this on v1 source packages
 	   so I don't really care much. */
 	instSpecFile = alloca(strlen(realSourceDir) + strlen(specFile) + 2);
-	strcpy(instSpecFile, realSourceDir);
-	strcat(instSpecFile, "/");
-	strcat(instSpecFile, specFile);
+	(void)stpcpy(stpcpy(stpcpy(instSpecFile,realSourceDir), "/"), specFile);
 
 	correctSpecFile = alloca(strlen(realSpecDir) + strlen(specFile) + 2);
-	strcpy(correctSpecFile, realSpecDir);
-	strcat(correctSpecFile, "/");
-	strcat(correctSpecFile, specFile);
+	(void)stpcpy(stpcpy(stpcpy(correctSpecFile,realSpecDir), "/"), specFile);
 
 	xfree(specFile);
 
@@ -922,7 +916,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     int fileCount = 0;
     int type, count;
     struct fileInfo * files;
-    char * fileStates = NULL;
     int i;
     Header oldH = NULL;
     int otherOffset = 0;
@@ -1025,8 +1018,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 
 	      case FA_ALTNAME:
 		newpath = alloca(strlen(files[i].relativePath) + 20);
-		strcpy(newpath, files[i].relativePath);
-		strcat(newpath, ".rpmnew");
+		(void)stpcpy(stpcpy(newpath, files[i].relativePath), ".rpmnew");
 		rpmError(RPMMESS_ALTNAME, _("warning: %s created as %s"),
 			files[i].relativePath, newpath);
 		files[i].relativePath = newpath;
@@ -1062,8 +1054,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 
 	    if (ext && access(files[i].relativePath, F_OK) == 0) {
 		newpath = alloca(strlen(files[i].relativePath) + 20);
-		strcpy(newpath, files[i].relativePath);
-		strcat(newpath, ext);
+		(void)stpcpy(stpcpy(newpath, files[i].relativePath), ext);
 		rpmError(RPMMESS_BACKUP, _("warning: %s saved as %s"),
 			files[i].relativePath, newpath);
 
@@ -1080,7 +1071,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 
 	    if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, &type,
 				(void **) &archiveSizePtr, &count))
-	    archiveSizePtr = NULL;
+		archiveSizePtr = NULL;
 
 	    if (notify) {
 		(void)notify(h, RPMCALLBACK_INST_START, 0, 0,
@@ -1095,19 +1086,20 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	    }
 	}
 
-	fileStates = xmalloc(sizeof(*fileStates) * fileCount);
-	for (i = 0; i < fileCount; i++)
-	    fileStates[i] = files[i].state;
+	{  char *fileStates = xmalloc(sizeof(*fileStates) * fileCount);
+	    for (i = 0; i < fileCount; i++)
+		fileStates[i] = files[i].state;
 
-	headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fileStates,
+	    headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fileStates,
 			fileCount);
 
-	free(fileStates);
+	    free(fileStates);
+	}
 	if (fileMem) freeFileMemory(fileMem);
 	fileMem = NULL;
     } else if (transFlags & RPMTRANS_FLAG_JUSTDB) {
 	if (headerGetEntry(h, RPMTAG_BASENAMES, NULL, NULL, &fileCount)) {
-	    fileStates = xmalloc(sizeof(*fileStates) * fileCount);
+	    char * fileStates = xmalloc(sizeof(*fileStates) * fileCount);
 	    memset(fileStates, RPMFILE_STATE_NORMAL, fileCount);
 	    headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fileStates,
 			    fileCount);

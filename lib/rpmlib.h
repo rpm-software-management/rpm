@@ -665,7 +665,8 @@ typedef enum rpmProblemType_e {
     RPMPROB_FILE_CONFLICT,/*!< file ... from install of ... conflicts with file from package ... */
     RPMPROB_OLDPACKAGE,	/*!< package ... (which is newer than ...) is already installed */
     RPMPROB_DISKSPACE,	/*!< installing package ... needs ... on the ...  filesystem */
-    RPMPROB_BADPRETRANS	/*!< (unused) */
+    RPMPROB_DISKNODES,	/*!< installing package ... needs ... on the ...  filesystem */
+    RPMPROB_BADPRETRANS	/*!< (unimplemented) */
  } rpmProblemType;
 
 /**
@@ -941,7 +942,8 @@ typedef enum rpmprobFilterFlags_e {
     RPMPROB_FILTER_REPLACENEWFILES= (1 << 4),
     RPMPROB_FILTER_REPLACEOLDFILES= (1 << 5),
     RPMPROB_FILTER_OLDPACKAGE	= (1 << 6),
-    RPMPROB_FILTER_DISKSPACE	= (1 << 7)
+    RPMPROB_FILTER_DISKSPACE	= (1 << 7),
+    RPMPROB_FILTER_DISKNODES	= (1 << 8)
 } rpmprobFilterFlags;
 
 /** \ingroup rpmtrans

@@ -12,6 +12,8 @@
 		(katzj@linuxpower.org) (#17672).
 	- handle possible db3 dependency on -lpthread more gracefully.
 	- fix: more (possible) xstrdup side effects.
+	- detect rdonly linux file systems.
+	- check available inodes as well as blocks on mounted file systems.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
