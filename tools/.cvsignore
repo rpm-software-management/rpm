@@ -11,3 +11,4 @@ rpmheader
 rpmlead
 rpmputtext
 rpmsignature
+.libs
