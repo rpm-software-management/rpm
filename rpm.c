@@ -680,6 +680,7 @@ int main(int argc, char ** argv) {
 	      case 'c':
 	      case 'p':
 	      case 'l':
+	      case 's':
 		break;
 	      default:
 		argerror(errString);
@@ -1044,9 +1045,10 @@ int main(int argc, char ** argv) {
     if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && shortCircuit) 
 	argerror(_("--short-circuit may only be used during package building"));
 
-    if (shortCircuit && (buildChar != 'c') && (buildChar != 'i')) {
-	argerror(_("--short-circuit may only be used with -bc, -bi, -tc "
-			"or -ti"));
+    if (shortCircuit && (buildChar != 'c') && (buildChar != 'i')
+		     && (buildChar !=' s')) {
+	argerror(_("--short-circuit may only be used with -bc, -bi, -bs, -tc "
+			"-ti, or -ts"));
     }
 
     if (oldPackage && !(installFlags & RPMINSTALL_UPGRADE))
@@ -1209,6 +1211,9 @@ int main(int argc, char ** argv) {
 	    
 	  case 'l':
 	    buildAmount |= RPMBUILD_FILECHECK;
+	    break;
+	  case 's':
+	    buildAmount |= RPMBUILD_PACKAGESOURCE;
 	    break;
 	}
 
