@@ -13,12 +13,15 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/popt \
 	@INCPATH@
 
-EXTRA_DIST = getdate.y
+EXTRA_DIST = getdate.y tgi.c rpmgi.c rpmgi.h
+
+EXTRA_PROGRAMS = tgi
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	misc.h rpmcli.h rpmlib.h \
-	rpmal.h rpmds.h rpmfi.h rpmps.h rpmsx.h rpmte.h rpmts.h stringbuf.h
+	rpmal.h rpmds.h rpmfi.h rpmps.h rpmsx.h rpmte.h rpmts.h \
+	stringbuf.h
 noinst_HEADERS = \
 	cpio.h fsm.h manifest.h psm.h rpmlead.h signature.h rpmlock.h
 
@@ -119,3 +122,6 @@ tplatform: tplatform.o librpm.la
 
 trhn: trhn.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
+
+tgi_SOURCES = tgi.c rpmgi.c
+tgi_LDADD = librpm.la
