@@ -1519,8 +1519,7 @@ main(int argc, char *argv[])
 	dumpMacroTable(NULL, NULL);
 
 	if ((fp = fopen(testfile, "r")) != NULL) {
-		while(fgets(buf, sizeof(buf), fp)) {
-			buf[strlen(buf)-1] = '\0';
+		while(rdcl(buf, sizeof(buf), fp, 1)) {
 			x = expandMacros(NULL, NULL, buf, sizeof(buf));
 			fprintf(stderr, "%d->%s\n", x, buf);
 			memset(buf, 0, sizeof(buf));
@@ -1529,7 +1528,6 @@ main(int argc, char *argv[])
 	}
 
 	while(rdcl(buf, sizeof(buf), stdin, 1)) {
-		buf[strlen(buf)-1] = '\0';
 		x = expandMacros(NULL, NULL, buf, sizeof(buf));
 		fprintf(stderr, "%d->%s\n <-\n", x, buf);
 		memset(buf, 0, sizeof(buf));
