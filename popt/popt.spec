@@ -5,7 +5,7 @@ Release: 1
 Copyright: LGPL
 Group: Libraries
 Source: ftp://ftp.redhat.com/pub/redhat/code/popt/popt-%{version}.tar.gz
-BuildRoot: /var/tmp/popt.root
+BuildRoot: /var/tmp/%{name}root
 
 %description
 Popt is a C library for pasing command line parameters. It was heavily
@@ -30,9 +30,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 rm -rf $RPM_BUILD_ROOT
 
 %files
-%attr(0644, root, root) /usr/lib/libpopt.a
-%attr(0644, root, root) /usr/include/popt.h
-%attr(0644, root, root) /usr/man/man3/popt.3
+%defattr(-,root,root)
+/usr/lib/libpopt.a
+/usr/include/popt.h
+/usr/man/man3/popt.3
 
 %changelog
 * Thu Dec 10 1998 Michael Johnson <johnsonm@redhat.com>

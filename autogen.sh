@@ -2,8 +2,8 @@
 
 autoheader
 autoconf
-echo timestamp > stamp-h.in
-(cd popt; autoconf; echo timestamp > stamp-h.in)
+#echo timestamp > stamp-h.in
+#(cd popt; autoconf; echo timestamp > stamp-h.in)
 
 if [ "$1" = "--noconfigure" ]; then 
     exit 0;

@@ -7,9 +7,12 @@ Makefile
 configure
 config.h
 config.log
+config.guess
 config.cache
-config.satus
 config.status
 stamp-h
 stamp-h.in
 test1
+libtool
+ltconfig
+ltmain.sh

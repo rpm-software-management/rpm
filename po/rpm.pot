@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-01-21 14:10-0500\n"
+"POT-Creation-Date: 1999-01-22 10:28-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -175,6 +175,35 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
+#: ../convertdb.c:37
+msgid "RPM database already exists"
+msgstr ""
+
+#: ../convertdb.c:42
+msgid "Old db is missing"
+msgstr ""
+
+#: ../convertdb.c:53
+msgid "failed to create RPM database /var/lib/rpm"
+msgstr ""
+
+#: ../convertdb.c:59
+msgid "Old db is corrupt"
+msgstr ""
+
+#: ../convertdb.c:68
+#, c-format
+msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
+msgstr ""
+
+#: ../convertdb.c:200
+msgid "rpmconvert: no arguments expected"
+msgstr ""
+
+#: ../convertdb.c:206
+msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
+msgstr ""
+
 #: ../ftp.c:567
 msgid "Success"
 msgstr ""
@@ -330,6 +359,19 @@ msgstr ""
 #: ../install.c:469
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
+msgstr ""
+
+#: ../oldrpmdb.c:454
+#, c-format
+msgid "pulling %s from database\n"
+msgstr ""
+
+#: ../oldrpmdb.c:461
+msgid "package not found in database"
+msgstr ""
+
+#: ../oldrpmdb.c:522
+msgid "no copyright!\n"
 msgstr ""
 
 #: ../rpm.c:148
@@ -1347,6 +1389,14 @@ msgstr ""
 msgid "no arguments given for verify"
 msgstr ""
 
+#: ../rpm2cpio.c:42
+msgid "argument is not an RPM package\n"
+msgstr ""
+
+#: ../rpm2cpio.c:46
+msgid "error reading header from package\n"
+msgstr ""
+
 #: ../url.c:104
 #, c-format
 msgid "Password for %s@%s: "
@@ -1423,56 +1473,6 @@ msgstr ""
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: ../rpm2cpio.c:42
-msgid "argument is not an RPM package\n"
-msgstr ""
-
-#: ../rpm2cpio.c:46
-msgid "error reading header from package\n"
-msgstr ""
-
-#: ../convertdb.c:37
-msgid "RPM database already exists"
-msgstr ""
-
-#: ../convertdb.c:42
-msgid "Old db is missing"
-msgstr ""
-
-#: ../convertdb.c:53
-msgid "failed to create RPM database /var/lib/rpm"
-msgstr ""
-
-#: ../convertdb.c:59
-msgid "Old db is corrupt"
-msgstr ""
-
-#: ../convertdb.c:68
-#, c-format
-msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-msgstr ""
-
-#: ../convertdb.c:200
-msgid "rpmconvert: no arguments expected"
-msgstr ""
-
-#: ../convertdb.c:206
-msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
-msgstr ""
-
-#: ../oldrpmdb.c:454
-#, c-format
-msgid "pulling %s from database\n"
-msgstr ""
-
-#: ../oldrpmdb.c:461
-msgid "package not found in database"
-msgstr ""
-
-#: ../oldrpmdb.c:522
-msgid "no copyright!\n"
-msgstr ""
-
 #: ../build/build.c:86 ../build/pack.c:263
 msgid "Unable to open temp file"
 msgstr ""
@@ -1487,7 +1487,7 @@ msgstr ""
 msgid "Exec of %s failed (%s)"
 msgstr ""
 
-#: ../build/build.c:137
+#: ../build/build.c:139
 #, c-format
 msgid "Bad exit status from %s (%s)"
 msgstr ""
@@ -3104,6 +3104,21 @@ msgstr ""
 
 #: ../lib/signature.c:583 ../lib/signature.c:652
 msgid "Invalid signature spec in rc file"
+msgstr ""
+
+#: ../lib/transaction.c:570
+#, c-format
+msgid "relocating %s to %s\n"
+msgstr ""
+
+#: ../lib/transaction.c:576
+#, c-format
+msgid "excluding %s\n"
+msgstr ""
+
+#: ../lib/transaction.c:663
+#, c-format
+msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #: ../lib/uninstall.c:51
