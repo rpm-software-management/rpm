@@ -7,7 +7,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: log.c,v 11.52 2001/04/20 17:35:47 bostic Exp ";
+static const char revid[] = "Id: log.c,v 11.56 2001/07/05 14:24:45 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -373,8 +373,8 @@ __log_find(dblp, find_first, valp, statusp)
 		 * Names of the form log\.[0-9]* are reserved for DB.  Other
 		 * names sharing LFPREFIX, such as "log.db", are legal.
 		 */
-		for (c = names[cnt] + sizeof(LFPREFIX); *c != '\0'; c++)
-			if (!isdigit(*c))
+		for (c = names[cnt] + sizeof(LFPREFIX) - 1; *c != '\0'; c++)
+			if (!isdigit((int)*c))
 				break;
 		if (*c != '\0')
 			continue;
@@ -395,8 +395,11 @@ __log_find(dblp, find_first, valp, statusp)
 		 * Take note of whether the log file logval is
 		 * an old version or incompletely initialized.
 		 */
-		if ((ret = __log_valid(dblp, clv, 1, &status)) != 0)
+		if ((ret = __log_valid(dblp, clv, 1, &status)) != 0) {
+			__db_err(dblp->dbenv, "Invalid log file: %s: %s",
+			    names[cnt], db_strerror(ret));
 			goto err;
+		}
 		switch (status) {
 		case DB_LV_INCOMPLETE:
 			/*
@@ -652,6 +655,8 @@ log_stat(dbenv, statp)
 
 	stats->st_cur_file = region->lsn.file;
 	stats->st_cur_offset = region->lsn.offset;
+	stats->st_disk_file = region->s_lsn.file;
+	stats->st_disk_offset = region->s_lsn.offset;
 
 	R_UNLOCK(dbenv, &dblp->reginfo);
 
@@ -713,12 +718,9 @@ __log_region_destroy(dbenv, infop)
 	DB_ENV *dbenv;
 	REGINFO *infop;
 {
-	LOG *region;
+	__db_shlocks_destroy(infop, (REGMAINT *)R_ADDR(infop,
+	    ((LOG *)R_ADDR(infop, infop->rp->primary))->maint_off));
 
 	COMPQUIET(dbenv, NULL);
-	region = R_ADDR(infop, infop->rp->primary);
-
-	__db_shlocks_destroy(infop,
-	    (REGMAINT *)R_ADDR(infop, region->maint_off));
-	return;
+	COMPQUIET(infop, NULL);
 }

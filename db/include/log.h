@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2001
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: log.h,v 11.25 2001/04/25 19:06:39 margo Exp 
+ * Id: log.h,v 11.26 2001/07/05 18:41:03 bostic Exp 
  */
 
 #ifndef _LOG_H_
@@ -65,7 +65,6 @@ struct __db_log {
 	DB_LSN	  c_lsn;		/* Cursor: current LSN. */
 	DBT	  c_dbt;		/* Cursor: return DBT structure. */
 	DB_FH	  c_fh;			/* Cursor: file handle. */
-	FILE	  *c_fp;		/* Cursor: file pointer. */
 	u_int32_t c_off;		/* Cursor: previous record offset. */
 	u_int32_t c_len;		/* Cursor: current record length. */
 	u_int32_t r_file;		/* Cursor: current read file */

@@ -36,7 +36,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: log_rec.c,v 11.59 2001/05/08 19:00:54 bostic Exp ";
+static const char revid[] = "Id: log_rec.c,v 11.60 2001/06/12 01:49:05 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -489,7 +489,6 @@ __db_fileid_to_db(dbenv, dbpp, ndx, inc)
 	int inc;
 {
 	DB_LOG *logp;
-	DB *dbp;
 	FNAME *fname;
 	int ret;
 	char *name;
@@ -507,7 +506,7 @@ __db_fileid_to_db(dbenv, dbpp, ndx, inc)
 	 */
 	if (ndx >= logp->dbentry_cnt ||
 	    (!logp->dbentry[ndx].deleted &&
-	    (dbp = TAILQ_FIRST(&logp->dbentry[ndx].dblist)) == NULL)) {
+	    TAILQ_FIRST(&logp->dbentry[ndx].dblist) == NULL)) {
 		if (F_ISSET(logp, DBLOG_RECOVER)) {
 			ret = ENOENT;
 			goto err;
