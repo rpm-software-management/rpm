@@ -414,10 +414,13 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 				    fputs("normal        ", stdout); break;
 				  case RPMFILE_STATE_REPLACED:
 				    fputs("replaced      ", stdout); break;
+				  case RPMFILE_STATE_NETSHARED:
+				    fputs("net shared    ", stdout); break;
 				  case RPMFILE_STATE_NOTINSTALLED:
 				    fputs("not installed ", stdout); break;
 				  default:
-				    fputs("(unknown)     ", stdout);
+				    printf("(unknown %3d) ", 
+					  fileStatesList[i]);
 				}
 			    } else {
 				fputs(    "(no state)    ", stdout);
