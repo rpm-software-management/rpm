@@ -259,6 +259,7 @@ main(int argc, char ** argv)
       if (!h)
 	continue;
       compressFilelist(h);
+      providePackageNVR(h);
       headerNVR(h, &name, &version, &release);
       mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
       rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, version);
