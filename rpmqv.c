@@ -232,7 +232,7 @@ static void printBanner(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    (void) puts(_("Copyright (C) 1998-2000 - Red Hat, Inc."));
+    (void) puts(_("Copyright (C) 1998-2002 - Red Hat, Inc."));
     (void) puts(_("This program may be freely redistributed under the terms of the GNU GPL"));
 }
 

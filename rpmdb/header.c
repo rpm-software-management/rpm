@@ -2,7 +2,7 @@
  * \file lib/header.c
  */
 
-/* RPM - Copyright (C) 1995-2000 Red Hat Software */
+/* RPM - Copyright (C) 1995-2002 Red Hat Software */
 
 /* Data written to file descriptors is in network byte order.    */
 /* Data read from file descriptors is expected to be in          */

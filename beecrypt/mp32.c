@@ -1130,6 +1130,10 @@ void mp32unpack(uint32 size, uint8* bytes, const uint32* bits)
 #ifndef ASM_MP32PRINT
 void mp32print(register FILE * fp, register uint32 xsize, register const uint32* xdata)
 {
+	if (xdata == NULL)
+	 	return;
+	if (fp == NULL)
+		fp = stderr;
 	while (xsize--)
 		fprintf(fp, "%08x", *(xdata++));
 	(void) fflush(fp);
@@ -1139,6 +1143,10 @@ void mp32print(register FILE * fp, register uint32 xsize, register const uint32*
 #ifndef ASM_MP32PRINTLN
 void mp32println(register FILE * fp, register uint32 xsize, register const uint32* xdata)
 {
+	if (xdata == NULL)
+	 	return;
+	if (fp == NULL)
+		fp = stderr;
 	while (xsize--)
 		fprintf(fp, "%08x", *(xdata++));
 	fprintf(fp, "\n");

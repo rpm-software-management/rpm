@@ -560,12 +560,12 @@ int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
 
 if (_debug && _print)
 fprintf(stderr, "   hash[%u] -- %s\n", plen, pgpHexStr(p, plen));
-	/*@-mods@*/
+/*@-mods@*/
 	if (_digp && _digp->pubkey_algo == 0) {
-	    _digp->hashlen = plen;
-	    _digp->hash = memcpy(xmalloc(plen), p, plen);
+	    _digp->hashlen = sizeof(*v) + plen;
+	    _digp->hash = memcpy(xmalloc(_digp->hashlen), v, _digp->hashlen);
 	}
-	/*@=mods@*/
+/*@=mods@*/
 	(void) pgpPrtSubType(p, plen);
 	p += plen;
 
@@ -1014,6 +1014,12 @@ struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
 	/*@=branchstate@*/
 	dig->md5ctx = NULL;
 	dig->md5 = _free(dig->md5);
+
+	/*@-branchstate@*/
+	if (dig->hdrsha1ctx != NULL)
+	    (void) rpmDigestFinal(dig->hdrsha1ctx, NULL, NULL, 0);
+	/*@=branchstate@*/
+	dig->hdrsha1ctx = NULL;
 
 	/*@-branchstate@*/
 	if (dig->sha1ctx != NULL)

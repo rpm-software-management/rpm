@@ -210,6 +210,11 @@ static rpmRC readPackageHeaders(FD_t fd,
 }
 #endif
 
+/*@unchecked@*/
+static unsigned char header_magic[8] = {
+        0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
+};
+
 int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
 		const char * fn, Header * hdrp)
 {
@@ -326,6 +331,7 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
     switch (ts->sigtag) {
     case RPMSIGTAG_DSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
+rpmMessage(RPMMESS_DEBUG, _("========== Header DSA signature\n"));
 	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
 	/*@fallthrough@*/
     case RPMSIGTAG_SHA1:
@@ -335,8 +341,10 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
 
 	/*@-branchstate@*/
 	if (headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)) {
-	    ts->dig->sha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(ts->dig->sha1ctx, uh, uhc);
+	    ts->dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	    (void) rpmDigestUpdate(ts->dig->hdrsha1ctx, header_magic, sizeof(header_magic));
+	    ts->dig->nbytes += sizeof(header_magic);
+	    (void) rpmDigestUpdate(ts->dig->hdrsha1ctx, uh, uhc);
 	    ts->dig->nbytes += uhc;
 	    uh = headerFreeData(uh, uht);
 	}
@@ -346,6 +354,7 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
+rpmMessage(RPMMESS_DEBUG, _("========== Package DSA/RSA signature\n"));
 	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
 	/*@fallthrough@*/
     case RPMSIGTAG_MD5:

@@ -434,16 +434,16 @@ void mp32ndivmod(/*@out@*/ uint32* result, uint32 xsize, const uint32* xdata, ui
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mp32print(FILE * fp, uint32 xsize, const uint32* xdata)
+void mp32print(/*@null@*/ FILE * fp, uint32 xsize, /*@null@*/ const uint32* xdata)
 	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@modifies *fp, fileSystem @*/;
 
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mp32println(FILE * fp, uint32 xsize, const uint32* xdata)
+void mp32println(/*@null@*/ FILE * fp, uint32 xsize, /*@null@*/ const uint32* xdata)
 	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@modifies *fp, fileSystem @*/;
 
 #ifdef __cplusplus
 }

@@ -88,6 +88,7 @@
 	- add Pubkey index, using signer id as binary key.
 	- display pubkeys in hex when debugging db access.
 	- retrieve pubkey(s) from rpmdb, not from detached signature file.
+	- add header DSA signature.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

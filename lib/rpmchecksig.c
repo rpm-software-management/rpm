@@ -141,6 +141,8 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
     const char *sigtarget = NULL;
     char tmprpm[1024+1];
     Header sig = NULL;
+    void * uh = NULL;
+    int_32 uht, uhc;
     int res = EXIT_FAILURE;
     rpmRC rc;
     
@@ -189,20 +191,19 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
 	/* Both fd and ofd are now closed. sigtarget contains tempfile name. */
 	/* ASSERT: fd == NULL && ofd == NULL */
 
+	/* Dump the immutable region (if present). */
+	if (headerGetEntry(sig, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
+	    Header nh = headerCopyLoad(uh);
+	    uh = headerFreeData(uh, uht);
+	    if (nh == NULL)
+		    goto exit;
+	    sig = headerFree(sig, NULL);
+	    sig = headerLink(nh, NULL);
+	    nh = headerFree(nh, NULL);
+	}
+
 	/* Toss the current signatures and recompute if not --addsign. */
 	if (qva->qva_mode != RPMSIGN_ADD_SIGNATURE) {
-	    void * uh = NULL;
-	    int_32 uht, uhc;
-
-	    /* Dump the immutable region (if present). */
-	    if (headerGetEntry(sig, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
-		Header nh = headerCopyLoad(uh);
-		if (nh == NULL)
-		    goto exit;
-		sig = headerFree(sig, NULL);
-		sig = headerLink(nh, NULL);
-		nh = headerFree(nh, NULL);
-	    }
 
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_SIZE);
 	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
@@ -210,20 +211,19 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_2);
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_MD5);
 	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
-#ifdef	NOTNOW
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_SHA1);
 	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
 
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_PGP5);
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_PGP);
-	    (void) headerRemoveEntry(sig, RPMSIGTAG_GPG);
-#endif
 	}
 
+	/* If gpg/pgp is configured, replace the signature. */
 	if ((sigtype = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
 	    (void) headerRemoveEntry(sig, sigtype);
 	    (void) rpmAddSignature(sig, sigtarget, sigtype, qva->passPhrase);
 	}
+
+	/* Reallocate the signature into one contiguous region. */
+	sig = headerReload(sig, RPMTAG_HEADERSIGNATURES);
 
 	/* Write the lead/signature of the output rpm */
 	strcpy(tmprpm, rpm);
@@ -435,8 +435,13 @@ bottom:
     return res;
 }
 
+/*@unchecked@*/
+static unsigned char header_magic[8] = {
+        0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
+};
+
 /**
- * @todo If the GPG key was known aavailable, the md5 digest could be skipped.
+ * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
 static int readFile(FD_t fd, int_32 sigtag, const char * fn, pgpDig dig)
 	/*@globals fileSystem, internalState @*/
@@ -448,54 +453,59 @@ static int readFile(FD_t fd, int_32 sigtag, const char * fn, pgpDig dig)
     int rc = 1;
     int i;
 
-    switch (sigtag) {
-    case RPMSIGTAG_GPG:
-    /*@-type@*/ /* FIX: cast? */
-	fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-    /*@=type@*/
-	/*@fallthrough@*/
-    case RPMSIGTAG_PGP5:	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-    case RPMSIGTAG_MD5:
-    /*@-type@*/ /* FIX: cast? */
-	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-    /*@=type@*/
-	break;
-    case RPMSIGTAG_LEMD5_2:
-    case RPMSIGTAG_LEMD5_1:
-    case RPMSIGTAG_SIZE:
-    default:
-	break;
-    }
     dig->nbytes = 0;
 
+    /* Read the header from the package. */
+    {	Header h = headerRead(fd, HEADER_MAGIC_YES);
+
+	if (h == NULL) {
+	    rpmError(RPMERR_FREAD, _("%s: headerRead failed\n"), fn);
+	    goto exit;
+	}
+
+	dig->nbytes += headerSizeof(h, HEADER_MAGIC_YES);
+
+	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
+	    void * uh;
+	    int_32 uht, uhc;
+	
+	    if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)
+	    ||   uh == NULL)
+	    {
+		h = headerFree(h, NULL);
+		rpmError(RPMERR_FREAD, _("%s: headerGetEntry failed\n"), fn);
+		goto exit;
+	    }
+	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	    (void) rpmDigestUpdate(dig->hdrsha1ctx, header_magic, sizeof(header_magic));
+	    (void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
+	    uh = headerFreeData(uh, uht);
+	}
+	h = headerFree(h, NULL);
+    }
+
+    /* Read the payload from the package. */
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	dig->nbytes += count;
-
     if (count < 0) {
 	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
 	goto exit;
     }
 
+    /* XXX Steal the digest-in-progress from the file handle. */
     /*@-type@*/ /* FIX: cast? */
     for (i = fd->ndigests - 1; i >= 0; i--) {
 	FDDIGEST_t fddig = fd->digests + i;
 	if (fddig->hashctx == NULL)
 	    continue;
 	if (fddig->hashalgo == PGPHASHALGO_MD5) {
-	    /*@-branchstate@*/
-	    if (dig->md5ctx != NULL)
-		(void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
-	    /*@=branchstate@*/
+assert(dig->md5ctx == NULL);
 	    dig->md5ctx = fddig->hashctx;
 	    fddig->hashctx = NULL;
 	    continue;
 	}
 	if (fddig->hashalgo == PGPHASHALGO_SHA1) {
-	    /*@-branchstate@*/
-	    if (dig->sha1ctx != NULL)
-		(void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
-	    /*@=branchstate@*/
+assert(dig->sha1ctx == NULL);
 	    dig->sha1ctx = fddig->hashctx;
 	    fddig->hashctx = NULL;
 	    continue;
@@ -563,12 +573,17 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 	    sigtag = RPMSIGTAG_PGP;
 	else if (headerIsEntry(sig, RPMSIGTAG_MD5))
 	    sigtag = RPMSIGTAG_MD5;
-#ifdef	NOTYET
 	else if (headerIsEntry(sig, RPMSIGTAG_SHA1))
 	    sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
-#endif
 	else
 	    sigtag = 0;			/* XXX never happens */
+
+	if (headerIsEntry(sig, RPMSIGTAG_PGP)
+	||  headerIsEntry(sig, RPMSIGTAG_PGP5)
+	||  headerIsEntry(sig, RPMSIGTAG_MD5))
+	    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+	if (headerIsEntry(sig, RPMSIGTAG_GPG))
+	    fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
 
 	ts->dig = pgpNewDig();
 
@@ -600,16 +615,26 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 	    case RPMSIGTAG_PGP:
 		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
 		     continue;
-if (rpmIsDebug())
-fprintf(stderr, "========================= Package RSA Signature\n");
+rpmMessage(RPMMESS_DEBUG, _("========== Package RSA signature\n"));
 		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
 		/*@switchbreak@*/ break;
+	    case RPMSIGTAG_SHA1:
+		if (!(qva->qva_flags & VERIFY_DIGEST)) 
+		     continue;
+		/* XXX Don't bother with header sha1 if header dsa. */
+		if (sigtag == RPMSIGTAG_DSA)
+		    continue;
+		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_DSA:
+		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
+		     continue;
+rpmMessage(RPMMESS_DEBUG, _("========== Header DSA signature\n"));
+		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
+		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_GPG:
 		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
 		     continue;
-if (rpmIsDebug())
-fprintf(stderr, "========================= Package DSA Signature\n");
+rpmMessage(RPMMESS_DEBUG, _("========== Package DSA signature\n"));
 		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_LEMD5_2:
@@ -624,12 +649,6 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 		if (sigtag == RPMSIGTAG_PGP)
 		    continue;
 		/*@switchbreak@*/ break;
-	    case RPMSIGTAG_SHA1:
-#ifdef	NOTYET
-		if (!(qva->qva_flags & VERIFY_DIGEST)) 
-		     continue;
-		/*@switchbreak@*/ break;
-#endif
 	    default:
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;

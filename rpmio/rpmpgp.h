@@ -10,8 +10,6 @@
  *	Copyright (C) The Internet Society (1998).  All Rights Reserved.
  */
 
-#undef PACKAGE
-#undef VERSION
 #include "base64.h"
 #include "dsa.h"
 #include "endianness.h"
@@ -975,15 +973,21 @@ struct pgpDig_s {
     struct pgpDigParams_s signature;
     struct pgpDigParams_s pubkey;
 
-    size_t nbytes;			/*!< No. bytes of plain text. */
+    size_t nbytes;		/*!< No. bytes of plain text. */
 
-/*@only@*/ /*@null@*/ DIGEST_CTX sha1ctx;/*!< (dsa) sha1 hash context. */
-/*@only@*/ /*@null@*/ void * sha1;	/*!< (dsa) V3 signature hash. */
-    size_t sha1len;			/*!< (dsa) V3 signature hash length. */
+/*@only@*/ /*@null@*/
+    DIGEST_CTX sha1ctx;		/*!< (dsa) sha1 hash context. */
+/*@only@*/ /*@null@*/
+    DIGEST_CTX hdrsha1ctx;	/*!< (dsa) header sha1 hash context. */
+/*@only@*/ /*@null@*/
+    void * sha1;		/*!< (dsa) V3 signature hash. */
+    size_t sha1len;		/*!< (dsa) V3 signature hash length. */
 
-/*@only@*/ /*@null@*/ DIGEST_CTX md5ctx;/*!< (rsa) md5 hash context. */
-/*@only@*/ /*@null@*/ void * md5;	/*!< (rsa) V3 signature hash. */
-    size_t md5len;			/*!< (rsa) V3 signature hash length. */
+/*@only@*/ /*@null@*/
+    DIGEST_CTX md5ctx;		/*!< (rsa) md5 hash context. */
+/*@only@*/ /*@null@*/
+    void * md5;			/*!< (rsa) V3 signature hash. */
+    size_t md5len;		/*!< (rsa) V3 signature hash length. */
 
     /* DSA parameters. */
     mp32barrett p;

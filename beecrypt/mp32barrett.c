@@ -907,6 +907,7 @@ int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* 
 }
 #else
 
+/*@unchecked@*/
 static int _debug = 0;
 
 #undef	FULL_BINARY_EXTENDED_GCD
@@ -955,6 +956,7 @@ int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* 
 #endif
 
 if (_debug < 0) {
+/*@-modfilesys@*/
 fprintf(stderr, "       u: "), mp32println(stderr, ysize, u);
 fprintf(stderr, "       v: "), mp32println(stderr, ysize, v);
 fprintf(stderr, "      u1: "), mp32println(stderr, ysize, u1);
@@ -967,6 +969,7 @@ fprintf(stderr, "      v1: "), mp32println(stderr, ysize, v1);
 fprintf(stderr, "      v2: "), mp32println(stderr, ysize, v2);
 #endif
 fprintf(stderr, "      v3: "), mp32println(stderr, ysize, v3);
+/*@=modfilesys@*/
 }
 
 	if (mp32odd(ysize, u)) {
@@ -976,7 +979,7 @@ fprintf(stderr, "      v3: "), mp32println(stderr, ysize, v3);
 		mp32subw(ysize, t2, 1);
 #endif
 		mp32zero(ysize, t3);
-		mp32sub(ysize, t3, v);
+		(void) mp32sub(ysize, t3, v);
 		goto Y4;
 	} else {
 		mp32setw(ysize, t1, 1);
@@ -990,13 +993,13 @@ fprintf(stderr, "      v3: "), mp32println(stderr, ysize, v3);
 	    do {
 #ifdef	FULL_BINARY_EXTENDED_GCD
 		if (mp32odd(ysize, t1) ||  mp32odd(ysize, t2)) {
-			mp32add(ysize, t1, v);
-			mp32sub(ysize, t2, u);
+			(void) mp32add(ysize, t1, v);
+			(void) mp32sub(ysize, t2, u);
 		}
 #else
 		/* XXX this assumes v is odd, true for DSA inversion. */
 		if (mp32odd(ysize, t1))
-			mp32add(ysize, t1, v);
+			(void) mp32add(ysize, t1, v);
 #endif
 
 		mp32sdivtwo(ysize, t1);
@@ -1006,11 +1009,13 @@ fprintf(stderr, "      v3: "), mp32println(stderr, ysize, v3);
 		mp32sdivtwo(ysize, t3);
 Y4:
 if (_debug < 0) {
+/*@-modfilesys@*/
 fprintf(stderr, "-->Y4 t3: "), mp32println(stderr, ysize, t3);
 #ifdef	FULL_BINARY_EXTENDED_GCD
 fprintf(stderr, "      t2: "), mp32println(stderr, ysize, t2);
 #endif
 fprintf(stderr, "      t1: "), mp32println(stderr, ysize, t1);
+/*@=modfilesys@*/
 }
 	    } while (mp32even(ysize, t3));
 
@@ -1022,54 +1027,60 @@ fprintf(stderr, "      t1: "), mp32println(stderr, ysize, t1);
 #endif
 		mp32setx(ysize, u3, ysize, t3);
 if (_debug < 0) {
+/*@-modfilesys@*/
 fprintf(stderr, "-->Y5 u1: "), mp32println(stderr, ysize, u1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
 fprintf(stderr, "      u2: "), mp32println(stderr, ysize, u2);
 #endif
 fprintf(stderr, "      u3: "), mp32println(stderr, ysize, u3);
+/*@=modfilesys@*/
 }
 	    } else {
 		mp32setx(ysize, v1, ysize, v);
-		mp32sub(ysize, v1, t1);
+		(void) mp32sub(ysize, v1, t1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
 		mp32setx(ysize, v2, ysize, u);
 		mp32neg(ysize, v2);
-		mp32sub(ysize, v2, t2);
+		(void) mp32sub(ysize, v2, t2);
 #endif
 		mp32zero(ysize, v3);
-		mp32sub(ysize, v3, t3);
+		(void) mp32sub(ysize, v3, t3);
 if (_debug < 0) {
+/*@-modfilesys@*/
 fprintf(stderr, "-->Y5 v1: "), mp32println(stderr, ysize, v1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
 fprintf(stderr, "      v2: "), mp32println(stderr, ysize, v2);
 #endif
 fprintf(stderr, "      v3: "), mp32println(stderr, ysize, v3);
+/*@=modfilesys@*/
 }
 	    }
 
 	    /* Y6. Subtract. */
 	    mp32setx(ysize, t1, ysize, u1);
-	    mp32sub(ysize, t1, v1);
+	    (void) mp32sub(ysize, t1, v1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
 	    mp32setx(ysize, t2, ysize, u2);
-	    mp32sub(ysize, t2, v2);
+	    (void) mp32sub(ysize, t2, v2);
 #endif
 	    mp32setx(ysize, t3, ysize, u3);
-	    mp32sub(ysize, t3, v3);
+	    (void) mp32sub(ysize, t3, v3);
 
 	    if (*t1 & 0x80000000) {
-		mp32add(ysize, t1, v);
+		(void) mp32add(ysize, t1, v);
 #ifdef	FULL_BINARY_EXTENDED_GCD
-		mp32sub(ysize, t2, u);
+		(void) mp32sub(ysize, t2, u);
 #endif
 	    }
 
 if (_debug < 0) {
+/*@-modfilesys@*/
 fprintf(stderr, "-->Y6 t1: "), mp32println(stderr, ysize, t1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
 fprintf(stderr, "      t2: "), mp32println(stderr, ysize, t2);
 #endif
 fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
+/*@=modfilesys@*/
 }
 
 	} while (mp32nz(ysize, t3));
@@ -1079,11 +1090,13 @@ fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
 
 	if (result) {
 		while (--k > 0)
-			mp32add(ysize, u1, u1);
+			(void) mp32add(ysize, u1, u1);
 		mp32setx(b->size, result, ysize, u1);
 	}
 
 if (_debug) {
+/*@-modfilesys@*/
+if (result)
 fprintf(stderr, "=== EXIT: "), mp32println(stderr, b->size, result);
 fprintf(stderr, "      u1: "), mp32println(stderr, ysize, u1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
@@ -1100,6 +1113,7 @@ fprintf(stderr, "      t1: "), mp32println(stderr, ysize, t1);
 fprintf(stderr, "      t2: "), mp32println(stderr, ysize, t2);
 #endif
 fprintf(stderr, "      t3: "), mp32println(stderr, ysize, t3);
+/*@=modfilesys@*/
 }
 
 	return 1;

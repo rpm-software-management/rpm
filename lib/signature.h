@@ -46,7 +46,7 @@ Header rpmNewSignature(void)
 	/*@*/;
 
 /** \ingroup signature
- * Read (and verify header+archive size) signature header.
+ * Read (and verify header+payload size) signature header.
  * If an old-style signature is found, we emulate a new style one.
  * @param fd		file handle
  * @retval headerp	address of (signature) header (or NULL)
@@ -69,40 +69,51 @@ int rpmWriteSignature(FD_t fd, Header h)
 	/*@modifies fd, h, fileSystem @*/;
 
 /** \ingroup signature
- *  Generate a signature of data in file, insert in header.
+ * Generate signature(s) from a header+payload file, save in signature header.
+ * @param sig		signature header
+ * @param file		header+payload file name
+ * @param sigTag	type of signature(s) to add
+ * @param passPhrase	private key pass phrase
+ * @return		0 on success, -1 on failure
  */
-int rpmAddSignature(Header h, const char * file,
+int rpmAddSignature(Header sig, const char * file,
 		    int_32 sigTag, /*@null@*/ const char * passPhrase)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem @*/
-	/*@modifies h, rpmGlobalMacroContext, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies sig, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /******************************************************************/
 
-/* Possible actions for rpmLookupSignatureType() */
-#define RPMLOOKUPSIG_QUERY	0	/* Lookup type in effect          */
-#define RPMLOOKUPSIG_DISABLE	1	/* Disable (--sign was not given) */
-#define RPMLOOKUPSIG_ENABLE	2	/* Re-enable %_signature          */
+/**
+ *  Possible actions for rpmLookupSignatureType()
+ */
+#define RPMLOOKUPSIG_QUERY	0	/*!< Lookup type in effect          */
+#define RPMLOOKUPSIG_DISABLE	1	/*!< Disable (--sign was not given) */
+#define RPMLOOKUPSIG_ENABLE	2	/*!< Re-enable %_signature          */
 
 /** \ingroup signature
- * Return type of signature in effect for building.
+ * Return type of signature needed for signing/building.
+ * @param action	enable/disable/query action
+ * @return		sigTag to use, 0 if none, -1 on error
  */
 int rpmLookupSignatureType(int action)
-	/*@globals rpmGlobalMacroContext,
-		internalState @*/
+	/*@globals rpmGlobalMacroContext, internalState @*/
 	/*@modifies rpmGlobalMacroContext, internalState @*/;
 
 /** \ingroup signature
- *  Read a pass phrase from the user.
+ * Read a pass phrase using getpass(3), confirm with gpg/pgp helper binaries.
+ * @param prompt	user prompt
+ * @param sigTag	signature type/tag
+ * @return		pass phrase
  */
-/*@null@*/ char * rpmGetPassPhrase(const char *prompt, const int sigTag)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem @*/
-	/*@modifies rpmGlobalMacroContext,
-		fileSystem @*/;
+/*@null@*/ char * rpmGetPassPhrase(/*@null@*/ const char * prompt,
+		const int sigTag)
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup signature
- *  Return path to pgp executable of given type, or NULL when not found.
+ * Return path to pgp executable of given type, or NULL when not found.
+ * @retval pgpVer	pgp version
+ * @return		path to pgp executable
  */
 /*@-exportlocal -redecl@*/
 /*@null@*/ const char * rpmDetectPGPVersion(

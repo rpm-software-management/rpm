@@ -44,6 +44,7 @@ extern void regfree (/*@only@*/ regex_t *preg)
 /*@access dbiIndexItem@*/
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/
+/*@access pgpDig@*/
 
 /*@unchecked@*/
 static int _debug = 0;
@@ -2610,7 +2611,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 			ssize_t pktlen;
 
 			if (b64decode(rpmvals[i], (void **)&pkt, &pktlen))
-			    continue;
+			    /*@innercontinue@*/ continue;
 			(void) pgpPrtPkts(pkt, pktlen, dig, 0);
 			memcpy(bin, dig->pubkey.signid, 8);
 			pkt = _free(pkt);
@@ -2621,8 +2622,8 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 		    }
 		    /*@fallthrough@*/
 		default:
-		    vallen = strlen(rpmvals[i]);
 		    valp = rpmvals[i];
+		    vallen = strlen(rpmvals[i]);
 		    stringvalued = 1;
 		    /*@switchbreak@*/ break;
 		}
@@ -2979,7 +2980,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 			ssize_t pktlen;
 
 			if (b64decode(rpmvals[i], (void **)&pkt, &pktlen))
-			    continue;
+			    /*@innercontinue@*/ continue;
 			(void) pgpPrtPkts(pkt, pktlen, dig, 0);
 			memcpy(bin, dig->pubkey.signid, 8);
 			pkt = _free(pkt);

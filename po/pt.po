@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-02-10 13:58-0500\n"
+"POT-Creation-Date: 2002-03-06 18:13-0500\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -189,7 +189,8 @@ msgid "RPM version %s\n"
 msgstr "RPM versão %s\n"
 
 #: rpmqv.c:235
-msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
+#, fuzzy
+msgid "Copyright (C) 1998-2002 - Red Hat, Inc."
 msgstr "Copyright (C) 1998-2000 - Red Hat, Inc."
 
 #: rpmqv.c:236
@@ -427,7 +428,7 @@ msgstr "argumentos inesperados no --querytags "
 msgid "no arguments given"
 msgstr "não foram indicados argumentos para a pesquisa"
 
-#: build/build.c:125 build/pack.c:479
+#: build/build.c:125 build/pack.c:483
 msgid "Unable to open temp file.\n"
 msgstr "Não consegui abrir um ficheiro temporário.\n"
 
@@ -774,7 +775,7 @@ msgstr "readRPM: aceder ao %s: %s\n"
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: ler o %s: %s\n"
 
-#: build/pack.c:305 build/pack.c:521
+#: build/pack.c:305 build/pack.c:529
 #, fuzzy, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
@@ -789,81 +790,81 @@ msgstr "readRPM: o %s não é um pacote RPM\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: a ler o cabeçalho do %s\n"
 
-#: build/pack.c:467
+#: build/pack.c:471
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "Não consegui ler o cabeçalho de %s: %s\n"
 
-#: build/pack.c:485
+#: build/pack.c:490
 #, fuzzy
 msgid "Unable to write temp header\n"
 msgstr "Não consegui gravar o cabeçalho de %s: %s\n"
 
-#: build/pack.c:493
+#: build/pack.c:500
 msgid "Bad CSA data\n"
 msgstr "Dados de CSA inválidos\n"
 
-#: build/pack.c:528
+#: build/pack.c:536
 #, fuzzy
 msgid "Unable to write final header\n"
 msgstr "Não consegui gravar o cabeçalho de %s: %s\n"
 
-#: build/pack.c:546
+#: build/pack.c:556
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "A gerar a assinatura: %d\n"
 
-#: build/pack.c:559
+#: build/pack.c:574
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "Não consegui ler o cabeçalho de %s: %s\n"
 
-#: build/pack.c:567
+#: build/pack.c:582
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Não consigo aceder ao %s: %s\n"
 
-#: build/pack.c:603 lib/psm.c:1444
+#: build/pack.c:618 lib/psm.c:1444
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Não consegui gravar o pacote: %s\n"
 
-#: build/pack.c:618
+#: build/pack.c:633
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Não consegui abrir o sigtarget %s: %s\n"
 
-#: build/pack.c:628
+#: build/pack.c:644
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Não consegui ler o cabeçalho de %s: %s\n"
 
-#: build/pack.c:642
+#: build/pack.c:658
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Não consegui gravar o cabeçalho de %s: %s\n"
 
-#: build/pack.c:652
+#: build/pack.c:668
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Não consegui ler o conteúdo de %s: %s\n"
 
-#: build/pack.c:658
+#: build/pack.c:674
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Não consegui escrever o conteúdo de %s: %s\n"
 
-#: build/pack.c:683 lib/psm.c:1725
+#: build/pack.c:699 lib/psm.c:1725
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Gravei: %s\n"
 
-#: build/pack.c:750
+#: build/pack.c:766
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Não consigo gerar o ficheiro de saída para o pacote %s: %s\n"
 
-#: build/pack.c:767
+#: build/pack.c:783
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "não consigo criar o %s: %s\n"
@@ -1606,41 +1607,51 @@ msgstr "%s criado como %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "erro ao criar o ficheiro temporário %s\n"
 
-#: lib/package.c:167 lib/package.c:238
+#: lib/package.c:179 lib/package.c:255
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "a versão 1 dos pacotes não é suportada por esta versão do RPM\n"
 
-#: lib/package.c:188 lib/package.c:246
+#: lib/package.c:200 lib/package.c:263
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "só os pacotes com versão <= 4 são suportados por esta versão do RPM\n"
 
-#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:522
+#: lib/package.c:241 lib/rpmchecksig.c:161 lib/rpmchecksig.c:541
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ":%s: o readLead falhou\n"
 
-#: lib/package.c:230
+#: lib/package.c:247
 #, fuzzy, c-format
 msgid "%s: bad magic\n"
 msgstr "Código de integridade inválido"
 
-#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:538
+#: lib/package.c:272 lib/rpmchecksig.c:179 lib/rpmchecksig.c:557
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: o rpmReadSignature falhou\n"
 
-#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:543
+#: lib/package.c:276 lib/rpmchecksig.c:183 lib/rpmchecksig.c:562
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Nenhuma assinatura disponível\n"
 
-#: lib/package.c:284
+#: lib/package.c:304 lib/rpmchecksig.c:462
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr ":%s: o readLead falhou\n"
 
-#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:466
+#. Parse the parameters from the OpenPGP packets that will be needed.
+#: lib/package.c:334 lib/rpmchecksig.c:631
+msgid "========== Header DSA signature\n"
+msgstr ""
+
+#. Parse the parameters from the OpenPGP packets that will be needed.
+#: lib/package.c:357
+msgid "========== Package DSA/RSA signature\n"
+msgstr ""
+
+#: lib/package.c:366 lib/rpmchecksig.c:110 lib/rpmchecksig.c:491
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
@@ -2376,66 +2387,81 @@ msgstr "ficheiro db inválido %s\n"
 msgid "(added provide)"
 msgstr "%s: %-45s SI (oferecidos pelo db)\n"
 
-#: lib/rpmchecksig.c:49
+#: lib/rpmchecksig.c:51
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: o acesso falhou: %s\n"
 
-#: lib/rpmchecksig.c:61
+#: lib/rpmchecksig.c:63
 msgid "makeTempFile failed\n"
 msgstr "o makeTempFile falhou\n"
 
-#: lib/rpmchecksig.c:101
+#: lib/rpmchecksig.c:104
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: O fwrite falhou: %s\n"
 
-#: lib/rpmchecksig.c:161
-#, c-format
-msgid "%s: Can't sign v1.0 RPM\n"
+#: lib/rpmchecksig.c:166
+#, fuzzy, c-format
+msgid "%s: Can't sign v1 packaging\n"
 msgstr "%s: Não consigo assinar o RPM v1.0\n"
 
-#: lib/rpmchecksig.c:165
-#, c-format
-msgid "%s: Can't re-sign v2.0 RPM\n"
+#: lib/rpmchecksig.c:170
+#, fuzzy, c-format
+msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: não consigo assinar de novo o RPM v2.0\n"
 
-#: lib/rpmchecksig.c:229
+#: lib/rpmchecksig.c:239
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: o writeLead falhou: %s\n"
 
-#: lib/rpmchecksig.c:235
+#: lib/rpmchecksig.c:245
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: o rpmWriteSignature falhou: %s\n"
 
-#: lib/rpmchecksig.c:528
+#: lib/rpmchecksig.c:476
+#, fuzzy, c-format
+msgid "%s: headerGetEntry failed\n"
+msgstr ":%s: o readLead falhou\n"
+
+#: lib/rpmchecksig.c:547
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Nenhuma assinatura disponível (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:725
+#: lib/rpmchecksig.c:618
+#, fuzzy
+msgid "========== Package RSA signature\n"
+msgstr "========== a realizar o tsort nos pacotes\n"
+
+#: lib/rpmchecksig.c:637
+#, fuzzy
+msgid "========== Package DSA signature\n"
+msgstr "========== a realizar o tsort nos pacotes\n"
+
+#: lib/rpmchecksig.c:768
 msgid "NOT OK"
 msgstr "NÃO-OK"
 
-#: lib/rpmchecksig.c:726 lib/rpmchecksig.c:740
+#: lib/rpmchecksig.c:769 lib/rpmchecksig.c:783
 msgid " (MISSING KEYS:"
 msgstr " (FALTAM AS CHAVES:"
 
-#: lib/rpmchecksig.c:728 lib/rpmchecksig.c:742
+#: lib/rpmchecksig.c:771 lib/rpmchecksig.c:785
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:729 lib/rpmchecksig.c:743
+#: lib/rpmchecksig.c:772 lib/rpmchecksig.c:786
 msgid " (UNTRUSTED KEYS:"
 msgstr " (CHAVES SUSPEITAS:"
 
-#: lib/rpmchecksig.c:731 lib/rpmchecksig.c:745
+#: lib/rpmchecksig.c:774 lib/rpmchecksig.c:788
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:739
+#: lib/rpmchecksig.c:782
 msgid "OK"
 msgstr "OK"
 
@@ -2647,140 +2673,140 @@ msgstr "Não consigo ler o %s, a HOME é demasiado grande.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Não consegui abrir o %s para leitura: %s.\n"
 
-#: lib/signature.c:117
+#: lib/signature.c:118
 msgid "file is not regular -- skipping size check\n"
 msgstr "o ficheiro não é normal -- a ignorar a verificação do tamanho\n"
 
-#: lib/signature.c:126
+#: lib/signature.c:127
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr "Esperado um tamanho: %12d = início(%d)+assin.(%d)+'pad'(%d)+dados(%d)\n"
 
-#: lib/signature.c:131
+#: lib/signature.c:132
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "  Tamanho real: %12d\n"
 
-#: lib/signature.c:151
+#: lib/signature.c:152
 msgid "No signature\n"
 msgstr "Sem assinatura\n"
 
-#: lib/signature.c:155
+#: lib/signature.c:156
 msgid "Old PGP signature\n"
 msgstr "Assinatura PGP antiga\n"
 
-#: lib/signature.c:168
+#: lib/signature.c:169
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Assinatura (só interna) antiga! Como é que obteve isto!?\n"
 
-#: lib/signature.c:224
+#: lib/signature.c:225
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Tamanho da assinatura: %d\n"
 
-#: lib/signature.c:299 lib/signature.c:397 lib/signature.c:537
-#: lib/signature.c:569
+#: lib/signature.c:306 lib/signature.c:405 lib/signature.c:656
+#: lib/signature.c:688
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Não consegui executar o %s: %S\n"
 
-#: lib/signature.c:315
+#: lib/signature.c:322
 msgid "pgp failed\n"
 msgstr "o pgp falhou\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:322
+#: lib/signature.c:329
 msgid "pgp failed to write signature\n"
 msgstr "o pgp não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:327
+#: lib/signature.c:334
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "tamanho da assinatura do PGP: %d\n"
 
-#: lib/signature.c:343 lib/signature.c:442
+#: lib/signature.c:350 lib/signature.c:450
 msgid "unable to read the signature\n"
 msgstr "incapaz de ler a assinatura\n"
 
-#: lib/signature.c:348
+#: lib/signature.c:355
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Obtive %d bytes da assinatura PGP\n"
 
-#: lib/signature.c:414
+#: lib/signature.c:422
 msgid "gpg failed\n"
 msgstr "o gpg falhou\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:421
+#: lib/signature.c:429
 msgid "gpg failed to write signature\n"
 msgstr "o gpg não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:426
+#: lib/signature.c:434
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Tamanho da assinatura do GPG: %d\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:455
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Obtive %d bytes da assinatura do GPG\n"
 
-#: lib/signature.c:475
-msgid "Generating signature using PGP.\n"
-msgstr "A gerar a assinatura usando o PGP.\n"
-
-#: lib/signature.c:481
-msgid "Generating signature using GPG.\n"
-msgstr "A gerar a assinatura usando o PGP.\n"
-
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:574 lib/signature.c:627
+#: lib/signature.c:693 lib/signature.c:747
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "'Spec' %%_signature inválido no ficheiro de macros\n"
 
-#: lib/signature.c:607
+#: lib/signature.c:727
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_gpg_name\" no seu ficheiro de macros\n"
 
-#: lib/signature.c:619
+#: lib/signature.c:739
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_pgp_name\" no seu ficheiro de macros\n"
 
-#: lib/signature.c:663
+#: lib/signature.c:783
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "Tamanho do cabeçalho demasiado grande"
 
-#: lib/signature.c:692
+#: lib/signature.c:823
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:732
+#: lib/signature.c:880
+msgid "Header SHA1 digest: "
+msgstr ""
+
+#: lib/signature.c:1042
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "ignorar as assinaturas de MD5"
 
-#: lib/signature.c:822
+#: lib/signature.c:1135
+msgid "Header "
+msgstr ""
+
+#: lib/signature.c:1136
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Sem assinatura\n"
 
-#: lib/signature.c:886
+#: lib/signature.c:1214
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:906
+#: lib/signature.c:1240
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:910
+#: lib/signature.c:1244
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "'Pad' ou preenchimento da assinatura: %d\n"
@@ -3053,155 +3079,155 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "gerar os cabeçalhos compatíveis com o formato do rpm[23]"
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:129
+#: rpmdb/rpmdb.c:163
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: nome de opção não reconhecido: \"%s\" ignorado\n"
 
-#: rpmdb/rpmdb.c:387
+#: rpmdb/rpmdb.c:440
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "não consigo abrir o índice de %s usando o db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:409
+#: rpmdb/rpmdb.c:462
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "não consigo abrir o índice do %s\n"
 
-#: rpmdb/rpmdb.c:501
+#: rpmdb/rpmdb.c:554
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "erro(%d) ao obter os registos \"%s\" do índice %s\n"
 
-#: rpmdb/rpmdb.c:632
+#: rpmdb/rpmdb.c:685
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "erro(%d) ao guardar o registo %s em %s\n"
 
-#: rpmdb/rpmdb.c:642
+#: rpmdb/rpmdb.c:695
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "erro(%d) ao remover o registo %s do %s\n"
 
-#: rpmdb/rpmdb.c:906
+#: rpmdb/rpmdb.c:959
 msgid "no dbpath has been set\n"
 msgstr "não foi definido o dbpath\n"
 
-#: rpmdb/rpmdb.c:1054
+#: rpmdb/rpmdb.c:1107
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
 msgstr "está presente uma base de dados antiga; use o --rebuildb para gerar uma base de dados no novo formato\n"
 
 #. error
-#: rpmdb/rpmdb.c:1319
+#: rpmdb/rpmdb.c:1372
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "erro(%d) ao contar os pacotes\n"
 
-#: rpmdb/rpmdb.c:2097 rpmdb/rpmdb.c:3372
+#: rpmdb/rpmdb.c:2150 rpmdb/rpmdb.c:3502
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "o número do registo %d na base de dados está errado -- a ignorar.\n"
 
-#: rpmdb/rpmdb.c:2150
+#: rpmdb/rpmdb.c:2203
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2420
+#: rpmdb/rpmdb.c:2473
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: não consigo ler o cabeçalho em 0x%x\n"
 
-#: rpmdb/rpmdb.c:2540
+#: rpmdb/rpmdb.c:2634
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "a remover o \"%s\" do índice %s.\n"
 
-#: rpmdb/rpmdb.c:2544
+#: rpmdb/rpmdb.c:2638
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "a remover %d registos do índice %s.\n"
 
-#: rpmdb/rpmdb.c:2714
+#: rpmdb/rpmdb.c:2808
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "erro(%d) ao criar uma nova instância do pacote\n"
 
-#: rpmdb/rpmdb.c:2873
+#: rpmdb/rpmdb.c:3003
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "a adicionar o \"%s\" ao índice %s.\n"
 
-#: rpmdb/rpmdb.c:2877
+#: rpmdb/rpmdb.c:3007
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "a adicionar %d registos ao índice %s.\n"
 
-#: rpmdb/rpmdb.c:3258
+#: rpmdb/rpmdb.c:3388
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "a remover o %s depois duma reconstrução bem sucedida do db3.\n"
 
-#: rpmdb/rpmdb.c:3291
+#: rpmdb/rpmdb.c:3421
 msgid "no dbpath has been set"
 msgstr "não foi definido o dbpath"
 
-#: rpmdb/rpmdb.c:3318
+#: rpmdb/rpmdb.c:3448
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "a reconstruir a base de dados %s em %s\n"
 
-#: rpmdb/rpmdb.c:3322
+#: rpmdb/rpmdb.c:3452
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "A base de dados temporária %s já existe\n"
 
-#: rpmdb/rpmdb.c:3328
+#: rpmdb/rpmdb.c:3458
 #, c-format
 msgid "creating directory %s\n"
 msgstr "a criar a directoria %s\n"
 
-#: rpmdb/rpmdb.c:3330
+#: rpmdb/rpmdb.c:3460
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "a criar a directoria %s: %s\n"
 
-#: rpmdb/rpmdb.c:3337
+#: rpmdb/rpmdb.c:3467
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "a abrir a base de dados antiga com a dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3348
+#: rpmdb/rpmdb.c:3478
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "a abrir a base de dados nova com a dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3412
+#: rpmdb/rpmdb.c:3542
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "não consigo adicionar o registo originalmente em %d\n"
 
-#: rpmdb/rpmdb.c:3430
+#: rpmdb/rpmdb.c:3560
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "falhou a reconstrução da base de dados: a base de dados original mantém-se\n"
 
-#: rpmdb/rpmdb.c:3438
+#: rpmdb/rpmdb.c:3568
 msgid "failed to replace old database with new database!\n"
 msgstr "falhou a substituição da base de dados antiga pela nova!\n"
 
-#: rpmdb/rpmdb.c:3440
+#: rpmdb/rpmdb.c:3570
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "substituir os ficheiros em %s por ficheiros de %s a recuperar"
 
-#: rpmdb/rpmdb.c:3450
+#: rpmdb/rpmdb.c:3580
 #, c-format
 msgid "removing directory %s\n"
 msgstr "a remover a directoria %s\n"
 
-#: rpmdb/rpmdb.c:3452
+#: rpmdb/rpmdb.c:3582
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "falhou a remoção da directoria %s: %s\n"
@@ -3412,6 +3438,12 @@ msgstr "o porto do URL tem de ser um número\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "não consegui criar o %s: %s\n"
+
+#~ msgid "Generating signature using PGP.\n"
+#~ msgstr "A gerar a assinatura usando o PGP.\n"
+
+#~ msgid "Generating signature using GPG.\n"
+#~ msgstr "A gerar a assinatura usando o PGP.\n"
 
 #~ msgid "no packages given for uninstall"
 #~ msgstr "não foram indicados pacote para desinstalar"
@@ -4213,9 +4245,6 @@ msgstr "não consegui criar o %s: %s\n"
 
 #~ msgid "locked  db index       %s/%s\n"
 #~ msgstr "tranquei o índice do db     %s/%s\n"
-
-#~ msgid "========== tsorting packages\n"
-#~ msgstr "========== a realizar o tsort nos pacotes\n"
 
 #~ msgid ""
 #~ "--notriggers may only be specified during package installation, erasure, "

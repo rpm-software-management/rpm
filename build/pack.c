@@ -360,10 +360,12 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     return 0;
 }
 
+#ifdef	DYING
 /*@unchecked@*/
 static unsigned char header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
+#endif
 
 #define	RPMPKGVERSION_MIN	30004
 #define	RPMPKGVERSION_MAX	40003
@@ -487,6 +489,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	rc = RPMERR_NOSPACE;
 	rpmError(RPMERR_NOSPACE, _("Unable to write temp header\n"));
     } else { /* Write the archive and get the size */
+	(void) Fflush(fd);
 	fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&sha1, NULL, 1);
 	if (csa->cpioList != NULL) {
 	    rc = cpio_doio(fd, h, csa, rpmio_flags);
