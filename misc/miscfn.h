@@ -19,6 +19,10 @@
 char *realpath(char *path, char resolved_path[]);
 #endif
 
+#if ! HAVE_S_IFSOCK
+#define S_IFSOCK (0)
+#endif
+
 #if ! HAVE_S_ISLNK
 #define S_ISLNK(mode) ((mode) & S_IFLNK)
 #endif

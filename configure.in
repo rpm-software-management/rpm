@@ -212,6 +212,16 @@ if test $PROVIDES_ERRNO = yes; then
 	AC_DEFINE(HAVE_HERRNO)
 fi
 
+dnl If a system doesn't have S_IFSOCK, define it as 0 which will
+dnl make S_ISSOCK always return false (nice, eh?)
+AC_MSG_CHECKING(checking if <sys/stat.h> defines S_IFSOCK...)
+AC_TRY_LINK([#include <sys/stat.h>],printf("%d", S_IFSOCK),
+	HAS_S_IFSOCK=yes,HAS_S_IFSOCK=no)
+AC_MSG_RESULT($HAS_S_IFSOCK)
+if test $HAS_S_ISLNK=yes; then
+	AC_DEFINE(HAVE_S_IFSOCK)
+fi
+
 dnl Some Unix's are missing S_ISLNK, S_ISSOCK
 AC_MSG_CHECKING(checking if <sys/stat.h> defines S_ISLNK...)
 AC_TRY_LINK([#include <sys/stat.h>],printf("%d", S_ISLNK(0755)),
@@ -254,13 +264,15 @@ if test "x$tmpdir" = "x"; then
     fi
 fi
 
-if echo "$build" | egrep 'solaris|hpux10' >/dev/null ; then
+if echo "$build" | egrep 'solaris|hpux10|sco' >/dev/null ; then
 	# Solaris needs -ldl to use -lnsl, and it can't build static
 	# binaries if you use -ldl
 	RPM=rpm.shared
 	if echo "$build" | grep solaris >/dev/null; then
 		echo "hacking things up for solaris"
 		LIBDL=-ldl
+	elif echo "$build" | grep sco > /dev/null; then
+		echo "hacking things up for sco"
 	else
 		echo "hacking things up for hpux"
 	fi
