@@ -70,18 +70,19 @@ int poptReadConfigFile(poptContext con, const char * fn)
     char * buf;
 /*@dependent@*/ char * dst;
     int fd, rc;
-    int fileLength;
+    off_t fileLength;
 
     fd = open(fn, O_RDONLY);
-    if (fd < 0) {
-	if (errno == ENOENT)
-	    return 0;
-	else 
-	    return POPT_ERROR_ERRNO;
-    }
+    if (fd < 0)
+	return (errno == ENOENT ? 0 : POPT_ERROR_ERRNO);
 
     fileLength = lseek(fd, 0, SEEK_END);
-    (void) lseek(fd, 0, 0);
+    if (fileLength == -1 || lseek(fd, 0, 0) == -1) {
+	rc = errno;
+	(void) close(fd);
+	errno = rc;
+	return POPT_ERROR_ERRNO;
+    }
 
     file = alloca(fileLength + 1);
     if (read(fd, (char *)file, fileLength) != fileLength) {
@@ -90,7 +91,8 @@ int poptReadConfigFile(poptContext con, const char * fn)
 	errno = rc;
 	return POPT_ERROR_ERRNO;
     }
-    (void) close(fd);
+    if (close(fd) == -1)
+	return POPT_ERROR_ERRNO;
 
     dst = buf = alloca(fileLength + 1);
 

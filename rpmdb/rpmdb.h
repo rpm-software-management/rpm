@@ -10,6 +10,13 @@
 
 #include "fprint.h"
 
+#ifdef	__LCLINT__
+typedef	unsigned int u_int32_t;
+typedef	unsigned short u_int16_t;
+typedef	unsigned char u_int8_t;
+typedef	int int32_t;
+#endif
+
 typedef /*@abstract@*/ struct _dbiIndexItem * dbiIndexItem;
 typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 

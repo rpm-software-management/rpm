@@ -9,6 +9,6 @@
 find $1 \( -name "*$2" -o -name ".*$2" \) -print |
 while read f; do
     U=-u
-    [ "${f##*/}" == "ChangeLog$2" ] && U=-U0
+    [ "${f##*/}" = "ChangeLog$2" ] && U=-U0
     diff ${U} $f `echo $f | sed s/$2\$//`
 done

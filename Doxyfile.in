@@ -391,7 +391,6 @@ INPUT                  = \
 	./lib/transaction.c \
 	./lib/verify.c \
 	./rpmdb/db1.c \
-	./rpmdb/db2.c \
 	./rpmdb/db3.c \
 	./rpmdb/dbconfig.c \
 	./rpmdb/falloc.c \

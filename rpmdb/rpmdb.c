@@ -317,7 +317,6 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
     if (dbix < 0 || dbix >= dbiTagsMax)
 	return NULL;
 
-
     /* Is this index already open ? */
     if ((dbi = rpmdb->_dbi[dbix]) != NULL)
 	return dbi;

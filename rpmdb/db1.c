@@ -4,21 +4,7 @@
 
 #include "system.h"
 
-static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
-
-#ifdef HAVE_DB1_DB_H
-#include <db1/db.h>
-#else
-#ifdef HAVE_DB_185_H
-#include <db_185.h> /* XXX there are too mant compat API's for this to work */
-#else
-#include <db.h>
-#endif
-#endif
-
-#define	DB_VERSION_MAJOR	1
-#define	DB_VERSION_MINOR	85
-#define	DB_VERSION_PATCH	0
+/*@unused@*/ static int _debug = 1; /* XXX if < 0 debugging, > 0 unusual error returns */
 
 #define	_mymemset(_a, _b, _c)
 
@@ -30,8 +16,20 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include "falloc.h"
 #include "misc.h"
 
-#define	DBC	void
 #include "rpmdb.h"
+
+/* XXX must follow rpmdb.h */
+#define	DB_VERSION_MAJOR	1
+#define	DB_VERSION_MINOR	85
+#define	DB_VERSION_PATCH	0
+
+struct _DBT1 {
+    void * data;	/* data */
+    size_t size;	/* data length */
+};
+
+#undef	DBT
+#define	DBT struct _DBT1
 
 #include "debug.h"
 
@@ -41,6 +39,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 /*@access dbiIndexSet@*/
 /*@-onlytrans@*/
 
+#ifdef	DYING
 /* XXX remap DB3 types back into DB1 types */
 static inline DBTYPE db3_to_dbtype(int dbitype)
 {
@@ -105,8 +104,9 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
 
     return rc;
 }
+#endif	/* DYING */
 
-static int db1sync(dbiIndex dbi, unsigned int flags) {
+static int db1sync(dbiIndex dbi, /*@unused@*/ unsigned int flags) {
     int rc = 0;
 
     if (dbi->dbi_db) {
@@ -115,17 +115,20 @@ static int db1sync(dbiIndex dbi, unsigned int flags) {
 	    int fdno = Fileno(pkgs);
 	    if (fdno >= 0 && (rc = fsync(fdno)) != 0)
 		rc = errno;
-	} else {
+	}
+#ifdef	DYING
+	else {
 	    DB * db = dbi->dbi_db;
 	    rc = db->sync(db, flags);
 	    rc = cvtdberr(dbi, "db->sync", rc, _debug);
 	}
+#endif
     }
 
     return rc;
 }
 
-static void * doGetRecord(FD_t pkgs, unsigned int offset)
+/*@null@*/ static void * doGetRecord(FD_t pkgs, unsigned int offset)
 {
     void * uh = NULL;
     Header h = NULL;
@@ -141,13 +144,12 @@ static void * doGetRecord(FD_t pkgs, unsigned int offset)
     h = headerRead(pkgs, HEADER_MAGIC_NO);
 
     /* let's sanity check this record a bit, otherwise just skip it */
-    if (!(headerIsEntry(h, RPMTAG_NAME) &&
-	headerIsEntry(h, RPMTAG_VERSION) &&
-	headerIsEntry(h, RPMTAG_RELEASE) &&
-	headerIsEntry(h, RPMTAG_BUILDTIME)))
+    if (!(	headerIsEntry(h, RPMTAG_NAME) &&
+		headerIsEntry(h, RPMTAG_VERSION) &&
+		headerIsEntry(h, RPMTAG_RELEASE) &&
+		headerIsEntry(h, RPMTAG_BUILDTIME)))
     {
-	headerFree(h);
-	h = NULL;
+	h = headerFree(h);
     }
 
     if (h == NULL)
@@ -204,7 +206,7 @@ static void * doGetRecord(FD_t pkgs, unsigned int offset)
 exit:
     if (h != NULL) {
 	uh = headerUnload(h);
-	headerFree(h);
+	h = headerFree(h);
     }
     return uh;
 }
@@ -280,7 +282,9 @@ if (keylen)	*keylen = key.size;
 		rc = EFAULT;
 	    }
 	}
-    } else {
+    }
+#ifdef	DYING
+    else {
 	DB * db;
 	int _printit;
 
@@ -297,6 +301,10 @@ if (keylen)	*keylen = key.size;
 	    rc = cvtdberr(dbi, "db1cget", rc, _printit);
 	}
     }
+#else
+    else
+	rc = EINVAL;
+#endif
 
     if (rc == 0) {
 	if (keyp)	*keyp = key.data;
@@ -314,28 +322,31 @@ if (keylen)	*keylen = key.size;
 static int db1cdel(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, const void * keyp,
 		size_t keylen, /*@unused@*/ unsigned int flags)
 {
+    DBT key;
     int rc = 0;
+
+    memset(&key, 0, sizeof(key));
+    key.data = (void *)keyp;
+    key.size = keylen;
 
     if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
 	FD_t pkgs = dbi->dbi_db;
 	unsigned int offset;
 	memcpy(&offset, keyp, sizeof(offset));
 	fadFree(pkgs, offset);
-    } else {
-	DBT key;
+    }
+#ifdef	DYING
+    else {
 	DB * db = dbi->dbi_db;
-
-	_mymemset(&key, 0, sizeof(key));
-
-	/*@-usedef@*/
-	key.data = (void *)keyp;
-	/*@=usedef@*/
-	key.size = keylen;
 
 	if (db)
 	    rc = db->del(db, &key, 0);
 	rc = cvtdberr(dbi, "db->del", rc, _debug);
     }
+#else
+    else
+	rc = EINVAL;
+#endif
 
     return rc;
 }
@@ -375,21 +386,27 @@ static int db1cput(dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
             fdSetContentLength(pkgs, -1);
 	    if (rc)
 		rc = EIO;
-	    headerFree(h);
+	    h = headerFree(h);
 	}
-    } else {
+    }
+#ifdef	DYING
+    else {
 	DB * db = dbi->dbi_db;
 
 	if (db)
 	    rc = db->put(db, &key, &data, 0);
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
     }
+#else
+    else
+	rc = EINVAL;
+#endif
 
     return rc;
 }
 
-static int db1ccount(dbiIndex dbi, DBC * dbcursor,
-		/*@out@*/ unsigned int * countp,
+static int db1ccount(/*@unused@*/ dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
+		/*@unused@*/ /*@out@*/ unsigned int * countp,
 		/*@unused@*/ unsigned int flags)
 {
     return EINVAL;
@@ -400,7 +417,7 @@ static int db1byteswapped(/*@unused@*/dbiIndex dbi)
     return 0;
 }
 
-static int db1stat(dbiIndex dbi, unsigned int flags)
+static int db1stat(/*@unused@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 {
     return EINVAL;
 }
@@ -419,11 +436,17 @@ static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
 	    FD_t pkgs = dbi->dbi_db;
 	    rc = Fclose(pkgs);
-	} else {
+	}
+#ifdef	DYING
+	else {
 	    DB * db = dbi->dbi_db;
 	    rc = db->close(db);
 	    rc = cvtdberr(dbi, "db->close", rc, _debug);
 	}
+#else
+	else
+	    rc = EINVAL;
+#endif
 	dbi->dbi_db = NULL;
     }
 
@@ -496,7 +519,9 @@ static int db1open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	}
 
 	dbi->dbi_db = pkgs;
-    } else {
+    }
+#ifdef	DYING
+    else {
 	void * dbopeninfo = NULL;
 	int dbimode = dbi->dbi_mode;
 
@@ -507,6 +532,10 @@ static int db1open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		db3_to_dbtype(dbi->dbi_type), dbopeninfo);
 	if (dbi->dbi_db == NULL) rc = errno;
     }
+#else
+    else
+	rc = EINVAL;
+#endif
 
 exit:
     if (rc == 0 && dbi->dbi_db != NULL && dbip) {

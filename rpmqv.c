@@ -786,6 +786,15 @@ int main(int argc, const char ** argv)
 
     rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
 
+#if 0
+    {	const char ** avp;
+	fprintf(stderr, "==> argv[%d]:", argc);
+	for (avp = argv; *avp; avp++)
+	    fprintf(stderr, " '%s'", *avp);
+	fprintf(stderr, "\n");
+    }
+#endif
+
     /* Make a first pass through the arguments, looking for --rcfile */
     /* We need to handle that before dealing with the rest of the arguments. */
     /*@-nullpass -temptrans@*/
@@ -904,10 +913,8 @@ int main(int argc, const char ** argv)
 #endif
 
 	  case GETOPT_EXCLUDEPATH:
-	    /*@-nullderef@*/	/* LCL: optarg != NULL */
-	    if (optarg == NULL || *optArg != '/') 
+	    if (optArg == NULL || *optArg != '/') 
 		argerror(_("exclude paths must begin with a /"));
-	    /*@=nullderef@*/
 
 	    relocations = xrealloc(relocations, 
 				  sizeof(*relocations) * (numRelocations + 1));
@@ -919,12 +926,10 @@ int main(int argc, const char ** argv)
 
 	  case GETOPT_RELOCATE:
 	  { char * newPath = NULL;
-	    /*@-nullderef -nullpass@*/	/* LCL: optarg != NULL */
-	    if (optarg == NULL || *optArg != '/') 
+	    if (optArg == NULL || *optArg != '/') 
 		argerror(_("relocations must begin with a /"));
 	    if (!(newPath = strchr(optArg, '=')))
 		argerror(_("relocations must contain a ="));
-	    /*@=nullderef =nullpass@*/
 	    *newPath++ = '\0';
 	    if (*newPath != '/') 
 		argerror(_("relocations must have a / following the ="));
@@ -975,21 +980,21 @@ int main(int argc, const char ** argv)
 #endif	/* IAM_RPMK */
 
 	  case GETOPT_DEFINEMACRO:
-	    /*@-nullderef -nullpass@*/	/* LCL: optarg != NULL */
-	    if (optarg == NULL)	break;	/* XXX can't happen. */
-	    (void) rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
-	    (void) rpmDefineMacro(&rpmCLIMacroContext, optArg, RMIL_CMDLINE);
-	    /*@=nullderef =nullpass@*/
+	    if (optArg) {
+		(void) rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
+		(void) rpmDefineMacro(&rpmCLIMacroContext, optArg,RMIL_CMDLINE);
+	    }
 	    noUsageMsg = 1;
 	    break;
 
 	  case GETOPT_EVALMACRO:
-	    if (optarg == NULL)	break;	/* XXX can't happen. */
-	  { const char *val = rpmExpand(optArg, NULL);
-	    fprintf(stdout, "%s\n", val);
-	    free((void *)val);
+	    if (optArg) {
+		const char *val = rpmExpand(optArg, NULL);
+		fprintf(stdout, "%s\n", val);
+		val = _free(val);
+	    }
 	    noUsageMsg = 1;
-	  } break;
+	    break;
 
 #if defined(GETOPT_RCFILE)
 	  case GETOPT_RCFILE:

@@ -4,13 +4,6 @@
 
 static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
-#ifdef	__LCLINT__
-typedef	unsigned int u_int32_t;
-typedef	unsigned short u_int16_t;
-typedef	unsigned char u_int8_t;
-typedef	int int32_t;
-#endif
-
 #include "system.h"
 
 #if defined(HAVE_FTOK) && defined(HAVE_SYS_IPC_H)

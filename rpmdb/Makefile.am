@@ -10,7 +10,7 @@ INCLUDES = \
 	-I$(top_srcdir)/popt \
 	@INCPATH@
 
-EXTRA_DIST = db3.c db2.c db1.c falloc.c
+EXTRA_DIST = db3.c db1.c falloc.c
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = rpmdb.h
@@ -28,7 +28,7 @@ DB3LOBJS = $(shell cat $(top_builddir)/$(WITH_DB_SUBDIR)/db3lobjs)
 
 lib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = $(DBLIBSRCS) dbconfig.c fprint.c rpmhash.c rpmdb.c
-librpmdb_la_LDFLAGS = @libdb3@ @libdb2@ @libdb1@
+librpmdb_la_LDFLAGS = @libdb3@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(DB3LOBJS)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) createlinks
 

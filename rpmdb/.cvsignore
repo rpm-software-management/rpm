@@ -3,5 +3,6 @@
 Makefile
 Makefile.in
 .libs
+db3lobjs
 *.la
 *.lo
