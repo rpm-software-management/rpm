@@ -16,6 +16,7 @@ config.sub
 configure
 doxygen
 libtool
+listobjs
 ltconfig
 ltmain.sh
 *.o

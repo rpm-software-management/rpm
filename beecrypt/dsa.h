@@ -1,8 +1,10 @@
+/** \ingroup DSA_m
+ * \file dsa.h
+ *
+ * Digital Signature Algorithm signature scheme, header.
+ */
+
 /*
- * dsa.h
- *
- * Digital Signature Algorithm signature scheme, header
- *
  * Copyright (c) 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -34,11 +36,17 @@
 extern "C" {
 #endif
 
-BEECRYPTAPI
-int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, randomGeneratorContext*, const mp32number* hm, const mp32number* x, mp32number* r, mp32number* s);
+/**
+ */
+BEECRYPTAPI /*@unused@*/
+int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, randomGeneratorContext* rgc, const mp32number* hm, const mp32number* x, mp32number* r, mp32number* s)
+	/*@modifies r->size, r->data, *r->data, s->size, s->data @*/;
 
-BEECRYPTAPI
-int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mp32number* g, const mp32number* hm, const mp32number* y, const mp32number* r, const mp32number* s);
+/**
+ */
+BEECRYPTAPI /*@unused@*/
+int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mp32number* g, const mp32number* hm, const mp32number* y, const mp32number* r, const mp32number* s)
+	/*@*/;
 
 #ifdef __cplusplus
 }

@@ -1,11 +1,25 @@
-/*
- * dsa.c
+/** \ingroup DSA_m
+ * \file dsa.c
  *
- * Digital Signature Algorithm signature scheme, code
+ * Digital Signature Algorithm signature scheme, code.
+ *
+ * DSA Signature:
+ *  - Signing equation:
+ *   - r = (g^k mod p) mod q and
+ *   - s = (inv(k) * (h(m) + x*r)) mod q
+ *  - Verifying equation:
+ *   - check 0 < r < q and 0 < s < q
+ *   - w = inv(s) mod q
+ *   - u1 = (h(m)*w) mod q
+ *   - u2 = (r*w) mod q
+ *   - v = ((g^u1 * y^u2) mod p) mod q
+ *   - check v == r
  *
  * For more information on this algorithm, see:
  *  NIST FIPS 186-1
- *
+ */
+
+/*
  * Copyright (c) 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -24,18 +38,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * DSA Signature:
- *  Signing equation:
- *   r = (g^k mod p) mod q and
- *   s = (inv(k) * (h(m) + x*r)) mod q
- *  Verifying equation:
- *   check 0 < r < q and 0 < s < q
- *   w = inv(s) mod q
- *   u1 = (h(m)*w) mod q
- *   u2 = (r*w) mod q
- *   v = ((g^u1 * y^u2) mod p) mod q
- *   check v == r
  *
  */
  
@@ -59,10 +61,19 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, ran
 	// k + inv(k) = 2 * qsize
 	// g^k mod p = psize+4*psize+2
 
-	register uint32* ptemp = (uint32*) malloc((5*psize+2)*sizeof(uint32));
-	register uint32* qtemp = (uint32*) malloc((9*qsize+6)*sizeof(uint32));
+	register uint32* ptemp;
+	register uint32* qtemp;
+	register int rc = -1;	/* assume failure */
 
-	if (ptemp && qtemp)
+	ptemp = (uint32*) malloc((5*psize+2)*sizeof(uint32));
+	if (ptemp == NULL)
+		return rc;
+	qtemp = (uint32*) malloc((9*qsize+6)*sizeof(uint32));
+	if (qtemp == NULL) {
+		free(ptemp);
+		return rc;
+	}
+
 	{
 		register uint32* pwksp = ptemp+psize;
 		register uint32* qwksp = qtemp+3*qsize;
@@ -103,13 +114,13 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, ran
 
 		// multiply inv(k) mod q
 		mp32bmulmod_w(q, qsize, qtemp+qsize, qsize, qtemp+2*qsize, s->data, qwksp);
+		rc = 0;
 
-		free(qtemp);
-		free(ptemp);
-
-		return 0;
 	}
-	return -1;
+	free(qtemp);
+	free(ptemp);
+
+	return rc;
 }
 
 int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mp32number* g, const mp32number* hm, const mp32number* y, const mp32number* r, const mp32number* s)
@@ -118,27 +129,33 @@ int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mp32number* g, con
 	register uint32  qsize = q->size;
 	register uint32* ptemp;
 	register uint32* qtemp;
+	register int rc = 0;	/* XXX shouldn't this be -1 ?*/
 
 	if (mp32z(r->size, r->data))
-		return 0;
+		return rc;
 
 	if (mp32gex(r->size, r->data, qsize, q->modl))
-		return 0;
+		return rc;
 
 	if (mp32z(s->size, s->data))
-		return 0;
+		return rc;
 
 	if (mp32gex(s->size, s->data, qsize, q->modl))
-		return 0;
+		return rc;
 
 	ptemp = (uint32*) malloc((6*psize+2)*sizeof(uint32));
-	qtemp = (uint32*) malloc((8*qsize+6)*sizeof(uint32));
+	if (ptemp == NULL)
+		return rc;
 
-	if (ptemp && qtemp)
+	qtemp = (uint32*) malloc((8*qsize+6)*sizeof(uint32));
+	if (qtemp == NULL) {
+		free(ptemp);
+		return rc;
+	}
+
 	{
 		register uint32* pwksp = ptemp+2*psize;
 		register uint32* qwksp = qtemp+2*qsize;
-		register int rc = 0;
 
 		// compute w = inv(s) mod q
 		if (mp32binv_w(q, s->size, s->data, qtemp, qwksp))
@@ -163,11 +180,10 @@ int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mp32number* g, con
 
 			rc = mp32eqx(r->size, r->data, psize, ptemp+psize);
 		}
-
-		free(qtemp);
-		free(ptemp);
-
-		return rc;
 	}
-	return 0;
+
+	free(qtemp);
+	free(ptemp);
+
+	return rc;
 }
