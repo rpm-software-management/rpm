@@ -13,6 +13,13 @@ typedef struct sources {
     struct sources *next;
 } *Sources;
 
+struct ReqProv {
+    int flags;
+    char *name;
+    char *version;
+    struct ReqProv *next;
+};
+
 struct SpecRec {
     char *name;      /* package base name */
     char *specfile;
@@ -38,9 +45,16 @@ struct PackageRec {
     Header header;
     char *icon;
     int files;       /* If -1, package has no files, and won't be written */
+    char *fileFile;
     StringBuf filelist;
     StringBuf doc;   /* Used to buffer up %doc lines until fully parsed */
+    int numReq;
+    int numProv;
+    struct ReqProv *reqprov;
     struct PackageRec *next;
 };
+
+int addReqProv(struct PackageRec *p, int flags, char *name, char *version);
+int addReqProvHeaderEntry(Header h, struct PackageRec *p);
 
 #endif _SPECP_H_
