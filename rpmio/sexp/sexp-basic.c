@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <malloc.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include "sexp.h"
 
@@ -18,15 +19,19 @@
  * c1 and c2 are (optional) integer parameters for the message.
  * Terminates iff level==ERROR, otherwise returns.
  */
-void ErrorMessage(int level, const char *msg, int c1, int c2)
+void ErrorMessage(int level, const char *fmt, ...)
 {
-  fflush(stdout);
+  va_list ap;
+
+  (void) fflush(stdout);
   printf("\n*** ");
   if (level==WARNING) printf("Warning: ");
   else if (level==ERROR) printf("Error: ");
-  printf(msg,c1,c2);
+  va_start(ap, fmt);
+  (void) vprintf(fmt, ap);
+  va_end(ap);
   printf(" ***\n");
-  if (level==ERROR) exit(1);
+  if (level==ERROR) exit(EXIT_FAILURE);
 }
 
 /**********************/
@@ -44,8 +49,8 @@ void initializeMemory(void)
  * Terminates execution if no memory available.
  */
 char *sexpAlloc(int n)
-{ char *c = (char *)malloc((unsigned int) n);
-  if (c == NULL) ErrorMessage(ERROR,"Error in sexpAlloc: out of memory!",0,0);
+{ char *c = (char *)calloc(1, (unsigned int) n);
+  if (c == NULL) ErrorMessage(ERROR,"Error in sexpAlloc: out of memory!");
 /*@-nullret@*/
   return c;
 /*@=nullret@*/
@@ -119,8 +124,10 @@ void appendCharToSimpleString(int c, sexpSimpleString *ss)
     ss = newSimpleString();
     if (ss == NULL) return;
   }
+/*@-branchstate@*/
   if (ss->string == NULL || ss->length == ss->allocatedLength )
     ss = reallocateSimpleString(ss);
+/*@=branchstate@*/
   if (ss != NULL && ss->string != NULL) {
     ss->string[ss->length] = (octet) (c & 0xFF);
     ss->length++;
@@ -138,7 +145,7 @@ void appendCharToSimpleString(int c, sexpSimpleString *ss)
 sexpString *newSexpString(void)
 {
   sexpString *s;
-  s = (sexpString *) sexpAlloc(sizeof(sexpString));
+  s = (sexpString *) sexpAlloc(sizeof(*s));
   s->type = SEXP_STRING;
   s->presentationHint = NULL;
   s->string = NULL;
@@ -172,7 +179,7 @@ sexpSimpleString *sexpStringString(sexpString *s)
 /* closeSexpString()
  * finish up string computations after created
  */
-void closeSexpString(sexpString *s)
+void closeSexpString(/*@unused@*/ sexpString *s)
 { ; }  /* do nothing in this implementation */
 
 /**************************/
@@ -187,7 +194,7 @@ void closeSexpString(sexpString *s)
 sexpList *newSexpList(void)
 {
   sexpList *list;
-  list = (sexpList *) sexpAlloc(sizeof(sexpList));
+  list = (sexpList *) sexpAlloc(sizeof(*list));
   list->type = SEXP_LIST;
   list->first = NULL;
   list->rest = NULL;
@@ -205,15 +212,17 @@ void sexpAddSexpListObject(sexpList *list, sexpObject *object)
     while (list->rest != NULL)
       list = list->rest;
     list->rest = newSexpList();
+/*@-branchstate@*/
     if ((list = list->rest) != NULL)
       list->first = object;
+/*@=branchstate@*/
   }
 }
 
 /* closeSexpList()
  * finish off a list that has just been input
  */
-void closeSexpList(sexpList *list)
+void closeSexpList(/*@unused@*/ sexpList *list)
 { ; } /* nothing in this implementation */
 
 /* Iteration on lists.

@@ -7,8 +7,10 @@
 #include <malloc.h>
 #include "sexp.h"
 
+/*@unchecked@*/ /*@observer@*/
 static char *hexDigits = "0123456789ABCDEF";
 
+/*@unchecked@*/ /*@observer@*/
 static char *base64Digits =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
@@ -22,7 +24,7 @@ static char *base64Digits =
  */
 void putChar(sexpOutputStream *os, int c)
 {
-  putc(c,os->outputFile);
+  (void) putc(c,os->outputFile);
   os->column++;
 }
 
@@ -61,7 +63,7 @@ void varPutChar(sexpOutputStream *os, int c)
 void changeOutputByteSize(sexpOutputStream *os, int newByteSize, int mode)
 {
   if (newByteSize != 4 && newByteSize !=6 && newByteSize !=8)
-    ErrorMessage(ERROR,"Illegal output base %d.",newByteSize,0);
+    ErrorMessage(ERROR,"Illegal output base %d.",newByteSize);
   if (newByteSize !=8 && os->byteSize != 8)
     ErrorMessage(ERROR,"Illegal change of output byte size from %d to %d.",
 		 os->byteSize,newByteSize);
@@ -119,7 +121,7 @@ void newLine(sexpOutputStream *os, int mode)
 sexpOutputStream *newSexpOutputStream(void)
 {
   sexpOutputStream *os;
-  os = (sexpOutputStream *) sexpAlloc(sizeof(sexpOutputStream));
+  os = (sexpOutputStream *) sexpAlloc(sizeof(*os));
   os->column = 0;
   os->maxcolumn = DEFAULTLINELENGTH;
   os->indent = 0;
@@ -143,7 +145,9 @@ sexpOutputStream *newSexpOutputStream(void)
 void printDecimal(sexpOutputStream *os, long int n)
 { char buffer[50];
   int i;
+/*@-bufferoverflowhigh@*/
   sprintf(buffer,"%ld",n);
+/*@=bufferoverflowhigh@*/
   for (i=0;buffer[i]!=0;i++)
     varPutChar(os,buffer[i]);
 }
@@ -162,7 +166,7 @@ void canonicalPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *
   octet * c = simpleStringString(ss);
 
   if (c == NULL)
-    ErrorMessage(ERROR,"Can't print NULL string verbatim",0,0);
+    ErrorMessage(ERROR,"Can't print NULL string verbatim");
   /* print out len: */
   printDecimal(os,len);
   varPutChar(os,':');
@@ -183,7 +187,7 @@ void canonicalPrintString(sexpOutputStream *os, sexpString *s)
   }
   ss = sexpStringString(s);
   if (ss == NULL)
-    ErrorMessage(ERROR,"NULL string can't be printed.",0,0);
+    ErrorMessage(ERROR,"NULL string can't be printed.");
   else
     canonicalPrintVerbatimSimpleString(os,ss);
 }
@@ -215,7 +219,7 @@ void canonicalPrintObject(sexpOutputStream *os, sexpObject *object)
     canonicalPrintString(os,(sexpString *)object);
   else if (isObjectList(object))
     canonicalPrintList(os,(sexpList *)object);
-  else ErrorMessage(ERROR,"NULL object can't be printed.",0,0);
+  else ErrorMessage(ERROR,"NULL object can't be printed.");
 }
 
 /* *************/
@@ -297,7 +301,7 @@ void advancedPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *s
   octet *c;
   c = simpleStringString(ss);
   if (c == NULL)
-    ErrorMessage(ERROR,"Can't print NULL string verbatim",0,0);
+    ErrorMessage(ERROR,"Can't print NULL string verbatim");
   if (os->maxcolumn>0 && os->column > (os->maxcolumn - len))
     os->newLine(os,ADVANCED);
   printDecimal(os,len);
@@ -326,7 +330,7 @@ void advancedPrintBase64SimpleString(sexpOutputStream *os, sexpSimpleString *ss)
   octet *c = simpleStringString(ss);
   len = simpleStringLength(ss);
   if (c == NULL)
-    ErrorMessage(ERROR,"Can't print NULL string base 64",0,0);
+    ErrorMessage(ERROR,"Can't print NULL string base 64");
   varPutChar(os,'|');
   changeOutputByteSize(os,6,ADVANCED);
   for (i=0;i<len;i++)
@@ -347,7 +351,7 @@ void advancedPrintHexSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
   octet *c = simpleStringString(ss);
   len = simpleStringLength(ss);
   if (c == NULL)
-    ErrorMessage(ERROR,"Can't print NULL string hexadecimal",0,0);
+    ErrorMessage(ERROR,"Can't print NULL string hexadecimal");
   os->putChar(os,'#');
   changeOutputByteSize(os,4,ADVANCED);
   for (i=0;i<len;i++)
@@ -431,7 +435,7 @@ void advancedPrintSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
   else if (os->byteSize == 8)
     advancedPrintBase64SimpleString(os,ss);
   else
-    ErrorMessage(ERROR,"Can't print advanced mode with restricted output character set.",0,0);
+    ErrorMessage(ERROR,"Can't print advanced mode with restricted output character set.");
 }
 
 /* advancedPrintString(os,s)
@@ -447,7 +451,7 @@ void advancedPrintString(sexpOutputStream *os, sexpString *s)
       os->putChar(os,']');
     }
   if (ss == NULL)
-    ErrorMessage(ERROR,"NULL string can't be printed.",0,0);
+    ErrorMessage(ERROR,"NULL string can't be printed.");
   else
     advancedPrintSimpleString(os,ss);
 }
@@ -559,7 +563,7 @@ void advancedPrintObject(sexpOutputStream *os, sexpObject *object)
   else if (isObjectList(object))
     advancedPrintList(os,(sexpList *)object);
   else
-    ErrorMessage(ERROR,"NULL object can't be printed.",0,0);
+    ErrorMessage(ERROR,"NULL object can't be printed.");
 }
 
 

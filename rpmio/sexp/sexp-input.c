@@ -11,16 +11,26 @@
 /* CHARACTER ROUTINES AND DEFINITIONS */
 /**************************************/
 
-char upper[256];            /* upper[c] is upper case version of c */
-char whitespace[256];       /* whitespace[c] is nonzero if c is whitespace */
-char decdigit[256];         /* decdigit[c] is nonzero if c is a dec digit */
-char decvalue[256];         /* decvalue[c] is value of c as dec digit */
-char hexdigit[256];         /* hexdigit[c] is nonzero if c is a hex digit */
-char hexvalue[256];         /* hexvalue[c] is value of c as a hex digit */
-char base64digit[256];      /* base64char[c] is nonzero if c is base64 digit */
-char base64value[256];      /* base64value[c] is value of c as base64 digit */
-char tokenchar[256];        /* tokenchar[c] is true if c can be in a token */
-char alpha[256];            /* alpha[c] is true if c is alphabetic A-Z a-z */
+/*@unchecked@*/
+static char upper[256];      /* upper[c] is upper case version of c */
+/*@unchecked@*/
+static char whitespace[256]; /* whitespace[c] is nonzero if c is whitespace */
+/*@unchecked@*/
+static char decdigit[256];   /* decdigit[c] is nonzero if c is a dec digit */
+/*@unchecked@*/
+static char decvalue[256];   /* decvalue[c] is value of c as dec digit */
+/*@unchecked@*/
+static char hexdigit[256];   /* hexdigit[c] is nonzero if c is a hex digit */
+/*@unchecked@*/
+static char hexvalue[256];   /* hexvalue[c] is value of c as a hex digit */
+/*@unchecked@*/
+static char base64digit[256];/* base64char[c] is nonzero if c is base64 digit */
+/*@unchecked@*/
+static char base64value[256];/* base64value[c] is value of c as base64 digit */
+/*@unchecked@*/
+static char tokenchar[256];  /* tokenchar[c] is true if c can be in a token */
+/*@unchecked@*/
+static char alpha[256];      /* alpha[c] is true if c is alphabetic A-Z a-z */
 
 /* initializeCharacterTables
  * initializes all of the above arrays
@@ -181,7 +191,7 @@ void getChar(sexpInputStream *is)
 sexpInputStream *newSexpInputStream(void)
 {
   sexpInputStream *is;
-  is = (sexpInputStream *) sexpAlloc(sizeof(sexpInputStream));
+  is = (sexpInputStream *) sexpAlloc(sizeof(*is));
   is->nextChar = ' ';
   is->getChar = getChar;
   is->count = -1;
@@ -260,7 +270,7 @@ unsigned long int scanDecimal(sexpInputStream *is)
     { value = value*10 + decvalue[is->nextChar];
       is->getChar(is);
       if (i++ > 8)
-	ErrorMessage(ERROR,"Decimal number %d... too long.",(int)value,0);
+	ErrorMessage(ERROR,"Decimal number %d... too long.",(int)value);
     }
   return value;
 }
@@ -274,7 +284,7 @@ void scanVerbatimString(sexpInputStream *is, sexpSimpleString *ss, long int leng
   skipWhiteSpace(is);
   skipChar(is,':');
   if (length == -1L) /* no length was specified */
-    ErrorMessage(ERROR,"Verbatim string had no declared length.",0,0);
+    ErrorMessage(ERROR,"Verbatim string had no declared length.");
   for (i=0;i<length;i++)
     { appendCharToSimpleString(is->nextChar,ss);
       is->getChar(is);
@@ -299,7 +309,7 @@ void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length
 	      return;
 	    }
 	  else
-	    ErrorMessage(ERROR,"Quoted string ended too early. Declared length was %d",(int)length,0);
+	    ErrorMessage(ERROR,"Quoted string ended too early. Declared length was %d",(int)length);
 	}
       else if (is->nextChar == '\\') /* handle escape sequence */
 	{ is->getChar(is);
@@ -323,11 +333,11 @@ void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length
 		    }
 		  else
 		    ErrorMessage(ERROR,"Octal character \\%o... too short.",
-				 val,0);
+				 val);
 		}
 	      if (val > 255)
 		    ErrorMessage(ERROR,"Octal character \\%o... too big.",
-				 val,0);
+				 val);
 	      appendCharToSimpleString(val,ss);
 	    }
 	  else if (c == 'x') /* hexadecimal number */
@@ -342,7 +352,7 @@ void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length
 		    }
 		  else
 		    ErrorMessage(ERROR,"Hex character \\x%x... too short.",
-				 val,0);
+				 val);
 		}
 	      appendCharToSimpleString(val,ss);
 	    }
@@ -358,7 +368,7 @@ void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length
 	    }
 	  else
 	    ErrorMessage(WARNING,"Escape character \\%c... unknown.",
-			 c,0);
+			 c);
 	} /* end of handling escape sequence */
       else
 	appendCharToSimpleString(is->nextChar,ss);
@@ -441,7 +451,7 @@ sexpSimpleString *scanSimpleString(sexpInputStream *is)
     ErrorMessage(ERROR,"illegal character at position %d: %d (decimal)",
 		 is->count, is->nextChar );
   if (simpleStringLength(ss) == 0)
-    ErrorMessage(WARNING,"Simple string has zero length.",0,0);
+    ErrorMessage(WARNING,"Simple string has zero length.");
   return ss;
 }
 
@@ -478,7 +488,7 @@ sexpList *scanList(sexpInputStream *is)
   skipWhiteSpace(is);
   list = newSexpList();
   if (is->nextChar == ')')
-    { /* ErrorMessage(ERROR,"List () with no contents is illegal.",0,0); */
+    { /* ErrorMessage(ERROR,"List () with no contents is illegal."); */
       ; /* OK */
     }
   else

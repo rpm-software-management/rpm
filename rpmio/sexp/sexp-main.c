@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include "sexp.h"
 
+/*@unchecked@*/ /*@observer@*/
 static const char *help =
 "The program `sexp' reads, parses, and prints out S-expressions.\n"
 " INPUT:\n"
@@ -41,6 +42,7 @@ static const char *help =
 /*@-mods@*/
 /*@-nullderef@*/
 /*@-nullpass@*/
+/*@-nullstate@*/
 int main(int argc, char **argv)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -76,14 +78,14 @@ int main(int argc, char **argv)
       else if (*c == 'h') /* help */
 	{
 	  printf("%s",help);
-	  fflush(stdout);
+	  (void) fflush(stdout);
 	  exit(0);
 	}
       else if (*c == 'i') /* input file */
 	{ if (i+1<argc) i++;
 	  is->inputFile = fopen(argv[i],"r");
 	  if (is->inputFile==NULL)
-	    ErrorMessage(ERROR,"Can't open input file.",0,0);
+	    ErrorMessage(ERROR,"Can't open input file.");
 	}
       else if (*c == 'l') /* suppress linefeeds after output */
 	swl = TRUE;
@@ -91,7 +93,7 @@ int main(int argc, char **argv)
 	{ if (i+1<argc) i++;
 	  os->outputFile = fopen(argv[i],"w");
 	  if (os->outputFile==NULL)
-	    ErrorMessage(ERROR,"Can't open output file.",0,0);
+	    ErrorMessage(ERROR,"Can't open output file.");
 	}	
       else if (*c == 'p') /* prompt for input */
 	swp = TRUE;
@@ -115,7 +117,7 @@ int main(int argc, char **argv)
   while (is->nextChar != EOF)
     {
       if (swp)
-	{ printf("Input:\n"); fflush(stdout); }
+	{ printf("Input:\n"); (void) fflush(stdout); }
 
       changeInputByteSize(is,8);
       if (is->nextChar == -2) is->getChar(is);
@@ -130,37 +132,38 @@ int main(int argc, char **argv)
 
       if (swc)
 	{ if (swp)
-	    { printf("Canonical output:"); fflush(stdout);
+	    { printf("Canonical output:"); (void) fflush(stdout);
 	      os->newLine(os,ADVANCED);
 	    }
 	  canonicalPrintObject(os,object);
-	  if (!swl) { printf("\n"); fflush(stdout); }
+	  if (!swl) { printf("\n"); (void) fflush(stdout); }
 	}
 
       if (swb)
 	{ if (swp)
-	    { printf("Base64 (of canonical) output:"); fflush(stdout);
+	    { printf("Base64 (of canonical) output:"); (void) fflush(stdout);
 	      os->newLine(os,ADVANCED);
 	    }
 	  base64PrintWholeObject(os,object);
-	  if (!swl) { printf("\n"); fflush(stdout); }
+	  if (!swl) { printf("\n"); (void) fflush(stdout); }
 	}
 
       if (swa)
 	{ if (swp)
-	    { printf("Advanced transport output:"); fflush(stdout);
+	    { printf("Advanced transport output:"); (void) fflush(stdout);
 	      os->newLine(os,ADVANCED);
 	    }
 	  advancedPrintObject(os,object);
-	  if (!swl) { printf("\n"); fflush(stdout); }
+	  if (!swl) { printf("\n"); (void) fflush(stdout); }
 	}
 
       if (!swx) break;
       if (!swp) skipWhiteSpace(is);
-      else if (!swl) { printf("\n"); fflush(stdout); }
+      else if (!swl) { printf("\n"); (void) fflush(stdout); }
     }
   return 0;
 }
+/*@=nullstate@*/
 /*@=nullpass@*/
 /*@=nullderef@*/
 /*@=mods@*/

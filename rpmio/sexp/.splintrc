@@ -12,34 +12,19 @@
 +strict			# lclint level
 
 # --- in progress
--branchstate
--bufferoverflowhigh
--compdef
--dependenttrans
+-compdef		# 5
 -evalorder
--exitarg
 -exportheadervar
 -exportlocal
 -fcnuse
--formatconst
--globs
--globstate
 -ifempty
--infloopsuncon
--internalglobs
--noeffect
--noeffectuncon
-#-nullpass
--nullstate
--paramuse
--readonlytrans
--retalias
--retvalint
+-infloopsuncon		# 6
+-noeffect		# 4
+-noeffectuncon		# 51
+-retalias		# 7
 -shiftimplementation
 -shiftnegative
--sizeoftype
--temptrans
--unqualifiedtrans
+-temptrans		# 6
 -usereleased
 
 # --- +partial artifacts
