@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <ftw.h>
 #include <glob.h>
+#include <time.h>
 
 #include "spec.h"
 #include "specP.h"
@@ -74,6 +75,9 @@ int process_filelist(Header header, struct PackageRec *pr,
     int special_doc;
     int passed_special_doc = 0;
     FILE *file;
+    int tc;
+    char *tcs;
+    int currentTime;
 
     fes = NULL;
     *size = 0;
@@ -276,7 +280,14 @@ int process_filelist(Header header, struct PackageRec *pr,
 	}
 	qsort(file_entry_array, count, sizeof(struct file_entry *),
 	      compare_fe);
-	
+		
+	/* Do timecheck */
+	tc = 0;
+	currentTime = time(NULL);
+	if ((tcs = getVar(RPMVAR_TIMECHECK))) {
+	    tc = strtoul(tcs, NULL, 10);
+	}
+    
 	c = 0;
 	while (c < count) {
 	    fest = file_entry_array[c];
@@ -305,6 +316,15 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    fileUIDList[c] = fest->statbuf.st_uid;
 	    fileGIDList[c] = fest->statbuf.st_gid;
 	    fileMtimesList[c] = fest->statbuf.st_mtime;
+
+	    /* Do timecheck */
+	    if (tc && (type == RPMLEAD_BINARY)) {
+		if (currentTime - fest->statbuf.st_mtime > tc) {
+		    message(MESS_WARNING, "TIMECHECK failure: %s\n",
+			    fest->file);
+		}
+	    }
+    
 	    fileFlagsList[c] = 0;
 	    if (isDoc(fest->file))
 	        fileFlagsList[c] |= RPMFILE_DOC;
@@ -541,7 +561,7 @@ static int add_file(struct file_entry **festack, const char *name,
  	mode |= p->statbuf.st_mode & S_IFMT;
  	p->statbuf.st_mode = (unsigned short)mode;
     }
-    
+
     if (Uname && strcmp(Uname, "-")) {
  	p->uname = getUnameS(Uname);
     } else {
