@@ -10,8 +10,6 @@
 #include "misc.h"
 #include "rpmdb.h"
 
-enum instActions { UNKNOWN, CREATE, BACKUP, KEEP, SAVE, SKIP, ALTNAME };
-enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
 
 struct callbackInfo {
     unsigned long archiveSize;

@@ -10,6 +10,9 @@ struct sharedFile {
     int secFileNumber;
 } ;
 
+enum instActions { UNKNOWN, CREATE, BACKUP, KEEP, SAVE, SKIP, ALTNAME };
+enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
+
 int findSharedFiles(rpmdb db, int offset, char ** fileList, int fileCount,
 		    struct sharedFile ** listPtr, int * listCountPtr);
 int runInstScript(char * prefix, Header h, int scriptTag, int progTag,
