@@ -1,0 +1,11 @@
+ELFUTILS_1.0 {
+  global:
+    sparc_backend_name;
+    sparc_destr;
+    sparc_init;
+    sparc_reloc_type_check;
+    sparc_reloc_type_name;
+
+  local:
+    *;
+};
