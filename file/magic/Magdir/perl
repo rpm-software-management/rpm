@@ -15,4 +15,4 @@
 # a couple more, by me
 # XXX: christos matches
 #0	regex		package		Perl5 module source text (via regex)
-#0	string		package		Perl5 module source text
+0	string		package		Perl5 module source text
