@@ -289,7 +289,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	if (!strcmp(rpmteN(p), Name))
 	    continue;
 
-	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
+	if (Name[0] == '/')
+	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
+	else
+	    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
 
 	xx = rpmdbPruneIterator(mi,
 	    ts->removedPackages, ts->numRemovedPackages, 1);
@@ -307,11 +310,16 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	     * If no obsoletes version info is available, match all names.
 	     */
 	    if (rpmdsEVR(obsoletes) == NULL
-	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote))
+	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)) {
+		const char * ohNEVRA = hGetNEVRA(oh, NULL);
 #ifdef	DYING	/* XXX see http://bugzilla.redhat.com #134497 */
 		if (rpmVersionCompare(h, oh))
 #endif
 		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
+		rpmMessage(RPMMESS_DEBUG, _("  Obsoletes: %s\t\terases %s\n"),
+			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
+		ohNEVRA = _free(ohNEVRA);
+	    }
 	}
 	mi = rpmdbFreeIterator(mi);
     }

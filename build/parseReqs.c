@@ -106,7 +106,6 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, rpmTag tagN,
 
 	/* Don't permit file names as args for certain tags */
 	switch (tagN) {
-	case RPMTAG_OBSOLETEFLAGS:
 	case RPMTAG_CONFLICTFLAGS:
 	case RPMTAG_BUILDCONFLICTS:
 	    if (r[0] == '/') {

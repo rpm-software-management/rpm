@@ -19,6 +19,7 @@
 	- disable expensive header+payload verifies in default config.
 	- adjust digest/signature stats to count #pkgs and bytes.
 	- obsolete Serial:, Copyright:, and RHNPlatform: syntax in spec files.
+	- permit Obsoletes: /path/to/file.
 
 4.3.1 -> 4.3.2:
 	- use /etc/selinux/targeted/contexts/files/file_contexts for now.

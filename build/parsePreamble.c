@@ -809,13 +809,14 @@ static int findPreambleTag(Spec spec, /*@out@*/rpmTag * tag,
 	initPreambleList();
 
     for (p = preambleList; p->token != NULL; p++) {
-	if (p->token && !xstrncasecmp(spec->line, p->token, p->len))
-	    break;
+	if (!(p->token && !xstrncasecmp(spec->line, p->token, p->len)))
+	    continue;
 	if (p->obsolete) {
 	    rpmError(RPMERR_BADSPEC, _("Obsolete syntax: %s\n"),
 			p->token);
 	    p = NULL;
 	}
+	break;
     }
     if (p == NULL || p->token == NULL)
 	return 1;
