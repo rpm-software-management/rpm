@@ -38,8 +38,8 @@ Entry      : 016 (1021)RPMTAG_OS      STRING_TYPE        0xffffffff 00000001
 Entry      : 017 (1022)RPMTAG_ARCH    STRING_TYPE        0xffffffff 00000001
        Data: 000 sparc
 Entry      : 018 (1027)RPMTAG_FILENAMES STRING_ARRAY_TYPE  0xffffffff 00000003
-       Data: 000 /home/devel/jbj/src/rpm/tests/usr/doc/hello-1.0
-       Data: 001 /home/devel/jbj/src/rpm/tests/usr/doc/hello-1.0/FAQ
+       Data: 000 /usr/doc/hello-1.0
+       Data: 001 /usr/doc/hello-1.0/FAQ
        Data: 002 /usr/local/bin/hello
 Entry      : 019 (1028)RPMTAG_FILESIZES INT32_TYPE         0xffffffff 00000003
        Data: 000 0x00000400 (1024)
