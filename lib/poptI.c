@@ -51,9 +51,9 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	    argerror(_("exclude paths must begin with a /"));
 	ia->relocations = xrealloc(ia->relocations, 
 			sizeof(*ia->relocations) * (ia->numRelocations + 1));
-	/*@-temptrans@*/
+/*@-temptrans@*/
 	ia->relocations[ia->numRelocations].oldPath = xstrdup(arg);
-	/*@=temptrans@*/
+/*@=temptrans@*/
 	ia->relocations[ia->numRelocations].newPath = NULL;
 	ia->numRelocations++;
 	break;
@@ -71,12 +71,12 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	    argerror(_("relocations must have a / following the ="));
 	ia->relocations = xrealloc(ia->relocations, 
 			sizeof(*ia->relocations) * (ia->numRelocations + 1));
-	/*@-temptrans@*/
+/*@-temptrans@*/
 	ia->relocations[ia->numRelocations].oldPath = oldPath;
-	/*@=temptrans@*/
-	/*@-kepttrans@*/
+/*@=temptrans@*/
+/*@-kepttrans -usereleased @*/
 	ia->relocations[ia->numRelocations].newPath = newPath;
-	/*@=kepttrans@*/
+/*@=kepttrans =usereleased @*/
 	ia->numRelocations++;
       }	break;
     case POPT_ROLLBACK:

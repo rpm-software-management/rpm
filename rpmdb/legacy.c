@@ -37,15 +37,12 @@
  * @return		-1 on error, otherwise, an open file descriptor
  */ 
 static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_t *fsizep)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies *pidp, *fsizep, rpmGlobalMacroContext,
-		fileSystem, internalState @*/
+	/*@globals rpmGlobalMacroContext, internalState @*/
+	/*@modifies *pidp, *fsizep, rpmGlobalMacroContext, internalState @*/
 {
 /*@only@*/
     static const char * cmd = NULL;
     static int initted = 0;
-    pid_t pid;
     int fdno;
 
     if (!initted) {
@@ -112,6 +109,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 /*@-boundswrite@*/
     if (pidp != NULL && bingo) {
 	int pipes[2];
+	pid_t pid;
 	int xx;
 
 	xx = close(fdno);

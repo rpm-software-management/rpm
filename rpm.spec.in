@@ -77,7 +77,7 @@ will manipulate RPM packages and databases.
 %package build
 Summary: Scripts and executable programs used to build packages.
 Group: Development/Tools
-Requires: rpm = %{rpm_version}, patch >= 2.5
+Requires: rpm = %{rpm_version}, patch >= 2.5, file
 Provides: rpmbuild(VendorConfig) = %{version}
 
 %description build
@@ -434,8 +434,8 @@ fi
 #%attr(0644, @RPMUSER@, @RPMGROUP@) %{__prefix}/lib/rpm/perl.req
 
 %rpmattr	%{__prefix}/lib/rpm/rpm[bt]
-%rpmattr	%{__prefix}/lib/rpm/rpmdiff
-%rpmattr	%{__prefix}/lib/rpm/rpmdiff.cgi
+#%rpmattr	%{__prefix}/lib/rpm/rpmdiff
+#%rpmattr	%{__prefix}/lib/rpm/rpmdiff.cgi
 %rpmattr	%{__prefix}/lib/rpm/trpm
 %rpmattr	%{__prefix}/lib/rpm/u_pkg.sh
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh

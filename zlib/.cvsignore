@@ -20,6 +20,7 @@ doxygen
 example
 install-sh
 libtool
+ltmain.sh
 minigzip
 missing
 mkinstalldirs

@@ -6,14 +6,15 @@
 #include "rpmps.h"
 
 #include "rpmte.h"
+
+#define _RPMTS_INTERNAL         /* ts->goal, ts->dbmode, ts->suggests */
 #include "rpmts.h"
 
 #include "manifest.h"
-#ifdef	DYING
-#include "misc.h"
-#endif
+#include "misc.h"		/* rpmGlob */
 #include "debug.h"
 
+static int noDeps = 1;
 static int noChainsaw = 0;
 
 static int vsflags = _RPMTS_VSF_VERIFY_LEGACY;
@@ -43,6 +44,7 @@ static int
 rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
 	/*@*/
 {
+    rpmps ps;
     const char ** pkgURL = NULL;
     char * pkgState = NULL;
     const char ** fnp;
@@ -187,7 +189,41 @@ restart:
 	break;
     }
 
-    if (numFailed) goto exit;
+    if (numFailed > 0) goto exit;
+
+    if (!noDeps) {
+	rc = rpmtsCheck(ts);
+	if (rc) {
+	    numFailed += numPkgs;
+	    goto exit;
+	}
+	ps = rpmtsProblems(ts);
+	if (rpmpsNumProblems(ps) > 0) {
+	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
+	    rpmpsPrint(NULL, ps);
+	    numFailed += numPkgs;
+
+            /*@-branchstate@*/
+	    if (ts->suggests != NULL && ts->nsuggests > 0) {
+		rpmMessage(RPMMESS_NORMAL, _("    Suggested resolutions:\n"));
+		for (i = 0; i < ts->nsuggests; i++) {
+		    const char * str = ts->suggests[i];
+
+		    if (str == NULL)
+			break;
+
+		    rpmMessage(RPMMESS_NORMAL, "\t%s\n", str);
+		    ts->suggests[i] = NULL;
+		    str = _free(str);
+		}
+		ts->suggests = _free(ts->suggests);
+	    }
+	    /*@=branchstate@*/
+	}
+	ps = rpmpsFree(ps);
+    }
+
+    if (numFailed > 0) goto exit;
 
     rc = rpmtsOrder(ts);
     if (rc)
@@ -234,6 +270,8 @@ exit:
 }
 
 static struct poptOption optionsTable[] = {
+ { "check", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noDeps, 0,
+	N_("don't verify package dependencies"), NULL },
  { "nolegacy", '\0', POPT_BIT_CLR,	&vsflags, _RPMTS_VSF_VERIFY_LEGACY,
         N_("don't verify header+payload signature"), NULL },
  { "nodigest", '\0', POPT_BIT_SET,	&vsflags, _RPMTS_VSF_NODIGESTS,

@@ -32,6 +32,7 @@ lib/fsm.c
 lib/manifest.c
 lib/misc.c
 lib/package.c
+lib/poptALL.c
 lib/poptI.c
 lib/poptQV.c
 lib/psm.c
@@ -39,8 +40,10 @@ lib/query.c
 lib/rpmal.c
 lib/rpmchecksig.c
 lib/rpmds.c
+lib/rpmfi.c
 lib/rpminstall.c
 lib/rpmlead.c
+lib/rpmlibprov.c
 lib/rpmps.c
 lib/rpmrc.c
 lib/rpmte.c
@@ -52,16 +55,18 @@ lib/transaction.c
 lib/verify.c
 rpmdb/db3.c
 rpmdb/dbconfig.c
+rpmdb/fprint.c
 rpmdb/hdrNVR.c
 rpmdb/header.c
 rpmdb/header_internal.c
 rpmdb/legacy.c
 rpmdb/merge.c
 rpmdb/poptDB.c
-rpmdb/rpmhash.c
 rpmdb/rpmdb.c
+rpmdb/rpmhash.c
 rpmdb/tagname.c
 rpmio/digest.c
+rpmio/fts.c
 rpmio/macro.c
 rpmio/rpmio.c
 rpmio/rpmlog.c
@@ -70,3 +75,5 @@ rpmio/rpmpgp.c
 rpmio/rpmrpc.c
 rpmio/ugid.c
 rpmio/url.c
+tools/rpmcache.c
+tools/rpmgraph.c

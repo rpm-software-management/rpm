@@ -25,7 +25,7 @@ static const char * pipeOutput = NULL;
 /*@unchecked@*/
 /*@observer@*/ /*@null@*/
 static const char * rcfile = NULL;
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 static const char * rootdir = "/";
 
 /*@-exportheadervar@*/
@@ -53,8 +53,10 @@ static void printVersion(void)
  */
 /*@mayexit@*/
 static void rpmcliConfigured(void)
-	/*@globals internalState @*/
-	/*@modifies internalState @*/
+	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     static int initted = -1;
 
@@ -71,7 +73,10 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
                 /*@unused@*/ enum poptCallbackReason reason,
                 const struct poptOption * opt, const char * arg,
                 /*@unused@*/ const void * data)
-        /*@*/
+	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
 #if 0
 /*@observer@*/
@@ -92,7 +97,9 @@ fprintf(stderr, "*** rpmcliALL: -%c,--%s %s %s opt %p arg %p val %d\n", opt->sho
     case 'D':
 	(void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
 	rpmcliConfigured();
+/*@-type@*/
 	(void) rpmDefineMacro(rpmCLIMacroContext, arg, RMIL_CMDLINE);
+/*@=type@*/
 	break;
     case 'E':
 	rpmcliConfigured();
@@ -118,6 +125,7 @@ fprintf(stderr, "*** rpmcliALL: -%c,--%s %s %s opt %p arg %p val %d\n", opt->sho
     /*@=branchstate@*/
 }
 
+/*@-bitwisesigned -compmempass @*/
 /*@unchecked@*/
 struct poptOption rpmcliAllPoptTable[] = {
 /*@-type@*/ /* FIX: cast? */
@@ -158,7 +166,7 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
 #endif
- { "showrc", '\0', 0, POPT_SHOWRC|POPT_ARGFLAG_DOC_HIDDEN, 0,
+ { "showrc", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_SHOWRC,
 	N_("display final rpmrc and macro configuration"),
 	NULL },
 
@@ -176,6 +184,7 @@ struct poptOption rpmcliAllPoptTable[] = {
 
    POPT_TABLEEND
 };
+/*@=bitwisesigned =compmempass @*/
 
 poptContext
 rpmcliFini(poptContext optCon)
@@ -183,12 +192,15 @@ rpmcliFini(poptContext optCon)
     optCon = poptFreeContext(optCon);
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
+    /*@-noeffect@*/
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+    /*@=noeffect@*/
 #endif
 
     return NULL;
 }
 
+/*@-globstate@*/
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 {
@@ -197,8 +209,11 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     int rc;
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
+    /*@-noeffect@*/
     mtrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+    /*@=noeffect@*/
 #endif
+/*@-globs -mods@*/
     setprogname(argv[0]);       /* Retrofit glibc __progname */
 
     /* XXX glibc churn sanity */
@@ -206,14 +221,14 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
 	else __progname = argv[0];
     }
+/*@=globs =mods@*/
 
+#if !defined(__LCLINT__)
     (void)setlocale(LC_ALL, "" );
 
-#ifdef  __LCLINT__
-#define LOCALEDIR       "/usr/share/locale"
-#endif
     (void)bindtextdomain(PACKAGE, LOCALEDIR);
     (void)textdomain(PACKAGE);
+#endif
 
     rpmSetVerbosity(RPMMESS_NORMAL);
 
@@ -223,9 +238,11 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 	return NULL;
     }
 
+/*@-nullpass -temptrans@*/
     optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
+/*@=nullpass =temptrans@*/
     (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
-    poptReadDefaultConfig(optCon, 1);
+    (void) poptReadDefaultConfig(optCon, 1);
     poptSetExecPath(optCon, RPMCONFIGDIR, 1);
 
     /* Process all options, whine if unknown. */
@@ -233,18 +250,22 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 	optArg = poptGetOptArg(optCon);
 	switch (rc) {
 	default:
+/*@-nullpass@*/
 	    fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
 		__progname, rc);
+/*@=nullpass@*/
 	    exit(EXIT_FAILURE);
 
-	    /*@notreached@*/ break;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
         }
     }
 
     if (rc < -1) {
+/*@-nullpass@*/
 	fprintf(stderr, "%s: %s: %s\n", __progname,
 		poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
 		poptStrerror(rc));
+/*@=nullpass@*/
 	exit(EXIT_FAILURE);
     }
 
@@ -258,5 +279,6 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 
     return optCon;
 }
+/*@=globstate@*/
 
 /*@=boundsread@*/

@@ -143,8 +143,8 @@ Header headerRegenSigHeader(const Header h)
 
 /*@unchecked@*/
 static int nkeyids = 0;
-/*@unchecked@*/
-static int * keyids = NULL;
+/*@unchecked@*/ /*@only@*/ /*@null@*/
+static int * keyids;
 
 /**
  * Remember current key id.
@@ -152,8 +152,8 @@ static int * keyids = NULL;
  * @return		0 if new keyid, otherwise 1
  */
 static int rpmtsStashKeyid(rpmts ts)
-	/*@globals keyids, nkeyids @*/
-	/*@modifies keyids, nkeyids @*/
+	/*@globals nkeyids, keyids @*/
+	/*@modifies nkeyids, keyids @*/
 {
     struct pgpDigParams_s * sigp = NULL;
     unsigned int keyid;
@@ -164,15 +164,19 @@ static int rpmtsStashKeyid(rpmts ts)
 
     sigp = &ts->dig->signature;
     keyid = pgpGrab(sigp->signid+4, 4);
+    if (keyid == 0)
+	return 0;
 
-    if (keyids != NULL && keyid > 0)
+    if (keyids != NULL)
     for (i = 0; i < nkeyids; i++) {
 	if (keyid == keyids[i])
 	    return 1;
     }
 
     keyids = xrealloc(keyids, (nkeyids + 1) * sizeof(*keyids));
+/*@-boundswrite@*/
     keyids[nkeyids] = keyid;
+/*@=boundswrite@*/
     nkeyids++;
 
     return 0;

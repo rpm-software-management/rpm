@@ -461,6 +461,7 @@ int main(int argc, const char ** argv)
 #endif
 
 #ifdef	IAM_RPMEIU
+    if (ia->relocations != NULL)
     for (i = 0; i < ia->numRelocations; i++)
 	ia->relocations[i].oldPath = _free(ia->relocations[i].oldPath);
     ia->relocations = _free(ia->relocations);
@@ -1220,6 +1221,7 @@ exit:
 #endif
 
 #ifdef	IAM_RPMEIU
+    if (ia->relocations != NULL)
     for (i = 0; i < ia->numRelocations; i++)
 	ia->relocations[i].oldPath = _free(ia->relocations[i].oldPath);
     ia->relocations = _free(ia->relocations);

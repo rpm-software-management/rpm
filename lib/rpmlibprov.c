@@ -57,8 +57,10 @@ void rpmShowRpmlibProvides(FILE * fp)
     const struct rpmlibProvides_s * rlp;
 
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
+/*@-nullpass@*/ /* FIX: rlp->featureEVR not NULL */
 	rpmds pro = rpmdsSingle(RPMTAG_PROVIDENAME, rlp->featureName,
 			rlp->featureEVR, rlp->featureFlags);
+/*@=nullpass@*/
 	const char * DNEVR = rpmdsDNEVR(pro);
 
 	if (pro != NULL && DNEVR != NULL) {

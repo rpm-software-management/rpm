@@ -37,7 +37,10 @@ extern struct poptOption		rpmcliAllPoptTable[];
 /*@null@*/
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
-	/*@*/;
+	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext, stderr, 
+		fileSystem, internalState @*/
+	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext, stderr, 
+		fileSystem, internalState @*/;
 
 /**
  * Destroy most everything needed by an rpm CLI executable context.

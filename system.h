@@ -351,6 +351,7 @@ extern void muntrace (void)
     else __progname = pn;		\
   }
 #endif
+/*@unchecked@*/
 const char *__progname;
 
 #if HAVE_NETDB_H
