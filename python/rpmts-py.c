@@ -1347,7 +1347,8 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
     PyObject *TagN = NULL;
     PyObject *Key = NULL;
     char *key = NULL;
-    long lkey = 0;
+/* XXX lkey *must* be a 32 bit integer, int "works" on all known platforms. */
+    int lkey = 0;
     int len = 0;
     int tag = RPMDBI_PACKAGES;
     char * kwlist[] = {"tagNumber", "key", NULL};
