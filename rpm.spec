@@ -94,11 +94,11 @@ make -C python
 
 %install
 rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_DIR/etc/rpm
 
 make DESTDIR="$RPM_BUILD_ROOT" install
 %ifos linux
 make DESTDIR="$RPM_BUILD_ROOT" install -C python
-mkdir -p $RPM_BUILD_DIR/etc/rpm
 %endif
 
 { cd $RPM_BUILD_ROOT

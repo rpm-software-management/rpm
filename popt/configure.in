@@ -59,7 +59,7 @@ else
 	AC_MSG_RESULT(no)
 fi
 
-if !test -f ../rpm.c
+if test ! -f ../rpm.c
 then
   AC_MSG_CHECKING(for GNU xgettext)
   xgettext --version 2>&1 | grep 'GNU gettext' >/dev/null 2>&1 || AC_MSG_ERROR([
