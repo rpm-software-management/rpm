@@ -9,6 +9,8 @@
 	  then "not a number"
 	- almost completely rewrote rcfile parsing; I'm sure this will
 	  break things eventually but it's much more flexible now
+	- added buildarch/buildos compatibility tables, listed values
+	  in --showrc
 
 2.4.2 -> 2.4.3:
 	- implemented install time prerequisites
