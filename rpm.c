@@ -7,7 +7,6 @@
 #include "install.h"
 #include "lib/signature.h"
 #include "popt/popt.h"
-#include "query.h"
 #include "verify.h"
 
 #define GETOPT_REBUILD		1003

@@ -3,7 +3,6 @@
 #include "build/rpmbuild.h"
 
 #include "install.h"
-#include "query.h"
 #include "url.h"
 
 static int hashesPrinted = 0;
