@@ -640,7 +640,7 @@ int main(int argc, char ** argv) {
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
 	    bigMode == MODE_RESIGN) {
-            if ((optind != argc) && (sigLookupType() == RPMSIG_PGP262_1024)) {
+            if ((optind != argc) && (sigLookupType() == RPMSIG_MD5_PGP)) {
 	        if (!(passPhrase = getPassPhrase("Enter pass phrase: "))) {
 		    fprintf(stderr, _("Pass phrase check failed\n"));
 		    exit(1);
