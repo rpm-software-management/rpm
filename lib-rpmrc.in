@@ -1,3 +1,5 @@
+#############################################################
+# Default values, often overridden in /etc/rpmrc
 
 dbpath:		@varprefix@/lib/rpm
 topdir:		@prefix@/src/redhat
@@ -7,6 +9,14 @@ cpiobin:	@CPIOBIN@
 #############################################################
 
 # Please send new entries to rpm-list@redhat.com
+
+#############################################################
+# Values for RPM_OPT_FLAGS for various platforms
+
+optflags: i386 -O2 -m486 -fno-strength-reduce
+optflags: axp -O2
+optflags: sparc -O2
+optflags: m68k -O2 -fomit-frame-pointer
 
 #############################################################
 # Canonical arch names and numbers
@@ -94,3 +104,5 @@ arch_compat: osfmach3_i386: i486
 arch_compat: osfmach3_ppc: ppc
 
 arch_compat: usparc: sparc
+
+topdir: /usr/src/redhat
