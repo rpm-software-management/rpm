@@ -146,12 +146,12 @@ varprefix = @varprefix@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST = convertrpmrc.sh find-lang.sh freshen.sh getpo.sh
+EXTRA_DIST = convertrpmrc.sh find-lang.sh freshen.sh getpo.sh vpkg-provides.sh
 
 installprefix = $(DESTDIR)
 
 configdir = ${prefix}/lib/rpm
-config_SCRIPTS = convertrpmrc.sh find-lang.sh freshen.sh getpo.sh
+config_SCRIPTS = convertrpmrc.sh find-lang.sh freshen.sh getpo.sh vpkg-provides.sh
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
