@@ -5,6 +5,7 @@
 	- don't give an error if missingok files don't exist during remove
 	- touched ftp code to make it coexist w/ Red Hat install better
 	- use rand/srand rather then random/srandom
+	- don't build misc directory unless it's necessary
 
 2.4.8 -> 2.4.9:
 	- fix for verification on systems where a single group id
