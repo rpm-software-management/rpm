@@ -789,7 +789,7 @@ static int process_filelist(Header header, StringBuf sb, int *size,
 		} else {
 		    strcpy(buf, fest->file);
 		}
-		readlink(buf, buf, 1024);
+		buf[readlink(buf, buf, 1024)] = '\0';
 		fileLinktoList[c] = strdup(buf);
 	    } else {
 		/* This is stupid */
@@ -894,6 +894,7 @@ int packageBinaries(Spec s, char *passPhrase)
     char *release;
     char *vendor;
     char *dist;
+    char *packageVersion, *packageRelease;
     int size;
     int_8 os, arch;
     
@@ -927,6 +928,16 @@ int packageBinaries(Spec s, char *passPhrase)
 	    pr = pr->next;
 	    continue;
 	}
+
+	/* Handle subpackage version/release overrides */
+	if (!getEntry(pr->header, RPMTAG_VERSION, NULL,
+		      (void *) &packageVersion, NULL)) {
+	    packageVersion = version;
+	}
+	if (!getEntry(pr->header, RPMTAG_RELEASE, NULL,
+		      (void *) &packageRelease, NULL)) {
+	    packageRelease = release;
+	}
 	
 	/* Figure out the name of this package */
 	if (pr->subname) {
@@ -939,9 +950,9 @@ int packageBinaries(Spec s, char *passPhrase)
 	    strcpy(name, s->name);
 	}
 	strcat(name, "-");
-	strcat(name, version);
+	strcat(name, packageVersion);
 	strcat(name, "-");
-	strcat(name, release);
+	strcat(name, packageRelease);
 
 	/**** Generate the Header ****/
 	
@@ -1003,8 +1014,8 @@ int packageBinaries(Spec s, char *passPhrase)
 	
 	/**** Process the file list ****/
 	
-	if (process_filelist(outHeader, pr->filelist, &size,
-			     s->name, version, release, RPMLEAD_BINARY)) {
+	if (process_filelist(outHeader, pr->filelist, &size, s->name,
+			     packageVersion, packageRelease, RPMLEAD_BINARY)) {
 	    return 1;
 	}
 	/* And add the final Header entry */
