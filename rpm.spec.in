@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 1
+Release: 0.1
 Group: System Environment/Base
 Source: ftp://jbj.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -28,7 +28,7 @@ Conflicts: patch < 2.5
 %ifos linux
 Prereq: fileutils shadow-utils
 %endif
-Requires: popt = 1.10.1
+Requires: popt = 1.10.2
 Obsoletes: rpm-perl < %{version}
 
 # XXX necessary only to drag in /usr/lib/libelf.a, otherwise internal elfutils.
@@ -116,7 +116,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.10.1
+Version: 1.10.2
 
 %description -n popt
 Popt is a C library for parsing command line parameters. Popt was
@@ -500,62 +500,5 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Sun Feb 13 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-1
-- don't classify files in /dev (#146623).
-- don't build with sqlite3 if <sqlite3.h> is missing.
-
-* Sat Feb 12 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.24
-- zlib: uniqify certain symbols to prevent name space pollution.
-- macosx: include <sys/types.h> so that python sees the u_char typedef.
-- macosx: change to --prefix=/usr rather than /opt/local.
-- use waitpid rather than SIGCHLD reaper.
-- rip out DB_PRIVATE revert if not NPTL, it's not the right thing to do.
-
-* Fri Feb 11 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.22
-- permit build scriptlet interpreters to be individually overridden.
-
-* Thu Feb 10 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.20
-- perform callbacks as always (#147537).
-
-* Wed Feb  2 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.16
-- fix: length of gpg V4 hash seed was incorrect (#146896).
-- add support for V4 rfc-2440 signatures.
-
-* Mon Jan 31 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.14
-- add sqlite internal (build still expects external sqlite3-3.0.8).
-- sqlite: revert to original narrow scoping of cOpen/cClose.
-
-* Fri Jan 28 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.12
-- python: force dbMatch() h# key to be 32 bit integer (#146477).
-
-* Tue Jan 25 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.10
-- more macosx fiddles.
-- move global /var/lock/rpm/transaction to dbpath.
-- permit fcntl path to be configured through rpmlock_path macro.
-- add missing #if defined(ENABLE_NLS) (#146184).
-
-* Mon Jan 17 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.8
-- changes to build on Mac OS X using darwinports neon/beecrypt.
-- add https://svn.uhulinux.hu/packages/dev/zlib/patches/02-rsync.patch
-
-* Sun Jan  9 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.7
-- build against external/internal neon.
-
-* Tue Jan  4 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.6
-- mac os x patches (#131943,#131944,#132924,#132926).
-- mac os x patches (#133611, #133612, #134637).
-
-* Sun Jan  2 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.5
-- upgrade to db-4.3.27.
-- revert MAGIC_COMPRESS, real fix is in libmagic (#143782).
-- upgrade to file-4.12 internal.
-
-* Tue Dec  7 2004 Jeff Johnson <jbj@jbj.org> 4.4.1-0.3
-- use package color as Obsoletes: color.
-
-* Mon Dec  6 2004 Jeff Johnson <jbj@jbj.org> 4.4.1-0.2
-- automagically detect and emit "python(abi) = 2.4" dependencies.
-- popt 1.10.1 to preserve newer.
-
-* Sun Dec  5 2004 Jeff Johnson <jbj@jbj.org> 4.4.1-0.1
-- force *.py->*.pyo byte code compilation with brp-python-bytecompile.
+* Sun Feb 13 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.1
+- start 4.4.2 devel.
