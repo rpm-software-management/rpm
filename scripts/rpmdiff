@@ -1,0 +1,873 @@
+
+#!/usr/local/bin/perl
+
+# rpmdiff - a program for comparing two rpm files for differences.
+# Written by Ken Estes, Mail.com.
+
+use Getopt::Long;
+
+# much of this code comes from reading the book 
+#  "Maximum RPM" by Edward C. Bailey
+
+
+sub usage {
+  
+    my $args = "[--".join("] [--", @ARGS)."]";
+    my @default_args = map $RPMTAG->{$_}->{'arg'}, @DEFAULT_CMP;
+    my $default_args = "--".join(" --", @default_args)."";
+
+    my $usage =<<EOF;
+
+$0  [--version]  [--help]  [--cmpmode]  [--all] 
+    $args
+    old_rpm_file  new_rpm_file
+
+
+Arguments
+
+
+--version	Print version information for this program
+
+--help		Show this usage page
+
+--cmpmode	Do not send any information to stdout, instead
+		exit with zero if the rpm files are identical and 
+		exit with 1 if there are differences.
+
+--all		Ensure that all possible comparisons will be performed.
+		This argument should not be used with any CMP arguments.
+
+
+CMP Arguments
+
+
+Many of the options are designed to select which comparisons the user
+is interested in so that spurious differences can be ignored.  If no
+CMP arguments are chosen then the default arguments are picked.
+
+The CMP arguments are:
+	$args
+
+The default arguments are:
+	$default_args
+
+There are two methods of picking which comparisions will be performed.
+Any differences between the two files which are not in the list of
+performed comparisons will be ignored.
+
+First arguments may be specified on the command line preceeded with a
+'--' as in '--md5' these arguments specify which comparisons will be
+performed. If a comparison is not mentioned on the command line it will
+not be performed.
+
+Second arguments may be specified on the command line preceeded with a
+'--no' as in '--nomd5' these arguments specify which comparisons will
+not be performed. If a comparison is not mentioned on the command line
+it will be prefomed.
+
+You can not mix the two types of arguments.
+
+
+Synopsis
+
+
+This script will compare old_rpm_file and new_rpm_file and print to
+standard out the differences between the two files.  The output is
+designed to help isolate the changes which will occur when upgrading
+an installed package.  The output looks like the output of 'rpm -V'.
+It is assumed that you have installed oldpackage and are thinking of
+upgrading to newpackage.  The output is as if you ran 'rpm -Va' after
+installing the new package with cpio so that the rpm database was not
+up todate.  Thus 'rpm -Va' will pick up the differences between the
+two pacakges.
+
+
+Additionally the RPM scripts (prein, postin, triggers, verify, etc)
+are compared and their results are displayed as if the scripts ended
+up as files in the filesystem.
+
+Exit Code
+
+
+The if not run in cmpmode the program exists with the number of files
+which are different between the two packages, the exitcode will get no
+bigger than $MAX_EXIT.
+
+If run in cmpmode then the program will exit with zero if the rpm
+files are identical and exit with 1 if there are differences.
+
+
+BUGS
+
+
+This program only parses the RPM file headers not the cpio payload
+inside the RPM file.  In the rare case where an tag is defined in one
+RPM and not in another we charitably assume that the RPMs match on
+this tag.  An example of this may be file uid/gid\'s.  Currently rpm
+does not store this information in the header, it appears only in the
+cpio payload.  If you were to compare two rpm files and one of them
+does not have the uid/gid\'s in the header then no difference in
+uid/gid will ever appear in the output regardless of what the RPMs
+actually contain.
+
+The program only checks differences between files and scripts, any
+changes to dependencies, prefixes, or spec file header information are
+not checked.
+
+There is no method provided to check changes in a files flags, this
+includes changes to the files documentation, MISSINGOK, NOREPLACE, or
+configuration status.
+
+
+Output Format
+
+
+The differences are sent to stdout.  There is one line for each file
+which is different.  The differences are encoded in a string using the
+following letters to represent the differerences and the following
+order to encode the information:
+
+	S is the file size
+
+	M is the files mode
+
+	5 is the MD5 checksum of the file
+
+	D is the files major and monor numbers
+
+	L is the files symbolic link contents.
+
+	U is the owner of the file
+
+	T is the modification time of the file
+
+Any attributes which match are denoted with a '.'. 
+
+
+Output Example
+
+
+S.5.....   PREIN
+.....U..   /dev/vcsa1
+..5....T   /dev/printer
+S.5....T   /etc/info-dir
+missing    /usr/doc/dhcpcd-0.70/README
+.M......   /usr/lib/libpanel.so.4
+added      /usr/lib/libmenu.so.4
+SM5....T   /usr/info/dir
+
+
+Usage Example
+
+
+$0 --help
+$0 --version
+
+$0 java-jdk-1.1.7-2.rpm java-jdk-1.1.7-3.rpm
+$0 --md5 java-jdk-1.1.7-2.rpm java-jdk-1.1.7-3.rpm
+$0 --nomd5 java-jdk-1.1.7-2.rpm java-jdk-1.1.7-3.rpm
+$0 --md5 --link --mtime java-jdk-1.1.7-2.rpm java-jdk-1.1.7-3.rpm
+$0 --all java-jdk-1.1.7-2.rpm java-jdk-1.1.7-3.rpm
+$0 --cmpmode java-jdk-1.1.7-2.rpm java-jdk-1.1.7-3.rpm
+$0 --cmpmode --md5 java-jdk-1.1.7-2.rpm java-jdk-1.1.7-3.rpm
+
+
+EOF
+
+    print $usage;
+    exit 0;
+
+}
+
+
+
+sub set_static_vars {
+
+# This functions sets all the static variables which are often
+# configuration parameters.  Since it only sets variables to static
+# quantites it can not fail at run time. Some of these variables are
+# adjusted by parse_args() but asside from that none of these
+# variables are ever written to. All global variables are defined here
+# so we have a list of them and a comment of what they are for.
+  
+
+# The numerical indicies to the hash comes from ~rpm/lib/rpmlib.h
+# the index is the number of the tag as it appears in the rpmfile.
+
+# tag_name: the name of the tag as it appears in rpmlib.h.
+
+# all entries have a tag_name if an entry has one of the next three
+# fields it must have the rest.  If a tag does not have the next three
+# fields we we will still gather data for it. This is for future
+# functionality as these fields look important, and for debugging.
+
+
+# diff_order: if the tag is used in the different output then this is
+# 		the order of the character differences.
+
+# diff_char: if the tag is used in the different output then this is
+# 		the character which will appear when there is a 
+#		difference.
+
+# arg: the name of the command line option to specify whether this tag
+#		 is used in the difference or not
+
+# The scripts contained in the rpm (preinstall, postinstall) do not
+# have the comparison information that files have.  Some of the
+# comparisons (md5, size) can be performed on scripts, using regular
+# perl functions, others (uid, modes, link) can not.  We use
+# script_cmp to link the perl comparison function to the comparison
+# arguments and to the diff_char.
+
+# script_cmp: the perl comparion function to perform if this
+# difference can be performed on the rpm scripts
+
+# is_script: if defined this indicates that the datatype is a script
+# and we can use script_cmp on it.  The data is stored as an array
+# containing a single string.
+
+
+# note: that although we may need to denote differences in the flags
+# this table may not be appropriate for that task.
+
+
+# The data from the RPM files is stored in $RPM0, $RPM1 they are HoL.
+# The hash is indexed with the same index as appears in $RPMTAG, the
+# other data is what ever comes out of the file. Most of the data we
+# want is stored as arrays of values.  We keep a hash to allow us to
+# find the index number to use in all arrays given the filename. Some
+# information like the package name and the posinstall script are
+# stored, in the hash table as an array which contains a single
+# string.
+
+
+
+
+  $RPMTAG = {
+	     1000 => {
+		      'tag_name' => 'NAME',
+		     },
+	     1001 => {
+		      'tag_name' => 'VERSION',
+		     },
+	     1002 => {
+		      'tag_name' => 'RELEASE',
+		     },
+	     1006 => {
+		      'tag_name' => 'BUILDTIME',
+		     },
+	     1027 => {
+		     'tag_name' => 'FILENAMES',
+		     },
+	     1028 => {
+		     'tag_name' => 'FILESIZES',
+		      'diff_order' => 0,
+		      'diff_char' => 'S',
+		      'arg' => 'size',
+		      'script_cmp' => sub { return (length($_[0]) ne 
+						    length($_[1])); },
+		     },
+	     1029 => {
+		      'tag_name' => 'FILESTATES',
+		     },
+	     1030 => {
+		      'tag_name' => 'FILEMODES',
+		      'diff_order' => 1,
+		      'diff_char' => 'M',
+		      'arg' => 'mode',
+		     },
+	     1031 => {
+		      # /* internal */
+		      'tag_name' => 'FILEUIDS',
+		      'diff_order' => 5,
+		      'diff_char' => 'U',
+		      'arg' => 'user',
+		     },
+	     1032 => {
+		      # /* internal */
+		      'tag_name' => 'FILEGIDS',
+		      'diff_order' => 6,
+		      'diff_char' => 'G',
+		      'arg' => 'group',
+		     },
+	     1033 => {
+		      'tag_name' => 'FILERDEVS',
+		      'diff_order' => 3,
+		      'diff_char' => 'D',
+		      'arg' => 'dev',
+		     },
+	     1034 => {
+		      'tag_name' => 'FILEMTIMES',
+		      'diff_order' => 7,
+		      'diff_char' => 'T',
+		      'arg' => 'mtime',
+		     },
+	     1035 => {
+		      'tag_name' => 'FILEMD5S',
+		      'diff_order' => 2,
+		      'diff_char' => '5',
+		      'arg' => 'md5',
+		      'script_cmp' => sub{ return ($_[0] ne 
+		     				  $_[1]); },
+		     },
+	    1036 => {
+		     'tag_name' => 'FILELINKTOS',
+		     'diff_order' => 4,
+		     'diff_char' => 'L',
+		     'arg' => 'link',
+		    },
+	     1037 => {
+		      'tag_name' => 'FILEFLAGS',
+		     },
+	     
+	     #  support for differences of scripts
+	     
+	     1023 => {
+		      'tag_name' => 'PREIN',
+		      'is_script' => 1,
+		     },
+	     1024 => {			    
+		      'tag_name' => 'POSTIN',
+		      'is_script' => 1,
+		     },
+	     1025 => {			    
+		      'tag_name' => 'PREUN',
+		      'is_script' => 1,
+		     },
+	     1026 => {			    
+		      'tag_name' => 'POSTUN',
+		      'is_script' => 1,
+		     },
+	     1079 => {			    
+		      'tag_name' => 'VERIFYSCRIPT',
+		      'is_script' => 1,
+		     },
+	     1065 => {			    
+		      'tag_name' => 'TRIGGERSCRIPTS',
+		      'is_script' => 1,
+		     },
+	     1091 => {			    
+		      'tag_name' => 'VERIFYSCRIPTPROG',
+		      'is_script' => 1,
+		     },
+	     1092 => {			    
+		      'tag_name' => 'TRIGGERSCRIPTPROG',
+		       'is_script' => 1,
+		     },
+	     
+	   };
+  
+  # by default check these options, which are the "contents" of the
+  # files.
+  
+  @DEFAULT_CMP = ( 1028, 1035, 1036, );
+  
+  
+  $RPM_FILE_MAGIC   = chr(0xed).chr(0xab).chr(0xee).chr(0xdb);
+  $RPM_HEADER_MAGIC = chr(0x8e).chr(0xad).chr(0xe8);
+  
+  # we want the second header block, as the first header is the
+  # signature block.
+
+  $HEADER_BLOCK_NUM = 2;
+
+  # number of bytes in the file to skip when looking for the first
+  # header. Actually I think the lead is bigger then this like 96, but
+  # I am sure this minimum value is correct.
+
+  $LEAD_LENGTH = 66;
+
+  $HEADER_RECORD_SIZE = 16;
+  
+  # largest exit code we allow.
+
+  $MAX_EXIT = 250;
+  
+  $NUM_DIFFERENCES = 0;
+
+  $RCS_REVISION = ' $Revision: 1.1 $ ';
+  
+  # set a known path.
+ 
+  $ENV{'PATH'}= (
+		 '/opt/gnu/bin'.
+		 ':/usr/local/bin'.
+		 ':/usr/bin'.
+		 ':/bin'.
+		 '');
+  
+  # taint perl requires we clean up these bad environmental variables.
+  
+  delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
+  
+  
+  $VERSION = 'NONE';
+  if ( $RCS_REVISION =~ m/([.0-9]+)/ ) {
+    $VERSION = $1;
+  }
+  
+  return ;
+}
+
+
+sub parse_args{
+
+  my $arg_include = '';
+  my $arg_exclude = '';
+  my %arg_tags= ();
+
+  my @args_with_bang = ();
+  my %arg2tag = ();
+
+  # find out what arguments are availible and build some
+  # data structures to work with them.
+
+ foreach $tag (keys %$RPMTAG ) {
+   my $arg = $RPMTAG->{$tag}->{'arg'};
+   ($arg) || next;
+   push @ARGS, $arg;
+   push @ALL_CMP_TAGS, $tag;
+   push @args_with_bang, "$arg!";
+   $arg2tag{$arg}=$tag;
+ }
+  
+  # sort the tags to determine the proper comparison order.
+  # use the order stored in the RPMTAG table.
+  #  If this code is too confusing, look up
+  # 'Schwartzian Transform' in perlfaq4 or an advanced perl book.
+  
+  @ALL_CMP_TAGS  =	 map { $_->[0] }
+			 sort{ $a->[1] <=> $b->[1] }	
+			 map { [ $_, $RPMTAG->{$_}->{'diff_order'} ] }
+			 @ALL_CMP_TAGS;
+  
+  $FILES_EQ_STRING = '.' x scalar(@ALL_CMP_TAGS);
+
+  if( !GetOptions("version", "help", "all", "cmpmode!", @args_with_bang) ) {
+    print("Illegal options in \@ARGV: '@ARGV'\n");
+    usage() ;
+    exit 1 ;
+ }
+  
+ if($opt_version) {
+   print "Version: $VERSION\n";
+   exit 0;  
+ }
+ 
+ if ($opt_help) {
+   usage();
+ }
+
+ if ($opt_all) {
+   # all is just an exclude with nothing to exclude
+   $arg_exclude = 1;
+ }
+
+ # process each of the arguments derived from the $RPMTAG hash
+
+ foreach $arg (@ARGS) {
+   my $arg_var = "opt_$arg";
+   if (defined($$arg_var)) {
+     $arg_tags{$arg2tag{$arg}} = 1;
+     if ($$arg_var) {
+       $arg_include = 1;
+     } else {
+       $arg_exclude = 1;
+     }
+   }
+ }
+
+ ($arg_include) && ($arg_exclude) &&
+   die("$0: Can not mix both include and exclude arguements ".
+       "on the command line.\n");
+ 
+  if ($arg_include) {
+    # check only the options listed
+    foreach $tag (keys %arg_tags) {
+      $CMP_TAGS{$tag} = 1;
+    }
+  } elsif ($arg_exclude) {
+    # check everything but the options listed
+    foreach $tag (@ALL_CMP_TAGS) {
+      $CMP_TAGS{$tag} = 1;
+    }
+    foreach $tag (keys %arg_tags) {
+      delete $CMP_TAGS{$tag};
+    }
+  } else {
+    # check the default options 
+    foreach $tag (@DEFAULT_CMP) {
+      $CMP_TAGS{$tag} = 1;
+    }
+  }
+  
+  ($#ARGV == 1) ||
+    die("$0: Argument list must include two file names\n");
+  
+  $RPMFILE0 = $ARGV[0];
+  $RPMFILE1 = $ARGV[1];
+
+  ( !(-f $RPMFILE0) || !(-r $RPMFILE0) ) &&
+    die("$0: '$RPMFILE0' is not a readable file\n");
+  
+  ( !(-f $RPMFILE1) || !(-r $RPMFILE1) ) && 
+    die("$0: '$RPMFILE1' is not a readable file\n");
+  
+  $CMP_MODE = ($opt_cmpmode == 1);
+
+  return ;
+}
+
+# read the rpmfile and extract the header information.
+
+sub parse_rpm_headers {
+  my ($filename) = @_;
+
+  my $file = '';
+  my $out = {};
+
+  # read whole file into memory
+  {
+    open (RPMFILE, "<$filename")||
+      die("$0: Could not open: $filename for reading. $!\n");
+
+    # not needed on unix but lets be very clear
+    binmode (RPMFILE);
+
+    # slurp whole file
+    my $old_irs = $/;
+    undef $/;
+
+    $file = <RPMFILE>;
+    
+    $/ = $old_irs;
+
+    close(RPMFILE)||
+      die("$0: Could not close: $filename. $!\n");
+    
+    $file =~ m/^$RPM_FILE_MAGIC/ ||
+      die("$0: file: $filename is not an RPM file. ".
+	  "No magic number found.\n");
+  }  
+
+  # we want the second header block, as the first header is the
+  # signature block.
+
+  my ($header_start, $store_start) = ($LEAD_LENGTH,0);
+  my ($_version, $_reserved, $num_header_entries, $num_store_bytes) = ();
+
+  foreach $i (1 .. $HEADER_BLOCK_NUM) {
+
+    # find beginning of header,
+    $header_start = index($file, $RPM_HEADER_MAGIC, $header_start);
+    ($header_start < 0) &&
+      die("$0: file: $filename is not an RPM file. ".
+	  "No: $i, header found.\n");
+
+    $header_start += length($RPM_HEADER_MAGIC);
+    
+    ($_version, $_reserved, $num_header_entries, $num_store_bytes) = 
+      unpack("CNNN", substr($file, $header_start, 1+(4*3)));
+    $header_start += 1+(4*3);
+    
+    # find beginning of store
+    $store_start = $header_start + 
+      ($num_header_entries * $HEADER_RECORD_SIZE);
+    
+    ( ($store_start + $num_store_bytes) < length($file) ) ||
+      die("$0: File Parse Error, file: $filename, ".
+	  "is not long enough to hold store.\n");
+  }
+  
+  # the header is just a list of information about data.
+  # the data is stored in the store futher down the file.
+  my $header_position = $header_start;
+  foreach $i (0 .. $num_header_entries-1) {
+    
+    my ($tag, $data_type, $offset, $data_count)  =
+      unpack("N4", substr($file, $header_position, $HEADER_RECORD_SIZE));
+    $header_position += $HEADER_RECORD_SIZE;
+    
+    (    
+     ( ($tag < 100) || ($tag > 1200) ) ||
+     ( ($data_type < 0) || ($data_type > 10) ) ||
+     ($offset < 0)
+    ) && die("$0: Error parsing header in rpm file: $filename, ".
+	     "record number: $i.\n");
+    
+    # we are only interested in the tags which are defined
+    $RPMTAG->{$tag} || next;
+    
+    foreach $j (0 .. $data_count-1) {
+      my $value ='';
+      if (0) {
+	# dummy for aliging the code like a case statement
+      } elsif ($data_type == 0) {
+	# null
+	$value = '';
+      } elsif ($data_type == 1) {
+	# char
+	$value = substr($file, $store_start+$offset, 1);
+	$offset += 1;
+      } elsif ($data_type == 2) {
+	# int8
+	$value = ord(substr($file, $store_start+$offset, 1));
+	$offset += 1;
+      } elsif ($data_type == 3) {
+	# int16
+	$value = unpack("n", substr($file, $store_start+$offset, 2));
+	$offset += 2;
+      } elsif ($data_type == 4) {
+	# int32
+	$value = unpack("N", substr($file, $store_start+$offset, 4));
+	$offset += 4;
+      } elsif ($data_type == 5) {
+	# int64
+	# ---- These aren't supported by RPM (yet) */
+	die("$0: int64 type found in rpm file: $filename, ".
+	    "record number: $i.\n");
+      } elsif ($data_type == 6) {
+	# string
+	my $null_position = index ($file, "\0", $store_start+$offset);
+	my $length =  $null_position - ($store_start+$offset);
+	$value = substr($file, $store_start+$offset, $length);
+	$offset += $length;
+      } elsif ($data_type == 7) {
+	# bin
+	# to properly support this I need to move it outside the $j
+	# loop.  However I do not need it.
+	die("$0: Bin type found in rpm file: $filename, ".
+	    "record number: $i.\n");
+      } elsif ($data_type == 8) {
+	# string_array
+	my $null_position = index ($file, "\0", $store_start+$offset);
+	my $length =  $null_position - ($store_start+$offset);
+	$value = substr($file, $store_start+$offset, $length);
+	$offset += $length+1
+      } elsif ($data_type == 9) {
+	# this is listed as both RPM_I18NSTRING_TYPE and RPM_MAX_TYPE
+	# in file ~rpm/lib/header.h but I ignore it
+	die("$0: I18NSTRING type found in rpm file: $filename, ".
+	    "record number: $i.\n");
+      }
+      
+      push @{$out->{$tag}}, $value;
+      if ($RPMTAG->{$tag}->{"tag_name"} eq 'FILENAMES') {
+	$out->{'name2index'}->{$value} = $j;
+      }
+    } # foreach $j
+    
+  } # foreach $i
+
+  return $out;
+}
+
+
+# traverse the datastructures to create a text representation of the
+# critical differences between rpmscripts.  If we are running in
+# cmpmode and a difference is found exit early.
+
+
+sub format_script_differences {
+  my ($rpm0, $rpm1) = @_;
+
+  my $out = '';;
+  my %seen = ();
+
+  foreach $script ( sort (keys %$RPMTAG) ) {
+
+    ($RPMTAG->{$script}->{'is_script'}) || next;
+
+    ($rpm0->{$script} || $rpm1->{$script}) || next;
+
+    my $prefix='';
+    
+    if ( ($rpm0->{$script}) && (!($rpm1->{$script})) ) {
+      $prefix = 'missing ';
+    } elsif ( (!($rpm0->{$script})) && ($rpm1->{$script}) ) {
+      $prefix = 'added   ';
+    } else {
+      my $diff_str = '';
+      foreach $cmp_tag (@ALL_CMP_TAGS) {
+	if ( !($CMP_TAGS{$cmp_tag}) || 
+	     !($RPMTAG->{$cmp_tag}->{'script_cmp'}) ){
+	  $diff_str .= '.';
+	  next;
+	}
+	
+	# In the rare case where an tag is defined in one RPM and not
+	# in another we charitably assume that the RPMs match on this
+	# tag.  There is a warning in the stderr anyway.
+	
+	if (
+	    ($rpm0->{$cmp_tag}) && 
+	    ($rpm1->{$cmp_tag}) &&
+
+	    # use the anonymous comparison function (stored in the
+	    # table) to compare the two scripts
+
+	    (&{$RPMTAG->{$cmp_tag}->{'script_cmp'}}
+	     		($rpm0->{$script}->[0], $rpm1->{$script}->[0]))
+	   ) {
+	  $diff_str .= $RPMTAG->{$cmp_tag}->{'diff_char'};
+	} else {
+	  $diff_str .= '.';
+	}
+	
+      } # foreach $tag
+      if ($diff_str ne $FILES_EQ_STRING) {
+	$prefix = $diff_str;
+      }
+    }
+    
+    ($prefix) || next;
+
+    if ($CMP_MODE) {
+      exit 1;
+    }
+
+    ($NUM_DIFFERENCES < $MAX_EXIT) &&
+      $NUM_DIFFERENCES++;
+
+    $out .= "$prefix   $RPMTAG->{$script}->{'tag_name'}\n";
+
+  } # foreach $filename
+    
+  return $out;
+}
+
+
+
+# traverse the datastructures to create a text representation of the
+# critical differences between file stored in the pacakge.  If we are
+# running in cmpmode and a difference is found exit early.
+
+
+
+sub format_file_differences {
+  my ($rpm0, $rpm1) = @_;
+
+  my $out = '';;
+  my %seen = ();
+
+  foreach $filename ( sort (
+			    (keys %{$rpm0->{'name2index'}}), 
+			    (keys %{$rpm1->{'name2index'}})
+			   ) ) {
+
+    $seen{$filename} && next;
+    $seen{$filename} = 1;
+    $index0 = $rpm0->{'name2index'}->{$filename};
+    $index1 = $rpm1->{'name2index'}->{$filename};
+
+    my $prefix='';
+    
+    if ( ($index0) && (!($index1)) ) {
+      $prefix = 'missing ';
+    } elsif ( (!($index0)) && ($index1) ) {
+      $prefix = 'added   ';
+    } else {
+      my $diff_str = '';
+      foreach $cmp_tag (@ALL_CMP_TAGS) {
+	if (!($CMP_TAGS{$cmp_tag})){
+	  $diff_str .= '.';
+	  next;
+	}
+	
+	# In the rare case where an tag is defined in one RPM and not
+	# in another we charitably assume that the RPMs match on this
+	# tag. There is a warning in the stderr anyway.
+	
+	if (
+	    ($rpm0->{$cmp_tag}->[$index0]) && 
+	    ($rpm1->{$cmp_tag}->[$index1]) &&
+	    ($rpm0->{$cmp_tag}->[$index0] ne 
+		$rpm1->{$cmp_tag}->[$index1])
+	   ) {
+	  $diff_str .= $RPMTAG->{$cmp_tag}->{'diff_char'};
+	} else {
+	  $diff_str .= '.';
+	}
+	
+      } # foreach $tag
+      if ($diff_str ne $FILES_EQ_STRING) {
+	$prefix = $diff_str;
+      }
+    }
+    
+    ($prefix) || next;
+
+    if ($CMP_MODE) {
+      die 1;
+    }
+
+    ($NUM_DIFFERENCES < $MAX_EXIT) &&
+      $NUM_DIFFERENCES++;
+
+    # this set of blanks would contain information from the flags, if
+    # only I was not so lazy
+
+    $out .= "$prefix   $filename\n";
+
+  } # foreach $filename
+    
+  return $out;
+}
+
+# warn user of a cmp that was requested can not be carried out due to
+# lack of data in the header of atleast one file.
+
+sub data_missing_warnings {
+  my ($rpm0, $rpm1) = @_;
+  
+  my $out = '';;
+  
+  foreach $cmp_tag (@ALL_CMP_TAGS) {
+    if (!($CMP_TAGS{$cmp_tag})) {
+      next;
+    }
+    
+    if ( ($CMP_TAGS{$cmp_tag}) &&
+	 (!$rpm0->{$cmp_tag}) 
+       ){
+      $out .= ("Comparison: '$RPMTAG->{$cmp_tag}->{'arg'}' ".
+	       "specified, but data is not availible in ".
+	       "rpm: $RPMFILE0.\n");
+	}
+    if ( ($CMP_TAGS{$cmp_tag}) &&
+	     (!$rpm1->{$cmp_tag}) 
+       ){
+      $out .= ("Comparison: '$RPMTAG->{$cmp_tag}->{'arg'}' ".
+	       "specified, but data is not availible in ".
+	       "rpm: $RPMFILE1.\n");
+    }
+  }
+  return $out;
+}
+
+
+
+
+# -------------- main --------------
+{
+  set_static_vars();
+  parse_args();
+  $RPM0 = parse_rpm_headers($RPMFILE0);
+  $RPM1 = parse_rpm_headers($RPMFILE1);
+  
+  my $warnings = data_missing_warnings($RPM0, $RPM1);
+
+  # we must print warnings before running diff as we may exit early.
+
+  ($warnings) &&
+    warn($warnings);
+  
+  my $header = "oldpkg $RPMFILE0\n"."newpkg $RPMFILE1\n"."\n\n";
+  my $script_diffs = format_script_differences($RPM0, $RPM1);
+  my $file_diffs = format_file_differences($RPM0, $RPM1);
+  
+  ($script_diffs || $file_diffs) && 
+    print $header, $script_diffs, $file_diffs;
+  
+  exit $NUM_DIFFERENCES;
+}
