@@ -642,6 +642,40 @@ exit:
 }
 
 /* =============================================================== */
+int davReq(FD_t data, const char * davCmd, const char * davArg)
+{
+    return -1;
+}
+
+ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
+        /*@globals fileSystem, internalState @*/
+        /*@modifies *buf, fileSystem, internalState @*/
+        /*@requires maxSet(buf) >= (count - 1) @*/
+        /*@ensures maxRead(buf) == result @*/
+{
+    return -1;
+}
+
+ssize_t davWrite(void * cookie, const char * buf, size_t count)
+        /*@globals fileSystem, internalState @*/
+        /*@modifies fileSystem, internalState @*/
+{
+    return -1;
+}
+
+int davSeek(void * cookie, _libio_pos_t pos, int whence)
+        /*@globals fileSystem, internalState @*/
+        /*@modifies fileSystem, internalState @*/
+{
+    return -1;
+}
+
+int davClose(/*@only@*/ void * cookie)
+{
+    return -1;
+}
+
+/* =============================================================== */
 #ifdef	NOTYET
 static int davMkdir(const char * path, /*@unused@*/ mode_t mode)
 	/*@globals h_errno, fileSystem, internalState @*/

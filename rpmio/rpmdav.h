@@ -81,6 +81,43 @@ DIR * avOpendir(const char * path)
 	/*@modifies fileSystem, internalState @*/;
 
 /**
+ * Send a http request.
+ * @param data		
+ * @param davCmd	http command
+ * @param davArg	http command argumeny
+ * @returns		0 on success
+ */
+int davReq(FD_t data, const char * davCmd, const char * davArg)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies data, fileSystem, internalState @*/;
+
+/**
+ */
+ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
+        /*@globals fileSystem, internalState @*/
+        /*@modifies *buf, fileSystem, internalState @*/
+        /*@requires maxSet(buf) >= (count - 1) @*/
+        /*@ensures maxRead(buf) == result @*/;
+
+/**
+ */
+ssize_t davWrite(void * cookie, const char * buf, size_t count)
+        /*@globals fileSystem, internalState @*/
+        /*@modifies fileSystem, internalState @*/;
+
+/**
+ */
+int davSeek(void * cookie, _libio_pos_t pos, int whence)
+        /*@globals fileSystem, internalState @*/
+        /*@modifies fileSystem, internalState @*/;
+
+/**
+ */
+int davClose(/*@only@*/ void * cookie)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies cookie, fileSystem, internalState @*/;
+
+/**
  * Close a DAV collection.
  * @param dir		argv DIR
  * @return 		0 always
