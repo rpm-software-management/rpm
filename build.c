@@ -258,9 +258,9 @@ exit:
     return rc;
 }
 
-int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,
-	  int fromTarball, char *cookie, const char * rcfile, int force,
-	  int nodeps)
+int build(const char * arg, struct rpmBuildArguments * ba,
+	const char * passPhrase, int fromTarball, char * cookie,
+	const char * rcfile, int force, int nodeps)
 {
     char *t, *te;
     int rc = 0;

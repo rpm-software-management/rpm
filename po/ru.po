@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-16 15:59-0500\n"
+"POT-Creation-Date: 1999-12-19 13:47-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2551,8 +2551,8 @@ msgid ""
 msgstr "файл %s из пакета %s-%s-%s конфликтует с файлом из пакета %s-%s-%s"
 
 #: lib/problems.c:98
-#, c-format
-msgid "package %s-%s-%s (which is newer then %s-%s-%s) is already installed"
+#, fuzzy, c-format
+msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
 msgstr "пакет %s-%s-%s (который новее, чем %s-%s-%s) уже установлен"
 
 #: lib/problems.c:104

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-16 15:59-0500\n"
+"POT-Creation-Date: 1999-12-19 13:47-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -2591,7 +2591,7 @@ msgstr " se sudara sa %s-%s-%s\n"
 
 #: lib/problems.c:98
 #, fuzzy, c-format
-msgid "package %s-%s-%s (which is newer then %s-%s-%s) is already installed"
+msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
 msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
 #: lib/problems.c:104

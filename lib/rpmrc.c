@@ -282,8 +282,8 @@ static void machFindEquivs(struct machCache * cache,
     machCacheEntryVisit(cache, table, key, 2);
 }
 
-static int addCanon(struct canonEntry **table, int *tableLen, char *line,
-		    const char *fn, int lineNum)
+static int addCanon(struct canonEntry ** table, int * tableLen, char * line,
+		    const char * fn, int lineNum)
 {
     struct canonEntry *t;
     char *s, *s1;
@@ -314,7 +314,7 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
     }
 
     tnum = strtoul(s, &s1, 10);
-    if ((*s1) || (s1 == s) || (t->num == ULONG_MAX)) {
+    if ((*s1) || (s1 == s) || (tnum == ULONG_MAX)) {
 	rpmError(RPMERR_RPMRC, _("Bad arch/os number: %s (%s:%d)"), s,
 	      fn, lineNum);
 	return(RPMERR_RPMRC);

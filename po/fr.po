@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 1999-12-16 15:59-0500\n"
+msgstr "POT-Creation-Date: 1999-12-19 13:47-0500\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:424
 #, c-format
@@ -2631,7 +2631,7 @@ msgstr ""
 
 #: lib/problems.c:98
 #, fuzzy, c-format
-msgid "package %s-%s-%s (which is newer then %s-%s-%s) is already installed"
+msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
 msgstr "aucun package n'a été spécifié pour l'installation"
 
 #: lib/problems.c:104

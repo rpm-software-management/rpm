@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-16 15:59-0500\n"
+"POT-Creation-Date: 1999-12-19 13:47-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2631,7 +2631,7 @@ msgstr " on ristiriidassa %s-%s-%s:n kanssa\n"
 
 #: lib/problems.c:98
 #, fuzzy, c-format
-msgid "package %s-%s-%s (which is newer then %s-%s-%s) is already installed"
+msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
 #: lib/problems.c:104

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-12-16 15:59-0500\n"
+"POT-Creation-Date: 1999-12-19 13:47-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2630,7 +2630,7 @@ msgstr ", %s-%s-%s ile çeliþiyor\n"
 
 #: lib/problems.c:98
 #, fuzzy, c-format
-msgid "package %s-%s-%s (which is newer then %s-%s-%s) is already installed"
+msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
 msgstr "Paket %s-%s-%s ortak (shared) dosyalar içeriyor\n"
 
 #: lib/problems.c:104
