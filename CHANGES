@@ -175,6 +175,8 @@
 	- python: bind rhnUnload differently.
 	- fix: rescusitate --querytags.
 	- fix: short aliases broken (#49213).
+	- python: "seal" immutable region for legacy headers in rhnUnload() .
+	- python: add poptmodule.so bindings.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

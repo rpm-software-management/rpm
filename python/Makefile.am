@@ -21,15 +21,21 @@ mylibs= \
 LDADD =
 
 pythondir = $(prefix)/lib/python1.5/site-packages
-python_PROGRAMS = rpmmodule.so
+python_PROGRAMS = rpmmodule.so poptmodule.so
+
 rpmmodule_so_SOURCES =
 rpmmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,rpmmodule.so
+poptmodule_so_SOURCES = poptmodule.c
+poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
 librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c
 
 rpmmodule.so: $(librpmmodule_la_OBJECTS)
 	$(LINK) -o $@ $^ $(rpmmodule_so_LDFLAGS)
+
+poptmodule.so: $(poptmodule_so_OBJECTS)
+	$(LINK) -o $@ $^ $(poptmodule_so_LDFLAGS)
 
 .PHONY:	lclint
 lclint:

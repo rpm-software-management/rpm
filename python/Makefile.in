@@ -194,9 +194,12 @@ mylibs =  	$(top_builddir)/lib/librpm.la 	$(top_builddir)/rpmdb/librpmdb.la 	$(t
 LDADD = 
 
 pythondir = $(prefix)/lib/python1.5/site-packages
-python_PROGRAMS = rpmmodule.so
+python_PROGRAMS = rpmmodule.so poptmodule.so
+
 rpmmodule_so_SOURCES = 
 rpmmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,rpmmodule.so
+poptmodule_so_SOURCES = poptmodule.c
+poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
 librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c
@@ -212,12 +215,15 @@ LDFLAGS = @LDFLAGS@
 librpmmodule_la_LDFLAGS = 
 librpmmodule_la_LIBADD = 
 librpmmodule_la_OBJECTS =  rpmmodule.lo hash.lo upgrade.lo
-python_PROGRAMS =  rpmmodule.so
+python_PROGRAMS =  rpmmodule.so poptmodule.so
 PROGRAMS =  $(python_PROGRAMS)
 
 rpmmodule_so_OBJECTS = 
 rpmmodule_so_LDADD = $(LDADD)
 rpmmodule_so_DEPENDENCIES = 
+poptmodule_so_OBJECTS =  poptmodule.$(OBJEXT)
+poptmodule_so_LDADD = $(LDADD)
+poptmodule_so_DEPENDENCIES = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -230,9 +236,10 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/hash.P .deps/rpmmodule.P .deps/upgrade.P
-SOURCES = $(librpmmodule_la_SOURCES) $(rpmmodule_so_SOURCES)
-OBJECTS = $(librpmmodule_la_OBJECTS) $(rpmmodule_so_OBJECTS)
+DEP_FILES =  .deps/hash.P .deps/poptmodule.P .deps/rpmmodule.P \
+.deps/upgrade.P
+SOURCES = $(librpmmodule_la_SOURCES) $(rpmmodule_so_SOURCES) $(poptmodule_so_SOURCES)
+OBJECTS = $(librpmmodule_la_OBJECTS) $(rpmmodule_so_OBJECTS) $(poptmodule_so_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -486,6 +493,9 @@ mostlyclean distclean maintainer-clean
 
 rpmmodule.so: $(librpmmodule_la_OBJECTS)
 	$(LINK) -o $@ $^ $(rpmmodule_so_LDFLAGS)
+
+poptmodule.so: $(poptmodule_so_OBJECTS)
+	$(LINK) -o $@ $^ $(poptmodule_so_LDFLAGS)
 
 .PHONY:	lclint
 lclint:

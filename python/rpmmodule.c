@@ -1863,8 +1863,13 @@ static PyObject * rhnUnload(PyObject * self, PyObject * args) {
     h = headerLink(s->h);
 
     /* Legacy headers are forced into immutable region. */
-    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE))
-	h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
+    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
+	Header nh = headerReload(h, RPMTAG_HEADERIMMUTABLE);
+	/* XXX Another unload/load cycle to "seal" the immutable region. */
+	uh = headerUnload(nh);
+	headerFree(nh);
+	h = headerLoad(uh);
+    }
 
     /* All headers have SHA1 digest, compute and add if necessary. */
     if (!headerIsEntry(h, RPMTAG_SHA1HEADER)) {

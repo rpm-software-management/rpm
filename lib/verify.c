@@ -347,11 +347,7 @@ int rpmVerifyDigest(Header h)
 	rpmDigestUpdate(ctx, uh, uhc);
 	rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
 
-	if (digest) {		/* XXX can't happen */
-	    if (strcmp(hdigest, digest)) {
-		ec = 1;
-	    }
-	}
+	ec = (digest == NULL || strcmp(hdigest, digest)) ? 1 : 0;
 	digest = _free(digest);
     }
 
@@ -572,7 +568,7 @@ int rpmVerify(QVA_t qva, rpmQVSources source, const char * arg)
 	    break;
 	/*@fallthrough@*/
     default:
-	if (rpmdbOpen(qva->qva_prefix, &rpmdb, O_RDONLY, 0644))
+	if ((rc = rpmdbOpen(qva->qva_prefix, &rpmdb, O_RDONLY, 0644)) != 0)
 	    return 1;
 	break;
     }

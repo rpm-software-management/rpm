@@ -381,6 +381,7 @@ fi
 %files python
 %defattr(-,root,root)
 %{__prefix}/lib/python1.5/site-packages/rpmmodule.so
+%{__prefix}/lib/python1.5/site-packages/poptmodule.so
 %endif
 
 %files devel
