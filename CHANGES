@@ -112,6 +112,7 @@
 	- duplicate package checks with arch/os checks if colored.
 	- file conflict checks with colors.
 	- fix: debugedit.c problem.
+	- permit anaconda to choose "presentation order".
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

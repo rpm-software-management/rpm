@@ -152,6 +152,8 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->key = key;
     p->fd = NULL;
 
+    p->pkgFileSize = 0;
+
     p->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
     p->provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
     p->requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
@@ -187,21 +189,28 @@ rpmte rpmteNew(const rpmts ts, Header h,
 		int dboffset,
 		alKey pkgKey)
 {
-    rpmte te = xcalloc(1, sizeof(*te));
+    rpmte p = xcalloc(1, sizeof(*p));
+    int_32 * ep;
+    int xx;
 
-    addTE(ts, te, h, key, relocs);
+    addTE(ts, p, h, key, relocs);
     switch (type) {
     case TR_ADDED:
-	te->type = type;
-	te->u.addedKey = pkgKey;
+	p->type = type;
+	p->u.addedKey = pkgKey;
+	ep = NULL;
+	xx = headerGetEntry(h, RPMTAG_SIGSIZE, NULL, (void **)&ep, NULL);
+	/* XXX 256 is only an estimate of signature header. */
+	if (ep != NULL)
+	    p->pkgFileSize += 96 + 256 + *ep;
 	break;
     case TR_REMOVED:
-	te->type = type;
-	te->u.removed.dependsOnKey = pkgKey;
-	te->u.removed.dboffset = dboffset;
+	p->type = type;
+	p->u.removed.dependsOnKey = pkgKey;
+	p->u.removed.dboffset = dboffset;
 	break;
     }
-    return te;
+    return p;
 }
 
 rpmElementType rpmteType(rpmte te)
@@ -252,6 +261,11 @@ uint_32 rpmteSetColor(rpmte te, uint_32 color)
 	te->color = color;
     }
     return ocolor;
+}
+
+uint_32 rpmtePkgFileSize(rpmte te)
+{
+    return (te != NULL ? te->pkgFileSize : 0);
 }
 
 int rpmteDepth(rpmte te)

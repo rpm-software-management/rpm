@@ -42,6 +42,7 @@
  * - te.O()	Return package operating system.
  * - te.NEVR()	Return package name-version-release.
  * - te.Color() Return package color bits.
+ * - te.PkgFileSize() Return no. of bytes in package file (approx).
  * - te.Depth()	Return the level in the dependency tree (after ordering).
  * - te.Npreds() Return the number of package prerequisites (after ordering).
  * - te.Degree() Return the parent's degree + 1.
@@ -137,6 +138,14 @@ rpmte_Color(rpmteObject * s, PyObject * args)
 {
     if (!PyArg_ParseTuple(args, ":Color")) return NULL;
     return Py_BuildValue("i", rpmteColor(s->te));
+}
+
+static PyObject *
+rpmte_PkgFileSize(rpmteObject * s, PyObject * args)
+	/*@*/
+{
+    if (!PyArg_ParseTuple(args, ":PkgFileSize")) return NULL;
+    return Py_BuildValue("i", rpmtePkgFileSize(s->te));
 }
 
 static PyObject *
@@ -312,6 +321,8 @@ static struct PyMethodDef rpmte_methods[] = {
 "te.NEVR() -> NEVR\n\
 - Return element name-version-release.\n" },
     {"Color",(PyCFunction)rpmte_Color,		METH_VARARGS,
+        NULL},
+    {"PkgFileSize",(PyCFunction)rpmte_PkgFileSize,	METH_VARARGS,
         NULL},
     {"Depth",	(PyCFunction)rpmte_Depth,	METH_VARARGS,
         NULL},

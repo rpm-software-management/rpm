@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-22 07:25-0500\n"
+"POT-Creation-Date: 2003-01-25 15:52-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -543,7 +543,7 @@ msgstr "Súbor nebol nájdený: %s"
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: build/files.c:1767 lib/rpmchecksig.c:573
+#: build/files.c:1767 lib/rpmchecksig.c:572
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
@@ -558,7 +558,7 @@ msgstr "Súbor potrebuje na zaèiatku \"/\": %s"
 msgid "Glob not permitted: %s\n"
 msgstr "riadok %d: V %s sú vy¾adované verzie: %s"
 
-#: build/files.c:1856 lib/rpminstall.c:349
+#: build/files.c:1856 lib/rpminstall.c:347
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Súbor nebol nájdený: %s"
@@ -739,7 +739,7 @@ msgstr "Nie je mo¾né preèíta» ikonu: %s"
 msgid "Could not open %s: %s\n"
 msgstr "Otvorenie %s zlyhalo\n"
 
-#: build/pack.c:632 lib/psm.c:1657
+#: build/pack.c:632 lib/psm.c:1653
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie je mo¾né zapísa» balík: %s"
@@ -769,7 +769,7 @@ msgstr "Nie je mo¾né preèíta» ikonu: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: build/pack.c:725 lib/psm.c:1947
+#: build/pack.c:725 lib/psm.c:1943
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapísané: %s\n"
@@ -1264,19 +1264,19 @@ msgstr "neoverova» závislosti balíka"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:229 lib/poptALL.c:220 lib/poptI.c:250 lib/poptQV.c:329
+#: build/poptBT.c:229 lib/poptALL.c:220 lib/poptI.c:254 lib/poptQV.c:329
 #: lib/poptQV.c:338 lib/poptQV.c:377
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "neoverova» závislosti balíka"
 
-#: build/poptBT.c:231 lib/poptALL.c:222 lib/poptI.c:252 lib/poptQV.c:332
+#: build/poptBT.c:231 lib/poptALL.c:222 lib/poptI.c:256 lib/poptQV.c:332
 #: lib/poptQV.c:340 lib/poptQV.c:380
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "neoverova» architektúru balíka"
 
-#: build/poptBT.c:233 lib/poptALL.c:228 lib/poptI.c:254 lib/poptQV.c:335
+#: build/poptBT.c:233 lib/poptALL.c:228 lib/poptI.c:258 lib/poptQV.c:335
 #: lib/poptQV.c:342 lib/poptQV.c:382
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1425,31 +1425,32 @@ msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstraòuje sa index skupín\n"
 
 #. Record all relations.
-#: lib/depends.c:1185
+#: lib/depends.c:1186
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1285
+#: lib/depends.c:1278
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1369
-msgid "========== successors only (presentation order)\n"
+#: lib/depends.c:1363
+#, c-format
+msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1439
+#: lib/depends.c:1433
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1474
+#: lib/depends.c:1468
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1479
+#: lib/depends.c:1473
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1478,184 +1479,189 @@ msgstr "(nie je èíslo)"
 msgid "(not an OpenPGP signature)"
 msgstr "vynecha» akékoµvek PGP podpisy"
 
-#: lib/fs.c:73
+#: lib/fs.c:74
 #, fuzzy, c-format
 msgid "mntctl() failed to return size: %s\n"
 msgstr "mntctl() nevrátil veµkos» fuggeru: %s"
 
-#: lib/fs.c:88
+#: lib/fs.c:89
 #, fuzzy, c-format
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() nevrátil veµkos» fuggeru: %s"
 
-#: lib/fs.c:108 lib/fs.c:193 lib/fs.c:303
+#: lib/fs.c:109 lib/fs.c:196 lib/fs.c:313
 #, fuzzy, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "nepodarilo sa zisti» stav %s: %s"
 
-#: lib/fs.c:151 rpmio/url.c:523
+#: lib/fs.c:154 rpmio/url.c:523
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
-#: lib/fs.c:326
+#: lib/fs.c:213
+#, fuzzy, c-format
+msgid "%5d 0x%04x %s %s\n"
+msgstr "Súbor %4d: 0%o %s.%s\t %s\n"
+
+#: lib/fs.c:336
 #, fuzzy, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "súbor %s sa nachádza na neznámom zariadení"
 
-#: lib/fsm.c:340
+#: lib/fsm.c:338
 msgid "========== Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:342
+#: lib/fsm.c:340
 #, fuzzy, c-format
 msgid "%10d %s\n"
 msgstr "riadok %d: %s"
 
-#: lib/fsm.c:1248
+#: lib/fsm.c:1242
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1546
+#: lib/fsm.c:1540
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1675 lib/fsm.c:1811
+#: lib/fsm.c:1667 lib/fsm.c:1801
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "varovanie: %s uchovaný ako %s"
 
-#: lib/fsm.c:1837
+#: lib/fsm.c:1827
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "nie je mo¾né odstráni» %s - adresár nie je prázdny"
 
-#: lib/fsm.c:1843
+#: lib/fsm.c:1833
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "rmdir %s zlyhalo: %s"
 
-#: lib/fsm.c:1853
+#: lib/fsm.c:1843
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo\n"
 
-#: lib/fsm.c:1873
+#: lib/fsm.c:1863
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "varovanie: %s vytvorené ako %s"
 
-#: lib/misc.c:45
+#: lib/misc.c:42
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "nie je mo¾né zapísa» do %s: "
 
-#: lib/misc.c:50
+#: lib/misc.c:47
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "nie je mo¾né zapísa» do %s: "
 
-#: lib/misc.c:190 lib/misc.c:195 lib/misc.c:201
+#: lib/misc.c:187 lib/misc.c:192 lib/misc.c:198
 #, fuzzy, c-format
 msgid "error creating temporary file %s\n"
 msgstr "chyba pri vytváraní doèasného súboru %s"
 
-#: lib/package.c:362
+#: lib/package.c:361
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr ""
 
-#: lib/package.c:371 lib/package.c:435 lib/package.c:502 lib/signature.c:226
+#: lib/package.c:370 lib/package.c:434 lib/package.c:501 lib/signature.c:226
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:391 lib/signature.c:242
+#: lib/package.c:390 lib/signature.c:242
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:412 lib/signature.c:263
+#: lib/package.c:411 lib/signature.c:263
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:426 lib/signature.c:277
+#: lib/package.c:425 lib/signature.c:277
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
-#: lib/package.c:454
+#: lib/package.c:453
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr ""
 
-#: lib/package.c:472
+#: lib/package.c:471
 msgid "hdr DSA: BAD, not binary\n"
 msgstr ""
 
-#: lib/package.c:536 lib/package.c:576 lib/package.c:877 lib/package.c:901
-#: lib/package.c:931 lib/rpmchecksig.c:806
+#: lib/package.c:535 lib/package.c:575 lib/package.c:876 lib/package.c:900
+#: lib/package.c:930 lib/rpmchecksig.c:805
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 
-#: lib/package.c:655
+#: lib/package.c:654
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:659
+#: lib/package.c:658
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:667
+#: lib/package.c:666
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:676
+#: lib/package.c:675
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:690
+#: lib/package.c:689
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:703
+#: lib/package.c:702
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:768
+#: lib/package.c:767
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "táto verzia RPM podporuje iba balíky s hlavným èíslom <= 3"
 
-#: lib/package.c:776
+#: lib/package.c:775
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "táto verzia RPM podporuje iba balíky s hlavným èíslom <= 3"
 
-#: lib/package.c:787 lib/rpmchecksig.c:230 lib/rpmchecksig.c:721
+#: lib/package.c:786 lib/rpmchecksig.c:229 lib/rpmchecksig.c:720
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature zlyhalo\n"
 
-#: lib/package.c:794 lib/rpmchecksig.c:237 lib/rpmchecksig.c:729
+#: lib/package.c:793 lib/rpmchecksig.c:236 lib/rpmchecksig.c:728
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Podpis nie je k dispozícii\n"
 
-#: lib/package.c:841
+#: lib/package.c:840
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/package.c:944 lib/rpmchecksig.c:118 lib/rpmchecksig.c:644
+#: lib/package.c:943 lib/rpmchecksig.c:117 lib/rpmchecksig.c:643
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
@@ -1807,153 +1813,157 @@ msgstr ""
 "odin¹talova» v¹etky balíky urèené <balíkom> (inak je chybou, pokiaµ <balík> "
 "¹pecifikuje viac ako jeden balík)"
 
-#: lib/poptI.c:165 lib/poptI.c:234
+#: lib/poptI.c:164 tools/rpmgraph.c:273
+msgid "use anaconda \"presentation order\""
+msgstr ""
+
+#: lib/poptI.c:169 lib/poptI.c:238
 #, fuzzy
 msgid "do not execute package scriptlet(s)"
 msgstr "nevykona» ¾iadne skripty ¹pecifikované balíkom"
 
-#: lib/poptI.c:169
+#: lib/poptI.c:173
 #, fuzzy
 msgid "relocate files in non-relocateable package"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/poptI.c:172
+#: lib/poptI.c:176
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
-#: lib/poptI.c:175
+#: lib/poptI.c:179
 msgid "erase (uninstall) package"
 msgstr "odin¹talova» balík"
 
-#: lib/poptI.c:175
+#: lib/poptI.c:179
 #, fuzzy
 msgid "<package>+"
 msgstr "nájdených %d balíkov\n"
 
-#: lib/poptI.c:178 lib/poptI.c:215
+#: lib/poptI.c:182 lib/poptI.c:219
 #, fuzzy
 msgid "do not install configuration files"
 msgstr "zobrazi» v¹etky konfiguraèné súbory"
 
-#: lib/poptI.c:181 lib/poptI.c:220
+#: lib/poptI.c:185 lib/poptI.c:224
 msgid "do not install documentation"
 msgstr "nein¹talova» dokumentáciu"
 
-#: lib/poptI.c:183
+#: lib/poptI.c:187
 #, fuzzy
 msgid "skip files with leading component <path> "
 msgstr "vynecha» súbory v ceste <cesta>"
 
-#: lib/poptI.c:184
+#: lib/poptI.c:188
 msgid "<path>"
 msgstr ""
 
-#: lib/poptI.c:187
+#: lib/poptI.c:191
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "skratka pre --replacepkgs --replacefiles"
 
-#: lib/poptI.c:191
+#: lib/poptI.c:195
 #, fuzzy
 msgid "upgrade package(s) if already installed"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/poptI.c:192 lib/poptI.c:208 lib/poptI.c:301
+#: lib/poptI.c:196 lib/poptI.c:212 lib/poptI.c:305
 #, fuzzy
 msgid "<packagefile>+"
 msgstr "        -p <súbor_balíku>+"
 
-#: lib/poptI.c:194
+#: lib/poptI.c:198
 msgid "print hash marks as package installs (good with -v)"
 msgstr "vypisova» znaèky poèas in¹talácie balíka (vhodné s -v)"
 
-#: lib/poptI.c:197
+#: lib/poptI.c:201
 msgid "don't verify package architecture"
 msgstr "neoverova» architektúru balíka"
 
-#: lib/poptI.c:200
+#: lib/poptI.c:204
 msgid "don't verify package operating system"
 msgstr "neoverova» operaèný systém balíka"
 
-#: lib/poptI.c:203
+#: lib/poptI.c:207
 msgid "don't check disk space before installing"
 msgstr "pred in¹taláciou nekontrolova» dostupné miesto na disku"
 
-#: lib/poptI.c:205
+#: lib/poptI.c:209
 msgid "install documentation"
 msgstr "in¹talova» dokumentáciu"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:212
 #, fuzzy
 msgid "install package(s)"
 msgstr "in¹talova» balík"
 
-#: lib/poptI.c:211
+#: lib/poptI.c:215
 msgid "update the database, but do not modify the filesystem"
 msgstr "aktualizova» databázu bez zmeny súborového systému"
 
-#: lib/poptI.c:217
+#: lib/poptI.c:221
 msgid "do not verify package dependencies"
 msgstr "neoverova» závislosti balíka"
 
-#: lib/poptI.c:223 lib/poptQV.c:275 lib/poptQV.c:278
+#: lib/poptI.c:227 lib/poptQV.c:275 lib/poptQV.c:278
 #, fuzzy
 msgid "don't verify MD5 digest of files"
 msgstr "zobrazi» súbory v balíku"
 
-#: lib/poptI.c:226
+#: lib/poptI.c:230
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "nemeni» poradie balíkov kvôli vyrie¹eniu závislostí"
 
-#: lib/poptI.c:231
+#: lib/poptI.c:235
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptI.c:238
+#: lib/poptI.c:242
 #, fuzzy, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "nevykona» ¾iadne etapy"
 
-#: lib/poptI.c:241
+#: lib/poptI.c:245
 #, fuzzy, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "nevykona» ¾iadne etapy"
 
-#: lib/poptI.c:244
+#: lib/poptI.c:248
 #, fuzzy, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "nevykona» ¾iadne etapy"
 
-#: lib/poptI.c:247
+#: lib/poptI.c:251
 #, fuzzy, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "nevykona» ¾iadne etapy"
 
-#: lib/poptI.c:257
+#: lib/poptI.c:261
 #, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "nevykona» ¾iadne skripty spú¹»ané týmto balíkom"
 
-#: lib/poptI.c:260
+#: lib/poptI.c:264
 #, fuzzy, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "nevykona» ¾iadne skripty ¹pecifikované balíkom"
 
-#: lib/poptI.c:263
+#: lib/poptI.c:267
 #, fuzzy, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "nevykona» ¾iadne in¹talaèné skripty"
 
-#: lib/poptI.c:266
+#: lib/poptI.c:270
 #, fuzzy, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "nevykona» ¾iadne in¹talaèné skripty"
 
-#: lib/poptI.c:269
+#: lib/poptI.c:273
 #, fuzzy, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "nevykona» ¾iadne in¹talaèné skripty"
 
-#: lib/poptI.c:273
+#: lib/poptI.c:277
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -1961,53 +1971,53 @@ msgstr ""
 "aktualizova» na star¹iu verziu balíka (--force to pri aktualizácii urobí "
 "automaticky)"
 
-#: lib/poptI.c:277
+#: lib/poptI.c:281
 msgid "print percentages as package installs"
 msgstr "vypisova» percentá poèas in¹talácie balíka"
 
-#: lib/poptI.c:279
+#: lib/poptI.c:283
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "presunú» balík do <adresára>, pokiaµ to balík povoµuje"
 
-#: lib/poptI.c:280
+#: lib/poptI.c:284
 msgid "<dir>"
 msgstr ""
 
-#: lib/poptI.c:282
+#: lib/poptI.c:286
 #, fuzzy
 msgid "relocate files from path <old> to <new>"
 msgstr "presunú» súbory zo <starej_cesty> do <novej_cesty>"
 
-#: lib/poptI.c:283
+#: lib/poptI.c:287
 #, fuzzy
 msgid "<old>=<new>"
 msgstr "      --relocate <stará_cesta>=<nová_cesta>"
 
-#: lib/poptI.c:286
+#: lib/poptI.c:290
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:289
+#: lib/poptI.c:293
 msgid "install even if the package replaces installed files"
 msgstr "in¹talova» aj pokiaµ balík prepí¹e in¹talované súbory"
 
-#: lib/poptI.c:292
+#: lib/poptI.c:296
 msgid "reinstall if the package is already present"
 msgstr "prein¹talova», pokiaµ u¾ balík existuje"
 
-#: lib/poptI.c:294
+#: lib/poptI.c:298
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:295
+#: lib/poptI.c:299
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:297
+#: lib/poptI.c:301
 msgid "don't install, but tell if it would work or not"
 msgstr "nein¹talova», ale oznámi», èi by to bolo mo¾né"
 
-#: lib/poptI.c:300
+#: lib/poptI.c:304
 #, fuzzy
 msgid "upgrade package(s)"
 msgstr "    --upgrade <súbor_balíka>"
@@ -2174,7 +2184,7 @@ msgstr "zobrazi» súbory v balíku"
 msgid "don't verify files in package"
 msgstr "zobrazi» súbory v balíku"
 
-#: lib/poptQV.c:306 lib/poptQV.c:309 tools/rpmgraph.c:274
+#: lib/poptQV.c:306 lib/poptQV.c:309 tools/rpmgraph.c:267
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "neoverova» závislosti balíka"
@@ -2218,221 +2228,221 @@ msgstr "podpísa» balík (znièi» aktuálny podpis)"
 msgid "generate signature"
 msgstr "vytvori» PGP/GPG podpis"
 
-#: lib/psm.c:278
+#: lib/psm.c:271
 #, fuzzy
 msgid "source package expected, binary found\n"
 msgstr "oèakávaný zdrojový balík, nájdený binárny"
 
-#: lib/psm.c:395
+#: lib/psm.c:391
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 
-#: lib/psm.c:731
+#: lib/psm.c:727
 #, c-format
 msgid "%s: waitpid(%d) rc %d status %x\n"
 msgstr ""
 
-#: lib/psm.c:814
+#: lib/psm.c:810
 #, c-format
 msgid "%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:822
+#: lib/psm.c:818
 #, c-format
 msgid "%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:985
+#: lib/psm.c:981
 #, c-format
 msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:1008
+#: lib/psm.c:1004
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s vynechané - prenos zlyhal - %s\n"
 
-#: lib/psm.c:1014
+#: lib/psm.c:1010
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr "vykonanie skriptu zlyhalo"
 
-#: lib/psm.c:1421
+#: lib/psm.c:1417
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "balík: %s-%s-%s test súborov = %d\n"
 
-#: lib/psm.c:1560
+#: lib/psm.c:1556
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1669
+#: lib/psm.c:1665
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: lib/psm.c:1715
+#: lib/psm.c:1711
 #, fuzzy, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "pou¾ívateµ %s neexistuje - pou¾ije sa root"
 
-#: lib/psm.c:1724
+#: lib/psm.c:1720
 #, fuzzy, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "skupina %s neexistuje - pou¾ije sa root"
 
-#: lib/psm.c:1772
+#: lib/psm.c:1768
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozbalenie archívu zlyhalo%s%s: %s"
 
-#: lib/psm.c:1773
+#: lib/psm.c:1769
 msgid " on file "
 msgstr " pre súbor "
 
-#: lib/psm.c:1955
+#: lib/psm.c:1951
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
 
-#: lib/psm.c:1958
+#: lib/psm.c:1954
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s zlyhalo"
 
-#: lib/query.c:122 lib/rpmts.c:453
+#: lib/query.c:118 lib/rpmts.c:451
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "chyba formátu: %s\n"
 
 #. @-boundswrite@
-#: lib/query.c:184
+#: lib/query.c:180
 msgid "(contains no files)"
 msgstr "(neobsahuje ¾iadne súbory)"
 
-#: lib/query.c:249
+#: lib/query.c:245
 msgid "normal        "
 msgstr "normálny      "
 
-#: lib/query.c:252
+#: lib/query.c:248
 msgid "replaced      "
 msgstr "nahradený     "
 
-#: lib/query.c:255
+#: lib/query.c:251
 msgid "not installed "
 msgstr "nein¹talovaný "
 
-#: lib/query.c:258
+#: lib/query.c:254
 msgid "net shared    "
 msgstr "zdieµaný      "
 
-#: lib/query.c:261
+#: lib/query.c:257
 msgid "wrong color   "
 msgstr ""
 
-#: lib/query.c:264
+#: lib/query.c:260
 msgid "(no state)    "
 msgstr "(¾iadny stav) "
 
-#: lib/query.c:267
+#: lib/query.c:263
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(neznámy %d)  "
 
-#: lib/query.c:285
+#: lib/query.c:281
 #, fuzzy
 msgid "package has not file owner/group lists\n"
 msgstr "balík neobsahuje ani vlastníka súboru, ani zoznamy identifikácií"
 
-#: lib/query.c:318
+#: lib/query.c:314
 #, fuzzy
 msgid "package has neither file owner or id lists\n"
 msgstr "balík neobsahuje ani vlastníka súboru, ani zoznamy identifikácií"
 
-#: lib/query.c:447 lib/query.c:494 lib/rpminstall.c:127 lib/rpminstall.c:464
-#: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:464
-#: tools/rpmgraph.c:127 tools/rpmgraph.c:164
+#: lib/query.c:443 lib/query.c:490 lib/rpminstall.c:123 lib/rpminstall.c:462
+#: lib/rpminstall.c:593 lib/rpminstall.c:1005 lib/rpmts.c:462
+#: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo\n"
 
-#: lib/query.c:462
+#: lib/query.c:458
 #, c-format
 msgid "query of %s failed\n"
 msgstr "otázka na %s zlyhala\n"
 
-#: lib/query.c:472
+#: lib/query.c:468
 msgid "old format source packages cannot be queried\n"
 msgstr "nie je mo¾né pýta» sa zdrojových balíkov v starom formáte\n"
 
-#: lib/query.c:505 lib/rpminstall.c:608
+#: lib/query.c:501 lib/rpminstall.c:606
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "¾iadny z balíkov nespú¹»a %s\n"
 
-#: lib/query.c:534
+#: lib/query.c:530
 #, fuzzy
 msgid "no packages\n"
 msgstr "nájdených %d balíkov\n"
 
-#: lib/query.c:554
+#: lib/query.c:550
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s neobsahuje ¾iadne balíky\n"
 
-#: lib/query.c:563
+#: lib/query.c:559
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¾iadny z balíkov nespú¹»a %s\n"
 
-#: lib/query.c:576 lib/query.c:597 lib/query.c:617 lib/query.c:651
+#: lib/query.c:572 lib/query.c:593 lib/query.c:613 lib/query.c:647
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Nie je mo¾né preèíta» %s: %s."
 
-#: lib/query.c:586 lib/query.c:603 lib/query.c:627 lib/query.c:656
+#: lib/query.c:582 lib/query.c:599 lib/query.c:623 lib/query.c:652
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "¾iadny z balíkov nespú¹»a %s\n"
 
-#: lib/query.c:666
+#: lib/query.c:662
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾iadny z balíkov nevy¾aduje %s\n"
 
-#: lib/query.c:677
+#: lib/query.c:673
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¾iadny z balíkov neposkytuje %s\n"
 
-#: lib/query.c:712
+#: lib/query.c:708
 #, c-format
 msgid "file %s: %s\n"
 msgstr "súbor %s: %s\n"
 
-#: lib/query.c:716
+#: lib/query.c:712
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/query.c:741
+#: lib/query.c:737
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "chybné èíslo balíku: %s\n"
 
-#: lib/query.c:744
+#: lib/query.c:740
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "po¾aduje sa záznam èíslo %d\n"
 
-#: lib/query.c:749
+#: lib/query.c:745
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "záznam %d nie je mo¾né preèíta»\n"
 
-#: lib/query.c:759 lib/rpminstall.c:779
+#: lib/query.c:755 lib/rpminstall.c:777
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nain¹talovaný\n"
@@ -2446,97 +2456,97 @@ msgstr "chybný stav súboru: %s"
 msgid "(added provide)"
 msgstr ""
 
-#: lib/rpmchecksig.c:56
+#: lib/rpmchecksig.c:55
 #, fuzzy, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: otvorenie zlyhalo\n"
 
-#: lib/rpmchecksig.c:68
+#: lib/rpmchecksig.c:67
 #, fuzzy
 msgid "makeTempFile failed\n"
 msgstr "vykonanie zlyhalo\n"
 
-#: lib/rpmchecksig.c:112
+#: lib/rpmchecksig.c:111
 #, fuzzy, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/rpmchecksig.c:210 lib/rpmchecksig.c:703
+#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:702
 #, fuzzy, c-format
 msgid "%s: not an rpm package\n"
 msgstr "argument nie je RPM balík\n"
 
-#: lib/rpmchecksig.c:215
+#: lib/rpmchecksig.c:214
 #, fuzzy, c-format
 msgid "%s: Can't sign v1 packaging\n"
 msgstr "%s: Nie je mo¾né podpísa» v1.0 RPM\n"
 
-#: lib/rpmchecksig.c:219
+#: lib/rpmchecksig.c:218
 #, fuzzy, c-format
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: Nie je mo¾né znovu podpísa» v2.0 RPM\n"
 
-#: lib/rpmchecksig.c:327
+#: lib/rpmchecksig.c:326
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:358
+#: lib/rpmchecksig.c:357
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/rpmchecksig.c:364
+#: lib/rpmchecksig.c:363
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmReadSignature zlyhalo\n"
 
-#: lib/rpmchecksig.c:568
+#: lib/rpmchecksig.c:567
 #, fuzzy, c-format
 msgid "%s: import read failed.\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/rpmchecksig.c:580
+#: lib/rpmchecksig.c:579
 #, fuzzy, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/rpmchecksig.c:615
+#: lib/rpmchecksig.c:614
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/rpmchecksig.c:629
+#: lib/rpmchecksig.c:628
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/rpmchecksig.c:709
+#: lib/rpmchecksig.c:708
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Podpis nie je k dispozícii (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:972
+#: lib/rpmchecksig.c:971
 msgid "NOT OK"
 msgstr "NIE JE V PORIADKU"
 
-#: lib/rpmchecksig.c:973 lib/rpmchecksig.c:987
+#: lib/rpmchecksig.c:972 lib/rpmchecksig.c:986
 msgid " (MISSING KEYS:"
 msgstr " (CHÝBAJÚCE K¥ÚÈE):"
 
-#: lib/rpmchecksig.c:975 lib/rpmchecksig.c:989
+#: lib/rpmchecksig.c:974 lib/rpmchecksig.c:988
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:976 lib/rpmchecksig.c:990
+#: lib/rpmchecksig.c:975 lib/rpmchecksig.c:989
 msgid " (UNTRUSTED KEYS:"
 msgstr " (NEDÔVERUJE SA K¥ÚÈOM: "
 
-#: lib/rpmchecksig.c:978 lib/rpmchecksig.c:992
+#: lib/rpmchecksig.c:977 lib/rpmchecksig.c:991
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:986
+#: lib/rpmchecksig.c:985
 msgid "OK"
 msgstr "V PORIADKU"
 
@@ -2596,115 +2606,115 @@ msgstr "presúva sa %s do %s\n"
 msgid "relocating directory %s to %s\n"
 msgstr "presúva sa %s do %s\n"
 
-#: lib/rpminstall.c:192
+#: lib/rpminstall.c:190
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:194
+#: lib/rpminstall.c:192
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "neboli zadané ¾iadne balíky pre in¹taláciu"
 
-#: lib/rpminstall.c:212
+#: lib/rpminstall.c:210
 msgid "Repackaging..."
 msgstr ""
 
-#: lib/rpminstall.c:214
+#: lib/rpminstall.c:212
 #, fuzzy
 msgid "Repackaging erased files..."
 msgstr "balík neobsahuje ¾iadne súbory\n"
 
-#: lib/rpminstall.c:233
+#: lib/rpminstall.c:231
 msgid "Upgrading..."
 msgstr ""
 
-#: lib/rpminstall.c:235
+#: lib/rpminstall.c:233
 #, fuzzy
 msgid "Upgrading packages..."
 msgstr "    --upgrade <súbor_balíka>"
 
-#: lib/rpminstall.c:396
+#: lib/rpminstall.c:394
 #, fuzzy, c-format
 msgid "Adding goal: %s\n"
 msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
 
-#: lib/rpminstall.c:411
+#: lib/rpminstall.c:409
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Prená¹a sa %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:424
+#: lib/rpminstall.c:422
 #, c-format
 msgid " ... as %s\n"
 msgstr "... ako %s\n"
 
-#: lib/rpminstall.c:428
+#: lib/rpminstall.c:426
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s vynechané - prenos zlyhal - %s\n"
 
-#: lib/rpminstall.c:483 lib/rpminstall.c:860 tools/rpmgraph.c:147
+#: lib/rpminstall.c:481 lib/rpminstall.c:858 tools/rpmgraph.c:140
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie je mo¾né nain¹talova»\n"
 
-#: lib/rpminstall.c:525
+#: lib/rpminstall.c:523
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/rpminstall.c:575
+#: lib/rpminstall.c:573
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pri vytváraní doèasného súboru %s"
 
-#: lib/rpminstall.c:581
+#: lib/rpminstall.c:579
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:623
+#: lib/rpminstall.c:621
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "nájdených %d zdrojových a %d binárnych balíkov\n"
 
-#: lib/rpminstall.c:637 lib/rpminstall.c:807 lib/rpminstall.c:1236
-#: tools/rpmgraph.c:202
+#: lib/rpminstall.c:635 lib/rpminstall.c:805 lib/rpminstall.c:1226
+#: tools/rpmgraph.c:195
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "nevyrie¹ené závislosti:\n"
 
-#: lib/rpminstall.c:644 tools/rpmgraph.c:208
+#: lib/rpminstall.c:642 tools/rpmgraph.c:201
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:674
+#: lib/rpminstall.c:672
 msgid "installing binary packages\n"
 msgstr "in¹talujú sa binárne balíky\n"
 
-#: lib/rpminstall.c:698
+#: lib/rpminstall.c:696
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nie je mo¾né otvori» súbor %s: %s"
 
-#: lib/rpminstall.c:782
+#: lib/rpminstall.c:780
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" ¹pecifikuje viac balíkov\n"
 
-#: lib/rpminstall.c:844
+#: lib/rpminstall.c:842
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie je mo¾né otvori» %s\n"
 
-#: lib/rpminstall.c:850
+#: lib/rpminstall.c:848
 #, c-format
 msgid "Installing %s\n"
 msgstr "In¹taluje sa %s\n"
 
-#: lib/rpminstall.c:1230
+#: lib/rpminstall.c:1220
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
@@ -2821,124 +2831,132 @@ msgstr " koliduje s %s-%s-%s\n"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/rpmrc.c:201
+#: lib/rpmrc.c:197
 #, fuzzy, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "chýbajúce druhé ':' na %s:%d"
 
-#: lib/rpmrc.c:204
+#: lib/rpmrc.c:200
 #, fuzzy, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "chýba názov architektúry na %s:%d"
 
-#: lib/rpmrc.c:358
+#: lib/rpmrc.c:354
 #, fuzzy, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Neúplný riadok údajov na %s:%d"
 
-#: lib/rpmrc.c:363
+#: lib/rpmrc.c:359
 #, fuzzy, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Priveµa argumentov v riadku údajov na %s:%d"
 
-#: lib/rpmrc.c:371
+#: lib/rpmrc.c:367
 #, fuzzy, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Chybné èíslo arch/os: %s (%s:%d)"
 
-#: lib/rpmrc.c:408
+#: lib/rpmrc.c:404
 #, fuzzy, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Neúplný implicitný riadok na %s:%d"
 
-#: lib/rpmrc.c:413
+#: lib/rpmrc.c:409
 #, fuzzy, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Priveµa argumentov v implicitnom riadku na %s:%d"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:583
+#: lib/rpmrc.c:575
 #, fuzzy, c-format
 msgid "Failed to read %s: %s.\n"
 msgstr "Nie je mo¾né preèíta» %s: %s."
 
-#: lib/rpmrc.c:621
+#: lib/rpmrc.c:613
 #, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "chýbajúca ':' na %s:%d"
 
-#: lib/rpmrc.c:638 lib/rpmrc.c:712
+#: lib/rpmrc.c:630 lib/rpmrc.c:704
 #, fuzzy, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "chýbajúci argument pre %s na %s:%d"
 
-#: lib/rpmrc.c:655 lib/rpmrc.c:677
+#: lib/rpmrc.c:647 lib/rpmrc.c:669
 #, fuzzy, c-format
 msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "expanzia %s zlyhala na %s:%d \"%s\""
 
-#: lib/rpmrc.c:664
+#: lib/rpmrc.c:656
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s\n"
 msgstr "nie je mo¾né otvori» %s na %s:%d"
 
-#: lib/rpmrc.c:704
+#: lib/rpmrc.c:696
 #, fuzzy, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "chýbajúca architektúra pre %s na %s:%d"
 
-#: lib/rpmrc.c:771
+#: lib/rpmrc.c:763
 #, fuzzy, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "chybná voµba '%s' na %s:%d"
 
-#: lib/rpmrc.c:1530
+#: lib/rpmrc.c:1527
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznámy systém: %s\n"
 
-#: lib/rpmrc.c:1531
+#: lib/rpmrc.c:1528
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Kontaktujte prosím rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1764
+#: lib/rpmrc.c:1765
 #, fuzzy, c-format
 msgid "Cannot expand %s\n"
 msgstr "Nie je mo¾né expandova» %s"
 
-#: lib/rpmrc.c:1769
+#: lib/rpmrc.c:1770
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1786
+#: lib/rpmrc.c:1787
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie je mo¾né otvori» %s pre èítanie: %s."
 
-#: lib/rpmts.c:158
+#: lib/rpmts.c:156
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
-#: lib/rpmts.c:343
+#: lib/rpmts.c:341
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
-#: lib/rpmts.c:485
+#: lib/rpmts.c:483
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "riadok: %s"
 
-#: lib/rpmts.c:497
+#: lib/rpmts.c:495
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "zdroje v: %s\n"
 
-#. Get available space on mounted file systems.
-#: lib/rpmts.c:929
-msgid "getting list of mounted filesystems\n"
+#: lib/rpmts.c:923
+msgid "mounted filesystems:\n"
+msgstr ""
+
+#: lib/rpmts.c:925
+msgid "    i    dev bsize       bavail       iavail mount point\n"
+msgstr ""
+
+#: lib/rpmts.c:981
+#, c-format
+msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
 msgstr ""
 
 #: lib/signature.c:133
@@ -3109,13 +3127,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Doplnenie podpisu: %d\n"
 
-#: lib/transaction.c:107
+#: lib/transaction.c:105
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s vynechané kvôli príznaku missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:956
+#: lib/transaction.c:954
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "vytvára sa adresár %s\n"
@@ -3128,7 +3146,7 @@ msgstr "vytvára sa adresár %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1068
+#: lib/transaction.c:1066
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -3141,7 +3159,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1156
+#: lib/transaction.c:1154
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3149,16 +3167,16 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1233
+#: lib/transaction.c:1231
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/verify.c:287
+#: lib/verify.c:285
 #, fuzzy, c-format
 msgid "missing  %c %s"
 msgstr "chýbajúce    %s\n"
 
-#: lib/verify.c:396
+#: lib/verify.c:394
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
@@ -3734,7 +3752,7 @@ msgstr "url port musí by» èíslo\n"
 msgid "failed to create %s: %s\n"
 msgstr "nepodarilo sa vytvori» %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:276
+#: tools/rpmcache.c:515 tools/rpmgraph.c:269
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "overi» podpis balíka"
@@ -3776,7 +3794,7 @@ msgstr ""
 msgid "return whiteout information"
 msgstr ""
 
-#: tools/rpmcache.c:546 tools/rpmdeps.c:34 tools/rpmgraph.c:282
+#: tools/rpmcache.c:546 tools/rpmdeps.c:34 tools/rpmgraph.c:276
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
@@ -3790,7 +3808,7 @@ msgstr ""
 msgid "%s: cache operation failed: ec %d.\n"
 msgstr "%s: otvorenie zlyhalo\n"
 
-#: tools/rpmgraph.c:177
+#: tools/rpmgraph.c:170
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
@@ -3912,10 +3930,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "failed to write all data to %s\n"
 #~ msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
-
-#, fuzzy
-#~ msgid "File%5d: %07o %s.%s\t %s\n"
-#~ msgstr "Súbor %4d: 0%o %s.%s\t %s\n"
 
 #, fuzzy
 #~ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"

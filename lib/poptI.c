@@ -159,6 +159,10 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"),
 	NULL},
 
+ { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ 	&rpmIArgs.transFlags, RPMTRANS_FLAG_ANACONDA,
+	N_("use anaconda \"presentation order\""), NULL},
+
  { "apply", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.transFlags,
 	(_noTransScripts|_noTransTriggers|
 		RPMTRANS_FLAG_APPLYONLY|RPMTRANS_FLAG_PKGCOMMIT),

@@ -18,7 +18,6 @@ static int _depends_debug;
 static int noAvailable = 1;
 static const char * avdbpath =
 	"/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat";
-static int noChainsaw = 0;
 static int noDeps = 0;
 
 static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
@@ -66,8 +65,6 @@ do_tsort(const char *fileArgv[])
 	return 0;
 
     ts = rpmtsCreate();
-    if (!noChainsaw)
-	(void) rpmtsSetFlags(ts, rpmtsFlags(ts) | RPMTRANS_FLAG_CHAINSAW);
 
     rc = rpmtsOpenDB(ts, O_RDONLY);
     if (rc) {
@@ -277,7 +274,6 @@ exit:
 
 static struct poptOption optionsTable[] = {
  { "noavailable", '\0', 0, &noAvailable, 0,	NULL, NULL},
- { "nochainsaw", '\0', 0, &noChainsaw, 0,	NULL, NULL},
  { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
  { "verbose", 'v', 0, 0, 'v',			NULL, NULL},
  { NULL,	0, 0, 0, 0,			NULL, NULL}

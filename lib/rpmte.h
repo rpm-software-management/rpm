@@ -99,7 +99,8 @@ struct rpmte_s {
 /*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File information. */
 
-    uint_32 color;		/*!< Color bit(s) from package dependencies */
+    uint_32 color;		/*!< Color bit(s) from package dependencies. */
+    uint_32 pkgFileSize;	/*!< No. of bytes in package file (approx). */
 
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
@@ -247,6 +248,15 @@ uint_32 rpmteColor(rpmte te)
  */
 uint_32 rpmteSetColor(rpmte te, uint_32 color)
 	/*@modifies te @*/;
+
+/**
+ * Retrieve size in bytes of package file.
+ * @todo Signature header is estimated at 256b.
+ * @param te		transaction element
+ * @return		size in bytes of package file.
+ */
+uint_32 rpmtePkgFileSize(rpmte te)
+	/*@*/;
 
 /**
  * Retrieve tsort tree depth of transaction element.

@@ -15,7 +15,6 @@
 #include "debug.h"
 
 static int noDeps = 1;
-static int noChainsaw = 0;
 
 static rpmVSFlags vsflags = 0;
 
@@ -57,7 +56,6 @@ rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
     int argc = 0;
     const char ** av = NULL;
     int ac = 0;
-    int tsflags;
     Header h;
     rpmRC rpmrc;
     int rc = 0;
@@ -66,11 +64,6 @@ rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
 
     if (fileArgv == NULL)
 	return 0;
-
-    tsflags = rpmtsFlags(ts);
-    if (!noChainsaw)
-	tsflags |= RPMTRANS_FLAG_CHAINSAW;
-    (void) rpmtsSetFlags(ts, tsflags);
 
     if (ia->qva_flags & VERIFY_DIGEST)
 	vsflags |= _RPMVSF_NODIGESTS;
@@ -275,8 +268,9 @@ static struct poptOption optionsTable[] = {
  { "nolegacy", '\0', POPT_BIT_SET,	&vsflags, RPMVSF_NEEDPAYLOAD,
         N_("don't verify header+payload signature"), NULL },
 
- { "nochainsaw", '\0', POPT_ARGFLAG_DOC_HIDDEN, &noChainsaw, 0,
-	NULL, NULL},
+ { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmIArgs.transFlags, RPMTRANS_FLAG_ANACONDA,
+	N_("use anaconda \"presentation order\""), NULL},
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm modes and executables:"),

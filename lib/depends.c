@@ -997,10 +997,14 @@ static inline int addRelation(rpmts ts,
     int i = 0;
 
     if ((Name = rpmdsN(requires)) == NULL)
-	return 0;	/* XXX can't happen */
+	return 0;
 
     /* Avoid rpmlib feature dependencies. */
     if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1))
+	return 0;
+
+    /* Avoid package config dependencies. */
+    if (!strncmp(Name, "config(", sizeof("config(")-1))
 	return 0;
 
     pkgKey = RPMAL_NOMATCH;
@@ -1131,12 +1135,7 @@ int rpmtsOrder(rpmts ts)
 {
     rpmds requires;
     int_32 Flags;
-
-#ifdef	DYING
-    int chainsaw = rpmtsFlags(ts) & RPMTRANS_FLAG_CHAINSAW;
-#else
-    int chainsaw = 1;
-#endif
+    int anaconda = rpmtsFlags(ts) & RPMTRANS_FLAG_ANACONDA;
     rpmtsi pi; rpmte p;
     rpmtsi qi; rpmte q;
     rpmtsi ri; rpmte r;
@@ -1153,6 +1152,7 @@ int rpmtsOrder(rpmts ts)
     int nrescans = 10;
     int _printed = 0;
     char deptypechar;
+    size_t tsbytes;
     int oType = 0;
     int treex;
     int depth;
@@ -1175,6 +1175,7 @@ int rpmtsOrder(rpmts ts)
      }
     ordering = alloca(sizeof(*ordering) * (numOrderList + 1));
     loopcheck = numOrderList;
+    tsbytes = 0;
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL)
@@ -1207,17 +1208,13 @@ int rpmtsOrder(rpmts ts)
 	    case TR_REMOVED:
 		/* Skip if not %preun/%postun requires or legacy prereq. */
 		if (isInstallPreReq(Flags)
-		 || !( isErasePreReq(Flags)
-		    || isLegacyPreReq(Flags) )
-		    )
+		 || !( isErasePreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    case TR_ADDED:
 		/* Skip if not %pre/%post requires or legacy prereq. */
 		if (isErasePreReq(Flags)
-		 || !( isInstallPreReq(Flags)
-		    || isLegacyPreReq(Flags) )
-		    )
+		 || !( isInstallPreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    }
@@ -1238,17 +1235,13 @@ int rpmtsOrder(rpmts ts)
 	    case TR_REMOVED:
 		/* Skip if %preun/%postun requires or legacy prereq. */
 		if (isInstallPreReq(Flags)
-		 ||  ( isErasePreReq(Flags)
-		    || isLegacyPreReq(Flags) )
-		    )
+		 ||  ( isErasePreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    case TR_ADDED:
 		/* Skip if %pre/%post requires or legacy prereq. */
 		if (isErasePreReq(Flags)
-		 ||  ( isInstallPreReq(Flags)
-		    || isLegacyPreReq(Flags) )
-		    )
+		 ||  ( isInstallPreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    }
@@ -1291,8 +1284,8 @@ rescan:
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
 
-	/* Prefer packages in chainsaw or presentation order. */
-	if (!chainsaw)
+	/* Prefer packages in chainsaw or anaconda presentation order. */
+	if (anaconda)
 	    rpmteTSI(p)->tsi_qcnt = (ts->orderCount - rpmtsiOc(pi));
 
 	if (rpmteTSI(p)->tsi_count != 0)
@@ -1335,6 +1328,7 @@ rescan:
 	treex = rpmteTree(q);
 	depth = rpmteDepth(q);
 	(void) rpmteSetDegree(q, 0);
+	tsbytes += rpmtePkgFileSize(q);
 
 	ordering[orderingCount] = rpmteAddedKey(q);
 	orderingCount++;
@@ -1366,7 +1360,7 @@ rescan:
 	    _printed++;
 	    (void) rpmtsUnorderedSuccessors(ts, orderingCount);
 	    rpmMessage(RPMMESS_DEBUG,
-		_("========== successors only (presentation order)\n"));
+		_("========== successors only (%d bytes)\n"), (int)tsbytes);
 
 	    /* Relink the queue in presentation order. */
 	    tsi = rpmteTSI(q);
@@ -1535,7 +1529,7 @@ rescan:
 
 	newOrder[newOrderCount++] = q;
 	ts->order[j] = NULL;
-	if (!chainsaw)
+	if (anaconda)
 	for (j = needle->orIndex + 1; j < ts->orderCount; j++) {
 	    if ((q = ts->order[j]) == NULL)
 		/*@innerbreak@*/ break;
