@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Constants.pm,v 1.1 2000/05/27 03:54:14 rjray Exp $
+#   $Id: Constants.pm,v 1.2 2000/06/05 08:10:32 rjray Exp $
 #
 #   Description:    Constants for the RPM package
 #
@@ -27,7 +27,7 @@ use RPM;
 @ISA = qw(Exporter);
 
 $VERSION = $RPM::VERSION;
-$revision = do { my @r=(q$Revision: 1.1 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.2 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT_OK = qw(
                 ADD_SIGNATURE
@@ -40,7 +40,6 @@ $revision = do { my @r=(q$Revision: 1.1 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r 
                 INSTALL_NOORDER
                 INSTALL_PERCENT
                 INSTALL_UPGRADE
-                NEW_SIGNATURE
                 QUERY_FOR_CONFIG
                 QUERY_FOR_DOCS
                 QUERY_FOR_DUMPFILES
@@ -118,23 +117,6 @@ $revision = do { my @r=(q$Revision: 1.1 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r 
                 RPMFILE_STATE_NORMAL
                 RPMFILE_STATE_NOTINSTALLED
                 RPMFILE_STATE_REPLACED
-                RPMLEAD_BINARY
-                RPMLEAD_MAGIC0
-                RPMLEAD_MAGIC1
-                RPMLEAD_MAGIC2
-                RPMLEAD_MAGIC3
-                RPMLEAD_SIZE
-                RPMLEAD_SOURCE
-                RPMMESS_ALTNAME
-                RPMMESS_BACKUP
-                RPMMESS_DEBUG
-                RPMMESS_ERROR
-                RPMMESS_FATALERROR
-                RPMMESS_NORMAL
-                RPMMESS_PREREQLOOP
-                RPMMESS_QUIET
-                RPMMESS_VERBOSE
-                RPMMESS_WARNING
                 RPMPROB_FILTER_DISKSPACE
                 RPMPROB_FILTER_FORCERELOCATE
                 RPMPROB_FILTER_IGNOREARCH
@@ -181,23 +163,17 @@ $revision = do { my @r=(q$Revision: 1.1 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r 
                 RPMTAG_CONFLICTNAME
                 RPMTAG_CONFLICTVERSION
                 RPMTAG_COOKIE
-                RPMTAG_DEFAULTPREFIX
                 RPMTAG_DESCRIPTION
                 RPMTAG_DIRINDEXES
                 RPMTAG_DIRNAMES
                 RPMTAG_DISTRIBUTION
-                RPMTAG_DOCDIR
                 RPMTAG_EPOCH
-                RPMTAG_EXCLUDE
                 RPMTAG_EXCLUDEARCH
                 RPMTAG_EXCLUDEOS
-                RPMTAG_EXCLUSIVE
                 RPMTAG_EXCLUSIVEARCH
                 RPMTAG_EXCLUSIVEOS
-                RPMTAG_EXTERNAL_TAG
                 RPMTAG_FILEDEVICES
                 RPMTAG_FILEFLAGS
-                RPMTAG_FILEGIDS
                 RPMTAG_FILEGROUPNAME
                 RPMTAG_FILEINODES
                 RPMTAG_FILELANGS
@@ -208,46 +184,21 @@ $revision = do { my @r=(q$Revision: 1.1 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r 
                 RPMTAG_FILERDEVS
                 RPMTAG_FILESIZES
                 RPMTAG_FILESTATES
-                RPMTAG_FILEUIDS
                 RPMTAG_FILEUSERNAME
                 RPMTAG_FILEVERIFYFLAGS
-                RPMTAG_FIRSTFREE_TAG
                 RPMTAG_GIF
                 RPMTAG_GROUP
-                RPMTAG_HASH_BASE
-                RPMTAG_HASH_HAVAL_5_160
-                RPMTAG_HASH_MD2
-                RPMTAG_HASH_MD5
-                RPMTAG_HASH_RIPEMD160
-                RPMTAG_HASH_SHA1
-                RPMTAG_HASH_TIGER192
                 RPMTAG_ICON
-                RPMTAG_INSTALLPREFIX
                 RPMTAG_INSTALLTIME
                 RPMTAG_INSTPREFIXES
                 RPMTAG_LICENSE
                 RPMTAG_NAME
-                RPMTAG_NOPATCH
-                RPMTAG_NOSOURCE
                 RPMTAG_OBSOLETEFLAGS
                 RPMTAG_OBSOLETENAME
                 RPMTAG_OBSOLETEVERSION
-                RPMTAG_ORIGBASENAMES
-                RPMTAG_ORIGDIRINDEXES
-                RPMTAG_ORIGDIRNAMES
                 RPMTAG_OS
                 RPMTAG_PACKAGER
                 RPMTAG_PATCH
-                RPMTAG_PK_BASE
-                RPMTAG_PK_DH
-                RPMTAG_PK_DSA
-                RPMTAG_PK_ECDSA
-                RPMTAG_PK_ELGAMAL_E
-                RPMTAG_PK_ELGAMAL_ES
-                RPMTAG_PK_ELLIPTIC
-                RPMTAG_PK_RSA_E
-                RPMTAG_PK_RSA_ES
-                RPMTAG_PK_RSA_S
                 RPMTAG_POSTIN
                 RPMTAG_POSTINPROG
                 RPMTAG_POSTUN
@@ -255,7 +206,6 @@ $revision = do { my @r=(q$Revision: 1.1 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r 
                 RPMTAG_PREFIXES
                 RPMTAG_PREIN
                 RPMTAG_PREINPROG
-                RPMTAG_PREREQ
                 RPMTAG_PREUN
                 RPMTAG_PREUNPROG
                 RPMTAG_PROVIDEFLAGS
@@ -265,20 +215,18 @@ $revision = do { my @r=(q$Revision: 1.1 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r 
                 RPMTAG_REQUIREFLAGS
                 RPMTAG_REQUIRENAME
                 RPMTAG_REQUIREVERSION
+                RPMTAG_ROOT
                 RPMTAG_RPMVERSION
                 RPMTAG_SIZE
                 RPMTAG_SOURCE
-                RPMTAG_SOURCEPACKAGE
                 RPMTAG_SOURCERPM
                 RPMTAG_SUMMARY
+                RPMTAG_TRIGGERCONDS
                 RPMTAG_TRIGGERFLAGS
-                RPMTAG_TRIGGERIN
                 RPMTAG_TRIGGERINDEX
                 RPMTAG_TRIGGERNAME
-                RPMTAG_TRIGGERPOSTUN
                 RPMTAG_TRIGGERSCRIPTPROG
                 RPMTAG_TRIGGERSCRIPTS
-                RPMTAG_TRIGGERUN
                 RPMTAG_TRIGGERVERSION
                 RPMTAG_URL
                 RPMTAG_VENDOR
@@ -387,7 +335,7 @@ RPM::Constants - Groups of RPM-defined symbols
 
 =head1 SYNOPSIS
 
-    use RPM::Constants qw(:rpmerr :rpmtypes);
+    use RPM::Constants qw(:rpmerr :rpmtype);
 
 =head1 DESCRIPTION
 
@@ -397,7 +345,7 @@ may be of use to those developing with the B<RPM> Perl bindings.
 =head1 GROUPS
 
 For ease of use and uderstanding (at last count, the total number of
-constants was 293), the constants are broken up into several smaller groups:
+constants was 232), the constants are broken up into several smaller groups:
 
 =head2 Header Tag Identifiers
 
@@ -460,23 +408,23 @@ of the entry, in the respective order given above.
 
 =item RPMTAG_CONFLICTFLAGS
 
-Not documented yet.
-
 =item RPMTAG_CONFLICTNAME
-
-Not documented yet.
 
 =item RPMTAG_CONFLICTVERSION
 
-Not documented yet.
+These three items are used in conjunction to specify packages and/or
+individual files which the package itself would conflict with. Of the three,
+only B<RPMTAG_CONFLICTNAME> is required to have data in all elements of
+the array.  The other two wil have the same number of elements, though some
+(or most) may be null. This is the same approach as is used to specify the
+elements that the package obsoletes, those the package provides and those
+the package requires (see below).
 
 =item RPMTAG_COOKIE
 
-Not documented yet.
-
-=item RPMTAG_DEFAULTPREFIX
-
-Not documented yet.
+A simple tag, a single text string, added at the time the RPM is created.
+Generally, it is created from the hostname on which the package is built
+and the UNIX C<time()> value at the time of packaging.
 
 =item RPMTAG_DESCRIPTION
 
@@ -500,15 +448,7 @@ way of B<RPMTAG_DIRINDEXES> above.
 
 Not documented yet.
 
-=item RPMTAG_DOCDIR
-
-Not documented yet.
-
 =item RPMTAG_EPOCH
-
-Not documented yet.
-
-=item RPMTAG_EXCLUDE
 
 Not documented yet.
 
@@ -520,19 +460,11 @@ Not documented yet.
 
 Not documented yet.
 
-=item RPMTAG_EXCLUSIVE
-
-Not documented yet.
-
 =item RPMTAG_EXCLUSIVEARCH
 
 Not documented yet.
 
 =item RPMTAG_EXCLUSIVEOS
-
-Not documented yet.
-
-=item RPMTAG_EXTERNAL_TAG
 
 Not documented yet.
 
@@ -544,13 +476,12 @@ Not documented yet.
 
 Not documented yet.
 
-=item RPMTAG_FILEGIDS
-
-Not documented yet.
-
 =item RPMTAG_FILEGROUPNAME
 
-Not documented yet.
+A string-array data field that contains the group ID (by name) that should
+be used for setting group ownership of the files contained in the package.
+There should be a one-to-one correspondance between this list and the list of
+files in C<RPMTAG_BASENAMES>. See also C<RPMTAG_USERNAME>.
 
 =item RPMTAG_FILEINODES
 
@@ -588,19 +519,16 @@ Not documented yet.
 
 Not documented yet.
 
-=item RPMTAG_FILEUIDS
-
-Not documented yet.
-
 =item RPMTAG_FILEUSERNAME
 
-Not documented yet.
+A string-array data field that contains the user ID (by name) that should
+be used for setting ownership of the files contained in the package. There
+should be a one-to-one correspondance between this list and the list of
+files in C<RPMTAG_BASENAMES>. See also C<RPMTAG_GROUPNAME>.
 
 =item RPMTAG_FILEVERIFYFLAGS
 
 Not documented yet.
-
-=item RPMTAG_FIRSTFREE_TAG
 
 =item RPMTAG_GIF
 
@@ -609,45 +537,16 @@ image that external software could make use of. See C<RPMTAG_XPM> below.
 
 =item RPMTAG_GROUP
 
-Not documented yet.
-
-=item RPMTAG_HASH_BASE
-
-Not documented yet.
-
-=item RPMTAG_HASH_HAVAL_5_160
-
-Not documented yet.
-
-=item RPMTAG_HASH_MD2
-
-Not documented yet.
-
-=item RPMTAG_HASH_MD5
-
-Not documented yet.
-
-=item RPMTAG_HASH_RIPEMD160
-
-Not documented yet.
-
-=item RPMTAG_HASH_SHA1
-
-Not documented yet.
-
-=item RPMTAG_HASH_TIGER192
-
-Not documented yet.
+A one-line text string that places the package within the overall hierarchy
+of packages, using a UNIX-style format of denoting level with forward-slash
+characters (C</>). Most packages will have at least two elements separated by
+one such slash, though more are possible (as is a top-level name).
 
 =item RPMTAG_ICON
 
 Not directly used by the B<rpm> library. Likely intended to hold an image
 of some neutral format that external software could make use of.
 See C<RPMTAG_XPM> below and C<RPMTAG_GIF> above.
-
-=item RPMTAG_INSTALLPREFIX
-
-Not documented yet.
 
 =item RPMTAG_INSTALLTIME
 
@@ -667,37 +566,19 @@ The name of the package. This is the first part of a triple used to uniquely
 identify a given package. It is used in conjunction with B<RPMTAG_VERSION>
 and B<RPMTAG_RELEASE>, in that order.
 
-=item RPMTAG_NOPATCH
-
-Not documented yet.
-
-=item RPMTAG_NOSOURCE
-
-Not documented yet.
-
 =item RPMTAG_OBSOLETEFLAGS
-
-Not documented yet.
 
 =item RPMTAG_OBSOLETENAME
 
-Not documented yet.
-
 =item RPMTAG_OBSOLETEVERSION
 
-Not documented yet.
-
-=item RPMTAG_ORIGBASENAMES
-
-Not documented yet.
-
-=item RPMTAG_ORIGDIRINDEXES
-
-Not documented yet.
-
-=item RPMTAG_ORIGDIRNAMES
-
-Not documented yet.
+These three items are used in conjunction to specify packages and/or
+individual files which the package itself obsoletes. Of the three, only
+B<RPMTAG_OBSOLETENAME> is required to have data in all elements of the array.
+The other two wil have the same number of elements, though some (or most)
+may be null. This is the same approach as is used to specify the elements
+that the package conflicts with, those the package provides and those the
+package requires (see below).
 
 =item RPMTAG_OS
 
@@ -708,46 +589,6 @@ The name of the O/S for which the package is intended.
 Name of the group/company/individual who built the package.
 
 =item RPMTAG_PATCH
-
-Not documented yet.
-
-=item RPMTAG_PK_BASE
-
-Not documented yet.
-
-=item RPMTAG_PK_DH
-
-Not documented yet.
-
-=item RPMTAG_PK_DSA
-
-Not documented yet.
-
-=item RPMTAG_PK_ECDSA
-
-Not documented yet.
-
-=item RPMTAG_PK_ELGAMAL_E
-
-Not documented yet.
-
-=item RPMTAG_PK_ELGAMAL_ES
-
-Not documented yet.
-
-=item RPMTAG_PK_ELLIPTIC
-
-Not documented yet.
-
-=item RPMTAG_PK_RSA_E
-
-Not documented yet.
-
-=item RPMTAG_PK_RSA_ES
-
-Not documented yet.
-
-=item RPMTAG_PK_RSA_S
 
 Not documented yet.
 
@@ -779,10 +620,6 @@ Not documented yet.
 
 Not documented yet.
 
-=item RPMTAG_PREREQ
-
-Not documented yet.
-
 =item RPMTAG_PREUN
 
 Not documented yet.
@@ -793,15 +630,16 @@ Not documented yet.
 
 =item RPMTAG_PROVIDEFLAGS
 
-Not documented yet.
-
 =item RPMTAG_PROVIDENAME
-
-Not documented yet.
 
 =item RPMTAG_PROVIDEVERSION
 
-Not documented yet.
+These three items are used in conjunction to specify the specific files that
+the package itself provides to other packages as possible dependancies. Of the
+three, only B<RPMTAG_PROVIDENAME> is required to have data in all elements
+of the array.  The other two wil have the same number of elements, though
+some (or most) may be null. This three-part specification is also used to
+itemize dependancies (see below) and obsoletions (see above).
 
 =item RPMTAG_RELEASE
 
@@ -815,11 +653,16 @@ identification for each package.
 
 =item RPMTAG_REQUIREVERSION
 
-These three items are used in conjunction to specify packages and/or individual
-files on which the package itself depends. Of the three, only
+These three items are used in conjunction to specify packages and/or
+individual files on which the package itself depends. Of the three, only
 B<RPMTAG_REQUIRENAME> is required to have data in all elements of the array.
-The other two wil have the same number of elements, though some (or most) may
-be null.
+The other two wil have the same number of elements, though some (or most)
+may be null. This is the same approach as is used to specify the elements
+that the package provides and those the package obsoletes (see above).
+
+=item RPMTAG_ROOT
+
+Not documented yet.
 
 =item RPMTAG_RPMVERSION
 
@@ -845,11 +688,11 @@ value.
 
 A one line summary description of the package.
 
-=item RPMTAG_TRIGGERFLAGS
+=item RPMTAG_TRIGGERCONDS
 
 Not documented yet.
 
-=item RPMTAG_TRIGGERIN
+=item RPMTAG_TRIGGERFLAGS
 
 Not documented yet.
 
@@ -861,19 +704,11 @@ Not documented yet.
 
 Not documented yet.
 
-=item RPMTAG_TRIGGERPOSTUN
-
-Not documented yet.
-
 =item RPMTAG_TRIGGERSCRIPTPROG
 
 Not documented yet.
 
 =item RPMTAG_TRIGGERSCRIPTS
-
-Not documented yet.
-
-=item RPMTAG_TRIGGERUN
 
 Not documented yet.
 
@@ -1256,10 +1091,6 @@ Not documented yet.
 
 Not documented yet.
 
-=item NEW_SIGNATURE
-
-Not documented yet.
-
 =item QUERY_FOR_CONFIG
 
 Not documented yet.
@@ -1329,74 +1160,6 @@ Not documented yet.
 Not documented yet.
 
 =item RPMFILE_STATE_REPLACED
-
-Not documented yet.
-
-=item RPMLEAD_BINARY
-
-Not documented yet.
-
-=item RPMLEAD_MAGIC0
-
-Not documented yet.
-
-=item RPMLEAD_MAGIC1
-
-Not documented yet.
-
-=item RPMLEAD_MAGIC2
-
-Not documented yet.
-
-=item RPMLEAD_MAGIC3
-
-Not documented yet.
-
-=item RPMLEAD_SIZE
-
-Not documented yet.
-
-=item RPMLEAD_SOURCE
-
-Not documented yet.
-
-=item RPMMESS_ALTNAME
-
-Not documented yet.
-
-=item RPMMESS_BACKUP
-
-Not documented yet.
-
-=item RPMMESS_DEBUG
-
-Not documented yet.
-
-=item RPMMESS_ERROR
-
-Not documented yet.
-
-=item RPMMESS_FATALERROR
-
-Not documented yet.
-
-=item RPMMESS_NORMAL
-
-Not documented yet.
-
-=item RPMMESS_PREREQLOOP
-
-Not documented yet.
-
-=item RPMMESS_QUIET
-
-Not documented yet.
-
-=item RPMMESS_VERBOSE
-
-Not documented yet.
-
-=item RPMMESS_WARNING
 
 Not documented yet.
 

@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Constants.xs,v 1.2 2000/05/30 01:03:13 rjray Exp $";
+static char * const rcsid = "$Id: Constants.xs,v 1.3 2000/06/05 08:10:32 rjray Exp $";
 
 static int
 not_here(char *s)
@@ -106,12 +106,6 @@ constant(char *name, int arg)
     case 'M':
         break;
     case 'N':
-        if (strEQ(name, "NEW_SIGNATURE"))
-#ifdef NEW_SIGNATURE
-            return NEW_SIGNATURE;
-#else
-            goto not_there;
-#endif
         break;
     case 'O':
         break;
@@ -582,108 +576,6 @@ constant(char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMLEAD_BINARY"))
-#ifdef RPMLEAD_BINARY
-            return RPMLEAD_BINARY;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMLEAD_MAGIC0"))
-#ifdef RPMLEAD_MAGIC0
-            return RPMLEAD_MAGIC0;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMLEAD_MAGIC1"))
-#ifdef RPMLEAD_MAGIC1
-            return RPMLEAD_MAGIC1;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMLEAD_MAGIC2"))
-#ifdef RPMLEAD_MAGIC2
-            return RPMLEAD_MAGIC2;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMLEAD_MAGIC3"))
-#ifdef RPMLEAD_MAGIC3
-            return RPMLEAD_MAGIC3;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMLEAD_SIZE"))
-#ifdef RPMLEAD_SIZE
-            return RPMLEAD_SIZE;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMLEAD_SOURCE"))
-#ifdef RPMLEAD_SOURCE
-            return RPMLEAD_SOURCE;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMMESS_ALTNAME"))
-#ifdef RPMMESS_ALTNAME
-            return RPMMESS_ALTNAME;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMMESS_BACKUP"))
-#ifdef RPMMESS_BACKUP
-            return RPMMESS_BACKUP;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMMESS_DEBUG"))
-#ifdef RPMMESS_DEBUG
-            return RPMMESS_DEBUG;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMMESS_ERROR"))
-#ifdef RPMMESS_ERROR
-            return RPMMESS_ERROR;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMMESS_FATALERROR"))
-#ifdef RPMMESS_FATALERROR
-            return RPMMESS_FATALERROR;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMMESS_NORMAL"))
-#ifdef RPMMESS_NORMAL
-            return RPMMESS_NORMAL;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMMESS_PREREQLOOP"))
-#ifdef RPMMESS_PREREQLOOP
-            return RPMMESS_PREREQLOOP;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMMESS_QUIET"))
-#ifdef RPMMESS_QUIET
-            return RPMMESS_QUIET;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMMESS_VERBOSE"))
-#ifdef RPMMESS_VERBOSE
-            return RPMMESS_VERBOSE;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMMESS_WARNING"))
-#ifdef RPMMESS_WARNING
-            return RPMMESS_WARNING;
-#else
-            goto not_there;
-#endif
         if (strEQ(name, "RPMPROB_FILTER_DISKSPACE"))
 #ifdef RPMPROB_FILTER_DISKSPACE
             return RPMPROB_FILTER_DISKSPACE;
@@ -954,12 +846,6 @@ constant(char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_DEFAULTPREFIX"))
-#ifdef RPMTAG_DEFAULTPREFIX
-            return RPMTAG_DEFAULTPREFIX;
-#else
-            goto not_there;
-#endif
         if (strEQ(name, "RPMTAG_DESCRIPTION"))
 #ifdef RPMTAG_DESCRIPTION
             return RPMTAG_DESCRIPTION;
@@ -984,21 +870,9 @@ constant(char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_DOCDIR"))
-#ifdef RPMTAG_DOCDIR
-            return RPMTAG_DOCDIR;
-#else
-            goto not_there;
-#endif
         if (strEQ(name, "RPMTAG_EPOCH"))
 #ifdef RPMTAG_EPOCH
             return RPMTAG_EPOCH;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_EXCLUDE"))
-#ifdef RPMTAG_EXCLUDE
-            return RPMTAG_EXCLUDE;
 #else
             goto not_there;
 #endif
@@ -1014,12 +888,6 @@ constant(char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_EXCLUSIVE"))
-#ifdef RPMTAG_EXCLUSIVE
-            return RPMTAG_EXCLUSIVE;
-#else
-            goto not_there;
-#endif
         if (strEQ(name, "RPMTAG_EXCLUSIVEARCH"))
 #ifdef RPMTAG_EXCLUSIVEARCH
             return RPMTAG_EXCLUSIVEARCH;
@@ -1032,12 +900,6 @@ constant(char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_EXTERNAL_TAG"))
-#ifdef RPMTAG_EXTERNAL_TAG
-            return RPMTAG_EXTERNAL_TAG;
-#else
-            goto not_there;
-#endif
         if (strEQ(name, "RPMTAG_FILEDEVICES"))
 #ifdef RPMTAG_FILEDEVICES
             return RPMTAG_FILEDEVICES;
@@ -1047,12 +909,6 @@ constant(char *name, int arg)
         if (strEQ(name, "RPMTAG_FILEFLAGS"))
 #ifdef RPMTAG_FILEFLAGS
             return RPMTAG_FILEFLAGS;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_FILEGIDS"))
-#ifdef RPMTAG_FILEGIDS
-            return RPMTAG_FILEGIDS;
 #else
             goto not_there;
 #endif
@@ -1116,12 +972,6 @@ constant(char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_FILEUIDS"))
-#ifdef RPMTAG_FILEUIDS
-            return RPMTAG_FILEUIDS;
-#else
-            goto not_there;
-#endif
         if (strEQ(name, "RPMTAG_FILEUSERNAME"))
 #ifdef RPMTAG_FILEUSERNAME
             return RPMTAG_FILEUSERNAME;
@@ -1131,12 +981,6 @@ constant(char *name, int arg)
         if (strEQ(name, "RPMTAG_FILEVERIFYFLAGS"))
 #ifdef RPMTAG_FILEVERIFYFLAGS
             return RPMTAG_FILEVERIFYFLAGS;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_FIRSTFREE_TAG"))
-#ifdef RPMTAG_FIRSTFREE_TAG
-            return RPMTAG_FIRSTFREE_TAG;
 #else
             goto not_there;
 #endif
@@ -1152,57 +996,9 @@ constant(char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_HASH_BASE"))
-#ifdef RPMTAG_HASH_BASE
-            return RPMTAG_HASH_BASE;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_HASH_HAVAL_5_160"))
-#ifdef RPMTAG_HASH_HAVAL_5_160
-            return RPMTAG_HASH_HAVAL_5_160;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_HASH_MD2"))
-#ifdef RPMTAG_HASH_MD2
-            return RPMTAG_HASH_MD2;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_HASH_MD5"))
-#ifdef RPMTAG_HASH_MD5
-            return RPMTAG_HASH_MD5;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_HASH_RIPEMD160"))
-#ifdef RPMTAG_HASH_RIPEMD160
-            return RPMTAG_HASH_RIPEMD160;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_HASH_SHA1"))
-#ifdef RPMTAG_HASH_SHA1
-            return RPMTAG_HASH_SHA1;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_HASH_TIGER192"))
-#ifdef RPMTAG_HASH_TIGER192
-            return RPMTAG_HASH_TIGER192;
-#else
-            goto not_there;
-#endif
         if (strEQ(name, "RPMTAG_ICON"))
 #ifdef RPMTAG_ICON
             return RPMTAG_ICON;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_INSTALLPREFIX"))
-#ifdef RPMTAG_INSTALLPREFIX
-            return RPMTAG_INSTALLPREFIX;
 #else
             goto not_there;
 #endif
@@ -1230,18 +1026,6 @@ constant(char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_NOPATCH"))
-#ifdef RPMTAG_NOPATCH
-            return RPMTAG_NOPATCH;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_NOSOURCE"))
-#ifdef RPMTAG_NOSOURCE
-            return RPMTAG_NOSOURCE;
-#else
-            goto not_there;
-#endif
         if (strEQ(name, "RPMTAG_OBSOLETEFLAGS"))
 #ifdef RPMTAG_OBSOLETEFLAGS
             return RPMTAG_OBSOLETEFLAGS;
@@ -1260,24 +1044,6 @@ constant(char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_ORIGBASENAMES"))
-#ifdef RPMTAG_ORIGBASENAMES
-            return RPMTAG_ORIGBASENAMES;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_ORIGDIRINDEXES"))
-#ifdef RPMTAG_ORIGDIRINDEXES
-            return RPMTAG_ORIGDIRINDEXES;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_ORIGDIRNAMES"))
-#ifdef RPMTAG_ORIGDIRNAMES
-            return RPMTAG_ORIGDIRNAMES;
-#else
-            goto not_there;
-#endif
         if (strEQ(name, "RPMTAG_OS"))
 #ifdef RPMTAG_OS
             return RPMTAG_OS;
@@ -1293,66 +1059,6 @@ constant(char *name, int arg)
         if (strEQ(name, "RPMTAG_PATCH"))
 #ifdef RPMTAG_PATCH
             return RPMTAG_PATCH;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_PK_BASE"))
-#ifdef RPMTAG_PK_BASE
-            return RPMTAG_PK_BASE;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_PK_DH"))
-#ifdef RPMTAG_PK_DH
-            return RPMTAG_PK_DH;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_PK_DSA"))
-#ifdef RPMTAG_PK_DSA
-            return RPMTAG_PK_DSA;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_PK_ECDSA"))
-#ifdef RPMTAG_PK_ECDSA
-            return RPMTAG_PK_ECDSA;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_PK_ELGAMAL_E"))
-#ifdef RPMTAG_PK_ELGAMAL_E
-            return RPMTAG_PK_ELGAMAL_E;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_PK_ELGAMAL_ES"))
-#ifdef RPMTAG_PK_ELGAMAL_ES
-            return RPMTAG_PK_ELGAMAL_ES;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_PK_ELLIPTIC"))
-#ifdef RPMTAG_PK_ELLIPTIC
-            return RPMTAG_PK_ELLIPTIC;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_PK_RSA_E"))
-#ifdef RPMTAG_PK_RSA_E
-            return RPMTAG_PK_RSA_E;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_PK_RSA_ES"))
-#ifdef RPMTAG_PK_RSA_ES
-            return RPMTAG_PK_RSA_ES;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_PK_RSA_S"))
-#ifdef RPMTAG_PK_RSA_S
-            return RPMTAG_PK_RSA_S;
 #else
             goto not_there;
 #endif
@@ -1395,12 +1101,6 @@ constant(char *name, int arg)
         if (strEQ(name, "RPMTAG_PREINPROG"))
 #ifdef RPMTAG_PREINPROG
             return RPMTAG_PREINPROG;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_PREREQ"))
-#ifdef RPMTAG_PREREQ
-            return RPMTAG_PREREQ;
 #else
             goto not_there;
 #endif
@@ -1458,6 +1158,12 @@ constant(char *name, int arg)
 #else
             goto not_there;
 #endif
+        if (strEQ(name, "RPMTAG_ROOT"))
+#ifdef RPMTAG_ROOT
+            return RPMTAG_ROOT;
+#else
+            goto not_there;
+#endif
         if (strEQ(name, "RPMTAG_RPMVERSION"))
 #ifdef RPMTAG_RPMVERSION
             return RPMTAG_RPMVERSION;
@@ -1476,12 +1182,6 @@ constant(char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_SOURCEPACKAGE"))
-#ifdef RPMTAG_SOURCEPACKAGE
-            return RPMTAG_SOURCEPACKAGE;
-#else
-            goto not_there;
-#endif
         if (strEQ(name, "RPMTAG_SOURCERPM"))
 #ifdef RPMTAG_SOURCERPM
             return RPMTAG_SOURCERPM;
@@ -1494,15 +1194,15 @@ constant(char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_TRIGGERFLAGS"))
-#ifdef RPMTAG_TRIGGERFLAGS
-            return RPMTAG_TRIGGERFLAGS;
+        if (strEQ(name, "RPMTAG_TRIGGERCONDS"))
+#ifdef RPMTAG_TRIGGERCONDS
+            return RPMTAG_TRIGGERCONDS;
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_TRIGGERIN"))
-#ifdef RPMTAG_TRIGGERIN
-            return RPMTAG_TRIGGERIN;
+        if (strEQ(name, "RPMTAG_TRIGGERFLAGS"))
+#ifdef RPMTAG_TRIGGERFLAGS
+            return RPMTAG_TRIGGERFLAGS;
 #else
             goto not_there;
 #endif
@@ -1518,12 +1218,6 @@ constant(char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_TRIGGERPOSTUN"))
-#ifdef RPMTAG_TRIGGERPOSTUN
-            return RPMTAG_TRIGGERPOSTUN;
-#else
-            goto not_there;
-#endif
         if (strEQ(name, "RPMTAG_TRIGGERSCRIPTPROG"))
 #ifdef RPMTAG_TRIGGERSCRIPTPROG
             return RPMTAG_TRIGGERSCRIPTPROG;
@@ -1533,12 +1227,6 @@ constant(char *name, int arg)
         if (strEQ(name, "RPMTAG_TRIGGERSCRIPTS"))
 #ifdef RPMTAG_TRIGGERSCRIPTS
             return RPMTAG_TRIGGERSCRIPTS;
-#else
-            goto not_there;
-#endif
-        if (strEQ(name, "RPMTAG_TRIGGERUN"))
-#ifdef RPMTAG_TRIGGERUN
-            return RPMTAG_TRIGGERUN;
 #else
             goto not_there;
 #endif
