@@ -522,6 +522,7 @@ fi
 - renumber the callback types to be an orthogonal bit mask.
 - provide repackage progress callbacks, compression is slow.
 - fix: don't repackage %%ghost files.
+- add --predefine to define macros before reading macro configuration.
 
 * Fri Aug  2 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.67
 - fix: identify athlon with 3DNOWEXT as "athlon", not "i786" (#70539).

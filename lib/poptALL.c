@@ -12,8 +12,9 @@
 #define POPT_SHOWVERSION	-999
 #define POPT_SHOWRC		-998
 #define POPT_QUERYTAGS		-997
+#define POPT_PREDEFINE		-996
 #ifdef  NOTYET
-#define POPT_RCFILE		-996
+#define POPT_RCFILE		-995
 #endif
 
 /*@unchecked@*/
@@ -75,6 +76,9 @@ extern int noLibio;
 extern int _rpmio_debug;
 /*@=exportheadervar@*/
 
+/*@unchecked@*/
+static int rpmcliInitialized = -1;
+
 /**
  * Display rpm version.
  */
@@ -96,11 +100,10 @@ void rpmcliConfigured(void)
 	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    static int initted = -1;
 
-    if (initted < 0)
-	initted = rpmReadConfigFiles(rpmcliRcfile, NULL);
-    if (initted)
+    if (rpmcliInitialized < 0)
+	rpmcliInitialized = rpmReadConfigFiles(rpmcliRcfile, NULL);
+    if (rpmcliInitialized)
 	exit(EXIT_FAILURE);
 }
 
@@ -127,10 +130,16 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
     case 'v':
 	rpmIncreaseVerbosity();
 	break;
-    case 'D':
+    case POPT_PREDEFINE:
 	(void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
+	break;
+    case 'D':
+	/* XXX Predefine macro if not initialized yet. */
+	if (rpmcliInitialized < 0)
+	    (void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
 	rpmcliConfigured();
 /*@-type@*/
+	(void) rpmDefineMacro(NULL, arg, RMIL_CMDLINE);
 	(void) rpmDefineMacro(rpmCLIMacroContext, arg, RMIL_CMDLINE);
 /*@=type@*/
 	break;
@@ -184,6 +193,9 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "debug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_debug, -1,
         NULL, NULL },
 
+ { "predefine", 'D', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_PREDEFINE,
+	N_("predefine MACRO with value EXPR"),
+	N_("'MACRO EXPR'") },
  { "define", 'D', POPT_ARG_STRING, 0, 'D',
 	N_("define MACRO with value EXPR"),
 	N_("'MACRO EXPR'") },

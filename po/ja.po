@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-04 14:59-0400\n"
+"POT-Creation-Date: 2002-08-04 15:34-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -116,7 +116,7 @@ msgstr ""
 msgid "%s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: rpmqv.c:129 lib/poptALL.c:85
+#: rpmqv.c:129 lib/poptALL.c:89
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM バージョン %s\n"
@@ -1305,19 +1305,19 @@ msgstr "パッケージの依存関係の検証をしません"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:229 lib/poptALL.c:198 lib/poptI.c:261 lib/poptI.c:268
+#: build/poptBT.c:229 lib/poptALL.c:210 lib/poptI.c:261 lib/poptI.c:268
 #: lib/poptQV.c:329 lib/poptQV.c:338 lib/poptQV.c:377
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "パッケージの依存関係の検証をしません"
 
-#: build/poptBT.c:231 lib/poptALL.c:200 lib/poptI.c:263 lib/poptI.c:270
+#: build/poptBT.c:231 lib/poptALL.c:212 lib/poptI.c:263 lib/poptI.c:270
 #: lib/poptQV.c:332 lib/poptQV.c:340 lib/poptQV.c:380
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "パッケージの対象アーキテクチャの検証をしません"
 
-#: build/poptBT.c:233 lib/poptALL.c:206 lib/poptI.c:265 lib/poptI.c:272
+#: build/poptBT.c:233 lib/poptALL.c:218 lib/poptI.c:265 lib/poptI.c:272
 #: lib/poptQV.c:335 lib/poptQV.c:342 lib/poptQV.c:382
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1642,97 +1642,101 @@ msgstr "%s: readLead に失敗しました\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: lib/poptALL.c:188
-msgid "define MACRO with value EXPR"
+#: lib/poptALL.c:197
+msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:189
+#: lib/poptALL.c:198 lib/poptALL.c:201
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:191
+#: lib/poptALL.c:200
+msgid "define MACRO with value EXPR"
+msgstr ""
+
+#: lib/poptALL.c:203
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "使用している rpm のバージョンを表示します"
 
-#: lib/poptALL.c:192
+#: lib/poptALL.c:204
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:194 lib/poptALL.c:213 lib/poptALL.c:217
+#: lib/poptALL.c:206 lib/poptALL.c:225 lib/poptALL.c:229
 msgid "read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#: lib/poptALL.c:195 lib/poptALL.c:214 lib/poptALL.c:218
+#: lib/poptALL.c:207 lib/poptALL.c:226 lib/poptALL.c:230
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:203 lib/poptALL.c:237
+#: lib/poptALL.c:215 lib/poptALL.c:249
 msgid "disable use of libio(3) API"
-msgstr ""
-
-#: lib/poptALL.c:209
-#, fuzzy
-msgid "send stdout to CMD"
-msgstr "標準出力を <cmd> へパイプします"
-
-#: lib/poptALL.c:210
-msgid "CMD"
 msgstr ""
 
 #: lib/poptALL.c:221
 #, fuzzy
-msgid "use ROOT as top level directory"
-msgstr "トップディレクトリとして <dir> を使用します"
+msgid "send stdout to CMD"
+msgstr "標準出力を <cmd> へパイプします"
 
 #: lib/poptALL.c:222
-msgid "ROOT"
-msgstr ""
-
-#: lib/poptALL.c:225
-msgid "display known query tags"
-msgstr ""
-
-#: lib/poptALL.c:227
-msgid "display final rpmrc and macro configuration"
-msgstr ""
-
-#: lib/poptALL.c:229
-msgid "provide less detailed output"
-msgstr ""
-
-#: lib/poptALL.c:231
-msgid "provide more detailed output"
+msgid "CMD"
 msgstr ""
 
 #: lib/poptALL.c:233
+#, fuzzy
+msgid "use ROOT as top level directory"
+msgstr "トップディレクトリとして <dir> を使用します"
+
+#: lib/poptALL.c:234
+msgid "ROOT"
+msgstr ""
+
+#: lib/poptALL.c:237
+msgid "display known query tags"
+msgstr ""
+
+#: lib/poptALL.c:239
+msgid "display final rpmrc and macro configuration"
+msgstr ""
+
+#: lib/poptALL.c:241
+msgid "provide less detailed output"
+msgstr ""
+
+#: lib/poptALL.c:243
+msgid "provide more detailed output"
+msgstr ""
+
+#: lib/poptALL.c:245
 msgid "print the version of rpm being used"
 msgstr "使用している rpm のバージョンを表示します"
 
-#: lib/poptALL.c:246
+#: lib/poptALL.c:258
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "不正なファイルの状態: %s"
 
-#: lib/poptALL.c:248
+#: lib/poptALL.c:260
 msgid "debug protocol data stream"
 msgstr ""
 
-#: lib/poptALL.c:251
+#: lib/poptALL.c:263
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "引数処理(%d)での内部エラー :-(\n"
 
-#: lib/poptALL.c:262
+#: lib/poptALL.c:274
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: lib/poptALL.c:270
+#: lib/poptALL.c:282
 msgid "debug URL cache handling"
 msgstr ""
 
 #. @-nullpass@
-#: lib/poptALL.c:341
+#: lib/poptALL.c:353
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
