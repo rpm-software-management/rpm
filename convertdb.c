@@ -38,12 +38,12 @@ int convertDB(void)
     int i, j;
     
     if (rpmfileexists("/var/lib/rpm/packages.rpm")) {
-	rpmError(RPMERR_NOCREATEDB, _("RPM database already exists"));
+	rpmError(RPMERR_NOCREATEDB, _("RPM database already exists\n"));
 	return 0;
     }
 
     if (oldrpmdbOpen(&olddb)) {
-	rpmError(RPMERR_OLDDBMISSING, _("Old db is missing"));
+	rpmError(RPMERR_OLDDBMISSING, _("Old db is missing\n"));
 	return 0;
     }
 
@@ -54,13 +54,13 @@ int convertDB(void)
     unlink("/var/lib/rpm/fileindex.rpm");
 
     if (rpmdbOpen("", &db, O_RDWR | O_CREAT, 0644)) {
-	rpmError(RPMERR_DBOPEN, _("failed to create RPM database /var/lib/rpm"));
+	rpmError(RPMERR_DBOPEN, _("failed to create RPM database /var/lib/rpm\n"));
 	return 0;
     }
 
     packageLabels = oldrpmdbGetAllLabels(&olddb);
     if (!packageLabels) {
-	rpmError(RPMERR_OLDDBCORRUPT, _("Old db is corrupt"));
+	rpmError(RPMERR_OLDDBCORRUPT, _("Old db is corrupt\n"));
 	rpmdbClose(db);
 	unlink("/var/lib/rpm/packages.rpm");
 	oldrpmdbClose(&olddb);

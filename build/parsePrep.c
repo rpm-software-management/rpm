@@ -34,11 +34,12 @@ static int checkOwners(const char *urlfn)
     struct stat sb;
 
     if (Lstat(urlfn, &sb)) {
-	rpmError(RPMERR_BADSPEC, _("Bad source: %s: %s"), urlfn, strerror(errno));
+	rpmError(RPMERR_BADSPEC, _("Bad source: %s: %s\n"),
+		urlfn, strerror(errno));
 	return RPMERR_BADSPEC;
     }
     if (!getUname(sb.st_uid) || !getGname(sb.st_gid)) {
-	rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s"), urlfn);
+	rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s\n"), urlfn);
 	return RPMERR_BADSPEC;
     }
 
@@ -71,7 +72,7 @@ static int checkOwners(const char *urlfn)
 	}
     }
     if (sp == NULL) {
-	rpmError(RPMERR_BADSPEC, _("No patch number %d"), c);
+	rpmError(RPMERR_BADSPEC, _("No patch number %d\n"), c);
 	return NULL;
     }
 
@@ -161,7 +162,7 @@ static int checkOwners(const char *urlfn)
 	}
     }
     if (sp == NULL) {
-	rpmError(RPMERR_BADSPEC, _("No source number %d"), c);
+	rpmError(RPMERR_BADSPEC, _("No source number %d\n"), c);
 	return NULL;
     }
 
@@ -180,8 +181,9 @@ static int checkOwners(const char *urlfn)
 	if (Lstat(urlfn, &st) != 0 && errno == ENOENT &&
 	    urlIsUrl(sp->fullSource) != URL_IS_UNKNOWN) {
 	    if ((rc = urlGetFile(sp->fullSource, urlfn)) != 0) {
-		rpmError(RPMERR_BADFILENAME, _("Couldn't download nosource %s: %s"),
-		    sp->fullSource, ftpStrerror(rc));
+		rpmError(RPMERR_BADFILENAME,
+			_("Couldn't download nosource %s: %s\n"),
+			sp->fullSource, ftpStrerror(rc));
 		return NULL;
 	    }
 	}
@@ -274,7 +276,7 @@ static int doSetupMacro(Spec spec, char *line)
     dirName = NULL;
 
     if ((rc = poptParseArgvString(line, &argc, &argv))) {
-	rpmError(RPMERR_BADSPEC, _("Error parsing %%setup: %s"),
+	rpmError(RPMERR_BADSPEC, _("Error parsing %%setup: %s\n"),
 			poptStrerror(rc));
 	return RPMERR_BADSPEC;
     }
@@ -289,7 +291,7 @@ static int doSetupMacro(Spec spec, char *line)
 	/* We only parse -a and -b here */
 
 	if (parseNum(optArg, &num)) {
-	    rpmError(RPMERR_BADSPEC, _("line %d: Bad arg to %%setup %c: %s"),
+	    rpmError(RPMERR_BADSPEC, _("line %d: Bad arg to %%setup %c: %s\n"),
 		     spec->lineNum, num, optArg);
 	    free(argv);
 	    freeStringBuf(before);
@@ -307,7 +309,7 @@ static int doSetupMacro(Spec spec, char *line)
     }
 
     if (arg < -1) {
-	rpmError(RPMERR_BADSPEC, _("line %d: Bad %%setup option %s: %s"),
+	rpmError(RPMERR_BADSPEC, _("line %d: Bad %%setup option %s: %s\n"),
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 poptStrerror(arg));
@@ -440,16 +442,18 @@ static int doPatchMacro(Spec spec, char *line)
 	    /* orig suffix */
 	    opt_b = strtok(NULL, " \t\n");
 	    if (! opt_b) {
-		rpmError(RPMERR_BADSPEC, _("line %d: Need arg to %%patch -b: %s"),
-			 spec->lineNum, spec->line);
+		rpmError(RPMERR_BADSPEC,
+			_("line %d: Need arg to %%patch -b: %s\n"),
+			spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
 	} else if (!strcmp(s, "-z")) {
 	    /* orig suffix */
 	    opt_b = strtok(NULL, " \t\n");
 	    if (! opt_b) {
-		rpmError(RPMERR_BADSPEC, _("line %d: Need arg to %%patch -z: %s"),
-			 spec->lineNum, spec->line);
+		rpmError(RPMERR_BADSPEC,
+			_("line %d: Need arg to %%patch -z: %s\n"),
+			spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
 	} else if (!strncmp(s, "-p", sizeof("-p")-1)) {
@@ -460,24 +464,25 @@ static int doPatchMacro(Spec spec, char *line)
 		s = strtok(NULL, " \t\n");
 		if (s == NULL) {
 		    rpmError(RPMERR_BADSPEC,
-			     _("line %d: Need arg to %%patch -p: %s"),
+			     _("line %d: Need arg to %%patch -p: %s\n"),
 			     spec->lineNum, spec->line);
 		    return RPMERR_BADSPEC;
 		}
 	    }
 	    if (parseNum(s, &opt_p)) {
-		rpmError(RPMERR_BADSPEC, _("line %d: Bad arg to %%patch -p: %s"),
-			 spec->lineNum, spec->line);
+		rpmError(RPMERR_BADSPEC,
+			_("line %d: Bad arg to %%patch -p: %s\n"),
+			spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
 	} else {
 	    /* Must be a patch num */
 	    if (patch_index == 1024) {
-		rpmError(RPMERR_BADSPEC, _("Too many patches!"));
+		rpmError(RPMERR_BADSPEC, _("Too many patches!\n"));
 		return RPMERR_BADSPEC;
 	    }
 	    if (parseNum(s, &(patch_nums[patch_index]))) {
-		rpmError(RPMERR_BADSPEC, _("line %d: Bad arg to %%patch: %s"),
+		rpmError(RPMERR_BADSPEC, _("line %d: Bad arg to %%patch: %s\n"),
 			 spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
@@ -513,7 +518,7 @@ int parsePrep(Spec spec)
     char **lines, **saveLines;
 
     if (spec->prep != NULL) {
-	rpmError(RPMERR_BADSPEC, _("line %d: second %%prep"), spec->lineNum);
+	rpmError(RPMERR_BADSPEC, _("line %d: second %%prep\n"), spec->lineNum);
 	return RPMERR_BADSPEC;
     }
 

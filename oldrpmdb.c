@@ -459,7 +459,7 @@ int oldrpmdbGetPackageInfo(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel labe
     
     rec = gdbm_fetch(oldrpmdb->packages, key);
     if (!rec.dptr) {
-	rpmError(RPMERR_OLDDBCORRUPT, _("package not found in database"));
+	rpmError(RPMERR_OLDDBCORRUPT, _("package not found in database\n"));
 	return 1;
     }
 

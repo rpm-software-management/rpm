@@ -66,7 +66,7 @@ static int getFilesystemList(void)
 
     num = mntctl(MCTL_QUERY, sizeof(size), (char *) &size);
     if (num < 0) {
-	rpmError(RPMERR_MTAB, _("mntctl() failed to return fugger size: %s"), 
+	rpmError(RPMERR_MTAB, _("mntctl() failed to return size: %s\n"), 
 		 strerror(errno));
 	return 1;
     }
@@ -81,7 +81,7 @@ static int getFilesystemList(void)
     buf = alloca(size);
     num = mntctl(MCTL_QUERY, size, buf);
     if ( num <= 0 ) {
-        rpmError(RPMERR_MTAB, "mntctl() failed to return mount points: %s", 
+        rpmError(RPMERR_MTAB, _("mntctl() failed to return mount points: %s\n"), 
 		 strerror(errno));
 	return 1;
     }
@@ -101,7 +101,7 @@ static int getFilesystemList(void)
 	filesystems[i].mntPoint = fsnames[i] = fsn;
 	
 	if (stat(filesystems[i].mntPoint, &sb)) {
-	    rpmError(RPMERR_STAT, _("failed to stat %s: %s"), fsnames[i],
+	    rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), fsnames[i],
 			strerror(errno));
 
 	    freeFilesystems();
@@ -149,7 +149,7 @@ static int getFilesystemList(void)
 #   if GETMNTENT_ONE || GETMNTENT_TWO
 	mtab = fopen(MOUNTED, "r");
 	if (!mtab) {
-	    rpmError(RPMERR_MTAB, _("failed to open %s: %s"), MOUNTED, 
+	    rpmError(RPMERR_MTAB, _("failed to open %s: %s\n"), MOUNTED, 
 		     strerror(errno));
 	    return 1;
 	}
@@ -181,7 +181,7 @@ static int getFilesystemList(void)
 #	endif
 
 	if (stat(mntdir, &sb)) {
-	    rpmError(RPMERR_STAT, "failed to stat %s: %s", mntdir,
+	    rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), mntdir,
 			strerror(errno));
 
 	    freeFilesystems();
@@ -284,7 +284,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 	    chptr = dirName + strlen(dirName) - 1;
 	    while (stat(dirName, &sb)) {
 		if (errno != ENOENT) {
-		    rpmError(RPMERR_STAT, _("failed to stat %s: %s"), buf,
+		    rpmError(RPMERR_STAT, _("failed to stat %s: %s\n"), buf,
 				strerror(errno));
 		    free((void *)sourceDir);
 		    free(usages);
@@ -306,7 +306,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 
 		if (j == numFilesystems) {
 		    rpmError(RPMERR_BADDEV, 
-				_("file %s is on an unknown device"), buf);
+				_("file %s is on an unknown device\n"), buf);
 		    free((void *)sourceDir);
 		    free(usages);
 		    return 1;

@@ -648,7 +648,7 @@ static int installArchive(FD_t fd, struct fileInfo * files, int fileCount,
 	/* this would probably be a good place to check if disk space
 	   was used up - if so, we should return a different error */
 	errno = saveerrno; /* XXX FIXME: Fclose with libio destroys errno */
-	rpmError(RPMERR_CPIO, _("unpacking of archive failed%s%s: %s"),
+	rpmError(RPMERR_CPIO, _("unpacking of archive failed%s%s: %s\n"),
 		(failedFile != NULL ? _(" on file ") : ""),
 		(failedFile != NULL ? failedFile : ""),
 		cpioStrerror(rc));
@@ -718,13 +718,14 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
 	    break;
 	}
 	if (rc < 0) {
-	    rpmError(RPMERR_CREATE, _("cannot create sourcedir %s"), realSourceDir);
+	    rpmError(RPMERR_CREATE, _("cannot create sourcedir %s\n"),
+			realSourceDir);
 	    rc = 2;
 	    goto exit;
 	}
     }
     if ((rc = Access(realSourceDir, W_OK))) {
-	rpmError(RPMERR_CREATE, _("cannot write to %s"), realSourceDir);
+	rpmError(RPMERR_CREATE, _("cannot write to %s\n"), realSourceDir);
 	rc = 2;
 	goto exit;
     }
@@ -748,13 +749,14 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
 	    break;
 	}
 	if (rc < 0) {
-	    rpmError(RPMERR_CREATE, _("cannot create specdir %s"), realSpecDir);
+	    rpmError(RPMERR_CREATE, _("cannot create specdir %s\n"),
+			realSpecDir);
 	    rc = 2;
 	    goto exit;
 	}
     }
     if ((rc = Access(realSpecDir, W_OK))) {
-	rpmError(RPMERR_CREATE, _("cannot write to %s"), realSpecDir);
+	rpmError(RPMERR_CREATE, _("cannot write to %s\n"), realSpecDir);
 	rc = 2;
 	goto exit;
     }
@@ -790,7 +792,8 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
 	    files[i].relativePath = t;
 	    specFileIndex = i;
 	} else {
-	    rpmError(RPMERR_NOSPEC, _("source package contains no .spec file"));
+	    rpmError(RPMERR_NOSPEC,
+		_("source package contains no .spec file\n"));
 	    rc = 2;
 	    goto exit;
 	}
@@ -818,7 +821,8 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
 
     if (specFileIndex == -1) {
 	if (specFile == NULL) {
-	    rpmError(RPMERR_NOSPEC, _("source package contains no .spec file"));
+	    rpmError(RPMERR_NOSPEC,
+		_("source package contains no .spec file\n"));
 	    rc = 1;
 	    goto exit;
 	}
@@ -838,7 +842,7 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
 	    rpmMessage(RPMMESS_DEBUG,
 		    _("renaming %s to %s\n"), instSpecFile, correctSpecFile);
 	    if ((rc = Rename(instSpecFile, correctSpecFile))) {
-		rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s"),
+		rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s\n"),
 			instSpecFile, correctSpecFile, strerror(errno));
 		rc = 2;
 		goto exit;
@@ -928,7 +932,7 @@ int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     if (rc) return rc;
 
     if (!isSource) {
-	rpmError(RPMERR_NOTSRPM, _("source package expected, binary found"));
+	rpmError(RPMERR_NOTSRPM, _("source package expected, binary found\n"));
 	return 2;
     }
 
@@ -1028,7 +1032,9 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 
     if (rc) {
 	rc = 2;
-	rpmError(RPMERR_SCRIPT, _("skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"), name, version, release, rc);
+	rpmError(RPMERR_SCRIPT,
+		_("skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"),
+		name, version, release, rc);
 	goto exit;
     }
 
@@ -1100,7 +1106,7 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 			files[i].relativePath, newpath);
 
 		if (rename(files[i].relativePath, newpath)) {
-		    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s"),
+		    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s\n"),
 			  files[i].relativePath, newpath, strerror(errno));
 		    rc = 2;
 		    goto exit;
@@ -1165,7 +1171,7 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
     /* if this package has already been installed, remove it from the database
        before adding the new one */
     if (otherOffset)
-        rpmdbRemove(ts->rpmdb, otherOffset);
+        rpmdbRemove(ts->rpmdb, ts->id, otherOffset);
 
     if (transFlags & RPMTRANS_FLAG_MULTILIB) {
 	uint_32 multiLib, * newMultiLib, * p;
@@ -1185,7 +1191,7 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	}
     }
 
-    if (rpmdbAdd(ts->rpmdb, h)) {
+    if (rpmdbAdd(ts->rpmdb, ts->id, h)) {
 	rc = 2;
 	goto exit;
     }

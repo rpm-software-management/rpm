@@ -97,7 +97,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	/* Tokens must begin with alphanumeric, _, or / */
 	if (!(isalnum(r[0]) || r[0] == '_' || r[0] == '/')) {
 	    rpmError(RPMERR_BADSPEC,
-		     _("line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"),
+		     _("line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"),
 		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
@@ -108,7 +108,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	case RPMTAG_CONFLICTFLAGS:
 	case RPMTAG_BUILDCONFLICTS:
 	    if (r[0] == '/') {
-		rpmError(RPMERR_BADSPEC,_("line %d: File name not permitted: %s"),
+		rpmError(RPMERR_BADSPEC,_("line %d: File name not permitted: %s\n"),
 			 spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
@@ -140,7 +140,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 
 	    if (r[0] == '/') {
 		rpmError(RPMERR_BADSPEC,
-			 _("line %d: Versioned file name not permitted: %s"),
+			 _("line %d: Versioned file name not permitted: %s\n"),
 			 spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
@@ -170,7 +170,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 
 	if (flags & RPMSENSE_SENSEMASK) {
 	    if (*v == '\0' || ve == v) {
-		rpmError(RPMERR_BADSPEC, _("line %d: Version required: %s"),
+		rpmError(RPMERR_BADSPEC, _("line %d: Version required: %s\n"),
 			spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }

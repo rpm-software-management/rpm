@@ -30,7 +30,7 @@ int parseFiles(Spec spec)
     name = file = NULL;
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
-	rpmError(RPMERR_BADSPEC, _("line %d: Error parsing %%files: %s"),
+	rpmError(RPMERR_BADSPEC, _("line %d: Error parsing %%files: %s\n"),
 		 spec->lineNum, poptStrerror(rc));
 	rc = RPMERR_BADSPEC;
 	goto exit;
@@ -44,7 +44,7 @@ int parseFiles(Spec spec)
     }
 
     if (arg < -1) {
-	rpmError(RPMERR_BADSPEC, _("line %d: Bad option %s: %s"),
+	rpmError(RPMERR_BADSPEC, _("line %d: Bad option %s: %s\n"),
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
@@ -56,7 +56,7 @@ int parseFiles(Spec spec)
 	if (name == NULL)
 	    name = poptGetArg(optCon);
 	if (poptPeekArg(optCon)) {
-	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s"),
+	    rpmError(RPMERR_BADSPEC, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,
 		     spec->line);
 	    rc = RPMERR_BADSPEC;
@@ -65,14 +65,14 @@ int parseFiles(Spec spec)
     }
 
     if (lookupPackage(spec, name, flag, &pkg)) {
-	rpmError(RPMERR_BADSPEC, _("line %d: Package does not exist: %s"),
+	rpmError(RPMERR_BADSPEC, _("line %d: Package does not exist: %s\n"),
 		 spec->lineNum, spec->line);
 	rc = RPMERR_BADSPEC;
 	goto exit;
     }
 
     if (pkg->fileList != NULL) {
-	rpmError(RPMERR_BADSPEC, _("line %d: Second %%files list"),
+	rpmError(RPMERR_BADSPEC, _("line %d: Second %%files list\n"),
 		 spec->lineNum);
 	rc = RPMERR_BADSPEC;
 	goto exit;

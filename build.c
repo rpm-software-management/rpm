@@ -62,7 +62,8 @@ static int isSpecFile(const char *specfile)
 
     fd = Fopen(specfile, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
-	rpmError(RPMERR_OPEN, _("Unable to open spec file %s: %s\n"), specfile, Fstrerror(fd));
+	rpmError(RPMERR_OPEN, _("Unable to open spec file %s: %s\n"),
+		specfile, Fstrerror(fd));
 	return 0;
     }
     count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd);
@@ -126,7 +127,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	sprintf(cmd, "%s < %s | tar xOvf - Specfile 2>&1 > %s",
 			zcmds[res & 0x3], arg, tmpSpecFile);
 	if (!(fp = popen(cmd, "r"))) {
-	    rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m"));
+	    rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m\n"));
 	    free((void *)specDir);
 	    free((void *)tmpSpecFile);
 	    return 1;
@@ -138,14 +139,15 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	    sprintf(cmd, "%s < %s | tar xOvf - \\*.spec 2>&1 > %s",
 		    zcmds[res & 0x3], arg, tmpSpecFile);
 	    if (!(fp = popen(cmd, "r"))) {
-		rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m"));
+		rpmError(RPMERR_POPEN, _("Failed to open tar pipe: %m\n"));
 		free((void *)specDir);
 		free((void *)tmpSpecFile);
 		return 1;
 	    }
 	    if (!fgets(buf, sizeof(buf) - 1, fp)) {
 		/* Give up */
-		rpmError(RPMERR_READ, _("Failed to read spec file from %s"), arg);
+		rpmError(RPMERR_READ, _("Failed to read spec file from %s\n"),
+			arg);
 		unlink(tmpSpecFile);
 		free((void *)specDir);
 		free((void *)tmpSpecFile);
@@ -172,7 +174,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	free((void *)specDir);
 	
 	if (res) {
-	    rpmError(RPMERR_RENAME, _("Failed to rename %s to %s: %m"),
+	    rpmError(RPMERR_RENAME, _("Failed to rename %s to %s: %m\n"),
 			tmpSpecFile, s);
 	    unlink(tmpSpecFile);
 	    free((void *)tmpSpecFile);
@@ -211,12 +213,12 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
     if (specut != URL_IS_DASH) {
 	struct stat st;
 	if (Stat(specURL, &st) < 0) {
-	    rpmError(RPMERR_STAT, _("failed to stat %s: %m"), specURL);
+	    rpmError(RPMERR_STAT, _("failed to stat %s: %m\n"), specURL);
 	    rc = 1;
 	    goto exit;
 	}
 	if (! S_ISREG(st.st_mode)) {
-	    rpmError(RPMERR_NOTREG, _("File %s is not a regular file."),
+	    rpmError(RPMERR_NOTREG, _("File %s is not a regular file.\n"),
 		specURL);
 	    rc = 1;
 	    goto exit;
@@ -224,8 +226,8 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 
 	/* Try to verify that the file is actually a specfile */
 	if (!isSpecFile(specURL)) {
-	    rpmError(RPMERR_BADSPEC, _("File %s does not appear to be a specfile."),
-		specURL);
+	    rpmError(RPMERR_BADSPEC,
+		_("File %s does not appear to be a specfile.\n"), specURL);
 	    rc = 1;
 	    goto exit;
 	}

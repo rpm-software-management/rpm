@@ -25,7 +25,8 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
     }
     
     if (*sbp != NULL) {
-	rpmError(RPMERR_BADSPEC, _("line %d: second %s"), spec->lineNum, name);
+	rpmError(RPMERR_BADSPEC, _("line %d: second %s\n"),
+		spec->lineNum, name);
 	return RPMERR_BADSPEC;
     }
     

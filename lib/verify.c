@@ -239,7 +239,7 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum,
 		*result |= RPMVERIFY_GROUP;
 	} else {
 	    rpmError(RPMERR_INTERNAL, _("package lacks both user name and id "
-		  "lists (this should never happen)"));
+		  "lists (this should never happen)\n"));
 	    *result |= RPMVERIFY_GROUP;
 	}
     }
@@ -257,7 +257,7 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum,
 		*result |= RPMVERIFY_GROUP;
 	} else {
 	    rpmError(RPMERR_INTERNAL, _("package lacks both group name and id "
-		     "lists (this should never happen)"));
+		     "lists (this should never happen)\n"));
 	    *result |= RPMVERIFY_GROUP;
 	}
     }

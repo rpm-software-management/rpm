@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-13 11:37-0500\n"
+"POT-Creation-Date: 2001-01-15 14:34-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -29,44 +29,44 @@ msgstr "依存性の欠如:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "spec ファイルをオープンできません: %s\n"
 
-#: build.c:129 build.c:141
+#: build.c:130 build.c:142
 #, fuzzy, c-format
-msgid "Failed to open tar pipe: %m"
+msgid "Failed to open tar pipe: %m\n"
 msgstr "tar パイプのオープンに失敗: %s\n"
 
 #. Give up
-#: build.c:148
+#: build.c:149
 #, fuzzy, c-format
-msgid "Failed to read spec file from %s"
+msgid "Failed to read spec file from %s\n"
 msgstr "%s から spec ファイルの読み込みに失敗しました\n"
 
-#: build.c:175
+#: build.c:177
 #, fuzzy, c-format
-msgid "Failed to rename %s to %s: %m"
+msgid "Failed to rename %s to %s: %m\n"
 msgstr "%s を %s にする名前の変更に失敗しました: %s\n"
 
-#: build.c:214
+#: build.c:216
 #, fuzzy, c-format
-msgid "failed to stat %s: %m"
+msgid "failed to stat %s: %m\n"
 msgstr "stat %s に失敗: %s"
 
-#: build.c:219
+#: build.c:221
 #, fuzzy, c-format
-msgid "File %s is not a regular file."
+msgid "File %s is not a regular file.\n"
 msgstr "普通のファイルではありません: %s\n"
 
-#: build.c:227
+#: build.c:230
 #, fuzzy, c-format
-msgid "File %s does not appear to be a specfile."
+msgid "File %s does not appear to be a specfile.\n"
 msgstr "ファイル %s は スペックファイルではないようです。\n"
 
 #. parse up the build operators
-#: build.c:285
+#: build.c:287
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "作成中ターゲットプラットフォーム: %s\n"
 
-#: build.c:300
+#: build.c:302
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "ターゲット %s 用に作成中\n"
@@ -88,7 +88,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.149 2001/01/13 17:39:56 jbj Exp $
+# $Id: ja.po,v 1.150 2001/01/15 23:09:44 jbj Exp $
 #: rpm.c:185 rpmqv.c:386
 #, c-format
 msgid "rpm: %s\n"
@@ -1665,9 +1665,9 @@ msgstr "作成のための spec ファイルがありません"
 msgid "no tar files given for build"
 msgstr "作成(build)のための tar ファイルがありません"
 
-#: build/build.c:114 build/pack.c:369
+#: build/build.c:114 build/pack.c:370
 #, fuzzy
-msgid "Unable to open temp file."
+msgid "Unable to open temp file.\n"
 msgstr "一時ファイルをオープンできません"
 
 #: build/build.c:193
@@ -1677,15 +1677,15 @@ msgstr "実行中: %s\n"
 
 #: build/build.c:199
 #, fuzzy, c-format
-msgid "Exec of %s failed (%s): %s"
+msgid "Exec of %s failed (%s): %s\n"
 msgstr "%s の実行に失敗 (%s)"
 
-#: build/build.c:207
-#, c-format
-msgid "Bad exit status from %s (%s)"
+#: build/build.c:208
+#, fuzzy, c-format
+msgid "Bad exit status from %s (%s)\n"
 msgstr "%s の不正な終了ステータス (%s)"
 
-#: build/build.c:306
+#: build/build.c:307
 msgid ""
 "\n"
 "\n"
@@ -1693,54 +1693,64 @@ msgid ""
 msgstr ""
 
 #: build/expression.c:215
-msgid "syntax error while parsing =="
+#, fuzzy
+msgid "syntax error while parsing ==\n"
 msgstr "構文解析中の文法エラー =="
 
 #: build/expression.c:245
-msgid "syntax error while parsing &&"
+#, fuzzy
+msgid "syntax error while parsing &&\n"
 msgstr "構文解析中の文法エラー &&"
 
 #: build/expression.c:254
-msgid "syntax error while parsing ||"
+#, fuzzy
+msgid "syntax error while parsing ||\n"
 msgstr "構文解析中の文法エラー ||"
 
 #: build/expression.c:294
 #, fuzzy
-msgid "parse error in expression"
+msgid "parse error in expression\n"
 msgstr "式中で構文解析エラー"
 
 #: build/expression.c:326
-msgid "unmatched ("
+#, fuzzy
+msgid "unmatched (\n"
 msgstr "一致しない ("
 
 #: build/expression.c:356
-msgid "- only on numbers"
+#, fuzzy
+msgid "- only on numbers\n"
 msgstr "- 数のみ"
 
 #: build/expression.c:372
-msgid "! only on numbers"
+#, fuzzy
+msgid "! only on numbers\n"
 msgstr "! 数のみ"
 
 #: build/expression.c:414 build/expression.c:462 build/expression.c:520
 #: build/expression.c:612
-msgid "types must match"
+#, fuzzy
+msgid "types must match\n"
 msgstr "型は一致していなければなりません"
 
 #: build/expression.c:427
-msgid "* / not suported for strings"
+#, fuzzy
+msgid "* / not suported for strings\n"
 msgstr "* / は文字列用にサポートされていません"
 
 #: build/expression.c:478
-msgid "- not suported for strings"
+#, fuzzy
+msgid "- not suported for strings\n"
 msgstr "- は文字列用にサポートされていません"
 
 #: build/expression.c:625
-msgid "&& and || not suported for strings"
+#, fuzzy
+msgid "&& and || not suported for strings\n"
 msgstr "&& と || は文字列用にサポートされていません"
 
 #: build/expression.c:658 build/expression.c:705
 #, fuzzy
-msgid "syntax error in expression"
+msgid "syntax error in expression\n"
 msgstr "式中で文法エラー"
 
 #: build/files.c:226
@@ -1750,163 +1760,162 @@ msgstr "TIMECHECK 失敗: %s\n"
 
 #: build/files.c:276 build/files.c:360 build/files.c:527
 #, fuzzy, c-format
-msgid "Missing '(' in %s %s"
+msgid "Missing '(' in %s %s\n"
 msgstr "%s %s で '('が見つかりません"
 
 #: build/files.c:287 build/files.c:479 build/files.c:538
 #, fuzzy, c-format
-msgid "Missing ')' in %s(%s"
+msgid "Missing ')' in %s(%s\n"
 msgstr "')' がありません %s(%s "
 
 #: build/files.c:325 build/files.c:504
-#, c-format
-msgid "Invalid %s token: %s"
+#, fuzzy, c-format
+msgid "Invalid %s token: %s\n"
 msgstr "無効な %s のトークン: %s"
 
 #: build/files.c:376
-#, c-format
-msgid "Non-white space follows %s(): %s"
+#, fuzzy, c-format
+msgid "Non-white space follows %s(): %s\n"
 msgstr "%s() に続く空白がありません: %s"
 
 #: build/files.c:414
 #, fuzzy, c-format
-msgid "Bad syntax: %s(%s)"
+msgid "Bad syntax: %s(%s)\n"
 msgstr "不正な文法: %s(%s)"
 
 #: build/files.c:424
 #, fuzzy, c-format
-msgid "Bad mode spec: %s(%s)"
+msgid "Bad mode spec: %s(%s)\n"
 msgstr "不正なモードスペック: %s(%s)"
 
 #: build/files.c:436
 #, fuzzy, c-format
-msgid "Bad dirmode spec: %s(%s)"
+msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "不正なディレクトリモードスペック: %s(%s)"
 
-#: build/files.c:564
+#: build/files.c:565
 #, fuzzy
-msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
+msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "異常なロカール長: \"%.*s\"  %%lang(%s)"
 
-#: build/files.c:574
-msgid "Duplicate locale %.*s in %%lang(%s)"
+#: build/files.c:575
+#, fuzzy
+msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "複数のロカール %.*s %%lang(%s)"
 
-#: build/files.c:706
-msgid "Hit limit for %%docdir"
+#: build/files.c:707
+#, fuzzy
+msgid "Hit limit for %%docdir\n"
 msgstr "%%docdir の限界に達しました"
 
-#: build/files.c:712
-msgid "Only one arg for %%docdir"
+#: build/files.c:713
+#, fuzzy
+msgid "Only one arg for %%docdir\n"
 msgstr "%%docdir の引数は1つのみです"
 
 #. We already got a file -- error
-#: build/files.c:740
-#, c-format
-msgid "Two files on one line: %s"
+#: build/files.c:741
+#, fuzzy, c-format
+msgid "Two files on one line: %s\n"
 msgstr "1行に2つのファイル: %s"
 
-#: build/files.c:753
-#, c-format
-msgid "File must begin with \"/\": %s"
+#: build/files.c:755
+#, fuzzy, c-format
+msgid "File must begin with \"/\": %s\n"
 msgstr "ファイルは \"/\" から始まらなければなりません: %s"
 
-#: build/files.c:765
-msgid "Can't mix special %%doc with other forms: %s"
+#: build/files.c:767
+#, fuzzy
+msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "他のフォームで特別な %%doc を混ぜることはできません: %s"
 
-#: build/files.c:859
-#, c-format
-msgid "File listed twice: %s"
+#: build/files.c:861
+#, fuzzy, c-format
+msgid "File listed twice: %s\n"
 msgstr "ファイルが2回表記されています: %s"
 
-#: build/files.c:968
+#: build/files.c:972
 #, c-format
-msgid "Symlink points to BuildRoot: %s -> %s"
+msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1062
-#, c-format
-msgid "File doesn't match prefix (%s): %s"
+#: build/files.c:1066
+#, fuzzy, c-format
+msgid "File doesn't match prefix (%s): %s\n"
 msgstr "ファイルは prefix (%s) と一致しません: %s"
 
-#: build/files.c:1072
-#, c-format
-msgid "File not found: %s"
+#: build/files.c:1076
+#, fuzzy, c-format
+msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s"
 
-#: build/files.c:1115
+#: build/files.c:1119 build/files.c:1639 build/parsePrep.c:42
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:1127
+#: build/files.c:1131
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "ファイル %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1203
-#, c-format
-msgid "File needs leading \"/\": %s"
+#: build/files.c:1207
+#, fuzzy, c-format
+msgid "File needs leading \"/\": %s\n"
 msgstr "ファイルは先頭に \"/\" が必要です: %s"
 
-#: build/files.c:1232
+#: build/files.c:1237
 #, fuzzy, c-format
-msgid "File not found by glob: %s"
+msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません(by glob): %s"
 
-#: build/files.c:1286
+#: build/files.c:1292
 #, fuzzy
-msgid "Could not open %%files file %s: %s"
+msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1295 build/pack.c:108
-#, c-format
-msgid "line: %s"
+#: build/files.c:1301 build/pack.c:108
+#, fuzzy, c-format
+msgid "line: %s\n"
 msgstr "行目: %s"
 
-#: build/files.c:1621
+#: build/files.c:1627
 #, fuzzy, c-format
-msgid "Bad file: %s: %s"
+msgid "Bad file: %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: build/files.c:1633 build/parsePrep.c:41
-#, c-format
-msgid "Bad owner/group: %s"
-msgstr "不正な所有者/グループ: %s"
-
 #. XXX this error message is probably not seen.
-#: build/files.c:1690
+#: build/files.c:1696
 #, fuzzy, c-format
-msgid "Couldn't exec %s: %s"
+msgid "Couldn't exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:1695
+#: build/files.c:1701
 #, fuzzy, c-format
-msgid "Couldn't fork %s: %s"
+msgid "Couldn't fork %s: %s\n"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:1777
-#, c-format
-msgid "%s failed"
+#: build/files.c:1783
+#, fuzzy, c-format
+msgid "%s failed\n"
 msgstr "%s 失敗"
 
-#: build/files.c:1781
-#, c-format
-msgid "failed to write all data to %s"
+#: build/files.c:1787
+#, fuzzy, c-format
+msgid "failed to write all data to %s\n"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:1906
+#: build/files.c:1912
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:1934 build/files.c:1948
+#: build/files.c:1940 build/files.c:1954
 #, fuzzy, c-format
-msgid "Failed to find %s:"
+msgid "Failed to find %s:\n"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:2061
+#: build/files.c:2067
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -1934,47 +1943,47 @@ msgstr "ホスト名を正式なものにできません: %s\n"
 
 #: build/pack.c:52
 #, fuzzy, c-format
-msgid "create archive failed on file %s: %s"
+msgid "create archive failed on file %s: %s\n"
 msgstr "ファイル %s でアーカイブの作成に失敗: %s"
 
 #: build/pack.c:74
 #, fuzzy, c-format
-msgid "cpio_copy write failed: %s"
+msgid "cpio_copy write failed: %s\n"
 msgstr "cpio_copy で書き込み失敗: %s"
 
 #: build/pack.c:81
 #, fuzzy, c-format
-msgid "cpio_copy read failed: %s"
+msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy で読み込み失敗: %s"
 
 #: build/pack.c:165
-#, c-format
-msgid "Could not open PreIn file: %s"
+#, fuzzy, c-format
+msgid "Could not open PreIn file: %s\n"
 msgstr "PreIn ファイルをオープンできませんでした: %s"
 
 #: build/pack.c:172
-#, c-format
-msgid "Could not open PreUn file: %s"
+#, fuzzy, c-format
+msgid "Could not open PreUn file: %s\n"
 msgstr "PreUn ファイルをオープンできませんでした: %s"
 
 #: build/pack.c:179
-#, c-format
-msgid "Could not open PostIn file: %s"
+#, fuzzy, c-format
+msgid "Could not open PostIn file: %s\n"
 msgstr "PostIn ファイルをオープンできませんでした: %s"
 
 #: build/pack.c:186
-#, c-format
-msgid "Could not open PostUn file: %s"
+#, fuzzy, c-format
+msgid "Could not open PostUn file: %s\n"
 msgstr "PostUn ファイルをオープンできませんでした: %s"
 
 #: build/pack.c:194
-#, c-format
-msgid "Could not open VerifyScript file: %s"
+#, fuzzy, c-format
+msgid "Could not open VerifyScript file: %s\n"
 msgstr "VerifyScript ファイルをオープンできませんでした: %s"
 
 #: build/pack.c:209
-#, c-format
-msgid "Could not open Trigger script file: %s"
+#, fuzzy, c-format
+msgid "Could not open Trigger script file: %s\n"
 msgstr "トリガースクリプトファイルをオープンできませんでした: %s"
 
 #: build/pack.c:235
@@ -1997,385 +2006,408 @@ msgstr "readRPM: %s は RPM パッケージではありません\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s からのヘッダの読み込み\n"
 
-#: build/pack.c:381
-msgid "Bad CSA data"
+#: build/pack.c:382
+#, fuzzy
+msgid "Bad CSA data\n"
 msgstr "不正な CSA データ"
 
-#: build/pack.c:422
+#: build/pack.c:423
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の生成中: %d\n"
 
-#: build/pack.c:432
+#: build/pack.c:433
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:469
-#, c-format
-msgid "Unable to write package: %s"
+#: build/pack.c:470
+#, fuzzy, c-format
+msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:484
+#: build/pack.c:485
 #, fuzzy, c-format
-msgid "Unable to open sigtarget %s: %s"
+msgid "Unable to open sigtarget %s: %s\n"
 msgstr "sigtarget の読み込みができませんでした: %s"
 
-#: build/pack.c:494
+#: build/pack.c:495
 #, fuzzy, c-format
-msgid "Unable to read header from %s: %s"
+msgid "Unable to read header from %s: %s\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/pack.c:508
+#: build/pack.c:509
 #, fuzzy, c-format
-msgid "Unable to write header to %s: %s"
+msgid "Unable to write header to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:518
+#: build/pack.c:519
 #, fuzzy, c-format
-msgid "Unable to read payload from %s: %s"
+msgid "Unable to read payload from %s: %s\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/pack.c:524
+#: build/pack.c:525
 #, fuzzy, c-format
-msgid "Unable to write payload to %s: %s"
+msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:551
+#: build/pack.c:552
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
 
-#: build/pack.c:616
+#: build/pack.c:617
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の 出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:633
+#: build/pack.c:634
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
 
 #: build/parseBuildInstallClean.c:28
-#, c-format
-msgid "line %d: second %s"
+#, fuzzy, c-format
+msgid "line %d: second %s\n"
 msgstr "%d 行目: 2番目の %s"
 
-#: build/parseChangelog.c:120
-msgid "%%changelog entries must start with *"
+#: build/parseChangelog.c:121
+#, fuzzy
+msgid "%%changelog entries must start with *\n"
 msgstr "%%chagelog エントリは * で始まらねばなりません"
 
-#: build/parseChangelog.c:128
-msgid "incomplete %%changelog entry"
+#: build/parseChangelog.c:129
+#, fuzzy
+msgid "incomplete %%changelog entry\n"
 msgstr "不完全な %%changelog エントリ"
 
-#: build/parseChangelog.c:143
-msgid "bad date in %%changelog: %s"
+#: build/parseChangelog.c:144
+#, fuzzy
+msgid "bad date in %%changelog: %s\n"
 msgstr "%%changelog 中の不正な日付: %s"
 
-#: build/parseChangelog.c:148
-msgid "%%changelog not in decending chronological order"
+#: build/parseChangelog.c:149
+#, fuzzy
+msgid "%%changelog not in decending chronological order\n"
 msgstr "%%changelog は十進数の年代順になっていません"
 
-#: build/parseChangelog.c:156 build/parseChangelog.c:167
-msgid "missing name in %%changelog"
+#: build/parseChangelog.c:157 build/parseChangelog.c:168
+#, fuzzy
+msgid "missing name in %%changelog\n"
 msgstr "%%changelog 中に名前がありません"
 
-#: build/parseChangelog.c:174
-msgid "no description in %%changelog"
+#: build/parseChangelog.c:175
+#, fuzzy
+msgid "no description in %%changelog\n"
 msgstr "%%changelog 中に説明がありません"
 
 #: build/parseDescription.c:39
-msgid "line %d: Error parsing %%description: %s"
+#, fuzzy
+msgid "line %d: Error parsing %%description: %s\n"
 msgstr "%d 行目: %%description の解析エラー: %s"
 
 #: build/parseDescription.c:52 build/parseFiles.c:47 build/parseScript.c:187
-#, c-format
-msgid "line %d: Bad option %s: %s"
+#, fuzzy, c-format
+msgid "line %d: Bad option %s: %s\n"
 msgstr "%d 行目: 不正なオプション %s:%s"
 
 #: build/parseDescription.c:65 build/parseFiles.c:59 build/parseScript.c:199
-#, c-format
-msgid "line %d: Too many names: %s"
+#, fuzzy, c-format
+msgid "line %d: Too many names: %s\n"
 msgstr "%d 行目: 名前が多すぎます: %s"
 
 #: build/parseDescription.c:75 build/parseFiles.c:68 build/parseScript.c:208
-#, c-format
-msgid "line %d: Package does not exist: %s"
+#, fuzzy, c-format
+msgid "line %d: Package does not exist: %s\n"
 msgstr "%d 行目: パッケージが存在しません: %s"
 
 #: build/parseDescription.c:87
-#, c-format
-msgid "line %d: Second description"
+#, fuzzy, c-format
+msgid "line %d: Second description\n"
 msgstr "%d 行目: 2番目の説明"
 
 #: build/parseFiles.c:33
-msgid "line %d: Error parsing %%files: %s"
+#, fuzzy
+msgid "line %d: Error parsing %%files: %s\n"
 msgstr "%d 行目: %%files の解析エラー: %s"
 
 #: build/parseFiles.c:75
-msgid "line %d: Second %%files list"
+#, fuzzy
+msgid "line %d: Second %%files list\n"
 msgstr "%d 行目: 2番目の %%files リスト"
 
 #: build/parsePreamble.c:211
-#, c-format
-msgid "Architecture is excluded: %s"
+#, fuzzy, c-format
+msgid "Architecture is excluded: %s\n"
 msgstr "アーキテクチャは除外されています: %s"
 
 #: build/parsePreamble.c:216
-#, c-format
-msgid "Architecture is not included: %s"
+#, fuzzy, c-format
+msgid "Architecture is not included: %s\n"
 msgstr "アーキテクチャは含まれていません: %s"
 
 #: build/parsePreamble.c:221
-#, c-format
-msgid "OS is excluded: %s"
+#, fuzzy, c-format
+msgid "OS is excluded: %s\n"
 msgstr "OS は除外されています: %s"
 
 #: build/parsePreamble.c:226
-#, c-format
-msgid "OS is not included: %s"
+#, fuzzy, c-format
+msgid "OS is not included: %s\n"
 msgstr "OS は含まれていません: %s"
 
-#: build/parsePreamble.c:242
-#, c-format
-msgid "%s field must be present in package: %s"
+#: build/parsePreamble.c:243
+#, fuzzy, c-format
+msgid "%s field must be present in package: %s\n"
 msgstr "%s フィールドはパッケージ中に必要です: %s"
 
-#: build/parsePreamble.c:269
-#, c-format
-msgid "Duplicate %s entries in package: %s"
+#: build/parsePreamble.c:270
+#, fuzzy, c-format
+msgid "Duplicate %s entries in package: %s\n"
 msgstr "パッケージ中の二重の %s エントリ: %s"
 
-#: build/parsePreamble.c:323
+#: build/parsePreamble.c:324
 #, fuzzy, c-format
-msgid "Unable to open icon %s: %s"
+msgid "Unable to open icon %s: %s\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/parsePreamble.c:341
+#: build/parsePreamble.c:342
 #, fuzzy, c-format
-msgid "Unable to read icon %s: %s"
+msgid "Unable to read icon %s: %s\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/parsePreamble.c:354
-#, c-format
-msgid "Unknown icon type: %s"
+#: build/parsePreamble.c:355
+#, fuzzy, c-format
+msgid "Unknown icon type: %s\n"
 msgstr "不明なアイコンタイプ: %s"
 
-#: build/parsePreamble.c:421
-#, c-format
-msgid "line %d: Malformed tag: %s"
+#: build/parsePreamble.c:422
+#, fuzzy, c-format
+msgid "line %d: Malformed tag: %s\n"
 msgstr "%d 行目: 不完全な形のタグ: %s"
 
 #. Empty field
-#: build/parsePreamble.c:429
-#, c-format
-msgid "line %d: Empty tag: %s"
+#: build/parsePreamble.c:430
+#, fuzzy, c-format
+msgid "line %d: Empty tag: %s\n"
 msgstr "%d 行目: 空のタグ: %s"
 
-#: build/parsePreamble.c:451 build/parsePreamble.c:458
+#: build/parsePreamble.c:452 build/parsePreamble.c:459
 #, fuzzy, c-format
-msgid "line %d: Illegal char '-' in %s: %s"
+msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "%d 行目: %s 中に不正な文字 '-' : %s"
 
-#: build/parsePreamble.c:515 build/parseSpec.c:382
+#: build/parsePreamble.c:516 build/parseSpec.c:386
 #, fuzzy, c-format
-msgid "BuildRoot can not be \"/\": %s"
+msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "%d 行目: BuildRoot は \"/\" にすることはできません: %s"
 
-#: build/parsePreamble.c:528
-#, c-format
-msgid "line %d: Prefixes must not end with \"/\": %s"
+#: build/parsePreamble.c:529
+#, fuzzy, c-format
+msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "%d 行目: Prefixes は \"/\" で終わってはいけません: %s"
 
-#: build/parsePreamble.c:540
-#, c-format
-msgid "line %d: Docdir must begin with '/': %s"
+#: build/parsePreamble.c:541
+#, fuzzy, c-format
+msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "%d 行目: Docdir は '/' で始まらなくてはいけません: %s"
 
-#: build/parsePreamble.c:552
+#: build/parsePreamble.c:553
 #, fuzzy, c-format
-msgid "line %d: Epoch/Serial field must be a number: %s"
+msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "%d 行目: Epoch/Serial フィールドは番号でなければいけません: %s"
 
-#: build/parsePreamble.c:592 build/parsePreamble.c:603
+#: build/parsePreamble.c:593 build/parsePreamble.c:604
 #, fuzzy, c-format
-msgid "line %d: Bad %s: qualifiers: %s"
+msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "%d 行目: 不正な %s 番号: %s\n"
 
-#: build/parsePreamble.c:629
-#, c-format
-msgid "line %d: Bad BuildArchitecture format: %s"
+#: build/parsePreamble.c:630
+#, fuzzy, c-format
+msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "%d 行目: 不正な BuildArchitecture フォーマット: %s"
 
-#: build/parsePreamble.c:638
-#, c-format
-msgid "Internal error: Bogus tag %d"
+#: build/parsePreamble.c:639
+#, fuzzy, c-format
+msgid "Internal error: Bogus tag %d\n"
 msgstr "内部エラー: にせのタグ %d"
 
-#: build/parsePreamble.c:782
-#, c-format
-msgid "Bad package specification: %s"
+#: build/parsePreamble.c:783
+#, fuzzy, c-format
+msgid "Bad package specification: %s\n"
 msgstr "不正なパッケージの指定: %s"
 
-#: build/parsePreamble.c:788
-#, c-format
-msgid "Package already exists: %s"
+#: build/parsePreamble.c:789
+#, fuzzy, c-format
+msgid "Package already exists: %s\n"
 msgstr "パッケージはすでに存在しています: %s"
 
-#: build/parsePreamble.c:813
-#, c-format
-msgid "line %d: Unknown tag: %s"
+#: build/parsePreamble.c:815
+#, fuzzy, c-format
+msgid "line %d: Unknown tag: %s\n"
 msgstr "%d 行目: 不明なタグ: %s"
 
-#: build/parsePreamble.c:835
-msgid "Spec file can't use BuildRoot"
+#: build/parsePreamble.c:837
+#, fuzzy
+msgid "Spec file can't use BuildRoot\n"
 msgstr "スペックファイルは BuildRoot を使用できません"
 
 #: build/parsePrep.c:37
-#, c-format
-msgid "Bad source: %s: %s"
+#, fuzzy, c-format
+msgid "Bad source: %s: %s\n"
 msgstr "不正なソース: %s : %s"
 
-#: build/parsePrep.c:74
-#, c-format
-msgid "No patch number %d"
+#: build/parsePrep.c:75
+#, fuzzy, c-format
+msgid "No patch number %d\n"
 msgstr "パッチ番号 %d はありません"
 
-#: build/parsePrep.c:164
-#, c-format
-msgid "No source number %d"
+#: build/parsePrep.c:165
+#, fuzzy, c-format
+msgid "No source number %d\n"
 msgstr "ソース番号 %d はありません"
 
-#: build/parsePrep.c:183
+#: build/parsePrep.c:185
 #, fuzzy, c-format
-msgid "Couldn't download nosource %s: %s"
+msgid "Couldn't download nosource %s: %s\n"
 msgstr "nosource %s をダウンロードできません: %s"
 
-#: build/parsePrep.c:277
-msgid "Error parsing %%setup: %s"
+#: build/parsePrep.c:279
+#, fuzzy
+msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup の構文解析エラー: %s"
 
-#: build/parsePrep.c:292
-msgid "line %d: Bad arg to %%setup %c: %s"
+#: build/parsePrep.c:294
+#, fuzzy
+msgid "line %d: Bad arg to %%setup %c: %s\n"
 msgstr "%d 行目: %%setup %c への不正な引数: %s"
 
-#: build/parsePrep.c:310
-msgid "line %d: Bad %%setup option %s: %s"
+#: build/parsePrep.c:312
+#, fuzzy
+msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 行目: 不正な %%setup オプション %s: %s"
 
-#: build/parsePrep.c:443
-msgid "line %d: Need arg to %%patch -b: %s"
+#: build/parsePrep.c:446
+#, fuzzy
+msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "%d 行目: %%patch -b には引数が必要です: %s"
 
-#: build/parsePrep.c:451
-msgid "line %d: Need arg to %%patch -z: %s"
+#: build/parsePrep.c:455
+#, fuzzy
+msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "%d 行目: %%patch -z には引数が必要です: %s"
 
-#: build/parsePrep.c:463
-msgid "line %d: Need arg to %%patch -p: %s"
+#: build/parsePrep.c:467
+#, fuzzy
+msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "%d 行目: %%patch -p には引数が必要です: %s"
 
-#: build/parsePrep.c:469
-msgid "line %d: Bad arg to %%patch -p: %s"
+#: build/parsePrep.c:474
+#, fuzzy
+msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "%d 行目: 不正な %%patch -p への引数: %s"
 
-#: build/parsePrep.c:476
-msgid "Too many patches!"
+#: build/parsePrep.c:481
+#, fuzzy
+msgid "Too many patches!\n"
 msgstr "パッチが多すぎます"
 
-#: build/parsePrep.c:480
-msgid "line %d: Bad arg to %%patch: %s"
+#: build/parsePrep.c:485
+#, fuzzy
+msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "%d 行目: %%patch への不正な引数: %s"
 
-#: build/parsePrep.c:516
-msgid "line %d: second %%prep"
+#: build/parsePrep.c:521
+#, fuzzy
+msgid "line %d: second %%prep\n"
 msgstr "%d 行目: 2番目の %%prep"
 
 #: build/parseReqs.c:100
 #, fuzzy, c-format
 msgid ""
-"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
+"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
 "%d 行目: 依存性トークンは英数字、'_'、'/' で始まらなければなりません: %s"
 
 #: build/parseReqs.c:111
 #, fuzzy, c-format
-msgid "line %d: File name not permitted: %s"
+msgid "line %d: File name not permitted: %s\n"
 msgstr "%d 行目: ファイル名は許可されていません: %s"
 
 #: build/parseReqs.c:143
 #, fuzzy, c-format
-msgid "line %d: Versioned file name not permitted: %s"
+msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "%d 行目: バージョン付けされたファイル名は許可されていません: %s"
 
 #: build/parseReqs.c:173
 #, fuzzy, c-format
-msgid "line %d: Version required: %s"
+msgid "line %d: Version required: %s\n"
 msgstr "%d 行目: バージョンが必要です: %s"
 
 #: build/parseScript.c:153
-#, c-format
-msgid "line %d: triggers must have --: %s"
+#, fuzzy, c-format
+msgid "line %d: triggers must have --: %s\n"
 msgstr "%d 行目: トリガーは -- がなければなりません: %s"
 
 #: build/parseScript.c:163 build/parseScript.c:224
-#, c-format
-msgid "line %d: Error parsing %s: %s"
+#, fuzzy, c-format
+msgid "line %d: Error parsing %s: %s\n"
 msgstr "%d 行目: %s の構文解析エラー: %s"
 
 #: build/parseScript.c:174
-#, c-format
-msgid "line %d: script program must begin with '/': %s"
+#, fuzzy, c-format
+msgid "line %d: script program must begin with '/': %s\n"
 msgstr "%d 行目: スクリプトプログラムは '/' で始まらなければなりません: %s"
 
 #: build/parseScript.c:216
-#, c-format
-msgid "line %d: Second %s"
+#, fuzzy, c-format
+msgid "line %d: Second %s\n"
 msgstr "%d 行目: 2番目の %s"
 
 #: build/parseSpec.c:136
-#, c-format
-msgid "line %d: %s"
+#, fuzzy, c-format
+msgid "line %d: %s\n"
 msgstr "%d 行目: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:184
+#: build/parseSpec.c:185
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "オープンできません: %s\n"
 
-#: build/parseSpec.c:196
-msgid "Unclosed %%if"
+#: build/parseSpec.c:197
+#, fuzzy
+msgid "Unclosed %%if\n"
 msgstr "%%if が閉じていません"
 
-#: build/parseSpec.c:267
-#, c-format
-msgid "%s:%d: parseExpressionBoolean returns %d"
+#: build/parseSpec.c:269
+#, fuzzy, c-format
+msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s%d: parseExpressionBoolean が %d を返しました"
 
-#. Got an else with no %if !
-#: build/parseSpec.c:275
+#: build/parseSpec.c:278
 #, fuzzy
-msgid "%s:%d: Got a %%else with no if"
+msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: if がないのに %%else があります"
 
-#. Got an end with no %if !
-#: build/parseSpec.c:286
+#: build/parseSpec.c:290
 #, fuzzy
-msgid "%s:%d: Got a %%endif with no if"
+msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: if がないのに %%endif があります"
 
-#: build/parseSpec.c:300 build/parseSpec.c:309
-msgid "malformed %%include statement"
+#: build/parseSpec.c:304 build/parseSpec.c:313
+#, fuzzy
+msgid "malformed %%include statement\n"
 msgstr "おかしな %%include ステートメントです"
 
-#: build/parseSpec.c:488
-msgid "No buildable architectures"
+#: build/parseSpec.c:493
+#, fuzzy
+msgid "No buildable architectures\n"
 msgstr "作成(build)可能なアーキテクチャはありません"
 
-#: build/parseSpec.c:543
-msgid "Package has no %%description: %s"
+#: build/parseSpec.c:548
+#, fuzzy
+msgid "Package has no %%description: %s\n"
 msgstr "パッケージには %%description がありません: %s"
 
 #: build/spec.c:41
@@ -2384,13 +2416,13 @@ msgid "archive = %s, fs = %s\n"
 msgstr "アーカイブ = %s, fs = %s\n"
 
 #: build/spec.c:228
-#, c-format
-msgid "line %d: Bad number: %s"
+#, fuzzy, c-format
+msgid "line %d: Bad number: %s\n"
 msgstr "%d 行目: 不正な番号: %s"
 
 #: build/spec.c:234
-#, c-format
-msgid "line %d: Bad no%s number: %d"
+#, fuzzy, c-format
+msgid "line %d: Bad no%s number: %d\n"
 msgstr "%d 行目: 不正な no%s 番号: %d"
 
 #: build/spec.c:292
@@ -2468,64 +2500,64 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:948
+#: lib/depends.c:949
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %s はファイルリストに加えることによって満されます。\n"
 
-#: lib/depends.c:1007
+#: lib/depends.c:1008
 #, fuzzy, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %s は provide に加えることによって満されます。\n"
 
-#: lib/depends.c:1059
+#: lib/depends.c:1060
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1078
+#: lib/depends.c:1079
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:1095
+#: lib/depends.c:1096
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:1117
+#: lib/depends.c:1118
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1130
+#: lib/depends.c:1131
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/depends.c:1144
+#: lib/depends.c:1145
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %s は db パッケージによって満されています。\n"
 
-#: lib/depends.c:1160
+#: lib/depends.c:1161
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1181
+#: lib/depends.c:1182
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: %s はパッケージに加えることによって満されます。\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1239
+#: lib/depends.c:1240
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1306
+#: lib/depends.c:1307
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s と競合するパッケージがあります: %s\n"
@@ -2579,7 +2611,7 @@ msgstr "%s 用の file インデックスを削除します\n"
 
 #: lib/db1.c:421
 #, fuzzy, c-format
-msgid "bad db file %s"
+msgid "bad db file %s\n"
 msgstr "不正なファイルの状態: %s"
 
 #: lib/db1.c:426
@@ -2589,8 +2621,8 @@ msgstr "データベースモード 0x%x のオープン (%s)\n"
 
 #. XXX check errno validity
 #: lib/db1.c:449
-#, c-format
-msgid "cannot get %s lock on database"
+#, fuzzy, c-format
+msgid "cannot get %s lock on database\n"
 msgstr "データベースの %s をロックできません"
 
 #: lib/db1.c:450 lib/db3.c:1120
@@ -2702,27 +2734,32 @@ msgid "(not a number)"
 msgstr "(数字ではありません)"
 
 #: lib/fs.c:69
-#, c-format
-msgid "mntctl() failed to return fugger size: %s"
+#, fuzzy, c-format
+msgid "mntctl() failed to return size: %s\n"
 msgstr "mntctl() fugger サイズを返すのに失敗しました: %s"
 
-#: lib/fs.c:104 lib/fs.c:287
-#, c-format
-msgid "failed to stat %s: %s"
+#: lib/fs.c:84
+#, fuzzy, c-format
+msgid "mntctl() failed to return mount points: %s\n"
+msgstr "mntctl() fugger サイズを返すのに失敗しました: %s"
+
+#: lib/fs.c:104 lib/fs.c:184 lib/fs.c:287
+#, fuzzy, c-format
+msgid "failed to stat %s: %s\n"
 msgstr "stat %s に失敗: %s"
 
 #: lib/fs.c:147
 msgid "getting list of mounted filesystems\n"
 msgstr "マウントされたファイルシステムのリストを取得しています\n"
 
-#: lib/fs.c:152
-#, c-format
-msgid "failed to open %s: %s"
+#: lib/fs.c:152 rpmio/url.c:452
+#, fuzzy, c-format
+msgid "failed to open %s: %s\n"
 msgstr "%s のオープンに失敗: %s"
 
 #: lib/fs.c:309
-#, c-format
-msgid "file %s is on an unknown device"
+#, fuzzy, c-format
+msgid "file %s is on an unknown device\n"
 msgstr "ファイル %s は不明なデバイスです"
 
 #. This should not be allowed
@@ -2816,7 +2853,7 @@ msgstr "式の終りに | が期待されます"
 msgid "(unknown type)"
 msgstr "(不明なタイプ)"
 
-#: lib/install.c:190 lib/uninstall.c:211
+#: lib/install.c:190 lib/uninstall.c:209
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
 msgstr "ファイル %s: アクション: %s\n"
@@ -2836,7 +2873,7 @@ msgstr "グループ %s は存在しません - root を使用します"
 #. XXX FIXME: Fclose with libio destroys errno
 #: lib/install.c:651
 #, fuzzy, c-format
-msgid "unpacking of archive failed%s%s: %s"
+msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
 #: lib/install.c:652
@@ -2850,95 +2887,97 @@ msgstr "ソースパッケージをインストールしています\n"
 
 #: lib/install.c:721
 #, fuzzy, c-format
-msgid "cannot create sourcedir %s"
+msgid "cannot create sourcedir %s\n"
 msgstr "%s を作成できません: %s"
 
-#: lib/install.c:727 lib/install.c:757
-#, c-format
-msgid "cannot write to %s"
+#: lib/install.c:728 lib/install.c:759
+#, fuzzy, c-format
+msgid "cannot write to %s\n"
 msgstr "%s へ書き込めません"
 
-#: lib/install.c:731
+#: lib/install.c:732
 #, c-format
 msgid "sources in: %s\n"
 msgstr "ソースは: %s\n"
 
-#: lib/install.c:751
+#: lib/install.c:752
 #, fuzzy, c-format
-msgid "cannot create specdir %s"
+msgid "cannot create specdir %s\n"
 msgstr "%s を作成できません: %s"
 
-#: lib/install.c:761
+#: lib/install.c:763
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "spec ファイルは: %s\n"
 
-#: lib/install.c:793 lib/install.c:821
-msgid "source package contains no .spec file"
+#: lib/install.c:796 lib/install.c:825
+#, fuzzy
+msgid "source package contains no .spec file\n"
 msgstr "ソースパッケージは .spec ファイルを含んでいません"
 
-#: lib/install.c:839
+#: lib/install.c:843
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/install.c:841 lib/install.c:1103 lib/uninstall.c:60
-#, c-format
-msgid "rename of %s to %s failed: %s"
+#: lib/install.c:845 lib/install.c:1109 lib/uninstall.c:60
+#, fuzzy, c-format
+msgid "rename of %s to %s failed: %s\n"
 msgstr "%s を %s にする名前の変更に失敗: %s"
 
-#: lib/install.c:931
-msgid "source package expected, binary found"
+#: lib/install.c:935
+#, fuzzy
+msgid "source package expected, binary found\n"
 msgstr "ソースパッケージが期待されます、バイナリは見つかりました"
 
-#: lib/install.c:975
+#: lib/install.c:979
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/install.c:1019
+#: lib/install.c:1023
 msgid "stopping install as we're running --test\n"
 msgstr "--test を実行するようにインストールを中止しています\n"
 
-#: lib/install.c:1024
+#: lib/install.c:1028
 msgid "running preinstall script (if any)\n"
 msgstr "プリインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/install.c:1031
+#: lib/install.c:1036
 #, fuzzy
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr "%s をスキップします - 転送失敗 - %s\n"
 
-#: lib/install.c:1063
+#: lib/install.c:1069
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "警告: %s は %s として作成されます"
 
-#: lib/install.c:1099
+#: lib/install.c:1105
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "警告: %s は %s として保存されます"
 
-#: lib/install.c:1193
+#: lib/install.c:1199
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
 
 #: lib/misc.c:328 lib/misc.c:333 lib/misc.c:339
-#, c-format
-msgid "error creating temporary file %s"
+#, fuzzy, c-format
+msgid "error creating temporary file %s\n"
 msgstr "一時ファイル %s の作成エラー"
 
 #: lib/package.c:88
 #, fuzzy
-msgid "packaging version 1 is not supported by this version of RPM"
+msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
 #: lib/package.c:143
 #, fuzzy
 msgid ""
-"only packaging with major numbers <= 4 is supported by this version of RPM"
+"only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
@@ -3284,7 +3323,8 @@ msgid "(no state)    "
 msgstr "(何の状態もありません)"
 
 #: lib/query.c:316 lib/query.c:361
-msgid "package has neither file owner or id lists"
+#, fuzzy
+msgid "package has neither file owner or id lists\n"
 msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 
 #: lib/query.c:418
@@ -3462,193 +3502,148 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:267
-msgid ""
-"\n"
-"--> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n"
-"    Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n"
-"    and configure \"%%_dbapi 3\" (e.g. create and/or edit /etc/rpm/macros).\n"
-"\n"
-msgstr ""
-
-#: lib/rpmdb.c:283
+#: lib/rpmdb.c:271
 #, fuzzy, c-format
-msgid "cannot open %s index using db%d - %s (%d)"
+msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "%s をオープンできません  %s:%d"
 
-#: lib/rpmdb.c:303
+#: lib/rpmdb.c:291
 #, fuzzy, c-format
-msgid "cannot open %s index"
+msgid "cannot open %s index\n"
 msgstr "%s をオープンできません\n"
 
-#: lib/rpmdb.c:318
-#, c-format
-msgid ""
-"\n"
-"--> The rpm database cannot be opened in db%d format.\n"
-"    If you have just upgraded the rpm package you need to convert\n"
-"    your database to db%d format by running \"rpm --rebuilddb\" as root.\n"
-"\n"
-msgstr ""
-
-#: lib/rpmdb.c:332
-msgid ""
-"\n"
-"--> The configured %%_dbapi was db%d, but the rpm database is db%d format.\n"
-"    Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n"
-"    and configure \"%%_dbapi %d\" (e.g. create and/or edit "
-"/etc/rpm/macros).\n"
-"\n"
-msgstr ""
-
-#: lib/rpmdb.c:348
-msgid ""
-"\n"
-"--> The rpm database is in db%d format, not the suggested db%d format.\n"
-"    Please verify the setting of the macros %%_dbapi and %%_dbapi_rebuild\n"
-"    using \"rpm --showrc\", and either run \"rpm --rebuilddb\" as root\n"
-"    to convert your database from db%d to db%d format, or configure\n"
-"    \"%%_dbapi_rebuild %d\" (e.g. create and/or edit /etc/rpm/macros).\n"
-"\n"
-msgstr ""
-
-#: lib/rpmdb.c:417
+#: lib/rpmdb.c:376
 #, fuzzy, c-format
-msgid "error(%d) getting \"%s\" records from %s index"
+msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "レコード %s の取得のエラー (%s から)"
 
-#: lib/rpmdb.c:535
+#: lib/rpmdb.c:495
 #, fuzzy, c-format
-msgid "error(%d) storing record %s into %s"
+msgid "error(%d) storing record %s into %s\n"
 msgstr "レコード %s を %s にストアでエラー "
 
-#: lib/rpmdb.c:544
+#: lib/rpmdb.c:505
 #, fuzzy, c-format
-msgid "error(%d) removing record %s from %s"
+msgid "error(%d) removing record %s from %s\n"
 msgstr "レコード %s を %s に削除でエラー"
 
-#: lib/rpmdb.c:779 lib/rpmdb.c:2368
-msgid "no dbpath has been set"
+#: lib/rpmdb.c:740
+#, fuzzy
+msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません"
 
-#: lib/rpmdb.c:878
+#: lib/rpmdb.c:839
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
-"database"
+"database\n"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:1090
+#: lib/rpmdb.c:1023
 #, fuzzy, c-format
-msgid "error(%d) counting packages"
+msgid "error(%d) counting packages\n"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: lib/rpmdb.c:1149 lib/rpmdb.c:1693
+#: lib/rpmdb.c:1079 lib/rpmdb.c:1620
 #, fuzzy, c-format
-msgid "%s: cannot read header at 0x%x"
+msgid "%s: cannot read header at 0x%x\n"
 msgstr "検索のための %d で ヘッダを読むことができません"
 
-#: lib/rpmdb.c:1746
-#, fuzzy, c-format
-msgid "removing 0 %s entries.\n"
-msgstr "データベースエントリを削除します\n"
-
-#: lib/rpmdb.c:1757
+#: lib/rpmdb.c:1685
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "group インデックスを削除します\n"
 
-#: lib/rpmdb.c:1766
+#: lib/rpmdb.c:1694
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "name インデックス削除します\n"
 
-#: lib/rpmdb.c:1908
+#: lib/rpmdb.c:1872
 #, fuzzy, c-format
-msgid "error(%d) allocating new package instance"
+msgid "error(%d) allocating new package instance\n"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: lib/rpmdb.c:1971
-#, c-format
-msgid "adding 0 %s entries.\n"
-msgstr ""
-
-#: lib/rpmdb.c:1987
+#: lib/rpmdb.c:1968
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/rpmdb.c:1996
+#: lib/rpmdb.c:1972
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/rpmdb.c:2342
+#: lib/rpmdb.c:2344
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2393
+#: lib/rpmdb.c:2370
+msgid "no dbpath has been set"
+msgstr "dbpath が設定されていません"
+
+#: lib/rpmdb.c:2395
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rootdir %s 中でデータベースを再構築します\n"
 
-#: lib/rpmdb.c:2397
-#, c-format
-msgid "temporary database %s already exists"
+#: lib/rpmdb.c:2399
+#, fuzzy, c-format
+msgid "temporary database %s already exists\n"
 msgstr "一時的なデータベース %s はすでに存在しています"
 
-#: lib/rpmdb.c:2403
+#: lib/rpmdb.c:2405
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: lib/rpmdb.c:2405
-#, c-format
-msgid "error creating directory %s: %s"
-msgstr "ディレクトリ %s の作成エラー: %s"
+#: lib/rpmdb.c:2407
+#, fuzzy, c-format
+msgid "creating directory %s: %s\n"
+msgstr "ディレクトリの作成: %s\n"
 
-#: lib/rpmdb.c:2412
+#: lib/rpmdb.c:2414
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "古いデータベースのオープン\n"
 
-#: lib/rpmdb.c:2423
+#: lib/rpmdb.c:2425
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "新しいデータベースのオープン\n"
 
-#: lib/rpmdb.c:2446
+#: lib/rpmdb.c:2448
 #, fuzzy, c-format
-msgid "record number %d in database is bad -- skipping."
+msgid "record number %d in database is bad -- skipping.\n"
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: lib/rpmdb.c:2483
-#, c-format
-msgid "cannot add record originally at %d"
+#: lib/rpmdb.c:2485
+#, fuzzy, c-format
+msgid "cannot add record originally at %d\n"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: lib/rpmdb.c:2501
+#: lib/rpmdb.c:2503
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: lib/rpmdb.c:2509
+#: lib/rpmdb.c:2511
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: lib/rpmdb.c:2511
+#: lib/rpmdb.c:2513
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: lib/rpmdb.c:2521
+#: lib/rpmdb.c:2523
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: lib/rpmdb.c:2523
+#: lib/rpmdb.c:2525
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
@@ -3770,102 +3765,102 @@ msgid "Installing %s\n"
 msgstr "%s をインストール中\n"
 
 #: lib/rpmlead.c:48
-#, c-format
-msgid "read failed: %s (%d)"
+#, fuzzy, c-format
+msgid "read failed: %s (%d)\n"
 msgstr "読み込みの失敗: %s (%d)"
 
 #: lib/rpmrc.c:150
-#, c-format
-msgid "missing second ':' at %s:%d"
+#, fuzzy, c-format
+msgid "missing second ':' at %s:%d\n"
 msgstr "2番目の ':' がありません(%s:%d で)"
 
 #: lib/rpmrc.c:153
-#, c-format
-msgid "missing architecture name at %s:%d"
+#, fuzzy, c-format
+msgid "missing architecture name at %s:%d\n"
 msgstr "%s:%d にアーキテクチャ名がありません"
 
 #: lib/rpmrc.c:305
-#, c-format
-msgid "Incomplete data line at %s:%d"
+#, fuzzy, c-format
+msgid "Incomplete data line at %s:%d\n"
 msgstr "%s:%d でデータ行が不完全です"
 
-#: lib/rpmrc.c:309
-#, c-format
-msgid "Too many args in data line at %s:%d"
+#: lib/rpmrc.c:310
+#, fuzzy, c-format
+msgid "Too many args in data line at %s:%d\n"
 msgstr "%s:%d でデータ行に引数が多すぎます"
 
-#: lib/rpmrc.c:316
-#, c-format
-msgid "Bad arch/os number: %s (%s:%d)"
+#: lib/rpmrc.c:317
+#, fuzzy, c-format
+msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "不正な arch/os 番号: %s (%s:%d)"
 
-#: lib/rpmrc.c:351
-#, c-format
-msgid "Incomplete default line at %s:%d"
+#: lib/rpmrc.c:352
+#, fuzzy, c-format
+msgid "Incomplete default line at %s:%d\n"
 msgstr "%s:%d で不完全なデフォルト行"
 
-#: lib/rpmrc.c:356
-#, c-format
-msgid "Too many args in default line at %s:%d"
+#: lib/rpmrc.c:357
+#, fuzzy, c-format
+msgid "Too many args in default line at %s:%d\n"
 msgstr "%s:%d でデフォルト行は引数が多すぎます"
 
-#: lib/rpmrc.c:546
-#, c-format
-msgid "Cannot expand %s"
+#: lib/rpmrc.c:547
+#, fuzzy, c-format
+msgid "Cannot expand %s\n"
 msgstr "伸張できません %s"
 
-#: lib/rpmrc.c:551
+#: lib/rpmrc.c:552
 #, c-format
-msgid "Cannot read %s, HOME is too large."
+msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:568
-#, c-format
-msgid "Unable to open %s for reading: %s."
+#: lib/rpmrc.c:569
+#, fuzzy, c-format
+msgid "Unable to open %s for reading: %s.\n"
 msgstr "読み込むために %s をオープンできません: %s。"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:613
-#, c-format
-msgid "Failed to read %s: %s."
+#: lib/rpmrc.c:614
+#, fuzzy, c-format
+msgid "Failed to read %s: %s.\n"
 msgstr "%s を読むのに失敗: $s。"
 
-#: lib/rpmrc.c:650
+#: lib/rpmrc.c:651
 #, fuzzy, c-format
-msgid "missing ':' (found 0x%02x) at %s:%d"
+msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "%s:%d で ':' がありません"
 
-#: lib/rpmrc.c:667 lib/rpmrc.c:741
-#, c-format
-msgid "missing argument for %s at %s:%d"
+#: lib/rpmrc.c:668 lib/rpmrc.c:742
+#, fuzzy, c-format
+msgid "missing argument for %s at %s:%d\n"
 msgstr "%s の引数がありません %s:%d"
 
-#: lib/rpmrc.c:684 lib/rpmrc.c:706
+#: lib/rpmrc.c:685 lib/rpmrc.c:707
 #, fuzzy, c-format
-msgid "%s expansion failed at %s:%d \"%s\""
+msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "%s の伸張失敗 %s:%d \"%s\""
 
-#: lib/rpmrc.c:693
+#: lib/rpmrc.c:694
 #, fuzzy, c-format
-msgid "cannot open %s at %s:%d: %s"
+msgid "cannot open %s at %s:%d: %s\n"
 msgstr "%s をオープンできません  %s:%d"
 
-#: lib/rpmrc.c:733
-#, c-format
-msgid "missing architecture for %s at %s:%d"
+#: lib/rpmrc.c:734
+#, fuzzy, c-format
+msgid "missing architecture for %s at %s:%d\n"
 msgstr "%s 用のアーキテクチャが見つかりません %s:%d"
 
-#: lib/rpmrc.c:800
-#, c-format
-msgid "bad option '%s' at %s:%d"
+#: lib/rpmrc.c:801
+#, fuzzy, c-format
+msgid "bad option '%s' at %s:%d\n"
 msgstr "'%s' の不正なオープン %s:%d"
 
-#: lib/rpmrc.c:1197
+#: lib/rpmrc.c:1198
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "不明なシステム: %s\n"
 
-#: lib/rpmrc.c:1198
+#: lib/rpmrc.c:1199
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "rpm-list@redhat.com に連絡を下さい\n"
 
@@ -3893,7 +3888,8 @@ msgid "Old PGP signature\n"
 msgstr "古い PGP 署名\n"
 
 #: lib/signature.c:162
-msgid "Old (internal-only) signature!  How did you get that!?"
+#, fuzzy
+msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "古い(内部だけの)署名!  どうやってそれを手にいれましたか!?"
 
 #: lib/signature.c:211
@@ -3908,17 +3904,19 @@ msgstr "署名パッド: %d\n"
 
 #: lib/signature.c:274
 #, fuzzy, c-format
-msgid "Couldn't exec pgp (%s)"
+msgid "Couldn't exec pgp (%s)\n"
 msgstr "pgp を実行できません(%s)"
 
 #: lib/signature.c:285
-msgid "pgp failed"
+#, fuzzy
+msgid "pgp failed\n"
 msgstr "pgp 失敗"
 
 #. PGP failed to write signature
 #. Just in case
 #: lib/signature.c:292
-msgid "pgp failed to write signature"
+#, fuzzy
+msgid "pgp failed to write signature\n"
 msgstr "pgp が署名を書き込むのに失敗しました"
 
 #: lib/signature.c:297
@@ -3927,7 +3925,8 @@ msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %s\n"
 
 #: lib/signature.c:308 lib/signature.c:385
-msgid "unable to read the signature"
+#, fuzzy
+msgid "unable to read the signature\n"
 msgstr "署名を読むことができません"
 
 #: lib/signature.c:313
@@ -3937,19 +3936,19 @@ msgstr "PGP 署名の %d バイトを取得\n"
 
 #: lib/signature.c:351 lib/signature.c:694
 #, fuzzy
-msgid "Couldn't exec gpg"
+msgid "Couldn't exec gpg\n"
 msgstr "gpg を実行できません"
 
 #: lib/signature.c:362
 #, fuzzy
-msgid "gpg failed"
+msgid "gpg failed\n"
 msgstr "gpg 失敗"
 
 #. GPG failed to write signature
 #. Just in case
 #: lib/signature.c:369
 #, fuzzy
-msgid "gpg failed to write signature"
+msgid "gpg failed to write signature\n"
 msgstr "gpg が署名を書き込むのに失敗しました"
 
 #: lib/signature.c:374
@@ -3973,36 +3972,39 @@ msgid "Generating signature using GPG.\n"
 msgstr "GPG を使用して署名の生成中\n"
 
 #: lib/signature.c:502 lib/signature.c:563
-msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
+#, fuzzy
+msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 "pgp を実行できませんでした。\n"
 "PGP チェックをスキップするために --nopgp を使用してください。"
 
 #: lib/signature.c:635
 #, fuzzy
-msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
+msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 "gpg を実行できませんでした。\n"
 "GPG チェックをスキップするために --nogpg を使用してください。"
 
 #: lib/signature.c:723
-msgid "Couldn't exec pgp"
+#, fuzzy
+msgid "Couldn't exec pgp\n"
 msgstr "pgp を実行できません"
 
 #. @notreached@
 #. This case should have been screened out long ago.
 #: lib/signature.c:727 lib/signature.c:780
-msgid "Invalid %%_signature spec in macro file"
-msgstr "マクロファイル中で無効な %%_signature スペック"
+#, fuzzy
+msgid "Invalid %%_signature spec in macro file\n"
+msgstr "マクロファイル中の無効な %%_signature 。\n"
 
 #: lib/signature.c:760
 #, fuzzy
-msgid "You must set \"%%_gpg_name\" in your macro file"
+msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
 #: lib/signature.c:772
 #, fuzzy
-msgid "You must set \"%%_pgp_name\" in your macro file"
+msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
 #: lib/transaction.c:466
@@ -4050,18 +4052,18 @@ msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
 
 #: lib/uninstall.c:74
-#, c-format
-msgid "cannot remove %s - directory not empty"
+#, fuzzy, c-format
+msgid "cannot remove %s - directory not empty\n"
 msgstr "%s を削除できません - ディレクトリが空でありません"
 
 #: lib/uninstall.c:78
-#, c-format
-msgid "rmdir of %s failed: %s"
+#, fuzzy, c-format
+msgid "rmdir of %s failed: %s\n"
 msgstr "%s の rmdir に失敗: %s"
 
 #: lib/uninstall.c:88
-#, c-format
-msgid "removal of %s failed: %s"
+#, fuzzy, c-format
+msgid "removal of %s failed: %s\n"
 msgstr "%s の削除に失敗: %s"
 
 #: lib/uninstall.c:151
@@ -4069,13 +4071,13 @@ msgstr "%s の削除に失敗: %s"
 msgid "will remove files test = %d\n"
 msgstr "ファイル test = %d を削除します\n"
 
-#: lib/uninstall.c:235
+#: lib/uninstall.c:233
 msgid "running postuninstall script (if any)\n"
 msgstr "ポストアンインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/uninstall.c:448
+#: lib/uninstall.c:446
 #, fuzzy, c-format
-msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d"
+msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "スクリプトの実行に失敗"
 
 #: lib/verify.c:59
@@ -4089,13 +4091,15 @@ msgid "do not execute %verifyscript (if any)"
 msgstr "どの段階も実行しません"
 
 #: lib/verify.c:241
-msgid "package lacks both user name and id lists (this should never happen)"
+#, fuzzy
+msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 "パッケージは ユーザ名と id "
 "リストの両方が欠けています(これは決して起きてはならない)"
 
 #: lib/verify.c:259
-msgid "package lacks both group name and id lists (this should never happen)"
+#, fuzzy
+msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "パッケージはグループ名と id "
 "リストの両方が欠けています(これは決して起きてはならない)"
@@ -4192,71 +4196,80 @@ msgstr ""
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:555
-msgid "Macro %%%s has unterminated body"
+#: rpmio/macro.c:556
+#, fuzzy
+msgid "Macro %%%s has unterminated body\n"
 msgstr "マクロ %%%s はボディが終端されていません"
 
-#: rpmio/macro.c:581
-msgid "Macro %%%s has illegal name (%%define)"
+#: rpmio/macro.c:583
+#, fuzzy
+msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "マクロ %%%s は違法な名前です(%%define)"
 
-#: rpmio/macro.c:587
-msgid "Macro %%%s has unterminated opts"
+#: rpmio/macro.c:590
+#, fuzzy
+msgid "Macro %%%s has unterminated opts\n"
 msgstr "マクロ %%%s は opts が終端されていません"
 
-#: rpmio/macro.c:592
-msgid "Macro %%%s has empty body"
+#: rpmio/macro.c:595
+#, fuzzy
+msgid "Macro %%%s has empty body\n"
 msgstr "マクロ %%%s は空のボディです"
 
-#: rpmio/macro.c:597
-msgid "Macro %%%s failed to expand"
+#: rpmio/macro.c:600
+#, fuzzy
+msgid "Macro %%%s failed to expand\n"
 msgstr "マクロ %%%s は伸長に失敗しました"
 
-#: rpmio/macro.c:628
-msgid "Macro %%%s has illegal name (%%undefine)"
+#: rpmio/macro.c:632
+#, fuzzy
+msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "マクロ %%%s は違法な名前です(%%undefine)"
 
-#: rpmio/macro.c:721
-msgid "Macro %%%s (%s) was not used below level %d"
+#: rpmio/macro.c:726
+#, fuzzy
+msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "マクロ %%%s (%s) はレベル %d 以下で使用されませんでした"
 
-#: rpmio/macro.c:814
+#: rpmio/macro.c:819
 #, fuzzy, c-format
-msgid "Unknown option %c in %s(%s)"
+msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)"
 
-#: rpmio/macro.c:993
-#, c-format
-msgid "Recursion depth(%d) greater than max(%d)"
+#: rpmio/macro.c:999
+#, fuzzy, c-format
+msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "再帰の深さ(%d)が最大値(%d)よりも大きい"
 
-#: rpmio/macro.c:1059 rpmio/macro.c:1075
+#: rpmio/macro.c:1066 rpmio/macro.c:1083
 #, fuzzy, c-format
-msgid "Unterminated %c: %s"
+msgid "Unterminated %c: %s\n"
 msgstr "終端されていない %c: %s"
 
-#: rpmio/macro.c:1115
-msgid "A %% is followed by an unparseable macro"
+#: rpmio/macro.c:1124
+#, fuzzy
+msgid "A %% is followed by an unparseable macro\n"
 msgstr "A %% は構文解析できないマクロが続いています"
 
-#: rpmio/macro.c:1241
+#: rpmio/macro.c:1251
 #, fuzzy
-msgid "Macro %%%.*s not found, skipping"
+msgid "Macro %%%.*s not found, skipping\n"
 msgstr "マクロ %%%.*s は見つかりません、スキップします"
 
-#: rpmio/macro.c:1312
-msgid "Target buffer overflow"
+#: rpmio/macro.c:1322
+#, fuzzy
+msgid "Target buffer overflow\n"
 msgstr "ターゲットバッファオーバーフロー"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1492 rpmio/macro.c:1498
-#, c-format
-msgid "File %s: %s"
+#: rpmio/macro.c:1502 rpmio/macro.c:1508
+#, fuzzy, c-format
+msgid "File %s: %s\n"
 msgstr "ファイル %s: %s"
 
-#: rpmio/macro.c:1501
+#: rpmio/macro.c:1511
 #, fuzzy, c-format
-msgid "File %s is smaller than %u bytes"
+msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s: は %d バイトより小さいです"
 
 #: rpmio/rpmlog.c:24
@@ -4314,16 +4327,27 @@ msgstr "エラー: %sポートは数字でなければなりません\n"
 msgid "url port must be a number\n"
 msgstr "url ポートは数字でなければなりません\n"
 
-#: rpmio/url.c:452
-#, fuzzy, c-format
-msgid "failed to open %s: %s\n"
-msgstr "%s のオープンに失敗: %s"
-
 #. XXX Fstrerror
 #: rpmio/url.c:469
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました\n"
+
+#~ msgid "Bad owner/group: %s"
+#~ msgstr "不正な所有者/グループ: %s"
+
+#~ msgid "failed to open %s: %s"
+#~ msgstr "%s のオープンに失敗: %s"
+
+#, fuzzy
+#~ msgid "removing 0 %s entries.\n"
+#~ msgstr "データベースエントリを削除します\n"
+
+#~ msgid "error creating directory %s: %s"
+#~ msgstr "ディレクトリ %s の作成エラー: %s"
+
+#~ msgid "Invalid %%_signature spec in macro file"
+#~ msgstr "マクロファイル中で無効な %%_signature スペック"
 
 #, fuzzy
 #~ msgid "package src rpm only"

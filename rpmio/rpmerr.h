@@ -87,6 +87,7 @@ typedef enum rpmerrCode_e {
     RPMERR_FREAD	= _em(134), /*!< */
     RPMERR_READLEAD	= _em(135), /*!< */
     RPMERR_WRITELEAD	= _em(136), /*!< */
+    RPMERR_QUERYINFO	= _en(137), /*!< */
 
     RPMERR_BADSIGTYPE	= _em(200), /*!< Unknown signature type */
     RPMERR_SIGGEN	= _em(201), /*!< Error generating signature */

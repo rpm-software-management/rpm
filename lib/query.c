@@ -313,7 +313,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 		te += strlen(te);
 	    } else {
 		rpmError(RPMERR_INTERNAL,
-			_("package has neither file owner or id lists"));
+			_("package has neither file owner or id lists\n"));
 	    }
 
 	    sprintf(te, " %s %s %u ", 
@@ -358,7 +358,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 		te += strlen(te);
 	    } else {
 		rpmError(RPMERR_INTERNAL,
-			_("package has neither file owner or id lists"));
+			_("package has neither file owner or id lists\n"));
 	    }
 
 	    free(filespec);
@@ -621,7 +621,7 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 	/* RPMDBI_PACKAGES */
 	mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, NULL, 0);
 	if (mi == NULL) {
-	    rpmError(RPMERR_QUERY, _("no packages\n"));
+	    rpmError(RPMERR_QUERYINFO, _("no packages\n"));
 	    retcode = 1;
 	} else {
 	    retcode = showMatches(qva, mi, showPackage);
@@ -631,7 +631,7 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
     case RPMQV_GROUP:
 	mi = rpmdbInitIterator(rpmdb, RPMTAG_GROUP, arg, 0);
 	if (mi == NULL) {
-	    rpmError(RPMERR_QUERY,
+	    rpmError(RPMERR_QUERYINFO,
 		_("group %s does not contain any packages\n"), arg);
 	    retcode = 1;
 	} else {
@@ -642,7 +642,7 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
     case RPMQV_TRIGGEREDBY:
 	mi = rpmdbInitIterator(rpmdb, RPMTAG_TRIGGERNAME, arg, 0);
 	if (mi == NULL) {
-	    rpmError(RPMERR_QUERY, _("no package triggers %s\n"), arg);
+	    rpmError(RPMERR_QUERYINFO, _("no package triggers %s\n"), arg);
 	    retcode = 1;
 	} else {
 	    retcode = showMatches(qva, mi, showPackage);
@@ -652,7 +652,7 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
     case RPMQV_WHATREQUIRES:
 	mi = rpmdbInitIterator(rpmdb, RPMTAG_REQUIRENAME, arg, 0);
 	if (mi == NULL) {
-	    rpmError(RPMERR_QUERY, _("no package requires %s\n"), arg);
+	    rpmError(RPMERR_QUERYINFO, _("no package requires %s\n"), arg);
 	    retcode = 1;
 	} else {
 	    retcode = showMatches(qva, mi, showPackage);
@@ -663,7 +663,7 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 	if (arg[0] != '/') {
 	    mi = rpmdbInitIterator(rpmdb, RPMTAG_PROVIDENAME, arg, 0);
 	    if (mi == NULL) {
-		rpmError(RPMERR_QUERY, _("no package provides %s\n"), arg);
+		rpmError(RPMERR_QUERYINFO, _("no package provides %s\n"), arg);
 		retcode = 1;
 	    } else {
 		retcode = showMatches(qva, mi, showPackage);
@@ -697,7 +697,7 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 			_("file %s: %s\n"), fn, strerror(myerrno));
 		break;
 	    case 0:
-		rpmError(RPMERR_QUERY,
+		rpmError(RPMERR_QUERYINFO,
 			_("file %s is not owned by any package\n"), fn);
 		break;
 	    }
@@ -743,7 +743,7 @@ int rpmQueryVerify(QVA_t *qva, rpmQVSources source, const char * arg,
 	/* XXX HACK to get rpmdbFindByLabel out of the API */
 	mi = rpmdbInitIterator(rpmdb, RPMDBI_LABEL, arg, 0);
 	if (mi == NULL) {
-	    rpmError(RPMERR_QUERY, _("package %s is not installed\n"), arg);
+	    rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
 	    retcode = 1;
 	} else {
 	    retcode = showMatches(qva, mi, showPackage);

@@ -133,7 +133,8 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 	/* Don't expand macros (eg. %define) in false branch of %if clause */
 	if (spec->readStack->reading &&
 	    expandMacros(spec, spec->macros, spec->lbuf, sizeof(spec->lbuf))) {
-		rpmError(RPMERR_BADSPEC, _("line %d: %s"), spec->lineNum, spec->lbuf);
+		rpmError(RPMERR_BADSPEC, _("line %d: %s\n"),
+			spec->lineNum, spec->lbuf);
 		return RPMERR_BADSPEC;
 	}
 	spec->nextline = spec->lbuf;
@@ -193,7 +194,7 @@ retry:
 	if (!fgets(ofi->readBuf, BUFSIZ, fdGetFp(ofi->fd))) {
 	    /* EOF */
 	    if (spec->readStack->next) {
-		rpmError(RPMERR_UNMATCHEDIF, _("Unclosed %%if"));
+		rpmError(RPMERR_UNMATCHEDIF, _("Unclosed %%if\n"));
 	        return RPMERR_UNMATCHEDIF;
 	    }
 
@@ -264,16 +265,18 @@ retry:
 	s += 3;
         match = parseExpressionBoolean(spec, s);
 	if (match < 0) {
-	    rpmError(RPMERR_UNMATCHEDIF, _("%s:%d: parseExpressionBoolean returns %d"),
-		     ofi->fileName, ofi->lineNum, match);
+	    rpmError(RPMERR_UNMATCHEDIF,
+			_("%s:%d: parseExpressionBoolean returns %d\n"),
+			ofi->fileName, ofi->lineNum, match);
 	    return RPMERR_BADSPEC;
 	}
     } else if (! strncmp("%else", s, sizeof("%else")-1)) {
 	s += 5;
 	if (! spec->readStack->next) {
 	    /* Got an else with no %if ! */
-	    rpmError(RPMERR_UNMATCHEDIF, _("%s:%d: Got a %%else with no if"),
-		     ofi->fileName, ofi->lineNum);
+	    rpmError(RPMERR_UNMATCHEDIF,
+			_("%s:%d: Got a %%else with no %%if\n"),
+			ofi->fileName, ofi->lineNum);
 	    return RPMERR_UNMATCHEDIF;
 	}
 	spec->readStack->reading =
@@ -283,8 +286,9 @@ retry:
 	s += 6;
 	if (! spec->readStack->next) {
 	    /* Got an end with no %if ! */
-	    rpmError(RPMERR_UNMATCHEDIF, _("%s:%d: Got a %%endif with no if"),
-		     ofi->fileName, ofi->lineNum);
+	    rpmError(RPMERR_UNMATCHEDIF,
+			_("%s:%d: Got a %%endif with no %%if\n"),
+			ofi->fileName, ofi->lineNum);
 	    return RPMERR_UNMATCHEDIF;
 	}
 	rl = spec->readStack;
@@ -297,7 +301,7 @@ retry:
 	s += 8;
 	fileName = s;
 	if (! isspace(*fileName)) {
-	    rpmError(RPMERR_BADSPEC, _("malformed %%include statement"));
+	    rpmError(RPMERR_BADSPEC, _("malformed %%include statement\n"));
 	    return RPMERR_BADSPEC;
 	}
 	SKIPSPACE(fileName);
@@ -306,7 +310,7 @@ retry:
 	p = endFileName;
 	SKIPSPACE(p);
 	if (*p != '\0') {
-	    rpmError(RPMERR_BADSPEC, _("malformed %%include statement"));
+	    rpmError(RPMERR_BADSPEC, _("malformed %%include statement\n"));
 	    return RPMERR_BADSPEC;
 	}
 	*endFileName = '\0';
@@ -379,7 +383,7 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
 	if (*buildRoot == '\0') buildRoot = "/";
 	if (!strcmp(buildRoot, "/")) {
             rpmError(RPMERR_BADSPEC,
-                     _("BuildRoot can not be \"/\": %s"), buildRootURL);
+                     _("BuildRoot can not be \"/\": %s\n"), buildRootURL);
             return RPMERR_BADSPEC;
         }
 	spec->gotBuildRootURL = 1;
@@ -443,6 +447,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	    break;
 
 	  case PART_NONE:		/* XXX avoid gcc whining */
+	  case PART_LAST:
 	  case PART_BUILDARCHITECTURES:
 	    break;
 	}
@@ -485,7 +490,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	    spec->buildArchitectureCount = index;
 	    if (! index) {
 		freeSpec(spec);
-		rpmError(RPMERR_BADSPEC, _("No buildable architectures"));
+		rpmError(RPMERR_BADSPEC, _("No buildable architectures\n"));
 		return RPMERR_BADSPEC;
 	    }
 
@@ -540,7 +545,8 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
 	    const char * name;
 	    headerNVR(pkg->header, &name, NULL, NULL);
-	    rpmError(RPMERR_BADSPEC, _("Package has no %%description: %s"), name);
+	    rpmError(RPMERR_BADSPEC, _("Package has no %%description: %s\n"),
+			name);
 	    freeSpec(spec);
 	    return RPMERR_BADSPEC;
 	}

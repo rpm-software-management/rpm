@@ -111,7 +111,7 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     }
     
     if (makeTempFile(rootURL, &scriptName, &fd) || fd == NULL || Ferror(fd)) {
-	rpmError(RPMERR_SCRIPT, _("Unable to open temp file."));
+	rpmError(RPMERR_SCRIPT, _("Unable to open temp file.\n"));
 	rc = RPMERR_SCRIPT;
 	goto exit;
     }
@@ -196,7 +196,8 @@ fprintf(stderr, "*** addMacros\n");
 	errno = 0;
 	execvp(argv[0], (char *const *)argv);
 
-	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s): %s"), scriptName, name, strerror(errno));
+	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s): %s\n"),
+		scriptName, name, strerror(errno));
 
 	_exit(-1);
     }
@@ -204,7 +205,7 @@ fprintf(stderr, "*** addMacros\n");
     rc = waitpid(child, &status, 0);
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_SCRIPT, _("Bad exit status from %s (%s)"),
+	rpmError(RPMERR_SCRIPT, _("Bad exit status from %s (%s)\n"),
 		 scriptName, name);
 	rc = RPMERR_SCRIPT;
     } else

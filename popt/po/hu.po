@@ -1,13 +1,54 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.1\n"
-"POT-Creation-Date: 2001-01-01 17:42-0500\n"
+"POT-Creation-Date: 2001-01-15 16:14-0500\n"
 "PO-Revision-Date: 2000-08-03 23:26+0200\n"
 "Last-Translator: László Németh <nemeth@qwertynet.hu>\n"
 "Language-Team: Hungarian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
+
+#: popt.c:29
+msgid "unknown errno"
+msgstr ""
+
+#: popt.c:758
+#, c-format
+msgid "option type (%d) not implemented in popt\n"
+msgstr ""
+
+#: popt.c:893
+msgid "missing argument"
+msgstr ""
+
+#: popt.c:895
+msgid "unknown option"
+msgstr ""
+
+#: popt.c:897
+msgid "mutually exclusive logical operations requested"
+msgstr ""
+
+#: popt.c:899
+msgid "aliases nested too deeply"
+msgstr ""
+
+#: popt.c:901
+msgid "error in paramter quoting"
+msgstr ""
+
+#: popt.c:903
+msgid "invalid numeric value"
+msgstr ""
+
+#: popt.c:905
+msgid "number too large or too small"
+msgstr ""
+
+#: popt.c:909
+msgid "unknown error"
+msgstr ""
 
 #: popthelp.c:28
 msgid "Show this help message"
@@ -16,3 +57,43 @@ msgstr "E súgó megjelenítése"
 #: popthelp.c:29
 msgid "Display brief usage message"
 msgstr "Rövid használati utasítás megjelenítése"
+
+#: popthelp.c:60
+msgid "NONE"
+msgstr ""
+
+#: popthelp.c:61
+msgid "VAL"
+msgstr ""
+
+#: popthelp.c:62
+msgid "INT"
+msgstr ""
+
+#: popthelp.c:63
+msgid "LONG"
+msgstr ""
+
+#: popthelp.c:64
+msgid "STRING"
+msgstr ""
+
+#: popthelp.c:65
+msgid "FLOAT"
+msgstr ""
+
+#: popthelp.c:66
+msgid "DOUBLE"
+msgstr ""
+
+#: popthelp.c:67
+msgid "ARG"
+msgstr ""
+
+#: popthelp.c:240
+msgid "Usage:"
+msgstr ""
+
+#: popthelp.c:259
+msgid "[OPTION...]"
+msgstr ""

@@ -85,7 +85,7 @@ static int readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
     switch (lead->major) {
     case 1:
 	rpmError(RPMERR_NEWPACKAGE,
-	    _("packaging version 1 is not supported by this version of RPM"));
+	    _("packaging version 1 is not supported by this version of RPM\n"));
 	return 2;
 	/*@notreached@*/ break;
     case 2:
@@ -141,7 +141,7 @@ static int readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
 
     default:
 	rpmError(RPMERR_NEWPACKAGE, _("only packaging with major numbers <= 4 "
-		"is supported by this version of RPM"));
+		"is supported by this version of RPM\n"));
 	return 2;
 	/*@notreached@*/ break;
     } 

@@ -1370,6 +1370,10 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	free((void *)ts->currDir);
     ts->currDir = currentDirectory();
     ts->chrootDone = 0;
+    {	time_t t;
+	time(&t);
+	ts->id = t;
+    }
 
     /* Get available space on mounted file systems. */
     if (!(ts->ignoreSet & RPMPROB_FILTER_DISKSPACE) &&

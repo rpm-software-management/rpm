@@ -134,7 +134,7 @@ static void alFreeIndex(struct availableList * al)
 static void alCreate(struct availableList * al)
 	/*@modifies *al @*/
 {
-    al->alloced = 5;
+    al->alloced = al->delta;
     al->size = 0;
     al->list = xcalloc(al->alloced, sizeof(*al->list));
 
@@ -247,7 +247,7 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     uint_32 * pp = NULL;
 
     if (al->size == al->alloced) {
-	al->alloced += 5;
+	al->alloced += al->delta;
 	al->list = xrealloc(al->list, sizeof(*al->list) * al->alloced);
     }
 
@@ -651,7 +651,6 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
     return result;
 }
 
-/* XXX FIXME: eliminate when obsoletes is correctly implemented */
 int headerMatchesDepFlags(Header h,
 	const char * reqName, const char * reqEVR, int reqFlags)
 {
@@ -677,23 +676,25 @@ int headerMatchesDepFlags(Header h,
     (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
 
     return rpmRangesOverlap(name, pkgEVR, pkgFlags, reqName, reqEVR, reqFlags);
-
 }
 
 rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb, const char * rootDir)
 {
-    rpmTransactionSet rpmdep;
+    rpmTransactionSet ts;
     int rootLen;
 
     if (!rootDir) rootDir = "";
 
-    rpmdep = xcalloc(1, sizeof(*rpmdep));
-    rpmdep->rpmdb = rpmdb;
-    rpmdep->scriptFd = NULL;
-    rpmdep->numRemovedPackages = 0;
-    rpmdep->allocedRemovedPackages = 5;
-    rpmdep->removedPackages = xcalloc(rpmdep->allocedRemovedPackages,
-			sizeof(*rpmdep->removedPackages));
+    ts = xcalloc(1, sizeof(*ts));
+    ts->rpmdb = rpmdb;
+    ts->scriptFd = NULL;
+    ts->id = 0;
+    ts->delta = 5;
+
+    ts->numRemovedPackages = 0;
+    ts->allocedRemovedPackages = ts->delta;
+    ts->removedPackages = xcalloc(ts->allocedRemovedPackages,
+			sizeof(*ts->removedPackages));
 
     /* This canonicalizes the root */
     rootLen = strlen(rootDir);
@@ -706,49 +707,50 @@ rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb, const char * rootDir)
 	rootDir = t;
     }
 
-    rpmdep->rootDir = xstrdup(rootDir);
-    rpmdep->currDir = NULL;
-    rpmdep->chrootDone = 0;
+    ts->rootDir = xstrdup(rootDir);
+    ts->currDir = NULL;
+    ts->chrootDone = 0;
 
-    alCreate(&rpmdep->addedPackages);
-    alCreate(&rpmdep->availablePackages);
+    ts->addedPackages.delta = ts->delta;
+    alCreate(&ts->addedPackages);
+    ts->availablePackages.delta = ts->delta;
+    alCreate(&ts->availablePackages);
 
-    rpmdep->orderAlloced = 5;
-    rpmdep->orderCount = 0;
-    rpmdep->order = xcalloc(rpmdep->orderAlloced, sizeof(*rpmdep->order));
+    ts->orderAlloced = ts->delta;
+    ts->orderCount = 0;
+    ts->order = xcalloc(ts->orderAlloced, sizeof(*ts->order));
 
-    return rpmdep;
+    return ts;
 }
 
 /**
  * Add removed package instance to ordered transaction set.
- * @param rpmdep	rpm transaction set
+ * @param ts		transaction set
  * @param dboffset	rpm database instance
  * @param depends	installed package of pair (or -1 on erase)
  */
-static void removePackage(rpmTransactionSet rpmdep, int dboffset, int depends)
-	/*@modifies rpmdep @*/
+static void removePackage(rpmTransactionSet ts, int dboffset, int depends)
+	/*@modifies ts @*/
 {
-    if (rpmdep->numRemovedPackages == rpmdep->allocedRemovedPackages) {
-	rpmdep->allocedRemovedPackages += 5;
-	rpmdep->removedPackages = xrealloc(rpmdep->removedPackages,
-		sizeof(int *) * rpmdep->allocedRemovedPackages);
+    if (ts->numRemovedPackages == ts->allocedRemovedPackages) {
+	ts->allocedRemovedPackages += ts->delta;
+	ts->removedPackages = xrealloc(ts->removedPackages,
+		sizeof(int *) * ts->allocedRemovedPackages);
     }
 
-    rpmdep->removedPackages[rpmdep->numRemovedPackages++] = dboffset;
+    ts->removedPackages[ts->numRemovedPackages++] = dboffset;
 
-    if (rpmdep->orderCount == rpmdep->orderAlloced) {
-	rpmdep->orderAlloced += 5;
-	rpmdep->order = xrealloc(rpmdep->order,
-		sizeof(*rpmdep->order) * rpmdep->orderAlloced);
+    if (ts->orderCount == ts->orderAlloced) {
+	ts->orderAlloced += ts->delta;
+	ts->order = xrealloc(ts->order, sizeof(*ts->order) * ts->orderAlloced);
     }
 
-    rpmdep->order[rpmdep->orderCount].type = TR_REMOVED;
-    rpmdep->order[rpmdep->orderCount].u.removed.dboffset = dboffset;
-    rpmdep->order[rpmdep->orderCount++].u.removed.dependsOnIndex = depends;
+    ts->order[ts->orderCount].type = TR_REMOVED;
+    ts->order[ts->orderCount].u.removed.dboffset = dboffset;
+    ts->order[ts->orderCount++].u.removed.dependsOnIndex = depends;
 }
 
-int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
+int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 			const void * key, int upgrade, rpmRelocation * relocs)
 {
     /* this is an install followed by uninstalls */
@@ -766,27 +768,26 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
        makes it difficult to generate a return code based on the number of
        packages which failed. */
 
-    if (rpmdep->orderCount == rpmdep->orderAlloced) {
-	rpmdep->orderAlloced += 5;
-	rpmdep->order = xrealloc(rpmdep->order,
-		sizeof(*rpmdep->order) * rpmdep->orderAlloced);
+    if (ts->orderCount == ts->orderAlloced) {
+	ts->orderAlloced += ts->delta;
+	ts->order = xrealloc(ts->order, sizeof(*ts->order) * ts->orderAlloced);
     }
-    rpmdep->order[rpmdep->orderCount].type = TR_ADDED;
-    alNum = alAddPackage(&rpmdep->addedPackages, h, key, fd, relocs) -
-    		rpmdep->addedPackages.list;
-    rpmdep->order[rpmdep->orderCount++].u.addedIndex = alNum;
+    ts->order[ts->orderCount].type = TR_ADDED;
+    alNum = alAddPackage(&ts->addedPackages, h, key, fd, relocs) -
+    		ts->addedPackages.list;
+    ts->order[ts->orderCount++].u.addedIndex = alNum;
 
-    if (!upgrade || rpmdep->rpmdb == NULL) return 0;
+    if (!upgrade || ts->rpmdb == NULL) return 0;
 
     headerNVR(h, &name, NULL, NULL);
 
     {	rpmdbMatchIterator mi;
 	Header h2;
 
-	mi = rpmdbInitIterator(rpmdep->rpmdb, RPMTAG_NAME, name, 0);
+	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, name, 0);
 	while((h2 = rpmdbNextIterator(mi)) != NULL) {
 	    if (rpmVersionCompare(h, h2))
-		removePackage(rpmdep, rpmdbGetIteratorOffset(mi), alNum);
+		removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
 	    else {
 		uint_32 *p, multiLibMask = 0, oldmultiLibMask = 0;
 
@@ -796,7 +797,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 		    multiLibMask = *p;
 		if (oldmultiLibMask && multiLibMask
 		    && !(oldmultiLibMask & multiLibMask)) {
-		    rpmdep->addedPackages.list[alNum].multiLib = multiLibMask;
+		    ts->addedPackages.list[alNum].multiLib = multiLibMask;
 		}
 	    }
 	}
@@ -820,10 +821,10 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 	  { rpmdbMatchIterator mi;
 	    Header h2;
 
-	    mi = rpmdbInitIterator(rpmdep->rpmdb, RPMTAG_NAME, obsoletes[j], 0);
+	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, obsoletes[j], 0);
 
 	    rpmdbPruneIterator(mi,
-		rpmdep->removedPackages, rpmdep->numRemovedPackages, 1);
+		ts->removedPackages, ts->numRemovedPackages, 1);
 
 	    while((h2 = rpmdbNextIterator(mi)) != NULL) {
 		/*
@@ -834,7 +835,7 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 		    headerMatchesDepFlags(h2,
 			obsoletes[j], obsoletesEVR[j], obsoletesFlags[j]))
 		{
-		    removePackage(rpmdep, rpmdbGetIteratorOffset(mi), alNum);
+		    removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
 		}
 	    }
 	    rpmdbFreeIterator(mi);
@@ -848,37 +849,37 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
     return 0;
 }
 
-void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h,
+void rpmtransAvailablePackage(rpmTransactionSet ts, Header h,
 	const void * key)
 {
     struct availablePackage * al;
-    al = alAddPackage(&rpmdep->availablePackages, h, key, NULL, NULL);
+    al = alAddPackage(&ts->availablePackages, h, key, NULL, NULL);
 }
 
-void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset)
+void rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
 {
-    removePackage(rpmdep, dboffset, -1);
+    removePackage(ts, dboffset, -1);
 }
 
-void rpmtransFree(rpmTransactionSet rpmdep)
+void rpmtransFree(rpmTransactionSet ts)
 {
-    struct availableList * addedPackages = &rpmdep->addedPackages;
-    struct availableList * availablePackages = &rpmdep->availablePackages;
+    struct availableList * addedPackages = &ts->addedPackages;
+    struct availableList * availablePackages = &ts->availablePackages;
 
     alFree(addedPackages);
     alFree(availablePackages);
-    if (rpmdep->removedPackages)
-	free(rpmdep->removedPackages);
-    if (rpmdep->order)
-	free(rpmdep->order);
-    if (rpmdep->scriptFd)
-	rpmdep->scriptFd = fdFree(rpmdep->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
-    if (rpmdep->rootDir)
-	free((void *)rpmdep->rootDir);
-    if (rpmdep->currDir)
-	free((void *)rpmdep->currDir);
+    if (ts->removedPackages)
+	free(ts->removedPackages);
+    if (ts->order)
+	free(ts->order);
+    if (ts->scriptFd)
+	ts->scriptFd = fdFree(ts->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
+    if (ts->rootDir)
+	free((void *)ts->rootDir);
+    if (ts->currDir)
+	free((void *)ts->currDir);
 
-    free(rpmdep);
+    free(ts);
 }
 
 void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts,
@@ -888,11 +889,11 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts,
 
     for (i = 0; i < numConflicts; i++) {
 	headerFree(conflicts[i].byHeader);
-	free(conflicts[i].byName);
-	free(conflicts[i].byVersion);
-	free(conflicts[i].byRelease);
-	free(conflicts[i].needsName);
-	free(conflicts[i].needsVersion);
+	free((void *)conflicts[i].byName);
+	free((void *)conflicts[i].byVersion);
+	free((void *)conflicts[i].byRelease);
+	free((void *)conflicts[i].needsName);
+	free((void *)conflicts[i].needsVersion);
     }
 
     free(conflicts);
@@ -1026,7 +1027,7 @@ alFileSatisfiesDepend(struct availableList * al,
  * @retval suggestion	possible package to resolve dependency
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
-static int unsatisfiedDepend(rpmTransactionSet rpmdep,
+static int unsatisfiedDepend(rpmTransactionSet ts,
 	const char * keyType, const char * keyDepend,
 	const char * keyName, const char * keyEVR, int keyFlags,
 	/*@out@*/ struct availablePackage ** suggestion)
@@ -1043,7 +1044,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
      */
     if (_cacheDependsRC) {
 	dbiIndex dbi;
-	dbi = dbiOpen(rpmdep->rpmdb, RPMDBI_DEPENDS, 0);
+	dbi = dbiOpen(ts->rpmdb, RPMDBI_DEPENDS, 0);
 	if (dbi == NULL)
 	    _cacheDependsRC = 0;
 	else {
@@ -1099,19 +1100,19 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	goto unsatisfied;
     }
 
-    if (alSatisfiesDepend(&rpmdep->addedPackages, keyType, keyDepend, keyName, keyEVR, keyFlags)) {
+    if (alSatisfiesDepend(&ts->addedPackages, keyType, keyDepend, keyName, keyEVR, keyFlags)) {
 	goto exit;
     }
 
     /* XXX only the installer does not have the database open here. */
-    if (rpmdep->rpmdb != NULL) {
+    if (ts->rpmdb != NULL) {
 	if (*keyName == '/') {
 	    /* keyFlags better be 0! */
 
-	    mi = rpmdbInitIterator(rpmdep->rpmdb, RPMTAG_BASENAMES, keyName, 0);
+	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_BASENAMES, keyName, 0);
 
 	    rpmdbPruneIterator(mi,
-			rpmdep->removedPackages, rpmdep->numRemovedPackages, 1);
+			ts->removedPackages, ts->numRemovedPackages, 1);
 
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db files)\n"),
@@ -1122,9 +1123,9 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	    rpmdbFreeIterator(mi);
 	}
 
-	mi = rpmdbInitIterator(rpmdep->rpmdb, RPMTAG_PROVIDENAME, keyName, 0);
+	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_PROVIDENAME, keyName, 0);
 	rpmdbPruneIterator(mi,
-			rpmdep->removedPackages, rpmdep->numRemovedPackages, 1);
+			ts->removedPackages, ts->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (rangeMatchesDepFlags(h, keyName, keyEVR, keyFlags)) {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db provides)\n"),
@@ -1136,9 +1137,9 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	rpmdbFreeIterator(mi);
 
 #ifndef DYING
-	mi = rpmdbInitIterator(rpmdep->rpmdb, RPMTAG_NAME, keyName, 0);
+	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, keyName, 0);
 	rpmdbPruneIterator(mi,
-			rpmdep->removedPackages, rpmdep->numRemovedPackages, 1);
+			ts->removedPackages, ts->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (rangeMatchesDepFlags(h, keyName, keyEVR, keyFlags)) {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (db package)\n"),
@@ -1153,7 +1154,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
     }
 
     if (suggestion)
-	*suggestion = alSatisfiesDepend(&rpmdep->availablePackages, NULL, NULL,
+	*suggestion = alSatisfiesDepend(&ts->availablePackages, NULL, NULL,
 				keyName, keyEVR, keyFlags);
 
 unsatisfied:
@@ -1166,7 +1167,7 @@ exit:
      */
     if (_cacheDependsRC) {
 	dbiIndex dbi;
-	dbi = dbiOpen(rpmdep->rpmdb, RPMDBI_DEPENDS, 0);
+	dbi = dbiOpen(ts->rpmdb, RPMDBI_DEPENDS, 0);
 	if (dbi == NULL) {
 	    _cacheDependsRC = 0;
 	} else {
@@ -1186,7 +1187,7 @@ exit:
     return rc;
 }
 
-static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
+static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
 		Header h, const char * keyName, uint_32 multiLib)
 {
     const char * name, * version, * release;
@@ -1229,7 +1230,7 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 
 	keyDepend = printDepend("R", requires[i], requiresEVR[i], requireFlags[i]);
 
-	rc = unsatisfiedDepend(rpmdep, " Requires", keyDepend,
+	rc = unsatisfiedDepend(ts, " Requires", keyDepend,
 		requires[i], requiresEVR[i], requireFlags[i], &suggestion);
 
 	switch (rc) {
@@ -1297,7 +1298,7 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 
 	keyDepend = printDepend("C", conflicts[i], conflictsEVR[i], conflictFlags[i]);
 
-	rc = unsatisfiedDepend(rpmdep, "Conflicts", keyDepend,
+	rc = unsatisfiedDepend(ts, "Conflicts", keyDepend,
 		conflicts[i], conflictsEVR[i], conflictFlags[i], NULL);
 
 	/* 1 == unsatisfied, 0 == satsisfied */
@@ -1345,16 +1346,15 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
  * Adding: check name/provides key against each conflict match,
  * Erasing: check name/provides/filename key against each requiredby match.
  */
-static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
+static int checkPackageSet(rpmTransactionSet ts, struct problemsSet * psp,
 	const char * key, /*@only@*/ rpmdbMatchIterator mi)
 {
     Header h;
     int rc = 0;
 
-    rpmdbPruneIterator(mi,
-		rpmdep->removedPackages, rpmdep->numRemovedPackages, 1);
+    rpmdbPruneIterator(mi, ts->removedPackages, ts->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	if (checkPackageDeps(rpmdep, psp, h, key, 0)) {
+	if (checkPackageDeps(ts, psp, h, key, 0)) {
 	    rc = 1;
 	    break;
 	}
@@ -1367,26 +1367,26 @@ static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
 /**
  * Erasing: check name/provides/filename key against requiredby matches.
  */
-static int checkDependentPackages(rpmTransactionSet rpmdep,
+static int checkDependentPackages(rpmTransactionSet ts,
 			struct problemsSet * psp, const char * key)
 {
     rpmdbMatchIterator mi;
-    mi = rpmdbInitIterator(rpmdep->rpmdb, RPMTAG_REQUIRENAME, key, 0);
-    return checkPackageSet(rpmdep, psp, key, mi);
+    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_REQUIRENAME, key, 0);
+    return checkPackageSet(ts, psp, key, mi);
 }
 
 /**
  * Adding: check name/provides key against conflicts matches.
  */
-static int checkDependentConflicts(rpmTransactionSet rpmdep,
+static int checkDependentConflicts(rpmTransactionSet ts,
 		struct problemsSet * psp, const char * key)
 {
     int rc = 0;
 
-    if (rpmdep->rpmdb) {	/* XXX is this necessary? */
+    if (ts->rpmdb) {	/* XXX is this necessary? */
 	rpmdbMatchIterator mi;
-	mi = rpmdbInitIterator(rpmdep->rpmdb, RPMTAG_CONFLICTNAME, key, 0);
-	rc = checkPackageSet(rpmdep, psp, key, mi);
+	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_CONFLICTNAME, key, 0);
+	rc = checkPackageSet(ts, psp, key, mi);
     }
 
     return rc;
@@ -2077,20 +2077,20 @@ zapRelation(struct availablePackage * q, struct availablePackage * p,
 
 /**
  * Record next "q <- p" relation (i.e. "p" requires "q").
- * @param rpmdep	rpm transaction set
+ * @param ts		transaction set
  * @param p		predecessor (i.e. package that "Requires: q")
  * @param selected	boolean package selected array
  * @param j		relation index
  * @return		0 always
  */
-static inline int addRelation( const rpmTransactionSet rpmdep,
+static inline int addRelation( const rpmTransactionSet ts,
 		struct availablePackage * p, unsigned char * selected, int j)
 {
     struct availablePackage * q;
     struct tsortInfo * tsi;
     int matchNum;
 
-    q = alSatisfiesDepend(&rpmdep->addedPackages, NULL, NULL,
+    q = alSatisfiesDepend(&ts->addedPackages, NULL, NULL,
 		p->requires[j], p->requiresEVR[j], p->requireFlags[j]);
 
     /* Ordering depends only on added package relations. */
@@ -2109,7 +2109,7 @@ static inline int addRelation( const rpmTransactionSet rpmdep,
 
     /* Avoid redundant relations. */
     /* XXX FIXME: add control bit. */
-    matchNum = q - rpmdep->addedPackages.list;
+    matchNum = q - ts->addedPackages.list;
     if (selected[matchNum])
 	return 0;
     selected[matchNum] = 1;
@@ -2486,10 +2486,10 @@ rescan:
     return 0;
 }
 
-int rpmdepCheck(rpmTransactionSet rpmdep,
+int rpmdepCheck(rpmTransactionSet ts,
 		struct rpmDependencyConflict ** conflicts, int * numConflicts)
 {
-    int npkgs = rpmdep->addedPackages.size;
+    int npkgs = ts->addedPackages.size;
     struct availablePackage * p;
     int i, j;
     int rc;
@@ -2504,24 +2504,23 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     *conflicts = NULL;
     *numConflicts = 0;
 
-    qsort(rpmdep->removedPackages, rpmdep->numRemovedPackages,
-	  sizeof(int), intcmp);
+    qsort(ts->removedPackages, ts->numRemovedPackages, sizeof(int), intcmp);
 
-    alMakeIndex(&rpmdep->addedPackages);
-    alMakeIndex(&rpmdep->availablePackages);
+    alMakeIndex(&ts->addedPackages);
+    alMakeIndex(&ts->availablePackages);
 
     /* Look at all of the added packages and make sure their dependencies
      * are satisfied.
      */
-    for (i = 0, p = rpmdep->addedPackages.list; i < npkgs; i++, p++)
+    for (i = 0, p = ts->addedPackages.list; i < npkgs; i++, p++)
     {
 
-	rc = checkPackageDeps(rpmdep, &ps, p->h, NULL, p->multiLib);
+	rc = checkPackageDeps(ts, &ps, p->h, NULL, p->multiLib);
 	if (rc)
 	    goto exit;
 
 	/* Adding: check name against conflicts matches. */
-	rc = checkDependentConflicts(rpmdep, &ps, p->name);
+	rc = checkDependentConflicts(ts, &ps, p->name);
 	if (rc)
 	    goto exit;
 
@@ -2531,7 +2530,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 	rc = 0;
 	for (j = 0; j < p->providesCount; j++) {
 	    /* Adding: check provides key against conflicts matches. */
-	    if (checkDependentConflicts(rpmdep, &ps, p->provides[j])) {
+	    if (checkDependentConflicts(ts, &ps, p->provides[j])) {
 		rc = 1;
 		break;
 	    }
@@ -2541,17 +2540,16 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     }
 
     /* now look at the removed packages and make sure they aren't critical */
-    if (rpmdep->numRemovedPackages > 0) {
-      mi = rpmdbInitIterator(rpmdep->rpmdb, RPMDBI_PACKAGES, NULL, 0);
-      rpmdbAppendIterator(mi, rpmdep->removedPackages,
-		rpmdep->numRemovedPackages);
+    if (ts->numRemovedPackages > 0) {
+      mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, NULL, 0);
+      rpmdbAppendIterator(mi, ts->removedPackages, ts->numRemovedPackages);
       while ((h = rpmdbNextIterator(mi)) != NULL) {
 
 	{   const char * name;
 	    headerNVR(h, &name, NULL, NULL);
 
 	    /* Erasing: check name against requiredby matches. */
-	    rc = checkDependentPackages(rpmdep, &ps, name);
+	    rc = checkDependentPackages(ts, &ps, name);
 	    if (rc)
 		goto exit;
 	}
@@ -2564,7 +2562,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 		rc = 0;
 		for (j = 0; j < providesCount; j++) {
 		    /* Erasing: check provides against requiredby matches. */
-		    if (checkDependentPackages(rpmdep, &ps, provides[j])) {
+		    if (checkDependentPackages(ts, &ps, provides[j])) {
 		    rc = 1;
 		    break;
 		    }
@@ -2599,7 +2597,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 		    *fileName = '\0';
 		    (void) stpcpy( stpcpy(fileName, dirNames[dirIndexes[j]]) , baseNames[j]);
 		    /* Erasing: check filename against requiredby matches. */
-		    if (checkDependentPackages(rpmdep, &ps, fileName)) {
+		    if (checkDependentPackages(ts, &ps, fileName)) {
 			rc = 1;
 			break;
 		    }

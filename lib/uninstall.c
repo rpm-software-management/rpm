@@ -57,7 +57,7 @@ static int removeFile(const char * file, rpmfileAttrs fileAttrs, short mode,
 	(void)stpcpy(stpcpy(newfile, file), SUFFIX_RPMSAVE);
 
 	if (rename(file, newfile)) {
-	    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s"),
+	    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s\n"),
 			file, newfile, strerror(errno));
 	    rc = 1;
 	}
@@ -71,11 +71,11 @@ static int removeFile(const char * file, rpmfileAttrs fileAttrs, short mode,
 		case ENOENT:	/* XXX rmdir("/") linux 2.2.x kernel hack */
 		case ENOTEMPTY:
 		    rpmError(RPMERR_RMDIR, 
-			_("cannot remove %s - directory not empty"), 
+			_("cannot remove %s - directory not empty\n"), 
 			file);
 		    break;
 		default:
-		    rpmError(RPMERR_RMDIR, _("rmdir of %s failed: %s"),
+		    rpmError(RPMERR_RMDIR, _("rmdir of %s failed: %s\n"),
 				file, strerror(errno));
 		    break;
 		}
@@ -85,7 +85,7 @@ static int removeFile(const char * file, rpmfileAttrs fileAttrs, short mode,
 	    if (unlink(file)) {
 		if (errno != ENOENT || !(fileAttrs & RPMFILE_MISSINGOK)) {
 		    rpmError(RPMERR_UNLINK, 
-			      _("removal of %s failed: %s"),
+			      _("removal of %s failed: %s\n"),
 				file, strerror(errno));
 		}
 		rc = 1;
@@ -165,10 +165,8 @@ int removeBinaryPackage(const rpmTransactionSet ts, unsigned int offset,
 	int rdlen = (ts->rootDir && !(ts->rootDir[0] == '/' && ts->rootDir[1] == '\0'))
 			? strlen(ts->rootDir) : 0;
 
-	headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes,
-	               NULL);
-	headerGetEntry(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames,
-	               NULL);
+	headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+	headerGetEntry(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames, NULL);
 
 	/* Get buffer for largest possible rootDir + dirname + filename. */
 	fnmaxlen = 0;
@@ -246,7 +244,7 @@ int removeBinaryPackage(const rpmTransactionSet ts, unsigned int offset,
     }
 
     if (!(transFlags & RPMTRANS_FLAG_TEST))
-	rpmdbRemove(ts->rpmdb, offset);
+	rpmdbRemove(ts->rpmdb, ts->id, offset);
 
     return 0;
 }
@@ -445,7 +443,7 @@ static int runScript(const rpmTransactionSet ts, Header h,
 	const char *n, *v, *r;
 	headerNVR(h, &n, &v, &r);
 	rpmError(RPMERR_SCRIPT,
-	    _("execution of %s scriptlet from %s-%s-%s failed, exit status %d"),
+	    _("execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"),
 		sln, n, v, r, WEXITSTATUS(status));
 	return 1;
     }

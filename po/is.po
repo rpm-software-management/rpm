@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-13 11:37-0500\n"
+"POT-Creation-Date: 2001-01-15 14:34-0500\n"
 "PO-Revision-Date: 2000-08-02 13:00+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -23,44 +23,44 @@ msgstr "gat ekki útbúið pakkaskilyrði:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Get ekki opnað spec skrána %s: %s\n"
 
-#: build.c:129 build.c:141
+#: build.c:130 build.c:142
 #, fuzzy, c-format
-msgid "Failed to open tar pipe: %m"
+msgid "Failed to open tar pipe: %m\n"
 msgstr "Gat ekki opnað pípu í tar: %s\n"
 
 #. Give up
-#: build.c:148
+#: build.c:149
 #, fuzzy, c-format
-msgid "Failed to read spec file from %s"
+msgid "Failed to read spec file from %s\n"
 msgstr "Gat ekki lesið spec skrá frá %s\n"
 
-#: build.c:175
+#: build.c:177
 #, fuzzy, c-format
-msgid "Failed to rename %s to %s: %m"
+msgid "Failed to rename %s to %s: %m\n"
 msgstr "Gat ekki endurnefnt %s sem %s: %s\n"
 
-#: build.c:214
+#: build.c:216
 #, fuzzy, c-format
-msgid "failed to stat %s: %m"
+msgid "failed to stat %s: %m\n"
 msgstr "gat ekki búið til %s: %s\n"
 
-#: build.c:219
+#: build.c:221
 #, fuzzy, c-format
-msgid "File %s is not a regular file."
+msgid "File %s is not a regular file.\n"
 msgstr "Skráin er ekki venjuleg skrá: %s\n"
 
-#: build.c:227
+#: build.c:230
 #, fuzzy, c-format
-msgid "File %s does not appear to be a specfile."
+msgid "File %s does not appear to be a specfile.\n"
 msgstr "Skráin %s virðist ekki vera specskrá.\n"
 
 #. parse up the build operators
-#: build.c:285
+#: build.c:287
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Þýði fyrir markkerfi: %s\n"
 
-#: build.c:300
+#: build.c:302
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Þýði fyrir markkerfi %s\n"
@@ -1558,9 +1558,10 @@ msgstr ""
 msgid "no tar files given for build"
 msgstr ""
 
-#: build/build.c:114 build/pack.c:369
-msgid "Unable to open temp file."
-msgstr ""
+#: build/build.c:114 build/pack.c:370
+#, fuzzy
+msgid "Unable to open temp file.\n"
+msgstr "Get ekki opnað spec skrána %s: %s\n"
 
 #: build/build.c:193
 #, c-format
@@ -1568,16 +1569,16 @@ msgid "Executing(%s): %s\n"
 msgstr ""
 
 #: build/build.c:199
+#, fuzzy, c-format
+msgid "Exec of %s failed (%s): %s\n"
+msgstr "Get ekki opnað spec skrána %s: %s\n"
+
+#: build/build.c:208
 #, c-format
-msgid "Exec of %s failed (%s): %s"
+msgid "Bad exit status from %s (%s)\n"
 msgstr ""
 
-#: build/build.c:207
-#, c-format
-msgid "Bad exit status from %s (%s)"
-msgstr ""
-
-#: build/build.c:306
+#: build/build.c:307
 msgid ""
 "\n"
 "\n"
@@ -1585,52 +1586,52 @@ msgid ""
 msgstr ""
 
 #: build/expression.c:215
-msgid "syntax error while parsing =="
+msgid "syntax error while parsing ==\n"
 msgstr ""
 
 #: build/expression.c:245
-msgid "syntax error while parsing &&"
+msgid "syntax error while parsing &&\n"
 msgstr ""
 
 #: build/expression.c:254
-msgid "syntax error while parsing ||"
+msgid "syntax error while parsing ||\n"
 msgstr ""
 
 #: build/expression.c:294
-msgid "parse error in expression"
+msgid "parse error in expression\n"
 msgstr ""
 
 #: build/expression.c:326
-msgid "unmatched ("
+msgid "unmatched (\n"
 msgstr ""
 
 #: build/expression.c:356
-msgid "- only on numbers"
+msgid "- only on numbers\n"
 msgstr ""
 
 #: build/expression.c:372
-msgid "! only on numbers"
+msgid "! only on numbers\n"
 msgstr ""
 
 #: build/expression.c:414 build/expression.c:462 build/expression.c:520
 #: build/expression.c:612
-msgid "types must match"
+msgid "types must match\n"
 msgstr ""
 
 #: build/expression.c:427
-msgid "* / not suported for strings"
+msgid "* / not suported for strings\n"
 msgstr ""
 
 #: build/expression.c:478
-msgid "- not suported for strings"
+msgid "- not suported for strings\n"
 msgstr ""
 
 #: build/expression.c:625
-msgid "&& and || not suported for strings"
+msgid "&& and || not suported for strings\n"
 msgstr ""
 
 #: build/expression.c:658 build/expression.c:705
-msgid "syntax error in expression"
+msgid "syntax error in expression\n"
 msgstr ""
 
 #: build/files.c:226
@@ -1640,161 +1641,157 @@ msgstr ""
 
 #: build/files.c:276 build/files.c:360 build/files.c:527
 #, c-format
-msgid "Missing '(' in %s %s"
+msgid "Missing '(' in %s %s\n"
 msgstr ""
 
 #: build/files.c:287 build/files.c:479 build/files.c:538
 #, c-format
-msgid "Missing ')' in %s(%s"
+msgid "Missing ')' in %s(%s\n"
 msgstr ""
 
 #: build/files.c:325 build/files.c:504
-#, c-format
-msgid "Invalid %s token: %s"
-msgstr ""
+#, fuzzy, c-format
+msgid "Invalid %s token: %s\n"
+msgstr "gat ekki opnað %s: %s\n"
 
 #: build/files.c:376
 #, c-format
-msgid "Non-white space follows %s(): %s"
+msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
 #: build/files.c:414
 #, c-format
-msgid "Bad syntax: %s(%s)"
+msgid "Bad syntax: %s(%s)\n"
 msgstr ""
 
 #: build/files.c:424
 #, c-format
-msgid "Bad mode spec: %s(%s)"
+msgid "Bad mode spec: %s(%s)\n"
 msgstr ""
 
 #: build/files.c:436
 #, c-format
-msgid "Bad dirmode spec: %s(%s)"
+msgid "Bad dirmode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:564
-msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
+#: build/files.c:565
+msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:574
-msgid "Duplicate locale %.*s in %%lang(%s)"
+#: build/files.c:575
+msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:706
-msgid "Hit limit for %%docdir"
+#: build/files.c:707
+msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:712
-msgid "Only one arg for %%docdir"
+#: build/files.c:713
+msgid "Only one arg for %%docdir\n"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:740
+#: build/files.c:741
+#, fuzzy, c-format
+msgid "Two files on one line: %s\n"
+msgstr "gat ekki opnað %s: %s\n"
+
+#: build/files.c:755
 #, c-format
-msgid "Two files on one line: %s"
+msgid "File must begin with \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:753
+#: build/files.c:767
+msgid "Can't mix special %%doc with other forms: %s\n"
+msgstr ""
+
+#: build/files.c:861
+#, fuzzy, c-format
+msgid "File listed twice: %s\n"
+msgstr "Skrá %s: %s"
+
+#: build/files.c:972
 #, c-format
-msgid "File must begin with \"/\": %s"
+msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:765
-msgid "Can't mix special %%doc with other forms: %s"
-msgstr ""
-
-#: build/files.c:859
+#: build/files.c:1066
 #, c-format
-msgid "File listed twice: %s"
+msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:968
-#, c-format
-msgid "Symlink points to BuildRoot: %s -> %s"
-msgstr ""
+#: build/files.c:1076
+#, fuzzy, c-format
+msgid "File not found: %s\n"
+msgstr "gat ekki opnað %s: %s\n"
 
-#: build/files.c:1062
-#, c-format
-msgid "File doesn't match prefix (%s): %s"
-msgstr ""
-
-#: build/files.c:1072
-#, c-format
-msgid "File not found: %s"
-msgstr ""
-
-#: build/files.c:1115
+#: build/files.c:1119 build/files.c:1639 build/parsePrep.c:42
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1127
+#: build/files.c:1131
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1203
+#: build/files.c:1207
 #, c-format
-msgid "File needs leading \"/\": %s"
+msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1232
+#: build/files.c:1237
 #, c-format
-msgid "File not found by glob: %s"
+msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1286
-msgid "Could not open %%files file %s: %s"
-msgstr ""
+#: build/files.c:1292
+#, fuzzy
+msgid "Could not open %%files file %s: %s\n"
+msgstr "Get ekki opnað spec skrána %s: %s\n"
 
-#: build/files.c:1295 build/pack.c:108
-#, c-format
-msgid "line: %s"
-msgstr ""
+#: build/files.c:1301 build/pack.c:108
+#, fuzzy, c-format
+msgid "line: %s\n"
+msgstr "Skrá %s: %s"
 
-#: build/files.c:1621
-#, c-format
-msgid "Bad file: %s: %s"
-msgstr ""
-
-#: build/files.c:1633 build/parsePrep.c:41
-#, c-format
-msgid "Bad owner/group: %s"
-msgstr ""
+#: build/files.c:1627
+#, fuzzy, c-format
+msgid "Bad file: %s: %s\n"
+msgstr "Skrá %s: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1690
+#: build/files.c:1696
+#, fuzzy, c-format
+msgid "Couldn't exec %s: %s\n"
+msgstr "gat ekki búið til %s: %s\n"
+
+#: build/files.c:1701
+#, fuzzy, c-format
+msgid "Couldn't fork %s: %s\n"
+msgstr "gat ekki opnað %s: %s\n"
+
+#: build/files.c:1783
 #, c-format
-msgid "Couldn't exec %s: %s"
+msgid "%s failed\n"
 msgstr ""
 
-#: build/files.c:1695
-#, c-format
-msgid "Couldn't fork %s: %s"
-msgstr ""
+#: build/files.c:1787
+#, fuzzy, c-format
+msgid "failed to write all data to %s\n"
+msgstr "gat ekki búið til %s: %s\n"
 
-#: build/files.c:1777
-#, c-format
-msgid "%s failed"
-msgstr ""
-
-#: build/files.c:1781
-#, c-format
-msgid "failed to write all data to %s"
-msgstr ""
-
-#: build/files.c:1906
+#: build/files.c:1912
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1934 build/files.c:1948
-#, c-format
-msgid "Failed to find %s:"
-msgstr ""
+#: build/files.c:1940 build/files.c:1954
+#, fuzzy, c-format
+msgid "Failed to find %s:\n"
+msgstr "gat ekki opnað %s: %s\n"
 
-#: build/files.c:2061
+#: build/files.c:2067
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1821,48 +1818,48 @@ msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
 #: build/pack.c:52
-#, c-format
-msgid "create archive failed on file %s: %s"
-msgstr ""
+#, fuzzy, c-format
+msgid "create archive failed on file %s: %s\n"
+msgstr "gat ekki opnað %s: %s\n"
 
 #: build/pack.c:74
 #, c-format
-msgid "cpio_copy write failed: %s"
+msgid "cpio_copy write failed: %s\n"
 msgstr ""
 
 #: build/pack.c:81
 #, c-format
-msgid "cpio_copy read failed: %s"
+msgid "cpio_copy read failed: %s\n"
 msgstr ""
 
 #: build/pack.c:165
-#, c-format
-msgid "Could not open PreIn file: %s"
-msgstr ""
+#, fuzzy, c-format
+msgid "Could not open PreIn file: %s\n"
+msgstr "Get ekki opnað spec skrána %s: %s\n"
 
 #: build/pack.c:172
-#, c-format
-msgid "Could not open PreUn file: %s"
-msgstr ""
+#, fuzzy, c-format
+msgid "Could not open PreUn file: %s\n"
+msgstr "Get ekki opnað spec skrána %s: %s\n"
 
 #: build/pack.c:179
-#, c-format
-msgid "Could not open PostIn file: %s"
-msgstr ""
+#, fuzzy, c-format
+msgid "Could not open PostIn file: %s\n"
+msgstr "Get ekki opnað spec skrána %s: %s\n"
 
 #: build/pack.c:186
-#, c-format
-msgid "Could not open PostUn file: %s"
-msgstr ""
+#, fuzzy, c-format
+msgid "Could not open PostUn file: %s\n"
+msgstr "Get ekki opnað spec skrána %s: %s\n"
 
 #: build/pack.c:194
-#, c-format
-msgid "Could not open VerifyScript file: %s"
-msgstr ""
+#, fuzzy, c-format
+msgid "Could not open VerifyScript file: %s\n"
+msgstr "Get ekki opnað spec skrána %s: %s\n"
 
 #: build/pack.c:209
 #, c-format
-msgid "Could not open Trigger script file: %s"
+msgid "Could not open Trigger script file: %s\n"
 msgstr ""
 
 #: build/pack.c:235
@@ -1885,382 +1882,380 @@ msgstr ""
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:381
-msgid "Bad CSA data"
+#: build/pack.c:382
+msgid "Bad CSA data\n"
 msgstr ""
 
-#: build/pack.c:422
+#: build/pack.c:423
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:432
+#: build/pack.c:433
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:469
-#, c-format
-msgid "Unable to write package: %s"
-msgstr ""
-
-#: build/pack.c:484
-#, c-format
-msgid "Unable to open sigtarget %s: %s"
-msgstr ""
-
-#: build/pack.c:494
+#: build/pack.c:470
 #, fuzzy, c-format
-msgid "Unable to read header from %s: %s"
+msgid "Unable to write package: %s\n"
 msgstr "Get ekki opnað spec skrána %s: %s\n"
 
-#: build/pack.c:508
+#: build/pack.c:485
 #, fuzzy, c-format
-msgid "Unable to write header to %s: %s"
+msgid "Unable to open sigtarget %s: %s\n"
+msgstr "Get ekki opnað spec skrána %s: %s\n"
+
+#: build/pack.c:495
+#, fuzzy, c-format
+msgid "Unable to read header from %s: %s\n"
+msgstr "Get ekki opnað spec skrána %s: %s\n"
+
+#: build/pack.c:509
+#, fuzzy, c-format
+msgid "Unable to write header to %s: %s\n"
 msgstr "Gat ekki endurnefnt %s sem %s: %s\n"
 
-#: build/pack.c:518
+#: build/pack.c:519
 #, fuzzy, c-format
-msgid "Unable to read payload from %s: %s"
+msgid "Unable to read payload from %s: %s\n"
 msgstr "Get ekki opnað spec skrána %s: %s\n"
 
-#: build/pack.c:524
+#: build/pack.c:525
 #, fuzzy, c-format
-msgid "Unable to write payload to %s: %s"
+msgid "Unable to write payload to %s: %s\n"
 msgstr "Get ekki opnað spec skrána %s: %s\n"
 
-#: build/pack.c:551
+#: build/pack.c:552
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:616
+#: build/pack.c:617
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:633
+#: build/pack.c:634
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
 
 #: build/parseBuildInstallClean.c:28
 #, c-format
-msgid "line %d: second %s"
+msgid "line %d: second %s\n"
 msgstr ""
 
-#: build/parseChangelog.c:120
-msgid "%%changelog entries must start with *"
+#: build/parseChangelog.c:121
+msgid "%%changelog entries must start with *\n"
 msgstr ""
 
-#: build/parseChangelog.c:128
-msgid "incomplete %%changelog entry"
+#: build/parseChangelog.c:129
+msgid "incomplete %%changelog entry\n"
 msgstr ""
 
-#: build/parseChangelog.c:143
-msgid "bad date in %%changelog: %s"
+#: build/parseChangelog.c:144
+msgid "bad date in %%changelog: %s\n"
 msgstr ""
 
-#: build/parseChangelog.c:148
-msgid "%%changelog not in decending chronological order"
+#: build/parseChangelog.c:149
+msgid "%%changelog not in decending chronological order\n"
 msgstr ""
 
-#: build/parseChangelog.c:156 build/parseChangelog.c:167
-msgid "missing name in %%changelog"
+#: build/parseChangelog.c:157 build/parseChangelog.c:168
+msgid "missing name in %%changelog\n"
 msgstr ""
 
-#: build/parseChangelog.c:174
-msgid "no description in %%changelog"
+#: build/parseChangelog.c:175
+msgid "no description in %%changelog\n"
 msgstr ""
 
 #: build/parseDescription.c:39
-msgid "line %d: Error parsing %%description: %s"
+msgid "line %d: Error parsing %%description: %s\n"
 msgstr ""
 
 #: build/parseDescription.c:52 build/parseFiles.c:47 build/parseScript.c:187
-#, c-format
-msgid "line %d: Bad option %s: %s"
-msgstr ""
+#, fuzzy, c-format
+msgid "line %d: Bad option %s: %s\n"
+msgstr "gat ekki opnað %s: %s\n"
 
 #: build/parseDescription.c:65 build/parseFiles.c:59 build/parseScript.c:199
 #, c-format
-msgid "line %d: Too many names: %s"
+msgid "line %d: Too many names: %s\n"
 msgstr ""
 
 #: build/parseDescription.c:75 build/parseFiles.c:68 build/parseScript.c:208
 #, c-format
-msgid "line %d: Package does not exist: %s"
+msgid "line %d: Package does not exist: %s\n"
 msgstr ""
 
 #: build/parseDescription.c:87
 #, c-format
-msgid "line %d: Second description"
+msgid "line %d: Second description\n"
 msgstr ""
 
 #: build/parseFiles.c:33
-msgid "line %d: Error parsing %%files: %s"
+msgid "line %d: Error parsing %%files: %s\n"
 msgstr ""
 
 #: build/parseFiles.c:75
-msgid "line %d: Second %%files list"
+msgid "line %d: Second %%files list\n"
 msgstr ""
 
 #: build/parsePreamble.c:211
 #, c-format
-msgid "Architecture is excluded: %s"
+msgid "Architecture is excluded: %s\n"
 msgstr ""
 
 #: build/parsePreamble.c:216
 #, c-format
-msgid "Architecture is not included: %s"
+msgid "Architecture is not included: %s\n"
 msgstr ""
 
 #: build/parsePreamble.c:221
 #, c-format
-msgid "OS is excluded: %s"
+msgid "OS is excluded: %s\n"
 msgstr ""
 
 #: build/parsePreamble.c:226
 #, c-format
-msgid "OS is not included: %s"
+msgid "OS is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:242
+#: build/parsePreamble.c:243
 #, c-format
-msgid "%s field must be present in package: %s"
+msgid "%s field must be present in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:269
+#: build/parsePreamble.c:270
 #, c-format
-msgid "Duplicate %s entries in package: %s"
+msgid "Duplicate %s entries in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:323
-#, c-format
-msgid "Unable to open icon %s: %s"
-msgstr ""
+#: build/parsePreamble.c:324
+#, fuzzy, c-format
+msgid "Unable to open icon %s: %s\n"
+msgstr "Get ekki opnað spec skrána %s: %s\n"
 
-#: build/parsePreamble.c:341
-#, c-format
-msgid "Unable to read icon %s: %s"
-msgstr ""
+#: build/parsePreamble.c:342
+#, fuzzy, c-format
+msgid "Unable to read icon %s: %s\n"
+msgstr "Gat ekki endurnefnt %s sem %s: %s\n"
 
-#: build/parsePreamble.c:354
-#, c-format
-msgid "Unknown icon type: %s"
-msgstr ""
+#: build/parsePreamble.c:355
+#, fuzzy, c-format
+msgid "Unknown icon type: %s\n"
+msgstr "+Oþekkt viðfang %c í %s(%s)"
 
-#: build/parsePreamble.c:421
-#, c-format
-msgid "line %d: Malformed tag: %s"
-msgstr ""
+#: build/parsePreamble.c:422
+#, fuzzy, c-format
+msgid "line %d: Malformed tag: %s\n"
+msgstr "Þýði fyrir markkerfi %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:429
+#: build/parsePreamble.c:430
 #, c-format
-msgid "line %d: Empty tag: %s"
+msgid "line %d: Empty tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:451 build/parsePreamble.c:458
+#: build/parsePreamble.c:452 build/parsePreamble.c:459
 #, c-format
-msgid "line %d: Illegal char '-' in %s: %s"
+msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:515 build/parseSpec.c:382
+#: build/parsePreamble.c:516 build/parseSpec.c:386
 #, c-format
-msgid "BuildRoot can not be \"/\": %s"
+msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:528
+#: build/parsePreamble.c:529
 #, c-format
-msgid "line %d: Prefixes must not end with \"/\": %s"
+msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:540
+#: build/parsePreamble.c:541
 #, c-format
-msgid "line %d: Docdir must begin with '/': %s"
+msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:552
+#: build/parsePreamble.c:553
+#, fuzzy, c-format
+msgid "line %d: Epoch/Serial field must be a number: %s\n"
+msgstr "gátt slóðar verður að vera tala\n"
+
+#: build/parsePreamble.c:593 build/parsePreamble.c:604
 #, c-format
-msgid "line %d: Epoch/Serial field must be a number: %s"
+msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:592 build/parsePreamble.c:603
+#: build/parsePreamble.c:630
 #, c-format
-msgid "line %d: Bad %s: qualifiers: %s"
+msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:629
+#: build/parsePreamble.c:639
+#, fuzzy, c-format
+msgid "Internal error: Bogus tag %d\n"
+msgstr "innvær villa (í rpm?): "
+
+#: build/parsePreamble.c:783
 #, c-format
-msgid "line %d: Bad BuildArchitecture format: %s"
+msgid "Bad package specification: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:638
+#: build/parsePreamble.c:789
 #, c-format
-msgid "Internal error: Bogus tag %d"
+msgid "Package already exists: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:782
+#: build/parsePreamble.c:815
 #, c-format
-msgid "Bad package specification: %s"
+msgid "line %d: Unknown tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:788
-#, c-format
-msgid "Package already exists: %s"
-msgstr ""
-
-#: build/parsePreamble.c:813
-#, c-format
-msgid "line %d: Unknown tag: %s"
-msgstr ""
-
-#: build/parsePreamble.c:835
-msgid "Spec file can't use BuildRoot"
+#: build/parsePreamble.c:837
+msgid "Spec file can't use BuildRoot\n"
 msgstr ""
 
 #: build/parsePrep.c:37
+#, fuzzy, c-format
+msgid "Bad source: %s: %s\n"
+msgstr "gat ekki búið til %s: %s\n"
+
+#: build/parsePrep.c:75
 #, c-format
-msgid "Bad source: %s: %s"
+msgid "No patch number %d\n"
 msgstr ""
 
-#: build/parsePrep.c:74
+#: build/parsePrep.c:165
 #, c-format
-msgid "No patch number %d"
+msgid "No source number %d\n"
 msgstr ""
 
-#: build/parsePrep.c:164
+#: build/parsePrep.c:185
 #, c-format
-msgid "No source number %d"
+msgid "Couldn't download nosource %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:183
-#, c-format
-msgid "Couldn't download nosource %s: %s"
+#: build/parsePrep.c:279
+msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:277
-msgid "Error parsing %%setup: %s"
+#: build/parsePrep.c:294
+msgid "line %d: Bad arg to %%setup %c: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:292
-msgid "line %d: Bad arg to %%setup %c: %s"
+#: build/parsePrep.c:312
+msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:310
-msgid "line %d: Bad %%setup option %s: %s"
+#: build/parsePrep.c:446
+msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:443
-msgid "line %d: Need arg to %%patch -b: %s"
+#: build/parsePrep.c:455
+msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:451
-msgid "line %d: Need arg to %%patch -z: %s"
+#: build/parsePrep.c:467
+msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:463
-msgid "line %d: Need arg to %%patch -p: %s"
+#: build/parsePrep.c:474
+msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:469
-msgid "line %d: Bad arg to %%patch -p: %s"
+#: build/parsePrep.c:481
+msgid "Too many patches!\n"
 msgstr ""
 
-#: build/parsePrep.c:476
-msgid "Too many patches!"
+#: build/parsePrep.c:485
+msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:480
-msgid "line %d: Bad arg to %%patch: %s"
-msgstr ""
-
-#: build/parsePrep.c:516
-msgid "line %d: second %%prep"
+#: build/parsePrep.c:521
+msgid "line %d: second %%prep\n"
 msgstr ""
 
 #: build/parseReqs.c:100
 #, c-format
 msgid ""
-"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
+"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
 
 #: build/parseReqs.c:111
 #, c-format
-msgid "line %d: File name not permitted: %s"
+msgid "line %d: File name not permitted: %s\n"
 msgstr ""
 
 #: build/parseReqs.c:143
 #, c-format
-msgid "line %d: Versioned file name not permitted: %s"
+msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr ""
 
 #: build/parseReqs.c:173
 #, c-format
-msgid "line %d: Version required: %s"
+msgid "line %d: Version required: %s\n"
 msgstr ""
 
 #: build/parseScript.c:153
 #, c-format
-msgid "line %d: triggers must have --: %s"
+msgid "line %d: triggers must have --: %s\n"
 msgstr ""
 
 #: build/parseScript.c:163 build/parseScript.c:224
-#, c-format
-msgid "line %d: Error parsing %s: %s"
-msgstr ""
+#, fuzzy, c-format
+msgid "line %d: Error parsing %s: %s\n"
+msgstr "gat ekki opnað %s: %s\n"
 
 #: build/parseScript.c:174
 #, c-format
-msgid "line %d: script program must begin with '/': %s"
+msgid "line %d: script program must begin with '/': %s\n"
 msgstr ""
 
 #: build/parseScript.c:216
 #, c-format
-msgid "line %d: Second %s"
+msgid "line %d: Second %s\n"
 msgstr ""
 
 #: build/parseSpec.c:136
-#, c-format
-msgid "line %d: %s"
-msgstr ""
+#, fuzzy, c-format
+msgid "line %d: %s\n"
+msgstr "Skrá %s: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:184
+#: build/parseSpec.c:185
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:196
-msgid "Unclosed %%if"
+#: build/parseSpec.c:197
+msgid "Unclosed %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:267
+#: build/parseSpec.c:269
 #, c-format
-msgid "%s:%d: parseExpressionBoolean returns %d"
+msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr ""
 
-#. Got an else with no %if !
-#: build/parseSpec.c:275
-msgid "%s:%d: Got a %%else with no if"
+#: build/parseSpec.c:278
+msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr ""
 
-#. Got an end with no %if !
-#: build/parseSpec.c:286
-msgid "%s:%d: Got a %%endif with no if"
+#: build/parseSpec.c:290
+msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:300 build/parseSpec.c:309
-msgid "malformed %%include statement"
+#: build/parseSpec.c:304 build/parseSpec.c:313
+msgid "malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:488
-msgid "No buildable architectures"
+#: build/parseSpec.c:493
+msgid "No buildable architectures\n"
 msgstr ""
 
-#: build/parseSpec.c:543
-msgid "Package has no %%description: %s"
+#: build/parseSpec.c:548
+msgid "Package has no %%description: %s\n"
 msgstr ""
 
 #: build/spec.c:41
@@ -2270,12 +2265,12 @@ msgstr ""
 
 #: build/spec.c:228
 #, c-format
-msgid "line %d: Bad number: %s"
+msgid "line %d: Bad number: %s\n"
 msgstr ""
 
 #: build/spec.c:234
 #, c-format
-msgid "line %d: Bad no%s number: %d"
+msgid "line %d: Bad no%s number: %d\n"
 msgstr ""
 
 #: build/spec.c:292
@@ -2348,64 +2343,64 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:948
+#: lib/depends.c:949
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1007
+#: lib/depends.c:1008
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1059
+#: lib/depends.c:1060
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1078
+#: lib/depends.c:1079
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1095
+#: lib/depends.c:1096
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1117
+#: lib/depends.c:1118
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1130
+#: lib/depends.c:1131
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1144
+#: lib/depends.c:1145
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:1160
+#: lib/depends.c:1161
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1181
+#: lib/depends.c:1182
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1239
+#: lib/depends.c:1240
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1306
+#: lib/depends.c:1307
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
@@ -2459,7 +2454,7 @@ msgstr ""
 
 #: lib/db1.c:421
 #, c-format
-msgid "bad db file %s"
+msgid "bad db file %s\n"
 msgstr ""
 
 #: lib/db1.c:426
@@ -2469,9 +2464,9 @@ msgstr ""
 
 #. XXX check errno validity
 #: lib/db1.c:449
-#, c-format
-msgid "cannot get %s lock on database"
-msgstr ""
+#, fuzzy, c-format
+msgid "cannot get %s lock on database\n"
+msgstr "get ekki opnað pakka gagnagrunn í\n"
 
 #: lib/db1.c:450 lib/db3.c:1120
 msgid "exclusive"
@@ -2577,27 +2572,32 @@ msgid "(not a number)"
 msgstr ""
 
 #: lib/fs.c:69
+#, fuzzy, c-format
+msgid "mntctl() failed to return size: %s\n"
+msgstr "gat ekki búið til %s: %s\n"
+
+#: lib/fs.c:84
 #, c-format
-msgid "mntctl() failed to return fugger size: %s"
+msgid "mntctl() failed to return mount points: %s\n"
 msgstr ""
 
-#: lib/fs.c:104 lib/fs.c:287
-#, c-format
-msgid "failed to stat %s: %s"
-msgstr ""
+#: lib/fs.c:104 lib/fs.c:184 lib/fs.c:287
+#, fuzzy, c-format
+msgid "failed to stat %s: %s\n"
+msgstr "gat ekki búið til %s: %s\n"
 
 #: lib/fs.c:147
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
-#: lib/fs.c:152
+#: lib/fs.c:152 rpmio/url.c:452
 #, c-format
-msgid "failed to open %s: %s"
-msgstr ""
+msgid "failed to open %s: %s\n"
+msgstr "gat ekki opnað %s: %s\n"
 
 #: lib/fs.c:309
 #, c-format
-msgid "file %s is on an unknown device"
+msgid "file %s is on an unknown device\n"
 msgstr ""
 
 #. This should not be allowed
@@ -2690,7 +2690,7 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: lib/install.c:190 lib/uninstall.c:211
+#: lib/install.c:190 lib/uninstall.c:209
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
@@ -2710,7 +2710,7 @@ msgstr ""
 #. XXX FIXME: Fclose with libio destroys errno
 #: lib/install.c:651
 #, c-format
-msgid "unpacking of archive failed%s%s: %s"
+msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
 #: lib/install.c:652
@@ -2723,90 +2723,91 @@ msgstr ""
 
 #: lib/install.c:721
 #, c-format
-msgid "cannot create sourcedir %s"
+msgid "cannot create sourcedir %s\n"
 msgstr ""
 
-#: lib/install.c:727 lib/install.c:757
-#, c-format
-msgid "cannot write to %s"
-msgstr ""
+#: lib/install.c:728 lib/install.c:759
+#, fuzzy, c-format
+msgid "cannot write to %s\n"
+msgstr "get ekki opnað pakka gagnagrunn í\n"
 
-#: lib/install.c:731
+#: lib/install.c:732
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:751
-#, c-format
-msgid "cannot create specdir %s"
-msgstr ""
+#: lib/install.c:752
+#, fuzzy, c-format
+msgid "cannot create specdir %s\n"
+msgstr "gat ekki búið til %s: %s\n"
 
-#: lib/install.c:761
+#: lib/install.c:763
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: lib/install.c:793 lib/install.c:821
-msgid "source package contains no .spec file"
-msgstr ""
+#: lib/install.c:796 lib/install.c:825
+#, fuzzy
+msgid "source package contains no .spec file\n"
+msgstr "fyrirspurn á pakkann sem á <skrá>"
 
-#: lib/install.c:839
+#: lib/install.c:843
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:841 lib/install.c:1103 lib/uninstall.c:60
-#, c-format
-msgid "rename of %s to %s failed: %s"
+#: lib/install.c:845 lib/install.c:1109 lib/uninstall.c:60
+#, fuzzy, c-format
+msgid "rename of %s to %s failed: %s\n"
+msgstr "Get ekki opnað spec skrána %s: %s\n"
+
+#: lib/install.c:935
+msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/install.c:931
-msgid "source package expected, binary found"
-msgstr ""
-
-#: lib/install.c:975
+#: lib/install.c:979
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:1019
+#: lib/install.c:1023
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:1024
+#: lib/install.c:1028
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:1031
+#: lib/install.c:1036
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
-#: lib/install.c:1063
+#: lib/install.c:1069
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "gat ekki búið til %s: %s\n"
 
-#: lib/install.c:1099
+#: lib/install.c:1105
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "gat ekki búið til %s: %s\n"
 
-#: lib/install.c:1193
+#: lib/install.c:1199
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
 #: lib/misc.c:328 lib/misc.c:333 lib/misc.c:339
 #, c-format
-msgid "error creating temporary file %s"
+msgid "error creating temporary file %s\n"
 msgstr ""
 
 #: lib/package.c:88
-msgid "packaging version 1 is not supported by this version of RPM"
+msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 
 #: lib/package.c:143
 msgid ""
-"only packaging with major numbers <= 4 is supported by this version of RPM"
+"only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 
 #: lib/poptBT.c:94
@@ -3113,7 +3114,7 @@ msgid "(no state)    "
 msgstr ""
 
 #: lib/query.c:316 lib/query.c:361
-msgid "package has neither file owner or id lists"
+msgid "package has neither file owner or id lists\n"
 msgstr ""
 
 #: lib/query.c:418
@@ -3288,191 +3289,145 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:267
-msgid ""
-"\n"
-"--> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n"
-"    Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n"
-"    and configure \"%%_dbapi 3\" (e.g. create and/or edit /etc/rpm/macros).\n"
-"\n"
-msgstr ""
-
-#: lib/rpmdb.c:283
-#, c-format
-msgid "cannot open %s index using db%d - %s (%d)"
-msgstr ""
-
-#: lib/rpmdb.c:303
-#, c-format
-msgid "cannot open %s index"
+#: lib/rpmdb.c:271
+#, fuzzy, c-format
+msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "get ekki opnað index í %s"
 
-#: lib/rpmdb.c:318
+#: lib/rpmdb.c:291
+#, fuzzy, c-format
+msgid "cannot open %s index\n"
+msgstr "get ekki opnað index í %s"
+
+#: lib/rpmdb.c:376
 #, c-format
-msgid ""
-"\n"
-"--> The rpm database cannot be opened in db%d format.\n"
-"    If you have just upgraded the rpm package you need to convert\n"
-"    your database to db%d format by running \"rpm --rebuilddb\" as root.\n"
-"\n"
+msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 
-#: lib/rpmdb.c:332
-msgid ""
-"\n"
-"--> The configured %%_dbapi was db%d, but the rpm database is db%d format.\n"
-"    Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n"
-"    and configure \"%%_dbapi %d\" (e.g. create and/or edit "
-"/etc/rpm/macros).\n"
-"\n"
-msgstr ""
-
-#: lib/rpmdb.c:348
-msgid ""
-"\n"
-"--> The rpm database is in db%d format, not the suggested db%d format.\n"
-"    Please verify the setting of the macros %%_dbapi and %%_dbapi_rebuild\n"
-"    using \"rpm --showrc\", and either run \"rpm --rebuilddb\" as root\n"
-"    to convert your database from db%d to db%d format, or configure\n"
-"    \"%%_dbapi_rebuild %d\" (e.g. create and/or edit /etc/rpm/macros).\n"
-"\n"
-msgstr ""
-
-#: lib/rpmdb.c:417
+#: lib/rpmdb.c:495
 #, c-format
-msgid "error(%d) getting \"%s\" records from %s index"
+msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:535
+#: lib/rpmdb.c:505
 #, c-format
-msgid "error(%d) storing record %s into %s"
+msgid "error(%d) removing record %s from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:544
-#, c-format
-msgid "error(%d) removing record %s from %s"
+#: lib/rpmdb.c:740
+msgid "no dbpath has been set\n"
 msgstr ""
 
-#: lib/rpmdb.c:779 lib/rpmdb.c:2368
-msgid "no dbpath has been set"
-msgstr ""
-
-#: lib/rpmdb.c:878
+#: lib/rpmdb.c:839
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
-"database"
+"database\n"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:1090
+#: lib/rpmdb.c:1023
 #, c-format
-msgid "error(%d) counting packages"
+msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: lib/rpmdb.c:1149 lib/rpmdb.c:1693
+#: lib/rpmdb.c:1079 lib/rpmdb.c:1620
 #, c-format
-msgid "%s: cannot read header at 0x%x"
+msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: lib/rpmdb.c:1746
-#, c-format
-msgid "removing 0 %s entries.\n"
-msgstr ""
-
-#: lib/rpmdb.c:1757
+#: lib/rpmdb.c:1685
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1766
+#: lib/rpmdb.c:1694
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1908
+#: lib/rpmdb.c:1872
 #, c-format
-msgid "error(%d) allocating new package instance"
+msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: lib/rpmdb.c:1971
-#, c-format
-msgid "adding 0 %s entries.\n"
-msgstr ""
-
-#: lib/rpmdb.c:1987
+#: lib/rpmdb.c:1968
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1996
+#: lib/rpmdb.c:1972
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2342
+#: lib/rpmdb.c:2344
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2393
+#: lib/rpmdb.c:2370
+msgid "no dbpath has been set"
+msgstr ""
+
+#: lib/rpmdb.c:2395
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2397
+#: lib/rpmdb.c:2399
 #, c-format
-msgid "temporary database %s already exists"
-msgstr ""
-
-#: lib/rpmdb.c:2403
-#, c-format
-msgid "creating directory %s\n"
+msgid "temporary database %s already exists\n"
 msgstr ""
 
 #: lib/rpmdb.c:2405
 #, c-format
-msgid "error creating directory %s: %s"
+msgid "creating directory %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2412
+#: lib/rpmdb.c:2407
+#, c-format
+msgid "creating directory %s: %s\n"
+msgstr ""
+
+#: lib/rpmdb.c:2414
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2423
+#: lib/rpmdb.c:2425
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2446
+#: lib/rpmdb.c:2448
 #, c-format
-msgid "record number %d in database is bad -- skipping."
+msgid "record number %d in database is bad -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2483
+#: lib/rpmdb.c:2485
 #, c-format
-msgid "cannot add record originally at %d"
+msgid "cannot add record originally at %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2501
+#: lib/rpmdb.c:2503
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2509
+#: lib/rpmdb.c:2511
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2511
+#: lib/rpmdb.c:2513
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2521
+#: lib/rpmdb.c:2523
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2523
+#: lib/rpmdb.c:2525
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
@@ -3594,101 +3549,101 @@ msgstr ""
 
 #: lib/rpmlead.c:48
 #, c-format
-msgid "read failed: %s (%d)"
+msgid "read failed: %s (%d)\n"
 msgstr ""
 
 #: lib/rpmrc.c:150
 #, c-format
-msgid "missing second ':' at %s:%d"
+msgid "missing second ':' at %s:%d\n"
 msgstr ""
 
 #: lib/rpmrc.c:153
 #, c-format
-msgid "missing architecture name at %s:%d"
+msgid "missing architecture name at %s:%d\n"
 msgstr ""
 
 #: lib/rpmrc.c:305
 #, c-format
-msgid "Incomplete data line at %s:%d"
+msgid "Incomplete data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:309
+#: lib/rpmrc.c:310
 #, c-format
-msgid "Too many args in data line at %s:%d"
+msgid "Too many args in data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:316
+#: lib/rpmrc.c:317
 #, c-format
-msgid "Bad arch/os number: %s (%s:%d)"
+msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr ""
 
-#: lib/rpmrc.c:351
+#: lib/rpmrc.c:352
 #, c-format
-msgid "Incomplete default line at %s:%d"
+msgid "Incomplete default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:356
+#: lib/rpmrc.c:357
 #, c-format
-msgid "Too many args in default line at %s:%d"
+msgid "Too many args in default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:546
+#: lib/rpmrc.c:547
 #, c-format
-msgid "Cannot expand %s"
+msgid "Cannot expand %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:551
+#: lib/rpmrc.c:552
 #, c-format
-msgid "Cannot read %s, HOME is too large."
+msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:568
-#, c-format
-msgid "Unable to open %s for reading: %s."
-msgstr ""
+#: lib/rpmrc.c:569
+#, fuzzy, c-format
+msgid "Unable to open %s for reading: %s.\n"
+msgstr "Get ekki opnað spec skrána %s: %s\n"
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:613
+#: lib/rpmrc.c:614
+#, fuzzy, c-format
+msgid "Failed to read %s: %s.\n"
+msgstr "gat ekki búið til %s: %s\n"
+
+#: lib/rpmrc.c:651
 #, c-format
-msgid "Failed to read %s: %s."
+msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:650
+#: lib/rpmrc.c:668 lib/rpmrc.c:742
+#, fuzzy, c-format
+msgid "missing argument for %s at %s:%d\n"
+msgstr "Þýði fyrir markkerfi: %s\n"
+
+#: lib/rpmrc.c:685 lib/rpmrc.c:707
 #, c-format
-msgid "missing ':' (found 0x%02x) at %s:%d"
+msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr ""
 
-#: lib/rpmrc.c:667 lib/rpmrc.c:741
+#: lib/rpmrc.c:694
+#, fuzzy, c-format
+msgid "cannot open %s at %s:%d: %s\n"
+msgstr "get ekki opnað pakka gagnagrunn í\n"
+
+#: lib/rpmrc.c:734
 #, c-format
-msgid "missing argument for %s at %s:%d"
+msgid "missing architecture for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:684 lib/rpmrc.c:706
-#, c-format
-msgid "%s expansion failed at %s:%d \"%s\""
-msgstr ""
+#: lib/rpmrc.c:801
+#, fuzzy, c-format
+msgid "bad option '%s' at %s:%d\n"
+msgstr "gat ekki búið til %s: %s\n"
 
-#: lib/rpmrc.c:693
-#, c-format
-msgid "cannot open %s at %s:%d: %s"
-msgstr ""
-
-#: lib/rpmrc.c:733
-#, c-format
-msgid "missing architecture for %s at %s:%d"
-msgstr ""
-
-#: lib/rpmrc.c:800
-#, c-format
-msgid "bad option '%s' at %s:%d"
-msgstr ""
-
-#: lib/rpmrc.c:1197
+#: lib/rpmrc.c:1198
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1198
+#: lib/rpmrc.c:1199
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
@@ -3715,7 +3670,7 @@ msgid "Old PGP signature\n"
 msgstr ""
 
 #: lib/signature.c:162
-msgid "Old (internal-only) signature!  How did you get that!?"
+msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr ""
 
 #: lib/signature.c:211
@@ -3730,17 +3685,17 @@ msgstr ""
 
 #: lib/signature.c:274
 #, c-format
-msgid "Couldn't exec pgp (%s)"
+msgid "Couldn't exec pgp (%s)\n"
 msgstr ""
 
 #: lib/signature.c:285
-msgid "pgp failed"
+msgid "pgp failed\n"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
 #: lib/signature.c:292
-msgid "pgp failed to write signature"
+msgid "pgp failed to write signature\n"
 msgstr ""
 
 #: lib/signature.c:297
@@ -3749,7 +3704,7 @@ msgid "PGP sig size: %d\n"
 msgstr ""
 
 #: lib/signature.c:308 lib/signature.c:385
-msgid "unable to read the signature"
+msgid "unable to read the signature\n"
 msgstr ""
 
 #: lib/signature.c:313
@@ -3758,17 +3713,17 @@ msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
 #: lib/signature.c:351 lib/signature.c:694
-msgid "Couldn't exec gpg"
+msgid "Couldn't exec gpg\n"
 msgstr ""
 
 #: lib/signature.c:362
-msgid "gpg failed"
+msgid "gpg failed\n"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
 #: lib/signature.c:369
-msgid "gpg failed to write signature"
+msgid "gpg failed to write signature\n"
 msgstr ""
 
 #: lib/signature.c:374
@@ -3790,29 +3745,29 @@ msgid "Generating signature using GPG.\n"
 msgstr ""
 
 #: lib/signature.c:502 lib/signature.c:563
-msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
+msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 
 #: lib/signature.c:635
-msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
+msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 
 #: lib/signature.c:723
-msgid "Couldn't exec pgp"
+msgid "Couldn't exec pgp\n"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
 #: lib/signature.c:727 lib/signature.c:780
-msgid "Invalid %%_signature spec in macro file"
+msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
 #: lib/signature.c:760
-msgid "You must set \"%%_gpg_name\" in your macro file"
+msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
 #: lib/signature.c:772
-msgid "You must set \"%%_pgp_name\" in your macro file"
+msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
 #: lib/transaction.c:466
@@ -3861,17 +3816,17 @@ msgstr ""
 
 #: lib/uninstall.c:74
 #, c-format
-msgid "cannot remove %s - directory not empty"
+msgid "cannot remove %s - directory not empty\n"
 msgstr ""
 
 #: lib/uninstall.c:78
 #, c-format
-msgid "rmdir of %s failed: %s"
+msgid "rmdir of %s failed: %s\n"
 msgstr ""
 
 #: lib/uninstall.c:88
 #, c-format
-msgid "removal of %s failed: %s"
+msgid "removal of %s failed: %s\n"
 msgstr ""
 
 #: lib/uninstall.c:151
@@ -3879,13 +3834,13 @@ msgstr ""
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:235
+#: lib/uninstall.c:233
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:448
+#: lib/uninstall.c:446
 #, c-format
-msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d"
+msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
 #: lib/verify.c:59
@@ -3897,11 +3852,11 @@ msgid "do not execute %verifyscript (if any)"
 msgstr ""
 
 #: lib/verify.c:241
-msgid "package lacks both user name and id lists (this should never happen)"
+msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 
 #: lib/verify.c:259
-msgid "package lacks both group name and id lists (this should never happen)"
+msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
 #: lib/verify.c:321
@@ -3987,70 +3942,71 @@ msgstr ""
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:555
-msgid "Macro %%%s has unterminated body"
+#: rpmio/macro.c:556
+msgid "Macro %%%s has unterminated body\n"
 msgstr ""
 
-#: rpmio/macro.c:581
-msgid "Macro %%%s has illegal name (%%define)"
+#: rpmio/macro.c:583
+msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr ""
 
-#: rpmio/macro.c:587
-msgid "Macro %%%s has unterminated opts"
+#: rpmio/macro.c:590
+msgid "Macro %%%s has unterminated opts\n"
 msgstr ""
 
-#: rpmio/macro.c:592
-msgid "Macro %%%s has empty body"
+#: rpmio/macro.c:595
+msgid "Macro %%%s has empty body\n"
 msgstr ""
 
-#: rpmio/macro.c:597
-msgid "Macro %%%s failed to expand"
+#: rpmio/macro.c:600
+msgid "Macro %%%s failed to expand\n"
 msgstr ""
 
-#: rpmio/macro.c:628
-msgid "Macro %%%s has illegal name (%%undefine)"
+#: rpmio/macro.c:632
+msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr ""
 
-#: rpmio/macro.c:721
-msgid "Macro %%%s (%s) was not used below level %d"
+#: rpmio/macro.c:726
+msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr ""
 
-#: rpmio/macro.c:814
-#, c-format
-msgid "Unknown option %c in %s(%s)"
+#: rpmio/macro.c:819
+#, fuzzy, c-format
+msgid "Unknown option %c in %s(%s)\n"
 msgstr "+Oþekkt viðfang %c í %s(%s)"
 
-#: rpmio/macro.c:993
+#: rpmio/macro.c:999
 #, c-format
-msgid "Recursion depth(%d) greater than max(%d)"
+msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:1059 rpmio/macro.c:1075
+#: rpmio/macro.c:1066 rpmio/macro.c:1083
 #, c-format
-msgid "Unterminated %c: %s"
+msgid "Unterminated %c: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:1115
-msgid "A %% is followed by an unparseable macro"
+#: rpmio/macro.c:1124
+msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1241
-msgid "Macro %%%.*s not found, skipping"
+#: rpmio/macro.c:1251
+#, fuzzy
+msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Fjölvi %%%.*s fanmst ekki. Sleppi"
 
-#: rpmio/macro.c:1312
-msgid "Target buffer overflow"
+#: rpmio/macro.c:1322
+msgid "Target buffer overflow\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1492 rpmio/macro.c:1498
-#, c-format
-msgid "File %s: %s"
+#: rpmio/macro.c:1502 rpmio/macro.c:1508
+#, fuzzy, c-format
+msgid "File %s: %s\n"
 msgstr "Skrá %s: %s"
 
-#: rpmio/macro.c:1501
+#: rpmio/macro.c:1511
 #, fuzzy, c-format
-msgid "File %s is smaller than %u bytes"
+msgid "File %s is smaller than %u bytes\n"
 msgstr "Skráin %s er minni en %d bæti"
 
 #: rpmio/rpmlog.c:24
@@ -4106,11 +4062,6 @@ msgstr "villa: %sport verður að vera tala\n"
 msgid "url port must be a number\n"
 msgstr "gátt slóðar verður að vera tala\n"
 
-#: rpmio/url.c:452
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "gat ekki opnað %s: %s\n"
-
 #. XXX Fstrerror
 #: rpmio/url.c:469
 #, c-format
@@ -4126,6 +4077,3 @@ msgstr "gat ekki búið til %s: %s\n"
 #, fuzzy
 #~ msgid "       %s {--rmsource} [--macros <file:...>] [-v] specfile\n"
 #~ msgstr "                        [--rmsource] [--rmspec] specskrá"
-
-#~ msgid "internal error (rpm bug?): "
-#~ msgstr "innvær villa (í rpm?): "

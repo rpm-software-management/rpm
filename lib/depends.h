@@ -94,8 +94,9 @@ struct dirInfo {
 struct availableList {
 /*@owned@*/ /*@null@*/ struct availablePackage * list;	/*!< Set of packages. */
     struct availableIndex index;	/*!< Set of available items. */
-    int size;
-    int alloced;
+    int delta;				/*!< Delta for pkg list reallocation. */
+    int size;				/*!< No. of pkgs in list. */
+    int alloced;			/*!< No. of pkgs allocated for list. */
     int numDirs;			/*!< No. of directories. */
 /*@owned@*/ struct dirInfo * dirs;	/*!< Set of directories. */
 };
@@ -130,21 +131,28 @@ struct rpmTransactionSet_s {
 /*@only@*/ int * removedPackages;	/*!< Set of packages being removed. */
     int numRemovedPackages;		/*!< No. removed rpmdb instances. */
     int allocedRemovedPackages;		/*!< Size of removed packages array. */
-    struct availableList addedPackages;	/*!< Set of packages being installed. */
-    struct availableList availablePackages; /*!< Universe of possible packages to install. */
-/*@only@*/ struct transactionElement * order; /*!< Packages sorted by dependencies. */
-    int orderCount;
-    int orderAlloced;
-    int chrootDone;
-/*@only@*/ const char * rootDir;	/*!< Path to top of install tree. */
-/*@only@*/ const char * currDir;	/*!< Current working directory. */
-/*@null@*/ FD_t scriptFd;
+    struct availableList addedPackages;/*!< Set of packages being installed. */
+    struct availableList availablePackages;
+				/*!< Universe of possible packages. */
+/*@only@*/ struct transactionElement * order;
+				/*!< Packages sorted by dependencies. */
+    int orderCount;		/*!< No. of transaction elements. */
+    int orderAlloced;		/*!< No. of allocated transaction elements. */
+    int chrootDone;		/*!< Has chroot(2) been been done? */
+/*@only@*/ const char * rootDir;/*!< Path to top of install tree. */
+/*@only@*/ const char * currDir;/*!< Current working directory. */
+/*@null@*/ FD_t scriptFd;	/*!< Scriptlet stdout/stderr. */
+    int delta;			/*!< Delta for reallocation. */
+    int id;			/*!< Transaction id. */
 };
 
+/**
+ * Problems encountered while checking dependencies.
+ */
 struct problemsSet {
-    struct rpmDependencyConflict * problems;
-    int num;
-    int alloced;
+    struct rpmDependencyConflict * problems;	/*!< Problems encountered. */
+    int num;			/*!< No. of problems found. */
+    int alloced;		/*!< No. of problems allocated. */
 };
 
 #ifdef __cplusplus
@@ -152,7 +160,18 @@ extern "C" {
 #endif
 
 /* XXX lib/uninstall.c */
-int headerMatchesDepFlags(Header h, const char *reqName, const char * reqInfo, int reqFlags);
+/**
+ * Compare package name-version-release from header with dependency, looking
+ * for overlap.
+ * @deprecated Remove from API when obsoletes is correctly eliminated.
+ * @param h		header
+ * @param reqName	dependency name
+ * @param reqEVR	dependency [epoch:]version[-release]
+ * @param reqFlags	dependency logical range qualifiers
+ * @return		1 if dependency overlaps, 0 otherwise
+ */
+int headerMatchesDepFlags(Header h,
+	const char *reqName, const char * reqEVR, int reqFlags);
 
 #ifdef __cplusplus
 }

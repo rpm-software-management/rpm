@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-13 11:37-0500\n"
+"POT-Creation-Date: 2001-01-15 14:34-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -24,44 +24,44 @@ msgstr "неудовлетворенные зависимости сборки:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Ошибка открытия spec файла %s: %s\n"
 
-#: build.c:129 build.c:141
+#: build.c:130 build.c:142
 #, fuzzy, c-format
-msgid "Failed to open tar pipe: %m"
+msgid "Failed to open tar pipe: %m\n"
 msgstr "Ошибка открытия канала tar: %s\n"
 
 #. Give up
-#: build.c:148
+#: build.c:149
 #, fuzzy, c-format
-msgid "Failed to read spec file from %s"
+msgid "Failed to read spec file from %s\n"
 msgstr "Ошибка чтения файла spec из %s\n"
 
-#: build.c:175
+#: build.c:177
 #, fuzzy, c-format
-msgid "Failed to rename %s to %s: %m"
+msgid "Failed to rename %s to %s: %m\n"
 msgstr "Не могу переименовать %s в %s: %s\n"
 
-#: build.c:214
+#: build.c:216
 #, fuzzy, c-format
-msgid "failed to stat %s: %m"
+msgid "failed to stat %s: %m\n"
 msgstr "невозможно получить информацию о %s: %s"
 
-#: build.c:219
+#: build.c:221
 #, fuzzy, c-format
-msgid "File %s is not a regular file."
+msgid "File %s is not a regular file.\n"
 msgstr "Не обычный файл: %s\n"
 
-#: build.c:227
+#: build.c:230
 #, fuzzy, c-format
-msgid "File %s does not appear to be a specfile."
+msgid "File %s does not appear to be a specfile.\n"
 msgstr "Файл %s не похож на spec файл.\n"
 
 #. parse up the build operators
-#: build.c:285
+#: build.c:287
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Целевые платформы для сборки: %s\n"
 
-#: build.c:300
+#: build.c:302
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Сборка для целевой платформы %s\n"
@@ -1608,8 +1608,9 @@ msgstr "не задан spec-файл для сборки пакета"
 msgid "no tar files given for build"
 msgstr "не заданы tar-файлы для сборки пакета"
 
-#: build/build.c:114 build/pack.c:369
-msgid "Unable to open temp file."
+#: build/build.c:114 build/pack.c:370
+#, fuzzy
+msgid "Unable to open temp file.\n"
 msgstr "Невозможно открыть временный файл"
 
 #: build/build.c:193
@@ -1618,16 +1619,16 @@ msgid "Executing(%s): %s\n"
 msgstr "Выполняется(%s): %s\n"
 
 #: build/build.c:199
-#, c-format
-msgid "Exec of %s failed (%s): %s"
+#, fuzzy, c-format
+msgid "Exec of %s failed (%s): %s\n"
 msgstr "Выполнить %s не удалось (%s): %s"
 
-#: build/build.c:207
-#, c-format
-msgid "Bad exit status from %s (%s)"
+#: build/build.c:208
+#, fuzzy, c-format
+msgid "Bad exit status from %s (%s)\n"
 msgstr "Неверный код возврата из %s (%s)"
 
-#: build/build.c:306
+#: build/build.c:307
 msgid ""
 "\n"
 "\n"
@@ -1635,52 +1636,64 @@ msgid ""
 msgstr ""
 
 #: build/expression.c:215
-msgid "syntax error while parsing =="
+#, fuzzy
+msgid "syntax error while parsing ==\n"
 msgstr "синтаксическая ошибка при анализе =="
 
 #: build/expression.c:245
-msgid "syntax error while parsing &&"
+#, fuzzy
+msgid "syntax error while parsing &&\n"
 msgstr "синтаксическая ошибка при анализе &&"
 
 #: build/expression.c:254
-msgid "syntax error while parsing ||"
+#, fuzzy
+msgid "syntax error while parsing ||\n"
 msgstr "синтаксическая ошибка при анализе ||"
 
 #: build/expression.c:294
-msgid "parse error in expression"
+#, fuzzy
+msgid "parse error in expression\n"
 msgstr "ошибка анализа выражения"
 
 #: build/expression.c:326
-msgid "unmatched ("
+#, fuzzy
+msgid "unmatched (\n"
 msgstr "незакрытая ("
 
 #: build/expression.c:356
-msgid "- only on numbers"
+#, fuzzy
+msgid "- only on numbers\n"
 msgstr "- только для чисел"
 
 #: build/expression.c:372
-msgid "! only on numbers"
+#, fuzzy
+msgid "! only on numbers\n"
 msgstr "! только для чисел"
 
 #: build/expression.c:414 build/expression.c:462 build/expression.c:520
 #: build/expression.c:612
-msgid "types must match"
+#, fuzzy
+msgid "types must match\n"
 msgstr "типы должны совпадать"
 
 #: build/expression.c:427
-msgid "* / not suported for strings"
+#, fuzzy
+msgid "* / not suported for strings\n"
 msgstr "* / не поддерживается для строк"
 
 #: build/expression.c:478
-msgid "- not suported for strings"
+#, fuzzy
+msgid "- not suported for strings\n"
 msgstr "- не поддерживается для строк"
 
 #: build/expression.c:625
-msgid "&& and || not suported for strings"
+#, fuzzy
+msgid "&& and || not suported for strings\n"
 msgstr "&& и || не поддерживаются для строк"
 
 #: build/expression.c:658 build/expression.c:705
-msgid "syntax error in expression"
+#, fuzzy
+msgid "syntax error in expression\n"
 msgstr "синтаксическая ошибка в выражении"
 
 #: build/files.c:226
@@ -1689,162 +1702,163 @@ msgid "TIMECHECK failure: %s\n"
 msgstr "Ошибка TIMECHECK: %s\n"
 
 #: build/files.c:276 build/files.c:360 build/files.c:527
-#, c-format
-msgid "Missing '(' in %s %s"
+#, fuzzy, c-format
+msgid "Missing '(' in %s %s\n"
 msgstr "Отсутствует '(' в %s %s"
 
 #: build/files.c:287 build/files.c:479 build/files.c:538
-#, c-format
-msgid "Missing ')' in %s(%s"
+#, fuzzy, c-format
+msgid "Missing ')' in %s(%s\n"
 msgstr "отсутствует ')' в %s(%s"
 
 #: build/files.c:325 build/files.c:504
-#, c-format
-msgid "Invalid %s token: %s"
+#, fuzzy, c-format
+msgid "Invalid %s token: %s\n"
 msgstr "Неверный токен %s: %s"
 
 #: build/files.c:376
-#, c-format
-msgid "Non-white space follows %s(): %s"
+#, fuzzy, c-format
+msgid "Non-white space follows %s(): %s\n"
 msgstr "Не пробел следует после %s(): %s"
 
 #: build/files.c:414
-#, c-format
-msgid "Bad syntax: %s(%s)"
+#, fuzzy, c-format
+msgid "Bad syntax: %s(%s)\n"
 msgstr "Неверный синтаксис: %s(%s)"
 
 #: build/files.c:424
-#, c-format
-msgid "Bad mode spec: %s(%s)"
+#, fuzzy, c-format
+msgid "Bad mode spec: %s(%s)\n"
 msgstr "Неверные права: %s(%s)"
 
 #: build/files.c:436
-#, c-format
-msgid "Bad dirmode spec: %s(%s)"
+#, fuzzy, c-format
+msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Неверные права на каталог %s(%s)"
 
-#: build/files.c:564
-msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
+#: build/files.c:565
+#, fuzzy
+msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Необычная длина locale: \"%.*s\" в %%lang(%s)"
 
-#: build/files.c:574
-msgid "Duplicate locale %.*s in %%lang(%s)"
+#: build/files.c:575
+#, fuzzy
+msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Дубликат locale %.*s в %%lang(%s)"
 
-#: build/files.c:706
-msgid "Hit limit for %%docdir"
+#: build/files.c:707
+#, fuzzy
+msgid "Hit limit for %%docdir\n"
 msgstr "Лимит для %%docdir превышен"
 
-#: build/files.c:712
-msgid "Only one arg for %%docdir"
+#: build/files.c:713
+#, fuzzy
+msgid "Only one arg for %%docdir\n"
 msgstr "Только один аргумент для %%docdir"
 
 #. We already got a file -- error
-#: build/files.c:740
-#, c-format
-msgid "Two files on one line: %s"
+#: build/files.c:741
+#, fuzzy, c-format
+msgid "Two files on one line: %s\n"
 msgstr "Два файла в одной строке: %s"
 
-#: build/files.c:753
-#, c-format
-msgid "File must begin with \"/\": %s"
+#: build/files.c:755
+#, fuzzy, c-format
+msgid "File must begin with \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s"
 
-#: build/files.c:765
-msgid "Can't mix special %%doc with other forms: %s"
+#: build/files.c:767
+#, fuzzy
+msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Нельзя смешивать спец. %%doc с другими формами: %s"
 
-#: build/files.c:859
-#, c-format
-msgid "File listed twice: %s"
+#: build/files.c:861
+#, fuzzy, c-format
+msgid "File listed twice: %s\n"
 msgstr "Файл указан дважды: %s"
 
-#: build/files.c:968
-#, c-format
-msgid "Symlink points to BuildRoot: %s -> %s"
+#: build/files.c:972
+#, fuzzy, c-format
+msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символическая ссылка указывает на BuildRoot: %s -> %s"
 
-#: build/files.c:1062
-#, c-format
-msgid "File doesn't match prefix (%s): %s"
+#: build/files.c:1066
+#, fuzzy, c-format
+msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Файл не соответстует префиксу (%s): %s"
 
-#: build/files.c:1072
-#, c-format
-msgid "File not found: %s"
+#: build/files.c:1076
+#, fuzzy, c-format
+msgid "File not found: %s\n"
 msgstr "Файл не найден: %s"
 
-#: build/files.c:1115
+#: build/files.c:1119 build/files.c:1639 build/parsePrep.c:42
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара хозяин/группа: %s\n"
 
-#: build/files.c:1127
+#: build/files.c:1131
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Файл %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1203
-#, c-format
-msgid "File needs leading \"/\": %s"
+#: build/files.c:1207
+#, fuzzy, c-format
+msgid "File needs leading \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s"
 
-#: build/files.c:1232
-#, c-format
-msgid "File not found by glob: %s"
+#: build/files.c:1237
+#, fuzzy, c-format
+msgid "File not found by glob: %s\n"
 msgstr "Файл не найден: %s"
 
-#: build/files.c:1286
-msgid "Could not open %%files file %s: %s"
+#: build/files.c:1292
+#, fuzzy
+msgid "Could not open %%files file %s: %s\n"
 msgstr "Невозможно открыть файл %%files: %s"
 
-#: build/files.c:1295 build/pack.c:108
-#, c-format
-msgid "line: %s"
+#: build/files.c:1301 build/pack.c:108
+#, fuzzy, c-format
+msgid "line: %s\n"
 msgstr "строка: %s"
 
-#: build/files.c:1621
-#, c-format
-msgid "Bad file: %s: %s"
+#: build/files.c:1627
+#, fuzzy, c-format
+msgid "Bad file: %s: %s\n"
 msgstr "Неверный файл %s: %s"
 
-#: build/files.c:1633 build/parsePrep.c:41
-#, c-format
-msgid "Bad owner/group: %s"
-msgstr "Неверная пара владелец/группа: %s"
-
 #. XXX this error message is probably not seen.
-#: build/files.c:1690
-#, c-format
-msgid "Couldn't exec %s: %s"
+#: build/files.c:1696
+#, fuzzy, c-format
+msgid "Couldn't exec %s: %s\n"
 msgstr "Невозможно вылнить %s: %s"
 
-#: build/files.c:1695
-#, c-format
-msgid "Couldn't fork %s: %s"
+#: build/files.c:1701
+#, fuzzy, c-format
+msgid "Couldn't fork %s: %s\n"
 msgstr "Сбой ветвления %s: %s"
 
-#: build/files.c:1777
-#, c-format
-msgid "%s failed"
+#: build/files.c:1783
+#, fuzzy, c-format
+msgid "%s failed\n"
 msgstr "%s не удалось"
 
-#: build/files.c:1781
-#, c-format
-msgid "failed to write all data to %s"
+#: build/files.c:1787
+#, fuzzy, c-format
+msgid "failed to write all data to %s\n"
 msgstr "запись всех данных в %s не удалась"
 
-#: build/files.c:1906
+#: build/files.c:1912
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Поиск %s (используя %s): ...\n"
 
-#: build/files.c:1934 build/files.c:1948
-#, c-format
-msgid "Failed to find %s:"
+#: build/files.c:1940 build/files.c:1954
+#, fuzzy, c-format
+msgid "Failed to find %s:\n"
 msgstr "Невозможно найти %s:"
 
-#: build/files.c:2061
+#: build/files.c:2067
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываются файлы: %s-%s-%s\n"
@@ -1871,48 +1885,48 @@ msgid "Could not canonicalize hostname: %s\n"
 msgstr "Невозможно канонизировать имя компьютера: %s\n"
 
 #: build/pack.c:52
-#, c-format
-msgid "create archive failed on file %s: %s"
+#, fuzzy, c-format
+msgid "create archive failed on file %s: %s\n"
 msgstr "ошибка создания архива на файле %s: %s"
 
 #: build/pack.c:74
-#, c-format
-msgid "cpio_copy write failed: %s"
+#, fuzzy, c-format
+msgid "cpio_copy write failed: %s\n"
 msgstr "cpio_copy: ошибка записи: %s"
 
 #: build/pack.c:81
-#, c-format
-msgid "cpio_copy read failed: %s"
+#, fuzzy, c-format
+msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy: ошибка чтения: %s"
 
 #: build/pack.c:165
-#, c-format
-msgid "Could not open PreIn file: %s"
+#, fuzzy, c-format
+msgid "Could not open PreIn file: %s\n"
 msgstr "Невозможно открыть файл PreIn: %s"
 
 #: build/pack.c:172
-#, c-format
-msgid "Could not open PreUn file: %s"
+#, fuzzy, c-format
+msgid "Could not open PreUn file: %s\n"
 msgstr "Невозможно открыть файл PreUn: %s"
 
 #: build/pack.c:179
-#, c-format
-msgid "Could not open PostIn file: %s"
+#, fuzzy, c-format
+msgid "Could not open PostIn file: %s\n"
 msgstr "Невозможно открыть файл PostIn: %s"
 
 #: build/pack.c:186
-#, c-format
-msgid "Could not open PostUn file: %s"
+#, fuzzy, c-format
+msgid "Could not open PostUn file: %s\n"
 msgstr "Невозможно открыть файл PostUn: %s"
 
 #: build/pack.c:194
-#, c-format
-msgid "Could not open VerifyScript file: %s"
+#, fuzzy, c-format
+msgid "Could not open VerifyScript file: %s\n"
 msgstr "Невозможно открыть файл VerifyScript: %s"
 
 #: build/pack.c:209
-#, c-format
-msgid "Could not open Trigger script file: %s"
+#, fuzzy, c-format
+msgid "Could not open Trigger script file: %s\n"
 msgstr "Невозможно открыть файл Trigger script: %s"
 
 #: build/pack.c:235
@@ -1935,384 +1949,409 @@ msgstr "readRPM: %s  не является пакетом RPM\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: читается заголовок из %s\n"
 
-#: build/pack.c:381
-msgid "Bad CSA data"
+#: build/pack.c:382
+#, fuzzy
+msgid "Bad CSA data\n"
 msgstr "Неверные данные CSA"
 
-#: build/pack.c:422
+#: build/pack.c:423
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Генерируется подпись: %d\n"
 
-#: build/pack.c:432
+#: build/pack.c:433
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/pack.c:469
-#, c-format
-msgid "Unable to write package: %s"
+#: build/pack.c:470
+#, fuzzy, c-format
+msgid "Unable to write package: %s\n"
 msgstr "Невозможно записать пакет: %s"
 
-#: build/pack.c:484
-#, c-format
-msgid "Unable to open sigtarget %s: %s"
+#: build/pack.c:485
+#, fuzzy, c-format
+msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Невозможно открыть цель подписи %s: %s"
 
-#: build/pack.c:494
+#: build/pack.c:495
 #, fuzzy, c-format
-msgid "Unable to read header from %s: %s"
+msgid "Unable to read header from %s: %s\n"
 msgstr "Невозможно прочитать пиктограмму %s: %s"
 
-#: build/pack.c:508
+#: build/pack.c:509
 #, fuzzy, c-format
-msgid "Unable to write header to %s: %s"
+msgid "Unable to write header to %s: %s\n"
 msgstr "Невозможно записать пакет %s: %s"
 
-#: build/pack.c:518
+#: build/pack.c:519
 #, fuzzy, c-format
-msgid "Unable to read payload from %s: %s"
+msgid "Unable to read payload from %s: %s\n"
 msgstr "Невозможно прочитать пиктограмму %s: %s"
 
-#: build/pack.c:524
+#: build/pack.c:525
 #, fuzzy, c-format
-msgid "Unable to write payload to %s: %s"
+msgid "Unable to write payload to %s: %s\n"
 msgstr "Невозможно записать пакет %s: %s"
 
-#: build/pack.c:551
+#: build/pack.c:552
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
 
-#: build/pack.c:616
+#: build/pack.c:617
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Невозможно сгенерировать имя файла для пакета %s: %s\n"
 
-#: build/pack.c:633
+#: build/pack.c:634
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
 
 #: build/parseBuildInstallClean.c:28
-#, c-format
-msgid "line %d: second %s"
+#, fuzzy, c-format
+msgid "line %d: second %s\n"
 msgstr "строка %d: второе %s"
 
-#: build/parseChangelog.c:120
-msgid "%%changelog entries must start with *"
+#: build/parseChangelog.c:121
+#, fuzzy
+msgid "%%changelog entries must start with *\n"
 msgstr "записи %%changelog должны начинаться с *"
 
-#: build/parseChangelog.c:128
-msgid "incomplete %%changelog entry"
+#: build/parseChangelog.c:129
+#, fuzzy
+msgid "incomplete %%changelog entry\n"
 msgstr "неполная запись %%changelog"
 
-#: build/parseChangelog.c:143
-msgid "bad date in %%changelog: %s"
+#: build/parseChangelog.c:144
+#, fuzzy
+msgid "bad date in %%changelog: %s\n"
 msgstr "неверная дата в %%changelog: %s"
 
-#: build/parseChangelog.c:148
-msgid "%%changelog not in decending chronological order"
+#: build/parseChangelog.c:149
+#, fuzzy
+msgid "%%changelog not in decending chronological order\n"
 msgstr "%%changelog не в нисходящем хронологическом порядке"
 
-#: build/parseChangelog.c:156 build/parseChangelog.c:167
-msgid "missing name in %%changelog"
+#: build/parseChangelog.c:157 build/parseChangelog.c:168
+#, fuzzy
+msgid "missing name in %%changelog\n"
 msgstr "пропущено имя в %%changelog"
 
-#: build/parseChangelog.c:174
-msgid "no description in %%changelog"
+#: build/parseChangelog.c:175
+#, fuzzy
+msgid "no description in %%changelog\n"
 msgstr "нет описания в %%changelog"
 
 #: build/parseDescription.c:39
-msgid "line %d: Error parsing %%description: %s"
+#, fuzzy
+msgid "line %d: Error parsing %%description: %s\n"
 msgstr "строка %d: Ошибка анализа %%description: %s"
 
 #: build/parseDescription.c:52 build/parseFiles.c:47 build/parseScript.c:187
-#, c-format
-msgid "line %d: Bad option %s: %s"
+#, fuzzy, c-format
+msgid "line %d: Bad option %s: %s\n"
 msgstr "строка %d: Неверная опция %s: %s"
 
 #: build/parseDescription.c:65 build/parseFiles.c:59 build/parseScript.c:199
-#, c-format
-msgid "line %d: Too many names: %s"
+#, fuzzy, c-format
+msgid "line %d: Too many names: %s\n"
 msgstr "строка %d: Слишком много имен: %s"
 
 #: build/parseDescription.c:75 build/parseFiles.c:68 build/parseScript.c:208
-#, c-format
-msgid "line %d: Package does not exist: %s"
+#, fuzzy, c-format
+msgid "line %d: Package does not exist: %s\n"
 msgstr "строка %d: Пакет не существует: %s"
 
 #: build/parseDescription.c:87
-#, c-format
-msgid "line %d: Second description"
+#, fuzzy, c-format
+msgid "line %d: Second description\n"
 msgstr "строка %d: Второе описание"
 
 #: build/parseFiles.c:33
-msgid "line %d: Error parsing %%files: %s"
+#, fuzzy
+msgid "line %d: Error parsing %%files: %s\n"
 msgstr "строка %d: Ошибка разбора %%files: %s"
 
 #: build/parseFiles.c:75
-msgid "line %d: Second %%files list"
+#, fuzzy
+msgid "line %d: Second %%files list\n"
 msgstr "строка %d: Второй список %%files"
 
 #: build/parsePreamble.c:211
-#, c-format
-msgid "Architecture is excluded: %s"
+#, fuzzy, c-format
+msgid "Architecture is excluded: %s\n"
 msgstr "Архитектура исключена: %s"
 
 #: build/parsePreamble.c:216
-#, c-format
-msgid "Architecture is not included: %s"
+#, fuzzy, c-format
+msgid "Architecture is not included: %s\n"
 msgstr "Архитектура не включена: %s"
 
 #: build/parsePreamble.c:221
-#, c-format
-msgid "OS is excluded: %s"
+#, fuzzy, c-format
+msgid "OS is excluded: %s\n"
 msgstr "ОС исключена: %s"
 
 #: build/parsePreamble.c:226
-#, c-format
-msgid "OS is not included: %s"
+#, fuzzy, c-format
+msgid "OS is not included: %s\n"
 msgstr "ОС не включена: %s"
 
-#: build/parsePreamble.c:242
-#, c-format
-msgid "%s field must be present in package: %s"
+#: build/parsePreamble.c:243
+#, fuzzy, c-format
+msgid "%s field must be present in package: %s\n"
 msgstr "Поле %s обязано присутствовать в пакете: %s"
 
-#: build/parsePreamble.c:269
-#, c-format
-msgid "Duplicate %s entries in package: %s"
+#: build/parsePreamble.c:270
+#, fuzzy, c-format
+msgid "Duplicate %s entries in package: %s\n"
 msgstr "Дублирующиеся записи %s в пакете: %s"
 
-#: build/parsePreamble.c:323
-#, c-format
-msgid "Unable to open icon %s: %s"
+#: build/parsePreamble.c:324
+#, fuzzy, c-format
+msgid "Unable to open icon %s: %s\n"
 msgstr "Невозможно открыть пиктограмму %s: %s"
 
-#: build/parsePreamble.c:341
-#, c-format
-msgid "Unable to read icon %s: %s"
+#: build/parsePreamble.c:342
+#, fuzzy, c-format
+msgid "Unable to read icon %s: %s\n"
 msgstr "Невозможно прочитать пиктограмму %s: %s"
 
-#: build/parsePreamble.c:354
-#, c-format
-msgid "Unknown icon type: %s"
+#: build/parsePreamble.c:355
+#, fuzzy, c-format
+msgid "Unknown icon type: %s\n"
 msgstr "Неизвестный тип пиктограммы: %s"
 
-#: build/parsePreamble.c:421
-#, c-format
-msgid "line %d: Malformed tag: %s"
+#: build/parsePreamble.c:422
+#, fuzzy, c-format
+msgid "line %d: Malformed tag: %s\n"
 msgstr "строка %d: Неверный тэг: %s"
 
 #. Empty field
-#: build/parsePreamble.c:429
-#, c-format
-msgid "line %d: Empty tag: %s"
+#: build/parsePreamble.c:430
+#, fuzzy, c-format
+msgid "line %d: Empty tag: %s\n"
 msgstr "строка %d: Пустой тэг: %s"
 
-#: build/parsePreamble.c:451 build/parsePreamble.c:458
-#, c-format
-msgid "line %d: Illegal char '-' in %s: %s"
+#: build/parsePreamble.c:452 build/parsePreamble.c:459
+#, fuzzy, c-format
+msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "строка %d: Недопустимый символ '-' в %s: %s"
 
-#: build/parsePreamble.c:515 build/parseSpec.c:382
-#, c-format
-msgid "BuildRoot can not be \"/\": %s"
+#: build/parsePreamble.c:516 build/parseSpec.c:386
+#, fuzzy, c-format
+msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot не может быть \"/\": %s"
 
-#: build/parsePreamble.c:528
-#, c-format
-msgid "line %d: Prefixes must not end with \"/\": %s"
+#: build/parsePreamble.c:529
+#, fuzzy, c-format
+msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "строка %d: Префикс не может заканчиваться на \"/\": %s"
 
-#: build/parsePreamble.c:540
-#, c-format
-msgid "line %d: Docdir must begin with '/': %s"
+#: build/parsePreamble.c:541
+#, fuzzy, c-format
+msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "строка %d: Docdir должен начинаться с '/': %s"
 
-#: build/parsePreamble.c:552
-#, c-format
-msgid "line %d: Epoch/Serial field must be a number: %s"
+#: build/parsePreamble.c:553
+#, fuzzy, c-format
+msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "строка %d: Поле Epoch/Serial должно быть числом: %s"
 
-#: build/parsePreamble.c:592 build/parsePreamble.c:603
+#: build/parsePreamble.c:593 build/parsePreamble.c:604
 #, fuzzy, c-format
-msgid "line %d: Bad %s: qualifiers: %s"
+msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "строка %d: Неверное число %s: %s\n"
 
-#: build/parsePreamble.c:629
-#, c-format
-msgid "line %d: Bad BuildArchitecture format: %s"
+#: build/parsePreamble.c:630
+#, fuzzy, c-format
+msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "строка %d: Неверный формат BuildArchitecture: %s"
 
-#: build/parsePreamble.c:638
-#, c-format
-msgid "Internal error: Bogus tag %d"
+#: build/parsePreamble.c:639
+#, fuzzy, c-format
+msgid "Internal error: Bogus tag %d\n"
 msgstr "Внутренняя ошибка: Неизвестный ярлык %d"
 
-#: build/parsePreamble.c:782
-#, c-format
-msgid "Bad package specification: %s"
+#: build/parsePreamble.c:783
+#, fuzzy, c-format
+msgid "Bad package specification: %s\n"
 msgstr "Неверная спецификация пакета: %s"
 
-#: build/parsePreamble.c:788
-#, c-format
-msgid "Package already exists: %s"
+#: build/parsePreamble.c:789
+#, fuzzy, c-format
+msgid "Package already exists: %s\n"
 msgstr "Пакет уже существует: %s"
 
-#: build/parsePreamble.c:813
-#, c-format
-msgid "line %d: Unknown tag: %s"
+#: build/parsePreamble.c:815
+#, fuzzy, c-format
+msgid "line %d: Unknown tag: %s\n"
 msgstr "строка %d: Неизвестный тэг: %s"
 
-#: build/parsePreamble.c:835
-msgid "Spec file can't use BuildRoot"
+#: build/parsePreamble.c:837
+#, fuzzy
+msgid "Spec file can't use BuildRoot\n"
 msgstr "Файл spec не может использовать BuildRoot"
 
 #: build/parsePrep.c:37
-#, c-format
-msgid "Bad source: %s: %s"
+#, fuzzy, c-format
+msgid "Bad source: %s: %s\n"
 msgstr "Неверный исходник: %s: %s"
 
-#: build/parsePrep.c:74
-#, c-format
-msgid "No patch number %d"
+#: build/parsePrep.c:75
+#, fuzzy, c-format
+msgid "No patch number %d\n"
 msgstr "Нет заплаты номер %d"
 
-#: build/parsePrep.c:164
-#, c-format
-msgid "No source number %d"
+#: build/parsePrep.c:165
+#, fuzzy, c-format
+msgid "No source number %d\n"
 msgstr "Нет исходника номер %d"
 
-#: build/parsePrep.c:183
-#, c-format
-msgid "Couldn't download nosource %s: %s"
+#: build/parsePrep.c:185
+#, fuzzy, c-format
+msgid "Couldn't download nosource %s: %s\n"
 msgstr "Не могу получить nosource %s: %s"
 
-#: build/parsePrep.c:277
-msgid "Error parsing %%setup: %s"
+#: build/parsePrep.c:279
+#, fuzzy
+msgid "Error parsing %%setup: %s\n"
 msgstr "Ошибка анализа %%setup: %s"
 
-#: build/parsePrep.c:292
-msgid "line %d: Bad arg to %%setup %c: %s"
+#: build/parsePrep.c:294
+#, fuzzy
+msgid "line %d: Bad arg to %%setup %c: %s\n"
 msgstr "строка %d: Неверный аргумент для %%setup %c: %s"
 
-#: build/parsePrep.c:310
-msgid "line %d: Bad %%setup option %s: %s"
+#: build/parsePrep.c:312
+#, fuzzy
+msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "строка %d: Неверная опция %%setup %s: %s"
 
-#: build/parsePrep.c:443
-msgid "line %d: Need arg to %%patch -b: %s"
+#: build/parsePrep.c:446
+#, fuzzy
+msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "строка %d: Для %%patch -b нужен аргумент: %s"
 
-#: build/parsePrep.c:451
-msgid "line %d: Need arg to %%patch -z: %s"
+#: build/parsePrep.c:455
+#, fuzzy
+msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "строка %d: Для %%patch -z нужен аргумент: %s"
 
-#: build/parsePrep.c:463
-msgid "line %d: Need arg to %%patch -p: %s"
+#: build/parsePrep.c:467
+#, fuzzy
+msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "строка %d: Для %%patch -p нужен аргумент: %s"
 
-#: build/parsePrep.c:469
-msgid "line %d: Bad arg to %%patch -p: %s"
+#: build/parsePrep.c:474
+#, fuzzy
+msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "строка %d: Неверный аргумент для %%patch -p: %s"
 
-#: build/parsePrep.c:476
-msgid "Too many patches!"
+#: build/parsePrep.c:481
+#, fuzzy
+msgid "Too many patches!\n"
 msgstr "Слишком много заплат!"
 
-#: build/parsePrep.c:480
-msgid "line %d: Bad arg to %%patch: %s"
+#: build/parsePrep.c:485
+#, fuzzy
+msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "строка %d: Неверный аргумент для %%patch: %s"
 
-#: build/parsePrep.c:516
-msgid "line %d: second %%prep"
+#: build/parsePrep.c:521
+#, fuzzy
+msgid "line %d: second %%prep\n"
 msgstr "строка %d: второй %%prep"
 
 #: build/parseReqs.c:100
-#, c-format
+#, fuzzy, c-format
 msgid ""
-"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
+"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
 "строка %d: Токены зависимостей должны начинаться с буквы, цифры, '_' или "
 "'/': %s"
 
 #: build/parseReqs.c:111
-#, c-format
-msgid "line %d: File name not permitted: %s"
+#, fuzzy, c-format
+msgid "line %d: File name not permitted: %s\n"
 msgstr "строка %d: Имена файлов не разрешаются: %s"
 
 #: build/parseReqs.c:143
-#, c-format
-msgid "line %d: Versioned file name not permitted: %s"
+#, fuzzy, c-format
+msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "строка %d: Версии в именах файлов недопустимы: %s"
 
 #: build/parseReqs.c:173
-#, c-format
-msgid "line %d: Version required: %s"
+#, fuzzy, c-format
+msgid "line %d: Version required: %s\n"
 msgstr "строка %d: Требуется версия: %s"
 
 #: build/parseScript.c:153
-#, c-format
-msgid "line %d: triggers must have --: %s"
+#, fuzzy, c-format
+msgid "line %d: triggers must have --: %s\n"
 msgstr "строка %d: триггеры должны содержать --: %s"
 
 #: build/parseScript.c:163 build/parseScript.c:224
-#, c-format
-msgid "line %d: Error parsing %s: %s"
+#, fuzzy, c-format
+msgid "line %d: Error parsing %s: %s\n"
 msgstr "строка %d: Ошибка анализа %s: %s"
 
 #: build/parseScript.c:174
-#, c-format
-msgid "line %d: script program must begin with '/': %s"
+#, fuzzy, c-format
+msgid "line %d: script program must begin with '/': %s\n"
 msgstr "строка %d: Программы в скриптах должны начинаться с '/': %s"
 
 #: build/parseScript.c:216
-#, c-format
-msgid "line %d: Second %s"
+#, fuzzy, c-format
+msgid "line %d: Second %s\n"
 msgstr "строка %d: Второе %s"
 
 #: build/parseSpec.c:136
-#, c-format
-msgid "line %d: %s"
+#, fuzzy, c-format
+msgid "line %d: %s\n"
 msgstr "строка %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:184
+#: build/parseSpec.c:185
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/parseSpec.c:196
-msgid "Unclosed %%if"
+#: build/parseSpec.c:197
+#, fuzzy
+msgid "Unclosed %%if\n"
 msgstr "Незакрытый %%if"
 
-#: build/parseSpec.c:267
-#, c-format
-msgid "%s:%d: parseExpressionBoolean returns %d"
+#: build/parseSpec.c:269
+#, fuzzy, c-format
+msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean код возврата: %d"
 
-#. Got an else with no %if !
-#: build/parseSpec.c:275
-msgid "%s:%d: Got a %%else with no if"
+#: build/parseSpec.c:278
+#, fuzzy
+msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Найден %%else без %%if"
 
-#. Got an end with no %if !
-#: build/parseSpec.c:286
-msgid "%s:%d: Got a %%endif with no if"
+#: build/parseSpec.c:290
+#, fuzzy
+msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Найден %%endif без %%if"
 
-#: build/parseSpec.c:300 build/parseSpec.c:309
-msgid "malformed %%include statement"
+#: build/parseSpec.c:304 build/parseSpec.c:313
+#, fuzzy
+msgid "malformed %%include statement\n"
 msgstr "неверное объявление %%include"
 
-#: build/parseSpec.c:488
-msgid "No buildable architectures"
+#: build/parseSpec.c:493
+#, fuzzy
+msgid "No buildable architectures\n"
 msgstr "Нет архитектур, для которых возможна сборка"
 
-#: build/parseSpec.c:543
-msgid "Package has no %%description: %s"
+#: build/parseSpec.c:548
+#, fuzzy
+msgid "Package has no %%description: %s\n"
 msgstr "Пакет не имеет %%description: %s"
 
 #: build/spec.c:41
@@ -2321,13 +2360,13 @@ msgid "archive = %s, fs = %s\n"
 msgstr "архив = %s, fs = %s\n"
 
 #: build/spec.c:228
-#, c-format
-msgid "line %d: Bad number: %s"
+#, fuzzy, c-format
+msgid "line %d: Bad number: %s\n"
 msgstr "строка %d: Неверное число: %s"
 
 #: build/spec.c:234
-#, c-format
-msgid "line %d: Bad no%s number: %d"
+#, fuzzy, c-format
+msgid "line %d: Bad no%s number: %d\n"
 msgstr "строка %d: Неверное число no%s: %d"
 
 #: build/spec.c:292
@@ -2402,64 +2441,64 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:948
+#: lib/depends.c:949
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s YES (added files)\n"
 
-#: lib/depends.c:1007
+#: lib/depends.c:1008
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s YES (added provide)\n"
 
-#: lib/depends.c:1059
+#: lib/depends.c:1060
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr "%s: %-45s %-3s (cached)\n"
 
-#: lib/depends.c:1078
+#: lib/depends.c:1079
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:1095
+#: lib/depends.c:1096
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:1117
+#: lib/depends.c:1118
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s YES (db files)\n"
 
-#: lib/depends.c:1130
+#: lib/depends.c:1131
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:1144
+#: lib/depends.c:1145
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s YES (db files)\n"
 
-#: lib/depends.c:1160
+#: lib/depends.c:1161
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NO\n"
 
-#: lib/depends.c:1181
+#: lib/depends.c:1182
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1239
+#: lib/depends.c:1240
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1306
+#: lib/depends.c:1307
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
@@ -2512,8 +2551,8 @@ msgid "removed db file        %s\n"
 msgstr "удалён файл базы данных %s\n"
 
 #: lib/db1.c:421
-#, c-format
-msgid "bad db file %s"
+#, fuzzy, c-format
+msgid "bad db file %s\n"
 msgstr "неверный файл базы данных %s"
 
 #: lib/db1.c:426
@@ -2523,8 +2562,8 @@ msgstr "открывется файл %s базы данных в режиме 0x%x\n"
 
 #. XXX check errno validity
 #: lib/db1.c:449
-#, c-format
-msgid "cannot get %s lock on database"
+#, fuzzy, c-format
+msgid "cannot get %s lock on database\n"
 msgstr "невозможно получить блокировку %s базы данных"
 
 #: lib/db1.c:450 lib/db3.c:1120
@@ -2636,27 +2675,32 @@ msgid "(not a number)"
 msgstr "(не число)"
 
 #: lib/fs.c:69
-#, c-format
-msgid "mntctl() failed to return fugger size: %s"
+#, fuzzy, c-format
+msgid "mntctl() failed to return size: %s\n"
 msgstr "mntctl() не возвратил значение размера fugger: %s"
 
-#: lib/fs.c:104 lib/fs.c:287
-#, c-format
-msgid "failed to stat %s: %s"
+#: lib/fs.c:84
+#, fuzzy, c-format
+msgid "mntctl() failed to return mount points: %s\n"
+msgstr "mntctl() не возвратил значение размера fugger: %s"
+
+#: lib/fs.c:104 lib/fs.c:184 lib/fs.c:287
+#, fuzzy, c-format
+msgid "failed to stat %s: %s\n"
 msgstr "невозможно получить информацию о %s: %s"
 
 #: lib/fs.c:147
 msgid "getting list of mounted filesystems\n"
 msgstr "получение списка смонтированных файловых систем\n"
 
-#: lib/fs.c:152
+#: lib/fs.c:152 rpmio/url.c:452
 #, c-format
-msgid "failed to open %s: %s"
-msgstr "невозможно открыть %s: %s"
+msgid "failed to open %s: %s\n"
+msgstr "невозможно открыть %s: %s\n"
 
 #: lib/fs.c:309
-#, c-format
-msgid "file %s is on an unknown device"
+#, fuzzy, c-format
+msgid "file %s is on an unknown device\n"
 msgstr "файл %s - на неизвестном устройстве"
 
 #. This should not be allowed
@@ -2750,7 +2794,7 @@ msgstr "в конце выражения ожидался \"|\""
 msgid "(unknown type)"
 msgstr "(неизвестный тип)"
 
-#: lib/install.c:190 lib/uninstall.c:211
+#: lib/install.c:190 lib/uninstall.c:209
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "файл : %s действие: %s\n"
@@ -2769,8 +2813,8 @@ msgstr "группа %s не существует, используется root"
 #. was used up - if so, we should return a different error
 #. XXX FIXME: Fclose with libio destroys errno
 #: lib/install.c:651
-#, c-format
-msgid "unpacking of archive failed%s%s: %s"
+#, fuzzy, c-format
+msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "распаковка архива не удалась%s%s: %s"
 
 #: lib/install.c:652
@@ -2782,92 +2826,96 @@ msgid "installing a source package\n"
 msgstr "устанавливается исходный пакет\n"
 
 #: lib/install.c:721
-#, c-format
-msgid "cannot create sourcedir %s"
+#, fuzzy, c-format
+msgid "cannot create sourcedir %s\n"
 msgstr "невозможно создать sourcedir %s"
 
-#: lib/install.c:727 lib/install.c:757
-#, c-format
-msgid "cannot write to %s"
+#: lib/install.c:728 lib/install.c:759
+#, fuzzy, c-format
+msgid "cannot write to %s\n"
 msgstr "невозможно писать в %s"
 
-#: lib/install.c:731
+#: lib/install.c:732
 #, c-format
 msgid "sources in: %s\n"
 msgstr "исходники в: %s\n"
 
-#: lib/install.c:751
-#, c-format
-msgid "cannot create specdir %s"
+#: lib/install.c:752
+#, fuzzy, c-format
+msgid "cannot create specdir %s\n"
 msgstr "невозможно создать specdir %s"
 
-#: lib/install.c:761
+#: lib/install.c:763
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "файл spec в: %s\n"
 
-#: lib/install.c:793 lib/install.c:821
-msgid "source package contains no .spec file"
+#: lib/install.c:796 lib/install.c:825
+#, fuzzy
+msgid "source package contains no .spec file\n"
 msgstr "исходный пакет не содержит файла .spec"
 
-#: lib/install.c:839
+#: lib/install.c:843
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "переименовываю %s в %s\n"
 
-#: lib/install.c:841 lib/install.c:1103 lib/uninstall.c:60
-#, c-format
-msgid "rename of %s to %s failed: %s"
+#: lib/install.c:845 lib/install.c:1109 lib/uninstall.c:60
+#, fuzzy, c-format
+msgid "rename of %s to %s failed: %s\n"
 msgstr "ошибка переименования %s в %s: %s"
 
-#: lib/install.c:931
-msgid "source package expected, binary found"
+#: lib/install.c:935
+#, fuzzy
+msgid "source package expected, binary found\n"
 msgstr "обнаружен двоичный пакет вместо ожидаемого исходного"
 
-#: lib/install.c:975
+#: lib/install.c:979
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "пакет: %s-%s-%s файлов; test = %d\n"
 
-#: lib/install.c:1019
+#: lib/install.c:1023
 msgid "stopping install as we're running --test\n"
 msgstr "установка прекращается, т.к. мы исполняем --test\n"
 
-#: lib/install.c:1024
+#: lib/install.c:1028
 msgid "running preinstall script (if any)\n"
 msgstr "исполняется скрипт preinstall (если есть)\n"
 
-#: lib/install.c:1031
+#: lib/install.c:1036
 #, fuzzy
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr "%s пропускается - ошибка передачи - %s\n"
 
-#: lib/install.c:1063
+#: lib/install.c:1069
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "внимание: %s создан как %s"
 
-#: lib/install.c:1099
+#: lib/install.c:1105
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "внимание: %s сохранен как %s"
 
-#: lib/install.c:1193
+#: lib/install.c:1199
 msgid "running postinstall scripts (if any)\n"
 msgstr "выполняется скрипт postinstall (если есть)\n"
 
 #: lib/misc.c:328 lib/misc.c:333 lib/misc.c:339
-#, c-format
-msgid "error creating temporary file %s"
+#, fuzzy, c-format
+msgid "error creating temporary file %s\n"
 msgstr "ошибка создания временного файла %s"
 
 #: lib/package.c:88
-msgid "packaging version 1 is not supported by this version of RPM"
+#, fuzzy
+msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "пакеты версии 1 не поддерживаются этой версией RPM"
 
 #: lib/package.c:143
+#, fuzzy
 msgid ""
-"only packaging with major numbers <= 4 is supported by this version of RPM"
+"only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "эта версия RPM поддерживает только пакеты версии <= 4"
 
 #: lib/poptBT.c:94
@@ -3191,7 +3239,8 @@ msgid "(no state)    "
 msgstr "(сост. нет)   "
 
 #: lib/query.c:316 lib/query.c:361
-msgid "package has neither file owner or id lists"
+#, fuzzy
+msgid "package has neither file owner or id lists\n"
 msgstr "пакет не содержит списков ни хозяев файлов, ни их ID"
 
 #: lib/query.c:418
@@ -3366,219 +3415,150 @@ msgstr "OК"
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: имя ключа \"%s\" не известно, игнорируется\n"
 
-#: lib/rpmdb.c:267
-msgid ""
-"\n"
-"--> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n"
-"    Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n"
-"    and configure \"%%_dbapi 3\" (e.g. create and/or edit /etc/rpm/macros).\n"
-"\n"
-msgstr ""
-"\n"
-"--> Эта версия RPM не была собрана с поддержкой для \"%%_dbapi %d\".\n"
-"    Используя \"rpm --showrc\" проверьте значения макроса %%_dbapi и\n"
-"    определите \"%%_dbapi 3\" (т.е. создайте или поправьте "
-"/etc/rpm/macros).\n"
-"\n"
-
-#: lib/rpmdb.c:283
-#, c-format
-msgid "cannot open %s index using db%d - %s (%d)"
+#: lib/rpmdb.c:271
+#, fuzzy, c-format
+msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "невозможно открыть индекс %s используя db%d - %s (%d)"
 
-#: lib/rpmdb.c:303
-#, c-format
-msgid "cannot open %s index"
+#: lib/rpmdb.c:291
+#, fuzzy, c-format
+msgid "cannot open %s index\n"
 msgstr "невозможно открыть индекс %s"
 
-#: lib/rpmdb.c:318
-#, c-format
-msgid ""
-"\n"
-"--> The rpm database cannot be opened in db%d format.\n"
-"    If you have just upgraded the rpm package you need to convert\n"
-"    your database to db%d format by running \"rpm --rebuilddb\" as root.\n"
-"\n"
-msgstr ""
-"\n"
-"--> Невозможно открыть базу данных RPM в формате db%d.\n"
-"    Если пакет RPM был обновлен, необходимо переиндексировать базу данных\n"
-"    в формат db%d, запустив \"rpm --rebuilddb\" как root\n"
-"\n"
-
-#: lib/rpmdb.c:332
-msgid ""
-"\n"
-"--> The configured %%_dbapi was db%d, but the rpm database is db%d format.\n"
-"    Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n"
-"    and configure \"%%_dbapi %d\" (e.g. create and/or edit "
-"/etc/rpm/macros).\n"
-"\n"
-msgstr ""
-"\n"
-"--> База данных db%d указана в макросе %%_dbapi, но обнаружена база данных\n"
-"    в формате db%d. Проверьте значение макроса %%_dbapi, используя\n"
-"    \"rpm --showrc\" и укажите \"%%_dbapi %d\" (т.е. создайте и/или\n"
-"    поправьте /etc/rpm/macros).\n"
-"\n"
-
-#: lib/rpmdb.c:348
-msgid ""
-"\n"
-"--> The rpm database is in db%d format, not the suggested db%d format.\n"
-"    Please verify the setting of the macros %%_dbapi and %%_dbapi_rebuild\n"
-"    using \"rpm --showrc\", and either run \"rpm --rebuilddb\" as root\n"
-"    to convert your database from db%d to db%d format, or configure\n"
-"    \"%%_dbapi_rebuild %d\" (e.g. create and/or edit /etc/rpm/macros).\n"
-"\n"
-msgstr ""
-"\n"
-"--> Обнаружена база данных RPM в формате db%d. Рекомендуемый формат - db%d.\n"
-"    Используя \"rpm --showrc\" проверьте значения макросов\n"
-"    %%_dbapi и %%_dbapi_rebuild\n"
-", затем запустите \"rpm --rebuilddb\"\n"
-"    как root или определите \"%%_dbapi_rebuild %d\"\n"
-"    в файле /etc/rpm/macros).\n"
-"\n"
-
-#: lib/rpmdb.c:417
-#, c-format
-msgid "error(%d) getting \"%s\" records from %s index"
+#: lib/rpmdb.c:376
+#, fuzzy, c-format
+msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "ошибка(%d) получения записей \"%s\" из индекса %s"
 
-#: lib/rpmdb.c:535
-#, c-format
-msgid "error(%d) storing record %s into %s"
+#: lib/rpmdb.c:495
+#, fuzzy, c-format
+msgid "error(%d) storing record %s into %s\n"
 msgstr "ошибка(%d) записи записи %s в %s"
 
-#: lib/rpmdb.c:544
-#, c-format
-msgid "error(%d) removing record %s from %s"
+#: lib/rpmdb.c:505
+#, fuzzy, c-format
+msgid "error(%d) removing record %s from %s\n"
 msgstr "ошибка(%d) удаления записи %s из %s"
 
-#: lib/rpmdb.c:779 lib/rpmdb.c:2368
-msgid "no dbpath has been set"
+#: lib/rpmdb.c:740
+#, fuzzy
+msgid "no dbpath has been set\n"
 msgstr "параметер dbpath не установлен"
 
-#: lib/rpmdb.c:878
+#: lib/rpmdb.c:839
+#, fuzzy
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
-"database"
+"database\n"
 msgstr ""
 "найдена база данных старого формата; используйте --rebuilddb для генерации "
 "базы данных нового формата"
 
 #. error
-#: lib/rpmdb.c:1090
-#, c-format
-msgid "error(%d) counting packages"
+#: lib/rpmdb.c:1023
+#, fuzzy, c-format
+msgid "error(%d) counting packages\n"
 msgstr "ошибка(%d) при подсчёте пакетов"
 
-#: lib/rpmdb.c:1149 lib/rpmdb.c:1693
-#, c-format
-msgid "%s: cannot read header at 0x%x"
+#: lib/rpmdb.c:1079 lib/rpmdb.c:1620
+#, fuzzy, c-format
+msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: невозможно прочесть заголовок в 0x%x"
 
-#: lib/rpmdb.c:1746
-#, c-format
-msgid "removing 0 %s entries.\n"
-msgstr "удаляется 0 записей %s.\n"
-
-#: lib/rpmdb.c:1757
+#: lib/rpmdb.c:1685
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляется \"%s\" из индекса %s.\n"
 
-#: lib/rpmdb.c:1766
+#: lib/rpmdb.c:1694
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "удаляется %d записей из индекса %s.\n"
 
-#: lib/rpmdb.c:1908
-#, c-format
-msgid "error(%d) allocating new package instance"
+#: lib/rpmdb.c:1872
+#, fuzzy, c-format
+msgid "error(%d) allocating new package instance\n"
 msgstr "ошибка(%d) резервирования памяти для образа нового пакета"
 
-#: lib/rpmdb.c:1971
-#, c-format
-msgid "adding 0 %s entries.\n"
-msgstr "добавляется 0 записей %s.\n"
-
-#: lib/rpmdb.c:1987
+#: lib/rpmdb.c:1968
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "добавляется \"%s\" в индекс %s.\n"
 
-#: lib/rpmdb.c:1996
+#: lib/rpmdb.c:1972
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "добавляется %d записей в индекс %s\n"
 
-#: lib/rpmdb.c:2342
+#: lib/rpmdb.c:2344
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2393
+#: lib/rpmdb.c:2370
+msgid "no dbpath has been set"
+msgstr "параметер dbpath не установлен"
+
+#: lib/rpmdb.c:2395
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраивается база данных %s в %s\n"
 
-#: lib/rpmdb.c:2397
-#, c-format
-msgid "temporary database %s already exists"
+#: lib/rpmdb.c:2399
+#, fuzzy, c-format
+msgid "temporary database %s already exists\n"
 msgstr "временная база данных %s уже существует"
 
-#: lib/rpmdb.c:2403
+#: lib/rpmdb.c:2405
 #, c-format
 msgid "creating directory %s\n"
 msgstr "создаётся каталог %s\n"
 
-#: lib/rpmdb.c:2405
-#, c-format
-msgid "error creating directory %s: %s"
-msgstr "ошибка создания каталога %s: %s"
+#: lib/rpmdb.c:2407
+#, fuzzy, c-format
+msgid "creating directory %s: %s\n"
+msgstr "создаётся каталог %s\n"
 
-#: lib/rpmdb.c:2412
+#: lib/rpmdb.c:2414
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "открывается старая база данных через dbapi %d\n"
 
-#: lib/rpmdb.c:2423
+#: lib/rpmdb.c:2425
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "открывается новая база данных через dbapi %d\n"
 
-#: lib/rpmdb.c:2446
-#, c-format
-msgid "record number %d in database is bad -- skipping."
+#: lib/rpmdb.c:2448
+#, fuzzy, c-format
+msgid "record number %d in database is bad -- skipping.\n"
 msgstr "запись номер %d в базе данных неверна, пропускается."
 
-#: lib/rpmdb.c:2483
-#, c-format
-msgid "cannot add record originally at %d"
+#: lib/rpmdb.c:2485
+#, fuzzy, c-format
+msgid "cannot add record originally at %d\n"
 msgstr "невозможно добавить запись (первоначально в %d)"
 
-#: lib/rpmdb.c:2501
+#: lib/rpmdb.c:2503
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "перестроение базы данных не удалось, старая база данных остается на месте\n"
 
-#: lib/rpmdb.c:2509
+#: lib/rpmdb.c:2511
 msgid "failed to replace old database with new database!\n"
 msgstr "невозможно заменить старую базу данных на новую!\n"
 
-#: lib/rpmdb.c:2511
+#: lib/rpmdb.c:2513
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "файлы в %s заменяются файлами из %s для восстановления"
 
-#: lib/rpmdb.c:2521
+#: lib/rpmdb.c:2523
 #, c-format
 msgid "removing directory %s\n"
 msgstr "удаляется каталог %s\n"
 
-#: lib/rpmdb.c:2523
+#: lib/rpmdb.c:2525
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ошибка удаления каталога %s: %s\n"
@@ -3700,102 +3680,102 @@ msgid "Installing %s\n"
 msgstr "Устанавливается %s\n"
 
 #: lib/rpmlead.c:48
-#, c-format
-msgid "read failed: %s (%d)"
+#, fuzzy, c-format
+msgid "read failed: %s (%d)\n"
 msgstr "ошибка чтения: %s (%d)"
 
 #: lib/rpmrc.c:150
-#, c-format
-msgid "missing second ':' at %s:%d"
+#, fuzzy, c-format
+msgid "missing second ':' at %s:%d\n"
 msgstr "отсутствует второе ':' в %s:%d"
 
 #: lib/rpmrc.c:153
-#, c-format
-msgid "missing architecture name at %s:%d"
+#, fuzzy, c-format
+msgid "missing architecture name at %s:%d\n"
 msgstr "отсутствует название архитектуры в %s:%d"
 
 #: lib/rpmrc.c:305
-#, c-format
-msgid "Incomplete data line at %s:%d"
+#, fuzzy, c-format
+msgid "Incomplete data line at %s:%d\n"
 msgstr "Неполная строка данных в %s:%d"
 
-#: lib/rpmrc.c:309
-#, c-format
-msgid "Too many args in data line at %s:%d"
+#: lib/rpmrc.c:310
+#, fuzzy, c-format
+msgid "Too many args in data line at %s:%d\n"
 msgstr "Слишком много аргументов в строке данных в %s:%d"
 
-#: lib/rpmrc.c:316
-#, c-format
-msgid "Bad arch/os number: %s (%s:%d)"
+#: lib/rpmrc.c:317
+#, fuzzy, c-format
+msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Неверный номер arch/os: %s (%s:%d)"
 
-#: lib/rpmrc.c:351
-#, c-format
-msgid "Incomplete default line at %s:%d"
+#: lib/rpmrc.c:352
+#, fuzzy, c-format
+msgid "Incomplete default line at %s:%d\n"
 msgstr "Неполная строка по умолчанию в %s:%d"
 
-#: lib/rpmrc.c:356
-#, c-format
-msgid "Too many args in default line at %s:%d"
+#: lib/rpmrc.c:357
+#, fuzzy, c-format
+msgid "Too many args in default line at %s:%d\n"
 msgstr "Слишком много аргументов в строке по умолчанию в %s:%d"
 
-#: lib/rpmrc.c:546
-#, c-format
-msgid "Cannot expand %s"
+#: lib/rpmrc.c:547
+#, fuzzy, c-format
+msgid "Cannot expand %s\n"
 msgstr "Невозможно раскрыть %s"
 
-#: lib/rpmrc.c:551
-#, c-format
-msgid "Cannot read %s, HOME is too large."
+#: lib/rpmrc.c:552
+#, fuzzy, c-format
+msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Невозможно прочитать %s, значение HOME слишком велико."
 
-#: lib/rpmrc.c:568
-#, c-format
-msgid "Unable to open %s for reading: %s."
+#: lib/rpmrc.c:569
+#, fuzzy, c-format
+msgid "Unable to open %s for reading: %s.\n"
 msgstr "Невозможно открыть %s для чтения: %s."
 
 #. XXX Feof(fd)
-#: lib/rpmrc.c:613
-#, c-format
-msgid "Failed to read %s: %s."
+#: lib/rpmrc.c:614
+#, fuzzy, c-format
+msgid "Failed to read %s: %s.\n"
 msgstr "Невозможно прочесть %s: %s."
 
-#: lib/rpmrc.c:650
-#, c-format
-msgid "missing ':' (found 0x%02x) at %s:%d"
+#: lib/rpmrc.c:651
+#, fuzzy, c-format
+msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "отсутствует ':' (найден 0x%02x) в %s:%d"
 
-#: lib/rpmrc.c:667 lib/rpmrc.c:741
-#, c-format
-msgid "missing argument for %s at %s:%d"
+#: lib/rpmrc.c:668 lib/rpmrc.c:742
+#, fuzzy, c-format
+msgid "missing argument for %s at %s:%d\n"
 msgstr "отсутствует аргумент для %s в %s:%d"
 
-#: lib/rpmrc.c:684 lib/rpmrc.c:706
-#, c-format
-msgid "%s expansion failed at %s:%d \"%s\""
+#: lib/rpmrc.c:685 lib/rpmrc.c:707
+#, fuzzy, c-format
+msgid "%s expansion failed at %s:%d \"%s\"\n"
 msgstr "ошибка раскрытия %s на %s:%d \"%s\""
 
-#: lib/rpmrc.c:693
-#, c-format
-msgid "cannot open %s at %s:%d: %s"
+#: lib/rpmrc.c:694
+#, fuzzy, c-format
+msgid "cannot open %s at %s:%d: %s\n"
 msgstr "невозможно открыть %s в %s:%d %s"
 
-#: lib/rpmrc.c:733
-#, c-format
-msgid "missing architecture for %s at %s:%d"
+#: lib/rpmrc.c:734
+#, fuzzy, c-format
+msgid "missing architecture for %s at %s:%d\n"
 msgstr "отсутствует архитектура для %s в %s:%d"
 
-#: lib/rpmrc.c:800
-#, c-format
-msgid "bad option '%s' at %s:%d"
+#: lib/rpmrc.c:801
+#, fuzzy, c-format
+msgid "bad option '%s' at %s:%d\n"
 msgstr "неверная опция '%s' в %s:%d"
 
-#: lib/rpmrc.c:1197
+#: lib/rpmrc.c:1198
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Неизвестная система: %s\n"
 
-#: lib/rpmrc.c:1198
+#: lib/rpmrc.c:1199
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Свяжитесь с rpm-list@redhat.com\n"
 
@@ -3822,7 +3802,8 @@ msgid "Old PGP signature\n"
 msgstr "Старая подпись PGP\n"
 
 #: lib/signature.c:162
-msgid "Old (internal-only) signature!  How did you get that!?"
+#, fuzzy
+msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr ""
 "Старая (только для внутреннего использования) подпись! Где вы ЭТО взяли!?"
 
@@ -3837,18 +3818,20 @@ msgid "Signature pad : %d\n"
 msgstr "Заполнитель подписи : %d\n"
 
 #: lib/signature.c:274
-#, c-format
-msgid "Couldn't exec pgp (%s)"
+#, fuzzy, c-format
+msgid "Couldn't exec pgp (%s)\n"
 msgstr "Нвозможно запустить pgp (%s)"
 
 #: lib/signature.c:285
-msgid "pgp failed"
+#, fuzzy
+msgid "pgp failed\n"
 msgstr "ошибка pgp"
 
 #. PGP failed to write signature
 #. Just in case
 #: lib/signature.c:292
-msgid "pgp failed to write signature"
+#, fuzzy
+msgid "pgp failed to write signature\n"
 msgstr "ошибка pgp при записи подписи"
 
 #: lib/signature.c:297
@@ -3857,7 +3840,8 @@ msgid "PGP sig size: %d\n"
 msgstr "Размер подписи PGP: %d\n"
 
 #: lib/signature.c:308 lib/signature.c:385
-msgid "unable to read the signature"
+#, fuzzy
+msgid "unable to read the signature\n"
 msgstr "невозможно прочесть подпись"
 
 #: lib/signature.c:313
@@ -3866,17 +3850,20 @@ msgid "Got %d bytes of PGP sig\n"
 msgstr "Получено %d байт подписи PGP\n"
 
 #: lib/signature.c:351 lib/signature.c:694
-msgid "Couldn't exec gpg"
+#, fuzzy
+msgid "Couldn't exec gpg\n"
 msgstr "Невозможно запустить gpg"
 
 #: lib/signature.c:362
-msgid "gpg failed"
+#, fuzzy
+msgid "gpg failed\n"
 msgstr "ошибка gpg"
 
 #. GPG failed to write signature
 #. Just in case
 #: lib/signature.c:369
-msgid "gpg failed to write signature"
+#, fuzzy
+msgid "gpg failed to write signature\n"
 msgstr "ошибка gpg при записи подписи"
 
 #: lib/signature.c:374
@@ -3898,33 +3885,39 @@ msgid "Generating signature using GPG.\n"
 msgstr "Генерируется подпись GPG.\n"
 
 #: lib/signature.c:502 lib/signature.c:563
-msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
+#, fuzzy
+msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 "Нвозможно запустить pgp. Используйте --nopgp чтобы пропустить проверку PGP "
 "подписей."
 
 #: lib/signature.c:635
-msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
+#, fuzzy
+msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 "Невозможно запустить gpg. Используйте --nogpg чтобы пропустить проверку GPG "
 "подписей."
 
 #: lib/signature.c:723
-msgid "Couldn't exec pgp"
+#, fuzzy
+msgid "Couldn't exec pgp\n"
 msgstr "Невозможно запустить pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
 #: lib/signature.c:727 lib/signature.c:780
-msgid "Invalid %%_signature spec in macro file"
-msgstr "Неверная спецификация %%_signature в макрофайле"
+#, fuzzy
+msgid "Invalid %%_signature spec in macro file\n"
+msgstr "Неверная спецификация %%_signature в макрофайле.\n"
 
 #: lib/signature.c:760
-msgid "You must set \"%%_gpg_name\" in your macro file"
+#, fuzzy
+msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_gpg_name\" в вашем макрофайле"
 
 #: lib/signature.c:772
-msgid "You must set \"%%_pgp_name\" in your macro file"
+#, fuzzy
+msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_pgp_name\" в вашем макрофайле"
 
 #: lib/transaction.c:466
@@ -3972,18 +3965,18 @@ msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущен из-за флага missingok\n"
 
 #: lib/uninstall.c:74
-#, c-format
-msgid "cannot remove %s - directory not empty"
+#, fuzzy, c-format
+msgid "cannot remove %s - directory not empty\n"
 msgstr "невозможно удалить %s - каталог не пуст"
 
 #: lib/uninstall.c:78
-#, c-format
-msgid "rmdir of %s failed: %s"
+#, fuzzy, c-format
+msgid "rmdir of %s failed: %s\n"
 msgstr "ошибка удаления каталога %s: %s"
 
 #: lib/uninstall.c:88
-#, c-format
-msgid "removal of %s failed: %s"
+#, fuzzy, c-format
+msgid "removal of %s failed: %s\n"
 msgstr "ошибка удаления %s: %s"
 
 #: lib/uninstall.c:151
@@ -3991,13 +3984,13 @@ msgstr "ошибка удаления %s: %s"
 msgid "will remove files test = %d\n"
 msgstr "файлы будут удалены; test = %d\n"
 
-#: lib/uninstall.c:235
+#: lib/uninstall.c:233
 msgid "running postuninstall script (if any)\n"
 msgstr "выполняется скрипт postuninstall (если есть)\n"
 
-#: lib/uninstall.c:448
+#: lib/uninstall.c:446
 #, fuzzy, c-format
-msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d"
+msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "ошибка выполнения скрипта %s-%s-%s, код возврата %d"
 
 #: lib/verify.c:59
@@ -4010,11 +4003,13 @@ msgid "do not execute %verifyscript (if any)"
 msgstr "не исполнять никаких этапов"
 
 #: lib/verify.c:241
-msgid "package lacks both user name and id lists (this should never happen)"
+#, fuzzy
+msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr "в пакете нет ни имен пользователей, ни их ID (так не должно быть)"
 
 #: lib/verify.c:259
-msgid "package lacks both group name and id lists (this should never happen)"
+#, fuzzy
+msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr "в пакете нет ни имен групп, ни их ID (так не должно быть)"
 
 #: lib/verify.c:321
@@ -4102,70 +4097,80 @@ msgstr "%3d>%*s(пусто)"
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(пусто)\n"
 
-#: rpmio/macro.c:555
-msgid "Macro %%%s has unterminated body"
+#: rpmio/macro.c:556
+#, fuzzy
+msgid "Macro %%%s has unterminated body\n"
 msgstr "Незакрытый макрос %%%s"
 
-#: rpmio/macro.c:581
-msgid "Macro %%%s has illegal name (%%define)"
+#: rpmio/macro.c:583
+#, fuzzy
+msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "Недопустимое имя (%%define) макроса %%%s"
 
-#: rpmio/macro.c:587
-msgid "Macro %%%s has unterminated opts"
+#: rpmio/macro.c:590
+#, fuzzy
+msgid "Macro %%%s has unterminated opts\n"
 msgstr "Незакрытые опции в макросе %%%s"
 
-#: rpmio/macro.c:592
-msgid "Macro %%%s has empty body"
+#: rpmio/macro.c:595
+#, fuzzy
+msgid "Macro %%%s has empty body\n"
 msgstr "Макрос %%%s пуст"
 
-#: rpmio/macro.c:597
-msgid "Macro %%%s failed to expand"
+#: rpmio/macro.c:600
+#, fuzzy
+msgid "Macro %%%s failed to expand\n"
 msgstr "Невозможно раскрыть макрос %%%s"
 
-#: rpmio/macro.c:628
-msgid "Macro %%%s has illegal name (%%undefine)"
+#: rpmio/macro.c:632
+#, fuzzy
+msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "Недопустимое имя (%%undefine) макроса %%%s"
 
-#: rpmio/macro.c:721
-msgid "Macro %%%s (%s) was not used below level %d"
+#: rpmio/macro.c:726
+#, fuzzy
+msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Макрос %%%s (%s) не был использован ниже уровня %d"
 
-#: rpmio/macro.c:814
-#, c-format
-msgid "Unknown option %c in %s(%s)"
+#: rpmio/macro.c:819
+#, fuzzy, c-format
+msgid "Unknown option %c in %s(%s)\n"
 msgstr "Неизвестная опция %c в %s(%s)"
 
-#: rpmio/macro.c:993
-#, c-format
-msgid "Recursion depth(%d) greater than max(%d)"
+#: rpmio/macro.c:999
+#, fuzzy, c-format
+msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Глубина рекурсии(%d) больше допустимой(%d)"
 
-#: rpmio/macro.c:1059 rpmio/macro.c:1075
-#, c-format
-msgid "Unterminated %c: %s"
+#: rpmio/macro.c:1066 rpmio/macro.c:1083
+#, fuzzy, c-format
+msgid "Unterminated %c: %s\n"
 msgstr "Незакрытая %c: %s"
 
-#: rpmio/macro.c:1115
-msgid "A %% is followed by an unparseable macro"
+#: rpmio/macro.c:1124
+#, fuzzy
+msgid "A %% is followed by an unparseable macro\n"
 msgstr "непонятный макрос после %%"
 
-#: rpmio/macro.c:1241
-msgid "Macro %%%.*s not found, skipping"
+#: rpmio/macro.c:1251
+#, fuzzy
+msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Макрос %%%.*s не найден, пропускаю"
 
-#: rpmio/macro.c:1312
-msgid "Target buffer overflow"
+#: rpmio/macro.c:1322
+#, fuzzy
+msgid "Target buffer overflow\n"
 msgstr "Переполнение целевого буфера"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1492 rpmio/macro.c:1498
-#, c-format
-msgid "File %s: %s"
+#: rpmio/macro.c:1502 rpmio/macro.c:1508
+#, fuzzy, c-format
+msgid "File %s: %s\n"
 msgstr "Файл %s: %s"
 
-#: rpmio/macro.c:1501
+#: rpmio/macro.c:1511
 #, fuzzy, c-format
-msgid "File %s is smaller than %u bytes"
+msgid "File %s is smaller than %u bytes\n"
 msgstr "Длина файла %s меньше чем %d байт"
 
 #: rpmio/rpmlog.c:24
@@ -4222,16 +4227,89 @@ msgstr "ошибка: %s порт должен быть числом\n"
 msgid "url port must be a number\n"
 msgstr "url порт должен быть числом\n"
 
-#: rpmio/url.c:452
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "невозможно открыть %s: %s\n"
-
 #. XXX Fstrerror
 #: rpmio/url.c:469
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
+
+#~ msgid "Bad owner/group: %s"
+#~ msgstr "Неверная пара владелец/группа: %s"
+
+#~ msgid "failed to open %s: %s"
+#~ msgstr "невозможно открыть %s: %s"
+
+#~ msgid ""
+#~ "\n"
+#~ "--> This version of rpm was not compiled with support for \"%%_dbapi %d\".\n"
+#~ "    Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n"
+#~ "    and configure \"%%_dbapi 3\" (e.g. create and/or edit /etc/rpm/macros).\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "--> Эта версия RPM не была собрана с поддержкой для \"%%_dbapi %d\".\n"
+#~ "    Используя \"rpm --showrc\" проверьте значения макроса %%_dbapi и\n"
+#~ "    определите \"%%_dbapi 3\" (т.е. создайте или поправьте "
+#~ "/etc/rpm/macros).\n"
+#~ "\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "--> The rpm database cannot be opened in db%d format.\n"
+#~ "    If you have just upgraded the rpm package you need to convert\n"
+#~ "    your database to db%d format by running \"rpm --rebuilddb\" as root.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "--> Невозможно открыть базу данных RPM в формате db%d.\n"
+#~ "    Если пакет RPM был обновлен, необходимо переиндексировать базу данных\n"
+#~ "    в формат db%d, запустив \"rpm --rebuilddb\" как root\n"
+#~ "\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "--> The configured %%_dbapi was db%d, but the rpm database is db%d format.\n"
+#~ "    Please verify the setting of the macro %%_dbapi using \"rpm --showrc\"\n"
+#~ "    and configure \"%%_dbapi %d\" (e.g. create and/or edit "
+#~ "/etc/rpm/macros).\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "--> База данных db%d указана в макросе %%_dbapi, но обнаружена база данных\n"
+#~ "    в формате db%d. Проверьте значение макроса %%_dbapi, используя\n"
+#~ "    \"rpm --showrc\" и укажите \"%%_dbapi %d\" (т.е. создайте и/или\n"
+#~ "    поправьте /etc/rpm/macros).\n"
+#~ "\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "--> The rpm database is in db%d format, not the suggested db%d format.\n"
+#~ "    Please verify the setting of the macros %%_dbapi and %%_dbapi_rebuild\n"
+#~ "    using \"rpm --showrc\", and either run \"rpm --rebuilddb\" as root\n"
+#~ "    to convert your database from db%d to db%d format, or configure\n"
+#~ "    \"%%_dbapi_rebuild %d\" (e.g. create and/or edit /etc/rpm/macros).\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "--> Обнаружена база данных RPM в формате db%d. Рекомендуемый формат - db%d.\n"
+#~ "    Используя \"rpm --showrc\" проверьте значения макросов\n"
+#~ "    %%_dbapi и %%_dbapi_rebuild\n"
+#~ ", затем запустите \"rpm --rebuilddb\"\n"
+#~ "    как root или определите \"%%_dbapi_rebuild %d\"\n"
+#~ "    в файле /etc/rpm/macros).\n"
+#~ "\n"
+
+#~ msgid "removing 0 %s entries.\n"
+#~ msgstr "удаляется 0 записей %s.\n"
+
+#~ msgid "adding 0 %s entries.\n"
+#~ msgstr "добавляется 0 записей %s.\n"
+
+#~ msgid "error creating directory %s: %s"
+#~ msgstr "ошибка создания каталога %s: %s"
+
+#~ msgid "Invalid %%_signature spec in macro file"
+#~ msgstr "Неверная спецификация %%_signature в макрофайле"
 
 #~ msgid " performing %s"
 #~ msgstr " исполняется %s"

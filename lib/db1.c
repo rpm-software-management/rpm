@@ -418,7 +418,7 @@ static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     urlfn = rpmGenPath(rpmdb->db_root, rpmdb->db_home, base);
     (void) urlPath(urlfn, &fn);
     if (!(fn && *fn != '\0')) {
-	rpmError(RPMERR_DBOPEN, _("bad db file %s"), urlfn);
+	rpmError(RPMERR_DBOPEN, _("bad db file %s\n"), urlfn);
 	rc = EFAULT;
 	goto exit;
     }
@@ -446,7 +446,7 @@ static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
 	    if (Fcntl(pkgs, F_SETLK, (void *) &l)) {
 		rc = errno;	/* XXX check errno validity */
-		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"),
+		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database\n"),
 		    ((dbi->dbi_mode & O_RDWR) ? _("exclusive") : _("shared")));
 		goto exit;
 	    }

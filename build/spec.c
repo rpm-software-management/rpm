@@ -225,13 +225,13 @@ int parseNoSource(Spec spec, const char *field, int tag)
 	if (*fe) fe++;
 
 	if (parseNum(f, &num)) {
-	    rpmError(RPMERR_BADSPEC, _("line %d: Bad number: %s"),
+	    rpmError(RPMERR_BADSPEC, _("line %d: Bad number: %s\n"),
 		     spec->lineNum, f);
 	    return RPMERR_BADSPEC;
 	}
 
 	if (! (p = findSource(spec, num, flag))) {
-	    rpmError(RPMERR_BADSPEC, _("line %d: Bad no%s number: %d"),
+	    rpmError(RPMERR_BADSPEC, _("line %d: Bad no%s number: %d\n"),
 		     spec->lineNum, name, num);
 	    return RPMERR_BADSPEC;
 	}

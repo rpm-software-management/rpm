@@ -290,6 +290,8 @@ typedef enum rpmTag_e {
     RPMTAG_PAYLOADCOMPRESSOR	= 1125,
     RPMTAG_PAYLOADFLAGS		= 1126,
     RPMTAG_MULTILIBS		= 1127,
+    RPMTAG_INSTALLTID		= 1128,
+    RPMTAG_REMOVETID		= 1129,
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
 
@@ -675,7 +677,7 @@ Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l)
  * Return database iterator.
  * @param rpmdb		rpm database
  * @param rpmtag	rpm tag
- * @param keyp		key data (NULL for sequential acess)
+ * @param keyp		key data (NULL for sequential access)
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		NULL on failure
  */
@@ -684,20 +686,22 @@ Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l)
 			const void * key, size_t keylen);
 
 /** \ingroup rpmdb
+ * Add package header to rpm database and indices.
+ * @param rpmdb		rpm database
+ * @param iid		install transaction id (or -1 to skip)
+ * @param h		header
+ * @return		0 on success
+ */
+int rpmdbAdd(rpmdb rpmdb, int iid, Header h);	/*@modifies h @*/
+
+/** \ingroup rpmdb
  * Remove package header from rpm database and indices.
  * @param rpmdb		rpm database
+ * @param rid		remove transaction id (or -1 to skip)
  * @param offset	location in Packages dbi
  * @return		0 on success
  */
-int rpmdbRemove(rpmdb db, unsigned int offset);
-
-/** \ingroup rpmdb
- * Add package header to rpm database and indices.
- * @param rpmdb		rpm database
- * @param rpmtag	rpm tag
- * @return		0 on success
- */
-int rpmdbAdd(rpmdb rpmdb, Header dbentry);
+int rpmdbRemove(rpmdb db, int rid, unsigned int offset);
 
 /** \ingroup rpmdb
  * Rebuild database indices from package headers.
@@ -757,19 +761,19 @@ void printDepFlags(FILE *fp, const char *version, int flags)
 /**
  */
 struct rpmDependencyConflict {
-    char * byName;
-    char * byVersion;
-    char * byRelease;
+    const char * byName;
+    const char * byVersion;
+    const char * byRelease;
     Header byHeader;
     /* these needs fields are misnamed -- they are used for the package
        which isn't needed as well */
-    char * needsName;
-    char * needsVersion;
+    const char * needsName;
+    const char * needsVersion;
     int needsFlags;
 /*@observer@*/ /*@null@*/ const void * suggestedPackage; /* NULL if none */
     enum {
-	RPMDEP_SENSE_REQUIRES,
-	RPMDEP_SENSE_CONFLICTS
+	RPMDEP_SENSE_REQUIRES,		/*!< requirement not satisfied. */
+	RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
     } sense;
 } ;
 
@@ -853,7 +857,7 @@ typedef /*@abstract@*/ struct rpmTransactionSet_s * rpmTransactionSet;
  * Create an empty transaction set.
  * @param rpmdb		rpm database (may be NULL if database is not accessed)
  * @param rootdir	path to top of install tree
- * @return		rpm transaction set
+ * @return		transaction set
  */
 /*@only@*/ rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb,
 	const char * rootdir);
@@ -866,7 +870,7 @@ typedef /*@abstract@*/ struct rpmTransactionSet_s * rpmTransactionSet;
  * used, otherwise fd is only needed (and only opened) for actual package 
  * installation.
  *
- * @param rpmdep	rpm transaction set
+ * @param ts		transaction set
  * @param h		package header
  * @param fd		package file handle
  * @param key		package private data
@@ -874,35 +878,35 @@ typedef /*@abstract@*/ struct rpmTransactionSet_s * rpmTransactionSet;
  * @param relocs	package file relocations
  * @return		0 on success, 1 on I/O error, 2 needs capabilities
  */
-int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
+int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 		/*@owned@*/ const void * key, int update,
 		rpmRelocation * relocs);
 
 /** \ingroup rpmtrans
  * Add package to universe of possible packages to install in transaction set.
- * @param rpmdep	rpm transaction set
+ * @param ts		transaction set
  * @param h		header
  * @param key		package private data
  */
-void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h,
+void rpmtransAvailablePackage(rpmTransactionSet ts, Header h,
 		/*@owned@*/ const void * key);
 
 /** \ingroup rpmtrans
  * Add package to be removed to unordered transaction set.
- * @param rpmdep	rpm transaction set
+ * @param ts		transaction set
  * @param dboffset	rpm database instance
  */
-void rpmtransRemovePackage(rpmTransactionSet rpmdep, int dboffset);
+void rpmtransRemovePackage(rpmTransactionSet ts, int dboffset);
 
 /** \ingroup rpmtrans
  * Destroy transaction set.
- * @param rpmdep	rpm transaction set
+ * @param ts		transaction set
  */
-void rpmtransFree( /*@only@*/ rpmTransactionSet rpmdep);
+void rpmtransFree( /*@only@*/ rpmTransactionSet ts);
 
 /** \ingroup rpmtrans
  * Save file handle to be used as stderr when running package scripts.
- * @param ts		rpm transaction set
+ * @param ts		transaction set
  * @param fd		file handle
  */
 void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
@@ -911,7 +915,7 @@ void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
 /** \ingroup rpmtrans
  * Retrieve keys from ordered transaction set.
  * @todo Removed packages have no keys, returned as interleaved NULL pointers.
- * @param ts		rpm transaction set
+ * @param ts		transaction set
  * @retval ep		address of returned element array pointer (or NULL)
  * @retval nep		address of no. of returned elements (or NULL)
  * @return		0 always
@@ -922,12 +926,12 @@ int rpmtransGetKeys(const rpmTransactionSet ts,
 
 /** \ingroup rpmtrans
  * Check that all dependencies can be resolved.
- * @param rpmdep	rpm transaction set
+ * @param ts		transaction set
  * @retval conflicts
  * @retval numConflicts
  * @return		0 on success
  */
-int rpmdepCheck(rpmTransactionSet rpmdep,
+int rpmdepCheck(rpmTransactionSet ts,
 	/*@exposed@*/ /*@out@*/ struct rpmDependencyConflict ** conflicts,
 	/*@exposed@*/ /*@out@*/ int * numConflicts);
 
@@ -947,10 +951,10 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
  * The operation would be easier if we could sort the addedPackages array in the
  * transaction set, but we store indexes into the array in various places.
  *
- * @param rpmdep	transaction set
+ * @param ts		transaction set
  * @return		0 if packages are successfully ordered, 1 otherwise
  */
-int rpmdepOrder(rpmTransactionSet rpmdep)	/*@modifies rpmdep @*/;
+int rpmdepOrder(rpmTransactionSet ts)	/*@modifies ts @*/;
 
 /** \ingroup rpmtrans
  * Destroy dependency conflicts storage.
@@ -1033,7 +1037,7 @@ typedef enum rpmprobFilterFlags_e {
 
 /** \ingroup rpmtrans
  * Process all packages in transaction set.
- * @param ts		rpm transaction set
+ * @param ts		transaction set
  * @param notify	progress callback
  * @param notifyData	progress callback private data
  * @param okProbs	previously known problems (or NULL)

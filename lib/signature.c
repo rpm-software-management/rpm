@@ -159,7 +159,7 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
       case RPMSIG_MD5:
       case RPMSIG_MD5_PGP:
 	rpmError(RPMERR_BADSIGTYPE,
-	      _("Old (internal-only) signature!  How did you get that!?"));
+	      _("Old (internal-only) signature!  How did you get that!?\n"));
 	break;
       case RPMSIG_HEADERSIG:
 	/* This is a new style signature */
@@ -271,7 +271,7 @@ static int makePGPSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
 		break;
 	    }
 	}
-	rpmError(RPMERR_EXEC, _("Couldn't exec pgp (%s)"), path);
+	rpmError(RPMERR_EXEC, _("Couldn't exec pgp (%s)\n"), path);
 	_exit(RPMERR_EXEC);
     }
 
@@ -282,14 +282,14 @@ static int makePGPSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
 
     (void)waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_SIGGEN, _("pgp failed"));
+	rpmError(RPMERR_SIGGEN, _("pgp failed\n"));
 	return 1;
     }
 
     if (stat(sigfile, &st)) {
 	/* PGP failed to write signature */
 	unlink(sigfile);  /* Just in case */
-	rpmError(RPMERR_SIGGEN, _("pgp failed to write signature"));
+	rpmError(RPMERR_SIGGEN, _("pgp failed to write signature\n"));
 	return 1;
     }
 
@@ -305,7 +305,7 @@ static int makePGPSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
 	Fclose(fd);
 	if (rc != *size) {
 	    free(*sig);
-	    rpmError(RPMERR_SIGGEN, _("unable to read the signature"));
+	    rpmError(RPMERR_SIGGEN, _("unable to read the signature\n"));
 	    return 1;
 	}
     }
@@ -348,7 +348,7 @@ static int makeGPGSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
 	       "--batch", "--no-verbose", "--no-armor", "--passphrase-fd", "3",
 	       "-u", name, "-sbo", sigfile, file,
 	       NULL);
-	rpmError(RPMERR_EXEC, _("Couldn't exec gpg"));
+	rpmError(RPMERR_EXEC, _("Couldn't exec gpg\n"));
 	_exit(RPMERR_EXEC);
     }
 
@@ -359,14 +359,14 @@ static int makeGPGSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
 
     (void)waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_SIGGEN, _("gpg failed"));
+	rpmError(RPMERR_SIGGEN, _("gpg failed\n"));
 	return 1;
     }
 
     if (stat(sigfile, &st)) {
 	/* GPG failed to write signature */
 	unlink(sigfile);  /* Just in case */
-	rpmError(RPMERR_SIGGEN, _("gpg failed to write signature"));
+	rpmError(RPMERR_SIGGEN, _("gpg failed to write signature\n"));
 	return 1;
     }
 
@@ -382,7 +382,7 @@ static int makeGPGSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
 	Fclose(fd);
 	if (rc != *size) {
 	    free(*sig);
-	    rpmError(RPMERR_SIGGEN, _("unable to read the signature"));
+	    rpmError(RPMERR_SIGGEN, _("unable to read the signature\n"));
 	    return 1;
 	}
     }
@@ -499,7 +499,7 @@ verifyPGPSignature(const char *datafile, const void * sig, int count, char *resu
     if ((path = rpmDetectPGPVersion(&pgpVer)) == NULL) {
 	errno = ENOENT;
 	rpmError(RPMERR_EXEC, 
-		 _("Could not run pgp.  Use --nopgp to skip PGP checks."));
+		 _("Could not run pgp.  Use --nopgp to skip PGP checks.\n"));
 	_exit(RPMERR_EXEC);
     }
 
@@ -560,7 +560,7 @@ verifyPGPSignature(const char *datafile, const void * sig, int count, char *resu
 	}
 
 	rpmError(RPMERR_EXEC, 
-		 _("Could not run pgp.  Use --nopgp to skip PGP checks."));
+		 _("Could not run pgp.  Use --nopgp to skip PGP checks.\n"));
 	_exit(RPMERR_EXEC);
     }
 
@@ -632,7 +632,7 @@ verifyGPGSignature(const char *datafile, const void * sig, int count, char *resu
 	       "--verify", sigfile, datafile,
 	       NULL);
 	rpmError(RPMERR_EXEC, 
-		 _("Could not run gpg.  Use --nogpg to skip GPG checks."));
+		 _("Could not run gpg.  Use --nogpg to skip GPG checks.\n"));
 	_exit(RPMERR_EXEC);
     }
 
@@ -691,7 +691,7 @@ static int checkPassPhrase(const char *passPhrase, const int sigTag)
 	           "--batch", "--no-verbose", "--passphrase-fd", "3",
 	           "-u", name, "-so", "-",
 	           NULL);
-	    rpmError(RPMERR_EXEC, _("Couldn't exec gpg"));
+	    rpmError(RPMERR_EXEC, _("Couldn't exec gpg\n"));
 	    _exit(RPMERR_EXEC);
 	}   /*@notreached@*/ break;
 	case RPMSIGTAG_PGP5:	/* XXX legacy */
@@ -720,11 +720,11 @@ static int checkPassPhrase(const char *passPhrase, const int sigTag)
 		    break;
 		}
 	    }
-	    rpmError(RPMERR_EXEC, _("Couldn't exec pgp"));
+	    rpmError(RPMERR_EXEC, _("Couldn't exec pgp\n"));
 	    _exit(RPMERR_EXEC);
 	}   /*@notreached@*/ break;
 	default: /* This case should have been screened out long ago. */
-	    rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file"));
+	    rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file\n"));
 	    _exit(RPMERR_SIGGEN);
 	    /*@notreached@*/ break;
 	}
@@ -757,7 +757,7 @@ char *rpmGetPassPhrase(const char *prompt, const int sigTag)
       }
 	if (!aok) {
 	    rpmError(RPMERR_SIGGEN,
-		_("You must set \"%%_gpg_name\" in your macro file"));
+		_("You must set \"%%_gpg_name\" in your macro file\n"));
 	    return NULL;
 	}
 	break;
@@ -769,7 +769,7 @@ char *rpmGetPassPhrase(const char *prompt, const int sigTag)
       }
 	if (!aok) {
 	    rpmError(RPMERR_SIGGEN,
-		_("You must set \"%%_pgp_name\" in your macro file"));
+		_("You must set \"%%_pgp_name\" in your macro file\n"));
 	    return NULL;
 	}
 	break;
@@ -777,7 +777,7 @@ char *rpmGetPassPhrase(const char *prompt, const int sigTag)
 	/* Currently the calling function (rpm.c:main) is checking this and
 	 * doing a better job.  This section should never be accessed.
 	 */
-	rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file"));
+	rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file\n"));
 	return NULL;
 	/*@notreached@*/ break;
     }

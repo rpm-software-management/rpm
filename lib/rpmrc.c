@@ -147,10 +147,10 @@ static int machCompatCacheAdd(char * name, const char * fn, int linenum,
     chptr = name;
     while (*chptr && *chptr != ':') chptr++;
     if (!*chptr) {
-	rpmError(RPMERR_RPMRC, _("missing second ':' at %s:%d"), fn, linenum);
+	rpmError(RPMERR_RPMRC, _("missing second ':' at %s:%d\n"), fn, linenum);
 	return 1;
     } else if (chptr == name) {
-	rpmError(RPMERR_RPMRC, _("missing architecture name at %s:%d"), fn,
+	rpmError(RPMERR_RPMRC, _("missing architecture name at %s:%d\n"), fn,
 			     linenum);
 	return 1;
     }
@@ -302,18 +302,19 @@ static int addCanon(struct canonEntry ** table, int * tableLen, char * line,
     tshort_name = strtok(NULL, " \t");
     s = strtok(NULL, " \t");
     if (! (tname && tshort_name && s)) {
-	rpmError(RPMERR_RPMRC, _("Incomplete data line at %s:%d"), fn, lineNum);
+	rpmError(RPMERR_RPMRC, _("Incomplete data line at %s:%d\n"),
+		fn, lineNum);
 	return RPMERR_RPMRC;
     }
     if (strtok(NULL, " \t")) {
-	rpmError(RPMERR_RPMRC, _("Too many args in data line at %s:%d"),
+	rpmError(RPMERR_RPMRC, _("Too many args in data line at %s:%d\n"),
 	      fn, lineNum);
 	return RPMERR_RPMRC;
     }
 
     tnum = strtoul(s, &s1, 10);
     if ((*s1) || (s1 == s) || (tnum == ULONG_MAX)) {
-	rpmError(RPMERR_RPMRC, _("Bad arch/os number: %s (%s:%d)"), s,
+	rpmError(RPMERR_RPMRC, _("Bad arch/os number: %s (%s:%d)\n"), s,
 	      fn, lineNum);
 	return(RPMERR_RPMRC);
     }
@@ -348,12 +349,12 @@ static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
     t->name = strtok(line, ": \t");
     t->defName = strtok(NULL, " \t");
     if (! (t->name && t->defName)) {
-	rpmError(RPMERR_RPMRC, _("Incomplete default line at %s:%d"),
+	rpmError(RPMERR_RPMRC, _("Incomplete default line at %s:%d\n"),
 		 fn, lineNum);
 	return RPMERR_RPMRC;
     }
     if (strtok(NULL, " \t")) {
-	rpmError(RPMERR_RPMRC, _("Too many args in default line at %s:%d"),
+	rpmError(RPMERR_RPMRC, _("Too many args in default line at %s:%d\n"),
 	      fn, lineNum);
 	return RPMERR_RPMRC;
     }
@@ -543,12 +544,12 @@ int rpmReadRC(const char * rcfiles)
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
 		if (rcfiles == defrcfiles && myrcfiles != r)
 		    continue;
-		rpmError(RPMERR_RPMRC, _("Cannot expand %s"), r);
+		rpmError(RPMERR_RPMRC, _("Cannot expand %s\n"), r);
 		rc = 1;
 		break;
 	    }
 	    if (strlen(home) > (sizeof(fn) - strlen(r))) {
-		rpmError(RPMERR_RPMRC, _("Cannot read %s, HOME is too large."),
+		rpmError(RPMERR_RPMRC, _("Cannot read %s, HOME is too large.\n"),
 				r);
 		rc = 1;
 		break;
@@ -565,7 +566,7 @@ int rpmReadRC(const char * rcfiles)
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
 	    if (rcfiles == defrcfiles && myrcfiles != r)
 		continue;
-	    rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."),
+	    rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s.\n"),
 		 fn, Fstrerror(fd));
 	    rc = 1;
 	    break;
@@ -610,7 +611,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
     next[0] = '\0';
     rc = Fread(next, sizeof(*next), nb, fd);
     if (Ferror(fd) || (size > 0 && rc != nb)) {	/* XXX Feof(fd) */
-	rpmError(RPMERR_RPMRC, _("Failed to read %s: %s."), urlfn,
+	rpmError(RPMERR_RPMRC, _("Failed to read %s: %s.\n"), urlfn,
 		 Fstrerror(fd));
 	rc = 1;
     } else
@@ -647,7 +648,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 	}
 
 	if (*se != ':') {
-	    rpmError(RPMERR_RPMRC, _("missing ':' (found 0x%02x) at %s:%d"),
+	    rpmError(RPMERR_RPMRC, _("missing ':' (found 0x%02x) at %s:%d\n"),
 		     (0xff & *se), urlfn, linenum);
 	    return 1;
 	}
@@ -664,7 +665,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 
 	    arch = val = fn = NULL;
 	    if (*se == '\0') {
-		rpmError(RPMERR_RPMRC, _("missing argument for %s at %s:%d"),
+		rpmError(RPMERR_RPMRC, _("missing argument for %s at %s:%d\n"),
 		      option->name, urlfn, linenum);
 		return 1;
 	    }
@@ -681,7 +682,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 
 		fn = rpmGetPath(s, NULL);
 		if (fn == NULL || *fn == '\0') {
-		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\""),
+		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\"\n"),
 			option->name, urlfn, linenum, s);
 		    if (fn) free((void *)fn);
 		    return 1;
@@ -690,7 +691,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 
 		fdinc = Fopen(fn, "r.fpio");
 		if (fdinc == NULL || Ferror(fdinc)) {
-		    rpmError(RPMERR_RPMRC, _("cannot open %s at %s:%d: %s"),
+		    rpmError(RPMERR_RPMRC, _("cannot open %s at %s:%d: %s\n"),
 			fn, urlfn, linenum, Fstrerror(fdinc));
 		    rc = 1;
 		} else {
@@ -703,7 +704,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 	    case RPMVAR_MACROFILES:
 		fn = rpmGetPath(se, NULL);
 		if (fn == NULL || *fn == '\0') {
-		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\""),
+		    rpmError(RPMERR_RPMRC, _("%s expansion failed at %s:%d \"%s\"\n"),
 			option->name, urlfn, linenum, fn);
 		    if (fn) free((void *)fn);
 		    return 1;
@@ -730,7 +731,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		while (*se && !isspace(*se)) se++;
 		if (*se == '\0') {
 		    rpmError(RPMERR_RPMRC,
-				_("missing architecture for %s at %s:%d"),
+				_("missing architecture for %s at %s:%d\n"),
 			  	option->name, urlfn, linenum);
 		    return 1;
 		}
@@ -738,7 +739,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 		while (*se && isspace(*se)) se++;
 		if (*se == '\0') {
 		    rpmError(RPMERR_RPMRC,
-				_("missing argument for %s at %s:%d"),
+				_("missing argument for %s at %s:%d\n"),
 			  	option->name, urlfn, linenum);
 		    return 1;
 		}
@@ -797,7 +798,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 	    }
 
 	    if (!gotit) {
-		rpmError(RPMERR_RPMRC, _("bad option '%s' at %s:%d"),
+		rpmError(RPMERR_RPMRC, _("bad option '%s' at %s:%d\n"),
 			    s, urlfn, linenum);
 	    }
 	}
