@@ -6,7 +6,7 @@ use DynaLoader;
 use Data::Dumper;
 
 use vars qw/$VERSION/;
-$VERSION = '0.10';
+$VERSION = '0.43';
 use vars qw/@ISA/;
 @ISA = qw/DynaLoader/;
 
@@ -56,18 +56,12 @@ sub open_package {
   open FH, "<$file"
     or die "Can't open $file: $!";
 
-  my ($hdr, $sigs) = RPM2::_read_package_info(*FH);
+  my $hdr = RPM2::_read_package_info(*FH);
   close FH;
 
   $hdr = RPM2::Header->_new_raw($hdr, 1);
-  $sigs = RPM2::Header->_new_raw($sigs, 1);
 
-  if (wantarray) {
-    return ($hdr, $sigs);
-  }
-  else {
-    return $hdr;
-  }
+  return $hdr;
 }
 
 sub close_rpm_db {
@@ -164,6 +158,9 @@ sub DESTROY {
 
 package RPM2::Header;
 
+use overload '<=>' => \&op_spaceship,
+             'bool' => \&op_bool;
+
 sub _new_raw {
   my $class = shift;
   my $c_header = shift;
@@ -186,6 +183,31 @@ sub tag {
     unless exists $tagmap{$tag};
 
   return RPM2::_header_tag($self->{header}, $tagmap{$tag});
+}
+
+sub compare {
+  my $h1 = shift;
+  my $h2 = shift;
+
+  return RPM2::_header_compare($h1->{header}, $h2->{header});
+}
+
+sub op_bool {
+  my $self = shift;
+
+  return defined($self) && defined($self->{header});
+}
+
+sub op_spaceship {
+  my $h1 = shift;
+  my $h2 = shift;
+
+  my $ret = $h1->compare($h2);
+
+  # rpmvercmp can return any neg/pos number; normalize here to -1, 0, 1
+  return  1 if $ret > 0;
+  return -1 if $ret < 0;
+  return  0;
 }
 
 sub is_source_package {

@@ -1,5 +1,7 @@
 #include "rpmcli.h"
-#include "rpmlib.h"
+#include "rpmts.h"
+#include "header.h"
+#include "rpmdb.h"
 #include "misc.h"
 
 #include "EXTERN.h"
@@ -87,31 +89,40 @@ void
 _read_package_info(fp)
 	FILE *fp
     PREINIT:
+	rpmts ts;
 	Header ret;
 	Header sigs;
 	rpmRC rc;
 	FD_t fd;
     PPCODE:
+	ts = rpmtsCreate();
+
+        /* XXX Determine type of signature verification when reading
+	vsflags |= _RPMTS_VSF_NOLEGACY;
+	vsflags |= _RPMTS_VSF_NODIGESTS;
+	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+	xx = rpmtsSetVerifySigFlags(ts, vsflags);
+        */ 
+
 	fd = fdDup(fileno(fp));
-	rc = rpmReadPackageInfo(fd, &sigs, &ret);
+	rc = rpmReadPackageFile(ts, fd, "filename or other identifier", &ret);
+
 	Fclose(fd);
 
 	if (rc == RPMRC_OK) {
-	    SV *h_sv, *s_sv;
+	    SV *h_sv;
 
-	    EXTEND(SP, 2);
+	    EXTEND(SP, 1);
 
 	    h_sv = sv_newmortal();
-	    s_sv = sv_newmortal();
             sv_setref_pv(h_sv, "Header", (void *)ret);
-            sv_setref_pv(s_sv, "Header", (void *)sigs);
 
 	    PUSHs(h_sv);
-	    PUSHs(s_sv);
 	}
 	else {
 	    croak("error reading package");
 	}
+	ts = rpmtsFree(ts);
 
 void
 _free_header(h)
@@ -174,6 +185,15 @@ _header_tag(h, tag)
 		}
 	}
 	headerFreeData(ret, type);
+
+int
+_header_compare(h1, h2)
+	Header h1
+	Header h2
+    CODE:
+	RETVAL = rpmVersionCompare(h1, h2);
+    OUTPUT:
+        RETVAL
 
 int
 _header_is_source(h)

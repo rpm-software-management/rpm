@@ -8,7 +8,7 @@
 
 use Test;
 use strict;
-BEGIN { plan tests => 22 };
+BEGIN { plan tests => 26 };
 use RPM2;
 ok(1); # If we made it this far, we're ok.
 
@@ -84,6 +84,12 @@ $pkg = RPM2->open_package("test-rpm-1.0-1.src.rpm");
 ok($pkg);
 ok($pkg->name eq 'test-rpm');
 ok($pkg->is_source_package);
+
+my $pkg2 = RPM2->open_package("test-rpm-1.0-1.noarch.rpm");
+ok($pkg->compare($pkg2) == 0);
+ok(($pkg <=> $pkg2) == 0);
+ok(!($pkg < $pkg2));
+ok(!($pkg > $pkg2));
 
 # another rpm, handily provided by the rpmdb-redhat package
 my $other_rpm_dir = "/usr/lib/rpmdb/i386-redhat-linux/redhat";

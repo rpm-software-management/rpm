@@ -2,16 +2,16 @@ use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 
-my $libs = "-lrpm -lrpmdb -lrpmio -lpopt";
+my $libs = "-lrpm-4.1 -lrpmdb-4.1 -lrpmio-4.1 -lpopt";
 
 # try to be smart about which shared libs we should load.
 # use the .la file.  probably linux only.
 
-if (open FH, "</usr/lib/librpm.la") {
+if (0 and open FH, "</usr/lib/librpm.la") {
   my ($line, @rest) = grep { /^dependency_libs=/ } <FH>;
   if ($line and not @rest) {
     if ($line =~ /^dependency_libs='(.*)'$/) {
-      $libs = "-lrpm $1";
+      $libs = "-lrpm-4.1 $1";
     }
   }
 }
