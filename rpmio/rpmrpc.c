@@ -87,7 +87,6 @@ static int ftpUnlink(const char * path)
 }
 
 /* =============================================================== */
-/* XXX rebuilddb.c: analogues to mkdir(2)/rmdir(2). */
 int Mkdir (const char * path, mode_t mode)
 {
     const char * lpath;
@@ -97,8 +96,11 @@ int Mkdir (const char * path, mode_t mode)
     case URL_IS_FTP:
 	return ftpMkdir(path, mode);
 	/*@notreached@*/ break;
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+	if (!noNeon)
+	    return davMkdir(path, mode);
+	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -121,8 +123,13 @@ int Chdir (const char * path)
     case URL_IS_FTP:
 	return ftpChdir(path);
 	/*@notreached@*/ break;
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+#ifdef	NOTYET
+	if (!noNeon)
+	    return davChdir(path);
+#endif
+	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -145,8 +152,11 @@ int Rmdir (const char * path)
     case URL_IS_FTP:
 	return ftpRmdir(path);
 	/*@notreached@*/ break;
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+	if (!noNeon)
+	    return davRmdir(path);
+	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -173,8 +183,11 @@ int Rename (const char * oldpath, const char * newpath)
 
     oldut = urlPath(oldpath, &oe);
     switch (oldut) {
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+	if (!noNeon)
+	    return davRename(oldpath, newpath);
+	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
     case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
@@ -265,8 +278,11 @@ int Unlink(const char * path) {
     case URL_IS_FTP:
 	return ftpUnlink(path);
 	/*@notreached@*/ break;
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+	if (!noNeon)
+	    return davUnlink(path);
+	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -1268,7 +1284,7 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
     case URL_IS_HTTP:
 	if (!noNeon)
 	    return davStat(path, st);
-	/*@fallthrough@*/	/* WRONG WRONG WRONG */
+	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -1297,7 +1313,7 @@ fprintf(stderr, "*** Lstat(%s,%p)\n", path, st);
     case URL_IS_HTTP:
 	if (!noNeon)
 	    return davLstat(path, st);
-	/*@fallthrough@*/	/* WRONG WRONG WRONG */
+	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -1320,8 +1336,13 @@ int Readlink(const char * path, char * buf, size_t bufsiz)
     case URL_IS_FTP:
 	return ftpReadlink(path, buf, bufsiz);
 	/*@notreached@*/ break;
-    case URL_IS_HTTPS:		/* XXX WRONG WRONG WRONG */
-    case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTPS:
+    case URL_IS_HTTP:
+#ifdef	NOTYET
+	if (!noNeon)
+	    return davReadlink(path, buf, bufsiz);
+#endif
+	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -1472,7 +1493,7 @@ fprintf(stderr, "*** Opendir(%s)\n", path);
     case URL_IS_HTTP:
 	if (!noNeon)
 	    return davOpendir(path);
-	/*@fallthrough@*/	/* WRONG WRONG WRONG */
+	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/

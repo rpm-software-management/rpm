@@ -80,7 +80,6 @@ DIR * avOpendir(const char * path)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/;
 
-/*@-globuse@*/
 /**
  * Send a http request.
  * @param ctrl		
@@ -108,7 +107,7 @@ int davResp(urlinfo u, FD_t ctrl, /*@out@*/ /*@null@*/ char *const * str)
 /*@null@*/
 FD_t davOpen(const char * url, /*@unused@*/ int flags,
 		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
-        /*@globals h_errno, internalState @*/
+        /*@globals internalState @*/
         /*@modifies *uret, internalState @*/;
 
 /**
@@ -138,7 +137,30 @@ int davSeek(void * cookie, _libio_pos_t pos, int whence)
 int davClose(void * cookie)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies cookie, fileSystem, internalState @*/;
-/*@=globuse@*/
+
+/**
+ */
+int davMkdir(const char * path, mode_t mode)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
+ */
+int davRmdir(const char * path)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
+ */
+int davRename(const char * oldpath, const char * newpath)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
+ */
+int davUnlink(const char * path)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
 
 /**
  * Close a DAV collection.

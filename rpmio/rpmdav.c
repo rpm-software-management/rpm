@@ -1042,7 +1042,9 @@ ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
     FD_t fd = cookie;
     ssize_t rc;
 
+#if 0
 assert(count >= 128);	/* HACK: see ne_request.h comment */
+#endif
     rc = ne_read_response_block(fd->req, buf, count);
 
 if (_dav_debug < 0) {
@@ -1096,52 +1098,115 @@ fprintf(stderr, "*** davClose(%p) rc %d\n", fd, rc);
 /*@=mustmod@*/
 
 /* =============================================================== */
-#ifdef	NOTYET
-static int davMkdir(const char * path, /*@unused@*/ mode_t mode)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
+int davMkdir(const char * path, mode_t mode)
 {
+    urlinfo u = NULL;
+    const char * src = NULL;
     int rc;
-    if ((rc = davCmd("MKD", path, NULL)) != 0)
-	return rc;
-#if NOTYET
-    {	char buf[20];
-	sprintf(buf, " 0%o", mode);
-	(void) davCmd("SITE CHMOD", path, buf);
-    }
-#endif
+
+    rc = davInit(path, &u);
+assert(u != NULL);
+    if (rc)
+	goto exit;
+
+    (void) urlPath(path, &src);
+
+    rc = ne_mkcol(u->sess, path);
+
+    if (rc) rc = -1;	/* XXX HACK: errno impedance match */
+
+    /* XXX HACK: verify getrestype(remote) == resr_collection */
+
+exit:
+if (_dav_debug)
+fprintf(stderr, "*** davMkdir(%s,0%o) rc %d\n", path, mode, rc);
     return rc;
 }
 
+int davRmdir(const char * path)
+{
+    urlinfo u = NULL;
+    const char * src = NULL;
+    int rc;
+
+    rc = davInit(path, &u);
+assert(u != NULL);
+    if (rc)
+	goto exit;
+
+    (void) urlPath(path, &src);
+
+    /* XXX HACK: only getrestype(remote) == resr_collection */
+
+    rc = ne_delete(u->sess, path);
+
+    if (rc) rc = -1;	/* XXX HACK: errno impedance match */
+
+exit:
+if (_dav_debug)
+fprintf(stderr, "*** davRmdir(%s) rc %d\n", path, rc);
+    return rc;
+}
+
+int davRename(const char * oldpath, const char * newpath)
+{
+    urlinfo u = NULL;
+    const char * src = NULL;
+    const char * dst = NULL;
+    int overwrite = 1;		/* HACK: set this correctly. */
+    int rc;
+
+    rc = davInit(oldpath, &u);
+assert(u != NULL);
+    if (rc)
+	goto exit;
+
+    (void) urlPath(oldpath, &src);
+    (void) urlPath(newpath, &dst);
+
+    /* XXX HACK: only getrestype(remote) != resr_collection */
+
+    rc = ne_move(u->sess, overwrite, src, dst);
+
+    if (rc) rc = -1;	/* XXX HACK: errno impedance match */
+
+exit:
+if (_dav_debug)
+fprintf(stderr, "*** davRename(%s,%s) rc %d\n", oldpath, newpath, rc);
+    return rc;
+}
+
+int davUnlink(const char * path)
+{
+    urlinfo u = NULL;
+    const char * src = NULL;
+    int rc;
+
+    rc = davInit(path, &u);
+assert(u != NULL);
+    if (rc)
+	goto exit;
+
+    (void) urlPath(path, &src);
+
+    /* XXX HACK: only getrestype(remote) != resr_collection */
+
+    rc = ne_delete(u->sess, src);
+
+    if (rc) rc = -1;	/* XXX HACK: errno impedance match */
+
+exit:
+if (_dav_debug)
+fprintf(stderr, "*** davUnlink(%s) rc %d\n", path, rc);
+    return rc;
+}
+
+#ifdef	NOTYET
 static int davChdir(const char * path)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
-    return davCmd("CWD", path, NULL);
-}
-
-static int davRmdir(const char * path)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
-{
-    return davCmd("RMD", path, NULL);
-}
-
-static int davRename(const char * oldpath, const char * newpath)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
-{
-    int rc;
-    if ((rc = davCmd("RNFR", oldpath, NULL)) != 0)
-	return rc;
-    return davCmd("RNTO", newpath, NULL);
-}
-
-static int davUnlink(const char * path)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
-{
-    return davCmd("DELE", path, NULL);
+    return davCommand("CWD", path, NULL);
 }
 #endif	/* NOTYET */
 
