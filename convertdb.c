@@ -36,7 +36,7 @@ int convertDB(void) {
     int_16 * fileRDevsList;
     char * fileStatesList;
     char * preun, * postun;
-    int i;
+    int i, j;
     
     if (oldrpmdbOpen(&olddb)) {
 	error(RPMERR_OLDDBMISSING, "");
@@ -128,27 +128,29 @@ int convertDB(void) {
 	    fileRDevsList = malloc(sizeof(int_16) * package.fileCount);
 	    fileStatesList = malloc(sizeof(char) * package.fileCount);
 
-	    for (i = 0; i < package.fileCount; i++) {
-		fileList[i] = package.files[i].path;
-		fileMD5List[i] = package.files[i].md5;
-		fileSizeList[i] = package.files[i].size;
-		fileUIDList[i] = package.files[i].uid;
-		fileGIDList[i] = package.files[i].gid;
-		fileMtimesList[i] = package.files[i].mtime;
-		fileModesList[i] = package.files[i].mode;
-		fileRDevsList[i] = package.files[i].rdev;
-		fileStatesList[i] = package.files[i].state;
+	    /* reverse the file list while we're at it */
+	    j = package.fileCount - 1;
+	    for (i = 0; i < package.fileCount; i++, j--) {
+		fileList[j] = package.files[i].path;
+		fileMD5List[j] = package.files[i].md5;
+		fileSizeList[j] = package.files[i].size;
+		fileUIDList[j] = package.files[i].uid;
+		fileGIDList[j] = package.files[i].gid;
+		fileMtimesList[j] = package.files[i].mtime;
+		fileModesList[j] = package.files[i].mode;
+		fileRDevsList[j] = package.files[i].rdev;
+		fileStatesList[j] = package.files[i].state;
 
 		if (package.files[i].linkto)
-		    fileLinktoList[i] = package.files[i].linkto;
+		    fileLinktoList[j] = package.files[i].linkto;
 		else
-		    fileLinktoList[i] = "";
+		    fileLinktoList[j] = "";
 		
-		fileFlagsList[i] = 0;
+		fileFlagsList[j] = 0;
 		if (package.files[i].isdoc) 
-		    fileFlagsList[i] |= RPMFILE_DOC;
+		    fileFlagsList[j] |= RPMFILE_DOC;
 		if (package.files[i].isconf)
-		    fileFlagsList[i] |= RPMFILE_CONFIG;
+		    fileFlagsList[j] |= RPMFILE_CONFIG;
 	    }
 
 	    addEntry(dbentry, RPMTAG_FILENAMES, STRING_ARRAY_TYPE, fileList, 
