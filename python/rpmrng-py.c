@@ -230,7 +230,11 @@ rng_Prime(rngObject * s, PyObject * args)
 	mpbzero(b);
 	if (trials <= 2)
 	    trials = mpptrials(pbits);
+#if 1
 	mpprnd_w(b, rc, pbits, trials, (const mpnumber*) 0, temp);
+#else
+	mpprndsafe_w(b, rc, pbits, trials, temp);
+#endif
 	mpnset(&z->n, b->size, b->modl);
 
 if (_rng_debug)
