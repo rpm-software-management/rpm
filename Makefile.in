@@ -27,8 +27,6 @@ MANDIR=$(prefix)/man/man8
 LIBDIR=$(libdir)
 INCDIR=$(prefix)/include/rpm
 ETCDIR=$(ROOT)/etc
-NLSDIR=$(prefix)/lib/locale
-NLSPACKAGE=rpm
 
 # -----------------------------------------------------------------------
 
@@ -112,7 +110,7 @@ install: all
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/lib-rpmrc $(installprefix)/$(LIBDIR)/rpmrc
 	(cd lib; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 	for d in $(INSTSUBDIRS); do \
-		(cd $$d; $(MAKE) NLSDIR=$(installprefix)/$(NLSDIR) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install) ;\
+		(cd $$d; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install) ;\
 	done
 
 .PHONY:		clean
