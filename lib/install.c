@@ -1028,6 +1028,7 @@ enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
 	dbAttr = dbMd5;
 	newAttr = newMd5;
     } else /* dbWhat == LINK */ {
+	memset(buffer, 0, sizeof(buffer));
 	i = readlink(filespec, buffer, sizeof(buffer) - 1);
 	if (i == -1) {
 	    /* assume the file has been removed, don't freak */
