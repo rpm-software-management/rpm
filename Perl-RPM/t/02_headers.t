@@ -5,7 +5,7 @@ use RPM::Database;
 
 chomp($rpmstr = qx{rpm -q rpm});
 
-print "1..16\n";
+print "1..17\n";
 
 tie %DB, "RPM::Database" or die "$RPM::err";
 
@@ -17,7 +17,7 @@ print "ok 1\n";
 # Does this one match what rpm thinks?
 print "not "
     unless ($rpmstr eq join('-',
-                            map { $hdr->{$_}->[0] } qw(name version release)));
+                            map { $hdr->{$_} } qw(name version release)));
 print "ok 2\n";
 
 # This is a much more involved test sequence
@@ -39,10 +39,10 @@ print "ok 4\n";
 for $idx (0 .. $#rpmlines)
 {
     if ($rpmlines[$idx] ne
-	sprintf("%s%s", $dirs->[$indices->[$idx]], $files->[$idx]))
+        sprintf("%s%s", $dirs->[$indices->[$idx]], $files->[$idx]))
     {
-	print "not ";
-	last;
+        print "not ";
+        last;
     }
 }
 print "ok 5\n";
@@ -56,8 +56,8 @@ for $idx (0 .. $#rpmlines)
 {
     if ($rpmlines[$idx] ne $rpmlines->[$idx])
     {
-	print "not ";
-	last;
+        print "not ";
+        last;
     }
 }
 print "ok 7\n";
@@ -100,5 +100,18 @@ use RPM::Constants ':rpmerr';
 print "not " unless ((! RPM::Header->scalar_tag(q{not_a_tag})) and
                      ($RPM::err == RPMERR_BADARG));
 print "ok 16\n";
+
+# Check all the keys to see that the scalar_tag flag matches the return value
+$hdr = $DB{rpm};
+while (($k, $v) = each %$hdr)
+{
+    unless ((ref($v) and (! $hdr->scalar_tag($k))) or
+            ((! ref($v)) and $hdr->scalar_tag($k)))
+    {
+        print "not ";
+        last;
+    }
+}
+print "ok 17\n";
 
 exit 0;
