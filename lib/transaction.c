@@ -274,17 +274,23 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 		    if (FP_EQUAL(fi->fps[i], 
 				 recs[otherPkgNum]->fps[otherFileNum])) 
 			break;
-		if ((otherFileNum > 0) && 
+		if ((otherFileNum >= 0) && 
 		    (recs[otherPkgNum]->actions[otherFileNum] == CREATE))
 		    break;
 		otherPkgNum--;
 	    }
 
 	    if (otherPkgNum < 0) {
+		struct stat sb;
+
 		/* If it isn't in the database, install it. 
 		   FIXME: check for config files here for .rpmorig purporses! */
-		if (fi->actions[i] == UNKNOWN)
-		    fi->actions[i] = CREATE;
+		if (fi->actions[i] == UNKNOWN) {
+		    if (lstat(fi->fl[i], &sb))
+			fi->actions[i] = CREATE;
+		    else
+			fi->actions[i] = BACKUP;
+		}
 	    } else {
 		if (filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
 			    recs[otherPkgNum]->fmd5s[otherFileNum],
@@ -345,7 +351,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	    ourrc++;
 	headerFree(hdrs[pkgNum]);
 
-	if (alp->h != flList[numPackages].h) {
+	if (alp->h == flList[numPackages].h) {
 	    free(fi->actions);
 	    numPackages++;
 	}
