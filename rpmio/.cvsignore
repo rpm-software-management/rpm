@@ -7,5 +7,10 @@ Makefile.in
 *.la
 *.lo
 tdigest
+tdir
+tficl
+tfts
+tglob
 tkey
+tring
 trpmio

@@ -1006,6 +1006,23 @@ exit:
 }
 /*@=mods@*/
 
+static const char * statstr(struct stat * st)
+{
+    static char buf[1024];
+sprintf(buf, "*** dev %x ino %x mode %0o nlink %d uid %d gid %d rdev %x size %x\n",
+(unsigned)st->st_dev,
+(unsigned)st->st_ino,
+st->st_mode,
+st->st_nlink,
+st->st_uid,
+st->st_gid,
+(unsigned)st->st_rdev,
+(unsigned)st->st_size);
+    return buf;
+}
+
+static int ftp_st_ino = 0x1000;
+
 static int ftpStat(const char * path, /*@out@*/ struct stat *st)
 	/*@globals fileSystem @*/
 	/*@modifies *st, fileSystem @*/
@@ -1013,7 +1030,10 @@ static int ftpStat(const char * path, /*@out@*/ struct stat *st)
     int rc;
     rc = ftpNLST(path, DO_FTP_STAT, st, NULL, 0);
 if (_ftp_debug)
-fprintf(stderr, "*** ftpStat(%s) rc %d\n", path, rc);
+fprintf(stderr, "*** ftpStat(%s) rc %d\n%s", path, rc, statstr(st));
+    /* XXX fts(3) needs/uses st_ino, make something up for now. */
+    if (st->st_ino == 0)
+	st->st_ino = ftp_st_ino++;
     return rc;
 }
 
@@ -1024,7 +1044,11 @@ static int ftpLstat(const char * path, /*@out@*/ struct stat *st)
     int rc;
     rc = ftpNLST(path, DO_FTP_LSTAT, st, NULL, 0);
 if (_ftp_debug)
-fprintf(stderr, "*** ftpLstat(%s) rc %d\n", path, rc);
+fprintf(stderr, "*** ftpLstat(%s) rc %d\n%s\n", path, rc, statstr(st));
+st->st_ino = ftp_st_ino++;
+    /* XXX fts(3) needs/uses st_ino, make something up for now. */
+    if (st->st_ino == 0)
+	st->st_ino = ftp_st_ino++;
     return rc;
 }
 
