@@ -158,8 +158,10 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 	}
     }
 
-    free(secFileMd5List);
-    free(secFileList);
+    if (secOffset) {
+	free(secFileMd5List);
+	free(secFileList);
+    }
     free(sharedList);
 
     return rc;
