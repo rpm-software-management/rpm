@@ -1484,6 +1484,8 @@ rpmVerifySignature(const rpmts ts, char * result)
 	res = verifySHA1Signature(ts, result, dig->hdrsha1ctx);
 	break;
     case RPMSIGTAG_RSA:
+	res = verifyRSASignature(ts, result, dig->hdrmd5ctx);
+	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	res = verifyRSASignature(ts, result, dig->md5ctx);

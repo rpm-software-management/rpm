@@ -661,6 +661,9 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, header_magic, sizeof(header_magic));
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
+	    dig->hdrmd5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+	    (void) rpmDigestUpdate(dig->hdrmd5ctx, header_magic, sizeof(header_magic));
+	    (void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
 	    uh = headerFreeData(uh, uht);
 	}
 	h = headerFree(h);

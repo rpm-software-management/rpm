@@ -463,9 +463,18 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 		siglen = blen + 1;
 	    }
 	    /*@switchbreak@*/ break;
-#ifdef	NOTYET
 	case RPMTAG_RSAHEADER:
-#endif
+	    if (vsflags & RPMVSF_NORSAHEADER)
+		/*@switchbreak@*/ break;
+	    if (entry->info.type != RPM_BIN_TYPE) {
+		(void) snprintf(buf, sizeof(buf), _("hdr RSA: BAD, not binary\n"));
+		goto exit;
+	    }
+/*@-boundswrite@*/
+	    *info = entry->info;	/* structure assignment */
+/*@=boundswrite@*/
+	    siglen = info->count;
+	    /*@switchbreak@*/ break;
 	case RPMTAG_DSAHEADER:
 	    if (vsflags & RPMVSF_NODSAHEADER)
 		/*@switchbreak@*/ break;
@@ -529,7 +538,6 @@ verifyinfo_exit:
     (void) rpmtsSetSig(ts, info->tag, info->type, sig, info->count);
 
     switch (info->tag) {
-#ifdef	NOTYET
     case RPMTAG_RSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
@@ -570,7 +578,6 @@ verifyinfo_exit:
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 
 	break;
-#endif
     case RPMTAG_DSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
@@ -922,10 +929,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
 	    break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	dig->md5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(dig->md5ctx, header_magic, sizeof(header_magic));
+	dig->hdrmd5ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
+	(void) rpmDigestUpdate(dig->hdrmd5ctx, header_magic, sizeof(header_magic));
 	dig->nbytes += sizeof(header_magic);
-	(void) rpmDigestUpdate(dig->md5ctx, uh, uhc);
+	(void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
 	dig->nbytes += uhc;
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */

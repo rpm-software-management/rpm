@@ -63,16 +63,16 @@ int rpmWriteSignature(FD_t fd, Header h)
 
 /** \ingroup signature
  * Generate signature(s) from a header+payload file, save in signature header.
- * @param sig		signature header
+ * @param sigh		signature header
  * @param file		header+payload file name
  * @param sigTag	type of signature(s) to add
  * @param passPhrase	private key pass phrase
  * @return		0 on success, -1 on failure
  */
-int rpmAddSignature(Header sig, const char * file,
+int rpmAddSignature(Header sigh, const char * file,
 		    int_32 sigTag, /*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
-	/*@modifies sig, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@modifies sigh, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /******************************************************************/
 
