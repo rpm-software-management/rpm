@@ -628,7 +628,8 @@ static int parseForSimple(Spec spec, Package pkg, char *buf,
 		fl->currentFlags |= vfa->flag;
 	    break;
 	}
-	if (vfa)
+	/* if we got an attribute, continue with next token */
+	if (vfa->attribute != NULL)
 	    continue;
     }
 
