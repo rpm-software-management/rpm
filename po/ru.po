@@ -1144,9 +1144,7 @@ msgstr "не могу открыть файл %s\n"
 #: rpmqv.c:284
 #, c-format
 msgid "Usage: %s {--help}\n"
-msgstr ""
-"Использование:\n"
-"       rpm {--help}"
+msgstr "Использование: %s {--help}\n"
 
 #: rpmqv.c:288
 #, c-format
@@ -1163,29 +1161,29 @@ msgstr "       rpm {--rebuilddb} [--rcfile <файл>] [--dbpath <каталог>]"
 msgid ""
 "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 msgstr ""
-"       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
+"       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 
 #: rpmqv.c:313
 #, c-format
 msgid "       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]\n"
 msgstr ""
-"       rpm {--erase -e} [--root <каталог>] [--noscripts] [--rcfile <файл>]"
+"       %s {--erase -e} [--root <каталог>] [--noscripts] [--rcfile <файл>]\n"
 
 #: rpmqv.c:327
 #, c-format
 msgid "       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"
 msgstr ""
-"       rpm {--verify -V -y} [-afpg] [--root <каталог>] [--rcfile <файл>]"
+"       %s {--verify -V -y} [-afpg] [--root <каталог>] [--rcfile <файл>]\n"
 
 #: rpmqv.c:331
 #, c-format
 msgid "       %s {--setperms} [-afpg] [target]\n"
-msgstr "       rpm {--setperms} [-afpg] [цель]"
+msgstr "      %s {--setperms} [-afpg] [цель]\n"
 
 #: rpmqv.c:332
 #, c-format
 msgid "       %s {--setugids} [-afpg] [target]\n"
-msgstr "       rpm {--setugids} [-afpg] [цель]"
+msgstr "      %s {--setugids} [-afpg] [цель]\n"
 
 #: rpmqv.c:336
 #, c-format
@@ -1193,7 +1191,8 @@ msgid ""
 "       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
 "<file>]\n"
 msgstr ""
-"       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <файл>]"
+"       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
+"<файл>]\n"
 
 #: rpmqv.c:338
 msgid "                        [--target=platform1[,platform2...]]"
@@ -1201,52 +1200,52 @@ msgstr "                        [--target=platform1[,platform2...]]"
 
 #: rpmqv.c:339
 msgid "                        [--rmsource] [--rmspec] specfile"
-msgstr "                        [--rmsource] specfile"
+msgstr "                        [--rmsource] [--rmspec] specfile"
 
 #: rpmqv.c:340
 #, c-format
 msgid "       %s {--rmsource} [--rcfile <file>] [-v] specfile\n"
-msgstr "       rpm {--rmsource} [--rcfile <файл>] [-v] specfile"
+msgstr "       %s {--rmsource} [--rcfile <файл>] [-v] specfile\n"
 
 #: rpmqv.c:341
 #, c-format
 msgid ""
 "       %s {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"
 msgstr ""
-"       rpm {--rebuild} [--rcfile <файл>] [-v] source1.rpm ... sourceN.rpm"
+"       %s {--rebuild} [--rcfile <файл>] [-v] source1.rpm ... sourceN.rpm\n"
 
 #: rpmqv.c:342
 #, c-format
 msgid ""
 "       %s {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm\n"
 msgstr ""
-"       rpm {--recompile} [--rcfile <файл>] [-v] source1.rpm ... sourceN.rpm"
+"       %s {--recompile} [--rcfile <файл>] [-v] source1.rpm ... sourceN.rpm\n"
 
 #: rpmqv.c:343
 #, c-format
 msgid "       %s {--freshen -F} file1.rpm ... fileN.rpm\n"
-msgstr "                        file1.rpm ... fileN.rpm"
+msgstr "       %s {--freshen -F} file1.rpm ... fileN.rpm\n"
 
 #: rpmqv.c:347
 #, c-format
 msgid "       %s {--resign} [--rcfile <file>] package1 package2 ... packageN\n"
-msgstr "       rpm {--resign} [--rcfile <файл>] пакет1 пакет2 ... пакетN"
+msgstr "       %s {--resign} [--rcfile <файл>] пакет1 пакет2 ... пакетN\n"
 
 #: rpmqv.c:348
 #, c-format
 msgid "       %s {--addsign} [--rcfile <file>] package1 package2 ... packageN"
-msgstr "       rpm {--addsign} [--rcfile <файл>] пакет1 пакет2 ... пакетN"
+msgstr "       %s {--addsign} [--rcfile <файл>] пакет1 пакет2 ... пакетN"
 
 #: rpmqv.c:349
 #, c-format
 msgid ""
 "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]\n"
 msgstr ""
-"       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <файл>]"
+"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <файл>]\n"
 
 #: rpmqv.c:393
 msgid "  All modes support the following options:"
-msgstr "   все режимы поддерживают следующие аргументы:"
+msgstr "   Все режимы поддерживают следующие аргументы:"
 
 #: rpmqv.c:394
 msgid "   --define '<name> <body>'"
@@ -3903,7 +3902,7 @@ msgstr "url port должен быть числом\n"
 #: rpmio/url.c:445
 #, c-format
 msgid "failed to open %s: %s\n"
-msgstr "не могу открыть %s: %s"
+msgstr "не могу открыть %s: %s\n"
 
 #. XXX Fstrerror
 #: rpmio/url.c:462
