@@ -70,12 +70,12 @@ void * _null_callback(
 		}
 		break;
 
+#ifdef RPM2_RPM41
 	case RPMCALLBACK_INST_START:
 		rpmcliHashesCurrent = 0;
 		if (h == NULL || !(flags & INSTALL_LABEL))
 			break;
 		break;
-
 	case RPMCALLBACK_TRANS_PROGRESS:
 	case RPMCALLBACK_INST_PROGRESS:
 		break;
@@ -119,6 +119,7 @@ void * _null_callback(
 		break;
 	case RPMCALLBACK_UNKNOWN:
 		break;
+#endif
 	default:
 		break;
 	}
@@ -176,6 +177,8 @@ BOOT:
 	REGISTER_CONSTANT(_RPMVSF_NOPAYLOAD);
 	REGISTER_CONSTANT(TR_ADDED);
 	REGISTER_CONSTANT(TR_REMOVED);
+        REGISTER_CONSTANT(RPMSENSE_PATCHES);
+        REGISTER_CONSTANT(RPMSENSE_CONFIG);
 #endif
 
 	REGISTER_CONSTANT(RPMSENSE_ANY);
@@ -205,8 +208,6 @@ BOOT:
         REGISTER_CONSTANT(RPMSENSE_RPMLIB);
         REGISTER_CONSTANT(RPMSENSE_TRIGGERPREIN);
         REGISTER_CONSTANT(RPMSENSE_KEYRING);
-        REGISTER_CONSTANT(RPMSENSE_PATCHES);
-        REGISTER_CONSTANT(RPMSENSE_CONFIG);
 
     }
 
@@ -306,6 +307,8 @@ _read_package_info(fp, vsflags)
 	ts = rpmtsFree(ts);
 #endif
 
+#ifdef RPM2_RPM41
+
 void
 _create_transaction(vsflags)
 	int vsflags
@@ -328,6 +331,8 @@ _create_transaction(vsflags)
 	sv_setref_pv(h_sv, "RPM2::C::Transaction", (void *)ret);
 
 	PUSHs(h_sv);
+
+#endif
 
 void
 _read_from_file(fp)
@@ -525,6 +530,7 @@ _unload(h)
 
 MODULE = RPM2		PACKAGE = RPM2::C::Transaction
 
+#ifdef RPM2_RPM41
 void
 DESTROY(t)
 	rpmts t
@@ -655,5 +661,7 @@ _run(t, ok_probs, prob_filter)
 	RETVAL = (ret == 0) ? 1 : 0;
     OUTPUT:
 	RETVAL
+
+#endif
 
 

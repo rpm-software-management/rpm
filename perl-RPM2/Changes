@@ -1,3 +1,9 @@
+0.68 2004-10-20 cturner
+	* make it compile again with rpm 4.0
+
+0.67 2004-09-15 cturner
+	* add support for manipulating headers and header lists
+
 0.66  2004-04-14 cturner
 	* add changelog support and doc updates from Ville Skytta <ville.skytta@iki.fi>
 

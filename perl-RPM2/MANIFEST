@@ -9,3 +9,4 @@ test-rpm-1.0-1.noarch.rpm
 test-rpm-1.0-1.src.rpm
 hdlist-test.hdr
 typemap
+META.yml                                 Module meta-data (added by MakeMaker)
