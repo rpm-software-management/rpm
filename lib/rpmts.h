@@ -96,6 +96,7 @@ typedef	enum rpmtsOpX_e {
 
 #include "rpmhash.h"	/* XXX hashTable */
 #include "rpmal.h"	/* XXX availablePackage/relocateFileList ,*/
+#include "rpmlua.h"	/* XXX lua state */
 
 /**********************
  * Transaction Scores *
@@ -318,6 +319,9 @@ struct rpmts_s {
     Spec spec;			/*!< Spec file control structure. */
 
     rpmtsScore score;		/*!< Transaction Score (autorollback). */
+
+    rpmlua lua;
+
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 };

@@ -8,6 +8,8 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
+#include <rpmlua.h>
+
 /*@access StringBuf@*/	/* XXX compared with NULL */
 /*@access poptContext @*/	/* compared with NULL */
 
@@ -129,6 +131,18 @@ int parseScript(Spec spec, int parsePart)
 	progtag = RPMTAG_POSTUNPROG;
 	partname = "%postun";
 	break;
+      case PART_PRETRANS:
+	tag = RPMTAG_PRETRANS;
+	tagflags = 0;
+	progtag = RPMTAG_PRETRANSPROG;
+	partname = "%pretrans";
+	break;
+      case PART_POSTTRANS:
+	tag = RPMTAG_POSTTRANS;
+	tagflags = 0;
+	progtag = RPMTAG_POSTTRANSPROG;
+	partname = "%posttrans";
+	break;
       case PART_VERIFYSCRIPT:
 	tag = RPMTAG_VERIFYSCRIPT;
 	tagflags = RPMSENSE_SCRIPT_VERIFY;
@@ -182,7 +196,15 @@ int parseScript(Spec spec, int parsePart)
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	switch (arg) {
 	case 'p':
-	    if (prog[0] != '/') {
+	    if (prog[0] == '<') {
+		if (prog[strlen(prog)-1] != '>') {
+		    rpmError(RPMERR_BADSPEC,
+			     _("line %d: internal script must end "
+			     "with \'>\': %s\n"), spec->lineNum, prog);
+		    rc = RPMERR_BADSPEC;
+		    goto exit;
+		}
+	    } else if (prog[0] != '/') {
 		rpmError(RPMERR_BADSPEC,
 			 _("line %d: script program must begin "
 			 "with \'/\': %s\n"), spec->lineNum, prog);
@@ -261,7 +283,25 @@ int parseScript(Spec spec, int parsePart)
     stripTrailingBlanksStringBuf(sb);
     p = getStringBuf(sb);
 
-    (void) addReqProv(spec, pkg->header, (tagflags | RPMSENSE_INTERP), progArgv[0], NULL, 0);
+    if (!strcmp(progArgv[0], "<lua>")) {
+	rpmlua lua = rpmluaNew();
+	if (rpmluaCheckScript(lua, p, partname) != RPMRC_OK) {
+	    rpmluaFree(lua);
+	    rc = RPMERR_BADSPEC;
+	    goto exit;
+	}
+	rpmluaFree(lua);
+	(void) rpmlibNeedsFeature(pkg->header,
+				  "BuiltinLuaScripts", "4.2.2-1");
+    } else if (progArgv[0][0] == '<') {
+	rpmError(RPMERR_BADSPEC,
+		 _("line %d: unsupported internal script: %s\n"),
+		 spec->lineNum, progArgv[0]);
+	rc = RPMERR_BADSPEC;
+	goto exit;
+    } else {
+        (void) addReqProv(spec, pkg->header, (tagflags | RPMSENSE_INTERP), progArgv[0], NULL, 0);
+    }
 
     /* Trigger script insertion is always delayed in order to */
     /* get the index right.                                   */
@@ -299,6 +339,12 @@ int parseScript(Spec spec, int parsePart)
 		break;
 	      case PART_POSTUN:
 		pkg->postUnFile = xstrdup(file);
+		break;
+	      case PART_PRETRANS:
+		pkg->preTransFile = xstrdup(file);
+		break;
+	      case PART_POSTTRANS:
+		pkg->postTransFile = xstrdup(file);
 		break;
 	      case PART_VERIFYSCRIPT:
 		pkg->verifyFile = xstrdup(file);

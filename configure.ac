@@ -1216,6 +1216,7 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	python/Makefile
 	python/rpmdb/Makefile
 	python/rpmdb/test/Makefile
+ 	lua/Makefile
   ])
 AC_CONFIG_COMMANDS([default],[[	echo timestamp > popt/stamp-h.in
 	echo timestamp > stamp-h.in

@@ -230,6 +230,13 @@ static int processScriptFiles(Spec spec, Package pkg)
 	    return RPMERR_BADFILENAME;
 	}
     }
+    if (pkg->preTransFile) {
+	if (addFileToTag(spec, pkg->preTransFile, pkg->header, RPMTAG_PRETRANS)) {
+	    rpmError(RPMERR_BADFILENAME,
+		     _("Could not open PreIn file: %s\n"), pkg->preTransFile);
+	    return RPMERR_BADFILENAME;
+	}
+    }
     if (pkg->postInFile) {
 	if (addFileToTag(spec, pkg->postInFile, pkg->header, RPMTAG_POSTIN)) {
 	    rpmError(RPMERR_BADFILENAME,
@@ -241,6 +248,13 @@ static int processScriptFiles(Spec spec, Package pkg)
 	if (addFileToTag(spec, pkg->postUnFile, pkg->header, RPMTAG_POSTUN)) {
 	    rpmError(RPMERR_BADFILENAME,
 		     _("Could not open PostUn file: %s\n"), pkg->postUnFile);
+	    return RPMERR_BADFILENAME;
+	}
+    }
+    if (pkg->postTransFile) {
+	if (addFileToTag(spec, pkg->postTransFile, pkg->header, RPMTAG_POSTTRANS)) {
+	    rpmError(RPMERR_BADFILENAME,
+		     _("Could not open PostUn file: %s\n"), pkg->postTransFile);
 	    return RPMERR_BADFILENAME;
 	}
     }

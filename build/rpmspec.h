@@ -195,6 +195,10 @@ struct Package_s {
 /*@only@*/
     const char * postUnFile;	/*!< %postun scriptlet. */
 /*@only@*/
+    const char * preTransFile;	/*!< %pretrans scriptlet. */
+/*@only@*/
+    const char * postTransFile;	/*!< %posttrans scriptlet. */
+/*@only@*/
     const char * verifyFile;	/*!< %verifyscript scriptlet. */
 
 /*@only@*/

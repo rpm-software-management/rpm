@@ -30,6 +30,8 @@ static struct PartRec {
     { PART_CLEAN,         0, "%clean"},
     { PART_PREUN,         0, "%preun"},
     { PART_POSTUN,        0, "%postun"},
+    { PART_PRETRANS,      0, "%pretrans"},
+    { PART_POSTTRANS,     0, "%posttrans"},
     { PART_PRE,           0, "%pre"},
     { PART_POST,          0, "%post"},
     { PART_FILES,         0, "%files"},
@@ -475,6 +477,8 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	case PART_POST:
 	case PART_PREUN:
 	case PART_POSTUN:
+	case PART_PRETRANS:
+	case PART_POSTTRANS:
 	case PART_VERIFYSCRIPT:
 	case PART_TRIGGERIN:
 	case PART_TRIGGERUN:

@@ -618,6 +618,11 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (progArgv == NULL && script == NULL)
 	return rc;
 
+    if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
+	return rpmluaRunScript(ts->lua, h, sln, progArgc, progArgv,
+			       script, arg1, arg2);
+    }
+
     psm->sq.reaper = 1;
 
     /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */

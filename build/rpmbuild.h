@@ -62,14 +62,16 @@ typedef enum rpmParseState_e {
     PART_POST		=  9,	/*!< */
     PART_PREUN		= 10,	/*!< */
     PART_POSTUN		= 11,	/*!< */
-    PART_DESCRIPTION	= 12,	/*!< */
-    PART_CHANGELOG	= 13,	/*!< */
-    PART_TRIGGERIN	= 14,	/*!< */
-    PART_TRIGGERUN	= 15,	/*!< */
-    PART_VERIFYSCRIPT	= 16,	/*!< */
-    PART_BUILDARCHITECTURES= 17,/*!< */
-    PART_TRIGGERPOSTUN	= 18,	/*!< */
-    PART_LAST		= 19	/*!< */
+    PART_PRETRANS	= 12,	/*!< */
+    PART_POSTTRANS	= 13,	/*!< */
+    PART_DESCRIPTION	= 14,	/*!< */
+    PART_CHANGELOG	= 15,	/*!< */
+    PART_TRIGGERIN	= 16,	/*!< */
+    PART_TRIGGERUN	= 17,	/*!< */
+    PART_VERIFYSCRIPT	= 18,	/*!< */
+    PART_BUILDARCHITECTURES= 19,/*!< */
+    PART_TRIGGERPOSTUN	= 20,	/*!< */
+    PART_LAST		= 21	/*!< */
 } rpmParseState;
 
 #define STRIP_NOTHING             0

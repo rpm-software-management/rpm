@@ -419,6 +419,10 @@ typedef enum rpmTag_e {
     RPMTAG_FSCONTEXTS		= 1148,	/*!< extension */
     RPMTAG_RECONTEXTS		= 1149,	/*!< extension */
     RPMTAG_POLICIES		= 1150,	/*!< selinux *.te policy file. */
+    RPMTAG_PRETRANS		= 1151,
+    RPMTAG_POSTTRANS		= 1152,
+    RPMTAG_PRETRANSPROG		= 1153,
+    RPMTAG_POSTTRANSPROG	= 1154,
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 /*@=enummemuse@*/
