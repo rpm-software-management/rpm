@@ -260,30 +260,13 @@ Use the directory given as top level directory for all operations.
 In order to use the signature feature RPM must be able to run PGP
 (it must be installed and in your path), and it must be able to
 find a public key ring with RPM public keys in it.  By default,
-RPM looks in /usr/lib/rpm for both pubring.pgp and secring.pgp
-(which is used during package builds).  If your key rings are not
-located there you must set the following on your /etc/rpmrc
+RPM uses the PGP defaults to find the keyrings (honoring PGPPATH).
+If your key rings are not located where PGP expects them to be,
+you must set the following in your /etc/rpmrc
 
 .IP "\fBpgp_path\fP"
 Replacement path for /usr/lib/rpm.  Must contain your key rings.
-.IP "\fBpgp_pubring\fP"
-The full path to your public key ring.
-.IP "\fBpgp_secring\fP"
-The full path to your secret key ring.
 .PP
-The bare minimum you need to do to get PGP singature checking working
-is install PGP and run the following:
-
-.nf
-mkdir -p /usr/lib/rpm
-cd /usr/lib/rpm
-cp /mnt/crom/RPM-PGP-KEY .
-touch config.txt
-pgp -ka RPM-PGP-KEY pubring.pgp
-.fi
-
-You should then be able to check the signatures of packages produced
-by Red Hat Software using rpm \-K.
 
 If you want to be able to sign packages you create yourself, you also
 need to create your own public and secret key pair (see the PGP manual).
