@@ -105,6 +105,7 @@
 	- python: put rpmmodule.so where python expects to find.
 	- add brp-strip-static-archive build root policy helper.
 	- add -lelf to rpm LDFLAGS, not LDADD, since there is no libelf.la now.
+	- fix: obscure corner case(s) with rpmvercmp (#50977).
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
