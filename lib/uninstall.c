@@ -1,4 +1,7 @@
-#include <alloca.h>
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
+#endif 
+
 #include <errno.h>
 #include <fcntl.h>
 #include <stdlib.h>
