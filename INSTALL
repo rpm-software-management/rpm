@@ -55,6 +55,7 @@ the configure environment.
 Here is an example:
 	LIBS='-L/opt/libz/ -L/opt/BerkeleyDB/lib/' \
 	CPPFLAGS='-I/opt/libz/ -I/opt/BerkeleyDB/include' \
+	export LIBS CPPFLAGS
 	./configure
 
 now build the system with:
