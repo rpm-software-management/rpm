@@ -120,6 +120,10 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 	ia->transFlags |= RPMTRANS_FLAG_NOMD5;
 	break;
 
+    case RPMCLI_POPT_NOCONTEXTS:
+	ia->transFlags |= RPMTRANS_FLAG_NOCONTEXTS;
+	break;
+
     case RPMCLI_POPT_FORCE:
 	ia->probFilter |=
 		( RPMPROB_FILTER_REPLACEPKG
@@ -225,6 +229,9 @@ struct poptOption rpmInstallPoptTable[] = {
 
  { "nomd5", '\0', 0, NULL, RPMCLI_POPT_NOMD5,
 	N_("don't verify MD5 digest of files"), NULL },
+ { "nocontexts", '\0',0,  NULL, RPMCLI_POPT_NOCONTEXTS,
+	N_("don't install file security contexts"), NULL},
+
  { "noorder", '\0', POPT_BIT_SET,
 	&rpmIArgs.installInterfaceFlags, INSTALL_NOORDER,
 	N_("do not reorder package installation to satisfy dependencies"),

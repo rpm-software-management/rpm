@@ -307,7 +307,21 @@ int rpmInstall(rpmts ts,
     if (rpmExpandNumeric("%{?_repackage_all_erasures}"))
 	ia->transFlags |= RPMTRANS_FLAG_REPACKAGE;
 
+    /* Initialize security context patterns (if not already done). */
+    if (!(ia->transFlags & RPMTRANS_FLAG_NOCONTEXTS)) {
+	rpmsx sx = rpmtsREContext(ts);
+	if (sx == NULL) {
+	    const char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
+	    if (fn != NULL && *fn != '\0') {
+		sx = rpmsxNew(fn);
+		(void) rpmtsSetREContext(ts, sx);
+	    }
+	    fn = _free(fn);
+	}
+	sx = rpmsxFree(sx);
+    }
     (void) rpmtsSetFlags(ts, ia->transFlags);
+
     probFilter = ia->probFilter;
     relocations = ia->relocations;
 

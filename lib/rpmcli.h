@@ -81,6 +81,7 @@ rpmcliFini(/*@only@*/ /*@null@*/ poptContext optCon)
 #define	RPMCLI_POPT_NOSIGNATURE		-1029
 #define	RPMCLI_POPT_NODIGEST		-1030
 #define	RPMCLI_POPT_NOHDRCHK		-1031
+#define	RPMCLI_POPT_NOCONTEXTS		-1032
 
 /* ==================================================================== */
 /** \name RPMQV */
@@ -388,7 +389,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, /*@null@*/ const char ** argv)
 int rpmVerifyFile(const rpmts ts, rpmfi fi,
 		/*@out@*/ rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fi, *res, fileSystem, internalState @*/
+	/*@modifies ts, fi, *res, fileSystem, internalState @*/
 	/*@requires maxSet(res) >= 0 @*/;
 /*@=incondefs@*/
 

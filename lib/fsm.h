@@ -54,18 +54,19 @@ typedef enum fileStage_e {
     FSM_RENAME	=  _fs(34),
     FSM_MKDIR	=  _fs(35),
     FSM_RMDIR	=  _fs(36),
-    FSM_CHOWN	=  _fs(37),
-    FSM_LCHOWN	=  _fs(38),
-    FSM_CHMOD	=  _fs(39),
-    FSM_UTIME	=  _fs(40),
-    FSM_SYMLINK	=  _fs(41),
-    FSM_LINK	=  _fs(42),
-    FSM_MKFIFO	=  _fs(43),
-    FSM_MKNOD	=  _fs(44),
-    FSM_LSTAT	=  _fs(45),
-    FSM_STAT	=  _fs(46),
-    FSM_READLINK=  _fs(47),
-    FSM_CHROOT	=  _fs(48),
+    FSM_LSETFCON=  _fs(39),
+    FSM_CHOWN	=  _fs(40),
+    FSM_LCHOWN	=  _fs(41),
+    FSM_CHMOD	=  _fs(42),
+    FSM_UTIME	=  _fs(43),
+    FSM_SYMLINK	=  _fs(44),
+    FSM_LINK	=  _fs(45),
+    FSM_MKFIFO	=  _fs(46),
+    FSM_MKNOD	=  _fs(47),
+    FSM_LSTAT	=  _fs(48),
+    FSM_STAT	=  _fs(49),
+    FSM_READLINK=  _fs(50),
+    FSM_CHROOT	=  _fs(51),
 
     FSM_NEXT	=  _fd(65),
     FSM_EAT	=  _fd(66),
@@ -188,6 +189,8 @@ struct fsm_s {
     const char * fmd5sum;	/*!< Hex MD5 sum (NULL disables). */
 /*@shared@*/ /*@relnull@*/
     const char * md5sum;	/*!< Binary MD5 sum (NULL disables). */
+/*@dependent@*/ /*@observer@*/ /*@null@*/
+    const char * fcontext;	/*!< File security context (NULL disables). */
     
     unsigned fflags;		/*!< File flags. */
     fileAction action;		/*!< File disposition. */

@@ -509,7 +509,7 @@ rpmfi rpmfiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmfi fi)
  * @return		new file info set
  */
 /*@null@*/
-rpmfi rpmfiNew(/*@null@*/ rpmts ts, Header h, rpmTag tagN, int scareMem)
+rpmfi rpmfiNew(/*@null@*/ const rpmts ts, Header h, rpmTag tagN, int scareMem)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem @*/
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem @*/;
 

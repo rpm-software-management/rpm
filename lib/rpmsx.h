@@ -97,6 +97,7 @@ struct rpmsx_s {
     int nsxs;			/*!< No. of file stems. */
     int maxsxs;			/*!< No. of allocated file stems. */
     int reverse;		/*!< Reverse traversal? */
+/*@refs@*/
     int nrefs;			/*!< Reference count. */
 };
 #endif /* defined(_RPMSX_INTERNAL) */
@@ -295,7 +296,7 @@ rpmsx rpmsxInit(/*@null@*/ rpmsx sx, int reverse)
  * @param fmode		file mode
  * @return		file security context
  */
-/*@null@*/
+/*@owned@*/ /*@null@*/
 const char * rpmsxFContext(rpmsx sx, const char * fn, mode_t fmode)
 	/*@modifies sx @*/;
 

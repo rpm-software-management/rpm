@@ -1312,6 +1312,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 			       &(flp->flags), 1);
 
 	/* Add file security context to package. */
+/*@-branchstate@*/
 	if (sx != NULL) {
 	    mode_t fmode = (uint_16)flp->fl_mode;
 	    s = rpmsxFContext(sx, flp->fileURL, fmode);
@@ -1319,6 +1320,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    (void) headerAddOrAppendEntry(h, RPMTAG_FILECONTEXTS, RPM_STRING_ARRAY_TYPE,
 			       &s, 1);
 	}
+/*@=branchstate@*/
 
     }
     sx = rpmsxFree(sx);

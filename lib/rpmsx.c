@@ -619,7 +619,7 @@ rpmsx rpmsxInit(/*@null@*/ rpmsx sx, int reverse)
 
 const char * rpmsxFContext(rpmsx sx, const char * fn, mode_t fmode)
 {
-    const char * context = NULL;
+    const char * fcontext = NULL;
     const char * myfn = fn;
 /*@-mods@*/
     int fstem = rpmsxFind(sx, &myfn);
@@ -652,7 +652,7 @@ const char * rpmsxFContext(rpmsx sx, const char * fn, mode_t fmode)
 	    continue;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	case 0:
-	    context = rpmsxContext(sx);
+	    fcontext = rpmsxContext(sx);
 	    /*@switchbreak@*/ break;
 	default:
 	  { static char errbuf[255 + 1];
@@ -666,5 +666,5 @@ const char * rpmsxFContext(rpmsx sx, const char * fn, mode_t fmode)
 	break;
     }
 
-    return context;
+    return fcontext;
 }

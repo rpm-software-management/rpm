@@ -119,6 +119,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     /*
      * Verify file security context.
      */
+/*@-branchstate@*/
     if (flags & RPMVERIFY_CONTEXTS) {
 	security_context_t con;
 
@@ -142,6 +143,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	    freecon(con);
 	}
     }
+/*@=branchstate@*/
 
     if (flags & RPMVERIFY_MD5) {
 	unsigned char md5sum[16];
@@ -281,7 +283,7 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmts ts,
  */
 static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies fi, fileSystem, internalState  @*/
+	/*@modifies ts, fi, fileSystem, internalState  @*/
 {
     char buf[BUFSIZ];
     char * t, * te;

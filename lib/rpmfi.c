@@ -1189,7 +1189,7 @@ static inline unsigned char nibble(char c)
 	(_fi)->_data = memcpy(xmalloc((_fi)->fc * sizeof(*(_fi)->_data)), \
 			(_fi)->_data, (_fi)->fc * sizeof(*(_fi)->_data))
 
-rpmfi rpmfiNew(rpmts ts, Header h, rpmTag tagN, int scareMem)
+rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
 {
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);

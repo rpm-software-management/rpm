@@ -618,6 +618,32 @@ int fsmTeardown(FSM_t fsm)
     return rc;
 }
 
+static int fsmMapFContext(FSM_t fsm)
+	/*@modifies fsm @*/
+{
+    rpmts ts = fsmGetTs(fsm);
+    rpmfi fi = fsmGetFi(fsm);
+    struct stat * st = &fsm->sb;
+
+    /*
+     * Find file security context (if not disabled).
+     */
+    fsm->fcontext = NULL;
+    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
+	rpmsx sx = rpmtsREContext(ts);
+
+	if (sx != NULL) {
+	    /* Get file security context from patterns. */
+	    fsm->fcontext = rpmsxFContext(sx, fsm->path, st->st_mode);
+	    sx = rpmsxFree(sx);
+	} else {
+	    /* Get file security context from package. */
+	    fsm->fcontext = rpmfiFContext(fi);
+	}
+    }
+    return 0;
+}
+
 int fsmMapPath(FSM_t fsm)
 {
     rpmfi fi = fsmGetFi(fsm);	/* XXX const except for fstates */
@@ -757,6 +783,9 @@ int fsmMapAttrs(FSM_t fsm)
 
 	{   rpmts ts = fsmGetTs(fsm);
 
+	    /*
+	     * Set file md5 (if not disabled).
+	     */
 	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOMD5)) {
 		fsm->fmd5sum = (fi->fmd5s ? fi->fmd5s[i] : NULL);
 		fsm->md5sum = (fi->md5s ? (fi->md5s + (16 * i)) : NULL);
@@ -1929,6 +1958,15 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		}
 		fsm->opath = _free(fsm->opath);
 	    }
+	    /*
+	     * Set file security context (if not disabled).
+	     */
+	    if (!rc && !getuid()) {
+		rc = fsmMapFContext(fsm);
+		if (!rc)
+		    rc = fsmNext(fsm, FSM_LSETFCON);
+		fsm->fcontext = NULL;
+	    }
 	    if (S_ISLNK(st->st_mode)) {
 		if (!rc && !getuid())
 		    rc = fsmNext(fsm, FSM_LCHOWN);
@@ -2098,6 +2136,16 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    case ENOTEMPTY:     rc = CPIOERR_ENOTEMPTY; /*@switchbreak@*/ break;
 	    default:            rc = CPIOERR_RMDIR_FAILED; /*@switchbreak@*/ break;
 	    }
+	break;
+    case FSM_LSETFCON:
+	if (fsm->fcontext == NULL)
+	    break;
+	rc = lsetfilecon(fsm->path, (security_context_t)fsm->fcontext);
+	if (_fsm_debug && (stage & FSM_SYSCALL))
+	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %s) %s\n", cur,
+		fsm->path, fsm->fcontext,
+		(rc < 0 ? strerror(errno) : ""));
+	if (rc < 0)	rc = CPIOERR_LSETFCON_FAILED;
 	break;
     case FSM_CHOWN:
 	rc = chown(fsm->path, st->st_uid, st->st_gid);
@@ -2405,6 +2453,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_RENAME:	return "Rename";
     case FSM_MKDIR:	return "Mkdir";
     case FSM_RMDIR:	return "rmdir";
+    case FSM_LSETFCON:	return "lsetfcon";
     case FSM_CHOWN:	return "chown";
     case FSM_LCHOWN:	return "lchown";
     case FSM_CHMOD:	return "chmod";

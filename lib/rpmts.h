@@ -592,8 +592,8 @@ int rpmtsSetChrootDone(rpmts ts, int chrootDone)
  * @return		file security context patterns
  */
 /*@null@*/
-rpmsx rpmtsREContext(rpmts ts)
-	/*@*/;
+rpmsx rpmtsREContext(const rpmts ts)
+	/*@modifies ts @*/;
 
 /** \ingroup rpmts
  * Get file security context patterns.
@@ -602,7 +602,7 @@ rpmsx rpmtsREContext(rpmts ts)
  * @return		0 on success
  */
 int rpmtsSetREContext(rpmts ts, rpmsx sx)
-	/*@*/;
+	/*@modifies ts, sx @*/;
 
 /** \ingroup rpmts
  * Get transaction id, i.e. transaction time stamp.
