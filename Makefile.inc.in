@@ -1,4 +1,5 @@
 topdir=@topdir@
+topsrcdir=@topsrcdir@
 CPP = @CPP@
 prefix= @prefix@
 exec_prefix = @exec_prefix@
@@ -11,10 +12,10 @@ LIBRPMRC_FILENAME=$(libdir)/rpmrc
 LIBRPMALIAS_FILENAME=$(libdir)/rpmpopt
 RPMNLSDIR=@datadir@/locale
 RPMNLSPACKAGE=rpm
-CFLAGS = @CFLAGS@ @INCPATH@ $(WARNINGS) $(OPTS) -I$(topdir) \
-	-I$(topdir)/lib -I$(topdir)/misc -Wall -Wstrict-prototypes 
+CFLAGS = @CFLAGS@ @INCPATH@ $(WARNINGS) $(OPTS) -I$(topdir) -I$(topsrcdir)\
+	-I$(topsrcdir)/lib -I$(topsrcdir)/misc -Wall -Wstrict-prototypes 
 LDFLAGS = @LDFLAGS@ -L$(topdir)/lib -L$(topdir)/build -L$(topdir)/misc \
 	  -L$(topdir)/popt
-VERSION = 2.4.101
+VERSION = 2.4.102
 CC = @CC@
 

@@ -1,7 +1,7 @@
 srcdir = @srcdir@
 VPATH = $(srcdir)
 
-include $(srcdir)/../Makefile.inc
+include ../Makefile.inc
 
 PROGS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb
 LOADLIBES = @LIBS@ @LIBMISC@ @LIBINTL@

@@ -1,7 +1,7 @@
 srcdir = @srcdir@
 VPATH = $(srcdir)
 
-include $(srcdir)/../Makefile.inc
+include ../Makefile.inc
 
 LIBOBJECTS = @MISCOBJS@ 
 LIBMISC = libmisc.a

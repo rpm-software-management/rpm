@@ -1,0 +1,8 @@
+AC_INIT(popt.h)
+
+AC_PROG_CC
+AC_GCC_TRADITIONAL
+
+AC_CHECK_FUNCS(mmap)
+
+AC_OUTPUT(Makefile)

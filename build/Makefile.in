@@ -14,7 +14,7 @@ LOADLIBES = -lrpm -lz ../popt/libpopt.a $(LIBEFENCE)
 
 # -----------------------------------------------------------------------
 
-include $(srcdir)/../Makefile.inc
+include ../Makefile.inc
 
 ifeq (.depend,$(wildcard .depend))
 TARGET=everything
@@ -32,7 +32,8 @@ $(LIBBUILD): $(LIBOBJECTS)
 
 $(PROGS): $(LIBOBJECTS)
 
-pack.o:
+# GNU make doesn't need the pack.c on here, but broken makes may
+pack.o: pack.c
 	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" -o $@ -c $<
 
 clean:

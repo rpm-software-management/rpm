@@ -82,6 +82,7 @@ if test "$cross_compiling" != "yes"; then
 fi
 
 topdir=`pwd`
+topsrcdir=`cd ${srcdir}; pwd`
 
 if test $prefix != "/usr" -a $prefix != "/usr/local"; then
 	AC_MSG_CHECKING("$prefix/lib... $ac_c")
@@ -364,24 +365,27 @@ elif echo "$build_os" | grep sunos > /dev/null; then
 elif echo "$build_os" | grep hpux > /dev/null; then
 	RPM=rpm.shared
 	echo "hacking things up for hpux"
+elif echo "$build_os" | grep irix > /dev/null; then
+	RPM=rpm.shared
+	echo "hacking things up for irix"
 fi
 
 rm -f ./find-provides.sh
-if test -f autodeps/${build_os}.prov ; then
-	echo "using autodeps/$build_os.prov for automatic provides generation"
-	ln -s autodeps/${build_os}.prov ./find-provides.sh
+if test -f ${srcdir}/autodeps/${target_os}.prov ; then
+	echo "using ${srcdir}/autodeps/$build_os.prov for automatic provides generation"
+	ln -s ${srcdir}/autodeps/${build_os}.prov ./find-provides.sh
 else
-	echo "*** no default provides information is available for $build_os"
-	ln -s autodeps/none ./find-provides.sh
+	echo "*** no default provides information is available for $target_os"
+	ln -s ${srcdir}/autodeps/none ./find-provides.sh
 fi
 
 rm -f ./find-requires.sh
-if test -f autodeps/${build_os}.req ; then
-	echo "using autodeps/$build_os.req for automatic requires generation"
-	ln -s autodeps/$build_os.req ./find-requires.sh
+if test -f ${srcdir}/autodeps/${target_os}.req ; then
+	echo "using ${srcdir}/autodeps/$build_os.req for automatic requires generation"
+	ln -s ${srcdir}/autodeps/$build_os.req ./find-requires.sh
 else
-	echo "*** no default requires information is available for $build_os"
-	ln -s autodeps/none ./find-requires.sh
+	echo "*** no default requires information is available for $target_os"
+	ln -s ${srcdir}/autodeps/none ./find-requires.sh
 fi
 
 if test -n "$MISCOBJS" ; then
@@ -396,6 +400,7 @@ AC_SUBST(LIBINTL)
 AC_SUBST(varprefix)
 AC_SUBST(tmpdir)
 AC_SUBST(topdir)
+AC_SUBST(topsrcdir)
 AC_SUBST(INTLDEF)
 AC_SUBST(XGETTEXT)
 AC_SUBST(LIBINTL)
@@ -416,4 +421,5 @@ else
    NBMAKEFILE=
 fi
 
+AC_CONFIG_SUBDIRS(popt)
 AC_OUTPUT(Makefile Makefile.inc lib-rpmrc lib/Makefile build/Makefile $NBMAKEFILE tools/Makefile po/Makefile misc/Makefile)

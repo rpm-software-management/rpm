@@ -22,7 +22,7 @@ INSTALL_DATA= @INSTALL_DATA@
 
 # -----------------------------------------------------------------------
 
-include $(srcdir)/../Makefile.inc
+include ../Makefile.inc
 
 ifeq (.depend,$(wildcard .depend))
 TARGET=allprogs
@@ -34,10 +34,12 @@ all: $(TARGET)
 
 allprogs: $(LIBRPM) $(PROGS)
 
-misc.o:
+# GNU make doesn't need this, but stupid ones may
+misc.o: misc.c
 	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" -o $@ -c $<
 
-rpmrc.o:
+# ditto
+rpmrc.o: rpmrc.c
 	$(CC) $(CFLAGS) -DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -o $@ -c $<
 
 $(PROGS): $(LIBRPM)

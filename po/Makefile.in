@@ -1,7 +1,7 @@
 srcdir = @srcdir@
 VPATH = $(srcdir)
 
-include $(srcdir)/../Makefile.inc
+include ../Makefile.inc
 
 INSTALL= @INSTALL@
 INSTALL_PROGRAM= @INSTALL_PROGRAM@
@@ -13,23 +13,23 @@ NLSPACKAGE = rpm
 
 CATALOGS = sv.mo fr.mo de.mo pt-br.mo tr.mo
 
-POTFILES  = $(topdir)/rpm.c 		$(topdir)/query.c 		\
-	    $(topdir)/install.c 	$(topdir)/verify.c 		\
-	    $(topdir)/checksig.c 	$(topdir)/url.c			\
-	    $(topdir)/ftp.c 	        $(topdir)/url.c			\
-	    $(topdir)/lib/uninstall.c	$(topdir)/lib/rpmdb.c		\
-	    $(topdir)/lib/signature.c	$(topdir)/lib/dbindex.c		\
-	    $(topdir)/lib/depends.c	$(topdir)/lib/formats.c		\
-	    $(topdir)/lib/fs.c		$(topdir)/lib/header.c		\
-	    $(topdir)/lib/lookup.c	$(topdir)/lib/rebuilddb.c	\
-	    $(topdir)/lib/messages.c	$(topdir)/lib/package.c		\
-	    $(topdir)/lib/rpmlead.c	$(topdir)/lib/rpmrc.c		\
+POTFILES  = $(topsrcdir)/rpm.c 		$(topsrcdir)/query.c 		\
+	$(topsrcdir)/install.c 		$(topsrcdir)/verify.c 		\
+	$(topsrcdir)/checksig.c 	$(topsrcdir)/url.c		\
+	$(topsrcdir)/ftp.c 	        	                  	\
+	$(topsrcdir)/lib/uninstall.c	$(topsrcdir)/lib/rpmdb.c	\
+	$(topsrcdir)/lib/signature.c	$(topsrcdir)/lib/dbindex.c	\
+	$(topsrcdir)/lib/depends.c	$(topsrcdir)/lib/formats.c	\
+	$(topsrcdir)/lib/fs.c		$(topsrcdir)/lib/header.c	\
+	$(topsrcdir)/lib/lookup.c	$(topsrcdir)/lib/rebuilddb.c	\
+	$(topsrcdir)/lib/messages.c	$(topsrcdir)/lib/package.c	\
+	$(topsrcdir)/lib/rpmlead.c	$(topsrcdir)/lib/rpmrc.c
 
 all: $(NLSPACKAGE).pot $(CATALOGS)
 
 $(NLSPACKAGE).pot: $(POTFILES)
 	xgettext --default-domain=$(NLSPACKAGE) \
-       	  --add-comments --keyword=_ --keyword=N_ $(POTFILES)
+	    --add-comments --keyword=_ --keyword=N_ $(POTFILES)
 	if cmp -s $(NLSPACKAGE).po $(NLSPACKAGE).pot; then \
 	    rm -f $(NLSPACKAGE).po; \
 	else \
@@ -47,7 +47,7 @@ update-po: Makefile
 		if $(MSGMERGE) $$lang.old.po $(NLSPACKAGE).pot -o $$lang.po; then \
 		rm -f $$lang.old.po; \
 	else \
-    		echo "msgmerge for $$cat failed!"; \
+		echo "msgmerge for $$cat failed!"; \
 		rm -f $$lang.po; \
 		mv $$lang.old.po $$lang.po; \
 	fi; \

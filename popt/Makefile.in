@@ -1,21 +1,18 @@
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
 LIBOBJECTS = 	popt.o
 
-DEFCFLAGS=-O2 -Wall
+WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
 
-SOURCES =$(subst .o,.c,$(LIBOBJECTS))
+SOURCES = $(addprefix $(srcdir)/,$(subst .o,.c,$(LIBOBJECTS)))
 LIBPOPT = libpopt.a
 LIBS=/usr/lib
 INCLUDE=/usr/include
 
-ifeq (../Makefile.inc,$(wildcard ../Makefile.inc))
-include ../Makefile.inc
-endif
-
 # -----------------------------------------------------------------------
 
-ifeq ($(CFLAGS),)
-CFLAGS=$(DEFCFLAGS)
-endif
+CFLAGS = @CFLAGS@ $(WARNINGS) $(OPTS)
 
 ifeq ($(RANLIB),)
 RANLIB=ranlib
