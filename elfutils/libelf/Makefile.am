@@ -3,18 +3,15 @@
 ##
 ## Copyright (C) 1996-2001, 2002 Red Hat, Inc.
 ##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License version 2 as
-## published by the Free Software Foundation.
+## This program is Open Source software; you can redistribute it and/or
+## modify it under the terms of the Open Software License version 1.0 as
+## published by the Open Source Initiative.
 ##
-## his program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software Foundation,
-## Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+## You should have received a copy of the Open Software License along
+## with this program; if not, you may obtain a copy of the Open Software
+## License version 1.0 from http://www.opensource.org/license/osl.php or
+## by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+## 3001 King Ranch Road, Ukiah, CA 95482.   */
 ##
 DEFS = -D_GNU_SOURCE -DHAVE_CONFIG_H
 AM_CFLAGS = -Wall -Werror
@@ -66,7 +63,7 @@ libelf_la_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		    gelf_update_vernaux.c gelf_update_verdef.c \
 		    gelf_update_verdaux.c \
 		    elf_getshnum.c elf_getshstrndx.c \
-		    gelf_checksum.c elf32_checksum.c elf64_checksum.c crc32.c \
+		    gelf_checksum.c elf32_checksum.c elf64_checksum.c \
 		    gelf_rawchunk.c gelf_freechunk.c
 libelf_la_LIBADD = ../lib/libeu.la
 ## XXX We might remove the -version-info parameter if all binary compatibility

@@ -2,18 +2,15 @@
    Copyright (C) 2000, 2001, 2002 Red Hat, Inc.
    Written by Ulrich Drepper <drepper@redhat.com>, 2000.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+   This program is Open Source software; you can redistribute it and/or
+   modify it under the terms of the Open Software License version 1.0 as
+   published by the Open Source Initiative.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the Open Software License along
+   with this program; if not, you may obtain a copy of the Open Software
+   License version 1.0 from http://www.opensource.org/license/osl.php or
+   by writing the Open Source Initiative c/o Lawrence Rosen, Esq.,
+   3001 King Ranch Road, Ukiah, CA 95482.   */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -257,6 +254,7 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
    on the stack.  */
 #define MAX_TMPBUF	32768
 
+
 /* Helper function to write out fill bytes.  */
 static int
 fill (int fd, off_t pos, size_t len, char *fillbuf, size_t *filledp)
@@ -265,7 +263,7 @@ fill (int fd, off_t pos, size_t len, char *fillbuf, size_t *filledp)
   size_t filled = *filledp;
   size_t fill_len = MIN (len, FILLBUFSIZE);
 
-  if (unlikely (fill_len > filled) && (filled < FILLBUFSIZE))
+  if (unlikely (fill_len > filled) && filled < FILLBUFSIZE)
     {
       /* Initialize a few more bytes.  */
       memset (fillbuf + filled, __libelf_fill_byte, fill_len - filled);
@@ -354,7 +352,8 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
 
   /* Write out the program header table.  */
   if (elf->state.ELFW(elf,LIBELFBITS).phdr != NULL
-      && (elf->state.ELFW(elf,LIBELFBITS).phdr_flags | elf->flags) & ELF_F_DIRTY)
+      && ((elf->state.ELFW(elf,LIBELFBITS).phdr_flags | elf->flags)
+	  & ELF_F_DIRTY))
     {
       ElfW2(LIBELFBITS,Phdr) tmp_phdr;
       ElfW2(LIBELFBITS,Phdr) *out_phdr = elf->state.ELFW(elf,LIBELFBITS).phdr;
@@ -539,6 +538,7 @@ __elfw2(LIBELFBITS,updatefile) (Elf *elf, int change_bo, size_t shnum)
 	    }
 	}
       while ((list = list->next) != NULL);
+
 
       if (change_bo || elf->state.ELFW(elf,LIBELFBITS).shdr == NULL)
 	assert (shdr_data == &shdr_data_begin[shnum]);
