@@ -82,6 +82,18 @@ static void freeFi(struct fileInfo *fi)
 	if (fi->fmd5s) {
 	    free(fi->fmd5s); fi->fmd5s = NULL;
 	}
+
+	if (fi->type == REMOVED) {
+	    if (fi->fflags) {
+		free(fi->fflags); fi->fflags = NULL;
+	    }
+	    if (fi->fmodes) {
+		free(fi->fmodes); fi->fmodes = NULL;
+	    }
+	    if (fi->fstates) {
+		free(fi->fstates); fi->fstates = NULL;
+	    }
+	}
 }
 
 static void freeFl(rpmTransactionSet ts, struct fileInfo *flList)
@@ -267,26 +279,35 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	NOTIFY((fi->h, RPMCALLBACK_TRANS_PROGRESS, i, ts->numRemovedPackages,
 	    NULL, notifyData));
 
-	if (!headerGetEntryMinMemory(fi->h, RPMTAG_FILENAMES, NULL, 
+	if (!headerGetEntry(fi->h, RPMTAG_FILENAMES, NULL, 
 				     (void *) &fi->fl, &fi->fc)) {
 	    fi->fc = 0;
 	    continue;
 	}
-	headerGetEntryMinMemory(fi->h, RPMTAG_FILEFLAGS, NULL, 
+	headerGetEntry(fi->h, RPMTAG_FILEFLAGS, NULL, 
 				(void *) &fi->fflags, NULL);
-	headerGetEntryMinMemory(fi->h, RPMTAG_FILEMD5S, NULL, 
+	fi->fflags = memcpy(malloc(fi->fc * sizeof(*fi->fflags)),
+			    fi->fflags, fi->fc * sizeof(*fi->fflags));
+	headerGetEntry(fi->h, RPMTAG_FILEMD5S, NULL, 
 				(void *) &fi->fmd5s, NULL);
 
-	fi->flinks = NULL;	/* XXX FIXME W2DO? */
+	fi->flinks = NULL;
 
-	headerGetEntryMinMemory(fi->h, RPMTAG_FILEMODES, NULL, 
+	headerGetEntry(fi->h, RPMTAG_FILEMODES, NULL, 
 				(void *) &fi->fmodes, NULL);
-	headerGetEntryMinMemory(fi->h, RPMTAG_FILESTATES, NULL, 
+	fi->fmodes = memcpy(malloc(fi->fc * sizeof(*fi->fmodes)),
+			    fi->fmodes, fi->fc * sizeof(*fi->fmodes));
+	headerGetEntry(fi->h, RPMTAG_FILESTATES, NULL, 
 				(void *) &fi->fstates, NULL);
+	fi->fstates = memcpy(malloc(fi->fc * sizeof(*fi->fstates)),
+			    fi->fstates, fi->fc * sizeof(*fi->fstates));
 
 	/* Note that as FA_UNKNOWN = 0, this does the right thing */
 	fi->actions = calloc(sizeof(*fi->actions), fi->fc);
         fi->fps = malloc(fi->fc * sizeof(*fi->fps));
+
+	headerFree(fi->h);
+	fi->h = NULL;
     }
 
     NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 4, ts->numRemovedPackages,
