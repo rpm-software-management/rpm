@@ -13,8 +13,10 @@ echo -n > $SOURCEFILE
 
 # Strip ELF binaries
 for f in `find $RPM_BUILD_ROOT -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -exec file {} \; | \
-	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped/\1/p'`; do
+	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped/\1/p'`
+do
 	BASEDIR=`dirname $f | sed -n -e "s#^$RPM_BUILD_ROOT#/#p"`
+	[ "$BASEDIR" = "/usr/lib/debug" ] && continue;
 	OUTPUTDIR=${RPM_BUILD_ROOT}/usr/lib/debug${BASEDIR}
 	mkdir -p ${OUTPUTDIR}
 	echo extracting debug info from $f
