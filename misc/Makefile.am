@@ -18,9 +18,9 @@ noinst_HEADERS = \
 	libgettext.h	message.h	po-lex.h	str-list.h	\
 	fstrcmp.h
 
-noinst_LTLIBRARIES = libmisc.la
+noinst_LIBRARIES = libmisc.a
 
-libmisc_la_SOURCES =
+libmisc_a_SOURCES =
 
-libmisc_la_LIBADD = @LIBOBJS@ @ALLOCA@
-libmisc_la_DEPENDENCIES = $(libmisc_la_LIBADD)
+libmisc_a_LIBADD = @LIBOBJS@ @ALLOCA@
+libmisc_a_DEPENDENCIES = $(libmisc_a_LIBADD)

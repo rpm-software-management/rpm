@@ -13,8 +13,9 @@ config.h.in
 config.h
 config.guess
 config.cache
-config.status
 config.log
+config.status
+config.sub
 configure
 libtool
 stamp-h

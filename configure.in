@@ -48,30 +48,29 @@ AC_SUBST(TARGET)
 
 
 dnl
-dnl This is a quick hack, to make it so that we can statically link the
-dnl rpm binary on as many platforms as possible.
+dnl This now uses libtool. Put
+dnl	LDFLAGS_STATIC="-all"
+dnl to attempt static executables using libtool. Otherwise
+dnl	LDFLAGS_STATIC=""
 dnl
-dnl a *much* better solution would be to use libtool to determine the proper
-dnl way to statically link on your platform.
-dnl
-AC_MSG_CHECKING(what additional CFLAGS are needed to link statically)
+AC_MSG_CHECKING(flag used by libtool to link rpm)
 if test X"$GCC" = Xyes ; then
 	case "$target" in
-		*-*-hpux*)		LDFLAGS_STATIC="-Wl,-a,archive_shared";; #works better
-		*-*-*)			LDFLAGS_STATIC="-static";;
+		*-*-solaris*)	LDFLAGS_STATIC="";;
+		*-*-*)		LDFLAGS_STATIC="-all";;
 	esac
 elif test X"$CC" = Xcc ; then
 	case "$target" in
-		*-*-linux*)		LDFLAGS_STATIC="-static";;
-		*-*-freebsd*)	LDFLAGS_STATIC="-static";;
-		*-*-osf*)		LDFLAGS_STATIC="-non_shared";;
-		*-*-aix*)		LDFLAGS_STATIC="";;  # -Wl,-bnso doesn't seem to work...
-		*-*-hpux*)		LDFLAGS_STATIC="-Wl,-a,archive_shared";;
+		*-*-linux*)	LDFLAGS_STATIC="-all";;
+		*-*-freebsd*)	LDFLAGS_STATIC="-all";;
+		*-*-osf*)	LDFLAGS_STATIC="-all";;
+		*-*-aix*)	LDFLAGS_STATIC="";;  # -Wl,-bnso doesn't seem to work...
+		*-*-hpux*)	LDFLAGS_STATIC="-all";;
 		*-*-solaris*)	LDFLAGS_STATIC="";;
-		*-*-irix*)		LDFLAGS_STATIC="";;  #should be -non_shared, but can't
+		*-*-irix*)	LDFLAGS_STATIC="";;  #should be -non_shared, but can't
 											# link because of crt1.o then.
-		*-*-ultrix*)	LDFLAGS_STATIC="";;  #ultrix doesn't have shared libs.
-		*-*-*)			LDFLAGS_STATIC=""
+		*-*-ultrix*)	LDFLAGS_STATIC="-all";;  #ultrix doesn't have shared libs.
+		*-*-*)		LDFLAGS_STATIC=""
 AC_MSG_WARN([
 
 Unable to guess what option to pass to $CC to generate a static
@@ -85,20 +84,8 @@ else
 	# just link it dynamically
 	LDFLAGS_STATIC=""
 fi
+LDFLAGS_STATIC="${LDFLAGS_STATIC}-static"	# libtool format
 AC_MSG_RESULT($LDFLAGS_STATIC)
-
-dnl make sure we set a default for RPM.
-RPM=rpm.shared
-if test -n "$LDFLAGS_STATIC"
-then
-  AC_CHECKING(if we can link dynamically and still access the services switch)
-  AC_CHECK_LIB(c,gethostbyname,
-    AC_MSG_RESULT(will build static executable)
-     RPM=rpm,
-    AC_MSG_RESULT(will have to link dynamically)
-     RPM=rpm.shared,
-    $LDFLAGS_STATIC)
-fi
 
 AC_MSG_CHECKING(POSIX chmod)
 touch foo.chmodtest
@@ -594,11 +581,8 @@ else
     ln -s ${srcdir}/autodeps/none ./find-requires.sh
 fi
 
-
 if test -n "$LIBOBJS" ; then
-	MISCDIR=misc
-	LIBMISC=-lmisc
-	MISCPATH=misc/libmisc.a
+    LIBMISC="$(top_builddir)/misc/libmisc.a"
 fi
 
 LOCALEDIR="`echo ${prefix}/share/locale`"
@@ -640,9 +624,7 @@ AC_SUBST(RPM)
 AC_SUBST(GZIPBIN)
 AC_SUBST(BZIP2BIN)
 AC_SUBST(FIXPERMS)
-AC_SUBST(MISCDIR)
 AC_SUBST(LIBMISC)
-AC_SUBST(MISCPATH)
 AC_SUBST(MKDIR_P)
 AC_SUBST(LDFLAGS_STATIC)
 
@@ -650,7 +632,7 @@ AC_SUBST(LDFLAGS_STATIC)
 export LIBS INCPATH
 
 AC_CONFIG_SUBDIRS(popt)
-AC_OUTPUT([Makefile.inc Makefile lib-rpmrc macros lib/Makefile
+AC_OUTPUT([Makefile lib-rpmrc macros lib/Makefile
 	build/Makefile tools/Makefile scripts/Makefile
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
 	misc/Makefile po/Makefile.in intl/Makefile],

@@ -15,7 +15,7 @@ mylibs=	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/popt/libpopt.la
 
-LDFLAGS = -all@LDFLAGS_STATIC@
+LDFLAGS = @LDFLAGS_STATIC@
 
 rpmbindir = $(subst usr/bin,bin,$(bindir))
 rpmbin_PROGRAMS = rpm
@@ -40,8 +40,6 @@ rpm_SOURCES =		build.c checksig.c ftp.c install.c rpm.c url.c \
 rpm_LDADD =		$(mylibs) @LIBMISC@
 
 $(PROGRAMS): 		$(mylibs) @LIBMISC@
-
-include ./Makefile.inc
 
 .PHONY:	lclint
 lclint:

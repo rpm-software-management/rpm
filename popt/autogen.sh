@@ -1,7 +1,9 @@
 #!/bin/sh
 
-libtoolize --copy
+libtoolize --copy --force
+aclocal
 autoheader
+automake
 autoconf
 
 if [ "$1" = "--noconfigure" ]; then 
@@ -9,7 +11,7 @@ if [ "$1" = "--noconfigure" ]; then
 fi
 
 if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
-    ./configure --prefix=/usr --disable-shared
+    ./configure --disable-shared --prefix=/usr
 else
-    ./configure "$@"
+    ./configure --disable-shared "$@"
 fi
