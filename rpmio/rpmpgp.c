@@ -324,7 +324,7 @@ const char * pgpMpiHex(const byte *p)
  * @return		0 on success
  */
 static int pgpHexSet(const char * pre, int lbits,
-		/*@out@*/ mp32number * mpn, const byte * p, const byte * pend)
+		/*@out@*/ mpnumber * mpn, const byte * p, const byte * pend)
 	/*@globals fileSystem @*/
 	/*@modifies *mpn, fileSystem @*/
 {
@@ -348,7 +348,7 @@ fprintf(stderr, "*** mbits %u nbits %u nbytes %u t %p[%d] ix %u\n", mbits, nbits
     strcpy(t+ix, pgpMpiHex(p));
 if (_debug)
 fprintf(stderr, "*** %s %s\n", pre, t);
-    mp32nsethex(mpn, t);
+    mpnsethex(mpn, t);
     t = _free(t);
 if (_debug && _print)
 fprintf(stderr, "\t %s ", pre), mp32println(stderr, mpn->size, mpn->data);
@@ -481,7 +481,7 @@ static int pgpPrtSigParams(/*@unused@*/ pgpTag tag, byte pubkey_algo, byte sigty
 	    {
 		switch (i) {
 		case 0:		/* m**d */
-		    mp32nsethex(&_dig->c, pgpMpiHex(p));
+		    mpnsethex(&_dig->c, pgpMpiHex(p));
 if (_debug && _print)
 fprintf(stderr, "\t  m**d = "),  mp32println(stderr, _dig->c.size, _dig->c.data);
 		    /*@switchbreak@*/ break;
@@ -708,7 +708,7 @@ if (_debug && _print)
 fprintf(stderr, "\t     n = "),  mp32println(stderr, _dig->rsa_pk.n.size, _dig->rsa_pk.n.modl);
 		    /*@switchbreak@*/ break;
 		case 1:		/* e */
-		    mp32nsethex(&_dig->rsa_pk.e, pgpMpiHex(p));
+		    mpnsethex(&_dig->rsa_pk.e, pgpMpiHex(p));
 if (_debug && _print)
 fprintf(stderr, "\t     e = "),  mp32println(stderr, _dig->rsa_pk.e.size, _dig->rsa_pk.e.data);
 		    /*@switchbreak@*/ break;
@@ -732,12 +732,12 @@ if (_debug && _print)
 fprintf(stderr, "\t     q = "),  mp32println(stderr, _dig->q.size, _dig->q.modl);
 		    /*@switchbreak@*/ break;
 		case 2:		/* g */
-		    mp32nsethex(&_dig->g, pgpMpiHex(p));
+		    mpnsethex(&_dig->g, pgpMpiHex(p));
 if (_debug && _print)
 fprintf(stderr, "\t     g = "),  mp32println(stderr, _dig->g.size, _dig->g.data);
 		    /*@switchbreak@*/ break;
 		case 3:		/* y */
-		    mp32nsethex(&_dig->y, pgpMpiHex(p));
+		    mpnsethex(&_dig->y, pgpMpiHex(p));
 if (_debug && _print)
 fprintf(stderr, "\t     y = "),  mp32println(stderr, _dig->y.size, _dig->y.data);
 		    /*@switchbreak@*/ break;
@@ -1038,14 +1038,14 @@ void pgpCleanDig(pgpDig dig)
 
 	dig->md5 = _free(dig->md5);
 	dig->sha1 = _free(dig->sha1);
-	mp32nfree(&dig->hm);
-	mp32nfree(&dig->r);
-	mp32nfree(&dig->s);
+	mpnfree(&dig->hm);
+	mpnfree(&dig->r);
+	mpnfree(&dig->s);
 
 	(void) rsapkFree(&dig->rsa_pk);
-	mp32nfree(&dig->m);
-	mp32nfree(&dig->c);
-	mp32nfree(&dig->rsahm);
+	mpnfree(&dig->m);
+	mpnfree(&dig->c);
+	mpnfree(&dig->rsahm);
     }
 /*@-nullstate@*/
     return;
@@ -1075,11 +1075,11 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 
 	mp32bfree(&dig->p);
 	mp32bfree(&dig->q);
-	mp32nfree(&dig->g);
-	mp32nfree(&dig->y);
-	mp32nfree(&dig->hm);
-	mp32nfree(&dig->r);
-	mp32nfree(&dig->s);
+	mpnfree(&dig->g);
+	mpnfree(&dig->y);
+	mpnfree(&dig->hm);
+	mpnfree(&dig->r);
+	mpnfree(&dig->s);
 
 #ifdef	NOTYET
 	/*@-branchstate@*/
@@ -1096,10 +1096,10 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
 	dig->md5ctx = NULL;
 
 	mp32bfree(&dig->rsa_pk.n);
-	mp32nfree(&dig->rsa_pk.e);
-	mp32nfree(&dig->m);
-	mp32nfree(&dig->c);
-	mp32nfree(&dig->hm);
+	mpnfree(&dig->rsa_pk.e);
+	mpnfree(&dig->m);
+	mpnfree(&dig->c);
+	mpnfree(&dig->hm);
 
 	dig = _free(dig);
     }

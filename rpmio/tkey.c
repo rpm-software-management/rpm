@@ -110,11 +110,11 @@ main (int argc, char *argv[])
 
     mp32bzero(&dig->p);	mp32bsethex(&dig->p, fips_p);
     mp32bzero(&dig->q);	mp32bsethex(&dig->q, fips_q);
-    mp32nzero(&dig->g);	mp32nsethex(&dig->g, fips_g);
-    mp32nzero(&dig->y);	mp32nsethex(&dig->y, fips_y);
-    mp32nzero(&dig->r);	mp32nsethex(&dig->r, fips_r);
-    mp32nzero(&dig->s);	mp32nsethex(&dig->s, fips_s);
-    mp32nzero(&dig->hm);mp32nsethex(&dig->hm, fips_hm);
+    mpnzero(&dig->g);	mpnsethex(&dig->g, fips_g);
+    mpnzero(&dig->y);	mpnsethex(&dig->y, fips_y);
+    mpnzero(&dig->r);	mpnsethex(&dig->r, fips_r);
+    mpnzero(&dig->s);	mpnsethex(&dig->s, fips_s);
+    mpnzero(&dig->hm);	mpnsethex(&dig->hm, fips_hm);
 
     rc = dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm,
 		&dig->y, &dig->r, &dig->s);
@@ -123,12 +123,12 @@ fprintf(stderr, "=============================== DSA FIPS-186-1: rc %d\n", rc);
 
     mp32bfree(&dig->p);
     mp32bfree(&dig->q);
-    mp32nfree(&dig->g);
-    mp32nfree(&dig->y);
+    mpnfree(&dig->g);
+    mpnfree(&dig->y);
 
-    mp32nfree(&dig->hm);
-    mp32nfree(&dig->r);
-    mp32nfree(&dig->s);
+    mpnfree(&dig->hm);
+    mpnfree(&dig->r);
+    mpnfree(&dig->s);
 
 fprintf(stderr, "=============================== GPG Secret Key\n");
     if ((rc = doit(jbjSecretDSA, dig, printing)) != 0)
@@ -152,7 +152,7 @@ fprintf(stderr, "=============================== GPG Signature of \"abc\"\n");
 	rpmDigestUpdate(ctx, dsig->hash, dsig->hashlen);
 	rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
 
-	mp32nzero(&dig->hm);mp32nsethex(&dig->hm, digest);
+	mpnzero(&dig->hm); mpnsethex(&dig->hm, digest);
 
 fprintf(stderr, "\n    hm = [ 160]: %s\n\n", digest);
 
@@ -169,12 +169,12 @@ fprintf(stderr, "=============================== DSA verify: rc %d\n", rc);
 
     mp32bfree(&dig->p);
     mp32bfree(&dig->q);
-    mp32nfree(&dig->g);
-    mp32nfree(&dig->y);
+    mpnfree(&dig->g);
+    mpnfree(&dig->y);
 
-    mp32nfree(&dig->hm);
-    mp32nfree(&dig->r);
-    mp32nfree(&dig->s);
+    mpnfree(&dig->hm);
+    mpnfree(&dig->r);
+    mpnfree(&dig->s);
 
     dig = pgpFreeDig(dig);
 

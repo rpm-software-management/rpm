@@ -80,17 +80,17 @@ struct pgpDig_s {
     /* DSA parameters. */
     mp32barrett p;
     mp32barrett q;
-    mp32number g;
-    mp32number y;
-    mp32number hm;
-    mp32number r;
-    mp32number s;
+    mpnumber g;
+    mpnumber y;
+    mpnumber hm;
+    mpnumber r;
+    mpnumber s;
 
     /* RSA parameters. */
     rsapk rsa_pk;
-    mp32number m;
-    mp32number c;
-    mp32number rsahm;
+    mpnumber m;
+    mpnumber c;
+    mpnumber rsahm;
 };
 
 /** \ingroup rpmio

@@ -12,7 +12,7 @@
 typedef struct rpmbcObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
-    mp32number n;
+    mpnumber n;
 } rpmbcObject;
 
 /**

@@ -1214,7 +1214,7 @@ verifyPGPSignature(rpmts ts, /*@out@*/ char * t,
 	tt = stpcpy(tt, prefix);
 	tt = stpcpy(tt, dig->md5);
 
-	mp32nzero(&dig->rsahm);	mp32nsethex(&dig->rsahm, hexstr);
+	mpnzero(&dig->rsahm);	mpnsethex(&dig->rsahm, hexstr);
 
 	hexstr = _free(hexstr);
 
@@ -1308,7 +1308,7 @@ verifyGPGSignature(rpmts ts, /*@out@*/ char * t,
 	xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
 
-	mp32nzero(&dig->hm);	mp32nsethex(&dig->hm, dig->sha1);
+	mpnzero(&dig->hm);	mpnsethex(&dig->hm, dig->sha1);
 
 	/* Compare leading 16 bits of digest for quick check. */
 	signhash16[0] = (*dig->hm.data >> 24) & 0xff;

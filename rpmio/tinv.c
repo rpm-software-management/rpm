@@ -467,7 +467,7 @@ main(int argc, const char * argv[])
 {
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
     mp32barrett q;
-    mp32number s;
+    mpnumber s;
     uint32 qsize;
     uint32* qtemp;
     uint32* qwksp;
@@ -490,7 +490,7 @@ main(int argc, const char * argv[])
 	if (dsa_s[i] == NULL) break;
 fprintf(stderr, "================================================== %d\n", i);
 	fprintf(stderr, "       s: %s\n", dsa_s[i]);
-	mp32nzero(&s); mp32nsethex(&s, dsa_s[i]);
+	mpnzero(&s); mpnsethex(&s, dsa_s[i]);
 
 fprintf(stderr, "-------------------------------------------------- %d\n", i);
 	rc = Xmp32binv_w(&q, s.size, s.data, qtemp, qwksp);

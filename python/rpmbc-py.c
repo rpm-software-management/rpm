@@ -577,7 +577,7 @@ fprintf(stderr, "*** rpmbc_format(%p,%d,%d):\t", z, zbase, withname), mp32printl
 \endverbatim
  *
  */
-static void mp32nslide(const mp32number* n, uint32 xsize, const uint32* xdata,
+static void mpnslide(const mpnumber* n, uint32 xsize, const uint32* xdata,
 		uint32 size, /*@out@*/ uint32* slide)
 	/*@modifies slide @*/
 {
@@ -622,22 +622,22 @@ fprintf(stderr, "\t  x^1:\t"), mp32println(stderr, size, slide);
 }
 
 /*@observer@*/ /*@unchecked@*/
-static byte mp32nslide_presq[16] = 
+static byte mpnslide_presq[16] = 
 { 0, 1, 1, 2, 1, 3, 2, 3, 1, 4, 3, 4, 2, 4, 3, 4 };
 
 /*@observer@*/ /*@unchecked@*/
-static byte mp32nslide_mulg[16] =
+static byte mpnslide_mulg[16] =
 { 0, 0, 0, 1, 0, 2, 1, 3, 0, 4, 2, 5, 1, 6, 3, 7 };
 
 /*@observer@*/ /*@unchecked@*/
-static byte mp32nslide_postsq[16] =
+static byte mpnslide_postsq[16] =
 { 0, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0 };
 
 /**
  * Exponentiation with precomputed sliding window table.
  */
 /*@-boundsread@*/
-static void mp32npowsld_w(mp32number* n, uint32 size, const uint32* slide,
+static void mpnpowsld_w(mpnumber* n, uint32 size, const uint32* slide,
 		uint32 psize, const uint32* pdata)
 {
     uint32 rsize = (n->size > size ? n->size : size);
@@ -685,7 +685,7 @@ fprintf(stderr, "npowsld: p\t"), mp32println(stderr, psize, pdata);
 		if (lbits == 4) {
 if (_bc_debug < 0)
 fprintf(stderr, "*** #1 lbits %d kbits %d\n", lbits, kbits);
-		    for (s = mp32nslide_presq[kbits]; s > 0; s--) {
+		    for (s = mpnslide_presq[kbits]; s > 0; s--) {
 			mp32sqr(rdata, n->size, n->data);
 			mp32setx(n->size, n->data, 2*n->size, rdata);
 if (_bc_debug < 0)
@@ -693,12 +693,12 @@ fprintf(stderr, "\t pre1:\t"), mp32println(stderr, n->size, n->data);
 		    }
 
 		    mp32mul(rdata, n->size, n->data,
-				size, slide+mp32nslide_mulg[kbits]*size);
+				size, slide+mpnslide_mulg[kbits]*size);
 		    mp32setx(n->size, n->data, n->size+size, rdata);
 if (_bc_debug < 0)
 fprintf(stderr, "\t mul1:\t"), mp32println(stderr, n->size, n->data);
 
-		    for (s = mp32nslide_postsq[kbits]; s > 0; s--) {
+		    for (s = mpnslide_postsq[kbits]; s > 0; s--) {
 			mp32sqr(rdata, n->size, n->data);
 			mp32setx(n->size, n->data, 2*n->size, rdata);
 if (_bc_debug < 0)
@@ -726,7 +726,7 @@ fprintf(stderr, "\t  sqr:\t"), mp32println(stderr, n->size, n->data);
     if (kbits != 0) {
 if (_bc_debug < 0)
 fprintf(stderr, "*** #1 lbits %d kbits %d\n", lbits, kbits);
-	for (s = mp32nslide_presq[kbits]; s > 0; s--) {
+	for (s = mpnslide_presq[kbits]; s > 0; s--) {
 	    mp32sqr(rdata, n->size, n->data);
 	    mp32setx(n->size, n->data, 2*n->size, rdata);
 if (_bc_debug < 0)
@@ -734,12 +734,12 @@ fprintf(stderr, "\t pre2:\t"), mp32println(stderr, n->size, n->data);
 	}
 
 	mp32mul(rdata, n->size, n->data,
-			size, slide+mp32nslide_mulg[kbits]*size);
+			size, slide+mpnslide_mulg[kbits]*size);
 	mp32setx(n->size, n->data, n->size+size, rdata);
 if (_bc_debug < 0)
 fprintf(stderr, "\t mul2:\t"), mp32println(stderr, n->size, n->data);
 
-	for (s = mp32nslide_postsq[kbits]; s > 0; s--) {
+	for (s = mpnslide_postsq[kbits]; s > 0; s--) {
 	    mp32sqr(rdata, n->size, n->data);
 	    mp32setx(n->size, n->data, 2*n->size, rdata);
 if (_bc_debug < 0)
@@ -750,13 +750,13 @@ fprintf(stderr, "\tpost2:\t"), mp32println(stderr, n->size, n->data);
 /*@=boundsread@*/
 
 /**
- * mp32npow_w
+ * mpnpow_w
  *
  * Uses sliding window exponentiation; needs extra storage:
  *	if K=3, needs 4*size, if K=4, needs 8*size
  */
 /*@-boundsread@*/
-static void mp32npow_w(mp32number* n, uint32 xsize, const uint32* xdata,
+static void mpnpow_w(mpnumber* n, uint32 xsize, const uint32* xdata,
 		uint32 psize, const uint32* pdata)
 {
     uint32 xbits = mp32bitcnt(xsize, xdata);
@@ -768,12 +768,12 @@ static void mp32npow_w(mp32number* n, uint32 xsize, const uint32* xdata,
 
     /* Special case: 0**P and X**(-P) */
     if (xbits == 0 || mp32msbset(psize, pdata)) {
-	mp32nsetw(n, 0);
+	mpnsetw(n, 0);
 	return;
     }
     /* Special case: X**0 and 1**P */
     if (pbits == 0 || mp32isone(xsize, xdata)) {
-	mp32nsetw(n, 1);
+	mpnsetw(n, 1);
 	return;
     }
 
@@ -794,15 +794,15 @@ static void mp32npow_w(mp32number* n, uint32 xsize, const uint32* xdata,
 
 if (_bc_debug < 0)
 fprintf(stderr, "*** pbits %d xbits %d nsize %d size %d\n", pbits, xbits, nsize, size);
-    mp32nsize(n, nsize);
+    mpnsize(n, nsize);
 
     /* 1. Precompute odd powers of x (up to 2**K). */
     slide = (uint32*) alloca( (8*size) * sizeof(uint32));
 
-    mp32nslide(n, xsize, xdata, size, slide);
+    mpnslide(n, xsize, xdata, size, slide);
 
     /*@-internalglobs -mods@*/ /* noisy */
-    mp32npowsld_w(n, size, slide, psize, pdata);
+    mpnpowsld_w(n, size, slide, psize, pdata);
     /*@=internalglobs =mods@*/
 
 }
@@ -817,7 +817,7 @@ rpmbc_dealloc(rpmbcObject * s)
 if (_bc_debug < 0)
 fprintf(stderr, "*** rpmbc_dealloc(%p)\n", s);
 
-    mp32nfree(&s->n);
+    mpnfree(&s->n);
     PyObject_Del(s);
 }
 
@@ -889,7 +889,7 @@ static int rpmbc_init(rpmbcObject * z, PyObject *args, PyObject *kwds)
 
     if (o == NULL) {
 	if (z->n.data == NULL)
-	    mp32nsetw(&z->n, 0);
+	    mpnsetw(&z->n, 0);
     } else if (PyInt_Check(o)) {
 	l = PyInt_AsLong(o);
 	words = sizeof(l)/sizeof(words);
@@ -904,10 +904,10 @@ static int rpmbc_init(rpmbcObject * z, PyObject *args, PyObject *kwds)
     } else if (PyString_Check(o)) {
 	const unsigned char * hex = PyString_AsString(o);
 	/* XXX TODO: check for hex. */
-	mp32nsethex(&z->n, hex);
+	mpnsethex(&z->n, hex);
     } else if (is_rpmbc(o)) {
 	rpmbcObject *a = (rpmbcObject *)o;
-	mp32nsize(&z->n, a->n.size);
+	mpnsize(&z->n, a->n.size);
 	if (a->n.size > 0)
 	    mp32setx(z->n.size, z->n.data, a->n.size, a->n.data);
     } else {
@@ -916,7 +916,7 @@ static int rpmbc_init(rpmbcObject * z, PyObject *args, PyObject *kwds)
     }
 
     if (words > 0) {
-	mp32nsize(&z->n, words);
+	mpnsize(&z->n, words);
 	switch (words) {
 	case 2:
 /*@-shiftimplementation @*/
@@ -943,7 +943,7 @@ static void rpmbc_free(/*@only@*/ rpmbcObject * s)
 {
 if (_bc_debug)
 fprintf(stderr, "*** rpmbc_free(%p[%s])\n", s, lbl(s));
-    mp32nfree(&s->n);
+    mpnfree(&s->n);
     PyObject_Del(s);
 }
 
@@ -966,7 +966,7 @@ rpmbc_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
     PyObject * ns = (PyObject *) PyObject_New(rpmbcObject, &rpmbc_Type);
 
     if (ns != NULL)
-	mp32nzero(&((rpmbcObject *)ns)->n);
+	mpnzero(&((rpmbcObject *)ns)->n);
 
 if (_bc_debug < 0)
 fprintf(stderr, "*** rpmbc_new(%p[%s],%p[%s],%p[%s]) ret %p[%s]\n", subtype, lbl(subtype), args, lbl(args), kwds, lbl(kwds), ns, lbl(ns));
@@ -978,7 +978,7 @@ rpmbc_New(void)
 {
     rpmbcObject * ns = PyObject_New(rpmbcObject, &rpmbc_Type);
 
-    mp32nzero(&ns->n);
+    mpnzero(&ns->n);
     return ns;
 }
 
@@ -993,7 +993,7 @@ rpmbc_i2bc(PyObject * o)
 	rpmbcObject * ns = PyObject_New(rpmbcObject, &rpmbc_Type);
 	PyObject * args = PyTuple_New(1);
 
-	mp32nzero(&((rpmbcObject *)ns)->n);
+	mpnzero(&((rpmbcObject *)ns)->n);
 	(void) PyTuple_SetItem(args, 0, o);
 	rpmbc_init(ns, args, NULL);
 	Py_DECREF(args);
@@ -1042,7 +1042,7 @@ rpmbc_Gcd(/*@unused@*/ rpmbcObject * s, PyObject * args)
      && (z = rpmbc_New()) != NULL)
     {
 	wksp = alloca((a->n.size) * sizeof(*wksp));
-	mp32nsize(&z->n, a->n.size);
+	mpnsize(&z->n, a->n.size);
 	mp32gcd_w(a->n.size, a->n.data, b->n.data, z->n.data, wksp);
     }
 
@@ -1075,7 +1075,7 @@ fprintf(stderr, "*** rpmbc_Sqrt(%p)\n", s);
 
     if ((a = rpmbc_i2bc(op1)) != NULL
      && (z = rpmbc_New()) != NULL) {
-	mp32nsize(&z->n, a->n.size);
+	mpnsize(&z->n, a->n.size);
 	mp32sqr(z->n.data, a->n.size, a->n.data);
     }
 
@@ -1114,7 +1114,7 @@ rpmbc_add(rpmbcObject * a, rpmbcObject * b)
     uint32 carry;
 
     if ((z = rpmbc_New()) != NULL) {
-	mp32ninit(&z->n, a->n.size, a->n.data);
+	mpninit(&z->n, a->n.size, a->n.data);
 	carry = mp32addx(z->n.size, z->n.data, b->n.size, b->n.data);
     }
 
@@ -1132,7 +1132,7 @@ rpmbc_subtract(rpmbcObject * a, rpmbcObject * b)
     uint32 carry;
 
     if ((z = rpmbc_New()) != NULL) {
-	mp32ninit(&z->n, a->n.size, a->n.data);
+	mpninit(&z->n, a->n.size, a->n.data);
 	carry = mp32subx(z->n.size, z->n.data, b->n.size, b->n.data);
     }
 
@@ -1157,7 +1157,7 @@ rpmbc_multiply(rpmbcObject * a, rpmbcObject * b)
 	znorm = zsize - (mp32bitcnt(zsize, zdata) + 31)/32;
 	zsize -= znorm;
 	zdata += znorm;
-	mp32nset(&z->n, zsize, zdata);
+	mpnset(&z->n, zsize, zdata);
 if (_bc_debug)
 fprintf(stderr, "*** rpmbc_multiply(%p,%p):\t", a, b), mp32println(stderr, z->n.size, z->n.data);
     }
@@ -1219,7 +1219,7 @@ fprintf(stderr, "*** z %p[%d]\t", zdata, zsize), mp32println(stderr, zsize, zdat
 	}
 if (_bc_debug < 0)
 fprintf(stderr, "*** z %p[%d]\t", zdata, zsize), mp32println(stderr, zsize, zdata);
-	mp32nset(&z->n, zsize, zdata);
+	mpnset(&z->n, zsize, zdata);
 
 if (_bc_debug)
 fprintf(stderr, "*** rpmbc_divide(%p,%p):\t", a, b), mp32println(stderr, z->n.size, z->n.data);
@@ -1249,7 +1249,7 @@ rpmbc_remainder(rpmbcObject * a, rpmbcObject * b)
 	wksp = alloca((bsize+1) * sizeof(*wksp));
 
 	mp32nmod(zdata, a->n.size, a->n.data, bsize, bdata, wksp);
-	mp32nset(&z->n, zsize, zdata);
+	mpnset(&z->n, zsize, zdata);
 
 if (_bc_debug)
 fprintf(stderr, "*** rpmbc_remainder(%p,%p):\t", a, b), mp32println(stderr, z->n.size, z->n.data);
@@ -1308,14 +1308,14 @@ if (_bc_debug < 0)
 fprintf(stderr, "*** a %p[%d] b %p[%d] z %p[%d]\t", adata, asize, bdata, bsize, zdata, zsize), mp32println(stderr, zsize, zdata);
 
     zsize -= bsize;
-    mp32nset(&r->n, bsize, zdata+zsize);
+    mpnset(&r->n, bsize, zdata+zsize);
 
     znorm = mp32size(zsize, zdata);
     if (znorm < zsize) {
 	zsize -= znorm;
 	zdata += znorm;
     }
-    mp32nset(&q->n, zsize, zdata);
+    mpnset(&q->n, zsize, zdata);
 
 if (_bc_debug) {
 fprintf(stderr, "*** rpmbc_divmod(%p,%p)\n", a, b);
@@ -1336,7 +1336,7 @@ rpmbc_power(rpmbcObject * a, rpmbcObject * b, rpmbcObject * c)
 
     if ((z = rpmbc_New()) != NULL) {
 
-	mp32npow_w(&z->n, a->n.size, a->n.data, b->n.size, b->n.data);
+	mpnpow_w(&z->n, a->n.size, a->n.data, b->n.size, b->n.data);
 
 if (_bc_debug)
 fprintf(stderr, "*** rpmbc_power(%p,%p,%p):\t", a, b, c), mp32println(stderr, z->n.size, z->n.data);
@@ -1353,7 +1353,7 @@ rpmbc_negative(rpmbcObject * a)
     rpmbcObject * z;
 
     if ((z = rpmbc_New()) != NULL) {
-	mp32ninit(&z->n, a->n.size, a->n.data);
+	mpninit(&z->n, a->n.size, a->n.data);
 	mp32neg(z->n.size, z->n.data);
     }
 
@@ -1387,7 +1387,7 @@ rpmbc_absolute(rpmbcObject * a)
     }
 
     if ((z = rpmbc_New()) != NULL) {
-	mp32ninit(&z->n, a->n.size, a->n.data);
+	mpninit(&z->n, a->n.size, a->n.data);
 	mp32neg(z->n.size, z->n.data);
     }
 
@@ -1413,7 +1413,7 @@ rpmbc_invert(rpmbcObject * a)
     rpmbcObject * z;
 
     if ((z = rpmbc_New()) != NULL) {
-	mp32ninit(&z->n, a->n.size, a->n.data);
+	mpninit(&z->n, a->n.size, a->n.data);
 	mp32not(z->n.size, z->n.data);
     }
 
@@ -1438,7 +1438,7 @@ rpmbc_lshift(rpmbcObject * a, rpmbcObject * b)
 
 	if (bsize == 1)
 	    count = bdata[0];
-	mp32ninit(&z->n, a->n.size, a->n.data);
+	mpninit(&z->n, a->n.size, a->n.data);
 	mp32lshift(z->n.size, z->n.data, count);
 
 if (_bc_debug)
@@ -1464,7 +1464,7 @@ rpmbc_rshift(rpmbcObject * a, rpmbcObject * b)
 
 	if (bsize == 1)
 	    count = bdata[0];
-	mp32ninit(&z->n, a->n.size, a->n.data);
+	mpninit(&z->n, a->n.size, a->n.data);
 	mp32rshift(z->n.size, z->n.data, count);
 
 if (_bc_debug)
@@ -1491,7 +1491,7 @@ rpmbc_and(rpmbcObject * a, rpmbcObject * b)
 	    c = b;
 	    d = a;
 	}
-	mp32ninit(&z->n, c->n.size, c->n.data);
+	mpninit(&z->n, c->n.size, c->n.data);
 	mp32and(z->n.size, z->n.data, d->n.data + (d->n.size - c->n.size));
     }
 
@@ -1517,7 +1517,7 @@ rpmbc_xor(rpmbcObject * a, rpmbcObject * b)
 	    c = b;
 	    d = a;
 	}
-	mp32ninit(&z->n, c->n.size, c->n.data);
+	mpninit(&z->n, c->n.size, c->n.data);
 	mp32xor(z->n.size, z->n.data, d->n.data + (d->n.size - c->n.size));
     }
 
@@ -1543,7 +1543,7 @@ rpmbc_or(rpmbcObject * a, rpmbcObject * b)
 	    c = b;
 	    d = a;
 	}
-	mp32ninit(&z->n, c->n.size, c->n.data);
+	mpninit(&z->n, c->n.size, c->n.data);
 	mp32or(z->n.size, z->n.data, d->n.data + (d->n.size - c->n.size));
     }
 
@@ -1583,7 +1583,7 @@ fprintf(stderr, "*** rpmbc_coerce(%p[%s],%p[%s])\n", pv, lbl(*pv), pw, lbl(*pw))
 
     if (words > 0) {
 	rpmbcObject * z = rpmbc_New();
-	mp32nsize(&z->n, words);
+	mpnsize(&z->n, words);
 	switch (words) {
 	case 2:
 /*@-shiftimplementation @*/
@@ -1724,7 +1724,7 @@ rpmbc_inplace_multiply(rpmbcObject * a, rpmbcObject * b)
     zsize -= znorm;
     zdata += znorm;
 
-    mp32nset(&a->n, zsize, zdata);
+    mpnset(&a->n, zsize, zdata);
 
 if (_bc_debug)
 fprintf(stderr, "*** rpmbc_inplace_multiply(%p,%p):\t", a, b), mp32println(stderr, a->n.size, a->n.data);
@@ -1769,7 +1769,7 @@ fprintf(stderr, "*** a %p[%d] b %p[%d] z %p[%d]\t", adata, asize, bdata, bsize, 
 	zsize -= znorm;
 	zdata += znorm;
     }
-    mp32nset(&a->n, zsize, zdata);
+    mpnset(&a->n, zsize, zdata);
 
 if (_bc_debug)
 fprintf(stderr, "*** rpmbc_inplace_divide(%p,%p):\t", a, b), mp32println(stderr, a->n.size, a->n.data);
@@ -1796,7 +1796,7 @@ rpmbc_inplace_remainder(rpmbcObject * a, rpmbcObject * b)
     wksp = alloca((bsize+1) * sizeof(*wksp));
 
     mp32nmod(zdata, a->n.size, a->n.data, bsize, bdata, wksp);
-    mp32nset(&a->n, zsize, zdata);
+    mpnset(&a->n, zsize, zdata);
 
 if (_bc_debug)
 fprintf(stderr, "*** rpmbc_inplace_remainder(%p,%p):\t", a, b), mp32println(stderr, a->n.size, a->n.data);
