@@ -8,16 +8,65 @@
 #include "misc.h"
 #include "rpmdb.h"
 
-static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:"
-			                 "/usr/X11R6/bin";
+static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
 static int removeFile(char * file, unsigned int flags, short mode, 
-		      enum fileActions action);
-static int runScript(Header h, const char * root, int progArgc, const char ** progArgv, 
-		     const char * script, int arg1, int arg2, FD_t errfd);
+		      enum fileActions action)
+{
+    int rc = 0;
+    char * newfile;
+	
+    switch (action) {
+
+      case FA_BACKUP:
+	newfile = alloca(strlen(file) + 20);
+	strcpy(newfile, file);
+	strcat(newfile, ".rpmsave");
+	if (rename(file, newfile)) {
+	    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s"),
+			file, newfile, strerror(errno));
+	    rc = 1;
+	}
+	break;
+
+      case FA_REMOVE:
+	if (S_ISDIR(mode)) {
+	    if (rmdir(file)) {
+		if (errno == ENOTEMPTY)
+		    rpmError(RPMERR_RMDIR, 
+			_("cannot remove %s - directory not empty"), 
+			file);
+		else
+		    rpmError(RPMERR_RMDIR, _("rmdir of %s failed: %s"),
+				file, strerror(errno));
+		rc = 1;
+	    }
+	} else {
+	    if (unlink(file)) {
+		if (errno != ENOENT || !(flags & RPMFILE_MISSINGOK)) {
+		    rpmError(RPMERR_UNLINK, 
+			      _("removal of %s failed: %s"),
+				file, strerror(errno));
+		}
+		rc = 1;
+	    }
+	}
+	break;
+      case FA_UNKNOWN:
+      case FA_CREATE:
+      case FA_SAVE:
+      case FA_SKIP:
+      case FA_SKIPNSTATE:
+      case FA_ALTNAME:
+	break;
+    }
+ 
+    return 0;
+}
 
 int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset, 
-			int flags, enum fileActions * actions, FD_t scriptFd) {
+			int flags, enum fileActions * actions, FD_t scriptFd)
+{
     Header h;
     int i;
     int fileCount;
@@ -143,7 +192,8 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
 }
 
 static int runScript(Header h, const char * root, int progArgc, const char ** progArgv, 
-		     const char * script, int arg1, int arg2, FD_t errfd) {
+		     const char * script, int arg1, int arg2, FD_t errfd)
+{
     const char ** argv;
     int argc;
     const char ** prefixes = NULL;
@@ -294,7 +344,8 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 }
 
 int runInstScript(const char * root, Header h, int scriptTag, int progTag,
-	          int arg, int norunScripts, FD_t err) {
+	          int arg, int norunScripts, FD_t err)
+{
     void ** programArgv;
     int programArgc;
     const char ** argv;
@@ -322,62 +373,10 @@ int runInstScript(const char * root, Header h, int scriptTag, int progTag,
     return rc;
 }
 
-static int removeFile(char * file, unsigned int flags, short mode, 
-		      enum fileActions action) {
-    int rc = 0;
-    char * newfile;
-	
-    switch (action) {
-
-      case FA_BACKUP:
-	newfile = alloca(strlen(file) + 20);
-	strcpy(newfile, file);
-	strcat(newfile, ".rpmsave");
-	if (rename(file, newfile)) {
-	    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s"),
-			file, newfile, strerror(errno));
-	    rc = 1;
-	}
-	break;
-
-      case FA_REMOVE:
-	if (S_ISDIR(mode)) {
-	    if (rmdir(file)) {
-		if (errno == ENOTEMPTY)
-		    rpmError(RPMERR_RMDIR, 
-			_("cannot remove %s - directory not empty"), 
-			file);
-		else
-		    rpmError(RPMERR_RMDIR, _("rmdir of %s failed: %s"),
-				file, strerror(errno));
-		rc = 1;
-	    }
-	} else {
-	    if (unlink(file)) {
-		if (errno != ENOENT || !(flags & RPMFILE_MISSINGOK)) {
-		    rpmError(RPMERR_UNLINK, 
-			      _("removal of %s failed: %s"),
-				file, strerror(errno));
-		}
-		rc = 1;
-	    }
-	}
-	break;
-      case FA_UNKNOWN:
-      case FA_CREATE:
-      case FA_SAVE:
-      case FA_SKIP:
-      case FA_SKIPNSTATE:
-      case FA_ALTNAME:
-	break;
-    }
- 
-    return 0;
-}
-
 static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourceH,
 			    Header triggeredH, int arg1correction, int arg2,
-			    char * triggersAlreadyRun, FD_t scriptFd) {
+			    char * triggersAlreadyRun, FD_t scriptFd)
+{
     const char ** triggerNames;
     const char ** triggerVersions;
     const char ** triggerScripts;
@@ -457,7 +456,8 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 }
 
 int runTriggers(const char * root, rpmdb db, int sense, Header h,
-		int countCorrection, FD_t scriptFd) {
+		int countCorrection, FD_t scriptFd)
+{
     char * packageName;
     dbiIndexSet matches, otherMatches;
     Header triggeredH;
@@ -495,7 +495,8 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
 }
 
 int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
-		     int countCorrection, FD_t scriptFd) {
+		     int countCorrection, FD_t scriptFd)
+{
     int rc = 0;
     dbiIndexSet matches;
     char ** triggerNames;
