@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2001-01-05 16:03-0500\n"
+msgstr "POT-Creation-Date: 2001-01-08 23:06-0500\n"
 
 # , c-format
 #: build.c:26
@@ -2652,20 +2652,20 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1626
+#: lib/depends.c:1660
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1676
+#: lib/depends.c:1710
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1779
+#: lib/depends.c:1807
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1810
+#: lib/depends.c:1838
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3039,16 +3039,16 @@ msgstr "Não consegui abrir: %s\n"
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
-#: lib/misc.c:339 lib/misc.c:344 lib/misc.c:350
+#: lib/misc.c:328 lib/misc.c:333 lib/misc.c:339
 #, c-format
 msgid "error creating temporary file %s"
 msgstr ""
 
-#: lib/package.c:85
+#: lib/package.c:88
 msgid "packaging version 1 is not supported by this version of RPM"
 msgstr ""
 
-#: lib/package.c:142
+#: lib/package.c:143
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
 msgstr ""
@@ -4137,6 +4137,10 @@ msgstr ""
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr ""
 
+#: lib/transaction.c:466
+msgid "========== relocations\n"
+msgstr ""
+
 # "Project-Id-Version: rpm-2.5.3\n"
 # "PO-Revision-Date: 1997-09-11 14:00 MET DST\n"
 # "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
@@ -4145,9 +4149,28 @@ msgstr ""
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/transaction.c:496
+#: lib/transaction.c:469
 #, fuzzy, c-format
-msgid "excluding file %s%s\n"
+msgid "%5d exclude  %s\n"
+msgstr "RPM versão %s\n"
+
+# , c-format
+#: lib/transaction.c:472
+#, fuzzy, c-format
+msgid "%5d relocate %s -> %s\n"
+msgstr "Não consegui abrir: %s\n"
+
+# "Project-Id-Version: rpm-2.5.3\n"
+# "PO-Revision-Date: 1997-09-11 14:00 MET DST\n"
+# "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
+# "Language-Team: Portuguese <pt@li.org>\n"
+# "MIME-Version: 1.0\n"
+# "Content-Type: text/plain; charset=ISO-8859-1\n"
+# "Content-Transfer-Encoding: 8-bit\n"
+# , c-format
+#: lib/transaction.c:543
+#, fuzzy, c-format
+msgid "excluding multilib path %s%s\n"
 msgstr "RPM versão %s\n"
 
 # "Project-Id-Version: rpm-2.5.3\n"
@@ -4158,23 +4181,36 @@ msgstr "RPM versão %s\n"
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: lib/transaction.c:522 lib/transaction.c:605
+#: lib/transaction.c:592
 #, fuzzy, c-format
-msgid "excluding directory %s\n"
+msgid "excluding %s %s\n"
 msgstr "RPM versão %s\n"
 
-#: lib/transaction.c:527
+#: lib/transaction.c:599
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
 # , c-format
-#: lib/transaction.c:598
+#: lib/transaction.c:671
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "Não consegui abrir: %s\n"
 
-#: lib/transaction.c:749
+# "Project-Id-Version: rpm-2.5.3\n"
+# "PO-Revision-Date: 1997-09-11 14:00 MET DST\n"
+# "Last-Translator: Arnaldo Carvalho de Melo <acme@conectiva.com.br>\n"
+# "Language-Team: Portuguese <pt@li.org>\n"
+# "MIME-Version: 1.0\n"
+# "Content-Type: text/plain; charset=ISO-8859-1\n"
+# "Content-Transfer-Encoding: 8-bit\n"
+# , c-format
+#: lib/transaction.c:676
+#, fuzzy, c-format
+msgid "excluding directory %s\n"
+msgstr "RPM versão %s\n"
+
+#: lib/transaction.c:800
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

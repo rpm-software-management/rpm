@@ -317,34 +317,81 @@ void rpmProblemSetFree(rpmProblemSet probs)
     free(probs);
 }
 
-/** @todo multilib file action assignment need to be checked. */
-static Header relocateFileList(struct availablePackage * alp,
-			       rpmProblemSet probs, Header origH,
-			       enum fileActions * actions,
-			       int allowBadRelocate)
+static /*@observer@*/ const char *const ftstring (enum fileTypes ft)
 {
-    int numValid, numRelocations;
-    int i, j;
+    switch (ft) {
+    case XDIR:	return "directory";
+    case CDEV:	return "char dev";
+    case BDEV:	return "block dev";
+    case LINK:	return "link";
+    case SOCK:	return "sock";
+    case PIPE:	return "fifo/pipe";
+    case REG:	return "file";
+    }
+    return "unknown file type";
+}
+
+static enum fileTypes whatis(uint_16 mode)
+{
+    if (S_ISDIR(mode))	return XDIR;
+    if (S_ISCHR(mode))	return CDEV;
+    if (S_ISBLK(mode))	return BDEV;
+    if (S_ISLNK(mode))	return LINK;
+    if (S_ISSOCK(mode))	return SOCK;
+    if (S_ISFIFO(mode))	return PIPE;
+    return REG;
+}
+
+#define alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
+
+/**
+ * Relocate files in header.
+ * @todo multilib file dispositions need to be checked.
+ * @param ts		transaction set
+ * @param alp		available package
+ * @param origH		package header
+ * @param actions	file dispositions
+ * @return		header with relocated files
+ */
+static Header relocateFileList(const rpmTransactionSet ts,
+		struct availablePackage * alp,
+		Header origH, enum fileActions * actions)
+{
+    static int _printed = 0;
+    rpmProblemSet probs = ts->probs;
+    int allowBadRelocate = (ts->ignoreSet & RPMPROB_FILTER_FORCERELOCATE);
     rpmRelocation * rawRelocations = alp->relocs;
     rpmRelocation * relocations = NULL;
+    int numRelocations;
     const char ** validRelocations;
-    char ** baseNames, ** dirNames;
+    int_32 validType;
+    int numValid;
+    const char ** baseNames;
+    const char ** dirNames;
     int_32 * dirIndexes;
     int_32 * newDirIndexes;
-    int_32 fileCount, dirCount;
+    int_32 fileCount;
+    int_32 dirCount;
     uint_32 * fFlags = NULL;
+    uint_16 * fModes = NULL;
     char * skipDirList;
     Header h;
-    int relocated = 0, len;
-    char * str;
+    int nrelocated = 0;
     int fileAlloced = 0;
-    char * filespec = NULL;
-    char * chptr;
+    char * fn = NULL;
     int haveRelocatedFile = 0;
+    int len;
+    int i, j;
 
-    if (!headerGetEntry(origH, RPMTAG_PREFIXES, NULL,
+    if (!headerGetEntry(origH, RPMTAG_PREFIXES, &validType,
 			(void **) &validRelocations, &numValid))
 	numValid = 0;
+
+    numRelocations = 0;
+    if (rawRelocations)
+	while (rawRelocations[numRelocations].newPath ||
+	       rawRelocations[numRelocations].oldPath)
+	    numRelocations++;
 
     /*
      * If no relocations are specified (usually the case), then return the
@@ -352,13 +399,12 @@ static Header relocateFileList(struct availablePackage * alp,
      * should be added, but, since relocateFileList() can be called more
      * than once for the same header, don't bother if already present.
      */
-    if (rawRelocations == NULL) {
-
-	if (numValid && !headerIsEntry(origH, RPMTAG_INSTPREFIXES)) {
+    if (numRelocations == 0) {
+	if (numValid) {
 	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES))
 		headerAddEntry(origH, RPMTAG_INSTPREFIXES,
-			RPM_STRING_ARRAY_TYPE, validRelocations, numValid);
-	    free((void *)validRelocations);
+			validType, validRelocations, numValid);
+	    headerFreeData(validRelocations, validType);
 	}
 	/* XXX FIXME multilib file actions need to be checked. */
 	return headerLink(origH);
@@ -370,13 +416,6 @@ static Header relocateFileList(struct availablePackage * alp,
     h = headerLink(origH);
 #endif
 
-    if (rawRelocations) {
-	for (i = 0; rawRelocations[i].newPath || rawRelocations[i].oldPath; i++)
-	    ;
-	numRelocations = i;
-    } else {
-	numRelocations = 0;
-    }
     relocations = alloca(sizeof(*relocations) * numRelocations);
 
     /* Build sorted relocation list from raw relocations. */
@@ -386,22 +425,19 @@ static Header relocateFileList(struct availablePackage * alp,
 
 	/* FIXME: Trailing /'s will confuse us greatly. Internal ones will 
 	   too, but those are more trouble to fix up. :-( */
-	str = alloca(strlen(rawRelocations[i].oldPath) + 1);
-	strcpy(str, rawRelocations[i].oldPath);
-	stripTrailingSlashes(str);
-	relocations[i].oldPath = str;
+	relocations[i].oldPath =
+	    stripTrailingChar(alloca_strdup(rawRelocations[i].oldPath), '/');
 
 	/* An old path w/o a new path is valid, and indicates exclusion */
 	if (rawRelocations[i].newPath) {
-	    str = alloca(strlen(rawRelocations[i].newPath) + 1);
-	    strcpy(str, rawRelocations[i].newPath);
-	    stripTrailingSlashes(str);
-	    relocations[i].newPath = str;
+	    relocations[i].newPath =
+	    	stripTrailingChar(alloca_strdup(rawRelocations[i].newPath), '/');
 
 	    /* Verify that the relocation's old path is in the header. */
 	    for (j = 0; j < numValid; j++)
 		if (!strcmp(validRelocations[j], relocations[i].oldPath)) break;
-	    if (j == numValid && !allowBadRelocate)
+	    /* XXX actions check prevents problem from being appended twice. */
+	    if (j == numValid && !allowBadRelocate && actions)
 		psAppend(probs, RPMPROB_BADRELOCATE, alp->key, alp->h,
 			 relocations[i].oldPath, NULL, NULL, 0);
 	} else {
@@ -423,6 +459,19 @@ static Header relocateFileList(struct availablePackage * alp,
 	    madeSwap = 1;
 	}
 	if (!madeSwap) break;
+    }
+
+    if (!_printed) {
+	_printed = 1;
+	rpmMessage(RPMMESS_DEBUG, _("========== relocations\n"));
+	for (i = 0; i < numRelocations; i++) {
+	    if (relocations[i].newPath == NULL)
+		rpmMessage(RPMMESS_DEBUG, _("%5d exclude  %s\n"),
+			i, relocations[i].oldPath);
+	    else
+		rpmMessage(RPMMESS_DEBUG, _("%5d relocate %s -> %s\n"),
+			i, relocations[i].oldPath, relocations[i].newPath);
+	}
     }
 
     /* Add relocation values to the header */
@@ -454,13 +503,8 @@ static Header relocateFileList(struct availablePackage * alp,
 		       (void **) actualRelocations, numActual);
 
 	free((void *)actualRelocations);
-	free((void *)validRelocations);
+	headerFreeData(validRelocations, validType);
     }
-
-    /* For all relocations, we go through sorted file and relocation lists 
-     * backwards so that /usr/local relocations take precedence over /usr 
-     * ones.
-     */
 
     headerGetEntry(h, RPMTAG_BASENAMES, NULL, (void **) &baseNames, 
 		   &fileCount);
@@ -468,84 +512,112 @@ static Header relocateFileList(struct availablePackage * alp,
     headerGetEntry(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames, 
 		   &dirCount);
     headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fFlags, NULL);
+    headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fModes, NULL);
 
-    skipDirList = xcalloc(sizeof(*skipDirList), dirCount);
+    skipDirList = alloca(dirCount * sizeof(*skipDirList));
+    memset(skipDirList, 0, dirCount * sizeof(*skipDirList));
 
     newDirIndexes = alloca(sizeof(*newDirIndexes) * fileCount);
     memcpy(newDirIndexes, dirIndexes, sizeof(*newDirIndexes) * fileCount);
     dirIndexes = newDirIndexes;
 
-    /* Now relocate individual files. */
+    /*
+     * For all relocations, we go through sorted file/relocation lists 
+     * backwards so that /usr/local relocations take precedence over /usr 
+     * ones.
+     */
+
+    /* Relocate individual paths. */
 
     for (i = fileCount - 1; i >= 0; i--) {
+	char * te;
+	int fslen;
 
 	/*
 	 * If only adding libraries of different arch into an already
 	 * installed package, skip all other files.
 	 */
-	if (actions && alp->multiLib && !isFileMULTILIB((fFlags[i]))) {
-	    actions[i] = FA_SKIPMULTILIB;
+	if (alp->multiLib && !isFileMULTILIB((fFlags[i]))) {
+	    if (actions) {
+		actions[i] = FA_SKIPMULTILIB;
+		rpmMessage(RPMMESS_DEBUG, _("excluding multilib path %s%s\n"), 
+			dirNames[dirIndexes[i]], baseNames[i]);
+	    }
 	    continue;
 	}
-
-	/* If we're skipping the directory this file is part of, skip this
-	 * file as well.
-	 */
-	if (skipDirList[dirIndexes[i]]) {
-	    actions[i] = FA_SKIPNSTATE;
-	    rpmMessage(RPMMESS_DEBUG, _("excluding file %s%s\n"), 
-		       dirNames[dirIndexes[i]], baseNames[i]);
-	    continue;
-	} 
-
-	/* See if this file needs relocating (which will only occur if the
-	 * full file path we have exactly matches a path in the relocation
-	 * list. XXX FIXME: Would a bsearch of the (already sorted) 
-	 * relocation list be a good idea?
-	 */
 
 	len = strlen(dirNames[dirIndexes[i]]) + strlen(baseNames[i]) + 1;
 	if (len >= fileAlloced) {
 	    fileAlloced = len * 2;
-	    filespec = xrealloc(filespec, fileAlloced);
+	    fn = xrealloc(fn, fileAlloced);
 	}
-	(void) stpcpy( stpcpy(filespec, dirNames[dirIndexes[i]]) , baseNames[i]);
+	te = stpcpy( stpcpy(fn, dirNames[dirIndexes[i]]), baseNames[i]);
+	fslen = (te - fn);
 
-	for (j = numRelocations - 1; j >= 0; j--)
-	    if (!strcmp(relocations[j].oldPath, filespec)) break;
-
+	/*
+	 * See if this file needs relocating.
+	 */
+	/*
+	 * XXX FIXME: Would a bsearch of the (already sorted) 
+	 * relocation list be a good idea?
+	 */
+	for (j = numRelocations - 1; j >= 0; j--) {
+	    len = strlen(relocations[j].oldPath);
+	    if (fslen < len)
+		continue;
+	    if (strncmp(relocations[j].oldPath, fn, len))
+		continue;
+	    break;
+	}
 	if (j < 0) continue;
 
-	if (actions && relocations[j].newPath == NULL) {
-	    /* On install, a relocate to NULL means skip the path. */
-	    skipDirList[i] = 1;
-	    rpmMessage(RPMMESS_DEBUG, _("excluding directory %s\n"), 
-		       dirNames[i]);
+	/* On install, a relocate to NULL means skip the path. */
+	if (relocations[j].newPath == NULL) {
+	    enum fileTypes ft = whatis(fModes[i]);
+	    int k;
+	    if (ft == XDIR) {
+		/* Start with the parent, looking for directory to exclude. */
+		for (k = dirIndexes[i]; k < dirCount; k++) {
+		    len = strlen(dirNames[k]) - 1;
+		    while (len > 0 && dirNames[k][len-1] == '/') len--;
+		    if (len == fslen && !strncmp(dirNames[k], fn, len))
+			break;
+		}
+		if (k >= dirCount)
+		    continue;
+		skipDirList[k] = 1;
+	    }
+	    if (actions) {
+		actions[i] = FA_SKIPNSTATE;
+		rpmMessage(RPMMESS_DEBUG, _("excluding %s %s\n"),
+			ftstring(ft), fn);
+	    }
 	    continue;
 	}
 
-	rpmMessage(RPMMESS_DEBUG, _("relocating %s to %s\n"),
-		    filespec, relocations[j].newPath);
-	relocated = 1;
+	if (actions)
+	    rpmMessage(RPMMESS_DEBUG, _("relocating %s to %s\n"),
+		    fn, relocations[j].newPath);
+	nrelocated++;
 
 	len = strlen(relocations[j].newPath);
 	if (len >= fileAlloced) {
 	    fileAlloced = len * 2;
-	    filespec = xrealloc(filespec, fileAlloced);
+	    fn = xrealloc(fn, fileAlloced);
 	}
-	strcpy(filespec, relocations[j].newPath);
-	chptr = strrchr(filespec, '/');
-	*chptr++ = '\0';
+	strcpy(fn, relocations[j].newPath);
 
-	/* filespec is the new path, and chptr is the new basename */
-	if (strcmp(baseNames[i], chptr)) {
-	    baseNames[i] = alloca(strlen(chptr) + 1);
-	    strcpy(baseNames[i], chptr);
+	{   char * s = strrchr(fn, '/');
+	    *s++ = '\0';
+
+	    /* fn is the new dirName, and s is the new baseName */
+	    if (strcmp(baseNames[i], s))
+		baseNames[i] = alloca_strdup(s);
 	}
 
 	/* Does this directory already exist in the directory list? */
 	for (j = 0; j < dirCount; j++)
-	    if (!strcmp(filespec, dirNames[j])) break;
+	    if (!strcmp(fn, dirNames[j])) break;
 	
 	if (j < dirCount) {
 	    dirIndexes[i] = j;
@@ -554,29 +626,26 @@ static Header relocateFileList(struct availablePackage * alp,
 
 	/* Creating new paths is a pita */
 	if (!haveRelocatedFile) {
-	    char ** newDirList;
+	    const char ** newDirList;
 	    int k;
 
 	    haveRelocatedFile = 1;
 	    newDirList = xmalloc(sizeof(*newDirList) * (dirCount + 1));
-	    for (k = 0; k < dirCount; k++) {
-		newDirList[k] = alloca(strlen(dirNames[k]) + 1);
-		strcpy(newDirList[k], dirNames[k]);
-	    }
-	    free(dirNames);
+	    for (k = 0; k < dirCount; k++)
+		newDirList[k] = alloca_strdup(dirNames[k]);
+	    headerFreeData(dirNames, RPM_STRING_ARRAY_TYPE);
 	    dirNames = newDirList;
 	} else {
 	    dirNames = xrealloc(dirNames, 
 			       sizeof(*dirNames) * (dirCount + 1));
 	}
 
-	dirNames[dirCount] = alloca(strlen(filespec) + 1);
-	strcpy(dirNames[dirCount], filespec);
+	dirNames[dirCount] = alloca_strdup(fn);
 	dirIndexes[i] = dirCount;
 	dirCount++;
     }
 
-    /* Start off by relocating directories. */
+    /* Finish off by relocating directories. */
     for (i = dirCount - 1; i >= 0; i--) {
 	for (j = numRelocations - 1; j >= 0; j--) {
 	    int oplen;
@@ -585,8 +654,10 @@ static Header relocateFileList(struct availablePackage * alp,
 	    if (strncmp(relocations[j].oldPath, dirNames[i], oplen))
 		continue;
 
-	    /* Only subdirectories or complete file paths may be relocated. We
-	       don't check for '\0' as our directory names all end in '/'. */
+	    /*
+	     * Only subdirectories or complete file paths may be relocated. We
+	     * don't check for '\0' as our directory names all end in '/'.
+	     */
 	    if (!(dirNames[i][oplen] == '/'))
 		continue;
 
@@ -595,22 +666,24 @@ static Header relocateFileList(struct availablePackage * alp,
 		char *t = alloca(strlen(s) + strlen(dirNames[i]) - oplen + 1);
 
 		(void) stpcpy( stpcpy(t, s) , dirNames[i] + oplen);
-		rpmMessage(RPMMESS_DEBUG, _("relocating directory %s to %s\n"),
-			dirNames[i], t);
+		if (actions)
+		    rpmMessage(RPMMESS_DEBUG,
+			_("relocating directory %s to %s\n"), dirNames[i], t);
 		dirNames[i] = t;
-		relocated = 1;
-	    } else if (actions) {
-		/* On install, a relocate to NULL means skip the file */
-		skipDirList[i] = 1;
-		rpmMessage(RPMMESS_DEBUG, _("excluding directory %s\n"), 
-			   dirNames[i]);
+		nrelocated++;
+	    } else {
+		if (actions && !skipDirList[i]) {
+		    rpmMessage(RPMMESS_DEBUG, _("excluding directory %s\n"), 
+			dirNames[dirIndexes[i]]);
+		    actions[i] = FA_SKIPNSTATE;
+		}
 	    }
 	    break;
 	}
     }
 
     /* Save original filenames in header and replace (relocated) filenames. */
-    if (relocated) {
+    if (nrelocated) {
 	int c;
 	void * p;
 	int t;
@@ -618,16 +691,17 @@ static Header relocateFileList(struct availablePackage * alp,
 	p = NULL;
 	headerGetEntry(h, RPMTAG_BASENAMES, &t, &p, &c);
 	headerAddEntry(h, RPMTAG_ORIGBASENAMES, t, p, c);
-	free((void *)p);
+	headerFreeData(p, t);
 
 	p = NULL;
 	headerGetEntry(h, RPMTAG_DIRNAMES, &t, &p, &c);
 	headerAddEntry(h, RPMTAG_ORIGDIRNAMES, t, p, c);
-	free((void *)p);
+	headerFreeData(p, t);
 
 	p = NULL;
 	headerGetEntry(h, RPMTAG_DIRINDEXES, &t, &p, &c);
 	headerAddEntry(h, RPMTAG_ORIGDIRINDEXES, t, p, c);
+	headerFreeData(p, t);
 
 	headerModifyEntry(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
@@ -637,10 +711,9 @@ static Header relocateFileList(struct availablePackage * alp,
 			  dirIndexes, fileCount);
     }
 
-    free(baseNames);
-    free(dirNames);
-    if (filespec) free(filespec);
-    free(skipDirList);
+    headerFreeData(baseNames, RPM_STRING_ARRAY_TYPE);
+    headerFreeData(dirNames, RPM_STRING_ARRAY_TYPE);
+    if (fn) free(fn);
 
     return h;
 }
@@ -699,28 +772,6 @@ static int sharedCmp(const void * one, const void * two)
 	return 1;
 
     return 0;
-}
-
-static enum fileTypes whatis(short mode)
-{
-    enum fileTypes result;
-
-    if (S_ISDIR(mode))
-	result = XDIR;
-    else if (S_ISCHR(mode))
-	result = CDEV;
-    else if (S_ISBLK(mode))
-	result = BDEV;
-    else if (S_ISLNK(mode))
-	result = LINK;
-    else if (S_ISSOCK(mode))
-	result = SOCK;
-    else if (S_ISFIFO(mode))
-	result = PIPE;
-    else
-	result = REG;
-
-    return result;
 }
 
 static enum fileActions decideFileFate(const char * dirName,
@@ -884,7 +935,7 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
 	if (otherStates && otherStates[otherFileNum] != RPMFILE_STATE_NORMAL)
 	    continue;
 
-	if (fi->actions[fileNum] == FA_SKIPMULTILIB)
+	if (XFA_SKIPPING(fi->actions[fileNum]))
 	    continue;
 
 	if (filecmp(otherModes[otherFileNum],
@@ -1032,7 +1083,7 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
 	 */
 
 	/* Locate this overlapped file in the set of added/removed packages. */
-	for (j = 0; recs[j] != fi; j++)
+	for (j = 0; j < numRecs && recs[j] != fi; j++)
 	    ;
 
 	/* Find what the previous disposition of this file was. */
@@ -1472,13 +1523,12 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		continue;
 	    }
 
-	    /* Allocate file actions (and initialize to RPMFILE_STATE_NORMAL) */
+	    /* Allocate file actions (and initialize to FA_UNKNOWN) */
 	    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-	    hdrs[i] = relocateFileList(alp, ts->probs, alp->h, fi->actions,
-			          ts->ignoreSet & RPMPROB_FILTER_FORCERELOCATE);
+	    hdrs[i] = relocateFileList(ts, alp, alp->h, fi->actions);
 	    fi->h = headerLink(hdrs[i]);
-	    fi->type = TR_ADDED;
 	    fi->ap = alp;
+	    fi->type = TR_ADDED;
 	    break;
 	case TR_REMOVED:
 	    fi->record = ts->order[oc].u.removed.dboffset;
@@ -1792,7 +1842,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 			ourrc++;
 			fd = NULL;
 		    } else {
-			hdrs[i] = relocateFileList(alp, ts->probs, h, NULL, 1);
+			hdrs[i] = relocateFileList(ts, alp, h, NULL);
 			headerFree(h);
 		    }
 		}

@@ -25,6 +25,7 @@ struct sharedFileInfo {
 };
 
 /**
+ * File disposition(s) during package install/erase.
  */
 enum fileActions {
     FA_UNKNOWN = 0,
@@ -40,15 +41,19 @@ enum fileActions {
 };
 
 /**
+ * File types.
+ * These are the types of files used internally by rpm. The file
+ * type is determined by applying stat(2) macros like S_ISDIR to
+ * the file mode tag from a header.
  */
 enum fileTypes {
-    XDIR,
-    BDEV,
-    CDEV,
-    SOCK,
-    PIPE,
-    REG,
-    LINK
+    PIPE	= 1,	/*!< pipe/fifo */
+    CDEV	= 2,	/*!< character device */
+    XDIR	= 4,	/*!< directory */
+    BDEV	= 6,	/*!< block device */
+    REG		= 8,	/*!< regular file */
+    LINK	= 10,	/*!< hard link */
+    SOCK	= 12	/*!< socket */
 };
 
 #ifdef __cplusplus

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-01-05 16:03-0500\n"
+"POT-Creation-Date: 2001-01-08 23:06-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2573,20 +2573,20 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
 #. Record all relations.
-#: lib/depends.c:1626
+#: lib/depends.c:1660
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1676
+#: lib/depends.c:1710
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1779
+#: lib/depends.c:1807
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1810
+#: lib/depends.c:1838
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2953,18 +2953,18 @@ msgstr "en voinut avata tiedostoa %s: "
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
-#: lib/misc.c:339 lib/misc.c:344 lib/misc.c:350
+#: lib/misc.c:328 lib/misc.c:333 lib/misc.c:339
 #, fuzzy, c-format
 msgid "error creating temporary file %s"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/package.c:85
+#: lib/package.c:88
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM"
 msgstr ""
 "tämä versio RPM:stä tukee vain suuremmman kuin 3 versionumeron paketteja"
 
-#: lib/package.c:142
+#: lib/package.c:143
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
@@ -4021,27 +4021,46 @@ msgstr "Sinun pitää asettaa \"pgp_name:\" rpmrc-tiedostossa"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Sinun pitää asettaa \"pgp_name:\" rpmrc-tiedostossa"
 
-#: lib/transaction.c:496
+#: lib/transaction.c:466
+msgid "========== relocations\n"
+msgstr ""
+
+#: lib/transaction.c:469
 #, fuzzy, c-format
-msgid "excluding file %s%s\n"
+msgid "%5d exclude  %s\n"
 msgstr "Haen: %s\n"
 
-#: lib/transaction.c:522 lib/transaction.c:605
+#: lib/transaction.c:472
 #, fuzzy, c-format
-msgid "excluding directory %s\n"
-msgstr "virhe luotaessa hakemistoa %s: %s"
+msgid "%5d relocate %s -> %s\n"
+msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/transaction.c:527
+#: lib/transaction.c:543
+#, fuzzy, c-format
+msgid "excluding multilib path %s%s\n"
+msgstr "Haen: %s\n"
+
+#: lib/transaction.c:592
+#, fuzzy, c-format
+msgid "excluding %s %s\n"
+msgstr "Haen: %s\n"
+
+#: lib/transaction.c:599
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:598
+#: lib/transaction.c:671
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/transaction.c:749
+#: lib/transaction.c:676
+#, fuzzy, c-format
+msgid "excluding directory %s\n"
+msgstr "virhe luotaessa hakemistoa %s: %s"
+
+#: lib/transaction.c:800
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

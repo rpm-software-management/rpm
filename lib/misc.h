@@ -24,8 +24,19 @@ extern "C" {
 void	freeSplitString( /*@only@*/ char ** list);
 
 /**
+ * Remove occurences of trailing character from string.
+ * @param s		string
+ * @param c		character to strip
+ * @return 		string
  */
-void	stripTrailingSlashes(char * str)	/*@modifies *str @*/;
+/*@unused@*/ static inline char * stripTrailingChar(char * s, char c)
+	/*@modifies *s */
+{
+    char * t;
+    for (t = s + strlen(s) - 1; *t == c && t >= s; t--)
+	*t = '\0';
+    return s;
+}
 
 /**
  */

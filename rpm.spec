@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.18
+Release: 0.19
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -309,6 +309,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Jan  8 2001 Jeff Johnson <jbj@redhat.com>
+- tsorted packages processed in successor count order.
+- fix: resurrect --excludepath (#19666).
+
 * Fri Jan  5 2001 Jeff Johnson <jbj@redhat.com>
 - fix: 3 packages from Red Hat 5.2 had bogus %verifyscript tag.
 

@@ -15,6 +15,8 @@
 #include "signature.h"
 #include "debug.h"
 
+#define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
+
 /*@access Header@*/		/* XXX compared with NULL */
 
 void headerMergeLegacySigs(Header h, const Header sig)
@@ -82,17 +84,17 @@ static int readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
 
     switch (lead->major) {
     case 1:
-	rpmError(RPMERR_NEWPACKAGE, _("packaging version 1 is not"
-		" supported by this version of RPM"));
+	rpmError(RPMERR_NEWPACKAGE,
+	    _("packaging version 1 is not supported by this version of RPM"));
 	return 2;
 	/*@notreached@*/ break;
     case 2:
     case 3:
     case 4:
 	if (rpmReadSignature(fd, sigs, lead->signature_type))
-	   return 2;
-	*hdr = headerRead(fd, (lead->major >= 3) ?
-			  HEADER_MAGIC_YES : HEADER_MAGIC_NO);
+	    return 2;
+	*hdr = headerRead(fd, (lead->major >= 3)
+			  ? HEADER_MAGIC_YES : HEADER_MAGIC_NO);
 	if (*hdr == NULL) {
 	    if (sigs != NULL)
 		headerFree(*sigs);
@@ -113,9 +115,8 @@ static int readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
 	   which is quite handy. */
 	if (headerGetEntry(*hdr, RPMTAG_DEFAULTPREFIX, NULL,
 			   (void **) &defaultPrefix, NULL)) {
-	    defaultPrefix = strcpy(alloca(strlen(defaultPrefix) + 1), 
-				   defaultPrefix);
-	    stripTrailingSlashes(defaultPrefix);
+	    defaultPrefix =
+		stripTrailingChar(alloca_strdup(defaultPrefix), '/');
 	    headerAddEntry(*hdr, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
 			   &defaultPrefix, 1); 
 	}

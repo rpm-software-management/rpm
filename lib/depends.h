@@ -20,6 +20,7 @@ struct tsortInfo {
 /*@owned@*/ struct tsortInfo * tsi_next;
 /*@dependent@*/ struct availablePackage * tsi_pkg;
     int		tsi_reqx;
+    int		tsi_qcnt;
 };
 
 /**

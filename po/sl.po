@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.127 2001/01/05 21:04:51 jbj Exp $
+# $Id: sl.po,v 1.128 2001/01/09 04:07:53 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-05 16:03-0500\n"
+"POT-Creation-Date: 2001-01-08 23:06-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2527,20 +2527,20 @@ msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
 #. Record all relations.
-#: lib/depends.c:1626
+#: lib/depends.c:1660
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1676
+#: lib/depends.c:1710
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1779
+#: lib/depends.c:1807
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1810
+#: lib/depends.c:1838
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2910,17 +2910,17 @@ msgstr "opozorilo: %s shranjen kot %s"
 msgid "running postinstall scripts (if any)\n"
 msgstr "poganjanje ponamestitvenih skript (èe obstajajo)\n"
 
-#: lib/misc.c:339 lib/misc.c:344 lib/misc.c:350
+#: lib/misc.c:328 lib/misc.c:333 lib/misc.c:339
 #, c-format
 msgid "error creating temporary file %s"
 msgstr "napaka pri ustvarjanju zaèasne datoteke %s"
 
-#: lib/package.c:85
+#: lib/package.c:88
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM"
 msgstr "ta razlièica RPM podpira samo pakete z glavnim ¹tevilom razlièice <= 3"
 
-#: lib/package.c:142
+#: lib/package.c:143
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
@@ -3985,27 +3985,46 @@ msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/transaction.c:496
-#, c-format
-msgid "excluding file %s%s\n"
+#: lib/transaction.c:466
+msgid "========== relocations\n"
+msgstr ""
+
+#: lib/transaction.c:469
+#, fuzzy, c-format
+msgid "%5d exclude  %s\n"
+msgstr "OS je izkljuèen: %s"
+
+#: lib/transaction.c:472
+#, fuzzy, c-format
+msgid "%5d relocate %s -> %s\n"
+msgstr "premikanje %s v %s\n"
+
+#: lib/transaction.c:543
+#, fuzzy, c-format
+msgid "excluding multilib path %s%s\n"
 msgstr "izkljuèevanje datoteke %s%s\n"
 
-#: lib/transaction.c:522 lib/transaction.c:605
-#, c-format
-msgid "excluding directory %s\n"
-msgstr "izkljuèevanje imenika %s\n"
+#: lib/transaction.c:592
+#, fuzzy, c-format
+msgid "excluding %s %s\n"
+msgstr "izkljuèevanje datoteke %s%s\n"
 
-#: lib/transaction.c:527
+#: lib/transaction.c:599
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "premikanje %s v %s\n"
 
-#: lib/transaction.c:598
+#: lib/transaction.c:671
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "premiokanje imenika %s v %s\n"
 
-#: lib/transaction.c:749
+#: lib/transaction.c:676
+#, c-format
+msgid "excluding directory %s\n"
+msgstr "izkljuèevanje imenika %s\n"
+
+#: lib/transaction.c:800
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"

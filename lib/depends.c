@@ -1576,12 +1576,13 @@ static inline int addRelation( const rpmTransactionSet rpmdep,
     selected[matchNum] = 1;
 
     /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-    p->tsi.tsi_count++;
+    p->tsi.tsi_count++;			/* bump p predecessor count */
     tsi = xmalloc(sizeof(*tsi));
     tsi->tsi_suc = p;
     tsi->tsi_reqx = j;
     tsi->tsi_next = q->tsi.tsi_next;
     q->tsi.tsi_next = tsi;
+    q->tsi.tsi_qcnt++;			/* bump q successor count */
     return 0;
 }
 
@@ -1596,6 +1597,38 @@ static int orderListIndexCmp(const void * one, const void * two)
     int a = ((const struct orderListIndex *)one)->alIndex;
     int b = ((const struct orderListIndex *)two)->alIndex;
     return (a - b);
+}
+
+/**
+ * Add element to list sorting by initial successor count.
+ * @param p		new element
+ * @retval qp		address of first element
+ * @retval rp		address of last element
+ */
+static void addQ(struct availablePackage * p,
+	/*@out@*/ struct availablePackage ** qp,
+	/*@out@*/ struct availablePackage ** rp)
+{
+    struct availablePackage *q, *qprev;
+
+    if ((*rp) == NULL) {	/* 1st element */
+	(*rp) = (*qp) = p;
+	return;
+    }
+    for (qprev = NULL, q = (*qp); q != NULL; qprev = q, q = q->tsi.tsi_suc) {
+	if (q->tsi.tsi_qcnt < p->tsi.tsi_qcnt)
+	    break;
+    }
+    if (qprev == NULL) {	/* insert at beginning of list */
+	p->tsi.tsi_suc = q;
+	(*qp) = p;		/* new head */
+    } else if (q == NULL) {	/* insert at end of list */
+	qprev->tsi.tsi_suc = p;
+	(*rp) = p;		/* new tail */
+    } else {			/* insert between qprev and q */
+	p->tsi.tsi_suc = q;
+	qprev->tsi.tsi_suc = p;
+    }
 }
 
 int rpmdepOrder(rpmTransactionSet rpmdep)
@@ -1614,6 +1647,7 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
     int newOrderCount = 0;
     struct orderListIndex * orderList;
     int nrescans = 10;
+    int qlen;
     int i, j;
 
     alMakeIndex(&rpmdep->addedPackages);
@@ -1677,6 +1711,7 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
 
 rescan:
     q = r = NULL;
+    qlen = 0;
     for (i = 0, p = rpmdep->addedPackages.list;
 	     i < rpmdep->addedPackages.size;
 	     i++, p++)
@@ -1684,18 +1719,16 @@ rescan:
 	    if (p->tsi.tsi_count != 0)
 		continue;
 	    p->tsi.tsi_suc = NULL;
-	    if (r == NULL)
-		q = p;
-	    else
-		r->tsi.tsi_suc = p;
-	    r = p;
+	    addQ(p, &q, &r);
+	    qlen++;
     }
 
     /* T5. Output fromt of queue (T7. Remove from queue.) */
     for (; q != NULL; q = q->tsi.tsi_suc) {
 
-	rpmMessage(RPMMESS_DEBUG, "%5d %s-%s-%s\n", orderingCount,
-			q->name, q->version, q->release);
+	rpmMessage(RPMMESS_DEBUG, "%5d (%d) %s-%s-%s\n", orderingCount,
+			qlen, q->name, q->version, q->release);
+	qlen--;
 
 	ordering[orderingCount++] = q - rpmdep->addedPackages.list;
 	loopcheck--;
@@ -1709,14 +1742,9 @@ rescan:
 	    p = tsi->tsi_suc;
 	    if ((--p->tsi.tsi_count) <= 0) {
 		/* XXX FIXME: add control bit. */
-#ifdef	QUEUE_AT_REAR
 		p->tsi.tsi_suc = NULL;
-		r->tsi.tsi_suc = p;
-		r = p;
-#else
-		p->tsi.tsi_suc = q->tsi.tsi_suc;
-		q->tsi.tsi_suc = p;
-#endif
+		addQ(p, &q->tsi.tsi_suc, &r);
+		qlen++;
 	    }
 	    free(tsi);
 	}

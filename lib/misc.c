@@ -183,17 +183,6 @@ int rpmvercmp(const char * a, const char * b)
     if (!*one) return -1; else return 1;
 }
 
-void stripTrailingSlashes(char * str)
-{
-    char * chptr;
-
-    chptr = str + strlen(str) - 1;
-    while (*chptr == '/' && chptr >= str) {
-	*chptr = '\0';
-	chptr--;
-    }
-}
-
 int doputenv(const char *str)
 {
     char * a;
