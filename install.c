@@ -115,7 +115,6 @@ int doInstall(const char * rootdir, const char ** argv, int transFlags,
     int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
     int dbIsOpen = 0;
     const char ** sourcePackages;
-    rpmRelocation * r;
 
     if (transFlags & RPMTRANS_FLAG_TEST) 
 	mode = O_RDONLY;
