@@ -1,6 +1,7 @@
 2.4.102 -> 2.4.103:
 	- need to create popt/configure during make archive
 	- added comments about modifictation to base popt and rpmrc files
+	- allow spaces in group names
 
 2.4.101 -> 2.4.102:
 	- fixed spelling of "instchangelog" in lib-rpmrc.in
