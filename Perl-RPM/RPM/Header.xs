@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.14 2000/08/17 09:23:19 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.15 2000/08/18 08:25:39 rjray Exp $";
 static int scalar_tag(pTHX_ SV *, int);
 
 /*
@@ -206,6 +206,7 @@ static int new_from_fd(int fd, RPM_Header* new_hdr)
 static int new_from_fname(pTHX_ const char* source, RPM_Header* new_hdr)
 {
     FD_t fd;
+    int retval;
 
     if (! (fd = Fopen(source, "r")))
     {
@@ -216,7 +217,14 @@ static int new_from_fname(pTHX_ const char* source, RPM_Header* new_hdr)
         return 0;
     }
 
-    return(new_from_fd_t(fd, new_hdr));
+    if (retval = new_from_fd_t(fd, new_hdr))
+    {
+        Fclose(fd);
+        new_hdr->source_name = safemalloc(strlen(source) + 1);
+        strcpy(new_hdr->source_name, source);
+    }
+
+    return retval;
 }
 
 RPM__Header rpmhdr_TIEHASH(pTHX_ SV* class, SV* source, int flags)
@@ -1025,6 +1033,20 @@ int rpmhdr_cmpver(pTHX_ RPM__Header self, RPM__Header other)
 }
 
 /*
+  If the header object was read from a specific source (file, ftp, http), then
+  a copy of that location was kept for future reference. Now reference it.
+*/
+char* rpmhdr_source_name(RPM__Header self)
+{
+    SV** svp;
+    RPM_Header* hdr;
+
+    header_from_object(svp, hdr, self);
+
+    return hdr->source_name;
+}
+
+/*
   A matter-of-convenience function that tells whether the passed-in tag is
   one that returns a scalar (yields a true return value) or one that returns
   an array reference (yields a false value).
@@ -1326,5 +1348,14 @@ rpmhdr_scalar_tag(self, tag)
                   "RPM::Header::scalar_tag: argument must be string or int");
         RETVAL = 0;
     }
+    OUTPUT:
+    RETVAL
+
+char*
+rpmhdr_source_name(self)
+    RPM::Header self;
+    PROTOTYPE: $
+    CODE:
+    RETVAL = rpmhdr_source_name(self);
     OUTPUT:
     RETVAL
