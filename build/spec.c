@@ -796,7 +796,7 @@ static void parseForDocFiles(struct PackageRec *package, char *line)
     }
     
     appendLineStringBuf(package->doc, "mkdir -p $DOCDIR");
-    appendStringBuf(package->doc, "cp -ar ");
+    appendStringBuf(package->doc, "cp -pr ");
     appendStringBuf(package->doc, line);
     appendLineStringBuf(package->doc, " $DOCDIR");
 }
