@@ -51,9 +51,6 @@
 /*@access dbiIndex @*/
 
 /*@unchecked@*/
-static int noisy = 0;
-
-/*@unchecked@*/
 static int _debug = 0;
 
 /* Define the things normally in a header... */
@@ -86,7 +83,9 @@ struct _sql_dbcursor_s {
     int nr;			/* no. of rows */
     int nc;			/* no. of columns */
 
-    int all;		/* Cursor is for all items, not a specific key */
+    int all;			/* sequential iteration cursor */
+    int * keys;			/* array of package keys */
+    int nkeys;
 
     SQL_MEM * memory;
     int count;
@@ -191,6 +190,7 @@ static SCP_t scpFree(/*@only@*/ SCP_t scp)
     scp = scpReset(scp);
     scp->av = _free(scp->av);
     scp->avlen = _free(scp->avlen);
+    scp->keys = _free(scp->keys);
 if (_debug)
 fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
     scp = _free(scp);
@@ -640,7 +640,7 @@ static int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor,
 	/*@modifies dbi, *dbcursor, fileSystem @*/
 {
     SCP_t scp = (SCP_t)dbcursor;
-    int rc = 0;
+    int rc;
 
 if (_debug)
 fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, scp);
@@ -650,7 +650,7 @@ fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, scp);
 	SQL_MEM * next_mem;
 	int loc_count=0;
 
-	while ( curr_mem ) {
+	while (curr_mem) {
 	    next_mem = curr_mem->next;
 	    free ( curr_mem->mem_ptr );
 	    free ( curr_mem );
@@ -934,6 +934,7 @@ static int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 /*@i@*/    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     SCP_t scp = (SCP_t)dbcursor;
     int rc = 0;
+    int i;
 
 dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
@@ -957,6 +958,21 @@ fprintf(stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
 assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 	    switch (dbi->dbi_rpmtag) {
 	    case RPMDBI_PACKAGES:
+		scp->cmd = sqlite3_mprintf("SELECT key FROM '%q' ORDER BY key;",
+			dbi->dbi_subfile);
+		rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
+		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+
+		rc = sql_step(scp);
+		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential sql_step rc %d\n", dbi->dbi_subfile, rc);
+		scp->nkeys = scp->nr;
+		scp->keys = xcalloc(scp->nkeys, sizeof(*scp->keys));
+		for (i = 0; i < scp->nkeys; i++) {
+		    memcpy(scp->keys+i, scp->av[i+1], sizeof(*scp->keys));
+fprintf(stderr, "\tkeys[%d] %d\n", i, scp->keys[i]);
+		}
+		scp = scpReset(scp);	/* Free av and avlen, reset counters.*/
+/*==============*/
 		scp->cmd = sqlite3_mprintf("SELECT key,value FROM '%q' ORDER BY key;",
 			dbi->dbi_subfile);
 		rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
@@ -964,6 +980,7 @@ assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 
 		rc = sql_step(scp);
 		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential sql_step rc %d\n", dbi->dbi_subfile, rc);
+/*==============*/
 		/*@innerbreak@*/ break;
 	    default:
 		scp->cmd = sqlite3_mprintf("SELECT key,value FROM '%q';",
