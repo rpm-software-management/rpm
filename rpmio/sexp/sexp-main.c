@@ -110,7 +110,6 @@ int main(int argc, char **argv)
 
     initializeCharacterTables();
     initializeMemory();
-    is = newSexpInputStream();
     os = newSexpOutputStream();
     /* process switches */
     if (argc>1)
@@ -132,11 +131,8 @@ int main(int argc, char **argv)
 	goto exit;
     }
 
-    if (ifn != NULL) {
-	is->inputFile = fopen(ifn, "r");
-	if (is->inputFile == NULL)
-	    ErrorMessage(ERROR, "Can't open input file %s.", ifn);
-    }
+    is = newSexpInputStream(ifn, "r");
+
     if (ofn != NULL) {
 	os->outputFile = fopen(ofn, "w");
 	if (os->outputFile == NULL)
@@ -150,17 +146,17 @@ int main(int argc, char **argv)
 	swc = TRUE;  /* must have some output format! */
 
     /* main loop */
-    if (swp == 0) is->getChar(is);
-    else is->nextChar = -2;  /* this is not EOF */
+    if (swp == 0) sexpIFgetc(is);
+    else sexpIFpoke(is, -2);  /* this is not EOF */
 
-    while (is->nextChar != EOF) {
+    while (!sexpIFeof(is)) {
 	if (swp) { fprintf(stdout, "Input:\n"); (void) fflush(stdout); }
 
-	changeInputByteSize(is,8);
-	if (is->nextChar == -2) is->getChar(is);
+	changeInputByteSize(is, 8);
+	if (sexpIFpeek(is) == -2) sexpIFgetc(is);
 
 	skipWhiteSpace(is);
-	if (is->nextChar == EOF) break;
+	if (sexpIFeof(is)) break;
 
 	if (sws == FALSE)
 	    object = scanObject(is);

@@ -75,17 +75,6 @@ union sexpObject_u {
 /* In this implementation, it is the same as a list */
 typedef /*@abstract@*/ sexpList * sexpIter;
 
-struct sexpInputStream_s {
-  int nextChar;        /* character currently being scanned */
-  int byteSize;        /* 4 or 6 or 8 == currently scanning mode */
-  int bits;            /* Bits waiting to be used */
-  int nBits;           /* number of such bits waiting to be used */
-  void (*getChar)();
-  int count;           /* number of 8-bit characters output by getChar */
-/*@shared@*/ /*@relnull@*/
-  FILE *inputFile;     /* where to get input, if not stdin */
-};
-
 struct sexpOutputStream_s {
   long int column;          /* column where next character will go */
   long int maxcolumn;       /* max usable column, or -1 if no maximum */
@@ -188,7 +177,19 @@ void changeInputByteSize(sexpInputStream is, int newByteSize)
 void getChar(sexpInputStream is)
 	/*@globals fileSystem @*/
 	/*@modifies is, fileSystem @*/;
-sexpInputStream newSexpInputStream(void)
+
+/*@-globuse@*/
+void sexpIFgetc(sexpInputStream is)
+	/*@globals fileSystem @*/
+	/*@modifies is, fileSystem @*/;
+/*@=globuse@*/
+int sexpIFpeek(sexpInputStream is)
+	/*@*/;
+int sexpIFeof(sexpInputStream is)
+	/*@*/;
+void sexpIFpoke(sexpInputStream is, int c)
+	/*@modifies is @*/;
+sexpInputStream newSexpInputStream(/*@null@*/ const char * ifn, const char * fmode)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 void skipWhiteSpace(sexpInputStream is)

@@ -8,6 +8,16 @@
 #include "sexp.h"
 
 /*@access sexpInputStream @*/
+struct sexpInputStream_s {
+  int nextChar;        /* character currently being scanned */
+  int byteSize;        /* 4 or 6 or 8 == currently scanning mode */
+  int bits;            /* Bits waiting to be used */
+  int nBits;           /* number of such bits waiting to be used */
+  void (*getChar)();
+  int count;           /* number of 8-bit characters output by getChar */
+/*@shared@*/ /*@relnull@*/
+  FILE *inputFile;     /* where to get input, if not stdin */
+};
 
 /*@access sexpList @*/
 /*@access sexpString @*/
@@ -143,52 +153,75 @@ void changeInputByteSize(sexpInputStream is, int newByteSize)
  * This code handles 4-bit/6-bit/8-bit channels.
  */
 void getChar(sexpInputStream is)
-{ int c;
-  if (is->nextChar == EOF)
-    { is->byteSize = 8;
-      return;
+{
+    int c;
+
+    if (is->nextChar == EOF) {
+	is->byteSize = 8;
+	return;
     }
-  while (TRUE)
-    { c = is->nextChar = fgetc(is->inputFile);
-      if (c == EOF) return;
-      if ((is->byteSize == 6 && (c == '|' || c == '}'))
-	  || (is->byteSize == 4 && (c == '#')))
-	/* end of region reached; return terminating character, after
-	   checking for unused bits */
-	{ if (is->nBits>0 && (((1<<is->nBits)-1) & is->bits) != 0)
-	    ErrorMessage(WARNING,
+
+    while (TRUE) {
+	c = is->nextChar = fgetc(is->inputFile);
+	if (c == EOF) return;
+	if ((is->byteSize == 6 && (c == '|' || c == '}'))
+	 || (is->byteSize == 4 && (c == '#')))
+	{
+	    /* end of region reached; return terminating character, after
+	       checking for unused bits */
+	    if (is->nBits>0 && (((1<<is->nBits)-1) & is->bits) != 0)
+		ErrorMessage(WARNING,
 			 "%d-bit region ended with %d unused bits left-over",
 			 is->byteSize,is->nBits);
-	  changeInputByteSize(is,8);
-	  return;
+	    changeInputByteSize(is,8);
+	    return;
 	}
-      else if (is->byteSize != 8 && isWhiteSpace(c))
-	{} /* ignore white space in hex and base64 regions */
-      else if (is->byteSize == 6 && c == '=')
-	{} /* ignore equals signs in base64 regions */
-      else if (is->byteSize==8)
-	{
-	  is->count++;
-	  return;
+	else if (is->byteSize != 8 && isWhiteSpace(c))
+	    {} /* ignore white space in hex and base64 regions */
+	else if (is->byteSize == 6 && c == '=')
+	    {} /* ignore equals signs in base64 regions */
+	else if (is->byteSize==8) {
+	    is->count++;
+	    return;
 	}
-      else if (is->byteSize<8)
-	{ is->bits = is->bits << is->byteSize;
-	  is->nBits += is->byteSize;
-	  if (is->byteSize == 6 && isBase64Digit(c))
-	    is->bits = is->bits | base64value[c];
-	  else if (is->byteSize == 4 && isHexDigit(c))
-	    is->bits = is->bits | hexvalue[c];
-	  else
-	    ErrorMessage(ERROR, "character %c found in %d-bit coding region",
-		 (int) is->nextChar, is->byteSize);
-	  if (is->nBits >= 8)
-	    { is->nextChar = (is->bits >> (is->nBits-8)) & 0xFF;
-	      is->nBits -= 8;
-	      is->count++;
-	      return;
+	else if (is->byteSize<8) {
+	    is->bits = is->bits << is->byteSize;
+	    is->nBits += is->byteSize;
+	    if (is->byteSize == 6 && isBase64Digit(c))
+		is->bits = is->bits | base64value[c];
+	    else if (is->byteSize == 4 && isHexDigit(c))
+		is->bits = is->bits | hexvalue[c];
+	    else
+		ErrorMessage(ERROR, "character %c found in %d-bit coding region",
+			(int) is->nextChar, is->byteSize);
+	    if (is->nBits >= 8) {
+		is->nextChar = (is->bits >> (is->nBits-8)) & 0xFF;
+		is->nBits -= 8;
+		is->count++;
+		return;
 	    }
 	}
     }
+}
+
+void sexpIFgetc(sexpInputStream is)
+{
+    is->getChar(is);
+}
+
+int sexpIFpeek(sexpInputStream is)
+{
+    return is->nextChar;
+}
+
+int sexpIFeof(sexpInputStream is)
+{
+    return (is->nextChar == EOF ? 1 : 0);
+}
+
+void sexpIFpoke(sexpInputStream is, int c)
+{
+    is->nextChar = c;
 }
 
 /* newSexpInputStream()
@@ -196,20 +229,27 @@ void getChar(sexpInputStream is)
  * (Prefixes stream with one blank, and initializes stream
  *  so that it reads from standard input.)
  */
-sexpInputStream newSexpInputStream(void)
+sexpInputStream newSexpInputStream(const char * ifn, const char * fmode)
 {
-  sexpInputStream is;
-  is = (sexpInputStream) sexpAlloc(sizeof(*is));
-  is->nextChar = ' ';
-  is->getChar = getChar;
-  is->count = -1;
-  is->byteSize = 8;
-  is->bits = 0;
-  is->nBits = 0;
+    sexpInputStream is;
+    is = (sexpInputStream) sexpAlloc(sizeof(*is));
+    is->nextChar = ' ';
+    is->getChar = getChar;
+    is->count = -1;
+    is->byteSize = 8;
+    is->bits = 0;
+    is->nBits = 0;
+
+    if (ifn == NULL) {
 /*@-assignexpose@*/
-  is->inputFile = stdin;
+	is->inputFile = stdin;
 /*@=assignexpose@*/
-  return is;
+    } else {
+        is->inputFile = fopen(ifn, fmode);
+        if (is->inputFile == NULL)
+            ErrorMessage(ERROR, "Can't open input file %s.", ifn);
+    }
+    return is;
 }
 
 /*****************************************/
