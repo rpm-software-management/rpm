@@ -1,5 +1,6 @@
 2.90 -> 2.91
 	- create rpmbzio.c to avoid implicit dependence on libbz2 for installer.
+	- spec files can provide /filename now
 
 2.5.x -> 2.90
 	- added --excludepath

@@ -118,25 +118,16 @@ int parseProvidesObsoletes(Spec spec, Package pkg, char *field, int tag)
     line = buf;
     
     while ((prov = strtok(line, " ,\t\n"))) {
-	if (prov[0] == '/') {
+	if (prov[0] == '/' && tag != RPMTAG_PROVIDES) {
 	    rpmError(RPMERR_BADSPEC,
-		     _("line %d: No file names in %s: %s"),
-		     spec->lineNum,
-		     (tag == RPMTAG_PROVIDES) ? "Provides" : "Obsoletes",
-		     spec->line);
+		     _("line %d: No file names in Obsoletes: %s"),
+		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
-	if (!(isalnum(prov[0]) || prov[0] == '_')) {
+	if (!(isalnum(prov[0]) || prov[0] == '_') && 
+	     (tag == RPMTAG_OBSOLETES || prov[0] != '/')) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: %s: tokens must begin with alpha-numeric: %s"),
-		     spec->lineNum,
-		     (tag == RPMTAG_PROVIDES) ? "Provides" : "Obsoletes",
-		     spec->line);
-	    return RPMERR_BADSPEC;
-	}
-	if (!(isalnum(prov[0]) || prov[0] == '_')) {
-	    rpmError(RPMERR_BADSPEC,
-		     "line %d: %s: tokens must begin with alpha-numeric: %s",
 		     spec->lineNum,
 		     (tag == RPMTAG_PROVIDES) ? "Provides" : "Obsoletes",
 		     spec->line);

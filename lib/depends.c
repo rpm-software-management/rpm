@@ -468,41 +468,41 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, char * reqName,
 		dbiFreeIndexRecord(matches);
 		if (i < dbiIndexSetCount(matches)) return 0;
 	    }
-	} else {
-	    if (!reqFlags && !rpmdbFindByProvides(rpmdep->db, reqName, 
-						  &matches)) {
-		for (i = 0; i < dbiIndexSetCount(matches); i++) {
-		    unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-		    if (bsearch(&recOffset,
-				rpmdep->removedPackages, 
-				rpmdep->numRemovedPackages, 
-				sizeof(int), intcmp)) 
-			continue;
+	}
+
+	if (!reqFlags && !rpmdbFindByProvides(rpmdep->db, reqName, 
+					      &matches)) {
+	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
+		unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+		if (bsearch(&recOffset,
+			    rpmdep->removedPackages, 
+			    rpmdep->numRemovedPackages, 
+			    sizeof(int), intcmp)) 
+		    continue;
+		break;
+	    }
+
+	    dbiFreeIndexRecord(matches);
+	    if (i < dbiIndexSetCount(matches)) return 0;
+	}
+
+	if (!rpmdbFindPackage(rpmdep->db, reqName, &matches)) {
+	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
+		unsigned int recOffset = dbiIndexRecordOffset(matches, i);
+		if (bsearch(&recOffset,
+			    rpmdep->removedPackages, 
+			    rpmdep->numRemovedPackages, 
+			    sizeof(int), intcmp)) 
+		    continue;
+
+		if (dbrecMatchesDepFlags(rpmdep, recOffset, 
+					 reqVersion, reqFlags)) {
 		    break;
 		}
-
-		dbiFreeIndexRecord(matches);
-		if (i < dbiIndexSetCount(matches)) return 0;
 	    }
 
-	    if (!rpmdbFindPackage(rpmdep->db, reqName, &matches)) {
-		for (i = 0; i < dbiIndexSetCount(matches); i++) {
-		    unsigned int recOffset = dbiIndexRecordOffset(matches, i);
-		    if (bsearch(&recOffset,
-				rpmdep->removedPackages, 
-				rpmdep->numRemovedPackages, 
-				sizeof(int), intcmp)) 
-			continue;
-
-		    if (dbrecMatchesDepFlags(rpmdep, recOffset, 
-					     reqVersion, reqFlags)) {
-			break;
-		    }
-		}
-
-		dbiFreeIndexRecord(matches);
-		if (i < dbiIndexSetCount(matches)) return 0;
-	    }
+	    dbiFreeIndexRecord(matches);
+	    if (i < dbiIndexSetCount(matches)) return 0;
 	}
     }
 
