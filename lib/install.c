@@ -1383,7 +1383,7 @@ static int installSources(Header h, char * rootdir, int fd,
     }
 
     if (access(specDir, W_OK)) {
-	rpmError(RPMERR_CREATE, "cannot write to %s", sourceDir);
+	rpmError(RPMERR_CREATE, "cannot write to %s", specDir);
 	return 2;
     }
 
@@ -1516,14 +1516,14 @@ int rpmVersionCompare(Header first, Header second) {
 	return rpmvercmp(one, two);
 
     headerGetEntry(first, RPMTAG_VERSION, NULL, (void **) &one, NULL);
-    headerGetEntry(second, RPMTAG_VERSION, NULL, (void **) &one, NULL);
+    headerGetEntry(second, RPMTAG_VERSION, NULL, (void **) &two, NULL);
 
     rc = rpmvercmp(one, two);
     if (rc)
 	return rc;
 
     headerGetEntry(first, RPMTAG_RELEASE, NULL, (void **) &one, NULL);
-    headerGetEntry(second, RPMTAG_RELEASE, NULL, (void **) &one, NULL);
+    headerGetEntry(second, RPMTAG_RELEASE, NULL, (void **) &two, NULL);
     
     return rpmvercmp(one, two);
 }
