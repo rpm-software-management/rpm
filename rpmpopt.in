@@ -138,6 +138,7 @@ rpm	exec --short-circuit	rpmb --short-circuit
 
 rpm	exec --initdb		rpmd --initdb
 rpm	exec --rebuilddb	rpmd --rebuilddb
+rpm	exec --verifydb		rpmd --verifydb
 
 #rpm	exec -e			rpme -e
 #rpm	exec --erase		rpme --erase

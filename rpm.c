@@ -10,7 +10,7 @@
 #define GETOPT_ADDSIGN		1005
 #define GETOPT_RESIGN		1006
 #define GETOPT_DBPATH		1010
-#define GETOPT_REBUILDDB        1013
+#define GETOPT_REBUILDDB	1013
 #define GETOPT_INSTALL		1014
 #define GETOPT_RELOCATE		1016
 #define GETOPT_SHOWRC		1018
@@ -18,6 +18,7 @@
 #define	GETOPT_DEFINEMACRO	1020
 #define	GETOPT_EVALMACRO	1021
 #define	GETOPT_RCFILE		1022
+#define GETOPT_VERIFYDB		1023
 
 enum modes {
     MODE_UNKNOWN	= 0,
@@ -33,13 +34,14 @@ enum modes {
     MODE_QUERYTAGS	= (1 <<  9),
     MODE_INITDB		= (1 << 10),
     MODE_TARBUILD	= (1 << 11),
-    MODE_REBUILDDB	= (1 << 12)
+    MODE_REBUILDDB	= (1 << 12),
+    MODE_VERIFYDB	= (1 << 13)
 };
 
 #define	MODES_QV (MODE_QUERY | MODE_VERIFY)
 #define	MODES_BT (MODE_BUILD | MODE_TARBUILD | MODE_REBUILD | MODE_RECOMPILE)
 #define	MODES_IE (MODE_INSTALL | MODE_UNINSTALL)
-#define	MODES_DB (MODE_INITDB | MODE_REBUILDDB)
+#define	MODES_DB (MODE_INITDB | MODE_REBUILDDB | MODE_VERIFYDB)
 #define	MODES_K	 (MODE_CHECKSIG | MODES_RESIGN)
 
 #define	MODES_FOR_DBPATH	(MODES_BT | MODES_IE | MODES_QV | MODES_DB)
@@ -184,6 +186,7 @@ static struct poptOption optionsTable[] = {
  { "rcfile", '\0', 0, 0, GETOPT_RCFILE,		NULL, NULL},
 #endif
  { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB,	NULL, NULL},
+ { "verifydb", '\0', 0, 0, GETOPT_VERIFYDB,	NULL, NULL},
  { "relocate", '\0', POPT_ARG_STRING, 0, GETOPT_RELOCATE,	NULL, NULL},
  { "repackage", '\0', POPT_ARG_VAL, &rePackage, 1,	NULL, NULL},
  { "replacefiles", '\0', 0, &replaceFiles, 0,	NULL, NULL},
@@ -290,6 +293,7 @@ static void printUsage(void) {
     puts(_("       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"));
     puts(_("                           package1 ... packageN"));
     puts(_("       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"));
+    puts(_("       rpm {--verifydb} [--rcfile <file>] [--dbpath <dir>]"));
     puts(_("       rpm {--querytags}"));
 }
 
@@ -557,6 +561,8 @@ static void printHelp(void) {
 		  _("make sure a valid database exists"));
     printHelpLine(  "    --rebuilddb           ",
 		  _("rebuild database from existing database"));
+    printHelpLine(  "    --verifydb            ",
+		  _("verify database files"));
     printHelpLine(_("      --dbpath <dir>      "),
 		  _("use <dir> as the directory for the database"));
     printHelpLine(  "      --root <dir>        ",
@@ -808,6 +814,12 @@ int main(int argc, const char ** argv)
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILDDB)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_REBUILDDB;
+	    break;
+
+	  case GETOPT_VERIFYDB:
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_VERIFYDB)
+		argerror(_("only one major mode may be specified"));
+	    bigMode = MODE_VERIFYDB;
 	    break;
 
 	  case GETOPT_RELOCATE:
@@ -1093,6 +1105,10 @@ int main(int argc, const char ** argv)
 
       case MODE_REBUILDDB:
 	ec = rpmdbRebuild(rootdir);
+	break;
+
+      case MODE_VERIFYDB:
+	ec = rpmdbVerify(rootdir);
 	break;
 
       case MODE_QUERYTAGS:

@@ -271,6 +271,32 @@ if (_debug < 0 || dbi->dbi_debug) {
     return rc;
 }
 
+INLINE int dbiCount(dbiIndex dbi, DBC * dbcursor,
+	unsigned int * countp, unsigned int flags)
+{
+    int rc = (*dbi->dbi_vec->ccount) (dbi, dbcursor, countp, flags);
+
+if (rc == 0 && countp && *countp > 1)
+fprintf(stderr, "    Count %s: %u rc %d\n", tagName(dbi->dbi_rpmtag), *countp, rc);
+
+    return rc;
+}
+
+INLINE int dbiVerify(dbiIndex dbi, unsigned int flags)
+{
+    int dbi_debug = dbi->dbi_debug;
+    int dbi_rpmtag = dbi->dbi_rpmtag;
+    int rc;
+
+    dbi->dbi_verify_on_close = 1;
+    rc = (*dbi->dbi_vec->close) (dbi, flags);
+
+if (_debug < 0 || dbi_debug)
+fprintf(stderr, "    Verify %s rc %d\n", tagName(dbi_rpmtag), rc);
+
+    return rc;
+}
+
 INLINE int dbiClose(dbiIndex dbi, unsigned int flags) {
 if (_debug < 0 || dbi->dbi_debug)
 fprintf(stderr, "    Close %s\n", tagName(dbi->dbi_rpmtag));
@@ -363,12 +389,10 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
     }
 
 exit:
-    if (rc == 0 && dbi) {
+    if (rc == 0 && dbi)
 	rpmdb->_dbi[dbix] = dbi;
-    } else if (dbi) {
-	db3Free(dbi);
-	dbi = NULL;
-    }
+    else
+	dbi = db3Free(dbi);
 
     return dbi;
 }
@@ -664,8 +688,8 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
 /* XXX transaction.c */
 void dbiFreeIndexSet(dbiIndexSet set) {
     if (set) {
-	if (set->recs) free(set->recs);
-	free(set);
+	set->recs = _free(set->recs);
+	set = _free(set);
     }
 }
 
@@ -712,9 +736,10 @@ static void unblockSignals(rpmdb rpmdb, sigset_t * oldMask)
 };
 /*@=fullinitblock@*/
 
-int rpmdbOpenAll (rpmdb rpmdb)
+int rpmdbOpenAll(rpmdb rpmdb)
 {
     int dbix;
+    int rc = 0;
 
     if (rpmdb == NULL) return -2;
 
@@ -724,20 +749,24 @@ int rpmdbOpenAll (rpmdb rpmdb)
 	    continue;
 	(void) dbiOpen(rpmdb, dbiTags[dbix], rpmdb->db_flags);
     }
-    return 0;
+    return rc;
 }
 
 /* XXX query.c, rpminstall.c, verify.c */
-int rpmdbClose (rpmdb rpmdb)
+int rpmdbClose(rpmdb rpmdb)
 {
     int dbix;
+    int rc = 0;
 
     if (rpmdb == NULL) return 0;
+    if (rpmdb->_dbi)
     for (dbix = rpmdb->db_ndbi; --dbix >= 0; ) {
+	int xx;
 	if (rpmdb->_dbi[dbix] == NULL)
 	    continue;
-	/*@-unqualifiedtrans@*/
-    	(void) dbiClose(rpmdb->_dbi[dbix], 0);
+	/*@-unqualifiedtrans@*/		/* FIX: double indirection. */
+    	xx = dbiClose(rpmdb->_dbi[dbix], 0);
+	if (xx && rc == 0) rc = xx;
     	rpmdb->_dbi[dbix] = NULL;
 	/*@=unqualifiedtrans@*/
     }
@@ -746,12 +775,13 @@ int rpmdbClose (rpmdb rpmdb)
     rpmdb->db_home = _free(rpmdb->db_home);
     rpmdb->_dbi = _free(rpmdb->_dbi);
     rpmdb = _free(rpmdb);
-    return 0;
+    return rc;
 }
 
 int rpmdbSync(rpmdb rpmdb)
 {
     int dbix;
+    int rc = 0;
 
     if (rpmdb == NULL) return 0;
     for (dbix = 0; dbix < rpmdb->db_ndbi; dbix++) {
@@ -759,8 +789,9 @@ int rpmdbSync(rpmdb rpmdb)
 	if (rpmdb->_dbi[dbix] == NULL)
 	    continue;
     	xx = dbiSync(rpmdb->_dbi[dbix], 0);
+	if (xx && rc == 0) rc = xx;
     }
-    return 0;
+    return rc;
 }
 
 static /*@only@*/ /*@null@*/
@@ -934,8 +965,42 @@ int rpmdbInit (const char * prefix, int perms)
     rc = openDatabase(prefix, NULL, _dbapi, &rpmdb, (O_CREAT | O_RDWR),
 		perms, RPMDB_FLAG_JUSTCHECK);
     if (rpmdb) {
-	(void) rpmdbOpenAll(rpmdb);
-	(void) rpmdbClose(rpmdb);
+	int xx;
+	xx = rpmdbOpenAll(rpmdb);
+	if (xx && rc == 0) rc = xx;
+	xx = rpmdbClose(rpmdb);
+	if (xx && rc == 0) rc = xx;
+	rpmdb = NULL;
+    }
+    return rc;
+}
+
+int rpmdbVerify(const char * prefix)
+{
+    rpmdb rpmdb = NULL;
+    int _dbapi = rpmExpandNumeric("%{_dbapi}");
+    int rc = 0;
+
+    rc = openDatabase(prefix, NULL, _dbapi, &rpmdb, O_RDONLY, 0644, 0);
+    if (rc) return rc;
+
+    if (rpmdb) {
+	int dbix;
+	int xx;
+	rc = rpmdbOpenAll(rpmdb);
+
+	for (dbix = rpmdb->db_ndbi; --dbix >= 0; ) {
+	    if (rpmdb->_dbi[dbix] == NULL)
+		continue;
+	    /*@-unqualifiedtrans@*/		/* FIX: double indirection. */
+	    xx = dbiVerify(rpmdb->_dbi[dbix], 0);
+	    if (xx && rc == 0) rc = xx;
+	    rpmdb->_dbi[dbix] = NULL;
+	    /*@=unqualifiedtrans@*/
+	}
+
+	xx = rpmdbClose(rpmdb);
+	if (xx && rc == 0) rc = xx;
 	rpmdb = NULL;
     }
     return rc;
@@ -1271,7 +1336,7 @@ static int dbiUpdateRecord(dbiIndex dbi, DBC * dbcursor, int offset, Header h)
 	rc = dbiPut(dbi, dbcursor, &offset, sizeof(offset), uh, uhlen, 0);
 	xx = dbiSync(dbi, 0);
 	unblockSignals(dbi->dbi_rpmdb, &signalMask);
-	free(uh);
+	uh = _free(uh);
     }
     return rc;
 }
@@ -1283,6 +1348,7 @@ struct _rpmdbMatchIterator {
     int			mi_rpmtag;
     dbiIndexSet		mi_set;
     DBC *		mi_dbc;
+    unsigned int	mi_ndups;
     int			mi_setx;
 /*@null@*/ Header	mi_h;
     int			mi_sorted;
@@ -1511,7 +1577,7 @@ exit:
 #ifdef	NOTNOW
     if (mi->mi_h) {
 	const char *n, *v, *r;
-	headerNVR(mi->mi_h, &n, &v, &r);
+	(void) headerNVR(mi->mi_h, &n, &v, &r);
 	rpmMessage(RPMMESS_DEBUG, "%s-%s-%s at 0x%x, h %p\n", n, v, r,
 		mi->mi_offset, mi->mi_h);
     }
@@ -1882,10 +1948,7 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 	    rpmcnt = 0;
 	}
 
-	if (rec) {
-	    free(rec);
-	    rec = NULL;
-	}
+	rec = _free(rec);
     }
 
     unblockSignals(rpmdb, &signalMask);
@@ -2183,10 +2246,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 	    rpmcnt = 0;
 	}
 
-	if (rec) {
-	    free(rec);
-	    rec = NULL;
-	}
+	rec = _free(rec);
     }
 
 exit:
@@ -2499,7 +2559,7 @@ int rpmdbRebuild(const char * rootdir)
     int nocleanup = 1;
     int failed = 0;
     int removedir = 0;
-    int rc = 0;
+    int rc = 0, xx;
     int _dbapi;
     int _dbapi_rebuild;
 
@@ -2645,14 +2705,14 @@ int rpmdbRebuild(const char * rootdir)
 	olddb->db_remove_env = 1;
 	newdb->db_remove_env = 1;
     }
-    (void) rpmdbClose(olddb);
-    (void) rpmdbClose(newdb);
+    xx = rpmdbClose(olddb);
+    xx = rpmdbClose(newdb);
 
     if (failed) {
 	rpmMessage(RPMMESS_NORMAL, _("failed to rebuild database: original database "
 		"remains in place\n"));
 
-	(void) rpmdbRemoveDatabase(rootdir, newdbpath, _dbapi_rebuild);
+	xx = rpmdbRemoveDatabase(rootdir, newdbpath, _dbapi_rebuild);
 	rc = 1;
 	goto exit;
     } else if (!nocleanup) {

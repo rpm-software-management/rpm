@@ -8,8 +8,8 @@ rm -f config.cache
 ln -sf ../dist $db_dist/../db/dist
 ln -sf ../dist $db_dist
 
-CFALGS="-O2" $db_dist/configure \
-	$(echo $* | sed -e "s% --cache-file=.*$% --enable-shared --enable-static --enable-debug --enable-rpc --with-uniquename=rpmdb --srcdir=$db_dist%")
+CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure \
+	`echo $* | sed -e "s% --cache-file=.*$% --enable-shared --enable-static --enable-debug --enable-rpc --with-uniquename=rpmdb --srcdir=$db_dist%"`
 
 # XXX hack to get db-3.3.4 to configure properly
 rm -f $db_dist/../db/dist $db_dist/dist
@@ -20,7 +20,7 @@ cat Makefile.orig | sed -e 's/ -g$/ -g -O2/' -e '/^install:/c\
 listobjs:\
 	@echo $(OBJS) $(C_OBJS) \
 \
-distdir install:\
+distdir install check:\
 \
 db3_install: all install_setip \\' > Makefile
 

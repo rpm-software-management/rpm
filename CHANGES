@@ -63,6 +63,7 @@
 	- fix: skip %ghost files when building packages (#38218).
 	- headerFree() returns NULL, _free is C++ safe.
 	- remove all header region assertion failures, return NULL instead.
+	- perform db->verify when closing db files.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

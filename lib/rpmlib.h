@@ -603,9 +603,17 @@ int rpmdbInit(/*@null@*/ const char * root, int perms)
 		/*@modifies fileSystem @*/;
 
 /** \ingroup rpmdb
+ * Verify database components.
+ * @param root		path to top of install tree
+ * @return		0 on success
+ */
+int rpmdbVerify(/*@null@*/ const char * root)
+		/*@modifies fileSystem @*/;
+
+/** \ingroup rpmdb
  * Close all database indices and free rpmdb.
  * @param rpmdb		rpm database
- * @return		0 always
+ * @return		0 on success
  */
 int rpmdbClose (/*@only@*/ /*@null@*/ rpmdb rpmdb)
 		/*@modifies fileSystem @*/;
@@ -613,7 +621,7 @@ int rpmdbClose (/*@only@*/ /*@null@*/ rpmdb rpmdb)
 /** \ingroup rpmdb
  * Sync all database indices.
  * @param rpmdb		rpm database
- * @return		0 always
+ * @return		0 on success
  */
 int rpmdbSync (/*@null@*/ rpmdb rpmdb)
 		/*@modifies fileSystem @*/;
@@ -621,7 +629,7 @@ int rpmdbSync (/*@null@*/ rpmdb rpmdb)
 /** \ingroup rpmdb
  * Open all database indices.
  * @param rpmdb		rpm database
- * @return		0 always
+ * @return		0 on success
  */
 int rpmdbOpenAll (/*@null@*/ rpmdb rpmdb)
 		/*@modifies fileSystem @*/;

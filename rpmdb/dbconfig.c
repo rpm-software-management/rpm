@@ -137,6 +137,8 @@ struct dbOption rdbOptions[] = {
  { "sv_timeout", 0,POPT_ARG_LONG,	&db3dbi.dbi_sv_timeout, 0,
 	NULL, NULL },
 
+ { "verify",	0,POPT_ARG_NONE,	&db3dbi.dbi_verify_on_close, 0,
+	NULL, NULL },
  { "teardown",	0,POPT_ARG_NONE,	&db3dbi.dbi_tear_down, 0,
 	NULL, NULL },
  { "usecursors",0,POPT_ARG_NONE,	&db3dbi.dbi_use_cursors, 0,
@@ -295,7 +297,7 @@ static int dbSaveInt(const struct dbOption * opt, int argInfo, long aLong) {
     return 0;
 }
 
-void db3Free(dbiIndex dbi) {
+dbiIndex db3Free(dbiIndex dbi) {
     if (dbi) {
 	dbi->dbi_root = _free(dbi->dbi_root);
 	dbi->dbi_home = _free(dbi->dbi_home);
@@ -306,8 +308,10 @@ void db3Free(dbiIndex dbi) {
 	dbi->dbi_re_source = _free(dbi->dbi_re_source);
 	dbi->dbi_dbenv = _free(dbi->dbi_dbenv);
 	dbi->dbi_dbinfo = _free(dbi->dbi_dbinfo);
+	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi = _free(dbi);
     }
+    return dbi;
 }
 
 static const char *db3_config_default =

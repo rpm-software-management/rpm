@@ -534,6 +534,13 @@ static int db2cget(dbiIndex dbi, DBC * dbcursor,
     return rc;
 }
 
+static int db2ccount(dbiIndex dbi, DBC * dbcursor,
+		/*@out@*/ unsigned int * countp,
+		/*@unused@*/ unsigned int flags)
+{
+    return EINVAL;
+}
+
 static int db2byteswapped(dbiIndex dbi)
 {
     int rc = 0;
@@ -545,6 +552,11 @@ static int db2byteswapped(dbiIndex dbi)
 #endif	/* __USE_DB3 */
 
     return rc;
+}
+
+static int db2stat(dbiIndex dbi, unsigned int flags)
+{
+    return EINVAL;
 }
 
 static int db2close(/*@only@*/ dbiIndex dbi, unsigned int flags)
@@ -607,7 +619,7 @@ static int db2close(/*@only@*/ dbiIndex dbi, unsigned int flags)
 
     urlfn = _free(urlfn);
 
-    db3Free(dbi);
+    dbi = db3Free(dbi);
 
     return rc;
 }
@@ -875,7 +887,7 @@ static int db2open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 struct _dbiVec db2vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db2open, db2close, db2sync, db2copen, db2cclose, db2cdel, db2cget, db2cput,
-    db2byteswapped
+    db2ccount, db2byteswapped, db2stat
 };
 
 #endif	/* DB_VERSION_MAJOR == 2 */

@@ -20,7 +20,8 @@
 #endif
 
 #ifdef	IAM_RPMDB
-#define GETOPT_REBUILDDB        1013
+#define GETOPT_REBUILDDB	1013
+#define GETOPT_VERIFYDB		1023
 static int initdb = 0;
 #endif
 
@@ -76,7 +77,8 @@ enum modes {
 
     MODE_INITDB		= (1 << 10),
     MODE_REBUILDDB	= (1 << 12),
-#define	MODES_DB (MODE_INITDB | MODE_REBUILDDB)
+    MODE_VERIFYDB	= (1 << 13),
+#define	MODES_DB (MODE_INITDB | MODE_REBUILDDB | MODE_VERIFYDB)
 
     MODE_UNKNOWN	= 0
 };
@@ -181,6 +183,9 @@ static struct poptOption rpmDatabasePoptTable[] = {
 	N_("initialize database"), NULL},
  { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB,
 	N_("rebuild database inverted lists from installed package headers"),
+	NULL},
+ { "verifydb", '\0', 0, 0, GETOPT_VERIFYDB,
+	N_("verify database files"),
 	NULL},
  { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,
 	N_("generate headers compatible with (legacy) rpm[23] packaging"),
@@ -938,6 +943,11 @@ int main(int argc, const char ** argv)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_REBUILDDB;
 	    break;
+	  case GETOPT_VERIFYDB:
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_VERIFYDB)
+		argerror(_("only one major mode may be specified"));
+	    bigMode = MODE_VERIFYDB;
+	    break;
 #endif
 
 #ifdef	IAM_RPMK
@@ -1285,6 +1295,9 @@ int main(int argc, const char ** argv)
       case MODE_REBUILDDB:
 	ec = rpmdbRebuild(rootdir);
 	break;
+      case MODE_VERIFYDB:
+	ec = rpmdbVerify(rootdir);
+	break;
 #if !defined(__LCLINT__)
       case MODE_QUERY:
       case MODE_VERIFY:
@@ -1404,6 +1417,7 @@ int main(int argc, const char ** argv)
       case MODE_RESIGN:
       case MODE_INITDB:
       case MODE_REBUILDDB:
+      case MODE_VERIFYDB:
 	if (!showVersion && !help && !noUsageMsg) printUsage();
 	break;
 #endif
@@ -1472,6 +1486,7 @@ int main(int argc, const char ** argv)
       case MODE_RESIGN:
       case MODE_INITDB:
       case MODE_REBUILDDB:
+      case MODE_VERIFYDB:
 	if (!showVersion && !help && !noUsageMsg) printUsage();
 	break;
 #endif
@@ -1534,6 +1549,7 @@ int main(int argc, const char ** argv)
       case MODE_RESIGN:
       case MODE_INITDB:
       case MODE_REBUILDDB:
+      case MODE_VERIFYDB:
 	if (!showVersion && !help && !noUsageMsg) printUsage();
 	break;
 #endif
@@ -1570,6 +1586,7 @@ int main(int argc, const char ** argv)
       case MODE_TARBUILD:
       case MODE_INITDB:
       case MODE_REBUILDDB:
+      case MODE_VERIFYDB:
 	if (!showVersion && !help && !noUsageMsg) printUsage();
 	break;
 #endif

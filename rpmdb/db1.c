@@ -125,11 +125,6 @@ static int db1sync(dbiIndex dbi, unsigned int flags) {
     return rc;
 }
 
-static int db1byteswapped(/*@unused@*/dbiIndex dbi)
-{
-    return 0;
-}
-
 static void * doGetRecord(FD_t pkgs, unsigned int offset)
 {
     void * uh = NULL;
@@ -393,6 +388,23 @@ static int db1cput(dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
     return rc;
 }
 
+static int db1ccount(dbiIndex dbi, DBC * dbcursor,
+		/*@out@*/ unsigned int * countp,
+		/*@unused@*/ unsigned int flags)
+{
+    return EINVAL;
+}
+
+static int db1byteswapped(/*@unused@*/dbiIndex dbi)
+{
+    return 0;
+}
+
+static int db1stat(dbiIndex dbi, unsigned int flags)
+{
+    return EINVAL;
+}
+
 static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
@@ -422,7 +434,7 @@ static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	(void) unlink(fn);
     }
 
-    db3Free(dbi);
+    dbi = db3Free(dbi);
     base = _free(base);
     urlfn = _free(urlfn);
     return rc;
@@ -515,5 +527,5 @@ exit:
 struct _dbiVec db1vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db1open, db1close, db1sync, db1copen, db1cclose, db1cdel, db1cget, db1cput,
-    db1byteswapped
+    db1ccount, db1byteswapped, db1stat
 };

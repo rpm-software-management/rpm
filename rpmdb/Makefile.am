@@ -44,7 +44,7 @@ falloc.lo: falloc.c $(top_srcdir)/system.h $(top_srcdir)/rpmio/rpmio.h falloc.h
 .PHONY: createlinks
 createlinks:
 	for lo in $(DB3LOBJS); do \
-	  [ -e $$lo ] || $(LN_S) $(top_builddir)/$(WITH_DB_SUBDIR)/$$lo $$lo ; \
+	  [ -f $$lo ] || $(LN_S) $(top_builddir)/$(WITH_DB_SUBDIR)/$$lo $$lo ; \
 	done
 
 clean-local:

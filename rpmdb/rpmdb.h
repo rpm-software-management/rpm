@@ -68,7 +68,7 @@ struct _dbiVec {
     int (*open) (rpmdb rpmdb, int rpmtag, /*@out@*/ dbiIndex * dbip);
 
 /** \ingroup dbi
- * Close index database.
+ * Close index database, and destroy database handle.
  * @param dbi		index database handle
  * @param flags		(unused)
  * @return		0 on success
@@ -143,16 +143,36 @@ struct _dbiVec {
 			unsigned int flags);
 
 /** \ingroup dbi
+ * Retrieve count of (possible) duplicate items using dbcursor->c_count.
+ * @param dbi		index database handle
+ * @param dbcursor	database cursor
+ * @param countp	address of count
+ * @param flags		(unused)
+ * @return		0 on success
+ */
+    int (*ccount) (dbiIndex dbi, DBC * dbcursor,
+			/*@out@*/ unsigned int * countp,
+			unsigned int flags);
+
+/** \ingroup dbi
  * Is database byte swapped?
  * @param dbi		index database handle
  * @return		0 no
  */
     int (*byteswapped) (dbiIndex dbi);
 
+/** \ingroup dbi
+ * Save statistics in database handle.
+ * @param dbi		index database handle
+ * @param flags		retrieve statistics that don't require traversal?
+ * @return		0 on success
+ */
+    int (*stat) (dbiIndex dbi, unsigned int flags);
+
 };
 
 /** \ingroup dbi
- * Describes an index database (implemented on Berkeley db[123] API).
+ * Describes an index database (implemented on Berkeley db3 functionality).
  */
 struct _dbiIndex {
 /*@null@*/ const char *	dbi_root;
@@ -173,6 +193,7 @@ struct _dbiIndex {
     long		dbi_shmkey;	/*!< shared memory base key */
     int			dbi_api;	/*!< Berkeley API type */
 
+    int			dbi_verify_on_close;
     int			dbi_tear_down;	/*!< tear down dbenv on close */
     int			dbi_use_cursors;/*!< access with cursors? (always) */
     int			dbi_use_dbenv;	/*!< use db environment? */
@@ -243,9 +264,10 @@ struct _dbiIndex {
     unsigned int dbi_lastoffset;	/*!< db1 with falloc.c needs this */
 
 /*@only@*//*@null@*/ void * dbi_db;	/*!< dbi handle */
-/*@only@*//*@null@*/ void * dbi_dbenv;
-/*@only@*//*@null@*/ void * dbi_dbinfo;
+/*@only@*//*@null@*/ void * dbi_dbenv;	/*!< */
+/*@only@*//*@null@*/ void * dbi_dbinfo;	/*!< */
 /*@only@*//*@null@*/ void * dbi_rmw;	/*!< db cursor (with DB_WRITECURSOR) */
+/*@only@*//*@null@*/ void * dbi_stats;	/*!< */
 
 /*@observer@*/ const struct _dbiVec * dbi_vec;	/*!< private methods */
 
@@ -298,8 +320,9 @@ extern "C" {
 /** \ingroup db3
  * Destroy index database handle instance.
  * @param dbi		index database handle
+ * @return		NULL always
  */
-void db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi);
+/*@null@*/ dbiIndex db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi);
 
 /** \ingroup db3
  * Format db3 open flags for debugging print.
@@ -380,6 +403,25 @@ int dbiGet(dbiIndex dbi, DBC * dbcursor, void ** keypp,
  */
 int dbiPut(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
 	const void * datap, size_t datalen, unsigned int flags);
+
+/** \ingroup dbi
+ * Retrieve count of (possible) duplicate items.
+ * @param dbi		index database handle
+ * @param dbcursor	database cursor
+ * @param countp	address of count
+ * @param flags		(unused)
+ * @return		0 on success
+ */
+int dbiCount(dbiIndex dbi, DBC * dbcursor, /*@out@*/ unsigned int * countp,
+	unsigned int flags);
+
+/** \ingroup dbi
+ * Verify (and close) index database.
+ * @param dbi		index database handle
+ * @param flags		(unused)
+ * @return		0 on success
+ */
+int dbiVerify(/*@only@*/ dbiIndex dbi, unsigned int flags);
 
 /** \ingroup dbi
  * Close index database.

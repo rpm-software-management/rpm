@@ -30,6 +30,52 @@ typedef	int int32_t;
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
 
+/** \ingroup dbi
+ * Hash database statistics.
+ */
+struct dbiHStats_s {
+    unsigned int hash_magic;	/*!< hash database magic number. */
+    unsigned int hash_version;	/*!< version of the hash database. */
+    unsigned int hash_nkeys;	/*!< no. of unique keys in the database. */
+    unsigned int hash_ndata;	/*!< no. of key/data pairs in the database. */
+    unsigned int hash_pagesize;	/*!< db page (and bucket) size, in bytes. */
+    unsigned int hash_nelem;	/*!< estimated size of the hash table. */
+    unsigned int hash_ffactor;	/*!< no. of items per bucket. */
+    unsigned int hash_buckets;	/*!< no. of hash buckets. */
+    unsigned int hash_free;	/*!< no. of pages on the free list. */
+    unsigned int hash_bfree;	/*!< no. of bytes free on bucket pages. */
+    unsigned int hash_bigpages;	/*!< no. of big key/data pages. */
+    unsigned int hash_big_bfree;/*!< no. of bytes free on big item pages. */
+    unsigned int hash_overflows;/*!< no. of overflow pages. */
+    unsigned int hash_ovfl_free;/*!< no. of bytes free on overflow pages. */
+    unsigned int hash_dup;	/*!< no. of duplicate pages. */
+    unsigned int hash_dup_free;	/*!< no. bytes free on duplicate pages. */
+};
+
+/** \ingroup dbi
+ * B-tree database statistics.
+ */
+struct dbiBStats_s {
+    unsigned int bt_magic;	/*!< btree database magic. */
+    unsigned int bt_version;	/*!< version of the btree database. */
+    unsigned int bt_nkeys;	/*!< no. of unique keys in the database. */
+    unsigned int bt_ndata;	/*!< no. of key/data pairs in the database. */
+    unsigned int bt_pagesize;	/*!< database page size, in bytes. */
+    unsigned int bt_minkey;	/*!< minimum keys per page. */
+    unsigned int bt_re_len;	/*!< length of fixed-length records. */
+    unsigned int bt_re_pad;	/*!< padding byte for fixed-length records. */
+    unsigned int bt_levels;	/*!< no. of levels in the database. */
+    unsigned int bt_int_pg;	/*!< no. of database internal pages. */
+    unsigned int bt_leaf_pg;	/*!< no. of database leaf pages. */
+    unsigned int bt_dup_pg;	/*!< no. of database duplicate pages. */
+    unsigned int bt_over_pg;	/*!< no. of database overflow pages. */
+    unsigned int bt_free;	/*!< no. of pages on the free list. */
+    unsigned int bt_int_pgfree;	/*!< no. of bytes free in internal pages. */
+    unsigned int bt_leaf_pgfree;/*!< no. of bytes free in leaf pages. */
+    unsigned int bt_dup_pgfree;	/*!< no. of bytes free in duplicate pages. */
+    unsigned int bt_over_pgfree;/*!< no. of bytes free in overflow pages. */
+};
+
 #if DB_VERSION_MAJOR == 3
 #define	__USE_DB3	1
 
@@ -132,7 +178,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
     rc = cvtdberr(dbi, "dbenv->close", rc, _debug);
 
     if (dbfile)
-	rpmMessage(RPMMESS_DEBUG, _("closed  db environment %s/%s\n"),
+	rpmMessage(RPMMESS_DEBUG, _("closed   db environment %s/%s\n"),
 			dbhome, dbfile);
 
     if (rpmdb->db_remove_env || dbi->dbi_tear_down) {
@@ -148,7 +194,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
 	xx = cvtdberr(dbi, "dbenv->remove", rc, _debug);
 
 	if (dbfile)
-	    rpmMessage(RPMMESS_DEBUG, _("removed db environment %s/%s\n"),
+	    rpmMessage(RPMMESS_DEBUG, _("removed  db environment %s/%s\n"),
 			dbhome, dbfile);
 
     }
@@ -156,7 +202,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
 #else	/* __USE_DB3 */
     rc = db_appexit(dbenv);
     rc = cvtdberr(dbi, "db_appexit", rc, _debug);
-    free(dbenv);
+    dbenv = _free(dbenv);
 #endif	/* __USE_DB3 */
     dbi->dbi_dbenv = NULL;
     return rc;
@@ -301,7 +347,7 @@ errxit:
 	xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
     }
 #else	/* __USE_DB3 */
-    if (dbenv)	free(dbenv);
+    dbenv = _free(dbenv);
 #endif	/* __USE_DB3 */
     return rc;
 }
@@ -575,6 +621,22 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor,
     /*@=compmempass =nullstate@*/
 }
 
+static int db3ccount(dbiIndex dbi, DBC * dbcursor,
+		/*@out@*/ unsigned int * countp,
+		/*@unused@*/ unsigned int flags)
+{
+    db_recno_t count = 0;
+    int rc = 0;
+
+    flags = 0;
+    rc = dbcursor->c_count(dbcursor, &count, flags);
+    rc = cvtdberr(dbi, "dbcursor->c_count", rc, _debug);
+    if (rc) return rc;
+    if (countp) *countp = count;
+
+    return rc;
+}
+
 static int db3byteswapped(dbiIndex dbi)
 {
     DB * db = dbi->dbi_db;
@@ -588,6 +650,25 @@ static int db3byteswapped(dbiIndex dbi)
     return rc;
 }
 
+static int db3stat(dbiIndex dbi, unsigned int flags)
+{
+    DB * db = dbi->dbi_db;
+    int rc = 0;
+
+    if (db == NULL) return -2;
+#if defined(DB_FAST_STAT)
+    if (flags)
+	flags = DB_FAST_STAT;
+    else
+#endif
+	flags = 0;
+    dbi->dbi_stats = _free(dbi->dbi_stats);
+    rc = db->stat(db, &dbi->dbi_stats, flags);
+    rc = cvtdberr(dbi, "db->stat", rc, _debug);
+    return rc;
+}
+
+/** @todo Add/use per-rpmdb verify_on_close. */
 static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
@@ -597,6 +678,8 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     const char * dbsubfile;
     DB * db = dbi->dbi_db;
     int rc = 0, xx;
+
+    flags = 0;	/* XXX unused */
 
     urlfn = rpmGenPath(
 	(dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root),
@@ -616,8 +699,6 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 #endif
     }
 
-#if defined(__USE_DB2) || defined(__USE_DB3)
-
     if (dbi->dbi_rmw)
 	rc = db3cclose(dbi, NULL, 0);
 
@@ -626,31 +707,65 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	rc = cvtdberr(dbi, "db->close", rc, _debug);
 	db = dbi->dbi_db = NULL;
 
-	rpmMessage(RPMMESS_DEBUG, _("closed  db index       %s/%s\n"),
+	rpmMessage(RPMMESS_DEBUG, _("closed   db index       %s/%s\n"),
 		dbhome, (dbfile ? dbfile : tagName(dbi->dbi_rpmtag)));
 
     }
 
-    if (dbi->dbi_dbinfo) {
-	free(dbi->dbi_dbinfo);
-	dbi->dbi_dbinfo = NULL;
-    }
+    dbi->dbi_dbinfo = _free(dbi->dbi_dbinfo);
 
-    if (dbi->dbi_use_dbenv)
+    if (dbi->dbi_use_dbenv) {
 	/*@-nullstate@*/
 	xx = db_fini(dbi, (dbhome ? dbhome : ""), dbfile, dbsubfile);
 	/*@=nullstate@*/
+    }
 
-#else	/* __USE_DB2 || __USE_DB3 */
+    if (dbi->dbi_verify_on_close && !dbi->dbi_temporary) {
+	DB_ENV * dbenv = NULL;
 
-    rc = db->close(db);
+	rc = db_env_create(&dbenv, 0);
+	rc = cvtdberr(dbi, "db_env_create", rc, _debug);
+	if (rc) goto exit;
 
-#endif	/* __USE_DB2 || __USE_DB3 */
+	if (dbenv)	/* XXX can't happen. */
+	rc = dbenv->open(dbenv, dbhome,
+            DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON, 0);
+	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
+	if (rc) goto exit;
+
+	if (dbenv) {
+	    rc = db_create(&db, dbenv, 0);
+	    rc = cvtdberr(dbi, "db_create", rc, _debug);
+
+	    if (db != NULL) {
+		const char * dbf = rpmGetPath(dbhome, "/", dbfile, NULL);
+
+		rc = db->verify(db, dbf, NULL, NULL, flags);
+		rc = cvtdberr(dbi, "db->verify", rc, _debug);
+
+		rpmMessage(RPMMESS_DEBUG, _("verified db index       %s/%s\n"),
+			(dbhome ? dbhome : ""),
+			(dbfile ? dbfile : tagName(dbi->dbi_rpmtag)));
+
+		xx = db->close(db, 0);
+		xx = cvtdberr(dbi, "db->close", xx, _debug);
+		db = NULL;
+		if (rc == 0 && xx) rc = xx;
+
+		dbf = _free(dbf);
+	    }
+	    xx = dbenv->close(dbenv, 0);
+	    xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
+	    if (rc == 0 && xx) rc = xx;
+	}
+    }
+
+exit:
     dbi->dbi_db = NULL;
 
     urlfn = _free(urlfn);
 
-    db3Free(dbi);
+    dbi = db3Free(dbi);
 
     return rc;
 }
@@ -805,7 +920,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     if (dbi->dbi_use_dbenv)
 	rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
 
-    rpmMessage(RPMMESS_DEBUG, _("opening db index       %s/%s %s mode=0x%x\n"),
+    rpmMessage(RPMMESS_DEBUG, _("opening  db index       %s/%s %s mode=0x%x\n"),
 		dbhome, (dbfile ? dbfile : tagName(dbi->dbi_rpmtag)),
 		prDbiOpenFlags(oflags, 0), dbi->dbi_mode);
 
@@ -992,7 +1107,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 			rc = (!dbi->dbi_use_dbenv ? 1 : 0);
 		    } else if (dbfile) {
 			rpmMessage(RPMMESS_DEBUG,
-				_("locked  db index       %s/%s\n"),
+				_("locked   db index       %s/%s\n"),
 				dbhome, dbfile);
 		    }
 		}
@@ -1045,8 +1160,10 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
 	dbi->dbi_vec = &db3vec;
 	*dbip = dbi;
-    } else
+    } else {
+	dbi->dbi_verify_on_close = 0;
 	(void) db3close(dbi, 0);
+    }
 
     urlfn = _free(urlfn);
 
@@ -1060,7 +1177,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 struct _dbiVec db3vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db3open, db3close, db3sync, db3copen, db3cclose, db3cdel, db3cget, db3cput,
-    db3byteswapped
+    db3ccount, db3byteswapped, db3stat
 };
 
 #endif	/* DB_VERSION_MAJOR == 3 */
