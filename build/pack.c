@@ -37,16 +37,14 @@ struct file_entry {
     struct file_entry *next;
 };
 
-static int cpio_gzip(Header header, int fd);
-static int writeMagic(Spec s, struct PackageRec *pr,
-		      int fd, char *name, unsigned short type);
+static int cpio_gzip(Header header, int fd, char *tempdir);
+static int writeMagic(Spec s, int fd, char *name, unsigned short type);
 static int add_file(struct file_entry **festack,
 		    char *name, int isdoc, int isconf, int isdir);
-static int process_filelist(Header header, StringBuf sb);
+static int process_filelist(Header header, StringBuf sb, int type);
 static int add_file_aux(char *file, struct stat *sb, int flag);
 
-static int writeMagic(Spec s, struct PackageRec *pr,
-		      int fd, char *name, unsigned short type)
+static int writeMagic(Spec s, int fd, char *name, unsigned short type)
 {
     struct rpmlead lead;
 
@@ -63,7 +61,7 @@ static int writeMagic(Spec s, struct PackageRec *pr,
     return 0;
 }
 
-static int cpio_gzip(Header header, int fd)
+static int cpio_gzip(Header header, int fd, char *tempdir)
 {
     char **f, *s;
     int count;
@@ -86,7 +84,9 @@ static int cpio_gzip(Header header, int fd)
 	dup2(inpipe[0], 0);  /* Make stdin the in pipe */
 	dup2(outpipe[1], 1); /* Make stdout the out pipe */
 
-	if (getVar(RPMVAR_ROOT)) {
+	if (tempdir) {
+	    chdir(tempdir);
+	} else if (getVar(RPMVAR_ROOT)) {
 	    if (chdir(getVar(RPMVAR_ROOT))) {
 		error(RPMERR_EXEC, "Couldn't chdir to %s",
 		      getVar(RPMVAR_ROOT));
@@ -96,7 +96,10 @@ static int cpio_gzip(Header header, int fd)
 	    chdir("/");
 	}
 
-	execlp("cpio", "cpio", (isVerbose()) ? "-ovH" : "-oH", "crc", NULL);
+	execlp("cpio", "cpio",
+	       (isVerbose()) ? "-ov" : "-o",
+	       (tempdir) ? "-LH" : "-H",
+	       "crc", NULL);
 	error(RPMERR_EXEC, "Couldn't exec cpio");
 	exit(RPMERR_EXEC);
     }
@@ -132,11 +135,9 @@ static int cpio_gzip(Header header, int fd)
     if (getEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
 	inpipeF = fdopen(inpipe[1], "w");
 	while (count--) {
-	    /* This business strips the leading "/" for cpio */
-	    s = *f;
-	    s++;
-	    fprintf(inpipeF, "%s\n", s);
-	    f++;
+	    s = *f++;
+	    /* For binary package, strip the leading "/" for cpio */
+	    fprintf(inpipeF, "%s\n", (tempdir) ? s : (s+1));
 	}
 	fclose(inpipeF);
     } else {
@@ -225,7 +226,7 @@ static int add_file_aux(char *file, struct stat *sb, int flag)
     return 0; /* for ftw() */
 }
 
-static int process_filelist(Header header, StringBuf sb)
+static int process_filelist(Header header, StringBuf sb, int type)
 {
     char buf[1024];
     char **files, **fp;
@@ -266,13 +267,27 @@ static int process_filelist(Header header, StringBuf sb)
 	    continue;
 	}
 
-	/* check that file starts with leading "/" */
-	if (*filename != '/') {
-	    error(RPMERR_BADSPEC, "File needs leading \"/\": %s", filename);
-	    return(RPMERR_BADSPEC);
-	}
+	if (type == RPMLEAD_BINARY) {
+	    /* check that file starts with leading "/" */
+	    if (*filename != '/') {
+		error(RPMERR_BADSPEC,
+		      "File needs leading \"/\": %s", filename);
+		return(RPMERR_BADSPEC);
+	    }
 
-	c = add_file(&fes, filename, isdoc, isconf, isdir);
+	    c = add_file(&fes, filename, isdoc, isconf, isdir);
+	} else {
+	    /* Source package are the simple case */
+	    fest = malloc(sizeof(struct file_entry));
+	    fest->isdoc = 0;
+	    fest->isconf = 0;
+	    stat(filename, &fest->statbuf);
+	    strcpy(fest->file, filename);
+	    fest->next = fes;
+	    fes = fest;
+	    c = 1;
+	}
+	    
 	if (! c) {
 	    error(RPMERR_BADSPEC, "File not found: %s", filename);
 	    return(RPMERR_BADSPEC);
@@ -309,7 +324,11 @@ static int process_filelist(Header header, StringBuf sb)
 	fest = fes;
 	c = count;
 	while (c--) {
-	    fileList[c] = strdup(fes->file);
+	    if (type == RPMLEAD_BINARY) {
+		fileList[c] = strdup(fes->file);
+	    } else {
+		fileList[c] = strdup(strrchr(fes->file, '/') + 1);
+	    }
 	    if (S_ISREG(fes->statbuf.st_mode)) {
 		mdfile(fes->file, buf);
 		fileMD5List[c] = strdup(buf);
@@ -380,17 +399,25 @@ static int process_filelist(Header header, StringBuf sb)
     return 0;
 }
 
+static time_t buildtime;
+void markBuildTime(void)
+{
+    buildtime = time(NULL);
+}
+
 int packageBinaries(Spec s)
 {
     char name[1024];
     char filename[1024];
+    char *icon;
+    int iconFD;
+    struct stat statbuf;
     struct PackageRec *pr;
     Header outHeader;
     HeaderIterator headerIter;
     int_32 tag, type, c;
     void *ptr;
     int fd;
-    time_t buildtime;
     char *version;
     char *release;
 
@@ -405,8 +432,6 @@ int packageBinaries(Spec s)
 	return RPMERR_BADSPEC;
     }
 
-    buildtime = time(NULL);
-    
     /* Look through for each package */
     pr = s->packages;
     while (pr) {
@@ -452,22 +477,35 @@ int packageBinaries(Spec s)
 	}
 	freeIterator(headerIter);
 	
-	if (process_filelist(outHeader, pr->filelist)) {
+	if (process_filelist(outHeader, pr->filelist, RPMLEAD_BINARY)) {
 	    return 1;
 	}
 	
 	sprintf(filename, "%s.%s.rpm", name, getArchName());
 	fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-	if (writeMagic(s, pr, fd, name, RPMLEAD_BINARY)) {
+	if (writeMagic(s, fd, name, RPMLEAD_BINARY)) {
 	    return 1;
 	}
 
 	/* Add some final entries to the header */
 	addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
+	addEntry(outHeader, RPMTAG_INSTALLTIME, INT32_TYPE, &buildtime, 1);
+	if (pr->icon) {
+	    sprintf(filename, "%s/%s", getVar(RPMVAR_SOURCEDIR), pr->icon);
+	    stat(filename, &statbuf);
+	    icon = malloc(statbuf.st_size);
+	    iconFD = open(filename, O_RDONLY, 0644);
+	    read(iconFD, icon, statbuf.st_size);
+	    close(iconFD);
+	    addEntry(outHeader, RPMTAG_ICON, BIN_TYPE, icon, statbuf.st_size);
+	    free(icon);
+	}
+	/* XXX - need: distribution, vendor, release, builder, buildhost */
+	
 	writeHeader(fd, outHeader);
 	
 	/* Now do the cpio | gzip thing */
-	if (cpio_gzip(outHeader, fd)) {
+	if (cpio_gzip(outHeader, fd, NULL)) {
 	    return 1;
 	}
     
@@ -480,7 +518,109 @@ int packageBinaries(Spec s)
     return 0;
 }
 
+/**************** SOURCE PACKAGING ************************/
+
 int packageSource(Spec s)
 {
+    struct sources *source;
+    struct PackageRec *package;
+    char *tempdir;
+    char src[1024], dest[1024], filename[1024];
+    char *version;
+    char *release;
+    Header outHeader;
+    StringBuf filelist;
+    int fd;
+
+    tempdir = tempnam("/usr/tmp", "rpmbuild");
+    mkdir(tempdir, 0700);
+
+    filelist = newStringBuf();
+    
+    /* Link in the spec file and all the sources */
+    sprintf(dest, "%s%s", tempdir, strrchr(s->specfile, '/'));
+    symlink(s->specfile, dest);
+    appendLineStringBuf(filelist, dest);
+    source = s->sources;
+    while (source) {
+	sprintf(src, "%s/%s", getVar(RPMVAR_SOURCEDIR), source->source);
+	sprintf(dest, "%s/%s", tempdir, source->source);
+	symlink(src, dest);
+	appendLineStringBuf(filelist, dest);
+	source = source->next;
+    }
+    /* ... and icons */
+    package = s->packages;
+    while (package) {
+	if (package->icon) {
+	    sprintf(src, "%s/%s", getVar(RPMVAR_SOURCEDIR), package->icon);
+	    sprintf(dest, "%s/%s", tempdir, source->source);
+	    appendLineStringBuf(filelist, dest);
+	    symlink(src, dest);
+	}
+	package = package->next;
+    }
+
+    /**************************************************/
+    
+    /* Now start packaging */
+    if (!getEntry(s->packages->header, RPMTAG_VERSION, NULL,
+		  (void *) &version, NULL)) {
+	error(RPMERR_BADSPEC, "No version field");
+	return RPMERR_BADSPEC;
+    }
+    if (!getEntry(s->packages->header, RPMTAG_RELEASE, NULL,
+		  (void *) &release, NULL)) {
+	error(RPMERR_BADSPEC, "No release field");
+	return RPMERR_BADSPEC;
+    }
+
+    sprintf(filename, "%s-%s-%s.src.rpm", s->name, version, release);
+    fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    if (writeMagic(s, fd, s->name, RPMLEAD_SOURCE)) {
+	return 1;
+    }
+
+    outHeader = copyHeader(s->packages->header);
+    addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
+    addEntry(outHeader, RPMTAG_INSTALLTIME, INT32_TYPE, &buildtime, 1);
+    /* XXX - need: distribution, vendor, release, builder, buildhost */
+
+    if (process_filelist(outHeader, filelist, RPMLEAD_SOURCE)) {
+	return 1;
+    }
+    
+    writeHeader(fd, outHeader);
+
+    /* Now do the cpio | gzip thing */
+    if (cpio_gzip(outHeader, fd, tempdir)) {
+	return 1;
+    }
+    
+    close(fd);
+    freeHeader(outHeader);
+
+    /**************************************************/
+
+    /* Now clean up */
+
+    freeStringBuf(filelist);
+    
+    source = s->sources;
+    while (source) {
+	sprintf(dest, "%s/%s", tempdir, source->source);
+	unlink(dest);
+	source = source->next;
+    }
+    package = s->packages;
+    while (package) {
+	if (package->icon) {
+	    sprintf(dest, "%s/%s", tempdir, source->source);
+	    unlink(dest);
+	}
+	package = package->next;
+    }
+    rmdir(tempdir);
+    
     return 0;
 }
