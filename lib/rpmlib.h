@@ -385,10 +385,13 @@ typedef enum rpmTag_e {
 /*@=enummemuse@*/
     RPMTAG_RHNPLATFORM		= 1131,
     RPMTAG_PLATFORM		= 1132,
-    RPMTAG_CACHECTIME		= 1133,
-    RPMTAG_CACHEPKGPATH		= 1134,
-    RPMTAG_CACHEPKGSIZE		= 1135,
-    RPMTAG_CACHEPKGMTIME	= 1136,
+    RPMTAG_PATCHESNAME		= 1133, /*!< placeholder (SuSE) */
+    RPMTAG_PATCHESFLAGS		= 1134, /*!< placeholder (SuSE) */
+    RPMTAG_PATCHESVERSION	= 1135, /*!< placeholder (SuSE) */
+    RPMTAG_CACHECTIME		= 1136,
+    RPMTAG_CACHEPKGPATH		= 1137,
+    RPMTAG_CACHEPKGSIZE		= 1138,
+    RPMTAG_CACHEPKGMTIME	= 1139,
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 /*@=enummemuse@*/
@@ -425,7 +428,8 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_GHOST	= (1 << 6),	/*!< from %%ghost */
     RPMFILE_LICENSE	= (1 << 7),	/*!< from %%license */
     RPMFILE_README	= (1 << 8),	/*!< from %%readme */
-    RPMFILE_EXCLUDE	= (1 << 9)	/*!< from %%exclude */
+    RPMFILE_EXCLUDE	= (1 << 9),	/*!< from %%exclude */
+    RPMFILE_UNPATCHED	= (1 << 10)	/*!< placeholder (SuSE) */
 } rpmfileAttrs;
 #define	RPMFILE_MULTILIB_SHIFT		9
 #define	RPMFILE_MULTILIB(N)		((N) << RPMFILE_MULTILIB_SHIFT)
@@ -472,7 +476,8 @@ typedef	enum rpmsenseFlags_e {
 /*@-enummemuse@*/
     RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< @todo Implement %triggerprein. */
 /*@=enummemuse@*/
-    RPMSENSE_KEYRING	= (1 << 26)
+    RPMSENSE_KEYRING	= (1 << 26),
+    RPMSENSE_PATCHES	= (1 << 27)
 } rpmsenseFlags;
 
 #define	RPMSENSE_SENSEMASK	15	 /* Mask to get senses, ie serial, */

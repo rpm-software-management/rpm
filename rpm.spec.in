@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.43
+Release: 0.44
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -514,6 +514,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jul  9 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.44
+- placeholders for manifest constants for SuSE patch packages.
+
 * Sat Jul  6 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.43
 - fix: permit deletions of added packages (#67108).
 

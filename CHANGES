@@ -161,6 +161,7 @@
 	- fix: do lazy open of database in rpmtsInitDB() (#67994).
 	- update rpmcache.8.
 	- fix: permit deletions of added packages (#67108).
+	- placeholders for manifest constants for SuSE patch packages.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

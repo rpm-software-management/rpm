@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-06 14:48-0400\n"
+"POT-Creation-Date: 2002-07-09 11:35-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -423,27 +423,27 @@ msgstr ""
 msgid "no arguments given"
 msgstr ""
 
-#: build/build.c:125 build/pack.c:497
+#: build/build.c:124 build/pack.c:494
 msgid "Unable to open temp file.\n"
 msgstr ""
 
-#: build/build.c:213
+#: build/build.c:212
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr ""
 
 #. @=boundsread@
-#: build/build.c:223
+#: build/build.c:222
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr ""
 
-#: build/build.c:232
+#: build/build.c:231
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr ""
 
-#: build/build.c:334
+#: build/build.c:333
 msgid ""
 "\n"
 "\n"
@@ -504,12 +504,12 @@ msgstr ""
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:346 build/files.c:546 build/files.c:739
+#: build/files.c:346 build/files.c:546 build/files.c:742
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr ""
 
-#: build/files.c:357 build/files.c:676 build/files.c:750
+#: build/files.c:357 build/files.c:676 build/files.c:753
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr ""
@@ -544,69 +544,69 @@ msgstr ""
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:777
+#: build/files.c:780
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
 #. @innercontinue@
-#: build/files.c:788
+#: build/files.c:791
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:951
+#: build/files.c:954
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:957
+#: build/files.c:960
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:985
+#: build/files.c:988
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr ""
 
-#: build/files.c:1000
+#: build/files.c:1003
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1013
+#: build/files.c:1016
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1166
+#: build/files.c:1168
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr ""
 
-#: build/files.c:1310
+#: build/files.c:1312
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1556
+#: build/files.c:1557
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1580
+#: build/files.c:1581
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:1623 build/files.c:2248 build/parsePrep.c:50
+#: build/files.c:1624 build/files.c:2248 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1636
+#: build/files.c:1637
 #, c-format
 msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr ""
@@ -631,7 +631,7 @@ msgstr ""
 msgid "Could not open %%files file %s: %s\n"
 msgstr ""
 
-#: build/files.c:1860 build/pack.c:157
+#: build/files.c:1860 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr ""
@@ -726,132 +726,132 @@ msgstr ""
 msgid "cpio_copy read failed: %s\n"
 msgstr ""
 
-#: build/pack.c:225
+#: build/pack.c:222
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr ""
 
-#: build/pack.c:232
+#: build/pack.c:229
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr ""
 
-#: build/pack.c:239
+#: build/pack.c:236
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr ""
 
-#: build/pack.c:246
+#: build/pack.c:243
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr ""
 
-#: build/pack.c:254
+#: build/pack.c:251
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr ""
 
-#: build/pack.c:269
+#: build/pack.c:266
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr ""
 
-#: build/pack.c:298
+#: build/pack.c:295
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:308
+#: build/pack.c:305
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: build/pack.c:317 build/pack.c:543
+#: build/pack.c:314 build/pack.c:540
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr ""
 
-#: build/pack.c:345
+#: build/pack.c:342
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr ""
 
-#: build/pack.c:354
+#: build/pack.c:351
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:485
+#: build/pack.c:482
 msgid "Unable to create immutable header region.\n"
 msgstr ""
 
-#: build/pack.c:504
+#: build/pack.c:501
 msgid "Unable to write temp header\n"
 msgstr ""
 
-#: build/pack.c:514
+#: build/pack.c:511
 msgid "Bad CSA data\n"
 msgstr ""
 
-#: build/pack.c:550
+#: build/pack.c:547
 msgid "Unable to write final header\n"
 msgstr ""
 
-#: build/pack.c:570
+#: build/pack.c:567
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:588
+#: build/pack.c:585
 msgid "Unable to reload signature header.\n"
 msgstr ""
 
-#: build/pack.c:596
+#: build/pack.c:593
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:632 lib/psm.c:1411
+#: build/pack.c:629 lib/psm.c:1411
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
 
-#: build/pack.c:647
+#: build/pack.c:644
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr ""
 
-#: build/pack.c:658
+#: build/pack.c:655
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:672
+#: build/pack.c:669
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:682
+#: build/pack.c:679
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:688
+#: build/pack.c:685
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:713 lib/psm.c:1701
+#: build/pack.c:710 lib/psm.c:1701
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:782
+#: build/pack.c:779
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:799
+#: build/pack.c:796
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -956,93 +956,93 @@ msgstr ""
 msgid "Duplicate %s entries in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:372
+#: build/parsePreamble.c:371
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:390
+#: build/parsePreamble.c:389
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:403
+#: build/parsePreamble.c:402
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:448
+#: build/parsePreamble.c:447
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:489
+#: build/parsePreamble.c:487
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr ""
 
 #. Empty field
-#: build/parsePreamble.c:497
+#: build/parsePreamble.c:495
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:520 build/parsePreamble.c:527
+#: build/parsePreamble.c:518 build/parsePreamble.c:525
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:588 build/parseSpec.c:423
+#: build/parsePreamble.c:586 build/parseSpec.c:423
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:601
+#: build/parsePreamble.c:599
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:613
+#: build/parsePreamble.c:611
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:625
+#: build/parsePreamble.c:623
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:665 build/parsePreamble.c:676
+#: build/parsePreamble.c:663 build/parsePreamble.c:674
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:702
+#: build/parsePreamble.c:700
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:711
+#: build/parsePreamble.c:709
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr ""
 
-#: build/parsePreamble.c:871
+#: build/parsePreamble.c:869
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:877
+#: build/parsePreamble.c:875
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:904
+#: build/parsePreamble.c:902
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:926
+#: build/parsePreamble.c:924
 msgid "Spec file can't use BuildRoot\n"
 msgstr ""
 
@@ -1051,66 +1051,66 @@ msgstr ""
 msgid "Bad source: %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:87
+#: build/parsePrep.c:86
 #, c-format
 msgid "No patch number %d\n"
 msgstr ""
 
-#: build/parsePrep.c:183
+#: build/parsePrep.c:181
 #, c-format
 msgid "No source number %d\n"
 msgstr ""
 
-#: build/parsePrep.c:205
+#: build/parsePrep.c:203
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:307
+#: build/parsePrep.c:304
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:322
+#: build/parsePrep.c:319
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:340
+#: build/parsePrep.c:337
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:483
+#: build/parsePrep.c:481
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:492
+#: build/parsePrep.c:490
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:504
+#: build/parsePrep.c:502
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:511
+#: build/parsePrep.c:509
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:518
+#: build/parsePrep.c:516
 msgid "Too many patches!\n"
 msgstr ""
 
-#: build/parsePrep.c:522
+#: build/parsePrep.c:520
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:558
+#: build/parsePrep.c:556
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -1475,7 +1475,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:305
-#: rpmdb/header.c:3130 rpmdb/header.c:3153 rpmdb/header.c:3177
+#: rpmdb/header.c:3136 rpmdb/header.c:3159 rpmdb/header.c:3183
 msgid "(not a number)"
 msgstr ""
 
@@ -1506,7 +1506,7 @@ msgstr ""
 msgid "failed to stat %s: %s\n"
 msgstr ""
 
-#: lib/fs.c:155 rpmio/url.c:520
+#: lib/fs.c:155 rpmio/url.c:523
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr ""
@@ -2104,7 +2104,7 @@ msgstr ""
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:124 lib/rpmts.c:285
+#: lib/query.c:124 lib/rpmts.c:286
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
@@ -2332,29 +2332,29 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:447 lib/rpmds.c:614
+#: lib/rpmds.c:449 lib/rpmds.c:616
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:447 lib/rpmds.c:614
+#: lib/rpmds.c:449 lib/rpmds.c:616
 msgid "YES"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:582
+#: lib/rpmds.c:584
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:613
+#: lib/rpmds.c:615
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:637
+#: lib/rpmds.c:639
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""
@@ -2687,13 +2687,13 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr ""
 
-#: lib/rpmts.c:135 lib/rpmts.c:192
+#: lib/rpmts.c:136 lib/rpmts.c:193
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:583
+#: lib/rpmts.c:584
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -2729,107 +2729,107 @@ msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
 #. @=boundsread@
-#: lib/signature.c:337 lib/signature.c:446 lib/signature.c:723
-#: lib/signature.c:762
+#: lib/signature.c:341 lib/signature.c:454 lib/signature.c:733
+#: lib/signature.c:772
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr ""
 
-#: lib/signature.c:353
+#: lib/signature.c:357
 msgid "pgp failed\n"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:360
+#: lib/signature.c:364
 msgid "pgp failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:366
+#: lib/signature.c:370
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
 #. @=boundswrite@
-#: lib/signature.c:384 lib/signature.c:494
+#: lib/signature.c:388 lib/signature.c:502
 msgid "unable to read the signature\n"
 msgstr ""
 
-#: lib/signature.c:389
+#: lib/signature.c:393
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:463
+#: lib/signature.c:471
 msgid "gpg failed\n"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:470
+#: lib/signature.c:478
 msgid "gpg failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:476
+#: lib/signature.c:484
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:499
+#: lib/signature.c:507
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:767 lib/signature.c:822
+#: lib/signature.c:777 lib/signature.c:832
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:799
+#: lib/signature.c:809
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:814
+#: lib/signature.c:824
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:859
+#: lib/signature.c:871
 msgid "Header+Payload size: "
 msgstr ""
 
-#: lib/signature.c:897
+#: lib/signature.c:909
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:948
+#: lib/signature.c:960
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1140
+#: lib/signature.c:1152
 msgid "V3 RSA/MD5 signature: "
 msgstr ""
 
-#: lib/signature.c:1252
+#: lib/signature.c:1264
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1253
+#: lib/signature.c:1265
 msgid "V3 DSA signature: "
 msgstr ""
 
-#: lib/signature.c:1329
+#: lib/signature.c:1341
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1356
+#: lib/signature.c:1368
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1360
+#: lib/signature.c:1372
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
@@ -2940,72 +2940,72 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2310
+#: rpmdb/header.c:2312
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2340
+#: rpmdb/header.c:2342
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2354
+#: rpmdb/header.c:2356
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2368
+#: rpmdb/header.c:2370
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2385
+#: rpmdb/header.c:2387
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2412
+#: rpmdb/header.c:2414
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2430
+#: rpmdb/header.c:2432
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2434
+#: rpmdb/header.c:2436
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2503
+#: rpmdb/header.c:2505
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2512
+#: rpmdb/header.c:2514
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2525 rpmdb/header.c:2570
+#: rpmdb/header.c:2527 rpmdb/header.c:2572
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2535
+#: rpmdb/header.c:2537
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2555
+#: rpmdb/header.c:2557
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2580
+#: rpmdb/header.c:2582
 msgid "| expected at end of expression"
 msgstr ""
 
@@ -3279,59 +3279,59 @@ msgstr ""
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:660
+#: rpmio/rpmio.c:664
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:663
+#: rpmio/rpmio.c:667
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:666
+#: rpmio/rpmio.c:670
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:669
+#: rpmio/rpmio.c:673
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:672
+#: rpmio/rpmio.c:676
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:675
+#: rpmio/rpmio.c:679
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:682
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:685
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:684
+#: rpmio/rpmio.c:688
 msgid "I/O error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:687
+#: rpmio/rpmio.c:691
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:690
+#: rpmio/rpmio.c:694
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:693
+#: rpmio/rpmio.c:697
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:697
+#: rpmio/rpmio.c:701
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:1389
+#: rpmio/rpmio.c:1393
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3380,17 +3380,17 @@ msgstr ""
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: rpmio/url.c:292 rpmio/url.c:318
+#: rpmio/url.c:295 rpmio/url.c:321
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: rpmio/url.c:473
+#: rpmio/url.c:476
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/url.c:540
+#: rpmio/url.c:543
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr ""

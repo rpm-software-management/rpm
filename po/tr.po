@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-06 14:48-0400\n"
+"POT-Creation-Date: 2002-07-09 11:35-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -445,27 +445,27 @@ msgstr "--querytags ile beklenmeyen girdiler"
 msgid "no arguments given"
 msgstr "sorgulama için hiç argüman belirtilmedi"
 
-#: build/build.c:125 build/pack.c:497
+#: build/build.c:124 build/pack.c:494
 msgid "Unable to open temp file.\n"
 msgstr "Geçici dosya açýlamadý.\n"
 
-#: build/build.c:213
+#: build/build.c:212
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "%s icra ediliyor: %s\n"
 
 #. @=boundsread@
-#: build/build.c:223
+#: build/build.c:222
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "%s 'in icrasý baþarýsýz (%s): %s\n"
 
-#: build/build.c:232
+#: build/build.c:231
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "%s çýkýþýnda hata (%s)\n"
 
-#: build/build.c:334
+#: build/build.c:333
 msgid ""
 "\n"
 "\n"
@@ -529,12 +529,12 @@ msgstr "ifadede sözdizimi hatasý\n"
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK baþarýsýz: %s\n"
 
-#: build/files.c:346 build/files.c:546 build/files.c:739
+#: build/files.c:346 build/files.c:546 build/files.c:742
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "%s içinde '(' yok: %s\n"
 
-#: build/files.c:357 build/files.c:676 build/files.c:750
+#: build/files.c:357 build/files.c:676 build/files.c:753
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "%s içinde ')' yok: (%s\n"
@@ -569,69 +569,69 @@ msgstr "mode spec hatalý: %s(%s)\n"
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "dirmode spec hatalý: %s(%s)\n"
 
-#: build/files.c:777
+#: build/files.c:780
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "yerel uzunluðu hatalý: \"%.*s\" (%%lang(%s))\n"
 
 #. @innercontinue@
-#: build/files.c:788
+#: build/files.c:791
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "%.*s yereli %%lang(%s) içinde tekrarlanmýþ\n"
 
-#: build/files.c:951
+#: build/files.c:954
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "%%docdir için hit sýnýrý\n"
 
-#: build/files.c:957
+#: build/files.c:960
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "%%docdir için sadece tek argüman\n"
 
 #. We already got a file -- error
-#: build/files.c:985
+#: build/files.c:988
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Bir satýrda 2 dosya: %s\n"
 
-#: build/files.c:1000
+#: build/files.c:1003
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Dosya \"/\" ile baþlamalý: %s\n"
 
-#: build/files.c:1013
+#: build/files.c:1016
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Özel %%doc ile diðer formlar karýþtýrýlamaz: %s\n"
 
-#: build/files.c:1166
+#: build/files.c:1168
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Dosya iki kere gösterildi: %s\n"
 
-#: build/files.c:1310
+#: build/files.c:1312
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Sembolik bað BuildRoot gösteriyor: %s -> %s\n"
 
-#: build/files.c:1556
+#: build/files.c:1557
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Dosya önek (%s) ile uyumsuz: %s\n"
 
-#: build/files.c:1580
+#: build/files.c:1581
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Dosya bulunamadý: %s\n"
 
-#: build/files.c:1623 build/files.c:2248 build/parsePrep.c:50
+#: build/files.c:1624 build/files.c:2248 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Kullanýcý/grup hatalý: %s\n"
 
-#: build/files.c:1636
+#: build/files.c:1637
 #, fuzzy, c-format
 msgid "File%5d: %07o %s.%s\t %s\n"
 msgstr "Dosya %4d: %07o %s.%s\t %s\n"
@@ -656,7 +656,7 @@ msgstr "Dosya glob tarafýndan bulunamadý: %s\n"
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files dosya %s dosyasýnda açýlamadý: %s\n"
 
-#: build/files.c:1860 build/pack.c:157
+#: build/files.c:1860 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "satýr: %s\n"
@@ -751,136 +751,136 @@ msgstr "cpio_copy yazma hatasý:%s\n"
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy okuma hatasý: %s\n"
 
-#: build/pack.c:225
+#: build/pack.c:222
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "PreIn dosyasý açýlamadý: %s\n"
 
-#: build/pack.c:232
+#: build/pack.c:229
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "PreUn dosyasý açýlamadý: %s\n"
 
-#: build/pack.c:239
+#: build/pack.c:236
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "PostIn dosyasý açýlamadý: %s\n"
 
-#: build/pack.c:246
+#: build/pack.c:243
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "PostUn dosyasý açýlamadý: %s\n"
 
-#: build/pack.c:254
+#: build/pack.c:251
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "VerifyScript dosyasý açýlamadý: %s\n"
 
-#: build/pack.c:269
+#: build/pack.c:266
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "Trigger betik dosyasý açýlamadý: %s\n"
 
-#: build/pack.c:298
+#: build/pack.c:295
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: %s açýlýrken: %s\n"
 
-#: build/pack.c:308
+#: build/pack.c:305
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: %s okunurken: %s\n"
 
-#: build/pack.c:317 build/pack.c:543
+#: build/pack.c:314 build/pack.c:540
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fseek baþarýsýz: %s\n"
 
-#: build/pack.c:345
+#: build/pack.c:342
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s bir RPM paketi deðil\n"
 
-#: build/pack.c:354
+#: build/pack.c:351
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s baþlýðý okunuyor\n"
 
-#: build/pack.c:485
+#: build/pack.c:482
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "%s'den baþlýk okunamadý: %s\n"
 
-#: build/pack.c:504
+#: build/pack.c:501
 #, fuzzy
 msgid "Unable to write temp header\n"
 msgstr "%s'e baþlýk yazýlamadý: %s\n"
 
-#: build/pack.c:514
+#: build/pack.c:511
 msgid "Bad CSA data\n"
 msgstr "CSA verisi geçersiz\n"
 
-#: build/pack.c:550
+#: build/pack.c:547
 #, fuzzy
 msgid "Unable to write final header\n"
 msgstr "%s'e baþlýk yazýlamadý: %s\n"
 
-#: build/pack.c:570
+#: build/pack.c:567
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Ýmza üretiliyor: %d\n"
 
-#: build/pack.c:588
+#: build/pack.c:585
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "%s'den baþlýk okunamadý: %s\n"
 
-#: build/pack.c:596
+#: build/pack.c:593
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: build/pack.c:632 lib/psm.c:1411
+#: build/pack.c:629 lib/psm.c:1411
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "paket yazýlamadý: %s\n"
 
-#: build/pack.c:647
+#: build/pack.c:644
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "sigtarget %s açýlamadý: %s\n"
 
-#: build/pack.c:658
+#: build/pack.c:655
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s'den baþlýk okunamadý: %s\n"
 
-#: build/pack.c:672
+#: build/pack.c:669
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s'e baþlýk yazýlamadý: %s\n"
 
-#: build/pack.c:682
+#: build/pack.c:679
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s'den payload okunamadý: %s\n"
 
-#: build/pack.c:688
+#: build/pack.c:685
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s'e payload yazýlamadý: %s\n"
 
-#: build/pack.c:713 lib/psm.c:1701
+#: build/pack.c:710 lib/psm.c:1701
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Yazýldý: %s\n"
 
-#: build/pack.c:782
+#: build/pack.c:779
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "%s paket dosyasý için çýktý dosya adý üretilemedi: %s\n"
 
-#: build/pack.c:799
+#: build/pack.c:796
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s dosyasý oluþturulamýyor: %s\n"
@@ -985,93 +985,93 @@ msgstr "Pakette %s alan mevcut olmalý: %s\n"
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Pakette %s girdi tekrarlanmýþ: %s\n"
 
-#: build/parsePreamble.c:372
+#: build/parsePreamble.c:371
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "%s kýsayol simgesi açýlamadý: %s\n"
 
-#: build/parsePreamble.c:390
+#: build/parsePreamble.c:389
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "%s kýsayol simgesi okunamadý: %s\n"
 
-#: build/parsePreamble.c:403
+#: build/parsePreamble.c:402
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "bilinmeyen kýsayol simgesi türü: %s\n"
 
-#: build/parsePreamble.c:448
+#: build/parsePreamble.c:447
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "satýr %d: Etiket sadece tek dizgecik alýr: %s\n"
 
-#: build/parsePreamble.c:489
+#: build/parsePreamble.c:487
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "satýr %d: Etiket bozuk: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:497
+#: build/parsePreamble.c:495
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "satýr %d: Etiket boþ: %s\n"
 
-#: build/parsePreamble.c:520 build/parsePreamble.c:527
+#: build/parsePreamble.c:518 build/parsePreamble.c:525
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "satýr %d:  %s içinde '-' karakteri kuraldýþý: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:423
+#: build/parsePreamble.c:586 build/parseSpec.c:423
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot \"/\" olamaz: %s\n"
 
-#: build/parsePreamble.c:601
+#: build/parsePreamble.c:599
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "satýr %d: Önekler \"/\" ile bitemez: %s\n"
 
-#: build/parsePreamble.c:613
+#: build/parsePreamble.c:611
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "satýr %d: Docdir '/' ile baþlamalý: %s\n"
 
-#: build/parsePreamble.c:625
+#: build/parsePreamble.c:623
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "satýr %d: Epoch/Serial alaný bir sayý olmalý: %s\n"
 
-#: build/parsePreamble.c:665 build/parsePreamble.c:676
+#: build/parsePreamble.c:663 build/parsePreamble.c:674
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "satýr %d: %s hatalý: niteleyiciler: %s\n"
 
-#: build/parsePreamble.c:702
+#: build/parsePreamble.c:700
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "satýr %d: BuildArchitecture biçimi hatalý: %s\n"
 
-#: build/parsePreamble.c:711
+#: build/parsePreamble.c:709
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Ýçsel hata: %d etiketi sahte\n"
 
-#: build/parsePreamble.c:871
+#: build/parsePreamble.c:869
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Paket özellikleri hatalý: %s\n"
 
-#: build/parsePreamble.c:877
+#: build/parsePreamble.c:875
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paket zaten var: %s\n"
 
-#: build/parsePreamble.c:904
+#: build/parsePreamble.c:902
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "satýr %d: Bilinmeyen etiket: %s\n"
 
-#: build/parsePreamble.c:926
+#: build/parsePreamble.c:924
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec dosyasý BuildRoot kullanamaz\n"
 
@@ -1080,66 +1080,66 @@ msgstr "Spec dosyasý BuildRoot kullanamaz\n"
 msgid "Bad source: %s: %s\n"
 msgstr "Kaynak hatalý: %s: %s\n"
 
-#: build/parsePrep.c:87
+#: build/parsePrep.c:86
 #, c-format
 msgid "No patch number %d\n"
 msgstr "%d yama numarasý yok\n"
 
-#: build/parsePrep.c:183
+#: build/parsePrep.c:181
 #, c-format
 msgid "No source number %d\n"
 msgstr "%d kaynak kodu numarasý yok\n"
 
-#: build/parsePrep.c:205
+#: build/parsePrep.c:203
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr "Kaynak kodu olmayan %s sunucudan indirilemedi: %s\n"
 
-#: build/parsePrep.c:307
+#: build/parsePrep.c:304
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup çözümlenirken hata: %s\n"
 
-#: build/parsePrep.c:322
+#: build/parsePrep.c:319
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "satýr %d: %%setup argumaný hatalý: %s\n"
 
-#: build/parsePrep.c:340
+#: build/parsePrep.c:337
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "satýr %d: %%setup seçeneði %s hatalý: %s\n"
 
-#: build/parsePrep.c:483
+#: build/parsePrep.c:481
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "satýr %d: %%patch -b'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:492
+#: build/parsePrep.c:490
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "satýr %d: %%patch -z'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:504
+#: build/parsePrep.c:502
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "satýr %d: %%patch -p'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:511
+#: build/parsePrep.c:509
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "satýr %d: %%patch -p'nin argümaný hatalý: %s\n"
 
-#: build/parsePrep.c:518
+#: build/parsePrep.c:516
 msgid "Too many patches!\n"
 msgstr "Yamalar çok fazla!\n"
 
-#: build/parsePrep.c:522
+#: build/parsePrep.c:520
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "satýr %d: %%patch argüman hatasý: %s\n"
 
-#: build/parsePrep.c:558
+#: build/parsePrep.c:556
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "satýr %d: %%prep saniye\n"
@@ -1527,7 +1527,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:305
-#: rpmdb/header.c:3130 rpmdb/header.c:3153 rpmdb/header.c:3177
+#: rpmdb/header.c:3136 rpmdb/header.c:3159 rpmdb/header.c:3183
 msgid "(not a number)"
 msgstr "(bir sayý deðil)"
 
@@ -1560,7 +1560,7 @@ msgstr "mntctl() sonuçlanan hatalý baðlantý yerleri nedeniyle baþarýsýz: %s\n"
 msgid "failed to stat %s: %s\n"
 msgstr "stat %s baþarýsýz: %s\n"
 
-#: lib/fs.c:155 rpmio/url.c:520
+#: lib/fs.c:155 rpmio/url.c:523
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
@@ -2188,7 +2188,7 @@ msgstr "%s açýlamadý: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s baþarýsýz\n"
 
-#: lib/query.c:124 lib/rpmts.c:285
+#: lib/query.c:124 lib/rpmts.c:286
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "biçem yanlýþ: %s\n"
@@ -2419,16 +2419,16 @@ msgstr ")"
 msgid "OK"
 msgstr "Tamam"
 
-#: lib/rpmds.c:447 lib/rpmds.c:614
+#: lib/rpmds.c:449 lib/rpmds.c:616
 msgid "NO "
 msgstr "HAYIR "
 
-#: lib/rpmds.c:447 lib/rpmds.c:614
+#: lib/rpmds.c:449 lib/rpmds.c:616
 msgid "YES"
 msgstr "EVET"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:582
+#: lib/rpmds.c:584
 #, fuzzy, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2437,13 +2437,13 @@ msgstr ""
 "\"B\" baðýmlýlýðý bir dönemsellik gerektirir (tabii ki \"A\" da)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:613
+#: lib/rpmds.c:615
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:637
+#: lib/rpmds.c:639
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
@@ -2778,13 +2778,13 @@ msgstr "%s okunamýyor, EV çok büyük\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s okuma eriþimi için açýlamadý: %s.\n"
 
-#: lib/rpmts.c:135 lib/rpmts.c:192
+#: lib/rpmts.c:136 lib/rpmts.c:193
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s de Paket veritabaný açýlamadý\n"
 
 #. Get available space on mounted file systems.
-#: lib/rpmts.c:583
+#: lib/rpmts.c:584
 msgid "getting list of mounted filesystems\n"
 msgstr "baðlý dosya sistemlerinin listesi alýnýyor\n"
 
@@ -2820,111 +2820,111 @@ msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Ýmza: boyut(%d)+iz(%d)\n"
 
 #. @=boundsread@
-#: lib/signature.c:337 lib/signature.c:446 lib/signature.c:723
-#: lib/signature.c:762
+#: lib/signature.c:341 lib/signature.c:454 lib/signature.c:733
+#: lib/signature.c:772
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s icra edilemedi: %s\n"
 
-#: lib/signature.c:353
+#: lib/signature.c:357
 msgid "pgp failed\n"
 msgstr "pgp hata verdi\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:360
+#: lib/signature.c:364
 msgid "pgp failed to write signature\n"
 msgstr "pgp imzasýnýn yazýlmasý baþarýsýz\n"
 
-#: lib/signature.c:366
+#: lib/signature.c:370
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP imza uzunluðu: %d\n"
 
 #. @=boundswrite@
-#: lib/signature.c:384 lib/signature.c:494
+#: lib/signature.c:388 lib/signature.c:502
 msgid "unable to read the signature\n"
 msgstr "imza okunamadý\n"
 
-#: lib/signature.c:389
+#: lib/signature.c:393
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "GPG imzasýnýn %d baytý alýndý\n"
 
-#: lib/signature.c:463
+#: lib/signature.c:471
 msgid "gpg failed\n"
 msgstr "gpg hata verdi\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:470
+#: lib/signature.c:478
 msgid "gpg failed to write signature\n"
 msgstr "imzanýn yazýlmasý sýrasýnda gpg hata verdi\n"
 
-#: lib/signature.c:476
+#: lib/signature.c:484
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG imza uzunluðu: %d\n"
 
-#: lib/signature.c:499
+#: lib/signature.c:507
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG imzasýnýn %d baytý alýndý\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:767 lib/signature.c:822
+#: lib/signature.c:777 lib/signature.c:832
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Makro dosyasýnda %%_signature spec geçersiz\n"
 
-#: lib/signature.c:799
+#: lib/signature.c:809
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Makro dosyanýzda \"%%_pgp_name\" tanýmlanmýþ olmalý\n"
 
-#: lib/signature.c:814
+#: lib/signature.c:824
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Makro dosyanýzda \"%%_pgp_name\" belirtmelisiniz\n"
 
-#: lib/signature.c:859
+#: lib/signature.c:871
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "Baþlýk çok uzun"
 
-#: lib/signature.c:897
+#: lib/signature.c:909
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:948
+#: lib/signature.c:960
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "Baþlýk SHA1 özümlemesi doðrulanmaz"
 
-#: lib/signature.c:1140
+#: lib/signature.c:1152
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "tüm MD5 imzalarýný atlar"
 
-#: lib/signature.c:1252
+#: lib/signature.c:1264
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1253
+#: lib/signature.c:1265
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Ýmza yok\n"
 
-#: lib/signature.c:1329
+#: lib/signature.c:1341
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1356
+#: lib/signature.c:1368
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1360
+#: lib/signature.c:1372
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Ýmza: boyut(%d)+iz(%d)\n"
@@ -3035,72 +3035,72 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE sayýsý 1 olmalý.\n"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2310
+#: rpmdb/header.c:2312
 msgid "missing { after %"
 msgstr "%% den sonraki { yok"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2340
+#: rpmdb/header.c:2342
 msgid "missing } after %{"
 msgstr "%%{ den sonraki } yok"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2354
+#: rpmdb/header.c:2356
 msgid "empty tag format"
 msgstr "etiket biçemi boþ"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2368
+#: rpmdb/header.c:2370
 msgid "empty tag name"
 msgstr "etiket ismi boþ"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2385
+#: rpmdb/header.c:2387
 msgid "unknown tag"
 msgstr "bilinmeyen etiket"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2412
+#: rpmdb/header.c:2414
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] gerekli"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2430
+#: rpmdb/header.c:2432
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2434
+#: rpmdb/header.c:2436
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2503
+#: rpmdb/header.c:2505
 msgid "? expected in expression"
 msgstr "ifade içerisinde ? gerekli"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2512
+#: rpmdb/header.c:2514
 msgid "{ expected after ? in expression"
 msgstr "ifade içerisinde ? dan sonra { gerekli"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2525 rpmdb/header.c:2570
+#: rpmdb/header.c:2527 rpmdb/header.c:2572
 msgid "} expected in expression"
 msgstr "ifade içinde } gerekli"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2535
+#: rpmdb/header.c:2537
 msgid ": expected following ? subexpression"
 msgstr "? alt ifadesinden sonra : gerekli"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2555
+#: rpmdb/header.c:2557
 msgid "{ expected after : in expression"
 msgstr "ifade içersinde : den sonra { gerekli"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2580
+#: rpmdb/header.c:2582
 msgid "| expected at end of expression"
 msgstr "ifadenin sonunda | gerekli"
 
@@ -3376,59 +3376,59 @@ msgstr "%s dosyasý: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"
 
-#: rpmio/rpmio.c:660
+#: rpmio/rpmio.c:664
 msgid "Success"
 msgstr "Baþarýlý"
 
-#: rpmio/rpmio.c:663
+#: rpmio/rpmio.c:667
 msgid "Bad server response"
 msgstr "Sunucudan kötü yanýt"
 
-#: rpmio/rpmio.c:666
+#: rpmio/rpmio.c:670
 msgid "Server I/O error"
 msgstr "Sunucu G/Ç hatasý"
 
-#: rpmio/rpmio.c:669
+#: rpmio/rpmio.c:673
 msgid "Server timeout"
 msgstr "Sunucu zaman aþýmý"
 
-#: rpmio/rpmio.c:672
+#: rpmio/rpmio.c:676
 msgid "Unable to lookup server host address"
 msgstr "Sunucu makina adresi bulunamadý"
 
-#: rpmio/rpmio.c:675
+#: rpmio/rpmio.c:679
 msgid "Unable to lookup server host name"
 msgstr "Sunucu makina ismi bulunamadý"
 
-#: rpmio/rpmio.c:678
+#: rpmio/rpmio.c:682
 msgid "Failed to connect to server"
 msgstr "Sunucuya baðlanýlamadý"
 
-#: rpmio/rpmio.c:681
+#: rpmio/rpmio.c:685
 msgid "Failed to establish data connection to server"
 msgstr "Sunucuya veri baðlantýsý kurulamadý"
 
-#: rpmio/rpmio.c:684
+#: rpmio/rpmio.c:688
 msgid "I/O error to local file"
 msgstr "Yerel dosyaya G/Ç hatasý"
 
-#: rpmio/rpmio.c:687
+#: rpmio/rpmio.c:691
 msgid "Error setting remote server to passive mode"
 msgstr "Karþý sunucuyu pasif kipe sokma ayarlarýnda hata"
 
-#: rpmio/rpmio.c:690
+#: rpmio/rpmio.c:694
 msgid "File not found on server"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: rpmio/rpmio.c:693
+#: rpmio/rpmio.c:697
 msgid "Abort in progress"
 msgstr "Kesme iþlemi sürüyor"
 
-#: rpmio/rpmio.c:697
+#: rpmio/rpmio.c:701
 msgid "Unknown or unexpected error"
 msgstr "Bilinmeyen ya da beklenmeyen hata"
 
-#: rpmio/rpmio.c:1389
+#: rpmio/rpmio.c:1393
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s sunucusuna %s olarak giriliyor, parola %s\n"
@@ -3477,17 +3477,17 @@ msgstr "uyarý: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgid "Password for %s@%s: "
 msgstr "%s@%s için parola: "
 
-#: rpmio/url.c:292 rpmio/url.c:318
+#: rpmio/url.c:295 rpmio/url.c:321
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "hata: %sport bir sayý olmalý\n"
 
-#: rpmio/url.c:473
+#: rpmio/url.c:476
 msgid "url port must be a number\n"
 msgstr "url portu bir sayý olmalý\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:540
+#: rpmio/url.c:543
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s oluþturulamadý: %s\n"
