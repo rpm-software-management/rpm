@@ -209,8 +209,8 @@ INPUT                = \
 	./build/spec.c \
 	./lib/cpio.c \
 	./lib/cpio.h \
-	./lib/dbindex.c \
-	./lib/dbindex.h \
+	./lib/db0.c \
+	./lib/db3.c \
 	./lib/depends.c \
 	./lib/depends.h \
 	./lib/falloc.c \
@@ -225,8 +225,6 @@ INPUT                = \
 	./lib/header.h \
 	./lib/install.c \
 	./lib/install.h \
-	./lib/lookup.c \
-	./lib/lookup.h \
 	./lib/macro.c \
 	./lib/md5.c \
 	./lib/md5.h \
@@ -240,7 +238,6 @@ INPUT                = \
 	./lib/package.c \
 	./lib/problems.c \
 	./lib/query.c \
-	./lib/rebuilddb.c \
 	./lib/rpmchecksig.c \
 	./lib/rpmdb.c \
 	./lib/rpmdb.h \
