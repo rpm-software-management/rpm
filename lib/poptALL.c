@@ -11,8 +11,9 @@
 
 #define POPT_SHOWVERSION	-999
 #define POPT_SHOWRC		-998
+#define POPT_QUERYTAGS		-997
 #ifdef  NOTYET
-#define POPT_RCFILE		-997
+#define POPT_RCFILE		-996
 #endif
 
 /*@unchecked@*/
@@ -149,6 +150,10 @@ static void rpmcliAllArgCallback( /*@unused@*/ poptContext con,
 	(void) rpmShowRC(stdout);
 	exit(EXIT_SUCCESS);
 	/*@notreached@*/ break;
+    case POPT_QUERYTAGS:
+	rpmDisplayQueryTags(stdout);
+	exit(EXIT_SUCCESS);
+	/*@notreached@*/ break;
 #if defined(POPT_RCFILE)
     case POPT_RCFILE:		/* XXX FIXME: noop for now */
 	break;
@@ -216,6 +221,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	N_("use ROOT as top level directory"),
 	N_("ROOT") },
 
+ { "querytags", '\0', 0, 0, 'Q',
+        N_("display known query tags"), NULL },
  { "showrc", '\0', 0, NULL, POPT_SHOWRC,
 	N_("display final rpmrc and macro configuration"), NULL },
  { "quiet", '\0', 0, NULL, 'q',

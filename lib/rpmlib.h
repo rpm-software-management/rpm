@@ -1113,21 +1113,19 @@ typedef enum rpmEraseInterfaceFlags_e {
  * Tags found in signature header from package.
  */
 enum rpmtagSignature {
-    RPMSIGTAG_SIZE	= 1000,	/*!< Header+Payload size in bytes. */
-/* the md5 sum was broken *twice* on big endian machines */
-    RPMSIGTAG_LEMD5_1	= 1001,	/*!< Broken MD5, take 1 @deprecated legacy. */
-    RPMSIGTAG_PGP	= 1002,	/*!< PGP 2.6.3 signature. */
-    RPMSIGTAG_LEMD5_2	= 1003,	/*!< Broken MD5, take 2 @deprecated legacy. */
-    RPMSIGTAG_MD5	= 1004,	/*!< MD5 signature. */
-    RPMSIGTAG_GPG	= 1005, /*!< GnuPG signature. */
-    RPMSIGTAG_PGP5	= 1006,	/*!< PGP5 signature @deprecated legacy. */
-    RPMSIGTAG_PAYLOADSIZE = 1007,
-				/*!< uncompressed payload size in bytes. */
-    RPMSIGTAG_BADSHA1_1	= RPMTAG_BADSHA1_1,	/*!< Broken SHA1, take 1. */
-    RPMSIGTAG_BADSHA1_2	= RPMTAG_BADSHA1_2,	/*!< Broken SHA1, take 2. */
-    RPMSIGTAG_SHA1	= RPMTAG_SHA1HEADER,	/*!< sha1 header digest. */
-    RPMSIGTAG_DSA	= RPMTAG_DSAHEADER,	/*!< DSA header signature. */
-    RPMSIGTAG_RSA	= RPMTAG_RSAHEADER	/*!< RSA header signature. */
+    RPMSIGTAG_SIZE	= 1000,	/*!< internal Header+Payload size in bytes. */
+    RPMSIGTAG_LEMD5_1	= 1001,	/*!< internal Broken MD5, take 1 @deprecated legacy. */
+    RPMSIGTAG_PGP	= 1002,	/*!< internal PGP 2.6.3 signature. */
+    RPMSIGTAG_LEMD5_2	= 1003,	/*!< internal Broken MD5, take 2 @deprecated legacy. */
+    RPMSIGTAG_MD5	= 1004,	/*!< internal MD5 signature. */
+    RPMSIGTAG_GPG	= 1005, /*!< internal GnuPG signature. */
+    RPMSIGTAG_PGP5	= 1006,	/*!< internal PGP5 signature @deprecated legacy. */
+    RPMSIGTAG_PAYLOADSIZE = 1007,/*!< internal uncompressed payload size in bytes. */
+    RPMSIGTAG_BADSHA1_1	= RPMTAG_BADSHA1_1,	/*!< internal Broken SHA1, take 1. */
+    RPMSIGTAG_BADSHA1_2	= RPMTAG_BADSHA1_2,	/*!< internal Broken SHA1, take 2. */
+    RPMSIGTAG_SHA1	= RPMTAG_SHA1HEADER,	/*!< internal sha1 header digest. */
+    RPMSIGTAG_DSA	= RPMTAG_DSAHEADER,	/*!< internal DSA header signature. */
+    RPMSIGTAG_RSA	= RPMTAG_RSAHEADER	/*!< internal RSA header signature. */
 };
 
 /**

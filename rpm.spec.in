@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.59
+Release: 0.60
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -515,6 +515,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jul 31 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.60
+- make --querytags a common option, fix errant regex (#70135).
+- db3: increase mpool and cachesize, compile w/o --enable-debug.
+
 * Tue Jul 30 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.59
 - prevent stale locks in __db files by closing databases on signals.
 

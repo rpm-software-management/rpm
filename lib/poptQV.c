@@ -40,13 +40,13 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 
     switch (opt->val) {
     case 'q':	/* from --query, -q */
-    case 'Q':	/* from --querytags */
+    case 'Q':	/* from --querytags (handled by poptALL) */
     case 'V':	/* from --verify, -V */
     case 'A':	/* from --addsign */
     case 'I':	/* from --import */
     case 'K':	/* from --checksig, -K */
     case 'R':	/* from --resign */
-	if (qva->qva_mode == ' ' || qva->qva_mode == '\0') {
+	if (qva->qva_mode == '\0' || strchr("qQ ", qva->qva_mode)) {
 	    qva->qva_mode = opt->val;
 	    qva->qva_char = ' ';
 	}
@@ -111,8 +111,6 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("rpm query mode"), NULL },
  { "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYNUMBER,
 	N_("query/verify a header instance"), "HDRNUM" },
- { "querytags", '\0', 0, 0, 'Q',
-	N_("display known query tags"), NULL },
  { "specfile", '\0', 0, 0, POPT_SPECFILE,
 	N_("query a spec file"), N_("<spec>") },
  { "tid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYTID,

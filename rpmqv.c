@@ -33,7 +33,6 @@ enum modes {
 
     MODE_QUERY		= (1 <<  0),
     MODE_VERIFY		= (1 <<  3),
-    MODE_QUERYTAGS	= (1 <<  9),
 #define	MODES_QV (MODE_QUERY | MODE_VERIFY)
 
     MODE_INSTALL	= (1 <<  1),
@@ -249,7 +248,6 @@ int main(int argc, const char ** argv)
     switch (bigMode) {
     case MODE_QUERY:	qva->qva_mode = 'q';	break;
     case MODE_VERIFY:	qva->qva_mode = 'V';	break;
-    case MODE_QUERYTAGS:qva->qva_mode = 'Q';	break;
     case MODE_CHECKSIG:	qva->qva_mode = 'K';	break;
     case MODE_RESIGN:	qva->qva_mode = 'R';	break;
     case MODE_INSTALL:
@@ -360,7 +358,6 @@ int main(int argc, const char ** argv)
     switch (qva->qva_mode) {
     case 'q':	bigMode = MODE_QUERY;		break;
     case 'V':	bigMode = MODE_VERIFY;		break;
-    case 'Q':	bigMode = MODE_QUERYTAGS;	break;
     }
 
     if (qva->qva_sourceCount) {
@@ -810,13 +807,6 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
     }	break;
-
-    case MODE_QUERYTAGS:
-	if (argc != 2)
-	    argerror(_("unexpected arguments to --querytags "));
-
-	rpmDisplayQueryTags(stdout);
-	break;
 #endif	/* IAM_RPMQV */
 
 #ifdef IAM_RPMK
@@ -840,7 +830,6 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 #if !defined(IAM_RPMQV)
     case MODE_QUERY:
     case MODE_VERIFY:
-    case MODE_QUERYTAGS:
 #endif
 #if !defined(IAM_RPMK)
     case MODE_CHECKSIG:

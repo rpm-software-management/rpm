@@ -195,6 +195,8 @@
 	- treat an unspecified epoch as Epoch: 0 everywhere.
 	- detect athlon/duron with CMOV (PLD).
 	- prevent stale locks in __db files by closing databases on signals.
+	- make --querytags a common option, fix errant regex (#70135).
+	- db3: increase mpool and cachesize, compile w/o --enable-debug.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
