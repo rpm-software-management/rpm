@@ -1,7 +1,11 @@
 /* RPM - Copyright (C) 1995 Red Hat Software
-
+ *
  * header.c - routines for managing rpm headers
  */
+
+/* Data written to file descriptors is in network byte order.    */
+/* Data read from file descriptors is expected to be in          */
+/* network byte order and is converted on the fly to host order. */
 
 #include <stdlib.h>
 #include <asm/byteorder.h>
@@ -26,12 +30,9 @@ struct headerToken {
     int data_malloced;
     int data_used;
 
-    caddr_t mmapped_address;
-
     int mutable;
 };
 
-/* All this is in network byte order! */
 struct indexEntry {
     int_32 tag;
     int_32 type;
@@ -39,13 +40,21 @@ struct indexEntry {
     int_32 count;
 };
 
+static int indexSort(const void *ap, const void *bp);
+static struct indexEntry *findEntry(Header h, int_32 tag);
+static void *dataHostToNetwork(Header h);
+static void *dataNetworkToHost(Header h);
+
+/********************************************************************/
+/*                                                                  */
+/* Header iteration and copying                                     */
+/*                                                                  */
+/********************************************************************/
+
 struct headerIteratorS {
     Header h;
     int next_index;
 };
-
-static int indexSort(const void *ap, const void *bp);
-static struct indexEntry *findEntry(Header h, int_32 tag);
 
 HeaderIterator initIterator(Header h)
 {
@@ -75,9 +84,9 @@ int nextIterator(HeaderIterator iter,
     }
     iter->next_index++;
     
-    *tag = ntohl(index[slot].tag);
-    *type = ntohl(index[slot].type);
-    *c = ntohl(index[slot].count);
+    *tag = index[slot].tag;
+    *type = index[slot].type;
+    *c = index[slot].count;
 
     /* Now look it up */
     switch (*type) {
@@ -87,21 +96,21 @@ int nextIterator(HeaderIterator iter,
     case INT8_TYPE:
     case BIN_TYPE:
     case CHAR_TYPE:
-	*p = h->data + ntohl(index[slot].offset);
+	*p = h->data + index[slot].offset;
 	break;
     case STRING_TYPE:
 	if (*c == 1) {
 	    /* Special case -- just return a pointer to the string */
-	    *p = h->data + ntohl(index[slot].offset);
+	    *p = h->data + index[slot].offset;
 	    break;
 	}
 	/* Fall through to STRING_ARRAY_TYPE */
     case STRING_ARRAY_TYPE:
 	/* Otherwise, build up an array of char* to return */
-	x = ntohl(index[slot].count);
+	x = index[slot].count;
 	*p = malloc(x * sizeof(char *));
 	spp = (char **) *p;
-	sp = h->data + ntohl(index[slot].offset);
+	sp = h->data + index[slot].offset;
 	while (x--) {
 	    *spp++ = sp;
 	    sp = strchr(sp, 0);
@@ -131,18 +140,10 @@ Header copyHeader(Header h)
 }
 
 /********************************************************************/
-
-unsigned int sizeofHeader(Header h)
-{
-    unsigned int size;
-
-    size = sizeof(int_32);	/* count of index entries */
-    size += sizeof(int_32);	/* length of data */
-    size += sizeof(struct indexEntry) * h->entries_used;
-    size += h->data_used;
-
-    return size;
-}
+/*                                                                  */
+/* Reading and writing headers                                      */
+/*                                                                  */
+/********************************************************************/
 
 static int indexSort(const void *ap, const void *bp)
 {
@@ -163,8 +164,12 @@ static int indexSort(const void *ap, const void *bp)
 void writeHeader(int fd, Header h)
 {
     int_32 l;
-    struct indexEntry *sortedIndex;
+    struct indexEntry *sortedIndex, *p;
+    int c;
+    void *converted_data;
 
+    /* We must write using network byte order! */
+    
     /* First write out the length of the index (count of index entries) */
     l = htonl(h->entries_used);
     write(fd, &l, sizeof(l));
@@ -173,55 +178,86 @@ void writeHeader(int fd, Header h)
     l = htonl(h->data_used);
     write(fd, &l, sizeof(l));
 
-    /* Now write the index */
+    /* Sort and convert the index */
     sortedIndex = malloc(sizeof(struct indexEntry) * h->entries_used);
     memcpy(sortedIndex, h->index, sizeof(struct indexEntry) * h->entries_used);
     qsort(sortedIndex, h->entries_used, sizeof(struct indexEntry), indexSort);
+    c = h->entries_used;
+    p = sortedIndex;
+    while (c--) {
+	p->tag = htonl(p->tag);
+	p->type = htonl(p->type);
+	p->offset = htonl(p->offset);
+	p->count = htonl(p->count);
+	p++;
+    }
+
+    /* Write the index */
     write(fd, sortedIndex, sizeof(struct indexEntry) * h->entries_used);
     free(sortedIndex);
 
-    /* Finally write the data */
-    write(fd, h->data, h->data_used);
+    /* Finally convert and write the data */
+    converted_data = dataHostToNetwork(h);
+    write(fd, converted_data, h->data_used);
+    free(converted_data);
 }
 
-Header mmapHeader(int fd, long offset)
+static void *dataHostToNetwork(Header h)
 {
-    struct headerToken *h = malloc(sizeof(struct headerToken));
-    int_32 *p1, il, dl;
-    caddr_t p;
-    size_t bytes = 2 * sizeof(int_32);
+    char *data, *p;
+    struct indexEntry *index = h->index;
+    int entries = h->entries_used;
+    int count;
 
-    p = mmap(0, bytes, PROT_READ, MAP_FILE | MAP_PRIVATE, fd, offset);
-    if (!p)
-	return NULL;
+    data = malloc(h->data_used);
+    memcpy(data, h->data, h->data_used);
 
-    p1 = (int_32 *) p;
-
-    printf("here p1 = %p\n", p1);
-    il = ntohl(*p1++);
-    printf("il = %d\n", il);
-    dl = ntohl(*p1++);
-    if (munmap((caddr_t) p, 0)) {
-	return NULL;
+    while (entries--) {
+	p = data + index->offset;
+	count = index->count;
+	switch (index->type) {
+	case INT64_TYPE:
+	    while (count--) {
+		*((int_64 *)p) = htonl(*((int_64 *)p));
+		p += sizeof(int_64);
+	    }
+	    break;
+	case INT32_TYPE:
+	    while (count--) {
+		*((int_32 *)p) = htonl(*((int_32 *)p));
+		p += sizeof(int_32);
+	    }
+	    break;
+	case INT16_TYPE:
+	    while (count--) {
+		*((int_16 *)p) = htons(*((int_16 *)p));
+		p += sizeof(int_16);
+	    }
+	    break;
+	case INT8_TYPE:
+	case BIN_TYPE:
+	case CHAR_TYPE:
+	case STRING_TYPE:
+	case STRING_ARRAY_TYPE:
+	    /* No conversion necessary */
+	    break;
+	default:
+	    fprintf(stderr, "Data type %d not supprted\n", (int) index->type);
+	    exit(1);
+	}
+	
+	index++;
     }
-    bytes += il * sizeof(struct indexEntry) + dl;
-    p = mmap(0, bytes, PROT_READ, MAP_FILE | MAP_PRIVATE, fd, 0);
-    h->index = (void *) (p + 2 * sizeof(int_32));
-    h->data = (void *) (p + 2 * sizeof(int_32) + il * sizeof(struct indexEntry));
-
-    h->entries_malloced = il;
-    h->entries_used = il;
-    h->data_malloced = dl;
-    h->data_used = dl;
-    h->mutable = 0;
-    h->mmapped_address = p;
-
-    return h;
+    
+    return data;
 }
 
 Header readHeader(int fd)
 {
     int_32 il, dl;
+    struct indexEntry *p;
+    int c;
+    void *converted_data;
 
     struct headerToken *h = (struct headerToken *)
     malloc(sizeof(struct headerToken));
@@ -240,16 +276,88 @@ Header readHeader(int fd)
     h->entries_used = il;
     read(fd, h->index, sizeof(struct indexEntry) * il);
 
+    /* Convert the index */
+    c = h->entries_used;
+    p = h->index;
+    while (c--) {
+	p->tag = ntohl(p->tag);
+	p->type = ntohl(p->type);
+	p->offset = ntohl(p->offset);
+	p->count = ntohl(p->count);
+	p++;
+    }
+
     /* Finally, read the data */
+    /* XXX need to convert the data! */
     h->data = malloc(dl);
     h->data_malloced = dl;
     h->data_used = dl;
     read(fd, h->data, dl);
 
+    converted_data = dataNetworkToHost(h);
+    free(h->data);
+    h->data = converted_data;
+
     h->mutable = 0;
 
     return h;
 }
+
+static void *dataNetworkToHost(Header h)
+{
+    char *data, *p;
+    struct indexEntry *index = h->index;
+    int entries = h->entries_used;
+    int count;
+
+    data = malloc(h->data_used);
+    memcpy(data, h->data, h->data_used);
+
+    while (entries--) {
+	p = data + index->offset;
+	count = index->count;
+	switch (index->type) {
+	case INT64_TYPE:
+	    while (count--) {
+		*((int_64 *)p) = ntohl(*((int_64 *)p));
+		p += sizeof(int_64);
+	    }
+	    break;
+	case INT32_TYPE:
+	    while (count--) {
+		*((int_32 *)p) = ntohl(*((int_32 *)p));
+		p += sizeof(int_32);
+	    }
+	    break;
+	case INT16_TYPE:
+	    while (count--) {
+		*((int_16 *)p) = ntohs(*((int_16 *)p));
+		p += sizeof(int_16);
+	    }
+	    break;
+	case INT8_TYPE:
+	case BIN_TYPE:
+	case CHAR_TYPE:
+	case STRING_TYPE:
+	case STRING_ARRAY_TYPE:
+	    /* No conversion necessary */
+	    break;
+	default:
+	    fprintf(stderr, "Data type %d not supprted\n", (int) index->type);
+	    exit(1);
+	}
+	
+	index++;
+    }
+    
+    return data;
+}
+
+/********************************************************************/
+/*                                                                  */
+/* Header loading and unloading                                     */
+/*                                                                  */
+/********************************************************************/
 
 Header loadHeader(void *pv)
 {
@@ -257,9 +365,9 @@ Header loadHeader(void *pv)
     char *p = pv;
     struct headerToken *h = malloc(sizeof(struct headerToken));
 
-    il = ntohl(*((int_32 *) p));
+    il = *((int_32 *) p);
     p += sizeof(int_32);
-    dl = ntohl(*((int_32 *) p));
+    dl = *((int_32 *) p);
     p += sizeof(int_32);
 
     h->entries_malloced = il;
@@ -294,6 +402,12 @@ void *unloadHeader(Header h)
     return p;
 }
 
+/********************************************************************/
+/*                                                                  */
+/* Header dumping                                                   */
+/*                                                                  */
+/********************************************************************/
+
 void dumpHeader(Header h, FILE * f, int flags)
 {
     int i, c, ct;
@@ -313,7 +427,7 @@ void dumpHeader(Header h, FILE * f, int flags)
     fprintf(f, "\n             CT  TAG                  TYPE         "
 		"OFSET     COUNT\n");
     for (i = 0; i < h->entries_used; i++) {
-	switch (ntohl(p->type)) {
+	switch (p->type) {
 	    case NULL_TYPE:   		type = "NULL_TYPE"; 	break;
 	    case CHAR_TYPE:   		type = "CHAR_TYPE"; 	break;
 	    case BIN_TYPE:   		type = "BIN_TYPE"; 	break;
@@ -326,7 +440,7 @@ void dumpHeader(Header h, FILE * f, int flags)
 	    default:		    	type = "(unknown)";	break;
 	}
 
-	switch (ntohl(p->tag)) {
+	switch (p->tag) {
 	    case RPMTAG_NAME:		tag = "RPMTAG_NAME";		break;
 	    case RPMTAG_VERSION:	tag = "RPMTAG_VERSION";		break;
 	    case RPMTAG_RELEASE:	tag = "RPMTAG_RELEASE";		break;
@@ -369,19 +483,19 @@ void dumpHeader(Header h, FILE * f, int flags)
 	}
 
 	fprintf(f, "Entry      : %.3d %-20s %-18s 0x%.8x %.8d\n", i, tag, type,
-		(uint_32) ntohl(p->offset), (uint_32) ntohl(p->count));
+		(uint_32) p->offset, (uint_32) p->count);
 
 	if (flags & DUMP_INLINE) {
 	    /* Print the data inline */
-	    dp = h->data + ntohl(p->offset);
-	    c = ntohl(p->count);
+	    dp = h->data + p->offset;
+	    c = p->count;
 	    ct = 0;
-	    switch (ntohl(p->type)) {
+	    switch (p->type) {
 	    case INT32_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%.8x (%d)\n", ct++,
-			    (uint_32) ntohl(*((int_32 *) dp)),
-			    (uint_32) ntohl(*((int_32 *) dp)));
+			    (uint_32) *((int_32 *) dp),
+			    (uint_32) *((int_32 *) dp));
 		    dp += sizeof(int_32);
 		}
 		break;
@@ -389,8 +503,8 @@ void dumpHeader(Header h, FILE * f, int flags)
 	    case INT16_TYPE:
 		while (c--) {
 		    fprintf(f, "       Data: %.3d 0x%.4x (%d)\n", ct++,
-			    (short int) ntohs(*((int_16 *) dp)),
-			    (short int) ntohs(*((int_16 *) dp)));
+			    (short int) *((int_16 *) dp),
+			    (short int) *((int_16 *) dp));
 		    dp += sizeof(int_16);
 		}
 		break;
@@ -423,7 +537,7 @@ void dumpHeader(Header h, FILE * f, int flags)
 		}
 		break;
 	    default:
-		fprintf(stderr, "Data type %d not supprted\n", (int) ntohl(p->type));
+		fprintf(stderr, "Data type %d not supprted\n", (int) p->type);
 		exit(1);
 	    }
 	}
@@ -431,17 +545,11 @@ void dumpHeader(Header h, FILE * f, int flags)
     }
 }
 
-void freeHeader(Header h)
-{
-    if (h->mutable) {
-	free(h->index);
-	free(h->data);
-    }
-    if (h->mmapped_address) {
-	munmap(h->mmapped_address, 0);
-    }
-    free(h);
-}
+/********************************************************************/
+/*                                                                  */
+/* Entry lookup                                                     */
+/*                                                                  */
+/********************************************************************/
 
 static int tagCompare(const void *key, const void *member)
 {
@@ -458,9 +566,6 @@ static struct indexEntry *findEntry(Header h, int_32 tag)
 {
     struct indexEntry *index = h->index;
     int x = h->entries_used;
-
-    /* the index is network order */
-    tag = htonl(tag);
 
     if (! h->mutable) {
 	return bsearch(&tag, index, x, sizeof(struct indexEntry), tagCompare);
@@ -492,35 +597,35 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
     }
 
     if (type) {
-	*type = (int) ntohl(index->type);
+	*type = (int) index->type;
     }
     if (c) {
-	*c = ntohl(index->count);
+	*c = index->count;
     }
 
     /* Now look it up */
-    switch ((int) ntohl(index->type)) {
+    switch (index->type) {
     case INT64_TYPE:
     case INT32_TYPE:
     case INT16_TYPE:
     case INT8_TYPE:
     case BIN_TYPE:
     case CHAR_TYPE:
-	*p = h->data + ntohl(index->offset);
+	*p = h->data + index->offset;
 	break;
     case STRING_TYPE:
-	if (ntohl(index->count) == 1) {
+	if (index->count == 1) {
 	    /* Special case -- just return a pointer to the string */
-	    *p = h->data + ntohl(index->offset);
+	    *p = h->data + index->offset;
 	    break;
 	}
 	/* Fall through to STRING_ARRAY_TYPE */
     case STRING_ARRAY_TYPE:
 	/* Otherwise, build up an array of char* to return */
-	x = ntohl(index->count);
+	x = index->count;
 	*p = malloc(x * sizeof(char *));
 	spp = (char **) *p;
-	sp = h->data + ntohl(index->offset);
+	sp = h->data + index->offset;
 	while (x--) {
 	    *spp++ = sp;
 	    sp = strchr(sp, 0);
@@ -529,64 +634,18 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 	break;
     default:
 	fprintf(stderr, "Data type %d not supprted\n",
-		(int) ntohl(index->type));
+		(int) index->type);
 	exit(1);
     }
 
     return 1;
 }
 
-int modifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
-{
-    struct indexEntry *index;
-
-    /* First find the tag */
-    index = findEntry(h, tag);
-    if (! index) {
-	return 0;
-    }
-
-    if (type != ntohl(index->type)) {
-	return 0;
-    }
-
-    if (c != 1) {
-	return 0;
-    }
-
-    if (ntohl(index->count) != 1) {
-	return 0;
-    }
-    
-    switch ((int) ntohl(index->type)) {
-    case INT64_TYPE:
-	*((int_64 *)(h->data + ntohl(index->offset))) = *((int_64 *)p);
-	break;
-    case INT32_TYPE:
-	*((int_32 *)(h->data + ntohl(index->offset))) = *((int_32 *)p);
-	break;
-    case INT16_TYPE:
-	*((int_16 *)(h->data + ntohl(index->offset))) = *((int_16 *)p);
-	break;
-    case INT8_TYPE:
-	*((int_8 *)(h->data + ntohl(index->offset))) = *((int_8 *)p);
-	break;
-    case BIN_TYPE:
-    case CHAR_TYPE:
-	*((char *)(h->data + ntohl(index->offset))) = *((char *)p);
-	break;
-    default:
-	return 0;
-    }
-
-    return 1;
-}
-
 /********************************************************************/
-
-/*
- *  The following routines are used to build up a header.
- */
+/*                                                                  */
+/* Header creation and deletion                                     */
+/*                                                                  */
+/********************************************************************/
 
 Header newHeader()
 {
@@ -602,10 +661,36 @@ Header newHeader()
     h->entries_used = 0;
 
     h->mutable = 1;
-    h->mmapped_address = (caddr_t) 0;
 
     return (Header) h;
 }
+
+void freeHeader(Header h)
+{
+    if (h->mutable) {
+	free(h->index);
+	free(h->data);
+    }
+    free(h);
+}
+
+unsigned int sizeofHeader(Header h)
+{
+    unsigned int size;
+
+    size = sizeof(int_32);	/* count of index entries */
+    size += sizeof(int_32);	/* length of data */
+    size += sizeof(struct indexEntry) * h->entries_used;
+    size += h->data_used;
+
+    return size;
+}
+
+/********************************************************************/
+/*                                                                  */
+/* Adding and modifying entries                                     */
+/*                                                                  */
+/********************************************************************/
 
 int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 {
@@ -613,8 +698,6 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     void *ptr;
     char **spp;
     char *sp;
-    int_32 *i32p;
-    int_16 *i16p;
     int i, length;
 
     if (c <= 0) {
@@ -634,10 +717,10 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     /* Fill in the index */
     i = h->entries_used++;
     entry = &((h->index)[i]);
-    entry->tag = htonl(tag);
-    entry->type = htonl(type);
-    entry->count = htonl(c);
-    entry->offset = htonl(h->data_used);
+    entry->tag = tag;
+    entry->type = type;
+    entry->count = c;
+    entry->offset = h->data_used;
 
     /* Compute length of data to add */
     switch (type) {
@@ -689,23 +772,7 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     ptr = h->data + h->data_used;
     switch (type) {
       case INT32_TYPE:
-	memcpy(ptr, p, length);
-	i = c;
-	i32p = (int_32 *) ptr;
-	while (i--) {
-	    *i32p = htonl(*i32p);
-	    i32p++;
-	}
-	break;
       case INT16_TYPE:
-	memcpy(ptr, p, length);
-	i = c;
-	i16p = (int_16 *) ptr;
-	while (i--) {
-	    *i16p = htons(*i16p);
-	    i16p++;
-	}
-	break;
       case INT8_TYPE:
       case BIN_TYPE:
       case CHAR_TYPE:
@@ -734,6 +801,52 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     }
 
     h->data_used += length;
+
+    return 1;
+}
+
+int modifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
+{
+    struct indexEntry *index;
+
+    /* First find the tag */
+    index = findEntry(h, tag);
+    if (! index) {
+	return 0;
+    }
+
+    if (type != index->type) {
+	return 0;
+    }
+
+    if (c != 1) {
+	return 0;
+    }
+
+    if (index->count != 1) {
+	return 0;
+    }
+    
+    switch (index->type) {
+    case INT64_TYPE:
+	*((int_64 *)(h->data + index->offset)) = *((int_64 *)p);
+	break;
+    case INT32_TYPE:
+	*((int_32 *)(h->data + index->offset)) = *((int_32 *)p);
+	break;
+    case INT16_TYPE:
+	*((int_16 *)(h->data + index->offset)) = *((int_16 *)p);
+	break;
+    case INT8_TYPE:
+	*((int_8 *)(h->data + index->offset)) = *((int_8 *)p);
+	break;
+    case BIN_TYPE:
+    case CHAR_TYPE:
+	*((char *)(h->data + index->offset)) = *((char *)p);
+	break;
+    default:
+	return 0;
+    }
 
     return 1;
 }
