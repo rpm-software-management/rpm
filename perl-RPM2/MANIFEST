@@ -7,4 +7,5 @@ RPM2.xs
 test.pl
 test-rpm-1.0-1.noarch.rpm
 test-rpm-1.0-1.src.rpm
+hdlist-test.hdr
 typemap
