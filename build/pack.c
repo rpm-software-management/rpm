@@ -531,7 +531,7 @@ static int parseForVerify(char *buf, int *verify_flags)
 	*start++ = ' ';
     }
 
-    p = strtok(ourbuf, " \n\t");
+    p = strtok(ourbuf, ", \n\t");
     not = 0;
     *verify_flags = VERIFY_NONE;
     while (p) {
@@ -561,7 +561,7 @@ static int parseForVerify(char *buf, int *verify_flags)
 	    error(RPMERR_BADSPEC, "Invalid %%verify token: %s", p);
 	    return 0;
 	}
-	p = strtok(NULL, " \n\t");
+	p = strtok(NULL, ", \n\t");
     }
 
     if (not) {
