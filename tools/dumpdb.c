@@ -10,7 +10,7 @@ int main(int argc, char ** argv)
     int blockNum = 0;
     rpmdb db;
 
-    rpmReadConfigFiles(NULL, NULL, NULL, 0, NULL);
+    rpmReadConfigFiles(NULL, NULL);
 
     if (argc == 2) {
 	dspBlockNum = atoi(argv[1]);

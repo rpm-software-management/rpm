@@ -242,11 +242,11 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMVAR_BZIP2BIN			41
 #define	RPMVAR_LANGPATT			42
 #define	RPMVAR_INCLUDE			43
-#define	RPMVAR_ARCH			44
-#define	RPMVAR_OS			45
-#define	RPMVAR_BUILDPLATFORM		46
-#define	RPMVAR_BUILDARCH		47
-#define	RPMVAR_BUILDOS			48
+/* #define RPMVAR_ARCH			44 -- No longer used */
+/* #define RPMVAR_OS			45 -- No longer used */
+/* #define RPMVAR_BUILDPLATFORM		46 -- No longer used */
+/* #define RPMVAR_BUILDARCH		47 -- No longer used */
+/* #define RPMVAR_BUILDOS		48 -- No longer used */
 #define	RPMVAR_MACROFILES		49
 
 #define	RPMVAR_NUM			50     /* number of RPMVAR entries */
@@ -263,11 +263,8 @@ void rpmSetVar(int var, char *val);
 #define	RPM_MACHTABLE_BUILDOS  		3
 #define	RPM_MACHTABLE_COUNT		4	/* number of arch/os tables */
 
-/* rpmReadConfigFiles() is for backwards compatibility only! It won't
-   work if building is true! */
-int rpmReadConfigFiles(char * file, char * arch, char * os, int building,
-    char * buildplatform);
-int rpmReadRC(char * file);
+int rpmReadConfigFiles(const char * file, const char * target);
+int rpmReadRC(const char * file);
 void rpmGetArchInfo(/*@out@*/char ** name, /*@out@*/int * num);
 void rpmGetOsInfo(/*@out@*/char ** name, /*@out@*/int * num);
 int rpmMachineScore(int type, char * name);

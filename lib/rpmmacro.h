@@ -46,6 +46,8 @@ extern "C" {
 
 int isCompressed(char *file, int *compressed);
 
+void	dumpMacroTable	__P((MacroContext *mc));
+
 void	initMacros	__P((MacroContext *mc, const char *macrofile));
 void	freeMacros	__P((MacroContext *mc));
 

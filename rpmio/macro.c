@@ -88,7 +88,7 @@ sortMacroTable(MacroContext *mc)
 		compareMacroName);
 }
 
-static void
+void
 dumpMacroTable(MacroContext *mc)
 {
 	int i;

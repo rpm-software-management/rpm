@@ -11,9 +11,9 @@
 
 #include "misc.h"
 
-static char *usrlibrpmrc = LIBRPMRC_FILENAME;
-static char *etcrpmrc = "/etc/rpmrc";
-static char *macrofiles = MACROFILES;
+static const char *usrlibrpmrc = LIBRPMRC_FILENAME;
+static const char *etcrpmrc = "/etc/rpmrc";
+static const char *macrofiles = MACROFILES;
 
 struct MacroContext globalMacroContext;
 
@@ -90,11 +90,7 @@ static struct tableType tables[RPM_MACHTABLE_COUNT] = {
 /* The order of the flags is archSpecific, required, macroize, localize */
 
 static struct rpmOption optionTable[] = {
-    { "arch",			RPMVAR_ARCH,			0, 1,	1, 2 },
     { "builddir",		RPMVAR_BUILDDIR,		0, 0,	1, 2 },
-    { "buildarch",		RPMVAR_BUILDARCH,           	0, 1,	1, 0 },
-    { "buildos",		RPMVAR_BUILDOS,           	0, 1,	1, 0 },
-    { "buildplatform",		RPMVAR_BUILDPLATFORM,           0, 1,	1, 2 },
     { "buildroot",              RPMVAR_BUILDROOT,               0, 0,	1, 0 },
     { "buildshell",             RPMVAR_BUILDSHELL,              0, 0,	1, 0 },
     { "bzip2bin",		RPMVAR_BZIP2BIN,		0, 1,	1, 2 },
@@ -113,7 +109,6 @@ static struct rpmOption optionTable[] = {
     { "messagelevel",		RPMVAR_MESSAGELEVEL,		0, 0,	1, 0 },
     { "netsharedpath",		RPMVAR_NETSHAREDPATH,		0, 0,	1, 0 },
     { "optflags",		RPMVAR_OPTFLAGS,		1, 0,	1, 0 },
-    { "os",			RPMVAR_OS,                      0, 1,	1, 2 },
     { "packager",               RPMVAR_PACKAGER,                0, 0,	1, 0 },
     { "pgp_name",               RPMVAR_PGP_NAME,                0, 0,	1, 0 },
     { "pgp_path",               RPMVAR_PGP_PATH,                0, 0,	1, 0 },
@@ -121,8 +116,6 @@ static struct rpmOption optionTable[] = {
     { "require_distribution",	RPMVAR_REQUIREDISTRIBUTION,	0, 0,	1, 0 },
     { "require_icon",		RPMVAR_REQUIREICON,		0, 0,	1, 0 },
     { "require_vendor",		RPMVAR_REQUIREVENDOR,		0, 0,	1, 0 },
-/* root is obsolete - use buildroot instead                             */
-/*    { "root",			RPMVAR_ROOT,			0, 0,	1, 0 }, */
     { "rpmdir",			RPMVAR_RPMDIR,			0, 0,	1, 1 },
     { "rpmfilename",		RPMVAR_RPMFILENAME,		0, 1,	1, 2 },
 #if defined(RPMVAR_SETENV)
@@ -149,12 +142,12 @@ static struct rpmvarValue values[RPMVAR_NUM];
 
 /* prototypes */
 static void defaultMachine(char ** arch, char ** os);
-static int doReadRC(FD_t fd, char * filename);
+static int doReadRC(FD_t fd, const char * filename);
 static int optionCompare(const void * a, const void * b);
 static int addCanon(struct canonEntry **table, int *tableLen, char *line,
-		   char *fn, int lineNum);
+			const char *fn, int lineNum);
 static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
-		      char *fn, int lineNum);
+			const char *fn, int lineNum);
 static void freeRpmVar(struct rpmvarValue * orig);
 static void rpmSetVarArch(int var, char * val, char * arch);
 static struct canonEntry *lookupInCanonTable(char *name,
@@ -168,7 +161,7 @@ static void setPathDefault(int var, char * macroname, char * subdir);
 static void rebuildCompatTables(int type, char * name);
 
 /* compatiblity tables */
-static int machCompatCacheAdd(char * name, char * fn, int linenum,
+static int machCompatCacheAdd(char * name, const char * fn, int linenum,
 				struct machCache * cache);
 static struct machCacheEntry * machCacheFindEntry(struct machCache * cache,
 						  char * key);
@@ -189,12 +182,12 @@ static int optionCompare(const void * a, const void * b) {
 		      ((struct rpmOption *) b)->name);
 }
 
-static void rpmRebuildPlatformVars(char ** buildplatform, char **canonarch,
-                             char **canonos);
+static void rpmRebuildTargetVars(const char ** canontarget);
 
 
 static struct machCacheEntry * machCacheFindEntry(struct machCache * cache,
-						  char * key) {
+						  char * key)
+{
     int i;
 
     for (i = 0; i < cache->size; i++)
@@ -203,8 +196,9 @@ static struct machCacheEntry * machCacheFindEntry(struct machCache * cache,
     return NULL;
 }
 
-static int machCompatCacheAdd(char * name, char * fn, int linenum,
-				struct machCache * cache) {
+static int machCompatCacheAdd(char * name, const char * fn, int linenum,
+				struct machCache * cache)
+{
     char * chptr, * equivs;
     int delEntry = 0;
     int i;
@@ -252,27 +246,26 @@ static int machCompatCacheAdd(char * name, char * fn, int linenum,
 
     if (delEntry) return 0;
 
-    chptr = strtok(equivs, " ");
-    while (chptr) {
-	if (strlen(chptr)) {		/* does strtok() return "" ever?? */
-	    if (entry->count)
-		entry->equivs = realloc(entry->equivs, sizeof(*entry->equivs)
+    while ((chptr = strtok(equivs, " ")) != NULL) {
+	equivs = NULL;
+	if (chptr[0] == '\0')	/* does strtok() return "" ever?? */
+	    continue;
+	if (entry->count)
+	    entry->equivs = realloc(entry->equivs, sizeof(*entry->equivs)
 					* (entry->count + 1));
-	    else
-		entry->equivs = malloc(sizeof(*entry->equivs));
+	else
+	    entry->equivs = malloc(sizeof(*entry->equivs));
 
-	    entry->equivs[entry->count] = strdup(chptr);
-	    entry->count++;
-	}
-
-	chptr = strtok(NULL, " ");
+	entry->equivs[entry->count] = strdup(chptr);
+	entry->count++;
     }
 
     return 0;
 }
 
 static struct machEquivInfo * machEquivSearch(
-		struct machEquivTable * table, char * name) {
+		struct machEquivTable * table, char * name)
+{
     int i;
 
 /*
@@ -291,7 +284,8 @@ static struct machEquivInfo * machEquivSearch(
 }
 
 static void machAddEquiv(struct machEquivTable * table, char * name,
-			   int distance) {
+			   int distance)
+{
     struct machEquivInfo * equiv;
 
     equiv = machEquivSearch(table, name);
@@ -310,7 +304,8 @@ static void machAddEquiv(struct machEquivTable * table, char * name,
 static void machCacheEntryVisit(struct machCache * cache,
 				  struct machEquivTable * table,
 				  char * name,
-	  			  int distance) {
+	  			  int distance)
+{
     struct machCacheEntry * entry;
     int i;
 
@@ -330,7 +325,8 @@ static void machCacheEntryVisit(struct machCache * cache,
 
 static void machFindEquivs(struct machCache * cache,
 			     struct machEquivTable * table,
-			     char * key) {
+			     char * key)
+{
     int i;
 
     for (i = 0; i < cache->size; i++)
@@ -346,7 +342,8 @@ static void machFindEquivs(struct machCache * cache,
 }
 
 static int addCanon(struct canonEntry **table, int *tableLen, char *line,
-		    char *fn, int lineNum) {
+		    const char *fn, int lineNum)
+{
     struct canonEntry *t;
     char *s, *s1;
 
@@ -392,7 +389,8 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 }
 
 static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
-		      char *fn, int lineNum) {
+			const char *fn, int lineNum)
+{
     struct defaultEntry *t;
 
     if (! *tableLen) {
@@ -448,42 +446,24 @@ static char *lookupInDefaultTable(char *name, struct defaultEntry *table,
     return name;
 }
 
-int rpmReadConfigFiles(char * file, char * arch, char * os, int building,
-    char * buildplatform)
+int rpmReadConfigFiles(const char * file, const char * target)
 {
 
-    char * canonarch, * canonos;
+    rpmSetMachine(NULL, NULL);
 
-    rpmSetMachine(arch, os);
-    if (!buildplatform) 
-       rpmRebuildPlatformVars(&buildplatform, &canonarch, &canonos);
-    else 
-       addMacro(&globalMacroContext, "_buildplatform_preset", NULL,
-          buildplatform, RMIL_RPMRC);
-
-/*
-    addMacro(&globalMacroContext, "buildplatform", NULL, buildplatform,
-      RMIL_RPMRC);
-*/
+    if (target == NULL) {
+       rpmRebuildTargetVars(&target);
+    } else {
+       addMacro(&globalMacroContext, "_target", NULL, target, RMIL_RPMRC);
+    }
 
     if (rpmReadRC(file)) return -1;
 
-    rpmRebuildPlatformVars(&buildplatform, &canonarch, &canonos);
+    rpmRebuildTargetVars(&target);
 
-    /* This is where we finally set the arch and os absolutely */
-
-/*    rpmSetMachine(canonarch, canonos); */
-
-
-   {	char *buildarch;
-	char *buildos;
-
-	/* XXX getMacroBody() may be nuked -- (see below) */
-	/* XXX the macro names buildarch/buildos don't exist */
-	buildarch = (char *) getMacroBody(&globalMacroContext, "buildarch");
-	buildos = (char *) getMacroBody(&globalMacroContext, "buildos");
-
-	rpmSetMachine(buildarch, buildos);
+   {	const char *cpu = getMacroBody(&globalMacroContext, "_target_cpu");
+	const char *os = getMacroBody(&globalMacroContext, "_target_os");
+	rpmSetMachine(cpu, os);
    }
 
     return 0;
@@ -528,9 +508,9 @@ static void setDefaults(void) {
     rpmSetVar(RPMVAR_BUILDSHELL, "/bin/sh");
 }
 
-int rpmReadRC(char * file) {
+int rpmReadRC(const char * file) {
     FD_t fd;
-    char * fn;
+    const char * fn;
     char * home;
     int rc = 0;
     static int first = 1;
@@ -551,26 +531,22 @@ int rpmReadRC(char * file) {
 	return 1;
     }
 
-    if (file)
-	fn = file;
-    else
-	fn = etcrpmrc;
-
+    fn = (file != NULL ? file : etcrpmrc);
     fd = fdOpen(fn, O_RDONLY, 0);
     if (fdFileno(fd) >= 0) {
 	rc = doReadRC(fd, fn);
 	fdClose(fd);
 	if (rc) return rc;
-    } else if (file) {
+    } else if (file != NULL) {
 	rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."), file,
 		 strerror(errno));
 	return 1;
     }
 
-    if (!file) {
+    if (file == NULL) {
 	home = getenv("HOME");
-	if (home) {
-	    fn = alloca(strlen(home) + 8);
+	if (home != NULL) {
+	    char *fn = alloca(strlen(home) + 8);
 	    strcpy(fn, home);
 	    strcat(fn, "/.rpmrc");
 	    fd = fdOpen(fn, O_RDONLY, 0);
@@ -596,7 +572,7 @@ int rpmReadRC(char * file) {
     return 0;
 }
 
-static int doReadRC(FD_t fd, char * filename) {
+static int doReadRC(FD_t fd, const char * filename) {
     char buf[BUFSIZ];
     char * start, * chptr, * next, * rest;
     int linenum = 0;
@@ -713,7 +689,7 @@ static int doReadRC(FD_t fd, char * filename) {
 	    case RPMVAR_INCLUDE:
 	      {	FD_t fdinc;
 
-		rpmRebuildPlatformVars(NULL,NULL,NULL);
+		rpmRebuildTargetVars(NULL);
 
 		strcpy(buf, start);
 		if (expandMacros(NULL, &globalMacroContext, buf, sizeof(buf))) {
@@ -891,11 +867,10 @@ static void defaultMachine(char ** arch, char ** os) {
            /* wrong, just for now, find out how to look for i586 later*/
            strcpy(un.machine,"i486");
         }
-#endif
+#endif	/* __linux__ */
                    
 	/* get rid of the hyphens in the sysname */
-	chptr = un.machine;
-	while (*chptr++)
+	for (chptr = un.machine; *chptr; chptr++)
 	    if (*chptr == '/') *chptr = '-';
 
 #	if defined(__MIPSEL__) || defined(__MIPSEL) || defined(_MIPSEL)
@@ -946,7 +921,7 @@ static void defaultMachine(char ** arch, char ** os) {
 		    strcpy(un.machine, "hppa2.0");
 #	    endif
 	}
-#	endif
+#	endif	/* hpux */
 
 	/* the uname() result goes through the arch_canon table */
 	canon = lookupInCanonTable(un.machine,
@@ -960,6 +935,7 @@ static void defaultMachine(char ** arch, char ** os) {
 				   tables[RPM_MACHTABLE_INSTOS].canonsLength);
 	if (canon)
 	    strcpy(un.sysname, canon->short_name);
+	gotDefaults = 1;
     }
 
     if (arch) *arch = un.machine;
@@ -1105,30 +1081,30 @@ void rpmGetMachine(char **arch, char **os)
 }
 
 void rpmSetMachine(char * arch, char * os) {
-    int transOs = os == NULL;
-    int transArch = arch == NULL;
-    char * realArch, * realOs;
+    char * host_cpu, * host_os;
 
-    defaultMachine(&realArch, &realOs);
+    defaultMachine(&host_cpu, &host_os);
 
-    if (!arch)
-	arch = realArch;
-    if (!os)
-	os = realOs;
-
-    if (transArch && tables[currTables[ARCH]].hasTranslate)
-	arch = lookupInDefaultTable(arch,
+    if (arch == NULL) {
+	arch = host_cpu;
+	if (tables[currTables[ARCH]].hasTranslate)
+	    arch = lookupInDefaultTable(arch,
 			    tables[currTables[ARCH]].defaults,
 			    tables[currTables[ARCH]].defaultsLength);
-    if (transOs && tables[currTables[OS]].hasTranslate)
-	os = lookupInDefaultTable(os,
+    }
+
+    if (os == NULL) {
+	os = host_os;
+	if (tables[currTables[OS]].hasTranslate)
+	    os = lookupInDefaultTable(os,
 			    tables[currTables[OS]].defaults,
 			    tables[currTables[OS]].defaultsLength);
+    }
 
     if (!current[ARCH] || strcmp(arch, current[ARCH])) {
 	if (current[ARCH]) free(current[ARCH]);
 	current[ARCH] = strdup(arch);
-	rebuildCompatTables(ARCH, realArch);
+	rebuildCompatTables(ARCH, host_cpu);
     }
 
     if (!current[OS] || strcmp(os, current[OS])) {
@@ -1144,7 +1120,7 @@ void rpmSetMachine(char * arch, char * os) {
 	 */
 	if (!strcmp(current[OS], "linux"))
 	    *current[OS]= 'L';
-	rebuildCompatTables(OS, realOs);
+	rebuildCompatTables(OS, host_os);
     }
 }
 
@@ -1187,17 +1163,12 @@ void rpmGetOsInfo(char ** name, int * num) {
     getMachineInfo(OS, name, num);
 }
 
-void rpmRebuildPlatformVars(char ** buildplatform, char **canonarch,
-                             char **canonos) {
+void rpmRebuildTargetVars(const char ** canontarget)
+{
 
-/* If buildplatform == NULL, don't return anything  */
-
-
-    char * b = NULL, * ca = NULL, * co = NULL;
-    char * presetbuildplatform = NULL;
+    char * ct = NULL, * ca = NULL, * co = NULL;
+    const char * target = NULL;
     int x;
-/*
-*/
 
 /*
  * XXX getMacroBody() may be nuked -- I originally added it for tdyas and it's
@@ -1206,34 +1177,38 @@ void rpmRebuildPlatformVars(char ** buildplatform, char **canonarch,
  *
  * You can, however, always do
  *	char buf[BUFSIZ];
- *	strcpy(buf, "%_buildplatform_preset")
- *	expandMacros(NULL, &globalMacroContext, buf, sizeof(buf))) {
- *	presetbuildplatform = strdup(buf);
+ *	strcpy(buf, "%_target")
+ *	expandMacros(NULL, &globalMacroContext, buf, sizeof(buf)))
+ *	target = strdup(buf);
  *
  */
-    presetbuildplatform= (char *) getMacroBody(&globalMacroContext,
-              "_buildplatform_preset");
+    if ((target = getMacroBody(&globalMacroContext, "_target")) != NULL)
+	target = strdup(target);
 
       /* Rebuild the compat table to recalculate the
-         current buildarch.  */
+         current target arch.  */
 
-      rpmSetMachine(NULL, NULL);
-      rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
-      rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
+    rpmSetMachine(NULL, NULL);
+    rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
+    rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 
-      rpmGetArchInfo(&ca,NULL);
-      rpmGetOsInfo(&co,NULL);
+    rpmGetArchInfo(&ca,NULL);
+    rpmGetOsInfo(&co,NULL);
 
-      if (!ca) defaultMachine(&ca,NULL);
-      if (!co) defaultMachine(NULL,&co);
+    if (ca == NULL) defaultMachine(&ca, NULL);
+    if (co == NULL) defaultMachine(NULL, &co);
 
-      for (x = 0; ca[x]; x++)
-              ca[x] = tolower(ca[x]);
-      for (x = 0; co[x]; x++)
-              co[x] = tolower(co[x]);
+    for (x = 0; ca[x]; x++)
+	ca[x] = tolower(ca[x]);
+    for (x = 0; co[x]; x++)
+	co[x] = tolower(co[x]);
 
-      b = malloc(strlen(co)+strlen(ca)+2);
-      sprintf(b,"%s-%s",ca,co);
+    if (target) {
+	ct = target;
+    } else {
+	ct = malloc(strlen(co)+strlen(ca)+2);
+	sprintf(ct, "%s-%s", ca, co);
+    }
 
 /*
  * XXX All this macro pokery/jiggery could be achieved (I think)
@@ -1241,41 +1216,23 @@ void rpmRebuildPlatformVars(char ** buildplatform, char **canonarch,
  *	initMacros(&globalMacroContext, PER-PLATFORM-MACRO-FILE-NAMES);
  * (I haven't looked at the code :-)
  *
- * In fact, if you want to get really sophisticatedf, you could encapsulate
+ * In fact, if you want to get really sophisticated, you could encapsulate
  * within per-platform MacroContexts (but I'm not quite ready for that yet).
  */
-      delMacro(&globalMacroContext, "buildplatform");
+    delMacro(&globalMacroContext, "_target");
+    addMacro(&globalMacroContext, "_target", NULL, ct, RMIL_RPMRC);
+    delMacro(&globalMacroContext, "_target_cpu");
+    addMacro(&globalMacroContext, "_target_cpu", NULL, ca, RMIL_RPMRC);
+    delMacro(&globalMacroContext, "_target_os");
+    addMacro(&globalMacroContext, "_target_os", NULL, co, RMIL_RPMRC);
 
-    if (!presetbuildplatform) {
-      addMacro(&globalMacroContext, "buildplatform", NULL, b,
-        RMIL_RPMRC);
-    } else {
-      addMacro(&globalMacroContext, "buildplatform", NULL,
-        presetbuildplatform, RMIL_RPMRC);
-    }
-      delMacro(&globalMacroContext, "arch");
-      addMacro(&globalMacroContext, "arch", NULL, ca, 
-          RMIL_RPMRC);
-      delMacro(&globalMacroContext, "os");
-      addMacro(&globalMacroContext, "os", NULL, co, 
-          RMIL_RPMRC);
-
-    if (buildplatform) {
-      if (presetbuildplatform) 
-         *buildplatform = presetbuildplatform;
-      else
-         *buildplatform = b;
-    }
-    if (canonarch) *canonarch = ca;
-    if (canonos) *canonos = co;
-
+    if (canontarget)
+	*canontarget = ct;
 }
 
 int rpmShowRC(FILE *f)
 {
     struct rpmOption *opt;
-    int count = 0;
-    char *s;
     int i;
     struct machEquivTable * equivTable;
 
@@ -1316,14 +1273,13 @@ int rpmShowRC(FILE *f)
     fprintf(f, "\n");
 
     fprintf(f, "\nRPMRC VALUES:\n");
-    opt = optionTable;
-    while (count < optionTableSize) {
-	s = rpmGetVar(opt->var);
+    for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
+	char *s = rpmGetVar(opt->var);
 	if (s != NULL || rpmGetVerbosity() < RPMMESS_NORMAL)
 	    fprintf(f, "%-21s : %s\n", opt->name, s ? s : "(not set)");
-	opt++;
-	count++;
     }
+
+    dumpMacroTable(&globalMacroContext);
 
     return 0;
 }

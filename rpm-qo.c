@@ -131,9 +131,7 @@ int main(int argc, char ** argv) {
     char * specFile;
     char *passPhrase = "";
     char *buildRootOverride = NULL;
-    char *arch = NULL;
     char * ftpProxy = NULL, * ftpPort = NULL;
-    char *os = NULL;
     char * smallArgv[2] = { NULL, NULL };
     char ** currarg;
     int ec = 0;
@@ -175,7 +173,7 @@ int main(int argc, char ** argv) {
     textdomain(NLSPACKAGE);
 
     /* reading this early makes it easy to override */
-    if (rpmReadConfigFiles(rcfile, arch, os, building))  
+    if (rpmReadConfigFiles(rcfile, NULL))  
 	exit(EXIT_FAILURE);
     if (showrc) {
 	rpmShowRC(stdout);

@@ -13,17 +13,12 @@
 #define GETOPT_RECOMPILE	1004
 #define GETOPT_ADDSIGN		1005
 #define GETOPT_RESIGN		1006
-#define GETOPT_BUILDROOT 	1007
 #define GETOPT_DBPATH		1010
 #define GETOPT_TIMECHECK        1012
 #define GETOPT_REBUILDDB        1013
 #define GETOPT_INSTALL		1014
-#define GETOPT_RMSOURCE		1015
 #define GETOPT_RELOCATE		1016
 #define GETOPT_SHOWRC		1018
-#define GETOPT_BUILDPLATFORM	1019
-#define GETOPT_BUILDARCH	1020
-#define GETOPT_BUILDOS		1021
 
 char * version = VERSION;
 
@@ -35,11 +30,7 @@ enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
 /* the flags for the various options */
 static int allFiles;
 static int allMatches;
-static char * arch;
 static int badReloc;
-#if XXX
-static int clean;
-#endif
 static int excldocs;
 static int force;
 static char * ftpPort;
@@ -58,7 +49,6 @@ static int noOrder;
 static int noPgp;
 static int noScripts;
 static int noTriggers;
-static char * os;
 static int oldPackage;
 static int showPercents;
 static char * pipeOutput;
@@ -69,7 +59,6 @@ static char * rcfile;
 static int replaceFiles;
 static int replacePackages;
 static char * rootdir;
-static int shortCircuit;
 static int showrc;
 static int signIt;
 static int test;
@@ -88,14 +77,7 @@ static struct poptOption optionsTable[] = {
  { "allmatches", '\0', 0, &allMatches, 0,	NULL, NULL},
  { "badreloc", '\0', 0, &badReloc, 0,		NULL, NULL},
  { "build", 'b', POPT_ARG_STRING, 0, 'b',	NULL, NULL},
- { "buildarch", '\0', POPT_ARG_STRING, &arch, GETOPT_BUILDARCH,	NULL, NULL},
- { "buildos", '\0', POPT_ARG_STRING, &os, GETOPT_BUILDOS,	NULL, NULL},
- { "buildplatform", '\0', POPT_ARG_STRING, 0, GETOPT_BUILDPLATFORM, NULL, NULL},
- { "buildroot", '\0', POPT_ARG_STRING, 0, GETOPT_BUILDROOT,	NULL, NULL},
  { "checksig", 'K', 0, 0, 'K',			NULL, NULL},
-#if XXX
- { "clean", '\0', 0, &clean, 0,			NULL, NULL},
-#endif
  { "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH,		NULL, NULL},
  { "erase", 'e', 0, 0, 'e',			NULL, NULL},
  { "excludedocs", '\0', 0, &excldocs, 0,	NULL, NULL},
@@ -134,11 +116,7 @@ static struct poptOption optionsTable[] = {
  { "replacefiles", '\0', 0, &replaceFiles, 0,	NULL, NULL},
  { "replacepkgs", '\0', 0, &replacePackages, 0,	NULL, NULL},
  { "resign", '\0', 0, 0, GETOPT_RESIGN,		NULL, NULL},
-#if XXX
- { "rmsource", '\0', 0, 0, GETOPT_RMSOURCE,	NULL, NULL},
-#endif
  { "root", 'r', POPT_ARG_STRING, &rootdir, 0,	NULL, NULL},
- { "short-circuit", '\0', 0, &shortCircuit, 0,	NULL, NULL},
  { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,	NULL, NULL},
  { "sign", '\0', 0, &signIt, 0,			NULL, NULL},
  { "tarball", 't', POPT_ARG_STRING, 0, 't',	NULL, NULL},
@@ -222,8 +200,8 @@ static void printUsage(void) {
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
     puts(_("                        [--justdb] [--notriggers] rpackage1 ... packageN"));
     puts(_("       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
-    puts(_("                        [--sign] [--test] [--timecheck <s>] ]"));
-    puts(_("                        [--buildplatform=platform1[,platform2...]]"));
+    puts(_("                        [--sign] [--nobuild] [--timecheck <s>] ]"));
+    puts(_("                        [--target=platform1[,platform2...]]"));
     puts(_("                        [--rmsource] specfile"));
     puts(_("       rpm {--rmsource} [--rcfile <file>] [-v] specfile"));
     puts(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
@@ -455,9 +433,9 @@ static void printHelp(void) {
 		  _("generate PGP signature"));
     printHelpLine(_("      --buildroot <dir>   "),
 		  _("use <dir> as the build root"));
-    printHelpLine(_("      --platform=<platform>+"),
-		  _("build the packages for the platform1...platformN build targets."));
-    printHelpLine(  "      --test              ",
+    printHelpLine(_("      --target=<platform>+"),
+		  _("build the packages for the build targets platform1...platformN."));
+    printHelpLine(  "      --nobuild           ",
 		  _("do not execute any stages"));
     printHelpLine(_("      --timecheck <secs>  "),
 		  _("set the time check to <secs> seconds (0 disables)"));
@@ -497,15 +475,10 @@ int main(int argc, char ** argv) {
     enum verifysources verifySource = VERIFY_PACKAGE;
     int arg;
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
-    int buildAmount = 0;
-    int gotDbpath = 0, building = 0, verifyFlags;
-#if XXX
-    int rmsource = 0;
-#endif
+    int gotDbpath = 0, verifyFlags;
     int checksigFlags = 0;
     unsigned long int timeCheck = 0L;
     int addSign = NEW_SIGNATURE;
-    char buildChar = ' ';
     char * specFile;
     char * tce;
     char * passPhrase = "";
@@ -522,16 +495,11 @@ int main(int argc, char ** argv) {
     int p[2];
     struct rpmRelocation * relocations = NULL;
     int numRelocations = 0;
-    char * buildplatforms = NULL;
 	
     /* set the defaults for the various command line options */
     allFiles = 0;
     allMatches = 0;
-    arch = NULL;
     badReloc = 0;
-#if XXX
-    clean = 0;
-#endif
     excldocs = 0;
     force = 0;
     ftpProxy = NULL;
@@ -551,7 +519,6 @@ int main(int argc, char ** argv) {
     noScripts = 0;
     noTriggers = 0;
     oldPackage = 0;
-    os = NULL;
     showPercents = 0;
     pipeOutput = NULL;
     prefix = NULL;
@@ -560,7 +527,6 @@ int main(int argc, char ** argv) {
     replaceFiles = 0;
     replacePackages = 0;
     rootdir = "/";
-    shortCircuit = 0;
     showrc = 0;
     signIt = 0;
     test = 0;
@@ -578,49 +544,28 @@ int main(int argc, char ** argv) {
     rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
 
     /* Make a first pass through the arguments, looking for --rcfile */
-    /* as well as --arch and --os.  We need to handle that before    */
-    /* dealing with the rest of the arguments.                       */
+    /* We need to handle that before dealing with the rest of the arguments. */
     optCon = poptGetContext("rpm", argc, argv, optionsTable, 0);
     poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
     poptReadDefaultConfig(optCon, 1);
     poptSetExecPath(optCon, RPMCONFIGDIR, 1);
 
-    while ((arg = poptGetNextOpt(optCon)) > 0) {
-	optArg = poptGetOptArg(optCon);
+    /* reading rcfile early makes it easy to override */
+    /* XXX only --rcfile (and --showrc) need this pre-parse */
 
+    while ((arg = poptGetNextOpt(optCon)) > 0) {
 	switch(arg) {
 	case 'v':
 	    rpmIncreaseVerbosity();	/* XXX silly use by showrc */
-
 	    break;
-	case GETOPT_BUILDARCH:
-	    fprintf(stderr, "--buildarch has been obsoleted.  Use the --buildplatform option\n"); 
-	    fprintf(stderr, "with a platform specific rpmrc file with a Buildarch: tag set\n");
-	    exit(EXIT_FAILURE);
-	    break;
-	case GETOPT_BUILDOS:
-	    fprintf(stderr, "--buildos has been obsoleted.  Use the --buildplatform option\n"); 
-	    fprintf(stderr, "with a platform specific rpmrc file with a Buildos: tag set\n");
-	    exit(EXIT_FAILURE);
-	    break;
-        case 'b':
-        case 't':
-        case GETOPT_REBUILD:
-        case GETOPT_RECOMPILE:
-        case GETOPT_SHOWRC:   /* showrc set as side effect */
-#if XXX
-        case GETOPT_RMSOURCE:
-#endif
-	    building = 1;
-	    /* fall thru */
         default:
 	    break;
       }
     }
 
-    /* reading this early makes it easy to override */
-    if (rpmReadConfigFiles(rcfile, arch, os, building, NULL))  
+    if (rpmReadConfigFiles(rcfile, NULL))  
 	exit(EXIT_FAILURE);
+
     if (showrc) {
 	rpmShowRC(stdout);
 	exit(EXIT_SUCCESS);
@@ -633,7 +578,9 @@ int main(int argc, char ** argv) {
     if (queryArgs.queryFormat) free(queryArgs.queryFormat);
     memset(&queryArgs, 0, sizeof(queryArgs));
     if (buildArgs.buildRootOverride) free(buildArgs.buildRootOverride);
+    if (buildArgs.targets) free(buildArgs.targets);
     memset(&buildArgs, 0, sizeof(buildArgs));
+    buildArgs.buildChar = ' ';
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	optArg = poptGetOptArg(optCon);
@@ -691,8 +638,8 @@ int main(int argc, char ** argv) {
 	    if (strlen(optArg) > 1) 
 		argerror(errString);
 
-	    buildChar = optArg[0];
-	    switch (buildChar) {
+	    buildArgs.buildChar = optArg[0];
+	    switch (buildArgs.buildChar) {
 	      case 'a':
 	      case 'b':
 	      case 'i':
@@ -875,12 +822,8 @@ int main(int argc, char ** argv) {
 	    relocations[numRelocations++].newPath = errString;
 	    break;
 
-	  case GETOPT_BUILDPLATFORM:
-            buildplatforms = optArg;
-	    break;
-
 	  default:
-	    fprintf(stderr, _("Internal error in argument processing :-(\n"));
+	    fprintf(stderr, _("Internal error in argument processing (%d) :-(\n"), arg);
 	    exit(EXIT_FAILURE);
 	}
     }
@@ -1053,16 +996,16 @@ int main(int argc, char ** argv) {
 
     if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && rmsource)
 	argerror(_("--rmsource may only be used with -b and -t"));
-#endif
 
-    if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && shortCircuit) 
+    if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && buildArgs.shortCircuit) 
 	argerror(_("--short-circuit may only be used during package building"));
 
-    if (shortCircuit && (buildChar != 'c') && (buildChar != 'i')
-		     && (buildChar != 's')) {
+    if (buildArgs.shortCircuit && (buildArgs.buildChar != 'c') && (buildArgs.buildChar != 'i')
+		     && (buildArgs.buildChar != 's')) {
 	argerror(_("--short-circuit may only be used with -bc, -bi, -bs, -tc "
 			"-ti, or -ts"));
     }
+#endif
 
     if (oldPackage && !(installFlags & RPMINSTALL_UPGRADE))
 	argerror(_("--oldpackage may only be used during upgrades"));
@@ -1171,20 +1114,20 @@ int main(int argc, char ** argv) {
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages files given for rebuild"));
 
-	buildAmount = RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL;
+	buildArgs.buildAmount = RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL;
 	if (bigMode == MODE_REBUILD) {
-	    buildAmount |= RPMBUILD_PACKAGEBINARY;
-	    buildAmount |= RPMBUILD_RMSOURCE;
-	    buildAmount |= RPMBUILD_CLEAN;
-	    buildAmount |= RPMBUILD_RMBUILD;
+	    buildArgs.buildAmount |= RPMBUILD_PACKAGEBINARY;
+	    buildArgs.buildAmount |= RPMBUILD_RMSOURCE;
+	    buildArgs.buildAmount |= RPMBUILD_CLEAN;
+	    buildArgs.buildAmount |= RPMBUILD_RMBUILD;
 	}
 
 	while ((pkg = poptGetArg(optCon))) {
 	    if (doSourceInstall("/", pkg, &specFile, &cookie))
 		exit(EXIT_FAILURE);
 
-	    if (build(specFile, buildAmount, passPhrase, buildArgs.buildRootOverride,
-			0, test, cookie, rcfile, arch, os, buildplatforms, force)) {
+	    if (build(specFile, buildArgs.buildAmount, passPhrase, buildArgs.buildRootOverride,
+			0, buildArgs.noBuild, cookie, rcfile, buildArgs.targets, force)) {
 		exit(EXIT_FAILURE);
 	    }
 	    free(cookie);
@@ -1197,45 +1140,32 @@ int main(int argc, char ** argv) {
         if (rpmGetVerbosity() == RPMMESS_NORMAL)
 	    rpmSetVerbosity(RPMMESS_VERBOSE);
        
-	switch (buildChar) {
+	switch (buildArgs.buildChar) {
 	  /* these fallthroughs are intentional */
 	  case 'a':
-	    buildAmount |= RPMBUILD_PACKAGESOURCE;
+	    buildArgs.buildAmount |= RPMBUILD_PACKAGESOURCE;
 	  case 'b':
-	    buildAmount |= RPMBUILD_PACKAGEBINARY;
-	    buildAmount |= RPMBUILD_CLEAN;
+	    buildArgs.buildAmount |= RPMBUILD_PACKAGEBINARY;
+	    buildArgs.buildAmount |= RPMBUILD_CLEAN;
 	  case 'i':
-	    buildAmount |= RPMBUILD_INSTALL;
-	    if ((buildChar == 'i') && shortCircuit)
+	    buildArgs.buildAmount |= RPMBUILD_INSTALL;
+	    if ((buildArgs.buildChar == 'i') && buildArgs.shortCircuit)
 		break;
 	  case 'c':
-	    buildAmount |= RPMBUILD_BUILD;
-	    if ((buildChar == 'c') && shortCircuit)
+	    buildArgs.buildAmount |= RPMBUILD_BUILD;
+	    if ((buildArgs.buildChar == 'c') && buildArgs.shortCircuit)
 		break;
 	  case 'p':
-	    buildAmount |= RPMBUILD_PREP;
+	    buildArgs.buildAmount |= RPMBUILD_PREP;
 	    break;
 	    
 	  case 'l':
-	    buildAmount |= RPMBUILD_FILECHECK;
+	    buildArgs.buildAmount |= RPMBUILD_FILECHECK;
 	    break;
 	  case 's':
-	    buildAmount |= RPMBUILD_PACKAGESOURCE;
+	    buildArgs.buildAmount |= RPMBUILD_PACKAGESOURCE;
 	    break;
 	}
-
-#if XXX
-	if (rmsource)
-	    buildAmount |= RPMBUILD_RMSOURCE;
-
-	if (clean)
-	    buildAmount |= RPMBUILD_RMBUILD;
-#else
-	if (buildArgs.buildAmount) {
-	    buildAmount |=
-		(buildArgs.buildAmount & (RPMBUILD_RMSOURCE|RPMBUILD_RMBUILD));
-	}
-#endif
 
 	if (!poptPeekArg(optCon)) {
 	    if (bigMode == MODE_BUILD)
@@ -1245,9 +1175,9 @@ int main(int argc, char ** argv) {
 	}
 
 	while ((pkg = poptGetArg(optCon)))
-	    if (build(pkg, buildAmount, passPhrase, buildArgs.buildRootOverride,
-			bigMode == MODE_TARBUILD, test, NULL,
-                        rcfile, arch, os, buildplatforms, force)) {
+	    if (build(pkg, buildArgs.buildAmount, passPhrase, buildArgs.buildRootOverride,
+			bigMode == MODE_TARBUILD, buildArgs.noBuild, NULL,
+                        rcfile, buildArgs.targets, force)) {
 		exit(EXIT_FAILURE);
 	    }
 	break;

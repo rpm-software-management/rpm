@@ -201,7 +201,7 @@ int main(int argc, char ** argv) {
 	exit(EXIT_FAILURE);
     }
 
-    rpmReadConfigFiles(NULL, NULL, NULL, 0, NULL);
+    rpmReadConfigFiles(NULL, NULL);
 
     printf(_("rpmconvert 1.0 - converting database in /var/lib/rpm\n"));
     convertDB();

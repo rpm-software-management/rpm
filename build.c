@@ -5,12 +5,12 @@
 #include "build.h"
 
 #ifdef DYING
-int buildplatform(char *arg, int buildAmount, char *passPhrase,
+int buildForTarget(char *arg, int buildAmount, char *passPhrase,
 	          char *buildRoot, int fromTarball, int test, char *cookie,
 		  force);
 #endif
 
-int buildplatform(char *arg, int buildAmount, char *passPhrase,
+static int buildForTarget(char *arg, int buildAmount, char *passPhrase,
 	          char *buildRoot, int fromTarball, int test, char *cookie,
 		  int force)
 {
@@ -156,30 +156,28 @@ int buildplatform(char *arg, int buildAmount, char *passPhrase,
 
 int build(char *arg, int buildAmount, char *passPhrase,
 	  char *buildRoot, int fromTarball, int test, char *cookie,
-          char * rcfile, char * arch, char * os, 
-          char *buildplatforms, int force)
+          char * rcfile, char *targets, int force)
 {
-    char *platform, *t;
+    char *target, *t;
     int rc;
 
-    if (buildplatforms == NULL) {
-	rc =  buildplatform(arg, buildAmount, passPhrase, buildRoot,
+    if (targets == NULL) {
+	rc =  buildForTarget(arg, buildAmount, passPhrase, buildRoot,
 		fromTarball, test, cookie, force);
 	return rc;
     }
 
     /* parse up the build operators */
 
-    printf("building these platforms: %s\n", buildplatforms);
+    printf("Building target platforms: %s\n", targets);
 
-    t = buildplatforms;
-    while((platform = strtok(t, ",")) != NULL) {
+    t = targets;
+    while((target = strtok(t, ",")) != NULL) {
 	t = NULL;
-	printf("building %s\n", platform);
+	printf("Building for target %s\n", target);
 
-	rpmSetVar(RPMVAR_BUILDPLATFORM,platform);
-	rpmReadConfigFiles(rcfile, arch, os, 1, platform);
-	rc = buildplatform(arg, buildAmount, passPhrase, buildRoot,
+	rpmReadConfigFiles(rcfile, target);
+	rc = buildForTarget(arg, buildAmount, passPhrase, buildRoot,
 	    fromTarball, test, cookie, force);
 	if (rc)
 	    return rc;
@@ -193,8 +191,14 @@ int build(char *arg, int buildAmount, char *passPhrase,
 #define	POPT_RMSOURCE		1002
 #define	POPT_RMBUILD		1003
 #define	POPT_BUILDROOT		1004
+#define	POPT_BUILDARCH		1005
+#define	POPT_BUILDOS		1006
+#define	POPT_TARGETPLATFORM	1007
+#define	POPT_NOBUILD		1008
+#define	POPT_SHORTCIRCUIT	1009
 
 extern int noLang;
+static int noBuild = 0;
 static int useCatalog = 0;
 
 static void buildArgCallback(poptContext con, enum poptCallbackReason reason,
@@ -203,7 +207,9 @@ static void buildArgCallback(poptContext con, enum poptCallbackReason reason,
 {
     switch (opt->val) {
     case POPT_USECATALOG: data->useCatalog = 1; break;
+    case POPT_NOBUILD: data->noBuild = 1; break;
     case POPT_NOLANG: data->noLang = 1; break;
+    case POPT_SHORTCIRCUIT: data->shortCircuit = 1; break;
     case POPT_RMSOURCE: data->buildAmount |= RPMBUILD_RMSOURCE; break;
     case POPT_RMBUILD: data->buildAmount |= RPMBUILD_RMBUILD; break;
     case POPT_BUILDROOT:
@@ -213,22 +219,50 @@ static void buildArgCallback(poptContext con, enum poptCallbackReason reason,
 	}
 	data->buildRootOverride = strdup(arg);
 	break;
+    case POPT_BUILDARCH:
+	fprintf(stderr, _("--buildarch has been obsoleted.  Use the --target option instead.\n")); 
+	exit(EXIT_FAILURE);
+	break;
+    case POPT_BUILDOS:
+	fprintf(stderr, _("--buildos has been obsoleted.  Use the --target option instead.\n")); 
+	exit(EXIT_FAILURE);
+	break;
+    case POPT_TARGETPLATFORM:
+	if (data->targets) {
+	    int len = strlen(data->targets) + strlen(arg) + 2;
+	    data->targets = realloc(data->targets, len);
+	    strcat(data->targets, ",");
+	} else {
+	    data->targets = malloc(strlen(arg) + 1);
+	    data->targets[0] = '\0';
+	}
+	strcat(data->targets, arg);
+	break;
     }
 }
 
 struct poptOption rpmBuildPoptTable[] = {
 	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
 		buildArgCallback, 0, NULL, NULL },
+	{ "buildarch", '\0', POPT_ARG_STRING, 0,  POPT_BUILDARCH,
+		N_("override build architecture"), "ARCH" },
+	{ "buildos", '\0', POPT_ARG_STRING, 0,  POPT_BUILDOS,
+		N_("override build operating system"), "OS" },
 	{ "buildroot", '\0', POPT_ARG_STRING, 0,  POPT_BUILDROOT,
 		N_("override build root"), "DIRECTORY" },
 	{ "clean", '\0', 0, 0, POPT_RMBUILD,
 		N_("remove build tree when done"), NULL},
+	{ "nobuild", '\0', 0, &noBuild,  POPT_NOBUILD,
+		N_("do not execute any stages of the build"), NULL },
 	{ "nolang", '\0', 0, &noLang, POPT_NOLANG,
 		N_("do not accept I18N msgstr's from specfile"), NULL},
 	{ "rmsource", '\0', 0, 0, POPT_RMSOURCE,
 		N_("remove sources and specfile when done"), NULL},
+	{ "short-circuit", '\0', 0, 0,  POPT_SHORTCIRCUIT,
+		N_("skip straight to specified stage (only for c,i)"), NULL },
+	{ "target", '\0', POPT_ARG_STRING, 0,  POPT_TARGETPLATFORM,
+		N_("override target platform"), "CPU-VENDOR-OS" },
 	{ "usecatalog", '\0', 0, &useCatalog, POPT_USECATALOG,
 		N_("lookup I18N strings in specfile catalog"), NULL},
 	{ 0, 0, 0, 0, 0,	NULL, NULL }
 };
-

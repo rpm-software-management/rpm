@@ -61,8 +61,8 @@
 	RPM_SOURCE_DIR=\"%{_sourcedir}\"\
 	RPM_BUILD_DIR=\"%{_builddir}\"\
 	RPM_OPT_FLAGS=\"%{optflags}\"\
-	RPM_ARCH=\"%{arch}\"\
-	RPM_OS=\"%{os}\"\
+	RPM_ARCH=\"%{_target_cpu}\"\
+	RPM_OS=\"%{_target_os}\"\
 	export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\
 	RPM_DOC_DIR=\"%{_docdir}\"\
 	export RPM_DOC_DIR\
@@ -78,6 +78,7 @@
 # ---- configure macros.
 #	Macro(s) similar to those used by configure.
 #
+%_prefix		@prefix@
 %_build			@build@
 %_build_alias		@build_alias@
 %_build_cpu		@build_cpu@
@@ -88,4 +89,8 @@
 %_host_cpu		@host_cpu@
 %_host_vendor		@host_vendor@
 %_host_os		@host_os@
-%_prefix		@prefix@
+%_target		@target@
+%_target_alias		@target_alias@
+%_target_cpu		@target_cpu@
+%_target_vendor		@target_vendor@
+%_target_os		@target_os@
