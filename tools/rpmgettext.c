@@ -375,6 +375,61 @@ message_free (mp)
   free (mp);
 }
 
+message_variant_ty *
+message_variant_search (mp, domain)
+     message_ty *mp;
+     const char *domain;
+{
+  size_t j;
+  message_variant_ty *mvp;
+
+  for (j = 0; j < mp->variant_count; ++j)
+    {
+      mvp = &mp->variant[j];
+      if (0 == strcmp (domain, mvp->domain))
+        return mvp;
+    }
+  return 0;
+}
+
+void
+message_variant_append (mp, domain, msgstr, pp)
+     message_ty *mp;
+     const char *domain;
+     const char *msgstr;
+     const lex_pos_ty *pp;
+{
+  size_t nbytes;
+  message_variant_ty *mvp;
+
+  nbytes = (mp->variant_count + 1) * sizeof (mp->variant[0]);
+  mp->variant = xrealloc (mp->variant, nbytes);
+  mvp = &mp->variant[mp->variant_count++];
+  mvp->domain = domain;
+  mvp->msgstr = msgstr;
+  mvp->pos = *pp;
+}
+
+void
+message_comment_append (mp, s)
+     message_ty *mp;
+     const char *s;
+{
+  if (mp->comment == NULL)
+    mp->comment = string_list_alloc ();
+  string_list_append (mp->comment, s);
+}
+
+void
+message_comment_dot_append (mp, s)
+     message_ty *mp;
+     const char *s;
+{
+  if (mp->comment_dot == NULL)
+    mp->comment_dot = string_list_alloc ();
+  string_list_append (mp->comment_dot, s);
+}
+
 message_list_ty *
 message_list_alloc ()
 {
@@ -508,6 +563,7 @@ parsepofile(const char *file, message_list_ty **mlpp)
     message_list_ty *mlp;
     message_ty *mp;
     KW_t *kw;
+    char *lang;
     char *buf, *s, *se, *t;
     size_t nb;
     int c, rc;
@@ -551,14 +607,10 @@ fprintf(stderr, "%.*s\n", (int)(se-s), s);
 			switch (s[1]) {
 			case ':':	/* XXX for now fall thru */
 			case '.':
-				if (mp->comment_dot == NULL)
-					mp->comment_dot = string_list_alloc();
-				string_list_append(mp->comment_dot, xstrdup(s));
+				message_comment_dot_append(mp, xstrdup(s));
 				break;
 			default:
-				if (mp->comment == NULL)
-					mp->comment = string_list_alloc();
-				string_list_append(mp->comment, xstrdup(s));
+				message_comment_append(mp, xstrdup(s));
 				break;
 			}
 			if (c)
@@ -595,8 +647,12 @@ fprintf(stderr, "%.*s", (int)(se-s), s);
 	/* === s:se has lang */
 if (debug)
 fprintf(stderr, "(%.*s)", (int)(se-s), s);
-			se++;	/* skip ) */
-		}
+			*se = '\0';
+			lang = s;
+			if (c)
+				se++;	/* skip ) */
+		} else
+			lang = "C";
 if (debug)
 fprintf(stderr, "\n");
 
@@ -643,6 +699,9 @@ fprintf(stderr, "\n");
 			FREE(((char *)mp->msgid));
 			mp->msgid = xstrdup(tbuf);
 		} else if (!strcmp(kw->name, "msgstr")) {
+			static lex_pos_ty pos = { __FILE__, __LINE__ };
+			message_variant_append(mp, xstrdup(lang), xstrdup(tbuf), &pos);
+			lang = NULL;
 		}
 
 		mp = NULL;
