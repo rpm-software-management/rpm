@@ -88,7 +88,7 @@
 
 #define PY_BSDDB_VERSION "3.3.1"
 
-static char *rcs_id = "$Id: _rpmdb.c,v 1.1 2002/06/02 20:50:49 jbj Exp $";
+static char *rcs_id = "$Id: _rpmdb.c,v 1.2 2002/06/03 20:44:08 jbj Exp $";
 
 
 #ifdef WITH_THREAD
@@ -1996,7 +1996,7 @@ DB_set_get_returns_none(DBObject* self, PyObject* args)
 /*-------------------------------------------------------------- */
 /* Mapping and Dictionary-like access routines */
 
-int DB_length(DBObject* self)
+static int DB_length(DBObject* self)
 {
     int err;
     long size = 0;
@@ -2034,7 +2034,7 @@ int DB_length(DBObject* self)
 }
 
 
-PyObject* DB_subscript(DBObject* self, PyObject* keyobj)
+static PyObject* DB_subscript(DBObject* self, PyObject* keyobj)
 {
     int err;
     PyObject* retval;
@@ -3927,6 +3927,8 @@ static PyMethodDef bsddb_methods[] = {
 
 
 
+void init_rpmdb(void);		/* XXX remove compiler warning */
+
 DL_EXPORT(void) init_rpmdb(void)
 {
     PyObject* m;
@@ -3948,7 +3950,7 @@ DL_EXPORT(void) init_rpmdb(void)
 #endif
 
     /* Create the module and add the functions */
-    m = Py_InitModule("_db", bsddb_methods);
+    m = Py_InitModule("_rpmdb", bsddb_methods);
 
     /* Add some symbolic constants to the module */
     d = PyModule_GetDict(m);

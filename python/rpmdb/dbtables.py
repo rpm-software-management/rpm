@@ -28,7 +28,7 @@ import xdrlib
 import re
 import copy
 
-from bsddb3.db import *
+from rpmdb.db import *
 
 
 class TableDBError(StandardError): pass

@@ -28,13 +28,13 @@
 
 #
 # import the time.sleep function in a namespace safe way to allow
-# "from bsddb3.db import *"
+# "from rpmdb.db import *"
 #
 from time import sleep
 _sleep = sleep
 del sleep
 
-import _db
+import _rpmdb as _db
 
 _deadlock_MinSleepTime = 1.0/64  # always sleep at least N seconds between retrys
 _deadlock_MaxSleepTime = 1.0     # never sleep more than N seconds between retrys
