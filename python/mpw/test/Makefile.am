@@ -13,4 +13,4 @@ EXTRA_DIST = \
 all:
 
 check:
-	python test_all.py
+	python test_all.py verbose

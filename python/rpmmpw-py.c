@@ -5,6 +5,8 @@
 #include "system.h"
 
 #include "Python.h"
+#include "longintrepr.h"
+
 #ifdef __LCLINT__
 #undef  PyObject_HEAD
 #define PyObject_HEAD   int _PyObjectHead;
@@ -16,6 +18,23 @@
 #include "rpmdebug-py.c"
 
 #include "debug.h"
+
+#define ABS(_x)		((_x) < 0 ? -(_x) : (_x))
+
+#define	BITS_TO_DIGITS(_b)	(((_b) + SHIFT - 1)/SHIFT)
+#define	DIGITS_TO_BITS(_d)	((_d) * SHIFT)
+
+#define	MP_ROUND_B2W(_b)	MP_BITS_TO_WORDS((_b) + MP_WBITS - 1)
+
+/*@unchecked@*/
+static int _ie = 0x44332211;
+/*@unchecked@*/
+static union _dendian {
+/*@unused@*/ int i;
+    char b[4];
+} *_endian = (union _dendian *)&_ie;
+#define        IS_BIG_ENDIAN()         (_endian->b[0] == '\x44')
+#define        IS_LITTLE_ENDIAN()      (_endian->b[0] == '\x11')
 
 /*@unchecked@*/
 static int _mpw_debug = 0;
@@ -312,7 +331,7 @@ mpsizeinbase(size_t xsize, mpw* xdata, size_t base)
 	return 1;
 
     /* XXX assumes positive integer. */
-    nbits = 32 * xsize - mpmszcnt(xsize, xdata);
+    nbits = MP_WORDS_TO_BITS(xsize) - mpmszcnt(xsize, xdata);
     if ((base & (base-1)) == 0) {	/* exact power of 2 */
 	size_t lbits = mp_bases[base].big_base;
 	res = (nbits + (lbits - 1)) / lbits;
@@ -385,7 +404,7 @@ fprintf(stderr, "*** mpstr(%p[%d], %p[%d], %d):\t", t, nt, data, size, base), mp
 
 	mpndivmod(zdata, asize, adata, 1, &base, wksp);
 
-if (_mpw_debug < 0) {
+if (_mpw_debug < -1) {
 fprintf(stderr, "    a %p[%d]:\t", adata, asize), mpfprintln(stderr, asize, adata);
 fprintf(stderr, "    z %p[%d]:\t", zdata, asize+1), mpfprintln(stderr, asize+1, zdata);
 }
@@ -444,12 +463,12 @@ fprintf(stderr, "*** mpw_format(%p,%d,%d):\t", z, zbase, addL), mpfprintln(stder
     } else if (zsign) {
 	*tcp++ = '-';
 	i += 1;		/* space to hold '-' */
-	zsize = (nt + 31)/32;
+	zsize = MP_ROUND_B2W(nt);
 	zdata = alloca(zsize * sizeof(*zdata));
 	mpsetx(zsize, zdata, zsize, z->n.data + (z->n.size - zsize));
 	mpneg(zsize, zdata);
     } else {
-	zsize = (nt + 31)/32;
+	zsize = MP_ROUND_B2W(nt);
 	zdata = z->n.data + (z->n.size - zsize);
     }
 
@@ -761,19 +780,19 @@ static void mpnpow_w(mpnumber* n, size_t xsize, const mpw* xdata,
     }
 
     /* Normalize (to mpw boundary) exponent. */
-    pdata += psize - ((pbits+31)/32);
-    psize -= (pbits/32);
+    pdata += psize - MP_ROUND_B2W(pbits);
+    psize -= MP_BITS_TO_WORDS(pbits);
 
     /* Calculate size of result. */
     if (xbits == 0) xbits = 1;
     nbits = (*pdata) * xbits;
-    nsize = (nbits + 31)/32;
+    nsize = MP_ROUND_B2W(nbits);
 
     /* XXX Add 1 word to carry sign bit */
-    if (!mpmsbset(xsize, xdata) && (nbits & (32 -1)) == 0)
+    if (!mpmsbset(xsize, xdata) && (nbits & (MP_WBITS - 1)) == 0)
 	nsize++;
 
-    size = ((15 * xbits)+31)/32;
+    size = MP_ROUND_B2W(15 * xbits);
 
 if (_mpw_debug < 0)
 fprintf(stderr, "*** pbits %d xbits %d nsize %d size %d\n", pbits, xbits, nsize, size);
@@ -861,60 +880,68 @@ fprintf(stderr, "*** mpw_str(%p): \"%s\"\n", a, PyString_AS_STRING(so));
 
 /** \ingroup py_c
  */
-static int mpw_init(mpwObject * s, PyObject *args, PyObject *kwds)
+static int mpw_init(mpwObject * z, PyObject *args, PyObject *kwds)
 	/*@modifies s @*/
 {
     PyObject * o = NULL;
-    size_t words = 0;
     long l = 0;
 
     if (!PyArg_ParseTuple(args, "|O:Cvt", &o)) return -1;
 
     if (o == NULL) {
-	if (s->n.data == NULL)
-	    mpnsetw(&s->n, 0);
+	mpnsetw(&z->n, l);
     } else if (PyInt_Check(o)) {
 	l = PyInt_AsLong(o);
-	words = sizeof(l)/sizeof(words);
+	mpnsetw(&z->n, l);
     } else if (PyLong_Check(o)) {
-	l = PyLong_AsLong(o);
-	words = sizeof(l)/sizeof(words);
+	PyLongObject *lo = (PyLongObject *)o;
+	int lsize = ABS(lo->ob_size);
+	int lbits = DIGITS_TO_BITS(lsize);
+	size_t zsize = MP_BITS_TO_WORDS(lbits) + 1;
+	mpw* zdata = alloca(zsize * sizeof(*zdata));
+	unsigned char * zb = (unsigned char *) zdata;
+	size_t nzb = MP_WORDS_TO_BYTES(zsize);
+	int is_littleendian = 0;
+	int is_signed = 1;
+
+	/* Grab long as big-endian signed octets. */
+	if (_PyLong_AsByteArray(lo, zb, nzb, is_littleendian, is_signed))
+	    return -1;
+
+	/* Endian swap zdata's mpw elements. */
+	if (IS_LITTLE_ENDIAN()) {
+	    mpw w = 0;
+	    int zx = 0;
+	    while (nzb) {
+		w <<= 8;
+		w |= *zb++;
+		nzb--;
+		if ((nzb % MP_WBYTES) == 0) {
+		    zdata[zx++] = w;
+		    w = 0;
+		}
+	    }
+	}
+	mpnset(&z->n, zsize, zdata);
     } else if (PyFloat_Check(o)) {
 	double d = PyFloat_AsDouble(o);
 	/* XXX TODO: check for overflow/underflow. */
 	l = (long) (d + 0.5);
-	words = sizeof(l)/sizeof(words);
+	mpnsetw(&z->n, l);
     } else if (PyString_Check(o)) {
 	const unsigned char * hex = PyString_AsString(o);
 	/* XXX TODO: check for hex. */
-	mpnsethex(&s->n, hex);
+	mpnsethex(&z->n, hex);
     } else if (is_mpw(o)) {
 	mpwObject *a = (mpwObject *)o;
-	mpnsize(&s->n, a->n.size);
-	if (a->n.size > 0)
-	    mpsetx(s->n.size, s->n.data, a->n.size, a->n.data);
+	mpncopy(&z->n, &a->n);
     } else {
 	PyErr_SetString(PyExc_TypeError, "non-numeric coercion failed (mpw_init)");
 	return -1;
     }
 
-    if (words > 0) {
-	mpnsize(&s->n, words);
-	switch (words) {
-	case 2:
-/*@-shiftimplementation @*/
-	    s->n.data[0] = (l >> 32) & 0xffffffff;
-/*@=shiftimplementation @*/
-	    s->n.data[1] = (l      ) & 0xffffffff;
-	    break;
-	case 1:
-	    s->n.data[0] = (l      ) & 0xffffffff;
-	    break;
-	}
-    }
-
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_init(%p[%s],%p[%s],%p[%s]):\t", s, lbl(s), args, lbl(args), kwds, lbl(kwds)), mpfprintln(stderr, s->n.size, s->n.data);
+fprintf(stderr, "*** mpw_init(%p[%s],%p[%s],%p[%s]):\t", z, lbl(z), args, lbl(args), kwds, lbl(kwds)), mpfprintln(stderr, z->n.size, z->n.data);
 
     return 0;
 }
@@ -1076,7 +1103,7 @@ fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpfprintln(stderr, m->
 	size_t znorm;
 
 	mpmul(zdata, x->n.size, x->n.data, m->n.size, m->n.data);
-	znorm = zsize - (mpbitcnt(zsize, zdata) + 31)/32;
+	znorm = zsize - MP_ROUND_B2W(mpbitcnt(zsize, zdata));
 	zsize -= znorm;
 	zdata += znorm;
 	mpnset(&z->n, zsize, zdata);
@@ -1084,10 +1111,10 @@ fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpfprintln(stderr, m->
     case '/':
     {	size_t asize = x->n.size;
 	mpw* adata = x->n.data;
-	size_t anorm = asize - (mpbitcnt(asize, adata) + 31)/32;
+	size_t anorm = asize - MP_ROUND_B2W(mpbitcnt(asize, adata));
 	size_t bsize = m->n.size;
 	mpw* bdata = m->n.data;
-	size_t bnorm = bsize - (mpbitcnt(bsize, bdata) + 31)/32;
+	size_t bnorm = bsize - MP_ROUND_B2W(mpbitcnt(bsize, bdata));
 	size_t zsize;
 	mpw* zdata;
 	size_t znorm;
@@ -1133,7 +1160,7 @@ fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpfprintln(stderr, m->
 	mpnset(&z->n, zsize, zdata);
     }	break;
     case '<':
-    {	size_t bnorm = m->n.size - (mpbitcnt(m->n.size, m->n.data) + 31)/32;
+    {	size_t bnorm = m->n.size - MP_ROUND_B2W(mpbitcnt(m->n.size, m->n.data));
 	size_t bsize = m->n.size - bnorm;
 	mpw* bdata = m->n.data + bnorm;
 	size_t count = 0;
@@ -1144,7 +1171,7 @@ fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpfprintln(stderr, m->
 	mplshift(z->n.size, z->n.data, count);
     }	break;
     case '>':
-    {	size_t bnorm = m->n.size - (mpbitcnt(m->n.size, m->n.data) + 31)/32;
+    {	size_t bnorm = m->n.size - MP_ROUND_B2W(mpbitcnt(m->n.size, m->n.data));
 	size_t bsize = m->n.size - bnorm;
 	mpw* bdata = m->n.data + bnorm;
 	size_t count = 0;
@@ -1182,7 +1209,7 @@ fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpfprintln(stderr, m->
 	}
 	break;
     case 'P':
-    {	size_t bnorm = m->n.size - (mpbitcnt(m->n.size, m->n.data) + 31)/32;
+    {	size_t bnorm = m->n.size - MP_ROUND_B2W(mpbitcnt(m->n.size, m->n.data));
 	size_t bsize = m->n.size - bnorm;
 	mpw* bdata = m->n.data + bnorm;
 	mpnpow_w(&z->n, x->n.size, x->n.data, bsize, bdata);
@@ -1745,7 +1772,7 @@ static PyObject *
 mpw_int(mpwObject * a)
 	/*@*/
 {
-    size_t anorm = a->n.size - (mpbitcnt(a->n.size, a->n.data) + 31)/32;
+    size_t anorm = a->n.size - MP_ROUND_B2W(mpbitcnt(a->n.size, a->n.data));
     size_t asize = a->n.size - anorm;
     mpw* adata = a->n.data + anorm;
 
@@ -1764,19 +1791,34 @@ static PyObject *
 mpw_long(mpwObject * a)
 	/*@*/
 {
-    size_t anorm = a->n.size - (mpbitcnt(a->n.size, a->n.data) + 31)/32;
+    size_t abits = mpbitcnt(a->n.size, a->n.data);
+    size_t anorm = a->n.size - (abits + MP_WBITS - 1);
     size_t asize = a->n.size - anorm;
     mpw* adata = a->n.data + anorm;
+    size_t asign = mpmsbset(asize, adata);
+    size_t zsize = asize;
+    mpw* zdata = alloca(zsize * sizeof(*zdata));
+    int lsize = BITS_TO_DIGITS(abits);
+    PyLongObject *lo = _PyLong_New(lsize);
+    int digx;
 
-    if (asize > 1) {
-	PyErr_SetString(PyExc_ValueError, "mpw_long() arg too long to convert");
+    if (lo == NULL)
 	return NULL;
+
+    mpcopy(asize, zdata, adata);
+    if (asign)
+	mpneg(zsize, zdata);
+
+    for (digx = 0; digx < lsize; digx++) {
+	lo->ob_digit[digx] = zdata[zsize - 1] & MASK;
+	mprshift(zsize, zdata, SHIFT);
     }
 
-if (_mpw_debug)
-fprintf(stderr, "*** mpw_long(%p):\t%08lx\n", a, (long)(asize ? adata[0] : 0));
+    while (digx > 0 && lo->ob_digit[digx-1] == 0)
+	digx--;
+    lo->ob_size = (asign == 0 ? digx : -digx);
 
-    return Py_BuildValue("l", (asize ? adata[0] : 0));
+    return (PyObject *)lo;
 }
 
 static PyObject *
@@ -1859,7 +1901,7 @@ mpw_inplace_multiply(mpwObject * a, mpwObject * b)
     size_t znorm;
 
     mpmul(zdata, a->n.size, a->n.data, b->n.size, b->n.data);
-    znorm = zsize - (mpbitcnt(zsize, zdata) + 31)/32;
+    znorm = zsize - MP_ROUND_B2W(mpbitcnt(zsize, zdata));
     zsize -= znorm;
     zdata += znorm;
 
@@ -1923,7 +1965,7 @@ mpw_inplace_remainder(mpwObject * a, mpwObject * b)
 {
     size_t bsize = b->n.size;
     mpw* bdata = b->n.data;
-    size_t bnorm = bsize - (mpbitcnt(bsize, bdata) + 31)/32;
+    size_t bnorm = bsize - MP_ROUND_B2W(mpbitcnt(bsize, bdata));
     size_t zsize = a->n.size;
     mpw* zdata = alloca(zsize * sizeof(*zdata));
     mpw* wksp;
@@ -1959,7 +2001,7 @@ static PyObject *
 mpw_inplace_lshift(mpwObject * a, mpwObject * b)
 	/*@modifies a @*/
 {
-    size_t bnorm = b->n.size - (mpbitcnt(b->n.size, b->n.data) + 31)/32;
+    size_t bnorm = b->n.size - MP_ROUND_B2W(mpbitcnt(b->n.size, b->n.data));
     size_t bsize = b->n.size - bnorm;
     mpw* bdata = b->n.data + bnorm;
     size_t count = 0;
@@ -1980,7 +2022,7 @@ static PyObject *
 mpw_inplace_rshift(mpwObject * a, mpwObject * b)
 	/*@modifies a @*/
 {
-    size_t bnorm = b->n.size - (mpbitcnt(b->n.size, b->n.data) + 31)/32;
+    size_t bnorm = b->n.size - MP_ROUND_B2W(mpbitcnt(b->n.size, b->n.data));
     size_t bsize = b->n.size - bnorm;
     mpw* bdata = b->n.data + bnorm;
     size_t count = 0;
