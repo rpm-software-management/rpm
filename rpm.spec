@@ -76,8 +76,8 @@ fi
 %endif
 
 %ifos linux
-%post -n devel -b /sbin/ldconfig
-%postun -n devel -b /sbin/ldconfig
+%post -n devel -p /sbin/ldconfig
+%postun -n devel -p /sbin/ldconfig
 %endif
 
 %files
