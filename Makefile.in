@@ -33,7 +33,7 @@ NLSPACKAGE=rpm
 # -----------------------------------------------------------------------
 
 SUBDIRS = misc lib build tools @PO@
-OTHERSUBDIRS = docs find-provides
+OTHERSUBDIRS = docs autodeps
 OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o url.o @GETTEXTSTUB@
 PROGS = @RPMSTATIC@ rpm.shared rpm2cpio
 LOADLIBES = -lbuild -lrpm @LIBMISC@ @LIBS@ @ZLIB@ @LIBINTL@ @LIBSOCKET@ @LIBDL@
@@ -105,6 +105,7 @@ install: all
 	
 	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/gendiff $(installprefix)/$(BINDIR)
 	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/find-provides.sh $(installprefix)/$(BINDIR)/find-provides
+	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/find-requires.sh $(installprefix)/$(BINDIR)/find-provides
 	$(INSTALL) -s -m 755 -o 0 -g 0 rpm2cpio $(installprefix)/$(BINDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)

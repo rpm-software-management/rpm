@@ -165,12 +165,21 @@ else
 fi
 
 rm -f ./find-provides.sh
-if test -f find-provides/$build_os ; then
-	echo "using find-provides/$build_os for automatic provides generation"
-	ln -s find-provides/$build_os ./find-provides.sh
+if test -f autodeps/${build_os}.prov ; then
+	echo "using autodeps/$build_os.prov for automatic provides generation"
+	ln -s autodeps/${build_os}.prov ./find-provides.sh
 else
 	echo "*** no default provides information is available for $build_os"
-	ln -s find-provides/none ./find-provides.sh
+	ln -s autodeps/none ./find-provides.sh
+fi
+
+rm -f ./find-requires.sh
+if test -f autodeps/${build_os}.req ; then
+	echo "using autodeps/$build_os.req for automatic requires generation"
+	ln -s autodeps/$build_os.req ./find-requires.sh
+else
+	echo "*** no default requires information is available for $build_os"
+	ln -s autodeps/none ./find-requires.sh
 fi
 
 AC_SUBST(MISCOBJS)
