@@ -1,5 +1,11 @@
 2.3.6 -> 2.3.7:
 	- no longer put file uid/gid in header
+	- fixed nasty memory link in -Va
+	- configure checks for -lnsl explicitly rather then linking it
+	  to -lsocket (for NCR SysVR4)
+	- configure checks for dirent.h
+	- modified glob.c to include config.h and use HAVE_DIRENT_H
+	- cleanup of LIBS/LIBPATH mess a bit more
 
 2.3.5 -> 2.3.6:
 	- -Vf uses realpath() now
