@@ -203,8 +203,8 @@ int rpmdepCheck(rpmDependencies rpmdep,
 	}
     }
 
-    qsort(rpmdep->providesTable, rpmdep->numProvides, sizeof(char *), 
-	  (void *) providescmp);
+    qsort(rpmdep->providesTable, rpmdep->numProvides, 
+	  sizeof(*rpmdep->providesTable), (void *) providescmp);
     
     /* look at all of the added packages and make sure their dependencies
        are satisfied */
@@ -266,7 +266,7 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 
     prent.entry = reqName;
     if ((provider = bsearch(&prent, rpmdep->providesTable, rpmdep->numProvides,
-		sizeof(char *), (void *) providescmp))) {
+		sizeof(*rpmdep->providesTable), (void *) providescmp))) {
  	if (headerMatchesDepFlags(provider->package->h, reqVersion, reqFlags))
 	    return 0;
     }
