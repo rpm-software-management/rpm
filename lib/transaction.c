@@ -222,11 +222,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
        worth the trouble though. */
     for (fi = flList, alp = al->list; (alp - al->list) < al->size; 
 		fi++, alp++) {
+	memset(fi, 0, sizeof(*fi));
+
 	if (!headerGetEntryMinMemory(alp->h, RPMTAG_FILENAMES, NULL, 
 				     (void *) NULL, &fi->fc)) {
-	    fi->replaced = NULL;
-	    fi->actions = NULL;
-	    fi->fc = 0;
 	    fi->h = alp->h;
 	    hdrs[alp - al->list] = headerLink(fi->h);
 	    continue;
@@ -256,7 +255,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	fi->type = ADDED;
         fi->fps = malloc(fi->fc * sizeof(*fi->fps));
 	fi->ap = alp;
-	fi->replaced = NULL;
     }
 
     NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 3, al->size, NULL, notifyData));
@@ -265,9 +263,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    NULL, notifyData));
 
     for (i = 0; i < ts->numRemovedPackages; i++, fi++) {
+	memset(fi, 0, sizeof(*fi));
 
-	fi->actions = NULL;
-	fi->replaced = NULL;
 	fi->type = REMOVED;
 	fi->record = ts->removedPackages[i];
 	fi->h = rpmdbGetRecord(ts->db, fi->record);
@@ -290,8 +287,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 			    fi->fflags, fi->fc * sizeof(*fi->fflags));
 	headerGetEntry(fi->h, RPMTAG_FILEMD5S, NULL, 
 				(void *) &fi->fmd5s, NULL);
-
-	fi->flinks = NULL;
 
 	headerGetEntry(fi->h, RPMTAG_FILEMODES, NULL, 
 				(void *) &fi->fmodes, NULL);
