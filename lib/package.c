@@ -337,6 +337,14 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 rpmMessage(RPMMESS_DEBUG, _("========== Header RSA signature\n"));
 	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
+	/* XXX only V3 signatures for now. */
+	if (ts->dig->signature.version != 3) {
+	    rpmMessage(RPMMESS_WARNING,
+		_("only V3 signatures can be verified, skipping V%u signature"),
+		ts->dig->signature.version);
+	    rc = RPMRC_OK;
+	    goto exit;
+	}
 	/*@fallthrough@*/
     {	void * uh = NULL;
 	int_32 uht;
@@ -357,6 +365,14 @@ rpmMessage(RPMMESS_DEBUG, _("========== Header RSA signature\n"));
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 rpmMessage(RPMMESS_DEBUG, _("========== Header DSA signature\n"));
 	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
+	/* XXX only V3 signatures for now. */
+	if (ts->dig->signature.version != 3) {
+	    rpmMessage(RPMMESS_WARNING,
+		_("only V3 signatures can be verified, skipping V%u signature"),
+		ts->dig->signature.version);
+	    rc = RPMRC_OK;
+	    goto exit;
+	}
 	/*@fallthrough@*/
     case RPMSIGTAG_SHA1:
     {	void * uh = NULL;
@@ -380,6 +396,15 @@ rpmMessage(RPMMESS_DEBUG, _("========== Header DSA signature\n"));
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 rpmMessage(RPMMESS_DEBUG, _("========== Package DSA/RSA signature\n"));
 	xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
+
+	/* XXX only V3 signatures for now. */
+	if (ts->dig->signature.version != 3) {
+	    rpmMessage(RPMMESS_WARNING,
+		_("only V3 signatures can be verified, skipping V%u signature"),
+		ts->dig->signature.version);
+	    rc = RPMRC_OK;
+	    goto exit;
+	}
 	/*@fallthrough@*/
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
@@ -445,7 +470,7 @@ rpmMessage(RPMMESS_DEBUG, _("========== Package DSA/RSA signature\n"));
     }
 
 exit:
-    if (rc == 0 && hdrp != NULL) {
+    if (rc == RPMRC_OK && hdrp != NULL) {
 	/* Convert legacy headers on the fly ... */
 	legacyRetrofit(h, l);
 	

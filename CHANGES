@@ -89,7 +89,9 @@
 	- display pubkeys in hex when debugging db access.
 	- retrieve pubkey(s) from rpmdb, not from detached signature file.
 	- add header DSA signature.
-	- add header RSA signature (untested).
+	- add header RSA signature (untested, disabled for now).
+`	- don't bother with signing check if 16 bits of hash don't match.
+	- only V3 signatures for now.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
@@ -128,7 +130,7 @@
 	- a couple more perl.{prov,req} fiddles.
 	- macro for %files, always include %defattr(), redhat config only.
 	- fix: drop header region when writing repackaged legacy header.
-        - bail on %files macro.
+	- bail on %files macro.
 	- transaction rollbacks are functional.
 	- generate index for pkgid (aka Sigmd5) tag, query/verify by pkgid.
 	- generate index for hdrid (aka Sha1header) tag, query/verify by hdrid.
@@ -556,7 +558,7 @@
 	- fix: (segfault) verify needs rpmdb while query does not.
 	- add calculated nlink field to -qlv output (like ls -al).
 	- detects and builds properly against the new fopencookie API in
-          glibc 2.2.
+	  glibc 2.2.
 	- change popt exec alias in oreder to exec rpm children.
 	- split rpm into 5 pieces along major mode fault lines with popt glue.
 	- turn on new, more complete version of %%configure.
@@ -634,9 +636,9 @@
 	- builds against bzip2 1.0
 	- fix: resurrect symlink unique'ifying property of finger prints.
 	- fix: broken glob test with empty build directory (Geoff Keating).
-        - fix: create per-platform directories correctly.
-        - update brp-* scripts from rpm-4.0, enable in per-platform config.
-        - alpha: add -mieee to default optflags.
+	- fix: create per-platform directories correctly.
+	- update brp-* scripts from rpm-4.0, enable in per-platform config.
+	- alpha: add -mieee to default optflags.
 	- add RPMTAG_OPTFLAGS, configured optflags when package was built.
 	- add RPMTAG_DISTURL for rpmfind-like tools (content unknown yet).
 	- teach brp-compress about /usr/info and /usr/share/info as well.
@@ -971,8 +973,8 @@
 	- preliminary macro environment as side effect of rpmrc parse.
 	- macro handling in rpmlib -- rework include: tag with macro expansion.
 	- first attempt at librpmbuild API.
-        - fixed lib/rpmrc.c to accept include: tags (AdV)
-        - fixed the CHANGES file to reflect that this is 2.9, not 3.0 (AdV)
+	- fixed lib/rpmrc.c to accept include: tags (AdV)
+	- fixed the CHANGES file to reflect that this is 2.9, not 3.0 (AdV)
 	- aggregate system includes into system.h.
 	- rearrange functions to minimize exported routines in librpmbuild API.
 	- generalize cpio I/O to eliminate pipe to exec'd gzip on install.
@@ -1036,7 +1038,7 @@
 	- portable mode_t/pid_t typedefs.
 	- fix check for trailing / in Prefix:
 	- remove 2 character language name assumption.
-        - add /usr/lib/rpm/find-lang.sh (W. L. Estes <wlestes@uncg.edu>)
+	- add /usr/lib/rpm/find-lang.sh (W. L. Estes <wlestes@uncg.edu>)
 	- miscellaneous portability cruft (Eugene Kanter).
 	- Makefile: don't use ln -sf.
 	- getOutputFrom(): fix race between last read on pipe and child death
@@ -1068,7 +1070,7 @@
 	- solaris portability patch resurrection (Steve Sanberg).
 	- permit autogen.sh to work on non "prefix=/usr" hosts.
 	- add %license/%readme virtual file attributes.
-        - align "Build Host:" with other fields.
+	- align "Build Host:" with other fields.
 
 2.5.2 -> 2.5.3:
 	- copy changelog tags to sub-packages just before packaging.
@@ -1153,7 +1155,7 @@
 	- fix typo in %triggerpostun generation
 	- include icons in source packages
 	- headerGetEntry() should return count of 1 when returning
-          strings plucked from i18n strings
+	  strings plucked from i18n strings
 	- do not remove comments in scripts
 	- save/restore existing arch when done with buildarch
 	- copy the I18N table to the source header so i18n stuff works
@@ -1162,14 +1164,14 @@
 	- shared files weren't being handled properly in net shared paths
 
 2.4.108 -> 2.4.109:
-        - remove icons with --rmsource
-        - do dependecy generation on -bl
-        - check files on all packages on -bl
+	- remove icons with --rmsource
+	- do dependecy generation on -bl
+	- check files on all packages on -bl
 	- integrate Jeff Johnson's memleak patches
 	- added OSF1 autodep scripts
 
 2.4.107 -> 2.4.108:
-        - make --clean work with no %setup
+	- make --clean work with no %setup
 	- fixed FSSIZES problem introduced in 2.4.107
 	- fixed search for find-requires.sh
 	- improved solaris autodeps scripts
@@ -1178,7 +1180,7 @@
 2.4.106 -> 2.4.107:
 	- --nomd5 wasn't handled properly
 	- updated configure.in find-req and find-prov checks (Tim Mooney)
-        - make --rmsource actually work
+	- make --rmsource actually work
 	- run postun triggers
 
 2.4.105 -> 2.4.106:
@@ -1243,8 +1245,8 @@
 
 2.4.100 -> 2.4.101:
 	- handle files with spaces (put double quotes around them)
-        - new rpmrc setting, buildshell, can be used to set shell
-          used for build scripts (default is /bin/sh)
+	- new rpmrc setting, buildshell, can be used to set shell
+	  used for build scripts (default is /bin/sh)
 	- fix bug where macros were being improperly set for
 	  Patch: and Source: lines
 	- may use "instchangelog" in rpmrc to limit the maxmium number of 
@@ -1252,11 +1254,11 @@
 	  (-1 means store all of them)
 	- default instchangelog is set to 5
 	- headerRemoveEntry() didn't free the item's data -- this led to
-  	  a slight memory leak when installing packages
-        - implemented generic file relocations at install time
-          (use --relocate <oldpath>=<newpath>, i.e. --relocate /usr=/foo)
-        - added --badreloc flag to force RPM to relocate files which packages
-          haven't advertised as relocateable
+	  a slight memory leak when installing packages
+	- implemented generic file relocations at install time
+	  (use --relocate <oldpath>=<newpath>, i.e. --relocate /usr=/foo)
+	- added --badreloc flag to force RPM to relocate files which packages
+	  haven't advertised as relocateable
 	- fix return code on failed uncompresses in %prep
 	- preliminary handling of bzip2 compressed files
 	- differentiates between big and little endian mips
@@ -1274,9 +1276,9 @@
 
 2.4.12 -> 2.4.99:
 	- added many more i18n strings
-        - merged in large rewrite of build code, which includes the following
+	- merged in large rewrite of build code, which includes the following
 	  changes:
-            - new option --rmsource
+	    - new option --rmsource
 	    - all scripts can now take -p <prog>
 	    - more strict about %package placement and use of main package 
 	      preamble
@@ -1286,7 +1288,7 @@
 	    - Root: is depricated.  Use BuildRoot: instead
 	    - "nosrc" sources arn't deleted when sources are removed
 	    - New tag DocDir: <dir> to set alternate doc dir (default is 
-              /usr/doc)
+	      /usr/doc)
 	    - %doc should work as expected with buildroot, prefix, DocDir:
 	    - all file processing is done before any packaging
 	    - should work with modern patch programs (later than 2.1)
@@ -1294,8 +1296,8 @@
 	    - %define only defines a macro if it starts a line
 	    - script prog entries are now arrays (ie with arguments)
 	    - standard macros: tag names, buildarch, buildos, buildarch_lc, 
-              buildos_lc, PATCHn, SOURCEn, PATCHURLn, SOURCEURLn, sourcedir, 
-              builddir, optflags
+	      buildos_lc, PATCHn, SOURCEn, PATCHURLn, SOURCEURLn, sourcedir, 
+	      builddir, optflags
 	    - deprecate require_distribution, require_icon, require_vendor
 	    - add RPMTAG_FILEDEVICES and RPMTAG_FILEINODES to header
 	    - export variables in scripts
@@ -1364,7 +1366,7 @@
 	- archivesize tag was incorrect for packages with hard links
 	- moved popt into a separate library
 	- directory created with %doc is now name-version (dropped
-          the release)
+	  the release)
 	- added buildarch/buildos macros
 	- added %ghost file option
 	- updated linux.req to only find requirements for exectuable files
@@ -1815,7 +1817,7 @@
 	- -h and -v work for source package >= V2
 	- -h output is much smoother now
 	- new AutoReqProv: tag in spec file can disable automatic
-          require/provide generation
+	  require/provide generation
 	- fixed md5sum problem on big endian machines in a way that's
 	  mostly backwards compatible; this hack will be removed someday
 	- added :fflags tag
@@ -1925,7 +1927,7 @@
 
 2.1.1 -> 2.1.2:
 	- fixed error message for unrelocateable packages
-        - automatic shared lib provides now work with buildprefix
+	- automatic shared lib provides now work with buildprefix
 	- fixed dependency checking during upgrades to work if the
 	  package wasn't previously installed
 	- clean up temp file after signature check
@@ -1936,7 +1938,7 @@
 	- fixed -qi query format 
 
 2.0.11 -> 2.1:
-        - added --requires, --whatrequires, --provides and 
+	- added --requires, --whatrequires, --provides and 
 	  --whatprovides queries
 	- using a string array tag in a queryformat results in every
 	  item in the string being printed out with spaces in between
@@ -1958,7 +1960,7 @@
 	- always do at least an MD5 "signature"
 	  as a result, -K will always tell you something
 	- signatures now include a simple "header+archive size" check
-          just calling readSignature() checks this
+	  just calling readSignature() checks this
 	- --nopgp (with -K) to skip PGP check, just do MD5
 	- allow '#' comments in preamble and %files section
 	- fixed -qsv to print both the states and the file information	
@@ -1991,7 +1993,7 @@
 	  queryFormats
 
 2.0.10 -> 2.0.11:
-        - fixed chmod(symlink) bug (since 2.0.9)
+	- fixed chmod(symlink) bug (since 2.0.9)
 
 2.0.9 -> 2.0.10:
 	- fixed the fix to rpm -q <num> bug
@@ -2028,7 +2030,7 @@
 	  will probably won't be implemented in RPM 2.x anyway
 
 2.0.6 -> 2.0.7:
-        - builds now set umask 022 for all scripts
+	- builds now set umask 022 for all scripts
 	- queries relative paths correctly (thanks to Johnie Stafford)
 	- fixed error codes for failed installs
 	- don't add NULL entry to group index for packages that don't
@@ -2121,7 +2123,7 @@
 
 1.4.2 -> 1.4.3:
 	- added tokens for SPARC, MIPS, PowerPC, and 680x0 architectures
-        - fixed sparc arch, added arch sanity check
+	- fixed sparc arch, added arch sanity check
 
 1.4.1 -> 1.4.2:
 	- added --root to man page, usage, and help messages

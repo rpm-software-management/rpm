@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-03-06 21:16-0500\n"
+"POT-Creation-Date: 2002-03-07 17:53-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -1671,23 +1671,28 @@ msgid "%s: headerRead failed\n"
 msgstr "%s: Neuspeo 'readLead'\n"
 
 #. Parse the parameters from the OpenPGP packets that will be needed.
-#: lib/package.c:338 lib/rpmchecksig.c:633
+#: lib/package.c:338
 #, fuzzy
 msgid "========== Header RSA signature\n"
 msgstr "ne mogu da proèitam potpis"
 
+#: lib/package.c:343 lib/package.c:371 lib/package.c:403 lib/rpmchecksig.c:631
+#, c-format
+msgid "only V3 signatures can be verified, skipping V%u signature"
+msgstr ""
+
 #. Parse the parameters from the OpenPGP packets that will be needed.
-#: lib/package.c:358 lib/rpmchecksig.c:639
+#: lib/package.c:366
 #, fuzzy
 msgid "========== Header DSA signature\n"
 msgstr "ne mogu da proèitam potpis"
 
 #. Parse the parameters from the OpenPGP packets that will be needed.
-#: lib/package.c:381
+#: lib/package.c:397
 msgid "========== Package DSA/RSA signature\n"
 msgstr ""
 
-#: lib/package.c:390 lib/rpmchecksig.c:110 lib/rpmchecksig.c:491
+#: lib/package.c:415 lib/rpmchecksig.c:110 lib/rpmchecksig.c:491
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Neuspeo 'readLead'\n"
@@ -2495,36 +2500,28 @@ msgstr "%s: Neuspeo 'readLead'\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Potpis nije na raspolaganju (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:620
-msgid "========== Package RSA signature\n"
-msgstr ""
-
-#: lib/rpmchecksig.c:645
-msgid "========== Package DSA signature\n"
-msgstr ""
-
-#: lib/rpmchecksig.c:778
+#: lib/rpmchecksig.c:773
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:779 lib/rpmchecksig.c:793
+#: lib/rpmchecksig.c:774 lib/rpmchecksig.c:788
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (NEDOSTAJUÆI KLJUÈEVI)"
 
-#: lib/rpmchecksig.c:781 lib/rpmchecksig.c:795
+#: lib/rpmchecksig.c:776 lib/rpmchecksig.c:790
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:782 lib/rpmchecksig.c:796
+#: lib/rpmchecksig.c:777 lib/rpmchecksig.c:791
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:784 lib/rpmchecksig.c:798
+#: lib/rpmchecksig.c:779 lib/rpmchecksig.c:793
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:792
+#: lib/rpmchecksig.c:787
 msgid "OK"
 msgstr ""
 
@@ -2770,8 +2767,8 @@ msgstr "Stari (interni) potpis!  Odakle vam!?"
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
-#: lib/signature.c:306 lib/signature.c:405 lib/signature.c:675
-#: lib/signature.c:708
+#: lib/signature.c:306 lib/signature.c:405 lib/signature.c:677
+#: lib/signature.c:710
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Ne mogu da izvr¹im PGP"
@@ -2827,56 +2824,56 @@ msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:713 lib/signature.c:768
+#: lib/signature.c:715 lib/signature.c:770
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:747
+#: lib/signature.c:749
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"
 
-#: lib/signature.c:760
+#: lib/signature.c:762
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Morate podesiti \"pgp_name:\" u va¹oj rpmrc datoteci"
 
-#: lib/signature.c:804
+#: lib/signature.c:806
 msgid "Header+Payload size: "
 msgstr ""
 
-#: lib/signature.c:844
+#: lib/signature.c:846
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:901
+#: lib/signature.c:903
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1063
+#: lib/signature.c:1082
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "preskoèi sve MD5 potpise"
 
-#: lib/signature.c:1179
+#: lib/signature.c:1199
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1180
+#: lib/signature.c:1200
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "%s: Potpis nije na raspolaganju\n"
 
-#: lib/signature.c:1271
+#: lib/signature.c:1287
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1298
+#: lib/signature.c:1314
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1302
+#: lib/signature.c:1318
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""

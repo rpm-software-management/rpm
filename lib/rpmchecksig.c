@@ -612,13 +612,26 @@ int rpmVerifySignatures(QVA_t qva, rpmTransactionSet ts, FD_t fd,
 	    if (ts->sig == NULL) /* XXX can't happen */
 		continue;
 
+	    /* Clean up parameters from previous sigtag. */
+	    pgpCleanDig(ts->dig);
+
 	    switch (ts->sigtag) {
+	    case RPMSIGTAG_RSA:
+	    case RPMSIGTAG_DSA:
+	    case RPMSIGTAG_GPG:
 	    case RPMSIGTAG_PGP5:	/* XXX legacy */
 	    case RPMSIGTAG_PGP:
 		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
 		     continue;
-rpmMessage(RPMMESS_DEBUG, _("========== Package RSA signature\n"));
 		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
+
+		/* XXX only V3 signatures for now. */
+		if (ts->dig->signature.version != 3) {
+		    rpmError(RPMERR_SIGVFY,
+		_("only V3 signatures can be verified, skipping V%u signature"),
+			ts->dig->signature.version);
+		    continue;
+		}
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_SHA1:
 		if (!(qva->qva_flags & VERIFY_DIGEST)) 
@@ -626,24 +639,6 @@ rpmMessage(RPMMESS_DEBUG, _("========== Package RSA signature\n"));
 		/* XXX Don't bother with header sha1 if header dsa. */
 		if (sigtag == RPMSIGTAG_DSA)
 		    continue;
-		/*@switchbreak@*/ break;
-	    case RPMSIGTAG_RSA:
-		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
-		     continue;
-rpmMessage(RPMMESS_DEBUG, _("========== Header RSA signature\n"));
-		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
-		/*@switchbreak@*/ break;
-	    case RPMSIGTAG_DSA:
-		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
-		     continue;
-rpmMessage(RPMMESS_DEBUG, _("========== Header DSA signature\n"));
-		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
-		/*@switchbreak@*/ break;
-	    case RPMSIGTAG_GPG:
-		if (!(qva->qva_flags & VERIFY_SIGNATURE)) 
-		     continue;
-rpmMessage(RPMMESS_DEBUG, _("========== Package DSA signature\n"));
-		xx = pgpPrtPkts(ts->sig, ts->siglen, ts->dig, rpmIsDebug());
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_LEMD5_2:
 	    case RPMSIGTAG_LEMD5_1:

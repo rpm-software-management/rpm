@@ -965,6 +965,10 @@ struct pgpDigParams_s {
     byte hashlen;
     byte signhash16[2];
     byte signid[8];
+    byte saved;
+#define	PGPDIG_SAVED_TIME	(1 << 0)
+#define	PGPDIG_SAVED_ID		(1 << 1)
+
 };
 
 /**
@@ -1195,9 +1199,14 @@ struct pgpDig_s * pgpNewDig(void)
 
 /**
  */
+void pgpCleanDig(/*@null@*/ struct pgpDig_s * dig)
+	/*@modifies *dig @*/;
+
+/**
+ */
 /*@only@*/ /*@null@*/
 struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
-	/*@modifies dig @*/;
+	/*@modifies *dig @*/;
 
 /**
  */

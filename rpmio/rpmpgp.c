@@ -369,7 +369,13 @@ int pgpPrtSubType(const byte *h, unsigned int hlen)
 	    /*@switchbreak@*/ break;
 	case PGPSUBTYPE_SIG_CREATE_TIME:
 /*@-mods -mayaliasunique @*/
-	    if (_digp && _digp->tag == PGPTAG_PUBLIC_KEY) {
+#ifdef	DYING
+	    if (_digp && _digp->tag == PGPTAG_PUBLIC_KEY)
+#else
+	    if (_digp && !(_digp->saved & PGPDIG_SAVED_TIME))
+#endif
+	    {
+		_digp->saved |= PGPDIG_SAVED_TIME;
 		memcpy(_digp->time, p+1, sizeof(_digp->time));
 	    }
 /*@=mods =mayaliasunique @*/
@@ -386,7 +392,13 @@ int pgpPrtSubType(const byte *h, unsigned int hlen)
 
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
 /*@-mods -mayaliasunique @*/
-	    if (_digp && _digp->tag == PGPTAG_PUBLIC_KEY) {
+#ifdef	DYING
+	    if (_digp && _digp->tag == PGPTAG_PUBLIC_KEY)
+#else
+	    if (_digp && !(_digp->saved & PGPDIG_SAVED_ID))
+#endif
+	    {
+		_digp->saved |= PGPDIG_SAVED_ID;
 		memcpy(_digp->signid, p+1, sizeof(_digp->signid));
 	    }
 /*@=mods =mayaliasunique @*/
@@ -992,7 +1004,7 @@ struct pgpDig_s * pgpNewDig(void)
     return dig;
 }
 
-struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
+void pgpCleanDig(struct pgpDig_s * dig)
 	/*@modifies dig @*/
 {
     if (dig != NULL) {
@@ -1008,12 +1020,35 @@ struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
 	}
 	/*@=unqualifiedtrans@*/
 
+	memset(&dig->signature, 0, sizeof(dig->signature));
+	memset(&dig->pubkey, 0, sizeof(dig->pubkey));
+
+	dig->md5 = _free(dig->md5);
+	dig->sha1 = _free(dig->sha1);
+	mp32nfree(&dig->hm);
+	mp32nfree(&dig->r);
+	mp32nfree(&dig->s);
+
+	(void) rsapkFree(&dig->rsa_pk);
+	mp32nfree(&dig->m);
+	mp32nfree(&dig->c);
+	mp32nfree(&dig->rsahm);
+    }
+}
+
+struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
+	/*@modifies dig @*/
+{
+    if (dig != NULL) {
+
+	/* DUmp the signature/pubkey data. */
+	pgpCleanDig(dig);
+
 	/*@-branchstate@*/
 	if (dig->md5ctx != NULL)
 	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
 	/*@=branchstate@*/
 	dig->md5ctx = NULL;
-	dig->md5 = _free(dig->md5);
 
 	/*@-branchstate@*/
 	if (dig->hdrsha1ctx != NULL)
@@ -1026,16 +1061,7 @@ struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
 	    (void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
 	/*@=branchstate@*/
 	dig->sha1ctx = NULL;
-	dig->sha1 = _free(dig->sha1);
 
-	mp32nfree(&dig->hm);
-	mp32nfree(&dig->r);
-	mp32nfree(&dig->s);
-
-	(void) rsapkFree(&dig->rsa_pk);
-	mp32nfree(&dig->m);
-	mp32nfree(&dig->c);
-	mp32nfree(&dig->rsahm);
 	dig = _free(dig);
     }
     return dig;

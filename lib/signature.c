@@ -459,7 +459,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
 
 /*@unchecked@*/
 static unsigned char header_magic[8] = {
-        0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
+	0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
 /**
@@ -538,7 +538,7 @@ static int makeHDRSignature(Header sig, const char * file, int_32 sigTag,
 	if (headerWrite(fd, h, HEADER_MAGIC_YES))
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
-        if (makeGPGSignature(fn, &pkt, &pktlen, passPhrase)
+	if (makeGPGSignature(fn, &pkt, &pktlen, passPhrase)
 	||  !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    goto exit;
 	ret = 0;
@@ -556,7 +556,7 @@ static int makeHDRSignature(Header sig, const char * file, int_32 sigTag,
 	if (headerWrite(fd, h, HEADER_MAGIC_YES))
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
-        if (makePGPSignature(fn, &pkt, &pktlen, passPhrase)
+	if (makePGPSignature(fn, &pkt, &pktlen, passPhrase)
 	||  !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    goto exit;
 	ret = 0;
@@ -604,12 +604,14 @@ int rpmAddSignature(Header sig, const char * file, int_32 sigTag,
 	if (makePGPSignature(file, &pkt, &pktlen, passPhrase)
 	||  !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
+#ifdef	NOTYET	/* XXX needs hdrmd5ctx, like hdrsha1ctx. */
 	/* XXX Piggyback a header-only RSA signature as well. */
 	ret = makeHDRSignature(sig, file, RPMSIGTAG_RSA, passPhrase);
+#endif
 	ret = 0;
 	break;
     case RPMSIGTAG_GPG:
-        if (makeGPGSignature(file, &pkt, &pktlen, passPhrase)
+	if (makeGPGSignature(file, &pkt, &pktlen, passPhrase)
 	||  !headerAddEntry(sig, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
 	/* XXX Piggyback a header-only DSA signature as well. */
@@ -1046,6 +1048,23 @@ exit:
 }
 
 /**
+ * Convert hex to binary nibble.
+ * @param c            hex character
+ * @return             binary nibble
+ */
+static inline unsigned char nibble(char c)
+	/*@*/
+{
+    if (c >= '0' && c <= '9')
+	return (c - '0');
+    if (c >= 'A' && c <= 'F')
+	return (c - 'A') + 10;
+    if (c >= 'a' && c <= 'f')
+	return (c - 'a') + 10;
+    return 0;
+}
+
+/**
  * Verify PGP (aka RSA/MD5) signature.
  * @param ts		transaction set
  * @retval t		verbose success/failure text
@@ -1085,10 +1104,13 @@ goto exit;
 
     /*@-type@*/ /* FIX: cast? */
     {	DIGEST_CTX ctx = rpmDigestDup(md5ctx);
+	byte signhash16[2];
+	const char * s;
 
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
-#ifdef	NOTYET
+
+#ifdef	NOTYET	/* XXX not for binary/text doccument signatures. */
 	if (sigp->sigtype == 4) {
 	    int nb = ts->dig->nbytes + sigp->hashlen;
 	    byte trailer[6];
@@ -1099,15 +1121,22 @@ goto exit;
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
 	}
 #endif
+
 	xx = rpmDigestFinal(ctx, (void **)&ts->dig->md5, &ts->dig->md5len, 1);
+
+	/* Compare leading 16 bits of digest for quick check. */
+	s = ts->dig->md5;
+	signhash16[0] = (nibble(s[0]) << 4) | nibble(s[1]);
+	signhash16[1] = (nibble(s[2]) << 4) | nibble(s[3]);
+	if (memcmp(signhash16, sigp->signhash16, sizeof(signhash16))) {
+	    res = RPMSIG_BAD;
+	    goto exit;
+	}
 
     }
     /*@=type@*/
 
     {	const char * prefix = "3020300c06082a864886f70d020505000410";
-#ifdef	NOTYET
-	byte signhash16[2];
-#endif
 	unsigned int nbits = 1024;
 	unsigned int nb = (nbits + 7) >> 3;
 	const char * hexstr;
@@ -1121,20 +1150,11 @@ goto exit;
 	*tt++ = '0'; *tt++ = '0';
 	tt = stpcpy(tt, prefix);
 	tt = stpcpy(tt, ts->dig->md5);
-		
+
 	mp32nzero(&ts->dig->rsahm);	mp32nsethex(&ts->dig->rsahm, hexstr);
 
 	hexstr = _free(hexstr);
 
-	/* XXX compare leading 16 bits of digest for quick check. */
-#ifdef	NOTYET
-	signhash16[0] = (*ts->dig->rsahm.data >> 24) & 0xff;
-	signhash16[1] = (*ts->dig->rsahm.data >> 16) & 0xff;
-	if (memcmp(signhash16, sigp->signhash16, sizeof(signhash16))) {
-	    res = RPMSIG_BAD;
-	    goto exit;
-	}
-#endif
     }
 
     /* Retrieve the matching public key. */
@@ -1202,14 +1222,12 @@ goto exit;
 
     /*@-type@*/ /* FIX: cast? */
     {	DIGEST_CTX ctx = rpmDigestDup(sha1ctx);
-#ifdef	NOTYET
 	byte signhash16[2];
-#endif
 
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
-#ifdef	NOTYET
+#ifdef	NOTYET	/* XXX not for binary/text doccument signatures. */
 	if (sigp->sigtype == 4) {
 	    int nb = ts->dig->nbytes + sigp->hashlen;
 	    byte trailer[6];
@@ -1227,14 +1245,12 @@ goto exit;
 	mp32nzero(&ts->dig->hm);	mp32nsethex(&ts->dig->hm, ts->dig->sha1);
 
 	/* XXX compare leading 16 bits of digest for quick check. */
-#ifdef	NOTYET
 	signhash16[0] = (*ts->dig->hm.data >> 24) & 0xff;
 	signhash16[1] = (*ts->dig->hm.data >> 16) & 0xff;
 	if (memcmp(signhash16, sigp->signhash16, sizeof(signhash16))) {
 	    res = RPMSIG_BAD;
 	    goto exit;
 	}
-#endif
     }
     /*@=type@*/
 
