@@ -1428,7 +1428,7 @@ fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, s->ts->rdb);
        the items on the list as well :-) */
     Py_DECREF(s->keyList);
 
-   PyObject_Del((PyObject *)s);
+    PyObject_Del((PyObject *)s);
 }
 
 /** \ingroup py_c  
