@@ -155,7 +155,9 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
 	}
     }
     if (what == RPMBUILD_RMBUILD) {
-	fprintf(f, "rm -rf %s\n", spec->buildSubdir);
+	if (spec->buildSubdir) {
+	    fprintf(f, "rm -rf %s\n", spec->buildSubdir);
+	}
     } else {
 	fprintf(f, "%s", getStringBuf(sb));
     }
