@@ -55,6 +55,11 @@ rpm.shared: lib/librpm.a build/libbuild.a $(OBJS)
 	$(CC) -o rpm.shared $(LDFLAGS) $(OBJS) $(LOADLIBES) \
 		$(LIBEFENCE)
 
+# we don't normally build this, so ./configure doesn't try very hard
+# to make it work
+rpmconvert: lib/librpm.a convertdb.o oldrpmdb.o
+	$(CC) -o rpmconvert $(LDFLAGS) convertdb.o oldrpmdb.o -lgdbm $(LOADLIBES) 
+
 rpm2cpio: lib/librpm.a rpm2cpio.o
 	$(CC) -o rpm2cpio $(LDFLAGS) rpm2cpio.o $(LOADLIBES) 
 
