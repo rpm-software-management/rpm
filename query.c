@@ -647,6 +647,8 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 		fprintf(stderr, "open of %s failed: %s\n", arg, 
 			ftpStrerror(fd));
 	    }
+	} else if (!strcmp(arg, "-")) {
+	    fd = 0;
 	} else {
 	    isUrl = 0;
 	    if ((fd = open(arg, O_RDONLY)) < 0) {
