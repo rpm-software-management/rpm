@@ -5,11 +5,12 @@ AUTOMAKE_OPTIONS = 1.3 foreign
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build @INCPATH@
 
 rpmincdir = $(includedir)/rpm
-rpminc_HEADERS = dbindex.h header.h misc.h rpmlib.h rpmmacro.h stringbuf.h
+rpminc_HEADERS = \
+	dbindex.h header.h misc.h rpmio.h rpmlib.h rpmmacro.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h install.h \
 	md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
-	rpmdb.h rpmio.h rpmlead.h signature.h tread.h
+	rpmdb.h rpmlead.h signature.h tread.h
 
 lib_LIBRARIES = librpm.a
 librpm_a_SOURCES = \

@@ -2,6 +2,9 @@
 #define	H_RPMIO
 
 #include <sys/types.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
 
 typedef	/*@abstract@*/ struct _FD {
     int		fd_fd;
@@ -21,92 +24,19 @@ extern "C" {
 
 int timedRead(FD_t fd, void * bufptr, int length);
 
-extern inline /*@null@*/ FD_t fdNew(void);
-extern inline /*@null@*/ FD_t fdNew(void) {
-    FD_t fd = (FD_t)malloc(sizeof(struct _FD));
-    if (fd == NULL)
-	return NULL;
-    fd->fd_fd = -1;
-    fd->fd_bzd = NULL;
-    fd->fd_gzd = NULL;
-    fd->fd_url = NULL;
-    return fd;
-}
+extern /*@null@*/ FD_t fdNew(void);
+extern int fdValid(FD_t fd);
+extern int fdFileno(FD_t fd);
 
-extern inline int fdValid(FD_t fd);
-extern inline int fdValid(FD_t fd) {
-    return (fd != NULL && fd->fd_fd >= 0);
-}
+extern /*@null@*/ FD_t fdOpen(const char *pathname, int flags, mode_t mode);
+extern /*@null@*/ FD_t fdDup(int fdno);
 
-extern inline int fdFileno(FD_t fd);
-extern inline int fdFileno(FD_t fd) {
-    return (fd != NULL ? fd->fd_fd : -1);
-}
+extern off_t	fdLseek(FD_t fd, off_t offset, int whence);
+extern ssize_t	fdRead(FD_t fd, void * buf, size_t count);
+extern ssize_t	fdWrite(FD_t fd, const void * buf, size_t count);
+extern int	fdClose(/*@only@*/ FD_t fd);
 
-extern inline /*@null@*/ FD_t fdOpen(const char *pathname, int flags, mode_t mode);
-extern inline /*@null@*/ FD_t fdOpen(const char *pathname, int flags, mode_t mode) {
-    FD_t fd;
-    int fdno;
-    if ((fdno = open(pathname, flags, mode)) < 0)
-	return NULL;
-    fd = fdNew();
-    fd->fd_fd = fdno;
-    return fd;
-}
-
-extern inline /*@null@*/ FD_t fdDup(int fdno);
-extern inline /*@null@*/ FD_t fdDup(int fdno) {
-    FD_t fd;
-    int nfdno;
-    if ((nfdno = dup(fdno)) < 0)
-	return NULL;
-    fd = fdNew();
-    fd->fd_fd = nfdno;
-    return fd;
-}
-
-extern inline off_t fdLseek(FD_t fd, off_t offset, int whence);
-extern inline off_t fdLseek(FD_t fd, off_t offset, int whence) {
-    return lseek(fdFileno(fd), offset, whence);
-}
-
-extern inline ssize_t fdRead(FD_t fd, void * buf, size_t count);
-extern inline ssize_t fdRead(FD_t fd, void * buf, size_t count) {
-    return read(fdFileno(fd), buf, count);
-}
-
-extern inline ssize_t fdWrite(FD_t fd, const void * buf, size_t count);
-extern inline ssize_t fdWrite(FD_t fd, const void * buf, size_t count) {
-    return write(fdFileno(fd), buf, count);
-}
-
-extern inline int fdClose(/*@only@*/ FD_t fd);
-extern inline int fdClose(/*@only@*/ FD_t fd) {
-    int fdno;
-
-    if (fd != NULL && (fdno = fdFileno(fd)) >= 0) {
-	fd->fd_fd = -1;
-	fd->fd_bzd = NULL;
-	fd->fd_gzd = NULL;
-	fd->fd_url = NULL;
-	free(fd);
-    	return close(fdno);
-    }
-    return -2;
-}
-
-extern inline /*@shared@*/ FILE *fdFdopen(/*@owned@*/ FD_t fd, const char *mode);
-/*@-mustfree*/
-extern inline /*@shared@*/ FILE *fdFdopen(/*@owned@*/ FD_t fd, const char *mode) {
-    FILE *f = fdopen(fdFileno(fd), mode);
-    if (f != NULL) {
-	fd->fd_fd = -1;
-	free(fd);
-	return f;
-    }
-    return NULL;
-}
-/*@=mustfree*/
+extern /*@shared@*/ FILE *fdFdopen(/*@owned@*/ FD_t fd, const char *mode);
 
 /*
  * Support for GZIP library.
@@ -204,7 +134,8 @@ extern inline int gzdClose(/*@only@*/ FD_t fd) {
     return -2;
 }
 
-#endif	/* HAVE_BZLIB_H */
+#endif	/* HAVE_ZLIB_H */
+
 /*
  * Support for BZIP2 library.
  */
