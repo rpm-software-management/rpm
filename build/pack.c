@@ -540,7 +540,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	    rc = RPMERR_READ;
 	    goto exit;
 	}
-	if (Fwrite(buf, sizeof(buf[0]), count, fd) < 0) {
+	if (Fwrite(buf, sizeof(buf[0]), count, fd) != count) {
 	    rpmError(RPMERR_NOSPACE, _("Unable to write payload to %s: %s\n"),
 		     fileName, Fstrerror(fd));
 	    rc = RPMERR_NOSPACE;
