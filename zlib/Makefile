@@ -33,10 +33,10 @@ RANLIB=ranlib
 TAR=tar
 SHELL=/bin/sh
 
-prefix =/usr/local
-exec_prefix =${prefix}
-libdir =${exec_prefix}/lib
-includedir =${prefix}/include
+prefix = /usr/local
+exec_prefix = ${prefix}
+libdir = ${exec_prefix}/lib
+includedir = ${prefix}/include
 
 OBJS = adler32.o compress.o crc32.o gzio.o uncompr.o deflate.o trees.o \
        zutil.o inflate.o infblock.o inftrees.o infutil.o inffast.o
