@@ -6,7 +6,9 @@
 
 #include <rpmlib.h>
 #include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
-#include <rpmpgp.h>		/* XXX rpmtransFree() needs pgpFreeDig */
+#include <rpmpgp.h>		/* XXX rpmtsFree() needs pgpFreeDig */
+
+#include "rpmdb.h"		/* XXX stealing db->db_mode. */
 
 #include "rpmds.h"
 #include "rpmfi.h"
@@ -14,10 +16,9 @@
 #include "rpmte.h"
 #include "rpmts.h"
 
-#include "rpmdb.h"		/* XXX stealing db->db_mode. */
-
 #include "debug.h"
 
+/*@access FD_t @*/		/* XXX compared with NULL */
 /*@access rpmProblemSet @*/
 /*@access rpmTransactionSet @*/
 /*@access fnpyKey @*/
@@ -82,7 +83,7 @@ int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
 
     (void) rpmtsCloseDB(ts);
 
-    /* XXX there's a db lock race here. */
+    /* XXX there's a potential db lock race here. */
 
     ts->dbmode = dbmode;
     rc = rpmdbOpen(ts->rootDir, &ts->rpmdb, ts->dbmode, 0644);
@@ -288,7 +289,7 @@ rpmProblemSet rpmtsGetProblems(rpmTransactionSet ts)
     return ps;
 }
 
-void rpmtransClean(rpmTransactionSet ts)
+void rpmtsClean(rpmTransactionSet ts)
 {
     if (ts) {
 	teIterator pi; transactionElement p;
@@ -315,7 +316,7 @@ void rpmtransClean(rpmTransactionSet ts)
     }
 }
 
-rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
+rpmTransactionSet rpmtsFree(rpmTransactionSet ts)
 {
     if (ts) {
 	teIterator pi; transactionElement p;
@@ -338,7 +339,7 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	ts->removedPackages = _free(ts->removedPackages);
 	if (ts->scriptFd != NULL) {
 	    ts->scriptFd =
-		fdFree(ts->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
+		fdFree(ts->scriptFd, "rpmtsFree");
 	    ts->scriptFd = NULL;
 	}
 	ts->rootDir = _free(ts->rootDir);
@@ -360,7 +361,7 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	memset(ts->pksignid, 0, sizeof(ts->pksignid));
 
 /*@-nullstate@*/	/* FIX: partial annotations */
-	rpmtransClean(ts);
+	rpmtsClean(ts);
 /*@=nullstate@*/
 
 	/*@-refcounttrans@*/ ts = _free(ts); /*@=refcounttrans@*/
@@ -369,29 +370,150 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
     return NULL;
 }
 
-rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
+int rpmtsSetVerifySigFlags(rpmTransactionSet ts, int vsflags)
+	/*@modifies ts @*/
+{
+    int ret = 0;
+    if (ts != NULL) {
+	ret = ts->vsflags;
+	ts->vsflags = vsflags;
+    }
+    return ret;
+}
+
+const char * rpmtsGetRootDir(rpmTransactionSet ts)
+{
+    const char * rootDir = NULL;
+    if (ts != NULL) {
+	rootDir = ts->rootDir;
+    }
+    return rootDir;
+}
+
+void rpmtsSetRootDir(rpmTransactionSet ts, const char * rootDir)
+{
+    if (ts != NULL) {
+	size_t rootLen;
+
+	ts->rootDir = _free(ts->rootDir);
+
+	if (rootDir == NULL) {
+#ifndef	DYING
+	    ts->rootDir = xstrdup("");
+#endif
+	    return;
+	}
+	rootLen = strlen(rootDir);
+
+/*@-branchstate@*/
+	/* Make sure that rootDir has trailing / */
+	if (!(rootLen && rootDir[rootLen - 1] == '/')) {
+	    char * t = alloca(rootLen + 2);
+	    *t = '\0';
+	    (void) stpcpy( stpcpy(t, rootDir), "/");
+	    rootDir = t;
+	}
+/*@=branchstate@*/
+	ts->rootDir = xstrdup(rootDir);
+    }
+}
+
+FD_t rpmtsGetScriptFd(rpmTransactionSet ts)
+{
+    FD_t scriptFd = NULL;
+    if (ts != NULL) {
+	scriptFd = ts->scriptFd;
+    }
+/*@-compdef -refcounttrans -usereleased@*/
+    return scriptFd;
+/*@=compdef =refcounttrans =usereleased@*/
+}
+
+void rpmtsSetScriptFd(rpmTransactionSet ts, FD_t scriptFd)
+{
+
+    if (ts != NULL) {
+	if (ts->scriptFd != NULL) {
+	    ts->scriptFd = fdFree(ts->scriptFd, "rpmtsSetScriptFd");
+	    ts->scriptFd = NULL;
+	}
+	if (scriptFd != NULL)
+	    ts->scriptFd = fdLink(scriptFd, "rpmtsSetScriptFd");
+    }
+}
+
+rpmtsFlags rpmtsGetFlags(rpmTransactionSet ts)
+{
+    rpmtsFlags otransFlags = 0;
+    if (ts != NULL) {
+	otransFlags = ts->transFlags;
+    }
+    return otransFlags;
+}
+
+rpmtsFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtsFlags ntransFlags)
+{
+    rpmtsFlags otransFlags = 0;
+    if (ts != NULL) {
+	otransFlags = ts->transFlags;
+	ts->transFlags = ntransFlags;
+    }
+    return otransFlags;
+}
+
+int rpmtsSetNotifyCallback(rpmTransactionSet ts,
+		rpmCallbackFunction notify, rpmCallbackData notifyData)
+{
+    if (ts != NULL) {
+	ts->notify = notify;
+	ts->notifyData = notifyData;
+    }
+    return 0;
+}
+
+int rpmtsGetKeys(const rpmTransactionSet ts, fnpyKey ** ep, int * nep)
+{
+    int rc = 0;
+
+    if (nep) *nep = ts->orderCount;
+    if (ep) {
+	teIterator pi;	transactionElement p;
+	fnpyKey * e;
+
+	*ep = e = xmalloc(ts->orderCount * sizeof(*e));
+	pi = teInitIterator(ts);
+	while ((p = teNextIterator(pi)) != NULL) {
+	    switch (teGetType(p)) {
+	    case TR_ADDED:
+		/*@-dependenttrans@*/
+		*e = teGetKey(p);
+		/*@=dependenttrans@*/
+		/*@switchbreak@*/ break;
+	    case TR_REMOVED:
+	    default:
+		*e = NULL;
+		/*@switchbreak@*/ break;
+	    }
+	    e++;
+	}
+	pi = teFreeIterator(pi);
+    }
+    return rc;
+}
+
+rpmTransactionSet rpmtsCreate(void)
 {
     rpmTransactionSet ts;
-    int rootLen;
-
-    /*@-branchstate@*/
-    if (!rootDir) rootDir = "";
-    /*@=branchstate@*/
 
     ts = xcalloc(1, sizeof(*ts));
     ts->goal = TSM_UNKNOWN;
     ts->filesystemCount = 0;
     ts->filesystems = NULL;
     ts->di = NULL;
-    if (db != NULL) {
-	ts->rpmdb = rpmdbLink(db, "tsCreate");
-	/*@-type@*/ /* FIX: silly wrapper */
-	ts->dbmode = db->db_mode;
-	/*@=type@*/
-    } else {
-	ts->rpmdb = NULL;
-	ts->dbmode = O_RDONLY;
-    }
+
+    ts->rpmdb = NULL;
+    ts->dbmode = O_RDONLY;
+
     ts->scriptFd = NULL;
     ts->id = (int_32) time(NULL);
     ts->delta = 5;
@@ -401,18 +523,7 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     ts->removedPackages = xcalloc(ts->allocedRemovedPackages,
 			sizeof(*ts->removedPackages));
 
-    /* This canonicalizes the root */
-    rootLen = strlen(rootDir);
-    if (!(rootLen && rootDir[rootLen - 1] == '/')) {
-	char * t;
-
-	t = alloca(rootLen + 2);
-	*t = '\0';
-	(void) stpcpy( stpcpy(t, rootDir), "/");
-	rootDir = t;
-    }
-
-    ts->rootDir = (rootDir != NULL ? xstrdup(rootDir) : xstrdup(""));
+    ts->rootDir = NULL;
     ts->currDir = NULL;
     ts->chrootDone = 0;
 
@@ -442,33 +553,4 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     ts->nrefs = 0;
 
     return rpmtsLink(ts, "tsCreate");
-}
-
-rpmtransFlags rpmtsGetFlags(rpmTransactionSet ts)
-{
-    rpmtransFlags otransFlags = 0;
-    if (ts != NULL) {
-	otransFlags = ts->transFlags;
-    }
-    return otransFlags;
-}
-
-rpmtransFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtransFlags ntransFlags)
-{
-    rpmtransFlags otransFlags = 0;
-    if (ts != NULL) {
-	otransFlags = ts->transFlags;
-	ts->transFlags = ntransFlags;
-    }
-    return otransFlags;
-}
-
-int rpmtsSetNotifyCallback(rpmTransactionSet ts,
-		rpmCallbackFunction notify, rpmCallbackData notifyData)
-{
-    if (ts != NULL) {
-	ts->notify = notify;
-	ts->notifyData = notifyData;
-    }
-    return 0;
 }

@@ -30,9 +30,10 @@ static int checkSpec(rpmTransactionSet ts, Header h)
      && !headerIsEntry(h, RPMTAG_CONFLICTNAME))
 	return 0;
 
-    rc = rpmtransAddPackage(ts, h, NULL, 0, NULL);
+    rc = rpmtsAddPackage(ts, h, NULL, 0, NULL);
 
-    rc = rpmdepCheck(ts);
+    rc = rpmtsCheck(ts);
+
     ps = rpmtsGetProblems(ts);
     if (rc == 0 && ps) {
 	rpmMessage(RPMMESS_ERROR, _("Failed build dependencies:\n"));
@@ -42,7 +43,7 @@ static int checkSpec(rpmTransactionSet ts, Header h)
     ps = rpmProblemSetFree(ps);
 
     /* XXX nuke the added package. */
-    rpmtransClean(ts);
+    rpmtsClean(ts);
 
     return rc;
 }

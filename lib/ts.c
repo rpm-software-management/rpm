@@ -185,7 +185,7 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts)
 		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
 		n, v, r);
 #ifdef NOTYET
-	xx = rpmtransAddPackage(ts, h, fts->fts_path, 1, NULL);
+	xx = rpmtsAddPackage(ts, h, fts->fts_path, 1, NULL);
 #endif
 
 	break;
@@ -290,7 +290,6 @@ main(int argc, const char *argv[])
 {
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
     const char * rootDir = "";
-    rpmdb db = NULL;
     rpmTransactionSet ts = NULL;
     FTS * ftsp;
     int ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
@@ -320,7 +319,8 @@ main(int argc, const char *argv[])
 	rpmIncreaseVerbosity();
     }
 
-    ts = rpmtransCreateSet(db, rootDir);
+    ts = rpmtsCreate();
+    (void) rpmtsSetRootDir(rootDir);
     (void) rpmtsOpenDB(ts, O_RDONLY);
 
     args = poptGetArgs(optCon);
@@ -372,7 +372,7 @@ if (!_debug) {
 if (!_debug) {
     {	rpmProblemSet ps;
 
-	xx = rpmdepCheck(ts);
+	xx = rpmtsCheck(ts);
 
 	ps = rpmtsGetProblems(ts);
 	if (ps) {
@@ -382,12 +382,12 @@ if (!_debug) {
 	ps = rpmProblemSetFree(ts);
     }
 
-    (void) rpmdepOrder(ts);
+    (void) rpmtsOrder(ts);
 }
 #endif
 
 exit:
-    ts = rpmtransFree(ts);
+    ts = rpmtsFree(ts);
 
     return ec;
 }

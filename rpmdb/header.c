@@ -102,14 +102,18 @@ Header XheaderLink(Header h, /*@null@*/ const char * msg,
 		const char * fn, unsigned ln)
 	/*@modifies h @*/
 {
-    if (h != NULL) h->nrefs++;
+/*@-nullret@*/
+    if (h == NULL) return NULL;
+/*@=nullret@*/
+
+    h->nrefs++;
 /*@-modfilesystem@*/
 if ((_h_debug > 0 || (h->flags & HEADERFLAG_DEBUG)) && msg != NULL)
-fprintf(stderr, "--> h  %p ++ %d blob %p flags %x %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), (h != NULL ? h->blob : NULL), (h != NULL ? h->flags : 0), msg, fn, ln);
+fprintf(stderr, "--> h  %p ++ %d blob %p flags %x %s at %s:%u\n", h, h->nrefs, h->blob, h->flags, msg, fn, ln);
 /*@=modfilesystem@*/
-    /*@-refcounttrans -nullret @*/
+    /*@-refcounttrans @*/
     return h;
-    /*@=refcounttrans =nullret @*/
+    /*@=refcounttrans @*/
 }
 
 /** \ingroup header
@@ -122,11 +126,12 @@ Header XheaderUnlink(/*@killref@*/ /*@null@*/ Header h,
 		/*@null@*/ const char * msg, const char * fn, unsigned ln)
 	/*@modifies h @*/
 {
+    if (h == NULL) return NULL;
 /*@-modfilesystem@*/
 if ((_h_debug > 0 || (h->flags & HEADERFLAG_DEBUG)) && msg != NULL)
-fprintf(stderr, "--> h  %p -- %d blob %p flags %x %s at %s:%u\n", h, (h != NULL ? h->nrefs : 0), (h != NULL ? h->blob : NULL), (h != NULL ? h->flags : 0), msg, fn, ln);
+fprintf(stderr, "--> h  %p -- %d blob %p flags %x %s at %s:%u\n", h, h->nrefs, h->blob, h->flags, msg, fn, ln);
 /*@=modfilesystem@*/
-    if (h != NULL) h->nrefs--;
+    h->nrefs--;
     return NULL;
 }
 
@@ -185,7 +190,7 @@ Header headerNew(void)
     h->blob = NULL;
     h->indexAlloced = INDEX_MALLOC_SIZE;
     h->indexUsed = 0;
-    h->flags = HEADERFLAG_SORTED;
+    h->flags |= HEADERFLAG_SORTED;
 
     h->index = (h->indexAlloced
 	? xcalloc(h->indexAlloced, sizeof(*h->index))
@@ -912,7 +917,7 @@ Header headerLoad(/*@kept@*/ void * uh)
     h->indexAlloced = il + 1;
     h->indexUsed = il;
     h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
-    h->flags = HEADERFLAG_SORTED;
+    h->flags |= HEADERFLAG_SORTED;
     h->nrefs = 0;
     h = headerLink(h, "headerLoad");
 

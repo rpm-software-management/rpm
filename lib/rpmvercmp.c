@@ -1,4 +1,4 @@
-/** \ingroup rpmtrans
+/** \ingroup rpmts
  * \file lib/rpmvercmp.c
  */
 

@@ -13,6 +13,9 @@
 #include <rpmcli.h>
 #include <rpmbuild.h>
 
+#include "rpmdb.h"
+#include "rpmts.h"
+
 #define	POPT_NODEPS		1025
 #define	POPT_FORCE		1026
 #define	POPT_NOMD5		1027
@@ -932,7 +935,8 @@ int main(int argc, const char ** argv)
 	(void) close(p[1]);
     }
 	
-    ts = rpmtransCreateSet(NULL, rootdir);
+    ts = rpmtsCreate();
+    (void) rpmtsSetRootDir(ts, rootdir);
     switch (bigMode) {
 #ifdef	IAM_RPMDB
     case MODE_INITDB:
@@ -1183,7 +1187,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 exit:
 #endif	/* IAM_RPMBT || IAM_RPMK */
 
-    ts = rpmtransFree(ts);
+    ts = rpmtsFree(ts);
 
     optCon = poptFreeContext(optCon);
     rpmFreeMacros(NULL);

@@ -17,7 +17,10 @@
 #include "Python.h"
 #include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
+
+#include "rpmdb.h"
 #include "rpmts.h"	/* XXX for ts->rpmdb */
+
 #include "legacy.h"
 #include "misc.h"
 #include "header_internal.h"
@@ -46,7 +49,7 @@ int rpmvercmp(const char * one, const char * two);
 
 /** \ingroup python
  */
-typedef struct rpmtransObject_s rpmtransObject;
+typedef struct rpmtsObject_s rpmtsObject;
 
 /** \ingroup python
  * \name Class: rpmtrans
@@ -153,7 +156,7 @@ typedef struct rpmtransObject_s rpmtransObject;
 
 /** \ingroup python
  */
-struct rpmtransObject_s {
+struct rpmtsObject_s {
     PyObject_HEAD;
     rpmdbObject * dbo;
     rpmTransactionSet ts;
@@ -163,7 +166,7 @@ struct rpmtransObject_s {
 
 /** \ingroup python
  */
-static PyObject * rpmtransAdd(rpmtransObject * s, PyObject * args) {
+static PyObject * py_rpmtsAdd(rpmtsObject * s, PyObject * args) {
     hdrObject * h;
     PyObject * key;
     char * how = NULL;
@@ -185,9 +188,9 @@ static PyObject * rpmtransAdd(rpmtransObject * s, PyObject * args) {
     	isUpgrade = 1;
 
     if (how && !strcmp(how, "a"))
-	rpmtransAvailablePackage(s->ts, hdrGetHeader(h), key);
+	rpmtsAvailablePackage(s->ts, hdrGetHeader(h), key);
     else
-	rpmtransAddPackage(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
+	rpmtsAddPackage(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
 
     /* This should increment the usage count for me */
     if (key) {
@@ -200,7 +203,7 @@ static PyObject * rpmtransAdd(rpmtransObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args) {
+static PyObject * py_rpmtsRemove(rpmtsObject * s, PyObject * args) {
     char * name;
     int count;
     rpmdbMatchIterator mi;
@@ -219,7 +222,7 @@ static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args) {
         while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 	    if (recOffset) {
-	        rpmtransRemovePackage(s->ts, h, recOffset);
+	        rpmtsRemovePackage(s->ts, h, recOffset);
 	    }
 	}
     }
@@ -231,16 +234,17 @@ static PyObject * rpmtransRemove(rpmtransObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
+static PyObject * py_rpmtsDepCheck(rpmtsObject * s, PyObject * args) {
     rpmProblemSet ps;
     rpmProblem p;
     PyObject * list, * cf;
     int i;
     int allSuggestions = 0;
+    int xx;
 
     if (!PyArg_ParseTuple(args, "|i", &allSuggestions)) return NULL;
 
-    rpmdepCheck(s->ts);
+    xx = rpmtsCheck(s->ts);
     ps = rpmtsGetProblems(s->ts);
     if (ps) {
 	list = PyList_New(0);
@@ -313,10 +317,12 @@ static PyObject * rpmtransDepCheck(rpmtransObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static PyObject * rpmtransOrder(rpmtransObject * s, PyObject * args) {
+static PyObject * py_rpmtsOrder(rpmtsObject * s, PyObject * args) {
+    int xx;
+
     if (!PyArg_ParseTuple(args, "")) return NULL;
 
-    rpmdepOrder(s->ts);
+    xx = rpmtsOrder(s->ts);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -324,12 +330,12 @@ static PyObject * rpmtransOrder(rpmtransObject * s, PyObject * args) {
 
 /** \ingroup python
  */
-static PyObject * py_rpmtransGetKeys(rpmtransObject * s, PyObject * args) {
+static PyObject * py_rpmtsGetKeys(rpmtsObject * s, PyObject * args) {
     const void **data = NULL;
     int num, i;
     PyObject *tuple;
 
-    rpmtransGetKeys(s->ts, &data, &num);
+    rpmtsGetKeys(s->ts, &data, &num);
     if (data == NULL) {
 	Py_INCREF(Py_None);
 	return Py_None;
@@ -409,7 +415,7 @@ static void * tsCallback(const void * hd, const rpmCallbackType what,
 
 /** \ingroup python
  */
-static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args)
+static PyObject * py_rpmtsRun(rpmtsObject * s, PyObject * args)
 {
     int flags, ignoreSet;
     int rc, i;
@@ -426,7 +432,7 @@ static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args)
     (void) rpmtsSetNotifyCallback(s->ts, tsCallback, (void *) &cbInfo);
     (void) rpmtsSetFlags(s->ts, flags);
 
-    rc = rpmRunTransactions(s->ts, NULL, ignoreSet);
+    rc = rpmtsRun(s->ts, NULL, ignoreSet);
     ps = rpmtsGetProblems(s->ts);
 
     if (cbInfo.pythonError) {
@@ -460,29 +466,29 @@ static PyObject * rpmtransRun(rpmtransObject * s, PyObject * args)
 
 /** \ingroup python
  */
-static struct PyMethodDef rpmtransMethods[] = {
-	{"add",		(PyCFunction) rpmtransAdd,	1 },
-	{"remove",	(PyCFunction) rpmtransRemove,	1 },
-	{"depcheck",	(PyCFunction) rpmtransDepCheck,	1 },
-	{"order",	(PyCFunction) rpmtransOrder,	1 },
-	{"getKeys",	(PyCFunction) py_rpmtransGetKeys, 1 },
-	{"run",		(PyCFunction) rpmtransRun, 1 },
+static struct PyMethodDef rpmtsMethods[] = {
+	{"add",		(PyCFunction) py_rpmtsAdd,	1 },
+	{"remove",	(PyCFunction) py_rpmtsRemove,	1 },
+	{"depcheck",	(PyCFunction) py_rpmtsDepCheck,	1 },
+	{"order",	(PyCFunction) py_rpmtsOrder,	1 },
+	{"getKeys",	(PyCFunction) py_rpmtsGetKeys,	1 },
+	{"run",		(PyCFunction) py_rpmtsRun,	1 },
 	{NULL,		NULL}		/* sentinel */
 };
 
 /** \ingroup python
  */
-static PyObject * rpmtransGetAttr(rpmtransObject * o, char * name) {
-    return Py_FindMethod(rpmtransMethods, (PyObject *) o, name);
+static PyObject * py_rpmtsGetAttr(rpmtsObject * o, char * name) {
+    return Py_FindMethod(rpmtsMethods, (PyObject *) o, name);
 }
 
 /** \ingroup python
  */
-static void rpmtransDealloc(PyObject * o) {
-    rpmtransObject * trans = (void *) o;
+static void py_rpmtsDealloc(PyObject * o) {
+    rpmtsObject * trans = (void *) o;
 
     trans->ts->rpmdb = NULL;	/* XXX HACK: avoid rpmdb close/free */
-    rpmtransFree(trans->ts);
+    rpmtsFree(trans->ts);
     if (trans->dbo) {
 	Py_DECREF(trans->dbo);
     }
@@ -495,7 +501,7 @@ static void rpmtransDealloc(PyObject * o) {
 
 /** \ingroup python
  */
-static int rpmtransSetAttr(rpmtransObject * o, char * name,
+static int py_rpmtsSetAttr(rpmtsObject * o, char * name,
 			   PyObject * val) {
     int i;
 
@@ -506,7 +512,7 @@ static int rpmtransSetAttr(rpmtransObject * o, char * name,
 	    return -1;
 	} else {
 	    o->scriptFd = fdDup(i);
-	    rpmtransSetScriptFd(o->ts, o->scriptFd);
+	    rpmtsSetScriptFd(o->ts, o->scriptFd);
 	}
     } else {
 	PyErr_SetString(PyExc_AttributeError, name);
@@ -518,16 +524,16 @@ static int rpmtransSetAttr(rpmtransObject * o, char * name,
 
 /** \ingroup python
  */
-static PyTypeObject rpmtransType = {
+static PyTypeObject rpmtsType = {
 	PyObject_HEAD_INIT(NULL)
 	0,				/* ob_size */
 	"rpmtrans",			/* tp_name */
-	sizeof(rpmtransObject),		/* tp_size */
+	sizeof(rpmtsObject),		/* tp_size */
 	0,				/* tp_itemsize */
-	(destructor) rpmtransDealloc, 	/* tp_dealloc */
+	(destructor) py_rpmtsDealloc, 	/* tp_dealloc */
 	0,				/* tp_print */
-	(getattrfunc) rpmtransGetAttr, 	/* tp_getattr */
-	(setattrfunc) rpmtransSetAttr,	/* tp_setattr */
+	(getattrfunc) py_rpmtsGetAttr, 	/* tp_getattr */
+	(setattrfunc) py_rpmtsSetAttr,	/* tp_setattr */
 	0,				/* tp_compare */
 	0,				/* tp_repr */
 	0,				/* tp_as_number */
@@ -544,23 +550,25 @@ static PyTypeObject rpmtransType = {
 
 /**
  */
-static PyObject * rpmtransCreate(PyObject * self, PyObject * args) {
-    rpmtransObject * o;
+static PyObject * py_rpmtsCreate(PyObject * self, PyObject * args) {
+    rpmtsObject * o;
     rpmdbObject * db = NULL;
-    char * rootPath = "/";
+    char * rootDir = "/";
 
-    if (!PyArg_ParseTuple(args, "|sO", &rootPath, &db)) return NULL;
+    if (!PyArg_ParseTuple(args, "|sO", &rootDir, &db)) return NULL;
     if (db && ((PyObject *) db)->ob_type != &rpmdbType) {
 	PyErr_SetString(PyExc_TypeError, "bad type for database argument");
 	return NULL;
     }
 
-    o = (void *) PyObject_NEW(rpmtransObject, &rpmtransType);
+    o = (void *) PyObject_NEW(rpmtsObject, &rpmtsType);
 
     Py_XINCREF(db);
     o->dbo = db;
     o->scriptFd = NULL;
-    o->ts = rpmtransCreateSet(NULL, rootPath);
+    o->ts = rpmtsCreate();
+    (void) rpmtsSetRootDir(o->ts, rootDir);
+    /* XXX this will be fun to fix */
     o->ts->rpmdb = (db ? dbFromDb(db) : NULL);
     o->keyList = PyList_New(0);
 
@@ -839,9 +847,9 @@ static PyObject * checkSig (PyObject * self, PyObject * args) {
 	ka->qva_flags = (VERIFY_DIGEST|VERIFY_SIGNATURE);
 	ka->sign = 0;
 	ka->passPhrase = NULL;
-	ts = rpmtransCreateSet(NULL, NULL);
+	ts = rpmtsCreate();
 	rc = rpmcliSign(ts, ka, av);
-	rpmtransFree(ts);
+	rpmtsFree(ts);
     }
     return Py_BuildValue("i", rc);
 }
@@ -978,7 +986,7 @@ static PyObject * doFopen(PyObject * self, PyObject * args) {
 /**
  */
 static PyMethodDef rpmModuleMethods[] = {
-    { "TransactionSet", (PyCFunction) rpmtransCreate, METH_VARARGS, NULL },
+    { "TransactionSet", (PyCFunction) py_rpmtsCreate, METH_VARARGS, NULL },
     { "addMacro", (PyCFunction) doAddMacro, METH_VARARGS, NULL },
     { "delMacro", (PyCFunction) doDelMacro, METH_VARARGS, NULL },
     { "archscore", (PyCFunction) archScore, METH_VARARGS, NULL },
@@ -1015,7 +1023,7 @@ void initrpm(void) {
     hdrType.ob_type = &PyType_Type;
     rpmdbMIType.ob_type = &PyType_Type;
     rpmdbType.ob_type = &PyType_Type;
-    rpmtransType.ob_type = &PyType_Type;
+    rpmtsType.ob_type = &PyType_Type;
 
     if(!m)
 	return;

@@ -21,7 +21,6 @@
 
 /*@access rpmProblemSet @*/
 /*@access rpmProblem @*/
-/*@access rpmTransactionSet @*/
 /*@access PSM_t @*/	/* XXX for %verifyscript through psmStage() */
 /*@access FD_t @*/	/* XXX compared with NULL */
 
@@ -34,20 +33,22 @@ int rpmVerifyFile(const rpmTransactionSet ts, const TFI_t fi,
     rpmfileAttrs fileAttrs = tfiGetFFlags(fi);
     rpmVerifyAttrs flags = tfiGetVFlags(fi);
     const char * filespec = tfiGetFN(fi);
+    const char * rootDir;
     int rc;
     struct stat sb;
 
     /* Prepend the path to root (if specified). */
-    if (ts->rootDir && *ts->rootDir != '\0'
-     && !(ts->rootDir[0] == '/' && ts->rootDir[1] == '\0'))
+    rootDir = rpmtsGetRootDir(ts);
+    if (rootDir && *rootDir != '\0'
+     && !(rootDir[0] == '/' && rootDir[1] == '\0'))
     {
-	int nb = strlen(filespec) + strlen(ts->rootDir) + 1;
+	int nb = strlen(filespec) + strlen(rootDir) + 1;
 	char * tb = alloca(nb);
 	char * t;
 
 	t = tb;
 	*t = '\0';
-	t = stpcpy(t, ts->rootDir);
+	t = stpcpy(t, rootDir);
 	while (t > tb && t[-1] == '/') {
 	    --t;
 	    *t = '\0';
@@ -212,20 +213,17 @@ int rpmVerifyFile(const rpmTransactionSet ts, const TFI_t fi,
 static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 		TFI_t fi, /*@null@*/ FD_t scriptFd)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@modifies ts, fi, rpmGlobalMacroContext,
+	/*@modifies ts, fi, scriptFd, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
     int rc = 0;
-    FD_t savefd = NULL;
     PSM_t psm;
 
     psm = memset(alloca(sizeof(*psm)), 0, sizeof(*psm));
     psm->ts = rpmtsLink(ts, "rpmVerifyScript");
 
-    if (scriptFd != NULL) {
-	savefd = ts->scriptFd;
-	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
-    }
+    if (scriptFd != NULL)
+	rpmtsSetScriptFd(ts, scriptFd);
 
     psm->fi = rpmfiLink(fi, "rpmVerifyScript");
     psm->stepName = "verify";
@@ -234,57 +232,12 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     rc = psmStage(psm, PSM_SCRIPT);
     psm->fi = rpmfiUnlink(fi, "rpmVerifyScript");
 
-    if (scriptFd != NULL) {
-	ts->scriptFd = fdFree(ts->scriptFd, "rpmVerifyScript");
-	ts->scriptFd = savefd;
-    }
+    if (scriptFd != NULL)
+	rpmtsSetScriptFd(ts, NULL);
 
     psm->ts = rpmtsUnlink(ts, "rpmVerifyScript");
 
     return rc;
-}
-
-int rpmVerifyDigest(Header h)
-{
-    HGE_t hge = (HGE_t)headerGetEntry;	/* XXX headerGetEntryMinMemory? */
-    HFD_t hfd = headerFreeData;
-    void * uh = NULL;
-    rpmTagType uht;
-    int_32 uhc;
-    const char * hdigest;
-    rpmTagType hdt;
-    int ec = 0;		/* assume no problems */
-
-    /* Retrieve header digest. */
-    if (!hge(h, RPMTAG_SHA1HEADER, &hdt, (void **) &hdigest, NULL)
-     && !hge(h, RPMTAG_SHA1RHN, &hdt, (void **) &hdigest, NULL))
-    {
-	    return 0;
-    }
-    /* Regenerate original header. */
-    if (!hge(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
-	return 0;
-
-    if (hdigest == NULL || uh == NULL)
-	return 0;
-
-    /* Compute header digest. */
-    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	const char * digest;
-	size_t digestlen;
-
-	(void) rpmDigestUpdate(ctx, uh, uhc);
-	(void) rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
-
-	/* XXX can't happen: report NULL malloc return as a digest failure. */
-	ec = (digest == NULL || strcmp(hdigest, digest)) ? 1 : 0;
-	digest = _free(digest);
-    }
-
-    uh = hfd(uh, uht);
-    hdigest = hfd(hdigest, hdt);
-
-    return ec;
 }
 
 /**
@@ -402,10 +355,10 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     int xx;
     int i;
 
-    rpmtransClean(ts);
-    (void) rpmtransAddPackage(ts, h, NULL, 0, NULL);
+    rpmtsClean(ts);
+    (void) rpmtsAddPackage(ts, h, NULL, 0, NULL);
 
-    xx = rpmdepCheck(ts);
+    xx = rpmtsCheck(ts);
     ps = rpmtsGetProblems(ts);
 
     /*@-branchstate@*/
@@ -445,7 +398,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     }
     /*@=branchstate@*/
 
-    rpmtransClean(ts);
+    rpmtsClean(ts);
 
     return rc;
 }
@@ -456,19 +409,6 @@ int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
     TFI_t fi;
     int ec = 0;
     int rc;
-
-#ifdef	DYING
-    if (qva->qva_flags & VERIFY_DIGEST) {
-	if ((rc = rpmVerifyDigest(h)) != 0) {
-	    const char *n, *v, *r;
-	    (void) headerNVR(h, &n, &v, &r);
-	    rpmMessage(RPMMESS_NORMAL,
-		   _("%s-%s-%s: immutable header region digest check failed\n"),
-			n, v, r);
-	    ec = rc;
-	}
-    }
-#endif
 
     fi = fiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
     if (fi != NULL) {
@@ -500,6 +440,7 @@ int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
 int rpmcliVerify(rpmTransactionSet ts, QVA_t qva, const char ** argv)
 {
     const char * arg;
+    int vsflags;
     int ec = 0;
 
     if (qva->qva_showPackage == NULL)
@@ -518,10 +459,15 @@ int rpmcliVerify(rpmTransactionSet ts, QVA_t qva, const char ** argv)
 	break;
     }
 
-    /* XXX verifyFlags are inverted */
-    ts->nodigests = (qva->qva_flags & VERIFY_DIGEST);
-    ts->nosignatures = (qva->qva_flags & VERIFY_SIGNATURE);
+    /* XXX verify flags are inverted from query. */
+    vsflags = 0;
+    if (!(qva->qva_flags & VERIFY_DIGEST))
+	vsflags |= _RPMTS_VSF_NODIGESTS;
+    if (!(qva->qva_flags & VERIFY_SIGNATURE))
+	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+    vsflags |= _RPMTS_VSF_VERIFY_LEGACY;
 
+    (void) rpmtsSetVerifySigFlags(ts, vsflags);
     if (qva->qva_source == RPMQV_ALL) {
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, (const char *) argv);
@@ -530,9 +476,10 @@ int rpmcliVerify(rpmTransactionSet ts, QVA_t qva, const char ** argv)
 	if (argv != NULL)
 	while ((arg = *argv++) != NULL) {
 	    ec += rpmQueryVerify(qva, ts, arg);
-	    rpmtransClean(ts);
+	    rpmtsClean(ts);
 	}
     }
+    (void) rpmtsSetVerifySigFlags(ts, 0);
 
     if (qva->qva_showPackage == showVerifyPackage)
         qva->qva_showPackage = NULL;

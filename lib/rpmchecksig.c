@@ -9,6 +9,7 @@
 #include <rpmcli.h>
 #include "rpmpgp.h"
 
+#include "rpmdb.h"
 #include "rpmts.h"
 
 #include "rpmlead.h"

@@ -183,7 +183,7 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
 	TFI_t fi;
 	int rc;
 
-	ts = rpmtransCreateSet(NULL, NULL);
+	ts = rpmtsCreate();
 	fi = fiNew(ts, NULL, s->h, RPMTAG_BASENAMES, scareMem);
 	fi = tfiInit(fi, fileNumber);
 	if (fi != NULL && tfiNext(fi) >= 0) {
@@ -193,7 +193,7 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
 	    rc = 1;
 
 	fi = fiFree(fi, 1);
-	rpmtransFree(ts);
+	rpmtsFree(ts);
 
 	if (rc) {
 	    Py_INCREF(Py_None);
@@ -782,9 +782,9 @@ PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
 
     fd = fdDup(rawFd);
     {	rpmTransactionSet ts;
-	ts = rpmtransCreateSet(NULL, NULL);
+	ts = rpmtsCreate();
 	rc = rpmReadPackageFile(ts, fd, "rpmHeaderFromPackage", &header);
-	rpmtransFree(ts);
+	rpmtsFree(ts);
     }
     Fclose(fd);
 
@@ -887,12 +887,6 @@ PyObject * rhnLoad(PyObject * self, PyObject * args) {
     &&  !headerIsEntry(hdr, RPMTAG_SHA1RHN)) {
 	PyErr_SetString(pyrpmError, "bad header, no digest");
 	headerFree(hdr, "rhnLoad hdr #2");
-	return NULL;
-    }
-
-    if (rpmVerifyDigest(hdr)) {
-	PyErr_SetString(pyrpmError, "bad header, digest check failed");
-	headerFree(hdr, "rhnLoad hdr #3");
 	return NULL;
     }
 

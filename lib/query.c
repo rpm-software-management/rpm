@@ -15,16 +15,15 @@
 #include <rpmcli.h>
 #include <rpmbuild.h>
 
+#include "rpmdb.h"
 #include "rpmts.h"
 
 #include "manifest.h"
 
 #include "debug.h"
 
-/*@access rpmTransactionSet@*/		/* XXX ts->rpmdb */
 /*@access rpmdbMatchIterator@*/		/* XXX compared with NULL */
 /*@access Header@*/			/* XXX compared with NULL */
-/*@access rpmdb@*/			/* XXX compared with NULL */
 /*@access FD_t@*/			/* XXX compared with NULL */
 
 /**
@@ -624,11 +623,7 @@ restart:
 		/*@loopbreak@*/ break;
 	    }
 
-	    ts->verify_legacy = 1;
-	    /*@=mustmod@*/	/* LCL: something fishy here, was segfault */
     	    rpmrc = rpmReadPackageFile(ts, fd, fileURL, &h);
-	    /*@=mustmod@*/
-	    ts->verify_legacy = 0;
 
 	    (void) Fclose(fd);
 
@@ -648,7 +643,7 @@ restart:
 	    if (rpmrc == RPMRC_OK) {
 		res = qva->qva_showPackage(qva, ts, h);
 		h = headerFree(h, "QueryVerify");
-		rpmtransClean(ts);
+		rpmtsClean(ts);
 		continue;
 	    }
 
@@ -978,6 +973,7 @@ restart:
 int rpmcliQuery(rpmTransactionSet ts, QVA_t qva, const char ** argv)
 {
     const char * arg;
+    int vsflags;
     int ec = 0;
 
     if (qva->qva_showPackage == NULL)
@@ -995,9 +991,14 @@ int rpmcliQuery(rpmTransactionSet ts, QVA_t qva, const char ** argv)
 	break;
     }
 
-    ts->nodigests = (qva->qva_flags & VERIFY_DIGEST);
-    ts->nosignatures = (qva->qva_flags & VERIFY_SIGNATURE);
+    vsflags = 0;
+    if (qva->qva_flags & VERIFY_DIGEST)
+	vsflags |= _RPMTS_VSF_NODIGESTS;
+    if (qva->qva_flags & VERIFY_SIGNATURE)
+	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+    vsflags |= _RPMTS_VSF_VERIFY_LEGACY;
 
+    (void) rpmtsSetVerifySigFlags(ts, vsflags);
     if (qva->qva_source == RPMQV_ALL) {
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, (const char *) argv);
@@ -1006,9 +1007,10 @@ int rpmcliQuery(rpmTransactionSet ts, QVA_t qva, const char ** argv)
 	if (argv != NULL)
 	while ((arg = *argv++) != NULL) {
 	    ec += rpmQueryVerify(qva, ts, arg);
-	    rpmtransClean(ts);
+	    rpmtsClean(ts);
 	}
     }
+    (void) rpmtsSetVerifySigFlags(ts, 0);
 
     if (qva->qva_showPackage == showQueryPackage)
 	qva->qva_showPackage = NULL;

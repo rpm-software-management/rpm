@@ -211,31 +211,35 @@ AM_PROG_LIBTOOL
 
 AC_CHECK_TOOL(AR, ar, :)
 
-if test "$cross_compiling" != "yes"; then
 dnl
-dnl Set search path for common programs
+dnl use defaults if cross-compiling, otherwise use the default path.
 dnl
-    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin:/opt/gnu/bin"
+if test "$cross_compiling" = "yes"; then
+    MYPATH=""
+else
+#    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin:/opt/gnu/bin"
+    MYPATH=$PATH
+fi
 
 dnl
 dnl Find some common programs
 dnl
-    AC_PATH_PROG(BZIP2BIN, bzip2, /usr/bin/bzip2, $MYPATH)
-    AC_PATH_PROG(__CAT, cat, /bin/cat, $MYPATH)
-    AC_PATH_PROG(__CHGRP, chgrp, /bin/chgrp, $MYPATH)
-    AC_PATH_PROG(__CHMOD, chmod, /bin/chmod, $MYPATH)
-    AC_PATH_PROG(__CHOWN, chown, /bin/chown, $MYPATH)
-    AC_PATH_PROG(__CP, cp, /bin/cp, $MYPATH)
-    AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
-    AC_PATH_PROG(__FILE, file, /usr/bin/file, $MYPATH)
-    AC_PATH_PROG(__GPG, gpg, /usr/bin/gpg, $MYPATH)
-    AC_PATH_PROG(__GREP, grep, /bin/grep, $MYPATH)
-    AC_PATH_PROG(GZIPBIN, gzip, /bin/gzip, $MYPATH)
-    AC_PATH_PROG(UNZIPBIN, unzip, /usr/bin/unzip, $MYPATH)
+AC_PATH_PROG(BZIP2BIN, bzip2, /usr/bin/bzip2, $MYPATH)
+AC_PATH_PROG(__CAT, cat, /bin/cat, $MYPATH)
+AC_PATH_PROG(__CHGRP, chgrp, /bin/chgrp, $MYPATH)
+AC_PATH_PROG(__CHMOD, chmod, /bin/chmod, $MYPATH)
+AC_PATH_PROG(__CHOWN, chown, /bin/chown, $MYPATH)
+AC_PATH_PROG(__CP, cp, /bin/cp, $MYPATH)
+AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
+AC_PATH_PROG(__FILE, file, /usr/bin/file, $MYPATH)
+AC_PATH_PROG(__GPG, gpg, /usr/bin/gpg, $MYPATH)
+AC_PATH_PROG(__GREP, grep, /bin/grep, $MYPATH)
+AC_PATH_PROG(GZIPBIN, gzip, /bin/gzip, $MYPATH)
+AC_PATH_PROG(UNZIPBIN, unzip, /usr/bin/unzip, $MYPATH)
 
-    AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
-    AC_MSG_CHECKING(checking whether id supports -u)
-    if `${__ID} -u 2>&1 > /dev/null` ; then
+AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
+AC_MSG_CHECKING(checking whether id supports -u)
+    if ${__ID} -u 2>&1 > /dev/null ; then
 	__ID_U="%{__id} -u"
 	AC_MSG_RESULT(yes)
     else
@@ -243,14 +247,14 @@ dnl XXX Watchout for square brackets fed to m4.
 	__ID_U="%{__id} | %{__sed} 's/[[^=]]*=\\\\([[0-9]][[0-9]]*\\\\).*$/\\\\1/'"
 	AC_MSG_RESULT(no)
     fi
-    AC_SUBST(__ID_U)
+AC_SUBST(__ID_U)
 
-    AC_PATH_PROG(__INSTALL, install, /usr/bin/install, $MYPATH)
-    AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
-    AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
-    AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
-    AC_PATH_PROG(__PATCH, patch, /usr/bin/patch, $MYPATH)
-    AC_MSG_CHECKING(old version of patch)
+AC_PATH_PROG(__INSTALL, install, /usr/bin/install, $MYPATH)
+AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
+AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
+AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
+AC_PATH_PROG(__PATCH, patch, /usr/bin/patch, $MYPATH)
+AC_MSG_CHECKING(old version of patch)
     PATCHVERSION=`patch --version 2>&1`
 
     if test "$PATCHVERSION" = "Patch version 2.1"; then
@@ -261,21 +265,20 @@ dnl XXX Watchout for square brackets fed to m4.
 	AC_MSG_RESULT(patch later then 2.2 found)
     fi
 
-    AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
-    AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
-    AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH)
-    AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
-    AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
-    AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
-    AC_PATH_PROG(__SSH, ssh, /usr/bin/ssh, $MYPATH)
-    AC_PATH_PROG(__TAR, tar, /bin/tar, $MYPATH)
+AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
+AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
+AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH)
+AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
+AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
+AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
+AC_PATH_PROG(__SSH, ssh, /usr/bin/ssh, $MYPATH)
+AC_PATH_PROG(__TAR, tar, /bin/tar, $MYPATH)
 
-    AC_PATH_PROG(__LD, ld, /usr/bin/ld, $MYPATH)
-    AC_PATH_PROG(__NM, nm, /usr/bin/nm, $MYPATH)
-    AC_PATH_PROG(__OBJCOPY, objcopy, /usr/bin/objcopy, $MYPATH)
-    AC_PATH_PROG(__OBJDUMP, objdump, /usr/bin/objdump, $MYPATH)
-    AC_PATH_PROG(__STRIP, strip, /usr/bin/strip, $MYPATH)
-fi
+AC_PATH_PROG(__LD, ld, /usr/bin/ld, $MYPATH)
+AC_PATH_PROG(__NM, nm, /usr/bin/nm, $MYPATH)
+AC_PATH_PROG(__OBJCOPY, objcopy, /usr/bin/objcopy, $MYPATH)
+AC_PATH_PROG(__OBJDUMP, objdump, /usr/bin/objdump, $MYPATH)
+AC_PATH_PROG(__STRIP, strip, /usr/bin/strip, $MYPATH)
 
 addlib() {
   l=$1

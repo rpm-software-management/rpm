@@ -81,20 +81,30 @@ typedef /*@abstract@*/ void * alKey;
 typedef /*@abstract@*/ int alNum;
 /*@=mutrep@*/
 
-/**
+/** \ingroup rpmtrans
  * Dependency tag sets from a header, so that a header can be discarded early.
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmDepSet_s * rpmDepSet;
 
-/**
+/** \ingroup rpmtrans
  * File info tag sets from a header, so that a header can be discarded early.
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct TFI_s * TFI_t;
 
-/**
+/** \ingroup rpmtrans
  * An element of a transaction set, i.e. a TR_ADDED or TR_REMOVED package.
  */
 typedef /*@abstract@*/ struct transactionElement_s * transactionElement;
+
+/** \ingroup rpmdb
+ * Database of headers and tag value indices.
+ */
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
+
+/** \ingroup rpmdb
+ * Database iterator.
+ */
+typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 
 /** \ingroup header
  * Return name, version, release strings from header.
@@ -128,7 +138,7 @@ void headerMergeLegacySigs(Header h, const Header sig)
 Header headerRegenSigHeader(const Header h)
 	/*@modifies h @*/;
 
-/**
+/** \ingroup header
  * Retrieve file names from header.
  * The representation of file names in package headers changed in rpm-4.0.
  * Originally, file names were stored as an array of paths. In rpm-4.0,
@@ -145,7 +155,7 @@ void rpmBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 		/*@out@*/ int * fileCountPtr)
 	/*@modifies *fileListPtr, *fileCountPtr @*/;
 
-/**
+/** \ingroup header
  * Retrieve tag info from header.
  * This is a "dressed" entry to headerGetEntry to do:
  *	1) DIRNAME/BASENAME/DIRINDICES -> FILENAMES tag conversions.
@@ -371,7 +381,9 @@ typedef enum rpmTag_e {
     RPMTAG_MULTILIBS		= 1127,
     RPMTAG_INSTALLTID		= 1128,
     RPMTAG_REMOVETID		= 1129,
+/*@-enummemuse@*/
     RPMTAG_SHA1RHN		= 1130, /*!< internal */
+/*@=enummemuse@*/
     RPMTAG_RHNPLATFORM		= 1131,
     RPMTAG_PLATFORM		= 1132,
 /*@-enummemuse@*/
@@ -643,284 +655,6 @@ void rpmFreeRpmrc(void)
 
 /*@}*/
 /* ==================================================================== */
-/** \name RPMDB */
-/*@{*/
-
-/** \ingroup rpmdb
- */
-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmdb_s * rpmdb;
-
-/** \ingroup rpmdb
- */
-typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
-
-/** \ingroup rpmdb
- * Tags for which rpmdb indices will be built.
- */
-/*@unchecked@*/
-/*@only@*/ /*@null@*/ extern int * dbiTags;
-/*@unchecked@*/
-extern int dbiTagsMax;
-
-/** \ingroup rpmdb
- * Unreference a database instance.
- * @param db		rpm database
- * @param msg
- * @return		NULL always
- */
-/*@unused@*/ /*@null@*/
-rpmdb rpmdbUnlink (/*@killref@*/ /*@only@*/ rpmdb db, const char * msg)
-	/*@modifies db @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@null@*/
-rpmdb XrpmdbUnlink (/*@killref@*/ /*@only@*/ rpmdb db, const char * msg,
-		const char * fn, unsigned ln)
-	/*@modifies db @*/;
-#define	rpmdbUnlink(_db, _msg)	XrpmdbUnlink(_db, _msg, __FILE__, __LINE__)
-
-/** \ingroup rpmdb
- * Reference a database instance.
- * @param db		rpm database
- * @param msg
- * @return		new rpm database reference
- */
-/*@unused@*/
-rpmdb rpmdbLink (rpmdb db, const char * msg)
-	/*@modifies db @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-rpmdb XrpmdbLink (rpmdb db, const char * msg,
-		const char * fn, unsigned ln)
-        /*@modifies db @*/;
-#define	rpmdbLink(_db, _msg)	XrpmdbLink(_db, _msg, __FILE__, __LINE__)
-
-/** \ingroup rpmdb
- * Open rpm database.
- * @param prefix	path to top of install tree
- * @retval dbp		address of rpm database
- * @param mode		open(2) flags:  O_RDWR or O_RDONLY (O_CREAT also)
- * @param perms		database permissions
- * @return		0 on success
- */
-int rpmdbOpen (/*@null@*/ const char * prefix, /*@null@*/ /*@out@*/ rpmdb * dbp,
-		int mode, int perms)
-	/*@globals fileSystem @*/
-	/*@modifies *dbp, fileSystem @*/;
-
-/** \ingroup rpmdb
- * Initialize database.
- * @param prefix	path to top of install tree
- * @param perms		database permissions
- * @return		0 on success
- */
-int rpmdbInit(/*@null@*/ const char * prefix, int perms)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/** \ingroup rpmdb
- * Verify database components.
- * @param prefix	path to top of install tree
- * @return		0 on success
- */
-int rpmdbVerify(/*@null@*/ const char * prefix)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/** \ingroup rpmdb
- * Close all database indices and free rpmdb.
- * @param db		rpm database
- * @return		0 on success
- */
-int rpmdbClose (/*@killref@*/ /*@only@*/ /*@null@*/ rpmdb db)
-	/*@globals fileSystem @*/
-	/*@modifies db, fileSystem @*/;
-
-/** \ingroup rpmdb
- * Sync all database indices.
- * @param db		rpm database
- * @return		0 on success
- */
-int rpmdbSync (/*@null@*/ rpmdb db)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-/** \ingroup rpmdb
- * Open all database indices.
- * @param db		rpm database
- * @return		0 on success
- */
-int rpmdbOpenAll (/*@null@*/ rpmdb db)
-	/*@modifies db @*/;
-
-/** \ingroup rpmdb
- * Return number of instances of package in rpm database.
- * @param db		rpm database
- * @param name		rpm package name
- * @return		number of instances
- */
-int rpmdbCountPackages(/*@null@*/ rpmdb db, const char * name)
-	/*@globals fileSystem @*/
-	/*@modifies db, fileSystem @*/;
-
-/** \ingroup rpmdb
- */
-typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
-
-/** \ingroup rpmdb
- * Destroy rpm database iterator.
- * @param mi		rpm database iterator
- * @return		NULL always
- */
-/*@null@*/ rpmdbMatchIterator rpmdbFreeIterator(
-		/*@only@*//*@null@*/rpmdbMatchIterator mi)
-	/*@globals fileSystem @*/
-	/*@modifies mi, fileSystem @*/;
-
-/** \ingroup rpmdb
- * Return header join key for current position of rpm database iterator.
- * @param mi		rpm database iterator
- * @return		current header join key
- */
-unsigned int rpmdbGetIteratorOffset(/*@null@*/ rpmdbMatchIterator mi)
-	/*@*/;
-
-/** \ingroup rpmdb
- * Return number of elements in rpm database iterator.
- * @param mi		rpm database iterator
- * @return		number of elements
- */
-int rpmdbGetIteratorCount(/*@null@*/ rpmdbMatchIterator mi)
-	/*@*/;
-
-/** \ingroup rpmdb
- * Append items to set of package instances to iterate.
- * @param mi		rpm database iterator
- * @param hdrNums	array of package instances
- * @param nHdrNums	number of elements in array
- * @return		0 on success, 1 on failure (bad args)
- */
-int rpmdbAppendIterator(/*@null@*/ rpmdbMatchIterator mi,
-		/*@null@*/ const int * hdrNums, int nHdrNums)
-	/*@modifies mi @*/;
-
-/** \ingroup rpmdb
- * Remove items from set of package instances to iterate.
- * @note Sorted hdrNums are always passed in rpmlib.
- * @param mi		rpm database iterator
- * @param hdrNums	array of package instances
- * @param nHdrNums	number of elements in array
- * @param sorted	is the array sorted? (array will be sorted on return)
- * @return		0 on success, 1 on failure (bad args)
- */
-int rpmdbPruneIterator(/*@null@*/ rpmdbMatchIterator mi,
-		/*@null@*/ int * hdrNums, int nHdrNums, int sorted)
-	/*@modifies mi, hdrNums @*/;
-
-/**
- * Tag value pattern match mode.
- */
-typedef enum rpmMireMode_e {
-    RPMMIRE_DEFAULT	= 0,	/*!< regex with \., .* and ^...$ added */
-    RPMMIRE_STRCMP	= 1,	/*!< strcmp on strings */
-    RPMMIRE_REGEX	= 2,	/*!< regex patterns */
-    RPMMIRE_GLOB	= 3	/*!< glob patterns through fnmatch(3) */
-} rpmMireMode;
-
-/** \ingroup rpmdb
- * Add pattern to iterator selector.
- * @param mi		rpm database iterator
- * @param tag		rpm tag
- * @param mode		type of pattern match
- * @param pattern	pattern to match
- * @return		0 on success
- */
-int rpmdbSetIteratorRE(/*@null@*/ rpmdbMatchIterator mi, rpmTag tag,
-		rpmMireMode mode, /*@null@*/ const char * pattern)
-	/*@modifies mi @*/;
-
-/** \ingroup rpmdb
- * Prepare iterator for lazy writes.
- * @note Must be called before rpmdbNextIterator() in CDB model database.
- * @param mi		rpm database iterator
- * @param rewrite	new value of rewrite
- * @return		previous value
- */
-int rpmdbSetIteratorRewrite(/*@null@*/ rpmdbMatchIterator mi, int rewrite)
-	/*@modifies mi @*/;
-
-/** \ingroup rpmdb
- * Modify iterator to mark header for lazy write.
- * @param mi		rpm database iterator
- * @param modified	new value of modified
- * @return		previous value
- */
-int rpmdbSetIteratorModified(/*@null@*/ rpmdbMatchIterator mi, int modified)
-	/*@modifies mi @*/;
-
-/** \ingroup rpmdb
- * Return next package header from iteration.
- * @param mi		rpm database iterator
- * @return		NULL on end of iteration.
- */
-/*@null@*/ Header rpmdbNextIterator(/*@null@*/ rpmdbMatchIterator mi)
-	/*@globals fileSystem @*/
-	/*@modifies mi, fileSystem @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@unused@*/
-/*@null@*/ Header XrpmdbNextIterator(rpmdbMatchIterator mi,
-		const char * f, unsigned int l)
-	/*@globals fileSystem @*/
-	/*@modifies mi, fileSystem @*/;
-
-/** \ingroup rpmdb
- * Return database iterator.
- * @param db		rpm database
- * @param rpmtag	rpm tag
- * @param keyp		key data (NULL for sequential access)
- * @param keylen	key data length (0 will use strlen(keyp))
- * @return		NULL on failure
- */
-/*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(
-			/*@null@*/ rpmdb db, rpmTag rpmtag,
-			/*@null@*/ const void * keyp, size_t keylen)
-	/*@globals fileSystem @*/
-	/*@modifies db, fileSystem @*/;
-
-/** \ingroup rpmdb
- * Add package header to rpm database and indices.
- * @param db		rpm database
- * @param iid		install transaction id (iid = 0 or -1 to skip)
- * @param h		header
- * @return		0 on success
- */
-int rpmdbAdd(/*@null@*/ rpmdb db, int iid, Header h)
-	/*@globals fileSystem @*/
-	/*@modifies db, h, fileSystem @*/;
-
-/** \ingroup rpmdb
- * Remove package header from rpm database and indices.
- * @param db		rpm database
- * @param rid		remove transaction id (rid = 0 or -1 to skip)
- * @param hdrNum	package instance number in database
- * @return		0 on success
- */
-int rpmdbRemove(/*@null@*/ rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
-	/*@globals fileSystem @*/
-	/*@modifies db, fileSystem @*/;
-
-/** \ingroup rpmdb
- * Rebuild database indices from package headers.
- * @param prefix	path to top of install tree
- * @return		0 on success
- */
-int rpmdbRebuild(/*@null@*/ const char * prefix)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem @*/;
-
-/*@}*/
-/* ==================================================================== */
 /** \name RPMPROBS */
 /*@{*/
 
@@ -930,7 +664,7 @@ int rpmdbRebuild(/*@null@*/ const char * prefix)
 typedef /*@abstract@*/ struct rpmProblem_s * rpmProblem;
 
 /**
- * Transaction problems found by rpmRunTransactions().
+ * Transaction problems found by rpmtsRun().
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmProblemSet_s * rpmProblemSet;
 
@@ -1107,6 +841,7 @@ int rpmProblemSetTrim(/*@null@*/ rpmProblemSet ps,
 /*@{*/
 /**
  * Prototype for headerFreeData() vector.
+ *
  * @param data		address of data (or NULL)
  * @param type		type of data (or -1 to force free)
  * @return		NULL always
@@ -1117,6 +852,7 @@ typedef /*@null@*/
 
 /**
  * Prototype for headerGetEntry() vector.
+ *
  * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
  * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
  * entry is present).
@@ -1136,6 +872,7 @@ typedef int (*HGE_t) (Header h, rpmTag tag,
 
 /**
  * Prototype for headerAddEntry() vector.
+ *
  * Duplicate tags are okay, but only defined for iteration (with the
  * exceptions noted below). While you are allowed to add i18n string
  * arrays through this function, you probably don't mean to. See
@@ -1155,6 +892,7 @@ typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
 /**
  * Prototype for headerModifyEntry() vector.
  * If there are multiple entries with this tag, the first one gets replaced.
+ *
  * @param h		header
  * @param tag		tag
  * @param type		tag value data type
@@ -1178,6 +916,22 @@ typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
  */
 typedef int (*HRE_t) (Header h, int_32 tag)
 	/*@modifies h @*/;
+
+/**
+ * @todo Generalize filter mechanism.
+ */
+typedef enum rpmprobFilterFlags_e {
+    RPMPROB_FILTER_NONE		= 0,
+    RPMPROB_FILTER_IGNOREOS	= (1 << 0),	/*!< from --ignoreos */
+    RPMPROB_FILTER_IGNOREARCH	= (1 << 1),	/*!< from --ignorearch */
+    RPMPROB_FILTER_REPLACEPKG	= (1 << 2),	/*!< from --replacepkgs */
+    RPMPROB_FILTER_FORCERELOCATE= (1 << 3),	/*!< from --badreloc */
+    RPMPROB_FILTER_REPLACENEWFILES= (1 << 4),	/*!< from --replacefiles */
+    RPMPROB_FILTER_REPLACEOLDFILES= (1 << 5),	/*!< from --replacefiles */
+    RPMPROB_FILTER_OLDPACKAGE	= (1 << 6),	/*!< from --oldpackage */
+    RPMPROB_FILTER_DISKSPACE	= (1 << 7),	/*!< from --ignoresize */
+    RPMPROB_FILTER_DISKNODES	= (1 << 8)	/*!< from --ignoresize */
+} rpmprobFilterFlags;
 
 /**
  * We pass these around as an array with a sentinel.
@@ -1281,234 +1035,9 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmtrans
- * Unreference a transaction instance.
- * @param ts		transaction set
- * @param msg
- * @return		NULL always
+ * Bit(s) to control rpmtsRun() operation.
  */
-/*@unused@*/ /*@null@*/
-rpmTransactionSet rpmtsUnlink (/*@killref@*/ /*@only@*/ rpmTransactionSet ts,
-		const char * msg)
-	/*@modifies ts @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-/*@null@*/
-rpmTransactionSet XrpmtsUnlink (/*@killref@*/ /*@only@*/ rpmTransactionSet ts,
-		const char * msg, const char * fn, unsigned ln)
-	/*@modifies ts @*/;
-#define	rpmtsUnlink(_ts, _msg)	XrpmtsUnlink(_ts, _msg, __FILE__, __LINE__)
-
-/** \ingroup rpmtrans
- * Reference a transaction set instance.
- * @param ts		transaction set
- * @param msg
- * @return		new transaction set reference
- */
-/*@unused@*/
-rpmTransactionSet rpmtsLink (rpmTransactionSet ts, const char * msg)
-	/*@modifies ts @*/;
-
-/** @todo Remove debugging entry from the ABI. */
-rpmTransactionSet XrpmtsLink (rpmTransactionSet ts,
-		const char * msg, const char * fn, unsigned ln)
-        /*@modifies ts @*/;
-#define	rpmtsLink(_ts, _msg)	XrpmtsLink(_ts, _msg, __FILE__, __LINE__)
-
-/** \ingroup rpmtrans
- * Close the database used by the transaction.
- * @param ts		transaction set
- * @return		0 on success
- */
-int rpmtsCloseDB(rpmTransactionSet ts)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
-
-/** \ingroup rpmtrans
- * Open the database used by the transaction.
- * @param ts		transaction set
- * @param dbmode	O_RDONLY or O_RDWR
- * @return		0 on success
- */
-int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, fileSystem, internalState @*/;
-
-/** \ingroup rpmtrans
- * Return transaction database iterator.
- * @param ts		transaction set
- * @param rpmtag	rpm tag
- * @param keyp		key data (NULL for sequential access)
- * @param keylen	key data length (0 will use strlen(keyp))
- * @return		NULL on failure
- */
-/*@only@*/ /*@null@*/
-rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
-			/*@null@*/ const void * keyp, size_t keylen)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
-
-/**
- * Attempt to solve a needed dependency.
- * @param ts		transaction set
- * @param ds		dependency set
- * @return		0 if resolved (and added to ts), 1 not found
- */
-int rpmtsSolve(rpmTransactionSet ts, rpmDepSet ds)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
-
-/**
- * Attempt to solve a needed dependency.
- * @param ts		transaction set
- * @param ds		dependency set
- * @return		0 if resolved (and added to ts), 1 not found
- */
-/*@unused@*/
-int rpmtsAvailable(rpmTransactionSet ts, const rpmDepSet ds)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
-
-/**
- * Return (and clear) current transaction set problems.
- * @param ts		transaction set
- * @return		current problem set (or NULL)
- */
-/*@null@*/
-rpmProblemSet rpmtsGetProblems(rpmTransactionSet ts)
-	/*@modifies ts @*/;
-
-/** \ingroup rpmtrans
- * Re-create an empty transaction set.
- * @param ts		transaction set
- */
-void rpmtransClean(rpmTransactionSet ts)
-	/*@modifies ts @*/;
-
-/** \ingroup rpmtrans
- * Destroy transaction set, closing the database as well.
- * @param ts		transaction set
- * @return		NULL always
- */
-/*@null@*/ rpmTransactionSet
-rpmtransFree(/*@killref@*/ /*@only@*//*@null@*/ rpmTransactionSet ts)
-	/*@globals fileSystem @*/
-	/*@modifies ts, fileSystem @*/;
-
-/** \ingroup rpmtrans
- * Create an empty transaction set.
- * @param db		rpm database (may be NULL if database is not accessed)
- * @param rootDir	path to top of install tree
- * @return		transaction set
- */
-/*@only@*/ rpmTransactionSet rpmtransCreateSet(
-		/*@null@*/ rpmdb db,
-		/*@null@*/ const char * rootDir)
-	/*@modifies db @*/;
-
-/** \ingroup rpmtrans
- * Add package to be installed to transaction set.
- *
- * If fd is NULL, the callback specified in rpmtransCreateSet() is used to
- * open and close the file descriptor. If Header is NULL, the fd is always
- * used, otherwise fd is only needed (and only opened) for actual package 
- * installation.
- *
- * @warning The fd argument has been eliminated, and is assumed always NULL.
- *
- * @param ts		transaction set
- * @param h		header
- * @param key		package retrieval key (e.g. file name)
- * @param upgrade	is package being upgraded?
- * @param relocs	package file relocations
- * @return		0 on success, 1 on I/O error, 2 needs capabilities
- */
-int rpmtransAddPackage(rpmTransactionSet ts, Header h,
-		/*@exposed@*/ /*@null@*/ const fnpyKey key, int upgrade,
-		/*@null@*/ rpmRelocation * relocs)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, h, fileSystem, internalState @*/;
-
-/** \ingroup rpmtrans
- * Add package to universe of possible packages to install in transaction set.
- * @warning The key parameter is non-functional.
- * @param ts		transaction set
- * @param h		header
- * @param key		package private data
- */
-/*@unused@*/
-void rpmtransAvailablePackage(rpmTransactionSet ts, Header h,
-		/*@exposed@*/ /*@null@*/ fnpyKey key)
-	/*@modifies h, ts @*/;
-
-/** \ingroup rpmtrans
- * Add package to be erased to transaction set.
- * @param ts		transaction set
- * @param h		header
- * @param dboffset	rpm database instance
- * @return		0 on success
- */
-int rpmtransRemovePackage(rpmTransactionSet ts, Header h, int dboffset)
-	/*@modifies ts, h @*/;
-
-/** \ingroup rpmtrans
- * Save file handle to be used as stderr when running package scripts.
- * @param ts		transaction set
- * @param fd		file handle
- */
-/*@unused@*/
-void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
-	/*@modifies ts, fd @*/;
-
-/** \ingroup rpmtrans
- * Retrieve keys from ordered transaction set.
- * @todo Removed packages have no keys, returned as interleaved NULL pointers.
- * @param ts		transaction set
- * @retval ep		address of returned element array pointer (or NULL)
- * @retval nep		address of no. of returned elements (or NULL)
- * @return		0 always
- */
-/*@unused@*/
-int rpmtransGetKeys(rpmTransactionSet ts,
-		/*@null@*/ /*@out@*/ fnpyKey ** ep,
-		/*@null@*/ /*@out@*/ int * nep)
-	/*@modifies ts, ep, nep @*/;
-
-/** \ingroup rpmtrans
- * Check that all dependencies can be resolved.
- * @param ts		transaction set
- * @return		0 on success
- */
-int rpmdepCheck(rpmTransactionSet ts)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, fileSystem, internalState @*/;
-
-/** \ingroup rpmtrans
- * Determine package order in a transaction set according to dependencies.
- *
- * Order packages, returning error if circular dependencies cannot be
- * eliminated by removing PreReq's from the loop(s). Only dependencies from
- * added or removed packages are used to determine ordering using a
- * topological sort (Knuth vol. 1, p. 262). Use rpmdepCheck() to verify
- * that all dependencies can be resolved.
- *
- * The final order ends up as installed packages followed by removed packages,
- * with packages removed for upgrades immediately following the new package
- * to be installed.
- *
- * The operation would be easier if we could sort the addedPackages array in the
- * transaction set, but we store indexes into the array in various places.
- *
- * @param ts		transaction set
- * @return		no. of (added) packages that could not be ordered
- */
-int rpmdepOrder(rpmTransactionSet ts)
-	/*@globals fileSystem, internalState@*/
-	/*@modifies ts, fileSystem, internalState @*/;
-
-/** \ingroup rpmtrans
- * Bit(s) to control rpmRunTransactions() operation.
- */
-typedef enum rpmtransFlags_e {
+typedef enum rpmtsFlags_e {
     RPMTRANS_FLAG_NONE		= 0,
     RPMTRANS_FLAG_TEST		= (1 <<  0),	/*!< from --test */
     RPMTRANS_FLAG_BUILD_PROBS	= (1 <<  1),	/*!< @todo Document. */
@@ -1552,7 +1081,7 @@ typedef enum rpmtransFlags_e {
 /*@=enummemuse@*/
     RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
     RPMTRANS_FLAG_NOSUGGESTS	= (1 << 28)	/*!< from --nosuggests */
-} rpmtransFlags;
+} rpmtsFlags;
 
 #define	_noTransScripts		\
   ( RPMTRANS_FLAG_NOPRE |	\
@@ -1606,71 +1135,6 @@ int rpmCheckRpmlibProvides(const rpmDepSet key)
 void rpmShowRpmlibProvides(FILE * fp)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
-
-/**
- * @todo Generalize filter mechanism.
- */
-typedef enum rpmprobFilterFlags_e {
-    RPMPROB_FILTER_NONE		= 0,
-    RPMPROB_FILTER_IGNOREOS	= (1 << 0),	/*!< from --ignoreos */
-    RPMPROB_FILTER_IGNOREARCH	= (1 << 1),	/*!< from --ignorearch */
-    RPMPROB_FILTER_REPLACEPKG	= (1 << 2),	/*!< from --replacepkgs */
-    RPMPROB_FILTER_FORCERELOCATE= (1 << 3),	/*!< from --badreloc */
-    RPMPROB_FILTER_REPLACENEWFILES= (1 << 4),	/*!< from --replacefiles */
-    RPMPROB_FILTER_REPLACEOLDFILES= (1 << 5),	/*!< from --replacefiles */
-    RPMPROB_FILTER_OLDPACKAGE	= (1 << 6),	/*!< from --oldpackage */
-    RPMPROB_FILTER_DISKSPACE	= (1 << 7),	/*!< from --ignoresize */
-    RPMPROB_FILTER_DISKNODES	= (1 << 8)	/*!< from --ignoresize */
-} rpmprobFilterFlags;
-
-/** \ingroup rpmtrans
- * Get transaction flags, i.e. bits to control rpmRunTransactions().
- * @param ts		transaction set
- * @return		transaction flags
- */
-rpmtransFlags rpmtsGetFlags(rpmTransactionSet ts)
-	/*@*/;
-
-/** \ingroup rpmtrans
- * Set transaction flags, i.e. bits to control rpmRunTransactions().
- * @param ts		transaction set
- * @param ntransFlags	new transaction flags
- * @return		previous transaction flags
- */
-rpmtransFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtransFlags ntransFlags)
-	/*@modifies ts @*/;
-
-/** \ingroup rpmtrans
- * Set transaction notify callback function and argument.
- *
- * @warning This call must be made before rpmRunTransactions() for
- *	install/upgrade/freshen to "work".
- *
- * @param ts		transaction set
- * @param notify	progress callback
- * @param notifyData	progress callback private data
- * @return		0 on success
- */
-int rpmtsSetNotifyCallback(rpmTransactionSet ts,
-		/*@observer@*/ rpmCallbackFunction notify,
-		/*@observer@*/ rpmCallbackData notifyData)
-	/*@modifies ts @*/;
-
-/** \ingroup rpmtrans
- * Process all packages in a transaction set.
- *
- * @param ts		transaction set
- * @param okProbs	previously known problems (or NULL)
- * @param ignoreSet	bits to filter problem types
- * @return		0 on success, -1 on error, >0 with newProbs set
- */
-int rpmRunTransactions(rpmTransactionSet ts,
-			rpmProblemSet okProbs,
-			rpmprobFilterFlags ignoreSet)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState@*/
-	/*@modifies ts, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
 
 /*@}*/
 

@@ -1,4 +1,4 @@
-/** \ingroup rpmtrans
+/** \ingroup rpmts
  * \file lib/transaction.c
  */
 
@@ -84,12 +84,13 @@ struct diskspaceInfo {
    probably right :-( */
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
 
-void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
+#ifdef	DYING
+void rpmtsSetScriptFd(rpmTransactionSet ts, FD_t fd)
 {
-    ts->scriptFd = (fd ? fdLink(fd, "rpmtransSetScriptFd") : NULL);
+    ts->scriptFd = (fd ? fdLink(fd, "rpmtsSetScriptFd") : NULL);
 }
 
-int rpmtransGetKeys(const rpmTransactionSet ts, fnpyKey ** ep, int * nep)
+int rpmtsGetKeys(const rpmTransactionSet ts, fnpyKey ** ep, int * nep)
 {
     int rc = 0;
 
@@ -118,6 +119,7 @@ int rpmtransGetKeys(const rpmTransactionSet ts, fnpyKey ** ep, int * nep)
     }
     return rc;
 }
+#endif
 
 /**
  */
@@ -1041,9 +1043,8 @@ TFI_t teiGetFi(const teIterator tei)
 
 #define	NOTIFY(_ts, _al)	if ((_ts)->notify) (void) (_ts)->notify _al
 
-int rpmRunTransactions(	rpmTransactionSet ts,
-			rpmProblemSet okProbs,
-			rpmprobFilterFlags ignoreSet)
+int rpmtsRun(rpmTransactionSet ts,
+		rpmProblemSet okProbs, rpmprobFilterFlags ignoreSet)
 {
     int i, j;
     int ourrc = 0;
@@ -1549,7 +1550,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		    rpmRC rpmrc;
 
 		    rpmrc = rpmReadPackageFile(ts, teGetFd(p),
-				"rpmRunTransactions", &h);
+				"rpmtsRun", &h);
 
 		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
 			/*@-noeffectuncon@*/ /* FIX: notify annotations */
@@ -1627,7 +1628,9 @@ fi->actions = actions;
 	(void) rpmfiUnlink(psm->fi, "tsInstall");
 	psm->fi = NULL;
 	psm->te = NULL;
+/*@-type@*/ /* FIX: p is almost opaque */
 	p->fi = fiFree(fi, 1);
+/*@=type@*/
     }
     /*@=branchstate@*/
     pi = teFreeIterator(pi);

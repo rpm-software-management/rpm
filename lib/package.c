@@ -206,8 +206,8 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
 
     /* Figger the most effective available signature. */
     ts->sigtag = 0;
-    if (ts->verify_legacy) {
-	if (ts->sigtag == 0 && !ts->nosignatures) {
+    if (ts->vsflags & _RPMTS_VSF_VERIFY_LEGACY) {
+	if (ts->sigtag == 0 && !(ts->vsflags & _RPMTS_VSF_NOSIGNATURES)) {
 	    if (headerIsEntry(sig, RPMSIGTAG_DSA))
 		ts->sigtag = RPMSIGTAG_DSA;
 	    else if (headerIsEntry(sig, RPMSIGTAG_RSA))
@@ -220,7 +220,7 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
 		fdInitDigest(fd, PGPHASHALGO_MD5, 0);
 	    }
 	}
-	if (ts->sigtag == 0 && !ts->nodigests) {
+	if (ts->sigtag == 0 && !(ts->vsflags & _RPMTS_VSF_NODIGESTS)) {
 	    if (headerIsEntry(sig, RPMSIGTAG_SHA1))
 		ts->sigtag = RPMSIGTAG_SHA1;
 	    else if (headerIsEntry(sig, RPMSIGTAG_MD5)) {
@@ -229,13 +229,13 @@ int rpmReadPackageFile(rpmTransactionSet ts, FD_t fd,
 	    }
 	}
     } else {
-	if (ts->sigtag == 0 && !ts->nosignatures) {
+	if (ts->sigtag == 0 && !(ts->vsflags & _RPMTS_VSF_NOSIGNATURES)) {
 	    if (headerIsEntry(sig, RPMSIGTAG_DSA))
 		ts->sigtag = RPMSIGTAG_DSA;
 	    else if (headerIsEntry(sig, RPMSIGTAG_RSA))
 		ts->sigtag = RPMSIGTAG_RSA;
 	}
-	if (ts->sigtag == 0 && !ts->nodigests) {
+	if (ts->sigtag == 0 && !(ts->vsflags & _RPMTS_VSF_NODIGESTS)) {
 	    if (headerIsEntry(sig, RPMSIGTAG_SHA1))
 		ts->sigtag = RPMSIGTAG_SHA1;
 	}

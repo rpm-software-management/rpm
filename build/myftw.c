@@ -229,6 +229,7 @@ int myftw (const char *dir,
 
   if (flag == MYFTW_D)
     {
+/*@-compdef@*/ /* FIX: *dirs not defined */
       if (retval == 0)
 	retval = myftw_dir (dirs, 0, descriptors, buf, len, func, fl);
       if (dirs[0] != NULL)
@@ -241,6 +242,7 @@ int myftw (const char *dir,
 	  errno = save;
 	  /*@=mods@*/
 	}
+/*@=compdef@*/
     }
 
   return retval;

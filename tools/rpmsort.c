@@ -4,6 +4,7 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
+#include "rpmdb.h"
 #include "rpmte.h"
 #include "rpmts.h"
 
@@ -64,7 +65,7 @@ do_tsort(const char *fileArgv[])
     if (fileArgv == NULL)
 	return 0;
 
-    ts = rpmtransCreateSet(NULL, NULL);
+    ts = rpmtsCreate();
     if (!noChainsaw)
 	ts->transFlags = RPMTRANS_FLAG_CHAINSAW;
 
@@ -89,7 +90,7 @@ do_tsort(const char *fileArgv[])
 	}
         mi = rpmdbInitIterator(avdb, RPMDBI_PACKAGES, NULL, 0);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    rpmtransAvailablePackage(ts, h, NULL);
+	    rpmtsAvailablePackage(ts, h, NULL);
 	}
 
 endavail:
@@ -168,7 +169,7 @@ restart:
 	}
 
 	if (rc == 0) {
-	    rc = rpmtransAddPackage(ts, h, (fnpyKey)fileName, 0, NULL);
+	    rc = rpmtsAddPackage(ts, h, (fnpyKey)fileName, 0, NULL);
 	    headerFree(h, "do_tsort"); 
 	    continue;
 	}
@@ -211,7 +212,7 @@ restart:
     if (!noDeps) {
 	rpmProblemSet ps;
 
-	rc = rpmdepCheck(ts);
+	rc = rpmtsCheck(ts);
 
 	ps = rpmtsGetProblems(ts);
 	if (ps) {
@@ -224,7 +225,7 @@ restart:
 	ps = rpmProblemSetFree(ps);
     }
 
-    rc = rpmdepOrder(ts);
+    rc = rpmtsOrder(ts);
     if (rc)
 	goto exit;
 
@@ -373,7 +374,7 @@ exit:
     pkgURL = _free(pkgURL);
     argv = _free(argv);
 
-    ts = rpmtransFree(ts);
+    ts = rpmtsFree(ts);
     return rc;
 }
 

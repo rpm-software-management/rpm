@@ -1,4 +1,3 @@
-/*@-branchstate@*/
 /** \ingroup rpmrc rpmio
  * \file rpmio/macro.c
  */
@@ -248,11 +247,13 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
     if (mc->macroTable == NULL || mc->firstFree == 0)
 	return NULL;
 
+/*@-branchstate@*/
     if (namelen > 0) {
 	strncpy(namebuf, name, namelen);
 	namebuf[namelen] = '\0';
 	name = namebuf;
     }
+/*@=branchstate@*/
     
     key = &keybuf;
     memset(key, 0, sizeof(*key));
@@ -763,10 +764,12 @@ pushMacro(/*@out@*/ MacroEntry * mep,
     me->body = xstrdup(b ? b : "");
     me->used = 0;
     me->level = level;
+/*@-branchstate@*/
     if (mep)
 	*mep = me;
     else
 	me = _free(me);
+/*@=branchstate@*/
 }
 
 /**
@@ -779,6 +782,7 @@ popMacro(MacroEntry * mep)
 {
 	MacroEntry me = (*mep ? *mep : NULL);
 
+/*@-branchstate@*/
 	if (me) {
 		/* XXX cast to workaround const */
 		/*@-onlytrans@*/
@@ -789,6 +793,7 @@ popMacro(MacroEntry * mep)
 		me = _free(me);
 		/*@=onlytrans@*/
 	}
+/*@=branchstate@*/
 }
 
 /**
@@ -1059,7 +1064,9 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    b = (rpmIsVerbose() ? buf : NULL);
     } else if (STREQ("url2path", f, fn) || STREQ("u2p", f, fn)) {
 	(void)urlPath(buf, (const char **)&b);
+/*@-branchstate@*/
 	if (*b == '\0') b = "/";
+/*@=branchstate@*/
     } else if (STREQ("uncompress", f, fn)) {
 	rpmCompressedMagic compressed = COMPRESSED_OTHER;
 /*@-globs@*/
@@ -1151,6 +1158,7 @@ expandMacro(MacroBuf mb)
 	return 1;
     }
 
+/*@-branchstate@*/
     while (rc == 0 && mb->nb > 0 && (c = *s) != '\0') {
 	s++;
 	/* Copy text until next macro */
@@ -1434,6 +1442,7 @@ expandMacro(MacroBuf mb)
 
 	s = se;
     }
+/*@=branchstate@*/
 
     *mb->t = '\0';
     mb->s = s;
@@ -1930,12 +1939,14 @@ if (_debug) fprintf(stderr, "*** RGP ut %d file %s nurl %d\n", ut, file, nurl);
 #endif
     }
 
+/*@-branchstate@*/
     if (url && nurl > 0) {
 	char *t = strncpy(alloca(nurl+1), url, nurl);
 	t[nurl] = '\0';
 	url = t;
     } else
 	url = "";
+/*@=branchstate@*/
 
     result = rpmGetPath(url, root, "/", mdir, "/", file, NULL);
 
@@ -2029,4 +2040,3 @@ main(int argc, char *argv[])
 }
 #endif	/* EVAL_MACROS */
 #endif	/* DEBUG_MACROS */
-/*@=branchstate@*/

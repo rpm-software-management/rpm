@@ -305,6 +305,7 @@ dbiIndex db3Free(dbiIndex dbi)
 	dbi->dbi_home = _free(dbi->dbi_home);
 	dbi->dbi_file = _free(dbi->dbi_file);
 	dbi->dbi_subfile = _free(dbi->dbi_subfile);
+	dbi->dbi_tmpdir = _free(dbi->dbi_tmpdir);
 	dbi->dbi_host = _free(dbi->dbi_host);
 	dbi->dbi_errpfx = _free(dbi->dbi_errpfx);
 	dbi->dbi_re_source = _free(dbi->dbi_re_source);

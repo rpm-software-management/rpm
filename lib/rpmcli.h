@@ -354,17 +354,6 @@ int showVerifyPackage(QVA_t qva, rpmTransactionSet ts, Header h)
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
- * Check original header digest.
- * @deprecated Remove.
- * @todo Make digest/signature check part of rpmdb iterator.
- * @param h		header
- * @return		0 on success (or unavailable), 1 on digest mismatch
- */
-/*@unused@*/
-int rpmVerifyDigest(Header h)
-	/*@modifies nothing @*/;
-
-/**
  * Check package and header signatures.
  * @param qva		parsed query/verify options
  * @param ts		transaction set
@@ -443,7 +432,7 @@ int rpmInstallSource(rpmTransactionSet ts, const char * arg,
  * Describe database command line requests.
  */
 struct rpmInstallArguments_s {
-    rpmtransFlags transFlags;
+    rpmtsFlags transFlags;
     rpmprobFilterFlags probFilter;
     rpmInstallInterfaceFlags installInterfaceFlags;
     rpmEraseInterfaceFlags eraseInterfaceFlags;

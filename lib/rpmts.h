@@ -1,7 +1,7 @@
 #ifndef H_RPMTS
 #define H_RPMTS
 
-/** \ingroup rpmdep rpmtrans
+/** \ingroup rpmts
  * \file lib/rpmts.h
  * Structures and prototypes used for an rpmTransactionSet
  */
@@ -25,11 +25,11 @@ typedef enum tsStage_e {
     TSM_ERASE		=  8,
 } tsmStage;
 
-/** \ingroup rpmdep
+/** \ingroup rpmts
  * The set of packages to be installed/removed atomically.
  */
 struct rpmTransactionSet_s {
-    rpmtransFlags transFlags;	/*!< Bit(s) to control operation. */
+    rpmtsFlags transFlags;	/*!< Bit(s) to control operation. */
     tsmStage goal;		/*!< Transaction goal (i.e. mode) */
 
 /*@null@*/
@@ -95,6 +95,10 @@ struct rpmTransactionSet_s {
     int verify_legacy;		/*!< Verify legacy signatures? */
     int nodigests;		/*!< Verify digests? */
     int nosignatures;		/*!< Verify signatures? */
+    int vsflags;		/*!< Signature verification flags. */
+#define	_RPMTS_VSF_NODIGESTS		(1 << 0)
+#define	_RPMTS_VSF_NOSIGNATURES		(1 << 1)
+#define	_RPMTS_VSF_VERIFY_LEGACY	(1 << 2)
 
 /*@observer@*/ /*@dependent@*/ /*@null@*/
     const char * fn;		/*!< Current package fn. */
@@ -114,9 +118,319 @@ struct rpmTransactionSet_s {
 /*@refs@*/ int nrefs;		/*!< Reference count. */
 
 };
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/** \ingroup rpmts
+ * Check that all dependencies can be resolved.
+ * @param ts		transaction set
+ * @return		0 on success
+ */
+int rpmtsCheck(rpmTransactionSet ts)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
+
+/** \ingroup rpmts
+ * Determine package order in a transaction set according to dependencies.
+ *
+ * Order packages, returning error if circular dependencies cannot be
+ * eliminated by removing PreReq's from the loop(s). Only dependencies from
+ * added or removed packages are used to determine ordering using a
+ * topological sort (Knuth vol. 1, p. 262). Use rpmtsCheck() to verify
+ * that all dependencies can be resolved.
+ *
+ * The final order ends up as installed packages followed by removed packages,
+ * with packages removed for upgrades immediately following the new package
+ * to be installed.
+ *
+ * The operation would be easier if we could sort the addedPackages array in the
+ * transaction set, but we store indexes into the array in various places.
+ *
+ * @param ts		transaction set
+ * @return		no. of (added) packages that could not be ordered
+ */
+int rpmtsOrder(rpmTransactionSet ts)
+	/*@globals fileSystem, internalState@*/
+	/*@modifies ts, fileSystem, internalState @*/;
+
+/** \ingroup rpmts
+ * Process all packages in a transaction set.
+ *
+ * @param ts		transaction set
+ * @param okProbs	previously known problems (or NULL)
+ * @param ignoreSet	bits to filter problem types
+ * @return		0 on success, -1 on error, >0 with newProbs set
+ */
+int rpmtsRun(rpmTransactionSet ts,
+			rpmProblemSet okProbs,
+			rpmprobFilterFlags ignoreSet)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState@*/
+	/*@modifies ts, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
+
+/** \ingroup rpmts
+ * Unreference a transaction instance.
+ * @param ts		transaction set
+ * @param msg
+ * @return		NULL always
+ */
+/*@unused@*/ /*@null@*/
+rpmTransactionSet rpmtsUnlink (/*@killref@*/ /*@only@*/ rpmTransactionSet ts,
+		const char * msg)
+	/*@modifies ts @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@null@*/
+rpmTransactionSet XrpmtsUnlink (/*@killref@*/ /*@only@*/ rpmTransactionSet ts,
+		const char * msg, const char * fn, unsigned ln)
+	/*@modifies ts @*/;
+#define	rpmtsUnlink(_ts, _msg)	XrpmtsUnlink(_ts, _msg, __FILE__, __LINE__)
+
+/** \ingroup rpmts
+ * Reference a transaction set instance.
+ * @param ts		transaction set
+ * @param msg
+ * @return		new transaction set reference
+ */
+/*@unused@*/
+rpmTransactionSet rpmtsLink (rpmTransactionSet ts, const char * msg)
+	/*@modifies ts @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+rpmTransactionSet XrpmtsLink (rpmTransactionSet ts,
+		const char * msg, const char * fn, unsigned ln)
+        /*@modifies ts @*/;
+#define	rpmtsLink(_ts, _msg)	XrpmtsLink(_ts, _msg, __FILE__, __LINE__)
+
+/** \ingroup rpmts
+ * Close the database used by the transaction.
+ * @param ts		transaction set
+ * @return		0 on success
+ */
+int rpmtsCloseDB(rpmTransactionSet ts)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/;
+
+/** \ingroup rpmts
+ * Open the database used by the transaction.
+ * @param ts		transaction set
+ * @param dbmode	O_RDONLY or O_RDWR
+ * @return		0 on success
+ */
+int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, fileSystem, internalState @*/;
+
+/** \ingroup rpmts
+ * Return transaction database iterator.
+ * @param ts		transaction set
+ * @param rpmtag	rpm tag
+ * @param keyp		key data (NULL for sequential access)
+ * @param keylen	key data length (0 will use strlen(keyp))
+ * @return		NULL on failure
+ */
+/*@only@*/ /*@null@*/
+rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
+			/*@null@*/ const void * keyp, size_t keylen)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/;
+
+/**
+ * Attempt to solve a needed dependency.
+ * @param ts		transaction set
+ * @param ds		dependency set
+ * @return		0 if resolved (and added to ts), 1 not found
+ */
+/*@-exportlocal@*/
+int rpmtsSolve(rpmTransactionSet ts, rpmDepSet ds)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+/*@=exportlocal@*/
+
+/**
+ * Attempt to solve a needed dependency.
+ * @param ts		transaction set
+ * @param ds		dependency set
+ * @return		0 if resolved (and added to ts), 1 not found
+ */
+/*@unused@*/
+int rpmtsAvailable(rpmTransactionSet ts, const rpmDepSet ds)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/;
+
+/**
+ * Return (and clear) current transaction set problems.
+ * @param ts		transaction set
+ * @return		current problem set (or NULL)
+ */
+/*@null@*/
+rpmProblemSet rpmtsGetProblems(rpmTransactionSet ts)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Re-create an empty transaction set.
+ * @param ts		transaction set
+ */
+void rpmtsClean(rpmTransactionSet ts)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Destroy transaction set, closing the database as well.
+ * @param ts		transaction set
+ * @return		NULL always
+ */
+/*@null@*/
+rpmTransactionSet
+rpmtsFree(/*@killref@*/ /*@only@*//*@null@*/ rpmTransactionSet ts)
+	/*@globals fileSystem @*/
+	/*@modifies ts, fileSystem @*/;
+
+/** \ingroup rpmts
+ * Set verify signatures flag(s).
+ * @param ts		transaction set
+ * @param vsflags	new verify signatures flags
+ * @retrun		previous value
+ */
+int rpmtsSetVerifySigFlags(rpmTransactionSet ts, int vsflags)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Get transaction rootDir, i.e. path to chroot(2).
+ * @param ts		transaction set
+ * @return		transaction rootDir
+ */
+/*@observer@*/ /*@null@*/
+const char * rpmtsGetRootDir(rpmTransactionSet ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Set transaction rootDir, i.e. path to chroot(2).
+ * @param ts		transaction set
+ * @param rootDir	new transaction rootDir (or NULL)
+ */
+void rpmtsSetRootDir(rpmTransactionSet ts,
+		/*@null@*/ const char * rootDir)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Get transaction script file handle, i.e. stdout/stderr on scriptlet execution
+ * @param ts		transaction set
+ * @return		transaction script file handle
+ */
+/*@null@*/
+FD_t rpmtsGetScriptFd(rpmTransactionSet ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Set transaction script file handle, i.e. stdout/stderr on scriptlet execution
+ * @param ts		transaction set
+ * @param scriptFd	new script file handle (or NULL)
+ */
+void rpmtsSetScriptFd(rpmTransactionSet ts, /*@null@*/ FD_t scriptFd)
+	/*@modifies ts, scriptFd @*/;
+
+/** \ingroup rpmts
+ * Get transaction flags, i.e. bits to control rpmtsRun().
+ * @param ts		transaction set
+ * @return		transaction flags
+ */
+rpmtsFlags rpmtsGetFlags(rpmTransactionSet ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Set transaction flags, i.e. bits to control rpmtsRun().
+ * @param ts		transaction set
+ * @param ntransFlags	new transaction flags
+ * @return		previous transaction flags
+ */
+rpmtsFlags rpmtsSetFlags(rpmTransactionSet ts, rpmtsFlags ntransFlags)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Set transaction notify callback function and argument.
+ *
+ * @warning This call must be made before rpmtsRun() for
+ *	install/upgrade/freshen to "work".
+ *
+ * @param ts		transaction set
+ * @param notify	progress callback
+ * @param notifyData	progress callback private data
+ * @return		0 on success
+ */
+int rpmtsSetNotifyCallback(rpmTransactionSet ts,
+		/*@observer@*/ rpmCallbackFunction notify,
+		/*@observer@*/ rpmCallbackData notifyData)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Create an empty transaction set.
+ * @return		new transaction set
+ */
+/*@only@*/
+rpmTransactionSet rpmtsCreate(void)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Add package to be installed to transaction set.
+ *
+ * If fd is NULL, the callback set by rpmtsSetNotifyCallback() is used to
+ * open and close the file descriptor. If Header is NULL, the fd is always
+ * used, otherwise fd is only needed (and only opened) for actual package 
+ * installation.
+ *
+ * @warning The fd argument has been eliminated, and is assumed always NULL.
+ *
+ * @param ts		transaction set
+ * @param h		header
+ * @param key		package retrieval key (e.g. file name)
+ * @param upgrade	is package being upgraded?
+ * @param relocs	package file relocations
+ * @return		0 on success, 1 on I/O error, 2 needs capabilities
+ */
+int rpmtsAddPackage(rpmTransactionSet ts, Header h,
+		/*@exposed@*/ /*@null@*/ const fnpyKey key, int upgrade,
+		/*@null@*/ rpmRelocation * relocs)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies ts, h, fileSystem, internalState @*/;
+
+/** \ingroup rpmts
+ * Add package to universe of possible packages to install in transaction set.
+ * @warning The key parameter is non-functional.
+ * @param ts		transaction set
+ * @param h		header
+ * @param key		package private data
+ */
+/*@unused@*/
+void rpmtsAvailablePackage(rpmTransactionSet ts, Header h,
+		/*@exposed@*/ /*@null@*/ fnpyKey key)
+	/*@modifies h, ts @*/;
+
+/** \ingroup rpmts
+ * Add package to be erased to transaction set.
+ * @param ts		transaction set
+ * @param h		header
+ * @param dboffset	rpm database instance
+ * @return		0 on success
+ */
+int rpmtsRemovePackage(rpmTransactionSet ts, Header h, int dboffset)
+	/*@modifies ts, h @*/;
+
+/** \ingroup rpmts
+ * Retrieve keys from ordered transaction set.
+ * @todo Removed packages have no keys, returned as interleaved NULL pointers.
+ * @param ts		transaction set
+ * @retval ep		address of returned element array pointer (or NULL)
+ * @retval nep		address of no. of returned elements (or NULL)
+ * @return		0 always
+ */
+/*@unused@*/
+int rpmtsGetKeys(rpmTransactionSet ts,
+		/*@null@*/ /*@out@*/ fnpyKey ** ep,
+		/*@null@*/ /*@out@*/ int * nep)
+	/*@modifies ts, ep, nep @*/;
 
 /**
  * Return (malloc'd) header name-version-release string.

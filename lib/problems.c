@@ -68,7 +68,9 @@ rpmProblemSet rpmProblemSetFree(rpmProblemSet ps)
 	}
 	ps->probs = _free(ps->probs);
     }
+/*@-nullstate@*/ /* FIX: ps->probs may be NULL */
     (void) rpmpsUnlink(ps, "destroy");
+/*@=nullstate@*/
     /*@-refcounttrans -usereleased@*/
     ps = _free(ps);
     /*@=refcounttrans =usereleased@*/

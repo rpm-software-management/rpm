@@ -198,8 +198,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 PYVER = @WITH_PYTHON_VERSION@
 
-INCLUDES = \
-	-I$(top_srcdir) \
+INCLUDES = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \

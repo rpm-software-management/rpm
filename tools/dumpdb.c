@@ -2,6 +2,9 @@
 
 #include <rpmlib.h>
 #include "header_internal.h"
+
+#include "rpmdb.h"
+
 #include "debug.h"
 
 int main(int argc, char ** argv)

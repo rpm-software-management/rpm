@@ -237,7 +237,7 @@ int tfiSetDX(/*@null@*/ TFI_t fi, int dx)
  * @param fi		file info set
  * @return		current base name, NULL on invalid
  */
-/*@null@*/
+/*@observer@*/ /*@null@*/
 const char * tfiGetBN(/*@null@*/ TFI_t fi)
 	/*@*/;
 
@@ -246,7 +246,7 @@ const char * tfiGetBN(/*@null@*/ TFI_t fi)
  * @param fi		file info set
  * @return		current directory, NULL on invalid
  */
-/*@null@*/
+/*@observer@*/ /*@null@*/
 const char * tfiGetDN(/*@null@*/ TFI_t fi)
 	/*@*/;
 

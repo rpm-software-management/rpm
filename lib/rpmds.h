@@ -154,7 +154,7 @@ int dsiSetIx(/*@null@*/ rpmDepSet ds, int ix)
  * @param ds		dependency set
  * @return		current dependency DNEVR, NULL on invalid
  */
-/*@null@*/
+/*@observer@*/ /*@null@*/
 const char * dsiGetDNEVR(/*@null@*/ const rpmDepSet ds)
 	/*@*/;
 
@@ -163,7 +163,7 @@ const char * dsiGetDNEVR(/*@null@*/ const rpmDepSet ds)
  * @param ds		dependency set
  * @return		current dependency name, NULL on invalid
  */
-/*@null@*/
+/*@observer@*/ /*@null@*/
 const char * dsiGetN(/*@null@*/ const rpmDepSet ds)
 	/*@*/;
 
@@ -172,7 +172,7 @@ const char * dsiGetN(/*@null@*/ const rpmDepSet ds)
  * @param ds		dependency set
  * @return		current dependency EVR, NULL on invalid
  */
-/*@null@*/
+/*@observer@*/ /*@null@*/
 const char * dsiGetEVR(/*@null@*/ const rpmDepSet ds)
 	/*@*/;
 

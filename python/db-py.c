@@ -7,8 +7,12 @@
 #include <unistd.h>
 
 #include "Python.h"
+
 #include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
+
+#include "rpmdb.h"
+
 #include "misc.h"
 #include "header_internal.h"
 #include "upgrade.h"

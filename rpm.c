@@ -583,7 +583,7 @@ int main(int argc, const char ** argv)
     enum modes bigMode = MODE_UNKNOWN;
     QVA_t qva = &rpmQVArgs;
     int arg;
-    rpmtransFlags transFlags = RPMTRANS_FLAG_NONE;
+    rpmtsFlags transFlags = RPMTRANS_FLAG_NONE;
     rpmInstallInterfaceFlags installInterfaceFlags = INSTALL_NONE;
     rpmEraseInterfaceFlags eraseInterfaceFlags = UNINSTALL_NONE;
     int verifyFlags;

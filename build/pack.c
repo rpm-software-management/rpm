@@ -11,7 +11,9 @@
 #include "cpio.h"
 #include "fsm.h"
 #include "psm.h"
+
 #include "rpmfi.h"
+#include "rpmts.h"
 
 #include "buildio.h"
 
@@ -54,7 +56,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
 		fileSystem@*/
 	/*@modifies fdo, csa, rpmGlobalMacroContext, fileSystem @*/
 {
-    rpmTransactionSet ts = rpmtransCreateSet(NULL, NULL);
+    rpmTransactionSet ts = rpmtsCreate();
     TFI_t fi = csa->cpioList;
     const char *failedFile = NULL;
     FD_t cfd;
@@ -89,7 +91,7 @@ static int cpio_doio(FD_t fdo, /*@unused@*/ Header h, CSA_t csa,
     }
 
     failedFile = _free(failedFile);
-    ts = rpmtransFree(ts);
+    ts = rpmtsFree(ts);
 
     return rc;
 }
@@ -319,7 +321,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     spec->packages->header = headerFree(spec->packages->header, "spec->packages");
 
     /* Read the rpm lead, signatures, and header */
-    {	rpmTransactionSet ts = rpmtransCreateSet(NULL, NULL);
+    {	rpmTransactionSet ts = rpmtsCreate();
 
 	/* XXX W2DO? pass fileName? */
 	/*@-mustmod@*/      /* LCL: segfault */
@@ -327,7 +329,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
 			 &spec->packages->header);
 	/*@=mustmod@*/
 
-	ts = rpmtransFree(ts);
+	ts = rpmtsFree(ts);
 
 	if (sigs) *sigs = NULL;			/* XXX HACK */
     }

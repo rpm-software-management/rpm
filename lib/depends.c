@@ -1,4 +1,4 @@
-/** \ingroup rpmdep
+/** \ingroup rpmts
  * \file lib/depends.c
  */
 
@@ -8,13 +8,13 @@
 
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
 
+#include "rpmdb.h"		/* XXX response cache needs dbiOpen et al. */
+
 #include "rpmal.h"
 #include "rpmds.h"
 #include "rpmfi.h"
 #include "rpmte.h"
 #include "rpmts.h"
-
-#include "rpmdb.h"		/* XXX response cache needs dbiOpen et al. */
 
 #include "debug.h"
 
@@ -116,7 +116,7 @@ static int removePackage(rpmTransactionSet ts, Header h, int dboffset,
     return 0;
 }
 
-int rpmtransAddPackage(rpmTransactionSet ts, Header h,
+int rpmtsAddPackage(rpmTransactionSet ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -301,7 +301,7 @@ exit:
     return ec;
 }
 
-void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, fnpyKey key)
+void rpmtsAvailablePackage(rpmTransactionSet ts, Header h, fnpyKey key)
 {
     int scareMem = 0;
     rpmDepSet provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
@@ -314,7 +314,7 @@ void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, fnpyKey key)
     provides = dsFree(provides);
 }
 
-int rpmtransRemovePackage(rpmTransactionSet ts, Header h, int dboffset)
+int rpmtsRemovePackage(rpmTransactionSet ts, Header h, int dboffset)
 {
     return removePackage(ts, h, dboffset, RPMAL_NOMATCH);
 }
@@ -353,6 +353,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet dep)
 	    const char * DNEVR;
 
 	    rc = -1;
+/*@-branchstate@*/
 	    if ((DNEVR = dsiGetDNEVR(dep)) != NULL) {
 		DBC * dbcursor = NULL;
 		void * datap = NULL;
@@ -362,7 +363,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet dep)
 		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 
 		memset(key, 0, sizeof(*key));
-		key->data = (void *) DNEVR;
+/*@i@*/		key->data = (void *) DNEVR;
 		key->size = DNEVRlen;
 		memset(data, 0, sizeof(*data));
 		data->data = datap;
@@ -377,6 +378,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet dep)
 		    memcpy(&rc, datap, datalen);
 		xx = dbiCclose(dbi, dbcursor, 0);
 	    }
+/*@=branchstate@*/
 
 	    if (rc >= 0) {
 		dsiNotify(dep, _("(cached)"), rc);
@@ -506,7 +508,7 @@ exit:
 		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
 		memset(key, 0, sizeof(*key));
-		key->data = (void *) DNEVR;
+/*@i@*/		key->data = (void *) DNEVR;
 		key->size = DNEVRlen;
 		memset(data, 0, sizeof(*data));
 		data->data = &rc;
@@ -752,6 +754,7 @@ static struct badDeps_s * badDeps = NULL;
 
 /**
  */
+/*@-modobserver -observertrans @*/
 static void freeBadDeps(void)
 	/*@globals badDeps, badDepsInitialized @*/
 	/*@modifies badDeps, badDepsInitialized @*/
@@ -764,6 +767,7 @@ static void freeBadDeps(void)
     }
     badDepsInitialized = 0;
 }
+/*@=modobserver =observertrans @*/
 
 /**
  * Check for dependency relations to be ignored.
@@ -1130,7 +1134,7 @@ static void addQ(/*@dependent@*/ transactionElement p,
 }
 /*@=mustmod@*/
 
-int rpmdepOrder(rpmTransactionSet ts)
+int rpmtsOrder(rpmTransactionSet ts)
 {
     rpmDepSet requires;
     int_32 Flags;
@@ -1170,7 +1174,7 @@ int rpmdepOrder(rpmTransactionSet ts)
 
 /*@-modfilesystem -nullpass -formattype@*/
 if (_tso_debug)
-fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCount);
+fprintf(stderr, "*** rpmtsOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCount);
 /*@=modfilesystem =nullpass =formattype@*/
 
     /* T1. Initialize. */
@@ -1501,7 +1505,7 @@ prtTSI(" p", teGetTSI(p));
 	}
 
 	/* Return no. of packages that could not be ordered. */
-	rpmMessage(RPMMESS_ERROR, _("rpmdepOrder failed, %d elements remain\n"),
+	rpmMessage(RPMMESS_ERROR, _("rpmtsOrder failed, %d elements remain\n"),
 			loopcheck);
 	return loopcheck;
     }
@@ -1601,7 +1605,7 @@ assert(newOrderCount == ts->orderCount);
     ts->addedPackages = alFree(ts->addedPackages);
     ts->numAddedPackages = 0;
 #else
-    rpmtransClean(ts);
+    rpmtsClean(ts);
 #endif
     freeBadDeps();
 
@@ -1642,7 +1646,7 @@ static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
 }
 /*@=mustmod =type@*/
 
-int rpmdepCheck(rpmTransactionSet ts)
+int rpmtsCheck(rpmTransactionSet ts)
 {
     rpmdbMatchIterator mi = NULL;
     teIterator pi = NULL; transactionElement p;

@@ -8,11 +8,13 @@
  */
 /** \defgroup	rpmrc	RPMRC.
  */
-/** \defgroup	rpmdep	RPMDEP.
+/** \defgroup	rpmts	Transaction Set API.
  */
-/** \defgroup	rpmtrans	RPMTRANS.
+/** \defgroup	rpmte	Transaction set Element API.
  */
-/** \defgroup	rpmdb	RPMDB.
+/** \defgroup	rpmds	Dependency Set API.
+ */
+/** \defgroup	rpmfi	File Info set API.
  */
 /** \defgroup	lead	LEAD.
  */
@@ -22,11 +24,11 @@
  */
 /** \defgroup	payload	PAYLOAD.
  */
-/** \defgroup	dbi	DBI.
+/** \defgroup	rpmdb	RPM database API.
  */
-/** \defgroup	db1	DB1.
+/** \defgroup	dbi	DataBase Index element API.
  */
-/** \defgroup	db3	DB3.
+/** \defgroup	db3	Berkeley DB API.
  */
 /** \defgroup	rpmrpc	RPMRPC.
  */

@@ -30,7 +30,7 @@
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
 /*@unchecked@*/
-int _fsm_debug = 0;
+int _fsm_debug = 1;
 
 /* XXX Failure to remove is not (yet) cause for failure. */
 /*@-exportlocal -exportheadervar@*/

@@ -51,7 +51,7 @@ typedef /*@abstract@*/ struct availableIndexEntry_s *	availableIndexEntry;
 struct availableIndexEntry_s {
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
     alKey pkgKey;		/*!< Containing package. */
-/*@dependent@*/
+/*@observer@*/
     const char * entry;		/*!< Dependency name. */
     unsigned short entryLen;	/*!< No. of bytes in name. */
     unsigned short entryIx;	/*!< Dependency index. */
@@ -319,9 +319,9 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 
 	    (void) tfiSetDX(fi, dx);
 
-	    /*@-assignexpose@*/
+	    /*@-assignexpose -dependenttrans -observertrans@*/
 	    dieNeedle->dirName = (char *) tfiGetDN(fi);
-	    /*@=assignexpose@*/
+	    /*@=assignexpose =dependenttrans =observertrans@*/
 	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
 			? strlen(dieNeedle->dirName) : 0);
 	    die = bsearch(dieNeedle, al->dirs, al->numDirs,
@@ -435,9 +435,9 @@ fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
 
 	    (void) tfiSetDX(fi, dx);
 
-	    /*@-assignexpose@*/
+	    /*@-assignexpose -dependenttrans -observertrans@*/
 	    dieNeedle->dirName = (char *) tfiGetDN(fi);
-	    /*@=assignexpose@*/
+	    /*@=assignexpose =dependenttrans =observertrans@*/
 	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
 			? strlen(dieNeedle->dirName) : 0);
 	    die = bsearch(dieNeedle, al->dirs, origNumDirs,
@@ -481,9 +481,9 @@ fprintf(stderr, "+++ die[%3d] %p [%d] %s\n", al->numDirs, die, die->dirNameLen, 
 	    /* Rewind to first file, generate file index entry for each file. */
 	    fi = tfiInit(fi, first);
 	    while ((first = tfiNext(fi)) >= 0 && first < next) {
-		/*@-assignexpose -onlytrans @*/
+		/*@-assignexpose -dependenttrans -observertrans @*/
 		fie->baseName = tfiGetBN(fi);
-		/*@=assignexpose =onlytrans @*/
+		/*@=assignexpose =dependenttrans =observertrans @*/
 		fie->baseNameLen = (fie->baseName ? strlen(fie->baseName) : 0);
 		fie->pkgNum = pkgNum;
 		fie->fileFlags = tfiGetFFlags(fi);
@@ -660,7 +660,9 @@ if (_al_debug)
 fprintf(stderr, "==> die %p %s\n", die, (die->dirName ? die->dirName : "(nil)"));
 /*@=modfilesys@*/
 
+/*@-observertrans@*/
 	fieNeedle->baseName = baseName;
+/*@=observertrans@*/
 	fieNeedle->baseNameLen = strlen(fieNeedle->baseName);
 	fie = bsearch(fieNeedle, die->files, die->numFiles,
 		       sizeof(*fieNeedle), fieCompare);

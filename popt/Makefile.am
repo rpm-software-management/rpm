@@ -9,7 +9,7 @@ EXTRA_DIST = autogen.sh CHANGES $(man_MANS) popt.spec \
 
 SUBDIRS = intl po
 
-INCLUDES = -I$(top_srcdir)
+INCLUDES = -I. -I$(top_srcdir)
 
 noinst_HEADERS = findme.h poptint.h system.h
 

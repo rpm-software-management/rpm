@@ -12,6 +12,7 @@
 #include <dirent.h>	/* XXX rpmio.h */
 
 #include <rpmlib.h>
+#include "rpmdb.h"
 
 #include "hash.h"
 #include "upgrade.h"

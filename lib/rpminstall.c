@@ -6,6 +6,7 @@
 
 #include <rpmcli.h>
 
+#include "rpmdb.h"
 #include "rpmts.h"		/* XXX ts->rpmdb */
 
 #include "manifest.h"
@@ -223,6 +224,7 @@ int rpmInstall(rpmTransactionSet ts,
 /*@only@*/ /*@null@*/ const char * fileURL = NULL;
     int stopInstall = 0;
     const char ** av = NULL;
+    int vsflags;
     int ac = 0;
     int rc;
     int xx;
@@ -235,8 +237,13 @@ int rpmInstall(rpmTransactionSet ts,
     relocations = ia->relocations;
 
     ts->goal = TSM_INSTALL;
-    ts->nodigests = (ia->qva_flags & VERIFY_DIGEST);
-    ts->nosignatures = (ia->qva_flags & VERIFY_SIGNATURE);
+
+    vsflags = 0;
+    if (ia->qva_flags & VERIFY_DIGEST)
+	vsflags |= _RPMTS_VSF_NODIGESTS;
+    if (ia->qva_flags & VERIFY_SIGNATURE)
+	vsflags |= _RPMTS_VSF_NOSIGNATURES;
+    vsflags |= _RPMTS_VSF_VERIFY_LEGACY;
 
     ts->dbmode = (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)
 		? O_RDONLY : (O_RDWR|O_CREAT);
@@ -359,11 +366,11 @@ restart:
 	    continue;
 	}
 
-	ts->verify_legacy = 1;
-	/*@-mustmod -nullstate @*/	/* LCL: segfault */
+	/* Read the header, verifying signatures (if present). */
+	xx = rpmtsSetVerifySigFlags(ts, vsflags);
 	eiu->rpmrc = rpmReadPackageFile(ts, eiu->fd, *eiu->fnp, &eiu->h);
-	/*@=mustmod =nullstate @*/
-	ts->verify_legacy = 0;
+	xx = rpmtsSetVerifySigFlags(ts, xx);
+
 	eiu->isSource = headerIsEntry(eiu->h, RPMTAG_SOURCEPACKAGE);
 
 	xx = Fclose(eiu->fd);
@@ -447,7 +454,7 @@ restart:
 
 	    /*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
 	    /*@-abstract@*/
-	    rc = rpmtransAddPackage(ts, eiu->h, (fnpyKey)fileName,
+	    rc = rpmtsAddPackage(ts, eiu->h, (fnpyKey)fileName,
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
 			relocations);
 	    /*@=abstract@*/
@@ -527,7 +534,7 @@ restart:
     if (eiu->numRPMS && !(ia->installInterfaceFlags & INSTALL_NODEPS)) {
 
 	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
-	if (rpmdepCheck(ts)) {
+	if (rpmtsCheck(ts)) {
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
@@ -563,7 +570,7 @@ restart:
 
     if (eiu->numRPMS && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
 	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
-	if (rpmdepOrder(ts)) {
+	if (rpmtsOrder(ts)) {
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
 	}
@@ -577,7 +584,7 @@ restart:
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 
 	/*@-nullstate@*/ /* FIX: ts->rootDir may be NULL? */
-	rc = rpmRunTransactions(ts, NULL, probFilter);
+	rc = rpmtsRun(ts, NULL, probFilter);
 	/*@=nullstate@*/
 	ps = rpmtsGetProblems(ts);
 
@@ -606,9 +613,7 @@ restart:
 	    }
 
 	    if (!(rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)) {
-#if !defined(__LCLINT__) /* LCL: segfault */
 		eiu->rpmrc = rpmInstallSourcePackage(ts, eiu->fd, NULL, NULL);
-#endif
 		if (eiu->rpmrc != RPMRC_OK) eiu->numFailed++;
 	    }
 
@@ -656,8 +661,6 @@ int rpmErase(rpmTransactionSet ts,
 #endif
 
     ts->goal = TSM_ERASE;
-    ts->nodigests = (ia->qva_flags & VERIFY_DIGEST);
-    ts->nosignatures = (ia->qva_flags & VERIFY_SIGNATURE);
 
     /* XXX W2DO? O_EXCL??? */
     ts->dbmode = (rpmtsGetFlags(ts) & RPMTRANS_FLAG_TEST)
@@ -683,7 +686,7 @@ int rpmErase(rpmTransactionSet ts,
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 		if (recOffset) {
-		    (void) rpmtransRemovePackage(ts, h, recOffset);
+		    (void) rpmtsRemovePackage(ts, h, recOffset);
 		    numPackages++;
 		}
 	    }
@@ -693,7 +696,7 @@ int rpmErase(rpmTransactionSet ts,
 
     if (!(ia->eraseInterfaceFlags & UNINSTALL_NODEPS)) {
 
-	if (rpmdepCheck(ts)) {
+	if (rpmtsCheck(ts)) {
 	    numFailed = numPackages;
 	    stopUninstall = 1;
 	}
@@ -711,7 +714,7 @@ int rpmErase(rpmTransactionSet ts,
 
     if (!stopUninstall) {
 	(void) rpmtsSetFlags(ts, (rpmtsGetFlags(ts) | RPMTRANS_FLAG_REVERSE));
-	numFailed += rpmRunTransactions(ts, NULL, 0);
+	numFailed += rpmtsRun(ts, NULL, 0);
 	ps = rpmtsGetProblems(ts);
 	ps = rpmProblemSetFree(ps);
     }
@@ -890,9 +893,7 @@ IDTX IDTXglob(rpmTransactionSet ts, const char * globstr, rpmTag tag)
 	    continue;
 	}
 
-	/*@-mustmod@*/	/* LCL: segfault */
 	xx = rpmReadPackageFile(ts, fd, av[i], &h);
-	/*@=mustmod@*/
 	rpmrc = (xx ? RPMRC_FAIL : RPMRC_OK);		/* XXX HACK */
 	isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 
@@ -1019,7 +1020,7 @@ int rpmRollback(rpmTransactionSet ts,
 
 	    rpmMessage(RPMMESS_DEBUG, "\t+++ %s\n", rp->key);
 
-	    rc = rpmtransAddPackage(ts, rp->h, (fnpyKey)rp->key,
+	    rc = rpmtsAddPackage(ts, rp->h, (fnpyKey)rp->key,
 			       0, ia->relocations);
 	    if (rc != 0)
 		goto exit;
@@ -1044,7 +1045,7 @@ int rpmRollback(rpmTransactionSet ts,
 	    rpmMessage(RPMMESS_DEBUG,
 			"\t--- rpmdb instance #%u\n", ip->instance);
 
-	    rc = rpmtransRemovePackage(ts, ip->instance);
+	    rc = rpmtsRemovePackage(ts, ip->instance);
 	    if (rc != 0)
 		goto exit;
 
@@ -1070,7 +1071,7 @@ int rpmRollback(rpmTransactionSet ts,
 	rpmMessage(RPMMESS_DEBUG, _("rollback %d packages to %s"),
 			packagesTotal, ctime(&tid));
 
-	rc = rpmdepCheck(ts);
+	rc = rpmtsCheck(ts);
 	ps = rpmtsGetProblems(ts);
 	if (rc != 0 && ps) {
 	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
@@ -1080,12 +1081,11 @@ int rpmRollback(rpmTransactionSet ts,
 	}
 	ps = rpmProblemSetFree(ps);
 
-	rc = rpmdepOrder(ts);
+	rc = rpmtsOrder(ts);
 	if (rc != 0)
 	    goto exit;
 
-	rc = rpmRunTransactions(ts, NULL,
-		(ia->probFilter|RPMPROB_FILTER_OLDPACKAGE));
+	rc = rpmtsRun(ts, NULL, (ia->probFilter|RPMPROB_FILTER_OLDPACKAGE));
 	ps = rpmtsGetProblems(ts);
 	if (rc > 0)
 	    rpmProblemSetPrint(stderr, ps);

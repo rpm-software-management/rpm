@@ -30,13 +30,13 @@ int main(int argc, char **argv)
     }
     fdo = fdDup(STDOUT_FILENO);
 
-    {	rpmTransactionSet ts = rpmtransCreateSet(NULL, NULL);
+    {	rpmTransactionSet ts = rpmtsCreate();
 
 	/*@-mustmod@*/      /* LCL: segfault */
 	rc = rpmReadPackageFile(ts, fdi, "rpm2cpio", &h);
 	/*@=mustmod@*/
 
-	ts = rpmtransFree(ts);
+	ts = rpmtsFree(ts);
     }
 
     switch (rc) {

@@ -13,8 +13,13 @@
 +strict			# lclint level
 -includenest 16		# getting deep, sigh
 
-# --- not-yet at strict level
+# --- in progress
+#+bounds
+#+boundswrite
+-redecl
+-redef
 
+# --- not-yet at strict level
 -bitwisesigned		# pita
 -elseifcomplete		# 95 occurences
 -exportconst		# 839 occurences

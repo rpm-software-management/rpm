@@ -23,6 +23,12 @@
 -typeuse
 -varuse
 
+# --- in progress
+#+bounds
+#+boundswrite
+-redecl
+-redef
+
 # --- not-yet at strict level
 -bitwisesigned		# pita
 -elseifcomplete		# 95 occurences

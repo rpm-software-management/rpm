@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-05-06 21:08-0400\n"
+"POT-Creation-Date: 2002-05-16 12:53-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -14,54 +14,54 @@ msgstr ""
 "Content-Type: text/plain; charset=EUC-JP\n"
 "Content-Transfer-Encoding: EUC-JP\n"
 
-#: build.c:38
+#: build.c:39
 #, fuzzy
 msgid "Failed build dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: build.c:69
+#: build.c:70
 #, fuzzy, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "spec ファイルをオープンできません: %s\n"
 
-#: build.c:149 build.c:161
+#: build.c:150 build.c:162
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "tar パイプのオープンに失敗: %s\n"
 
 #. Give up
-#: build.c:168
+#: build.c:169
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "%s から spec ファイルの読み込みに失敗しました\n"
 
-#: build.c:196
+#: build.c:197
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "%s を %s にする名前の変更に失敗しました: %s\n"
 
-#: build.c:236
+#: build.c:237
 #, fuzzy, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "stat %s に失敗: %s"
 
-#: build.c:241
+#: build.c:242
 #, fuzzy, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "普通のファイルではありません: %s\n"
 
-#: build.c:250
+#: build.c:251
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "ファイル %s は スペックファイルではないようです。\n"
 
 #. parse up the build operators
-#: build.c:305
+#: build.c:306
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "作成中ターゲットプラットフォーム: %s\n"
 
-#: build.c:320
+#: build.c:321
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "ターゲット %s 用に作成中\n"
@@ -81,124 +81,124 @@ msgstr "パッケージからヘッダの読み込みのエラー\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "ファイル %s をオープンできません"
 
-#: rpmqv.c:108
+#: rpmqv.c:111
 msgid "print the version of rpm being used"
 msgstr "使用している rpm のバージョンを表示します"
 
-#: rpmqv.c:111
+#: rpmqv.c:114
 msgid "provide less detailed output"
 msgstr ""
 
-#: rpmqv.c:113
+#: rpmqv.c:116
 msgid "provide more detailed output"
 msgstr ""
 
-#: rpmqv.c:115
+#: rpmqv.c:118
 msgid "define macro <name> with value <body>"
 msgstr ""
 
-#: rpmqv.c:116
+#: rpmqv.c:119
 msgid "'<name> <body>'"
 msgstr ""
 
-#: rpmqv.c:118
+#: rpmqv.c:121
 #, fuzzy
 msgid "print macro expansion of <expr>+"
 msgstr "使用している rpm のバージョンを表示します"
 
-#: rpmqv.c:119
+#: rpmqv.c:122
 msgid "<expr>+"
 msgstr ""
 
-#: rpmqv.c:121
+#: rpmqv.c:124
 msgid "send stdout to <cmd>"
 msgstr "標準出力を <cmd> へパイプします"
 
-#: rpmqv.c:122
+#: rpmqv.c:125
 msgid "<cmd>"
 msgstr ""
 
-#: rpmqv.c:124
+#: rpmqv.c:127
 msgid "use <dir> as the top level directory"
 msgstr "トップディレクトリとして <dir> を使用します"
 
-#: rpmqv.c:125 lib/poptI.c:215
+#: rpmqv.c:128 lib/poptI.c:215
 msgid "<dir>"
 msgstr ""
 
-#: rpmqv.c:127
+#: rpmqv.c:130
 msgid "read <file:...> instead of default macro file(s)"
 msgstr ""
 
-#: rpmqv.c:128 rpmqv.c:132 rpmqv.c:136
+#: rpmqv.c:131 rpmqv.c:135 rpmqv.c:139
 msgid "<file:...>"
 msgstr ""
 
-#: rpmqv.c:131 rpmqv.c:135
+#: rpmqv.c:134 rpmqv.c:138
 msgid "read <file:...> instead of default rpmrc file(s)"
 msgstr ""
 
-#: rpmqv.c:139
+#: rpmqv.c:142
 msgid "display final rpmrc and macro configuration"
 msgstr ""
 
-#: rpmqv.c:144
+#: rpmqv.c:147
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: rpmqv.c:147
+#: rpmqv.c:150
 msgid "debug protocol data stream"
 msgstr ""
 
-#: rpmqv.c:149
+#: rpmqv.c:152
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: rpmqv.c:151
+#: rpmqv.c:154
 msgid "debug URL cache handling"
 msgstr ""
 
-#: rpmqv.c:171
+#: rpmqv.c:174
 msgid "Query options (with -q or --query):"
 msgstr ""
 
-#: rpmqv.c:174
+#: rpmqv.c:177
 msgid "Verify options (with -V or --verify):"
 msgstr ""
 
-#: rpmqv.c:180
+#: rpmqv.c:183
 #, fuzzy
 msgid "Signature options:"
 msgstr "署名サイズ: %d\n"
 
-#: rpmqv.c:186
+#: rpmqv.c:189
 msgid "Database options:"
 msgstr ""
 
-#: rpmqv.c:192
+#: rpmqv.c:195
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 
-#: rpmqv.c:198
+#: rpmqv.c:201
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:203
+#: rpmqv.c:206
 msgid "Common options for all rpm modes:"
 msgstr ""
 
 #. @-modfilesys -globs @
-#: rpmqv.c:220 lib/poptI.c:27
+#: rpmqv.c:223 lib/poptI.c:27
 #, fuzzy, c-format
 msgid "%s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: rpmqv.c:228
+#: rpmqv.c:231
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM バージョン %s\n"
 
-#: rpmqv.c:235
+#: rpmqv.c:238
 #, fuzzy
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc."
 msgstr ""
@@ -206,72 +206,72 @@ msgstr ""
 "翻訳者 神田 充 <kanda@nn.iij4u.or.jp>\n"
 "誤訳等は神田まで"
 
-#: rpmqv.c:236
+#: rpmqv.c:239
 #, fuzzy
 msgid "This program may be freely redistributed under the terms of the GNU GPL"
 msgstr "GNU一般公有使用許諾書の下で自由に配布できます"
 
-#: rpmqv.c:248
+#: rpmqv.c:251
 #, fuzzy, c-format
 msgid "Usage: %s {--help}\n"
 msgstr "使用法: rpm {--help}"
 
-#: rpmqv.c:601
+#: rpmqv.c:604
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
-#: rpmqv.c:602
+#: rpmqv.c:605
 #, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "-e か --erase を使ってください\n"
 
-#: rpmqv.c:608
+#: rpmqv.c:611
 #, fuzzy, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "引数処理(%d)での内部エラー :-(\n"
 
-#: rpmqv.c:649 rpmqv.c:655 rpmqv.c:661 rpmqv.c:699
+#: rpmqv.c:652 rpmqv.c:658 rpmqv.c:664 rpmqv.c:702
 msgid "only one major mode may be specified"
 msgstr "一つのメジャーモードのみを指定してください"
 
-#: rpmqv.c:678
+#: rpmqv.c:681
 msgid "one type of query/verify may be performed at a time"
 msgstr "問い合わせ/検証は一度に一つしか実行できません"
 
-#: rpmqv.c:682
+#: rpmqv.c:685
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "予期せぬ問い合わせのフラグ"
 
-#: rpmqv.c:685
+#: rpmqv.c:688
 #, fuzzy
 msgid "unexpected query format"
 msgstr "予期せぬ問い合わせのフォーマット"
 
-#: rpmqv.c:688
+#: rpmqv.c:691
 msgid "unexpected query source"
 msgstr "予期せぬ問い合わせのソース"
 
-#: rpmqv.c:729
+#: rpmqv.c:732
 msgid "--dbpath given for operation that does not use a database"
 msgstr "データベースを使用しないのに --dbpath が与えられています"
 
-#: rpmqv.c:735
+#: rpmqv.c:738
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "インストール、アップグレード、ソース削除、スペックファイル削除時のみ強制でき"
 "ます"
 
-#: rpmqv.c:737
+#: rpmqv.c:740
 msgid "files may only be relocated during package installation"
 msgstr "ファイルはパッケージインストール時のみ再配置できます"
 
-#: rpmqv.c:740
+#: rpmqv.c:743
 msgid "only one of --prefix or --relocate may be used"
 msgstr "--prefix もしくは --relocate のいずれかのみ使用できます"
 
-#: rpmqv.c:743
+#: rpmqv.c:746
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
@@ -279,82 +279,82 @@ msgstr ""
 "--relocate と --excludepath は新しいパッケージをインストールするときのみ使用"
 "できます"
 
-#: rpmqv.c:746
+#: rpmqv.c:749
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix は新規にパッケージをインストールするときのみ使用できます"
 
-#: rpmqv.c:749
+#: rpmqv.c:752
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix への引数は / から始まらねばなりません"
 
-#: rpmqv.c:752
+#: rpmqv.c:755
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:756
+#: rpmqv.c:759
 msgid "--percent may only be specified during package installation"
 msgstr "--percent はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:761
+#: rpmqv.c:764
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:765
+#: rpmqv.c:768
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:769
+#: rpmqv.c:772
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:773
+#: rpmqv.c:776
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:777
+#: rpmqv.c:780
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs と --includedocs はどちらか一方のみ指定できます"
 
-#: rpmqv.c:781
+#: rpmqv.c:784
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:785
+#: rpmqv.c:788
 msgid "--ignoreos may only be specified during package installation"
 msgstr "-ignoreos はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:790
+#: rpmqv.c:793
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "-ignoresize はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:794
+#: rpmqv.c:797
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches はパッケージの削除時のみ指定できます"
 
-#: rpmqv.c:798
+#: rpmqv.c:801
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles はパッケージのインストール時のみ指定できます"
 
-#: rpmqv.c:803
+#: rpmqv.c:806
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb はパッケージのインストール、削除時のみ指定できます"
 
-#: rpmqv.c:808
+#: rpmqv.c:811
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb はパッケージのインストール、削除時のみ指定できます"
 
-#: rpmqv.c:813
+#: rpmqv.c:816
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb はパッケージのインストール、削除時のみ指定できます"
 
-#: rpmqv.c:817
+#: rpmqv.c:820
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -362,13 +362,13 @@ msgid ""
 msgstr ""
 "--nodeps はパッケージの作成、インストール、削除、検証時のみ指定できます"
 
-#: rpmqv.c:822
+#: rpmqv.c:825
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test はパッケージのインストール、削除、作成時のみ指定できます"
 
-#: rpmqv.c:827
+#: rpmqv.c:830
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -376,88 +376,88 @@ msgstr ""
 "--root (-r) はインストール、削除、問い合わせ、データベース再構築時のみ指定で"
 "きます"
 
-#: rpmqv.c:839
+#: rpmqv.c:842
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) の引数は / から始まらねばなりません"
 
-#: rpmqv.c:863
+#: rpmqv.c:866
 msgid "no files to sign\n"
 msgstr "署名するためのファイルがありません\n"
 
-#: rpmqv.c:868
+#: rpmqv.c:871
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "ファイル %s にアクセスできません\n"
 
-#: rpmqv.c:887
+#: rpmqv.c:890
 #, fuzzy
 msgid "pgp not found: "
 msgstr "pgp が見つかりません: "
 
-#: rpmqv.c:892
+#: rpmqv.c:895
 msgid "Enter pass phrase: "
 msgstr "パスフレーズを入力してください: "
 
-#: rpmqv.c:894
+#: rpmqv.c:897
 msgid "Pass phrase check failed\n"
 msgstr "パスフレーズチェックに失敗しました\n"
 
-#: rpmqv.c:898
+#: rpmqv.c:901
 msgid "Pass phrase is good.\n"
 msgstr "パスフレーズは正常です．\n"
 
-#: rpmqv.c:903
+#: rpmqv.c:906
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "マクロファイル中の無効な %%_signature 。\n"
 
-#: rpmqv.c:910
+#: rpmqv.c:913
 msgid "--sign may only be used during package building"
 msgstr "--sign はパッケージ作成時のみ使用できます"
 
-#: rpmqv.c:927
+#: rpmqv.c:930
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
-#: rpmqv.c:959
+#: rpmqv.c:963
 msgid "no packages files given for rebuild"
 msgstr "再作成するためのパッケージファイルがありません"
 
-#: rpmqv.c:1027
+#: rpmqv.c:1031
 msgid "no spec files given for build"
 msgstr "作成のための spec ファイルがありません"
 
-#: rpmqv.c:1029
+#: rpmqv.c:1033
 msgid "no tar files given for build"
 msgstr "作成(build)のための tar ファイルがありません"
 
-#: rpmqv.c:1051
+#: rpmqv.c:1055
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "署名のためのパッケージがありません"
 
-#: rpmqv.c:1092
+#: rpmqv.c:1096
 msgid "no packages given for install"
 msgstr "インストールのためのパッケージがありません"
 
-#: rpmqv.c:1108
+#: rpmqv.c:1112
 msgid "no arguments given for query"
 msgstr "問い合わせのための引数がありません"
 
-#: rpmqv.c:1121
+#: rpmqv.c:1125
 msgid "no arguments given for verify"
 msgstr "検証のための引数がありません"
 
-#: rpmqv.c:1129
+#: rpmqv.c:1133
 msgid "unexpected arguments to --querytags "
 msgstr "--querytags の引数が間違っています"
 
-#: rpmqv.c:1145
+#: rpmqv.c:1149
 #, fuzzy
 msgid "no arguments given"
 msgstr "問い合わせのための引数がありません"
 
-#: build/build.c:125 build/pack.c:487
+#: build/build.c:125 build/pack.c:489
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "一時ファイルをオープンできません"
@@ -677,7 +677,7 @@ msgstr "ファイルが見つかりません(by glob): %s"
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1826 build/pack.c:150
+#: build/files.c:1826 build/pack.c:152
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "行目: %s"
@@ -752,157 +752,157 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "ホスト名を正式なものにできません: %s\n"
 
-#: build/pack.c:83
+#: build/pack.c:85
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "ファイル %s でアーカイブの作成に失敗: %s"
 
-#: build/pack.c:86
+#: build/pack.c:88
 #, fuzzy, c-format
 msgid "create archive failed: %s\n"
 msgstr "ファイル %s でアーカイブの作成に失敗: %s"
 
-#: build/pack.c:108
+#: build/pack.c:110
 #, fuzzy, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "cpio_copy で書き込み失敗: %s"
 
-#: build/pack.c:115
+#: build/pack.c:117
 #, fuzzy, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy で読み込み失敗: %s"
 
-#: build/pack.c:218
+#: build/pack.c:220
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "PreIn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:225
+#: build/pack.c:227
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "PreUn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:232
+#: build/pack.c:234
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "PostIn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:239
+#: build/pack.c:241
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "PostUn ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:247
+#: build/pack.c:249
 #, fuzzy, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "VerifyScript ファイルをオープンできませんでした: %s"
 
-#: build/pack.c:262
+#: build/pack.c:264
 #, fuzzy, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "トリガースクリプトファイルをオープンできませんでした: %s"
 
-#: build/pack.c:290
+#: build/pack.c:292
 #, fuzzy, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: %s のオープン: %s\n"
 
-#: build/pack.c:300
+#: build/pack.c:302
 #, fuzzy, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: %s の読み込み: %s\n"
 
-#: build/pack.c:309 build/pack.c:533
+#: build/pack.c:311 build/pack.c:535
 #, fuzzy, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: build/pack.c:337
+#: build/pack.c:339
 #, fuzzy, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s は RPM パッケージではありません\n"
 
-#: build/pack.c:346
+#: build/pack.c:348
 #, fuzzy, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: %s からのヘッダの読み込み\n"
 
-#: build/pack.c:475
+#: build/pack.c:477
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/pack.c:494
+#: build/pack.c:496
 #, fuzzy
 msgid "Unable to write temp header\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:504
+#: build/pack.c:506
 #, fuzzy
 msgid "Bad CSA data\n"
 msgstr "不正な CSA データ"
 
-#: build/pack.c:540
+#: build/pack.c:542
 #, fuzzy
 msgid "Unable to write final header\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:560
+#: build/pack.c:562
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "署名の生成中: %d\n"
 
-#: build/pack.c:578
+#: build/pack.c:580
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/pack.c:586
+#: build/pack.c:588
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗しました\n"
 
-#: build/pack.c:622 lib/psm.c:1450
+#: build/pack.c:624 lib/psm.c:1450
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:637
+#: build/pack.c:639
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "sigtarget の読み込みができませんでした: %s"
 
-#: build/pack.c:648
+#: build/pack.c:650
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/pack.c:662
+#: build/pack.c:664
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:672
+#: build/pack.c:674
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "アイコンを読むことができません: %s"
 
-#: build/pack.c:678
+#: build/pack.c:680
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "パッケージの書き込みに失敗しました: %s"
 
-#: build/pack.c:703 lib/psm.c:1738
+#: build/pack.c:705 lib/psm.c:1738
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
 
-#: build/pack.c:770
+#: build/pack.c:772
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の 出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:787
+#: build/pack.c:789
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -1488,77 +1488,77 @@ msgstr "失敗 - "
 msgid "package %s was already added, replacing with %s\n"
 msgstr "パッケージ %s-%s-%s はすでにインストールされています"
 
-#: lib/depends.c:382
+#: lib/depends.c:384
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:407
+#: lib/depends.c:409
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:423
+#: lib/depends.c:425
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:444
+#: lib/depends.c:446
 #, fuzzy
 msgid "(db files)"
 msgstr "不正なファイルの状態: %s"
 
-#: lib/depends.c:456
+#: lib/depends.c:458
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/depends.c:469
+#: lib/depends.c:471
 #, fuzzy
 msgid "(db package)"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/depends.c:807
+#: lib/depends.c:811
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:927
+#: lib/depends.c:931
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "group インデックスを削除します\n"
 
 #. Record all relations.
-#: lib/depends.c:1195
+#: lib/depends.c:1199
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1301
+#: lib/depends.c:1305
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1394
+#: lib/depends.c:1398
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1464
+#: lib/depends.c:1468
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1499
+#: lib/depends.c:1503
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1504
+#: lib/depends.c:1508
 #, c-format
-msgid "rpmdepOrder failed, %d elements remain\n"
+msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: rpmdb/header.c:2985 rpmdb/header.c:3006 rpmdb/header.c:3028
+#: rpmdb/header.c:2990 rpmdb/header.c:3011 rpmdb/header.c:3033
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -1650,50 +1650,45 @@ msgstr "警告: %s は %s として作成されます"
 msgid "error creating temporary file %s\n"
 msgstr "一時ファイル %s の作成エラー"
 
-#: lib/package.c:168 lib/rpmchecksig.c:165 lib/rpmchecksig.c:573
+#: lib/package.c:168 lib/rpmchecksig.c:166 lib/rpmchecksig.c:574
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/package.c:174
-#, fuzzy, c-format
-msgid "%s: bad magic\n"
-msgstr "不正なマジック"
-
-#: lib/package.c:182
+#: lib/package.c:181
 #, fuzzy
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
-#: lib/package.c:190
+#: lib/package.c:189
 #, fuzzy
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
-#: lib/package.c:199 lib/rpmchecksig.c:183 lib/rpmchecksig.c:589
+#: lib/package.c:198 lib/rpmchecksig.c:184 lib/rpmchecksig.c:590
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature に失敗しました\n"
 
-#: lib/package.c:203 lib/rpmchecksig.c:187 lib/rpmchecksig.c:594
+#: lib/package.c:202 lib/rpmchecksig.c:188 lib/rpmchecksig.c:595
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 有効な署名はありません\n"
 
-#: lib/package.c:249 lib/rpmchecksig.c:494
+#: lib/package.c:248 lib/rpmchecksig.c:495
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/package.c:284 lib/package.c:309 lib/package.c:339 lib/rpmchecksig.c:665
+#: lib/package.c:283 lib/package.c:308 lib/package.c:338 lib/rpmchecksig.c:666
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:351 lib/rpmchecksig.c:113 lib/rpmchecksig.c:523
+#: lib/package.c:350 lib/rpmchecksig.c:114 lib/rpmchecksig.c:524
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
@@ -2168,96 +2163,96 @@ msgid "generate signature"
 msgstr "PGP/GPG 署名を生成します"
 
 #. @observer@
-#: lib/problems.c:211
+#: lib/problems.c:213
 msgid "different"
 msgstr ""
 
-#: lib/problems.c:219
+#: lib/problems.c:221
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "パッケージ %s-%s-%s は異なるアーキテクチャ向けです"
 
-#: lib/problems.c:224
+#: lib/problems.c:226
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "パッケージ %s-%s-%s は異なる OS 向けです"
 
-#: lib/problems.c:229
+#: lib/problems.c:231
 #, fuzzy, c-format
 msgid "package %s is already installed"
 msgstr "パッケージ %s-%s-%s はすでにインストールされています"
 
-#: lib/problems.c:234
+#: lib/problems.c:236
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocateable"
 msgstr "パッケージ %s は再配置できません"
 
-#: lib/problems.c:239
+#: lib/problems.c:241
 #, fuzzy, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "ファイル %s は %s-%s-%s と %s-%s-%s のインストールのファイルと競合しています"
 
-#: lib/problems.c:244
+#: lib/problems.c:246
 #, fuzzy, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "%s-%s-%s のインストールからのファイル %s はパッケージ %s-%s-%s からのファイル"
 "と競合しています"
 
-#: lib/problems.c:249
+#: lib/problems.c:251
 #, fuzzy, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 "パッケージ %s-%s-%s (%s-%s-%sよりも新しいもの) はすでにインストールされていま"
 "す"
 
-#: lib/problems.c:254
+#: lib/problems.c:256
 #, fuzzy, c-format
 msgid "installing package %s needs %ld%cb on the %s filesystem"
 msgstr ""
 "パッケージ %s-%s-%s のインストールは %ld%cb が必要です(%s ファイルシステム上"
 "で)"
 
-#: lib/problems.c:264
+#: lib/problems.c:266
 #, fuzzy, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
 msgstr ""
 "パッケージ %s-%s-%s のインストールは %ld%cb が必要です(%s ファイルシステム上"
 "で)"
 
-#: lib/problems.c:269
+#: lib/problems.c:271
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
 
-#: lib/problems.c:273
+#: lib/problems.c:275
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Requires: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
-#: lib/problems.c:277
+#: lib/problems.c:279
 #, fuzzy, c-format
 msgid "package %s has unsatisfied Conflicts: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
-#: lib/problems.c:282
+#: lib/problems.c:284
 #, fuzzy, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "不明なエラー %d がパッケージ %s-%s-%s の操作中におきました"
 
-#: lib/problems.c:363
+#: lib/problems.c:365
 #, fuzzy
 msgid "conflicts with"
 msgstr " %s-%s-%s と競合します\n"
 
-#: lib/problems.c:363
+#: lib/problems.c:365
 #, fuzzy
 msgid "is needed by"
 msgstr "は %s-%s-%s に必要とされています\n"
 
 #. @-modfilesys@
-#: lib/psm.c:250 rpmdb/header.c:383 rpmdb/header_internal.c:161
+#: lib/psm.c:250 rpmdb/header.c:388 rpmdb/header_internal.c:161
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "データタイプ %d はサポートされていません\n"
@@ -2272,27 +2267,27 @@ msgstr "%s を作成できません: %s\n"
 msgid "cannot write to %%%s %s\n"
 msgstr "%s へ書き込めません"
 
-#: lib/psm.c:487
+#: lib/psm.c:485
 #, fuzzy
 msgid "source package expected, binary found\n"
 msgstr "ソースパッケージが期待されます、バイナリは見つかりました"
 
-#: lib/psm.c:603
+#: lib/psm.c:601
 #, fuzzy
 msgid "source package contains no .spec file\n"
 msgstr "ソースパッケージは .spec ファイルを含んでいません"
 
-#: lib/psm.c:722
+#: lib/psm.c:720
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/psm.c:888
+#: lib/psm.c:890
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "スクリプトの実行に失敗"
 
-#: lib/psm.c:895
+#: lib/psm.c:897
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "スクリプトの実行に失敗"
@@ -2337,217 +2332,217 @@ msgstr "%s のオープンに失敗: %s"
 msgid "%s failed: %s\n"
 msgstr "%s 失敗"
 
-#: lib/query.c:127 lib/rpmts.c:226
+#: lib/query.c:126 lib/rpmts.c:227
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "フォーマット中のエラー: %s\n"
 
-#: lib/query.c:223
+#: lib/query.c:222
 msgid "(contains no files)"
 msgstr "ファイルを含んでいません"
 
-#: lib/query.c:284
+#: lib/query.c:283
 msgid "normal        "
 msgstr "通常"
 
-#: lib/query.c:287
+#: lib/query.c:286
 msgid "replaced      "
 msgstr "置き換えられています"
 
-#: lib/query.c:290
+#: lib/query.c:289
 msgid "not installed "
 msgstr "インストールされていません"
 
-#: lib/query.c:293
+#: lib/query.c:292
 msgid "net shared    "
 msgstr "ネット共有"
 
-#: lib/query.c:296
+#: lib/query.c:295
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(未知の %3d)"
 
-#: lib/query.c:301
+#: lib/query.c:300
 msgid "(no state)    "
 msgstr "(何の状態もありません)"
 
-#: lib/query.c:320 lib/query.c:376
+#: lib/query.c:319 lib/query.c:375
 #, fuzzy
 msgid "package has neither file owner or id lists\n"
 msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 
-#: lib/query.c:466
+#: lib/query.c:465
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
-#: lib/query.c:620 lib/query.c:658 lib/rpminstall.c:352 lib/rpminstall.c:494
-#: lib/rpminstall.c:887
+#: lib/query.c:619 lib/query.c:653 lib/rpminstall.c:359 lib/rpminstall.c:501
+#: lib/rpminstall.c:890
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/query.c:636
+#: lib/query.c:631
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s への問い合わせに失敗しました\n"
 
-#: lib/query.c:642
+#: lib/query.c:637
 msgid "old format source packages cannot be queried\n"
 msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
-#: lib/query.c:668 lib/rpminstall.c:507
+#: lib/query.c:663 lib/rpminstall.c:514
 #, fuzzy, c-format
-msgid "%s: read manifest failed: %s\n"
-msgstr "%s: Fread に失敗しました: %s\n"
+msgid "%s: not a package manifest: %s\n"
+msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:712
+#: lib/query.c:707
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s への問い合わせに失敗しました、パースできません\n"
 
-#: lib/query.c:733
+#: lib/query.c:728
 #, fuzzy
 msgid "no packages\n"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/query.c:753
+#: lib/query.c:748
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません\n"
 
-#: lib/query.c:763
+#: lib/query.c:758
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:777 lib/query.c:799 lib/query.c:820 lib/query.c:855
+#: lib/query.c:772 lib/query.c:794 lib/query.c:815 lib/query.c:850
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "%s を読むのに失敗: $s。"
 
-#: lib/query.c:787 lib/query.c:805 lib/query.c:830 lib/query.c:860
+#: lib/query.c:782 lib/query.c:800 lib/query.c:825 lib/query.c:855
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:871
+#: lib/query.c:866
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません\n"
 
-#: lib/query.c:882
+#: lib/query.c:877
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません\n"
 
-#: lib/query.c:916
+#: lib/query.c:911
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:920
+#: lib/query.c:915
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:947
+#: lib/query.c:942
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:950
+#: lib/query.c:945
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:955
+#: lib/query.c:950
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:966 lib/rpminstall.c:675
+#: lib/query.c:961 lib/rpminstall.c:678
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
 
-#: lib/rpmal.c:684
+#: lib/rpmal.c:686
 #, fuzzy
 msgid "(added files)"
 msgstr "不正なファイルの状態: %s"
 
-#: lib/rpmal.c:761
+#: lib/rpmal.c:763
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/rpmchecksig.c:54
+#: lib/rpmchecksig.c:55
 #, fuzzy, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: fdOpen に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:66
+#: lib/rpmchecksig.c:67
 #, fuzzy
 msgid "makeTempFile failed\n"
 msgstr "makeTempFile に失敗しました\n"
 
-#: lib/rpmchecksig.c:107
+#: lib/rpmchecksig.c:108
 #, fuzzy, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:170
+#: lib/rpmchecksig.c:171
 #, fuzzy, c-format
 msgid "%s: Can't sign v1 packaging\n"
 msgstr "%s: v1.0 の RPM には署名できません\n"
 
-#: lib/rpmchecksig.c:174
+#: lib/rpmchecksig.c:175
 #, fuzzy, c-format
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: v2.0 の RPM には再署名できません\n"
 
-#: lib/rpmchecksig.c:273
+#: lib/rpmchecksig.c:274
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writedLead に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:279
+#: lib/rpmchecksig.c:280
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature に失敗しました\n"
 
-#: lib/rpmchecksig.c:508
+#: lib/rpmchecksig.c:509
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/rpmchecksig.c:579
+#: lib/rpmchecksig.c:580
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 有効な署名はありません(v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:824
+#: lib/rpmchecksig.c:825
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:825 lib/rpmchecksig.c:839
+#: lib/rpmchecksig.c:826 lib/rpmchecksig.c:840
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (キーの紛失) "
 
-#: lib/rpmchecksig.c:827 lib/rpmchecksig.c:841
+#: lib/rpmchecksig.c:828 lib/rpmchecksig.c:842
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:828 lib/rpmchecksig.c:842
+#: lib/rpmchecksig.c:829 lib/rpmchecksig.c:843
 msgid " (UNTRUSTED KEYS:"
 msgstr " (信頼できない鍵:"
 
-#: lib/rpmchecksig.c:830 lib/rpmchecksig.c:844
+#: lib/rpmchecksig.c:831 lib/rpmchecksig.c:845
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:838
+#: lib/rpmchecksig.c:839
 msgid "OK"
 msgstr ""
 
@@ -2580,95 +2575,95 @@ msgstr ""
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
-#: lib/rpminstall.c:161
+#: lib/rpminstall.c:162
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:163
+#: lib/rpminstall.c:164
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "インストールのためのパッケージがありません"
 
-#: lib/rpminstall.c:300
+#: lib/rpminstall.c:307
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s を取得しています\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:312
+#: lib/rpminstall.c:319
 #, c-format
 msgid " ... as %s\n"
 msgstr "%s として...\n"
 
-#: lib/rpminstall.c:316
+#: lib/rpminstall.c:323
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s をスキップします - 転送失敗 - %s\n"
 
-#: lib/rpminstall.c:414
+#: lib/rpminstall.c:421
 #, fuzzy, c-format
 msgid "package %s is not relocateable\n"
 msgstr "パッケージ %s は再配置できません"
 
-#: lib/rpminstall.c:468
+#: lib/rpminstall.c:475
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "ファイル %s からの読み込みエラー "
 
-#: lib/rpminstall.c:474
+#: lib/rpminstall.c:481
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "ファイル %s にはより新しい RPM のバージョンが必要です\n"
 
-#: lib/rpminstall.c:486 lib/rpminstall.c:743
+#: lib/rpminstall.c:493 lib/rpminstall.c:746
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません\n"
 
-#: lib/rpminstall.c:522
+#: lib/rpminstall.c:529
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "%d 個のソースと %d 個のバイナリパッケージが見つかりました\n"
 
-#: lib/rpminstall.c:538 lib/rpminstall.c:1076
+#: lib/rpminstall.c:545 lib/rpminstall.c:1077
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: lib/rpminstall.c:545
+#: lib/rpminstall.c:552
 msgid "    Suggested resolutions:\n"
 msgstr ""
 
-#: lib/rpminstall.c:577
+#: lib/rpminstall.c:584
 msgid "installing binary packages\n"
 msgstr "バイナリパッケージをインストール中\n"
 
-#: lib/rpminstall.c:599
+#: lib/rpminstall.c:606
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ファイル %s をオープンできません: %s"
 
-#: lib/rpminstall.c:678
+#: lib/rpminstall.c:681
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" は複数のパッケージを指定しています\n"
 
-#: lib/rpminstall.c:703
+#: lib/rpminstall.c:706
 msgid "removing these packages would break dependencies:\n"
 msgstr "これらのパッケージを削除すると依存性を破壊します:\n"
 
-#: lib/rpminstall.c:730
+#: lib/rpminstall.c:733
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s をオープンできません\n"
 
-#: lib/rpminstall.c:736
+#: lib/rpminstall.c:739
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中\n"
 
-#: lib/rpminstall.c:1070
+#: lib/rpminstall.c:1071
 #, c-format
 msgid "rollback %d packages to %s"
 msgstr ""
@@ -2773,7 +2768,7 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "読み込むために %s をオープンできません: %s。"
 
-#: lib/rpmts.c:95 lib/rpmts.c:137
+#: lib/rpmts.c:96 lib/rpmts.c:138
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
@@ -2923,35 +2918,30 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名パッド: %d\n"
 
-#: lib/transaction.c:178
+#: lib/transaction.c:180
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
 
 #. @innercontinue@
-#: lib/transaction.c:1002
+#: lib/transaction.c:1004
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/transaction.c:1092
+#: lib/transaction.c:1093
 msgid "getting list of mounted filesystems\n"
 msgstr "マウントされたファイルシステムのリストを取得しています\n"
 
-#: lib/verify.c:330
+#: lib/verify.c:283
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "%s が見つかりません\n"
 
-#: lib/verify.c:426
+#: lib/verify.c:379
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "%s-%s-%s のための依存性を満たしていません:"
-
-#: lib/verify.c:466
-#, c-format
-msgid "%s-%s-%s: immutable header region digest check failed\n"
-msgstr ""
 
 #: rpmdb/db3.c:85
 #, c-format
@@ -3011,100 +3001,100 @@ msgstr "共有"
 msgid "locked   db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/dbconfig.c:389
+#: rpmdb/dbconfig.c:390
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:427
+#: rpmdb/dbconfig.c:428
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:436
+#: rpmdb/dbconfig.c:437
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:445
+#: rpmdb/dbconfig.c:446
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
 #. This should not be allowed
 #. @-modfilesys@
-#: rpmdb/header.c:346
+#: rpmdb/header.c:351
 #, fuzzy
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabDate() RPM_STRING_TYPE カウントは 1 でなければなりません。\n"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2210
+#: rpmdb/header.c:2215
 msgid "missing { after %"
 msgstr "% の後に { がありません"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2240
+#: rpmdb/header.c:2245
 msgid "missing } after %{"
 msgstr "%{ の後に } がありません"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2254
+#: rpmdb/header.c:2259
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2268
+#: rpmdb/header.c:2273
 msgid "empty tag name"
 msgstr "空のタグ名"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2285
+#: rpmdb/header.c:2290
 msgid "unknown tag"
 msgstr "不明なタグ"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2312
+#: rpmdb/header.c:2317
 msgid "] expected at end of array"
 msgstr "配列の後に ] が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2330
+#: rpmdb/header.c:2335
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2334
+#: rpmdb/header.c:2339
 msgid "unexpected }"
 msgstr "予期せぬ }"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2401
+#: rpmdb/header.c:2406
 msgid "? expected in expression"
 msgstr "式中で ? が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2410
+#: rpmdb/header.c:2415
 msgid "{ expected after ? in expression"
 msgstr "式中で ? の後に { が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2423 rpmdb/header.c:2468
+#: rpmdb/header.c:2428 rpmdb/header.c:2473
 msgid "} expected in expression"
 msgstr "式中に } が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2433
+#: rpmdb/header.c:2438
 msgid ": expected following ? subexpression"
 msgstr "以下の ? サブ式の に: が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2453
+#: rpmdb/header.c:2458
 msgid "{ expected after : in expression"
 msgstr "式中で : の後に { が期待されます"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2478
+#: rpmdb/header.c:2483
 msgid "| expected at end of expression"
 msgstr "式の終りに | が期待されます"
 
@@ -3127,239 +3117,249 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:162
+#: rpmdb/rpmdb.c:164
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:234
+#: rpmdb/rpmdb.c:236
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "%s をオープンできません  %s:%d"
 
-#: rpmdb/rpmdb.c:256
+#: rpmdb/rpmdb.c:258
 #, fuzzy, c-format
 msgid "cannot open %s index\n"
 msgstr "%s をオープンできません\n"
 
-#: rpmdb/rpmdb.c:695
+#: rpmdb/rpmdb.c:701
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません"
 
-#: rpmdb/rpmdb.c:983 rpmdb/rpmdb.c:1110 rpmdb/rpmdb.c:1157 rpmdb/rpmdb.c:2007
-#: rpmdb/rpmdb.c:2107 rpmdb/rpmdb.c:2385 rpmdb/rpmdb.c:2787
+#: rpmdb/rpmdb.c:991 rpmdb/rpmdb.c:1120 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:2034
+#: rpmdb/rpmdb.c:2139 rpmdb/rpmdb.c:2419 rpmdb/rpmdb.c:2820
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "レコード %s の取得のエラー (%s から)"
 
-#: rpmdb/rpmdb.c:1930
+#: rpmdb/rpmdb.c:1384
+#, fuzzy, c-format
+msgid "error(%d) storing record #%d into %s\n"
+msgstr "レコード %s を %s にストアでエラー "
+
+#: rpmdb/rpmdb.c:1956
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2189
+#: rpmdb/rpmdb.c:2222
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "検索のための %d で ヘッダを読むことができません"
 
-#: rpmdb/rpmdb.c:2354
+#: rpmdb/rpmdb.c:2388
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "group インデックスを削除します\n"
 
-#: rpmdb/rpmdb.c:2358
+#: rpmdb/rpmdb.c:2392
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "name インデックス削除します\n"
 
-#: rpmdb/rpmdb.c:2406 rpmdb/rpmdb.c:2803
+#: rpmdb/rpmdb.c:2440
 #, fuzzy, c-format
-msgid "error(%d) storing record %s into %s\n"
+msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "レコード %s を %s にストアでエラー "
 
-#: rpmdb/rpmdb.c:2416
+#: rpmdb/rpmdb.c:2450
 #, fuzzy, c-format
-msgid "error(%d) removing record %s from %s\n"
+msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "レコード %s を %s に削除でエラー"
 
-#: rpmdb/rpmdb.c:2557
+#: rpmdb/rpmdb.c:2592
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: rpmdb/rpmdb.c:2763
+#: rpmdb/rpmdb.c:2796
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: rpmdb/rpmdb.c:2767
+#: rpmdb/rpmdb.c:2800
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: rpmdb/rpmdb.c:3137
+#: rpmdb/rpmdb.c:2836
+#, fuzzy, c-format
+msgid "error(%d) storing record %s into %s\n"
+msgstr "レコード %s を %s にストアでエラー "
+
+#: rpmdb/rpmdb.c:3175
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3172
+#: rpmdb/rpmdb.c:3210
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません"
 
-#: rpmdb/rpmdb.c:3199
+#: rpmdb/rpmdb.c:3237
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rootdir %s 中でデータベースを再構築します\n"
 
-#: rpmdb/rpmdb.c:3203
+#: rpmdb/rpmdb.c:3241
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "一時的なデータベース %s はすでに存在しています"
 
-#: rpmdb/rpmdb.c:3209
+#: rpmdb/rpmdb.c:3247
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3211
+#: rpmdb/rpmdb.c:3249
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3218
+#: rpmdb/rpmdb.c:3256
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "古いデータベースのオープン\n"
 
-#: rpmdb/rpmdb.c:3229
+#: rpmdb/rpmdb.c:3267
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "新しいデータベースのオープン\n"
 
-#: rpmdb/rpmdb.c:3253
+#: rpmdb/rpmdb.c:3291
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: rpmdb/rpmdb.c:3293
+#: rpmdb/rpmdb.c:3331
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: rpmdb/rpmdb.c:3311
+#: rpmdb/rpmdb.c:3349
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: rpmdb/rpmdb.c:3319
+#: rpmdb/rpmdb.c:3357
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: rpmdb/rpmdb.c:3321
+#: rpmdb/rpmdb.c:3359
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: rpmdb/rpmdb.c:3331
+#: rpmdb/rpmdb.c:3369
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3333
+#: rpmdb/rpmdb.c:3371
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
 
-#: rpmio/macro.c:226
+#: rpmio/macro.c:225
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== アクティブ %d エンプティ %d\n"
 
 #. XXX just in case
-#: rpmio/macro.c:353
+#: rpmio/macro.c:354
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: rpmio/macro.c:396
+#: rpmio/macro.c:397
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:631
+#: rpmio/macro.c:632
 #, fuzzy, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "マクロ %%%s はボディが終端されていません"
 
-#: rpmio/macro.c:660
+#: rpmio/macro.c:661
 #, fuzzy, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "マクロ %%%s は違法な名前です(%%define)"
 
-#: rpmio/macro.c:666
+#: rpmio/macro.c:667
 #, fuzzy, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "マクロ %%%s は opts が終端されていません"
 
-#: rpmio/macro.c:671
+#: rpmio/macro.c:672
 #, fuzzy, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "マクロ %%%s は空のボディです"
 
-#: rpmio/macro.c:677
+#: rpmio/macro.c:678
 #, fuzzy, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "マクロ %%%s は伸長に失敗しました"
 
-#: rpmio/macro.c:714
+#: rpmio/macro.c:715
 #, fuzzy, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "マクロ %%%s は違法な名前です(%%undefine)"
 
-#: rpmio/macro.c:826
+#: rpmio/macro.c:831
 #, fuzzy, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "マクロ %%%s (%s) はレベル %d 以下で使用されませんでした"
 
-#: rpmio/macro.c:946
+#: rpmio/macro.c:951
 #, fuzzy, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)"
 
-#: rpmio/macro.c:1147
+#: rpmio/macro.c:1154
 #, fuzzy, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "再帰の深さ(%d)が最大値(%d)よりも大きい"
 
-#: rpmio/macro.c:1216 rpmio/macro.c:1233
+#: rpmio/macro.c:1224 rpmio/macro.c:1241
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "終端されていない %c: %s"
 
-#: rpmio/macro.c:1274
+#: rpmio/macro.c:1282
 #, fuzzy, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "A %% は構文解析できないマクロが続いています"
 
-#: rpmio/macro.c:1403
+#: rpmio/macro.c:1411
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "マクロ %%%.*s は見つかりません、スキップします"
 
-#: rpmio/macro.c:1479
+#: rpmio/macro.c:1488
 #, fuzzy
 msgid "Target buffer overflow\n"
 msgstr "ターゲットバッファオーバーフロー"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1678 rpmio/macro.c:1684
+#: rpmio/macro.c:1687 rpmio/macro.c:1693
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "ファイル %s: %s"
 
-#: rpmio/macro.c:1687
+#: rpmio/macro.c:1696
 #, fuzzy, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s: は %d バイトより小さいです"
@@ -3490,6 +3490,14 @@ msgstr "url ポートは数字でなければなりません\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました\n"
+
+#, fuzzy
+#~ msgid "%s: bad magic\n"
+#~ msgstr "不正なマジック"
+
+#, fuzzy
+#~ msgid "%s: read manifest failed: %s\n"
+#~ msgstr "%s: Fread に失敗しました: %s\n"
 
 #, fuzzy
 #~ msgid "removed db file        %s\n"

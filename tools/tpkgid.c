@@ -419,7 +419,6 @@ main(int argc, const char *argv[])
 {
     poptContext optCon = poptGetContext(argv[0], argc, argv, optionsTable, 0);
     const char * rootDir = "";
-    rpmdb db = NULL;
     rpmTransactionSet ts = NULL;
     FTS * ftsp;
     FTSENT * fts;
@@ -445,7 +444,8 @@ main(int argc, const char *argv[])
 	rpmIncreaseVerbosity();
     }
 
-    ts = rpmtransCreateSet(db, rootDir);
+    ts = rpmtsCreate();
+    (void) rpmtsSetRootDir(rootDir);
     (void) rpmtsOpenDB(ts, O_RDONLY);
     if (verify_legacy) {
 	ts->dig = pgpNewDig();
@@ -467,7 +467,7 @@ main(int argc, const char *argv[])
     ftsPrintPaths(stdout);
     freeItems();
 
-    ts = rpmtransFree(ts);
+    ts = rpmtsFree(ts);
 
     return ec;
 }
