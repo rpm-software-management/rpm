@@ -94,15 +94,15 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
 
     /*@-type@*/ /* FIX: cast? */
     if (dig != NULL) {
-	dig->md5ctx = rpmDigestInit(RPMDIGEST_MD5);
-	(void) fdInitSHA1(*sfdp, 0);
+	(void) fdInitDigest(*sfdp, PGPHASHALGO_MD5, 0);
+	dig->sha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
     }
     /*@=type@*/
 
     while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0) {
     /*@-type@*/ /* FIX: cast? */
 	if (dig)
-	    rpmDigestUpdate(dig->md5ctx, buffer, count);
+	    (void) rpmDigestUpdate(dig->sha1ctx, buffer, count);
     /*@=type@*/
 
 	if (Fwrite(buffer, sizeof(buffer[0]), count, *tfdp) != count) {
@@ -118,8 +118,8 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
 
     /*@-type@*/ /* FIX: cast? */
     if (dig != NULL) {
-	dig->sha1ctx = _free(dig->sha1ctx);
-	dig->sha1ctx = (*sfdp)->digest;
+	dig->md5ctx = _free(dig->md5ctx);
+	dig->md5ctx = (*sfdp)->digest;
 	(*sfdp)->digest = NULL;
     }
     /*@=type@*/
@@ -358,8 +358,8 @@ fprintf(stderr, "========================= Package RSA Signature\n");
     /*@-type@*/ /* FIX: cast? */
 	    {	DIGEST_CTX ctx = rpmDigestDup(dig->md5ctx);
 
-		rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
-		rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
+		(void) rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
+		(void) rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 1);
 
 		/* XXX compare leading 16 bits of digest for quick check. */
 	    }
@@ -402,8 +402,8 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 		(void) pgpPrtPkts(ptr, count, dig, rpmIsVerbose());
     /*@-type@*/ /* FIX: cast? */
 	    {	DIGEST_CTX ctx = rpmDigestDup(dig->sha1ctx);
-		rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
-		rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
+		(void) rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
+		(void) rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 		mp32nzero(&dig->hm);	mp32nsethex(&dig->hm, dig->sha1);
 	    }
     /*@=type@*/
@@ -567,10 +567,10 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 	    (void) unlink(sigtarget);
 	    sigtarget = _free(sigtarget);
 	}
-	dig->sha1ctx = _free(dig->sha1ctx);
-	dig->sha1 = _free(dig->sha1);
 	dig->md5ctx = _free(dig->md5ctx);
 	dig->md5 = _free(dig->md5);
+	dig->sha1ctx = _free(dig->sha1ctx);
+	dig->sha1 = _free(dig->sha1);
 	dig->hash_data = _free(dig->hash_data);
 
 	mp32nfree(&dig->hm);
@@ -584,10 +584,10 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
     }
     /*@=branchstate@*/
 
-    dig->sha1ctx = _free(dig->sha1ctx);
-    dig->sha1 = _free(dig->sha1);
     dig->md5ctx = _free(dig->md5ctx);
     dig->md5 = _free(dig->md5);
+    dig->sha1ctx = _free(dig->sha1ctx);
+    dig->sha1 = _free(dig->sha1);
     dig->hash_data = _free(dig->hash_data);
 
     mp32bfree(&dig->p);

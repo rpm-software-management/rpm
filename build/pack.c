@@ -514,13 +514,13 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 			sigtarget, Fstrerror(fd));
     }
 
-    fdInitSHA1(fd, 0);
+    fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
     if (headerWrite(fd, h, HEADER_MAGIC_NO)) {
 	rc = RPMERR_NOSPACE;
 	rpmError(RPMERR_NOSPACE, _("Unable to write final header\n"));
     }
     (void) Fflush(fd);
-    fdFiniSHA1(fd, (void **)&sha1, NULL, 1);
+    fdFiniDigest(fd, (void **)&sha1, NULL, 1);
 
     (void) Fclose(fd);
     fd = NULL;

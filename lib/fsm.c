@@ -696,7 +696,7 @@ static int expandRegular(/*@special@*/ FSM_t fsm)
     fmd5sum = fsm->fmd5sum;
 
     if (st->st_size > 0 && fmd5sum)
-	fdInitMD5(fsm->wfd, 0);
+	fdInitDigest(fsm->wfd, PGPHASHALGO_MD5, 0);
 
     while (left) {
 
@@ -720,7 +720,7 @@ static int expandRegular(/*@special@*/ FSM_t fsm)
 	const char * md5sum = NULL;
 
 	(void) Fflush(fsm->wfd);
-	fdFiniMD5(fsm->wfd, (void **)&md5sum, NULL, 1);
+	fdFiniDigest(fsm->wfd, (void **)&md5sum, NULL, 1);
 
 	if (md5sum == NULL) {
 	    rc = CPIOERR_MD5SUM_MISMATCH;

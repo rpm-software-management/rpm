@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-10-18 21:22-0400\n"
+"POT-Creation-Date: 2001-10-18 21:28-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3442,27 +3442,27 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:404
+#: lib/verify.c:398
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:501
+#: lib/verify.c:495
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
-#: lib/verify.c:543
+#: lib/verify.c:537
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
-#: rpmdb/db1.c:101 rpmdb/db3.c:98
+#: rpmdb/db1.c:101 rpmdb/db3.c:100
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:104 rpmdb/db3.c:101
+#: rpmdb/db1.c:104 rpmdb/db3.c:103
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
@@ -3505,50 +3505,50 @@ msgstr ""
 msgid "cannot get %s lock on database\n"
 msgstr ""
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1209
+#: rpmdb/db1.c:576 rpmdb/db3.c:1211
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1209
+#: rpmdb/db1.c:576 rpmdb/db3.c:1211
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db3.c:129
+#: rpmdb/db3.c:131
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:147
+#: rpmdb/db3.c:149
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:188
+#: rpmdb/db3.c:190
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:708
+#: rpmdb/db3.c:710
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:773
+#: rpmdb/db3.c:775
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:986
+#: rpmdb/db3.c:988
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db3.c:1207
+#: rpmdb/db3.c:1209
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1213
+#: rpmdb/db3.c:1215
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr ""
@@ -3840,59 +3840,59 @@ msgstr ""
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:632
+#: rpmio/rpmio.c:644
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:635
+#: rpmio/rpmio.c:647
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:638
+#: rpmio/rpmio.c:650
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:641
+#: rpmio/rpmio.c:653
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:644
+#: rpmio/rpmio.c:656
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:647
+#: rpmio/rpmio.c:659
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:650
+#: rpmio/rpmio.c:662
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:653
+#: rpmio/rpmio.c:665
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:656
+#: rpmio/rpmio.c:668
 msgid "I/O error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:659
+#: rpmio/rpmio.c:671
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:662
+#: rpmio/rpmio.c:674
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:665
+#: rpmio/rpmio.c:677
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:669
+#: rpmio/rpmio.c:681
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:1341
+#: rpmio/rpmio.c:1353
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

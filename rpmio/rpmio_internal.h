@@ -8,6 +8,7 @@
 
 #include <rpmio.h>
 #include <rpmurl.h>
+#include <rpmpgp.h>
 
 /** \ingroup rpmio
  */
@@ -49,14 +50,15 @@ typedef	/*@abstract@*/ struct {
  * Bit(s) to control digest operation.
  */
 typedef enum rpmDigestFlags_e {
+    RPMDIGEST_NONE	= 0,
+#ifdef	DYING
     RPMDIGEST_MD5	= (1 <<  0),	/*!< MD5 digest. */
     RPMDIGEST_SHA1	= (1 <<  1)	/*!< SHA1 digest. */
-#ifdef	DYING
     RPMDIGEST_REVERSE	= (1 << 16),	/*!< Should bytes be reversed? */
     RPMDIGEST_BCSWAP	= (1 << 17),	/*!< Should bit count be reversed? */
+#define	RPMDIGEST_MASK	0xffff
 #endif
 } rpmDigestFlags;
-#define	RPMDIGEST_MASK	0xffff
 
 /**
  */
@@ -78,7 +80,7 @@ DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
  * @return		digest context
  */
 /*@only@*/
-DIGEST_CTX rpmDigestInit(rpmDigestFlags flags)
+DIGEST_CTX rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 	/*@*/;
 
 /** \ingroup rpmio
@@ -86,8 +88,9 @@ DIGEST_CTX rpmDigestInit(rpmDigestFlags flags)
  * @param ctx		digest context
  * @param data		next data buffer
  * @param len		no. bytes of data
+ * @return		0 on success
  */
-void rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
+int rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 	/*@modifies ctx @*/;
 
 /** \ingroup rpmio
@@ -99,8 +102,9 @@ void rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
  * @retval datap	address of returned digest
  * @retval lenp		address of digest length
  * @param asAscii	return digest as ascii string?
+ * @return		0 on success
  */
-void rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx,
+int rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx,
 	/*@null@*/ /*@out@*/ void ** datap,
 	/*@null@*/ /*@out@*/ size_t * lenp, int asAscii)
 		/*@modifies *datap, *lenp @*/;
@@ -448,14 +452,44 @@ FD_t c2f(/*@null@*/ void * cookie)
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
+void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
+	/*@modifies fd @*/
+{
+    fd->digest = rpmDigestInit(hashalgo, flags);
+}
+
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline
+void fdFiniDigest(FD_t fd,
+		/*@null@*/ /*@out@*/ void ** datap,
+		/*@null@*/ /*@out@*/ size_t * lenp,
+		int asAscii)
+	/*@modifies fd, *datap, *lenp @*/
+{
+    if (fd->digest == NULL) {
+	if (datap) *datap = NULL;
+	if (lenp) *lenp = 0;
+	return;
+    }
+    /*@-mayaliasunique@*/
+    (void) rpmDigestFinal(fd->digest, datap, lenp, asAscii);
+    /*@=mayaliasunique@*/
+    fd->digest = NULL;
+}
+
+#ifdef	DYING
+/** \ingroup rpmio
+ */
+/*@unused@*/ static inline
 void fdInitMD5(FD_t fd, int flags)
 	/*@modifies fd @*/
 {
 #ifdef	DYING
     if (flags) flags = RPMDIGEST_REVERSE;
-#endif
     flags |= RPMDIGEST_MD5;
-    fd->digest = rpmDigestInit(flags);
+#endif
+    fd->digest = rpmDigestInit(PGPHASHALGO_MD5, flags);
 }
 
 /** \ingroup rpmio
@@ -466,9 +500,9 @@ void fdInitSHA1(FD_t fd, int flags)
 {
 #ifdef	DYING
     if (flags) flags = RPMDIGEST_REVERSE;
-#endif
     flags |= RPMDIGEST_SHA1;
-    fd->digest = rpmDigestInit(flags);
+#endif
+    fd->digest = rpmDigestInit(PGPHASHALGO_SHA1, flags);
 }
 
 /** \ingroup rpmio
@@ -486,7 +520,7 @@ void fdFiniMD5(FD_t fd,
 	return;
     }
     /*@-mayaliasunique@*/
-    rpmDigestFinal(fd->digest, datap, lenp, asAscii);
+    (void) rpmDigestFinal(fd->digest, datap, lenp, asAscii);
     /*@=mayaliasunique@*/
     fd->digest = NULL;
 }
@@ -506,10 +540,11 @@ void fdFiniSHA1(FD_t fd,
 	return;
     }
     /*@-mayaliasunique@*/
-    rpmDigestFinal(fd->digest, datap, lenp, asAscii);
+    (void) rpmDigestFinal(fd->digest, datap, lenp, asAscii);
     /*@=mayaliasunique@*/
     fd->digest = NULL;
 }
+#endif
 
 /*@-shadow@*/
 /** \ingroup rpmio

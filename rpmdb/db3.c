@@ -13,12 +13,14 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #endif
 
 #if defined(__LCLINT__)
+/*@-redef@*/ /* FIX: rpmio/rpmio.c also declares */
 typedef	unsigned int u_int32_t;
 typedef	unsigned short u_int16_t;
 typedef	unsigned char u_int8_t;
 /*@-incondefs@*/	/* LCLint 3.0.0.15 */
 typedef	int int32_t;
 /*@=incondefs@*/
+/*@=redef@*/
 #endif
 
 #include <db3/db.h>

@@ -9,6 +9,7 @@ INCLUDES = \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
+	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir)/popt \
 	-I/usr/include/python${PYVER} \
 	@INCPATH@

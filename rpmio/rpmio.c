@@ -15,6 +15,18 @@
 
 #if HAVE_NETINET_IN_SYSTM_H
 # include <sys/types.h>
+
+#if defined(__LCLINT__)
+/*@-redef@*/ /* FIX: rpmdb/db3.c also declares */
+typedef unsigned int u_int32_t;
+typedef unsigned short u_int16_t;
+typedef unsigned char u_int8_t;
+/*@-incondefs@*/        /* LCLint 3.0.0.15 */
+typedef int int32_t;
+/*@=incondefs@*/
+/*@=redef@*/
+#endif
+
 # include <netinet/in_systm.h>
 #endif
 
@@ -358,7 +370,7 @@ ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_READ, rc);
 
-    if (fd->digest && rc > 0) rpmDigestUpdate(fd->digest, buf, rc);
+    if (fd->digest && rc > 0) (void) rpmDigestUpdate(fd->digest, buf, rc);
 
 /*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
@@ -377,7 +389,7 @@ ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->digest && count > 0) rpmDigestUpdate(fd->digest, buf, count);
+    if (fd->digest && count > 0) (void) rpmDigestUpdate(fd->digest, buf, count);
 
     if (fd->wr_chunked) {
 	char chunksize[20];
@@ -2176,7 +2188,7 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
 	/*@-compdef@*/
-	if (fd->digest && rc > 0) rpmDigestUpdate(fd->digest, buf, rc);
+	if (fd->digest && rc > 0) (void) rpmDigestUpdate(fd->digest, buf, rc);
 	/*@=compdef@*/
     }
     return rc;
@@ -2193,7 +2205,7 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->digest && count > 0) rpmDigestUpdate(fd->digest, buf, count);
+    if (fd->digest && count > 0) (void) rpmDigestUpdate(fd->digest, buf, count);
 
     gzfile = gzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);
@@ -2410,7 +2422,7 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
 	/*@-compdef@*/
-	if (fd->digest && rc > 0) rpmDigestUpdate(fd->digest, buf, rc);
+	if (fd->digest && rc > 0) (void) rpmDigestUpdate(fd->digest, buf, rc);
 	/*@=compdef@*/
     }
     return rc;
@@ -2429,7 +2441,7 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->digest && count > 0) rpmDigestUpdate(fd->digest, buf, count);
+    if (fd->digest && count > 0) (void) rpmDigestUpdate(fd->digest, buf, count);
 
     bzfile = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);

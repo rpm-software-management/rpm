@@ -4,7 +4,8 @@
 #include "debug.h"
 
 
-static rpmDigestFlags flags = RPMDIGEST_MD5;
+static pgpHashAlgo hashalgo = PGPHASHALGO_MD5;
+static rpmDigestFlags flags = RPMDIGEST_NONE;
 extern int _rpmio_debug;
 
 static int fips = 0;
@@ -14,14 +15,14 @@ const char * FIPSBdigest = "84983e441c3bd26ebaae4aa1f95129e5e54670f1";
 const char * FIPSCdigest = "34aa973cd4c4daa4f61eeb2bdbad27316534016f";
 
 static struct poptOption optionsTable[] = {
- { "md5", '\0', POPT_BIT_SET, 	&flags, RPMDIGEST_MD5,	NULL, NULL },
- { "sha1",'\0', POPT_BIT_SET, 	&flags, RPMDIGEST_SHA1,	NULL, NULL },
+ { "md5", '\0', POPT_ARG_VAL, 	&hashalgo, PGPHASHALGO_MD5,	NULL, NULL },
+ { "sha1",'\0', POPT_ARG_VAL, 	&hashalgo, PGPHASHALGO_SHA1,	NULL, NULL },
 #ifdef	DYING
  { "reverse",'\0', POPT_BIT_SET, &flags, RPMDIGEST_REVERSE,	NULL, NULL },
 #endif
- { "fipsa",'\0', POPT_BIT_SET, &fips, 1,	NULL, NULL },
- { "fipsb",'\0', POPT_BIT_SET, &fips, 2,	NULL, NULL },
- { "fipsc",'\0', POPT_BIT_SET, &fips, 3,	NULL, NULL },
+ { "fipsa",'\0', POPT_ARG_VAL, &fips, 1,	NULL, NULL },
+ { "fipsb",'\0', POPT_ARG_VAL, &fips, 2,	NULL, NULL },
+ { "fipsc",'\0', POPT_ARG_VAL, &fips, 3,	NULL, NULL },
  { "debug",'d', POPT_ARG_VAL, &_rpmio_debug, -1,	NULL, NULL },
   POPT_AUTOHELP
   POPT_TABLEEND
@@ -53,14 +54,11 @@ main(int argc, const char *argv[])
     while ((rc = poptGetNextOpt(optCon)) > 0)
 	;
 
-    if (flags & RPMDIGEST_SHA1) flags &= ~RPMDIGEST_MD5;
 #ifdef	DYING
     reverse = (flags & RPMDIGEST_REVERSE);
 #endif
     if (fips) {
-	flags &= ~RPMDIGEST_MD5;
-	flags |= RPMDIGEST_SHA1;
-	ctx = rpmDigestInit(flags);
+	ctx = rpmDigestInit(PGPHASHALGO_SHA1, flags);
 	ifn = NULL;
 	appendix = ' ';
 	sdigest = NULL;
@@ -117,7 +115,7 @@ main(int argc, const char *argv[])
 
 	    se = buf;
 	    *se = '\0';
-	    se = stpcpy(se, ((flags & RPMDIGEST_SHA1) ? SHA1_CMD : MD5_CMD));
+	    se = stpcpy(se, ((hashalgo == PGPHASHALGO_SHA1) ? SHA1_CMD : MD5_CMD));
 	    *se++ = ' ';
 	    se = stpcpy(se, ifn);
 	    if ((sfp = popen(buf, "r")) != NULL) {
@@ -137,7 +135,7 @@ main(int argc, const char *argv[])
 	    continue;
 	}
 	idigest = NULL;
-	(flags & RPMDIGEST_SHA1) ? fdInitSHA1(ifd, reverse) : fdInitMD5(ifd, reverse);
+	fdInitDigest(ifd, hashalgo, reverse);
 
 	ofd = Fopen(ofn, "w.ufdio");
 	if (ofd == NULL || Ferror(ofd)) {
@@ -148,24 +146,20 @@ main(int argc, const char *argv[])
 	    continue;
 	}
 	odigest = NULL;
-	(flags & RPMDIGEST_SHA1) ? fdInitSHA1(ofd, reverse) : fdInitMD5(ofd, reverse);
+	fdInitDigest(ofd, hashalgo, reverse);
 
-	ctx = rpmDigestInit(flags);
+	ctx = rpmDigestInit(hashalgo, flags);
 
 	while ((nb = Fread(buf, 1, sizeof(buf), ifd)) > 0) {
 	    rpmDigestUpdate(ctx, buf, nb);
 	    (void) Fwrite(buf, 1, nb, ofd);
 	}
 
-	(flags & RPMDIGEST_SHA1)
-	    ? fdFiniSHA1(ifd, (void **)&idigest, NULL, asAscii)
-	    : fdFiniMD5(ifd, (void **)&idigest, NULL, asAscii);
+	fdFiniDigest(ifd, (void **)&idigest, NULL, asAscii);
 	Fclose(ifd);
 
 	Fflush(ofd);
-	(flags & RPMDIGEST_SHA1)
-	    ? fdFiniSHA1(ofd, (void **)&odigest, NULL, asAscii)
-	    : fdFiniMD5(ofd, (void **)&odigest, NULL, asAscii);
+	fdFiniDigest(ofd, (void **)&odigest, NULL, asAscii);
 	Fclose(ofd);
 
 	rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);

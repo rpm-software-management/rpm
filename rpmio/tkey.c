@@ -143,13 +143,11 @@ fprintf(stderr, "=============================== GPG Signature of \"abc\"\n");
     if ((rc = doit(abcSignatureDSA, dig, printing)) != 0)
 	fprintf(stderr, "==> FAILED: rc %d\n", rc);
 
-    {	DIGEST_CTX ctx = rpmDigestInit(RPMDIGEST_SHA1);
+    {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	const char * digest = NULL;
 	size_t digestlen = 0;
 	const char * txt = "abc";
 	
-	ctx = rpmDigestInit(RPMDIGEST_SHA1);
-
 	rpmDigestUpdate(ctx, txt, strlen(txt));
 	rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
 	rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
