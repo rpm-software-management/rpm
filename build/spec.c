@@ -1278,6 +1278,12 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		    s1 = s;
 		    while (*s1 && *s1 != ' ' && *s1 != '\t') s1++;
 		    *s1 = '\0';
+		    if (s1 == s) {
+			rpmError(RPMERR_BADSPEC, (tag == RPMTAG_VERSION) ?
+				 "Empty version field." :
+				 "Empty release field.");
+			return NULL;
+		    }
 		    if (tag == RPMTAG_VERSION) {
 			if (! versionMacroSet) {
 			    versionMacroSet = 1;
