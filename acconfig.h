@@ -139,7 +139,7 @@
 #undef ENABLE_V1_PACKAGES
 
 /* define if experimental support rpm-4.0 packages is desired */
-#undef ENABLE_V4_PACKAGES
+#undef ENABLE_V5_PACKAGES
 
 /* Use the included glob.c? */
 #undef USE_GNU_GLOB
