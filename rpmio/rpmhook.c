@@ -1,56 +1,46 @@
+#include "system.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 
+#include <rpmhook.h>
+
 #define RPMHOOK_TABLE_INITSIZE  256
 #define RPMHOOK_BUCKET_INITSIZE 5
 
-typedef union {
-    char *s;
-    int i;
-    float f;
-    void *p;
-} rpmhookArgv;
-
-typedef struct {
-    int argc;
-    const char *argt;
-    rpmhookArgv argv[1];
-} rpmhookArgs;
-
-typedef int (*rpmhookFunc)(rpmhookArgs *args, void *data);
-
-typedef struct _rpmhookItem {
+typedef struct rpmhookItem_s {
     rpmhookFunc func;
     void *data;
-    struct _rpmhookItem *next;
-} rpmhookItem;
+    struct rpmhookItem_s *next;
+} * rpmhookItem;
 
-typedef struct {
+typedef struct rpmhookBucket_s {
     unsigned long hash;
     char *name;
-    rpmhookItem *item;
-} rpmhookBucket;
+    rpmhookItem item;
+} * rpmhookBucket;
 
-typedef struct {
+typedef struct rpmhookTable_s {
     int size;
     int used;
-    rpmhookBucket bucket[1];
-} rpmhookTable;
+    struct rpmhookBucket_s bucket[1];
+} * rpmhookTable;
 
-rpmhookTable *rpmhookTableNew(int size)
+static rpmhookTable rpmhookTableNew(int size)
 {
-    rpmhookTable *table = (rpmhookTable *)calloc(1, sizeof(rpmhookTable)+
-                                                 sizeof(rpmhookBucket)*
-                                                 (size-1));
+    rpmhookTable table =
+        (rpmhookTable)xcalloc(1, sizeof(struct rpmhookTable_s)+
+                                 sizeof(struct rpmhookBucket_s)*(size-1));
     table->size = size;
     return table;
 }
 
-rpmhookTable *rpmhookTableFree(rpmhookTable *table)
+#if 0
+static rpmhookTable rpmhookTableFree(rpmhookTable table)
 {
-    rpmhookItem *item, *nextItem;
+    rpmhookItem item, nextItem;
     int i;
     for (i = 0; i != table->size; i++) {
         if (table->bucket[i].name) {
@@ -64,18 +54,20 @@ rpmhookTable *rpmhookTableFree(rpmhookTable *table)
         }
     }
     free(table);
+    return NULL;
 }
+#endif
 
-void rpmhookTableRehash(rpmhookTable **table);
+static void rpmhookTableRehash(rpmhookTable *table);
 
-int rpmhookTableFindBucket(rpmhookTable **table, const char *name)
+static int rpmhookTableFindBucket(rpmhookTable *table, const char *name)
 {
     /* Hash based on http://www.isthe.com/chongo/tech/comp/fnv/ */
     unsigned long perturb;
     unsigned long hash = 0;
     unsigned char *bp = (unsigned char *)name;
     unsigned char *be = bp + strlen(name);
-    rpmhookBucket *bucket;
+    rpmhookBucket bucket;
     if (((*table)->used/2)*3 > (*table)->size)
         rpmhookTableRehash(table);
     int ret;
@@ -98,9 +90,9 @@ int rpmhookTableFindBucket(rpmhookTable **table, const char *name)
     return ret;
 }
 
-void rpmhookTableRehash(rpmhookTable **table)
+static void rpmhookTableRehash(rpmhookTable *table)
 {
-    rpmhookTable *newtable = rpmhookTableNew((*table)->size*2);
+    rpmhookTable newtable = rpmhookTableNew((*table)->size*2);
     int n, i = 0;
     for (; i != (*table)->size; i++) {
         if ((*table)->bucket[i].name) {
@@ -114,55 +106,58 @@ void rpmhookTableRehash(rpmhookTable **table)
     *table = newtable;
 }
 
-void rpmhookTableAddItem(rpmhookTable **table, const char *name,
-                         rpmhookFunc func, void *data)
+static void rpmhookTableAddItem(rpmhookTable *table, const char *name,
+                                rpmhookFunc func, void *data)
 {
     int n = rpmhookTableFindBucket(table, name);
-    rpmhookBucket *bucket = &(*table)->bucket[n];
-    rpmhookItem **item = &bucket->item;
+    rpmhookBucket bucket = &(*table)->bucket[n];
+    rpmhookItem *item = &bucket->item;
     if (!bucket->name) {
         bucket->name = strdup(name);
         (*table)->used++;
     }
     while (*item) item = &(*item)->next;
-    *item = calloc(1, sizeof(rpmhookItem));
+    *item = calloc(1, sizeof(struct rpmhookItem_s));
     (*item)->func = func;
     (*item)->data = data;
 }
 
-void rpmhookTableDelItem(rpmhookTable **table, const char *name,
-                         rpmhookFunc func, void *data)
+static void rpmhookTableDelItem(rpmhookTable *table, const char *name,
+                                rpmhookFunc func, void *data,
+                                int matchfunc, int matchdata)
 {
     int n = rpmhookTableFindBucket(table, name);
-    rpmhookBucket *bucket = &(*table)->bucket[n];
-    rpmhookItem *item = bucket->item;
-    rpmhookItem *lastItem = NULL;
-    while (item && item->func != func
-           && (data == NULL || item->data == data)) {
-        lastItem = item;
-        item = item->next;
-    }
-    if (item) {
-        if (lastItem)
-            lastItem->next = item->next;
-        else
-            bucket->item = item->next;
-        free(item);
-        if (!bucket->item) {
-            free(bucket->name);
-            bucket->name = NULL;
-            (*table)->used--;
+    rpmhookBucket bucket = &(*table)->bucket[n];
+    rpmhookItem item = bucket->item;
+    rpmhookItem lastItem = NULL;
+    rpmhookItem nextItem;
+    while (item) {
+        nextItem = item->next;
+        if ((!matchfunc || item->func == func) &&
+            (!matchdata || item->data == data)) {
+            free(item);
+            if (lastItem)
+                lastItem->next = nextItem;
+            else
+                bucket->item = nextItem;
+        } else {
+            lastItem = item;
         }
+        item = nextItem;
+    }
+    if (!bucket->item) {
+        free(bucket->name);
+        bucket->name = NULL;
+        (*table)->used--;
     }
 }
 
-rpmhookArgs *rpmhookArgsParse(const char *argt, va_list ap)
+static rpmhookArgs rpmhookArgsParse(const char *argt, va_list ap)
 {
     int argc = strlen(argt);
     int i;
-    rpmhookArgs *args =
-        (rpmhookArgs *)malloc(sizeof(rpmhookArgs)+
-                       (argc-1)*sizeof(rpmhookArgv));
+    rpmhookArgs args = (rpmhookArgs)malloc(sizeof(struct rpmhookArgs_s)+
+                                           (argc-1)*sizeof(rpmhookArgv));
     args->argc = argc;
     args->argt = argt;
     for (i = 0; i != argc; i++) {
@@ -180,58 +175,66 @@ rpmhookArgs *rpmhookArgsParse(const char *argt, va_list ap)
                 args->argv[i].p = va_arg(ap, void *);
                 break;
             default:
-                fprintf(stderr,
-                    "error: unsupported type '%c' as "
-                    "a hook argument\n");
+                fprintf(stderr, "error: unsupported type '%c' as "
+                                "a hook argument\n", argt[i]);
                 break;
         }
     }
     return args;
 }
 
-void rpmhookTableCall(rpmhookTable **table, const char *name,
-                      const char *argt, ...)
+static void rpmhookTableCallV(rpmhookTable *table, const char *name,
+                             const char *argt, va_list ap)
 {
-    rpmhookItem *item;
-    rpmhookArgs *args;
+    rpmhookItem item;
+    rpmhookArgs args;
     int n;
-    va_list ap;
-    va_start(ap, argt);
     args = rpmhookArgsParse(argt, ap);
-    va_end(ap);
     n = rpmhookTableFindBucket(table, name);
     item = (*table)->bucket[n].item;
     while (item) {
-        item->func(args, item->data);
+        if (item->func(args, item->data) != 0)
+            break;
         item = item->next;
     }
     free(args);
 }
 
-int myhook(rpmhookArgs *args, void *data)
+static rpmhookTable globalTable = NULL;
+
+void rpmhookRegister(const char *name, rpmhookFunc func, void *data)
 {
-   printf("%s: %d\n", args->argv[0].s, data);
+    if (!globalTable)
+        globalTable = rpmhookTableNew(RPMHOOK_TABLE_INITSIZE);
+    rpmhookTableAddItem(&globalTable, name, func, data);
 }
 
-int main()
+void rpmhookUnregister(const char *name, rpmhookFunc func, void *data)
 {
-    rpmhookTable *table = rpmhookTableNew(RPMHOOK_TABLE_INITSIZE);
-    int i;
-    char buf[BUFSIZ];
-    for (i = 0; i != 100000; i++) {
-        sprintf(buf, "%d", i);
-        rpmhookTableAddItem(&table, buf, myhook, (void *)i);
+    if (globalTable)
+        rpmhookTableDelItem(&globalTable, name, func, data, 1, 1);
+}
+
+void rpmhookUnregisterAny(const char *name, rpmhookFunc func)
+{
+    if (globalTable)
+        rpmhookTableDelItem(&globalTable, name, func, NULL, 1, 0);
+}
+
+void rpmhookUnregisterAll(const char *name)
+{
+    if (globalTable)
+        rpmhookTableDelItem(&globalTable, name, NULL, NULL, 0, 0);
+}
+
+void rpmhookCall(const char *name, const char *argt, ...)
+{
+    if (globalTable) {
+        va_list ap;
+        va_start(ap, argt);
+        rpmhookTableCallV(&globalTable, name, argt, ap);
+        va_end(ap);
     }
-    for (i = 0; i != 100000; i++) {
-        sprintf(buf, "%d", i);
-        rpmhookTableCall(&table, buf, "s", "Hello world!");
-    }
-    for (i = 0; i != 100000; i++) {
-        sprintf(buf, "%d", i);
-        rpmhookTableDelItem(&table, buf, myhook, (void *)i);
-    }
-    rpmhookTableFree(table);
-    return 0;
 }
 
 /* vim:ts=4:sw=4:et

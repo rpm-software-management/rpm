@@ -20,7 +20,7 @@ pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	argv.h fts.h \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h rpmpgp.h \
-	rpmsq.h rpmsw.h ugid.h rpmlua.h
+	rpmsq.h rpmsw.h ugid.h rpmlua.h rpmhook.h
 noinst_HEADERS = rpmio_internal.h
 
 BEECRYPTLOBJS = $(shell test X"@WITH_BEECRYPT_SUBDIR@" != X && cat $(top_builddir)/@WITH_BEECTYPT_SUBDIR@/listobjs)
@@ -33,7 +33,7 @@ librpmio_la_SOURCES = \
 	argv.c digest.c fts.c macro.c \
 	rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c \
-	rpmlua.c
+	rpmlua.c rpmhook.c
 librpmio_la_LDFLAGS = -release 4.3 $(LDFLAGS) \
 	@WITH_BEECRYPT_LIB@ \
 	$(top_builddir)/file/src/libfmagic.la \
