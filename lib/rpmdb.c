@@ -2,6 +2,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/file.h>
 #include <unistd.h>
 
 #include "dbindex.h"
@@ -35,6 +36,20 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     if (!db.pkgs) {
 	error(RPMERR_DBOPEN, "failed to open %s\n", filename);
 	return 1;
+    }
+
+    /* try and get a lock - this is released by the kernel when we close
+       the file */
+    if (mode & O_RDWR) {
+        if (flock(db.pkgs->fd, LOCK_EX | LOCK_NB)) {
+	    error(RPMERR_FLOCK, "cannot get %s lock on database", "exclusive");
+	    return 1;
+	} 
+    } else {
+        if (flock(db.pkgs->fd, LOCK_SH | LOCK_NB)) {
+	    error(RPMERR_FLOCK, "cannot get %s lock on database", "shared");
+	    return 1;
+	} 
     }
     
     strcpy(filename, prefix); 
