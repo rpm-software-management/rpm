@@ -123,7 +123,7 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
     *uret = u = uCache[i];
 
     /* Zap proxy host and port in case they have been reset */
-    FREE(u->proxyp);
+    u->proxyp = -1;
     FREE(u->proxyh);
 
     /* Perform one-time FTP initialization */
