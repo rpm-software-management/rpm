@@ -20,6 +20,20 @@ AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
 
+echo $ac_n "checking for POSIX chmod... $ac_c"
+touch foo.chmodtest
+chmod 744 foo.chmodtest
+chmod +X foo.chmodtest 2>/dev/null
+a=`ls -l foo.chmodtest | awk '{print $1}'`
+rm -f foo.chmodtest
+if test "$a" = "-rwxr-xr-x"; then
+    echo "yes"
+    FIXPERMS=a+rX,g-w,o-w 
+else
+    echo "no (tell your OS vendor about GNU fileutils)"
+    FIXPERMS=a+r,g-w,o-w 
+fi
+
 AC_AIX
 AC_MINIX
 AC_ISC_POSIX
@@ -235,5 +249,6 @@ AC_SUBST(PO)
 AC_SUBST(GETTEXTSTUB)
 AC_SUBST(RPM)
 AC_SUBST(CPIOBIN)
+AC_SUBST(FIXPERMS)
 
 AC_OUTPUT(Makefile Makefile.inc lib-rpmrc lib/Makefile build/Makefile tools/Makefile po/Makefile misc/Makefile)
