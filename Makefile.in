@@ -45,12 +45,12 @@ endif
 
 all: $(TARGET)
 
-rpm: lib/librpm.a build/libbuild.a @GETTEXTSTUB@ $(OBJS)
-	$(CC) -o rpm -static $(LDFLAGS) @GETTEXTSTUB@ $(OBJS) $(LOADLIBES) \
+rpm: lib/librpm.a build/libbuild.a $(OBJS)
+	$(CC) -o rpm -static $(LDFLAGS) $(OBJS) $(LOADLIBES) \
 		$(LIBEFENCE)
 
-rpm.shared: lib/librpm.a build/libbuild.a @GETTEXTSTUB@ $(OBJS)
-	$(CC) -o rpm.shared $(LDFLAGS) @GETTEXTSTUB@ $(OBJS) $(LOADLIBES) \
+rpm.shared: lib/librpm.a build/libbuild.a $(OBJS)
+	$(CC) -o rpm.shared $(LDFLAGS) $(OBJS) $(LOADLIBES) \
 		$(LIBEFENCE)
 
 rpm2cpio: lib/librpm.a rpm2cpio.o
@@ -96,7 +96,12 @@ install: all
 	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(MANDIR)
 	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(ETCDIR)
 	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(LIBDIR)
-	$(INSTALL) -s -m 755 -o 0 -g 0 rpm $(installprefix)/$(RPMBINDIR)
+	if [ -f rpm ]; then \
+	    $(INSTALL) -s -m 755 -o 0 -g 0 rpm $(installprefix)/$(RPMBINDIR); \
+	else \
+	    $(INSTALL) -s -m 755 -o 0 -g 0 rpm.shared $(installprefix)/$(RPMBINDIR)/rpm; \
+	fi
+	
 	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/gendiff $(installprefix)/$(BINDIR)
 	$(INSTALL) -m 755 -o 0 -g 0 $(srcdir)/find-provides $(installprefix)/$(BINDIR)
 	$(INSTALL) -s -m 755 -o 0 -g 0 rpm2cpio $(installprefix)/$(BINDIR)
