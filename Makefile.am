@@ -118,15 +118,21 @@ install-data-local:
 	done
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/BUILD
 	@case "@build_cpu@" in \
-	*86) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i386 ;;\
+	*86)	$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i386;\
+		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i486;\
+		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i586;\
+		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i686;\
+		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/athlon ;;\
 	alpha*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/alpha ;;\
 	sparc*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparc;\
+		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparcv9;\
 		$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparc64 ;;\
 	powerpc*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/ppc ;;\
 	esac
 	@case "@build_os@" in \
 	mint) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/m68kmint ;;\
-	linux*) chmod u+x ./installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" ./installplatform rpmrc macros platform ; \
+	solaris*|linux*) \
+	   chmod u+x ./installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" ./installplatform rpmrc macros platform ; \
 	   $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@ ;;\
 	*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@ ;;\
 	esac

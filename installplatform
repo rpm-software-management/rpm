@@ -27,8 +27,10 @@ OS="`$RPM --eval '%{_os}'`"
 target_platform="`$RPM --eval '%{_target_platform}'`"
 target="`$RPM --eval '%{_target}'`"
 
-ln -sf ${arch}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${VENDOR}-${OS}
-ln -sf ${arch}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${OS}
+rm -f ${DESTDIR}/${pkglibdir}/noarch-${VENDOR}-${OS}
+ln -s ${arch}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${VENDOR}-${OS}
+rm -f ${DESTDIR}/${pkglibdir}/noarch-${OS}
+ln -s ${arch}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${OS}
 
 case "$arch" in
   i[3456]86) SUBSTS='s_i386_i386_ s_i386_i486_ s_i386_i586_ s_i386_i686_' ;;
@@ -67,8 +69,14 @@ for SUBST in $SUBSTS ; do
 
   #
   # Better try to create these too until the smoke clears. Yuck.
-  [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET}
-  [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET_PLATFORM}" ] || ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
+  [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET}" ] || {
+    rm -f ${DESTDIR}/${pkglibdir}/${TARGET}
+    ln -s ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET}
+  }
+  [ "${ARCH}-${VENDOR}-${OS}" = "${TARGET_PLATFORM}" ] || {
+    rm -f ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
+    ln -s ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/${TARGET_PLATFORM}
+  }
 
 done
 
