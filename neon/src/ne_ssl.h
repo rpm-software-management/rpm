@@ -105,7 +105,7 @@ int ne_ssl_cert_digest(const ne_ssl_certificate *cert, char *digest)
  * NUL-terminated human-readable strings.  The buffers must be at
  * least NE_SSL_VDATELEN bytes in length. */
 void ne_ssl_cert_validity(const ne_ssl_certificate *cert,
-                          char *from, char *until)
+                          /*@out@*/ char *from, /*@out@*/ char *until)
 	/*@modifies from, until @*/;
 
 /* Returns zero if 'c1' and 'c2' refer to the same certificate, or

@@ -110,7 +110,7 @@ typedef struct {
 /* Determines server capabilities (using OPTIONS).  Pass 'path' as "*"
  * to determine proxy server capabilities if using a proxy server. */
 int ne_options(ne_session *sess, const char *path,
-	       ne_server_capabilities *caps)
+	       /*@out@*/ ne_server_capabilities *caps)
 	/*@globals internalState @*/
 	/*@modifies internalState @*/;
 

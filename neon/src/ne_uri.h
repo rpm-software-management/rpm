@@ -72,7 +72,7 @@ typedef struct {
  * are malloc'ed, structure should be free'd with uri_free on
  * successful return.  Any unspecified URI fields are set to NULL or 0
  * appropriately in *parsed. */
-int ne_uri_parse(const char *uri, ne_uri *parsed)
+int ne_uri_parse(const char *uri, /*@out@*/ ne_uri *parsed)
 	/*@modifies parsed @*/;
 
 /* Turns a URI structure back into a string.  String is

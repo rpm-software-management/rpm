@@ -155,8 +155,10 @@ enum ne_proppatch_optype {
     ne_propremove
 };
 typedef struct {
+/*@observer@*/
     const ne_propname *name;
     enum ne_proppatch_optype type;
+/*@observer@*/
     const char *value;
 } ne_proppatch_operation;
 
