@@ -4,12 +4,13 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: RPM.xs,v 1.6 2000/08/02 08:45:16 rjray Exp $";
+static char * const rcsid = "$Id: RPM.xs,v 1.7 2000/10/08 10:06:20 rjray Exp $";
 
 extern XS(boot_RPM__Constants);
 extern XS(boot_RPM__Header);
 extern XS(boot_RPM__Database);
 extern XS(boot_RPM__Error);
+extern XS(boot_RPM__Package);
 
 static HV* tag2num_priv;
 static HV* num2tag_priv;
@@ -116,4 +117,5 @@ BOOT:
     newXS("RPM::bootstrap_Header", boot_RPM__Header, file);
     newXS("RPM::bootstrap_Database", boot_RPM__Database, file);
     newXS("RPM::bootstrap_Error", boot_RPM__Error, file);
+    newXS("RPM::bootstrap_Package", boot_RPM__Package, file);
 }
