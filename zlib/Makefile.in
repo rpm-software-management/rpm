@@ -80,7 +80,7 @@ match.o: match.S
 	rm -f _match.s
 
 $(SHAREDLIB).$(VER): $(OBJS)
-	$(LDSHARED) -o $@ $(OBJS)
+	$(LDSHARED) -o $@ $(OBJS) -lc
 	rm -f $(SHAREDLIB) $(SHAREDLIB).1
 	ln -s $@ $(SHAREDLIB)
 	ln -s $@ $(SHAREDLIB).1
