@@ -111,6 +111,7 @@
 
 /**
  */
+/*@null@*/
 static rpmmiObject *
 rpmdb_Match (rpmdbObject * s, PyObject * args)
 	/*@globals rpmGlobalMacroContext @*/
@@ -164,6 +165,7 @@ rpmdb_length(rpmdbObject * s)
 
 /**
  */
+/*@null@*/
 static hdrObject *
 rpmdb_subscript(rpmdbObject * s, PyObject * key)
 	/*@globals rpmGlobalMacroContext @*/
@@ -208,7 +210,7 @@ static PyMappingMethods rpmdb_as_mapping = {
 static void rpmdb_dealloc(rpmdbObject * s)
 	/*@modifies s @*/
 {
-    if (s->db)
+    if (s->db != NULL)
 	rpmdbClose(s->db);
     PyObject_Del(s);
 }

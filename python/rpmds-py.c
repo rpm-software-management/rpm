@@ -19,6 +19,7 @@
 
 /*@access rpmds @*/
 
+/*@null@*/
 static PyObject *
 rpmds_Debug(/*@unused@*/ rpmdsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -29,6 +30,7 @@ rpmds_Debug(/*@unused@*/ rpmdsObject * s, PyObject * args)
     return Py_None;
 }
 
+/*@null@*/
 static PyObject *
 rpmds_Count(rpmdsObject * s, PyObject * args)
 	/*@*/
@@ -37,6 +39,7 @@ rpmds_Count(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("i", rpmdsCount(s->ds));
 }
 
+/*@null@*/
 static PyObject *
 rpmds_Ix(rpmdsObject * s, PyObject * args)
 	/*@*/
@@ -45,6 +48,7 @@ rpmds_Ix(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("i", rpmdsIx(s->ds));
 }
 
+/*@null@*/
 static PyObject *
 rpmds_DNEVR(rpmdsObject * s, PyObject * args)
 	/*@*/
@@ -53,6 +57,7 @@ rpmds_DNEVR(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("s", rpmdsDNEVR(s->ds));
 }
 
+/*@null@*/
 static PyObject *
 rpmds_N(rpmdsObject * s, PyObject * args)
 	/*@*/
@@ -61,6 +66,7 @@ rpmds_N(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("s", rpmdsN(s->ds));
 }
 
+/*@null@*/
 static PyObject *
 rpmds_EVR(rpmdsObject * s, PyObject * args)
 	/*@*/
@@ -69,6 +75,7 @@ rpmds_EVR(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("s", rpmdsEVR(s->ds));
 }
 
+/*@null@*/
 static PyObject *
 rpmds_Flags(rpmdsObject * s, PyObject * args)
 	/*@*/
@@ -77,6 +84,7 @@ rpmds_Flags(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("i", rpmdsFlags(s->ds));
 }
 
+/*@null@*/
 static PyObject *
 rpmds_TagN(rpmdsObject * s, PyObject * args)
 	/*@*/
@@ -85,6 +93,7 @@ rpmds_TagN(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("i", rpmdsTagN(s->ds));
 }
 
+/*@null@*/
 static PyObject *
 rpmds_Color(rpmdsObject * s, PyObject * args)
 	/*@*/
@@ -93,6 +102,7 @@ rpmds_Color(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("i", rpmdsColor(s->ds));
 }
 
+/*@null@*/
 static PyObject *
 rpmds_Refs(rpmdsObject * s, PyObject * args)
 	/*@*/
@@ -116,6 +126,7 @@ rpmds_iter(rpmdsObject * s)
     return (PyObject *)s;
 }
 
+/*@null@*/
 static PyObject *
 rpmds_iternext(rpmdsObject * s)
 	/*@globals _Py_NoneStruct @*/
@@ -153,6 +164,7 @@ rpmds_iternext(rpmdsObject * s)
     return result;
 }
 
+/*@null@*/
 static PyObject *
 rpmds_Next(rpmdsObject * s, PyObject *args)
 	/*@globals _Py_NoneStruct @*/
@@ -172,6 +184,7 @@ rpmds_Next(rpmdsObject * s, PyObject *args)
     return result;
 }
 
+/*@null@*/
 static PyObject *
 rpmds_SetNoPromote(rpmdsObject * s, PyObject * args)
 	/*@modifies s @*/
@@ -183,6 +196,7 @@ rpmds_SetNoPromote(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("i", rpmdsSetNoPromote(s->ds, nopromote));
 }
 
+/*@null@*/
 static PyObject *
 rpmds_Notify(rpmdsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -199,6 +213,7 @@ rpmds_Notify(rpmdsObject * s, PyObject * args)
 }
 
 #ifdef	NOTYET
+/*@null@*/
 static PyObject *
 rpmds_Problem(rpmdsObject * s, PyObject * args)
 	/*@*/
@@ -293,6 +308,7 @@ rpmds_length(rpmdsObject * s)
     return rpmdsCount(s->ds);
 }
 
+/*@null@*/
 static PyObject *
 rpmds_subscript(rpmdsObject * s, PyObject * key)
 	/*@modifies s @*/

@@ -1332,10 +1332,12 @@ if (fi->actions == NULL)
 	i = p->nrelocs;
 	if (newPath != NULL && *newPath != '\0' && p->relocs != NULL)
 	for (i = 0; i < p->nrelocs; i++) {
+/*@-nullpass@*/ /* XXX {old,new}Path might be NULL */
 	   if (strcmp(p->relocs[i].oldPath, "/"))
 		continue;
 	   if (strcmp(p->relocs[i].newPath, newPath))
 		continue;
+/*@=nullpass@*/
 	   break;
 	}
 

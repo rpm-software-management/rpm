@@ -16,51 +16,38 @@
 +slovak-fcns
 -bufferoverflowhigh
 
--branchstate
--castfcnptr
--compdef
--evalorderuncon
--exportheader
--globs
--globstate
--incondefs		# 1
--internalglobs
--modfilesys
--modnomods
--modobserveruncon
--moduncon
--modunconnomods
--noeffect
--noeffectuncon
--nullassign
--nullderef
+-castfcnptr		# 48
+-compdef		# 28
+-globs			# 150
+-globstate		# 3 rpmfd
+-internalglobs		# 114
+-modfilesys		# 131
+-moduncon		# 441
+-noeffect		# 7
+-noeffectuncon		# 132
+-nullassign		# 60
 -nullpass		# 40
--nullret
--nullstate
 -paramuse		# 14
--predboolothers
--protoparammatch
+-protoparammatch	# 5
 -redecl			# 23
--retalias
--retvalint
--shiftimplementation
--sizeoftype
--type
--usereleased
+-retalias		# 41 PyNone
+-retvalint		# 51
+-sizeoftype		# 11
+-type			# 44
+-usereleased		# 6
 
--dependenttrans
--exposetrans
--immediatetrans
--kepttrans
--newreftrans
--observertrans
--onlytrans
--readonlytrans
--refcounttrans
--statictrans
--temptrans
+-dependenttrans		# 3
+-exposetrans		# 2 rpmte
+-immediatetrans		# 34 PyNone
+-kepttrans		# 1 rpmfd
+-newreftrans		# 3
+-onlytrans		# 2 rpmfd
+-readonlytrans		# 211
+-refcounttrans		# 5
+-statictrans		# 46
+-temptrans		# 10
 
--ifempty
+-ifempty		# 51
 
 # --- +partial artifacts
 -declundef

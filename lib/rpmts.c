@@ -219,6 +219,7 @@ static int isArch(const char * arch)
 }
 /*@=boundsread@*/
 
+/*@-compdef@*/ /* keyp might no be defined. */
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen)
 {
@@ -299,6 +300,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
     return mi;
 }
+/*@=compdef@*/
 
 rpmRC rpmtsFindPubkey(rpmts ts)
 {

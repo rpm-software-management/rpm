@@ -21,6 +21,7 @@ extern PyTypeObject PyFrame_Type;
 
 /**
  */
+/*@observer@*/
 static const char * lbl(void * s)
 	/*@*/
 {

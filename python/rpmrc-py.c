@@ -227,6 +227,7 @@ fprintf(stderr, "*** rpmrc_iter(%p[%s])\n", s, lbl(s));
 
 /**
  */
+/*@null@*/
 static PyObject * rpmrc_iternext(PyObject * s)
 	/*@*/
 {
@@ -239,6 +240,7 @@ fprintf(stderr, "*** rpmrc_iternext(%p[%s])\n", s, lbl(s));
 
 /**
  */
+/*@null@*/
 static PyObject * rpmrc_next(PyObject * s, PyObject *args)
 	/*@*/
 {
@@ -285,6 +287,7 @@ fprintf(stderr, "*** rpmrc_alloc(%p[%s},%d) ret %p[%s]\n", subtype, lbl(subtype)
 
 /** \ingroup py_c
  */
+/*@null@*/
 static PyObject * rpmrc_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 	/*@*/
 {

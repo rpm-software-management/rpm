@@ -24,26 +24,31 @@ extern PyTypeObject rpmds_Type;
 
 /**
  */
+/*@null@*/
 rpmds dsFromDs(rpmdsObject * ds)
 	/*@*/;
 
 /**
  */
+/*@null@*/
 rpmdsObject * rpmds_Wrap(rpmds ds)
 	/*@*/;
 
 /**
  */
+/*@null@*/
 rpmdsObject * rpmds_Single(PyObject * s, PyObject * args)
 	/*@*/;
 
 /**
  */
+/*@null@*/
 rpmdsObject * hdr_dsFromHeader(PyObject * s, PyObject * args)
 	/*@*/;
 
 /**
  */
+/*@null@*/
 rpmdsObject * hdr_dsOfHeader(PyObject * s, PyObject * args)
 	/*@*/;
 

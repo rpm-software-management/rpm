@@ -18,13 +18,17 @@ typedef struct rpmfiObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmfi_Type;
 
+/*@null@*/
 rpmfi fiFromFi(rpmfiObject * fi)
 	/*@*/;
 
+/*@null@*/
 rpmfiObject * rpmfi_Wrap(rpmfi fi)
 	/*@*/;
 
+/*@null@*/
 rpmfiObject * hdr_fiFromHeader(PyObject * s, PyObject * args)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 
 #endif

@@ -32,6 +32,7 @@ static int _rpmfd_debug = 1;
  * \brief An python rpm.fd object represents an rpm I/O handle.
  */
 
+/*@null@*/
 static PyObject *
 rpmfd_Debug(/*@unused@*/ rpmfdObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -79,6 +80,7 @@ static int closeCallback(FILE * f)
 	last = node;
 	node = node->next;
     }
+/*@-branchstate@*/
     if (node) {
 	if (last)
 	    last->next = node->next;
@@ -91,11 +93,13 @@ static int closeCallback(FILE * f)
 	    node->fd = fdFree(node->fd, "closeCallback");
 	node = _free (node);
     }
+/*@=branchstate@*/
     return 0;
 }
 
 /**
  */
+/*@null@*/
 static PyObject *
 rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args)
 	/*@globals fdhead, fdtail @*/
@@ -136,6 +140,7 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args)
     }
 
     node->next = NULL;
+/*@-branchstate@*/
     if (!fdhead) {
 	fdhead = fdtail = node;
     } else if (fdtail) {
@@ -143,6 +148,7 @@ rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args)
     } else {
 	fdhead = node;
     }
+/*@=branchstate@*/
     fdtail = node;
 
     return PyFile_FromFile (node->f, path, mode, closeCallback);
@@ -247,6 +253,7 @@ fprintf(stderr, "*** rpmfd_alloc(%p,%d) ret %p\n", subtype, nitems, s);
 
 /** \ingroup py_c
  */
+/*@null@*/
 static rpmfdObject * rpmfd_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 	/*@*/
 {

@@ -84,6 +84,7 @@ rpmmi_iter(rpmmiObject * s)
 
 /**
  */
+/*@null@*/
 static PyObject *
 rpmmi_iternext(rpmmiObject * s)
 	/*@globals rpmGlobalMacroContext @*/
@@ -100,6 +101,7 @@ rpmmi_iternext(rpmmiObject * s)
 
 /**
  */
+/*@null@*/
 static PyObject *
 rpmmi_Next(rpmmiObject * s, PyObject *args)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
@@ -121,6 +123,7 @@ rpmmi_Next(rpmmiObject * s, PyObject *args)
 
 /**
  */
+/*@null@*/
 static PyObject *
 rpmmi_Instance(rpmmiObject * s, PyObject * args)
 	/*@*/
@@ -130,7 +133,7 @@ rpmmi_Instance(rpmmiObject * s, PyObject * args)
     if (!PyArg_ParseTuple(args, ":Instance"))
 	return NULL;
 
-    if (s->mi)
+    if (s->mi != NULL)
 	rc = rpmdbGetIteratorOffset(s->mi);
 
     return Py_BuildValue("i", rc);
@@ -138,6 +141,7 @@ rpmmi_Instance(rpmmiObject * s, PyObject * args)
 
 /**
  */
+/*@null@*/
 static PyObject *
 rpmmi_Count(rpmmiObject * s, PyObject * args)
 	/*@*/
@@ -147,7 +151,7 @@ rpmmi_Count(rpmmiObject * s, PyObject * args)
     if (!PyArg_ParseTuple(args, ":Instance"))
 	return NULL;
 
-    if (s->mi)
+    if (s->mi != NULL)
 	rc = rpmdbGetIteratorCount(s->mi);
 
     return Py_BuildValue("i", rc);
@@ -155,6 +159,7 @@ rpmmi_Count(rpmmiObject * s, PyObject * args)
 
 /**
  */
+/*@null@*/
 static PyObject *
 rpmmi_Pattern(rpmmiObject * s, PyObject * args)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/

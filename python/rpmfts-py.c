@@ -72,10 +72,11 @@ rpmfts_initialize(rpmftsObject * s, const char * root, int options, int ignore)
 	/*@modifies s @*/
 {
     int ac = 1;
-    char * t;
     size_t nb;
 
+/*@-branchstate@*/
     if (root == NULL)	root = "/";
+/*@=branchstate@*/
     if (options == -1)	options = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
     if (ignore == -1)	ignore = infoBit(FTS_DP);
 
@@ -84,10 +85,12 @@ rpmfts_initialize(rpmftsObject * s, const char * root, int options, int ignore)
     nb = (ac + 1) * sizeof(*s->roots);
     nb += strlen(root) + 1;
     s->roots = malloc(nb);
-    t = (char *) &s->roots[ac + 1];
-    s->roots[0] = t;
-    s->roots[ac] = NULL;
-    (void) stpcpy(t, root);
+    if (s->roots != NULL) {
+	char *t = (char *) &s->roots[ac + 1];
+	s->roots[0] = t;
+	s->roots[ac] = NULL;
+	(void) stpcpy(t, root);
+    }
 
     s->options = options;
     s->ignore = ignore;
@@ -131,6 +134,7 @@ rpmfts_debug(__FUNCTION__, s);
     return rc;
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_step(rpmftsObject * s)
 	/*@modifies s @*/
@@ -168,6 +172,7 @@ rpmfts_debug(__FUNCTION__, s);
  * \brief A python rpm.fts object represents an rpm fts(3) handle.
  */
 
+/*@null@*/
 static PyObject *
 rpmfts_Debug(/*@unused@*/ rpmftsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -180,6 +185,7 @@ rpmfts_Debug(/*@unused@*/ rpmftsObject * s, PyObject * args)
     return Py_None;
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_Open(rpmftsObject * s, PyObject * args)
 	/*@modifies s @*/
@@ -199,6 +205,7 @@ rpmfts_debug(__FUNCTION__, s);
     return (PyObject *)s;
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_Read(rpmftsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -219,6 +226,7 @@ rpmfts_debug(__FUNCTION__, s);
     return result;
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_Children(rpmftsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -240,6 +248,7 @@ rpmfts_debug(__FUNCTION__, s);
     return Py_None;
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_Close(rpmftsObject * s, PyObject * args)
 	/*@modifies s @*/
@@ -251,6 +260,7 @@ rpmfts_debug(__FUNCTION__, s);
     return Py_BuildValue("i", rpmfts_state(s, RPMFTS_CLOSE));
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_Set(rpmftsObject * s, PyObject * args)
 	/*@modifies s @*/
@@ -326,6 +336,7 @@ rpmfts_iter(rpmftsObject * s)
     return (PyObject *)s;
 }
 
+/*@null@*/
 static PyObject *
 rpmfts_iternext(rpmftsObject * s)
 	/*@modifies s @*/
@@ -388,6 +399,7 @@ rpmfts_debug(__FUNCTION__, s);
     return rpmfts_initialize(s, root, options, ignore);
 }
 
+/*@null@*/
 static PyObject * rpmfts_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	/*@*/
 {
@@ -491,7 +503,7 @@ static int rpmfts_print(rpmftsObject * s,  FILE * fp, /*@unused@*/ int flags)
 {
     static int indent = 2;
 
-    if (!(s && s->ftsp && s->fts))
+    if (!(s != NULL && s->ftsp != NULL && s->fts != NULL))
 	return -1;
     fprintf(fp, "FTS_%-7s %*s%s", ftsInfoStr(s->fts->fts_info),
 	indent * (s->fts->fts_level < 0 ? 0 : s->fts->fts_level), "",

@@ -18,7 +18,7 @@
 -redecl
 -bufferoverflowhigh
 
--nullpass		# rpmExpand annoyance
+-nullpass		# 62 rpmExpand annoyance
 
 # --- +partial artifacts
 -declundef
@@ -38,7 +38,7 @@
 -exportfcn
 -exporttype
 -exportvar
--fielduse		# 1 occurence <bits/sigset.h>
+-fielduse		# 405
 -forblock		# tedious
 -ifblock		# tedious
 -namechecks		# 1843 tedious ANSI compliance checks
@@ -46,7 +46,7 @@
 
 -compdestroy		# 66
 -mustdefine		# 66
--sys-dir-errors
+-sys-dir-errors		# 842
 
 -strictops		# 46
 -whileblock		# 54
@@ -54,8 +54,8 @@
 # --- not-yet at checks level
 +enumint		# 861
 -mustfree		# 671
--predboolptr		# 311
--usedef			# 191
+-predboolptr		# 308
+-usedef			# 126
 
 # --- not-yet at standard level
 -boolops		# 165

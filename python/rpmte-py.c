@@ -58,6 +58,7 @@
  * @param tag	'Basenames'
  */
 
+/*@null@*/
 static PyObject *
 rpmte_Debug(/*@unused@*/ rpmteObject * s, /*@unused@*/ PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -68,6 +69,7 @@ rpmte_Debug(/*@unused@*/ rpmteObject * s, /*@unused@*/ PyObject * args)
     return Py_None;
 }
 
+/*@null@*/
 static PyObject *
 rpmte_TEType(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -76,6 +78,7 @@ rpmte_TEType(rpmteObject * s, PyObject * args)
     return Py_BuildValue("i", rpmteType(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_N(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -84,6 +87,7 @@ rpmte_N(rpmteObject * s, PyObject * args)
     return Py_BuildValue("s", rpmteN(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_E(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -92,6 +96,7 @@ rpmte_E(rpmteObject * s, PyObject * args)
     return Py_BuildValue("s", rpmteE(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_V(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -100,6 +105,7 @@ rpmte_V(rpmteObject * s, PyObject * args)
     return Py_BuildValue("s", rpmteV(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_R(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -108,6 +114,7 @@ rpmte_R(rpmteObject * s, PyObject * args)
     return Py_BuildValue("s", rpmteR(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_A(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -116,6 +123,7 @@ rpmte_A(rpmteObject * s, PyObject * args)
     return Py_BuildValue("s", rpmteA(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_O(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -124,6 +132,7 @@ rpmte_O(rpmteObject * s, PyObject * args)
     return Py_BuildValue("s", rpmteO(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_NEVR(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -132,6 +141,7 @@ rpmte_NEVR(rpmteObject * s, PyObject * args)
     return Py_BuildValue("s", rpmteNEVR(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_Color(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -140,6 +150,7 @@ rpmte_Color(rpmteObject * s, PyObject * args)
     return Py_BuildValue("i", rpmteColor(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_PkgFileSize(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -148,6 +159,7 @@ rpmte_PkgFileSize(rpmteObject * s, PyObject * args)
     return Py_BuildValue("i", rpmtePkgFileSize(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_Depth(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -156,6 +168,7 @@ rpmte_Depth(rpmteObject * s, PyObject * args)
     return Py_BuildValue("i", rpmteDepth(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_Npreds(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -164,6 +177,7 @@ rpmte_Npreds(rpmteObject * s, PyObject * args)
     return Py_BuildValue("i", rpmteNpreds(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_Degree(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -172,6 +186,7 @@ rpmte_Degree(rpmteObject * s, PyObject * args)
     return Py_BuildValue("i", rpmteDegree(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_Parent(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -180,6 +195,7 @@ rpmte_Parent(rpmteObject * s, PyObject * args)
     return Py_BuildValue("i", rpmteParent(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_Tree(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -188,6 +204,7 @@ rpmte_Tree(rpmteObject * s, PyObject * args)
     return Py_BuildValue("i", rpmteTree(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_AddedKey(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -196,6 +213,7 @@ rpmte_AddedKey(rpmteObject * s, PyObject * args)
     return Py_BuildValue("i", rpmteAddedKey(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_DependsOnKey(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -204,6 +222,7 @@ rpmte_DependsOnKey(rpmteObject * s, PyObject * args)
     return Py_BuildValue("i", rpmteDependsOnKey(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_DBOffset(rpmteObject * s, PyObject * args)
 	/*@*/
@@ -212,6 +231,7 @@ rpmte_DBOffset(rpmteObject * s, PyObject * args)
     return Py_BuildValue("i", rpmteDBOffset(s->te));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_Key(rpmteObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -229,6 +249,7 @@ rpmte_Key(rpmteObject * s, PyObject * args)
     return Key;
 }
 
+/*@null@*/
 static PyObject *
 rpmte_DS(rpmteObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -259,6 +280,7 @@ rpmte_DS(rpmteObject * s, PyObject * args)
     return (PyObject *) rpmds_Wrap(rpmdsLink(ds, "rpmte_DS"));
 }
 
+/*@null@*/
 static PyObject *
 rpmte_FI(rpmteObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/

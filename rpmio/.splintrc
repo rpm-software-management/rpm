@@ -52,7 +52,7 @@
 -usedef			# 9
 
 # --- not-yet at standard level
--boolops		# 116
+-boolops		# 117
 +boolint		# 11
 +charint		# 146
 +ignorequals		# 112

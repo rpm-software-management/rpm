@@ -13,6 +13,7 @@ typedef struct rpmtsObject_s {
     rpmts	ts;
     PyObject * keyList;		/* keeps reference counts correct */
     FD_t scriptFd;
+/*@relnull@*/
     rpmtsi tsi;
     rpmElementType tsiFilter;
     rpmprobFilterFlags ignoreSet;

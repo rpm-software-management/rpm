@@ -18,6 +18,7 @@
 
 #include "debug.h"
 
+/*@null@*/
 static PyObject *
 rpmal_Debug(/*@unused@*/ rpmalObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -28,6 +29,7 @@ rpmal_Debug(/*@unused@*/ rpmalObject * s, PyObject * args)
     return Py_None;
 }
 
+/*@null@*/
 static PyObject *
 rpmal_Add(rpmalObject * s, PyObject * args)
 	/*@modifies s @*/
@@ -47,6 +49,7 @@ rpmal_Add(rpmalObject * s, PyObject * args)
     return Py_BuildValue("i", pkgKey);
 }
 
+/*@null@*/
 static PyObject *
 rpmal_Del(rpmalObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -63,6 +66,7 @@ rpmal_Del(rpmalObject * s, PyObject * args)
     return Py_None;
 }
 
+/*@null@*/
 static PyObject *
 rpmal_AddProvides(rpmalObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
@@ -81,6 +85,7 @@ rpmal_AddProvides(rpmalObject * s, PyObject * args)
     return Py_None;
 }
 
+/*@null@*/
 static PyObject *
 rpmal_MakeIndex(rpmalObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/

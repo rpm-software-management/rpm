@@ -16,6 +16,7 @@ typedef struct rpmteObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmte_Type;
 
+/*@null@*/
 rpmteObject * rpmte_Wrap(rpmte te)
 	/*@*/;
 

@@ -23,14 +23,17 @@ struct rpmrcObject_s {
 /*@unchecked@*/
 extern PyTypeObject rpmrc_Type;
 
+/*@null@*/
 PyObject * rpmrc_AddMacro(PyObject * self, PyObject * args)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies rpmGlobalMacroContext, _Py_NoneStruct @*/;
+/*@null@*/
 PyObject * rpmrc_DelMacro(PyObject * self, PyObject * args)
 	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
 	/*@modifies rpmGlobalMacroContext, _Py_NoneStruct @*/;
 
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
+/*@null@*/
 PyObject * rpmrc_Create(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
 #endif
