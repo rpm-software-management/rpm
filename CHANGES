@@ -1,3 +1,6 @@
+2.2.3 -> 2.2.4:
+	- allow -R to %patch
+
 2.2.2 -> 2.2.3:
 	- fixed script file md5 checking when files are in a root
 	- implemented proper strdup/free logic for dependency conflict
