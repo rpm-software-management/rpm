@@ -366,6 +366,7 @@ static int read_line(FILE *f, char *line)
 	if (! fgets(line, LINE_BUF_SIZE, f)) {
 	    /* the end */
 	    if (read_level->next) {
+		error(RPMERR_UNMATCHEDIF, "Unclosed %%if");
 	        return RPMERR_UNMATCHEDIF;
 	    } else {
 	        return 0;
@@ -386,12 +387,14 @@ static int read_line(FILE *f, char *line)
 	} else if (! strncmp("%else", line, 5)) {
 	    if (! read_level->next) {
 	        /* Got an else with no %if ! */
+		error(RPMERR_UNMATCHEDIF, "Got a %%else with no if");
 	        return RPMERR_UNMATCHEDIF;
 	    }
 	    read_level->reading =
 	        read_level->next->reading && ! read_level->reading;
 	} else if (! strncmp("%endif", line, 6)) {
-	    if (! read_level) {
+	    if (! read_level->next) {
+		error(RPMERR_UNMATCHEDIF, "Got a %%endif with no if");
 		return RPMERR_UNMATCHEDIF;
 	    }
 	    rl = read_level;
@@ -787,7 +790,6 @@ Spec parseSpec(FILE *f, char *specfile)
 	} /* switch */
     }
     if (x < 0) {
-	error(RPMERR_READERROR, "Error reading specfile");
 	return NULL;
     }
 
