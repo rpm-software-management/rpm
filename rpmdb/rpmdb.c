@@ -3279,7 +3279,9 @@ static struct skipDir_s {
     _skip("/usr/share/zoneinfo"),
     _skip("/usr/share/locale"),
     _skip("/usr/share/i18n"),
+    _skip("/usr/share/doc"),
     _skip("/usr/lib/locale"),
+    _skip("/usr/src/debug"),
     { 0, NULL }
 };
 

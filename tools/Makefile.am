@@ -29,7 +29,7 @@ noinst_PROGRAMS = \
 	convertdb1 dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = debugedit javadeps rpmcache rpmdeps
+pkgbin_PROGRAMS = debugedit javadeps rpmcache rpmdeps rpmfile
 
 bin_PROGRAMS =	rpmgraph
 
@@ -45,6 +45,14 @@ rpmcache_SOURCES =	rpmcache.c
 rpmdeps_SOURCES =	rpmdeps.c
 rpmdeps_LDADD =		$(top_builddir)/build/librpmbuild.la
 #rpmdeps_LDFLAGS =	$(staticLDFLAGS)
+
+rpmfile.c: $(top_builddir)/file/file.c
+	rm -f $@
+	ln -s $< $@
+
+rpmfile_SOURCES =	rpmfile.c
+rpmfile_LDADD =		$(top_builddir)/rpmio/librpmio.la
+#rpmfile_LDFLAGS =	$(staticLDFLAGS)
 
 rpmgraph_SOURCES =	rpmgraph.c
 #rpmgraph_LDFLAGS =	$(staticLDFLAGS)
