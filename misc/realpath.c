@@ -13,10 +13,6 @@
  * GNU Library Public License for more details.
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <sys/types.h>
 #if defined(HAVE_UNISTD_H) || defined(STDC_HEADERS)
 #include <unistd.h>
