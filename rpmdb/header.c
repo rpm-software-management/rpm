@@ -26,7 +26,7 @@ int _hdr_debug = 0;
 /*@access entryInfo @*/
 /*@access indexEntry @*/
 
-/*@access extensionCache @*/
+/*@access rpmec @*/
 /*@access sprintfTag @*/
 /*@access sprintfToken @*/
 /*@access HV_t @*/
@@ -604,6 +604,9 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 }
 
 /** \ingroup header
+ * @param h		header
+ * @retval *lengthPtr	no. bytes in unloaded header blob
+ * @return		unloaded header blob (NULL on error)
  */
 static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
 		/*@out@*/ int * lengthPtr)
@@ -2228,6 +2231,7 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
     int i;
 
     if (format == NULL) return NULL;
+
     for (i = 0; i < num; i++) {
 	switch (format[i].type) {
 	case PTOK_ARRAY:
@@ -2288,7 +2292,7 @@ static void findTag(char * name, const headerTagTableEntry tags,
     ext = extensions;
     while (ext->type != HEADER_EXT_LAST) {
 	if (ext->name != NULL && ext->type == HEADER_EXT_TAG
-	&& !xstrcasecmp(ext->name, tagname))
+	 && !xstrcasecmp(ext->name, tagname))
 	    break;
 
 	if (ext->type == HEADER_EXT_MORE)
@@ -2314,6 +2318,16 @@ static void findTag(char * name, const headerTagTableEntry tags,
 }
 
 /* forward ref */
+/**
+ * @param token
+ * @param str
+ * @param tags
+ * @param extensions
+ * @retval *endPtr
+ * @param state
+ * @retval *errmsg	error message (if any)
+ * @return		0 on success
+ */
 static int parseExpression(sprintfToken token, char * str, 
 		const headerTagTableEntry tags, 
 		const headerSprintfExtension extensions,
@@ -2322,6 +2336,15 @@ static int parseExpression(sprintfToken token, char * str,
 	/*@requires maxSet(endPtr) >= 0 /\ maxSet(errmsg) >= 0 @*/;
 
 /**
+ * @param str
+ * @param tags
+ * @param extensions
+ * @retval *formatPtr
+ * @retval *numTokensPtr
+ * @retval *endPtr
+ * @param state
+ * @retval *errmsg	error message (if any)
+ * @return		0 on success
  */
 /*@-boundswrite@*/
 static int parseFormat(/*@null@*/ char * str, const headerTagTableEntry tags,
@@ -2368,11 +2391,8 @@ static int parseFormat(/*@null@*/ char * str, const headerTagTableEntry tags,
 		    dst = format[currToken].u.string.string = start;
 		    /*@=temptrans =assignexpose@*/
 		}
-
 		start++;
-
 		*dst++ = *start++;
-
 		/*@switchbreak@*/ break;
 	    } 
 
@@ -2520,18 +2540,23 @@ static int parseFormat(/*@null@*/ char * str, const headerTagTableEntry tags,
 	    /*@switchbreak@*/ break;
 
 	case ']':
+	    if (state != PARSER_IN_ARRAY) {
+		/*@-observertrans -readonlytrans@*/
+		if (errmsg) *errmsg = _("unexpected ]");
+		/*@=observertrans =readonlytrans@*/
+		format = freeFormat(format, numTokens);
+		return 1;
+	    }
+	    *start++ = '\0';
+	    if (endPtr) *endPtr = start;
+	    done = 1;
+	    /*@switchbreak@*/ break;
+
 	case '}':
-	    if ((*start == ']' && state != PARSER_IN_ARRAY) ||
-	        (*start == '}' && state != PARSER_IN_EXPR)) {
-		if (*start == ']') {
-		    /*@-observertrans -readonlytrans@*/
-		    if (errmsg) *errmsg = _("unexpected ]");
-		    /*@=observertrans =readonlytrans@*/
-		} else {
-		    /*@-observertrans -readonlytrans@*/
-		    if (errmsg) *errmsg = _("unexpected }");
-		    /*@=observertrans =readonlytrans@*/
-		}
+	    if (state != PARSER_IN_EXPR) {
+		/*@-observertrans -readonlytrans@*/
+		if (errmsg) *errmsg = _("unexpected }");
+		/*@=observertrans =readonlytrans@*/
 		format = freeFormat(format, numTokens);
 		return 1;
 	    }
@@ -2578,8 +2603,6 @@ static int parseFormat(/*@null@*/ char * str, const headerTagTableEntry tags,
 }
 /*@=boundswrite@*/
 
-/**
- */
 /*@-boundswrite@*/
 static int parseExpression(sprintfToken token, char * str, 
 		const headerTagTableEntry tags, 
@@ -2712,44 +2735,55 @@ static int parseExpression(sprintfToken token, char * str,
 /*@=boundswrite@*/
 
 /**
- * @param h
+ * @param h		header
  * @param fn
- * @retval typeptr
- * @retval data
- * @retval countptr
- * @param ext
+ * @retval *typeptr
+ * @retval *data
+ * @retval *countptr
+ * @param ec		extension cache
  * @return		0 on success, 1 on failure
  */
 static int getExtension(Header h, headerTagTagFunction fn,
 		/*@out@*/ hTYP_t typeptr,
 		/*@out@*/ hPTR_t * data,
 		/*@out@*/ hCNT_t countptr,
-		extensionCache ext)
+		rpmec ec)
 	/*@modifies *typeptr, *data, *countptr, ext @*/
 	/*@requires maxSet(typeptr) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(countptr) >= 0 @*/
 {
-    if (!ext->avail) {
-	if (fn(h, &ext->type, &ext->data, &ext->count, &ext->freeit))
+    if (!ec->avail) {
+	if (fn(h, &ec->type, &ec->data, &ec->count, &ec->freeit))
 	    return 1;
-	ext->avail = 1;
+	ec->avail = 1;
     }
 
-    if (typeptr) *typeptr = ext->type;
-    if (data) *data = ext->data;
-    if (countptr) *countptr = ext->count;
+    if (typeptr) *typeptr = ec->type;
+    if (data) *data = ec->data;
+    if (countptr) *countptr = ec->count;
 
     return 0;
 }
 
 /**
+ * @param tag
+ * @param h		header
+ * @param etensions
+ * @param ec		extension cache
+ * @param element
+ * @retval *valp
+ * @retval *vallenp
+ * @retval *allocedp
+ * @retval *errmsg	error message (if any)
+ * @return		end of formatted string (NULL on error)
  */
-/*@observer@*/
+/*@observer@*/ /*@null@*/
 static char * formatValue(sprintfTag tag, Header h, 
 		const headerSprintfExtension extensions,
-		extensionCache extCache, int element,
-		char ** valp, int * vallenp, int * allocedp)
-	/*@modifies extCache, *valp, *vallenp, *allocedp @*/
+		rpmec ec, int element,
+		char ** valp, int * vallenp, int * allocedp,
+		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
+	/*@modifies ec, *valp, *vallenp, *allocedp, *errmsg @*/
 	/*@requires maxSet(valp) >= 0 /\ maxSet(vallenp) >= 0
 		/\ maxSet(allocedp) >= 0 @*/
 {
@@ -2770,8 +2804,7 @@ static char * formatValue(sprintfTag tag, Header h,
     /*@-branchstate@*/
     if (tag->ext) {
 /*@-boundswrite@*/
-	if (getExtension(h, tag->ext, &type, &data, &count, 
-			 extCache + tag->extNum))
+	if (getExtension(h, tag->ext, &type, &data, &count, ec + tag->extNum))
 	{
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
@@ -2785,8 +2818,22 @@ static char * formatValue(sprintfTag tag, Header h,
 	    type = RPM_STRING_TYPE;	
 	    data = "(none)";
 	}
-/*@=boundswrite@*/
 
+	/* XXX this test is unnecessary, array sizes are checked */
+	switch (type) {
+	default:
+	    if (element >= count) {
+		data = headerFreeData(data, type);
+		if (errmsg)
+		    errmsg = _("(index out of range)");
+		return NULL;
+	    }
+	    break;
+	case RPM_BIN_TYPE:
+	case RPM_STRING_TYPE:
+	    break;
+	}
+/*@=boundswrite@*/
 	datafree = 1;
     }
     /*@=branchstate@*/
@@ -2843,10 +2890,6 @@ static char * formatValue(sprintfTag tag, Header h,
 	    sprintf(val, buf, strarray[element]);
 	    /*@=formatconst@*/
 	}
-
-	/*@-observertrans -modobserver@*/
-	if (datafree) data = _free(data);
-	/*@=observertrans =modobserver@*/
 
 	break;
 
@@ -2935,6 +2978,11 @@ static char * formatValue(sprintfTag tag, Header h,
     }
     /*@=branchstate@*/
 
+    /*@-observertrans -modobserver@*/
+    if (datafree)
+	data = headerFreeData(data, type);
+    /*@=observertrans =modobserver@*/
+
     /*@-branchstate@*/
     if (val && need > 0) {
 	if (((*vallenp) + need) >= (*allocedp)) {
@@ -2960,21 +3008,33 @@ static char * formatValue(sprintfTag tag, Header h,
 }
 
 /**
+ * @param h		header
+ * @param token
+ * @param extensions
+ * @param ec		extension cache
+ * @param element
+ * @retval *valp
+ * @retval *vallenp
+ * @retval *allocedp
+ * @retval *errmsg	error message (if any)
+ * @return		end of formatted string (NULL on error)
  */
 /*@observer@*/
 static char * singleSprintf(Header h, sprintfToken token,
 		const headerSprintfExtension extensions,
-		extensionCache extCache, int element,
-		char ** valp, int * vallenp, int * allocedp)
-	/*@modifies h, extCache, *valp, *vallenp, *allocedp @*/
+		rpmec ec, int element,
+		char ** valp, int * vallenp, int * allocedp,
+		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
+	/*@modifies h, ec, *valp, *vallenp, *allocedp, *errmsg @*/
 	/*@requires maxSet(valp) >= 0 /\ maxSet(vallenp) >= 0
 		/\ maxSet(allocedp) >= 0 @*/
 {
     char * t, * te;
     int i, j;
     int numElements;
-    int type;
-    sprintfToken condFormat;
+    int_32 type;
+    int_32 count;
+    sprintfToken spft;
     int condNumFormats;
     int need;
 
@@ -3006,23 +3066,24 @@ static char * singleSprintf(Header h, sprintfToken token,
 
     case PTOK_TAG:
 	t = (*valp) + (*vallenp);
-	te = formatValue(&token->u.tag, h, extensions, extCache,
+	te = formatValue(&token->u.tag, h, extensions, ec,
 			(token->u.tag.justOne ? 0 : element),
-			valp, vallenp, allocedp);
+			valp, vallenp, allocedp, errmsg);
+	if (te == NULL)
+	    return NULL;
 	break;
 
     case PTOK_COND:
-	if (token->u.cond.tag.ext ||
-	    headerIsEntry(h, token->u.cond.tag.tag)) {
-	    condFormat = token->u.cond.ifFormat;
+	if (token->u.cond.tag.ext || headerIsEntry(h, token->u.cond.tag.tag)) {
+	    spft = token->u.cond.ifFormat;
 	    condNumFormats = token->u.cond.numIfTokens;
 	} else {
-	    condFormat = token->u.cond.elseFormat;
+	    spft = token->u.cond.elseFormat;
 	    condNumFormats = token->u.cond.numElseTokens;
 	}
 
 	need = condNumFormats * 20;
-	if (condFormat == NULL || need <= 0) break;
+	if (spft == NULL || need <= 0) break;
 	if (((*vallenp) + need) >= (*allocedp)) {
 	    if ((*allocedp) <= need)
 		(*allocedp) += need;
@@ -3035,35 +3096,48 @@ static char * singleSprintf(Header h, sprintfToken token,
 	}
 
 	t = (*valp) + (*vallenp);
-	for (i = 0; i < condNumFormats; i++)
-	    te = singleSprintf(h, condFormat + i, extensions, extCache,
-				element, valp, vallenp, allocedp);
+	for (i = 0; i < condNumFormats; i++, spft++) {
+	    te = singleSprintf(h, spft, extensions, ec,
+				element, valp, vallenp, allocedp, errmsg);
+	    if (te == NULL)
+		return NULL;
+	}
 	break;
 
     case PTOK_ARRAY:
 	numElements = -1;
-	for (i = 0; i < token->u.array.numTokens; i++) {
-	    if (token->u.array.format[i].type != PTOK_TAG ||
-		token->u.array.format[i].u.tag.arrayCount ||
-		token->u.array.format[i].u.tag.justOne) continue;
+	spft = token->u.array.format;
+	for (i = 0; i < token->u.array.numTokens; i++, spft++) {
+	    if (spft->type != PTOK_TAG ||
+		spft->u.tag.arrayCount ||
+		spft->u.tag.justOne) continue;
 
-	    if (token->u.array.format[i].u.tag.ext) {
-		const void * data;
+	    if (spft->u.tag.ext) {
 /*@-boundswrite@*/
-		if (getExtension(h, token->u.array.format[i].u.tag.ext,
-				 &type, &data, &numElements, 
-				 extCache + 
-				   token->u.array.format[i].u.tag.extNum))
+		if (getExtension(h, spft->u.tag.ext, &type, NULL, &count, 
+				 ec + spft->u.tag.extNum))
 		     continue;
 /*@=boundswrite@*/
 	    } else {
 /*@-boundswrite@*/
-		if (!headerGetEntry(h, token->u.array.format[i].u.tag.tag, 
-				    &type, NULL, &numElements))
+		if (!headerGetEntry(h, spft->u.tag.tag, &type, NULL, &count))
 		    continue;
 /*@=boundswrite@*/
 	    } 
-	    /*@loopbreak@*/ break;
+	    if (numElements > 1 && count != numElements)
+	    switch (type) {
+	    default:
+		if (errmsg)
+		    *errmsg =
+			_("array iterator used with different sized arrays");
+		return NULL;
+		/*@notreached@*/ break;
+	    case RPM_BIN_TYPE:
+	    case RPM_STRING_TYPE:
+		break;
+	    }
+	    if (count > numElements)
+		numElements = count;
 	}
 
 	if (numElements == -1) {
@@ -3099,10 +3173,13 @@ static char * singleSprintf(Header h, sprintfToken token,
 
 	    t = (*valp) + (*vallenp);
 	    for (j = 0; j < numElements; j++) {
-		for (i = 0; i < token->u.array.numTokens; i++)
-		    te = singleSprintf(h, token->u.array.format + i, 
-					extensions, extCache, j,
-					valp, vallenp, allocedp);
+		spft = token->u.array.format;
+		for (i = 0; i < token->u.array.numTokens; i++, spft++) {
+		    te = singleSprintf(h, spft, extensions, ec, j,
+					valp, vallenp, allocedp, errmsg);
+		    if (te == NULL)
+			return NULL;
+		}
 	    }
 	}
 	break;
@@ -3112,12 +3189,16 @@ static char * singleSprintf(Header h, sprintfToken token,
 }
 
 /**
+ * Create an extension cache.
+ * @param extensions
+ * @return		new extension cache
  */
-static /*@only@*/ extensionCache
-allocateExtensionCache(const headerSprintfExtension extensions)
+static /*@only@*/ rpmec
+rpmecNew(const headerSprintfExtension extensions)
 	/*@*/
 {
     headerSprintfExtension ext = extensions;
+    rpmec ec;
     int i = 0;
 
     while (ext->type != HEADER_EXT_LAST) {
@@ -3127,26 +3208,26 @@ allocateExtensionCache(const headerSprintfExtension extensions)
 	else
 	    ext++;
     }
-
-    /*@-sizeoftype@*/
-    return xcalloc(i, sizeof(struct extensionCache_s));
-    /*@=sizeoftype@*/
+    ec = xcalloc(i, sizeof(*ec));
+    return ec;
 }
 
 /**
+ * Destroy an extension cache.
+ * @param extensions
+ * @param ec		extension cache
  * @return		NULL always
  */
-static /*@null@*/ extensionCache
-freeExtensionCache(const headerSprintfExtension extensions,
-		        /*@only@*/ extensionCache cache)
-	/*@*/
+static /*@null@*/ rpmec
+rpmecFree(const headerSprintfExtension extensions, /*@only@*/ rpmec ec)
+	/*@modifies ec @*/
 {
     headerSprintfExtension ext = extensions;
     int i = 0;
 
     while (ext->type != HEADER_EXT_LAST) {
 /*@-boundswrite@*/
-	if (cache[i].freeit) cache[i].data = _free(cache[i].data);
+	if (ec[i].freeit) ec[i].data = _free(ec[i].data);
 /*@=boundswrite@*/
 
 	i++;
@@ -3156,7 +3237,7 @@ freeExtensionCache(const headerSprintfExtension extensions,
 	    ext++;
     }
 
-    cache = _free(cache);
+    ec = _free(ec);
     return NULL;
 }
 
@@ -3168,7 +3249,7 @@ freeExtensionCache(const headerSprintfExtension extensions,
  * @param fmt		format to use
  * @param tbltags	array of tag name/value pairs
  * @param extensions	chained table of formatting extensions.
- * @retval errmsg	error message (if any)
+ * @retval *errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
 static /*@only@*/ /*@null@*/
@@ -3178,11 +3259,11 @@ char * headerSprintf(Header h, const char * fmt,
 		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/
 {
-    /*@-castexpose@*/	/* FIX: legacy API shouldn't change. */
+/*@-castexpose@*/	/* FIX: legacy API shouldn't change. */
     headerSprintfExtension exts = (headerSprintfExtension) extensions;
     headerTagTableEntry tags = (headerTagTableEntry) tbltags;
-    /*@=castexpose@*/
-    char * t;
+/*@=castexpose@*/
+    char * te;
     char * fmtString;
     sprintfToken format;
     int numTokens;
@@ -3190,42 +3271,51 @@ char * headerSprintf(Header h, const char * fmt,
     int vallen = 0;
     int alloced = 0;
     int i;
-    extensionCache extCache;
+    rpmec ec;
  
     /*fmtString = escapeString(fmt);*/
     fmtString = xstrdup(fmt);
    
 /*@-boundswrite@*/
     if (parseFormat(fmtString, tags, exts, &format, &numTokens, 
-		    NULL, PARSER_BEGIN, errmsg)) {
-	fmtString = _free(fmtString);
-	return NULL;
-    }
+		    NULL, PARSER_BEGIN, errmsg))
+	goto exit;
 /*@=boundswrite@*/
 
-    extCache = allocateExtensionCache(exts);
+    ec = rpmecNew(exts);
 
     val = xstrdup("");
     for (i = 0; i < numTokens; i++) {
 /*@-boundswrite@*/
 	/*@-mods@*/
-	t = singleSprintf(h, format + i, exts, extCache, 0,
-		&val, &vallen, &alloced);
+	te = singleSprintf(h, format + i, exts, ec, 0,
+		&val, &vallen, &alloced, errmsg);
 	/*@=mods@*/
+	if (te == NULL) {
+	    val = _free(val);
+	    break;
+	}
 /*@=boundswrite@*/
     }
 
     if (val != NULL && vallen < alloced)
 	val = xrealloc(val, vallen+1);	
 
-    fmtString = _free(fmtString);
-    extCache = freeExtensionCache(exts, extCache);
+    ec = rpmecFree(exts, ec);
     format = freeFormat(format, numTokens);
 
+exit:
+    fmtString = _free(fmtString);
     return val;
 }
 
 /**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
  */
 static char * octalFormat(int_32 type, hPTR_t data, 
 		char * formatPrefix, int padding, /*@unused@*/int element)
@@ -3249,6 +3339,12 @@ static char * octalFormat(int_32 type, hPTR_t data,
 }
 
 /**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
  */
 static char * hexFormat(int_32 type, hPTR_t data, 
 		char * formatPrefix, int padding, /*@unused@*/int element)
@@ -3307,6 +3403,12 @@ static char * realDateFormat(int_32 type, hPTR_t data,
 }
 
 /**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
  */
 static char * dateFormat(int_32 type, hPTR_t data, 
 		         char * formatPrefix, int padding, int element)
@@ -3316,6 +3418,12 @@ static char * dateFormat(int_32 type, hPTR_t data,
 }
 
 /**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
  */
 static char * dayFormat(int_32 type, hPTR_t data, 
 		         char * formatPrefix, int padding, int element)
@@ -3326,6 +3434,12 @@ static char * dayFormat(int_32 type, hPTR_t data,
 }
 
 /**
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
  */
 static char * shescapeFormat(int_32 type, hPTR_t data, 
 		char * formatPrefix, int padding, /*@unused@*/int element)

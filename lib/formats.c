@@ -242,7 +242,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
  * @param data		tag value
  * @param formatPrefix
  * @param padding
- * @param element	(unused)
+ * @param element
  * @return		formatted string
  */
 static /*@only@*/ char * base64Format(int_32 type, const void * data, 
@@ -431,7 +431,7 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
  * Retrieve mounted file system paths.
  * @param h		header
  * @retval *type	tag type
- * @retval *data	tag value pointer
+ * @retval *data	tag value
  * @retval *count	no. of data items
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
@@ -463,7 +463,7 @@ static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
  * Retrieve install prefixes.
  * @param h		header
  * @retval *type	tag type
- * @retval *data	tag value pointer
+ * @retval *data	tag value
  * @retval *count	no. of data items
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
@@ -501,7 +501,7 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
  * Retrieve mounted file system space.
  * @param h		header
  * @retval *type	tag type
- * @retval *data	tag value pointer
+ * @retval *data	tag value
  * @retval *count	no. of data items
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
@@ -561,7 +561,7 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
  * Retrieve trigger info.
  * @param h		header
  * @retval *type	tag type
- * @retval *data	tag value pointer
+ * @retval *data	tag value
  * @retval *count	no. of data items
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
@@ -638,7 +638,7 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
  * Retrieve trigger type info.
  * @param h		header
  * @retval *type	tag type
- * @retval *data	tag value pointer
+ * @retval *data	tag value
  * @retval *count	no. of data items
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
@@ -698,7 +698,7 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
  * Retrieve file paths.
  * @param h		header
  * @retval *type	tag type
- * @retval *data	tag value pointer
+ * @retval *data	tag value
  * @retval *count	no. of data items
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
@@ -724,7 +724,7 @@ static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
  * Retrieve file classes.
  * @param h		header
  * @retval *type	tag type
- * @retval *data	tag value pointer
+ * @retval *data	tag value
  * @retval *count	no. of data items
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
@@ -746,7 +746,7 @@ static int fileclassTag(Header h, /*@out@*/ rpmTagType * type,
  * Retrieve file provides.
  * @param h		header
  * @retval *type	tag type
- * @retval *data	tag value pointer
+ * @retval *data	tag value
  * @retval *count	no. of data items
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
@@ -768,7 +768,7 @@ static int fileprovideTag(Header h, /*@out@*/ rpmTagType * type,
  * Retrieve file requires.
  * @param h		header
  * @retval *type	tag type
- * @retval *data	tag value pointer
+ * @retval *data	tag value
  * @retval *count	no. of data items
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
@@ -803,7 +803,7 @@ static const char * _macro_i18ndomains = "%{?_i18ndomains}";
  * @param h		header
  * @param tag		tag
  * @retval *type	tag type
- * @retval *data	tag value pointer
+ * @retval *data	tag value
  * @retval *count	no. of data items
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
@@ -893,7 +893,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
  * Retrieve summary text.
  * @param h		header
  * @retval *type	tag type
- * @retval *data	tag value pointer
+ * @retval *data	tag value
  * @retval *count	no. of data items
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
@@ -913,7 +913,7 @@ static int summaryTag(Header h, /*@out@*/ rpmTagType * type,
  * Retrieve description text.
  * @param h		header
  * @retval *type	tag type
- * @retval *data	tag value pointer
+ * @retval *data	tag value
  * @retval *count	no. of data items
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success
@@ -933,7 +933,7 @@ static int descriptionTag(Header h, /*@out@*/ rpmTagType * type,
  * Retrieve group text.
  * @param h		header
  * @retval *type	tag type
- * @retval *data	tag value pointer
+ * @retval *data	tag value
  * @retval *count	no. of data items
  * @retval *freeData	data-was-malloc'ed indicator
  * @return		0 on success

@@ -153,7 +153,7 @@ enum headerSprintfExtensionType {
  * @param data		tag value
  * @param formatPrefix
  * @param padding
- * @param element
+ * @param element	RPM_BIN_TYPE: no. bytes of data
  * @return		formatted string
  */
 typedef /*only@*/ char * (*headerTagFormatFunction)(int_32 type,
@@ -166,10 +166,10 @@ typedef /*only@*/ char * (*headerTagFormatFunction)(int_32 type,
  * This is allowed to fail, which indicates the tag doesn't exist.
  *
  * @param h		header
- * @retval type		address of tag type
- * @retval data		address of tag value pointer
- * @retval count	address of no. of data items
- * @retval freedata	address of data-was-malloc'ed indicator
+ * @retval *type	tag type
+ * @retval *data	tag value
+ * @retval *count	no. of data items
+ * @retval *freedata	data-was-malloc'ed indicator
  * @return		0 on success
  */
 typedef int (*headerTagTagFunction) (Header h,

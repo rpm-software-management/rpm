@@ -82,6 +82,7 @@
 	- ignore ENOENT return from db->close (#80514,#79314).
 	- fix builddir relative inclusion, add %%pubkeys to rpm header.
 	- fix: package relocations were broken (#75057).
+	- error if querying with iterator on different sized arrays.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

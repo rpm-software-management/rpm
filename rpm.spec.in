@@ -15,7 +15,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.42
+Release: 0.44
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -232,9 +232,10 @@ exit 0
 %files
 %defattr(-,root,root)
 %doc RPM-PGP-KEY RPM-GPG-KEY BETA-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
-%pubkey RPM-PGP-KEY
-%pubkey RPM-GPG-KEY
-%pubkey BETA-GPG-KEY
+# XXX comment these lines out if building with rpm that knows not %pubkey attr
+#%pubkey RPM-PGP-KEY
+#%pubkey RPM-GPG-KEY
+#%pubkey BETA-GPG-KEY
 %attr(0755, @RPMUSER@, @RPMGROUP@)	/bin/rpm
 
 %ifos linux
@@ -458,6 +459,9 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Dec 28 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.44
+- error if querying with iterator on different sized arrays.
+
 * Fri Dec 27 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.42
 - add BETA-GPG-KEY (but not in headers using %%pubkey yet).
 - disable perl module magic rule.

@@ -43,7 +43,8 @@ struct entryInfo_s {
 typedef /*@abstract@*/ struct indexEntry_s * indexEntry;
 struct indexEntry_s {
     struct entryInfo_s info;	/*!< Description of tag data. */
-/*@owned@*/ void * data; 	/*!< Location of tag data. */
+/*@owned@*/
+    void * data; 		/*!< Location of tag data. */
     int length;			/*!< No. bytes of data. */
     int rdlen;			/*!< No. bytes of data in region. */
 };
@@ -52,7 +53,8 @@ struct indexEntry_s {
  * The Header data structure.
  */
 struct headerToken {
-/*@unused@*/ struct HV_s hv;	/*!< Header public methods. */
+/*@unused@*/
+    struct HV_s hv;		/*!< Header public methods. */
 /*@only@*/ /*@null@*/
     void * blob;		/*!< Header region blob. */
 /*@owned@*/ indexEntry index;	/*!< Array of tags. */
@@ -63,32 +65,38 @@ struct headerToken {
 #define	HEADERFLAG_ALLOCATED	(1 << 1) /*!< Is 1st header region allocated? */
 #define	HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
 #define HEADERFLAG_DEBUG	(1 << 3) /*!< Debug this header? */
-/*@refs@*/ int nrefs;		/*!< Reference count. */
+/*@refs@*/
+    int nrefs;			/*!< Reference count. */
 };
 
 /** \ingroup header
  */
 typedef /*@abstract@*/ struct sprintfTag_s * sprintfTag;
 struct sprintfTag_s {
-/*@null@*/ headerTagTagFunction ext;   /*!< if NULL tag element is invalid */
+/*@null@*/
+    headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
     int extNum;
     int_32 tag;
     int justOne;
     int arrayCount;
-/*@kept@*/ char * format;
-/*@kept@*/ /*@null@*/ char * type;
+/*@kept@*/
+    char * format;
+/*@kept@*/ /*@null@*/
+    char * type;
     int pad;
 };
 
 /** \ingroup header
+ * Extension cache.
  */
-typedef /*@abstract@*/ struct extensionCache_s * extensionCache;
-struct extensionCache_s {
+typedef /*@abstract@*/ struct rpmec_s * rpmec;
+struct rpmec_s {
     int_32 type;
     int_32 count;
     int avail;
     int freeit;
-/*@owned@*/ const void * data;
+/*@owned@*/
+    const void * data;
 };
 
 /** \ingroup header
@@ -105,18 +113,22 @@ struct sprintfToken {
     } type;
     union {
 	struct {
-	/*@only@*/ sprintfToken format;
+	/*@only@*/
+	    sprintfToken format;
 	    int numTokens;
 	} array;
 	struct sprintfTag_s tag;
 	struct {
-	/*@dependent@*/ char * string;
+	/*@dependent@*/
+	    char * string;
 	    int len;
 	} string;
 	struct {
-	/*@only@*/ /*@null@*/ sprintfToken ifFormat;
+	/*@only@*/ /*@null@*/
+	    sprintfToken ifFormat;
 	    int numIfTokens;
-	/*@only@*/ /*@null@*/ sprintfToken elseFormat;
+	/*@only@*/ /*@null@*/
+	    sprintfToken elseFormat;
 	    int numElseTokens;
 	    struct sprintfTag_s tag;
 	} cond;

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-12-27 19:22-0500\n"
+"POT-Creation-Date: 2002-12-28 14:25-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1418,7 +1418,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:405
-#: rpmdb/header.c:3237 rpmdb/header.c:3260 rpmdb/header.c:3284
+#: rpmdb/header.c:3327 rpmdb/header.c:3356 rpmdb/header.c:3380
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
@@ -3188,74 +3188,82 @@ msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s(은)는 너무 크거나 너무 적은 정수(int) 값입니다, 생략합니다\n"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2408
+#: rpmdb/header.c:2428
 msgid "missing { after %"
 msgstr "'%' 뒤에 '{' 가 없습니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2438
+#: rpmdb/header.c:2458
 msgid "missing } after %{"
 msgstr "'%{' 뒤에 '}' 가 없습니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2452
+#: rpmdb/header.c:2472
 msgid "empty tag format"
 msgstr "태그 형식이 비어있습니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2466
+#: rpmdb/header.c:2486
 msgid "empty tag name"
 msgstr "태그 이름이 비어있습니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2483
+#: rpmdb/header.c:2503
 msgid "unknown tag"
 msgstr "알 수 없는 태그 입니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2510
+#: rpmdb/header.c:2530
 msgid "] expected at end of array"
 msgstr "배열의 끝부분에 ']' 가 와야합니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2528
+#: rpmdb/header.c:2545
 msgid "unexpected ]"
 msgstr "불필요한 ']' 가 있습니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2532
+#: rpmdb/header.c:2558
 msgid "unexpected }"
 msgstr "불필요한 '}' 가 있습니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2601
+#: rpmdb/header.c:2624
 msgid "? expected in expression"
 msgstr "표현식에 '?' 가 와야합니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2610
+#: rpmdb/header.c:2633
 msgid "{ expected after ? in expression"
 msgstr "표현식의 '?' 뒤에 '{' 가 와야합니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2624 rpmdb/header.c:2671
+#: rpmdb/header.c:2647 rpmdb/header.c:2694
 msgid "} expected in expression"
 msgstr "표현식에 '}' 가 와야합니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2634
+#: rpmdb/header.c:2657
 msgid ": expected following ? subexpression"
 msgstr "'?' 하부표현식(subexpression) 뒤에 ':' 이 와야합니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2654
+#: rpmdb/header.c:2677
 msgid "{ expected after : in expression"
 msgstr "표현식의 ':' 뒤에 '{' 가 와야합니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2681
+#: rpmdb/header.c:2704
 msgid "| expected at end of expression"
 msgstr "표현식의 끝부분에 '|' 가 와야합니다"
+
+#: rpmdb/header.c:2828
+msgid "(index out of range)"
+msgstr ""
+
+#: rpmdb/header.c:3132
+msgid "array iterator used with different sized arrays"
+msgstr ""
 
 #: rpmdb/poptDB.c:18
 msgid "initialize database"
