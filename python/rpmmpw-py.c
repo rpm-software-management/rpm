@@ -1559,10 +1559,9 @@ fprintf(stderr, "sub ++: borrow\n");
 	mpgcd_w(xsize, xdata, mdata, MPW_DATA(z), wksp);
 	break;
     case 'I':
-	wksp = alloca(6*(msize+1)*sizeof(*wksp));
-	mpbset(&b, msize, mdata);
+	wksp = alloca((7*msize+6)*sizeof(*wksp));
 	z = mpw_New(msize);
-	mpbinv_w(&b, xsize, xdata, MPW_DATA(z), wksp);
+	(void) mpextgcd_w(msize, wksp, mdata, MPW_DATA(z), wksp+msize);
 	break;
 #ifdef	DYING
     case 'R':
