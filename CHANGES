@@ -35,6 +35,7 @@
 	- add LC_ALL/LC_MESSAGES to query locale search.
 	- fix: segfault with "--sign" w/o supplying files (#4651).
 	- add headerWrite return code and check for errors.
+	- update python bindings from anaconda.
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).
