@@ -151,16 +151,20 @@ else
     echo "user specificed no gettext; will not build i18n support"
 fi
 
-AC_CHECK_LIB(nsl, gethostname, [LIBSOCKET="-lnsl"])
-AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket $LIBSOCKET"])
+AC_CHECK_FUNC(gethostname, [], [
+    AC_CHECK_LIB(nsl, gethostname, [LIBS="-lnsl $LIBS"])
+])
+AC_CHECK_FUNC(socket, [], [
+    AC_CHECK_LIB(socket, socket, [LIBS="-lsocket $LIBS"])
+])
 
 AC_CHECK_FUNC(dbopen, [],
   AC_CHECK_LIB(db, dbopen, [], AC_MSG_WARN([sorry this package needs libdb.a 
-(from the db package)]), $LIBS)
+(from the db package)]))
            )
 
 AC_CHECK_FUNC(fork, [], [echo "using vfork() instead of fork()";
-	MISCOBJS=fakefork.o], $LIBS)
+	MISCOBJS=fakefork.o])
 
 dnl AmigaOS and IXEmul have a fork() dummy
     case "$target" in
@@ -174,14 +178,12 @@ esac
 ZLIB=
 for zlib in z gz ; do
    AC_CHECK_LIB(${zlib}, gzread, 
-	[ZLIB="-l${zlib}"; break], 
+	[LIBS="-l${zlib} $LIBS"; break], 
 	[if test ${zlib} = gz; then 
 	    AC_MSG_WARN([sorry this package needs libz.a or libgz.a (from the zlib package)]) 
 	 fi]
-	       , $LIBS)
+	       )
 done
-AC_SUBST(ZLIB)
-
 
 dnl Checks for header files we can live without.
 AC_HEADER_STDC
@@ -264,7 +266,6 @@ AC_SUBST(MISCOBJS)
 AC_SUBST(INCPATH)
 AC_SUBST(LIBMISC)
 AC_SUBST(LIBINTL)
-AC_SUBST(LIBSOCKET)
 AC_SUBST(varprefix)
 AC_SUBST(tmpdir)
 AC_SUBST(topdir)
