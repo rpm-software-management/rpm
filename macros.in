@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: @RPMCONFIGDIR@/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.123 2002/08/31 22:39:34 jbj Exp $
+# $Id: macros.in,v 1.124 2002/10/18 16:01:59 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -119,7 +119,6 @@
 %package debug \
 Summary: Debug information for package %{name} \
 Group: Development/Debug \
-Requires: %{name} = %{version} \
 %description debug \
 This package provides debug information for package %{name}. \
 Debug information is useful when developing applications that use this \

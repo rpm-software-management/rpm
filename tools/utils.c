@@ -150,10 +150,10 @@ static unsigned int crc32 (unsigned int crc, unsigned char *buf, size_t len)
 {
   unsigned char *end;
 
-  crc = ~crc;
+  crc = ~crc & 0xffffffff;
   for (end = buf + len; buf < end; ++buf)
     crc = crc32_table[(crc ^ *buf) & 0xff] ^ (crc >> 8);
-  return ~crc;
+  return ~crc & 0xffffffff;
 }
 
 unsigned int

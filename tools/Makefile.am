@@ -14,7 +14,7 @@ INCLUDES = -I. \
 	@INCPATH@ \
 	-I$(top_srcdir)/misc
 
-EXTRA_DIST =	rpminject.c rpmsort.c sections.h utils.h
+EXTRA_DIST =	rpminject.c rpmsort.c sections.h utils.h dwarf2.h hashtab.h
 
 EXTRA_PROGRAMS = rpminject rpmsort
 
@@ -31,12 +31,13 @@ noinst_PROGRAMS = \
 	convertdb1 dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = javadeps rpmcache striptofile unstripfile
+pkgbin_PROGRAMS = debugedit javadeps rpmcache striptofile unstripfile
 
 bin_PROGRAMS =	rpmgraph
 
 convertdb1_SOURCES =	convertdb1.c
 
+debugedit_SOURCES =	debugedit.c hashtab.c
 javadeps_SOURCES =	javadeps.c
 
 rpmcache_SOURCES =	rpmcache.c
