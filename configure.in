@@ -196,9 +196,9 @@ if echo "$build" | grep solaris >/dev/null ; then
 	# binaries if you use -ldl
 	echo "hacking things up for solaris"
 	LIBDL=-ldl
-	RPMSTATIC=rpm.static
+	RPM=rpm.shared
 else
-	RPMSTATIC=rpm
+	RPM=rpm
 fi
 
 rm -f ./find-provides.sh
@@ -234,7 +234,7 @@ AC_SUBST(LIBPATH)
 AC_SUBST(LIBDL)
 AC_SUBST(PO)
 AC_SUBST(GETTEXTSTUB)
-AC_SUBST(RPMSTATIC)
+AC_SUBST(RPM)
 AC_SUBST(CPIOBIN)
 
 AC_OUTPUT(Makefile Makefile.inc lib-rpmrc lib/Makefile build/Makefile tools/Makefile po/Makefile misc/Makefile)
