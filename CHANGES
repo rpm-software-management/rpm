@@ -1,5 +1,6 @@
 2.3.10 -> 2.3.11:
 	- fixed newlines in --scripts output
+	- fix handling of source files with bad owners/groups
 
 2.3.9 -> 2.3.10:
 	- --allmatches handling in -e broke some cases
