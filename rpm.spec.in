@@ -15,7 +15,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.33
+Release: 0.35
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -465,7 +465,7 @@ exit 0
 - add --enable-posixmutexes when configuring on linux.
 - add rpmdb_{deadlock,dump,load,svc,stat,verify} utilities.
 - include srpm pkgid in binary headers (#71460).
-- add %check scriptlet to run after %install (#64137).
+- add %%check scriptlet to run after %%install (#64137).
 - simplify specfile query linkage loop.
 - drill rpmts into parseSpec(), carrying Spec along.
 
