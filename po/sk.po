@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-04-26 21:07-0400\n"
+"POT-Creation-Date: 2000-04-27 08:36-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2359,86 +2359,86 @@ msgstr "hodnota %%instchangelog v makro-súbore by mala by» èíselná, ale nie je"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:375
+#: lib/install.c:364
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "rozbalenie archívu zlyhalo%s%s: %s"
 
-#: lib/install.c:376
+#: lib/install.c:365
 msgid " on file "
 msgstr " pre súbor "
 
-#: lib/install.c:420
+#: lib/install.c:409
 msgid "installing a source package\n"
 msgstr "in¹taluje sa zdrojový balík\n"
 
-#: lib/install.c:440
+#: lib/install.c:429
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "nie je mo¾né zapísa» do %s: "
 
-#: lib/install.c:446 lib/install.c:476
+#: lib/install.c:435 lib/install.c:465
 #, c-format
 msgid "cannot write to %s"
 msgstr "nie je mo¾né zapísa» do %s: "
 
-#: lib/install.c:450
+#: lib/install.c:439
 #, c-format
 msgid "sources in: %s\n"
 msgstr "zdroje v: %s\n"
 
-#: lib/install.c:470
+#: lib/install.c:459
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "nie je mo¾né zapísa» do %s: "
 
-#: lib/install.c:480
+#: lib/install.c:469
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "spec-súbor v: %s\n"
 
-#: lib/install.c:514 lib/install.c:542
+#: lib/install.c:503 lib/install.c:531
 msgid "source package contains no .spec file"
 msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 
-#: lib/install.c:564
+#: lib/install.c:553
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/install.c:566 lib/install.c:840 lib/uninstall.c:28
+#: lib/install.c:555 lib/install.c:829 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "premenovanie %s na %s zlyhalo: %s"
 
-#: lib/install.c:657
+#: lib/install.c:646
 msgid "source package expected, binary found"
 msgstr "oèakávaný zdrojový balík, nájdený binárny"
 
-#: lib/install.c:712
+#: lib/install.c:701
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "balík: %s-%s-%s test súborov = %d\n"
 
-#: lib/install.c:770
+#: lib/install.c:759
 msgid "stopping install as we're running --test\n"
 msgstr "in¹talácia zastavená kvôli re¾imu --test\n"
 
-#: lib/install.c:775
+#: lib/install.c:764
 msgid "running preinstall script (if any)\n"
 msgstr "vykonávajú sa predin¹talaèné skripty (ak existujú)\n"
 
-#: lib/install.c:800
+#: lib/install.c:789
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "varovanie: %s vytvorené ako %s"
 
-#: lib/install.c:836
+#: lib/install.c:825
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "varovanie: %s uchovaný ako %s"
 
-#: lib/install.c:910
+#: lib/install.c:899
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "vykonávajú sa poin¹talaèné skripty (ak existujú)\n"
@@ -2902,12 +2902,12 @@ msgstr ")"
 msgid "OK"
 msgstr "V PORIADKU"
 
-#: lib/rpmdb.c:89
+#: lib/rpmdb.c:92
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:207
+#: lib/rpmdb.c:210
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2915,31 +2915,31 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:222
+#: lib/rpmdb.c:225
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "nie je mo¾né otvori» %s\n"
 
-#: lib/rpmdb.c:276
+#: lib/rpmdb.c:279
 #, fuzzy, c-format
 msgid "error getting \"%s\" records from %s index"
 msgstr "chyba pri naèítaní záznamu %s z %s"
 
-#: lib/rpmdb.c:393
+#: lib/rpmdb.c:396
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "chyba pri zápise záznamu %s do %s"
 
-#: lib/rpmdb.c:402
+#: lib/rpmdb.c:405
 #, fuzzy, c-format
 msgid "error removing record %s from %s"
 msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
-#: lib/rpmdb.c:586 lib/rpmdb.c:1932
+#: lib/rpmdb.c:591 lib/rpmdb.c:1979
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
-#: lib/rpmdb.c:664
+#: lib/rpmdb.c:669
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -2948,125 +2948,125 @@ msgstr ""
 "databázy v novom formáte"
 
 #. error
-#: lib/rpmdb.c:857
+#: lib/rpmdb.c:860
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
-#: lib/rpmdb.c:923 lib/rpmdb.c:1374 lib/uninstall.c:90
+#: lib/rpmdb.c:926 lib/rpmdb.c:1395 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"
 
-#: lib/rpmdb.c:1330
+#: lib/rpmdb.c:1350
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "balík %s nebol nájdený v %s"
 
-#: lib/rpmdb.c:1338
+#: lib/rpmdb.c:1358
 #, fuzzy, c-format
 msgid "key \"%s\" not removed from %s"
 msgstr "balík %s nebol nájdený v %s"
 
-#: lib/rpmdb.c:1408
+#: lib/rpmdb.c:1429
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "odstraòuje sa záznam z databázy\n"
 
-#: lib/rpmdb.c:1415
+#: lib/rpmdb.c:1436
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuje sa index skupín\n"
 
-#: lib/rpmdb.c:1423
+#: lib/rpmdb.c:1444
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "odstraòuje sa index názvov\n"
 
-#: lib/rpmdb.c:1427
+#: lib/rpmdb.c:1448
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1574
+#: lib/rpmdb.c:1624
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "nie je mo¾né prideli» miesto pre databázu"
 
-#: lib/rpmdb.c:1623
+#: lib/rpmdb.c:1671
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1636
+#: lib/rpmdb.c:1684
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/rpmdb.c:1643
+#: lib/rpmdb.c:1691
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1647
+#: lib/rpmdb.c:1695
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1957
+#: lib/rpmdb.c:2004
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "znovu sa vytvára databáza v adresári %s\n"
 
-#: lib/rpmdb.c:1961
+#: lib/rpmdb.c:2008
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "doèasná databáza %s u¾ existuje"
 
-#: lib/rpmdb.c:1967
+#: lib/rpmdb.c:2014
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: lib/rpmdb.c:1969
+#: lib/rpmdb.c:2016
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "chyba pri vytváraní adresára %s: %s"
 
-#: lib/rpmdb.c:1976
+#: lib/rpmdb.c:2023
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "otvára sa stará databáza\n"
 
-#: lib/rpmdb.c:1985
+#: lib/rpmdb.c:2032
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "otvára sa nová databáza\n"
 
-#: lib/rpmdb.c:2007
+#: lib/rpmdb.c:2054
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: lib/rpmdb.c:2039
+#: lib/rpmdb.c:2086
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: lib/rpmdb.c:2057
+#: lib/rpmdb.c:2104
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: lib/rpmdb.c:2065
+#: lib/rpmdb.c:2112
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: lib/rpmdb.c:2067
+#: lib/rpmdb.c:2114
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: lib/rpmdb.c:2073
+#: lib/rpmdb.c:2120
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"

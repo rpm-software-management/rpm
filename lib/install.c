@@ -233,53 +233,42 @@ static void trimChangelog(Header h)
 }
 
 /** */
-static int markReplacedFiles(rpmdb db, struct sharedFileInfo * replList)
+static int markReplacedFiles(rpmdb db, const struct sharedFileInfo * replList)
 {
-    struct sharedFileInfo * fileInfo;
-    Header secHeader = NULL, sh;
-    char * secStates = NULL;
-    int secOffset = 0;
-    int type, count;
+    const struct sharedFileInfo * fileInfo;
+    rpmdbMatchIterator mi;
+    Header h;
+    unsigned int * offsets;
+    int num;
 
-    for (fileInfo = replList; fileInfo->otherPkg; fileInfo++) {
-	if (secOffset != fileInfo->otherPkg) {
-	    rpmdbMatchIterator mi;
+    for (num = 0, fileInfo = replList; fileInfo->otherPkg; fileInfo++)
+	num++;
+    offsets = alloca(num * sizeof(*offsets));
+    for (num = 0, fileInfo = replList; fileInfo->otherPkg; fileInfo++)
+	offsets[num++] = fileInfo->otherPkg;
 
-	    if (secHeader != NULL) {
-		/* ignore errors here - just do the best we can */
+    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
+    rpmdbAppendIteratorMatches(mi, offsets, num);
 
-		rpmdbRemove(db, secOffset, 1);
-		rpmdbAdd(db, secHeader);
-		headerFree(secHeader);
-	    }
+    fileInfo = replList;
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	char * secStates;
+	int modified;
+	int count;
 
-	    secOffset = fileInfo->otherPkg;
-
-	    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &secOffset, sizeof(secOffset));
-	    sh = rpmdbNextIterator(mi);
-	    if (sh == NULL)
-		secOffset = 0;
-	    else
-		secHeader = headerCopy(sh);	/* so we can modify it */
-	    rpmdbFreeIterator(mi);
-
-	    headerGetEntry(secHeader, RPMTAG_FILESTATES, &type,
-			   (void **) &secStates, &count);
+	headerGetEntry(h, RPMTAG_FILESTATES, NULL, (void **)&secStates, &count);
+	
+	modified = 0;
+	while ( fileInfo->otherPkg &&
+		fileInfo->otherPkg == rpmdbGetIteratorOffset(mi)) {
+	    secStates[fileInfo->otherFileNum] = RPMFILE_STATE_REPLACED;
+	    modified = 1;
+	    fileInfo++;
 	}
 
-	/* by now, secHeader is the right header to modify, secStates is
-	   the right states list to modify  */
-
-	secStates[fileInfo->otherFileNum] = RPMFILE_STATE_REPLACED;
+	rpmdbSetIteratorModified(mi, modified);
     }
-
-    if (secHeader != NULL) {
-	/* ignore errors here - just do the best we can */
-
-	rpmdbRemove(db, secOffset, 1);
-	rpmdbAdd(db, secHeader);
-	headerFree(secHeader);
-    }
+    rpmdbFreeIterator(mi);
 
     return 0;
 }

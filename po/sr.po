@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-04-26 21:07-0400\n"
+"POT-Creation-Date: 2000-04-27 08:36-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -2391,88 +2391,88 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:375
+#: lib/install.c:364
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:376
+#: lib/install.c:365
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:420
+#: lib/install.c:409
 #, fuzzy
 msgid "installing a source package\n"
 msgstr "instaliraj paket"
 
-#: lib/install.c:440
+#: lib/install.c:429
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/install.c:446 lib/install.c:476
+#: lib/install.c:435 lib/install.c:465
 #, fuzzy, c-format
 msgid "cannot write to %s"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/install.c:450
+#: lib/install.c:439
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:470
+#: lib/install.c:459
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: lib/install.c:480
+#: lib/install.c:469
 #, fuzzy, c-format
 msgid "spec file in: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: lib/install.c:514 lib/install.c:542
+#: lib/install.c:503 lib/install.c:531
 #, fuzzy
 msgid "source package contains no .spec file"
 msgstr "upit nad paketom koji ima <datoteku>"
 
-#: lib/install.c:564
+#: lib/install.c:553
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:566 lib/install.c:840 lib/uninstall.c:28
+#: lib/install.c:555 lib/install.c:829 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "preimenovanje %s u %s nije uspelo: %s"
 
-#: lib/install.c:657
+#: lib/install.c:646
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:712
+#: lib/install.c:701
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "paket %s-%s-%s sadr¾i deljene datoteke\n"
 
-#: lib/install.c:770
+#: lib/install.c:759
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:775
+#: lib/install.c:764
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:800
+#: lib/install.c:789
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:836
+#: lib/install.c:825
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:910
+#: lib/install.c:899
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2950,12 +2950,12 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:89
+#: lib/rpmdb.c:92
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:207
+#: lib/rpmdb.c:210
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2963,156 +2963,156 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:222
+#: lib/rpmdb.c:225
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "gre¹ka: ne mogu da otvorim %s\n"
 
-#: lib/rpmdb.c:276
+#: lib/rpmdb.c:279
 #, fuzzy, c-format
 msgid "error getting \"%s\" records from %s index"
 msgstr "gre¹ka kod uzimanja sloga %s iz %s"
 
-#: lib/rpmdb.c:393
+#: lib/rpmdb.c:396
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "gre¹ka zapisivanja sloga %s u %s"
 
-#: lib/rpmdb.c:402
+#: lib/rpmdb.c:405
 #, fuzzy, c-format
 msgid "error removing record %s from %s"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: lib/rpmdb.c:586 lib/rpmdb.c:1932
+#: lib/rpmdb.c:591 lib/rpmdb.c:1979
 msgid "no dbpath has been set"
 msgstr "dbpath nije odreðen"
 
-#: lib/rpmdb.c:664
+#: lib/rpmdb.c:669
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:857
+#: lib/rpmdb.c:860
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
-#: lib/rpmdb.c:923 lib/rpmdb.c:1374 lib/uninstall.c:90
+#: lib/rpmdb.c:926 lib/rpmdb.c:1395 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "ne mogu da proèitam zaglavlje na %d za proveru"
 
-#: lib/rpmdb.c:1330
+#: lib/rpmdb.c:1350
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "paket %s nije naðen u %s"
 
-#: lib/rpmdb.c:1338
+#: lib/rpmdb.c:1358
 #, fuzzy, c-format
 msgid "key \"%s\" not removed from %s"
 msgstr "paket %s nije naðen u %s"
 
-#: lib/rpmdb.c:1408
+#: lib/rpmdb.c:1429
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1415
+#: lib/rpmdb.c:1436
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: lib/rpmdb.c:1423
+#: lib/rpmdb.c:1444
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "gre¹ka uklanjanja sloga %s u %s"
 
-#: lib/rpmdb.c:1427
+#: lib/rpmdb.c:1448
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1574
+#: lib/rpmdb.c:1624
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "ne mogu da zauzmem prostor za bazu podataka"
 
-#: lib/rpmdb.c:1623
+#: lib/rpmdb.c:1671
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1636
+#: lib/rpmdb.c:1684
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1643
+#: lib/rpmdb.c:1691
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1647
+#: lib/rpmdb.c:1695
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1957
+#: lib/rpmdb.c:2004
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/rpmdb.c:1961
+#: lib/rpmdb.c:2008
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "privremena baza podataka %s veæ postoji"
 
-#: lib/rpmdb.c:1967
+#: lib/rpmdb.c:2014
 #, fuzzy, c-format
 msgid "creating directory: %s\n"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmdb.c:1969
+#: lib/rpmdb.c:2016
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "gre¹ka kod kreiranja direktorijuma %s: %s"
 
-#: lib/rpmdb.c:1976
+#: lib/rpmdb.c:2023
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/rpmdb.c:1985
+#: lib/rpmdb.c:2032
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: lib/rpmdb.c:2007
+#: lib/rpmdb.c:2054
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "slog broj %d u bazi podataka je neispravan -- preskaèem ga"
 
-#: lib/rpmdb.c:2039
+#: lib/rpmdb.c:2086
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "ne mogu da dodam slog originalno na %d"
 
-#: lib/rpmdb.c:2057
+#: lib/rpmdb.c:2104
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2065
+#: lib/rpmdb.c:2112
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2067
+#: lib/rpmdb.c:2114
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2073
+#: lib/rpmdb.c:2120
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"

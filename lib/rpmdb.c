@@ -46,6 +46,9 @@ static int dbiTagToDbix(int rpmtag)
     return -1;
 }
 
+/**
+ * Initialize database (index, tag) tuple from configuration.
+ */
 static void dbiTagsInit(void)
 {
     static const char * _dbiTagStr_default =
@@ -487,24 +490,26 @@ void dbiFreeIndexSet(dbiIndexSet set) {
     }
 }
 
-/* XXX the signal handling in here is not thread safe */
-
-static sigset_t signalMask;
-
-static void blockSignals(rpmdb rpmdb)
+/**
+ * Disable all signals, returning previous signal mask.
+ */
+static void blockSignals(rpmdb rpmdb, sigset_t * oldMask)
 {
     sigset_t newMask;
 
     if (!(rpmdb && rpmdb->db_major == 3)) {
 	sigfillset(&newMask);		/* block all signals */
-	sigprocmask(SIG_BLOCK, &newMask, &signalMask);
+	sigprocmask(SIG_BLOCK, &newMask, oldMask);
     }
 }
 
-static void unblockSignals(rpmdb rpmdb)
+/**
+ * Restore signal mask.
+ */
+static void unblockSignals(rpmdb rpmdb, sigset_t * oldMask)
 {
     if (!(rpmdb && rpmdb->db_major == 3)) {
-	sigprocmask(SIG_SETMASK, &signalMask, NULL);
+	sigprocmask(SIG_SETMASK, oldMask, NULL);
     }
 }
 
@@ -706,7 +711,6 @@ int rpmdbInit (const char * prefix, int perms)
 /* XXX install.c, query.c, transaction.c, uninstall.c */
 static Header rpmdbGetRecord(rpmdb rpmdb, unsigned int offset)
 {
-    int rpmtag;
     dbiIndex dbi;
     void * uh;
     size_t uhlen;
@@ -714,8 +718,7 @@ static Header rpmdbGetRecord(rpmdb rpmdb, unsigned int offset)
     size_t keylen = sizeof(offset);
     int rc;
 
-    rpmtag = 0;	/* RPMDBI_PACKAGES */
-    dbi = dbiOpen(rpmdb, rpmtag, 0);
+    dbi = dbiOpen(rpmdb, RPMDBI_PACKAGES, 0);
     if (dbi == NULL)
 	return NULL;
     rc = dbiGet(dbi, &keyp, &keylen, &uh, &uhlen, 0);
@@ -955,7 +958,6 @@ exit:
     return rc;
 }
 
-/* XXX query.c, rpminstall.c */
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */
@@ -997,22 +999,35 @@ struct _rpmdbMatchIterator {
     const void *	mi_keyp;
     size_t		mi_keylen;
     rpmdb		mi_rpmdb;
-    dbiIndex		mi_dbi;
-    int			mi_dbix;
+    int			mi_rpmtag;
     dbiIndexSet		mi_set;
     int			mi_setx;
     Header		mi_h;
+    int			mi_modified;
     unsigned int	mi_prevoffset;
     unsigned int	mi_offset;
     unsigned int	mi_filenum;
+    unsigned int	mi_fpnum;
+    unsigned int	mi_dbnum;
     const char *	mi_version;
     const char *	mi_release;
 };
 
 void rpmdbFreeIterator(rpmdbMatchIterator mi)
 {
+    dbiIndex dbi = NULL;
+
     if (mi == NULL)
 	return;
+
+    dbi = dbiOpen(mi->mi_rpmdb, RPMDBI_PACKAGES, 0);
+    if (mi->mi_h) {
+	if (mi->mi_modified && mi->mi_prevoffset)
+	    dbiUpdateRecord(dbi, mi->mi_prevoffset, mi->mi_h);
+	headerFree(mi->mi_h);
+	mi->mi_h = NULL;
+    }
+    (void) dbiCclose(dbi, NULL, 0);
 
     if (mi->mi_release) {
 	xfree(mi->mi_release);
@@ -1022,17 +1037,9 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
 	xfree(mi->mi_version);
 	mi->mi_version = NULL;
     }
-    if (mi->mi_h) {
-	headerFree(mi->mi_h);
-	mi->mi_h = NULL;
-    }
     if (mi->mi_set) {
 	dbiFreeIndexSet(mi->mi_set);
 	mi->mi_set = NULL;
-    } else {
-	dbiIndex dbi = dbiOpen(mi->mi_rpmdb, RPMDBI_PACKAGES, 0);
-	if (dbi)
-	    (void) dbiCclose(dbi, NULL, 0);
     }
     if (mi->mi_keyp) {
 	xfree(mi->mi_keyp);
@@ -1077,6 +1084,15 @@ void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version) {
 	mi->mi_version = NULL;
     }
     mi->mi_version = (version ? xstrdup(version) : NULL);
+}
+
+int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified) {
+    int rc;
+    if (mi == NULL)
+	return;
+    rc = mi->mi_modified;
+    mi->mi_modified = modified;
+    return rc;
 }
 
 Header rpmdbNextIterator(rpmdbMatchIterator mi)
@@ -1124,14 +1140,17 @@ top:
     if (mi->mi_prevoffset && mi->mi_offset == mi->mi_prevoffset)
 	return mi->mi_h;
 
-    /* Retrieve header */
+    /* Retrieve next header */
     if (uh == NULL) {
 	rc = dbiGet(dbi, &keyp, &keylen, &uh, &uhlen, 0);
 	if (rc)
 	    return NULL;
     }
 
+    /* Free current header */
     if (mi->mi_h) {
+	if (mi->mi_modified && mi->mi_prevoffset)
+	    dbiUpdateRecord(dbi, mi->mi_prevoffset, mi->mi_h);
 	headerFree(mi->mi_h);
 	mi->mi_h = NULL;
     }
@@ -1153,6 +1172,7 @@ top:
     }
 
     mi->mi_prevoffset = mi->mi_offset;
+    mi->mi_modified = 0;
     return mi->mi_h;
 }
 
@@ -1178,7 +1198,9 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi,
     if (!(mi && keyp))
 	return 1;
 
-    dbi = mi->mi_rpmdb->_dbi[mi->mi_dbix];
+    dbi = dbiOpen(mi->mi_rpmdb, mi->mi_rpmtag, 0);
+    if (dbi == NULL)
+	return 1;
 
     if (keylen == 0)
 	keylen = strlen(keyp);
@@ -1237,7 +1259,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
     dbiIndexSet set = NULL;
     dbiIndex dbi;
     int isLabel = 0;
-    int dbix;
 
     /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
     switch (rpmtag) {
@@ -1247,9 +1268,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
 	break;
     }
 
-    dbix = dbiTagToDbix(rpmtag);
-    if (dbix < 0)
-	return NULL;
     dbi = dbiOpen(rpmdb, rpmtag, 0);
     if (dbi == NULL)
 	return NULL;
@@ -1298,15 +1316,17 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
     mi->mi_keylen = keylen;
 
     mi->mi_rpmdb = rpmdb;
-    mi->mi_dbi = dbi;
+    mi->mi_rpmtag = rpmtag;
 
-    mi->mi_dbix = dbix;
     mi->mi_set = set;
     mi->mi_setx = 0;
     mi->mi_h = NULL;
+    mi->mi_modified = 0;
     mi->mi_prevoffset = 0;
     mi->mi_offset = 0;
     mi->mi_filenum = 0;
+    mi->mi_fpnum = 0;
+    mi->mi_dbnum = 0;
     mi->mi_version = NULL;
     mi->mi_release = NULL;
     return mi;
@@ -1358,6 +1378,7 @@ static inline int removeIndexEntry(dbiIndex dbi, const char * keyp, dbiIndexReco
 int rpmdbRemove(rpmdb rpmdb, unsigned int offset, int tolerant)
 {
     Header h;
+    sigset_t signalMask;
 
 #ifndef	DYING_NOTYET
     h = rpmdbGetRecord(rpmdb, offset);
@@ -1381,7 +1402,7 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int offset, int tolerant)
 	rpmMessage(RPMMESS_VERBOSE, "  --- %s-%s-%s\n", n, v, r);
     }
 
-    blockSignals(rpmdb);
+    blockSignals(rpmdb, &signalMask);
 
     {	int dbix;
 	dbiIndexRecord rec = dbiReturnIndexRecordInstance(offset, 0);
@@ -1397,7 +1418,7 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int offset, int tolerant)
 	    rpmtag = dbiTags[dbix];
 	    dbi = dbiOpen(rpmdb, rpmtag, 0);
 
-	    if (dbi->dbi_rpmtag == 0) {
+	    if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
 		(void) dbiDel(dbi, &offset, sizeof(offset), 0);
 		continue;
 	    }
@@ -1469,7 +1490,7 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int offset, int tolerant)
 	}
     }
 
-    unblockSignals(rpmdb);
+    unblockSignals(rpmdb, &signalMask);
 
     headerFree(h);
 
@@ -1507,9 +1528,39 @@ static inline int addIndexEntry(dbiIndex dbi, const char *index, dbiIndexRecord 
     return 0;
 }
 
+/**
+ * Rewrite a header in the database.
+ *   Note: this is called from a markReplacedFiles iteration, and *must*
+ *   preserve the "join key" (i.e. offset) for the header.
+ * @param dbi		index database handle (always RPMDBI_PACKAGES)
+ * @param offset	join key
+ * @param h		rpm header
+ * @return 		0 on success
+ */
+static int dbiUpdateRecord(dbiIndex dbi, int offset, Header h)
+{
+    sigset_t signalMask;
+    void * uh;
+    size_t uhlen;
+    int rc;
+
+    if (_noDirTokens)
+	expandFilelist(h);
+
+    uhlen = headerSizeof(h, HEADER_MAGIC_NO);
+    uh = headerUnload(h);
+    blockSignals(dbi->dbi_rpmdb, &signalMask);
+    rc = dbiPut(dbi, &offset, sizeof(offset), uh, uhlen, 0);
+    unblockSignals(dbi->dbi_rpmdb, &signalMask);
+    free(uh);
+
+    return rc;
+}
+
 /* XXX install.c */
 int rpmdbAdd(rpmdb rpmdb, Header h)
 {
+    sigset_t signalMask;
     const char ** baseNames;
     int count = 0;
     int type;
@@ -1530,7 +1581,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
     if (_noDirTokens)
 	expandFilelist(h);
 
-    blockSignals(rpmdb);
+    blockSignals(rpmdb, &signalMask);
 
     {
 	unsigned int firstkey = 0;
@@ -1540,8 +1591,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 	size_t datalen = 0;
 	int rc;
 
-	rpmtag = 0;	/* RPMDBI_PACKAGES */
-	dbi = dbiOpen(rpmdb, rpmtag, 0);
+	dbi = dbiOpen(rpmdb, RPMDBI_PACKAGES, 0);
 
 	/* XXX db0: hack to pass sizeof header to fadAlloc */
 	datap = h;
@@ -1589,12 +1639,10 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 	    rpmtag = dbiTags[dbix];
 	    dbi = dbiOpen(rpmdb, rpmtag, 0);
 
-	    if (dbi->dbi_rpmtag == 0) {
-		size_t uhlen = headerSizeof(h, HEADER_MAGIC_NO);
-		void * uh = headerUnload(h);
+	    if (dbi->dbi_rpmtag == RPMDBI_PACKAGES) {
+		int xx;
 
-		(void) dbiPut(dbi, &offset, sizeof(offset), uh, uhlen, 0);
-		free(uh);
+		xx = dbiUpdateRecord(dbi, offset, h);
 
 		{   const char *n, *v, *r;
 		    headerNVR(h, &n, &v, &r);
@@ -1689,7 +1737,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
     }
 
 exit:
-    unblockSignals(rpmdb);
+    unblockSignals(rpmdb, &signalMask);
 
     return rc;
 }
@@ -1908,7 +1956,6 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 
 }
 
-/** */
 int rpmdbRebuild(const char * rootdir)
 {
     rpmdb olddb;

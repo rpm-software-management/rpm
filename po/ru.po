@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-04-26 21:07-0400\n"
+"POT-Creation-Date: 2000-04-27 08:36-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2356,86 +2356,86 @@ msgstr "значение %%instchangelog в макрофайле должно быть числом, а оно нет..."
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:375
+#: lib/install.c:364
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "распаковка архива не удалась%s%s: %s"
 
-#: lib/install.c:376
+#: lib/install.c:365
 msgid " on file "
 msgstr " на файле "
 
-#: lib/install.c:420
+#: lib/install.c:409
 msgid "installing a source package\n"
 msgstr "устанавливаю исходный пакет\n"
 
-#: lib/install.c:440
+#: lib/install.c:429
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "не могу создать %s"
 
-#: lib/install.c:446 lib/install.c:476
+#: lib/install.c:435 lib/install.c:465
 #, c-format
 msgid "cannot write to %s"
 msgstr "не могу писать в %s"
 
-#: lib/install.c:450
+#: lib/install.c:439
 #, c-format
 msgid "sources in: %s\n"
 msgstr "исходники в: %s\n"
 
-#: lib/install.c:470
+#: lib/install.c:459
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "не могу создать %s"
 
-#: lib/install.c:480
+#: lib/install.c:469
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "файл spec в: %s\n"
 
-#: lib/install.c:514 lib/install.c:542
+#: lib/install.c:503 lib/install.c:531
 msgid "source package contains no .spec file"
 msgstr "исходный пакет не содержит файла .spec"
 
-#: lib/install.c:564
+#: lib/install.c:553
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "переименовываю %s в %s\n"
 
-#: lib/install.c:566 lib/install.c:840 lib/uninstall.c:28
+#: lib/install.c:555 lib/install.c:829 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "ошибка переименования %s в %s: %s"
 
-#: lib/install.c:657
+#: lib/install.c:646
 msgid "source package expected, binary found"
 msgstr "ожидался исходный пакет, найден бинарный"
 
-#: lib/install.c:712
+#: lib/install.c:701
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "пакет: %s-%s-%s файлов; test = %d\n"
 
-#: lib/install.c:770
+#: lib/install.c:759
 msgid "stopping install as we're running --test\n"
 msgstr "останавливаю установку, т.к. мы исполняем --test\n"
 
-#: lib/install.c:775
+#: lib/install.c:764
 msgid "running preinstall script (if any)\n"
 msgstr "исполняю скрипт preinstall (если есть)\n"
 
-#: lib/install.c:800
+#: lib/install.c:789
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "предупреждение: %s создан как %s"
 
-#: lib/install.c:836
+#: lib/install.c:825
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "предупреждение: %s сохранен как %s"
 
-#: lib/install.c:910
+#: lib/install.c:899
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "исполняю скрипт postinstall (если есть)\n"
@@ -2898,12 +2898,12 @@ msgstr ")"
 msgid "OK"
 msgstr "Ok"
 
-#: lib/rpmdb.c:89
+#: lib/rpmdb.c:92
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:207
+#: lib/rpmdb.c:210
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2911,31 +2911,31 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:222
+#: lib/rpmdb.c:225
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "не могу открыть %s\n"
 
-#: lib/rpmdb.c:276
+#: lib/rpmdb.c:279
 #, fuzzy, c-format
 msgid "error getting \"%s\" records from %s index"
 msgstr "ошибка получения записи %s из %s"
 
-#: lib/rpmdb.c:393
+#: lib/rpmdb.c:396
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "ошибка сохранения записи %s в %s"
 
-#: lib/rpmdb.c:402
+#: lib/rpmdb.c:405
 #, fuzzy, c-format
 msgid "error removing record %s from %s"
 msgstr "ошибка удаления записи %s из %s"
 
-#: lib/rpmdb.c:586 lib/rpmdb.c:1932
+#: lib/rpmdb.c:591 lib/rpmdb.c:1979
 msgid "no dbpath has been set"
 msgstr "не установлена dbpath"
 
-#: lib/rpmdb.c:664
+#: lib/rpmdb.c:669
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -2944,125 +2944,125 @@ msgstr ""
 "базы нового формата"
 
 #. error
-#: lib/rpmdb.c:857
+#: lib/rpmdb.c:860
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "не могу открыть %s/packages.rpm\n"
 
-#: lib/rpmdb.c:923 lib/rpmdb.c:1374 lib/uninstall.c:90
+#: lib/rpmdb.c:926 lib/rpmdb.c:1395 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "не могу прочесть хедер в %d для поиска"
 
-#: lib/rpmdb.c:1330
+#: lib/rpmdb.c:1350
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "пакет %s не найден в %s"
 
-#: lib/rpmdb.c:1338
+#: lib/rpmdb.c:1358
 #, fuzzy, c-format
 msgid "key \"%s\" not removed from %s"
 msgstr "пакет %s не найден в %s"
 
-#: lib/rpmdb.c:1408
+#: lib/rpmdb.c:1429
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "удаляю запись базы данных\n"
 
-#: lib/rpmdb.c:1415
+#: lib/rpmdb.c:1436
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляю индекс групп\n"
 
-#: lib/rpmdb.c:1423
+#: lib/rpmdb.c:1444
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "удаляю индекс имен\n"
 
-#: lib/rpmdb.c:1427
+#: lib/rpmdb.c:1448
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1574
+#: lib/rpmdb.c:1624
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "не могу выделить место для базы данных"
 
-#: lib/rpmdb.c:1623
+#: lib/rpmdb.c:1671
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1636
+#: lib/rpmdb.c:1684
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "переименовываю %s в %s\n"
 
-#: lib/rpmdb.c:1643
+#: lib/rpmdb.c:1691
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1647
+#: lib/rpmdb.c:1695
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1957
+#: lib/rpmdb.c:2004
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраиваю базу в корневом каталоге %s\n"
 
-#: lib/rpmdb.c:1961
+#: lib/rpmdb.c:2008
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "временная база данных %s уже существует"
 
-#: lib/rpmdb.c:1967
+#: lib/rpmdb.c:2014
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "создаю каталог: %s\n"
 
-#: lib/rpmdb.c:1969
+#: lib/rpmdb.c:2016
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ошибка создания каталога %s: %s"
 
-#: lib/rpmdb.c:1976
+#: lib/rpmdb.c:2023
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "открываю старую базу\n"
 
-#: lib/rpmdb.c:1985
+#: lib/rpmdb.c:2032
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "открываю новую базу\n"
 
-#: lib/rpmdb.c:2007
+#: lib/rpmdb.c:2054
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "запись номер %d в базе неверна, пропускаю"
 
-#: lib/rpmdb.c:2039
+#: lib/rpmdb.c:2086
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "не могу добавить запись (первоначально в %d)"
 
-#: lib/rpmdb.c:2057
+#: lib/rpmdb.c:2104
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "перестроение базы не удалось, старая база остается на месте\n"
 
-#: lib/rpmdb.c:2065
+#: lib/rpmdb.c:2112
 msgid "failed to replace old database with new database!\n"
 msgstr "замена старой базы на новую не удалась!\n"
 
-#: lib/rpmdb.c:2067
+#: lib/rpmdb.c:2114
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "для восстановления заменяет файлы в %s файлами из %s"
 
-#: lib/rpmdb.c:2073
+#: lib/rpmdb.c:2120
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "удаление каталога %s не удалось: %s\n"

@@ -398,6 +398,7 @@ void rpmdbAppendIteratorMatches(rpmdbMatchIterator mi, int * offsets,
  * Modify iterator to filter out headers that do not match version.
  *  TODO: replace with a more general mechanism.
  * @param mi		rpm database iterator
+ * @param version	version to check for
  */
 void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version);
 
@@ -405,8 +406,18 @@ void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version);
  * Modify iterator to filter out headers that do not match release.
  *  TODO: replace with a more general mechanism.
  * @param mi		rpm database iterator
+ * @param release	release to check for
  */
 void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release);
+
+/**
+ * Modify iterator to mark header for lazy write.
+ *  TODO: replace with a more general mechanism.
+ * @param mi		rpm database iterator
+ * @param modified	new value of modified
+ * @return		previous value
+ */
+int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified);
 
 /**
  * Return next package header from iteration.

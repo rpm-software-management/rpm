@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-04-26 21:07-0400\n"
+"POT-Creation-Date: 2000-04-27 08:36-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.48 2000/04/27 01:11:49 jbj Exp $
+# $Id: ja.po,v 1.49 2000/04/27 12:50:55 jbj Exp $
 #: rpm.c:200
 #, c-format
 msgid "rpm: %s\n"
@@ -2406,87 +2406,87 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:375
+#: lib/install.c:364
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "ファイル %s のアーカイブの伸長に失敗 %s%s: %s"
 
-#: lib/install.c:376
+#: lib/install.c:365
 #, fuzzy
 msgid " on file "
 msgstr "ファイル上"
 
-#: lib/install.c:420
+#: lib/install.c:409
 msgid "installing a source package\n"
 msgstr "ソースパッケージをインストールしています\n"
 
-#: lib/install.c:440
+#: lib/install.c:429
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "%s を作成できません: %s"
 
-#: lib/install.c:446 lib/install.c:476
+#: lib/install.c:435 lib/install.c:465
 #, c-format
 msgid "cannot write to %s"
 msgstr "%s へ書き込めません"
 
-#: lib/install.c:450
+#: lib/install.c:439
 #, c-format
 msgid "sources in: %s\n"
 msgstr "ソースは: %s\n"
 
-#: lib/install.c:470
+#: lib/install.c:459
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "%s を作成できません: %s"
 
-#: lib/install.c:480
+#: lib/install.c:469
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "spec ファイルは: %s\n"
 
-#: lib/install.c:514 lib/install.c:542
+#: lib/install.c:503 lib/install.c:531
 msgid "source package contains no .spec file"
 msgstr "ソースパッケージは .spec ファイルを含んでいません"
 
-#: lib/install.c:564
+#: lib/install.c:553
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/install.c:566 lib/install.c:840 lib/uninstall.c:28
+#: lib/install.c:555 lib/install.c:829 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s を %s にする名前の変更に失敗: %s"
 
-#: lib/install.c:657
+#: lib/install.c:646
 msgid "source package expected, binary found"
 msgstr "ソースパッケージが期待されます、バイナリは見つかりました"
 
-#: lib/install.c:712
+#: lib/install.c:701
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "パッケージ: %s-%s-%s ファイルテスト = %d\n"
 
-#: lib/install.c:770
+#: lib/install.c:759
 msgid "stopping install as we're running --test\n"
 msgstr "--test を実行するようにインストールを中止しています\n"
 
-#: lib/install.c:775
+#: lib/install.c:764
 msgid "running preinstall script (if any)\n"
 msgstr "プリインストールスクリプト(が有れば)を実行します\n"
 
-#: lib/install.c:800
+#: lib/install.c:789
 #, c-format
 msgid "warning: %s created as %s"
 msgstr "警告: %s は %s として作成されます"
 
-#: lib/install.c:836
+#: lib/install.c:825
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr "警告: %s は %s として保存されます"
 
-#: lib/install.c:910
+#: lib/install.c:899
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
@@ -2974,12 +2974,12 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:89
+#: lib/rpmdb.c:92
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:207
+#: lib/rpmdb.c:210
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2987,157 +2987,157 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:222
+#: lib/rpmdb.c:225
 #, fuzzy, c-format
 msgid "dbiOpen: cannot open %s index"
 msgstr "%s をオープンできません\n"
 
-#: lib/rpmdb.c:276
+#: lib/rpmdb.c:279
 #, fuzzy, c-format
 msgid "error getting \"%s\" records from %s index"
 msgstr "レコード %s の取得のエラー (%s から)"
 
-#: lib/rpmdb.c:393
+#: lib/rpmdb.c:396
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "レコード %s を %s にストアでエラー "
 
-#: lib/rpmdb.c:402
+#: lib/rpmdb.c:405
 #, fuzzy, c-format
 msgid "error removing record %s from %s"
 msgstr "レコード %s を %s に削除でエラー"
 
-#: lib/rpmdb.c:586 lib/rpmdb.c:1932
+#: lib/rpmdb.c:591 lib/rpmdb.c:1979
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません"
 
-#: lib/rpmdb.c:664
+#: lib/rpmdb.c:669
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:857
+#: lib/rpmdb.c:860
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "%s/packages.rpm をオープンできません\n"
 
-#: lib/rpmdb.c:923 lib/rpmdb.c:1374 lib/uninstall.c:90
+#: lib/rpmdb.c:926 lib/rpmdb.c:1395 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "検索のための %d で ヘッダを読むことができません"
 
-#: lib/rpmdb.c:1330
+#: lib/rpmdb.c:1350
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "パッケージ %s は %s 中に見つかりません"
 
-#: lib/rpmdb.c:1338
+#: lib/rpmdb.c:1358
 #, fuzzy, c-format
 msgid "key \"%s\" not removed from %s"
 msgstr "パッケージ %s は %s 中に見つかりません"
 
-#: lib/rpmdb.c:1408
+#: lib/rpmdb.c:1429
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "データベースエントリを削除します\n"
 
-#: lib/rpmdb.c:1415
+#: lib/rpmdb.c:1436
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "group インデックスを削除します\n"
 
-#: lib/rpmdb.c:1423
+#: lib/rpmdb.c:1444
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "name インデックス削除します\n"
 
-#: lib/rpmdb.c:1427
+#: lib/rpmdb.c:1448
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1574
+#: lib/rpmdb.c:1624
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "データベース用の空き容量が足りません"
 
-#: lib/rpmdb.c:1623
+#: lib/rpmdb.c:1671
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1636
+#: lib/rpmdb.c:1684
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/rpmdb.c:1643
+#: lib/rpmdb.c:1691
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1647
+#: lib/rpmdb.c:1695
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1957
+#: lib/rpmdb.c:2004
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rootdir %s 中でデータベースを再構築します\n"
 
-#: lib/rpmdb.c:1961
+#: lib/rpmdb.c:2008
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "一時的なデータベース %s はすでに存在しています"
 
-#: lib/rpmdb.c:1967
+#: lib/rpmdb.c:2014
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: lib/rpmdb.c:1969
+#: lib/rpmdb.c:2016
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ディレクトリ %s の作成エラー: %s"
 
-#: lib/rpmdb.c:1976
+#: lib/rpmdb.c:2023
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "古いデータベースのオープン\n"
 
-#: lib/rpmdb.c:1985
+#: lib/rpmdb.c:2032
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "新しいデータベースのオープン\n"
 
-#: lib/rpmdb.c:2007
+#: lib/rpmdb.c:2054
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: lib/rpmdb.c:2039
+#: lib/rpmdb.c:2086
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: lib/rpmdb.c:2057
+#: lib/rpmdb.c:2104
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: lib/rpmdb.c:2065
+#: lib/rpmdb.c:2112
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: lib/rpmdb.c:2067
+#: lib/rpmdb.c:2114
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: lib/rpmdb.c:2073
+#: lib/rpmdb.c:2120
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"

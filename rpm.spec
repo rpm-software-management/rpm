@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.11
+Release: 0.12
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -219,6 +219,12 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Thu Apr 27 2000 Jeff Johnson <jbj@redhat.com>
+- API: replace rpmdbUpdateRecord with rpmdbSetIteratorModified.
+- API: replace rpmdbFindByLabel with RPMDBI_LABEL iteration.
+- API: replace rpmdbGetRecord with iterators.
+- API: replace findMatches with iterators.
+
 * Tue Apr 25 2000 Jeff Johnson <jbj@redhat.com>
 - rebuild to check autoconf configuration in dist-7.0.
 
