@@ -368,7 +368,11 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 
     fdstat_enter(fd, FDSTAT_READ);
 /*@-boundswrite@*/
-    rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+    /* HACK: flimsy wiring for davRead */
+    if (fd->req != NULL)
+	rc = davRead(fd, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+    else
+	rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
 /*@=boundswrite@*/
     fdstat_exit(fd, FDSTAT_READ, rc);
 
@@ -1737,10 +1741,12 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	}
 
 /*@-boundswrite@*/
+#ifdef	DYING
 	/* HACK: flimsy wiring for davRead */
 	if (fd->req != NULL)
 	    rc = davRead(fd, buf + total, count - total);
 	else
+#endif
 	    rc = fdRead(fd, buf + total, count - total);
 /*@=boundswrite@*/
 

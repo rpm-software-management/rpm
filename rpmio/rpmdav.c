@@ -94,7 +94,8 @@ static int davInit(const char * url, urlinfo * uret)
 
 	/* HACK: oneshots should be done Somewhere Else Instead. */
 /*@-noeffect@*/
-	ne_debug_init(stderr, 0);		/* XXX oneshot? */
+	xx = (_dav_debug ? NE_DBG_HTTP : 0);
+	ne_debug_init(stderr, xx);		/* XXX oneshot? */
 /*@=noeffect@*/
 	xx = ne_sock_init();			/* XXX oneshot? */
 
@@ -520,6 +521,8 @@ static int davFetch(const urlinfo u, struct fetch_context_s * ctx)
     (void) urlPath(u->url, &path);
     pfh = ne_propfind_create(u->sess, ctx->uri, depth);
 
+    /* HACK: need to set u->httpHasRange here. */
+
     ctx->resrock = resrock;
     ctx->include_target = include_target;
 
@@ -691,6 +694,34 @@ static void hexdump(unsigned char * buf, ssize_t len)
     fprintf(stderr, "\n");
 }
 
+static void davAcceptRanges(void * userdata, const char * val)
+{
+    urlinfo u = userdata;
+if (_dav_debug)
+fprintf(stderr, "*** u %p Accept-Ranges: %s\n", u, val);
+    if (!strcmp(val, "bytes"))
+	u->httpHasRange = 1;
+    if (!strcmp(val, "none"))
+	u->httpHasRange = 0;
+}
+
+static void davContentLength(void * userdata, const char * val)
+{
+    FD_t ctrl = userdata;
+if (_dav_debug)
+fprintf(stderr, "*** fd %p Content-Length: %s\n", ctrl, val);
+   ctrl->contentLength = strtoll(val, NULL, 10);
+}
+
+static void davConnection(void * userdata, const char * val)
+{
+    FD_t ctrl = userdata;
+if (_dav_debug)
+fprintf(stderr, "*** fd %p Connection: %s\n", ctrl, val);
+    if (!strcmp(val, "close"))
+	ctrl->persist = 0;
+}
+
 static int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ /*@out@*/ char ** str)
         /*@globals fileSystem @*/
         /*@modifies ctrl, *str, fileSystem @*/
@@ -728,7 +759,6 @@ fprintf(stderr, "<- %s", resp);
     return rc;
 }
 
-
 int davReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
 {
     urlinfo u;
@@ -757,6 +787,13 @@ assert(ctrl != NULL);
 assert(u->sess);
 assert(ctrl->req == NULL);
     ctrl->req = ne_request_create(u->sess, httpCmd, httpArg);
+
+    ne_add_response_header_handler(ctrl->req, "Accept-Ranges",
+		davAcceptRanges, u);
+    ne_add_response_header_handler(ctrl->req, "Content-Length",
+		davContentLength, ctrl);
+    ne_add_response_header_handler(ctrl->req, "Connection",
+		davConnection, ctrl);
 
 #ifdef	NOTYET
 if (_ftp_debug)
@@ -841,17 +878,23 @@ ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
     FD_t fd = cookie;
     ssize_t rc;
 
+#ifdef	DYING
 #if 0
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 #endif
 
     fdstat_enter(fd, FDSTAT_READ);
 /*@-boundswrite@*/
+#endif
+
     rc = ne_read_response_block(fd->req, buf, count);
+
+#ifdef	DYING
 /*@=boundswrite@*/
     fdstat_exit(fd, FDSTAT_READ, rc);
 
     if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
+#endif
 
 if (_dav_debug) {
 fprintf(stderr, "*** davRead(%p,%p,0x%x) rc 0x%x\n", cookie, buf, count, (unsigned)rc);
