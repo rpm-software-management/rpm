@@ -114,7 +114,7 @@
 struct poptOption {
 /*@observer@*/ /*@null@*/
     const char * longName;	/*!< may be NULL */
-    char shortName;		/*!< may be '\0' */
+    char shortName;		/*!< may be NUL */
     int argInfo;
 /*@shared@*/ /*@null@*/
     void * arg;			/*!< depends on argInfo */

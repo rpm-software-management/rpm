@@ -481,6 +481,45 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/stringbuf.h \
                          @top_srcdir@/lib/transaction.c \
                          @top_srcdir@/lib/verify.c \
+			 @top_srcdir@/lua/lapi.c \
+			 @top_srcdir@/lua/lapi.h \
+			 @top_srcdir@/lua/lcode.c \
+			 @top_srcdir@/lua/lcode.h \
+			 @top_srcdir@/lua/ldebug.c \
+			 @top_srcdir@/lua/ldebug.h \
+			 @top_srcdir@/lua/ldo.c \
+			 @top_srcdir@/lua/ldo.h \
+			 @top_srcdir@/lua/ldump.c \
+			 @top_srcdir@/lua/lfunc.c \
+			 @top_srcdir@/lua/lfunc.h \
+			 @top_srcdir@/lua/lgc.c \
+			 @top_srcdir@/lua/lgc.h \
+			 @top_srcdir@/lua/llex.c \
+			 @top_srcdir@/lua/llex.h \
+			 @top_srcdir@/lua/llimits.h \
+			 @top_srcdir@/lua/lmem.c \
+			 @top_srcdir@/lua/lmem.h \
+			 @top_srcdir@/lua/lobject.c \
+			 @top_srcdir@/lua/lobject.h \
+			 @top_srcdir@/lua/lopcodes.c \
+			 @top_srcdir@/lua/lopcodes.h \
+			 @top_srcdir@/lua/lparser.c \
+			 @top_srcdir@/lua/lparser.h \
+			 @top_srcdir@/lua/lstate.c \
+			 @top_srcdir@/lua/lstate.h \
+			 @top_srcdir@/lua/lstring.c \
+			 @top_srcdir@/lua/lstring.h \
+			 @top_srcdir@/lua/ltable.c \
+			 @top_srcdir@/lua/ltable.h \
+			 @top_srcdir@/lua/ltests.c \
+			 @top_srcdir@/lua/ltm.c \
+			 @top_srcdir@/lua/ltm.h \
+			 @top_srcdir@/lua/lundump.c \
+			 @top_srcdir@/lua/lundump.h \
+			 @top_srcdir@/lua/lvm.c \
+			 @top_srcdir@/lua/lvm.h \
+			 @top_srcdir@/lua/lzio.c \
+			 @top_srcdir@/lua/lzio.h \
                          @top_srcdir@/rpmdb/db3.c \
                          @top_srcdir@/rpmdb/dbconfig.c \
                          @top_srcdir@/rpmdb/fprint.c \
