@@ -41,8 +41,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%{_prefix}/lib/libpopt.a
-%{_prefix}/lib/libpopt.la
+%{_prefix}/lib/libpopt.*
 %{_prefix}/include/popt.h
 %{_prefix}/man/man3/popt.3
 %{_prefix}/share/locale/*/LC_MESSAGES/popt.mo
