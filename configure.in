@@ -385,6 +385,14 @@ else
 fi
 AC_SUBST(BUILD_RPMCONVERT)
 
+dnl whether or not we should try to build rpmgettext/rpmputtext.
+if test X"USE_NLS" = Xyes; then
+    BUILD_RPMNLSTOOLS="rpmgettext rpmputtext"
+else
+    BUILD_RPMNLSTOOLS=
+fi
+AC_SUBST(BUILD_RPMNLSTOOLS)
+
 AC_CHECK_HEADERS(glob.h)
 
 dnl statfs portability fiddles.

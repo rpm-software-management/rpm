@@ -17,13 +17,15 @@ mylibs=	$(top_builddir)/build/.libs/librpmbuild.a \
 	$(top_builddir)/popt/.libs/libpopt.a \
 	@LIBMISC@
 
+EXTRA_PROGRAMS = rpmgettext rpmputtext
+
 LDADD = $(top_builddir)/lib/.libs/librpm.a @LIBMISC@
 
 noinst_PROGRAMS = \
 	dump dumpdb javadeps rpmarchive rpmheader rpmlead rpmsignature
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = rpmgettext rpmputtext
+pkgbin_PROGRAMS = @BUILD_RPMNLSTOOLS@
 
 rpmgettext_SOURCES =	rpmgettext.c
 rpmgettext_LDADD =	$(mylibs)
