@@ -31,7 +31,7 @@ static char * strerror(int errno) {
     if ((0 <= errno) && (errno < sys_nerr))
 	return sys_errlist[errno];
     else
-	return "unknown errno";
+	return POPT_("unknown errno");
 }
 #endif
 
@@ -404,8 +404,7 @@ int poptGetNextOpt(poptContext con) {
 		    break;
 
 		  default:
-		    /* XXX I18N? */
-		    fprintf(stdout, "option type (%d) not implemented in popt\n",
+		    fprintf(stdout, POPT_("option type (%d) not implemented in popt\n"),
 		      opt->argInfo & POPT_ARG_MASK);
 		    exit(1);
 		}
@@ -529,21 +528,21 @@ char * poptBadOption(poptContext con, int flags) {
 const char * poptStrerror(const int error) {
     switch (error) {
       case POPT_ERROR_NOARG:
-	return "missing argument";
+	return POPT_("missing argument");
       case POPT_ERROR_BADOPT:
-	return "unknown option";
+	return POPT_("unknown option");
       case POPT_ERROR_OPTSTOODEEP:
-	return "aliases nested too deeply";
+	return POPT_("aliases nested too deeply");
       case POPT_ERROR_BADQUOTE:
-	return "error in paramter quoting";
+	return POPT_("error in paramter quoting");
       case POPT_ERROR_BADNUMBER:
-	return "invalid numeric value";
+	return POPT_("invalid numeric value");
       case POPT_ERROR_OVERFLOW:
-	return "number too large or too small";
+	return POPT_("number too large or too small");
       case POPT_ERROR_ERRNO:
 	return strerror(errno);
       default:
-	return "unknown error";
+	return POPT_("unknown error");
     }
 }
 

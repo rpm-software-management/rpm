@@ -43,4 +43,22 @@ struct poptContext_s {
     char * otherHelp;
 };
 
+#ifdef HAVE_LIBINTL_H
+#include <libintl.h>
+#endif
+
+#ifdef HAVE_GETTEXT
+#define _(foo) gettext(foo)
+#else
+#define _(foo) (foo)
+#endif
+
+#ifdef HAVE_DGETTEXT
+#define POPT_(foo) dgettext("popt", foo)
+#else
+#define POPT_(foo) (foo)
+#endif
+
+#define N_(foo) (foo)
+
 #endif

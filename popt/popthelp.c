@@ -26,23 +26,26 @@ static void displayArgs(poptContext con, enum poptCallbackReason foo,
 
 struct poptOption poptHelpOptions[] = {
     { NULL, '\0', POPT_ARG_CALLBACK, &displayArgs, '\0', NULL },
-    { "help", '?', 0, NULL, '?', "Show this help message" },
-    { "usage", '\0', 0, NULL, 'u', "Display brief usage message" },
+    { "help", '?', 0, NULL, '?', N_("Show this help message") },
+    { "usage", '\0', 0, NULL, 'u', N_("Display brief usage message") },
     { NULL, '\0', 0, NULL, 0 }
 } ;
 
 static const char * getArgDescrip(const struct poptOption * opt) {
     if (!(opt->argInfo & POPT_ARG_MASK)) return NULL;
 
-    if (opt->argDescrip) return opt->argDescrip;
-    return "ARG";
+    if (opt == (poptHelpOptions + 1) || opt == (poptHelpOptions + 2))
+	if (opt->argDescrip) return POPT_(opt->argDescrip);
+
+    if (opt->argDescrip) return _(opt->argDescrip);
+    return POPT_("ARG");
 }
 
 static void singleOptionHelp(FILE * f, int maxLeftCol, 
 			     const struct poptOption * opt) {
     int indentLength = maxLeftCol + 5;
     int lineLength = 79 - indentLength;
-    const char * help = opt->descrip;
+    const char * help = _(opt->descrip);
     int helpLength;
     const char * ch;
     char format[10];
@@ -131,7 +134,7 @@ static void singleTableHelp(FILE * f, const struct poptOption * table,
     while (opt->longName || opt->shortName || opt->arg) {
 	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
 	    if (opt->descrip)
-		fprintf(f, "\n%s\n", opt->descrip);
+		fprintf(f, "\n%s\n", _(opt->descrip));
 	    singleTableHelp(f, opt->arg, left);
 	}
 	opt++;
@@ -142,7 +145,7 @@ static int showHelpIntro(poptContext con, FILE * f) {
     int len = 6;
     char * fn;
 
-    fprintf(f, "Usage:");
+    fprintf(f, POPT_("Usage:"));
     if (!(con->flags & POPT_CONTEXT_KEEP_FIRST)) {
 	fn = con->optionStack->argv[0];
 	if (strchr(fn, '/')) fn = strchr(fn, '/') + 1;
@@ -160,7 +163,7 @@ void poptPrintHelp(poptContext con, FILE * f, int flags) {
     if (con->otherHelp)
 	fprintf(f, " %s\n", con->otherHelp);
     else
-	fprintf(f, " [OPTION...]\n");
+	fprintf(f, " %s\n", POPT_("[OPTION...]"));
 
     leftColWidth = maxArgWidth(con->options);
     singleTableHelp(f, con->options, leftColWidth);

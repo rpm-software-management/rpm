@@ -12,11 +12,20 @@
 /* Define to 1 if ANSI function prototypes are usable.  */
 #undef PROTOTYPES
 
+/* Define if you have the dgettext function.  */
+#undef HAVE_DGETTEXT
+
+/* Define if you have the gettext function.  */
+#undef HAVE_GETTEXT
+
 /* Define if you have the strerror function.  */
 #undef HAVE_STRERROR
 
 /* Define if you have the <alloca.h> header file.  */
 #undef HAVE_ALLOCA_H
+
+/* Define if you have the <libintl.h> header file.  */
+#undef HAVE_LIBINTL_H
 
 /* Define if you have the <string.h> header file.  */
 #undef HAVE_STRING_H
