@@ -1,6 +1,7 @@
 2.4.3 -> 2.4.4:
 	- restore working directory after installing a package w/ a chroot
 	- dump the package stack when a dependency loop is encountered
+	- when a user/group lookup fails, end*ent() and retry 
 
 2.4.2 -> 2.4.3:
 	- implemented install time prerequisites
