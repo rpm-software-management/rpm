@@ -15,6 +15,7 @@ int doCheckSig(char **argv)
     char *sig, *rpm;
     char result[1024];
     int res = 0;
+    int xres;
     
     while (*argv) {
 	rpm = *argv++;
@@ -34,8 +35,8 @@ int doCheckSig(char **argv)
 	    continue;
 	}
 	
-	res = verifySignature(fd, lead.signature_type, sig, result);
-	if (res) {
+	xres = verifySignature(fd, lead.signature_type, sig, result);
+	if (!xres) {
 	    if (isVerbose()) {
 		printf("%s: %s", rpm, result);
 	    }
@@ -44,7 +45,13 @@ int doCheckSig(char **argv)
 	    if (isVerbose()) {
 		fprintf(stderr, "%s: %s", rpm, result);
 	    }
-	    fprintf(stderr, "%s: Signature NOT OK!\n", rpm);
+	    if (xres == RPMSIG_NOSIG) {
+		fprintf(stderr, "%s: No signature available.\n", rpm);
+	    } else if (xres == RPMSIG_UNKNOWNSIG) {
+		fprintf(stderr, "%s: Unknown signature type.\n", rpm);
+	    } else {
+		fprintf(stderr, "%s: Signature NOT OK!\n", rpm);
+	    }
 	    res = -1;
 	}
 	close(fd);
