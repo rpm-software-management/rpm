@@ -372,7 +372,6 @@ void freeSpec(Spec s)
     FREE(s->specfile);
     FREE(s->noSource);
     FREE(s->noPatch);
-    FREE(s->prefix);
     FREE(s->buildroot);
     freeSources(s);
     freeStringBuf(s->prep);
@@ -801,7 +800,6 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
     spec->noPatch = NULL;
     spec->numNoSource = 0;
     spec->numNoPatch = 0;
-    spec->prefix = NULL;
     spec->buildroot = NULL;
 
     sb = newStringBuf();
@@ -1008,7 +1006,6 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		    spec->buildroot = strdup(s);
 		    break;
 		  case RPMTAG_DEFAULTPREFIX:
-		    spec->prefix = strdup(s);
 		    addEntry(cur_package->header, tag, STRING_TYPE, s, 1);
 		    break;
 		  case RPMTAG_SERIAL:
@@ -1129,7 +1126,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	return NULL;
     }
     if (spec->buildroot) {
-	/* This package can do build prefixes */
+	/* This package can do build roots */
 	if (buildRootOverride) {
 	    setVar(RPMVAR_ROOT, buildRootOverride);
 	    setVar(RPMVAR_BUILDROOT, buildRootOverride);

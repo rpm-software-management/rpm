@@ -39,7 +39,6 @@ struct SpecRec {
     StringBuf doc;
     StringBuf clean;
 
-    char *prefix;
     char *buildroot;
     
     struct PackageRec *packages;

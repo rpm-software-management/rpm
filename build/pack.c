@@ -400,22 +400,6 @@ int packageBinaries(Spec s, char *passPhrase)
 	dist = getVar(RPMVAR_DISTRIBUTION);
     }
 
-    if (s->prefix) {
-	prefix = s->prefix;
-	while (*prefix && (*prefix == '/')) {
-	    prefix++;
-	}
-	if (! *prefix) {
-	    prefix = NULL;
-	    prefixLen = 0;
-	} else {
-	    prefixLen = strlen(prefix);
-	}
-    } else {
-	prefix = NULL;
-	prefixLen = 0;
-    }
-    
     /* Look through for each package */
     pr = s->packages;
     while (pr) {
@@ -501,6 +485,21 @@ int packageBinaries(Spec s, char *passPhrase)
 	}
 	
 	/**** Process the file list ****/
+
+	prefix = NULL;
+	prefixLen = 0;
+	if (getEntry(outHeader, RPMTAG_DEFAULTPREFIX,
+		     NULL, (void **)&prefix, NULL)) {
+	    while (*prefix && (*prefix == '/')) {
+		prefix++;
+	    }
+	    if (! *prefix) {
+		prefix = NULL;
+		prefixLen = 0;
+	    } else {
+		prefixLen = strlen(prefix);
+	    }
+	}
 
 	if (process_filelist(outHeader, pr, pr->filelist, &size, nametmp,
 			     packageVersion, packageRelease, RPMLEAD_BINARY,
