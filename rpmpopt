@@ -69,3 +69,6 @@ rpm alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VER
 rpm alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]'
 rpm exec --freshen freshen.sh
 rpm alias -F --freshen
+
+rpm alias --redhatprovides -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatprovides
+rpm alias --redhatrequires -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatrequires
