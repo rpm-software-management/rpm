@@ -34,6 +34,7 @@ struct file_entry {
     int isdoc;
     int conf;
     int isspecfile;
+    int isghost;
     int verify_flags;
     char *uname;  /* reference -- do not free */
     char *gname;  /* reference -- do not free */
@@ -42,7 +43,8 @@ struct file_entry {
 };
 
 static int add_file(struct file_entry **festack, const char *name,
-		    int isdoc, int isconf, int isdir, int verify_flags,
+		    int isdoc, int isconf, int isdir, int isghost,
+		    int verify_flags,
 		    char *Pmode, char *Uname, char *Gname, char *prefix);
 static int compare_fe(const void *ap, const void *bp);
 static int add_file_aux(const char *file, struct stat *sb, int flag);
@@ -151,7 +153,7 @@ int process_filelist(Header header, struct PackageRec *pr,
     char **files, **fp;
     struct file_entry *fes, *fest;
     struct file_entry **file_entry_array;
-    int isdoc, conf, isdir, verify_flags;
+    int isdoc, conf, isdir, verify_flags, isghost;
     char *currPmode=NULL;	/* hold info from %attr() */
     char *currUname=NULL;	/* hold info from %attr() */
     char *currGname=NULL;	/* hold info from %attr() */
@@ -182,6 +184,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	special_doc = 0;
 	conf = 0;
 	isdir = 0;
+	isghost = 0;
 	if (currPmode) {
 	    free (currPmode);
 	    currPmode = NULL;
@@ -225,6 +228,8 @@ int process_filelist(Header header, struct PackageRec *pr,
 		isdoc = 1;
 	    } else if (!strcmp(s, "%dir")) {
 		isdir = 1;
+	    } else if (!strcmp(s, "%ghost")) {
+		isghost = 1;
 	    } else {
 		if (filename) {
 		    /* We already got a file -- error */
@@ -252,7 +257,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 		fp++;
 		continue;
 	    } else {
-		if (filename || conf || isdir) {
+		if (filename || conf || isdir || isghost) {
 		    rpmError(RPMERR_BADSPEC,
 			  "Can't mix special %%doc with other forms: %s", fp);
 		    processFileListFailed = 1;
@@ -300,13 +305,13 @@ int process_filelist(Header header, struct PackageRec *pr,
 		while (x < glob_result.gl_pathc) {
 		    int offset = strlen(rpmGetVar(RPMVAR_ROOT) ? : "");
 		    c += add_file(&fes, &(glob_result.gl_pathv[x][offset]),
-				  isdoc, conf, isdir, verify_flags,
+				  isdoc, conf, isdir, isghost, verify_flags,
 				  currPmode, currUname, currGname, prefix);
 		    x++;
 		}
 		globfree(&glob_result);
 	    } else {
-	        c = add_file(&fes, filename, isdoc, conf, isdir,
+	        c = add_file(&fes, filename, isdoc, conf, isdir, isghost,
 			     verify_flags, currPmode, currUname,
 			     currGname, prefix);
 	    }
@@ -315,6 +320,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    fest = malloc(sizeof(struct file_entry));
 	    fest->isdoc = 0;
 	    fest->conf = 0;
+	    fest->isghost = 0;
 	    if (!strcmp(filename, specFile)) {
 		fest->isspecfile = 1;
 	    } else {
@@ -446,6 +452,8 @@ int process_filelist(Header header, struct PackageRec *pr,
 	        fileFlagsList[c] |= RPMFILE_DOC;
 	    if (fest->isdoc) 
 		fileFlagsList[c] |= RPMFILE_DOC;
+	    if (fest->isghost) 
+		fileFlagsList[c] |= RPMFILE_GHOST;
 	    if (fest->conf && !(fest->statbuf.st_mode & S_IFDIR))
 		fileFlagsList[c] |= fest->conf;
 	    if (fest->isspecfile)
@@ -453,7 +461,13 @@ int process_filelist(Header header, struct PackageRec *pr,
 
 	    fileModesList[c] = fest->statbuf.st_mode;
 	    fileRDevsList[c] = fest->statbuf.st_rdev;
-	    fileVerifyFlagsList[c] = fest->verify_flags;
+	    if (! fest->isghost) {
+		fileVerifyFlagsList[c] = fest->verify_flags;
+	    } else {
+		fileVerifyFlagsList[c] = fest->verify_flags &
+		    ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE |
+		      RPMVERIFY_LINKTO | RPMVERIFY_MTIME);
+	    }
 
 	    if (S_ISLNK(fest->statbuf.st_mode)) {
 		if (rpmGetVar(RPMVAR_ROOT)) {
@@ -594,8 +608,9 @@ static int isDoc(char *filename)
 /*                                                           */
 /*************************************************************/
 
-/* Need three globals to keep track of things in ftw() */
+/* Need a bunch of globals to keep track of things in ftw() */
 static int Gisdoc;
+static int Gisghost;
 static int Gconf;
 static int Gverify_flags;
 static int Gcount;
@@ -606,7 +621,8 @@ static struct file_entry **Gfestack;
 static char *Gprefix;
 
 static int add_file(struct file_entry **festack, const char *name,
-		    int isdoc, int conf, int isdir, int verify_flags,
+		    int isdoc, int conf, int isdir, int isghost,
+		    int verify_flags,
 		    char *Pmode, char *Uname, char *Gname, char *prefix)
 {
     struct file_entry *p;
@@ -620,6 +636,7 @@ static int add_file(struct file_entry **festack, const char *name,
     Gfestack = festack;
     Gisdoc = isdoc;
     Gconf = conf;
+    Gisghost = isghost;
     Gverify_flags = verify_flags;
     GPmode = Pmode;
     GUname = Uname;
@@ -641,6 +658,7 @@ static int add_file(struct file_entry **festack, const char *name,
 
     p->isdoc = isdoc;
     p->conf = conf;
+    p->isghost = isghost;
     p->isspecfile = 0;  /* source packages are done by hand */
     p->verify_flags = verify_flags;
     if (rpmGetVar(RPMVAR_ROOT)) {
@@ -734,8 +752,9 @@ static int add_file_aux(const char *file, struct stat *sb, int flag)
 
     /* The 1 will cause add_file() to *not* descend */
     /* directories -- ftw() is already doing it!    */
-    Gcount += add_file(Gfestack, name, Gisdoc, Gconf, 1, Gverify_flags,
-			GPmode, GUname, GGname, Gprefix);
+    Gcount += add_file(Gfestack, name, Gisdoc, Gconf, 1, Gisghost,
+		       Gverify_flags,
+		       GPmode, GUname, GGname, Gprefix);
 
     return 0; /* for ftw() */
 }

@@ -332,6 +332,7 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
     StringBuf cpioFileList;
     char **farray, *file;
     int count;
+    int *fflagarray;
     
     if (!headerGetEntry(s->packages->header, RPMTAG_VERSION, NULL,
 		  (void *) &version, NULL)) {
@@ -497,11 +498,13 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 	    return 1;
 	}
 
-	if (!headerGetEntry(outHeader, RPMTAG_FILENAMES, NULL, (void **) &farray,
-		      &count)) {
+	if (!headerGetEntry(outHeader, RPMTAG_FILENAMES, NULL,
+			    (void **) &farray, &count)) {
 	    /* count may already be 0, but this is safer */
 	    count = 0;
 	}
+	headerGetEntry(outHeader, RPMTAG_FILEFLAGS, NULL,
+		       (void **) &fflagarray, NULL);
 
 	cpioFileList = newStringBuf();
 	while (count--) {
@@ -517,7 +520,11 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 		}
 		file += prefixLen + 1; /* 1 for "/" */
 	    }
-	    appendLineStringBuf(cpioFileList, file);
+
+	    if (! (*fflagarray & RPMFILE_GHOST)) {
+		appendLineStringBuf(cpioFileList, file);
+	    }
+	    fflagarray++;
 	}
 	
 	/* Generate any automatic require/provide entries */

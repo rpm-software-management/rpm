@@ -122,6 +122,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMFILE_MISSINGOK               (1 << 3)
 #define RPMFILE_NOREPLACE               (1 << 4)
 #define RPMFILE_SPECFILE                (1 << 5)
+#define RPMFILE_GHOST                   (1 << 6)
     
 #define RPMINSTALL_REPLACEPKG           (1 << 0)
 #define RPMINSTALL_REPLACEFILES         (1 << 1)

@@ -11,6 +11,7 @@
 	- directory created with %doc is now name-version (dropped
           the release)
 	- added buildarch/buildos macros
+	- added %ghost file option
 
 2.4.6 -> 2.4.7:
 	- had some wrong month lengths in changelog date parsing
