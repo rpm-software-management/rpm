@@ -5,6 +5,7 @@ Makefile
 rpm
 rpm.shared
 rpm2cpio
+rpmconvert
 lib-rpmrc
 macros
 config.h

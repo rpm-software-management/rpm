@@ -600,6 +600,10 @@ MACROFILES="${RPMCONFIGDIR}/macros"
 AC_DEFINE_UNQUOTED(MACROFILES, "$MACROFILES")
 AC_SUBST(MACROFILES)
 
+testdir="`pwd`/tests"
+dnl AC_DEFINE_UNQUOTED(testdir, "$testdir")
+AC_SUBST(testdir)
+
 AC_SUBST(LIBOBJS)
 AC_SUBST(INCPATH)
 
@@ -625,5 +629,6 @@ export LIBS INCPATH
 AC_CONFIG_SUBDIRS(popt)
 AC_OUTPUT([Makefile Makefile.inc lib-rpmrc macros lib/Makefile
 	build/Makefile tools/Makefile scripts/Makefile
+	tests/Makefile tests/rpmrc tests/hello-test/Makefile
 	misc/Makefile po/Makefile.in intl/Makefile],
 	[sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])

@@ -8,9 +8,9 @@
 #==============================================================================
 # ---- filesystem macros.
 #
-%_usr		@prefix@
-%_usrsrc	%{_usr}/src
-%_var		@varprefix@
+%_usr			@prefix@
+%_usrsrc		%{_usr}/src
+%_var			@varprefix@
 
 #==============================================================================
 # ---- path macros
@@ -41,7 +41,7 @@
 %_buildos		Linux
 %_bzip2bin		@BZIP2BIN@
 %_dbpath		%{_var}/lib/rpm
-%_defaultdocdir		%{_prefix}/doc
+%_defaultdocdir		%{_usr}/doc
 %_fixperms		@FIXPERMS@
 %_gzipbin		@GZIPBIN@
 %_rpmdir		%{_topdir}/RPMS
@@ -75,3 +75,17 @@
 	}
 
 #==============================================================================
+# ---- configure macros.
+#	Macro(s) similar to those used by configure.
+#
+%_build			@build@
+%_build_alias		@build_alias@
+%_build_cpu		@build_cpu@
+%_build_vendor		@build_vendor@
+%_build_os		@build_os@
+%_host			@host@
+%_host_alias		@host_alias@
+%_host_cpu		@host_cpu@
+%_host_vendor		@host_vendor@
+%_host_os		@host_os@
+%_prefix		@prefix@

@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.3 foreign
 
-SUBDIRS = popt build lib po intl misc tools scripts
+SUBDIRS = popt build lib po intl misc tools scripts tests
 
 INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl @INCPATH@
 
@@ -48,8 +48,9 @@ rpmconvert_SOURCES =	convertdb.c oldrpmdb.c
 rpmconvert_LDADD =	-lrpmbuild -lpopt -lrpm -lgdbm
 
 install-data-local:
-	@rm -f $(libdir)/rpmrc	&& ln -s rpm/rpmrc $(DESTDIR)/$(libdir)/rpmrc
-	@rm -f $(libdir)/rpmpopt && ln -s rpm/rpmpopt $(DESTDIR)/$(libdir)/rpmpopt
+	@$(mkinstalldirs) $(DESTDIR)/var/tmp $(DESTDIR)/var/lib/rpm
+	@rm -f $(DESTDIR)/$(libdir)/rpmrc && ln -s rpm/rpmrc $(DESTDIR)/$(libdir)/rpmrc
+	@rm -f $(DESTDIR)/$(libdir)/rpmpopt && ln -s rpm/rpmpopt $(DESTDIR)/$(libdir)/rpmpopt
 
 # FIXME: these should be generated in configure.in
 find-requires: find-requires.sh

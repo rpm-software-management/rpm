@@ -32,7 +32,8 @@ typedef struct MacroBuf {
 
 static int expandMacro(MacroBuf *mb);
 
-int max_macro_depth = 2;
+#define	MAX_MACRO_DEPTH	5
+int max_macro_depth = MAX_MACRO_DEPTH;
 
 #ifdef	DEBUG_MACROS
 int print_macro_trace = 0;
@@ -1132,7 +1133,7 @@ initMacros(MacroContext *mc, const char *macrofile)
 	if (first) {
 		mc->macroTable = NULL;
 		expandMacroTable(mc);
-		max_macro_depth = 2;	/* XXX Assume good ol' macro expansion */
+		max_macro_depth = MAX_MACRO_DEPTH;	/* XXX Assume good ol' macro expansion */
 		first = 0;
 	}
 
