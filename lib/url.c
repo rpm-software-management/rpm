@@ -80,7 +80,7 @@ DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, li
 	Fclose(u->ctrl);
 #endif
 
-	u->ctrl = fdio->deref(u->ctrl, "persist ctrl (urlFree)", file, line);
+	u->ctrl = fdio->_fdderef(u->ctrl, "persist ctrl (urlFree)", file, line);
 	if (u->ctrl)
 	    fprintf(stderr, _("warning: u %p ctrl %p nrefs != 0 (%s %s)\n"),
 			u, u->ctrl, u->host, u->service);
@@ -97,7 +97,7 @@ DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, li
 	Fclose(u->ctrl);
 #endif
 
-	u->data = fdio->deref(u->data, "persist data (urlFree)", file, line);
+	u->data = fdio->_fdderef(u->data, "persist data (urlFree)", file, line);
 	if (u->data)
 	    fprintf(stderr, _("warning: u %p data %p nrefs != 0 (%s %s)\n"),
 			u, u->data, u->host, u->service);

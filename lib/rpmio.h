@@ -52,9 +52,9 @@ struct FDIO_s {
   fdio_seek_function_t *	seek;
   fdio_close_function_t *	close;
 
-  fdio_ref_function_t *		ref;
-  fdio_deref_function_t *	deref;
-  fdio_new_function_t *		new;
+  fdio_ref_function_t *		_fdref;
+  fdio_deref_function_t *	_fdderef;
+  fdio_new_function_t *		_fdnew;
   fdio_fileno_function_t *	_fileno;
 
   fdio_open_function_t *	_open;
@@ -142,9 +142,9 @@ extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 #define	fdSeek		fdio->seek
 #endif
 
-#define	fdLink(_fd, _msg)	fdio->ref(_fd, _msg, __FILE__, __LINE__)
-#define	fdFree(_fd, _msg)	fdio->deref(_fd, _msg, __FILE__, __LINE__)
-#define	fdNew(_msg)		fdio->new(_msg, __FILE__, __LINE__)
+#define	fdLink(_fd, _msg)	fdio->_fdref(_fd, _msg, __FILE__, __LINE__)
+#define	fdFree(_fd, _msg)	fdio->_fdderef(_fd, _msg, __FILE__, __LINE__)
+#define	fdNew(_msg)		fdio->_fdnew(_msg, __FILE__, __LINE__)
 
 int	fdWritable(FD_t fd, int secs);
 int	fdReadable(FD_t fd, int secs);
@@ -180,9 +180,9 @@ int	ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
 #define	ufdWrite	ufdio->write
 #define	ufdSeek		ufdio->seek
 #define	ufdClose	ufdio->close
-#define	ufdLink		ufdio->ref
-#define	ufdFree		ufdio->deref
-#define	ufdNew		ufdio->new
+#define	ufdLink		ufdio->_fdref
+#define	ufdFree		ufdio->_fdderef
+#define	ufdNew		ufdio->_fdnew
 #define	ufdFileno	ufdio->_fileno
 #define	ufdOpen		ufdio->_open
 #define	ufdFopen	ufdio->_fopen
