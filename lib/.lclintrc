@@ -1,19 +1,11 @@
--I. -I..
-
--Du_long=unsigned
--Du_int=unsigned
--Du_short=short
--Du_char=char
-
--Du_int32_t=unsigned
--Du_int16_t=short
-
--Dfd_set=void
+-I. -I.. -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
 
-+unixlib	#-> +posixlib
 -warnunixlib
+-warnposix
+
++unixlib
 
 +boolint
 -boolops
