@@ -1,6 +1,9 @@
 2.2.10 -> 2.2.11:
 	- fixed some include file problems for FreeBSD
 	- fixed find-provides script for Linux (silly typo)
+	- -qvl didn't print out sticky bit
+	- linux.prov won't print provides info for symlinks which point
+	  to libraries w/ proper sonames
 
 2.2.9 -> 2.2.10:
 	- changed how installArchive() handles running out of gzread()
