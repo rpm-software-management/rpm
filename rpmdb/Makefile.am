@@ -18,7 +18,7 @@ EXTRA_DIST = db3.c
 EXTRA_PROGRAMS = tjfn
 
 tjfn_SOURCES = tjfn.c
-tjfn_LDFLAGS = -all-static
+tjfn_LDFLAGS = @LDFLAGS_STATIC@
 tjfn_LDADD = librpmdb.la
 
 pkgincdir = $(pkgincludedir)
@@ -186,4 +186,4 @@ lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmdb_la_SOURCES)
 
 tdbi: librpmdb.la tdbi.o
-	$(LINK) -all-static $@.o $< $(mylibpaths) $(mylibs) $(LIBS)
+	$(LINK) @LDFLAGS_STATIC@ $@.o $< $(mylibpaths) $(mylibs) $(LIBS)

@@ -23,7 +23,7 @@ libmagic_la_LDFLAGS = -version-info 1:0:0
 
 noinst_PROGRAMS = file
 file_SOURCES = file.c
-file_LDFLAGS = -all-static
+file_LDFLAGS = # -all-static
 file_LDADD = libmagic.la
 
 listobjs:

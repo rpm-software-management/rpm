@@ -49,6 +49,9 @@ Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #if HAVE_GNU_LD
 # define environ __environ
+#elif defined (__APPLE__)
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
 #else
 extern char **environ;
 #endif

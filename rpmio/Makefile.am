@@ -73,40 +73,40 @@ tdigest_SOURCES = tdigest.c
 tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la -lgcrypt
 
 tdir_SOURCES = tdir.c
-tdir_LDFLAGS = -all-static
+tdir_LDFLAGS = @LDFLAGS_STATIC@
 tdir_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 tfts_SOURCES = tfts.c
-tfts_LDFLAGS = -all-static
+tfts_LDFLAGS = @LDFLAGS_STATIC@
 tfts_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 tget_SOURCES = tget.c
-tget_LDFLAGS = -all-static
+tget_LDFLAGS = @LDFLAGS_STATIC@
 tget_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 thkp_SOURCES = thkp.c
-thkp_LDFLAGS = -all-static
+thkp_LDFLAGS = @LDFLAGS_STATIC@
 thkp_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 tput_SOURCES = tput.c
-tput_LDFLAGS = -all-static
+tput_LDFLAGS = @LDFLAGS_STATIC@
 tput_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 
 tglob_SOURCES = tglob.c
-tglob_LDFLAGS = -all-static
+tglob_LDFLAGS = @LDFLAGS_STATIC@
 tglob_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 tinv_SOURCES = tinv.c
-tinv_LDFLAGS = -all-static
+tinv_LDFLAGS = @LDFLAGS_STATIC@
 tinv_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 tkey_SOURCES = tkey.c
-tkey_LDFLAGS = -all-static
+tkey_LDFLAGS = @LDFLAGS_STATIC@
 tkey_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 tring_SOURCES = tring.c
-tring_LDFLAGS = -all-static
+tring_LDFLAGS = @LDFLAGS_STATIC@
 tring_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 trpmio_SOURCES = trpmio.c

@@ -115,6 +115,7 @@ if test X"$GCC" = Xyes ; then
 	case "$target" in
 		*-*-solaris*)	LDFLAGS_STATIC="-static";;
 		*-*-hpux*)	LDFLAGS_STATIC="-static";;
+		*-*-darwin*)	LDFLAGS_STATIC="";; # Mac OS X does not do static binaries.
 		*-*-sysv5uw*)   LDFLAGS_STATUS="-static";; # Unixware has no shared libthread.
 		*-*-*)		LDFLAGS_STATIC="-all-static";;
 	esac

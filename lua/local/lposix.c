@@ -438,7 +438,12 @@ static int Pgetenv(lua_State *L)		/** getenv([name]) */
 	if (lua_isnone(L, 1))
 	{
 /*@-nestedextern -shadow@*/
+	#ifdef __APPLE__
+		#include <crt_externs.h>
+		#define environ (*_NSGetEnviron())
+	#else
 		extern char **environ;
+	#endif /* __APPLE__ */
 /*@=nestedextern =shadow@*/
 		char **e;
 		if (*environ==NULL) lua_pushnil(L); else lua_newtable(L);

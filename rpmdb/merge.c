@@ -1,4 +1,5 @@
 /*@-bounds -mustmod -sizeoftype @*/
+#ifndef __APPLE__
 /*-
  * Copyright (c) 1992, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -353,4 +354,7 @@ COPY:	    			b = t;
 /*@=usereleased@*/
 	return (0);
 }
+#else
+/* mergesort is implemented in System on Mac OS X */
+#endif /* __APPLE__ */
 /*@=bounds =mustmod =sizeoftype @*/

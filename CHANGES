@@ -7,6 +7,7 @@
 	- revert MAGIC_COMPRESS, real fix is in libmagic (#143782).
 	- upgrade to file-4.12 internal.
 	- mac os x patches (#131943,#131944,#132924,#132926).
+	- mac os x patches (#133611, #133612, #134637).
 
 4.3.3 -> 4.4:
 	- pentium3/pentium4 arch support (pluto@PLD).
