@@ -13,6 +13,7 @@ mylibs= \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/popt/libpopt.la
 
+EXTRA_DIST = Makefile.in
 
 pythondir = $(prefix)/lib/python1.5/site-packages
 python_PROGRAMS = rpmmodule.so
