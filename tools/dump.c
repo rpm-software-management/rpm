@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "header.h"
+#include "rpmlib.h"
 
 void main(int argc, char ** argv)
 {
@@ -29,7 +30,7 @@ void main(int argc, char ** argv)
     }
     close(fd);
   
-    headerDump(h, stdout, 1);
+    headerDump(h, stdout, 1, rpmTagTable);
     headerFree(h);
 }
 
