@@ -17,6 +17,9 @@
 
 #define RPMLOCK_FILE "/var/lib/rpm/transaction.lock"
 
+/*@observer@*/ /*@unchecked@*/
+static const char * _rpmlock_file = RPMLOCK_FILE;
+
 enum {
 	RPMLOCK_READ   = 1 << 0,
 	RPMLOCK_WRITE  = 1 << 1,
@@ -37,7 +40,7 @@ static rpmlock rpmlock_new(const char *rootdir)
 	if (lock) {
 		mode_t oldmask = umask(022);
 		char *path = (char *)malloc(strlen(rootdir)+
-					    sizeof(RPMLOCK_FILE)+1);
+					    strlen(RPMLOCK_FILE)+2);
 		if (!path) {
 			free(lock);
 			return NULL;
