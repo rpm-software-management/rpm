@@ -273,18 +273,20 @@ int verifySignature(int fd, short sig_type, void *sig, char *result)
     switch (sig_type) {
     case RPMSIG_NONE:
 	strcpy(result, "No signature information available\n");
-	return 1;
+	return RPMSIG_NOSIG;
 	break;
     case RPMSIG_PGP262_1024:
-	if (!verifyPGPSignature(fd, sig, result)) {
-	    return 1;
+	if (verifyPGPSignature(fd, sig, result)) {
+	    return RPMSIG_BADSIG;
 	}
 	break;
     default:
 	sprintf(result, "Unimplemented signature type\n");
+	return RPMSIG_UNKNOWNSIG;
+	break;
     }
 
-    return 0;
+    return RPMSIG_SIGOK;
 }
 
 unsigned short sigLookupType(void)
