@@ -66,6 +66,8 @@ static int installPackages(char * rootdir, char ** packages, char * location,
     for (i = 0, filename = packages; i < numPackages; i++, filename++) {
 	if (!*filename) continue;
 
+	hashesPrinted = 0;
+
 	fd = open(*filename, O_RDONLY);
 	if (fd < 0) {
 	    fprintf(stderr, "error: cannot open %s\n", *filename);
@@ -241,7 +243,6 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	db = NULL;
 
     if (!stopInstall) {
-	hashesPrinted = 0;
 	message(MESS_DEBUG, "installing binary packages\n");
 	numFailed += installPackages(rootdir, packages, location, numPackages, 
 				     installFlags, interfaceFlags, db);
