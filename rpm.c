@@ -359,7 +359,7 @@ int main(int argc, char ** argv) {
 	    break;
 
 	  case 'r':
-	    if (optarg[1] != '/') 
+	    if (optarg[0] != '/') 
 		argerror("arguments to --root (-r) must begin with a /");
 	    prefix = optarg;
 	    break;
@@ -400,9 +400,10 @@ int main(int argc, char ** argv) {
 	argerror("--test may only be specified during package installation "
 		 "and uninstallation");
 
-    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && prefix[1])
-	argerror("--test may only be specified during package installation "
-		 "and uninstallation");
+    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
+	bigMode != MODE_QUERY   && prefix[1])
+	argerror("--root (-r) may only be specified during "
+		 "installation, uninstallation, and querying");
 
     if (bigMode != MODE_BUILD && clean) 
 	argerror("--clean may only be used during package building");
