@@ -23,20 +23,6 @@
 
 typedef int (*md5func)(const char * fn, unsigned char * digest);
 
-static int makePGPSignature(const char *file, void **sig, int_32 *size,
-			    const char *passPhrase, int sigTag);
-static int makeGPGSignature(const char *file, void **sig, int_32 *size,
-			    const char *passPhrase);
-static int checkSize(FD_t fd, int size, int sigsize);
-static int verifySizeSignature(const char *datafile, int_32 size, char *result);
-static int verifyMD5Signature(const char *datafile, unsigned char *sig,
-			      char *result, md5func fn);
-static int verifyPGPSignature(const char *datafile, void *sig,
-			      int count, char *result, int sigTag);
-static int verifyGPGSignature(const char *datafile, void *sig,
-			      int count, char *result);
-static int checkPassPhrase(const char *passPhrase, const int sigTag);
-
 int rpmLookupSignatureType(int action)
 {
     static int rc = 0;
@@ -124,6 +110,27 @@ const char * rpmDetectPGPVersion(int sigTag)
 	    break;
     }
     return NULL;
+}
+
+static int checkSize(FD_t fd, int size, int sigsize)
+{
+    int headerArchiveSize;
+    struct stat statbuf;
+
+    fstat(fdFileno(fd), &statbuf);
+
+    if (S_ISREG(statbuf.st_mode)) {
+	headerArchiveSize = statbuf.st_size - sizeof(struct rpmlead) - sigsize;
+
+	rpmMessage(RPMMESS_DEBUG, _("sigsize         : %d\n"), sigsize);
+	rpmMessage(RPMMESS_DEBUG, _("Header + Archive: %d\n"), headerArchiveSize);
+	rpmMessage(RPMMESS_DEBUG, _("expected size   : %d\n"), size);
+
+	return size - headerArchiveSize;
+    } else {
+	rpmMessage(RPMMESS_DEBUG, _("file is not regular -- skipping size check\n"));
+	return 0;
+    }
 }
 
 /* rpmReadSignature() emulates the new style signatures if it finds an */
@@ -226,42 +233,6 @@ Header rpmNewSignature(void)
 void rpmFreeSignature(Header h)
 {
     headerFree(h);
-}
-
-int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *passPhrase)
-{
-    struct stat statbuf;
-    int_32 size;
-    unsigned char buf[16];
-    void *sig;
-    int ret = -1;
-    
-    switch (sigTag) {
-      case RPMSIGTAG_SIZE:
-	stat(file, &statbuf);
-	size = statbuf.st_size;
-	ret = 0;
-	headerAddEntry(header, RPMSIGTAG_SIZE, RPM_INT32_TYPE, &size, 1);
-	break;
-      case RPMSIGTAG_MD5:
-	ret = mdbinfile(file, buf);
-	if (ret == 0)
-	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, buf, 16);
-	break;
-      case RPMSIGTAG_PGP:
-      case RPMSIGTAG_PGP5:
-	ret = makePGPSignature(file, &sig, &size, passPhrase, sigTag);
-	if (ret == 0)
-	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
-	break;
-      case RPMSIGTAG_GPG:
-        ret = makeGPGSignature(file, &sig, &size, passPhrase);
-	if (ret == 0)
-	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
-	break;
-    }
-
-    return ret;
 }
 
 static int makePGPSignature(const char *file, void **sig, int_32 *size,
@@ -423,60 +394,40 @@ static int makeGPGSignature(const char *file, void **sig, int_32 *size,
     return 0;
 }
 
-static int checkSize(FD_t fd, int size, int sigsize)
+int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *passPhrase)
 {
-    int headerArchiveSize;
     struct stat statbuf;
-
-    fstat(fdFileno(fd), &statbuf);
-
-    if (S_ISREG(statbuf.st_mode)) {
-	headerArchiveSize = statbuf.st_size - sizeof(struct rpmlead) - sigsize;
-
-	rpmMessage(RPMMESS_DEBUG, _("sigsize         : %d\n"), sigsize);
-	rpmMessage(RPMMESS_DEBUG, _("Header + Archive: %d\n"), headerArchiveSize);
-	rpmMessage(RPMMESS_DEBUG, _("expected size   : %d\n"), size);
-
-	return size - headerArchiveSize;
-    } else {
-	rpmMessage(RPMMESS_DEBUG, _("file is not regular -- skipping size check\n"));
-	return 0;
-    }
-}
-
-int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
-		    char *result)
-{
+    int_32 size;
+    unsigned char buf[16];
+    void *sig;
+    int ret = -1;
+    
     switch (sigTag) {
       case RPMSIGTAG_SIZE:
-	if (verifySizeSignature(file, *(int_32 *)sig, result)) {
-	    return RPMSIG_BAD;
-	}
+	stat(file, &statbuf);
+	size = statbuf.st_size;
+	ret = 0;
+	headerAddEntry(header, RPMSIGTAG_SIZE, RPM_INT32_TYPE, &size, 1);
 	break;
       case RPMSIGTAG_MD5:
-	if (verifyMD5Signature(file, sig, result, mdbinfile)) {
-	    return 1;
-	}
-	break;
-      case RPMSIGTAG_LEMD5_1:
-      case RPMSIGTAG_LEMD5_2:
-	if (verifyMD5Signature(file, sig, result, mdbinfileBroken)) {
-	    return 1;
-	}
+	ret = mdbinfile(file, buf);
+	if (ret == 0)
+	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, buf, 16);
 	break;
       case RPMSIGTAG_PGP:
       case RPMSIGTAG_PGP5:
-	return verifyPGPSignature(file, sig, count, result, sigTag);
+	ret = makePGPSignature(file, &sig, &size, passPhrase, sigTag);
+	if (ret == 0)
+	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
 	break;
       case RPMSIGTAG_GPG:
-	return verifyGPGSignature(file, sig, count, result);
+        ret = makeGPGSignature(file, &sig, &size, passPhrase);
+	if (ret == 0)
+	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
 	break;
-      default:
-	sprintf(result, "Do not know how to verify sig type %d\n", sigTag);
-	return RPMSIG_UNKNOWN;
     }
 
-    return RPMSIG_OK;
+    return ret;
 }
 
 static int verifySizeSignature(const char *datafile, int_32 size, char *result)
@@ -700,56 +651,6 @@ static int verifyGPGSignature(const char *datafile, void *sig,
     return res;
 }
 
-char *rpmGetPassPhrase(const char *prompt, const int sigTag)
-{
-    char *pass;
-    int aok;
-
-    switch (sigTag) {
-      case RPMSIGTAG_GPG:
-      { const char *name = rpmExpand("%{_gpg_name}", NULL);
-	aok = (name && *name != '%');
-	xfree(name);
-      }
-	if (!aok) {
-	    rpmError(RPMERR_SIGGEN,
-		_("You must set \"%%_gpg_name\" in your macro file"));
-	    return NULL;
-	}
-	break;
-      case RPMSIGTAG_PGP: 
-      case RPMSIGTAG_PGP5: 
-      { const char *name = rpmExpand("%{_pgp_name}", NULL);
-	aok = (name && *name != '%');
-	xfree(name);
-      }
-	if (!aok) {
-	    rpmError(RPMERR_SIGGEN,
-		_("You must set \"%%_pgp_name\" in your macro file"));
-	    return NULL;
-	}
-	break;
-      default:
-	/* Currently the calling function (rpm.c:main) is checking this and
-	 * doing a better job.  This section should never be accessed.
-	 */
-	rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file"));
-	return NULL;
-    }
-
-    if (prompt) {
-	pass = getpass(prompt);
-    } else {
-	pass = getpass("");
-    }
-
-    if (checkPassPhrase(pass, sigTag)) {
-	return NULL;
-    }
-
-    return pass;
-}
-
 static int checkPassPhrase(const char *passPhrase, const int sigTag)
 {
     int passPhrasePipe[2];
@@ -831,4 +732,89 @@ static int checkPassPhrase(const char *passPhrase, const int sigTag)
 
     /* passPhrase is good */
     return 0;
+}
+
+char *rpmGetPassPhrase(const char *prompt, const int sigTag)
+{
+    char *pass;
+    int aok;
+
+    switch (sigTag) {
+      case RPMSIGTAG_GPG:
+      { const char *name = rpmExpand("%{_gpg_name}", NULL);
+	aok = (name && *name != '%');
+	xfree(name);
+      }
+	if (!aok) {
+	    rpmError(RPMERR_SIGGEN,
+		_("You must set \"%%_gpg_name\" in your macro file"));
+	    return NULL;
+	}
+	break;
+      case RPMSIGTAG_PGP: 
+      case RPMSIGTAG_PGP5: 
+      { const char *name = rpmExpand("%{_pgp_name}", NULL);
+	aok = (name && *name != '%');
+	xfree(name);
+      }
+	if (!aok) {
+	    rpmError(RPMERR_SIGGEN,
+		_("You must set \"%%_pgp_name\" in your macro file"));
+	    return NULL;
+	}
+	break;
+      default:
+	/* Currently the calling function (rpm.c:main) is checking this and
+	 * doing a better job.  This section should never be accessed.
+	 */
+	rpmError(RPMERR_SIGGEN, _("Invalid %%_signature spec in macro file"));
+	return NULL;
+    }
+
+    if (prompt) {
+	pass = getpass(prompt);
+    } else {
+	pass = getpass("");
+    }
+
+    if (checkPassPhrase(pass, sigTag)) {
+	return NULL;
+    }
+
+    return pass;
+}
+
+int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
+		    char *result)
+{
+    switch (sigTag) {
+      case RPMSIGTAG_SIZE:
+	if (verifySizeSignature(file, *(int_32 *)sig, result)) {
+	    return RPMSIG_BAD;
+	}
+	break;
+      case RPMSIGTAG_MD5:
+	if (verifyMD5Signature(file, sig, result, mdbinfile)) {
+	    return 1;
+	}
+	break;
+      case RPMSIGTAG_LEMD5_1:
+      case RPMSIGTAG_LEMD5_2:
+	if (verifyMD5Signature(file, sig, result, mdbinfileBroken)) {
+	    return 1;
+	}
+	break;
+      case RPMSIGTAG_PGP:
+      case RPMSIGTAG_PGP5:
+	return verifyPGPSignature(file, sig, count, result, sigTag);
+	break;
+      case RPMSIGTAG_GPG:
+	return verifyGPGSignature(file, sig, count, result);
+	break;
+      default:
+	sprintf(result, "Do not know how to verify sig type %d\n", sigTag);
+	return RPMSIG_UNKNOWN;
+    }
+
+    return RPMSIG_OK;
 }

@@ -6,7 +6,9 @@
 #include "misc.h"
 
 /* XXX FIXME: merge into problems */
-void printDepFlags(FILE * fp, const char * version, int flags) {
+/* XXX used in verify.c */
+void printDepFlags(FILE * fp, const char * version, int flags)
+{
     if (flags)
 	fprintf(fp, " ");
 
@@ -27,7 +29,8 @@ void printDepFlags(FILE * fp, const char * version, int flags) {
 
 /* XXX FIXME: merge into problems */
 void printDepProblems(FILE * fp, struct rpmDependencyConflict * conflicts,
-			     int numConflicts) {
+			     int numConflicts)
+{
     int i;
 
     for (i = 0; i < numConflicts; i++) {
@@ -46,7 +49,8 @@ void printDepProblems(FILE * fp, struct rpmDependencyConflict * conflicts,
     }
 }
 
-char * rpmProblemString(rpmProblem prob) {
+char * rpmProblemString(rpmProblem prob)
+{
     char * name, * version, * release;
     char * buf;
     char * altName, * altVersion, * altRelease;

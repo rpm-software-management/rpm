@@ -12,7 +12,8 @@
 #if defined(ENABLE_V1_PACKAGES)
 /* 0 = success */
 /* !0 = error */
-static int readOldHeader(FD_t fd, Header * hdr, int * isSource) {
+static int readOldHeader(FD_t fd, Header * hdr, int * isSource)
+{
     struct oldrpmHeader oldheader;
     struct oldrpmHeaderSpec spec;
     Header dbentry;
@@ -193,7 +194,8 @@ static int readOldHeader(FD_t fd, Header * hdr, int * isSource) {
 /* 1 = bad magic */
 /* 2 = error */
 static int readPackageHeaders(FD_t fd, struct rpmlead * leadPtr, 
-			      Header * sigs, Header * hdrPtr) {
+			      Header * sigs, Header * hdrPtr)
+{
     Header hdrBlock;
     struct rpmlead leadBlock;
     Header * hdr;
@@ -299,7 +301,8 @@ static int readPackageHeaders(FD_t fd, struct rpmlead * leadPtr,
 /* 0 = success */
 /* 1 = bad magic */
 /* 2 = error */
-int rpmReadPackageInfo(FD_t fd, Header * signatures, Header * hdr) {
+int rpmReadPackageInfo(FD_t fd, Header * signatures, Header * hdr)
+{
     return readPackageHeaders(fd, NULL, signatures, hdr);
 }
 
@@ -307,7 +310,8 @@ int rpmReadPackageInfo(FD_t fd, Header * signatures, Header * hdr) {
 /* 1 = bad magic */
 /* 2 = error */
 int rpmReadPackageHeader(FD_t fd, Header * hdr, int * isSource, int * major,
-		  int * minor) {
+		  int * minor)
+{
     int rc;
     struct rpmlead lead;
 

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-13 17:29-0400\n"
+"POT-Creation-Date: 1999-07-13 19:29-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2167,31 +2167,31 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:456 ../lib/depends.c:615
-#, c-format
-msgid "cannot read header at %d for dependency check"
+#: ../lib/depends.c:392
+msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:521
+#: ../lib/depends.c:414
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:709
+#: ../lib/depends.c:541
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:752
+#: ../lib/depends.c:584
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:871
-msgid "dbrecMatchesDepFlags() failed to read header"
+#: ../lib/depends.c:637 ../lib/depends.c:1014
+#, c-format
+msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:923
+#: ../lib/depends.c:804
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2201,18 +2201,18 @@ msgstr ""
 msgid "free list corrupt (%u)- contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: ../lib/formats.c:97 ../lib/formats.c:114 ../lib/formats.c:134
-#: ../lib/formats.c:166 ../lib/header.c:1973 ../lib/header.c:1989
-#: ../lib/header.c:2008
+#: ../lib/formats.c:65 ../lib/formats.c:83 ../lib/formats.c:104
+#: ../lib/formats.c:137 ../lib/header.c:1995 ../lib/header.c:2012
+#: ../lib/header.c:2032
 msgid "(not a number)"
 msgstr ""
 
-#: ../lib/fs.c:41
+#: ../lib/fs.c:40
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
 msgstr ""
 
-#: ../lib/fs.c:76 ../lib/fs.c:246
+#: ../lib/fs.c:75 ../lib/fs.c:249
 #, c-format
 msgid "failed to stat %s: %s"
 msgstr ""
@@ -2222,7 +2222,7 @@ msgstr ""
 msgid "failed to open %s: %s"
 msgstr ""
 
-#: ../lib/fs.c:267
+#: ../lib/fs.c:270
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr ""
@@ -2279,187 +2279,187 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: ../lib/header.c:669
-#, c-format
-msgid "Data type %d not supprted\n"
-msgstr ""
-
 #. This should not be allowed
-#: ../lib/header.c:905
+#: ../lib/header.c:163
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: ../lib/header.c:935
+#: ../lib/header.c:193
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: ../lib/header.c:994
+#: ../lib/header.c:716
+#, c-format
+msgid "Data type %d not supprted\n"
+msgstr ""
+
+#: ../lib/header.c:995
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: ../lib/header.c:1328
-msgid "? expected in expression"
-msgstr ""
-
-#: ../lib/header.c:1335
-msgid "{ expected after ? in expression"
-msgstr ""
-
-#: ../lib/header.c:1345 ../lib/header.c:1377
-msgid "} expected in expression"
-msgstr ""
-
-#: ../lib/header.c:1352
-msgid ": expected following ? subexpression"
-msgstr ""
-
-#: ../lib/header.c:1365
-msgid "{ expected after : in expression"
-msgstr ""
-
-#: ../lib/header.c:1384
-msgid "| expected at end of expression"
-msgstr ""
-
-#: ../lib/header.c:1478
+#: ../lib/header.c:1395
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: ../lib/header.c:1506
+#: ../lib/header.c:1423
 msgid "missing } after %{"
 msgstr ""
 
-#: ../lib/header.c:1518
+#: ../lib/header.c:1435
 msgid "empty tag format"
 msgstr ""
 
-#: ../lib/header.c:1528
+#: ../lib/header.c:1445
 msgid "empty tag name"
 msgstr ""
 
-#: ../lib/header.c:1543
+#: ../lib/header.c:1460
 msgid "unknown tag"
 msgstr ""
 
-#: ../lib/header.c:1569
+#: ../lib/header.c:1486
 msgid "] expected at end of array"
 msgstr ""
 
-#: ../lib/header.c:1585
+#: ../lib/header.c:1502
 msgid "unexpected ]"
 msgstr ""
 
-#: ../lib/header.c:1587
+#: ../lib/header.c:1504
 msgid "unexpected }"
 msgstr ""
 
-#: ../lib/header.c:1762
+#: ../lib/header.c:1556
+msgid "? expected in expression"
+msgstr ""
+
+#: ../lib/header.c:1563
+msgid "{ expected after ? in expression"
+msgstr ""
+
+#: ../lib/header.c:1573 ../lib/header.c:1605
+msgid "} expected in expression"
+msgstr ""
+
+#: ../lib/header.c:1580
+msgid ": expected following ? subexpression"
+msgstr ""
+
+#: ../lib/header.c:1593
+msgid "{ expected after : in expression"
+msgstr ""
+
+#: ../lib/header.c:1612
+msgid "| expected at end of expression"
+msgstr ""
+
+#: ../lib/header.c:1779
 msgid "(unknown type)"
 msgstr ""
 
-#: ../lib/install.c:93
-msgid "source package expected, binary found"
-msgstr ""
-
-#: ../lib/install.c:171 ../lib/uninstall.c:111
+#: ../lib/install.c:118 ../lib/uninstall.c:111
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
 
-#: ../lib/install.c:188
+#: ../lib/install.c:136
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:196
+#: ../lib/install.c:144
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:223
+#: ../lib/install.c:172
 msgid "%%instchangelog value in macro file should be a number, but isn't"
-msgstr ""
-
-#: ../lib/install.c:291
-#, c-format
-msgid "package: %s-%s-%s files test = %d\n"
-msgstr ""
-
-#: ../lib/install.c:354
-msgid "stopping install as we're running --test\n"
-msgstr ""
-
-#: ../lib/install.c:359
-msgid "running preinstall script (if any)\n"
-msgstr ""
-
-#: ../lib/install.c:389
-#, c-format
-msgid "warning: %s created as %s"
-msgstr ""
-
-#: ../lib/install.c:425
-#, c-format
-msgid "warning: %s saved as %s"
-msgstr ""
-
-#: ../lib/install.c:429 ../lib/install.c:792 ../lib/uninstall.c:337
-#, c-format
-msgid "rename of %s to %s failed: %s"
-msgstr ""
-
-#: ../lib/install.c:509
-msgid "running postinstall script (if any)\n"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: ../lib/install.c:615
+#: ../lib/install.c:335
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: ../lib/install.c:616
+#: ../lib/install.c:336
 msgid " on file "
 msgstr ""
 
-#: ../lib/install.c:656
+#: ../lib/install.c:377
 msgid "installing a source package\n"
 msgstr ""
 
-#: ../lib/install.c:667 ../lib/install.c:689
+#: ../lib/install.c:388 ../lib/install.c:410
 #, c-format
 msgid "cannot create %s"
 msgstr ""
 
-#: ../lib/install.c:674 ../lib/install.c:696
+#: ../lib/install.c:395 ../lib/install.c:417
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: ../lib/install.c:678
+#: ../lib/install.c:399
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:700
+#: ../lib/install.c:421
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:733 ../lib/install.c:769
+#: ../lib/install.c:454 ../lib/install.c:490
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:790
+#: ../lib/install.c:511
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: ../lib/lookup.c:83
+#: ../lib/install.c:513 ../lib/install.c:802 ../lib/uninstall.c:337
+#, c-format
+msgid "rename of %s to %s failed: %s"
+msgstr ""
+
+#: ../lib/install.c:602
+msgid "source package expected, binary found"
+msgstr ""
+
+#: ../lib/install.c:664
+#, c-format
+msgid "package: %s-%s-%s files test = %d\n"
+msgstr ""
+
+#: ../lib/install.c:727
+msgid "stopping install as we're running --test\n"
+msgstr ""
+
+#: ../lib/install.c:732
+msgid "running preinstall script (if any)\n"
+msgstr ""
+
+#: ../lib/install.c:762
+#, c-format
+msgid "warning: %s created as %s"
+msgstr ""
+
+#: ../lib/install.c:798
+#, c-format
+msgid "warning: %s saved as %s"
+msgstr ""
+
+#: ../lib/install.c:882
+msgid "running postinstall script (if any)\n"
+msgstr ""
+
+#: ../lib/lookup.c:35
 #, c-format
 msgid "cannot read header at %d for lookup"
 msgstr ""
@@ -2571,80 +2571,80 @@ msgstr ""
 msgid "bad file state: %s"
 msgstr ""
 
-#: ../lib/package.c:226
+#: ../lib/package.c:228
 msgid "package is a version one package!\n"
 msgstr ""
 
-#: ../lib/package.c:231
+#: ../lib/package.c:233
 msgid "old style source package -- I'll do my best\n"
 msgstr ""
 
-#: ../lib/package.c:234
+#: ../lib/package.c:236
 #, c-format
 msgid "archive offset is %d\n"
 msgstr ""
 
-#: ../lib/package.c:244
+#: ../lib/package.c:246
 msgid "old style binary package\n"
 msgstr ""
 
-#: ../lib/package.c:288
+#: ../lib/package.c:290
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
 
-#: ../lib/problems.c:41
+#: ../lib/problems.c:44
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../lib/problems.c:44
+#: ../lib/problems.c:47
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
 
-#: ../lib/problems.c:70
+#: ../lib/problems.c:74
 #, c-format
 msgid "package %s-%s-%s is for a different architecture"
 msgstr ""
 
-#: ../lib/problems.c:75
+#: ../lib/problems.c:79
 #, c-format
 msgid "package %s-%s-%s is for a different operating system"
 msgstr ""
 
-#: ../lib/problems.c:80
+#: ../lib/problems.c:84
 #, c-format
 msgid "package %s-%s-%s is already installed"
 msgstr ""
 
-#: ../lib/problems.c:85
+#: ../lib/problems.c:89
 #, c-format
 msgid "path %s is not relocateable for package %s-%s-%s"
 msgstr ""
 
-#: ../lib/problems.c:90
+#: ../lib/problems.c:94
 #, c-format
 msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
 msgstr ""
 
-#: ../lib/problems.c:96
+#: ../lib/problems.c:100
 #, c-format
 msgid ""
 "file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
 msgstr ""
 
-#: ../lib/problems.c:102
+#: ../lib/problems.c:106
 #, c-format
 msgid "package %s-%s-%s (which is newer then %s-%s-%s) is already installed"
 msgstr ""
 
-#: ../lib/problems.c:108
+#: ../lib/problems.c:112
 #, c-format
 msgid "installing package %s-%s-%s needs %ld%c on the %s filesystem"
 msgstr ""
 
-#: ../lib/problems.c:120
+#: ../lib/problems.c:124
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr ""
@@ -2838,7 +2838,8 @@ msgstr ""
 msgid "rebuilding database in rootdir %s\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:23 ../lib/rpmdb.c:64 ../lib/rpmdb.c:82 ../lib/rpmdb.c:98
+#: ../lib/rebuilddb.c:23 ../lib/rpmdb.c:69 ../lib/rpmdb.c:87
+#: ../lib/rpmdb.c:103
 msgid "no dbpath has been set"
 msgstr ""
 
@@ -2893,105 +2894,105 @@ msgstr ""
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:159
+#: ../lib/rpmdb.c:164
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:169 ../lib/url.c:421
+#: ../lib/rpmdb.c:174 ../lib/url.c:421
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:182 ../lib/rpmdb.c:189
+#: ../lib/rpmdb.c:187 ../lib/rpmdb.c:194
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: ../lib/rpmdb.c:183
+#: ../lib/rpmdb.c:188
 msgid "exclusive"
 msgstr ""
 
-#: ../lib/rpmdb.c:190
+#: ../lib/rpmdb.c:195
 msgid "shared"
 msgstr ""
 
-#: ../lib/rpmdb.c:213
+#: ../lib/rpmdb.c:218
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
-#: ../lib/rpmdb.c:372
+#: ../lib/rpmdb.c:377
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:383
+#: ../lib/rpmdb.c:388
 #, c-format
 msgid "package %s not found in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:407 ../lib/uninstall.c:40
+#: ../lib/rpmdb.c:412 ../lib/uninstall.c:40
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: ../lib/rpmdb.c:415
+#: ../lib/rpmdb.c:420
 msgid "package has no name"
 msgstr ""
 
-#: ../lib/rpmdb.c:417
+#: ../lib/rpmdb.c:422
 msgid "removing name index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:422
+#: ../lib/rpmdb.c:427
 msgid "package has no group\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:424
+#: ../lib/rpmdb.c:429
 msgid "removing group index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:431
+#: ../lib/rpmdb.c:436
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:446
+#: ../lib/rpmdb.c:451
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:458
+#: ../lib/rpmdb.c:463
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:469
+#: ../lib/rpmdb.c:474
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:486
+#: ../lib/rpmdb.c:491
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:495
+#: ../lib/rpmdb.c:500
 msgid "package has no files\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:568
+#: ../lib/rpmdb.c:573
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: ../lib/rpmdb.c:639
+#: ../lib/rpmdb.c:644
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: ../lib/rpmdb.c:648
+#: ../lib/rpmdb.c:653
 msgid "header changed size!"
 msgstr ""
 
@@ -3089,129 +3090,127 @@ msgstr ""
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: ../lib/signature.c:147
+#: ../lib/signature.c:125
+#, c-format
+msgid "sigsize         : %d\n"
+msgstr ""
+
+#: ../lib/signature.c:126
+#, c-format
+msgid "Header + Archive: %d\n"
+msgstr ""
+
+#: ../lib/signature.c:127
+#, c-format
+msgid "expected size   : %d\n"
+msgstr ""
+
+#: ../lib/signature.c:131
+msgid "file is not regular -- skipping size check\n"
+msgstr ""
+
+#: ../lib/signature.c:154
 msgid "No signature\n"
 msgstr ""
 
-#: ../lib/signature.c:150
+#: ../lib/signature.c:157
 msgid "Old PGP signature\n"
 msgstr ""
 
-#: ../lib/signature.c:163
+#: ../lib/signature.c:170
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr ""
 
-#: ../lib/signature.c:167
+#: ../lib/signature.c:174
 msgid "New Header signature\n"
 msgstr ""
 
 #. 8-byte pad
-#: ../lib/signature.c:175 ../lib/signature.c:213
+#: ../lib/signature.c:182 ../lib/signature.c:220
 #, c-format
 msgid "Signature size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:176 ../lib/signature.c:214
+#: ../lib/signature.c:183 ../lib/signature.c:221
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr ""
 
-#: ../lib/signature.c:306 ../lib/signature.c:812
+#: ../lib/signature.c:277 ../lib/signature.c:713
 msgid "Couldn't exec pgp"
 msgstr ""
 
-#: ../lib/signature.c:317
+#: ../lib/signature.c:288
 msgid "pgp failed"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: ../lib/signature.c:324
+#: ../lib/signature.c:295
 msgid "pgp failed to write signature"
 msgstr ""
 
-#: ../lib/signature.c:329
+#: ../lib/signature.c:300
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:340 ../lib/signature.c:416
+#: ../lib/signature.c:311 ../lib/signature.c:387
 msgid "unable to read the signature"
 msgstr ""
 
-#: ../lib/signature.c:345
+#: ../lib/signature.c:316
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: ../lib/signature.c:382 ../lib/signature.c:787
+#: ../lib/signature.c:353 ../lib/signature.c:688
 msgid "Couldn't exec gpg"
 msgstr ""
 
-#: ../lib/signature.c:393
+#: ../lib/signature.c:364
 msgid "gpg failed"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: ../lib/signature.c:400
+#: ../lib/signature.c:371
 msgid "gpg failed to write signature"
 msgstr ""
 
-#: ../lib/signature.c:405
+#: ../lib/signature.c:376
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:421
+#: ../lib/signature.c:392
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: ../lib/signature.c:436
-#, c-format
-msgid "sigsize         : %d\n"
-msgstr ""
-
-#: ../lib/signature.c:437
-#, c-format
-msgid "Header + Archive: %d\n"
-msgstr ""
-
-#: ../lib/signature.c:438
-#, c-format
-msgid "expected size   : %d\n"
-msgstr ""
-
-#: ../lib/signature.c:442
-msgid "file is not regular -- skipping size check\n"
-msgstr ""
-
-#: ../lib/signature.c:560 ../lib/signature.c:607
+#: ../lib/signature.c:511 ../lib/signature.c:558
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 
-#: ../lib/signature.c:605 ../lib/signature.c:677
+#: ../lib/signature.c:556 ../lib/signature.c:628
 msgid "exec failed!\n"
 msgstr ""
 
-#: ../lib/signature.c:679
+#: ../lib/signature.c:630
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 
-#: ../lib/signature.c:716
+#. This case should have been screened out long ago.
+#: ../lib/signature.c:717 ../lib/signature.c:770
+msgid "Invalid %%_signature spec in macro file"
+msgstr ""
+
+#: ../lib/signature.c:750
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr ""
 
-#: ../lib/signature.c:728
+#: ../lib/signature.c:762
 msgid "You must set \"%%_pgp_name\" in your macro file"
-msgstr ""
-
-#. Currently the calling function (rpm.c:main) is checking this and
-#. * doing a better job.  This section should never be accessed.
-#.
-#: ../lib/signature.c:736 ../lib/signature.c:816
-msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
 #: ../lib/transaction.c:793
