@@ -17,11 +17,11 @@ int hashEqualityString(const void * key1, const void * key2);
    memory, but may be usefull anyway */
 hashTable htCreate(int numBuckets, int keySize, hashFunctionType fn,
 		   hashEqualityType eq); 
-void htAddEntry(hashTable ht, const void * key, void * data);
+void htAddEntry(hashTable ht, const void * key, const void * data);
 void htFree(hashTable ht);
 /* returns 0 on success, 1 if the item is not found. tableKey may be NULL */
-int htGetEntry(hashTable ht, const void * key, void *** data, int * dataCount,
-	       void ** tableKey);
+int htGetEntry(hashTable ht, const void * key, const void *** data, int * dataCount,
+	       const void ** tableKey);
 /* returns 1 if the item is present, 0 otherwise */
 int htHasEntry(hashTable ht, const void * key);
 

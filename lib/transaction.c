@@ -686,7 +686,7 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
   
     for (i = 0; i < fi->fc; i++) {
 	int otherPkgNum, otherFileNum;
-	struct fileInfo ** recs;
+	const struct fileInfo ** recs;
 	int numRecs;
 
 	if (XFA_SKIPPING(fi->actions[i]))
@@ -699,20 +699,44 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	    fixupSize = 0;
 	}
 
-	htGetEntry(ht, &fi->fps[i], (void ***) &recs, &numRecs, NULL);
+	/*
+	 * Retrieve all records that apply to this file. Note that the
+	 * file info records were built in the same order as the packages
+	 * will be installed and removed so the records for an overlapped
+	 * files will be sorted in exactly the same order.
+	 */
+	htGetEntry(ht, &fi->fps[i], (const void ***) &recs, &numRecs, NULL);
 
-	/* We need to figure out the current fate of this file. So,
-	   work backwards from this file and look for a final action
-	   we can work against. */
+	/*
+	 * If this package is being added, look only at other packages
+	 * being added -- removed packages dance to a different tune.
+	 * If both this and the other package are being added, overlapped
+	 * files must be identical (or marked as a conflict). The
+	 * disposition of already installed config files leads to
+	 * a small amount of extra complexity.
+	 *
+	 * If this package is being removed, then there are two cases that
+	 * need to be worried about:
+	 * If the other package is being added, then skip any overlapped files
+	 * so that this package removal doesn't nuke the overlapped files
+	 * that were just installed.
+	 * If both this and the other package are being removed, then each
+	 * file removal from preceding packages needs to be skipped so that
+	 * the file removal occurs only on the last occurence of an overlapped
+	 * file in the transaction set.
+	 *
+	 */
+
+	/* Locate this overlapped file in the set of added/removed packages. */
 	for (j = 0; recs[j] != fi; j++)
 	    ;
 
+	/* Find what the previous disposition of this file was. */
 	otherFileNum = -1;			/* keep gcc quiet */
 	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
-#if XXX_ERASED_PACKAGES_LAST
-	    if (recs[otherPkgNum]->type != TR_ADDED)
+	    /* Added packages need only look at other added packages. */
+	    if (fi->type == TR_ADDED && recs[otherPkgNum]->type != TR_ADDED)
 		continue;
-#endif
 
 	    /* TESTME: there are more efficient searches in the world... */
 	    for (otherFileNum = 0; otherFileNum < recs[otherPkgNum]->fc;
@@ -720,6 +744,7 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 		if (FP_EQUAL(fi->fps[i], recs[otherPkgNum]->fps[otherFileNum]))
 			break;
 	    }
+	    /* XXX is this test still necessary? */
 	    if (recs[otherPkgNum]->actions[otherFileNum] != FA_UNKNOWN)
 		break;
 	}
@@ -728,9 +753,11 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	struct stat sb;
 	case TR_ADDED:
 	    if (otherPkgNum < 0) {
+		/* XXX is this test still necessary? */
 		if (fi->actions[i] != FA_UNKNOWN)
 		    break;
 		if ((fi->fflags[i] & RPMFILE_CONFIG) && !lstat(fi->fl[i], &sb)) {
+		    /* Here is a non-overlapped pre-existing config file. */
 		    fi->actions[i] = (fi->fflags[i] & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_BACKUP;
 		} else {
@@ -739,6 +766,7 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 		break;
 	    }
 
+	    /* Mark added overlapped nnon-identical files as a conflict. */
 	    if (probs && filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
 			recs[otherPkgNum]->fmd5s[otherFileNum],
 			recs[otherPkgNum]->flinks[otherFileNum],
@@ -749,12 +777,11 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 			 fi->ap->h, fi->fl[i], recs[otherPkgNum]->ap->h, 0);
 	    }
 
+	    /* Try to get the disk accounting correct even if a conflict. */
 	    fixupSize = recs[otherPkgNum]->fsizes[otherFileNum];
 
-	    /* FIXME: is this right??? it locks us into the config
-	       file handling choice we already made, which may very
-	       well be exactly right. What about noreplace files?? */
 	    if ((fi->fflags[i] & RPMFILE_CONFIG) && !lstat(fi->fl[i], &sb)) {
+		/* Here is an overlapped  pre-existing config file. */
 		fi->actions[i] = (fi->fflags[i] & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_SKIP;
 	    } else {
@@ -767,12 +794,13 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 		fi->actions[i] = FA_SKIP;
 		break;
 #else
+		/* Here is an overlapped added file we don't want to nuke */
 		if (recs[otherPkgNum]->actions[otherFileNum] != FA_REMOVE) {
 		    /* On updates, don't remove files. */
 		    fi->actions[i] = FA_SKIP;
 		    break;
 		}
-		/* Remove file on last occurrence. Other package should skip. */
+		/* Here is an overlapped removed file: skip in previous. */
 		recs[otherPkgNum]->actions[otherFileNum] = FA_SKIP;
 #endif
 	    }
@@ -785,13 +813,13 @@ static void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 		break;
 	    }
 		
+	    /* Here is a pre-existing modified config file that needs saving. */
 	    {	char mdsum[50];
 		if (!mdfile(fi->fl[i], mdsum) && strcmp(fi->fmd5s[i], mdsum)) {
 		    fi->actions[i] = FA_BACKUP;
 		    break;
 		}
 	    }
-	    /* FIXME: config files may need to be saved */
 	    fi->actions[i] = FA_REMOVE;
 	    break;
 	}

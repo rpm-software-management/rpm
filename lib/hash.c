@@ -4,8 +4,8 @@
 #include "hash.h"
 
 struct hashBucket {
-    void * key;
-    void ** data;
+    const void * key;
+    const void ** data;
     int dataCount;
     struct hashBucket * next;
 };
@@ -34,8 +34,8 @@ static struct hashBucket * findEntry(hashTable ht, const void * key)
 
 int hashEqualityString(const void * key1, const void * key2)
 {
-    char *k1 = (char *)key1;
-    char *k2 = (char *)key2;
+    const char *k1 = (const char *)key1;
+    const char *k2 = (const char *)key2;
     return strcmp(k1, k2);
 }
 
@@ -71,7 +71,7 @@ hashTable htCreate(int numBuckets, int keySize, hashFunctionType fn,
     return ht;
 }
 
-void htAddEntry(hashTable ht, const void * key, void * data)
+void htAddEntry(hashTable ht, const void * key, const void * data)
 {
     unsigned int hash;
     struct hashBucket * b, * ob;
@@ -85,8 +85,9 @@ void htAddEntry(hashTable ht, const void * key, void * data)
     if (!b) {
 	b = malloc(sizeof(*b));
 	if (ht->keySize) {
-	    b->key = malloc(ht->keySize);
-	    memcpy(b->key, key, ht->keySize);
+	    char *k = malloc(ht->keySize);
+	    memcpy(k, key, ht->keySize);
+	    b->key = k;
 	} else {
 	    b->key = (void *) key;
 	}
@@ -107,10 +108,10 @@ void htFree(hashTable ht)
 
     for (i = 0; i < ht->numBuckets; i++) {
 	b = ht->buckets[i];
-	if (ht->keySize && b) free(b->key);
+	if (ht->keySize && b) xfree(b->key);
 	while (b) {
 	    n = b->next;
-	    if (b->data) free(b->data);		/* XXX ==> LEAK */
+	    if (b->data) xfree(b->data);
 	    free(b);
 	    b = n;
 	}
@@ -127,8 +128,8 @@ int htHasEntry(hashTable ht, const void * key)
     if (!(b = findEntry(ht, key))) return 0; else return 1;
 }
 
-int htGetEntry(hashTable ht, const void * key, void *** data, 
-	       int * dataCount, void ** tableKey)
+int htGetEntry(hashTable ht, const void * key, const void *** data, 
+	       int * dataCount, const void ** tableKey)
 {
     struct hashBucket * b;
 
