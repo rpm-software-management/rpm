@@ -211,12 +211,8 @@ static int sql_startTransaction(dbiIndex dbi)
 	/*@*/
 {
     DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+    SQL_DB * sqldb = (SQL_DB *)db->app_private;
     int rc = 0;
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
 
     /* XXX:  Transaction Support */
     if (!sqldb->transaction) {
@@ -239,12 +235,8 @@ static int sql_endTransaction(dbiIndex dbi)
 	/*@*/
 {
     DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+    SQL_DB * sqldb = (SQL_DB *)db->app_private;
     int rc=0;
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
 
     /* XXX:  Transaction Support */
     if (sqldb->transaction) {
@@ -267,12 +259,8 @@ static int sql_commitTransaction(dbiIndex dbi, int flag)
 	/*@*/
 {
     DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+    SQL_DB * sqldb = (SQL_DB *)db->app_private;
     int rc = 0;
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
 
     /* XXX:  Transactions */
     if ( sqldb->transaction ) {
@@ -352,15 +340,11 @@ static int sql_initDB(dbiIndex dbi)
 	/*@*/
 {
     DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+    SQL_DB * sqldb = (SQL_DB *)db->app_private;
     SCP_t scp = scpNew();
     int rc = 0;
 
     char cmd[BUFSIZ];
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
 
     /* Check if the table exists... */
     sprintf(cmd,
@@ -500,9 +484,8 @@ static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
     SQL_DB * sqldb;
     int rc = 0;
 
-    if (db && db->app_private && ((SQL_DB *)db->app_private)->db) {
+    if (db) {
 	sqldb = (SQL_DB *)db->app_private;
-assert(sqldb != NULL && sqldb->db != NULL);
 
 	/* Commit, don't open a new one */
 	rc = sql_commitTransaction(dbi, 1);
@@ -1246,14 +1229,10 @@ static int sql_byteswapped (dbiIndex dbi)
 	/*@modifies fileSystem @*/
 {
     DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+    SQL_DB * sqldb = (SQL_DB *)db->app_private;
     SCP_t scp = scpNew();
     int sql_rc, rc = 0;
     union _dbswap db_endian;
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
 
 /*@-nullstate@*/
     sql_rc = sqlite3_get_table(sqldb->db, "SELECT endian FROM 'db_info';",
@@ -1306,16 +1285,8 @@ static int sql_associate (dbiIndex dbi, dbiIndex dbisecondary,
 		unsigned int flags)
 	/*@*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
- 
-    /* unused */
-    rpmMessage(RPMMESS_ERROR, "sql_associate() not implemented\n");
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
+if (_debug)
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
     return EINVAL;
 }
 
@@ -1332,16 +1303,8 @@ static int sql_join (dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
- 
-    /* unused */
-    rpmMessage(RPMMESS_ERROR, "sql_join() not implemented\n");
-    
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
+if (_debug)
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
     return EINVAL;
 }
 
@@ -1358,16 +1321,8 @@ static int sql_cdup (dbiIndex dbi, DBC * dbcursor, /*@out@*/ DBC ** dbcp,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcp, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
- 
-    /* unused */
-    rpmMessage(RPMMESS_ERROR, "sql_cdup() not implemented\n");
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
+if (_debug)
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
     return EINVAL;
 }
 
@@ -1386,16 +1341,8 @@ static int sql_cpget (dbiIndex dbi, /*@null@*/ DBC * dbcursor,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *key, *pkey, *data, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
- 
-    /* unused */
-    rpmMessage(RPMMESS_ERROR, "sql_cpget() not implemented\n");
-
-    assert(db != NULL);
-    sqldb = (SQL_DB *)db->app_private;
-    assert(sqldb != NULL && sqldb->db != NULL);
-
+if (_debug)
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
     return EINVAL;
 }
 
@@ -1413,14 +1360,8 @@ static int sql_ccount (dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
-
-    /* unused */
-    rpmMessage(RPMMESS_ERROR, "sql_cpget() not implemented\n");
-
-assert(sqldb->db != NULL);
-
+if (_debug)
+fprintf(stderr, "*** %s:\n", __FUNCTION__);
     return EINVAL;
 }
 
