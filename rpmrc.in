@@ -1,9 +1,10 @@
-# $Id: rpmrc.in,v 2.28 2000/07/05 20:39:15 jbj Exp $
-
-#############################################################
-
-# Please send new entries to rpm-list@redhat.com
-
+# $Id: rpmrc.in,v 2.29 2000/08/28 15:25:04 jbj Exp $
+#
+# This is a global RPM configuration file. All changes made here will
+# be lost when the rpm package is upgraded. Any per-system configuration
+# should be added to /etc/rpm/rpmrc, while per-user configuration should
+# be added to ~/.rpmrc.
+#
 #############################################################
 # Values for RPM_OPT_FLAGS for various platforms
 
