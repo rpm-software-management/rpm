@@ -19,24 +19,32 @@ int doCheckSig(char **argv)
     while (*argv) {
 	rpm = *argv++;
 	if ((fd = open(rpm, O_RDONLY, 0644)) < 0) {
-	    fprintf(stderr, "Open failed: %s\n", rpm);
+	    fprintf(stderr, "%s: Open failed\n", rpm);
 	    res = -1;
+	    continue;
 	}
 	if (readLead(fd, &lead)) {
-	    fprintf(stderr, "readLead failed: %s\n", rpm);
+	    fprintf(stderr, "%s: readLead failed\n", rpm);
 	    res = -1;
+	    continue;
 	}
 	if (!readSignature(fd, lead.signature_type, (void **) &sig)) {
-	    fprintf(stderr, "readSignature failed: %s\n", rpm);
+	    fprintf(stderr, "%s: readSignature failed\n", rpm);
 	    res = -1;
+	    continue;
 	}
+	
 	res = verifySignature(fd, lead.signature_type, sig, result);
 	if (res) {
-	    printf("%s: %s", rpm, result);
-	    printf("Signature OK.\n");
+	    if (isVerbose()) {
+		printf("%s: %s", rpm, result);
+	    }
+	    printf("%s: Signature OK.\n", rpm);
 	} else {
-	    fprintf(stderr, "%s: %s", rpm, result);
-	    fprintf(stderr, "Signature NOT OK!\n");
+	    if (isVerbose()) {
+		fprintf(stderr, "%s: %s", rpm, result);
+	    }
+	    fprintf(stderr, "%s: Signature NOT OK!\n", rpm);
 	    res = -1;
 	}
 	close(fd);
