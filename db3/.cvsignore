@@ -39,6 +39,7 @@ mp_ext.h
 mutex_ext.h
 os_ext.h
 qam_ext.h
+rep_ext.h
 rpc_client_ext.h
 rpc_server_ext.h
 tcl_ext.h
