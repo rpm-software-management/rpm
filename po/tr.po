@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-30 08:11-0500\n"
+"POT-Creation-Date: 2004-01-05 17:24+0000\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -485,110 +485,120 @@ msgstr "yerel uzunluðu hatalý: \"%.*s\" (%%lang(%s))\n"
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "%.*s yereli %%lang(%s) içinde tekrarlanmýþ\n"
 
-#: build/files.c:919
+#: build/files.c:920
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "%%docdir için hit sýnýrý\n"
 
-#: build/files.c:927
+#: build/files.c:928
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "%%docdir için sadece tek argüman\n"
 
 #. We already got a file -- error
-#: build/files.c:961
+#: build/files.c:962
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Bir satýrda 2 dosya: %s\n"
 
-#: build/files.c:978
+#: build/files.c:981
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Dosya \"/\" ile baþlamalý: %s\n"
 
-#: build/files.c:991
+#: build/files.c:994
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Özel %%doc ile diðer formlar karýþtýrýlamaz: %s\n"
 
-#: build/files.c:1149
+#: build/files.c:1152
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Dosya iki kere gösterildi: %s\n"
 
-#: build/files.c:1288
+#: build/files.c:1291
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Sembolik bað BuildRoot gösteriyor: %s -> %s\n"
 
-#: build/files.c:1535
+#: build/files.c:1538
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Dosya önek (%s) ile uyumsuz: %s\n"
 
-#: build/files.c:1559
+#: build/files.c:1562
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Dosya bulunamadý: %s\n"
 
-#: build/files.c:1767
+#: build/files.c:1772
+#, c-format
+msgid "%s: can't load unknwon tag (%d).\n"
+msgstr ""
+
+#: build/files.c:1778
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead baþarýsýz\n"
 
-#: build/files.c:1771 lib/rpmchecksig.c:580
+#: build/files.c:1782 lib/rpmchecksig.c:580
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1819
+#: build/files.c:1789
+#, fuzzy, c-format
+msgid "%s: *.te policy read failed.\n"
+msgstr "%s: readLead baþarýsýz\n"
+
+#: build/files.c:1840
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Dosya \"/\" ile içermeli: %s\n"
 
-#: build/files.c:1843
+#: build/files.c:1864
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "satýr %d: Dosya adý uygun deðil: %s\n"
 
-#: build/files.c:1860 lib/rpminstall.c:361
+#: build/files.c:1881 lib/rpminstall.c:361
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Dosya glob tarafýndan bulunamadý: %s\n"
 
-#: build/files.c:1920
+#: build/files.c:1941
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files dosya %s dosyasýnda açýlamadý: %s\n"
 
-#: build/files.c:1931 build/pack.c:156
+#: build/files.c:1952 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "satýr: %s\n"
 
-#: build/files.c:2323
+#: build/files.c:2348
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Dosya hatalý: %s: %s\n"
 
-#: build/files.c:2335 build/parsePrep.c:50
+#: build/files.c:2360 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Kullanýcý/grup hatalý: %s\n"
 
-#: build/files.c:2379
+#: build/files.c:2404
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "arþiv paketi açýlýrken baþarýsýz%s%s: %s\n"
 
-#: build/files.c:2402
+#: build/files.c:2427
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2430
+#: build/files.c:2455
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Ýþlenen dosyalar: %s-%s-%s\n"
@@ -912,7 +922,7 @@ msgstr "satýr %d: Etiket boþ: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "satýr %d:  %s içinde '-' karakteri kuraldýþý: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:429
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot \"/\" olamaz: %s\n"
@@ -1078,47 +1088,47 @@ msgstr "satýr %d: betik programý '/' ile baþlamalý: %s\n"
 msgid "line %d: Second %s\n"
 msgstr "satýr %d: %s saniye\n"
 
-#: build/parseSpec.c:161
+#: build/parseSpec.c:158
 #, c-format
 msgid "line %d: %s\n"
 msgstr "satýr %d: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:213
+#: build/parseSpec.c:210
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: build/parseSpec.c:229
+#: build/parseSpec.c:226
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "%%if kapanmamýþ\n"
 
-#: build/parseSpec.c:303
+#: build/parseSpec.c:300
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean %d ile döner\n"
 
-#: build/parseSpec.c:312
+#: build/parseSpec.c:309
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: %%if'siz bir  %%else alýndý\n"
 
-#: build/parseSpec.c:324
+#: build/parseSpec.c:321
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: %%if'siz bir %%endif alýndý\n"
 
-#: build/parseSpec.c:338 build/parseSpec.c:347
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "%%include deyimi bozuk\n"
 
-#: build/parseSpec.c:548
+#: build/parseSpec.c:545
 msgid "No compatible architectures found for build\n"
 msgstr "Kurgulamak için uyumlu mimari yok\n"
 
-#: build/parseSpec.c:609
+#: build/parseSpec.c:606
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %%description içermiyor: %s\n"
@@ -1447,7 +1457,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:499
-#: rpmdb/header.c:3509 rpmdb/header.c:3538 rpmdb/header.c:3562
+#: rpmdb/header.c:3510 rpmdb/header.c:3539 rpmdb/header.c:3563
 msgid "(not a number)"
 msgstr "(bir sayý deðil)"
 
@@ -1514,47 +1524,47 @@ msgstr "========= Pakette bulunmayan dizinler:\n"
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:768
+#: lib/fsm.c:770
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "kullanýcý %s yok - root kullanýlacak\n"
 
-#: lib/fsm.c:776
+#: lib/fsm.c:778
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grup %s yok - root kullanýlacak\n"
 
-#: lib/fsm.c:1334
+#: lib/fsm.c:1336
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "%s dizin %04o izinleriyle oluþturuldu.\n"
 
-#: lib/fsm.c:1633
+#: lib/fsm.c:1635
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1760 lib/fsm.c:1896
+#: lib/fsm.c:1762 lib/fsm.c:1898
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s %s olarak kaydedildi\n"
 
-#: lib/fsm.c:1923
+#: lib/fsm.c:1925
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s / %s dizin silinemedi - Dizin boþ deðil\n"
 
-#: lib/fsm.c:1929
+#: lib/fsm.c:1931
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s / %s dizinin silinmesi baþarýsýz: %s\n"
 
-#: lib/fsm.c:1944
+#: lib/fsm.c:1946
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s / %s bað kaldýrýlamadý: %s\n"
 
-#: lib/fsm.c:1966
+#: lib/fsm.c:1968
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s %s olarak oluþturuldu\n"
@@ -2989,16 +2999,16 @@ msgstr "satýr: %s\n"
 msgid "Suggesting: %s\n"
 msgstr "%s alýnýyor\n"
 
-#: lib/rpmts.c:1097
+#: lib/rpmts.c:1098
 #, fuzzy
 msgid "mounted filesystems:\n"
 msgstr "baðlý dosya sistemlerinin listesi alýnýyor\n"
 
-#: lib/rpmts.c:1099
+#: lib/rpmts.c:1100
 msgid "    i    dev bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1155
+#: lib/rpmts.c:1156
 #, c-format
 msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
 msgstr ""
@@ -3205,12 +3215,12 @@ msgstr ""
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/verify.c:319
+#: lib/verify.c:321
 #, fuzzy, c-format
 msgid "missing  %c %s"
 msgstr "eksik      %s"
 
-#: lib/verify.c:433
+#: lib/verify.c:437
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s: "
 msgstr "%s-%s-%s için tatmin edici olmayan baðýmlýlýklar: "
@@ -3298,77 +3308,77 @@ msgstr "%s ya çok büyük ya da çok küçük 'long' deðer içeriyor, atlandý\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ya çok büyük ya da çok küçük 'integer' deðer içeriyor, atlandý\n"
 
-#: rpmdb/header.c:2685
+#: rpmdb/header.c:2686
 msgid "missing { after %"
 msgstr "%% den sonraki { yok"
 
-#: rpmdb/header.c:2715
+#: rpmdb/header.c:2716
 msgid "missing } after %{"
 msgstr "%%{ den sonraki } yok"
 
-#: rpmdb/header.c:2731
+#: rpmdb/header.c:2732
 msgid "empty tag format"
 msgstr "etiket biçemi boþ"
 
-#: rpmdb/header.c:2743
+#: rpmdb/header.c:2744
 msgid "empty tag name"
 msgstr "etiket ismi boþ"
 
-#: rpmdb/header.c:2752
+#: rpmdb/header.c:2753
 msgid "unknown tag"
 msgstr "bilinmeyen etiket"
 
-#: rpmdb/header.c:2779
+#: rpmdb/header.c:2780
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] gerekli"
 
-#: rpmdb/header.c:2792
+#: rpmdb/header.c:2793
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
-#: rpmdb/header.c:2805
+#: rpmdb/header.c:2806
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
-#: rpmdb/header.c:2869
+#: rpmdb/header.c:2870
 msgid "? expected in expression"
 msgstr "ifade içerisinde ? gerekli"
 
-#: rpmdb/header.c:2876
+#: rpmdb/header.c:2877
 msgid "{ expected after ? in expression"
 msgstr "ifade içerisinde ? dan sonra { gerekli"
 
-#: rpmdb/header.c:2888 rpmdb/header.c:2928
+#: rpmdb/header.c:2889 rpmdb/header.c:2929
 msgid "} expected in expression"
 msgstr "ifade içinde } gerekli"
 
-#: rpmdb/header.c:2896
+#: rpmdb/header.c:2897
 msgid ": expected following ? subexpression"
 msgstr "? alt ifadesinden sonra : gerekli"
 
-#: rpmdb/header.c:2914
+#: rpmdb/header.c:2915
 msgid "{ expected after : in expression"
 msgstr "ifade içersinde : den sonra { gerekli"
 
-#: rpmdb/header.c:2936
+#: rpmdb/header.c:2937
 msgid "| expected at end of expression"
 msgstr "ifadenin sonunda | gerekli"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3037
+#: rpmdb/header.c:3038
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3284
+#: rpmdb/header.c:3285
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:3600
+#: rpmdb/header.c:3601
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3616
+#: rpmdb/header.c:3617
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -3621,42 +3631,42 @@ msgstr "%%%s makrosunun ismi kuraldýþý (%%define)\n"
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "%%%s (%s) makrosu %d seviyenin altýnda kullanýlmadý\n"
 
-#: rpmio/macro.c:984
+#: rpmio/macro.c:985
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%c seçeneði %s(%s) de anlaþýlamadý\n"
 
-#: rpmio/macro.c:1184
+#: rpmio/macro.c:1185
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Yineleme derinliði(%d) mümkün miktardan(%d) büyük\n"
 
-#: rpmio/macro.c:1255 rpmio/macro.c:1272
+#: rpmio/macro.c:1256 rpmio/macro.c:1273
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c sonlandýrýlmamýþ: %s\n"
 
-#: rpmio/macro.c:1313
+#: rpmio/macro.c:1314
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Bir ayrýþtýrýlamayan makro tarafýndan bir %% izlendi\n"
 
-#: rpmio/macro.c:1442
+#: rpmio/macro.c:1443
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "%%%.*s makrosu bulunamadý, atlanýyor\n"
 
-#: rpmio/macro.c:1513
+#: rpmio/macro.c:1514
 msgid "Target buffer overflow\n"
 msgstr "Hedef tampon bellek taþtý\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1708 rpmio/macro.c:1714
+#: rpmio/macro.c:1709 rpmio/macro.c:1715
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s dosyasý: %s\n"
 
-#: rpmio/macro.c:1717
+#: rpmio/macro.c:1718
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s dosyasý %u bayttan küçük\n"

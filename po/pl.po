@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-30 08:11-0500\n"
+"POT-Creation-Date: 2004-01-05 17:24+0000\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld.org.pl>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
@@ -484,103 +484,113 @@ msgstr "Niespotykana d³ugo¶æ okre¶lenia lokalizacji \"%.*s\" w %%lang(%s)\n"
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Powtórzone okre¶lenie lokalizacji %.*s w %%lang(%s)\n"
 
-#: build/files.c:919
+#: build/files.c:920
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Limit trafieñ dla %%docdir\n"
 
-#: build/files.c:927
+#: build/files.c:928
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Tylko jeden argument dla %%docdir\n"
 
 #. We already got a file -- error
-#: build/files.c:961
+#: build/files.c:962
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dwa pliki w jednej linii: %s\n"
 
-#: build/files.c:978
+#: build/files.c:981
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s\n"
 
-#: build/files.c:991
+#: build/files.c:994
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Nie mo¿na mieszaæ specjalnego %%doc z innymi formami: %s\n"
 
-#: build/files.c:1149
+#: build/files.c:1152
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Plik podany dwukrotnie: %s\n"
 
-#: build/files.c:1288
+#: build/files.c:1291
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Dowi±zanie symboliczne wskazuje na BuildRoot: %s -> %s\n"
 
-#: build/files.c:1535
+#: build/files.c:1538
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Plik nie zgadza siê z prefiksem (%s): %s\n"
 
-#: build/files.c:1559
+#: build/files.c:1562
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Nie znaleziono pliku: %s\n"
 
-#: build/files.c:1767
+#: build/files.c:1772
+#, c-format
+msgid "%s: can't load unknwon tag (%d).\n"
+msgstr ""
+
+#: build/files.c:1778
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: odczyt klucza publicznego nie powiód³ siê.\n"
 
-#: build/files.c:1771 lib/rpmchecksig.c:580
+#: build/files.c:1782 lib/rpmchecksig.c:580
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: nie jest opakowanym kluczem publicznym.\n"
 
-#: build/files.c:1819
+#: build/files.c:1789
+#, fuzzy, c-format
+msgid "%s: *.te policy read failed.\n"
+msgstr "%s: odczyt klucza publicznego nie powiód³ siê.\n"
+
+#: build/files.c:1840
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s\n"
 
-#: build/files.c:1843
+#: build/files.c:1864
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob niedozwolony: %s\n"
 
-#: build/files.c:1860 lib/rpminstall.c:361
+#: build/files.c:1881 lib/rpminstall.c:361
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Nie znaleziono pliku poprzez glob: %s\n"
 
-#: build/files.c:1920
+#: build/files.c:1941
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku %s dla %%files: %s\n"
 
-#: build/files.c:1931 build/pack.c:156
+#: build/files.c:1952 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linia: %s\n"
 
-#: build/files.c:2323
+#: build/files.c:2348
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "B³êdny plik: %s: %s\n"
 
-#: build/files.c:2335 build/parsePrep.c:50
+#: build/files.c:2360 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "B³êdny u¿ytkownik/grupa: %s\n"
 
-#: build/files.c:2379
+#: build/files.c:2404
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Szukanie niespakietowanych plików: %s\n"
 
-#: build/files.c:2402
+#: build/files.c:2427
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -589,7 +599,7 @@ msgstr ""
 "Znaleziono zainstalowane (ale niespakietowane) pliki:\n"
 "%s"
 
-#: build/files.c:2430
+#: build/files.c:2455
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Przetwarzanie plików: %s-%s-%s\n"
@@ -909,7 +919,7 @@ msgstr "linia %d: Pusta etykieta: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linia %d: Nielegalny znak '-' w %s: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:429
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot nie mo¿e byæ \"/\": %s\n"
@@ -1075,47 +1085,47 @@ msgstr "linia %d: interpreter skryptu musi siê zaczynaæ od '/': %s\n"
 msgid "line %d: Second %s\n"
 msgstr "linia %d: Drugi %s\n"
 
-#: build/parseSpec.c:161
+#: build/parseSpec.c:158
 #, c-format
 msgid "line %d: %s\n"
 msgstr "linia %d: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:213
+#: build/parseSpec.c:210
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Nie mo¿na otworzyæ %s: %s\n"
 
-#: build/parseSpec.c:229
+#: build/parseSpec.c:226
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "Niedomkniête %%if\n"
 
-#: build/parseSpec.c:303
+#: build/parseSpec.c:300
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean zwróci³o %d\n"
 
-#: build/parseSpec.c:312
+#: build/parseSpec.c:309
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Napotkano %%else bez %%if\n"
 
-#: build/parseSpec.c:324
+#: build/parseSpec.c:321
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Napotkano %%endif bez %%if\n"
 
-#: build/parseSpec.c:338 build/parseSpec.c:347
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "b³êdnie sformu³owany wpis %%include\n"
 
-#: build/parseSpec.c:548
+#: build/parseSpec.c:545
 msgid "No compatible architectures found for build\n"
 msgstr "Nie znaleziono kompatybilnych architektur do budowania\n"
 
-#: build/parseSpec.c:609
+#: build/parseSpec.c:606
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Pakiet nie ma %%description: %s\n"
@@ -1424,7 +1434,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder nie powiod³o siê, zosta³o %d elementów\n"
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:499
-#: rpmdb/header.c:3509 rpmdb/header.c:3538 rpmdb/header.c:3562
+#: rpmdb/header.c:3510 rpmdb/header.c:3539 rpmdb/header.c:3563
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
@@ -1488,47 +1498,47 @@ msgstr "========== Katalogi nie w³±czone explicite do pakietu:\n"
 msgid "%10d %s\n"
 msgstr "%10d %s\n"
 
-#: lib/fsm.c:768
+#: lib/fsm.c:770
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "u¿ytkownik %s nie istnieje - u¿yto konta root\n"
 
-#: lib/fsm.c:776
+#: lib/fsm.c:778
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupa %s nie istnieje - u¿yto grupy root\n"
 
-#: lib/fsm.c:1334
+#: lib/fsm.c:1336
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "katalog %s utworzony z uprawnieniami %04o.\n"
 
-#: lib/fsm.c:1633
+#: lib/fsm.c:1635
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "plik archiwum %s nie znaleziony na li¶cie plików w nag³ówku\n"
 
-#: lib/fsm.c:1760 lib/fsm.c:1896
+#: lib/fsm.c:1762 lib/fsm.c:1898
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s zapisano jako %s\n"
 
-#: lib/fsm.c:1923
+#: lib/fsm.c:1925
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir %s nie powiod³o siê: katalog nie jest pusty\n"
 
-#: lib/fsm.c:1929
+#: lib/fsm.c:1931
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s nie powiod³o siê: %s\n"
 
-#: lib/fsm.c:1944
+#: lib/fsm.c:1946
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s unlink %s nie powiod³o siê: %s\n"
 
-#: lib/fsm.c:1966
+#: lib/fsm.c:1968
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s utworzony jako %s\n"
@@ -2927,15 +2937,15 @@ msgstr "Dodawane: %s\n"
 msgid "Suggesting: %s\n"
 msgstr "Sugerowane: %s\n"
 
-#: lib/rpmts.c:1097
+#: lib/rpmts.c:1098
 msgid "mounted filesystems:\n"
 msgstr "podmontowane systemy plików:\n"
 
-#: lib/rpmts.c:1099
+#: lib/rpmts.c:1100
 msgid "    i    dev bsize       bavail       iavail mount point\n"
 msgstr "    i    urz bloków  bl.wolnych    i.wolnych punkt montowania\n"
 
-#: lib/rpmts.c:1155
+#: lib/rpmts.c:1156
 #, c-format
 msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
@@ -3138,12 +3148,12 @@ msgstr "obliczanie %d odcisków plików\n"
 msgid "computing file dispositions\n"
 msgstr "obliczanie dyspozycji plików\n"
 
-#: lib/verify.c:319
+#: lib/verify.c:321
 #, c-format
 msgid "missing  %c %s"
 msgstr "brak     %c %s"
 
-#: lib/verify.c:433
+#: lib/verify.c:437
 #, c-format
 msgid "Unsatisfied dependencies for %s: "
 msgstr "Niespe³nione zale¿no¶ci dla %s: "
@@ -3233,77 +3243,77 @@ msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ long, pominiêto\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ma zbyt du¿± lub zbyt ma³± warto¶æ ca³kowit±, pominiêto\n"
 
-#: rpmdb/header.c:2685
+#: rpmdb/header.c:2686
 msgid "missing { after %"
 msgstr "brak { po %"
 
-#: rpmdb/header.c:2715
+#: rpmdb/header.c:2716
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
-#: rpmdb/header.c:2731
+#: rpmdb/header.c:2732
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
-#: rpmdb/header.c:2743
+#: rpmdb/header.c:2744
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
-#: rpmdb/header.c:2752
+#: rpmdb/header.c:2753
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
-#: rpmdb/header.c:2779
+#: rpmdb/header.c:2780
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
-#: rpmdb/header.c:2792
+#: rpmdb/header.c:2793
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
-#: rpmdb/header.c:2805
+#: rpmdb/header.c:2806
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
-#: rpmdb/header.c:2869
+#: rpmdb/header.c:2870
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
-#: rpmdb/header.c:2876
+#: rpmdb/header.c:2877
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
-#: rpmdb/header.c:2888 rpmdb/header.c:2928
+#: rpmdb/header.c:2889 rpmdb/header.c:2929
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
-#: rpmdb/header.c:2896
+#: rpmdb/header.c:2897
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
-#: rpmdb/header.c:2914
+#: rpmdb/header.c:2915
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
-#: rpmdb/header.c:2936
+#: rpmdb/header.c:2937
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3037
+#: rpmdb/header.c:3038
 msgid "(index out of range)"
 msgstr "(indeks spoza zakresu)"
 
-#: rpmdb/header.c:3284
+#: rpmdb/header.c:3285
 msgid "array iterator used with different sized arrays"
 msgstr "iterator tablicy u¿yty na tablicach o ró¿nych rozmiarach"
 
-#: rpmdb/header.c:3600
+#: rpmdb/header.c:3601
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:3616
+#: rpmdb/header.c:3617
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
 
@@ -3554,42 +3564,42 @@ msgstr "Makro %%%s ma niedozwolon± nazwê (%%undefine)\n"
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) nie by³o u¿yte poni¿ej poziomu %d\n"
 
-#: rpmio/macro.c:984
+#: rpmio/macro.c:985
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Nieznana opcja %c w %s(%s)\n"
 
-#: rpmio/macro.c:1184
+#: rpmio/macro.c:1185
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "G³êboko¶æ rekursji(%d) wiêksza ni¿ maksymalna(%d)\n"
 
-#: rpmio/macro.c:1255 rpmio/macro.c:1272
+#: rpmio/macro.c:1256 rpmio/macro.c:1273
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Niezakoñczone %c: %s\n"
 
-#: rpmio/macro.c:1313
+#: rpmio/macro.c:1314
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Napotkano nieprzetwarzalne makro po %%\n"
 
-#: rpmio/macro.c:1442
+#: rpmio/macro.c:1443
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Nie znaleziono makra %%%.*s, makro pominiête\n"
 
-#: rpmio/macro.c:1513
+#: rpmio/macro.c:1514
 msgid "Target buffer overflow\n"
 msgstr "Przepe³nienie bufora docelowego\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1708 rpmio/macro.c:1714
+#: rpmio/macro.c:1709 rpmio/macro.c:1715
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Plik %s: %s\n"
 
-#: rpmio/macro.c:1717
+#: rpmio/macro.c:1718
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy ni¿ %u bajtów\n"

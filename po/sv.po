@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-30 08:11-0500\n"
+"POT-Creation-Date: 2004-01-05 17:24+0000\n"
 "PO-Revision-Date: 2003-02-05 12:40+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -473,103 +473,113 @@ msgstr "Ovanlig lokallängd: \"%.*s\" i %%lang(%s)\n"
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Duplicerad lokal %.*s i %%lang(%s)\n"
 
-#: build/files.c:919
+#: build/files.c:920
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Slog i gränsen för %%docdir\n"
 
-#: build/files.c:927
+#: build/files.c:928
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Endast ett argument till %%docdir\n"
 
 #. We already got a file -- error
-#: build/files.c:961
+#: build/files.c:962
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Två filer på en rad: %s\n"
 
-#: build/files.c:978
+#: build/files.c:981
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Filnamn måste börja med \"/\": %s\n"
 
-#: build/files.c:991
+#: build/files.c:994
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Kan inte blanda special %%doc med andra former: %s\n"
 
-#: build/files.c:1149
+#: build/files.c:1152
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Filen uppräknad två gånger: %s\n"
 
-#: build/files.c:1288
+#: build/files.c:1291
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolisk länk pekar på BuildRoot: %s -> %s\n"
 
-#: build/files.c:1535
+#: build/files.c:1538
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Filen matchar inte prefixet (%s): %s\n"
 
-#: build/files.c:1559
+#: build/files.c:1562
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Filen hittades inte: %s\n"
 
-#: build/files.c:1767
+#: build/files.c:1772
+#, c-format
+msgid "%s: can't load unknwon tag (%d).\n"
+msgstr ""
+
+#: build/files.c:1778
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: läsning av publik nyckel misslyckades.\n"
 
-#: build/files.c:1771 lib/rpmchecksig.c:580
+#: build/files.c:1782 lib/rpmchecksig.c:580
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: inte en publik nyckel med skal.\n"
 
-#: build/files.c:1819
+#: build/files.c:1789
+#, fuzzy, c-format
+msgid "%s: *.te policy read failed.\n"
+msgstr "%s: läsning av publik nyckel misslyckades.\n"
+
+#: build/files.c:1840
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Filen behöver inledande \"/\": %s\n"
 
-#: build/files.c:1843
+#: build/files.c:1864
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Matchning inte tillåtet: %s\n"
 
-#: build/files.c:1860 lib/rpminstall.c:361
+#: build/files.c:1881 lib/rpminstall.c:361
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Hittade ingen fil vid matchningen: %s\n"
 
-#: build/files.c:1920
+#: build/files.c:1941
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunde inte öppna %%files-fil %s: %s\n"
 
-#: build/files.c:1931 build/pack.c:156
+#: build/files.c:1952 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "rad: %s\n"
 
-#: build/files.c:2323
+#: build/files.c:2348
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Felaktig fil: %s: %s\n"
 
-#: build/files.c:2335 build/parsePrep.c:50
+#: build/files.c:2360 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Felaktig ägare/grupp: %s\n"
 
-#: build/files.c:2379
+#: build/files.c:2404
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Letar efter opackade fil(er): %s\n"
 
-#: build/files.c:2402
+#: build/files.c:2427
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -578,7 +588,7 @@ msgstr ""
 "Installerade (men opaketerade) filer funna:\n"
 "%s"
 
-#: build/files.c:2430
+#: build/files.c:2455
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Bearbetar filer: %s-%s-%s\n"
@@ -898,7 +908,7 @@ msgstr "rad %d: Tom tagg: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "rad %d: Otillåtet tecken \"-\" i %s: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:429
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot kan inte vara \"/\": %s\n"
@@ -1063,47 +1073,47 @@ msgstr "rad %d: skriptprogram måste börja med \"/\": %s\n"
 msgid "line %d: Second %s\n"
 msgstr "rad %d: En andra %s\n"
 
-#: build/parseSpec.c:161
+#: build/parseSpec.c:158
 #, c-format
 msgid "line %d: %s\n"
 msgstr "rad %d: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:213
+#: build/parseSpec.c:210
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Kan inte öppna %s: %s\n"
 
-#: build/parseSpec.c:229
+#: build/parseSpec.c:226
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "Oavslutat %%if\n"
 
-#: build/parseSpec.c:303
+#: build/parseSpec.c:300
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean returnerar %d\n"
 
-#: build/parseSpec.c:312
+#: build/parseSpec.c:309
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Fick ett %%else utan något %%if\n"
 
-#: build/parseSpec.c:324
+#: build/parseSpec.c:321
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Fick ett %%endif utan något %%if\n"
 
-#: build/parseSpec.c:338 build/parseSpec.c:347
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "felformaterad %%include-sats\n"
 
-#: build/parseSpec.c:548
+#: build/parseSpec.c:545
 msgid "No compatible architectures found for build\n"
 msgstr "Hittade inga kompatibla arkitekturer att bygga\n"
 
-#: build/parseSpec.c:609
+#: build/parseSpec.c:606
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paketet har ingen %%description: %s\n"
@@ -1416,7 +1426,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:499
-#: rpmdb/header.c:3509 rpmdb/header.c:3538 rpmdb/header.c:3562
+#: rpmdb/header.c:3510 rpmdb/header.c:3539 rpmdb/header.c:3563
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
@@ -1481,47 +1491,47 @@ msgstr "========== Kataloger ej uttryckligen inkluderade i paketet:\n"
 msgid "%10d %s\n"
 msgstr "%10d %s\n"
 
-#: lib/fsm.c:768
+#: lib/fsm.c:770
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "användare %s finns inte - använder root\n"
 
-#: lib/fsm.c:776
+#: lib/fsm.c:778
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupp %s finns inte - använder root\n"
 
-#: lib/fsm.c:1334
+#: lib/fsm.c:1336
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "katalog %s skapad med rättigheter %04o.\n"
 
-#: lib/fsm.c:1633
+#: lib/fsm.c:1635
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "arkivfil %s fanns inte i huvudets fillista\n"
 
-#: lib/fsm.c:1760 lib/fsm.c:1896
+#: lib/fsm.c:1762 lib/fsm.c:1898
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sparades som %s\n"
 
-#: lib/fsm.c:1923
+#: lib/fsm.c:1925
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir av %s misslyckades: Katalogen är inte tom\n"
 
-#: lib/fsm.c:1929
+#: lib/fsm.c:1931
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir av %s misslyckades: %s\n"
 
-#: lib/fsm.c:1944
+#: lib/fsm.c:1946
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s unlink av %s misslyckades: %s\n"
 
-#: lib/fsm.c:1966
+#: lib/fsm.c:1968
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s skapades som %s\n"
@@ -2921,15 +2931,15 @@ msgstr "Lägger till: %s\n"
 msgid "Suggesting: %s\n"
 msgstr "Föreslår %s\n"
 
-#: lib/rpmts.c:1097
+#: lib/rpmts.c:1098
 msgid "mounted filesystems:\n"
 msgstr "monterade filsystem:\n"
 
-#: lib/rpmts.c:1099
+#: lib/rpmts.c:1100
 msgid "    i    dev bsize       bavail       iavail mount point\n"
 msgstr "    i  enhet bstrl       btillg       itillg monteringspunkt\n"
 
-#: lib/rpmts.c:1155
+#: lib/rpmts.c:1156
 #, c-format
 msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
@@ -3134,12 +3144,12 @@ msgstr "beräknar %d filfingeravtryck\n"
 msgid "computing file dispositions\n"
 msgstr "beräknar filåtgärder\n"
 
-#: lib/verify.c:319
+#: lib/verify.c:321
 #, c-format
 msgid "missing  %c %s"
 msgstr "saknas   %c %s"
 
-#: lib/verify.c:433
+#: lib/verify.c:437
 #, c-format
 msgid "Unsatisfied dependencies for %s: "
 msgstr "Ouppfyllda beroenden för %s: "
@@ -3228,77 +3238,77 @@ msgstr "%s har för stort eller för litet \"long\"-värde, hoppar över\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 
-#: rpmdb/header.c:2685
+#: rpmdb/header.c:2686
 msgid "missing { after %"
 msgstr "{ saknas efter %"
 
-#: rpmdb/header.c:2715
+#: rpmdb/header.c:2716
 msgid "missing } after %{"
 msgstr "} saknas efter %{"
 
-#: rpmdb/header.c:2731
+#: rpmdb/header.c:2732
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
-#: rpmdb/header.c:2743
+#: rpmdb/header.c:2744
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
-#: rpmdb/header.c:2752
+#: rpmdb/header.c:2753
 msgid "unknown tag"
 msgstr "okänd tagg"
 
-#: rpmdb/header.c:2779
+#: rpmdb/header.c:2780
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
-#: rpmdb/header.c:2792
+#: rpmdb/header.c:2793
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
-#: rpmdb/header.c:2805
+#: rpmdb/header.c:2806
 msgid "unexpected }"
 msgstr "oväntad }"
 
-#: rpmdb/header.c:2869
+#: rpmdb/header.c:2870
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
-#: rpmdb/header.c:2876
+#: rpmdb/header.c:2877
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
-#: rpmdb/header.c:2888 rpmdb/header.c:2928
+#: rpmdb/header.c:2889 rpmdb/header.c:2929
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
-#: rpmdb/header.c:2896
+#: rpmdb/header.c:2897
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
-#: rpmdb/header.c:2914
+#: rpmdb/header.c:2915
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
-#: rpmdb/header.c:2936
+#: rpmdb/header.c:2937
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
 #. @=modobserver =observertrans@
-#: rpmdb/header.c:3037
+#: rpmdb/header.c:3038
 msgid "(index out of range)"
 msgstr "(index utanför intervall)"
 
-#: rpmdb/header.c:3284
+#: rpmdb/header.c:3285
 msgid "array iterator used with different sized arrays"
 msgstr "vektoriterator använd med vektor av annan storlek"
 
-#: rpmdb/header.c:3600
+#: rpmdb/header.c:3601
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:3616
+#: rpmdb/header.c:3617
 msgid "%a %b %d %Y"
 msgstr ""
 
@@ -3548,42 +3558,42 @@ msgstr "Makro %%%s har otillåtet namn (%%undefine)\n"
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) användes inte under nivå %d\n"
 
-#: rpmio/macro.c:984
+#: rpmio/macro.c:985
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Okänd flagga %c i %s(%s)\n"
 
-#: rpmio/macro.c:1184
+#: rpmio/macro.c:1185
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursionsdjup(%d) större än max(%d)\n"
 
-#: rpmio/macro.c:1255 rpmio/macro.c:1272
+#: rpmio/macro.c:1256 rpmio/macro.c:1273
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Oavslutad %c: %s\n"
 
-#: rpmio/macro.c:1313
+#: rpmio/macro.c:1314
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Ett %% följs av ett makro som inte kan tolkas\n"
 
-#: rpmio/macro.c:1442
+#: rpmio/macro.c:1443
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Inget makro %%%.*s hittat, hoppar över\n"
 
-#: rpmio/macro.c:1513
+#: rpmio/macro.c:1514
 msgid "Target buffer overflow\n"
 msgstr "Målbuffert översvämmad\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1708 rpmio/macro.c:1714
+#: rpmio/macro.c:1709 rpmio/macro.c:1715
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:1717
+#: rpmio/macro.c:1718
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s är mindre än %u byte\n"
