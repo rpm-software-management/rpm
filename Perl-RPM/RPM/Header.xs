@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Header.xs,v 1.8 2000/06/17 08:39:32 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.9 2000/06/22 08:43:12 rjray Exp $";
 
 /*
   Use this define for deriving the saved Header struct, rather than coding
@@ -904,7 +904,6 @@ int rpmhdr_cmpver(pTHX_ RPM__Header self, RPM__Header other)
         return 0;
     }
 
-//    fprintf(stderr, "Before call: 0x%08x 0x%08x %d\n", (U32)one->hdr, (U32)two->hdr, rpmVersionCompare(one->hdr, two->hdr));
     return rpmVersionCompare(one->hdr, two->hdr);
 }
 
