@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Constants.xs,v 1.11 2001/05/15 07:49:56 rjray Exp $";
+static char * const rcsid = "$Id: Constants.xs,v 1.12 2002/04/11 22:40:20 rjray Exp $";
 
 static int constant(pTHX_ char *name)
 {
@@ -200,11 +200,7 @@ static int constant(pTHX_ char *name)
                 break;
               case 'R':
                 if (strEQ(name + 7, "READ") || strEQ(name + 7, "READERROR"))
-#                 if (RPM_VERSION >= 0x040002)
                     return RPMERR_READ;
-#                 else
-                    return RPMERR_READERROR;
-#                 endif
                 if (strEQ(name + 7, "RENAME"))
                     return RPMERR_RENAME;
                 if (strEQ(name + 7, "RMDIR"))
