@@ -28,6 +28,10 @@ struct fileToInstall {
     int size;
 } ;
 
+struct replacedFile {
+    int recOffset, fileNumber;
+} ;
+
 static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 			  int fileCount, notifyFunction notify,
 			  char ** installArchive);
@@ -43,9 +47,11 @@ static int mkdirIfNone(char * directory, mode_t perms);
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
 			         char ** fileMd5List, int fileCount, 
 				 enum instActions * instActions, 
-				 char ** prefixedFileList, int flags);
+			 	 char ** prefixedFileList, 
+				 struct replacedFile ** repListPtr, int flags);
 static int fileCompare(const void * one, const void * two);
 static int installSources(char * prefix, int fd, char ** specFilePtr);
+static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
 
 /* 0 success */
 /* 1 bad magic */
@@ -89,6 +95,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     char * ext = NULL, * newpath;
     int prefixLength = strlen(prefix);
     char ** prefixedFileList = NULL;
+    struct replacedFile * replacedList = NULL;
 
     rc = pkgReadHeader(fd, &h, &isSource);
     if (rc) return rc;
@@ -162,10 +169,12 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	}
 
 	rc = instHandleSharedFiles(db, 0, fileList, fileMd5s, fileCount, 
-				   instActions, prefixedFileList, flags);
+				   instActions, prefixedFileList, 
+				   &replacedList, flags);
 
 	free(fileMd5s);
 	if (rc) {
+	    if (replacedList) free(replacedList);
 	    free(fileList);
 	    return 1;
 	}
@@ -174,12 +183,14 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     if (flags & INSTALL_TEST) {
 	message(MESS_DEBUG, "stopping install as we're running --test\n");
 	free(fileList);
+	if (replacedList) free(replacedList);
 	return 0;
     }
 
     message(MESS_DEBUG, "running preinstall script (if any)\n");
     if (runScript(prefix, h, RPMTAG_PREIN)) {
 	free(fileList);
+	if (replacedList) free(replacedList);
 	return 2;
     }
 
@@ -188,6 +199,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	if (createDirectories(prefix, fileList, fileCount)) {
 	    freeHeader(h);
 	    free(fileList);
+	    if (replacedList) free(replacedList);
 	    return 2;
 	}
 
@@ -230,6 +242,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 		if (rename(prefixedFileList[i], newpath)) {
 		    error(RPMERR_RENAME, "rename of %s to %s failed: %s\n",
 			  prefixedFileList[i], newpath, strerror(errno));
+		    if (replacedList) free(replacedList);
 		    return 1;
 		}
 
@@ -249,6 +262,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	if (installArchive(prefix, fd, files, archiveFileCount, notify, NULL)) {
 	    freeHeader(h);
 	    free(fileList);
+	    if (replacedList) free(replacedList);
 	    return 2;
 	}
 
@@ -261,6 +275,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 		    free(fileOwners);
 		    free(fileGroups);
 		    free(fileList);
+		    if (replacedList) free(replacedList);
+
 		    return 2;
 		}
 		free(fileGroups);
@@ -277,6 +293,13 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	addEntry(h, RPMTAG_INSTALLTIME, INT32_TYPE, &installTime, 1);
     }
 
+    if (replacedList) {
+	rc = markReplacedFiles(db, replacedList);
+	free(replacedList);
+
+	if (rc) return rc;
+    }
+
     /* if this package has already been installed, remove it from the database
        before adding the new one */
     if (otherOffset) {
@@ -287,8 +310,6 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	freeHeader(h);
 	return 2;
     }
-
-    /* we need to figure out which files have been replaced XXX */
 
     message(MESS_DEBUG, "running postinstall script (if any)\n");
 
@@ -515,7 +536,7 @@ static int setFileOwnerships(char * prefix, char ** fileList,
 			     int fileCount) {
     int i;
 
-    message(MESS_DEBUG, "setting file owners and groups by name (not id)");
+    message(MESS_DEBUG, "setting file owners and groups by name (not id)\n");
 
     for (i = 0; i < fileCount; i++) {
 	/* ignore errors here - setFileOwner handles them reasonable
@@ -704,7 +725,8 @@ static int mkdirIfNone(char * directory, mode_t perms) {
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
 			         char ** fileMd5List, int fileCount, 
 			         enum instActions * instActions, 
-			 	 char ** prefixedFileList, int flags) {
+			 	 char ** prefixedFileList, 
+				 struct replacedFile ** repListPtr, int flags) {
     struct sharedFile * sharedList;
     int sharedCount;
     int i, type;
@@ -717,14 +739,20 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
     char * name, * version, * release;
     char currentMd5[33];
     int rc = 0;
+    struct replacedFile * replacedList;
+    int numReplacedFiles, numReplacedAlloced;
 
     if (findSharedFiles(db, 0, fileList, fileCount, &sharedList, 
 			&sharedCount)) {
 	return 1;
     }
     
+    numReplacedAlloced = 10;
+    numReplacedFiles = 0;
+    replacedList = malloc(sizeof(*replacedList) * numReplacedAlloced);
+
     for (i = 0; i < sharedCount; i++) {
-	if (secOffset == ignoreOffset) continue;
+	if (sharedList[i].secRecOffset == ignoreOffset) continue;
 
 	if (secOffset != sharedList[i].secRecOffset) {
 	    if (secOffset) {
@@ -774,10 +802,26 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 		secFileList[sharedList[i].secFileNumber]);
 
 	if (!(flags & INSTALL_REPLACEFILES)) {
-	    error(RPMERR_PKGINSTALLED, "%s conflicts with file from %s",
+	    error(RPMERR_PKGINSTALLED, "%s conflicts with file from %s-%s-%s",
 		  fileList[sharedList[i].mainFileNumber],
 		  name, version, release);
 	    rc = 1;
+	} else {
+	    if (numReplacedFiles == numReplacedAlloced) {
+		numReplacedAlloced += 10;
+		replacedList = realloc(replacedList, sizeof(*replacedList) * 
+					numReplacedAlloced);
+	    }
+	   
+	    replacedList[numReplacedFiles].recOffset = 
+		sharedList[i].secRecOffset;
+	    replacedList[numReplacedFiles].fileNumber = 	
+		sharedList[i].secFileNumber;
+	    numReplacedFiles++;
+
+	    message(MESS_DEBUG, "%s from %s-%s-%s will be replaced\n", 
+		    fileList[sharedList[i].mainFileNumber],
+		    name, version, release);
 	}
 
 	/* if this instance of the shared file is already recorded as
@@ -839,6 +883,13 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
     }
 
     free(sharedList);
+   
+    if (!numReplacedFiles) 
+	free(replacedList);
+    else {
+	replacedList[numReplacedFiles].recOffset = 0;  /* mark the end */
+	*repListPtr = replacedList;
+    }
 
     return rc;
 }
@@ -903,6 +954,54 @@ static int installSources(char * prefix, int fd, char ** specFilePtr) {
 
     if (specFilePtr)
 	*specFilePtr = strdup(correctSpecFile);
+
+    return 0;
+}
+
+static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
+    struct replacedFile * fileInfo;
+    Header secHeader = NULL, sh;
+    char * secStates;
+    int type, count;
+    
+    int secOffset = 0;
+
+    for (fileInfo = replList; fileInfo->recOffset; fileInfo++) {
+	if (secOffset != fileInfo->recOffset) {
+	    if (secHeader) {
+		/* ignore errors here - just do the best we can */
+
+		rpmdbUpdateRecord(db, secOffset, secHeader);
+		freeHeader(secHeader);
+	    }
+
+	    secOffset = fileInfo->recOffset;
+	    sh = rpmdbGetRecord(db, secOffset);
+	    if (!sh) {
+		secOffset = 0;
+	    } else {
+		secHeader = copyHeader(sh);	/* so we can modify it */
+		printf("old size: %d new size: %d\n", sizeofHeader(sh),
+			sizeofHeader(secHeader));
+		freeHeader(sh);
+	    }
+
+	    getEntry(secHeader, RPMTAG_FILESTATES, &type, (void **) &secStates, 
+		     &count);
+	}
+
+	/* by now, secHeader is the right header to modify, secStates is
+	   the right states list to modify  */
+	
+	secStates[fileInfo->fileNumber] = RPMFILE_STATE_REPLACED;
+    }
+
+    if (secHeader) {
+	/* ignore errors here - just do the best we can */
+
+	rpmdbUpdateRecord(db, secOffset, secHeader);
+	freeHeader(secHeader);
+    }
 
     return 0;
 }
