@@ -102,6 +102,7 @@ extern const int rpmTagTableSize;
 #define INSTALL_NODOCS		(1 << 5)
 #define INSTALL_NOSCRIPTS	(1 << 6)
 #define INSTALL_NOARCH		(1 << 7)
+#define INSTALL_NOOS		(1 << 8)
 
 #define UNINSTALL_TEST          (1 << 0)
 #define UNINSTALL_NOSCRIPTS	(1 << 1)
@@ -169,7 +170,7 @@ int getOsNum(void);
 int getArchNum(void);
 char *getOsName(void);
 char *getArchName(void);
-int showRc(FILE *f);
+int rpmShowRC(FILE *f);
 
 typedef struct rpmdb * rpmdb;
 
@@ -194,6 +195,7 @@ int rpmdbFindByProvides(rpmdb db, char * filespec, dbIndexSet * matches);
 int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbIndexSet * matches);
 
 int rpmArchScore(char * arch);
+int rpmOsScore(char * arch);
 int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile);
 int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * prefix, 
 		     int flags, notifyFunction notify, char * labelFormat);
