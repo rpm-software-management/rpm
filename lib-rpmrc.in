@@ -19,6 +19,7 @@ optflags: i386 -O2 -m486 -fno-strength-reduce
 optflags: alpha -O2
 optflags: sparc -O2
 optflags: m68k -O2 -fomit-frame-pointer
+optflags: ppc -O2 -fsigned-char
 
 #############################################################
 # Canonical arch names and numbers
