@@ -1,0 +1,878 @@
+# Makefile.in generated automatically by automake 1.4-p4 from Makefile.am
+
+# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# Copyright (C) 2000, 2001 by Martin Pool <mbp@samba.org>
+# Id: Makefile.am,v 1.111 2001/08/08 05:43:07 mbp Exp 
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation; either version 2.1 of
+# the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public
+# License along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+SHELL = @SHELL@
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+DESTDIR =
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = .
+
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = @host_alias@
+host_triplet = @host@
+AS = @AS@
+BUILD_POPT = @BUILD_POPT@
+CC = @CC@
+CCMALLOC_LIB = @CCMALLOC_LIB@
+CC_SHOBJ_FLAG = @CC_SHOBJ_FLAG@
+CPP = @CPP@
+DLLTOOL = @DLLTOOL@
+ECHO = @ECHO@
+EXEEXT = @EXEEXT@
+LIBOBJS = @LIBOBJS@
+LIBTOOL = @LIBTOOL@
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LN_S = @LN_S@
+MAKEINFO = @MAKEINFO@
+OBJDUMP = @OBJDUMP@
+OBJEXT = @OBJEXT@
+OBJ_RESTORE = @OBJ_RESTORE@
+OBJ_SAVE = @OBJ_SAVE@
+PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
+STRIP = @STRIP@
+VERSION = @VERSION@
+librsync_libversion = @librsync_libversion@
+net_libs = @net_libs@
+
+SUBDIRS = popt
+
+lib_LTLIBRARIES = librsync.la
+
+librsync_la_SOURCES =  	base64.c					buf.c buf.h					checksum.c checksum.h				command.c command.h				delta.c						emit.c emit.h					fileutil.c fileutil.h				hex.c						job.c job.h					mdfour.c					mksum.c						msg.c						netint.c netint.h				patch.c						protocol.h					prototab.c prototab.h				readsums.c					rsync.h						scoop.c						search.c search.h				stats.c						stream.c stream.h				sumset.c sumset.h				trace.c trace.h					tube.c						types.h						util.c util.h					version.c					whole.c whole.h
+
+
+man_MANS = rdiff.1 librsync.3
+
+# See libversions.txt and the libtool manual for an explanation of the
+# library versioning
+librsync_la_LDFLAGS = -version-info 1:1:0
+
+# TODO: If we ever care enough, build a second library containing only
+# the code necessary to be a client, and not stuff for encoding.  At
+# the moment it doesn't seem worth the additional compilation time to
+# do both, and I don't know if anyone will care if they're just shared
+# libraries anyhow.
+
+# NB: tests should exit with code 77 if they can't be run but haven't
+# failed.
+
+# Generally these tests should be ordered so that more basic tests
+# are run first.
+
+TESTS_ENVIRONMENT = $(SH) $(srcdir)/driver.sh
+
+test_scripts = signature.test mutate.test sources.test 	isprefix.test delta.test mksum.test triple.test changes.test
+
+
+# These are extra documents to be included in the source tarball.
+extra_docs = README.CVS libversions.txt
+
+# These ones are not tests, but are useful in watching the code run
+# through.
+try_scripts = 
+
+TESTS = $(test_scripts)
+
+noinst_SCRIPTS =  	$(test_scripts) 	driver.sh 	mkprototab.pl 	mutate.pl 	$(try_scripts)
+
+
+test_data = changes.input			changes.input/01.in				changes.input/02.in				changes.input/03.in				changes.input/04.in				delta.input					delta.input/01.delta				delta.input/01.expect				delta.input/02.delta				delta.input/02.expect				delta.input/03.delta				delta.input/03.expect				mdfour.input					mdfour.input/01.expect				mdfour.input/01.data				mksum.input					mksum.input/COPYING.sig				triple.input					triple.input/copying.in				triple.input/half.in				triple.input/hello.in				triple.input/zero.in				signature.input/01.in				signature.input/01.sig				dot
+
+
+CLEANFILES = tmp-test-*.d/* tmp-try-*.d/*
+
+EXTRA_DIST = $(noinst_SCRIPTS) $(test_data) $(extra_docs) $(man_MANS) 	librsync.spec
+
+
+include_HEADERS = rsync.h
+
+# This is the default for any programs that don't specify a
+# preference.
+LDADD = librsync.la $(LIBOBJS)
+
+# Eventually we might want to install some of these into system
+# directories, but they're pretty obscure and it's hard to imagine any
+# end users wanting to run them.  So for the time being they are not
+# installed.
+
+bin_PROGRAMS = rdiff
+
+rdiff_SOURCES = rdiff.c isprefix.c isprefix.h rsync.h trace.h
+rdiff_LDADD = @BUILD_POPT@ librsync.la
+rdiff_DEPENDENCIES = @BUILD_POPT@ librsync.la
+
+check_PROGRAMS = isprefix.driver
+
+isprefix_driver_SOURCES = isprefix.driver.c		isprefix.c isprefix.h
+
+isprefix_driver_LDADD = $(LIBOBJS)
+
+# Doxygen API documentation
+
+sites = front.linuxcare.com.au:/var/www/projects/rproxy 	rproxy.sourceforge.net:/home/groups/rproxy/htdocs 	rproxy.samba.org:/space/httpd/rproxy/htdocs
+
+
+converted_men = man_librsync_3.html man_librsync_3.ps 	man_rdiff_1.html man_rdiff_1.ps
+
+ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = config.h
+CONFIG_CLEAN_FILES = 
+LTLIBRARIES =  $(lib_LTLIBRARIES)
+
+
+DEFS = @DEFS@ -I. -I$(srcdir) -I.
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+librsync_la_LIBADD = 
+librsync_la_OBJECTS =  base64.lo buf.lo checksum.lo command.lo delta.lo \
+emit.lo fileutil.lo hex.lo job.lo mdfour.lo mksum.lo msg.lo netint.lo \
+patch.lo prototab.lo readsums.lo scoop.lo search.lo stats.lo stream.lo \
+sumset.lo trace.lo tube.lo util.lo version.lo whole.lo
+bin_PROGRAMS =  rdiff$(EXEEXT)
+check_PROGRAMS =  isprefix.driver
+PROGRAMS =  $(bin_PROGRAMS)
+
+rdiff_OBJECTS =  rdiff.$(OBJEXT) isprefix.$(OBJEXT)
+rdiff_LDFLAGS = 
+isprefix_driver_OBJECTS =  isprefix.driver.$(OBJEXT) isprefix.$(OBJEXT)
+isprefix_driver_DEPENDENCIES =  @LIBOBJS@
+isprefix_driver_LDFLAGS = 
+SCRIPTS =  $(noinst_SCRIPTS)
+
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+man1dir = $(mandir)/man1
+man3dir = $(mandir)/man3
+MANS = $(man_MANS)
+
+NROFF = nroff
+HEADERS =  $(include_HEADERS)
+
+DIST_COMMON =  README ./stamp-h.in AUTHORS COPYING ChangeLog INSTALL \
+Makefile.am Makefile.in NEWS THANKS TODO acconfig.h acinclude.m4 \
+aclocal.m4 config.guess config.h.in config.sub configure configure.in \
+install-sh ltmain.sh missing mkinstalldirs snprintf.c
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = tar
+GZIP_ENV = --best
+SOURCES = $(librsync_la_SOURCES) $(rdiff_SOURCES) $(isprefix_driver_SOURCES)
+OBJECTS = $(librsync_la_OBJECTS) $(rdiff_OBJECTS) $(isprefix_driver_OBJECTS)
+
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .lo .o .obj .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu --include-deps Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+$(ACLOCAL_M4):  configure.in  acinclude.m4
+	cd $(srcdir) && $(ACLOCAL)
+
+config.status: $(srcdir)/configure.in $(CONFIG_STATUS_DEPENDENCIES)
+	$(SHELL) ./config.status --recheck
+$(srcdir)/configure: $(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCIES)
+	cd $(srcdir) && $(AUTOCONF)
+
+config.h: stamp-h
+	@if test ! -f $@; then \
+		rm -f stamp-h; \
+		$(MAKE) stamp-h; \
+	else :; fi
+stamp-h: $(srcdir)/config.h.in $(top_builddir)/config.status
+	cd $(top_builddir) \
+	  && CONFIG_FILES= CONFIG_HEADERS=config.h \
+	     $(SHELL) ./config.status
+	@echo timestamp > stamp-h 2> /dev/null
+$(srcdir)/config.h.in: $(srcdir)/stamp-h.in
+	@if test ! -f $@; then \
+		rm -f $(srcdir)/stamp-h.in; \
+		$(MAKE) $(srcdir)/stamp-h.in; \
+	else :; fi
+$(srcdir)/stamp-h.in: $(top_srcdir)/configure.in $(ACLOCAL_M4) acconfig.h
+	cd $(top_srcdir) && $(AUTOHEADER)
+	@echo timestamp > $(srcdir)/stamp-h.in 2> /dev/null
+
+mostlyclean-hdr:
+
+clean-hdr:
+
+distclean-hdr:
+	-rm -f config.h
+
+maintainer-clean-hdr:
+
+mostlyclean-libLTLIBRARIES:
+
+clean-libLTLIBRARIES:
+	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
+
+distclean-libLTLIBRARIES:
+
+maintainer-clean-libLTLIBRARIES:
+
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(libdir)
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(libdir)/$$p; \
+	  else :; fi; \
+	done
+
+uninstall-libLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p; \
+	done
+
+.c.o:
+	$(COMPILE) -c $<
+
+# FIXME: We should only use cygpath when building on Windows,
+# and only if it is available.
+.c.obj:
+	$(COMPILE) -c `cygpath -w $<`
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+	-rm -f *.$(OBJEXT)
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.c.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+librsync.la: $(librsync_la_OBJECTS) $(librsync_la_DEPENDENCIES)
+	$(LINK) -rpath $(libdir) $(librsync_la_LDFLAGS) $(librsync_la_OBJECTS) $(librsync_la_LIBADD) $(LIBS)
+
+mostlyclean-binPROGRAMS:
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
+distclean-binPROGRAMS:
+
+maintainer-clean-binPROGRAMS:
+
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	  else :; fi; \
+	done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	done
+
+mostlyclean-checkPROGRAMS:
+
+clean-checkPROGRAMS:
+	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
+
+distclean-checkPROGRAMS:
+
+maintainer-clean-checkPROGRAMS:
+
+rdiff$(EXEEXT): $(rdiff_OBJECTS) $(rdiff_DEPENDENCIES)
+	@rm -f rdiff$(EXEEXT)
+	$(LINK) $(rdiff_LDFLAGS) $(rdiff_OBJECTS) $(rdiff_LDADD) $(LIBS)
+
+isprefix.driver: $(isprefix_driver_OBJECTS) $(isprefix_driver_DEPENDENCIES)
+	@rm -f isprefix.driver
+	$(LINK) $(isprefix_driver_LDFLAGS) $(isprefix_driver_OBJECTS) $(isprefix_driver_LDADD) $(LIBS)
+
+install-man1:
+	$(mkinstalldirs) $(DESTDIR)$(man1dir)
+	@list='$(man1_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
+	  else file=$$i; fi; \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " $(INSTALL_DATA) $$file $(DESTDIR)$(man1dir)/$$inst"; \
+	  $(INSTALL_DATA) $$file $(DESTDIR)$(man1dir)/$$inst; \
+	done
+
+uninstall-man1:
+	@list='$(man1_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.1*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " rm -f $(DESTDIR)$(man1dir)/$$inst"; \
+	  rm -f $(DESTDIR)$(man1dir)/$$inst; \
+	done
+
+install-man3:
+	$(mkinstalldirs) $(DESTDIR)$(man3dir)
+	@list='$(man3_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.3*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
+	  else file=$$i; fi; \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " $(INSTALL_DATA) $$file $(DESTDIR)$(man3dir)/$$inst"; \
+	  $(INSTALL_DATA) $$file $(DESTDIR)$(man3dir)/$$inst; \
+	done
+
+uninstall-man3:
+	@list='$(man3_MANS)'; \
+	l2='$(man_MANS)'; for i in $$l2; do \
+	  case "$$i" in \
+	    *.3*) list="$$list $$i" ;; \
+	  esac; \
+	done; \
+	for i in $$list; do \
+	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
+	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
+	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
+	  echo " rm -f $(DESTDIR)$(man3dir)/$$inst"; \
+	  rm -f $(DESTDIR)$(man3dir)/$$inst; \
+	done
+install-man: $(MANS)
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) install-man1 install-man3
+uninstall-man:
+	@$(NORMAL_UNINSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) uninstall-man1 uninstall-man3
+
+install-includeHEADERS: $(include_HEADERS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(includedir)
+	@list='$(include_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d= ; else d="$(srcdir)/"; fi; \
+	  echo " $(INSTALL_DATA) $$d$$p $(DESTDIR)$(includedir)/$$p"; \
+	  $(INSTALL_DATA) $$d$$p $(DESTDIR)$(includedir)/$$p; \
+	done
+
+uninstall-includeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	list='$(include_HEADERS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(includedir)/$$p; \
+	done
+
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+
+@SET_MAKE@
+
+all-recursive install-data-recursive install-exec-recursive \
+installdirs-recursive install-recursive uninstall-recursive  \
+check-recursive installcheck-recursive info-recursive dvi-recursive:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
+
+mostlyclean-recursive clean-recursive distclean-recursive \
+maintainer-clean-recursive:
+	@set fnord $(MAKEFLAGS); amf=$$2; \
+	dot_seen=no; \
+	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
+	  rev="$$subdir $$rev"; \
+	  test "$$subdir" = "." && dot_seen=yes; \
+	done; \
+	test "$$dot_seen" = "no" && rev=". $$rev"; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for subdir in $$rev; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	   || case "$$amf" in *=*) exit 1;; *k*) fail=yes;; *) exit 1;; esac; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
+	done
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS: tags-recursive $(HEADERS) $(SOURCES) config.h.in $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+   if test "$$subdir" = .; then :; else \
+	    test -f $$subdir/TAGS && tags="$$tags -i $$here/$$subdir/TAGS"; \
+   fi; \
+	done; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)config.h.in$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags config.h.in $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(PACKAGE)-$(VERSION)
+top_distdir = $(distdir)
+
+# This target untars the dist file and tries a VPATH configuration.  Then
+# it guarantees that the distribution is self-contained by making another
+# tarfile.
+distcheck: dist
+	-rm -rf $(distdir)
+	GZIP=$(GZIP_ENV) $(TAR) zxf $(distdir).tar.gz
+	mkdir $(distdir)/=build
+	mkdir $(distdir)/=inst
+	dc_install_base=`cd $(distdir)/=inst && pwd`; \
+	cd $(distdir)/=build \
+	  && ../configure --srcdir=.. --prefix=$$dc_install_base \
+	  && $(MAKE) $(AM_MAKEFLAGS) \
+	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
+	  && $(MAKE) $(AM_MAKEFLAGS) check \
+	  && $(MAKE) $(AM_MAKEFLAGS) install \
+	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
+	  && $(MAKE) $(AM_MAKEFLAGS) dist
+	-rm -rf $(distdir)
+	@banner="$(distdir).tar.gz is ready for distribution"; \
+	dashes=`echo "$$banner" | sed s/./=/g`; \
+	echo "$$dashes"; \
+	echo "$$banner"; \
+	echo "$$dashes"
+dist: distdir
+	-chmod -R a+r $(distdir)
+	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
+	-rm -rf $(distdir)
+dist-all: distdir
+	-chmod -R a+r $(distdir)
+	GZIP=$(GZIP_ENV) $(TAR) chozf $(distdir).tar.gz $(distdir)
+	-rm -rf $(distdir)
+distdir: $(DISTFILES)
+	-rm -rf $(distdir)
+	mkdir $(distdir)
+	-chmod 777 $(distdir)
+	$(mkinstalldirs) $(distdir)/changes.input $(distdir)/delta.input \
+	   $(distdir)/mdfour.input $(distdir)/mksum.input \
+	   $(distdir)/signature.input $(distdir)/triple.input
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+	for subdir in $(SUBDIRS); do \
+	  if test "$$subdir" = .; then :; else \
+	    test -d $(distdir)/$$subdir \
+	    || mkdir $(distdir)/$$subdir \
+	    || exit 1; \
+	    chmod 777 $(distdir)/$$subdir; \
+	    (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir=../$(distdir) distdir=../$(distdir)/$$subdir distdir) \
+	      || exit 1; \
+	  fi; \
+	done
+base64.lo base64.o : base64.c config.h rsync.h
+buf.lo buf.o : buf.c config.h rsync.h trace.h buf.h util.h
+checksum.lo checksum.o : checksum.c config.h rsync.h checksum.h
+command.lo command.o : command.c config.h rsync.h command.h
+delta.lo delta.o : delta.c config.h rsync.h emit.h stream.h util.h \
+	sumset.h job.h trace.h checksum.h search.h types.h
+emit.lo emit.o : emit.c config.h rsync.h command.h protocol.h trace.h \
+	emit.h prototab.h netint.h sumset.h job.h
+fileutil.lo fileutil.o : fileutil.c config.h rsync.h fileutil.h trace.h
+hex.lo hex.o : hex.c config.h rsync.h
+isprefix.driver.o: isprefix.driver.c isprefix.h
+isprefix.o: isprefix.c isprefix.h
+job.lo job.o : job.c config.h rsync.h stream.h util.h sumset.h job.h \
+	trace.h
+mdfour.lo mdfour.o : mdfour.c config.h rsync.h trace.h types.h
+mksum.lo mksum.o : mksum.c config.h rsync.h stream.h util.h sumset.h \
+	job.h protocol.h netint.h trace.h checksum.h
+msg.lo msg.o : msg.c config.h rsync.h
+netint.lo netint.o : netint.c config.h rsync.h job.h netint.h trace.h \
+	stream.h
+patch.lo patch.o : patch.c config.h rsync.h util.h trace.h protocol.h \
+	netint.h command.h sumset.h prototab.h stream.h job.h
+prototab.lo prototab.o : prototab.c config.h rsync.h protocol.h \
+	command.h prototab.h
+rdiff.o: rdiff.c config.h rsync.h fileutil.h util.h trace.h isprefix.h
+readsums.lo readsums.o : readsums.c config.h rsync.h sumset.h job.h \
+	trace.h netint.h protocol.h util.h stream.h
+scoop.lo scoop.o : scoop.c config.h rsync.h job.h stream.h trace.h \
+	util.h
+search.lo search.o : search.c config.h rsync.h trace.h util.h sumset.h \
+	search.h checksum.h
+stats.lo stats.o : stats.c config.h rsync.h trace.h
+stream.lo stream.o : stream.c config.h rsync.h stream.h util.h trace.h
+sumset.lo sumset.o : sumset.c config.h rsync.h sumset.h util.h trace.h
+trace.lo trace.o : trace.c config.h rsync.h util.h trace.h
+tube.lo tube.o : tube.c config.h rsync.h trace.h util.h job.h stream.h
+util.lo util.o : util.c config.h util.h rsync.h trace.h
+version.lo version.o : version.c config.h rsync.h
+whole.lo whole.o : whole.c config.h rsync.h trace.h fileutil.h sumset.h \
+	job.h buf.h whole.h util.h
+
+check-TESTS: $(TESTS)
+	@failed=0; all=0; \
+	srcdir=$(srcdir); export srcdir; \
+	for tst in $(TESTS); do \
+	  if test -f $$tst; then dir=.; \
+	  else dir="$(srcdir)"; fi; \
+	  if $(TESTS_ENVIRONMENT) $$dir/$$tst; then \
+	    all=`expr $$all + 1`; \
+	    echo "PASS: $$tst"; \
+	  elif test $$? -ne 77; then \
+	    all=`expr $$all + 1`; \
+	    failed=`expr $$failed + 1`; \
+	    echo "FAIL: $$tst"; \
+	  fi; \
+	done; \
+	if test "$$failed" -eq 0; then \
+	  banner="All $$all tests passed"; \
+	else \
+	  banner="$$failed of $$all tests failed"; \
+	fi; \
+	dashes=`echo "$$banner" | sed s/./=/g`; \
+	echo "$$dashes"; \
+	echo "$$banner"; \
+	echo "$$dashes"; \
+	test "$$failed" -eq 0
+info-am:
+info: info-recursive
+dvi-am:
+dvi: dvi-recursive
+check-am: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
+check: check-recursive
+installcheck-am:
+installcheck: installcheck-recursive
+all-recursive-am: config.h
+	$(MAKE) $(AM_MAKEFLAGS) all-recursive
+
+install-exec-am: install-libLTLIBRARIES install-binPROGRAMS
+install-exec: install-exec-recursive
+
+install-data-am: install-man install-includeHEADERS
+install-data: install-data-recursive
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-recursive
+uninstall-am: uninstall-libLTLIBRARIES uninstall-binPROGRAMS \
+		uninstall-man uninstall-includeHEADERS
+uninstall: uninstall-recursive
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(SCRIPTS) $(MANS) \
+		$(HEADERS) config.h
+all-redirect: all-recursive-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+installdirs: installdirs-recursive
+installdirs-am:
+	$(mkinstalldirs)  $(DESTDIR)$(libdir) $(DESTDIR)$(bindir) \
+		$(DESTDIR)$(mandir)/man1 $(DESTDIR)$(mandir)/man3 \
+		$(DESTDIR)$(includedir)
+
+
+mostlyclean-generic:
+
+clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+mostlyclean-am:  mostlyclean-hdr mostlyclean-libLTLIBRARIES \
+		mostlyclean-compile mostlyclean-libtool \
+		mostlyclean-binPROGRAMS mostlyclean-checkPROGRAMS \
+		mostlyclean-tags mostlyclean-generic
+
+mostlyclean: mostlyclean-recursive
+
+clean-am:  clean-hdr clean-libLTLIBRARIES clean-compile clean-libtool \
+		clean-binPROGRAMS clean-checkPROGRAMS clean-tags \
+		clean-generic mostlyclean-am
+
+clean: clean-recursive
+
+distclean-am:  distclean-hdr distclean-libLTLIBRARIES distclean-compile \
+		distclean-libtool distclean-binPROGRAMS \
+		distclean-checkPROGRAMS distclean-tags \
+		distclean-generic clean-am
+	-rm -f libtool
+
+distclean: distclean-recursive
+	-rm -f config.status
+
+maintainer-clean-am:  maintainer-clean-hdr \
+		maintainer-clean-libLTLIBRARIES \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-binPROGRAMS \
+		maintainer-clean-checkPROGRAMS maintainer-clean-tags \
+		maintainer-clean-generic distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-recursive
+	-rm -f config.status
+
+.PHONY: mostlyclean-hdr distclean-hdr clean-hdr maintainer-clean-hdr \
+mostlyclean-libLTLIBRARIES distclean-libLTLIBRARIES \
+clean-libLTLIBRARIES maintainer-clean-libLTLIBRARIES \
+uninstall-libLTLIBRARIES install-libLTLIBRARIES mostlyclean-compile \
+distclean-compile clean-compile maintainer-clean-compile \
+mostlyclean-libtool distclean-libtool clean-libtool \
+maintainer-clean-libtool mostlyclean-binPROGRAMS distclean-binPROGRAMS \
+clean-binPROGRAMS maintainer-clean-binPROGRAMS uninstall-binPROGRAMS \
+install-binPROGRAMS mostlyclean-checkPROGRAMS distclean-checkPROGRAMS \
+clean-checkPROGRAMS maintainer-clean-checkPROGRAMS install-man1 \
+uninstall-man1 install-man3 uninstall-man3 install-man uninstall-man \
+uninstall-includeHEADERS install-includeHEADERS install-data-recursive \
+uninstall-data-recursive install-exec-recursive \
+uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
+all-recursive check-recursive installcheck-recursive info-recursive \
+dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
+maintainer-clean-recursive tags tags-recursive mostlyclean-tags \
+distclean-tags clean-tags maintainer-clean-tags distdir check-TESTS \
+info-am info dvi-am dvi check check-am installcheck-am installcheck \
+all-recursive-am install-exec-am install-exec install-data-am \
+install-data install-am install uninstall-am uninstall all-redirect \
+all-am all installdirs-am installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
+
+
+			      # Thus spake the master programmer:
+			      # 
+			      # ``When the program is being tested, it
+			      # is too late to make design changes.''
+
+# Autogenerated by a script
+prototab.c prototab.h: $(srcdir)/mkprototab.pl
+	perl $(srcdir)/mkprototab.pl prototab.c prototab.h
+
+popt/libpopt.a:
+	(cd popt && $(MAKE) $(AM_MAKEFLAGS) libpopt.a)
+
+.PHONY: check_programs
+check_programs: $(check_PROGRAMS)
+
+.PHONY: do-doxy upload-doxy
+
+html/index.html latex/refman.pdf latex/refman.ps.gz do-doxy:
+	doxygen
+	(cd latex && make refman.ps refman.pdf && gzip -9vf refman.ps)
+
+upload-doxy: html/index.html latex/refman.pdf latex/refman.ps.gz
+	for i in $(sites); do \
+	rsync -avz --delete --exclude '*~' \
+		html/ latex/refman.pdf latex/refman.ps.gz \
+		./rproxy-small-logo.png $$i/doxygen/librsync; \
+	done
+
+man_%_1.ps: %.1
+	groff -mandoc -Tps $< >$@
+
+man_%_3.ps: %.3
+	groff -mandoc -Tps $< >$@
+
+man_%_1.html: %.1
+	groff -mandoc -Thtml $< >$@
+
+man_%_3.html: %.3
+	groff -mandoc -Thtml $< >$@
+
+man_%_1.txt: %.1
+	groff -mandoc -Tlatin1 $< >$@
+
+man_%_3.txt: %.3
+	groff -mandoc -Tlatin1 $< >$@
+
+upload-men: $(converted_men)
+	for i in $(sites); do \
+		rsync -avz --delete $(converted_men) $(man_MANS) $$i/man; \
+	done
+
+upload-news: NEWS
+	for i in $(sites); do \
+		rsync -avz --delete $(srcdir)/NEWS $$i/librsync-NEWS; \
+	done
+
+# Cater to people who prefer the name 'make test'
+.PHONY: test
+test: check;
+
+# test commands for maintainer use:
+/tmp/food:
+	find /usr/include -type f -exec cat {} \; >$@
+
+/tmp/doof: /tmp/food
+	tr '[a-zA-Z0123456789]' '[A-Za-z9876543210]' </tmp/food >$@
+
+/tmp/fodo: /tmp/food
+	tr 'z' 'Z' </tmp/food >$@
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:
