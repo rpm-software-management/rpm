@@ -384,11 +384,11 @@ void faClose(faFile fa) {
     free(fa);
 }
 
-unsigned int faFirstOffset(faFile fa) {
+int faFirstOffset(faFile fa) {
     return faNextOffset(fa, 0);
 }
 
-unsigned int faNextOffset(faFile fa, unsigned int lastOffset) {
+int faNextOffset(faFile fa, unsigned int lastOffset) {
     struct faHeader header;
     int offset;
 
@@ -417,8 +417,13 @@ unsigned int faNextOffset(faFile fa, unsigned int lastOffset) {
 	if (!header.isFree) break;
     } while (offset < fa->fileSize && header.isFree);
 
-    if (offset < fa->fileSize)
-	return (offset + sizeof(header));
-    else
+    if (offset < fa->fileSize) {
+	/* Sanity check this to make sure we're not going in loops */
+	offset += sizeof(header);
+
+	if (offset <= lastOffset) return -1;
+
+	return offset;
+    } else
 	return 0;
 }

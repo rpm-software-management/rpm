@@ -21,7 +21,7 @@ unsigned int faAlloc(faFile fa, unsigned int size); /* returns 0 on failure */
 void faFree(faFile fa, unsigned int offset);
 void faClose(faFile fa);
 
-unsigned int faFirstOffset(faFile fa);
-unsigned int faNextOffset(faFile fa, unsigned int lastOffset);  /* 0 at end */
+int faFirstOffset(faFile fa);
+int faNextOffset(faFile fa, unsigned int lastOffset);  /* 0 at end */
 
 #endif H_FALLOC
