@@ -1790,7 +1790,7 @@ static char * octalFormat(int_32 type, const void * data,
 	strcpy(val, "(not a number)");
     } else {
 	val = malloc(20 + padding);
-	strcat(formatPrefix, "#o");
+	strcat(formatPrefix, "o");
 	sprintf(val, formatPrefix, *((int_32 *) data));
     }
 
