@@ -1,13 +1,19 @@
 topdir=@topdir@
+CPP = @CPP@
+prefix= @prefix@
+exec_prefix = @exec_prefix@
+libdir= $(prefix)/lib
 
 AR = ar
 RANLIB = @RANLIB@
 OPTS = @DEFS@
-CFLAGS = @CFLAGS@ $(WARNINGS) $(OPTS) -I$(topdir) -I$(topdir)/lib \
-	-I$(topdir)/build -I$(topdir)/misc -I$(topdir)/.. -I$(topdir)/../lib \
-	-I$(topdir)/../build -I$(topdir)/../misc \
+LIBRPMRC_FILENAME=$(libdir)/rpmrc
+INTLDEF = @INTLDEF@
+CFLAGS = @CFLAGS@ @INCPATH@ @INTLDEF@ $(WARNINGS) $(OPTS) \
+	-I$(topdir)/lib -I$(topdir)/misc \
 	-DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DVERSION=\"$(VERSION)\" 
-LDFLAGS = @LDFLAGS@ -Llib -Lbuild -Lmisc -L../lib -L../build -L../misc
+LDFLAGS = @LDFLAGS@ @LIBPATH@ -Llib -Lbuild -Lmisc -L$(topdir)/lib \
+		-L$(topdir)/build -L$(topdir)/misc
 VERSION = 2.2.7
 CC = @CC@
 
