@@ -43,7 +43,7 @@ fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
 
 fnpyKey rpmfiGetKey(TFI_t fi)
 {
-    return fi->te->key;
+    return (fi != NULL ? teGetKey(fi->te) : NULL);
 }
 
 int tfiGetFC(TFI_t fi)

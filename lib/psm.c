@@ -28,7 +28,6 @@
 /*@access PSM_t@*/
 
 /*@access TFI_t@*/
-/*@access transactionElement @*/
 /*@access rpmTransactionSet@*/
 
 /*@access alKey@*/
@@ -77,7 +76,7 @@ int rpmVersionCompare(Header first, Header second)
 
 /*@observer@*/ const char *const fiTypeString(TFI_t fi)
 {
-    switch(fi->te->type) {
+    switch(teGetType(fi->te)) {
     case TR_ADDED:	return " install";
     case TR_REMOVED:	return "   erase";
     default:		return "???";
@@ -352,7 +351,7 @@ static int markReplacedFiles(const PSM_t psm)
     unsigned int prev;
     int num, xx;
 
-    if (!(fi->fc > 0 && fi->replaced))
+    if (!(tfiGetFC(fi) > 0 && fi->replaced))
 	return 0;
 
     num = prev = 0;
@@ -1086,7 +1085,7 @@ static int runTriggers(PSM_t psm)
     int numPackage;
     rpmRC rc = RPMRC_OK;
 
-    numPackage = rpmdbCountPackages(ts->rpmdb, psm->te->name) + psm->countCorrection;
+    numPackage = rpmdbCountPackages(ts->rpmdb, teGetN(psm->te)) + psm->countCorrection;
     if (numPackage < 0)
 	return 1;
 
@@ -1096,7 +1095,7 @@ static int runTriggers(PSM_t psm)
 	int countCorrection = psm->countCorrection;
 
 	psm->countCorrection = 0;
-	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, psm->te->name, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, teGetN(psm->te), 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL) {
 	    rc |= handleOneTrigger(psm, fi->h, triggeredH, numPackage, NULL);
 	}
@@ -1229,29 +1228,31 @@ int psmStage(PSM_t psm, pkgStage stage)
 	break;
     case PSM_INIT:
 	rpmMessage(RPMMESS_DEBUG, _("%s: %s has %d files, test = %d\n"),
-		psm->stepName, psm->te->NEVR,
-		fi->fc, (ts->transFlags & RPMTRANS_FLAG_TEST));
+		psm->stepName, teGetNEVR(psm->te),
+		tfiGetFC(fi), (ts->transFlags & RPMTRANS_FLAG_TEST));
 
 	/*
 	 * When we run scripts, we pass an argument which is the number of 
 	 * versions of this package that will be installed when we are
 	 * finished.
 	 */
-	psm->npkgs_installed = rpmdbCountPackages(ts->rpmdb, psm->te->name);
+	psm->npkgs_installed = rpmdbCountPackages(ts->rpmdb, teGetN(psm->te));
 	if (psm->npkgs_installed < 0) {
 	    rc = RPMRC_FAIL;
 	    break;
 	}
 
 	if (psm->goal == PSM_PKGINSTALL) {
+	    int fc = tfiGetFC(fi);
+
 	    psm->scriptArg = psm->npkgs_installed + 1;
 
 assert(psm->mi == NULL);
-	    psm->mi = rpmtsInitIterator(ts, RPMTAG_NAME, psm->te->name, 0);
+	    psm->mi = rpmtsInitIterator(ts, RPMTAG_NAME, teGetN(psm->te), 0);
 	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_VERSION,
-			RPMMIRE_DEFAULT, psm->te->version);
+			RPMMIRE_DEFAULT, teGetV(psm->te));
 	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE,
-			RPMMIRE_DEFAULT, psm->te->release);
+			RPMMIRE_DEFAULT, teGetR(psm->te));
 
 	    while ((psm->oh = rpmdbNextIterator(psm->mi))) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
@@ -1264,13 +1265,13 @@ assert(psm->mi == NULL);
 	    psm->mi = rpmdbFreeIterator(psm->mi);
 	    rc = RPMRC_OK;
 
-	    if (fi->fc > 0 && fi->fstates == NULL) {
-		fi->fstates = xmalloc(sizeof(*fi->fstates) * fi->fc);
-		memset(fi->fstates, RPMFILE_STATE_NORMAL, fi->fc);
+	    if (fc > 0 && fi->fstates == NULL) {
+		fi->fstates = xmalloc(sizeof(*fi->fstates) * fc);
+		memset(fi->fstates, RPMFILE_STATE_NORMAL, fc);
 	    }
 
-	    if (fi->fc <= 0)				break;
 	    if (ts->transFlags & RPMTRANS_FLAG_JUSTDB)	break;
+	    if (fc <= 0)				break;
 	
 	    /*
 	     * Old format relocateable packages need the entire default
@@ -1296,9 +1297,9 @@ assert(psm->mi == NULL);
 		xx = hge(fi->h, RPMTAG_FILEGROUPNAME, NULL,
 				(void **) &fi->fgroup, NULL);
 	    if (fi->fuids == NULL)
-		fi->fuids = xcalloc(sizeof(*fi->fuids), fi->fc);
+		fi->fuids = xcalloc(sizeof(*fi->fuids), fc);
 	    if (fi->fgids == NULL)
-		fi->fgids = xcalloc(sizeof(*fi->fgids), fi->fc);
+		fi->fgids = xcalloc(sizeof(*fi->fgids), fc);
 	    rc = RPMRC_OK;
 	}
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
@@ -1347,7 +1348,7 @@ assert(psm->mi == NULL);
 		    rpmError(RPMERR_SCRIPT,
 			_("%s: %s scriptlet failed (%d), skipping %s\n"),
 			psm->stepName, tag2sln(psm->scriptTag), rc,
-			psm->te->NEVR);
+			teGetNEVR(psm->te));
 		    break;
 		}
 	    }
@@ -1416,7 +1417,7 @@ assert(psm->mi == NULL);
 		lead.osnum = osnum;
 		lead.signature_type = RPMSIGTYPE_HEADERSIG;
 
-		strncpy(lead.name, psm->te->NEVR, sizeof(lead.name));
+		strncpy(lead.name, teGetNEVR(psm->te), sizeof(lead.name));
 
 		rc = writeLead(psm->fd, &lead);
 		if (rc) {
@@ -1445,10 +1446,16 @@ assert(psm->mi == NULL);
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int i;
 
-	    if (fi->fc <= 0)				break;
 	    if (ts->transFlags & RPMTRANS_FLAG_JUSTDB)	break;
-
-	    for (i = 0; i < fi->fc; i++) {
+#ifdef	DYING
+	    if (fi->fc <= 0)				break;
+	    for (i = 0; i < fi->fc; i++)
+#else
+	    if (tfiGetFC(fi) <= 0)			break;
+	    (void) tfiInit(fi, 0);
+	    while ((i = tfiNext(fi)) >= 0)
+#endif
+	    {
 		uid_t uid;
 		gid_t gid;
 
@@ -1478,12 +1485,13 @@ assert(psm->mi == NULL);
 	    /* Retrieve type of payload compression. */
 	    rc = psmStage(psm, PSM_RPMIO_FLAGS);
 
-	    if (fi->te->fd == NULL) {	/* XXX can't happen */
+	    if (teGetFd(fi->te) == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
 		break;
 	    }
+
 	    /*@-nullpass@*/	/* LCL: fi->fd != NULL here. */
-	    psm->cfd = Fdopen(fdDup(Fileno(fi->te->fd)), psm->rpmio_flags);
+	    psm->cfd = Fdopen(fdDup(Fileno(teGetFd(fi->te))), psm->rpmio_flags);
 	    /*@=nullpass@*/
 	    if (psm->cfd == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
@@ -1519,14 +1527,15 @@ assert(psm->mi == NULL);
 	    xx = psmStage(psm, PSM_NOTIFY);
 	}
 	if (psm->goal == PSM_PKGERASE) {
+	    int fc = tfiGetFC(fi);
 
-	    if (fi->fc <= 0)				break;
 	    if (ts->transFlags & RPMTRANS_FLAG_JUSTDB)	break;
 	    if (ts->transFlags & RPMTRANS_FLAG_APPLYONLY)	break;
+	    if (fc <= 0)				break;
 
 	    psm->what = RPMCALLBACK_UNINST_START;
-	    psm->amount = fi->fc;	/* XXX W2DO? looks wrong. */
-	    psm->total = fi->fc;
+	    psm->amount = fc;		/* XXX W2DO? looks wrong. */
+	    psm->total = fc;
 	    xx = psmStage(psm, PSM_NOTIFY);
 
 	    rc = fsmSetup(fi->fsm, FSM_PKGERASE, ts, fi,
@@ -1535,7 +1544,7 @@ assert(psm->mi == NULL);
 
 	    psm->what = RPMCALLBACK_UNINST_STOP;
 	    psm->amount = 0;		/* XXX W2DO? looks wrong. */
-	    psm->total = fi->fc;
+	    psm->total = fc;
 	    xx = psmStage(psm, PSM_NOTIFY);
 
 	}
@@ -1579,11 +1588,12 @@ assert(psm->mi == NULL);
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int_32 installTime = (int_32) time(NULL);
+	    int fc = tfiGetFC(fi);
 
 	    if (fi->h == NULL) break;	/* XXX can't happen */
-	    if (fi->fstates != NULL && fi->fc > 0)
+	    if (fi->fstates != NULL && fc > 0)
 		xx = headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE,
-				fi->fstates, fi->fc);
+				fi->fstates, fc);
 
 	    xx = headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
 				&installTime, 1);
@@ -1737,7 +1747,7 @@ assert(psm->mi == NULL);
 	if (ts && ts->notify) {
 	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void) ts->notify(fi->h, psm->what, psm->amount, psm->total,
-				psm->te->key, ts->notifyData);
+				teGetKey(psm->te), ts->notifyData);
 	    /*@=noeffectuncon @*/
 	}
 	break;

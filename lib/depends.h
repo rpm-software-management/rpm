@@ -50,13 +50,14 @@ struct teIterator_s {
 struct tsortInfo_s {
     union {
 	int	count;
-	/*@exposed@*/ /*@null@*/ transactionElement suc;
+	/*@exposed@*/ /*@dependent@*/ /*@null@*/
+	transactionElement suc;
     } tsi_u;
 #define	tsi_count	tsi_u.count
 #define	tsi_suc		tsi_u.suc
 /*@owned@*/ /*@null@*/
     struct tsortInfo_s * tsi_next;
-/*@null@*/
+/*@exposed@*/ /*@dependent@*/ /*@null@*/
     transactionElement tsi_chain;
     int		tsi_reqx;
     int		tsi_qcnt;
@@ -203,10 +204,221 @@ struct rpmTransactionSet_s {
 extern "C" {
 #endif
 
+/**
+ * Retrieve type of transaction element.
+ * @param te		transaction element
+ * @return		type
+ */
+/*@unused@*/ static inline
+rpmTransactionType teGetType(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return te->type;
+    /*@=type@*/
+}
+
+/**
+ * Retrieve name string of transaction element.
+ * @param te		transaction element
+ * @return		name string
+ */
+/*@unused@*/ static inline /*@observer@*/
+const char * teGetN(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return (te != NULL ? te->name : NULL);
+    /*@=type@*/
+}
+
+/**
+ * Retrieve epoch string of transaction element.
+ * @param te		transaction element
+ * @return		epoch string
+ */
+/*@unused@*/ static inline /*@observer@*/ /*@null@*/
+const char * teGetE(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return (te != NULL ? te->epoch : NULL);
+    /*@=type@*/
+}
+
+/**
+ * Retrieve version string of transaction element.
+ * @param te		transaction element
+ * @return		version string
+ */
+/*@unused@*/ static inline /*@observer@*/ /*@null@*/
+const char * teGetV(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return (te != NULL ? te->version : NULL);
+    /*@=type@*/
+}
+
+/**
+ * Retrieve release string of transaction element.
+ * @param te		transaction element
+ * @return		release string
+ */
+/*@unused@*/ static inline /*@observer@*/ /*@null@*/
+const char * teGetR(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return (te != NULL ? te->release : NULL);
+    /*@=type@*/
+}
+
+/**
+ * Retrieve arch string of transaction element.
+ * @param te		transaction element
+ * @return		arch string
+ */
+/*@unused@*/ static inline /*@observer@*/ /*@null@*/
+const char * teGetA(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return (te != NULL ? te->arch : NULL);
+    /*@=type@*/
+}
+
+/**
+ * Retrieve os string of transaction element.
+ * @param te		transaction element
+ * @return		os string
+ */
+/*@unused@*/ static inline /*@observer@*/ /*@null@*/
+const char * teGetO(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return (te != NULL ? te->os : NULL);
+    /*@=type@*/
+}
+
+/**
+ * Retrieve multlib flags of transaction element.
+ * @param te		transaction element
+ * @return		multilib flags
+ */
+/*@unused@*/ static inline
+int teGetMultiLib(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return (te != NULL ? te->multiLib : 0);
+    /*@=type@*/
+}
+
+/**
+ * Retrieve tsort info for transaction element.
+ * @param te		transaction element
+ * @return		tsort info
+ */
+/*@unused@*/ static inline
+tsortInfo teGetTSI(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return te->tsi;
+    /*@=type@*/
+}
+
+/**
+ * Retrieve pkgKey of TR_ADDED transaction element.
+ * @param te		transaction element
+ * @return		pkgKey
+ */
+/*@unused@*/ static inline /*@exposed@*/
+alKey teGetAddedKey(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return (te != NULL ? te->u.addedKey : 0);
+    /*@=type@*/
+}
+
+/**
+ * Retrieve dependent pkgKey of TR_REMOVED transaction element.
+ * @param te		transaction element
+ * @return		dependent pkgKey
+ */
+/*@unused@*/ static inline /*@exposed@*/
+alKey teGetDependsOnKey(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return (te != NULL ? te->u.removed.dependsOnKey : 0);
+    /*@=type@*/
+}
+
+/**
+ * Retrieve rpmdb instance of TR_REMOVED transaction element.
+ * @param te		transaction element
+ * @return		rpmdb instance
+ */
+/*@unused@*/ static inline
+int teGetDBOffset(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return (te != NULL ? te->u.removed.dboffset : 0);
+    /*@=type@*/
+}
+
+/**
+ * Retrieve name-version-release string from transaction element.
+ * @param te		transaction element
+ * @return		name-version-release string
+ */
+/*@unused@*/ static inline /*@observer@*/
+const char * teGetNEVR(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return (te != NULL ? te->NEVR : NULL);
+    /*@=type@*/
+}
+
+/**
+ * Retrieve file handle from transaction element.
+ * @param te		transaction element
+ * @return		file handle
+ */
+/*@unused@*/ static inline
+FD_t teGetFd(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    /*@-compdef -refcounttrans -retalias -retexpose -usereleased @*/
+    return (te != NULL ? te->fd : NULL);
+    /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
+    /*@=type@*/
+}
+
+/**
+ * Retrieve key from transaction element.
+ * @param te		transaction element
+ * @return		key
+ */
+/*@unused@*/ static inline /*@exposed@*/
+fnpyKey teGetKey(transactionElement te)
+	/*@*/
+{
+    /*@-type@*/
+    return (te != NULL ? te->key : NULL);
+    /*@=type@*/
+}
+
 #if defined(_NEED_TEITERATOR)
 /*@access teIterator @*/
 
-/*@access transactionElement @*/
 /*@access rpmTransactionSet @*/
 
 /**
@@ -215,7 +427,7 @@ extern "C" {
  * @return		transaction element index
  */
 /*@unused@*/ static inline
-int teGetOc(teIterator tei)
+int teiGetOc(teIterator tei)
 	/*@*/
 {
     return tei->ocsave;
@@ -272,8 +484,10 @@ transactionElement teNextIterator(teIterator tei)
     	if (tei->oc < tei->ts->orderCount)	oc = tei->oc++;
     }
     tei->ocsave = oc;
+    /*@-abstract @*/
     if (oc != -1)
 	te = tei->ts->order + oc;
+    /*@=abstract @*/
     /*@-compdef -usereleased@*/ /* FIX: ts->order may be released */
     return te;
     /*@=compdef =usereleased@*/
@@ -292,8 +506,10 @@ transactionElement teNext(teIterator tei, rpmTransactionType type)
     transactionElement p;
 
     while ((p = teNextIterator(tei)) != NULL) {
+	/*@-type@*/
 	if (p->type == type)
 	    break;
+	/*@=type@*/
     }
     return p;
 }

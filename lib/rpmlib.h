@@ -1467,15 +1467,15 @@ int rpmtransGetKeys(rpmTransactionSet ts,
 /** \ingroup rpmtrans
  * Check that all dependencies can be resolved.
  * @param ts		transaction set
- * @retval conflicts	dependency problems
- * @retval numConflicts	no. of dependency problems
+ * @retval dsprobs	dependency problems
+ * @retval numProbs	no. of dependency problems
  * @return		0 on success
  */
 int rpmdepCheck(rpmTransactionSet ts,
-		/*@exposed@*/ /*@out@*/ rpmProblem * conflicts,
-		/*@exposed@*/ /*@out@*/ int * numConflicts)
+		/*@exposed@*/ /*@out@*/ rpmProblem * dsprobs,
+		/*@exposed@*/ /*@out@*/ int * numProbs)
 	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, *conflicts, *numConflicts,
+	/*@modifies ts, *dsprobs, *numProbs,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmtrans

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-15 19:25-0500\n"
+"POT-Creation-Date: 2001-11-16 14:15-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -828,7 +828,7 @@ msgstr "Kunne ikke læse hoved fra %s: %s\n"
 msgid "Could not open %s: %s\n"
 msgstr "Kunne ikke åbne %s: %s\n"
 
-#: build/pack.c:603 lib/psm.c:1423
+#: build/pack.c:603 lib/psm.c:1424
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunne ikke skrive pakke: %s\n"
@@ -858,7 +858,7 @@ msgstr "Kunne ikke læse pakkeindhold fra %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kunne ikke skrive pakkeindhold til %s: %s\n"
 
-#: build/pack.c:683 lib/psm.c:1688
+#: build/pack.c:683 lib/psm.c:1698
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
@@ -1438,84 +1438,84 @@ msgstr " mislykkedes - "
 msgid "cannot open Packages database in %s\n"
 msgstr "kunne ikke åbne Packages-database i %s\n"
 
-#: lib/depends.c:401
+#: lib/depends.c:421
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "pakken %s er allerede installeret"
 
-#: lib/depends.c:675
+#: lib/depends.c:709
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:700
+#: lib/depends.c:734
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s JA (rpmrc tilfører)\n"
 
-#: lib/depends.c:716
+#: lib/depends.c:750
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s JA (rpmlib tilfører)\n"
 
-#: lib/depends.c:737
+#: lib/depends.c:771
 #, fuzzy
 msgid "(db files)"
 msgstr "ugyldig db-fil %s\n"
 
-#: lib/depends.c:749
+#: lib/depends.c:783
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s JA (db tilfører)\n"
 
-#: lib/depends.c:762
+#: lib/depends.c:796
 #, fuzzy
 msgid "(db package)"
 msgstr "ingen pakker\n"
 
-#: lib/depends.c:801
+#: lib/depends.c:835
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) tilføjet til afhængigheds-buffer.\n"
 
-#: lib/depends.c:803 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:837 lib/rpmds.c:407 lib/rpmds.c:566
 #, fuzzy
 msgid "NO "
 msgstr "IKKE O.K."
 
-#: lib/depends.c:803 lib/rpmds.c:407 lib/rpmds.c:566
+#: lib/depends.c:837 lib/rpmds.c:407 lib/rpmds.c:566
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:1142
+#: lib/depends.c:1178
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "fjerne %s-%s-%s \"%s\" fra tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1373
+#: lib/depends.c:1423
 msgid "========== recording tsort relations\n"
 msgstr "========== gemmer tsort-relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1444
+#: lib/depends.c:1499
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1519
+#: lib/depends.c:1576
 msgid "========== successors only (presentation order)\n"
 msgstr "========== kun efterfølgere (præsentationsrækkefølge)\n"
 
-#: lib/depends.c:1579
+#: lib/depends.c:1636
 msgid "LOOP:\n"
 msgstr "LØKKE:\n"
 
-#: lib/depends.c:1614
+#: lib/depends.c:1673
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1619
+#: lib/depends.c:1678
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1615,7 +1615,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE-antal skal være 1.\n"
 
 #. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:246
+#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:245
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Datatype %d understøttes ikke\n"
@@ -2235,76 +2235,76 @@ msgstr " skaber konflikt med %s-%s-%s\n"
 msgid "is needed by"
 msgstr " kræves af %s-%s-%s\n"
 
-#: lib/psm.c:443
+#: lib/psm.c:442
 #, fuzzy, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "kan ikke oprette %s: %s\n"
 
-#: lib/psm.c:449
+#: lib/psm.c:448
 #, fuzzy, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "kunne ikke skrive til %s\n"
 
-#: lib/psm.c:490
+#: lib/psm.c:489
 msgid "source package expected, binary found\n"
 msgstr "kildepakke forventet, binær fundet\n"
 
-#: lib/psm.c:604
+#: lib/psm.c:603
 msgid "source package contains no .spec file\n"
 msgstr "kildepakke indeholder ingen .spec-fil\n"
 
-#: lib/psm.c:714
+#: lib/psm.c:713
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "kører postinstallations-skript (hvis det findes)\n"
 
-#: lib/psm.c:882
+#: lib/psm.c:881
 #, fuzzy, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 "kørsel af småskriptet %s fra %s-%s-%s mislykkedes, afslutningsstatus %d\n"
 
-#: lib/psm.c:889
+#: lib/psm.c:888
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 "kørsel af småskriptet %s fra %s-%s-%s mislykkedes, afslutningsstatus %d\n"
 
-#: lib/psm.c:1231
+#: lib/psm.c:1230
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "pakke: %s-%s-%s filer test = %d\n"
 
-#: lib/psm.c:1348
+#: lib/psm.c:1349
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1459
+#: lib/psm.c:1466
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "bruger %s eksisterer ikke - bruger root\n"
 
-#: lib/psm.c:1468
+#: lib/psm.c:1475
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "gruppe %s eksisterer ikke - bruger root\n"
 
-#: lib/psm.c:1509
+#: lib/psm.c:1517
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: lib/psm.c:1510
+#: lib/psm.c:1518
 msgid " on file "
 msgstr " for fil "
 
-#: lib/psm.c:1696
+#: lib/psm.c:1706
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/psm.c:1699
+#: lib/psm.c:1709
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s mislykkedes\n"
@@ -2854,18 +2854,18 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signaturfyld : %d\n"
 
-#: lib/transaction.c:182
+#: lib/transaction.c:181
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s oversprunget grundet manglende ok-flag\n"
 
 #. @innercontinue@
-#: lib/transaction.c:1015
+#: lib/transaction.c:999
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "ekskluderer kataloget %s\n"
 
-#: lib/transaction.c:1106
+#: lib/transaction.c:1092
 msgid "getting list of mounted filesystems\n"
 msgstr "henter liste over monterede filsystemer\n"
 

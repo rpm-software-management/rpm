@@ -166,7 +166,7 @@ TFI_t XrpmfiLink (/*@null@*/ TFI_t fi, /*@null@*/ const char * msg,
 #define	rpmfiLink(_fi, _msg)	XrpmfiLink(_fi, _msg, __FILE__, __LINE__)
 
 /**
- * Retrieve key from transaction element file info
+ * Retrieve key from transaction element file info.
  * @param fi		transaction element file info
  * @return		transaction element file info key
  */
