@@ -64,8 +64,8 @@ int inet_aton(const char *cp, struct in_addr *inp);
 # endif
 #endif
 
-static int ftp_debug = 0;
-#define DBG(_f, _x)     if ((ftp_debug | (_f))) fprintf _x
+int _ftp_debug = 0;
+#define DBG(_f, _x)     if ((_ftp_debug | (_f))) fprintf _x
 
 static int checkResponse(urlinfo u, int fdno, int secs, int *ecp,
 		/*@out@*/ char ** str)
@@ -246,12 +246,13 @@ int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str)
     return rc;
 }
 
-static int ftpCommand(urlinfo u, char * command, ...)
+int ftpCommand(urlinfo u, char * command, ...)
 {
     va_list ap;
     int len;
     char * s;
     char * req;
+    int rc;
 
     va_start(ap, command);
     len = strlen(command) + 2;
@@ -283,7 +284,8 @@ static int ftpCommand(urlinfo u, char * command, ...)
     if (fdio->write(u->ftpControl, req, len) != len)
 	return FTPERR_SERVER_IO_ERROR;
 
-    return ftpCheckResponse(u, NULL);
+    rc = ftpCheckResponse(u, NULL);
+    return rc;
 }
 
 #if !defined(USE_ALT_DNS) || !USE_ALT_DNS 
@@ -457,9 +459,8 @@ int ftpOpen(urlinfo u)
 	goto errxit;
     }
 
-    if ((rc = ftpCheckResponse(u, NULL))) {
+    if ((rc = ftpCheckResponse(u, NULL)))
 	return rc;     
-    }
 
     if ((rc = ftpCommand(u, "USER", user, NULL)))
 	goto errxit;
@@ -480,29 +481,31 @@ errxit:
 
 int ftpFileDone(urlinfo u)
 {
+    int rc = 0;
+
     if (u == NULL)
 	return FTPERR_UNKNOWN;	/* XXX W2DO? */
 
     if (u->ftpFileDoneNeeded) {
 	u->ftpFileDoneNeeded = 0;
 	fdFree(u->ftpControl, "ftpFileDone (from ftpFileDone)");
-	if (ftpCheckResponse(u, NULL))
-	    return FTPERR_BAD_SERVER_RESPONSE;
+	rc = ftpCheckResponse(u, NULL);
     }
-    return 0;
+    return rc;
 }
 
 int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
 {
     struct sockaddr_in dataAddress;
-    int i, j;
+    int cmdlen;
     char * passReply;
     char * chptr;
     int rc;
 
-    if (u == NULL)
+    if (u == NULL || cmd == NULL || fd == NULL)
 	return FTPERR_UNKNOWN;	/* XXX W2DO? */
 
+    cmdlen = strlen(cmd);
 /*
  * XXX When ftpFileDesc() is called, there may be a lurking
  * XXX transfer complete message (if ftpFileDone() was not
@@ -510,7 +513,25 @@ int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
  */
 
     if (u->ftpFileDoneNeeded)
-	rc = ftpFileDone(u);
+	rc = ftpFileDone(u);	/* XXX return code ignored */
+/*
+ * Get the ftp version of the Content-Length.
+ */
+    if (!strncmp(cmd, "RETR", 4)) {
+	char * req = strcpy(alloca(cmdlen + 1), cmd);
+	unsigned cl;
+
+	memcpy(req, "SIZE", 4);
+	DBG(0, (stderr, "-> %s", req));
+	if (fdio->write(u->ftpControl, req, cmdlen) != cmdlen)
+	    return FTPERR_SERVER_IO_ERROR;
+	if ((rc = ftpCheckResponse(u, &passReply)))
+	    return rc;
+	if (sscanf(passReply, "%d %u", &rc, &cl) != 2)
+	    return FTPERR_BAD_SERVER_RESPONSE;
+	rc = 0;
+	u->httpContentLength = cl;
+    }
 
     DBG(0, (stderr, "-> PASV\n"));
     if (fdio->write(u->ftpControl, "PASV\r\n", 6) != 6)
@@ -538,10 +559,12 @@ int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
     /* now passReply points to the IP portion, and chptr points to the
        port number portion */
 
-    dataAddress.sin_family = AF_INET;
-    if (sscanf(chptr, "%d,%d", &i, &j) != 2)
-	return FTPERR_PASSIVE_ERROR;
-    dataAddress.sin_port = htons((((unsigned)i) << 8) + j);
+    {	int i, j;
+	dataAddress.sin_family = AF_INET;
+	if (sscanf(chptr, "%d,%d", &i, &j) != 2)
+	    return FTPERR_PASSIVE_ERROR;
+	dataAddress.sin_port = htons((((unsigned)i) << 8) + j);
+    }
 
     chptr = passReply;
     while (*chptr++) {
@@ -567,8 +590,7 @@ int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
     }
 
     DBG(0, (stderr, "-> %s", cmd));
-    i = strlen(cmd);
-    if (fdio->write(u->ftpControl, cmd, i) != i)
+    if (fdio->write(u->ftpControl, cmd, cmdlen) != cmdlen)
 	return FTPERR_SERVER_IO_ERROR;
 
     if ((rc = ftpCheckResponse(u, NULL))) {
