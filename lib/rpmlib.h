@@ -253,7 +253,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 
 char * rpmGetVar(int var);
 int rpmGetBooleanVar(int var);
-void rpmSetVar(int var, char *val);
+void rpmSetVar(int var, const char *val);
 
 /** rpmrc.c **/
 

@@ -11,9 +11,10 @@
 
 #include "misc.h"
 
-static const char *usrlibrpmrc = LIBRPMRC_FILENAME;
-static const char *etcrpmrc = "/etc/rpmrc";
+static const char *defrcfiles = LIBRPMRC_FILENAME ":/etc/rpmrc:~/.rpmrc";
+#if UNUSED
 static const char *macrofiles = MACROFILES;
+#endif
 
 struct MacroContext globalMacroContext;
 
@@ -156,9 +157,12 @@ static struct canonEntry *lookupInCanonTable(char *name,
 static const char *lookupInDefaultTable(const char *name,
 				  struct defaultEntry *table,
 				  int tableLen);
+
+static void setVarDefault(int var, const char *macroname, const char *val, const char *body);
+static void setPathDefault(int var, const char *macroname, const char *subdir);
 static void setDefaults(void);
-static void setPathDefault(int var, char * macroname, char * subdir);
-static void rebuildCompatTables(int type, char * name);
+
+static void rebuildCompatTables(int type, char *name);
 
 /* compatiblity tables */
 static int machCompatCacheAdd(char * name, const char * fn, int linenum,
@@ -469,14 +473,24 @@ int rpmReadConfigFiles(const char * file, const char * target)
     return 0;
 }
 
-static void setPathDefault(int var, char *macroname, char *subdir) {
+static void setVarDefault(int var, const char *macroname, const char *val, const char *body)
+{
+    if (rpmGetVar(var)) return;
+    rpmSetVar(var, val);
+    if (body == NULL)
+	body = val;
+    addMacro(&globalMacroContext, macroname, NULL, body, RMIL_DEFAULT);
+}
+
+static void setPathDefault(int var, const char *macroname, const char *subdir)
+{
     char * topdir;
     char * fn;
 
     if (rpmGetVar(var)) return;
 
     topdir = rpmGetVar(RPMVAR_TOPDIR);
-    if (!topdir) topdir = rpmGetVar(RPMVAR_TMPPATH);
+    if (topdir == NULL) topdir = rpmGetVar(RPMVAR_TMPPATH);
 
     fn = alloca(strlen(topdir) + strlen(subdir) + 2);
     strcpy(fn, topdir);
@@ -488,7 +502,7 @@ static void setPathDefault(int var, char *macroname, char *subdir) {
 
     if (macroname != NULL) {
 #define	_TOPDIRMACRO	"%{_topdir}/"
-	char *body = alloca(sizeof(_TOPDIRMACRO) + strlen(subdir) + 2);
+	char *body = alloca(sizeof(_TOPDIRMACRO) + strlen(subdir) + 1);
 	strcpy(body, _TOPDIRMACRO);
 	strcat(body, subdir);
 	addMacro(&globalMacroContext, macroname, NULL, body, RMIL_RPMRC);
@@ -498,67 +512,23 @@ static void setPathDefault(int var, char *macroname, char *subdir) {
 
 static void setDefaults(void) {
 
-    /* Read in all macro files (and also set maximum recursion depth) */
-    initMacros(&globalMacroContext, macrofiles);
+    addMacro(&globalMacroContext, "_usr", NULL, "/usr", RMIL_DEFAULT);
+    addMacro(&globalMacroContext, "_var", NULL, "/var", RMIL_DEFAULT);
 
-    rpmSetVar(RPMVAR_OPTFLAGS, "-O2");
-    rpmSetVar(RPMVAR_SIGTYPE, "none");
-    rpmSetVar(RPMVAR_DEFAULTDOCDIR, "/usr/doc");
-    rpmSetVar(RPMVAR_TOPDIR, "/usr/src/redhat");
-    rpmSetVar(RPMVAR_BUILDSHELL, "/bin/sh");
-}
+    setVarDefault(RPMVAR_MACROFILES,	"_macrofiles",
+		"/usr/lib/rpm/macros", "%{_usr}/lib/rpm/macros");
+    setVarDefault(RPMVAR_TOPDIR,	"_topdir",
+		"/usr/src/redhat", "%{_usr}/src/redhat");
+    setVarDefault(RPMVAR_TMPPATH,	"_tmppath",
+		"/var/tmp",	"%{_var}/tmp");
+    setVarDefault(RPMVAR_DBPATH,	"_dbpath",
+		"/var/lib/rpm",	"%{_var}/lib/rpm");
+    setVarDefault(RPMVAR_DEFAULTDOCDIR, "_defaultdocdir",
+		"/usr/doc",	"%{_usr}/doc");
 
-int rpmReadRC(const char * file) {
-    FD_t fd;
-    const char * fn;
-    char * home;
-    int rc = 0;
-    static int first = 1;
-
-    if (first) {
-	setDefaults();
-	first = 0;
-    }
-
-    fd = fdOpen(usrlibrpmrc, O_RDONLY, 0);
-    if (fdFileno(fd) >= 0) {
-	rc = doReadRC(fd, usrlibrpmrc);
-	fdClose(fd);
- 	if (rc) return rc;
-    } else {
-	rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."),
-		 usrlibrpmrc, strerror(errno));
-	return 1;
-    }
-
-    fn = (file != NULL ? file : etcrpmrc);
-    fd = fdOpen(fn, O_RDONLY, 0);
-    if (fdFileno(fd) >= 0) {
-	rc = doReadRC(fd, fn);
-	fdClose(fd);
-	if (rc) return rc;
-    } else if (file != NULL) {
-	rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."), file,
-		 strerror(errno));
-	return 1;
-    }
-
-    if (file == NULL) {
-	home = getenv("HOME");
-	if (home != NULL) {
-	    char *fn = alloca(strlen(home) + 8);
-	    strcpy(fn, home);
-	    strcat(fn, "/.rpmrc");
-	    fd = fdOpen(fn, O_RDONLY, 0);
-	    if (fdFileno(fd) >= 0) {
-		rc |= doReadRC(fd, fn);
-		fdClose(fd);
-		if (rc) return rc;
-	    }
-	}
-    }
-
-    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
+    setVarDefault(RPMVAR_OPTFLAGS,	"optflags",	"-O2",		NULL);
+    setVarDefault(RPMVAR_SIGTYPE,	"sigtype",	"none",		NULL);
+    setVarDefault(RPMVAR_BUILDSHELL,	"buildshell",	"/bin/sh",	NULL);
 
     setPathDefault(RPMVAR_BUILDDIR, "_builddir", "BUILD");
     setPathDefault(RPMVAR_RPMDIR, "_rpmdir", "RPMS");
@@ -566,10 +536,73 @@ int rpmReadRC(const char * file) {
     setPathDefault(RPMVAR_SOURCEDIR, "_sourcedir", "SOURCES");
     setPathDefault(RPMVAR_SPECDIR, "_specdir", "SPECS");
 
-    if ((fn = rpmGetVar(RPMVAR_MACROFILES)) != NULL)
-	initMacros(&globalMacroContext, fn);
+}
 
-    return 0;
+int rpmReadRC(const char * rcfiles)
+{
+    char *myrcfiles, *r, *re;
+    int rc;
+    static int first = 1;
+
+    if (first) {
+	setDefaults();
+	first = 0;
+    }
+
+    if (rcfiles == NULL)
+	rcfiles = defrcfiles;
+
+    /* Read each file in rcfiles. */
+    rc = 0;
+    for (r = myrcfiles = strdup(rcfiles); *r != '\0'; r = re) {
+	char fn[FILENAME_MAX+1];
+	FD_t fd;
+
+	/* Get pointer to rest of files */
+	if ((re = strchr(r, ':')) != NULL)
+	    *re++ = '\0';
+	else
+	    re = r + strlen(r);
+
+	/* Expand ~/ to $HOME/ */
+	fn[0] = '\0';
+	if (r[0] == '~' && r[1] == '/') {
+	    char *home = getenv("HOME");
+	    if (home == NULL) {
+		rpmError(RPMERR_RPMRC, _("Cannot expand %s"), r);
+		rc = 1;
+		break;
+	    }
+	    strcpy(fn, home);
+	    r++;
+	}
+	strcat(fn, r);
+	    
+	/* Read another rcfile */
+	fd = fdOpen(fn, O_RDONLY, 0);
+	if (fdFileno(fd) < 0) {
+	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
+	    if (rcfiles == defrcfiles && myrcfiles != r)
+		continue;
+	    rpmError(RPMERR_RPMRC, _("Unable to open %s for reading: %s."),
+		 fn, strerror(errno));
+	    rc = 1;
+	    break;
+	}
+	rc = doReadRC(fd, fn);
+	fdClose(fd);
+ 	if (rc) break;
+    }
+    if (myrcfiles)	free(myrcfiles);
+    if (rc)
+	return rc;
+
+    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
+
+    if ((r = rpmGetVar(RPMVAR_MACROFILES)) != NULL)
+	initMacros(&globalMacroContext, r);
+
+    return rc;
 }
 
 static int doReadRC(FD_t fd, const char * filename) {
@@ -937,7 +970,7 @@ int rpmGetBooleanVar(int var) {
     return 0;
 }
 
-void rpmSetVar(int var, char *val) {
+void rpmSetVar(int var, const char *val) {
     freeRpmVar(&values[var]);
 
     values[var].arch = NULL;

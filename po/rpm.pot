@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-12-01 18:23-0500\n"
+"POT-Creation-Date: 1998-12-02 12:50-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2978,92 +2978,92 @@ msgstr ""
 msgid "read failed: %s (%d)"
 msgstr ""
 
-#: ../lib/rpmrc.c:212
+#: ../lib/rpmrc.c:216
 #, c-format
 msgid "missing second ':' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:215
+#: ../lib/rpmrc.c:219
 #, c-format
 msgid "missing architecture name at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:363
+#: ../lib/rpmrc.c:367
 #, c-format
 msgid "Incomplete data line at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:367
+#: ../lib/rpmrc.c:371
 #, c-format
 msgid "Too many args in data line at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:374
+#: ../lib/rpmrc.c:378
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)"
 msgstr ""
 
-#: ../lib/rpmrc.c:408
+#: ../lib/rpmrc.c:412
 #, c-format
 msgid "Incomplete default line at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:413
+#: ../lib/rpmrc.c:417
 #, c-format
 msgid "Too many args in default line at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:529 ../lib/rpmrc.c:541
+#: ../lib/rpmrc.c:572
+#, c-format
+msgid "Cannot expand %s"
+msgstr ""
+
+#: ../lib/rpmrc.c:587
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr ""
 
-#: ../lib/rpmrc.c:588
+#: ../lib/rpmrc.c:621
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr ""
 
-#: ../lib/rpmrc.c:619
+#: ../lib/rpmrc.c:652
 #, c-format
 msgid "missing ':' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:635 ../lib/rpmrc.c:730
+#: ../lib/rpmrc.c:668 ../lib/rpmrc.c:716
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:665
-#, c-format
-msgid "no macroname for setenv %s:%d"
-msgstr ""
-
-#: ../lib/rpmrc.c:696
+#: ../lib/rpmrc.c:682
 #, c-format
 msgid "expansion failed at %s:d \"%s\""
 msgstr ""
 
-#: ../lib/rpmrc.c:702
+#: ../lib/rpmrc.c:688
 #, c-format
 msgid "cannot open %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:720
+#: ../lib/rpmrc.c:706
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:787
+#: ../lib/rpmrc.c:773
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:1152
+#: ../lib/rpmrc.c:1131
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: ../lib/rpmrc.c:1153
+#: ../lib/rpmrc.c:1132
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 

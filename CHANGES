@@ -1,4 +1,6 @@
 2.5.6 -> 2.90
+	- change --rcfile to permit colon separated file list.
+	- compile in defaults from rpmrc/macros.
 	- finish hiding rpmdb index record data ("matches").
 	- implement abstract fd type almost everywhere.
 	- update and rename Czech (Pavel Makovec <pavelm@terminal.cz>)
