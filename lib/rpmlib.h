@@ -368,10 +368,12 @@ int rpmdbOpen (const char * root, /*@out@*/ rpmdb * dbp, int mode, int perms);
     /* 0 on error */
 int rpmdbInit(const char * root, int perms);
     /* nonzero on error */
+
 /**
  * @param db		rpm database
  */
 void rpmdbClose ( /*@only@*/ rpmdb db);
+
 /* Databases like this should only have rpmdb*RecNum and rpmdbGetRecord
    used on them. Anything else could fail! */
 /**

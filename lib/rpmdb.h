@@ -24,8 +24,8 @@ typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
 struct _dbiIndexRecord {
     unsigned int recOffset;		/*!< byte offset of header in db */
     unsigned int fileNumber;		/*!< file array index */
-    int fpNum;				/*!< finger print index */
-    int dbNum;				/*!< database index */
+    unsigned int fpNum;			/*!< finger print index */
+    unsigned int dbNum;			/*!< database index */
 };
 
 /**
@@ -153,11 +153,13 @@ struct _dbiVec {
 struct _dbiIndex {
     const char *dbi_basename;		/*<! last component of name */
     int		dbi_rpmtag;		/*<! rpm tag used for index */
+    int		dbi_jlen;		/*<! size of join key */
 
     DBI_TYPE	dbi_type;		/*<! type of access */
     int		dbi_flags;		/*<! flags to use on open */
     int		dbi_perms;		/*<! file permission to use on open */
     int		dbi_major;		/*<! Berkeley db version major */
+
     unsigned int dbi_lastoffset;	/*<! db0 with falloc.c needs this */
     rpmdb	dbi_rpmdb;
 
@@ -169,6 +171,44 @@ struct _dbiIndex {
     void *	dbi_dbcursor;
     void *	dbi_pkgs;
 /*@observer@*/ const struct _dbiVec * dbi_vec;	/*<! private methods */
+};
+
+/* XXX hack to get dup_compare prototype correct */
+#if !defined(DB_VERSION_MAJOR)
+#define	DBT	void
+#endif
+
+/**
+ * Describes the collection of index databases used by rpm.
+ */
+struct rpmdb_s {
+    const char *	db_root;	/*<! path prefix */
+    const char *	db_home;	/*<! directory path */
+    int			db_flags;	/*<! */
+    DBI_TYPE		db_type;	/*<! db index type */
+    int			db_mode;	/*<! open mode */
+    int			db_perms;	/*<! open permissions */
+    int			db_major;	/*<! Berkeley API type */
+	/* dbenv parameters */
+    int			db_lorder;
+    void		(*db_errcall) (const char *db_errpfx, char *buffer);
+    FILE *		db_errfile;
+    const char *	db_errpfx;
+    int			db_verbose;
+    int			db_mp_mmapsize;	/*<! (10Mb) */
+    int			db_mp_size;	/*<! (128Kb) */
+	/* dbinfo parameters */
+    int			db_cachesize;	/*<! */
+    int			db_pagesize;	/*<! (fs blksize) */
+    void *		(*db_malloc) (size_t nbytes);
+	/* hash access parameters */
+    unsigned int	db_h_ffactor;	/*<! */
+    unsigned int	(*db_h_hash_fcn) (const void *bytes, u_int32_t length);
+    unsigned int	db_h_nelem;	/*<! */
+    unsigned int	db_h_flags;	/*<! DB_DUP, DB_DUPSORT */
+    int			(*db_h_dup_compare_fcn) (const DBT *, const DBT *);
+    int			db_ndbi;
+    dbiIndex		_dbi[16];	/*<! >= RPMDBI_MAX */
 };
 
 /* for RPM's internal use only */
@@ -210,12 +250,19 @@ void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath);
 int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char * newdbpath);
 
 /**
+ */
+unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi);
+
+/**
  * @param db		rpm database
  */
 int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, /*@out@*/dbiIndexSet * matchList, 
 		    int numItems);
 
 /* XXX only for the benefit of runTransactions() */
+/**
+ * @param db		rpm database
+ */
 int findMatches(rpmdb db, const char * name, const char * version,
 	const char * release, /*@out@*/ dbiIndexSet * matches);
 

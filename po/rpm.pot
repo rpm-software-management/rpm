@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-18 14:17-0400\n"
+"POT-Creation-Date: 2000-04-19 09:49-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2676,7 +2676,7 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr ""
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:458
+#: lib/rebuilddb.c:34 lib/rpmdb.c:451
 msgid "no dbpath has been set"
 msgstr ""
 
@@ -2841,7 +2841,7 @@ msgstr ""
 msgid "bad db file %s"
 msgstr ""
 
-#: lib/rpmdb.c:307
+#: lib/rpmdb.c:308
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2849,83 +2849,83 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:320
+#: lib/rpmdb.c:321
 #, c-format
 msgid "cannot open file %s: %s"
 msgstr ""
 
-#: lib/rpmdb.c:528
+#: lib/rpmdb.c:523
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:709
+#: lib/rpmdb.c:699
 #, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr ""
 
-#: lib/rpmdb.c:1031
+#: lib/rpmdb.c:1021
 #, c-format
 msgid "key \"%s\" not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:1039
+#: lib/rpmdb.c:1029
 #, c-format
 msgid "key \"%s\" not removed from %s"
 msgstr ""
 
-#: lib/rpmdb.c:1065
+#: lib/rpmdb.c:1055
 #, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr ""
 
-#: lib/rpmdb.c:1096
+#: lib/rpmdb.c:1086
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1103
+#: lib/rpmdb.c:1093
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1111
+#: lib/rpmdb.c:1101
 #, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1115
+#: lib/rpmdb.c:1105
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1255
+#: lib/rpmdb.c:1245
 msgid "cannot allocate new instance in database"
 msgstr ""
 
-#: lib/rpmdb.c:1301
+#: lib/rpmdb.c:1291
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1314
+#: lib/rpmdb.c:1304
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1321
+#: lib/rpmdb.c:1311
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1325
+#: lib/rpmdb.c:1315
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1637
+#: lib/rpmdb.c:1626
 #, c-format
 msgid "cannot read header at %d for lookup"
 msgstr ""

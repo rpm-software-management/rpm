@@ -26,28 +26,28 @@ extern int _useDbiMajor;
 #define	_DBI_MAJOR	-1
 
 struct _dbiIndex rpmdbi[] = {
-    { "packages.rpm", 0,
+    { "packages.rpm", 0, 0*sizeof(int_32),
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-    { "nameindex.rpm", RPMTAG_NAME,
+    { "nameindex.rpm", RPMTAG_NAME, 1*sizeof(int_32),
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-    { "fileindex.rpm", RPMTAG_BASENAMES,
+    { "fileindex.rpm", RPMTAG_BASENAMES, 2*sizeof(int_32),
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-    { "groupindex.rpm", RPMTAG_GROUP,
+    { "groupindex.rpm", RPMTAG_GROUP, 1*sizeof(int_32),
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-    { "requiredby.rpm", RPMTAG_REQUIRENAME,
+    { "requiredby.rpm", RPMTAG_REQUIRENAME, 1*sizeof(int_32),
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-    { "providesindex.rpm", RPMTAG_PROVIDENAME,
+    { "providesindex.rpm", RPMTAG_PROVIDENAME, 1*sizeof(int_32),
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-    { "conflictsindex.rpm", RPMTAG_CONFLICTNAME,
+    { "conflictsindex.rpm", RPMTAG_CONFLICTNAME, 1*sizeof(int_32),
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-    { "triggerindex.rpm", RPMTAG_TRIGGERNAME,
+    { "triggerindex.rpm", RPMTAG_TRIGGERNAME, 1*sizeof(int_32),
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { NULL }
@@ -256,7 +256,7 @@ static struct _dbiVec *mydbvecs[] = {
  * @param dbiTemplate	template to initialize new dbiIndex
  * @return		index database handle
  */
-static dbiIndex dbiOpenIndex(const char * urlfn, int flags, const dbiIndex dbiTemplate)
+static dbiIndex dbiOpenIndex(rpmdb rpmdb, const char * urlfn, int flags, const dbiIndex dbiTemplate)
 {
     dbiIndex dbi;
     const char * filename;
@@ -272,6 +272,7 @@ static dbiIndex dbiOpenIndex(const char * urlfn, int flags, const dbiIndex dbiTe
     dbi->dbi_file = xstrdup(filename);
     dbi->dbi_flags = flags;
     dbi->dbi_major = _useDbiMajor;
+    dbi->dbi_rpmdb = rpmdb;
 
     switch (dbi->dbi_major) {
     case 3:
@@ -347,33 +348,6 @@ void dbiFreeIndexSet(dbiIndexSet set) {
 
 /* XXX the signal handling in here is not thread safe */
 
-/* the requiredbyIndex isn't stricly necessary. In a perfect world, we could
-   have each header keep a list of packages that need it. However, we
-   can't reserve space in the header for extra information so all of the
-   required packages would move in the database every time a package was
-   added or removed. Instead, each package (or virtual package) name
-   keeps a list of package offsets of packages that might depend on this
-   one. Version numbers still need verification, but it gets us in the
-   right area w/o a linear search through the database. */
-
-struct rpmdb_s {
-    const char *	db_root;
-    const char *	db_home;
-    int			db_flags;
-    DBI_TYPE		db_type;
-    int			db_mode;
-    int			db_perms;
-    int			db_major;
-    int			db_mp_mmapsize;
-    int			db_mp_size;
-    int			db_cachesize;
-    int			db_pagesize;
-    unsigned int	db_h_ffactor;
-    unsigned int	db_h_nelem;
-    unsigned int	db_h_flags;
-    dbiIndex		_dbi[RPMDBI_MAX];
-};
-
 static sigset_t signalMask;
 
 static void blockSignals(void)
@@ -396,19 +370,34 @@ static void unblockSignals(void)
 #define _DB_MODE	0
 #define _DB_PERMS	0644
 #define _DB_MAJOR	-1
+
+#define	_DB_LORDER	0
+#define	_DB_ERRCALL	NULL
+#define	_DB_ERRFILE	NULL
+#define	_DB_ERRPFX	"rpmdb"
+#define	_DB_VERBOSE	1
+
 #define	_DB_MP_MMAPSIZE	16 * 1024 * 1024
 #define	_DB_MP_SIZE	2 * 1024 * 1024
 #define	_DB_CACHESIZE	0
 #define	_DB_PAGESIZE	0
+#define	_DB_MALLOC	NULL
 #define	_DB_H_FFACTOR	0
+#define	_DB_H_HASH_FCN	NULL
 #define	_DB_H_NELEM	0
-#define	_DB_H_FLAGS	0
+#define	_DB_H_FLAGS	0		/* DB_DUP, DB_DUPSORT */
+#define	_DB_H_DUP_COMPARE_FCN NULL
+
+#define	_DB_NDBI	0
 
 static struct rpmdb_s dbTemplate = {
     _DB_ROOT,	_DB_HOME, _DB_FLAGS,
     _DB_TYPE,	_DB_MODE, _DB_PERMS,
-    _DB_MAJOR,	_DB_MP_MMAPSIZE, _DB_MP_SIZE, _DB_CACHESIZE, _DB_PAGESIZE,
-		_DB_H_FFACTOR, _DB_H_NELEM, _DB_H_FLAGS
+    _DB_MAJOR,	_DB_LORDER, _DB_ERRCALL, _DB_ERRFILE, _DB_ERRPFX, _DB_VERBOSE,
+		_DB_MP_MMAPSIZE, _DB_MP_SIZE,
+		_DB_CACHESIZE, _DB_PAGESIZE, _DB_MALLOC,
+		_DB_H_FFACTOR, _DB_H_HASH_FCN, _DB_H_NELEM, _DB_H_FLAGS,
+    _DB_NDBI
 };
 
 /* XXX query.c, rebuilddb.c, rpminstall.c, verify.c */
@@ -416,11 +405,15 @@ void rpmdbClose (rpmdb db)
 {
     int dbix;
 
-    for (dbix = RPMDBI_MAX; --dbix >= RPMDBI_MIN; ) {
+    for (dbix = db->db_ndbi; --dbix >= RPMDBI_MIN; ) {
 	if (db->_dbi[dbix] == NULL)
 	    continue;
     	dbiCloseIndex(db->_dbi[dbix]);
     	db->_dbi[dbix] = NULL;
+    }
+    if (db->db_errpfx) {
+	xfree(db->db_errpfx);
+	db->db_root = NULL;
     }
     if (db->db_root) {
 	xfree(db->db_root);
@@ -459,6 +452,9 @@ static /*@only@*/ rpmdb newRpmdb(const char * root, const char * home,
 	   goto errxit;
 	}
     }
+    if (db->db_errpfx)
+	db->db_errpfx = xstrdup(db->db_errpfx);
+    db->db_ndbi = RPMDBI_MAX;
     return db;
 
 errxit:
@@ -486,7 +482,7 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
     {	int dbix;
 
 	rc = 0;
-	for (dbix = RPMDBI_MIN; rc == 0 && dbix < RPMDBI_MAX; dbix++) {
+	for (dbix = RPMDBI_MIN; rc == 0 && dbix < db->db_ndbi; dbix++) {
 	    dbiIndex dbiTemplate;
 	    dbiIndex dbi;
 	    const char * filename;
@@ -497,12 +493,11 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 		dbiTemplate->dbi_basename);
 
 	    if (!justCheck || !rpmfileexists(filename)) {
-		db->_dbi[dbix] = dbiOpenIndex(filename, db->db_mode, dbiTemplate);
+		db->_dbi[dbix] = dbiOpenIndex(db, filename, db->db_mode, dbiTemplate);
 	    }
 
 	    if ((dbi = db->_dbi[dbix]) == NULL)
 		continue;
-	    dbi->dbi_rpmdb = db;
 
 	    switch (dbix) {
 	    case 1:
@@ -688,11 +683,6 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     }
 
     return 0;
-}
-
-/* XXX python/upgrade.c, python/rpmmodule.c */
-int rpmdbFindPackage(rpmdb db, const char * name, dbiIndexSet * matches) {
-    return dbiSearchIndex(db->_dbi[RPMDBI_NAME], name, 0, matches);
 }
 
 /* XXX python/upgrade.c, install.c, uninstall.c */
@@ -1077,7 +1067,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
     {	int dbix;
 	dbiIndexRecord rec = dbiReturnIndexRecordInstance(offset, 0);
 
-	for (dbix = RPMDBI_MIN; dbix < RPMDBI_MAX; dbix++) {
+	for (dbix = RPMDBI_MIN; dbix < db->db_ndbi; dbix++) {
 	    dbiIndex dbi;
 	    const char **rpmvals = NULL;
 	    int rpmtype = 0;
@@ -1261,7 +1251,7 @@ int rpmdbAdd(rpmdb db, Header h)
     {	int dbix;
 	dbiIndexRecord rec = dbiReturnIndexRecordInstance(offset, 0);
 
-	for (dbix = RPMDBI_MIN; dbix < RPMDBI_MAX; dbix++) {
+	for (dbix = RPMDBI_MIN; dbix < db->db_ndbi; dbix++) {
 	    const char **rpmvals = NULL;
 	    int rpmtype = 0;
 	    int rpmcnt = 0;
@@ -1608,7 +1598,7 @@ int findMatches(rpmdb db, const char * name, const char * version,
     int rc;
     int i;
 
-    if ((rc = rpmdbFindPackage(db, name, matches))) {
+    if ((rc = dbiSearchIndex(db->_dbi[RPMDBI_NAME], name, 0, matches)) != 0) {
 	rc = ((rc == -1) ? 2 : 1);
 	goto exit;
     }

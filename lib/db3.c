@@ -18,6 +18,7 @@ static int __do_dbcursor_rmw = 0;
 
 extern int __do_dbenv_remove;	/* XXX in dbindex.c, shared with rebuilddb.c */
 
+#ifdef	DYING
 /* XXX dbenv parameters */
 static int db_lorder = 0;			/* 0 is native order */
 static void (*db_errcall) (const char *db_errpfx, char *buffer) = NULL;
@@ -37,6 +38,7 @@ static u_int32_t (*dbh_hash) (const void *, u_int32_t) = NULL;
 static u_int32_t dbh_ffactor = 0;	/* db1 default: 8 */
 static u_int32_t dbh_nelem = 0;		/* db1 default: 1 */
 static u_int32_t dbh_flags = 0;
+#endif
 
 #define	_mymemset(_a, _b, _c)	memset((_a), (_b), (_c))
 
@@ -287,14 +289,15 @@ static int db_fini(dbiIndex dbi)
 static int db_init(dbiIndex dbi, const char *dbhome, int dbflags,
 			DB_ENV **dbenvp)
 {
+    rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV *dbenv = NULL;
     int mydbopenflags;
     int rc;
 
     if (dbenvp == NULL)
 	return 1;
-    if (db_errfile == NULL)
-	db_errfile = stderr;
+    if (rpmdb->db_errfile == NULL)
+	rpmdb->db_errfile = stderr;
 
     rc = db_env_create(&dbenv, 0);
     rc = cvtdberr(dbi, "db_env_create", rc, _debug);
@@ -303,32 +306,32 @@ static int db_init(dbiIndex dbi, const char *dbhome, int dbflags,
 
 #if defined(__USE_DB3)
   { int xx;
-    dbenv->set_errcall(dbenv, db_errcall);
-    dbenv->set_errfile(dbenv, db_errfile);
-    dbenv->set_errpfx(dbenv, db_errpfx);
+    dbenv->set_errcall(dbenv, rpmdb->db_errcall);
+    dbenv->set_errfile(dbenv, rpmdb->db_errfile);
+    dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
  /* dbenv->set_paniccall(???) */
-    dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT, db_verbose);
-    dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK, db_verbose);
-    dbenv->set_verbose(dbenv, DB_VERB_RECOVERY, db_verbose);
-    dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR, db_verbose);
+    dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT, rpmdb->db_verbose);
+    dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK, rpmdb->db_verbose);
+    dbenv->set_verbose(dbenv, DB_VERB_RECOVERY, rpmdb->db_verbose);
+    dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR, rpmdb->db_verbose);
  /* dbenv->set_lg_max(???) */
  /* dbenv->set_lk_conflicts(???) */
  /* dbenv->set_lk_detect(???) */
  /* dbenv->set_lk_max(???) */
-    xx = dbenv->set_mp_mmapsize(dbenv, dbmp_mmapsize);
+    xx = dbenv->set_mp_mmapsize(dbenv, rpmdb->db_mp_mmapsize);
     xx = cvtdberr(dbi, "dbenv->set_mp_mmapsize", xx, _debug);
-    xx = dbenv->set_cachesize(dbenv, 0, dbmp_size, 0);
+    xx = dbenv->set_cachesize(dbenv, 0, rpmdb->db_mp_size, 0);
     xx = cvtdberr(dbi, "dbenv->set_cachesize", xx, _debug);
  /* dbenv->set_tx_max(???) */
  /* dbenv->set_tx_recover(???) */
   }
 #else	/* __USE_DB3 */
-    dbenv->db_errcall = db_errcall;
-    dbenv->db_errfile = db_errfile;
-    dbenv->db_errpfx = db_errpfx;
-    dbenv->db_verbose = db_verbose;
-    dbenv->mp_mmapsize = dbmp_mmapsize;	/* XXX default is 10 Mb */
-    dbenv->mp_size = dbmp_size;		/* XXX default is 128 Kb */
+    dbenv->db_errcall = rpmdb->db_errcall;
+    dbenv->db_errfile = rpmdb->db_errfile;
+    dbenv->db_errpfx = rpmdb->db_errpfx;
+    dbenv->db_verbose = rpmdb->db_verbose;
+    dbenv->mp_mmapsize = rpmdb->db_mp_mmapsize;	/* XXX default is 10 Mb */
+    dbenv->mp_size = rpmdb->db_mp_size;		/* XXX default is 128 Kb */
 #endif	/* __USE_DB3 */
 
 #define _DBFMASK	(DB_CREATE)
@@ -442,7 +445,7 @@ static int db3c_open(dbiIndex dbi, DB_TXN * txnid, DBC ** dbcp, u_int32_t flags)
 #else	/* __USE_DB3 */
     rc = db->cursor(db, txnid, dbcp);
 #endif	/* __USE_DB3 */
-    rc = cvtdberr(dbi, "db->cursor", rc, _debug);
+    rc = cvtdberr(dbi, "db3c_open", rc, _debug);
     return rc;
 }
 
@@ -505,25 +508,47 @@ static int db3SearchIndex(dbiIndex dbi, const void * str, size_t len,
 	int i;
 
 	*set = xmalloc(sizeof(**set));
-	(*set)->count = data.size / sizeof(struct _dbiIR);
-	(*set)->recs = xmalloc((*set)->count * sizeof(*((*set)->recs)));
 
 	/* Convert to database internal format */
-	for (i = 0; i < (*set)->count; i++) {
-	    union _dbswap recOffset, fileNumber;
+	switch (dbi->dbi_jlen) {
+	case 2*sizeof(int_32):
+	    (*set)->count = data.size / (2*sizeof(int_32));
+	    (*set)->recs = xmalloc((*set)->count * sizeof(*((*set)->recs)));
+	    for (i = 0; i < (*set)->count; i++) {
+		union _dbswap recOffset, fileNumber;
 
-	    memcpy(&recOffset.ui, sdbir, sizeof(recOffset.ui));
-	    sdbir += sizeof(recOffset.ui);
-	    memcpy(&fileNumber.ui, sdbir, sizeof(fileNumber.ui));
-	    sdbir += sizeof(fileNumber.ui);
-	    if (_dbbyteswapped) {
-		_DBSWAP(recOffset);
-		_DBSWAP(fileNumber);
+		memcpy(&recOffset.ui, sdbir, sizeof(recOffset.ui));
+		sdbir += sizeof(recOffset.ui);
+		memcpy(&fileNumber.ui, sdbir, sizeof(fileNumber.ui));
+		sdbir += sizeof(fileNumber.ui);
+		if (_dbbyteswapped) {
+		    _DBSWAP(recOffset);
+		    _DBSWAP(fileNumber);
+		}
+		(*set)->recs[i].recOffset = recOffset.ui;
+		(*set)->recs[i].fileNumber = fileNumber.ui;
+		(*set)->recs[i].fpNum = 0;
+		(*set)->recs[i].dbNum = 0;
 	    }
-	    (*set)->recs[i].recOffset = recOffset.ui;
-	    (*set)->recs[i].fileNumber = fileNumber.ui;
-	    (*set)->recs[i].fpNum = 0;
-	    (*set)->recs[i].dbNum = 0;
+	    break;
+	default:
+	case 1*sizeof(int_32):
+	    (*set)->count = data.size / (1*sizeof(int_32));
+	    (*set)->recs = xmalloc((*set)->count * sizeof(*((*set)->recs)));
+	    for (i = 0; i < (*set)->count; i++) {
+		union _dbswap recOffset;
+
+		memcpy(&recOffset.ui, sdbir, sizeof(recOffset.ui));
+		sdbir += sizeof(recOffset.ui);
+		if (_dbbyteswapped) {
+		    _DBSWAP(recOffset);
+		}
+		(*set)->recs[i].recOffset = recOffset.ui;
+		(*set)->recs[i].fileNumber = 0;
+		(*set)->recs[i].fpNum = 0;
+		(*set)->recs[i].dbNum = 0;
+	    }
+	    break;
 	}
     }
     return rc;
@@ -544,7 +569,7 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
     _mymemset(&data, 0, sizeof(data));
 
     if (set->count) {
-	DBIR_t dbir = alloca(set->count * sizeof(*dbir));
+	char * tdbir;
 	int i;
 	int _dbbyteswapped = 0;
 
@@ -553,21 +578,42 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
 #endif	/* __USE_DB3 */
 
 	/* Convert to database internal format */
-	for (i = 0; i < set->count; i++) {
-	    union _dbswap recOffset, fileNumber;
 
-	    recOffset.ui = set->recs[i].recOffset;
-	    fileNumber.ui = set->recs[i].fileNumber;
-	    if (_dbbyteswapped) {
-		_DBSWAP(recOffset);
-		_DBSWAP(fileNumber);
+	switch (dbi->dbi_jlen) {
+	case 2*sizeof(int_32):
+	    data.size = set->count * (2 * sizeof(int_32));
+	    data.data = tdbir = alloca(data.size);
+	    for (i = 0; i < set->count; i++) {
+		union _dbswap recOffset, fileNumber;
+
+		recOffset.ui = set->recs[i].recOffset;
+		fileNumber.ui = set->recs[i].fileNumber;
+		if (_dbbyteswapped) {
+		    _DBSWAP(recOffset);
+		    _DBSWAP(fileNumber);
+		}
+		memcpy(tdbir, &recOffset.ui, sizeof(recOffset.ui));
+		tdbir += sizeof(recOffset.ui);
+		memcpy(tdbir, &fileNumber.ui, sizeof(fileNumber.ui));
+		tdbir += sizeof(fileNumber.ui);
 	    }
-	    dbir[i].recOffset = recOffset.ui;
-	    dbir[i].fileNumber = fileNumber.ui;
+	    break;
+	default:
+	case 1*sizeof(int_32):
+	    data.size = set->count * (1 * sizeof(int_32));
+	    data.data = tdbir = alloca(data.size);
+	    for (i = 0; i < set->count; i++) {
+		union _dbswap recOffset;
+
+		recOffset.ui = set->recs[i].recOffset;
+		if (_dbbyteswapped) {
+		    _DBSWAP(recOffset);
+		}
+		memcpy(tdbir, &recOffset.ui, sizeof(recOffset.ui));
+		tdbir += sizeof(recOffset.ui);
+	    }
+	    break;
 	}
-	
-	data.data = dbir;
-	data.size = set->count * sizeof(*dbir);
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
 	if (!_use_cursors) {
@@ -576,7 +622,7 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
 	} else {
 	    DBC * dbcursor;
 
-	    rc = db3c_open(dbi, txnid, &dbcursor, DB_WRITECURSOR);
+	    rc = db3c_open(dbi, txnid, &dbcursor, 0);
 	    if (rc)
 		return rc;
 
@@ -598,7 +644,7 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
 	} else {
 	    DBC * dbcursor;
 
-	    rc = db3c_open(dbi, txnid, &dbcursor, DB_WRITECURSOR);
+	    rc = db3c_open(dbi, txnid, &dbcursor, 0);
 	    if (rc)
 		return rc;
 
@@ -816,6 +862,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 
 static int db3open(dbiIndex dbi)
 {
+    rpmdb rpmdb = dbi->dbi_rpmdb;
     int rc = 0;
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
@@ -845,31 +892,37 @@ static int db3open(dbiIndex dbi)
 	rc = db_create(&db, dbenv, 0);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0) {
-	    if (db_lorder) {
-		rc = db->set_lorder(db, db_lorder);
+	    if (rpmdb->db_lorder) {
+		rc = db->set_lorder(db, rpmdb->db_lorder);
 		rc = cvtdberr(dbi, "db->set_lorder", rc, _debug);
 	    }
-	    if (db_cachesize) {
-		rc = db->set_cachesize(db, 0, db_cachesize, 0);
+	    if (rpmdb->db_cachesize) {
+		rc = db->set_cachesize(db, 0, rpmdb->db_cachesize, 0);
 		rc = cvtdberr(dbi, "db->set_cachesize", rc, _debug);
 	    }
-	    if (db_pagesize) {
-		rc = db->set_pagesize(db, db_pagesize);
+	    if (rpmdb->db_pagesize) {
+		rc = db->set_pagesize(db, rpmdb->db_pagesize);
 		rc = cvtdberr(dbi, "db->set_pagesize", rc, _debug);
 	    }
-	    if (db_malloc) {
-		rc = db->set_malloc(db, db_malloc);
+	    if (rpmdb->db_malloc) {
+		rc = db->set_malloc(db, rpmdb->db_malloc);
 		rc = cvtdberr(dbi, "db->set_malloc", rc, _debug);
 	    }
 	    if (dbflags & DB_CREATE) {
-		rc = db->set_h_ffactor(db, dbh_ffactor);
+		rc = db->set_h_ffactor(db, rpmdb->db_h_ffactor);
 		rc = cvtdberr(dbi, "db->set_h_ffactor", rc, _debug);
-		rc = db->set_h_hash(db, dbh_hash);
+		rc = db->set_h_hash(db, rpmdb->db_h_hash_fcn);
 		rc = cvtdberr(dbi, "db->set_h_hash", rc, _debug);
-		rc = db->set_h_nelem(db, dbh_nelem);
+		rc = db->set_h_nelem(db, rpmdb->db_h_nelem);
 		rc = cvtdberr(dbi, "db->set_h_nelem", rc, _debug);
-		rc = db->set_flags(db, dbh_flags);
+	    }
+	    if (rpmdb->db_h_flags) {
+		rc = db->set_flags(db, rpmdb->db_h_flags);
 		rc = cvtdberr(dbi, "db->set_flags", rc, _debug);
+	    }
+	    if (rpmdb->db_h_dup_compare_fcn) {
+		rc = db->set_dup_compare(db, rpmdb->db_h_dup_compare_fcn);
+		rc = cvtdberr(dbi, "db->set_dup_compare", rc, _debug);
 	    }
 	    dbi->dbi_dbinfo = NULL;
 	    rc = db->open(db, "packages.db3", dbfile, dbi_to_dbtype(dbi->dbi_type),
@@ -889,15 +942,15 @@ static int db3open(dbiIndex dbi)
 	}
 #else
       {	DB_INFO * dbinfo = xcalloc(1, sizeof(*dbinfo));
-	dbinfo->db_cachesize = db_cachesize;
-	dbinfo->db_lorder = db_lorder;
-	dbinfo->db_pagesize = db_pagesize;
-	dbinfo->db_malloc = db_malloc;
+	dbinfo->db_cachesize = rpmdb->db_cachesize;
+	dbinfo->db_lorder = rpmdb->db_lorder;
+	dbinfo->db_pagesize = rpmdb->db_pagesize;
+	dbinfo->db_malloc = rpmdb->db_malloc;
 	if (dbflags & DB_CREATE) {
-	    dbinfo->h_ffactor = dbh_ffactor;
-	    dbinfo->h_hash = dbh_hash;
-	    dbinfo->h_nelem = dbh_nelem;
-	    dbinfo->flags = dbh_flags;
+	    dbinfo->h_ffactor = rpmdb->db_h_ffactor;
+	    dbinfo->h_hash = rpmdb->db_h_hash_fcn;
+	    dbinfo->h_nelem = rpmdb->db_h_nelem;
+	    dbinfo->flags = rpmdb->db_h_flags;
 	}
 	dbi->dbi_dbinfo = dbinfo;
 	rc = db_open(dbfile, dbi_to_dbtype(dbi->dbi_type), dbflags,
