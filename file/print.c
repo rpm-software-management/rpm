@@ -44,7 +44,7 @@ fmagic global_fmagic = &myfmagic;
 
 #ifndef COMPILE_ONLY
 void
-mdump(struct magic *m)
+file_mdump(struct magic *m)
 {
 	/*@observer@*/
 	static const char *typ[] = { "invalid", "byte", "short", "invalid",
@@ -65,7 +65,7 @@ mdump(struct magic *m)
 			       /* Note: type is unsigned */
 			       (m->in_type < SZOF(typ)) ? 
 					typ[m->in_type] : "*bad*");
-		if (m->in_op & OPINVERSE)
+		if (m->in_op & FILE_OPINVERSE)
 			(void) fputc('~', stderr);
 		(void) fprintf(stderr, "%c%d),",
 			       ((m->in_op&0x7F) < SZOF(optyp)) ? 
@@ -75,13 +75,13 @@ mdump(struct magic *m)
 	(void) fprintf(stderr, " %s%s", (m->flag & UNSIGNED) ? "u" : "",
 		       /* Note: type is unsigned */
 		       (m->type < SZOF(typ)) ? typ[m->type] : "*bad*");
-	if (m->mask_op & OPINVERSE)
+	if (m->mask_op & FILE_OPINVERSE)
 		(void) fputc('~', stderr);
 	if (m->mask) {
 		((m->mask_op&0x7F) < SZOF(optyp)) ? 
 			(void) fputc(optyp[m->mask_op&0x7F], stderr) :
 			(void) fputc('?', stderr);
-		if(STRING != m->type || PSTRING != m->type)
+		if (m->type != FILE_STRING || m->type != FILE_PSTRING)
 			(void) fprintf(stderr, "%.8x", m->mask);
 		else {
 			if (m->mask & STRING_IGNORE_LOWERCASE) 
@@ -98,29 +98,31 @@ mdump(struct magic *m)
 
 	if (m->reln != 'x') {
 		switch (m->type) {
-		case BYTE:
-		case SHORT:
-		case LONG:
-		case LESHORT:
-		case LELONG:
-		case BESHORT:
-		case BELONG:
+		case FILE_BYTE:
+		case FILE_SHORT:
+		case FILE_LONG:
+		case FILE_LESHORT:
+		case FILE_LELONG:
+		case FILE_BESHORT:
+		case FILE_BELONG:
 			(void) fprintf(stderr, "%d", m->value.l);
 			break;
-		case STRING:
-		case PSTRING:
-		case REGEX:
-			showstr(stderr, m->value.s, -1);
+		case FILE_STRING:
+		case FILE_PSTRING:
+		case FILE_REGEX:
+			file_showstr(stderr, m->value.s, ~0U);
 			break;
-		case DATE:
-		case LEDATE:
-		case BEDATE:
-			(void)fprintf(stderr, "%s,", fmttime(m->value.l, 1));
+		case FILE_DATE:
+		case FILE_LEDATE:
+		case FILE_BEDATE:
+			(void)fprintf(stderr, "%s,",
+			    file_fmttime(m->value.l, 1));
 			break;
-		case LDATE:
-		case LELDATE:
-		case BELDATE:
-			(void)fprintf(stderr, "%s,", fmttime(m->value.l, 0));
+		case FILE_LDATE:
+		case FILE_LELDATE:
+		case FILE_BELDATE:
+			(void)fprintf(stderr, "%s,",
+			    file_fmttime(m->value.l, 0));
 			break;
 		default:
 			(void) fputs("*bad*", stderr);
@@ -158,7 +160,7 @@ error(int status, /*@unused@*/ int errnum, const char * format, ...)
 
 /*VARARGS*/
 void
-magwarn(const char *f, ...)
+file_magwarn(const char *f, ...)
 {
 	fmagic fm = global_fmagic;
 	va_list va;
@@ -179,7 +181,7 @@ magwarn(const char *f, ...)
 }
 
 void
-fmagicPrintf(const fmagic fm, const char *f, ...)
+file_printf(const fmagic fm, const char *f, ...)
 {
 	va_list va;
 	size_t nob;
@@ -199,8 +201,8 @@ fmagicPrintf(const fmagic fm, const char *f, ...)
 
 
 #ifndef COMPILE_ONLY
-char *
-fmttime(long v, int local)
+const char *
+file_fmttime(uint32_t v, int local)
 {
 	char *pp = "???";
 	char *rt;

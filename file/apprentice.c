@@ -76,7 +76,7 @@ const char *default_magicfile = MAGIC;
  * extend the sign bit if the comparison is to be signed
  */
 uint32_t
-signextend(struct magic *m, uint32_t v)
+file_signextend(struct magic *m, uint32_t v)
 {
 	if (!(m->flag & UNSIGNED))
 		switch(m->type) {
@@ -85,32 +85,32 @@ signextend(struct magic *m, uint32_t v)
 		 * vital.  When later compared with the data,
 		 * the sign extension must have happened.
 		 */
-		case BYTE:
+		case FILE_BYTE:
 			v = (char) v;
 			break;
-		case SHORT:
-		case BESHORT:
-		case LESHORT:
+		case FILE_SHORT:
+		case FILE_BESHORT:
+		case FILE_LESHORT:
 			v = (short) v;
 			break;
-		case DATE:
-		case BEDATE:
-		case LEDATE:
-		case LDATE:
-		case BELDATE:
-		case LELDATE:
-		case LONG:
-		case BELONG:
-		case LELONG:
+		case FILE_DATE:
+		case FILE_BEDATE:
+		case FILE_LEDATE:
+		case FILE_LDATE:
+		case FILE_BELDATE:
+		case FILE_LELDATE:
+		case FILE_LONG:
+		case FILE_BELONG:
+		case FILE_LELONG:
 			v = (int32_t) v;
 			break;
-		case STRING:
-		case PSTRING:
+		case FILE_STRING:
+		case FILE_PSTRING:
 			break;
-		case REGEX:
+		case FILE_REGEX:
 			break;
 		default:
-			magwarn("can't happen: m->type=%d\n", m->type);
+			file_magwarn("can't happen: m->type=%d\n", m->type);
 			return -1;
 		}
 	return v;
@@ -284,12 +284,12 @@ getvalue(struct magic *m, /*@out@*/ char **p)
 {
 	int slen;
 
-	if (m->type == STRING || m->type == PSTRING || m->type == REGEX) {
+	if (m->type == FILE_STRING || m->type == FILE_PSTRING || m->type == FILE_REGEX) {
 		*p = getstr(*p, m->value.s, sizeof(m->value.s), &slen);
 		m->vallen = slen;
 	} else
 		if (m->reln != 'x') {
-			m->value.l = signextend(m, strtoul(*p, p, 0));
+			m->value.l = file_signextend(m, strtoul(*p, p, 0));
 			eatsize(p);
 		}
 	return 0;
@@ -340,11 +340,11 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 	/* get offset, then skip over it */
 	m->offset = (int) strtoul(l,&t,0);
         if (l == t)
-		magwarn("offset %s invalid", l);
+		file_magwarn("offset %s invalid", l);
         l = t;
 
 	if (m->flag & INDIR) {
-		m->in_type = LONG;
+		m->in_type = FILE_LONG;
 		m->in_offset = 0;
 		/*
 		 * read [.lbs][+-]nnnnn)
@@ -353,66 +353,66 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 			l++;
 			switch (*l) {
 			case 'l':
-				m->in_type = LELONG;
+				m->in_type = FILE_LELONG;
 				break;
 			case 'L':
-				m->in_type = BELONG;
+				m->in_type = FILE_BELONG;
 				break;
 			case 'h':
 			case 's':
-				m->in_type = LESHORT;
+				m->in_type = FILE_LESHORT;
 				break;
 			case 'H':
 			case 'S':
-				m->in_type = BESHORT;
+				m->in_type = FILE_BESHORT;
 				break;
 			case 'c':
 			case 'b':
 			case 'C':
 			case 'B':
-				m->in_type = BYTE;
+				m->in_type = FILE_BYTE;
 				break;
 			default:
-				magwarn("indirect offset type %c invalid", *l);
+				file_magwarn("indirect offset type %c invalid", *l);
 				break;
 			}
 			l++;
 		}
 		if (*l == '~') {
-			m->in_op = OPINVERSE;
+			m->in_op = FILE_OPINVERSE;
 			l++;
 		}
 		switch (*l) {
 		case '&':
-			m->in_op |= OPAND;
+			m->in_op |= FILE_OPAND;
 			l++;
 			break;
 		case '|':
-			m->in_op |= OPOR;
+			m->in_op |= FILE_OPOR;
 			l++;
 			break;
 		case '^':
-			m->in_op |= OPXOR;
+			m->in_op |= FILE_OPXOR;
 			l++;
 			break;
 		case '+':
-			m->in_op |= OPADD;
+			m->in_op |= FILE_OPADD;
 			l++;
 			break;
 		case '-':
-			m->in_op |= OPMINUS;
+			m->in_op |= FILE_OPMINUS;
 			l++;
 			break;
 		case '*':
-			m->in_op |= OPMULTIPLY;
+			m->in_op |= FILE_OPMULTIPLY;
 			l++;
 			break;
 		case '/':
-			m->in_op |= OPDIVIDE;
+			m->in_op |= FILE_OPDIVIDE;
 			l++;
 			break;
 		case '%':
-			m->in_op |= OPMODULO;
+			m->in_op |= FILE_OPMODULO;
 			l++;
 			break;
 		}
@@ -421,7 +421,7 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 		else
 			t = l;
 		if (*t++ != ')') 
-			magwarn("missing ')' in indirect offset");
+			file_magwarn("missing ')' in indirect offset");
 		l = t;
 	}
 
@@ -454,115 +454,115 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 
 	/* get type, skip it */
 	if (strncmp(l, "char", NBYTE)==0) {	/* HP/UX compat */
-		m->type = BYTE;
+		m->type = FILE_BYTE;
 		l += NBYTE;
 	} else if (strncmp(l, "byte", NBYTE)==0) {
-		m->type = BYTE;
+		m->type = FILE_BYTE;
 		l += NBYTE;
 	} else if (strncmp(l, "short", NSHORT)==0) {
-		m->type = SHORT;
+		m->type = FILE_SHORT;
 		l += NSHORT;
 	} else if (strncmp(l, "long", NLONG)==0) {
-		m->type = LONG;
+		m->type = FILE_LONG;
 		l += NLONG;
 	} else if (strncmp(l, "string", NSTRING)==0) {
-		m->type = STRING;
+		m->type = FILE_STRING;
 		l += NSTRING;
 	} else if (strncmp(l, "date", NDATE)==0) {
-		m->type = DATE;
+		m->type = FILE_DATE;
 		l += NDATE;
 	} else if (strncmp(l, "beshort", NBESHORT)==0) {
-		m->type = BESHORT;
+		m->type = FILE_BESHORT;
 		l += NBESHORT;
 	} else if (strncmp(l, "belong", NBELONG)==0) {
-		m->type = BELONG;
+		m->type = FILE_BELONG;
 		l += NBELONG;
 	} else if (strncmp(l, "bedate", NBEDATE)==0) {
-		m->type = BEDATE;
+		m->type = FILE_BEDATE;
 		l += NBEDATE;
 	} else if (strncmp(l, "leshort", NLESHORT)==0) {
-		m->type = LESHORT;
+		m->type = FILE_LESHORT;
 		l += NLESHORT;
 	} else if (strncmp(l, "lelong", NLELONG)==0) {
-		m->type = LELONG;
+		m->type = FILE_LELONG;
 		l += NLELONG;
 	} else if (strncmp(l, "ledate", NLEDATE)==0) {
-		m->type = LEDATE;
+		m->type = FILE_LEDATE;
 		l += NLEDATE;
 	} else if (strncmp(l, "pstring", NPSTRING)==0) {
-		m->type = PSTRING;
+		m->type = FILE_PSTRING;
 		l += NPSTRING;
 	} else if (strncmp(l, "ldate", NLDATE)==0) {
-		m->type = LDATE;
+		m->type = FILE_LDATE;
 		l += NLDATE;
 	} else if (strncmp(l, "beldate", NBELDATE)==0) {
-		m->type = BELDATE;
+		m->type = FILE_BELDATE;
 		l += NBELDATE;
 	} else if (strncmp(l, "leldate", NLELDATE)==0) {
-		m->type = LELDATE;
+		m->type = FILE_LELDATE;
 		l += NLELDATE;
 	} else if (strncmp(l, "regex", NREGEX)==0) {
-		m->type = REGEX;
+		m->type = FILE_REGEX;
 		l += sizeof("regex");
 	} else {
-		magwarn("type %s invalid", l);
+		file_magwarn("type %s invalid", l);
 		return -1;
 	}
 	/* New-style anding: "0 byte&0x80 =0x80 dynamically linked" */
 	/* New and improved: ~ & | ^ + - * / % -- exciting, isn't it? */
 	if (*l == '~') {
-		if (STRING != m->type && PSTRING != m->type)
-			m->mask_op = OPINVERSE;
+		if (m->type != FILE_STRING && m->type != FILE_PSTRING)
+			m->mask_op = FILE_OPINVERSE;
 		++l;
 	}
 	switch (*l) {
 	case '&':
-		m->mask_op |= OPAND;
+		m->mask_op |= FILE_OPAND;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '|':
-		m->mask_op |= OPOR;
+		m->mask_op |= FILE_OPOR;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '^':
-		m->mask_op |= OPXOR;
+		m->mask_op |= FILE_OPXOR;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '+':
-		m->mask_op |= OPADD;
+		m->mask_op |= FILE_OPADD;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '-':
-		m->mask_op |= OPMINUS;
+		m->mask_op |= FILE_OPMINUS;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '*':
-		m->mask_op |= OPMULTIPLY;
+		m->mask_op |= FILE_OPMULTIPLY;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '%':
-		m->mask_op |= OPMODULO;
+		m->mask_op |= FILE_OPMODULO;
 		++l;
-		m->mask = signextend(m, strtoul(l, &l, 0));
+		m->mask = file_signextend(m, strtoul(l, &l, 0));
 		eatsize(&l);
 		break;
 	case '/':
-		if (STRING != m->type && PSTRING != m->type) {
-			m->mask_op |= OPDIVIDE;
+		if (m->type != FILE_STRING && m->type != FILE_PSTRING) {
+			m->mask_op |= FILE_OPDIVIDE;
 			++l;
-			m->mask = signextend(m, strtoul(l, &l, 0));
+			m->mask = file_signextend(m, strtoul(l, &l, 0));
 			eatsize(&l);
 		} else {
 			m->mask = 0L;
@@ -579,7 +579,7 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 					    STRING_COMPACT_OPTIONAL_BLANK;
 					/*@switchbreak@*/ break;
 				default:
-					magwarn("string extension %c invalid",
+					file_magwarn("string extension %c invalid",
 					    *l);
 					return -1;
 				}
@@ -606,7 +606,7 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 		}
 		break;
 	case '!':
-		if (m->type != STRING && m->type != PSTRING) {
+		if (m->type != FILE_STRING && m->type != FILE_PSTRING) {
 			m->reln = *l;
 			++l;
 			break;
@@ -629,7 +629,7 @@ parse(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 	/*
 	 * TODO finish this macro and start using it!
 	 * #define offsetcheck {if (offset > HOWMANY-1) 
-	 *	magwarn("offset too big"); }
+	 *	file_magwarn("offset too big"); }
 	 */
 
 	/*
@@ -650,8 +650,8 @@ GetDesc:
 		{};
 
 #ifndef COMPILE_ONLY
-	if (action == CHECK) {
-		mdump(m);
+	if (action == FILE_CHECK) {
+		file_mdump(m);
 	}
 #endif
 	++(*nmagicp);		/* make room for next */
@@ -663,7 +663,7 @@ GetDesc:
  * Print a string containing C character escapes.
  */
 void
-showstr(FILE *fp, const char *s, int len)
+file_showstr(FILE *fp, const char *s, size_t len)
 {
 	char	c;
 
@@ -761,7 +761,7 @@ void bs1(struct magic *m)
 	m->cont_level = swap2(m->cont_level);
 	m->offset = swap4(m->offset);
 	m->in_offset = swap4(m->in_offset);
-	if (m->type != STRING)
+	if (m->type != FILE_STRING)
 		m->value.l = swap4(m->value.l);
 	m->mask = swap4(m->mask);
 }
@@ -829,7 +829,7 @@ apprentice_file(fmagic fm, /*@out@*/ struct magic **magicp,
 	*magicp = (struct magic *) xcalloc(sizeof(**magicp), maxmagic);
 
 	/* parse it */
-	if (action == CHECK)	/* print silly verbose header for USG compat. */
+	if (action == FILE_CHECK)	/* print silly verbose header for USG compat. */
 		(void) printf("%s\n", hdr);
 
 	for (fm->lineno = 1; fgets(line, BUFSIZ, f) != NULL; fm->lineno++) {
@@ -1014,7 +1014,7 @@ apprentice_1(fmagic fm, const char *fn, int action)
 	struct mlist *ml;
 	int rv = -1;
 
-	if (action == COMPILE) {
+	if (action == FILE_COMPILE) {
 		rv = apprentice_file(fm, &magic, &nmagic, fn, action);
 		if (rv)
 			return rv;
@@ -1087,7 +1087,7 @@ fmagicSetup(fmagic fm, const char *fn, int action)
 	if (errs == -1)
 		(void) fprintf(stderr, "%s: couldn't find any magic files!\n",
 		    __progname);
-	if (action == CHECK && errs)
+	if (action == FILE_CHECK && errs)
 		exit(EXIT_FAILURE);
 
 	free(mfn);

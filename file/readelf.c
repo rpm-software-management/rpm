@@ -144,11 +144,11 @@ doshn(fmagic fm, off_t off, int num, size_t size)
 			/*@notreached@*/
 		}
 		if (shs_type == SHT_SYMTAB /* || shs_type == SHT_DYNSYM */) {
-			fmagicPrintf(fm, ", not stripped");
+			file_printf(fm, ", not stripped");
 			return;
 		}
 	}
-	fmagicPrintf(fm, ", stripped");
+	file_printf(fm, ", stripped");
 }
 /*@=bounds@*/
 
@@ -249,22 +249,22 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 					uint32_t *desc =
 					    (uint32_t *)&nbuf[offset];
 
-					fmagicPrintf(fm, ", for GNU/");
+					file_printf(fm, ", for GNU/");
 					switch (getu32(fm, desc[0])) {
 					case GNU_OS_LINUX:
-						fmagicPrintf(fm, "Linux");
+						file_printf(fm, "Linux");
 						/*@switchbreak@*/ break;
 					case GNU_OS_HURD:
-						fmagicPrintf(fm, "Hurd");
+						file_printf(fm, "Hurd");
 						/*@switchbreak@*/ break;
 					case GNU_OS_SOLARIS:
-						fmagicPrintf(fm, "Solaris");
+						file_printf(fm, "Solaris");
 						/*@switchbreak@*/ break;
 					default:
-						fmagicPrintf(fm, "<unknown>");
+						file_printf(fm, "<unknown>");
 						/*@switchbreak@*/ break;
 					}
-					fmagicPrintf(fm, " %d.%d.%d",
+					file_printf(fm, " %d.%d.%d",
 					    getu32(fm, desc[1]),
 					    getu32(fm, desc[2]),
 					    getu32(fm, desc[3]));
@@ -274,7 +274,7 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 				    strcmp(&nbuf[nameoffset], "NetBSD") == 0 &&
 				    nh_type == NT_NETBSD_VERSION &&
 				    nh_descsz == 4) {
-					fmagicPrintf(fm, ", for NetBSD");
+					file_printf(fm, ", for NetBSD");
 					/*
 					 * Version number is stuck at 199905,
 					 * and hence is basically content-free.
@@ -287,7 +287,7 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 				    nh_descsz == 4) {
 					uint32_t desc = getu32(fm,
 					    *(uint32_t *)&nbuf[offset]);
-					fmagicPrintf(fm, ", for FreeBSD");
+					file_printf(fm, ", for FreeBSD");
 					/*
 					 * Contents is __FreeBSD_version,
 					 * whose relation to OS versions is
@@ -298,10 +298,10 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 					 * FreeBSD that use this note.
 					 */
 
-					fmagicPrintf(fm, " %d.%d", desc / 100000,
+					file_printf(fm, " %d.%d", desc / 100000,
 					    desc / 10000 % 10);
 					if (desc / 1000 % 10 > 0)
-						fmagicPrintf(fm, ".%d",
+						file_printf(fm, ".%d",
 						    desc / 1000 % 10);
 				}
 
@@ -309,7 +309,7 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 				    strcmp(&nbuf[nameoffset], "OpenBSD") == 0 &&
 				    nh_type == NT_OPENBSD_VERSION &&
 				    nh_descsz == 4) {
-					fmagicPrintf(fm, ", for OpenBSD");
+					file_printf(fm, ", for OpenBSD");
 					/* Content of note is always 0 */
 				}
 			}
@@ -320,7 +320,7 @@ dophn_exec(fmagic fm, off_t off, int num, size_t size)
 			/*@switchbreak@*/ break;
 		}
 	}
-	fmagicPrintf(fm, ", %s linked%s", linking_style, shared_libraries);
+	file_printf(fm, ", %s linked%s", linking_style, shared_libraries);
 }
 /*@=bounds@*/
 
@@ -485,7 +485,7 @@ dophn_core(fmagic fm, off_t off, int num, size_t size)
 					os_style = OS_STYLE_NETBSD;
 				} else
 					/*@innercontinue@*/ continue;
-				fmagicPrintf(fm, ", %s-style", os_style_names[os_style]);
+				file_printf(fm, ", %s-style", os_style_names[os_style]);
 			}
 
 			if (os_style == OS_STYLE_NETBSD &&
@@ -497,7 +497,7 @@ dophn_core(fmagic fm, off_t off, int num, size_t size)
 				 * offset 0x7c, and is up to 32-bytes,
 				 * including the terminating NUL.
 				 */
-				fmagicPrintf(fm, ", from '%.31s'", &nbuf[offset + 0x7c]);
+				file_printf(fm, ", from '%.31s'", &nbuf[offset + 0x7c]);
 				
 				/*
 				 * Extract the signal number.  It is at
@@ -505,7 +505,7 @@ dophn_core(fmagic fm, off_t off, int num, size_t size)
 				 */
 				memcpy(&signo, &nbuf[offset + 0x08],
 				    sizeof(signo));
-				fmagicPrintf(fm, " (signal %u)", getu32(fm, signo));
+				file_printf(fm, " (signal %u)", getu32(fm, signo));
 			} else
 			if (os_style != OS_STYLE_NETBSD &&
 			    nh_type == NT_PRPSINFO) {
@@ -570,7 +570,7 @@ dophn_core(fmagic fm, off_t off, int num, size_t size)
 					/*
 					 * Well, that worked.
 					 */
-					fmagicPrintf(fm, ", from '%.16s'",
+					file_printf(fm, ", from '%.16s'",
 					    &nbuf[offset + prpsoffsets(i)]);
 					/*@innerbreak@*/ break;
 
@@ -602,7 +602,7 @@ fmagicE(fmagic fm)
 	 * If we can't seek, it must be a pipe, socket or fifo.
 	 */
 	if((lseek(fm->fd, (off_t)0, SEEK_SET) == (off_t)-1) && (errno == ESPIPE))
-		fm->fd = pipe2file(fm->fd, fm->buf, fm->nb);
+		fm->fd = file_pipe2file(fm->fd, fm->buf, fm->nb);
 
 	/*
 	 * ELF executables have multiple section headers in arbitrary

@@ -87,7 +87,7 @@ sread(int fd, /*@out@*/ void *buf, size_t n)
 }
 
 int
-pipe2file(int fd, void *startbuf, size_t nbytes)
+file_pipe2file(int fd, const void *startbuf, size_t nbytes)
 {
 	char buf[4096];
 	int r, tfd;
