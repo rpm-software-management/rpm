@@ -171,7 +171,7 @@ sub process_file {
   }
 
   while (<FH>) {
-    next if m(^=(head1|head2|pod|item)) .. m(^=cut);
+    next if m(^=(head[1-4]|pod|item)) .. m(^=cut);
     next if m(^=over) .. m(^=back);
     last if m/^__(DATA|END)__$/;
 
