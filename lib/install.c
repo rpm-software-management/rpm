@@ -426,6 +426,8 @@ static int markReplacedFiles(rpmdb db, const struct sharedFileInfo * replList)
 	prev = fileInfo->otherPkg;
 	num++;
     }
+    if (num == 0)
+	return 0;
 
     offsets = alloca(num * sizeof(*offsets));
     num = prev = 0;
@@ -449,10 +451,14 @@ static int markReplacedFiles(rpmdb db, const struct sharedFileInfo * replList)
 	
 	modified = 0;
 	prev = rpmdbGetIteratorOffset(mi);
+	num = 0;
 	while (fileInfo->otherPkg && fileInfo->otherPkg == prev) {
 	    assert(fileInfo->otherFileNum < count);
-	    secStates[fileInfo->otherFileNum] = RPMFILE_STATE_REPLACED;
-	    modified = 1;
+	    if (secStates[fileInfo->otherFileNum] != RPMFILE_STATE_REPLACED) {
+		secStates[fileInfo->otherFileNum] = RPMFILE_STATE_REPLACED;
+		modified = 1;
+		num++;
+	    }
 	    fileInfo++;
 	}
 
