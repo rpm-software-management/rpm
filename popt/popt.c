@@ -582,6 +582,10 @@ const char * poptStrerror(const int error) {
 	return "aliases nested too deeply";
       case POPT_ERROR_BADQUOTE:
 	return "error in paramter quoting";
+      case POPT_ERROR_BADNUMBER:
+	return "invalid numeric value";
+      case POPT_ERROR_OVERFLOW:
+	return "number too large or too small";
       case POPT_ERROR_ERRNO:
 	return strerror(errno);
       default:
