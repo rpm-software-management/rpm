@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.20
+Release: 0.21
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -459,7 +459,7 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
-* Mon Dec  9 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.20
+* Tue Dec 10 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.21
 - don't generate dependencies unless execute bit is set.
 - enable internal automagic dependency generation as default.
 

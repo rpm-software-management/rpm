@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-07 17:44-0500\n"
+"POT-Creation-Date: 2002-12-10 11:33-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -116,7 +116,7 @@ msgstr ""
 msgid "%s: %s\n"
 msgstr "plik %s: %s\n"
 
-#: rpmqv.c:129 lib/poptALL.c:95
+#: rpmqv.c:129 lib/poptALL.c:99
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM wersja %s\n"
@@ -1258,19 +1258,19 @@ msgstr "nie sprawdzaj zale¿no¶ci pakietu"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:229 lib/poptALL.c:216 lib/poptI.c:265 lib/poptI.c:272
+#: build/poptBT.c:229 lib/poptALL.c:220 lib/poptI.c:265 lib/poptI.c:272
 #: lib/poptQV.c:329 lib/poptQV.c:338 lib/poptQV.c:377
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "nie sprawdzaj zale¿no¶ci pakietu"
 
-#: build/poptBT.c:231 lib/poptALL.c:218 lib/poptI.c:267 lib/poptI.c:274
+#: build/poptBT.c:231 lib/poptALL.c:222 lib/poptI.c:267 lib/poptI.c:274
 #: lib/poptQV.c:332 lib/poptQV.c:340 lib/poptQV.c:380
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "nie sprawdzaj architektury systemu"
 
-#: build/poptBT.c:233 lib/poptALL.c:224 lib/poptI.c:269 lib/poptI.c:276
+#: build/poptBT.c:233 lib/poptALL.c:228 lib/poptI.c:269 lib/poptI.c:276
 #: lib/poptQV.c:335 lib/poptQV.c:342 lib/poptQV.c:382
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1644,106 +1644,106 @@ msgstr "%s: readLead nie powiod³o siê\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/poptALL.c:203
+#: lib/poptALL.c:207
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:204 lib/poptALL.c:207
+#: lib/poptALL.c:208 lib/poptALL.c:211
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:206
+#: lib/poptALL.c:210
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:209
+#: lib/poptALL.c:213
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "wy¶wietl wersjê u¿ywanego rpm-a"
 
-#: lib/poptALL.c:210
+#: lib/poptALL.c:214
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:212 lib/poptALL.c:231 lib/poptALL.c:235
+#: lib/poptALL.c:216 lib/poptALL.c:235 lib/poptALL.c:239
 msgid "read <FILE:...> instead of default file(s)"
 msgstr ""
 
-#: lib/poptALL.c:213 lib/poptALL.c:232 lib/poptALL.c:236
+#: lib/poptALL.c:217 lib/poptALL.c:236 lib/poptALL.c:240
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:221 lib/poptALL.c:255
+#: lib/poptALL.c:225 lib/poptALL.c:259
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: lib/poptALL.c:227
+#: lib/poptALL.c:231
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "przeka¿ standartowe wyj¶cie do <komenda>"
 
-#: lib/poptALL.c:228
+#: lib/poptALL.c:232
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:239
+#: lib/poptALL.c:243
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "u¿yj <katalogu> jako katalogu najwy¿szego poziomu"
 
-#: lib/poptALL.c:240
+#: lib/poptALL.c:244
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:247
 msgid "display known query tags"
 msgstr ""
 
-#: lib/poptALL.c:245
+#: lib/poptALL.c:249
 msgid "display final rpmrc and macro configuration"
 msgstr ""
 
-#: lib/poptALL.c:247
+#: lib/poptALL.c:251
 msgid "provide less detailed output"
 msgstr ""
 
-#: lib/poptALL.c:249
+#: lib/poptALL.c:253
 msgid "provide more detailed output"
 msgstr ""
 
-#: lib/poptALL.c:251
+#: lib/poptALL.c:255
 msgid "print the version of rpm being used"
 msgstr "wy¶wietl wersjê u¿ywanego rpm-a"
 
-#: lib/poptALL.c:264
+#: lib/poptALL.c:268
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "b³êdny status pliku: %s"
 
-#: lib/poptALL.c:266
+#: lib/poptALL.c:270
 msgid "debug protocol data stream"
 msgstr ""
 
-#: lib/poptALL.c:271
+#: lib/poptALL.c:275
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "B³±d wewnêtrzny w przetwarzaniu argumentu (%d) :-(\n"
 
-#: lib/poptALL.c:274
+#: lib/poptALL.c:278
 #, fuzzy
 msgid "debug package state machine"
 msgstr "b³êdny status pliku: %s"
 
-#: lib/poptALL.c:284
+#: lib/poptALL.c:290
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: lib/poptALL.c:292
+#: lib/poptALL.c:298
 msgid "debug URL cache handling"
 msgstr ""
 
 #. @-nullpass@
-#: lib/poptALL.c:362
+#: lib/poptALL.c:368
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""

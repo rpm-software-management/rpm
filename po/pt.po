@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-12-07 17:44-0500\n"
+"POT-Creation-Date: 2002-12-10 11:33-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -108,7 +108,7 @@ msgstr "Opções comuns para todos os modos do rpm:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:129 lib/poptALL.c:95
+#: rpmqv.c:129 lib/poptALL.c:99
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM versão %s\n"
@@ -1234,19 +1234,19 @@ msgstr "não verificar as dependências de compilação"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "gerar um cabeçalho do pacote compatível com os pacotes do rpm[23]"
 
-#: build/poptBT.c:229 lib/poptALL.c:216 lib/poptI.c:265 lib/poptI.c:272
+#: build/poptBT.c:229 lib/poptALL.c:220 lib/poptI.c:265 lib/poptI.c:272
 #: lib/poptQV.c:329 lib/poptQV.c:338 lib/poptQV.c:377
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "não verificar as dependências do pacote"
 
-#: build/poptBT.c:231 lib/poptALL.c:218 lib/poptI.c:267 lib/poptI.c:274
+#: build/poptBT.c:231 lib/poptALL.c:222 lib/poptI.c:267 lib/poptI.c:274
 #: lib/poptQV.c:332 lib/poptQV.c:340 lib/poptQV.c:380
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "não verifica a arquitectura do pacote"
 
-#: build/poptBT.c:233 lib/poptALL.c:224 lib/poptI.c:269 lib/poptI.c:276
+#: build/poptBT.c:233 lib/poptALL.c:228 lib/poptI.c:269 lib/poptI.c:276
 #: lib/poptQV.c:335 lib/poptQV.c:342 lib/poptQV.c:382
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1616,107 +1616,107 @@ msgstr ":%s: o readLead falhou\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
 
-#: lib/poptALL.c:203
+#: lib/poptALL.c:207
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:204 lib/poptALL.c:207
+#: lib/poptALL.c:208 lib/poptALL.c:211
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:206
+#: lib/poptALL.c:210
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:209
+#: lib/poptALL.c:213
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "imprimir a expansão da macro <expr>+"
 
-#: lib/poptALL.c:210
+#: lib/poptALL.c:214
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:212 lib/poptALL.c:231 lib/poptALL.c:235
+#: lib/poptALL.c:216 lib/poptALL.c:235 lib/poptALL.c:239
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "ler o <fich:...> em vez do(s) ficheiro(s) de macros por omissão"
 
-#: lib/poptALL.c:213 lib/poptALL.c:232 lib/poptALL.c:236
+#: lib/poptALL.c:217 lib/poptALL.c:236 lib/poptALL.c:240
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:221 lib/poptALL.c:255
+#: lib/poptALL.c:225 lib/poptALL.c:259
 msgid "disable use of libio(3) API"
 msgstr "desactivar o uso da API da libio(3)"
 
-#: lib/poptALL.c:227
+#: lib/poptALL.c:231
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "manda o stdout para <cmd>"
 
-#: lib/poptALL.c:228
+#: lib/poptALL.c:232
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:239
+#: lib/poptALL.c:243
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "usa <dir> como a directoria de topo"
 
-#: lib/poptALL.c:240
+#: lib/poptALL.c:244
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:247
 msgid "display known query tags"
 msgstr "mostrar as opções de pesquisa conhecidas"
 
-#: lib/poptALL.c:245
+#: lib/poptALL.c:249
 msgid "display final rpmrc and macro configuration"
 msgstr "mostra a configuração final do rpmrc e das macros"
 
-#: lib/poptALL.c:247
+#: lib/poptALL.c:251
 msgid "provide less detailed output"
 msgstr "devolver um resultado menos detalhado"
 
-#: lib/poptALL.c:249
+#: lib/poptALL.c:253
 msgid "provide more detailed output"
 msgstr "devolver um resultado mais detalhado"
 
-#: lib/poptALL.c:251
+#: lib/poptALL.c:255
 msgid "print the version of rpm being used"
 msgstr "imprime a versão do RPM que está a usar"
 
-#: lib/poptALL.c:264
+#: lib/poptALL.c:268
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "depurar máquina de estados de ficheiros"
 
-#: lib/poptALL.c:266
+#: lib/poptALL.c:270
 msgid "debug protocol data stream"
 msgstr "depurar a sequência de dados do protocolo"
 
-#: lib/poptALL.c:271
+#: lib/poptALL.c:275
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "Erro interno no processamento de argumentos (%d) :-(\n"
 
-#: lib/poptALL.c:274
+#: lib/poptALL.c:278
 #, fuzzy
 msgid "debug package state machine"
 msgstr "depurar máquina de estados de ficheiros"
 
-#: lib/poptALL.c:284
+#: lib/poptALL.c:290
 msgid "debug rpmio I/O"
 msgstr "depurar a E/S da rpmio"
 
-#: lib/poptALL.c:292
+#: lib/poptALL.c:298
 msgid "debug URL cache handling"
 msgstr "depurar a gestão da 'cache' de URLs"
 
 #. @-nullpass@
-#: lib/poptALL.c:362
+#: lib/poptALL.c:368
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-12-07 17:44-0500\n"
+"POT-Creation-Date: 2002-12-10 11:33-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -109,7 +109,7 @@ msgstr "모든 rpm 모드에서의 일반적인 옵션:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:129 lib/poptALL.c:95
+#: rpmqv.c:129 lib/poptALL.c:99
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM 버전 - %s\n"
@@ -1218,19 +1218,19 @@ msgstr "패키지 제작 의존성을 검사하지 않습니다"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "(기존의) rpm[23] 패키징과 호환하는 패키지 헤더를 생성합니다"
 
-#: build/poptBT.c:229 lib/poptALL.c:216 lib/poptI.c:265 lib/poptI.c:272
+#: build/poptBT.c:229 lib/poptALL.c:220 lib/poptI.c:265 lib/poptI.c:272
 #: lib/poptQV.c:329 lib/poptQV.c:338 lib/poptQV.c:377
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "패키지의 의존성을 검사하지 않습니다"
 
-#: build/poptBT.c:231 lib/poptALL.c:218 lib/poptI.c:267 lib/poptI.c:274
+#: build/poptBT.c:231 lib/poptALL.c:222 lib/poptI.c:267 lib/poptI.c:274
 #: lib/poptQV.c:332 lib/poptQV.c:340 lib/poptQV.c:380
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "패키지의 아키텍쳐를 검사하지 않습니다"
 
-#: build/poptBT.c:233 lib/poptALL.c:224 lib/poptI.c:269 lib/poptI.c:276
+#: build/poptBT.c:233 lib/poptALL.c:228 lib/poptI.c:269 lib/poptI.c:276
 #: lib/poptQV.c:335 lib/poptQV.c:342 lib/poptQV.c:382
 #, fuzzy
 msgid "don't verify package signature(s)"
@@ -1599,107 +1599,107 @@ msgstr "%s: readLead이 실패했습니다\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread이 실패했습니다: %s\n"
 
-#: lib/poptALL.c:203
+#: lib/poptALL.c:207
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:204 lib/poptALL.c:207
+#: lib/poptALL.c:208 lib/poptALL.c:211
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:206
+#: lib/poptALL.c:210
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:209
+#: lib/poptALL.c:213
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "<표현식>+ 의 매크로 확장을 출력합니다"
 
-#: lib/poptALL.c:210
+#: lib/poptALL.c:214
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:212 lib/poptALL.c:231 lib/poptALL.c:235
+#: lib/poptALL.c:216 lib/poptALL.c:235 lib/poptALL.c:239
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "기본 매크로 파일 대신 <파일:..>을 읽어들입니다"
 
-#: lib/poptALL.c:213 lib/poptALL.c:232 lib/poptALL.c:236
+#: lib/poptALL.c:217 lib/poptALL.c:236 lib/poptALL.c:240
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:221 lib/poptALL.c:255
+#: lib/poptALL.c:225 lib/poptALL.c:259
 msgid "disable use of libio(3) API"
 msgstr "libio(3) API의 사용을 해제합니다"
 
-#: lib/poptALL.c:227
+#: lib/poptALL.c:231
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "표준출력을 <명령>으로 보냅니다"
 
-#: lib/poptALL.c:228
+#: lib/poptALL.c:232
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:239
+#: lib/poptALL.c:243
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "<디렉토리>를 최상위 디렉토리로 사용합니다"
 
-#: lib/poptALL.c:240
+#: lib/poptALL.c:244
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:247
 msgid "display known query tags"
 msgstr "질의 태그를 보여줍니다"
 
-#: lib/poptALL.c:245
+#: lib/poptALL.c:249
 msgid "display final rpmrc and macro configuration"
 msgstr "현재 설정되어 있는 rpmrc의 내용과 매크로를 보여줍니다"
 
-#: lib/poptALL.c:247
+#: lib/poptALL.c:251
 msgid "provide less detailed output"
 msgstr "자세한 출력을 제공합니다"
 
-#: lib/poptALL.c:249
+#: lib/poptALL.c:253
 msgid "provide more detailed output"
 msgstr "아주 상세한 출력을 제공합니다"
 
-#: lib/poptALL.c:251
+#: lib/poptALL.c:255
 msgid "print the version of rpm being used"
 msgstr "현재 사용되고 있는 rpm 버전을 표시합니다"
 
-#: lib/poptALL.c:264
+#: lib/poptALL.c:268
 #, fuzzy
 msgid "debug payload file state machine"
 msgstr "컴퓨터의 상태(state) 파일을 디버그 합니다"
 
-#: lib/poptALL.c:266
+#: lib/poptALL.c:270
 msgid "debug protocol data stream"
 msgstr "데이터 스트림 프로토콜을 디버그 합니다"
 
-#: lib/poptALL.c:271
+#: lib/poptALL.c:275
 #, fuzzy
 msgid "debug option/argument processing"
 msgstr "인수 처리과정 (%d) 도중 내부 오류가 발생했습니다 :-(\n"
 
-#: lib/poptALL.c:274
+#: lib/poptALL.c:278
 #, fuzzy
 msgid "debug package state machine"
 msgstr "컴퓨터의 상태(state) 파일을 디버그 합니다"
 
-#: lib/poptALL.c:284
+#: lib/poptALL.c:290
 msgid "debug rpmio I/O"
 msgstr "rpmio 입/출력을 디버그 합니다"
 
-#: lib/poptALL.c:292
+#: lib/poptALL.c:298
 msgid "debug URL cache handling"
 msgstr "URL 캐시 핸들링을 디버그 합니다"
 
 #. @-nullpass@
-#: lib/poptALL.c:362
+#: lib/poptALL.c:368
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
