@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST = sys_elf.h.in
 
-INCLUDES = -I$(topdir) -I. -I$(srcdir)
+INCLUDES = -I$(top_srcdir) -I. -I$(srcdir)
 
 # generic sources
 SRCS1 = begin.c cntl.c end.c errmsg.c errno.c fill.c flag.c getarhdr.c \
@@ -49,11 +49,11 @@ noinst_HEADERS = \
 
 .PHONY: sources
 sources:
-	@echo $(libelf_la_SOURCES:%=libelf/%)
+	@echo $(libelf_la_SOURCES:%=libelf/lib/%)
 
 .PHONY: lclint
 lclint:
-	lclint -Dlint $(DEFS) $(INCLUDES) $(SRCS)
+	lclint -Dlint $(DEFS) $(INCLUDES) $(libelf_la_SOURCES)
 
 t1:	libelf.a t1.o
 	$(CC) -o $@ $@.o libelf.a

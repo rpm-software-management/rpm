@@ -171,7 +171,7 @@ extern int elf_cntl __P((/*@null@*/ Elf *elf, Elf_Cmd cmd))
 extern int elf_end __P((/*@only@*/ /*@null@*/ Elf *elf))
 	/*@globals fileSystem @*/
 	/*@modifies elf, fileSystem @*/;
-/*@null@*/
+/*@observer@*/ /*@null@*/
 extern const char *elf_errmsg __P((int err))
 	/*@*/;
 extern int elf_errno __P((void))
@@ -300,8 +300,7 @@ extern Elf64_Phdr *elf64_newphdr __P((Elf *elf, size_t count))
 /*@null@*/
 extern Elf64_Shdr *elf64_getshdr __P((Elf_Scn *scn))
 	/*@*/;
-extern size_t elf64_fsize __P((Elf_Type type, size_t count,
-	unsigned ver))
+extern size_t elf64_fsize __P((Elf_Type type, size_t count, unsigned ver))
 	/*@*/;
 /*@null@*/
 extern Elf_Data *elf64_xlatetof __P((/*@returned@*/ Elf_Data *dst, const Elf_Data *src,

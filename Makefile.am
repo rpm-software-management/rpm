@@ -104,12 +104,13 @@ $(PROGRAMS): 		$(myLDADD) @WITH_APIDOCS_TARGET@
 
 .PHONY:	lclint
 lclint:
-	lclint $(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES) \
+	lclint -Dlint $(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES) \
 		`make -s sources -C build` \
 		`make -s sources -C lib` \
 		`make -s sources -C rpmdb` \
 		`make -s sources -C rpmio` \
 		`make -s sources -C beecrypt` \
+		`make -s sources -C libelf` \
 		`make -s sources -C popt`
 
 CVSTAG = r$(subst .,-,$(VERSION))

@@ -10,6 +10,7 @@
 #endif
 
 #include <sys/types.h>
+
 #if defined(__LCLINT__)
 /*@-redef@*/
 typedef unsigned int u_int32_t;

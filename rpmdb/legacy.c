@@ -5,6 +5,9 @@
 #include "system.h"
 
 #if HAVE_LIBELF_GELF_H
+#define	__LIBELF_INTERNAL__	1
+#  undef __P
+#  define __P(protos)   protos
 #include <gelf.h>
 #define	DT_GNU_PRELINKED	0x6ffffdf5
 #endif
@@ -23,12 +26,15 @@
  * @param path		file path
  * @retval pidp		prelink helper pid or 0
  * @retval fsizep	file size
- * @return		-1 on error, otherwise open file descriptor
+ * @return		-1 on error, otherwise, an open file descriptor
  */ 
 static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_t *fsizep)
-	/*@globals rpmGlobalMacroContext, fileSystem @*/
-	/*@modifies *pidp, *fsizep, rpmGlobalMacroContext, fileSystem @*/
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies *pidp, *fsizep, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
+/*@only@*/
     static const char * cmd = NULL;
     static int initted = 0;
     pid_t pid;
@@ -64,7 +70,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
     GElf_Dyn dyn;
     int bingo;
 
-    elf_version(EV_CURRENT);
+    (void) elf_version(EV_CURRENT);
 
     if ((elf = elf_begin (fdno, ELF_C_READ, NULL)) == NULL
      || elf_kind(elf) != ELF_K_ELF
@@ -73,8 +79,9 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	goto exit;
 
     bingo = 0;
+    /*@-branchstate -uniondef @*/
     while (!bingo && (scn = elf_nextscn(elf, scn)) != NULL) {
-	gelf_getshdr(scn, &shdr);
+	(void) gelf_getshdr(scn, &shdr);
 	if (shdr.sh_type != SHT_DYNAMIC)
 	    continue;
 	while (!bingo && (data = elf_getdata (scn, data)) != NULL) {
@@ -82,16 +89,17 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	    int ndx;
 
             for (ndx = 0; ndx < maxndx; ++ndx) {
-		gelf_getdyn (data, ndx, &dyn);
+		(void) gelf_getdyn (data, ndx, &dyn);
 		if (dyn.d_tag != DT_GNU_PRELINKED)
-		    continue;
+		    /*@innercontinue@*/ continue;
 		bingo = 1;
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	}
     }
+    /*@=branchstate =uniondef @*/
 
-    if (bingo) {
+    if (pidp != NULL && bingo) {
 	int pipes[2];
 	int xx;
 
@@ -138,7 +146,9 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
     int fdno;
     int xx;
 
+/*@-globs -internalglobs -mods @*/
     fdno = open_dso(path, &pid, &fsize);
+/*@=globs =internalglobs =mods @*/
     if (fdno < 0) {
 	rc = 1;
 	goto exit;

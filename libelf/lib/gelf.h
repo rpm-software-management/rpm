@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 extern "C" {
 #endif /* __cplusplus */
 
-#ifndef __P
+#if !defined(__P)
 # if __STDC__ || defined(__cplusplus)
 #  define __P(args) args
 # else /* __STDC__ || defined(__cplusplus) */
@@ -111,7 +111,7 @@ extern Elf_Data       *gelf_xlatetom __P((Elf *elf, Elf_Data *dst, const Elf_Dat
 	/*@modifies *dst @*/;
 
 /*@null@*/
-extern GElf_Ehdr       *gelf_getehdr __P((Elf *elf, /*@returned@*/ GElf_Ehdr *dst))
+extern GElf_Ehdr       *gelf_getehdr __P((Elf *elf, /*@returned@*/ /*@out@*/ GElf_Ehdr *dst))
 	/*@modifies *elf, dst @*/;
 extern int          gelf_update_ehdr __P((Elf *elf, GElf_Ehdr *src))
 	/*@modifies *elf @*/;
@@ -119,7 +119,7 @@ extern unsigned long    gelf_newehdr __P((Elf *elf, int cls))
 	/*@modifies *elf @*/;
 
 /*@null@*/
-extern GElf_Phdr       *gelf_getphdr __P((Elf *elf, int ndx, /*@returned@*/ GElf_Phdr *dst))
+extern GElf_Phdr       *gelf_getphdr __P((Elf *elf, int ndx, /*@returned@*/ /*@out@*/ GElf_Phdr *dst))
 	/*@modifies *elf, dst @*/;
 extern int          gelf_update_phdr __P((Elf *elf, int ndx, GElf_Phdr *src))
 	/*@modifies *elf @*/;
@@ -127,31 +127,31 @@ extern unsigned long    gelf_newphdr __P((Elf *elf, size_t phnum))
 	/*@modifies *elf @*/;
 
 /*@null@*/
-extern GElf_Shdr       *gelf_getshdr __P((Elf_Scn *scn, /*@returned@*/ GElf_Shdr *dst))
+extern GElf_Shdr       *gelf_getshdr __P((Elf_Scn *scn, /*@returned@*/ /*@out@*/ GElf_Shdr *dst))
 	/*@modifies dst @*/;
 extern int          gelf_update_shdr __P((Elf_Scn *scn, GElf_Shdr *src))
 	/*@modifies scn @*/;
 
 /*@null@*/
-extern GElf_Dyn         *gelf_getdyn __P((Elf_Data *src, int ndx, /*@returned@*/ GElf_Dyn *dst))
+extern GElf_Dyn         *gelf_getdyn __P((Elf_Data *src, int ndx, /*@returned@*/ /*@out@*/ GElf_Dyn *dst))
 	/*@modifies *dst @*/;
 extern int           gelf_update_dyn __P((Elf_Data *dst, int ndx, GElf_Dyn *src))
 	/*@modifies *dst @*/;
 
 /*@null@*/
-extern GElf_Rel         *gelf_getrel __P((Elf_Data *src, int ndx, /*@returned@*/ GElf_Rel *dst))
+extern GElf_Rel         *gelf_getrel __P((Elf_Data *src, int ndx, /*@returned@*/ /*@out@*/ GElf_Rel *dst))
 	/*@modifies *dst @*/;
 extern int           gelf_update_rel __P((Elf_Data *dst, int ndx, GElf_Rel *src))
 	/*@modifies *dst @*/;
 
 /*@null@*/
-extern GElf_Rela       *gelf_getrela __P((Elf_Data *src, int ndx, /*@returned@*/ GElf_Rela *dst))
+extern GElf_Rela       *gelf_getrela __P((Elf_Data *src, int ndx, /*@returned@*/ /*@out@*/ GElf_Rela *dst))
 	/*@modifies *dst @*/;
 extern int          gelf_update_rela __P((Elf_Data *dst, int ndx, GElf_Rela *src))
 	/*@modifies *dst @*/;
 
 /*@null@*/
-extern GElf_Sym         *gelf_getsym __P((Elf_Data *src, int ndx, /*@returned@*/ GElf_Sym *dst))
+extern GElf_Sym         *gelf_getsym __P((Elf_Data *src, int ndx, /*@returned@*/ /*@out@*/ GElf_Sym *dst))
 	/*@modifies *dst @*/;
 extern int           gelf_update_sym __P((Elf_Data *dst, int ndx, GElf_Sym *src))
 	/*@modifies *dst @*/;
@@ -164,12 +164,12 @@ extern long            gelf_checksum __P((Elf *elf))
  *
  */
 #if 0
-extern GElf_Move       *gelf_getmove __P((Elf_Data *src, int ndx, GElf_Move *src))
+extern GElf_Move       *gelf_getmove __P((Elf_Data *src, int ndx, /*@returned@*/ /*@out@*/ GElf_Move *src))
 	/*@*/;
 extern int          gelf_update_move __P((Elf_Data *dst, int ndx, GElf_Move *src))
 	/*@modifies *dst @*/;
 
-extern GElf_Syminfo* gelf_getsyminfo __P((Elf_Data *src, int ndx, GElf_Syminfo *dst))
+extern GElf_Syminfo* gelf_getsyminfo __P((Elf_Data *src, int ndx, /*@returned@*/ /*@null@*/ GElf_Syminfo *dst))
 	/*@modifies *dst @*/;
 extern int       gelf_update_syminfo __P((Elf_Data *dst, int ndx, GElf_Syminfo *src))
 	/*@modifies *dst @*/;

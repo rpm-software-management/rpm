@@ -364,20 +364,23 @@ WITH_LIBELF_LIB=
 AC_CHECK_HEADER([libelf/gelf.h], [
 	AC_DEFINE(HAVE_LIBELF_GELF_H, 1, [Define to 1 if you have the <libelf/gelf.h> header file.])
 	WITH_LIBELF_INCLUDE="-I/usr/include/libelf"
-	INCPATH="$INCPATH -I/usr/include/libelf"
 	AC_CHECK_FUNC(gelf_getdyn, [],
 	    AC_CHECK_LIB(elf, gelf_getdyn)
 	)
     ], [
-	if test -d libelf ; then
+	case `uname -m` in
+	i[[3456]]86)
+	  if test -d libelf ; then
 	    AC_DEFINE(HAVE_LIBELF_GELF_H, 1, [Define to 1 if you have the <libelf/gelf.h> header file.])
 	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the `elf' library (-lelf).])
 	    WITH_LIBELF_SUBDIR=libelf
-	    addlib \${top_builddir}/libelf
 	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_LIBELF_SUBDIR}/lib"
-	    INCPATH="$INCPATH -I\${top_srcdir}/${WITH_LIBELF_SUBDIR}/lib"
 	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_LIBELF_SUBDIR}/lib/libelf.la"
-	fi
+	  fi
+	  ;;
+	*)
+	  ;;
+	esac
 ])
 AC_SUBST(WITH_LIBELF_SUBDIR)
 AC_SUBST(WITH_LIBELF_INCLUDE)
@@ -1190,10 +1193,18 @@ AC_OUTPUT([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	scripts/Makefile scripts/brp-redhat tools/Makefile
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
 	misc/Makefile intl/Makefile po/Makefile.in
-	doc/Makefile doc/manual/Makefile
-	doc/ja/Makefile doc/pl/Makefile doc/ru/Makefile doc/sk/Makefile
-	python/Makefile python/rpmdb/Makefile python/test/Makefile ],
-  [	echo timestamp > popt/stamp-h.in
+	doc/Makefile
+	doc/manual/Makefile
+	doc/fr/Makefile
+	doc/ja/Makefile
+	doc/ko/Makefile
+	doc/pl/Makefile
+	doc/ru/Makefile
+	doc/sk/Makefile
+	python/Makefile
+	python/rpmdb/Makefile
+	python/test/Makefile
+  ], [	echo timestamp > popt/stamp-h.in
 	echo timestamp > beecrypt/stamp-h.in
 	echo timestamp > stamp-h.in
   ]
