@@ -14,4 +14,4 @@ EXTRA_DIST = \
 all:
 
 check:
-	$(VALGRIND) python test_all.py verbose
+	env PYTHONPATH=.. $(VALGRIND) python test_all.py verbose

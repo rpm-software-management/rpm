@@ -84,7 +84,6 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 		(void) bc->encrypt(bp, dst, dst);
 /*@=noeffectuncon@*/
 
-		dst += blockwords;
 		src += blockwords;
 
 		nblocks--;
@@ -93,20 +92,22 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 		while (nblocks > 0)
 		{
 			for (i = 0; i < blockwords; i++)
-				dst[i] = src[i] ^ dst[i-blockwords];
+				dst[i+blockwords] = src[i] ^ dst[i];
+			dst += blockwords;
 
 /*@-noeffectuncon@*/
 			(void) bc->encrypt(bp, dst, dst);
 /*@=noeffectuncon@*/
 
-			dst += blockwords;
 			src += blockwords;
 
 			nblocks--;
 		}
 
+		dst -= blockwords;
+
 		for (i = 0; i < blockwords; i++)
-			fdback[i] = dst[i-blockwords];
+			fdback[i] = dst[i];
 /*@=usedef@*/
 	}
 	return 0;

@@ -166,13 +166,13 @@ AC_ARG_WITH(mtmalloc,[  --with-mtmalloc         links against the mtmalloc libra
   fi
   ],[ac_with_mtmalloc=no])
 
-AC_ARG_WITH(javaglue,[  --with-javaglue         creates the java glue code [default=no]],[
+AC_ARG_WITH(java,[  --with-java             creates the java glue code [default=no]],[
   if test "$withval" = no; then
-    ac_with_javaglue=no
+    ac_with_java=no
   else
-    ac_with_javaglue=yes
+    ac_with_java=yes
   fi
-  ],[ac_with_javaglue=no])
+  ],[ac_with_java=no])
 
 AC_ARG_WITH(python,[  --with-python         creates the python bindings code [default=no]],[
   if test "$withval" = no; then
@@ -433,7 +433,7 @@ fi
 # Predefines and checks for Java API support
 AH_TEMPLATE([JAVAGLUE],[Define to 1 if you want to include the Java code])
 
-if test "$ac_with_javaglue" = yes ; then
+if test "$ac_with_java" = yes ; then
   AC_CHECK_PROG(ac_cv_have_gcj, gcj, yes, no)
   if test "$ac_cv_have_gcj" = yes; then
     AC_CACHE_CHECK([for java native interface headers], ac_cv_java_include, [
@@ -458,10 +458,10 @@ EOF
           ac_cv_java_include="$ac_cv_java_include -I$gcjpath/include"
         fi
       else
-        AC_MSG_WARN([java headers not found, disabling javaglue])
+        AC_MSG_WARN([java headers not found, disabling java])
         ac_cv_java_headers=no
         ac_cv_java_include=
-        ac_with_javaglue=no
+        ac_with_java=no
       fi
       rm -fr conftest*
     ])
@@ -512,29 +512,29 @@ EOF
                 ac_cv_java_include="-I$java_include" ;;
               esac
           else
-            AC_MSG_WARN([java headers not found, disabling javaglue])
+            AC_MSG_WARN([java headers not found, disabling java])
             ac_cv_java_headers=no
               ac_cv_java_include=
-            ac_with_javaglue=no
+            ac_with_java=no
           fi
         fi
         rm -fr conftest*
       ])
     else
-      AC_MSG_WARN([javac not found, disabling javaglue])
+      AC_MSG_WARN([javac not found, disabling java])
       ac_cv_java_headers=no
         ac_cv_java_include=
-        ac_with_javaglue=no
+        ac_with_java=no
     fi
   else
-    AC_MSG_WARN([java not found, disabling javaglue])
+    AC_MSG_WARN([java not found, disabling java])
     ac_cv_java_headers=no
-    ac_with_javaglue=no
+    ac_with_java=no
   fi
 fi
 fi
 
-if test "$ac_with_javaglue" = yes ; then
+if test "$ac_with_java" = yes ; then
   AC_DEFINE([JAVAGLUE],1)
 fi
 
@@ -696,13 +696,13 @@ fi
 BEECRYPT_INT_TYPES
 BEECRYPT_CPU_BITS
 
-if test "$ac_with_javaglue" = yes ; then
+if test "$ac_with_java" = yes ; then
   CFLAGS="$CFLAGS $ac_cv_java_include"
 fi
 
 MAYBE_OPT=
 
-if test "$ac_with_javaglue" = yes; then
+if test "$ac_with_java" = yes; then
   MAYBE_OPT="$MAYBE_OPT java"
 fi
 

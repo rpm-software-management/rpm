@@ -27,7 +27,7 @@ C_FUNCTION_BEGIN(mpadd)
 	s8addq `$'16,0,`$'1
 	addq `$'17,`$'1,`$'17
 	addq `$'18,`$'1,`$'18
-	mov `$31',`$'0
+	clr `$'0
 
 	.align 4
 LOCAL(mpadd_loop):
@@ -52,7 +52,7 @@ C_FUNCTION_BEGIN(mpsub)
 	s8addq `$'16,0,`$'1
 	addq `$'17,`$'1,`$'17
 	addq `$'18,`$'1,`$'18
-	mov `$31',`$'0
+	clr `$'0
 
 	.align 4
 LOCAL(mpsub_loop):
@@ -77,7 +77,7 @@ C_FUNCTION_BEGIN(mpsetmul)
 	s8addq `$'16,0,`$'1
 	addq `$'17,`$'1,`$'17
 	addq `$'18,`$'1,`$'18
-	mov `$31',`$'0
+	clr `$'0
 
 	.align 4
 LOCAL(mpsetmul_loop):
@@ -101,7 +101,7 @@ C_FUNCTION_BEGIN(mpaddmul)
 	s8addq `$'16,0,`$'1
 	addq `$'17,`$'1,`$'17
 	addq `$'18,`$'1,`$'18
-	mov `$31',`$'0
+	clr `$'0
 
 	.align 4
 LOCAL(mpaddmul_loop):
@@ -128,9 +128,9 @@ C_FUNCTION_BEGIN(mpaddsqrtrc)
 	subq `$'16,1,`$'16
 	s8addq `$'16,0,`$'1
 	addq `$'17,`$'1,`$'17
-	addq `$'17,`$'1,`$'17
 	addq `$'18,`$'1,`$'18
-	mov `$31',`$'0
+	addq `$'17,`$'1,`$'17
+	clr `$'0
 
 	.align 4
 LOCAL(mpaddsqrtrc_loop):
@@ -154,6 +154,6 @@ LOCAL(mpaddsqrtrc_loop):
 	subq `$'16,1,`$'16
 	subq `$'17,16,`$'17
 	subq `$'18,8,`$'18
-	bge `$'16,LOCAL(mpaddmul_loop)
+	bge `$'16,LOCAL(mpaddsqrtrc_loop)
 	ret `$'31,(`$'26),1
 C_FUNCTION_END(mpaddsqrtrc)

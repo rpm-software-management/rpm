@@ -568,6 +568,8 @@ AC_DEFUN(BEECRYPT_ASM_ALIGN,[
         bc_cv_asm_align=".align 4" ;;
       ia64)
         bc_cv_asm_align=".align 16" ;;
+      powerpc*)
+        bc_cv_asm_align=".align 2" ;;
       s390x)
         bc_cv_asm_align=".align 4" ;;
       sparc*)

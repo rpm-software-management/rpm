@@ -19,8 +19,9 @@ dnl  License along with this library; if not, write to the Free Software
 dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-define(`saved_pfs',`r14')
-define(`saved_lc',`r15')
+define(`saved_pfs',`r31')
+define(`saved_lc',`r30')
+define(`saved_pr',`r29')
 
 ifelse(substr(ASM_OS,0,5),linux,`
 undefine(`C_FUNCTION_BEGIN')
