@@ -210,10 +210,14 @@ int ftpOpen(char * host, char * name, char * password, char * proxy,
 	name = "anonymous";
 
     if (!password) {
-	pw = getpwuid(getuid());
-	password = alloca(strlen(pw->pw_name) + 2);
-	strcpy(password, pw->pw_name);
-	strcat(password, "@");
+	if (getuid()) {
+	    pw = getpwuid(getuid());
+	    password = alloca(strlen(pw->pw_name) + 2);
+	    strcpy(password, pw->pw_name);
+	    strcat(password, "@");
+	} else {
+	    password = "root@";
+	}
     }
 
     if (proxy) {
