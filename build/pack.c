@@ -543,14 +543,10 @@ static int parseForVerify(char *buf, int *verify_flags)
 	    *verify_flags |= VERIFY_FILESIZE;
 	} else if (!strcmp(p, "link")) {
 	    *verify_flags |= VERIFY_LINKTO;
-	} else if (!strcmp(p, "uid")) {
-	    *verify_flags |= VERIFY_UID;
-	} else if (!strcmp(p, "gid")) {
-	    *verify_flags |= VERIFY_GID;
-	} else if (!strcmp(p, "username")) {
-	    *verify_flags |= VERIFY_USERNAME;
-	} else if (!strcmp(p, "groupname")) {
-	    *verify_flags |= VERIFY_GROUPNAME;
+	} else if (!strcmp(p, "user")) {
+	    *verify_flags |= VERIFY_USER;
+	} else if (!strcmp(p, "group")) {
+	    *verify_flags |= VERIFY_GROUP;
 	} else if (!strcmp(p, "mtime")) {
 	    *verify_flags |= VERIFY_MTIME;
 	} else if (!strcmp(p, "mode")) {
