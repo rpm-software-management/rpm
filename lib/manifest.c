@@ -18,7 +18,9 @@ char * rpmPermsString(int mode)
 {
     char *perms = xstrdup("----------");
    
-    if (S_ISDIR(mode)) 
+    if (S_ISREG(mode)) 
+	perms[0] = '-';
+    else if (S_ISDIR(mode)) 
 	perms[0] = 'd';
     else if (S_ISLNK(mode))
 	perms[0] = 'l';
