@@ -37,7 +37,8 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
 static int archOkay(Header h);
 static int osOkay(Header h);
 static Header relocateFileList(struct availablePackage * alp, 
-			       rpmProblemSet probs, Header h);
+			       rpmProblemSet probs, Header h, 
+			       enum fileActions * actions);
 static int psTrim(rpmProblemSet filter, rpmProblemSet target);
 static int sharedCmp(const void * one, const void * two);
 static enum fileActions decideFileFate(char * filespec, short dbMode, 
@@ -64,7 +65,7 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		       void * notifyData, rpmProblemSet okProbs,
 		       rpmProblemSet * newProbs, int flags) {
-    int i, j, numPackages;
+    int i, j;
     struct availableList * al = &ts->addedPackages;
     int rc, ourrc = 0;
     int instFlags = 0, rmFlags = 0;
@@ -79,7 +80,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     struct fileInfo * flList, * fi;
     struct sharedFileInfo * shared, * sharedList;
     int numShared;
-    int pkgNum;
     int flEntries;
     int last;
     int beingRemoved;
@@ -99,7 +99,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     *newProbs = probs;
     hdrs = alloca(sizeof(*hdrs) * al->size);
 
-    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
+    for (alp = al->list; (alp - al->list) < al->size; alp++) {
 	if (!archOkay(alp->h))
 	    psAppend(probs, RPMPROB_BADARCH, alp->key, alp->h, NULL, NULL);
 
@@ -117,8 +117,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    dbiFreeIndexRecord(dbi);
 	}
 
-	hdrs[pkgNum] = relocateFileList(alp, probs, alp->h);
-
 	if (headerGetEntry(alp->h, RPMTAG_FILENAMES, NULL, NULL, &fileCount))
 	    totalFileCount += fileCount;
     }
@@ -134,20 +132,30 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	}
     }
 
-    flList = alloca(sizeof(*flList) * (al->size + ts->numRemovedPackages));
+    flEntries = al->size + ts->numRemovedPackages;
+    flList = alloca(sizeof(*flList) * (flEntries));
 
     ht = htCreate(totalFileCount * 2, 0, fpHashFunction, fpEqual);
-    fi = flList;
 
     /* FIXME?: we'd be better off assembling one very large file list and
        calling fpLookupList only once. I'm not sure that the speedup is
        worth the trouble though. */
-    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
-	fi->h = alp->h;
-
-	if (!headerGetEntryMinMemory(fi->h, RPMTAG_FILENAMES, NULL, 
-				     (void *) &fi->fl, &fi->fc))
+    for (fi = flList, alp = al->list; (alp - al->list) < al->size; 
+		fi++, alp++) {
+	if (!headerGetEntryMinMemory(alp->h, RPMTAG_FILENAMES, NULL, 
+				     (void *) NULL, &fi->fc)) {
+	    fi->fc = 0;
+	    fi->h = alp->h;
 	    continue;
+	}
+
+	fi->actions = calloc(sizeof(*fi->actions), fi->fc);
+	fi->h = hdrs[alp - al->list] = relocateFileList(alp, probs, alp->h, 
+						         fi->actions);
+
+	headerGetEntryMinMemory(fi->h, RPMTAG_FILENAMES, NULL, 
+				     (void *) &fi->fl, &fi->fc);
+
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILEMD5S, NULL, 
 				(void *) &fi->fmd5s, NULL);
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILELINKTOS, NULL, 
@@ -158,14 +166,12 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 				(void *) &fi->fflags, NULL);
 
 	fi->type = ADDED;
-	fi->actions = malloc(sizeof(*fi->actions) * fi->fc);
         fi->fps = alloca(fi->fc * sizeof(*fi->fps));
 	fi->ap = alp;
 	fi->replaced = NULL;
-	fi++;
     }
 
-    for (i = 0; i < ts->numRemovedPackages; i++) {
+    for (i = 0; i < ts->numRemovedPackages; i++, fi++) {
 	fi->type = REMOVED;
 	fi->record = ts->removedPackages[i];
 	fi->h = rpmdbGetRecord(ts->db, fi->record);
@@ -175,6 +181,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	}
 	if (!headerGetEntryMinMemory(fi->h, RPMTAG_FILENAMES, NULL, 
 				     (void *) &fi->fl, &fi->fc)) {
+	    fi->fc = 0;
 	    continue;
 	}
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILEFLAGS, NULL, 
@@ -186,18 +193,14 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILESTATES, NULL, 
 				(void *) &fi->fstates, NULL);
 
-	fi->actions = malloc(sizeof(*fi->actions) * fi->fc);
+	fi->actions = calloc(sizeof(*fi->actions), fi->fc);
         fi->fps = alloca(fi->fc * sizeof(*fi->fps));
-
-	fi++;
     }
 
-    flEntries = fi - flList;
-    for (pkgNum = 0, fi = flList; pkgNum < flEntries; pkgNum++, fi++) {
+    for (fi = flList; (fi - flList) < flEntries; fi++) {
 	fpLookupList(fi->fl, fi->fps, fi->fc, 1);
 	for (i = 0; i < fi->fc; i++) {
 	    htAddEntry(ht, fi->fps + i, fi);
-	    fi->actions[i] = UNKNOWN;
 	}
     }
 
@@ -208,7 +211,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     chdir("/");
     chroot(ts->root);
 
-    for (pkgNum = 0, fi = flList; pkgNum < flEntries; pkgNum++, fi++) {
+    for (fi = flList; (fi - flList) < flEntries; fi++) {
 	matches = malloc(sizeof(*matches) * fi->fc);
 	if (rpmdbFindFpList(ts->db, fi->fps, matches, fi->fc)) return 1;
 
@@ -263,17 +266,15 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
     htFree(ht);
 
-    numPackages = 0;
-    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
-	if (alp->h != flList[numPackages].h) continue;
-	fi = flList + numPackages;
-	free(fi->fl);
-	if (fi->type == ADDED) {
-	    free(fi->fmd5s);
-	    free(fi->flinks);
+    for (alp = al->list, fi = flList; (alp - al->list) < al->size; 
+		alp++, fi++) {
+	if (fi->fc) {
+	    free(fi->fl);
+	    if (fi->type == ADDED) {
+		free(fi->fmd5s);
+		free(fi->flinks);
+	    }
 	}
-
-	numPackages++;
     }
 
     if ((flags & RPMTRANS_FLAG_BUILD_PROBS) || 
@@ -282,64 +283,61 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	for (i = 0; i < al->size; i++)
 	    headerFree(hdrs[i]);
 
-	numPackages = 0;
-	for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
-	    if (alp->h != flList[numPackages].h) continue;
-	    fi = flList + numPackages;
-	    free(fi->actions);
+	for (alp = al->list, fi = flList; (alp - al->list) < al->size; 
+			alp++, fi++) {
+	    if (fi->fc)
+		free(fi->actions);
 	}
 
 	return al->size + ts->numRemovedPackages;
     }
 
-    numPackages = 0;
-    for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++, fi++) {
-	if (al->list[pkgNum].fd) {
-	    fd = al->list[pkgNum].fd;
+    for (alp = al->list, fi = flList; (alp - al->list) < al->size; 
+			alp++, fi++) {
+	if (alp->fd) {
+	    fd = alp->fd;
 	} else {
 	    fd = notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0, 
-			al->list[pkgNum].key, notifyData);
+			alp->key, notifyData);
 	    if (fd) {
 		Header h;
 
-		headerFree(hdrs[pkgNum]);
+		headerFree(hdrs[alp - al->list]);
 		rc = rpmReadPackageHeader(fd, &h, NULL, NULL, NULL);
 		if (rc) {
 		    notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0, 
-				al->list[pkgNum].key, notifyData);
+				alp->key, notifyData);
 		    ourrc++;
 		    fd = NULL;
 		} else {
-		    hdrs[pkgNum] = relocateFileList(alp, probs, h);
+		    hdrs[alp - al->list] = 
+			relocateFileList(alp, probs, h, NULL);
 		    headerFree(h);
 		}
 	    }
 	}
 
 	if (fd) {
-	    fi = flList + numPackages;
-	    if (installBinaryPackage(ts->root, ts->db, fd, hdrs[pkgNum], 
-				     instFlags, notify, notifyData, 
-			             al->list[pkgNum].key, fi->actions, 
-			             fi->replaced))
+	    if (installBinaryPackage(ts->root, ts->db, fd, 
+				     hdrs[alp - al->list], instFlags, notify, 
+				     notifyData, alp->key, fi->actions, 
+				     fi->replaced))
 		ourrc++;
 	} else {
 	    ourrc++;
 	}
 
-	headerFree(hdrs[pkgNum]);
+	headerFree(hdrs[alp - al->list]);
 
-	if (alp->h == flList[numPackages].h) {
+	if (fi->fc)
 	    free(fi->actions);
-	    numPackages++;
-	}
 
-	if (!al->list[pkgNum].fd && fd)
-	    notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0, 
-			al->list[pkgNum].key, notifyData);
+	if (!alp->fd && fd)
+	    notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0, alp->key, 
+		   notifyData);
     }
 
-    fi = flList + numPackages;
+    /* fi is left at the first package which is to be removed */
     for (i = 0; i < ts->numRemovedPackages; i++, fi++) {
 	if (removeBinaryPackage(ts->root, ts->db, ts->removedPackages[i], 
 				rmFlags, fi->actions))
@@ -444,7 +442,8 @@ void rpmProblemSetFree(rpmProblemSet probs) {
 }
 
 static Header relocateFileList(struct availablePackage * alp, 
-			       rpmProblemSet probs, Header origH) {
+			       rpmProblemSet probs, Header origH,
+			       enum fileActions * actions) {
     int numValid, numRelocations;
     int i, j, madeSwap, rc;
     rpmRelocation * nextReloc, * relocations = NULL;
@@ -452,10 +451,12 @@ static Header relocateFileList(struct availablePackage * alp,
     rpmRelocation tmpReloc;
     char ** validRelocations, ** actualRelocations;
     char ** names;
+    char ** origNames;
     int len, newLen;
     char * newName;
     int_32 fileCount;
     Header h;
+    int relocated = 0;
 
     if (!rawRelocations) return headerLink(origH);
     h = headerCopy(origH);
@@ -475,17 +476,21 @@ static Header relocateFileList(struct availablePackage * alp,
 
     for (i = 0; i < numRelocations; i++) {
 	/* FIXME: default relocations (oldPath == NULL) need to be handled
-	   int the UI, not rpmlib */
+	   in the UI, not rpmlib */
 
 	relocations[i].oldPath = 
 	    alloca(strlen(rawRelocations[i].oldPath) + 1);
 	strcpy(relocations[i].oldPath, rawRelocations[i].oldPath);
 	stripTrailingSlashes(relocations[i].oldPath);
 
-	relocations[i].newPath = 
-	    alloca(strlen(rawRelocations[i].newPath) + 1);
-	strcpy(relocations[i].newPath, rawRelocations[i].newPath);
-	stripTrailingSlashes(relocations[i].newPath);
+	if (rawRelocations[i].newPath) {
+	    relocations[i].newPath = 
+		alloca(strlen(rawRelocations[i].newPath) + 1);
+	    strcpy(relocations[i].newPath, rawRelocations[i].newPath);
+	    stripTrailingSlashes(relocations[i].newPath);
+	} else {
+	    relocations[i].newPath = NULL;
+	}
 
 	for (j = 0; j < numValid; j++) 
 	    if (!strcmp(validRelocations[j],
@@ -533,8 +538,6 @@ static Header relocateFileList(struct availablePackage * alp,
 
     headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &names, 
 		   &fileCount);
-    headerAddEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, names,
-		   fileCount);
 
     /* go through things backwards so that /usr/local relocations take
        precedence over /usr ones */
@@ -556,17 +559,28 @@ static Header relocateFileList(struct availablePackage * alp,
 	} while (rc > 0 && nextReloc);
 
 	if (!rc) {
-	    newName = alloca(newLen + strlen(names[i]) + 1);
-	    strcpy(newName, nextReloc->newPath);
-	    strcat(newName, names[i] + len);
-	    rpmMessage(RPMMESS_DEBUG, _("relocating %s to %s\n"),
-		       names[i], newName);
-	    names[i] = newName;
+	    if (nextReloc->newPath) {
+		newName = alloca(newLen + strlen(names[i]) + 1);
+		strcpy(newName, nextReloc->newPath);
+		strcat(newName, names[i] + len);
+		rpmMessage(RPMMESS_DEBUG, _("relocating %s to %s\n"),
+			   names[i], newName);
+		names[i] = newName;
+		relocated = 1;
+	    } else if (actions) {
+		actions[i] = SKIP;
+	    }
 	} 
     }
 
-    headerModifyEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, 
-		      names, fileCount);
+    if (relocated) {
+	headerGetEntry(h, RPMTAG_FILENAMES, NULL, &origNames, NULL);
+	headerAddEntry(h, RPMTAG_ORIGFILENAMES, RPM_STRING_ARRAY_TYPE, 
+			  origNames, fileCount);
+	free(origNames);
+	headerModifyEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, 
+			  names, fileCount);
+    }
 
     free(names);
 
