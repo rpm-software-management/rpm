@@ -282,7 +282,9 @@ static int fieCompare(const void * one, const void * two)
 /*@-modfilesys@*/
 if (_rpmal_debug) {
 fprintf(stderr, "\t\tstrcmp(%p:%p, %p:%p)", a, a->baseName, b, b->baseName);
+#if 0
 fprintf(stderr, " a %s", a->baseName);
+#endif
 fprintf(stderr, " b %s", a->baseName);
 fprintf(stderr, "\n");
 }
@@ -355,7 +357,7 @@ fprintf(stderr, "--- die[%5d] %p [%3d] %s\n", (die - al->dirs), die, die->dirNam
 		if (i < die->numFiles) {
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p,0x%x)\n", die->files, die->numFiles, fie, fie->baseName, fie+1, ((die->numFiles - i) * sizeof(*fie)));
+fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%x) %s <- %s\n", die->files, die->numFiles, fie, fie->baseName, fie+1, (fie+1)->baseName, ((die->numFiles - i) * sizeof(*fie)), fie->baseName, (fie+1)->baseName);
 /*@=modfilesys@*/
 
 /*@-bounds@*/
@@ -364,7 +366,7 @@ fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p,0x%x)\n", die->files, die->numFiles,
 		}
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%x)\n", die->files, die->numFiles, die->files + die->numFiles, sizeof(*fie));
+fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%x) %p [%3d] %s\n", die->files, die->numFiles, die->files + die->numFiles, sizeof(*fie), fie->baseName, fie->baseNameLen, fie->baseName);
 /*@=modfilesys@*/
 		memset(die->files + die->numFiles, 0, sizeof(*fie)); /* overkill */
 
@@ -456,34 +458,54 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
     fi = rpmfiLink(alp->fi, "Files index (rpmalAdd)");
     fi = rpmfiInit(fi, 0);
     if (rpmfiFC(fi) > 0) {
-	int * dirMapping;
 	dirInfo dieNeedle =
 		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
 	dirInfo die;
-	int first;
-	int origNumDirs;
+	int dc = rpmfiDC(fi);
 	int dx;
-	int dc;
-
-	dc = rpmfiDC(fi);
+	int * dirMapping = alloca(sizeof(*dirMapping) * dc);
+	int * dirUnique = alloca(sizeof(*dirUnique) * dc);
+	const char * DN;
+	int origNumDirs;
+	int first;
+	int i;
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
-	dirMapping = alloca(sizeof(*dirMapping) * dc);
-
-	/*
-	 * Allocated enough space for all the directories we could possible
-	 * need to add
-	 */
+	/* XXX enough space for all directories, late realloc to truncate. */
 	al->dirs = xrealloc(al->dirs, (al->numDirs + dc) * sizeof(*al->dirs));
+
+	/* Only previously allocated dirInfo is sorted and bsearch'able. */
 	origNumDirs = al->numDirs;
 
+	/* Package dirnames are not currently unique. Create unique mapping. */
+	for (dx = 0; dx < dc; dx++) {
+	    (void) rpmfiSetDX(fi, dx);
+	    DN = rpmfiDN(fi);
+	    for (i = 0; i < dx; i++) {
+		const char * iDN;
+		(void) rpmfiSetDX(fi, i);
+		iDN = rpmfiDN(fi);
+		if (!strcmp(DN, iDN))
+		    break;
+	    }
+	    dirUnique[dx] = i;
+	}
+
+	/* Map package dirs into transaction dirInfo index. */
 	for (dx = 0; dx < dc; dx++) {
 
+	    /* Non-unique package dirs use the 1st entry mapping. */
+	    if (dirUnique[dx] < dx) {
+		dirMapping[dx] = dirMapping[dirUnique[dx]];
+		continue;
+	    }
+
+	    /* Find global dirInfo mapping for first encounter. */
 	    (void) rpmfiSetDX(fi, dx);
 
 	    /*@-assignexpose -dependenttrans -observertrans@*/
-	    {   const char * DN = rpmfiDN(fi);
+	    {   DN = rpmfiDN(fi);
 
 #if defined(__ia64__)
 /* XXX Make sure that autorelocated file dependencies are satisfied. */
