@@ -46,7 +46,9 @@ static const char * lbl(void * s)
     if (o->ob_type == &PyCode_Type)	return "Code";
     if (o->ob_type == &PyComplex_Type)	return "Complex";
     if (o->ob_type == &PyDict_Type)	return "Dict";
+#if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 4
     if (o->ob_type == &PyDictIter_Type)	return "DictIter";
+#endif
     if (o->ob_type == &PyFile_Type)	return "File";
     if (o->ob_type == &PyFloat_Type)	return "Float";
     if (o->ob_type == &PyFrame_Type)	return "Frame";

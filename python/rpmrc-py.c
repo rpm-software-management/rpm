@@ -207,6 +207,7 @@ fprintf(stderr, "*** rpmrc_richcompare(%p[%s],%p[%s],%x)\n", v, lbl(v), w, lbl(w
     return PyDict_Type.tp_richcompare(v, w, op);
 }
 
+#if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 4
 /**
  */
 static PyObject * rpmrc_iter(PyObject * s)
@@ -244,6 +245,10 @@ fprintf(stderr, "*** rpmrc_next(%p[%s],%p)\n", s, lbl(s), args);
 	return PyDictIter_Type.tp_methods[0].ml_meth(s, args);
     return NULL;
 }
+#else
+#define	rpmrc_iter	0
+#define	rpmrc_iternext	0
+#endif
 
 /** \ingroup py_c
  */
@@ -311,7 +316,7 @@ static struct PyMethodDef rpmrc_methods[] = {
 	NULL },
     { "delMacro",	(PyCFunction) rpmrc_DelMacro, METH_VARARGS,
 	NULL },
-#if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
+#if Py_TPFLAGS_HAVE_ITER && PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 4
     { "next",		(PyCFunction) rpmrc_next,     METH_VARARGS,
 	"next() -- get the next value, or raise StopIteration"},
 #endif
