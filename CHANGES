@@ -7,6 +7,9 @@
 	- used pclose() instead of fclose() in -t code
 	- updated man pages
 	- changed "struct rpmdb" to "struct rpmdb_s" for C++
+	- netsharedpath entries shouldn't match partial directory names
+	  anymore (a nersharedpath of /usr/lib shouldn't affect /usr/libexec)
+	- don't backup config files on netsharedpaths (take 2)
 
 2.4 -> 2.4.1:
 	- take advantage of lchown() if it's available

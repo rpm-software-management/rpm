@@ -208,7 +208,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     struct fileInfo * files;
     int_32 installTime;
     char * fileStates;
-    int i;
+    int i, j;
     int installFile = 0;
     int otherOffset = 0;
     char * ext = NULL, * newpath;
@@ -390,9 +390,13 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 	    /* netsharedPaths are not relative to the current root (though 
 	       they do need to take the package prefix into account */
-	    for (nsp = netsharedPaths; nsp && *nsp; nsp++) 
-		if (!strncmp(files[i].relativePath, *nsp, strlen(*nsp))) 
+	    for (nsp = netsharedPaths; nsp && *nsp; nsp++) {
+		j = strlen(*nsp);
+		if (!strncmp(files[i].relativePath, *nsp, j) &&
+		    (files[i].relativePath[j] == '\0' ||
+		     files[i].relativePath[j] == '/'))
 		    break;
+	    }
 
 	    if (nsp && *nsp) {
 		rpmMessage(RPMMESS_DEBUG, "file %s in netshared path\n", 
@@ -853,7 +857,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
     for (i = 0; i < sharedCount; i++) {
 	/* if a file isn't going to be installed it doesn't matter who
 	   it's shared with */
-	if (!files[sharedList[i].mainFileNumber].install) continue;
+	if (!files[sharedList[i].mainFileNumber].action == SKIP) continue;
 
 	if (secOffset != sharedList[i].secRecOffset) {
 	    if (secOffset) {
