@@ -394,7 +394,6 @@ static inline int db3c_open(dbiIndex dbi, /*@out@*/ DBC ** dbcp, int dbiflags)
     if ((dbiflags & DBI_WRITECURSOR) &&
 	(dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
     {
-fprintf(stderr, "D: *** WRITECURSOR\n");
 	flags = DB_WRITECURSOR;
     } else
 	flags = 0;
@@ -916,7 +915,6 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
 	    if (rc == 0 && dbi->dbi_use_dbenv && (dbi->dbi_eflags & DB_INIT_CDB) && dbi->dbi_get_rmw_cursor) {
 		DBC * dbcursor = NULL;
-fprintf(stderr, "D: *** rmw WRITECURSOR\n");
 		xx = db->cursor(db, txnid, &dbcursor,
 			((oflags & DB_RDONLY) ? 0 : DB_WRITECURSOR));
 		xx = cvtdberr(dbi, "db->cursor", xx, _debug);

@@ -175,12 +175,12 @@ if [ -f /var/lib/rpm/packages.rpm ]; then
 elif [ -f /var/lib/rpm/Packages ]; then
     # undo db1 configuration
     rm -f /etc/rpm/macros.db1
-   /bin/chown @@RPMUSER@@.@@RPMGROUP@@ /var/lib/rpm/[A-Z]*
+   /bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]*
 else
     # initialize db3 database
     rm -f /etc/rpm/macros.db1
     /bin/rpm --initdb
-   /bin/chown @@RPMUSER@@.@@RPMGROUP@@ /var/lib/rpm/[A-Z]*
+   /bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]*
 fi
 
 %ifos linux
@@ -207,67 +207,67 @@ fi
 %files
 %defattr(-,root,root)
 %doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	/bin/rpm
+%attr(0755, @RPMUSER@, @RPMGROUP@)	/bin/rpm
 %dir			/etc/rpm
 %config(missingok)	/etc/rpm/macros.db1
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/bin/rpm2cpio
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/bin/gendiff
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/bin/rpmdb
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/bin/rpm[eiukqv]
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/bin/rpmsign
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/bin/rpmquery
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/bin/rpmverify
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpm2cpio
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/gendiff
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpmdb
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpm[eiukqv]
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpmsign
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpmquery
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpmverify
 
 %{__prefix}/lib/librpm.so.*
 %{__prefix}/lib/librpmdb.so.*
 %{__prefix}/lib/librpmio.so.*
 %{__prefix}/lib/librpmbuild.so.*
 
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/config.guess
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/config.sub
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/convertrpmrc.sh
-%attr(0644, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/macros
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/mkinstalldirs
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpm[deiukqv]
-%attr(0644, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpmpopt*
-%attr(0644, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpmrc
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/config.guess
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/config.sub
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/convertrpmrc.sh
+%attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/macros
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/mkinstalldirs
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpm[deiukqv]
+%attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmpopt*
+%attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmrc
 
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%dir /var/lib/rpm
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/Basenames
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/Conflictname
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/__db.001
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/Dirnames
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/Group
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/Installtid
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/Name
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/Packages
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/Providename
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/Provideversion
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/Removetid
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/Requirename
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/Requireversion
-#%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%ghost /var/lib/rpm/Triggername
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Basenames
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Conflictname
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/__db.001
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Dirnames
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Group
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Installtid
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Name
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Packages
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Providename
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Provideversion
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Removetid
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Requirename
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Requireversion
+#%attr(0755, @RPMUSER@, @RPMGROUP@)	%ghost /var/lib/rpm/Triggername
 
 %ifarch i386 i486 i586 i686 athlon
-%attr(-, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/i[3456]86*
+%attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/i[3456]86*
 %endif
 %ifarch alpha
-%attr(-, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/alpha*
+%attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/alpha*
 %endif
 %ifarch sparc sparc64
-%attr(-, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/sparc*
+%attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/sparc*
 %endif
 %ifarch ia64
-%attr(-, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/ia64*
+%attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/ia64*
 %endif
 %ifarch powerpc ppc
-%attr(-, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/ppc*
+%attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/ppc*
 %endif
 %ifarch s390 s390x
-%attr(-, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/s390*
+%attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/s390*
 %endif
 %ifarch armv3l armv4l
-%attr(-, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/armv[34][lb]*
+%attr(-, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/armv[34][lb]*
 %endif
 
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
@@ -303,31 +303,31 @@ fi
 %dir %{__prefix}/src/redhat/SRPMS
 %dir %{__prefix}/src/redhat/RPMS
 %{__prefix}/src/redhat/RPMS/*
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/bin/rpmbuild
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/brp-*
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/check-prereqs
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/cpanflute
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/find-lang.sh
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/find-prov.pl
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/find-provides
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/find-provides.perl
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/find-req.pl
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/find-requires
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/find-requires.perl
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/get_magic.pl
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/getpo.sh
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/http.req
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/javadeps
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/magic.prov
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/magic.req
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/perl.prov
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/perl.req
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpm[bt]
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpmdiff
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/rpmdiff.cgi
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/u_pkg.sh
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/vpkg-provides.sh
-%attr(0755, @@RPMUSER@@, @@RPMGROUP@@)	%{__prefix}/lib/rpm/vpkg-provides2.sh
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpmbuild
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/brp-*
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/check-prereqs
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/cpanflute
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-lang.sh
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-prov.pl
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-provides
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-provides.perl
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-req.pl
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-requires
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/find-requires.perl
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/get_magic.pl
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/getpo.sh
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/http.req
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/javadeps
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/magic.prov
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/magic.req
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/perl.prov
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/perl.req
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpm[bt]
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmdiff
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmdiff.cgi
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/u_pkg.sh
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/vpkg-provides.sh
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/vpkg-provides2.sh
 
 %if %{with_python_subpackage}
 %files python
