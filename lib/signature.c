@@ -278,9 +278,7 @@ int verifySignature(char *file, int_32 sigTag, void *sig, int count,
 	}
 	break;
       case SIGTAG_PGP:
-	if (verifyPGPSignature(file, sig, count, result)) {
-	    return 1;
-	}
+	return verifyPGPSignature(file, sig, count, result);
 	break;
       default:
 	sprintf(result, "Do not know how to verify sig type %d\n", sigTag);
@@ -345,6 +343,7 @@ static int verifyPGPSignature(char *datafile, void *sig,
     char *sigfile;
     unsigned char buf[8192];
     FILE *file;
+    int res = RPMSIG_OK;
 
     /* Write out the signature */
     sigfile = tempnam("/var/tmp", "rpmsig");
@@ -380,16 +379,19 @@ static int verifyPGPSignature(char *datafile, void *sig,
 	    buf[0] != '\n') {
 	    strcat(result, buf);
 	}
+	if (!strncmp("WARNING: Can't find the right public key", buf, 40)) {
+	    res = RPMSIG_NOKEY;
+	}
     }
     fclose(file);
 
     waitpid(pid, &status, 0);
     unlink(sigfile);
-    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	return 1;
+    if (!res && (!WIFEXITED(status) || WEXITSTATUS(status))) {
+	res = RPMSIG_BAD;
     }
     
-    return 0;
+    return res;
 }
 
 char *getPassPhrase(char *prompt)

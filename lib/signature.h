@@ -45,6 +45,7 @@
 #define RPMSIG_OK        0
 #define RPMSIG_UNKNOWN   1
 #define RPMSIG_BAD       2
+#define RPMSIG_NOKEY     3  /* Do not have the key to check this signature */
 
 /**************************************************/
 /*                                                */
