@@ -16,7 +16,6 @@
 #include "md5.h"
 #include "misc.h"
 #include "rpmdb.h"
-#include "rpmerr.h"
 #include "rpmlib.h"
 
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:"
@@ -49,7 +48,7 @@ int findSharedFiles(rpmdb db, int offset, char ** fileList, int fileCount,
     struct sharedFile * list = NULL;
     int itemsUsed = 0;
     int itemsAllocated = 0;
-    dbIndexSet matches;
+    dbiIndexSet matches;
 
     itemsAllocated = 5;
     list = malloc(sizeof(struct sharedFile) * itemsAllocated);
@@ -70,7 +69,7 @@ int findSharedFiles(rpmdb db, int offset, char ** fileList, int fileCount,
 		}
 	    }
 
-	    freeDBIndexRecord(matches);
+	    dbiFreeIndexRecord(matches);
 	}
     }
 
@@ -114,7 +113,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
     for (i = 0; i < sharedCount; i++) {
 	if (secOffset != sharedList[i].secRecOffset) {
 	    if (secOffset) {
-		freeHeader(sech);
+		headerFree(sech);
 		free(secFileMd5List);
 		free(secFileList);
 	    }
@@ -122,58 +121,58 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
 	    secOffset = sharedList[i].secRecOffset;
 	    sech = rpmdbGetRecord(db, secOffset);
 	    if (!sech) {
-		error(RPMERR_DBCORRUPT, "cannot read header at %d for "
+		rpmError(RPMERR_DBCORRUPT, "cannot read header at %d for "
 		      "uninstall", offset);
 		rc = 1;
 		break;
 	    }
 
-	    getEntry(sech, RPMTAG_NAME, &type, (void **) &name, 
+	    headerGetEntry(sech, RPMTAG_NAME, &type, (void **) &name, 
 		     &secFileCount);
-	    getEntry(sech, RPMTAG_VERSION, &type, (void **) &version, 
+	    headerGetEntry(sech, RPMTAG_VERSION, &type, (void **) &version, 
 		     &secFileCount);
-	    getEntry(sech, RPMTAG_RELEASE, &type, (void **) &release, 
+	    headerGetEntry(sech, RPMTAG_RELEASE, &type, (void **) &release, 
 		     &secFileCount);
 
-	    message(MESS_DEBUG, "package %s-%s-%s contain shared files\n", 
+	    rpmMessage(RPMMESS_DEBUG, "package %s-%s-%s contain shared files\n", 
 		    name, version, release);
 
-	    if (!getEntry(sech, RPMTAG_FILENAMES, &type, 
+	    if (!headerGetEntry(sech, RPMTAG_FILENAMES, &type, 
 			  (void **) &secFileList, &secFileCount)) {
-		error(RPMERR_DBCORRUPT, "package %s contains no files",
+		rpmError(RPMERR_DBCORRUPT, "package %s contains no files",
 		      name);
-		freeHeader(sech);
+		headerFree(sech);
 		rc = 1;
 		break;
 	    }
 
-	    getEntry(sech, RPMTAG_FILESTATES, &type, 
+	    headerGetEntry(sech, RPMTAG_FILESTATES, &type, 
 		     (void **) &secFileStatesList, &secFileCount);
-	    getEntry(sech, RPMTAG_FILEMD5S, &type, 
+	    headerGetEntry(sech, RPMTAG_FILEMD5S, &type, 
 		     (void **) &secFileMd5List, &secFileCount);
 	}
 
-	message(MESS_DEBUG, "file %s is shared\n",
+	rpmMessage(RPMMESS_DEBUG, "file %s is shared\n",
 		fileList[sharedList[i].mainFileNumber]);
 	
 	switch (secFileStatesList[sharedList[i].secFileNumber]) {
 	  case RPMFILE_STATE_REPLACED:
-	    message(MESS_DEBUG, "     file has already been replaced\n");
+	    rpmMessage(RPMMESS_DEBUG, "     file has already been replaced\n");
 	    break;
 
 	  case RPMFILE_STATE_NOTINSTALLED:
-	    message(MESS_DEBUG, "     file was never installed\n");
+	    rpmMessage(RPMMESS_DEBUG, "     file was never installed\n");
 	    break;
     
 	  case RPMFILE_STATE_NETSHARED:
-	    message(MESS_DEBUG, "     file is netshared (so don't touch it)\n");
+	    rpmMessage(RPMMESS_DEBUG, "     file is netshared (so don't touch it)\n");
 	    fileActions[sharedList[i].mainFileNumber] = KEEP;
 	    break;
     
 	  case RPMFILE_STATE_NORMAL:
 	    if (!strcmp(fileMd5List[sharedList[i].mainFileNumber],
 			secFileMd5List[sharedList[i].secFileNumber])) {
-		message(MESS_DEBUG, "    file is truely shared - saving\n");
+		rpmMessage(RPMMESS_DEBUG, "    file is truely shared - saving\n");
 	    }
 	    fileActions[sharedList[i].mainFileNumber] = KEEP;
 	    break;
@@ -181,7 +180,7 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
     }
 
     if (secOffset) {
-	freeHeader(sech);
+	headerFree(sech);
 	free(secFileMd5List);
 	free(secFileList);
     }
@@ -196,7 +195,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     int fileCount;
     char * rmmess, * name, * version, * release;
     char * fnbuffer = NULL;
-    dbIndexSet matches;
+    dbiIndexSet matches;
     int fnbuffersize = 0;
     int prefixLength = strlen(prefix);
     char ** fileList, ** fileMd5List;
@@ -209,54 +208,54 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 
     h = rpmdbGetRecord(db, offset);
     if (!h) {
-	error(RPMERR_DBCORRUPT, "cannot read header at %d for uninstall",
+	rpmError(RPMERR_DBCORRUPT, "cannot read header at %d for uninstall",
 	      offset);
 	return 1;
     }
 
-    getEntry(h, RPMTAG_NAME, &type, (void **) &name,  &count);
-    getEntry(h, RPMTAG_VERSION, &type, (void **) &version,  &count);
-    getEntry(h, RPMTAG_RELEASE, &type, (void **) &release,  &count);
+    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name,  &count);
+    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version,  &count);
+    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release,  &count);
     /* when we run scripts, we pass an argument which is the number of 
        versions of this package that will be installed when we are finished */
     if (rpmdbFindPackage(db, name, &matches)) {
-	error(RPMERR_DBCORRUPT, "cannot read packages named %s for uninstall",
+	rpmError(RPMERR_DBCORRUPT, "cannot read packages named %s for uninstall",
 	      name);
 	return 1;
     }
  
     scriptArg = matches.count - 1;
-    freeDBIndexRecord(matches);
+    dbiFreeIndexRecord(matches);
 
-    if (flags & UNINSTALL_TEST) {
+    if (flags & RPMUNINSTALL_TEST) {
 	rmmess = "would remove";
     } else {
 	rmmess = "removing";
     }
 
-    message(MESS_DEBUG, "running preuninstall script (if any)\n");
+    rpmMessage(RPMMESS_DEBUG, "running preuninstall script (if any)\n");
 
     if (runScript(prefix, h, RPMTAG_PREUN, scriptArg, 
-		 flags & UNINSTALL_NOSCRIPTS)) {
-	freeHeader(h);
+		 flags & RPMUNINSTALL_NOSCRIPTS)) {
+	headerFree(h);
 	return 1;
     }
     
-    message(MESS_DEBUG, "%s files test = %d\n", rmmess, flags & UNINSTALL_TEST);
-    if (getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+    rpmMessage(RPMMESS_DEBUG, "%s files test = %d\n", rmmess, flags & RPMUNINSTALL_TEST);
+    if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 	 &fileCount)) {
 	if (prefix[0]) {
 	    fnbuffersize = 1024;
 	    fnbuffer = alloca(fnbuffersize);
 	}
 
-	getEntry(h, RPMTAG_FILESTATES, &type, (void **) &fileStatesList, 
+	headerGetEntry(h, RPMTAG_FILESTATES, &type, (void **) &fileStatesList, 
 		 &fileCount);
-	getEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5List, 
+	headerGetEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5List, 
 		 &fileCount);
-	getEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, 
+	headerGetEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, 
 		 &fileCount);
-	getEntry(h, RPMTAG_FILEMODES, &type, (void **) &fileModesList, 
+	headerGetEntry(h, RPMTAG_FILEMODES, &type, (void **) &fileModesList, 
 		 &fileCount);
 
 	fileActions = alloca(sizeof(*fileActions) * fileCount);
@@ -286,21 +285,21 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 
 	    removeFile(fnbuffer, fileStatesList[i], fileFlagsList[i],
 		       fileMd5List[i], fileModesList[i], fileActions[i], 
-		       rmmess, !isEntry(h, RPMTAG_RPMVERSION),
-		       flags & UNINSTALL_TEST);
+		       rmmess, !headerIsEntry(h, RPMTAG_RPMVERSION),
+		       flags & RPMUNINSTALL_TEST);
 	}
 
 	free(fileList);
 	free(fileMd5List);
     }
 
-    message(MESS_DEBUG, "running postuninstall script (if any)\n");
-    runScript(prefix, h, RPMTAG_POSTUN, scriptArg, flags & UNINSTALL_NOSCRIPTS);
+    rpmMessage(RPMMESS_DEBUG, "running postuninstall script (if any)\n");
+    runScript(prefix, h, RPMTAG_POSTUN, scriptArg, flags & RPMUNINSTALL_NOSCRIPTS);
 
-    freeHeader(h);
+    headerFree(h);
 
-    message(MESS_DEBUG, "%s database entry\n", rmmess);
-    if (!(flags & UNINSTALL_TEST))
+    rpmMessage(RPMMESS_DEBUG, "%s database entry\n", rmmess);
+    if (!(flags & RPMUNINSTALL_TEST))
 	rpmdbRemove(db, offset, 0);
 
     return 0;
@@ -311,7 +310,7 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
     char * script;
     char * fn;
     int fd;
-    int isdebug = isDebug();
+    int isdebug = rpmIsDebug();
     int child;
     int status;
     char upgradeArg[20];
@@ -322,8 +321,8 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
 
     if (norunScripts) return 0;
 
-    if (getEntry(h, tag, &type, (void **) &script, &count)) {
-	if (getEntry(h, RPMTAG_INSTALLPREFIX, &type, (void **) &installPrefix,
+    if (headerGetEntry(h, tag, &type, (void **) &script, &count)) {
+	if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, &type, (void **) &installPrefix,
 	    	     &count)) {
 	    installPrefixEnv = alloca(strlen(installPrefix) + 30);
 	    strcpy(installPrefixEnv, "RPM_INSTALL_PREFIX=");
@@ -331,11 +330,11 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
 	}
 
 	fn = tmpnam(NULL);
-	message(MESS_DEBUG, "script found - running from file %s\n", fn);
+	rpmMessage(RPMMESS_DEBUG, "script found - running from file %s\n", fn);
 	fd = open(fn, O_CREAT | O_RDWR);
 	unlink(fn);
 	if (fd < 0) {
-	    error(RPMERR_SCRIPT, "error creating file for (un)install script");
+	    rpmError(RPMERR_SCRIPT, "error creating file for (un)install script");
 	    return 1;
 	}
 	write(fd, SCRIPT_PATH, strlen(SCRIPT_PATH));
@@ -354,7 +353,7 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
 	    close(fd);
 
 	    if (strcmp(prefix, "/")) {
-		message(MESS_DEBUG, "performing chroot(%s)\n", prefix);
+		rpmMessage(RPMMESS_DEBUG, "performing chroot(%s)\n", prefix);
 		chroot(prefix);
 		chdir("/");
 	    }
@@ -369,7 +368,7 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
 	waitpid(child, &status, 0);
 
 	if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	    error(RPMERR_SCRIPT, "execution of script failed");
+	    rpmError(RPMERR_SCRIPT, "execution of script failed");
 	    return 1;
 	}
     }
@@ -386,26 +385,26 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	
     switch (state) {
       case RPMFILE_STATE_REPLACED:
-	message(MESS_DEBUG, "%s has already been replaced\n", file);
+	rpmMessage(RPMMESS_DEBUG, "%s has already been replaced\n", file);
 	break;
 
       case RPMFILE_STATE_NORMAL:
 	if ((action == REMOVE) && (flags & RPMFILE_CONFIG)) {
 	    /* if it's a config file, we may not want to remove it */
-	    message(MESS_DEBUG, "finding md5sum of %s\n", file);
+	    rpmMessage(RPMMESS_DEBUG, "finding md5sum of %s\n", file);
 	    if (brokenMd5)
 		rc = mdfileBroken(file, currentMd5);
 	    else
 		rc = mdfile(file, currentMd5);
 
 	    if (mdfile(file, currentMd5)) 
-		message(MESS_DEBUG, "    failed - assuming file removed\n");
+		rpmMessage(RPMMESS_DEBUG, "    failed - assuming file removed\n");
 	    else {
 		if (strcmp(currentMd5, md5)) {
-		    message(MESS_DEBUG, "    file changed - will save\n");
+		    rpmMessage(RPMMESS_DEBUG, "    file changed - will save\n");
 		    action = BACKUP;
 		} else {
-		    message(MESS_DEBUG, "    file unchanged - will remove\n");
+		    rpmMessage(RPMMESS_DEBUG, "    file unchanged - will remove\n");
 		}
 	    }
 	}
@@ -413,17 +412,17 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	switch (action) {
 
 	  case KEEP:
-	    message(MESS_DEBUG, "keeping %s\n", file);
+	    rpmMessage(RPMMESS_DEBUG, "keeping %s\n", file);
 	    break;
 
 	  case BACKUP:
-	    message(MESS_DEBUG, "saving %s as %s.rpmsave\n", file, file);
+	    rpmMessage(RPMMESS_DEBUG, "saving %s as %s.rpmsave\n", file, file);
 	    if (!test) {
 		newfile = alloca(strlen(file) + 20);
 		strcpy(newfile, file);
 		strcat(newfile, ".rpmsave");
 		if (rename(file, newfile)) {
-		    error(RPMERR_RENAME, "rename of %s to %s failed: %s",
+		    rpmError(RPMERR_RENAME, "rename of %s to %s failed: %s",
 				file, newfile, strerror(errno));
 		    rc = 1;
 		}
@@ -431,15 +430,15 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	    break;
 
 	  case REMOVE:
-	    message(MESS_DEBUG, "%s - %s\n", file, rmmess);
+	    rpmMessage(RPMMESS_DEBUG, "%s - %s\n", file, rmmess);
 	    if (S_ISDIR(mode)) {
 		if (!test) {
 		    if (rmdir(file)) {
 			if (errno == ENOTEMPTY)
-			    error(RPMERR_RMDIR, "cannot remove %s - directory "
+			    rpmError(RPMERR_RMDIR, "cannot remove %s - directory "
 				  "not empty", file);
 			else
-			    error(RPMERR_RMDIR, "rmdir of %s failed: %s",
+			    rpmError(RPMERR_RMDIR, "rmdir of %s failed: %s",
 					file, strerror(errno));
 			rc = 1;
 		    }
@@ -447,7 +446,7 @@ static int removeFile(char * file, char state, unsigned int flags, char * md5,
 	    } else {
 		if (!test) {
 		    if (unlink(file)) {
-			error(RPMERR_UNLINK, "removal of %s failed: %s",
+			rpmError(RPMERR_UNLINK, "removal of %s failed: %s",
 				    file, strerror(errno));
 			rc = 1;
 		    }

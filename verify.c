@@ -11,7 +11,7 @@
 #include "verify.h"
 
 static void verifyHeader(char * prefix, Header h);
-static void verifyMatches(char * prefix, rpmdb db, dbIndexSet matches,
+static void verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
 			  int verifyFlags);
 static void verifyDependencies(rpmdb db, Header h);
 
@@ -24,9 +24,9 @@ static void verifyHeader(char * prefix, Header h) {
     char * group, * user, * rdev;
     int_32 * fileFlagsList;
 
-    getEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, &count);
+    headerGetEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, &count);
 
-    if (getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, &count)) {
+    if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, &count)) {
 	for (i = 0; i < count; i++) {
 	    if (rpmVerifyFile(prefix, h, i, &verifyResult))
 		printf("missing    %s\n", fileList[i]);
@@ -36,21 +36,21 @@ static void verifyHeader(char * prefix, Header h) {
 
 		if (!verifyResult) continue;
 	    
-		if (verifyResult & VERIFY_MD5)
+		if (verifyResult & RPMVERIFY_MD5)
 		    md5 = "5";
-		if (verifyResult & VERIFY_FILESIZE)
+		if (verifyResult & RPMVERIFY_FILESIZE)
 		    size = "S";
-		if (verifyResult & VERIFY_LINKTO)
+		if (verifyResult & RPMVERIFY_LINKTO)
 		    link = "L";
-		if (verifyResult & VERIFY_MTIME)
+		if (verifyResult & RPMVERIFY_MTIME)
 		    mtime = "T";
-		if (verifyResult & VERIFY_RDEV)
+		if (verifyResult & RPMVERIFY_RDEV)
 		    rdev = "D";
-		if (verifyResult & VERIFY_USER)
+		if (verifyResult & RPMVERIFY_USER)
 		    user = "U";
-		if (verifyResult & VERIFY_GROUP)
+		if (verifyResult & RPMVERIFY_GROUP)
 		    group = "G";
-		if (verifyResult & VERIFY_MODE)
+		if (verifyResult & RPMVERIFY_MODE)
 		    mode = "M";
 
 		printf("%s%s%s%s%s%s%s%s %c %s\n",
@@ -78,9 +78,9 @@ static void verifyDependencies(rpmdb db, Header h) {
     rpmdepDone(rpmdep);
 
     if (numConflicts) {
-	getEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
-	getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
-	getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
+	headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
+	headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
+	headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
 	printf("Unsatisfied dependencies for %s-%s-%s: ", name, version, 
 		release);
 	for (i = 0; i < numConflicts; i++) {
@@ -96,14 +96,14 @@ static void verifyDependencies(rpmdb db, Header h) {
     }
 }
 
-static void verifyMatches(char * prefix, rpmdb db, dbIndexSet matches,
+static void verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
 			  int verifyFlags) {
     int i;
     Header h;
 
     for (i = 0; i < matches.count; i++) {
 	if (matches.recs[i].recOffset) {
-	    message(MESS_DEBUG, "verifying record number %d\n",
+	    rpmMessage(RPMMESS_DEBUG, "verifying record number %d\n",
 			matches.recs[i].recOffset);
 	    
 	    h = rpmdbGetRecord(db, matches.recs[i].recOffset);
@@ -114,7 +114,7 @@ static void verifyMatches(char * prefix, rpmdb db, dbIndexSet matches,
 		    verifyDependencies(db, h);
 		if (verifyFlags & VERIFY_FILES)
 		    verifyHeader(prefix, h);
-		freeHeader(h);
+		headerFree(h);
 	    }
 	}
     }
@@ -128,7 +128,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
     int rc;
     int isSource;
     rpmdb db;
-    dbIndexSet matches;
+    dbiIndexSet matches;
     char * arg;
 
     if ((source == VERIFY_SRPM || source == VERIFY_RPM) && 
@@ -152,7 +152,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		verifyDependencies(db, h);
 	    if (verifyFlags & VERIFY_FILES)
 		verifyHeader(prefix, h);
-	    freeHeader(h);
+	    headerFree(h);
 	    offset = rpmdbNextRecNum(db, offset);
 	}
     } else {
@@ -167,7 +167,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		    fprintf(stderr, "open of %s failed: %s\n", arg, 
 			    strerror(errno));
 		} else {
-		    rc = pkgReadHeader(fd, &h, &isSource, NULL, NULL);
+		    rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
 		    close(fd);
 		    switch (rc) {
 			case 0:
@@ -175,7 +175,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 				verifyDependencies(db, h);
 			    if (verifyFlags & VERIFY_FILES)
 				verifyHeader(prefix, h);
-			    freeHeader(h);
+			    headerFree(h);
 			    break;
 			case 1:
 			    fprintf(stderr, "%s is not an RPM\n", arg);
@@ -191,7 +191,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 				     arg);
 		} else {
 		    verifyMatches(prefix, db, matches, verifyFlags);
-		    freeDBIndexRecord(matches);
+		    dbiFreeIndexRecord(matches);
 		}
 		break;
 
@@ -202,7 +202,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 				arg);
 		} else {
 		    verifyMatches(prefix, db, matches, verifyFlags);
-		    freeDBIndexRecord(matches);
+		    dbiFreeIndexRecord(matches);
 		}
 		break;
 
@@ -215,7 +215,7 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 		    fprintf(stderr, "error looking for package %s\n", arg);
 		} else {
 		    verifyMatches(prefix, db, matches, verifyFlags);
-		    freeDBIndexRecord(matches);
+		    dbiFreeIndexRecord(matches);
 		}
 		break;
 

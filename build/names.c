@@ -12,7 +12,7 @@
 
 #include "names.h"
 #include "rpmlib.h"
-#include "rpmerr.h"
+#include "messages.h"
 
 static uid_t uids[1024];
 static char *unames[1024];
@@ -183,7 +183,7 @@ char *buildHost(void)
 	if ((hbn = gethostbyname(hostname))) {
 	    strcpy(hostname, hbn->h_name);
 	} else {
-	    message(MESS_WARNING, "Could not canonicalize hostname: %s\n",
+	    rpmMessage(RPMMESS_WARNING, "Could not canonicalize hostname: %s\n",
 		    hostname);
 	}
 	gotit = 1;

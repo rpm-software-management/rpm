@@ -7,7 +7,7 @@
 
 static char * values[RPMVAR_LASTVAR + 1];
 
-char *getVar(int var)
+char *rpmGetVar(int var)
 {
     if (var > RPMVAR_LASTVAR) 
 	return NULL;
@@ -15,12 +15,12 @@ char *getVar(int var)
 	return values[var];
 }
 
-int getBooleanVar(int var) {
+int rpmGetBooleanVar(int var) {
     char * val;
     int num;
     char * chptr;
 
-    val = getVar(var);
+    val = rpmGetVar(var);
     if (!val) return 0;
 
     if (val[0] == 'y' || val[0] == 'Y') return 1;
@@ -33,7 +33,7 @@ int getBooleanVar(int var) {
     return 0;
 }
 
-void setVar(int var, char *val)
+void rpmSetVar(int var, char *val)
 {
     if (var > RPMVAR_LASTVAR) 
 	return ;		/* XXX should we go harey carey here? */

@@ -52,17 +52,17 @@ static int installPackages(char * rootdir, char ** packages, char * location,
     char * printFormat = NULL;
     char * chptr;
     int rc;
-    notifyFunction fn;
+    rpmNotifyFunction fn;
     char * netsharedPath = NULL;
 
-    if (interfaceFlags & RPMINSTALL_PERCENT)
+    if (interfaceFlags & INSTALL_PERCENT)
 	fn = printPercent;
-    else if (interfaceFlags & RPMINSTALL_HASH)
+    else if (interfaceFlags & INSTALL_HASH)
 	fn = printHash;
     else
 	fn = NULL;
 
-    netsharedPath = getVar(RPMVAR_NETSHAREDPATH);
+    netsharedPath = rpmGetVar(RPMVAR_NETSHAREDPATH);
 
     for (i = 0, filename = packages; i < numPackages; i++, filename++) {
 	if (!*filename) continue;
@@ -77,9 +77,9 @@ static int installPackages(char * rootdir, char ** packages, char * location,
 	    continue;
 	} 
 
-	if (interfaceFlags & RPMINSTALL_PERCENT) 
+	if (interfaceFlags & INSTALL_PERCENT) 
 	    printFormat = "%%f %s:%s:%s\n";
-	else if (isVerbose() && (interfaceFlags & RPMINSTALL_HASH)) {
+	else if (rpmIsVerbose() && (interfaceFlags & INSTALL_HASH)) {
 	    chptr = strrchr(*filename, '/');
 	    if (!chptr)
 		chptr = *filename;
@@ -87,15 +87,15 @@ static int installPackages(char * rootdir, char ** packages, char * location,
 		chptr++;
 
 	    printFormat = "%-28s";
-	} else if (isVerbose())
+	} else if (rpmIsVerbose())
 	    printf("Installing %s\n", *filename);
 
 	if (db) {
 	    rc = rpmInstallPackage(rootdir, db, fd, location, installFlags, fn, 
 				   printFormat, netsharedPath);
 	} else {
-	    if (installFlags &= INSTALL_TEST) {
-		message(MESS_DEBUG, "stopping source install as we're "
+	    if (installFlags &= RPMINSTALL_TEST) {
+		rpmMessage(RPMMESS_DEBUG, "stopping source install as we're "
 			"just testing\n");
 		rc = 0;
 	    } else {
@@ -138,31 +138,31 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
     int numConflicts;
     int stopInstall = 0;
 
-    if (installFlags & INSTALL_TEST) 
+    if (installFlags & RPMINSTALL_TEST) 
 	mode = O_RDONLY;
     else
 	mode = O_RDWR | O_CREAT;
 
-    message(MESS_DEBUG, "counting packages to install\n");
+    rpmMessage(RPMMESS_DEBUG, "counting packages to install\n");
     for (filename = argv, numPackages = 0; *filename; filename++, numPackages++)
 	;
 
-    message(MESS_DEBUG, "found %d packages\n", numPackages);
+    rpmMessage(RPMMESS_DEBUG, "found %d packages\n", numPackages);
     packages = alloca((numPackages + 1) * sizeof(char *));
     packages[numPackages] = NULL;
     tmpPackages = alloca((numPackages + 1) * sizeof(char *));
     binaryHeaders = alloca((numPackages + 1) * sizeof(Header));
 	
-    message(MESS_DEBUG, "looking for packages to download\n");
+    rpmMessage(RPMMESS_DEBUG, "looking for packages to download\n");
     for (filename = argv, i = 0; *filename; filename++) {
 	if (urlIsURL(*filename)) {
-	    if (isVerbose()) {
+	    if (rpmIsVerbose()) {
 		printf("Retrieving %s\n", *filename);
 	    }
 	    packages[i] = alloca(strlen(*filename) + 30 + strlen(rootdir));
 	    sprintf(packages[i], "%s/var/tmp/rpm-ftp-%d-%d.tmp", rootdir, 
 		    tmpnum++, (int) getpid());
-	    message(MESS_DEBUG, "getting %s as %s\n", *filename, packages[i]);
+	    rpmMessage(RPMMESS_DEBUG, "getting %s as %s\n", *filename, packages[i]);
 	    fd = urlGetFile(*filename, packages[i]);
 	    if (fd < 0) {
 		fprintf(stderr, "error: skipping %s - transfer failed - %s\n", 
@@ -177,9 +177,9 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	}
     }
 
-    message(MESS_DEBUG, "retrieved %d packages\n", numTmpPackages);
+    rpmMessage(RPMMESS_DEBUG, "retrieved %d packages\n", numTmpPackages);
 
-    message(MESS_DEBUG, "finding source and binary packages\n");
+    rpmMessage(RPMMESS_DEBUG, "finding source and binary packages\n");
     for (filename = packages; *filename; filename++) {
 	fd = open(*filename, O_RDONLY);
 	if (fd < 0) {
@@ -189,7 +189,7 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	    continue;
 	}
 
-	rc = pkgReadHeader(fd, &binaryHeaders[numBinaryPackages], &isSource,
+	rc = rpmReadPackageHeader(fd, &binaryHeaders[numBinaryPackages], &isSource,
 			   NULL, NULL);
 
 	close(fd);
@@ -206,7 +206,7 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	} else if (isSource) {
 	    /* the header will be NULL if this is a v1 source package */
 	    if (binaryHeaders[numBinaryPackages])
-		freeHeader(binaryHeaders[numBinaryPackages]);
+		headerFree(binaryHeaders[numBinaryPackages]);
 
 	    numSourcePackages++;
 	} else {
@@ -214,21 +214,21 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	}
     }
 
-    message(MESS_DEBUG, "found %d source and %d binary packages\n", 
+    rpmMessage(RPMMESS_DEBUG, "found %d source and %d binary packages\n", 
 		numSourcePackages, numBinaryPackages);
 
     if (numBinaryPackages) {
-	message(MESS_DEBUG, "opening database mode: 0%o\n", mode);
+	rpmMessage(RPMMESS_DEBUG, "opening database mode: 0%o\n", mode);
 	if (rpmdbOpen(rootdir, &db, mode, 0644)) {
 	    fprintf(stderr, "error: cannot open %s/var/lib/rpm/packages.rpm\n", 
 			rootdir);
 	    exit(1);
 	}
 
-	if (!(interfaceFlags & RPMINSTALL_NODEPS)) {
+	if (!(interfaceFlags & INSTALL_NODEPS)) {
 	    rpmdep = rpmdepDependencies(db);
 	    for (i = 0; i < numBinaryPackages; i++)
-		if (installFlags & INSTALL_UPGRADE)
+		if (installFlags & RPMINSTALL_UPGRADE)
 		    rpmdepUpgradePackage(rpmdep, binaryHeaders[i]);
 		else
 		    rpmdepAddPackage(rpmdep, binaryHeaders[i]);
@@ -253,7 +253,7 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	db = NULL;
 
     if (!stopInstall) {
-	message(MESS_DEBUG, "installing binary packages\n");
+	rpmMessage(RPMMESS_DEBUG, "installing binary packages\n");
 	numFailed += installPackages(rootdir, packages, location, numPackages, 
 				     installFlags, interfaceFlags, db);
     }
@@ -262,7 +262,7 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	unlink(tmpPackages[i]);
 
     for (i = 0; i < numBinaryPackages; i++) 
-	freeHeader(binaryHeaders[i]);
+	headerFree(binaryHeaders[i]);
 
     if (db) rpmdbClose(db);
 
@@ -272,7 +272,7 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 		 int interfaceFlags) {
     rpmdb db;
-    dbIndexSet matches;
+    dbiIndexSet matches;
     int i, j;
     int mode;
     int rc;
@@ -286,14 +286,14 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     int numConflicts;
     int stopUninstall = 0;
 
-    message(MESS_DEBUG, "counting packages to uninstall\n");
+    rpmMessage(RPMMESS_DEBUG, "counting packages to uninstall\n");
     for (arg = argv, numPackages = 0; *arg; arg++, numPackages++)
 	;
-    message(MESS_DEBUG, "found %d packages to uninstall\n", numPackages);
+    rpmMessage(RPMMESS_DEBUG, "found %d packages to uninstall\n", numPackages);
 
     packageOffsets = alloca(sizeof(int *) * numPackages);
 
-    if (uninstallFlags & UNINSTALL_TEST) 
+    if (uninstallFlags & RPMUNINSTALL_TEST) 
 	mode = O_RDONLY;
     else
 	mode = O_RDWR | O_EXCL;
@@ -329,12 +329,12 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 		}
 	    }
 
-	    freeDBIndexRecord(matches);
+	    dbiFreeIndexRecord(matches);
 	}
     }
     numPackages = j;
 
-    if (!(interfaceFlags & RPMUNINSTALL_NODEPS)) {
+    if (!(interfaceFlags & UNINSTALL_NODEPS)) {
 	rpmdep = rpmdepDependencies(db);
 	for (i = 0; i < numPackages; i++)
 	    rpmdepRemovePackage(rpmdep, packageOffsets[i]);
@@ -358,7 +358,7 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 
     if (!stopUninstall) {
 	for (i = 0; i < numPackages; i++) {
-	    message(MESS_DEBUG, "uninstalling record number %d\n",
+	    rpmMessage(RPMMESS_DEBUG, "uninstalling record number %d\n",
 			packageOffsets[i]);
 	    rpmRemovePackage(rootdir, db, packageOffsets[i], uninstallFlags);
 	}
@@ -379,7 +379,7 @@ int doSourceInstall(char * rootdir, char * arg, char ** specFile) {
 	return 1;
     }
 
-    if (isVerbose())
+    if (rpmIsVerbose())
 	printf("Installing %s\n", arg);
 
     rc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL);
@@ -396,13 +396,13 @@ void printDepFlags(FILE * f, char * version, int flags) {
     if (flags)
 	fprintf(f, " ");
 
-    if (flags & REQUIRE_LESS) 
+    if (flags & RPMSENSE_LESS) 
 	fprintf(f, "<");
-    if (flags & REQUIRE_GREATER)
+    if (flags & RPMSENSE_GREATER)
 	fprintf(f, ">");
-    if (flags & REQUIRE_EQUAL)
+    if (flags & RPMSENSE_EQUAL)
 	fprintf(f, "=");
-    if (flags & REQUIRE_SERIAL)
+    if (flags & RPMSENSE_SERIAL)
 	fprintf(f, "S");
 
     if (flags)

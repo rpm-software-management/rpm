@@ -1,33 +1,33 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "rpmerr.h"
+#include "rpmlib.h"
 
 static struct err {
     int code;
     char string[1024];
 } errorRec;
 
-static CallBackType errorCallback = NULL;
+static rpmErrorCallBackType errorCallback = NULL;
 
-int errCode(void)
+int rpmErrorCode(void)
 {
     return errorRec.code;
 }
 
-char *errCodeString(void)
+char *rpmErrorCodeString(void)
 {
     return NULL;
 }
 
-char *errString(void)
+char *rpmErrorString(void)
 {
     return errorRec.string;
 }
 
-CallBackType errSetCallback(CallBackType cb)
+rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType cb)
 {
-    CallBackType ocb;
+    rpmErrorCallBackType ocb;
 
     ocb = errorCallback;
     errorCallback = cb;
@@ -35,7 +35,7 @@ CallBackType errSetCallback(CallBackType cb)
     return ocb;
 }
 
-void error(int code, char *format, ...)
+void rpmError(int code, char *format, ...)
 {
     va_list args;
 

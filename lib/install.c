@@ -21,8 +21,8 @@
 #include "md5.h"
 #include "misc.h"
 #include "rpmdb.h"
-#include "rpmerr.h"
 #include "rpmlib.h"
+#include "messages.h"
 
 enum instActions { CREATE, BACKUP, KEEP, SAVE, SKIP };
 enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
@@ -43,7 +43,7 @@ static enum instActions decideFileFate(char * filespec, short dbMode,
 				char * dbMd5, char * dbLink, short newMode, 
 				char * newMd5, char * newLink, int brokenMd5);
 static int installArchive(char * prefix, int fd, struct fileToInstall * files,
-			  int fileCount, notifyFunction notify,
+			  int fileCount, rpmNotifyFunction notify,
 			  char ** installArchive, char * tmpPath,
 			  int archiveSize);
 static int packageAlreadyInstalled(rpmdb db, char * name, char * version, 
@@ -63,7 +63,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 				 struct replacedFile ** repListPtr, int flags);
 static int fileCompare(const void * one, const void * two);
 static int installSources(Header h, char * rootdir, int fd, 
-			  char ** specFilePtr, notifyFunction notify,
+			  char ** specFilePtr, rpmNotifyFunction notify,
 			  char * labelFormat);
 static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
 static int relocateFilelist(Header * hp, char * defaultPrefix, 
@@ -78,16 +78,16 @@ static void unglobFilename(char * dptr, char * sptr);
 /* 1 bad magic */
 /* 2 error */
 int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile,
-			    notifyFunction notify, char * labelFormat) {
+			    rpmNotifyFunction notify, char * labelFormat) {
     int rc, isSource;
     Header h;
     int major, minor;
 
-    rc = pkgReadHeader(fd, &h, &isSource, &major, &minor);
+    rc = rpmReadPackageHeader(fd, &h, &isSource, &major, &minor);
     if (rc) return rc;
 
     if (!isSource) {
-	error(RPMERR_NOTSRPM, "source package expected, binary found");
+	rpmError(RPMERR_NOTSRPM, "source package expected, binary found");
 	return 2;
     }
 
@@ -98,7 +98,7 @@ int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile,
     }
 
     rc = installSources(h, rootdir, fd, specFile, notify, labelFormat);
-    if (h) freeHeader(h);
+    if (h) headerFree(h);
  
     return rc;
 }
@@ -107,7 +107,7 @@ int rpmInstallSourcePackage(char * rootdir, int fd, char ** specFile,
 /* 1 bad magic */
 /* 2 error */
 int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location, 
-		      int flags, notifyFunction notify, char * labelFormat,
+		      int flags, rpmNotifyFunction notify, char * labelFormat,
 		      char * netsharedPath) {
     int rc, isSource, major, minor;
     char * name, * version, * release;
@@ -131,7 +131,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     char ** prefixedFileList = NULL;
     struct replacedFile * replacedList = NULL;
     char * defaultPrefix;
-    dbIndexSet matches;
+    dbiIndexSet matches;
     int * oldVersions;
     int * intptr;
     char * archivePrefix, * tmpPath;
@@ -142,12 +142,12 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     oldVersions = alloca(sizeof(int));
     *oldVersions = 0;
 
-    rc = pkgReadHeader(fd, &h, &isSource, &major, &minor);
+    rc = rpmReadPackageHeader(fd, &h, &isSource, &major, &minor);
     if (rc) return rc;
 
     if (isSource) {
-	if (flags & INSTALL_TEST) {
-	    message(MESS_DEBUG, "stopping install as we're running --test\n");
+	if (flags & RPMINSTALL_TEST) {
+	    rpmMessage(RPMMESS_DEBUG, "stopping install as we're running --test\n");
 	    return 0;
 	}
 
@@ -158,33 +158,33 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	}
 
 	rc = installSources(h, rootdir, fd, NULL, notify, labelFormat);
-	if (h) freeHeader(h);
+	if (h) headerFree(h);
 
 	return rc;
     }
 
     /* Do this now so we can give error messages, even though we'll just
        do it again after relocating everything */
-    getEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
-    getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
-    getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
+    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
+    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
+    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
 
-    if (!getEntry(h, RPMTAG_DEFAULTPREFIX, &type, (void *)
+    if (!headerGetEntry(h, RPMTAG_DEFAULTPREFIX, &type, (void *)
 			      &defaultPrefix, &fileCount)) {
 	defaultPrefix = NULL;
     }
 
     if (location && !defaultPrefix) {
-	error(RPMERR_NORELOCATE, "package %s-%s-%s is not relocatable",
+	rpmError(RPMERR_NORELOCATE, "package %s-%s-%s is not relocatable",
 		      name, version, release);
-	freeHeader(h);
+	headerFree(h);
 	return 2;
     } else if (!location && defaultPrefix)
 	location = defaultPrefix;
     
     if (location) {
 	relocateFilelist(&h, defaultPrefix, location, &relocationSize);
-        getEntry(h, RPMTAG_DEFAULTPREFIX, &type, (void *) &defaultPrefix, 
+        headerGetEntry(h, RPMTAG_DEFAULTPREFIX, &type, (void *) &defaultPrefix, 
 		&fileCount);
 	archivePrefix = alloca(strlen(rootdir) + strlen(location) + 2);
 	sprintf(archivePrefix, "%s/%s", rootdir, location);
@@ -196,27 +196,27 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     /* You're probably upset because name already points to the name of
        this package, right? Almost... it points to the name in the original
        header, which could have been trahsed by relocateFileList() */
-    getEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
-    getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
-    getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
+    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
+    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
+    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
 
-    if (!(flags & INSTALL_NOARCH) && !archOkay(h)) {
-	error(RPMERR_BADARCH, "package %s-%s-%s is for a different "
+    if (!(flags & RPMINSTALL_NOARCH) && !archOkay(h)) {
+	rpmError(RPMERR_BADARCH, "package %s-%s-%s is for a different "
 	      "architecture", name, version, release);
-	freeHeader(h);
+	headerFree(h);
 	return 2;
     }
 
-    if (!(flags & INSTALL_NOOS) && !osOkay(h)) {
-	error(RPMERR_BADOS, "package %s-%s-%s is for a different "
+    if (!(flags & RPMINSTALL_NOOS) && !osOkay(h)) {
+	rpmError(RPMERR_BADOS, "package %s-%s-%s is for a different "
 	      "operating system", name, version, release);
-	freeHeader(h);
+	headerFree(h);
 	return 2;
     }
 
     if (packageAlreadyInstalled(db, name, version, release, &otherOffset, 
 				flags)) {
-	freeHeader(h);
+	headerFree(h);
 	return 2;
     }
 
@@ -225,8 +225,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	fflush(stdout);
     }
 
-    message(MESS_DEBUG, "package: %s-%s-%s files test = %d\n", 
-		name, version, release, flags & INSTALL_TEST);
+    rpmMessage(RPMMESS_DEBUG, "package: %s-%s-%s files test = %d\n", 
+		name, version, release, flags & RPMINSTALL_TEST);
 
     rc = rpmdbFindPackage(db, name, &matches);
     if (rc == -1) return 2;
@@ -235,7 +235,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     else
 	scriptArg = matches.count + 1;
 
-    if (flags & INSTALL_UPGRADE) {
+    if (flags & RPMINSTALL_UPGRADE) {
 	/* 
 	   We need to get a list of all old version of this package. We let
 	   this install procede normally then, but:
@@ -252,7 +252,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    intptr = oldVersions = alloca((matches.count + 1) * sizeof(int));
 	    for (i = 0; i < matches.count; i++) {
 		if (matches.recs[i].recOffset != otherOffset) {
-		    if (!(flags & INSTALL_UPGRADETOOLD)) 
+		    if (!(flags & RPMINSTALL_UPGRADETOOLD)) 
 			if (rpmEnsureOlder(db, name, version, release, 
 					matches.recs[i].recOffset)) 
 			    return 2;
@@ -264,7 +264,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     }
 
     fileList = NULL;
-    if (getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+    if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 		 &fileCount)) {
 	char ** netsharedPaths;
 	char ** nsp;
@@ -279,12 +279,12 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	prefixedFileList = alloca(sizeof(char *) * fileCount);
 	fileStatesList = alloca(sizeof(*fileStatesList) * fileCount);
 
-	getEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5s, &fileCount);
-	getEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, 
+	headerGetEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5s, &fileCount);
+	headerGetEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, 
 		 &fileCount);
-	getEntry(h, RPMTAG_FILEMODES, &type, (void **) &fileModesList, 
+	headerGetEntry(h, RPMTAG_FILEMODES, &type, (void **) &fileModesList, 
 		 &fileCount);
-	getEntry(h, RPMTAG_FILELINKTOS, &type, (void **) &fileLinkList, 
+	headerGetEntry(h, RPMTAG_FILELINKTOS, &type, (void **) &fileLinkList, 
 		 &fileCount);
 
 	/* check for any config files that already exist. If they do, plan
@@ -304,12 +304,12 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		if (!strncmp(prefixedFileList[i], *nsp, strlen(*nsp))) break;
 
 	    if (nsp && *nsp) {
-		message(MESS_DEBUG, "file %s in netshared path\n", 
+		rpmMessage(RPMMESS_DEBUG, "file %s in netshared path\n", 
 			prefixedFileList[i]);
 		instActions[i] = SKIP;
 		fileStatesList[i] = RPMFILE_STATE_NETSHARED;
 	    } else if ((fileFlagsList[i] & RPMFILE_DOC) && 
-			(flags & INSTALL_NODOCS)) {
+			(flags & RPMINSTALL_NODOCS)) {
 		instActions[i] = SKIP;
 		fileStatesList[i] = RPMFILE_STATE_NOTINSTALLED;
 	    } else {
@@ -319,7 +319,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		if ((fileFlagsList[i] & RPMFILE_CONFIG) &&
 		    !S_ISDIR(fileModesList[i])) {
 		    if (exists(prefixedFileList[i])) {
-			message(MESS_DEBUG, "%s exists - backing up\n", 
+			rpmMessage(RPMMESS_DEBUG, "%s exists - backing up\n", 
 				    prefixedFileList[i]);
 			instActions[i] = BACKUP;
 		    }
@@ -341,16 +341,16 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	}
     }
     
-    if (flags & INSTALL_TEST) {
-	message(MESS_DEBUG, "stopping install as we're running --test\n");
+    if (flags & RPMINSTALL_TEST) {
+	rpmMessage(RPMMESS_DEBUG, "stopping install as we're running --test\n");
 	free(fileList);
 	if (replacedList) free(replacedList);
 	return 0;
     }
 
-    message(MESS_DEBUG, "running preinstall script (if any)\n");
+    rpmMessage(RPMMESS_DEBUG, "running preinstall script (if any)\n");
     if (runScript(rootdir, h, RPMTAG_PREIN, scriptArg, 
-		  flags & INSTALL_NOSCRIPTS)) {
+		  flags & RPMINSTALL_NOSCRIPTS)) {
 	free(fileList);
 	if (replacedList) free(replacedList);
 	return 2;
@@ -358,13 +358,13 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
     if (fileList) {
 	if (createDirectories(rootdir, fileList, fileCount)) {
-	    freeHeader(h);
+	    headerFree(h);
 	    free(fileList);
 	    if (replacedList) free(replacedList);
 	    return 2;
 	}
 
-	getEntry(h, RPMTAG_FILESIZES, &type, (void **) &fileSizesList, 
+	headerGetEntry(h, RPMTAG_FILESIZES, &type, (void **) &fileSizesList, 
 		 &fileCount);
 
 	files = alloca(sizeof(struct fileToInstall) * fileCount);
@@ -400,11 +400,11 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		newpath = malloc(strlen(prefixedFileList[i]) + 20);
 		strcpy(newpath, prefixedFileList[i]);
 		strcat(newpath, ext);
-		error(RPMMESS_BACKUP, "warning: %s saved as %s", 
+		rpmError(RPMMESS_BACKUP, "warning: %s saved as %s", 
 			prefixedFileList[i], newpath);
 
 		if (rename(prefixedFileList[i], newpath)) {
-		    error(RPMERR_RENAME, "rename of %s to %s failed: %s",
+		    rpmError(RPMERR_RENAME, "rename of %s to %s failed: %s",
 			  prefixedFileList[i], newpath, strerror(errno));
 		    if (replacedList) free(replacedList);
 		    free(newpath);
@@ -436,11 +436,11 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	if (rootdir) {
 	    tmpPath = alloca(strlen(rootdir) + 15);
 	    strcpy(tmpPath, rootdir);
-	    strcat(tmpPath, getVar(RPMVAR_TMPPATH));
+	    strcat(tmpPath, rpmGetVar(RPMVAR_TMPPATH));
 	} else
-	    tmpPath = getVar(RPMVAR_TMPPATH);
+	    tmpPath = rpmGetVar(RPMVAR_TMPPATH);
 
-	if (!getEntry(h, RPMTAG_ARCHIVESIZE, &type, (void *) &archiveSizePtr, 
+	if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, &type, (void *) &archiveSizePtr, 
 		      &count))
 	    archiveSizePtr = NULL;
 
@@ -448,15 +448,15 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	if (installArchive(archivePrefix, fd, files, archiveFileCount, notify, 
 			   NULL, tmpPath, 
 			   archiveSizePtr ? *archiveSizePtr : 0)) {
-	    freeHeader(h);
+	    headerFree(h);
 	    free(fileList);
 	    if (replacedList) free(replacedList);
 	    return 2;
 	}
 
-	if (getEntry(h, RPMTAG_FILEUSERNAME, &type, (void **) &fileOwners, 
+	if (headerGetEntry(h, RPMTAG_FILEUSERNAME, &type, (void **) &fileOwners, 
 		     &fileCount)) {
-	    if (getEntry(h, RPMTAG_FILEGROUPNAME, &type, (void **) &fileGroups, 
+	    if (headerGetEntry(h, RPMTAG_FILEGROUPNAME, &type, (void **) &fileGroups, 
 			 &fileCount)) {
 		if (setFileOwnerships(rootdir, fileList, fileOwners, fileGroups, 
 				fileModesList, instActions, fileCount)) {
@@ -473,10 +473,10 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	}
 	free(fileList);
 
-	addEntry(h, RPMTAG_FILESTATES, CHAR_TYPE, fileStatesList, fileCount);
+	headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fileStatesList, fileCount);
 
 	installTime = time(NULL);
-	addEntry(h, RPMTAG_INSTALLTIME, INT32_TYPE, &installTime, 1);
+	headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &installTime, 1);
     }
 
     if (replacedList) {
@@ -493,19 +493,19 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     }
 
     if (rpmdbAdd(db, h)) {
-	freeHeader(h);
+	headerFree(h);
 	return 2;
     }
 
-    message(MESS_DEBUG, "running postinstall script (if any)\n");
+    rpmMessage(RPMMESS_DEBUG, "running postinstall script (if any)\n");
 
     if (runScript(rootdir, h, RPMTAG_POSTIN, scriptArg,
-		  flags & INSTALL_NOSCRIPTS)) {
+		  flags & RPMINSTALL_NOSCRIPTS)) {
 	return 2;
     }
 
-    if (flags & INSTALL_UPGRADE) {
-	message(MESS_DEBUG, "removing old versions of package\n");
+    if (flags & RPMINSTALL_UPGRADE) {
+	rpmMessage(RPMMESS_DEBUG, "removing old versions of package\n");
 	intptr = oldVersions;
 	while (*intptr) {
 	    rpmRemovePackage(rootdir, db, *intptr, 0);
@@ -513,7 +513,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	}
     }
 
-    freeHeader(h);
+    headerFree(h);
 
     return 0;
 }
@@ -522,7 +522,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 /* -1 fileCount means install all files */
 static int installArchive(char * prefix, int fd, struct fileToInstall * files,
-			  int fileCount, notifyFunction notify, 
+			  int fileCount, rpmNotifyFunction notify, 
 			  char ** specFile, char * tmpPath, int archiveSize) {
     gzFile stream;
     char buf[BLOCKSIZE];
@@ -556,7 +556,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 
     /* fd should be a gzipped cpio archive */
 
-    message(MESS_DEBUG, "installing archive into %s\n", prefix);
+    rpmMessage(RPMMESS_DEBUG, "installing archive into %s\n", prefix);
 
     needSecondPipe = (notify != NULL && !archiveSize) || specFile;
 
@@ -564,7 +564,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     
     args = alloca(sizeof(char *) * (fileCount + 10));
 
-    args[i++] = getVar(RPMVAR_CPIOBIN);
+    args[i++] = rpmGetVar(RPMVAR_CPIOBIN);
     args[i++] = "--extract";
     args[i++] = "--unconditional";
     args[i++] = "--preserve-modification-time";
@@ -584,12 +584,12 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     if (fileCount > 500) {
 	filelist = alloca(strlen(tmpPath) + 40);
 
-	message(MESS_DEBUG, "using a %s filelist\n", tmpPath);
+	rpmMessage(RPMMESS_DEBUG, "using a %s filelist\n", tmpPath);
 	sprintf(filelist, "%s/rpm-cpiofilelist.%d.tmp", tmpPath, 
 		(int) getpid());
 	f = fopen(filelist, "w");
 	if (!f) {
-	    error(RPMERR_CREATE, "failed to create %s: %s", filelist,
+	    rpmError(RPMERR_CREATE, "failed to create %s: %s", filelist,
 		  strerror(errno));
 	    return 1;
 	}
@@ -598,9 +598,9 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	    if ((fputs(files[j].fileName, f) == EOF) || 
 		(fputs("\n", f) == EOF)) {
 		if (errno == ENOSPC) {
-		    error(RPMERR_NOSPACE, "out of space on device");
+		    rpmError(RPMERR_NOSPACE, "out of space on device");
 		} else {
-		    error(RPMERR_CREATE, "failed to create %s: %s", filelist,
+		    rpmError(RPMERR_CREATE, "failed to create %s: %s", filelist,
 			  strerror(errno));
 		}
 
@@ -695,7 +695,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 		while ((chptr = (strchr(fileInstalled.fileName, '\n')))) {
 		    *chptr = '\0';
 
-		    message(MESS_DEBUG, "file \"%s\" complete\n", 
+		    rpmMessage(RPMMESS_DEBUG, "file \"%s\" complete\n", 
 				fileInstalled.fileName);
 
 		    if (notify && !archiveSize) {
@@ -747,7 +747,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     if (cpioFailed || !WIFEXITED(status) || WEXITSTATUS(status)) {
 	/* this would probably be a good place to check if disk space
 	   was used up - if so, we should return a different error */
-	error(RPMERR_CPIO, "unpacking of archive failed");
+	rpmError(RPMERR_CPIO, "unpacking of archive failed");
 	return 1;
     }
 
@@ -762,7 +762,7 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
     char * secVersion, * secRelease;
     Header sech;
     int i;
-    dbIndexSet matches;
+    dbiIndexSet matches;
     int type, count;
 
     if (!rpmdbFindPackage(db, name, &matches)) {
@@ -772,23 +772,23 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
 		return 1;
 	    }
 
-	    getEntry(sech, RPMTAG_VERSION, &type, (void **) &secVersion, 
+	    headerGetEntry(sech, RPMTAG_VERSION, &type, (void **) &secVersion, 
 			&count);
-	    getEntry(sech, RPMTAG_RELEASE, &type, (void **) &secRelease, 
+	    headerGetEntry(sech, RPMTAG_RELEASE, &type, (void **) &secRelease, 
 			&count);
 
 	    if (!strcmp(secVersion, version) && !strcmp(secRelease, release)) {
 		*offset = matches.recs[i].recOffset;
-		if (!(flags & INSTALL_REPLACEPKG)) {
-		    error(RPMERR_PKGINSTALLED, 
+		if (!(flags & RPMINSTALL_REPLACEPKG)) {
+		    rpmError(RPMERR_PKGINSTALLED, 
 			  "package %s-%s-%s is already installed",
 			  name, version, release);
-		    freeHeader(sech);
+		    headerFree(sech);
 		    return 1;
 		}
 	    }
 
-	    freeHeader(sech);
+	    headerFree(sech);
 	}
     }
 
@@ -805,14 +805,14 @@ static int setFileOwnerships(char * rootdir, char ** fileList,
     pid_t child;
     int status;
 
-    message(MESS_DEBUG, "setting file owners and groups by name (not id)\n");
+    rpmMessage(RPMMESS_DEBUG, "setting file owners and groups by name (not id)\n");
 
     chptr = rootdir;
     while (*chptr && *chptr == '/') 
 	chptr++;
 
     if (*chptr) {
-	message(MESS_DEBUG, "forking child to setid's in chroot() "
+	rpmMessage(RPMMESS_DEBUG, "forking child to setid's in chroot() "
 		"environment\n");
 	doFork = 1;
 
@@ -862,7 +862,7 @@ static int setFileOwner(char * file, char * owner, char * group,
     else {
 	pwent = getpwnam(owner);
 	if (!pwent) {
-	    error(RPMERR_NOUSER, "user %s does not exist - using root", owner);
+	    rpmError(RPMERR_NOUSER, "user %s does not exist - using root", owner);
 	    uid = 0;
 	} else {
 	    uid = pwent->pw_uid;
@@ -879,7 +879,7 @@ static int setFileOwner(char * file, char * owner, char * group,
     else {
 	grent = getgrnam(group);
 	if (!grent) {
-	    error(RPMERR_NOGROUP, "group %s does not exist - using root", 
+	    rpmError(RPMERR_NOGROUP, "group %s does not exist - using root", 
 			group);
 	    gid = 0;
 	} else {
@@ -890,10 +890,10 @@ static int setFileOwner(char * file, char * owner, char * group,
 	}
     }
 	
-    message(MESS_DEBUG, "%s owned by %s (%d), group %s (%d) mode %o\n",
+    rpmMessage(RPMMESS_DEBUG, "%s owned by %s (%d), group %s (%d) mode %o\n",
 		file, owner, uid, group, gid, mode & 07777);
     if (chown(file, uid, gid)) {
-	error(RPMERR_CHOWN, "cannot set owner and group for %s - %s",
+	rpmError(RPMERR_CHOWN, "cannot set owner and group for %s - %s",
 		file, strerror(errno));
 	/* screw with the permissions so it's not SUID and 0.0 */
 	chmod(file, 0644);
@@ -902,7 +902,7 @@ static int setFileOwner(char * file, char * owner, char * group,
     /* Also set the mode according to what is stored in the header */
     if (! S_ISLNK(mode)) {
 	if (chmod(file, mode & 07777)) {
-	    error(RPMERR_CHOWN, "cannot change mode for %s - %s",
+	    rpmError(RPMERR_CHOWN, "cannot change mode for %s - %s",
 		  file, strerror(errno));
 	    /* screw with the permissions so it's not SUID and 0.0 */
 	    chmod(file, 0644);
@@ -1002,14 +1002,14 @@ static int mkdirIfNone(char * directory, mode_t perms) {
 
     if (exists(directory)) return 0;
 
-    message(MESS_DEBUG, "trying to make %s\n", directory);
+    rpmMessage(RPMMESS_DEBUG, "trying to make %s\n", directory);
 
     rc = mkdir(directory, perms);
     if (!rc || errno == EEXIST) return 0;
 
     chmod(directory, perms);  /* this should not be modified by the umask */
 
-    error(RPMERR_MKDIR, "failed to create %s - %s", directory, 
+    rpmError(RPMERR_MKDIR, "failed to create %s - %s", directory, 
 	  strerror(errno));
 
     return errno;
@@ -1051,18 +1051,18 @@ static enum instActions decideFileFate(char * filespec, short dbMode,
     newWhat = whatis(newMode);
 
     if (diskWhat != newWhat) {
-	message(MESS_DEBUG, "	file type on disk is different then package - "
+	rpmMessage(RPMMESS_DEBUG, "	file type on disk is different then package - "
 			"saving\n");
 	return SAVE;
     } else if (newWhat != dbWhat && diskWhat != dbWhat) {
-	message(MESS_DEBUG, "	file type in database is different then disk"
+	rpmMessage(RPMMESS_DEBUG, "	file type in database is different then disk"
 			" and package file - saving\n");
 	return SAVE;
     } else if (dbWhat != newWhat) {
-	message(MESS_DEBUG, "	file type changed - replacing\n");
+	rpmMessage(RPMMESS_DEBUG, "	file type changed - replacing\n");
 	return CREATE;
     } else if (dbWhat != LINK && dbWhat != REG) {
-	message(MESS_DEBUG, "	can't check file for changes - replacing\n");
+	rpmMessage(RPMMESS_DEBUG, "	can't check file for changes - replacing\n");
 	return CREATE;
     }
 
@@ -1074,7 +1074,7 @@ static enum instActions decideFileFate(char * filespec, short dbMode,
 
 	if (rc) {
 	    /* assume the file has been removed, don't freak */
-	    message(MESS_DEBUG, "	file not present - creating");
+	    rpmMessage(RPMMESS_DEBUG, "	file not present - creating");
 	    return CREATE;
 	}
 	dbAttr = dbMd5;
@@ -1084,7 +1084,7 @@ static enum instActions decideFileFate(char * filespec, short dbMode,
 	i = readlink(filespec, buffer, sizeof(buffer) - 1);
 	if (i == -1) {
 	    /* assume the file has been removed, don't freak */
-	    message(MESS_DEBUG, "	file not present - creating");
+	    rpmMessage(RPMMESS_DEBUG, "	file not present - creating");
 	    return CREATE;
 	}
 	dbAttr = dbLink;
@@ -1097,14 +1097,14 @@ static enum instActions decideFileFate(char * filespec, short dbMode,
     if (!strcmp(dbAttr, buffer)) {
 	/* this config file has never been modified, so 
 	   just replace it */
-	message(MESS_DEBUG, "	old == current, replacing "
+	rpmMessage(RPMMESS_DEBUG, "	old == current, replacing "
 		"with new version\n");
 	return CREATE;
     }
 
     if (!strcmp(dbAttr, newAttr)) {
 	/* this file is the same in all versions of this package */
-	message(MESS_DEBUG, "	old == new, keeping\n");
+	rpmMessage(RPMMESS_DEBUG, "	old == new, keeping\n");
 	return KEEP;
     }
 
@@ -1112,7 +1112,7 @@ static enum instActions decideFileFate(char * filespec, short dbMode,
        the ones in the two packages are different. It would
        be nice if RPM was smart enough to at least try and
        merge the difference ala CVS, but... */
-    message(MESS_DEBUG, "	files changed too much - backing up\n");
+    rpmMessage(RPMMESS_DEBUG, "	files changed too much - backing up\n");
 	    
     return SAVE;
 }
@@ -1158,7 +1158,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 
 	if (secOffset != sharedList[i].secRecOffset) {
 	    if (secOffset) {
-		freeHeader(sech);
+		headerFree(sech);
 		free(secFileMd5List);
 		free(secFileLinksList);
 		free(secFileList);
@@ -1167,47 +1167,47 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 	    secOffset = sharedList[i].secRecOffset;
 	    sech = rpmdbGetRecord(db, secOffset);
 	    if (!sech) {
-		error(RPMERR_DBCORRUPT, "cannot read header at %d for "
+		rpmError(RPMERR_DBCORRUPT, "cannot read header at %d for "
 		      "uninstall", secOffset);
 		rc = 1;
 		break;
 	    }
 
-	    getEntry(sech, RPMTAG_NAME, &type, (void **) &name, 
+	    headerGetEntry(sech, RPMTAG_NAME, &type, (void **) &name, 
 		     &secFileCount);
-	    getEntry(sech, RPMTAG_VERSION, &type, (void **) &version, 
+	    headerGetEntry(sech, RPMTAG_VERSION, &type, (void **) &version, 
 		     &secFileCount);
-	    getEntry(sech, RPMTAG_RELEASE, &type, (void **) &release, 
+	    headerGetEntry(sech, RPMTAG_RELEASE, &type, (void **) &release, 
 		     &secFileCount);
 
-	    message(MESS_DEBUG, "package %s-%s-%s contain shared files\n", 
+	    rpmMessage(RPMMESS_DEBUG, "package %s-%s-%s contain shared files\n", 
 		    name, version, release);
 
-	    if (!getEntry(sech, RPMTAG_FILENAMES, &type, 
+	    if (!headerGetEntry(sech, RPMTAG_FILENAMES, &type, 
 			  (void **) &secFileList, &secFileCount)) {
-		error(RPMERR_DBCORRUPT, "package %s contains no files",
+		rpmError(RPMERR_DBCORRUPT, "package %s contains no files",
 		      name);
-		freeHeader(sech);
+		headerFree(sech);
 		rc = 1;
 		break;
 	    }
 
-	    getEntry(sech, RPMTAG_FILESTATES, &type, 
+	    headerGetEntry(sech, RPMTAG_FILESTATES, &type, 
 		     (void **) &secFileStatesList, &secFileCount);
-	    getEntry(sech, RPMTAG_FILEMD5S, &type, 
+	    headerGetEntry(sech, RPMTAG_FILEMD5S, &type, 
 		     (void **) &secFileMd5List, &secFileCount);
-	    getEntry(sech, RPMTAG_FILEFLAGS, &type, 
+	    headerGetEntry(sech, RPMTAG_FILEFLAGS, &type, 
 		     (void **) &secFileFlagsList, &secFileCount);
-	    getEntry(sech, RPMTAG_FILELINKTOS, &type, 
+	    headerGetEntry(sech, RPMTAG_FILELINKTOS, &type, 
 		     (void **) &secFileLinksList, &secFileCount);
-	    getEntry(sech, RPMTAG_FILEMODES, &type, 
+	    headerGetEntry(sech, RPMTAG_FILEMODES, &type, 
 		     (void **) &secFileModesList, &secFileCount);
 	}
 
  	secNum = sharedList[i].secFileNumber;
 	mainNum = sharedList[i].mainFileNumber;
 
-	message(MESS_DEBUG, "file %s is shared\n", secFileList[secNum]);
+	rpmMessage(RPMMESS_DEBUG, "file %s is shared\n", secFileList[secNum]);
 
 	intptr = notErrors;
 	while (*intptr) {
@@ -1219,18 +1219,18 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 	   replaced, just forget about it */
 	state = secFileStatesList[sharedList[i].secFileNumber];
 	if (state == RPMFILE_STATE_REPLACED) {
-	    message(MESS_DEBUG, "	old version already replaced\n");
+	    rpmMessage(RPMMESS_DEBUG, "	old version already replaced\n");
 	    continue;
 	} else if (state == RPMFILE_STATE_NOTINSTALLED) {
-	    message(MESS_DEBUG, "	other version never installed\n");
+	    rpmMessage(RPMMESS_DEBUG, "	other version never installed\n");
 	    continue;
 	}
 
 	if (filecmp(fileModesList[mainNum], fileMd5List[mainNum], 
 		    fileLinkList[mainNum], secFileModesList[secNum],
 		    secFileMd5List[secNum], secFileLinksList[secNum])) {
-	    if (!(flags & INSTALL_REPLACEFILES) && !(*intptr)) {
-		error(RPMERR_PKGINSTALLED, "%s conflicts with file from "
+	    if (!(flags & RPMINSTALL_REPLACEFILES) && !(*intptr)) {
+		rpmError(RPMERR_PKGINSTALLED, "%s conflicts with file from "
 		      "%s-%s-%s", fileList[sharedList[i].mainFileNumber],
 		      name, version, release);
 		rc = 1;
@@ -1248,7 +1248,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 		    sharedList[i].secFileNumber;
 		numReplacedFiles++;
 
-		message(MESS_DEBUG, "%s from %s-%s-%s will be replaced\n", 
+		rpmMessage(RPMMESS_DEBUG, "%s from %s-%s-%s will be replaced\n", 
 			fileList[sharedList[i].mainFileNumber],
 			name, version, release);
 	    }
@@ -1263,12 +1263,12 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 			       secFileMd5List[secNum], secFileLinksList[secNum],
 			       fileModesList[mainNum], fileMd5List[mainNum],
 			       fileLinkList[mainNum], 
-			       !isEntry(sech, RPMTAG_RPMVERSION));
+			       !headerIsEntry(sech, RPMTAG_RPMVERSION));
 	}
     }
 
     if (secOffset) {
-	freeHeader(sech);
+	headerFree(sech);
 	free(secFileMd5List);
 	free(secFileLinksList);
 	free(secFileList);
@@ -1295,7 +1295,7 @@ static int fileCompare(const void * one, const void * two) {
 /* 1 bad magic */
 /* 2 error */
 static int installSources(Header h, char * rootdir, int fd, 
-			  char ** specFilePtr, notifyFunction notify,
+			  char ** specFilePtr, rpmNotifyFunction notify,
 			  char * labelFormat) {
     char * specFile;
     char * sourceDir, * specDir;
@@ -1305,18 +1305,18 @@ static int installSources(Header h, char * rootdir, int fd,
     uint_32 * archiveSizePtr = NULL;
     int type, count;
 
-    message(MESS_DEBUG, "installing a source package\n");
+    rpmMessage(RPMMESS_DEBUG, "installing a source package\n");
 
-    sourceDir = getVar(RPMVAR_SOURCEDIR);
-    specDir = getVar(RPMVAR_SPECDIR);
+    sourceDir = rpmGetVar(RPMVAR_SOURCEDIR);
+    specDir = rpmGetVar(RPMVAR_SPECDIR);
 
     if (access(sourceDir, W_OK)) {
-	error(RPMERR_CREATE, "cannot write to %s", sourceDir);
+	rpmError(RPMERR_CREATE, "cannot write to %s", sourceDir);
 	return 2;
     }
 
     if (access(specDir, W_OK)) {
-	error(RPMERR_CREATE, "cannot write to %s", sourceDir);
+	rpmError(RPMERR_CREATE, "cannot write to %s", sourceDir);
 	return 2;
     }
 
@@ -1330,21 +1330,21 @@ static int installSources(Header h, char * rootdir, int fd,
     strcat(realSpecDir, "/");
     strcat(realSpecDir, specDir);
 
-    message(MESS_DEBUG, "sources in: %s\n", realSourceDir);
-    message(MESS_DEBUG, "spec file in: %s\n", realSpecDir);
+    rpmMessage(RPMMESS_DEBUG, "sources in: %s\n", realSourceDir);
+    rpmMessage(RPMMESS_DEBUG, "spec file in: %s\n", realSpecDir);
 
     if (rootdir) {
 	tmpPath = alloca(strlen(rootdir) + 15);
 	strcpy(tmpPath, rootdir);
-	strcat(tmpPath, getVar(RPMVAR_TMPPATH));
+	strcat(tmpPath, rpmGetVar(RPMVAR_TMPPATH));
     } else
-	tmpPath = getVar(RPMVAR_TMPPATH);
+	tmpPath = rpmGetVar(RPMVAR_TMPPATH);
 
     if (labelFormat && h) {
-	getEntry(h, RPMTAG_NAME, &type, (void *) &name, &count);
-	getEntry(h, RPMTAG_VERSION, &type, (void *) &version, &count);
-	getEntry(h, RPMTAG_RELEASE, &type, (void *) &release, &count);
-	if (!getEntry(h, RPMTAG_ARCHIVESIZE, &type, (void *) &archiveSizePtr, 
+	headerGetEntry(h, RPMTAG_NAME, &type, (void *) &name, &count);
+	headerGetEntry(h, RPMTAG_VERSION, &type, (void *) &version, &count);
+	headerGetEntry(h, RPMTAG_RELEASE, &type, (void *) &release, &count);
+	if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, &type, (void *) &archiveSizePtr, 
 		      &count))
 	    archiveSizePtr = NULL;
 	printf(labelFormat, name, version, release);
@@ -1357,7 +1357,7 @@ static int installSources(Header h, char * rootdir, int fd,
     }
 
     if (!specFile) {
-	error(RPMERR_NOSPEC, "source package contains no .spec file");
+	rpmError(RPMERR_NOSPEC, "source package contains no .spec file");
 	return 1;
     }
 
@@ -1373,7 +1373,7 @@ static int installSources(Header h, char * rootdir, int fd,
     strcat(correctSpecFile, "/");
     strcat(correctSpecFile, specFile);
 
-    message(MESS_DEBUG, "renaming %s to %s\n", instSpecFile, correctSpecFile);
+    rpmMessage(RPMMESS_DEBUG, "renaming %s to %s\n", instSpecFile, correctSpecFile);
     if (rename(instSpecFile, correctSpecFile)) {
 	/* try copying the file */
 	if (moveFile(instSpecFile, correctSpecFile))
@@ -1400,7 +1400,7 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
 		/* ignore errors here - just do the best we can */
 
 		rpmdbUpdateRecord(db, secOffset, secHeader);
-		freeHeader(secHeader);
+		headerFree(secHeader);
 	    }
 
 	    secOffset = fileInfo->recOffset;
@@ -1408,11 +1408,11 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
 	    if (!sh) {
 		secOffset = 0;
 	    } else {
-		secHeader = copyHeader(sh);	/* so we can modify it */
-		freeHeader(sh);
+		secHeader = headerCopy(sh);	/* so we can modify it */
+		headerFree(sh);
 	    }
 
-	    getEntry(secHeader, RPMTAG_FILESTATES, &type, (void **) &secStates, 
+	    headerGetEntry(secHeader, RPMTAG_FILESTATES, &type, (void **) &secStates, 
 		     &count);
 	}
 
@@ -1426,7 +1426,7 @@ static int markReplacedFiles(rpmdb db, struct replacedFile * replList) {
 	/* ignore errors here - just do the best we can */
 
 	rpmdbUpdateRecord(db, secOffset, secHeader);
-	freeHeader(secHeader);
+	headerFree(secHeader);
     }
 
     return 0;
@@ -1442,8 +1442,8 @@ int rpmEnsureOlder(rpmdb db, char * name, char * newVersion,
     h = rpmdbGetRecord(db, dbOffset);
     if (!h) return 1;
 
-    getEntry(h, RPMTAG_VERSION, &type, (void **) &oldVersion, &count);
-    getEntry(h, RPMTAG_RELEASE, &type, (void **) &oldRelease, &count);
+    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &oldVersion, &count);
+    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &oldRelease, &count);
 
     result = vercmp(oldVersion, newVersion);
     if (result < 0)
@@ -1459,10 +1459,10 @@ int rpmEnsureOlder(rpmdb db, char * name, char * newVersion,
     }
 
     if (rc) 
-	error(RPMERR_OLDPACKAGE, "package %s-%s-%s (which is newer) is already"
+	rpmError(RPMERR_OLDPACKAGE, "package %s-%s-%s (which is newer) is already"
 		" installed", name, oldVersion, oldRelease);
 
-    freeHeader(h);
+    headerFree(h);
 
     return rc;
 }
@@ -1509,11 +1509,11 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
     newPrefix = strcpy(alloca(strlen(newPrefix) + 1), newPrefix);
     stripTrailingSlashes(newPrefix);
 
-    message(MESS_DEBUG, "relocating files from %s to %s\n", defaultPrefix,
+    rpmMessage(RPMMESS_DEBUG, "relocating files from %s to %s\n", defaultPrefix,
 			 newPrefix);
 
     if (!strcmp(newPrefix, defaultPrefix)) {
-	addEntry(h, RPMTAG_INSTALLPREFIX, STRING_TYPE, defaultPrefix, 1);
+	headerAddEntry(h, RPMTAG_INSTALLPREFIX, RPM_STRING_TYPE, defaultPrefix, 1);
 	*relocationLength = strlen(defaultPrefix) + 1;
 	return 0;
     }
@@ -1522,18 +1522,18 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
     newPrefixLength = strlen(newPrefix);
 
     /* packages can have empty filelists */
-    if (!getEntry(h, RPMTAG_FILENAMES, &type, (void *) &fileList, &fileCount))
+    if (!headerGetEntry(h, RPMTAG_FILENAMES, &type, (void *) &fileList, &fileCount))
 	return 0;
     if (!count)
 	return 0;
 
-    newh = newHeader();
-    it = initIterator(h);
-    while (nextIterator(it, &tag, &type, &data, &count))
+    newh = headerNew();
+    it = headerInitIterator(h);
+    while (headerNextIterator(it, &tag, &type, &data, &count))
 	if (tag != RPMTAG_FILENAMES)
-	    addEntry(newh, tag, type, data, count);
+	    headerAddEntry(newh, tag, type, data, count);
 
-    freeIterator(it);
+    headerFreeIterator(it);
 
     newFileList = alloca(sizeof(char *) * fileCount);
     for (i = 0; i < fileCount; i++) {
@@ -1543,7 +1543,7 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
 	    sprintf(newFileList[i], "%s/%s", newPrefix, 
 		    fileList[i] + defaultPrefixLength + 1);
 	} else {
-	    message(MESS_DEBUG, "BAD - unprefixed file in relocatable package");
+	    rpmMessage(RPMMESS_DEBUG, "BAD - unprefixed file in relocatable package");
 	    newFileList[i] = alloca(strlen(fileList[i]) - 
 					defaultPrefixLength + 2);
 	    sprintf(newFileList[i], "/%s", fileList[i] + 
@@ -1551,8 +1551,8 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
 	}
     }
 
-    addEntry(newh, RPMTAG_FILENAMES, STRING_ARRAY_TYPE, newFileList, fileCount);
-    addEntry(newh, RPMTAG_INSTALLPREFIX, STRING_TYPE, newPrefix, 1);
+    headerAddEntry(newh, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, newFileList, fileCount);
+    headerAddEntry(newh, RPMTAG_INSTALLPREFIX, RPM_STRING_TYPE, newPrefix, 1);
 
     *relocationLength = newPrefixLength + 1;
     *hp = newh;
@@ -1566,11 +1566,11 @@ static int archOkay(Header h) {
     int type, count;
 
     /* make sure we're trying to install this on the proper architecture */
-    getEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &count);
-    if (type == INT8_TYPE) {
+    headerGetEntry(h, RPMTAG_ARCH, &type, (void **) &pkgArch, &count);
+    if (type == RPM_INT8_TYPE) {
 	/* old arch handling */
 	pkgArchNum = pkgArch;
-	if (getArchNum() != *pkgArchNum) {
+	if (rpmGetArchNum() != *pkgArchNum) {
 	    return 0;
 	}
     } else {
@@ -1588,8 +1588,8 @@ static int osOkay(Header h) {
     int type, count;
 
     /* make sure we're trying to install this on the proper os */
-    getEntry(h, RPMTAG_OS, &type, (void **) &pkgOs, &count);
-    if (type == INT8_TYPE) {
+    headerGetEntry(h, RPMTAG_OS, &type, (void **) &pkgOs, &count);
+    if (type == RPM_INT8_TYPE) {
 	/* v1 packages and v2 packages both used improper OS numbers, so just
 	   deal with it hope things work */
 	return 1;
@@ -1614,18 +1614,18 @@ static int copyFile(char * sourceName, char * destName) {
     int source, dest, i;
     char buf[16384];
 
-    message(MESS_DEBUG, "coping %s to %s\n", sourceName, destName);
+    rpmMessage(RPMMESS_DEBUG, "coping %s to %s\n", sourceName, destName);
 
     source = open(sourceName, O_RDONLY);
     if (source < 0) {
-	error(RPMERR_INTERNAL, "file %s missing from source directory",
+	rpmError(RPMERR_INTERNAL, "file %s missing from source directory",
 		    sourceName);
 	return 1;
     }
 
     dest = creat(destName, 0644);
     if (dest < 0) {
-	error(RPMERR_CREATE, "failed to create file %s", destName);
+	rpmError(RPMERR_CREATE, "failed to create file %s", destName);
 	close(source);
 	return 1;
     }
@@ -1633,10 +1633,10 @@ static int copyFile(char * sourceName, char * destName) {
     while ((i = read(source, buf, sizeof(buf))) > 0) {
 	if (write(dest, buf, i) != i) {
 	    if (errno == ENOSPC) {
-		error(RPMERR_NOSPACE, "out of disk space writing file %s",
+		rpmError(RPMERR_NOSPACE, "out of disk space writing file %s",
 			destName);
 	    } else {
-		error(RPMERR_CREATE, "error writing to file %s: %s",
+		rpmError(RPMERR_CREATE, "error writing to file %s: %s",
 			destName, strerror(errno));
 	    }
 	    close(source);
@@ -1647,7 +1647,7 @@ static int copyFile(char * sourceName, char * destName) {
     }
 
     if (i < 0) {
-	error(RPMERR_CREATE, "error reading from file %s: %s",
+	rpmError(RPMERR_CREATE, "error reading from file %s: %s",
 		sourceName, strerror(errno));
     }
 

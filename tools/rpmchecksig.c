@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 	exit(-1);
 
     readLead(fd, &lead);
-    readSignature(fd, lead.signature_type, (void **) &sig);
+    rpmReadSignature(fd, lead.signature_type, (void **) &sig);
     res = verifySignature(fd, lead.signature_type, sig, result, 1);
     printf("%s", result);
     if (res) {

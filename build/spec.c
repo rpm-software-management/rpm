@@ -21,7 +21,6 @@ TODO:
 #include "header.h"
 #include "spec.h"
 #include "specP.h"
-#include "rpmerr.h"
 #include "messages.h"
 #include "rpmlib.h"
 #include "stringbuf.h"
@@ -81,7 +80,7 @@ static int addSource(Spec spec, char *line)
 	p->ispatch = 1;
 	s = line + 5;
     } else {
-	error(RPMERR_BADSPEC, "Not a source/patch line: %s\n", line);
+	rpmError(RPMERR_BADSPEC, "Not a source/patch line: %s\n", line);
 	return(RPMERR_BADSPEC);
     }
 
@@ -90,7 +89,7 @@ static int addSource(Spec spec, char *line)
     if (*s != ':') {
         x = strspn(s, "0123456789");
 	if (! x) {
-	    error(RPMERR_BADSPEC, "Bad source/patch line: %s\n", line);
+	    rpmError(RPMERR_BADSPEC, "Bad source/patch line: %s\n", line);
 	    return(RPMERR_BADSPEC);
 	}
 	c = s[x];
@@ -99,7 +98,7 @@ static int addSource(Spec spec, char *line)
 	p->num = strtoul(s, &s1, 10);
 	if ((*s1) || (s1 == s) || (p->num == ULONG_MAX)) {
 	    s[x] = c;
-	    error(RPMERR_BADSPEC, "Bad source/patch number: %s\n", s);
+	    rpmError(RPMERR_BADSPEC, "Bad source/patch number: %s\n", s);
 	    return(RPMERR_BADSPEC);
 	}
 	s[x] = c;
@@ -109,7 +108,7 @@ static int addSource(Spec spec, char *line)
     }
 
     if (*s != ':') {
-	error(RPMERR_BADSPEC, "Bad source/patch line: %s\n", line);
+	rpmError(RPMERR_BADSPEC, "Bad source/patch line: %s\n", line);
 	return(RPMERR_BADSPEC);
     }
     
@@ -119,7 +118,7 @@ static int addSource(Spec spec, char *line)
 
     file = strtok(s, " \t\n");
     if (! file) {
-	error(RPMERR_BADSPEC, "Bad source/patch line: %s\n", line);
+	rpmError(RPMERR_BADSPEC, "Bad source/patch line: %s\n", line);
 	return(RPMERR_BADSPEC);
     }
     p->fullSource = strdup(file);
@@ -131,9 +130,9 @@ static int addSource(Spec spec, char *line)
     }
 
     if (p->ispatch) {
-	message(MESS_DEBUG, "Patch(%d) = %s\n", p->num, p->fullSource);
+	rpmMessage(RPMMESS_DEBUG, "Patch(%d) = %s\n", p->num, p->fullSource);
     } else {
-	message(MESS_DEBUG, "Source(%d) = %s\n", p->num, p->fullSource);
+	rpmMessage(RPMMESS_DEBUG, "Source(%d) = %s\n", p->num, p->fullSource);
     }
     
     return 0;
@@ -201,7 +200,7 @@ int noSourcePatch(Spec s, char *line, int_32 tag)
 
     if (((tag == RPMTAG_NOSOURCE) && s->numNoSource) ||
 	((tag == RPMTAG_NOPATCH) && s->numNoPatch)) {
-	error(RPMERR_BADSPEC, "Only one nosource/nopatch line allowed\n");
+	rpmError(RPMERR_BADSPEC, "Only one nosource/nopatch line allowed\n");
 	return(RPMERR_BADSPEC);
     }
     
@@ -209,11 +208,11 @@ int noSourcePatch(Spec s, char *line, int_32 tag)
     while ((t = strtok(line, ", \t"))) {
 	num = strtoul(t, &te, 10);
 	if ((*te) || (te == t) || (num == ULONG_MAX)) {
-	    error(RPMERR_BADSPEC, "Bad source/patch number: %s\n", t);
+	    rpmError(RPMERR_BADSPEC, "Bad source/patch number: %s\n", t);
 	    return(RPMERR_BADSPEC);
 	}
 	array[count++] = num;
-	message(MESS_DEBUG, "Skipping source/patch number: %d\n", num);
+	rpmMessage(RPMMESS_DEBUG, "Skipping source/patch number: %d\n", num);
 	line = NULL;
     }
 
@@ -252,22 +251,22 @@ static void free_reqprov(struct ReqProv *p)
 }
 
 struct ReqComp ReqComparisons[] = {
-    { "<=", REQUIRE_LESS | REQUIRE_EQUAL},
-    { "<=S", REQUIRE_LESS | REQUIRE_EQUAL | REQUIRE_SERIAL},
-    { "=<", REQUIRE_LESS | REQUIRE_EQUAL},
-    { "=<S", REQUIRE_LESS | REQUIRE_EQUAL | REQUIRE_SERIAL},
-    { "<", REQUIRE_LESS},
-    { "<S", REQUIRE_LESS | REQUIRE_SERIAL},
+    { "<=", RPMSENSE_LESS | RPMSENSE_EQUAL},
+    { "<=S", RPMSENSE_LESS | RPMSENSE_EQUAL | RPMSENSE_SERIAL},
+    { "=<", RPMSENSE_LESS | RPMSENSE_EQUAL},
+    { "=<S", RPMSENSE_LESS | RPMSENSE_EQUAL | RPMSENSE_SERIAL},
+    { "<", RPMSENSE_LESS},
+    { "<S", RPMSENSE_LESS | RPMSENSE_SERIAL},
 
-    { "=", REQUIRE_EQUAL},
-    { "=S", REQUIRE_EQUAL | REQUIRE_SERIAL},
+    { "=", RPMSENSE_EQUAL},
+    { "=S", RPMSENSE_EQUAL | RPMSENSE_SERIAL},
     
-    { ">=", REQUIRE_GREATER | REQUIRE_EQUAL},
-    { ">=S", REQUIRE_GREATER | REQUIRE_EQUAL | REQUIRE_SERIAL},
-    { "=>", REQUIRE_GREATER | REQUIRE_EQUAL},
-    { "=>S", REQUIRE_GREATER | REQUIRE_EQUAL | REQUIRE_SERIAL},
-    { ">", REQUIRE_GREATER},
-    { ">S", REQUIRE_GREATER | REQUIRE_SERIAL},
+    { ">=", RPMSENSE_GREATER | RPMSENSE_EQUAL},
+    { ">=S", RPMSENSE_GREATER | RPMSENSE_EQUAL | RPMSENSE_SERIAL},
+    { "=>", RPMSENSE_GREATER | RPMSENSE_EQUAL},
+    { "=>S", RPMSENSE_GREATER | RPMSENSE_EQUAL | RPMSENSE_SERIAL},
+    { ">", RPMSENSE_GREATER},
+    { ">S", RPMSENSE_GREATER | RPMSENSE_SERIAL},
     { NULL, 0 },
 };
 
@@ -281,7 +280,7 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 
     while (req || (req = strtok(line, " ,\t\n"))) {
 	flags = (flag == RPMTAG_CONFLICTFLAGS) ?
-	    REQUIRE_CONFLICTS : REQUIRE_ANY;
+	    RPMSENSE_CONFLICTS : RPMSENSE_ANY;
 	if ((version = strtok(NULL, " ,\t\n"))) {
 	    rc = ReqComparisons;
 	    while (rc->token && strcmp(version, rc->token)) {
@@ -293,8 +292,8 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 		version = strtok(NULL, " ,\t\n");
 	    }
 	}
-	if ((flags & REQUIRE_SENSEMASK) && !version) {
-	    error(RPMERR_BADSPEC, "Version required in require/conflict");
+	if ((flags & RPMSENSE_SENSEMASK) && !version) {
+	    rpmError(RPMERR_BADSPEC, "Version required in require/conflict");
 	    return RPMERR_BADSPEC;
 	}
 
@@ -314,7 +313,7 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
 static int parseProvides(struct PackageRec *p, char *line)
 {
     char *prov;
-    int flags = REQUIRE_PROVIDES;
+    int flags = RPMSENSE_PROVIDES;
     
     while ((prov = strtok(line, " ,\t\n"))) {
 	addReqProv(p, flags, prov, NULL);
@@ -336,7 +335,7 @@ static struct PackageRec *new_packagerec(void)
     p->subname = NULL;
     p->newname = NULL;
     p->icon = NULL;
-    p->header = newHeader();
+    p->header = headerNew();
     p->filelist = newStringBuf();
     p->files = -1;  /* -1 means no %files, thus no package */
     p->fileFile = NULL;
@@ -357,7 +356,7 @@ static struct PackageRec *new_packagerec(void)
 
 void free_packagerec(struct PackageRec *p)
 {
-    freeHeader(p->header);
+    headerFree(p->header);
     freeStringBuf(p->filelist);
     freeStringBuf(p->doc);
     FREE(p->subname);
@@ -469,9 +468,9 @@ static void generateNamesAndDocScript(Spec s)
     char fullname[1024];
     char *name, *version, *release, *packageVersion, *packageRelease, *docs;
 
-    getEntry(s->packages->header, RPMTAG_VERSION, NULL,
+    headerGetEntry(s->packages->header, RPMTAG_VERSION, NULL,
 	     (void *) &version, NULL);
-    getEntry(s->packages->header, RPMTAG_RELEASE, NULL,
+    headerGetEntry(s->packages->header, RPMTAG_RELEASE, NULL,
 	     (void *) &release, NULL);
     
     package = s->packages;
@@ -485,14 +484,14 @@ static void generateNamesAndDocScript(Spec s)
 	    /* Must be the main package */
 	    name = s->name;
 	}
-	addEntry(package->header, RPMTAG_NAME, STRING_TYPE, name, 1);
+	headerAddEntry(package->header, RPMTAG_NAME, RPM_STRING_TYPE, name, 1);
 
 	/* Handle subpackage version/release overrides */
-        if (!getEntry(package->header, RPMTAG_VERSION, NULL,
+        if (!headerGetEntry(package->header, RPMTAG_VERSION, NULL,
 		      (void *) &packageVersion, NULL)) {
             packageVersion = version;
 	}
-        if (!getEntry(package->header, RPMTAG_RELEASE, NULL,
+        if (!headerGetEntry(package->header, RPMTAG_RELEASE, NULL,
 		      (void *) &packageRelease, NULL)) {
             packageRelease = release;
 	}
@@ -522,7 +521,7 @@ static int match_arch(char *s)
     char *tok, *arch;
     int sense, match;
 
-    arch = getArchName();
+    arch = rpmGetArchName();
     match = 0;
     
     tok = strtok(s, " \n\t");
@@ -542,7 +541,7 @@ static int match_os(char *s)
     char *tok, *os;
     int sense, match;
 
-    os = getOsName();
+    os = rpmGetOsName();
     match = 0;
     
     tok = strtok(s, " \n\t");
@@ -573,7 +572,7 @@ static int read_line(FILE *f, char *line)
 	if (! fgets(line, LINE_BUF_SIZE, f)) {
 	    /* the end */
 	    if (read_level->next) {
-		error(RPMERR_UNMATCHEDIF, "Unclosed %%if");
+		rpmError(RPMERR_UNMATCHEDIF, "Unclosed %%if");
 	        return RPMERR_UNMATCHEDIF;
 	    } else {
 	        return 0;
@@ -594,14 +593,14 @@ static int read_line(FILE *f, char *line)
 	} else if (! strncmp("%else", line, 5)) {
 	    if (! read_level->next) {
 	        /* Got an else with no %if ! */
-		error(RPMERR_UNMATCHEDIF, "Got a %%else with no if");
+		rpmError(RPMERR_UNMATCHEDIF, "Got a %%else with no if");
 	        return RPMERR_UNMATCHEDIF;
 	    }
 	    read_level->reading =
 	        read_level->next->reading && ! read_level->reading;
 	} else if (! strncmp("%endif", line, 6)) {
 	    if (! read_level->next) {
-		error(RPMERR_UNMATCHEDIF, "Got a %%endif with no if");
+		rpmError(RPMERR_UNMATCHEDIF, "Got a %%endif with no if");
 		return RPMERR_UNMATCHEDIF;
 	    }
 	    rl = read_level;
@@ -775,7 +774,7 @@ static void addListEntry(Header h, int_32 tag, char *line)
 	line = NULL;
     }
     if (argc) {
-	addEntry(h, tag, STRING_ARRAY_TYPE, argvs, argc);
+	headerAddEntry(h, tag, RPM_STRING_ARRAY_TYPE, argvs, argc);
     }
     free(argvs);
 }
@@ -852,7 +851,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	line = buf;
 	s = NULL;
         if ((tag = check_part(line, &s))) {
-	    message(MESS_DEBUG, "Switching to part: %d\n", tag);
+	    rpmMessage(RPMMESS_DEBUG, "Switching to part: %d\n", tag);
 	    t1 = 0;
 	    switch (cur_part) {
 	      case PREIN_PART:
@@ -880,25 +879,25 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		/* %changelog is a little special.  It goes in the   */
 		/* "main" package no matter where it appears, and it */
 		/* ends up in all the packages.                      */
-		addEntry(spec->packages->header, RPMTAG_CHANGELOG, STRING_TYPE,
+		headerAddEntry(spec->packages->header, RPMTAG_CHANGELOG, RPM_STRING_TYPE,
 			 getStringBuf(sb), 1);
 		break;
 	      case TRIGGERON_PART:
-		if (addTrigger(cur_package, TRIGGER_ON,
+		if (addTrigger(cur_package, RPMSENSE_TRIGGER_ON,
 			       getStringBuf(sb), triggerArgs)) {
 		    return NULL;
 		}
 		break;
 	      case TRIGGEROFF_PART:
-		if (addTrigger(cur_package, TRIGGER_OFF,
+		if (addTrigger(cur_package, RPMSENSE_TRIGGER_OFF,
 			       getStringBuf(sb), triggerArgs)) {
 		    return NULL;
 		}
 		break;
 	    }
 	    if (t1) {
-		addEntry(cur_package->header, t1,
-			 STRING_TYPE, getStringBuf(sb), 1);
+		headerAddEntry(cur_package->header, t1,
+			 RPM_STRING_TYPE, getStringBuf(sb), 1);
 	    }
 	    cur_part = tag;
 	    truncStringBuf(sb);
@@ -911,7 +910,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		  case INSTALL_PART:
 		  case CLEAN_PART:
 		  case CHANGELOG_PART:
-		    error(RPMERR_BADARG, "Tag takes no arguments: %s", s);
+		    rpmError(RPMERR_BADARG, "Tag takes no arguments: %s", s);
 		    return NULL;
 	        }
 	    }
@@ -950,7 +949,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		}
 	    }
 
-	    message(MESS_DEBUG, "fileFile = %s\n", 
+	    rpmMessage(RPMMESS_DEBUG, "fileFile = %s\n", 
 			fileFile[0] ? fileFile : "(null)");
 
 	    /* If trigger, pull off the args */
@@ -973,7 +972,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		    s += 2;
 		    s += strspn(s, ": \t");
 		    if (*s == '\0') {
-			error(RPMERR_BADARG, "-n takes argument");
+			rpmError(RPMERR_BADARG, "-n takes argument");
 			return NULL;
 		    }
 		    lookupopts = LP_NEWNAME;
@@ -1003,10 +1002,10 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	      default:
 	        /* XXX - should be able to drop the -n in non-%package parts */
 	        if (! lookup_package(spec, &cur_package, s, lookupopts)) {
-		    error(RPMERR_INTERNAL, "Package lookup failed: %s", s);
+		    rpmError(RPMERR_INTERNAL, "Package lookup failed: %s", s);
 		    return NULL;
 	        }
-	        message(MESS_DEBUG, "Switched to package: %s\n", 
+	        rpmMessage(RPMMESS_DEBUG, "Switched to package: %s\n", 
 			s ? s : "(main)");
 	    }
 
@@ -1030,10 +1029,10 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		lookupopts = LP_CREATE | LP_FAIL_EXISTS;
 	    }
 	    if (! lookup_package(spec, &cur_package, NULL, lookupopts)) {
-		error(RPMERR_INTERNAL, "Base package lookup failed!");
+		rpmError(RPMERR_INTERNAL, "Base package lookup failed!");
 		return NULL;
 	    }
-	    message(MESS_DEBUG, "Switched to BASE package\n");
+	    rpmMessage(RPMMESS_DEBUG, "Switched to BASE package\n");
 	}
 	
         switch (cur_part) {
@@ -1042,14 +1041,14 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	        switch (tag) {
 		  case RPMTAG_EXCLUDE:
 		  case RPMTAG_EXCLUSIVE:
-		      message(MESS_WARNING,
+		      rpmMessage(RPMMESS_WARNING,
 			      "Exclude/Exclusive are depricated.\n"
 			      "Use ExcludeArch/ExclusiveArch instead.\n");
 		      sprintf(buf2, "%s %s",
 			      (tag == RPMTAG_EXCLUDE) ? "%ifarch" : "%ifnarch",
 			      s);
 		      if (match_arch(buf2)) {
-			  error(RPMERR_BADARCH, "Arch mismatch!");
+			  rpmError(RPMERR_BADARCH, "Arch mismatch!");
 			  return NULL;
 		      }
 		      addListEntry(cur_package->header,
@@ -1062,7 +1061,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		    sprintf(buf2, "%s %s", (tag == RPMTAG_EXCLUDEARCH) ?
 			    "%ifarch" : "%ifnarch",  s);
 		    if (match_arch(buf2)) {
-			error(RPMERR_BADARCH, "Arch mismatch!");
+			rpmError(RPMERR_BADARCH, "Arch mismatch!");
 			return NULL;
 		    }
 		    addListEntry(cur_package->header, tag, s);
@@ -1072,7 +1071,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		    sprintf(buf2, "%s %s", (tag == RPMTAG_EXCLUDEOS) ?
 			    "%ifos" : "%ifnos",  s);
 		    if (match_os(buf2)) {
-			error(RPMERR_BADOS, "OS mismatch!");
+			rpmError(RPMERR_BADOS, "OS mismatch!");
 			return NULL;
 		    }
 		    addListEntry(cur_package->header, tag, s);
@@ -1099,18 +1098,18 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		  case RPMTAG_PACKAGER:
 		  case RPMTAG_GROUP:
 		  case RPMTAG_URL:
-		    addEntry(cur_package->header, tag, STRING_TYPE, s, 1);
+		    headerAddEntry(cur_package->header, tag, RPM_STRING_TYPE, s, 1);
 		    break;
 		  case RPMTAG_BUILDROOT:
 		    gotBuildroot = 1;
 		    spec->buildroot = strdup(s);
 		    break;
 		  case RPMTAG_DEFAULTPREFIX:
-		    addEntry(cur_package->header, tag, STRING_TYPE, s, 1);
+		    headerAddEntry(cur_package->header, tag, RPM_STRING_TYPE, s, 1);
 		    break;
 		  case RPMTAG_SERIAL:
 		    serial = atoi(s);
-		    addEntry(cur_package->header, tag, INT32_TYPE, &serial, 1);
+		    headerAddEntry(cur_package->header, tag, RPM_INT32_TYPE, &serial, 1);
 		    break;
 		  case RPMTAG_DESCRIPTION:
 		    /* Special case -- need to handle backslash */
@@ -1126,15 +1125,15 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 			s = buf;
 		    }
 		    appendStringBuf(sb, s);
-		    addEntry(cur_package->header, RPMTAG_DESCRIPTION,
-			     STRING_TYPE, getStringBuf(sb), 1);
+		    headerAddEntry(cur_package->header, RPMTAG_DESCRIPTION,
+			     RPM_STRING_TYPE, getStringBuf(sb), 1);
 		    break;
 		  case RPMTAG_ROOT:
 		    /* special case */
 		    gotRoot = 1;
-		    message(MESS_DEBUG, "Got root: %s\n", s);
-		    message(MESS_WARNING, "The Root: tag is depricated.  Use Buildroot: instead\n");
-		    setVar(RPMVAR_ROOT, s);
+		    rpmMessage(RPMMESS_DEBUG, "Got root: %s\n", s);
+		    rpmMessage(RPMMESS_WARNING, "The Root: tag is depricated.  Use Buildroot: instead\n");
+		    rpmSetVar(RPMVAR_ROOT, s);
 		    break;
 		  case RPMTAG_ICON:
 		      cur_package->icon = strdup(s);
@@ -1177,9 +1176,9 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		    }
 		    break;
 		  default:
-		      /* message(MESS_DEBUG, "Skipping: %s\n", line); */
+		      /* rpmMessage(RPMMESS_DEBUG, "Skipping: %s\n", line); */
 		      /* This shouldn't happen? */
-		      error(RPMERR_INTERNAL, "Bogus token");
+		      rpmError(RPMERR_INTERNAL, "Bogus token");
 		      return NULL;
 		}		
 	    } else {
@@ -1188,8 +1187,8 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		while (*s1 && (*s1 == ' ' || *s1 == '\t')) s1++;
 		/* Handle blanks lines and comments */
 		if (*s1 && (*s1 != '#')) {
-		    /*message(MESS_WARNING, "Unknown Field: %s\n", line);*/
-		    error(RPMERR_BADSPEC, "Unknown Field: %s\n", line);
+		    /*rpmMessage(RPMMESS_WARNING, "Unknown Field: %s\n", line);*/
+		    rpmError(RPMERR_BADSPEC, "Unknown Field: %s\n", line);
 		    return NULL;
 		}
 	    }
@@ -1230,7 +1229,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	      }
 	    break;
 	  default:
-	    error(RPMERR_INTERNAL, "Bad part");
+	    rpmError(RPMERR_INTERNAL, "Bad part");
 	    return NULL;
 	} /* switch */
     }
@@ -1240,30 +1239,30 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 
     if (gotRoot && gotBuildroot) {
 	freeSpec(spec);
-	error(RPMERR_BADSPEC,
+	rpmError(RPMERR_BADSPEC,
 	      "Spec file can not have both Root: and Buildroot:");
 	return NULL;
     }
     if (spec->buildroot) {
 	/* This package can do build roots */
 	if (buildRootOverride) {
-	    setVar(RPMVAR_ROOT, buildRootOverride);
-	    setVar(RPMVAR_BUILDROOT, buildRootOverride);
+	    rpmSetVar(RPMVAR_ROOT, buildRootOverride);
+	    rpmSetVar(RPMVAR_BUILDROOT, buildRootOverride);
 	} else {
-	    if ((s = getVar(RPMVAR_BUILDROOT))) {
+	    if ((s = rpmGetVar(RPMVAR_BUILDROOT))) {
 		/* Take build prefix from rpmrc */
-		setVar(RPMVAR_ROOT, s);
+		rpmSetVar(RPMVAR_ROOT, s);
 	    } else {
 		/* Use default */
-		setVar(RPMVAR_ROOT, spec->buildroot);
-		setVar(RPMVAR_BUILDROOT, spec->buildroot);
+		rpmSetVar(RPMVAR_ROOT, spec->buildroot);
+		rpmSetVar(RPMVAR_BUILDROOT, spec->buildroot);
 	    }
 	}
     } else {
 	/* Package can not do build prefixes */
 	if (buildRootOverride) {
 	    freeSpec(spec);
-	    error(RPMERR_BADARG, "Package can not do build prefixes");
+	    rpmError(RPMERR_BADARG, "Package can not do build prefixes");
 	    return NULL;
 	}
     }
@@ -1285,7 +1284,7 @@ static void reset_spec()
     struct preamble_line *p = preamble_spec;
     struct part_rec *p1 = part_list;
 
-    setVar(RPMVAR_ROOT, NULL);
+    rpmSetVar(RPMVAR_ROOT, NULL);
 
     while (read_level) {
 	rl = read_level;
@@ -1353,7 +1352,7 @@ static void dumpPackage(struct PackageRec *p, FILE *f)
     fprintf(f, "%s", getStringBuf(p->filelist));
     fprintf(f, "FILES =^\n");
     fprintf(f, "HEADER =v\n");
-    dumpHeader(p->header, f, 1);
+    headerDump(p->header, f, 1);
     fprintf(f, "HEADER =^\n");
 
 }

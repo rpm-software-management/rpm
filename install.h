@@ -3,11 +3,11 @@
 
 #include <stdio.h>
 
-#define RPMINSTALL_PERCENT 		(1 << 0)
-#define RPMINSTALL_HASH	   		(1 << 1)
-#define RPMINSTALL_NODEPS	   	(1 << 2)
+#define INSTALL_PERCENT         (1 << 0)
+#define INSTALL_HASH            (1 << 1)
+#define INSTALL_NODEPS          (1 << 2)
 
-#define RPMUNINSTALL_NODEPS		(1 << 0)
+#define UNINSTALL_NODEPS        (1 << 0)
 
 int doInstall(char * rootdir, char ** argv, char * prefix, int installFlags, 
 	      int interfaceFlags);

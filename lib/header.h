@@ -31,49 +31,49 @@ typedef struct headerToken *Header;
 typedef struct headerIteratorS *HeaderIterator;
 
 /* read and write a header from a file */
-Header readHeader(int fd, int magicp);
-void writeHeader(int fd, Header h, int magicp);
-unsigned int sizeofHeader(Header h, int magicp);
+Header headerRead(int fd, int magicp);
+void headerWrite(int fd, Header h, int magicp);
+unsigned int headerSizeof(Header h, int magicp);
 
-#define NO_HEADER_MAGIC 0
-#define HEADER_MAGIC    1
+#define HEADER_MAGIC_NO   0
+#define HEADER_MAGIC_YES  1
 
 /* load and unload a header from a chunk of memory */
-Header loadHeader(void *p);
-void *unloadHeader(Header h);
+Header headerLoad(void *p);
+void *headerUnload(Header h);
 
-Header newHeader(void);
-void freeHeader(Header h);
+Header headerNew(void);
+void headerFree(Header h);
 
 /* dump a header to a file, in human readable format */
-void dumpHeader(Header h, FILE *f, int flags);
+void headerDump(Header h, FILE *f, int flags);
 
-#define DUMP_INLINE   1
-#define DUMP_SYMBOLIC 2
+#define HEADER_DUMP_INLINE   1
+#define HEADER_DUMP_SYMBOLIC 2
 
-int getEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c);
-int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
-int modifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
+int headerGetEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c);
+int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
+int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 
-int isEntry(Header h, int_32 tag);
+int headerIsEntry(Header h, int_32 tag);
 
-HeaderIterator initIterator(Header h);
-int nextIterator(HeaderIterator iter,
-		 int_32 *tag, int_32 *type, void **p, int_32 *c);
-void freeIterator(HeaderIterator iter);
+HeaderIterator headerInitIterator(Header h);
+int headerNextIterator(HeaderIterator iter,
+		       int_32 *tag, int_32 *type, void **p, int_32 *c);
+void headerFreeIterator(HeaderIterator iter);
 
-Header copyHeader(Header h);
+Header headerCopy(Header h);
 
 /* Entry Types */
 
-#define NULL_TYPE 0
-#define CHAR_TYPE 1
-#define INT8_TYPE 2
-#define INT16_TYPE 3
-#define INT32_TYPE 4
-#define INT64_TYPE 5
-#define STRING_TYPE 6
-#define BIN_TYPE 7
-#define STRING_ARRAY_TYPE 8
+#define RPM_NULL_TYPE         0
+#define RPM_CHAR_TYPE         1
+#define RPM_INT8_TYPE         2
+#define RPM_INT16_TYPE        3
+#define RPM_INT32_TYPE        4
+#define RPM_INT64_TYPE        5
+#define RPM_STRING_TYPE       6
+#define RPM_BIN_TYPE          7
+#define RPM_STRING_ARRAY_TYPE 8
 
 #endif _header_h

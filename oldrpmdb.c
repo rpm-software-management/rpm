@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "rpmerr.h"
+#include "rpmlib.h"
 #include "rpm_malloc.h"
 #include "messages.h"
 #include "misc.h"
@@ -149,7 +149,7 @@ int oldrpmdbOpen(struct oldrpmdb * oldrpmdb) {
     strcat(path, "/packages");
     oldrpmdb->packages = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
     if (!oldrpmdb->packages) {
-	error(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
+	rpmError(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
 	goterr = 1;
     }
 
@@ -157,7 +157,7 @@ int oldrpmdbOpen(struct oldrpmdb * oldrpmdb) {
     strcat(path, "/nameidx");
     oldrpmdb->nameIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
     if (!oldrpmdb->packages) {
-	error(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
+	rpmError(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
 	goterr = 1;
     }
 
@@ -165,7 +165,7 @@ int oldrpmdbOpen(struct oldrpmdb * oldrpmdb) {
     strcat(path, "/pathidx");
     oldrpmdb->pathIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
     if (!oldrpmdb->packages) {
-	error(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
+	rpmError(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
 	goterr = 1;
     }
 
@@ -173,7 +173,7 @@ int oldrpmdbOpen(struct oldrpmdb * oldrpmdb) {
     strcat(path, "/iconidx");
     oldrpmdb->iconIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
     if (!oldrpmdb->iconIndex) {
-	error(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
+	rpmError(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
 	goterr = 1;
     }
 
@@ -181,7 +181,7 @@ int oldrpmdbOpen(struct oldrpmdb * oldrpmdb) {
     strcat(path, "/groupindex");
     oldrpmdb->groupIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
     if (!oldrpmdb->packages) {
-	error(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
+	rpmError(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
 	goterr = 1;
     }
 
@@ -189,7 +189,7 @@ int oldrpmdbOpen(struct oldrpmdb * oldrpmdb) {
     strcat(path, "/postidx");
     oldrpmdb->postIndex = gdbm_open(path, 1024, gdbmFlags, 0644, NULL);
     if (!oldrpmdb->postIndex) {
-	error(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
+	rpmError(RPMERR_GDBMOPEN, path, gdbm_strerror(gdbm_errno));
 	goterr = 1;
     }
 
@@ -454,14 +454,14 @@ int oldrpmdbGetPackageInfo(struct oldrpmdb * oldrpmdb, struct oldrpmdbLabel labe
 
     labelstr = oldrpmdbLabelToLabelstr(label, 0);
 
-    message(MESS_DEBUG, "pulling %s from database\n", labelstr);
+    rpmMessage(RPMMESS_DEBUG, "pulling %s from database\n", labelstr);
 
     key.dptr = labelstr;
     key.dsize = strlen(labelstr);
     
     rec = gdbm_fetch(oldrpmdb->packages, key);
     if (!rec.dptr) {
-	error(RPMERR_OLDDBCORRUPT, "package not found in database");
+	rpmError(RPMERR_OLDDBCORRUPT, "package not found in database");
 	return 1;
     }
 

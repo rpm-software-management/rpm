@@ -15,7 +15,6 @@
 #include "reqprov.h"
 #include "messages.h"
 #include "rpmlib.h"
-#include "rpmerr.h"
 #include "misc.h"
 
 static StringBuf getOutputFrom(char *dir, char *argv[],
@@ -57,7 +56,7 @@ int addReqProv(struct PackageRec *p, int flags,
     }
     if (rd) {
 	/* already there */
-	message(MESS_DEBUG, "Already Got: %s\n", name);
+	rpmMessage(RPMMESS_DEBUG, "Already Got: %s\n", name);
 	return 0;
     }
     
@@ -68,14 +67,14 @@ int addReqProv(struct PackageRec *p, int flags,
     rd->next = p->reqprov;
     p->reqprov = rd;
 
-    if (flags & REQUIRE_PROVIDES) {
-	message(MESS_DEBUG, "Adding provide: %s\n", name);
+    if (flags & RPMSENSE_PROVIDES) {
+	rpmMessage(RPMMESS_DEBUG, "Adding provide: %s\n", name);
 	p->numProv++;
-    } else if (flags & REQUIRE_CONFLICTS) {
-	message(MESS_DEBUG, "Adding conflict: %s\n", name);
+    } else if (flags & RPMSENSE_CONFLICTS) {
+	rpmMessage(RPMMESS_DEBUG, "Adding conflict: %s\n", name);
 	p->numConflict++;
     } else {
-	message(MESS_DEBUG, "Adding require: %s\n", name);
+	rpmMessage(RPMMESS_DEBUG, "Adding require: %s\n", name);
 	p->numReq++;
     }
 
@@ -121,11 +120,11 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 	chdir(dir);
 	
 	execvp(argv[0], argv);
-	error(RPMERR_EXEC, "Couldn't exec %s", argv[0]);
+	rpmError(RPMERR_EXEC, "Couldn't exec %s", argv[0]);
 	exit(RPMERR_EXEC);
     }
     if (progPID < 0) {
-	error(RPMERR_FORK, "Couldn't fork %s", argv[0]);
+	rpmError(RPMERR_FORK, "Couldn't fork %s", argv[0]);
 	return NULL;
     }
 
@@ -177,12 +176,12 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
     signal(SIGPIPE, oldhandler);
 
     if (writeBytesLeft) {
-	error(RPMERR_EXEC, "failed to write all data to %s", argv[0]);
+	rpmError(RPMERR_EXEC, "failed to write all data to %s", argv[0]);
 	return NULL;
     }
     waitpid(progPID, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	error(RPMERR_EXEC, "%s failed", argv[0]);
+	rpmError(RPMERR_EXEC, "%s failed", argv[0]);
 	return NULL;
     }
 
@@ -202,26 +201,26 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
     char dir[1024];
     char *argv[8];
 
-    message(MESS_VERBOSE, "Finding dependencies...\n");
+    rpmMessage(RPMMESS_VERBOSE, "Finding dependencies...\n");
 
     /*** Get root directory ***/
     
-    if (getVar(RPMVAR_ROOT)) {
-	strcpy(dir, getVar(RPMVAR_ROOT));
+    if (rpmGetVar(RPMVAR_ROOT)) {
+	strcpy(dir, rpmGetVar(RPMVAR_ROOT));
     } else {
 	strcpy(dir, "/");
     }
 
     /*** Generate File List ***/
     
-    if (!getEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
+    if (!headerGetEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
 	return 0;
     }
     if (!count) {
 	return 0;
     }
     fsave = f;
-    getEntry(header, RPMTAG_FILEMODES, NULL, (void **) &modes, NULL);
+    headerGetEntry(header, RPMTAG_FILEMODES, NULL, (void **) &modes, NULL);
 
     writeBuff = newStringBuf();
     writeBytes = 0;
@@ -244,7 +243,7 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
     argv[1] = NULL;
     readBuff = getOutputFrom(dir, argv, writePtr, writeBytes);
     if (!readBuff) {
-	error(RPMERR_EXEC, "Failed to find provides");
+	rpmError(RPMERR_EXEC, "Failed to find provides");
 	exit(1);
     }
     
@@ -253,7 +252,7 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
     freeStringBuf(readBuff);
     while (*f) {
 	if (**f) {
-	    addReqProv(p, REQUIRE_PROVIDES, *f, NULL);
+	    addReqProv(p, RPMSENSE_PROVIDES, *f, NULL);
 	}
 	f++;
     }
@@ -276,7 +275,7 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
     argv[3] = NULL;
     readBuff = getOutputFrom(dir, argv, writePtr, writeBytes);
     if (!readBuff) {
-	error(RPMERR_EXEC, "Failed to find requires");
+	rpmError(RPMERR_EXEC, "Failed to find requires");
 	exit(1);
     }
 
@@ -297,7 +296,7 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
 	    if ((s = strrchr(tok, '/'))) {
 		tok = s + 1;
 	    }
-	    addReqProv(p, REQUIRE_ANY, tok, NULL);
+	    addReqProv(p, RPMSENSE_ANY, tok, NULL);
 	}
 
 	f++;
@@ -328,17 +327,17 @@ int processReqProv(Header h, struct PackageRec *p)
     if (p->numProv) {
 	rd = p->reqprov;
 	nameArray = namePtr = malloc(p->numProv * sizeof(*nameArray));
-	message(MESS_VERBOSE, "Provides (%d):", p->numProv);
+	rpmMessage(RPMMESS_VERBOSE, "Provides (%d):", p->numProv);
 	while (rd) {
-	    if (rd->flags & REQUIRE_PROVIDES) {
-		message(MESS_VERBOSE, " %s", rd->name);
+	    if (rd->flags & RPMSENSE_PROVIDES) {
+		rpmMessage(RPMMESS_VERBOSE, " %s", rd->name);
 		*namePtr++ = rd->name;
 	    }
 	    rd = rd->next;
 	}
-	message(MESS_VERBOSE, "\n");
+	rpmMessage(RPMMESS_VERBOSE, "\n");
 
-	addEntry(h, RPMTAG_PROVIDES, STRING_ARRAY_TYPE, nameArray, p->numProv);
+	headerAddEntry(h, RPMTAG_PROVIDES, RPM_STRING_ARRAY_TYPE, nameArray, p->numProv);
 	free(nameArray);
     }
 
@@ -348,23 +347,23 @@ int processReqProv(Header h, struct PackageRec *p)
 	versionArray = versionPtr =
 	    malloc(p->numConflict * sizeof(*versionArray));
 	flagArray = flagPtr = malloc(p->numConflict * sizeof(*flagArray));
-	message(MESS_VERBOSE, "Conflicts (%d):", p->numConflict);
+	rpmMessage(RPMMESS_VERBOSE, "Conflicts (%d):", p->numConflict);
 	while (rd) {
-	    if (rd->flags & REQUIRE_CONFLICTS) {
-		message(MESS_VERBOSE, " %s", rd->name);
+	    if (rd->flags & RPMSENSE_CONFLICTS) {
+		rpmMessage(RPMMESS_VERBOSE, " %s", rd->name);
 		*namePtr++ = rd->name;
 		*versionPtr++ = rd->version ? rd->version : "";
-		*flagPtr++ = rd->flags & REQUIRE_SENSEMASK;
+		*flagPtr++ = rd->flags & RPMSENSE_SENSEMASK;
 	    }
 	    rd = rd->next;
 	}
-	message(MESS_VERBOSE, "\n");
+	rpmMessage(RPMMESS_VERBOSE, "\n");
 
-	addEntry(h, RPMTAG_CONFLICTNAME, STRING_ARRAY_TYPE,
+	headerAddEntry(h, RPMTAG_CONFLICTNAME, RPM_STRING_ARRAY_TYPE,
 		 nameArray, p->numConflict);
-	addEntry(h, RPMTAG_CONFLICTVERSION, STRING_ARRAY_TYPE,
+	headerAddEntry(h, RPMTAG_CONFLICTVERSION, RPM_STRING_ARRAY_TYPE,
 		 versionArray, p->numConflict);
-	addEntry(h, RPMTAG_CONFLICTFLAGS, INT32_TYPE,
+	headerAddEntry(h, RPMTAG_CONFLICTFLAGS, RPM_INT32_TYPE,
 		 flagArray, p->numConflict);
 
 	free(nameArray);
@@ -377,24 +376,24 @@ int processReqProv(Header h, struct PackageRec *p)
 	nameArray = namePtr = malloc(p->numReq * sizeof(*nameArray));
 	versionArray = versionPtr = malloc(p->numReq * sizeof(*versionArray));
 	flagArray = flagPtr = malloc(p->numReq * sizeof(*flagArray));
-	message(MESS_VERBOSE, "Requires (%d):", p->numReq);
+	rpmMessage(RPMMESS_VERBOSE, "Requires (%d):", p->numReq);
 	while (rd) {
-	    if (! ((rd->flags & REQUIRE_PROVIDES) ||
-		   (rd->flags & REQUIRE_CONFLICTS))) {
-		message(MESS_VERBOSE, " %s", rd->name);
+	    if (! ((rd->flags & RPMSENSE_PROVIDES) ||
+		   (rd->flags & RPMSENSE_CONFLICTS))) {
+		rpmMessage(RPMMESS_VERBOSE, " %s", rd->name);
 		*namePtr++ = rd->name;
 		*versionPtr++ = rd->version ? rd->version : "";
-		*flagPtr++ = rd->flags & REQUIRE_SENSEMASK;
+		*flagPtr++ = rd->flags & RPMSENSE_SENSEMASK;
 	    }
 	    rd = rd->next;
 	}
-	message(MESS_VERBOSE, "\n");
+	rpmMessage(RPMMESS_VERBOSE, "\n");
 
-	addEntry(h, RPMTAG_REQUIRENAME, STRING_ARRAY_TYPE,
+	headerAddEntry(h, RPMTAG_REQUIRENAME, RPM_STRING_ARRAY_TYPE,
 		 nameArray, p->numReq);
-	addEntry(h, RPMTAG_REQUIREVERSION, STRING_ARRAY_TYPE,
+	headerAddEntry(h, RPMTAG_REQUIREVERSION, RPM_STRING_ARRAY_TYPE,
 		 versionArray, p->numReq);
-	addEntry(h, RPMTAG_REQUIREFLAGS, INT32_TYPE,
+	headerAddEntry(h, RPMTAG_REQUIREFLAGS, RPM_INT32_TYPE,
 		 flagArray, p->numReq);
 
 	free(nameArray);

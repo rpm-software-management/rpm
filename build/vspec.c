@@ -22,7 +22,6 @@ Here's what we do
 #include "header.h"
 #include "spec.h"
 #include "specP.h"
-#include "rpmerr.h"
 #include "messages.h"
 #include "rpmlib.h"
 #include "stringbuf.h"
@@ -121,13 +120,13 @@ static int checkHeaderTags(Header inh, struct packageFieldsRec *pfr)
     struct packageFieldsRec *p;
 
     /* This actually sorts the index, so it'll be easy to catch dups */
-    h = copyHeader(inh);
+    h = headerCopy(inh);
 
-    headerIter = initIterator(h);
+    headerIter = headerInitIterator(h);
     lastTag = 0;
-    while (nextIterator(headerIter, &tag, &type, &ptr, &c)) {
+    while (headerNextIterator(headerIter, &tag, &type, &ptr, &c)) {
 	if (tag == lastTag) {
-	    error(RPMERR_BADSPEC, "Duplicate fields for     : %s",
+	    rpmError(RPMERR_BADSPEC, "Duplicate fields for     : %s",
 		  tagName(tag));
 	    res = 1;
 	}
@@ -136,13 +135,13 @@ static int checkHeaderTags(Header inh, struct packageFieldsRec *pfr)
 	    p->present = 1;
 	lastTag = tag;
     }
-    freeIterator(headerIter);
-    freeHeader(h);
+    headerFreeIterator(headerIter);
+    headerFree(h);
 
     p = pfr;
     while (p->tag) {
 	if (p->shouldBePresent != p->present) {
-	    error(RPMERR_BADSPEC, "Field must%s be present%s: %s",
+	    rpmError(RPMERR_BADSPEC, "Field must%s be present%s: %s",
 		  p->present ? " NOT" : "", p->present ? "" : "    ",
 		  tagName(p->tag));
 	    res = 1;
@@ -186,15 +185,15 @@ int verifySpec(Spec s)
 	}
 
 	val = NULL;
-	getEntry(pr->header, RPMTAG_VERSION, NULL, (void *) &val, NULL);
+	headerGetEntry(pr->header, RPMTAG_VERSION, NULL, (void *) &val, NULL);
 	if (val && strchr(val, '-')) {
-	    error(RPMERR_BADSPEC, "Illegal '-' char in version: %s\n", val);
+	    rpmError(RPMERR_BADSPEC, "Illegal '-' char in version: %s\n", val);
 	    res = 1;
 	}
 	val = NULL;
-	getEntry(pr->header, RPMTAG_RELEASE, NULL, (void *) &val, NULL);
+	headerGetEntry(pr->header, RPMTAG_RELEASE, NULL, (void *) &val, NULL);
 	if (val && strchr(val, '-')) {
-	    error(RPMERR_BADSPEC, "Illegal '-' char in release: %s\n", val);
+	    rpmError(RPMERR_BADSPEC, "Illegal '-' char in release: %s\n", val);
 	    res = 1;
 	}
 	

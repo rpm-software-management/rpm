@@ -8,7 +8,6 @@
 #include <sys/stat.h>
 
 #include "install.h"
-#include "lib/rpmerr.h"
 #include "lib/messages.h"
 #include "lib/signature.h"
 #include "query.h"
@@ -238,7 +237,7 @@ int build(char *arg, int buildAmount, char *passPhrase,
 
     stat(specfile, &statbuf);
     if (! S_ISREG(statbuf.st_mode)) {
-	error(RPMERR_BADSPEC, "File is not a regular file: %s\n", specfile);
+	rpmError(RPMERR_BADSPEC, "File is not a regular file: %s\n", specfile);
 	return 1;
     }
     
@@ -265,7 +264,7 @@ int build(char *arg, int buildAmount, char *passPhrase,
     } else {
 	/* Spec parse failed -- could be Exclude: Exclusive: */
 	res = 1;
-	if (errCode() == RPMERR_BADARCH) {
+	if (rpmErrorCode() == RPMERR_BADARCH) {
 	    fprintf(stderr, _("%s doesn't build on this architecture\n"), arg);
 	} else {
 	    fprintf(stderr, _("Build failed.\n"));
@@ -464,9 +463,9 @@ int main(int argc, char ** argv) {
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_UNINSTALL;
-	    message(MESS_ERROR, _("-u and --uninstall are depricated and no"
+	    rpmMessage(RPMMESS_ERROR, _("-u and --uninstall are depricated and no"
 		    " longer work.\n"));
-	    message(MESS_ERROR, _("Use -e or --erase instead.\n"));
+	    rpmMessage(RPMMESS_ERROR, _("Use -e or --erase instead.\n"));
 	    exit(1);
 	
 	  case 'e':
@@ -501,7 +500,7 @@ int main(int argc, char ** argv) {
 	    break;
 	
 	  case 'v':
-	    increaseVerbosity();
+	    rpmIncreaseVerbosity();
 	    break;
 
 	  case 'i':
@@ -524,7 +523,7 @@ int main(int argc, char ** argv) {
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_INSTALL)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_INSTALL;
-	    installFlags |= INSTALL_UPGRADE;
+	    installFlags |= RPMINSTALL_UPGRADE;
 	    break;
 
 	  case 's':
@@ -684,7 +683,7 @@ int main(int argc, char ** argv) {
 	  case GETOPT_DBPATH:
             if (optarg[0] != '/')
                 argerror(_("arguments to --dbpath must begin with a /"));
-	    setVar(RPMVAR_DBPATH, optarg);
+	    rpmSetVar(RPMVAR_DBPATH, optarg);
 	    gotDbpath = 1;
 	    break;
 
@@ -702,7 +701,7 @@ int main(int argc, char ** argv) {
 	    if ((*tce) || (tce == optarg) || (timeCheck == ULONG_MAX)) {
 		argerror("Argument to --timecheck must be integer");
 	    }
-	    setVar(RPMVAR_TIMECHECK, optarg);
+	    rpmSetVar(RPMVAR_TIMECHECK, optarg);
 	    break;
 
 	  case GETOPT_REBUILDDB:
@@ -727,7 +726,7 @@ int main(int argc, char ** argv) {
     }
 
     if (quiet)
-	setVerbosity(MESS_QUIET);
+	rpmSetVerbosity(RPMMESS_QUIET);
 
     if (version) printVersion();
     if (help) printHelp();
@@ -845,7 +844,7 @@ int main(int argc, char ** argv) {
 	argerror(_("--short-circuit may only be used with -bc or -bi"));
     }
 
-    if (oldPackage && !(installFlags & INSTALL_UPGRADE))
+    if (oldPackage && !(installFlags & RPMINSTALL_UPGRADE))
 	argerror(_("--oldpackage may only be used during upgrades"));
 
     if (bigMode != MODE_QUERY && dump) 
@@ -860,19 +859,19 @@ int main(int argc, char ** argv) {
 	argerror(_("ftp options can only be used during package queries, "
 		 "installs, and upgrades"));
 
-    if (oldPackage || (force && (installFlags & INSTALL_UPGRADE)))
-	installFlags |= INSTALL_UPGRADETOOLD;
+    if (oldPackage || (force && (installFlags & RPMINSTALL_UPGRADE)))
+	installFlags |= RPMINSTALL_UPGRADETOOLD;
 
-    if (ftpProxy) setVar(RPMVAR_FTPPROXY, ftpProxy);
-    if (ftpPort) setVar(RPMVAR_FTPPORT, ftpPort);
+    if (ftpProxy) rpmSetVar(RPMVAR_FTPPROXY, ftpProxy);
+    if (ftpPort) rpmSetVar(RPMVAR_FTPPORT, ftpPort);
 
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
 	    bigMode == MODE_RESIGN) {
             if (optind != argc) {
-		switch (sigLookupType()) {
-		  case SIGTAG_PGP:
-		    if (!(passPhrase = getPassPhrase("Enter pass phrase: "))) {
+		switch (rpmLookupSignatureType()) {
+		  case RPMSIGTAG_PGP:
+		    if (!(passPhrase = rpmGetPassPhrase("Enter pass phrase: "))) {
 			fprintf(stderr, _("Pass phrase check failed\n"));
 			exit(1);
 		    } else {
@@ -892,7 +891,7 @@ int main(int argc, char ** argv) {
 	}
     } else {
         /* Override any rpmrc setting */
-        setVar(RPMVAR_SIGTYPE, "none");
+        rpmSetVar(RPMVAR_SIGTYPE, "none");
     }
 	
     switch (bigMode) {
@@ -927,8 +926,8 @@ int main(int argc, char ** argv) {
 	
       case MODE_REBUILD:
       case MODE_RECOMPILE:
-        if (getVerbosity() == MESS_NORMAL)
-	    setVerbosity(MESS_VERBOSE);
+        if (rpmGetVerbosity() == RPMMESS_NORMAL)
+	    rpmSetVerbosity(RPMMESS_VERBOSE);
 
         if (optind == argc) 
 	    argerror(_("no packages files given for rebuild"));
@@ -950,8 +949,8 @@ int main(int argc, char ** argv) {
 	break;
 
       case MODE_BUILD:
-        if (getVerbosity() == MESS_NORMAL)
-	    setVerbosity(MESS_VERBOSE);
+        if (rpmGetVerbosity() == RPMMESS_NORMAL)
+	    rpmSetVerbosity(RPMMESS_VERBOSE);
        
 	switch (buildChar) {
 	  /* these fallthroughs are intentional */
@@ -996,32 +995,33 @@ int main(int argc, char ** argv) {
 	if (optind == argc) 
 	    argerror(_("no packages given for uninstall"));
 
-	if (noScripts) uninstallFlags |= UNINSTALL_NOSCRIPTS;
-	if (test) uninstallFlags |= UNINSTALL_TEST;
-	if (noDeps) interfaceFlags |= RPMUNINSTALL_NODEPS;
+	if (noScripts) uninstallFlags |= RPMUNINSTALL_NOSCRIPTS;
+	if (test) uninstallFlags |= RPMUNINSTALL_TEST;
+	if (noDeps) interfaceFlags |= UNINSTALL_NODEPS;
 
 	ec = doUninstall(rootdir, argv + optind, uninstallFlags, 
 		interfaceFlags);
 	break;
 
       case MODE_INSTALL:
-	if (force) installFlags |= (INSTALL_REPLACEPKG | INSTALL_REPLACEFILES);
-	if (replaceFiles) installFlags |= INSTALL_REPLACEFILES;
-	if (replacePackages) installFlags |= INSTALL_REPLACEPKG;
-	if (test) installFlags |= INSTALL_TEST;
-	if (noScripts) installFlags |= INSTALL_NOSCRIPTS;
-	if (ignoreArch) installFlags |= INSTALL_NOARCH;
-	if (ignoreOs) installFlags |= INSTALL_NOOS;
+	if (force)
+	    installFlags |= (RPMINSTALL_REPLACEPKG | RPMINSTALL_REPLACEFILES);
+	if (replaceFiles) installFlags |= RPMINSTALL_REPLACEFILES;
+	if (replacePackages) installFlags |= RPMINSTALL_REPLACEPKG;
+	if (test) installFlags |= RPMINSTALL_TEST;
+	if (noScripts) installFlags |= RPMINSTALL_NOSCRIPTS;
+	if (ignoreArch) installFlags |= RPMINSTALL_NOARCH;
+	if (ignoreOs) installFlags |= RPMINSTALL_NOOS;
 
-	if (showPercents) interfaceFlags |= RPMINSTALL_PERCENT;
-	if (showHash) interfaceFlags |= RPMINSTALL_HASH;
-	if (noDeps) interfaceFlags |= RPMINSTALL_NODEPS;
+	if (showPercents) interfaceFlags |= INSTALL_PERCENT;
+	if (showHash) interfaceFlags |= INSTALL_HASH;
+	if (noDeps) interfaceFlags |= INSTALL_NODEPS;
 
 	if (!incldocs) {
 	    if (excldocs)
-		installFlags |= INSTALL_NODOCS;
-	    else if (getBooleanVar(RPMVAR_EXCLUDEDOCS))
-		installFlags |= INSTALL_NODOCS;
+		installFlags |= RPMINSTALL_NODOCS;
+	    else if (rpmGetBooleanVar(RPMVAR_EXCLUDEDOCS))
+		installFlags |= RPMINSTALL_NODOCS;
 	}
 
 	if (optind == argc) 

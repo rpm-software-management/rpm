@@ -6,7 +6,6 @@
 
 #include "messages.h"
 #include "misc.h"
-#include "rpmerr.h"
 #include "rpmlib.h"
 
 /* the rpmrc is read from /etc/rpmrc or $HOME/.rpmrc - it is not affected
@@ -245,10 +244,10 @@ static int archosCompatCacheAdd(char * name, char * fn, int linenum,
     chptr = name;
     while (*chptr && *chptr != ':') chptr++;
     if (!*chptr) {
-	error(RPMERR_RPMRC, "missing second ':' at %s:%d", fn, linenum);
+	rpmError(RPMERR_RPMRC, "missing second ':' at %s:%d", fn, linenum);
 	return 1;
     } else if (chptr == name) {
-	error(RPMERR_RPMRC, "missing architecture name at %s:%d", fn, 
+	rpmError(RPMERR_RPMRC, "missing architecture name at %s:%d", fn, 
 			     linenum);
 	return 1;
     }
@@ -320,18 +319,18 @@ static int addCanon(struct canonEntry **table, int *tableLen, char *line,
     t->short_name = strtok(NULL, " \t");
     s = strtok(NULL, " \t");
     if (! (t->name && t->short_name && s)) {
-	error(RPMERR_RPMRC, "Incomplete data line at %s:%d", fn, lineNum);
+	rpmError(RPMERR_RPMRC, "Incomplete data line at %s:%d", fn, lineNum);
 	return RPMERR_RPMRC;
     }
     if (strtok(NULL, " \t")) {
-	error(RPMERR_RPMRC, "Too many args in data line at %s:%d",
+	rpmError(RPMERR_RPMRC, "Too many args in data line at %s:%d",
 	      fn, lineNum);
 	return RPMERR_RPMRC;
     }
 
     t->num = strtoul(s, &s1, 10);
     if ((*s1) || (s1 == s) || (t->num == ULONG_MAX)) {
-	error(RPMERR_RPMRC, "Bad arch/os number: %s (%s:%d)", s,
+	rpmError(RPMERR_RPMRC, "Bad arch/os number: %s (%s:%d)", s,
 	      fn, lineNum);
 	return(RPMERR_RPMRC);
     }
@@ -365,11 +364,11 @@ static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
     t->name = strtok(line, ": \t");
     t->defName = strtok(NULL, " \t");
     if (! (t->name && t->defName)) {
-	error(RPMERR_RPMRC, "Incomplete default line at %s:%d", fn, lineNum);
+	rpmError(RPMERR_RPMRC, "Incomplete default line at %s:%d", fn, lineNum);
 	return RPMERR_RPMRC;
     }
     if (strtok(NULL, " \t")) {
-	error(RPMERR_RPMRC, "Too many args in default line at %s:%d",
+	rpmError(RPMERR_RPMRC, "Too many args in default line at %s:%d",
 	      fn, lineNum);
 	return RPMERR_RPMRC;
     }
@@ -456,7 +455,7 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 	for (chptr = start; *chptr && *chptr != ':'; chptr++);
 
 	if (! *chptr) {
-	    error(RPMERR_RPMRC, "missing ':' at %s:%d", fn, linenum);
+	    rpmError(RPMERR_RPMRC, "missing ':' at %s:%d", fn, linenum);
 	    return 1;
 	}
 
@@ -465,12 +464,12 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 	while (*chptr && isspace(*chptr)) chptr++;
 
 	if (! *chptr) {
-	    error(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
+	    rpmError(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
 		  start, fn, linenum);
 	    return 1;
 	}
 
-	message(MESS_DEBUG, "got var '%s' arg '%s'\n", start, chptr);
+	rpmMessage(RPMMESS_DEBUG, "got var '%s' arg '%s'\n", start, chptr);
 
 	/* these are options that don't just get stuffed in a VAR somewhere */
 	if (!strcasecmp(start, "arch_compat")) {
@@ -511,7 +510,7 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 	option = bsearch(&searchOption, optionTable, optionTableSize,
 			 sizeof(struct option), optionCompare);
 	if (!option) {
-	    error(RPMERR_RPMRC, "bad option '%s' at %s:%d", 
+	    rpmError(RPMERR_RPMRC, "bad option '%s' at %s:%d", 
 			start, fn, linenum);
 	    continue;			/* aborting here is rude */
 	}
@@ -520,12 +519,12 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 	    if (option->archSpecific) {
 		start = chptr;
 
-		/* getArchName() should be safe by now */
-		if (!archName) archName = getArchName();
+		/* rpmGetArchName() should be safe by now */
+		if (!archName) archName = rpmGetArchName();
 
 		for (chptr = start; *chptr && !isspace(*chptr); chptr++);
 		if (! *chptr) {
-		    error(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
+		    rpmError(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
 			  option->name, fn, linenum);
 		    return 1;
 		}
@@ -533,22 +532,22 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 		
 		while (*chptr && isspace(*chptr)) chptr++;
 		if (! *chptr) {
-		    error(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
+		    rpmError(RPMERR_RPMRC, "missing argument for %s at %s:%d", 
 			  option->name, fn, linenum);
 		    return 1;
 		}
 		
 		if (!strcmp(archName, start)) {
-		    message(MESS_DEBUG, "%s is arg for %s platform", chptr,
+		    rpmMessage(RPMMESS_DEBUG, "%s is arg for %s platform", chptr,
 			    archName);
-		    setVar(option->var, chptr);
+		    rpmSetVar(option->var, chptr);
 		}
 	    } else {
-		setVar(option->var, chptr);
+		rpmSetVar(option->var, chptr);
 	    }
 	    continue;
 	}
-	error(RPMERR_INTERNAL, "Bad readWhat: %d", readWhat);
+	rpmError(RPMERR_INTERNAL, "Bad readWhat: %d", readWhat);
 	exit(1);
     }
 
@@ -556,10 +555,10 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 }
 
 static void setDefaults(void) {
-    setVar(RPMVAR_OPTFLAGS, "-O2");
-    setVar(RPMVAR_SIGTYPE, "none");
-    setVar(RPMVAR_DEFAULTDOCDIR, "/usr/doc");
-    setVar(RPMVAR_TOPDIR, "/usr/src/redhat");
+    rpmSetVar(RPMVAR_OPTFLAGS, "-O2");
+    rpmSetVar(RPMVAR_SIGTYPE, "none");
+    rpmSetVar(RPMVAR_DEFAULTDOCDIR, "/usr/doc");
+    rpmSetVar(RPMVAR_TOPDIR, "/usr/src/redhat");
 }
 
 static int readConfigFilesAux(char *file, int readWhat)
@@ -575,7 +574,7 @@ static int readConfigFilesAux(char *file, int readWhat)
 	fclose(f);
 	if (rc) return rc;
     } else {
-	error(RPMERR_RPMRC, "Unable to read " LIBRPMRC_FILENAME);
+	rpmError(RPMERR_RPMRC, "Unable to read " LIBRPMRC_FILENAME);
 	return RPMERR_RPMRC;
     }
     
@@ -632,8 +631,8 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building)
 
     /* set default directories */
 
-    if (!getVar(RPMVAR_TMPPATH))
-	setVar(RPMVAR_TMPPATH, "/tmp");
+    if (!rpmGetVar(RPMVAR_TMPPATH))
+	rpmSetVar(RPMVAR_TMPPATH, "/tmp");
 
     setPathDefault(RPMVAR_BUILDDIR, "BUILD");    
     setPathDefault(RPMVAR_RPMDIR, "RPMS");    
@@ -643,15 +642,15 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building)
 
     /* setup arch equivalences */
     
-    archosFindEquivs(&archCache, &archEquivTable, getArchName());
-    archosFindEquivs(&osCache, &osEquivTable, getOsName());
+    archosFindEquivs(&archCache, &archEquivTable, rpmGetArchName());
+    archosFindEquivs(&osCache, &osEquivTable, rpmGetOsName());
 
     /* Do some checking */
-    if ((tcs = getVar(RPMVAR_TIMECHECK))) {
+    if ((tcs = rpmGetVar(RPMVAR_TIMECHECK))) {
 	tcse = NULL;
 	tc = strtoul(tcs, &tcse, 10);
 	if ((*tcse) || (tcse == tcs) || (tc == ULONG_MAX)) {
-	    error(RPMERR_RPMRC, "Bad arg to timecheck: %s", tcs);
+	    rpmError(RPMERR_RPMRC, "Bad arg to timecheck: %s", tcs);
 	    return(RPMERR_RPMRC);
 	}
     }
@@ -663,10 +662,10 @@ static void setPathDefault(int var, char * s) {
     char * topdir;
     char * fn;
 
-    if (getVar(var)) return;
+    if (rpmGetVar(var)) return;
 
-    topdir = getVar(RPMVAR_TOPDIR);
-    if (!topdir) topdir = getVar(RPMVAR_TMPPATH);
+    topdir = rpmGetVar(RPMVAR_TOPDIR);
+    if (!topdir) topdir = rpmGetVar(RPMVAR_TMPPATH);
 	
     fn = alloca(strlen(topdir) + strlen(s) + 2);
     strcpy(fn, topdir);
@@ -674,7 +673,7 @@ static void setPathDefault(int var, char * s) {
 	strcat(fn, "/");
     strcat(fn, s);
    
-    setVar(var, fn);
+    rpmSetVar(var, fn);
 }
 
 static int osnum;
@@ -689,8 +688,8 @@ static void setArchOs(char *arch, char *os, int build)
     struct canonEntry *archCanon, *osCanon;
 
     if (archOsIsInit) {
-	error(RPMERR_INTERNAL, "Internal error: Arch/OS already initialized!");
-        error(RPMERR_INTERNAL, "Arch: %d\nOS: %d", archnum, osnum);
+	rpmError(RPMERR_INTERNAL, "Internal error: Arch/OS already initialized!");
+        rpmError(RPMERR_INTERNAL, "Arch: %d\nOS: %d", archnum, osnum);
 	exit(1);
     }
 
@@ -717,8 +716,8 @@ static void setArchOs(char *arch, char *os, int build)
     } else {
 	archnum = 255;
 	archname = strdup(arch);
-	message(MESS_WARNING, "Unknown architecture: %s\n", arch);
-	message(MESS_WARNING, "Please contact rpm-list@redhat.com\n");
+	rpmMessage(RPMMESS_WARNING, "Unknown architecture: %s\n", arch);
+	rpmMessage(RPMMESS_WARNING, "Please contact rpm-list@redhat.com\n");
     }
     if (osCanon) {
 	osnum = osCanon->num;
@@ -726,8 +725,8 @@ static void setArchOs(char *arch, char *os, int build)
     } else {
 	osnum = 255;
 	osname = strdup(os);
-	message(MESS_WARNING, "Unknown OS: %s\n", os);
-	message(MESS_WARNING, "Please contact rpm-list@redhat.com\n");
+	rpmMessage(RPMMESS_WARNING, "Unknown OS: %s\n", os);
+	rpmMessage(RPMMESS_WARNING, "Please contact rpm-list@redhat.com\n");
     }
 
     archOsIsInit = 1;
@@ -736,31 +735,31 @@ static void setArchOs(char *arch, char *os, int build)
 #define FAIL_IF_NOT_INIT \
 {\
     if (! archOsIsInit) {\
-	error(RPMERR_INTERNAL, "Internal error: Arch/OS not initialized!");\
-        error(RPMERR_INTERNAL, "Arch: %d\nOS: %d", archnum, osnum);\
+	rpmError(RPMERR_INTERNAL, "Internal error: Arch/OS not initialized!");\
+        rpmError(RPMERR_INTERNAL, "Arch: %d\nOS: %d", archnum, osnum);\
 	exit(1);\
     }\
 }
 
-int getOsNum(void)
+int rpmGetOsNum(void)
 {
     FAIL_IF_NOT_INIT;
     return osnum;
 }
 
-int getArchNum(void)
+int rpmGetArchNum(void)
 {
     FAIL_IF_NOT_INIT;
     return archnum;
 }
 
-char *getOsName(void)
+char *rpmGetOsName(void)
 {
     FAIL_IF_NOT_INIT;
     return osname;
 }
 
-char *getArchName(void)
+char *rpmGetArchName(void)
 {
     FAIL_IF_NOT_INIT;
     return archname;
@@ -774,16 +773,16 @@ int rpmShowRC(FILE *f)
     int i;
 
     fprintf(f, "ARCHITECTURE AND OS:\n");
-    fprintf(f, "build arch           : %s\n", getArchName());
-    fprintf(f, "build os             : %s\n", getOsName());
+    fprintf(f, "build arch           : %s\n", rpmGetArchName());
+    fprintf(f, "build os             : %s\n", rpmGetOsName());
 
     /* This is a major hack */
     archOsIsInit = 0;
     setArchOs(NULL, NULL, 0);
-    archosFindEquivs(&archCache, &archEquivTable, getArchName());
-    archosFindEquivs(&osCache, &osEquivTable, getOsName());
-    fprintf(f, "install arch         : %s\n", getArchName());
-    fprintf(f, "install os           : %s\n", getOsName());
+    archosFindEquivs(&archCache, &archEquivTable, rpmGetArchName());
+    archosFindEquivs(&osCache, &osEquivTable, rpmGetOsName());
+    fprintf(f, "install arch         : %s\n", rpmGetArchName());
+    fprintf(f, "install os           : %s\n", rpmGetOsName());
     fprintf(f, "compatible arch list :");
     for (i = 0; i < archEquivTable.count; i++)
 	fprintf(f," %s", archEquivTable.list[i].name);
@@ -796,7 +795,7 @@ int rpmShowRC(FILE *f)
     fprintf(f, "RPMRC VALUES:\n");
     opt = optionTable;
     while (count < optionTableSize) {
-	s = getVar(opt->var);
+	s = rpmGetVar(opt->var);
 	fprintf(f, "%-20s : %s\n", opt->name, s ? s : "(not set)");
 	opt++;
 	count++;

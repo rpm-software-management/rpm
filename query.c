@@ -23,10 +23,10 @@ static int queryHeader(Header h, char * chptr);
 static int queryArray(Header h, char ** chptrptr);
 static void escapedChar(char ch);
 static char * handleFormat(Header h, char * chptr, int * count, int arrayNum);
-static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags, 
+static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags, 
 			char * queryFormat);
 static int findMatches(rpmdb db, char * name, char * version, char * release,
-		       dbIndexSet * matches);
+		       dbiIndexSet * matches);
 static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  unsigned int mtime, unsigned short rdev,
 			  char * owner, char * group, int uid, int gid,
@@ -217,43 +217,43 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
 	return NULL;
     }
  
-    if (!getEntry(h, t->val, &type, &p, &count) || !p) {
+    if (!headerGetEntry(h, t->val, &type, &p, &count) || !p) {
 	p = "(none)";
 	count = 1;
-	type = STRING_TYPE;
+	type = RPM_STRING_TYPE;
     } else if (notArray) {
 	*cntptr = -1;
     } else if (count > 1 && (arrayNum == -1)) {
 	p = "(array)";
 	count = 1;
-	type = STRING_TYPE;
+	type = RPM_STRING_TYPE;
     } else if ((count - 1) < arrayNum && arrayNum != -1) {
 	p = "(past array end)";
 	count = 1;
-	type = STRING_TYPE;
+	type = RPM_STRING_TYPE;
     } else if (arrayNum != -1)
 	*cntptr = count;
 
     if (arrayNum == -1) arrayNum = 0;
 
     switch (type) {
-      case STRING_ARRAY_TYPE:
+      case RPM_STRING_ARRAY_TYPE:
 	strcat(format, "s");
 	printf(format, ((char **) p)[arrayNum]);
 	free(p);
 	break;
 
-      case STRING_TYPE:
+      case RPM_STRING_TYPE:
 	strcat(format, "s");
 	printf(format, p);
 	break;
 
-      case INT8_TYPE:
+      case RPM_INT8_TYPE:
 	strcat(format, "d");
 	printf(format, *(((int_8 *) p) + arrayNum));
 	break;
 
-      case INT16_TYPE:
+      case RPM_INT16_TYPE:
 	if (!strcmp(how, "perms") || !strcmp(how, "permissions")) {
 	    strcat(format, "s");
 	    printf(format, permsString(*(((int_16 *) p) + arrayNum)));
@@ -263,7 +263,7 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
 	}
 	break;
 
-      case INT32_TYPE:
+      case RPM_INT32_TYPE:
 	if (!strcmp(how, "date")) {
 	    strcat(format, "s");
 	    /* this is important if sizeof(int_32) ! sizeof(time_t) */
@@ -286,13 +286,13 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
 	} else if (!strcmp(how, "depflags")) {
 	    buf[0] = '\0';
 	    anint = *(((int_32 *) p) + arrayNum);
-	    if (anint & REQUIRE_LESS) 
+	    if (anint & RPMSENSE_LESS) 
 		strcat(buf, "<");
-	    if (anint & REQUIRE_GREATER)
+	    if (anint & RPMSENSE_GREATER)
 		strcat(buf, ">");
-	    if (anint & REQUIRE_EQUAL)
+	    if (anint & RPMSENSE_EQUAL)
 		strcat(buf, "=");
-	    if (anint & REQUIRE_SERIAL)
+	    if (anint & RPMSENSE_SERIAL)
 		strcat(buf, "S");
 	
 	    strcat(format, "s");
@@ -339,9 +339,9 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
     uint_16 * fileRdevList;
     int i;
 
-    getEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
-    getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
-    getEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
+    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
+    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
+    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
 
     if (!queryFlags) {
 	printf("%s-%s-%s\n", name, version, release);
@@ -355,45 +355,45 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 	}
 
 	if (queryFlags & QUERY_FOR_PROVIDES) {
-	    if (isEntry(h, RPMTAG_PROVIDES))
+	    if (headerIsEntry(h, RPMTAG_PROVIDES))
 		queryHeader(h, providesQueryFormat);
 	}
 
 	if (queryFlags & QUERY_FOR_REQUIRES) {
-	    if (isEntry(h, RPMTAG_REQUIREFLAGS))
+	    if (headerIsEntry(h, RPMTAG_REQUIREFLAGS))
 		queryHeader(h, requiresQueryFormat);
 	}
 
 	if (queryFlags & QUERY_FOR_LIST) {
-	    if (!getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+	    if (!headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 		 &count)) {
 		puts("(contains no files)");
 	    } else {
-		if (!getEntry(h, RPMTAG_FILESTATES, &type, 
+		if (!headerGetEntry(h, RPMTAG_FILESTATES, &type, 
 			 (void **) &fileStatesList, &count)) {
 		    fileStatesList = NULL;
 		}
-		getEntry(h, RPMTAG_FILEFLAGS, &type, 
+		headerGetEntry(h, RPMTAG_FILEFLAGS, &type, 
 			 (void **) &fileFlagsList, &count);
-		getEntry(h, RPMTAG_FILESIZES, &type, 
+		headerGetEntry(h, RPMTAG_FILESIZES, &type, 
 			 (void **) &fileSizeList, &count);
-		getEntry(h, RPMTAG_FILEMODES, &type, 
+		headerGetEntry(h, RPMTAG_FILEMODES, &type, 
 			 (void **) &fileModeList, &count);
-		getEntry(h, RPMTAG_FILEMTIMES, &type, 
+		headerGetEntry(h, RPMTAG_FILEMTIMES, &type, 
 			 (void **) &fileMTimeList, &count);
-		getEntry(h, RPMTAG_FILERDEVS, &type, 
+		headerGetEntry(h, RPMTAG_FILERDEVS, &type, 
 			 (void **) &fileRdevList, &count);
-		getEntry(h, RPMTAG_FILEUIDS, &type, 
+		headerGetEntry(h, RPMTAG_FILEUIDS, &type, 
 			 (void **) &fileUIDList, &count);
-		getEntry(h, RPMTAG_FILEGIDS, &type, 
+		headerGetEntry(h, RPMTAG_FILEGIDS, &type, 
 			 (void **) &fileGIDList, &count);
-		getEntry(h, RPMTAG_FILEUSERNAME, &type, 
+		headerGetEntry(h, RPMTAG_FILEUSERNAME, &type, 
 			 (void **) &fileOwnerList, &count);
-		getEntry(h, RPMTAG_FILEGROUPNAME, &type, 
+		headerGetEntry(h, RPMTAG_FILEGROUPNAME, &type, 
 			 (void **) &fileGroupList, &count);
-		getEntry(h, RPMTAG_FILELINKTOS, &type, 
+		headerGetEntry(h, RPMTAG_FILELINKTOS, &type, 
 			 (void **) &fileLinktoList, &count);
-		getEntry(h, RPMTAG_FILEMD5S, &type, 
+		headerGetEntry(h, RPMTAG_FILEMD5S, &type, 
 			 (void **) &fileMD5List, &count);
 
 		for (i = 0; i < count; i++) {
@@ -404,7 +404,7 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 			|| ((queryFlags & QUERY_FOR_CONFIG) && 
 			    (fileFlagsList[i] & RPMFILE_CONFIG))) {
 
-			if (!isVerbose())
+			if (!rpmIsVerbose())
 			    prefix ? fputs(prefix, stdout) : 0;
 
 			if (queryFlags & QUERY_FOR_STATE) {
@@ -449,7 +449,7 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 			    else
 				printf("X\n");
 
-			} else if (!isVerbose()) {
+			} else if (!rpmIsVerbose()) {
 			    puts(fileList[i]);
 			} else if (fileOwnerList) 
 			    printFileInfo(fileList[i], fileSizeList[i],
@@ -595,14 +595,14 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 		sizefield, timefield, namefield);
 }
 
-static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags, 
+static void showMatches(rpmdb db, dbiIndexSet matches, int queryFlags, 
 			char * queryFormat) {
     int i;
     Header h;
 
     for (i = 0; i < matches.count; i++) {
 	if (matches.recs[i].recOffset) {
-	    message(MESS_DEBUG, "querying record number %d\n",
+	    rpmMessage(RPMMESS_DEBUG, "querying record number %d\n",
 			matches.recs[i].recOffset);
 	    
 	    h = rpmdbGetRecord(db, matches.recs[i].recOffset);
@@ -610,7 +610,7 @@ static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags,
 		fprintf(stderr, "error: could not read database record\n");
 	    } else {
 		printHeader(h, queryFlags, queryFormat);
-		freeHeader(h);
+		headerFree(h);
 	    }
 	}
     }
@@ -624,7 +624,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
     int rc;
     int isSource;
     rpmdb db;
-    dbIndexSet matches;
+    dbiIndexSet matches;
     int recNumber;
     int retcode = 0;
     char *end = NULL;
@@ -655,7 +655,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	}
 
 	if (fd >= 0) {
-	    rc = pkgReadHeader(fd, &h, &isSource, NULL, NULL);
+	    rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
 
 	    close(fd);
 	    if (isUrl) {
@@ -669,7 +669,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 						"queried\n");
 		    } else {
 			printHeader(h, queryFlags, queryFormat);
-			freeHeader(h);
+			headerFree(h);
 		    }
 		    break;
 		case 1:
@@ -694,7 +694,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 		return 1;
 	    }
 	    printHeader(h, queryFlags, queryFormat);
-	    freeHeader(h);
+	    headerFree(h);
 	    offset = rpmdbNextRecNum(db, offset);
 	}
 	break;
@@ -706,7 +706,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
-	    freeDBIndexRecord(matches);
+	    dbiFreeIndexRecord(matches);
 	}
 	break;
 
@@ -716,7 +716,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
-	    freeDBIndexRecord(matches);
+	    dbiFreeIndexRecord(matches);
 	}
 	break;
 
@@ -726,7 +726,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
-	    freeDBIndexRecord(matches);
+	    dbiFreeIndexRecord(matches);
 	}
 	break;
 
@@ -742,7 +742,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	    retcode = 1;
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
-	    freeDBIndexRecord(matches);
+	    dbiFreeIndexRecord(matches);
 	}
 	break;
 
@@ -754,7 +754,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	    fprintf(stderr, "invalid package number: %s\n", arg);
 	    return 1;
 	}
-	message(MESS_DEBUG, "showing package: %d\n", recNumber);
+	rpmMessage(RPMMESS_DEBUG, "showing package: %d\n", recNumber);
 	h = rpmdbGetRecord(db, recNumber);
 
 	if (!h)  {
@@ -762,7 +762,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	    retcode = 1;
 	} else {
 	    printHeader(h, queryFlags, queryFormat);
-	    freeHeader(h);
+	    headerFree(h);
 	}
 	break;
 
@@ -776,7 +776,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	    fprintf(stderr, "error looking for package %s\n", arg);
 	} else {
 	    showMatches(db, matches, queryFlags, queryFormat);
-	    freeDBIndexRecord(matches);
+	    dbiFreeIndexRecord(matches);
 	}
 	break;
     }
@@ -791,7 +791,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */
-int findPackageByLabel(rpmdb db, char * arg, dbIndexSet * matches) {
+int findPackageByLabel(rpmdb db, char * arg, dbiIndexSet * matches) {
     char * localarg, * chptr;
     char * release;
     int rc;
@@ -828,7 +828,7 @@ int findPackageByLabel(rpmdb db, char * arg, dbIndexSet * matches) {
 /* 1 no matches */
 /* 2 error */
 int findMatches(rpmdb db, char * name, char * version, char * release,
-		dbIndexSet * matches) {
+		dbiIndexSet * matches) {
     int gotMatches;
     int rc;
     int i;
@@ -851,12 +851,12 @@ int findMatches(rpmdb db, char * name, char * version, char * release,
 	    h = rpmdbGetRecord(db, matches->recs[i].recOffset);
 	    if (!h) {
 		fprintf(stderr, "error: could not read database record\n");
-		freeDBIndexRecord(*matches);
+		dbiFreeIndexRecord(*matches);
 		return 2;
 	    }
 
-	    getEntry(h, RPMTAG_VERSION, &type, (void **) &pkgVersion, &count);
-	    getEntry(h, RPMTAG_RELEASE, &type, (void **) &pkgRelease, &count);
+	    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &pkgVersion, &count);
+	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &pkgRelease, &count);
 	    
 	    goodRelease = goodVersion = 1;
 
@@ -871,7 +871,7 @@ int findMatches(rpmdb db, char * name, char * version, char * release,
     }
 
     if (!gotMatches) {
-	freeDBIndexRecord(*matches);
+	dbiFreeIndexRecord(*matches);
 	return 1;
     }
     

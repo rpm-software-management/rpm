@@ -9,7 +9,7 @@
 #include <string.h>
 #include <errno.h>
 
-#include "rpmerr.h"
+#include "rpmlib.h"
 #include "rpmlead.h"
 #include "tread.h"
 
@@ -39,7 +39,7 @@ int writeLead(int fd, struct rpmlead *lead)
 int readLead(int fd, struct rpmlead *lead)
 {
     if (timedRead(fd, lead, sizeof(*lead)) != sizeof(*lead)) {
-	error(RPMERR_READERROR, "read failed: %s (%d)", strerror(errno), 
+	rpmError(RPMERR_READERROR, "read failed: %s (%d)", strerror(errno), 
 	      errno);
 	return 1;
     }

@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "misc.h"
-#include "rpmerr.h"
+#include "rpmlib.h"
 #include "messages.h"
 
 char ** splitString(char * str, int length, char sep) {

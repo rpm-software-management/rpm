@@ -20,13 +20,13 @@ int main(int argc, char **argv)
     }
 
     readLead(fd, &lead);
-    readSignature(fd, &sig, lead.signature_type);
+    rpmReadSignature(fd, &sig, lead.signature_type);
     switch (lead.signature_type) {
       case RPMSIG_NONE:
 	fprintf(stderr, "No signature available.\n");
 	break;
       default:
-	writeSignature(1, sig);
+	rpmWriteSignature(1, sig);
     }
     
     return 0;

@@ -8,7 +8,6 @@
 /* it shouldn't need these :-( */
 #include "dbindex.h"
 #include "header.h"
-#include "messages.h"
 
 struct rpmTagTableEntry {
     char * name;
@@ -16,8 +15,8 @@ struct rpmTagTableEntry {
 };
 
 int rpmReadPackageInfo(int fd, Header * signatures, Header * hdr);
-int pkgReadHeader(int fd, Header * hdr, int * isSource, int * major,
-		  int * minor);
+int rpmReadPackageHeader(int fd, Header * hdr, int * isSource, int * major,
+			 int * minor);
    /* 0 = success */
    /* 1 = bad magic */
    /* 2 = error */
@@ -112,41 +111,41 @@ extern const int rpmTagTableSize;
 #define RPMFILE_DOC			(1 << 1)
 #define RPMFILE_SPECFILE                (1 << 2)
 
-#define INSTALL_REPLACEPKG	(1 << 0)
-#define INSTALL_REPLACEFILES	(1 << 1)
-#define INSTALL_TEST		(1 << 2)
-#define INSTALL_UPGRADE		(1 << 3)
-#define INSTALL_UPGRADETOOLD	(1 << 4)
-#define INSTALL_NODOCS		(1 << 5)
-#define INSTALL_NOSCRIPTS	(1 << 6)
-#define INSTALL_NOARCH		(1 << 7)
-#define INSTALL_NOOS		(1 << 8)
+#define RPMINSTALL_REPLACEPKG           (1 << 0)
+#define RPMINSTALL_REPLACEFILES         (1 << 1)
+#define RPMINSTALL_TEST                 (1 << 2)
+#define RPMINSTALL_UPGRADE              (1 << 3)
+#define RPMINSTALL_UPGRADETOOLD         (1 << 4)
+#define RPMINSTALL_NODOCS               (1 << 5)
+#define RPMINSTALL_NOSCRIPTS            (1 << 6)
+#define RPMINSTALL_NOARCH               (1 << 7)
+#define RPMINSTALL_NOOS                 (1 << 8)
 
-#define UNINSTALL_TEST          (1 << 0)
-#define UNINSTALL_NOSCRIPTS	(1 << 1)
+#define RPMUNINSTALL_TEST               (1 << 0)
+#define RPMUNINSTALL_NOSCRIPTS          (1 << 1)
 
-#define VERIFY_NONE             0
-#define VERIFY_MD5              (1 << 0)
-#define VERIFY_FILESIZE         (1 << 1)
-#define VERIFY_LINKTO           (1 << 2)
-#define VERIFY_USER             (1 << 3)
-#define VERIFY_GROUP            (1 << 4)
-#define VERIFY_MTIME            (1 << 5)
-#define VERIFY_MODE             (1 << 6)
-#define VERIFY_RDEV             (1 << 7)
-#define VERIFY_ALL              ~(VERIFY_NONE)
+#define RPMVERIFY_NONE             0
+#define RPMVERIFY_MD5              (1 << 0)
+#define RPMVERIFY_FILESIZE         (1 << 1)
+#define RPMVERIFY_LINKTO           (1 << 2)
+#define RPMVERIFY_USER             (1 << 3)
+#define RPMVERIFY_GROUP            (1 << 4)
+#define RPMVERIFY_MTIME            (1 << 5)
+#define RPMVERIFY_MODE             (1 << 6)
+#define RPMVERIFY_RDEV             (1 << 7)
+#define RPMVERIFY_ALL              ~(RPMVERIFY_NONE)
 
-#define REQUIRE_ANY             0
-#define REQUIRE_SERIAL          (1 << 0)
-#define REQUIRE_LESS            (1 << 1)
-#define REQUIRE_GREATER         (1 << 2)
-#define REQUIRE_EQUAL           (1 << 3)
-#define REQUIRE_PROVIDES        (1 << 4)   /* only used internally by builds */
-#define REQUIRE_CONFLICTS       (1 << 5)   /* only used internally by builds */
-#define REQUIRE_SENSEMASK       15         /* Mask to get senses */
+#define RPMSENSE_ANY             0
+#define RPMSENSE_SERIAL          (1 << 0)
+#define RPMSENSE_LESS            (1 << 1)
+#define RPMSENSE_GREATER         (1 << 2)
+#define RPMSENSE_EQUAL           (1 << 3)
+#define RPMSENSE_PROVIDES        (1 << 4) /* only used internally by builds */
+#define RPMSENSE_CONFLICTS       (1 << 5) /* only used internally by builds */
+#define RPMSENSE_SENSEMASK       15       /* Mask to get senses */
 
-#define TRIGGER_ON              (1 << 16)
-#define TRIGGER_OFF             (1 << 17)
+#define RPMSENSE_TRIGGER_ON              (1 << 16)
+#define RPMSENSE_TRIGGER_OFF             (1 << 17)
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
@@ -187,21 +186,26 @@ extern const int rpmTagTableSize;
 #define RPMVAR_DEFAULTDOCDIR		34
 #define RPMVAR_LASTVAR	                35 /* IMPORTANT to keep right! */
 
-char *getVar(int var);
-int getBooleanVar(int var);
-void setVar(int var, char *val);
+char *rpmGetVar(int var);
+int rpmGetBooleanVar(int var);
+void rpmSetVar(int var, char *val);
 
-/* rpmrc.c */
+/** rpmrc.c **/
+
 int rpmReadConfigFiles(char * file, char * arch, char * os, int building);
-int getOsNum(void);
-int getArchNum(void);
-char *getOsName(void);
-char *getArchName(void);
+int rpmGetOsNum(void);
+int rpmGetArchNum(void);
+char *rpmGetOsName(void);
+char *rpmGetArchName(void);
 int rpmShowRC(FILE *f);
+int rpmArchScore(char * arch);
+int rpmOsScore(char * arch);
+
+/** **/
 
 typedef struct rpmdb * rpmdb;
 
-typedef void (*notifyFunction)(const unsigned long amount,
+typedef void (*rpmNotifyFunction)(const unsigned long amount,
 			       const unsigned long total);
 
 int rpmdbOpen (char * prefix, rpmdb * dbp, int mode, int perms);
@@ -215,19 +219,17 @@ unsigned int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);
     /* 0 at end */
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset);
-int rpmdbFindByFile(rpmdb db, char * filespec, dbIndexSet * matches);
-int rpmdbFindByGroup(rpmdb db, char * group, dbIndexSet * matches);
-int rpmdbFindPackage(rpmdb db, char * name, dbIndexSet * matches);
-int rpmdbFindByProvides(rpmdb db, char * filespec, dbIndexSet * matches);
-int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbIndexSet * matches);
-int rpmdbFindByConflicts(rpmdb db, char * filespec, dbIndexSet * matches);
+int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches);
+int rpmdbFindByGroup(rpmdb db, char * group, dbiIndexSet * matches);
+int rpmdbFindPackage(rpmdb db, char * name, dbiIndexSet * matches);
+int rpmdbFindByProvides(rpmdb db, char * filespec, dbiIndexSet * matches);
+int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbiIndexSet * matches);
+int rpmdbFindByConflicts(rpmdb db, char * filespec, dbiIndexSet * matches);
 
-int rpmArchScore(char * arch);
-int rpmOsScore(char * arch);
 int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile,
-			    notifyFunction notify, char * labelFormat);
+			    rpmNotifyFunction notify, char * labelFormat);
 int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * prefix, 
-		      int flags, notifyFunction notify, char * labelFormat,
+		      int flags, rpmNotifyFunction notify, char * labelFormat,
 		      char * netsharedPath);
 int rpmEnsureOlder(rpmdb db, char * name, char * newVersion, 
 		char * newRelease, int dbOffset);
@@ -258,6 +260,151 @@ void rpmdepDone(rpmDependencies rpmdep);
 void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
 			 numConflicts);
 
-int mdfile(char *fn, unsigned char *digest);
+/** messages.c **/
+
+#define RPMMESS_DEBUG      1
+#define RPMMESS_VERBOSE    2
+#define RPMMESS_NORMAL     3
+#define RPMMESS_WARNING    4
+#define RPMMESS_ERROR      5
+#define RPMMESS_FATALERROR 6
+
+#define RPMMESS_QUIET (RPMMESS_NORMAL + 1)
+
+void rpmIncreaseVerbosity(void);
+void rpmSetVerbosity(int level);
+int rpmGetVerbosity(void);
+int rpmIsVerbose(void);
+int rpmIsDebug(void);
+
+/** rpmlead.c **/
+
+#define RPMLEAD_BINARY 0
+#define RPMLEAD_SOURCE 1
+
+#define RPMLEAD_MAGIC0 0xed
+#define RPMLEAD_MAGIC1 0xab
+#define RPMLEAD_MAGIC2 0xee
+#define RPMLEAD_MAGIC3 0xdb
+
+/* The lead needs to be 8 byte aligned */
+
+#define RPMLEAD_SIZE 96
+
+struct rpmlead {
+    unsigned char magic[4];
+    unsigned char major, minor;
+    short type;
+    short archnum;
+    char name[66];
+    short osnum;
+    short signature_type;
+    char reserved[16];      /* pads to 96 bytes -- 8 byte aligned! */
+} ;
+
+struct oldrpmlead {		/* for version 1 packages */
+    unsigned char magic[4];
+    unsigned char major, minor;
+    short type;
+    short archnum;
+    char name[66];
+    unsigned int specOffset;
+    unsigned int specLength;
+    unsigned int archiveOffset;
+} ;
+
+/** rpmerr.c **/
+
+typedef void (*rpmErrorCallBackType)(void);
+
+void rpmError(int code, char * format, ...);
+int rpmErrorCode(void);
+char *rpmErrorString(void);
+rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
+
+#define RPMERR_GDBMOPEN		-2      /* gdbm open failed */
+#define RPMERR_GDBMREAD		-3	/* gdbm read failed */
+#define RPMERR_GDBMWRITE	-4	/* gdbm write failed */
+#define RPMERR_INTERNAL		-5	/* internal RPM error */
+#define RPMERR_DBCORRUPT	-6	/* rpm database is corrupt */
+#define RPMERR_OLDDBCORRUPT	-7	/* old style rpm database is corrupt */
+#define RPMERR_OLDDBMISSING	-8	/* old style rpm database is missing */
+#define RPMERR_NOCREATEDB	-9	/* cannot create new database */
+#define RPMERR_DBOPEN		-10     /* database open failed */
+#define RPMERR_DBGETINDEX	-11     /* database get from index failed */
+#define RPMERR_DBPUTINDEX	-12     /* database get from index failed */
+#define RPMERR_NEWPACKAGE	-13     /* package is too new to handle */
+#define RPMERR_BADMAGIC		-14	/* bad magic for an RPM */
+#define RPMERR_RENAME		-15	/* rename(2) failed */
+#define RPMERR_UNLINK		-16	/* unlink(2) failed */
+#define RPMERR_RMDIR		-17	/* rmdir(2) failed */
+#define RPMERR_PKGINSTALLED	-18	/* package already installed */
+#define RPMERR_CHOWN		-19	/* chown() call failed */
+#define RPMERR_NOUSER		-20	/* user does not exist */
+#define RPMERR_NOGROUP		-21	/* group does not exist */
+#define RPMERR_MKDIR		-22	/* mkdir() call failed */
+#define RPMERR_FILECONFLICT     -23     /* file being installed exists */
+#define RPMERR_RPMRC		-24     /* bad line in rpmrc */
+#define RPMERR_NOSPEC		-25     /* .spec file is missing */
+#define RPMERR_NOTSRPM		-26     /* a source rpm was expected */
+#define RPMERR_FLOCK		-27     /* locking the database failed */
+#define RPMERR_OLDPACKAGE	-28	/* trying upgrading to old version */
+#define RPMERR_BADARCH          -29     /* bad architecture or arch mismatch */
+#define RPMERR_CREATE		-30	/* failed to create a file */
+#define RPMERR_NOSPACE		-31	/* out of disk space */
+#define RPMERR_NORELOCATE	-32	/* tried to relocate improper package */
+#define RPMERR_BADOS            -33     /* bad architecture or arch mismatch */
+#define RPMMESS_BACKUP          -34     /* backup made during [un]install */
+
+/* spec.c build.c pack.c */
+#define RPMERR_UNMATCHEDIF      -107    /* unclosed %ifarch or %ifos */
+#define RPMERR_BADARG           -109
+#define RPMERR_SCRIPT           -110    /* errors related to script exec */
+#define RPMERR_READERROR        -111
+#define RPMERR_UNKNOWNOS        -112
+#define RPMERR_UNKNOWNARCH      -113
+#define RPMERR_EXEC             -114
+#define RPMERR_FORK             -115
+#define RPMERR_CPIO             -116
+#define RPMERR_GZIP             -117
+#define RPMERR_BADSPEC          -118
+#define RPMERR_LDD              -119    /* couldn't understand ldd output */
+
+#define RPMERR_BADSIGTYPE       -200    /* Unknown signature type */
+#define RPMERR_SIGGEN           -201    /* Error generating signature */
+
+/** signature.c **/
+
+/**************************************************/
+/*                                                */
+/* Signature Tags                                 */
+/*                                                */
+/* These go in the sig Header to specify          */
+/* individual signature types.                    */
+/*                                                */
+/**************************************************/
+
+#define RPMSIGTAG_SIZE         	        1000
+/* the md5 sum was broken on big endian machines for a while */
+#define RPMSIGTAG_LITTLEENDIANMD5	1001
+#define RPMSIGTAG_PGP          	        1002
+#define RPMSIGTAG_MD5		        1003
+
+/**************************************************/
+/*                                                */
+/* verifySignature() results                      */
+/*                                                */
+/**************************************************/
+
+/* verifySignature() results */
+#define RPMSIG_OK        0
+#define RPMSIG_UNKNOWN   1
+#define RPMSIG_BAD       2
+#define RPMSIG_NOKEY     3  /* Do not have the key to check this signature */
+
+void rpmFreeSignature(Header h);
+
+int rpmVerifySignature(char *file, int_32 sigTag, void *sig, int count,
+		       char *result);
 
 #endif

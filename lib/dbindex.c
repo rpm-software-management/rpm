@@ -4,10 +4,10 @@
 #include <strings.h>
 
 #include "dbindex.h"
-#include "rpmerr.h"
+#include "rpmlib.h"
 
-dbIndex * openDBIndex(char * filename, int flags, int perms) {
-    dbIndex * db;
+dbiIndex * dbiOpenIndex(char * filename, int flags, int perms) {
+    dbiIndex * db;
         
     db = malloc(sizeof(*db));
     db->indexname = strdup(filename);
@@ -15,7 +15,7 @@ dbIndex * openDBIndex(char * filename, int flags, int perms) {
     if (!db->db) {
 	free(db->indexname);
 	free(db);
-	error(RPMERR_DBOPEN, "cannot open file %s: ", filename, 
+	rpmError(RPMERR_DBOPEN, "cannot open file %s: ", filename, 
 			      strerror(errno));
 	return NULL;
     }
@@ -23,17 +23,17 @@ dbIndex * openDBIndex(char * filename, int flags, int perms) {
     return db;
 }
 
-void closeDBIndex(dbIndex * dbi) {
+void dbiCloseIndex(dbiIndex * dbi) {
     dbi->db->close(dbi->db);
     free(dbi->indexname);
     free(dbi);
 }
 
-void syncDBIndex(dbIndex * dbi) {
+void dbiSyncIndex(dbiIndex * dbi) {
     dbi->db->sync(dbi->db, 0);
 }
 
-int searchDBIndex(dbIndex * dbi, char * str, dbIndexSet * set) {
+int dbiSearchIndex(dbiIndex * dbi, char * str, dbiIndexSet * set) {
     DBT key, data;
     int rc;
 
@@ -42,7 +42,7 @@ int searchDBIndex(dbIndex * dbi, char * str, dbIndexSet * set) {
 
     rc = dbi->db->get(dbi->db, &key, &data, 0);
     if (rc == -1) {
-	error(RPMERR_DBGETINDEX, "error getting record %s from %s",
+	rpmError(RPMERR_DBGETINDEX, "error getting record %s from %s",
 		str, dbi->indexname);
 	return -1;
     } else if (rc == 1) {
@@ -51,12 +51,12 @@ int searchDBIndex(dbIndex * dbi, char * str, dbIndexSet * set) {
 	set->recs = data.data;
 	set->recs = malloc(data.size);
 	memcpy(set->recs, data.data, data.size);
-	set->count = data.size / sizeof(dbIndexRecord);
+	set->count = data.size / sizeof(dbiIndexRecord);
 	return 0;
     }
 }
 
-int updateDBIndex(dbIndex * dbi, char * str, dbIndexSet * set) {
+int dbiUpdateIndex(dbiIndex * dbi, char * str, dbiIndexSet * set) {
    /* 0 on success */
     DBT key, data;
     int rc;
@@ -66,18 +66,18 @@ int updateDBIndex(dbIndex * dbi, char * str, dbIndexSet * set) {
 
     if (set->count) {
 	data.data = set->recs;
-	data.size = set->count * sizeof(dbIndexRecord);
+	data.size = set->count * sizeof(dbiIndexRecord);
 
 	rc = dbi->db->put(dbi->db, &key, &data, 0);
 	if (rc) {
-	    error(RPMERR_DBPUTINDEX, "error storing record %s into %s",
+	    rpmError(RPMERR_DBPUTINDEX, "error storing record %s into %s",
 		    str, dbi->indexname);
 	    return 1;
 	}
     } else {
 	rc = dbi->db->del(dbi->db, &key, 0);
 	if (rc) {
-	    error(RPMERR_DBPUTINDEX, "error removing record %s into %s",
+	    rpmError(RPMERR_DBPUTINDEX, "error removing record %s into %s",
 		    str, dbi->indexname);
 	    return 1;
 	}
@@ -86,32 +86,32 @@ int updateDBIndex(dbIndex * dbi, char * str, dbIndexSet * set) {
     return 0;
 }
 
-int appendDBIndexRecord(dbIndexSet * set, dbIndexRecord rec) {
+int dbiAppendIndexRecord(dbiIndexSet * set, dbiIndexRecord rec) {
     set->count++;
 
     if (set->count == 1) {
-	set->recs = malloc(set->count * sizeof(dbIndexRecord));
+	set->recs = malloc(set->count * sizeof(dbiIndexRecord));
     } else {
-	set->recs = realloc(set->recs, set->count * sizeof(dbIndexRecord));
+	set->recs = realloc(set->recs, set->count * sizeof(dbiIndexRecord));
     }
     set->recs[set->count - 1] = rec;
 
     return 0;
 }
 
-dbIndexSet createDBIndexRecord(void) {
-    dbIndexSet set;
+dbiIndexSet dbiCreateIndexRecord(void) {
+    dbiIndexSet set;
 
     set.count = 0;
     return set;
 }
     
-void freeDBIndexRecord(dbIndexSet set) {
+void dbiFreeIndexRecord(dbiIndexSet set) {
     free(set.recs);
 }
 
 /* returns 1 on failure */
-int removeDBIndexRecord(dbIndexSet * set, dbIndexRecord rec) {
+int dbiRemoveIndexRecord(dbiIndexSet * set, dbiIndexRecord rec) {
     int from;
     int to = 0;
     int num = set->count;

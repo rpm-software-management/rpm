@@ -115,19 +115,19 @@ static int urlFtpLogin(char * url, char ** fileNamePtr) {
     int port;
     int ftpconn;
    
-    message(MESS_DEBUG, "getting %s via anonymous ftp\n", url);
+    rpmMessage(RPMMESS_DEBUG, "getting %s via anonymous ftp\n", url);
 
     buf = alloca(strlen(url) + 1);
     strcpy(buf, url);
 
     urlFtpSplit(buf, &userName, &password, &machineName, &fileName);
 
-    message(MESS_DEBUG, "logging into %s as %s, pw %s\n", machineName,
+    rpmMessage(RPMMESS_DEBUG, "logging into %s as %s, pw %s\n", machineName,
 		userName ? userName : "ftp", 
 		password ? password : "(username)");
 
-    proxy = getVar(RPMVAR_FTPPROXY);
-    portStr = getVar(RPMVAR_FTPPORT);
+    proxy = rpmGetVar(RPMVAR_FTPPROXY);
+    portStr = rpmGetVar(RPMVAR_FTPPORT);
     if (!portStr) {
 	port = -1;
     } else {
@@ -158,7 +158,7 @@ int urlGetFd(char * url, struct urlContext * context) {
     char * fileName;
     int fd;
 
-    message(MESS_DEBUG, "getting %s via anonymous ftp\n", url);
+    rpmMessage(RPMMESS_DEBUG, "getting %s via anonymous ftp\n", url);
 
     if ((context->ftpControl = urlFtpLogin(url, &fileName)) < 0) 
 	return context->ftpControl;
@@ -184,14 +184,14 @@ int urlGetFile(char * url, char * dest) {
     int rc;
     int fd;
 
-    message(MESS_DEBUG, "getting %s via anonymous ftp\n", url);
+    rpmMessage(RPMMESS_DEBUG, "getting %s via anonymous ftp\n", url);
 
     if ((ftpconn = urlFtpLogin(url, &fileName)) < 0) return ftpconn;
 
     fd = creat(dest, 0600);
 
     if (fd < 0) {
-	message(MESS_DEBUG, "failed to create %s\n", dest);
+	rpmMessage(RPMMESS_DEBUG, "failed to create %s\n", dest);
 	ftpClose(ftpconn);
 	free(fileName);
 	return FTPERR_UNKNOWN;

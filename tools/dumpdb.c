@@ -35,13 +35,13 @@ void main(int argc, char ** argv)
 	if (!dspBlockNum || dspBlockNum == blockNum) {
 	    h = rpmdbGetRecord(db, offset);
 	    if (!h) {
-		fprintf(stderr, "readHeader failed\n");
+		fprintf(stderr, "headerRead failed\n");
 		exit(1);
 	    }
 	  
-	    dumpHeader(h, stdout, 1);
+	    headerDump(h, stdout, 1);
 	    printf("Offset: %d\n", offset);
-	    freeHeader(h);
+	    headerFree(h);
 	}
     
 	if (dspBlockNum && blockNum > dspBlockNum) exit(0);

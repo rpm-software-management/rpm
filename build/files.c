@@ -20,7 +20,6 @@
 #include "header.h"
 #include "files.h"
 #include "names.h"
-#include "rpmerr.h"
 #include "rpmlead.h"
 #include "rpmlib.h"
 #include "misc.h"
@@ -86,9 +85,9 @@ int process_filelist(Header header, struct PackageRec *pr,
     resetDocdir();
 
     if (type == RPMLEAD_BINARY && pr->fileFile) {
-	sprintf(buf, "%s/%s/%s", getVar(RPMVAR_BUILDDIR),
+	sprintf(buf, "%s/%s/%s", rpmGetVar(RPMVAR_BUILDDIR),
 		build_subdir, pr->fileFile);
-	message(MESS_DEBUG, "Reading file names from: %sXX\n", buf);
+	rpmMessage(RPMMESS_DEBUG, "Reading file names from: %sXX\n", buf);
 	if ((file = fopen(buf, "r")) == NULL) {
 	    perror("open fileFile");
 	    exit(1);
@@ -121,7 +120,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    free (currGname);
 	    currGname = NULL;
 	}
-	verify_flags = VERIFY_ALL;
+	verify_flags = RPMVERIFY_ALL;
 	filename = NULL;
 
 	/* First preparse buf for %verify() */
@@ -149,7 +148,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    } else {
 		if (filename) {
 		    /* We already got a file -- error */
-		    error(RPMERR_BADSPEC,
+		    rpmError(RPMERR_BADSPEC,
 			  "Two files on one line: %s", filename);
 		    return(RPMERR_BADSPEC);
 		}
@@ -158,7 +157,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 			special_doc = 1;
 		    } else {
 			/* not in %doc, does not begin with / -- error */
-			error(RPMERR_BADSPEC,
+			rpmError(RPMERR_BADSPEC,
 			      "File must begin with \"/\": %s", s);
 			return(RPMERR_BADSPEC);
 		    }
@@ -174,11 +173,11 @@ int process_filelist(Header header, struct PackageRec *pr,
 		continue;
 	    } else {
 		if (filename || isconf || isdir) {
-		    error(RPMERR_BADSPEC,
+		    rpmError(RPMERR_BADSPEC,
 			  "Can't mix special %%doc with other forms: %s", fp);
 		    return(RPMERR_BADSPEC);
 		}
-		sprintf(buf, "%s/%s-%s-%s", getVar(RPMVAR_DEFAULTDOCDIR), 
+		sprintf(buf, "%s/%s-%s-%s", rpmGetVar(RPMVAR_DEFAULTDOCDIR), 
 			name, version, release);
 		filename = buf;
 		passed_special_doc = 1;
@@ -192,7 +191,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	if (type == RPMLEAD_BINARY) {
 	    /* check that file starts with leading "/" */
 	    if (*filename != '/') {
-		error(RPMERR_BADSPEC,
+		rpmError(RPMERR_BADSPEC,
 		      "File needs leading \"/\": %s", filename);
 		return(RPMERR_BADSPEC);
 	    }
@@ -200,24 +199,24 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    if (glob_pattern_p(filename)) {
 		char fullname[1024];
 
-		if (getVar(RPMVAR_ROOT)) {
-		    sprintf(fullname, "%s%s", getVar(RPMVAR_ROOT), filename);
+		if (rpmGetVar(RPMVAR_ROOT)) {
+		    sprintf(fullname, "%s%s", rpmGetVar(RPMVAR_ROOT), filename);
 		} else {
 		    strcpy(fullname, filename);
 		}
 
 	        if (glob(fullname, 0, glob_error, &glob_result)) {
-		    error(RPMERR_BADSPEC, "No matches: %s", fullname);
+		    rpmError(RPMERR_BADSPEC, "No matches: %s", fullname);
 		    return(RPMERR_BADSPEC);
 		}
 		if (glob_result.gl_pathc < 1) {
-		    error(RPMERR_BADSPEC, "No matches: %s", fullname);
+		    rpmError(RPMERR_BADSPEC, "No matches: %s", fullname);
 		    return(RPMERR_BADSPEC);
 		}
 		x = 0;
 		c = 0;
 		while (x < glob_result.gl_pathc) {
-		    int offset = strlen(getVar(RPMVAR_ROOT) ? : "");
+		    int offset = strlen(rpmGetVar(RPMVAR_ROOT) ? : "");
 		    c += add_file(&fes, &(glob_result.gl_pathv[x][offset]),
 				  isdoc, isconf, isdir, verify_flags,
 				  currPmode, currUname, currGname, prefix);
@@ -248,7 +247,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	}
 	    
 	if (! c) {
-	    error(RPMERR_BADSPEC, "File not found: %s", filename);
+	    rpmError(RPMERR_BADSPEC, "File not found: %s", filename);
 	    return(RPMERR_BADSPEC);
 	}
 	count += c;
@@ -301,7 +300,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	/* Do timecheck */
 	tc = 0;
 	currentTime = time(NULL);
-	if ((tcs = getVar(RPMVAR_TIMECHECK))) {
+	if ((tcs = rpmGetVar(RPMVAR_TIMECHECK))) {
 	    tc = strtoul(tcs, NULL, 10);
 	}
     
@@ -314,7 +313,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 		fileList[c] = strrchr(fest->file, '/') + 1;
 	    }
 	    if ((c > 0) && !strcmp(fileList[c], fileList[c-1])) {
-		error(RPMERR_BADSPEC, "File listed twice: %s", fileList[c]);
+		rpmError(RPMERR_BADSPEC, "File listed twice: %s", fileList[c]);
 		return(RPMERR_BADSPEC);
 	    }
 	    
@@ -322,14 +321,14 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    fileGnameList[c] = fest->gname;
 	    *size += fest->statbuf.st_size;
 	    if (S_ISREG(fest->statbuf.st_mode)) {
-		if (getVar(RPMVAR_ROOT)) {
-		    sprintf(buf, "%s%s", getVar(RPMVAR_ROOT), fest->file);
+		if (rpmGetVar(RPMVAR_ROOT)) {
+		    sprintf(buf, "%s%s", rpmGetVar(RPMVAR_ROOT), fest->file);
 		} else {
 		    strcpy(buf, fest->file);
 		}
 		mdfile(buf, buf);
 		fileMD5List[c] = strdup(buf);
-		message(MESS_DEBUG, "md5(%s) = %s\n", fest->file, buf);
+		rpmMessage(RPMMESS_DEBUG, "md5(%s) = %s\n", fest->file, buf);
 	    } else {
 		/* This is stupid */
 		fileMD5List[c] = strdup("");
@@ -342,7 +341,7 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    /* Do timecheck */
 	    if (tc && (type == RPMLEAD_BINARY)) {
 		if (currentTime - fest->statbuf.st_mtime > tc) {
-		    message(MESS_WARNING, "TIMECHECK failure: %s\n",
+		    rpmMessage(RPMMESS_WARNING, "TIMECHECK failure: %s\n",
 			    fest->file);
 		}
 	    }
@@ -362,8 +361,8 @@ int process_filelist(Header header, struct PackageRec *pr,
 	    fileVerifyFlagsList[c] = fest->verify_flags;
 
 	    if (S_ISLNK(fest->statbuf.st_mode)) {
-		if (getVar(RPMVAR_ROOT)) {
-		    sprintf(buf, "%s%s", getVar(RPMVAR_ROOT), fest->file);
+		if (rpmGetVar(RPMVAR_ROOT)) {
+		    sprintf(buf, "%s%s", rpmGetVar(RPMVAR_ROOT), fest->file);
 		} else {
 		    strcpy(buf, fest->file);
 		}
@@ -378,22 +377,22 @@ int process_filelist(Header header, struct PackageRec *pr,
 
 	/* Add the header entries */
 	c = count;
-	addEntry(header, RPMTAG_FILENAMES, STRING_ARRAY_TYPE, fileList, c);
-	addEntry(header, RPMTAG_FILELINKTOS, STRING_ARRAY_TYPE,
+	headerAddEntry(header, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, fileList, c);
+	headerAddEntry(header, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE,
 		 fileLinktoList, c);
-	addEntry(header, RPMTAG_FILEMD5S, STRING_ARRAY_TYPE, fileMD5List, c);
-	addEntry(header, RPMTAG_FILESIZES, INT32_TYPE, fileSizeList, c);
-	addEntry(header, RPMTAG_FILEUIDS, INT32_TYPE, fileUIDList, c);
-	addEntry(header, RPMTAG_FILEGIDS, INT32_TYPE, fileGIDList, c);
-	addEntry(header, RPMTAG_FILEUSERNAME, STRING_ARRAY_TYPE,
+	headerAddEntry(header, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE, fileMD5List, c);
+	headerAddEntry(header, RPMTAG_FILESIZES, RPM_INT32_TYPE, fileSizeList, c);
+	headerAddEntry(header, RPMTAG_FILEUIDS, RPM_INT32_TYPE, fileUIDList, c);
+	headerAddEntry(header, RPMTAG_FILEGIDS, RPM_INT32_TYPE, fileGIDList, c);
+	headerAddEntry(header, RPMTAG_FILEUSERNAME, RPM_STRING_ARRAY_TYPE,
 		 fileUnameList, c);
-	addEntry(header, RPMTAG_FILEGROUPNAME, STRING_ARRAY_TYPE,
+	headerAddEntry(header, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE,
 		 fileGnameList, c);
-	addEntry(header, RPMTAG_FILEMTIMES, INT32_TYPE, fileMtimesList, c);
-	addEntry(header, RPMTAG_FILEFLAGS, INT32_TYPE, fileFlagsList, c);
-	addEntry(header, RPMTAG_FILEMODES, INT16_TYPE, fileModesList, c);
-	addEntry(header, RPMTAG_FILERDEVS, INT16_TYPE, fileRDevsList, c);
-	addEntry(header, RPMTAG_FILEVERIFYFLAGS, INT32_TYPE,
+	headerAddEntry(header, RPMTAG_FILEMTIMES, RPM_INT32_TYPE, fileMtimesList, c);
+	headerAddEntry(header, RPMTAG_FILEFLAGS, RPM_INT32_TYPE, fileFlagsList, c);
+	headerAddEntry(header, RPMTAG_FILEMODES, RPM_INT16_TYPE, fileModesList, c);
+	headerAddEntry(header, RPMTAG_FILERDEVS, RPM_INT16_TYPE, fileRDevsList, c);
+	headerAddEntry(header, RPMTAG_FILEVERIFYFLAGS, RPM_INT32_TYPE,
 		 fileVerifyFlagsList, c);
 	
 	/* Free the allocated strings */
@@ -548,8 +547,8 @@ static int add_file(struct file_entry **festack, const char *name,
     p->isconf = isconf;
     p->isspecfile = 0;  /* source packages are done by hand */
     p->verify_flags = verify_flags;
-    if (getVar(RPMVAR_ROOT)) {
-	sprintf(fullname, "%s%s", getVar(RPMVAR_ROOT), name);
+    if (rpmGetVar(RPMVAR_ROOT)) {
+	sprintf(fullname, "%s%s", rpmGetVar(RPMVAR_ROOT), name);
     } else {
 	strcpy(fullname, name);
     }
@@ -566,7 +565,7 @@ static int add_file(struct file_entry **festack, const char *name,
 	    prefixTest++;
 	}
 	if (*prefixPtr) {
-	    error(RPMERR_BADSPEC, "File doesn't match prefix (%s): %s",
+	    rpmError(RPMERR_BADSPEC, "File doesn't match prefix (%s): %s",
 		  prefix, name);
 	    return 0;
 	}
@@ -615,7 +614,7 @@ static int add_file(struct file_entry **festack, const char *name,
 	p->next = *festack;
 	*festack = p;
 
-	message(MESS_DEBUG, "ADDING: %s\n", name);
+	rpmMessage(RPMMESS_DEBUG, "ADDING: %s\n", name);
 
 	/* return number of entries added */
 	return 1;
@@ -626,8 +625,8 @@ static int add_file_aux(const char *file, struct stat *sb, int flag)
 {
     const char *name = file;
 
-    if (getVar(RPMVAR_ROOT)) {
-	name += strlen(getVar(RPMVAR_ROOT));
+    if (rpmGetVar(RPMVAR_ROOT)) {
+	name += strlen(rpmGetVar(RPMVAR_ROOT));
     }
 
     /* The 1 will cause add_file() to *not* descend */
@@ -705,7 +704,7 @@ static int parseForAttr(char *buf, char **currPmode,
     }
 
     if (*p != '(') {
-	error(RPMERR_BADSPEC, "Bad %%attr() syntax: %s", buf);
+	rpmError(RPMERR_BADSPEC, "Bad %%attr() syntax: %s", buf);
 	return 0;
     }
     p++;
@@ -716,7 +715,7 @@ static int parseForAttr(char *buf, char **currPmode,
     }
 
     if (! *end) {
-	error(RPMERR_BADSPEC, "Bad %%attr() syntax: %s", buf);
+	rpmError(RPMERR_BADSPEC, "Bad %%attr() syntax: %s", buf);
 	return 0;
     }
 
@@ -728,7 +727,7 @@ static int parseForAttr(char *buf, char **currPmode,
     *currGname = strtok(NULL, ", \n\t");
 
     if (! (*currPmode && *currUname && *currGname)) {
-	error(RPMERR_BADSPEC, "Bad %%attr() syntax: %s", buf);
+	rpmError(RPMERR_BADSPEC, "Bad %%attr() syntax: %s", buf);
 	*currPmode = *currUname = *currGname = NULL;
 	return 0;
     }
@@ -737,7 +736,7 @@ static int parseForAttr(char *buf, char **currPmode,
     if (strcmp(*currPmode, "-")) {
 	x = sscanf(*currPmode, "%o", &mode);
 	if ((x == 0) || (mode >> 12)) {
-	    error(RPMERR_BADSPEC, "Bad %%attr() mode spec: %s", buf);
+	    rpmError(RPMERR_BADSPEC, "Bad %%attr() mode spec: %s", buf);
 	    *currPmode = *currUname = *currGname = NULL;
 	    return 0;
 	}
@@ -777,7 +776,7 @@ static int parseForVerify(char *buf, int *verify_flags)
     }
 
     if (*p != '(') {
-	error(RPMERR_BADSPEC, "Bad %%verify() syntax: %s", buf);
+	rpmError(RPMERR_BADSPEC, "Bad %%verify() syntax: %s", buf);
 	return 0;
     }
     p++;
@@ -788,7 +787,7 @@ static int parseForVerify(char *buf, int *verify_flags)
     }
 
     if (! *end) {
-	error(RPMERR_BADSPEC, "Bad %%verify() syntax: %s", buf);
+	rpmError(RPMERR_BADSPEC, "Bad %%verify() syntax: %s", buf);
 	return 0;
     }
 
@@ -800,28 +799,28 @@ static int parseForVerify(char *buf, int *verify_flags)
 
     p = strtok(ourbuf, ", \n\t");
     not = 0;
-    *verify_flags = VERIFY_NONE;
+    *verify_flags = RPMVERIFY_NONE;
     while (p) {
 	if (!strcmp(p, "not")) {
 	    not = 1;
 	} else if (!strcmp(p, "md5")) {
-	    *verify_flags |= VERIFY_MD5;
+	    *verify_flags |= RPMVERIFY_MD5;
 	} else if (!strcmp(p, "size")) {
-	    *verify_flags |= VERIFY_FILESIZE;
+	    *verify_flags |= RPMVERIFY_FILESIZE;
 	} else if (!strcmp(p, "link")) {
-	    *verify_flags |= VERIFY_LINKTO;
+	    *verify_flags |= RPMVERIFY_LINKTO;
 	} else if (!strcmp(p, "user")) {
-	    *verify_flags |= VERIFY_USER;
+	    *verify_flags |= RPMVERIFY_USER;
 	} else if (!strcmp(p, "group")) {
-	    *verify_flags |= VERIFY_GROUP;
+	    *verify_flags |= RPMVERIFY_GROUP;
 	} else if (!strcmp(p, "mtime")) {
-	    *verify_flags |= VERIFY_MTIME;
+	    *verify_flags |= RPMVERIFY_MTIME;
 	} else if (!strcmp(p, "mode")) {
-	    *verify_flags |= VERIFY_MODE;
+	    *verify_flags |= RPMVERIFY_MODE;
 	} else if (!strcmp(p, "rdev")) {
-	    *verify_flags |= VERIFY_RDEV;
+	    *verify_flags |= RPMVERIFY_RDEV;
 	} else {
-	    error(RPMERR_BADSPEC, "Invalid %%verify token: %s", p);
+	    rpmError(RPMERR_BADSPEC, "Invalid %%verify token: %s", p);
 	    return 0;
 	}
 	p = strtok(NULL, ", \n\t");

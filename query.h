@@ -25,6 +25,6 @@ void queryPrintTags(void);
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */
-int findPackageByLabel(rpmdb db, char * arg, dbIndexSet * matches);
+int findPackageByLabel(rpmdb db, char * arg, dbiIndexSet * matches);
 
 #endif

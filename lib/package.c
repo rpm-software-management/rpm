@@ -7,10 +7,10 @@
 #include "header.h"
 #include "misc.h"
 #include "oldheader.h"
-#include "rpmerr.h"
 #include "rpmlead.h"
 #include "rpmlib.h"
 #include "signature.h"
+#include "messages.h"
 
 /* 0 = success */
 /* !0 = error */
@@ -44,13 +44,13 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
     }
 
     if (lead->major == 1) {
-	message(MESS_DEBUG, "package is a version one package!\n");
+	rpmMessage(RPMMESS_DEBUG, "package is a version one package!\n");
 
 	if (lead->type == RPMLEAD_SOURCE) {
-	    message(MESS_DEBUG, "old style source package -- "
+	    rpmMessage(RPMMESS_DEBUG, "old style source package -- "
 			"I'll do my best\n");
 	    oldLead->archiveOffset = ntohl(oldLead->archiveOffset);
-	    message(MESS_DEBUG, "archive offset is %d\n", 
+	    rpmMessage(RPMMESS_DEBUG, "archive offset is %d\n", 
 			oldLead->archiveOffset);
 	    lseek(fd, oldLead->archiveOffset, SEEK_SET);
 	    
@@ -60,30 +60,30 @@ static int readPackageHeaders(int fd, struct rpmlead * leadPtr,
 
 	    *hdr = NULL;
 	} else {
-	    message(MESS_DEBUG, "old style binary package\n");
+	    rpmMessage(RPMMESS_DEBUG, "old style binary package\n");
 	    readOldHeader(fd, hdr, &isSource);
 	    arch = lead->archnum;
-	    addEntry(*hdr, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
+	    headerAddEntry(*hdr, RPMTAG_ARCH, RPM_INT8_TYPE, &arch, 1);
 	    arch = 1;		  /* old versions of RPM only supported Linux */
-	    addEntry(*hdr, RPMTAG_OS, INT8_TYPE, &arch, 1);
+	    headerAddEntry(*hdr, RPMTAG_OS, RPM_INT8_TYPE, &arch, 1);
 	}
     } else if (lead->major == 2 || lead->major == 3) {
-	if (readSignature(fd, sigs, lead->signature_type)) {
+	if (rpmReadSignature(fd, sigs, lead->signature_type)) {
 	   return 2;
 	}
-	*hdr = readHeader(fd, (lead->major >= 3) ?
-			  HEADER_MAGIC : NO_HEADER_MAGIC);
+	*hdr = headerRead(fd, (lead->major >= 3) ?
+			  HEADER_MAGIC_YES : HEADER_MAGIC_NO);
 	if (! *hdr) {
-	    if (sigs) freeHeader(*sigs);
+	    if (sigs) headerFree(*sigs);
 	    return 2;
 	}
     } else {
-	error(RPMERR_NEWPACKAGE, "only packages with major numbers <= 3 are"
+	rpmError(RPMERR_NEWPACKAGE, "only packages with major numbers <= 3 are"
 		" supported by this version of RPM");
 	return 2;
     } 
 
-    if (!hdrPtr) freeHeader(*hdr);
+    if (!hdrPtr) headerFree(*hdr);
     
     return 0;
 }
@@ -98,7 +98,7 @@ int rpmReadPackageInfo(int fd, Header * signatures, Header * hdr) {
 /* 0 = success */
 /* 1 = bad magic */
 /* 2 = error */
-int pkgReadHeader(int fd, Header * hdr, int * isSource, int * major,
+int rpmReadPackageHeader(int fd, Header * hdr, int * isSource, int * major,
 		  int * minor) {
     int rc;
     struct rpmlead lead;
@@ -140,34 +140,34 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
 	return 1;
     }
 
-    dbentry = newHeader();
-    addEntry(dbentry, RPMTAG_NAME, STRING_TYPE, oldheader.name, 1);
-    addEntry(dbentry, RPMTAG_VERSION, STRING_TYPE, oldheader.version, 1);
-    addEntry(dbentry, RPMTAG_RELEASE, STRING_TYPE, oldheader.release, 1);
-    addEntry(dbentry, RPMTAG_DESCRIPTION, STRING_TYPE, 
+    dbentry = headerNew();
+    headerAddEntry(dbentry, RPMTAG_NAME, RPM_STRING_TYPE, oldheader.name, 1);
+    headerAddEntry(dbentry, RPMTAG_VERSION, RPM_STRING_TYPE, oldheader.version, 1);
+    headerAddEntry(dbentry, RPMTAG_RELEASE, RPM_STRING_TYPE, oldheader.release, 1);
+    headerAddEntry(dbentry, RPMTAG_DESCRIPTION, RPM_STRING_TYPE, 
 	     spec.description, 1);
-    addEntry(dbentry, RPMTAG_BUILDTIME, INT32_TYPE, &spec.buildTime, 1);
-    addEntry(dbentry, RPMTAG_BUILDHOST, STRING_TYPE, spec.buildHost, 1);
-    addEntry(dbentry, RPMTAG_INSTALLTIME, INT32_TYPE, &installTime, 1); 
-    addEntry(dbentry, RPMTAG_DISTRIBUTION, STRING_TYPE, 
+    headerAddEntry(dbentry, RPMTAG_BUILDTIME, RPM_INT32_TYPE, &spec.buildTime, 1);
+    headerAddEntry(dbentry, RPMTAG_BUILDHOST, RPM_STRING_TYPE, spec.buildHost, 1);
+    headerAddEntry(dbentry, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &installTime, 1); 
+    headerAddEntry(dbentry, RPMTAG_DISTRIBUTION, RPM_STRING_TYPE, 
 	     spec.distribution, 1);
-    addEntry(dbentry, RPMTAG_VENDOR, STRING_TYPE, spec.vendor, 1);
-    addEntry(dbentry, RPMTAG_SIZE, INT32_TYPE, &oldheader.size, 1);
-    addEntry(dbentry, RPMTAG_COPYRIGHT, STRING_TYPE, spec.copyright, 1); 
+    headerAddEntry(dbentry, RPMTAG_VENDOR, RPM_STRING_TYPE, spec.vendor, 1);
+    headerAddEntry(dbentry, RPMTAG_SIZE, RPM_INT32_TYPE, &oldheader.size, 1);
+    headerAddEntry(dbentry, RPMTAG_COPYRIGHT, RPM_STRING_TYPE, spec.copyright, 1); 
 
     if (oldheader.group)
-	addEntry(dbentry, RPMTAG_GROUP, STRING_TYPE, oldheader.group, 1);
+	headerAddEntry(dbentry, RPMTAG_GROUP, RPM_STRING_TYPE, oldheader.group, 1);
     else
-	addEntry(dbentry, RPMTAG_GROUP, STRING_TYPE, "Unknown", 1);
+	headerAddEntry(dbentry, RPMTAG_GROUP, RPM_STRING_TYPE, "Unknown", 1);
 
     if (spec.prein) 
-	addEntry(dbentry, RPMTAG_PREIN, STRING_TYPE, spec.prein, 1);
+	headerAddEntry(dbentry, RPMTAG_PREIN, RPM_STRING_TYPE, spec.prein, 1);
     if (spec.preun) 
-	addEntry(dbentry, RPMTAG_PREUN, STRING_TYPE, spec.preun, 1);
+	headerAddEntry(dbentry, RPMTAG_PREUN, RPM_STRING_TYPE, spec.preun, 1);
     if (spec.postin) 
-	addEntry(dbentry, RPMTAG_POSTIN, STRING_TYPE, spec.postin, 1);
+	headerAddEntry(dbentry, RPMTAG_POSTIN, RPM_STRING_TYPE, spec.postin, 1);
     if (spec.postun) 
-	addEntry(dbentry, RPMTAG_POSTUN, STRING_TYPE, spec.postun, 1);
+	headerAddEntry(dbentry, RPMTAG_POSTUN, RPM_STRING_TYPE, spec.postun, 1);
 
     *hdr = dbentry;
 
@@ -211,27 +211,27 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
 		fileFlagsList[j] |= RPMFILE_CONFIG;
 	}
 
-	addEntry(dbentry, RPMTAG_FILENAMES, STRING_ARRAY_TYPE, fileList, 
+	headerAddEntry(dbentry, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, fileList, 
 		 spec.fileCount);
-	addEntry(dbentry, RPMTAG_FILELINKTOS, STRING_ARRAY_TYPE, 
+	headerAddEntry(dbentry, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE, 
 		 fileLinktoList, spec.fileCount);
-	addEntry(dbentry, RPMTAG_FILEMD5S, STRING_ARRAY_TYPE, fileMD5List, 
+	headerAddEntry(dbentry, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE, fileMD5List, 
 		 spec.fileCount);
-	addEntry(dbentry, RPMTAG_FILESIZES, INT32_TYPE, fileSizeList, 
+	headerAddEntry(dbentry, RPMTAG_FILESIZES, RPM_INT32_TYPE, fileSizeList, 
 		 spec.fileCount);
-	addEntry(dbentry, RPMTAG_FILEUIDS, INT32_TYPE, fileUIDList, 
+	headerAddEntry(dbentry, RPMTAG_FILEUIDS, RPM_INT32_TYPE, fileUIDList, 
 		 spec.fileCount);
-	addEntry(dbentry, RPMTAG_FILEGIDS, INT32_TYPE, fileGIDList, 
+	headerAddEntry(dbentry, RPMTAG_FILEGIDS, RPM_INT32_TYPE, fileGIDList, 
 		 spec.fileCount);
-	addEntry(dbentry, RPMTAG_FILEMTIMES, INT32_TYPE, fileMtimesList, 
+	headerAddEntry(dbentry, RPMTAG_FILEMTIMES, RPM_INT32_TYPE, fileMtimesList, 
 		 spec.fileCount);
-	addEntry(dbentry, RPMTAG_FILEFLAGS, INT32_TYPE, fileFlagsList, 
+	headerAddEntry(dbentry, RPMTAG_FILEFLAGS, RPM_INT32_TYPE, fileFlagsList, 
 		 spec.fileCount);
-	addEntry(dbentry, RPMTAG_FILEMODES, INT16_TYPE, fileModesList, 
+	headerAddEntry(dbentry, RPMTAG_FILEMODES, RPM_INT16_TYPE, fileModesList, 
 		 spec.fileCount);
-	addEntry(dbentry, RPMTAG_FILERDEVS, INT16_TYPE, fileRDevsList, 
+	headerAddEntry(dbentry, RPMTAG_FILERDEVS, RPM_INT16_TYPE, fileRDevsList, 
 		 spec.fileCount);
-	addEntry(dbentry, RPMTAG_FILESTATES, INT8_TYPE, fileStatesList, 
+	headerAddEntry(dbentry, RPMTAG_FILESTATES, RPM_INT8_TYPE, fileStatesList, 
 		 spec.fileCount);
 
 	free(fileList);

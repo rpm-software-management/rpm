@@ -15,8 +15,8 @@
 #include "header.h"
 #include "misc.h"
 #include "rpmdb.h"
-#include "rpmerr.h"
 #include "rpmlib.h"
+#include "messages.h"
 
 /* XXX the signal handling in here is not thread safe */
 
@@ -31,13 +31,13 @@
 
 struct rpmdb {
     faFile pkgs;
-    dbIndex * nameIndex, * fileIndex, * groupIndex, * providesIndex;
-    dbIndex * requiredbyIndex, * conflictsIndex;
+    dbiIndex * nameIndex, * fileIndex, * groupIndex, * providesIndex;
+    dbiIndex * requiredbyIndex, * conflictsIndex;
 };
 
-static void removeIndexEntry(dbIndex * dbi, char * name, dbIndexRecord rec,
+static void removeIndexEntry(dbiIndex * dbi, char * name, dbiIndexRecord rec,
 		             int tolerant, char * idxName);
-static int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
+static int addIndexEntry(dbiIndex * idx, char * index, unsigned int offset,
 		         unsigned int fileNumber);
 static void blockSignals(void);
 static void unblockSignals(void);
@@ -47,9 +47,9 @@ static sigset_t signalMask;
 int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     char * dbpath;
 
-    dbpath = getVar(RPMVAR_DBPATH);
+    dbpath = rpmGetVar(RPMVAR_DBPATH);
     if (!dbpath) {
-	message(MESS_DEBUG, "no dbpath has been set");
+	rpmMessage(RPMMESS_DEBUG, "no dbpath has been set");
 	return 1;
     }
 
@@ -60,9 +60,9 @@ int rpmdbInit (char * prefix, int perms) {
     rpmdb db;
     char * dbpath;
 
-    dbpath = getVar(RPMVAR_DBPATH);
+    dbpath = rpmGetVar(RPMVAR_DBPATH);
     if (!dbpath) {
-	message(MESS_DEBUG, "no dbpath has been set");
+	rpmMessage(RPMMESS_DEBUG, "no dbpath has been set");
 	return 1;
     }
 
@@ -93,7 +93,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     strcpy(filename, prefix); 
     strcat(filename, dbpath);
 
-    message(MESS_DEBUG, "opening database in %s\n", filename);
+    rpmMessage(RPMMESS_DEBUG, "opening database in %s\n", filename);
 
     strcat(filename, "packages.rpm");
 
@@ -102,7 +102,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     if (!justcheck || !exists(filename)) {
 	db.pkgs = faOpen(filename, mode, 0644);
 	if (!db.pkgs) {
-	    error(RPMERR_DBOPEN, "failed to open %s\n", filename);
+	    rpmError(RPMERR_DBOPEN, "failed to open %s\n", filename);
 	    return 1;
 	}
 
@@ -115,14 +115,14 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 	if (mode & O_RDWR) {
 	    lockinfo.l_type = F_WRLCK;
 	    if (fcntl(db.pkgs->fd, F_SETLK, (void *) &lockinfo)) {
-		error(RPMERR_FLOCK, "cannot get %s lock on database", 
+		rpmError(RPMERR_FLOCK, "cannot get %s lock on database", 
 			"exclusive");
 		return 1;
 	    } 
 	} else {
 	    lockinfo.l_type = F_RDLCK;
 	    if (fcntl(db.pkgs->fd, F_SETLK, (void *) &lockinfo)) {
-		error(RPMERR_FLOCK, "cannot get %s lock on database", "shared");
+		rpmError(RPMERR_FLOCK, "cannot get %s lock on database", "shared");
 		return 1;
 	    } 
 	}
@@ -133,7 +133,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     strcat(filename, "nameindex.rpm");
 
     if (!justcheck || !exists(filename)) {
-	db.nameIndex = openDBIndex(filename, mode, 0644);
+	db.nameIndex = dbiOpenIndex(filename, mode, 0644);
 	if (!db.nameIndex) {
 	    faClose(db.pkgs);
 	    return 1;
@@ -145,10 +145,10 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     strcat(filename, "fileindex.rpm");
 
     if (!justcheck || !exists(filename)) {
-	db.fileIndex = openDBIndex(filename, mode, 0644);
+	db.fileIndex = dbiOpenIndex(filename, mode, 0644);
 	if (!db.fileIndex) {
 	    faClose(db.pkgs);
-	    closeDBIndex(db.nameIndex);
+	    dbiCloseIndex(db.nameIndex);
 	    return 1;
 	}
     }
@@ -158,11 +158,11 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     strcat(filename, "groupindex.rpm");
 
     if (!justcheck || !exists(filename)) {
-	db.groupIndex = openDBIndex(filename, mode, 0644);
+	db.groupIndex = dbiOpenIndex(filename, mode, 0644);
 	if (!db.groupIndex) {
 	    faClose(db.pkgs);
-	    closeDBIndex(db.nameIndex);
-	    closeDBIndex(db.fileIndex);
+	    dbiCloseIndex(db.nameIndex);
+	    dbiCloseIndex(db.fileIndex);
 	    return 1;
 	}
     }
@@ -172,12 +172,12 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     strcat(filename, "providesindex.rpm");
 
     if (!justcheck || !exists(filename)) {
-	db.providesIndex = openDBIndex(filename, mode, 0644);
+	db.providesIndex = dbiOpenIndex(filename, mode, 0644);
 	if (!db.providesIndex) {
 	    faClose(db.pkgs);
-	    closeDBIndex(db.fileIndex);
-	    closeDBIndex(db.nameIndex);
-	    closeDBIndex(db.groupIndex);
+	    dbiCloseIndex(db.fileIndex);
+	    dbiCloseIndex(db.nameIndex);
+	    dbiCloseIndex(db.groupIndex);
 	    return 1;
 	}
     }
@@ -187,13 +187,13 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     strcat(filename, "requiredby.rpm");
 
     if (!justcheck || !exists(filename)) {
-	db.requiredbyIndex = openDBIndex(filename, mode, 0644);
+	db.requiredbyIndex = dbiOpenIndex(filename, mode, 0644);
 	if (!db.requiredbyIndex) {
 	    faClose(db.pkgs);
-	    closeDBIndex(db.fileIndex);
-	    closeDBIndex(db.nameIndex);
-	    closeDBIndex(db.groupIndex);
-	    closeDBIndex(db.providesIndex);
+	    dbiCloseIndex(db.fileIndex);
+	    dbiCloseIndex(db.nameIndex);
+	    dbiCloseIndex(db.groupIndex);
+	    dbiCloseIndex(db.providesIndex);
 	    return 1;
 	}
     }
@@ -203,14 +203,14 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     strcat(filename, "conflictsindex.rpm");
 
     if (!justcheck || !exists(filename)) {
-	db.conflictsIndex = openDBIndex(filename, mode, 0644);
+	db.conflictsIndex = dbiOpenIndex(filename, mode, 0644);
 	if (!db.conflictsIndex) {
 	    faClose(db.pkgs);
-	    closeDBIndex(db.fileIndex);
-	    closeDBIndex(db.nameIndex);
-	    closeDBIndex(db.groupIndex);
-	    closeDBIndex(db.providesIndex);
-	    closeDBIndex(db.requiredbyIndex);
+	    dbiCloseIndex(db.fileIndex);
+	    dbiCloseIndex(db.nameIndex);
+	    dbiCloseIndex(db.groupIndex);
+	    dbiCloseIndex(db.providesIndex);
+	    dbiCloseIndex(db.requiredbyIndex);
 	    return 1;
 	}
     }
@@ -227,12 +227,12 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 
 void rpmdbClose (rpmdb db) {
     if (db->pkgs) faClose(db->pkgs);
-    if (db->fileIndex) closeDBIndex(db->fileIndex);
-    if (db->groupIndex) closeDBIndex(db->groupIndex);
-    if (db->nameIndex) closeDBIndex(db->nameIndex);
-    if (db->providesIndex) closeDBIndex(db->providesIndex);
-    if (db->requiredbyIndex) closeDBIndex(db->requiredbyIndex);
-    if (db->conflictsIndex) closeDBIndex(db->conflictsIndex);
+    if (db->fileIndex) dbiCloseIndex(db->fileIndex);
+    if (db->groupIndex) dbiCloseIndex(db->groupIndex);
+    if (db->nameIndex) dbiCloseIndex(db->nameIndex);
+    if (db->providesIndex) dbiCloseIndex(db->providesIndex);
+    if (db->requiredbyIndex) dbiCloseIndex(db->requiredbyIndex);
+    if (db->conflictsIndex) dbiCloseIndex(db->conflictsIndex);
     free(db);
 }
 
@@ -248,58 +248,58 @@ unsigned int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset) {
 Header rpmdbGetRecord(rpmdb db, unsigned int offset) {
     lseek(db->pkgs->fd, offset, SEEK_SET);
 
-    return readHeader(db->pkgs->fd, NO_HEADER_MAGIC);
+    return headerRead(db->pkgs->fd, HEADER_MAGIC_NO);
 }
 
-int rpmdbFindByFile(rpmdb db, char * filespec, dbIndexSet * matches) {
-    return searchDBIndex(db->fileIndex, filespec, matches);
+int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches) {
+    return dbiSearchIndex(db->fileIndex, filespec, matches);
 }
 
-int rpmdbFindByProvides(rpmdb db, char * filespec, dbIndexSet * matches) {
-    return searchDBIndex(db->providesIndex, filespec, matches);
+int rpmdbFindByProvides(rpmdb db, char * filespec, dbiIndexSet * matches) {
+    return dbiSearchIndex(db->providesIndex, filespec, matches);
 }
 
-int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbIndexSet * matches) {
-    return searchDBIndex(db->requiredbyIndex, filespec, matches);
+int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbiIndexSet * matches) {
+    return dbiSearchIndex(db->requiredbyIndex, filespec, matches);
 }
 
-int rpmdbFindByConflicts(rpmdb db, char * filespec, dbIndexSet * matches) {
-    return searchDBIndex(db->conflictsIndex, filespec, matches);
+int rpmdbFindByConflicts(rpmdb db, char * filespec, dbiIndexSet * matches) {
+    return dbiSearchIndex(db->conflictsIndex, filespec, matches);
 }
 
-int rpmdbFindByGroup(rpmdb db, char * group, dbIndexSet * matches) {
-    return searchDBIndex(db->groupIndex, group, matches);
+int rpmdbFindByGroup(rpmdb db, char * group, dbiIndexSet * matches) {
+    return dbiSearchIndex(db->groupIndex, group, matches);
 }
 
-int rpmdbFindPackage(rpmdb db, char * name, dbIndexSet * matches) {
-    return searchDBIndex(db->nameIndex, name, matches);
+int rpmdbFindPackage(rpmdb db, char * name, dbiIndexSet * matches) {
+    return dbiSearchIndex(db->nameIndex, name, matches);
 }
 
-static void removeIndexEntry(dbIndex * dbi, char * key, dbIndexRecord rec,
+static void removeIndexEntry(dbiIndex * dbi, char * key, dbiIndexRecord rec,
 		             int tolerant, char * idxName) {
     int rc;
-    dbIndexSet matches;
+    dbiIndexSet matches;
     
-    rc = searchDBIndex(dbi, key, &matches);
+    rc = dbiSearchIndex(dbi, key, &matches);
     switch (rc) {
       case 0:
-	if (removeDBIndexRecord(&matches, rec) && !tolerant) {
-	    error(RPMERR_DBCORRUPT, "package %s not listed in %s",
+	if (dbiRemoveIndexRecord(&matches, rec) && !tolerant) {
+	    rpmError(RPMERR_DBCORRUPT, "package %s not listed in %s",
 		  key, idxName);
 	} else {
-	    updateDBIndex(dbi, key, &matches);
+	    dbiUpdateIndex(dbi, key, &matches);
 	       /* errors from above will be reported from dbindex.c */
 	}
 	break;
       case 1:
 	if (!tolerant) 
-	    error(RPMERR_DBCORRUPT, "package %s not found in %s", key, idxName);
+	    rpmError(RPMERR_DBCORRUPT, "package %s not found in %s", key, idxName);
 	break;
       case 2:
 	break;   /* error message already generated from dbindex.c */
     }
 
-    freeDBIndexRecord(matches);
+    dbiFreeIndexRecord(matches);
 }
 
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
@@ -307,7 +307,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
     char * name, * group;
     int type;
     unsigned int count;
-    dbIndexRecord rec;
+    dbiIndexRecord rec;
     char ** fileList, ** providesList, ** requiredbyList;
     char ** conflictList;
     int i;
@@ -317,31 +317,31 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 
     h = rpmdbGetRecord(db, offset);
     if (!h) {
-	error(RPMERR_DBCORRUPT, "cannot read header at %d for uninstall",
+	rpmError(RPMERR_DBCORRUPT, "cannot read header at %d for uninstall",
 	      offset);
 	return 1;
     }
 
     blockSignals();
 
-    if (!getEntry(h, RPMTAG_NAME, &type, (void **) &name, &count)) {
-	error(RPMERR_DBCORRUPT, "package has no name");
+    if (!headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count)) {
+	rpmError(RPMERR_DBCORRUPT, "package has no name");
     } else {
-	message(MESS_DEBUG, "removing name index\n");
+	rpmMessage(RPMMESS_DEBUG, "removing name index\n");
 	removeIndexEntry(db->nameIndex, name, rec, tolerant, "name index");
     }
 
-    if (!getEntry(h, RPMTAG_GROUP, &type, (void **) &group, &count)) {
-	message(MESS_DEBUG, "package has no group\n");
+    if (!headerGetEntry(h, RPMTAG_GROUP, &type, (void **) &group, &count)) {
+	rpmMessage(RPMMESS_DEBUG, "package has no group\n");
     } else {
-	message(MESS_DEBUG, "removing group index\n");
+	rpmMessage(RPMMESS_DEBUG, "removing group index\n");
 	removeIndexEntry(db->groupIndex, group, rec, tolerant, "group index");
     }
 
-    if (getEntry(h, RPMTAG_PROVIDES, &type, (void **) &providesList, 
+    if (headerGetEntry(h, RPMTAG_PROVIDES, &type, (void **) &providesList, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
-	    message(MESS_DEBUG, "removing provides index for %s\n", 
+	    rpmMessage(RPMMESS_DEBUG, "removing provides index for %s\n", 
 		    providesList[i]);
 	    removeIndexEntry(db->providesIndex, providesList[i], rec, tolerant, 
 			     "providesfile index");
@@ -349,10 +349,10 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 	free(providesList);
     }
 
-    if (getEntry(h, RPMTAG_REQUIRENAME, &type, (void **) &requiredbyList, 
+    if (headerGetEntry(h, RPMTAG_REQUIRENAME, &type, (void **) &requiredbyList, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
-	    message(MESS_DEBUG, "removing requiredby index for %s\n", 
+	    rpmMessage(RPMMESS_DEBUG, "removing requiredby index for %s\n", 
 		    requiredbyList[i]);
 	    removeIndexEntry(db->requiredbyIndex, requiredbyList[i], rec, 
 			     tolerant, "requiredby index");
@@ -360,10 +360,10 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 	free(requiredbyList);
     }
 
-    if (getEntry(h, RPMTAG_CONFLICTNAME, &type, (void **) &conflictList, 
+    if (headerGetEntry(h, RPMTAG_CONFLICTNAME, &type, (void **) &conflictList, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
-	    message(MESS_DEBUG, "removing conflict index for %s\n", 
+	    rpmMessage(RPMMESS_DEBUG, "removing conflict index for %s\n", 
 		    conflictList[i]);
 	    removeIndexEntry(db->conflictsIndex, conflictList[i], rec, 
 			     tolerant, "conflict index");
@@ -371,51 +371,51 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 	free(conflictList);
     }
 
-    if (getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+    if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
-	    message(MESS_DEBUG, "removing file index for %s\n", fileList[i]);
+	    rpmMessage(RPMMESS_DEBUG, "removing file index for %s\n", fileList[i]);
 	    rec.fileNumber = i;
 	    removeIndexEntry(db->fileIndex, fileList[i], rec, tolerant, 
 			     "file index");
 	}
 	free(fileList);
     } else {
-	message(MESS_DEBUG, "package has no files\n");
+	rpmMessage(RPMMESS_DEBUG, "package has no files\n");
     }
 
     faFree(db->pkgs, offset);
 
-    syncDBIndex(db->nameIndex);
-    syncDBIndex(db->groupIndex);
-    syncDBIndex(db->fileIndex);
+    dbiSyncIndex(db->nameIndex);
+    dbiSyncIndex(db->groupIndex);
+    dbiSyncIndex(db->fileIndex);
 
     unblockSignals();
 
-    freeHeader(h);
+    headerFree(h);
 
     return 0;
 }
 
-static int addIndexEntry(dbIndex * idx, char * index, unsigned int offset,
+static int addIndexEntry(dbiIndex * idx, char * index, unsigned int offset,
 		         unsigned int fileNumber) {
-    dbIndexSet set;
-    dbIndexRecord irec;   
+    dbiIndexSet set;
+    dbiIndexRecord irec;   
     int rc;
 
     irec.recOffset = offset;
     irec.fileNumber = fileNumber;
 
-    rc = searchDBIndex(idx, index, &set);
+    rc = dbiSearchIndex(idx, index, &set);
     if (rc == -1)  		/* error */
 	return 1;
 
     if (rc == 1)  		/* new item */
-	set = createDBIndexRecord();
-    appendDBIndexRecord(&set, irec);
-    if (updateDBIndex(idx, index, &set))
+	set = dbiCreateIndexRecord();
+    dbiAppendIndexRecord(&set, irec);
+    if (dbiUpdateIndex(idx, index, &set))
 	exit(1);
-    freeDBIndexRecord(set);
+    dbiFreeIndexRecord(set);
     return 0;
 }
 
@@ -431,36 +431,36 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     int type;
     int rc = 0;
 
-    getEntry(dbentry, RPMTAG_NAME, &type, (void **) &name, &count);
-    getEntry(dbentry, RPMTAG_GROUP, &type, (void **) &group, &count);
+    headerGetEntry(dbentry, RPMTAG_NAME, &type, (void **) &name, &count);
+    headerGetEntry(dbentry, RPMTAG_GROUP, &type, (void **) &group, &count);
 
     if (!group) group = "Unknown";
 
-    if (!getEntry(dbentry, RPMTAG_FILENAMES, &type, (void **) &fileList, 
+    if (!headerGetEntry(dbentry, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 	 &count)) {
 	count = 0;
     } 
 
-    if (!getEntry(dbentry, RPMTAG_PROVIDES, &type, (void **) &providesList, 
+    if (!headerGetEntry(dbentry, RPMTAG_PROVIDES, &type, (void **) &providesList, 
 	 &providesCount)) {
 	providesCount = 0;
     } 
 
-    if (!getEntry(dbentry, RPMTAG_REQUIRENAME, &type, 
+    if (!headerGetEntry(dbentry, RPMTAG_REQUIRENAME, &type, 
 		  (void **) &requiredbyList, &requiredbyCount)) {
 	requiredbyCount = 0;
     } 
 
-    if (!getEntry(dbentry, RPMTAG_CONFLICTNAME, &type, 
+    if (!headerGetEntry(dbentry, RPMTAG_CONFLICTNAME, &type, 
 		  (void **) &conflictList, &conflictCount)) {
 	conflictCount = 0;
     } 
 
     blockSignals();
 
-    dboffset = faAlloc(db->pkgs, sizeofHeader(dbentry, NO_HEADER_MAGIC));
+    dboffset = faAlloc(db->pkgs, headerSizeof(dbentry, HEADER_MAGIC_NO));
     if (!dboffset) {
-	error(RPMERR_DBCORRUPT, "cannot allocate space for database");
+	rpmError(RPMERR_DBCORRUPT, "cannot allocate space for database");
 	unblockSignals();
 	if (providesCount) free(providesList);
 	if (requiredbyCount) free(requiredbyList);
@@ -469,7 +469,7 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     }
     lseek(db->pkgs->fd, dboffset, SEEK_SET);
 
-    writeHeader(db->pkgs->fd, dbentry, NO_HEADER_MAGIC);
+    headerWrite(db->pkgs->fd, dbentry, HEADER_MAGIC_NO);
 
     /* Now update the appropriate indexes */
     if (addIndexEntry(db->nameIndex, name, dboffset, 0))
@@ -497,11 +497,11 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 	    rc = 1;
     }
 
-    syncDBIndex(db->nameIndex);
-    syncDBIndex(db->groupIndex);
-    syncDBIndex(db->fileIndex);
-    syncDBIndex(db->providesIndex);
-    syncDBIndex(db->requiredbyIndex);
+    dbiSyncIndex(db->nameIndex);
+    dbiSyncIndex(db->groupIndex);
+    dbiSyncIndex(db->fileIndex);
+    dbiSyncIndex(db->providesIndex);
+    dbiSyncIndex(db->requiredbyIndex);
 
     unblockSignals();
 
@@ -517,14 +517,14 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
 
     oldHeader = rpmdbGetRecord(db, offset);
     if (!oldHeader) {
-	error(RPMERR_DBCORRUPT, "cannot read header at %d for update",
+	rpmError(RPMERR_DBCORRUPT, "cannot read header at %d for update",
 		offset);
 	return 1;
     }
 
-    if (sizeofHeader(oldHeader, NO_HEADER_MAGIC) !=
-	sizeofHeader(newHeader, NO_HEADER_MAGIC)) {
-	message(MESS_DEBUG, "header changed size!");
+    if (headerSizeof(oldHeader, HEADER_MAGIC_NO) !=
+	headerSizeof(newHeader, HEADER_MAGIC_NO)) {
+	rpmMessage(RPMMESS_DEBUG, "header changed size!");
 	if (rpmdbRemove(db, offset, 1))
 	    return 1;
 
@@ -535,7 +535,7 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
 
 	lseek(db->pkgs->fd, offset, SEEK_SET);
 
-	writeHeader(db->pkgs->fd, newHeader, NO_HEADER_MAGIC);
+	headerWrite(db->pkgs->fd, newHeader, HEADER_MAGIC_NO);
 
 	unblockSignals();
     }

@@ -26,21 +26,21 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
     int_32 * uidList, * gidList;
     int useBrokenMd5;
 
-    if (getEntry(h, RPMTAG_RPMVERSION, NULL, NULL, NULL))
+    if (headerGetEntry(h, RPMTAG_RPMVERSION, NULL, NULL, NULL))
 	useBrokenMd5 = 0;
     else
 	useBrokenMd5 = 1;
 
-    getEntry(h, RPMTAG_FILEMODES, &type, (void **) &modeList, &count);
+    headerGetEntry(h, RPMTAG_FILEMODES, &type, (void **) &modeList, &count);
 
-    if (getEntry(h, RPMTAG_FILEVERIFYFLAGS, &type, (void **) &verifyFlags, 
+    if (headerGetEntry(h, RPMTAG_FILEVERIFYFLAGS, &type, (void **) &verifyFlags, 
 		 &count)) {
 	flags = verifyFlags[filenum];
     } else {
-	flags = VERIFY_ALL;
+	flags = RPMVERIFY_ALL;
     }
 
-    getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, &count);
+    headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, &count);
     filespec = alloca(strlen(fileList[filenum]) + strlen(prefix) + 5);
     strcpy(filespec, prefix);
     strcat(filespec, "/");
@@ -51,7 +51,7 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
     *result = 0;
 
     /* Check to see if the file was installed - if not pretend all is OK */
-    if (getEntry(h, RPMTAG_FILESTATES, &type, 
+    if (headerGetEntry(h, RPMTAG_FILESTATES, &type, 
 		 (void **) &fileStatesList, &count) && fileStatesList) {
 	if (fileStatesList[filenum] == RPMFILE_STATE_NOTINSTALLED)
 	    return 0;
@@ -61,20 +61,20 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
 	return 1;
 
     if (S_ISDIR(sb.st_mode))
-	flags &= ~(VERIFY_MD5 | VERIFY_FILESIZE | VERIFY_MTIME | VERIFY_LINKTO);
+	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | RPMVERIFY_LINKTO);
     else if (S_ISLNK(sb.st_mode))
-	flags &= ~(VERIFY_MD5 | VERIFY_FILESIZE | VERIFY_MTIME);
+	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME);
     else if (S_ISFIFO(sb.st_mode))
-	flags &= ~(VERIFY_MD5 | VERIFY_FILESIZE | VERIFY_MTIME | VERIFY_LINKTO);
+	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | RPMVERIFY_LINKTO);
     else if (S_ISCHR(sb.st_mode))
-	flags &= ~(VERIFY_MD5 | VERIFY_FILESIZE | VERIFY_MTIME | VERIFY_LINKTO);
+	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | RPMVERIFY_LINKTO);
     else if (S_ISBLK(sb.st_mode))
-	flags &= ~(VERIFY_MD5 | VERIFY_FILESIZE | VERIFY_MTIME | VERIFY_LINKTO);
+	flags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME | RPMVERIFY_LINKTO);
     else 
-	flags &= ~(VERIFY_LINKTO);
+	flags &= ~(RPMVERIFY_LINKTO);
 
-    if (flags & VERIFY_MD5) {
-	getEntry(h, RPMTAG_FILEMD5S, &type, (void **) &md5List, &count);
+    if (flags & RPMVERIFY_MD5) {
+	headerGetEntry(h, RPMTAG_FILEMD5S, &type, (void **) &md5List, &count);
 	if (useBrokenMd5) {
 	    rc = mdfileBroken(filespec, md5sum);
 	} else {
@@ -82,48 +82,48 @@ int rpmVerifyFile(char * prefix, Header h, int filenum, int * result) {
 	}
 
 	if (rc || strcmp(md5sum, md5List[filenum]))
-	    *result |= VERIFY_MD5;
+	    *result |= RPMVERIFY_MD5;
 	free(md5List);
     } 
-    if (flags & VERIFY_LINKTO) {
-	getEntry(h, RPMTAG_FILELINKTOS, &type, (void **) &linktoList, &count);
+    if (flags & RPMVERIFY_LINKTO) {
+	headerGetEntry(h, RPMTAG_FILELINKTOS, &type, (void **) &linktoList, &count);
 	size = readlink(filespec, linkto, sizeof(linkto));
 	if (size == -1)
-	    *result |= VERIFY_LINKTO;
+	    *result |= RPMVERIFY_LINKTO;
 	else 
 	    linkto[size] = '\0';
 	    if (strcmp(linkto, linktoList[filenum]))
-		*result |= VERIFY_LINKTO;
+		*result |= RPMVERIFY_LINKTO;
 	free(linktoList);
     } 
-    if (flags & VERIFY_FILESIZE) {
-	getEntry(h, RPMTAG_FILESIZES, &type, (void **) &sizeList, &count);
+    if (flags & RPMVERIFY_FILESIZE) {
+	headerGetEntry(h, RPMTAG_FILESIZES, &type, (void **) &sizeList, &count);
 	if (sizeList[filenum] != sb.st_size)
-	    *result |= VERIFY_FILESIZE;
+	    *result |= RPMVERIFY_FILESIZE;
     } 
-    if (flags & VERIFY_MODE) {
+    if (flags & RPMVERIFY_MODE) {
 	if (modeList[filenum] != sb.st_mode)
-	    *result |= VERIFY_MODE;
+	    *result |= RPMVERIFY_MODE;
     }
-    if (flags & VERIFY_RDEV) {
-	getEntry(h, RPMTAG_FILERDEVS, &type, (void **) &rdevList, &count);
+    if (flags & RPMVERIFY_RDEV) {
+	headerGetEntry(h, RPMTAG_FILERDEVS, &type, (void **) &rdevList, &count);
 	if (rdevList[filenum] != sb.st_rdev)
-	    *result |= VERIFY_RDEV;
+	    *result |= RPMVERIFY_RDEV;
     }
-    if (flags & VERIFY_MTIME) {
-	getEntry(h, RPMTAG_FILEMTIMES, &type, (void **) &mtimeList, &count);
+    if (flags & RPMVERIFY_MTIME) {
+	headerGetEntry(h, RPMTAG_FILEMTIMES, &type, (void **) &mtimeList, &count);
 	if (mtimeList[filenum] != sb.st_mtime)
-	    *result |= VERIFY_MTIME;
+	    *result |= RPMVERIFY_MTIME;
     }
-    if (flags & VERIFY_USER) {
-	getEntry(h, RPMTAG_FILEUIDS, &type, (void **) &uidList, &count);
+    if (flags & RPMVERIFY_USER) {
+	headerGetEntry(h, RPMTAG_FILEUIDS, &type, (void **) &uidList, &count);
 	if (uidList[filenum] != sb.st_uid)
-	    *result |= VERIFY_USER;
+	    *result |= RPMVERIFY_USER;
     }
-    if (flags & VERIFY_GROUP) {
-	getEntry(h, RPMTAG_FILEGIDS, &type, (void **) &gidList, &count);
+    if (flags & RPMVERIFY_GROUP) {
+	headerGetEntry(h, RPMTAG_FILEGIDS, &type, (void **) &gidList, &count);
 	if (gidList[filenum] != sb.st_gid)
-	    *result |= VERIFY_GROUP;
+	    *result |= RPMVERIFY_GROUP;
     }
 
     return 0;

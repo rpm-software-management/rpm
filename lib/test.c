@@ -17,41 +17,41 @@ void main(int argc, char **argv)
     int_16 i16a[] = {100, 200, 300};
     char ca[] = "char array";
 
-    h = newHeader();
+    h = headerNew();
 
-    addEntry(h, RPMTAG_NAME, STRING_TYPE, "MarcEwing", 1);
-    addEntry(h, RPMTAG_VERSION, STRING_TYPE, "1.1", 1);
-    addEntry(h, RPMTAG_VERSION, STRING_ARRAY_TYPE, sa, 3);
-    addEntry(h, RPMTAG_SIZE, INT32_TYPE, &i32, 1);
-    addEntry(h, RPMTAG_SIZE, INT16_TYPE, &i16, 1);
-    addEntry(h, RPMTAG_SIZE, INT16_TYPE, i16a, 3);
-    addEntry(h, RPMTAG_VENDOR, CHAR_TYPE, ca, strlen(ca));
-    addEntry(h, RPMTAG_SIZE, INT32_TYPE, i32a, 3);
+    headerAddEntry(h, RPMTAG_NAME, RPM_STRING_TYPE, "MarcEwing", 1);
+    headerAddEntry(h, RPMTAG_VERSION, RPM_STRING_TYPE, "1.1", 1);
+    headerAddEntry(h, RPMTAG_VERSION, RPM_STRING_ARRAY_TYPE, sa, 3);
+    headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE, &i32, 1);
+    headerAddEntry(h, RPMTAG_SIZE, RPM_INT16_TYPE, &i16, 1);
+    headerAddEntry(h, RPMTAG_SIZE, RPM_INT16_TYPE, i16a, 3);
+    headerAddEntry(h, RPMTAG_VENDOR, RPM_CHAR_TYPE, ca, strlen(ca));
+    headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE, i32a, 3);
 
-    printf("Original = %d\n", sizeofHeader(h));
+    printf("Original = %d\n", headerSizeof(h));
     fd = open("test.out", O_WRONLY|O_CREAT);
-    writeHeader(fd, h);
+    headerWrite(fd, h);
     close(fd);
-    h2 = copyHeader(h);
-    printf("Copy     = %d\n", sizeofHeader(h2));
+    h2 = headerCopy(h);
+    printf("Copy     = %d\n", headerSizeof(h2));
 
     fd = open("test.out", O_RDONLY);
-    h3 = readHeader(fd);
+    h3 = headerRead(fd);
     close(fd);
    
-    printf("From disk    = %d\n", sizeofHeader(h3));
-    h4 = copyHeader(h3);
-    printf("Copy of disk = %d\n", sizeofHeader(h4));
+    printf("From disk    = %d\n", headerSizeof(h3));
+    h4 = headerCopy(h3);
+    printf("Copy of disk = %d\n", headerSizeof(h4));
    
     printf("=====================\n");
     printf("Original\n");
-    dumpHeader(h, stdout, 1);
+    headerDump(h, stdout, 1);
     printf("=====================\n");
     printf("From disk\n");
-    dumpHeader(h3, stdout, 1);
+    headerDump(h3, stdout, 1);
     printf("=====================\n");
     printf("Copy of disk\n");
-    dumpHeader(h4, stdout, 1);
+    headerDump(h4, stdout, 1);
 
 #if 0
     convertDB("");

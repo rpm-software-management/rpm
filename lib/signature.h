@@ -26,57 +26,26 @@
 
 /**************************************************/
 /*                                                */
-/* Signature Tags                                 */
-/*                                                */
-/* These go in the sig Header to specify          */
-/* individual signature types.                    */
-/*                                                */
-/**************************************************/
-
-#define SIGTAG_SIZE         	1000
-/* the md5 sum was broken on big endian machines for a while */
-#define SIGTAG_LITTLEENDIANMD5	1001
-#define SIGTAG_PGP          	1002
-#define SIGTAG_MD5		1003
-
-/**************************************************/
-/*                                                */
-/* verifySignature() results                      */
-/*                                                */
-/**************************************************/
-
-/* verifySignature() results */
-#define RPMSIG_OK        0
-#define RPMSIG_UNKNOWN   1
-#define RPMSIG_BAD       2
-#define RPMSIG_NOKEY     3  /* Do not have the key to check this signature */
-
-/**************************************************/
-/*                                                */
 /* Prototypes                                     */
 /*                                                */
 /**************************************************/
 
-Header newSignature(void);
+Header rpmNewSignature(void);
 
 /* If an old-style signature is found, we emulate a new style one */
-int readSignature(int fd, Header *header, short sig_type);
-int writeSignature(int fd, Header header);
+int rpmReadSignature(int fd, Header *header, short sig_type);
+int rpmWriteSignature(int fd, Header header);
 
 /* Generate a signature of data in file, insert in header */
-int addSignature(Header header, char *file, int_32 sigTag, char *passPhrase);
-
-void freeSignature(Header h);
+int rpmAddSignature(Header header, char *file,
+		    int_32 sigTag, char *passPhrase);
 
 /******************************************************************/
 
-int verifySignature(char *file, int_32 sigTag, void *sig, int count,
-		    char *result);
-
 /* Return type of signature in effect for building */
-int sigLookupType(void);
+int rpmLookupSignatureType(void);
 
 /* Utility to read a pass phrase from the user */
-char *getPassPhrase(char *prompt);
+char *rpmGetPassPhrase(char *prompt);
 
 #endif

@@ -10,7 +10,6 @@
 #include "misc.h"
 #include "oldrpmdb.h"
 #include "oldheader.h"
-#include "rpmerr.h"
 #include "rpmlib.h"
 
 int convertDB(void);
@@ -39,12 +38,12 @@ int convertDB(void) {
     int i, j;
     
     if (exists("/var/lib/rpm/packages.rpm")) {
-	error(RPMERR_NOCREATEDB, "RPM database already exists");
+	rpmError(RPMERR_NOCREATEDB, "RPM database already exists");
 	return 0;
     }
 
     if (oldrpmdbOpen(&olddb)) {
-	error(RPMERR_OLDDBMISSING, "");
+	rpmError(RPMERR_OLDDBMISSING, "");
 	return 0;
     }
 
@@ -55,13 +54,13 @@ int convertDB(void) {
     unlink("/var/lib/rpm/fileindex.rpm");
 
     if (rpmdbOpen("", &db, O_RDWR | O_EXCL | O_CREAT, 0644)) {
-	error(RPMERR_DBOPEN, "failed to create RPM database /var/lib/rpm");
+	rpmError(RPMERR_DBOPEN, "failed to create RPM database /var/lib/rpm");
 	return 0;
     }
 
     packageLabels = oldrpmdbGetAllLabels(&olddb);
     if (!packageLabels) {
-	error(RPMERR_OLDDBCORRUPT, "");
+	rpmError(RPMERR_OLDDBCORRUPT, "");
 	rpmdbClose(db);
 	unlink("/var/lib/rpm/packages.rpm");
 	oldrpmdbClose(&olddb);
@@ -78,35 +77,35 @@ int convertDB(void) {
 	preun = oldrpmdbGetPackagePreun(&olddb, *label);
 	postun = oldrpmdbGetPackagePostun(&olddb, *label);
 
-	dbentry = newHeader();
-	addEntry(dbentry, RPMTAG_NAME, STRING_TYPE, package.name, 1);
-	addEntry(dbentry, RPMTAG_VERSION, STRING_TYPE, package.version, 1);
-	addEntry(dbentry, RPMTAG_RELEASE, STRING_TYPE, package.release, 1);
-	addEntry(dbentry, RPMTAG_DESCRIPTION, STRING_TYPE, 
+	dbentry = headerNew();
+	headerAddEntry(dbentry, RPMTAG_NAME, RPM_STRING_TYPE, package.name, 1);
+	headerAddEntry(dbentry, RPMTAG_VERSION, RPM_STRING_TYPE, package.version, 1);
+	headerAddEntry(dbentry, RPMTAG_RELEASE, RPM_STRING_TYPE, package.release, 1);
+	headerAddEntry(dbentry, RPMTAG_DESCRIPTION, RPM_STRING_TYPE, 
 		 package.description, 1);
-	addEntry(dbentry, RPMTAG_BUILDTIME, INT32_TYPE, &package.buildTime, 1);
-	addEntry(dbentry, RPMTAG_BUILDHOST, STRING_TYPE, package.buildHost, 1);
-	addEntry(dbentry, RPMTAG_INSTALLTIME, INT32_TYPE, 
+	headerAddEntry(dbentry, RPMTAG_BUILDTIME, RPM_INT32_TYPE, &package.buildTime, 1);
+	headerAddEntry(dbentry, RPMTAG_BUILDHOST, RPM_STRING_TYPE, package.buildHost, 1);
+	headerAddEntry(dbentry, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, 
 		 &package.installTime, 1);
-	addEntry(dbentry, RPMTAG_DISTRIBUTION, STRING_TYPE, 
+	headerAddEntry(dbentry, RPMTAG_DISTRIBUTION, RPM_STRING_TYPE, 
 		 package.distribution, 1);
-	addEntry(dbentry, RPMTAG_VENDOR, STRING_TYPE, package.vendor, 1);
-	addEntry(dbentry, RPMTAG_SIZE, INT32_TYPE, &package.size, 1);
-	addEntry(dbentry, RPMTAG_COPYRIGHT, STRING_TYPE, package.copyright, 1);
-	addEntry(dbentry, RPMTAG_GROUP, STRING_TYPE, group, 1);
+	headerAddEntry(dbentry, RPMTAG_VENDOR, RPM_STRING_TYPE, package.vendor, 1);
+	headerAddEntry(dbentry, RPMTAG_SIZE, RPM_INT32_TYPE, &package.size, 1);
+	headerAddEntry(dbentry, RPMTAG_COPYRIGHT, RPM_STRING_TYPE, package.copyright, 1);
+	headerAddEntry(dbentry, RPMTAG_GROUP, RPM_STRING_TYPE, group, 1);
 
 	if (preun) {
-	    addEntry(dbentry, RPMTAG_PREUN, STRING_TYPE, preun, 1);
+	    headerAddEntry(dbentry, RPMTAG_PREUN, RPM_STRING_TYPE, preun, 1);
 	    free(preun);
 	}
 	if (postun) {
-	    addEntry(dbentry, RPMTAG_POSTUN, STRING_TYPE, postun, 1);
+	    headerAddEntry(dbentry, RPMTAG_POSTUN, RPM_STRING_TYPE, postun, 1);
 	    free(postun);
 	}
 
 	gif = oldrpmdbGetPackageGif(&olddb, *label, &gifSize);
 	if (gif) {
-	    addEntry(dbentry, RPMTAG_GIF, BIN_TYPE, gif, gifSize);
+	    headerAddEntry(dbentry, RPMTAG_GIF, RPM_BIN_TYPE, gif, gifSize);
 	    free(gif);
 	}
 
@@ -150,27 +149,27 @@ int convertDB(void) {
 		    fileFlagsList[j] |= RPMFILE_CONFIG;
 	    }
 
-	    addEntry(dbentry, RPMTAG_FILENAMES, STRING_ARRAY_TYPE, fileList, 
+	    headerAddEntry(dbentry, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, fileList, 
 		     package.fileCount);
-	    addEntry(dbentry, RPMTAG_FILELINKTOS, STRING_ARRAY_TYPE, 
+	    headerAddEntry(dbentry, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE, 
 		     fileLinktoList, package.fileCount);
-	    addEntry(dbentry, RPMTAG_FILEMD5S, STRING_ARRAY_TYPE, fileMD5List, 
+	    headerAddEntry(dbentry, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE, fileMD5List, 
 		     package.fileCount);
-	    addEntry(dbentry, RPMTAG_FILESIZES, INT32_TYPE, fileSizeList, 
+	    headerAddEntry(dbentry, RPMTAG_FILESIZES, RPM_INT32_TYPE, fileSizeList, 
 		     package.fileCount);
-	    addEntry(dbentry, RPMTAG_FILEUIDS, INT32_TYPE, fileUIDList, 
+	    headerAddEntry(dbentry, RPMTAG_FILEUIDS, RPM_INT32_TYPE, fileUIDList, 
 		     package.fileCount);
-	    addEntry(dbentry, RPMTAG_FILEGIDS, INT32_TYPE, fileGIDList, 
+	    headerAddEntry(dbentry, RPMTAG_FILEGIDS, RPM_INT32_TYPE, fileGIDList, 
 		     package.fileCount);
-	    addEntry(dbentry, RPMTAG_FILEMTIMES, INT32_TYPE, fileMtimesList, 
+	    headerAddEntry(dbentry, RPMTAG_FILEMTIMES, RPM_INT32_TYPE, fileMtimesList, 
 		     package.fileCount);
-	    addEntry(dbentry, RPMTAG_FILEFLAGS, INT32_TYPE, fileFlagsList, 
+	    headerAddEntry(dbentry, RPMTAG_FILEFLAGS, RPM_INT32_TYPE, fileFlagsList, 
 		     package.fileCount);
-	    addEntry(dbentry, RPMTAG_FILEMODES, INT16_TYPE, fileModesList, 
+	    headerAddEntry(dbentry, RPMTAG_FILEMODES, RPM_INT16_TYPE, fileModesList, 
 		     package.fileCount);
-	    addEntry(dbentry, RPMTAG_FILERDEVS, INT16_TYPE, fileRDevsList, 
+	    headerAddEntry(dbentry, RPMTAG_FILERDEVS, RPM_INT16_TYPE, fileRDevsList, 
 		     package.fileCount);
-	    addEntry(dbentry, RPMTAG_FILESTATES, INT8_TYPE, fileStatesList, 
+	    headerAddEntry(dbentry, RPMTAG_FILESTATES, RPM_INT8_TYPE, fileStatesList, 
 		     package.fileCount);
 
 	    free(fileList);
@@ -189,7 +188,7 @@ int convertDB(void) {
         rpmdbAdd(db, dbentry);
 
 	free(group);
-	freeHeader(dbentry);
+	headerFree(dbentry);
 
 	oldrpmdbFreePackageInfo(package);
     }

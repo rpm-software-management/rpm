@@ -2,59 +2,60 @@
 #include <stdio.h>
 
 #include "messages.h"
+#include "rpmlib.h"
 
-static minLevel = MESS_NORMAL;
+static minLevel = RPMMESS_NORMAL;
 
-void increaseVerbosity(void) {
+void rpmIncreaseVerbosity(void) {
     minLevel--;
 }
 
-void setVerbosity(int level) {
+void rpmSetVerbosity(int level) {
     minLevel = level;
 }
 
-int getVerbosity(void)
+int rpmGetVerbosity(void)
 {
    return minLevel;
 }
 
-int isDebug(void)
+int rpmIsDebug(void)
 {
-    return (minLevel <= MESS_DEBUG);
+    return (minLevel <= RPMMESS_DEBUG);
 }
 
-int isVerbose(void)
+int rpmIsVerbose(void)
 {
-    return (minLevel <= MESS_VERBOSE);
+    return (minLevel <= RPMMESS_VERBOSE);
 }
 
-void message(int level, char * format, ...) {
+void rpmMessage(int level, char * format, ...) {
     va_list args;
 
     va_start(args, format);
     if (level >= minLevel) {
 	switch (level) {
-	  case MESS_VERBOSE:
-	  case MESS_NORMAL:
+	  case RPMMESS_VERBOSE:
+	  case RPMMESS_NORMAL:
 	    vfprintf(stdout, format, args);
 	    break;
 	    
-	  case MESS_DEBUG:
+	  case RPMMESS_DEBUG:
 	    fprintf(stdout, "D: ");
 	    vfprintf(stdout, format, args);
 	    break;
 
-	  case MESS_WARNING:
+	  case RPMMESS_WARNING:
 	    fprintf(stderr, "warning: ");
 	    vfprintf(stderr, format, args);
 	    break;
 
-	  case MESS_ERROR:
+	  case RPMMESS_ERROR:
 	    fprintf(stderr, "error: ");
 	    vfprintf(stderr, format, args);
 	    break;
 
-	  case MESS_FATALERROR:
+	  case RPMMESS_FATALERROR:
 	    fprintf(stderr, "fatal error: ");
 	    vfprintf(stderr, format, args);
 	    exit(1);

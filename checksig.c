@@ -10,6 +10,7 @@
 #include "rpmlib.h"
 #include "rpmlead.h"
 #include "signature.h"
+#include "messages.h"
 
 int doReSign(int add, char *passPhrase, char **argv)
 {
@@ -40,16 +41,16 @@ int doReSign(int add, char *passPhrase, char **argv)
 	    fprintf(stderr, "%s: Can't re-sign v2.0 RPM\n", rpm);
 	    exit(1);
 	}
-	if (readSignature(fd, &sig, lead.signature_type)) {
-	    fprintf(stderr, "%s: readSignature failed\n", rpm);
+	if (rpmReadSignature(fd, &sig, lead.signature_type)) {
+	    fprintf(stderr, "%s: rpmReadSignature failed\n", rpm);
 	    exit(1);
 	}
 	if (add != ADD_SIGNATURE) {
-	    freeSignature(sig);
+	    rpmFreeSignature(sig);
 	}
 
 	/* Write the rest to a temp file */
-	strcpy(sigtarget, tempnam(getVar(RPMVAR_TMPPATH), "rpmsigtarget"));
+	strcpy(sigtarget, tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmsigtarget"));
 	ofd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
@@ -81,24 +82,24 @@ int doReSign(int add, char *passPhrase, char **argv)
 	}
 
 	/* Generate the signature */
-	sigtype = sigLookupType();
-	message(MESS_VERBOSE, "Generating signature: %d\n", sigtype);
+	sigtype = rpmLookupSignatureType();
+	rpmMessage(RPMMESS_VERBOSE, "Generating signature: %d\n", sigtype);
 	if (add != ADD_SIGNATURE) {
-	    sig = newSignature();
-	    addSignature(sig, sigtarget, SIGTAG_SIZE, passPhrase);
-	    addSignature(sig, sigtarget, SIGTAG_MD5, passPhrase);
+	    sig = rpmNewSignature();
+	    rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
+	    rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
 	}
 	if (sigtype>0) {
-	    addSignature(sig, sigtarget, sigtype, passPhrase);
+	    rpmAddSignature(sig, sigtarget, sigtype, passPhrase);
 	}
-	if (writeSignature(ofd, sig)) {
+	if (rpmWriteSignature(ofd, sig)) {
 	    close(ofd);
 	    unlink(sigtarget);
 	    unlink(tmprpm);
-	    freeSignature(sig);
+	    rpmFreeSignature(sig);
 	    exit(1);
 	}
-	freeSignature(sig);
+	rpmFreeSignature(sig);
 
 	/* Append the header and archive */
 	fd = open(sigtarget, O_RDONLY);
@@ -162,8 +163,8 @@ int doCheckSig(int pgp, char **argv)
 	    res++;
 	    continue;
 	}
-	if (readSignature(fd, &sig, lead.signature_type)) {
-	    fprintf(stderr, "%s: readSignature failed\n", rpm);
+	if (rpmReadSignature(fd, &sig, lead.signature_type)) {
+	    fprintf(stderr, "%s: rpmReadSignature failed\n", rpm);
 	    res++;
 	    continue;
 	}
@@ -173,7 +174,7 @@ int doCheckSig(int pgp, char **argv)
 	    continue;
 	}
 	/* Write the rest to a temp file */
-	strcpy(sigtarget, tempnam(getVar(RPMVAR_TMPPATH), "rpmsigtarget"));
+	strcpy(sigtarget, tempnam(rpmGetVar(RPMVAR_TMPPATH), "rpmsigtarget"));
 	ofd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
@@ -193,34 +194,34 @@ int doCheckSig(int pgp, char **argv)
 	close(fd);
 	close(ofd);
 
-	sigIter = initIterator(sig);
+	sigIter = headerInitIterator(sig);
 	res2 = 0;
 	missingKeys = 0;
-	if (isVerbose()) {
+	if (rpmIsVerbose()) {
 	    sprintf(buffer, "%s:\n", rpm);
 	} else {
 	    sprintf(buffer, "%s: ", rpm);
 	}
-	while (nextIterator(sigIter, &tag, &type, &ptr, &count)) {
-	    if ((tag == SIGTAG_PGP) && !pgp) {
+	while (headerNextIterator(sigIter, &tag, &type, &ptr, &count)) {
+	    if ((tag == RPMSIGTAG_PGP) && !pgp) {
 		continue;
 	    }
-	    if ((res3 = verifySignature(sigtarget, tag, ptr, count, result))) {
-		if (isVerbose()) {
+	    if ((res3 = rpmVerifySignature(sigtarget, tag, ptr, count, result))) {
+		if (rpmIsVerbose()) {
 		    strcat(buffer, result);
 		    res2 = 1;
 		} else {
 		    switch (tag) {
-		      case SIGTAG_SIZE:
+		      case RPMSIGTAG_SIZE:
 			strcat(buffer, "SIZE ");
 			res2 = 1;
 			break;
-		      case SIGTAG_MD5:
-		      case SIGTAG_LITTLEENDIANMD5:
+		      case RPMSIGTAG_MD5:
+		      case RPMSIGTAG_LITTLEENDIANMD5:
 			strcat(buffer, "MD5 ");
 			res2 = 1;
 			break;
-		      case SIGTAG_PGP:
+		      case RPMSIGTAG_PGP:
 			if (res3 == RPMSIG_NOKEY) {
 			    /* Do not consedier this a failure */
 			    strcat(buffer, "(PGP) ");
@@ -236,18 +237,18 @@ int doCheckSig(int pgp, char **argv)
 		    }
 		}
 	    } else {
-		if (isVerbose()) {
+		if (rpmIsVerbose()) {
 		    strcat(buffer, result);
 		} else {
 		    switch (tag) {
-		      case SIGTAG_SIZE:
+		      case RPMSIGTAG_SIZE:
 			strcat(buffer, "size ");
 			break;
-		      case SIGTAG_MD5:
-		      case SIGTAG_LITTLEENDIANMD5:
+		      case RPMSIGTAG_MD5:
+		      case RPMSIGTAG_LITTLEENDIANMD5:
 			strcat(buffer, "md5 ");
 			break;
-		      case SIGTAG_PGP:
+		      case RPMSIGTAG_PGP:
 			strcat(buffer, "pgp ");
 			break;
 		      default:
@@ -256,19 +257,19 @@ int doCheckSig(int pgp, char **argv)
 		}
 	    }
 	}
-	freeIterator(sigIter);
+	headerFreeIterator(sigIter);
 	res += res2;
 	unlink(sigtarget);
 
 	if (res2) {
-	    if (isVerbose()) {
+	    if (rpmIsVerbose()) {
 		fprintf(stderr, "%s", buffer);
 	    } else {
 		fprintf(stderr, "%sNOT OK%s\n", buffer,
 			missingKeys ? " (MISSING KEYS)" : "");
 	    }
 	} else {
-	    if (isVerbose()) {
+	    if (rpmIsVerbose()) {
 		printf("%s", buffer);
 	    } else {
 		printf("%sOK%s\n", buffer,

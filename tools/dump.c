@@ -22,15 +22,15 @@ void main(int argc, char ** argv)
 	exit(1);
     }
 
-    h = readHeader(fd, HEADER_MAGIC);
+    h = headerRead(fd, HEADER_MAGIC_YES);
     if (!h) {
-	fprintf(stderr, "readHeader error: %s\n", strerror(errno));
+	fprintf(stderr, "headerRead error: %s\n", strerror(errno));
 	exit(1);
     }
     close(fd);
   
-    dumpHeader(h, stdout, 1);
-    freeHeader(h);
+    headerDump(h, stdout, 1);
+    headerFree(h);
 }
 
   

@@ -49,8 +49,6 @@ install:
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpmlib.h $(INCDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/dbindex.h $(INCDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/header.h $(INCDIR)
-	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/messages.h $(INCDIR)
-	$(INSTALL) -m 644 -o 0 -g 0 $(srcdir)/rpmerr.h $(INCDIR)
 	$(INSTALL) -m 644 -o 0 -g 0 librpm.a $(LIBDIR)
 
 distclean: clean
