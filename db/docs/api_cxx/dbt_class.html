@@ -1,5 +1,5 @@
 <!--$Id: dbt_class.so,v 10.1 2002/08/24 18:22:30 bostic Exp $-->
-<!--$Id: dbt_cxx.so,v 10.68 2004/08/13 03:38:56 bostic Exp $-->
+<!--$Id: dbt_cxx.so,v 10.69 2004/10/14 15:58:43 bostic Exp $-->
 <!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -15,7 +15,7 @@
 <h3>Dbt</h3>
 </td>
 <td align=right>
-<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
 <a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
 </tr></table>
 <hr size=1 noshade>
@@ -215,12 +215,13 @@ whether memory was allocated using the returned value of the
 <b>data</b> field.
 <p>It is an error to specify more than one of DB_DBT_MALLOC,
 DB_DBT_REALLOC, and DB_DBT_USERMEM.</p>
+<a name="3"><!--meow--></a>
 <dt><a name="DB_DBT_USERMEM">DB_DBT_USERMEM</a><dd>The <b>data</b> field of the key or data object must refer to memory
 that is at least <b>ulen</b> bytes in length.  If the length of the
 requested item is less than or equal to that number of bytes, the item
 is copied into the memory referred to by the <b>data</b> field.
 Otherwise, the <b>size</b> field is set to the length needed for the
-requested item, and the error <a href="../api_cxx/dbt_class.html#DB_BUFFER_SMALL">DB_BUFFER_SMALL</a> is returned.
+requested item, and the error DB_BUFFER_SMALL is returned.
 <p>It is an error to specify more than one of DB_DBT_MALLOC,
 DB_DBT_REALLOC, and DB_DBT_USERMEM.</p>
 </dl>
@@ -234,8 +235,8 @@ you are retrieving, you might decrease the memory burden and speed your
 application by allocating your own byte array and using
 DB_DBT_USERMEM.  Even if you don't know the maximum size, you can
 use this option and reallocate your array whenever your retrieval API call
-returns an <a href="../api_cxx/dbt_class.html#DB_BUFFER_SMALL">DB_BUFFER_SMALL</a> error or throws an exception
-encapsulating an <a href="../api_cxx/dbt_class.html#DB_BUFFER_SMALL">DB_BUFFER_SMALL</a>.</p>
+returns an DB_BUFFER_SMALL error or throws an exception
+encapsulating an DB_BUFFER_SMALL.</p>
 <dl compact>
 <dt><a name="DB_DBT_PARTIAL">DB_DBT_PARTIAL</a><dd>Do partial retrieval or storage of an item.  If the calling application
 is doing a get, the <b>dlen</b> bytes starting <b>doff</b> bytes from
@@ -274,7 +275,7 @@ bytes would be those specified by the put call.</p>
 <p>Return the object flag value.</p>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>

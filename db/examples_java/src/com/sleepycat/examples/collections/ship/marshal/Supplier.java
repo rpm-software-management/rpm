@@ -4,7 +4,7 @@
  * Copyright (c) 2002-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: Supplier.java,v 1.3 2004/09/22 16:17:13 mark Exp $
+ * $Id: Supplier.java,v 1.4 2004/11/01 21:45:40 mark Exp $
  */
 
 package com.sleepycat.examples.collections.ship.marshal;
@@ -18,7 +18,7 @@ import com.sleepycat.bind.tuple.TupleOutput;
  * A Supplier represents the combined key/data pair for a supplier entity.
  *
  * <p> In this sample, Supplier is bound to the stored key/data entry by
- * implementing the MarshalledEntity interface, which is called by {@link
+ * implementing the MarshalledEnt interface, which is called by {@link
  * SampleViews.MarshalledEntityBinding}. </p>
  *
  * <p> The binding is "tricky" in that it uses this class for both the stored
@@ -31,7 +31,7 @@ import com.sleepycat.bind.tuple.TupleOutput;
  *
  * @author Mark Hayes
  */
-public class Supplier implements Serializable, MarshalledEntity {
+public class Supplier implements Serializable, MarshalledEnt {
 
     static final String CITY_KEY = "city";
 
@@ -85,7 +85,7 @@ public class Supplier implements Serializable, MarshalledEntity {
                " city=" + city + ']';
     }
 
-    // --- MarshalledEntity implementation ---
+    // --- MarshalledEnt implementation ---
 
     Supplier() {
 

@@ -1,6 +1,6 @@
 #!/bin/sh -
 #
-# $Id: chk.build,v 1.2 2004/09/28 17:18:24 bostic Exp $
+# $Id: chk.build,v 1.4 2004/10/29 20:03:49 bostic Exp $
 #
 # Build a program that calls the run-time API configuration functions.
 
@@ -48,6 +48,21 @@ r()
 		echo "$i: FAILED in configure"
 		exit 1
 	fi
+	(echo /^CFLAGS=/ &&
+	echo \
+	's/-c /-c -W -Werror -Wall -Wpointer-arith -Wmissing-prototypes /p' &&
+	echo '/^db_server_svc.*: db_server_svc.c$/' &&
+	echo '+1s/\$(CFLAGS)/-c \$(CPPFLAGS)/' &&
+	echo '/^db_server_xdr.*: db_server_xdr.c$/' &&
+	echo '+1s/\$(CFLAGS)/-c \$(CPPFLAGS)/' &&
+	echo '/^gen_db_server.*: gen_db_server.c$/' &&
+	echo '+1s/\$(CFLAGS)/-c \$(CPPFLAGS)/' &&
+	echo '/^db_java_wrap.*: .*db_java_wrap.c$/' &&
+	echo '+1s/\$(CFLAGS)/-c \$(CPPFLAGS)/' &&
+	echo '/^tcl_db_pkg.*: .*tcl_db_pkg.c$/' &&
+	echo '+1s/\$(CFLAGS)/-c \$(CPPFLAGS)/' &&
+	echo w &&
+	echo q) | ed Makefile > /dev/null
 	make > mklog 2>&1
 	if test $? -ne 0; then
 		echo "$i: FAILED in make"

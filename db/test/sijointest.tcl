@@ -3,11 +3,11 @@
 # Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: sijointest.tcl,v 11.4 2004/01/28 03:36:30 bostic Exp $
+# $Id: sijointest.tcl,v 11.7 2004/11/01 16:01:39 carol Exp $
 #
 # TEST	sijointest: Secondary index and join test.
 # TEST 	This used to be si005.tcl.
-proc sijointest { methods {nitems 1000} args } {
+proc sijointest { methods {nentries 1000} args } {
 	source ./include.tcl
 
 	# Primary method/args.
@@ -37,7 +37,8 @@ proc sijointest { methods {nitems 1000} args } {
 	set argses [convert_argses $methods $args]
 	set omethods [convert_methods $methods]
 
-	puts "Sijoin ($pmethod/$methods) Secondary index join test."
+	puts "Secondary index join test."
+	puts "sijoin  \{\[ list $pmethod $methods \]\} $nentries" 
 	env_cleanup $testdir
 
 	set pname "sijoin-primary.db"
@@ -63,8 +64,8 @@ proc sijointest { methods {nitems 1000} args } {
 	error_check_good name_open [is_valid_db $namedb] TRUE
 	error_check_good name_associate [$pdb associate sj_getname $namedb] 0
 
-	puts "\tSijoin.a: Populate database with $nitems \"names\""
-	sj_populate $pdb $nitems
+	puts "\tSijoin.a: Populate database with $nentries \"names\""
+	sj_populate $pdb $nentries
 	puts "\tSijoin.b: Perform a join on each \"name\" and \"ZIP\""
 	sj_jointest $pdb $zipdb $namedb
 
@@ -122,11 +123,11 @@ proc sj_dojoin { item pdb zipdb namedb } {
 	error_check_good zipc_close($item) [$zipc close] 0
 }
 
-proc sj_populate { db nitems } {
+proc sj_populate { db nentries } {
 	global dict
 
 	set did [open $dict]
-	for { set i 1 } { $i <= $nitems } { incr i } {
+	for { set i 1 } { $i <= $nentries } { incr i } {
 		gets $did word
 		if { [string length $word] < 3 } {
 			gets $did word

@@ -3,7 +3,7 @@
 # Reconcile the list of public defines with the man pages and the Java files.
 
 d=../..
-docs=$d/../docs_src
+docs=$d/../db_docs
 
 [ -f $d/LICENSE ] || {
 	echo 'FAIL: cannot find source distribution directory.'

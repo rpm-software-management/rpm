@@ -4,11 +4,11 @@
  *
  *  http://www.apache.org/licenses/LICENSE-2.0.txt
  * 
- *  authors: Thies C. Arntzen <thies@php.net>
- *           Sterling Hughes <sterling@php.net>
- *           George Schlossnagle <george@omniti.com>
+ *  authors: George Schlossnagle <george@omniti.com>
  */
 
+extern "C"
+{
 #include "httpd.h"
 #include "http_config.h"
 #include "http_core.h"
@@ -19,6 +19,8 @@
 #include "util_script.h"
 
 #include "sem_utils.h"
+}
+#include "mod_db4_export.h"
 #include "utils.h"
 
 extern scoreboard *ap_scoreboard_image;
@@ -28,7 +30,7 @@ extern scoreboard *ap_scoreboard_image;
  * We'll fill it in at the end of the module.
  */
 
-module MODULE_VAR_EXPORT db4_module;
+extern module MODULE_VAR_EXPORT db4_module;
 
 void kill_all_children()
 {
@@ -88,7 +90,7 @@ static void db4_child_init(server_rec *s, pool *p)
  */
 static void db4_child_exit(server_rec *s, pool *p)
 {
-    child_clean_process_shutdown();
+    mod_db4_child_clean_process_shutdown();
 }
 
 static const command_rec db4_cmds[] =

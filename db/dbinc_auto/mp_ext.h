@@ -56,7 +56,7 @@ int __memp_register __P((DB_ENV *, int, int (*)(DB_ENV *, db_pgno_t, void *, DBT
 int __memp_stat_pp __P((DB_ENV *, DB_MPOOL_STAT **, DB_MPOOL_FSTAT ***, u_int32_t));
 int __memp_stat_print_pp __P((DB_ENV *, u_int32_t));
 int  __memp_stat_print __P((DB_ENV *, u_int32_t));
-void __memp_stat_hash __P((DB_ENV *, REGINFO *, MPOOL *, u_int32_t *));
+void __memp_stat_hash __P((REGINFO *, MPOOL *, u_int32_t *));
 int __memp_sync_pp __P((DB_ENV *, DB_LSN *));
 int __memp_sync __P((DB_ENV *, DB_LSN *));
 int __memp_fsync_pp __P((DB_MPOOLFILE *));

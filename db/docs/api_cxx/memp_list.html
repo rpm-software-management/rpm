@@ -10,31 +10,38 @@
 </head>
 <body bgcolor=white>
 <h3 align=center>Berkeley DB: Memory Pools and Related Methods</h3>
-<!--$Id: m4.methods,v 1.5 2004/10/12 13:27:28 bostic Exp $-->
+<!--$Id: m4.methods,v 1.7 2004/11/03 15:52:02 bostic Exp $-->
 <table border=1 align=center>
 <tr><th>Memory Pools and Related Methods</th><th>Description</th></tr>
 <!--Db::mpf--><tr><td><a href="../api_cxx/db_get_mpf.html">Db::get_mpf</a></td><td>Return the database's memory pool handle</td></tr>
-<!--DbEnv::memp_fcreate--><tr><td><a href="../api_cxx/memp_fcreate.html">DbEnv::memp_fcreate</a></td><td>Open a file in a memory pool</td></tr>
-<!--DbEnv::memp_register--><tr><td><a href="../api_cxx/memp_register.html">DbEnv::memp_register</a></td><td>Register input/output functions for a file in a memory pool</td></tr>
-<!--DbEnv::memp_set_max_openfd--><tr><td><a href="../api_cxx/memp_openfd.html">DbEnv::set_max_openfd</a></td><td>Set the maximum number of open file descriptors</td></tr>
-<!--DbEnv::memp_set_max_write--><tr><td><a href="../api_cxx/memp_maxwrite.html">DbEnv::set_max_write</a></td><td>Set the maximum number of sequential disk writes</td></tr>
 <!--DbEnv::memp_stat--><tr><td><a href="../api_cxx/memp_stat.html">DbEnv::memp_stat</a></td><td>Return memory pool statistics</td></tr>
 <!--DbEnv::memp_sync--><tr><td><a href="../api_cxx/memp_sync.html">DbEnv::memp_sync</a></td><td>Flush pages from a memory pool</td></tr>
 <!--DbEnv::memp_trickle--><tr><td><a href="../api_cxx/memp_trickle.html">DbEnv::memp_trickle</a></td><td>Trickle flush pages from a memory pool</td></tr>
+<!--DbMemoryException--><tr><td><a href="../api_cxx/memp_class.html">DbMemoryException</a></td><td>Insufficient memory exception</td></tr>
+<tr><th>Memory Pool Configuration</th><th><br></th></tr>
+<!--DbEnv::memp_register--><tr><td><a href="../api_cxx/memp_register.html">DbEnv::memp_register</a></td><td>Register input/output functions for a file in a memory pool</td></tr>
+<!--DbEnv::memp_set_max_openfd--><tr><td><a href="../api_cxx/memp_openfd.html">DbEnv::set_max_openfd</a></td><td>Set the maximum number of open file descriptors</td></tr>
+<!--DbEnv::memp_set_max_write--><tr><td><a href="../api_cxx/memp_maxwrite.html">DbEnv::set_max_write</a></td><td>Set the maximum number of sequential disk writes</td></tr>
 <!--DbEnv::set_cachesize--><tr><td><a href="../api_cxx/env_set_cachesize.html">DbEnv::set_cachesize</a></td><td>Set the environment cache size</td></tr>
 <!--DbEnv::set_mp_mmapsize--><tr><td><a href="../api_cxx/env_set_mp_mmapsize.html">DbEnv::set_mp_mmapsize</a></td><td>Set maximum mapped-in database file size</td></tr>
+<tr><th>Memory Pool Files</th><th><br></th></tr>
+<!--DbEnv::memp_fcreate--><tr><td><a href="../api_cxx/memp_fcreate.html">DbEnv::memp_fcreate</a></td><td>Create a memory pool file handle</td></tr>
+<!--DbMpoolFile::--><tr><td><a href="../api_cxx/mempfile_class.html">DbMpoolFile</a></td><td>Memory pool file object</td></tr>
 <!--DbMpoolFile::close--><tr><td><a href="../api_cxx/memp_fclose.html">DbMpoolFile::close</a></td><td>Close a file in a memory pool</td></tr>
 <!--DbMpoolFile::get--><tr><td><a href="../api_cxx/memp_fget.html">DbMpoolFile::get</a></td><td>Get page from a file in a memory pool</td></tr>
 <!--DbMpoolFile::open--><tr><td><a href="../api_cxx/memp_fopen.html">DbMpoolFile::open</a></td><td>Open a file in a memory pool</td></tr>
 <!--DbMpoolFile::put--><tr><td><a href="../api_cxx/memp_fput.html">DbMpoolFile::put</a></td><td>Return a page to a memory pool</td></tr>
-<!--DbMpoolFile::set--><tr><td><a href="../api_cxx/memp_fset.html">DbMpoolFile::set</a></td><td>Set memory pool page status</td></tr>
+<!--DbMpoolFile::set--><tr><td><a href="../api_cxx/memp_fset.html">DbMpoolFile::set</a></td><td>Set memory pool page attributes</td></tr>
+<!--DbMpoolFile::sync--><tr><td><a href="../api_cxx/memp_fsync.html">DbMpoolFile::sync</a></td><td>Flush pages from a file in a memory pool</td></tr>
+<tr><th>Memory Pool File Configuration</th><th><br></th></tr>
 <!--DbMpoolFile::set_clear_len--><tr><td><a href="../api_cxx/memp_set_clear_len.html">DbMpoolFile::set_clear_len</a></td><td>Set file page bytes to be cleared</td></tr>
 <!--DbMpoolFile::set_fileid--><tr><td><a href="../api_cxx/memp_set_fileid.html">DbMpoolFile::set_fileid</a></td><td>Set file unique identifier</td></tr>
 <!--DbMpoolFile::set_flags--><tr><td><a href="../api_cxx/memp_set_flags.html">DbMpoolFile::set_flags</a></td><td>General memory pool file configuration</td></tr>
 <!--DbMpoolFile::set_ftype--><tr><td><a href="../api_cxx/memp_set_ftype.html">DbMpoolFile::set_ftype</a></td><td>Set file type</td></tr>
 <!--DbMpoolFile::set_lsn_offset--><tr><td><a href="../api_cxx/memp_set_lsn_offset.html">DbMpoolFile::set_lsn_offset</a></td><td>Set file log-sequence-number offset</td></tr>
+<!--DbMpoolFile::set_maxsize--><tr><td><a href="../api_cxx/memp_set_maxsize.html">DbMpoolFile::set_maxsize</a></td><td>Set maximum file size</td></tr>
 <!--DbMpoolFile::set_pgcookie--><tr><td><a href="../api_cxx/memp_set_pgcookie.html">DbMpoolFile::set_pgcookie</a></td><td>Set file cookie for pgin/pgout</td></tr>
-<!--DbMpoolFile::sync--><tr><td><a href="../api_cxx/memp_fsync.html">DbMpoolFile::sync</a></td><td>Flush pages from a file in a memory pool</td></tr>
+<!--DbMpoolFile::set_priority--><tr><td><a href="../api_cxx/memp_set_priority.html">DbMpoolFile::set_priority</a></td><td>Set memory pool file priority</td></tr>
 </table>
 <p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>

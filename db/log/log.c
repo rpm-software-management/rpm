@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: log.c,v 11.160 2004/10/07 16:50:57 bostic Exp $
+ * $Id: log.c,v 11.161 2004/10/15 16:59:42 bostic Exp $
  */
 
 #include "db_config.h"
@@ -70,7 +70,7 @@ __log_open(dbenv)
 
 	/* Set the local addresses. */
 	lp = dblp->reginfo.primary =
-	    R_ADDR(dbenv, &dblp->reginfo, dblp->reginfo.rp->primary);
+	    R_ADDR(&dblp->reginfo, dblp->reginfo.rp->primary);
 
 	/*
 	 * If the region is threaded, then we have to lock both the handles
@@ -82,7 +82,7 @@ __log_open(dbenv)
 		goto err;
 
 	/* Initialize the rest of the structure. */
-	dblp->bufp = R_ADDR(dbenv, &dblp->reginfo, lp->buffer_off);
+	dblp->bufp = R_ADDR(&dblp->reginfo, lp->buffer_off);
 
 	/*
 	 * Set the handle -- we may be about to run recovery, which allocates
@@ -197,7 +197,7 @@ __log_init(dbenv, dblp)
 	    sizeof(*lp), MUTEX_ALIGN, &dblp->reginfo.primary)) != 0)
 		goto mem_err;
 	dblp->reginfo.rp->primary =
-	    R_OFFSET(dbenv, &dblp->reginfo, dblp->reginfo.primary);
+	    R_OFFSET(&dblp->reginfo, dblp->reginfo.primary);
 	lp = dblp->reginfo.primary;
 	memset(lp, 0, sizeof(*lp));
 
@@ -230,7 +230,7 @@ __log_init(dbenv, dblp)
 	    sizeof(REGMAINT) + LG_MAINT_SIZE, 0, &addr)) != 0)
 		goto mem_err;
 	__db_maintinit(&dblp->reginfo, addr, LG_MAINT_SIZE);
-	lp->maint_off = R_OFFSET(dbenv, &dblp->reginfo, addr);
+	lp->maint_off = R_OFFSET(&dblp->reginfo, addr);
 #endif
 
 	if ((ret = __db_mutex_setup(dbenv, &dblp->reginfo, &lp->fq_mutex,
@@ -248,7 +248,7 @@ __log_init(dbenv, dblp)
 	if ((ret = __db_mutex_setup(dbenv, &dblp->reginfo, flush_mutexp,
 	    MUTEX_NO_RLOCK)) != 0)
 		return (ret);
-	lp->flush_mutex_off = R_OFFSET(dbenv, &dblp->reginfo, flush_mutexp);
+	lp->flush_mutex_off = R_OFFSET(&dblp->reginfo, flush_mutexp);
 
 	/* Initialize the buffer. */
 	if ((ret = __db_shalloc(&dblp->reginfo, dbenv->lg_bsize, 0, &p)) != 0) {
@@ -256,7 +256,7 @@ mem_err:	__db_err(dbenv, "Unable to allocate memory for the log buffer");
 		return (ret);
 	}
 	lp->regionmax = dbenv->lg_regionmax;
-	lp->buffer_off = R_OFFSET(dbenv, &dblp->reginfo, p);
+	lp->buffer_off = R_OFFSET(&dblp->reginfo, p);
 	lp->buffer_size = dbenv->lg_bsize;
 	lp->log_size = lp->log_nsize = dbenv->lg_size;
 
@@ -809,16 +809,15 @@ __log_dbenv_refresh(dbenv)
 	if (F_ISSET(dbenv, DB_ENV_PRIVATE)) {
 		/* Discard the flush mutex. */
 		__db_shalloc_free(reginfo,
-		    R_ADDR(dbenv, reginfo, lp->flush_mutex_off));
+		    R_ADDR(reginfo, lp->flush_mutex_off));
 
 		/* Discard the buffer. */
-		__db_shalloc_free(reginfo,
-		    R_ADDR(dbenv, reginfo, lp->buffer_off));
+		__db_shalloc_free(reginfo, R_ADDR(reginfo, lp->buffer_off));
 
 		/* Discard stack of free file IDs. */
 		if (lp->free_fid_stack != INVALID_ROFF)
 			__db_shalloc_free(reginfo,
-			    R_ADDR(dbenv, reginfo, lp->free_fid_stack));
+			    R_ADDR(reginfo, lp->free_fid_stack));
 	}
 
 	/* Discard the per-thread lock. */
@@ -911,12 +910,12 @@ __log_region_destroy(dbenv, infop)
 #ifdef HAVE_MUTEX_SYSTEM_RESOURCES
 	LOG *lp;
 
-	lp = R_ADDR(dbenv, infop, infop->rp->primary);
+	lp = R_ADDR(infop, infop->rp->primary);
 
 	/* Destroy mutexes. */
-	__db_shlocks_destroy(infop, R_ADDR(dbenv, infop, lp->maint_off));
+	__db_shlocks_destroy(infop, R_ADDR(infop, lp->maint_off));
 	if (infop->primary != NULL && F_ISSET(dbenv, DB_ENV_PRIVATE))
-		__db_shalloc_free(infop, R_ADDR(dbenv, infop, lp->maint_off));
+		__db_shalloc_free(infop, R_ADDR(infop, lp->maint_off));
 #endif
 	if (infop->primary != NULL && F_ISSET(dbenv, DB_ENV_PRIVATE))
 		__db_shalloc_free(infop, infop->primary);
@@ -1001,7 +1000,7 @@ __log_vtruncate(dbenv, lsn, ckplsn, trunclsn)
 	 * If the saved lsn is greater than our new end of log, reset it
 	 * to our current end of log.
 	 */
-	flush_mutexp = R_ADDR(dbenv, &dblp->reginfo, lp->flush_mutex_off);
+	flush_mutexp = R_ADDR(&dblp->reginfo, lp->flush_mutex_off);
 	MUTEX_LOCK(dbenv, flush_mutexp);
 	if (log_compare(&lp->s_lsn, lsn) > 0)
 		lp->s_lsn = lp->lsn;

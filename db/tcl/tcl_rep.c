@@ -4,7 +4,7 @@
  * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: tcl_rep.c,v 11.105 2004/10/07 16:48:39 bostic Exp $
+ * $Id: tcl_rep.c,v 11.106 2004/10/14 18:09:00 bostic Exp $
  */
 
 #include "db_config.h"
@@ -435,7 +435,7 @@ tcl_RepStat(interp, objc, objv, dbenv)
 	 */
 	if (sp->st_status == DB_REP_MASTER)
 		MAKE_STAT_LIST("Master", 1);
-	else 
+	else
 		MAKE_STAT_LIST("Client", 1);
 	MAKE_STAT_LSN("Next LSN expected", &sp->st_next_lsn);
 	MAKE_STAT_LSN("First missed LSN", &sp->st_waiting_lsn);

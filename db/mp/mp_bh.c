@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mp_bh.c,v 11.98 2004/09/17 22:00:31 mjc Exp $
+ * $Id: mp_bh.c,v 11.99 2004/10/15 16:59:42 bostic Exp $
  */
 
 #include "db_config.h"
@@ -374,8 +374,7 @@ __memp_pgwrite(dbenv, dbmfp, hp, bhp)
 		lp = dblp->reginfo.primary;
 		if (!lp->db_log_inmemory &&
 		    log_compare(&lp->s_lsn, &LSN(bhp->buf)) <= 0) {
-			mtx = R_ADDR(dbenv,
-			    &dblp->reginfo, lp->flush_mutex_off);
+			mtx = R_ADDR(&dblp->reginfo, lp->flush_mutex_off);
 			MUTEX_LOCK(dbenv, mtx);
 			DB_ASSERT(log_compare(&lp->s_lsn, &LSN(bhp->buf)) > 0);
 			MUTEX_UNLOCK(dbenv, mtx);
@@ -474,8 +473,7 @@ __memp_pg(dbmfp, bhp, is_pgin)
 			dbtp = NULL;
 		else {
 			dbt.size = (u_int32_t)mfp->pgcookie_len;
-			dbt.data = R_ADDR(dbenv,
-			    dbmp->reginfo, mfp->pgcookie_off);
+			dbt.data = R_ADDR(dbmp->reginfo, mfp->pgcookie_off);
 			dbtp = &dbt;
 		}
 		MUTEX_THREAD_UNLOCK(dbenv, dbmp->mutexp);
@@ -551,7 +549,7 @@ __memp_bhfree(dbmp, hp, bhp, flags)
 	 * Find the underlying MPOOLFILE and decrement its reference count.
 	 * If this is its last reference, remove it.
 	 */
-	mfp = R_ADDR(dbenv, dbmp->reginfo, bhp->mf_offset);
+	mfp = R_ADDR(dbmp->reginfo, bhp->mf_offset);
 	MUTEX_LOCK(dbenv, &mfp->mutex);
 	if (--mfp->block_cnt == 0 && mfp->mpf_cnt == 0)
 		(void)__memp_mf_discard(dbmp, mfp);
@@ -565,7 +563,7 @@ __memp_bhfree(dbmp, hp, bhp, flags)
 	 * be held.
 	 */
 	__db_shlocks_clear(&bhp->mutex, &dbmp->reginfo[n_cache],
-	    (REGMAINT *)R_ADDR(dbenv, &dbmp->reginfo[n_cache], mp->maint_off));
+	    R_ADDR(&dbmp->reginfo[n_cache], mp->maint_off));
 
 	/*
 	 * If we're not reusing the buffer immediately, free the buffer header

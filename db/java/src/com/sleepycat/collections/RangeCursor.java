@@ -4,7 +4,7 @@
  * Copyright (c) 2002-2004
  *      Sleepycat Software.  All rights reserved.
  *
- * $Id: RangeCursor.java,v 1.3 2004/09/22 18:01:02 bostic Exp $
+ * $Id: RangeCursor.java,v 1.4 2004/11/05 01:08:31 mjc Exp $
  */
 
 package com.sleepycat.collections;
@@ -707,16 +707,16 @@ class RangeCursor implements Cloneable {
         return cursor.putCurrent(data);
     }
 
-    public OperationStatus putAfter(DatabaseEntry data)
+    public OperationStatus putAfter(DatabaseEntry key, DatabaseEntry data)
         throws DatabaseException {
 
-        return DbCompat.putAfter(cursor, data);
+        return DbCompat.putAfter(cursor, key, data);
     }
 
-    public OperationStatus putBefore(DatabaseEntry data)
+    public OperationStatus putBefore(DatabaseEntry key, DatabaseEntry data)
         throws DatabaseException {
 
-        return DbCompat.putBefore(cursor, data);
+        return DbCompat.putBefore(cursor, key, data);
     }
 
     private OperationStatus doGetFirst(LockMode lockMode)

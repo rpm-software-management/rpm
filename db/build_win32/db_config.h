@@ -289,6 +289,9 @@
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
 
+/* Define to 1 if you have the `strtol' function. */
+#define HAVE_STRTOL 1
+
 /* Define to 1 if you have the `strtoul' function. */
 #define HAVE_STRTOUL 1
 
@@ -357,13 +360,13 @@
 #define PACKAGE_NAME "Berkeley DB"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Berkeley DB 4.3.14"
+#define PACKAGE_STRING "Berkeley DB 4.3.21"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "db-4.3.14"
+#define PACKAGE_TARNAME "db-4.3.21"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "4.3.14"
+#define PACKAGE_VERSION "4.3.21"
 
 /* Define to 1 if the `S_IS*' macros in <sys/stat.h> do not work properly. */
 /* #undef STAT_MACROS_BROKEN */

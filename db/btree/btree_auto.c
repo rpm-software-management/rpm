@@ -84,6 +84,11 @@ __bam_split_log(dbp, txnid, ret_lsnp, flags, left, llsn, right, rlsn, indx,
 		lsnp = &txnid->last_lsn;
 	}
 
+	DB_ASSERT(dbp->log_filename != NULL);
+	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
+	    (ret = __dbreg_lazy_id(dbp)) != 0)
+		return (ret);
+
 	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
 	    + sizeof(u_int32_t)
 	    + sizeof(u_int32_t)
@@ -133,11 +138,6 @@ __bam_split_log(dbp, txnid, ret_lsnp, flags, left, llsn, right, rlsn, indx,
 
 	memcpy(bp, lsnp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);
-
-	DB_ASSERT(dbp->log_filename != NULL);
-	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
-	    (ret = __dbreg_lazy_id(dbp)) != 0)
-		return (ret);
 
 	uinttmp = (u_int32_t)dbp->log_filename->id;
 	memcpy(bp, &uinttmp, sizeof(uinttmp));
@@ -377,6 +377,11 @@ __bam_rsplit_log(dbp, txnid, ret_lsnp, flags, pgno, pgdbt, root_pgno, nrec, root
 		lsnp = &txnid->last_lsn;
 	}
 
+	DB_ASSERT(dbp->log_filename != NULL);
+	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
+	    (ret = __dbreg_lazy_id(dbp)) != 0)
+		return (ret);
+
 	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
 	    + sizeof(u_int32_t)
 	    + sizeof(u_int32_t)
@@ -422,11 +427,6 @@ __bam_rsplit_log(dbp, txnid, ret_lsnp, flags, pgno, pgdbt, root_pgno, nrec, root
 
 	memcpy(bp, lsnp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);
-
-	DB_ASSERT(dbp->log_filename != NULL);
-	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
-	    (ret = __dbreg_lazy_id(dbp)) != 0)
-		return (ret);
 
 	uinttmp = (u_int32_t)dbp->log_filename->id;
 	memcpy(bp, &uinttmp, sizeof(uinttmp));
@@ -639,6 +639,11 @@ __bam_adj_log(dbp, txnid, ret_lsnp, flags, pgno, lsn, indx, indx_copy, is_insert
 		lsnp = &txnid->last_lsn;
 	}
 
+	DB_ASSERT(dbp->log_filename != NULL);
+	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
+	    (ret = __dbreg_lazy_id(dbp)) != 0)
+		return (ret);
+
 	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
 	    + sizeof(u_int32_t)
 	    + sizeof(u_int32_t)
@@ -683,11 +688,6 @@ __bam_adj_log(dbp, txnid, ret_lsnp, flags, pgno, lsn, indx, indx_copy, is_insert
 
 	memcpy(bp, lsnp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);
-
-	DB_ASSERT(dbp->log_filename != NULL);
-	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
-	    (ret = __dbreg_lazy_id(dbp)) != 0)
-		return (ret);
 
 	uinttmp = (u_int32_t)dbp->log_filename->id;
 	memcpy(bp, &uinttmp, sizeof(uinttmp));
@@ -873,6 +873,11 @@ __bam_cadjust_log(dbp, txnid, ret_lsnp, flags, pgno, lsn, indx, adjust, opflags)
 		lsnp = &txnid->last_lsn;
 	}
 
+	DB_ASSERT(dbp->log_filename != NULL);
+	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
+	    (ret = __dbreg_lazy_id(dbp)) != 0)
+		return (ret);
+
 	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
 	    + sizeof(u_int32_t)
 	    + sizeof(u_int32_t)
@@ -917,11 +922,6 @@ __bam_cadjust_log(dbp, txnid, ret_lsnp, flags, pgno, lsn, indx, adjust, opflags)
 
 	memcpy(bp, lsnp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);
-
-	DB_ASSERT(dbp->log_filename != NULL);
-	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
-	    (ret = __dbreg_lazy_id(dbp)) != 0)
-		return (ret);
 
 	uinttmp = (u_int32_t)dbp->log_filename->id;
 	memcpy(bp, &uinttmp, sizeof(uinttmp));
@@ -1106,6 +1106,11 @@ __bam_cdel_log(dbp, txnid, ret_lsnp, flags, pgno, lsn, indx)
 		lsnp = &txnid->last_lsn;
 	}
 
+	DB_ASSERT(dbp->log_filename != NULL);
+	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
+	    (ret = __dbreg_lazy_id(dbp)) != 0)
+		return (ret);
+
 	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
 	    + sizeof(u_int32_t)
 	    + sizeof(u_int32_t)
@@ -1148,11 +1153,6 @@ __bam_cdel_log(dbp, txnid, ret_lsnp, flags, pgno, lsn, indx)
 
 	memcpy(bp, lsnp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);
-
-	DB_ASSERT(dbp->log_filename != NULL);
-	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
-	    (ret = __dbreg_lazy_id(dbp)) != 0)
-		return (ret);
 
 	uinttmp = (u_int32_t)dbp->log_filename->id;
 	memcpy(bp, &uinttmp, sizeof(uinttmp));
@@ -1327,6 +1327,11 @@ __bam_repl_log(dbp, txnid, ret_lsnp, flags, pgno, lsn, indx, isdeleted, orig,
 		lsnp = &txnid->last_lsn;
 	}
 
+	DB_ASSERT(dbp->log_filename != NULL);
+	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
+	    (ret = __dbreg_lazy_id(dbp)) != 0)
+		return (ret);
+
 	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
 	    + sizeof(u_int32_t)
 	    + sizeof(u_int32_t)
@@ -1374,11 +1379,6 @@ __bam_repl_log(dbp, txnid, ret_lsnp, flags, pgno, lsn, indx, isdeleted, orig,
 
 	memcpy(bp, lsnp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);
-
-	DB_ASSERT(dbp->log_filename != NULL);
-	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
-	    (ret = __dbreg_lazy_id(dbp)) != 0)
-		return (ret);
 
 	uinttmp = (u_int32_t)dbp->log_filename->id;
 	memcpy(bp, &uinttmp, sizeof(uinttmp));
@@ -1604,6 +1604,11 @@ __bam_root_log(dbp, txnid, ret_lsnp, flags, meta_pgno, root_pgno, meta_lsn)
 		lsnp = &txnid->last_lsn;
 	}
 
+	DB_ASSERT(dbp->log_filename != NULL);
+	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
+	    (ret = __dbreg_lazy_id(dbp)) != 0)
+		return (ret);
+
 	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
 	    + sizeof(u_int32_t)
 	    + sizeof(u_int32_t)
@@ -1646,11 +1651,6 @@ __bam_root_log(dbp, txnid, ret_lsnp, flags, meta_pgno, root_pgno, meta_lsn)
 
 	memcpy(bp, lsnp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);
-
-	DB_ASSERT(dbp->log_filename != NULL);
-	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
-	    (ret = __dbreg_lazy_id(dbp)) != 0)
-		return (ret);
 
 	uinttmp = (u_int32_t)dbp->log_filename->id;
 	memcpy(bp, &uinttmp, sizeof(uinttmp));
@@ -1824,6 +1824,11 @@ __bam_curadj_log(dbp, txnid, ret_lsnp, flags, mode, from_pgno, to_pgno, left_pgn
 		lsnp = &txnid->last_lsn;
 	}
 
+	DB_ASSERT(dbp->log_filename != NULL);
+	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
+	    (ret = __dbreg_lazy_id(dbp)) != 0)
+		return (ret);
+
 	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
 	    + sizeof(u_int32_t)
 	    + sizeof(u_int32_t)
@@ -1870,11 +1875,6 @@ __bam_curadj_log(dbp, txnid, ret_lsnp, flags, mode, from_pgno, to_pgno, left_pgn
 
 	memcpy(bp, lsnp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);
-
-	DB_ASSERT(dbp->log_filename != NULL);
-	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
-	    (ret = __dbreg_lazy_id(dbp)) != 0)
-		return (ret);
 
 	uinttmp = (u_int32_t)dbp->log_filename->id;
 	memcpy(bp, &uinttmp, sizeof(uinttmp));
@@ -2074,6 +2074,11 @@ __bam_rcuradj_log(dbp, txnid, ret_lsnp, flags, mode, root, recno, order)
 		lsnp = &txnid->last_lsn;
 	}
 
+	DB_ASSERT(dbp->log_filename != NULL);
+	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
+	    (ret = __dbreg_lazy_id(dbp)) != 0)
+		return (ret);
+
 	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
 	    + sizeof(u_int32_t)
 	    + sizeof(u_int32_t)
@@ -2117,11 +2122,6 @@ __bam_rcuradj_log(dbp, txnid, ret_lsnp, flags, mode, root, recno, order)
 
 	memcpy(bp, lsnp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);
-
-	DB_ASSERT(dbp->log_filename != NULL);
-	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
-	    (ret = __dbreg_lazy_id(dbp)) != 0)
-		return (ret);
 
 	uinttmp = (u_int32_t)dbp->log_filename->id;
 	memcpy(bp, &uinttmp, sizeof(uinttmp));
@@ -2302,6 +2302,11 @@ __bam_relink_log(dbp, txnid, ret_lsnp, flags, pgno, lsn, prev, lsn_prev, next,
 		lsnp = &txnid->last_lsn;
 	}
 
+	DB_ASSERT(dbp->log_filename != NULL);
+	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
+	    (ret = __dbreg_lazy_id(dbp)) != 0)
+		return (ret);
+
 	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
 	    + sizeof(u_int32_t)
 	    + sizeof(u_int32_t)
@@ -2347,11 +2352,6 @@ __bam_relink_log(dbp, txnid, ret_lsnp, flags, pgno, lsn, prev, lsn_prev, next,
 
 	memcpy(bp, lsnp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);
-
-	DB_ASSERT(dbp->log_filename != NULL);
-	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
-	    (ret = __dbreg_lazy_id(dbp)) != 0)
-		return (ret);
 
 	uinttmp = (u_int32_t)dbp->log_filename->id;
 	memcpy(bp, &uinttmp, sizeof(uinttmp));

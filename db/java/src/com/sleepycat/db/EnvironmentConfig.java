@@ -4,7 +4,7 @@
 * Copyright (c) 2002-2004
 *	Sleepycat Software.  All rights reserved.
 *
-* $Id: EnvironmentConfig.java,v 1.13 2004/09/28 19:30:37 mjc Exp $
+* $Id: EnvironmentConfig.java,v 1.15 2004/11/05 00:50:54 mjc Exp $
 */
 
 package com.sleepycat.db;
@@ -711,7 +711,8 @@ public class EnvironmentConfig implements Cloneable {
 
         boolean succeeded = false;
         try {
-            dbenv.open(home.toString(), openFlags, mode);
+            dbenv.open((home == null) ? null : home.toString(),
+                openFlags, mode);
             succeeded = true;
             return dbenv;
         } finally {
@@ -1006,6 +1007,7 @@ public class EnvironmentConfig implements Cloneable {
         if (dataDirArray == null)
             dataDirArray = new String[0];
         dataDirs = new java.util.Vector(dataDirArray.length);
+        dataDirs.setSize(dataDirArray.length);
         for (int i = 0; i < dataDirArray.length; i++)
             dataDirs.set(i, dataDirArray[i]);
 

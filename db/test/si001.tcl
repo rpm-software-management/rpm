@@ -3,7 +3,7 @@
 # Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: si001.tcl,v 1.16 2004/09/22 18:01:06 bostic Exp $
+# $Id: si001.tcl,v 1.18 2004/10/27 20:40:25 carol Exp $
 #
 # TEST	si001
 # TEST	Basic secondary index put/delete test
@@ -37,7 +37,7 @@ proc si001 { methods {nentries 200} {tnum "001"} args } {
 	set argses [convert_argses $methods $args]
 	set omethods [convert_methods $methods]
 
-	puts "Si$tnum ($pmethod/$methods) $nentries equal key/data pairs"
+	puts "si$tnum \{\[ list $pmethod $methods \]\} $nentries" 
 	env_cleanup $testdir
 
 	set pname "primary$tnum.db"

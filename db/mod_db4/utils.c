@@ -4,11 +4,11 @@
  *
  *  http://www.apache.org/licenses/LICENSE-2.0.txt
  * 
- *  authors: Thies C. Arntzen <thies@php.net>
- *           Sterling Hughes <sterling@php.net>
- *           George Schlossnagle <george@omniti.com>
+ *  authors: George Schlossnagle <george@omniti.com>
  */
 
+extern "C"
+{
 #include "httpd.h"
 #include "http_config.h"
 #include "http_core.h"          /* For REMOTE_NAME */
@@ -16,8 +16,11 @@
 
 #include "sem_utils.h"
 #include "skiplist.h"
-#include "db.h"
 #include "mm_hash.h"
+}
+
+#include "utils.h"
+#include "db_cxx.h"
 
 /* the semaphore set for the application */
 static int semset;
@@ -243,7 +246,7 @@ static DB *retrieve_db(const char *fname, const char *dname)
     }
     key.fname = fname;
     key.dname = dname;
-    rv = skiplist_find(&open_dbs, (void *) &key, NULL);
+    rv = (DB *) skiplist_find(&open_dbs, (void *) &key, NULL);
     return rv;
 }
 
@@ -262,7 +265,7 @@ static void unregister_db(DB *db)
 
 static DB_ENV *retrieve_db_env(const char *db_home)
 {
-  return skiplist_find(&open_dbenvs, (void *) db_home, NULL);
+  return (DB_ENV *) skiplist_find(&open_dbenvs, (void *) db_home, NULL);
 }
 
 static void register_db_env(DB_ENV *dbenv)
@@ -449,7 +452,6 @@ static int (*old_db_close)(DB *, u_int32_t) = NULL;
 static int new_db_close(DB *db, u_int32_t flags)
 {
     unregister_db(db);
-    ap_log_error(APLOG_MARK, APLOG_ERR, NULL, "closing DB* (%p)\n", db);
     return old_db_close(db, flags);
 }
 
@@ -516,6 +518,7 @@ int mod_db4_db_env_create(DB_ENV **dbenvp, u_int32_t flags)
         return ret;
     }
     dbenv = *dbenvp;
+    DbEnv::wrap_DB_ENV(dbenv);
     /* Here we set defaults settings for the db_env */
     /* grab context info from httpd.conf for error file */
     /* grab context info for cachesize */
@@ -585,7 +588,7 @@ flags = 0;
 
 /* }}} */
 
-void child_clean_request_shutdown()
+void mod_db4_child_clean_request_shutdown()
 {
     DBC *cursor;
     DB_TXN *transaction;
@@ -597,19 +600,19 @@ void child_clean_request_shutdown()
     }
 }
 
-void child_clean_process_shutdown()
+void mod_db4_child_clean_process_shutdown()
 {
     DB *db;
     DB_ENV *dbenv;
-    child_clean_request_shutdown();
+    mod_db4_child_clean_request_shutdown();
     while(db = (DB *)skiplist_pop(&open_dbs, NULL)) {
-        ap_log_error(APLOG_MARK, APLOG_ERR, NULL, "calling close on %x\n", db);
         db->close(db, 0);
-        /* destroy db FIXME */
     }
     while(dbenv = (DB_ENV *)skiplist_pop(&open_dbenvs, NULL)) {
+        DbEnv *dbe = DbEnv::get_DbEnv(dbenv);
         global_ref_count_decrease(dbenv->db_home);
-        dbenv->close(dbenv, 0);
+        dbe->close(0);
+        delete dbe;
     }
 }
 /* vim: set ts=4 sts=4 expandtab bs=2 ai fdm=marker: */

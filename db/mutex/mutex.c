@@ -4,7 +4,7 @@
  * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mutex.c,v 11.42 2004/09/15 21:49:19 mjc Exp $
+ * $Id: mutex.c,v 11.43 2004/10/15 16:59:44 bostic Exp $
  */
 
 #include "db_config.h"
@@ -205,8 +205,7 @@ __db_shreg_locks_record(dbenv, mutexp, infop, rp)
 		return (0);
 	DB_ASSERT(mutexp->reg_off == INVALID_ROFF);
 	rp->stat.st_records++;
-	i = (roff_t *)R_ADDR(dbenv, infop, rp->regmutex_hint) -
-	    &rp->regmutexes[0];
+	i = (roff_t *)R_ADDR(infop, rp->regmutex_hint) - &rp->regmutexes[0];
 	if (rp->regmutexes[i] != INVALID_ROFF) {
 		/*
 		 * Our hint failed, search for an open slot.
@@ -228,11 +227,11 @@ __db_shreg_locks_record(dbenv, mutexp, infop, rp)
 	 * When we get here, i is an empty slot.  Record this
 	 * mutex, set hint to point to the next slot and we are done.
 	 */
-	rp->regmutexes[i] = R_OFFSET(dbenv, infop, mutexp);
-	mutexp->reg_off = R_OFFSET(dbenv, infop, &rp->regmutexes[i]);
+	rp->regmutexes[i] = R_OFFSET(infop, mutexp);
+	mutexp->reg_off = R_OFFSET(infop, &rp->regmutexes[i]);
 	rp->regmutex_hint = (i < rp->reglocks - 1) ?
-	    R_OFFSET(dbenv, infop, &rp->regmutexes[i+1]) :
-	    R_OFFSET(dbenv, infop, &rp->regmutexes[0]);
+	    R_OFFSET(infop, &rp->regmutexes[i+1]) :
+	    R_OFFSET(infop, &rp->regmutexes[0]);
 	return (0);
 }
 
@@ -259,9 +258,9 @@ __db_shreg_locks_clear(mutexp, infop, rp)
 	 * environment.  We recorded our index in the mutex, find and clear it.
 	 */
 	DB_ASSERT(mutexp->reg_off != INVALID_ROFF);
-	DB_ASSERT(*(roff_t *)R_ADDR(dbenv, infop, mutexp->reg_off) == \
-	    R_OFFSET(dbenv, infop, mutexp));
-	*(roff_t *)R_ADDR(dbenv, infop, mutexp->reg_off) = 0;
+	DB_ASSERT(*(roff_t *)R_ADDR(infop, mutexp->reg_off) == \
+	    R_OFFSET(infop, mutexp));
+	*(roff_t *)R_ADDR(infop, mutexp->reg_off) = 0;
 	if (rp != NULL) {
 		rp->regmutex_hint = mutexp->reg_off;
 		rp->stat.st_clears++;
@@ -289,8 +288,7 @@ __db_shreg_locks_destroy(infop, rp)
 	for (i = 0; i < rp->reglocks; i++)
 		if (rp->regmutexes[i] != 0) {
 			rp->stat.st_destroys++;
-			__db_mutex_destroy((DB_MUTEX *)R_ADDR(dbenv, infop,
-			    rp->regmutexes[i]));
+			__db_mutex_destroy(R_ADDR(infop, rp->regmutexes[i]));
 		}
 }
 
@@ -357,7 +355,7 @@ __db_shreg_maintinit(infop, addr, size)
 	rp = (REGMAINT *)addr;
 	memset(addr, 0, sizeof(REGMAINT));
 	rp->reglocks = size / sizeof(roff_t);
-	rp->regmutex_hint = R_OFFSET(dbenv, infop, &rp->regmutexes[0]);
+	rp->regmutex_hint = R_OFFSET(infop, &rp->regmutexes[0]);
 	for (i = 0; i < rp->reglocks; i++)
 		rp->regmutexes[i] = INVALID_ROFF;
 }
@@ -371,26 +369,24 @@ __db_mutex_maint(dbenv, infop)
 
 	switch (infop->type) {
 	case REGION_TYPE_LOCK:
-		moff = ((DB_LOCKREGION *)R_ADDR(dbenv, infop,
-		    infop->rp->primary))->maint_off;
+		moff = ((DB_LOCKREGION *)
+		    R_ADDR(infop, infop->rp->primary))->maint_off;
 		break;
 	case REGION_TYPE_LOG:
-		moff = ((LOG *)R_ADDR(dbenv, infop,
-		    infop->rp->primary))->maint_off;
+		moff = ((LOG *)R_ADDR(infop, infop->rp->primary))->maint_off;
 		break;
 	case REGION_TYPE_MPOOL:
-		moff = ((MPOOL *)R_ADDR(dbenv, infop,
-		    infop->rp->primary))->maint_off;
+		moff = ((MPOOL *)R_ADDR(infop, infop->rp->primary))->maint_off;
 		break;
 	case REGION_TYPE_TXN:
-		moff = ((DB_TXNREGION *)R_ADDR(dbenv, infop,
-		    infop->rp->primary))->maint_off;
+		moff = ((DB_TXNREGION *)
+		    R_ADDR(infop, infop->rp->primary))->maint_off;
 		break;
 	default:
 		__db_err(dbenv,
 	"Attempting to record mutex in a region not set up to do so");
 		return (NULL);
 	}
-	return ((REGMAINT *)R_ADDR(dbenv, infop, moff));
+	return ((REGMAINT *)R_ADDR(infop, moff));
 }
 #endif /* HAVE_MUTEX_SYSTEM_RESOURCES */

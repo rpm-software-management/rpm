@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: xa.c,v 11.34 2004/09/15 21:49:21 mjc Exp $
+ * $Id: xa.c,v 11.35 2004/10/15 16:59:45 bostic Exp $
  */
 
 #include "db_config.h"
@@ -335,8 +335,7 @@ __db_xa_start(xid, rmid, arg_flags)
 	 * Other error conditions: RMERR, RMFAIL, OUTSIDE, PROTO, RB*
 	 */
 	if (is_known) {
-		td = (TXN_DETAIL *)R_ADDR(dbenv,
-		    &((DB_TXNMGR *)dbenv->tx_handle)->reginfo, off);
+		td = R_ADDR(&((DB_TXNMGR *)dbenv->tx_handle)->reginfo, off);
 		if (td->xa_status == TXN_XA_SUSPENDED &&
 		    !LF_ISSET(TMRESUME | TMJOIN))
 			return (XAER_PROTO);
@@ -356,7 +355,7 @@ __db_xa_start(xid, rmid, arg_flags)
 		if (__txn_xa_begin(dbenv, txnp))
 			return (XAER_RMERR);
 		(void)__db_map_xid(dbenv, xid, txnp->off);
-		td = (TXN_DETAIL *)R_ADDR(dbenv,
+		td = R_ADDR(
 		    &((DB_TXNMGR *)dbenv->tx_handle)->reginfo, txnp->off);
 		td->xa_status = TXN_XA_STARTED;
 	}
@@ -393,8 +392,7 @@ __db_xa_end(xid, rmid, flags)
 	if (off != txn->off)
 		return (XAER_PROTO);
 
-	td = (TXN_DETAIL *)R_ADDR(dbenv,
-	    &((DB_TXNMGR *)dbenv->tx_handle)->reginfo, off);
+	td = R_ADDR(&((DB_TXNMGR *)dbenv->tx_handle)->reginfo, off);
 	if (td->xa_status == TXN_XA_DEADLOCKED)
 		return (XA_RBDEADLOCK);
 
@@ -454,8 +452,7 @@ __db_xa_prepare(xid, rmid, arg_flags)
 
 	if (__db_xid_to_txn(dbenv, xid, &off) != 0)
 		return (XAER_NOTA);
-	td = (TXN_DETAIL *)R_ADDR(dbenv,
-	    &((DB_TXNMGR *)dbenv->tx_handle)->reginfo, off);
+	td = R_ADDR(&((DB_TXNMGR *)dbenv->tx_handle)->reginfo, off);
 	if (td->xa_status == TXN_XA_DEADLOCKED)
 		return (XA_RBDEADLOCK);
 
@@ -512,8 +509,7 @@ __db_xa_commit(xid, rmid, arg_flags)
 	if (__db_xid_to_txn(dbenv, xid, &off) != 0)
 		return (XAER_NOTA);
 
-	td = (TXN_DETAIL *)R_ADDR(dbenv,
-	    &((DB_TXNMGR *)dbenv->tx_handle)->reginfo, off);
+	td = R_ADDR(&((DB_TXNMGR *)dbenv->tx_handle)->reginfo, off);
 	if (td->xa_status == TXN_XA_DEADLOCKED)
 		return (XA_RBDEADLOCK);
 
@@ -605,8 +601,7 @@ __db_xa_rollback(xid, rmid, arg_flags)
 	if (__db_xid_to_txn(dbenv, xid, &off) != 0)
 		return (XAER_NOTA);
 
-	td = (TXN_DETAIL *)R_ADDR(dbenv,
-	    &((DB_TXNMGR *)dbenv->tx_handle)->reginfo, off);
+	td = R_ADDR(&((DB_TXNMGR *)dbenv->tx_handle)->reginfo, off);
 	if (td->xa_status == TXN_XA_DEADLOCKED)
 		return (XA_RBDEADLOCK);
 

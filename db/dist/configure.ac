@@ -1,4 +1,4 @@
-# $Id: configure.ac,v 11.219 2004/09/16 01:27:42 bostic Exp $
+# $Id: configure.ac,v 11.220 2004/10/28 14:43:29 bostic Exp $
 # Process this file with autoconf to produce a configure script.
 
 PACKAGE=db
@@ -478,12 +478,12 @@ AM_DEFINE_MUTEXES
 # buffer is non-NULL -- Solaris can't handle a NULL buffer, and they
 # deleted getwd().
 AC_REPLACE_FUNCS(getcwd getopt memcmp memcpy memmove raise)
-AC_REPLACE_FUNCS(strcasecmp strdup strerror)
+AC_REPLACE_FUNCS(strcasecmp strdup strerror strtol strtoul)
 
 # Check for system functions we optionally use.
 AC_CHECK_FUNCS(_fstati64 clock_gettime directio fdatasync ftruncate getrusage)
 AC_CHECK_FUNCS(gettimeofday getuid pstat_getdynamic rand sched_yield)
-AC_CHECK_FUNCS(select snprintf srand strtoul sysconf vsnprintf yield)
+AC_CHECK_FUNCS(select snprintf srand sysconf vsnprintf yield)
 
 # Pread/pwrite.
 # HP-UX has pread/pwrite, but it doesn't work with largefile support.

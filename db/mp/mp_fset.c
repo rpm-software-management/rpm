@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mp_fset.c,v 11.33 2004/09/15 21:49:19 mjc Exp $
+ * $Id: mp_fset.c,v 11.34 2004/10/15 16:59:43 bostic Exp $
  */
 
 #include "db_config.h"
@@ -91,7 +91,7 @@ __memp_fset(dbmfp, pgaddr, flags)
 	bhp = (BH *)((u_int8_t *)pgaddr - SSZA(BH, buf));
 	n_cache = NCACHE(dbmp->reginfo[0].primary, bhp->mf_offset, bhp->pgno);
 	c_mp = dbmp->reginfo[n_cache].primary;
-	hp = R_ADDR(dbenv, &dbmp->reginfo[n_cache], c_mp->htab);
+	hp = R_ADDR(&dbmp->reginfo[n_cache], c_mp->htab);
 	hp = &hp[NBUCKET(c_mp, bhp->mf_offset, bhp->pgno)];
 
 	MUTEX_LOCK(dbenv, &hp->hash_mutex);

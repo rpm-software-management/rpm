@@ -571,7 +571,8 @@ tm_file_init()
 		exit(EXIT_FAILURE);
 	}
 
-	if (lseek(fd, (off_t)len, SEEK_SET) != len || write(fd, &fd, 1) != 1) {
+	if (lseek(fd,
+	    (off_t)len, SEEK_SET) != (off_t)len || write(fd, &fd, 1) != 1) {
 		(void)fprintf(stderr,
 		    "%s: seek/write: %s\n", MT_FILE, strerror(errno));
 		exit(EXIT_FAILURE);

@@ -3,7 +3,7 @@
 # Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: si003.tcl,v 1.10 2004/01/28 03:36:30 bostic Exp $
+# $Id: si003.tcl,v 1.12 2004/10/27 20:40:25 carol Exp $
 #
 # TEST	si003
 # TEST	si001 with secondaries created and closed mid-test
@@ -37,7 +37,7 @@ proc si003 { methods {nentries 200} {tnum "003"} args } {
 	set argses [convert_argses $methods $args]
 	set omethods [convert_methods $methods]
 
-	puts "Si$tnum ($pmethod/$methods) $nentries equal key/data pairs"
+	puts "si$tnum \{\[ list $pmethod $methods \]\} $nentries" 
 	env_cleanup $testdir
 
 	set pname "primary$tnum.db"

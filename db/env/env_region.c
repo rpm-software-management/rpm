@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: env_region.c,v 11.102 2004/09/15 21:49:17 mjc Exp $
+ * $Id: env_region.c,v 11.103 2004/10/15 16:59:41 bostic Exp $
  */
 
 #include "db_config.h"
@@ -896,6 +896,7 @@ __db_r_attach(dbenv, infop, size)
 		MUTEX_UNLOCK(dbenv, &renv->mutex);
 		return (ret);
 	}
+	infop->dbenv = dbenv;
 	infop->rp = rp;
 	infop->type = rp->type;
 	infop->id = rp->id;

@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db_getlong.c,v 11.21 2004/01/28 03:35:52 bostic Exp $
+ * $Id: db_getlong.c,v 11.22 2004/10/28 14:43:26 bostic Exp $
  */
 
 #include "db_config.h"
@@ -93,11 +93,6 @@ __db_getulong(dbenv, progname, p, min, max, storep)
 	char *p;
 	u_long min, max, *storep;
 {
-#if !defined(HAVE_STRTOUL)
-	COMPQUIET(min, 0);
-
-	return (__db_getlong(dbenv, progname, p, 0, max, (long *)storep));
-#else
 	u_long val;
 	char *end;
 
@@ -148,5 +143,4 @@ __db_getulong(dbenv, progname, p, min, max, storep)
 	}
 	*storep = val;
 	return (0);
-#endif	/* !defined(HAVE_STRTOUL) */
 }

@@ -3,7 +3,7 @@
  * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: rep_util.c,v 1.134 2004/10/12 15:42:43 sue Exp $
+ * $Id: rep_util.c,v 1.135 2004/10/15 16:59:44 bostic Exp $
  */
 
 #include "db_config.h"
@@ -498,16 +498,16 @@ __rep_grow_sites(dbenv, nsites)
 	    &tally)) == 0) {
 		if (rep->tally_off != INVALID_ROFF)
 			 __db_shalloc_free(
-			     infop, R_ADDR(dbenv, infop, rep->tally_off));
-		rep->tally_off = R_OFFSET(dbenv, infop, tally);
+			     infop, R_ADDR(infop, rep->tally_off));
+		rep->tally_off = R_OFFSET(infop, tally);
 		if ((ret = __db_shalloc(infop,
 		    (size_t)nalloc * sizeof(REP_VTALLY), sizeof(REP_VTALLY),
 		    &tally)) == 0) {
 			/* Success */
 			if (rep->v2tally_off != INVALID_ROFF)
 				 __db_shalloc_free(infop,
-				    R_ADDR(dbenv, infop, rep->v2tally_off));
-			rep->v2tally_off = R_OFFSET(dbenv, infop, tally);
+				    R_ADDR(infop, rep->v2tally_off));
+			rep->v2tally_off = R_OFFSET(infop, tally);
 			rep->asites = nalloc;
 			rep->nsites = nsites;
 		} else {
@@ -520,9 +520,9 @@ __rep_grow_sites(dbenv, nsites)
 			 */
 			if (rep->v2tally_off != INVALID_ROFF)
 				 __db_shalloc_free(infop,
-				    R_ADDR(dbenv, infop, rep->v2tally_off));
+				    R_ADDR(infop, rep->v2tally_off));
 			__db_shalloc_free(infop,
-			    R_ADDR(dbenv, infop, rep->tally_off));
+			    R_ADDR(infop, rep->tally_off));
 			rep->v2tally_off = rep->tally_off = INVALID_ROFF;
 			rep->asites = 0;
 			rep->nsites = 0;

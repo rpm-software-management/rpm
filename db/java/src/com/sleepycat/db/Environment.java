@@ -4,7 +4,7 @@
 * Copyright (c) 2002-2004
 *	Sleepycat Software.  All rights reserved.
 *
-* $Id: Environment.java,v 1.5 2004/08/05 19:20:34 mjc Exp $
+* $Id: Environment.java,v 1.6 2004/11/05 00:50:54 mjc Exp $
 */
 
 package com.sleepycat.db;
@@ -58,7 +58,7 @@ public class Environment {
         flags |= config.getUseEnvironmentRoot() ?
             DbConstants.DB_USE_ENVIRON_ROOT : 0;
         final DbEnv dbenv = config.createEnvironment();
-        dbenv.remove(home.toString(), flags);
+        dbenv.remove((home == null) ? null : home.toString(), flags);
     }
 
     public void setConfig(final EnvironmentConfig config)

@@ -1,4 +1,4 @@
-<!--$Id: memp_class.so,v 10.19 2004/08/13 03:38:58 bostic Exp $-->
+<!--$Id: memp_class.so,v 10.20 2004/10/14 15:58:43 bostic Exp $-->
 <!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -14,7 +14,7 @@
 <h3>DbMemoryException</h3>
 </td>
 <td align=right>
-<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a>
 <a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
 </tr></table>
 <hr size=1 noshade>
@@ -35,7 +35,9 @@ it is used by the various Db* classes.</p>
 to complete an operation, and there is the possibility of recovering.
 An example is during a <a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> operation with
 the <a href="../api_cxx/dbt_class.html">Dbt</a> flags set to <a href="../api_cxx/dbt_class.html#DB_DBT_USERMEM">DB_DBT_USERMEM</a>.</p>
-<p>The <a href="../api_cxx/except_class.html">DbException</a> errno value is set to DB_BUFFER_SMALL or ENOMEM.</p>
+<a name="DB_BUFFER_SMALL">DB_BUFFER_SMALL</a>
+<p>The <a href="../api_cxx/except_class.html">DbException</a> errno value is set to <a href="../api_cxx/dbt_class.html#DB_BUFFER_SMALL">DB_BUFFER_SMALL</a>
+or ENOMEM.</p>
 <p>The <b>get_dbt</b> method returns the <a href="../api_cxx/dbt_class.html">Dbt</a> with insufficient
 memory to complete the operation, causing the DbMemoryException
 to be thrown.
@@ -44,7 +46,7 @@ on whether the <a href="../api_cxx/dbt_class.html">Dbt</a> used in the call to t
 is still in scope and has not been deleted.</p>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_cxx/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_cxx/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>

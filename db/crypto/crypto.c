@@ -7,7 +7,7 @@
  * Some parts of this code originally written by Adam Stubblefield
  * -- astubble@rice.edu
  *
- * $Id: crypto.c,v 1.30 2004/09/15 21:49:11 mjc Exp $
+ * $Id: crypto.c,v 1.31 2004/10/15 16:59:38 bostic Exp $
  */
 
 #include "db_config.h"
@@ -71,11 +71,11 @@ __crypto_region_init(dbenv)
 			goto err;
 		}
 		memset(sh_passwd, 0, dbenv->passwd_len);
-		cipher->passwd = R_OFFSET(dbenv, infop, sh_passwd);
+		cipher->passwd = R_OFFSET(infop, sh_passwd);
 		cipher->passwd_len = dbenv->passwd_len;
 		cipher->flags = db_cipher->alg;
 		memcpy(sh_passwd, dbenv->passwd, cipher->passwd_len);
-		renv->cipher_off = R_OFFSET(dbenv, infop, cipher);
+		renv->cipher_off = R_OFFSET(infop, cipher);
 	} else {
 		if (!CRYPTO_ON(dbenv)) {
 			__db_err(dbenv,
@@ -83,8 +83,8 @@ __crypto_region_init(dbenv)
 			ret = EINVAL;
 			goto err;
 		}
-		cipher = R_ADDR(dbenv, infop, renv->cipher_off);
-		sh_passwd = R_ADDR(dbenv, infop, cipher->passwd);
+		cipher = R_ADDR(infop, renv->cipher_off);
+		sh_passwd = R_ADDR(infop, cipher->passwd);
 		if ((cipher->passwd_len != dbenv->passwd_len) ||
 		    memcmp(dbenv->passwd, sh_passwd, cipher->passwd_len) != 0) {
 			__db_err(dbenv, "Invalid password");
@@ -172,8 +172,8 @@ __crypto_region_destroy(dbenv)
 	infop = dbenv->reginfo;
 	renv = infop->primary;
 	if (renv->cipher_off != INVALID_ROFF) {
-		cipher = R_ADDR(dbenv, infop, renv->cipher_off);
-		__db_shalloc_free(infop, R_ADDR(dbenv, infop, cipher->passwd));
+		cipher = R_ADDR(infop, renv->cipher_off);
+		__db_shalloc_free(infop, R_ADDR(infop, cipher->passwd));
 		__db_shalloc_free(infop, cipher);
 	}
 	return (0);
@@ -379,7 +379,7 @@ __crypto_set_passwd(dbenv_src, dbenv_dest)
 
 	DB_ASSERT(CRYPTO_ON(dbenv_src));
 
-	cipher = R_ADDR(dbenv_src, infop, renv->cipher_off);
-	sh_passwd = R_ADDR(dbenv_src, infop, cipher->passwd);
+	cipher = R_ADDR(infop, renv->cipher_off);
+	sh_passwd = R_ADDR(infop, cipher->passwd);
 	return (__dbenv_set_encrypt(dbenv_dest, sh_passwd, DB_ENCRYPT_AES));
 }

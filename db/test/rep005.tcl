@@ -3,7 +3,7 @@
 # Copyright (c) 2002-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: rep005.tcl,v 11.40 2004/09/22 18:01:05 bostic Exp $
+# $Id: rep005.tcl,v 11.41 2004/10/15 15:41:56 sue Exp $
 #
 # TEST  rep005
 # TEST	Replication election test with error handling.
@@ -139,7 +139,7 @@ proc rep005_sub { method tnum niter nclients logset recargs largs } {
 			foreach c2 $c2err {
 				set elist [list $c0 $c1 $c2]
 				rep005_elect env_cmd envlist $qdir \
-				    $m $count win last_win $elist
+				    $m $count win last_win $elist $logset
 				incr count
 			}
 		}
@@ -156,7 +156,8 @@ proc rep005_sub { method tnum niter nclients logset recargs largs } {
 	puts [clock format [clock seconds] -format "%H:%M %D"]
 }
 
-proc rep005_elect { ecmd celist qdir msg count winner lsn_lose elist } {
+proc rep005_elect { ecmd celist qdir msg count \
+    winner lsn_lose elist logset} {
 	global elect_timeout elect_serial
 	global is_windows_test
 	upvar $ecmd env_cmd
@@ -240,6 +241,8 @@ proc rep005_elect { ecmd celist qdir msg count winner lsn_lose elist } {
 		set lsn_len [expr [llength $lsn_win] - 1]
 		set lsn_index [berkdb random_int 0 $lsn_len]
 		set rec_arg ""
+		set win_inmem [expr [string compare [lindex $logset \
+		    [expr $win + 1]] in-memory] == 0]
 		if { [lindex $lsn_win $lsn_index] == 1 } {
 			set last_win $win
 			set dirindex [lsearch -exact $env_cmd($win) "-home"]
@@ -248,7 +251,6 @@ proc rep005_elect { ecmd celist qdir msg count winner lsn_lose elist } {
 			env_cleanup $lsn_dir
 			puts -nonewline "and cleaning "
 		} else {
-			set last_win -1
 			#
 			# If we're not cleaning the env, decide if we should
 			# run recovery upon reopening the env.  This causes
@@ -265,6 +267,22 @@ proc rep005_elect { ecmd celist qdir msg count winner lsn_lose elist } {
 			if { [lindex $rec_win $rec_index] == 1 } {
 				puts -nonewline "and recovering "
 				set rec_arg "-recover"
+				#
+				# If we're in memory and about to run
+				# recovery, we force ourselves not to win
+				# the next election because recovery will
+				# blow away the entire log in memory.
+				# However, we don't skip this entirely
+				# because we still want to force reading
+				# of __db.rep.egen.
+				#
+				if { $win_inmem } {
+					set last_win $win
+				} else {
+					set last_win -1
+				}
+			} else {
+				set last_win -1
 			}
 		}
 		puts "new master, new client $win"
@@ -276,7 +294,7 @@ proc rep005_elect { ecmd celist qdir msg count winner lsn_lose elist } {
 		# new Tcl handle name in there.
 		set newel "$clientenv($win) [expr $win + 2]"
 		set envlist [lreplace $envlist $win $win $newel]
-		if { $rec_arg == "" } {
+		if { $rec_arg == "" || $win_inmem } {
 			set win -1
 		}
 		#

@@ -4,7 +4,7 @@
  * Copyright (c) 2000-2004
  *      Sleepycat Software.  All rights reserved.
  *
- * $Id: DataCursor.java,v 1.4 2004/09/22 18:01:02 bostic Exp $
+ * $Id: DataCursor.java,v 1.5 2004/11/05 01:08:31 mjc Exp $
  */
 
 package com.sleepycat.collections;
@@ -535,7 +535,7 @@ final class DataCursor implements Cloneable {
 
         checkWriteAllowed(false);
         view.useValue(value, valueThang, null); /* why no key check? */
-        return cursor.putAfter(valueThang);
+        return cursor.putAfter(new DatabaseEntry(), valueThang);
     }
 
     /**
@@ -546,7 +546,7 @@ final class DataCursor implements Cloneable {
 
         checkWriteAllowed(false);
         view.useValue(value, valueThang, keyThang);
-        return cursor.putBefore(valueThang);
+        return cursor.putBefore(new DatabaseEntry(), valueThang);
     }
 
     /**

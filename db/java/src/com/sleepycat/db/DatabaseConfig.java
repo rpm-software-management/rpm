@@ -4,7 +4,7 @@
 * Copyright (c) 2002-2004
 *	Sleepycat Software.  All rights reserved.
 *
-* $Id: DatabaseConfig.java,v 1.8 2004/07/30 14:52:21 mjc Exp $
+* $Id: DatabaseConfig.java,v 1.9 2004/11/05 00:50:54 mjc Exp $
 */
 
 package com.sleepycat.db;
@@ -472,9 +472,9 @@ public class DatabaseConfig implements Cloneable {
         if (transactional && txn == null)
             openFlags |= DbConstants.DB_AUTO_COMMIT;
 
-        configureDatabase(db, DEFAULT);
         boolean succeeded = false;
         try {
+            configureDatabase(db, DEFAULT);
             db.open(txn, fileName, databaseName, type.getId(), openFlags, mode);
             succeeded = true;
             return db;
@@ -537,7 +537,8 @@ public class DatabaseConfig implements Cloneable {
         if (recordPad != oldConfig.recordPad)
             db.set_re_pad(recordPad);
         if (recordSource != oldConfig.recordSource)
-            db.set_re_source(recordSource.toString());
+            db.set_re_source(
+                (recordSource == null) ? null : recordSource.toString());
 
         if (btreeComparator != oldConfig.btreeComparator)
             db.set_bt_compare(btreeComparator);

@@ -4,7 +4,7 @@
  * Copyright (c) 2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: rep_backup.c,v 1.29 2004/10/14 12:56:13 sue Exp $
+ * $Id: rep_backup.c,v 1.33 2004/10/29 18:08:09 bostic Exp $
  */
 
 #include "db_config.h"
@@ -196,10 +196,16 @@ __rep_walk_dir(dbenv, dir, fp, fileszp, filelenp, filecntp)
 #endif
 	memset(&namedbt, 0, sizeof(namedbt));
 	memset(&uiddbt, 0, sizeof(uiddbt));
+	RPRINT(dbenv, rep, (dbenv, &mb,
+	    "Walk_dir: Getting info for dir: %s", dir));
 	if ((ret = __os_dirlist(dbenv, dir, &names, &cnt)) != 0)
 		return (ret);
 	rfp = fp;
+	RPRINT(dbenv, rep, (dbenv, &mb,
+	    "Walk_dir: Dir %s has %d files", dir, cnt));
 	for (i = 0; i < cnt; i++) {
+		RPRINT(dbenv, rep, (dbenv, &mb,
+		    "Walk_dir: File %d name: %s", i, names[i]));
 		/*
 		 * Skip DB-owned files: ., ..,  __db*, DB_CONFIG, log*
 		 */
@@ -239,7 +245,7 @@ __rep_walk_dir(dbenv, dir, fp, fileszp, filelenp, filecntp)
 retry:
 		ret = __rep_fileinfo_buf(rfp, *fileszp, &len,
 		    tmpfp.pgsize, tmpfp.pgno, tmpfp.max_pgno,
-		    tmpfp.filenum, tmpfp.id, tmpfp.type, 
+		    tmpfp.filenum, tmpfp.id, tmpfp.type,
 		    tmpfp.flags, &uiddbt, &namedbt);
 		if (ret == ENOMEM) {
 			offset = (size_t)(rfp - fp);
@@ -316,7 +322,7 @@ __rep_get_fileinfo(dbenv, file, rfp, uid, filecntp)
 	 */
 	if (dbp->type == DB_QUEUE)
 		rfp->max_pgno = 0;
-	else 
+	else
 		rfp->max_pgno = dbmeta->last_pgno;
 	rfp->pgsize = dbp->pgsize;
 	memcpy(uid, dbp->fileid, DB_FILE_ID_LEN);
@@ -555,7 +561,7 @@ __rep_page_sendpages(dbenv, eid, msgfp, mpf, dbp)
 		len = 0;
 		ret = __rep_fileinfo_buf(buf, msgsz, &len,
 		    msgfp->pgsize, p, msgfp->max_pgno,
-		    msgfp->filenum, msgfp->id, msgfp->type, 
+		    msgfp->filenum, msgfp->id, msgfp->type,
 		    msgfp->flags, &msgfp->uid, &pgdbt);
 		if (ret != 0)
 			goto err;
@@ -593,7 +599,7 @@ __rep_page_sendpages(dbenv, eid, msgfp, mpf, dbp)
 			bytes -= (msgdbt.size + sizeof(REP_CONTROL));
 		}
 send:
-                RPRINT(dbenv, rep, (dbenv, &mb,
+		RPRINT(dbenv, rep, (dbenv, &mb,
 		    "sendpages: %s %lu, lsn [%lu][%lu]",
 		    (type == REP_PAGE ? "PAGE" :
 		    (type == REP_PAGE_MORE ? "PAGE_MORE" : "PAGE_FAIL")),
@@ -776,7 +782,7 @@ __rep_update_setup(dbenv, eid, rp, rec)
 	pagereq_dbt.data = rep->finfo;
 	pagereq_dbt.size = (u_int32_t)((u_int8_t *)rep->nextinfo -
 	    (u_int8_t *)rep->finfo);
-	
+
 	RPRINT(dbenv, rep, (dbenv, &mb,
 	    "Update PAGE_REQ file 0: pgsize %lu, maxpg %lu",
 	    (u_long)rep->curinfo->pgsize,
@@ -797,13 +803,15 @@ err:
 	/*
 	 * If we get an error, we cannot leave ourselves in the
 	 * RECOVER_PAGE state because we have no file information.
+	 * That also means undo'ing the rep_lockout.
 	 * We need to move back to the RECOVER_UPDATE stage.
 	 */
 	if (ret != 0) {
 		RPRINT(dbenv, rep, (dbenv, &mb,
 		    "Update_setup: Error: Clear PAGE, set UPDATE again. %s",
 		    db_strerror(ret)));
-		F_CLR(rep, REP_F_RECOVER_PAGE);
+		F_CLR(rep, REP_F_RECOVER_PAGE | REP_F_READY);
+		rep->in_recovery = 0;
 		F_SET(rep, REP_F_RECOVER_UPDATE);
 	}
 	MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
@@ -1072,7 +1080,7 @@ __rep_write_page(dbenv, rep, msgfp)
 				goto err;
 			/*
 			 * Create the file on disk.  We'll be putting the data
-			 * into the file via mpool.  
+			 * into the file via mpool.
 			 */
 			if ((ret = __os_open(dbenv, real_name,
 			    DB_OSO_CREATE, dbenv->db_mode, &rfh)) == 0)
@@ -1477,6 +1485,16 @@ __rep_pggap_req(dbenv, rep, reqfp, moregap)
 
 	ret = 0;
 	alloc = 0;
+	/*
+	 * There is a window where we have to set REP_RECOVER_PAGE when
+	 * we receive the update information to transition from getting
+	 * file information to getting page information.  However, that
+	 * thread does release and then reacquire mutexes.  So, we might
+	 * try re-requesting before the original thread can get curinfo
+	 * setup.  If curinfo isn't set up there is nothing to do.
+	 */
+	if (rep->curinfo == NULL)
+		return (0);
 	if (reqfp == NULL) {
 		if ((ret = __rep_finfo_alloc(dbenv, rep->curinfo, &tmpfp)) != 0)
 			return (ret);
@@ -1682,6 +1700,11 @@ __rep_queue_filedone(dbenv, rep, rfp)
 	REP *rep;
 	__rep_fileinfo_args *rfp;
 {
+#ifndef HAVE_QUEUE
+	COMPQUIET(rep, NULL);
+	COMPQUIET(rfp, NULL);
+	return (__db_no_queue_am(dbenv));
+#else
 	db_pgno_t first, last;
 	u_int32_t flags;
 	int empty, ret, t_ret;
@@ -1689,23 +1712,18 @@ __rep_queue_filedone(dbenv, rep, rfp)
 	DB_MSGBUF mb;
 #endif
 
-#ifndef HAVE_QUEUE
-	COMPQUIET(rep, NULL);
-	COMPQUIET(rfp, NULL);
-	return (__db_no_queue_am(dbenv));
-#else
 	ret = 0;
 	if (rep->queue_dbp == NULL) {
 		/*
 		 * We need to do a sync here so that the open
-		 * can find the file and file id.  
+		 * can find the file and file id.
 		 */
 		if ((ret = __memp_sync(dbenv, NULL)) != 0)
 			goto out;
 		if ((ret = db_create(&rep->queue_dbp, dbenv,
 		    DB_REP_CREATE)) != 0)
 			goto out;
-		flags = DB_NO_AUTO_COMMIT | 
+		flags = DB_NO_AUTO_COMMIT |
 		    (F_ISSET(dbenv, DB_ENV_THREAD) ? DB_THREAD : 0);
 		if ((ret = __db_open(rep->queue_dbp, NULL, rfp->info.data,
 		    NULL, DB_QUEUE, flags, 0, PGNO_BASE_MD)) != 0)
@@ -1765,7 +1783,7 @@ req:
 		rep->max_wait_pg = PGNO_INVALID;
 		ret = __rep_pggap_req(dbenv, rep, rfp, 0);
 		return (ret);
-	} 
+	}
 	/*
 	 * max_pgno == last
 	 * If we get here, we have all the pages we need.

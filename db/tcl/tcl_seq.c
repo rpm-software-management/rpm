@@ -4,7 +4,7 @@
  * Copyright (c) 2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: tcl_seq.c,v 11.11 2004/09/22 22:20:35 mjc Exp $
+ * $Id: tcl_seq.c,v 11.12 2004/10/25 18:02:56 bostic Exp $
  */
 
 #include "db_config.h"
@@ -523,4 +523,4 @@ tcl_SeqGetFlags(interp, objc, objv, seq)
 
 	return (result);
 }
-#endif
+#endif /* HAVE_SEQUENCE */

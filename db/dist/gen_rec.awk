@@ -5,7 +5,7 @@
 # Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: gen_rec.awk,v 11.108 2004/09/22 18:03:49 bostic Exp $
+# $Id: gen_rec.awk,v 11.110 2004/10/20 20:40:58 bostic Exp $
 #
 
 # This awk script generates all the log, print, and read routines for the DB
@@ -287,7 +287,8 @@ END {
 	printf("\treturn (0);\n}\n") >> CFILE;
 }
 
-function log_function() {
+function log_function()
+{
 	# Write the log function; function prototype
 	pi = 1;
 	if (not_buf) {
@@ -320,10 +321,10 @@ function log_function() {
 	proto_format(p, CFILE);
 
 	# Function declaration
-	if (not_buf == 1 && has_dbp == 1) {
+	if (not_buf && has_dbp == 1) {
 		printf("int\n%s_log(dbp, txnid, ret_lsnp, flags", \
 		    funcname) >> CFILE;
-	} else if (not_buf == 1) {
+	} else if (not_buf) {
 		printf("int\n%s_log(dbenv, txnid, ret_lsnp, flags", \
 		    funcname) >> CFILE;
 	} else {
@@ -345,7 +346,7 @@ function log_function() {
 	printf(")\n") >> CFILE;
 
 	# Now print the parameters
-	if (not_buf == 1) {
+	if (not_buf) {
 		if (has_dbp == 1) {
 			printf("\tDB *dbp;\n") >> CFILE;
 		} else {
@@ -368,7 +369,7 @@ function log_function() {
 
 	# Function body and local decls
 	printf("{\n") >> CFILE;
-	if (not_buf == 1) {
+	if (not_buf) {
 		printf("\tDBT logrec;\n") >> CFILE;
 		if (has_dbp == 1)
 			printf("\tDB_ENV *dbenv;\n") >> CFILE;
@@ -391,13 +392,13 @@ function log_function() {
 	}
 	printf("\tu_int8_t *bp;\n") >> CFILE;
 	printf("\tint ") >> CFILE;
-	if (dbprivate && not_buf == 1) {
+	if (dbprivate && not_buf) {
 		printf("is_durable, ") >> CFILE;
 	}
 	printf("ret;\n\n") >> CFILE;
 
 	# Initialization
-	if (not_buf == 1) {
+	if (not_buf) {
 		if (has_dbp == 1)
 			printf("\tdbenv = dbp->dbenv;\n") >> CFILE;
 		if (dbprivate)
@@ -450,6 +451,11 @@ function log_function() {
 		printf("\t\ttxn_num = txnid->txnid;\n") >> CFILE;
 		printf("\t\tlsnp = &txnid->last_lsn;\n") >> CFILE;
 		printf("\t}\n\n") >> CFILE;
+
+		# If we're logging a DB handle, make sure we have a log
+		# file ID for it.
+		db_handle_id_function(modes, nvars);
+
 		# Malloc
 		printf("\tlogrec.size = ") >> CFILE;
 		printf("sizeof(rectype) + ") >> CFILE;
@@ -504,16 +510,21 @@ function log_function() {
 		printf("\tmemcpy(bp, lsnp, sizeof(DB_LSN));\n") >> CFILE;
 		printf("\tbp += sizeof(DB_LSN);\n\n") >> CFILE;
 	} else {
+		# If we're logging a DB handle, make sure we have a log
+		# file ID for it.
+		db_handle_id_function(modes, nvars);
+
 		printf("\tbp = buf;\n") >> CFILE;
 		printf("\tendbuf = bp + max;\n\n") >> CFILE
 	}
 
-	for (i = 0; i < nvars; i ++) {
+	for (i = 0; i < nvars; i++) {
 		if (modes[i] == "ARG" || modes[i] == "TIME") {
 			printf("\tuinttmp = (u_int32_t)%s;\n", \
 			    vars[i]) >> CFILE;
-			if (not_buf == 0) {
-				printf("\tif (bp + sizeof(uinttmp) > endbuf)\n") \
+			if (!not_buf) {
+				printf(\
+				    "\tif (bp + sizeof(uinttmp) > endbuf)\n") \
 				    >> CFILE;
 				printf("\t\treturn (ENOMEM);\n") >> CFILE;
 			}
@@ -524,8 +535,9 @@ function log_function() {
 		     modes[i] == "LOCKS" || modes[i] == "PGDBT") {
 			printf("\tif (%s == NULL) {\n", vars[i]) >> CFILE;
 			printf("\t\tzero = 0;\n") >> CFILE;
-			if (not_buf == 0) {
-				printf("\t\tif (bp + sizeof(u_int32_t) > endbuf)\n") \
+			if (!not_buf) {
+				printf(\
+			    "\t\tif (bp + sizeof(u_int32_t) > endbuf)\n") \
 				    >> CFILE;
 				printf("\t\t\treturn (ENOMEM);\n") >> CFILE;
 			}
@@ -533,8 +545,9 @@ function log_function() {
 				>> CFILE;
 			printf("\t\tbp += sizeof(u_int32_t);\n") >> CFILE;
 			printf("\t} else {\n") >> CFILE;
-			if (not_buf == 0) {
-				printf("\t\tif (bp + sizeof(%s->size) > endbuf)\n", \
+			if (!not_buf) {
+				printf(\
+			    "\t\tif (bp + sizeof(%s->size) > endbuf)\n", \
 				    vars[i]) >> CFILE;
 				printf("\t\t\treturn (ENOMEM);\n") >> CFILE;
 			}
@@ -542,7 +555,7 @@ function log_function() {
 			printf("sizeof(%s->size));\n", vars[i]) >> CFILE;
 			printf("\t\tbp += sizeof(%s->size);\n", vars[i]) \
 			    >> CFILE;
-			if (not_buf == 0) {
+			if (!not_buf) {
 				printf("\t\tif (bp + %s->size > endbuf)\n", \
 				    vars[i]) >> CFILE;
 				printf("\t\t\treturn (ENOMEM);\n") >> CFILE;
@@ -552,24 +565,13 @@ function log_function() {
 			printf("\t\tbp += %s->size;\n\t}\n\n", \
 			    vars[i]) >> CFILE;
 		} else if (modes[i] == "DB") {
-			# We need to log a DB handle.  To do this, we
-			# actually just log its fileid;  from that, we'll
-			# be able to acquire an open handle at recovery time.
-			printf("\tDB_ASSERT(dbp->log_filename != NULL);\n") \
-			    >> CFILE;
-			printf("\tif (dbp->log_filename->id == ") >> CFILE;
-			printf("DB_LOGFILEID_INVALID &&\n\t    ") >> CFILE
-			printf("(ret = __dbreg_lazy_id(dbp)) != 0)\n") \
-			    >> CFILE;
-			printf("\t\treturn (ret);\n\n") >> CFILE;
-
 			printf("\tuinttmp = ") >> CFILE;
 			printf("(u_int32_t)dbp->log_filename->id;\n") >> CFILE;
 			printf("\tmemcpy(bp, &uinttmp, sizeof(uinttmp));\n") \
 			    >> CFILE;
 			printf("\tbp += sizeof(uinttmp);\n\n") >> CFILE;
 		} else { # POINTER
-			if (not_buf == 0) {
+			if (!not_buf) {
 				printf("\tif (bp + %s > endbuf)\n", \
 				    sizes[i]) >> CFILE;
 				printf("\t\treturn (ENOMEM);\n") >> CFILE;
@@ -586,7 +588,7 @@ function log_function() {
 	# Error checking.  User code won't have DB_ASSERT available, but
 	# this is a pretty unlikely assertion anyway, so we just leave it out
 	# rather than requiring assert.h.
-	if (not_buf == 1) {
+	if (not_buf) {
 		if (dbprivate) {
 			printf("\tDB_ASSERT((u_int32_t)") >> CFILE;
 			printf("(bp - (u_int8_t *)logrec.data) ") >> CFILE;
@@ -679,7 +681,31 @@ function log_function() {
 	printf("\treturn (ret);\n}\n\n") >> CFILE;
 }
 
-function print_function() {
+# If we're logging a DB handle, make sure we have a log
+# file ID for it.
+function db_handle_id_function(modes, n)
+{
+	for (i = 0; i < n; i++)
+		if (modes[i] == "DB") {
+			# We actually log the DB handle's fileid; from
+			# that ID we're able to acquire an open handle
+			# at recovery time.
+			printf(\
+		    "\tDB_ASSERT(dbp->log_filename != NULL);\n") \
+			    >> CFILE;
+			printf("\tif (dbp->log_filename->id == ") \
+			    >> CFILE;
+			printf("DB_LOGFILEID_INVALID &&\n\t    ") \
+			    >> CFILE
+			printf("(ret = __dbreg_lazy_id(dbp)) != 0)\n") \
+			    >> CFILE
+			printf("\t\treturn (ret);\n\n") >> CFILE;
+			break;
+		}
+}
+
+function print_function()
+{
 	# Write the print function; function prototype
 	p[1] = sprintf("int %s_print", funcname);
 	p[2] = " ";
@@ -796,9 +822,10 @@ function print_function() {
 	printf("}\n\n") >> PFILE;
 }
 
-function read_function() {
+function read_function()
+{
 	# Write the read function; function prototype
-	if (not_buf == 1)
+	if (not_buf)
 		p[1] = sprintf("int %s_read __P((DB_ENV *, void *,", funcname);
 	else
 		p[1] = sprintf("int %s_read __P((DB_ENV *, void *, void **,", \
@@ -809,7 +836,7 @@ function read_function() {
 	proto_format(p, CFILE);
 
 	# Function declaration
-	if (not_buf == 1)
+	if (not_buf)
 		printf("int\n%s_read(dbenv, recbuf, argpp)\n", funcname) \
 		    >> CFILE;
 	else
@@ -820,7 +847,7 @@ function read_function() {
 	# Now print the parameters
 	printf("\tDB_ENV *dbenv;\n") >> CFILE;
 	printf("\tvoid *recbuf;\n") >> CFILE;
-	if (not_buf == 0)
+	if (!not_buf)
 		printf("\tvoid **nextp;\n") >> CFILE;
 	printf("\t%s_args **argpp;\n", funcname) >> CFILE;
 
@@ -839,7 +866,7 @@ function read_function() {
 		printf("\n\tdbenv = NULL;\n") >> CFILE;
 	}
 
-	if (not_buf == 1) {
+	if (not_buf) {
 		malloc_size = sprintf("sizeof(%s_args) + sizeof(DB_TXN)", \
 		    funcname)
 	} else {
@@ -850,7 +877,7 @@ function read_function() {
 	# Set up the pointers to the txnid.
 	printf("\tbp = recbuf;\n") >> CFILE;
 
-	if (not_buf == 1) {
+	if (not_buf) {
 		printf("\targp->txnid = (DB_TXN *)&argp[1];\n\n") >> CFILE;
 
 		# First get the record type, prev_lsn, and txnid fields.
@@ -893,7 +920,7 @@ function read_function() {
 	}
 
 	# Free and return
-	if (not_buf == 0)
+	if (!not_buf)
 		printf("\t*nextp = bp;\n") >> CFILE;
 	printf("\t*argpp = argp;\n") >> CFILE;
 	printf("\treturn (0);\n}\n\n") >> CFILE;

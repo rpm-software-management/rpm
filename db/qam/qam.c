@@ -4,7 +4,7 @@
  * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: qam.c,v 11.186 2004/09/22 16:29:47 bostic Exp $
+ * $Id: qam.c,v 11.187 2004/10/18 20:21:13 ubell Exp $
  */
 
 #include "db_config.h"
@@ -1619,7 +1619,6 @@ __qam_truncate(dbc, countp)
 	DB_LOCK metalock;
 	DB_MPOOLFILE *mpf;
 	QMETA *meta;
-	QUEUE_CURSOR *cp;
 	db_pgno_t metapno;
 	u_int32_t count;
 	int ret, t_ret;
@@ -1631,13 +1630,6 @@ __qam_truncate(dbc, countp)
 	    (ret = __qam_c_get(dbc, NULL, NULL, DB_CONSUME, &metapno)) == 0;)
 		count++;
 	if (ret != DB_NOTFOUND)
-		return (ret);
-
-	cp = (QUEUE_CURSOR *)dbc->internal;
-	/* Remove the last extent file. */
-	if (cp->pgno != 0 &&
-	    ((QUEUE *)dbp->q_internal)->page_ext != 0 &&
-	    (ret = __qam_fremove(dbp, cp->pgno)) != 0)
 		return (ret);
 
 	/* Update the meta page. */
@@ -1652,6 +1644,13 @@ __qam_truncate(dbc, countp)
 		(void)__LPUT(dbc, metalock);
 		return (ret);
 	}
+	/* Remove the last extent file. */
+	if (meta->cur_recno > 1 && ((QUEUE *)dbp->q_internal)->page_ext != 0) {
+		if ((ret = __qam_fremove(dbp,
+		     QAM_RECNO_PAGE(dbp, meta->cur_recno - 1))) != 0)
+			return (ret);
+	}
+
 	if (DBC_LOGGING(dbc)) {
 		ret = __qam_mvptr_log(dbp, dbc->txn, &meta->dbmeta.lsn, 0,
 		    QAM_SETCUR | QAM_SETFIRST | QAM_TRUNCATE, meta->first_recno,

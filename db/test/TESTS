@@ -508,6 +508,7 @@ rep012
 	Replication and dead DB handles.
 
 	Run a modified version of test001 in a replicated master env.
+	Run in replicated environment with secondary indices too.
 	Make additional changes to master, but not to the client.
 	Downgrade the master and upgrade the client with open db handles.
 	Verify that the roll back on clients gives dead db handles.
@@ -892,13 +893,6 @@ sdb012
 	Test subdbs with locking and transactions
 	Tests creating and removing subdbs while handles
 	are open works correctly, and in the face of txns.
-
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-sdb013
-	Tests in-memory subdatabases.
-	Create an in-memory subdb.  Test for persistence after
-	overflowing the cache.  Test for conflicts when we have
-	two in-memory files.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 sdbtest001
@@ -1632,11 +1626,6 @@ test074
 	Test of DB_NEXT_NODUP.
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-test075
-	Test of DB->rename().
-	(formerly test of DB_TRUNCATE cached page invalidation [#1487])
-
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 test076
 	Test creation of many small databases in a single environment. [#1528].
 
@@ -1655,10 +1644,6 @@ test079
 	Check that delete operations work in large btrees.  10000 entries
 	and a pagesize of 512 push this out to a four-level btree, with a
 	small fraction of the entries going on overflow pages.
-
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-test080
-	Test of DB->remove()
 
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 test081

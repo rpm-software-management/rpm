@@ -4,7 +4,7 @@
  * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: dbreg_util.c,v 11.49 2004/09/22 03:43:09 bostic Exp $
+ * $Id: dbreg_util.c,v 11.50 2004/10/15 16:59:41 bostic Exp $
  */
 
 #include "db_config.h"
@@ -119,7 +119,7 @@ __dbreg_log_files(dbenv)
 			dbtp = NULL;
 		else {
 			memset(&t, 0, sizeof(t));
-			t.data = R_ADDR(dbenv, &dblp->reginfo, fnp->name_off);
+			t.data = R_ADDR(&dblp->reginfo, fnp->name_off);
 			t.size = (u_int32_t)strlen(t.data) + 1;
 			dbtp = &t;
 		}
@@ -300,7 +300,7 @@ __dbreg_id_to_db_int(dbenv, txn, dbpp, ndx, inc, tryopen)
 		 * assumption, because the other process that has the file
 		 * open shouldn't be closing it while we're trying to abort.
 		 */
-		name = R_ADDR(dbenv, &dblp->reginfo, fname->name_off);
+		name = R_ADDR(&dblp->reginfo, fname->name_off);
 
 		/*
 		 * At this point, we are not holding the thread lock, so exit
@@ -436,7 +436,7 @@ __dbreg_get_name(dbenv, fid, namep)
 	dblp = dbenv->lg_handle;
 
 	if (dblp != NULL && __dbreg_fid_to_fname(dblp, fid, 0, &fnp) == 0) {
-		*namep = R_ADDR(dbenv, &dblp->reginfo, fnp->name_off);
+		*namep = R_ADDR(&dblp->reginfo, fnp->name_off);
 		return (0);
 	}
 

@@ -5,7 +5,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0.txt
 #
 
-dnl $Id: config.m4,v 1.1 2004/10/05 14:45:58 bostic Exp $
+dnl $Id: config.m4,v 1.3 2004/11/04 18:13:43 george Exp $
 dnl config.m4 for extension db4
 
 dnl Comments in this file start with the string 'dnl'.
@@ -44,16 +44,19 @@ if test "$PHP_DB4" != "no"; then
       fi
     done
     PHP_ADD_INCLUDE(THIS_INCLUDE)
-    PHP_ADD_LIBRARY_WITH_PATH(db-4.2, THIS_PREFIX, DB4_SHARED_LIBADD)
+    PHP_ADD_LIBRARY_WITH_PATH(db_cxx, THIS_PREFIX, DB4_SHARED_LIBADD)
   fi 
   if test "$PHP_MOD_DB4" != "no" && test "$PHP_MOD_DB4" != "yes"; then
     PHP_ADD_INCLUDE("$PHP_MOD_DB4")
     AC_DEFINE(HAVE_MOD_DB4, 1, [Whether you have mod_db4])
   elif test "$PHP_MOD_DB4" = "no"; then
-    PHP_ADD_LIBRARY(db-4.2,, DB4_SHARED_LIBADD)
+    PHP_ADD_LIBRARY(db_cxx,, DB4_SHARED_LIBADD)
   else 
     AC_MSG_RESULT([no])
   fi
-  PHP_NEW_EXTENSION(db4, db4.c, $ext_shared)
+  EXTRA_CXXFLAGS="-g -DHAVE_CONFIG_H -O2 -Wall"
+  PHP_REQUIRE_CXX()
+  PHP_NEW_EXTENSION(db4, db4.cpp, $ext_shared)
+  PHP_ADD_MAKEFILE_FRAGMENT
   PHP_SUBST(DB4_SHARED_LIBADD)
 fi

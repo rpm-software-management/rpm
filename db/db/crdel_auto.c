@@ -74,6 +74,11 @@ __crdel_metasub_log(dbp, txnid, ret_lsnp, flags, pgno, page, lsn)
 		lsnp = &txnid->last_lsn;
 	}
 
+	DB_ASSERT(dbp->log_filename != NULL);
+	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
+	    (ret = __dbreg_lazy_id(dbp)) != 0)
+		return (ret);
+
 	logrec.size = sizeof(rectype) + sizeof(txn_num) + sizeof(DB_LSN)
 	    + sizeof(u_int32_t)
 	    + sizeof(u_int32_t)
@@ -116,11 +121,6 @@ __crdel_metasub_log(dbp, txnid, ret_lsnp, flags, pgno, page, lsn)
 
 	memcpy(bp, lsnp, sizeof(DB_LSN));
 	bp += sizeof(DB_LSN);
-
-	DB_ASSERT(dbp->log_filename != NULL);
-	if (dbp->log_filename->id == DB_LOGFILEID_INVALID &&
-	    (ret = __dbreg_lazy_id(dbp)) != 0)
-		return (ret);
 
 	uinttmp = (u_int32_t)dbp->log_filename->id;
 	memcpy(bp, &uinttmp, sizeof(uinttmp));

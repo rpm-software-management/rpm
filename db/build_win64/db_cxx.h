@@ -5,7 +5,7 @@
  * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db_cxx.h,v 11.16 2004/10/14 15:32:29 bostic Exp $
+ * $Id: db_cxx.h,v 11.27 2004/11/09 01:30:41 bostic Exp $
  */
 
 #ifndef _DB_CXX_H_

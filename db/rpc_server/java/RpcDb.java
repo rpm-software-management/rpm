@@ -4,7 +4,7 @@
  * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: RpcDb.java,v 1.23 2004/09/24 15:27:47 mjc Exp $
+ * $Id: RpcDb.java,v 1.24 2004/11/05 00:42:40 mjc Exp $
  */
 
 package com.sleepycat.db.rpcserver;
@@ -73,7 +73,7 @@ public class RpcDb extends Timer {
         }
     }
 
-    public  void close(Dispatcher server,
+    public void close(Dispatcher server,
                        __db_close_msg args, __db_close_reply reply) {
         if (refcount == 0 || --refcount > 0) {
             reply.status = 0;
@@ -83,7 +83,7 @@ public class RpcDb extends Timer {
         try {
             server.delDatabase(this, false);
             if (db != null)
-                db.close(args.flags != DbConstants.DB_NOSYNC);
+                db.close((args.flags & DbConstants.DB_NOSYNC) != 0);
             reply.status = 0;
         } catch (Throwable t) {
             reply.status = Util.handleException(t);
@@ -273,7 +273,7 @@ public class RpcDb extends Timer {
             reply.lorder = rdb.config.getByteOrder();
             reply.status = 0;
 
-            Server.err.println("Sharing Database: " + reply.dbcl_id);
+            // Server.err.println("Sharing Database: " + reply.dbcl_id);
         }
 
         return matchFound;
@@ -313,14 +313,16 @@ public class RpcDb extends Timer {
                 RpcDbTxn rtxn = server.getTxn(args.txnpcl_id);
                 Transaction txn = (rtxn != null) ? rtxn.txn : null;
 
-                Server.err.println("Calling db.open(" + null + ", " + dbname + ", " + subdbname + ", " + args.type + ", " + Integer.toHexString(args.flags) + ", " + args.mode + ")");
+                // Server.err.println("Calling db.open(" + null + ", " + dbname + ", " + subdbname + ", " + args.type + ", " + Integer.toHexString(args.flags) + ", " + args.mode + ")");
 
                 config.setAllowCreate((args.flags & DbConstants.DB_CREATE) != 0);
                 config.setExclusiveCreate((args.flags & DbConstants.DB_EXCL) != 0);
                 config.setReadOnly((args.flags & DbConstants.DB_RDONLY) != 0);
                 config.setTransactional(txn != null || (args.flags & DbConstants.DB_AUTO_COMMIT) != 0);
+                config.setTruncate((args.flags & DbConstants.DB_TRUNCATE) != 0);
                 config.setType(Util.toDatabaseType(args.type));
                 config.setMode(args.mode);
+
                 db = rdbenv.dbenv.openDatabase(txn, dbname, subdbname, config);
                 ++refcount;
 

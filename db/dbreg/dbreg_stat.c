@@ -4,7 +4,7 @@
  * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: dbreg_stat.c,v 11.47 2004/09/22 03:43:09 bostic Exp $
+ * $Id: dbreg_stat.c,v 11.48 2004/10/15 16:59:41 bostic Exp $
  */
 
 #include "db_config.h"
@@ -79,7 +79,7 @@ __dbreg_print_dblist(dbenv, flags)
 		if (fnp->name_off == INVALID_ROFF)
 			name = "";
 		else
-			name = R_ADDR(dbenv, &dblp->reginfo, fnp->name_off);
+			name = R_ADDR(&dblp->reginfo, fnp->name_off);
 
 		dbp = fnp->id >= dblp->dbentry_cnt ? NULL :
 		    dblp->dbentry[fnp->id].dbp;

@@ -29,59 +29,61 @@ version upgrade (<a href="../../api_c/db_upgrade.html">DB-&gt;upgrade</a>), veri
 (<a href="../../api_c/db_verify.html">DB-&gt;verify</a>), flushing to a backing file (<a href="../../api_c/db_sync.html">DB-&gt;sync</a>),
 and association of secondary indices (<a href="../../api_c/db_associate.html">DB-&gt;associate</a>).  Database
 handles are eventually closed using <a href="../../api_c/db_close.html">DB-&gt;close</a>.</p>
-<!--$Id: m4.methods,v 1.5 2004/08/27 13:49:28 bostic Exp $-->
+<!--$Id: m4.methods,v 1.7 2004/11/03 15:52:01 bostic Exp $-->
 <table border=1 align=center>
 <tr><th>Database Operations</th><th>Description</th></tr>
-<tr><td><a href="../../api_c/db_class.html">db_create</a></td><td>Create a database handle</td></tr>
-<tr><td><a href="../../api_c/db_associate.html">DB-&gt;associate</a></td><td>Associate a secondary index</td></tr>
-<tr><td><a href="../../api_c/db_close.html">DB-&gt;close</a></td><td>Close a database</td></tr>
-<tr><td><a href="../../api_c/db_del.html">DB-&gt;del</a></td><td>Delete items from a database</td></tr>
-<tr><td><a href="../../api_c/db_err.html">DB-&gt;err</a></td><td>Error message with error string</td></tr>
-<tr><td><a href="../../api_c/db_err.html">DB-&gt;errx</a></td><td>Error message</td></tr>
-<tr><td><a href="../../api_c/db_fd.html">DB-&gt;fd</a></td><td>Return a file descriptor from a database</td></tr>
-<tr><td><a href="../../api_c/db_get.html">DB-&gt;get</a>, <a href="../../api_c/db_get.html">DB-&gt;pget</a></td><td>Get items from a database</td></tr>
-<tr><td><a href="../../api_c/db_get_byteswapped.html">DB-&gt;get_byteswapped</a></td><td>Return if the underlying database is in host order</td></tr>
-<tr><td><a href="../../api_c/db_getenv.html">DB-&gt;get_env</a></td><td>Return database environment handle</td></tr>
-<tr><td><a href="../../api_c/db_get_type.html">DB-&gt;get_type</a></td><td>Return the database type</td></tr>
-<tr><td><a href="../../api_c/db_join.html">DB-&gt;join</a></td><td>Perform a database join on cursors</td></tr>
-<tr><td><a href="../../api_c/db_key_range.html">DB-&gt;key_range</a></td><td>Return estimate of key location</td></tr>
-<tr><td><a href="../../api_c/db_open.html">DB-&gt;open</a></td><td>Open a database</td></tr>
-<tr><td><a href="../../api_c/db_put.html">DB-&gt;put</a></td><td>Store items into a database</td></tr>
-<tr><td><a href="../../api_c/db_remove.html">DB-&gt;remove</a></td><td>Remove a database</td></tr>
-<tr><td><a href="../../api_c/db_rename.html">DB-&gt;rename</a></td><td>Rename a database</td></tr>
-<tr><td><a href="../../api_c/db_stat.html">DB-&gt;stat</a>, <a href="../../api_c/db_stat.html">DB-&gt;stat_print</a></td><td>Database statistics</td></tr>
-<tr><td><a href="../../api_c/db_sync.html">DB-&gt;sync</a></td><td>Flush a database to stable storage</td></tr>
-<tr><td><a href="../../api_c/db_truncate.html">DB-&gt;truncate</a></td><td>Empty a database</td></tr>
-<tr><td><a href="../../api_c/db_upgrade.html">DB-&gt;upgrade</a></td><td>Upgrade a database</td></tr>
-<tr><td><a href="../../api_c/db_verify.html">DB-&gt;verify</a></td><td>Verify/salvage a database</td></tr>
-<tr><td><b>Database Configuration</b></td><td><br></td></tr>
-<tr><td><a href="../../api_c/db_set_alloc.html">DB-&gt;set_alloc</a></td><td>Set local space allocation functions</td></tr>
-<tr><td><a href="../../api_c/db_set_cachesize.html">DB-&gt;set_cachesize</a></td><td>Set the database cache size</td></tr>
-<tr><td><a href="../../api_c/db_set_dup_compare.html">DB-&gt;set_dup_compare</a></td><td>Set a duplicate comparison function</td></tr>
-<tr><td><a href="../../api_c/db_set_encrypt.html">DB-&gt;set_encrypt</a></td><td>Set the database cryptographic key</td></tr>
-<tr><td><a href="../../api_c/db_set_errcall.html">DB-&gt;set_errcall</a>, <a href="../../api_c/db_set_msgcall.html">DB-&gt;set_msgcall</a></td><td>Set error and informational message callback</td></tr>
-<tr><td><a href="../../api_c/db_set_errfile.html">DB-&gt;set_errfile</a>, <a href="../../api_c/db_set_msgfile.html">DB-&gt;set_msgfile</a></td><td>Set error and informational message FILE</td></tr>
-<tr><td><a href="../../api_c/db_set_errpfx.html">DB-&gt;set_errpfx</a></td><td>Set error message prefix</td></tr>
-<tr><td><a href="../../api_c/db_set_feedback.html">DB-&gt;set_feedback</a></td><td>Set feedback callback</td></tr>
-<tr><td><a href="../../api_c/db_set_flags.html">DB-&gt;set_flags</a></td><td>General database configuration</td></tr>
-<tr><td><a href="../../api_c/db_set_lorder.html">DB-&gt;set_lorder</a></td><td>Set the database byte order</td></tr>
-<tr><td><a href="../../api_c/db_set_pagesize.html">DB-&gt;set_pagesize</a></td><td>Set the underlying database page size</td></tr>
-<tr><td><a href="../../api_c/db_set_paniccall.html">DB-&gt;set_paniccall</a></td><td>Set panic callback</td></tr>
-<tr><td><b>Btree/Recno Configuration</b></td><td><br></td></tr>
-<tr><td><a href="../../api_c/db_set_append_recno.html">DB-&gt;set_append_recno</a></td><td>Set record append callback</td></tr>
-<tr><td><a href="../../api_c/db_set_bt_compare.html">DB-&gt;set_bt_compare</a></td><td>Set a Btree comparison function</td></tr>
-<tr><td><a href="../../api_c/db_set_bt_minkey.html">DB-&gt;set_bt_minkey</a></td><td>Set the minimum number of keys per Btree page</td></tr>
-<tr><td><a href="../../api_c/db_set_bt_prefix.html">DB-&gt;set_bt_prefix</a></td><td>Set a Btree prefix comparison function</td></tr>
-<tr><td><a href="../../api_c/db_set_re_delim.html">DB-&gt;set_re_delim</a></td><td>Set the variable-length record delimiter</td></tr>
-<tr><td><a href="../../api_c/db_set_re_len.html">DB-&gt;set_re_len</a></td><td>Set the fixed-length record length</td></tr>
-<tr><td><a href="../../api_c/db_set_re_pad.html">DB-&gt;set_re_pad</a></td><td>Set the fixed-length record pad byte</td></tr>
-<tr><td><a href="../../api_c/db_set_re_source.html">DB-&gt;set_re_source</a></td><td>Set the backing Recno text file</td></tr>
-<tr><td><b>Hash Configuration</b></td><td><br></td></tr>
-<tr><td><a href="../../api_c/db_set_h_ffactor.html">DB-&gt;set_h_ffactor</a></td><td>Set the Hash table density</td></tr>
-<tr><td><a href="../../api_c/db_set_h_hash.html">DB-&gt;set_h_hash</a></td><td>Set a hashing function</td></tr>
-<tr><td><a href="../../api_c/db_set_h_nelem.html">DB-&gt;set_h_nelem</a></td><td>Set the Hash table size</td></tr>
-<tr><td><b>Queue Configuration</b></td><td><br></td></tr>
-<tr><td><a href="../../api_c/db_set_q_extentsize.html">DB-&gt;set_q_extentsize</a></td><td>Set Queue database extent size</td></tr>
+<!--Db::--><tr><td><a href="../../api_c/db_class.html">db_create</a></td><td>Create a database handle</td></tr>
+<!--Db::associate--><tr><td><a href="../../api_c/db_associate.html">DB-&gt;associate</a></td><td>Associate a secondary index</td></tr>
+<!--Db::close--><tr><td><a href="../../api_c/db_close.html">DB-&gt;close</a></td><td>Close a database</td></tr>
+<!--Db::cursor--><tr><td><a href="../../api_c/db_close.html">DB-&gt;close</a></td><td>Create a cursor</td></tr>
+<!--Db::del--><tr><td><a href="../../api_c/db_del.html">DB-&gt;del</a></td><td>Delete items from a database</td></tr>
+<!--Db::err--><tr><td><a href="../../api_c/db_err.html">DB-&gt;err</a>, <a href="../../api_c/db_err.html">DB-&gt;errx</a></td><td>Error message</td></tr>
+<!--Db::fd--><tr><td><a href="../../api_c/db_fd.html">DB-&gt;fd</a></td><td>Return a file descriptor from a database</td></tr>
+<!--Db::get--><tr><td><a href="../../api_c/db_get.html">DB-&gt;get</a>, <a href="../../api_c/db_get.html">DB-&gt;pget</a></td><td>Get items from a database</td></tr>
+<!--Db::get_byteswapped--><tr><td><a href="../../api_c/db_get_byteswapped.html">DB-&gt;get_byteswapped</a></td><td>Return if the underlying database is in host order</td></tr>
+<!--Db::get_env--><tr><td><a href="../../api_c/db_getenv.html">DB-&gt;get_env</a></td><td>Return database environment handle</td></tr>
+<!--Db::get_mpf--><tr><td><a href="../../api_c/db_get_mpf.html">DB-&gt;mpf</a></td><td>Return underlying <a href="../../api_c/mempfile_class.html">DB_MPOOLFILE</a> handle</td></tr>
+<!--Db::get_type--><tr><td><a href="../../api_c/db_get_type.html">DB-&gt;get_type</a></td><td>Return the database type</td></tr>
+<!--Db::join--><tr><td><a href="../../api_c/db_join.html">DB-&gt;join</a></td><td>Perform a database join on cursors</td></tr>
+<!--Db::key_range--><tr><td><a href="../../api_c/db_key_range.html">DB-&gt;key_range</a></td><td>Return estimate of key location</td></tr>
+<!--Db::open--><tr><td><a href="../../api_c/db_open.html">DB-&gt;open</a></td><td>Open a database</td></tr>
+<!--Db::put--><tr><td><a href="../../api_c/db_put.html">DB-&gt;put</a></td><td>Store items into a database</td></tr>
+<!--Db::remove--><tr><td><a href="../../api_c/db_remove.html">DB-&gt;remove</a></td><td>Remove a database</td></tr>
+<!--Db::rename--><tr><td><a href="../../api_c/db_rename.html">DB-&gt;rename</a></td><td>Rename a database</td></tr>
+<!--Db::stat--><tr><td><a href="../../api_c/db_stat.html">DB-&gt;stat</a>, <a href="../../api_c/db_stat.html">DB-&gt;stat_print</a></td><td>Database statistics</td></tr>
+<!--Db::sync--><tr><td><a href="../../api_c/db_sync.html">DB-&gt;sync</a></td><td>Flush a database to stable storage</td></tr>
+<!--Db::truncate--><tr><td><a href="../../api_c/db_truncate.html">DB-&gt;truncate</a></td><td>Empty a database</td></tr>
+<!--Db::upgrade--><tr><td><a href="../../api_c/db_upgrade.html">DB-&gt;upgrade</a></td><td>Upgrade a database</td></tr>
+<!--Db::verify--><tr><td><a href="../../api_c/db_verify.html">DB-&gt;verify</a></td><td>Verify/salvage a database</td></tr>
+<tr><th>Database Configuration</th><th><br></th></tr>
+<!--Db::set_alloc--><tr><td><a href="../../api_c/db_set_alloc.html">DB-&gt;set_alloc</a></td><td>Set local space allocation functions</td></tr>
+<!--Db::set_cachesize--><tr><td><a href="../../api_c/db_set_cachesize.html">DB-&gt;set_cachesize</a></td><td>Set the database cache size</td></tr>
+<!--Db::set_dup_compare--><tr><td><a href="../../api_c/db_set_dup_compare.html">DB-&gt;set_dup_compare</a></td><td>Set a duplicate comparison function</td></tr>
+<!--Db::set_encrypt--><tr><td><a href="../../api_c/db_set_encrypt.html">DB-&gt;set_encrypt</a></td><td>Set the database cryptographic key</td></tr>
+<!--Db::set_errcall--><tr><td><a href="../../api_c/db_set_errcall.html">DB-&gt;set_errcall</a>, <a href="../../api_c/db_set_msgcall.html">DB-&gt;set_msgcall</a></td><td>Set error and informational message callback</td></tr>
+<!--Db::set_errfile--><tr><td><a href="../../api_c/db_set_errfile.html">DB-&gt;set_errfile</a>, <a href="../../api_c/db_set_msgfile.html">DB-&gt;set_msgfile</a></td><td>Set error and informational message FILE</td></tr>
+<!--Db::set_error_stream-->
+<!--Db::set_errpfx--><tr><td><a href="../../api_c/db_set_errpfx.html">DB-&gt;set_errpfx</a></td><td>Set error message prefix</td></tr>
+<!--Db::set_feedback--><tr><td><a href="../../api_c/db_set_feedback.html">DB-&gt;set_feedback</a></td><td>Set feedback callback</td></tr>
+<!--Db::set_flags--><tr><td><a href="../../api_c/db_set_flags.html">DB-&gt;set_flags</a></td><td>General database configuration</td></tr>
+<!--Db::set_lorder--><tr><td><a href="../../api_c/db_set_lorder.html">DB-&gt;set_lorder</a></td><td>Set the database byte order</td></tr>
+<!--Db::set_pagesize--><tr><td><a href="../../api_c/db_set_pagesize.html">DB-&gt;set_pagesize</a></td><td>Set the underlying database page size</td></tr>
+<!--Db::set_paniccall--><tr><td><a href="../../api_c/db_set_paniccall.html">DB-&gt;set_paniccall</a></td><td>Set panic callback</td></tr>
+<tr><th>Btree/Recno Configuration</th><th><br></th></tr>
+<!--Db::set_append_recno--><tr><td><a href="../../api_c/db_set_append_recno.html">DB-&gt;set_append_recno</a></td><td>Set record append callback</td></tr>
+<!--Db::set_bt_compare--><tr><td><a href="../../api_c/db_set_bt_compare.html">DB-&gt;set_bt_compare</a></td><td>Set a Btree comparison function</td></tr>
+<!--Db::set_bt_minkey--><tr><td><a href="../../api_c/db_set_bt_minkey.html">DB-&gt;set_bt_minkey</a></td><td>Set the minimum number of keys per Btree page</td></tr>
+<!--Db::set_bt_prefix--><tr><td><a href="../../api_c/db_set_bt_prefix.html">DB-&gt;set_bt_prefix</a></td><td>Set a Btree prefix comparison function</td></tr>
+<!--Db::set_re_delim--><tr><td><a href="../../api_c/db_set_re_delim.html">DB-&gt;set_re_delim</a></td><td>Set the variable-length record delimiter</td></tr>
+<!--Db::set_re_len--><tr><td><a href="../../api_c/db_set_re_len.html">DB-&gt;set_re_len</a></td><td>Set the fixed-length record length</td></tr>
+<!--Db::set_re_pad--><tr><td><a href="../../api_c/db_set_re_pad.html">DB-&gt;set_re_pad</a></td><td>Set the fixed-length record pad byte</td></tr>
+<!--Db::set_re_source--><tr><td><a href="../../api_c/db_set_re_source.html">DB-&gt;set_re_source</a></td><td>Set the backing Recno text file</td></tr>
+<tr><th>Hash Configuration</th><th><br></th></tr>
+<!--Db::set_h_ffactor--><tr><td><a href="../../api_c/db_set_h_ffactor.html">DB-&gt;set_h_ffactor</a></td><td>Set the Hash table density</td></tr>
+<!--Db::set_h_hash--><tr><td><a href="../../api_c/db_set_h_hash.html">DB-&gt;set_h_hash</a></td><td>Set a hashing function</td></tr>
+<!--Db::set_h_nelem--><tr><td><a href="../../api_c/db_set_h_nelem.html">DB-&gt;set_h_nelem</a></td><td>Set the Hash table size</td></tr>
+<tr><th>Queue Configuration</th><th><br></th></tr>
+<!--Db::set_q_extentsize--><tr><td><a href="../../api_c/db_set_q_extentsize.html">DB-&gt;set_q_extentsize</a></td><td>Set Queue database extent size</td></tr>
 </table>
 <table width="100%"><tr><td><br></td><td align=right><a href="../am_conf/renumber.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../am/open.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>

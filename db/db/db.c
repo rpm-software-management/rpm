@@ -36,7 +36,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: db.c,v 11.298 2004/10/07 16:43:43 bostic Exp $
+ * $Id: db.c,v 11.300 2004/10/26 17:38:41 bostic Exp $
  */
 
 #include "db_config.h"
@@ -566,8 +566,7 @@ __db_dbenv_mpool(dbp, fname, flags)
 		}
 		/* FALLTHROUGH */
 	default:
-		return (
-		    __db_unknown_type(dbenv, "__db_dbenv_setup", dbp->type));
+		return (__db_unknown_type(dbenv, "DB->open", dbp->type));
 	}
 
 	mpf = dbp->mpf;
@@ -1171,7 +1170,7 @@ __db_testcopy(dbenv, dbp, name)
 	if (name == NULL) {
 		dbmp = dbenv->mp_handle;
 		mpf = dbp->mpf;
-		name = R_ADDR(dbenv, dbmp->reginfo, mpf->mfp->path_off);
+		name = R_ADDR(dbmp->reginfo, mpf->mfp->path_off);
 	}
 
 	if (dbp != NULL && dbp->type == DB_QUEUE)

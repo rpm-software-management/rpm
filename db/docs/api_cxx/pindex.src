@@ -81,6 +81,7 @@ __APIREL__/api_cxx/db_verify.html__OCT__DB_ORDERCHKONLY Db::verify@DB_ORDERCHKON
 __APIREL__/api_cxx/dbt_class.html__OCT__2 @key/data pairs
 __APIREL__/api_cxx/dbt_class.html__OCT__DB_DBT_MALLOC Dbt@DB_DBT_MALLOC
 __APIREL__/api_cxx/dbt_class.html__OCT__DB_DBT_REALLOC Dbt@DB_DBT_REALLOC
+__APIREL__/api_cxx/dbt_class.html__OCT__3 @DB_BUFFER_SMALL
 __APIREL__/api_cxx/dbt_class.html__OCT__DB_DBT_USERMEM Dbt@DB_DBT_USERMEM
 __APIREL__/api_cxx/dbt_class.html__OCT__DB_DBT_PARTIAL Dbt@DB_DBT_PARTIAL
 __APIREL__/api_cxx/dbc_dup.html__OCT__DB_POSITION Dbc::dup@DB_POSITION
@@ -271,6 +272,7 @@ __APIREL__/api_cxx/memp_stat.html__OCT__DB_STAT_CLEAR DbEnv::memp_stat@DB_STAT_C
 __APIREL__/api_cxx/memp_stat.html__OCT__DB_STAT_CLEAR DbEnv::memp_stat@DB_STAT_CLEAR
 __APIREL__/api_cxx/memp_stat.html__OCT__DB_STAT_ALL DbEnv::memp_stat@DB_STAT_ALL
 __APIREL__/api_cxx/memp_stat.html__OCT__DB_STAT_MEMP_HASH DbEnv::memp_stat@DB_STAT_MEMP_HASH
+__APIREL__/api_cxx/memp_class.html__OCT__DB_BUFFER_SMALL DbMemoryException@DB_BUFFER_SMALL
 __APIREL__/api_cxx/rep_elect.html__OCT__2 @DB_REP_UNAVAIL
 __APIREL__/api_cxx/rep_message.html__OCT__DB_REP_DUPMASTER DbEnv::rep_process_message@DB_REP_DUPMASTER
 __APIREL__/api_cxx/rep_message.html__OCT__DB_REP_HOLDELECTION DbEnv::rep_process_message@DB_REP_HOLDELECTION

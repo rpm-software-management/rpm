@@ -1,4 +1,4 @@
-# $Id: Makefile.in,v 11.261 2004/09/24 15:27:47 mjc Exp $
+# $Id: Makefile.in,v 11.264 2004/11/01 21:55:33 mark Exp $
 
 srcdir=	@srcdir@/..
 builddir=.
@@ -414,7 +414,7 @@ JAVA_EXSRCS=\
 	$(JAVA_EXDIR)/collections/ship/index/SupplierData.java \
 	$(JAVA_EXDIR)/collections/ship/index/SupplierKey.java \
 	$(JAVA_EXDIR)/collections/ship/index/Weight.java \
-	$(JAVA_EXDIR)/collections/ship/marshal/MarshalledEntity.java \
+	$(JAVA_EXDIR)/collections/ship/marshal/MarshalledEnt.java \
 	$(JAVA_EXDIR)/collections/ship/marshal/MarshalledKey.java \
 	$(JAVA_EXDIR)/collections/ship/marshal/Part.java \
 	$(JAVA_EXDIR)/collections/ship/marshal/PartKey.java \
@@ -1659,7 +1659,7 @@ cxx_txn@o@: $(srcdir)/cxx/cxx_txn.cpp
 ##################################################
 # Java API build rules.
 ##################################################
-db_java_wrap@o@::$(srcdir)/libdb_java/db_java_wrap.c
+db_java_wrap@o@: $(srcdir)/libdb_java/db_java_wrap.c
 	$(CC) $(CFLAGS) $?
 
 ##################################################
@@ -1769,4 +1769,8 @@ strdup@o@: $(srcdir)/clib/strdup.c
 snprintf@o@: $(srcdir)/clib/snprintf.c
 	$(CC) $(CFLAGS) $?
 strerror@o@: $(srcdir)/clib/strerror.c
+	$(CC) $(CFLAGS) $?
+strtol@o@: $(srcdir)/clib/strtol.c
+	$(CC) $(CFLAGS) $?
+strtoul@o@: $(srcdir)/clib/strtoul.c
 	$(CC) $(CFLAGS) $?

@@ -45,8 +45,8 @@ extern "C" {
  */
 #define	DB_VERSION_MAJOR	4
 #define	DB_VERSION_MINOR	3
-#define	DB_VERSION_PATCH	14
-#define	DB_VERSION_STRING	"Sleepycat Software: Berkeley DB 4.3.14: (October 14, 2004)"
+#define	DB_VERSION_PATCH	21
+#define	DB_VERSION_STRING	"Sleepycat Software: Berkeley DB 4.3.21: (November  8, 2004)"
 
 /*
  * !!!
@@ -89,8 +89,8 @@ typedef unsigned int u_int32_t;
  * get upset about that.  So far we haven't run on any machine where there's
  * no unsigned type the same size as a pointer -- here's hoping.
  */
-@uintmax_t_decl@
-@uintptr_t_decl@
+typedef unsigned long uintmax_t;
+typedef unsigned long uintptr_t;
 
 /*
  * Sequences are only available on machines with 64-bit integral types.

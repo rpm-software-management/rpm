@@ -4,7 +4,7 @@
  * Copyright (c) 2000-2004
  *      Sleepycat Software.  All rights reserved.
  *
- * $Id: DbCompat.java,v 1.5 2004/09/22 18:01:03 bostic Exp $
+ * $Id: DbCompat.java,v 1.6 2004/11/05 01:08:31 mjc Exp $
  */
 
 package com.sleepycat.compat;
@@ -139,14 +139,14 @@ public class DbCompat {
         return cursor.getSearchRecordNumber(key, pKey, data, lockMode);
     }
 
-    public static OperationStatus putAfter(Cursor cursor, DatabaseEntry data)
+    public static OperationStatus putAfter(Cursor cursor, DatabaseEntry key, DatabaseEntry data)
         throws DatabaseException {
-        return cursor.putAfter(data);
+        return cursor.putAfter(key, data);
     }
 
-    public static OperationStatus putBefore(Cursor cursor, DatabaseEntry data)
+    public static OperationStatus putBefore(Cursor cursor, DatabaseEntry key, DatabaseEntry data)
         throws DatabaseException {
-        return cursor.putBefore(data);
+        return cursor.putBefore(key, data);
     }
 
     public static OperationStatus append(Database db,

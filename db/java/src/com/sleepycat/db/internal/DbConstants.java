@@ -60,6 +60,7 @@ public interface DbConstants
     int DB_KEYLAST = 16;
     int DB_LAST = 17;
     int DB_LOCKDOWN = 0x0080000;
+    int DB_LOCK_DEADLOCK = -30995;
     int DB_LOCK_DEFAULT = 1;
     int DB_LOCK_EXPIRE = 2;
     int DB_LOCK_GET = 1;
@@ -172,7 +173,7 @@ public interface DbConstants
     int DB_VERIFY = 0x0000002;
     int DB_VERSION_MAJOR = 4;
     int DB_VERSION_MINOR = 3;
-    int DB_VERSION_PATCH = 14;
+    int DB_VERSION_PATCH = 21;
     int DB_WRITECURSOR = 35;
     int DB_XA_CREATE = 0x0000002;
     int DB_XIDDATASIZE = 128;

@@ -4,7 +4,7 @@
  * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: qam_method.c,v 11.83 2004/10/05 16:59:26 sue Exp $
+ * $Id: qam_method.c,v 11.84 2004/10/14 18:09:32 bostic Exp $
  */
 
 #include "db_config.h"
@@ -209,7 +209,7 @@ __db_prqueue(dbp, flags)
 
 	if ((ret = __queue_pageinfo(dbp, &first, &last, &empty, 1, flags)) != 0)
 		return (ret);
-	    
+
 	if (empty || ret != 0)
 		return (ret);
 

@@ -4,7 +4,7 @@
  * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: tcl_internal.c,v 11.69 2004/05/06 02:01:41 bostic Exp $
+ * $Id: tcl_internal.c,v 11.70 2004/10/25 18:04:44 bostic Exp $
  */
 
 #include "db_config.h"
@@ -239,6 +239,12 @@ _SetListElemInt(interp, list, elem1, elem2)
 }
 
 /*
+ * Don't compile this code if we don't have sequences compiled into the DB
+ * library, it's likely because we don't have a 64-bit type, and trying to
+ * use int64_t is going to result in syntax errors.
+ */
+#ifdef HAVE_SEQUENCE
+/*
  * PUBLIC: int _SetListElemWideInt __P((Tcl_Interp *,
  * PUBLIC:     Tcl_Obj *, void *, int64_t));
  */
@@ -261,6 +267,7 @@ _SetListElemWideInt(interp, list, elem1, elem2)
 		return (TCL_ERROR);
 	return (Tcl_ListObjAppendElement(interp, list, thislist));
 }
+#endif /* HAVE_SEQUENCE */
 
 /*
  * PUBLIC: int _SetListRecnoElem __P((Tcl_Interp *, Tcl_Obj *,

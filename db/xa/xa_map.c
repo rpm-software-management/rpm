@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: xa_map.c,v 11.24 2004/09/15 21:49:21 mjc Exp $
+ * $Id: xa_map.c,v 11.25 2004/10/15 16:59:46 bostic Exp $
  */
 
 #include "db_config.h"
@@ -132,7 +132,7 @@ __db_map_xid(dbenv, xid, off)
 	TXN_DETAIL *td;
 
 	infop = &((DB_TXNMGR *)dbenv->tx_handle)->reginfo;
-	td = (TXN_DETAIL *)R_ADDR(dbenv, infop, off);
+	td = R_ADDR(infop, off);
 
 	R_LOCK(dbenv, infop);
 	memcpy(td->xid, xid->data, XIDDATASIZE);
@@ -161,7 +161,6 @@ __db_unmap_xid(dbenv, xid, off)
 
 	COMPQUIET(xid, NULL);
 
-	td = (TXN_DETAIL *)R_ADDR(dbenv,
-	    &((DB_TXNMGR *)dbenv->tx_handle)->reginfo, off);
+	td = R_ADDR(&((DB_TXNMGR *)dbenv->tx_handle)->reginfo, off);
 	memset(td->xid, 0, sizeof(td->xid));
 }

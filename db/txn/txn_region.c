@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: txn_region.c,v 11.86 2004/09/22 17:41:10 bostic Exp $
+ * $Id: txn_region.c,v 11.87 2004/10/15 16:59:44 bostic Exp $
  */
 
 #include "db_config.h"
@@ -70,7 +70,7 @@ __txn_open(dbenv)
 
 	/* Set the local addresses. */
 	tmgrp->reginfo.primary =
-	    R_ADDR(dbenv, &tmgrp->reginfo, tmgrp->reginfo.rp->primary);
+	    R_ADDR(&tmgrp->reginfo, tmgrp->reginfo.rp->primary);
 
 	/* Acquire a mutex to protect the active TXN list. */
 	if (F_ISSET(dbenv, DB_ENV_THREAD) &&
@@ -139,7 +139,7 @@ __txn_init(dbenv, tmgrp)
 		return (ret);
 	}
 	tmgrp->reginfo.rp->primary =
-	    R_OFFSET(dbenv, &tmgrp->reginfo, tmgrp->reginfo.primary);
+	    R_OFFSET(&tmgrp->reginfo, tmgrp->reginfo.primary);
 	region = tmgrp->reginfo.primary;
 	memset(region, 0, sizeof(*region));
 
@@ -162,7 +162,7 @@ __txn_init(dbenv, tmgrp)
 		return (ret);
 	}
 	__db_maintinit(&tmgrp->reginfo, addr, TXN_MAINT_SIZE);
-	region->maint_off = R_OFFSET(dbenv, &tmgrp->reginfo, addr);
+	region->maint_off = R_OFFSET(&tmgrp->reginfo, addr);
 #endif
 	return (0);
 }
@@ -265,7 +265,7 @@ __txn_dbenv_refresh(dbenv)
 	if (TAILQ_FIRST(&tmgrp->txn_chain) != NULL) {
 		while ((txnp = TAILQ_FIRST(&tmgrp->txn_chain)) != NULL) {
 			/* Prepared transactions are OK. */
-			td = (TXN_DETAIL *)R_ADDR(dbenv, reginfo, txnp->off);
+			td = R_ADDR(reginfo, txnp->off);
 			txnid = txnp->txnid;
 			if (td->status == TXN_PREPARED) {
 				if ((ret = __txn_discard(txnp, 0)) != 0) {
@@ -357,12 +357,11 @@ __txn_region_destroy(dbenv, infop)
 #ifdef HAVE_MUTEX_SYSTEM_RESOURCES
 	DB_TXNREGION *region;
 
-	region = R_ADDR(dbenv, infop, infop->rp->primary);
+	region = R_ADDR(infop, infop->rp->primary);
 
-	__db_shlocks_destroy(infop, R_ADDR(dbenv, infop, region->maint_off));
+	__db_shlocks_destroy(infop, R_ADDR(infop, region->maint_off));
 	if (infop->primary != NULL && F_ISSET(dbenv, DB_ENV_PRIVATE))
-		__db_shalloc_free(infop,
-		    R_ADDR(dbenv, infop, region->maint_off));
+		__db_shalloc_free(infop, R_ADDR(infop, region->maint_off));
 #endif
 	if (infop->primary != NULL && F_ISSET(dbenv, DB_ENV_PRIVATE))
 		__db_shalloc_free(infop, infop->primary);

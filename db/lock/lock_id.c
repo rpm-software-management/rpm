@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: lock_id.c,v 11.145 2004/09/15 21:49:17 mjc Exp $
+ * $Id: lock_id.c,v 11.146 2004/10/15 16:59:42 bostic Exp $
  */
 
 #include "db_config.h"
@@ -312,15 +312,14 @@ __lock_addfamilylocker(dbenv, pid, id)
 		goto err;
 
 	/* Point to our parent. */
-	lockerp->parent_locker = R_OFFSET(dbenv, &lt->reginfo, mlockerp);
+	lockerp->parent_locker = R_OFFSET(&lt->reginfo, mlockerp);
 
 	/* See if this locker is the family master. */
 	if (mlockerp->master_locker == INVALID_ROFF)
-		lockerp->master_locker =
-		    R_OFFSET(dbenv, &lt->reginfo, mlockerp);
+		lockerp->master_locker = R_OFFSET(&lt->reginfo, mlockerp);
 	else {
 		lockerp->master_locker = mlockerp->master_locker;
-		mlockerp = R_ADDR(dbenv, &lt->reginfo, mlockerp->master_locker);
+		mlockerp = R_ADDR(&lt->reginfo, mlockerp->master_locker);
 	}
 
 	/*

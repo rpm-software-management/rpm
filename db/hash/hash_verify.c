@@ -4,7 +4,7 @@
  * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: hash_verify.c,v 1.62 2004/10/11 18:47:50 bostic Exp $
+ * $Id: hash_verify.c,v 1.63 2004/10/14 18:11:36 bostic Exp $
  */
 
 #include "db_config.h"
@@ -81,12 +81,12 @@ __ham_vrfy_meta(dbp, vdp, m, pgno, flags)
 	if (!LF_ISSET(DB_NOORDERCHK))
 		if (m->h_charkey != hfunc(dbp, CHARKEY, sizeof(CHARKEY))) {
 			EPRINT((dbp->dbenv,
-"Page %lu: database has different custom hash function; reverify with DB_NOORDERCHK set",
+"Page %lu: database has custom hash function; reverify with DB_NOORDERCHK set",
 			    (u_long)pgno));
 			/*
-			 * Return immediately;  this is probably a sign
-			 * of user error rather than database corruption, so
-			 * we want to avoid extraneous errors.
+			 * Return immediately;  this is probably a sign of user
+			 * error rather than database corruption, so we want to
+			 * avoid extraneous errors.
 			 */
 			isbad = 1;
 			goto err;

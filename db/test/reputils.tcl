@@ -3,7 +3,7 @@
 # Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: reputils.tcl,v 11.83 2004/09/22 18:01:06 bostic Exp $
+# $Id: reputils.tcl,v 11.84 2004/11/03 18:50:52 carol Exp $
 #
 # Replication testing utilities
 
@@ -871,6 +871,7 @@ proc setpriority { priority nclients winner {start 0} } {
 proc run_election { ecmd celist errcmd priority crsh qdir msg elector \
     nsites nvotes nclients win {reopen 0} {dbname "test.db"} } {
 	global elect_timeout elect_serial
+	global is_hp_test
 	global is_windows_test
 	global rand_init
 	upvar $ecmd env_cmd
@@ -903,8 +904,8 @@ proc run_election { ecmd celist errcmd priority crsh qdir msg elector \
 	    expected winner is $win (eid [expr $win + 2])"
 	incr elect_serial
 	set pfx "CHILD$elector.$elect_serial"
-	# Windows requires a longer timeout.
-	if { $is_windows_test == 1 } {
+	# Windows and HP-UX require a longer timeout.
+	if { $is_windows_test == 1 || $is_hp_test == 1 } {
 		set elect_timeout [expr $elect_timeout * 3]
 	}
 	set elect_pipe($elector) [start_election \

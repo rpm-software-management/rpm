@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mp_method.c,v 11.57 2004/09/22 16:26:19 bostic Exp $
+ * $Id: mp_method.c,v 11.58 2004/10/15 16:59:43 bostic Exp $
  */
 
 #include "db_config.h"
@@ -423,7 +423,7 @@ __memp_nameop(dbenv, fileid, newname, fullold, fullnew)
 			continue;
 
 		/* Ignore non-matching files. */
-		if (memcmp(fileid, R_ADDR(dbenv,
+		if (memcmp(fileid, R_ADDR(
 		    dbmp->reginfo, mfp->fileid_off), DB_FILE_ID_LEN) != 0)
 			continue;
 
@@ -437,7 +437,7 @@ __memp_nameop(dbenv, fileid, newname, fullold, fullnew)
 			 * Else, it's a rename.  We've allocated memory
 			 * for the new name.  Swap it with the old one.
 			 */
-			p = R_ADDR(dbenv, dbmp->reginfo, mfp->path_off);
+			p = R_ADDR(dbmp->reginfo, mfp->path_off);
 			mfp->path_off = newname_off;
 		}
 		break;
@@ -507,7 +507,7 @@ __memp_get_refcnt(dbenv, fileid, refp)
 			continue;
 
 		/* Ignore non-matching files. */
-		if (memcmp(fileid, R_ADDR(dbenv,
+		if (memcmp(fileid, R_ADDR(
 		    dbmp->reginfo, mfp->fileid_off), DB_FILE_ID_LEN) != 0)
 			continue;
 

@@ -11,11 +11,14 @@
  * ======================================================================
 */
 
+extern "C"
+{
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
 #include "skiplist.h"
+}
 
 #ifdef USE_DMALLOC
 #    include <dmalloc.h>
@@ -134,7 +137,7 @@ void *skiplist_find_compare(Skiplist *sli,
   } else {
     skiplist_find(sli->index, (void *)comp, &m);
     assert(m);
-    sl=m->data;
+    sl= (Skiplist *) m->data;
   }
   skiplisti_find_compare(sl, data, iter, sl->comparek);
   return (*iter)?((*iter)->data):(*iter);
@@ -198,9 +201,13 @@ struct skiplistnode *skiplist_insert_compare(Skiplist *sl,
     sl->topend = sl->bottomend = sl->top = sl->bottom = 
       (struct skiplistnode *)malloc(sizeof(struct skiplistnode));
     assert(sl->top);
-    sl->top->next = sl->top->data = sl->top->prev =
-	sl->top->up = sl->top->down = 
-	sl->top->nextindex = sl->top->previndex = NULL;
+    sl->top->next = (struct skiplistnode *) NULL;
+    sl->top->data = (struct skiplistnode *) NULL;
+    sl->top->prev =(struct skiplistnode *) NULL;
+	sl->top->up = (struct skiplistnode *) NULL;
+    sl->top->down = (struct skiplistnode *) NULL;
+	sl->top->nextindex=  (struct skiplistnode *) NULL;
+    sl->top->previndex = (struct skiplistnode *) NULL;
     sl->top->sl = sl;
   }
   if(sl->preheight) {
@@ -462,7 +469,7 @@ int skiplist_remove_compare(Skiplist *sli,
   } else {
     skiplist_find(sli->index, (void *)comp, &m);
     assert(m);
-    sl=m->data;
+    sl= (Skiplist *) m->data;
   }
   skiplisti_find_compare(sl, data, &m, comp);
   if(!m) return 0;

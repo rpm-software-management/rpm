@@ -4,7 +4,7 @@
  * Copyright (c) 2002-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: Shipment.java,v 1.3 2004/09/22 16:17:13 mark Exp $
+ * $Id: Shipment.java,v 1.4 2004/11/01 21:45:40 mark Exp $
  */
 
 package com.sleepycat.examples.collections.ship.marshal;
@@ -18,7 +18,7 @@ import com.sleepycat.bind.tuple.TupleOutput;
  * A Shipment represents the combined key/data pair for a shipment entity.
  *
  * <p> In this sample, Shipment is bound to the stored key/data entry by
- * implementing the MarshalledEntity interface, which is called by {@link
+ * implementing the MarshalledEnt interface, which is called by {@link
  * SampleViews.MarshalledEntityBinding}. </p>
  *
  * <p> The binding is "tricky" in that it uses this class for both the stored
@@ -31,7 +31,7 @@ import com.sleepycat.bind.tuple.TupleOutput;
  *
  * @author Mark Hayes
  */
-public class Shipment implements Serializable, MarshalledEntity {
+public class Shipment implements Serializable, MarshalledEnt {
 
     static final String PART_KEY = "part";
     static final String SUPPLIER_KEY = "supplier";
@@ -79,7 +79,7 @@ public class Shipment implements Serializable, MarshalledEntity {
                 " quantity=" + quantity + ']';
     }
 
-    // --- MarshalledEntity implementation ---
+    // --- MarshalledEnt implementation ---
 
     Shipment() {
 

@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: txn_stat.c,v 11.36 2004/09/15 21:49:21 mjc Exp $
+ * $Id: txn_stat.c,v 11.37 2004/10/15 16:59:44 bostic Exp $
  */
 
 #include "db_config.h"
@@ -124,7 +124,7 @@ __txn_stat(dbenv, statp, flags)
 			stats->st_txnarray[ndx].parentid = TXN_INVALID;
 		else
 			stats->st_txnarray[ndx].parentid =
-			    ((TXN_DETAIL *)R_ADDR(dbenv, &mgr->reginfo,
+			    ((TXN_DETAIL *)R_ADDR(&mgr->reginfo,
 			    txnp->parent))->txnid;
 		stats->st_txnarray[ndx].lsn = txnp->begin_lsn;
 		if ((stats->st_txnarray[ndx].xa_status = txnp->xa_status) != 0)

@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mp_fput.c,v 11.58 2004/09/15 21:49:19 mjc Exp $
+ * $Id: mp_fput.c,v 11.59 2004/10/15 16:59:43 bostic Exp $
  */
 
 #include "db_config.h"
@@ -122,7 +122,7 @@ __memp_fput(dbmfp, pgaddr, flags)
 	bhp = (BH *)((u_int8_t *)pgaddr - SSZA(BH, buf));
 	n_cache = NCACHE(dbmp->reginfo[0].primary, bhp->mf_offset, bhp->pgno);
 	c_mp = dbmp->reginfo[n_cache].primary;
-	hp = R_ADDR(dbenv, &dbmp->reginfo[n_cache], c_mp->htab);
+	hp = R_ADDR(&dbmp->reginfo[n_cache], c_mp->htab);
 	hp = &hp[NBUCKET(c_mp, bhp->mf_offset, bhp->pgno)];
 
 	MUTEX_LOCK(dbenv, &hp->hash_mutex);
@@ -258,16 +258,16 @@ done:
  *	Reset the cache LRU counter.
  */
 static void
-__memp_reset_lru(dbenv, memreg)
+__memp_reset_lru(dbenv, infop)
 	DB_ENV *dbenv;
-	REGINFO *memreg;
+	REGINFO *infop;
 {
 	BH *bhp;
 	DB_MPOOL_HASH *hp;
 	MPOOL *c_mp;
 	u_int32_t bucket;
 
-	c_mp = memreg->primary;
+	c_mp = infop->primary;
 
 	/*
 	 * Update the counter so all future allocations will start at the
@@ -276,7 +276,7 @@ __memp_reset_lru(dbenv, memreg)
 	c_mp->lru_count -= MPOOL_BASE_DECREMENT;
 
 	/* Adjust the priority of every buffer in the system. */
-	for (hp = R_ADDR(dbenv, memreg, c_mp->htab),
+	for (hp = R_ADDR(infop, c_mp->htab),
 	    bucket = 0; bucket < c_mp->htab_buckets; ++hp, ++bucket) {
 		/*
 		 * Skip empty buckets.

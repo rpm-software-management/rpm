@@ -3,7 +3,7 @@
 # Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: upgrade.tcl,v 11.34 2004/09/22 18:01:06 bostic Exp $
+# $Id: upgrade.tcl,v 11.37 2004/10/27 20:29:29 carol Exp $
 
 source ./include.tcl
 
@@ -267,12 +267,17 @@ proc _log_test { temp_dir release method file } {
 		set ret [catch {exec $util_path/db_printlog -h $temp_dir \
 		    -P $passwd > $temp_dir/logs.prlog} message]
 		if { $ret == 1 } {
-			puts "db_printlog failed: $message"
+			# If the failure is because of a historic
+			# log version, that's okay.
+			if { $current_logvers <= $saved_logvers } {
+				puts "db_printlog failed: $message"
+		 	}	
 		}
 	}
+
 	if { $current_logvers > $saved_logvers } {
-		error_check_good unreadable_log_version \
-		    [is_substr $message "unreadable log version"] 1
+		error_check_good historic_log_version \
+		    [is_substr $message "historic log version"] 1
 	} else {
 		error_check_good db_printlog:$message $ret 0
 		# Compare logs.prlog and $file.prlog (should match)
@@ -613,7 +618,7 @@ proc upgrade_dump { database file {stripnulls 0} } {
 	if { $encrypt == 1 } {
 		set encargs " -encryptany $passwd "
 	}
-	set db [eval {berkdb open} $encargs $database]
+	set db [eval {berkdb open} -rdonly $encargs $database]
 	set dbc [$db cursor]
 
 	set f [open $file w+]

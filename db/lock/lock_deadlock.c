@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: lock_deadlock.c,v 11.85 2004/09/22 03:48:29 bostic Exp $
+ * $Id: lock_deadlock.c,v 11.86 2004/10/15 16:59:42 bostic Exp $
  */
 
 #include "db_config.h"
@@ -512,7 +512,7 @@ obj_loop:
 				continue;
 
 			if (lockerp->dd_id == DD_INVALID_ID) {
-				dd = ((DB_LOCKER *)R_ADDR(dbenv, &lt->reginfo,
+				dd = ((DB_LOCKER *)R_ADDR(&lt->reginfo,
 				    lockerp->master_locker))->dd_id;
 				lockerp->dd_id = dd;
 				switch (atype) {
@@ -571,7 +571,7 @@ look_waiters:
 				continue;
 
 			if (lockerp->dd_id == DD_INVALID_ID) {
-				dd = ((DB_LOCKER *)R_ADDR(dbenv, &lt->reginfo,
+				dd = ((DB_LOCKER *)R_ADDR(&lt->reginfo,
 				    lockerp->master_locker))->dd_id;
 				lockerp->dd_id = dd;
 				switch (atype) {
@@ -654,8 +654,7 @@ look_waiters:
 		lp = SH_LIST_FIRST(&lockerp->heldby, __db_lock);
 		if (lp != NULL) {
 			id_array[id].last_locker_id = lockerp->id;
-get_lock:		id_array[id].last_lock = R_OFFSET(dbenv,
-			    &lt->reginfo, lp);
+get_lock:		id_array[id].last_lock = R_OFFSET(&lt->reginfo, lp);
 			id_array[id].last_obj = lp->obj;
 			lo = (DB_LOCKOBJ *)((u_int8_t *)lp + lp->obj);
 			pptr = SH_DBT_PTR(&lo->lockobj);
@@ -790,7 +789,7 @@ __dd_abort(dbenv, info)
 		ret = DB_ALREADY_ABORTED;
 		goto out;
 	}
-	if (R_OFFSET(dbenv, &lt->reginfo, lockp) != info->last_lock ||
+	if (R_OFFSET(&lt->reginfo, lockp) != info->last_lock ||
 	    lockp->holder != lockerp->id ||
 	    lockp->obj != info->last_obj || lockp->status != DB_LSTAT_WAITING) {
 		ret = DB_ALREADY_ABORTED;

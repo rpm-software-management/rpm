@@ -39,7 +39,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: bt_put.c,v 11.79 2004/01/28 03:35:49 bostic Exp $
+ * $Id: bt_put.c,v 11.80 2004/10/29 17:33:25 ubell Exp $
  */
 
 #include "db_config.h"
@@ -700,7 +700,7 @@ __bam_dup_convert(dbc, h, indx)
 
 	/* Sum up all the data items. */
 	for (cnt = 0, first = indx;
-	    inp[first] == inp[indx] && indx < NUM_ENT(h);
+	    indx < NUM_ENT(h) && inp[first] == inp[indx];
 	    ++cnt, indx += P_INDX) {
 		bk = GET_BKEYDATA(dbp, h, indx + O_INDX);
 		sz += B_TYPE(bk->type) == B_KEYDATA ?

@@ -4,7 +4,7 @@
 * Copyright (c) 2002-2004
 *	Sleepycat Software.  All rights reserved.
 *
-* $Id: Cursor.java,v 1.5 2004/06/02 21:28:43 mark Exp $
+* $Id: Cursor.java,v 1.6 2004/11/05 01:08:31 mjc Exp $
 */
 
 package com.sleepycat.db;
@@ -271,18 +271,20 @@ public class Cursor {
             dbc.put(key, data, DbConstants.DB_KEYLAST));
     }
 
-    public OperationStatus putAfter(final DatabaseEntry data)
+    public OperationStatus putAfter(final DatabaseEntry key,
+                                    final DatabaseEntry data)
         throws DatabaseException {
 
         return OperationStatus.fromInt(
-            dbc.put(DatabaseEntry.UNUSED, data, DbConstants.DB_AFTER));
+            dbc.put(key, data, DbConstants.DB_AFTER));
     }
 
-    public OperationStatus putBefore(final DatabaseEntry data)
+    public OperationStatus putBefore(final DatabaseEntry key,
+                                     final DatabaseEntry data)
         throws DatabaseException {
 
         return OperationStatus.fromInt(
-            dbc.put(DatabaseEntry.UNUSED, data, DbConstants.DB_BEFORE));
+            dbc.put(key, data, DbConstants.DB_BEFORE));
     }
 
     public OperationStatus putNoOverwrite(final DatabaseEntry key,

@@ -1,6 +1,6 @@
 1 VERSIONINFO
- FILEVERSION 4,0,3,14
- PRODUCTVERSION 4,0,3,14
+ FILEVERSION 4,0,3,21
+ PRODUCTVERSION 4,0,3,21
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -18,12 +18,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Sleepycat Software\0"
             VALUE "FileDescription", "Berkeley DB 3.0 DLL\0"
-            VALUE "FileVersion", "4.3.14\0"
+            VALUE "FileVersion", "4.3.21\0"
             VALUE "InternalName", "libdb.dll\0"
             VALUE "LegalCopyright", "Copyright © Sleepycat Software Inc. 1997-2004\0"
             VALUE "OriginalFilename", "libdb.dll\0"
             VALUE "ProductName", "Sleepycat Software libdb\0"
-            VALUE "ProductVersion", "4.3.14\0"
+            VALUE "ProductVersion", "4.3.21\0"
         END
     END
     BLOCK "VarFileInfo"

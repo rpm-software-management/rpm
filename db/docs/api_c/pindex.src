@@ -438,6 +438,7 @@ __APIREL__/ref/build_unix/intro.html__OCT__4 building for @UNIX
 __APIREL__/ref/build_unix/intro.html__OCT__5 building for @QNX
 __APIREL__/ref/build_unix/irix.html__OCT__2 @IRIX
 __APIREL__/ref/build_unix/linux.html__OCT__2 @Linux
+__APIREL__/ref/build_unix/macosx.html__OCT__2 @Mac OS X
 __APIREL__/ref/build_unix/notes.html__OCT__2 @building for UNIX FAQ
 __APIREL__/ref/build_unix/notes.html__OCT__3 building for @UNIX FAQ
 __APIREL__/ref/build_unix/osf1.html__OCT__2 @OSF/1

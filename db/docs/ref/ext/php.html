@@ -1,4 +1,4 @@
-<!--$Id: php.so,v 10.2 2004/10/05 19:59:43 bostic Exp $-->
+<!--$Id: php.so,v 10.3 2004/10/18 17:08:43 bostic Exp $-->
 <!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -43,7 +43,7 @@ function del($key, $txn = null) {}
 function get($key, $txn = null, $flags = 0) {}
 function pget($key, &$pkey, $txn = null, $flags = 0) {}
 function get_type() {}	// returns the stringified database type name
-function stat() {}	// returns statistics as an associative array
+function stat($txn = null, $flags = 0) {} // returns statistics as an as
 function join($cursor_list, $flags = 0) {}
 function sync() {}
 function truncate($txn = null, $flags = 0) {}

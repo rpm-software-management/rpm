@@ -4,7 +4,7 @@
  * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: tcl_db_pkg.c,v 11.188 2004/10/12 23:54:14 ubell Exp $
+ * $Id: tcl_db_pkg.c,v 11.190 2004/10/27 16:48:32 bostic Exp $
  */
 
 #include "db_config.h"
@@ -1485,7 +1485,7 @@ bdb_DbOpen(interp, objc, objv, ip, dbp)
 	DB_ENV *envp;
 	Tcl_Obj **myobjv;
 	u_int32_t gbytes, bytes, open_flags, set_flags, uintarg;
-	int endarg, i, intarg, lorder, mode, myobjc, ncaches;
+	int endarg, i, intarg, mode, myobjc, ncaches;
 	int optindex, result, ret, set_err, set_pfx, subdblen;
 	u_char *subdbtmp;
 	char *arg, *db, *passwd, *subdb, msg[MSG_SIZE];
@@ -1672,10 +1672,10 @@ bdb_DbOpen(interp, objc, objv, ip, dbp)
 				result = TCL_ERROR;
 				break;
 			}
-			result = Tcl_GetIntFromObj(interp, objv[i++], &lorder);
+			result = Tcl_GetIntFromObj(interp, objv[i++], &intarg);
 			if (result == TCL_OK) {
 				_debug_check();
-				ret = (*dbp)->set_lorder(*dbp, lorder);
+				ret = (*dbp)->set_lorder(*dbp, intarg);
 				result = _ReturnSetup(interp, ret,
 				    DB_RETOK_STD(ret), "set_lorder");
 			}
@@ -2401,7 +2401,7 @@ bdb_SeqOpen(interp, objc, objv, ip, seqp)
 		goto error;
 
 	if (0) {
-error:		(void) (*seqp)->close(*seqp, 0);
+error:		(void)(*seqp)->close(*seqp, 0);
 		*seqp = NULL;
 	}
 	return (result);

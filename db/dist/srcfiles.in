@@ -1,4 +1,4 @@
-#	$Id: srcfiles.in,v 1.86 2004/09/23 19:54:23 bostic Exp $
+#	$Id: srcfiles.in,v 1.87 2004/10/30 21:07:01 bostic Exp $
 #
 # This is an input file for the s_win32_dsp and s_vxworks scripts.  It lists
 # the source files in the Berkeley DB tree and notes which are used to build
@@ -64,6 +64,8 @@ clib/snprintf.c					vx vxsmall
 clib/strcasecmp.c				dynamic small static vx vxsmall
 clib/strdup.c					vx vxsmall
 clib/strerror.c
+clib/strtol.c
+clib/strtoul.c
 common/crypto_stub.c				small vxsmall
 common/db_byteorder.c				dynamic small static vx vxsmall
 common/db_err.c					dynamic small static vx vxsmall

@@ -4,7 +4,7 @@
  * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: rep_record.c,v 1.251 2004/10/14 12:56:13 sue Exp $
+ * $Id: rep_record.c,v 1.255 2004/11/04 18:35:29 sue Exp $
  */
 
 #include "db_config.h"
@@ -34,7 +34,7 @@
 #include "dbinc/mp.h"
 #include "dbinc/txn.h"
 
-static int __rep_apply __P((DB_ENV *, REP_CONTROL *, DBT *, DB_LSN *));
+static int __rep_apply __P((DB_ENV *, REP_CONTROL *, DBT *, DB_LSN *, int *));
 static int __rep_collect_txn __P((DB_ENV *, DB_LSN *, LSN_COLLECTION *));
 static int __rep_do_ckp __P((DB_ENV *, DBT *, REP_CONTROL *));
 static int __rep_dorecovery __P((DB_ENV *, DB_LSN *, DB_LSN *));
@@ -136,7 +136,7 @@ __rep_process_message(dbenv, control, rec, eidp, ret_lsnp)
 	REP_CONTROL *rp;
 	REP_VOTE_INFO *vi;
 	u_int32_t bytes, egen, flags, gen, gbytes, rectype, type;
-	int check_limit, cmp, done, do_req;
+	int check_limit, cmp, done, do_req, is_dup;
 	int master, match, old, recovering, ret, t_ret;
 	time_t savetime;
 #ifdef DIAGNOSTIC
@@ -470,14 +470,14 @@ send:			if (__rep_send_message(dbenv, *eidp, type,
 	case REP_LOG_MORE:
 		CLIENT_ONLY(rep, rp);
 		MASTER_CHECK(dbenv, *eidp, rep);
-		if ((ret = __rep_apply(dbenv, rp, rec, ret_lsnp)) != 0 &&
-		    ret != DB_REP_LOGREADY)
-			goto errlock;
+		is_dup = 0;
+		ret = __rep_apply(dbenv, rp, rec, ret_lsnp, &is_dup);
+		switch (ret) {
 		/*
-		 * We're in an internal backup and we've gotten all the log
-		 * we need to run recovery.  Do so now.
+		 * We're in an internal backup and we've gotten 
+		 * all the log we need to run recovery.  Do so now.
 		 */
-		if (ret == DB_REP_LOGREADY) {
+		case DB_REP_LOGREADY:
 			if ((ret = __log_flush(dbenv, NULL)) != 0)
 				goto errlock;
 			if ((ret = __rep_verify_match(dbenv, &rep->last_lsn,
@@ -488,6 +488,27 @@ send:			if (__rep_send_message(dbenv, *eidp, type,
 				F_CLR(rep, REP_F_RECOVER_LOG);
 				MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
 			}
+			break;
+		/*
+		 * If we get any of the "normal" returns, we only process
+		 * LOG_MORE if this is not a duplicate record.  If the 
+		 * record is a duplicate we don't want to handle LOG_MORE
+		 * and request a multiple data stream (or trigger internal
+		 * initialization) since this could be a very old record
+		 * that no longer exists on the master.
+		 */
+		case DB_REP_ISPERM:
+		case DB_REP_NOTPERM:
+		case 0:
+			if (is_dup)
+				goto errlock;
+			else
+				break;
+		/*
+		 * Any other return (errors), we're done.
+		 */
+		default:
+			goto errlock;
 		}
 		if (rp->rectype == REP_LOG_MORE) {
 			MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
@@ -754,7 +775,7 @@ send1:			 if (__rep_send_message(dbenv, *eidp, type,
 	case REP_NEWFILE:
 		CLIENT_ONLY(rep, rp);
 		MASTER_CHECK(dbenv, *eidp, rep);
-		ret = __rep_apply(dbenv, rp, rec, ret_lsnp);
+		ret = __rep_apply(dbenv, rp, rec, ret_lsnp, NULL);
 		goto errlock;
 	case REP_NEWMASTER:
 		ANYSITE(rep);
@@ -878,16 +899,35 @@ rep_verify_err:	if ((t_ret = __log_c_close(logc)) != 0 && ret == 0)
 			goto errlock;
 		rep->stat.st_outdated++;
 
-		R_LOCK(dbenv, &dblp->reginfo);
-		lsn = lp->lsn;
-		R_UNLOCK(dbenv, &dblp->reginfo);
+		MUTEX_LOCK(dbenv, db_rep->db_mutexp);
 		MUTEX_LOCK(dbenv, db_rep->rep_mutexp);
-		F_CLR(rep, REP_F_RECOVER_VERIFY);
-		F_SET(rep, REP_F_RECOVER_UPDATE);
-		ZERO_LSN(rep->first_lsn);
-		MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
-		(void)__rep_send_message(dbenv,
-		    *eidp, REP_UPDATE_REQ, NULL, NULL, 0);
+		/*
+		 * We don't want an old or delayed VERIFY_FAIL
+		 * message to throw us into internal initialization
+		 * when we shouldn't be.  
+		 *
+		 * Only go into internal initialization if:
+		 * We are in RECOVER_VERIFY and this LSN == verify_lsn.
+		 * We are not in any RECOVERY and we are expecting
+		 *    an LSN that no longer exists on the master.
+		 * Otherwise, ignore this message.
+		 */
+		if (((F_ISSET(rep, REP_F_RECOVER_VERIFY)) &&
+		    log_compare(&rp->lsn, &lp->verify_lsn) == 0) ||
+		    (F_ISSET(rep, REP_F_RECOVER_MASK) == 0 &&
+		    log_compare(&rp->lsn, &lp->ready_lsn) >= 0)) {
+			F_CLR(rep, REP_F_RECOVER_VERIFY);
+			F_SET(rep, REP_F_RECOVER_UPDATE);
+			ZERO_LSN(rep->first_lsn);
+			lp->wait_recs = rep->request_gap;
+			MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
+			MUTEX_UNLOCK(dbenv, db_rep->db_mutexp);
+			(void)__rep_send_message(dbenv,
+			    *eidp, REP_UPDATE_REQ, NULL, NULL, 0);
+		} else {
+			MUTEX_UNLOCK(dbenv, db_rep->rep_mutexp);
+			MUTEX_UNLOCK(dbenv, db_rep->db_mutexp);
+		}
 		goto errlock;
 	case REP_VERIFY_REQ:
 		MASTER_ONLY(rep, rp);
@@ -1180,11 +1220,12 @@ out:
  * we try to process as much as possible from __db.rep.db to catch up.
  */
 static int
-__rep_apply(dbenv, rp, rec, ret_lsnp)
+__rep_apply(dbenv, rp, rec, ret_lsnp, is_dupp)
 	DB_ENV *dbenv;
 	REP_CONTROL *rp;
 	DBT *rec;
 	DB_LSN *ret_lsnp;
+	int *is_dupp;
 {
 	DB_REP *db_rep;
 	DBT control_dbt, key_dbt;
@@ -1236,7 +1277,7 @@ __rep_apply(dbenv, rp, rec, ret_lsnp)
 			 * We just filled in a gap in the log record stream.
 			 * Write subsequent records to the log.
 			 */
-gap_check:		lp->wait_recs = 0;
+gap_check:
 			lp->rcvd_recs = 0;
 			ZERO_LSN(lp->max_wait_lsn);
 			if ((ret =
@@ -1333,6 +1374,8 @@ gap_check:		lp->wait_recs = 0;
 		 * don't currently hold the rep mutex.
 		 */
 		rep->stat.st_log_duplicated++;
+		if (is_dupp != NULL)
+			*is_dupp = 1;
 		if (F_ISSET(rp, DB_LOG_PERM))
 			max_lsn = lp->max_perm_lsn;
 		goto done;
@@ -1694,7 +1737,7 @@ __rep_tally(dbenv, rep, eid, countp, egen, vtoff)
 	COMPQUIET(rep, NULL);
 #endif
 
-	tally = R_ADDR(dbenv, (REGINFO *)dbenv->reginfo, vtoff);
+	tally = R_ADDR((REGINFO *)dbenv->reginfo, vtoff);
 	i = 0;
 	vtp = &tally[i];
 	while (i < *countp) {
@@ -1826,7 +1869,7 @@ __rep_cmp_vote2(dbenv, rep, eid, egen)
 	DB_MSGBUF mb;
 #endif
 
-	tally = R_ADDR(dbenv, (REGINFO *)dbenv->reginfo, rep->tally_off);
+	tally = R_ADDR((REGINFO *)dbenv->reginfo, rep->tally_off);
 	i = 0;
 	vtp = &tally[i];
 	for (i = 0; i < rep->sites; i++) {

@@ -3,7 +3,7 @@
 # Copyright (c) 1999-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: sec002.tcl,v 11.12 2004/02/20 19:47:58 sue Exp $
+# $Id: sec002.tcl,v 11.13 2004/11/02 16:12:04 carol Exp $
 #
 # TEST	sec002
 # TEST	Test of security interface and catching errors in the
@@ -130,6 +130,7 @@ proc sec002 { } {
 	# Forcing the error which causes DB_RUNRECOVERY to be
 	# returned ends up leaving open files that cannot be removed.
 	if { $is_windows_test == 1 } {
+		cleanup $testdir NULL 1
 		puts "Skipping remainder of test for Windows"
 		return
 	}

@@ -35,7 +35,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: db_dispatch.c,v 11.167 2004/09/24 00:43:14 bostic Exp $
+ * $Id: db_dispatch.c,v 11.169 2004/10/27 16:44:26 ubell Exp $
  */
 
 #include "db_config.h"
@@ -908,7 +908,7 @@ __db_add_limbo(dbenv, info, fileid, pgno, count)
 	do {
 		if ((ret =
 		    __db_txnlist_pgnoadd(dbenv, info, fileid, fnp->ufid,
-		    R_ADDR(dbenv, &dblp->reginfo, fnp->name_off), pgno)) != 0)
+		    R_ADDR(&dblp->reginfo, fnp->name_off), pgno)) != 0)
 			return (ret);
 		pgno++;
 	} while (--count != 0);
@@ -1153,7 +1153,8 @@ retry:		dbp_created = 0;
 		mpf = dbp->mpf;
 		last_pgno = PGNO_INVALID;
 
-		if (ctxn == NULL || state == LIMBO_COMPENSATE) {
+		if (meta == NULL && 
+		    (ctxn == NULL || state == LIMBO_COMPENSATE)) {
 			pgno = PGNO_BASE_MD;
 			if ((ret = __memp_fget(mpf, &pgno, 0, &meta)) != 0)
 				goto err;

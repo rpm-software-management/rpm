@@ -4,7 +4,7 @@
  * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: tcl_txn.c,v 11.69 2004/10/07 16:48:39 bostic Exp $
+ * $Id: tcl_txn.c,v 11.70 2004/10/27 16:48:32 bostic Exp $
  */
 
 #include "db_config.h"
@@ -447,7 +447,6 @@ txn_Cmd(clientData, interp, objc, objv)
 	DBTCL_INFO *txnip;
 	DB_TXN *txnp;
 	Tcl_Obj *res;
-	u_int32_t tid;
 	int cmdindex, result, ret;
 #ifdef CONFIG_TEST
 	u_int8_t *gid;
@@ -496,8 +495,7 @@ txn_Cmd(clientData, interp, objc, objv)
 			return (TCL_ERROR);
 		}
 		_debug_check();
-		tid = txnp->id(txnp);
-		res = Tcl_NewIntObj((int)tid);
+		res = Tcl_NewIntObj((int)txnp->id(txnp));
 		break;
 	case TXNPREPARE:
 		if (objc != 3) {

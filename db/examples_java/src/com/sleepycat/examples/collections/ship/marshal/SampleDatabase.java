@@ -4,7 +4,7 @@
  * Copyright (c) 2002-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: SampleDatabase.java,v 1.4 2004/09/22 18:00:58 bostic Exp $
+ * $Id: SampleDatabase.java,v 1.5 2004/11/01 21:45:40 mark Exp $
  */
 
 package com.sleepycat.examples.collections.ship.marshal;
@@ -216,7 +216,7 @@ public class SampleDatabase {
     }
 
     /**
-     * The SecondaryKeyCreator for MarshalledEntity objects.  This is an
+     * The SecondaryKeyCreator for MarshalledEnt objects.  This is an
      * extension of the abstract class TupleSerialKeyCreator, which implements
      * SecondaryKeyCreator for the case where the data keys are of the format
      * TupleFormat and the data values are of the format SerialFormat.
@@ -251,7 +251,7 @@ public class SampleDatabase {
             // the primary key is unmarshalled before marshalling the index
             // key, to account for cases where the index key is composed of
             // data elements from the primary key
-            MarshalledEntity entity = (MarshalledEntity) valueInput;
+            MarshalledEnt entity = (MarshalledEnt) valueInput;
             entity.unmarshalPrimaryKey(primaryKeyInput);
             return entity.marshalSecondaryKey(keyName, indexKeyOutput);
         }

@@ -8,8 +8,8 @@ ACTIVATE_CTP	../dbinc/db_server_int.h	/^#define	ACTIVATE_CTP(ctp, id, type) {		\
 ALIGNP_DEC	../dbinc/db_int.in	/^#define	ALIGNP_DEC(p, bound)						\\$/
 ALIGNP_INC	../dbinc/db_int.in	/^#define	ALIGNP_INC(p, bound)						\\$/
 ANYSITE	../rep/rep_record.c	/^#define	ANYSITE(rep)$/
-APPNAME	../dbinc/db_int.in	288
-BACKUP_PREFIX	../db/db.c	1008
+APPNAME	../dbinc/db_int.in	292
+BACKUP_PREFIX	../db/db.c	1007
 BADARG	../clib/getopt.c	59
 BADCH	../clib/getopt.c	57
 BAD_BLOCK_LENGTH	../crypto/rijndael/rijndael-api-fst.h	64
@@ -85,7 +85,7 @@ CHARKEY	../dbinc/hash.h	92
 CHECK_LSN	../dbinc/log.h	/^#define	CHECK_LSN(redo, cmp, lsn, prev)					\\$/
 CIPHER_AES	../dbinc/crypto.h	45
 CIPHER_ANY	../dbinc/crypto.h	49
-CKPLSN_CMP	../dbinc/log.h	363
+CKPLSN_CMP	../dbinc/log.h	361
 CLEAR_BYTE	../dbinc/debug.h	28
 CLEAR_MAP	../lock/lock_deadlock.c	/^#define	CLEAR_MAP(M, N) {						\\$/
 CLIENT_ONLY	../rep/rep_record.c	/^#define	CLIENT_ONLY(rep, rp) do {					\\$/
@@ -232,7 +232,7 @@ DB_DBT_MALLOC	../dbinc/db.in	177
 DB_DBT_PARTIAL	../dbinc/db.in	178
 DB_DBT_REALLOC	../dbinc/db.in	179
 DB_DBT_USERMEM	../dbinc/db.in	180
-DB_DEF_IOSIZE	../dbinc/db_int.in	96
+DB_DEF_IOSIZE	../dbinc/db_int.in	100
 DB_DEGREE_2	../dbinc/db.in	226
 DB_DELETED	../dbinc/db.in	1216
 DB_DESTRUCTOR	../cxx/cxx_db.cpp	/^#define	DB_DESTRUCTOR(_name, _argspec, _arglist, _/
@@ -298,8 +298,8 @@ DB_FILE_ID_LEN	../dbinc/db.in	369
 DB_FIRST	../dbinc/db.in	1131
 DB_FLUSH	../dbinc/db.in	526
 DB_FORCE	../dbinc/db.in	192
-DB_FTYPE_NOTSET	../dbinc/db_int.in	437
-DB_FTYPE_SET	../dbinc/db_int.in	436
+DB_FTYPE_NOTSET	../dbinc/db_int.in	441
+DB_FTYPE_SET	../dbinc/db_int.in	440
 DB_GET_BOTH	../dbinc/db.in	1132
 DB_GET_BOTHC	../dbinc/db.in	1133
 DB_GET_BOTH_RANGE	../dbinc/db.in	1134
@@ -338,7 +338,7 @@ DB_INTERNAL	../libdb_java/db_java_wrap.c	/^#define	DB_INTERNAL(db) ((db)->api_in
 DB_IO_READ	../dbinc/os.h	55
 DB_IO_WRITE	../dbinc/os.h	56
 DB_IS_THREADED	../dbinc/db_int.in	/^#define	DB_IS_THREADED(dbp)						\\$/
-DB_IV_BYTES	../dbinc/db_int.in	489
+DB_IV_BYTES	../dbinc/db_int.in	493
 DB_JOINENV	../dbinc/db.in	250
 DB_JOIN_ITEM	../dbinc/db.in	1136
 DB_JOIN_NOSORT	../dbinc/db.in	339
@@ -412,18 +412,18 @@ DB_LOG_SILENT_ERR	../dbinc/db.in	589
 DB_LOG_STAT	../dbinc/db.in	138
 DB_LOG_WRNOSYNC	../dbinc/db.in	533
 DB_LSN	../dbinc/db.in	139
-DB_MAC_KEY	../dbinc/db_int.in	490
+DB_MAC_KEY	../dbinc/db_int.in	494
 DB_MAC_MAGIC	../dbinc/hmac.h	28
 DB_MAXMMAPSIZE	../mp/mp_fopen.c	493
 DB_MAX_HANDLES	../dbinc/mutex.h	979
 DB_MAX_PAGES	../dbinc/db.in	107
-DB_MAX_PGSIZE	../dbinc/db_int.in	85
+DB_MAX_PGSIZE	../dbinc/db_int.in	89
 DB_MAX_RECORDS	../dbinc/db.in	110
 DB_METHOD	../cxx/cxx_db.cpp	/^#define	DB_METHOD(_name, _argspec, _arglist, _reto/
 DB_METHOD_QUIET	../cxx/cxx_db.cpp	/^#define	DB_METHOD_QUIET(_name, _argspec, _arglist)/
 DB_METHOD_VOID	../cxx/cxx_db.cpp	/^#define	DB_METHOD_VOID(_name, _argspec, _arglist)	/
-DB_MINPAGECACHE	../dbinc/db_int.in	90
-DB_MIN_PGSIZE	../dbinc/db_int.in	84
+DB_MINPAGECACHE	../dbinc/db_int.in	94
+DB_MIN_PGSIZE	../dbinc/db_int.in	88
 DB_MPOOL	../dbinc/db.in	140
 DB_MPOOLFILE	../dbinc/db.in	143
 DB_MPOOLFILE_METHOD	../cxx/cxx_mpool.cpp	/^#define	DB_MPOOLFILE_METHOD(_name, _argspec, _argl/
@@ -475,7 +475,7 @@ DB_OK_QUEUE	../dbinc/db.in	1479
 DB_OK_RECNO	../dbinc/db.in	1480
 DB_OLD_VERSION	../dbinc/db.in	1198
 DB_OPFLAGS_MASK	../dbinc/db.in	1161
-DB_OPNOTSUP	../dbinc/db_int.in	255
+DB_OPNOTSUP	../dbinc/db_int.in	259
 DB_ORDERCHKONLY	../dbinc/db.in	346
 DB_OSO_CREATE	../dbinc/os.h	31
 DB_OSO_DIRECT	../dbinc/os.h	32
@@ -567,16 +567,16 @@ DB_RETOK_STD	../dbinc/db_int.in	/^#define	DB_RETOK_STD(ret)	((ret) == 0)$/
 DB_RETRY	../dbinc/os.h	18
 DB_REVSPLITOFF	../dbinc/db.in	321
 DB_RMW	../dbinc/db.in	1170
-DB_RPC2ND_CONCATDATAKEY	../dbinc/db_int.in	511
-DB_RPC2ND_CONCATKEYDATA	../dbinc/db_int.in	510
-DB_RPC2ND_CONSTANT	../dbinc/db_int.in	514
-DB_RPC2ND_GETNAME	../dbinc/db_int.in	516
-DB_RPC2ND_GETZIP	../dbinc/db_int.in	515
-DB_RPC2ND_MASK	../dbinc/db_int.in	506
-DB_RPC2ND_NOOP	../dbinc/db_int.in	509
-DB_RPC2ND_REVERSECONCAT	../dbinc/db_int.in	512
-DB_RPC2ND_REVERSEDATA	../dbinc/db_int.in	508
-DB_RPC2ND_TRUNCDATA	../dbinc/db_int.in	513
+DB_RPC2ND_CONCATDATAKEY	../dbinc/db_int.in	515
+DB_RPC2ND_CONCATKEYDATA	../dbinc/db_int.in	514
+DB_RPC2ND_CONSTANT	../dbinc/db_int.in	518
+DB_RPC2ND_GETNAME	../dbinc/db_int.in	520
+DB_RPC2ND_GETZIP	../dbinc/db_int.in	519
+DB_RPC2ND_MASK	../dbinc/db_int.in	510
+DB_RPC2ND_NOOP	../dbinc/db_int.in	513
+DB_RPC2ND_REVERSECONCAT	../dbinc/db_int.in	516
+DB_RPC2ND_REVERSEDATA	../dbinc/db_int.in	512
+DB_RPC2ND_TRUNCDATA	../dbinc/db_int.in	517
 DB_RPCCLIENT	../dbinc/db.in	233
 DB_RUNRECOVERY	../dbinc/db.in	1209
 DB_SALVAGE	../dbinc/db.in	350
@@ -612,7 +612,7 @@ DB_STAT_LOCK_FLAGS	../lock/lock_stat.c	150
 DB_STAT_LOCK_LOCKERS	../dbinc/db.in	330
 DB_STAT_LOCK_OBJECTS	../dbinc/db.in	331
 DB_STAT_LOCK_PARAMS	../dbinc/db.in	332
-DB_STAT_MEMP_FLAGS	../mp/mp_stat.c	289
+DB_STAT_MEMP_FLAGS	../mp/mp_stat.c	288
 DB_STAT_MEMP_HASH	../dbinc/db.in	333
 DB_STAT_SUBSYSTEM	../dbinc/db.in	334
 DB_SURPRISE_KID	../dbinc/db.in	1222
@@ -638,10 +638,10 @@ DB_TIME_NOTGRANTED	../dbinc/db.in	289
 DB_TRAIL	../env/env_open.c	923
 DB_TRUNCATE	../dbinc/db.in	197
 DB_TXN	../dbinc/db.in	151
-DB_TXNHEAD	../dbinc/db_int.in	523
-DB_TXNLIST	../dbinc/db_int.in	524
+DB_TXNHEAD	../dbinc/db_int.in	527
+DB_TXNLIST	../dbinc/db_int.in	528
 DB_TXNLIST_MASK	../dbinc/db_dispatch.h	/^#define	DB_TXNLIST_MASK(hp, n)  (n % hp->nslots)$/
-DB_TXNLIST_MAX_PGNO	../db/db_dispatch.c	1468
+DB_TXNLIST_MAX_PGNO	../db/db_dispatch.c	1469
 DB_TXNLOGREC	../dbinc/txn.h	24
 DB_TXNMGR	../dbinc/db.in	154
 DB_TXNREGION	../dbinc/txn.h	23
@@ -998,7 +998,7 @@ FLAG_CHECK2	../dbinc/tcl_db.h	/^#define	FLAG_CHECK2(flag, val) do {					\\$/
 FLD_CLR	../dbinc/db_int.in	/^#define	FLD_CLR(fld, f)		(fld) &= ~(f)$/
 FLD_ISSET	../dbinc/db_int.in	/^#define	FLD_ISSET(fld, f)	((fld) & (f))$/
 FLD_SET	../dbinc/db_int.in	/^#define	FLD_SET(fld, f)		(fld) |= (f)$/
-FMAP_ENTRIES	../mp/mp_stat.c	304
+FMAP_ENTRIES	../mp/mp_stat.c	303
 FNAME	../dbinc/db.in	158
 FREE_IF_CHANGED	../rpc_client/gen_client_ret.c	/^#define	FREE_IF_CHANGED(dbtp, orig)	do {				\\$/
 FREE_IF_NEEDED	../dbinc/db_int.in	/^#define	FREE_IF_NEEDED(sdbp, dbt)					\\$/
@@ -1017,7 +1017,7 @@ GET_PCOUNT	../lock/lock_list.c	/^#define	GET_PCOUNT(dp, count)	do {					\\$/
 GET_PGNO	../lock/lock_list.c	/^#define	GET_PGNO(dp, pgno)	do {					\\$/
 GET_RINTERNAL	../dbinc/db_page.h	/^#define	GET_RINTERNAL(dbp, pg, indx)					\\$/
 GET_SIZE	../lock/lock_list.c	/^#define	GET_SIZE(dp, size)	do {					\\$/
-GIGABYTE	../dbinc/db_int.in	73
+GIGABYTE	../dbinc/db_int.in	77
 GLOB_CHAR	../tcl/tcl_internal.c	/^#define	GLOB_CHAR(c)	((c) == '*' || (c) == '?')$/
 GUARD_BYTE	../dbinc/debug.h	29
 HASH4	../hash/hash_func.c	166
@@ -1069,13 +1069,13 @@ H_PAIRDATA	../dbinc/db_page.h	/^#define	H_PAIRDATA(dbp, pg, indx)	P_ENTRY(dbp, p
 H_PAIRKEY	../dbinc/db_page.h	/^#define	H_PAIRKEY(dbp, pg, indx)	P_ENTRY(dbp, pg, /
 H_PAIRSIZE	../dbinc/db_page.h	/^#define	H_PAIRSIZE(dbp, pg, psize, indx)				\\$/
 ILLEGAL_SIZE	../env/db_salloc.c	37
-INITIAL_DEAD_ALLOC	../lock/lock_deadlock.c	699
+INITIAL_DEAD_ALLOC	../lock/lock_deadlock.c	698
 INIT_LSN	../dbinc/db_int.in	/^#define	INIT_LSN(LSN)		do {					\\$/
 INP_OFFSET	../db/db_vrfy.c	/^#define	INP_OFFSET(dbp, h, i)	\\$/
-INT64_FMT	../dbinc/db_int.in	55
-INT64_MAX	../dbinc/db_int.in	51
-INT64_MIN	../dbinc/db_int.in	52
-INVALID_LSNMSG	../tcl/tcl_internal.c	518
+INT64_FMT	../dbinc/db_int.in	59
+INT64_MAX	../dbinc/db_int.in	55
+INT64_MIN	../dbinc/db_int.in	56
+INVALID_LSNMSG	../tcl/tcl_internal.c	525
 INVALID_ORDER	../dbinc/btree.h	59
 INVALID_REGION_ID	../dbinc/region.h	107
 INVALID_REGION_SEGID	../dbinc/region.h	119
@@ -1109,7 +1109,7 @@ IS_SUBTRANSACTION	../dbinc/db_int.in	/^#define	IS_SUBTRANSACTION(txn)						\\$/
 IS_VALID_PAGESIZE	../dbinc/db_int.in	/^#define	IS_VALID_PAGESIZE(x)						\\$/
 IS_VALID_PGNO	../dbinc/db_verify.h	/^#define	IS_VALID_PGNO(x)	((x) <= vdp->last_pgno)$/
 IS_WRITELOCK	../dbinc/lock.h	/^#define	IS_WRITELOCK(m) \\$/
-IS_ZERO_LSN	../dbinc/db_int.in	/^#define	IS_ZERO_LSN(LSN)	((LSN).file == 0)$/
+IS_ZERO_LSN	../dbinc/db_int.in	/^#define	IS_ZERO_LSN(LSN)	((LSN).file == 0 && (LSN)/
 JAVADB_STAT_ACTIVE	../libdb_java/db_java_wrap.c	/^#define JAVADB_STAT_ACTIVE(jenv, cl, jobj, statp, /
 JAVADB_STAT_INT	../libdb_java/db_java_wrap.c	/^#define JAVADB_STAT_INT(jenv, jobj, fid, statp, na/
 JAVADB_STAT_LONG	../libdb_java/db_java_wrap.c	/^#define JAVADB_STAT_LONG(jenv, jobj, fid, statp, n/
@@ -1319,7 +1319,7 @@ Java_com_sleepycat_db_internal_db_1javaJNI_initialize	../libdb_java/db_java_wrap
 Java_com_sleepycat_db_internal_db_1javaJNI_new_1Db	../libdb_java/db_java_wrap.c	/^JNIEXPORT jlong JNICALL Java_com_sleepycat_db_inte/
 Java_com_sleepycat_db_internal_db_1javaJNI_new_1DbEnv	../libdb_java/db_java_wrap.c	/^JNIEXPORT jlong JNICALL Java_com_sleepycat_db_inte/
 Java_com_sleepycat_db_internal_db_1javaJNI_new_1DbSequence	../libdb_java/db_java_wrap.c	/^JNIEXPORT jlong JNICALL Java_com_sleepycat_db_inte/
-LASTCKP_CMP	../dbinc/log.h	364
+LASTCKP_CMP	../dbinc/log.h	362
 LCK_ALWAYS	../dbinc/db_am.h	114
 LCK_COUPLE	../dbinc/db_am.h	115
 LCK_COUPLE_ALWAYS	../dbinc/db_am.h	116
@@ -1382,8 +1382,8 @@ MAKE_STAT_LIST	../dbinc/tcl_db.h	/^#define	MAKE_STAT_LIST(s, v) do {					\\$/
 MAKE_STAT_LSN	../dbinc/tcl_db.h	/^#define	MAKE_STAT_LSN(s, lsn) do {					\\$/
 MAKE_STAT_STRLIST	../dbinc/tcl_db.h	/^#define	MAKE_STAT_STRLIST(s,s1) do {					\\$/
 MAKE_WSTAT_LIST	../dbinc/tcl_db.h	/^#define	MAKE_WSTAT_LIST(s, v) do {					\\$/
-MAP_FAILED	../mutex/tm.c	733
-MAP_FILE	../mutex/tm.c	736
+MAP_FAILED	../mutex/tm.c	734
+MAP_FILE	../mutex/tm.c	737
 MASTER_CHECK	../rep/rep_record.c	/^#define	MASTER_CHECK(dbenv, eid, rep) do {				\\$/
 MASTER_ONLY	../rep/rep_record.c	/^#define	MASTER_ONLY(rep, rp) do {					\\$/
 MASTER_UPDATE	../rep/rep_record.c	/^#define	MASTER_UPDATE(dbenv, renv) do {					\\$/
@@ -1396,17 +1396,17 @@ MAXINFOSIZE	../dbinc/xa.h	46
 MAXKB	../crypto/rijndael/rijndael-alg-fst.h	33
 MAXKC	../crypto/rijndael/rijndael-alg-fst.h	32
 MAXNR	../crypto/rijndael/rijndael-alg-fst.h	34
-MAXPATHLEN	../dbinc/db_int.in	273
+MAXPATHLEN	../dbinc/db_int.in	277
 MAX_ID	../dbinc/tcl_db.h	19
 MAX_IV_SIZE	../crypto/rijndael/rijndael-api-fst.h	71
 MAX_KEY_SIZE	../crypto/rijndael/rijndael-api-fst.h	70
 MAX_LSN	../dbinc/db_int.in	/^#define	MAX_LSN(LSN) do {						\\$/
-MAX_LSN_TO_TEXT	../db/db.c	1011
+MAX_LSN_TO_TEXT	../db/db.c	1010
 MAX_PAGE_NUMBER	../dbinc/db_185.in	79
 MAX_PAGE_OFFSET	../dbinc/db_185.in	81
 MAX_PGNOS	../lock/lock_list.c	54
 MAX_REC_NUMBER	../dbinc/db_185.in	83
-MEGABYTE	../dbinc/db_int.in	72
+MEGABYTE	../dbinc/db_int.in	76
 MINFILL	../dbinc/hash.h	106
 MODE_CBC	../crypto/rijndael/rijndael-api-fst.h	50
 MODE_CFB1	../crypto/rijndael/rijndael-api-fst.h	51
@@ -1441,7 +1441,7 @@ MSG	../mutex/mut_fcntl.c	151
 MSG1	../mutex/mut_pthread.c	23
 MSG2	../mutex/mut_pthread.c	25
 MSG_SIZE	../dbinc/tcl_db.h	13
-MS_PER_SEC	../dbinc/db_int.in	75
+MS_PER_SEC	../dbinc/db_int.in	79
 MT_FILE	../mutex/tm.c	42
 MT_FILE_QUIT	../mutex/tm.c	43
 MUTEX_ALIGN	../dbinc/mutex.h	82
@@ -1519,8 +1519,8 @@ PAIR_KEYMASK	../dbinc/hash.h	117
 PAIR_MASK	../dbinc/hash.h	120
 PANIC_CHECK	../dbinc/region.h	/^#define	PANIC_CHECK(dbenv)						\\$/
 PANIC_SET	../dbinc/region.h	/^#define	PANIC_SET(dbenv, onoff)						\\$/
-PATH_DOT	../dbinc/db_int.in	275
-PATH_SEPARATOR	../dbinc/db_int.in	277
+PATH_DOT	../dbinc/db_int.in	279
+PATH_SEPARATOR	../dbinc/db_int.in	281
 PGNO	../dbinc/db_page.h	/^#define	PGNO(p)		(((PAGE *)p)->pgno)$/
 PGNO_BASE_MD	../dbinc/db_page.h	34
 PGNO_INVALID	../dbinc/db_page.h	33
@@ -1600,14 +1600,14 @@ R2	../hmac/sha1.c	/^#define R2(v,w,x,y,z,i) z+=(w^x^y)+blk(i)+0x6ED9EB/
 R3	../hmac/sha1.c	/^#define R3(v,w,x,y,z,i) z+=(((w|x)&y)|(w&x))+blk(i/
 R4	../hmac/sha1.c	/^#define R4(v,w,x,y,z,i) z+=(w^x^y)+blk(i)+0xCA62C1/
 RECNO	../dbinc/btree.h	51
-RECNO_OOB	../dbinc/db_int.in	78
+RECNO_OOB	../dbinc/db_int.in	82
 REC_CLOSE	../dbinc/db_am.h	53
 REC_FGET	../dbinc/db_am.h	/^#define	REC_FGET(mpf, pgno, pagep, cont)				\\$/
 REC_INTRO	../dbinc/db_am.h	/^#define	REC_INTRO(func, inc_count) do {					\\$/
 REC_NOOP_CLOSE	../dbinc/db_am.h	71
 REC_NOOP_INTRO	../dbinc/db_am.h	/^#define	REC_NOOP_INTRO(func) do {					\\$/
 REC_PRINT	../dbinc/db_am.h	/^#define	REC_PRINT(func)							\\$/
-REGINFO	../dbinc/db_int.in	522
+REGINFO	../dbinc/db_int.in	526
 REGION_CREATE	../dbinc/region.h	229
 REGION_CREATE_OK	../dbinc/region.h	230
 REGION_ID_ENV	../dbinc/region.h	108
@@ -1673,7 +1673,7 @@ RMNAMESZ	../dbinc/xa.h	44
 RPC_ON	../dbinc/db_int.in	/^#define	RPC_ON(dbenv)		((dbenv)->cl_handle != NULL/
 RPRINT	../dbinc/rep.h	/^#define RPRINT(e, r, x) do {						\\$/
 RSMSG	../db185/db185.c	522
-R_ADDR	../dbinc/region.h	/^#define	R_ADDR(dbenv, base, offset)					\\$/
+R_ADDR	../dbinc/region.h	/^#define	R_ADDR(reginfop, offset)					\\$/
 R_CURSOR	../dbinc/db_185.in	93
 R_DUP	../dbinc/db_185.in	125
 R_FIRST	../dbinc/db_185.in	95
@@ -1685,7 +1685,7 @@ R_LOCK	../dbinc/region.h	/^#define	R_LOCK(dbenv, reginfo)						\\$/
 R_NEXT	../dbinc/db_185.in	99
 R_NOKEY	../dbinc/db_185.in	155
 R_NOOVERWRITE	../dbinc/db_185.in	100
-R_OFFSET	../dbinc/region.h	/^#define	R_OFFSET(dbenv, base, p)					\\$/
+R_OFFSET	../dbinc/region.h	/^#define	R_OFFSET(reginfop, p)						\\$/
 R_PREV	../dbinc/db_185.in	101
 R_RECNOSYNC	../dbinc/db_185.in	103
 R_SETCURSOR	../dbinc/db_185.in	102
@@ -1706,7 +1706,7 @@ SA_SKIPFIRSTKEY	../dbinc/db_verify.h	66
 SEQ_ILLEGAL_AFTER_OPEN	../sequence/sequence.c	/^#define	SEQ_ILLEGAL_AFTER_OPEN(seq, name)				\\$/
 SEQ_ILLEGAL_BEFORE_OPEN	../sequence/sequence.c	/^#define	SEQ_ILLEGAL_BEFORE_OPEN(seq, name)				\\$/
 SEQ_OPEN_FLAGS	../sequence/sequence.c	123
-SEQ_SET_FLAGS	../sequence/sequence.c	252
+SEQ_SET_FLAGS	../sequence/sequence.c	261
 SET_LOG_FLAGS	../txn/txn.c	/^#define	SET_LOG_FLAGS(dbenv, txnp, lflags)				\\$/
 SET_MAP	../lock/lock_deadlock.c	/^#define	SET_MAP(M, B)	((M)[(B) \/ 32] |= (1 << ((B)/
 SET_RET_MEM	../dbinc/db_int.in	/^#define	SET_RET_MEM(dbc, owner)				\\$/
@@ -1941,17 +1941,17 @@ TYPE_ERR_PRINT	../dbinc/db_verify.h	/^#define	TYPE_ERR_PRINT(dbenv, func, pgno, 
 T_RESTORED	../db/db_dispatch.c	/^#define	T_RESTORED(txn)       ((txn) != NULL && F_/
 UINT16_MAX	../dbinc/db_int.in	39
 UINT32_CMP	../lock/lock_list.c	/^#define	UINT32_CMP(A, B)	((A) == (B) ? 0 : ((A) > /
-UINT32_MAX	../dbinc/db_int.in	42
-UINT64_FMT	../dbinc/db_int.in	56
-UINT64_MAX	../dbinc/db_int.in	53
+UINT32_MAX	../dbinc/db_int.in	43
+UINT64_FMT	../dbinc/db_int.in	60
+UINT64_MAX	../dbinc/db_int.in	57
 UMRW_SET	../dbinc/debug.h	/^#define	UMRW_SET(v)	(v) = 0$/
 UNLOCKREGION	../dbinc/lock.h	/^#define	UNLOCKREGION(dbenv, lt)  R_UNLOCK((dbenv),/
 UPPER_MASK	../crypto/mersenne/mt19937db.c	40
 UPREFIX	../clib/strerror.c	55
-USEC_PER_MS	../dbinc/db_int.in	76
+USEC_PER_MS	../dbinc/db_int.in	80
 VERIFY_FLAGS	../db/db_vrfy.c	65
-VRFY_CHILDINFO	../dbinc/db_int.in	525
-VRFY_DBINFO	../dbinc/db_int.in	526
+VRFY_CHILDINFO	../dbinc/db_int.in	529
+VRFY_DBINFO	../dbinc/db_int.in	530
 VRFY_DUPS_UNSORTED	../dbinc/db_verify.h	182
 VRFY_HAS_DUPS	../dbinc/db_verify.h	183
 VRFY_HAS_DUPSORT	../dbinc/db_verify.h	184
@@ -1965,7 +1965,7 @@ VRFY_IS_RRECNO	../dbinc/db_verify.h	191
 VRFY_ITEM	../btree/bt_verify.c	507
 VRFY_LEAFCHAIN_BROKEN	../dbinc/db_verify.h	138
 VRFY_OVFL_LEAFSEEN	../dbinc/db_verify.h	192
-VRFY_PAGEINFO	../dbinc/db_int.in	527
+VRFY_PAGEINFO	../dbinc/db_int.in	531
 VRFY_QMETA_SET	../dbinc/db_verify.h	139
 V_DUPLICATE	../dbinc/db_verify.h	203
 V_OVERFLOW	../dbinc/db_verify.h	204
@@ -2064,7 +2064,7 @@ _SetMultiList	../tcl/tcl_internal.c	/^_SetMultiList(interp, list, key, data, typ
 _TXN_H_	../dbinc/txn.h	11
 _TxnInfoDelete	../tcl/tcl_txn.c	/^_TxnInfoDelete(interp, txnip)$/
 __BIT_TYPES_DEFINED__	../dbinc/db.in	62
-__DBC_INTERNAL	../dbinc/db_int.in	372
+__DBC_INTERNAL	../dbinc/db_int.in	376
 __DB_OVFL	../env/env_open.c	/^#define	__DB_OVFL(v, max)						\\$/
 __DB_STD	../dbinc/db_cxx.in	/^#define	__DB_STD(x)	std::x$/
 __ENV_LPUT	../dbinc/db_am.h	/^#define	__ENV_LPUT(dbenv, lock, flags)					\\$/
@@ -3557,7 +3557,7 @@ __log_vtruncate	../log/log.c	/^__log_vtruncate(dbenv, lsn, ckplsn, trunclsn)$/
 __log_write	../log/log_put.c	/^__log_write(dblp, addr, len)$/
 __log_zero	../log/log.c	/^__log_zero(dbenv, from_lsn, to_lsn)$/
 __lsn_diff	../env/env_recover.c	/^__lsn_diff(low, high, current, max, is_forward)$/
-__memp_alloc	../mp/mp_alloc.c	/^__memp_alloc(dbmp, memreg, mfp, len, offsetp, retp/
+__memp_alloc	../mp/mp_alloc.c	/^__memp_alloc(dbmp, infop, mfp, len, offsetp, retp)/
 __memp_bad_buffer	../mp/mp_alloc.c	/^__memp_bad_buffer(hp)$/
 __memp_bhfree	../mp/mp_bh.c	/^__memp_bhfree(dbmp, hp, bhp, flags)$/
 __memp_bhwrite	../mp/mp_bh.c	/^__memp_bhwrite(dbmp, hp, mfp, bhp, open_extents)$/
@@ -3613,7 +3613,7 @@ __memp_region_destroy	../mp/mp_region.c	/^__memp_region_destroy(dbenv, infop)$/
 __memp_region_maint	../mp/mp_region.c	/^__memp_region_maint(infop)$/
 __memp_register	../mp/mp_register.c	/^__memp_register(dbenv, ftype, pgin, pgout)$/
 __memp_register_pp	../mp/mp_register.c	/^__memp_register_pp(dbenv, ftype, pgin, pgout)$/
-__memp_reset_lru	../mp/mp_fput.c	/^__memp_reset_lru(dbenv, memreg)$/
+__memp_reset_lru	../mp/mp_fput.c	/^__memp_reset_lru(dbenv, infop)$/
 __memp_set_cachesize	../mp/mp_method.c	/^__memp_set_cachesize(dbenv, gbytes, bytes, arg_nca/
 __memp_set_clear_len	../mp/mp_fmethod.c	/^__memp_set_clear_len(dbmfp, clear_len)$/
 __memp_set_fileid	../mp/mp_fmethod.c	/^__memp_set_fileid(dbmfp, fileid)$/
@@ -3627,11 +3627,11 @@ __memp_set_mp_mmapsize	../mp/mp_method.c	/^__memp_set_mp_mmapsize(dbenv, mp_mmap
 __memp_set_pgcookie	../mp/mp_fmethod.c	/^__memp_set_pgcookie(dbmfp, pgcookie)$/
 __memp_set_priority	../mp/mp_fmethod.c	/^__memp_set_priority(dbmfp, priority)$/
 __memp_stat	../mp/mp_stat.c	/^__memp_stat(dbenv, gspp, fspp, flags)$/
-__memp_stat_hash	../mp/mp_stat.c	/^__memp_stat_hash(dbenv, reginfo, mp, dirtyp)$/
+__memp_stat_hash	../mp/mp_stat.c	/^__memp_stat_hash(reginfo, mp, dirtyp)$/
 __memp_stat_pp	../mp/mp_stat.c	/^__memp_stat_pp(dbenv, gspp, fspp, flags)$/
 __memp_stat_print	../mp/mp_stat.c	/^__memp_stat_print(dbenv, flags)$/
 __memp_stat_print_pp	../mp/mp_stat.c	/^__memp_stat_print_pp(dbenv, flags)$/
-__memp_stat_wait	../mp/mp_stat.c	/^__memp_stat_wait(dbenv, reginfo, mp, mstat, flags)/
+__memp_stat_wait	../mp/mp_stat.c	/^__memp_stat_wait(reginfo, mp, mstat, flags)$/
 __memp_sync	../mp/mp_sync.c	/^__memp_sync(dbenv, lsnp)$/
 __memp_sync_files	../mp/mp_sync.c	/^int __memp_sync_files(dbenv, dbmp)$/
 __memp_sync_int	../mp/mp_sync.c	/^__memp_sync_int(dbenv, dbmfp, trickle_max, op, wro/
@@ -3799,7 +3799,7 @@ __ram_vrfy_leaf	../btree/bt_verify.c	/^__ram_vrfy_leaf(dbp, vdp, h, pgno, flags)
 __ram_writeback	../btree/bt_recno.c	/^__ram_writeback(dbp)$/
 __reg_type	../env/env_stat.c	/^__reg_type(t)$/
 __rep_abort_prepared	../rep/rep_method.c	/^__rep_abort_prepared(dbenv)$/
-__rep_apply	../rep/rep_record.c	/^__rep_apply(dbenv, rp, rec, ret_lsnp)$/
+__rep_apply	../rep/rep_record.c	/^__rep_apply(dbenv, rp, rec, ret_lsnp, is_dupp)$/
 __rep_bt_cmp	../rep/rep_method.c	/^__rep_bt_cmp(dbp, dbt1, dbt2)$/
 __rep_check_doreq	../rep/rep_record.c	/^__rep_check_doreq(dbenv, rep)$/
 __rep_client_dbinit	../rep/rep_method.c	/^__rep_client_dbinit(dbenv, startup, which)$/
@@ -4164,13 +4164,13 @@ item	../hsearch/hsearch.c	/^	ENTRY item;$/
 lock_Cmd	../tcl/tcl_lock.c	/^lock_Cmd(clientData, interp, objc, objv)$/
 log_compare	../log/log_compare.c	/^log_compare(lsn0, lsn1)$/
 logc_Cmd	../tcl/tcl_log.c	/^logc_Cmd(clientData, interp, objc, objv)$/
-logfile_validity	../dbinc/log.h	376
+logfile_validity	../dbinc/log.h	374
 m	../dbinc/tcl_db.h	42
 map_file	../mutex/tm.c	/^map_file(gm_addrp, tm_addrp, lm_addrp, fdp)$/
 memcmp	../clib/memcmp.c	/^memcmp(s1, s2, n)$/
 memcpy	../clib/memmove.c	/^memcpy(dst0, src0, length)$/
 mp_Cmd	../tcl/tcl_mp.c	/^mp_Cmd(clientData, interp, objc, objv)$/
-mu_action	../dbinc/db_int.in	388
+mu_action	../dbinc/db_int.in	392
 mutex_Cmd	../tcl/tcl_util.c	/^mutex_Cmd(clientData, interp, objc, objv)$/
 ndbm_Cmd	../tcl/tcl_compat.c	/^ndbm_Cmd(clientData, interp, objc, objv)$/
 new_Db	../libdb_java/db_java_wrap.c	/^struct Db *new_Db(DB_ENV *dbenv,u_int32_t flags){$/
@@ -4216,6 +4216,8 @@ strcasecmp	../clib/strcasecmp.c	/^strcasecmp(s1, s2)$/
 strdup	../clib/strdup.c	/^strdup(str)$/
 strerror	../clib/strerror.c	/^strerror(num)$/
 strncasecmp	../clib/strcasecmp.c	/^strncasecmp(s1, s2, n)$/
+strtol	../clib/strtol.c	/^strtol(nptr, endptr, base)$/
+strtoul	../clib/strtoul.c	/^strtoul(nptr, endptr, base)$/
 tcl_DbAssociate	../tcl/tcl_db.c	/^tcl_DbAssociate(interp, objc, objv, dbp)$/
 tcl_DbClose	../tcl/tcl_db.c	/^tcl_DbClose(interp, objc, objv, dbp, dbip)$/
 tcl_DbCount	../tcl/tcl_db.c	/^tcl_DbCount(interp, objc, objv, dbp)$/

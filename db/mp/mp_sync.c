@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mp_sync.c,v 11.97 2004/09/22 16:26:19 bostic Exp $
+ * $Id: mp_sync.c,v 11.98 2004/10/15 16:59:43 bostic Exp $
  */
 
 #include "db_config.h"
@@ -250,7 +250,7 @@ __memp_sync_int(dbenv, dbmfp, trickle_max, op, wrotep)
 	for (ar_cnt = 0, n_cache = 0; n_cache < mp->nreg; ++n_cache) {
 		c_mp = dbmp->reginfo[n_cache].primary;
 
-		hp = R_ADDR(dbenv, &dbmp->reginfo[n_cache], c_mp->htab);
+		hp = R_ADDR(&dbmp->reginfo[n_cache], c_mp->htab);
 		for (i = 0; i < c_mp->htab_buckets; i++, hp++) {
 			/*
 			 * We can check for empty buckets before locking as we
@@ -283,8 +283,7 @@ __memp_sync_int(dbenv, dbmfp, trickle_max, op, wrotep)
 				    !F_ISSET(bhp, BH_DIRTY))
 					continue;
 
-				mfp = R_ADDR(dbenv,
-				    dbmp->reginfo, bhp->mf_offset);
+				mfp = R_ADDR(dbmp->reginfo, bhp->mf_offset);
 
 				/*
 				 * Ignore temporary files -- this means you
@@ -489,7 +488,7 @@ __memp_sync_int(dbenv, dbmfp, trickle_max, op, wrotep)
 			hb_lock = 0;
 			MUTEX_UNLOCK(dbenv, mutexp);
 
-			mfp = R_ADDR(dbenv, dbmp->reginfo, bhp->mf_offset);
+			mfp = R_ADDR(dbmp->reginfo, bhp->mf_offset);
 			if ((ret = __memp_bhwrite(dbmp, hp, mfp, bhp, 1)) == 0)
 				++wrote;
 			else
@@ -613,7 +612,7 @@ int __memp_sync_files(dbenv, dbmp)
 			ret = __memp_mf_sync(dbmp, mfp);
 		if (ret != 0) {
 			__db_err(dbenv, "%s: unable to flush: %s",
-			    (char *)R_ADDR(dbenv, dbmp->reginfo, mfp->path_off),
+			    (char *)R_ADDR(dbmp->reginfo, mfp->path_off),
 			    db_strerror(ret));
 			if (final_ret == 0)
 				final_ret = ret;
@@ -668,7 +667,7 @@ __memp_mf_sync(dbmp, mfp)
 	 * name and __memp_nameop might try and rename the file.
 	 */
 	if ((ret = __db_appname(dbenv, DB_APP_DATA,
-	    R_ADDR(dbenv, dbmp->reginfo, mfp->path_off), 0, NULL,
+	    R_ADDR(dbmp->reginfo, mfp->path_off), 0, NULL,
 	    &rpath)) == 0) {
 		if ((ret = __os_open(dbenv, rpath, 0, 0, &fhp)) == 0) {
 			ret = __os_fsync(dbenv, fhp);

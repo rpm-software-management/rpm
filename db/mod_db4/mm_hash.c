@@ -9,15 +9,18 @@
  *           George Schlossnagle <george@omniti.com>
  */
 
+extern "C"
+{
 #include <stdlib.h>
 #include <string.h>
 #include "mm_hash.h"
+}
 
 MM_Hash *mm_hash_new(MM *mm, MM_HashDtor dtor)
 {
 	MM_Hash *table;
 
-	table = mm_calloc(mm, 1, sizeof(MM_Hash));
+	table = (MM_Hash *) mm_calloc(mm, 1, sizeof(MM_Hash));
 	table->mm = mm;
 	table->dtor = dtor;
 
@@ -58,7 +61,7 @@ static unsigned int hash_hash(const char *key, int length)
 void *mm_hash_find(MM_Hash *table, const void *key, int length)
 {
 	MM_Bucket       *b;
-	unsigned int  hash = hash_hash(key, length) % MM_HASH_SIZE;
+	unsigned int  hash = hash_hash((const char *)key, length) % MM_HASH_SIZE;
 
     for (b = table->buckets[ hash ]; b; b = b->next) {
 		if (hash != b->hash) continue;
@@ -86,8 +89,8 @@ void mm_hash_update(MM_Hash *table, char *key, int length, void *data)
 		b->data = data;
 	}
 	if(!b) {
-    	b = mm_malloc(table->mm, sizeof(MM_Bucket));
-    	b->key = mm_malloc(table->mm, length + 1);
+    	b = (MM_Bucket *) mm_malloc(table->mm, sizeof(MM_Bucket));
+    	b->key = (char *) mm_malloc(table->mm, length + 1);
     	memcpy(b->key, key, length);
     	b->key[length] = 0;
     	b->length = length;

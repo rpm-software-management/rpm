@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mp_fmethod.c,v 11.141 2004/09/24 00:43:19 bostic Exp $
+ * $Id: mp_fmethod.c,v 11.142 2004/10/15 16:59:42 bostic Exp $
  */
 
 #include "db_config.h"
@@ -595,5 +595,5 @@ __memp_fns(dbmp, mfp)
 	if (mfp->path_off == 0)
 		return ((char *)"temporary");
 
-	return ((char *)R_ADDR(dbmp->dbenv, dbmp->reginfo, mfp->path_off));
+	return ((char *)R_ADDR(dbmp->reginfo, mfp->path_off));
 }

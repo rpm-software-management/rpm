@@ -113,6 +113,7 @@ CKPLSN
 CL
 CLASSPATH
 CLOSEFP
+CLR
 CLRDBC
 CLpsvxX
 CMP
@@ -320,6 +321,7 @@ DeadlockException
 Debian
 DeleteInfo
 Deref'ing
+Dir
 Dups
 EAGAIN
 EBUSY
@@ -743,7 +745,7 @@ Malloc
 MapEntry
 MapViewOfFile
 Margo
-MarshalledEntity
+MarshalledEnt
 MarshalledEntityBinding
 MarshalledKey
 MarshalledKeyBinding
@@ -1242,6 +1244,7 @@ TPS
 TRU
 TRUNC
 TRUNCDATA
+TSTRING
 TXN
 TXNAPP
 TXNHEAD
@@ -1336,6 +1339,7 @@ UMRW
 UNAVAIL
 UNDEF
 UNDOC
+UNICODE
 UNISTD
 UNREF
 UOC
@@ -1725,6 +1729,7 @@ curslen
 curslist
 cursp
 cursq
+cutlim
 cxx
 cxxproc
 cxxthis
@@ -1883,6 +1888,7 @@ dst
 dsync
 dtab
 dtabsize
+dumptree
 dup
 dup'ed
 dupcompare
@@ -2642,6 +2648,7 @@ msg's
 msgadd
 msgbuf
 msgcall
+msgdbt
 msgfile
 msgfp
 msgs
@@ -2697,6 +2704,7 @@ ndeadlocks
 ndir
 ndx
 needswap
+neg
 nelem
 nelemp
 nentries
@@ -2775,6 +2783,7 @@ np
 npages
 npgno
 nprocs
+nptr
 nr
 nread
 nreaders
@@ -3544,6 +3553,7 @@ umalloc
 uncorrect
 undef
 undeleting
+undo'ing
 undodup
 undosplit
 uni
@@ -3684,3 +3694,4 @@ zero'd
 zeroeth
 zerofill
 zipcode
+zl

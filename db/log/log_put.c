@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: log_put.c,v 11.167 2004/09/29 15:06:40 bostic Exp $
+ * $Id: log_put.c,v 11.168 2004/10/15 16:59:42 bostic Exp $
  */
 
 #include "db_config.h"
@@ -751,7 +751,7 @@ __log_flush_int(dblp, lsnp, release)
 
 	dbenv = dblp->dbenv;
 	lp = dblp->reginfo.primary;
-	flush_mutexp = R_ADDR(dbenv, &dblp->reginfo, lp->flush_mutex_off);
+	flush_mutexp = R_ADDR(&dblp->reginfo, lp->flush_mutex_off);
 	ncommit = 0;
 	ret = 0;
 

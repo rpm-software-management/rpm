@@ -4,7 +4,7 @@
  * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: txn_recover.c,v 1.53 2004/09/22 17:41:10 bostic Exp $
+ * $Id: txn_recover.c,v 1.54 2004/10/15 16:59:44 bostic Exp $
  */
 
 #include "db_config.h"
@@ -94,7 +94,7 @@ __txn_map_gid(dbenv, gid, tdp, offp)
 	if (*tdp == NULL)
 		return (EINVAL);
 
-	*offp = R_OFFSET(dbenv, &mgr->reginfo, *tdp);
+	*offp = R_OFFSET(&mgr->reginfo, *tdp);
 	return (0);
 }
 
@@ -256,7 +256,7 @@ __txn_get_prepared(dbenv, xids, txns, count, retp, flags)
 				goto err;
 			}
 			__txn_continue(dbenv,
-			    prepp->txn, td, R_OFFSET(dbenv, &mgr->reginfo, td));
+			    prepp->txn, td, R_OFFSET(&mgr->reginfo, td));
 			F_SET(prepp->txn, TXN_MALLOC);
 			memcpy(prepp->gid, td->xid, sizeof(td->xid));
 			prepp++;

@@ -5,7 +5,7 @@
  *  Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- *  $Id: LockNotGrantedException.java,v 1.2 2004/09/28 19:30:37 mjc Exp $
+ *  $Id: LockNotGrantedException.java,v 1.3 2004/11/05 00:50:55 mjc Exp $
  */
 package com.sleepycat.db;
 
@@ -31,7 +31,7 @@ public class LockNotGrantedException extends DeadlockException {
         this.op = op;
         this.mode = mode;
         this.obj = obj;
-        this.lock = lock.wrapper;
+        this.lock = (lock == null) ? null : lock.wrapper;
         this.index = index;
     }
 

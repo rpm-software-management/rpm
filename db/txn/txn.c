@@ -35,7 +35,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: txn.c,v 11.248 2004/09/23 15:02:32 bostic Exp $
+ * $Id: txn.c,v 11.249 2004/10/15 16:59:44 bostic Exp $
  */
 
 #include "db_config.h"
@@ -389,7 +389,7 @@ __txn_begin_int(txn, internal)
 	td->flags = 0;
 	td->xa_status = 0;
 
-	off = R_OFFSET(dbenv, &mgr->reginfo, td);
+	off = R_OFFSET(&mgr->reginfo, td);
 	R_UNLOCK(dbenv, &mgr->reginfo);
 
 	ZERO_LSN(txn->last_lsn);
@@ -928,7 +928,7 @@ __txn_isvalid(txnp, tdp, op)
 	}
 
 	/* Check transaction's state. */
-	tp = (TXN_DETAIL *)R_ADDR(dbenv, &mgrp->reginfo, txnp->off);
+	tp = R_ADDR(&mgrp->reginfo, txnp->off);
 	if (tdp != NULL)
 		*tdp = tp;
 
@@ -1055,7 +1055,7 @@ __txn_end(txnp, is_commit)
 	/* End the transaction. */
 	R_LOCK(dbenv, &mgr->reginfo);
 
-	tp = (TXN_DETAIL *)R_ADDR(dbenv, &mgr->reginfo, txnp->off);
+	tp = R_ADDR(&mgr->reginfo, txnp->off);
 	SH_TAILQ_REMOVE(&region->active_txn, tp, links, __txn_detail);
 	if (F_ISSET(tp, TXN_DTL_RESTORED)) {
 		region->stat.st_nrestores--;
@@ -1674,11 +1674,9 @@ __txn_set_begin_lsnp(txn, rlsnp)
 	DB_LSN *lsnp;
 	TXN_DETAIL *td;
 
-	td = (TXN_DETAIL *)R_ADDR(txn->mgrp->dbenv,
-	    &txn->mgrp->reginfo, txn->off);
+	td = R_ADDR(&txn->mgrp->reginfo, txn->off);
 	while (td->parent != INVALID_ROFF)
-		td = (TXN_DETAIL *)R_ADDR(txn->mgrp->dbenv,
-		    &txn->mgrp->reginfo, td->parent);
+		td = R_ADDR(&txn->mgrp->reginfo, td->parent);
 
 	lsnp = &td->begin_lsn;
 	if (IS_ZERO_LSN(*lsnp))

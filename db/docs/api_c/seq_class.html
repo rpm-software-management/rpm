@@ -1,4 +1,4 @@
-<!--$Id: seq_class.so,v 1.11 2004/10/13 19:57:15 bostic Exp $-->
+<!--$Id: seq_class.so,v 1.12 2004/10/18 19:46:31 bostic Exp $-->
 <!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -14,7 +14,7 @@
 <h3>db_sequence_create</h3>
 </td>
 <td align=right>
-<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a>
 <a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a></td>
 </tr></table>
 <hr size=1 noshade>
@@ -53,7 +53,8 @@ and 0 on success.
 <dt><b>seq</b><dd>The <b>seq</b> parameter references the memory into which the returned
 structure pointer is stored.
 <dt><b>db</b><dd>The <b>db</b> parameter is an open database handle which holds the
-persistent data for the sequence.
+persistent data for the sequence.  The database may be of any type,
+but may not have been configured to support duplicate data items.
 <dt><b>flags</b><dd>The <b>flags</b> parameter is currently unused, and must be set to 0.
 </dl>
 <h3>Errors</h3>
@@ -70,7 +71,7 @@ DB_SEQUENCE
 <a href="../api_c/seq_list.html">Sequences and Related Methods</a>
 </tt>
 <table width="100%"><tr><td><br></td><td align=right>
-<a href="../api_c/api_index.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
+<a href="../api_c/api_core.html"><img src="../images/api.gif" alt="API"></a><a href="../ref/toc.html"><img src="../images/ref.gif" alt="Ref"></a>
 </td></tr></table>
 <p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>

@@ -36,6 +36,7 @@ void mm_hash_free(MM_Hash *table);
 void *mm_hash_find(MM_Hash *table, const void *key, int length);
 void mm_hash_add(MM_Hash *table, char *key, int length, void *data);
 void mm_hash_delete(MM_Hash *table, char *key, int length);
+void mm_hash_update(MM_Hash *table, char *key, int length, void *data);
 #endif
 
 /*

@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mp_stat.c,v 11.81 2004/09/28 20:08:17 bostic Exp $
+ * $Id: mp_stat.c,v 11.82 2004/10/15 16:59:43 bostic Exp $
  */
 
 #include "db_config.h"
@@ -32,7 +32,7 @@ static void __memp_print_hash __P((DB_ENV *,
 		DB_MPOOL *, REGINFO *, roff_t *, u_int32_t));
 static int  __memp_stat __P((DB_ENV *,
 		DB_MPOOL_STAT **, DB_MPOOL_FSTAT ***, u_int32_t));
-static void __memp_stat_wait __P((DB_ENV *,
+static void __memp_stat_wait __P((
 		REGINFO *, MPOOL *, DB_MPOOL_STAT *, u_int32_t));
 
 /*
@@ -137,7 +137,7 @@ __memp_stat(dbenv, gspp, fspp, flags)
 			 * st_page_dirty	calculated by __memp_stat_hash
 			 * st_page_clean	calculated here
 			 */
-			__memp_stat_hash(dbenv,
+			__memp_stat_hash(
 			    &dbmp->reginfo[i], c_mp, &sp->st_page_dirty);
 			sp->st_page_clean = sp->st_pages - sp->st_page_dirty;
 			sp->st_hash_buckets += c_mp->stat.st_hash_buckets;
@@ -148,8 +148,7 @@ __memp_stat(dbenv, gspp, fspp, flags)
 			 * st_hash_nowait	calculated by __memp_stat_wait
 			 * st_hash_wait
 			 */
-			__memp_stat_wait(dbenv,
-			    &dbmp->reginfo[i], c_mp, sp, flags);
+			__memp_stat_wait(&dbmp->reginfo[i], c_mp, sp, flags);
 			sp->st_region_nowait +=
 			    dbmp->reginfo[i].rp->mutex.mutex_set_nowait;
 			sp->st_region_wait +=
@@ -542,7 +541,7 @@ __memp_print_all(dbenv, flags)
 		STAT_LONG("Page's clear length", mfp->clear_len);
 
 		__db_print_fileid(dbenv,
-		    R_ADDR(dbenv, dbmp->reginfo, mfp->fileid_off), "\tID");
+		    R_ADDR(dbmp->reginfo, mfp->fileid_off), "\tID");
 
 		mfp_flags = 0;
 		if (mfp->deadfile)
@@ -556,7 +555,7 @@ __memp_print_all(dbenv, flags)
 		__db_prflags(dbenv, NULL, mfp_flags, fn, NULL, "\tFlags");
 
 		if (cnt < FMAP_ENTRIES)
-			fmap[cnt] = R_OFFSET(dbenv, dbmp->reginfo, mfp);
+			fmap[cnt] = R_OFFSET(dbmp->reginfo, mfp);
 		MUTEX_UNLOCK(dbenv, &mfp->mutex);
 	}
 	R_UNLOCK(dbenv, dbmp->reginfo);
@@ -604,7 +603,7 @@ __memp_print_hash(dbenv, dbmp, reginfo, fmap, flags)
 	__db_msg(dbenv,
 	    "\tpageno, file, ref, LSN, mutex, address, priority, flags");
 
-	for (hp = R_ADDR(dbenv, reginfo, c_mp->htab),
+	for (hp = R_ADDR(reginfo, c_mp->htab),
 	    bucket = 0; bucket < c_mp->htab_buckets; ++hp, ++bucket) {
 		MUTEX_LOCK(dbenv, &hp->hash_mutex);
 		if ((bhp =
@@ -663,7 +662,7 @@ __memp_print_bh(dbenv, dbmp, bhp, fmap, flags)
 	    (u_long)LSN(bhp->buf).file, (u_long)LSN(bhp->buf).offset);
 	__db_print_mutex(dbenv, &mb, &bhp->mutex, ", ", flags);
 	__db_msgadd(dbenv, &mb, "%#08lx, %lu",
-	    (u_long)R_OFFSET(dbenv, dbmp->reginfo, bhp), (u_long)bhp->priority);
+	    (u_long)R_OFFSET(dbmp->reginfo, bhp), (u_long)bhp->priority);
 	__db_prflags(dbenv, &mb, bhp->flags, fn, " (", ")");
 	DB_MSGBUF_FLUSH(dbenv, &mb);
 }
@@ -673,8 +672,7 @@ __memp_print_bh(dbenv, dbmp, bhp, fmap, flags)
  *	Total hash bucket wait stats into the region.
  */
 static void
-__memp_stat_wait(dbenv, reginfo, mp, mstat, flags)
-	DB_ENV *dbenv;
+__memp_stat_wait(reginfo, mp, mstat, flags)
 	REGINFO *reginfo;
 	MPOOL *mp;
 	DB_MPOOL_STAT *mstat;
@@ -685,7 +683,7 @@ __memp_stat_wait(dbenv, reginfo, mp, mstat, flags)
 	u_int32_t i;
 
 	mstat->st_hash_max_wait = 0;
-	hp = R_ADDR(dbenv, reginfo, mp->htab);
+	hp = R_ADDR(reginfo, mp->htab);
 	for (i = 0; i < mp->htab_buckets; i++, hp++) {
 		mutexp = &hp->hash_mutex;
 		mstat->st_hash_nowait += mutexp->mutex_set_nowait;
@@ -729,12 +727,10 @@ __memp_stat_print_pp(dbenv, flags)
  * __memp_stat_hash --
  *	Total hash bucket stats (other than mutex wait) into the region.
  *
- * PUBLIC: void __memp_stat_hash
- * PUBLIC:		__P((DB_ENV *, REGINFO *, MPOOL *, u_int32_t *));
+ * PUBLIC: void __memp_stat_hash __P((REGINFO *, MPOOL *, u_int32_t *));
  */
 void
-__memp_stat_hash(dbenv, reginfo, mp, dirtyp)
-	DB_ENV *dbenv;
+__memp_stat_hash(reginfo, mp, dirtyp)
 	REGINFO *reginfo;
 	MPOOL *mp;
 	u_int32_t *dirtyp;
@@ -742,7 +738,7 @@ __memp_stat_hash(dbenv, reginfo, mp, dirtyp)
 	DB_MPOOL_HASH *hp;
 	u_int32_t dirty, i;
 
-	hp = R_ADDR(dbenv, reginfo, mp->htab);
+	hp = R_ADDR(reginfo, mp->htab);
 	for (i = 0, dirty = 0; i < mp->htab_buckets; i++, hp++)
 		dirty += hp->hash_page_dirty;
 	*dirtyp = dirty;

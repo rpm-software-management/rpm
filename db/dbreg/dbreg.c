@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: dbreg.c,v 11.89 2004/09/22 03:43:09 bostic Exp $
+ * $Id: dbreg.c,v 11.90 2004/10/15 16:59:39 bostic Exp $
  */
 
 #include "db_config.h"
@@ -122,7 +122,7 @@ __dbreg_setup(dbp, name, create_txnid)
 		len = strlen(name) + 1;
 		if ((ret = __db_shalloc(infop, len, 0, &namep)) != 0)
 			goto err;
-		fnp->name_off = R_OFFSET(dbenv, infop, namep);
+		fnp->name_off = R_OFFSET(infop, namep);
 		memcpy(namep, name, len);
 	} else
 		fnp->name_off = INVALID_ROFF;
@@ -182,7 +182,7 @@ __dbreg_teardown(dbp)
 
 	R_LOCK(dbenv, infop);
 	if (fnp->name_off != INVALID_ROFF)
-		__db_shalloc_free(infop, R_ADDR(dbenv, infop, fnp->name_off));
+		__db_shalloc_free(infop, R_ADDR(infop, fnp->name_off));
 	__db_shalloc_free(infop, fnp);
 	R_UNLOCK(dbenv, infop);
 
@@ -283,7 +283,7 @@ __dbreg_get_id(dbp, txn, idp)
 	memset(&fid_dbt, 0, sizeof(fid_dbt));
 	memset(&r_name, 0, sizeof(r_name));
 	if (fnp->name_off != INVALID_ROFF) {
-		r_name.data = R_ADDR(dbenv, &dblp->reginfo, fnp->name_off);
+		r_name.data = R_ADDR(&dblp->reginfo, fnp->name_off);
 		r_name.size = (u_int32_t)strlen((char *)r_name.data) + 1;
 	}
 	fid_dbt.data = dbp->fileid;
@@ -506,7 +506,7 @@ __dbreg_close_id(dbp, txn, op)
 		dbtp = NULL;
 	else {
 		memset(&r_name, 0, sizeof(r_name));
-		r_name.data = R_ADDR(dbenv, &dblp->reginfo, fnp->name_off);
+		r_name.data = R_ADDR(&dblp->reginfo, fnp->name_off);
 		r_name.size =
 		    (u_int32_t)strlen((char *)r_name.data) + 1;
 		dbtp = &r_name;
@@ -555,7 +555,7 @@ __dbreg_push_id(dbenv, id)
 		stack = NULL;
 		DB_ASSERT(lp->free_fids_alloced == 0);
 	} else
-		stack = R_ADDR(dbenv, infop, lp->free_fid_stack);
+		stack = R_ADDR(infop, lp->free_fid_stack);
 
 	/* Check if we have room on the stack. */
 	if (lp->free_fids_alloced <= lp->free_fids + 1) {
@@ -573,7 +573,7 @@ __dbreg_push_id(dbenv, id)
 			__db_shalloc_free(infop, stack);
 		}
 		stack = newstack;
-		lp->free_fid_stack = R_OFFSET(dbenv, infop, stack);
+		lp->free_fid_stack = R_OFFSET(infop, stack);
 		lp->free_fids_alloced += 20;
 		R_UNLOCK(dbenv, infop);
 	}
@@ -596,7 +596,7 @@ __dbreg_pop_id(dbenv, id)
 
 	/* Do we have anything to pop? */
 	if (lp->free_fid_stack != INVALID_ROFF && lp->free_fids > 0) {
-		stack = R_ADDR(dbenv, &dblp->reginfo, lp->free_fid_stack);
+		stack = R_ADDR(&dblp->reginfo, lp->free_fid_stack);
 		*id = stack[--lp->free_fids];
 	} else
 		*id = DB_LOGFILEID_INVALID;
@@ -628,7 +628,7 @@ __dbreg_pluck_id(dbenv, id)
 
 	/* Do we have anything to look at? */
 	if (lp->free_fid_stack != INVALID_ROFF) {
-		stack = R_ADDR(dbenv, &dblp->reginfo, lp->free_fid_stack);
+		stack = R_ADDR(&dblp->reginfo, lp->free_fid_stack);
 		for (i = 0; i < lp->free_fids; i++)
 			if (id == stack[i]) {
 				/*

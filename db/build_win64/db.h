@@ -5,7 +5,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db.h,v 11.20 2004/10/14 15:32:29 bostic Exp $
+ * $Id: db.h,v 11.31 2004/11/09 01:30:41 bostic Exp $
  *
  * db.h include file layout:
  *	General.
@@ -41,8 +41,8 @@ extern "C" {
  */
 #define	DB_VERSION_MAJOR	4
 #define	DB_VERSION_MINOR	3
-#define	DB_VERSION_PATCH	14
-#define	DB_VERSION_STRING	"Sleepycat Software: Berkeley DB 4.3.14: (October 14, 2004)"
+#define	DB_VERSION_PATCH	21
+#define	DB_VERSION_STRING	"Sleepycat Software: Berkeley DB 4.3.21: (November  8, 2004)"
 
 /*
  * !!!

@@ -3,7 +3,7 @@
 # Copyright (c) 2001-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: siutils.tcl,v 11.6 2004/03/02 18:44:41 mjc Exp $
+# $Id: siutils.tcl,v 11.7 2004/10/15 12:55:01 sue Exp $
 #
 # Secondary index utilities.  This file used to be known as
 # sindex.tcl.
@@ -54,18 +54,42 @@ set verbose_check_secondaries 0
 # Given a primary database handle, a list of secondary handles, a
 # number of entries, and arrays of keys and data, verify that all
 # databases have what they ought to.
-proc check_secondaries { pdb sdbs nentries keyarr dataarr {pref "Check"} } {
+proc check_secondaries { pdb sdbs nentries keyarr dataarr {pref "Check"} \
+    {errp NONE} {errs NONE} {errsg NONE}} {
 	upvar $keyarr keys
 	upvar $dataarr data
 	global verbose_check_secondaries
 
+	if { [string compare $errp NONE] != 0 } {
+		upvar $errp errorp
+	}
+	set errorp 0
+	if { [string compare $errs NONE] != 0 } {
+		upvar $errs errors
+	}
+	set errors 0
+	if { [string compare $errsg NONE] != 0 } {
+		upvar $errsg errorsg
+	}
+	set errorsg 0
 	# Make sure each key/data pair is in the primary.
 	if { $verbose_check_secondaries } {
 		puts "\t\t$pref.1: Each key/data pair is in the primary"
 	}
 	for { set i 0 } { $i < $nentries } { incr i } {
-		error_check_good pdb_get($i) [$pdb get $keys($i)] \
-		    [list [list $keys($i) $data($i)]]
+		if { [string compare $errp NONE] == 0 } {
+			error_check_good pdb_get($i) [$pdb get $keys($i)] \
+			    [list [list $keys($i) $data($i)]]
+		} else {
+			set stat [catch {$pdb get $keys($i)} ret]
+			if { $stat == 1 } {
+				set errorp $ret
+				break
+			} else {
+				error_check_good pdb_get($i) $ret \
+				    [list [list $keys($i) $data($i)]]
+			}
+		}
 	}
 
 	for { set j 0 } { $j < [llength $sdbs] } { incr j } {
@@ -78,9 +102,20 @@ proc check_secondaries { pdb sdbs nentries keyarr dataarr {pref "Check"} } {
 		for { set i 0 } { $i < $nentries } { incr i } {
 			set skey [[callback_n $j] $keys($i) $data($i)]
 			# Check with pget on the secondary.
-			error_check_good sdb($j)_pget($i) \
-			    [$sdb pget -get_both $skey $keys($i)] \
-			    [list [list $skey $keys($i) $data($i)]]
+			set stat [catch {$sdb pget -get_both \
+			    $skey $keys($i)} ret]
+			if { [string compare $errs NONE] == 0 } {
+				error_check_good stat $stat 0
+				error_check_good sdb($j)_pget($i) $ret \
+				    [list [list $skey $keys($i) $data($i)]]
+			} else {
+				if { $stat == 1 } {
+					set errors $ret
+				} else {
+					error_check_good sdb($j)_pget($i) $ret \
+					    [list [list $skey $keys($i) $data($i)]]
+				}
+			}
 			# Check again with get on the secondary.
 			# Since get_both is not an allowed option
 			# with get on a secondary handle, we can't
@@ -93,10 +128,32 @@ proc check_secondaries { pdb sdbs nentries keyarr dataarr {pref "Check"} } {
 				    [is_substr [$sdb get $skey] \
 				    [list [list $skey $data($i)]]] 1
 			} else {
-				error_check_good sdb($j)_get($i) \
-				    [$sdb get $skey] \
-				    [list [list $skey $data($i)]]
+				set stat [catch {$sdb get $skey} ret]
+				if { [string compare $errs NONE] == 0 } {
+					error_check_good sdb($j)_get($i) \
+					    $ret \
+					    [list [list $skey $data($i)]]
+				} else {
+					if { $stat == 1 } {
+						set errorsg $ret
+						break
+					} else {
+						error_check_good sdb($j)_get($i) \
+						    $ret \
+						    [list [list $skey $data($i)]]
+					}
+				}
 			}
+			#
+			# We couldn't break above because we need to execute
+			# the errorsg error as well.
+			#
+			if { $errors != 0 } {
+				break
+			}
+		}
+		if { $errors != 0 || $errorsg != 0 } {
+			break
 		}
 
 		# Make sure this secondary contains only $nentries
@@ -111,6 +168,9 @@ proc check_secondaries { pdb sdbs nentries keyarr dataarr {pref "Check"} } {
 		    { incr k } { }
 		error_check_good numitems($i) $k $nentries
 		error_check_good dbc($i)_close [$dbc close] 0
+	}
+	if { $errorp != 0 || $errors != 0 || $errorsg != 0 } {
+		return
 	}
 
 	if { $verbose_check_secondaries } {

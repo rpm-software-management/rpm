@@ -4,7 +4,7 @@
  * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: RpcDbc.java,v 1.12 2004/04/09 15:08:40 mjc Exp $
+ * $Id: RpcDbc.java,v 1.13 2004/11/05 01:08:31 mjc Exp $
  */
 
 package com.sleepycat.db.rpcserver;
@@ -277,11 +277,11 @@ public class RpcDbc extends Timer {
                 break;
 
             case DbConstants.DB_AFTER:
-                status = dbc.putAfter(data);
+                status = dbc.putAfter(key, data);
                 break;
 
             case DbConstants.DB_BEFORE:
-                status = dbc.putBefore(data);
+                status = dbc.putBefore(key, data);
                 break;
 
             case DbConstants.DB_NOOVERWRITE:

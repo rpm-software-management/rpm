@@ -4,7 +4,7 @@
  * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_tpcb.c,v 11.45 2004/01/28 03:36:03 bostic Exp $
+ * $Id: ex_tpcb.c,v 11.46 2004/10/27 16:17:10 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -102,6 +102,8 @@ typedef struct _histrec {
 	u_int8_t	pad[RECLEN - 4 * sizeof(u_int32_t)];
 } histrec;
 
+char *progname = "ex_tpcb";			/* Program name. */
+
 int
 main(argc, argv)
 	int argc;
@@ -112,10 +114,9 @@ main(argc, argv)
 	DB_ENV *dbenv;
 	int accounts, branches, seed, tellers, history;
 	int ch, iflag, mpool, ntxns, ret, txn_no_sync, verbose;
-	const char *home, *progname;
+	const char *home;
 
 	home = "TESTDIR";
-	progname = "ex_tpcb";
 	accounts = branches = history = tellers = 0;
 	iflag = mpool = ntxns = txn_no_sync = verbose = 0;
 	seed = (int)time(NULL);
@@ -499,12 +500,10 @@ tp_run(dbenv, n, accounts, branches, tellers, verbose)
 	int n, accounts, branches, tellers, verbose;
 {
 	DB *adb, *bdb, *hdb, *tdb;
-	double gtps, itps;
-	int failed, ifailed, ret, txns;
-	time_t starttime, curtime, lasttime;
+	int failed, ret, txns;
+	time_t start_time, end_time;
 
 	adb = bdb = hdb = tdb = NULL;
-	txns = failed = 0;
 
 	/*
 	 * Open the database files.
@@ -546,27 +545,16 @@ tp_run(dbenv, n, accounts, branches, tellers, verbose)
 		goto err;
 	}
 
-	starttime = time(NULL);
-	lasttime = starttime;
-	for (ifailed = 0; n-- > 0;) {
-		txns++;
-		ret = tp_txn(dbenv, adb, bdb, tdb, hdb,
-		    accounts, branches, tellers, verbose);
-		if (ret != 0) {
-			failed++;
-			ifailed++;
-		}
-		if (n % 5000 == 0) {
-			curtime = time(NULL);
-			gtps = (double)(txns - failed) / (curtime - starttime);
-			itps = (double)(5000 - ifailed) / (curtime - lasttime);
-			printf("%d txns %d failed ", txns, failed);
-			printf("%6.2f TPS (gross) %6.2f TPS (interval)\n",
-			   gtps, itps);
-			lasttime = curtime;
-			ifailed = 0;
-		}
-	}
+	(void)time(&start_time);
+	for (txns = n, failed = 0; n-- > 0;)
+		if ((ret = tp_txn(dbenv, adb, bdb, tdb, hdb,
+		    accounts, branches, tellers, verbose)) != 0)
+			++failed;
+	(void)time(&end_time);
+	if (end_time == start_time)
+		++end_time;
+	printf("%s: %d txns: %d failed, %.2f TPS\n", progname,
+	    txns, failed, (txns - failed) / (double)(end_time - start_time));
 
 err:	if (adb != NULL)
 		(void)adb->close(adb, 0);
@@ -576,8 +564,6 @@ err:	if (adb != NULL)
 		(void)tdb->close(tdb, 0);
 	if (hdb != NULL)
 		(void)hdb->close(hdb, 0);
-
-	printf("%ld transactions begun %ld failed\n", (long)txns, (long)failed);
 	return (ret == 0 ? 0 : 1);
 }
 
@@ -602,8 +588,9 @@ tp_txn(dbenv, adb, bdb, tdb, hdb, accounts, branches, tellers, verbose)
 	acurs = bcurs = tcurs = NULL;
 
 	/*
-	 * XXX We could move a lot of this into the driver to make this
-	 * faster.
+	 * !!!
+	 * This is sample code -- we could move a lot of this into the driver
+	 * to make it faster.
 	 */
 	account = random_id(ACCOUNT, accounts, branches, tellers);
 	branch = random_id(BRANCH, accounts, branches, tellers);
@@ -630,7 +617,14 @@ tp_txn(dbenv, adb, bdb, tdb, hdb, accounts, branches, tellers, verbose)
 	/* Request 0 bytes since we're just positioning. */
 	d_histdbt.flags = DB_DBT_PARTIAL;
 
-	/* START TIMING */
+	/*
+	 * START PER-TRANSACTION TIMING.
+	 *
+	 * Technically, TPCB requires a limit on response time, you only get
+	 * to count transactions that complete within 2 seconds.  That's not
+	 * an issue for this sample application -- regardless, here's where
+	 * the transaction begins.
+	 */
 	if (dbenv->txn_begin(dbenv, NULL, &t, 0) != 0)
 		goto err;
 
@@ -678,8 +672,8 @@ tp_txn(dbenv, adb, bdb, tdb, hdb, accounts, branches, tellers, verbose)
 	t = NULL;
 	if (ret != 0)
 		goto err;
+	/* END PER-TRANSACTION TIMING. */
 
-	/* END TIMING */
 	return (0);
 
 err:	if (acurs != NULL)

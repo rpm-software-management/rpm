@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: lock_stat.c,v 11.63 2004/09/22 03:48:29 bostic Exp $
+ * $Id: lock_stat.c,v 11.64 2004/10/15 16:59:42 bostic Exp $
  */
 
 #include "db_config.h"
@@ -528,7 +528,7 @@ __lock_printlock(lt, mbp, lp, ispgno)
 			(u_long)pgno);
 	} else {
 		__db_msgadd(dbenv, mbp, "0x%lx ",
-		    (u_long)R_OFFSET(dbenv, &lt->reginfo, lockobj));
+		    (u_long)R_OFFSET(&lt->reginfo, lockobj));
 		__db_pr(dbenv, mbp, ptr, lockobj->lockobj.size);
 	}
 	DB_MSGBUF_FLUSH(dbenv, mbp);

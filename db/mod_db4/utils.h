@@ -4,15 +4,13 @@
  *
  *  http://www.apache.org/licenses/LICENSE-2.0.txt
  * 
- *  authors: Thies C. Arntzen <thies@php.net>
- *           Sterling Hughes <sterling@php.net>
- *           George Schlossnagle <george@omniti.com>
+ *  authors: George Schlossnagle <george@omniti.com>
  */
 
 #ifndef DB4_UTILS_H
 #define DB4_UTILS_H
 
-#include "db.h"
+#include "db_cxx.h"
 #include "mod_db4_export.h"
 
 /* locks */

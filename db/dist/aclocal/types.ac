@@ -1,4 +1,4 @@
-# $Id: types.ac,v 11.16 2004/09/15 21:49:17 mjc Exp $
+# $Id: types.ac,v 11.18 2004/10/25 18:14:14 bostic Exp $
 
 # Check the sizes we know about, and see if any of them match what's needed.
 #
@@ -17,7 +17,9 @@ AC_DEFUN(AM_SEARCH_USIZES, [
 	"$ac_cv_sizeof_unsigned_long_long")
 		$1="typedef unsigned long long $2;";;
 	*)
-		AC_MSG_ERROR([No unsigned $3-byte integral type]);;
+		if test "$4" != "notfatal"; then
+			AC_MSG_ERROR([No unsigned $3-byte integral type])
+		fi;;
 	esac])
 AC_DEFUN(AM_SEARCH_SSIZES, [
 	case "$3" in
@@ -32,7 +34,9 @@ AC_DEFUN(AM_SEARCH_SSIZES, [
 	"$ac_cv_sizeof_long_long")
 		$1="typedef long long $2;";;
 	*)
-		AC_MSG_ERROR([No signed $3-byte integral type]);;
+		if test "$4" != "notfatal"; then
+			AC_MSG_ERROR([No signed $3-byte integral type])
+		fi;;
 	esac])
 
 # Check for the standard system types.
@@ -131,11 +135,11 @@ AC_CHECK_TYPE(int32_t,,
 
 AC_SUBST(u_int64_decl)
 AC_CHECK_TYPE(u_int64_t,,
-    [AM_SEARCH_SSIZES(u_int64_decl, u_int64_t, 8)], $db_includes)
+    [AM_SEARCH_USIZES(u_int64_decl, u_int64_t, 8, notfatal)], $db_includes)
 
 AC_SUBST(int64_decl)
 AC_CHECK_TYPE(int64_t,,
-    [AM_SEARCH_SSIZES(int64_decl, int64_t, 8)], $db_includes)
+    [AM_SEARCH_SSIZES(int64_decl, int64_t, 8, notfatal)], $db_includes)
 
 # Check for ssize_t -- if none exists, find a signed integral type that's
 # the same size as a size_t.

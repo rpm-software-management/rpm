@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db_rec.c,v 11.60 2004/09/22 03:30:23 bostic Exp $
+ * $Id: db_rec.c,v 11.61 2004/10/21 14:39:58 bostic Exp $
  */
 
 #include "db_config.h"
@@ -971,6 +971,7 @@ out:	REC_CLOSE;
 #endif
 
 }
+
 /*
  * __db_pg_init_recover --
  *	Recovery function to reinit pages for truncate.

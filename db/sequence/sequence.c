@@ -4,7 +4,7 @@
  * Copyright (c) 2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: sequence.c,v 1.24 2004/10/12 23:54:14 ubell Exp $
+ * $Id: sequence.c,v 1.26 2004/10/25 17:59:28 bostic Exp $
  */
 
 #include "db_config.h"
@@ -118,7 +118,7 @@ __seq_open(seq, txn, keyp, flags)
 	DB_ENV *dbenv;
 	DB_MPOOL *dbmp;
 	DB_SEQ_RECORD *rp;
-	u_int32_t pflags;
+	u_int32_t tflags;
 	int ret;
 #define	SEQ_OPEN_FLAGS (DB_AUTO_COMMIT | DB_CREATE | DB_EXCL | DB_THREAD)
 
@@ -133,6 +133,15 @@ __seq_open(seq, txn, keyp, flags)
 
 	if (LF_ISSET(~SEQ_OPEN_FLAGS))
 		return (__db_ferr(dbenv, "DB_SEQUENCE->open", 0));
+
+	if ((ret = dbp->get_flags(dbp, &tflags)) != 0)
+		return (ret);
+
+	if (FLD_ISSET(tflags, DB_DUP)) {
+		__db_err(dbenv,
+	"Sequences not supported in databases configured for duplicate data");
+		return (EINVAL);
+	}
 
 	if (LF_ISSET(DB_THREAD)) {
 		dbmp = dbenv->mp_handle;
@@ -170,8 +179,8 @@ retry:	if ((ret = dbp->get(dbp, txn, &seq->seq_key, &seq->seq_data, 0)) != 0) {
 			goto err;
 
 		ret = 0;
-		pflags = DB_NOOVERWRITE;
-		pflags |= LF_ISSET(DB_AUTO_COMMIT);
+		tflags = DB_NOOVERWRITE;
+		tflags |= LF_ISSET(DB_AUTO_COMMIT);
 		if (!F_ISSET(rp, DB_SEQ_RANGE_SET)) {
 			rp->seq_max = INT64_MAX;
 			rp->seq_min = INT64_MIN;
@@ -188,7 +197,7 @@ retry:	if ((ret = dbp->get(dbp, txn, &seq->seq_key, &seq->seq_data, 0)) != 0) {
 			ret = EINVAL;
 			goto err;
 		} else if ((ret = dbp->put(dbp, txn,
-		    &seq->seq_key, &seq->seq_data, pflags)) != 0) {
+		    &seq->seq_key, &seq->seq_data, tflags)) != 0) {
 			__db_err(dbenv, "Sequence create failed");
 			goto err;
 		}
@@ -628,6 +637,8 @@ db_sequence_create(seqp, dbp, flags)
 	DB *dbp;
 	u_int32_t flags;
 {
+	COMPQUIET(seqp, NULL);
+	COMPQUIET(flags, 0);
 	__db_err(dbp->dbenv,
 	    "library build did not include support for sequences");
 	return (DB_OPNOTSUP);

@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db_pr.c,v 11.120 2004/10/11 18:47:50 bostic Exp $
+ * $Id: db_pr.c,v 11.121 2004/10/28 14:48:43 bostic Exp $
  */
 
 #include "db_config.h"
@@ -983,7 +983,7 @@ int
 __db_dump_pp(dbp, subname, callback, handle, pflag, keyflag)
 	DB *dbp;
 	const char *subname;
-	int (*callback)(void *, const void *);
+	int (*callback) __P((void *, const void *));
 	void *handle;
 	int pflag, keyflag;
 {
@@ -1020,7 +1020,7 @@ int
 __db_dump(dbp, subname, callback, handle, pflag, keyflag)
 	DB *dbp;
 	const char *subname;
-	int (*callback)(void *, const void *);
+	int (*callback) __P((void *, const void *));
 	void *handle;
 	int pflag, keyflag;
 {

@@ -1,4 +1,4 @@
-<!--$Id: mod.so,v 10.3 2004/10/06 17:24:56 bostic Exp $-->
+<!--$Id: mod.so,v 10.4 2004/10/21 16:51:25 bostic Exp $-->
 <!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -16,13 +16,20 @@
 </td></tr></table>
 <p>
 <h3 align=center>Using Berkeley DB with Apache</h3>
-<p>A mod_db4 Apache module for this release of Berkeley DB is included in the
-distribution, providing a safe framework for running Berkeley DB applications
-in the Apache 1.3 environment.  In general, it is dangerous to run Berkeley DB
-in a multiprocess system without some facility to coordinate recovery
-between participating processes. Apache natively provides no interface
-for communication between processes, so the mod_db4 module exists to
-provide this communication.</p>
+<p>A mod_db4 Apache module is included in the Berkeley DB distribution, providing
+a safe framework for running Berkeley DB applications in an Apache 1.3
+environment.  Apache natively provides no interface for communication
+between threads or processes, so the mod_db4 module exists to provide
+this communication.</p>
+<p>In general, it is dangerous to run Berkeley DB in a multiprocess system
+without some facility to coordinate database recovery between processes
+sharing the database environment after application or system failure.
+Failure to run recovery after failure can include process hangs and an
+inability to access the database environment.  The mod_db4 Apache module
+oversees the proper management of Berkeley DB database environment resources.
+Developers building applications using Berkeley DB as the storage manager
+within an Apache module should employ this technique for proper resource
+management.</p>
 <p>Specifically, mod_db4 provides the following facilities:</p>
 <ol>
 <p><li>New constructors for <a href="../../api_c/env_class.html">DB_ENV</a> and <a href="../../api_c/db_class.html">DB</a> handles, which install

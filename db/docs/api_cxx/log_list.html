@@ -10,23 +10,26 @@
 </head>
 <body bgcolor=white>
 <h3 align=center>Berkeley DB: Logging Subsystem and Related Methods</h3>
-<!--$Id: m4.methods,v 1.2 2004/08/27 13:49:28 bostic Exp $-->
+<!--$Id: m4.methods,v 1.4 2004/11/03 15:52:01 bostic Exp $-->
 <table border=1 align=center>
 <tr><th>Logging Subsystem and Related Methods</th><th>Description</th></tr>
 <!--DbLsn--><tr><td><a href="../api_cxx/lsn_class.html">DbLsn</a></td><td>Log Sequence Numbers</td></tr>
 <!--log_compare--><tr><td><a href="../api_cxx/log_compare.html">DbEnv::log_compare</a></td><td>Compare two Log Sequence Numbers</td></tr>
 <!--DbEnv::log_archive--><tr><td><a href="../api_cxx/log_archive.html">DbEnv::log_archive</a></td><td>List log and database files</td></tr>
-<!--DbEnv::log_cursor--><tr><td><a href="../api_cxx/log_cursor.html">DbEnv::log_cursor</a></td><td>Create a log cursor handle</td></tr>
 <!--DbEnv::log_file--><tr><td><a href="../api_cxx/log_file.html">DbEnv::log_file</a></td><td>Map Log Sequence Numbers to log files</td></tr>
 <!--DbEnv::log_flush--><tr><td><a href="../api_cxx/log_flush.html">DbEnv::log_flush</a></td><td>Flush log records</td></tr>
 <!--DbEnv::log_put--><tr><td><a href="../api_cxx/log_put.html">DbEnv::log_put</a></td><td>Write a log record</td></tr>
 <!--DbEnv::log_stat--><tr><td><a href="../api_cxx/log_stat.html">DbEnv::log_stat</a></td><td>Return log subsystem statistics</td></tr>
+<tr><th>Logging Subsystem Cursors</th><th><br></th></tr>
+<!--DbLogc::--><tr><td><a href="../api_cxx/logc_class.html">DbLogc</a></td><td>Log Cursor Object</td></tr>
+<!--DbLogc::--><tr><td><a href="../api_cxx/log_cursor.html">DbEnv::log_cursor</a></td><td>Create a log cursor handle</td></tr>
+<!--DbLogc::close--><tr><td><a href="../api_cxx/logc_close.html">DbLogc::close</a></td><td>Close a log cursor</td></tr>
+<!--DbLogc::get--><tr><td><a href="../api_cxx/logc_get.html">DbLogc::get</a></td><td>Retrieve a log record</td></tr>
+<tr><th>Logging Subsystem Configuration</th><th><br></th></tr>
 <!--DbEnv::set_lg_bsize--><tr><td><a href="../api_cxx/env_set_lg_bsize.html">DbEnv::set_lg_bsize</a></td><td>Set log buffer size</td></tr>
 <!--DbEnv::set_lg_dir--><tr><td><a href="../api_cxx/env_set_lg_dir.html">DbEnv::set_lg_dir</a></td><td>Set the environment logging directory</td></tr>
 <!--DbEnv::set_lg_max--><tr><td><a href="../api_cxx/env_set_lg_max.html">DbEnv::set_lg_max</a></td><td>Set log file size</td></tr>
 <!--DbEnv::set_lg_regionmax--><tr><td><a href="../api_cxx/env_set_lg_regionmax.html">DbEnv::set_lg_regionmax</a></td><td>Set logging region size</td></tr>
-<!--DbLogc::close--><tr><td><a href="../api_cxx/logc_close.html">DbLogc::close</a></td><td>Close a log cursor</td></tr>
-<!--DbLogc::get--><tr><td><a href="../api_cxx/logc_get.html">DbLogc::get</a></td><td>Retrieve a log record</td></tr>
 </table>
 <p><font size=1><a href="../sleepycat/legal.html">Copyright (c) 1996-2004</a> <a href="http://www.sleepycat.com">Sleepycat Software, Inc.</a> - All rights reserved.</font>
 </body>

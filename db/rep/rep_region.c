@@ -4,7 +4,7 @@
  * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: rep_region.c,v 1.52 2004/10/07 17:20:12 bostic Exp $
+ * $Id: rep_region.c,v 1.53 2004/10/15 16:59:44 bostic Exp $
  */
 
 #include "db_config.h"
@@ -62,7 +62,7 @@ __rep_region_init(dbenv)
 		memset(rep, 0, sizeof(*rep));
 		rep->tally_off = INVALID_ROFF;
 		rep->v2tally_off = INVALID_ROFF;
-		renv->rep_off = R_OFFSET(dbenv, infop, rep);
+		renv->rep_off = R_OFFSET(infop, rep);
 
 		if ((ret = __db_mutex_setup(dbenv, infop, &rep->mutex,
 		    MUTEX_NO_RECORD)) != 0)
@@ -77,7 +77,7 @@ __rep_region_init(dbenv)
 		if ((ret = __db_shalloc(infop, sizeof(DB_MUTEX),
 		    MUTEX_ALIGN, &db_mutexp)) != 0)
 			goto err;
-		rep->db_mutex_off = R_OFFSET(dbenv, infop, db_mutexp);
+		rep->db_mutex_off = R_OFFSET(infop, db_mutexp);
 
 		/*
 		 * Because we have no way to prevent deadlocks and cannot log
@@ -105,11 +105,11 @@ __rep_region_init(dbenv)
 		F_SET(rep, REP_F_NOARCHIVE);
 		(void)time(&renv->rep_timestamp);
 	} else
-		rep = R_ADDR(dbenv, infop, renv->rep_off);
+		rep = R_ADDR(infop, renv->rep_off);
 	MUTEX_UNLOCK(dbenv, &renv->mutex);
 
 	db_rep->rep_mutexp = &rep->mutex;
-	db_rep->db_mutexp = R_ADDR(dbenv, infop, rep->db_mutex_off);
+	db_rep->db_mutexp = R_ADDR(infop, rep->db_mutex_off);
 	db_rep->region = rep;
 
 	return (0);

@@ -3,7 +3,7 @@
 # Copyright (c) 2000-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: sdb010.tcl,v 11.18 2004/09/24 14:55:26 carol Exp $
+# $Id: sdb010.tcl,v 11.19 2004/10/18 17:34:17 carol Exp $
 #
 # TEST	sdb010
 # TEST	Test DB->remove() method and DB->truncate() for subdbs
@@ -162,5 +162,9 @@ proc sdb010 { method args } {
 
 	error_check_good db_close [$db close] 0
 	error_check_good db_close [$db2 close] 0
-	puts "\tSubdb010 succeeded."
+
+	# If we created our env, close it.
+	if { $eindex == -1 } {
+		error_check_good env_close [$env close] 0
+	}
 }

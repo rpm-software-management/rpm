@@ -4,7 +4,7 @@
  * Copyright (c) 2002-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: SampleViews.java,v 1.3 2004/09/22 16:17:13 mark Exp $
+ * $Id: SampleViews.java,v 1.4 2004/11/01 21:45:40 mark Exp $
  */
 
 package com.sleepycat.examples.collections.ship.marshal;
@@ -218,7 +218,7 @@ public class SampleViews {
     /**
      * MarshalledEntityBinding is used to bind the stored key/data entry pair
      * to a combined to an entity object representation.  To do this, it calls
-     * the MarshalledEntity interface implemented by the entity class.
+     * the MarshalledEnt interface implemented by the entity class.
      *
      * <p> The binding is "tricky" in that it uses the entity class for both
      * the stored data entry and the combined entity object.  To do this,
@@ -238,9 +238,9 @@ public class SampleViews {
 
             // The entity class will be used to instantiate the entity object.
             //
-            if (!MarshalledEntity.class.isAssignableFrom(entityClass)) {
+            if (!MarshalledEnt.class.isAssignableFrom(entityClass)) {
                 throw new IllegalArgumentException(entityClass.toString() +
-                                       " does not implement MarshalledEntity");
+                                       " does not implement MarshalledEnt");
             }
         }
 
@@ -251,7 +251,7 @@ public class SampleViews {
          */
         public Object entryToObject(TupleInput tupleInput, Object javaInput) {
 
-            MarshalledEntity entity = (MarshalledEntity) javaInput;
+            MarshalledEnt entity = (MarshalledEnt) javaInput;
             entity.unmarshalPrimaryKey(tupleInput);
             return entity;
         }
@@ -261,7 +261,7 @@ public class SampleViews {
          */
         public void objectToKey(Object object, TupleOutput output) {
 
-            MarshalledEntity entity = (MarshalledEntity) object;
+            MarshalledEnt entity = (MarshalledEnt) object;
             entity.marshalPrimaryKey(output);
         }
 

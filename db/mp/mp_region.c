@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mp_region.c,v 11.67 2004/09/17 22:00:31 mjc Exp $
+ * $Id: mp_region.c,v 11.68 2004/10/15 16:59:43 bostic Exp $
  */
 
 #include "db_config.h"
@@ -103,8 +103,8 @@ __memp_open(dbenv)
 		 * Create/initialize remaining regions and copy their IDs into
 		 * the first region.
 		 */
-		mp = R_ADDR(dbenv, dbmp->reginfo, dbmp->reginfo[0].rp->primary);
-		regids = R_ADDR(dbenv, dbmp->reginfo, mp->regids);
+		mp = R_ADDR(dbmp->reginfo, dbmp->reginfo[0].rp->primary);
+		regids = R_ADDR(dbmp->reginfo, mp->regids);
 		for (i = 1; i < dbmp->nreg; ++i) {
 			dbmp->reginfo[i].dbenv = dbenv;
 			dbmp->reginfo[i].type = REGION_TYPE_MPOOL;
@@ -130,7 +130,7 @@ __memp_open(dbenv)
 		 * the REGINFO structures and fill in local copies of that
 		 * information.
 		 */
-		mp = R_ADDR(dbenv, &reginfo, reginfo.rp->primary);
+		mp = R_ADDR(&reginfo, reginfo.rp->primary);
 		dbmp->nreg = mp->nreg;
 		if ((ret = __os_calloc(dbenv,
 		    dbmp->nreg, sizeof(REGINFO), &dbmp->reginfo)) != 0)
@@ -156,7 +156,7 @@ __memp_open(dbenv)
 		R_UNLOCK(dbenv, dbmp->reginfo);
 
 		/* Join remaining regions. */
-		regids = R_ADDR(dbenv, dbmp->reginfo, mp->regids);
+		regids = R_ADDR(dbmp->reginfo, mp->regids);
 		for (i = 1; i < dbmp->nreg; ++i) {
 			dbmp->reginfo[i].dbenv = dbenv;
 			dbmp->reginfo[i].type = REGION_TYPE_MPOOL;
@@ -171,8 +171,8 @@ __memp_open(dbenv)
 
 	/* Set the local addresses for the regions. */
 	for (i = 0; i < dbmp->nreg; ++i)
-		dbmp->reginfo[i].primary = R_ADDR(dbenv,
-		    &dbmp->reginfo[i], dbmp->reginfo[i].rp->primary);
+		dbmp->reginfo[i].primary =
+		    R_ADDR(&dbmp->reginfo[i], dbmp->reginfo[i].rp->primary);
 
 	/* If the region is threaded, allocate a mutex to lock the handles. */
 	if (F_ISSET(dbenv, DB_ENV_THREAD) &&
@@ -226,7 +226,7 @@ __memp_init(dbenv, dbmp, reginfo_off, htab_buckets)
 	if ((ret = __db_shalloc(reginfo,
 	    sizeof(MPOOL), MUTEX_ALIGN, &reginfo->primary)) != 0)
 		goto mem_err;
-	reginfo->rp->primary = R_OFFSET(dbenv, reginfo, reginfo->primary);
+	reginfo->rp->primary = R_OFFSET(reginfo, reginfo->primary);
 	mp = reginfo->primary;
 	memset(mp, 0, sizeof(*mp));
 
@@ -237,7 +237,7 @@ __memp_init(dbenv, dbmp, reginfo_off, htab_buckets)
 	    sizeof(REGMAINT) + maint_size, 0, &p)) != 0)
 		goto mem_err;
 	__db_maintinit(reginfo, p, maint_size);
-	mp->maint_off = R_OFFSET(dbenv, reginfo, p);
+	mp->maint_off = R_OFFSET(reginfo, p);
 #endif
 
 	if (reginfo_off == 0) {
@@ -249,14 +249,14 @@ __memp_init(dbenv, dbmp, reginfo_off, htab_buckets)
 		if ((ret = __db_shalloc(&dbmp->reginfo[0],
 		    dbmp->nreg * sizeof(u_int32_t), 0, &p)) != 0)
 			goto mem_err;
-		mp->regids = R_OFFSET(dbenv, dbmp->reginfo, p);
+		mp->regids = R_OFFSET(dbmp->reginfo, p);
 	}
 
 	/* Allocate hash table space and initialize it. */
 	if ((ret = __db_shalloc(reginfo,
 	    htab_buckets * sizeof(DB_MPOOL_HASH), MUTEX_ALIGN, &htab)) != 0)
 		goto mem_err;
-	mp->htab = R_OFFSET(dbenv, reginfo, htab);
+	mp->htab = R_OFFSET(reginfo, htab);
 	for (i = 0; i < htab_buckets; i++) {
 		if ((ret = __db_mutex_setup(dbenv,
 		    reginfo, &htab[i].hash_mutex, MUTEX_NO_RLOCK)) != 0)
@@ -332,7 +332,7 @@ __memp_dbenv_refresh(dbenv)
 		for (i = 0; i < dbmp->nreg; ++i) {
 			reginfo = &dbmp->reginfo[i];
 			mp = reginfo->primary;
-			for (hp = R_ADDR(dbenv, reginfo, mp->htab), bucket = 0;
+			for (hp = R_ADDR(reginfo, mp->htab), bucket = 0;
 			    bucket < mp->htab_buckets; ++hp, ++bucket)
 				while ((bhp = SH_TAILQ_FIRST(
 				    &hp->hash_bucket, __bh)) != NULL)
@@ -359,14 +359,13 @@ __memp_dbenv_refresh(dbenv)
 		/* Discard REGION IDs. */
 		reginfo = &dbmp->reginfo[0];
 		mp = dbmp->reginfo[0].primary;
-		__db_shalloc_free(reginfo, R_ADDR(dbenv, reginfo, mp->regids));
+		__db_shalloc_free(reginfo, R_ADDR(reginfo, mp->regids));
 
 		/* Discard Hash tables. */
 		for (i = 0; i < dbmp->nreg; ++i) {
 			reginfo = &dbmp->reginfo[i];
 			mp = reginfo->primary;
-			__db_shalloc_free(reginfo,
-			    R_ADDR(dbenv, reginfo, mp->htab));
+			__db_shalloc_free(reginfo, R_ADDR(reginfo, mp->htab));
 		}
 	}
 
@@ -433,12 +432,12 @@ __memp_region_destroy(dbenv, infop)
 #ifdef HAVE_MUTEX_SYSTEM_RESOURCES
 	MPOOL *mp;
 
-	mp = R_ADDR(dbenv, infop, infop->rp->primary);
+	mp = R_ADDR(infop, infop->rp->primary);
 
 	/* Destroy mutexes. */
-	__db_shlocks_destroy(infop, R_ADDR(dbenv, infop, mp->maint_off));
+	__db_shlocks_destroy(infop, R_ADDR(infop, mp->maint_off));
 	if (infop->primary != NULL && F_ISSET(dbenv, DB_ENV_PRIVATE))
-		__db_shalloc_free(infop, R_ADDR(dbenv, infop, mp->maint_off));
+		__db_shalloc_free(infop, R_ADDR(infop, mp->maint_off));
 #endif
 	if (infop->primary != NULL && F_ISSET(dbenv, DB_ENV_PRIVATE))
 		__db_shalloc_free(infop, infop->primary);

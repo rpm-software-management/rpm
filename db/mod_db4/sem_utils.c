@@ -4,11 +4,10 @@
  *
  *  http://www.apache.org/licenses/LICENSE-2.0.txt
  * 
- *  authors: Thies C. Arntzen <thies@php.net>
- *           Sterling Hughes <sterling@php.net>
- *           George Schlossnagle <george@omniti.com>
+ *  authors: George Schlossnagle <george@omniti.com>
  */
-
+extern "C"
+{
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
@@ -20,6 +19,7 @@
 
 
 #include <errno.h>
+}
 extern int errno;
 
 #if HAVE_SEMUN

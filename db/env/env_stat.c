@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: env_stat.c,v 1.20 2004/09/28 20:29:52 bostic Exp $
+ * $Id: env_stat.c,v 1.21 2004/10/29 17:37:23 bostic Exp $
  */
 
 #include "db_config.h"
@@ -437,8 +437,13 @@ __db_print_mutex(dbenv, mbp, mutex, suffix, flags)
 		    DB_PCT(mutex->mutex_set_wait,
 		    mutex->mutex_set_wait + mutex->mutex_set_nowait));
 #ifdef DIAGNOSTIC
+#ifdef HAVE_MUTEX_THREADS
 		if (mutex->locked != 0)
 			__db_msgadd(dbenv, &mb, "/%lu", (u_long)mutex->locked);
+#else
+		if (mutex->pid != 0)
+			__db_msgadd(dbenv, &mb, "/%lu", (u_long)mutex->pid);
+#endif
 #endif
 		__db_msgadd(dbenv, &mb, ")");
 
@@ -447,8 +452,13 @@ __db_print_mutex(dbenv, mbp, mutex, suffix, flags)
 		__db_msgadd(dbenv, mbp, "/%d%%", DB_PCT(mutex->mutex_set_wait,
 		    mutex->mutex_set_wait + mutex->mutex_set_nowait));
 #ifdef DIAGNOSTIC
-		if (mutex->locked)
-			__db_msgadd(dbenv, mbp, "/%lu", (u_long)mutex->locked);
+#ifdef HAVE_MUTEX_THREADS
+		if (mutex->locked != 0)
+			__db_msgadd(dbenv, &mb, "/%lu", (u_long)mutex->locked);
+#else
+		if (mutex->pid != 0)
+			__db_msgadd(dbenv, &mb, "/%lu", (u_long)mutex->pid);
+#endif
 #endif
 		if (suffix != NULL)
 			__db_msgadd(dbenv, mbp, "%s", suffix);

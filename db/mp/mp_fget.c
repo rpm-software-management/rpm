@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mp_fget.c,v 11.95 2004/09/15 21:49:19 mjc Exp $
+ * $Id: mp_fget.c,v 11.96 2004/10/15 16:59:42 bostic Exp $
  */
 
 #include "db_config.h"
@@ -117,7 +117,7 @@ __memp_fget(dbmfp, pgnoaddr, flags, addrp)
 	c_mp = NULL;
 	mp = dbmp->reginfo[0].primary;
 	mfp = dbmfp->mfp;
-	mf_offset = R_OFFSET(dbenv, dbmp->reginfo, mfp);
+	mf_offset = R_OFFSET(dbmp->reginfo, mfp);
 	alloc_bhp = bhp = NULL;
 	hp = NULL;
 	b_incr = extending = ret = 0;
@@ -178,7 +178,7 @@ hb_search:
 	 */
 	n_cache = NCACHE(mp, mf_offset, *pgnoaddr);
 	c_mp = dbmp->reginfo[n_cache].primary;
-	hp = R_ADDR(dbenv, &dbmp->reginfo[n_cache], c_mp->htab);
+	hp = R_ADDR(&dbmp->reginfo[n_cache], c_mp->htab);
 	hp = &hp[NBUCKET(c_mp, mf_offset, *pgnoaddr)];
 
 	/* Search the hash chain for the page. */
@@ -361,7 +361,7 @@ alloc:		/*
 		 * In the DB_MPOOL_NEW code path, mf_offset and n_cache have
 		 * not yet been initialized.
 		 */
-		mf_offset = R_OFFSET(dbenv, dbmp->reginfo, mfp);
+		mf_offset = R_OFFSET(dbmp->reginfo, mfp);
 		n_cache = NCACHE(mp, mf_offset, *pgnoaddr);
 		c_mp = dbmp->reginfo[n_cache].primary;
 

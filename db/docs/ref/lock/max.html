@@ -1,4 +1,4 @@
-<!--$Id: max.so,v 10.9 2004/04/10 15:17:08 bostic Exp $-->
+<!--$Id: max.so,v 10.10 2004/10/18 19:35:11 bostic Exp $-->
 <!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -35,13 +35,19 @@ subsystem will consume more resources than is necessary.  It is better
 to err in the direction of allocating too many locks, lockers, and
 objects because increasing the number of locks does not require large
 amounts of additional resources.</p>
-<p>The recommended algorithm for selecting the maximum number of locks,
-lockers, and lock objects is to run the application under stressful
-conditions and then review the lock system's statistics to determine
-the maximum number of locks, lockers, and lock objects that were used.
-Then, double these values for safety.  However, in some large
-applications, finer granularity of control is necessary in order to
-minimize the size of the Lock subsystem.</p>
+<p>When configuring a Berkeley DB Concurrent Data Store application, the number of lock objects needed
+is two per open database (one for the database lock, and one for the
+cursor lock when the <a href="../../api_c/env_set_flags.html#DB_CDB_ALLDB">DB_CDB_ALLDB</a> option is not specified).  The
+number of locks needed is one per open database handle plus one per
+simultaneous cursor or non-cursor operation.</p>
+<p>Configuring a Berkeley DB Transactional Data Store application is more complicated.  The recommended
+algorithm for selecting the maximum number of locks, lockers, and lock
+objects is to run the application under stressful conditions and then
+review the lock system's statistics to determine the maximum number of
+locks, lockers, and lock objects that were used.  Then, double these
+values for safety.  However, in some large applications, finer
+granularity of control is necessary in order to minimize the size of the
+Lock subsystem.</p>
 <p>The maximum number of lockers can be estimated as follows:</p>
 <p><ul type=disc>
 <li>If the database environment is using transactions, the maximum number

@@ -39,7 +39,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: hash_rec.c,v 11.82 2004/09/22 03:46:22 bostic Exp $
+ * $Id: hash_rec.c,v 11.83 2004/10/25 16:52:13 ubell Exp $
  */
 
 #include "db_config.h"
@@ -871,10 +871,6 @@ __ham_groupalloc_recover(dbenv, dbtp, lsnp, op, info)
 			goto out;
 		} else
 			goto done;
-	}
-	if (ret != 0) {
-		ret = __db_pgerr(file_dbp, pgno, ret);
-		goto out;
 	}
 
 	cmp_n = log_compare(lsnp, &LSN(mmeta));

@@ -45,23 +45,26 @@ display statistics about the log.
 <dt><a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a><dd>The log meta-information (but not the log files themselves) may be
 removed using the <a href="../../api_c/env_remove.html">DB_ENV-&gt;remove</a> method.
 </dl>
-<!--$Id: m4.methods,v 1.2 2004/08/27 13:49:28 bostic Exp $-->
+<!--$Id: m4.methods,v 1.4 2004/11/03 15:52:01 bostic Exp $-->
 <table border=1 align=center>
 <tr><th>Logging Subsystem and Related Methods</th><th>Description</th></tr>
 <!--DbLsn--><tr><td><a href="../../api_c/lsn_class.html">DB_LSN</a></td><td>Log Sequence Numbers</td></tr>
 <!--log_compare--><tr><td><a href="../../api_c/log_compare.html">log_compare</a></td><td>Compare two Log Sequence Numbers</td></tr>
 <!--DbEnv::log_archive--><tr><td><a href="../../api_c/log_archive.html">DB_ENV-&gt;log_archive</a></td><td>List log and database files</td></tr>
-<!--DbEnv::log_cursor--><tr><td><a href="../../api_c/log_cursor.html">DB_ENV-&gt;log_cursor</a></td><td>Create a log cursor handle</td></tr>
 <!--DbEnv::log_file--><tr><td><a href="../../api_c/log_file.html">DB_ENV-&gt;log_file</a></td><td>Map Log Sequence Numbers to log files</td></tr>
 <!--DbEnv::log_flush--><tr><td><a href="../../api_c/log_flush.html">DB_ENV-&gt;log_flush</a></td><td>Flush log records</td></tr>
 <!--DbEnv::log_put--><tr><td><a href="../../api_c/log_put.html">DB_ENV-&gt;log_put</a></td><td>Write a log record</td></tr>
 <!--DbEnv::log_stat--><tr><td><a href="../../api_c/log_stat.html">DB_ENV-&gt;log_stat</a></td><td>Return log subsystem statistics</td></tr>
+<tr><th>Logging Subsystem Cursors</th><th><br></th></tr>
+<!--DbLogc::-->
+<!--DbLogc::--><tr><td><a href="../../api_c/log_cursor.html">DB_ENV-&gt;log_cursor</a></td><td>Create a log cursor handle</td></tr>
+<!--DbLogc::close--><tr><td><a href="../../api_c/logc_close.html">DB_LOGC-&gt;close</a></td><td>Close a log cursor</td></tr>
+<!--DbLogc::get--><tr><td><a href="../../api_c/logc_get.html">DB_LOGC-&gt;get</a></td><td>Retrieve a log record</td></tr>
+<tr><th>Logging Subsystem Configuration</th><th><br></th></tr>
 <!--DbEnv::set_lg_bsize--><tr><td><a href="../../api_c/env_set_lg_bsize.html">DB_ENV-&gt;set_lg_bsize</a></td><td>Set log buffer size</td></tr>
 <!--DbEnv::set_lg_dir--><tr><td><a href="../../api_c/env_set_lg_dir.html">DB_ENV-&gt;set_lg_dir</a></td><td>Set the environment logging directory</td></tr>
 <!--DbEnv::set_lg_max--><tr><td><a href="../../api_c/env_set_lg_max.html">DB_ENV-&gt;set_lg_max</a></td><td>Set log file size</td></tr>
 <!--DbEnv::set_lg_regionmax--><tr><td><a href="../../api_c/env_set_lg_regionmax.html">DB_ENV-&gt;set_lg_regionmax</a></td><td>Set logging region size</td></tr>
-<!--DbLogc::close--><tr><td><a href="../../api_c/logc_close.html">DB_LOGC-&gt;close</a></td><td>Close a log cursor</td></tr>
-<!--DbLogc::get--><tr><td><a href="../../api_c/logc_get.html">DB_LOGC-&gt;get</a></td><td>Retrieve a log record</td></tr>
 </table>
 <table width="100%"><tr><td><br></td><td align=right><a href="../lock/nondb.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../log/config.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>

@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: lock_region.c,v 11.81 2004/09/15 21:49:17 mjc Exp $
+ * $Id: lock_region.c,v 11.82 2004/10/15 16:59:42 bostic Exp $
  */
 
 #include "db_config.h"
@@ -98,7 +98,7 @@ __lock_open(dbenv)
 
 	/* Set the local addresses. */
 	region = lt->reginfo.primary =
-	    R_ADDR(dbenv, &lt->reginfo, lt->reginfo.rp->primary);
+	    R_ADDR(&lt->reginfo, lt->reginfo.rp->primary);
 
 	if (dbenv->lk_detect != DB_LOCK_NORUN) {
 		/*
@@ -132,12 +132,9 @@ __lock_open(dbenv)
 		region->tx_timeout = dbenv->tx_timeout;
 
 	/* Set remaining pointers into region. */
-	lt->conflicts =
-	    (u_int8_t *)R_ADDR(dbenv, &lt->reginfo, region->conf_off);
-	lt->obj_tab =
-	    (DB_HASHTAB *)R_ADDR(dbenv, &lt->reginfo, region->obj_off);
-	lt->locker_tab =
-	    (DB_HASHTAB *)R_ADDR(dbenv, &lt->reginfo, region->locker_off);
+	lt->conflicts = R_ADDR(&lt->reginfo, region->conf_off);
+	lt->obj_tab = R_ADDR(&lt->reginfo, region->obj_off);
+	lt->locker_tab = R_ADDR(&lt->reginfo, region->locker_off);
 
 	R_UNLOCK(dbenv, &lt->reginfo);
 
@@ -178,8 +175,7 @@ __lock_region_init(dbenv, lt)
 	if ((ret = __db_shalloc(&lt->reginfo,
 	    sizeof(DB_LOCKREGION), 0, &lt->reginfo.primary)) != 0)
 		goto mem_err;
-	lt->reginfo.rp->primary =
-	    R_OFFSET(dbenv, &lt->reginfo, lt->reginfo.primary);
+	lt->reginfo.rp->primary = R_OFFSET(&lt->reginfo, lt->reginfo.primary);
 	region = lt->reginfo.primary;
 	memset(region, 0, sizeof(*region));
 
@@ -217,21 +213,21 @@ __lock_region_init(dbenv, lt)
 	    &lt->reginfo, (size_t)(lk_modes * lk_modes), 0, &addr)) != 0)
 		goto mem_err;
 	memcpy(addr, lk_conflicts, (size_t)(lk_modes * lk_modes));
-	region->conf_off = R_OFFSET(dbenv, &lt->reginfo, addr);
+	region->conf_off = R_OFFSET(&lt->reginfo, addr);
 
 	/* Allocate room for the object hash table and initialize it. */
 	if ((ret = __db_shalloc(&lt->reginfo,
 	    region->object_t_size * sizeof(DB_HASHTAB), 0, &addr)) != 0)
 		goto mem_err;
 	__db_hashinit(addr, region->object_t_size);
-	region->obj_off = R_OFFSET(dbenv, &lt->reginfo, addr);
+	region->obj_off = R_OFFSET(&lt->reginfo, addr);
 
 	/* Allocate room for the locker hash table and initialize it. */
 	if ((ret = __db_shalloc(&lt->reginfo,
 	    region->locker_t_size * sizeof(DB_HASHTAB), 0, &addr)) != 0)
 		goto mem_err;
 	__db_hashinit(addr, region->locker_t_size);
-	region->locker_off = R_OFFSET(dbenv, &lt->reginfo, addr);
+	region->locker_off = R_OFFSET(&lt->reginfo, addr);
 
 #ifdef	HAVE_MUTEX_SYSTEM_RESOURCES
 	maint_size = __lock_region_maint(dbenv);
@@ -240,7 +236,7 @@ __lock_region_init(dbenv, lt)
 	    sizeof(REGMAINT) + maint_size, 0, &addr)) != 0)
 		goto mem_err;
 	__db_maintinit(&lt->reginfo, addr, maint_size);
-	region->maint_off = R_OFFSET(dbenv, &lt->reginfo, addr);
+	region->maint_off = R_OFFSET(&lt->reginfo, addr);
 #endif
 
 	/*
@@ -320,16 +316,14 @@ __lock_dbenv_refresh(dbenv)
 	 */
 	if (F_ISSET(dbenv, DB_ENV_PRIVATE)) {
 		/* Discard the conflict matrix. */
-		__db_shalloc_free(reginfo,
-		    R_ADDR(dbenv, &lt->reginfo, lr->conf_off));
+		__db_shalloc_free(reginfo, R_ADDR(&lt->reginfo, lr->conf_off));
 
 		/* Discard the object hash table. */
-		__db_shalloc_free(reginfo,
-		    R_ADDR(dbenv, &lt->reginfo, lr->obj_off));
+		__db_shalloc_free(reginfo, R_ADDR(&lt->reginfo, lr->obj_off));
 
 		/* Discard the locker hash table. */
 		__db_shalloc_free(
-		    reginfo, R_ADDR(dbenv, &lt->reginfo, lr->locker_off));
+		    reginfo, R_ADDR(&lt->reginfo, lr->locker_off));
 
 		/* Discard locks. */
 		while ((lp =
@@ -448,11 +442,11 @@ __lock_region_destroy(dbenv, infop)
 #ifdef HAVE_MUTEX_SYSTEM_RESOURCES
 	DB_LOCKREGION *lt;
 
-	lt = R_ADDR(dbenv, infop, infop->rp->primary);
+	lt = R_ADDR(infop, infop->rp->primary);
 
-	__db_shlocks_destroy(infop, R_ADDR(dbenv, infop, lt->maint_off));
+	__db_shlocks_destroy(infop, R_ADDR(infop, lt->maint_off));
 	if (infop->primary != NULL && F_ISSET(dbenv, DB_ENV_PRIVATE))
-		__db_shalloc_free(infop, R_ADDR(dbenv, infop, lt->maint_off));
+		__db_shalloc_free(infop, R_ADDR(infop, lt->maint_off));
 #endif
 	if (infop->primary != NULL && F_ISSET(dbenv, DB_ENV_PRIVATE))
 		__db_shalloc_free(infop, infop->primary);

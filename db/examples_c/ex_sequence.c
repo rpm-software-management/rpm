@@ -4,7 +4,7 @@
  * Copyright (c) 1997-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: ex_sequence.c,v 1.2 2004/09/23 15:38:02 mjc Exp $
+ * $Id: ex_sequence.c,v 1.3 2004/10/14 18:12:13 bostic Exp $
  */
 
 #include <sys/types.h>
@@ -79,7 +79,7 @@ main(argc, argv)
 		goto err1;
 	}
 
-	memset(&key, 0, sizeof (DBT));
+	memset(&key, 0, sizeof(DBT));
 	key.data = SEQUENCE;
 	key.size = (u_int32_t)strlen(SEQUENCE);
 

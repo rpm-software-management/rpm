@@ -3,7 +3,7 @@
 # Copyright (c) 1996-2004
 #	Sleepycat Software.  All rights reserved.
 #
-# $Id: test.tcl,v 11.271 2004/09/22 18:01:06 bostic Exp $
+# $Id: test.tcl,v 11.273 2004/11/01 14:48:23 carol Exp $
 
 source ./include.tcl
 
@@ -396,11 +396,12 @@ proc check_output { file } {
 		^\t*Run_rpcmethod.*|
 		^\t*Running\srecovery\son\s.*|
 		^\t*[s|S]ec[0-9][0-9][0-9].*|
-		^\t*Si[0-9][0-9][0-9].*|
+		^\t*[s|S]i[0-9][0-9][0-9].*|
 		^\t*Sijoin.*|
 		^\t*sdb[0-9][0-9][0-9].*|
 		^\t*Skipping\s.*|
 		^\t*Subdb[0-9][0-9][0-9].*|
+		^\t*Subdbtest[0-9][0-9][0-9].*|
 		^\t*Syncing$|
 		^\t*[t|T]est[0-9][0-9][0-9].*|
 		^\t*[t|T]xn[0-9][0-9][0-9].*|
@@ -633,10 +634,10 @@ proc r { args } {
 			sdb {
 				if { $one_test == "ALL" } {
 					if { $display } {
-						puts "eval r $saveflags sdbtest"
+						run_subsystem sdbtest 1 0
 					}
 					if { $run } {
-						eval r $saveflags sdbtest
+						run_subsystem sdbtest 0 1
 					}
 				}
 				foreach test $test_names(sdb) {

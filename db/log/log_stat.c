@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: log_stat.c,v 11.148 2004/09/15 21:49:18 mjc Exp $
+ * $Id: log_stat.c,v 11.149 2004/10/15 16:59:42 bostic Exp $
  */
 
 #include "db_config.h"
@@ -283,7 +283,7 @@ __log_print_all(dbenv, flags)
 	STAT_ULONG("length of last record", lp->len);
 	STAT_LONG("log flush in progress", lp->in_flush);
 
-	flush_mutexp = R_ADDR(dbenv, &dblp->reginfo, lp->flush_mutex_off);
+	flush_mutexp = R_ADDR(&dblp->reginfo, lp->flush_mutex_off);
 	__db_print_mutex(dbenv, NULL, flush_mutexp, "Log flush mutex", flags);
 
 	STAT_LSN("last sync LSN", &lp->s_lsn);

@@ -4,7 +4,7 @@
  * Copyright (c) 1998-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: region.h,v 11.50 2004/09/15 21:49:12 mjc Exp $
+ * $Id: region.h,v 11.51 2004/10/15 16:59:39 bostic Exp $
  */
 
 #ifndef _DB_REGION_H_
@@ -256,12 +256,12 @@ typedef struct __db_regmaint_t {
  * R_ADDR	Return a per-process address for a shared region offset.
  * R_OFFSET	Return a shared region offset for a per-process address.
  */
-#define	R_ADDR(dbenv, base, offset)					\
-	(F_ISSET((dbenv), DB_ENV_PRIVATE) ? (void *)(offset) :		\
-	(void *)((u_int8_t *)((base)->addr) + (offset)))
-#define	R_OFFSET(dbenv, base, p)					\
-	(F_ISSET((dbenv), DB_ENV_PRIVATE) ? (roff_t)(p) :		\
-	(roff_t)((u_int8_t *)(p) - (u_int8_t *)(base)->addr))
+#define	R_ADDR(reginfop, offset)					\
+	(F_ISSET((reginfop)->dbenv, DB_ENV_PRIVATE) ? (void *)(offset) :\
+	(void *)((u_int8_t *)((reginfop)->addr) + (offset)))
+#define	R_OFFSET(reginfop, p)						\
+	(F_ISSET((reginfop)->dbenv, DB_ENV_PRIVATE) ? (roff_t)(p) :	\
+	(roff_t)((u_int8_t *)(p) - (u_int8_t *)(reginfop)->addr))
 
 /*
  * R_LOCK	Lock/unlock a region.

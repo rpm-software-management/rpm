@@ -4,7 +4,7 @@
  * Copyright (c) 2001-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: Util.java,v 1.5 2004/09/23 23:56:43 bostic Exp $
+ * $Id: Util.java,v 1.6 2004/11/05 00:42:41 mjc Exp $
  */
 
 package com.sleepycat.db.rpcserver;
@@ -15,15 +15,17 @@ import com.sleepycat.db.*;
 import com.sleepycat.db.internal.DbConstants;
 
 /**
- * Helper methods for JDB <-> DB mapping
+ * Helper methods for Java API <-> C API mapping
  */
 public class Util {
     static int handleException(Throwable t) {
         int ret = Server.EINVAL;
 
-        if (t instanceof DatabaseException)
+        if (t instanceof DatabaseException) {
             ret = ((DatabaseException)t).getErrno();
-        else if (t instanceof FileNotFoundException)
+            if (ret == DbConstants.DB_LOCK_NOTGRANTED)
+                ret = DbConstants.DB_LOCK_DEADLOCK;
+        } else if (t instanceof FileNotFoundException)
             ret = Server.ENOENT;
 
         t.printStackTrace(Server.err);

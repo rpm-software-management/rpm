@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db_load.c,v 11.99 2004/10/11 18:53:14 bostic Exp $
+ * $Id: db_load.c,v 11.100 2004/10/29 17:29:02 bostic Exp $
  */
 
 #include "db_config.h"
@@ -99,7 +99,8 @@ main(argc, argv)
 	dbtype = DB_UNKNOWN;
 
 	/* Allocate enough room for configuration arguments. */
-	if ((clp = clist = calloc((size_t)argc + 1, sizeof(char *))) == NULL) {
+	if ((clp = clist =
+	    (char **)calloc((size_t)argc + 1, sizeof(char *))) == NULL) {
 		fprintf(stderr, "%s: %s\n", ldg.progname, strerror(ENOMEM));
 		return (EXIT_FAILURE);
 	}

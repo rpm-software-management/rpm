@@ -4,7 +4,7 @@
  * Copyright (c) 1999-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: qam_files.c,v 1.86 2004/10/12 22:53:44 ubell Exp $
+ * $Id: qam_files.c,v 1.88 2004/10/21 14:54:42 bostic Exp $
  */
 
 #include "db_config.h"
@@ -681,9 +681,9 @@ int __qam_nameop(dbp, txn, newname, op)
 	char *endname, *endpath, *exname, *fullname, **names;
 	char *ndir, *namep, *new, *cp;
 
-	ret = t_ret = 0;
 	dbenv = dbp->dbenv;
 	qp = (QUEUE *)dbp->q_internal;
+	cnt = ret = t_ret = 0;
 	namep = exname = fullname = NULL;
 	names = NULL;
 
@@ -700,9 +700,7 @@ int __qam_nameop(dbp, txn, newname, op)
 	 * are in mainline code, then return as soon as we have a problem.
 	 * Memory allocation errors (__db_appname, __os_malloc) are always
 	 * considered failure.
-	 */
-
-	/*
+	 *
 	 * Set buf to : dir/__dbq.NAME.0 and fullname to HOME/dir/__dbq.NAME.0
 	 * or, in the case of an absolute path: /dir/__dbq.NAME.0
 	 */
@@ -820,6 +818,6 @@ err:	if (fullname != NULL)
 	if (namep != NULL)
 		__os_free(dbenv, namep);
 	if (names != NULL)
-		__os_free(dbenv, names);
+		__os_dirfree(dbenv, names, cnt);
 	return (ret);
 }

@@ -1,4 +1,4 @@
-<!--$Id: intro.so,v 1.3 2004/08/28 23:44:22 bostic Exp $-->
+<!--$Id: intro.so,v 1.4 2004/10/18 19:46:31 bostic Exp $-->
 <!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -21,11 +21,12 @@ an increasing or decreasing sequence of integers.  Opening a sequence
 handle associates it with a record in a database.  The handle can
 maintain a cache of values from the database so that a database update
 is not needed as the application allocates a value.</p>
-<p>A sequence is stored as a record pair in any type of database.  It is
-referenced by the key used when the sequence is created.  The key must
-be compatible with the underlying access method.  If the access method
-of the database has fixed-length records, the record size must be at
-least 64 bytes long.</p>
+<p>A sequence is stored as a record pair in a database.  The database may
+be of any type, but may not have been configured to support duplicate
+data items.  The sequence is referenced by the key used when the
+sequence is created, therefore the key must be compatible with the
+underlying access method.  If the database stores fixed-length records,
+the record size must be at least 64 bytes long.</p>
 <p>Since a sequence handle is opened using a database handle, the use of
 transactions with the sequence must follow how the database handle was
 opened.  In other words, if the database handle was opened within a
@@ -38,24 +39,22 @@ specified to the <a href="../../api_c/seq_get.html">DB_SEQUENCE-&gt;get</a> meth
 sequence value must be part of a transaction, and rolled back if the
 transaction aborts, then no caching should be specified and the
 transaction handle must be passed to the <a href="../../api_c/seq_get.html">DB_SEQUENCE-&gt;get</a> method.</p>
-<!--$Id: m4.methods,v 1.5 2004/08/28 23:42:46 bostic Exp $-->
+<!--$Id: m4.methods,v 1.6 2004/11/02 20:04:10 bostic Exp $-->
 <table border=1 align=center>
 <tr><th>Sequences and Related Methods</th><th>Description</th></tr>
-<tr><td><a href="../../api_c/seq_class.html">db_sequence_create</a></td><td>Create a sequence handle</td></tr>
-<tr><td><a href="../../api_c/seq_close.html">DB_SEQUENCE-&gt;close</a></td><td>Close a sequence</td></tr>
-<tr><td><a href="../../api_c/seq_get.html">DB_SEQUENCE-&gt;get</a></td><td>Get the next sequence element(s)</td></tr>
-<tr><td><a href="../../api_c/seq_open.html">DB_SEQUENCE-&gt;get_dbp</a></td><td>Return a handle for the underlying sequence database</td></tr>
-<tr><td><a href="../../api_c/seq_set_cachesize.html">DB_SEQUENCE-&gt;get_cachesize</a></td><td>Return the cache size of a sequence</td></tr>
-<tr><td><a href="../../api_c/seq_set_flags.html">DB_SEQUENCE-&gt;get_flags</a></td><td>Return the flags for a sequence</td></tr>
-<tr><td><a href="../../api_c/seq_set_range.html">DB_SEQUENCE-&gt;get_range</a></td><td>Return the range for a sequence</td></tr>
-<tr><td><a href="../../api_c/seq_open.html">DB_SEQUENCE-&gt;get_key</a></td><td>Return the key for a sequence</td></tr>
-<tr><td><a href="../../api_c/seq_init_value.html">DB_SEQUENCE-&gt;init_value</a></td><td>Set the initial value of a sequence</td></tr>
-<tr><td><a href="../../api_c/seq_open.html">DB_SEQUENCE-&gt;open</a></td><td>Open a sequence</td></tr>
-<tr><td><a href="../../api_c/seq_remove.html">DB_SEQUENCE-&gt;remove</a></td><td>Remove a sequence</td></tr>
-<tr><td><a href="../../api_c/seq_set_cachesize.html">DB_SEQUENCE-&gt;set_cachesize</a></td><td>Set the cache size of a sequence</td></tr>
-<tr><td><a href="../../api_c/seq_set_flags.html">DB_SEQUENCE-&gt;set_flags</a></td><td>Set the flags for a sequence</td></tr>
-<tr><td><a href="../../api_c/seq_set_range.html">DB_SEQUENCE-&gt;set_range</a></td><td>Set the range for a sequence</td></tr>
-<tr><td><a href="../../api_c/seq_stat.html">DB_SEQUENCE-&gt;stat</a></td><td>Return sequence statistics</td></tr>
+<!--DbSequence::--><tr><td><a href="../../api_c/seq_class.html">db_sequence_create</a></td><td>Create a sequence handle</td></tr>
+<!--DbSequence::close--><tr><td><a href="../../api_c/seq_close.html">DB_SEQUENCE-&gt;close</a></td><td>Close a sequence</td></tr>
+<!--DbSequence::get--><tr><td><a href="../../api_c/seq_get.html">DB_SEQUENCE-&gt;get</a></td><td>Get the next sequence element(s)</td></tr>
+<!--DbSequence::get_dbp--><tr><td><a href="../../api_c/seq_open.html">DB_SEQUENCE-&gt;get_dbp</a></td><td>Return a handle for the underlying sequence database</td></tr>
+<!--DbSequence::get_key--><tr><td><a href="../../api_c/seq_open.html">DB_SEQUENCE-&gt;get_key</a></td><td>Return the key for a sequence</td></tr>
+<!--DbSequence::init_value--><tr><td><a href="../../api_c/seq_init_value.html">DB_SEQUENCE-&gt;init_value</a></td><td>Set the initial value of a sequence</td></tr>
+<!--DbSequence::open--><tr><td><a href="../../api_c/seq_open.html">DB_SEQUENCE-&gt;open</a></td><td>Open a sequence</td></tr>
+<!--DbSequence::remove--><tr><td><a href="../../api_c/seq_remove.html">DB_SEQUENCE-&gt;remove</a></td><td>Remove a sequence</td></tr>
+<!--DbSequence::stat--><tr><td><a href="../../api_c/seq_stat.html">DB_SEQUENCE-&gt;stat</a></td><td>Return sequence statistics</td></tr>
+<tr><th>Sequences Configuration</th><th><br></th></tr>
+<!--DbSequence::set_cachesize--><tr><td><a href="../../api_c/seq_set_cachesize.html">DB_SEQUENCE-&gt;set_cachesize</a></td><td>Set the cache size of a sequence</td></tr>
+<!--DbSequence::set_flags--><tr><td><a href="../../api_c/seq_set_flags.html">DB_SEQUENCE-&gt;set_flags</a></td><td>Set the flags for a sequence</td></tr>
+<!--DbSequence::set_range--><tr><td><a href="../../api_c/seq_set_range.html">DB_SEQUENCE-&gt;set_range</a></td><td>Set the range for a sequence</td></tr>
 </table>
 <table width="100%"><tr><td><br></td><td align=right><a href="../txn/limits.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../toc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../rpc/intro.html"><img src="../../images/next.gif" alt="Next"></a>
 </td></tr></table>

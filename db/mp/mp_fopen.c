@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mp_fopen.c,v 11.142 2004/09/17 22:00:31 mjc Exp $
+ * $Id: mp_fopen.c,v 11.143 2004/10/15 16:59:43 bostic Exp $
  */
 
 #include "db_config.h"
@@ -180,7 +180,7 @@ __memp_fopen(dbmfp, mfp, path, flags, mode, pgsize)
 	 */
 	if (mfp != NULL) {
 		R_LOCK(dbenv, dbmp->reginfo);
-		path = R_ADDR(dbenv, dbmp->reginfo, mfp->path_off);
+		path = R_ADDR(dbmp->reginfo, mfp->path_off);
 	}
 	if ((ret =
 	    __db_appname(dbenv, DB_APP_DATA, path, 0, NULL, &rpath)) == 0)
@@ -263,7 +263,7 @@ __memp_fopen(dbmfp, mfp, path, flags, mode, pgsize)
 			continue;
 
 		/* Skip non-matching files. */
-		if (memcmp(dbmfp->fileid, R_ADDR(dbenv, dbmp->reginfo,
+		if (memcmp(dbmfp->fileid, R_ADDR(dbmp->reginfo,
 		    mfp->fileid_off), DB_FILE_ID_LEN) != 0)
 			continue;
 
@@ -711,7 +711,7 @@ __memp_fclose(dbmfp, flags)
 			mfp->deadfile = 1;
 		if (mfp->unlink_on_close) {
 			if ((t_ret = __db_appname(dbmp->dbenv,
-			    DB_APP_DATA, R_ADDR(dbenv, dbmp->reginfo,
+			    DB_APP_DATA, R_ADDR(dbmp->reginfo,
 			    mfp->path_off), 0, NULL, &rpath)) != 0 && ret == 0)
 				ret = t_ret;
 			if (t_ret == 0) {
@@ -799,18 +799,18 @@ __memp_mf_discard(dbmp, mfp)
 
 	/* Clear the mutex this MPOOLFILE recorded. */
 	__db_shlocks_clear(&mfp->mutex, dbmp->reginfo,
-	    (REGMAINT *)R_ADDR(dbenv, dbmp->reginfo, mp->maint_off));
+	    R_ADDR(dbmp->reginfo, mp->maint_off));
 
 	/* Free the space. */
 	if (mfp->path_off != 0)
 		__db_shalloc_free(&dbmp->reginfo[0],
-		    R_ADDR(dbenv, dbmp->reginfo, mfp->path_off));
+		    R_ADDR(dbmp->reginfo, mfp->path_off));
 	if (mfp->fileid_off != 0)
 		__db_shalloc_free(&dbmp->reginfo[0],
-		    R_ADDR(dbenv, dbmp->reginfo, mfp->fileid_off));
+		    R_ADDR(dbmp->reginfo, mfp->fileid_off));
 	if (mfp->pgcookie_off != 0)
 		__db_shalloc_free(&dbmp->reginfo[0],
-		    R_ADDR(dbenv, dbmp->reginfo, mfp->pgcookie_off));
+		    R_ADDR(dbmp->reginfo, mfp->pgcookie_off));
 	__db_shalloc_free(&dbmp->reginfo[0], mfp);
 
 	R_UNLOCK(dbenv, dbmp->reginfo);

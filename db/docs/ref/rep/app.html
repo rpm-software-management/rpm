@@ -1,4 +1,4 @@
-<!--$Id: app.so,v 1.20 2004/10/14 15:06:11 bostic Exp $-->
+<!--$Id: app.so,v 1.24 2004/11/01 15:35:48 sue Exp $-->
 <!--Copyright 1997-2004 by Sleepycat Software, Inc.-->
 <!--All rights reserved.-->
 <!--See the file LICENSE for redistribution information.-->
@@ -17,8 +17,8 @@
 <h3 align=center>Building replicated applications</h3>
 <p>The simplest way to build a replicated Berkeley DB application is to first
 build (and debug!) the transactional version of the same application.
-Then, add a thin replication layer to the application.  All highly available
-applications use the following additional four Berkeley DB methods:
+Then, add a thin replication layer to the application. All highly
+available applications use the following additional four Berkeley DB methods:
 <a href="../../api_c/rep_elect.html">DB_ENV-&gt;rep_elect</a>, <a href="../../api_c/rep_message.html">DB_ENV-&gt;rep_process_message</a>, <a href="../../api_c/rep_start.html">DB_ENV-&gt;rep_start</a> and
 <a href="../../api_c/rep_transport.html">DB_ENV-&gt;set_rep_transport</a> and may also use the configuration method
 <a href="../../api_c/rep_limit.html">DB_ENV-&gt;set_rep_limit</a>:</p>
@@ -57,7 +57,12 @@ simple, but the communications infrastructure code can be complex.</p>
 data directories set from <a href="../../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a> or in the default
 environment home directory.  If your databases reside in the default
 environment home directory, they must be in the home directory itself,
-not subdirectories below the environment home.</p>
+not subdirectories below the environment home.  Care must be taken in
+applications using relative pathnames and changing working directories
+after opening the environment.  In such applications the replication
+initialization code may not be able to locate the databases, and
+applications that change their working directories may need to use
+absolute pathnames.</p>
 <p>During application initialization, the application performs three
 additional tasks: first, it must specify the <a href="../../api_c/env_open.html#DB_INIT_REP">DB_INIT_REP</a> flag
 when opening its database environment; second, it must provide Berkeley DB

@@ -28,7 +28,7 @@ class Db4 {
 	function get($key, $txn = null, $flags = 0) {}
 	function pget($key, &$pkey, $txn = null, $flags = 0) {}
 	function get_type() {} // returns the stringified database type name
-	function stat() {} // returns statistics as an associative array
+	function stat($txn = null, $flags = 0) {} // returns statistics as an associative array
 	function join($cursor_list, $flags = 0) {}
 	function sync() {}
 	function truncate($txn = null, $flags = 0) {}

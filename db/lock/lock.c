@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: lock.c,v 11.166 2004/10/11 19:38:49 ubell Exp $
+ * $Id: lock.c,v 11.167 2004/10/15 16:59:41 bostic Exp $
  */
 
 #include "db_config.h"
@@ -237,8 +237,7 @@ __lock_vec(dbenv, locker, flags, list, nlist, elistp)
 					    locker_links, __db_lock)) {
 					if (lp->mode != DB_LOCK_WWRITE)
 						continue;
-					lock.off = R_OFFSET(dbenv,
-					    &lt->reginfo, lp);
+					lock.off = R_OFFSET(&lt->reginfo, lp);
 					lock.gen = lp->gen;
 					F_SET(sh_locker, DB_LOCKER_INABORT);
 					if ((ret = __lock_get_internal(lt,
@@ -482,8 +481,8 @@ __lock_get_internal(lt, locker, flags, obj, lock_mode, timeout, lock)
 
 	if (obj == NULL) {
 		DB_ASSERT(LOCK_ISSET(*lock));
-		lp = (struct __db_lock *)R_ADDR(dbenv, &lt->reginfo, lock->off);
-		sh_obj = (DB_LOCKOBJ *) ((u_int8_t *)lp + lp->obj);
+		lp = R_ADDR(&lt->reginfo, lock->off);
+		sh_obj = (DB_LOCKOBJ *)((u_int8_t *)lp + lp->obj);
 	} else {
 		/* Allocate a shared memory new object. */
 		OBJECT_LOCK(lt, region, obj, lock->ndx);
@@ -563,7 +562,7 @@ __lock_get_internal(lt, locker, flags, obj, lock_mode, timeout, lock)
 				 * the locker.
 				 */
 				lp->refcount++;
-				lock->off = R_OFFSET(dbenv, &lt->reginfo, lp);
+				lock->off = R_OFFSET(&lt->reginfo, lp);
 				lock->gen = lp->gen;
 				lock->mode = lp->mode;
 				goto done;
@@ -704,13 +703,12 @@ __lock_get_internal(lt, locker, flags, obj, lock_mode, timeout, lock)
 upgrade:	if (wwrite != NULL) {
 			lp = wwrite;
 			lp->refcount++;
-			lock->off = R_OFFSET(dbenv, &lt->reginfo, lp);
+			lock->off = R_OFFSET(&lt->reginfo, lp);
 			lock->gen = lp->gen;
 			lock->mode = lock_mode;
 		}
 		else
-			lp = (struct __db_lock *)R_ADDR(dbenv,
-			    &lt->reginfo, lock->off);
+			lp = R_ADDR(&lt->reginfo, lock->off);
 		if (IS_WRITELOCK(lock_mode) && !IS_WRITELOCK(lp->mode))
 			sh_locker->nwrites++;
 		lp->mode = lock_mode;
@@ -874,7 +872,7 @@ expired:		SHOBJECT_LOCK(lt, region, sh_obj, obj_ndx);
 		}
 	}
 
-	lock->off = R_OFFSET(dbenv, &lt->reginfo, newl);
+	lock->off = R_OFFSET(&lt->reginfo, newl);
 	lock->gen = newl->gen;
 	lock->mode = newl->mode;
 	sh_locker->nlocks++;
@@ -974,7 +972,7 @@ __lock_put_nolock(dbenv, lock, runp, flags)
 	lt = dbenv->lk_handle;
 	region = lt->reginfo.primary;
 
-	lockp = (struct __db_lock *)R_ADDR(dbenv, &lt->reginfo, lock->off);
+	lockp = R_ADDR(&lt->reginfo, lock->off);
 	if (lock->gen != lockp->gen) {
 		__db_err(dbenv, __db_lock_invalid, "DB_LOCK->lock_put");
 		LOCK_INIT(*lock);
@@ -1040,7 +1038,7 @@ __lock_downgrade(dbenv, lock, new_mode, flags)
 	if (!LF_ISSET(DB_LOCK_NOREGION))
 		LOCKREGION(dbenv, lt);
 
-	lockp = (struct __db_lock *)R_ADDR(dbenv, &lt->reginfo, lock->off);
+	lockp = R_ADDR(&lt->reginfo, lock->off);
 	if (lock->gen != lockp->gen) {
 		__db_err(dbenv, __db_lock_invalid, "lock_downgrade");
 		ret = EINVAL;
@@ -1298,8 +1296,7 @@ __lock_is_parent(lt, locker, sh_locker)
 
 	parent = sh_locker;
 	while (parent->parent_locker != INVALID_ROFF) {
-		parent = (DB_LOCKER *)
-		    R_ADDR(lt->dbenv, &lt->reginfo, parent->parent_locker);
+		parent = R_ADDR(&lt->reginfo, parent->parent_locker);
 		if (parent->id == locker)
 			return (1);
 	}
@@ -1394,8 +1391,7 @@ __lock_inherit_locks(lt, locker, flags)
 		ret = EINVAL;
 		goto err;
 	}
-	sh_parent = (DB_LOCKER *)
-	    R_ADDR(dbenv, &lt->reginfo, sh_locker->parent_locker);
+	sh_parent = R_ADDR(&lt->reginfo, sh_locker->parent_locker);
 	F_SET(sh_locker, DB_LOCKER_DELETED);
 
 	/*
@@ -1618,8 +1614,7 @@ __lock_trade(dbenv, lock, new_locker)
 
 	lt = dbenv->lk_handle;
 	region = lt->reginfo.primary;
-
-	lp = (struct __db_lock *)R_ADDR(dbenv, &lt->reginfo, lock->off);
+	lp = R_ADDR(&lt->reginfo, lock->off);
 
 	/* If the lock is already released, simply return. */
 	if (lp->gen != lock->gen)

@@ -39,7 +39,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: hash.c,v 11.199 2004/10/11 19:38:49 ubell Exp $
+ * $Id: hash.c,v 11.200 2004/10/14 18:11:36 bostic Exp $
  */
 
 #include "db_config.h"
@@ -2100,8 +2100,8 @@ __ham_c_writelock(dbc)
 	ret = 0;
 	if ((!LOCK_ISSET(hcp->lock) || hcp->lock_mode != DB_LOCK_WRITE)) {
 		tmp_lock = hcp->lock;
-		if ((ret = __ham_lock_bucket(dbc, DB_LOCK_WRITE)) == 0
-		    && tmp_lock.mode != DB_LOCK_WWRITE)
+		if ((ret = __ham_lock_bucket(dbc, DB_LOCK_WRITE)) == 0 &&
+		    tmp_lock.mode != DB_LOCK_WWRITE)
 			ret = __LPUT(dbc, tmp_lock);
 	}
 	return (ret);

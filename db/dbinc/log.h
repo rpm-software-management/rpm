@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: log.h,v 11.89 2004/09/24 00:43:18 bostic Exp $
+ * $Id: log.h,v 11.90 2004/10/15 16:59:39 bostic Exp $
  */
 
 #ifndef _LOG_H_
@@ -346,11 +346,9 @@ struct __db_filestart {
 #define	DB_SET_BEGIN_LSNP(txn, rlsnp) do {				\
 	DB_LSN *__lsnp;							\
 	TXN_DETAIL *__td;						\
-	__td = (TXN_DETAIL *)R_ADDR((txn)->mgrp->dbenv,			\
-	    &(txn)->mgrp->reginfo, (txn)->off);				\
+	__td = R_ADDR(&(txn)->mgrp->reginfo, (txn)->off);		\
 	while (__td->parent != INVALID_ROFF)				\
-		__td = (TXN_DETAIL *)R_ADDR((txn)->mgrp->dbenv,		\
-		    &(txn)->mgrp->reginfo, __td->parent);		\
+		__td = R_ADDR(&(txn)->mgrp->reginfo, __td->parent);	\
 	__lsnp = &__td->begin_lsn;					\
 	if (IS_ZERO_LSN(*__lsnp))					\
 		*(rlsnp) = __lsnp;					\

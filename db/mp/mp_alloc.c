@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: mp_alloc.c,v 11.46 2004/09/15 21:49:19 mjc Exp $
+ * $Id: mp_alloc.c,v 11.47 2004/10/15 16:59:42 bostic Exp $
  */
 
 #include "db_config.h"
@@ -28,9 +28,9 @@ static void __memp_bad_buffer __P((DB_MPOOL_HASH *));
  * PUBLIC:     REGINFO *, MPOOLFILE *, size_t, roff_t *, void *));
  */
 int
-__memp_alloc(dbmp, memreg, mfp, len, offsetp, retp)
+__memp_alloc(dbmp, infop, mfp, len, offsetp, retp)
 	DB_MPOOL *dbmp;
-	REGINFO *memreg;
+	REGINFO *infop;
 	MPOOLFILE *mfp;
 	size_t len;
 	roff_t *offsetp;
@@ -49,8 +49,8 @@ __memp_alloc(dbmp, memreg, mfp, len, offsetp, retp)
 	void *p;
 
 	dbenv = dbmp->dbenv;
-	c_mp = memreg->primary;
-	dbht = R_ADDR(dbenv, memreg, c_mp->htab);
+	c_mp = infop->primary;
+	dbht = R_ADDR(infop, c_mp->htab);
 	hp_end = &dbht[c_mp->htab_buckets];
 
 	buckets = buffers = put_counter = total_buckets = 0;
@@ -69,7 +69,7 @@ __memp_alloc(dbmp, memreg, mfp, len, offsetp, retp)
 	if (mfp != NULL)
 		len = (sizeof(BH) - sizeof(u_int8_t)) + mfp->stat.st_pagesize;
 
-	R_LOCK(dbenv, memreg);
+	R_LOCK(dbenv, infop);
 	/*
 	 * Anything newer than 1/10th of the buffer pool is ignored during
 	 * allocation (unless allocation starts failing).
@@ -85,13 +85,13 @@ __memp_alloc(dbmp, memreg, mfp, len, offsetp, retp)
 	 * we need in the hopes it will coalesce into a contiguous chunk of the
 	 * right size.  In the latter case we branch back here and try again.
 	 */
-alloc:	if ((ret = __db_shalloc(memreg, len, MUTEX_ALIGN, &p)) == 0) {
+alloc:	if ((ret = __db_shalloc(infop, len, MUTEX_ALIGN, &p)) == 0) {
 		if (mfp != NULL)
 			c_mp->stat.st_pages++;
-		R_UNLOCK(dbenv, memreg);
+		R_UNLOCK(dbenv, infop);
 
 found:		if (offsetp != NULL)
-			*offsetp = R_OFFSET(dbenv, memreg, p);
+			*offsetp = R_OFFSET(infop, p);
 		*(void **)retp = p;
 
 		/*
@@ -113,7 +113,7 @@ found:		if (offsetp != NULL)
 		}
 		return (0);
 	} else if (giveup || c_mp->stat.st_pages == 0) {
-		R_UNLOCK(dbenv, memreg);
+		R_UNLOCK(dbenv, infop);
 
 		__db_err(dbenv,
 		    "unable to allocate space from the buffer cache");
@@ -187,7 +187,7 @@ found:		if (offsetp != NULL)
 		if ((++buckets % c_mp->htab_buckets) == 0) {
 			if (freed_space > 0)
 				goto alloc;
-			R_UNLOCK(dbenv, memreg);
+			R_UNLOCK(dbenv, infop);
 
 			switch (++aggressive) {
 			case 1:
@@ -211,7 +211,7 @@ found:		if (offsetp != NULL)
 				break;
 			}
 
-			R_LOCK(dbenv, memreg);
+			R_LOCK(dbenv, infop);
 			goto alloc;
 		}
 
@@ -239,7 +239,7 @@ found:		if (offsetp != NULL)
 		priority = hp->hash_priority;
 
 		/* Unlock the region and lock the hash bucket. */
-		R_UNLOCK(dbenv, memreg);
+		R_UNLOCK(dbenv, infop);
 		mutexp = &hp->hash_mutex;
 		MUTEX_LOCK(dbenv, mutexp);
 
@@ -262,7 +262,7 @@ found:		if (offsetp != NULL)
 		buffers++;
 
 		/* Find the associated MPOOLFILE. */
-		bh_mfp = R_ADDR(dbenv, dbmp->reginfo, bhp->mf_offset);
+		bh_mfp = R_ADDR(dbmp->reginfo, bhp->mf_offset);
 
 		/* If the page is dirty, pin it and write it. */
 		ret = 0;
@@ -318,7 +318,7 @@ found:		if (offsetp != NULL)
 		if (0) {
 next_hb:		MUTEX_UNLOCK(dbenv, mutexp);
 		}
-		R_LOCK(dbenv, memreg);
+		R_LOCK(dbenv, infop);
 
 		/*
 		 * Retry the allocation as soon as we've freed up sufficient

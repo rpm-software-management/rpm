@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2004
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: db_int.in,v 11.153 2004/10/05 14:43:53 mjc Exp $
+ * $Id: db_int.in,v 11.155 2004/10/28 16:07:38 ubell Exp $
  */
 
 #ifndef _DB_INTERNAL_H_
@@ -39,7 +39,11 @@ extern "C" {
 #define	UINT16_MAX	65535		/* Maximum 16-bit unsigned. */
 #endif
 #ifndef	UINT32_MAX
+#ifdef __STDC__
 #define	UINT32_MAX	4294967295U	/* Maximum 32-bit unsigned. */
+#else
+#define	UINT32_MAX	0xffffffff	/* Maximum 32-bit unsigned. */
+#endif
 #endif
 
 #if defined(HAVE_LONG_LONG) && defined(HAVE_UNSIGNED_LONG_LONG)
@@ -451,7 +455,7 @@ typedef struct __dbpginfo {
 	(LSN).file = 0;							\
 	(LSN).offset = 0;						\
 } while (0)
-#define	IS_ZERO_LSN(LSN)	((LSN).file == 0)
+#define	IS_ZERO_LSN(LSN)	((LSN).file == 0 && (LSN).offset == 0)
 
 #define	IS_INIT_LSN(LSN)	((LSN).file == 1 && (LSN).offset == 0)
 #define	INIT_LSN(LSN)		do {					\
