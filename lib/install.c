@@ -581,9 +581,9 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     } else {
 	for (j = 0; j < fileCount; j++)
 	    args[i++] = files[j].fileName;
-
-	args[i++] = NULL;
     }
+
+    args[i++] = NULL;
     
     stream = gzdopen(fd, "r");
     pipe(p);
