@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.1\n"
-"POT-Creation-Date: 2001-02-09 10:46-0500\n"
+"POT-Creation-Date: 2001-02-22 17:41-0500\n"
 "PO-Revision-Date: 1999-03-18 23:11+0100\n"
 "Last-Translator: Nobody yet\n"
 "Language-Team: walon <linux-wa@chanae.alphanet.ch>\n"
@@ -98,10 +98,10 @@ msgstr ""
 msgid "ARG"
 msgstr ""
 
-#: popthelp.c:240
+#: popthelp.c:241
 msgid "Usage:"
 msgstr ""
 
-#: popthelp.c:259
+#: popthelp.c:260
 msgid "[OPTION...]"
 msgstr ""

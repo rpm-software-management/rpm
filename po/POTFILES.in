@@ -51,7 +51,6 @@ lib/rpmdb.c
 lib/rpminstall.c
 lib/rpmlead.c
 lib/rpmrc.c
-lib/scriptlet.c
 lib/signature.c
 lib/stringbuf.c
 lib/transaction.c

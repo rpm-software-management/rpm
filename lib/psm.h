@@ -6,15 +6,7 @@
 
 #include <rpmlib.h>
 #include "depends.h"
-#include "scriptlet.h"
 #include "fsm.h"
-
-/**
- */
-typedef	enum rollbackDir_e {
-    ROLLBACK_SAVE	= 1,	/*!< Save files. */
-    ROLLBACK_RESTORE	= 2,	/*!< Restore files. */
-} rollbackDir;
 
 /**
  */
@@ -72,7 +64,6 @@ struct transactionFileInfo_s {
     int dnlmax;			/*!< Length (in bytes) of longest dir name. */
     int astriplen;
     int striplen;
-    int chrootDone;
     unsigned int archiveSize;
     mode_t dperms;		/*!< Directory perms (0755) if not mapped. */
     mode_t fperms;		/*!< File perms (0644) if not mapped. */
@@ -97,16 +88,49 @@ struct transactionFileInfo_s {
 
 /**
  */
+#define	PSM_VERBOSE	0x8000
+#define	PSM_INTERNAL	0x4000
+#define	PSM_SYSCALL	0x2000
+#define	PSM_DEAD	0x1000
+#define	_fv(_a)		((_a) | PSM_VERBOSE)
+#define	_fi(_a)		((_a) | PSM_INTERNAL)
+#define	_fs(_a)		((_a) | (PSM_INTERNAL | PSM_SYSCALL))
+#define	_fd(_a)		((_a) | (PSM_INTERNAL | PSM_DEAD))
+typedef enum pkgStage_e {
+    PSM_UNKNOWN =  0,
+    PSM_INIT	=  1,
+    PSM_PRE	=  2,
+    PSM_PROCESS	=  3,
+    PSM_POST	=  4,
+    PSM_UNDO	=  5,
+    PSM_FINI	=  6,
+    PSM_NOTIFY	=  7,
+    PSM_COMMIT	=  8,
+    PSM_CREATE	=  9,
+    PSM_DESTROY	=  10,
+    PSM_CHROOT_IN= 11,
+    PSM_CHROOT_OUT=12,
+    PSM_SCRIPT	=  13,
+    PSM_TRIGGER	=  14,
+} pkgStage;
+#undef	_fv
+#undef	_fi
+#undef	_fs
+#undef	_fd
+
+/**
+ */
 struct psm_s {
     rpmTransactionSet ts;
     TFI_t fi;
-    int scriptTag;		/*!< Scriptlet tag. */
+    int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
     int scriptArg;		/*!< No. of installed instances. */
     int sense;			/*!< One of RPMSENSE_TRIGGER{IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
+    int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
     int rc;
-    fileStage stage;
+    pkgStage stage;
 };
 
 #ifdef __cplusplus
@@ -167,7 +191,7 @@ int repackage(PSM_t psm)
 
 /**
  */
-int psmStage(PSM_t psm, fileStage stage)
+int psmStage(PSM_t psm, pkgStage stage)
 	/*@modifies psm @*/;
 
 #ifdef __cplusplus

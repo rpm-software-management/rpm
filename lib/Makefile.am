@@ -13,7 +13,7 @@ pkginc_HEADERS = \
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h fprint.h fsm.h hash.h \
 	md5.h psm.h \
-	rpmdb.h rpmlead.h scriptlet.h signature.h
+	rpmdb.h rpmlead.h signature.h
 
 mylibpaths =	-L$(top_builddir)/lib/.libs -L$(top_builddir)/rpmio/.libs \
 		-L$(top_builddir)/popt/.libs
@@ -27,7 +27,7 @@ librpm_la_SOURCES = \
 	md5.c md5sum.c misc.c package.c problems.c \
 	poptBT.c poptQV.c psm.c query.c \
 	rpmchecksig.c rpmdb.c rpminstall.c \
-	rpmlead.c rpmlibprov.c rpmrc.c scriptlet.c signature.c stringbuf.c \
+	rpmlead.c rpmlibprov.c rpmrc.c signature.c stringbuf.c \
 	tagName.c tagtable.c transaction.c verify.c
 librpm_la_LDFLAGS = @libdb3@ @libdb2@ @libdb1@
 librpm_la_LIBADD = $(DBLIBOBJS)

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-19 11:19-0500\n"
+"POT-Creation-Date: 2001-02-28 10:48-0500\n"
 "PO-Revision-Date: 2000-08-23 22:24+0100\n"
 "Last-Translator: Milan Kerslager <milan.kerslager@spsselib.hiedu.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1886,7 +1886,7 @@ msgstr "Generuji podpis: %d\n"
 msgid "Could not open %s: %s\n"
 msgstr "Nemohu otevøít %s: %s\n"
 
-#: build/pack.c:484 lib/psm.c:1304
+#: build/pack.c:484 lib/psm.c:1830
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nemohu zapsat balíèek: %s"
@@ -1916,7 +1916,7 @@ msgstr "Nemohu pøeèíst ikonu %s: %s"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nemohu zapsat balíèek %s: %s"
 
-#: build/pack.c:566 lib/psm.c:1360
+#: build/pack.c:566 lib/psm.c:1886
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapsáno: %s\n"
@@ -2593,27 +2593,27 @@ msgstr "øádek %d: %s"
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1344 lib/fsm.c:1461
+#: lib/fsm.c:1345 lib/fsm.c:1462
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "varování: %s ulo¾eno jako %s"
 
-#: lib/fsm.c:1486
+#: lib/fsm.c:1487
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "nemohu odstranit %s - adresáø není prázdný"
 
-#: lib/fsm.c:1491
+#: lib/fsm.c:1492
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "rmdir %s selhalo: %s"
 
-#: lib/fsm.c:1500
+#: lib/fsm.c:1501
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
 
-#: lib/fsm.c:1517
+#: lib/fsm.c:1518
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "varování: %s vytvoøeno jako %s"
@@ -3063,18 +3063,28 @@ msgstr "zdrojový balíèek neobsahuje spec soubor"
 msgid "source package expected, binary found\n"
 msgstr "oèekávám balíèek se zdrojovými kódy, nalezen v¹ak binární"
 
-#: lib/psm.c:927 lib/psm.c:1101
+#: lib/psm.c:1083
+#, fuzzy, c-format
+msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
+msgstr "provedení %s-%s-%s skriptu selhalo, návratový kód: %d"
+
+#: lib/psm.c:1090
+#, fuzzy, c-format
+msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
+msgstr "provedení %s-%s-%s skriptu selhalo, návratový kód: %d"
+
+#: lib/psm.c:1432 lib/psm.c:1613
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "balíèek: %s-%s-%s test souborù = %d\n"
 
 #. XXX WTFO? erase failures are not cause for stopping.
-#: lib/psm.c:991 lib/psm.c:1059 lib/psm.c:1151 lib/psm.c:1176
+#: lib/psm.c:1496 lib/psm.c:1565 lib/psm.c:1666 lib/psm.c:1692
 #, fuzzy, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "spou¹tím pøípadný postinstalaèní skript\n"
 
-#: lib/psm.c:998
+#: lib/psm.c:1504
 #, fuzzy
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr "pøeskakuji %s - pøenos selhal - %s\n"
@@ -3221,67 +3231,67 @@ msgstr "%s: Fwrite selhalo: %s\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
 
-#: lib/rpmchecksig.c:137 lib/rpmchecksig.c:273
+#: lib/rpmchecksig.c:121 lib/rpmchecksig.c:253
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead selhalo\n"
 
-#: lib/rpmchecksig.c:142
+#: lib/rpmchecksig.c:126
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: RPM v1.0 nelze podepsat\n"
 
-#: lib/rpmchecksig.c:146
+#: lib/rpmchecksig.c:130
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Nemohu znovu podepsat RPM v2.0\n"
 
-#: lib/rpmchecksig.c:155 lib/rpmchecksig.c:289
+#: lib/rpmchecksig.c:139 lib/rpmchecksig.c:269
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature selhalo\n"
 
-#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:294
+#: lib/rpmchecksig.c:143 lib/rpmchecksig.c:274
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Není dostupný ¾ádný podpis\n"
 
-#: lib/rpmchecksig.c:192
+#: lib/rpmchecksig.c:176
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead selhalo: %s\n"
 
-#: lib/rpmchecksig.c:198
+#: lib/rpmchecksig.c:182
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature selhalo: %s\n"
 
-#: lib/rpmchecksig.c:279
+#: lib/rpmchecksig.c:259
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Není dostupný ¾ádný podpis (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:443
+#: lib/rpmchecksig.c:423
 msgid "NOT OK"
 msgstr "NENÍ OK"
 
-#: lib/rpmchecksig.c:444 lib/rpmchecksig.c:458
+#: lib/rpmchecksig.c:424 lib/rpmchecksig.c:438
 msgid " (MISSING KEYS:"
 msgstr " (CHYBÍ KLÍÈ:"
 
-#: lib/rpmchecksig.c:446 lib/rpmchecksig.c:460
+#: lib/rpmchecksig.c:426 lib/rpmchecksig.c:440
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:447 lib/rpmchecksig.c:461
+#: lib/rpmchecksig.c:427 lib/rpmchecksig.c:441
 msgid " (UNTRUSTED KEYS:"
 msgstr " (NEDÙVÌRYHODNÝ KLÍÈ:"
 
-#: lib/rpmchecksig.c:449 lib/rpmchecksig.c:463
+#: lib/rpmchecksig.c:429 lib/rpmchecksig.c:443
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:457
+#: lib/rpmchecksig.c:437
 msgid "OK"
 msgstr "OK"
 
@@ -3340,105 +3350,105 @@ msgstr "chyba(%d) pøi poèítání balíèkù"
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: nemohu èíst hlavièku na 0x%x"
 
-#: lib/rpmdb.c:1699
+#: lib/rpmdb.c:1698
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuji \"%s\" z indexu %s.\n"
 
-#: lib/rpmdb.c:1708
+#: lib/rpmdb.c:1707
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstraòuji %d polo¾ek z indexu %s.\n"
 
-#: lib/rpmdb.c:1862
+#: lib/rpmdb.c:1890
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "chyba(%d) pøi alokaci nové instance balíèku"
 
-#: lib/rpmdb.c:1936
+#: lib/rpmdb.c:1964
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "pøidávám \"%s\" do indexu %s\n"
 
-#: lib/rpmdb.c:1945
+#: lib/rpmdb.c:1973
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "pøidávám %d polo¾ek do indexu %s.\n"
 
-#: lib/rpmdb.c:2286
+#: lib/rpmdb.c:2342
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2312
+#: lib/rpmdb.c:2368
 msgid "no dbpath has been set"
 msgstr "nebyla nastavena dbpath"
 
-#: lib/rpmdb.c:2337
+#: lib/rpmdb.c:2393
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "databázi %s pøevádím do %s\n"
 
-#: lib/rpmdb.c:2341
+#: lib/rpmdb.c:2397
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "doèasná databáze %s ji¾ existuje"
 
-#: lib/rpmdb.c:2347
+#: lib/rpmdb.c:2403
 #, c-format
 msgid "creating directory %s\n"
 msgstr "vytváøím adresáø %s\n"
 
-#: lib/rpmdb.c:2349
+#: lib/rpmdb.c:2405
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "vytváøím adresáø %s\n"
 
-#: lib/rpmdb.c:2356
+#: lib/rpmdb.c:2412
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otevírám starou databázi s dbapi %d\n"
 
-#: lib/rpmdb.c:2367
+#: lib/rpmdb.c:2423
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otevírám novou databázi s dbapi %d\n"
 
-#: lib/rpmdb.c:2390
+#: lib/rpmdb.c:2446
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping.\n"
 msgstr "záznam èíslo %d v databázi je chybný -- vynechávám."
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2485
 #, fuzzy, c-format
 msgid "cannot add record originally at %d\n"
 msgstr "nemohu pøidat záznam - pùvodnì u %d"
 
-#: lib/rpmdb.c:2447
+#: lib/rpmdb.c:2503
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "databázi nelze zvovu vytvoøit; pùvodní databáze zùstává na svém místì\n"
 
-#: lib/rpmdb.c:2455
+#: lib/rpmdb.c:2511
 msgid "failed to replace old database with new database!\n"
 msgstr "starou databázi nelze nahradit novou databází!\n"
 
-#: lib/rpmdb.c:2457
+#: lib/rpmdb.c:2513
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "pro obnovení nahraïte soubory v %s soubory z %s"
 
-#: lib/rpmdb.c:2467
+#: lib/rpmdb.c:2523
 #, c-format
 msgid "removing directory %s\n"
 msgstr "ma¾u adresáø %s\n"
 
-#: lib/rpmdb.c:2469
+#: lib/rpmdb.c:2525
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nemohu odstranit adresáø %s: %s\n"
 
-#: lib/rpminstall.c:147
+#: lib/rpminstall.c:148
 msgid "Preparing..."
 msgstr ""
 
@@ -3654,16 +3664,6 @@ msgstr "Neznámý systém: %s\n"
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Zkontaktujte prosím rpm-list@redhat.com\n"
 
-#: lib/scriptlet.c:229
-#, fuzzy, c-format
-msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
-msgstr "provedení %s-%s-%s skriptu selhalo, návratový kód: %d"
-
-#: lib/scriptlet.c:236
-#, fuzzy, c-format
-msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
-msgstr "provedení %s-%s-%s skriptu selhalo, návratový kód: %d"
-
 #: lib/signature.c:125
 msgid "file is not regular -- skipping size check\n"
 msgstr "není obyèejný soubor -- pøeskakuji kontrolu velikosti\n"
@@ -3678,163 +3678,163 @@ msgstr ""
 msgid "  Actual size: %12d\n"
 msgstr "Velikost podpisu: %d\n"
 
-#: lib/signature.c:161
+#: lib/signature.c:156
 msgid "No signature\n"
 msgstr "Chybí podpis\n"
 
-#: lib/signature.c:165
+#: lib/signature.c:160
 msgid "Old PGP signature\n"
 msgstr "Starý PGP podpis\n"
 
-#: lib/signature.c:176
+#: lib/signature.c:171
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Starý (pouze interní) podpis! Jak jste to získali!?"
 
-#: lib/signature.c:230
+#: lib/signature.c:225
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Velikost podpisu: %d\n"
 
-#: lib/signature.c:289
+#: lib/signature.c:284
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Nemohu spustit pgp (%s)"
 
-#: lib/signature.c:300
+#: lib/signature.c:295
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp selhalo"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:307
+#: lib/signature.c:302
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp selhalo pøi zápisu podpisu"
 
-#: lib/signature.c:312
+#: lib/signature.c:307
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Velikost podpisu PGP: %d\n"
 
-#: lib/signature.c:323 lib/signature.c:400
+#: lib/signature.c:318 lib/signature.c:395
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "nemohu èíst podpis"
 
-#: lib/signature.c:328
+#: lib/signature.c:323
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Pøeèteno %d bajtù PGP podpisu\n"
 
-#: lib/signature.c:366 lib/signature.c:712
+#: lib/signature.c:361 lib/signature.c:707
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "Nemohu spustit gpg"
 
-#: lib/signature.c:377
+#: lib/signature.c:372
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg selhalo"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:384
+#: lib/signature.c:379
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg selhalo pøi zápisu podpisu"
 
-#: lib/signature.c:389
+#: lib/signature.c:384
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Velikost GPG podpisu: %d\n"
 
-#: lib/signature.c:405
+#: lib/signature.c:400
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Pøeèteno %d bajtù GPG podpisu\n"
 
-#: lib/signature.c:433
+#: lib/signature.c:428
 msgid "Generating signature using PGP.\n"
 msgstr "Generuji PGP podpis.\n"
 
-#: lib/signature.c:439
+#: lib/signature.c:434
 msgid "Generating signature using GPG.\n"
 msgstr "Generuji GPG podpis.\n"
 
-#: lib/signature.c:519 lib/signature.c:580
+#: lib/signature.c:514 lib/signature.c:575
 #, fuzzy
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "Nemohu spustit pgp. Vynechte kontroly PGP pomocí --nopgp."
 
-#: lib/signature.c:653
+#: lib/signature.c:648
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "Nelze spustit gpg. Vynechte kontroly GPG pomocí --nogpg."
 
-#: lib/signature.c:741
+#: lib/signature.c:736
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "Nemohu spustit pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:745 lib/signature.c:798
+#: lib/signature.c:740 lib/signature.c:793
 #, fuzzy
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "©patná %%_signature spec v souboru maker.\n"
 
-#: lib/signature.c:778
+#: lib/signature.c:773
 #, fuzzy
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Musíte nastavit \"%%_gpg_name\" ve svém makro souboru"
 
-#: lib/signature.c:790
+#: lib/signature.c:785
 #, fuzzy
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Musíte nastavit \"%%_pgp_name\" ve svém makro souboru"
 
-#: lib/transaction.c:403
+#: lib/transaction.c:404
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:406
+#: lib/transaction.c:407
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "OS je vyøazen: %s"
 
-#: lib/transaction.c:409
+#: lib/transaction.c:410
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "pøemís»uji %s do %s\n"
 
-#: lib/transaction.c:483
+#: lib/transaction.c:484
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "vynechávám soubor %s%s\n"
 
-#: lib/transaction.c:532
+#: lib/transaction.c:533
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "vynechávám soubor %s%s\n"
 
-#: lib/transaction.c:539
+#: lib/transaction.c:540
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "pøemís»uji %s do %s\n"
 
-#: lib/transaction.c:611
+#: lib/transaction.c:612
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "pøemís»uji adresáø %s do %s\n"
 
-#: lib/transaction.c:616
+#: lib/transaction.c:617
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "vynechávám adresáø %s\n"
 
-#: lib/transaction.c:740
+#: lib/transaction.c:741
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s pøeskoèeno, proto¾e chybí pøíznak\n"
@@ -3848,25 +3848,25 @@ msgstr "nekontrolovat soubory v balíèku"
 msgid "do not execute %verifyscript (if any)"
 msgstr "nespou¹tìt ¾ádné etapy"
 
-#: lib/verify.c:239
+#: lib/verify.c:249
 #, fuzzy
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 "balíèek neobsahuje ani u¾ivatelská jména ani seznam id (nemìlo by se nikdy "
 "stát)"
 
-#: lib/verify.c:257
+#: lib/verify.c:267
 #, fuzzy
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 "balíèek neobsahuje ani jména skupin ani seznam id (nemìlo by se nikdy stát)"
 
-#: lib/verify.c:319
+#: lib/verify.c:340
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "chybí      %s\n"
 
-#: lib/verify.c:400
+#: lib/verify.c:421
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "

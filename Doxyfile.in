@@ -315,8 +315,6 @@ INPUT                  = \
 	./lib/rpmlib.h \
 	./lib/rpmlibprov.c \
 	./lib/rpmrc.c \
-	./lib/scriptlet.c \
-	./lib/scriptlet.h \
 	./lib/signature.c \
 	./lib/signature.h \
 	./lib/stringbuf.c \

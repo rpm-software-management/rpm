@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-19 11:19-0500\n"
+"POT-Creation-Date: 2001-02-28 10:48-0500\n"
 "PO-Revision-Date: 2000-08-17 20:22+02:00\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -1856,7 +1856,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:484 lib/psm.c:1304
+#: build/pack.c:484 lib/psm.c:1830
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunne ikke åpne spec fil %s: %s\n"
@@ -1886,7 +1886,7 @@ msgstr "Kunne ikke åpne spec fil %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kunne ikke åpne spec fil %s: %s\n"
 
-#: build/pack.c:566 lib/psm.c:1360
+#: build/pack.c:566 lib/psm.c:1886
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2531,27 +2531,27 @@ msgstr "Fil %s: %s"
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1344 lib/fsm.c:1461
+#: lib/fsm.c:1345 lib/fsm.c:1462
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "kunne ikke opprette %s: %s\n"
 
-#: lib/fsm.c:1486
+#: lib/fsm.c:1487
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "lesing feilet: %s (%d)"
 
-#: lib/fsm.c:1491
+#: lib/fsm.c:1492
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "lesing feilet: %s (%d)"
 
-#: lib/fsm.c:1500
+#: lib/fsm.c:1501
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "lesing feilet: %s (%d)"
 
-#: lib/fsm.c:1517
+#: lib/fsm.c:1518
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "kunne ikke opprette %s: %s\n"
@@ -2986,18 +2986,28 @@ msgstr "spør pakke som eier <fil>"
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:927 lib/psm.c:1101
+#: lib/psm.c:1083
+#, c-format
+msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
+msgstr ""
+
+#: lib/psm.c:1090
+#, c-format
+msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
+msgstr ""
+
+#: lib/psm.c:1432 lib/psm.c:1613
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
 #. XXX WTFO? erase failures are not cause for stopping.
-#: lib/psm.c:991 lib/psm.c:1059 lib/psm.c:1151 lib/psm.c:1176
+#: lib/psm.c:1496 lib/psm.c:1565 lib/psm.c:1666 lib/psm.c:1692
 #, fuzzy, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "ikke kjør noen steg"
 
-#: lib/psm.c:998
+#: lib/psm.c:1504
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
@@ -3142,67 +3152,67 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:137 lib/rpmchecksig.c:273
+#: lib/rpmchecksig.c:121 lib/rpmchecksig.c:253
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:142
+#: lib/rpmchecksig.c:126
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:146
+#: lib/rpmchecksig.c:130
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:155 lib/rpmchecksig.c:289
+#: lib/rpmchecksig.c:139 lib/rpmchecksig.c:269
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:294
+#: lib/rpmchecksig.c:143 lib/rpmchecksig.c:274
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:192
+#: lib/rpmchecksig.c:176
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:198
+#: lib/rpmchecksig.c:182
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:279
+#: lib/rpmchecksig.c:259
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:443
+#: lib/rpmchecksig.c:423
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:444 lib/rpmchecksig.c:458
+#: lib/rpmchecksig.c:424 lib/rpmchecksig.c:438
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:446 lib/rpmchecksig.c:460
+#: lib/rpmchecksig.c:426 lib/rpmchecksig.c:440
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:447 lib/rpmchecksig.c:461
+#: lib/rpmchecksig.c:427 lib/rpmchecksig.c:441
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:449 lib/rpmchecksig.c:463
+#: lib/rpmchecksig.c:429 lib/rpmchecksig.c:443
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:457
+#: lib/rpmchecksig.c:437
 msgid "OK"
 msgstr ""
 
@@ -3257,104 +3267,104 @@ msgstr ""
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: lib/rpmdb.c:1699
+#: lib/rpmdb.c:1698
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1708
+#: lib/rpmdb.c:1707
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1862
+#: lib/rpmdb.c:1890
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: lib/rpmdb.c:1936
+#: lib/rpmdb.c:1964
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1945
+#: lib/rpmdb.c:1973
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2286
+#: lib/rpmdb.c:2342
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2312
+#: lib/rpmdb.c:2368
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:2337
+#: lib/rpmdb.c:2393
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2341
+#: lib/rpmdb.c:2397
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: lib/rpmdb.c:2347
+#: lib/rpmdb.c:2403
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2349
+#: lib/rpmdb.c:2405
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2356
+#: lib/rpmdb.c:2412
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2367
+#: lib/rpmdb.c:2423
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2390
+#: lib/rpmdb.c:2446
 #, c-format
 msgid "record number %d in database is bad -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2485
 #, c-format
 msgid "cannot add record originally at %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2447
+#: lib/rpmdb.c:2503
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2455
+#: lib/rpmdb.c:2511
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2457
+#: lib/rpmdb.c:2513
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2467
+#: lib/rpmdb.c:2523
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2469
+#: lib/rpmdb.c:2525
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:147
+#: lib/rpminstall.c:148
 msgid "Preparing..."
 msgstr ""
 
@@ -3570,16 +3580,6 @@ msgstr ""
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/scriptlet.c:229
-#, c-format
-msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
-msgstr ""
-
-#: lib/scriptlet.c:236
-#, c-format
-msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
-msgstr ""
-
 #: lib/signature.c:125
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
@@ -3594,150 +3594,150 @@ msgstr ""
 msgid "  Actual size: %12d\n"
 msgstr ""
 
-#: lib/signature.c:161
+#: lib/signature.c:156
 msgid "No signature\n"
 msgstr ""
 
-#: lib/signature.c:165
+#: lib/signature.c:160
 msgid "Old PGP signature\n"
 msgstr ""
 
-#: lib/signature.c:176
+#: lib/signature.c:171
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr ""
 
-#: lib/signature.c:230
+#: lib/signature.c:225
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
-#: lib/signature.c:289
+#: lib/signature.c:284
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr ""
 
-#: lib/signature.c:300
+#: lib/signature.c:295
 msgid "pgp failed\n"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:307
+#: lib/signature.c:302
 msgid "pgp failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:312
+#: lib/signature.c:307
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:323 lib/signature.c:400
+#: lib/signature.c:318 lib/signature.c:395
 msgid "unable to read the signature\n"
 msgstr ""
 
-#: lib/signature.c:328
+#: lib/signature.c:323
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:366 lib/signature.c:712
+#: lib/signature.c:361 lib/signature.c:707
 msgid "Couldn't exec gpg\n"
 msgstr ""
 
-#: lib/signature.c:377
+#: lib/signature.c:372
 msgid "gpg failed\n"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:384
+#: lib/signature.c:379
 msgid "gpg failed to write signature\n"
 msgstr ""
 
-#: lib/signature.c:389
+#: lib/signature.c:384
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:405
+#: lib/signature.c:400
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: lib/signature.c:433
+#: lib/signature.c:428
 msgid "Generating signature using PGP.\n"
 msgstr ""
 
-#: lib/signature.c:439
+#: lib/signature.c:434
 msgid "Generating signature using GPG.\n"
 msgstr ""
 
-#: lib/signature.c:519 lib/signature.c:580
+#: lib/signature.c:514 lib/signature.c:575
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr ""
 
-#: lib/signature.c:653
+#: lib/signature.c:648
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr ""
 
-#: lib/signature.c:741
+#: lib/signature.c:736
 msgid "Couldn't exec pgp\n"
 msgstr ""
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:745 lib/signature.c:798
+#: lib/signature.c:740 lib/signature.c:793
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:778
+#: lib/signature.c:773
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:790
+#: lib/signature.c:785
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/transaction.c:403
+#: lib/transaction.c:404
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:406
+#: lib/transaction.c:407
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/transaction.c:409
+#: lib/transaction.c:410
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "kunne ikke opprette %s: %s\n"
 
-#: lib/transaction.c:483
+#: lib/transaction.c:484
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/transaction.c:532
+#: lib/transaction.c:533
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/transaction.c:539
+#: lib/transaction.c:540
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:611
+#: lib/transaction.c:612
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:616
+#: lib/transaction.c:617
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:740
+#: lib/transaction.c:741
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
@@ -3751,20 +3751,20 @@ msgstr ""
 msgid "do not execute %verifyscript (if any)"
 msgstr "ikke kjør noen steg"
 
-#: lib/verify.c:239
+#: lib/verify.c:249
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:257
+#: lib/verify.c:267
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:319
+#: lib/verify.c:340
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "mangler andre ':' ved %s:%d"
 
-#: lib/verify.c:400
+#: lib/verify.c:421
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""

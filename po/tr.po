@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-02-19 11:19-0500\n"
+"POT-Creation-Date: 2001-02-28 10:48-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1996,7 +1996,7 @@ msgstr "PGP-imzasý yaratýr"
 msgid "Could not open %s: %s\n"
 msgstr "%s 'ye eriþimde hata oluþtu\n"
 
-#: build/pack.c:484 lib/psm.c:1304
+#: build/pack.c:484 lib/psm.c:1830
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "%s 'nin yazýlmasý mümkün deðil"
@@ -2026,7 +2026,7 @@ msgstr "%s 'nin yazýlmasý mümkün deðil"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s 'nin yazýlmasý mümkün deðil"
 
-#: build/pack.c:566 lib/psm.c:1360
+#: build/pack.c:566 lib/psm.c:1886
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2685,27 +2685,27 @@ msgstr "%s açýlamadý: %s"
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1344 lib/fsm.c:1461
+#: lib/fsm.c:1345 lib/fsm.c:1462
 #, fuzzy, c-format
 msgid "%s saved as %s\n"
 msgstr "%s dosyasý açýlamýyor: "
 
-#: lib/fsm.c:1486
+#: lib/fsm.c:1487
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s silinemedi - belirtilen dizin boþ deðil"
 
-#: lib/fsm.c:1491
+#: lib/fsm.c:1492
 #, fuzzy, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s dizinin silinmesinde belirtilen hata oluþtu: %s"
 
-#: lib/fsm.c:1500
+#: lib/fsm.c:1501
 #, fuzzy, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s 'ye erisimde belirtilen hata oluþtu: %s\n"
 
-#: lib/fsm.c:1517
+#: lib/fsm.c:1518
 #, fuzzy, c-format
 msgid "%s created as %s\n"
 msgstr "%s dosyasý açýlamýyor: "
@@ -3170,18 +3170,28 @@ msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:927 lib/psm.c:1101
+#: lib/psm.c:1083
+#, fuzzy, c-format
+msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
+msgstr "betik (script) çalýþtýrýlamadý "
+
+#: lib/psm.c:1090
+#, fuzzy, c-format
+msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
+msgstr "betik (script) çalýþtýrýlamadý "
+
+#: lib/psm.c:1432 lib/psm.c:1613
 #, fuzzy, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "Paket %s-%s-%s ortak (shared) dosyalar içeriyor\n"
 
 #. XXX WTFO? erase failures are not cause for stopping.
-#: lib/psm.c:991 lib/psm.c:1059 lib/psm.c:1151 lib/psm.c:1176
+#: lib/psm.c:1496 lib/psm.c:1565 lib/psm.c:1666 lib/psm.c:1692
 #, fuzzy, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr "adýmlarýn hiçbirini çalýþtýrmaz"
 
-#: lib/psm.c:998
+#: lib/psm.c:1504
 #, fuzzy
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr "hata: %s atlanýyor - aktarým baþarýsýz - %s\n"
@@ -3331,68 +3341,68 @@ msgstr "%s: 'readLead' hata verdi\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: 'readLead' hata verdi\n"
 
-#: lib/rpmchecksig.c:137 lib/rpmchecksig.c:273
+#: lib/rpmchecksig.c:121 lib/rpmchecksig.c:253
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: 'readLead' hata verdi\n"
 
-#: lib/rpmchecksig.c:142
+#: lib/rpmchecksig.c:126
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: v1.0-RPM (eski sürüm) imzalanamýyor\n"
 
-#: lib/rpmchecksig.c:146
+#: lib/rpmchecksig.c:130
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: v2.0-RPM (eski sürüm) yeniden imzalanamýyor\n"
 
-#: lib/rpmchecksig.c:155 lib/rpmchecksig.c:289
+#: lib/rpmchecksig.c:139 lib/rpmchecksig.c:269
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: 'rpmReadSignature' hata verdi\n"
 
-#: lib/rpmchecksig.c:159 lib/rpmchecksig.c:294
+#: lib/rpmchecksig.c:143 lib/rpmchecksig.c:274
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ýmza bulunmuyor\n"
 
-#: lib/rpmchecksig.c:192
+#: lib/rpmchecksig.c:176
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: 'readLead' hata verdi\n"
 
-#: lib/rpmchecksig.c:198
+#: lib/rpmchecksig.c:182
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: 'rpmReadSignature' hata verdi\n"
 
-#: lib/rpmchecksig.c:279
+#: lib/rpmchecksig.c:259
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ýmza bulundurmuyor (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:443
+#: lib/rpmchecksig.c:423
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:444 lib/rpmchecksig.c:458
+#: lib/rpmchecksig.c:424 lib/rpmchecksig.c:438
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (EKSÝK ANAHTARLAR)"
 
-#: lib/rpmchecksig.c:446 lib/rpmchecksig.c:460
+#: lib/rpmchecksig.c:426 lib/rpmchecksig.c:440
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:447 lib/rpmchecksig.c:461
+#: lib/rpmchecksig.c:427 lib/rpmchecksig.c:441
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:449 lib/rpmchecksig.c:463
+#: lib/rpmchecksig.c:429 lib/rpmchecksig.c:443
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:457
+#: lib/rpmchecksig.c:437
 msgid "OK"
 msgstr ""
 
@@ -3448,104 +3458,104 @@ msgstr "%s pakedi aranýrken hata oluþtu\n"
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%d kaydýndan baþlýk bilgisi okunamadý"
 
-#: lib/rpmdb.c:1699
+#: lib/rpmdb.c:1698
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:1708
+#: lib/rpmdb.c:1707
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:1862
+#: lib/rpmdb.c:1890
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "%s pakedi aranýrken hata oluþtu\n"
 
-#: lib/rpmdb.c:1936
+#: lib/rpmdb.c:1964
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1945
+#: lib/rpmdb.c:1973
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:2286
+#: lib/rpmdb.c:2342
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2312
+#: lib/rpmdb.c:2368
 msgid "no dbpath has been set"
 msgstr "dbpath deðeri girilmemiþ"
 
-#: lib/rpmdb.c:2337
+#: lib/rpmdb.c:2393
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rpmdb.c:2341
+#: lib/rpmdb.c:2397
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "geçici veritabaný %s mevcut"
 
-#: lib/rpmdb.c:2347
+#: lib/rpmdb.c:2403
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rpmdb.c:2349
+#: lib/rpmdb.c:2405
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rpmdb.c:2356
+#: lib/rpmdb.c:2412
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rpmdb.c:2367
+#: lib/rpmdb.c:2423
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rpmdb.c:2390
+#: lib/rpmdb.c:2446
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping.\n"
 msgstr "veritabanýndaki %d numaralý kayýt hatalý -- atlanýyor"
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2485
 #, fuzzy, c-format
 msgid "cannot add record originally at %d\n"
 msgstr "%d de yer alan kayýt saklayamýyor"
 
-#: lib/rpmdb.c:2447
+#: lib/rpmdb.c:2503
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2455
+#: lib/rpmdb.c:2511
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2457
+#: lib/rpmdb.c:2513
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2467
+#: lib/rpmdb.c:2523
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rpmdb.c:2469
+#: lib/rpmdb.c:2525
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s açýlamadý: %s"
 
-#: lib/rpminstall.c:147
+#: lib/rpminstall.c:148
 msgid "Preparing..."
 msgstr ""
 
@@ -3764,16 +3774,6 @@ msgstr ""
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: lib/scriptlet.c:229
-#, fuzzy, c-format
-msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
-msgstr "betik (script) çalýþtýrýlamadý "
-
-#: lib/scriptlet.c:236
-#, fuzzy, c-format
-msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
-msgstr "betik (script) çalýþtýrýlamadý "
-
 #: lib/signature.c:125
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
@@ -3788,166 +3788,166 @@ msgstr ""
 msgid "  Actual size: %12d\n"
 msgstr ""
 
-#: lib/signature.c:161
+#: lib/signature.c:156
 #, fuzzy
 msgid "No signature\n"
 msgstr "%s: Ýmza bulunmuyor\n"
 
-#: lib/signature.c:165
+#: lib/signature.c:160
 #, fuzzy
 msgid "Old PGP signature\n"
 msgstr "PGP-imzasý yaratýr"
 
-#: lib/signature.c:176
+#: lib/signature.c:171
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Eski imza !!! Eee bunu nasýl baþardýn bakiiim ?"
 
-#: lib/signature.c:230
+#: lib/signature.c:225
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
-#: lib/signature.c:289
+#: lib/signature.c:284
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "PGP çalýþtýrýlamadý"
 
-#: lib/signature.c:300
+#: lib/signature.c:295
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "PGP hata verdi"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:307
+#: lib/signature.c:302
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "PGP imzasýnýn yazýlmasý sýrasýnda hata oluþtu"
 
-#: lib/signature.c:312
+#: lib/signature.c:307
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:323 lib/signature.c:400
+#: lib/signature.c:318 lib/signature.c:395
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "imzayý okumak mümkün olmadý"
 
-#: lib/signature.c:328
+#: lib/signature.c:323
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:366 lib/signature.c:712
+#: lib/signature.c:361 lib/signature.c:707
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "PGP çalýþtýrýlamadý"
 
-#: lib/signature.c:377
+#: lib/signature.c:372
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "PGP hata verdi"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:384
+#: lib/signature.c:379
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "PGP imzasýnýn yazýlmasý sýrasýnda hata oluþtu"
 
-#: lib/signature.c:389
+#: lib/signature.c:384
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:405
+#: lib/signature.c:400
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: lib/signature.c:433
+#: lib/signature.c:428
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "PGP-imzasý yaratýr"
 
-#: lib/signature.c:439
+#: lib/signature.c:434
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "PGP-imzasý yaratýr"
 
-#: lib/signature.c:519 lib/signature.c:580
+#: lib/signature.c:514 lib/signature.c:575
 #, fuzzy
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks.\n"
 msgstr "PGP çalýþtýrýlamadý. PGP kontrollerini atlamak için --nopgp kullanýn."
 
-#: lib/signature.c:653
+#: lib/signature.c:648
 #, fuzzy
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks.\n"
 msgstr "PGP çalýþtýrýlamadý. PGP kontrollerini atlamak için --nopgp kullanýn."
 
-#: lib/signature.c:741
+#: lib/signature.c:736
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "PGP çalýþtýrýlamadý"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:745 lib/signature.c:798
+#: lib/signature.c:740 lib/signature.c:793
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:778
+#: lib/signature.c:773
 #, fuzzy
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "rpmrc dosyanýzda \"pgp_name:\" tanýmlanmýþ olmalý"
 
-#: lib/signature.c:790
+#: lib/signature.c:785
 #, fuzzy
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "rpmrc dosyanýzda \"pgp_name:\" tanýmlanmýþ olmalý"
 
-#: lib/transaction.c:403
+#: lib/transaction.c:404
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:406
+#: lib/transaction.c:407
 #, fuzzy, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%s alýnýyor\n"
 
-#: lib/transaction.c:409
+#: lib/transaction.c:410
 #, fuzzy, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%s dosyasý açýlamýyor: "
 
-#: lib/transaction.c:483
+#: lib/transaction.c:484
 #, fuzzy, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "%s alýnýyor\n"
 
-#: lib/transaction.c:532
+#: lib/transaction.c:533
 #, fuzzy, c-format
 msgid "excluding %s %s\n"
 msgstr "%s alýnýyor\n"
 
-#: lib/transaction.c:539
+#: lib/transaction.c:540
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:611
+#: lib/transaction.c:612
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/transaction.c:616
+#: lib/transaction.c:617
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/transaction.c:740
+#: lib/transaction.c:741
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
@@ -3962,20 +3962,20 @@ msgstr "paket yüklemek"
 msgid "do not execute %verifyscript (if any)"
 msgstr "adýmlarýn hiçbirini çalýþtýrmaz"
 
-#: lib/verify.c:239
+#: lib/verify.c:249
 msgid "package lacks both user name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:257
+#: lib/verify.c:267
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:319
+#: lib/verify.c:340
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "% den sonra eksik {"
 
-#: lib/verify.c:400
+#: lib/verify.c:421
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "

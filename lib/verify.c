@@ -299,7 +299,7 @@ int rpmVerifyScript(const char * rootDir, Header h, FD_t scriptFd)
     psm->fi = fi;
     psm->scriptTag = RPMTAG_VERIFYSCRIPT;
     psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
-    rc = runInstScript(psm);
+    rc = psmStage(psm, PSM_SCRIPT);
     freeFi(fi);
     fi = _free(fi);
     rpmtransFree(ts);
