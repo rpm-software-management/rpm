@@ -12,6 +12,8 @@
 #include <signal.h>	/* getOutputFrom() */
 
 #include <rpmio_internal.h>
+#include <fts.h>
+
 #include <rpmbuild.h>
 
 #include "cpio.h"
@@ -24,7 +26,6 @@
 
 #include "buildio.h"
 
-#include "myftw.h"
 #include "legacy.h"	/* XXX domd5, expandFileList, compressFileList */
 #include "misc.h"
 #include "debug.h"
@@ -70,23 +71,28 @@ typedef struct FileListRec_s {
 #define	fl_size	fl_st.st_size
 #define	fl_mtime fl_st.st_mtime
 
-/*@only@*/ const char * diskURL;	/* get file from here       */
-/*@only@*/ const char * fileURL;	/* filename in cpio archive */
-/*@observer@*/ const char * uname;
-/*@observer@*/ const char * gname;
+/*@only@*/
+    const char *diskURL;	/* get file from here       */
+/*@only@*/
+    const char *fileURL;	/* filename in cpio archive */
+/*@observer@*/
+    const char *uname;
+/*@observer@*/
+    const char *gname;
     unsigned	flags;
     specdFlags	specdFlags;	/* which attributes have been explicitly specified. */
     unsigned	verifyFlags;
-/*@only@*/ const char *langs;	/* XXX locales separated with | */
+/*@only@*/
+    const char *langs;		/* XXX locales separated with | */
 } * FileListRec;
 
 /**
  */
 typedef struct AttrRec_s {
-    const char * ar_fmodestr;
-    const char * ar_dmodestr;
-    const char * ar_user;
-    const char * ar_group;
+    const char *ar_fmodestr;
+    const char *ar_dmodestr;
+    const char *ar_user;
+    const char *ar_group;
     mode_t	ar_fmode;
     mode_t	ar_dmode;
 } * AttrRec;
@@ -106,8 +112,10 @@ static int check_fileListLen = 0;
  * Package file tree walk data.
  */
 typedef struct FileList_s {
-/*@only@*/ const char * buildRootURL;
-/*@only@*/ const char * prefix;
+/*@only@*/
+    const char * buildRootURL;
+/*@only@*/
+    const char * prefix;
 
     int fileCount;
     int totalFileSize;
@@ -131,14 +139,16 @@ typedef struct FileList_s {
     specdFlags defSpecdFlags;
     int defVerifyFlags;
     int nLangs;
-/*@only@*/ /*@null@*/ const char ** currentLangs;
+/*@only@*/ /*@null@*/
+    const char ** currentLangs;
 
     /* Hard coded limit of MAXDOCDIR docdirs.         */
     /* If you break it you are doing something wrong. */
     const char * docDirs[MAXDOCDIR];
     int docDirCount;
     
-/*@only@*/ FileListRec fileList;
+/*@only@*/
+    FileListRec fileList;
     int fileListRecsAlloced;
     int fileListRecsUsed;
 } * FileList;
@@ -1503,6 +1513,10 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
 }
 /*@=boundswrite@*/
 
+/* forward ref */
+static int recurseDir(FileList fl, const char * diskURL)
+	/*@*/;
+
 /**
  * Add a file to the package manifest.
  * @param fl		package file tree walk data
@@ -1595,16 +1609,7 @@ static int addFile(FileList fl, const char * diskURL,
     }
 
     if ((! fl->isDir) && S_ISDIR(statp->st_mode)) {
-	/* We use our own ftw() call, because ftw() uses stat()    */
-	/* instead of lstat(), which causes it to follow symlinks! */
-	/* It also has better callback support.                    */
-	
-	fl->inFtw = 1;  /* Flag to indicate file has buildRootURL prefixed */
-	fl->isDir = 1;  /* Keep it from following myftw() again         */
-	(void) myftw(diskURL, 16, (myftwFunc) addFile, fl);
-	fl->isDir = 0;
-	fl->inFtw = 0;
-	return 0;
+	return recurseDir(fl, diskURL);
     }
 
     fileMode = statp->st_mode;
@@ -1629,30 +1634,17 @@ static int addFile(FileList fl, const char * diskURL,
 	fileGname = getGname(fileGid);
     }
 	
-#if 0	/* XXX this looks dumb to me */
-    if (! (fileUname && fileGname)) {
-	rpmError(RPMERR_BADSPEC, _("Bad owner/group: %s\n"), diskName);
-	fl->processingFailed = 1;
-	return RPMERR_BADSPEC;
-    }
-#else
     /* Default user/group to builder's user/group */
     if (fileUname == NULL)
 	fileUname = getUname(getuid());
     if (fileGname == NULL)
 	fileGname = getGname(getgid());
-#endif
     
-#ifdef	DYING	/* XXX duplicates with %exclude, use psm.c output instead. */
-    rpmMessage(RPMMESS_DEBUG, _("File%5d: %07o %s.%s\t %s\n"), fl->fileCount,
-	(unsigned)fileMode, fileUname, fileGname, fileURL);
-#endif
-
     /* S_XXX macro must be consistent with type in find call at check-files script */
     if (check_fileList && S_ISREG(fileMode)) {
-      appendStringBuf(check_fileList, diskURL);
-      appendStringBuf(check_fileList, "\n");
-      check_fileListLen += strlen(diskURL) + 1;
+	appendStringBuf(check_fileList, diskURL);
+	appendStringBuf(check_fileList, "\n");
+	check_fileListLen += strlen(diskURL) + 1;
     }
 
     /* Add to the file list */
@@ -1734,6 +1726,63 @@ static int addFile(FileList fl, const char * diskURL,
     return 0;
 }
 /*@=boundswrite@*/
+
+/**
+ * Add directory (and all of its files) to the package manifest.
+ * @param fl		package file tree walk data
+ * @param diskURL	path to file
+ * @param statp		file stat (possibly NULL)
+ * @return		0 on success
+ */
+static int recurseDir(FileList fl, const char * diskURL)
+	/*@*/
+{
+    char * ftsSet[2];
+    FTS * ftsp;
+    FTSENT * fts;
+    int ftsOpts = (FTS_COMFOLLOW | FTS_NOCHDIR | FTS_PHYSICAL);
+    int rc = RPMERR_BADSPEC;
+
+    fl->inFtw = 1;  /* Flag to indicate file has buildRootURL prefixed */
+    fl->isDir = 1;  /* Keep it from following myftw() again         */
+
+    ftsSet[0] = (char *) diskURL;
+    ftsSet[1] = NULL;
+    ftsp = Fts_open(ftsSet, ftsOpts, NULL);
+    while ((fts = Fts_read(ftsp)) != NULL) {
+	switch (fts->fts_info) {
+	case FTS_D:		/* preorder directory */
+	case FTS_F:		/* regular file */
+	case FTS_SL:		/* symbolic link */
+	case FTS_SLNONE:	/* symbolic link without target */
+	case FTS_DEFAULT:	/* none of the above */
+	    rc = addFile(fl, fts->fts_accpath, fts->fts_statp);
+	    break;
+	case FTS_DOT:		/* dot or dot-dot */
+	case FTS_DP:		/* postorder directory */
+	    rc = 0;
+	    break;
+	case FTS_NS:		/* stat(2) failed */
+	case FTS_DNR:		/* unreadable directory */
+	case FTS_ERR:		/* error; errno is set */
+	case FTS_DC:		/* directory that causes cycles */
+	case FTS_NSOK:		/* no stat(2) requested */
+	case FTS_INIT:		/* initialized only */
+	case FTS_W:		/* whiteout object */
+	default:
+	    rc = RPMERR_BADSPEC;
+	    break;
+	}
+	if (rc)
+	    break;
+    }
+    (void) Fts_close(ftsp);
+
+    fl->isDir = 0;
+    fl->inFtw = 0;
+
+    return rc;
+}
 
 /**
  * Add a file to a binary package.

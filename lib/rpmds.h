@@ -232,6 +232,7 @@ int rpmdsNoPromote(/*@null@*/ const rpmds ds)
 /**
  * Set "Don't promote Epoch:" flag.
  * @param ds		dependency set
+ * @param nopromote	Should an unspecified Epoch: be treated as Epoch: 0?
  * @return		previous "Don't promote Epoch:" flag
  */
 int rpmdsSetNoPromote(/*@null@*/ rpmds ds, int nopromote)

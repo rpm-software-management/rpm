@@ -257,7 +257,7 @@ usage (void)
 	 "assumed to be zero. \n\n"
 	 "");
   printf("EXAMPLES (Java Keywords): \n\n"
-	 "\t public static final String REVISION = \"$Revision: 2.11 $\";\n"
+	 "\t public static final String REVISION = \"$Revision: 2.12 $\";\n"
 	 "\t public static final String EPOCH = \"4\";\n"
 	 "\t public static final String REQUIRES = \"RPM_Requires: "
 	 "java(gnu.regexp.RE) java(com.ibm.site.util.Options)>=1.5\";\n"
@@ -316,8 +316,6 @@ void die(char *format, ...) {
      is hard since we only know that name when we are done parsing
      the file, and most errors will occur before that.*/
 
-  va_start(ap, format);
-  
   if ( (!FILE_NAME) ) {
 
     sprintf (newformat, "\n%s: %s",
@@ -333,7 +331,9 @@ void die(char *format, ...) {
 	     PROGRAM_NAME, FILE_NAME, CLASS_NAME, format);
   }
     
+  va_start(ap, format);
   vsprintf (newmsg, newformat, ap);  
+  va_end(ap);
   
   /* print error to where it needs to go:
 	 stdout, stderr, or syslog

@@ -4,6 +4,7 @@
 	- unify cachesize configuration, with (or without) a dbenv.
 	- comments regarding unsupported (yet) db-4.1.17 functionality.
 	- update to db-4.1.24 final.
+	- eliminate myftw, use Fts(3) instead.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
