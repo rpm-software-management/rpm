@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 1999-12-19 14:28-0500\n"
+"POT-Creation-Date: 1999-12-21 12:08-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1487,43 +1487,43 @@ msgstr "Nie mo¿na otworzyæ %%files pliku: %s"
 msgid "line: %s"
 msgstr "linia: %s"
 
-#: build/files.c:1504 build/parsePrep.c:30
+#: build/files.c:1495 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "B³êdny u¿ytkownik/grupa: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1559
+#: build/files.c:1550
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nie mo¿na uruchomiæ %s"
 
-#: build/files.c:1564
+#: build/files.c:1555
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nie mo¿na wykonaæ fork na %s"
 
-#: build/files.c:1646
+#: build/files.c:1637
 #, c-format
 msgid "%s failed"
 msgstr "%s nie powiod³o siê"
 
-#: build/files.c:1650
+#: build/files.c:1641
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "zapisanie wszystkich danych do %s nie powiod³o siê"
 
-#: build/files.c:1739
+#: build/files.c:1730
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Wyszukiwanie wymaganych zasobów...\n"
 
-#: build/files.c:1767 build/files.c:1776
+#: build/files.c:1758 build/files.c:1767
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Wyszukiwanie nie powiod³o siê"
 
-#: build/files.c:1882
+#: build/files.c:1873
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Przetwarzanie plików: %s\n"

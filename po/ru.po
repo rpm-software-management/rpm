@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-19 14:28-0500\n"
+"POT-Creation-Date: 1999-12-21 12:08-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1495,43 +1495,43 @@ msgstr "Не могу открыть файл %%files: %s"
 msgid "line: %s"
 msgstr "строка: %s"
 
-#: build/files.c:1504 build/parsePrep.c:30
+#: build/files.c:1495 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Неверная пара хозяин/группа: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1559
+#: build/files.c:1550
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Не могу исполнить %s"
 
-#: build/files.c:1564
+#: build/files.c:1555
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Не могу форкнуть %s"
 
-#: build/files.c:1646
+#: build/files.c:1637
 #, c-format
 msgid "%s failed"
 msgstr "%s не удалось"
 
-#: build/files.c:1650
+#: build/files.c:1641
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "запись всех данных в %s не удалась"
 
-#: build/files.c:1739
+#: build/files.c:1730
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Определяю требования пакета...\n"
 
-#: build/files.c:1767 build/files.c:1776
+#: build/files.c:1758 build/files.c:1767
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Ошибка определения сервисов, предоставляемых пакетом"
 
-#: build/files.c:1882
+#: build/files.c:1873
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываю файлы: %s\n"

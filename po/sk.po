@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 1999-12-19 14:28-0500\n"
+"POT-Creation-Date: 1999-12-21 12:08-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1499,43 +1499,43 @@ msgstr "chybe: nie je mo¾né otvori» %%files súbor: %s"
 msgid "line: %s"
 msgstr "riadok: %s"
 
-#: build/files.c:1504 build/parsePrep.c:30
+#: build/files.c:1495 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Chybný vlastník/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1559
+#: build/files.c:1550
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nie je mo¾né spusti» %s"
 
-#: build/files.c:1564
+#: build/files.c:1555
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nie je mo¾né vytvori» proces %s"
 
-#: build/files.c:1646
+#: build/files.c:1637
 #, c-format
 msgid "%s failed"
 msgstr "%s zlyhalo"
 
-#: build/files.c:1650
+#: build/files.c:1641
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
 
-#: build/files.c:1739
+#: build/files.c:1730
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
 
-#: build/files.c:1767 build/files.c:1776
+#: build/files.c:1758 build/files.c:1767
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
 
-#: build/files.c:1882
+#: build/files.c:1873
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Spracovávajú sa súbory: %s\n"

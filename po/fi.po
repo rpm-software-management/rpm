@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-19 14:28-0500\n"
+"POT-Creation-Date: 1999-12-21 12:08-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -1564,43 +1564,43 @@ msgstr "virhe: tiedostoa %s ei voi avata\n"
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1504 build/parsePrep.c:30
+#: build/files.c:1495 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1559
+#: build/files.c:1550
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "En voinut ajaa pgp:tä"
 
-#: build/files.c:1564
+#: build/files.c:1555
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "En voinut ajaa pgp:tä"
 
-#: build/files.c:1646
+#: build/files.c:1637
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "pgp epäonnistui"
 
-#: build/files.c:1650
+#: build/files.c:1641
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:1739
+#: build/files.c:1730
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1767 build/files.c:1776
+#: build/files.c:1758 build/files.c:1767
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:1882
+#: build/files.c:1873
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "en voinut avata %s: %s"

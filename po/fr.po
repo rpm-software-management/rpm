@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 1999-12-19 14:28-0500\n"
+msgstr "POT-Creation-Date: 1999-12-21 12:08-0500\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:424
 #, c-format
@@ -1567,43 +1567,43 @@ msgstr "impossible d'ouvrir: %s\n"
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1504 build/parsePrep.c:30
+#: build/files.c:1495 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1559
+#: build/files.c:1550
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1564
+#: build/files.c:1555
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1646
+#: build/files.c:1637
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "La construction a échoué.\n"
 
-#: build/files.c:1650
+#: build/files.c:1641
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1739
+#: build/files.c:1730
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1767 build/files.c:1776
+#: build/files.c:1758 build/files.c:1767
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1882
+#: build/files.c:1873
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
