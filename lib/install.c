@@ -669,9 +669,10 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 	     cpioFailed = 1;
 	     childDead = 1;
 	     kill(SIGTERM, child);
-	}
-
-	if (bytesRead && write(p[1], buf, bytesRead) != bytesRead) {
+	} else if (bytesRead == 0) {
+	     /* if it's not dead yet, it will be when we close the pipe */
+	     childDead = 1;
+	} else if (bytesRead && write(p[1], buf, bytesRead) != bytesRead) {
 	     cpioFailed = 1;
 	     childDead = 1;
 	     kill(SIGTERM, child);
