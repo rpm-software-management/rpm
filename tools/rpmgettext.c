@@ -11,7 +11,7 @@
 
 #include "intl.h"
 
-#define	MYDEBUG	0
+#define	MYDEBUG	1
 
 #ifdef	MYDEBUG
 #include <stdarg.h>
@@ -792,8 +792,8 @@ DPRINTF(100, ("\n"));
 
 	/* === s:se has next part of string */
 			*se = '\0';
-			strcpy(t, s);
-			t += (se - s);
+			contractRpmPO(t, s);
+			t += strlen(t);
 			*t = '\0';
 
 			se++;	/* skip close quote */
@@ -898,6 +898,7 @@ static int
 headerInject(Header h, int *poTags, message_list_ty *mlp)
 {
     message_ty *mp;
+    message_variant_ty *mvp;
     int *tp;
     char **langs;
     char buf[BUFSIZ];
@@ -917,6 +918,15 @@ headerInject(Header h, int *poTags, message_list_ty *mlp)
 	/* Search for the msgid */
 	e = *s;
 	if ((mp = message_list_search(mlp, e)) != NULL) {
+
+DPRINTF(1, ("injecting %s msgid\n", getTagString(*tp)));
+	    for (i = 0; i < count; i++) {
+		if ((mvp = message_variant_search(mp, langs[i])) == NULL)
+		    continue;
+
+DPRINTF(1, ("\tmsgstr(%s)\n", langs[i]));
+
+	    }
 
 #if 0
 	    for (i = 1, e += strlen(e)+1; i < count && e != NULL; i++, e += strlen(e)+1) {
