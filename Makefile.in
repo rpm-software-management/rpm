@@ -1,28 +1,46 @@
-SUBDIRS = lib
-OBJS = spec.o build.o pack.o query.o
-PROGS = rpm rpmlead rpmheader rpmarchive 
+### These are variables meant to be exported
 
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
 DEBUG = -g
 OPTS = -O2
-CFLAGS = $(WARNINGS) $(DEBUG) $(OPTS) -Ilib
-LDFLAGS = $(DEBUG) -Llib 
-LOADLIBES = -lrpm -ldb -lefence
+CFLAGS = $(WARNINGS) $(DEBUG) $(OPTS) -Ilib -Ibuild -I../lib -I../build
+LDFLAGS = $(DEBUG) -Llib -Lbuild -L../lib -L../build
+LIBEFENCE = -lefence
+LOADLIBES = -lbuild -lrpm -lgdbm -ldb $(LIBEFENCE)
+AR = ar r
+RANLIB = ranlib
 
-all: make-subdirs $(OBJS) $(PROGS)
+.EXPORT_ALL_VARIABLES:
+
+### End exported variables
+# -----------------------------------------------------------------------
+
+SUBDIRS = lib build
+OBJS = query.o
+PROGS = rpm rpmlead rpmheader rpmarchive 
+
+ifeq (.depend,$(wildcard .depend))
+TARGET=everything
+else
+TARGET=depend everything
+endif
+
+all: $(TARGET)
+
+everything: make-subdirs $(PROGS)
 	
 make-subdirs:
 	for d in $(SUBDIRS); do \
 		(cd $$d; $(MAKE)) ;\
 	done
 
-rpm: rpm.o $(OBJS) lib/librpm.a
+$(PROGS): $(OBJS)
 
 clean:
 	for d in $(SUBDIRS); do \
 		(cd $$d; $(MAKE) $@) ;\
 	done
-	rm -f *.o *~ $(PROGS)
+	rm -f *.a *.o *~ $(PROGS)
 
 depend:
 	$(CPP) $(CFLAGS) -M *.c > .depend
