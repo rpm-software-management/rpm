@@ -90,7 +90,7 @@ string_has_prefix (char *string, char *prefix)
 }
 
 /* Table computed with Mark Adler's makecrc.c utility.  */
-static const uint32_t crc32_table[256] =
+static const unsigned int crc32_table[256] =
 {
   0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419,
   0x706af48f, 0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4,
@@ -146,7 +146,7 @@ static const uint32_t crc32_table[256] =
   0x2d02ef8d
 };
 
-uint32_t crc32 (uint32_t crc, unsigned char *buf, size_t len)
+unsigned int crc32 (unsigned int crc, unsigned char *buf, size_t len)
 {
   unsigned char *end;
 
@@ -156,10 +156,10 @@ uint32_t crc32 (uint32_t crc, unsigned char *buf, size_t len)
   return ~crc;
 }
 
-uint32_t
+unsigned int
 crc32_file (const char *filename)
 {
-  uint32_t crc = 0;
+  unsigned int crc = 0;
   int fd;
   char buffer[1024*8];
   ssize_t count;
