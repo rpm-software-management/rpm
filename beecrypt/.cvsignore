@@ -17,6 +17,7 @@ config.h.in
 config.cache
 config.guess
 config.log
+config.m4
 config.status
 config.sub
 configure
@@ -33,7 +34,7 @@ sha1opt.c
 *.lcd
 *.lo
 *.o
-*.S
+*.s
 stamp-h
 stamp-h1
 stamp-h.in
