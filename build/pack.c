@@ -12,6 +12,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <time.h>
+#include <ftw.h>
 
 #include "header.h"
 #include "specP.h"
@@ -21,15 +22,12 @@
 #include "pack.h"
 #include "messages.h"
 #include "md5.h"
+#include "var.h"
 
 #define BINARY_HEADER 0
 #define SOURCE_HEADER 1
 
 static unsigned char magic[] = { 0xed, 0xab, 0xee, 0xdb };
-
-static unsigned char arch_num;
-static unsigned char os_num;
-static char arch_token[40];
 
 struct file_entry {
     char file[1024];
@@ -45,45 +43,7 @@ static int writeMagic(Spec s, struct PackageRec *pr,
 static int add_file(struct file_entry **festack,
 		    char *name, int isdoc, int isconf, int isdir);
 static int process_filelist(Header header, StringBuf sb);
-
-static int init_pack(void)
-{
-    static int pack_initialized = 0;
-    struct utsname un;
-
-    if (! pack_initialized) {
-	uname(&un);
-	if (!strcmp(un.sysname, "Linux")) {
-	    os_num = 1;
-	} else {
-	    error(RPMERR_UNKNOWNOS, "Don't recogzine OS: %s", un.sysname);
-	    return RPMERR_UNKNOWNOS;
-	}
-
-	if ((!strcmp(un.machine, "i386")) ||
-	    (!strcmp(un.machine, "i486")) ||
-	    (!strcmp(un.machine, "i586")) ||
-	    (!strcmp(un.machine, "i686"))) {
-	    arch_num = 1;
-	    strcpy(arch_token, "i386");
-	} else if (!strcmp(un.machine, "alpha")) {
-	    arch_num = 2;
-	    strcpy(arch_token, "axp");
-	} else if (!strcmp(un.machine, "sparc")) {
-	    arch_num = 3;
-	    strcpy(arch_token, "sparc");
-	} else if (!strcmp(un.machine, "IP2")) {
-	    arch_num = 4;
-	    strcpy(arch_token, "mips");
-	} else {
-	    error(RPMERR_UNKNOWNARCH, "Don't recogzine arch: %s", un.machine);
-	    return RPMERR_UNKNOWNARCH;
-	}
-
-    }
-
-    return 0;
-}
+static int add_file_aux(char *file, struct stat *sb, int flag);
 
 static int writeMagic(Spec s, struct PackageRec *pr,
 		      int fd, char *name, unsigned char type)
@@ -95,10 +55,10 @@ static int writeMagic(Spec s, struct PackageRec *pr,
     header[2] = 0;
     header[3] = type;
     header[4] = 0;
-    header[5] = arch_num;
+    header[5] = getArchNum();
     strncpy(&(header[6]), name, 66);
     header[72] = 0;
-    header[73] = os_num;
+    header[73] = getOsNum();
     
     write(fd, &magic, 4);
     write(fd, &header, 74);
@@ -108,7 +68,7 @@ static int writeMagic(Spec s, struct PackageRec *pr,
 
 static int cpio_gzip(Header header, int fd)
 {
-    char **f;
+    char **f, *s;
     int count;
     FILE *inpipeF;
     int cpioPID, gzipPID;
@@ -129,7 +89,17 @@ static int cpio_gzip(Header header, int fd)
 	dup2(inpipe[0], 0);  /* Make stdin the in pipe */
 	dup2(outpipe[1], 1); /* Make stdout the out pipe */
 
-	execlp("cpio", "cpio", "-ovLH", "crc", NULL);
+	if (getVar(RPMVAR_ROOT)) {
+	    if (chdir(getVar(RPMVAR_ROOT))) {
+		error(RPMERR_EXEC, "Couldn't chdir to %s",
+		      getVar(RPMVAR_ROOT));
+		exit(RPMERR_EXEC);
+	    }
+	} else {
+	    chdir("/");
+	}
+
+	execlp("cpio", "cpio", (isVerbose()) ? "-ovH" : "-oH", "crc", NULL);
 	error(RPMERR_EXEC, "Couldn't exec cpio");
 	exit(RPMERR_EXEC);
     }
@@ -165,7 +135,10 @@ static int cpio_gzip(Header header, int fd)
     if (getEntry(header, RPMTAG_FILENAMES, NULL, (void **) &f, &count)) {
 	inpipeF = fdopen(inpipe[1], "w");
 	while (count--) {
-	    fprintf(inpipeF, "%s\n", *f);
+	    /* This business strips the leading "/" for cpio */
+	    s = *f;
+	    s++;
+	    fprintf(inpipeF, "%s\n", s);
 	    f++;
 	}
 	fclose(inpipeF);
@@ -187,23 +160,72 @@ static int cpio_gzip(Header header, int fd)
     return 0;
 }
 
+/* Need three globals to keep track of things in ftw() */
+static int Gisdoc;
+static int Gisconf;
+static int Gcount;
+static struct file_entry **Gfestack;
+
 static int add_file(struct file_entry **festack,
 		    char *name, int isdoc, int isconf, int isdir)
 {
     struct file_entry *p;
+    char fullname[1024];
 
-    /* XXX do globbing and %dir %doc %config expansion here */
+    /* Set these up for ftw() */
+    Gfestack = festack;
+    Gisdoc = isdoc;
+    Gisconf = isconf;
+
+    /* XXX do globbing and %doc expansion here */
+
     p = malloc(sizeof(struct file_entry));
     strcpy(p->file, name);
     p->isdoc = isdoc;
     p->isconf = isconf;
-    stat(name, &p->statbuf);
-    p->next = *festack;
-    *festack = p;
+    if (getVar(RPMVAR_ROOT)) {
+	sprintf(fullname, "%s%s", getVar(RPMVAR_ROOT), name);
+    } else {
+	strcpy(fullname, name);
+    }
+    if (lstat(fullname, &p->statbuf)) {
+	return 0;
+    }
 
-    message(MESS_DEBUG, "ADDING: %s\n", name);
-    /* return number of entries added */
-    return 1;
+    if ((! isdir) && S_ISDIR(p->statbuf.st_mode)) {
+	/* This means we need to decend with ftw() */
+	Gcount = 0;
+
+	ftw(fullname, add_file_aux, 3);
+	
+	free(p);
+
+	return Gcount;
+    } else {
+	/* Link it in */
+	p->next = *festack;
+	*festack = p;
+
+	message(MESS_DEBUG, "ADDING: %s\n", name);
+
+	/* return number of entries added */
+	return 1;
+    }
+}
+
+static int add_file_aux(char *file, struct stat *sb, int flag)
+{
+    char *name = file;
+
+    if (getVar(RPMVAR_ROOT)) {
+	name += strlen(getVar(RPMVAR_ROOT));
+    }
+
+    /* The 1 will cause add_file() to *not* descend */
+    /* directories -- ftw() is already doing it!    */
+    Gcount += add_file(Gfestack, name, Gisdoc, Gisconf, 1);
+
+    return 0; /* for ftw() */
 }
 
 static int process_filelist(Header header, StringBuf sb)
@@ -246,7 +268,19 @@ static int process_filelist(Header header, StringBuf sb)
 	    fp++;
 	    continue;
 	}
-	count += add_file(&fes, filename, isdoc, isconf, isdir);
+
+	/* check that file starts with leading "/" */
+	if (*filename != '/') {
+	    error(RPMERR_BADSPEC, "File needs leading \"/\": %s", filename);
+	    return(RPMERR_BADSPEC);
+	}
+
+	c = add_file(&fes, filename, isdoc, isconf, isdir);
+	if (! c) {
+	    error(RPMERR_BADSPEC, "File not found: %s", filename);
+	    return(RPMERR_BADSPEC);
+	}
+	count += c;
 	
 	fp++;
     }
@@ -279,9 +313,14 @@ static int process_filelist(Header header, StringBuf sb)
 	c = count;
 	while (c--) {
 	    fileList[c] = strdup(fes->file);
-	    mdfile(fes->file, buf);
-	    fileMD5List[c] = strdup(buf);
-	    message(MESS_DEBUG, "md5(%s) = %s\n", fes->file, buf);
+	    if (S_ISREG(fes->statbuf.st_mode)) {
+		mdfile(fes->file, buf);
+		fileMD5List[c] = strdup(buf);
+		message(MESS_DEBUG, "md5(%s) = %s\n", fes->file, buf);
+	    } else {
+		/* This is stupid */
+		fileMD5List[c] = strdup("");
+	    }
 	    fileSizeList[c] = fes->statbuf.st_size;
 	    fileUIDList[c] = fes->statbuf.st_uid;
 	    fileGIDList[c] = fes->statbuf.st_gid;
@@ -296,7 +335,12 @@ static int process_filelist(Header header, StringBuf sb)
 	    fileRDevsList[c] = fes->statbuf.st_rdev;
 
 	    if (S_ISLNK(fes->statbuf.st_mode)) {
-		readlink(fes->file, buf, 1024);
+		if (getVar(RPMVAR_ROOT)) {
+		    sprintf(buf, "%s%s", getVar(RPMVAR_ROOT), fes->file);
+		} else {
+		    strcpy(buf, fes->file);
+		}
+		readlink(buf, buf, 1024);
 		fileLinktoList[c] = strdup(buf);
 	    } else {
 		/* This is stupid */
@@ -352,10 +396,6 @@ int packageBinaries(Spec s)
     time_t buildtime;
     char *version;
     char *release;
-
-    if (init_pack()) {
-	return 1;
-    }
 
     if (!getEntry(s->packages->header, RPMTAG_VERSION, NULL,
 		  (void *) &version, NULL)) {
@@ -415,9 +455,11 @@ int packageBinaries(Spec s)
 	}
 	freeIterator(headerIter);
 	
-	process_filelist(outHeader, pr->filelist);
+	if (process_filelist(outHeader, pr->filelist)) {
+	    return 1;
+	}
 	
-	sprintf(filename, "%s.%s.rpm", name, arch_token);
+	sprintf(filename, "%s.%s.rpm", name, getArchName());
 	fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	if (writeMagic(s, pr, fd, name, BINARY_HEADER)) {
 	    return 1;
@@ -443,9 +485,5 @@ int packageBinaries(Spec s)
 
 int packageSource(Spec s)
 {
-    if (init_pack()) {
-	return 1;
-    }
-    
     return 0;
 }
