@@ -1035,7 +1035,9 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
 		if (*intptr == sharedList[i].secRecOffset) break;
 		intptr++;
 	    }
-	}
+	    if (!*intptr) intptr = NULL;
+	} else 
+	    intptr = NULL;
 
 	/* if this instance of the shared file is already recorded as
 	   replaced, just forget about it */
@@ -1051,7 +1053,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
 	if (filecmp(files[mainNum].mode, files[mainNum].md5, 
 		    files[mainNum].link, secFileModesList[secNum],
 		    secFileMd5List[secNum], secFileLinksList[secNum])) {
-	    if (!(flags & RPMINSTALL_REPLACEFILES) && !(*intptr)) {
+	    if (!(flags & RPMINSTALL_REPLACEFILES) && !intptr) {
 		rpmError(RPMERR_PKGINSTALLED, "%s conflicts with file from "
 		         "%s-%s-%s", 
 			 files[sharedList[i].mainFileNumber].relativePath,
