@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Constants.pm,v 1.11 2000/10/05 04:48:59 rjray Exp $
+#   $Id: Constants.pm,v 1.12 2000/10/10 08:22:21 rjray Exp $
 #
 #   Description:    Constants for the RPM package
 #
@@ -27,7 +27,7 @@ use RPM;
 @ISA = qw(Exporter);
 
 $VERSION = '0.29';
-$revision = do { my @r=(q$Revision: 1.11 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.12 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT_OK = qw(
                 ADD_SIGNATURE
@@ -307,19 +307,15 @@ delete $groups{uninstall};
                 %groups
                );
 
-sub AUTOLOAD {
+sub AUTOLOAD
+{
     my $constname;
     ($constname = $AUTOLOAD) =~ s/.*:://;
     die "& not defined" if $constname eq 'constant';
     my $val = constant($constname);
-    if ($! != 0) {
-        if ($! =~ /Invalid/) {
-            $AutoLoader::AUTOLOAD = $AUTOLOAD;
-            goto &AutoLoader::AUTOLOAD;
-        }
-        else {
-            die "Your vendor has not defined RPM macro $constname";
-        }
+    if ($! != 0)
+    {
+        die "Your vendor has not defined RPM macro $constname";
     }
     no strict 'refs';
     *$AUTOLOAD = sub { $val };
