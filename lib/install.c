@@ -115,9 +115,7 @@ static int assembleFileList(Header h, struct fileMemory * mem,
     struct fileInfo * file;
     int fileCount;
     int i;
-    char ** fileLangs;
     char * chptr;
-    char ** languages, ** lang;
 
     if (!headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &mem->names, 
 		        fileCountPtr))
@@ -138,20 +136,13 @@ static int assembleFileList(Header h, struct fileMemory * mem,
     headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fileModes, NULL);
     headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, NULL);
     headerGetEntry(h, RPMTAG_FILELINKTOS, NULL, (void **) &mem->links, NULL);
-    if (!headerGetEntry(h, RPMTAG_FILELANGS, NULL, (void **) &fileLangs, NULL))
-	fileLangs = NULL;
-
-    if ((chptr = getenv("LINGUAS"))) {
-	languages = splitString(chptr, strlen(chptr), ':');
-    } else
-	languages = NULL;
 
     for (i = 0, file = files; i < fileCount; i++, file++) {
 	file->state = RPMFILE_STATE_NORMAL;
 	if (actions)
 	    file->action = actions[i];
 	else
-	    file->action = UNKNOWN;
+	    file->action = FA_UNKNOWN;
 	file->install = 1;
 
 	file->relativePath = mem->names[i];
@@ -162,23 +153,9 @@ static int assembleFileList(Header h, struct fileMemory * mem,
 	file->size = fileSizes[i];
 	file->flags = fileFlags[i];
 
-	/* FIXME: move this logic someplace else */
-	if (fileLangs && languages && *fileLangs[i]) {
-	    for (lang = languages; *lang; lang++)
-		if (!strcmp(*lang, fileLangs[i])) break;
-	    if (!*lang) {
-		file->install = 0;
-		rpmMessage(RPMMESS_DEBUG, _("not installing %s -- linguas\n"),
-			   file->relativePath);
-	    }
-	}
-
 	rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
 		    file->relativePath, fileActionString(file->action));
     }
-
-    if (fileLangs) free(fileLangs);
-    if (languages) freeSplitString(languages);
 
     return 0;
 }
@@ -371,12 +348,12 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 
 	for (i = 0; i < fileCount; i++) {
 	    switch (files[i].action) {
-	      case BACKUP:
+	      case FA_BACKUP:
 		ext = ".rpmorig";
 		installFile = 1;
 		break;
 
-	      case ALTNAME:
+	      case FA_ALTNAME:
 		ext = NULL;
 		installFile = 1;
 
@@ -389,29 +366,29 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		
 		break;
 
-	      case SAVE:
+	      case FA_SAVE:
 		ext = ".rpmsave";
 		installFile = 1;
 		break;
 
-	      case CREATE:
+	      case FA_CREATE:
 		installFile = 1;
 		ext = NULL;
 		break;
 
-	      case SKIP:
+	      case FA_SKIP:
 		installFile = 0;
 		ext = NULL;
 		break;
 
-	      case SKIPNSTATE:
+	      case FA_SKIPNSTATE:
 		installFile = 0;
 		ext = NULL;
 		files[i].state = RPMFILE_STATE_NOTINSTALLED;
 		break;
 
-	      case UNKNOWN:
-	      case REMOVE:
+	      case FA_UNKNOWN:
+	      case FA_REMOVE:
 		break;
 	    }
 
@@ -865,14 +842,14 @@ int rpmVersionCompare(Header first, Header second) {
 
 const char * fileActionString(enum fileActions a) {
     switch (a) {
-      case UNKNOWN: return "unknown";
-      case CREATE: return "create";
-      case BACKUP: return "backup";
-      case SAVE: return "save";
-      case SKIP: return "skip";
-      case SKIPNSTATE: return "skipnstate";
-      case ALTNAME: return "altname";
-      case REMOVE: return "remove";
+      case FA_UNKNOWN: return "unknown";
+      case FA_CREATE: return "create";
+      case FA_BACKUP: return "backup";
+      case FA_SAVE: return "save";
+      case FA_SKIP: return "skip";
+      case FA_SKIPNSTATE: return "skipnstate";
+      case FA_ALTNAME: return "altname";
+      case FA_REMOVE: return "remove";
     }
 
     return "???";

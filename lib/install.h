@@ -16,8 +16,8 @@ struct sharedFileInfo {
     int otherPkg;
 };
 
-enum fileActions { UNKNOWN = 0, CREATE, BACKUP, SAVE, SKIP, ALTNAME, REMOVE,
-		   SKIPNSTATE };
+enum fileActions { FA_UNKNOWN = 0, FA_CREATE, FA_BACKUP, FA_SAVE, FA_SKIP, 
+		   FA_ALTNAME, FA_REMOVE, FA_SKIPNSTATE };
 enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
 
 int removeBinaryPackage(char * root, rpmdb db, unsigned int offset, int flags,

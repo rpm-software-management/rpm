@@ -329,7 +329,7 @@ static int removeFile(char * file, unsigned int flags, short mode,
 	
     switch (action) {
 
-      case BACKUP:
+      case FA_BACKUP:
 	newfile = alloca(strlen(file) + 20);
 	strcpy(newfile, file);
 	strcat(newfile, ".rpmsave");
@@ -340,7 +340,7 @@ static int removeFile(char * file, unsigned int flags, short mode,
 	}
 	break;
 
-      case REMOVE:
+      case FA_REMOVE:
 	if (S_ISDIR(mode)) {
 	    if (rmdir(file)) {
 		if (errno == ENOTEMPTY)
@@ -363,12 +363,12 @@ static int removeFile(char * file, unsigned int flags, short mode,
 	    }
 	}
 	break;
-      case UNKNOWN:
-      case CREATE:
-      case SAVE:
-      case SKIP:
-      case SKIPNSTATE:
-      case ALTNAME:
+      case FA_UNKNOWN:
+      case FA_CREATE:
+      case FA_SAVE:
+      case FA_SKIP:
+      case FA_SKIPNSTATE:
+      case FA_ALTNAME:
 	break;
     }
  
