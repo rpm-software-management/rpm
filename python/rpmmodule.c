@@ -320,6 +320,16 @@ static PyObject * setVerbosity (PyObject * self, PyObject * args)
 
 /**
  */
+static PyObject * setEpochPromote (PyObject * self, PyObject * args)
+{
+    if (!PyArg_ParseTuple(args, "i", &_rpmds_nopromote))
+	return NULL;
+    Py_INCREF(Py_None);
+    return (PyObject *) Py_None;
+}
+
+/**
+ */
 static PyMethodDef rpmModuleMethods[] = {
     { "TransactionSet", (PyCFunction) rpmts_Create, METH_VARARGS,
 "rpm.TransactionSet([rootDir, [db]]) -> ts\n\
@@ -369,6 +379,8 @@ static PyMethodDef rpmModuleMethods[] = {
     { "checksig", (PyCFunction) checkSig, METH_VARARGS,
 	NULL },
     { "setVerbosity", (PyCFunction) setVerbosity, METH_VARARGS,
+	NULL },
+    { "setEpochPromote", (PyCFunction) setEpochPromote, METH_VARARGS,
 	NULL },
     { "dsSingle", (PyCFunction) rpmds_Single, METH_VARARGS,
 "rpm.dsSingle(TagN, N, [EVR, [Flags]] -> ds\n\

@@ -128,7 +128,23 @@ static int _rpmts_debug = 0;
  *	- rpm.RPMPROB_FILTER_DISKSPACE - 
  */
 
-/**
+/** \ingroup python
+ */
+static PyObject *
+rpmts_Debug(/*@unused@*/ rpmtsObject * s, PyObject * args)
+        /*@globals _Py_NoneStruct @*/
+        /*@modifies _Py_NoneStruct @*/
+{
+    if (!PyArg_ParseTuple(args, "i:Debug", &_rpmts_debug)) return NULL;
+
+if (_rpmts_debug < 0)
+fprintf(stderr, "*** rpmts_Debug(%p) ts %p\n", s, s->ts);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup python
  * Add package to universe of possible packages to install in transaction set.
  * @param ts		transaction set
  * @param h		header
@@ -516,6 +532,25 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
 /** \ingroup python
  */
 static PyObject *
+rpmts_SetVerifySigFlags(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    int vsflags;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_SetVerifySigFlags(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, "i:SetVerifySigFlags", &vsflags)) return NULL;
+
+    /* XXX FIXME: value check on vsflags. */
+
+    return Py_BuildValue("i", rpmtsSetVerifySigFlags(s->ts, vsflags));
+}
+
+/** \ingroup python
+ */
+static PyObject *
 rpmts_GetKeys(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
@@ -778,56 +813,66 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmts_methods[] = {
-    {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
+ {"Debug",	(PyCFunction)rpmts_Debug,	METH_VARARGS,
+        NULL},
+
+ {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
 	NULL },
 #ifdef	_LEGACY_BINDINGS_TOO
-    {"add",		(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
+ {"add",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
 	NULL },
 #endif
-    {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS,
+ {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS,
 	NULL },
 #ifdef	_LEGACY_BINDINGS_TOO
-    {"remove",		(PyCFunction) rpmts_AddErase,	METH_VARARGS,
+ {"remove",	(PyCFunction) rpmts_AddErase,	METH_VARARGS,
 	NULL },
 #endif
-    {"check",		(PyCFunction) rpmts_Check,	METH_VARARGS,
+ {"check",	(PyCFunction) rpmts_Check,	METH_VARARGS,
 	NULL },
 #ifdef	_LEGACY_BINDINGS_TOO
-    {"depcheck",	(PyCFunction) rpmts_Check,	METH_VARARGS,
+ {"depcheck",	(PyCFunction) rpmts_Check,	METH_VARARGS,
 	NULL },
 #endif
-    {"order",		(PyCFunction) rpmts_Order,	METH_VARARGS,
+ {"order",	(PyCFunction) rpmts_Order,	METH_VARARGS,
 	NULL },
-    {"run",		(PyCFunction) rpmts_Run,	METH_VARARGS,
+ {"run",	(PyCFunction) rpmts_Run,	METH_VARARGS,
 	NULL },
-    {"clean",		(PyCFunction) rpmts_Clean,	METH_VARARGS,
+ {"clean",	(PyCFunction) rpmts_Clean,	METH_VARARGS,
 	NULL },
-    {"openDB",		(PyCFunction) rpmts_OpenDB,	METH_VARARGS,
+ {"openDB",	(PyCFunction) rpmts_OpenDB,	METH_VARARGS,
 "ts.openDB() -> None\n\
 - Open the default transaction rpmdb.\n\
   Note: The transaction rpmdb is lazily opened, so ts.openDB() is seldom needed.\n" },
-    {"closeDB",		(PyCFunction) rpmts_CloseDB,	METH_VARARGS,
+ {"closeDB",	(PyCFunction) rpmts_CloseDB,	METH_VARARGS,
 "ts.closeDB() -> None\n\
 - Close the default transaction rpmdb.\n\
   Note: ts.closeDB() disables lazy opens, and should hardly ever be used.\n" },
-    {"initDB",		(PyCFunction) rpmts_InitDB,	METH_VARARGS,
+ {"initDB",	(PyCFunction) rpmts_InitDB,	METH_VARARGS,
 "ts.initDB() -> None\n\
 - Initialize the default transaction rpmdb.\n\
  Note: ts.initDB() is seldom needed anymore.\n" },
-    {"rebuildDB",	(PyCFunction) rpmts_RebuildDB,	METH_VARARGS,
+ {"rebuildDB",	(PyCFunction) rpmts_RebuildDB,	METH_VARARGS,
 "ts.rebuildDB() -> None\n\
 - Rebuild the default transaction rpmdb.\n" },
-    {"verifyDB",	(PyCFunction) rpmts_VerifyDB,	METH_VARARGS,
+ {"verifyDB",	(PyCFunction) rpmts_VerifyDB,	METH_VARARGS,
 "ts.verifyDB() -> None\n\
 - Verify the default transaction rpmdb.\n" },
-    {"getKeys",		(PyCFunction) rpmts_GetKeys,	METH_VARARGS,
+ {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_VARARGS,
 	NULL },
-    {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_VARARGS,
+ {"setVerifySigFlags",(PyCFunction) rpmts_SetVerifySigFlags,	METH_VARARGS,
+"ts.setVerifySigFlags(vsflags) -> ovsflags\n\
+- Set signature verification flags. Values for vsflags are:\n\
+	1  --nodigest		if set, don't check digest\n\
+	2  --nosignature	if set, don't check signature\n\
+	4  (none)		if set, check header+payload (if possible)\n\
+	8  --nohdrchk		if set, don't check rpmdb headers\n" },
+ {"getKeys",	(PyCFunction) rpmts_GetKeys,	METH_VARARGS,
 	NULL },
-    {"dbMatch",		(PyCFunction) rpmts_Match,	METH_VARARGS,
+ {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS,
 "ts.dbMatch([TagN, [key, [len]]]) -> mi\n\
 - Create a match iterator for the default transaction rpmdb.\n" },
-    {"next",		(PyCFunction)rpmts_Next,	METH_VARARGS,
+ {"next",		(PyCFunction)rpmts_Next,	METH_VARARGS,
 "ts.next() -> te\n\
 - Retrieve next transaction set element.\n" },
     {NULL,		NULL}		/* sentinel */

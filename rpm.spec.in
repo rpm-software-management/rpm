@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.62
+Release: 0.63
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -409,6 +409,7 @@ fi
 %{__prefix}/src/@RPMCANONVENDOR@/RPMS/*
 %rpmattr	%{__prefix}/bin/rpmbuild
 %rpmattr	%{__prefix}/lib/rpm/brp-*
+%rpmattr	%{__prefix}/lib/rpm/check-files
 %rpmattr	%{__prefix}/lib/rpm/check-prereqs
 %rpmattr	%{__prefix}/lib/rpm/config.site
 #%rpmattr	%{__prefix}/lib/rpm/cpanflute
@@ -515,6 +516,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Aug  1 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.63
+- add check-files to rpm-build manifest.
+
 * Wed Jul 31 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.62
 - make --querytags a common option, fix errant regex (#70135).
 - db3: increase mpool and cachesize, compile w/o --enable-debug.
