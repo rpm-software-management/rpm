@@ -23,6 +23,8 @@ ltmain.sh
 macros
 platform
 rpm
+rpmdb
+rpm[a-z]
 rpm2cpio
 rpmconvert
 rpmpopt

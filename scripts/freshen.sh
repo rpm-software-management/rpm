@@ -6,13 +6,11 @@
 # specified (i.e. filenames with " specified). I'm sure some shell-hacker
 # out there can fix that <hint, hint>.
 
-if [ $1 = ";" ]; then
-    RPM=rpm
-    shift
-else
-    RPM=$1
-    shift 2
-fi
+case `basename $0` in
+rpme|rpmi|rpmu)	rpm="$0" ;;
+*)		rpm="`dirname $0`/rpmi" ;;
+esac
+shift
 
 args="-U"
 while [ $# -gt 0 ]; do

@@ -17,18 +17,17 @@ SUBDIRS = intl po popt build lib misc tools scripts tests doc .
 INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/popt \
 	@INCPATH@
 
-myldflags= -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/popt
+myLDFLAGS = -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/popt
 
 # XXX libtool can/should generate dependent libs.
 # XXX solaris2.6 cannot use *.la with --all-static (downrev binutils/egcs?)
-myldadd= \
+myLDADD = \
 	$(top_builddir)/build/.libs/librpmbuild.a \
 	$(top_builddir)/lib/.libs/librpm.a \
 	$(top_builddir)/popt/.libs/libpopt.a \
 	@INTLLIBS@ @LIBMISC@
 
-LDFLAGS = @LDFLAGS_STATIC@ $(myldflags)
-LDADD = $(myldadd)
+newLDADD = -lrpmbuild -lrpm -lpopt @INTLLIBS@ @LIBMISC@
 
 rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
@@ -38,36 +37,83 @@ bin_SCRIPTS =		gendiff
 
 noinst_PROGRAMS =	@BUILD_RPMCONVERT@
 
-pkglibdir = @RPMCONFIGDIR@
-pkglib_DATA = rpmrc rpmpopt macros
-pkglib_SCRIPTS = find-provides find-requires mkinstalldirs \
-	config.guess config.sub
+pkglibdir =		@RPMCONFIGDIR@
+pkglib_PROGRAMS =	rpmb rpmdb rpmi rpmk rpmq
+pkglib_DATA =		rpmrc rpmpopt macros
+pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
+			config.guess config.sub
 
 noinst_HEADERS = \
 	acconfig.h	build.h		system.h
 
 rpm_SOURCES =		build.c rpm.c
+rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)
+rpm_LDADD =		$(myLDADD)
 
-$(PROGRAMS): 		$(myldadd)
+rpmb_SOURCES =		build.c
+rpmb_LDFLAGS =		$(myLDFLAGS)
+rpmb_LDADD =		rpmb.o $(newLDADD)
+rpmb.o:	rpmqv.c
+	$(COMPILE) -DIAM_RPMBT -o $@ -c $<
 
-.PHONY:	lclint
-lclint:
-	lclint ${DEFS} ${INCLUDES} ${rpm_SOURCES}
+rpmdb_SOURCES =
+rpmdb_LDFLAGS =		$(myLDFLAGS)
+rpmdb_LDADD =		rpmdb.o $(newLDADD)
+rpmdb.o:	rpmqv.c
+	$(COMPILE) -DIAM_RPMDB -o $@ -c $<
 
-CVSTAG = r$(subst .,-,$(VERSION))
+rpmi_SOURCES =
+rpmi_LDFLAGS =		$(myLDFLAGS)
+rpmi_LDADD =		rpmi.o $(newLDADD)
+rpmi.o:	rpmqv.c
+	$(COMPILE) -DIAM_RPMEIU -o $@ -c $<
+
+rpmk_SOURCES =
+rpmk_LDFLAGS =		$(myLDFLAGS)
+rpmk_LDADD =		rpmk.o $(newLDADD)
+rpmk.o:	rpmqv.c
+	$(COMPILE) -DIAM_RPMK -o $@ -c $<
+
+rpmq_SOURCES =
+rpmq_LDFLAGS =		$(myLDFLAGS)
+rpmq_LDADD =		rpmq.o $(newLDADD)
+rpmq.o:	rpmqv.c
+	$(COMPILE) -DIAM_RPMQV -o $@ -c $<
 
 rpm2cpio_SOURCES =	rpm2cpio.c
+rpm2cpio_LDFLAGS =	@LDFLAGS_STATIC@ $(myLDFLAGS)
+rpm2cpio_LDADD =	$(myLDADD)
 
 rpmconvert_SOURCES =	convertdb.c oldrpmdb.c
 ## Libmisc.a is required for rpmconvert.
-rpmconvert_LDADD =	$(myldadd) -lgdbm
+rpmconvert_LDADD =	$(myLDADD) -lgdbm
+
+$(PROGRAMS): 		$(myLDADD)
+
+.PHONY:	lclint
+lclint:
+	lclint $(DEFS) $(INCLUDES) $(rpm_SOURCES)
+
+CVSTAG = r$(subst .,-,$(VERSION))
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm
 	@rm -f $(DESTDIR)/$(libdir)/rpmrc
-	@ln -s rpm/rpmrc $(DESTDIR)/$(libdir)/rpmrc
+	@@LN_S@ rpm/rpmrc $(DESTDIR)/$(libdir)/rpmrc
 	@rm -f $(DESTDIR)/$(libdir)/rpmpopt
-	@ln -s rpm/rpmpopt $(DESTDIR)/$(libdir)/rpmpopt
+	@@LN_S@ rpm/rpmpopt $(DESTDIR)/$(libdir)/rpmpopt
+	@rm -f $(DESTDIR)/$(libdir)/rpm/rpmt
+	@@LN_S@ rpmb $(DESTDIR)/$(libdir)/rpm/rpmt
+	@rm -f $(DESTDIR)/$(libdir)/rpm/rpme
+	@@LN_S@ rpmi $(DESTDIR)/$(libdir)/rpm/rpme
+	@rm -f $(DESTDIR)/$(libdir)/rpm/rpmu
+	@@LN_S@ rpmi $(DESTDIR)/$(libdir)/rpm/rpmu
+	@rm -f $(DESTDIR)/$(libdir)/rpm/rpmv
+	@@LN_S@ rpmq $(DESTDIR)/$(libdir)/rpm/rpmv
+	for bf in b db e i k q t u v ; do \
+	    rm -f $(DESTDIR)/$(bindir)/rpm$$bf ; \
+	    @LN_S@ ../lib/rpm/rpm$$bf $(DESTDIR)/$(bindir)/rpm$$bf ; \
+	done
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/BUILD
 	@case "@build_cpu@" in \
 	*86) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i386 ;;\

@@ -2,6 +2,8 @@
    file accompanying popt source distributions, available from
    ftp://ftp.redhat.com/pub/code/popt */
 
+#undef	MYDEBUG
+
 #include "system.h"
 #include "findme.h"
 #include "poptint.h"
@@ -218,37 +220,43 @@ static int handleAlias(poptContext con, const char * longName, char shortName,
 
 static void execCommand(poptContext con) {
     const char ** argv;
-    int pos = 0;
-    const char * script = con->doExec->script;
+    int argc = 0;
+    const char ** sargv;
+    int sargc = 0;
+
+    poptParseArgvString(con->doExec->script, &sargc, &sargv);
+
+    if (sargv == NULL || sargc < 1 ||
+	(!con->execAbsolute && strchr(sargv[0], '/')))
+	    return;
 
     argv = malloc(sizeof(*argv) *
-			(6 + con->numLeftovers + con->finalArgvCount));
+			(6 + sargc + con->numLeftovers + con->finalArgvCount));
 
-    if (!con->execAbsolute && strchr(script, '/')) return;
-
-    if (!strchr(script, '/') && con->execPath) {
-	char *s = alloca(strlen(con->execPath) + strlen(script) + 2);
-	sprintf(s, "%s/%s", con->execPath, script);
-	argv[pos] = s;
+    if (!strchr(sargv[0], '/') && con->execPath) {
+	char *s = alloca(strlen(con->execPath) + strlen(sargv[0]) + sizeof("/"));
+	sprintf(s, "%s/%s", con->execPath, sargv[0]);
+	argv[argc] = s;
     } else {
-	argv[pos] = script;
+	argv[argc] = findProgramPath(sargv[0]);
     }
-    pos++;
+    if (argv[argc++] == NULL) return;
 
-    argv[pos] = findProgramPath(con->os->argv[0]);
-    if (argv[pos]) pos++;
-    argv[pos++] = ";";
+    if (sargc > 1) {
+	memcpy(argv + argc, sargv + 1, sizeof(*argv) * (sargc - 1));
+	argc += (sargc - 1);
+    }
 
-    memcpy(argv + pos, con->finalArgv, sizeof(*argv) * con->finalArgvCount);
-    pos += con->finalArgvCount;
+    memcpy(argv + argc, con->finalArgv, sizeof(*argv) * con->finalArgvCount);
+    argc += con->finalArgvCount;
 
     if (con->numLeftovers) {
-	argv[pos++] = "--";
-	memcpy(argv + pos, con->leftovers, sizeof(*argv) * con->numLeftovers);
-	pos += con->numLeftovers;
+	argv[argc++] = "--";
+	memcpy(argv + argc, con->leftovers, sizeof(*argv) * con->numLeftovers);
+	argc += con->numLeftovers;
     }
 
-    argv[pos++] = NULL;
+    argv[argc++] = NULL;
 
 #ifdef __hpux
     setresuid(getuid(), getuid(),-1);
@@ -265,6 +273,17 @@ static void execCommand(poptContext con) {
 #else
     ; /* Can't drop privileges */
 #endif
+#endif
+
+    if (argv[0] == NULL)
+	return;
+#ifdef MYDEBUG
+    {	const char ** arg;
+	fprintf(stderr, "==> execvp(%s):", argv[0]);
+	for (arg = argv; *arg; arg++)
+	    fprintf(stderr, " %s", *arg);
+	fprintf(stderr, "\n");
+    }
 #endif
 
     execvp(argv[0], (char *const *)argv);
@@ -386,7 +405,7 @@ static /*@only@*/ const char * expandNextArg(poptContext con, const char * s)
 
 static void poptStripArg(poptContext con, int which)
 {
-    if(con->arg_strip == NULL) {
+    if (con->arg_strip == NULL) {
 	con->arg_strip = PBM_ALLOC(con->optionStack[0].argc);
     }
     PBM_SET(which, con->arg_strip);
@@ -438,6 +457,20 @@ static int poptSaveInt(const struct poptOption * opt, long aLong) {
     return 0;
 }
 
+#ifdef MYDEBUG
+static void prtcon(const char *msg, poptContext con)
+{
+    if (msg) fprintf(stderr, "%s", msg);
+    fprintf(stderr, "\tcon %p os %p nextCharArg %p \"%s\" argv[%d] \"%s\"\n",
+	con, con->os,
+	con->os->nextCharArg,
+	(con->os->nextCharArg ? con->os->nextCharArg : ""),
+	con->os->next,
+	(con->os->argv && con->os->argv[con->os->next]
+		? con->os->argv[con->os->next] : ""));
+}
+#endif
+
 /* returns 'val' element, -1 on last item, POPT_ERROR_* on error */
 int poptGetNextOpt(poptContext con)
 {
@@ -470,7 +503,7 @@ int poptGetNextOpt(poptContext con)
 		con->os->next++;
 		continue;
 	    }
-	    thisopt=con->os->next;
+	    thisopt = con->os->next;
 	    origOptString = con->os->argv[con->os->next++];
 
 	    if (con->restLeftover || *origOptString != '-') {
@@ -525,7 +558,7 @@ int poptGetNextOpt(poptContext con)
 	    if (!opt) {
 		con->os->nextCharArg = origOptString + 1;
 	    } else {
-		if(con->os == con->optionStack &&
+		if (con->os == con->optionStack &&
 		   opt->argInfo & POPT_ARGFLAG_STRIP) {
 		    canstrip = 1;
 		    poptStripArg(con, thisopt);
@@ -541,11 +574,14 @@ int poptGetNextOpt(poptContext con)
 
 	    if (handleAlias(con, NULL, *origOptString,
 			    origOptString + 1)) {
-		origOptString++;
 		continue;
 	    }
-	    if (handleExec(con, NULL, *origOptString))
+	    if (handleExec(con, NULL, *origOptString)) {
+		/* Restore rest of short options for further processing */
+		origOptString++;
+		if (*origOptString) con->os->nextCharArg = origOptString;
 		continue;
+	    }
 
 	    opt = findOption(con->options, NULL, *origOptString, &cb,
 			     &cbData, 0);
@@ -553,8 +589,7 @@ int poptGetNextOpt(poptContext con)
 		return POPT_ERROR_BADOPT;
 
 	    origOptString++;
-	    if (*origOptString)
-		con->os->nextCharArg = origOptString;
+	    if (*origOptString) con->os->nextCharArg = origOptString;
 	}
 
 	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) == POPT_ARG_NONE) {
@@ -585,7 +620,7 @@ int poptGetNextOpt(poptContext con)
 
 		/* make sure this isn't part of a short arg or the
                    result of an alias expansion */
-		if(con->os == con->optionStack &&
+		if (con->os == con->optionStack &&
 		   opt->argInfo & POPT_ARGFLAG_STRIP &&
 		   canstrip) {
 		    poptStripArg(con, con->os->next);
@@ -642,7 +677,7 @@ int poptGetNextOpt(poptContext con)
 			    sizeof(*con->finalArgv) * con->finalArgvAlloced);
 	}
 
-	{    char *s = malloc((opt->longName ? strlen(opt->longName) : 0) + 3);
+	{   char *s = malloc((opt->longName ? strlen(opt->longName) : 0) + 3);
 	    if (opt->longName)
 		sprintf(s, "--%s", opt->longName);
 	    else
@@ -650,8 +685,9 @@ int poptGetNextOpt(poptContext con)
 	    con->finalArgv[con->finalArgvCount++] = s;
 	}
 
-	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE
-		     && (opt->argInfo & POPT_ARG_MASK) != POPT_ARG_VAL) {
+	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) == POPT_ARG_NONE) {
+	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_VAL) {
+	} else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) {
 	    con->finalArgv[con->finalArgvCount++] = xstrdup(con->os->nextArg);
 	}
     }
@@ -800,16 +836,16 @@ int poptStrippedArgv(poptContext con, int argc, char **argv)
     int i,j=1, numargs=argc;
     
     for(i=1; i<argc; i++) {
-	if(PBM_ISSET(i, con->arg_strip)) {
+	if (PBM_ISSET(i, con->arg_strip)) {
 	    numargs--;
 	}
     }
     
     for(i=1; i<argc; i++) {
-	if(PBM_ISSET(i, con->arg_strip)) {
+	if (PBM_ISSET(i, con->arg_strip)) {
 	    continue;
 	} else {
-	    if(j<numargs) {
+	    if (j<numargs) {
 		argv[j++]=argv[i];
 	    } else {
 		argv[j++]='\0';

@@ -221,6 +221,9 @@ void *vmefail(size_t size);
 
 /* Retrofit glibc __progname */
 #if defined __GLIBC__ && __GLIBC__ >= 2
+#if __GLIBC_MINOR__ >= 1
+#define	__progname	__assert_program_name
+#endif
 #define	setprogname(pn)
 #else
 #define	__progname	program_name
@@ -229,7 +232,7 @@ void *vmefail(size_t size);
     else __progname = pn;		\
   }
 #endif
-char *__progname;
+const char *__progname;
 
 #if HAVE_NETDB_H
 #ifndef __LCLINT__

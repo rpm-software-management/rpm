@@ -91,6 +91,100 @@ rpm alias --buildpolicy --define '__os_install_post @RPMCONFIGDIR@/brp-!#:+'
 #
 # There are two macros so that --rebuilddb can convert db1 -> db3
 rpm alias --dbapi		 --define '_dbapi !#:+'
-rpm alias --rebuilddbapi	 --define '_dbapi_rebuild !#:+'
 
+rpm alias --rebuilddbapi	 --define '_dbapi_rebuild !#:+'
 rpm alias --rebuilddbpath	 --define '_dbapath_rebuild !#:+'
+
+#==============================================================================
+#	[--dbpath <dir>]	"use <dir> as the directory for the database"
+rpm	alias --dbpath		--define '_dbpath !#:+'
+#	[--ftpport <port>]	"port number of ftp server (or proxy)"
+rpm	alias --ftpport		--define '_ftpport !#:+'
+#	[--ftpproxy <host>]	"hostname or IP of ftp proxy"
+rpm	alias --ftpproxy	--define '_ftpproxy !#:+'
+#	[--httpport <port>]	"port number of http server (or proxy)"
+rpm	alias --httpport	--define '_httpport !#:+'
+#	[--httpproxy <host>]	"hostname or IP of http proxy"
+rpm	alias --httpproxy	--define '_httpproxy !#:+'
+
+# set the time check to <secs>
+rpm	alias --timecheck	--define '_timecheck !#:+'
+
+#==============================================================================
+rpm	exec -b			rpmb -b
+rpm	exec --build		rpmb --build
+rpm	exec --rebuild		rpmb --rebuild
+rpm	exec --recompile	rpmb --recompile
+rpm	exec -t			rpmt -t
+rpm	exec --tarbuild		rpmt --tarbuild
+
+rpm	exec --initdb		rpmdb --initdb
+rpm	exec --rebuilddb	rpmdb --rebuilddb
+
+#rpm	exec -e			rpme -e
+#rpm	exec --erase		rpme --erase
+#rpm	exec -U			rpmu -U
+#rpm	exec --upgrade		rpmu --upgrade
+
+rpm	exec --addsign		rpmk --addsign
+rpm	exec -K			rpmk -K
+rpm	exec --checksig		rpmk --checksig
+rpm	exec --resign		rpmk --resign
+
+rpm	exec -q			rpmq -q
+rpm	exec --query		rpmq --query
+rpm	exec --querytags	rpmq --querytags
+rpm	exec -V			rpmv -V
+rpm	exec -y			rpmv -y
+rpm	exec --verify		rpmv --verify
+
+#==============================================================================
+rpmb	alias --dbpath		--define '_dbpath !#:+'
+rpmb	alias --ftpport		--define '_ftpport !#:+'
+rpmb	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmb	alias --httpport	--define '_httpport !#:+'
+rpmb	alias --httpproxy	--define '_httpproxy !#:+'
+rpmb	alias --timecheck	--define '_timecheck !#:+'
+#==============================================================================
+rpmdb	alias --dbpath		--define '_dbpath !#:+'
+rpmdb	alias --ftpport		--define '_ftpport !#:+'
+rpmdb	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmdb	alias --httpport	--define '_httpport !#:+'
+rpmdb	alias --httpproxy	--define '_httpproxy !#:+'
+#==============================================================================
+rpme	alias --dbpath		--define '_dbpath !#:+'
+rpme	alias --ftpport		--define '_ftpport !#:+'
+rpme	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpme	alias --httpport	--define '_httpport !#:+'
+rpme	alias --httpproxy	--define '_httpproxy !#:+'
+#==============================================================================
+rpmi	alias --dbpath		--define '_dbpath !#:+'
+rpmi	alias --ftpport		--define '_ftpport !#:+'
+rpmi	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmi	alias --httpport	--define '_httpport !#:+'
+rpmi	alias --httpproxy	--define '_httpproxy !#:+'
+#==============================================================================
+rpmq	alias --dbpath		--define '_dbpath !#:+'
+rpmq	alias --ftpport		--define '_ftpport !#:+'
+rpmq	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmq	alias --httpport	--define '_httpport !#:+'
+rpmq	alias --httpproxy	--define '_httpproxy !#:+'
+#==============================================================================
+rpmt	alias --dbpath		--define '_dbpath !#:+'
+rpmt	alias --ftpport		--define '_ftpport !#:+'
+rpmt	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmt	alias --httpport	--define '_httpport !#:+'
+rpmt	alias --httpproxy	--define '_httpproxy !#:+'
+rpmt	alias --timecheck	--define '_timecheck !#:+'
+#==============================================================================
+rpmu	alias --dbpath		--define '_dbpath !#:+'
+rpmu	alias --ftpport		--define '_ftpport !#:+'
+rpmu	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmu	alias --httpport	--define '_httpport !#:+'
+rpmu	alias --httpproxy	--define '_httpproxy !#:+'
+#==============================================================================
+rpmv	alias --dbpath		--define '_dbpath !#:+'
+rpmv	alias --ftpport		--define '_ftpport !#:+'
+rpmv	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmv	alias --httpport	--define '_httpport !#:+'
+rpmv	alias --httpproxy	--define '_httpproxy !#:+'

@@ -497,7 +497,7 @@ static inline int dbiAppendSet(dbiIndexSet set, const void * recs,
 	? xmalloc(nrecs * sizeof(*(set->recs)))
 	: xrealloc(set->recs, (set->count + nrecs) * sizeof(*(set->recs)));
 
-    memset(set->recs + set->count, 0, nrecs * sizeof(*recs));
+    memset(set->recs + set->count, 0, nrecs * sizeof(*(set->recs)));
 
     while (nrecs-- > 0) {
 	memcpy(set->recs + set->count, rptr, rlen);

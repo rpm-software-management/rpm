@@ -12,7 +12,9 @@
 #define GETOPT_ADDSIGN		1005
 #define GETOPT_RESIGN		1006
 #define GETOPT_DBPATH		1010
+#ifdef	DYING
 #define GETOPT_TIMECHECK        1012
+#endif
 #define GETOPT_REBUILDDB        1013
 #define GETOPT_INSTALL		1014
 #define GETOPT_RELOCATE		1016
@@ -45,7 +47,6 @@ enum modes {
 #define	MODES_K	 (MODE_CHECKSIG | MODES_RESIGN)
 
 #define	MODES_FOR_DBPATH	(MODES_BT | MODES_IE | MODES_QV | MODES_DB)
-#define	MODES_FOR_TIMECHECK	(MODES_BT)
 #define	MODES_FOR_NODEPS	(MODES_BT | MODES_IE | MODE_VERIFY)
 #define	MODES_FOR_TEST		(MODES_BT | MODES_IE)
 #define	MODES_FOR_ROOT		(MODES_BT | MODES_IE | MODES_QV | MODES_DB)
@@ -57,10 +58,12 @@ static int badReloc;
 static int excldocs;
 static int force;
 extern int _ftp_debug;
+#ifdef	DYING
 static char * ftpPort;
 static char * ftpProxy;
 static char * httpPort;
 static char * httpProxy;
+#endif
 static int showHash;
 static int help;
 static int ignoreArch;
@@ -116,7 +119,9 @@ static struct poptOption optionsTable[] = {
  { "badreloc", '\0', 0, &badReloc, 0,		NULL, NULL},
  { "build", 'b', POPT_ARG_STRING, 0, 'b',	NULL, NULL},
  { "checksig", 'K', 0, 0, 'K',			NULL, NULL},
+#ifdef	DYING
  { "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH,		NULL, NULL},
+#endif
  { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,NULL, NULL},
  { "dirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 0,	NULL, NULL},
  { "erase", 'e', 0, 0, 'e',			NULL, NULL},
@@ -125,12 +130,16 @@ static struct poptOption optionsTable[] = {
  { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,	NULL, NULL},
  { "force", '\0', 0, &force, 0,			NULL, NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL, &_ftp_debug, -1,		NULL, NULL},
+#ifdef	DYING
  { "ftpport", '\0', POPT_ARG_STRING, &ftpPort, 0,	NULL, NULL},
  { "ftpproxy", '\0', POPT_ARG_STRING, &ftpProxy, 0,	NULL, NULL},
+#endif
  { "hash", 'h', 0, &showHash, 0,		NULL, NULL},
  { "help", '\0', 0, &help, 0,			NULL, NULL},
+#ifdef	DYING
  { "httpport", '\0', POPT_ARG_STRING, &httpPort, 0,	NULL, NULL},
  { "httpproxy", '\0', POPT_ARG_STRING, &httpProxy, 0,	NULL, NULL},
+#endif
  {  NULL, 'i', 0, 0, 'i',			NULL, NULL},
  { "ignorearch", '\0', 0, &ignoreArch, 0,	NULL, NULL},
  { "ignoreos", '\0', 0, &ignoreOs, 0,		NULL, NULL},
@@ -172,7 +181,9 @@ static struct poptOption optionsTable[] = {
  { "sign", '\0', 0, &signIt, 0,			NULL, NULL},
  { "tarbuild", 't', POPT_ARG_STRING, 0, 't',	NULL, NULL},
  { "test", '\0', 0, &test, 0,			NULL, NULL},
+#ifdef	DYING
  { "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK,	NULL, NULL},
+#endif
  { "upgrade", 'U', 0, 0, 'U',			NULL, NULL},
  { "urldebug", '\0', POPT_ARG_VAL, &_url_debug, -1,		NULL, NULL},
  { "uninstall", 'u', 0, 0, 'u',			NULL, NULL},
@@ -221,7 +232,7 @@ static void printUsage(void) {
     printBanner();
     puts("");
 
-    puts(_("usage: rpm {--help}"));
+    puts(_("Usage: rpm {--help}"));
     puts(_("       rpm {--version}"));
     puts(_("       rpm {--initdb}   [--dbpath <dir>]"));
     puts(_("       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"));
@@ -306,38 +317,52 @@ static void printHelp(void) {
     printBanner();
     puts("");
 
-    puts(         _("usage:"));
+    puts(         _("Usage:"));
     printHelpLine(  "   --help                 ", 
 		  _("print this message"));
     printHelpLine(  "   --version              ",
 		  _("print the version of rpm being used"));
-    puts(         _("   all modes support the following arguments:"));
-    printHelpLine(_("      --rcfile <file>     "),
+
+    puts("");
+    puts(         _("   All modes support the following arguments:"));
+    printHelpLine(_("    --define '<name> <body>'"),
+		  _("define macro <name> with value <body>"));
+    printHelpLine(_("    --eval '<name>+'      "),
+		  _("print the expansion of macro <name> to stdout"));
+    printHelpLine(_("    --pipe <cmd>          "),
+		  _("send stdout to <cmd>"));
+    printHelpLine(_("    --rcfile <file>       "),
 		  _("use <file> instead of /etc/rpmrc and $HOME/.rpmrc"));
+    printHelpLine(  "    --showrc              ",
+		  _("display final rpmrc and macro configuration"));
     printHelpLine(  "     -v                   ",
 		  _("be a little more verbose"));
     printHelpLine(  "     -vv                  ",
 		  _("be incredibly verbose (for debugging)"));
-    printHelpLine(  "   -q                     ",
-		  _("query mode"));
-    printHelpLine(_("      --root <dir>        "),
-		  _("use <dir> as the top level directory"));
-    printHelpLine(_("      --dbpath <dir>      "),
-		  _("use <dir> as the directory for the database"));
-    printHelpLine(_("      --queryformat <qfmt>"),
-		  _("use <qfmt> as the header format (implies -i)"));
-    puts(         _("   install, upgrade and query (with -p) allow ftp URL's to be used in place"));
+
+    puts("");
+    puts(         _("   Install, upgrade and query (with -p) allow URL's to be used in place"));
     puts(         _("   of file names as well as the following options:"));
     printHelpLine(_("      --ftpproxy <host>   "),
 		  _("hostname or IP of ftp proxy"));
     printHelpLine(_("      --ftpport <port>    "),
 		  _("port number of ftp server (or proxy)"));
-    printHelpLine(_("      --httpproxy <host>   "),
+    printHelpLine(_("      --httpproxy <host>  "),
 		  _("hostname or IP of http proxy"));
-    printHelpLine(_("      --httpport <port>    "),
+    printHelpLine(_("      --httpport <port>   "),
 		  _("port number of http server (or proxy)"));
+
+    puts("");
+    printHelpLine(  "   -q, --query            ",
+		  _("query mode"));
+    printHelpLine(_("      --dbpath <dir>      "),
+		  _("use <dir> as the directory for the database"));
+    printHelpLine(_("      --queryformat <qfmt>"),
+		  _("use <qfmt> as the header format (implies --info)"));
+    printHelpLine(_("      --root <dir>        "),
+		  _("use <dir> as the top level directory"));
     puts(         _("      Package specification options:"));
-    printHelpLine(  "        -a                ",
+    printHelpLine(  "        -a, --all         ",
 		  _("query all packages"));
     printHelpLine(_("        -f <file>+        "),
 		  _("query package owning <file>"));
@@ -350,7 +375,7 @@ static void printHelp(void) {
     printHelpLine(_("        --whatrequires <cap>"),
 		  _("query packages which require <cap> capability"));
     puts(         _("      Information selection options:"));
-    printHelpLine(  "        -i                ",
+    printHelpLine(  "        -i, --info         ",
 		  _("display package information"));
     printHelpLine(  "        --changelog       ",
 		  _("display the package's change log"));
@@ -366,19 +391,15 @@ static void printHelp(void) {
 		  _("show all verifiable information for each file (must be used with -l, -c, or -d)"));
     printHelpLine(  "        --provides        ",
 		  _("list capabilities package provides"));
-    puts(         _("        --requires"));
-    printHelpLine(  "        -R                ",
+    printHelpLine(  "        -R, --requires    ",
 		  _("list package dependencies"));
     printHelpLine(  "        --scripts         ",
 		  _("print the various [un]install scripts"));
-    printHelpLine("          --triggers        ",
+    printHelpLine(  "        --triggers        ",
 		  _("show the trigger scripts contained in the package"));
+
     puts("");
-    puts(           "    -V");
-    puts(           "    -y");
-    printHelpLine(_("    --pipe <cmd>          "),
-		  _("send stdout to <cmd>"));
-    printHelpLine(  "    --verify              ",
+    printHelpLine(  "    -V, -y, --verify      ",
 		  _("verify a package installation using the same same package specification options as -q"));
     printHelpLine(_("      --dbpath <dir>      "),
 		  _("use <dir> as the directory for the database"));
@@ -390,14 +411,9 @@ static void printHelp(void) {
 		  _("do not verify file md5 checksums"));
     printHelpLine(  "      --nofiles           ",
 		  _("do not verify file attributes"));
-    puts("");
-    printHelpLine(  "    --setperms            ",
-		  _("set the file permissions to those in the package database"
-		    " using the same package specification options as -q"));
-    printHelpLine(  "    --setugids            ",
-		  _("set the file owner and group to those in the package "
-		    "database using the same package specification options as "
-		    "-q"));
+    printHelpLine(  "    --querytags           ",
+		  _("list the tags that can be used in a query format"));
+
     puts("");
     puts(         _("    --install <packagefile>"));
     printHelpLine(_("    -i <packagefile>      "),
@@ -406,8 +422,8 @@ static void printHelp(void) {
 		  _("skip files in path <path>"));
     printHelpLine(_("      --relocate <oldpath>=<newpath>"),
 		  _("relocate files from <oldpath> to <newpath>"));
-    printHelpLine(  "      --badreloc",
-		  _("relocate files even though the package doesn't allow it"));
+    printHelpLine(  "      --badreloc          ",
+		  _("relocate files in non-relocateable package"));
     printHelpLine(_("      --prefix <dir>      "),
 		  _("relocate the package to <dir>, if relocatable"));
     printHelpLine(_("      --dbpath <dir>      "),
@@ -416,8 +432,7 @@ static void printHelp(void) {
 		  _("do not install documentation"));
     printHelpLine(  "      --force             ",
 		  _("short hand for --replacepkgs --replacefiles"));
-    puts(           "      -h");
-    printHelpLine(  "      --hash              ",
+    printHelpLine(  "      -h, --hash          ",
 		  _("print hash marks as package installs (good with -v)"));
     printHelpLine(  "      --allfiles          ",
 		  _("install all files, even configurations which might "
@@ -450,6 +465,7 @@ static void printHelp(void) {
 		  _("use <dir> as the top level directory"));
     printHelpLine(  "      --test              ",
 		  _("don't install, but tell if it would work or not"));
+
     puts("");
     puts(         _("    --upgrade <packagefile>"));
     printHelpLine(_("    -U <packagefile>      "),
@@ -497,7 +513,9 @@ static void printHelp(void) {
     printHelpLine(  "      --clean             ",
 		  _("remove build tree when done"));
     printHelpLine(  "      --rmsource          ",
-		  _("remove sources and spec file when done"));
+		  _("remove sources when done"));
+    printHelpLine(  "      --rmspec            ",
+		  _("remove spec file when done"));
     printHelpLine(  "      --sign              ",
 		  _("generate PGP/GPG signature"));
     printHelpLine(_("      --buildroot <dir>   "),
@@ -511,16 +529,16 @@ static void printHelp(void) {
     puts("");
     printHelpLine(_("    --rebuild <src_pkg>   "),
 		  _("install source package, build binary package and remove spec file, sources, patches, and icons."));
-    printHelpLine(_("    --rmsource <spec>     "),
-		  _("remove sources and spec file"));
     printHelpLine(_("    --recompile <src_pkg> "),
 		  _("like --rebuild, but don't build any package"));
+
+    puts("");
     printHelpLine(_("    --resign <pkg>+       "),
 		  _("sign a package (discard current signature)"));
     printHelpLine(_("    --addsign <pkg>+      "),
 		  _("add a signature to a package"));
-    puts(           "    -K");
-    printHelpLine(_("    --checksig <pkg>+     "),
+    puts(         _("    --checksig <pkg>+"));
+    printHelpLine(_("    -K <pkg>+           "),
 		  _("verify package signature"));
     printHelpLine(  "      --nopgp             ",
 		  _("skip any PGP signatures"));
@@ -528,8 +546,8 @@ static void printHelp(void) {
 		  _("skip any GPG signatures"));
     printHelpLine(  "      --nomd5             ",
 		  _("skip any MD5 signatures"));
-    printHelpLine(  "    --querytags           ",
-		  _("list the tags that can be used in a query format"));
+
+    puts("");
     printHelpLine(  "    --initdb              ",
 		  _("make sure a valid database exists"));
     printHelpLine(  "    --rebuilddb           ",
@@ -538,6 +556,15 @@ static void printHelp(void) {
 		  _("use <dir> as the directory for the database"));
     printHelpLine(  "      --root <dir>        ",
 		  _("use <dir> as the top level directory"));
+
+    puts("");
+    printHelpLine(  "    --setperms            ",
+		  _("set the file permissions to those in the package database"
+		    " using the same package specification options as -q"));
+    printHelpLine(  "    --setugids            ",
+		  _("set the file owner and group to those in the package "
+		    "database using the same package specification options as "
+		    "-q"));
 }
 
 int main(int argc, const char ** argv)
@@ -548,12 +575,13 @@ int main(int argc, const char ** argv)
     enum rpmQVSources QVSource = RPMQV_PACKAGE;
     int arg;
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
-    int gotDbpath = 0, verifyFlags;
+#ifdef	DYING
+    int gotDbpath = 0;
+#endif
+    int verifyFlags;
     int checksigFlags = 0;
-    unsigned long int timeCheck = 0L;
     int addSign = NEW_SIGNATURE;
     const char * specFile;
-    char * tce;
     char * passPhrase = "";
     char * cookie = NULL;
     const char * optArg;
@@ -584,10 +612,12 @@ int main(int argc, const char ** argv)
     excldocs = 0;
     force = 0;
     _ftp_debug = 0;
+#ifdef	DYING
     ftpProxy = NULL;
     ftpPort = NULL;
     httpProxy = NULL;
     httpPort = NULL;
+#endif
     showHash = 0;
     help = 0;
     ignoreArch = 0;
@@ -834,6 +864,7 @@ int main(int argc, const char ** argv)
 	    signIt = 1;
 	    break;
 
+#ifdef	DYING
 	  case GETOPT_DBPATH:
 	    switch (urlIsURL(optArg)) {
 	    case URL_IS_UNKNOWN:
@@ -847,6 +878,7 @@ int main(int argc, const char ** argv)
 	    addMacro(&rpmCLIMacroContext, "_dbpath", NULL, optArg, RMIL_CMDLINE);
 	    gotDbpath = 1;
 	    break;
+#endif	/* DYING */
 
 	  case GETOPT_DEFINEMACRO:
 	    rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
@@ -861,8 +893,10 @@ int main(int argc, const char ** argv)
 	    noUsageMsg = 1;
 	  } break;
 
+#ifdef	DYING
 	  case GETOPT_TIMECHECK:
-	    tce = NULL;
+	  { char * tce = NULL;
+	    unsigned long int timeCheck = 0L;
 	    timeCheck = strtoul(optArg, &tce, 10);
 	    if ((*tce) || (tce == optArg) || (timeCheck == ULONG_MAX)) {
 		argerror("Argument to --timecheck must be integer");
@@ -870,7 +904,8 @@ int main(int argc, const char ** argv)
 	    addMacro(NULL, "_timecheck", NULL, optArg, RMIL_CMDLINE);
 	    addMacro(&rpmCLIMacroContext, "_timecheck", NULL, optArg, RMIL_CMDLINE);
 	    timeCheck = 1;
-	    break;
+	  } break;
+#endif
 
 	  case GETOPT_REBUILDDB:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILDDB)
@@ -953,12 +988,14 @@ int main(int argc, const char ** argv)
 	argerror("--buildroot may only be used during package builds");
     }
 
+#ifdef	DYING
     if (gotDbpath && (bigMode & ~MODES_FOR_DBPATH))
 	argerror(_("--dbpath given for operation that does not use a "
 			"database"));
 
-    if (timeCheck && (bigMode & ~MODES_FOR_TIMECHECK))
+    if (timeCheck && (bigMode & ~MODES_BT))
 	argerror(_("--timecheck may only be used during package builds"));
+#endif
     
     if (qva->qva_flags && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query flags"));
@@ -1081,6 +1118,7 @@ int main(int argc, const char ** argv)
     if (oldPackage && !upgrade)
 	argerror(_("--oldpackage may only be used during upgrades"));
 
+#ifdef	DYING
     if ((ftpProxy || ftpPort) && !(bigMode == MODE_INSTALL ||
 	((bigMode == MODE_QUERY && QVSource == RPMQV_RPM)) ||
 	((bigMode == MODE_VERIFY && QVSource == RPMQV_RPM))))
@@ -1092,6 +1130,7 @@ int main(int argc, const char ** argv)
 	((bigMode == MODE_VERIFY && QVSource == RPMQV_RPM))))
 	argerror(_("http options can only be used during package queries, "
 		 "installs, and upgrades"));
+#endif	/* DYING */
 
     if (noPgp && bigMode != MODE_CHECKSIG)
 	argerror(_("--nopgp may only be used during signature checking"));
@@ -1103,6 +1142,7 @@ int main(int argc, const char ** argv)
 	argerror(_("--nomd5 may only be used during signature checking and "
 		   "package verification"));
 
+#ifdef	DYING
     if (ftpProxy) {
 	addMacro(NULL, "_ftpproxy", NULL, ftpProxy, RMIL_CMDLINE);
 	addMacro(&rpmCLIMacroContext, "_ftpproxy", NULL, ftpProxy, RMIL_CMDLINE);
@@ -1119,6 +1159,7 @@ int main(int argc, const char ** argv)
 	addMacro(NULL, "_httpport", NULL, httpPort, RMIL_CMDLINE);
 	addMacro(&rpmCLIMacroContext, "_httpport", NULL, httpPort, RMIL_CMDLINE);
     }
+#endif
 
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||

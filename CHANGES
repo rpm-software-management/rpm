@@ -44,6 +44,8 @@
 	- builds against bzip2 1.0
 	- detects and builds properly against the new fopencookie API in
           glibc 2.2
+	- change popt exec alias in oreder to exec rpm children.
+	- split rpm into 5 pieces along major mode fault lines with popt glue.
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

@@ -11,15 +11,14 @@ const char * findProgramPath(const char * argv0) {
     char * start, * chptr;
     char * buf;
 
-    /* If there is a / in the argv[0], it has to be an absolute
-       path */
+    /* If there is a / in the argv[0], it has to be an absolute path */
     if (strchr(argv0, '/'))
 	return xstrdup(argv0);
 
     if (!path) return NULL;
 
     start = pathbuf = alloca(strlen(path) + 1);
-    buf = malloc(strlen(path) + strlen(argv0) + 2);
+    buf = malloc(strlen(path) + strlen(argv0) + sizeof("/"));
     strcpy(pathbuf, path);
 
     chptr = NULL;

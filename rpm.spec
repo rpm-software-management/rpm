@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.21
+Release: 0.22
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -141,6 +141,8 @@ fi
 %dir /etc/rpm
 /usr/bin/rpm2cpio
 /usr/bin/gendiff
+/usr/bin/rpmdb
+/usr/bin/rpm[eiukqv]
 /usr/lib/librpm.so.*
 /usr/lib/librpmbuild.so.*
 
@@ -155,6 +157,9 @@ fi
 /usr/lib/rpm/freshen.sh
 /usr/lib/rpm/macros
 /usr/lib/rpm/mkinstalldirs
+/usr/lib/rpm/rpmdb
+/usr/lib/rpm/rpm[eiukqv]
+/usr/lib/rpm/rpme
 /usr/lib/rpm/rpmpopt
 /usr/lib/rpm/rpmrc
 /usr/lib/rpm/vpkg-provides.sh
@@ -189,6 +194,7 @@ fi
 
 %files build
 %defattr(-,root,root)
+/usr/bin/rpm[bt]
 /usr/lib/rpm/check-prereqs
 /usr/lib/rpm/cpanflute
 /usr/lib/rpm/find-lang.sh
@@ -201,6 +207,7 @@ fi
 /usr/lib/rpm/magic.req
 /usr/lib/rpm/perl.prov
 /usr/lib/rpm/perl.req
+/usr/lib/rpm/rpm[bt]
 /usr/lib/rpm/rpmdiff
 /usr/lib/rpm/rpmdiff.cgi
 /usr/lib/rpm/rpmgettext
@@ -236,6 +243,10 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Wed May 24 2000 Jeff Johnson <jbj@redhat.com>
+- change popt exec alias in oreder to exec rpm children.
+- split rpm into 5 pieces along major mode fault lines with popt glue.
+
 * Thu May 18 2000 Jeff Johnson <jbj@redhat.com>
 - 2nd try at db1 -> db3 stable functionality.
 
