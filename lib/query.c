@@ -364,9 +364,13 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
     int ec = 0;
 
     while (rpmgiNext(gi) == RPMRC_OK) {
+	Header h;
 	int rc;
 
-	if ((rc = qva->qva_showPackage(qva, ts, rpmgiHeader(gi))) != 0)
+	h = rpmgiHeader(gi);
+	if (h == NULL)		/* XXX perhaps stricter break instead? */
+	    continue;
+	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
 	if (qva->qva_source == RPMQV_DBOFFSET)
 	    break;
@@ -426,104 +430,8 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     /*@-branchstate@*/
     switch (qva->qva_source) {
     case RPMQV_RPM:
-    {	int ac = 0;
-	const char * fileURL = NULL;
-	rpmRC rpmrc;
-
-	rc = rpmGlob(arg, &ac, &av);
-	if (rc) return 1;
-
-restart:
-	for (i = 0; i < ac; i++) {
-	    FD_t fd;
-
-	    fileURL = _free(fileURL);
-	    fileURL = av[i];
-	    av[i] = NULL;
-
-	    /* Try to read the header from a package file. */
-	    fd = Fopen(fileURL, "r.ufdio");
-	    if (fd == NULL || Ferror(fd)) {
-		rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
-			Fstrerror(fd));
-		if (fd != NULL) (void) Fclose(fd);
-		res = 1;
-		/*@loopbreak@*/ break;
-	    }
-
-    	    rpmrc = rpmReadPackageFile(ts, fd, fileURL, &h);
-
-	    (void) Fclose(fd);
-
-	    res = 0;
-	    switch (rpmrc) {
-	    default:
-#ifdef	DYING
-		rpmError(RPMERR_QUERY, _("query of %s failed\n"), fileURL);
-#endif
-		res = 1;
-		/*@switchbreak@*/ break;
-	    case RPMRC_NOTTRUSTED:
-	    case RPMRC_NOKEY:
-	    case RPMRC_OK:
-		if (h == NULL) {
-#ifdef	DYING
-		    rpmError(RPMERR_QUERY,
-			_("old format source packages cannot be queried\n"));
-#endif
-		    res = 1;
-		    /*@switchbreak@*/ break;
-		}
-
-		/* Query a package file. */
-		res = qva->qva_showPackage(qva, ts, h);
-		h = headerFree(h);
-		rpmtsEmpty(ts);
-		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
-	    case RPMRC_NOTFOUND:
-		res = 0;
-		/*@switchbreak@*/ break;
-	    }
-	    if (res)
-		/*@loopbreak@*/ break;
-
-	    /* Try to read a package manifest. */
-	    fd = Fopen(fileURL, "r.fpio");
-	    if (fd == NULL || Ferror(fd)) {
-		rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
-			Fstrerror(fd));
-		if (fd != NULL) (void) Fclose(fd);
-		res = 1;
-		/*@loopbreak@*/ break;
-	    }
-	    
-	    /* Read list of packages from manifest. */
-/*@-nullstate@*/ /* FIX: *av may be NULL */
-	    res = rpmReadPackageManifest(fd, &ac, &av);
-/*@=nullstate@*/
-	    if (res != RPMRC_OK) {
-		rpmError(RPMERR_MANIFEST,
-			_("%s: not an rpm package (or package manifest): %s\n"),
-			fileURL, Fstrerror(fd));
-		res = 1;
-	    }
-	    (void) Fclose(fd);
-
-	    /* If successful, restart the query loop. */
-	    if (res == 0)
-		goto restart;
-
-	    /*@loopbreak@*/ break;
-	}
-
-	fileURL = _free(fileURL);
-	if (av) {
-	    for (i = 0; i < ac; i++)
-		av[i] = _free(av[i]);
-	    av = _free(av);
-	}
-    }	break;
+	res = rpmgiShowMatches(qva, ts);
+	break;
 
     case RPMQV_SPECFILE:
 	res = ((qva->qva_specQuery != NULL)
@@ -769,6 +677,14 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, 0, RPMGI_NONE);
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, (const char *) argv);
+	/*@=nullpass@*/
+	rpmtsEmpty(ts);
+	break;
+    case RPMQV_RPM:
+	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
+	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, 0, RPMGI_NONE);
+	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
+	ec = rpmQueryVerify(qva, ts, NULL);
 	/*@=nullpass@*/
 	rpmtsEmpty(ts);
 	break;

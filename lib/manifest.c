@@ -130,6 +130,8 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     rpmrc = rpmGlob(s, &ac, &av);
     if (rpmrc != RPMRC_OK) goto exit;
 
+    rpmMessage(RPMMESS_DEBUG, _("adding %d args from manifest.\n"), ac);
+
     /* Find 1st existing unprocessed arg. */
     for (i = 0; i < argc; i++)
 	if (argv && argv[i]) break;

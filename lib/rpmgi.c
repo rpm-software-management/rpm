@@ -54,6 +54,7 @@ static const char * ftsInfoStr(int fts_info)
 
 /**
  * Open a file after macro expanding path.
+ * @todo There are two error messages printed on header, then manifest failures.
  * @param path		file path
  * @param fmode		open mode
  * @return		file handle
@@ -135,6 +136,9 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
 
 /**
  * Read next header from package, lazily expanding manifests as found.
+ * @todo An empty file read as manifest truncates argv returning RPMRC_NOTFOUND.
+ * @todo Errors, e.g. non-existent path in manifest, will terminate iteration.
+ * @todo Chained manifests lose an arg someplace.
  * @param gi		generalized iterator
  * @return		RPMRC_OK on success
  */

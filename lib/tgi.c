@@ -148,22 +148,16 @@ main(int argc, char *const argv[])
 
     ac = 0;
     while (rpmgiNext(gi) == RPMRC_OK) {
-	if (!(giflags & 0x3)) {
+	if (!(giflags & RPMGI_TSADD)) {
 	    const char * arg = rpmgiPathOrQF(gi);
-#ifdef	UNUSED
-	    Header h = rpmgiHeader(gi);
-	    const char * fn = rpmgiHdrPath(gi);
-	    int xx;
-#endif
 
-	    if (!(giflags & RPMGI_TSADD))
-	        fprintf(stdout, "%5d %s\n", ac, arg);
+	    fprintf(stdout, "%5d %s\n", ac, arg);
 	    arg = _free(arg);
 	}
 	ac++;
     }
 
-    if (giflags & RPMGI_TSADD) {
+    if (giflags & RPMGI_TSORDER) {
 	rpmtsi tsi;
 	rpmte q;
 	int i;
