@@ -9,8 +9,9 @@ Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
 Prereq: gawk fileutils textutils sh-utils mktemp
-BuildRequires: bzip2 >= 0.9.0c-2
 Requires: popt, bzip2 >= 0.9.0c-2
+BuildRequires: db1-devel, db3-devel
+BuildRequires: bzip2 >= 0.9.0c-2
 BuildRequires: python-devel >= 1.5.2
 %endif
 BuildRoot: %{_tmppath}/%{name}-root
@@ -234,6 +235,9 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Tue May  2 2000 Jeff Johnson <jbj@redhat.com>
+- first try at db1 -> db3 stability.
+
 * Mon May  1 2000 Jeff Johnson <jbj@redhat.com>
 - Rename db0.c to db1.c, resurrect db2.c (from db3.c).
 - Add ia64 and sparc64 changes.

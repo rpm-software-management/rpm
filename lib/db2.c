@@ -104,7 +104,7 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
 	rc = -1;
 
     if (printit && rc) {
-	fprintf(stderr, "*** db%d %s rc %d %s\n", dbi->dbi_major, msg,
+	fprintf(stderr, "*** db%d %s rc %d %s\n", dbi->dbi_api, msg,
 		rc, db_strerror(error));
     }
 
@@ -600,7 +600,7 @@ static int db2open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	*dbip = NULL;
     if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
 	return 1;
-    dbi->dbi_major = DB_VERSION_MAJOR;
+    dbi->dbi_api = DB_VERSION_MAJOR;
 
     urlfn = rpmGenPath(
 	(dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root),

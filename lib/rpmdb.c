@@ -20,7 +20,6 @@ static int _debug = 0;
 
 extern int _noDirTokens;
 
-int _useDbiMajor = 3;
 int _filterDbDups = 0;	/* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
 
 #define	_DBI_FLAGS	0
@@ -175,7 +174,7 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags)
 {
     int dbix;
     dbiIndex dbi = NULL;
-    int major;
+    int _dbapi;
     int rc = 0;
 
     dbix = dbiTagToDbix(rpmtag);
@@ -186,14 +185,14 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags)
     if ((dbi = rpmdb->_dbi[dbix]) != NULL)
 	return dbi;
 
-    major = rpmdb->db_major;
+    _dbapi = rpmdb->db_api;
 
-    switch (major) {
+    switch (_dbapi) {
     case 3:
     case 2:
     case 1:
     case 0:
-	if (mydbvecs[major] == NULL) {
+	if (mydbvecs[_dbapi] == NULL) {
 		fprintf(stderr, _("\n\
 --> This version of rpm was not compiled with support for db%d. Please\
     verify the setting of the macro %%_dbapi using \"rpm --showrc\" and\
@@ -204,22 +203,23 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags)
 	   break;
 	}
 	errno = 0;
-	rc = (*mydbvecs[major]->open) (rpmdb, rpmtag, &dbi);
-	if (rc == 0 && dbi)
-	    dbi->dbi_vec = mydbvecs[major];
+	rc = (*mydbvecs[_dbapi]->open) (rpmdb, rpmtag, &dbi);
+	if (rc == 0 && dbi) {
+	    dbi->dbi_vec = mydbvecs[_dbapi];
+	}
 	break;
     case -1:
-	major = 4;
-	while (major-- > 1) {
-	    if (mydbvecs[major] == NULL)
+	_dbapi = 4;
+	while (_dbapi-- > 1) {
+	    if (mydbvecs[_dbapi] == NULL)
 		continue;
 	    errno = 0;
-	    rc = (*mydbvecs[major]->open) (rpmdb, rpmtag, &dbi);
+	    rc = (*mydbvecs[_dbapi]->open) (rpmdb, rpmtag, &dbi);
 	    if (rc == 0 && dbi) {
-		dbi->dbi_vec = mydbvecs[major];
+		dbi->dbi_vec = mydbvecs[_dbapi];
 		break;
 	    }
-	    if (rc == 1 && major == 3) {
+	    if (rc == 1 && _dbapi == 3) {
 		fprintf(stderr, _("\n\
 --> Please run \"rpm --rebuilddb\" as root to convert your database from\n\
     db1 to db3 on-disk format.\n\
@@ -227,14 +227,15 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags)
 "));
 	    }
 	}
-	if (rpmdb->db_major == -1)
-	    rpmdb->db_major = major;
+	if (rpmdb->db_api == -1)
+	    rpmdb->db_api = _dbapi;
     	break;
     }
 
     if (rc == 0) {
 	rpmdb->_dbi[dbix] = dbi;
     } else if (dbi) {
+	/* XXX FIXME: dbNopen handles failures already. */
         rpmError(RPMERR_DBOPEN, _("dbiOpen: cannot open %s index"),
 		tagName(rpmtag));
 	db3Free(dbi);
@@ -510,8 +511,8 @@ static void blockSignals(rpmdb rpmdb, sigset_t * oldMask)
 {
     sigset_t newMask;
 
-    /* XXX HACK permit ^C aborts for now ... */
-    if (!(rpmdb && rpmdb->db_major == 3)) {
+    /* XXX HACK (disabled) permit ^C aborts for now ... */
+    if (!(rpmdb && rpmdb->db_api == 4)) {
 	sigfillset(&newMask);		/* block all signals */
 	sigprocmask(SIG_BLOCK, &newMask, oldMask);
     }
@@ -522,8 +523,8 @@ static void blockSignals(rpmdb rpmdb, sigset_t * oldMask)
  */
 static void unblockSignals(rpmdb rpmdb, sigset_t * oldMask)
 {
-    /* XXX HACK permit ^C aborts for now ... */
-    if (!(rpmdb && rpmdb->db_major == 3)) {
+    /* XXX HACK (disabled) permit ^C aborts for now ... */
+    if (!(rpmdb && rpmdb->db_api == 4)) {
 	sigprocmask(SIG_SETMASK, oldMask, NULL);
     }
 }
@@ -594,7 +595,6 @@ static /*@only@*/ rpmdb newRpmdb(const char * root, const char * home,
     static int _initialized = 0;
 
     if (!_initialized) {
-	_useDbiMajor = rpmExpandNumeric("%{_dbapi}");
 	_filterDbDups = rpmExpandNumeric("%{_filterdbdups}");
 	_initialized = 1;
     }
@@ -622,7 +622,6 @@ static /*@only@*/ rpmdb newRpmdb(const char * root, const char * home,
     }
     if (rpmdb->db_errpfx)
 	rpmdb->db_errpfx = xstrdup(rpmdb->db_errpfx);
-    rpmdb->db_major = _useDbiMajor;
     rpmdb->db_remove_env = 0;
     rpmdb->db_filter_dups = _filterDbDups;
     rpmdb->db_ndbi = dbiTagsMax;
@@ -635,8 +634,8 @@ errxit:
     return NULL;
 }
 
-static int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
-		int mode, int perms, int flags)
+static int openDatabase(const char * prefix, const char * dbpath, int _dbapi,
+	rpmdb *dbp, int mode, int perms, int flags)
 {
     rpmdb rpmdb;
     int rc;
@@ -655,6 +654,7 @@ static int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 	return 1;
 
     rpmdb = newRpmdb(prefix, dbpath, mode, perms, flags);
+    rpmdb->db_api = _dbapi;
 
     {	int dbix;
 
@@ -679,7 +679,7 @@ static int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 	    case RPMDBI_PACKAGES:
 		if (dbi == NULL) rc |= 1;
 #if 0
-		if (rpmdb->db_major == 3)
+		if (rpmdb->db_api == 3)
 #endif
 		    goto exit;
 		break;
@@ -730,15 +730,17 @@ exit:
 /* XXX python/rpmmodule.c */
 int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 {
-    return openDatabase(prefix, NULL, dbp, mode, perms, 0);
+    int _dbapi = rpmExpandNumeric("%{_dbapi}");
+    return openDatabase(prefix, NULL, _dbapi, dbp, mode, perms, 0);
 }
 
 int rpmdbInit (const char * prefix, int perms)
 {
     rpmdb rpmdb = NULL;
+    int _dbapi = rpmExpandNumeric("%{_dbapi}");
     int rc;
 
-    rc = openDatabase(prefix, NULL, &rpmdb, (O_CREAT | O_RDWR), perms, RPMDB_FLAG_JUSTCHECK);
+    rc = openDatabase(prefix, NULL, _dbapi, &rpmdb, (O_CREAT | O_RDWR), perms, RPMDB_FLAG_JUSTCHECK);
     if (rpmdb) {
 	rpmdbClose(rpmdb);
 	rpmdb = NULL;
@@ -1836,130 +1838,6 @@ exit:
     return rc;
 }
 
-static void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath)
-{ 
-    int i;
-    char * filename;
-
-    i = strlen(dbpath);
-    if (dbpath[i - 1] != '/') {
-	filename = alloca(i);
-	strcpy(filename, dbpath);
-	filename[i] = '/';
-	filename[i + 1] = '\0';
-	dbpath = filename;
-    }
-    
-    filename = alloca(strlen(rootdir) + strlen(dbpath) + 40);
-
-    {	int i;
-
-	for (i = 0; i < dbiTagsMax; i++) {
-	    const char * base = db1basename(dbiTags[i]);
-	    sprintf(filename, "%s/%s/%s", rootdir, dbpath, base);
-	    unlink(filename);
-	    xfree(base);
-	}
-        for (i = 0; i < 16; i++) {
-	    sprintf(filename, "%s/%s/__db.%03d", rootdir, dbpath, i);
-	    unlink(filename);
-	}
-        for (i = 0; i < 4; i++) {
-	    sprintf(filename, "%s/%s/packages.db%d", rootdir, dbpath, i);
-	    unlink(filename);
-	}
-    }
-
-    sprintf(filename, "%s/%s", rootdir, dbpath);
-    rmdir(filename);
-
-}
-
-static int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath,
-	const char * newdbpath)
-{
-    int i;
-    char * ofilename, * nfilename;
-    int rc = 0;
- 
-    i = strlen(olddbpath);
-    if (olddbpath[i - 1] != '/') {
-	ofilename = alloca(i + 2);
-	strcpy(ofilename, olddbpath);
-	ofilename[i] = '/';
-	ofilename[i + 1] = '\0';
-	olddbpath = ofilename;
-    }
-    
-    i = strlen(newdbpath);
-    if (newdbpath[i - 1] != '/') {
-	nfilename = alloca(i + 2);
-	strcpy(nfilename, newdbpath);
-	nfilename[i] = '/';
-	nfilename[i + 1] = '\0';
-	newdbpath = nfilename;
-    }
-    
-    ofilename = alloca(strlen(rootdir) + strlen(olddbpath) + 40);
-    nfilename = alloca(strlen(rootdir) + strlen(newdbpath) + 40);
-
-    switch(_useDbiMajor) {
-    case 3:
-      {	int i;
-	    sprintf(ofilename, "%s/%s/%s", rootdir, olddbpath, "packages.db3");
-	    sprintf(nfilename, "%s/%s/%s", rootdir, newdbpath, "packages.db3");
-	    (void)rpmCleanPath(ofilename);
-	    (void)rpmCleanPath(nfilename);
-	    if (Rename(ofilename, nfilename)) rc = 1;
-        for (i = 0; i < 16; i++) {
-	    sprintf(ofilename, "%s/%s/__db.%03d", rootdir, olddbpath, i);
-	    (void)rpmCleanPath(ofilename);
-	    if (!rpmfileexists(ofilename))
-		continue;
-	    sprintf(nfilename, "%s/%s/__db.%03d", rootdir, newdbpath, i);
-	    (void)rpmCleanPath(nfilename);
-	    if (Rename(ofilename, nfilename)) rc = 1;
-	}
-        for (i = 0; i < 4; i++) {
-	    sprintf(ofilename, "%s/%s/packages.db%d", rootdir, olddbpath, i);
-	    (void)rpmCleanPath(ofilename);
-	    if (!rpmfileexists(ofilename))
-		continue;
-	    sprintf(nfilename, "%s/%s/packages.db%d", rootdir, newdbpath, i);
-	    (void)rpmCleanPath(nfilename);
-	    if (Rename(ofilename, nfilename)) rc = 1;
-	}
-      }	break;
-    case 2:
-    case 1:
-    case 0:
-      {	int i;
-	for (i = 0; i < dbiTagsMax; i++) {
-	    const char * base = db1basename(dbiTags[i]);
-	    sprintf(ofilename, "%s/%s/%s", rootdir, olddbpath, base);
-	    sprintf(nfilename, "%s/%s/%s", rootdir, newdbpath, base);
-	    (void)rpmCleanPath(ofilename);
-	    (void)rpmCleanPath(nfilename);
-	    if (Rename(ofilename, nfilename))
-		rc = 1;
-	    xfree(base);
-	}
-        for (i = 0; i < 16; i++) {
-	    sprintf(ofilename, "%s/%s/__db.%03d", rootdir, olddbpath, i);
-	    (void)rpmCleanPath(ofilename);
-	    if (rpmfileexists(ofilename))
-		unlink(ofilename);
-	    sprintf(nfilename, "%s/%s/__db.%03d", rootdir, newdbpath, i);
-	    (void)rpmCleanPath(nfilename);
-	    if (rpmfileexists(nfilename))
-		unlink(nfilename);
-	}
-      }	break;
-    }
-
-    return rc;
-}
-
 /* XXX transaction.c */
 int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList, 
 		    int numItems)
@@ -2050,6 +1928,135 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 
 }
 
+static int rpmdbRemoveDatabase(const char * rootdir,
+	const char * dbpath, int _dbapi)
+{ 
+    int i;
+    char * filename;
+    int xx;
+
+fprintf(stderr, "*** rpmdbRemoveDatabase(%s, %s,%d)\n", rootdir, dbpath, _dbapi);
+    i = strlen(dbpath);
+    if (dbpath[i - 1] != '/') {
+	filename = alloca(i);
+	strcpy(filename, dbpath);
+	filename[i] = '/';
+	filename[i + 1] = '\0';
+	dbpath = filename;
+    }
+    
+    filename = alloca(strlen(rootdir) + strlen(dbpath) + 40);
+
+    switch (_dbapi) {
+    case 3:
+	for (i = 0; i < dbiTagsMax; i++) {
+	    const char * base = tagName(dbiTags[i]);
+	    sprintf(filename, "%s/%s/%s", rootdir, dbpath, base);
+	    (void)rpmCleanPath(filename);
+	    xx = unlink(filename);
+	}
+        for (i = 0; i < 16; i++) {
+	    sprintf(filename, "%s/%s/__db.%03d", rootdir, dbpath, i);
+	    xx = unlink(filename);
+	}
+	break;
+    case 2:
+    case 1:
+    case 0:
+	for (i = 0; i < dbiTagsMax; i++) {
+	    const char * base = db1basename(dbiTags[i]);
+	    sprintf(filename, "%s/%s/%s", rootdir, dbpath, base);
+	    xx = unlink(filename);
+	    xfree(base);
+	}
+	break;
+    }
+
+    sprintf(filename, "%s/%s", rootdir, dbpath);
+    xx = rmdir(filename);
+
+    return 0;
+}
+
+static int rpmdbMoveDatabase(const char * rootdir,
+	const char * olddbpath, int _olddbapi,
+	const char * newdbpath, int _newdbapi)
+{
+    int i;
+    char * ofilename, * nfilename;
+    int rc = 0;
+    int xx;
+ 
+fprintf(stderr, "*** rpmdbMoveDatabase(%s, %s,%d, %s,%d)\n", rootdir, olddbpath, _olddbapi, newdbpath, _newdbapi);
+    i = strlen(olddbpath);
+    if (olddbpath[i - 1] != '/') {
+	ofilename = alloca(i + 2);
+	strcpy(ofilename, olddbpath);
+	ofilename[i] = '/';
+	ofilename[i + 1] = '\0';
+	olddbpath = ofilename;
+    }
+    
+    i = strlen(newdbpath);
+    if (newdbpath[i - 1] != '/') {
+	nfilename = alloca(i + 2);
+	strcpy(nfilename, newdbpath);
+	nfilename[i] = '/';
+	nfilename[i + 1] = '\0';
+	newdbpath = nfilename;
+    }
+    
+    ofilename = alloca(strlen(rootdir) + strlen(olddbpath) + 40);
+    nfilename = alloca(strlen(rootdir) + strlen(newdbpath) + 40);
+
+    switch (_olddbapi) {
+    case 3:
+	for (i = 0; i < dbiTagsMax; i++) {
+	    const char * base = tagName(dbiTags[i]);
+	    sprintf(ofilename, "%s/%s/%s", rootdir, olddbpath, base);
+	    (void)rpmCleanPath(ofilename);
+	    if (!rpmfileexists(ofilename))
+		continue;
+	    sprintf(nfilename, "%s/%s/%s", rootdir, newdbpath, base);
+	    (void)rpmCleanPath(nfilename);
+	    if ((xx = Rename(ofilename, nfilename)) != 0)
+		rc = 1;
+	}
+        for (i = 0; i < 16; i++) {
+	    sprintf(ofilename, "%s/%s/__db.%03d", rootdir, olddbpath, i);
+	    (void)rpmCleanPath(ofilename);
+	    if (!rpmfileexists(ofilename))
+		continue;
+	    sprintf(nfilename, "%s/%s/__db.%03d", rootdir, newdbpath, i);
+	    (void)rpmCleanPath(nfilename);
+	    if ((xx = Rename(ofilename, nfilename)) != 0)
+		rc = 1;
+	}
+	break;
+    case 2:
+    case 1:
+    case 0:
+	for (i = 0; i < dbiTagsMax; i++) {
+	    const char * base = db1basename(dbiTags[i]);
+	    sprintf(ofilename, "%s/%s/%s", rootdir, olddbpath, base);
+	    (void)rpmCleanPath(ofilename);
+	    if (!rpmfileexists(ofilename))
+		continue;
+	    sprintf(nfilename, "%s/%s/%s", rootdir, newdbpath, base);
+	    (void)rpmCleanPath(nfilename);
+	    if ((xx = Rename(ofilename, nfilename)) != 0)
+		rc = 1;
+	    xfree(base);
+	}
+	break;
+    }
+    if (rc || _olddbapi == _newdbapi)
+	return rc;
+
+    rc = rpmdbRemoveDatabase(rootdir, newdbpath, _newdbapi);
+    return rc;
+}
+
 int rpmdbRebuild(const char * rootdir)
 {
     rpmdb olddb;
@@ -2062,11 +2069,11 @@ int rpmdbRebuild(const char * rootdir)
     int nocleanup = 1;
     int failed = 0;
     int rc = 0;
-    int _old_db_api;
-    int _new_db_api;
+    int _dbapi;
+    int _dbapi_rebuild;
 
-    _old_db_api = rpmExpandNumeric("%{_dbapi}");
-    _new_db_api = rpmExpandNumeric("%{_dbapi_rebuild}");
+    _dbapi = rpmExpandNumeric("%{_dbapi}");
+    _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
 
     tfn = rpmGetPath("%{_dbpath}", NULL);
     if (!(tfn && tfn[0] != '%')) {
@@ -2113,23 +2120,25 @@ int rpmdbRebuild(const char * rootdir)
 	goto exit;
     }
 
-    _useDbiMajor = ((_old_db_api >= 0) ? (_old_db_api & 0x03) : -1);
-    rpmMessage(RPMMESS_DEBUG, _("opening old database with dbi_major %d\n"),
-		_useDbiMajor);
-    if (openDatabase(rootdir, dbpath, &olddb, O_RDONLY, 0644, 
+    rpmMessage(RPMMESS_DEBUG, _("opening old database with dbapi %d\n"),
+		_dbapi);
+    if (openDatabase(rootdir, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
 		     RPMDB_FLAG_MINIMAL)) {
 	rc = 1;
 	goto exit;
     }
+    if ((_dbapi = olddb->db_api) == 0)
+	_dbapi = 1;
 
-    _useDbiMajor = ((_new_db_api >= 0) ? (_new_db_api & 0x03) : -1);
-    rpmMessage(RPMMESS_DEBUG, _("opening new database with dbi_major %d\n"),
-		_useDbiMajor);
-    if (openDatabase(rootdir, newdbpath, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
+    rpmMessage(RPMMESS_DEBUG, _("opening new database with dbapi %d\n"),
+		_dbapi_rebuild);
+    if (openDatabase(rootdir, newdbpath, _dbapi_rebuild, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
 	rc = 1;
 	goto exit;
     }
-
+    if ((_dbapi_rebuild = newdb->db_api) == 0)
+	_dbapi_rebuild = 1;
+    
     {	Header h = NULL;
 	rpmdbMatchIterator mi;
 #define	_RECNUM	rpmdbGetIteratorOffset(mi)
@@ -2198,11 +2207,11 @@ int rpmdbRebuild(const char * rootdir)
 	rpmMessage(RPMMESS_NORMAL, _("failed to rebuild database; original database "
 		"remains in place\n"));
 
-	rpmdbRemoveDatabase(rootdir, newdbpath);
+	rpmdbRemoveDatabase(rootdir, newdbpath, _dbapi_rebuild);
 	rc = 1;
 	goto exit;
     } else if (!nocleanup) {
-	if (rpmdbMoveDatabase(rootdir, newdbpath, dbpath)) {
+	if (rpmdbMoveDatabase(rootdir, newdbpath, _dbapi_rebuild, dbpath, _dbapi)) {
 	    rpmMessage(RPMMESS_ERROR, _("failed to replace old database with new "
 			"database!\n"));
 	    rpmMessage(RPMMESS_ERROR, _("replace files in %s with files from %s "
@@ -2217,7 +2226,7 @@ int rpmdbRebuild(const char * rootdir)
     rc = 0;
 
 exit:
-    if (rootdbpath)		xfree(rootdbpath);
+    if (rootdbpath)	xfree(rootdbpath);
     if (newrootdbpath)	xfree(newrootdbpath);
 
     return rc;

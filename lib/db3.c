@@ -73,13 +73,9 @@ struct dbOption rdbOptions[] = {
  { "mode",	POPT_ARG_INT,		&db3dbi.dbi_mode, 0 },
  { "perms",	POPT_ARG_INT,		&db3dbi.dbi_perms, 0 },
 
- { "db3",	POPT_ARG_VAL,		&db3dbi.dbi_major, 3 },
- { "db2",	POPT_ARG_VAL,		&db3dbi.dbi_major, 2 },
- { "db1",	POPT_ARG_VAL,		&db3dbi.dbi_major, 1 },
- { "db0",	POPT_ARG_VAL,		&db3dbi.dbi_major, 0 },
-
  { "teardown",	POPT_ARG_NONE,		&db3dbi.dbi_tear_down, 0 },
  { "usecursors",POPT_ARG_NONE,		&db3dbi.dbi_use_cursors, 0 },
+ { "usedbenv",	POPT_ARG_NONE,		&db3dbi.dbi_use_dbenv, 0 },
  { "rmwcursor",	POPT_ARG_NONE,		&db3dbi.dbi_get_rmw_cursor, 0 },
  { "nofsync",	POPT_ARG_NONE,		&db3dbi.dbi_no_fsync, 0 },
  { "nodbsync",	POPT_ARG_NONE,		&db3dbi.dbi_no_dbsync, 0 },
@@ -431,7 +427,7 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
 	rc = -1;
 
     if (printit && rc) {
-	fprintf(stderr, "*** db%d %s rc %d %s\n", dbi->dbi_major, msg,
+	fprintf(stderr, "*** db%d %s rc %d %s\n", dbi->dbi_api, msg,
 		rc, db_strerror(error));
     }
 
@@ -442,7 +438,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome, const char * dbfile,
 		const char * dbsubfile)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
-    DB_ENV * dbenv = (DB_ENV *)dbi->dbi_dbenv;
+    DB_ENV * dbenv = dbi->dbi_dbenv;
 
 #if defined(__USE_DB3)
     char **dbconfig = NULL;
@@ -457,8 +453,8 @@ static int db_fini(dbiIndex dbi, const char * dbhome, const char * dbfile,
     rc = cvtdberr(dbi, "dbenv->close", rc, _debug);
 
     if (dbfile)
-	rpmMessage(RPMMESS_DEBUG, _("closed  db environment %s/%s(%s)\n"),
-		dbhome, dbfile, dbsubfile);
+	    rpmMessage(RPMMESS_DEBUG, _("closed  db environment %s/%s(%s)\n"),
+			dbhome, dbfile, dbsubfile);
 
     if (rpmdb->db_remove_env || dbi->dbi_tear_down) {
 	int xx;
@@ -470,7 +466,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome, const char * dbfile,
 
 	if (dbfile)
 	    rpmMessage(RPMMESS_DEBUG, _("removed db environment %s/%s(%s)\n"),
-		dbhome, dbfile, dbsubfile);
+			dbhome, dbfile, dbsubfile);
 
     }
 	
@@ -887,7 +883,8 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 	dbi->dbi_dbinfo = NULL;
     }
 
-    xx = db_fini(dbi, dbhome, dbfile, dbsubfile);
+    if (dbi->dbi_use_dbenv)
+	xx = db_fini(dbi, dbhome, dbfile, dbsubfile);
 
 #else	/* __USE_DB2 || __USE_DB3 */
 
@@ -907,6 +904,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 {
     const char * urlfn = NULL;
+    const char * dbpath;
     const char * dbhome;
     const char * dbfile;
     const char * dbsubfile;
@@ -923,6 +921,7 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	*dbip = NULL;
     if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
 	return 1;
+    dbi->dbi_api = DB_VERSION_MAJOR;
 
     urlfn = rpmGenPath(
 	(dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root),
@@ -943,15 +942,24 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     }
 
     oflags = (dbi->dbi_oeflags | dbi->dbi_oflags);
+    oflags &= ~DB_TRUNCATE;	/* XXX this is dangerous */
+
 #if 0	/* XXX rpmdb: illegal flag combination specified to DB->open */
     if ( dbi->dbi_mode & O_EXCL) oflags |= DB_EXCL;
 #endif
-    if(!(dbi->dbi_mode & O_RDWR)) oflags |= DB_RDONLY;
-    if ( dbi->dbi_mode & O_CREAT) oflags |= DB_CREATE;
-    if ( dbi->dbi_mode & O_TRUNC) oflags |= DB_TRUNCATE;
+    if (dbi->dbi_temporary) {
+	oflags &= ~DB_RDONLY;
+	oflags |= DB_CREATE;
+    } else {
+	if(!(dbi->dbi_mode & O_RDWR)) oflags |= DB_RDONLY;
+	if ( dbi->dbi_mode & O_CREAT) oflags |= DB_CREATE;
+	if ( dbi->dbi_mode & O_TRUNC) oflags |= DB_TRUNCATE;
+    }
 
-    rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
     dbi->dbi_dbinfo = NULL;
+
+    if (dbi->dbi_use_dbenv)
+	rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
 
     if (dbfile)
 	rpmMessage(RPMMESS_DEBUG, _("opening db index       %s/%s(%s) %s mode=0x%x\n"),
@@ -1011,11 +1019,18 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    }
 	    dbi->dbi_dbinfo = NULL;
 
-	    rc = db->open(db, dbfile, dbsubfile,
+	    if (!dbi->dbi_use_dbenv && !dbi->dbi_temporary) {
+		char * t = alloca(strlen(dbhome) + 1 + strlen(dbfile) + 1);
+		stpcpy( stpcpy( stpcpy(t, dbhome), "/"), dbfile);
+		dbpath = t;
+	    } else
+		dbpath = dbfile;
+
+	    rc = db->open(db, dbpath, dbsubfile,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
 	    rc = cvtdberr(dbi, "db->open", rc, _debug);
 
-	    if (dbi->dbi_get_rmw_cursor) {
+	    if (rc == 0 && dbi->dbi_get_rmw_cursor) {
 		DBC * dbcursor = NULL;
 		int xx;
 		xx = db->cursor(db, txnid, &dbcursor,
@@ -1025,7 +1040,7 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    } else
 		dbi->dbi_rmw = NULL;
 
-	    if (dbi->dbi_lockdbfd) {
+	    if (rc == 0 && dbi->dbi_lockdbfd) {
 		int fdno = -1;
 
 		if (!(db->fd(db, &fdno) == 0 && fdno >= 0)) {
@@ -1045,7 +1060,7 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 				dbhome, dbfile, dbsubfile);
 			rc = 1;
 		    } else if (dbfile) {
-			rpmMessage(RPMMESS_VERBOSE,
+			rpmMessage(RPMMESS_DEBUG,
 				_("locked  db index       %s/%s(%s)\n"),
 				dbhome, dbfile, dbsubfile);
 		    }
@@ -1090,15 +1105,13 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
     dbi->dbi_db = dbopen(dbfile, dbi->dbi_mode, dbi->dbi_perms,
 		dbi->dbi_type, dbopeninfo);
+    if (dbi->dbi_db == NULL) rc = 1;
 #endif	/* __USE_DB2 || __USE_DB3 */
 
-    if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
-	rc = 0;
+    if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL)
 	*dbip = dbi;
-    } else {
-	rc = 1;
+    else
 	db3close(dbi, 0);
-    }
 
     if (urlfn)
 	xfree(urlfn);

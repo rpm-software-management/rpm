@@ -153,10 +153,11 @@ struct _dbiIndex {
     int			dbi_type;	/*<! db index type */
     int			dbi_mode;	/*<! mode to use on open */
     int			dbi_perms;	/*<! file permission to use on open */
-    int			dbi_major;	/*<! Berkeley API type */
+    int			dbi_api;	/*<! Berkeley API type */
 
     int			dbi_tear_down;
     int			dbi_use_cursors;
+    int			dbi_use_dbenv;
     int			dbi_get_rmw_cursor;
     int			dbi_no_fsync;	/*<! no-op fsync for db */
     int			dbi_no_dbsync;	/*<! don't call dbiSync */
@@ -215,13 +216,12 @@ struct _dbiIndex {
     int		dbi_rpmtag;		/*<! rpm tag used for index */
     int		dbi_jlen;		/*<! size of join key */
 
-    unsigned int dbi_lastoffset;	/*<! db0 with falloc.c needs this */
+    unsigned int dbi_lastoffset;	/*<! db1 with falloc.c needs this */
 
-    void *	dbi_db;			/*<! Berkeley db[123] handle */
+    void *	dbi_db;			/*<! dbi handle */
     void *	dbi_dbenv;
     void *	dbi_dbinfo;
     void *	dbi_rmw;		/*<! db cursor (with DB_WRITECURSOR) */
-    void *	dbi_pkgs;
 
 /*@observer@*/ const struct _dbiVec * dbi_vec;	/*<! private methods */
 
@@ -238,7 +238,7 @@ struct rpmdb_s {
     int			db_mode;	/*<! open mode */
     int			db_perms;	/*<! open permissions */
 
-    int			db_major;	/*<! Berkeley API type */
+    int			db_api;		/*<! Berkeley API type */
 
     int			db_remove_env;
     int			db_filter_dups;

@@ -871,6 +871,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	const char * keyName, const char * keyEVR, int keyFlags,
 	/*@out@*/ struct availablePackage ** suggestion)
 {
+    static int _cacheDependsRC = 1;
     rpmdbMatchIterator mi;
     Header h;
     int rc = 0;	/* assume dependency is satisfied */
@@ -878,7 +879,11 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 
     if (suggestion) *suggestion = NULL;
 
-    {	mi = rpmdbInitIterator(rpmdep->db, RPMDBI_DEPENDS, keyDepend, 0);
+    /*
+     * Check if dbiOpen/dbiPut failed (e.g. permissions), we can't cache.
+     */
+    if (_cacheDependsRC) {
+	mi = rpmdbInitIterator(rpmdep->db, RPMDBI_DEPENDS, keyDepend, 0);
 	if (mi) {
 	    rc = rpmdbGetIteratorOffset(mi);
 	    rpmdbFreeIterator(mi);
@@ -987,14 +992,24 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
     rc = 1;	/* dependency is unsatisfied */
 
 exit:
-    {	dbiIndex dbi;
-	if ((dbi = dbiOpen(rpmdep->db, RPMDBI_DEPENDS, 0)) != NULL) {
+    /*
+     * If dbiOpen/dbiPut fails (e.g. permissions), we can't cache.
+     */
+    if (_cacheDependsRC) {
+	dbiIndex dbi;
+	dbi = dbiOpen(rpmdep->db, RPMDBI_DEPENDS, 0);
+	if (dbi == NULL) {
+	    _cacheDependsRC = 0;
+	} else {
 	    int xx;
 	    xx = dbiCopen(dbi, NULL, 0);
 	    xx = dbiPut(dbi, keyDepend, strlen(keyDepend), &rc, sizeof(rc), 0);
-	    xx = dbiCclose(dbi, NULL, 0);
-	    if (xx == 0)
+	    if (xx) {
+		_cacheDependsRC = 0;
+	    } else {
 		rpmMessage(RPMMESS_DEBUG, _("%s: (%s, %d) added to Depends cache.\n"), keyType, keyDepend, rc);
+	    }
+	    xx = dbiCclose(dbi, NULL, 0);
 	}
     }
     return rc;

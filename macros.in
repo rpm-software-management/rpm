@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.56 2000/05/01 17:50:35 jbj Exp $
+# $Id: macros.in,v 1.57 2000/05/02 08:30:31 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -213,62 +213,37 @@
 #	-1	db3 -> db2 -> db1 (as available).
 #
 # There are two macros so that --rebuilddb can convert db1 -> db3
-%_dbapi			1
+%_dbapi			-1
 %_dbapi_rebuild		3
 
 #
 #   token		Berkeley db flag or value
 # =================================================
-#   recover		DB_RECOVER
-#   recover_fatal	DB_RECOVER_FATAL
-#   create		DB_CREATE
-#   lockdown		DB_LOCKDOWN
-#   cdb			DB_INIT_CDB
-#   lock		DB_INIT_LOCK
-#   log			DB_INIT_LOG
-#   mpool		DB_INIT_MPOOL
-#   txn			DB_INIT_TXN
-#   nommap		DB_NOMMAP
-#   private		DB_PRIVATE
-#   shared		DB_SYSTEM_MEM
-#   thread		DB_THREAD
-#   txn_nosync		DB_TXN_NOSYNC
 #   hash		DB_HASH
 #
-# See http://www.sleepycat.com for Berkeley db-3.0.55 configuration.
-#
-# The (intended) default value for rpm-3.1 on Red Hat Linux is
-#	db3:hash:mpool:cdb:usecursors:mp_mmapsize=8Mb:mp_size=8Mb:pagesize=512
+# See http://www.sleepycat.com for Berkeley db-3.0.55 documentation.
 #
 # Additional rpm specific configuration:
 #   usecursors	Should DB3 cursors be used in get/put/del ?
+#   lockdbfd	Should the file be locked using fcntl shared/exclusive locks?
 #
-%__dbi_major		db%{_dbapi}
 %__dbi_type		hash
-%__dbi_flags		mpool:cdb
 %__dbi_other		usecursors
-%__dbi_verbose		verbose
-%__dbi_mp_mmapsize	mp_mmapsize=16Mb
-%__dbi_mp_size		mp_size=512Kb
-%__dbi_pagesize		pagesize=512
 %__dbi_perms		perms=0644
 
 # This is a colon (or white space) separated list of tokens for Berkeley
 # dbi configuration.
 %_dbi_config	\
-  %{__dbi_major}\
   %{__dbi_type}\
-  %{__dbi_flags}\
   %{__dbi_other}\
-  %{__dbi_verbose}\
-  %{__dbi_mp_mmapsize}\
-  %{__dbi_mp_size}\
-  %{__dbi_pagesize}\
   %{__dbi_perms}\
 %{nil}
 
 # The list of tags for which indices will be built.
 %_dbi_indices	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Depends
+
+# "Packages" needs fcntl shared/exclusive lock.
+%_dbi_config_Packages	%{_dbi_config}:lockdbfd
 
 # "Depends" is a per-transaction cache of known dependency resolutions.
 %_dbi_config_Depends	%{_dbi_config}:temporary
