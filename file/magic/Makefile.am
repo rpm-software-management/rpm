@@ -18,10 +18,10 @@ magic: Header Localstuff $(magic_FRAGMENTS)
 	done >> $@
 
 magic.mgc: magic
-	$(top_builddir)/file -C -m $(srcdir)/magic
+	$(top_builddir)/src/file -C -m $(srcdir)/magic
 
 magic.mime.mgc: magic.mime
-	$(top_builddir)/file -C -m $(srcdir)/magic.mime
+	$(top_builddir)/src/file -C -m $(srcdir)/magic.mime
 
 magic_FRAGMENTS = \
 Magdir/acorn \
@@ -40,12 +40,15 @@ Magdir/archive \
 Magdir/asterix \
 Magdir/att3b \
 Magdir/audio \
+Magdir/bFLT \
 Magdir/blender \
 Magdir/blit \
+Magdir/bout \
 Magdir/bsdi \
 Magdir/c-lang \
 Magdir/cddb \
 Magdir/chi \
+Magdir/chord \
 Magdir/cisco \
 Magdir/citrus \
 Magdir/claris \
@@ -77,13 +80,14 @@ Magdir/gimp \
 Magdir/gnu \
 Magdir/grace \
 Magdir/gringotts \
+Magdir/hdf \
 Magdir/hitachi-sh \
 Magdir/hp \
+Magdir/human68k \
 Magdir/ibm370 \
 Magdir/ibm6000 \
 Magdir/iff \
 Magdir/images \
-Magdir/impulse \
 Magdir/intel \
 Magdir/interleaf \
 Magdir/island \
@@ -107,8 +111,8 @@ Magdir/mime \
 Magdir/mips \
 Magdir/mirage \
 Magdir/mkid \
-Magdir/mmdf \
 Magdir/mlssa \
+Magdir/mmdf \
 Magdir/modem \
 Magdir/motorola \
 Magdir/msdos \
@@ -153,6 +157,7 @@ Magdir/smalltalk \
 Magdir/sniffer \
 Magdir/softquad \
 Magdir/spectrum \
+Magdir/sql \
 Magdir/sun \
 Magdir/sysex \
 Magdir/teapot \

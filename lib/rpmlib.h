@@ -893,9 +893,9 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, /*@out@*/ Header *hdrp,
  * @param fd		file handle
  * @param fn		file name
  * @retval hdrp		address of header (or NULL)
- * @return		0 on success
+ * @return		RPMRC_OK on success
  */
-int rpmReadPackageFile(rpmts ts, FD_t fd,
+rpmRC rpmReadPackageFile(rpmts ts, FD_t fd,
 		const char * fn, /*@null@*/ /*@out@*/ Header * hdrp)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, fd, *hdrp, rpmGlobalMacroContext,

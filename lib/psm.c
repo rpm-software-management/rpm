@@ -242,14 +242,14 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     struct rpmpsm_s psmbuf;
     rpmpsm psm = &psmbuf;
     int isSource;
-    rpmRC rc;
+    rpmRC rpmrc;
     int i;
 
     memset(psm, 0, sizeof(*psm));
     psm->ts = rpmtsLink(ts, "InstallSourcePackage");
 
-    rc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
-    switch (rc) {
+    rpmrc = rpmReadPackageFile(ts, fd, "InstallSourcePackage", &h);
+    switch (rpmrc) {
     case RPMRC_NOTTRUSTED:
     case RPMRC_NOKEY:
     case RPMRC_OK:
@@ -261,13 +261,13 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (h == NULL)
 	goto exit;
 
-    rc = RPMRC_OK;
+    rpmrc = RPMRC_OK;
 
     isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 
     if (!isSource) {
 	rpmError(RPMERR_NOTSRPM, _("source package expected, binary found\n"));
-	rc = RPMRC_FAIL;
+	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -277,7 +277,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     h = headerFree(h);
 
     if (fi == NULL) {	/* XXX can't happen */
-	rc = RPMRC_FAIL;
+	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -285,7 +285,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     fi->te = rpmtsElement(ts, 0);
 /*@=onlytrans@*/
     if (fi->te == NULL) {	/* XXX can't happen */
-	rc = RPMRC_FAIL;
+	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -351,16 +351,16 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     }
 
     _sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
-    rc = rpmMkdirPath(_sourcedir, "sourcedir");
-    if (rc) {
-	rc = RPMRC_FAIL;
+    rpmrc = rpmMkdirPath(_sourcedir, "sourcedir");
+    if (rpmrc) {
+	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
 
     _specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
-    rc = rpmMkdirPath(_specdir, "specdir");
-    if (rc) {
-	rc = RPMRC_FAIL;
+    rpmrc = rpmMkdirPath(_specdir, "specdir");
+    if (rpmrc) {
+	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -392,22 +392,22 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	specFile = t;
     } else {
 	rpmError(RPMERR_NOSPEC, _("source package contains no .spec file\n"));
-	rc = RPMRC_FAIL;
+	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
 
     psm->goal = PSM_PKGINSTALL;
 
     /*@-compmempass@*/	/* FIX: psm->fi->dnl should be owned. */
-    rc = rpmpsmStage(psm, PSM_PROCESS);
+    rpmrc = rpmpsmStage(psm, PSM_PROCESS);
 
     (void) rpmpsmStage(psm, PSM_FINI);
     /*@=compmempass@*/
 
-    if (rc) rc = RPMRC_FAIL;
+    if (rpmrc) rpmrc = RPMRC_FAIL;
 
 exit:
-    if (specFilePtr && specFile && rc == RPMRC_OK)
+    if (specFilePtr && specFile && rpmrc == RPMRC_OK)
 	*specFilePtr = specFile;
     else
 	specFile = _free(specFile);
@@ -436,7 +436,7 @@ exit:
 
     psm->ts = rpmtsFree(psm->ts);
 
-    return rc;
+    return rpmrc;
 }
 
 /*@observer@*/ /*@unchecked@*/

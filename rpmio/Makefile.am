@@ -31,7 +31,7 @@ librpmio_la_SOURCES = \
 	rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c rpmsq.c rpmsw.c strcasecmp.c stubs.c url.c ugid.c
 librpmio_la_LDFLAGS = -release @VERSION@ $(LDFLAGS) \
-	$(top_builddir)/file/libfmagic.la \
+	$(top_builddir)/file/src/libfmagic.la \
 	@WITH_ZLIB_LIB@ \
 	-lrt -lpthread
 librpmio_la_LIBADD = $(BEECRYPTLOBJS)

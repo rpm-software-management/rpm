@@ -11,7 +11,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/popt \
 	@WITH_LIBELF_INCLUDE@ \
 	@WITH_LIBDWARF_INCLUDE@ \
-	-I$(top_srcdir)/file \
+	-I$(top_srcdir)/file/src \
 	@INCPATH@ \
 	-I$(top_srcdir)/misc
 
@@ -48,7 +48,7 @@ rpmdeps_SOURCES =	rpmdeps.c
 rpmdeps_LDADD =		$(top_builddir)/build/librpmbuild.la
 #rpmdeps_LDFLAGS =	$(staticLDFLAGS)
 
-rpmfile.c: $(top_builddir)/file/file.c
+rpmfile.c: $(top_builddir)/file/src/file.c
 	rm -f $@
 	ln -s $< $@
 

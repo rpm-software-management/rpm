@@ -35,7 +35,7 @@ librpmbuild_la_LDFLAGS = -release @VERSION@ $(LDFLAGS) \
 	@WITH_LIBELF_LIB@
 
 rpmfile.h:
-	@ln -sf $(top_builddir)/file/file.h $@
+	@ln -sf $(top_builddir)/file/src/file.h $@
 
 files.c rpmfc.c: rpmfile.h
 

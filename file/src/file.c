@@ -53,7 +53,7 @@ int os2_apptype (const char *fn, char *buf, int nb);
 /*@unchecked@*/
 static	int	nobuffer = 0;	/* Don't buffer stdout */
 
-/*@unchecked@*/
+/*@unchecked@*/ /*@observer@*/
 static const char * default_separator = ":";
 
 /*
@@ -161,10 +161,10 @@ help(void)
 int
 main(int argc, char **argv)
 	/*@globals global_fmagic, nobuffer,
-		default_magicfile, optind,
+		default_magicfile, default_separator, optind,
 		fileSystem, internalState @*/
 	/*@modifies global_fmagic, nobuffer,
-		default_magicfile, optind,
+		default_magicfile, default_separator, optind,
 		fileSystem, internalState @*/
 {
 	int xx;
@@ -273,8 +273,10 @@ main(int argc, char **argv)
 			++didsomefiles;
 			/*@switchbreak@*/ break;
 		case 'F':
+/*@-assignexpose@*/
 			fm->separator = optarg;
-			break;
+/*@=assignexpose@*/
+			/*@switchbreak@*/ break;
 		case 'i':
 			fm->flags |= FMAGIC_FLAGS_MIME;
 			mime = malloc(strlen(fm->magicfile) + sizeof(".mime"));

@@ -52,20 +52,23 @@ rpmRC readLead(FD_t fd, struct rpmlead *lead)
 /*@=boundswrite@*/
     /*@-type@*/ /* FIX: remove timed read */
     if (timedRead(fd, (char *)lead, sizeof(*lead)) != sizeof(*lead)) {
-	rpmError(RPMERR_READ, _("read failed: %s (%d)\n"), Fstrerror(fd), 
-	      errno);
-	return RPMRC_FAIL;
+	if (Ferror(fd)) {
+	    rpmError(RPMERR_READ, _("read failed: %s (%d)\n"),
+			Fstrerror(fd), errno);
+	    return RPMRC_FAIL;
+	}
+	return RPMRC_NOTFOUND;
     }
     /*@=type@*/
 
     if (memcmp(lead->magic, lead_magic, sizeof(lead_magic)))
-	return RPMRC_FAIL;
+	return RPMRC_NOTFOUND;
     lead->type = ntohs(lead->type);
     lead->archnum = ntohs(lead->archnum);
     lead->osnum = ntohs(lead->osnum);
     lead->signature_type = ntohs(lead->signature_type);
     if (lead->signature_type != RPMSIGTYPE_HEADERSIG)
-	return RPMRC_FAIL;
+	return RPMRC_NOTFOUND;
 
     return RPMRC_OK;
 }

@@ -752,11 +752,6 @@ fprintf(stderr, "*** rpmts_HdrFromFdno(%p) ts %p rc %d\n", s, s->ts, rpmrc);
 	h = headerFree(h);	/* XXX ref held by result */
 	break;
 
-    case RPMRC_NOTFOUND:
-	Py_INCREF(Py_None);
-	result = Py_None;
-	break;
-
     case RPMRC_NOKEY:
 	PyErr_SetString(pyrpmError, "public key not available");
 	break;
@@ -765,6 +760,7 @@ fprintf(stderr, "*** rpmts_HdrFromFdno(%p) ts %p rc %d\n", s, s->ts, rpmrc);
 	PyErr_SetString(pyrpmError, "public key not trusted");
 	break;
 
+    case RPMRC_NOTFOUND:
     case RPMRC_FAIL:
     default:
 	PyErr_SetString(pyrpmError, "error reading package header");

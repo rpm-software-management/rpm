@@ -163,18 +163,13 @@ restart:
 	rc = rpmReadPackageFile(ts, fd, *fnp, &h);
 	Fclose(fd);
 
-	if (rc == 2) {
-	    numFailed++; *fnp = NULL;
-	    continue;
-	}
-
-	if (rc == 0) {
+	if (rc == RPMRC_OK) {
 	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName, 0, NULL);
 	    h = headerFree(h); 
 	    continue;
 	}
 
-	if (rc != 1) {
+	if (rc != RPMRC_NOTFOUND) {
 	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *fnp);
 	    numFailed++; *fnp = NULL;
 	    break;

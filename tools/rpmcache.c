@@ -192,7 +192,7 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
 
     /* Read header from file. */
     {   FD_t fd = Fopen(fts->fts_accpath, "r");
-	rpmRC rc;
+	rpmRC rpmrc;
 	int xx;
 
 	if (fd == NULL || Ferror(fd)) {
@@ -200,9 +200,9 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
 	    goto exit;
 	}
 
-	rc = rpmReadPackageFile(ts, fd, fts->fts_path, &h);
+	rpmrc = rpmReadPackageFile(ts, fd, fts->fts_path, &h);
 	xx = Fclose(fd);
-	if (rc != RPMRC_OK || h == NULL)
+	if (rpmrc != RPMRC_OK || h == NULL)
 	    goto exit;
     }
 

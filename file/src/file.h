@@ -178,6 +178,7 @@ struct fmagic_s {
     int flags;			/*!< bit(s) to control fmagic behavior. */
 /*@dependent@*/ /*@observer@*/ /*@relnull@*/
     const char *magicfile;	/*!< name of the magic file		*/
+/*@dependent@*/ /*@observer@*/
     const char *separator;	/*!< file name/type separator (default ":" */
     int lineno;			/*!< current line number in magic file	*/
 /*@relnull@*/
