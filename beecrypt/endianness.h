@@ -240,7 +240,7 @@ int decodeInts(/*@out@*/ javaint* i, const byte* data, int count)
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int decodeIntsPartial(/*@out@*/ javaint* i, const byte* data, int bytecount)
 	/*@modifies i */;
 

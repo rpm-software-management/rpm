@@ -124,7 +124,8 @@ int entropy_provider_cleanup()
  * return an error in case they are all zeroes or ones.
  */
 static int entropy_noise_filter(void* sampledata, int samplecount, int samplesize, int channels, int swap)
-	/*@*/
+	/*@globals errno @*/
+	/*@modifies sampledata, errno @*/
 {
 	register int rc = 0, i;
 
@@ -143,7 +144,7 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 
 					for (i = 0; i < samplecount; i++)
 					{
-						if (samples[i] &= 0x1)
+						if ((samples[i] & 0x1) != 0)
 							ones_count++;
 						else
 							zero_count++;
@@ -157,7 +158,7 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 						rc = -1;
 					}
 				}
-				break;
+				/*@innerbreak@*/ break;
 
 			case 2:
 				{
@@ -170,14 +171,14 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 					{
 						if (i & 1)
 						{
-							if (samples[i] &= 0x1)
+							if ((samples[i] & 0x1) != 0)
 								ones_count_left++;
 							else
 								zero_count_left++;
 						}
 						else
 						{
-							if (samples[i] &= 0x1)
+							if ((samples[i] & 0x1) != 0)
 								ones_count_right++;
 							else
 								zero_count_right++;
@@ -193,7 +194,7 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 						rc = -1;
 					}
 				}
-				break;
+				/*@innerbreak@*/ break;
 
 			default:
 				#if HAVE_ERRNO_H
@@ -220,7 +221,7 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 						if (swap)
 							samples[i] = swapu16(samples[i]);
 
-						if (samples[i] &= 0x1)
+						if ((samples[i] & 0x1) != 0)
 							ones_count++;
 						else
 							zero_count++;
@@ -234,7 +235,7 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 						rc = -1;
 					}
 				}
-				break;
+				/*@innerbreak@*/ break;
 
 			case 2:
 				{
@@ -250,14 +251,14 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 
 						if (i & 1)
 						{
-							if (samples[i] &= 0x1)
+							if ((samples[i] & 0x1) != 0)
 								ones_count_left++;
 							else
 								zero_count_left++;
 						}
 						else
 						{
-							if (samples[i] &= 0x1)
+							if ((samples[i] & 0x1) != 0)
 								ones_count_right++;
 							else
 								zero_count_right++;
@@ -273,13 +274,14 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 						rc = -1;
 					}
 				}
-				break;
+				/*@innerbreak@*/ break;
 
 			default:
 				#if HAVE_ERRNO_H
 				errno = EINVAL;
 				#endif
 				rc = -1;
+				/*@innerbreak@*/ break;
 			}
 		}
 		break;
@@ -289,6 +291,7 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 		errno = EINVAL;
 		#endif
 		rc = -1;
+		break;
 	}
 
 	return 0;
@@ -306,11 +309,13 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 #if WIN32
 static int entropy_noise_gather(HWAVEIN wavein, int samplesize, int channels, int swap, int timeout, uint32 *data, int size)
 #else
-static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, int timeout, uint32 *data, int size)
-	/*@*/
+/*@-mustmod@*/ /* data is modified, annotations incorrect */
+static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, int timeout, /*@out@*/ uint32 *data, int size)
+	/*@globals errno, fileSystem @*/
+	/*@modifies data, errno, fileSystem @*/
 #endif
 {
-	uint32 randombits = size << 5;
+	uint32 randombits = ((unsigned)size) << 5;
 	uint32 temp = 0;
 	int rc, i;
 
@@ -339,10 +344,16 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 	#   error
 	#  endif
 
+	/*@-nullderef@*/
+	*sampledata = 0;
+	/*@=nullderef@*/
 	memset(&my_aiocb, 0, sizeof(struct aiocb));
+	memset(&my_aiocb_timeout, 0, sizeof(struct timespec));
 
 	my_aiocb.aio_fildes = fd;
+	/*@-unrecog@*/
 	my_aiocb.aio_sigevent.sigev_notify = SIGEV_NONE;
+	/*@=unrecog@*/
 	# endif
 	#endif
 
@@ -354,6 +365,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 		return -1;
 	}
 
+	/*@-infloopsuncon@*/
 	while (randombits)
 	{
 		#if WIN32
@@ -376,17 +388,23 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 		}
 		#else
 		# if ENABLE_AIO
+		/*@-mustfree@*/ /* my_aiocb.aio_buf is OK */
 		my_aiocb.aio_buf = sampledata;
+		/*@=mustfree@*/
 		my_aiocb.aio_nbytes = 1024 * samplesize * channels;
 
+		/*@-moduncon -compdef@*/
 		rc = aio_read(&my_aiocb);
+		/*@=moduncon =compdef@*/
 		# else
 		rc = read(fd, sampledata, 1024 * samplesize * channels);
 		# endif
 
 		if (rc < 0)
 		{
+			/*@-kepttrans@*/
 			free(sampledata);
+			/*@=kepttrans@*/
 			return -1;
 		}
 
@@ -394,7 +412,9 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 		my_aiocb_timeout.tv_sec = (timeout / 1000);
 		my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
 
+		/*@-compdef -moduncon @*/
 		rc = aio_suspend(&my_aiocb_list, 1, &my_aiocb_timeout);
+		/*@=compdef =moduncon @*/
 
 		if (rc < 0)
 		{
@@ -410,7 +430,9 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 				my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
 
 				/* and try again */
+				/*@-compdef -moduncon @*/
 				rc = aio_suspend(&my_aiocb_list, 1, &my_aiocb_timeout);
+				/*@=compdef =moduncon @*/
 			}
 			#endif
 		}
@@ -420,7 +442,9 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 			/* cancel any remaining reads */
 			while (rc != AIO_ALLDONE)
 			{
+				/*@-nullpass -moduncon @*/
 				rc = aio_cancel(fd, (struct aiocb*) 0);
+				/*@=nullpass =moduncon @*/
 
 				if (rc == AIO_NOTCANCELED)
 				{
@@ -433,25 +457,35 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 				}
 
 				if (rc < 0)
-					break;
+					/*@innerbreak@*/ break;
 			}
+			/*@-kepttrans@*/
 			free(sampledata);
+			/*@=kepttrans@*/
 			return -1;
 		}
 
+		/*@-moduncon -compdef @*/
 		rc = aio_error(&my_aiocb);
+		/*@=moduncon =compdef @*/
 
 		if (rc)
 		{
+			/*@-kepttrans@*/
 			free(sampledata);
+			/*@=kepttrans@*/
 			return -1;
 		}
 
+		/*@-moduncon -compdef @*/
 		rc = aio_return(&my_aiocb);
+		/*@=moduncon =compdef @*/
 
 		if (rc < 0)
 		{
+			/*@-kepttrans@*/
 			free(sampledata);
+			/*@=kepttrans@*/
 			return -1;
 		}
 		# endif
@@ -460,7 +494,9 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 		if (entropy_noise_filter(sampledata, rc / samplesize, samplesize, channels, swap) < 0)
 		{
 			fprintf(stderr, "noise filter indicates too much bias in audio samples\n");
+			/*@-kepttrans@*/
 			free(sampledata);
+			/*@=kepttrans@*/
 			return -1;
 		}
 
@@ -472,7 +508,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 
 				for (i = 0; randombits && (i < 1024); i += 2)
 				{
-					if (samples[i] ^ samples[i+1])
+					if ((samples[i] ^ samples[i+1]) != 0)
 					{
 						temp <<= 1;
 						temp |= samples[i];
@@ -482,7 +518,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 					}
 				}
 			}
-			break;
+			/*@switchbreak@*/ break;
 
 		case 2:
 			{
@@ -500,22 +536,29 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 					}
 				}
 			}
-			break;
+			/*@switchbreak@*/ break;
 
 		default:
+			/*@-kepttrans@*/
 			free(sampledata);
+			/*@=kepttrans@*/
 			return -1;
+			/*@notreached@*/ /*@switchbreak@*/ break;
 		}
 	}
+	/*@=infloopsuncon@*/
 
 	#if WIN32
 	waveInStop(wavein);
 	waveInReset(wavein);
 	#endif
 
+	/*@-usereleased -kepttrans@*/
 	free(sampledata);
+	/*@=usereleased =kepttrans@*/
 	return 0;
 }
+/*@=mustmod@*/
 #endif
 
 #if WIN32
@@ -1027,7 +1070,7 @@ static int entropy_ttybits(int fd, uint32* data, int size)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-	uint32 randombits = ((uint32)size) << 5;
+	uint32 randombits = ((unsigned)size) << 5;
 	uint32 temp = 0;
 	byte dummy;
 
@@ -1254,6 +1297,7 @@ dev_audio_end:
 
 #if HAVE_DEV_DSP
 int entropy_dev_dsp(uint32 *data, int size)
+	/*@globals dev_dsp_fd @*/
 	/*@modifies dev_dsp_fd @*/
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_DSP_TIMEOUT");
@@ -1282,7 +1326,10 @@ int entropy_dev_dsp(uint32 *data, int size)
 	{
 		int mask, format, samplesize, stereo, speed, swap;
 
+		mask = 0;
+		/*@-shiftsigned@*/
 		if ((rc = ioctl(dev_dsp_fd, SNDCTL_DSP_GETFMTS, &mask)) < 0)
+		/*@=shiftsigned@*/
 		{
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_GETFMTS failed");
@@ -1335,7 +1382,9 @@ int entropy_dev_dsp(uint32 *data, int size)
 			goto dev_dsp_end;
 		}
 
+		/*@-shiftsigned@*/
 		if ((rc = ioctl(dev_dsp_fd, SNDCTL_DSP_SETFMT, &format)) < 0)
+		/*@=shiftsigned@*/
 		{
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_SETFMT failed");
@@ -1347,10 +1396,14 @@ int entropy_dev_dsp(uint32 *data, int size)
 
 		/* the next two commands are not critical */
 		stereo = 1;
-		ioctl(dev_dsp_fd, SNDCTL_DSP_STEREO, &stereo);
+		/*@-shiftsigned@*/
+		(void) ioctl(dev_dsp_fd, SNDCTL_DSP_STEREO, &stereo);
+		/*@=shiftsigned@*/
 
 		speed = 44100;
-		ioctl(dev_dsp_fd, SNDCTL_DSP_SPEED, &speed);
+		/*@-shiftsigned@*/
+		(void) ioctl(dev_dsp_fd, SNDCTL_DSP_SPEED, &speed);
+		/*@=shiftsigned@*/
 
 		rc = entropy_noise_gather(dev_dsp_fd, samplesize, 2, swap, timeout_env ? atoi(timeout_env) : 1000, data, size);
 	}
