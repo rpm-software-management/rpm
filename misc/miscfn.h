@@ -39,4 +39,15 @@ char *realpath(char *path, char resolved_path[]);
 char *realpath(const char *path, char resolved_path []);
 #endif
 
+#if NEED_TIMEZONE
+#include <sys/stdtypes.h>
+extern time_t timezone;
+#endif
+
+#if NEED_MYREALLOC
+#include <sys/stdtypes.h>
+#define realloc(ptr,size) myrealloc(ptr,size)
+extern void *myrealloc(void *, size_t);
+#endif
+
 #endif
