@@ -44,6 +44,7 @@
 	- don't generate dependencies unless execute bit is set.
 	- enable internal automagic dependency generation as default.
 	- fix: add rpmlib(VersionedDependencies) if versioned Provides: found.
+	- fix: add %%ifnarch noarch to debug_package macro.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

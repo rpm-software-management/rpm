@@ -461,6 +461,7 @@ exit 0
 %changelog
 * Thu Dec 12 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.23
 - fix: add rpmlib(VersionedDependencies) if versioned Provides: found.
+- fix: add %%ifnarch noarch to debug_package macro.
 
 * Wed Dec 11 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.22
 - rebuild against glibc with TLS support.
