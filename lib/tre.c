@@ -46,7 +46,6 @@ int main(int argc, char **argv)
     poptContext optCon;
     const char ** av;
     rpmsx sx;
-    rpmsxp sxp;
     int ec = EXIT_FAILURE;	/* assume failure. */
     int rc;
     int i;
@@ -101,15 +100,19 @@ int main(int argc, char **argv)
 
     av = poptGetArgs(optCon);
 
+    _rpmsx_debug = -1;
     /* Parse the specification file. */
     sx = rpmsxNew(NULL);
 
-    sx = rpmsxInit(sx);
+    sx = rpmsxInit(sx, 1);
     if (sx != NULL)
     while ((i = rpmsxNext(sx)) >= 0) {
-	sxp = sx->sxp + i;
+	const char * pattern = rpmsxPattern(sx);
+	const char * type = rpmsxType(sx);
+	const char * context = rpmsxContext(sx);
+
 	fprintf(stderr, "%5d: %s\t%s\t%s\n", i,
-		sxp->pattern, (sxp->type ? sxp->type : ""), sxp->context);
+		pattern, (type ? type : ""), context);
     }
     sx = rpmsxFree(sx);
 

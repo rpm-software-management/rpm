@@ -59,6 +59,8 @@ fprintf(stderr, "*** sx %p\t%s[%d]\n", sx, __func__, sx->Count);
 	sxp->pattern = _free(sxp->pattern);
 	sxp->type = _free(sxp->type);
 	sxp->context = _free(sxp->context);
+	regfree(sxp->preg);
+	sxp->preg = _free(sxp->preg);
     }
     /*@=branchstate@*/
 
@@ -397,33 +399,94 @@ int rpmsxSetIx(rpmsx sx, int ix)
     return i;
 }
 
+const char * rpmsxPattern(const rpmsx sx)
+{
+    const char * pattern = NULL;
+
+    if (sx != NULL && sx->i >= 0 && sx->i < sx->Count)
+	pattern = (sx->sxp + sx->i)->pattern;
+    return pattern;
+}
+
+const char * rpmsxType(const rpmsx sx)
+{
+    const char * type = NULL;
+
+    if (sx != NULL && sx->i >= 0 && sx->i < sx->Count)
+	type = (sx->sxp + sx->i)->type;
+    return type;
+}
+
+const char * rpmsxContext(const rpmsx sx)
+{
+    const char * context = NULL;
+
+    if (sx != NULL && sx->i >= 0 && sx->i < sx->Count)
+	context = (sx->sxp + sx->i)->context;
+    return context;
+}
+
+regex_t * rpmsxRE(const rpmsx sx)
+{
+    regex_t * preg = NULL;
+
+    if (sx != NULL && sx->i >= 0 && sx->i < sx->Count)
+	preg = (sx->sxp + sx->i)->preg;
+    return preg;
+}
+
 int rpmsxNext(/*@null@*/ rpmsx sx)
 	/*@modifies sx @*/
 {
     int i = -1;
 
-    if (sx != NULL && ++sx->i >= 0) {
-	if (sx->i < sx->Count) {
-	    i = sx->i;
-	} else
-	    sx->i = -1;
+    if (sx != NULL) {
+	if (sx->reverse != 0) {
+	    i = --sx->i;
+	    if (sx->i < 0) {
+		sx->i = sx->Count;
+		i = -1;
+	    }
+	} else {
+	    i = ++sx->i;
+	    if (sx->i >= sx->Count) {
+		sx->i = -1;
+		i = -1;
+	    }
+	}
 
 /*@-modfilesys @*/
-if (_rpmsx_debug  < 0 && i != -1)
-fprintf(stderr, "*** sx %p\t%s[%d]\n", sx, __func__, i);
+if (_rpmsx_debug  < 0 && i != -1) {
+rpmsxp sxp = sx->sxp + i;
+fprintf(stderr, "*** sx %p\t%s[%d]\t%s\t%s\n", sx, __func__, i, sxp->pattern, sxp->context);
 /*@=modfilesys @*/
+}
 
     }
 
     return i;
 }
 
-rpmsx rpmsxInit(/*@null@*/ rpmsx sx)
+rpmsx rpmsxInit(/*@null@*/ rpmsx sx, int reverse)
 	/*@modifies sx @*/
 {
-    if (sx != NULL)
-	sx->i = -1;
+    if (sx != NULL) {
+	sx->reverse = reverse;
+	sx->i = (sx->reverse ? sx->Count : -1);
+    }
     /*@-refcounttrans@*/
     return sx;
     /*@=refcounttrans@*/
+}
+
+const char * rpmsxApply(rpmsx sx, const char * fn)
+{
+   const char * context = NULL;
+
+    sx = rpmsxInit(sx, 1);
+    if (sx != NULL)
+    while (rpmsxNext(sx) >= 0) {
+    }
+
+    return context;
 }
