@@ -157,16 +157,14 @@ noconfig:
 	find . -name "Makefile" -exec rm {} \; 
 	rm -f *gz *rpm config.*
 
-cvstag:
-	cvs tag -F $(CVSTAG) .
-
-archive: cvstag
+archive: 
 	@echo " "
 	@echo "I hope you checked everything out and made sure it builds"
 	@echo "maybe someday Erik will get around to making that automatic."
 	@echo
 	@echo "This is version $(VERSION)."
 	@sleep 5
+	cvs tag -F $(CVSTAG) .
 	@rm -rf /tmp/rpm-$(VERSION)
 	@mkdir /tmp/rpm-$(VERSION)
 	@tar cSpf - * | (cd /tmp/rpm-$(VERSION); tar xSpf -)
