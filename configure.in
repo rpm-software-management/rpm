@@ -80,7 +80,7 @@ topdir=`pwd`
 if test $prefix != "/usr" -a $prefix != "/usr/local"; then
 	echo $ac_n "checking for $prefix/lib... $ac_c"
 	if test -d $prefix/lib ; then
-	       LIBPATH="$LIBPATH -L$prefix/lib"
+	       LIBS="$LIBS -L$prefix/lib"
 	       
 	       echo "yes"
 	else
@@ -99,7 +99,7 @@ fi
 
 AC_MSG_CHECKING(checking for /usr/local/lib...)
 if test -d /usr/local/lib ; then
-	LIBPATH="$LIBPATH -L/usr/local/lib"
+	LIBS="$LIBS -L/usr/local/lib"
 	
 	AC_MSG_RESULT(yes)
 else
@@ -153,11 +153,11 @@ fi
 
 AC_CHECK_FUNC(dbopen, [],
   AC_CHECK_LIB(db, dbopen, [], AC_MSG_WARN([sorry this package needs libdb.a 
-(from the db package)]), $LIBPATH)
+(from the db package)]), $LIBS)
            )
 
 AC_CHECK_FUNC(fork, [], [echo "using vfork() instead of fork()";
-	MISCOBJS=fakefork.o], $LIBPATH)
+	MISCOBJS=fakefork.o], $LIBS)
 
 dnl AmigaOS and IXEmul have a fork() dummy
     case "$target" in
@@ -168,7 +168,8 @@ dnl AmigaOS and IXEmul have a fork() dummy
 esac
 
 
-AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -lnsl"])
+AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket"])
+AC_CHECK_LIB(nsl, gethostbyname, [LIBSOCKET="-lnsl"])
 
 ZLIB=
 for zlib in z gz ; do
@@ -177,7 +178,7 @@ for zlib in z gz ; do
 	[if test ${zlib} = gz; then 
 	    AC_MSG_WARN([sorry this package needs libz.a or libgz.a (from the zlib package)]) 
 	 fi]
-	       , $LIBPATH)
+	       , $LIBS)
 done
 AC_SUBST(ZLIB)
 
@@ -185,7 +186,7 @@ AC_SUBST(ZLIB)
 dnl Checks for header files we can live without.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(netinet/in_systm.h)
-AC_CHECK_HEADERS(alloca.h)
+AC_CHECK_HEADERS(alloca.h dirent.h)
 AC_CHECK_HEADERS(machine/types.h string.h)
 AC_CHECK_HEADERS(glob.h,,MISCOBJS="$MISCOBJS glob.o")
 AC_CHECK_HEADERS(fnmatch.h,,MISCOBJS="$MISCOBJS fnmatch.o")
@@ -270,7 +271,7 @@ AC_SUBST(topdir)
 AC_SUBST(INTLDEF)
 AC_SUBST(XGETTEXT)
 AC_SUBST(LIBINTL)
-AC_SUBST(LIBPATH)
+AC_SUBST(LIBS)
 AC_SUBST(LIBDL)
 AC_SUBST(PO)
 AC_SUBST(GETTEXTSTUB)
