@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.08
+Release: 0.10
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -196,7 +196,7 @@ cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
 %%_dbapi		1
 E_O_F
 cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.cdb
-%{?enable_cdb:#%%__dbi_cdb	%{enable_cdb}}
+%{?enable_cdb:%%__dbi_cdb	%{enable_cdb}}
 E_O_F
 
 mkdir -p $RPM_BUILD_ROOT/var/lib/rpm
@@ -521,8 +521,16 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed May  1 2002 Jeff Johnson <jbj@redhat.com>
+- attempt to make peace with automake-1.6.1, autoconf-2.53.
+- rip out two layers of dbN gook, internal Berkeley db is here to stay.
+
+* Fri Apr 19 2002 Jeff Johnson <jbj@redhat.com>
+- fix: queries that evaluated to "" incorrectly returned NULL.
+- fix: packages produced by rpm-4.0 dinna merge signature tags.
+
 * Sun Apr 14 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.08
-- use build time to choose one of  multiple alternative suggestions.
+- use build time to choose one of multiple alternative suggestions.
 - add --nosuggests to disable suggested resolutions.
 
 * Sat Apr 13 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.07
@@ -542,7 +550,7 @@ fi
 
 * Sun Mar 10 2002 Jeff Johnson <jbj@redhat.com>
 - make --addsign and --resign behave exactly the same.
-- splint annotationsm, signature cleanup.
+- splint annotations, signature cleanup.
 - drill ts/fi through verify mode, add methods to keep fi abstract.
 - use mmap when calculating file digests on verify, ~20% faster.
 - permit --dbpath and --root with signature (i.e. --import) modes.

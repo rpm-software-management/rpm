@@ -50,8 +50,7 @@ pkglib_SCRIPTS =	find-provides find-requires mkinstalldirs \
 rpmpopt-$(VERSION): rpmpopt
 	cp rpmpopt $@
 
-noinst_HEADERS = \
-	acconfig.h	build.h		debug.h		system.h
+noinst_HEADERS = build.h debug.h system.h
 
 rpm_SOURCES =
 rpm_LDFLAGS =		@LDFLAGS_STATIC@ $(myLDFLAGS)

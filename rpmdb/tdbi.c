@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <db3/db.h>
+#include <db.h>
 
 static char * dbfile = "/var/lib/rpm/Dirnames";
 

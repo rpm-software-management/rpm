@@ -81,6 +81,7 @@ static inline unsigned char nibble(char c)
     return 0;
 }
 
+#ifdef	DYING
 /**
  * Check key for printable characters.
  * @param ptr		key value pointer
@@ -95,6 +96,7 @@ static int printable(const void * ptr, size_t len)	/*@*/
 	if (!(*s >= ' ' && *s <= '~')) return 0;
     return 1;
 }
+#endif
 
 /**
  * Return dbi index used for rpm tag.
@@ -212,190 +214,6 @@ static struct _dbiVec *mydbvecs[] = {
     DB1vec, DB1vec, DB2vec, DB3vec, NULL
 };
 /*@=nullassign@*/
-
-INLINE int dbiSync(dbiIndex dbi, unsigned int flags)
-{
-if (_debug < 0 || dbi->dbi_debug)
-fprintf(stderr, "    Sync %s\n", tagName(dbi->dbi_rpmtag));
-    return (*dbi->dbi_vec->sync) (dbi, flags);
-}
-
-INLINE int dbiByteSwapped(dbiIndex dbi)
-{
-/*@-mods@*/ /* FIX: shrug */
-    if (dbi->dbi_byteswapped == -1)
-	dbi->dbi_byteswapped = (*dbi->dbi_vec->byteswapped) (dbi);
-/*@=mods@*/
-    return dbi->dbi_byteswapped;
-}
-
-INLINE int dbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags)
-{
-if (_debug < 0 || dbi->dbi_debug)
-fprintf(stderr, "+++ RMW %s %s\n", tagName(dbi->dbi_rpmtag), ((flags & DBI_WRITECURSOR) ? "WRITECURSOR" : ""));
-    return (*dbi->dbi_vec->copen) (dbi, dbcp, flags);
-}
-
-INLINE int dbiCclose(dbiIndex dbi, /*@only@*/DBC * dbcursor, unsigned int flags)
-{
-if (_debug < 0 || dbi->dbi_debug)
-fprintf(stderr, "--- RMW %s\n", tagName(dbi->dbi_rpmtag));
-    return (*dbi->dbi_vec->cclose) (dbi, dbcursor, flags);
-}
-
-INLINE int dbiDel(dbiIndex dbi, DBC * dbcursor,
-	const void * keyp, size_t keylen, unsigned int flags)
-{
-    int NULkey;
-    int rc;
-
-    /* Make sure that keylen is correct for "" lookup. */
-    NULkey = (keyp && *((char *)keyp) == '\0' && keylen == 0);
-    if (NULkey) keylen++;
-    rc = (*dbi->dbi_vec->cdel) (dbi, dbcursor, keyp, keylen, flags);
-    if (NULkey) keylen--;
-
-if (_debug < 0 || dbi->dbi_debug)
-fprintf(stderr, "    Del %s key (%p,%ld) %s rc %d\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""), rc);
-
-    return rc;
-}
-
-INLINE int dbiGet(dbiIndex dbi, DBC * dbcursor, void ** keypp, size_t * keylenp,
-	void ** datapp, size_t * datalenp, unsigned int flags)
-{
-    int NULkey;
-    int rc;
-
-    /* Make sure that keylen is correct for "" lookup. */
-    NULkey = (keypp && *keypp && *((char *)(*keypp)) == '\0');
-    NULkey = (keylenp && *keylenp == 0 && NULkey);
-    if (keylenp && NULkey) (*keylenp)++;
-    rc = (*dbi->dbi_vec->cget) (dbi, dbcursor,
-		keypp, keylenp, datapp, datalenp, flags);
-    if (keylenp && NULkey) (*keylenp)--;
-
-/*@-nullderef -nullpass@*/
-if (_debug < 0 || dbi->dbi_debug) {
- int dataval = 0xdeadbeef;
- const char * kvp;
- char keyval[64];
- keyval[0] = '\0';
- if (keypp && *keypp && keylenp) {
-  if (printable(*keypp, *keylenp)) {
-    kvp = *keypp;
-  } else if (*keylenp <= sizeof(int)) {
-    int keyint = 0;
-    memcpy(&keyint, *keypp, sizeof(keyint));
-    sprintf(keyval, "#%d", keyint);
-    kvp = keyval;
-  } else {
-    static const char hex[] = "0123456789abcdef";
-    const byte * s = *keypp;
-    char * t = keyval;
-    int i;
-    for (i = 0; i < *keylenp && t < (keyval+sizeof(keyval)-2); i++) {
-      *t++ = hex[ (unsigned)((*s >> 4) & 0x0f) ];
-      *t++ = hex[ (unsigned)((*s++   ) & 0x0f) ];
-    }
-    *t = '\0';
-    kvp = keyval;
-  }
- } else
-   kvp = keyval;
- if (rc == 0 && datapp && *datapp && datalenp && *datalenp >= sizeof(dataval)) {
-    memcpy(&dataval, *datapp, sizeof(dataval));
- }
- fprintf(stderr, "    Get %s key (%p,%ld) data (%p,%ld) \"%s\" %x rc %d\n",
-    tagName(dbi->dbi_rpmtag), *keypp, (long)*keylenp, *datapp, (long)*datalenp,
-    kvp, (unsigned)dataval, rc);
-}
-/*@=nullderef =nullpass@*/
-    return rc;
-}
-
-INLINE int dbiPut(dbiIndex dbi, DBC * dbcursor,
-	const void * keyp, size_t keylen,
-	const void * datap, size_t datalen, unsigned int flags)
-{
-    int NULkey;
-    int rc;
-
-    /* XXX make sure that keylen is correct for "" lookup */
-    NULkey = (keyp && *((char *)keyp) == '\0' && keylen == 0);
-    if (NULkey) keylen++;
-    rc = (*dbi->dbi_vec->cput) (dbi, dbcursor, keyp, keylen, datap, datalen, flags);
-    if (NULkey) keylen--;
-
-/*@-nullderef -nullpass@*/
-if (_debug < 0 || dbi->dbi_debug) {
- int dataval = 0xdeadbeef;
- const char * kvp;
- char keyval[64];
- keyval[0] = '\0';
- if (keyp) {
-  if (printable(keyp, keylen)) {
-    kvp = keyp;
-  } else if (keylen <= sizeof(int)) {
-    int keyint = 0;
-    memcpy(&keyint, keyp, sizeof(keyint));
-    sprintf(keyval, "#%d", keyint);
-    kvp = keyval;
-  } else {
-    static const char hex[] = "0123456789abcdef";
-    const byte * s = keyp;
-    char * t = keyval;
-    int i;
-    for (i = 0; i < keylen && t < (keyval+sizeof(keyval)-2); i++) {
-      *t++ = hex[ (unsigned)((*s >> 4) & 0x0f) ];
-      *t++ = hex[ (unsigned)((*s++   ) & 0x0f) ];
-    }
-    *t = '\0';
-    kvp = keyval;
-  }
- } else
-   kvp = keyval;
- if (rc == 0 && datap && datalen >= sizeof(dataval)) {
-    memcpy(&dataval, datap, sizeof(dataval));
- }
- fprintf(stderr, "    Put %s key (%p,%ld) data (%p,%ld) \"%s\" %x rc %d\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, (datap ? datap : NULL), (long)datalen, kvp, (unsigned)dataval, rc);
-}
-/*@=nullderef =nullpass@*/
-
-    return rc;
-}
-
-INLINE int dbiCount(dbiIndex dbi, DBC * dbcursor,
-	unsigned int * countp, unsigned int flags)
-{
-    int rc = (*dbi->dbi_vec->ccount) (dbi, dbcursor, countp, flags);
-
-if (rc == 0 && countp && *countp > 1)
-fprintf(stderr, "    Count %s: %u rc %d\n", tagName(dbi->dbi_rpmtag), *countp, rc);
-
-    return rc;
-}
-
-INLINE int dbiVerify(dbiIndex dbi, unsigned int flags)
-{
-    int dbi_debug = dbi->dbi_debug;
-    int dbi_rpmtag = dbi->dbi_rpmtag;
-    int rc;
-
-    dbi->dbi_verify_on_close = 1;
-    rc = (*dbi->dbi_vec->close) (dbi, flags);
-
-if (_debug < 0 || dbi_debug)
-fprintf(stderr, "    Verify %s rc %d\n", tagName(dbi_rpmtag), rc);
-
-    return rc;
-}
-
-INLINE int dbiClose(dbiIndex dbi, unsigned int flags) {
-if (_debug < 0 || dbi->dbi_debug)
-fprintf(stderr, "    Close %s\n", tagName(dbi->dbi_rpmtag));
-    return (*dbi->dbi_vec->close) (dbi, flags);
-}
 
 dbiIndex dbiOpen(rpmdb db, int rpmtag, /*@unused@*/ unsigned int flags)
 {
@@ -536,18 +354,25 @@ static int dbiSearch(dbiIndex dbi, DBC * dbcursor,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, *setp, fileSystem @*/
 {
-    unsigned int gflags = 0;	/* dbiGet() flags */
+    DBT * key = alloca(sizeof(*key));
+    DBT * data = alloca(sizeof(*data));
     void * datap = NULL;
     size_t datalen = 0;
     int rc;
 
-    if (setp) *setp = NULL;
     if (keylen == 0) keylen = strlen(keyp);
 
-    /*@-mods@*/		/* FIX: indirection @*/
-    rc = dbiGet(dbi, dbcursor, (void **)&keyp, &keylen, &datap, &datalen,
-		gflags);
-    /*@=mods@*/
+    memset(key, 0, sizeof(*key));
+    key->data = (void *) keyp;
+    key->size = keylen;
+    memset(data, 0, sizeof(*data));
+    data->data = datap;
+    data->size = datalen;
+    rc = dbiGet(dbi, dbcursor, key, data);
+    keyp = key->data;
+    keylen = key->size;
+    datap = data->data;
+    datalen = data->size;
 
     if (rc > 0) {
 	rpmError(RPMERR_DBGETINDEX,
@@ -626,8 +451,8 @@ static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, set, fileSystem @*/
 {
-    unsigned int pflags = 0;	/* dbiPut() flags */
-    unsigned int dflags = 0;	/* dbiDel() flags */
+    DBT * key = alloca(sizeof(*key));
+    DBT * data = alloca(sizeof(*data));
     void * datap;
     size_t datalen;
     int rc;
@@ -678,7 +503,13 @@ static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor,
 	    break;
 	}
 
-	rc = dbiPut(dbi, dbcursor, keyp, keylen, datap, datalen, pflags);
+	memset(key, 0, sizeof(*key));
+	key->data = (void *) keyp;
+	key->size = keylen;
+	memset(data, 0, sizeof(*data));
+	data->data = datap;
+	data->size = datalen;
+	rc = dbiPut(dbi, dbcursor, key, data);
 
 	if (rc) {
 	    rpmError(RPMERR_DBPUTINDEX,
@@ -688,7 +519,10 @@ static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor,
 
     } else {
 
-	rc = dbiDel(dbi, dbcursor, keyp, keylen, dflags);
+	memset(key, 0, sizeof(*key));
+	key->data = (void *) keyp;
+	key->size = keylen;
+	rc = dbiDel(dbi, dbcursor, key, 0);
 
 	if (rc) {
 	    rpmError(RPMERR_DBPUTINDEX,
@@ -981,7 +815,6 @@ static int openDatabase(/*@null@*/ const char * prefix,
 {
     rpmdb db;
     int rc, xx;
-    unsigned int gflags = 0;	/* dbiGet() flags */
     static int _tags_initialized = 0;
     static int _dbenv_removed = 0;
     int justCheck = flags & RPMDB_FLAG_JUSTCHECK;
@@ -1081,32 +914,6 @@ static int openDatabase(/*@null@*/ const char * prefix,
 		if (minimal)
 		    goto exit;
 		/*@switchbreak@*/ break;
-	    case RPMTAG_BASENAMES:
-	    {	void * keyp = NULL;
-		DBC * dbcursor;
-
-    /* We used to store the fileindexes as complete paths, rather then
-       plain basenames. Let's see which version we are... */
-    /*
-     * XXX FIXME: db->fileindex can be NULL under pathological (e.g. mixed
-     * XXX db1/db2 linkage) conditions.
-     */
-		if (justCheck)
-		    /*@switchbreak@*/ break;
-		dbcursor = NULL;
-		xx = dbiCopen(dbi, &dbcursor, 0);
-		xx = dbiGet(dbi, dbcursor, &keyp, NULL, NULL, NULL, gflags);
-		if (xx == 0) {
-		    const char * akey = keyp;
-		    if (akey && strchr(akey, '/')) {
-			rpmError(RPMERR_OLDDB, _("old format database is present; "
-				"use --rebuilddb to generate a new format database\n"));
-			rc |= 1;
-		    }
-		}
-		xx = dbiCclose(dbi, dbcursor, 0);
-		dbcursor = NULL;
-	    }	/*@switchbreak@*/ break;
 	    default:
 		/*@switchbreak@*/ break;
 	    }
@@ -1255,7 +1062,7 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
     dbi = dbiOpen(db, RPMTAG_BASENAMES, 0);
     if (dbi != NULL) {
 	dbcursor = NULL;
-	xx = dbiCopen(dbi, &dbcursor, 0);
+	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 	rc = dbiSearch(dbi, dbcursor, baseName, strlen(baseName), &allMatches);
 	xx = dbiCclose(dbi, dbcursor, 0);
 	dbcursor = NULL;
@@ -1354,7 +1161,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     dbi = dbiOpen(db, RPMTAG_NAME, 0);
     if (dbi) {
 	DBC * dbcursor = NULL;
-	xx = dbiCopen(dbi, &dbcursor, 0);
+	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 	rc = dbiSearch(dbi, dbcursor, name, strlen(name), &matches);
 	xx = dbiCclose(dbi, dbcursor, 0);
 	dbcursor = NULL;
@@ -1579,7 +1386,6 @@ static int dbiUpdateRecord(dbiIndex dbi, DBC * dbcursor, int offset, Header h)
     void * uh;
     size_t uhlen;
     int rc = EINVAL;	/* XXX W2DO? */
-    unsigned int pflags = 0;	/* dbiPut() flags */
     int xx;
 
     if (_noDirTokens)
@@ -1588,10 +1394,21 @@ static int dbiUpdateRecord(dbiIndex dbi, DBC * dbcursor, int offset, Header h)
     uhlen = headerSizeof(h, HEADER_MAGIC_NO);
     uh = headerUnload(h);
     if (uh) {
+	DBT * key = alloca(sizeof(*key));
+	DBT * data = alloca(sizeof(*data));
+
+	memset(key, 0, sizeof(*key));
+	key->data = (void *) &offset;
+	key->size = sizeof(offset);
+	memset(data, 0, sizeof(*data));
+	data->data = uh;
+	data->size = uhlen;
+
 	(void) blockSignals(dbi->dbi_rpmdb, &signalMask);
-	rc = dbiPut(dbi, dbcursor, &offset, sizeof(offset), uh, uhlen, pflags);
+	rc = dbiPut(dbi, dbcursor, key, data);
 	xx = dbiSync(dbi, 0);
 	(void) unblockSignals(dbi->dbi_rpmdb, &signalMask);
+
 	uh = _free(uh);
     } else
 fprintf(stderr, "*** dbiUpdateRecord: uh is NULL\n");
@@ -1651,11 +1468,6 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 	mi->mi_h = headerFree(mi->mi_h, "mi->mi_h");
     }
     /*@=branchstate@*/
-    if (dbi) {
-	if (dbi->dbi_rmw)
-	    xx = dbiCclose(dbi, dbi->dbi_rmw, 0);
-	dbi->dbi_rmw = NULL;
-    }
 
     if (mi->mi_re != NULL)
     for (i = 0; i < mi->mi_nre; i++) {
@@ -2103,7 +1915,8 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     dbiIndex dbi;
     void * uh = NULL;
     size_t uhlen = 0;
-    unsigned int gflags = 0;	/* dbiGet() flags */
+    DBT * key;
+    DBT * data;
     void * keyp;
     size_t keylen;
     int rc;
@@ -2123,10 +1936,13 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
      * marked with DB_WRITECURSOR as well.
      */
     if (mi->mi_dbc == NULL)
-	xx = dbiCopen(dbi, &mi->mi_dbc, (mi->mi_cflags | DBI_ITERATOR));
+	xx = dbiCopen(dbi, dbi->dbi_txnid, &mi->mi_dbc, (mi->mi_cflags | DBI_ITERATOR));
     dbi->dbi_lastoffset = mi->mi_prevoffset;
+    key = alloca(sizeof(*key));
+    data = alloca(sizeof(*data));
 
 top:
+
     /* XXX skip over instances with 0 join key */
     do {
 	if (mi->mi_set) {
@@ -2137,10 +1953,19 @@ top:
 	    keyp = &mi->mi_offset;
 	    keylen = sizeof(mi->mi_offset);
 	} else {
-	    keyp = (void *)mi->mi_keyp;		/* XXX FIXME const */
-	    keylen = mi->mi_keylen;
 
-	    rc = dbiGet(dbi, mi->mi_dbc, &keyp, &keylen, &uh, &uhlen, gflags);
+	    memset(key, 0, sizeof(*key));
+	    key->data = keyp = (void *)mi->mi_keyp;
+	    key->size = keylen = mi->mi_keylen;
+	    memset(data, 0, sizeof(*data));
+	    data->data = uh;
+	    data->size = uhlen;
+	    rc = dbiGet(dbi, mi->mi_dbc, key, data);
+	    keyp = key->data;
+	    keylen = key->size;
+	    uh = data->data;
+	    uhlen = data->size;
+
 if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
     rpmError(RPMERR_INTERNAL,
 	_("record number %u in database is bad -- skipping.\n"), dbi->dbi_lastoffset);
@@ -2171,7 +1996,17 @@ if (dbi->dbi_api == 1 && dbi->dbi_rpmtag == RPMDBI_PACKAGES && rc == EFAULT) {
 
     /* Retrieve next header */
     if (uh == NULL) {
-	rc = dbiGet(dbi, mi->mi_dbc, &keyp, &keylen, &uh, &uhlen, gflags);
+	memset(key, 0, sizeof(*key));
+	key->data = keyp;
+	key->size = keylen;
+	memset(data, 0, sizeof(*data));
+	uh = data->data;
+	uhlen = data->size;
+	rc = dbiGet(dbi, mi->mi_dbc, key, data);
+	keyp = key->data;
+	keylen = key->size;
+	uh = data->data;
+	uhlen = data->size;
 	if (rc)
 	    return NULL;
     }
@@ -2268,7 +2103,7 @@ static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi,
     if (keylen == 0)
 	keylen = strlen(keyp);
 
-    xx = dbiCopen(dbi, &dbcursor, 0);
+    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
     rc = dbiSearch(dbi, dbcursor, keyp, keylen, &set);
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
@@ -2339,14 +2174,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, int rpmtag,
     if (dbi == NULL)
 	return NULL;
 
-#if 0
-    assert(dbi->dbi_rmw == NULL);	/* db3: avoid "lost" cursors */
-    assert(dbi->dbi_lastoffset == 0);	/* db0: avoid "lost" cursors */
-#else
-if (dbi->dbi_rmw)
-fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
-#endif
-
     dbi->dbi_lastoffset = 0;		/* db0: rewind to beginning */
 
     if (rpmtag != RPMDBI_PACKAGES && keyp) {
@@ -2356,14 +2183,14 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
 
 	if (isLabel) {
 	    /* XXX HACK to get rpmdbFindByLabel out of the API */
-	    xx = dbiCopen(dbi, &dbcursor, 0);
+	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 	    rc = dbiFindByLabel(dbi, dbcursor, keyp, &set);
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
 	} else if (rpmtag == RPMTAG_BASENAMES) {
 	    rc = rpmdbFindByFile(db, keyp, &set);
 	} else {
-	    xx = dbiCopen(dbi, &dbcursor, 0);
+	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 	    /*@-nullpass@*/	/* LCL: keyp != NULL here. */
 	    rc = dbiSearch(dbi, dbcursor, keyp, keylen, &set);
 	    /*@=nullpass@*/
@@ -2458,6 +2285,7 @@ static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor,
 /* XXX install.c uninstall.c */
 int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 {
+    DBT * key = alloca(sizeof(*key));
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     Header h;
@@ -2526,8 +2354,13 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 	    case RPMDBI_PACKAGES:
 	      dbi = dbiOpen(db, rpmtag, 0);
 	      if (dbi != NULL) {
-		xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
-		xx = dbiDel(dbi, dbcursor, &hdrNum, sizeof(hdrNum), 0);
+
+		memset(key, 0, sizeof(*key));
+		key->data = &hdrNum;
+		key->size = sizeof(hdrNum);
+
+		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DBI_WRITECURSOR);
+		xx = dbiDel(dbi, dbcursor, key, 0);
 		xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
 		dbcursor = NULL;
 		if (!dbi->dbi_no_dbsync)
@@ -2553,7 +2386,7 @@ int rpmdbRemove(rpmdb db, /*@unused@*/ int rid, unsigned int hdrNum)
 	    }
 
 	    printed = 0;
-	    xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
+	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DBI_WRITECURSOR);
 	    for (i = 0; i < rpmcnt; i++) {
 		const void * valp;
 		size_t vallen;
@@ -2732,8 +2565,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
     int count = 0;
     dbiIndex dbi;
     int dbix;
-    unsigned int gflags = 0;	/* dbiGet() flags */
-    unsigned int pflags = 0;	/* dbiPut() flags */
     unsigned int hdrNum = 0;
     int rc = 0;
     int xx;
@@ -2766,6 +2597,8 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
     {
 	unsigned int firstkey = 0;
 	DBC * dbcursor = NULL;
+	DBT * key = alloca(sizeof(*key));
+	DBT * data = alloca(sizeof(*data));
 	void * keyp = &firstkey;
 	size_t keylen = sizeof(firstkey);
 	void * datap = NULL;
@@ -2779,11 +2612,21 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 	datap = h;
 	datalen = headerSizeof(h, HEADER_MAGIC_NO);
 
-	xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
+	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DBI_WRITECURSOR);
 
 	/* Retrieve join key for next header instance. */
 
-	rc = dbiGet(dbi, dbcursor, &keyp, &keylen, &datap, &datalen, gflags);
+	memset(key, 0, sizeof(*key));
+	key->data = keyp;
+	key->size = keylen;
+	memset(data, 0, sizeof(*data));
+	data->data = datap;
+	data->size = datalen;
+	rc = dbiGet(dbi, dbcursor, key, data);
+	keyp = key->data;
+	keylen = key->size;
+	datap = data->data;
+	datalen = data->size;
 
 	hdrNum = 0;
 	if (rc == 0 && datap)
@@ -2798,7 +2641,14 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 	    datalen = sizeof(hdrNum);
 	}
 
-	rc = dbiPut(dbi, dbcursor, keyp, keylen, datap, datalen, pflags);
+	memset(key, 0, sizeof(*key));
+	key->data = keyp;
+	key->size = keylen;
+	memset(data, 0, sizeof(*data));
+	data->data = datap;
+	data->size = datalen;
+
+	rc = dbiPut(dbi, dbcursor, key, data);
 	xx = dbiSync(dbi, 0);
 
 	xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
@@ -2846,7 +2696,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 	    case RPMDBI_PACKAGES:
 	      dbi = dbiOpen(db, rpmtag, 0);
 	      if (dbi != NULL) {
-		xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
+		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DBI_WRITECURSOR);
 		xx = dbiUpdateRecord(dbi, dbcursor, hdrNum, h);
 		xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
 		dbcursor = NULL;
@@ -2900,7 +2750,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 	    }
 
 	    printed = 0;
-	    xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
+	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DBI_WRITECURSOR);
 	    for (i = 0; i < rpmcnt; i++) {
 		const void * valp;
 		size_t vallen;

@@ -22,8 +22,8 @@
 /** \ingroup header
  * Description of tag data.
  */
-typedef /*@abstract@*/ struct entryInfo * entryInfo;
-struct entryInfo {
+typedef /*@abstract@*/ struct entryInfo_s * entryInfo;
+struct entryInfo_s {
     int_32 tag;			/*!< Tag identifier. */
     int_32 type;		/*!< Tag data type. */
     int_32 offset;		/*!< Offset into data segment (ondisk only). */
@@ -31,7 +31,7 @@ struct entryInfo {
 };
 
 #define	REGION_TAG_TYPE		RPM_BIN_TYPE
-#define	REGION_TAG_COUNT	sizeof(struct entryInfo)
+#define	REGION_TAG_COUNT	sizeof(struct entryInfo_s)
 
 #define	ENTRY_IS_REGION(_e) \
 	(((_e)->info.tag >= HEADER_IMAGE) && ((_e)->info.tag < HEADER_REGIONS))
@@ -40,9 +40,9 @@ struct entryInfo {
 /** \ingroup header
  * A single tag from a Header.
  */
-typedef /*@abstract@*/ struct indexEntry * indexEntry;
-struct indexEntry {
-    struct entryInfo info;	/*!< Description of tag data. */
+typedef /*@abstract@*/ struct indexEntry_s * indexEntry;
+struct indexEntry_s {
+    struct entryInfo_s info;	/*!< Description of tag data. */
 /*@owned@*/ void * data; 	/*!< Location of tag data. */
     int length;			/*!< No. bytes of data. */
     int rdlen;			/*!< No. bytes of data in region. */

@@ -18,15 +18,13 @@ pkginc_HEADERS = \
 	ugid.h
 noinst_HEADERS = fts.h rpmio_internal.h rpmpgp.h
 
-LIBS +=	@WITH_ZLIB_LIB@ -lrt -lpthread
-
 BEECRYPTLOBJS = $(shell cat $(top_builddir)/beecrypt/listobjs)
 
 lib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = digest.c fts.c macro.c \
 	rpmio.c rpmlog.c rpmmalloc.c \
 	rpmpgp.c rpmrpc.c strcasecmp.c stubs.c url.c ugid.c
-librpmio_la_LDFLAGS = -release @VERSION@
+librpmio_la_LDFLAGS = -release @VERSION@ @WITH_ZLIB_LIB@ -lrt -lpthread
 librpmio_la_LIBADD = $(BEECRYPTLOBJS)
 librpmio_la_DEPENDENCIES = .created
 

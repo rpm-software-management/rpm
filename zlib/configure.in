@@ -1,5 +1,7 @@
 AC_INIT(gzio.c)
 AC_CANONICAL_SYSTEM
+AC_PREREQ(2.12)
+AC_CONFIG_HEADERS
 AM_INIT_AUTOMAKE(zlib, 1.1.4)
 
 dnl Check for programs.

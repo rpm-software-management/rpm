@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-14 17:43-0400\n"
+"POT-Creation-Date: 2002-05-01 18:05-0400\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -114,7 +114,7 @@ msgstr "<pøík>"
 msgid "use <dir> as the top level directory"
 msgstr "pou¾ít <adr> jako adresáø nejvy¹¹í úrovnì"
 
-#: rpmqv.c:125 lib/poptI.c:219
+#: rpmqv.c:125 lib/poptI.c:215
 msgid "<dir>"
 msgstr "<adresáø>"
 
@@ -1439,52 +1439,52 @@ msgstr "selhal - "
 msgid "package %s was already added, replacing with %s\n"
 msgstr "balíèek %s je ji¾ nainstalován"
 
-#: lib/depends.c:367
+#: lib/depends.c:380
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:392
+#: lib/depends.c:405
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s ANO (rpmrc poskytuje)\n"
 
-#: lib/depends.c:408
+#: lib/depends.c:421
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s ANO (rpmlib poskytuje)\n"
 
-#: lib/depends.c:429
+#: lib/depends.c:442
 #, fuzzy
 msgid "(db files)"
 msgstr "¹patný db soubor %s\n"
 
-#: lib/depends.c:441
+#: lib/depends.c:454
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s ANO (db poskytuje)\n"
 
-#: lib/depends.c:454
+#: lib/depends.c:467
 #, fuzzy
 msgid "(db package)"
 msgstr "¾ádné balíèky\n"
 
-#: lib/depends.c:762
+#: lib/depends.c:783
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:882
+#: lib/depends.c:903
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "odstraòuji %s-%s-%s \"%s\" z tsort relací.\n"
 
 #. Record all relations.
-#: lib/depends.c:1150
+#: lib/depends.c:1171
 msgid "========== recording tsort relations\n"
 msgstr "========== ukládání tsort relací\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1256
+#: lib/depends.c:1277
 #, fuzzy
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
@@ -1492,26 +1492,26 @@ msgid ""
 msgstr ""
 "========== tsorting balíèkù (poøadí, #pøedchùdce, #následovník, hloubka)\n"
 
-#: lib/depends.c:1349
+#: lib/depends.c:1370
 msgid "========== successors only (presentation order)\n"
 msgstr "========== pouze úspì¹né (poøadí dle prezentace)\n"
 
-#: lib/depends.c:1419
+#: lib/depends.c:1440
 msgid "LOOP:\n"
 msgstr "SMYÈKA:\n"
 
-#: lib/depends.c:1454
+#: lib/depends.c:1475
 msgid "========== continuing tsort ...\n"
 msgstr "========== pokraèuje tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1459
+#: lib/depends.c:1480
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: rpmdb/header.c:2978 rpmdb/header.c:2999 rpmdb/header.c:3021
+#: rpmdb/header.c:2979 rpmdb/header.c:3000 rpmdb/header.c:3022
 msgid "(not a number)"
 msgstr "(není èíslo)"
 
@@ -1648,37 +1648,37 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
 
-#: lib/poptI.c:53
+#: lib/poptI.c:49
 msgid "exclude paths must begin with a /"
 msgstr "vynechané cesty musí zaèínat znakem /"
 
-#: lib/poptI.c:65
+#: lib/poptI.c:61
 msgid "relocations must begin with a /"
 msgstr "pøemístìní musejí zaèínat znakem /"
 
-#: lib/poptI.c:67
+#: lib/poptI.c:63
 msgid "relocations must contain a ="
 msgstr "pøemístìní musejí obsahovat ="
 
-#: lib/poptI.c:70
+#: lib/poptI.c:66
 msgid "relocations must have a / following the ="
 msgstr "pøemístìní musejí mít za znakem = znak /"
 
-#: lib/poptI.c:84
+#: lib/poptI.c:80
 msgid "rollback takes a time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:91
+#: lib/poptI.c:87
 #, fuzzy
 msgid "malformed rollback time/date stamp argument"
 msgstr "poru¹ený rollback èas"
 
-#: lib/poptI.c:110
+#: lib/poptI.c:106
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "nainstalovat v¹echny soubory i konfigurace, které by se jinak mohly vynechat"
 
-#: lib/poptI.c:114
+#: lib/poptI.c:110
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1686,146 +1686,146 @@ msgstr ""
 "odstranit v¹echny balíèky odpovídající <balíèku> (obvykle se generuje chyba, "
 "specifikuje-li <balíèek> více balíèkù)"
 
-#: lib/poptI.c:120 lib/poptI.c:175
+#: lib/poptI.c:116 lib/poptI.c:171
 msgid "do not execute package scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné skripty urèené pro balíèky"
 
-#: lib/poptI.c:124
+#: lib/poptI.c:120
 msgid "relocate files in non-relocateable package"
 msgstr "pøemístìní souborù v nepøemístitelném balíèku"
 
-#: lib/poptI.c:127
+#: lib/poptI.c:123
 msgid "save erased package files by renaming into sub-directory"
 msgstr "uchovat smazané soubory pøesunem do podadresáøe"
 
-#: lib/poptI.c:130
+#: lib/poptI.c:126
 msgid "erase (uninstall) package"
 msgstr "smazat (deinstalovat) balíèek"
 
-#: lib/poptI.c:130
+#: lib/poptI.c:126
 msgid "<package>+"
 msgstr "<balíèek>"
 
-#: lib/poptI.c:133
+#: lib/poptI.c:129
 msgid "do not install documentation"
 msgstr "neinstalovat dokumentaci"
 
-#: lib/poptI.c:135
+#: lib/poptI.c:131
 msgid "skip files with leading component <path> "
 msgstr "pøeskoèit soubory s úvodní cestou <cesta> "
 
-#: lib/poptI.c:136
+#: lib/poptI.c:132
 msgid "<path>"
 msgstr "<cesta>"
 
-#: lib/poptI.c:139
+#: lib/poptI.c:135
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "zkratka pro --replacepkgs --replacefiles"
 
-#: lib/poptI.c:142
+#: lib/poptI.c:138
 msgid "upgrade package(s) if already installed"
 msgstr "aktualizace balíèku jestli¾e je ji¾ nainstalován"
 
-#: lib/poptI.c:143 lib/poptI.c:159 lib/poptI.c:240
+#: lib/poptI.c:139 lib/poptI.c:155 lib/poptI.c:236
 msgid "<packagefile>+"
 msgstr "<soubor_balíèku>+"
 
-#: lib/poptI.c:145
+#: lib/poptI.c:141
 msgid "print hash marks as package installs (good with -v)"
 msgstr "bìhem instalace balíèku zobrazit dvojité køí¾ky (dobré s -v)"
 
-#: lib/poptI.c:148
+#: lib/poptI.c:144
 msgid "don't verify package architecture"
 msgstr "nekontrolovat architekturu balíèku"
 
-#: lib/poptI.c:151
+#: lib/poptI.c:147
 msgid "don't verify package operating system"
 msgstr "nekontrolovat operaèní systém balíèku"
 
-#: lib/poptI.c:154
+#: lib/poptI.c:150
 msgid "don't check disk space before installing"
 msgstr "nekontrolovat volné místo na disku pøed instalací"
 
-#: lib/poptI.c:156
+#: lib/poptI.c:152
 msgid "install documentation"
 msgstr "nainstalovat dokumentaci"
 
-#: lib/poptI.c:159
+#: lib/poptI.c:155
 #, fuzzy
 msgid "install package(s)"
 msgstr "nainstalovat balíèek"
 
-#: lib/poptI.c:161
+#: lib/poptI.c:157
 msgid "update the database, but do not modify the filesystem"
 msgstr "upravit databázi, ale neupravovat systém souborovù"
 
-#: lib/poptI.c:163
+#: lib/poptI.c:159
 msgid "do not verify package dependencies"
 msgstr "nekontrolovat závislosti balíèkù"
 
-#: lib/poptI.c:166
+#: lib/poptI.c:162
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "pro vyøe¹ení závislostí nemìnit poøadí instalace balíèkù"
 
-#: lib/poptI.c:171
+#: lib/poptI.c:167
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptI.c:178
+#: lib/poptI.c:174
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "nespou¹tìt ¾ádné skripty (jsou-li nìjaké)"
 
-#: lib/poptI.c:181
+#: lib/poptI.c:177
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "nespou¹tìt ¾ádné skripty (jsou-li nìjaké)"
 
-#: lib/poptI.c:184
+#: lib/poptI.c:180
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "nespou¹tìt ¾ádné skripty (jsou-li nìjaké)"
 
-#: lib/poptI.c:187
+#: lib/poptI.c:183
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "nespou¹tìt ¾ádné skripty (jsou-li nìjaké)"
 
-#: lib/poptI.c:190 lib/poptQV.c:272 lib/poptQV.c:309
+#: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "nekontrolovat MD5 souborù v balíèku"
 
-#: lib/poptI.c:192 lib/poptQV.c:275 lib/poptQV.c:311
+#: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "ovìøit podpis v balíèku"
 
-#: lib/poptI.c:196
+#: lib/poptI.c:192
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "nespou¹tìt ¾ádné skripty aktivované tímto balíèkem"
 
-#: lib/poptI.c:199
+#: lib/poptI.c:195
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné skripty urèené pro balíèky"
 
-#: lib/poptI.c:202
+#: lib/poptI.c:198
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné instalaèní skripty"
 
-#: lib/poptI.c:205
+#: lib/poptI.c:201
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné instalaèní skripty"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:204
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "nespou¹tìt ¾ádné instalaèní skripty"
 
-#: lib/poptI.c:212
+#: lib/poptI.c:208
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -1833,48 +1833,48 @@ msgstr ""
 "aktualizovat na starou verzi balíèku (--force to dìlá pøi aktualizacích "
 "automaticky)"
 
-#: lib/poptI.c:216
+#: lib/poptI.c:212
 msgid "print percentages as package installs"
 msgstr "bìhem instalace balíèku zobrazit procenta"
 
-#: lib/poptI.c:218
+#: lib/poptI.c:214
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "pøemístit soubory do <adr>, jsou-li pøemístitelné"
 
-#: lib/poptI.c:221
+#: lib/poptI.c:217
 msgid "relocate files from path <old> to <new>"
 msgstr "pøemístit soubory ze <staré_cesty> do <nové_cesty>"
 
-#: lib/poptI.c:222
+#: lib/poptI.c:218
 msgid "<old>=<new>"
 msgstr "<stará_cesta>=<nová_cesta>"
 
-#: lib/poptI.c:225
+#: lib/poptI.c:221
 msgid "save erased package files by repackaging"
 msgstr "uchovat smazané soubory pomocí pøebalení"
 
-#: lib/poptI.c:228
+#: lib/poptI.c:224
 msgid "install even if the package replaces installed files"
 msgstr "instalovat, i kdy¾ balíèek pøepí¹e existující soubory"
 
-#: lib/poptI.c:231
+#: lib/poptI.c:227
 msgid "reinstall if the package is already present"
 msgstr "pøeinstalovat, i kdy¾ je ji¾ balíèek pøítomen"
 
-#: lib/poptI.c:233
+#: lib/poptI.c:229
 #, fuzzy
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr "odinstalovat nové balíèky, reinstalovat staré balíèky zpìt do data"
 
-#: lib/poptI.c:234
+#: lib/poptI.c:230
 msgid "<date>"
 msgstr "<datum>"
 
-#: lib/poptI.c:236
+#: lib/poptI.c:232
 msgid "don't install, but tell if it would work or not"
 msgstr "neinstalovat ale sdìlit, zda-li by to fungovalo èi nikoli"
 
-#: lib/poptI.c:239
+#: lib/poptI.c:235
 msgid "upgrade package(s)"
 msgstr "aktualizace balíèku"
 
@@ -2268,96 +2268,96 @@ msgstr "(chybí stav)  "
 msgid "package has neither file owner or id lists\n"
 msgstr "balíèek nemá vlastníka souboru ani seznamy id\n"
 
-#: lib/query.c:463
+#: lib/query.c:464
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr "nemohu provést dotaz %s: %s\n"
 
-#: lib/query.c:617 lib/query.c:655 lib/rpminstall.c:352 lib/rpminstall.c:494
+#: lib/query.c:618 lib/query.c:656 lib/rpminstall.c:352 lib/rpminstall.c:494
 #: lib/rpminstall.c:887
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otevøení %s selhalo: %s\n"
 
-#: lib/query.c:633
+#: lib/query.c:634
 #, c-format
 msgid "query of %s failed\n"
 msgstr "dotaz na %s se nezdaøil\n"
 
-#: lib/query.c:639
+#: lib/query.c:640
 msgid "old format source packages cannot be queried\n"
 msgstr "nelze provést dotaz na zdrojové balíèky starého formátu\n"
 
-#: lib/query.c:665 lib/rpminstall.c:507
+#: lib/query.c:666 lib/rpminstall.c:507
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
 
-#: lib/query.c:709
+#: lib/query.c:710
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "dotaz na spec soubor %s selhal, nemohu parsovat\n"
 
-#: lib/query.c:730
+#: lib/query.c:731
 msgid "no packages\n"
 msgstr "¾ádné balíèky\n"
 
-#: lib/query.c:750
+#: lib/query.c:751
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s neobsahuje ¾ádné balíèky\n"
 
-#: lib/query.c:760
+#: lib/query.c:761
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¾ádný balíèek neaktivuje %s\n"
 
-#: lib/query.c:774 lib/query.c:796 lib/query.c:817 lib/query.c:852
+#: lib/query.c:775 lib/query.c:797 lib/query.c:818 lib/query.c:853
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Nemohu èíst %s: %s.\n"
 
-#: lib/query.c:784 lib/query.c:802 lib/query.c:827 lib/query.c:857
+#: lib/query.c:785 lib/query.c:803 lib/query.c:828 lib/query.c:858
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "¾ádný balíèek neaktivuje %s\n"
 
-#: lib/query.c:868
+#: lib/query.c:869
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾ádný balíèek nevy¾aduje %s\n"
 
-#: lib/query.c:879
+#: lib/query.c:880
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¾ádný balíèek neposkytuje %s\n"
 
-#: lib/query.c:913
+#: lib/query.c:914
 #, c-format
 msgid "file %s: %s\n"
 msgstr "soubor %s: %s\n"
 
-#: lib/query.c:917
+#: lib/query.c:918
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "soubor %s nevlastní ¾ádný balíèek\n"
 
-#: lib/query.c:944
+#: lib/query.c:945
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neplatné èíslo balíèku: %s\n"
 
-#: lib/query.c:947
+#: lib/query.c:948
 #, c-format
 msgid "package record number: %u\n"
 msgstr "záznam balíèku èíslo: %u\n"
 
-#: lib/query.c:952
+#: lib/query.c:953
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "záznam %d nelze pøeèíst\n"
 
-#: lib/query.c:963 lib/rpminstall.c:675
+#: lib/query.c:964 lib/rpminstall.c:675
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
@@ -2666,141 +2666,141 @@ msgstr "Nemohu otevøít %s pro ètení: %s.\n"
 msgid "cannot open Packages database in %s\n"
 msgstr "nemohu otevøít databázi balíèkù v %s\n"
 
-#: lib/signature.c:123
+#: lib/signature.c:124
 msgid "file is not regular -- skipping size check\n"
 msgstr "není obyèejný soubor -- pøeskakuji kontrolu velikosti\n"
 
-#: lib/signature.c:132
+#: lib/signature.c:142
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 "Pøedpokl. délka: %12d = hlavièka(%d)+signatura(%d)+výplò(%d)+data(%d)\n"
 
-#: lib/signature.c:137
+#: lib/signature.c:147
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "Aktuální délka: %12d\n"
 
-#: lib/signature.c:157
+#: lib/signature.c:167
 msgid "No signature\n"
 msgstr "Chybí podpis\n"
 
-#: lib/signature.c:161
+#: lib/signature.c:171
 msgid "Old PGP signature\n"
 msgstr "Starý PGP podpis\n"
 
-#: lib/signature.c:172
+#: lib/signature.c:182
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Starý (pouze interní) podpis! Jak jste to získali!?\n"
 
-#: lib/signature.c:226
+#: lib/signature.c:232
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Podpisu: velikost(%d)+vata(%d)\n"
 
-#: lib/signature.c:305 lib/signature.c:402 lib/signature.c:669
-#: lib/signature.c:702
+#: lib/signature.c:311 lib/signature.c:408 lib/signature.c:675
+#: lib/signature.c:708
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Nemohu spustit %s: %s\n"
 
-#: lib/signature.c:321
+#: lib/signature.c:327
 msgid "pgp failed\n"
 msgstr "pgp selhalo\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:328
+#: lib/signature.c:334
 msgid "pgp failed to write signature\n"
 msgstr "pgp selhalo pøi zápisu podpisu\n"
 
-#: lib/signature.c:333
+#: lib/signature.c:339
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Velikost podpisu PGP: %d\n"
 
-#: lib/signature.c:347 lib/signature.c:445
+#: lib/signature.c:353 lib/signature.c:451
 msgid "unable to read the signature\n"
 msgstr "nemohu èíst podpis\n"
 
-#: lib/signature.c:352
+#: lib/signature.c:358
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Pøeèteno %d bajtù PGP podpisu\n"
 
-#: lib/signature.c:419
+#: lib/signature.c:425
 msgid "gpg failed\n"
 msgstr "gpg selhalo\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:426
+#: lib/signature.c:432
 msgid "gpg failed to write signature\n"
 msgstr "gpg selhalo pøi zápisu podpisu\n"
 
-#: lib/signature.c:431
+#: lib/signature.c:437
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Velikost GPG podpisu: %d\n"
 
-#: lib/signature.c:450
+#: lib/signature.c:456
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Pøeèteno %d bajtù GPG podpisu\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:707 lib/signature.c:758
+#: lib/signature.c:713 lib/signature.c:764
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "©patná %%_signature spec v souboru maker\n"
 
-#: lib/signature.c:737
+#: lib/signature.c:743
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Musíte nastavit \"%%_gpg_name\" ve svém makro souboru\n"
 
-#: lib/signature.c:750
+#: lib/signature.c:756
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Musíte nastavit \"%%_pgp_name\" ve svém makro souboru\n"
 
-#: lib/signature.c:794
+#: lib/signature.c:800
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "Velikost hlavièky je pøili¹ velká"
 
-#: lib/signature.c:830
+#: lib/signature.c:836
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:879
+#: lib/signature.c:885
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1066
+#: lib/signature.c:1072
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "vynechat pøípadné MD5 souèty"
 
-#: lib/signature.c:1176
+#: lib/signature.c:1182
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1177
+#: lib/signature.c:1183
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Chybí podpis\n"
 
-#: lib/signature.c:1252
+#: lib/signature.c:1258
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1279
+#: lib/signature.c:1285
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1283
+#: lib/signature.c:1289
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Podpisu: velikost(%d)+vata(%d)\n"
@@ -2835,12 +2835,12 @@ msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: kontrola digestu v hlavièce selhala\n"
 
-#: rpmdb/db1.c:98 rpmdb/db3.c:100
+#: rpmdb/db1.c:98 rpmdb/db3.c:98
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "db%d chyba (%d) z %s: %s\n"
 
-#: rpmdb/db1.c:101 rpmdb/db3.c:103
+#: rpmdb/db1.c:101 rpmdb/db3.c:101
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d chyba (%d): %s\n"
@@ -2884,70 +2884,70 @@ msgstr "otevírám db soubor     %s mode 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "nemohu vytvoøit zámek %s na databázi\n"
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1228
+#: rpmdb/db1.c:573 rpmdb/db3.c:1121
 msgid "exclusive"
 msgstr "výhradní"
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1228
+#: rpmdb/db1.c:573 rpmdb/db3.c:1121
 msgid "shared"
 msgstr "sdílený"
 
-#: rpmdb/db3.c:129
+#: rpmdb/db3.c:127
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "uzavøeno DB prostøedí %s/%s\n"
 
-#: rpmdb/db3.c:147
+#: rpmdb/db3.c:145
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "odstranìno db prostøedí %s/%s\n"
 
-#: rpmdb/db3.c:187
+#: rpmdb/db3.c:185
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "otevírám db environment %s/%s %s\n"
 
-#: rpmdb/db3.c:711
+#: rpmdb/db3.c:614
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "uzavøen db index       %s/%s\n"
 
-#: rpmdb/db3.c:778
+#: rpmdb/db3.c:681
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "uzavøen db index       %s/%s\n"
 
-#: rpmdb/db3.c:1001
+#: rpmdb/db3.c:903
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otevírám db index      %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1226
+#: rpmdb/db3.c:1119
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nemohu zamknout databázi zámkem %s v %s/%s\n"
 
-#: rpmdb/db3.c:1232
+#: rpmdb/db3.c:1125
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "uzamèen db index       %s/%s\n"
 
-#: rpmdb/dbconfig.c:404
+#: rpmdb/dbconfig.c:400
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "neznámá db volba: \"%s\" ignorována\n"
 
-#: rpmdb/dbconfig.c:442
+#: rpmdb/dbconfig.c:438
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s má neplatnou numerickou hodnotu, pøeskoèeno\n"
 
-#: rpmdb/dbconfig.c:451
+#: rpmdb/dbconfig.c:447
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s má moc velkou nebo moc malou long hodnotu, pøeskoèeno\n"
 
-#: rpmdb/dbconfig.c:460
+#: rpmdb/dbconfig.c:456
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s má pøíli¹ velkou nebo moc malou celoèíselnou hodnotu, pøeskoèeno\n"
@@ -3059,157 +3059,150 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "generovat hlavièky kompatibilní RPM verze 2 a 3"
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:163
+#: rpmdb/rpmdb.c:165
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: neznámá znaèka: \"%s\" ignorována\n"
 
-#: rpmdb/rpmdb.c:440
+#: rpmdb/rpmdb.c:258
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "nemohu otevøít index %s pøi pou¾ívání db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:462
+#: rpmdb/rpmdb.c:280
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "nemohu otevøít index %s\n"
 
-#: rpmdb/rpmdb.c:554
+#: rpmdb/rpmdb.c:379
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "chyba(%d) pøi získávání záznamu \"%s\" z indexu %s\n"
 
-#: rpmdb/rpmdb.c:685
+#: rpmdb/rpmdb.c:516
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "chyba(%d) pøi ukládání záznamu %s do %s\n"
 
-#: rpmdb/rpmdb.c:695
+#: rpmdb/rpmdb.c:529
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "chyba(%d) pøi odstraòování záznamu %s z %s\n"
 
-#: rpmdb/rpmdb.c:954
+#: rpmdb/rpmdb.c:788
 msgid "no dbpath has been set\n"
 msgstr "nebyla nastavena dbpath\n"
 
-#: rpmdb/rpmdb.c:1102
-msgid ""
-"old format database is present; use --rebuilddb to generate a new format "
-"database\n"
-msgstr ""
-"databáze je ve starém formátu; pou¾ijte --rebuilddb pro pøevod do nového\n"
-
 #. error
-#: rpmdb/rpmdb.c:1367
+#: rpmdb/rpmdb.c:1174
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "chyba(%d) pøi poèítání balíèkù\n"
 
-#: rpmdb/rpmdb.c:2146 rpmdb/rpmdb.c:3507
+#: rpmdb/rpmdb.c:1971 rpmdb/rpmdb.c:3357
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "záznam èíslo %d v databázi je chybný -- vynechávám.\n"
 
-#: rpmdb/rpmdb.c:2199
+#: rpmdb/rpmdb.c:2034
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr "rpmdb: poru¹ená polo¾ka hlavièky #%u, pøeskakuji.\n"
 
-#: rpmdb/rpmdb.c:2478
+#: rpmdb/rpmdb.c:2306
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: nemohu èíst hlavièku na adrese 0x%x\n"
 
-#: rpmdb/rpmdb.c:2639
+#: rpmdb/rpmdb.c:2472
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuji \"%s\" z indexu %s.\n"
 
-#: rpmdb/rpmdb.c:2643
+#: rpmdb/rpmdb.c:2476
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstraòuji %d polo¾ek z indexu %s.\n"
 
-#: rpmdb/rpmdb.c:2813
+#: rpmdb/rpmdb.c:2663
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "chyba(%d) pøi alokaci nové instance balíèku\n"
 
-#: rpmdb/rpmdb.c:3008
+#: rpmdb/rpmdb.c:2858
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "pøidávám \"%s\" do indexu %s\n"
 
-#: rpmdb/rpmdb.c:3012
+#: rpmdb/rpmdb.c:2862
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "pøidávám %d polo¾ek do indexu %s.\n"
 
-#: rpmdb/rpmdb.c:3393
+#: rpmdb/rpmdb.c:3243
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "odstraòuji %s po úspì¹ném znovusestavení db3.\n"
 
-#: rpmdb/rpmdb.c:3426
+#: rpmdb/rpmdb.c:3276
 msgid "no dbpath has been set"
 msgstr "nebyla nastavena dbpath"
 
-#: rpmdb/rpmdb.c:3453
+#: rpmdb/rpmdb.c:3303
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "databázi %s pøevádím do %s\n"
 
-#: rpmdb/rpmdb.c:3457
+#: rpmdb/rpmdb.c:3307
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "doèasná databáze %s ji¾ existuje\n"
 
-#: rpmdb/rpmdb.c:3463
+#: rpmdb/rpmdb.c:3313
 #, c-format
 msgid "creating directory %s\n"
 msgstr "vytváøím adresáø %s\n"
 
-#: rpmdb/rpmdb.c:3465
+#: rpmdb/rpmdb.c:3315
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "vytváøím adresáø %s: %s\n"
 
-#: rpmdb/rpmdb.c:3472
+#: rpmdb/rpmdb.c:3322
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otevírám starou databázi s dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3483
+#: rpmdb/rpmdb.c:3333
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otevírám novou databázi s dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3547
+#: rpmdb/rpmdb.c:3397
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nemohu pøidat záznam - pùvodnì u %d\n"
 
-#: rpmdb/rpmdb.c:3565
+#: rpmdb/rpmdb.c:3415
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "databázi nelze zvovu vytvoøit; pùvodní databáze zùstává na svém místì\n"
 
-#: rpmdb/rpmdb.c:3573
+#: rpmdb/rpmdb.c:3423
 msgid "failed to replace old database with new database!\n"
 msgstr "starou databázi nelze nahradit novou databází!\n"
 
-#: rpmdb/rpmdb.c:3575
+#: rpmdb/rpmdb.c:3425
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "pro obnovení nahraïte soubory v %s soubory z %s"
 
-#: rpmdb/rpmdb.c:3585
+#: rpmdb/rpmdb.c:3435
 #, c-format
 msgid "removing directory %s\n"
 msgstr "ma¾u adresáø %s\n"
 
-#: rpmdb/rpmdb.c:3587
+#: rpmdb/rpmdb.c:3437
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nemohu odstranit adresáø %s: %s\n"
@@ -3420,6 +3413,12 @@ msgstr "url port musí být èíslo\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nemohu vytvoøit %s: %s\n"
+
+#~ msgid ""
+#~ "old format database is present; use --rebuilddb to generate a new format "
+#~ "database\n"
+#~ msgstr ""
+#~ "databáze je ve starém formátu; pou¾ijte --rebuilddb pro pøevod do nového\n"
 
 #, fuzzy
 #~ msgid "don't verify signature(s)"

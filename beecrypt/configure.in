@@ -3,6 +3,7 @@ dnl Process this file with autoconf to produce a configure script
 dnl Initialization
 AC_INIT(beecrypt.c)
 AC_CANONICAL_SYSTEM
+AC_CONFIG_HEADERS
 AM_INIT_AUTOMAKE(beecrypt, 2.2.0)
 AM_CONFIG_HEADER(config.h)
 

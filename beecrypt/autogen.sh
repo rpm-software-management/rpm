@@ -4,13 +4,13 @@ export CFLAGS
 export LDFLAGS
 
 LTV="libtoolize (GNU libtool) 1.4.2"
-ACV="autoconf (GNU Autoconf) 2.52"
-AMV="automake (GNU automake) 1.5"
+ACV="autoconf (GNU Autoconf) 2.53"
+AMV="automake (GNU automake) 1.6.1"
 USAGE="
 This script documents the versions of the tools I'm using to build rpm:
 	libtool-1.4.2
-	autoconf-2.52
-	automake-1.5
+	autoconf-2.53
+	automake-1.6.1
 Simply edit this script to change the libtool/autoconf/automake versions
 checked if you need to, as rpm should build (and has built) with all
 recent versions of libtool/autoconf/automake.
@@ -23,7 +23,7 @@ recent versions of libtool/autoconf/automake.
 libtoolize --copy --force
 aclocal
 autoheader
-automake
+automake -a -c
 autoconf
 
 if [ "$1" = "--noconfigure" ]; then 

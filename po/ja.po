@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-04-14 17:43-0400\n"
+"POT-Creation-Date: 2002-05-01 18:05-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -122,7 +122,7 @@ msgstr ""
 msgid "use <dir> as the top level directory"
 msgstr "トップディレクトリとして <dir> を使用します"
 
-#: rpmqv.c:125 lib/poptI.c:219
+#: rpmqv.c:125 lib/poptI.c:215
 msgid "<dir>"
 msgstr ""
 
@@ -1488,77 +1488,77 @@ msgstr "失敗 - "
 msgid "package %s was already added, replacing with %s\n"
 msgstr "パッケージ %s-%s-%s はすでにインストールされています"
 
-#: lib/depends.c:367
+#: lib/depends.c:380
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:392
+#: lib/depends.c:405
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:408
+#: lib/depends.c:421
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:429
+#: lib/depends.c:442
 #, fuzzy
 msgid "(db files)"
 msgstr "不正なファイルの状態: %s"
 
-#: lib/depends.c:441
+#: lib/depends.c:454
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/depends.c:454
+#: lib/depends.c:467
 #, fuzzy
 msgid "(db package)"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/depends.c:762
+#: lib/depends.c:783
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
-#: lib/depends.c:882
+#: lib/depends.c:903
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "group インデックスを削除します\n"
 
 #. Record all relations.
-#: lib/depends.c:1150
+#: lib/depends.c:1171
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1256
+#: lib/depends.c:1277
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
 msgstr ""
 
-#: lib/depends.c:1349
+#: lib/depends.c:1370
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1419
+#: lib/depends.c:1440
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1454
+#: lib/depends.c:1475
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1459
+#: lib/depends.c:1480
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: rpmdb/header.c:2978 rpmdb/header.c:2999 rpmdb/header.c:3021
+#: rpmdb/header.c:2979 rpmdb/header.c:3000 rpmdb/header.c:3022
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -1698,36 +1698,36 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: lib/poptI.c:53
+#: lib/poptI.c:49
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "除外するパスは / から始まらなければなりません"
 
-#: lib/poptI.c:65
+#: lib/poptI.c:61
 msgid "relocations must begin with a /"
 msgstr "再配置は / から始まらなければなりません"
 
-#: lib/poptI.c:67
+#: lib/poptI.c:63
 msgid "relocations must contain a ="
 msgstr "再配置は = を含んでいなければなりません"
 
-#: lib/poptI.c:70
+#: lib/poptI.c:66
 msgid "relocations must have a / following the ="
 msgstr "再配置は = の次に / でなければなりません"
 
-#: lib/poptI.c:84
+#: lib/poptI.c:80
 msgid "rollback takes a time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:91
+#: lib/poptI.c:87
 msgid "malformed rollback time/date stamp argument"
 msgstr ""
 
-#: lib/poptI.c:110
+#: lib/poptI.c:106
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr "設定をスキップし、全ファイルをインストールします"
 
-#: lib/poptI.c:114
+#: lib/poptI.c:110
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1735,159 +1735,159 @@ msgstr ""
 "<package> と一致するパッケージ全てを削除します(一般\n"
 "\t\t\t      的に複数のパッケージを指定するとエラーになります)"
 
-#: lib/poptI.c:120 lib/poptI.c:175
+#: lib/poptI.c:116 lib/poptI.c:171
 #, fuzzy
 msgid "do not execute package scriptlet(s)"
 msgstr "パッケージ指定のスクリプトを実行しません"
 
-#: lib/poptI.c:124
+#: lib/poptI.c:120
 #, fuzzy
 msgid "relocate files in non-relocateable package"
 msgstr "パス %s は再配置できません(パッケージ %s-%s-%s に対して)"
 
-#: lib/poptI.c:127
+#: lib/poptI.c:123
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
-#: lib/poptI.c:130
+#: lib/poptI.c:126
 msgid "erase (uninstall) package"
 msgstr "パッケージを削除(アンインストール)します"
 
-#: lib/poptI.c:130
+#: lib/poptI.c:126
 #, fuzzy
 msgid "<package>+"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/poptI.c:133
+#: lib/poptI.c:129
 msgid "do not install documentation"
 msgstr "ドキュメントをインストールしません"
 
-#: lib/poptI.c:135
+#: lib/poptI.c:131
 #, fuzzy
 msgid "skip files with leading component <path> "
 msgstr "パス <path> 中のファイルをスキップします"
 
-#: lib/poptI.c:136
+#: lib/poptI.c:132
 msgid "<path>"
 msgstr ""
 
-#: lib/poptI.c:139
+#: lib/poptI.c:135
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "--replacepkgs と --replacefiles を短縮したもの"
 
-#: lib/poptI.c:142
+#: lib/poptI.c:138
 #, fuzzy
 msgid "upgrade package(s) if already installed"
 msgstr "パッケージ %s-%s-%s はすでにインストールされています"
 
-#: lib/poptI.c:143 lib/poptI.c:159 lib/poptI.c:240
+#: lib/poptI.c:139 lib/poptI.c:155 lib/poptI.c:236
 #, fuzzy
 msgid "<packagefile>+"
 msgstr "パッケージファイルについて問い合わせます"
 
-#: lib/poptI.c:145
+#: lib/poptI.c:141
 msgid "print hash marks as package installs (good with -v)"
 msgstr "インストールする際に '#' で表示します(-v を使用すると良い)"
 
-#: lib/poptI.c:148
+#: lib/poptI.c:144
 msgid "don't verify package architecture"
 msgstr "パッケージの対象アーキテクチャの検証をしません"
 
-#: lib/poptI.c:151
+#: lib/poptI.c:147
 msgid "don't verify package operating system"
 msgstr "パッケージ対象OSの検証をしません"
 
-#: lib/poptI.c:154
+#: lib/poptI.c:150
 msgid "don't check disk space before installing"
 msgstr "インストール前にディスクの容量チェックをしません"
 
-#: lib/poptI.c:156
+#: lib/poptI.c:152
 msgid "install documentation"
 msgstr "ドキュメントをインストールします"
 
-#: lib/poptI.c:159
+#: lib/poptI.c:155
 #, fuzzy
 msgid "install package(s)"
 msgstr "パッケージをインストールします"
 
-#: lib/poptI.c:161
+#: lib/poptI.c:157
 msgid "update the database, but do not modify the filesystem"
 msgstr ""
 "データベースを更新しますが、\n"
 "ファイルシステムの変更しません"
 
-#: lib/poptI.c:163
+#: lib/poptI.c:159
 msgid "do not verify package dependencies"
 msgstr "パッケージの依存関係の検証をしません"
 
-#: lib/poptI.c:166
+#: lib/poptI.c:162
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 "依存性を満たすためのパッケージの\n"
 "インストールを要求しません"
 
-#: lib/poptI.c:171
+#: lib/poptI.c:167
 msgid "do not suggest missing dependency resolution(s)"
 msgstr ""
 
-#: lib/poptI.c:178
+#: lib/poptI.c:174
 #, fuzzy, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "どの段階も実行しません"
 
-#: lib/poptI.c:181
+#: lib/poptI.c:177
 #, fuzzy, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "どの段階も実行しません"
 
-#: lib/poptI.c:184
+#: lib/poptI.c:180
 #, fuzzy, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "どの段階も実行しません"
 
-#: lib/poptI.c:187
+#: lib/poptI.c:183
 #, fuzzy, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "どの段階も実行しません"
 
-#: lib/poptI.c:190 lib/poptQV.c:272 lib/poptQV.c:309
+#: lib/poptI.c:186 lib/poptQV.c:272 lib/poptQV.c:309
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "パッケージ中のファイルの検証をしません"
 
-#: lib/poptI.c:192 lib/poptQV.c:275 lib/poptQV.c:311
+#: lib/poptI.c:188 lib/poptQV.c:275 lib/poptQV.c:311
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "署名の検証をします"
 
-#: lib/poptI.c:196
+#: lib/poptI.c:192
 #, fuzzy
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr ""
 "このパッケージによってトリガーされるスクリプトを\n"
 "実行しません"
 
-#: lib/poptI.c:199
+#: lib/poptI.c:195
 #, fuzzy, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "パッケージ指定のスクリプトを実行しません"
 
-#: lib/poptI.c:202
+#: lib/poptI.c:198
 #, fuzzy, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "インストールスクリプトを実行しません"
 
-#: lib/poptI.c:205
+#: lib/poptI.c:201
 #, fuzzy, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "インストールスクリプトを実行しません"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:204
 #, fuzzy, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "インストールスクリプトを実行しません"
 
-#: lib/poptI.c:212
+#: lib/poptI.c:208
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -1895,53 +1895,53 @@ msgstr ""
 "古いバージョンのパッケージにアップグレードします\n"
 "(アップグレード時の --force はこれを自動的に行います)"
 
-#: lib/poptI.c:216
+#: lib/poptI.c:212
 msgid "print percentages as package installs"
 msgstr "インストールする際に '%' で表示します"
 
-#: lib/poptI.c:218
+#: lib/poptI.c:214
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
 "再配置可能なパッケージに対し、インストールパス\n"
 "接頭辞を <dir> に設定します"
 
-#: lib/poptI.c:221
+#: lib/poptI.c:217
 #, fuzzy
 msgid "relocate files from path <old> to <new>"
 msgstr "<oldpath> から <newpath> にファイルを再配置させます"
 
-#: lib/poptI.c:222
+#: lib/poptI.c:218
 #, fuzzy
 msgid "<old>=<new>"
 msgstr "<oldpath> から <newpath> にファイルを再配置させます"
 
-#: lib/poptI.c:225
+#: lib/poptI.c:221
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:228
+#: lib/poptI.c:224
 msgid "install even if the package replaces installed files"
 msgstr ""
 "インストール時に置き換えられるファイルが\n"
 "あってもインストールします"
 
-#: lib/poptI.c:231
+#: lib/poptI.c:227
 msgid "reinstall if the package is already present"
 msgstr "既に存在するパッケージでも再インストールします"
 
-#: lib/poptI.c:233
+#: lib/poptI.c:229
 msgid "deinstall new, reinstall old, package(s), back to <date>"
 msgstr ""
 
-#: lib/poptI.c:234
+#: lib/poptI.c:230
 msgid "<date>"
 msgstr ""
 
-#: lib/poptI.c:236
+#: lib/poptI.c:232
 msgid "don't install, but tell if it would work or not"
 msgstr "インストールせずに、テストのみ行います"
 
-#: lib/poptI.c:239
+#: lib/poptI.c:235
 #, fuzzy
 msgid "upgrade package(s)"
 msgstr "パッケージファイルについて問い合わせます"
@@ -2376,97 +2376,97 @@ msgstr "(何の状態もありません)"
 msgid "package has neither file owner or id lists\n"
 msgstr "パッケージはファイル所有者や id リストをどちらも持っていません"
 
-#: lib/query.c:463
+#: lib/query.c:464
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
-#: lib/query.c:617 lib/query.c:655 lib/rpminstall.c:352 lib/rpminstall.c:494
+#: lib/query.c:618 lib/query.c:656 lib/rpminstall.c:352 lib/rpminstall.c:494
 #: lib/rpminstall.c:887
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: lib/query.c:633
+#: lib/query.c:634
 #, c-format
 msgid "query of %s failed\n"
 msgstr "%s への問い合わせに失敗しました\n"
 
-#: lib/query.c:639
+#: lib/query.c:640
 msgid "old format source packages cannot be queried\n"
 msgstr "旧形式のソースパッケージを問い合わせることはできません\n"
 
-#: lib/query.c:665 lib/rpminstall.c:507
+#: lib/query.c:666 lib/rpminstall.c:507
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: lib/query.c:709
+#: lib/query.c:710
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "スペックファイル %s への問い合わせに失敗しました、パースできません\n"
 
-#: lib/query.c:730
+#: lib/query.c:731
 #, fuzzy
 msgid "no packages\n"
 msgstr "%d 個のパッケージを見つけました\n"
 
-#: lib/query.c:750
+#: lib/query.c:751
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません\n"
 
-#: lib/query.c:760
+#: lib/query.c:761
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:774 lib/query.c:796 lib/query.c:817 lib/query.c:852
+#: lib/query.c:775 lib/query.c:797 lib/query.c:818 lib/query.c:853
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "%s を読むのに失敗: $s。"
 
-#: lib/query.c:784 lib/query.c:802 lib/query.c:827 lib/query.c:857
+#: lib/query.c:785 lib/query.c:803 lib/query.c:828 lib/query.c:858
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "%s をトリガーするパッケージは存在しません\n"
 
-#: lib/query.c:868
+#: lib/query.c:869
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません\n"
 
-#: lib/query.c:879
+#: lib/query.c:880
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません\n"
 
-#: lib/query.c:913
+#: lib/query.c:914
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:917
+#: lib/query.c:918
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません\n"
 
-#: lib/query.c:944
+#: lib/query.c:945
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:947
+#: lib/query.c:948
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "パッケージレコード番号 %d\n"
 
-#: lib/query.c:952
+#: lib/query.c:953
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "レコード %d を読むことができませんでした\n"
 
-#: lib/query.c:963 lib/rpminstall.c:675
+#: lib/query.c:964 lib/rpminstall.c:675
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません\n"
@@ -2778,147 +2778,147 @@ msgstr "読み込むために %s をオープンできません: %s。"
 msgid "cannot open Packages database in %s\n"
 msgstr "%s/packages.rpm をオープンできません\n"
 
-#: lib/signature.c:123
+#: lib/signature.c:124
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 "ファイルは一般のファイルではありません -- サイズチェックをスキップします\n"
 
-#: lib/signature.c:132
+#: lib/signature.c:142
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:137
+#: lib/signature.c:147
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:157
+#: lib/signature.c:167
 msgid "No signature\n"
 msgstr "署名はありません\n"
 
-#: lib/signature.c:161
+#: lib/signature.c:171
 msgid "Old PGP signature\n"
 msgstr "古い PGP 署名\n"
 
-#: lib/signature.c:172
+#: lib/signature.c:182
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "古い(内部だけの)署名!  どうやってそれを手にいれましたか!?"
 
-#: lib/signature.c:226
+#: lib/signature.c:232
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:305 lib/signature.c:402 lib/signature.c:669
-#: lib/signature.c:702
+#: lib/signature.c:311 lib/signature.c:408 lib/signature.c:675
+#: lib/signature.c:708
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s"
 
-#: lib/signature.c:321
+#: lib/signature.c:327
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp 失敗"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:328
+#: lib/signature.c:334
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:333
+#: lib/signature.c:339
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %s\n"
 
-#: lib/signature.c:347 lib/signature.c:445
+#: lib/signature.c:353 lib/signature.c:451
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "署名を読むことができません"
 
-#: lib/signature.c:352
+#: lib/signature.c:358
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 署名の %d バイトを取得\n"
 
-#: lib/signature.c:419
+#: lib/signature.c:425
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg 失敗"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:426
+#: lib/signature.c:432
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:431
+#: lib/signature.c:437
 #, fuzzy, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 署名サイズ: %s\n"
 
-#: lib/signature.c:450
+#: lib/signature.c:456
 #, fuzzy, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG 署名の %d バイトを取得\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:707 lib/signature.c:758
+#: lib/signature.c:713 lib/signature.c:764
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "マクロファイル中の無効な %%_signature 。\n"
 
-#: lib/signature.c:737
+#: lib/signature.c:743
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:750
+#: lib/signature.c:756
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:794
+#: lib/signature.c:800
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "ヘッダサイズが大きすぎます"
 
-#: lib/signature.c:830
+#: lib/signature.c:836
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:879
+#: lib/signature.c:885
 msgid "Header SHA1 digest: "
 msgstr ""
 
-#: lib/signature.c:1066
+#: lib/signature.c:1072
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "MD5 署名をスキップします"
 
-#: lib/signature.c:1176
+#: lib/signature.c:1182
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1177
+#: lib/signature.c:1183
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "署名はありません\n"
 
-#: lib/signature.c:1252
+#: lib/signature.c:1258
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1279
+#: lib/signature.c:1285
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1283
+#: lib/signature.c:1289
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名パッド: %d\n"
@@ -2953,12 +2953,12 @@ msgstr "%s-%s-%s のための依存性を満たしていません:"
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
-#: rpmdb/db1.c:98 rpmdb/db3.c:100
+#: rpmdb/db1.c:98 rpmdb/db3.c:98
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:101 rpmdb/db3.c:103
+#: rpmdb/db1.c:101 rpmdb/db3.c:101
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr ""
@@ -3001,70 +3001,70 @@ msgstr "データベースモード 0x%x のオープン (%s)\n"
 msgid "cannot get %s lock on database\n"
 msgstr "データベースの %s をロックできません"
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1228
+#: rpmdb/db1.c:573 rpmdb/db3.c:1121
 msgid "exclusive"
 msgstr "除外"
 
-#: rpmdb/db1.c:573 rpmdb/db3.c:1228
+#: rpmdb/db1.c:573 rpmdb/db3.c:1121
 msgid "shared"
 msgstr "共有"
 
-#: rpmdb/db3.c:129
+#: rpmdb/db3.c:127
 #, fuzzy, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:147
+#: rpmdb/db3.c:145
 #, fuzzy, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:187
+#: rpmdb/db3.c:185
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:711
+#: rpmdb/db3.c:614
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:778
+#: rpmdb/db3.c:681
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:1001
+#: rpmdb/db3.c:903
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: rpmdb/db3.c:1226
+#: rpmdb/db3.c:1119
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "データベースの %s をロックできません"
 
-#: rpmdb/db3.c:1232
+#: rpmdb/db3.c:1125
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/dbconfig.c:404
+#: rpmdb/dbconfig.c:400
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:442
+#: rpmdb/dbconfig.c:438
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:451
+#: rpmdb/dbconfig.c:447
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:460
+#: rpmdb/dbconfig.c:456
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -3180,158 +3180,152 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:163
+#: rpmdb/rpmdb.c:165
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:440
+#: rpmdb/rpmdb.c:258
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "%s をオープンできません  %s:%d"
 
-#: rpmdb/rpmdb.c:462
+#: rpmdb/rpmdb.c:280
 #, fuzzy, c-format
 msgid "cannot open %s index\n"
 msgstr "%s をオープンできません\n"
 
-#: rpmdb/rpmdb.c:554
+#: rpmdb/rpmdb.c:379
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "レコード %s の取得のエラー (%s から)"
 
-#: rpmdb/rpmdb.c:685
+#: rpmdb/rpmdb.c:516
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "レコード %s を %s にストアでエラー "
 
-#: rpmdb/rpmdb.c:695
+#: rpmdb/rpmdb.c:529
 #, fuzzy, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "レコード %s を %s に削除でエラー"
 
-#: rpmdb/rpmdb.c:954
+#: rpmdb/rpmdb.c:788
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません"
 
-#: rpmdb/rpmdb.c:1102
-msgid ""
-"old format database is present; use --rebuilddb to generate a new format "
-"database\n"
-msgstr ""
-
 #. error
-#: rpmdb/rpmdb.c:1367
+#: rpmdb/rpmdb.c:1174
 #, fuzzy, c-format
 msgid "error(%d) counting packages\n"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: rpmdb/rpmdb.c:2146 rpmdb/rpmdb.c:3507
+#: rpmdb/rpmdb.c:1971 rpmdb/rpmdb.c:3357
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: rpmdb/rpmdb.c:2199
+#: rpmdb/rpmdb.c:2034
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2478
+#: rpmdb/rpmdb.c:2306
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "検索のための %d で ヘッダを読むことができません"
 
-#: rpmdb/rpmdb.c:2639
+#: rpmdb/rpmdb.c:2472
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "group インデックスを削除します\n"
 
-#: rpmdb/rpmdb.c:2643
+#: rpmdb/rpmdb.c:2476
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "name インデックス削除します\n"
 
-#: rpmdb/rpmdb.c:2813
+#: rpmdb/rpmdb.c:2663
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "パッケージ %s の探索エラー\n"
 
-#: rpmdb/rpmdb.c:3008
+#: rpmdb/rpmdb.c:2858
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: rpmdb/rpmdb.c:3012
+#: rpmdb/rpmdb.c:2862
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: rpmdb/rpmdb.c:3393
+#: rpmdb/rpmdb.c:3243
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3426
+#: rpmdb/rpmdb.c:3276
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません"
 
-#: rpmdb/rpmdb.c:3453
+#: rpmdb/rpmdb.c:3303
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rootdir %s 中でデータベースを再構築します\n"
 
-#: rpmdb/rpmdb.c:3457
+#: rpmdb/rpmdb.c:3307
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "一時的なデータベース %s はすでに存在しています"
 
-#: rpmdb/rpmdb.c:3463
+#: rpmdb/rpmdb.c:3313
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3465
+#: rpmdb/rpmdb.c:3315
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3472
+#: rpmdb/rpmdb.c:3322
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "古いデータベースのオープン\n"
 
-#: rpmdb/rpmdb.c:3483
+#: rpmdb/rpmdb.c:3333
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "新しいデータベースのオープン\n"
 
-#: rpmdb/rpmdb.c:3547
+#: rpmdb/rpmdb.c:3397
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: rpmdb/rpmdb.c:3565
+#: rpmdb/rpmdb.c:3415
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: rpmdb/rpmdb.c:3573
+#: rpmdb/rpmdb.c:3423
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: rpmdb/rpmdb.c:3575
+#: rpmdb/rpmdb.c:3425
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: rpmdb/rpmdb.c:3585
+#: rpmdb/rpmdb.c:3435
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: rpmdb/rpmdb.c:3587
+#: rpmdb/rpmdb.c:3437
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"

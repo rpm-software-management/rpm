@@ -1083,7 +1083,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	}
 #	endif	/* hpux */
 
-#	if HAVE_PERSONALITY && defined(__linux__) && defined(__sparc__)
+#	if defined(__linux__) && defined(__sparc__)
 	if (!strcmp(un.machine, "sparc")) {
 	    #define PERS_LINUX		0x00000000
 	    #define PERS_LINUX_32BIT	0x00800000

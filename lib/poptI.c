@@ -40,10 +40,6 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 {
     struct rpmInstallArguments_s * ia = &rpmIArgs;
 
-#if 0
-fprintf(stderr, "*** opt %s %c info 0x%x arg %p val 0x%x arg %p %s\n", opt->longName, opt->shortName, opt->argInfo, opt->arg, opt->val, arg, arg);
-#endif
-
     /* XXX avoid accidental collisions with POPT_BIT_SET for flags */
     /*@-branchstate@*/
     if (opt->arg == NULL)

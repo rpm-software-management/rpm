@@ -293,7 +293,7 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 	    /* XXX Legacy regions do not include the region tag and data. */
 	    /*@-sizeoftype@*/
 	    if (i == 0 && (h->flags & HEADERFLAG_LEGACY))
-		size += sizeof(struct entryInfo) + entry->info.count;
+		size += sizeof(struct entryInfo_s) + entry->info.count;
 	    /*@=sizeoftype@*/
 	    continue;
         }
@@ -313,7 +313,7 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 	}
 
 	/*@-sizeoftype@*/
-	size += sizeof(struct entryInfo) + entry->length;
+	size += sizeof(struct entryInfo_s) + entry->length;
 	/*@=sizeoftype@*/
     }
 
@@ -421,11 +421,11 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
     char * tprev = NULL;
     char * t = NULL;
     int tdel, tl = dl;
-    struct indexEntry ieprev;
+    struct indexEntry_s ieprev;
 
     memset(&ieprev, 0, sizeof(ieprev));
     for (; il > 0; il--, pe++) {
-	struct indexEntry ie;
+	struct indexEntry_s ie;
 	int_32 type;
 
 	ie.info.tag = ntohl(pe->tag);
@@ -786,7 +786,7 @@ indexEntry findEntry(/*@null@*/ Header h, int_32 tag, int_32 type)
 	/*@modifies h @*/
 {
     indexEntry entry, entry2, last;
-    struct indexEntry key;
+    struct indexEntry_s key;
 
     if (h == NULL) return NULL;
     if (!(h->flags & HEADERFLAG_SORTED)) headerSort(h);
@@ -882,7 +882,7 @@ Header headerLoad(/*@kept@*/ void * uh)
     int_32 dl = ntohl(ei[1]);		/* data length */
     /*@-sizeoftype@*/
     size_t pvlen = sizeof(il) + sizeof(dl) +
-               (il * sizeof(struct entryInfo)) + dl;
+               (il * sizeof(struct entryInfo_s)) + dl;
     /*@=sizeoftype@*/
     void * pv = uh;
     Header h = NULL;
@@ -979,7 +979,7 @@ Header headerLoad(/*@kept@*/ void * uh)
 	    } else {
 		ril = il;
 		/*@-sizeoftype@*/
-		rdl = (ril * sizeof(struct entryInfo));
+		rdl = (ril * sizeof(struct entryInfo_s));
 		/*@=sizeoftype@*/
 		entry->info.tag = HEADER_IMAGE;
 	    }
@@ -1099,7 +1099,7 @@ Header headerCopyLoad(const void * uh)
     int_32 dl = ntohl(ei[1]);		/* data length */
     /*@-sizeoftype@*/
     size_t pvlen = sizeof(il) + sizeof(dl) +
-			(il * sizeof(struct entryInfo)) + dl;
+			(il * sizeof(struct entryInfo_s)) + dl;
     /*@=sizeoftype@*/
     void * nuh = NULL;
     Header h = NULL;
@@ -1162,7 +1162,7 @@ Header headerRead(FD_t fd, enum hMagic magicp)
     dl = ntohl(block[i]);	i++;
 
     /*@-sizeoftype@*/
-    len = sizeof(il) + sizeof(dl) + (il * sizeof(struct entryInfo)) + dl;
+    len = sizeof(il) + sizeof(dl) + (il * sizeof(struct entryInfo_s)) + dl;
     /*@=sizeoftype@*/
 
     /* Sanity checks on header intro. */
@@ -1465,7 +1465,7 @@ headerFindI18NString(Header h, indexEntry entry)
     /* XXX Drepper sez' this is the order. */
     if ((lang = getenv("LANGUAGE")) == NULL &&
 	(lang = getenv("LC_ALL")) == NULL &&
-        (lang = getenv("LC_MESSAGES")) == NULL &&
+	(lang = getenv("LC_MESSAGES")) == NULL &&
 	(lang = getenv("LANG")) == NULL)
 	    return entry->data;
     
@@ -1763,15 +1763,15 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
     indexEntry entry;
     int length;
 
-    /* First find the tag */
-    entry = findEntry(h, tag, type);
-    if (!entry)
-	return 0;
-
     if (type == RPM_STRING_TYPE || type == RPM_I18NSTRING_TYPE) {
 	/* we can't do this */
 	return 0;
     }
+
+    /* Find the tag entry in the header. */
+    entry = findEntry(h, tag, type);
+    if (!entry)
+	return 0;
 
     length = dataLength(type, p, c, 0);
 
@@ -1951,7 +1951,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
 	t += en;
 /*@=mayaliasunique@*/
 
-	/* Replace I18N string array */
+	/* Replace i18N string array */
 	entry->length -= strlen(be) + 1;
 	entry->length += sn;
 	
@@ -2949,6 +2949,7 @@ char * headerSprintf(Header h, const char * fmt,
 
     extCache = allocateExtensionCache(exts);
 
+    val = xstrdup("");
     for (i = 0; i < numTokens; i++) {
 	/*@-mods@*/
 	t = singleSprintf(h, format + i, exts, extCache, 0,

@@ -318,23 +318,25 @@ int rpmtransRemovePackage(rpmTransactionSet ts, Header h, int dboffset)
 }
 
 /**
- * Check key for an unsatisfied dependency.
+ * Check dep for an unsatisfied dependency.
  * @todo Eliminate rpmrc provides.
  * @param ts		transaction set
- * @param key		dependency
+ * @param dep		dependency
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
-static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
+static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet dep)
 	/*@globals _cacheDependsRC, fileSystem @*/
 	/*@modifies ts, _cacheDependsRC, fileSystem @*/
 {
+    DBT * key = alloca(sizeof(*key));
+    DBT * data = alloca(sizeof(*data));
     rpmdbMatchIterator mi;
     const char * Name;
     Header h;
     int rc;
     int xx;
 
-    if ((Name = dsiGetN(key)) == NULL)
+    if ((Name = dsiGetN(dep)) == NULL)
 	return 0;	/* XXX can't happen */
 
     /*
@@ -349,22 +351,33 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
 	    const char * DNEVR;
 
 	    rc = -1;
-	    if ((DNEVR = dsiGetDNEVR(key)) != NULL) {
+	    if ((DNEVR = dsiGetDNEVR(dep)) != NULL) {
 		DBC * dbcursor = NULL;
 		void * datap = NULL;
 		size_t datalen = 0;
 		size_t DNEVRlen = strlen(DNEVR);
 
-		xx = dbiCopen(dbi, &dbcursor, 0);
-		xx = dbiGet(dbi, dbcursor, (void **)&DNEVR, &DNEVRlen,
-				&datap, &datalen, 0);
+		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+
+		memset(key, 0, sizeof(*key));
+		key->data = (void *) DNEVR;
+		key->size = DNEVRlen;
+		memset(data, 0, sizeof(*data));
+		data->data = datap;
+		data->size = datalen;
+		xx = dbiGet(dbi, dbcursor, key, data);
+		DNEVR = key->data;
+		DNEVRlen = key->size;
+		datap = data->data;
+		datalen = data->size;
+
 		if (xx == 0 && datap && datalen == 4)
 		    memcpy(&rc, datap, datalen);
 		xx = dbiCclose(dbi, dbcursor, 0);
 	    }
 
 	    if (rc >= 0) {
-		dsiNotify(key, _("(cached)"), rc);
+		dsiNotify(dep, _("(cached)"), rc);
 		return rc;
 	    }
 	}
@@ -375,7 +388,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
 #if defined(DYING) || defined(__LCLINT__)
   { static /*@observer@*/ const char noProvidesString[] = "nada";
     static /*@observer@*/ const char * rcProvidesString = noProvidesString;
-    int_32 Flags = dsiGetFlags(key);
+    int_32 Flags = dsiGetFlags(dep);
     const char * start;
     int i;
 
@@ -389,7 +402,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
 	while ((start = strstr(rcProvidesString, Name))) {
 	/*@=observertrans =mayaliasunique@*/
 	    if (xisspace(start[i]) || start[i] == '\0' || start[i] == ',') {
-		dsiNotify(key, _("(rpmrc provides)"), rc);
+		dsiNotify(dep, _("(rpmrc provides)"), rc);
 		goto exit;
 	    }
 	    rcProvidesString = start + 1;
@@ -404,21 +417,21 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
      * Check those dependencies now.
      */
     if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1)) {
-	if (rpmCheckRpmlibProvides(key)) {
-	    dsiNotify(key, _("(rpmlib provides)"), rc);
+	if (rpmCheckRpmlibProvides(dep)) {
+	    dsiNotify(dep, _("(rpmlib provides)"), rc);
 	    goto exit;
 	}
 	goto unsatisfied;
     }
 
     /* Search added packages for the dependency. */
-    if (alSatisfiesDepend(ts->addedPackages, key, NULL) != NULL)
+    if (alSatisfiesDepend(ts->addedPackages, dep, NULL) != NULL)
 	goto exit;
 
     /* XXX only the installer does not have the database open here. */
     if (ts->rpmdb != NULL) {
 	if (Name[0] == '/') {
-	    /* keyFlags better be 0! */
+	    /* depFlags better be 0! */
 
 	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
 
@@ -426,7 +439,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
 			ts->removedPackages, ts->numRemovedPackages, 1);
 
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
-		dsiNotify(key, _("(db files)"), rc);
+		dsiNotify(dep, _("(db files)"), rc);
 		mi = rpmdbFreeIterator(mi);
 		goto exit;
 	    }
@@ -437,8 +450,8 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
 	(void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (rangeMatchesDepFlags(h, key)) {
-		dsiNotify(key, _("(db provides)"), rc);
+	    if (rangeMatchesDepFlags(h, dep)) {
+		dsiNotify(dep, _("(db provides)"), rc);
 		mi = rpmdbFreeIterator(mi);
 		goto exit;
 	    }
@@ -450,8 +463,8 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
 	(void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (rangeMatchesDepFlags(h, key)) {
-		dsiNotify(key, _("(db package)"), rc);
+	    if (rangeMatchesDepFlags(h, dep)) {
+		dsiNotify(dep, _("(db package)"), rc);
 		mi = rpmdbFreeIterator(mi);
 		goto exit;
 	    }
@@ -465,11 +478,11 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key)
      * Search for an unsatisfied dependency.
      */
     if (!(ts->transFlags & RPMTRANS_FLAG_NOSUGGESTS) && ts->solve != NULL)
-	xx = (*ts->solve) (ts, key);
+	xx = (*ts->solve) (ts, dep);
 
 unsatisfied:
     rc = 1;	/* dependency is unsatisfied */
-    dsiNotify(key, NULL, rc);
+    dsiNotify(dep, NULL, rc);
 
 exit:
     /*
@@ -483,12 +496,20 @@ exit:
 	} else {
 	    const char * DNEVR;
 	    xx = 0;
-	    if ((DNEVR = dsiGetDNEVR(key)) != NULL) {
+	    if ((DNEVR = dsiGetDNEVR(dep)) != NULL) {
 		DBC * dbcursor = NULL;
 		size_t DNEVRlen = strlen(DNEVR);
-		xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
-		xx = dbiPut(dbi, dbcursor, DNEVR, DNEVRlen,
-			&rc, sizeof(rc), 0);
+
+		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DBI_WRITECURSOR);
+
+		memset(key, 0, sizeof(*key));
+		key->data = (void *) DNEVR;
+		key->size = DNEVRlen;
+		memset(data, 0, sizeof(*data));
+		data->data = &rc;
+		data->size = sizeof(rc);
+
+		xx = dbiPut(dbi, dbcursor, key, data);
 		xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
 	    }
 	    if (xx)
@@ -504,13 +525,13 @@ exit:
  * @param pkgNEVR	package name-version-release
  * @param requires	Requires: dependencies (or NULL)
  * @param conflicts	Conflicts: dependencies (or NULL)
- * @param keyName	dependency name to filter (or NULL)
+ * @param depName	dependency name to filter (or NULL)
  * @param multiLib	skip multilib colored dependencies?
  * @return		0 no problems found
  */
 static int checkPackageDeps(rpmTransactionSet ts, const char * pkgNEVR,
 		/*@null@*/ rpmDepSet requires, /*@null@*/ rpmDepSet conflicts,
-		/*@null@*/ const char * keyName, uint_32 multiLib)
+		/*@null@*/ const char * depName, uint_32 multiLib)
 	/*@globals fileSystem @*/
 	/*@modifies ts, requires, conflicts, fileSystem */
 {
@@ -527,7 +548,7 @@ static int checkPackageDeps(rpmTransactionSet ts, const char * pkgNEVR,
 	    continue;	/* XXX can't happen */
 
 	/* Filter out requires that came along for the ride. */
-	if (keyName != NULL && strcmp(keyName, Name))
+	if (depName != NULL && strcmp(depName, Name))
 	    continue;
 
 	Flags = dsiGetFlags(requires);
@@ -571,7 +592,7 @@ static int checkPackageDeps(rpmTransactionSet ts, const char * pkgNEVR,
 	    continue;	/* XXX can't happen */
 
 	/* Filter out conflicts that came along for the ride. */
-	if (keyName != NULL && strcmp(keyName, Name))
+	if (depName != NULL && strcmp(depName, Name))
 	    continue;
 
 	Flags = dsiGetFlags(conflicts);
@@ -602,15 +623,15 @@ static int checkPackageDeps(rpmTransactionSet ts, const char * pkgNEVR,
 
 /**
  * Check dependency against installed packages.
- * Adding: check name/provides key against each conflict match,
- * Erasing: check name/provides/filename key against each requiredby match.
+ * Adding: check name/provides dep against each conflict match,
+ * Erasing: check name/provides/filename dep against each requiredby match.
  * @param ts		transaction set
- * @param key		dependency name
+ * @param dep		dependency name
  * @param mi		rpm database iterator
  * @return		0 no problems found
  */
 static int checkPackageSet(rpmTransactionSet ts,
-		const char * key, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi)
+		const char * dep, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi)
 	/*@globals fileSystem @*/
 	/*@modifies ts, mi, fileSystem @*/
 {
@@ -628,7 +649,7 @@ static int checkPackageSet(rpmTransactionSet ts,
 	pkgNEVR = hGetNEVR(h, NULL);
 	requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	conflicts = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
-	rc = checkPackageDeps(ts, pkgNEVR, requires, conflicts, key, 0);
+	rc = checkPackageDeps(ts, pkgNEVR, requires, conflicts, dep, 0);
 	conflicts = dsFree(conflicts);
 	requires = dsFree(requires);
 	pkgNEVR = _free(pkgNEVR);
@@ -644,27 +665,27 @@ static int checkPackageSet(rpmTransactionSet ts,
 }
 
 /**
- * Erasing: check name/provides/filename key against requiredby matches.
+ * Erasing: check name/provides/filename dep against requiredby matches.
  * @param ts		transaction set
- * @param key		requires name
+ * @param dep		requires name
  * @return		0 no problems found
  */
-static int checkDependentPackages(rpmTransactionSet ts, const char * key)
+static int checkDependentPackages(rpmTransactionSet ts, const char * dep)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fileSystem @*/
 {
     rpmdbMatchIterator mi;
-    mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, key, 0);
-    return checkPackageSet(ts, key, mi);
+    mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
+    return checkPackageSet(ts, dep, mi);
 }
 
 /**
- * Adding: check name/provides key against conflicts matches.
+ * Adding: check name/provides dep against conflicts matches.
  * @param ts		transaction set
- * @param key		conflicts name
+ * @param dep		conflicts name
  * @return		0 no problems found
  */
-static int checkDependentConflicts(rpmTransactionSet ts, const char * key)
+static int checkDependentConflicts(rpmTransactionSet ts, const char * dep)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fileSystem @*/
 {
@@ -672,8 +693,8 @@ static int checkDependentConflicts(rpmTransactionSet ts, const char * key)
 
     if (ts->rpmdb != NULL) {	/* XXX is this necessary? */
 	rpmdbMatchIterator mi;
-	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, key, 0);
-	rc = checkPackageSet(ts, key, mi);
+	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
+	rc = checkPackageSet(ts, dep, mi);
     }
 
     return rc;
@@ -686,7 +707,7 @@ struct badDeps_s {
     const char * qname;
 };
 
-#ifdef	DYING
+#ifdef REFERENCE
 static struct badDeps_s {
 /*@observer@*/ /*@null@*/ const char * pname;
 /*@observer@*/ /*@null@*/ const char * qname;

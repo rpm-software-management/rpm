@@ -113,6 +113,7 @@ static inline rpmRC checkSize(FD_t fd, int siglen, int pad, int datalen)
 	/*@modifies fileSystem @*/
 {
     struct stat st;
+    int delta;
     rpmRC rc;
 
     if (fstat(Fileno(fd), &st))
@@ -125,15 +126,24 @@ static inline rpmRC checkSize(FD_t fd, int siglen, int pad, int datalen)
     }
 
     /*@-sizeoftype@*/
-    rc = (((sizeof(struct rpmlead) + siglen + pad + datalen) - st.st_size)
-	? RPMRC_BADSIZE : RPMRC_OK);
+    delta = (sizeof(struct rpmlead) + siglen + pad + datalen) - st.st_size;
+    switch (delta) {
+    case -32: /* XXX rpm-4.0 packages */
+    case 32:  /* XXX Legacy headers have a HEADER_IMAGE tag added. */
+    case 0:
+	rc = RPMRC_OK;
+	break;
+    default:
+	rc = RPMRC_BADSIZE;
+	break;
+    }
 
-    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_DEBUG),
+    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_WARNING),
 	_("Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"),
 		(int)sizeof(struct rpmlead)+siglen+pad+datalen,
 		(int)sizeof(struct rpmlead), siglen, pad, datalen);
     /*@=sizeoftype@*/
-    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_DEBUG),
+    rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_WARNING),
 	_("  Actual size: %12d\n"), (int)st.st_size);
 
     return rc;
@@ -181,10 +191,6 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 	rc = RPMRC_OK;
 	sigSize = headerSizeof(h, HEADER_MAGIC_YES);
 
-	/* XXX Legacy headers have a HEADER_IMAGE tag added. */
-	if (headerIsEntry(h, RPMTAG_HEADERIMAGE))
-	    sigSize -= (16 + 16);
-
 	pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 	if (sig_type == RPMSIGTYPE_HEADERSIG) {
 	    if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type,
@@ -199,7 +205,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 	break;
     }
 
-    if (headerp && rc == 0)
+    if (headerp && rc == RPMRC_OK)
 	*headerp = headerLink(h, NULL);
 
     h = headerFree(h, NULL);

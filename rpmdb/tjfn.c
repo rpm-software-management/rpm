@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include <db3/db.h>
+#include <db.h>
 
 #define RPMDB_HOME	"/tmp/rpm"
 #define	RPMDB_Packages	"Packages"

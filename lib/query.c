@@ -117,7 +117,7 @@ static void printFileInfo(char * te, const char * name,
 static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
 	/*@*/
 {
-    const char * errstr;
+    const char * errstr = "(unkown error)";
     const char * str;
 
     str = headerSprintf(h, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
@@ -458,6 +458,7 @@ printNewSpecfile(Spec spec)
 	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tn), "}");
 	msgstr = _free(msgstr);
 
+	/* XXX this should use queryHeader(), but prints out tn as well. */
 	msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 	if (msgstr == NULL) {
 	    rpmError(RPMERR_QFMT, _("can't query %s: %s\n"), tn, errstr);

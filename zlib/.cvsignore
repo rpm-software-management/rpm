@@ -6,6 +6,7 @@ Doxytags
 Makefile
 Makefile.in
 apidocs
+autom4te-*
 config.cache
 config.guess
 config.h
@@ -14,10 +15,14 @@ config.log
 config.status
 config.sub
 configure
+depcomp
 doxygen
 example
+install-sh
 libtool
 minigzip
+missing
+mkinstalldirs
 stamp-h
 stamp-h.in
 *.la

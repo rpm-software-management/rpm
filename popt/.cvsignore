@@ -5,6 +5,7 @@ Doxyfile
 Makefile
 Makefile.in
 aclocal.m4
+autom4te-*.cache
 config.cache
 config.guess
 config.h
@@ -14,10 +15,14 @@ config.status
 config.sub
 configure
 doxygen
+depcomp
+install-sh
 libtool
 ltconfig
 ltmain.sh
+missing
 stamp-h
+stamp-h1
 stamp-h.in
 test1
 test2

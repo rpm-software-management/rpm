@@ -20,7 +20,7 @@ tjfn_LDFLAGS = -all-static
 tjfn_LDADD = librpmdb.la
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = header.h hdrinline.h rpmdb.h
+pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h
 noinst_HEADERS = falloc.h fprint.h header_internal.h legacy.h rpmhash.h
 
 mylibpaths = \
@@ -68,7 +68,10 @@ tagtbl.c: $(top_srcdir)/lib/rpmlib.h
 	@echo '/*@unchecked@*/' >> $@
 	@echo 'const int rpmTagTableSize = sizeof(rpmTagTbl) / sizeof(rpmTagTbl[0]) - 1;' >> $@
 
-.created:
+db.h:
+	ln -sf ../$(WITH_DB_SUBDIR)/db.h $@
+
+.created:	db.h
 	for lo in $(DB3LOBJS); do \
 	  [ -f $$lo ] || $(LN_S) $(top_builddir)/$(WITH_DB_SUBDIR)/$$lo $$lo ; \
 	done

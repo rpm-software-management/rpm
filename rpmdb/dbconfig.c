@@ -15,8 +15,6 @@ typedef	int int32_t;
 /*@=redef@*/
 #endif
 
-#include <db3/db.h>
-
 #include <rpmlib.h>
 #include <rpmmacro.h>
 
@@ -156,8 +154,6 @@ struct dbOption rdbOptions[] = {
  { "usecursors",0,POPT_ARG_NONE,	&db3dbi.dbi_use_cursors, 0,
 	NULL, NULL },
  { "usedbenv",	0,POPT_ARG_NONE,	&db3dbi.dbi_use_dbenv, 0,
-	NULL, NULL },
- { "rmwcursor",	0,POPT_ARG_NONE,	&db3dbi.dbi_get_rmw_cursor, 0,
 	NULL, NULL },
  { "nofsync",	0,POPT_ARG_NONE,	&db3dbi.dbi_no_fsync, 0,
 	NULL, NULL },

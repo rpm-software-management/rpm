@@ -93,7 +93,7 @@
 `	- don't bother with signing check if 16 bits of hash don't match.
 	- only V3 signatures for now.
 	- wire --nodigest/--nosignature options to checksig/query/verify modes.
-	- splint annotationsm, signature cleanup.
+	- splint annotations, signature cleanup.
 	- drill ts/fi through verify mode, add methods to keep fi abstract.
 	- use mmap when calculating file digests on verify, ~20% faster.
 	- permit --dbpath and --root with signature (i.e. --import) modes.
@@ -101,8 +101,10 @@
 	- rescusitate --rebuild.
 	- use rpmdb-redhat to suggest dependency resolution(s).
 	- merge conflicts into problems, handle as transaction set variable.
-	- use build time to choose one of  multiple alternative suggestions.
+	- use build time to choose one of multiple alternative suggestions.
 	- add --nosuggests to disable suggested resolutions.
+	- attempt to make peace with automake-1.6.1, autoconf-2.53.
+	- rip out two layers of dbN gook, internal Berkeley db is here to stay.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
@@ -155,6 +157,8 @@
 	- speedup large queries by ~50%.
 	- revert to presentation ordering Yet Again (#62158).
 	- non-glibc: on upgrade, mergesort is much faster than quicksort.
+	- fix: queries that evaluated to "" incorrectly returned NULL.
+	- fix: packages produced by rpm-4.0 dinna merge signature tags.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).
