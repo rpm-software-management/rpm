@@ -263,7 +263,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
     }
 
     rc = cpioBuildArchive(toGzip[1], cpioList, numMappings, NULL, NULL, 
-			  &failedFile);
+			  archiveSize, &failedFile);
 
     chdir(savecwd);
 

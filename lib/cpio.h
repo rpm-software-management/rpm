@@ -64,7 +64,7 @@ int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings,
 		       char ** failedFile);
 int cpioBuildArchive(int fd, struct cpioFileMapping * mappings, 
 		     int numMappings, cpioCallback cb, void * cbData,
-		     char ** failedFile);
+		     unsigned int * archiveSize, char ** failedFile);
 
 /* This is designed to be qsort/bsearch compatible */
 int cpioFileMapCmp(const void * a, const void * b);

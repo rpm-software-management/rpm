@@ -3,6 +3,8 @@
 	  service shared libs to be loaded from outside of the root path
 	- added vesrion stamp to lib/misc.o (and librpm.a by extension)
 	- fixed config.sub, config.guess to recognize i686
+	- ARCHIVESIZE tag didn't get filled in properly, breaking progress
+	  meters
 
 2.4.3 -> 2.4.4:
 	- restore working directory after installing a package w/ a chroot

@@ -515,7 +515,7 @@ int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings,
 	    /* This won't get hard linked symlinks right, but I can't seem 
 	       to create those anyway */
 
-	    if (ch.nlink > 1) {
+	    if (S_ISREG(ch.mode) && ch.nlink > 1) {
 		li = links;
 		for (li = links; li; li = li->next) {
 		    if (li->inode == ch.inode && li->dev == ch.dev) break;
@@ -575,7 +575,7 @@ int cpioInstallArchive(gzFile stream, struct cpioFileMapping * mappings,
 		if (!rc)
 		    rc = setInfo(&ch);
 
-		if (ch.nlink > 1) {
+		if (S_ISREG(ch.mode) && ch.nlink > 1) {
 		    li->createdPath = linkNum;
 		    li->linksLeft--;
 		    rc = createLinks(li, failedFile);
@@ -780,7 +780,7 @@ static int writeLinkedFile(int fd, struct hardLink * hlink,
 
 int cpioBuildArchive(int fd, struct cpioFileMapping * mappings, 
 		     int numMappings, cpioCallback cb, void * cbData,
-		     char ** failedFile) {
+		     unsigned int * archiveSize, char ** failedFile) {
     size_t size, totalsize = 0;
     int rc;
     int i;
@@ -878,6 +878,8 @@ int cpioBuildArchive(int fd, struct cpioFileMapping * mappings,
     
     if ((rc = padoutfd(fd, &totalsize, 4)))
 	return rc;
+
+    if (archiveSize) *archiveSize = totalsize;
 
     return 0;
 }
