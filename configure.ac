@@ -364,39 +364,52 @@ dnl
 
 dnl Checks for libraries.
 
-WITH_LIBELF_SUBDIR=
+oCPPFLAGS="$CPPFLAGS"
+WITH_ELFUTILS_SUBDIR=
+if test -d /usr/include/elfutils; then
+    CPPFLAGS="$CPPFLAGS -I/usr/include/elfutils"
+elif test -d ./elfutils; then
+    WITH_ELFUTILS_SUBDIR=elfutils
+fi
+AC_SUBST(WITH_ELFUTILS_SUBDIR)
+
 WITH_LIBELF_INCLUDE=
 WITH_LIBELF_LIB=
-WITH_LIBELF_ARCHIVE=
+AC_CHECK_HEADER([elfutils/libelf.h])
+AC_CHECK_HEADER([elfutils/gelf.h], [
+	AC_CHECK_LIB(elf, gelf_getvernaux, [
+	    WITH_LIBELF_INCLUDE="-I/usr/include/elfutils"
+	    WITH_LIBELF_LIB="-lelf"
+	])
+    ], [
 	if test -d elfutils/libelf ; then
 	    AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
 	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the `elf' library (-lelf).])
-	    WITH_LIBELF_SUBDIR=elfutils/libelf
-	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_LIBELF_SUBDIR}"
-	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_LIBELF_SUBDIR}/libelf.la"
-	    WITH_LIBELF_ARCHIVE="\${top_builddir}/${WITH_LIBELF_SUBDIR}/.libs/libelf.a"
+	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libelf"
+	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_ELFUTILS_SUBDIR}/libelf/libelf.la"
 	fi
-AC_SUBST(WITH_LIBELF_SUBDIR)
+])
 AC_SUBST(WITH_LIBELF_INCLUDE)
 AC_SUBST(WITH_LIBELF_LIB)
-AC_SUBST(WITH_LIBELF_ARCHIVE)
 
-WITH_LIBDWARF_SUBDIR=
 WITH_LIBDWARF_INCLUDE=
 WITH_LIBDWARF_LIB=
-WITH_LIBDWARF_ARCHIVE=
+AC_CHECK_HEADER([elfutils/libdwarf.h], [
+	AC_CHECK_LIB(dwarf, dwarf_init, [
+	    WITH_LIBDWARF_INCLUDE="-I/usr/include/elfutils"
+	    WITH_LIBDWARF_LIB="-ldwarf"
+	])
+    ], [
 	if test -d elfutils/libdwarf ; then
 	    AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
 	    AC_DEFINE(HAVE_LIBDWARF, 1, [Define to 1 if you have the `dwarf' library (-ldwarf).])
-	    WITH_LIBDWARF_SUBDIR=elfutils/libdwarf
-	    WITH_LIBDWARF_INCLUDE="-I\${top_srcdir}/${WITH_LIBDWARF_SUBDIR}"
-	    WITH_LIBDWARF_LIB="\${top_builddir}/${WITH_LIBDWARF_SUBDIR}/libdwarf.la"
-	    WITH_LIBDWARF_ARCHIVE="\${top_builddir}/${WITH_LIBDWARF_SUBDIR}/.libs/libdwarf.a"
+	    WITH_LIBDWARF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libdwarf"
+	    WITH_LIBDWARF_LIB="\${top_builddir}/${WITH_ELFUTILS_SUBDIR}/libdwarf/libdwarf.la"
 	fi
-AC_SUBST(WITH_LIBDWARF_SUBDIR)
+])
 AC_SUBST(WITH_LIBDWARF_INCLUDE)
 AC_SUBST(WITH_LIBDWARF_LIB)
-AC_SUBST(WITH_LIBDWARF_ARCHIVE)
+CPPFLAGS="$oCPPFLAGS"
 
 AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])

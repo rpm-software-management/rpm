@@ -391,7 +391,7 @@ int main(int argc, const char ** argv)
 	else if (eflags)
 	    bigMode = MODE_ERASE;
     }
-#endif	/* IAM_RPMQV */
+#endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMK
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_K)) {

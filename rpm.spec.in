@@ -27,6 +27,9 @@ Prereq: gawk fileutils textutils mktemp shadow-utils
 Requires: popt = 1.8
 Obsoletes: rpm-perl < %{version}
 
+# XXX not really necessary with internal elfutils
+BuildRequires: elfutils
+
 %if !%{with_internal_db}
 BuildRequires: db3-devel
 
@@ -493,11 +496,12 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
-* Tue Nov 26 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.13
+* Fri Nov 29 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.13
 - bundle libfmagic into librpmbuild for now.
 - apply patches 7 and 8 to db-4.1.24.
 - upgrade to elfutils-0.59.
 - add -g to all platforms optflags.
+- build with external elfutils (preferred), if available.
 
 * Wed Nov 20 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.12
 - use rpmdeps rather than find-{requires,provides}.

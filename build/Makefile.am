@@ -43,6 +43,8 @@ $(top_builddir)/file/listobjs:
 	done
 	touch $@
 
+rpmfc.c: rpmfile.h
+
 clean-local:
 	 rm -f $(FILELOBJS) *.o .created rpmfile.h
 

@@ -20,11 +20,21 @@ recent versions of libtool/autoconf/automake.
 [ "`autoconf --version | head -1`" != "$ACV" ] && echo "$USAGE" && exit 1
 [ "`automake --version | head -1 | sed -e 's/1\.4[a-z]/1.4/'`" != "$AMV" ] && echo "$USAGE" && exit 1
 
-(echo "--- popt"; cd popt; ./autogen.sh --noconfigure "$@")
-(echo "--- zlib"; cd zlib; ./autogen.sh --noconfigure "$@")
-(echo "--- beecrypt"; cd beecrypt; ./autogen.sh --noconfigure "$@")
-(echo "--- elfutils"; cd elfutils; ./autogen.sh --noconfigure "$@")
-(echo "--- file"; cd file; ./autogen.sh --noconfigure "$@")
+if [ -d popt ]; then
+    (echo "--- popt"; cd popt; ./autogen.sh --noconfigure "$@")
+fi
+if [ -d zlib ]; then
+    (echo "--- zlib"; cd zlib; ./autogen.sh --noconfigure "$@")
+fi
+if [ -d beecrypt ]; then
+    (echo "--- beecrypt"; cd beecrypt; ./autogen.sh --noconfigure "$@")
+fi
+if [ -d elfutils ]; then
+    (echo "--- elfutils"; cd elfutils; ./autogen.sh --noconfigure "$@")
+fi
+if [ -d file ]; then
+    (echo "--- file"; cd file; ./autogen.sh --noconfigure "$@")
+fi
 
 echo "--- rpm"
 libtoolize --copy --force

@@ -12,7 +12,6 @@ INCLUDES = -I. \
 	@WITH_LIBELF_INCLUDE@ \
 	@WITH_LIBDWARF_INCLUDE@ \
 	-I$(top_srcdir)/file \
-	@WITH_ZLIB_INCLUDE@ \
 	@INCPATH@ \
 	-I$(top_srcdir)/misc
 
