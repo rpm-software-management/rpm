@@ -10,8 +10,6 @@
 #include "rpmerr.h"
 #include "messages.h"
 
-static void init_arch_os(char *arch, char *os);
-
 char ** splitString(char * str, int length, char sep) {
     char * s, * source, * dest;
     char ** list;
