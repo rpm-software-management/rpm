@@ -746,7 +746,8 @@ AC_FUNC_VPRINTF
 AC_FUNC_FNMATCH
 if test $ac_cv_func_fnmatch_works = no; then
    LIBOBJS="$LIBOBJS fnmatch.o"
-   AC_DEFINE_UNQUOTED(fnmatch, rpl_fnmatch)
+dnl XXX no expansion needed
+dnl AC_DEFINE_UNQUOTED(fnmatch, rpl_fnmatch)
 fi
 
 dnl XXX AC_FUNC_MEMCMP

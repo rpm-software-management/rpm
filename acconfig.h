@@ -153,6 +153,9 @@
 /* Build with dmalloc support? */
 #undef DMALLOC
 
+/* Define if you have the getmntent() function */
+#undef HAVE_GETMNTENT
+
 ^L
 /* Leave that blank line there!!  Autoheader needs it.
    If you're adding to this file, keep in mind:
