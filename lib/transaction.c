@@ -124,11 +124,7 @@ int rpmtransGetKeys(const rpmTransactionSet ts, fnpyKey ** ep, int * nep)
 	for (oc = 0; oc < ts->orderCount; oc++, e++) {
 	    switch (ts->order[oc].type) {
 	    case TR_ADDED:
-#ifdef	DYING
-		*e = alGetKey(ts->addedPackages, ts->order[oc].u.addedKey);
-#else
 		*e = ts->order[oc].key;
-#endif
 		/*@switchbreak@*/ break;
 	    default:
 	    case TR_REMOVED:
@@ -1034,13 +1030,8 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
      * - count files.
      */
     /* The ordering doesn't matter here */
-#ifdef	DYING
-    for (i = 0; i < alGetSize(ts->addedPackages); i++)
-#else
     tei = teInitIterator(ts);
-    while ((p = teNext(tei, TR_ADDED)) != NULL)
-#endif
-    {
+    while ((p = teNext(tei, TR_ADDED)) != NULL) {
 	const char * n, * v, * r;
 	fnpyKey key;
 	rpmdbMatchIterator mi;
@@ -1053,11 +1044,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	    continue;
 
 	(void) headerNVR(h, &n, &v, &r);
-#ifdef	DYING
-	key = alGetKey(ts->addedPackages, pkgKey);
-#else
 	key = p->key;
-#endif
 
 	if (!archOkay(h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
 	    rpmProblemSetAppend(ts->probs, RPMPROB_BADARCH,
@@ -1152,17 +1139,9 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	    fi->multiLib = ts->order[oc].multiLib;
 #endif
 
-#ifdef	DYING
-	    /*@-kepttrans@*/
-	    fi->key = alGetKey(ts->addedPackages, pkgKey);
-	    /*@=kepttrans@*/
-	    fi->relocs = alGetRelocs(ts->addedPackages, pkgKey);
-	    fi->fd = alGetFd(ts->addedPackages, pkgKey);
-#else
 /*@i@*/	    fi->key = ts->order[oc].key;
 	    fi->relocs = ts->order[oc].relocs;
 /*@i@*/	    fi->fd = ts->order[oc].fd;
-#endif
 
 	    /* XXX availablePackage can be dumped here XXX */
 

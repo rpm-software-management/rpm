@@ -543,15 +543,7 @@ void dsProblem(problemsSet psp, Header h, const rpmDepSet ds,
     const char * Name =  dsiGetN(ds);
     const char * DNEVR = dsiGetDNEVR(ds);
     const char * EVR = dsiGetEVR(ds);
-#ifdef	DYING
-    int_32 Flags = dsiGetFlags(ds);
-    const char * name, * version, * release;
-    int xx;
-
-    xx = headerNVR(h, &name, &version, &release);
-#else
     char * byNEVR = hGetNVR(h, NULL);
-#endif
 
     /*@-branchstate@*/
     if (Name == NULL) Name = "?N?";
@@ -571,25 +563,8 @@ void dsProblem(problemsSet psp, Header h, const rpmDepSet ds,
     dcp = psp->problems + psp->num;
     psp->num++;
 
-#ifdef	DYING
-    dcp->byHeader = headerLink(h, "dsProblem");
-    dcp->byName = xstrdup(name);
-    dcp->byVersion = xstrdup(version);
-    dcp->byRelease = xstrdup(release);
-    dcp->needsName = xstrdup(Name);
-    dcp->needsVersion = xstrdup(EVR);
-    dcp->needsFlags = Flags;
-    if (ds->tagN == RPMTAG_REQUIRENAME)
-	dcp->sense = RPMDEP_SENSE_REQUIRES;
-    else if (ds->tagN == RPMTAG_CONFLICTNAME)
-	dcp->sense = RPMDEP_SENSE_CONFLICTS;
-    else
-	dcp->sense = 0;
-#else
     dcp->byNEVR = byNEVR;
     dcp->needsNEVR = xstrdup(DNEVR);
-#endif
-
     dcp->suggestedKeys = suggestedKeys;
 }
 

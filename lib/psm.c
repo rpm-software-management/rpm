@@ -1214,18 +1214,10 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 
     fi->multiLib = 0;	/* MULTILIB for src.rpm's? */
 
-#ifdef	DYING
-    /*@-kepttrans@*/
-    fi->key = alGetKey(ts->addedPackages, pkgKey);
-    /*@=kepttrans@*/
-    fi->relocs = alGetRelocs(ts->addedPackages, pkgKey);
-    fi->fd = alGetFd(ts->addedPackages, pkgKey);
-#else
-    fi->key = NULL;
+    fi->key = NULL;	/* FIXME: this may be needed somewhen */
     /* XXX don't bother with fd, linked directly into fi below. */
 /*@i@*/ fi->fd = fd;
     fi->relocs = NULL;
-#endif
 
     /* XXX header arg unused. */
     loadFi(ts, fi, fi->h, 1);

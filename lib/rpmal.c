@@ -34,9 +34,6 @@ typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
 /*@access fnpyKey@*/
 
 /*@access rpmFNSet@*/
-#ifdef	DYING
-/*@access rpmDepSet@*/
-#endif
 
 /** \ingroup rpmdep
  * Info about a single package to be installed.
@@ -357,10 +354,6 @@ static int fieCompare(const void * one, const void * two)
 
 void alDelPackage(availableList al, alKey pkgKey)
 {
-#ifdef	DYING
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-#endif
     availablePackage alp;
     rpmFNSet fns;
     alNum pkgNum = alKey2Num(al, pkgKey);
@@ -378,21 +371,12 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
     if ((fns = alp->fns) != NULL)
     if (fns->BN != NULL && fns->Count > 0) {
 	int origNumDirs = al->numDirs;
-#ifdef	DYING
-	const char ** dirNames;
-	int_32 numDirs;
-	rpmTagType dnt;
-#endif
 	int dirNum;
 	dirInfo dieNeedle =
 		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
 	dirInfo die;
 	int last;
 	int i;
-
-#ifdef	DYING
-	xx = hge(alp->h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, &numDirs);
-#endif
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
@@ -440,10 +424,6 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 	    else
 		al->dirs = _free(al->dirs);
 	}
-
-#ifdef	DYING
-	dirNames = hfd(dirNames, dnt);
-#endif
     }
 
     alp->provides = dsFree(alp->provides);
@@ -462,9 +442,6 @@ alKey alAddPackage(availableList al, alKey pkgKey, fnpyKey key, Header h)
 {
     int scareMem = 1;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-#ifdef	DYING
-    HFD_t hfd = headerFreeData;
-#endif
     availablePackage alp;
     alNum pkgNum = alKey2Num(al, pkgKey);
     int xx;
@@ -571,10 +548,6 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 		al->numDirs++;
 	    }
 	}
-
-#ifdef	DYING
-	fns->DN = hfd(fns->DN, fns->DNt);
-#endif
 
 	last = 0;
 	for (first = 0; first < fns->Count; first = last + 1) {

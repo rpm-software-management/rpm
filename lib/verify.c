@@ -503,24 +503,13 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     /*@-branchstate@*/
     if (numConflicts) {
 	rpmDependencyConflict c;
-#ifdef	DYING
-	const char *n, *v, *r;
-#endif
 	char * t, * te;
 	int nb = 512;
-
-#ifdef	DYING
-	(void) headerNVR(h, &n, &v, &r);
-#endif
 
 	/*@-type@*/ /* FIX: rpmDependencyConflict usage */
 	for (i = 0; i < numConflicts; i++) {
 	    c = conflicts + i;
 	    nb += strlen(c->needsNEVR+2) + sizeof(", ") - 1;
-#ifdef	DYING
-	    if (conflicts[i].needsFlags)
-		nb += strlen(conflicts[i].needsVersion) + 5;
-#endif
 	}
 	te = t = alloca(nb);
 	*te = '\0';
@@ -529,20 +518,8 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 	for (i = 0; i < numConflicts; i++) {
 	    c = conflicts + i;
 	    if (i) te = stpcpy(te, ", ");
-#ifdef	DYING
-	    te = stpcpy(te, c->needsName);
-	    if (conflicts[i].needsFlags) {
-		int flags = c->needsFlags;
-		*te++ = ' ';
-		if (flags & RPMSENSE_LESS)	*te++ = '<';
-		if (flags & RPMSENSE_GREATER)	*te++ = '>';
-		if (flags & RPMSENSE_EQUAL)	*te++ = '=';
-		*te++ = ' ';
-		te = stpcpy(te, conflicts[i].needsVersion);
-	    }
-#else
+	    /* XXX FIXME: should probably supply the "[R|C] " type prefix */
 	    te = stpcpy(te, c->needsNEVR+2);
-#endif
 	}
 	conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
 	/*@=type@*/

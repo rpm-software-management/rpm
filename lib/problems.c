@@ -32,9 +32,6 @@ void rpmProblemSetFree(rpmProblemSet tsprobs)
 
     for (i = 0; i < tsprobs->numProblems; i++) {
 	rpmProblem p = tsprobs->probs + i;
-#ifdef	DYING
-	p->h = headerFree(p->h, "problems");
-#endif
 	p->pkgNEVR = _free(p->pkgNEVR);
 	p->altNEVR = _free(p->altNEVR);
 	p->str1 = _free(p->str1);
@@ -106,13 +103,8 @@ int rpmProblemSetTrim(rpmProblemSet tsprobs, rpmProblemSet filter)
 	}
 	while ((t - tsprobs->probs) < tsprobs->numProblems) {
 	    /*@-nullpass@*/	/* LCL: looks good to me */
-#ifdef	DYING
-	    if (f->h == t->h && f->type == t->type && t->key == f->key &&
-		     XSTRCMP(f->str1, t->str1))
-#else
 	    if (f->type == t->type && t->key == f->key &&
 		     XSTRCMP(f->str1, t->str1))
-#endif
 		/*@innerbreak@*/ break;
 	    /*@=nullpass@*/
 	    t++;
@@ -156,30 +148,10 @@ static int sameProblem(const rpmDependencyConflict ap,
 		const rpmDependencyConflict bp)
 	/*@*/
 {
-
-#ifdef	DYING
-    if (ap->sense != bp->sense)
-	return 1;
-
-    if (ap->byName && bp->byName && strcmp(ap->byName, bp->byName))
-	return 1;
-    if (ap->byVersion && bp->byVersion && strcmp(ap->byVersion, bp->byVersion))
-	return 1;
-    if (ap->byRelease && bp->byRelease && strcmp(ap->byRelease, bp->byRelease))
-	return 1;
-
-    if (ap->needsName && bp->needsName && strcmp(ap->needsName, bp->needsName))
-	return 1;
-    if (ap->needsVersion && bp->needsVersion && strcmp(ap->needsVersion, bp->needsVersion))
-	return 1;
-    if (ap->needsFlags && bp->needsFlags && ap->needsFlags != bp->needsFlags)
-	return 1;
-#else
     if (ap->byNEVR && bp->byNEVR && strcmp(ap->byNEVR, bp->byNEVR))
 	return 1;
     if (ap->needsNEVR && bp->needsNEVR && strcmp(ap->needsNEVR, bp->needsNEVR))
 	return 1;
-#endif
 
     return 0;
 }
@@ -193,24 +165,12 @@ rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,
 
     if (conflicts)
     for (i = 0; i < numConflicts; i++) {
-#ifdef	DYING
-	conflicts[i].byHeader = headerFree(conflicts[i].byHeader, "problem");
-	conflicts[i].byName = _free(conflicts[i].byName);
-	conflicts[i].byVersion = _free(conflicts[i].byVersion);
-	conflicts[i].byRelease = _free(conflicts[i].byRelease);
-	conflicts[i].needsName = _free(conflicts[i].needsName);
-	conflicts[i].needsVersion = _free(conflicts[i].needsVersion);
-	/*@-evalorder@*/
-	conflicts[i].suggestedPkgs = _free(conflicts[i].suggestedPkgs);
-	/*@=evalorder@*/
-#else
 	c = conflicts + i;
 	c->byNEVR = _free(c->byNEVR);
 	c->needsNEVR = _free(c->needsNEVR);
 	/*@-evalorder@*/
 	c->suggestedKeys = _free(c->suggestedKeys);
 	/*@=evalorder@*/
-#endif
     }
 
     return (conflicts = _free(conflicts));
@@ -234,25 +194,11 @@ void printDepProblems(FILE * fp,
 	if (j < i)
 	    continue;
 
-#ifdef	DYING
-	fprintf(fp, "\t%s", conflicts[i].needsName);
-	if (conflicts[i].needsFlags)
-	    printDepFlags(fp, conflicts[i].needsVersion, 
-			  conflicts[i].needsFlags);
-
-	if (conflicts[i].sense == RPMDEP_SENSE_REQUIRES) 
-	    fprintf(fp, _(" is needed by %s-%s-%s\n"), conflicts[i].byName, 
-		    conflicts[i].byVersion, conflicts[i].byRelease);
-	else
-	    fprintf(fp, _(" conflicts with %s-%s-%s\n"), conflicts[i].byName, 
-		    conflicts[i].byVersion, conflicts[i].byRelease);
-#else
 	c = conflicts + i;
 	fprintf(fp, "\t%s %s %s\n", c->needsNEVR+2,
 		((c->needsNEVR[0] == 'C' && c->needsNEVR[1] == ' ')
 			?  _("conflicts with") : _("is needed by")),
 		c->byNEVR);
-#endif
     }
 }
 

@@ -68,12 +68,6 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 typedef /*@abstract@*/ /*@refcounted@*/
 struct rpmTransactionSet_s * rpmTransactionSet;
 
-#ifdef	DYING
-/** \ingroup rpmtrans
- * A package in a transaction set.
- */
-typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
-#else
 /** \ingroup rpmtrans
  * An added/available package retrieval key.
  */
@@ -87,8 +81,9 @@ typedef /*@abstract@*/ void * alKey;
 typedef /*@abstract@*/ int alNum;
 /*@=mutrep@*/
 
-#endif
-
+/**
+ * Tag sets from a header, so that a header can be discarded early.
+ */
 typedef /*@abstract@*/ struct rpmDepSet_s * rpmDepSet;
 
 /** \ingroup header
@@ -982,10 +977,7 @@ typedef enum rpmProblemType_e {
 struct rpmProblem_s {
 /*@only@*/ /*@null@*/ const char * pkgNEVR;
 /*@only@*/ /*@null@*/ const char * altNEVR;
-/*@kept@*/ /*@null@*/ const void * key;
-#ifdef	DYING
-/*@null@*/ Header h;
-#endif
+/*@kept@*/ /*@null@*/ fnpyKey key;
     rpmProblemType type;
     int ignoreProblem;
 /*@only@*/ /*@null@*/ const char * str1;
@@ -1009,31 +1001,10 @@ void printDepFlags(FILE *fp, const char *version, int flags)
 /**
  */
 struct rpmDependencyConflict_s {
-#ifdef	DYING
-    const char * byName;	/*!< package name */
-    const char * byVersion;	/*!< package version */
-    const char * byRelease;	/*!< package release */
-    Header byHeader;		/*!< header with dependency problems */
-    /*
-     * These needs fields are misnamed -- they are used for the package
-     * which isn't needed as well.
-     */
-    const char * needsName;	/*!< dependency name */
-    const char * needsVersion;	/*!< dependency epoch:version-release */
-    int needsFlags;		/*!< dependency flags */
-#else
     char * byNEVR;	/*!< package name-version-release */
     char * needsNEVR;	/*!< dependency [R|C] name ?? epoch:version-release */
-#endif
 /*@owned@*/ /*@null@*/
     const fnpyKey * suggestedKeys; /*!< Added package keys, NULL terminated. */
-
-#ifdef	DYING
-    enum {
-	RPMDEP_SENSE_REQUIRES,		/*!< requirement not satisfied. */
-	RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
-    } sense;
-#endif
 };
 
 /**
