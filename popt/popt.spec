@@ -4,8 +4,8 @@
 #
 Summary: A C library for parsing command line parameters.
 Name: popt
-Version: 1.5
-Release: 1
+Version: 1.6
+Release: 0.1
 Copyright: LGPL
 Group: System Environment/Libraries
 Source: ftp://ftp.redhat.com/pub/redhat/code/popt/popt-%{version}.tar.gz
