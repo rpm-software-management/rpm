@@ -120,7 +120,7 @@ noinst_HEADERS =  	cpio.h depends.h falloc.h install.h 	md5.h oldheader.h oldrpm
 
 
 lib_LIBRARIES = librpm.a
-librpm_a_SOURCES =  	cpio.c dbindex.c depends.c falloc.c 	formats.c fs.c header.c install.c 	lookup.c macro.c md5.c md5sum.c 	messages.c misc.c oldheader.c package.c query.c 	rebuilddb.c rpmdb.c rpmerr.c rpmio.c rpmlead.c 	rpmrc.c signature.c stringbuf.c tagtable.c 	tread.c uninstall.c verify.c transaction.c problems.c hash.c fprint.c
+librpm_a_SOURCES =  	cpio.c dbindex.c depends.c falloc.c 	formats.c fs.c header.c install.c 	lookup.c macro.c md5.c md5sum.c 	messages.c misc.c oldheader.c package.c query.c 	rebuilddb.c rpmdb.c rpmerr.c rpmio.c rpmbzio.c rpmlead.c 	rpmrc.c signature.c stringbuf.c tagtable.c 	tread.c uninstall.c verify.c transaction.c problems.c hash.c fprint.c
 
 
 CPP = gcc -E
@@ -159,7 +159,7 @@ librpm_a_LIBADD =
 librpm_a_OBJECTS =  cpio.o dbindex.o depends.o falloc.o formats.o fs.o \
 header.o install.o lookup.o macro.o md5.o md5sum.o messages.o misc.o \
 oldheader.o package.o query.o rebuilddb.o rpmdb.o rpmerr.o rpmio.o \
-rpmlead.o rpmrc.o signature.o stringbuf.o tagtable.o tread.o \
+rpmbzio.o rpmlead.o rpmrc.o signature.o stringbuf.o tagtable.o tread.o \
 uninstall.o verify.o transaction.o problems.o hash.o fprint.o
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -178,9 +178,9 @@ DEP_FILES =  .deps/cpio.P .deps/dbindex.P .deps/depends.P .deps/falloc.P \
 .deps/formats.P .deps/fprint.P .deps/fs.P .deps/hash.P .deps/header.P \
 .deps/install.P .deps/lookup.P .deps/macro.P .deps/md5.P .deps/md5sum.P \
 .deps/messages.P .deps/misc.P .deps/oldheader.P .deps/package.P \
-.deps/problems.P .deps/query.P .deps/rebuilddb.P .deps/rpmdb.P \
-.deps/rpmerr.P .deps/rpmio.P .deps/rpmlead.P .deps/rpmrc.P \
-.deps/signature.P .deps/stringbuf.P .deps/tagtable.P \
+.deps/problems.P .deps/query.P .deps/rebuilddb.P .deps/rpmbzio.P \
+.deps/rpmdb.P .deps/rpmerr.P .deps/rpmio.P .deps/rpmlead.P \
+.deps/rpmrc.P .deps/signature.P .deps/stringbuf.P .deps/tagtable.P \
 .deps/transaction.P .deps/tread.P .deps/uninstall.P .deps/verify.P
 SOURCES = $(librpm_a_SOURCES)
 OBJECTS = $(librpm_a_OBJECTS)
