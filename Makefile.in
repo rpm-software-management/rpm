@@ -191,6 +191,8 @@ archive:
 	@rm /tmp/rpm-$(VERSION)/popt/popt.spec
 	@cd /tmp/rpm-$(VERSION); \
 	    autoconf
+	@cd /tmp/rpm-$(VERSION)/popt; \
+	    autoconf
 	@cd /tmp; tar czSpf rpm-$(VERSION).tar.gz rpm-$(VERSION)
 	@rm -rf /tmp/rpm-$(VERSION)
 	@cp /tmp/rpm-$(VERSION).tar.gz .

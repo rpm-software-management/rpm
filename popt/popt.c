@@ -24,7 +24,7 @@ struct poptContext_s {
     char ** leftovers;
     int numLeftovers;
     int nextLeftover;
-    struct poptOption * options;
+    const struct poptOption * options;
     int restLeftover;
     char * appName;
     struct poptAlias * aliases;
@@ -32,8 +32,20 @@ struct poptContext_s {
     int flags;
 };
 
+#ifndef HAVE_STRERROR
+static char * strerror(int errno) {
+    extern int sys_nerr;
+    extern char * sys_errlist[];
+
+    if ((0 <= errno) && (errno < sys_nerr))
+	return sys_errlist[errno];
+    else
+	return "unknown errno";
+}
+#endif
+
 poptContext poptGetContext(char * name ,int argc, char ** argv, 
-			   struct poptOption * options, int flags) {
+			   const struct poptOption * options, int flags) {
     poptContext con = malloc(sizeof(*con));
 
     con->os = con->optionStack;
@@ -84,7 +96,7 @@ int poptGetNextOpt(poptContext con) {
     char * origOptString;
     long aLong;
     char * end;
-    struct poptOption * opt = NULL;
+    const struct poptOption * opt = NULL;
     int done = 0;
     int i;
 

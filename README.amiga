@@ -19,11 +19,11 @@ These are the things you'll have to do to install this package.
   * cd <your-build-directory>
   * tar -xzvf rpm-2.2.9-src.tar.gz
   * cd rpm-2.2.9
-  * configure --prefix=/ade
+  * configure --prefix=/gg
   * make
   * make install
   
-Now it's time to edit the file "ade:lib/rpmrc" to correspond to your
+Now it's time to edit the file "gg:lib/rpmrc" to correspond to your
 system setup. Change the following entry:
   * topdir: /place/to/store/RPM/packages
 Make sure <tmppath> points to a _harddisk_ directory (the ram disk doesn't
@@ -42,8 +42,8 @@ Now create the following directories in <topdir>:
   * SRPMS
   * SPECS
   
-Create the "rpm" directory in "ade:lib".
-  makedir ade:lib/rpm
+Create the "rpm" directory in "gg:lib".
+  makedir gg:lib/rpm
 
 Now it's time to initialise the rpm database with:
   rpm --initdb

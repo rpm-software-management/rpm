@@ -1,10 +1,11 @@
 Summary: C library for parsing command line parameters
 Name: popt
-Version: 1.0
+%define version 1.1
+Version: %{version}
 Release: 1
 Copyright: LGPL
 Group: Utilities/System
-Source: ftp://ftp.redhat.com/pub/redhat/code/popt/popt-1.0.tar.gz
+Source: ftp://ftp.redhat.com/pub/redhat/code/popt/popt-%{version}.tar.gz
 BuildRoot: /var/tmp/popt.root
 
 %description
@@ -17,7 +18,7 @@ files and includes utility functions for parsing arbitrary strings into
 argv[] arrays using shell-like rules. 
 
 %prep
-%setup -n popt
+%setup
 
 %build
 make CFLAGS="$RPM_OPT_FLAGS"

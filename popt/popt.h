@@ -38,7 +38,7 @@ struct poptAlias {
 typedef struct poptContext_s * poptContext;
 
 poptContext poptGetContext(char * name, int argc, char ** argv, 
-			   struct poptOption * options, int flags);
+			   const struct poptOption * options, int flags);
 void poptResetContext(poptContext con);
 
 /* returns 'val' element, -1 on last item, POPT_ERROR_* on error */

@@ -1,4 +1,7 @@
-2.4.100 -> 2.4.102:
+2.4.102 -> 2.4.103:
+	- need to create popt/configure during make archive
+
+2.4.101 -> 2.4.102:
 	- fixed spelling of "instchangelog" in lib-rpmrc.in
 	- fixed memory leak in headerSprintf() extension cache
 	- fixed memory allocation for header formatting extension cache
@@ -14,6 +17,10 @@
 	  are not net shared
 	- changed --setugids to use separate chown and chgrp programs, for
 	  better portability
+	- popt moved to autoconf
+	- Makefiles changed to allow building in a different directory then
+	  the source code resides in
+	- finally fixed the Build Host spacing in rpmpopt
 
 2.4.100 -> 2.4.101:
 	- handle files with spaces (put double quotes around them)

@@ -3,6 +3,8 @@ AC_INIT(popt.h)
 AC_PROG_CC
 AC_GCC_TRADITIONAL
 
+AC_CHECK_HEADER(unistd.h)
 AC_CHECK_FUNCS(mmap)
+AC_CHECK_FUNCS(strerror)
 
 AC_OUTPUT(Makefile)

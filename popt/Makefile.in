@@ -7,12 +7,14 @@ WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes
 
 SOURCES = $(addprefix $(srcdir)/,$(subst .o,.c,$(LIBOBJECTS)))
 LIBPOPT = libpopt.a
-LIBS=/usr/lib
-INCLUDE=/usr/include
+
+prefix=@prefix@
+LIBS=$(prefix)/lib
+INCLUDE=$(prefix)/include
 
 # -----------------------------------------------------------------------
 
-CFLAGS = @CFLAGS@ $(WARNINGS) $(OPTS)
+CFLAGS = @CFLAGS@ @DEFS@ $(WARNINGS) $(OPTS)
 
 ifeq ($(RANLIB),)
 RANLIB=ranlib
@@ -28,6 +30,7 @@ $(LIBPOPT): $(LIBPOPT)($(LIBOBJECTS))
 	$(RANLIB) $@
 
 distclean: clean
+	rm -f Makefile config.h config.cache config.status config.log
 
 clean:
 	rm -f *.a *.o *~ $(PROGS) test.out tagtable.c
