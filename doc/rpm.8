@@ -170,7 +170,7 @@ The default \fIFILELIST\fR is
 Pipes the output of \fBrpm\fR to the command \fICMD\fR.
 .TP
 \fB--dbpath \fIDIRECTORY\fB\fR
-Use the database in \fIDIRECTORY\fR rathen
+Use the database in \fIDIRECTORY\fR rather
 than the default path \fI/var/lib/rpm\fR
 .TP
 \fB--root \fIDIRECTORY\fB\fR
@@ -283,7 +283,7 @@ Don't suggest package(s) that provide a missing dependency.
 .TP
 \fB--noorder\fR
 Don't reorder the packages for an install. The list of
-packages would normally be reordered to satisfy dependancies.
+packages would normally be reordered to satisfy dependencies.
 .TP
 \fB--noscripts\fR
 .TP
@@ -356,7 +356,7 @@ package will be named according to the macro
 \fB%_repackage_name_fmt\fR
 and will be created in the directory named by
 the macro \fB%_repackage_dir\fR (default value
-is \fI/var/tmp\fR).
+is \fI/var/spool/repackage\fR).
 .TP
 \fB--replacefiles\fR
 Install the packages even if they replace files from other,
@@ -427,7 +427,7 @@ package will be named according to the macro
 \fB%_repackage_name_fmt\fR
 and will be created in the directory named by
 the macro \fB%_repackage_dir\fR (default value
-is \fI/var/tmp\fR).
+is \fI/var/spool/repackage\fR).
 .TP
 \fB--test\fR
 Don't really uninstall anything, just go through the motions.
@@ -447,7 +447,7 @@ printed in. To do this, you use the
  \fB--qf|--queryformat\fR \fB\fIQUERYFMT\fB\fR
 
 option, followed by the \fIQUERYFMT\fR
-format string.  Query formats are modifed versions of the
+format string.  Query formats are modified versions of the
 standard \fBprintf(3)\fR formatting. The format
 is made up of static strings (which may include standard C
 character escapes for newlines, tabs, and other special
@@ -541,7 +541,7 @@ See \fBFTP/HTTP OPTIONS\fR for information on
 client support. The \fIPACKAGE_FILE\fR argument(s),
 if not a binary package, will be interpreted as an ASCII package
 manifest.  Comments are permitted, starting with a '#', and each
-line of a package manifest file may include white space seperated
+line of a package manifest file may include white space separated
 glob expressions, including URL's with remote glob expressions,
 that will be expanded to paths that are substituted in place of
 the package manifest as additional \fIPACKAGE_FILE\fR
@@ -652,7 +652,7 @@ Verifying a package compares information about the installed files in
 the package with information about the files taken from the package
 metadata stored in the rpm database.  Among other things, verifying
 compares the size, MD5 sum, permissions, type, owner and group of
-each file.  Any discrepencies are displayed.
+each file.  Any discrepancies are displayed.
 Files that were not installed from the package, for example,
 documentation files excluded on installation using the
 "\fB--excludedocs\fR" option,
@@ -721,8 +721,8 @@ the corresponding \fB--verify\fR test:
 \fBS\fR file \fBS\fRize differs
 \fBM\fR \fBM\fRode differs (includes permissions and file type)
 \fB5\fR MD\fB5\fR sum differs
-\fBD\fR \fBD\fRevice major/minor number mis-match
-\fBL\fR read\fBL\fRink(2) path mis-match
+\fBD\fR \fBD\fRevice major/minor number mismatch
+\fBL\fR read\fBL\fRink(2) path mismatch
 \fBU\fR \fBU\fRser ownership differs
 \fBG\fR \fBG\fRroup ownership differs
 \fBT\fR m\fBT\fRime differs
@@ -749,7 +749,7 @@ and \fB--checksig\fR is useful to verify
 all of the digests and signatures associated with a package.
 .PP
 Digital signatures cannot be verified without a public key.
-An ascii armored public key can be added to the \fBrpm\fR database
+An ASCII armored public key can be added to the \fBrpm\fR database
 using \fB--import\fR. An imported public key is
 carried in a header, and key ring management is performed
 exactly like package management. For example, all currently imported
