@@ -29,6 +29,7 @@
 	- attempt dependency tree breadth, take 1.
 	- use external libneon for http/https transport.
 	- python: add python 2.4 support.
+	- add --delsign to purge packages of digital signatures.
 
 4.3.1 -> 4.3.2:
 	- use /etc/selinux/targeted/contexts/files/file_contexts for now.

@@ -776,6 +776,7 @@ typedef enum rpmSignFlags_e {
     RPMSIGN_CHK_SIGNATURE	= 'K',	/*!< from --checksig */
     RPMSIGN_NEW_SIGNATURE	= 'R',	/*!< from --resign */
     RPMSIGN_ADD_SIGNATURE	= 'A',	/*!< from --addsign */
+    RPMSIGN_DEL_SIGNATURE	= 'D',	/*!< from --delsign */
     RPMSIGN_IMPORT_PUBKEY	= 'I',	/*!< from --import */
 } rpmSignFlags;
 /*@=typeuse@*/

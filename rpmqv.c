@@ -408,8 +408,9 @@ int main(int argc, const char ** argv)
 	    break;
 	case RPMSIGN_ADD_SIGNATURE:
 	case RPMSIGN_NEW_SIGNATURE:
+	case RPMSIGN_DEL_SIGNATURE:
 	    bigMode = MODE_RESIGN;
-	    ka->sign = 1;
+	    ka->sign = (ka->qva_mode != RPMSIGN_DEL_SIGNATURE);
 	    break;
 	}
   }

@@ -46,6 +46,7 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
     case 'Q':	/* from --querytags (handled by poptALL) */
     case 'V':	/* from --verify, -V */
     case 'A':	/* from --addsign */
+    case 'D':	/* from --delsign */
     case 'I':	/* from --import */
     case 'K':	/* from --checksig, -K */
     case 'R':	/* from --resign */
@@ -399,6 +400,8 @@ struct poptOption rpmSignPoptTable[] = {
 	N_("sign package(s) (identical to --resign)"), NULL },
  { "checksig", 'K', 0, NULL, 'K',
 	N_("verify package signature(s)"), NULL },
+ { "delsign", '\0', 0, NULL, 'D',
+	N_("delete package signatures"), NULL },
  { "import", '\0', 0, NULL, 'I',
 	N_("import an armored public key"), NULL },
  { "resign", '\0', 0, NULL, 'R',

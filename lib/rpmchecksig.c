@@ -184,6 +184,7 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     void * uh = NULL;
     int_32 uht, uhc;
     int res = EXIT_FAILURE;
+    int deleting = (qva->qva_mode == RPMSIGN_DEL_SIGNATURE);
     rpmRC rc;
     int xx;
     
@@ -290,7 +291,13 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	xx = headerRemoveEntry(sigh, RPMSIGTAG_SHA1);
 	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
 
-	/* If gpg/pgp is configured, replace the signature. */
+	if (deleting) {	/* Nuke all the signature tags. */
+	    xx = headerRemoveEntry(sigh, RPMSIGTAG_GPG);
+	    xx = headerRemoveEntry(sigh, RPMSIGTAG_DSA);
+	    xx = headerRemoveEntry(sigh, RPMSIGTAG_PGP5);
+	    xx = headerRemoveEntry(sigh, RPMSIGTAG_PGP);
+	    xx = headerRemoveEntry(sigh, RPMSIGTAG_RSA);
+	} else		/* If gpg/pgp is configured, replace the signature. */
 	if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
 	    unsigned char oldsignid[8], newsignid[8];
 
@@ -331,7 +338,6 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 		    continue;
 		}
 	    }
-
 	}
 
 	/* Reallocate the signature into one contiguous region. */
@@ -1024,6 +1030,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, const char ** argv)
 	/*@notreached@*/ break;
     case RPMSIGN_NEW_SIGNATURE:
     case RPMSIGN_ADD_SIGNATURE:
+    case RPMSIGN_DEL_SIGNATURE:
 	return rpmReSign(ts, qva, argv);
 	/*@notreached@*/ break;
     case RPMSIGN_NONE:
