@@ -435,7 +435,6 @@ int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags,
     int recNumber;
     int retcode = 0;
     char *end = NULL;
-    char path[PATH_MAX];
 
     switch (source) {
     default:
