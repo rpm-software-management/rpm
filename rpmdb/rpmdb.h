@@ -712,7 +712,7 @@ int dbiJoin(dbiIndex dbi, DBC ** curslist, /*@out@*/ DBC ** dbcp,
 /** \ingroup dbi
  * Is database byte swapped?
  * @param dbi		index database handle
- * @return		0 no
+ * @return		0 same order, 1 swapped order
  */
 /*@unused@*/ static inline
 int dbiByteSwapped(dbiIndex dbi)
@@ -725,7 +725,8 @@ int dbiByteSwapped(dbiIndex dbi)
 /** \ingroup dbi
  * Is database byte swapped?
  * @param dbi		index database handle
- * @return		0 no
+ * @param flags		DB_FAST_STAT or 0
+ * @return		0 on success
  */
 /*@unused@*/ static inline
 int dbiStat(dbiIndex dbi, unsigned int flags)

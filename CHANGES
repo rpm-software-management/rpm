@@ -179,6 +179,9 @@
 	- verify signatures/digests retrieved through rpmdbNextIterator().
 	- imbue %ghost with missingok attribute with --verify (#68933).
 	- fix: segfault if given a text file as 2nd arg to -Uvh (#69508).
+	- python: add ts.hdrCheck(), ts.rebuildDB() methods.
+	- python: iterating on an ts object returns transaction elements now.
+	- add yellowdog as vendor.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

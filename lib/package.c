@@ -247,6 +247,7 @@ static int rpmtsStashKeyid(rpmts ts)
  * @param dl		no. of bytes in header data.
  * @param pe		1st element in tag array, big-endian
  * @param info		failing (or last) tag element, host-endian
+ * @param negate	negative offset expected?
  * @return		-1 on success, otherwise failing tag element index
  */
 static int headerVerifyInfo(int il, int dl, entryInfo pe, entryInfo info,

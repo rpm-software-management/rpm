@@ -257,6 +257,7 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
  * Initialize the database used by the transaction.
  * @deprecated An explicit rpmdbInit() is almost never needed.
  * @param ts		transaction set
+ * @param dbmode	O_RDONLY or O_RDWR
  * @return		0 on success
  */
 int rpmtsInitDB(rpmts ts, int dbmode)

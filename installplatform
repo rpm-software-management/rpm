@@ -69,6 +69,9 @@ for SUBST in $SUBSTS ; do
   fi
 
   case $VENDOR in
+  yellowdog)
+    VENDORSED='-e s,^@yellowdog@,,'
+    ;;
   pld)
     VENDORSED='-e s,^@pld@,,'
     ;;

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-24 14:49-0400\n"
+"POT-Creation-Date: 2002-07-24 20:06-0400\n"
 
 #: build.c:40
 #, fuzzy
@@ -1768,44 +1768,44 @@ msgstr "No consegui abrir: %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/package.c:436 lib/package.c:476 lib/package.c:695 lib/package.c:719
-#: lib/package.c:749 lib/rpmchecksig.c:767
+#: lib/package.c:437 lib/package.c:477 lib/package.c:696 lib/package.c:720
+#: lib/package.c:750 lib/rpmchecksig.c:767
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:578 lib/rpmchecksig.c:208 lib/rpmchecksig.c:672
+#: lib/package.c:579 lib/rpmchecksig.c:208 lib/rpmchecksig.c:672
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
 
-#: lib/package.c:593
+#: lib/package.c:594
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:601
+#: lib/package.c:602
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 
-#: lib/package.c:610 lib/rpmchecksig.c:226 lib/rpmchecksig.c:688
+#: lib/package.c:611 lib/rpmchecksig.c:226 lib/rpmchecksig.c:688
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/package.c:614 lib/rpmchecksig.c:230 lib/rpmchecksig.c:693
+#: lib/package.c:615 lib/rpmchecksig.c:230 lib/rpmchecksig.c:693
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
 # , c-format
-#: lib/package.c:661 lib/rpmchecksig.c:586
+#: lib/package.c:662 lib/rpmchecksig.c:586
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/package.c:761 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
+#: lib/package.c:762 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "No consegui abrir: %s\n"

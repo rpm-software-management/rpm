@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-24 14:49-0400\n"
+"POT-Creation-Date: 2002-07-24 20:06-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1619,43 +1619,43 @@ msgstr "kunne ikke skrive til %s\n"
 msgid "error creating temporary file %s\n"
 msgstr "fejl ved oprettelse af midlertidig fil %s\n"
 
-#: lib/package.c:436 lib/package.c:476 lib/package.c:695 lib/package.c:719
-#: lib/package.c:749 lib/rpmchecksig.c:767
+#: lib/package.c:437 lib/package.c:477 lib/package.c:696 lib/package.c:720
+#: lib/package.c:750 lib/rpmchecksig.c:767
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:578 lib/rpmchecksig.c:208 lib/rpmchecksig.c:672
+#: lib/package.c:579 lib/rpmchecksig.c:208 lib/rpmchecksig.c:672
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: lib/package.c:593
+#: lib/package.c:594
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr "indpakningsversion 1 understøttes ikke af denne udgave af RPM\n"
 
-#: lib/package.c:601
+#: lib/package.c:602
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "kun indpakninger med hovedversion <= 4 understøttes af denne udgave af RPM\n"
 
-#: lib/package.c:610 lib/rpmchecksig.c:226 lib/rpmchecksig.c:688
+#: lib/package.c:611 lib/rpmchecksig.c:226 lib/rpmchecksig.c:688
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature mislykkedes\n"
 
-#: lib/package.c:614 lib/rpmchecksig.c:230 lib/rpmchecksig.c:693
+#: lib/package.c:615 lib/rpmchecksig.c:230 lib/rpmchecksig.c:693
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen tilgængelig signatur\n"
 
-#: lib/package.c:661 lib/rpmchecksig.c:586
+#: lib/package.c:662 lib/rpmchecksig.c:586
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: lib/package.c:761 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
+#: lib/package.c:762 lib/rpmchecksig.c:118 lib/rpmchecksig.c:615
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread mislykkedes: %s\n"

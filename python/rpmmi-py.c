@@ -82,7 +82,7 @@
  */
 /*@{*/
 
-/** \ingroup python
+/**
  */
 static PyObject *
 rpmmi_Next(rpmmiObject * s, PyObject *args)
@@ -103,7 +103,7 @@ rpmmi_Next(rpmmiObject * s, PyObject *args)
 }
 
 #if Py_TPFLAGS_HAVE_ITER
-/** \ingroup python
+/**
  */
 static PyObject *
 rpmmi_iter(rpmmiObject * s)
@@ -113,7 +113,7 @@ rpmmi_iter(rpmmiObject * s)
     return (PyObject *)s;
 }
 
-/** \ingroup python
+/**
  */
 static PyObject *
 rpmmi_iternext(rpmmiObject * s)

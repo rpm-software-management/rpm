@@ -400,10 +400,118 @@ fprintf(stderr, "*** rpmts_CloseDB(%p) ts %p\n", s, s->ts);
     if (!PyArg_ParseTuple(args, ":CloseDB")) return NULL;
 
     xx = rpmtsCloseDB(s->ts);
-    s->ts->dbmode = -1;
+    s->ts->dbmode = -1;		/* XXX disable lazy opens */
 
     Py_INCREF(Py_None);
     return Py_None;
+}
+
+/** \ingroup python
+ */
+static PyObject *
+rpmts_InitDB(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    int xx;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_InitDB(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, ":InitDB")) return NULL;
+
+    xx = rpmtsInitDB(s->ts, O_RDONLY);
+    xx = rpmtsCloseDB(s->ts);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup python
+ */
+static PyObject *
+rpmts_RebuildDB(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    int xx;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_RebuildDB(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, ":RebuildDB")) return NULL;
+
+    xx = rpmtsRebuildDB(s->ts);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup python
+ */
+static PyObject *
+rpmts_VerifyDB(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    int xx;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_VerifyDB(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, ":VerifyDB")) return NULL;
+
+    xx = rpmtsVerifyDB(s->ts);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+/** \ingroup python
+ */
+static PyObject *
+rpmts_HdrCheck(rpmtsObject * s, PyObject * args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    PyObject * blob;
+    PyObject * result = NULL;
+    const char * msg = NULL;
+    const void * uh;
+    int uc;
+    rpmRC rpmrc;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, "O:HdrCheck", &blob)) return NULL;
+    if (blob == Py_None) {
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+    if (!PyString_Check(blob)) {
+	PyErr_SetString(pyrpmError, "hdrCheck takes a string of octets");
+	return result;
+    }
+    uh = PyString_AsString(blob);
+    uc = PyString_Size(blob);
+fprintf(stderr, "*** uh %p uc %d\n", uh, uc);
+
+    rpmrc = headerCheck(s->ts, uh, uc, &msg);
+
+    switch (rpmrc) {
+    case RPMRC_OK:
+	Py_INCREF(Py_None);
+	result = Py_None;
+	break;
+    default:
+    case RPMRC_FAIL:
+	PyErr_SetString(pyrpmError, msg);
+	break;
+    }
+    msg = _free(msg);
+
+    return result;
 }
 
 /** \ingroup python
@@ -560,49 +668,81 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p flags %x ignore %x\n", s, s->ts, s->ts-
     return list;
 }
 
-#if Py_TPFLAGS_HAVE_ITER
+static PyObject *
+rpmts_iter(rpmtsObject * s)
+	/*@modifies s @*/
+{
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_iter(%p) ts %p\n", s, s->ts);
+
+#ifdef	DYING
+    s->tsi = rpmtsiInit(s->ts);
+    s->tsiFilter = 0;
+#endif
+    Py_INCREF(s);
+    return (PyObject *)s;
+}
+
+/**
+ * @todo Add TR_ADDED filter to iterator.
+ */
+static PyObject *
+rpmts_iternext(rpmtsObject * s)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    PyObject * result = NULL;
+    rpmte te;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_iternext(%p) ts %p tsi %p %d\n", s, s->ts, s->tsi, s->tsiFilter);
+
+    /* Reset iterator on 1st entry. */
+    if (s->tsi == NULL) {
+	s->tsi = rpmtsiInit(s->ts);
+	if (s->tsi == NULL)
+	    return NULL;
+	s->tsiFilter = 0;
+    }
+
+    te = rpmtsiNext(s->tsi, s->tsiFilter);
+    if (te != NULL) {
+	result = (PyObject *) rpmte_Wrap(te);
+    } else {
+	s->tsi = rpmtsiFree(s->tsi);
+	s->tsiFilter = 0;
+    }
+
+    return result;
+}
+
+/**
+ * @todo Add TR_ADDED filter to iterator.
+ */
 static PyObject *
 rpmts_Next(rpmtsObject * s)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
-    rpmte te;
+    PyObject * result;
 
 if (_rpmts_debug)
 fprintf(stderr, "*** rpmts_Next(%p) ts %p\n", s, s->ts);
 
-    if (s == NULL || s->tsi == NULL)
-	return NULL;
+    result = rpmts_iternext(s);
 
-    te = rpmtsiNext(s->tsi, s->tsiFilter);
-    if (te == NULL) {
-	s->tsi = rpmtsiFree(s->tsi);
-	s->tsiFilter = 0;
+    if (result == NULL) {
 	Py_INCREF(Py_None);
 	return Py_None;
     }
 
-    return (PyObject *) rpmte_Wrap(te);
+    return result;
 }
-
-static PyObject *
-rpmts_Iter(rpmtsObject * s)
-	/*@modifies s @*/
-{
-if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_Iter(%p) ts %p\n", s, s->ts);
-
-    s->tsi = rpmtsiInit(s->ts);
-    s->tsiFilter = 0;
-    Py_INCREF(s);
-    return (PyObject *) s;
-}
-#endif
 
 /**
  */
 static rpmmiObject *
-rpmts_Match (rpmtsObject * s, PyObject * args)
+rpmts_Match(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies s, _Py_NoneStruct @*/
 {
@@ -659,25 +799,38 @@ static struct PyMethodDef rpmts_methods[] = {
 #endif
     {"order",		(PyCFunction) rpmts_Order,	METH_VARARGS,
 	NULL },
+    {"run",		(PyCFunction) rpmts_Run,	METH_VARARGS,
+	NULL },
     {"clean",		(PyCFunction) rpmts_Clean,	METH_VARARGS,
 	NULL },
     {"openDB",		(PyCFunction) rpmts_OpenDB,	METH_VARARGS,
-	NULL },
+"ts.openDB() -> None\n\
+- Open the default transaction rpmdb.\n\
+  Note: The transaction rpmdb is lazily opened, so ts.openDB() is seldom needed.\n" },
     {"closeDB",		(PyCFunction) rpmts_CloseDB,	METH_VARARGS,
-	NULL },
+"ts.closeDB() -> None\n\
+- Close the default transaction rpmdb.\n\
+  Note: ts.closeDB() disables lazy opens, and should hardly ever be used.\n" },
+    {"initDB",		(PyCFunction) rpmts_InitDB,	METH_VARARGS,
+"ts.initDB() -> None\n\
+- Initialize the default transaction rpmdb.\n\
+ Note: ts.initDB() is seldom needed anymore.\n" },
+    {"rebuildDB",	(PyCFunction) rpmts_RebuildDB,	METH_VARARGS,
+"ts.rebuildDB() -> None\n\
+- Rebuild the default transaction rpmdb.\n" },
+    {"verifyDB",	(PyCFunction) rpmts_VerifyDB,	METH_VARARGS,
+"ts.verifyDB() -> None\n\
+- Verify the default transaction rpmdb.\n" },
     {"getKeys",		(PyCFunction) rpmts_GetKeys,	METH_VARARGS,
 	NULL },
-    {"run",		(PyCFunction) rpmts_Run,	METH_VARARGS,
+    {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_VARARGS,
 	NULL },
     {"dbMatch",		(PyCFunction) rpmts_Match,	METH_VARARGS,
 "ts.dbMatch([TagN, [key, [len]]]) -> mi\n\
-- Create a match iterator for the default rpmdb of the transaction.\n" },
-#if Py_TPFLAGS_HAVE_ITER
+- Create a match iterator for the default transaction rpmdb.\n" },
     {"next",		(PyCFunction)rpmts_Next,	METH_VARARGS,
-	NULL},
-    {"iter",		(PyCFunction)rpmts_Iter,	METH_VARARGS,
-	NULL},
-#endif
+"ts.next() -> te\n\
+- Retrieve next transaction set element.\n" },
     {NULL,		NULL}		/* sentinel */
 };
 /*@=fullinitblock@*/
@@ -769,8 +922,8 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc)rpmts_Iter,	/* tp_iter */
-	(iternextfunc)rpmts_Next,	/* tp_iternext */
+	(getiterfunc)rpmts_iter,	/* tp_iter */
+	(iternextfunc)rpmts_iternext,	/* tp_iternext */
 	rpmts_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
@@ -806,6 +959,8 @@ rpmts_Create(/*@unused@*/ PyObject * self, PyObject * args)
 
     o->keyList = PyList_New(0);
     o->scriptFd = NULL;
+    o->tsi = NULL;
+    o->tsiFilter = 0;
 
 if (_rpmts_debug)
 fprintf(stderr, "%p ++ ts %p db %p\n", o, o->ts, o->ts->rdb);
