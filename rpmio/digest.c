@@ -52,7 +52,9 @@ rpmDigestInit(rpmDigestFlags flags)
     if (flags & RPMDIGEST_MD5) {
 	ctx->digestlen = 16;
 	ctx->datalen = 64;
+	/*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->param = xcalloc(1, sizeof(md5Param));
+	/*@=sizeoftype@*/
 	ctx->Reset = (void *) md5Reset;
 	ctx->Update = (void *) md5Update;
 	ctx->Digest = (void *) md5Digest;
@@ -61,13 +63,17 @@ rpmDigestInit(rpmDigestFlags flags)
     if (flags & RPMDIGEST_SHA1) {
 	ctx->digestlen = 20;
 	ctx->datalen = 64;
+	/*@-sizeoftype@*/ /* FIX: union, not void pointer */
 	ctx->param = xcalloc(1, sizeof(sha1Param));
+	/*@=sizeoftype@*/
 	ctx->Reset = (void *) sha1Reset;
 	ctx->Update = (void *) sha1Update;
 	ctx->Digest = (void *) sha1Digest;
     }
 
+    /*@-noeffectuncon@*/ /* FIX: check rc */
     (void) (*ctx->Reset) (ctx->param);
+    /*@=noeffectuncon@*/ /* FIX: check rc */
 
 DPRINTF((stderr, "*** Init(%x) ctx %p param %p\n", flags, ctx, ctx->param));
     return ctx;
@@ -77,7 +83,9 @@ void
 rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len)
 {
 DPRINTF((stderr, "*** Update(%p,%p,%d) param %p \"%s\"\n", ctx, data, len, ctx->param, ((char *)data)));
+    /*@-noeffectuncon@*/ /* FIX: check rc */
     (void) (*ctx->Update) (ctx->param, data, len);
+    /*@=noeffectuncon@*/
 }
 
 /*@unchecked@*/
@@ -101,11 +109,15 @@ rpmDigestFinal(/*@only@*/ DIGEST_CTX ctx, /*@out@*/ void ** datap,
     int i;
 
 DPRINTF((stderr, "*** Final(%p,%p,%p,%d) param %p digest %p\n", ctx, datap, lenp, asAscii, ctx->param, digest));
+    /*@-noeffectuncon@*/ /* FIX: check rc */
     (void) (*ctx->Digest) (ctx->param, digest);
+    /*@=noeffectuncon@*/
 
+    /*@-sizeoftype@*/
     if (IS_LITTLE_ENDIAN())
     for (i = 0; i < (ctx->digestlen/sizeof(uint32)); i++)
 	digest[i] = swapu32(digest[i]);
+    /*@=sizeoftype@*/
 
     /* Return final digest. */
     /*@-branchstate@*/

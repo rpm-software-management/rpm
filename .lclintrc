@@ -1,7 +1,7 @@
 -I. -I./build -I./lib -I./rpmdb -I./rpmio -I./beecrypt -I./popt -I/usr/lib/gcc-lib/i386-redhat-linux/2.96/include -DHAVE_CONFIG_H -D_GNU_SOURCE -D_REENTRANT -DHAVE_DEV_DSP -DHAVE_SYS_SOUNDCARD
 
 #+partial
-+forcehints
+#+forcehints
 
 -warnunixlib
 -warnposix
@@ -28,15 +28,14 @@
 -matchfields		# <bits/ipc.h> heartburn
 -mods			# 281 occurences, errno will be a pita
 -namechecks		# tedious ANSI compliance checks
--noeffectuncon		# 228 occurences, HGE_t needs special annotations
 -numenummembers 1024	# RPMTAG has 138 members
 -numstructfields 256	# Java jni.h has 229 fields
 -ptrarith		# tedious
--sizeoftype		# ~240 occurences, <sys/select.h> tedium, more
+#-sizeoftype		# ~240 occurences, <sys/select.h> tedium, more
 -strictops
 -strictusereleased
 -stringliterallen 4096	# redhat*PubKey's are big
--usedef			# 303 occurences, HGE_t needs special annotations
+-usedef			# 303 occurences, HGE_t needs work
 -whileblock		# tedious
 
 # --- random anal-retentive parameters
@@ -45,8 +44,6 @@
 #+internalglobnoglobs		# ???
 #+modglobsunchecked	# 73 occurences
 #+warnmissingglobsnomods	# ???
-#+impcheckedstrictglobs	# 358 occurences
-#+impcheckedstrictstatics # 1057 occurences
 #+strictbranchstate
 #+strictdestroy
 #+ansi-reserved-internal

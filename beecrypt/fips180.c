@@ -44,7 +44,9 @@ static const uint32 k[4] = { 0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6 };
 /*@observer@*/ /*@unchecked@*/
 static const uint32 hinit[5] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0 };
 
+/*@-sizeoftype@*/
 const hashFunction sha1 = { "SHA-1", sizeof(sha1Param), 64, 5 * sizeof(uint32), (hashFunctionReset) sha1Reset, (hashFunctionUpdate) sha1Update, (hashFunctionDigest) sha1Digest };
+/*@=sizeoftype@*/
 
 int sha1Reset(register sha1Param *p)
 {

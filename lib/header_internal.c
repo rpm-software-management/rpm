@@ -1,3 +1,4 @@
+/*@-sizeoftype@*/
 /** \ingroup header
  * \file lib/header_internal.c
  */
@@ -164,3 +165,4 @@ void headerDump(Header h, FILE *f, int flags,
 	p++;
     }
 }
+/*@=sizeoftype@*/

@@ -73,7 +73,9 @@ Header headerLink(Header h)
 void headerSort(Header h)
 	/*@modifies h @*/
 {
+/*@-noeffectuncon@*/ /* FIX: add rc */
     (h2hv(h)->hdrsort) (h);
+/*@=noeffectuncon@*/
     return;
 }
 
@@ -85,7 +87,9 @@ void headerSort(Header h)
 void headerUnsort(Header h)
 	/*@modifies h @*/
 {
+/*@-noeffectuncon@*/ /* FIX: add rc */
     (h2hv(h)->hdrunsort) (h);
+/*@=noeffectuncon@*/
     return;
 }
 /*@=exportlocal@*/
@@ -431,7 +435,9 @@ int headerRemoveEntry(Header h, int_32 tag)
 void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 	/*@modifies headerFrom, headerTo @*/
 {
+/*@-noeffectuncon@*/ /* FIX: add rc */
     hdrVec->hdrcopytags(headerFrom, headerTo, tagstocopy);
+/*@=noeffectuncon@*/
     return;
 }
 

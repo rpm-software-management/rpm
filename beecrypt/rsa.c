@@ -40,7 +40,7 @@
 int rsapri(const rsakp* kp, const mp32number* m, mp32number* c)
 {
 	register uint32  size = kp->n.size;
-	register uint32* temp = (uint32*) malloc((4*size+2)*sizeof(uint32));
+	register uint32* temp = (uint32*) malloc((4*size+2) * sizeof(*temp));
 
 	if (temp)
 	{
@@ -61,7 +61,7 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 	register uint32  nsize = kp->n.size;
 	register uint32  psize = kp->p.size;
 	register uint32  qsize = kp->q.size;
-	register uint32* temp = (uint32*) malloc((psize+qsize+(5*nsize+6))*sizeof(uint32));
+	register uint32* temp = (uint32*) malloc((psize+qsize+(5*nsize+6))*sizeof(*temp));
 	register uint32* wksp = temp+psize+qsize+nsize;
 
 	/* compute j1 = m^d1 mod p */
@@ -116,7 +116,7 @@ int rsavrfy(const rsapk* pk, const mp32number* m, const mp32number* c)
 {
 	int rc;
 	register uint32  size = pk->n.size;
-	register uint32* temp = (uint32*) malloc((5*size+2)*sizeof(uint32));
+	register uint32* temp = (uint32*) malloc((5*size+2) * sizeof(*temp));
 
 	if (temp)
 	{

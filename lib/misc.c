@@ -74,7 +74,7 @@ char ** splitString(const char * str, int length, char sep)
 
     *dest = '\0';
 
-    list = xmalloc(sizeof(char *) * (fields + 1));
+    list = xmalloc(sizeof(*list) * (fields + 1));
 
     dest = s;
     list[0] = dest;
@@ -348,7 +348,7 @@ void compressFilelist(Header h)
     int_32 * dirIndexes;
     rpmTagType fnt;
     int count;
-    int i;
+    int i, xx;
     int dirIndex = -1;
 
     /*
@@ -358,7 +358,7 @@ void compressFilelist(Header h)
      */
 
     if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
-	(void) hre(h, RPMTAG_OLDFILENAMES);
+	xx = hre(h, RPMTAG_OLDFILENAMES);
 	return;		/* Already converted. */
     }
 
@@ -413,16 +413,16 @@ void compressFilelist(Header h)
 
 exit:
     if (count > 0) {
-	(void) hae(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, dirIndexes, count);
-	(void) hae(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
+	xx = hae(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, dirIndexes, count);
+	xx = hae(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			baseNames, count);
-	(void) hae(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
+	xx = hae(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			dirNames, dirIndex + 1);
     }
 
     fileNames = hfd(fileNames, fnt);
 
-    (void) hre(h, RPMTAG_OLDFILENAMES);
+    xx = hre(h, RPMTAG_OLDFILENAMES);
 }
 
 /*
@@ -444,7 +444,7 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
     int size;
     rpmTagType bnt, dnt;
     char * data;
-    int i;
+    int i, xx;
 
     if (!hge(h, baseNameTag, &bnt, (void **) &baseNames, &count)) {
 	if (fileListPtr) *fileListPtr = NULL;
@@ -452,8 +452,8 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 	return;		/* no file list */
     }
 
-    (void) hge(h, dirNameTag, &dnt, (void **) &dirNames, NULL);
-    (void) hge(h, dirIndexesTag, NULL, (void **) &dirIndexes, &count);
+    xx = hge(h, dirNameTag, &dnt, (void **) &dirNames, NULL);
+    xx = hge(h, dirIndexesTag, NULL, (void **) &dirIndexes, &count);
 
     size = sizeof(*fileNames) * count;
     for (i = 0; i < count; i++)
@@ -484,6 +484,7 @@ void expandFilelist(Header h)
     HRE_t hre = (HRE_t)headerRemoveEntry;
     const char ** fileNames = NULL;
     int count = 0;
+    int xx;
 
     /*@-branchstate@*/
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
@@ -491,15 +492,15 @@ void expandFilelist(Header h)
 			RPMTAG_DIRNAMES, RPMTAG_DIRINDEXES);
 	if (fileNames == NULL || count <= 0)
 	    return;
-	(void) hae(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
+	xx = hae(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			fileNames, count);
 	fileNames = _free(fileNames);
     }
     /*@=branchstate@*/
 
-    (void) hre(h, RPMTAG_DIRNAMES);
-    (void) hre(h, RPMTAG_BASENAMES);
-    (void) hre(h, RPMTAG_DIRINDEXES);
+    xx = hre(h, RPMTAG_DIRNAMES);
+    xx = hre(h, RPMTAG_BASENAMES);
+    xx = hre(h, RPMTAG_DIRINDEXES);
 }
 
 
@@ -764,11 +765,11 @@ void providePackageNVR(Header h)
     rpmTagType pnt, pvt;
     int_32 * provideFlags = NULL;
     int providesCount;
-    int i;
+    int i, xx;
     int bingo = 1;
 
     /* Generate provides for this package name-version-release. */
-    (void) headerNVR(h, &name, &version, &release);
+    xx = headerNVR(h, &name, &version, &release);
     if (!(name && version && release))
 	return;
     pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
@@ -794,15 +795,15 @@ void providePackageNVR(Header h)
 	for (i = 0; i < providesCount; i++) {
 	    char * vdummy = "";
 	    int_32 fdummy = RPMSENSE_ANY;
-	    (void) headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 			&vdummy, 1);
-	    (void) headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
 			&fdummy, 1);
 	}
 	goto exit;
     }
 
-    (void) hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
+    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
 
     if (provides && providesEVR && provideFlags)
     for (i = 0; i < providesCount; i++) {
@@ -820,11 +821,11 @@ exit:
     providesEVR = hfd(providesEVR, pvt);
 
     if (bingo) {
-	(void) headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
 		&name, 1);
-	(void) headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
 		&pFlags, 1);
-	(void) headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 		&pEVR, 1);
     }
 }

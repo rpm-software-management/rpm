@@ -332,7 +332,7 @@ static int addCanon(canonEntry * table, int * tableLen, char * line,
 
     (*tableLen) += 2;
     /*@-unqualifiedtrans@*/
-    *table = xrealloc(*table, sizeof(struct canonEntry_s) * (*tableLen));
+    *table = xrealloc(*table, sizeof(**table) * (*tableLen));
     /*@=unqualifiedtrans@*/
 
     t = & ((*table)[*tableLen - 2]);
@@ -382,7 +382,7 @@ static int addDefault(defaultEntry * table, int * tableLen, char * line,
 
     (*tableLen)++;
     /*@-unqualifiedtrans@*/
-    *table = xrealloc(*table, sizeof(struct defaultEntry_s) * (*tableLen));
+    *table = xrealloc(*table, sizeof(**table) * (*tableLen));
     /*@=unqualifiedtrans@*/
 
     t = & ((*table)[*tableLen - 1]);
@@ -737,7 +737,7 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
 	/* Find keyword in table */
 	searchOption.name = s;
 	option = bsearch(&searchOption, optionTable, optionTableSize,
-			 sizeof(struct rpmOption), optionCompare);
+			 sizeof(optionTable[0]), optionCompare);
 
 	if (option) {	/* For configuration variables  ... */
 	    const char *arch, *val, *fn;

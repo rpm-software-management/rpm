@@ -11,6 +11,15 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include <sys/ipc.h>
 #endif
 
+#if defined(__LCLINT__)
+typedef	unsigned int u_int32_t;
+typedef	unsigned short u_int16_t;
+typedef	unsigned char u_int8_t;
+/*@-incondefs@*/	/* LCLint 3.0.0.15 */
+typedef	int int32_t;
+/*@=incondefs@*/
+#endif
+
 #include <db3/db.h>
 
 #include <rpmlib.h>
@@ -83,7 +92,7 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
     rc = error;
 
     if (printit && rc) {
-	/*@-moduncon@*/
+	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	if (msg)
 	    rpmError(RPMERR_DBERR, _("db%d error(%d) from %s: %s\n"),
 		dbi->dbi_api, rc, msg, db_strerror(error));
@@ -122,7 +131,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
     if (rpmdb->db_remove_env || dbi->dbi_tear_down) {
 	int xx;
 
-	/*@-moduncon@*/
+	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	xx = db_env_create(&dbenv, 0);
 	/*@=moduncon@*/
 	xx = cvtdberr(dbi, "db_env_create", rc, _debug);
@@ -148,7 +157,7 @@ static int db3_fsync_disable(/*@unused@*/ int fd)
     return 0;
 }
 
-/*@-moduncon@*/
+/*@-moduncon@*/ /* FIX: annotate db3 methods */
 static int db_init(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
 		/*@unused@*/ /*@null@*/ const char * dbsubfile,
@@ -200,17 +209,19 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	return 1;
 
   { int xx;
+    /*@-noeffectuncon@*/ /* FIX: annotate db3 methods */
     dbenv->set_errcall(dbenv, rpmdb->db_errcall);
     dbenv->set_errfile(dbenv, rpmdb->db_errfile);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
+    /*@=noeffectuncon@*/
  /* dbenv->set_paniccall(???) */
-    (void) dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
+    xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
 		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
-    (void) dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
+    xx = dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
 		(dbi->dbi_verbose & DB_VERB_DEADLOCK));
-    (void) dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
+    xx = dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
 		(dbi->dbi_verbose & DB_VERB_RECOVERY));
-    (void) dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
+    xx = dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
 		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
  /* dbenv->set_lg_max(???) */
  /* dbenv->set_lk_conflicts(???) */
@@ -636,7 +647,7 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
-/*@-moduncon@*/
+/*@-moduncon@*/ /* FIX: annotate db3 methods */
 static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem @*/
@@ -705,23 +716,25 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     if (dbi->dbi_verify_on_close && !dbi->dbi_temporary) {
 	DB_ENV * dbenv = NULL;
 
-	/*@-moduncon@*/
+	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	rc = db_env_create(&dbenv, 0);
 	/*@=moduncon@*/
 	rc = cvtdberr(dbi, "db_env_create", rc, _debug);
 	if (rc || dbenv == NULL) goto exit;
 
+	/*@-noeffectuncon@*/ /* FIX: annotate db3 methods */
 	dbenv->set_errcall(dbenv, rpmdb->db_errcall);
 	dbenv->set_errfile(dbenv, rpmdb->db_errfile);
 	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
  /*	dbenv->set_paniccall(???) */
-	(void) dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
+	/*@=noeffectuncon@*/
+	xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
 		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
-	(void) dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
+	xx = dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
 		(dbi->dbi_verbose & DB_VERB_DEADLOCK));
-	(void) dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
+	xx = dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
 		(dbi->dbi_verbose & DB_VERB_RECOVERY));
-	(void) dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
+	xx = dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
 		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
 
 	if (dbi->dbi_tmpdir) {
@@ -737,7 +750,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
 	if (rc) goto exit;
 
-	/*@-moduncon@*/
+	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	rc = db_create(&db, dbenv, 0);
 	/*@=moduncon@*/
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
@@ -960,7 +973,7 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     if (rc == 0) {
 	static int _lockdbfd = 0;
 
-	/*@-moduncon@*/
+	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	rc = db_create(&db, dbenv, dbi->dbi_cflags);
 	/*@=moduncon@*/
 	rc = cvtdberr(dbi, "db_create", rc, _debug);

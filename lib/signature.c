@@ -125,6 +125,7 @@ static inline rpmRC checkSize(FD_t fd, int siglen, int pad, int datalen)
 	return RPMRC_OK;
     }
 
+    /*@-sizeoftype@*/
     rc = (((sizeof(struct rpmlead) + siglen + pad + datalen) - st.st_size)
 	? RPMRC_BADSIZE : RPMRC_OK);
 
@@ -132,6 +133,7 @@ static inline rpmRC checkSize(FD_t fd, int siglen, int pad, int datalen)
 	_("Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"),
 		(int)sizeof(struct rpmlead)+siglen+pad+datalen,
 		(int)sizeof(struct rpmlead), siglen, pad, datalen);
+    /*@=sizeoftype@*/
     rpmMessage((rc == RPMRC_OK ? RPMMESS_DEBUG : RPMMESS_WARNING),
 	_("  Actual size: %12d\n"), (int)st.st_size);
 
@@ -488,7 +490,9 @@ verifyMD5Signature(const char * datafile, const byte * sig,
     byte md5sum[16];
 
     memset(md5sum, 0, sizeof(md5sum));
+    /*@-noeffectuncon@*/ /* FIX: check rc */
     (void) fn(datafile, md5sum);
+    /*@=noeffectuncon@*/
     if (memcmp(md5sum, sig, 16)) {
 	sprintf(result, "MD5 sum mismatch\n"
 		"Expected: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
@@ -518,7 +522,7 @@ verifyMD5Signature(const char * datafile, const byte * sig,
 /*@=globuse@*/
 
 static rpmVerifySignatureReturn
-verifyPGPSignature(const char * datafile, const void * sig, int count,
+verifyPGPSignature(const char * datafile, const byte * sig, int count,
 		/*@unused@*/ const rpmDigest dig, /*@out@*/ char * result)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState@*/
@@ -575,7 +579,7 @@ fprintf(stderr, "=============================== RSA verify %s: rc %d\n",
 #else
     {	FD_t sfd;
 	if (!makeTempFile(NULL, &sigfile, &sfd)) {
-	    (void) Fwrite(sig, sizeof(char), count, sfd);
+	    (void) Fwrite(sig, sizeof(*sig), count, sfd);
 	    (void) Fclose(sfd);
 	    sfd = NULL;
 	}
@@ -663,7 +667,7 @@ fprintf(stderr, "=============================== RSA verify %s: rc %d\n",
 }
 
 static rpmVerifySignatureReturn
-verifyGPGSignature(const char * datafile, const void * sig, int count,
+verifyGPGSignature(const char * datafile, const byte * sig, int count,
 		/*@unused@*/ const rpmDigest dig, /*@out@*/ char * result)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState@*/
@@ -707,7 +711,7 @@ fprintf(stderr, "=============================== DSA verify %s: rc %d\n",
 #else
     {	FD_t sfd;
 	if (!makeTempFile(NULL, &sigfile, &sfd)) {
-	    (void) Fwrite(sig, sizeof(char), count, sfd);
+	    (void) Fwrite(sig, sizeof(*sig), count, sfd);
 	    (void) Fclose(sfd);
 	    sfd = NULL;
 	}

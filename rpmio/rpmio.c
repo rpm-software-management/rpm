@@ -308,7 +308,7 @@ static inline /*@null@*/ FD_t XfdNew(const char * msg,
 		const char * file, unsigned line)
 	/*@*/
 {
-    FD_t fd = (FD_t) xmalloc(sizeof(struct _FD_s));
+    FD_t fd = xmalloc(sizeof(*fd));
     if (fd == NULL) /* XXX xmalloc never returns NULL */
 	return NULL;
     fd->nrefs = 0;
@@ -804,7 +804,7 @@ static int checkResponse(void * uu, FD_t ctrl,
     URLSANE(u);
     if (u->bufAlloced == 0 || u->buf == NULL) {
 	u->bufAlloced = url_iobuf_size;
-	u->buf = xcalloc(u->bufAlloced, sizeof(char));
+	u->buf = xcalloc(u->bufAlloced, sizeof(u->buf[0]));
     }
     buf = u->buf;
     bufAlloced = u->bufAlloced;
@@ -1236,10 +1236,12 @@ errxit:
     return rc;
 }
 
-/*@unchecked@*/
-/*@null@*/ static rpmCallbackFunction	urlNotify = NULL;
-/*@unchecked@*/
-/*@null@*/ static void *	urlNotifyData = NULL;
+/*@unchecked@*/ /*@null@*/
+static rpmCallbackFunction	urlNotify = NULL;
+
+/*@unchecked@*/ /*@null@*/
+static void *			urlNotifyData = NULL;
+
 /*@unchecked@*/
 static int			urlNotifyCount = -1;
 
@@ -1258,8 +1260,10 @@ int ufdCopy(FD_t sfd, FD_t tfd)
     int notifier = -1;
 
     if (urlNotify) {
+	/*@-noeffectuncon @*/ /* FIX: check rc */
 	(void)(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
 		0, 0, NULL, urlNotifyData);
+	/*@=noeffectuncon @*/
     }
     
     while (1) {
@@ -1283,8 +1287,10 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 	if (urlNotify && urlNotifyCount > 0) {
 	    int n = itemsCopied/urlNotifyCount;
 	    if (n != notifier) {
+		/*@-noeffectuncon @*/ /* FIX: check rc */
 		(void)(*urlNotify) (NULL, RPMCALLBACK_INST_PROGRESS,
 			itemsCopied, 0, NULL, urlNotifyData);
+		/*@=noeffectuncon @*/
 		notifier = n;
 	    }
 	}
@@ -1296,8 +1302,10 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 /*@=modfilesys@*/
 
     if (urlNotify) {
+	/*@-noeffectuncon @*/ /* FIX: check rc */
 	(void)(*urlNotify) (NULL, RPMCALLBACK_INST_OPEN_FILE,
 		itemsCopied, itemsCopied, NULL, urlNotifyData);
+	/*@=noeffectuncon @*/
     }
     
     return rc;
@@ -2456,7 +2464,9 @@ static int bzdClose( /*@only@*/ void * cookie)
 
     if (bzfile == NULL) return -2;
     fdstat_enter(fd, FDSTAT_CLOSE);
+    /*@-noeffectuncon@*/ /* FIX: check rc */
     bzclose(bzfile);
+    /*@=noeffectuncon@*/
     rc = 0;	/* XXX FIXME */
 
     /* XXX TODO: preserve fd if errors */
@@ -3034,14 +3044,18 @@ ssize_t Pread(FD_t fd, void * buf, size_t count, _libio_off_t offset)
 {
     if (Fseek(fd, offset, SEEK_SET) < 0)
 	return -1;
+    /*@-sizeoftype@*/
     return Fread(buf, sizeof(char), count, fd);
+    /*@=sizeoftype@*/
 }
 
 ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _libio_off_t offset)
 {
     if (Fseek(fd, offset, SEEK_SET) < 0)
 	return -1;
+    /*@-sizeoftype@*/
     return Fwrite(buf, sizeof(char), count, fd);
+    /*@=sizeoftype@*/
 }
 
 static struct FDIO_s fpio_s = {

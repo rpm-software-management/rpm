@@ -1,3 +1,4 @@
+/*@-sizeoftype@*/
 /** \ingroup MP_m
  * \file mp32barrett.c
  *
@@ -1053,3 +1054,4 @@ void mp32bnpowmodsld(const mp32barrett* b, const uint32* slide, const mp32number
 	free(temp);
 	/*@=nullpass@*/
 }
+/*@=sizeoftype@*/

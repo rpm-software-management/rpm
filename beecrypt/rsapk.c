@@ -37,7 +37,7 @@
 
 int rsapkInit(rsapk* pk)
 {
-	memset(pk, 0, sizeof(rsapk));
+	memset(pk, 0, sizeof(*pk));
 	/* or
 	mp32bzero(&pk->n);
 	mp32nzero(&pk->e);

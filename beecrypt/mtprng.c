@@ -53,7 +53,9 @@
 #define loBits(a)		((a) & 0x7FFFFFFF)
 #define mixBits(a, b)	(hiBit(a) | loBits(b))
 
+/*@-sizeoftype@*/
 const randomGenerator mtprng = { "Mersenne Twister", sizeof(mtprngParam), (randomGeneratorSetup) mtprngSetup, (randomGeneratorSeed) mtprngSeed, (randomGeneratorNext) mtprngNext, (randomGeneratorCleanup) mtprngCleanup };
+/*@=sizeoftype@*/
 
 /**
  */

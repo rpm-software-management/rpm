@@ -293,12 +293,14 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     }
 
     /* Get copy of lead */
+    /*@-sizeoftype@*/
     if ((rc = Fread(lead, sizeof(char), sizeof(*lead), fdi)) != sizeof(*lead)) {
 	rpmError(RPMERR_BADMAGIC, _("readRPM: read %s: %s\n"),
 		(fileName ? fileName : "<stdin>"),
 		Fstrerror(fdi));
 	return RPMERR_BADMAGIC;
     }
+    /*@=sizeoftype@*/
 
     /* XXX FIXME: EPIPE on <stdin> */
     if (Fseek(fdi, 0, SEEK_SET) == -1) {

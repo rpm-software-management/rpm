@@ -692,8 +692,11 @@ restart:
 	    break;
 	}
 
-	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next)
+	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	    /*@-noeffectuncon@*/ /* FIX: check rc */
 	    (void) showPackage(qva, NULL, pkg->header);
+	    /*@=noeffectuncon@*/
+	}
 	spec = freeSpecVec(spec);
       }	break;
 

@@ -37,7 +37,7 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p) /*@modifies *p @*/
 
 StringBuf newStringBuf(void)
 {
-    StringBuf sb = xmalloc(sizeof(struct StringBufRec));
+    StringBuf sb = xmalloc(sizeof(*sb));
 
     sb->free = sb->allocated = BUF_CHUNK;
     sb->buf = xcalloc(sb->allocated, sizeof(*sb->buf));

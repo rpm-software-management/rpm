@@ -67,9 +67,9 @@ static void invokeCallbacksPRE(poptContext con, const struct poptOption * opt)
 	    poptCallbackType cb = (poptCallbackType)opt->arg;
 	    /*@=castfcnptr@*/
 	    /* Perform callback. */
-	    /*@-moduncon@*/
+	    /*@-moduncon -noeffectuncon @*/
 	    cb(con, POPT_CALLBACK_REASON_PRE, NULL, NULL, opt->descrip);
-	    /*@=moduncon@*/
+	    /*@=moduncon =noeffectuncon @*/
 	}
     }
 }
@@ -90,9 +90,9 @@ static void invokeCallbacksPOST(poptContext con, const struct poptOption * opt)
 	    poptCallbackType cb = (poptCallbackType)opt->arg;
 	    /*@=castfcnptr@*/
 	    /* Perform callback. */
-	    /*@-moduncon@*/
+	    /*@-moduncon -noeffectuncon @*/
 	    cb(con, POPT_CALLBACK_REASON_POST, NULL, NULL, opt->descrip);
-	    /*@=moduncon@*/
+	    /*@=moduncon =noeffectuncon @*/
 	}
     }
 }
@@ -130,10 +130,10 @@ static void invokeCallbacksOPTION(poptContext con,
 	    const void * cbData = (cbopt->descrip ? cbopt->descrip : myData);
 	    /* Perform callback. */
 	    if (cb != NULL) {	/* XXX program error */
-		/*@-moduncon@*/
+		/*@-moduncon -noeffectuncon @*/
 		cb(con, POPT_CALLBACK_REASON_OPTION, myOpt,
 			con->os->nextArg, cbData);
-		/*@=moduncon@*/
+		/*@=moduncon =noeffectuncon @*/
 	    }
 	    /* Terminate (unless explcitly continuing). */
 	    if (!(cbopt->argInfo & POPT_CBFLAG_CONTINUE))
@@ -160,7 +160,7 @@ poptContext poptGetContext(const char * name, int argc, const char ** argv,
     if (!(flags & POPT_CONTEXT_KEEP_FIRST))
 	con->os->next = 1;			/* skip argv[0] */
 
-    con->leftovers = calloc( (argc + 1), sizeof(char *) );
+    con->leftovers = calloc( (argc + 1), sizeof(*con->leftovers) );
     /*@-dependenttrans -assignexpose@*/	/* FIX: W2DO? */
     con->options = options;
     /*@=dependenttrans =assignexpose@*/
@@ -510,6 +510,7 @@ static const char * findNextArg(/*@special@*/ poptContext con,
 	if (os->next == os->argc && os == con->optionStack) break;
 	if (os->argv != NULL)
 	for (i = os->next; i < os->argc; i++) {
+	    /*@-sizeoftype@*/
 	    if (os->argb && PBM_ISSET(i, os->argb))
 		/*@innercontinue@*/ continue;
 	    if (*os->argv[i] == '-')
@@ -523,6 +524,7 @@ static const char * findNextArg(/*@special@*/ poptContext con,
 		PBM_SET(i, os->argb);
 	    }
 	    /*@innerbreak@*/ break;
+	    /*@=sizeoftype@*/
 	}
 	if (os > con->optionStack) os--;
     } while (arg == NULL);
@@ -583,10 +585,12 @@ static void poptStripArg(/*@special@*/ poptContext con, int which)
 	/*@defines con->arg_strip @*/
 	/*@modifies con @*/
 {
+    /*@-sizeoftype@*/
     if (con->arg_strip == NULL)
 	con->arg_strip = PBM_ALLOC(con->optionStack[0].argc);
     if (con->arg_strip != NULL)		/* XXX can't happen */
     PBM_SET(which, con->arg_strip);
+    /*@=sizeoftype@*/
 }
 
 static int poptSaveLong(const struct poptOption * opt, long aLong)
@@ -678,10 +682,12 @@ int poptGetNextOpt(poptContext con)
 	    char * localOptString, * optString;
 	    int thisopt;
 
+	    /*@-sizeoftype@*/
 	    if (con->os->argb && PBM_ISSET(con->os->next, con->os->argb)) {
 		con->os->next++;
 		continue;
 	    }
+	    /*@=sizeoftype@*/
 	    thisopt = con->os->next;
 	    if (con->os->argv != NULL)	/* XXX can't happen */
 	    origOptString = con->os->argv[con->os->next++];
@@ -1169,6 +1175,7 @@ int poptStrippedArgv(poptContext con, int argc, char ** argv)
     int j = 1;
     int i;
     
+    /*@-sizeoftype@*/
     if (con->arg_strip)
     for (i = 1; i < argc; i++) {
 	if (PBM_ISSET(i, con->arg_strip))
@@ -1181,6 +1188,7 @@ int poptStrippedArgv(poptContext con, int argc, char ** argv)
 	argv[j] = (j < numargs) ? argv[i] : NULL;
 	j++;
     }
+    /*@=sizeoftype@*/
     
     return numargs;
 }

@@ -1,3 +1,4 @@
+/*@-sizeoftype@*/
 /** \ingroup MP_m
  * \file mp32number.c
  *
@@ -229,3 +230,4 @@ void mp32nsethex(mp32number* n, const char* hex)
 	}
 }
 /*@=nullstate =compdef @*/
+/*@=sizeoftype@*/

@@ -335,7 +335,7 @@ retry:
     }
 
     if (match != -1) {
-	rl = xmalloc(sizeof(struct ReadLevelEntry));
+	rl = xmalloc(sizeof(*rl));
 	rl->reading = spec->readStack->reading && match;
 	rl->next = spec->readStack;
 	spec->readStack = rl;
@@ -482,7 +482,8 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 
 	    closeSpec(spec);
 
-	    spec->BASpecs = xcalloc(spec->BACount, sizeof(Spec));
+	    /* LCL: sizeof(spec->BASpecs[0]) -nullderef whine here */
+	    spec->BASpecs = xcalloc(spec->BACount, sizeof(*spec->BASpecs));
 	    index = 0;
 	    if (spec->BANames != NULL)
 	    for (x = 0; x < spec->BACount; x++) {

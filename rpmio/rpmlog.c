@@ -190,7 +190,9 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	++nrecs;
 
 	if (_rpmlogCallback) {
+	    /*@-noeffectuncon@*/ /* FIX: useless callback */
 	    _rpmlogCallback();
+	    /*@=noeffectuncon@*/
 	    return;	/* XXX Preserve legacy rpmError behavior. */
 	}
     }

@@ -4,6 +4,17 @@
 
 #include "system.h"
 
+#if defined(__LCLINT__)
+/*@-redef@*/
+typedef	unsigned int u_int32_t;
+typedef	unsigned short u_int16_t;
+typedef	unsigned char u_int8_t;
+/*@-incondefs@*/	/* LCLint 3.0.0.15 */
+typedef	int int32_t;
+/*@=incondefs@*/
+/*@=redef@*/
+#endif
+
 #include <db3/db.h>
 
 #include <rpmlib.h>
@@ -478,6 +489,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
     /*
      * Inverted lists have join length of 2, primary data has join length of 1.
      */
+    /*@-sizeoftype@*/
     switch (rpmtag) {
     case RPMDBI_PACKAGES:
     case RPMDBI_DEPENDS:
@@ -487,6 +499,7 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	dbi->dbi_jlen = 2 * sizeof(int_32);
 	break;
     }
+    /*@=sizeoftype@*/
 
     dbi->dbi_use_cursors = 1;		/* db3 cursors are always used now. */
 

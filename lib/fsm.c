@@ -486,8 +486,10 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 
     if (fsm->goal == FSM_PKGINSTALL) {
 	if (ts && ts->notify) {
+	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void)ts->notify(fi->h, RPMCALLBACK_INST_START, 0, fi->archiveSize,
 		(fi->ap ? fi->ap->key : NULL), ts->notifyData);
+	    /*@=noeffectuncon @*/
 	}
     }
 
@@ -853,12 +855,12 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 
     {	const rpmTransactionSet ts = fsmGetTs(fsm);
 	TFI_t fi = fsmGetFi(fsm);
-	if (ts && fi && ts->notify) {
+	if (ts && ts->notify && fi) {
 	    size_t size = (fdGetCpioPos(fsm->cfd) - pos);
-	    /*@-modunconnomods@*/
+	    /*@-noeffectuncon @*/ /* FIX: check rc */
 	    (void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS, size, size,
 			(fi->ap ? fi->ap->key : NULL), ts->notifyData);
-	    /*@=modunconnomods@*/
+	    /*@=noeffectuncon @*/
 	}
     }
 
@@ -1630,10 +1632,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
 	    rpmTransactionSet ts = fsmGetTs(fsm);
 	    TFI_t fi = fsmGetFi(fsm);
-	    if (ts && ts->notify && fi)
+	    if (ts && ts->notify && fi) {
+		/*@-noeffectuncon @*/ /* FIX: check rc */
 		(void)ts->notify(fi->h, RPMCALLBACK_INST_PROGRESS,
 			fdGetCpioPos(fsm->cfd), fi->archiveSize,
 			(fi->ap ? fi->ap->key : NULL), ts->notifyData);
+		/*@=noeffectuncon @*/
+	    }
 	}
 	break;
     case FSM_UNDO:

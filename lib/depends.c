@@ -249,7 +249,7 @@ alAddPackage(availableList al,
     rpmTagType dnt, bnt;
     struct availablePackage * p;
     rpmRelocation * r;
-    int i;
+    int i, xx;
     int_32 * dirIndexes;
     const char ** dirNames;
     int numDirs, dirNum;
@@ -275,7 +275,7 @@ alAddPackage(availableList al,
     memset(&p->tsi, 0, sizeof(p->tsi));
     p->multiLib = 0;	/* MULTILIB */
 
-    (void) headerNVR(p->h, &p->name, &p->version, &p->release);
+    xx = headerNVR(p->h, &p->name, &p->version, &p->release);
 
     /* XXX This should be added always so that packages look alike.
      * XXX However, there is logic in files.c/depends.c that checks for
@@ -333,9 +333,9 @@ alAddPackage(availableList al,
 	p->filesCount = 0;
 	p->baseNames = NULL;
     } else {
-	(void) hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, &numDirs);
-	(void) hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
-	(void) hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
+	xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, &numDirs);
+	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+	xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
@@ -619,7 +619,7 @@ static int rangeMatchesDepFlags (Header h,
     int_32 * provideFlags;
     int providesCount;
     int result;
-    int i;
+    int i, xx;
 
     if (!(reqFlags & RPMSENSE_SENSEMASK) || !reqEVR || !strlen(reqEVR))
 	return 1;
@@ -633,7 +633,7 @@ static int rangeMatchesDepFlags (Header h,
 		(void **) &providesEVR, &providesCount))
 	return 1;
 
-    (void) hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
+    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (void **) &provideFlags, NULL);
 
     if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides, &providesCount))
     {
@@ -770,19 +770,20 @@ static int removePackage(rpmTransactionSet ts, int dboffset, int depends)
     /* Filter out duplicate erasures. */
     if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
 	if (bsearch(&dboffset, ts->removedPackages, ts->numRemovedPackages,
-			sizeof(int), intcmp) != NULL)
+			sizeof(*ts->removedPackages), intcmp) != NULL)
 	    return 0;
     }
 
     if (ts->numRemovedPackages == ts->allocedRemovedPackages) {
 	ts->allocedRemovedPackages += ts->delta;
 	ts->removedPackages = xrealloc(ts->removedPackages,
-		sizeof(int *) * ts->allocedRemovedPackages);
+		sizeof(ts->removedPackages) * ts->allocedRemovedPackages);
     }
 
     if (ts->removedPackages != NULL) {	/* XXX can't happen. */
 	ts->removedPackages[ts->numRemovedPackages++] = dboffset;
-	qsort(ts->removedPackages, ts->numRemovedPackages, sizeof(int), intcmp);
+	qsort(ts->removedPackages, ts->numRemovedPackages,
+			sizeof(*ts->removedPackages), intcmp);
     }
 
     if (ts->orderCount == ts->orderAlloced) {
@@ -808,6 +809,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     int count;
     const char ** obsoletes;
     int alNum;
+    int xx;
 
     /*
      * FIXME: handling upgrades like this is *almost* okay. It doesn't
@@ -836,7 +838,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
 	return 0;
 
-    (void) headerNVR(h, &name, NULL, NULL);
+    xx = headerNVR(h, &name, NULL, NULL);
 
     {	rpmdbMatchIterator mi;
 	Header h2;
@@ -845,7 +847,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	while((h2 = rpmdbNextIterator(mi)) != NULL) {
 	    /*@-branchstate@*/
 	    if (rpmVersionCompare(h, h2))
-		(void) removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
+		xx = removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
 	    else {
 		uint_32 *p, multiLibMask = 0, oldmultiLibMask = 0;
 
@@ -868,9 +870,9 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	int_32 * obsoletesFlags;
 	int j;
 
-	(void) hge(h, RPMTAG_OBSOLETEVERSION, &ovt, (void **) &obsoletesEVR,
+	xx = hge(h, RPMTAG_OBSOLETEVERSION, &ovt, (void **) &obsoletesEVR,
 			NULL);
-	(void) hge(h, RPMTAG_OBSOLETEFLAGS, NULL, (void **) &obsoletesFlags,
+	xx = hge(h, RPMTAG_OBSOLETEFLAGS, NULL, (void **) &obsoletesFlags,
 			NULL);
 
 	for (j = 0; j < count; j++) {
@@ -884,7 +886,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 
 	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, obsoletes[j], 0);
 
-	    (void) rpmdbPruneIterator(mi,
+	    xx = rpmdbPruneIterator(mi,
 		ts->removedPackages, ts->numRemovedPackages, 1);
 
 	    while((h2 = rpmdbNextIterator(mi)) != NULL) {
@@ -897,7 +899,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 		    headerMatchesDepFlags(h2,
 			obsoletes[j], obsoletesEVR[j], obsoletesFlags[j]))
 		{
-		    (void) removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
+		    xx = removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
 		}
 		/*@=branchstate@*/
 	    }
@@ -1402,19 +1404,19 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
     int_32 * conflictFlags = NULL;
     int conflictsCount = 0;
     rpmTagType type;
-    int i, rc;
+    int i, rc, xx;
     int ourrc = 0;
     struct availablePackage ** suggestion;
 
-    (void) headerNVR(h, &name, &version, &release);
+    xx = headerNVR(h, &name, &version, &release);
 
     if (!hge(h, RPMTAG_REQUIRENAME, &rnt, (void **) &requires, &requiresCount))
     {
 	requiresCount = 0;
 	rvt = RPM_STRING_ARRAY_TYPE;
     } else {
-	(void)hge(h, RPMTAG_REQUIREFLAGS, NULL, (void **) &requireFlags, NULL);
-	(void)hge(h, RPMTAG_REQUIREVERSION, &rvt, (void **) &requiresEVR, NULL);
+	xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, (void **) &requireFlags, NULL);
+	xx = hge(h, RPMTAG_REQUIREVERSION, &rvt, (void **) &requiresEVR, NULL);
     }
 
     for (i = 0; i < requiresCount && !ourrc; i++) {
@@ -1492,9 +1494,9 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	conflictsCount = 0;
 	cvt = RPM_STRING_ARRAY_TYPE;
     } else {
-	(void) hge(h, RPMTAG_CONFLICTFLAGS, &type,
+	xx = hge(h, RPMTAG_CONFLICTFLAGS, &type,
 		(void **) &conflictFlags, &conflictsCount);
-	(void) hge(h, RPMTAG_CONFLICTVERSION, &cvt,
+	xx = hge(h, RPMTAG_CONFLICTVERSION, &cvt,
 		(void **) &conflictsEVR, &conflictsCount);
     }
 
@@ -2215,7 +2217,7 @@ int rpmdepCheck(rpmTransactionSet ts,
     struct availablePackage * p;
     problemsSet ps;
     int npkgs;
-    int i, j;
+    int i, j, xx;
     int rc;
 
     npkgs = ts->addedPackages.size;
@@ -2271,12 +2273,12 @@ int rpmdepCheck(rpmTransactionSet ts,
     /*@-branchstate@*/
     if (ts->numRemovedPackages > 0) {
       mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, NULL, 0);
-      (void) rpmdbAppendIterator(mi,
+      xx = rpmdbAppendIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages);
       while ((h = rpmdbNextIterator(mi)) != NULL) {
 
 	{   const char * name, * version, * release;
-	    (void) headerNVR(h, &name, &version, &release);
+	    xx = headerNVR(h, &name, &version, &release);
 	    rpmMessage(RPMMESS_DEBUG,  "========== --- %s-%s-%s\n" ,
 		name, version, release);
 
@@ -2317,8 +2319,8 @@ int rpmdepCheck(rpmTransactionSet ts,
 
 	    if (hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &fileCount))
 	    {
-		(void) hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
-		(void) hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes,
+		xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
+		xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes,
 				NULL);
 		rc = 0;
 		for (j = 0; j < fileCount; j++) {
@@ -2363,7 +2365,7 @@ exit:
     ps = _free(ps);
     /*@-branchstate@*/
     if (_cacheDependsRC)
-	(void) rpmdbCloseDBI(ts->rpmdb, RPMDBI_DEPENDS);
+	xx = rpmdbCloseDBI(ts->rpmdb, RPMDBI_DEPENDS);
     /*@=branchstate@*/
     return rc;
 }

@@ -1,3 +1,4 @@
+/*@-sizeoftype@*/
 /** \ingroup rpmdb dbi
  * \file rpmdb/rpmdb.c
  */
@@ -907,7 +908,7 @@ static int openDatabase(/*@null@*/ const char * prefix,
 	/*@modifies *dbp, fileSystem @*/
 {
     rpmdb db;
-    int rc;
+    int rc, xx;
     unsigned int gflags = 0;	/* dbiGet() flags */
     static int _initialized = 0;
     int justCheck = flags & RPMDB_FLAG_JUSTCHECK;
@@ -934,7 +935,7 @@ static int openDatabase(/*@null@*/ const char * prefix,
 		sprintf(filename, "%s/%s/__db.%03d",
 			(prefix ? prefix : ""), (dbpath ? dbpath : ""),  i);
 		(void) rpmCleanPath(filename);
-		(void) unlink(filename);
+		xx = unlink(filename);
 	    }
 	}
 #endif
@@ -1001,7 +1002,6 @@ static int openDatabase(/*@null@*/ const char * prefix,
 	    case RPMTAG_BASENAMES:
 	    {	void * keyp = NULL;
 		DBC * dbcursor;
-		int xx;
 
     /* We used to store the fileindexes as complete paths, rather then
        plain basenames. Let's see which version we are... */
@@ -1033,7 +1033,7 @@ static int openDatabase(/*@null@*/ const char * prefix,
 
 exit:
     if (rc || justCheck || dbp == NULL)
-	(void) rpmdbClose(db);
+	xx = rpmdbClose(db);
     else
 	*dbp = db;
 
@@ -1184,9 +1184,9 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 	    continue;
 	}
 
-	(void) hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, NULL);
-	(void) hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
-	(void) hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+	xx = hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, NULL);
+	xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
+	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
 
 	do {
 	    fingerPrint fp2;
@@ -1198,7 +1198,7 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 	    /*@=nullpass@*/
 		rec->hdrNum = dbiIndexRecordOffset(allMatches, i);
 		rec->tagNum = dbiIndexRecordFileNumber(allMatches, i);
-		(void) dbiAppendSet(*matches, rec, 1, sizeof(*rec), 0);
+		xx = dbiAppendSet(*matches, rec, 1, sizeof(*rec), 0);
 	    }
 
 	    prevoff = offset;
@@ -2565,9 +2565,9 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 
     if (iid != 0 && iid != -1) {
 	int_32 tid = iid;
-	(void) headerRemoveEntry(h, RPMTAG_REMOVETID);
+	xx = headerRemoveEntry(h, RPMTAG_REMOVETID);
 	if (!headerIsEntry(h, RPMTAG_INSTALLTID))
-	   (void) headerAddEntry(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);
+	   xx = headerAddEntry(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);
     }
 
     /*
@@ -2576,7 +2576,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
      * being written to the package header database.
      */
 
-    (void) hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &count);
+    xx = hge(h, RPMTAG_BASENAMES, &bnt, (void **) &baseNames, &count);
 
     if (_noDirTokens)
 	expandFilelist(h);
@@ -2672,7 +2672,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
 		{   const char *n, *v, *r;
-		    (void) headerNVR(h, &n, &v, &r);
+		    xx = headerNVR(h, &n, &v, &r);
 		    rpmMessage(RPMMESS_DEBUG, "  +++ %10u %s-%s-%s\n", hdrNum, n, v, r);
 		}
 	      }
@@ -2685,11 +2685,11 @@ int rpmdbAdd(rpmdb db, int iid, Header h)
 		rpmcnt = count;
 		/*@switchbreak@*/ break;
 	    case RPMTAG_REQUIRENAME:
-		(void) hge(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
-		(void) hge(h, RPMTAG_REQUIREFLAGS, NULL, (void **)&requireFlags, NULL);
+		xx = hge(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
+		xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, (void **)&requireFlags, NULL);
 		/*@switchbreak@*/ break;
 	    default:
-		(void) hge(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
+		xx = hge(h, rpmtag, &rpmtype, (void **)&rpmvals, &rpmcnt);
 		/*@switchbreak@*/ break;
 	    }
 
@@ -2822,7 +2822,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
     rpmdbMatchIterator mi;
     fingerPrintCache fpc;
     Header h;
-    int i;
+    int i, xx;
 
     if (db == NULL) return 0;
 
@@ -2830,7 +2830,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 
     /* Gather all matches from the database */
     for (i = 0; i < numItems; i++) {
-	(void) rpmdbGrowIterator(mi, fpList[i].baseName, 0, i);
+	xx = rpmdbGrowIterator(mi, fpList[i].baseName, 0, i);
 	matchList[i] = xcalloc(1, sizeof(*(matchList[i])));
     }
 
@@ -2869,9 +2869,9 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	num = end - start;
 
 	/* Compute fingerprints for this header's matches */
-	(void) hge(h, RPMTAG_BASENAMES, &bnt, (void **) &fullBaseNames, NULL);
-	(void) hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
-	(void) hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fullDirIndexes, NULL);
+	xx = hge(h, RPMTAG_BASENAMES, &bnt, (void **) &fullBaseNames, NULL);
+	xx = hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
+	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fullDirIndexes, NULL);
 
 	baseNames = xcalloc(num, sizeof(*baseNames));
 	dirIndexes = xcalloc(num, sizeof(*dirIndexes));
@@ -2889,7 +2889,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	    if (FP_EQUAL(fps[i], fpList[im->fpNum])) {
 	    /*@=nullpass@*/
 		/*@-usedef@*/
-		(void) dbiAppendSet(matchList[im->fpNum], im, 1, sizeof(*im), 0);
+		xx = dbiAppendSet(matchList[im->fpNum], im, 1, sizeof(*im), 0);
 		/*@=usedef@*/
 	    }
 	}
@@ -3327,3 +3327,4 @@ exit:
     return rc;
 }
 /*@=globs@*/
+/*@=sizeoftype@*/

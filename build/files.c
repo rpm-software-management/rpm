@@ -266,8 +266,8 @@ static void timeCheck(int tc, Header h)
     int count, x;
     time_t currentTime = time(NULL);
 
-    (void) hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &files, &count);
-    (void) hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtime, NULL);
+    x = hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &files, &count);
+    x = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &mtime, NULL);
     
     for (x = 0; x < count; x++) {
 	if ((currentTime - mtime[x]) > tc)
@@ -1209,6 +1209,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	(void) headerAddOrAppendEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			       &(flp->fileURL), 1);
 
+/*@-sizeoftype@*/
       if (sizeof(flp->fl_size) != sizeof(uint_32)) {
 	uint_32 psize = (uint_32)flp->fl_size;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
@@ -1247,6 +1248,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(flp->fl_dev), 1);
       }
+/*@=sizeoftype@*/
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
 			       &(flp->fl_ino), 1);
 
@@ -2551,7 +2553,7 @@ static void printDeps(Header h)
     rpmTagType dvt = -1;
     int * flags = NULL;
     DepMsg_t * dm;
-    int count;
+    int count, xx;
 
     for (dm = depMsgs; dm->msg != NULL; dm++) {
 	switch (dm->ntag) {
@@ -2574,7 +2576,7 @@ static void printDeps(Header h)
 	    /*@switchbreak@*/ break;
 	default:
 	    versions = hfd(versions, dvt);
-	    (void) hge(h, dm->vtag, &dvt, (void **) &versions, NULL);
+	    xx = hge(h, dm->vtag, &dvt, (void **) &versions, NULL);
 	    /*@switchbreak@*/ break;
 	}
 	switch (dm->ftag) {
@@ -2584,7 +2586,7 @@ static void printDeps(Header h)
 	case -1:
 	    /*@switchbreak@*/ break;
 	default:
-	    (void) hge(h, dm->ftag, NULL, (void **) &flags, NULL);
+	    xx = hge(h, dm->ftag, NULL, (void **) &flags, NULL);
 	    /*@switchbreak@*/ break;
 	}
 	/*@-noeffect@*/

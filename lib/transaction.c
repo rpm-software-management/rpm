@@ -367,7 +367,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     int haveRelocatedFile = 0;
     int reldel = 0;
     int len;
-    int i, j;
+    int i, j, xx;
 
     if (!hge(origH, RPMTAG_PREFIXES, &validType,
 			(void **) &validRelocations, &numValid))
@@ -388,7 +388,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     if (rawRelocations == NULL || numRelocations == 0) {
 	if (numValid) {
 	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES))
-		(void) hae(origH, RPMTAG_INSTPREFIXES,
+		xx = hae(origH, RPMTAG_INSTPREFIXES,
 			validType, validRelocations, numValid);
 	    validRelocations = hfd(validRelocations, validType);
 	}
@@ -510,18 +510,18 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	}
 
 	if (numActual)
-	    (void) hae(h, RPMTAG_INSTPREFIXES, RPM_STRING_ARRAY_TYPE,
+	    xx = hae(h, RPMTAG_INSTPREFIXES, RPM_STRING_ARRAY_TYPE,
 		       (void **) actualRelocations, numActual);
 
 	actualRelocations = _free(actualRelocations);
 	validRelocations = hfd(validRelocations, validType);
     }
 
-    (void) hge(h, RPMTAG_BASENAMES, NULL, (void **) &baseNames, &fileCount);
-    (void) hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
-    (void) hge(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames, &dirCount);
-    (void) hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fFlags, NULL);
-    (void) hge(h, RPMTAG_FILEMODES, NULL, (void **) &fModes, NULL);
+    xx = hge(h, RPMTAG_BASENAMES, NULL, (void **) &baseNames, &fileCount);
+    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes, NULL);
+    xx = hge(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames, &dirCount);
+    xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fFlags, NULL);
+    xx = hge(h, RPMTAG_FILEMODES, NULL, (void **) &fModes, NULL);
 
     skipDirList = alloca(dirCount * sizeof(*skipDirList));
     memset(skipDirList, 0, dirCount * sizeof(*skipDirList));
@@ -718,33 +718,33 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	rpmTagType t;
 
 	p = NULL;
-	(void) hge(h, RPMTAG_BASENAMES, &t, &p, &c);
-	(void) hae(h, RPMTAG_ORIGBASENAMES, t, p, c);
+	xx = hge(h, RPMTAG_BASENAMES, &t, &p, &c);
+	xx = hae(h, RPMTAG_ORIGBASENAMES, t, p, c);
 	p = hfd(p, t);
 
 	p = NULL;
-	(void) hge(h, RPMTAG_DIRNAMES, &t, &p, &c);
-	(void) hae(h, RPMTAG_ORIGDIRNAMES, t, p, c);
+	xx = hge(h, RPMTAG_DIRNAMES, &t, &p, &c);
+	xx = hae(h, RPMTAG_ORIGDIRNAMES, t, p, c);
 	p = hfd(p, t);
 
 	p = NULL;
-	(void) hge(h, RPMTAG_DIRINDEXES, &t, &p, &c);
-	(void) hae(h, RPMTAG_ORIGDIRINDEXES, t, p, c);
+	xx = hge(h, RPMTAG_DIRINDEXES, &t, &p, &c);
+	xx = hae(h, RPMTAG_ORIGDIRINDEXES, t, p, c);
 	p = hfd(p, t);
 
-	(void) hme(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
+	xx = hme(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
 	fi->bnl = hfd(fi->bnl, RPM_STRING_ARRAY_TYPE);
-	(void) hge(h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc);
+	xx = hge(h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc);
 
-	(void) hme(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
+	xx = hme(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
 	fi->dnl = hfd(fi->dnl, RPM_STRING_ARRAY_TYPE);
-	(void) hge(h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
+	xx = hge(h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
 
-	(void) hme(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
+	xx = hme(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
 			  dirIndexes, fileCount);
-	(void) hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
+	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
     }
 
     baseNames = hfd(baseNames, RPM_STRING_ARRAY_TYPE);
@@ -961,6 +961,7 @@ static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
     uint_32 * otherSizes;
     uint_16 * otherModes;
     int numReplaced = 0;
+    int xx;
 
     rpmdbMatchIterator mi;
 
@@ -971,12 +972,12 @@ static int handleInstInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 	return 1;
     }
 
-    (void) hge(h, RPMTAG_FILEMD5S, &omtype, (void **) &otherMd5s, NULL);
-    (void) hge(h, RPMTAG_FILELINKTOS, &oltype, (void **) &otherLinks, NULL);
-    (void) hge(h, RPMTAG_FILESTATES, NULL, (void **) &otherStates, NULL);
-    (void) hge(h, RPMTAG_FILEMODES, NULL, (void **) &otherModes, NULL);
-    (void) hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &otherFlags, NULL);
-    (void) hge(h, RPMTAG_FILESIZES, NULL, (void **) &otherSizes, NULL);
+    xx = hge(h, RPMTAG_FILEMD5S, &omtype, (void **) &otherMd5s, NULL);
+    xx = hge(h, RPMTAG_FILELINKTOS, &oltype, (void **) &otherLinks, NULL);
+    xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &otherStates, NULL);
+    xx = hge(h, RPMTAG_FILEMODES, NULL, (void **) &otherModes, NULL);
+    xx = hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &otherFlags, NULL);
+    xx = hge(h, RPMTAG_FILESIZES, NULL, (void **) &otherSizes, NULL);
 
     fi->replaced = xmalloc(sharedCount * sizeof(*fi->replaced));
 
@@ -1049,7 +1050,7 @@ static int handleRmvdInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
     HGE_t hge = fi->hge;
     Header h;
     const char * otherStates;
-    int i;
+    int i, xx;
    
     rpmdbMatchIterator mi;
 
@@ -1061,7 +1062,7 @@ static int handleRmvdInstalledFiles(TFI_t fi, /*@null@*/ rpmdb db,
 	return 1;
     }
 
-    (void) hge(h, RPMTAG_FILESTATES, NULL, (void **) &otherStates, NULL);
+    xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &otherStates, NULL);
 
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
@@ -1606,6 +1607,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     struct psm_s psmbuf;
     PSM_t psm = &psmbuf;
     void * tsi;
+    int xx;
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -1683,7 +1685,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		ts->di[i].iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 				? sfb.f_ffree : -1;
 
-		(void) stat(ts->filesystems[i], &sb);
+		xx = stat(ts->filesystems[i], &sb);
 		ts->di[i].dev = sb.st_dev;
 	    }
 	}
@@ -1716,7 +1718,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    Header oldH;
 	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, alp->name, 0);
 	    while ((oldH = rpmdbNextIterator(mi)) != NULL)
-		(void) ensureOlder(alp, oldH, ts->probs);
+		xx = ensureOlder(alp, oldH, ts->probs);
 	    mi = rpmdbFreeIterator(mi);
 	}
 
@@ -1724,9 +1726,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	if (!(ts->ignoreSet & RPMPROB_FILTER_REPLACEPKG) && !alp->multiLib) {
 	    rpmdbMatchIterator mi;
 	    mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, alp->name, 0);
-	    (void) rpmdbSetIteratorRE(mi, RPMTAG_VERSION,
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION,
 			RPMMIRE_DEFAULT, alp->version);
-	    (void) rpmdbSetIteratorRE(mi, RPMTAG_RELEASE,
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE,
 			RPMMIRE_DEFAULT, alp->release);
 
 	    while (rpmdbNextIterator(mi) != NULL) {
@@ -1749,7 +1751,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	int fileCount;
 
 	mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES, NULL, 0);
-	(void) rpmdbAppendIterator(mi, ts->removedPackages, ts->numRemovedPackages);
+	xx = rpmdbAppendIterator(mi, ts->removedPackages, ts->numRemovedPackages);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (headerGetEntry(h, RPMTAG_BASENAMES, NULL, NULL, &fileCount))
 		totalFileCount += fileCount;
@@ -1822,9 +1824,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     tsi = tsFreeIterator(tsi);
 
     if (!ts->chrootDone) {
-	(void) chdir("/");
+	xx = chdir("/");
 	/*@-superuser -noeffect @*/
-	(void) chroot(ts->rootDir);
+	xx = chroot(ts->rootDir);
 	/*@=superuser =noeffect @*/
 	ts->chrootDone = 1;
 	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 1;
@@ -1852,8 +1854,10 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     }
     tsi = tsFreeIterator(tsi);
 
+    /*@-noeffectuncon @*/ /* FIX: check rc */
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, ts->flEntries,
 	NULL, ts->notifyData));
+    /*@=noeffectuncon@*/
 
     /* ===============================================
      * Compute file disposition for each package in transaction set.
@@ -1863,8 +1867,10 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	dbiIndexSet * matches;
 	int knownBad;
 
+	/*@-noeffectuncon @*/ /* FIX: check rc */
 	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - ts->flList),
 			ts->flEntries, NULL, ts->notifyData));
+	/*@=noeffectuncon@*/
 
 	if (fi->fc == 0) continue;
 
@@ -1938,13 +1944,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    /* Determine the fate of each file. */
 	    switch (fi->type) {
 	    case TR_ADDED:
-		(void) handleInstInstalledFiles(fi, ts->rpmdb, shared, nexti - i,
+		xx = handleInstInstalledFiles(fi, ts->rpmdb, shared, nexti - i,
 		!(beingRemoved || (ts->ignoreSet & RPMPROB_FILTER_REPLACEOLDFILES)),
 			 ts->probs, ts->transFlags);
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
 		if (!beingRemoved)
-		    (void) handleRmvdInstalledFiles(fi, ts->rpmdb, shared, nexti - i);
+		    xx = handleRmvdInstalledFiles(fi, ts->rpmdb, shared, nexti - i);
 		/*@switchbreak@*/ break;
 	    }
 	}
@@ -1988,16 +1994,18 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     if (ts->chrootDone) {
 	/*@-superuser -noeffect @*/
-	(void) chroot(".");
+	xx = chroot(".");
 	/*@=superuser =noeffect @*/
 	ts->chrootDone = 0;
 	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 0;
 	chroot_prefix = NULL;
-	(void) chdir(ts->currDir);
+	xx = chdir(ts->currDir);
     }
 
+    /*@-noeffectuncon @*/ /* FIX: check rc */
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->flEntries,
 	NULL, ts->notifyData));
+    /*@=noeffectuncon @*/
 
     /* ===============================================
      * Free unused memory as soon as possible.
@@ -2043,7 +2051,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    case TR_REMOVED:
 /*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 		if (ts->transFlags & RPMTRANS_FLAG_REPACKAGE)
-		    (void) psmStage(psm, PSM_PKGSAVE);
+		    xx = psmStage(psm, PSM_PKGSAVE);
 /*@=globs@*/
 		/*@switchbreak@*/ break;
 	    }
@@ -2083,8 +2091,10 @@ assert(alp == fi->ap);
 		    rpmrc = rpmReadPackageHeader(alp->fd, &h, NULL, NULL, NULL);
 		    /*@=mustmod@*/
 		    if (!(rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE)) {
+			/*@-noeffectuncon @*/ /* FIX: check rc */
 			(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE,
 					0, 0, alp->key, ts->notifyData);
+			/*@=noeffectuncon @*/
 			alp->fd = NULL;
 			ourrc++;
 		    } else {
@@ -2129,8 +2139,10 @@ assert(alp == fi->ap);
 	    h = headerFree(h);
 
 	    if (gotfd) {
+		/*@-noeffectuncon @*/ /* FIX: check rc */
 		(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
 			alp->key, ts->notifyData);
+		/*@=noeffectuncon @*/
 		alp->fd = NULL;
 	    }
 	    /*@switchbreak@*/ break;
@@ -2147,7 +2159,7 @@ assert(alp == fi->ap);
 
 	    /*@switchbreak@*/ break;
 	}
-	(void) rpmdbSync(ts->rpmdb);
+	xx = rpmdbSync(ts->rpmdb);
     }
     tsi = tsFreeIterator(tsi);
 

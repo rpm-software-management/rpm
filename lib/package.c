@@ -24,6 +24,7 @@ void headerMergeLegacySigs(Header h, const Header sig)
     HeaderIterator hi;
     int_32 tag, type, count;
     const void * ptr;
+    int xx;
 
     /*@-mods@*/ /* FIX: undocumented modification of sig */
     for (hi = headerInitIterator(sig);
@@ -60,7 +61,7 @@ void headerMergeLegacySigs(Header h, const Header sig)
 	}
 	if (ptr == NULL) continue;	/* XXX can't happen */
 	if (!headerIsEntry(h, tag))
-	    (void) hae(h, tag, type, ptr, count);
+	    xx = hae(h, tag, type, ptr, count);
     }
     hi = headerFreeIterator(hi);
 }
@@ -72,6 +73,7 @@ Header headerRegenSigHeader(const Header h)
     HeaderIterator hi;
     int_32 tag, stag, type, count;
     const void * ptr;
+    int xx;
 
     /*@-mods@*/ /* FIX: undocumented modification of h */
     for (hi = headerInitIterator(h);
@@ -109,7 +111,7 @@ Header headerRegenSigHeader(const Header h)
 	}
 	if (ptr == NULL) continue;	/* XXX can't happen */
 	if (!headerIsEntry(sig, stag))
-	    (void) headerAddEntry(sig, stag, type, ptr, count);
+	    xx = headerAddEntry(sig, stag, type, ptr, count);
     }
     hi = headerFreeIterator(hi);
     return sig;

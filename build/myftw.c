@@ -192,7 +192,7 @@ int myftw (const char *dir,
     descriptors = 1;
 
   /*@access DIR@*/
-  dirs = (DIR **) alloca (descriptors * sizeof (DIR *));
+  dirs = (DIR **) alloca (descriptors * sizeof (*dirs));
   i = descriptors;
   while (i-- > 0)
     dirs[i] = NULL;

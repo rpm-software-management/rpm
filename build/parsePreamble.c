@@ -50,12 +50,13 @@ static rpmTag requiredTags[] = {
 static void addOrAppendListEntry(Header h, int_32 tag, char * line)
 	/*@modifies h @*/
 {
+    int xx;
     int argc;
     const char **argv;
 
-    (void) poptParseArgvString(line, &argc, &argv);
+    xx = poptParseArgvString(line, &argc, &argv);
     if (argc)
-	(void) headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, argv, argc);
+	xx = headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, argv, argc);
     argv = _free(argv);
 }
 
@@ -370,7 +371,7 @@ static int readIcon(Header h, const char * file)
     icon = xmalloc(iconsize + 1);
     *icon = '\0';
 
-    nb = Fread(icon, sizeof(char), iconsize, fd);
+    nb = Fread(icon, sizeof(icon[0]), iconsize, fd);
     if (Ferror(fd) || (size >= 0 && nb != size)) {
 	rpmError(RPMERR_BADSPEC, _("Unable to read icon %s: %s\n"),
 		fn, Fstrerror(fd));
@@ -462,6 +463,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
     int len;
     int num;
     int rc;
+    int xx;
     
     if (field == NULL) return RPMERR_BADSPEC;	/* XXX can't happen */
     /* Find the start of the "field" and strip trailing space */
@@ -574,7 +576,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
       }	break;
       case RPMTAG_PREFIXES:
 	addOrAppendListEntry(pkg->header, tag, field);
-	(void) hge(pkg->header, tag, &type, (void **)&array, &num);
+	xx = hge(pkg->header, tag, &type, (void **)&array, &num);
 	while (num--) {
 	    len = strlen(array[num]);
 	    if (array[num][len - 1] == '/' && len > 1) {
@@ -607,7 +609,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
-	(void) headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &num, 1);
+	xx = headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &num, 1);
 	break;
       case RPMTAG_AUTOREQPROV:
 	pkg->autoReq = parseYesNo(field);
@@ -830,7 +832,7 @@ static int findPreambleTag(Spec spec, /*@out@*/int * tag,
 int parsePreamble(Spec spec, int initialPackage)
 {
     int nextPart;
-    int tag, rc;
+    int tag, rc, xx;
     char *name, *linep;
     int flag;
     Package pkg;
@@ -858,11 +860,11 @@ int parsePreamble(Spec spec, int initialPackage)
 	/* Construct the package */
 	if (flag == PART_SUBNAME) {
 	    const char * mainName;
-	    (void) headerNVR(spec->packages->header, &mainName, NULL, NULL);
+	    xx = headerNVR(spec->packages->header, &mainName, NULL, NULL);
 	    sprintf(NVR, "%s-%s", mainName, name);
 	} else
 	    strcpy(NVR, name);
-	(void) headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, NVR, 1);
+	xx = headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, NVR, 1);
     }
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {

@@ -324,7 +324,9 @@ static const blockMode blowfishModes[2] =
 	{ /* CBC */ (blockModeEncrypt) blowfishCBCEncrypt, (blockModeDecrypt) blowfishCBCDecrypt }
 };
 
+/*@-sizeoftype@*/
 const blockCipher blowfish = { "Blowfish", sizeof(blowfishParam), 8, 64, 448, 32, (blockCipherSetup) blowfishSetup, (blockCipherSetIV) blowfishSetIV, (blockCipherEncrypt) blowfishEncrypt, (blockCipherDecrypt) blowfishDecrypt, blowfishModes };
+/*@=sizeoftype@*/
 
 int blowfishSetup(blowfishParam* bp, const uint32* key, int keybits, /*@unused@*/ cipherOperation op)
 {
@@ -336,8 +338,8 @@ int blowfishSetup(blowfishParam* bp, const uint32* key, int keybits, /*@unused@*
 
 		uint32 work[2];
 
-		memcpy(p, _bf_p, BLOWFISHPSIZE * sizeof(uint32));
-		memcpy(s, _bf_s, 1024 * sizeof(uint32));
+		memcpy(p, _bf_p, BLOWFISHPSIZE * sizeof(*p));
+		memcpy(s, _bf_s, 1024 * sizeof(*s));
 
 		if ((keybits & 31) == 0)
 		{

@@ -45,7 +45,7 @@ static Value valueMakeInteger(int i)
 {
   Value v;
 
-  v = (Value) xmalloc(sizeof(struct _value));
+  v = (Value) xmalloc(sizeof(*v));
   v->type = VALUE_TYPE_INTEGER;
   v->data.i = i;
   return v;
@@ -58,7 +58,7 @@ static Value valueMakeString(/*@only@*/ const char *s)
 {
   Value v;
 
-  v = (Value) xmalloc(sizeof(struct _value));
+  v = (Value) xmalloc(sizeof(*v));
   v->type = VALUE_TYPE_STRING;
   v->data.s = s;
   return v;

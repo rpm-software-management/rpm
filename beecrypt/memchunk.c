@@ -37,7 +37,7 @@
 /*@-compdef@*/	/* tmp->data is undefined */
 memchunk* memchunkAlloc(int size)
 {
-	memchunk* tmp = (memchunk*) calloc(1, sizeof(memchunk));
+	memchunk* tmp = (memchunk*) calloc(1, sizeof(*tmp));
 
 	if (tmp)
 	{

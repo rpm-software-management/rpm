@@ -315,7 +315,7 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
     char ** conds, ** s;
     char * item, * flagsStr;
     char * chptr;
-    int i, j;
+    int i, j, xx;
     char buf[5];
 
     if (!hge(h, RPMTAG_TRIGGERNAME, &tnt, (void **) &names, &numNames)) {
@@ -323,14 +323,14 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 	return 0;
     }
 
-    (void) hge(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, NULL);
-    (void) hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
-    (void) hge(h, RPMTAG_TRIGGERVERSION, &tvt, (void **) &versions, NULL);
-    (void) hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
+    xx = hge(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, NULL);
+    xx = hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
+    xx = hge(h, RPMTAG_TRIGGERVERSION, &tvt, (void **) &versions, NULL);
+    xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
     s = hfd(s, tst);
 
     *freeData = 1;
-    *data = conds = xmalloc(sizeof(char * ) * numScripts);
+    *data = conds = xmalloc(sizeof(*conds) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
     for (i = 0; i < numScripts; i++) {
@@ -384,7 +384,7 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
     int_32 * indices, * flags;
     const char ** conds;
     const char ** s;
-    int i, j;
+    int i, j, xx;
     int numScripts, numNames;
 
     if (!hge(h, RPMTAG_TRIGGERINDEX, NULL, (void **) &indices, &numNames)) {
@@ -392,12 +392,12 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
 	return 1;
     }
 
-    (void) hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
-    (void) hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
+    xx = hge(h, RPMTAG_TRIGGERFLAGS, NULL, (void **) &flags, NULL);
+    xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (void **) &s, &numScripts);
     s = hfd(s, tst);
 
     *freeData = 1;
-    *data = conds = xmalloc(sizeof(char * ) * numScripts);
+    *data = conds = xmalloc(sizeof(*conds) * numScripts);
     *count = numScripts;
     *type = RPM_STRING_ARRAY_TYPE;
     for (i = 0; i < numScripts; i++) {

@@ -67,7 +67,7 @@ getdate.c: getdate.y
 	-@if test -f y.tab.c; then \
 	 { echo "/*@-globstate -statictrans -unqualifiedtrans -noparams @*/";\
 	   echo "/*@-retvalint -usedef -varuse -nullderef -nullassign @*/";\
-	   echo "/*@-readonlytrans -modunconnomods -compdef @*/";\
+	   echo "/*@-readonlytrans -modunconnomods -compdef -noeffectuncon @*/";\
 	   echo "/*@-globs -evalorderuncon -modobserveruncon -modnomods @*/";\
 	   sed	-e 's,y.tab.c,getdate.c,' y.tab.c \
 		-e 's,^YYSTYPE ,static &,' \
@@ -76,7 +76,7 @@ getdate.c: getdate.y
 		-e 's,^int yydebug,/*@unused@*/ static &,' \
 		-e 's,^int ,static &,' ;\
 	   echo "/*@=globs =evalorderuncon =modobserveruncon =modnomods @*/";\
-	   echo "/*@=readonlytrans =modunconnomods =compdef @*/";\
+	   echo "/*@=readonlytrans =modunconnomods =compdef =noeffectuncon @*/";\
 	   echo "/*@=retvalint =usedef =varuse =nullderef =nullassign @*/";\
 	   echo "/*@=globstate =statictrans =unqualifiedtrans =noparams @*/";\
 	 } > getdate.c ;\

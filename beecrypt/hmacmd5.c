@@ -29,7 +29,9 @@
 
 #include "hmacmd5.h"
 
+/*@-sizeoftype@*/
 const keyedHashFunction hmacmd5 = { "HMAC-MD5", sizeof(hmacmd5Param), 64, 4 * sizeof(uint32), 64, 512, 32, (const keyedHashFunctionSetup) hmacmd5Setup, (const keyedHashFunctionReset) hmacmd5Reset, (const keyedHashFunctionUpdate) hmacmd5Update, (const keyedHashFunctionDigest) hmacmd5Digest };
+/*@=sizeoftype@*/
 
 int hmacmd5Setup (hmacmd5Param* sp, const uint32* key, int keybits)
 {

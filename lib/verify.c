@@ -34,7 +34,7 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
     int rc;
     struct stat sb;
 
-    (void) hge(h, RPMTAG_FILEMODES, NULL, (void **) &modeList, &count);
+    rc = hge(h, RPMTAG_FILEMODES, NULL, (void **) &modeList, &count);
     if (hge(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL))
 	fileAttrs = fileFlags[filenum];
 
@@ -145,8 +145,7 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 	if (!hge(h, RPMTAG_FILEMD5S, &mdt, (void **) &md5List, NULL))
 	    *result |= RPMVERIFY_MD5;
 	else {
-		rc = mdfile(filespec, md5sum);
-
+	    rc = mdfile(filespec, md5sum);
 	    if (rc)
 		*result |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
 	    else if (strcmp(md5sum, md5List[filenum]))
@@ -251,7 +250,7 @@ int rpmVerifyFile(const char * root, Header h, int filenum,
 	gid_t gid;
 
 	if (hge(h, RPMTAG_FILEGROUPNAME, &gnt, (void **) &gnameList, NULL)) {
-	    rc =  gnameToGid(gnameList[filenum], &gid);
+	    rc = gnameToGid(gnameList[filenum], &gid);
 	    if (rc || (gid != sb.st_gid))
 		*result |= RPMVERIFY_GROUP;
 	    gnameList = hfd(gnameList, gnt);

@@ -65,10 +65,10 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, ran
 	register uint32* qtemp;
 	register int rc = -1;	/* assume failure */
 
-	ptemp = (uint32*) malloc((5*psize+2)*sizeof(uint32));
+	ptemp = (uint32*) malloc((5*psize+2) * sizeof(*ptemp));
 	if (ptemp == NULL)
 		return rc;
-	qtemp = (uint32*) malloc((9*qsize+6)*sizeof(uint32));
+	qtemp = (uint32*) malloc((9*qsize+6) * sizeof(*qtemp));
 	if (qtemp == NULL) {
 		free(ptemp);
 		return rc;
@@ -144,11 +144,11 @@ int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mp32number* g, con
 	if (mp32gex(s->size, s->data, qsize, q->modl))
 		return rc;
 
-	ptemp = (uint32*) malloc((6*psize+2)*sizeof(uint32));
+	ptemp = (uint32*) malloc((6*psize+2) * sizeof(*ptemp));
 	if (ptemp == NULL)
 		return rc;
 
-	qtemp = (uint32*) malloc((8*qsize+6)*sizeof(uint32));
+	qtemp = (uint32*) malloc((8*qsize+6) * sizeof(*qtemp));
 	if (qtemp == NULL) {
 		free(ptemp);
 		return rc;

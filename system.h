@@ -45,15 +45,6 @@ extern int chroot (const char *__path)
 extern time_t timezone;
 #endif
 
-#if defined(__LCLINT__)
-typedef	unsigned int u_int32_t;
-typedef	unsigned short u_int16_t;
-typedef	unsigned char u_int8_t;
-/*@-incondefs@*/	/* LCLint 3.0.0.15 */
-typedef	int int32_t;
-/*@=incondefs@*/
-#endif
-
 /* Since major is a function on SVR4, we can't use `ifndef major'.  */
 #if MAJOR_IN_MKDEV
 #include <sys/mkdev.h>

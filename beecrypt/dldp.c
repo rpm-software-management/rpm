@@ -100,7 +100,7 @@ static int dldp_pValidate(const dldp_p* dp, randomGeneratorContext* rgc)
 	/*@*/
 {
 	register uint32  size = dp->p.size;
-	register uint32* temp = (uint32*) malloc((8*size+2) * sizeof(uint32));
+	register uint32* temp = (uint32*) malloc((8*size+2) * sizeof(*temp));
 
 	if (temp)
 	{
@@ -185,7 +185,7 @@ int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 
 	 * Generate parameters as described by IEEE P1363, A.16.1
 	 */
 
-	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(uint32));
+	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(*temp));
 
 	if (temp)
 	{
@@ -221,7 +221,7 @@ int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 	 *
 	 */
 
-	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(uint32));
+	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(*temp));
 
 	if (temp)
 	{
@@ -280,7 +280,7 @@ int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 int dldp_pgoqGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 {
 	register uint32  size = dp->p.size;
-	register uint32* temp = (uint32*) malloc((4*size+2)*sizeof(uint32));
+	register uint32* temp = (uint32*) malloc((4*size+2) * sizeof(*temp));
 
 	if (temp)
 	{
@@ -315,7 +315,7 @@ int dldp_pgonMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 
 	 * Generate parameters with a prime p such that p = qr+1, with q prime, and r = 2s, with s prime
 	 */
 
-	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(uint32));
+	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(*temp));
 
 	if (temp)
 	{
@@ -348,7 +348,7 @@ int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 	 * Generate parameters with a safe prime; i.e. p = 2q+1, where q is prime
 	 */
 
-	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(uint32));
+	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(*temp));
 
 	if (temp)
 	{
@@ -446,7 +446,7 @@ int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 int dldp_pgonGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 {
 	register uint32  psize = dp->p.size;
-	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(uint32));
+	register uint32* temp = (uint32*) malloc((8*psize+2) * sizeof(*temp));
 
 	if (temp)
 	{

@@ -50,7 +50,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 	 */
 
 	register uint32  pqsize = ((uint32)(nsize+1)) >> 1;
-	register uint32* temp = (uint32*) malloc((16*pqsize+6)*sizeof(uint32));
+	register uint32* temp = (uint32*) malloc((16*pqsize+6) * sizeof(*temp));
 	register uint32  newn = 1;
 
 	if (temp)
@@ -71,9 +71,11 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 		/* if p <= q, perform a swap to make p larger than q */
 		if (mp32le(pqsize, kp->p.modl, kp->q.modl))
 		{
+			/*@-sizeoftype@*/
 			memcpy(&r, &kp->q, sizeof(mp32barrett));
 			memcpy(&kp->q, &kp->p, sizeof(mp32barrett));
 			memcpy(&kp->p, &r, sizeof(mp32barrett));
+			/*@=sizeoftype@*/
 		}
 
 		mp32bzero(&r);
@@ -98,15 +100,19 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 			if (mp32le(pqsize, kp->p.modl, r.modl))
 			{
 				mp32bfree(&kp->q);
+				/*@-sizeoftype@*/
 				memcpy(&kp->q, &kp->p, sizeof(mp32barrett));
 				memcpy(&kp->p, &r, sizeof(mp32barrett));
+				/*@=sizeoftype@*/
 				mp32bzero(&r);
 				newn = 1;
 			}
 			else if (mp32le(pqsize, kp->q.modl, r.modl))
 			{
 				mp32bfree(&kp->q);
+				/*@-sizeoftype@*/
 				memcpy(&kp->q, &r, sizeof(mp32barrett));
+				/*@=sizeoftype@*/
 				mp32bzero(&r);
 				newn = 1;
 			}
@@ -159,7 +165,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 
 int rsakpInit(rsakp* kp)
 {
-	memset(kp, 0, sizeof(rsakp));
+	memset(kp, 0, sizeof(*kp));
 	/* or
 	mp32bzero(&kp->n);
 	mp32nzero(&kp->e);

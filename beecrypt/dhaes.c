@@ -327,7 +327,9 @@ memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mp32number* ephemera
 		goto decrypt_end;
 
 	/* decrypt the memchunk with CBC mode */
+	/*@-sizeoftype@*/
 	paddedtext = (memchunk*) calloc(1, sizeof(memchunk));
+	/*@=sizeoftype@*/
 
 	if (paddedtext == (memchunk*) 0)
 		goto decrypt_end;

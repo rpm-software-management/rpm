@@ -1,3 +1,4 @@
+/*@-sizeoftype@*/
 /**
  * \file beecrypt.c
  *
@@ -846,3 +847,4 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD wDataSeg, LPVOID lpReserved)
    	return TRUE;
 }
 #endif
+/*@=sizeoftype@*/

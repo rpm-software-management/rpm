@@ -299,7 +299,7 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     }
 
     /* Create the entry and link it in */
-    p = xmalloc(sizeof(struct Source));
+    p = xmalloc(sizeof(*p));
     p->num = num;
     p->fullSource = xstrdup(field);
     p->flags = flag;
@@ -542,7 +542,7 @@ Spec freeSpec(Spec spec)
 {
     struct OpenFileInfo *ofi;
 
-    ofi = xmalloc(sizeof(struct OpenFileInfo));
+    ofi = xmalloc(sizeof(*ofi));
     ofi->fd = NULL;
     ofi->fileName = NULL;
     ofi->lineNum = 0;

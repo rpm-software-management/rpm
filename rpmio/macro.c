@@ -890,7 +890,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, const char * se, char lastc)
 #endif
 
     /* Build argv array */
-    argv = (const char **) alloca((argc + 1) * sizeof(char *));
+    argv = (const char **) alloca((argc + 1) * sizeof(*argv));
     be[-1] = ' '; /* assert((be - 1) == (b + strlen(b) == buf + strlen(buf))) */
     be[0] = '\0';
     b = buf;
@@ -1643,7 +1643,7 @@ int isCompressed(const char * file, rpmCompressedMagic * compressed)
 	if (fd) (void) Fclose(fd);
 	return 1;
     }
-    nb = Fread(magic, sizeof(char), sizeof(magic), fd);
+    nb = Fread(magic, sizeof(magic[0]), sizeof(magic), fd);
     if (nb < 0) {
 	rpmError(RPMERR_BADSPEC, _("File %s: %s\n"), file, Fstrerror(fd));
 	rc = 1;

@@ -1,3 +1,4 @@
+/*@-sizeoftype@*/
 /** \ingroup header
  * \file lib/header.c
  */
@@ -3171,3 +3172,4 @@ static struct HV_s hdrVec1 = {
 /*@observer@*/ /*@unchecked@*/
 HV_t hdrVec = &hdrVec1;
 /*@=compmempass =redef@*/
+/*@=sizeoftype@*/

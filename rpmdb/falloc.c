@@ -78,10 +78,12 @@ FD_t fadOpen(const char * path, int flags, mode_t perms)
     if (fadGetFileSize(fd) == 0) {
 	newHdr.magic = FA_MAGIC;
 	newHdr.firstFree = 0;
+	/*@-sizeoftype@*/
 	if (Fwrite(&newHdr, sizeof(char), sizeof(newHdr), fd) != sizeof(newHdr)) {
 	    (void) Fclose(fd);
 	    return NULL;
 	}
+	/*@=sizeoftype@*/
 	fadSetFirstFree(fd, 0);
 	fadSetFileSize(fd, sizeof(newHdr));
     } else {
@@ -127,7 +129,9 @@ unsigned int fadAlloc(FD_t fd, unsigned int size)
     memset(&header, 0, sizeof(header));
 
     /* our internal idea of size includes overhead */
+    /*@-sizeoftype@*/
     size += sizeof(struct faHeader) + sizeof(struct faFooter);
+    /*@=sizeoftype@*/
 
     /* Make sure they are allocing multiples of 64 bytes. It'll keep
        things less fragmented that way */
@@ -387,6 +391,7 @@ static int fadSanity(FD_t fd, int offset, const struct faHeader * fh, int printi
 {
     int rc = 0;
 
+    /*@-sizeoftype@*/
     /* Check size range and alignment. */
     if (!(fh->size > 0 && fh->size <= 0x00200000 && (fh->size & 0x3f) == 0))
 	rc |= 0x1;
@@ -404,6 +409,7 @@ static int fadSanity(FD_t fd, int offset, const struct faHeader * fh, int printi
 		fh->freePrev < fadGetFileSize(fd) &&
 		(fh->freePrev & 0x3f) == sizeof(struct faFileHeader)) )
 	rc |= 0x4;
+    /*@=sizeoftype@*/
 
     /* Check that only the isFree bit is (possibly) set. */
     if (fh->isFree & ~1)
@@ -431,9 +437,11 @@ int fadNextOffset(FD_t fd, unsigned int lastoff)
     struct faHeader header;
     int offset;
 
+    /*@-sizeoftype@*/
     offset = (lastoff)
 	? (lastoff - sizeof(header))
 	: sizeof(struct faFileHeader);
+    /*@=sizeoftype@*/
 
     if (offset >= fadGetFileSize(fd))
 	return 0;
