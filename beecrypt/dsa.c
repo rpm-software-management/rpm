@@ -108,8 +108,6 @@ int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGen
 	return rc;
 }
 
-static int _debug = 1;
-
 int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
 {
 	register size_t psize = p->size;
@@ -122,7 +120,6 @@ int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpn
 	register mpw* qwksp;
 
 	register int rc = 0;
-int xx;
 
 	if (mpz(r->size, r->data))
 		return rc;
@@ -150,16 +147,6 @@ int xx;
 	pwksp = ptemp+2*psize;
 	qwksp = qtemp+2*qsize;
 
-if (_debug) {
-fprintf(stderr, "\t                p: "),  mpfprintln(stderr, p->size, p->modl);
-fprintf(stderr, "\t                q: "),  mpfprintln(stderr, q->size, q->modl);
-fprintf(stderr, "\t                g: "),  mpfprintln(stderr, g->size, g->data);
-fprintf(stderr, "\t               hm: "),  mpfprintln(stderr, hm->size, hm->data);
-fprintf(stderr, "\t                y: "),  mpfprintln(stderr, y->size, y->data);
-fprintf(stderr, "\t                r: "),  mpfprintln(stderr, r->size, r->data);
-fprintf(stderr, "\t                s: "),  mpfprintln(stderr, s->size, s->data);
-}
-
 	mpsetx(qsize, qtemp+qsize, s->size, s->data);
 
 	/* compute w = inv(s) mod q */
@@ -167,46 +154,24 @@ fprintf(stderr, "\t                s: "),  mpfprintln(stderr, s->size, s->data);
 	if (mpextgcd_w(qsize, qtemp+qsize, q->modl, qtemp, qwksp))
 /*@=compdef@*/
 	{
-if (_debug)
-fprintf(stderr, "\t w = inv(s) mod q: "),  mpfprintln(stderr, qsize, qtemp);
 
 		/* compute u1 = h(m)*w mod q */
 		mpbmulmod_w(q, hm->size, hm->data, qsize, qtemp, qtemp+qsize, qwksp);
 
-if (_debug)
-fprintf(stderr, "\tu1 = h(m)*w mod q: "),  mpfprintln(stderr, qsize, qtemp+qsize);
-
 		/* compute u2 = r*w mod q */
 		mpbmulmod_w(q, r->size, r->data, qsize, qtemp, qtemp, qwksp);
-
-if (_debug)
-fprintf(stderr, "\tu2 = r*w mod q   : "),  mpfprintln(stderr, qsize, qtemp);
 
 		/* compute g^u1 mod p */
 		mpbpowmod_w(p, g->size, g->data, qsize, qtemp+qsize, ptemp, pwksp);
 
-if (_debug)
-fprintf(stderr, "\t       g^u1 mod p: "),  mpfprintln(stderr, psize, ptemp);
-
 		/* compute y^u2 mod p */
 		mpbpowmod_w(p, y->size, y->data, qsize, qtemp, ptemp+psize, pwksp);
-
-if (_debug)
-fprintf(stderr, "\t       y^u2 mod p: "),  mpfprintln(stderr, psize, ptemp+psize);
 
 		/* multiply mod p */
 		mpbmulmod_w(p, psize, ptemp, psize, ptemp+psize, ptemp, pwksp);
 
-if (_debug)
-fprintf(stderr, "\t   multiply mod p: "),  mpfprintln(stderr, psize, ptemp);
-
 		/* modulo q */
 		mpmod(ptemp+psize, psize, ptemp, qsize, q->modl, pwksp);
-
-if (_debug)
-fprintf(stderr, "\tr                : "),  mpfprintln(stderr, r->size, r->data);
-if (_debug)
-fprintf(stderr, "\tr' mod q         : "),  mpfprintln(stderr, psize, ptemp+psize);
 
 		rc = mpeqx(r->size, r->data, psize, ptemp+psize);
 	}
@@ -214,6 +179,5 @@ fprintf(stderr, "\tr' mod q         : "),  mpfprintln(stderr, psize, ptemp+psize
 	free(qtemp);
 	free(ptemp);
 
-fprintf(stderr, "*** dsavrfy rc %d\n", rc);
 	return rc;
 }
