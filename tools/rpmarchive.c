@@ -23,8 +23,9 @@ int main(int argc, char **argv)
     }
 
     readLead(fd, &lead);
-    readSignature(fd, lead.signature_type, NULL);
-    hd = readHeader(fd);
+    readSignature(fd, NULL, lead.signature_type);
+    hd = readHeader(fd, (lead.major >= 3) ?
+		    HEADER_MAGIC : NO_HEADER_MAGIC);
 
     while ((ct = read(fd, &buffer, 1024))) {
 	write(1, &buffer, ct);

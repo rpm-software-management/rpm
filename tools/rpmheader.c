@@ -21,9 +21,10 @@ int main(int argc, char **argv)
     }
 
     readLead(fd, &lead);
-    readSignature(fd, lead.signature_type, NULL);
-    hd = readHeader(fd);
-    writeHeader(1, hd);
+    readSignature(fd, NULL, lead.signature_type);
+    hd = readHeader(fd, (lead.major >= 3) ?
+		    HEADER_MAGIC : NO_HEADER_MAGIC);
+    writeHeader(1, hd, HEADER_MAGIC);
     
     return 0;
 }

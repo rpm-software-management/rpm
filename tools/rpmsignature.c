@@ -9,9 +9,9 @@
 
 int main(int argc, char **argv)
 {
-    int fd, length;
+    int fd;
     struct rpmlead lead;
-    unsigned char *sig;
+    Header sig;
     
     if (argc == 1) {
 	fd = 0;
@@ -20,24 +20,13 @@ int main(int argc, char **argv)
     }
 
     readLead(fd, &lead);
-    readSignature(fd, lead.signature_type, (void **) &sig);
+    readSignature(fd, &sig, lead.signature_type);
     switch (lead.signature_type) {
-    case RPMSIG_NONE:
+      case RPMSIG_NONE:
 	fprintf(stderr, "No signature available.\n");
 	break;
-    case RPMSIG_PGP262_1024:
-	write(1, sig, 152);
-	break;
-    case RPMSIG_MD5:
-	write(1, sig, 16);
-	break;
-    case RPMSIG_MD5_PGP:
-	length = sig[16] * 256 + sig[17];
-	write(1, sig, 18 + length);
-	break;
-    default:
-	fprintf(stderr, "Unknown signature type: %d\n", lead.signature_type);
-	exit(1);
+      default:
+	writeSignature(1, sig);
     }
     
     return 0;
