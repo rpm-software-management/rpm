@@ -1,0 +1,29 @@
+<!--Id: java.so,v 1.2 2002/08/27 01:11:08 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Release 4.1: Java exceptions</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Upgrading Berkeley DB Applications</dl></h3></td>
+<td align=right><a href="../../ref/upgrade.4.1/hash_nelem.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.1/cxx.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Release 4.1: Java exceptions</h1>
+<p>The Java <a href="../../api_java/env_class.html">DbEnv</a> constructor is now marked with "throws
+DbException".  This means applications must construct <a href="../../api_java/env_class.html">DbEnv</a>
+objects in a context where <a href="../../api_java/except_class.html">DbException</a> throwables are
+handled (either in a try/catch block or in a method that propagates the
+exception up the stack).  Note that previous versions of the Berkeley DB Java
+API could throw this exception from the constructor but it was not
+marked.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/upgrade.4.1/hash_nelem.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/upgrade.4.1/cxx.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

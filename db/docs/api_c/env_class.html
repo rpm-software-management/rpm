@@ -1,0 +1,51 @@
+<!--Id: env_class.so,v 10.32 2002/08/29 03:24:38 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_ENV</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DB_ENV</h1>
+</td>
+<td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+typedef struct __db_env DB_ENV;
+</pre></h3>
+<h1>Description</h1>
+<p>The DB_ENV object is the handle for a Berkeley DB environment -- a
+collection including support for some or all of caching, locking,
+logging and transaction subsystems, as well as databases and log files.
+Methods off the DB_ENV handle are used to configure the
+environment as well as to operate on subsystems and databases in the
+environment.
+<p>DB_ENV handles are free-threaded if the <a href="../api_c/env_open.html#DB_THREAD">DB_THREAD</a> flag
+is specified to the <a href="../api_c/env_open.html">DB_ENV-&gt;open</a> method when the environment is opened.
+The DB_ENV handle should not be closed while any other handle
+remains open that is using it as a reference (for example, <a href="../api_c/db_class.html">DB</a>
+or <a href="../api_c/txn_class.html">DB_TXN</a>).  Once either the <a href="../api_c/env_close.html">DB_ENV-&gt;close</a> or
+<a href="../api_c/env_remove.html">DB_ENV-&gt;remove</a> methods are called, the handle may not be accessed again,
+regardless of the method's return.
+<h1>Class</h1>
+DB_ENV
+<h1>See Also</h1>
+<a href="../api_c/env_list.html">Database Environments and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

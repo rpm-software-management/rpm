@@ -1,0 +1,51 @@
+<!--Id: db_config.so,v 10.1 2002/09/03 20:09:29 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: DB_CONFIG configuration file</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a><a name="3"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Environment</dl></h3></td>
+<td align=right><a href="../../ref/env/error.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/env/naming.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>DB_CONFIG configuration file</h1>
+<p>Most of the configuration information that can be specified to
+<a href="../../api_c/env_class.html">DB_ENV</a> methods can also be specified using a configuration file.
+If an environment home directory has been specified (either by the
+application specifying a non-NULL <b>db_home</b> argument to
+<a href="../../api_c/env_open.html">DB_ENV-&gt;open</a>, or by the application setting the
+<a href="../../api_c/env_open.html#DB_USE_ENVIRON">DB_USE_ENVIRON</a> or <a href="../../api_c/env_open.html#DB_USE_ENVIRON_ROOT">DB_USE_ENVIRON_ROOT</a> flags and the
+<a href="../../ref/env/naming.html#DB_HOME">DB_HOME</a> environment variable being set), any file named
+DB_CONFIG in the database home directory will be read for lines
+of the format <b>NAME VALUE</b>.
+<p>One or more whitespace characters are used to delimit the two parts of
+the line, and trailing whitespace characters are discarded.  All empty
+lines or lines whose first character is a whitespace or hash
+(<b>#</b>) character will be ignored.  Each line must specify both
+the NAME and the VALUE of the pair.  The specific NAME VALUE pairs are
+documented in the manual for the corresponding methods (for example,
+the <a href="../../api_c/env_set_data_dir.html">DB_ENV-&gt;set_data_dir</a> documentation includes NAME VALUE pair
+information Berkeley DB administrators can use to configure locations for
+database files).
+<p>The DB_CONFIG configuration file is intended to allow database
+environment administrators to customize environments independent of
+applications using the environment.  For example, a database
+administrator can move the database log and data files to a different
+location without application recompilation.  In addition, because the
+DB_CONFIG file is read when the database environment is opened,
+it can be used to overrule application configuration done before that
+time.  For example a database administrator could override the
+compiled-in application cache size to a size more appropriate for a
+specific machine.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/env/error.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/env/naming.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!--Id: txn_class.so,v 10.21 2002/08/24 18:24:49 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_TXN</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DB_TXN</h1>
+</td>
+<td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+typedef struct __db_txn DB_TXN;
+</pre></h3>
+<h1>Description</h1>
+<p>The DB_TXN object is the handle for a transaction.  Methods off
+the DB_TXN handle are used to configure, abort and commit the
+transaction.  DB_TXN handles are provided to <a href="../api_c/db_class.html">DB</a> methods
+in order to transactionally protect those database operations.
+<p>DB_TXN handles are not free-threaded; transactions handles may
+be used by multiple threads, but only serially, that is, the application
+must serialize access to the DB_TXN handle.  Once the
+<a href="../api_c/txn_abort.html">DB_TXN-&gt;abort</a> or <a href="../api_c/txn_commit.html">DB_TXN-&gt;commit</a> methods are called, the handle may
+not be accessed again, regardless of the method's return. In addition,
+parent transactions may not issue any Berkeley DB operations while they have
+active child transactions (child transactions that have not yet been
+committed or aborted) except for <a href="../api_c/txn_begin.html">DB_ENV-&gt;txn_begin</a>, <a href="../api_c/txn_abort.html">DB_TXN-&gt;abort</a>
+and <a href="../api_c/txn_commit.html">DB_TXN-&gt;commit</a>.
+<h1>Class</h1>
+<a href="../api_c/env_class.html">DB_ENV</a>, DB_TXN
+<h1>See Also</h1>
+<a href="../api_c/txn_list.html">Transaction Subsystem and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

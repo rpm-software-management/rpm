@@ -1,0 +1,43 @@
+<!--Id: logc_class.so,v 1.5 2002/08/24 18:22:51 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DB_LOGC</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DB_LOGC</h1>
+</td>
+<td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db.h&gt;
+<p>
+typedef struct __db_log_cursor DB_LOGC;
+</pre></h3>
+<h1>Description</h1>
+<p>The DB_LOGC object is the handle for a cursor into the log files,
+supporting sequential access to the records stored in log files.  The
+handle is not free-threaded.  Once the <a href="../api_c/logc_close.html">DB_LOGC-&gt;close</a> method is called,
+the handle may not be accessed again, regardless of that method's
+return.
+<h1>Class</h1>
+<a href="../api_c/env_class.html">DB_ENV</a>, DB_LOGC, <a href="../api_c/lsn_class.html">DB_LSN</a>
+<h1>See Also</h1>
+<a href="../api_c/log_list.html">Logging Subsystem and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_c/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

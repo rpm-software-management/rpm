@@ -1,0 +1,96 @@
+<!--Id: env_class.so,v 10.32 2002/08/29 03:24:38 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbEnv</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DbEnv</h1>
+</td>
+<td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+class DbEnv {
+public:
+	DbEnv(u_int32 flags);
+	~DbEnv();
+<p>
+	DB_ENV *DbEnv::get_DB_ENV();
+	const DB_ENV *DbEnv::get_const_DB_ENV() const;
+	static DbEnv *DbEnv::get_DbEnv(DB_ENV *dbenv);
+	static const DbEnv *DbEnv::get_const_DbEnv(const DB_ENV *dbenv);
+	...
+};
+</pre></h3>
+<h1>Description</h1>
+<p>The DbEnv object is the handle for a Berkeley DB environment -- a
+collection including support for some or all of caching, locking,
+logging and transaction subsystems, as well as databases and log files.
+Methods off the DbEnv handle are used to configure the
+environment as well as to operate on subsystems and databases in the
+environment.
+<p>DbEnv handles are free-threaded if the <a href="../api_cxx/env_open.html#DB_THREAD">DB_THREAD</a> flag
+is specified to the <a href="../api_cxx/env_open.html">DbEnv::open</a> method when the environment is opened.
+The DbEnv handle should not be closed while any other handle
+remains open that is using it as a reference (for example, <a href="../api_cxx/db_class.html">Db</a>
+or <a href="../api_cxx/txn_class.html">DbTxn</a>).  Once either the <a href="../api_cxx/env_close.html">DbEnv::close</a> or
+<a href="../api_cxx/env_remove.html">DbEnv::remove</a> methods are called, the handle may not be accessed again,
+regardless of the method's return.
+<p>The constructor creates the DbEnv object.  The constructor
+allocates memory internally; calling the <a href="../api_cxx/env_close.html">DbEnv::close</a> or
+<a href="../api_cxx/env_remove.html">DbEnv::remove</a> methods will free that memory.
+<p>The following <b>flags</b> value may be specified:
+<p><dl compact>
+<p><dt><a name="DB_CLIENT">DB_CLIENT</a><dd>Create a client environment to connect to a server.
+<p>The DB_CLIENT flag indicates to the system that this environment
+is remote on a server.  The use of this flag causes the environment
+methods to use functions that call a server instead of local functions.
+Prior to making any environment or database method calls, the
+application must call the <a href="../api_cxx/env_set_rpc_server.html">DbEnv::set_rpc_server</a> method to
+establish the connection to the server.
+<p><dt><a name="DB_CXX_NO_EXCEPTIONS">DB_CXX_NO_EXCEPTIONS</a><dd>The Berkeley DB C++ API supports two different error behaviors.  By default,
+whenever an error occurs, an exception is thrown that encapsulates the
+error information.  This generally allows for cleaner logic for
+transaction processing because a try block can surround a single
+transaction.  However, if DB_CXX_NO_EXCEPTIONS is specified,
+exceptions are not thrown; instead, each individual function returns an
+error code.
+</dl>
+<p>Each DbEnv object has an associated DB_ENV structure,
+which is used by the underlying implementation of Berkeley DB and its
+C-language API.  The DbEnv::get_DB_ENV method returns a pointer to this
+struct.  Given a const DbEnv object, DbEnv::get_const_DB_ENV
+returns a const pointer to the same struct.
+<p>Given a DB_ENV struct, the DbEnv::get_DbEnv method returns the
+corresponding DbEnv object, if there is one.  If the
+DB_ENV object was not associated with a DbEnv (that is,
+it was not returned from a call to DbEnv::get_DB_ENV), then the result
+of DbEnv::get_DbEnv is undefined.  Given a const DB_ENV struct,
+DbEnv::get_const_Db_Env returns the associated const DbEnv
+object, if there is one.
+<p>These methods may be useful for Berkeley DB applications including  both C
+and C++ language software.  It should not be necessary to use these
+calls in a purely C++ application.
+<h1>Class</h1>
+DbEnv
+<h1>See Also</h1>
+<a href="../api_cxx/env_list.html">Database Environments and Related Methods</a>
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

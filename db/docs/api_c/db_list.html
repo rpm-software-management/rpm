@@ -1,0 +1,67 @@
+<!--Id: db_list.so,v 1.1 2002/08/30 20:00:48 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: Berkeley DB: Databases and Related Methods</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<h1 align=center>Berkeley DB: Databases and Related Methods</h1>
+<!--Id: m4.methods,v 1.1 2002/08/30 20:00:48 bostic Exp -->
+<p><table border=1 align=center>
+<tr><th>Databases and Related Methods</th><th>Description</th></tr>
+<tr><td><a href="../api_c/db_create.html">db_create</a></td><td>Create a database handle</td></tr>
+<tr><td><a href="../api_c/db_associate.html">DB-&gt;associate</a></td><td>Associate a secondary index</td></tr>
+<tr><td><a href="../api_c/db_close.html">DB-&gt;close</a></td><td>Close a database</td></tr>
+<tr><td><a href="../api_c/db_cursor.html">DB-&gt;cursor</a></td><td>Create a cursor handle</td></tr>
+<tr><td><a href="../api_c/db_del.html">DB-&gt;del</a></td><td>Delete items from a database</td></tr>
+<tr><td><a href="../api_c/db_err.html">DB-&gt;err</a></td><td>Error message with error string</td></tr>
+<tr><td><a href="../api_c/db_err.html">DB-&gt;errx</a></td><td>Error message</td></tr>
+<tr><td><a href="../api_c/db_fd.html">DB-&gt;fd</a></td><td>Return a file descriptor from a database</td></tr>
+<tr><td><a href="../api_c/db_get.html">DB-&gt;get</a></td><td>Get items from a database</td></tr>
+<tr><td><a href="../api_c/db_get_byteswapped.html">DB-&gt;get_byteswapped</a></td><td>Return if the underlying database is in host order</td></tr>
+<tr><td><a href="../api_c/db_get_type.html">DB-&gt;get_type</a></td><td>Return the database type</td></tr>
+<tr><td><a href="../api_c/db_join.html">DB-&gt;join</a></td><td>Perform a database join on cursors</td></tr>
+<tr><td><a href="../api_c/db_key_range.html">DB-&gt;key_range</a></td><td>Return estimate of key location</td></tr>
+<tr><td><a href="../api_c/db_open.html">DB-&gt;open</a></td><td>Open a database</td></tr>
+<tr><td><a href="../api_c/db_get.html">DB-&gt;pget</a></td><td>Get items from a database</td></tr>
+<tr><td><a href="../api_c/db_put.html">DB-&gt;put</a></td><td>Store items into a database</td></tr>
+<tr><td><a href="../api_c/db_remove.html">DB-&gt;remove</a></td><td>Remove a database</td></tr>
+<tr><td><a href="../api_c/db_rename.html">DB-&gt;rename</a></td><td>Rename a database</td></tr>
+<tr><td><a href="../api_c/db_set_alloc.html">DB-&gt;set_alloc</a></td><td>Set local space allocation functions</td></tr>
+<tr><td><a href="../api_c/db_set_append_recno.html">DB-&gt;set_append_recno</a></td><td>Set record append callback</td></tr>
+<tr><td><a href="../api_c/db_set_bt_compare.html">DB-&gt;set_bt_compare</a></td><td>Set a Btree comparison function</td></tr>
+<tr><td><a href="../api_c/db_set_bt_minkey.html">DB-&gt;set_bt_minkey</a></td><td>Set the minimum number of keys per Btree page</td></tr>
+<tr><td><a href="../api_c/db_set_bt_prefix.html">DB-&gt;set_bt_prefix</a></td><td>Set a Btree prefix comparison function</td></tr>
+<tr><td><a href="../api_c/db_set_cache_priority.html">DB-&gt;set_cache_priority</a></td><td>Set the database cache priority</td></tr>
+<tr><td><a href="../api_c/db_set_cachesize.html">DB-&gt;set_cachesize</a></td><td>Set the database cache size</td></tr>
+<tr><td><a href="../api_c/db_set_dup_compare.html">DB-&gt;set_dup_compare</a></td><td>Set a duplicate comparison function</td></tr>
+<tr><td><a href="../api_c/db_set_encrypt.html">DB-&gt;set_encrypt</a></td><td>Set the database cryptographic key</td></tr>
+<tr><td><a href="../api_c/db_set_errcall.html">DB-&gt;set_errcall</a></td><td>Set error message callback</td></tr>
+<tr><td><a href="../api_c/db_set_errfile.html">DB-&gt;set_errfile</a></td><td>Set error message FILE</td></tr>
+<tr><td><a href="../api_c/db_set_errpfx.html">DB-&gt;set_errpfx</a></td><td>Set error message prefix</td></tr>
+<tr><td><a href="../api_c/db_set_feedback.html">DB-&gt;set_feedback</a></td><td>Set feedback callback</td></tr>
+<tr><td><a href="../api_c/db_set_flags.html">DB-&gt;set_flags</a></td><td>General database configuration</td></tr>
+<tr><td><a href="../api_c/db_set_h_ffactor.html">DB-&gt;set_h_ffactor</a></td><td>Set the Hash table density</td></tr>
+<tr><td><a href="../api_c/db_set_h_hash.html">DB-&gt;set_h_hash</a></td><td>Set a hashing function</td></tr>
+<tr><td><a href="../api_c/db_set_h_nelem.html">DB-&gt;set_h_nelem</a></td><td>Set the Hash table size</td></tr>
+<tr><td><a href="../api_c/db_set_lorder.html">DB-&gt;set_lorder</a></td><td>Set the database byte order</td></tr>
+<tr><td><a href="../api_c/db_set_pagesize.html">DB-&gt;set_pagesize</a></td><td>Set the underlying database page size</td></tr>
+<tr><td><a href="../api_c/db_set_paniccall.html">DB-&gt;set_paniccall</a></td><td>Set panic callback</td></tr>
+<tr><td><a href="../api_c/db_set_q_extentsize.html">DB-&gt;set_q_extentsize</a></td><td>Set Queue database extent size</td></tr>
+<tr><td><a href="../api_c/db_set_re_delim.html">DB-&gt;set_re_delim</a></td><td>Set the variable-length record delimiter</td></tr>
+<tr><td><a href="../api_c/db_set_re_len.html">DB-&gt;set_re_len</a></td><td>Set the fixed-length record length</td></tr>
+<tr><td><a href="../api_c/db_set_re_pad.html">DB-&gt;set_re_pad</a></td><td>Set the fixed-length record pad byte</td></tr>
+<tr><td><a href="../api_c/db_set_re_source.html">DB-&gt;set_re_source</a></td><td>Set the backing Recno text file</td></tr>
+<tr><td><a href="../api_c/db_stat.html">DB-&gt;stat</a></td><td>Return database statistics</td></tr>
+<tr><td><a href="../api_c/db_sync.html">DB-&gt;sync</a></td><td>Flush a database to stable storage</td></tr>
+<tr><td><a href="../api_c/db_truncate.html">DB-&gt;truncate</a></td><td>Empty a database</td></tr>
+<tr><td><a href="../api_c/db_upgrade.html">DB-&gt;upgrade</a></td><td>Upgrade a database</td></tr>
+<tr><td><a href="../api_c/db_verify.html">DB-&gt;verify</a></td><td>Verify/salvage a database</td></tr>
+</table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!--Id: port.so,v 10.3 2002/08/30 19:57:07 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB Reference Guide: Porting Berkeley DB to new architectures</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<table width="100%"><tr valign=top>
+<td><h3><dl><dt>Berkeley DB Reference Guide:<dd>Distribution</dl></h3></td>
+<td align=right><a href="../../ref/test/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/distrib/layout.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p>
+<h1 align=center>Porting Berkeley DB to new architectures</h1>
+<p>Berkeley DB is generally easy to port to new architectures.  Berkeley DB was
+designed to be as portable as possible, and has been ported to a wide
+variety of systems, from Wind River's Tornado system, to VMS, to
+Windows/NT and Windows/95, and most existing UNIX platforms.  It runs
+on 16, 32 and 64-bit machines, little or big-endian.  The difficulty of
+a port depends on how much of the ANSI C and POSIX 1003.1 standards the
+new architecture offers.
+<p>An abstraction layer separates the main Berkeley DB code from the operating
+system and architecture specific components.   This layer is comprised
+of approximately 2500 lines of C language code, found in the <b>os</b>
+subdirectory of the Berkeley DB distribution.  The following list of files
+include functionality that may need to be modified or implemented in
+order to support a new architecture.  Within each file, there is usually
+one, but sometimes several functions (for example, the
+<b>os_alloc.c</b> file contains the malloc, calloc, realloc, free,
+and strdup functions).
+<p><table border=1 align=center>
+<tr><th>Source file</th><th>Description</th></tr>
+<tr><td>os_abs.c</td><td>Return if a filename is an absolute pathname</td></tr>
+<tr><td>os_alloc.c</td><td>ANSI C malloc, calloc, realloc, strdup, free front-ends</td></tr>
+<tr><td>os_clock.c</td><td>Return the current time-of-day</td></tr>
+<tr><td>os_config.c</td><td>Return run-time configuration information</td></tr>
+<tr><td>os_dir.c</td><td>Read the filenames from a directory</td></tr>
+<tr><td>os_errno.c</td><td>Set/get the ANSI C errno value</td></tr>
+<tr><td>os_fid.c</td><td>Create a unique ID for a file</td></tr>
+<tr><td>os_fsync.c</td><td>POSIX 1003.1 fsync front-end</td></tr>
+<tr><td>os_handle.c</td><td>Open file handles</td></tr>
+<tr><td>os_id.c</td><td>Return thread ID</td></tr>
+<tr><td>os_map.c</td><td>Map a shared memory area</td></tr>
+<tr><td>os_method.c</td><td>Run-time replacement of system calls</td></tr>
+<tr><td>os_oflags.c</td><td>Convert POSIX 1003.1 open flags, modes to Berkeley DB flags</td></tr>
+<tr><td>os_open.c</td><td>Open file handles</td></tr>
+<tr><td>os_region.c</td><td>Map a shared memory area</td></tr>
+<tr><td>os_rename.c</td><td>POSIX 1003.1 rename call</td></tr>
+<tr><td>os_root.c</td><td>Return if application has special permissions</td></tr>
+<tr><td>os_rpath.c</td><td>Return last pathname separator</td></tr>
+<tr><td>os_rw.c</td><td>POSIX 1003.1 read/write calls</td></tr>
+<tr><td>os_seek.c</td><td>POSIX 1003.1 seek call</td></tr>
+<tr><td>os_sleep.c</td><td>Cause a thread of control to release the CPU</td></tr>
+<tr><td>os_spin.c</td><td>Return the times to spin while waiting for a mutex</td></tr>
+<tr><td>os_stat.c</td><td>POSIX 1003.1 stat call</td></tr>
+<tr><td>os_tmpdir.c</td><td>Set the path for temporary files</td></tr>
+<tr><td>os_unlink.c</td><td>POSIX 1003.1 unlink call</td></tr>
+</table>
+<p>All but a few of these files contain relatively trivial pieces of code.
+Typically, there is only a single version of the code for all platforms
+Berkeley DB supports, and that code lives in the <b>os</b> directory of the
+distribution.  Where different code is required, the code is either
+conditionally compiled or an entirely different version is written. For
+example, VxWorks versions of some of these files can be found in the
+distribution directory os_vxworks, and Win32 versions can be found in
+os_win32.
+<p>Historically, there are only two difficult questions to answer for each
+new port.  The first question is how to handle shared memory.  In order
+to write multiprocess database applications (not multithreaded, but
+threads of control running in different address spaces), Berkeley DB must be
+able to name pieces of shared memory and access them from multiple
+processes.  On UNIX/POSIX systems, we use <b>mmap</b> and
+<b>shmget</b> for that purpose, but any interface that provides access
+to named shared memory is sufficient.  If you have a simple, flat
+address space, you should be able to use the code in
+<b>os_vxworks/os_map.c</b> as a starting point for the port.  If you
+are not intending to write multiprocess database applications, then
+this won't be necessary, as Berkeley DB can simply allocate memory from the
+heap if all threads of control will live in a single address space.
+<p>The second question is mutex support.  Berkeley DB requires some form of
+<b>self-blocking</b> mutual exclusion mutex.  Blocking mutexes are
+preferred as they tend to be less CPU-expensive and less likely to cause
+thrashing.  If blocking mutexes are not available, however, test-and-set
+will work as well.  The code for mutexes is in two places in the system:
+the include file <b>dbinc/mutex.h</b>, and the distribution directory
+<b>mutex</b>.
+<p>Berkeley DB uses the GNU autoconf tools for configuration on almost all of
+the platforms it supports.  Specifically, the include file
+<b>db_config.h</b> configures the Berkeley DB build.  The simplest way to
+begin a port is to configure and build Berkeley DB on a UNIX or UNIX-like
+system, and then take the <b>Makefile</b> and <b>db_config.h</b>
+file created by that configuration, and modify it by hand to reflect
+the needs of the new architecture.  Unless you're already familiar with
+the GNU autoconf toolset, we don't recommend you take the time to
+integrate your changes back into the Berkeley DB autoconfiguration framework.
+Instead, send Sleepycat Software context diffs of your changes and any
+new source files you created, and we'll integrate the changes into our
+source tree.
+<p>Finally, we're happy to work with you on the port, or potentially, do
+the port ourselves, if that is of interest to you.  Regardless, if you
+have any porting questions, just let us know, and we will be happy to
+answer them.
+<table width="100%"><tr><td><br></td><td align=right><a href="../../ref/test/faq.html"><img src="../../images/prev.gif" alt="Prev"></a><a href="../../reftoc.html"><img src="../../images/ref.gif" alt="Ref"></a><a href="../../ref/distrib/layout.html"><img src="../../images/next.gif" alt="Next"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>

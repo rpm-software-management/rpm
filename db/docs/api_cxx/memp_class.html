@@ -1,0 +1,49 @@
+<!--Id: memp_class.so,v 10.14 2002/08/24 18:23:29 bostic Exp -->
+<!--Copyright 1997-2002 by Sleepycat Software, Inc.-->
+<!--All rights reserved.-->
+<!--See the file LICENSE for redistribution information.-->
+<html>
+<head>
+<title>Berkeley DB: DbMemoryException</title>
+<meta name="description" content="Berkeley DB: An embedded database programmatic toolkit.">
+<meta name="keywords" content="embedded,database,programmatic,toolkit,b+tree,btree,hash,hashing,transaction,transactions,locking,logging,access method,access methods,java,C,C++">
+</head>
+<body bgcolor=white>
+<a name="2"><!--meow--></a>
+<table width="100%"><tr valign=top>
+<td>
+<h1>DbMemoryException</h1>
+</td>
+<td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<hr size=1 noshade>
+<tt>
+<h3><pre>
+#include &lt;db_cxx.h&gt;
+<p>
+class DbMemoryException : public DbException {
+public:
+	Dbt *get_dbt() const;
+};
+</pre></h3>
+<h1>Description</h1>
+<p>This manual page describes the DbMemoryException class and how
+it is used by the various Db* classes.
+<p>A DbMemoryException is thrown when there is insufficient memory
+to complete an operation, and there is the possibility of recovering.
+An example is during a <a href="../api_cxx/db_get.html">Db::get</a> or <a href="../api_cxx/dbc_get.html">Dbc::get</a> operation with
+the <a href="../api_cxx/dbt_class.html">Dbt</a> flags set to <a href="../api_cxx/dbt_class.html#DB_DBT_USERMEM">DB_DBT_USERMEM</a>.
+<p>The <b>get_dbt</b> method returns the <a href="../api_cxx/dbt_class.html">Dbt</a> that has insufficient
+memory to complete the operation, causing the DbMemoryException
+to be thrown.
+The <a href="../api_cxx/dbt_class.html">Dbt</a> pointer may or may not refer to valid memory, depending
+on whether the <a href="../api_cxx/dbt_class.html">Dbt</a> used in the call to the failed Berkeley DB method
+is still in scope and has not been deleted.
+</tt>
+<table width="100%"><tr><td><br></td><td align=right>
+<a href="../api_cxx/c_index.html"><img src="../images/api.gif" alt="API"></a><a href="../reftoc.html"><img src="../images/ref.gif" alt="Ref"></a>
+</td></tr></table>
+<p><font size=1><a href="http://www.sleepycat.com">Copyright Sleepycat Software</a></font>
+</body>
+</html>
