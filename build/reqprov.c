@@ -142,7 +142,7 @@ int generateAutoReqProv(Spec spec, Package pkg,
 	}
 	f++;
     }
-    FREE(fsave);
+    freeSplitString(fsave);
 
     /*** Do Requires ***/
     
@@ -167,7 +167,7 @@ int generateAutoReqProv(Spec spec, Package pkg,
 	}
 	f++;
     }
-    FREE(fsave);
+    freeSplitString(fsave);
 
     /*** Clean Up ***/
 

@@ -148,7 +148,7 @@ int processSourceFiles(Spec spec)
 	    /* do not copy */
 	    break;
 	}
-	if (type == RPM_STRING_ARRAY_TYPE) {
+	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE) {
 	    FREE(ptr);
 	}
     }
@@ -243,7 +243,7 @@ int processSourceFiles(Spec spec)
 	x++;
     }
     fl.fileListRecsUsed = x;
-    FREE(files);
+    freeSplitString(files);
 
     if (! fl.processingFailed) {
 	genCpioListAndHeader(&fl, &(spec->sourceCpioList),
@@ -450,7 +450,7 @@ static int processPackageFiles(Spec spec, Package pkg, int installSpecialDoc)
 	FREE(specialDoc);
     }
     
-    FREE(files);
+    freeSplitString(files);
 
     if (! fl.processingFailed) {
 	genCpioListAndHeader(&fl, &(pkg->cpioList), &(pkg->cpioCount),

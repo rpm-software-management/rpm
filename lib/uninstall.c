@@ -303,7 +303,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 		}
 	    }
 
-	    free(netsharedPaths);
+	    freeSplitString(netsharedPaths);
 	}
 
 	handleSharedFiles(db, offset, fileList, fileMd5List, fileCount, 

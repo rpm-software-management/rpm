@@ -215,6 +215,7 @@ static int writeRPM(Header header, char *fileName, int type,
     sprintf(buf, "%s-%s-%s", name, version, release);
     rpmGetArchInfo(NULL, &arch);
     rpmGetOsInfo(NULL, &os);
+    memset(&lead, 0, sizeof(lead));
     lead.major = RPM_MAJOR_NUMBER;
     lead.minor = 0;
     lead.type = type;

@@ -2,6 +2,7 @@
         - remove icons with --rmsource
         - do dependecy generation on -bl
         - check files on all packages on -bl
+	- integrate Jeff Johnson's memleak patches
 
 2.4.107 -> 2.4.108:
         - make --clean work with no %setup

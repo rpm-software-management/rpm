@@ -55,12 +55,12 @@ int parsePrep(Spec spec)
 
     spec->prep = newStringBuf();
 
-    buf = newStringBuf();
-    
     /* There are no options to %prep */
     if (readLine(spec, STRIP_NOTHING) > 0) {
 	return PART_NONE;
     }
+    
+    buf = newStringBuf();
     
     while (! (nextPart = isPart(spec->line))) {
 	/* Need to expand the macros inline.  That way we  */
@@ -85,11 +85,14 @@ int parsePrep(Spec spec)
 	}
 	if (res) {
 	    freeSplitString(saveLines);
+	    freeStringBuf(buf);
 	    return res;
 	}
 	lines++;
     }
+
     freeSplitString(saveLines);
+    freeStringBuf(buf);
 
     return nextPart;
 }
