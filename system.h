@@ -226,6 +226,8 @@ char *alloca ();
 # define _(Text) Text
 #endif
 
+#define N_(Text) Text
+
 /* ============== from misc/miscfn.h */
 
 #if HAVE_FNMATCH_H

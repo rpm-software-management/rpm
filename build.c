@@ -1,5 +1,7 @@
 #include "system.h"
+
 #include "build/rpmbuild.h"
+#include "popt/popt.h"
 #include "build.h"
 
 #ifdef DYING
@@ -185,3 +187,48 @@ int build(char *arg, int buildAmount, char *passPhrase,
 
     return 0;
 }
+
+#define	POPT_USECATALOG		1000
+#define	POPT_NOLANG		1001
+#define	POPT_RMSOURCE		1002
+#define	POPT_RMBUILD		1003
+#define	POPT_BUILDROOT		1004
+
+extern int noLang;
+static int useCatalog = 0;
+
+static void buildArgCallback(poptContext con, enum poptCallbackReason reason,
+                             const struct poptOption * opt, const char * arg,
+                             struct rpmBuildArguments * data)
+{
+    switch (opt->val) {
+    case POPT_USECATALOG: data->useCatalog = 1; break;
+    case POPT_NOLANG: data->noLang = 1; break;
+    case POPT_RMSOURCE: data->buildAmount |= RPMBUILD_RMSOURCE; break;
+    case POPT_RMBUILD: data->buildAmount |= RPMBUILD_RMBUILD; break;
+    case POPT_BUILDROOT:
+	if (data->buildRootOverride) {
+	    fprintf(stderr, _("buildroot already specified"));
+	    exit(EXIT_FAILURE);
+	}
+	data->buildRootOverride = strdup(arg);
+	break;
+    }
+}
+
+struct poptOption rpmBuildPoptTable[] = {
+	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
+		buildArgCallback, 0, NULL, NULL },
+	{ "buildroot", '\0', POPT_ARG_STRING, 0,  POPT_BUILDROOT,
+		N_("override build root"), "DIRECTORY" },
+	{ "clean", '\0', 0, 0, POPT_RMBUILD,
+		N_("remove build tree when done"), NULL},
+	{ "nolang", '\0', 0, &noLang, POPT_NOLANG,
+		N_("do not accept I18N msgstr's from specfile"), NULL},
+	{ "rmsource", '\0', 0, 0, POPT_RMSOURCE,
+		N_("remove sources and specfile when done"), NULL},
+	{ "usecatalog", '\0', 0, &useCatalog, POPT_USECATALOG,
+		N_("lookup I18N strings in specfile catalog"), NULL},
+	{ 0, 0, 0, 0, 0,	NULL, NULL }
+};
+

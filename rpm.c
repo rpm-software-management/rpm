@@ -37,7 +37,9 @@ static int allFiles;
 static int allMatches;
 static char * arch;
 static int badReloc;
+#if XXX
 static int clean;
+#endif
 static int excldocs;
 static int force;
 static char * ftpPort;
@@ -51,7 +53,6 @@ static int initdb;
 static int justdb;
 static int noDeps;
 static int noFiles;
-extern int noLang;
 static int noMd5;
 static int noOrder;
 static int noPgp;
@@ -72,11 +73,12 @@ static int shortCircuit;
 static int showrc;
 static int signIt;
 static int test;
-static int useCatalog;
 
 static int rpm_version;
 
 static struct rpmQueryArguments queryArgs;
+static struct rpmBuildArguments buildArgs;
+
 /* the structure describing the options we take and the defaults */
 static struct poptOption optionsTable[] = {
  { "addsign", '\0', 0, 0, GETOPT_ADDSIGN,	NULL, NULL},
@@ -91,7 +93,9 @@ static struct poptOption optionsTable[] = {
  { "buildplatform", '\0', POPT_ARG_STRING, 0, GETOPT_BUILDPLATFORM, NULL, NULL},
  { "buildroot", '\0', POPT_ARG_STRING, 0, GETOPT_BUILDROOT,	NULL, NULL},
  { "checksig", 'K', 0, 0, 'K',			NULL, NULL},
+#if XXX
  { "clean", '\0', 0, &clean, 0,			NULL, NULL},
+#endif
  { "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH,		NULL, NULL},
  { "erase", 'e', 0, 0, 'e',			NULL, NULL},
  { "excludedocs", '\0', 0, &excldocs, 0,	NULL, NULL},
@@ -110,7 +114,6 @@ static struct poptOption optionsTable[] = {
  { "justdb", '\0', 0, &justdb, 0,		NULL, NULL},
  { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
  { "nofiles", '\0', 0, &noFiles, 0,		NULL, NULL},
- { "nolang", '\0', 0, &noLang, 0,		NULL, NULL},
  { "nomd5", '\0', 0, &noMd5, 0,			NULL, NULL},
  { "noorder", '\0', 0, &noOrder, 0,		NULL, NULL},
  { "nopgp", '\0', 0, &noPgp, 0,			NULL, NULL},
@@ -131,7 +134,9 @@ static struct poptOption optionsTable[] = {
  { "replacefiles", '\0', 0, &replaceFiles, 0,	NULL, NULL},
  { "replacepkgs", '\0', 0, &replacePackages, 0,	NULL, NULL},
  { "resign", '\0', 0, 0, GETOPT_RESIGN,		NULL, NULL},
+#if XXX
  { "rmsource", '\0', 0, 0, GETOPT_RMSOURCE,	NULL, NULL},
+#endif
  { "root", 'r', POPT_ARG_STRING, &rootdir, 0,	NULL, NULL},
  { "short-circuit", '\0', 0, &shortCircuit, 0,	NULL, NULL},
  { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,	NULL, NULL},
@@ -141,7 +146,6 @@ static struct poptOption optionsTable[] = {
  { "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK,	NULL, NULL},
  { "upgrade", 'U', 0, 0, 'U',			NULL, NULL},
  { "uninstall", 'u', 0, 0, 'u',			NULL, NULL},
- { "usecatalog", '\0', 0, &useCatalog, 0,	NULL, NULL},
  { "verbose", 'v', 0, 0, 'v',			NULL, NULL},
  { "verify", 'V', 0, 0, 'V',			NULL, NULL},
  {  NULL, 'y', 0, 0, 'V',			NULL, NULL},
@@ -150,6 +154,8 @@ static struct poptOption optionsTable[] = {
 		rpmQuerySourcePoptTable, 0,	(void *) &queryArgs, NULL },
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
 		rpmQueryPoptTable, 0,		(void *) &queryArgs, NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
+		rpmBuildPoptTable, 0,		(void *) &buildArgs, NULL },
  { 0, 0, 0, 0, 0,	NULL, NULL }
 };
 
@@ -493,7 +499,9 @@ int main(int argc, char ** argv) {
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
     int buildAmount = 0;
     int gotDbpath = 0, building = 0, verifyFlags;
+#if XXX
     int rmsource = 0;
+#endif
     int checksigFlags = 0;
     unsigned long int timeCheck = 0L;
     int addSign = NEW_SIGNATURE;
@@ -501,7 +509,7 @@ int main(int argc, char ** argv) {
     char * specFile;
     char * tce;
     char * passPhrase = "";
-    char * buildRootOverride = NULL, * cookie = NULL;
+    char * cookie = NULL;
     char * optArg;
     pid_t pipeChild = 0;
     char * pkg;
@@ -521,7 +529,9 @@ int main(int argc, char ** argv) {
     allMatches = 0;
     arch = NULL;
     badReloc = 0;
+#if XXX
     clean = 0;
+#endif
     excldocs = 0;
     force = 0;
     ftpProxy = NULL;
@@ -535,7 +545,6 @@ int main(int argc, char ** argv) {
     justdb = 0;
     noDeps = 0;
     noFiles = 0;
-    noLang = 0;
     noMd5 = 0;
     noOrder = 0;
     noPgp = 0;
@@ -597,9 +606,11 @@ int main(int argc, char ** argv) {
         case 'b':
         case 't':
         case GETOPT_REBUILD:
-        case GETOPT_RMSOURCE:
         case GETOPT_RECOMPILE:
         case GETOPT_SHOWRC:   /* showrc set as side effect */
+#if XXX
+        case GETOPT_RMSOURCE:
+#endif
 	    building = 1;
 	    /* fall thru */
         default:
@@ -618,8 +629,11 @@ int main(int argc, char ** argv) {
     rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
 
     poptResetContext(optCon);
+
     if (queryArgs.queryFormat) free(queryArgs.queryFormat);
     memset(&queryArgs, 0, sizeof(queryArgs));
+    if (buildArgs.buildRootOverride) free(buildArgs.buildRootOverride);
+    memset(&buildArgs, 0, sizeof(buildArgs));
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	optArg = poptGetOptArg(optCon);
@@ -689,6 +703,7 @@ int main(int argc, char ** argv) {
 		break;
 	      default:
 		argerror(errString);
+		break;
 	    }
 
 	    break;
@@ -782,12 +797,14 @@ int main(int argc, char ** argv) {
 	    bigMode = MODE_REBUILD;
 	    break;
 
+#if XXX
 	  case GETOPT_RMSOURCE:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_BUILD &&
 		bigMode != MODE_TARBUILD)
 		argerror(_("only one major mode may be specified"));
 	    rmsource = 1;
 	    break;
+#endif
 
 	  case GETOPT_RECOMPILE:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RECOMPILE)
@@ -795,6 +812,7 @@ int main(int argc, char ** argv) {
 	    bigMode = MODE_RECOMPILE;
 	    break;
 
+#if XXX
 	  case GETOPT_BUILDROOT:
 	    if (bigMode != MODE_UNKNOWN &&
 		bigMode != MODE_BUILD && bigMode != MODE_REBUILD &&
@@ -802,6 +820,7 @@ int main(int argc, char ** argv) {
 		argerror(_("only one major mode may be specified"));
 	    buildRootOverride = optArg;
 	    break;
+#endif
 
 	  case GETOPT_RESIGN:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
@@ -879,7 +898,7 @@ int main(int argc, char ** argv) {
 	exit(EXIT_FAILURE);
     }
 
-    if (rmsource && bigMode == MODE_UNKNOWN)
+    if ((buildArgs.buildAmount & RPMBUILD_RMSOURCE) && bigMode == MODE_UNKNOWN)
 	bigMode = MODE_BUILD;
     
     if (initdb) {
@@ -903,7 +922,7 @@ int main(int argc, char ** argv) {
 	querySource = queryArgs.source;
     }
 
-    if (buildRootOverride && bigMode != MODE_BUILD &&
+    if (buildArgs.buildRootOverride && bigMode != MODE_BUILD &&
 	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
 	argerror("--buildroot may only be used during package builds");
     }
@@ -929,9 +948,9 @@ int main(int argc, char ** argv) {
 	argerror(_("unexpected query source"));
 
     if (!(bigMode == MODE_INSTALL ||
-         (bigMode == MODE_BUILD && rmsource)) && force)
+         (bigMode == MODE_BUILD && (buildArgs.buildAmount & RPMBUILD_RMSOURCE)))
+	&& force)
 	argerror(_("only installation, upgrading and rmsource may be forced"));
-
 
     if (bigMode != MODE_INSTALL && badReloc)
 	argerror(_("files may only be relocated during package installation"));
@@ -1028,11 +1047,13 @@ int main(int argc, char ** argv) {
     if (rootdir && rootdir[0] != '/')
 	argerror(_("arguments to --root (-r) must begin with a /"));
 
+#if XXX
     if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && clean)
 	argerror(_("--clean may only be used with -b and -t"));
 
     if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && rmsource)
 	argerror(_("--rmsource may only be used with -b and -t"));
+#endif
 
     if (bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && shortCircuit) 
 	argerror(_("--short-circuit may only be used during package building"));
@@ -1162,7 +1183,7 @@ int main(int argc, char ** argv) {
 	    if (doSourceInstall("/", pkg, &specFile, &cookie))
 		exit(EXIT_FAILURE);
 
-	    if (build(specFile, buildAmount, passPhrase, buildRootOverride,
+	    if (build(specFile, buildAmount, passPhrase, buildArgs.buildRootOverride,
 			0, test, cookie, rcfile, arch, os, buildplatforms, force)) {
 		exit(EXIT_FAILURE);
 	    }
@@ -1203,11 +1224,18 @@ int main(int argc, char ** argv) {
 	    break;
 	}
 
+#if XXX
 	if (rmsource)
 	    buildAmount |= RPMBUILD_RMSOURCE;
 
 	if (clean)
 	    buildAmount |= RPMBUILD_RMBUILD;
+#else
+	if (buildArgs.buildAmount) {
+	    buildAmount |=
+		(buildArgs.buildAmount & (RPMBUILD_RMSOURCE|RPMBUILD_RMBUILD));
+	}
+#endif
 
 	if (!poptPeekArg(optCon)) {
 	    if (bigMode == MODE_BUILD)
@@ -1217,7 +1245,7 @@ int main(int argc, char ** argv) {
 	}
 
 	while ((pkg = poptGetArg(optCon)))
-	    if (build(pkg, buildAmount, passPhrase, buildRootOverride,
+	    if (build(pkg, buildAmount, passPhrase, buildArgs.buildRootOverride,
 			bigMode == MODE_TARBUILD, test, NULL,
                         rcfile, arch, os, buildplatforms, force)) {
 		exit(EXIT_FAILURE);
