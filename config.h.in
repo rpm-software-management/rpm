@@ -47,4 +47,7 @@
    byte first (like Motorola and SPARC, unlike Intel and VAX).  */
 #define WORDS_BIGENDIAN 0
 
+/* Define as one if we need to include <strings.h> (along with <string.h>) */
+#define NEED_STRINGS_H 0
+
 #endif

@@ -31,4 +31,8 @@ char *realpath(char *path, char resolved_path[]);
 #define S_ISSOCK(mode) ((mode) & S_IFSOCK)
 #endif
 
+#if NEED_STRINGS_H
+#include <strings.h>
+#endif
+
 #endif
