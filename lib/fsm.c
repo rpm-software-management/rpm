@@ -19,6 +19,9 @@
 
 int _fsm_debug = 0;
 
+/* XXX Failure to remove is not (yet) cause for failure. */
+int strict_erasures = 0;
+
 rpmTransactionSet fsmGetTs(const FSM_t fsm) {
     const FSMI_t iter = fsm->iter;
     return (iter ? iter->ts : NULL);
@@ -1477,12 +1480,14 @@ int fsmStage(FSM_t fsm, fileStage stage)
 			    break;
 
 			/* XXX common error message. */
-			rpmError(RPMERR_RMDIR, 
+			rpmError(
+			    (strict_erasures ? RPMERR_RMDIR : RPMWARN_RMDIR),
 			    _("%s rmdir of %s failed: Directory not empty\n"), 
 				fiTypeString(fi), fsm->path);
 			break;
 		    default:
-			rpmError(RPMERR_RMDIR,
+			rpmError(
+			    (strict_erasures ? RPMERR_RMDIR : RPMWARN_RMDIR),
 				_("%s rmdir of %s failed: %s\n"),
 				fiTypeString(fi), fsm->path, strerror(errno));
 			break;
@@ -1492,10 +1497,13 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		    if (!rc) break;
 		    if (!(errno == ENOENT && (fsm->fflags & RPMFILE_MISSINGOK)))
 			rpmError(RPMERR_UNLINK,
+			    (strict_erasures ? RPMERR_UNLINK : RPMWARN_UNLINK),
 				_("%s unlink of %s failed: %s\n"),
 				fiTypeString(fi), fsm->path, strerror(errno));
 		}
 	    }
+	    /* XXX Failure to remove is not (yet) cause for failure. */
+	    if (!strict_erasures) rc = 0;
 	    break;
 	}
 

@@ -1411,8 +1411,8 @@ static void * tsInitIterator(/*@kept@*/ const void * this)
 
     iter = xcalloc(1, sizeof(*iter));
     iter->ts = ts;
-    iter->oc = ((ts->transFlags & RPMTRANS_FLAG_REVERSE)
-			? (ts->orderCount - 1) : 0);
+    iter->reverse = ((ts->transFlags & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
+    iter->oc = (iter->reverse ? (ts->orderCount - 1) : 0);
     iter->ocsave = iter->oc;
     return iter;
 }

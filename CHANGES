@@ -33,6 +33,11 @@
 	- lib/depends.c: diddle debugging messages.
 	- fix: readlink return value clobbered by header write.
 	- fix: ineeded count wrong for overlapped, created files.
+	- globalize _free(3) wrapper in rpmlib.h, consistent usage throughout.
+	- internalize locale insensitive ctype(3) in rpmio.h.
+	- boring lclint annotations and fiddles.
+	- transaction iterator(s) need to run in reverse order on pure erasures.
+	- erasures not yet strict, warn & chug on unlink(2)/rmdir(2) failure.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

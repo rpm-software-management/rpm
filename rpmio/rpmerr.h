@@ -10,8 +10,14 @@
 
 #define	_em(_e)	\
     (((_e) << 16) | RPMLOG_MAKEPRI(RPMLOG_ERRMSG, RPMLOG_ERR))
-#define	_en(_e)	\
+#define	_wm(_e)	\
+    (((_e) << 16) | RPMLOG_MAKEPRI(RPMLOG_ERRMSG, RPMLOG_WARNING))
+#define	_nm(_e)	\
     (((_e) << 16) | RPMLOG_MAKEPRI(RPMLOG_ERRMSG, RPMLOG_NOTICE))
+#define	_im(_e)	\
+    (((_e) << 16) | RPMLOG_MAKEPRI(RPMLOG_ERRMSG, RPMLOG_INFO))
+#define	_dm(_e)	\
+    (((_e) << 16) | RPMLOG_MAKEPRI(RPMLOG_ERRMSG, RPMLOG_DEBUG))
 
 /**
  * Tokens used by rpmError().
@@ -87,12 +93,15 @@ typedef enum rpmerrCode_e {
     RPMERR_FREAD	= _em(134), /*!< %s: Fread failed: %s */
     RPMERR_READLEAD	= _em(135), /*!< %s: readLead failed */
     RPMERR_WRITELEAD	= _em(136), /*!< %s: writeLead failed: %s */
-    RPMERR_QUERYINFO	= _en(137), /*!< */
-    RPMERR_MANIFEST	= _en(138), /*!< %s: read manifest failed: %s */
+    RPMERR_QUERYINFO	= _nm(137), /*!< */
+    RPMERR_MANIFEST	= _nm(138), /*!< %s: read manifest failed: %s */
 
     RPMERR_BADSIGTYPE	= _em(200), /*!< Unknown signature type */
     RPMERR_SIGGEN	= _em(201), /*!< Error generating signature */
-    RPMERR_SIGVFY	= _en(202)  /*!< */
+    RPMERR_SIGVFY	= _nm(202), /*!< */
+
+    RPMWARN_UNLINK	= _wm(512+16),  /*!< unlink(2) failed */
+    RPMWARN_RMDIR	= _wm(512+17)   /*!< rmdir(2) failed */
 } rpmerrCode;
 
 /**
