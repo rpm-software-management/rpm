@@ -128,6 +128,8 @@ POPT_ARG_STRING	No type checking to be performed	char *
 POPT_ARG_INT	An integer argument is expected	int
 POPT_ARG_LONG	A long integer is expected	long
 POPT_ARG_VAL	Integer value taken from \f(CWval\fR	int
+POPT_ARG_FLOAT	An float argument is expected	float
+POPT_ARG_DOUBLE	A double argument is expected	double
 .TE
 .sp
 For numeric values, if the \fIargInfo\fR value is bitwise or'd with one of
@@ -155,8 +157,9 @@ will perhaps not escape the attention of hunt-and-peck typists that
 an argument, the variable that 
 .IR arg " points to is updated to reflect the value of the argument." 
 .RB "Any string is acceptable for " POPT_ARG_STRING " arguments, but "
-.BR POPT_ARG_INT " and " POPT_ARG_LONG " are converted to the 
-appropriate type, and an error returned if the conversion fails.
+.BR POPT_ARG_INT ", " POPT_ARG_LONG ", " POPT_ARG_FLOAT ", and "
+.BR POPT_ARG_DOUBLE " are converted to the appropriate type, and an "
+error returned if the conversion fails.
 .sp
 \fBPOPT_ARG_VAL\fR causes \fIarg\fP to be set to the (integer) value of
 \fIval\fP when the argument is found.  This is most often useful for
@@ -445,14 +448,16 @@ A parsed string has a quotation mismatch (such as a single quotation
 A conversion from a string to a number (int or long) failed due
 to the string containing nonnumeric characters. This occurs when
 .BR poptGetNextOpt() " is processing an argument of type " 
-.BR POPT_ARG_INT " or " POPT_ARG_LONG .
+.BR POPT_ARG_INT ", " POPT_ARG_LONG ", "
+.RB POPT_ARG_FLOAT ", or " POPT_ARG_DOUBLE "."  
 .sp
 .TP
 .B POPT_ERROR_OVERFLOW
 A string-to-number conversion failed because the number was too
 .RB "large or too small. Like " POPT_ERROR_BADNUMBER ", this error 
 .RB "can occur only when " poptGetNextOpt() " is processing an "
-.RB "argument of type " POPT_ARG_INT " or " POPT_ARG_LONG .  
+.RB "argument of type " POPT_ARG_INT ", " POPT_ARG_LONG ", "
+.RB POPT_ARG_FLOAT ", or " POPT_ARG_DOUBLE "."  
 .sp
 .TP
 .B POPT_ERROR_ERRNO

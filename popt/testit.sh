@@ -58,5 +58,10 @@ run test1 "test1 - 29" "arg1: 0 arg2: bbbb" --arg2=aaaa -2 bbbb
 run test1 "test1 - 30" "arg1: 0 arg2: 'foo bingo' rest: boggle" --grab bingo boggle
 run test1 "test1 - 31" "arg1: 0 arg2: 'foo bar' rest: boggle" --grabbar boggle
 
+run test1 "test1 - 32" "arg1: 0 arg2: (none) aFloat: 10.1" -f 10.1
+run test1 "test1 - 33" "arg1: 0 arg2: (none) aFloat: 10.1" --float 10.1
+run test1 "test1 - 34" "arg1: 0 arg2: (none) aDouble: 10.1" -d 10.1
+run test1 "test1 - 35" "arg1: 0 arg2: (none) aDouble: 10.1" --double 10.1
+
 echo ""
 echo "Passed."

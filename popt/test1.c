@@ -17,6 +17,8 @@ char * arg2 = "(none)";
 int arg3 = 0;
 int inc = 0;
 int shortopt = 0;
+float aFloat = 0.0;
+double aDouble = 0.0;
 int singleDash = 0;
 
 static struct poptOption moreCallbackArgs[] = {
@@ -48,6 +50,10 @@ static struct poptOption options[] = {
 		"This shouldn't show up", NULL },
 	{ "unused", '\0', POPT_ARG_STRING, NULL, 0,
 	    "Unused option for help testing", "UNUSED" },
+	{ "float", 'f', POPT_ARG_FLOAT, &aFloat, 0,
+	    "A float argument", "FLOAT" },
+	{ "double", 'd', POPT_ARG_DOUBLE, &aDouble, 0,
+	    "A double argument", "DOUBLE" },
 	{ NULL, '-', POPT_ARG_NONE | POPT_ARGFLAG_DOC_HIDDEN, &singleDash, 0 },
 	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &moreArgs, 0, NULL },
 	{ NULL, '\0', POPT_ARG_INCLUDE_TABLE, &callbackArgs, 0, "Callback arguments" },
@@ -62,6 +68,8 @@ static void resetVars(void)
     arg3 = 0;
     inc = 0;
     shortopt = 0;
+    aFloat = 0.0;
+    aDouble = 0.0;
     singleDash = 0;
     pass2 = 0;
 }
@@ -116,6 +124,10 @@ int main(int argc, const char ** argv) {
 	fprintf(stdout, " inc: %d", inc);
     if (shortopt)
 	fprintf(stdout, " short: %d", shortopt);
+    if (aFloat != 0.0)
+	fprintf(stdout, " aFloat: %g", aFloat);
+    if (aDouble != 0.0)
+	fprintf(stdout, " aDouble: %g", aDouble);
     if (singleDash)
 	fprintf(stdout, " -");
 

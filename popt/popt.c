@@ -9,6 +9,9 @@
 #undef	MYDEBUG
 
 #include "system.h"
+
+#include <math.h>
+
 #include "findme.h"
 #include "poptint.h"
 
@@ -709,8 +712,35 @@ int poptGetNextOpt(poptContext con)
 			if (poptSaveInt(opt, aLong))
 			    return POPT_ERROR_BADOPERATION;
 		    }
-		  } break;
+		}   break;
 
+		case POPT_ARG_FLOAT:
+		case POPT_ARG_DOUBLE:
+		{   long aDouble;
+		    char *end;
+
+		    aDouble = strtod(con->os->nextArg, &end);
+		    if (*end)
+			return POPT_ERROR_BADNUMBER;
+
+		    if (aDouble == +HUGE_VAL || aDouble == -HUGE_VAL)
+			return POPT_ERROR_OVERFLOW;
+		    if (aDouble == 0.0 && errno == ERANGE)
+			return POPT_ERROR_OVERFLOW;
+		    if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_DOUBLE) {
+			*((double *) opt->arg) = aDouble;
+		    } else {
+#ifdef ABS
+#undef ABS
+#endif
+#define ABS(a) (((a) < 0) ? -(a) : (a))
+			if (ABS(aDouble) > FLT_MAX)
+			    return POPT_ERROR_OVERFLOW;
+			if (ABS(aDouble) < FLT_MIN)
+			    return POPT_ERROR_OVERFLOW;
+			*((float *) opt->arg) = aDouble;
+		    }
+		}   break;
 		default:
 		    fprintf(stdout, POPT_("option type (%d) not implemented in popt\n"),
 		      opt->argInfo & POPT_ARG_MASK);
