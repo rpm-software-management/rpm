@@ -79,6 +79,9 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     int i;
     struct flock lockinfo;
 
+    /* we should accept NULL as a valid prefix */
+    if (!prefix) prefix="";
+
     i = strlen(dbpath);
     if (dbpath[i - 1] != '/') {
 	filename = alloca(i + 2);
