@@ -28,6 +28,8 @@
 %_infodir		@infodir@
 %_mandir		@mandir@
 
+%_defaultdocdir		@DEFAULTDOCDIR@
+
 #==============================================================================
 # ---- Build policy macros.
 #

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-06-01 00:32-0400\n"
+"POT-Creation-Date: 2000-06-01 01:32-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -3083,6 +3083,87 @@ msgstr "predefinova» cieµovú platformu"
 msgid "lookup I18N strings in specfile catalog"
 msgstr "pre preklad re»azcov pou¾i» katalóg správ spec-súborov"
 
+#: lib/poptQV.c:62
+msgid "query package owning file"
+msgstr "opýta» sa balíku vlastniaceho súbor"
+
+#: lib/poptQV.c:64
+msgid "query packages in group"
+msgstr "opýta» sa v¹etkých balíkov v skupine"
+
+#: lib/poptQV.c:66
+msgid "query a package file"
+msgstr "opýta» sa súboru balíka"
+
+#: lib/poptQV.c:68
+#, fuzzy
+msgid "rpm query mode"
+msgstr "re¾im otázok"
+
+#: lib/poptQV.c:72
+msgid "display known query tags"
+msgstr ""
+
+#: lib/poptQV.c:74
+msgid "query a spec file"
+msgstr "opýta» sa spec súboru"
+
+#: lib/poptQV.c:76
+msgid "query the pacakges triggered by the package"
+msgstr "opýta» sa balíkov spustených balíkom"
+
+#: lib/poptQV.c:78
+#, fuzzy
+msgid "rpm verify mode"
+msgstr "re¾im otázok"
+
+#: lib/poptQV.c:80
+#, fuzzy
+msgid "rpm verify mode (legacy)"
+msgstr "re¾im otázok"
+
+#: lib/poptQV.c:82
+msgid "query the packages which require a capability"
+msgstr "opýta» sa balíkov vy¾adujúcich schopnos»"
+
+#: lib/poptQV.c:84
+msgid "query the packages which provide a capability"
+msgstr "opýta» sa balíkov poskytujúcich schopnos»"
+
+#: lib/poptQV.c:124
+msgid "list all configuration files"
+msgstr "zobrazi» v¹etky konfiguraèné súbory"
+
+#: lib/poptQV.c:126
+#, fuzzy
+msgid "list all documentation files"
+msgstr "zobrazi» v¹etky dokumentaèné súbory"
+
+#: lib/poptQV.c:128
+msgid "dump basic file information"
+msgstr "zobrazi» základné informácie o balíku"
+
+#: lib/poptQV.c:130
+msgid "list files in package"
+msgstr "zobrazi» súbory v balíku"
+
+#: lib/poptQV.c:134
+msgid "use the following query format"
+msgstr "pou¾i» nasledovný formát otázky"
+
+#: lib/poptQV.c:136
+#, fuzzy
+msgid "substitute i18n sections into spec file"
+msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
+
+#: lib/poptQV.c:138
+msgid "display the states of the listed files"
+msgstr "zobrazii» stav daných súborov"
+
+#: lib/poptQV.c:140
+msgid "display a verbose file listing"
+msgstr "zobrazi» podrobný zoznam súborov balíka"
+
 #: lib/problems.c:43
 #, c-format
 msgid " is needed by %s-%s-%s\n"
@@ -4031,61 +4112,6 @@ msgstr "chýbajúce    %s\n"
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
-
-#~ msgid "query package owning file"
-#~ msgstr "opýta» sa balíku vlastniaceho súbor"
-
-#~ msgid "query packages in group"
-#~ msgstr "opýta» sa v¹etkých balíkov v skupine"
-
-#~ msgid "query a package file"
-#~ msgstr "opýta» sa súboru balíka"
-
-#, fuzzy
-#~ msgid "rpm query mode"
-#~ msgstr "re¾im otázok"
-
-#~ msgid "query a spec file"
-#~ msgstr "opýta» sa spec súboru"
-
-#~ msgid "query the pacakges triggered by the package"
-#~ msgstr "opýta» sa balíkov spustených balíkom"
-
-#, fuzzy
-#~ msgid "rpm verify mode"
-#~ msgstr "re¾im otázok"
-
-#~ msgid "query the packages which require a capability"
-#~ msgstr "opýta» sa balíkov vy¾adujúcich schopnos»"
-
-#~ msgid "query the packages which provide a capability"
-#~ msgstr "opýta» sa balíkov poskytujúcich schopnos»"
-
-#~ msgid "list all configuration files"
-#~ msgstr "zobrazi» v¹etky konfiguraèné súbory"
-
-#, fuzzy
-#~ msgid "list all documentation files"
-#~ msgstr "zobrazi» v¹etky dokumentaèné súbory"
-
-#~ msgid "dump basic file information"
-#~ msgstr "zobrazi» základné informácie o balíku"
-
-#~ msgid "list files in package"
-#~ msgstr "zobrazi» súbory v balíku"
-
-#~ msgid "use the following query format"
-#~ msgstr "pou¾i» nasledovný formát otázky"
-
-#, fuzzy
-#~ msgid "substitute i18n sections into spec file"
-#~ msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
-
-#~ msgid "display the states of the listed files"
-#~ msgstr "zobrazii» stav daných súborov"
-
-#~ msgid "display a verbose file listing"
-#~ msgstr "zobrazi» podrobný zoznam súborov balíka"
 
 #~ msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 #~ msgstr "Voµba --buildarch je zastaralá. Pou¾ite namiesto nej --target.\n"

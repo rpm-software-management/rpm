@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-06-01 00:32-0400\n"
+"POT-Creation-Date: 2000-06-01 01:32-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -3214,6 +3214,99 @@ msgstr ""
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
+#: lib/poptQV.c:62
+#, fuzzy
+msgid "query package owning file"
+msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
+
+#: lib/poptQV.c:64
+#, fuzzy
+msgid "query packages in group"
+msgstr "Paket hat keinen Namen"
+
+#: lib/poptQV.c:66
+#, fuzzy
+msgid "query a package file"
+msgstr "Anfrage an alle Pakete"
+
+#: lib/poptQV.c:68
+#, fuzzy
+msgid "rpm query mode"
+msgstr "Anfrage-Modus"
+
+#: lib/poptQV.c:72
+msgid "display known query tags"
+msgstr ""
+
+#: lib/poptQV.c:74
+#, fuzzy
+msgid "query a spec file"
+msgstr "Anfrage von %s fehlgeschlagen\n"
+
+#: lib/poptQV.c:76
+#, fuzzy
+msgid "query the pacakges triggered by the package"
+msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
+
+#: lib/poptQV.c:78
+#, fuzzy
+msgid "rpm verify mode"
+msgstr "Anfrage-Modus"
+
+#: lib/poptQV.c:80
+#, fuzzy
+msgid "rpm verify mode (legacy)"
+msgstr "Anfrage-Modus"
+
+#: lib/poptQV.c:82
+#, fuzzy
+msgid "query the packages which require a capability"
+msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
+
+#: lib/poptQV.c:84
+#, fuzzy
+msgid "query the packages which provide a capability"
+msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
+
+#: lib/poptQV.c:124
+#, fuzzy
+msgid "list all configuration files"
+msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
+
+#: lib/poptQV.c:126
+#, fuzzy
+msgid "list all documentation files"
+msgstr "Dokumentation installieren"
+
+#: lib/poptQV.c:128
+#, fuzzy
+msgid "dump basic file information"
+msgstr "Paketinformationen anzeigen"
+
+#: lib/poptQV.c:130
+#, fuzzy
+msgid "list files in package"
+msgstr "Paket installieren"
+
+#: lib/poptQV.c:134
+#, fuzzy
+msgid "use the following query format"
+msgstr "Unerwartete Quelle der Anfrage"
+
+#: lib/poptQV.c:136
+#, fuzzy
+msgid "substitute i18n sections into spec file"
+msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
+
+#: lib/poptQV.c:138
+msgid "display the states of the listed files"
+msgstr ""
+
+#: lib/poptQV.c:140
+#, fuzzy
+msgid "display a verbose file listing"
+msgstr "Dateiliste des Pakets anzeigen"
+
 #: lib/problems.c:43
 #, c-format
 msgid " is needed by %s-%s-%s\n"
@@ -4197,66 +4290,6 @@ msgstr "fehlende { nach %{"
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nicht erfüllte Abhängigkeiten von %s-%s-%s: "
-
-#, fuzzy
-#~ msgid "query package owning file"
-#~ msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
-
-#, fuzzy
-#~ msgid "query packages in group"
-#~ msgstr "Paket hat keinen Namen"
-
-#, fuzzy
-#~ msgid "query a package file"
-#~ msgstr "Anfrage an alle Pakete"
-
-#, fuzzy
-#~ msgid "rpm query mode"
-#~ msgstr "Anfrage-Modus"
-
-#, fuzzy
-#~ msgid "query a spec file"
-#~ msgstr "Anfrage von %s fehlgeschlagen\n"
-
-#, fuzzy
-#~ msgid "query the pacakges triggered by the package"
-#~ msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
-
-#, fuzzy
-#~ msgid "rpm verify mode"
-#~ msgstr "Anfrage-Modus"
-
-#, fuzzy
-#~ msgid "query the packages which require a capability"
-#~ msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
-
-#, fuzzy
-#~ msgid "query the packages which provide a capability"
-#~ msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
-
-#, fuzzy
-#~ msgid "list all configuration files"
-#~ msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
-
-#, fuzzy
-#~ msgid "list all documentation files"
-#~ msgstr "Dokumentation installieren"
-
-#, fuzzy
-#~ msgid "dump basic file information"
-#~ msgstr "Paketinformationen anzeigen"
-
-#, fuzzy
-#~ msgid "list files in package"
-#~ msgstr "Paket installieren"
-
-#, fuzzy
-#~ msgid "substitute i18n sections into spec file"
-#~ msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
-
-#, fuzzy
-#~ msgid "display a verbose file listing"
-#~ msgstr "Dateiliste des Pakets anzeigen"
 
 #, fuzzy
 #~ msgid "override build architecture"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-01 00:32-0400\n"
+"POT-Creation-Date: 2000-06-01 01:32-0400\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -3112,6 +3112,99 @@ msgstr ""
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
+#: lib/poptQV.c:62
+#, fuzzy
+msgid "query package owning file"
+msgstr "dotazy na balíèek vlastnící <soubor>"
+
+#: lib/poptQV.c:64
+#, fuzzy
+msgid "query packages in group"
+msgstr "balíèek nemá skupinu\n"
+
+#: lib/poptQV.c:66
+#, fuzzy
+msgid "query a package file"
+msgstr "dotazovat v¹echny balíèky"
+
+#: lib/poptQV.c:68
+#, fuzzy
+msgid "rpm query mode"
+msgstr "dotazovací re¾im"
+
+#: lib/poptQV.c:72
+msgid "display known query tags"
+msgstr ""
+
+#: lib/poptQV.c:74
+#, fuzzy
+msgid "query a spec file"
+msgstr "dotaz na %s se nezdaøil\n"
+
+#: lib/poptQV.c:76
+#, fuzzy
+msgid "query the pacakges triggered by the package"
+msgstr "dotazy na balíèky aktivované <balíkem>"
+
+#: lib/poptQV.c:78
+#, fuzzy
+msgid "rpm verify mode"
+msgstr "dotazovací re¾im"
+
+#: lib/poptQV.c:80
+#, fuzzy
+msgid "rpm verify mode (legacy)"
+msgstr "dotazovací re¾im"
+
+#: lib/poptQV.c:82
+#, fuzzy
+msgid "query the packages which require a capability"
+msgstr "dotazovat balíèky vy¾adující schopnost <sch>"
+
+#: lib/poptQV.c:84
+#, fuzzy
+msgid "query the packages which provide a capability"
+msgstr "dotazovat balíèky poskytující schopnost <sch>"
+
+#: lib/poptQV.c:124
+#, fuzzy
+msgid "list all configuration files"
+msgstr "uvést pouze konfiguraèní soubory (implikuje -l)"
+
+#: lib/poptQV.c:126
+#, fuzzy
+msgid "list all documentation files"
+msgstr "nainstalovat dokumentaci"
+
+#: lib/poptQV.c:128
+#, fuzzy
+msgid "dump basic file information"
+msgstr "zobrazit informace o balíèku"
+
+#: lib/poptQV.c:130
+#, fuzzy
+msgid "list files in package"
+msgstr "binární balíèek starého typu\n"
+
+#: lib/poptQV.c:134
+#, fuzzy
+msgid "use the following query format"
+msgstr "neèekaný zdroj dotazu"
+
+#: lib/poptQV.c:136
+#, fuzzy
+msgid "substitute i18n sections into spec file"
+msgstr "balíèek %s neobsahuje soubory"
+
+#: lib/poptQV.c:138
+msgid "display the states of the listed files"
+msgstr ""
+
+#: lib/poptQV.c:140
+#, fuzzy
+msgid "display a verbose file listing"
+msgstr "zobrazit seznam souborù balíèkù"
+
 #: lib/problems.c:43
 #, c-format
 msgid " is needed by %s-%s-%s\n"
@@ -4070,66 +4163,6 @@ msgstr "chybí      %s\n"
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyøe¹ené závislosti pro %s-%s-%s: "
-
-#, fuzzy
-#~ msgid "query package owning file"
-#~ msgstr "dotazy na balíèek vlastnící <soubor>"
-
-#, fuzzy
-#~ msgid "query packages in group"
-#~ msgstr "balíèek nemá skupinu\n"
-
-#, fuzzy
-#~ msgid "query a package file"
-#~ msgstr "dotazovat v¹echny balíèky"
-
-#, fuzzy
-#~ msgid "rpm query mode"
-#~ msgstr "dotazovací re¾im"
-
-#, fuzzy
-#~ msgid "query a spec file"
-#~ msgstr "dotaz na %s se nezdaøil\n"
-
-#, fuzzy
-#~ msgid "query the pacakges triggered by the package"
-#~ msgstr "dotazy na balíèky aktivované <balíkem>"
-
-#, fuzzy
-#~ msgid "rpm verify mode"
-#~ msgstr "dotazovací re¾im"
-
-#, fuzzy
-#~ msgid "query the packages which require a capability"
-#~ msgstr "dotazovat balíèky vy¾adující schopnost <sch>"
-
-#, fuzzy
-#~ msgid "query the packages which provide a capability"
-#~ msgstr "dotazovat balíèky poskytující schopnost <sch>"
-
-#, fuzzy
-#~ msgid "list all configuration files"
-#~ msgstr "uvést pouze konfiguraèní soubory (implikuje -l)"
-
-#, fuzzy
-#~ msgid "list all documentation files"
-#~ msgstr "nainstalovat dokumentaci"
-
-#, fuzzy
-#~ msgid "dump basic file information"
-#~ msgstr "zobrazit informace o balíèku"
-
-#, fuzzy
-#~ msgid "list files in package"
-#~ msgstr "binární balíèek starého typu\n"
-
-#, fuzzy
-#~ msgid "substitute i18n sections into spec file"
-#~ msgstr "balíèek %s neobsahuje soubory"
-
-#, fuzzy
-#~ msgid "display a verbose file listing"
-#~ msgstr "zobrazit seznam souborù balíèkù"
 
 #, fuzzy
 #~ msgid "override build architecture"

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-06-01 00:32-0400\n"
+"POT-Creation-Date: 2000-06-01 01:32-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -3077,6 +3077,86 @@ msgstr "переопределить целевую платформу"
 msgid "lookup I18N strings in specfile catalog"
 msgstr "искать строки I18N в каталоге со spec-файлом"
 
+#: lib/poptQV.c:62
+msgid "query package owning file"
+msgstr "найти пакет, которому принадлежит файл"
+
+#: lib/poptQV.c:64
+msgid "query packages in group"
+msgstr "запрос пакетов в группе"
+
+#: lib/poptQV.c:66
+msgid "query a package file"
+msgstr "запросить файл пакета"
+
+#: lib/poptQV.c:68
+#, fuzzy
+msgid "rpm query mode"
+msgstr "режим запроса"
+
+#: lib/poptQV.c:72
+msgid "display known query tags"
+msgstr ""
+
+#: lib/poptQV.c:74
+msgid "query a spec file"
+msgstr "запросить spec-файл"
+
+#: lib/poptQV.c:76
+msgid "query the pacakges triggered by the package"
+msgstr "запросить пакеты с триггер-скриптами на пакет"
+
+#: lib/poptQV.c:78
+#, fuzzy
+msgid "rpm verify mode"
+msgstr "режим запроса"
+
+#: lib/poptQV.c:80
+#, fuzzy
+msgid "rpm verify mode (legacy)"
+msgstr "режим запроса"
+
+#: lib/poptQV.c:82
+msgid "query the packages which require a capability"
+msgstr "найти пакеты, требующие сервиса"
+
+#: lib/poptQV.c:84
+msgid "query the packages which provide a capability"
+msgstr "найти пакеты, предоставляющие сервис"
+
+#: lib/poptQV.c:124
+msgid "list all configuration files"
+msgstr "показать все конфигурационные файлы"
+
+#: lib/poptQV.c:126
+msgid "list all documentation files"
+msgstr "показать все файлы документации"
+
+#: lib/poptQV.c:128
+msgid "dump basic file information"
+msgstr "вывести базовую информацию о файле"
+
+#: lib/poptQV.c:130
+msgid "list files in package"
+msgstr "показать файлы пакета"
+
+#: lib/poptQV.c:134
+msgid "use the following query format"
+msgstr "исп. следующий формат запроса"
+
+#: lib/poptQV.c:136
+#, fuzzy
+msgid "substitute i18n sections into spec file"
+msgstr "подставить секции i18n из следующего каталога"
+
+#: lib/poptQV.c:138
+msgid "display the states of the listed files"
+msgstr "показать состояние показанных файлов"
+
+#: lib/poptQV.c:140
+msgid "display a verbose file listing"
+msgstr "вывести детальный список файлов пакета"
+
 #: lib/problems.c:43
 #, c-format
 msgid " is needed by %s-%s-%s\n"
@@ -4023,60 +4103,6 @@ msgstr "отсутствует %s\n"
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
-
-#~ msgid "query package owning file"
-#~ msgstr "найти пакет, которому принадлежит файл"
-
-#~ msgid "query packages in group"
-#~ msgstr "запрос пакетов в группе"
-
-#~ msgid "query a package file"
-#~ msgstr "запросить файл пакета"
-
-#, fuzzy
-#~ msgid "rpm query mode"
-#~ msgstr "режим запроса"
-
-#~ msgid "query a spec file"
-#~ msgstr "запросить spec-файл"
-
-#~ msgid "query the pacakges triggered by the package"
-#~ msgstr "запросить пакеты с триггер-скриптами на пакет"
-
-#, fuzzy
-#~ msgid "rpm verify mode"
-#~ msgstr "режим запроса"
-
-#~ msgid "query the packages which require a capability"
-#~ msgstr "найти пакеты, требующие сервиса"
-
-#~ msgid "query the packages which provide a capability"
-#~ msgstr "найти пакеты, предоставляющие сервис"
-
-#~ msgid "list all configuration files"
-#~ msgstr "показать все конфигурационные файлы"
-
-#~ msgid "list all documentation files"
-#~ msgstr "показать все файлы документации"
-
-#~ msgid "dump basic file information"
-#~ msgstr "вывести базовую информацию о файле"
-
-#~ msgid "list files in package"
-#~ msgstr "показать файлы пакета"
-
-#~ msgid "use the following query format"
-#~ msgstr "исп. следующий формат запроса"
-
-#, fuzzy
-#~ msgid "substitute i18n sections into spec file"
-#~ msgstr "подставить секции i18n из следующего каталога"
-
-#~ msgid "display the states of the listed files"
-#~ msgstr "показать состояние показанных файлов"
-
-#~ msgid "display a verbose file listing"
-#~ msgstr "вывести детальный список файлов пакета"
 
 #~ msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 #~ msgstr "--buildarch уже не в моде :) Используйте опцию --target.\n"

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-01 00:32-0400\n"
+"POT-Creation-Date: 2000-06-01 01:32-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2914,6 +2914,82 @@ msgstr ""
 
 #: lib/poptBT.c:159
 msgid "lookup I18N strings in specfile catalog"
+msgstr ""
+
+#: lib/poptQV.c:62
+msgid "query package owning file"
+msgstr ""
+
+#: lib/poptQV.c:64
+msgid "query packages in group"
+msgstr ""
+
+#: lib/poptQV.c:66
+msgid "query a package file"
+msgstr ""
+
+#: lib/poptQV.c:68
+msgid "rpm query mode"
+msgstr ""
+
+#: lib/poptQV.c:72
+msgid "display known query tags"
+msgstr ""
+
+#: lib/poptQV.c:74
+msgid "query a spec file"
+msgstr ""
+
+#: lib/poptQV.c:76
+msgid "query the pacakges triggered by the package"
+msgstr ""
+
+#: lib/poptQV.c:78
+msgid "rpm verify mode"
+msgstr ""
+
+#: lib/poptQV.c:80
+msgid "rpm verify mode (legacy)"
+msgstr ""
+
+#: lib/poptQV.c:82
+msgid "query the packages which require a capability"
+msgstr ""
+
+#: lib/poptQV.c:84
+msgid "query the packages which provide a capability"
+msgstr ""
+
+#: lib/poptQV.c:124
+msgid "list all configuration files"
+msgstr ""
+
+#: lib/poptQV.c:126
+msgid "list all documentation files"
+msgstr ""
+
+#: lib/poptQV.c:128
+msgid "dump basic file information"
+msgstr ""
+
+#: lib/poptQV.c:130
+msgid "list files in package"
+msgstr ""
+
+#: lib/poptQV.c:134
+msgid "use the following query format"
+msgstr ""
+
+#: lib/poptQV.c:136
+msgid "substitute i18n sections into spec file"
+msgstr ""
+
+#: lib/poptQV.c:138
+msgid "display the states of the listed files"
+msgstr ""
+
+#: lib/poptQV.c:140
+msgid "display a verbose file listing"
 msgstr ""
 
 #: lib/problems.c:43

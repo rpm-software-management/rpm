@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.49 2000/06/01 04:47:44 jbj Exp $
+# $Id: sl.po,v 1.50 2000/06/01 05:36:19 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-01 00:32-0400\n"
+"POT-Creation-Date: 2000-06-01 01:32-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3069,6 +3069,86 @@ msgstr "preglasujemo strojno okolje ciljnega sistema"
 msgid "lookup I18N strings in specfile catalog"
 msgstr "upo¹tevamo internacionalizirana sporoèila v katalogu spec"
 
+#: lib/poptQV.c:62
+msgid "query package owning file"
+msgstr "poizvedba po paketu, ki vsebuje datoteko"
+
+#: lib/poptQV.c:64
+msgid "query packages in group"
+msgstr "poizvedba po paketu v skupini"
+
+#: lib/poptQV.c:66
+msgid "query a package file"
+msgstr "poizvedba po paketu"
+
+#: lib/poptQV.c:68
+#, fuzzy
+msgid "rpm query mode"
+msgstr "poizvedbeni naèin"
+
+#: lib/poptQV.c:72
+msgid "display known query tags"
+msgstr ""
+
+#: lib/poptQV.c:74
+msgid "query a spec file"
+msgstr "poizvedba po datoteki spec"
+
+#: lib/poptQV.c:76
+msgid "query the pacakges triggered by the package"
+msgstr "poizvedba po paketih, ki jih spro¾i paket"
+
+#: lib/poptQV.c:78
+#, fuzzy
+msgid "rpm verify mode"
+msgstr "poizvedbeni naèin"
+
+#: lib/poptQV.c:80
+#, fuzzy
+msgid "rpm verify mode (legacy)"
+msgstr "poizvedbeni naèin"
+
+#: lib/poptQV.c:82
+msgid "query the packages which require a capability"
+msgstr "poizvedba po paketih, ki zahtevajo zmo¾nost"
+
+#: lib/poptQV.c:84
+msgid "query the packages which provide a capability"
+msgstr "poizvedba po paketih, ki nudijo zmo¾nost"
+
+#: lib/poptQV.c:124
+msgid "list all configuration files"
+msgstr "seznam vseh nastavitvenih datotek"
+
+#: lib/poptQV.c:126
+msgid "list all documentation files"
+msgstr "seznam vseh dokumentacijskih datotek"
+
+#: lib/poptQV.c:128
+msgid "dump basic file information"
+msgstr "iznos osnovnih podatkov o datoteki"
+
+#: lib/poptQV.c:130
+msgid "list files in package"
+msgstr "seznam datotek v paketu"
+
+#: lib/poptQV.c:134
+msgid "use the following query format"
+msgstr "uporabi naslednjo obliko poizvedbe"
+
+#: lib/poptQV.c:136
+#, fuzzy
+msgid "substitute i18n sections into spec file"
+msgstr "zamenjamo razdelje I18N z naslednjim katalogom"
+
+#: lib/poptQV.c:138
+msgid "display the states of the listed files"
+msgstr "izpis stanja seznama datotek"
+
+#: lib/poptQV.c:140
+msgid "display a verbose file listing"
+msgstr "izpis ob¹irnega seznama datotek"
+
 #: lib/problems.c:43
 #, c-format
 msgid " is needed by %s-%s-%s\n"
@@ -4011,60 +4091,6 @@ msgstr "manjka     %s\n"
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
-
-#~ msgid "query package owning file"
-#~ msgstr "poizvedba po paketu, ki vsebuje datoteko"
-
-#~ msgid "query packages in group"
-#~ msgstr "poizvedba po paketu v skupini"
-
-#~ msgid "query a package file"
-#~ msgstr "poizvedba po paketu"
-
-#, fuzzy
-#~ msgid "rpm query mode"
-#~ msgstr "poizvedbeni naèin"
-
-#~ msgid "query a spec file"
-#~ msgstr "poizvedba po datoteki spec"
-
-#~ msgid "query the pacakges triggered by the package"
-#~ msgstr "poizvedba po paketih, ki jih spro¾i paket"
-
-#, fuzzy
-#~ msgid "rpm verify mode"
-#~ msgstr "poizvedbeni naèin"
-
-#~ msgid "query the packages which require a capability"
-#~ msgstr "poizvedba po paketih, ki zahtevajo zmo¾nost"
-
-#~ msgid "query the packages which provide a capability"
-#~ msgstr "poizvedba po paketih, ki nudijo zmo¾nost"
-
-#~ msgid "list all configuration files"
-#~ msgstr "seznam vseh nastavitvenih datotek"
-
-#~ msgid "list all documentation files"
-#~ msgstr "seznam vseh dokumentacijskih datotek"
-
-#~ msgid "dump basic file information"
-#~ msgstr "iznos osnovnih podatkov o datoteki"
-
-#~ msgid "list files in package"
-#~ msgstr "seznam datotek v paketu"
-
-#~ msgid "use the following query format"
-#~ msgstr "uporabi naslednjo obliko poizvedbe"
-
-#, fuzzy
-#~ msgid "substitute i18n sections into spec file"
-#~ msgstr "zamenjamo razdelje I18N z naslednjim katalogom"
-
-#~ msgid "display the states of the listed files"
-#~ msgstr "izpis stanja seznama datotek"
-
-#~ msgid "display a verbose file listing"
-#~ msgstr "izpis ob¹irnega seznama datotek"
 
 #~ msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 #~ msgstr "--buildarch je opu¹èena izbira. Uporabite namesto nje --target.\n"

@@ -38,7 +38,7 @@ struct rpmBuildArguments         rpmBTArgs;
 #define	POPT_TP			0x7470
 #define	POPT_TS			0x7473
 
-extern int noLang;
+int noLang = 0;
 static int noBuild = 0;
 static int useCatalog = 0;
 

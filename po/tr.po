@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-01 00:32-0400\n"
+"POT-Creation-Date: 2000-06-01 01:32-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3145,6 +3145,100 @@ msgstr ""
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
+#: lib/poptQV.c:62
+#, fuzzy
+msgid "query package owning file"
+msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
+
+#: lib/poptQV.c:64
+#, fuzzy
+msgid "query packages in group"
+msgstr "pakedin adý yok :-)"
+
+#: lib/poptQV.c:66
+#, fuzzy
+msgid "query a package file"
+msgstr "Tüm paketleri sorgulama"
+
+#: lib/poptQV.c:68
+#, fuzzy
+msgid "rpm query mode"
+msgstr "Sorgulama kipi"
+
+#: lib/poptQV.c:72
+msgid "display known query tags"
+msgstr ""
+
+#: lib/poptQV.c:74
+#, fuzzy
+msgid "query a spec file"
+msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
+
+#: lib/poptQV.c:76
+#, fuzzy
+msgid "query the pacakges triggered by the package"
+msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
+
+#: lib/poptQV.c:78
+#, fuzzy
+msgid "rpm verify mode"
+msgstr "Sorgulama kipi"
+
+#: lib/poptQV.c:80
+#, fuzzy
+msgid "rpm verify mode (legacy)"
+msgstr "Sorgulama kipi"
+
+#: lib/poptQV.c:82
+#, fuzzy
+msgid "query the packages which require a capability"
+msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
+
+#: lib/poptQV.c:84
+#, fuzzy
+msgid "query the packages which provide a capability"
+msgstr "<i> yeteneði olan paketleri sorgulama"
+
+#: lib/poptQV.c:124
+#, fuzzy
+msgid "list all configuration files"
+msgstr ""
+"sadece yapýlandýrma (configuration) dosyalarýný gösterir (impliziert -l)"
+
+#: lib/poptQV.c:126
+#, fuzzy
+msgid "list all documentation files"
+msgstr "paket ile gelen belgeleri de yükler"
+
+#: lib/poptQV.c:128
+#, fuzzy
+msgid "dump basic file information"
+msgstr "Paket bilgisini gösterme"
+
+#: lib/poptQV.c:130
+#, fuzzy
+msgid "list files in package"
+msgstr "paket yüklemek"
+
+#: lib/poptQV.c:134
+#, fuzzy
+msgid "use the following query format"
+msgstr "beklenmeyen sorgulama kaynaðý girildi"
+
+#: lib/poptQV.c:136
+#, fuzzy
+msgid "substitute i18n sections into spec file"
+msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
+
+#: lib/poptQV.c:138
+msgid "display the states of the listed files"
+msgstr ""
+
+#: lib/poptQV.c:140
+#, fuzzy
+msgid "display a verbose file listing"
+msgstr "Paketin içerdiði dosyalarý gösterme"
+
 #: lib/problems.c:43
 #, c-format
 msgid " is needed by %s-%s-%s\n"
@@ -4111,67 +4205,6 @@ msgstr "% den sonra eksik {"
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "
-
-#, fuzzy
-#~ msgid "query package owning file"
-#~ msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
-
-#, fuzzy
-#~ msgid "query packages in group"
-#~ msgstr "pakedin adý yok :-)"
-
-#, fuzzy
-#~ msgid "query a package file"
-#~ msgstr "Tüm paketleri sorgulama"
-
-#, fuzzy
-#~ msgid "rpm query mode"
-#~ msgstr "Sorgulama kipi"
-
-#, fuzzy
-#~ msgid "query a spec file"
-#~ msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
-
-#, fuzzy
-#~ msgid "query the pacakges triggered by the package"
-#~ msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
-
-#, fuzzy
-#~ msgid "rpm verify mode"
-#~ msgstr "Sorgulama kipi"
-
-#, fuzzy
-#~ msgid "query the packages which require a capability"
-#~ msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
-
-#, fuzzy
-#~ msgid "query the packages which provide a capability"
-#~ msgstr "<i> yeteneði olan paketleri sorgulama"
-
-#, fuzzy
-#~ msgid "list all configuration files"
-#~ msgstr ""
-#~ "sadece yapýlandýrma (configuration) dosyalarýný gösterir (impliziert -l)"
-
-#, fuzzy
-#~ msgid "list all documentation files"
-#~ msgstr "paket ile gelen belgeleri de yükler"
-
-#, fuzzy
-#~ msgid "dump basic file information"
-#~ msgstr "Paket bilgisini gösterme"
-
-#, fuzzy
-#~ msgid "list files in package"
-#~ msgstr "paket yüklemek"
-
-#, fuzzy
-#~ msgid "substitute i18n sections into spec file"
-#~ msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
-
-#, fuzzy
-#~ msgid "display a verbose file listing"
-#~ msgstr "Paketin içerdiði dosyalarý gösterme"
 
 #, fuzzy
 #~ msgid "override build architecture"

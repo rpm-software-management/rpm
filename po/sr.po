@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-06-01 00:32-0400\n"
+"POT-Creation-Date: 2000-06-01 01:32-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -3093,6 +3093,99 @@ msgstr ""
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
+#: lib/poptQV.c:62
+#, fuzzy
+msgid "query package owning file"
+msgstr "upit nad paketom koji ima <datoteku>"
+
+#: lib/poptQV.c:64
+#, fuzzy
+msgid "query packages in group"
+msgstr "paket nema imena"
+
+#: lib/poptQV.c:66
+#, fuzzy
+msgid "query a package file"
+msgstr "upit nad svim paketima"
+
+#: lib/poptQV.c:68
+#, fuzzy
+msgid "rpm query mode"
+msgstr "re¾im upita"
+
+#: lib/poptQV.c:72
+msgid "display known query tags"
+msgstr ""
+
+#: lib/poptQV.c:74
+#, fuzzy
+msgid "query a spec file"
+msgstr "upit nad %s neuspeo\n"
+
+#: lib/poptQV.c:76
+#, fuzzy
+msgid "query the pacakges triggered by the package"
+msgstr "upit nad paketom koji ima <datoteku>"
+
+#: lib/poptQV.c:78
+#, fuzzy
+msgid "rpm verify mode"
+msgstr "re¾im upita"
+
+#: lib/poptQV.c:80
+#, fuzzy
+msgid "rpm verify mode (legacy)"
+msgstr "re¾im upita"
+
+#: lib/poptQV.c:82
+#, fuzzy
+msgid "query the packages which require a capability"
+msgstr "upit za pakete koji zahtevaju <i> svojstvo"
+
+#: lib/poptQV.c:84
+#, fuzzy
+msgid "query the packages which provide a capability"
+msgstr "upit za pakete koji omoguæavaju <i> svojstvo"
+
+#: lib/poptQV.c:124
+#, fuzzy
+msgid "list all configuration files"
+msgstr "prika¾i samo konfiguracione datoteke (povlaèi -i)"
+
+#: lib/poptQV.c:126
+#, fuzzy
+msgid "list all documentation files"
+msgstr "instaliraj dokumentaciju"
+
+#: lib/poptQV.c:128
+#, fuzzy
+msgid "dump basic file information"
+msgstr "prika¾i informacije o paketu"
+
+#: lib/poptQV.c:130
+#, fuzzy
+msgid "list files in package"
+msgstr "instaliraj paket"
+
+#: lib/poptQV.c:134
+#, fuzzy
+msgid "use the following query format"
+msgstr "neoèekivan izvor upita"
+
+#: lib/poptQV.c:136
+#, fuzzy
+msgid "substitute i18n sections into spec file"
+msgstr "upit nad paketom koji ima <datoteku>"
+
+#: lib/poptQV.c:138
+msgid "display the states of the listed files"
+msgstr ""
+
+#: lib/poptQV.c:140
+#, fuzzy
+msgid "display a verbose file listing"
+msgstr "prika¾i listu datoteka u paketu"
+
 #: lib/problems.c:43
 #, c-format
 msgid " is needed by %s-%s-%s\n"
@@ -4058,66 +4151,6 @@ msgstr "nedostaje { posle %"
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nezadovoljene meðuzavisnosti za %s-%s-%s: "
-
-#, fuzzy
-#~ msgid "query package owning file"
-#~ msgstr "upit nad paketom koji ima <datoteku>"
-
-#, fuzzy
-#~ msgid "query packages in group"
-#~ msgstr "paket nema imena"
-
-#, fuzzy
-#~ msgid "query a package file"
-#~ msgstr "upit nad svim paketima"
-
-#, fuzzy
-#~ msgid "rpm query mode"
-#~ msgstr "re¾im upita"
-
-#, fuzzy
-#~ msgid "query a spec file"
-#~ msgstr "upit nad %s neuspeo\n"
-
-#, fuzzy
-#~ msgid "query the pacakges triggered by the package"
-#~ msgstr "upit nad paketom koji ima <datoteku>"
-
-#, fuzzy
-#~ msgid "rpm verify mode"
-#~ msgstr "re¾im upita"
-
-#, fuzzy
-#~ msgid "query the packages which require a capability"
-#~ msgstr "upit za pakete koji zahtevaju <i> svojstvo"
-
-#, fuzzy
-#~ msgid "query the packages which provide a capability"
-#~ msgstr "upit za pakete koji omoguæavaju <i> svojstvo"
-
-#, fuzzy
-#~ msgid "list all configuration files"
-#~ msgstr "prika¾i samo konfiguracione datoteke (povlaèi -i)"
-
-#, fuzzy
-#~ msgid "list all documentation files"
-#~ msgstr "instaliraj dokumentaciju"
-
-#, fuzzy
-#~ msgid "dump basic file information"
-#~ msgstr "prika¾i informacije o paketu"
-
-#, fuzzy
-#~ msgid "list files in package"
-#~ msgstr "instaliraj paket"
-
-#, fuzzy
-#~ msgid "substitute i18n sections into spec file"
-#~ msgstr "upit nad paketom koji ima <datoteku>"
-
-#, fuzzy
-#~ msgid "display a verbose file listing"
-#~ msgstr "prika¾i listu datoteka u paketu"
 
 #, fuzzy
 #~ msgid "override build architecture"

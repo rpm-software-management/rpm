@@ -338,7 +338,7 @@ void closeSpec(Spec spec)
     }
 }
 
-int noLang = 0;		/* XXX FIXME: pass as arg */
+extern int noLang;		/* XXX FIXME: pass as arg */
 
 /** */
 int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
