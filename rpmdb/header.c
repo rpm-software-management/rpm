@@ -2263,6 +2263,123 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
 }
 
 /**
+ * Header tag iterator data structure.
+ */
+struct headerIterator_s {
+/*@unused@*/
+    Header h;		/*!< Header being iterated. */
+/*@unused@*/
+    int next_index;	/*!< Next tag index. */
+};
+
+/** \ingroup header
+ * Destroy header tag iterator.
+ * @param hi		header tag iterator
+ * @return		NULL always
+ */
+static /*@null@*/
+HeaderIterator headerFreeIterator(/*@only@*/ HeaderIterator hi)
+	/*@modifies hi @*/
+{
+    if (hi != NULL) {
+	hi->h = headerFree(hi->h);
+	hi = _free(hi);
+    }
+    return hi;
+}
+
+/** \ingroup header
+ * Create header tag iterator.
+ * @param h		header
+ * @return		header tag iterator
+ */
+static
+HeaderIterator headerInitIterator(Header h)
+	/*@modifies h */
+{
+    HeaderIterator hi = xmalloc(sizeof(*hi));
+
+    headerSort(h);
+
+    hi->h = headerLink(h);
+    hi->next_index = 0;
+    return hi;
+}
+
+/** \ingroup header
+ * Return next tag from header.
+ * @param hi		header tag iterator
+ * @retval *tag		tag
+ * @retval *type	tag value data type
+ * @retval *p		pointer to tag value(s)
+ * @retval *c		number of values
+ * @return		1 on success, 0 on failure
+ */
+static
+int headerNextIterator(HeaderIterator hi,
+		/*@null@*/ /*@out@*/ hTAG_t tag,
+		/*@null@*/ /*@out@*/ hTYP_t type,
+		/*@null@*/ /*@out@*/ hPTR_t * p,
+		/*@null@*/ /*@out@*/ hCNT_t c)
+	/*@modifies hi, *tag, *type, *p, *c @*/
+	/*@requires maxSet(tag) >= 0 /\ maxSet(type) >= 0
+		/\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
+{
+    Header h = hi->h;
+    int slot = hi->next_index;
+    indexEntry entry = NULL;
+    int rc;
+
+    for (slot = hi->next_index; slot < h->indexUsed; slot++) {
+	entry = h->index + slot;
+	if (!ENTRY_IS_REGION(entry))
+	    break;
+    }
+    hi->next_index = slot;
+    if (entry == NULL || slot >= h->indexUsed)
+	return 0;
+
+    /*@-noeffect@*/	/* LCL: no clue */
+    hi->next_index++;
+    /*@=noeffect@*/
+
+    if (tag)
+	*tag = entry->info.tag;
+
+    rc = copyEntry(entry, type, p, c, 0);
+
+    /* XXX 1 on success */
+    return ((rc == 1) ? 1 : 0);
+}
+
+/** \ingroup header
+ * Duplicate a header.
+ * @param h		header
+ * @return		new header instance
+ */
+static /*@null@*/
+Header headerCopy(Header h)
+	/*@modifies h @*/
+{
+    Header nh = headerNew();
+    HeaderIterator hi;
+    int_32 tag, type, count;
+    hPTR_t ptr;
+   
+    /*@-branchstate@*/
+    for (hi = headerInitIterator(h);
+	headerNextIterator(hi, &tag, &type, &ptr, &count);
+	ptr = headerFreeData((void *)ptr, type))
+    {
+	if (ptr) (void) headerAddEntry(nh, tag, type, ptr, count);
+    }
+    hi = headerFreeIterator(hi);
+    /*@=branchstate@*/
+
+    return headerReload(nh, HEADER_IMAGE);
+}
+
+/**
  */
 typedef struct headerSprintfArgs_s {
     Header h;
@@ -2273,14 +2390,81 @@ typedef struct headerSprintfArgs_s {
     headerSprintfExtension exts;
 /*@observer@*/ /*@null@*/
     const char * errmsg;
-    sprintfToken format;
-    int numTokens;
     rpmec ec;
+    sprintfToken format;
+    HeaderIterator hi;
 /*@owned@*/
     char * val;
     size_t vallen;
     size_t alloced;
+    int numTokens;
+    int i;
 } * headerSprintfArgs;
+
+/**
+ * Initialize an hsa iteration.
+ * @param hsa		headerSprintf args
+ * @return		headerSprintf args
+ */
+static headerSprintfArgs hsaInit(/*@returned@*/ headerSprintfArgs hsa)
+	/*@modifies hsa */
+{
+    if (hsa != NULL) {
+	hsa->i = 0;
+    }
+    return hsa;
+}
+
+/**
+ * Return next hsa iteration item.
+ * @param hsa		headerSprintf args
+ * @return		next sprintfToken (or NULL)
+ */
+/*@null@*/
+static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
+	/*@modifies hsa */
+{
+    sprintfToken fmt = NULL;
+
+    if (hsa != NULL && hsa->i >= 0 && hsa->i < hsa->numTokens) {
+	fmt = hsa->format + hsa->i++;
+    }
+    return fmt;
+}
+
+/**
+ * Finish an hsa iteration.
+ * @param hsa		headerSprintf args
+ * @return		headerSprintf args
+ */
+static headerSprintfArgs hsaFini(/*@returned@*/ headerSprintfArgs hsa)
+	/*@modifies hsa */
+{
+    if (hsa != NULL) {
+	hsa->hi = headerFreeIterator(hsa->hi);
+	hsa->i = 0;
+    }
+    return hsa;
+}
+
+/**
+ * Reserve sufficient buffer space for next output value.
+ * @param hsa		headerSprintf args
+ * @param need		no. of bytes to reserve
+ * @return		pointer to reserved space
+ */
+/*@dependent@*/ /*@exposed@*/
+static char * hsaReserve(headerSprintfArgs hsa, size_t need)
+	/*@modifies hsa */
+{
+    if ((hsa->vallen + need) >= hsa->alloced) {
+	if (hsa->alloced <= need)
+	    hsa->alloced += need;
+	hsa->alloced <<= 1;
+	hsa->val = xrealloc(hsa->val, hsa->alloced+1);	
+    }
+    return hsa->val + hsa->vallen;
+}
 
 /**
  * @param hsa		headerSprintf args
@@ -2763,25 +2947,6 @@ static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
 }
 
 /**
- * Reserve sufficient buffer space for next output value.
- * @param hsa		headerSprintf args
- * @param need		no. of bytes to reserve
- * @return		pointer to reserved space
- */
-/*@dependent@*/ /*@exposed@*/
-static char * hsaReserve(headerSprintfArgs hsa, size_t need)
-	/*@modifies hsa */
-{
-    if ((hsa->vallen + need) >= hsa->alloced) {
-	if (hsa->alloced <= need)
-	    hsa->alloced += need;
-	hsa->alloced <<= 1;
-	hsa->val = xrealloc(hsa->val, hsa->alloced+1);	
-    }
-    return hsa->val + hsa->vallen;
-}
-
-/**
  * @param hsa		headerSprintf args
  * @param tag
  * @param element
@@ -3193,8 +3358,8 @@ char * headerSprintf(Header h, const char * fmt,
 	/*@requires maxSet(errmsg) >= 0 @*/
 {
     headerSprintfArgs hsa = memset(alloca(sizeof(*hsa)), 0, sizeof(*hsa));
+    sprintfToken nextfmt;
     char * te;
-    int i;
  
     hsa->h = headerLink(h);
     hsa->fmt = xstrdup(fmt);
@@ -3210,19 +3375,17 @@ char * headerSprintf(Header h, const char * fmt,
 /*@=boundswrite@*/
 
     hsa->ec = rpmecNew(hsa->exts);
-
     hsa->val = xstrdup("");
-    for (i = 0; i < hsa->numTokens; i++) {
-/*@-boundswrite@*/
-	/*@-mods@*/
-	te = singleSprintf(hsa, hsa->format + i, 0);
-	/*@=mods@*/
+
+    hsa = hsaInit(hsa);
+    while ((nextfmt = hsaNext(hsa)) != NULL) {
+	te = singleSprintf(hsa, nextfmt, 0);
 	if (te == NULL) {
 	    hsa->val = _free(hsa->val);
 	    break;
 	}
-/*@=boundswrite@*/
     }
+    hsa = hsaFini(hsa);
 
     if (hsa->val != NULL && hsa->vallen < hsa->alloced)
 	hsa->val = xrealloc(hsa->val, hsa->vallen+1);	
@@ -3457,121 +3620,6 @@ void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 	(void) headerAddEntry(headerTo, *p, type, s, count);
 	s = headerFreeData(s, type);
     }
-}
-
-/**
- * Header tag iterator data structure.
- */
-struct headerIterator_s {
-/*@unused@*/
-    Header h;		/*!< Header being iterated. */
-/*@unused@*/
-    int next_index;	/*!< Next tag index. */
-};
-
-/** \ingroup header
- * Destroy header tag iterator.
- * @param hi		header tag iterator
- * @return		NULL always
- */
-static /*@null@*/
-HeaderIterator headerFreeIterator(/*@only@*/ HeaderIterator hi)
-	/*@modifies hi @*/
-{
-    hi->h = headerFree(hi->h);
-    hi = _free(hi);
-    return hi;
-}
-
-/** \ingroup header
- * Create header tag iterator.
- * @param h		header
- * @return		header tag iterator
- */
-static
-HeaderIterator headerInitIterator(Header h)
-	/*@modifies h */
-{
-    HeaderIterator hi = xmalloc(sizeof(*hi));
-
-    headerSort(h);
-
-    hi->h = headerLink(h);
-    hi->next_index = 0;
-    return hi;
-}
-
-/** \ingroup header
- * Return next tag from header.
- * @param hi		header tag iterator
- * @retval *tag		tag
- * @retval *type	tag value data type
- * @retval *p		pointer to tag value(s)
- * @retval *c		number of values
- * @return		1 on success, 0 on failure
- */
-static
-int headerNextIterator(HeaderIterator hi,
-		/*@null@*/ /*@out@*/ hTAG_t tag,
-		/*@null@*/ /*@out@*/ hTYP_t type,
-		/*@null@*/ /*@out@*/ hPTR_t * p,
-		/*@null@*/ /*@out@*/ hCNT_t c)
-	/*@modifies hi, *tag, *type, *p, *c @*/
-	/*@requires maxSet(tag) >= 0 /\ maxSet(type) >= 0
-		/\ maxSet(p) >= 0 /\ maxSet(c) >= 0 @*/
-{
-    Header h = hi->h;
-    int slot = hi->next_index;
-    indexEntry entry = NULL;
-    int rc;
-
-    for (slot = hi->next_index; slot < h->indexUsed; slot++) {
-	entry = h->index + slot;
-	if (!ENTRY_IS_REGION(entry))
-	    break;
-    }
-    hi->next_index = slot;
-    if (entry == NULL || slot >= h->indexUsed)
-	return 0;
-
-    /*@-noeffect@*/	/* LCL: no clue */
-    hi->next_index++;
-    /*@=noeffect@*/
-
-    if (tag)
-	*tag = entry->info.tag;
-
-    rc = copyEntry(entry, type, p, c, 0);
-
-    /* XXX 1 on success */
-    return ((rc == 1) ? 1 : 0);
-}
-
-/** \ingroup header
- * Duplicate a header.
- * @param h		header
- * @return		new header instance
- */
-static /*@null@*/
-Header headerCopy(Header h)
-	/*@modifies h @*/
-{
-    Header nh = headerNew();
-    HeaderIterator hi;
-    int_32 tag, type, count;
-    hPTR_t ptr;
-   
-    /*@-branchstate@*/
-    for (hi = headerInitIterator(h);
-	headerNextIterator(hi, &tag, &type, &ptr, &count);
-	ptr = headerFreeData((void *)ptr, type))
-    {
-	if (ptr) (void) headerAddEntry(nh, tag, type, ptr, count);
-    }
-    hi = headerFreeIterator(hi);
-    /*@=branchstate@*/
-
-    return headerReload(nh, HEADER_IMAGE);
 }
 
 /*@observer@*/ /*@unchecked@*/
