@@ -1,7 +1,7 @@
 #! /usr/bin/ksh
 
-# Original Author: Tim Mooney (mooney@plains.nodak.edu)
-# $Id: irix6.prov,v 1.5 1999/09/30 00:22:15 jbj Exp $
+# Original Author: Tim Mooney <mooney@golem.phys.ndsu.NoDak.edu>
+# $Id: irix6.prov,v 1.6 2000/12/02 16:52:14 jbj Exp $
 #
 # This file is distributed under the terms of the GNU Public License
 #
@@ -9,13 +9,11 @@
 # reads a list of full pathnames (in a package) on stdin, and outputs all
 # shared libraries provided by (contained in) the package.
 #
-# NOTE: I use `:' as the delimiter (by default) between the library soname
-# and any library version info.  This is because IRIX libraries (even
-# system libraries) have "version information" in both the soname and the
-# internal version field, so it's important to be able to separate those
-# fields.  If we just used `.', we wouldn't know where the soname ends and
-# the version infromation begins.
-#
+# NOTE: IRIX libraries (even system libraries) have "version information"
+# in both the soname and the internal version field, so it's important to
+# be able to separate the soname and internal version fields.  As has
+# become the case on other platforms, the soname/iversion delimiters have
+# become the `(' and `)' characters.
 #
 # On IRIX, use `elfdump -L' to find what libraries a package provides
 #
@@ -69,6 +67,14 @@ PATH=/usr/bin:/usr/sbin
 export PATH
 
 #
+# TVM: Marc Stephenson (marc@austin.ibm.com) points out we run things
+# like `file', et. al. and expect the output to be what we see in the
+# C/POSIX locale.  Make sure it is so.
+#
+LANG=C
+export LANG
+
+#
 # Use `while read ...' instead of `for f in ...', because there may be too
 # many files to stuff into one shell variable.
 #
@@ -82,16 +88,16 @@ do
 	if test X"$maybe_shared_lib" != X ; then
 		elfdump -L $f 2>/dev/null | awk '
 
+		#
+		# Since this entire awk script is enclosed in single quotes,
+		# you need to be careful to not use single quotes, even in awk
+		# comments, if you modify this script.
+		#
+
 		BEGIN { 
 			FS = " ";
 			RS = "\n";
 			OFS = "";
-
-			# The character that should separate the soname from
-			# the version information.  If you change this, you
-			# should also change the same variable in the IRIX
-			# find-requires script
-			soname_version_delimiter=":"
 
 			found_soname = 0;
 			found_iversion = 0;
@@ -127,7 +133,7 @@ do
 					numfields = split(version, versions, ":")
 					if (numfields > 1) {
 						for (i = 1; i < numfields; i++) {
-							print soname, soname_version_delimiter, versions[i]
+							print soname, "(", versions[i], ")"
 						}
 						#
 						# let our END routine print out the *last* version
@@ -176,7 +182,7 @@ do
 			# Uncomment the next line for debugging info
 			#{ print "END: NR: ", NR }
 			if ( (found_soname == 1) && (found_iversion == 1) ) {
-				print soname, soname_version_delimiter, version
+				print soname, "(", version, ")"
 				exit
 			} else if ( (found_soname == 1) && (found_iversion == 0) ) {
 				#
@@ -184,7 +190,7 @@ do
 				# against this library will pick up a dependency on version 0
 				# of this library, so we output that.
 				#
-				print soname, soname_version_delimiter, 0
+				print soname, "(", 0, ")"
 			}
 			# else do nothing
 		}

@@ -1,7 +1,7 @@
 #! /usr/bin/ksh
 
-# Original Author: Tim Mooney (mooney@plains.nodak.edu)
-# $Id: hpux.req,v 1.5 1999/09/30 00:22:15 jbj Exp $
+# Original Author: Tim Mooney <mooney@golem.phys.ndsu.NoDak.edu>
+# $Id: hpux.req,v 1.6 2000/12/02 16:52:14 jbj Exp $
 #
 # This file is distributed under the terms of the GNU Public License
 #
@@ -35,6 +35,14 @@
 
 PATH=/usr/bin:/usr/sbin:/sbin:/usr/ccs/bin
 export PATH
+
+#
+# TVM: Marc Stephenson (marc@austin.ibm.com) points out we run things
+# like `file', et. al. and expect the output to be what we see in the
+# C/POSIX locale.  Make sure it is so.
+#
+LANG=C
+export LANG
 
 IFS=""
 while read f

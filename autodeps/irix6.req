@@ -1,7 +1,7 @@
 #! /usr/bin/ksh
 
-# Original Author: Tim Mooney (mooney@plains.nodak.edu)
-# $Id: irix6.req,v 1.5 1999/09/30 00:22:15 jbj Exp $
+# Original Author: Tim Mooney <mooney@golem.phys.ndsu.NoDak.edu>
+# $Id: irix6.req,v 1.6 2000/12/02 16:52:14 jbj Exp $
 #
 # This file is distributed under the terms of the GNU Public License
 #
@@ -9,12 +9,11 @@
 # reads a list of full pathnames (in a package) on stdin, and outputs all
 # shared libraries the package requires to execute.
 #
-# NOTE: I use `:' as the delimiter (by default) between the library soname
-# and any library version info.  This is because IRIX libraries (even
-# system libraries) have "version information" in both the soname and the
-# internal version field, so it's important to be able to separate those
-# fields.  If we just used `.', we wouldn't know where the soname ends and
-# the version infromation begins.
+# NOTE: IRIX libraries (even system libraries) have "version information"
+# in both the soname and the internal version field, so it's important to
+# be able to separate the soname and internal version fields.  As has
+# become the case on other platforms, the soname/iversion delimiters have
+# become the `(' and `)' characters.
 #
 # On IRIX, use `elfdump -Dl' to find what libraries are required by
 # an executable.  `elfdump -L' does what we need too, but it gives us more
@@ -47,6 +46,14 @@
 
 PATH=/usr/bin:/usr/sbin
 export PATH
+
+#
+# TVM: Marc Stephenson (marc@austin.ibm.com) points out we run things
+# like `file', et. al. and expect the output to be what we see in the
+# C/POSIX locale.  Make sure it is so.
+#
+LANG=C
+export LANG
 
 #
 # TVM: switch to using `while read ...' instead of `for f in ...', because
@@ -99,8 +106,9 @@ do
 		| awk '
 
 		#
-		# For you non-awk-ers, no single quotes in comments -- the shell
-		# sees them and things get hosed.
+		# Since this entire awk script is enclosed in single quotes,
+		# you need to be careful to not use single quotes, even in awk
+		# comments, if you modify this script.
 		#
 
 		BEGIN { 
@@ -108,7 +116,6 @@ do
 			FS = " ";
 			RS = "\n";
 			OFS="";
-			soname_version_delimiter=":";
 		}
 
 		# uncomment the next line for debugging information
@@ -123,7 +130,7 @@ do
 				print fields[8]
 			} else if (numfields == 9) {
 				#
-				print fields[8], soname_version_delimiter, fields[9]
+				print fields[8], "(", fields[9], ")"
 			} else if (numfields > 9) {
 				#
 				# SGI has this annoying habit of putting comments, complete
@@ -133,9 +140,9 @@ do
 				#
 				verfields = split(fields[NF], junk, "#")
 				if (verfields == 2) {
-					print fields[8], soname_version_delimiter, junk[2]
+					print fields[8], "(", junk[2], ")"
 				} else if (verfields > 2) {
-					print fields[8], soname_version_delimiter, junk[verfields]
+					print fields[8], "(", junk[verfields], ")"
 				} else {
 					print "Cannot find version:", fields[numfields] | "cat 2>&1"
 				}

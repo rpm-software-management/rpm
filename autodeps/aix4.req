@@ -1,0 +1,99 @@
+#! /usr/bin/ksh
+#
+# Current Maintainer: Tim Mooney <mooney@golem.phys.ndsu.NoDak.edu>
+# Original Author: Ralph Goers(rgoer@Candle.Com)
+#
+# This file is distributed under the terms of the GNU Public License
+#
+# find-requires is part of RPM, the RedHat Package Manager.  find-requires
+# reads a list of full pathnames (in a package) on stdin, and outputs all
+# shared libraries the package requires to run correctly.
+#
+# On AIX, use `dump -H' to find the library dependencies for an executable
+#
+# Example dump output:
+#
+#$dump -H /usr/bin/dump
+#
+#/usr/bin/dump:
+#
+#                        ***Loader Section***
+#                      Loader Header Information
+#VERSION#         #SYMtableENT     #RELOCent        LENidSTR
+#0x00000001       0x00000021       0x0000006c       0x0000002f
+#
+##IMPfilID        OFFidSTR         LENstrTBL        OFFstrTBL
+#0x00000002       0x00000848       0x00000049       0x00000877
+#
+#
+#                        ***Import File Strings***
+#INDEX  PATH                          BASE                MEMBER
+#0      /usr/lib:/lib:/usr/lpp/xlC/lib
+#1                                    libc.a              shr.o
+#
+#
+
+PATH=/usr/bin:/usr/ccs/bin
+export PATH
+
+#
+# TVM: Marc Stephenson (marc@austin.ibm.com) points out we run things
+# like `file', et. al. and expect the output to be what we see in the
+# C/POSIX locale.  Make sure it is so.
+#
+LANG=C
+export LANG
+
+filelist=`sed "s/['\"]/\\\&/g" | xargs file \
+	| egrep '^.*:.*(executable |archive )' | cut -d: -f1`
+
+for f in $filelist
+do
+    dump -H $f 2>/dev/null | awk '
+
+		#
+		# Since this entire awk script is enclosed in single quotes,
+		# you need to be careful to not use single quotes, even in awk
+		# comments, if you modify this script.
+		#
+
+        BEGIN {
+            in_shlib_list = 0;
+            in_file_strings = 0;
+            FS = " ";
+            RS = "\n";
+        }
+
+        in_shlib_list == 1 && /^$/ {
+            in_shlib_list = 0;
+            in_file_strings = 0;
+        }
+
+        in_shlib_list == 1 {
+            pos = index($2, "/")
+            numfields = split($0, fields, " ")
+
+            if (pos == 0)  {
+              namevar = 2
+            }
+            else {
+              namevar = 3
+            }
+            if (namevar < numfields) {
+              printf("%s(%s)\n", fields[namevar], fields[namevar+1])
+            }
+            else {
+              print fields[namevar]
+            }
+        }
+
+        in_file_strings == 1 && $1 == "0" {
+            in_shlib_list = 1
+        }
+
+        /\*Import File Strings\*/ {
+            in_file_strings = 1
+        }
+
+    ' # end of awk
+done | sort -u

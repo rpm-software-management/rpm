@@ -35,6 +35,8 @@
 	- hpux w/o -D_OPEN_SOURCE has not h_errno.
 	- syntax to specify source of Requires: (PreReq: now legacy).
 	- md5 sums are little endian (no swap) so big endian needs the swap.
+	- improved find-{requires,provides} for aix4/hpux/irix6/osf.
+		Tim Mooney<mooney@dogbert.cc.ndsu.NoDak.edu>
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

@@ -1,7 +1,7 @@
 #! /usr/bin/ksh
 
-# Original Author: Tim Mooney (mooney@plains.nodak.edu)
-# $Id: osf.prov,v 1.4 1999/08/21 23:23:12 mooney Exp $
+# Original Author: Tim Mooney <mooney@golem.phys.ndsu.NoDak.edu>
+# $Id: osf.prov,v 1.7 2000/10/31 20:47:23 mooney Exp $
 #
 # This file is distributed under the terms of the GNU Public License
 #
@@ -10,8 +10,10 @@
 # shared libraries provided by (contained in) the package.
 #
 #
-# On Digital Unix (OSF1), use `odump -D' to find what libraries a package
-# provides
+# On Digital/Tru64 Unix (OSF1), use `odump -D' to find what libraries a
+# package provides.  Note that Tru64 Unix 5.x and later come with `ldd',
+# but sticking with `odump' works with versions of the OS back to at least
+# 3.x, so it's the preferred method.
 #
 # Example `odump -D' output:
 #
@@ -59,6 +61,14 @@ PATH=/usr/bin:/usr/sbin:/sbin:/usr/ccs/bin
 export PATH
 
 #
+# TVM: Marc Stephenson (marc@austin.ibm.com) points out we run things
+# like `file', et. al. and expect the output to be what we see in the
+# C/POSIX locale.  Make sure it is so.
+#
+LANG=C
+export LANG
+
+#
 # Use `while read ...' instead of a `for f in ...', because there may
 # be too many files to stuff into one shell variable.
 #
@@ -81,17 +91,6 @@ do
 				found_soname = 0;
 				found_iversion = 0;
 
-				#
-				# what character should be used to separate the soname from any
-				# version info?  Using a . is actually a bad idea, since some
-				# free/3rd party libraries may be built so that the library
-				# soname may have version info in it too.  If we use . as the
-				# separator, it may not be possible to tell where the soname
-				# ends and the internal version info begins.  It might be
-				# better to use a - or a : here.  If you do so, be sure to
-				# change this setting in find-requires, too.
-				#
-				soname_version_delimiter=".";
 			}
 
 			# Uncomment the next line for some debugging info.
@@ -108,7 +107,7 @@ do
 					# possibly in addition to the versioning info in the
 					# versions field) and generate a warning here.  Shared
 					# libraries should not be built with version info in
-					# the soname on Digital Unix.
+					# the soname on Digital/Tru64 Unix.
 					#
 				} else {
 					#
@@ -132,7 +131,7 @@ do
 						numfields = split(version, versions, ":")
 						if (numfields > 1) {
 							for (i = 1; i < numfields; i++) {
-							print soname, soname_version_delimiter, versions[i]
+								print soname, "(", versions[i], ")"
 							}
 							#
 							# let our END routine print out the *last* version
@@ -172,7 +171,7 @@ do
 				# Uncomment the next line for debugging info
 				#{ print "END: NR: ", NR }
 				if ( (found_soname == 1) && (found_iversion == 1) ) {
-					print soname, soname_version_delimiter, version
+					print soname, "(", version, ")"
 					exit
 				} else if (found_soname == 1) {
 					#

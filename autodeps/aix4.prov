@@ -1,0 +1,189 @@
+#! /usr/bin/ksh
+
+# Current Maintainer: Tim Mooney <mooney@golem.phys.ndsu.NoDak.edu>
+#
+# Original Author: Ralph Goers(rgoer@Candle.Com)
+# Borrowed heavily from H10 version created by Tim Mooney.
+# This file is distributed under the terms of the GNU Public License
+#
+# find-provides is part of RPM, the RedHat Package Manager.  find-provides
+# reads a list of full pathnames (in a package) on stdin, and outputs all
+# shared libraries provided by (contained in) the package.
+#
+# On AIX, use `dump -o' to find what the library provides, if anything.
+#
+#
+# Ralph's comments:
+#
+# Executables are skipped because, by convention, shared libraries
+# which are not dynamically loaded are packaged as archives. Also,
+# it is impossible to tell the difference between an executable
+# program and a dynamically loaded shared library.
+#
+# Because archives can contain any number of things, including
+# apparently, multiple shared libraries, dependencies in archives
+# will be specified as file[member]. Any member in an archive which
+# has a loader section will be listed as provided.
+#
+# Tim's (subsequent) comments:
+#
+# Based on discussions on the rpm-list in mid-March of 2000, I've modified
+# the copy of find-provides that Ralph provided me to use `dump -o' instead
+# of `dump -H', and I've followed Brandon S. Allbery's suggestions and modified
+# the awk script to look for a modtype of `RE', which is what constitutes a
+# shared member of a library.  Just like everything else on AIX, libraries are
+# weird.  :-|
+#
+# I've followed Ralph's convention of generating provides in the form of
+# `filebasename(member-object)' *if* there is a member object, or just
+# `filebasename' if there isn't (such as in the case of certain perl modules,
+# locally built shared libraries, etc.).
+#
+# Example dump output:
+#
+#$dump -o /usr/lpp/X11/lib/R6/libX11.a
+#
+#/usr/lpp/X11/lib/R6/libX11.a[shr4.o]:
+#
+#			***Object Module Header***
+## Sections	Symbol Ptr	# Symbols	Opt Hdr Len	Flags
+#         4	0x00126c28	    14557	         72	0x3002
+#Timestamp = 920377624
+#Magic = 0x1df  
+#
+#			***Optional Header***
+#Tsize	     Dsize	 Bsize	     Tstart 	 Dstart
+#0x000bcc20  0x00024bd4  0x00000e0c  0x00000000  0x00000000
+#
+#SNloader     SNentry     SNtext	     SNtoc       SNdata
+#0x0004      0x0000      0x0001      0x0002      0x0002    
+#
+#TXTalign     DATAalign   TOC         vstamp      entry
+#0x0005      0x0003      0x00023d74  0x0001      0xffffffff
+#
+#maxSTACK     maxDATA     SNbss       magic       modtype
+#0x00000000  0x00000000  0x0003      0x010b        RE
+#
+#/usr/lpp/X11/lib/R6/libX11.a[shr4net.o]:
+#
+#			***Object Module Header***
+## Sections	Symbol Ptr	# Symbols	Opt Hdr Len	Flags
+#         7	0x000006fb	       22	         72	0x3002
+#Timestamp = 774732998
+#Magic = 0x1df  
+#
+#			***Optional Header***
+#Tsize	     Dsize	 Bsize	     Tstart 	 Dstart
+#0x00000084  0x00000088  0x00000000  0x00000200  0x00000000
+#
+#SNloader     SNentry     SNtext	     SNtoc       SNdata
+#0x0007      0x0000      0x0002      0x0004      0x0004    
+#
+#TXTalign     DATAalign   TOC         vstamp      entry
+#0x0002      0x0003      0x00000080  0x0001      0xffffffff
+#
+#maxSTACK     maxDATA     SNbss       magic       modtype
+#0x00000000  0x00000000  0x0005      0x010b        RE
+
+PATH=/usr/bin:/usr/ccs/bin
+export PATH
+
+#
+# TVM: Marc Stephenson (marc@austin.ibm.com) points out we run things
+# like `file', et. al. and expect the output to be what we see in the
+# C/POSIX locale.  Make sure it is so.
+#
+LANG=C
+export LANG
+
+#
+# TVM: Because AIX libraries don't have the equivalent of a SONAME, if you do
+#
+# ln -s /usr/lib/libc.a /tmp/libmy_libc_link.a
+#
+# and then link your program with `-L/tmp -lmy_libc_link', that's the name
+# that will be recorded as the BASE in the Import File Strings area.
+# This means we need to include "symbolic link" in the list of files to check
+# out.
+#
+filelist=`sed "s/['\"]/\\\&/g" | xargs file \
+	| egrep 'archive|executable|symbolic link' | cut -d: -f1`
+
+for f in $filelist
+do
+   #
+   # Uncomment the next line for some additional debugging info:
+   #echo "Checking $f"
+   dump -o $f 2>/dev/null | awk '
+
+        # TVM: be careful to not use any single quotes, even in comments,
+        # since this entire awk script is enclosed in single quotes.
+
+        BEGIN {
+                FS = " ";
+                RS = "\n";
+                # our flag to indicate we found a filename[membername] or
+                # filename.
+                found_file_or_member = 0
+                # our flag to indicate we found the modtype tag.  If so,
+                # we want to look for RE on the next line.
+                found_modtype = 0
+				#
+				# number of times gsub substituted, used twice below
+				nsub = 0
+        }
+
+        # Uncomment the next line for some debugging info.
+        # { print NR , ":", $0 }
+
+        found_modtype == 1 && found_file_or_member == 1 {
+
+          if ( $0 ~ / RE/ ) {
+            # we have seen a filename, we have seen a modtype line, and now
+            # we know that the modtype is RE.  Print out the member name.
+			#
+			# Note that member names generally look like foo[bar.o], and
+			# since the RPM standard has become to use parens, we will
+			# translate the [ and ] into ( and ) in the output stream.
+			# awk on AIX 4 has sub() and gsub(), so we can use them to do
+			# it.  If this script is adapted for use on some other platform
+			# make sure that awk on that platform has sub/gsub.  If not,
+			# you will need to postprocess the output stream (probably before
+			# the sort -u) with tr or sed.
+			nsub = gsub(/\[/, "(", member)
+			if ( nsub > 1 ) {
+				print "substituted too many times for [:", member | "cat 1>&2"
+			}
+			nsub = gsub(/\]/, ")", member)
+			if ( nsub > 1 ) {
+				print "substituted too many times for ]:", member | "cat 1>&2"
+			}
+            print member
+          }
+          # In any case, reset our flags to zero, to indicate we are done
+          # with this member, so we are ready to handle additional members
+          # if needed.
+          found_file_or_member = 0
+          found_modtype = 0
+        }
+
+        found_file_or_member == 1 && /magic *modtype/ {
+          # we have seen a filename, and now we have seen the modtype
+          # line.  Set the found_modtype flag.  The next line of input
+          # will be caught by the rule above, and we will print out
+          # the member if the modtype is RE.
+          found_modtype = 1
+        }
+
+        /:$/ {
+          numfields = split($0,fields, "/")
+          # chop off the trailing colon
+          fieldlen = length(fields[numfields])-1
+          member= substr(fields[numfields], 1, fieldlen)
+          # Set the flat to indicate we found a file or a file(member).
+          found_file_or_member = 1
+        }
+   ' # end of awk
+done | sort -u
+#comment out the previous line and uncomment the next line when debugging
+#done
