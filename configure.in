@@ -693,6 +693,9 @@ AC_ARG_WITH(glob, [  --with-glob             use the internal GNU glob ],
 
 if test $rpm_cv_glob = no ; then
     AC_MSG_CHECKING(for GNU extensions to glob)
+    mkdir t
+    mkdir t/p
+    touch t/p/foo.8
     AC_TRY_RUN([
 #include <unistd.h>
 #include <sys/stat.h>
@@ -700,9 +703,10 @@ if test $rpm_cv_glob = no ; then
 main() {
   glob_t gl ;
   gl.gl_stat = stat;
-  exit(glob("doc/*/*.8", GLOB_PERIOD, NULL, &gl) || gl.gl_pathc < 1);
+  exit(glob("t/*/*.8", GLOB_PERIOD, NULL, &gl) || gl.gl_pathc < 1);
 } ],
     rpm_cv_glob_ext=yes, rpm_cv_glob_ext=no, rpm_cv_glob_ext=no)
+    rm -r t
     AC_MSG_RESULT([$rpm_cv_glob_ext])
     if test $rpm_cv_glob_ext = no ; then
 	    echo "    --> using the included GNU glob instead." >&AC_FD_MSG

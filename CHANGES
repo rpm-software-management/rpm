@@ -63,8 +63,10 @@
 	- fix: permit '\0' as special case key (e.g. "/" in Basenames).
 
 3.0.4 -> 3.0.5
+	- handle version 4 packaging as input.
 	- builds against bzip2 1.0
 	- fix: resurrect symlink unique'ifying property of finger prints.
+	- fix: broken glob test with empty build directory (Geoff Keating).
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.
