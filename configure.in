@@ -284,7 +284,7 @@ if test $result = no; then
 	rm -f foo bar
     else
 	AC_MSG_CHECKING((cannot check by non-root user))
-	result=yes
+	result=no
     fi
 fi
 AC_MSG_RESULT($result)
