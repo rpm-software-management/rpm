@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-12-11 20:34-0500\n"
+"POT-Creation-Date: 1999-12-12 11:59-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: build.c:25 lib/rpminstall.c:247 lib/rpminstall.c:407
+#: build.c:25 lib/rpminstall.c:248 lib/rpminstall.c:422
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
@@ -1407,62 +1407,62 @@ msgstr ""
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1091
+#: build/files.c:1086
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1121
+#: build/files.c:1116
 #, c-format
 msgid "File not found by glob: %s"
 msgstr ""
 
-#: build/files.c:1212
+#: build/files.c:1207
 msgid "Could not open %%files file %s: %s"
 msgstr ""
 
-#: build/files.c:1219 build/pack.c:482
+#: build/files.c:1214 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1562 build/parsePrep.c:30
+#: build/files.c:1557 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1617
+#: build/files.c:1612
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr ""
 
-#: build/files.c:1622
+#: build/files.c:1617
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr ""
 
-#: build/files.c:1704
+#: build/files.c:1699
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: build/files.c:1708
+#: build/files.c:1703
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: build/files.c:1797
+#: build/files.c:1792
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1825 build/files.c:1834
+#: build/files.c:1820 build/files.c:1829
 #, c-format
 msgid "Failed to find %s:"
 msgstr ""
 
-#: build/files.c:1940
+#: build/files.c:1935
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -2548,11 +2548,11 @@ msgstr ""
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:490
+#: lib/query.c:489
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:499 lib/rpminstall.c:228
+#: lib/query.c:498 lib/rpminstall.c:229
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
@@ -2616,7 +2616,7 @@ msgstr ""
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:652 lib/rpminstall.c:418
+#: lib/query.c:652 lib/rpminstall.c:433
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2838,7 +2838,7 @@ msgstr ""
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:157 lib/url.c:447
+#: lib/rpmdb.c:157 lib/url.c:459
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr ""
@@ -2935,32 +2935,37 @@ msgstr ""
 msgid "header changed size!"
 msgstr ""
 
-#: lib/rpminstall.c:124
+#: lib/rpminstall.c:126
 msgid "counting packages to install\n"
 msgstr ""
 
-#: lib/rpminstall.c:128
+#: lib/rpminstall.c:130
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:137
+#: lib/rpminstall.c:135
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: lib/rpminstall.c:147
+#: lib/rpminstall.c:150
+#, c-format
+msgid "skipping %s - rpmGlob failed(%d)\n"
+msgstr ""
+
+#: lib/rpminstall.c:165
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:182
+#: lib/rpminstall.c:175
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:186
+#: lib/rpminstall.c:179
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
@@ -2970,12 +2975,12 @@ msgstr ""
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:215 lib/rpminstall.c:357
+#: lib/rpminstall.c:215 lib/rpminstall.c:358
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:232 lib/rpminstall.c:495
+#: lib/rpminstall.c:233 lib/rpminstall.c:510
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
@@ -2985,49 +2990,49 @@ msgstr ""
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: lib/rpminstall.c:286
+#: lib/rpminstall.c:287
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:291
+#: lib/rpminstall.c:292
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:308
+#: lib/rpminstall.c:309
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:319
+#: lib/rpminstall.c:320
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:337
+#: lib/rpminstall.c:338
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:422
+#: lib/rpminstall.c:437
 #, c-format
 msgid "searching for package %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:431
+#: lib/rpminstall.c:446
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:457
+#: lib/rpminstall.c:472
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:484
+#: lib/rpminstall.c:499
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:490
+#: lib/rpminstall.c:505
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -3084,7 +3089,7 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: lib/rpmio.c:1329
+#: lib/rpmio.c:1347
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3393,27 +3398,27 @@ msgstr ""
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:130
+#: lib/url.c:132
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:223
+#: lib/url.c:229
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: lib/url.c:248 lib/url.c:274
+#: lib/url.c:254 lib/url.c:280
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: lib/url.c:411
+#: lib/url.c:419
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/url.c:470
+#: lib/url.c:499
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr ""

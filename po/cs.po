@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-12-11 20:34-0500\n"
+"POT-Creation-Date: 1999-12-12 11:59-0500\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: build.c:25 lib/rpminstall.c:247 lib/rpminstall.c:407
+#: build.c:25 lib/rpminstall.c:248 lib/rpminstall.c:422
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "chyba: nelze otevøít %s%s/packages.rpm\n"
@@ -1511,63 +1511,63 @@ msgstr ""
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "soubor %s: %s\n"
 
-#: build/files.c:1091
+#: build/files.c:1086
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1121
+#: build/files.c:1116
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: build/files.c:1212
+#: build/files.c:1207
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "chyba: nelze otevøít soubor %s\n"
 
-#: build/files.c:1219 build/pack.c:482
+#: build/files.c:1214 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1562 build/parsePrep.c:30
+#: build/files.c:1557 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1617
+#: build/files.c:1612
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nelze spustit pgp"
 
-#: build/files.c:1622
+#: build/files.c:1617
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nelze naèíst cílpodpisu"
 
-#: build/files.c:1704
+#: build/files.c:1699
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "chyba pgp"
 
-#: build/files.c:1708
+#: build/files.c:1703
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s nelze vytvoøit\n"
 
-#: build/files.c:1797
+#: build/files.c:1792
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1825 build/files.c:1834
+#: build/files.c:1820 build/files.c:1829
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s nelze vytvoøit\n"
 
-#: build/files.c:1940
+#: build/files.c:1935
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "soubor %s: %s\n"
@@ -2665,11 +2665,11 @@ msgstr "chyba: nelze naèíst databázový záznam\n"
 msgid "open of %s failed: %s\n"
 msgstr "nelze otevøít %s: %s\n"
 
-#: lib/query.c:490
+#: lib/query.c:489
 msgid "old format source packages cannot be queried\n"
 msgstr "na zdrojové balíèky starého formátu se nelze dotazovat\n"
 
-#: lib/query.c:499 lib/rpminstall.c:228
+#: lib/query.c:498 lib/rpminstall.c:229
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "nezdá se, ¾e by %s byl balíèek typu RPM\n"
@@ -2733,7 +2733,7 @@ msgstr "probíhá dotaz na záznam èíslo %d\n"
 msgid "record %d could not be read\n"
 msgstr "záznam %d nelze naèíst\n"
 
-#: lib/query.c:652 lib/rpminstall.c:418
+#: lib/query.c:652 lib/rpminstall.c:433
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
@@ -2970,7 +2970,7 @@ msgstr "OK"
 msgid "opening database mode 0x%x in %s\n"
 msgstr "probíhá otevírání databázového re¾imu: 0%o\n"
 
-#: lib/rpmdb.c:157 lib/url.c:447
+#: lib/rpmdb.c:157 lib/url.c:459
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nelze otevøít %s: %s"
@@ -3067,32 +3067,37 @@ msgstr "nelze èíst hlavièku u %d pro inovaci"
 msgid "header changed size!"
 msgstr "hlavièka zmìnila velikost!"
 
-#: lib/rpminstall.c:124
+#: lib/rpminstall.c:126
 msgid "counting packages to install\n"
 msgstr "probíhá poèítání balíèkù pro instalaci\n"
 
-#: lib/rpminstall.c:128
+#: lib/rpminstall.c:130
 #, c-format
 msgid "found %d packages\n"
 msgstr "nalezeno %d balíèkù\n"
 
-#: lib/rpminstall.c:137
+#: lib/rpminstall.c:135
 msgid "looking for packages to download\n"
 msgstr "probíhá hledání balíèkù pro sta¾ení\n"
 
-#: lib/rpminstall.c:147
+#: lib/rpminstall.c:150
+#, fuzzy, c-format
+msgid "skipping %s - rpmGlob failed(%d)\n"
+msgstr "chyba: vynechává se %s - pøenos neúspì¹ný - %s\n"
+
+#: lib/rpminstall.c:165
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Probíhá naèítání %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:182
+#: lib/rpminstall.c:175
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:186
+#: lib/rpminstall.c:179
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "chyba: vynechává se %s - pøenos neúspì¹ný - %s\n"
@@ -3102,12 +3107,12 @@ msgstr "chyba: vynechává se %s - pøenos neúspì¹ný - %s\n"
 msgid "retrieved %d packages\n"
 msgstr "získalo se %d balíèkù\n"
 
-#: lib/rpminstall.c:215 lib/rpminstall.c:357
+#: lib/rpminstall.c:215 lib/rpminstall.c:358
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "nelze otevøít soubor %s: "
 
-#: lib/rpminstall.c:232 lib/rpminstall.c:495
+#: lib/rpminstall.c:233 lib/rpminstall.c:510
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "chyba: %s nelze nainstalovat\n"
@@ -3117,49 +3122,49 @@ msgstr "chyba: %s nelze nainstalovat\n"
 msgid "package %s is not relocateable\n"
 msgstr "balíèek %s není nainstalován\n"
 
-#: lib/rpminstall.c:286
+#: lib/rpminstall.c:287
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pøi vytváøení adresáøe %s: %s"
 
-#: lib/rpminstall.c:291
+#: lib/rpminstall.c:292
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:308
+#: lib/rpminstall.c:309
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "nalezeno %d zdrojových a %d binárních balíèkù\n"
 
-#: lib/rpminstall.c:319
+#: lib/rpminstall.c:320
 msgid "failed dependencies:\n"
 msgstr "chybné závislosti:\n"
 
-#: lib/rpminstall.c:337
+#: lib/rpminstall.c:338
 msgid "installing binary packages\n"
 msgstr "probíhá instalace binárních balíèkù\n"
 
-#: lib/rpminstall.c:422
+#: lib/rpminstall.c:437
 #, fuzzy, c-format
 msgid "searching for package %s\n"
 msgstr "chyba pøi hledání balíèku %s\n"
 
-#: lib/rpminstall.c:431
+#: lib/rpminstall.c:446
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" specifikuje více balíèkù\n"
 
-#: lib/rpminstall.c:457
+#: lib/rpminstall.c:472
 msgid "removing these packages would break dependencies:\n"
 msgstr "odstranìní tìchto balíèkù by poru¹ilo závislosti:\n"
 
-#: lib/rpminstall.c:484
+#: lib/rpminstall.c:499
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "chyba: nelze otevøít %s\n"
 
-#: lib/rpminstall.c:490
+#: lib/rpminstall.c:505
 #, c-format
 msgid "Installing %s\n"
 msgstr "Probíhá instalace %s\n"
@@ -3224,7 +3229,7 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr "Neznámá nebo neèekaná chyba FTP"
 
-#: lib/rpmio.c:1329
+#: lib/rpmio.c:1347
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "probíhá pøihla¹ování na %s jako %s, h. %s\n"
@@ -3541,28 +3546,28 @@ msgstr ""
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:130
+#: lib/url.c:132
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:223
+#: lib/url.c:229
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Heslo pro %s@%s: "
 
-#: lib/url.c:248 lib/url.c:274
+#: lib/url.c:254 lib/url.c:280
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "chyba: ftpport musí být èíslo\n"
 
-#: lib/url.c:411
+#: lib/url.c:419
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "chyba: ftpport musí být èíslo\n"
 
 #. XXX Fstrerror
-#: lib/url.c:470
+#: lib/url.c:499
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s nelze vytvoøit\n"

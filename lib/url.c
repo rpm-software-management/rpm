@@ -112,7 +112,9 @@ DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, li
     FREE(u->password);
     FREE(u->host);
     FREE(u->portstr);
+#ifdef	DYING
     FREE(u->path);
+#endif
     FREE(u->proxyu);
     FREE(u->proxyh);
 
@@ -190,9 +192,10 @@ static void urlFind(urlinfo *uret, int mustAsk)
 	    else
 		uCache = xmalloc(sizeof(*uCache));
 	}
-	uCache[i] = urlLink(u, "uCache (miss)");
+	uCache[ucx] = urlLink(u, "uCache (miss)");
 	u = urlFree(u, "urlSplit (urlFind miss)");
     } else {
+#ifdef	DYING
 	/* XXX Swap original url and path into the cached structure */
 	const char *up = uCache[i]->path;
 	ucx = i;
@@ -201,12 +204,15 @@ static void urlFind(urlinfo *uret, int mustAsk)
 	up = uCache[ucx]->url;
 	uCache[ucx]->url = u->url;
 	u->url = up;
+#else
+	ucx = i;
+#endif
 	u = urlFree(u, "urlSplit (urlFind hit)");
     }
 
     /* This URL is now cached. */
 
-    u = urlLink(uCache[i], "uCache");
+    u = urlLink(uCache[ucx], "uCache");
     *uret = u;
     u = urlFree(u, "uCache (urlFind)");
 
@@ -378,7 +384,9 @@ int urlSplit(const char * url, urlinfo *uret)
 	}
 	
 	/* Item was everything-but-path. Save path and continue parse on rest */
+#ifdef DYING
 	u->path = xstrdup((*se ? se : "/"));
+#endif
 	*se = '\0';
 	break;
     }
@@ -440,15 +448,27 @@ int urlGetFile(const char * url, const char * dest) {
     int rc;
     FD_t sfd = NULL;
     FD_t tfd = NULL;
-    urlinfo sfu;
+    const char * sfuPath = NULL;
+    int urlType = urlPath(url, &sfuPath);
 
+    if (*sfuPath == '\0')
+	return FTPERR_UNKNOWN;
+	
     sfd = Fopen(url, "r.ufdio");
     if (sfd == NULL || Ferror(sfd)) {
 	rpmMessage(RPMMESS_DEBUG, _("failed to open %s: %s\n"), url, Fstrerror(sfd));
-	Fclose(sfd);
+#ifdef	DYING
+	if (sfd)
+	    Fclose(sfd);
 	return FTPERR_UNKNOWN;
+#else
+	rc = FTPERR_UNKNOWN;
+	goto exit;
+#endif
     }
 
+#ifdef	DYING
+  { urlinfo sfu;
     sfu = ufdGetUrlinfo(sfd);
     if (sfu != NULL && dest == NULL) {
 	const char *fileName = sfu->path;
@@ -461,6 +481,15 @@ int urlGetFile(const char * url, const char * dest) {
 	(void) urlFree(sfu, "ufdGetUrlinfo (urlGetFile)");
 	sfu = NULL;
     }
+  }
+#else
+    if (dest == NULL) {
+	if ((dest = strrchr(sfuPath, '/')) != NULL)
+	    dest++;
+	else
+	    dest = sfuPath;
+    }
+#endif
 
     tfd = Fopen(dest, "w.ufdio");
 if (_url_debug)
@@ -468,14 +497,19 @@ fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, tfd, dest);
     if (tfd == NULL || Ferror(tfd)) {
 	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_DEBUG, _("failed to create %s: %s\n"), dest, Fstrerror(tfd));
+#ifdef	DYING
 	if (tfd)
 	    Fclose(tfd);
 	if (sfd)
 	    Fclose(sfd);
 	return FTPERR_UNKNOWN;
+#else
+	rc = FTPERR_UNKNOWN;
+	goto exit;
+#endif
     }
 
-    switch (urlIsURL(url)) {
+    switch (urlType) {
     case URL_IS_FTP:
     case URL_IS_HTTP:
     case URL_IS_PATH:
@@ -486,14 +520,18 @@ fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, tfd, dest);
 	    /* XXX FIXME: sfd possibly closed by copyData */
 	    /*@-usereleased@*/ Fclose(sfd) /*@=usereleased@*/ ;
 	}
-	/* XXX Fclose(sfd) done by ufdCopy */
+	sfd = NULL;	/* XXX Fclose(sfd) done by ufdGetFile */
 	break;
     default:
 	rc = FTPERR_UNKNOWN;
 	break;
     }
 
-    Fclose(tfd);
+exit:
+    if (tfd)
+	Fclose(tfd);
+    if (sfd)
+	Fclose(sfd);
 
     return rc;
 }

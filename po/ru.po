@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-11 20:34-0500\n"
+"POT-Creation-Date: 1999-12-12 11:59-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Date: 1999-05-27 17:30:00+0300\n"
 "From: Sergey Kubushin <ksi@ksi-linux.com>\n"
 
-#: build.c:25 lib/rpminstall.c:247 lib/rpminstall.c:407
+#: build.c:25 lib/rpminstall.c:248 lib/rpminstall.c:422
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "не могу открыть %s/packages.rpm\n"
@@ -1480,63 +1480,63 @@ msgstr "Неверная пара хозяин/группа: %s\n"
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Файл %4d: 0%o %s.%s\t %s\n"
 
-#: build/files.c:1091
+#: build/files.c:1086
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Файл должен начинаться с \"/\": %s"
 
-#: build/files.c:1121
+#: build/files.c:1116
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Файл не найден: %s"
 
-#: build/files.c:1212
+#: build/files.c:1207
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "Не могу открыть файл %%files: %s"
 
-#: build/files.c:1219 build/pack.c:482
+#: build/files.c:1214 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr "строка: %s"
 
-#: build/files.c:1562 build/parsePrep.c:30
+#: build/files.c:1557 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Неверная пара хозяин/группа: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1617
+#: build/files.c:1612
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Не могу исполнить %s"
 
-#: build/files.c:1622
+#: build/files.c:1617
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Не могу форкнуть %s"
 
-#: build/files.c:1704
+#: build/files.c:1699
 #, c-format
 msgid "%s failed"
 msgstr "%s не удалось"
 
-#: build/files.c:1708
+#: build/files.c:1703
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "запись всех данных в %s не удалась"
 
-#: build/files.c:1797
+#: build/files.c:1792
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Определяю требования пакета...\n"
 
-#: build/files.c:1825 build/files.c:1834
+#: build/files.c:1820 build/files.c:1829
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Ошибка определения сервисов, предоставляемых пакетом"
 
-#: build/files.c:1940
+#: build/files.c:1935
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываю файлы: %s\n"
@@ -2623,11 +2623,11 @@ msgstr "ошибка: не могу прочесть запись базы данных\n"
 msgid "open of %s failed: %s\n"
 msgstr "открытие %s не удалось\n"
 
-#: lib/query.c:490
+#: lib/query.c:489
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к SRPM в старом формате не поддерживаются\n"
 
-#: lib/query.c:499 lib/rpminstall.c:228
+#: lib/query.c:498 lib/rpminstall.c:229
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s не похож на пакет RPM...\n"
@@ -2691,7 +2691,7 @@ msgstr "запись пакета номер %d\n"
 msgid "record %d could not be read\n"
 msgstr "запись %d не читается\n"
 
-#: lib/query.c:652 lib/rpminstall.c:418
+#: lib/query.c:652 lib/rpminstall.c:433
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
@@ -2914,7 +2914,7 @@ msgstr "Ok"
 msgid "opening database mode 0x%x in %s\n"
 msgstr "открываю базу в режиме 0x%x в %s\n"
 
-#: lib/rpmdb.c:157 lib/url.c:447
+#: lib/rpmdb.c:157 lib/url.c:459
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "не могу открыть %s: %s"
@@ -3013,32 +3013,37 @@ msgstr "не могу прочитать хедер в %d для апгрейда"
 msgid "header changed size!"
 msgstr "хедер изменил размер!"
 
-#: lib/rpminstall.c:124
+#: lib/rpminstall.c:126
 msgid "counting packages to install\n"
 msgstr "считаю пакеты для установки\n"
 
-#: lib/rpminstall.c:128
+#: lib/rpminstall.c:130
 #, c-format
 msgid "found %d packages\n"
 msgstr "найдено %d пакетов\n"
 
-#: lib/rpminstall.c:137
+#: lib/rpminstall.c:135
 msgid "looking for packages to download\n"
 msgstr "ищу пакеты для получения с ftp/http\n"
 
-#: lib/rpminstall.c:147
+#: lib/rpminstall.c:150
+#, fuzzy, c-format
+msgid "skipping %s - rpmGlob failed(%d)\n"
+msgstr "пропускаю %s - ошибка передачи - %s\n"
+
+#: lib/rpminstall.c:165
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Получаю %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:182
+#: lib/rpminstall.c:175
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... как %s\n"
 
-#: lib/rpminstall.c:186
+#: lib/rpminstall.c:179
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "пропускаю %s - ошибка передачи - %s\n"
@@ -3048,12 +3053,12 @@ msgstr "пропускаю %s - ошибка передачи - %s\n"
 msgid "retrieved %d packages\n"
 msgstr "получено %d пакетов\n"
 
-#: lib/rpminstall.c:215 lib/rpminstall.c:357
+#: lib/rpminstall.c:215 lib/rpminstall.c:358
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "не могу открыть файл %s: %s"
 
-#: lib/rpminstall.c:232 lib/rpminstall.c:495
+#: lib/rpminstall.c:233 lib/rpminstall.c:510
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не может быть установлен\n"
@@ -3063,49 +3068,49 @@ msgstr "%s не может быть установлен\n"
 msgid "package %s is not relocateable\n"
 msgstr "пакет %s - не перемещаемый\n"
 
-#: lib/rpminstall.c:286
+#: lib/rpminstall.c:287
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "ошибка чтения из файла %s\n"
 
-#: lib/rpminstall.c:291
+#: lib/rpminstall.c:292
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "файл %s требует более новой версии RPM\n"
 
-#: lib/rpminstall.c:308
+#: lib/rpminstall.c:309
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "найдено %d исходных и %d бинарных пакетов\n"
 
-#: lib/rpminstall.c:319
+#: lib/rpminstall.c:320
 msgid "failed dependencies:\n"
 msgstr "неудовлетворенные зависимости:\n"
 
-#: lib/rpminstall.c:337
+#: lib/rpminstall.c:338
 msgid "installing binary packages\n"
 msgstr "устанавливаю бинарные пакеты\n"
 
-#: lib/rpminstall.c:422
+#: lib/rpminstall.c:437
 #, c-format
 msgid "searching for package %s\n"
 msgstr "ищу пакет %s\n"
 
-#: lib/rpminstall.c:431
+#: lib/rpminstall.c:446
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" задает несколько пакетов\n"
 
-#: lib/rpminstall.c:457
+#: lib/rpminstall.c:472
 msgid "removing these packages would break dependencies:\n"
 msgstr "удаление этих пакетов нарушит зависимости:\n"
 
-#: lib/rpminstall.c:484
+#: lib/rpminstall.c:499
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "не могу открыть %s\n"
 
-#: lib/rpminstall.c:490
+#: lib/rpminstall.c:505
 #, c-format
 msgid "Installing %s\n"
 msgstr "Устанавливаю %s\n"
@@ -3162,7 +3167,7 @@ msgstr "Отмена в процессе"
 msgid "Unknown or unexpected error"
 msgstr "Неизвестная или неожиданная ошибка"
 
-#: lib/rpmio.c:1329
+#: lib/rpmio.c:1347
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "регистрируюсь в %s как %s, пароль %s\n"
@@ -3476,27 +3481,27 @@ msgstr ""
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:130
+#: lib/url.c:132
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:223
+#: lib/url.c:229
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Пароль для %s@%s: "
 
-#: lib/url.c:248 lib/url.c:274
+#: lib/url.c:254 lib/url.c:280
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "ошибка: %sport должен быть числом\n"
 
-#: lib/url.c:411
+#: lib/url.c:419
 msgid "url port must be a number\n"
 msgstr "url port должен быть числом\n"
 
 #. XXX Fstrerror
-#: lib/url.c:470
+#: lib/url.c:499
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "не могу создать %s\n"

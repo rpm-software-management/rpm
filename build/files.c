@@ -1067,11 +1067,6 @@ fprintf(stderr, "*** AF SAVE buildRootURL %s fileURL %s diskURL %s\n", fl->build
     return 0;
 }
 
-static int glob_error(/*@unused@*/const char *foo, /*@unused@*/int bar)
-{
-    return 1;
-}
-
 static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
 	const char *fileURL)
 {
@@ -1161,7 +1156,7 @@ fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", maxb, nb, nb,
 #else
 	int argc = 0;
 	const char ** argv = NULL;
-	rc = remoteGlob(diskURL, &argc, &argv);
+	rc = rpmGlob(diskURL, &argc, &argv);
 	if (rc == 0) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);

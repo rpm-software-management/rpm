@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 1999-12-11 20:34-0500\n"
+"POT-Creation-Date: 1999-12-12 11:59-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -45,7 +45,7 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: build.c:25 lib/rpminstall.c:247 lib/rpminstall.c:407
+#: build.c:25 lib/rpminstall.c:248 lib/rpminstall.c:422
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
@@ -1590,66 +1590,66 @@ msgstr ""
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/files.c:1091
+#: build/files.c:1086
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1121
+#: build/files.c:1116
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1212
+#: build/files.c:1207
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/files.c:1219 build/pack.c:482
+#: build/files.c:1214 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1562 build/parsePrep.c:30
+#: build/files.c:1557 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1617
+#: build/files.c:1612
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Konnte pgp nicht durchführen"
 
-#: build/files.c:1622
+#: build/files.c:1617
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
 
-#: build/files.c:1704
+#: build/files.c:1699
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "pgp fehlgeschlagen"
 
 # , c-format
-#: build/files.c:1708
+#: build/files.c:1703
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
-#: build/files.c:1797
+#: build/files.c:1792
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1825 build/files.c:1834
+#: build/files.c:1820 build/files.c:1829
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/files.c:1940
+#: build/files.c:1935
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -2777,11 +2777,11 @@ msgstr "Fehler: konnte Datenbank-Eintrag nicht lesen\n"
 msgid "open of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/query.c:490
+#: lib/query.c:489
 msgid "old format source packages cannot be queried\n"
 msgstr "altes Sourceformat-Paket kann nicht angefragt werden\n"
 
-#: lib/query.c:499 lib/rpminstall.c:228
+#: lib/query.c:498 lib/rpminstall.c:229
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
@@ -2847,7 +2847,7 @@ msgstr "ungültige Paket-Nummer: %s\n"
 msgid "record %d could not be read\n"
 msgstr "Eintrag %d konnte nicht gelesen werden\n"
 
-#: lib/query.c:652 lib/rpminstall.c:418
+#: lib/query.c:652 lib/rpminstall.c:433
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
@@ -3087,7 +3087,7 @@ msgid "opening database mode 0x%x in %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
 # , c-format
-#: lib/rpmdb.c:157 lib/url.c:447
+#: lib/rpmdb.c:157 lib/url.c:459
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -3190,35 +3190,40 @@ msgstr "kann Kopfzeilen bei %d nicht lesen, um Update durchzuführen"
 msgid "header changed size!"
 msgstr ""
 
-#: lib/rpminstall.c:124
+#: lib/rpminstall.c:126
 #, fuzzy
 msgid "counting packages to install\n"
 msgstr "Es wurden keine Pakete für die Installation angegeben"
 
-#: lib/rpminstall.c:128
+#: lib/rpminstall.c:130
 #, fuzzy, c-format
 msgid "found %d packages\n"
 msgstr "Anfrage an alle Pakete"
 
-#: lib/rpminstall.c:137
+#: lib/rpminstall.c:135
 #, fuzzy
 msgid "looking for packages to download\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
+#: lib/rpminstall.c:150
+#, fuzzy, c-format
+msgid "skipping %s - rpmGlob failed(%d)\n"
+msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
+
 # , c-format
-#: lib/rpminstall.c:147
+#: lib/rpminstall.c:165
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Hole %s heraus\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:182
+#: lib/rpminstall.c:175
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:186
+#: lib/rpminstall.c:179
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
@@ -3228,12 +3233,12 @@ msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:215 lib/rpminstall.c:357
+#: lib/rpminstall.c:215 lib/rpminstall.c:358
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/rpminstall.c:232 lib/rpminstall.c:495
+#: lib/rpminstall.c:233 lib/rpminstall.c:510
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "Fehler: %s kann nicht installiert werden\n"
@@ -3243,51 +3248,51 @@ msgstr "Fehler: %s kann nicht installiert werden\n"
 msgid "package %s is not relocateable\n"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/rpminstall.c:286
+#: lib/rpminstall.c:287
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/rpminstall.c:291
+#: lib/rpminstall.c:292
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:308
+#: lib/rpminstall.c:309
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
-#: lib/rpminstall.c:319
+#: lib/rpminstall.c:320
 msgid "failed dependencies:\n"
 msgstr "fehlgeschlagene Paket-Abhängigkeiten:\n"
 
-#: lib/rpminstall.c:337
+#: lib/rpminstall.c:338
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "Paket installieren"
 
-#: lib/rpminstall.c:422
+#: lib/rpminstall.c:437
 #, fuzzy, c-format
 msgid "searching for package %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: lib/rpminstall.c:431
+#: lib/rpminstall.c:446
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" bezeichnet mehrere Pakete\n"
 
 # oder besser: "... verletzen" ?
-#: lib/rpminstall.c:457
+#: lib/rpminstall.c:472
 msgid "removing these packages would break dependencies:\n"
 msgstr "Das Enfernen dieser Pakete würde Paket-Abhängigkeiten missachten:\n"
 
-#: lib/rpminstall.c:484
+#: lib/rpminstall.c:499
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: lib/rpminstall.c:490
+#: lib/rpminstall.c:505
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installiere %s\n"
@@ -3352,7 +3357,7 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr "FTP Unbekannter oder nicht erwarteter Fehler"
 
-#: lib/rpmio.c:1329
+#: lib/rpmio.c:1347
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3677,29 +3682,29 @@ msgstr ""
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:130
+#: lib/url.c:132
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:223
+#: lib/url.c:229
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Passworf für %s@%s: "
 
-#: lib/url.c:248 lib/url.c:274
+#: lib/url.c:254 lib/url.c:280
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 
-#: lib/url.c:411
+#: lib/url.c:419
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 
 # , c-format
 #. XXX Fstrerror
-#: lib/url.c:470
+#: lib/url.c:499
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "anlegen von %s fehlgeschlagen\n"

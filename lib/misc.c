@@ -649,7 +649,12 @@ int myGlobPatternP (const char *patternURL)
     return (0);
 }
 
-int remoteGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
+static int glob_error(/*@unused@*/const char *foo, /*@unused@*/int bar)
+{
+    return 1;
+}
+
+int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
 {
     int ac = 0;
     const char ** av = NULL;
@@ -675,14 +680,14 @@ int remoteGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
 	    else
 		argv = xrealloc(argv, (argc+2) * sizeof(*argv));
 if (_debug)
-fprintf(stderr, "*** remoteGlob argv[%d] \"%s\"\n", argc, av[j]);
+fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, av[j]);
 	    argv[argc++] = xstrdup(av[j]);
 	    continue;
 	}
 	
 	gl.gl_pathc = 0;
 	gl.gl_pathv = NULL;
-	rc = Glob(av[j], 0, NULL, &gl);
+	rc = Glob(av[j], 0, glob_error, &gl);
 	if (rc)
 	    goto exit;
 
@@ -724,7 +729,7 @@ fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", maxb, nb, nb,
 		while (*globFile == '/') globFile++;
 	    strcpy(globRoot, globFile);
 if (_debug)
-fprintf(stderr, "*** remoteGlob argv[%d] \"%s\"\n", argc, globURL);
+fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
 	    argv[argc++] = xstrdup(globURL);
 	}
 	Globfree(&gl);

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-11 20:34-0500\n"
+"POT-Creation-Date: 1999-12-12 11:59-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -20,7 +20,7 @@ msgstr ""
 "/home/ewt/redhat/rpm/lib/package.c /home/ewt/redhat/rpm/lib/rpmlead.c "
 "/home/ewt/redhat/rpm/lib/rpmrc.c\n"
 
-#: build.c:25 lib/rpminstall.c:247 lib/rpminstall.c:407
+#: build.c:25 lib/rpminstall.c:248 lib/rpminstall.c:422
 #, fuzzy, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr "virhe: en voi avata %s%s/packages.rpm\n"
@@ -1549,63 +1549,63 @@ msgstr ""
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:1091
+#: build/files.c:1086
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1121
+#: build/files.c:1116
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Tiedostoa ei lˆytynyt palvelimelta"
 
-#: build/files.c:1212
+#: build/files.c:1207
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/files.c:1219 build/pack.c:482
+#: build/files.c:1214 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1562 build/parsePrep.c:30
+#: build/files.c:1557 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1617
+#: build/files.c:1612
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "En voinut ajaa pgp:t‰"
 
-#: build/files.c:1622
+#: build/files.c:1617
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "En voinut ajaa pgp:t‰"
 
-#: build/files.c:1704
+#: build/files.c:1699
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "pgp ep‰onnistui"
 
-#: build/files.c:1708
+#: build/files.c:1703
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s:n luonti ep‰onnistui\n"
 
-#: build/files.c:1797
+#: build/files.c:1792
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1825 build/files.c:1834
+#: build/files.c:1820 build/files.c:1829
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s:n luonti ep‰onnistui\n"
 
-#: build/files.c:1940
+#: build/files.c:1935
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "en voinut avata %s: %s"
@@ -2703,11 +2703,11 @@ msgstr "virhe: tietokannan tietuetta ei voinut lukea\n"
 msgid "open of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/query.c:490
+#: lib/query.c:489
 msgid "old format source packages cannot be queried\n"
 msgstr "vanhan formaatin l‰hdekoodipaketteja ei voi kysell‰\n"
 
-#: lib/query.c:499 lib/rpminstall.c:228
+#: lib/query.c:498 lib/rpminstall.c:229
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s ei vaikuta RPM-paketilta\n"
@@ -2771,7 +2771,7 @@ msgstr "virheellinen paketin numero: %s\n"
 msgid "record %d could not be read\n"
 msgstr "tietuetta %d ei voitu lukea\n"
 
-#: lib/query.c:652 lib/rpminstall.c:418
+#: lib/query.c:652 lib/rpminstall.c:433
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
@@ -3008,7 +3008,7 @@ msgstr ""
 msgid "opening database mode 0x%x in %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: lib/rpmdb.c:157 lib/url.c:447
+#: lib/rpmdb.c:157 lib/url.c:459
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "en voinut avata %s: %s"
@@ -3107,34 +3107,39 @@ msgstr "en voi lukea headeria %d:st‰ p‰ivitt‰ess‰"
 msgid "header changed size!"
 msgstr ""
 
-#: lib/rpminstall.c:124
+#: lib/rpminstall.c:126
 #, fuzzy
 msgid "counting packages to install\n"
 msgstr "asennukselle ei m‰‰ritelty paketteja"
 
-#: lib/rpminstall.c:128
+#: lib/rpminstall.c:130
 #, fuzzy, c-format
 msgid "found %d packages\n"
 msgstr "kysele kaikki paketit"
 
-#: lib/rpminstall.c:137
+#: lib/rpminstall.c:135
 #, fuzzy
 msgid "looking for packages to download\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: lib/rpminstall.c:147
+#: lib/rpminstall.c:150
+#, fuzzy, c-format
+msgid "skipping %s - rpmGlob failed(%d)\n"
+msgstr "virhe: ohitan %s:n, siirto ep‰onnistui - %s\n"
+
+#: lib/rpminstall.c:165
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Haen: %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:182
+#: lib/rpminstall.c:175
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:186
+#: lib/rpminstall.c:179
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "virhe: ohitan %s:n, siirto ep‰onnistui - %s\n"
@@ -3144,12 +3149,12 @@ msgstr "virhe: ohitan %s:n, siirto ep‰onnistui - %s\n"
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:215 lib/rpminstall.c:357
+#: lib/rpminstall.c:215 lib/rpminstall.c:358
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: lib/rpminstall.c:232 lib/rpminstall.c:495
+#: lib/rpminstall.c:233 lib/rpminstall.c:510
 #, fuzzy, c-format
 msgid "%s cannot be installed\n"
 msgstr "virhe: %s ei voida asentaa\n"
@@ -3159,50 +3164,50 @@ msgstr "virhe: %s ei voida asentaa\n"
 msgid "package %s is not relocateable\n"
 msgstr "paketti %s ei ole asennettu\n"
 
-#: lib/rpminstall.c:286
+#: lib/rpminstall.c:287
 #, fuzzy, c-format
 msgid "error reading from file %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/rpminstall.c:291
+#: lib/rpminstall.c:292
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:308
+#: lib/rpminstall.c:309
 #, fuzzy, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/rpminstall.c:319
+#: lib/rpminstall.c:320
 msgid "failed dependencies:\n"
 msgstr "puuttuvat riippuvuudet:\n"
 
-#: lib/rpminstall.c:337
+#: lib/rpminstall.c:338
 #, fuzzy
 msgid "installing binary packages\n"
 msgstr "asenna paketti"
 
-#: lib/rpminstall.c:422
+#: lib/rpminstall.c:437
 #, fuzzy, c-format
 msgid "searching for package %s\n"
 msgstr "virhe etsitt‰ess‰ pakettia %s\n"
 
-#: lib/rpminstall.c:431
+#: lib/rpminstall.c:446
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" m‰‰ritt‰‰ useita paketteja\n"
 
-#: lib/rpminstall.c:457
+#: lib/rpminstall.c:472
 msgid "removing these packages would break dependencies:\n"
 msgstr "n‰iden pakettien poisto rikkoisi riippuvuuksia:\n"
 
-#: lib/rpminstall.c:484
+#: lib/rpminstall.c:499
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
 msgstr "virhe: en voi avata %s\n"
 
-#: lib/rpminstall.c:490
+#: lib/rpminstall.c:505
 #, c-format
 msgid "Installing %s\n"
 msgstr "Asennan: %s\n"
@@ -3267,7 +3272,7 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr "FTP:n tuntematon tai odottamaton virhe"
 
-#: lib/rpmio.c:1329
+#: lib/rpmio.c:1347
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -3588,28 +3593,28 @@ msgstr ""
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:130
+#: lib/url.c:132
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:223
+#: lib/url.c:229
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "%s@%s:n salasana: "
 
-#: lib/url.c:248 lib/url.c:274
+#: lib/url.c:254 lib/url.c:280
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "virhe: ftpport pit‰‰ olla luku\n"
 
-#: lib/url.c:411
+#: lib/url.c:419
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "virhe: ftpport pit‰‰ olla luku\n"
 
 #. XXX Fstrerror
-#: lib/url.c:470
+#: lib/url.c:499
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s:n luonti ep‰onnistui\n"

@@ -454,61 +454,61 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
     int retcode = 0;
     char *end = NULL;
 
-  switch (source) {
+    switch (source) {
     case RPMQV_RPM:
-    { int argc = 0;
-      const char ** argv = NULL;
-      int i;
+    {	int argc = 0;
+	const char ** argv = NULL;
+	int i;
 
-      rc = remoteGlob(arg, &argc, &argv);
-      if (rc)
-	return 1;
-      for (i = 0; i < argc; i++) {
-	FD_t fd;
-	fd = Fopen(argv[i], "r.ufdio");
-	if (Ferror(fd)) {
-	    /* XXX Fstrerror */
-	    fprintf(stderr, _("open of %s failed: %s\n"), argv[i],
+	rc = rpmGlob(arg, &argc, &argv);
+	if (rc)
+	    return 1;
+	for (i = 0; i < argc; i++) {
+	    FD_t fd;
+	    fd = Fopen(argv[i], "r.ufdio");
+	    if (Ferror(fd)) {
+		/* XXX Fstrerror */
+		fprintf(stderr, _("open of %s failed: %s\n"), argv[i],
 #ifndef	NOTYET
 			urlStrerror(argv[i]));
 #else
 			Fstrerror(fd));
 #endif
-	    if (fd)
-		Fclose(fd);
-	    retcode = 1;
-	    break;
-	}
-
-	retcode = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
-
-	Fclose(fd);
-
-	switch (retcode) {
-	case 0:
-	    if (h == NULL) {
-		fprintf(stderr, _("old format source packages cannot "
-			"be queried\n"));
+		if (fd) Fclose(fd);
 		retcode = 1;
 		break;
 	    }
-	    retcode = showPackage(qva, db, h);
-	    headerFree(h);
-	    break;
-	case 1:
-	    fprintf(stderr, _("%s does not appear to be a RPM package\n"), argv[i]);
-	    /*@fallthrough@*/
-	case 2:
-	    fprintf(stderr, _("query of %s failed\n"), argv[i]);
-	    retcode = 1;
-	    break;
+
+	    retcode = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+
+	    Fclose(fd);
+
+	    switch (retcode) {
+	    case 0:
+		if (h == NULL) {
+		    fprintf(stderr, _("old format source packages cannot "
+			"be queried\n"));
+		    retcode = 1;
+		    break;
+		}
+		retcode = showPackage(qva, db, h);
+		headerFree(h);
+		break;
+	    case 1:
+		fprintf(stderr, _("%s does not appear to be a RPM package\n"),
+				argv[i]);
+		/*@fallthrough@*/
+	    case 2:
+		fprintf(stderr, _("query of %s failed\n"), argv[i]);
+		retcode = 1;
+		break;
+	    }
 	}
-      }
-      if (argv) {
-	for (i = 0; i < argc; i++)
-	    xfree(argv[i]);
-	xfree(argv);
-      }
+	if (argv) {
+	    for (i = 0; i < argc; i++)
+		xfree(argv[i]);
+	    xfree(argv);
+	}
     }	break;
 
     case RPMQV_SPECFILE:
@@ -658,7 +658,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    dbiFreeIndexRecord(matches);
 	}
 	break;
-  }
+    }
    
     return retcode;
 }
