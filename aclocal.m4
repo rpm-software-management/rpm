@@ -238,7 +238,7 @@ esac
 ])
 
 
-# serial 39 AC_PROG_LIBTOOL
+# serial 40 AC_PROG_LIBTOOL
 AC_DEFUN(AC_PROG_LIBTOOL,
 [AC_REQUIRE([AC_LIBTOOL_SETUP])dnl
 
@@ -604,6 +604,7 @@ AC_DEFUN(AC_LIBLTDL_CONVENIENCE, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
       ac_configure_args="$ac_configure_args --enable-ltdl-convenience" ;;
   esac
   LIBLTDL=ifelse($#,1,$1,['${top_builddir}/libltdl'])/libltdlc.la
+  INCLTDL=ifelse($#,1,-I$1,['-I${top_builddir}/libltdl'])
 ])
 
 # AC_LIBLTDL_INSTALLABLE[(dir)] - sets LIBLTDL to the link flags for
@@ -627,9 +628,11 @@ AC_DEFUN(AC_LIBLTDL_INSTALLABLE, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
   if test x"$enable_ltdl_install" = x"yes"; then
     ac_configure_args="$ac_configure_args --enable-ltdl-install"
     LIBLTDL=ifelse($#,1,$1,['${top_builddir}/libltdl'])/libltdl.la
+    INCLTDL=ifelse($#,1,-I$1,['-I${top_builddir}/libltdl'])
   else
     ac_configure_args="$ac_configure_args --enable-ltdl-install=no"
     LIBLTDL="-lltdl"
+    INCLTDL=
   fi
 ])
 
@@ -642,8 +645,8 @@ AC_DEFUN(AM_DISABLE_STATIC, [indir([AC_DISABLE_STATIC], $@)])dnl
 AC_DEFUN(AM_PROG_LD, [indir([AC_PROG_LD])])dnl
 AC_DEFUN(AM_PROG_NM, [indir([AC_PROG_NM])])dnl
 
-dnl This is just to quiet aclocal about the macro not being used
-if(a,b,[AC_DISABLE_FAST_INSTALL])dnl
+dnl This is just to silence aclocal about the macro not being used
+ifelse([AC_DISABLE_FAST_INSTALL])dnl
 
 dnl From Jim Meyering.  Use this if you use the GNU error.[ch].
 dnl FIXME: Migrate into libit
