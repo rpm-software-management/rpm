@@ -3620,7 +3620,8 @@ static char * dateFormat(int_32 type, hPTR_t data,
 		         char * formatPrefix, int padding, int element)
 	/*@modifies formatPrefix @*/
 {
-    return realDateFormat(type, data, formatPrefix, padding, element, "%c");
+    return realDateFormat(type, data, formatPrefix, padding, element,
+			_("%c"));
 }
 
 /**
@@ -3636,7 +3637,7 @@ static char * dayFormat(int_32 type, hPTR_t data,
 	/*@modifies formatPrefix @*/
 {
     return realDateFormat(type, data, formatPrefix, padding, element, 
-			  "%a %b %d %Y");
+			  _("%a %b %d %Y"));
 }
 
 /**
