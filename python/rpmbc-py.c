@@ -17,7 +17,7 @@
 #include "debug.h"
 
 /*@unchecked@*/
-static int _bc_debug = 1;
+static int _bc_debug = 0;
 
 #define is_rpmbc(o)	((o)->ob_type == &rpmbc_Type)
 
@@ -307,7 +307,7 @@ mp32sizeinbase(uint32 xsize, uint32 * xdata, int base)
     size_t res = 1;
 
     if (xsize > 0) {
-	uint32 nbits = (xsize * 32) - mp32mszcnt(xsize, xdata);
+	uint32 nbits = mp32bitcnt(xsize, xdata);
 	uint32 lbits;
 
 	if ((base & (base-1)) == 0) {	/* exact power of 2 */
@@ -368,6 +368,7 @@ rpmbc_format(rpmbcObject * z, uint32 zbase, int withname)
     else
 	i = 0;
 
+    /* XXX FIXME: mp32bitcnt normalize with signed values. */
     nt = mp32mszcnt(z->n.size, z->n.data)/32;
     zsize = z->n.size - nt;
     zdata = z->n.data + nt;
@@ -443,6 +444,7 @@ fprintf(stderr, "*** rpmbc_dealloc(%p)\n", s);
     PyObject_Del(s);
 }
 
+#ifdef	DYING
 static int
 rpmbc_print(rpmbcObject * s, FILE * fp, /*@unused@*/ int flags)
 	/*@globals fileSystem @*/
@@ -453,6 +455,9 @@ fprintf(stderr, "*** rpmbc_print(%p)\n", s);
     mp32print(fp, s->n.size, s->n.data);
     return 0;
 }
+#else
+#define	rpmbc_print	0
+#endif
 
 static int
 rpmbc_compare(rpmbcObject * a, rpmbcObject * b)
@@ -479,6 +484,18 @@ rpmbc_repr(rpmbcObject * a)
     PyObject * so = rpmbc_format(a, 10, 1);
 if (_bc_debug && so != NULL)
 fprintf(stderr, "*** rpmbc_repr(%p): \"%s\"\n", a, PyString_AS_STRING(so));
+    return so;
+}
+
+/** \ingroup py_c  
+ */
+static PyObject *
+rpmbc_str(rpmbcObject * a)
+	/*@*/
+{
+    PyObject * so = rpmbc_format(a, 10, 0);
+if (_bc_debug && so != NULL)
+fprintf(stderr, "*** rpmbc_str(%p): \"%s\"\n", a, PyString_AS_STRING(so));
     return so;
 }
 
@@ -636,9 +653,6 @@ rpmbc_Gcd(/*@unused@*/ rpmbcObject * s, PyObject * args)
     rpmbcObject * z = NULL;
     uint32 * wksp = NULL;
 
-if (_bc_debug < 0) 
-fprintf(stderr, "*** rpmbc_Gcd(%p)\n", s);
- 
     if (!PyArg_ParseTuple(args, "OO:Gcd", &op1, &op2)) return NULL;
 
     if ((a = rpmbc_i2bc(op1)) != NULL
@@ -650,6 +664,12 @@ fprintf(stderr, "*** rpmbc_Gcd(%p)\n", s);
 	mp32gcd_w(a->n.size, a->n.data, b->n.data, z->n.data, wksp);
     }
 
+if (_bc_debug) {
+fprintf(stderr, "*** rpmbc_Gcd(%p):\t", s), mp32println(stderr, z->n.size, z->n.data);
+fprintf(stderr, "    a(%p):\t", a), mp32println(stderr, a->n.size, a->n.data);
+fprintf(stderr, "    b(%p):\t", b), mp32println(stderr, b->n.size, b->n.data);
+}
+ 
     Py_DECREF(a);
     Py_DECREF(b);
 
@@ -747,8 +767,13 @@ rpmbc_multiply(rpmbcObject * a, rpmbcObject * b)
     rpmbcObject * z;
 
     if ((z = rpmbc_New()) != NULL) {
-	/* XXX TODO: calculate zsize of result. */
-	mp32nsize(&z->n, (a->n.size + b->n.size));
+#ifdef	NOTYET
+	uint32 zsize = (mp32bitcnt(a->n.size, a->n.data) +
+			mp32bitcnt(b->n.size, b->n.data) + 2 + 31)/32;
+#else
+	uint32 zsize = a->n.size + b->n.size;
+#endif
+	mp32nsize(&z->n, zsize);
 	mp32mul(z->n.data, a->n.size, a->n.data, b->n.size, b->n.data);
     }
 
@@ -770,7 +795,7 @@ rpmbc_divide(rpmbcObject * a, rpmbcObject * b)
     }
 
     if ((z = rpmbc_New()) != NULL) {
-	uint32 bnorm = mp32mszcnt(b->n.size, b->n.data)/32;
+	uint32 bnorm = b->n.size - (mp32bitcnt(b->n.size, b->n.data) + 31)/32;
 	uint32 bsize = b->n.size - bnorm;
 	uint32 * bdata = b->n.data + bnorm;
 	uint32 * wksp = alloca((bsize+1) * sizeof(*wksp));
@@ -792,7 +817,7 @@ rpmbc_remainder(rpmbcObject * a, rpmbcObject * b)
     rpmbcObject * z;
 
     if ((z = rpmbc_New()) != NULL) {
-	uint32 bnorm = mp32mszcnt(b->n.size, b->n.data)/32;
+	uint32 bnorm = b->n.size - (mp32bitcnt(b->n.size, b->n.data) + 31)/32;
 	uint32 bsize = b->n.size - bnorm;
 	uint32 * bdata = b->n.data + bnorm;
 	uint32 * wksp = alloca((bsize+1) * sizeof(*wksp));
@@ -824,7 +849,7 @@ rpmbc_divmod(rpmbcObject * a, rpmbcObject * b)
 	return NULL;
     }
 
-    bnorm = mp32mszcnt(b->n.size, b->n.data)/32;
+    bnorm = b->n.size - (mp32bitcnt(b->n.size, b->n.data) + 31)/32;
     bsize = b->n.size - bnorm;
     bdata = b->n.data + bnorm;
 
@@ -957,7 +982,7 @@ rpmbc_lshift(rpmbcObject * a, rpmbcObject * b)
 
     /* XXX check shift count in range. */
     if ((z = rpmbc_New()) != NULL) {
-	uint32 bnorm = mp32mszcnt(b->n.size, b->n.data)/32;
+	uint32 bnorm = b->n.size - (mp32bitcnt(b->n.size, b->n.data) + 31)/32;
 	uint32 bsize = b->n.size - bnorm;
 	uint32 * bdata = b->n.data + bnorm;
 	uint32 count = 0;
@@ -983,7 +1008,7 @@ rpmbc_rshift(rpmbcObject * a, rpmbcObject * b)
 
     /* XXX check shift count in range. */
     if ((z = rpmbc_New()) != NULL) {
-	uint32 bnorm = mp32mszcnt(b->n.size, b->n.data)/32;
+	uint32 bnorm = b->n.size - (mp32bitcnt(b->n.size, b->n.data) + 31)/32;
 	uint32 bsize = b->n.size - bnorm;
 	uint32 * bdata = b->n.data + bnorm;
 	uint32 count = 0;
@@ -1132,7 +1157,7 @@ static PyObject *
 rpmbc_int(rpmbcObject * a)
 	/*@*/
 {
-    uint32 anorm = mp32mszcnt(a->n.size, a->n.data)/32;
+    uint32 anorm = a->n.size - (mp32bitcnt(a->n.size, a->n.data) + 31)/32;
     uint32 asize = a->n.size - anorm;
     uint32 * adata = a->n.data + anorm;
 
@@ -1151,7 +1176,7 @@ static PyObject *
 rpmbc_long(rpmbcObject * a)
 	/*@*/
 {
-    uint32 anorm = mp32mszcnt(a->n.size, a->n.data)/32;
+    uint32 anorm = a->n.size - (mp32bitcnt(a->n.size, a->n.data) + 31)/32;
     uint32 asize = a->n.size - anorm;
     uint32 * adata = a->n.data + anorm;
 
@@ -1241,12 +1266,18 @@ static PyObject *
 rpmbc_inplace_multiply(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
-    uint32 * result = xmalloc((a->n.size + b->n.size) * sizeof(*result));
+#ifdef	NOTYET
+    uint32 zsize = (mp32bitcnt(a->n.size, a->n.data) +
+			mp32bitcnt(b->n.size, b->n.data) + 2 + 31)/32;
+#else
+    uint32 zsize = a->n.size + b->n.size;
+#endif
+    uint32 * result = xmalloc(zsize * sizeof(*result));
 
     mp32mul(result, a->n.size, a->n.data, b->n.size, b->n.data);
 
     free(a->n.data);
-    a->n.size += b->n.size;
+    a->n.size = zsize;
     a->n.data = result;
 
 if (_bc_debug)
@@ -1261,7 +1292,7 @@ rpmbc_inplace_divide(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
     uint32 * result = xmalloc(a->n.size * sizeof(*result));
-    uint32 bnorm = mp32mszcnt(b->n.size, b->n.data)/32;
+    uint32 bnorm = b->n.size - (mp32bitcnt(b->n.size, b->n.data) + 31)/32;
     uint32 bsize = b->n.size - bnorm;
     uint32 * bdata = b->n.data + bnorm;
     uint32 * wksp = alloca((bsize+1) * sizeof(*wksp));
@@ -1283,7 +1314,7 @@ rpmbc_inplace_remainder(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
     uint32 * result = xmalloc(a->n.size * sizeof(*result));
-    uint32 bnorm = mp32mszcnt(b->n.size, b->n.data)/32;
+    uint32 bnorm = b->n.size - (mp32bitcnt(b->n.size, b->n.data) + 31)/32;
     uint32 bsize = b->n.size - bnorm;
     uint32 * bdata = b->n.data + bnorm;
     uint32 * wksp = alloca((bsize+1) * sizeof(*wksp));
@@ -1315,7 +1346,7 @@ static PyObject *
 rpmbc_inplace_lshift(rpmbcObject * a, rpmbcObject * b)
 	/*@modifies a @*/
 {
-    uint32 bnorm = mp32mszcnt(b->n.size, b->n.data)/32;
+    uint32 bnorm = b->n.size - (mp32bitcnt(b->n.size, b->n.data) + 31)/32;
     uint32 bsize = b->n.size - bnorm;
     uint32 * bdata = b->n.data + bnorm;
     uint32 count = 0;
@@ -1336,7 +1367,7 @@ static PyObject *
 rpmbc_inplace_rshift(rpmbcObject * a, rpmbcObject * b)
 	/*@modifies a @*/
 {
-    uint32 bnorm = mp32mszcnt(b->n.size, b->n.data)/32;
+    uint32 bnorm = b->n.size - (mp32bitcnt(b->n.size, b->n.data) + 31)/32;
     uint32 bsize = b->n.size - bnorm;
     uint32 * bdata = b->n.data + bnorm;
     uint32 count = 0;
@@ -1517,7 +1548,7 @@ PyTypeObject rpmbc_Type = {
 	0,				/* tp_as_mapping */
 	(hashfunc) 0,			/* tp_hash */
 	(ternaryfunc) 0,		/* tp_call */
-	(reprfunc) 0,			/* tp_str */
+	(reprfunc) rpmbc_str,		/* tp_str */
 	0,				/* tp_getattro */
 	0,				/* tp_setattro */
 	0,				/* tp_as_buffer */

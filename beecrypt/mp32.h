@@ -343,6 +343,12 @@ uint32 mp32mszcnt(uint32 xsize, const uint32* xdata)
 
 /**
  */
+BEECRYPTAPI
+uint32 mp32bitcnt(uint32 xsize, const uint32* xdata)
+	/*@*/;
+
+/**
+ */
 /*@-exportlocal@*/
 BEECRYPTAPI /*@unused@*/
 uint32 mp32lszcnt(uint32 xsize, const uint32* xdata)

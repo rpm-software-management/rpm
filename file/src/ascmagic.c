@@ -519,11 +519,11 @@ fmagicA(fmagic fm)
 	struct names *p;
 	int i;
 
-	char *code = NULL;
-	char *code_mime = NULL;
-	char *type = NULL;
-	char *subtype = NULL;
-	char *subtype_mime = NULL;
+	const char *code = NULL;
+	const char *code_mime = NULL;
+	const char *type = NULL;
+	const char *subtype = NULL;
+	const char *subtype_mime = NULL;
 
 	int has_escapes = 0;
 	int has_backspace = 0;

@@ -911,6 +911,30 @@ uint32 mp32mszcnt(register uint32 xsize, register const uint32* xdata)
 }
 #endif
 
+#ifndef ASM_MP32BITCNT
+uint32 mp32bitcnt(register uint32 xsize, register const uint32* xdata)
+{
+	register uint32 xmask = ((xdata[0] & 0x80000000) ? 0xffffffff : 0);
+	register uint32 nbits = 32 * xsize;
+	register uint32 i = 0;
+
+	while (i < xsize) {
+/*@-boundsread@*/
+		register uint32 temp = (xdata[i++] ^ xmask);
+/*@=boundsread@*/
+		if (temp) {
+			while (!(temp & 0x80000000)) {
+				nbits--;
+				temp <<= 1;
+			}
+			break;
+		} else
+			nbits -= 32;
+	}
+	return nbits;
+}
+#endif
+
 #ifndef ASM_MP32LSZCNT
 uint32 mp32lszcnt(register uint32 xsize, register const uint32* xdata)
 {

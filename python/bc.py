@@ -12,7 +12,7 @@ c = rpm.bc("0fedcba000000000")
 #rpm.bc.__mod__(a, b)
 
 #rpm.bc.__divmod__(a, b)
-#rpm.bc.__pow__(a, b)
+rpm.bc.__pow__(a, b)
 
 #rpm.bc.__lshift__(a, b)
 #rpm.bc.__rshift__(a, b)
@@ -28,7 +28,7 @@ c = rpm.bc("0fedcba000000000")
 
 #rpm.bc.__int__(b)
 #rpm.bc.__long__(b)
-#rpm.bc.__float__(a*a*a*a*b*b*b*b*b*b)
+#rpm.bc.__float__(a)
 #rpm.bc.__complex__(b)
 #rpm.bc.__oct__(a*b)
 #rpm.bc.__hex__(a*b)
@@ -47,8 +47,8 @@ c = rpm.bc("0fedcba000000000")
 #d = rpm.bc("987654321");	rpm.bc.__ixor__(d, a)
 #d = rpm.bc("987654321");	rpm.bc.__ior__(d, c)
 
-if a > i:
-	print "a > i"
+#if a > i:
+#	print "a > i"
 
 #b = rpm.bc("123456789")
 #print "b: ", a

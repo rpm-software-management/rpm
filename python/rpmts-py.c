@@ -526,14 +526,17 @@ fprintf(stderr, "*** rpmts_IDTXload(%p) ts %p\n", s, s->ts);
 	result = Py_None;
     } else {
 	PyObject * tuple;
+	PyObject * ho;
 	IDT idt;
 	int i;
 
 	result = PyTuple_New(idtx->nidt);
 	for (i = 0; i < idtx->nidt; i++) {
 	    idt = idtx->idt + i;
-	    tuple = Py_BuildValue("(iOi)", idt->val.u32, hdr_Wrap(idt->h), idt->instance);
+	    ho = (PyObject *) hdr_Wrap(idt->h);
+	    tuple = Py_BuildValue("(iOi)", idt->val.u32, ho, idt->instance);
 	    PyTuple_SET_ITEM(result,  i, tuple);
+	    Py_DECREF(ho);
 	}
     }
 
@@ -570,14 +573,17 @@ fprintf(stderr, "*** rpmts_IDTXglob(%p) ts %p\n", s, s->ts);
 	result = Py_None;
     } else {
 	PyObject * tuple;
+	PyObject * ho;
 	IDT idt;
 	int i;
 
 	result = PyTuple_New(idtx->nidt);
 	for (i = 0; i < idtx->nidt; i++) {
 	    idt = idtx->idt + i;
-	    tuple = Py_BuildValue("(iOs)", idt->val.u32, hdr_Wrap(idt->h), idt->key);
+	    ho = (PyObject *) hdr_Wrap(idt->h);
+	    tuple = Py_BuildValue("(iOs)", idt->val.u32, ho, idt->key);
 	    PyTuple_SET_ITEM(result,  i, tuple);
+	    Py_DECREF(ho);
 	}
     }
 
