@@ -39,6 +39,8 @@ void freeNames(void)
 
 /*@-boundswrite@*/
 const char *getUname(uid_t uid)
+	/*@globals uid_used, uids, unames @*/
+	/*@modifies uid_used, uids, unames @*/
 {
     struct passwd *pw;
     int x;
@@ -52,17 +54,19 @@ const char *getUname(uid_t uid)
     /* XXX - This is the other hard coded limit */
     if (x == 1024)
 	rpmlog(RPMLOG_CRIT, _("getUname: too many uid's\n"));
-    uid_used++;
     
-    pw = getpwuid(uid);
-    uids[x] = uid;
-    unames[x] = (pw ? xstrdup(pw->pw_name) : NULL);
-    return unames[x];
+    if ((pw = getpwuid(uid)) == NULL)
+	return NULL;
+    uids[uid_used] = uid;
+    unames[uid_used] = xstrdup(pw->pw_name);
+    return unames[uid_used++];
 }
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
 const char *getUnameS(const char *uname)
+	/*@globals uid_used, uids, unames @*/
+	/*@modifies uid_used, uids, unames @*/
 {
     struct passwd *pw;
     int x;
@@ -76,17 +80,22 @@ const char *getUnameS(const char *uname)
     /* XXX - This is the other hard coded limit */
     if (x == 1024)
 	rpmlog(RPMLOG_CRIT, _("getUnameS: too many uid's\n"));
-    uid_used++;
     
-    pw = getpwnam(uname);
-    uids[x] = (pw ? pw->pw_uid : -1);
-    unames[x] = (pw ? xstrdup(pw->pw_name) : xstrdup(uname));
-    return unames[x];
+    if ((pw = getpwnam(uname)) == NULL) {
+	uids[uid_used] = -1;
+	unames[uid_used] = xstrdup(uname);
+    } else {
+	uids[uid_used] = pw->pw_uid;
+	unames[uid_used] = xstrdup(pw->pw_name);
+    }
+    return unames[uid_used++];
 }
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
 uid_t getUidS(const char *uname)
+	/*@globals uid_used, uids, unames @*/
+	/*@modifies uid_used, uids, unames @*/
 {
     struct passwd *pw;
     int x;
@@ -100,17 +109,22 @@ uid_t getUidS(const char *uname)
     /* XXX - This is the other hard coded limit */
     if (x == 1024)
 	rpmlog(RPMLOG_CRIT, _("getUidS: too many uid's\n"));
-    uid_used++;
     
-    pw = getpwnam(uname);
-    uids[x] = (pw ? pw->pw_uid : -1);
-    unames[x] = (pw ? xstrdup(pw->pw_name) : xstrdup(uname));
-    return uids[x];
+    if ((pw = getpwnam(uname)) == NULL) {
+	uids[uid_used] = -1;
+	unames[uid_used] = xstrdup(uname);
+    } else {
+	uids[uid_used] = pw->pw_uid;
+	unames[uid_used] = xstrdup(pw->pw_name);
+    }
+    return uids[uid_used++];
 }
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
 const char *getGname(gid_t gid)
+	/*@globals gid_used, gids, gnames @*/
+	/*@modifies gid_used, gids, gnames @*/
 {
     struct group *gr;
     int x;
@@ -124,17 +138,19 @@ const char *getGname(gid_t gid)
     /* XXX - This is the other hard coded limit */
     if (x == 1024)
 	rpmlog(RPMLOG_CRIT, _("getGname: too many gid's\n"));
-    gid_used++;
     
-    gr = getgrgid(gid);
-    gids[x] = gid;
-    gnames[x] = (gr ? xstrdup(gr->gr_name) : NULL);
-    return gnames[x];
+    if ((gr = getgrgid(gid)) == NULL)
+	return NULL;
+    gids[gid_used] = gid;
+    gnames[gid_used] = xstrdup(gr->gr_name);
+    return gnames[gid_used++];
 }
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
 const char *getGnameS(const char *gname)
+	/*@globals gid_used, gids, gnames @*/
+	/*@modifies gid_used, gids, gnames @*/
 {
     struct group *gr;
     int x;
@@ -148,17 +164,22 @@ const char *getGnameS(const char *gname)
     /* XXX - This is the other hard coded limit */
     if (x == 1024)
 	rpmlog(RPMLOG_CRIT, _("getGnameS: too many gid's\n"));
-    gid_used++;
     
-    gr = getgrnam(gname);
-    gids[x] = (gr ? gr->gr_gid : -1);
-    gnames[x] = (gr ? xstrdup(gr->gr_name) : xstrdup(gname));
-    return gnames[x];
+    if ((gr = getgrnam(gname)) == NULL) {
+	gids[gid_used] = -1;
+	gnames[gid_used] = xstrdup(gname);
+    } else {
+	gids[gid_used] = gr->gr_gid;
+	gnames[gid_used] = xstrdup(gr->gr_name);
+    }
+    return gnames[gid_used++];
 }
 /*@=boundswrite@*/
 
 /*@-boundswrite@*/
 gid_t getGidS(const char *gname)
+	/*@globals gid_used, gids, gnames @*/
+	/*@modifies gid_used, gids, gnames @*/
 {
     struct group *gr;
     int x;
@@ -172,12 +193,15 @@ gid_t getGidS(const char *gname)
     /* XXX - This is the other hard coded limit */
     if (x == 1024)
 	rpmlog(RPMLOG_CRIT, _("getGidS: too many gid's\n"));
-    gid_used++;
     
-    gr = getgrnam(gname);
-    gids[x] = (gr ? gr->gr_gid : -1);
-    gnames[x] = (gr ? xstrdup(gr->gr_name) : xstrdup(gname));
-    return gids[x];
+    if ((gr = getgrnam(gname)) == NULL) {
+	gids[gid_used] = -1;
+	gnames[gid_used] = xstrdup(gname);
+    } else {
+	gids[gid_used] = gr->gr_gid;
+	gnames[gid_used] = xstrdup(gr->gr_name);
+    }
+    return gids[gid_used++];
 }
 /*@=boundswrite@*/
 
@@ -196,10 +220,10 @@ int_32 *const getBuildTime(void)
 const char *const buildHost(void)
 {
     static char hostname[1024];
-    static int gotit = 0;
+    static int oneshot = 0;
     struct hostent *hbn;
 
-    if (! gotit) {
+    if (! oneshot) {
         (void) gethostname(hostname, sizeof(hostname));
 	/*@-unrecog -multithreaded @*/
 	/*@-globs@*/	/* FIX: h_errno access */
@@ -211,7 +235,7 @@ const char *const buildHost(void)
 	else
 	    rpmMessage(RPMMESS_WARNING,
 			_("Could not canonicalize hostname: %s\n"), hostname);
-	gotit = 1;
+	oneshot = 1;
     }
     return(hostname);
 }

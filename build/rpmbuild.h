@@ -94,7 +94,9 @@ void freeNames(void)
  * @param uid		user id
  * @return		cached user name
  */
-extern /*@observer@*/ const char * getUname(uid_t uid)	/*@*/;
+extern /*@observer@*/ const char * getUname(uid_t uid)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmbuild
  * Return cached user name.
@@ -102,7 +104,9 @@ extern /*@observer@*/ const char * getUname(uid_t uid)	/*@*/;
  * @param uname		user name
  * @return		cached user name
  */
-extern /*@observer@*/ const char * getUnameS(const char * uname)	/*@*/;
+extern /*@observer@*/ const char * getUnameS(const char * uname)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmbuild
  * Return cached user id.
@@ -110,7 +114,9 @@ extern /*@observer@*/ const char * getUnameS(const char * uname)	/*@*/;
  * @param uname		user name
  * @return		cached uid
  */
-uid_t getUidS(const char * uname)	/*@*/;
+uid_t getUidS(const char * uname)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmbuild
  * Return cached group name from group id.
@@ -118,7 +124,9 @@ uid_t getUidS(const char * uname)	/*@*/;
  * @param gid		group id
  * @return		cached group name
  */
-extern /*@observer@*/ const char * getGname(gid_t gid)		/*@*/;
+extern /*@observer@*/ const char * getGname(gid_t gid)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmbuild
  * Return cached group name.
@@ -126,7 +134,9 @@ extern /*@observer@*/ const char * getGname(gid_t gid)		/*@*/;
  * @param gname		group name
  * @return		cached group name
  */
-extern /*@observer@*/ const char * getGnameS(const char * gname)	/*@*/;
+extern /*@observer@*/ const char * getGnameS(const char * gname)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmbuild
  * Return cached group id.
@@ -134,7 +144,9 @@ extern /*@observer@*/ const char * getGnameS(const char * gname)	/*@*/;
  * @param gname		group name
  * @return		cached gid
  */
-gid_t getGidS(const char * gname)	/*@*/;
+gid_t getGidS(const char * gname)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup rpmbuild
  * Return build hostname.
