@@ -818,7 +818,7 @@ AC_OUTPUT([Makefile rpmrc macros lib/Makefile
 	build/Makefile tools/Makefile scripts/Makefile
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
 	misc/Makefile po/Makefile.in intl/Makefile
-	doc/Makefile doc/pl/Makefile doc/ru/Makefile
+	doc/Makefile doc/manual/Makefile doc/pl/Makefile doc/ru/Makefile
 	python/Makefile],
 	[touch Makefile.in
 	sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
