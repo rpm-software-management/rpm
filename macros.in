@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.65 2000/06/23 01:19:45 jbj Exp $
+# $Id: macros.in,v 1.66 2000/07/07 20:36:19 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -251,7 +251,7 @@
 %{nil}
 
 # The list of tags for which indices will be built.
-%_dbi_indices	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Depends
+%_dbi_tags	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Depends
 
 # "Packages" needs fcntl shared/exclusive lock.
 %_dbi_config_Packages	%{_dbi_config}:lockdbfd
