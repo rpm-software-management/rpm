@@ -278,12 +278,13 @@ static int regionSwab(struct indexEntry * entry, int il, int dl,
 
 	ie.info.tag = ntohl(pe->tag);
 	ie.info.type = ntohl(pe->type);
-	assert(ie.info.type >= RPM_MIN_TYPE && ie.info.type <= RPM_MAX_TYPE);
 	ie.info.count = ntohl(pe->count);
 	ie.info.offset = ntohl(pe->offset);
 	ie.data = t = dataStart + ie.info.offset;
 	ie.length = dataLength(ie.info.type, ie.data, ie.info.count, 1);
 	ie.rdlen = 0;
+
+assert(ie.info.type >= RPM_MIN_TYPE && ie.info.type <= RPM_MAX_TYPE);
 
 	if (entry) {
 	    ie.info.offset = regionid;
@@ -579,7 +580,6 @@ assert(rdlen == dl);
 	  }
 
 	}
-
     }
 
     h->sorted = 0;

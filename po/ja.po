@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-14 17:04-0500\n"
+"POT-Creation-Date: 2000-12-17 14:41-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -88,7 +88,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.125 2000/12/14 22:14:31 jbj Exp $
+# $Id: ja.po,v 1.126 2000/12/17 19:55:32 jbj Exp $
 #: rpm.c:185 rpmqv.c:269
 #, c-format
 msgid "rpm: %s\n"
@@ -3131,7 +3131,7 @@ msgstr "パッケージ %s は再配置できません"
 
 #: lib/problems.c:116
 #, fuzzy, c-format
-msgid "file %s conflicts between attemped installs of %s and %s"
+msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "ファイル %s は %s-%s-%s と %s-%s-%s のインストールのファイルと競合しています"
 

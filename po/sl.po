@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.110 2000/12/14 22:14:33 jbj Exp $
+# $Id: sl.po,v 1.111 2000/12/17 19:55:49 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-14 17:04-0500\n"
+"POT-Creation-Date: 2000-12-17 14:41-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3112,7 +3112,7 @@ msgstr "paketa %s ni mo¾no prestaviti\n"
 
 #: lib/problems.c:116
 #, fuzzy, c-format
-msgid "file %s conflicts between attemped installs of %s and %s"
+msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "datoteka %s je v sporu med poskusom namestitve %s in %s"
 
 #: lib/problems.c:121

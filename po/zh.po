@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-14 17:04-0500\n"
+"POT-Creation-Date: 2000-12-17 14:41-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2942,7 +2942,7 @@ msgstr ""
 
 #: lib/problems.c:116
 #, c-format
-msgid "file %s conflicts between attemped installs of %s and %s"
+msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
 #: lib/problems.c:121

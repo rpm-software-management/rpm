@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-12-14 17:04-0500\n"
+msgstr "POT-Creation-Date: 2000-12-17 14:41-0500\n"
 
 #: build.c:26
 #, fuzzy, c-format
@@ -3182,7 +3182,7 @@ msgstr "aucun package n'a été spécifié pour l'installation"
 
 #: lib/problems.c:116
 #, c-format
-msgid "file %s conflicts between attemped installs of %s and %s"
+msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 
 #: lib/problems.c:121

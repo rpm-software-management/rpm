@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-14 17:04-0500\n"
+"POT-Creation-Date: 2000-12-17 14:41-0500\n"
 "PO-Revision-Date: 2000-10-09 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -3004,7 +3004,7 @@ msgstr "paket %s är inte relokerbart\n"
 
 #: lib/problems.c:116
 #, fuzzy, c-format
-msgid "file %s conflicts between attemped installs of %s and %s"
+msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "filen %s är en konflikt mellan installationsförsök av %s-%s-%s och %s-%s-%s"
 

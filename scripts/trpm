@@ -2,18 +2,22 @@
 
 dbg=	# echo
 
-dist=7.0
-type=all
-arch=`/bin/rpm --eval '%{_arch}'`
-
-root=`pwd`/root
-sudo=sudo
-rpm="/X/src/rpm401/rpm --root $root"
+rpm=/bin/rpm
 rpmb=/usr/bin/rpmbuild
+rpmq=/usr/bin/rpmquery
 rpmdb=/usr/bin/rpmdb
+
+dist=7.0
+type=min
+arch=`$rpm --eval '%{_arch}'`
+
+top=`pwd`
+root=$top/$dist
+sudo=sudo
 justdb="--justdb --noscripts --notriggers --ignoresize"
 dmopts="-l dmalloc.log -i 100 low"
 db1=
+rc="--rcfile $top/rpmrc-$dist"
 sorted=	# "| sort"
 
 minglob="
@@ -123,7 +127,7 @@ m4-
 perl-
 tcsh-
 "
-
+classes="min min1 min2 base devel build"
 notallpat="(kernel-[^2h])"
 
 for cmd in $*
@@ -133,54 +137,86 @@ do
     debug)		dbg=echo	;;
     dmalloc)		eval `dmalloc -b $dmopts`	;;
     db1)		db1="--define '%_dbapi 1'"	;;
-    5.2|6.2|7.0|7.1)	dist=$cmd	;;
+    5.2|6.2|7.0|7.1)
+	dist=$cmd
+	root=$top/$dist
+	rc="--rcfile $top/rpmrc-$dist $db1"
+	$dbg mkdir -p $root/{X/tmp,X/RPMS,X/SRPMS} || exit 1
+	cat << EOF > $top/rpmrc-$dist
+include:    /usr/lib/rpm/rpmrc
+macrofiles: /usr/lib/rpm/macros:/usr/lib/rpm/%{_target}/macros:$top/macros:$top/macros-$dist-$arch
+EOF
+	cat << EOF > $top/macros-$dist-$arch
+%_topdir	$root/X
+EOF
+	;;
+    config)
+	$dbg cat << EOF > $top/macros
+%_ntopdir	%{_topdir}/%{name}-%{version}-%{release}
+%_builddir	%{_ntopdir}
+%_sourcedir	%{_ntopdir}
+%_specdir	%{_ntopdir}
+%_rpmfilename	%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
+%_rpmdir	%{_topdir}/RPMS
+%_srcrpmdir	%{_topdir}/SRPMS
+%_tmppath	%{_topdir}/tmp
+EOF
+	;;
     manifest)
 	rm -f *-$dist-$arch
 	pkgs="/$dist/$arch"
  	ls -1 ${pkgs}/*.rpm | egrep "(noarch|$arch).rpm" > list-$dist-$arch
 	cat list-$dist-$arch | egrep -v $notallpat > all-$dist-$arch
-	for l in min min1 min2 base devel build
-	do
+	$dbg $rpmq $rc -qp --qf "/$dist/SRPMS/%{sourcerpm}\\n" \
+`cat all-$dist-$arch` | sort | uniq > all-$dist-$arch-srpms
+	for l in $classes ; do
 	    glv='$'${l}glob
 	    glist="`eval echo $glv`"
 	    for g in $glist ; do
 		ls -1 ${pkgs}/${g}*.rpm 2> /dev/null
 	    done | egrep "(noarch|$arch).rpm" $sorted > $l-$dist-$arch
+	    $dbg $rpmq $rc -qp --qf "/$dist/SRPMS/%{sourcerpm}\\n" \
+`cat $l-$dist-$arch` | sort | uniq > $l-$dist-$arch-srpms
+	done
+	;;
+    clean)
+	$dbg $sudo mv $root ${root}-$$ && $dbg $sudo rm -rf ${root}-$$
+	;;
+    --rebuild)
+	for srpm in `cat $type-$dist-$arch-srpms` ; do
+	    $dbg $rpmb $rc $cmd $srpm
 	done
 	;;
     --initdb)
-	[ -d $root ] && \
-		$dbg $sudo mv $root ${root}-$$ && \
-		$dbg $sudo rm -rf ${root}-$$ &
-	sleep 2
 	$dbg $sudo mkdir -p $root/var/lib/rpm
-	$dbg $sudo $rpm $db1 --initdb
+	$dbg $sudo $rpmdb $rc --root $root --initdb
 	;;
     --savedb)
 	( $dbg cd $root/var/lib && $dbg $sudo tar czvf rpmdb.tar.gz rpm ; )
 	;;
     --rebuilddb)
-	$dbg $sudo $rpm --rebuilddb -vv
+	$dbg $sudo $rpmdb $rc --root $root --rebuilddb -vv
 	;;
     --justdb)
 	[ -f $type-$dist-$arch ] || {
 	    echo $type-$dist-$arch not found
 	    exit 1
 	}
-	$dbg $sudo $rpm $db1 -Uv $justdb `cat $type-$dist-$arch`
+	$dbg $sudo $rpm $rc --root $root -Uv $justdb `cat $type-$dist-$arch`
 	;;
     -U*|-F*)
 	[ -f $type-$dist-$arch ] || {
 	    echo $type-$dist-$arch not found
 	    exit 1
 	}
-	$dbg $sudo $rpm $db1 $cmd `cat $type-$dist-$arch`
+	$dbg $sudo $rpm $rc --root $root $cmd `cat $type-$dist-$arch`
 	;;
-    -[Vqei]*)
-	$dbg $sudo $rpm $cmd
+    -[Vqei]*|--showrc)
+	$dbg $sudo $rpm $rc --root $root $cmd
 	;;
     chroot)
-	$dbg $sudo cp /etc/resolv.conf $root/etc
+	$dbg $sudo touch $root/etc/mtab
+	$dbg $sudo cp /etc/resolv.conf /etc/fstab $root/etc
 	$dbg $sudo env HOME=/root chroot $root
 	;;
     *)		type=$cmd	;;

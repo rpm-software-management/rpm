@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-14 17:04-0500\n"
+"POT-Creation-Date: 2000-12-17 14:41-0500\n"
 "PO-Revision-Date: 2000-08-23 22:24+0100\n"
 "Last-Translator: Milan Kerslager <milan.kerslager@spsselib.hiedu.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -3014,7 +3014,7 @@ msgstr "balíèek %s není pøemístitelný\n"
 
 #: lib/problems.c:116
 #, fuzzy, c-format
-msgid "file %s conflicts between attemped installs of %s and %s"
+msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "soubor %s zpùsobuje konflikt mezi instalovaným %s-%s-%s a %s-%s-%s"
 
 #: lib/problems.c:121

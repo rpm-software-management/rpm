@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-14 17:04-0500\n"
+"POT-Creation-Date: 2000-12-17 14:41-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3030,7 +3030,7 @@ msgstr "пакет %s - не перемещаемый\n"
 
 #: lib/problems.c:116
 #, fuzzy, c-format
-msgid "file %s conflicts between attemped installs of %s and %s"
+msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "конфликт файла %s при попытках установки %s-%s-%s и %s-%s-%s"
 
 #: lib/problems.c:121
