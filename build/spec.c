@@ -666,8 +666,8 @@ static int addChangelog(Header h, StringBuf sb)
 	/* find the next leading '*' (or eos) */
 	s = text;
 	do {
-	    while (*s && *s != '*') s++;
-	} while (*s && *(s-1) != '\n');
+	   s++;
+	} while (*s && (*(s-1) != '\n' || *s != '*'));
 	next = s;
 	s--;
 
