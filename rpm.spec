@@ -1,29 +1,34 @@
-Summary: Red Hat Package Manager
+Summary: The Red Hat package management system.
 Name: rpm
 %define version 2.92
 Version: %{version}
 Release: 3
-Group: Utilities/System
+Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.5.x/rpm-%{version}.tar.gz
 Copyright: GPL
 BuildRoot: /var/tmp/rpm-%{version}-root
 Conflicts: patch < 2.5
 
 %description
-RPM is a powerful package manager, which can be used to build, install, 
-query, verify, update, and uninstall individual software packages. A 
-package consists of an archive of files, and package information, including 
-name, version, and description.
+The Red Hat Package Manager (RPM) is a powerful command line driven
+package management system capable of installing, uninstalling,
+verifying, querying, and updating software packages.  Each software
+package consists of an archive of files along with information about
+the package like its version, a description, etc.
 
 %package devel
-Summary: Header files and libraries for programs that manipulate rpm packages
+Summary: Development files for applications which will manipulate RPM packages.
 Group: Development/Libraries
 
 %description devel
-The RPM packaging system includes a C library that makes it easy to
-manipulate RPM packages and databases. It is intended to ease the
-creation of graphical package managers and other tools that need
-intimate knowledge of RPM packages.
+This package contains the RPM C library and header files.  These
+development files will simplify the process of writing programs
+which manipulate RPM packages and databases and are intended to make
+it easier to create graphical package managers or any other tools
+that need an intimate knowledge of RPM packages in order to function.
+
+This package should be installed if you want to develop programs that
+will manipulate RPM packages and databases.
 
 %prep
 %setup -q
