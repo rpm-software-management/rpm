@@ -2005,6 +2005,18 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	break;
     case FSM_RENAME:
 	rc = Rename(fsm->opath, fsm->path);
+#if defined(ETXTBSY)
+	if (rc && errno == ETXTBSY) {
+	    char * path = alloca(strlen(fsm->path) + sizeof("-RPMDELETE"));
+	    (void) stpcpy( stpcpy(path, fsm->path), "-RPMDELETE");
+	    /*
+	     * XXX HP-UX (and other os'es) don't permit rename to busy
+	     * XXX files.
+	     */
+	    rc = Rename(fsm->path, path);
+	    if (!rc) rc = Rename(fsm->opath, fsm->path);
+	}
+#endif
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
