@@ -1366,7 +1366,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     int numRemoved;
     rpmts rollbackTransaction = NULL;
     int rollbackOnFailure = 0;
-    void * lock;
+    void * lock = NULL;
     int xx;
 
 
@@ -1382,13 +1382,15 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	rollbackOnFailure = 0;
     }
     /* If we are in test mode, there is no need to rollback on
-     * failure (-;
+     * failure, nor acquire the transaction lock.
      */
-    if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) rollbackOnFailure = 0;
-
-    lock = rpmtsAcquireLock(ts);
-    if (lock == NULL)
-	return -1;	/* XXX W2DO? */
+    if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) {
+	rollbackOnFailure = 0;
+    } else {
+	lock = rpmtsAcquireLock(ts);
+	if (lock == NULL)
+	    return -1;	/* XXX W2DO? */
+    }
 
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
@@ -1462,7 +1464,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 			rpmteO(p), NULL,
 			NULL, 0);
 
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_OLDPACKAGE)) {
+	 if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_OLDPACKAGE)) {
 	    Header h;
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
 	    while ((h = rpmdbNextIterator(mi)) != NULL)
