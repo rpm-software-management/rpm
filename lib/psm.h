@@ -138,9 +138,12 @@ struct psm_s {
     rpmTransactionSet ts;
     TFI_t fi;
     FD_t cfd;
+    FD_t fd;
 /*@observer@*/ const char * stepName;
 /*@owned@*/ const char * rpmio_flags;
 /*@owned@*/ const char * failedFile;
+/*@owned@*/ const char * pkgURL;
+/*@dependent@*/ const char * pkgfn;
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
     int scriptArg;		/*!< No. of installed instances. */
