@@ -1,9 +1,33 @@
-/*	$NetBSD: readelf.h,v 1.9 2002/05/18 07:00:47 pooka Exp $	*/
-/*@-redef@*/
-
 /*
- * readelf.h 
- * @(#)Id: readelf.h,v 1.9 2002/05/16 18:45:56 christos Exp 
+ * Copyright (c) Christos Zoulas 2003.
+ * All Rights Reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice immediately at the beginning of the file, without modification,
+ *    this list of conditions, and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *  
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+/*
+ * @(#)Id: readelf.h,v 1.9 2002/05/16 18:45:56 christos Exp
  *
  * Provide elf data structures for non-elf machines, allowing file
  * non-elf hosts to determine if an elf binary is stripped.
@@ -38,7 +62,6 @@ typedef uint8_t		Elf64_Char;
 
 #define EI_NIDENT	16
 
-/*@-matchfields@*/
 typedef struct {
     Elf32_Char	e_ident[EI_NIDENT];
     Elf32_Half	e_type;
@@ -72,7 +95,6 @@ typedef struct {
     Elf64_Half	e_shnum;
     Elf64_Half	e_shstrndx;
 } Elf64_Ehdr;
-/*@=matchfields@*/
 
 /* e_type */
 #define ET_EXEC		2
@@ -156,7 +178,6 @@ typedef struct {
     Elf32_Word	sh_entsize;
 } Elf32_Shdr;
 
-/*@-matchfields@*/
 typedef struct {
     Elf64_Word	sh_name;
     Elf64_Word	sh_type;
@@ -169,7 +190,6 @@ typedef struct {
     Elf64_Off	sh_addralign;
     Elf64_Off	sh_entsize;
 } Elf64_Shdr;
-/*@=matchfields@*/
 
 /* Notes used in ET_CORE */
 #define NT_PRSTATUS	1
@@ -212,6 +232,5 @@ typedef struct {
 #define GNU_OS_LINUX	0
 #define GNU_OS_HURD	1
 #define GNU_OS_SOLARIS	2
-/*@=redef@*/
 
 #endif

@@ -10,7 +10,7 @@ exit(sizeof(long long) < sizeof(long)); }],
 ac_cv_c_long_long=yes, ac_cv_c_long_long=no)
 fi])
 if test $ac_cv_c_long_long = yes; then
-  AC_DEFINE(HAVE_LONG_LONG,1,[Define if the `long long' type works.])
+  AC_DEFINE(HAVE_LONG_LONG)
 fi
 ])
 
@@ -43,7 +43,7 @@ AC_CACHE_CHECK([for tm_isdst in struct tm], ac_cv_struct_tm_isdst,
 #include <$ac_cv_struct_tm>], [struct tm tm; tm.tm_isdst;],
   ac_cv_struct_tm_isdst=yes, ac_cv_struct_tm_isdst=no)])
 if test "$ac_cv_struct_tm_isdst" = yes; then
-  AC_DEFINE(HAVE_TM_ISDST,1,[Define if we have "tm_isdst" in "struct tm".])
+  AC_DEFINE(HAVE_TM_ISDST)
 fi
 AC_CACHE_CHECK(for daylight, ac_cv_var_daylight,
 [AC_TRY_LINK(
@@ -55,7 +55,7 @@ extern int daylight;
 changequote([, ])dnl
 [atoi(daylight);], ac_cv_var_daylight=yes, ac_cv_var_daylight=no)])
   if test $ac_cv_var_daylight = yes; then
-    AC_DEFINE(HAVE_DAYLIGHT,1,[Define if we have a global "int" variable "daylight".])
+    AC_DEFINE(HAVE_DAYLIGHT)
   fi
 ])
 
@@ -88,7 +88,7 @@ if eval "test \"`echo '$ac_cv_type_'$1`\" = yes"; then
   AC_MSG_RESULT(yes)
 else
   AC_MSG_RESULT(no)
-  AC_DEFINE_UNQUOTED($1, $2, $1)
+  AC_DEFINE_UNQUOTED($1, $2)
 fi
 ])
 
@@ -111,7 +111,7 @@ main()
   exit(0);
 }], AC_CV_NAME=`cat conftestval`, AC_CV_NAME=0, ifelse([$2], , , AC_CV_NAME=$2))])dnl
 AC_MSG_RESULT($AC_CV_NAME)
-AC_DEFINE_UNQUOTED(AC_TYPE_NAME, $AC_CV_NAME, AC_TYPE_NAME)
+AC_DEFINE_UNQUOTED(AC_TYPE_NAME, $AC_CV_NAME)
 undefine([AC_TYPE_NAME])dnl
 undefine([AC_CV_NAME])dnl
 ])
@@ -150,7 +150,7 @@ AC_CACHE_VAL(ac_cv_type_$1,
 #endif], ac_cv_type_$1=yes, ac_cv_type_$1=no)])dnl
 AC_MSG_RESULT($ac_cv_type_$1)
 if test $ac_cv_type_$1 = no; then
-  AC_DEFINE($1, $2, $1)
+  AC_DEFINE($1, $2)
 fi
 ])
 
@@ -204,7 +204,8 @@ AC_DEFUN([AC_SYS_LARGEFILE],
      [  --disable-largefile     omit support for large files])
    if test "$enable_largefile" != no; then
 
-     AC_CACHE_CHECK([for special C compiler options needed for large files],
+     AC_CACHE_CHECK([for special C compiler options needed for large files=
+],
        ac_cv_sys_largefile_CC,
        [ac_cv_sys_largefile_CC=no
         if test "$GCC" != yes; then
@@ -250,4 +251,34 @@ AC_DEFUN([AC_FUNC_FSEEKO],
      AC_DEFINE(HAVE_FSEEKO, 1,
        [Define if fseeko (and presumably ftello) exists and is declared.])
    fi])
+
+# serial 9
+
+# From Paul Eggert.
+
+# BeOS 5 has <wchar.h> but does not define mbstate_t,
+# so you can't declare an object of that type.
+# Check for this incompatibility with Standard C.
+
+# Include stdlib.h first, because otherwise this test would fail on Linux
+# (at least glibc-2.1.3) because the "_XOPEN_SOURCE 500" definition elicits
+# a syntax error in wchar.h due to the use of undefined __int32_t.
+AC_DEFUN([AC_MBSTATE_T],
+  [
+   AC_CHECK_HEADERS(stdlib.h)
+  
+   AC_CACHE_CHECK([for mbstate_t], ac_cv_type_mbstate_t,
+    [AC_TRY_COMPILE([
+#if HAVE_STDLIB_H 
+# include <stdlib.h>
+#endif
+#include <wchar.h>],
+      [mbstate_t x; return sizeof x;],
+      ac_cv_type_mbstate_t=yes,
+      ac_cv_type_mbstate_t=no)])
+   if test $ac_cv_type_mbstate_t = no; then
+     AC_DEFINE(mbstate_t, int,
+               [Define to a type if <wchar.h> does not define.])
+   fi])
+
 

@@ -1,14 +1,20 @@
 ** README for file(1) Command **
-@(#) Id: README,v 1.25 2001/07/23 21:30:22 christos Exp 
+@(#) $Id: README,v 1.33 2003/05/23 21:31:56 christos Exp $
 
-This is Release 3.x of Ian Darwin's (copyright but distributable)
+This is Release 4.x of Ian Darwin's (copyright but distributable)
 file(1) command. This version is the standard "file" command for Linux,
 *BSD, and other systems. (See "patchlevel.h" for the exact release number).
+
+The major feature of 4.x is the refactoring of the code into a library,
+and the re-write of the file command in terms of that library. The library
+itself, libmagic can be used by 3rd party programs that wish to identify
+file types without having to fork() and exec() file. The prime contributor
+for 4.0 was M\xe5ns Rullg\xe5rd.
 
 UNIX is a trademark of UNIX System Laboratories.
 
 The prime contributor to Release 3.8 was Guy Harris, who put in megachanges
-including byte-order independance.
+including byte-order independence.
 
 The prime contributor to Release 3.0 was Christos Zoulas, who put
 in hundreds of lines of source code changes, including his own
@@ -33,7 +39,7 @@ In addition, the /etc/magic file is built from a subdirectory
 for easier(?) maintenance.  I will act as a clearinghouse for
 magic numbers assigned to all sorts of data files that
 are in reasonable circulation. Send your magic numbers,
-in magic(4) format please, to the maintainer, Christos Zoulas.
+in magic(5) format please, to the maintainer, Christos Zoulas.
 
 LEGAL.NOTICE - read this first.
 README - read this second (you are currently reading this file).
@@ -43,7 +49,7 @@ Makefile - read this next, adapt it as needed (particularly
 	the man page layouts), type "make" to compile, 
 	"make try" to try it out against your old version.
 	Expect some diffs, particularly since your original
-	file(1) may not grok the imbedded-space ("\ ") in
+	file(1) may not grok the embedded-space ("\ ") in
 	the current magic file, or may even not use the
 	magic file.
 apprentice.c - parses /etc/magic to learn magic
@@ -61,9 +67,8 @@ magdir - directory of /etc/magic pieces
 	magdir/Makefile - ADJUST THIS FOR YOUR CONFIGURATION
 names.h - header file for ascmagic.c
 softmagic.c - 2nd set of tests, based on /etc/magic
-readelf.[ch] - Standalone elf parsing code.
+readelf.[ch] - Stand-alone elf parsing code.
 compress.c - on-the-fly decompression.
-internat.c - recognize international `text' files.
 print.c - print results, errors, warnings.
 
 If your gzip sometimes fails to decompress things complaining about a short
@@ -84,11 +89,10 @@ E-mail: christos@astron.com
 
 Phone: Do not even think of telephoning me about this program. Send cash first!
 
-Parts of this software were developed at SoftQuad Inc., 56 Aberfoyle
-Cres, # 810, Toronto, Ontario CANADA M8X 2W4.  Phone: 416-239-4801 or
-800-387-2777. Email: mail@sq.com.  Call for information on SGML editing
-and browsing, Unix text processing, and customised products on Unix,
-DOS and Mac.
+Parts of this software were developed at SoftQuad Inc., developers
+of SGML/HTML/XML publishing software, in Toronto, Canada.
+SoftQuad was swallowed up by Corel in 2002
+and does not exist any longer.
 
 From: Kees Zeelenberg
 

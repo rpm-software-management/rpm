@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright (c) Ian F. Darwin 1986-1995.
  * Software written by Ian F. Darwin and others;
  * maintained 1995-present by Christos Zoulas and others.
@@ -32,13 +32,42 @@
  */
 /*
  * file.h - definitions for file(1) program
- * @(#) Id: file.h,v 1.53 2003/03/28 21:02:03 christos Exp 
+ * @(#)$Id: file.h,v 1.60 2004/03/22 19:12:15 christos Exp $
  */
 
 #ifndef __file_h__
 #define __file_h__
 
-/*@-redef@*/
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#include <stdio.h>	/* Include that here, to make sure __P gets defined */
+#include <errno.h>
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+/* Do this here and now, because struct stat gets re-defined on solaris */
+#include <sys/stat.h>
+
+#ifndef MAGIC
+#define MAGIC "/etc/magic"
+#endif
+
+#ifdef __EMX__
+#define PATHSEP	';'
+#else
+#define PATHSEP	':'
+#endif
+
+#define private static
+#ifndef protected
+#define protected
+#endif
+#define public
 
 #ifndef HOWMANY
 # define HOWMANY 65536		/* how much of the file to look at */
@@ -51,6 +80,7 @@
 #define VERSIONNO	2
 #define FILE_MAGICSIZE	(32 * 4)
 
+#define	FILE_LOAD	0
 #define FILE_CHECK	1
 #define FILE_COMPILE	2
 
@@ -86,9 +116,9 @@ struct magic {
 	/* Word 3 */
 	uint8_t in_op;		/* operator for indirection */
 	uint8_t mask_op;	/* operator for mask */
-	uint8_t dummy1;
-	uint8_t dummy2;
-#define				FILE_OPS	"&|^+-*%/"
+	uint8_t dummy1;	
+	uint8_t dummy2;	
+#define				FILE_OPS	"&|^+-*/%"
 #define				FILE_OPAND	0
 #define				FILE_OPOR	1
 #define				FILE_OPXOR	2
@@ -99,9 +129,9 @@ struct magic {
 #define				FILE_OPMODULO	7
 #define				FILE_OPINVERSE	0x80
 	/* Word 4 */
-	int32_t offset;		/* offset to magic number */
+	uint32_t offset;	/* offset to magic number */
 	/* Word 5 */
-	int32_t in_offset;	/* offset from indirection */
+	uint32_t in_offset;	/* offset from indirection */
 	/* Word 6 */
 	uint32_t mask;	/* mask before comparison with value */
 	/* Word 7 */
@@ -114,7 +144,7 @@ struct magic {
 		uint16_t h;
 		uint32_t l;
 		char s[MAXstring];
-		const char * buf;
+		char *buf;
 		uint8_t hs[2];	/* 2 bytes of a fixed-endian "short" */
 		uint8_t hl[4];	/* 4 bytes of a fixed-endian "long" */
 	} value;		/* either number or string */
@@ -134,14 +164,11 @@ struct magic {
 /* list of magic entries */
 struct mlist {
 	struct magic *magic;		/* array of magic entries */
-	uint32_t nmagic;		/* number of entries in array */
+	uint32_t nmagic;			/* number of entries in array */
 	int mapped;  /* allocation type: 0 => apprentice_file
 		      *                  1 => apprentice_map + malloc
 		      *                  2 => apprentice_map + mmap */
-/*@relnull@*/
-	struct mlist *next;
-/*@relnull@*/
-	struct mlist *prev;
+	struct mlist *next, *prev;
 };
 
 struct magic_set {
@@ -151,121 +178,64 @@ struct magic_set {
 	int32_t *off;
     } c;
     struct out {
+	/* Accumulation buffer */
 	char *buf;
 	char *ptr;
 	size_t len;
 	size_t size;
+	/* Printable buffer */
+	char *pbuf;
+	size_t psize;
     } o;
+    int error;
     int flags;
     int haderr;
 };
 
-enum fmagicFlags_e {
-/*@-enummemuse@*/
-    FMAGIC_FLAGS_NONE		= 0,
-/*@=enummemuse@*/
-    FMAGIC_FLAGS_DEBUG		= (1 << 0),
-    FMAGIC_FLAGS_BRIEF		= (1 << 1),	/*!< brief output format */
-    FMAGIC_FLAGS_MIME		= (1 << 2),	/*!< output as mime-types */
-    FMAGIC_FLAGS_CONTINUE	= (1 << 3),	/*!< continue after 1st match */
-    FMAGIC_FLAGS_FOLLOW		= (1 << 4),	/*!< follow symlinks? */
-    FMAGIC_FLAGS_SPECIAL	= (1 << 5),	/*!< analyze block devices? */
-    FMAGIC_FLAGS_UNCOMPRESS	= (1 << 6),	/*!< uncompress files? */
-    FMAGIC_FLAGS_NOPAD		= (1 << 7)	/*!< don't pad output */
-};
+struct stat;
+protected char *file_fmttime(uint32_t, int);
+protected int file_buffer(struct magic_set *, const void *, size_t);
+protected int file_fsmagic(struct magic_set *, const char *, struct stat *);
+protected int file_pipe2file(struct magic_set *, int, const void *, size_t);
+protected int file_printf(struct magic_set *, const char *, ...);
+protected int file_reset(struct magic_set *);
+protected int file_tryelf(struct magic_set *, int, const unsigned char *, size_t);
+protected int file_zmagic(struct magic_set *, const unsigned char *, size_t);
+protected int file_ascmagic(struct magic_set *, const unsigned char *, size_t);
+protected int file_is_tar(struct magic_set *, const unsigned char *, size_t);
+protected int file_softmagic(struct magic_set *, const unsigned char *, size_t);
+protected struct mlist *file_apprentice(struct magic_set *, const char *, int);
+protected uint32_t file_signextend(struct magic_set *, struct magic *, uint32_t);
+protected void file_delmagic(struct magic *, int type, size_t entries);
+protected void file_badread(struct magic_set *);
+protected void file_badseek(struct magic_set *);
+protected void file_oomem(struct magic_set *);
+protected void file_error(struct magic_set *, int, const char *, ...);
+protected void file_magwarn(const char *, ...);
+protected void file_mdump(struct magic *);
+protected void file_showstr(FILE *, const char *, size_t);
+protected size_t file_mbswidth(const char *);
+protected const char *file_getbuffer(struct magic_set *);
 
-struct fmagic_s {
-    int flags;			/*!< bit(s) to control fmagic behavior. */
-/*@dependent@*/ /*@observer@*/ /*@relnull@*/
-    const char *magicfile;	/*!< name of the magic file		*/
-/*@dependent@*/ /*@observer@*/
-    const char *separator;	/*!< file name/type separator (default ":" */
-    int lineno;			/*!< current line number in magic file	*/
-/*@relnull@*/
-    struct mlist * mlist;	/*!< list of arrays of magic entries	*/
-/*@relnull@*/
-    struct mlist * ml;		/*!< current magic array item		*/
-/*@observer@*/
-    const char * fn;		/*!< current file name			*/
-    int fd;			/*!< current file descriptor            */
-    struct stat sb;		/*!< current file stat(2) buffer	*/
-/*@relnull@*/
-    unsigned char * buf;	/*!< current file buffer		*/
-    int nb;			/*!< current no. bytes in file buffer	*/
-    union VALUETYPE val;	/*!< current magic expression value	*/
-    int cls;			/*!< Elf class				*/
-    int swap;			/*!< Elf swap bytes?			*/
-/*@dependent@*/
-    char * obp;			/*!< current output buffer pointer	*/
-    size_t nob;			/*!< bytes remaining in output buffer	*/
-    char obuf[512];		/*!< output buffer			*/
-};
-
-typedef /*@abstract@*/ struct fmagic_s * fmagic;
-
-/*@unchecked@*/
-extern fmagic global_fmagic;
-
-/*@unchecked@*//*@observer@*/
-extern const char * default_magicfile;
-
-#ifdef __cplusplus
-extern "C" {
+#ifndef HAVE_STRERROR
+extern int sys_nerr;
+extern char *sys_errlist[];
+#define strerror(e) \
+	(((e) >= 0 && (e) < sys_nerr) ? sys_errlist[(e)] : "Unknown error")
 #endif
 
-/*@mayexit@*/
-extern int fmagicSetup(fmagic fm, const char *fn, int action)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fm, fileSystem, internalState @*/;
-extern int fmagicProcess(fmagic fm, const char *fn, int wid)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fm, fileSystem, internalState @*/;
+#ifndef HAVE_STRTOUL
+#define strtoul(a, b, c)	strtol(a, b, c)
+#endif
 
-extern int fmagicA(fmagic fm)
-	/*@modifies fm @*/;
-extern int fmagicD(fmagic fm)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fm, fileSystem, internalState @*/;
-extern void fmagicE(fmagic fm)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fm, fileSystem, internalState @*/;
-extern int fmagicF(fmagic fm, int zfl)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fm, fileSystem, internalState @*/;
-extern int fmagicS(fmagic fm)
-	/*@globals fileSystem @*/
-	/*@modifies fm, fileSystem @*/;
-extern int fmagicZ(fmagic fm)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fm, fileSystem, internalState @*/;
+#if defined(HAVE_MMAP) && defined(HAVE_SYS_MMAN_H) && !defined(QUICK)
+#define QUICK
+#endif
 
-extern void file_printf(const fmagic fm, const char *f, ...)
-	/*@modifies fm @*/;
-
-/*@observer@*/
-extern const char *file_fmttime(uint32_t v, int local)
-	/*@*/;
-
-extern void file_magwarn(const char *f, ...)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-extern void file_mdump(struct magic *m)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-extern void file_showstr(FILE *fp, const char *s, size_t len)
-	/*@globals fileSystem @*/
-	/*@modifies fp, fileSystem @*/;
-
-extern uint32_t file_signextend(struct magic *m, uint32_t v)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-extern int file_pipe2file(int fd, const void *startbuf, size_t nbytes)
-	/*@globals errno, fileSystem, internalState @*/
-	/*@modifies errno, fileSystem, internalState @*/;
-
-#ifdef __cplusplus
+#define FILE_RCSID(id) \
+static const char *rcsid(const char *p) { \
+	return rcsid(p = id); \
 }
-#endif
+#else
 
-/*@=redef@*/
 #endif /* __file_h__ */

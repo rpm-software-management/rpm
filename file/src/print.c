@@ -1,64 +1,70 @@
 /*
+ * Copyright (c) Ian F. Darwin 1986-1995.
+ * Software written by Ian F. Darwin and others;
+ * maintained 1995-present by Christos Zoulas and others.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice immediately at the beginning of the file, without modification,
+ *    this list of conditions, and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *    This product includes software developed by Ian F. Darwin and others.
+ * 4. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *  
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+/*
  * print.c - debugging printout routines
- *
- * Copyright (c) Ian F. Darwin, 1987.
- * Written by Ian F. Darwin.
- *
- * This software is not subject to any license of the American Telephone
- * and Telegraph Company or of the Regents of the University of California.
- *
- * Permission is granted to anyone to use this software for any purpose on
- * any computer system, and to alter it and redistribute it freely, subject
- * to the following restrictions:
- *
- * 1. The author is not responsible for the consequences of use of this
- *    software, no matter how awful, even if they arise from flaws in it.
- *
- * 2. The origin of this software must not be misrepresented, either by
- *    explicit claim or by omission.  Since few users ever read sources,
- *    credits must appear in the documentation.
- *
- * 3. Altered versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.  Since few users
- *    ever read sources, credits must appear in the documentation.
- *
- * 4. This notice may not be removed or altered.
  */
 
-#include "system.h"
 #include "file.h"
-#include "debug.h"
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#include <time.h>
 
-FILE_RCSID("@(#)Id: print.c,v 1.38 2002/07/03 18:37:44 christos Exp ")
-
-/*@access fmagic @*/
-
-/*@-compmempass@*/
-/*@unchecked@*/
-static struct fmagic_s myfmagic;
-/*@unchecked@*/
-fmagic global_fmagic = &myfmagic;
-/*@=compmempass@*/
+#ifndef lint
+FILE_RCSID("@(#)$Id: print.c,v 1.44 2003/09/12 19:39:44 christos Exp $")
+#endif  /* lint */
 
 #define SZOF(a)	(sizeof(a) / sizeof(a[0]))
 
 #ifndef COMPILE_ONLY
-void
+protected void
 file_mdump(struct magic *m)
 {
-	/*@observer@*/
-	static const char *typ[] = { "invalid", "byte", "short", "invalid",
+	private const char *typ[] = { "invalid", "byte", "short", "invalid",
 				     "long", "string", "date", "beshort",
 				     "belong", "bedate", "leshort", "lelong",
 				     "ledate", "pstring", "ldate", "beldate",
 				     "leldate", "regex" };
-	static const char optyp[] = { '@', '&', '|', '^', '+', '-', 
+	private const char optyp[] = { '@', '&', '|', '^', '+', '-', 
 				      '*', '/', '%' };
 	(void) fputc('[', stderr);
-/*@-formatconst@*/
 	(void) fprintf(stderr, ">>>>>>>> %d" + 8 - (m->cont_level & 7),
 		       m->offset);
-/*@=formatconst@*/
 
 	if (m->flag & INDIR) {
 		(void) fprintf(stderr, "(%s,",
@@ -78,10 +84,11 @@ file_mdump(struct magic *m)
 	if (m->mask_op & FILE_OPINVERSE)
 		(void) fputc('~', stderr);
 	if (m->mask) {
-		((m->mask_op&0x7F) < SZOF(optyp)) ? 
-			(void) fputc(optyp[m->mask_op&0x7F], stderr) :
-			(void) fputc('?', stderr);
-		if (m->type != FILE_STRING || m->type != FILE_PSTRING)
+		if ((m->mask_op & 0x7F) < SZOF(optyp)) 
+			fputc(optyp[m->mask_op&0x7F], stderr);
+		else
+			fputc('?', stderr);
+		if(FILE_STRING != m->type || FILE_PSTRING != m->type)
 			(void) fprintf(stderr, "%.8x", m->mask);
 		else {
 			if (m->mask & STRING_IGNORE_LOWERCASE) 
@@ -133,89 +140,36 @@ file_mdump(struct magic *m)
 }
 #endif
 
-#if !defined(HAVE_ERROR) || defined(__LCLINT__)
-/*
- * error - print best error message possible and exit
- */
 /*VARARGS*/
-void
-error(int status, /*@unused@*/ int errnum, const char * format, ...)
-{
-	va_list va;
-
-	va_start(va,  format);
-	/* cuz we use stdout for most, stderr here */
-	(void) fflush(stdout); 
-
-	if (__progname != NULL) 
-		(void) fprintf(stderr, "%s: ", __progname);
-	(void) vfprintf(stderr,  format, va);
-	va_end(va);
-#if NOTYET
-	if (status)
-#endif
-		exit(status);
-}
-#endif
-
-/*VARARGS*/
-void
+protected void
 file_magwarn(const char *f, ...)
 {
-	fmagic fm = global_fmagic;
 	va_list va;
-
 	va_start(va, f);
+
 	/* cuz we use stdout for most, stderr here */
 	(void) fflush(stdout); 
 
-	if (__progname != NULL) 
-		(void) fprintf(stderr, "%s: %s, %d: ", 
-			       __progname, fm->magicfile, fm->lineno);
+	(void) fprintf(stderr, "WARNING: ");
 	(void) vfprintf(stderr, f, va);
 	va_end(va);
-	(void) fputc('\n', stderr);
-/*@-globstate@*/ /* FIX: __progname might be null */
-	return;
-/*@=globstate@*/
+	fputc('\n', stderr);
 }
 
-void
-file_printf(const fmagic fm, const char *f, ...)
-{
-	va_list va;
-	size_t nob;
-	int rc;
-
-	va_start(va, f);
-/*@-boundswrite@*/
-	rc = vsnprintf(fm->obp, fm->nob, f, va);
-/*@=boundswrite@*/
-	va_end(va);
-
-	fm->obuf[sizeof(fm->obuf)-1] = '\0';
-	nob = strlen(fm->obp);
-	fm->obp += nob;
-	fm->nob -= nob;
-}
-
-
-#ifndef COMPILE_ONLY
-const char *
+protected char *
 file_fmttime(uint32_t v, int local)
 {
-	char *pp = "???";
-	char *rt;
+	char *pp, *rt;
 	time_t t = (time_t)v;
 	struct tm *tm;
 
 	if (local) {
 		pp = ctime(&t);
 	} else {
-#if !defined(HAVE_DAYLIGHT) && !defined(__LCLINT__)
-		static int daylight = 0;
+#ifndef HAVE_DAYLIGHT
+		private int daylight = 0;
 #ifdef HAVE_TM_ISDST
-		static time_t now = (time_t)0;
+		private time_t now = (time_t)0;
 
 		if (now == (time_t)0) {
 			struct tm *tm1;
@@ -228,14 +182,10 @@ file_fmttime(uint32_t v, int local)
 		if (daylight)
 			t += 3600;
 		tm = gmtime(&t);
-		if (tm != NULL)
-			pp = asctime(tm);
+		pp = asctime(tm);
 	}
 
-/*@-modobserver@*/
 	if ((rt = strchr(pp, '\n')) != NULL)
 		*rt = '\0';
-/*@=modobserver@*/
 	return pp;
 }
-#endif

@@ -1,40 +1,15 @@
-LINT = splint
+MAGIC	 = $(pkgdatadir)/magic
+lib_LTLIBRARIES = libmagic.la
+include_HEADERS = magic.h
 
-BUILT_SOURCES = listobjs $(man_MANS)
+bin_PROGRAMS = file
 
-#pkgincdir =	@includedir@/fmagic
-#pkginc_HEADERS = file.h
-noinst_HEADERS = debug.h names.h patchlevel.h readelf.h system.h tar.h \
-		file.h
+AM_CPPFLAGS = -DMAGIC='"$(MAGIC)"'
 
-#usrlibdir = $(libdir)@MARK64@
-#usrlib_LTLIBRARIES = libfmagic.la
+libmagic_la_SOURCES = magic.c apprentice.c softmagic.c ascmagic.c \
+	compress.c is_tar.c readelf.c print.c fsmagic.c \
+	funcs.c file.h names.h patchlevel.h readelf.h tar.h apptype.c
+libmagic_la_LDFLAGS = -version-info 1:0:0
 
-noinst_LTLIBRARIES = libfmagic.la
-
-libfmagic_la_SOURCES = \
-	apprentice.c ascmagic.c fsmagic.c compress.c \
-	print.c readelf.c softmagic.c
-
-#bin_PROGRAMS =	file
-noinst_PROGRAMS =	file
-
-file_SOURCES =	file.c
-file_LDFLAGS =	-all-static
-file_LDADD =	libfmagic.la
-
-pkglibdir =  @prefix@/lib/rpm
-MAGIC	 = $(pkglibdir)/magic
-CPPFLAGS = -DMAGIC='"$(MAGIC)"'
-
-listobjs:
-	@echo $(libfmagic_la_SOURCES:.c=.lo) > $@
-
-.PHONY: lint
-lint:
-	$(LINT)  $(DEFS) $(INCLUDES) $(file_SOURCES) $(libfmagic_la_SOURCES) $(pkginc_HEADERS) $(noinst_HEADERS)
-
-.PHONY: sources
-sources:
-	@echo $(libfmagic_la_SOURCES:%=file/src/%)
-
+file_SOURCES = file.c
+file_LDADD = libmagic.la
