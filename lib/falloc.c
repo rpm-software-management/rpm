@@ -146,8 +146,13 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 
 /* XXX W2DO? exit(1) forces the user to discover rpm --rebuilddb */
 	if (!header.isFree) {
-	    fprintf(stderr, _("free list corrupt (%u)- contact "
-			"rpm-list@redhat.com\n"), nextFreeBlock);
+	    fprintf(stderr, _("free list corrupt (%u)- please run\n"
+			"\t\"rpm --rebuilddb\"\n"
+			"More information is available from http://www.rpm.org "
+			"or the rpm-list@redhat.com mailing list\n"
+			"if \"rpm --rebuilddb\" fails to correct the problem.\n"),
+			nextFreeBlock);
+
 	    exit(1);
 	}
 
