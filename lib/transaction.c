@@ -38,7 +38,8 @@ static int archOkay(Header h);
 static int osOkay(Header h);
 static Header relocateFileList(struct availablePackage * alp, 
 			       rpmProblemSet probs, Header h, 
-			       enum fileActions * actions);
+			       enum fileActions * actions,
+			       int allowBadRelocate);
 static int psTrim(rpmProblemSet filter, rpmProblemSet target);
 static int sharedCmp(const void * one, const void * two);
 static enum fileActions decideFileFate(char * filespec, short dbMode, 
@@ -138,33 +139,36 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     NOTIFY((NULL, RPMCALLBACK_TRANS_START, 1, al->size, NULL, notifyData));
 
     for (alp = al->list; (alp - al->list) < al->size; alp++) {
-	if (!archOkay(alp->h))
+	if (!archOkay(alp->h) && !(ignoreSet & RPMPROB_FILTER_IGNOREARCH))
 	    psAppend(probs, RPMPROB_BADARCH, alp->key, alp->h, NULL, NULL);
 
-	if (!osOkay(alp->h)) {
+	if (!osOkay(alp->h) && !(ignoreSet & RPMPROB_FILTER_IGNOREOS)) {
 	    psAppend(probs, RPMPROB_BADOS, alp->key, alp->h, NULL, NULL);
 	}
 
         NOTIFY((alp->h, RPMCALLBACK_TRANS_PROGRESS, (alp - al->list), al->size,
 		NULL, notifyData));
 
-	rc = rpmdbFindPackage(ts->db, alp->name, &dbi);
-	if (rc == 2) {
-	    return -1;
-	} else if (!rc) {
-	    for (i = 0; i < dbi.count; i++) 
-		ensureOlder(ts->db, alp->h, dbi.recs[i].recOffset, 
-				  probs, alp->key);
+	if (!(ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
+	    rc = rpmdbFindPackage(ts->db, alp->name, &dbi);
+	    if (rc == 2) {
+		return -1;
+	    } else if (!rc) {
+		for (i = 0; i < dbi.count; i++) 
+		    ensureOlder(ts->db, alp->h, dbi.recs[i].recOffset, 
+				      probs, alp->key);
 
-	    dbiFreeIndexRecord(dbi);
+		dbiFreeIndexRecord(dbi);
+	    }
 	}
 
 	rc = findMatches(ts->db, alp->name, alp->version, alp->release, &dbi);
 	if (rc == 2) {
 	    return -1;
 	} else if (!rc) {
-	    psAppend(probs, RPMPROB_PKG_INSTALLED, alp->key, alp->h, NULL, 
-		     NULL);
+	    if (!(ignoreSet & RPMPROB_FILTER_REPLACEPKG))
+		psAppend(probs, RPMPROB_PKG_INSTALLED, alp->key, alp->h, NULL, 
+			 NULL);
 	    dbiFreeIndexRecord(dbi);
 	}
 
@@ -218,7 +222,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	fi->actions = calloc(sizeof(*fi->actions), fi->fc);
 	fi->h = hdrs[alp - al->list] = relocateFileList(alp, probs, alp->h, 
-						         fi->actions);
+		 fi->actions, ignoreSet & RPMPROB_FILTER_FORCERELOCATE);
 
 	NOTIFY((fi->h, RPMCALLBACK_TRANS_PROGRESS, (alp - al->list), al->size,
 	    NULL, notifyData));
@@ -354,7 +358,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	    if (fi->type == ADDED)
 		handleInstInstalledFiles(fi, ts->db, sharedList + i, 
-					 last - i + 1, !beingRemoved, probs);
+			 last - i + 1, 
+			 !(beingRemoved || 
+				(ignoreSet & RPMPROB_FILTER_REPLACEOLDFILES)), 
+			 probs);
 	    else if (fi->type == REMOVED && !beingRemoved)
 		handleRmvdInstalledFiles(fi, ts->db, sharedList + i, 
 					 last - i + 1);
@@ -364,7 +371,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	free(sharedList);
 
-	handleOverlappedFiles(fi, ht, probs);
+	handleOverlappedFiles(fi, ht, 
+	       (ignoreSet & RPMPROB_FILTER_REPLACENEWFILES) ? NULL : probs);
     }
     NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 6, flEntries, NULL, notifyData));
 
@@ -387,8 +395,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     }
 
     NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 7, al->size, NULL, notifyData));
-
-    rpmProblemSetFilter(probs, ignoreSet);
 
     if ((flags & RPMTRANS_FLAG_BUILD_PROBS) || 
            (probs->numProblems && (!okProbs || psTrim(okProbs, probs)))) {
@@ -430,7 +436,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		    fd = NULL;
 		} else {
 		    hdrs[alp - al->list] = 
-			relocateFileList(alp, probs, h, NULL);
+			relocateFileList(alp, probs, h, NULL, 1);
 		    headerFree(h);
 		}
 	    }
@@ -578,7 +584,8 @@ void rpmProblemSetFree(rpmProblemSet probs) {
 
 static Header relocateFileList(struct availablePackage * alp, 
 			       rpmProblemSet probs, Header origH,
-			       enum fileActions * actions) {
+			       enum fileActions * actions,
+			       int allowBadRelocate) {
     int numValid, numRelocations;
     int i, j, madeSwap, rc;
     rpmRelocation * nextReloc, * relocations = NULL;
@@ -631,7 +638,7 @@ static Header relocateFileList(struct availablePackage * alp,
 	    for (j = 0; j < numValid; j++) 
 		if (!strcmp(validRelocations[j],
 			    relocations[i].oldPath)) break;
-	    if (j == numValid)
+	    if (j == numValid && !allowBadRelocate) 
 		psAppend(probs, RPMPROB_BADRELOCATE, alp->key, alp->h, 
 			 relocations[i].oldPath, NULL);
 	}
@@ -1046,7 +1053,7 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 		    fi->actions[i] = FA_CREATE;
 	    }
 	} else if (fi->type == ADDED) {
-	    if (filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
+	    if (probs && filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
 			recs[otherPkgNum]->fmd5s[otherFileNum],
 			recs[otherPkgNum]->flinks[otherFileNum],
 			fi->fmodes[i],
