@@ -20,7 +20,7 @@ pkginc_HEADERS = \
 	misc.h rpmcli.h rpmlib.h \
 	rpmal.h rpmds.h rpmfi.h rpmps.h rpmsx.h rpmte.h rpmts.h stringbuf.h
 noinst_HEADERS = \
-	cpio.h fsm.h manifest.h psm.h rpmlead.h signature.h
+	cpio.h fsm.h manifest.h psm.h rpmlead.h signature.h rpmlock.h
 
 mylibs = librpm.la
 LIBS =
@@ -36,7 +36,7 @@ librpm_la_SOURCES = \
 	rpmal.c rpmchecksig.c rpmds.c rpmfi.c rpminstall.c \
 	rpmlead.c rpmlibprov.c rpmps.c rpmrc.c rpmsx.c rpmte.c rpmts.c \
 	rpmvercmp.c signature.c stringbuf.c transaction.c \
-	verify.c
+	verify.c rpmlock.c
 librpm_la_LDFLAGS = -release 4.3 $(LDFLAGS) \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \

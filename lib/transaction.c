@@ -14,6 +14,8 @@
 
 #include "rpmds.h"
 
+#include "rpmlock.h"
+
 #define	_RPMFI_INTERNAL
 #include "rpmfi.h"
 
@@ -957,6 +959,10 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     if (rpmtsNElements(ts) <= 0)
 	return -1;
 
+    void *lock = rpmtsAcquireLock(ts);
+    if (!lock)
+	return -1;
+
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERS)
@@ -973,8 +979,10 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 		? O_RDONLY : (O_RDWR|O_CREAT);
 
 	/* Open database RDWR for installing packages. */
-	if (rpmtsOpenDB(ts, dbmode))
+	if (rpmtsOpenDB(ts, dbmode)) {
+	    rpmtsFreeLock(lock);
 	    return -1;	/* XXX W2DO? */
+	}
     }
 
     ts->ignoreSet = ignoreSet;
@@ -1194,6 +1202,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	matches = xcalloc(fc, sizeof(*matches));
 	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc)) {
 	    ps = rpmpsFree(ps);
+	    rpmtsFreeLock(lock);
 	    return 1;	/* XXX WTFO? */
 	}
 
@@ -1331,6 +1340,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		(okProbs != NULL || rpmpsTrim(ts->probs, okProbs)))
        )
     {
+	rpmtsFreeLock(lock);
 	return ts->orderCount;
     }
 
@@ -1545,6 +1555,8 @@ assert(psm != NULL);
     }
     /*@=branchstate@*/
     pi = rpmtsiFree(pi);
+
+    rpmtsFreeLock(lock);
 
     /*@-nullstate@*/ /* FIX: ts->flList may be NULL */
     if (ourrc)
