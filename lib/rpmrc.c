@@ -96,8 +96,8 @@ static int readRpmrc(FILE * f, char * fn) {
 	    }
 	}
 
-	/* strip off trailing spaces - chptr is at the end of the line already*/
-	for (chptr--; chptr >= start && isspace(*chptr); chptr++);
+	/* strip trailing spaces - chptr is at the end of the line already*/
+	for (chptr--; chptr >= start && isspace(*chptr); chptr--);
 	*(chptr + 1) = '\0';
 
 	if (!start[0]) continue;			/* blank line */
