@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 1999-12-10 16:04-0500\n"
+"POT-Creation-Date: 1999-12-11 12:52-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1483,173 +1483,173 @@ msgstr ""
 msgid "syntax error in expression"
 msgstr "? im Ausdruck erwartet"
 
-#: build/files.c:231
+#: build/files.c:199
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:275 build/files.c:357 build/files.c:520
+#: build/files.c:243 build/files.c:325 build/files.c:488
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s"
 msgstr "fehlende { nach %{"
 
-#: build/files.c:286 build/files.c:474 build/files.c:531
+#: build/files.c:254 build/files.c:442 build/files.c:499
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s"
 msgstr "fehlender ':' bei %s:%d"
 
-#: build/files.c:324 build/files.c:499
+#: build/files.c:292 build/files.c:467
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr ""
 
-#: build/files.c:373
+#: build/files.c:341
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr ""
 
 # , c-format
-#: build/files.c:411
+#: build/files.c:379
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
 # , c-format
-#: build/files.c:421
+#: build/files.c:389
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/files.c:433
+#: build/files.c:401
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr ""
 
-#: build/files.c:557
+#: build/files.c:525
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:567
+#: build/files.c:535
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:662
+#: build/files.c:630
 msgid "Hit limit for %%docdir"
 msgstr ""
 
-#: build/files.c:668
+#: build/files.c:636
 msgid "Only one arg for %%docdir"
 msgstr ""
 
 # , c-format
 #. We already got a file -- error
-#: build/files.c:693
+#: build/files.c:661
 #, fuzzy, c-format
 msgid "Two files on one line: %s"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/files.c:706
+#: build/files.c:674
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s"
 msgstr "Verschiebungen müssen mit einem »/« beginnen"
 
-#: build/files.c:718
+#: build/files.c:686
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
 # , c-format
-#: build/files.c:804
+#: build/files.c:772
 #, fuzzy, c-format
 msgid "File listed twice: %s"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/files.c:897
+#: build/files.c:865
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
 # , c-format
-#: build/files.c:977
+#: build/files.c:945
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: build/files.c:987
+#: build/files.c:955
 #, fuzzy, c-format
 msgid "File not found: %s"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1030
+#: build/files.c:998
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1044
+#: build/files.c:1012
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/files.c:1123
+#: build/files.c:1091
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1152
+#: build/files.c:1120
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1231
+#: build/files.c:1199
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/files.c:1238 build/pack.c:482
+#: build/files.c:1206 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1581 build/parsePrep.c:30
+#: build/files.c:1549 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1636
+#: build/files.c:1604
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Konnte pgp nicht durchführen"
 
-#: build/files.c:1641
+#: build/files.c:1609
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
 
-#: build/files.c:1723
+#: build/files.c:1691
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "pgp fehlgeschlagen"
 
 # , c-format
-#: build/files.c:1727
+#: build/files.c:1695
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
-#: build/files.c:1816
+#: build/files.c:1784
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1844 build/files.c:1853
+#: build/files.c:1812 build/files.c:1821
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/files.c:1959
+#: build/files.c:1927
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
