@@ -166,12 +166,3 @@ TAR_EXTERN struct link	*linklist;	/* Points to first link in list */
  */
 TAR_EXTERN char		read_error_flag;
 
-
-#if 0
-/*
- * Declarations of functions available to the world.
- */
-/*LINTLIBRARY*/
-#define	 annorec(stream, msg)	anno(stream, msg, 0)	/* Cur rec */
-#define	annofile(stream, msg)	anno(stream, msg, 1)	/* Saved rec */
-#endif

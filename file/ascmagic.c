@@ -35,7 +35,6 @@
  */
 
 #include "file.h"
-#include <stdio.h>
 #include <string.h>
 #include <memory.h>
 #include <ctype.h>
@@ -46,7 +45,7 @@
 #include "names.h"
 
 #ifndef	lint
-FILE_RCSID("@(#)Id: ascmagic.c,v 1.30 2001/07/26 13:15:49 christos Exp ")
+FILE_RCSID("@(#)Id: ascmagic.c,v 1.32 2002/07/03 18:26:37 christos Exp ")
 #endif	/* lint */
 
 typedef unsigned long unichar;
@@ -55,18 +54,30 @@ typedef unsigned long unichar;
 #define ISSPC(x) ((x) == ' ' || (x) == '\t' || (x) == '\r' || (x) == '\n' \
 		  || (x) == 0x85 || (x) == '\f')
 
-static int looks_ascii __P((const unsigned char *, int, unichar *, int *));
-static int looks_utf8 __P((const unsigned char *, int, unichar *, int *));
-static int looks_unicode __P((const unsigned char *, int, unichar *, int *));
-static int looks_latin1 __P((const unsigned char *, int, unichar *, int *));
-static int looks_extended __P((const unsigned char *, int, unichar *, int *));
-static void from_ebcdic __P((const unsigned char *, int, unsigned char *));
-static int ascmatch __P((const unsigned char *, const unichar *, int));
+static int looks_ascii(const unsigned char *buf, int nbytes,
+		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
+	/*@modifies *ubuf, *ulen @*/;
+static int looks_utf8(const unsigned char *buf, int nbytes,
+		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
+	/*@modifies *ubuf, *ulen @*/;
+static int looks_unicode(const unsigned char *buf, int nbytes,
+		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
+	/*@modifies *ubuf, *ulen @*/;
+static int looks_latin1(const unsigned char *buf, int nbytes,
+		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
+	/*@modifies *ubuf, *ulen @*/;
+static int looks_extended(const unsigned char *buf, int nbytes,
+		/*@out@*/ unichar *ubuf, /*@out@*/ int *ulen)
+	/*@modifies *ubuf, *ulen @*/;
+static void from_ebcdic(const unsigned char *buf, int nbytes,
+		/*@out@*/ unsigned char *otp)
+	/*@modifies *otp @*/;
+static int ascmatch(const unsigned char *s, const unichar *us, int ulen)
+	/*@*/;
 
+/* int nbytes: size actually read */
 int
-ascmagic(buf, nbytes)
-	unsigned char *buf;
-	int nbytes;	/* size actually read */
+ascmagic(unsigned char *buf, int nbytes)
 {
 	int i;
 	char nbuf[HOWMANY+1];		/* one extra for terminating '\0' */
@@ -207,7 +218,7 @@ ascmagic(buf, nbytes)
 		 */
 		for (end = i + 1; end < nbytes; end++)
 			if (ISSPC(ubuf[end]))
-				break;
+				/*@innerbreak@*/ break;
 
 		/*
 		 * compare the word thus isolated against the token list
@@ -322,10 +333,7 @@ subtype_identified:
 }
 
 static int
-ascmatch(s, us, ulen)
-	const unsigned char *s;
-	const unichar *us;
-	int ulen;
+ascmatch(const unsigned char *s, const unichar *us, int ulen)
 {
 	size_t i;
 
@@ -397,6 +405,7 @@ ascmatch(s, us, ulen)
 #define I 2   /* character appears in ISO-8859 text */
 #define X 3   /* character appears in non-ISO extended ASCII (Mac, IBM PC) */
 
+/*@unchecked@*/ /*@observer@*/
 static char text_chars[256] = {
 	/*                  BEL BS HT LF    FF CR    */
 	F, F, F, F, F, F, F, T, T, T, T, F, T, T, F, F,  /* 0x0X */
@@ -420,11 +429,7 @@ static char text_chars[256] = {
 };
 
 static int
-looks_ascii(buf, nbytes, ubuf, ulen)
-	const unsigned char *buf;
-	int nbytes;
-	unichar *ubuf;
-	int *ulen;
+looks_ascii(const unsigned char *buf, int nbytes, unichar *ubuf, int *ulen)
 {
 	int i;
 
@@ -443,11 +448,7 @@ looks_ascii(buf, nbytes, ubuf, ulen)
 }
 
 static int
-looks_latin1(buf, nbytes, ubuf, ulen)
-	const unsigned char *buf;
-	int nbytes;
-	unichar *ubuf;
-	int *ulen;
+looks_latin1(const unsigned char *buf, int nbytes, unichar *ubuf, int *ulen)
 {
 	int i;
 
@@ -466,11 +467,7 @@ looks_latin1(buf, nbytes, ubuf, ulen)
 }
 
 static int
-looks_extended(buf, nbytes, ubuf, ulen)
-	const unsigned char *buf;
-	int nbytes;
-	unichar *ubuf;
-	int *ulen;
+looks_extended(const unsigned char *buf, int nbytes, unichar *ubuf, int *ulen)
 {
 	int i;
 
@@ -489,11 +486,7 @@ looks_extended(buf, nbytes, ubuf, ulen)
 }
 
 int
-looks_utf8(buf, nbytes, ubuf, ulen)
-	const unsigned char *buf;
-	int nbytes;
-	unichar *ubuf;
-	int *ulen;
+looks_utf8(const unsigned char *buf, int nbytes, unichar *ubuf, int *ulen)
 {
 	int i, n;
 	unichar c;
@@ -555,11 +548,7 @@ done:
 }
 
 static int
-looks_unicode(buf, nbytes, ubuf, ulen)
-	const unsigned char *buf;
-	int nbytes;
-	unichar *ubuf;
-	int *ulen;
+looks_unicode(const unsigned char *buf, int nbytes, unichar *ubuf, int *ulen)
 {
 	int bigend;
 	int i;
@@ -620,6 +609,7 @@ looks_unicode(buf, nbytes, ubuf, ulen)
  * between old-style and internationalized examples of text.
  */
 
+/*@unchecked@*/ /*@observer@*/
 unsigned char ebcdic_to_ascii[] = {
   0,   1,   2,   3, 156,   9, 134, 127, 151, 141, 142,  11,  12,  13,  14,  15,
  16,  17,  18,  19, 157, 133,   8, 135,  24,  25, 146, 143,  28,  29,  30,  31,
@@ -653,6 +643,7 @@ unsigned char ebcdic_to_ascii[] = {
  * cases for the NEL character can be taken out of the code.
  */
 
+/*@unchecked@*/ /*@observer@*/
 unsigned char ebcdic_1047_to_8859[] = {
 0x00,0x01,0x02,0x03,0x9C,0x09,0x86,0x7F,0x97,0x8D,0x8E,0x0B,0x0C,0x0D,0x0E,0x0F,
 0x10,0x11,0x12,0x13,0x9D,0x0A,0x08,0x87,0x18,0x19,0x92,0x8F,0x1C,0x1D,0x1E,0x1F,
@@ -676,14 +667,11 @@ unsigned char ebcdic_1047_to_8859[] = {
  * Copy buf[0 ... nbytes-1] into out[], translating EBCDIC to ASCII.
  */
 static void
-from_ebcdic(buf, nbytes, out)
-	const unsigned char *buf;
-	int nbytes;
-	unsigned char *out;
+from_ebcdic(const unsigned char *buf, int nbytes, unsigned char *otp)
 {
 	int i;
 
 	for (i = 0; i < nbytes; i++) {
-		out[i] = ebcdic_to_ascii[buf[i]];
+		otp[i] = ebcdic_to_ascii[buf[i]];
 	}
 }

@@ -14,91 +14,64 @@
 +strict			# lclint level
 
 # --- in progress
--branchstate
--compdef
--compmempass
--declundef
--evalorderuncon
--exitarg
--exportheader
--exportheadervar
--exportlocal
--formatconst
--globs
--globstate
--internalglobs
--macroredef
--modfilesys
--modnomods
--modobserver
--modobserveruncon
--modunconnomods
--mustmod
--noeffectuncon
--noparams
--noret
--nullassign
--nullderef
--nullpass
--nullptrarith
--nullret
--nullstate
--paramuse
--protoparammatch
--redecl
--redef
--retalias
+-branchstate		# 4
+-exitarg		# 6
+-exportheader		# 19
+-formatconst		# 9
+-globstate		# 3
+-globuse		# 4
+-macroredef		# 1
+-modobserver		# 2
+-mods			# 7
+-moduncon		# 4
+-modunconnomods		# 12 ctype.h
+-mustmod		# 6
+-noeffectuncon		# 1
+-noparams		# 44 zlib
+-nullderef		# 2
+-nullpass		# 6
+-nullptrarith		# 1
+-paramuse		# 2
+-redecl			# 1
+-redef			# 4
 -retvalint
--retvalother
 -shadow
--sizeoftype
--type
--uniondef
--usereleased
--usevarargs
--varuse
--warnlintcomments
+-sizeoftype		# 29
+-type			# 2 zlib
+-uniondef		# 6
+-usereleased		# 1
+-usevarargs		# 1
+-warnmissingglobs	# 2
 
--dependenttrans
--immediatetrans
--kepttrans
--observertrans
--onlytrans
--readonlytrans
--statictrans
--temptrans
--unqualifiedtrans
+-dependenttrans		# 2
+-immediatetrans		# 2
+-kepttrans		# 1
+-observertrans		# 4
+-temptrans		# 1
+-unqualifiedtrans	# 2
 
--casebreak
--looploopbreak
--looploopcontinue
--loopswitchbreak
--switchloopbreak
--switchswitchbreak
--unreachable
 -whileempty
 
 # --- +partial artifacts
+-declundef		# 32 tar.h
+-exportheadervar
+-exportlocal
+
+-varuse			# 5
 
 # --- not-yet at strict level
 -bitwisesigned		# pita
 -elseifcomplete		# 95 occurences
--exportconst		# 839 occurences
--exportfcn
--exporttype
--exportvar
--fielduse		# 1 occurence <bits/sigset.h>
+-fielduse		# 21 tar.h
 -forblock		# tedious
 -ifblock		# tedious
 -incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
--matchfields		# <bits/ipc.h> heartburn
 -namechecks		# tedious ANSI compliance checks
 -ptrarith		# tedious
 
 -compdestroy
 -mustdefine
--shiftimplementation
--shiftnegative
+-shiftimplementation	# 148 ctype.h
 
 -strictops
 -strictusereleased
