@@ -7,6 +7,11 @@ rpmb=/usr/bin/rpmbuild
 rpmq=/usr/bin/rpmquery
 rpmdb=$rpm
 
+#rpm=/X/src/rpm307/rpm
+#rpmb=$rpm
+#rpmq=$rpm
+#rpmdb=$rpm
+
 dist=7.0
 type=min
 arch=`$rpmq --eval '%{_arch}'`
@@ -56,7 +61,7 @@ procps-2
 psmisc-
 sed-
 shadow-utils-
-readline-2
+readline-[24]
 rmt-
 tar-
 textutils-
@@ -82,7 +87,7 @@ words-
 baseglob="
 $min2glob
 console-tools-
-gmp-2
+gmp-[23]
 initscripts-
 kernel-2
 modutils-
@@ -107,7 +112,7 @@ glibc-devel-
 gmp-devel-
 kernel-headers-
 ncurses-devel-
-readline-devel-
+readline-devel-[24]
 tcl-
 zlib-devel-
 "
@@ -125,11 +130,12 @@ gcc-2
 gettext-
 krb5-configs-
 krb5-libs-
-libstdc++-
+libstdc++-2
 libtool-
 make-
 m4-
-perl-
+openssl-0
+perl-5
 python-1
 tcsh-
 "
@@ -143,23 +149,22 @@ do
     debug)		dbg=echo	;;
     dmalloc)		eval `dmalloc -b $dmopts`	;;
     db1)		db1="--define '%_dbapi 1'"	;;
-    5.2|6.2|7.0|7.1)
+    5.2|6.2|7.0|7.1|7.1x)
 	dist=$cmd
 	root=$top/$dist
 	rc="--rcfile $top/rpmrc-$dist $db1"
 	$dbg mkdir -p $root/{dev,X/RPMS,X/SRPMS}
-	[ ! -c $root/dev/null ] && $dbg $sudo mknod $root/dev/null c 1 3
-	find $root
-	cat << EOF > $top/rpmrc-$dist
+	[ -c $root/dev/null ] || $dbg $sudo mknod $root/dev/null c 1 3
+	[ -f $top/rpmrc-$dist ] || cat << EOF > $top/rpmrc-$dist
 include:    /usr/lib/rpm/rpmrc
 macrofiles: /usr/lib/rpm/macros:/usr/lib/rpm/%{_target}/macros:$top/macros:$top/macros-$dist-$arch
 EOF
-	cat << EOF > $top/macros-$dist-$arch
+	[ -f $top/macros-$dist-$arch ] || cat << EOF > $top/macros-$dist-$arch
 %_topdir	$root/X
 EOF
 	;;
     config)
-	$dbg cat << EOF > $top/macros
+	[ -f $top/macros ] || cat << EOF > $top/macros
 %_ntopdir	%{_topdir}/%{name}-%{version}-%{release}
 %_builddir	%{_ntopdir}
 %_sourcedir	%{_ntopdir}
@@ -188,6 +193,7 @@ EOF
 	done
 	;;
     clean)
+	$dbg rm -f $top/{rpmrc-$dist,macros-$dist-$arch,macros}
 	$dbg $sudo mv $root ${root}-$$ && $dbg $sudo rm -rf ${root}-$$
 	;;
     --rebuild)
@@ -217,7 +223,7 @@ EOF
 	    echo $type-$dist-$arch not found
 	    exit 1
 	}
-	$dbg $sudo $rpm $rc --root $root $cmd --notriggers `cat $type-$dist-$arch`
+	$dbg $sudo $rpm $rc --root $root --force $cmd `cat $type-$dist-$arch`
 	;;
     -[Vqei]*|--showrc)
 	$dbg $sudo $rpm $rc --root $root $cmd
