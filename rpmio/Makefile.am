@@ -63,7 +63,7 @@ lint:
 	$(LINT) $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
 
 tdigest_SOURCES = tdigest.c
-tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la -lgcrypt
 
 tdir_SOURCES = tdir.c
 tdir_LDFLAGS = -all-static
