@@ -596,11 +596,11 @@ static PyObject * rpmReadHeaders (FD_t fd) {
     list = PyList_New(0);
     Py_BEGIN_ALLOW_THREADS
     header = headerRead(fd, HEADER_MAGIC_YES);
-    compressFilelist (header);
-    providePackageNVR (header);    
-    
+
     Py_END_ALLOW_THREADS
     while (header) {
+	compressFilelist (header);
+	providePackageNVR (header);
 	h = (hdrObject *) PyObject_NEW(PyObject, &hdrType);
 	h->h = header;
 	h->fileList = h->linkList = h->md5list = NULL;
@@ -616,8 +616,6 @@ static PyObject * rpmReadHeaders (FD_t fd) {
 
 	Py_BEGIN_ALLOW_THREADS
 	header = headerRead(fd, HEADER_MAGIC_YES);
-	compressFilelist (header);
-	providePackageNVR (header);    
 	Py_END_ALLOW_THREADS
     }
 
