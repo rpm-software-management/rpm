@@ -1,0 +1,92 @@
+#! /usr/bin/ksh
+
+# Original Author: Tim Mooney (mooney@plains.nodak.edu)
+# This file is distributed under the terms of the GNU Public License
+#
+# find-requires is part of RPM, the RedHat Package Manager.  find-requires
+# reads a list of full pathnames (in a package) on stdin, and outputs all
+# shared libraries the package requires to execute.
+#
+# On Digital Unix (OSF1), use `odump -Dl' to find the library dependencies
+# for an executable.  `odump -D' does most of what we need, but it doesn't
+# give us library version information, so you must use `odump -Dl'
+#
+# Example `odump -Dl' output:
+#
+#$odump -Dl /usr/bin/X11/xterm
+# 
+#
+#
+#
+#			***LIBRARY LIST SECTION***
+#	Name             Time-Stamp        CheckSum   Flags Version
+#/usr/bin/X11/xterm:
+#	libXaw.so    Dec  9 00:15:35 1997 0x285006d0     0 6.0
+#	libXmu.so    Dec  9 00:13:36 1997 0x3bf3a33d     0 
+#	libXt.so     Dec  9 00:12:18 1997 0x10dd9a17     0 
+#	libSM.so     Dec  9 00:08:11 1997 0xb64c7082     0 
+#	libICE.so    Dec  9 00:07:52 1997 0x1199be32     0 
+#	libXext.so   Dec  9 00:08:51 1997 0xafcb84d5     0 
+#	libX11.so    Dec  9 00:06:05 1997 0xaa1bf091     0 
+#	libc.so      Dec  8 18:41:11 1997 0x5e955f9b     0 osf.1
+
+
+# TVM: it might be better to re-write this so that `file' isn't used, since
+# it can all be done with `odump',  but this works.
+#
+filelist=`sed "s/['\"]/\\\&/g" | xargs file | grep executable | cut -d: -f1`
+
+for f in $filelist
+do
+	odump -Dl $f 2>/dev/null | awk '
+
+		#
+		# For you non-awk-ers, no single quotes in comments -- the shell
+		# sees them and things get hosed.
+		#
+
+		BEGIN { 
+			seen_program_name = 0;
+			FS = " ";
+			RS = "\n";
+			OFS=""
+		}
+
+		# uncomment the next line for debugging information
+		#{ print "Got input:", $0 }
+
+		seen_program_name == 1 && $0 !~ /^$/ {
+
+			# uncomment for debugging information
+			#print "found shared library: $0"
+		
+			# get the library name (field 1) and the library version (field 8)
+			# if present.
+			numfields = split($0,fields)
+			if (numfields == 7) {
+				print fields[1]
+			} else if (numfields == 8) {
+				#
+				# Note that if a library contains a number as the last
+				# part of the soname *and* it contains version information,
+				# we have a problem because it is impossible to tell where
+				# the soname ends and the version info begins.  Digital Unix
+				# shared libraries should *not* be built with any version info
+				# in the soname.  That info should be in the version field
+				# only.
+				# If we used a separator character of a - or something else,
+				# instead of a ., we would not have this problem.
+				#
+				print fields[1], ".", fields[8]
+			}
+		}
+
+		/^.*: *$/ {
+			seen_program_name = 1
+			#
+			# uncomment the next line for debugging information
+			#print "found the program name: $1"
+		}
+
+	' # end of awk
+done | sort -u
