@@ -314,7 +314,7 @@ __memp_fopen_int(dbmfp, mfp, path, flags, mode, pagesize, needlock)
 if (chroot_prefix) {
     int chrlen = strlen(chroot_prefix);
     if (!strncmp(rpath, chroot_prefix, chrlen))
-	rpath += chrlen;
+	rpath += (chrlen - 1);
 }
 		oflags = 0;
 		if (LF_ISSET(DB_CREATE))

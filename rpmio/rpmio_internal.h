@@ -34,7 +34,7 @@ enum FDSTAT_e {
     FDSTAT_READ		= 0,	/*!< Read statistics index. */
     FDSTAT_WRITE	= 1,	/*!< Write statistics index. */
     FDSTAT_SEEK		= 2,	/*!< Seek statistics index. */
-    FDSTAT_CLOSE	= 3	/*!< Close statistics. index */
+    FDSTAT_CLOSE	= 3	/*!< Close statistics index */
 };
 
 /** \ingroup rpmio
@@ -50,7 +50,7 @@ typedef	/*@abstract@*/ struct {
  * Bit(s) to control digest operation.
  */
 typedef enum rpmDigestFlags_e {
-    RPMDIGEST_NONE	= 0,
+    RPMDIGEST_NONE	= 0
 } rpmDigestFlags;
 
 /** \ingroup rpmio

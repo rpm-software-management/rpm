@@ -83,7 +83,7 @@ for f in $liblist $exelist ; do
 	    sub(/:/, "", $3);
 	    LIBNAME=$3;
 	}
-	(START==1) && (LIBNAME!="") && ($4!="") && ($4~/^GLIBC_*/) {
+	(START==1) && (LIBNAME!="") && ($4!="") && (($4~/^GLIBC_*/) || ($4~/^GCC_*/)) {
 	    print LIBNAME "(" $4 ")'$lib64'";
 	}
 	/^$/ { START=0; }

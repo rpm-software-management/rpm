@@ -80,7 +80,7 @@ typedef enum fileStage_e {
     FSM_RCLOSE	=  _fs(131),
     FSM_WOPEN	=  _fs(132),
     FSM_WRITE	=  _fs(133),
-    FSM_WCLOSE	=  _fs(134),
+    FSM_WCLOSE	=  _fs(134)
 } fileStage;
 #undef	_fv
 #undef	_fi

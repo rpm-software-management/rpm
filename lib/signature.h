@@ -20,7 +20,7 @@ typedef	enum sigType_e {
     RPMSIGTYPE_MD5	= 3,	/*!< unused, legacy. */
     RPMSIGTYPE_MD5_PGP	= 4,	/*!< unused, legacy. */
     RPMSIGTYPE_HEADERSIG= 5,	/*!< Header style signature */
-    RPMSIGTYPE_DISABLE	= 6,	/*!< Disable verification (debugging only) */
+    RPMSIGTYPE_DISABLE	= 6	/*!< Disable verification (debugging only) */
 } sigType;
 
 /** \ingroup signature

@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: /usr/lib/rpm/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.90 2001/10/20 22:31:09 jbj Exp $
+# $Id: macros.in,v 1.91 2001/12/20 16:28:46 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -759,7 +759,7 @@
 #
 %GNUconfigure(MCs:)      \
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS; \
-  LDFLAGS="${LDFLAGS:-'%{-s:-s}'}"  ; export LDFLAGS; \
+  LDFLAGS="${LDFLAGS:-%{-s:-s}}"  ; export LDFLAGS; \
   %{-C:_mydir="`pwd`"; %{-M: %{__mkdir} -p %{-C*};} cd %{-C*}} \
   dirs="`find ${_mydir} -name configure.in -print`"; export dirs; \
     for coin in `echo ${dirs}` \

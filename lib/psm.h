@@ -47,7 +47,7 @@ typedef enum pkgStage_e {
 
     PSM_RPMDB_LOAD	= 97,
     PSM_RPMDB_ADD	= 98,
-    PSM_RPMDB_REMOVE	= 99,
+    PSM_RPMDB_REMOVE	= 99
 
 } pkgStage;
 #undef	_fv

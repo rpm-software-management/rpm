@@ -134,7 +134,7 @@ typedef enum rpmQueryFlags_e {
     QUERY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
     QUERY_FOR_DOCS	= (1 << 25),	/*!< query:  from --docfiles */
     QUERY_FOR_CONFIG	= (1 << 26),	/*!< query:  from --configfiles */
-    QUERY_FOR_DUMPFILES	= (1 << 27),	/*!< query:  from --dump */
+    QUERY_FOR_DUMPFILES	= (1 << 27)	/*!< query:  from --dump */
 } rpmQueryFlags;
 
 /** \ingroup rpmcli
@@ -165,7 +165,7 @@ typedef enum rpmVerifyFlags_e {
     VERIFY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
     VERIFY_FOR_DOCS	= (1 << 25),	/*!< query:  from --docfiles */
     VERIFY_FOR_CONFIG	= (1 << 26),	/*!< query:  from --configfiles */
-    VERIFY_FOR_DUMPFILES= (1 << 27),	/*!< query:  from --dump */
+    VERIFY_FOR_DUMPFILES= (1 << 27)	/*!< query:  from --dump */
 /*@=enummemuse@*/
 	/* bits 28-30 used in rpmVerifyAttrs */
 } rpmVerifyFlags;

@@ -1,4 +1,4 @@
-4.0.3 -> 4.1:
+4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
 	- drop rpmio/base64.[ch] in favor of beecrypt.
 	- drop lib/md5*.[ch] files in favor of beecrypt.
@@ -79,6 +79,11 @@
 	- lclint-3.0.0.19 fiddles.
 
 4.0.3 -> 4.0.4:
+	- solaris: translate i86pc to i386 (#57182).
+	- fix: %GNUconfigure breaks with single quotes (#57264).
+	- fix: typo in find-requires.
+	- tru64 compiler message cleanup.
+	- add buildarch lines for hppa (#57728).
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).
