@@ -590,7 +590,7 @@ dnl XXX AC_FUNC_STRCOLL
 dnl XXX AC_FUNC_STRFTIME
 dnl XXX AC_FUNC_UTIME_NULL
 dnl XXX AC_FUNC_VFORK
-dnl XXX AC_CHECK_FUNCS(gethostname lchown mkdir mkfifo rmdir select uname)
+dnl XXX AC_CHECK_FUNCS(gethostname mkdir mkfifo rmdir select uname)
 
 AC_REPLACE_FUNCS(getcwd getwd glob inet_aton putenv realpath)
 AC_REPLACE_FUNCS(strdup strerror strtol strtoul strspn strstr)
@@ -601,16 +601,18 @@ AC_REPLACE_FUNCS(basename)
 
 AC_CHECK_FUNCS(setlocale)
 
+dnl XXX Solaris <= 2.6 only permits 8 chars in password.
+AC_CHECK_FUNCS(getpassphrase)
+
 AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT), [
   AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL),[
     AC_CHECK_FUNC(getmntinfo_r, AC_DEFINE(HAVE_GETMNTINFO_R), [
       AC_CHECK_LIB(c_r, getmntinfo_r, [LIBS="$LIBS -lc_r"; 
 					AC_DEFINE(HAVE_GETMNTINFO_R)],
                  LIBOBJS="$LIBOBJS getmntent.o")])])])
-LCHOWN=no
-AC_CHECK_FUNC(lchown, [LCHOWN=yes; AC_DEFINE(HAVE_LCHOWN)])
 
-if test "$LCHOWN" = no; then 
+AC_CHECK_FUNC(lchown)
+if test $ac_cv_func_lchown = no; then 
     dnl Does chown() follow symlinks? This should be a good enough test.
     AC_MSG_CHECKING(whether chown() follows symlinks)
     AC_ARG_ENABLE([broken-chown],

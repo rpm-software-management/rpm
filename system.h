@@ -268,6 +268,11 @@ extern void *myrealloc(void *, size_t);
 #include <sys/select.h>
 #endif
 
+/* Solaris <= 2.6 limits getpass return to only 8 chars */
+#if HAVE_GETPASSPHRASE
+#define	getpass	getpassphrase
+#endif
+
 #if ! HAVE_LCHOWN
 #define lchown chown
 #endif
