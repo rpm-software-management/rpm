@@ -29,9 +29,6 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     if (mode & O_WRONLY) 
 	return 0;
 
-    if (mode & O_RDWR)
-	mode |= O_EXCL;
-
     strcpy(filename, prefix); 
     strcat(filename, "/var/lib/rpm/packages.rpm");
     db.pkgs = faOpen(filename, mode, 0644);
