@@ -1529,7 +1529,7 @@ static int generateAutoReqProv(Spec spec, Package pkg,
 	freeStringBuf(readBuf);
 	for (f = fsave; *f != NULL; f++) {
 	    if (**f) {
-		addReqProv(spec, pkg, RPMSENSE_PROVIDES, *f, NULL, 0);
+		addReqProv(spec, pkg->header, RPMSENSE_PROVIDES, *f, NULL, 0);
 	    }
 	}
 	freeSplitString(fsave);
@@ -1555,7 +1555,7 @@ static int generateAutoReqProv(Spec spec, Package pkg,
 	freeStringBuf(readBuf);
 	for (f = fsave; *f != NULL; f++) {
 	    if (**f) {
-		addReqProv(spec, pkg, RPMSENSE_ANY, *f, NULL, 0);
+		addReqProv(spec, pkg->header, RPMSENSE_ANY, *f, NULL, 0);
 	    }
 	}
 	freeSplitString(fsave);

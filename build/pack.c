@@ -44,7 +44,7 @@ int packageSources(Spec spec)
 {
     CSA_t csabuf, *csa = &csabuf;
     HeaderIterator iter;
-    int_32 tag, count;
+    int_32 tag, type, count;
     char **ptr;
     int rc;
 
@@ -65,10 +65,10 @@ int packageSources(Spec spec)
 
     /* Add the build restrictions */
     iter = headerInitIterator(spec->buildRestrictions);
-    while (headerNextIterator(iter, &tag, NULL, (void **)&ptr, &count)) {
-	headerAddEntry(spec->sourceHeader, tag,
-		       RPM_STRING_ARRAY_TYPE, ptr, count);
-	FREE(ptr);
+    while (headerNextIterator(iter, &tag, &type, (void **)&ptr, &count)) {
+	headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
+	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
+	    FREE(ptr);
     }
     headerFreeIterator(iter);
     if (spec->buildArchitectureCount) {

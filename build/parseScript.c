@@ -206,7 +206,7 @@ int parseScript(Spec spec, int parsePart)
     stripTrailingBlanksStringBuf(sb);
     p = getStringBuf(sb);
 
-    addReqProv(spec, pkg, RPMSENSE_PREREQ, prog, NULL, 0);
+    addReqProv(spec, pkg->header, RPMSENSE_PREREQ, prog, NULL, 0);
 
     /* Trigger script insertion is always delayed in order to */
     /* get the index right.                                   */

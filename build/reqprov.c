@@ -4,7 +4,7 @@
 
 #include "rpmbuild.h"
 
-int addReqProv(Spec spec, Package pkg,
+int addReqProv(Spec spec, Header h,
 	       int flag, const char *name, const char *version, int index)
 {
     const char **names;
@@ -48,14 +48,14 @@ int addReqProv(Spec spec, Package pkg,
 	version = "";
     }
     
-    if (headerGetEntry(pkg->header, nametag, NULL, (void *) &names, &len)) {
+    if (headerGetEntry(h, nametag, NULL, (void *) &names, &len)) {
 	if (flagtag) {
-	    headerGetEntry(pkg->header, versiontag, NULL,
+	    headerGetEntry(h, versiontag, NULL,
 			   (void *) &versions, NULL);
-	    headerGetEntry(pkg->header, flagtag, NULL, (void *) &flags, NULL);
+	    headerGetEntry(h, flagtag, NULL, (void *) &flags, NULL);
 	}
 	if (indextag) {
-	    headerGetEntry(pkg->header, indextag, NULL,
+	    headerGetEntry(h, indextag, NULL,
 			   (void *) &indexes, NULL);
 	}
 	while (len) {
@@ -76,16 +76,15 @@ int addReqProv(Spec spec, Package pkg,
 	FREE(versions);
     }
 
-    headerAddOrAppendEntry(pkg->header, nametag,
-			   RPM_STRING_ARRAY_TYPE, &name, 1);
+    headerAddOrAppendEntry(h, nametag, RPM_STRING_ARRAY_TYPE, &name, 1);
     if (flagtag) {
-	headerAddOrAppendEntry(pkg->header, versiontag,
+	headerAddOrAppendEntry(h, versiontag,
 			       RPM_STRING_ARRAY_TYPE, &version, 1);
-	headerAddOrAppendEntry(pkg->header, flagtag,
+	headerAddOrAppendEntry(h, flagtag,
 			       RPM_INT32_TYPE, &flag, 1);
     }
     if (indextag) {
-	headerAddOrAppendEntry(pkg->header, indextag,
+	headerAddOrAppendEntry(h, indextag,
 			       RPM_INT32_TYPE, &index, 1);
     }
 

@@ -128,7 +128,7 @@ void freePackage(/*@only@*/ Package p);
 
 /* from build/reqprov.h */
 
-int addReqProv(Spec spec, Package pkg,
+int addReqProv(Spec spec, Header h,
 		int flag, const char *name, const char *version, int index);
 
 /* from build/files.h */

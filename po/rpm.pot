@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-01-26 12:34-0500\n"
+"POT-Creation-Date: 1999-01-26 16:30-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1959,32 +1959,32 @@ msgstr ""
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:499
+#: ../build/parsePreamble.c:500
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:509
+#: ../build/parsePreamble.c:510
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: ../build/parsePreamble.c:653
+#: ../build/parsePreamble.c:655
 #, c-format
 msgid "Bad package specification: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:659
+#: ../build/parsePreamble.c:661
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:686
+#: ../build/parsePreamble.c:688
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:711
+#: ../build/parsePreamble.c:713
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -2063,12 +2063,12 @@ msgstr ""
 msgid "line %d: Version required in %s: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:122
+#: ../build/parseReqs.c:123
 #, c-format
 msgid "line %d: No file names in %s: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:130
+#: ../build/parseReqs.c:131
 #, c-format
 msgid "line %d: %s: tokens must begin with alpha-numeric: %s"
 msgstr ""

@@ -92,7 +92,7 @@ noconfig:
 
 .PHONY: archive
 archive: 
-	@cvs -d `cat CVS/Root` diff >& /dev/null || { \
+	@cvs -d `cat CVS/Root` diff 2>&1 > /dev/null || { \
 	    echo " " ; \
 	    echo "==> Please resolve differences between the repository and" ; \
 	    echo "==> your rpm check out before tagging." ; \

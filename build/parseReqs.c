@@ -96,8 +96,9 @@ int parseRequiresConflicts(Spec spec, Package pkg, char *field,
 	    return RPMERR_BADSPEC;
 	}
 
-	addReqProv(spec, pkg, flags, req,
-		   (flags & RPMSENSE_SENSEMASK) ? version : NULL, index);
+	addReqProv(spec,
+	    (tag == RPMTAG_BUILDREQUIRES ? spec->buildRestrictions : pkg->header),
+	    flags, req, (flags & RPMSENSE_SENSEMASK) ? version : NULL, index);
 
 	/* If there is no sense, we just read the next token */
 	req = (flags & RPMSENSE_SENSEMASK) ? NULL : version;
@@ -141,7 +142,7 @@ int parseProvidesObsoletes(Spec spec, Package pkg, char *field, int tag)
 		     spec->line);
 	    return RPMERR_BADSPEC;
 	}
-	addReqProv(spec, pkg, flags, prov, NULL, 0);
+	addReqProv(spec, pkg->header, flags, prov, NULL, 0);
 	line = NULL;
     }
 
