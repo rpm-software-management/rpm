@@ -11,9 +11,7 @@ my $result = GetOptions("provides" => \$show_provides,
 			"ignore=s" => \@ignores);
 my %ignores = map { $_ => 1 } @ignores;
 
-if (not $result) {
-  exit 1;
-}
+exit(1) if (not $result);
 
 my $deps = new DependencyParser;
 for my $file (grep /^[^-]/, @ARGV) {
@@ -23,25 +21,28 @@ for my $file (grep /^[^-]/, @ARGV) {
 if ($show_requires) {
   for my $req ($deps->requires) {
     my $verbage = "";
-    if (not exists $ignores{$req->to_string}) {
-      printf "%s%s\n", $req->to_string, $verbage;
-    }
+    next if (exists $ignores{$req->to_string});
+    printf "%s%s\n", $req->to_string, $verbage;
   }
 }
 
 if ($show_provides) {
   for my $prov ($deps->provides) {
     my $verbage = "";
-    if (not exists $ignores{$prov->to_string}) {
-      printf "%s%s\n", $prov->to_string, $verbage;
-    }
+    next if (exists $ignores{$prov->to_string});
+    printf "%s%s\n", $prov->to_string, $verbage;
   }
 }
 
+exit(0);
+
+####################
+# Dependency Class #
+####################
 package Dependency;
 sub new {
   my $class = shift;
-  my $type = shift;
+  my $type  = shift;
   my $value = shift;
 
   return bless { type => $type, value => $value }, $class;
@@ -139,11 +140,24 @@ sub add_provide {
   die "DependencyParser->add_provide requires -filename, -provide, and -type"
     if not exists $params{-filename} or not exists $params{-provide} or not exists $params{-type};
 
+  #
+  # Make sure this one has not been added already
+  $self->{'provides_check'} ||= { };
+  return if(exists($self->{'provides_check'}->{$params{'-provide'}}));
+
+  #
+  # Created dependency object
   my $dep = new Dependency "provide", $params{-provide};
   $dep->filename($params{-filename});
   $dep->type($params{-type});
   $dep->line_number($params{-line}) if $params{-line};
 
+  #
+  # Add to requires check list
+  $self->{'provides_check'}->{$params{'-provide'}} = 1; 
+
+  #
+  # Add to list
   push @{$self->{provides}}, $dep;
 }
 
@@ -153,11 +167,24 @@ sub add_require {
   die "DependencyParser->add_require requires -filename, -require, and -type"
     if not exists $params{-filename} or not exists $params{-require} or not exists $params{-type};
 
+  #
+  # Make sure this one has not been added already
+  $self->{'requires_check'} ||= { };
+  return if(exists($self->{'requires_check'}->{$params{'-require'}}));
+
+  #
+  # Create dependency object.
   my $dep = new Dependency "require", $params{-require};
   $dep->filename($params{-filename});
   $dep->type($params{-type});
   $dep->line_number($params{-line}) if $params{-line};
 
+  #
+  # Add to requires check list
+  $self->{'requires_check'}->{$params{'-require'}} = 1; 
+
+  #
+  # Add to list
   push @{$self->{requires}}, $dep;
 }
 
@@ -166,6 +193,7 @@ sub process_file {
   my $filename = shift;
 
   if (not open FH, "<$filename") {
+    # XXX: Should be die IMHO...JOO
     warn "Can't open $filename: $!";
     return;
   }
