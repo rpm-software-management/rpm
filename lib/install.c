@@ -934,15 +934,17 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd,
 	return 2;
     }
 
-    /* Run triggers this package sets off */
-    if (runTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0)) {
-	return 2;
-    }
+    if (!(flags & RPMINSTALL_NOTRIGGERS)) {
+	/* Run triggers this package sets off */
+	if (runTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0)) {
+	    return 2;
+	}
 
-    /* Run triggers in this package which are set off by other things in
-       the database. */
-    if (runImmedTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0)) {
-	return 2;
+	/* Run triggers in this package which are set off by other things in
+	   the database. */
+	if (runImmedTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0)) {
+	    return 2;
+	}
     }
 
     if (toRemove && flags & RPMINSTALL_UPGRADE) {

@@ -159,10 +159,12 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMINSTALL_JUSTDB               (1 << 10)
 #define RPMINSTALL_KEEPOBSOLETE         (1 << 11)
 #define RPMINSTALL_FORCERELOCATE        (1 << 12)
+#define RPMINSTALL_NOTRIGGERS           (1 << 13)
 
 #define RPMUNINSTALL_TEST               (1 << 0)
 #define RPMUNINSTALL_NOSCRIPTS          (1 << 1)
 #define RPMUNINSTALL_JUSTDB             (1 << 2)
+#define RPMUNINSTALL_NOTRIGGERS         (1 << 3)
 
 #define RPMVERIFY_NONE             0
 #define RPMVERIFY_MD5              (1 << 0)

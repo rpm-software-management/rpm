@@ -127,6 +127,8 @@ they exist.
 Don't do a dependency check before installing to upgrading a package.
 .IP "\fB\-\-noscripts\fP"
 Don't execute the preinstall or postinstall scripts.
+.IP "\fB\-\-notriggers\fP"
+Don't execute scripts which are triggered by the installation of this package.
 .IP "\fB\-\-excludedocs\fP"
 Don't install any files which are marked as documentation (which includes
 man pages and texinfo documents).
@@ -287,6 +289,8 @@ Remove all versions of the package which match \fI<package_name>\fR. Normally
 an error is issued if \fI<package_name>\fR matches multiple packages.
 .IP "\fB\-\-noscripts\fP"
 Don't execute the preuninstall or postuninstall scripts.
+.IP "\fB\-\-notriggers\fP"
+Don't execute scripts which are triggered by the removal of this package.
 .IP "\fB\-\-nodeps\fP"
 Don't check dependencies before uninstalling the packages.
 .IP "\fB\-\-test\fP"

@@ -77,6 +77,7 @@ static int noFiles;
 static int noMd5;
 static int noPgp;
 static int noScripts;
+static int noTriggers;
 static int oldPackage;
 static int showPercents;
 static char * pipeOutput;
@@ -132,6 +133,7 @@ static struct poptOption optionsTable[] = {
 	{ "nomd5", '\0', 0, &noMd5, 0 },
 	{ "nopgp", '\0', 0, &noPgp, 0 },
 	{ "noscripts", '\0', 0, &noScripts, 0 },
+	{ "notriggers", '\0', 0, &noTriggers, 0 },
 	{ "oldpackage", '\0', 0, &oldPackage, 0 },
 	{ "package", 'p', 0, 0, 'p' },
 	{ "percent", '\0', 0, &showPercents, 0 },
@@ -212,7 +214,7 @@ static void printUsage(void) {
     puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"));
     puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
-    puts(_("                        [--badreloc] file1.rpm ... fileN.rpm"));
+    puts(_("                        [--badreloc] [--notriggers] file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                        [--oldpackage] [--root <dir>] [--noscripts]"));
     puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"));
@@ -234,7 +236,7 @@ static void printUsage(void) {
     puts(_("       rpm {--setugids} [-afpg] [target]"));
     puts(_("       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
-    puts(_("                        [--justdb] package1 ... packageN"));
+    puts(_("                        [--justdb] [--notriggers] rpackage1 ... packageN"));
     puts(_("       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
     puts(_("                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"));
     puts(_("                        [--buildarch <arch>] [--rmsource] specfile"));
@@ -400,6 +402,8 @@ static void printHelp(void) {
 		  _("do not reorder package installation to satisfy dependencies"));
     printHelpLine("      --noscripts         ",
 		  _("don't execute any installation scripts"));
+    printHelpLine("      --notriggers        ",
+		  _("don't execute any scripts triggered by this package"));
     printHelpLine("      --percent           ",
 		  _("print percentages as package installs"));
     printHelpLine("      --replacefiles      ",
@@ -432,6 +436,8 @@ static void printHelp(void) {
 		  _("do not reorder package installation to satisfy dependencies"));
     printHelpLine("      --noscripts         ",
 		  _("do not execute any package specific scripts"));
+    printHelpLine("      --notriggers        ",
+		  _("don't execute any scripts triggered by this package"));
     printHelpLine("      --root <dir>        ",
 		  _("use <dir> as the top level directory"));
     puts("");
@@ -557,6 +563,7 @@ int main(int argc, char ** argv) {
     noMd5 = 0;
     noPgp = 0;
     noScripts = 0;
+    noTriggers = 0;
     oldPackage = 0;
     showPercents = 0;
     pipeOutput = NULL;
@@ -1013,6 +1020,10 @@ int main(int argc, char ** argv) {
 	argerror(_("--noscripts may only be specified during package "
 		   "installation, erasure, and verification"));
 
+    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && noTriggers)
+	argerror(_("--notriggers may only be specified during package "
+		   "installation, erasure, and verification"));
+
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
 	bigMode != MODE_VERIFY && noDeps)
 	argerror(_("--nodeps may only be specified during package "
@@ -1242,6 +1253,7 @@ int main(int argc, char ** argv) {
 	    argerror(_("no packages given for uninstall"));
 
 	if (noScripts) uninstallFlags |= RPMUNINSTALL_NOSCRIPTS;
+	if (noTriggers) uninstallFlags |= RPMUNINSTALL_NOTRIGGERS;
 	if (test) uninstallFlags |= RPMUNINSTALL_TEST;
 	if (justdb) uninstallFlags |= RPMUNINSTALL_JUSTDB;
 	if (noDeps) interfaceFlags |= UNINSTALL_NODEPS;
@@ -1259,6 +1271,7 @@ int main(int argc, char ** argv) {
 	if (replacePackages) installFlags |= RPMINSTALL_REPLACEPKG;
 	if (test) installFlags |= RPMINSTALL_TEST;
 	if (noScripts) installFlags |= RPMINSTALL_NOSCRIPTS;
+	if (noTriggers) installFlags |= RPMINSTALL_NOTRIGGERS;
 	if (ignoreArch) installFlags |= RPMINSTALL_NOARCH;
 	if (ignoreOs) installFlags |= RPMINSTALL_NOOS;
 	if (allFiles) installFlags |= RPMINSTALL_ALLFILES;
