@@ -47,8 +47,6 @@ static char * defaultQueryFormat =
 	    "Size        : %{SIZE}\n"
 	    "Summary     : %{SUMMARY}\n"
 	    "Description :\n%{DESCRIPTION}\n";
-static char * requiresQueryFormat = 
-	    "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]";
 
 static int queryHeader(Header h, char * chptr) {
     int count = 0;
@@ -357,21 +355,11 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
     headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
     headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &count);
 
-    if (!queryFlags) {
+    if (!queryFormat && !queryFlags) {
 	printf("%s-%s-%s\n", name, version, release);
     } else {
-	if (queryFlags & QUERY_FOR_INFO) {
-	    if (!queryFormat) {
-		queryFormat = defaultQueryFormat;
-	    } 
-
+	if (queryFormat)
 	    queryHeader(h, queryFormat);
-	}
-
-	if (queryFlags & QUERY_FOR_REQUIRES) {
-	    if (headerIsEntry(h, RPMTAG_REQUIREFLAGS))
-		queryHeader(h, requiresQueryFormat);
-	}
 
 	if (queryFlags & QUERY_FOR_LIST) {
 	    if (!headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
@@ -392,18 +380,24 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 			 (void **) &fileMTimeList, &count);
 		headerGetEntry(h, RPMTAG_FILERDEVS, &type, 
 			 (void **) &fileRdevList, &count);
-		headerGetEntry(h, RPMTAG_FILEUIDS, &type, 
-			 (void **) &fileUIDList, &count);
-		headerGetEntry(h, RPMTAG_FILEGIDS, &type, 
-			 (void **) &fileGIDList, &count);
-		headerGetEntry(h, RPMTAG_FILEUSERNAME, &type, 
-			 (void **) &fileOwnerList, &count);
-		headerGetEntry(h, RPMTAG_FILEGROUPNAME, &type, 
-			 (void **) &fileGroupList, &count);
 		headerGetEntry(h, RPMTAG_FILELINKTOS, &type, 
 			 (void **) &fileLinktoList, &count);
 		headerGetEntry(h, RPMTAG_FILEMD5S, &type, 
 			 (void **) &fileMD5List, &count);
+
+		if (!headerGetEntry(h, RPMTAG_FILEUIDS, &type, 
+			 (void **) &fileUIDList, &count)) {
+		    fileUIDList = NULL;
+		    headerGetEntry(h, RPMTAG_FILEGIDS, &type, 
+			     (void **) &fileGIDList, &count);
+		}
+
+		if (!headerGetEntry(h, RPMTAG_FILEUSERNAME, &type, 
+			 (void **) &fileOwnerList, &count)) {
+		    fileOwnerList = NULL;
+		    headerGetEntry(h, RPMTAG_FILEGROUPNAME, &type, 
+			     (void **) &fileGroupList, &count);
+		}
 
 		for (i = 0; i < count; i++) {
 		    if (!((queryFlags & QUERY_FOR_DOCS) || 
@@ -444,9 +438,13 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 			    if (fileOwnerList)
 				printf("%s %s", fileOwnerList[i], 
 						fileGroupList[i]);
-			    else
+			    else if (fileUIDList)
 				printf("%d %d", fileUIDList[i], 
 						fileGIDList[i]);
+			    else {
+				rpmError(RPMERR_INTERNAL, "package has "
+					"neither file owner or id lists");
+			    }
 
 			    printf(" %s %s %d ", 
 				 fileFlagsList[i] & RPMFILE_CONFIG ? "1" : "0",
@@ -464,14 +462,18 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 			    printFileInfo(fileList[i], fileSizeList[i],
 					  fileModeList[i], fileMTimeList[i],
 					  fileRdevList[i], fileOwnerList[i], 
-					  fileGroupList[i], fileUIDList[i], 
-					  fileGIDList[i], fileLinktoList[i]);
-			else
+					  fileGroupList[i], -1, 
+					  -1, fileLinktoList[i]);
+			else if (fileUIDList) {
 			    printFileInfo(fileList[i], fileSizeList[i],
 					  fileModeList[i], fileMTimeList[i],
 					  fileRdevList[i], NULL, 
 					  NULL, fileUIDList[i], 
 					  fileGIDList[i], fileLinktoList[i]);
+			} else {
+			    rpmError(RPMERR_INTERNAL, "package has "
+				    "neither file owner or id lists");
+			}
 		    }
 		}
 	    
@@ -567,7 +569,7 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 
     if (group) 
 	strncpy(groupfield, group, 8);
-    else
+    else 
 	sprintf(groupfield, "%-8d", gid);
 
     /* this is normally right */
@@ -635,6 +637,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
     char *end = NULL;
     struct urlContext context;
     int isUrl = 0;
+    char path[255];
 
     if (source != QUERY_RPM) {
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
@@ -736,7 +739,6 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 
       case QUERY_PATH:
 	if (*arg != '/') {
-	    char path[255];
 	    if (realpath(arg, path) != NULL)
 		arg = path;
 	}
