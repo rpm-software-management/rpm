@@ -325,9 +325,9 @@ void closeSpec(Spec spec)
 
 int noLang = 0;		/* XXX FIXME: pass as arg */
 
-int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
-	      int inBuildArch, const char *passPhrase, char *cookie,
-	      int anyarch, int force)
+int parseSpec(Spec *specp, const char *specFile, const char *rootdir,
+		const char *buildRoot, int inBuildArch, const char *passPhrase,
+		char *cookie, int anyarch, int force)
 {
     int parsePart = PART_PREAMBLE;
     int initialPackage = 1;
@@ -354,12 +354,12 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
     spec->anyarch = anyarch;
     spec->force = force;
 
-    if (passPhrase) {
+    if (rootdir && strcmp(rootdir, "/"))
+	spec->rootdir = xstrdup(rootdir);
+    if (passPhrase)
 	spec->passPhrase = xstrdup(passPhrase);
-    }
-    if (cookie) {
+    if (cookie)
 	spec->cookie = xstrdup(cookie);
-    }
 
     {	const char *timecheck = rpmExpand("%{_timecheck}", NULL);
 	if (timecheck && *timecheck != '%') {
@@ -434,7 +434,7 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
 		    saveArch = xstrdup(saveArch);
 		    rpmSetMachine(spec->buildArchitectures[x], NULL);
 		    if (parseSpec(&(spec->buildArchitectureSpecs[index]),
-				  specFile, buildRoot, 1,
+				  specFile, spec->rootdir, buildRoot, 1,
 				  passPhrase, cookie, anyarch, force)) {
 			spec->buildArchitectureCount = index;
 			freeSpec(spec);

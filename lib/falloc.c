@@ -53,7 +53,7 @@ FD_t fadOpen(const char * path, int flags, int perms)
     fadSetFileSize(fd, Fseek(fd, 0, SEEK_END));
 
     /* is this file brand new? */
-    if (fadGetFileSize(fd) < 0) {
+    if (fadGetFileSize(fd) == 0) {
 	newHdr.magic = FA_MAGIC;
 	newHdr.firstFree = 0;
 	if (Fwrite(&newHdr, sizeof(newHdr), 1, fd) != sizeof(newHdr)) {
@@ -256,6 +256,7 @@ unsigned int fadAlloc(FD_t fd, unsigned int size)
 	header.freePrev = header.freeNext = 0;
 
 	/* reserve all space up front */
+	/* XXX TODO: check max. no. of bytes to write */
 	if (Pwrite(fd, space, size, newBlockOffset) != size)
 	    return 0;
 
@@ -325,6 +326,7 @@ void fadFree(FD_t fd, unsigned int offset)
     header.freePrev = prevFreeOffset;
     footer.isFree = 1;
 
+    /* XXX TODO: set max. no. of bytes to write */
     (void)Pwrite(fd, &header, sizeof(header), offset);
 
     (void)Pwrite(fd, &footer, sizeof(footer), footerOffset);
@@ -347,6 +349,7 @@ void fadFree(FD_t fd, unsigned int offset)
 	faHeader.magic = FA_MAGIC;
 	faHeader.firstFree = fadGetFirstFree(fd);
 
+	/* XXX TODO: set max. no. of bytes to write */
 	if (Pwrite(fd, &faHeader, sizeof(faHeader), 0) != sizeof(faHeader))
 	    return;
     }

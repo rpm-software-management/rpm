@@ -115,6 +115,7 @@ struct SpecStruct {
 
     /*@dependent@*/ struct MacroContext *macros;
 
+    /*@only@*/ const char *rootdir;
     /*@only@*/ StringBuf prep;
     /*@only@*/ StringBuf build;
     /*@only@*/ StringBuf install;

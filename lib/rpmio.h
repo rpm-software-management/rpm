@@ -19,16 +19,16 @@ typedef	/*@abstract@*/ struct _FD {
 	long int	fileSize;	/* fadio: */
 	long int	fd_cpioPos;	/* cfdio: */
 	long int	fd_pos;
-/*@dependent@*/ cookie_io_functions_t *fd_io;
+/*@dependent@*/ cookie_io_functions_t * fd_io;
 } *FD_t;
 
-/*@observer@*/ const char * Fstrerror(FD_t);
+/*@observer@*/ const char * Fstrerror(FD_t fd);
 
-size_t	Fread	(/*@out@*/ void *buf, size_t size, size_t nmemb, FD_t fd);
+size_t	Fread	(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd);
 size_t	Fwrite	(const void *buf, size_t size, size_t nmemb, FD_t fd);
 int	Fseek	(FD_t fd, long int offset, int whence);
 int	Fclose	( /*@only@*/ FD_t fd);
-FILE *	Fopen	(const char *path, const char *fmode);
+FILE *	Fopen	(const char * path, const char * fmode);
 
 int	Ferror	(FD_t fd);
 int	Fileno	(FD_t fd);
@@ -36,6 +36,12 @@ int	Fileno	(FD_t fd);
 int	Fcntl	(FD_t, int op, void *lip);
 ssize_t Pread	(FD_t fd, /*@out@*/ void * buf, size_t count, off_t offset);
 ssize_t Pwrite	(FD_t fd, const void * buf, size_t count, off_t offset);
+int	Mkdir	(const char * path, mode_t mode);
+int	Chdir	(const char * path);
+int	Rmdir	(const char * path);
+int	Rename	(const char * oldpath, const char * newpath);
+int	Chroot	(const char * path);
+int	Unlink	(const char * path);
 
 #endif /* H_RPMIO */
 
@@ -51,9 +57,9 @@ int timedRead(FD_t fd, /*@out@*/void * bufptr, int length);
 extern /*@only@*/ /*@null@*/ FD_t fdNew(cookie_io_functions_t * iop);
 extern int fdValid(FD_t fd);
 
-extern /*@only@*/ /*@null@*/ FD_t fdOpen(const char *pathname, int flags, mode_t mode);
+extern /*@only@*/ /*@null@*/ FD_t fdOpen(const char * pathname, int flags, mode_t mode);
 extern /*@only@*/ /*@null@*/ FD_t fdDup(int fdno);
-extern /*@dependent@*/ /*@null@*/ FILE *fdFdopen( /*@only@*/ FD_t fd, const char *mode);
+extern /*@dependent@*/ /*@null@*/ FILE *fdFdopen( /*@only@*/ FD_t fd, const char * mode);
 
 /*@observer@*/ const cookie_io_functions_t * fdGetIoCookie(FD_t fd);
 void fdSetIoCookie(FD_t fd, cookie_io_functions_t * io);
@@ -68,7 +74,7 @@ extern cookie_io_functions_t fdio;
  */
 /*@only@*/ FD_t	ufdOpen(const char * pathname, int flags, mode_t mode);
 /*@dependent@*/ void * ufdGetUrlinfo(FD_t fd);
-/*@observer@*/ const char *urlStrerror(const char *url);
+/*@observer@*/ const char * urlStrerror(const char * url);
 
 extern cookie_io_functions_t ufdio;
 
@@ -92,9 +98,9 @@ extern cookie_io_functions_t fadio;
 
 extern /*@dependent@*/ /*@null@*/ gzFile * gzdFileno(FD_t fd);
 
-extern /*@only@*/ /*@null@*/ FD_t gzdOpen(const char *pathname, const char *mode);
+extern /*@only@*/ /*@null@*/ FD_t gzdOpen(const char * pathname, const char * mode);
 
-extern /*@only@*/ /*@null@*/ FD_t gzdFdopen( /*@only@*/ FD_t fd, const char *mode);
+extern /*@only@*/ /*@null@*/ FD_t gzdFdopen( /*@only@*/ FD_t fd, const char * mode);
 
 extern int gzdFlush(FD_t fd);
 
@@ -111,9 +117,9 @@ extern cookie_io_functions_t gzdio;
 
 extern /*@dependent@*/ /*@null@*/ BZFILE * bzdFileno(FD_t fd);
 
-extern /*@only@*/ /*@null@*/ FD_t bzdOpen(const char *pathname, const char *mode);
+extern /*@only@*/ /*@null@*/ FD_t bzdOpen(const char * pathname, const char * mode);
 
-extern /*@only@*/ /*@null@*/ FD_t bzdFdopen( /*@only@*/ FD_t fd, const char *mode);
+extern /*@only@*/ /*@null@*/ FD_t bzdFdopen( /*@only@*/ FD_t fd, const char * mode);
 
 extern int bzdFlush(FD_t fd);
 

@@ -60,52 +60,6 @@ static void unblockSignals(void)
     sigprocmask(SIG_SETMASK, &signalMask, NULL);
 }
 
-int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp)
-{
-    const char * dbpath = rpmGetPath("%{_dbpath}", NULL);
-    int rc = 0;
-
-    if (!(dbpath && dbpath[0] != '%')) {
-	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
-	rc = 1;
-    } else if (openDatabase(prefix, dbpath, rpmdbp, O_RDONLY, 0644, 
-		     RPMDB_FLAG_MINIMAL)) {
-	rc = 1;
-    }
-    xfree(dbpath);
-    return rc;
-}
-
-int rpmdbOpen (const char * prefix, rpmdb *rpmdbp, int mode, int perms)
-{
-    const char * dbpath = rpmGetPath("%{_dbpath}", NULL);
-    int rc;
-
-    if (!(dbpath && dbpath[0] != '%')) {
-	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
-	rc = 1;
-    } else
-    	rc = openDatabase(prefix, dbpath, rpmdbp, mode, perms, 0);
-    xfree(dbpath);
-    return rc;
-}
-
-int rpmdbInit (const char * prefix, int perms)
-{
-    const char * dbpath = rpmGetPath("%{_dbpath}", NULL);
-    rpmdb db;
-    int rc;
-
-    if (!(dbpath && dbpath[0] != '%')) {
-	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
-	rc = 1;
-    } else
-	rc = openDatabase(prefix, dbpath, &db, O_CREAT | O_RDWR, perms, 
-			RPMDB_FLAG_JUSTCHECK);
-    xfree(dbpath);
-    return rc;
-}
-
 static int openDbFile(const char * prefix, const char * dbpath, const char * shortName, 
 	 int justCheck, int mode, int perms, dbiIndex ** db, DBTYPE type)
 {
@@ -158,7 +112,6 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     int minimal = flags & RPMDB_FLAG_MINIMAL;
     const char * akey;
 
-fprintf(stderr, "==> openDatabase %s\n", dbpath);
     if (mode & O_WRONLY) 
 	return 1;
 
@@ -182,7 +135,7 @@ fprintf(stderr, "==> openDatabase %s\n", dbpath);
 
     switch (urlIsURL(dbpath)) {
     case URL_IS_UNKNOWN:
-	strcpy(filename, prefix); 
+	strcat(filename, prefix); 
 	break;
     default:
 	break;
@@ -282,6 +235,37 @@ fprintf(stderr, "==> openDatabase %s\n", dbpath);
 	*rpmdbp = db;
 
      return rc;
+}
+
+static int doRpmdbOpen (const char * prefix, rpmdb * rpmdbp,
+			int mode, int perms, int flags)
+{
+    const char * dbpath = rpmGetPath("%{_dbpath}", NULL);
+    int rc;
+
+    if (!(dbpath && dbpath[0] != '%')) {
+	rpmMessage(RPMMESS_DEBUG, _("no dbpath has been set"));
+	rc = 1;
+    } else
+    	rc = openDatabase(prefix, dbpath, rpmdbp, mode, perms, flags);
+    xfree(dbpath);
+    return rc;
+}
+
+int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp)
+{
+    return doRpmdbOpen(prefix, rpmdbp, O_RDONLY, 0644, RPMDB_FLAG_MINIMAL);
+}
+
+int rpmdbOpen (const char * prefix, rpmdb *rpmdbp, int mode, int perms)
+{
+    return doRpmdbOpen(prefix, rpmdbp, mode, perms, 0);
+}
+
+int rpmdbInit (const char * prefix, int perms)
+{
+    rpmdb db;
+    return doRpmdbOpen(prefix, &db, (O_CREAT | O_RDWR), perms, RPMDB_FLAG_JUSTCHECK);
 }
 
 void rpmdbClose (rpmdb db)
@@ -669,6 +653,7 @@ int rpmdbAdd(rpmdb db, Header dbentry)
     if (!dboffset) {
 	rc = 1;
     } else {
+	/* XXX TODO: set max. no. of bytes to write */
 	(void)Fseek(db->pkgs, dboffset, SEEK_SET);
 	rc = headerWrite(db->pkgs, dbentry, HEADER_MAGIC_NO);
     }
@@ -751,6 +736,7 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
     } else {
 	blockSignals();
 
+	/* XXX TODO: set max. no. of bytes to write */
 	(void)Fseek(db->pkgs, offset, SEEK_SET);
 
 	rc = headerWrite(db->pkgs, newHeader, HEADER_MAGIC_NO);
@@ -819,7 +805,7 @@ int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char *
     for (rpmdbfnp = rpmdb_filenames; *rpmdbfnp; rpmdbfnp++) {
 	sprintf(ofilename, "%s/%s/%s", rootdir, olddbpath, *rpmdbfnp);
 	sprintf(nfilename, "%s/%s/%s", rootdir, newdbpath, *rpmdbfnp);
-	if (rename(ofilename, nfilename)) rc = 1;
+	if (Rename(ofilename, nfilename)) rc = 1;
     }
 
     return rc;

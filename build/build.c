@@ -1,6 +1,7 @@
 #include "system.h"
 
-#include "rpmbuild.h"
+#include <rpmbuild.h>
+#include <rpmurl.h>
 
 static void doRmSource(Spec spec)
 {
@@ -73,11 +74,11 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
       case RPMBUILD_STRINGBUF:
 	break;
     }
-    if ((what != RPMBUILD_RMBUILD) && sb == NULL) {
+
+    if ((what != RPMBUILD_RMBUILD) && sb == NULL)
 	return 0;
-    }
     
-    if (makeTempFile(NULL, &scriptName, &fd)) {
+    if (makeTempFile(spec->rootdir, &scriptName, &fd)) {
 	    Fclose(fd);
 	    FREE(scriptName);
 	    rpmError(RPMERR_SCRIPT, _("Unable to open temp file"));
@@ -101,17 +102,14 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     fputs(buf, f);
 
     if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD) {
-	if (spec->buildSubdir) {
+	if (spec->buildSubdir)
 	    fprintf(f, "cd %s\n", spec->buildSubdir);
-	}
     }
     if (what == RPMBUILD_RMBUILD) {
-	if (spec->buildSubdir) {
+	if (spec->buildSubdir)
 	    fprintf(f, "rm -rf %s\n", spec->buildSubdir);
-	}
-    } else {
+    } else
 	fprintf(f, "%s", getStringBuf(sb));
-    }
     fprintf(f, "\nexit 0\n");
     
     fclose(f);
@@ -124,27 +122,39 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
     rpmMessage(RPMMESS_NORMAL, _("Executing: %s\n"), name);
     if (!(pid = fork())) {
 	const char *buildShell = rpmGetPath("%{_buildshell}", NULL);
-	execl(buildShell, buildShell, "-e", scriptName, scriptName, NULL);
-	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s)"),
-		 scriptName, name);
-#if 0   /* XXX don't erase the failing script */
-	unlink(scriptName);
-#endif
-	FREE(scriptName);
-	return RPMERR_SCRIPT;
+
+	if (spec->rootdir)
+	    Chroot(spec->rootdir);
+	chdir("/");
+
+	switch (urlIsURL(scriptName)) {
+	case URL_IS_PATH:
+	    scriptName += sizeof("file://") - 1;
+	    scriptName = strchr(scriptName, '/');
+	    /*@fallthrough@*/
+	case URL_IS_UNKNOWN:
+	    execl(buildShell, buildShell, "-e", scriptName, scriptName, NULL);
+	    break;
+	default:
+	    break;
+	}
+
+	rpmError(RPMERR_SCRIPT, _("Exec of %s failed (%s)"), scriptName, name);
+	_exit(-1);
     }
+
     (void)wait(&status);
     if (! WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmError(RPMERR_SCRIPT, _("Bad exit status from %s (%s)"),
 		 scriptName, name);
 #if HACK
-	unlink(scriptName);
+	Unlink(scriptName);
 #endif
 	FREE(scriptName);
 	return RPMERR_SCRIPT;
     }
     
-    unlink(scriptName);
+    Unlink(scriptName);
     FREE(scriptName);
 
     return 0;
@@ -166,66 +176,49 @@ int buildSpec(Spec spec, int what, int test)
 	    }
 	}
     } else {
-	if (what & RPMBUILD_PREP) {
-	    if ((rc = doScript(spec, RPMBUILD_PREP, NULL, NULL, test))) {
+	if ((what & RPMBUILD_PREP) &&
+	    (rc = doScript(spec, RPMBUILD_PREP, NULL, NULL, test)))
 		return rc;
-	    }
-	}
-	if (what & RPMBUILD_BUILD) {
-	    if ((rc = doScript(spec, RPMBUILD_BUILD, NULL, NULL, test))) {
-		return rc;
-	    }
-	}
-	if (what & RPMBUILD_INSTALL) {
-	    if ((rc = doScript(spec, RPMBUILD_INSTALL, NULL, NULL, test))) {
-		return rc;
-	    }
-	}
 
-	if (what & RPMBUILD_PACKAGESOURCE) {
-	    if ((rc = processSourceFiles(spec))) {
+	if ((what & RPMBUILD_BUILD) &&
+	    (rc = doScript(spec, RPMBUILD_BUILD, NULL, NULL, test)))
 		return rc;
-	    }
-	}
 
-	if ((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY) ||
-	    (what & RPMBUILD_FILECHECK)) {
-	    if ((rc = processBinaryFiles(spec, what & RPMBUILD_INSTALL,
-					 test))) {
+	if ((what & RPMBUILD_INSTALL) &&
+	    (rc = doScript(spec, RPMBUILD_INSTALL, NULL, NULL, test)))
 		return rc;
-	    }
-	}
 
-	if (what & RPMBUILD_PACKAGESOURCE && !test) {
-	    if ((rc = packageSources(spec))) {
+	if ((what & RPMBUILD_PACKAGESOURCE) &&
+	    (rc = processSourceFiles(spec)))
 		return rc;
-	    }
-	}
-	if (what & RPMBUILD_PACKAGEBINARY && !test) {
-	    if ((rc = packageBinaries(spec))) {
+
+	if (((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY) ||
+	    (what & RPMBUILD_FILECHECK)) &&
+	    (rc = processBinaryFiles(spec, what & RPMBUILD_INSTALL, test)))
 		return rc;
-	    }
-	}
+
+	if (((what & RPMBUILD_PACKAGESOURCE) && !test) &&
+	    (rc = packageSources(spec)))
+		return rc;
+
+	if (((what & RPMBUILD_PACKAGEBINARY) && !test) &&
+	    (rc = packageBinaries(spec)))
+		return rc;
 	
-	if (what & RPMBUILD_CLEAN) {
-	    if ((rc = doScript(spec, RPMBUILD_CLEAN, NULL, NULL, test))) {
+	if ((what & RPMBUILD_CLEAN) &&
+	    (rc = doScript(spec, RPMBUILD_CLEAN, NULL, NULL, test)))
 		return rc;
-	    }
-	}
-	if (what & RPMBUILD_RMBUILD) {
-	    if ((rc = doScript(spec, RPMBUILD_RMBUILD, NULL, NULL, test))) {
+
+	if ((what & RPMBUILD_RMBUILD) &&
+	    (rc = doScript(spec, RPMBUILD_RMBUILD, NULL, NULL, test)))
 		return rc;
-	    }
-	}
     }
 
-    if (what & RPMBUILD_RMSOURCE) {
+    if (what & RPMBUILD_RMSOURCE)
 	doRmSource(spec);
-    }
 
-    if (what & RPMBUILD_RMSPEC) {
+    if (what & RPMBUILD_RMSPEC)
 	unlink(spec->specFile);
-    }
 
     return 0;
 }

@@ -69,6 +69,7 @@ int rpmfileexists(const char * filespec) {
     case URL_IS_FTP:
     case URL_IS_HTTP:
     default:
+	return 0;
 	break;
     }
 
@@ -355,14 +356,14 @@ char * gidToGname(gid_t gid) {
 }
 
 int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
-    const char * fn;
+    const char * fnpath, * fn;
     FD_t fd;
     int ran;
     struct stat sb, sb2;
 
     if (!prefix) prefix = "";
 
-    fn = NULL;
+    fnpath = NULL;
 
     srand(time(NULL));
     ran = rand() % 100000;
@@ -372,34 +373,46 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr) {
     do {
 	char tfn[32];
 	sprintf(tfn, "rpm-tmp.%d", ran++);
-	if (fn)	xfree(fn);
-	fn = rpmGetPath(prefix, "%{_tmppath}/", tfn, NULL);
+	if (fnpath)	xfree(fnpath);
+	fnpath = rpmGetPath(prefix, "%{_tmppath}/", tfn, NULL);
+
+	switch (urlIsURL(fnpath)) {
+	case URL_IS_PATH:
+	    fn = fnpath + sizeof("file://") - 1;
+	    fn = strchr(fn, '/');
+	    break;
+	case URL_IS_UNKNOWN:
+	    fn = fnpath;
+	    break;
+	default:
+	    return 1;
+	}
 	fd = fdOpen(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
     } while (Ferror(fd) && errno == EEXIST);
 
     if (!stat(fn, &sb) && S_ISLNK(sb.st_mode)) {
-	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
-	xfree(fn);
+	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fnpath);
+	xfree(fnpath);
 	return 1;
     }
 
     if (sb.st_nlink != 1) {
-	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
-	xfree(fn);
+	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fnpath);
+	xfree(fnpath);
 	return 1;
     }
 
     fstat(Fileno(fd), &sb2);
     if (sb2.st_ino != sb.st_ino || sb2.st_dev != sb.st_dev) {
-	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
-	xfree(fn);
+	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fnpath);
+	xfree(fnpath);
 	return 1;
     }
 
     if (fnptr)
-	*fnptr = fn;
+	*fnptr = fnpath;
     else
-	xfree(fn);
+	xfree(fnpath);
     *fdptr = fd;
 
     return 0;

@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <rpmlib.h>
+#include <rpmurl.h>
 
 #include "depends.h"
 #include "install.h"
@@ -355,13 +356,21 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 	    }
 	}
 
-	if (strcmp(root, "/")) {
-	    /*@-unrecog@*/ chroot(root); /*@=unrecog@*/
+	switch(urlIsURL(root)) {
+	case URL_IS_PATH:
+	    root += sizeof("file://") - 1;
+	    root = strchr(root, '/');
+	    /*@fallthrough@*/
+	case URL_IS_UNKNOWN:
+	    if (strcmp(root, "/"))
+		/*@-unrecog@*/ chroot(root); /*@=unrecog@*/
+	    chdir("/");
+	    execv(argv[0], (char *const *)argv);
+	    break;
+	default:
+	    break;
 	}
 
-	chdir("/");
-
-	execv(argv[0], (char *const *)argv);
  	_exit(-1);
 	/*@notreached@*/
     }

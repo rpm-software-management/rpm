@@ -1497,16 +1497,16 @@ int processSourceFiles(Spec spec)
 	}
 
 	switch (urlIsURL(s)) {
-	case URL_IS_DASH:	/* stdin */
-	case URL_IS_FTP:	/* ftp://... */
-	case URL_IS_HTTP:	/* http://... */
-	    continue;		/* XXX just skip for now */
 	case URL_IS_PATH:	/* file://... */
 	    s += sizeof("file://") - 1;
 	    s = strchr(s, '/');
 	    /*@fallthrough@*/
 	case URL_IS_UNKNOWN:	/* plain file path */
 	    break;
+	case URL_IS_DASH:	/* stdin */
+	case URL_IS_FTP:	/* ftp://... */
+	case URL_IS_HTTP:	/* http://... */
+	    continue;		/* XXX just skip for now */
 	}
 
 	flp->diskName = xstrdup(s);

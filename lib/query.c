@@ -436,9 +436,9 @@ int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage)
 /*
  * XXX Eliminate linkage loop into librpmbuild.a
  */
-int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *buildRoot,
-                int inBuildArch, const char *passPhrase, char *cookie, int anyarch,
-                int force) = NULL;
+int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
+		const char *buildRoot, int inBuildArch, const char *passPhrase,
+		char *cookie, int anyarch, int force) = NULL;
 void	(*freeSpecVec) (Spec spec) = NULL;
 char	*specedit = NULL;
 
@@ -509,7 +509,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	int anyarch = 1;
 	int force = 1;
 
-	rc = parseSpecVec(&spec, arg, buildRoot, inBuildArch, passPhrase,
+	rc = parseSpecVec(&spec, arg, "/", buildRoot, inBuildArch, passPhrase,
 		cookie, anyarch, force);
 	if (rc || spec == NULL) {
 	    

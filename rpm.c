@@ -21,10 +21,34 @@
 #define	GETOPT_DEFINEMACRO	1020
 #define	GETOPT_EVALMACRO	1021
 
-enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
-	     MODE_BUILD, MODE_REBUILD, MODE_CHECKSIG, MODE_RESIGN,
-	     MODE_RECOMPILE, MODE_QUERYTAGS, MODE_INITDB, MODE_TARBUILD,
-	     MODE_REBUILDDB, MODE_UNKNOWN };
+enum modes {
+    MODE_UNKNOWN	= 0,
+    MODE_QUERY		= (1 <<  0),
+    MODE_INSTALL	= (1 <<  1),
+    MODE_UNINSTALL	= (1 <<  2),
+    MODE_VERIFY		= (1 <<  3),
+    MODE_BUILD		= (1 <<  4),
+    MODE_REBUILD	= (1 <<  5),
+    MODE_CHECKSIG	= (1 <<  6),
+    MODE_RESIGN		= (1 <<  7),
+    MODE_RECOMPILE	= (1 <<  8),
+    MODE_QUERYTAGS	= (1 <<  9),
+    MODE_INITDB		= (1 << 10),
+    MODE_TARBUILD	= (1 << 11),
+    MODE_REBUILDDB	= (1 << 12)
+};
+
+#define	MODES_QV (MODE_QUERY | MODE_VERIFY)
+#define	MODES_BT (MODE_BUILD | MODE_TARBUILD | MODE_REBUILD | MODE_RECOMPILE)
+#define	MODES_IE (MODE_INSTALL | MODE_UNINSTALL)
+#define	MODES_DB (MODE_INITDB | MODE_REBUILDDB)
+#define	MODES_K	 (MODE_CHECKSIG | MODES_RESIGN)
+
+#define	MODES_FOR_DBPATH	(MODES_BT | MODES_IE | MODES_QV | MODES_DB)
+#define	MODES_FOR_TIMECHECK	(MODES_BT)
+#define	MODES_FOR_NODEPS	(MODES_BT | MODES_IE | MODE_VERIFY)
+#define	MODES_FOR_TEST		(MODES_BT | MODES_IE)
+#define	MODES_FOR_ROOT		(MODES_BT | MODES_IE | MODES_QV | MODES_DB)
 
 /* the flags for the various options */
 static int allFiles;
@@ -900,25 +924,20 @@ int main(int argc, const char ** argv)
 	argerror("--buildroot may only be used during package builds");
     }
 
-    if (bigMode != MODE_QUERY && bigMode != MODE_INSTALL && 
-	bigMode != MODE_UNINSTALL && bigMode != MODE_VERIFY &&
-	bigMode != MODE_INITDB && bigMode != MODE_REBUILDDB &&
-	bigMode != MODE_REBUILD && gotDbpath)
+    if (gotDbpath && (bigMode & ~MODES_FOR_DBPATH))
 	argerror(_("--dbpath given for operation that does not use a "
 			"database"));
 
-    if (timeCheck && bigMode != MODE_BUILD && bigMode != MODE_REBUILD &&
-	bigMode != MODE_RECOMPILE && bigMode != MODE_TARBUILD) 
+    if (timeCheck && (bigMode & ~MODES_FOR_TIMECHECK))
 	argerror(_("--timecheck may only be used during package builds"));
     
-    if (!(bigMode == MODE_QUERY || bigMode == MODE_VERIFY) && qva->qva_flags) 
+    if (qva->qva_flags && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query flags"));
 
-    if (bigMode != MODE_QUERY && qva->qva_queryFormat) 
+    if (qva->qva_queryFormat && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query format"));
 
-    if (bigMode != MODE_QUERY && bigMode != MODE_VERIFY &&
-	QVSource != RPMQV_PACKAGE) 
+    if (QVSource != RPMQV_PACKAGE && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query source"));
 
     if (!(bigMode == MODE_INSTALL ||
@@ -1003,25 +1022,31 @@ int main(int argc, const char ** argv)
 	argerror(_("--notriggers may only be specified during package "
 		   "installation, erasure, and verification"));
 
-    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
-	bigMode != MODE_BUILD && bigMode != MODE_TARBUILD &&
-	bigMode != MODE_VERIFY && noDeps)
+    if (noDeps & (bigMode & ~MODES_FOR_NODEPS))
 	argerror(_("--nodeps may only be specified during package "
 		   "building, installation, erasure, and verification"));
 
-    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL &&
-	bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && test )
+    if (test && (bigMode & ~MODES_FOR_TEST))
 	argerror(_("--test may only be specified during package installation, "
 		 "erasure, and building"));
 
-    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
-	bigMode != MODE_QUERY   && bigMode != MODE_VERIFY    && 			bigMode != MODE_REBUILDDB && bigMode != MODE_INITDB && rootdir[1])
+    if (rootdir[1] && (bigMode & ~MODES_FOR_ROOT))
 	argerror(_("--root (-r) may only be specified during "
 		 "installation, erasure, querying, and "
 		 "database rebuilds"));
 
-    if (rootdir && rootdir[0] != '/')
-	argerror(_("arguments to --root (-r) must begin with a /"));
+    if (rootdir) {
+	switch (urlIsURL(rootdir)) {
+	default:
+	    if (bigMode & MODES_FOR_ROOT)
+		break;
+	    /*@fallthrough@*/
+	case URL_IS_UNKNOWN:
+	    if (rootdir[0] != '/')
+		argerror(_("arguments to --root (-r) must begin with a /"));
+	    break;
+	}
+    }
 
     if (oldPackage && !upgrade)
 	argerror(_("--oldpackage may only be used during upgrades"));
@@ -1193,6 +1218,7 @@ int main(int argc, const char ** argv)
 	    if (ec)
 		break;
 
+	    ba->rootdir = rootdir;
 	    ec = build(specFile, ba, passPhrase, 0, cookie, rcfile, force, noDeps);
 	    if (ec)
 		break;
@@ -1245,6 +1271,7 @@ int main(int argc, const char ** argv)
 	}
 
 	while ((pkg = poptGetArg(optCon))) {
+	    ba->rootdir = rootdir;
 	    ec = build(pkg, ba, passPhrase, bigMode == MODE_TARBUILD,
 			NULL, rcfile, force, noDeps);
 	    if (ec)

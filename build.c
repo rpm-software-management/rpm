@@ -223,8 +223,8 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
     /* Parse the spec file */
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
-    if (parseSpec(&spec, specfile, buildRoot, 0, passPhrase, cookie,
-	_anyarch(buildAmount), force)) {
+    if (parseSpec(&spec, specfile, ba->rootdir, buildRoot, 0, passPhrase,
+	cookie, _anyarch(buildAmount), force)) {
 	    return 1;
     }
 #undef	_anyarch

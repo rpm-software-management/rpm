@@ -36,7 +36,7 @@ int rpmdbRebuild(const char * rootdir)
     }
 
     rpmMessage(RPMMESS_DEBUG, _("creating directory: %s\n"), newrootdbpath);
-    if (mkdir(newrootdbpath, 0755)) {
+    if (Mkdir(newrootdbpath, 0755)) {
 	rpmError(RPMERR_MKDIR, _("error creating directory %s: %s"),
 	      newrootdbpath, strerror(errno));
     }
@@ -104,7 +104,7 @@ int rpmdbRebuild(const char * rootdir)
 	    rc = 1;
 	    goto exit;
 	}
-	if (rmdir(newrootdbpath))
+	if (Rmdir(newrootdbpath))
 	    rpmMessage(RPMMESS_ERROR, _("failed to remove directory %s: %s\n"),
 			newrootdbpath, strerror(errno));
     }

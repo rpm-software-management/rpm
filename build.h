@@ -16,6 +16,7 @@ struct rpmBuildArguments {
     int noBuild;
     int shortCircuit;
     char buildChar;
+    /*@dependent@*/ const char *rootdir;
 };
 
 int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,

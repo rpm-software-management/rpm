@@ -413,6 +413,7 @@ Spec newSpec(void)
     spec->readStack->next = NULL;
     spec->readStack->reading = 1;
 
+    spec->rootdir = NULL;
     spec->prep = NULL;
     spec->build = NULL;
     spec->install = NULL;
@@ -430,7 +431,6 @@ Spec newSpec(void)
     
     spec->gotBuildRoot = 0;
     spec->buildRoot = NULL;
-    
     spec->buildSubdir = NULL;
 
     spec->passPhrase = NULL;
