@@ -10,11 +10,11 @@
  *	Copyright (C) The Internet Society (1998).  All Rights Reserved.
  */
 
-#if !defined(_BEECRYPT_TYPES_H)
+#if !defined(_BEECRYPT_API_H)
 /*@-redef@*/
 typedef unsigned char byte;
 /*@=redef@*/
-#endif	/* _BEECRYPT_TYPES_H */
+#endif	/* _BEECRYPT_API_H */
 
 /**
  */

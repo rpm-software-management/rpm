@@ -9,7 +9,7 @@
 #include <rpmio.h>
 #include <rpmurl.h>
 
-#include <beecrypt/types.h>
+#include <beecrypt/beecrypt.api.h>
 #include <rpmpgp.h>
 #include <rpmsw.h>
 

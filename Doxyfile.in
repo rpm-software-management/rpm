@@ -327,6 +327,8 @@ INPUT                  = \
 	@top_srcdir@/beecrypt/base64.h \
 	@top_srcdir@/beecrypt/beecrypt.c \
 	@top_srcdir@/beecrypt/beecrypt.h \
+	@top_srcdir@/beecrypt/beecrypt.api.h \
+	@top_srcdir@/beecrypt/beecrypt.gnu.h \
 	@top_srcdir@/beecrypt/blockmode.c \
 	@top_srcdir@/beecrypt/blockmode.h \
 	@top_srcdir@/beecrypt/blockpad.c \
@@ -391,7 +393,6 @@ INPUT                  = \
 	@top_srcdir@/beecrypt/sha256.h \
 	@top_srcdir@/beecrypt/timestamp.c \
 	@top_srcdir@/beecrypt/timestamp.h \
-	@top_srcdir@/beecrypt/types.h \
 	@top_srcdir@/build/build.c \
 	@top_srcdir@/build/buildio.h \
 	@top_srcdir@/build/expression.c \

@@ -5,7 +5,7 @@ various DB flags, etc.
 
 import unittest
 
-import rpm
+from rpm import mpw
 
 from test_all import verbose
 
@@ -22,7 +22,7 @@ class Factory(object):
 	xself = long(self.false_self)
 	yself = int(self.false_self)
 	xm = long.__getattribute__(xself, self.method_name)
-	ym = rpm.mpw.__getattribute__(yself, self.method_name)
+	ym = mpw.__getattribute__(yself, self.method_name)
 	xa = xm(long(val))
 	ya = ym(int(val))
 	print "  Comparing", xa, ya
@@ -53,11 +53,11 @@ class BasicTestCase(unittest.TestCase):
     t = 10
 
     def setUp(self):
-	rpm.mpw().Debug(0)
+	mpw().Debug(0)
 	pass
 
     def tearDown(self):
-	rpm.mpw().Debug(0)
+	mpw().Debug(0)
 	pass
 
     #----------------------------------------
@@ -71,9 +71,9 @@ class BasicTestCase(unittest.TestCase):
 	    print "\tb:\t%s\t%s\t0x%x" % (type(self.b), self.b, self.b)
 	    print "\tc:\t%s\t%s\t0x%x" % (type(self.c), self.c, self.c)
 
-	wa = rpm.mpw(self.a)
-	wb = rpm.mpw(self.b)
-	wc = rpm.mpw(self.c)
+	wa = mpw(self.a)
+	wb = mpw(self.b)
+	wc = mpw(self.c)
 #	xa - Long(self.a)
 #	xb = Long(self.b)
 #	xc = Long(self.c)
@@ -119,8 +119,8 @@ class BasicTestCase(unittest.TestCase):
 	print "__xor__:\t", (wa ^ wa), "\t",  long(za ^ za)
 	print "__or__:\t", (wa | wc), "\t",  long(za | zc)
 
-#	print rpm.mpw.__complex__(b)
-#	print rpm.mpw.__coerce__(b, i)
+#	print mpw.__complex__(b)
+#	print mpw.__coerce__(b, i)
 
 	del wa
 	del wb
@@ -137,13 +137,13 @@ class BasicTestCase(unittest.TestCase):
             print "Running %s.test02_CarryBorrow..." % \
                   self.__class__.__name__
 	a = 0x7fffffff
-	wa = -rpm.mpw(a); wa = wa+wa
+	wa = -mpw(a); wa = wa+wa
 	za = -long(a); za = za+za
-	wb = -rpm.mpw(1)
+	wb = -mpw(1)
 	zb = -long(1)
-	wc = rpm.mpw(1)
+	wc = mpw(1)
 	zc = long(1)
-	wd = rpm.mpw(a); wd = wd+wd
+	wd = mpw(a); wd = wd+wd
 	zd = long(a); zd = zd+zd
 	print "add --:\t", (wa+wa), "\t",  (za+za)
 	print "add -+:\t", (wb+wd), "\t",  (zb+zd)
@@ -161,7 +161,7 @@ class BasicTestCase(unittest.TestCase):
             print '\n', '-=' * 30
             print "Running %s.test03_Signs..." % \
                   self.__class__.__name__
-	wpa = rpm.mpw(13)
+	wpa = mpw(13)
 	wma = -wpa
 	wpb = wpa - 3
 	wmb = -wpb
@@ -206,7 +206,7 @@ class BasicTestCase(unittest.TestCase):
 	print "pow +-:\t", (wpb**wma), "\t", (zpb**zma)
 	print "pow ++:\t", (wpb**wpa), "\t", (zpb**zpa)
 
-#	wpa = rpm.mpw(13)
+#	wpa = mpw(13)
 #	wma = -wpa
 #	wpb = wpa - 3
 #	wmb = -wpb
@@ -246,7 +246,7 @@ class BasicTestCase(unittest.TestCase):
 	tm2 = tfmt % (self.t - 2)
 	for m in range(self.lo,self.hi):
 	    for n in range(m+1,self.hi+1):
-		wt = rpm.mpw(self.t)
+		wt = mpw(self.t)
 		wa = (wt**m - 1) * (wt**n - 1)
 		ws = tfmt % long(wa)
 		zs = tm1 * (m - 1) + tm2 + tm1 * (n - m) + "0" * (m - 1) + "1"
@@ -262,7 +262,7 @@ class BasicTestCase(unittest.TestCase):
 	tm2 = tfmt % (self.t - 2)
 	for m in range(self.lo,self.hi):
 	    for n in range(m+1,self.hi+1):
-		wt = rpm.mpw(self.t)
+		wt = mpw(self.t)
 		wa = (wt**m - 1) * (wt**n - 1)
 		ws = tfmt % long(wa)
 		zs = tm1 * (m - 1) + tm2 + tm1 * (n - m) + "0" * (m - 1) + "1"
@@ -278,7 +278,7 @@ class BasicTestCase(unittest.TestCase):
 	tm2 = tfmt % (self.t - 2)
 	for m in range(self.lo,self.hi):
 	    for n in range(m+1,self.hi+1):
-		wt = rpm.mpw(self.t)
+		wt = mpw(self.t)
 		wa = (wt**m - 1) * (wt**n - 1)
 		ws = tfmt % long(wa)
 		zs = tm1 * (m - 1) + tm2 + tm1 * (n - m) + "0" * (m - 1) + "1"
@@ -295,7 +295,7 @@ class BasicTestCase(unittest.TestCase):
                   self.__class__.__name__
 	    print "\t(m**n)/(m**(n-1)) == m for m,n in [%d,%d)" % (self.lo,self.hi)
 	for m in range(self.lo,self.hi):
-	    wa = rpm.mpw(m)
+	    wa = mpw(m)
 	    wd = wa
 	    for n in range(self.lo,self.hi):
 		wc = wa**n
