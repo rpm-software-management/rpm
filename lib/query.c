@@ -450,7 +450,6 @@ printNewSpecfile(Spec spec)
 	    headerGetEntry(spec->packages->header, RPMTAG_NAME, NULL,
 		(void *) &n, NULL);
 	    sprintf(buf, "%s(%s)", n, tagName(t->t_tag));
-	    if ((n = strchr(buf, '(')) != NULL) n[1] = tolower(n[1]);
 	    t->t_msgid = strdup(buf);
 	}
 	msgstr = strdup(dgettext(SPECSPACKAGE, t->t_msgid));

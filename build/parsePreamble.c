@@ -320,10 +320,10 @@ stashSt(Spec spec, Header h, int tag, const char *lang)
 	t->t_lang = strdup(lang);
 	t->t_msgid = NULL;
 	if (!(t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
-	    char *n, buf[1024];
+	    char *n;
 	    if (headerGetEntry(h, RPMTAG_NAME, NULL, (void *) &n, NULL)) {
+		char buf[1024];
 		sprintf(buf, "%s(%s)", n, tagName(tag));
-		if ((n = strchr(buf, '(')) != NULL) n[1] = tolower(n[1]);
 		t->t_msgid = strdup(buf);
 	    }
 	}
