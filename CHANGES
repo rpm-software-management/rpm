@@ -3,6 +3,7 @@
 	- fix: % before non-alphabetic non-macro special now passed unscathed.
 	- fix: noarch header gets initialized differently.
 	- fix: $2 to triggerpostun scripts was wrong
+	- fix: --querybypkg in man page should be --filesbypkg
 
 2.94 -> 2.95
 	- fix: last update transaction set segfault bug in installer.
