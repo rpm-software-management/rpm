@@ -17,7 +17,7 @@ INCLUDES = -I. \
 	-I/usr/include/libxml2
 	-I$(top_srcdir)/misc
 
-EXTRA_DIST =	rpminject.c rpmsort.c rpmxml.c hashtab.h
+EXTRA_DIST =	rpminject.c rpmsort.c rpmxml.c rpmxp.c rpmxp.h hashtab.h
 
 EXTRA_PROGRAMS = convertdb1 rpminject rpmsort
 
@@ -69,7 +69,7 @@ rpmsort_SOURCES =	rpmsort.c
 rpmtool_SOURCES =	rpmtool.c
 #rpmtool_LDFLAGS =	$(staticLDFLAGS)
 
-rpmxml_SOURCES =	rpmxml.c
+rpmxml_SOURCES =	rpmxml.c rpmxp.c
 rpmxml_LDADD =		-lxml2
 
 $(PROGRAMS): $(LDADD)
