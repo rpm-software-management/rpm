@@ -38,16 +38,6 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  char * owner, char * group, int uid, int gid,
 			  char * linkto);
 
-static char * defaultQueryFormat = 
-	    "Name        : %-27{NAME} Distribution: %{DISTRIBUTION}\n"
-	    "Version     : %-27{VERSION}       Vendor: %{VENDOR}\n"
-	    "Release     : %-27{RELEASE}   Build Date: %{BUILDTIME:date}\n"
-	    "Install date: %-27{INSTALLTIME:date}   Build Host: %{BUILDHOST}\n"
-	    "Group       : %-27{GROUP}   Source RPM: %{SOURCERPM}\n"
-	    "Size        : %{SIZE}\n"
-	    "Summary     : %{SUMMARY}\n"
-	    "Description :\n%{DESCRIPTION}\n";
-
 static int queryHeader(Header h, char * chptr) {
     int count = 0;
 
