@@ -36,6 +36,7 @@ void printHeader(Header h, int queryFlags) {
     struct tm * tstruct;
     char ** fileList;
     char * fileStatesList;
+    char * sourcePackage;
     int_32 * fileFlagsList;
     int i;
 
@@ -52,6 +53,7 @@ void printHeader(Header h, int queryFlags) {
 	    buildHost = getString(h, RPMTAG_BUILDHOST, "");
 	    vendor = getString(h, RPMTAG_VENDOR, "");
 	    group = getString(h, RPMTAG_GROUP, "Unknown");
+	    sourcePackage = getString(h, RPMTAG_SOURCERPM, "Unknown");
 	    if (!getEntry(h, RPMTAG_SIZE, &type, (void **) &size, &count)) 
 		size = NULL;
 	    getEntry(h, RPMTAG_BUILDTIME, &type, (void **) &pBuildDate, &count);
@@ -62,11 +64,13 @@ void printHeader(Header h, int queryFlags) {
 	    strftime(buildDateStr, sizeof(buildDateStr) - 1, "%c", tstruct);
 	   
 	    printf("Name        : %-27s Distribution: %s\n", 
-		    name, distribution);
+		   name, distribution);
 	    printf("Version     : %-27s       Vendor: %s\n", version, vendor);
-	    printf("Release     : %-27s   Build Date: %s\n", release,				    buildDateStr); 
+	    printf("Release     : %-27s   Build Date: %s\n", release,
+		   buildDateStr); 
 	    printf("Install date: %-27s   Build Host: %s\n", "", buildHost);
-	    printf("Group       : %s\n", group);
+	    printf("Group       : %-27s   Source RPM: %s\n", group, 
+		   sourcePackage);
 	    if (size) 
 		printf("Size        : %d\n", *size);
 	    else 
@@ -150,7 +154,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
       case QUERY_SRPM:
       case QUERY_RPM:
 	fd = open(arg, O_RDONLY);
-	if (!fd) {
+	if (fd < 0) {
 	    fprintf(stderr, "open of %s failed: %s\n", arg, strerror(errno));
 	} else {
 	    rc = pkgReadHeader(fd, &h, &isSource);
