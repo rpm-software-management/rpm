@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
 "POT-Creation-Date: 2000-07-31 08:48-0400\n"
-"PO-Revision-Date: 2000-07-28 21:57+0200\n"
+"PO-Revision-Date: 2000-08-02 18:34+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -3110,14 +3110,14 @@ msgstr ""
 "\n"
 
 #: lib/rpmdb.c:273
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s index using db%d - %s (%d)"
-msgstr "kan inte öppna %s vid %s:%d: %s"
+msgstr "kan inte öppna %s-index med db%d - %s (%d)"
 
 #: lib/rpmdb.c:293
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s index"
-msgstr "dbiOpen: kan inte öppna %s-index"
+msgstr "kan inte öppna %s-index"
 
 #: lib/rpmdb.c:308
 #, c-format
@@ -3164,9 +3164,8 @@ msgstr ""
 "--> Rpmdatabasen är i db%d-format, inte det rekommenderade db%d-formatet.\n"
 "    Verifiera inställningen av makrot %%_dbapi och %%_dbapi_rebuild med\n"
 "    \"rpm --showrc\", och antingen kör \"rpm --rebuilddb\" som root för att\n"
-"    konvertera dindatabas från db%d- till db%d-format, eller konfigurera\n"
-"    \"%%_dbapi_rebuild %d\" (d.v.s. skapa och/eller editera "
-"/etc/rpm/macros).\n"
+"    konvertera din databas från db%d- till db%d-format, eller konfigurera\n"
+"    \"%%_dbapi_rebuild %d\" (d.v.s. skapa och/eller ändra /etc/rpm/macros).\n"
 "\n"
 
 #: lib/rpmdb.c:404
@@ -3218,9 +3217,9 @@ msgid "removing \"%s\" from %s index.\n"
 msgstr "tar bort \"%s\" från %s-index.\n"
 
 #: lib/rpmdb.c:1728
-#, fuzzy, c-format
+#, c-format
 msgid "removing %d entries from %s index.\n"
-msgstr "tar bort %d poster från %s-index:\n"
+msgstr "tar bort %d poster från %s-index.\n"
 
 #: lib/rpmdb.c:1870
 #, c-format
@@ -3238,9 +3237,9 @@ msgid "adding \"%s\" to %s index.\n"
 msgstr "lägger till \"%s\" till %s-index.\n"
 
 #: lib/rpmdb.c:1952
-#, fuzzy, c-format
+#, c-format
 msgid "adding %d entries to %s index.\n"
-msgstr "lägger till %d poster till %s-index:\n"
+msgstr "lägger till %d poster till %s-index.\n"
 
 #: lib/rpmdb.c:2310
 #, c-format
