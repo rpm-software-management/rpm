@@ -303,7 +303,6 @@ int fsmNext(FSM_t fsm, fileStage nstage)
 int fsmStage(/*@partial@*/ FSM_t fsm, fileStage stage)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies fsm, errno, fileSystem, internalState @*/;
-
 #define	fsmUNSAFE	fsmStage
 
 #ifdef __cplusplus

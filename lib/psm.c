@@ -36,6 +36,8 @@
 #define	_PSM_DEBUG	0
 /*@unchecked@*/
 int _psm_debug = _PSM_DEBUG;
+/*@unchecked@*/
+int _psm_threads = 0;
 
 /*@access FD_t @*/		/* XXX void ptr args */
 /*@access rpmpsm @*/
@@ -1139,7 +1141,9 @@ static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
 	/*@modifies psm @*/
 {
     psm->nstage = nstage;
-    return rpmsqThread(rpmpsmThread, psm);
+    if (_psm_threads)
+	return rpmsqThread(rpmpsmThread, psm);
+    return rpmpsmStage(psm, psm->nstage);
 }
 
 /**

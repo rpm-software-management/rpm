@@ -31,6 +31,8 @@
 #define	_FSM_DEBUG	0
 /*@unchecked@*/
 int _fsm_debug = _FSM_DEBUG;
+/*@unchecked@*/
+int _fsm_threads = 0;
 
 /* XXX Failure to remove is not (yet) cause for failure. */
 /*@-exportlocal -exportheadervar@*/
@@ -390,7 +392,9 @@ int fsmNext(FSM_t fsm, fileStage nstage)
 	/*@modifies fsm @*/
 {
     fsm->nstage = nstage;
-    return rpmsqThread(fsmThread, fsm);
+    if (_fsm_threads)
+	return rpmsqThread(fsmThread, fsm);
+    return fsmStage(fsm, fsm->nstage);
 }
 
 /** \ingroup payload

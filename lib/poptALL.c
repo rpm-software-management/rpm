@@ -29,12 +29,14 @@ extern int _fps_debug;
 
 /*@unchecked@*/
 extern int _fsm_debug;
+extern int _fsm_threads;
 
 /*@unchecked@*/
 extern int _hdr_debug;
 
 /*@unchecked@*/
 extern int _psm_debug;
+extern int _psm_threads;
 
 /*@unchecked@*/
 extern int _rpmal_debug;
@@ -269,6 +271,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "fsmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_debug, -1,
 	N_("debug payload file state machine"), NULL},
+ { "fsmthreads", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_threads, -1,
+	N_("use threads for file state machine"), NULL},
  { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
 	N_("debug protocol data stream"), NULL},
  { "hdrdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_debug, -1,
@@ -279,6 +283,8 @@ struct poptOption rpmcliAllPoptTable[] = {
 #endif
  { "psmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_debug, -1,
 	N_("debug package state machine"), NULL},
+ { "psmthreads", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_threads, -1,
+	N_("use threads for package state machine"), NULL},
  { "rpmaldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmal_debug, -1,
 	NULL, NULL},
  { "rpmdbdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmdb_debug, -1,

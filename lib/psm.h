@@ -178,6 +178,7 @@ rpmpsm rpmpsmNew(rpmts ts, /*@null@*/ rpmte te, rpmfi fi)
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies psm, rpmGlobalMacroContext, fileSystem, internalState @*/;
+#define	rpmpsmUNSAFE	rpmpsmSTAGE
 
 #ifdef __cplusplus
 }
