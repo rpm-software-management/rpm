@@ -16,7 +16,6 @@ static int hashesPrinted = 0;
 static void printHash(const unsigned long amount, const unsigned long total);
 static void printPercent(const unsigned long amount, const unsigned long total);
 static int getFtpURL(char * hostAndFile, char * dest);
-static void printDepFlags(FILE * f, char * version, int flags);
 static void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
 			     int numConflicts);
 static char * getFtpPassword(char * machine, char * account, int mustAsk);
@@ -499,7 +498,10 @@ static int getFtpURL(char * hostAndFile, char * dest) {
     return fd;
 }
 
-static void printDepFlags(FILE * f, char * version, int flags) {
+void printDepFlags(FILE * f, char * version, int flags) {
+    if (flags)
+	fprintf(f, " ");
+
     if (flags & REQUIRE_LESS) 
 	fprintf(f, "<");
     if (flags & REQUIRE_GREATER)
@@ -520,7 +522,6 @@ static void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
     for (i = 0; i < numConflicts; i++) {
 	fprintf(f, "\t%s", conflicts[i].needsName);
 	if (conflicts[i].needsFlags) {
-	    fprintf(f, " ");
 	    printDepFlags(stderr, conflicts[i].needsVersion, 
 			  conflicts[i].needsFlags);
 	}
