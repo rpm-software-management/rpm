@@ -2,41 +2,8 @@
 
 #include <rpmlib.h>
 
-static char * permsFormat(int_32 type, const void * data, 
-		          char * formatPrefix, int padding, int element);
-static char * depflagsFormat(int_32 type, const void * data, 
-		             char * formatPrefix, int padding, int element);
-static char * triggertypeFormat(int_32 type, const void * data, 
-		         char * formatPrefix, int padding, int element);
-static char * fflagsFormat(int_32 type, const void * data, 
-		           char * formatPrefix, int padding, int element);
-static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
-		      int * freeData);
-static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
-		      int * freeData);
-static int instprefixTag(Header h, int_32 * type, void ** data, int_32 * count,
-		         int * freeData);
-static int triggercondsTag(Header h, int_32 * type, void ** data, 
-			   int_32 * count, int * freeData);
-static int triggertypeTag(Header h, int_32 * type, void ** data, 
-			  int_32 * count, int * freeData);
-static char * permsString(int mode);
-
-const struct headerSprintfExtension rpmHeaderFormats[] = {
-    { HEADER_EXT_TAG, "RPMTAG_FSSIZES", { fssizesTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FSNAMES", { fsnamesTag } },
-    { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX", { instprefixTag } },
-    { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS", { triggercondsTag } },
-    { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE", { triggertypeTag } },
-    { HEADER_EXT_FORMAT, "depflags", { depflagsFormat } },
-    { HEADER_EXT_FORMAT, "fflags", { fflagsFormat } },
-    { HEADER_EXT_FORMAT, "perms", { permsFormat } },
-    { HEADER_EXT_FORMAT, "permissions", { permsFormat } },
-    { HEADER_EXT_FORMAT, "triggertype", { triggertypeFormat } },
-    { HEADER_EXT_MORE, NULL, { (void *) headerDefaultFormats } }
-} ;
-
-static char * permsString(int mode) {
+static char * permsString(int mode)
+{
     char * perms = malloc(11);
 
     strcpy(perms, "-----------");
@@ -88,7 +55,8 @@ static char * permsString(int mode) {
 }
 
 static char * triggertypeFormat(int_32 type, const void * data, 
-		         char * formatPrefix, int padding, int element) {
+		         char * formatPrefix, int padding, int element)
+{
     const int_32 * item = data;
     char * val;
 
@@ -105,7 +73,8 @@ static char * triggertypeFormat(int_32 type, const void * data,
 }
 
 static char * permsFormat(int_32 type, const void * data, 
-		         char * formatPrefix, int padding, int element) {
+		         char * formatPrefix, int padding, int element)
+{
     char * val;
     char * buf;
 
@@ -124,7 +93,8 @@ static char * permsFormat(int_32 type, const void * data,
 }
 
 static char * fflagsFormat(int_32 type, const void * data, 
-		         char * formatPrefix, int padding, int element) {
+		         char * formatPrefix, int padding, int element)
+{
     char * val;
     char buf[15];
     int anint = *((int_32 *) data);
@@ -156,7 +126,8 @@ static char * fflagsFormat(int_32 type, const void * data,
 }
 
 static char * depflagsFormat(int_32 type, const void * data, 
-		         char * formatPrefix, int padding, int element) {
+		         char * formatPrefix, int padding, int element)
+{
     char * val;
     char buf[10];
     int anint = *((int_32 *) data);
@@ -187,7 +158,8 @@ static char * depflagsFormat(int_32 type, const void * data,
 }
 
 static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
-		      int * freeData) {
+		      int * freeData)
+{
     const char ** list;
 
     if (rpmGetFilesystemList(&list, count)) {
@@ -203,7 +175,8 @@ static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
 }
 
 static int instprefixTag(Header h, int_32 * type, void ** data, int_32 * count,
-		      int * freeData) {
+		      int * freeData)
+{
     char ** array;
 
     if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, type, data, count)) {
@@ -222,7 +195,8 @@ static int instprefixTag(Header h, int_32 * type, void ** data, int_32 * count,
 }
 
 static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
-		      int * freeData) {
+		      int * freeData)
+{
     const char ** filenames;
     int_32 * filesizes;
     uint_32 * usages;
@@ -257,7 +231,8 @@ static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
 }
 
 static int triggercondsTag(Header h, int_32 * type, void ** data, 
-			   int_32 * count, int * freeData) {
+			   int_32 * count, int * freeData)
+{
     int_32 * indices, * flags;
     char ** names, ** versions;
     int numNames, numScripts;
@@ -317,7 +292,8 @@ static int triggercondsTag(Header h, int_32 * type, void ** data,
 }
 
 static int triggertypeTag(Header h, int_32 * type, void ** data, 
-			   int_32 * count, int * freeData) {
+			   int_32 * count, int * freeData)
+{
     int_32 * indices, * flags;
     char ** conds, ** s;
     int i, j;
@@ -354,3 +330,17 @@ static int triggertypeTag(Header h, int_32 * type, void ** data,
 
     return 0;
 }
+
+const struct headerSprintfExtension rpmHeaderFormats[] = {
+    { HEADER_EXT_TAG, "RPMTAG_FSSIZES", { fssizesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_FSNAMES", { fsnamesTag } },
+    { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX", { instprefixTag } },
+    { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS", { triggercondsTag } },
+    { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE", { triggertypeTag } },
+    { HEADER_EXT_FORMAT, "depflags", { depflagsFormat } },
+    { HEADER_EXT_FORMAT, "fflags", { fflagsFormat } },
+    { HEADER_EXT_FORMAT, "perms", { permsFormat } },
+    { HEADER_EXT_FORMAT, "permissions", { permsFormat } },
+    { HEADER_EXT_FORMAT, "triggertype", { triggertypeFormat } },
+    { HEADER_EXT_MORE, NULL, { (void *) headerDefaultFormats } }
+} ;
