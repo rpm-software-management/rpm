@@ -1,6 +1,5 @@
 LIBOBJECTS = spec.o build.o pack.o
 LIBBUILD = libbuild.a
-PROGS = rpmbuild
 LOADLIBES = -lrpm $(LIBEFENCE)
 
 # -----------------------------------------------------------------------
@@ -13,7 +12,7 @@ endif
 
 all: $(TARGET)
 
-everything: $(LIBBUILD) $(PROGS)
+everything: $(LIBBUILD)
 
 $(LIBBUILD): $(LIBOBJECTS) 
 	$(AR) $@ $(LIBOBJECTS)
