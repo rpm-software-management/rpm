@@ -16,6 +16,9 @@ LIBS=$(prefix)/lib
 INCLUDE=$(prefix)/include
 CPP=@CPP@
 
+VERSION=$(shell awk '/define version/ { print $$3 }' popt.spec)
+CVSTAG = r$(subst .,-,$(VERSION))
+
 # -----------------------------------------------------------------------
 
 CFLAGS = @CFLAGS@ @DEFS@ $(OPTS)
@@ -52,6 +55,16 @@ install:
 	mkdir -p $(PREFIX)/$(LIBS)
 	$INSTALL_DATA) -m 644 popt.h $(PREFIX)/$(INCLUDE)/popt.h
 	$INSTALL_DATA) -m 644 $(LIBPOPT) $(PREFIX)/$(LIBS)/$(LIBPOPT)
+
+archive:
+	cvs tag -F $(CVSTAG) .
+	@rm -rf /tmp/popt-$(VERSION) /tmp/popt
+	@cd /tmp; cvs export -r$(CVSTAG) popt
+	@cd /tmp/popt; autoconf
+	@mv /tmp/popt /tmp/popt-$(VERSION)
+	@dir=$$PWD; cd /tmp; tar cvzf $$dir/popt-$(VERSION).tar.gz popt-$(VERSION)
+	@rm -rf /tmp/popt-$(VERSION)
+	@echo "The archive is in popt-$(VERSION).tar.gz"
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
