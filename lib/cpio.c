@@ -693,7 +693,7 @@ static int writeFile(int fd, struct stat sb, struct cpioFileMapping * map,
 	
     if (writeData && S_ISREG(sb.st_mode)) {
 	/* FIXME: we should use mmap here if it's available */
-	if ((datafd = open(map->archivePath, O_RDONLY)) < 0)
+	if ((datafd = open(map->fsPath, O_RDONLY)) < 0)
 	    return CPIO_OPEN_FAILED;
 
 	size += sb.st_size;
