@@ -15,7 +15,7 @@ librpmio_la_LIBADD = @LIBMISC@
 
 # XXX Drill out -L ldflags remnants until libtool-1.4 appears
 install-data-local:
-	@cd $(libdir) && \
+	@cd $(DESTDIR)/$(libdir) && \
 	sed -e "s|-L$(top_builddir)/popt/.libs ||" < librpmio.la > .librpmio.la && \
 	mv .librpmio.la librpmio.la
 

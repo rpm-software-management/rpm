@@ -34,7 +34,7 @@ librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS))
 
 # XXX Drill out -L ldflags remnants until libtool-1.4 appears
 install-data-local:
-	@cd $(libdir) && \
+	@cd $(DESTDIR)/$(libdir) && \
 	sed -e "s|-L$(top_builddir)/rpmio/.libs ||" < librpm.la > .librpm.la && \
 	mv .librpm.la librpm.la
 

@@ -5,9 +5,9 @@
 
 /* and it shouldn't need these :-( */
 
-#include <rpmio.h>
-#include <header.h>
-#include <popt.h>
+#include "rpmio.h"
+#include "header.h"
+#include "popt.h"
 
 typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
 
