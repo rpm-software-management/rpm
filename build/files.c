@@ -1739,6 +1739,7 @@ static int recurseDir(FileList fl, const char * diskURL)
  * @param pkg
  * @param fl		package file tree walk data
  * @param fileURL	path to file, relative is builddir, absolute buildroot.
+ * @param tag		tag to add
  * @return		0 on success
  */
 static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,

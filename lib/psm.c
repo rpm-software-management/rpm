@@ -646,7 +646,6 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, const char *sln,
 	xx = rpmtsSetChrootDone(ts, 0);
     }
 
-exit:
     return rc;
 }
 

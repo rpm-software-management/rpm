@@ -303,7 +303,7 @@ int parsePrep(Spec spec)
  * @param spec		spec file control structure
  * @param pkg		package control structure
  * @param field		text to parse (e.g. "foo < 0:1.2-3, bar = 5:6.7")
- * @param tag		tag, identifies type of dependency
+ * @param tagN		tag, identifies type of dependency
  * @param index		(0 always)
  * @param tagflags	dependency flags already known from context
  * @return		0 on success, RPMERR_BADSPEC on failure

@@ -136,8 +136,9 @@ rpmfi_MD5(rpmfiObject * s, PyObject * args)
 
     if (!PyArg_ParseTuple(args, ":MD5")) return NULL;
     MD5 = rpmfiMD5(s->fi);
+    t = fmd5;
     if (MD5 != NULL)
-    for (i = 0, t = fmd5; i < 16; i++, t += 2)
+    for (i = 0; i < 16; i++, t += 2)
 	sprintf(t, "%02x", MD5[i]);
     *t = '\0';
     return Py_BuildValue("s", xstrdup(fmd5));

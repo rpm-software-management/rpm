@@ -383,79 +383,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/rpmrc \
                          @top_srcdir@/rpm2cpio.c \
                          @top_srcdir@/system.h \
-                         @top_srcdir@/beecrypt/aes.c \
-                         @top_srcdir@/beecrypt/aes.h \
-                         @top_srcdir@/beecrypt/aesopt.h \
-                         @top_srcdir@/beecrypt/base64.c \
-                         @top_srcdir@/beecrypt/base64.h \
-                         @top_srcdir@/beecrypt/beecrypt.c \
-                         @top_srcdir@/beecrypt/beecrypt.h \
-                         @top_srcdir@/beecrypt/beecrypt.api.h \
-                         @top_srcdir@/beecrypt/beecrypt.gnu.h \
-                         @top_srcdir@/beecrypt/blockmode.c \
-                         @top_srcdir@/beecrypt/blockmode.h \
-                         @top_srcdir@/beecrypt/blockpad.c \
-                         @top_srcdir@/beecrypt/blockpad.h \
-                         @top_srcdir@/beecrypt/blowfish.c \
-                         @top_srcdir@/beecrypt/blowfish.h \
-                         @top_srcdir@/beecrypt/blowfishopt.h \
-                         @top_srcdir@/beecrypt/config.h \
-                         @top_srcdir@/beecrypt/dhaes.c \
-                         @top_srcdir@/beecrypt/dhaes.h \
-                         @top_srcdir@/beecrypt/dldp.c \
-                         @top_srcdir@/beecrypt/dldp.h \
-                         @top_srcdir@/beecrypt/dlkp.c \
-                         @top_srcdir@/beecrypt/dlkp.h \
-                         @top_srcdir@/beecrypt/dlpk.c \
-                         @top_srcdir@/beecrypt/dlpk.h \
-                         @top_srcdir@/beecrypt/dlsvdp-dh.c \
-                         @top_srcdir@/beecrypt/dlsvdp-dh.h \
-                         @top_srcdir@/beecrypt/elgamal.c \
-                         @top_srcdir@/beecrypt/elgamal.h \
-                         @top_srcdir@/beecrypt/endianness.c \
-                         @top_srcdir@/beecrypt/endianness.h \
-                         @top_srcdir@/beecrypt/entropy.c \
-                         @top_srcdir@/beecrypt/entropy.h \
-                         @top_srcdir@/beecrypt/fips186.c \
-                         @top_srcdir@/beecrypt/fips186.h \
-                         @top_srcdir@/beecrypt/hmac.c \
-                         @top_srcdir@/beecrypt/hmac.h \
-                         @top_srcdir@/beecrypt/hmacmd5.c \
-                         @top_srcdir@/beecrypt/hmacmd5.h \
-                         @top_srcdir@/beecrypt/hmacsha1.c \
-                         @top_srcdir@/beecrypt/hmacsha1.h \
-                         @top_srcdir@/beecrypt/hmacsha256.c \
-                         @top_srcdir@/beecrypt/hmacsha256.h \
-                         @top_srcdir@/beecrypt/java/javaglue.c \
-                         @top_srcdir@/beecrypt/java/javaglue.h \
-                         @top_srcdir@/beecrypt/md5.c \
-                         @top_srcdir@/beecrypt/md5.h \
-                         @top_srcdir@/beecrypt/memchunk.c \
-                         @top_srcdir@/beecrypt/memchunk.h \
-                         @top_srcdir@/beecrypt/mpbarrett.c \
-                         @top_srcdir@/beecrypt/mpbarrett.h \
-                         @top_srcdir@/beecrypt/mp.c \
-                         @top_srcdir@/beecrypt/mp.h \
-                         @top_srcdir@/beecrypt/mpnumber.c \
-                         @top_srcdir@/beecrypt/mpnumber.h \
-                         @top_srcdir@/beecrypt/mpopt.h \
-                         @top_srcdir@/beecrypt/mpprime.c \
-                         @top_srcdir@/beecrypt/mpprime.h \
-                         @top_srcdir@/beecrypt/mtprng.c \
-                         @top_srcdir@/beecrypt/mtprng.h \
-                         @top_srcdir@/beecrypt/rsa.c \
-                         @top_srcdir@/beecrypt/rsa.h \
-                         @top_srcdir@/beecrypt/rsakp.c \
-                         @top_srcdir@/beecrypt/rsakp.h \
-                         @top_srcdir@/beecrypt/rsapk.c \
-                         @top_srcdir@/beecrypt/rsapk.h \
-                         @top_srcdir@/beecrypt/sha1.c \
-                         @top_srcdir@/beecrypt/sha1.h \
-                         @top_srcdir@/beecrypt/sha1opt.h \
-                         @top_srcdir@/beecrypt/sha256.c \
-                         @top_srcdir@/beecrypt/sha256.h \
-                         @top_srcdir@/beecrypt/timestamp.c \
-                         @top_srcdir@/beecrypt/timestamp.h \
                          @top_srcdir@/build/build.c \
                          @top_srcdir@/build/buildio.h \
                          @top_srcdir@/build/expression.c \
@@ -635,36 +562,13 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/tools/dump.c \
                          @top_srcdir@/tools/dumpdb.c \
                          @top_srcdir@/tools/javadeps.c \
-                         @top_srcdir@/tools/rpmarchive.c \
                          @top_srcdir@/tools/rpmcache.c \
                          @top_srcdir@/tools/rpmdeps.c \
                          @top_srcdir@/tools/rpmgraph.c \
-                         @top_srcdir@/tools/rpmheader.c \
                          @top_srcdir@/tools/rpminject.c \
-                         @top_srcdir@/tools/rpmlead.c \
-                         @top_srcdir@/tools/rpmsignature.c \
-                         @top_srcdir@/zlib/adler32.c \
-                         @top_srcdir@/zlib/crc32.c \
-                         @top_srcdir@/zlib/crc32.h \
-                         @top_srcdir@/zlib/deflate.c \
-                         @top_srcdir@/zlib/deflate.h \
-                         @top_srcdir@/zlib/gzio.c \
-                         @top_srcdir@/zlib/infback.c \
-                         @top_srcdir@/zlib/inffast.c \
-                         @top_srcdir@/zlib/inffast.h \
-                         @top_srcdir@/zlib/inffixed.h \
-                         @top_srcdir@/zlib/inflate.c \
-                         @top_srcdir@/zlib/inflate.h \
-                         @top_srcdir@/zlib/inftrees.c \
-                         @top_srcdir@/zlib/inftrees.h \
-                         @top_srcdir@/zlib/minigzip.c \
-                         @top_srcdir@/zlib/trees.c \
-                         @top_srcdir@/zlib/trees.h \
-                         @top_srcdir@/zlib/uncompr.c \
-                         @top_srcdir@/zlib/zconf.h \
-                         @top_srcdir@/zlib/zlib.h \
-                         @top_srcdir@/zlib/zutil.c \
-                         @top_srcdir@/zlib/zutil.h
+                         @top_srcdir@/tools/rpmtool.c \
+                         @top_srcdir@/tools/rpmxml.c \
+                         @top_srcdir@/tools/rpmxp.c
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

@@ -127,7 +127,7 @@ static int rex_gmatch(lua_State *L)
 #ifdef REG_BASIC
   size_t len;
 #endif
-  size_t ncapt, nmatch = 0, maxmatch, limit = 0;
+  size_t ncapt, nmatch = 0, maxmatch = 0, limit = 0;
   const char *text;
   regex_t *pr;
   regmatch_t *match;
