@@ -20,6 +20,7 @@
 #include <netdb.h>
 #include <glob.h>
 #include <zlib.h>
+#include <errno.h>
 
 #include "header.h"
 #include "specP.h"
@@ -803,20 +804,27 @@ static int process_filelist(Header header, struct PackageRec *pr,
 	    }
 
 	    if (glob_pattern_p(filename)) {
-	        if (glob(filename, 0, glob_error, &glob_result)) {
-		    error(RPMERR_BADSPEC,
-			  "No matches: %s", filename);
+		char fullname[1024];
+
+		if (getVar(RPMVAR_ROOT)) {
+		    sprintf(fullname, "%s%s", getVar(RPMVAR_ROOT), filename);
+		} else {
+		    strcpy(fullname, filename);
+		}
+
+	        if (glob(fullname, 0, glob_error, &glob_result)) {
+		    error(RPMERR_BADSPEC, "No matches: %s", fullname);
 		    return(RPMERR_BADSPEC);
 		}
 		if (glob_result.gl_pathc < 1) {
-		    error(RPMERR_BADSPEC,
-			  "No matches: %s", filename);
+		    error(RPMERR_BADSPEC, "No matches: %s", fullname);
 		    return(RPMERR_BADSPEC);
 		}
 		x = 0;
 		c = 0;
 		while (x < glob_result.gl_pathc) {
-		    c += add_file(&fes, glob_result.gl_pathv[x],
+		    int offset = strlen(getVar(RPMVAR_ROOT) ? : "");
+		    c += add_file(&fes, &(glob_result.gl_pathv[x][offset]),
 				  isdoc, isconf, isdir, verify_flags);
 		    x++;
 		}
