@@ -8,6 +8,7 @@
 #include "install.h"
 #include "query.h"
 #include "rpmlib.h"
+#include "url.h"
 #include "verify.h"
 
 static void verifyHeader(char * prefix, Header h, int verifyFlags);
@@ -140,7 +141,9 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
     int isSource;
     rpmdb db;
     dbiIndexSet matches;
+    struct urlContext context;
     char * arg;
+    int isUrl;
 
     if (source == VERIFY_RPM && !(verifyFlags & VERIFY_DEPS)) {
 	db = NULL;
@@ -168,11 +171,22 @@ void doVerify(char * prefix, enum verifysources source, char ** argv,
 
 	    switch (source) {
 	      case VERIFY_RPM:
-		fd = open(arg, O_RDONLY);
-		if (fd < 0) {
-		    fprintf(stderr, "open of %s failed: %s\n", arg, 
-			    strerror(errno));
+		if (urlIsURL(arg)) {
+		    isUrl = 1;
+		    if ((fd = urlGetFd(arg, &context)) < 0) {
+			fprintf(stderr, "open of %s failed: %s\n", arg, 
+				ftpStrerror(fd));
+		    }
+		} else if (!strcmp(arg, "-")) {
+		    fd = 0;
 		} else {
+		    if ((fd = open(arg, O_RDONLY)) < 0) {
+			fprintf(stderr, "open of %s failed: %s\n", arg, 
+				strerror(errno));
+		    }
+		}
+
+		if (fd >= 0) {
 		    rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
 		    close(fd);
 		    switch (rc) {
