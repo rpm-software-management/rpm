@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001
+ * Copyright (c) 2001-2002
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: util_arg.c,v 1.2 2001/10/04 21:11:48 bostic Exp ";
+static const char revid[] = "Id: util_arg.c,v 1.4 2002/02/01 18:15:30 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -16,7 +16,6 @@ static const char revid[] = "Id: util_arg.c,v 1.2 2001/10/04 21:11:48 bostic Exp
 #endif
 
 #include "db_int.h"
-#include "common_ext.h"
 
 static char *__db_strsep __P((char **, const char *));
 

@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001
+ * Copyright (c) 2001-2002
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: os_clock.c,v 1.2 2001/08/18 17:39:08 dda Exp ";
+static const char revid[] = "Id: os_clock.c,v 1.7 2002/07/12 18:56:53 bostic Exp ";
 #endif /* not lint */
 
 #include <sys/types.h>
@@ -16,13 +16,10 @@ static const char revid[] = "Id: os_clock.c,v 1.2 2001/08/18 17:39:08 dda Exp ";
 #include <string.h>
 
 #include "db_int.h"
-#include "os_jump.h"
 
 /*
  * __os_clock --
  *	Return the current time-of-day clock in seconds and microseconds.
- *
- * PUBLIC: int __os_clock __P((DB_ENV *, u_int32_t *, u_int32_t *));
  */
 int
 __os_clock(dbenv, secsp, usecsp)
@@ -33,7 +30,7 @@ __os_clock(dbenv, secsp, usecsp)
 
 	_ftime(&now);
 	if (secsp != NULL)
-		*secsp = now.time;
+		*secsp = (u_int32_t)now.time;
 	if (usecsp != NULL)
 		*usecsp = now.millitm * 1000;
 	return (0);

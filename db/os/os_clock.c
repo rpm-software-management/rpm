@@ -1,14 +1,14 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2001
+ * Copyright (c) 2001-2002
  *	Sleepycat Software.  All rights reserved.
  */
 
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: os_clock.c,v 1.6 2001/09/07 18:17:49 krinsky Exp ";
+static const char revid[] = "Id: os_clock.c,v 1.9 2002/03/29 20:46:44 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -29,7 +29,6 @@ static const char revid[] = "Id: os_clock.c,v 1.6 2001/09/07 18:17:49 krinsky Ex
 #endif
 
 #include "db_int.h"
-#include "os_jump.h"
 
 /*
  * __os_clock --

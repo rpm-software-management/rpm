@@ -1,15 +1,15 @@
 # See the file LICENSE for redistribution information.
 #
-# Copyright (c) 2001
+# Copyright (c) 2001-2002
 #	Sleepycat Software.  All rights reserved.
 #
-# Id: bigfile001.tcl,v 11.5 2001/08/03 18:02:53 sandstro Exp 
+# Id: bigfile001.tcl,v 11.7 2002/08/10 13:39:26 bostic Exp 
 #
 # TEST	bigfile001
 # TEST	Create a database greater than 4 GB in size.  Close, verify.
-#	Grow the database somewhat.  Close, reverify.  Lather, rinse,
-#	repeat.  Since it will not work on all systems, this test is
-#	not run by default.
+# TEST	Grow the database somewhat.  Close, reverify.  Lather, rinse,
+# TEST	repeat.  Since it will not work on all systems, this test is
+# TEST	not run by default.
 proc bigfile001 { method \
     { itemsize 4096 } { nitems 1048576 } { growby 5000 } { growtms 2 } args } {
 	source ./include.tcl

@@ -1,10 +1,10 @@
 /*-
  * See the file LICENSE for redistribution information.
  *
- * Copyright (c) 2000
+ * Copyright (c) 2000-2002
  *	Sleepycat Software.  All rights reserved.
  *
- * Id: TestGetSetMethods.java,v 1.2 2001/10/05 02:36:09 bostic Exp 
+ * Id: TestGetSetMethods.java,v 1.3 2002/01/11 15:54:02 bostic Exp 
  */
 
 /*
