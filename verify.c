@@ -154,9 +154,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
     int isSource;
     rpmdb db;
     dbiIndexSet matches;
-    struct urlContext context;
     char * arg;
-    int isUrl;
     char path[255];
 
     ec = 0;
@@ -188,37 +186,29 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 	    rc = 0;
 	    switch (source) {
 	      case VERIFY_RPM:
-	      { FD_t fd = NULL;
-		if (urlIsURL(arg)) {
-		    int fdno;
-		    isUrl = 1;
-		    if ((fdno = urlGetFd(arg, &context)) < 0) {
-			fprintf(stderr, _("open of %s failed: %s\n"), arg, 
-				ftpStrerror(fdno));
-		    }
-		    fd = fdDup(fdno);
-		    (void)close(fdno);
-		} else if (!strcmp(arg, "-")) {
-		    fd = fdDup(STDIN_FILENO);
-		} else {
-		    if (fdFileno(fd = fdOpen(arg, O_RDONLY, 0)) < 0) {
-			fprintf(stderr, _("open of %s failed: %s\n"), arg, 
-				strerror(errno));
-		    }
+	      { FD_t fd;
+
+		fd = ufdOpen(arg, O_RDONLY, 0);
+		if (fd == NULL) {
+		    fprintf(stderr, _("open of %s failed\n"), arg);
+		    break;
 		}
 
 		if (fdFileno(fd) >= 0) {
 		    rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
-		    switch (rc) {
-			case 0:
-			    rc = verifyPackage(prefix, db, h, verifyFlags);
-			    headerFree(h);
-			    break;
-			case 1:
-			    fprintf(stderr, _("%s is not an RPM\n"), arg);
-		    }
 		}
-		fdClose(fd);
+
+		ufdClose(fd);
+
+		switch (rc) {
+		case 0:
+			rc = verifyPackage(prefix, db, h, verifyFlags);
+			headerFree(h);
+			break;
+		case 1:
+			fprintf(stderr, _("%s is not an RPM\n"), arg);
+			break;
+		}
 	      }	break;
 
 	      case VERIFY_GRP:

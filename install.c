@@ -153,8 +153,10 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 	
     rpmMessage(RPMMESS_DEBUG, _("looking for packages to download\n"));
     for (filename = argv, i = 0; *filename; filename++) {
-	if (urlIsURL(*filename)) {
-	    int myrc;
+
+	switch (urlIsURL(*filename)) {
+	case URL_IS_FTP:
+	{   int myrc;
 	    if (rpmIsVerbose()) {
 		fprintf(stdout, _("Retrieving %s\n"), *filename);
 	    }
@@ -174,9 +176,12 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 		tmpPackages[numTmpPackages++] = packages[i];
 		i++;
 	    }
-	} else {
+	}   break;
+	default:
 	    packages[i++] = *filename;
+	    break;
 	}
+
     }
 
     rpmMessage(RPMMESS_DEBUG, _("retrieved %d packages\n"), numTmpPackages);

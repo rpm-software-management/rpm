@@ -3,6 +3,11 @@
 #include "build/rpmbuild.h"
 
 #include "ftp.h"
+
+typedef struct {
+	int	ftpControl;
+} urlContext;
+
 #include "url.h"
 
 struct pwcacheEntry {
@@ -12,7 +17,7 @@ struct pwcacheEntry {
 } ;
 
 static char * getFtpPassword(char * machine, char * account, int mustAsk);
-static int urlFtpLogin(char * url, char ** fileNamePtr);
+static int urlFtpLogin(const char * url, char ** fileNamePtr);
 static int urlFtpSplit(char * url, char ** user, char ** pw, char ** host, 
 		char ** path);
 
@@ -99,7 +104,7 @@ static int urlFtpSplit(char * url, char ** user, char ** pw, char ** host,
     return 0;
 }
 
-static int urlFtpLogin(char * url, char ** fileNamePtr) {
+static int urlFtpLogin(const char * url, char ** fileNamePtr) {
     char * buf;
     char * machineName, * fileName;
     char * userName = NULL;
@@ -148,28 +153,77 @@ static int urlFtpLogin(char * url, char ** fileNamePtr) {
     return ftpconn;
 }
 
-int urlGetFd(char * url, struct urlContext * context) {
-    char * fileName;
-    int fd;
+static struct urlstring {
+    const char *leadin;
+    urltype	ret;
+} urlstrings[] = {
+    { "file://",	URL_IS_PATH },
+    { "ftp://",		URL_IS_FTP },
+    { "http://",	URL_IS_HTTP },
+    { "-",		URL_IS_DASH },
+    { NULL,		URL_IS_UNKNOWN }
+};
 
-    rpmMessage(RPMMESS_DEBUG, _("getting %s via anonymous ftp\n"), url);
+urltype urlIsURL(const char * url)
+{
+    struct urlstring *us;
 
-    if ((context->ftpControl = urlFtpLogin(url, &fileName)) < 0) 
-	return context->ftpControl;
-
-    fd = ftpGetFileDesc(context->ftpControl, fileName);
-
-    free(fileName);
-
-    if (fd < 0) ftpClose(context->ftpControl);
-
-    return fd;
+    for (us = urlstrings; us->leadin != NULL; us++) {
+	if (strncmp(url, us->leadin, strlen(us->leadin)))
+	    continue;
+	return us->ret;
+    }
+    
+    return URL_IS_UNKNOWN;
 }
 
-int urlFinishedFd(struct urlContext * context) {
-    ftpClose(context->ftpControl);
+int ufdClose(FD_t fd)
+{
+    if (fd != NULL && fd->fd_url) {
+	int fdno = ((urlContext *)fd->fd_url)->ftpControl;
+	if (fdno >= 0)
+	    ftpClose(fdno);
+	free(fd->fd_url);
+	fd->fd_url = NULL;
+    }
+    return fdClose(fd);
+}
 
-    return 0;
+FD_t ufdOpen(const char *url, int flags, mode_t mode)
+{
+    FD_t fd;
+
+    switch (urlIsURL(url)) {
+    case URL_IS_FTP:
+	if ((fd = fdNew()) == NULL)
+	    return NULL;
+	if ((fd->fd_url = malloc(sizeof(urlContext))) == NULL)
+	    return NULL;;
+	{   urlContext *context = (urlContext *)fd->fd_url;
+	    char * fileName;
+	    if ((context->ftpControl = urlFtpLogin(url, &fileName)) < 0) {
+		ufdClose(fd);
+		return NULL;
+	    }
+	    fd->fd_fd = ftpGetFileDesc(context->ftpControl, fileName);
+	    free(fileName);
+	}
+	break;
+    case URL_IS_DASH:
+	fd = fdDup(STDIN_FILENO);
+	break;
+    case URL_IS_UNKNOWN:
+    case URL_IS_PATH:
+    default:
+	fd = fdOpen(url, flags, mode);
+	break;
+    }
+
+    if (fd == NULL || fdFileno(fd) < 0) {
+	ufdClose(fd);
+	return NULL;
+    }
+    return fd;
 }
 
 int urlGetFile(char * url, char * dest) {
@@ -203,10 +257,4 @@ int urlGetFile(char * url, char * dest) {
     ftpClose(ftpconn);
 
     return rc;
-}
-
-int urlIsURL(char * url) {
-    if (!strncmp(url, "ftp://", 6)) return 1;
-
-    return 0;
 }

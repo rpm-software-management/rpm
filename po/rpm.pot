@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-11-30 15:51-0500\n"
+"POT-Creation-Date: 1998-11-30 19:08-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -163,12 +163,12 @@ msgstr ""
 msgid "FTP Unknown or unexpected error"
 msgstr ""
 
-#: ../install.c:67 ../install.c:188
+#: ../install.c:67 ../install.c:193
 #, c-format
 msgid "error: cannot open file %s\n"
 msgstr ""
 
-#: ../install.c:84 ../install.c:412
+#: ../install.c:84 ../install.c:417
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -177,12 +177,12 @@ msgstr ""
 msgid "stopping source install as we're just testing\n"
 msgstr ""
 
-#: ../install.c:102 ../install.c:201
+#: ../install.c:102 ../install.c:206
 #, c-format
 msgid "error: %s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../install.c:107 ../install.c:206 ../install.c:416
+#: ../install.c:107 ../install.c:211 ../install.c:421
 #, c-format
 msgid "error: %s cannot be installed\n"
 msgstr ""
@@ -200,97 +200,97 @@ msgstr ""
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: ../install.c:159
+#: ../install.c:161
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
-#: ../install.c:166
+#: ../install.c:168
 #, c-format
 msgid "getting %s as %s\n"
 msgstr ""
 
-#: ../install.c:170
+#: ../install.c:172
 #, c-format
 msgid "error: skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: ../install.c:182
+#: ../install.c:187
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: ../install.c:184
+#: ../install.c:189
 msgid "finding source and binary packages\n"
 msgstr ""
 
-#: ../install.c:220
+#: ../install.c:225
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: ../install.c:224
+#: ../install.c:229
 #, c-format
 msgid "opening database mode: 0%o\n"
 msgstr ""
 
-#: ../install.c:226 ../install.c:315
+#: ../install.c:231 ../install.c:320
 #, c-format
 msgid "error: cannot open %s%s/packages.rpm\n"
 msgstr ""
 
-#: ../install.c:247
+#: ../install.c:252
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: ../install.c:268
+#: ../install.c:273
 msgid "installing binary packages\n"
 msgstr ""
 
-#: ../install.c:302
+#: ../install.c:307
 msgid "counting packages to uninstall\n"
 msgstr ""
 
-#: ../install.c:325 ../lib/query.c:643 ../verify.c:252
+#: ../install.c:330 ../lib/query.c:629 ../verify.c:242
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: ../install.c:328
+#: ../install.c:333
 #, c-format
 msgid "error searching for package %s\n"
 msgstr ""
 
-#: ../install.c:336
+#: ../install.c:341
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: ../install.c:359
+#: ../install.c:364
 #, c-format
 msgid "found %d packages to uninstall\n"
 msgstr ""
 
-#: ../install.c:374
+#: ../install.c:379
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: ../install.c:385
+#: ../install.c:390
 #, c-format
 msgid "uninstalling record number %d\n"
 msgstr ""
 
-#: ../install.c:407
+#: ../install.c:412
 #, c-format
 msgid "error: cannot open %s\n"
 msgstr ""
 
-#: ../install.c:455
+#: ../install.c:460
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../install.c:458
+#: ../install.c:463
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
@@ -1281,26 +1281,26 @@ msgstr ""
 msgid "no arguments given for verify"
 msgstr ""
 
-#: ../url.c:46
+#: ../url.c:51
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: ../url.c:112 ../url.c:155 ../url.c:181
+#: ../url.c:117 ../url.c:235
 #, c-format
 msgid "getting %s via anonymous ftp\n"
 msgstr ""
 
-#: ../url.c:119
+#: ../url.c:124
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: ../url.c:130
+#: ../url.c:135
 msgid "error: ftpport must be a number\n"
 msgstr ""
 
-#: ../url.c:187
+#: ../url.c:241
 #, c-format
 msgid "failed to create %s\n"
 msgstr ""
@@ -1324,31 +1324,31 @@ msgstr ""
 msgid "error: could not read database record\n"
 msgstr ""
 
-#: ../lib/query.c:532 ../verify.c:177
+#: ../lib/query.c:518 ../verify.c:175
 msgid "could not read database record!\n"
 msgstr ""
 
-#: ../lib/query.c:451 ../lib/query.c:460 ../verify.c:196 ../verify.c:205
+#: ../lib/query.c:448 ../verify.c:193
 #, c-format
-msgid "open of %s failed: %s\n"
+msgid "open of %s failed\n"
 msgstr ""
 
-#: ../verify.c:218
+#: ../verify.c:209
 #, c-format
 msgid "%s is not an RPM\n"
 msgstr ""
 
-#: ../lib/query.c:543 ../verify.c:227
+#: ../lib/query.c:529 ../verify.c:217
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: ../lib/query.c:612 ../verify.c:241
+#: ../lib/query.c:598 ../verify.c:231
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: ../lib/query.c:646 ../verify.c:254
+#: ../lib/query.c:632 ../verify.c:244
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
@@ -2659,64 +2659,64 @@ msgstr ""
 msgid "querying record number %d\n"
 msgstr ""
 
-#: ../lib/query.c:434
+#: ../lib/query.c:433
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: ../lib/query.c:476
+#: ../lib/query.c:464
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: ../lib/query.c:485
+#: ../lib/query.c:472
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../lib/query.c:489
+#: ../lib/query.c:475
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: ../lib/query.c:508
+#: ../lib/query.c:494
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: ../lib/query.c:553
+#: ../lib/query.c:539
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: ../lib/query.c:563
+#: ../lib/query.c:549
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: ../lib/query.c:573
+#: ../lib/query.c:559
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: ../lib/query.c:591 ../lib/query.c:597
+#: ../lib/query.c:577 ../lib/query.c:583
 msgid "maximum path length exceeded\n"
 msgstr ""
 
-#: ../lib/query.c:609
+#: ../lib/query.c:595
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: ../lib/query.c:625
+#: ../lib/query.c:611
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: ../lib/query.c:628
+#: ../lib/query.c:614
 #, c-format
 msgid "showing package: %d\n"
 msgstr ""
 
-#: ../lib/query.c:631
+#: ../lib/query.c:617
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""

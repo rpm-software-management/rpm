@@ -3,11 +3,11 @@
 
 #include <sys/types.h>
 
-typedef	/*@abstract@*/ struct {
-    int fd_fd;
+typedef	/*@abstract@*/ struct _FD {
+    int		fd_fd;
     void *	fd_bzd;
     void *	fd_gzd;
-    
+    void *	fd_url;
 } *FD_t;
 
 #ifdef __cplusplus
@@ -18,12 +18,13 @@ int timedRead(FD_t fd, void * bufptr, int length);
 
 extern inline /*@null@*/ FD_t fdNew(void);
 extern inline /*@null@*/ FD_t fdNew(void) {
-    FD_t fd = (FD_t)malloc(sizeof(FD_t));
+    FD_t fd = (FD_t)malloc(sizeof(struct _FD));
     if (fd == NULL)
 	return NULL;
     fd->fd_fd = -1;
     fd->fd_bzd = NULL;
     fd->fd_gzd = NULL;
+    fd->fd_url = NULL;
     return fd;
 }
 
@@ -80,6 +81,9 @@ extern inline int fdClose(/*@only@*/ FD_t fd) {
 
     if (fd != NULL && (fdno = fdFileno(fd)) >= 0) {
 	fd->fd_fd = -1;
+	fd->fd_bzd = NULL;
+	fd->fd_gzd = NULL;
+	fd->fd_url = NULL;
 	free(fd);
     	return close(fdno);
     }
@@ -187,6 +191,7 @@ extern inline int gzdClose(/*@only@*/ FD_t fd) {
 	fd->fd_fd = -1;
 	fd->fd_bzd = NULL;
 	fd->fd_gzd = NULL;
+	fd->fd_url = NULL;
 	free(fd);
     	zerror = gzclose(gzfile);
 	return 0;
@@ -258,6 +263,7 @@ extern inline int bzdClose(/*@only@*/ FD_t fd) {
 	fd->fd_fd = -1;
 	fd->fd_bzd = NULL;
 	fd->fd_gzd = NULL;
+	fd->fd_url = NULL;
 	free(fd);
     	bzclose(bzfile);
 	return 0;

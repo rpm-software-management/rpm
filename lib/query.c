@@ -425,7 +425,6 @@ int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags,
     int recNumber;
     int retcode = 0;
     char *end = NULL;
-    struct urlContext context;
     char path[PATH_MAX];
 
     switch (source) {
@@ -442,53 +441,40 @@ int rpmQuery(char * prefix, enum rpmQuerySources source, int queryFlags,
 
     switch (source) {
       case QUERY_RPM:
-      { FD_t fd = NULL;
-	int isUrl = 0;
-	if (urlIsURL(arg)) {
-	    int fdno;
-	    isUrl = 1;
-	    if ((fdno = urlGetFd(arg, &context)) < 0) {
-		fprintf(stderr, _("open of %s failed: %s\n"), arg, 
-			ftpStrerror(fdno));
-	    }
-	    fd = fdDup(fdno);
-	    close(fdno);
-	} else if (!strcmp(arg, "-")) {
-	    fd = fdDup(STDIN_FILENO);
-	} else {
-	    if (fdFileno(fd = fdOpen( arg, O_RDONLY, 0)) < 0) {
-		fprintf(stderr, _("open of %s failed: %s\n"), arg, 
-			strerror(errno));
-	    }
+      { FD_t fd;
+
+	fd = ufdOpen(arg, O_RDONLY, 0);
+	if (fd == NULL) {
+	    fprintf(stderr, _("open of %s failed\n"), arg);
+	    ufdClose(fd);
+	    retcode = 1;
+	    break;
 	}
 
-	if (fd != NULL && fdFileno(fd) >= 0) {
+	if (fdFileno(fd) >= 0) {
 	    rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+	} else
+	    rc = 2;
 
-	    fdClose(fd);
-	    if (isUrl) {
-		urlFinishedFd(&context);
-	    }
+	ufdClose(fd);
 
-	    switch (rc) {
-		case 0:
-		    if (h == NULL) {
-			fprintf(stderr, _("old format source packages cannot "
-				"be queried\n"));
-		    } else {
-			printHeader(h, queryFlags, queryFormat);
-			headerFree(h);
-		    }
-		    break;
-		case 1:
-		    fprintf(stderr, 
-			    _("%s does not appear to be a RPM package\n"), 
-			    arg);
-		    /* fallthrough */
-		case 2:
-		    fprintf(stderr, _("query of %s failed\n"), arg);
-		    retcode = 1;
+	switch (rc) {
+	case 0:
+	    if (h == NULL) {
+		fprintf(stderr, _("old format source packages cannot "
+			"be queried\n"));
+	    } else {
+		printHeader(h, queryFlags, queryFormat);
+		headerFree(h);
 	    }
+	    break;
+	case 1:
+	    fprintf(stderr, _("%s does not appear to be a RPM package\n"), arg);
+	    /* fallthrough */
+	case 2:
+	    fprintf(stderr, _("query of %s failed\n"), arg);
+	    retcode = 1;
+	    break;
 	}
       } break;
 
