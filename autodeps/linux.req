@@ -66,7 +66,7 @@ for f in $scriptlist; do
     *)		[ "${f%.pm}" != "${f}" ] && perllist="$perllist $f" ;;
     esac
 done
-[ -n "$interplist" ] && { echo "$interplist" | tr [:blank:] \\n | sort -u ; }
+[ -n "$interplist" ] && { echo "$interplist" | tr '[:blank:]' \\n | sort -u ; }
 
 
 #
@@ -93,16 +93,16 @@ done | sort -u
 #
 # --- Perl modules.
 [ -x /usr/lib/rpm/perl.req -a -n "$perllist" ] && \
-    echo $perllist | tr [:blank:] \\n | /usr/lib/rpm/perl.req | sort -u
+    echo $perllist | tr '[:blank:]' \\n | /usr/lib/rpm/perl.req | sort -u
 
 #
 # --- Python modules.
 [ -x /usr/lib/rpm/python.req -a -n "$pythonlist" ] && \
-    echo $pythonlist | tr [:blank:] \\n | /usr/lib/rpm/python.req | sort -u
+    echo $pythonlist | tr '[:blank:]' \\n | /usr/lib/rpm/python.req | sort -u
 
 #
 # --- Tcl modules.
 [ -x /usr/lib/rpm/tcl.req -a -n "$tcllist" ] && \
-    echo $tcllist | tr [:blank:] \\n | /usr/lib/rpm/tcl.req | sort -u
+    echo $tcllist | tr '[:blank:]' \\n | /usr/lib/rpm/tcl.req | sort -u
 
 exit 0

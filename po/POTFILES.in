@@ -64,7 +64,6 @@ rpmio/base64.c
 rpmio/digest.c
 rpmio/macro.c
 rpmio/rpmio.c
-rpmio/rpmio_api.c
 rpmio/rpmlog.c
 rpmio/rpmmalloc.c
 rpmio/rpmrpc.c

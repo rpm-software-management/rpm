@@ -868,7 +868,7 @@ static int openDatabase(/*@null@*/ const char * prefix,
 
     if (!_initialized || dbiTagsMax == 0) {
 
-#if 0
+#if 1
 	static int _enable_cdb = -1;
 
 	/* XXX hack in suoport for CDB, otherwise nuke the state. */

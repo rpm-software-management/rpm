@@ -203,6 +203,11 @@
 	- fix: i18n tags not terminated correctly with NUL (#50304).
 	- add explicit casts to work around a s390 compiler problem.
 	- fix: autoconf glob tests (#50845).
+	- portability: some compilers squawk at return ((void) foo()) (#50419).
+	- remove fdFileno() from librpmio, use inline version instead (#50420).
+	- fix: linux find-requires needs quotes around [:blank:].
+	- remove /var/lib/rpm/__db* cache files if %__dbi_cdb is not configured.
+	- python: add hiesenbug patch.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

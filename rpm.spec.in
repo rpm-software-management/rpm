@@ -107,6 +107,8 @@ programs that will manipulate RPM packages and databases.
 Summary: Native bindings to the RPM API for Perl.
 Group: Development/Languages
 URL: http://www.cpan.org
+Provides: perl(RPM::Database) = %{rpm_version}
+Provides: perl(RPM::Header) = %{rpm_version}
 Requires: rpm = %{rpm_version}
 Requires: perl >= 0:5.00503
 Requires: popt = 1.6.3

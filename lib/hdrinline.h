@@ -71,7 +71,8 @@ Header headerLink(Header h)
 void headerSort(Header h)
 	/*@modifies h @*/
 {
-    return (h2hv(h)->hdrsort) (h);
+    (h2hv(h)->hdrsort) (h);
+    return;
 }
 
 /** \ingroup header
@@ -82,7 +83,8 @@ void headerSort(Header h)
 void headerUnsort(Header h)
 	/*@modifies h @*/
 {
-    return (h2hv(h)->hdrunsort) (h);
+    (h2hv(h)->hdrunsort) (h);
+    return;
 }
 /*@=exportlocal@*/
 
@@ -427,7 +429,8 @@ int headerRemoveEntry(Header h, int_32 tag)
 void headerCopyTags(Header headerFrom, Header headerTo, hTAG_t tagstocopy)
 	/*@modifies headerFrom, headerTo @*/
 {
-    return hdrVec->hdrcopytags(headerFrom, headerTo, tagstocopy);
+    hdrVec->hdrcopytags(headerFrom, headerTo, tagstocopy);
+    return;
 }
 
 /** \ingroup header

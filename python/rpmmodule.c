@@ -2168,23 +2168,15 @@ static void errorcb (void)
 /**
  */
 static PyObject * errorSetCallback (PyObject * self, PyObject * args) {
-    if (errorCB != NULL) {
-	Py_DECREF (errorCB);
-	errorCB = NULL;
-    }
+    PyObject *newCB = NULL, *newData = NULL;
 
-    if (errorData != NULL) {
-	Py_DECREF (errorData);
-	errorData = NULL;
-    }
-
-    if (!PyArg_ParseTuple(args, "O|O", &errorCB, &errorData)) return NULL;
+    if (!PyArg_ParseTuple(args, "O|O", &newCB, &newData)) return NULL;
 
     /* if we're getting a void*, set the error callback to this. */
     /* also, we can possibly decref any python callbacks we had  */
     /* and set them to NULL.                                     */
-    if (PyCObject_Check (errorCB)) {
-	rpmErrorSetCallback (PyCObject_AsVoidPtr(errorCB));
+    if (PyCObject_Check (newCB)) {
+	rpmErrorSetCallback (PyCObject_AsVoidPtr(newCB));
 
 	Py_XDECREF (errorCB);
 	Py_XDECREF (errorData);
@@ -2196,11 +2188,17 @@ static PyObject * errorSetCallback (PyObject * self, PyObject * args) {
 	return Py_None;
     }
     
-    if (!PyCallable_Check (errorCB)) {
+    if (!PyCallable_Check (newCB)) {
 	PyErr_SetString(PyExc_TypeError, "parameter must be callable");
 	return NULL;
     }
 
+    Py_XDECREF(errorCB);
+    Py_XDECREF(errorData);
+
+    errorCB = newCB;
+    errorData = newData;
+    
     Py_INCREF (errorCB);
     Py_XINCREF (errorData);
 

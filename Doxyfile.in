@@ -419,7 +419,6 @@ INPUT                  = \
 	@top_srcdir@/rpmio/rpmio.c \
 	@top_srcdir@/rpmio/rpmio.h \
 	@top_srcdir@/rpmio/rpmio_internal.h \
-	@top_srcdir@/rpmio/rpmio_api.c \
 	@top_srcdir@/rpmio/rpmmacro.h \
 	@top_srcdir@/rpmio/rpmmalloc.c \
 	@top_srcdir@/rpmio/rpmmessages.h \
