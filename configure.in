@@ -613,5 +613,8 @@ else
    NBMAKEFILE=
 fi
 
+# XXX Propagate -lucb to popt ...
+export LIBS INCPATH
+
 AC_CONFIG_SUBDIRS(popt)
 AC_OUTPUT(Makefile Makefile.inc lib-rpmrc macros lib/Makefile build/Makefile $NBMAKEFILE tools/Makefile po/Makefile misc/Makefile)
