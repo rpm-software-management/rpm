@@ -2188,11 +2188,10 @@ top:
 /*@-boundsread -branchstate -sizeoftype @*/
     if (mi->mi_hdrchk && mi->mi_ts) {
 	rpmRC rpmrc = RPMRC_NOTFOUND;
-	pbm_set * set = NULL;
 
 	/* Don't bother re-checking a previously read header. */
 	if (mi->mi_db->db_bits) {
-	    set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
+	    pbm_set * set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
 			&mi->mi_db->db_nbits, mi->mi_offset);
 	    if (PBM_ISSET(mi->mi_offset, set))
 		rpmrc = RPMRC_OK;
@@ -2211,8 +2210,11 @@ top:
 	    msg = _free(msg);
 
 	    /* Mark header checked. */
-	    if (set && rpmrc == RPMRC_OK)
+	    if (set && rpmrc == RPMRC_OK) {
+		pbm_set * set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
+			&mi->mi_db->db_nbits, mi->mi_offset);
 		PBM_SET(mi->mi_offset, set);
+	    }
 
 	    /* Skip damaged and inconsistent headers. */
 	    if (rpmrc == RPMRC_FAIL)

@@ -1,14 +1,20 @@
-4.2 -> 4.3:
+4.2.2 -> 4.3:
 	- upgrade to zlib-1.2.beta7.
 	- fix: short option help missing string terminator.
-	- unify signal handling in librpmio, use condvar to deliver signal.
 	- permit secondary tag match patterns with RPMQV_ALL.
 	- fix: cut-n-paste error setting nopromote for Conflicts: (#81965).
 	- don't use error string after gzclose (Dmitry V. Levin).
 	- only internal Berkeley db from now on.
 	- revive "make dist".
+
+4.2.1 -> 4.2.2:
+	- unify signal handling in librpmio, use condvar to deliver signal.
+	- make peace with libtool-1.5, autoconf-2.59, automake-1.8.
 	- build with db-4.2.52 internal.
 	- refresh bsddb.
+	- detect (and remove) dbenv files while upgrading to db-4.2.52.
+	- ensure that librpmdb links against just built, not system, librpmio.
+	- fix: dangling pointer brain fart (#107835).
 
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.
