@@ -688,7 +688,7 @@ static int installArchive(int fd, struct fileInfo * files,
 	    if (!files[i].install) continue;
 
 	    map[mappedFiles].archivePath = files[i].cpioPath;
-	    map[mappedFiles].finalPath = files[i].relativePath;
+	    map[mappedFiles].fsPath = files[i].relativePath;
 	    map[mappedFiles].finalMode = files[i].mode;
 	    map[mappedFiles].finalUid = files[i].uid;
 	    map[mappedFiles].finalGid = files[i].gid;
