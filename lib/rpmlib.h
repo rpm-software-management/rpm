@@ -338,7 +338,8 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_SPECFILE	= (1 << 5),	/*!< @todo (unnecessary) marks 1st file in srpm. */
     RPMFILE_GHOST	= (1 << 6),	/*!< from %%ghost */
     RPMFILE_LICENSE	= (1 << 7),	/*!< from %%license */
-    RPMFILE_README	= (1 << 8)	/*!< from %%readme */
+    RPMFILE_README	= (1 << 8),	/*!< from %%readme */
+    RPMFILE_EXCLUDE	= (1 << 9)	/*!< from %%exclude */
 } rpmfileAttrs;
 #define	RPMFILE_MULTILIB_SHIFT		9
 #define	RPMFILE_MULTILIB(N)		((N) << RPMFILE_MULTILIB_SHIFT)

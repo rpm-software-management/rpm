@@ -10,6 +10,8 @@
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).
 	- fix: rpmvercmp("1.a", "1.") returned -1, not +1 (#21392).
 	- add cpuid asm voodoo to detect athlon processors.
+	- add %exclude support (i.e. "everything but") to %files.
+		(Michael (Micksa) Slade" <micksa@knobbits.org>)
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
