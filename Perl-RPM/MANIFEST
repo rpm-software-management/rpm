@@ -1,4 +1,5 @@
 ChangeLog		Change history
+IMPORTANT.perl		Notes regarding datbase-linkage issues in Perl
 MANIFEST		This file
 Makefile.PL		MakeMaker file
 README			Overview
