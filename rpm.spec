@@ -548,3 +548,4 @@ fi
 - transaction.c: cleanly uncouple availablePackage from TFI_t.
 - add header refcount annotations throughout.
 - depends.c: availablePackage is (almost) opaque.
+- invent some toy transactionElement iterators.

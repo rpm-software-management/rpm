@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-01 17:49-0500\n"
+"POT-Creation-Date: 2001-11-01 21:47-0500\n"
 "PO-Revision-Date: 2001-09-12 14:18+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1441,11 +1441,11 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:213 lib/depends.c:887 lib/depends.c:1019
+#: lib/depends.c:213 lib/depends.c:861 lib/depends.c:993
 msgid "YES"
 msgstr "JA"
 
-#: lib/depends.c:213 lib/depends.c:887 lib/depends.c:1019
+#: lib/depends.c:213 lib/depends.c:861 lib/depends.c:993
 msgid "NO "
 msgstr "NEJ "
 
@@ -1454,57 +1454,57 @@ msgstr "NEJ "
 msgid "cannot open Packages database in %s\n"
 msgstr "kan inte öppna paketdatabas i %s\n"
 
-#: lib/depends.c:590
+#: lib/depends.c:589
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:595
+#: lib/depends.c:594
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "paket %s är redan installerat"
 
-#: lib/depends.c:600
+#: lib/depends.c:599
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:886
+#: lib/depends.c:860
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (cachad)\n"
 
-#: lib/depends.c:915
+#: lib/depends.c:889
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s JA (rpmrc tillhandahåller)\n"
 
-#: lib/depends.c:932
+#: lib/depends.c:906
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s JA (rpmlib tillhandahåller)\n"
 
-#: lib/depends.c:955
+#: lib/depends.c:929
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s JA (db-filer)\n"
 
-#: lib/depends.c:968
+#: lib/depends.c:942
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s JA (db-tillhandahållande)\n"
 
-#: lib/depends.c:982
+#: lib/depends.c:956
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s JA (db-paket)\n"
 
-#: lib/depends.c:998
+#: lib/depends.c:972
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NEJ\n"
 
-#: lib/depends.c:1019
+#: lib/depends.c:993
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) tillagt till beroendecachen.\n"
@@ -1512,48 +1512,48 @@ msgstr "%s: (%s, %s) tillagt till beroendecachen.\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1085
+#: lib/depends.c:1059
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s-%s-%s behov inte uppfyllda: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1172
+#: lib/depends.c:1139
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paket %s står i konflikt: %s\n"
 
-#: lib/depends.c:1428
+#: lib/depends.c:1395
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s-%s-%s \"%s\" från tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1683
+#: lib/depends.c:1633
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1770
+#: lib/depends.c:1705
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, djup)\n"
 
-#: lib/depends.c:1852
+#: lib/depends.c:1780
 msgid "========== successors only (presentation order)\n"
 msgstr "========== endast efterföljare (presentationsordning)\n"
 
-#: lib/depends.c:1938
+#: lib/depends.c:1840
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1972
+#: lib/depends.c:1875
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1977
+#: lib/depends.c:1880
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2867,13 +2867,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: storlek(%d)+utfyllnad(%d)\n"
 
-#: lib/transaction.c:241
+#: lib/transaction.c:239
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s överhoppad på grund av missingok-flagga\n"
 
 #. @innercontinue@
-#: lib/transaction.c:880
+#: lib/transaction.c:878
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "hoppar över katalogen %s\n"

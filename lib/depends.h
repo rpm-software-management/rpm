@@ -12,6 +12,7 @@
 typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
 typedef /*@abstract@*/ struct orderListIndex_s *	orderListIndex;
 typedef /*@abstract@*/ struct transactionElement_s *	transactionElement;
+typedef /*@abstract@*/ struct teIterator_s *		teIterator;
 
 typedef /*@abstract@*/ struct availableList_s *		availableList;
 typedef /*@abstract@*/ struct problemsSet_s *		problemsSet;
@@ -20,6 +21,16 @@ typedef /*@abstract@*/ struct problemsSet_s *		problemsSet;
 /*@-exportlocal@*/
 extern int _ts_debug;
 /*@=exportlocal@*/
+
+/**
+ * Iterator across transaction elements, forward on install, backward on erase.
+ */
+struct teIterator_s {
+/*@refcounted@*/ rpmTransactionSet ts;	/*!< transaction set. */
+    int reverse;			/*!< reversed traversal? */
+    int ocsave;				/*!< last returned iterator index. */
+    int oc;				/*!< iterator index. */
+};
 
 /** \ingroup rpmdep
  * Dependncy ordering information.
@@ -137,7 +148,7 @@ struct rpmTransactionSet_s {
 				/*!< Universe of available packages. */
     int numAvailablePackages;	/*!< No. available package instances. */
 
-/*@only@*/
+/*@owned@*/
     transactionElement order;	/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */
@@ -179,6 +190,79 @@ struct problemsSet_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/*@access teIterator@*/
+/*@access rpmTransactionSet@*/
+
+/**
+ * Return transaction element index.
+ * @param tei		transaction element iterator
+ * @return		element index
+ */
+/*@unused@*/ static inline
+int teGetOc(teIterator tei)
+	/*@*/
+{
+    return tei->ocsave;
+}
+
+/**
+ * Destroy transaction element iterator.
+ * @param tei		transaction element iterator
+ * @return		NULL always
+ */
+/*@unused@*/ static inline /*@null@*/
+teIterator teFreeIterator(/*@only@*//*@null@*/ teIterator tei)
+	/*@*/
+{
+    if (tei)
+	tei->ts = rpmtsUnlink(tei->ts, "tsIterator");
+    return _free(tei);
+}
+
+/**
+ * Create transaction element iterator.
+ * @param ts		transaction set
+ * @return		transaction element iterator
+ */
+/*@unused@*/ static inline /*@only@*/
+teIterator teInitIterator(rpmTransactionSet ts)
+	/*@modifies ts @*/
+{
+    teIterator tei = NULL;
+
+    tei = xcalloc(1, sizeof(*tei));
+    tei->ts = rpmtsLink(ts, "teIterator");
+    tei->reverse = ((ts->transFlags & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
+    tei->oc = (tei->reverse ? (ts->orderCount - 1) : 0);
+    tei->ocsave = tei->oc;
+    return tei;
+}
+
+/**
+ * Return next transaction element
+ * @param tei		transaction element iterator
+ * @return		transaction element, NULL on termination
+ */
+/*@unused@*/ static inline /*@dependent@*/
+transactionElement teNextIterator(teIterator tei)
+	/*@modifies tei @*/
+{
+    transactionElement te = NULL;
+    int oc = -1;
+
+    if (tei->reverse) {
+	if (tei->oc >= 0)			oc = tei->oc--;
+    } else {
+    	if (tei->oc < tei->ts->orderCount)	oc = tei->oc++;
+    }
+    tei->ocsave = oc;
+    if (oc != -1)
+	te = tei->ts->order + oc;
+    /*@-compdef -usereleased@*/ /* FIX: ts->order may be released */
+    return te;
+    /*@=compdef =usereleased@*/
+}
 
 /**
  * Return (malloc'd) header name-version-release string.

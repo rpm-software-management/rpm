@@ -52,15 +52,13 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 /*@access rpmProblemSet@*/	/* XXX need rpmProblemSetOK() */
 /*@access dbiIndexSet@*/
 /*@access rpmdb@*/
-/*@access rpmTransactionSet@*/
-/*@access TFI_t@*/
+
 /*@access PSM_t@*/
 
-#if 0
-/*@access availablePackage@*/
-#endif
-
+/*@access TFI_t@*/
+/*@access teIterator@*/
 /*@access transactionElement@*/
+/*@access rpmTransactionSet@*/
 
 /**
  */
@@ -891,81 +889,21 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 }
 
 /**
- * Iterator across transaction elements, forward on install, backward on erase.
- */
-struct tsIterator_s {
-/*@refcounted@*/ rpmTransactionSet ts;	/*!< transaction set. */
-    int reverse;			/*!< reversed traversal? */
-    int ocsave;				/*!< last returned iterator index. */
-    int oc;				/*!< iterator index. */
-};
-
-/**
- * Return transaction element order count.
- * @param a		transaction element iterator
- * @return		element order count
- */
-static int tsGetOc(void * a)
-	/*@*/
-{
-    struct tsIterator_s * iter = a;
-    int oc = iter->ocsave;
-    return oc;
-}
-
-/**
- * Destroy transaction element iterator.
- * @param a		transaction element iterator
- * @return		NULL always
- */
-static /*@null@*/ void * tsFreeIterator(/*@only@*//*@null@*/ void * a)
-	/*@*/
-{
-    struct tsIterator_s * iter = a;
-    if (iter)
-	iter->ts = rpmtsUnlink(iter->ts, "tsIterator");
-    return _free(a);
-}
-
-/**
- * Create transaction element iterator.
- * @param ts		transaction set
- * @return		transaction element iterator
- */
-static void * tsInitIterator(rpmTransactionSet ts)
-	/*@modifies ts @*/
-{
-    struct tsIterator_s * iter = NULL;
-
-    iter = xcalloc(1, sizeof(*iter));
-    iter->ts = rpmtsLink(ts, "tsIterator");
-    iter->reverse = ((ts->transFlags & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
-    iter->oc = (iter->reverse ? (ts->orderCount - 1) : 0);
-    iter->ocsave = iter->oc;
-    return iter;
-}
-
-/**
  * Return next transaction element's file info.
- * @param a		file info iterator
- * @return		next index, -1 on termination
+ * @param tei		transaction element iterator
+ * @return		nest transaction element file info, NULL on termination
  */
-static TFI_t tsNextIterator(void * a)
-	/*@*/
+/*@unused@*/ static inline
+TFI_t teNextFi(teIterator tei)
+	/*@modifies tei @*/
 {
-    struct tsIterator_s * iter = a;
     TFI_t fi = NULL;
-    int oc = -1;
 
-    if (iter->reverse) {
-	if (iter->oc >= 0)			oc = iter->oc--;
-    } else {
-    	if (iter->oc < iter->ts->orderCount)	oc = iter->oc++;
-    }
-    iter->ocsave = oc;
-    if (oc != -1)
-	fi = iter->ts->flList + oc;
+    if (teNextIterator(tei) != NULL && tei->ocsave != -1)
+	fi = tei->ts->flList + tei->ocsave;
+    /*@-compdef -onlytrans -usereleased@*/ /* FIX: ts->flList may be released */
     return fi;
+    /*@=compdef =onlytrans =usereleased@*/
 }
 
 #define	NOTIFY(_ts, _al)	if ((_ts)->notify) (void) (_ts)->notify _al
@@ -988,7 +926,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     fingerPrintCache fpc;
     struct psm_s psmbuf;
     PSM_t psm = &psmbuf;
-    void * tsi;
+    teIterator tei;
     int xx;
 int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 
@@ -1168,9 +1106,9 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
      * calling fpLookupList only once. I'm not sure that the speedup is
      * worth the trouble though.
      */
-    tsi = tsInitIterator(ts);
-    while ((fi = tsNextIterator(tsi)) != NULL) {
-	oc = tsGetOc(tsi);
+    tei = teInitIterator(ts);
+    while ((fi = teNextFi(tei)) != NULL) {
+	oc = teGetOc(tei);
 	fi->magic = TFIMAGIC;
 
 	fi->type = ts->order[oc].type;
@@ -1229,7 +1167,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	if (fi->fc)
 	    fi->fps = xmalloc(fi->fc * sizeof(*fi->fps));
     }
-    tsi = tsFreeIterator(tsi);
+    tei = teFreeIterator(tei);
 
     if (!ts->chrootDone) {
 	xx = chdir("/");
@@ -1251,8 +1189,8 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
     /* ===============================================
      * Add fingerprint for each file not skipped.
      */
-    tsi = tsInitIterator(ts);
-    while ((fi = tsNextIterator(tsi)) != NULL) {
+    tei = teInitIterator(ts);
+    while ((fi = teNextFi(tei)) != NULL) {
 	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fi->fc, fi->fps);
 	for (i = 0; i < fi->fc; i++) {
 	    if (XFA_SKIPPING(fi->actions[i]))
@@ -1262,7 +1200,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	    /*@=dependenttrans@*/
 	}
     }
-    tsi = tsFreeIterator(tsi);
+    tei = teFreeIterator(tei);
 
     /*@-noeffectuncon @*/ /* FIX: check rc */
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, ts->flEntries,
@@ -1272,8 +1210,8 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
-    tsi = tsInitIterator(ts);
-    while ((fi = tsNextIterator(tsi)) != NULL) {
+    tei = teInitIterator(ts);
+    while ((fi = teNextFi(tei)) != NULL) {
 	dbiIndexSet * matches;
 	int knownBad;
 
@@ -1401,7 +1339,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	    /*@switchbreak@*/ break;
 	}
     }
-    tsi = tsFreeIterator(tsi);
+    tei = teFreeIterator(tei);
 
     if (ts->chrootDone) {
 	/*@-superuser -noeffect @*/
@@ -1424,13 +1362,13 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
      * Free unused memory as soon as possible.
      */
 
-    tsi = tsInitIterator(ts);
-    while ((fi = tsNextIterator(tsi)) != NULL) {
+    tei = teInitIterator(ts);
+    while ((fi = teNextFi(tei)) != NULL) {
 	if (fi->fc == 0)
 	    continue;
 	fi->fps = _free(fi->fps);
     }
-    tsi = tsFreeIterator(tsi);
+    tei = teFreeIterator(tei);
 
     fpCacheFree(fpc);
     htFree(ts->ht);
@@ -1459,8 +1397,8 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
      * Save removed files before erasing.
      */
     if (ts->transFlags & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
-	tsi = tsInitIterator(ts);
-	while ((fi = tsNextIterator(tsi)) != NULL) {
+	tei = teInitIterator(ts);
+	while ((fi = teNextFi(tei)) != NULL) {
 	    switch (fi->type) {
 	    case TR_ADDED:
 		/*@switchbreak@*/ break;
@@ -1474,7 +1412,7 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 		/*@switchbreak@*/ break;
 	    }
 	}
-	tsi = tsFreeIterator(tsi);
+	tei = teFreeIterator(tei);
     }
 
     /* ===============================================
@@ -1482,13 +1420,13 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
      */
 
     lastFailed = -2;	/* erased packages have -1 */
-    tsi = tsInitIterator(ts);
+    tei = teInitIterator(ts);
     /*@-branchstate@*/ /* FIX: fi reload needs work */
-    while ((fi = tsNextIterator(tsi)) != NULL) {
+    while ((fi = teNextFi(tei)) != NULL) {
 	Header h;
 	int gotfd;
 
-	oc = tsGetOc(tsi);
+	oc = teGetOc(tei);
 	gotfd = 0;
 	psm->fi = rpmfiLink(fi, "tsInstall");
 	switch (fi->type) {
@@ -1555,7 +1493,7 @@ fi->key = NULL;
 fi->relocs = NULL;
 fi->fd = NULL;
 		    freeFi(fi);
-oc = tsGetOc(tsi);
+oc = teGetOc(tei);
 fi->magic = TFIMAGIC;
 fi->type = ts->order[oc].type;
 fi->record = 0;
@@ -1603,7 +1541,7 @@ fi->relocs = relocs;
 	case TR_REMOVED:
 	    rpmMessage(RPMMESS_DEBUG, "========== --- %s-%s-%s\n",
 			fi->name, fi->version, fi->release);
-	    oc = tsGetOc(tsi);
+	    oc = teGetOc(tei);
 	    /* If install failed, then we shouldn't erase. */
 	    if (ts->order[oc].u.removed.dependsOnIndex != lastFailed) {
 		if (psmStage(psm, PSM_PKGERASE))
@@ -1617,7 +1555,7 @@ fi->relocs = relocs;
 	psm->fi = NULL;
     }
     /*@=branchstate@*/
-    tsi = tsFreeIterator(tsi);
+    tei = teFreeIterator(tei);
 
     ts->flList = freeFl(ts, ts->flList);
     ts->flEntries = 0;

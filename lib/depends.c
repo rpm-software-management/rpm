@@ -508,6 +508,24 @@ char * hGetNVR(Header h, const char ** np )
     return NVR;
 }
 
+/**
+ * Return next transaction element of type.
+ * @param tei		transaction element iterator
+ * @return		next transaction element of type, NULL on termination
+ */
+static /*@dependent@*/
+transactionElement teNext(teIterator tei, enum rpmTransactionType type)
+        /*@modifies tei @*/
+{
+    transactionElement p;
+
+    while ((p = teNextIterator(tei)) != NULL) {
+	if (p->type == type)
+	    break;
+    }
+    return p;
+}
+
 int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 			const void * key, int upgrade, rpmRelocation * relocs)
 {
@@ -519,11 +537,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     rpmTagType ont, ovt;
     int duplicate = 0;
     int apx;	/* addedPackages index */
-#ifdef	DYING
-    availablePackage p;
-#else
     transactionElement p;
-#endif
     rpmDepSet obsoletes = memset(alloca(sizeof(*obsoletes)), 0, sizeof(*obsoletes));
     int alNum;
     int xx;
@@ -553,20 +567,6 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 
 	apx++;
 
-#ifdef	DYING
-	if ((p = alGetPkg(ts->addedPackages, te->u.addedIndex)) == NULL)
-	    break;
-
-	/*@-type@*/ /* FIX: availablePackage excision */
-	if (strcmp(p->name, name))
-	    continue;
-	/*@=type@*/
-	pkgNVR = alGetNVR(ts->addedPackages, te->u.addedIndex);
-	if (pkgNVR == NULL)	/* XXX can't happen */
-	    continue;
-
-	ph = alGetHeader(ts->addedPackages, te->u.addedIndex, 0);
-#else
 	ph = alGetHeader(ts->addedPackages, p->u.addedIndex, 0);
 	if (ph == NULL)
 	    break;
@@ -581,7 +581,6 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
             continue;
 	}
 	
-#endif
 	rc = rpmVersionCompare(ph, h);
 	ph = headerFree(ph, "alGetHeader match");
 
@@ -609,18 +608,6 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 	ts->orderAlloced += ts->delta;
 	ts->order = xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
     }
-
-#ifdef	DYING
-    {	availablePackage this =
-		alAddPackage(ts->addedPackages, i, h, key, fd, relocs);
-    	alNum = alGetPkgIndex(ts->addedPackages, this);
-	ts->order[i].u.addedIndex = alNum;
-    }
-
-    /* XXX sanity check */
-    if (alGetPkg(ts->addedPackages, alNum) == NULL)
-	goto exit;
-#else
     alNum = alAddPackage(ts->addedPackages, apx, h, key, fd, relocs);
     if (alNum == -1L) {
 	ec = 1;
@@ -630,7 +617,6 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     memset(p, 0, sizeof(*p));
 assert(alNum == apx);
     p->u.addedIndex = alNum;
-#endif
 
     p->type = TR_ADDED;
     p->multiLib = 0;
@@ -695,13 +681,6 @@ assert(apx == ts->numAddedPackages);
 		if (oldmultiLibMask && multiLibMask
 		 && !(oldmultiLibMask & multiLibMask))
 		{
-#ifdef	DYING
-		    /*@-type@*/ /* FIX: availablePackage excision */
-		    availablePackage alp = alGetPkg(ts->addedPackages, alNum);
-		    if (alp != NULL)
-			alp->multiLib = multiLibMask;
-		    /*@=type@*/
-#endif
 		    p->multiLib = multiLibMask;
 		}
 	    }
@@ -759,13 +738,8 @@ exit:
 
 void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, const void * key)
 {
-#ifdef	DYING
-    availablePackage al;
-    al = alAddPackage(ts->availablePackages, -1, h, key, NULL, NULL);
-#else
     /* XXX FIXME: return code -1L is error */
    (void) alAddPackage(ts->availablePackages, -1, h, key, NULL, NULL);
-#endif
 }
 
 int rpmtransRemovePackage(rpmTransactionSet ts, int dboffset)
@@ -1107,17 +1081,10 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 			{};
 		    pp->suggestedPackages =
 			xmalloc( (j + 1) * sizeof(*pp->suggestedPackages) );
-#ifdef	DYING
-		    /*@-type@*/ /* FIX: availablePackage excision */
-		    for (j = 0; suggestion[j] != NULL; j++)
-			pp->suggestedPackages[j] = suggestion[j]->key;
-		    /*@=type@*/
-#else
 		    for (j = 0; suggestion[j] != NULL; j++)
 			pp->suggestedPackages[j] =
 			    alGetKey(ts->availablePackages,
 				alGetPkgIndex(ts->availablePackages, suggestion[j]));
-#endif
 		    pp->suggestedPackages[j] = NULL;
 		} else {
 		    pp->suggestedPackages = NULL;
@@ -1464,12 +1431,12 @@ if (_te_debug) {
  * @param j		relation index
  * @return		0 always
  */
-static inline int addRelation(const rpmTransactionSet ts,
+static inline int addRelation(rpmTransactionSet ts,
 		transactionElement p, unsigned char * selected,
 		rpmDepSet requires)
-	/*@modifies p, *selected @*/
+	/*@modifies ts, p, *selected @*/
 {
-    transactionElement q;
+    teIterator qi; transactionElement q;
     tsortInfo tsi;
     long matchNum;
     int i = 0;
@@ -1487,13 +1454,14 @@ fprintf(stderr, "addRelation: matchNum %d\n", (int)matchNum);
     if (matchNum == -1L)
 	return 0;
 
-/* XXX set q to the added package that has matchNum == q->u.addedIndex */
+/* XXX Set q to the added package that has matchNum == q->u.addedIndex */
 /* XXX FIXME: bsearch is possible/needed here */
-    if ((q = ts->order) != NULL)
-    for (i = 0; i < ts->orderCount; i++, q++) {
-	if (q->type == TR_ADDED && matchNum == q->u.addedIndex)
+    qi = teInitIterator(ts);
+    while ((q = teNext(qi, TR_ADDED)) != NULL) {
+	if (matchNum == q->u.addedIndex)
 	    break;
     }
+    qi = teFreeIterator(qi);
 /*@-modfilesystem -nullpass -nullderef@*/
 if (_te_debug)
 fprintf(stderr, "addRelation: q %p(%s) from %p[%d:%d]\n", q, q->name, ts->order, i, ts->orderCount);
@@ -1517,6 +1485,7 @@ fprintf(stderr, "addRelation: requires[%d] %s\n", requires->i, requires->N[requi
     /* Avoid redundant relations. */
     /* XXX TODO: add control bit. */
     i = q - ts->order;
+
     if (selected[i] != 0)
 	return 0;
     selected[i] = 1;
@@ -1613,9 +1582,9 @@ int rpmdepOrder(rpmTransactionSet ts)
 {
     int numAddedPackages = alGetSize(ts->addedPackages);
     int chainsaw = ts->transFlags & RPMTRANS_FLAG_CHAINSAW;
-    transactionElement p;
-    transactionElement q;
-    transactionElement r;
+    teIterator pi; transactionElement p;
+    teIterator qi; transactionElement q;
+    teIterator ri; transactionElement r;
     tsortInfo tsi;
     tsortInfo tsi_next;
     int * ordering = alloca(sizeof(*ordering) * (numAddedPackages + 1));
@@ -1641,29 +1610,9 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 
     /* T1. Initialize. */
     loopcheck = numAddedPackages;	/* XXX TR_ADDED only: should be ts->orderCount */
-    if ((p = ts->order) != NULL)
-    for (i = 0; i < ts->orderCount; i++, p++) {
-
-#ifdef	DYING
-	/* Initialize tsortInfo. */
-	memset(&p->tsi, 0, sizeof(p->tsi));
-	p->npreds = 0;
-	p->depth = 0;
-	p->NEVR = NULL;
-	p->name = NULL;
-	p->version = NULL;
-	p->release = NULL;
-#endif
-
-	/* XXX Only added packages are ordered (for now). */
-	switch (p->type) {
-	case TR_ADDED:
-	    /*@switchbreak@*/ break;
-	case TR_REMOVED:
-	default:
-	    continue;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	}
+    pi = teInitIterator(ts);
+    /* XXX Only added packages are ordered (for now). */
+    while ((p = teNext(pi, TR_ADDED)) != NULL) {
 
 	/* Retrieve info from addedPackages. */
 	p->NEVR = alGetNVR(ts->addedPackages, p->u.addedIndex);
@@ -1678,22 +1627,14 @@ prtTSI(p->NEVR, &p->tsi);
 /*@=modfilesystem@*/
 /*@=nullpass@*/
     }
+    pi = teFreeIterator(pi);
 
     /* Record all relations. */
     rpmMessage(RPMMESS_DEBUG, _("========== recording tsort relations\n"));
-    if ((p = ts->order) != NULL)
-    for (i = 0; i < ts->orderCount; i++, p++) {
+    pi = teInitIterator(ts);
+    /* XXX Only added packages are ordered (for now). */
+    while ((p = teNext(pi, TR_ADDED)) != NULL) {
 	rpmDepSet requires;
-
-	/* XXX Only added packages are ordered (for now). */
-	switch (p->type) {
-	case TR_ADDED:
-	    /*@switchbreak@*/ break;
-	case TR_REMOVED:
-	default:
-	    continue;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	}
 
 	requires = alGetRequires(ts->addedPackages, p->u.addedIndex);
 
@@ -1704,13 +1645,13 @@ prtTSI(p->NEVR, &p->tsi);
 
 /*@-modfilesystem -nullpass@*/
 if (_te_debug)
-fprintf(stderr, "\t+++ %p[%d] %s %s-%s-%s requires[%d] %p[%d] Flags %p\n", p, i, p->NEVR, p->name, p->version, p->release, p->u.addedIndex, requires, requires->Count, requires->Flags);
+fprintf(stderr, "\t+++ %p[%d] %s %s-%s-%s requires[%d] %p[%d] Flags %p\n", p, teGetOc(pi), p->NEVR, p->name, p->version, p->release, p->u.addedIndex, requires, requires->Count, requires->Flags);
 /*@=modfilesystem =nullpass@*/
 
 	memset(selected, 0, sizeof(*selected) * ts->orderCount);
 
 	/* Avoid narcisstic relations. */
-	selected[i] = 1;
+	selected[teGetOc(pi)] = 1;
 
 	/* T2. Next "q <- p" relation. */
 
@@ -1744,50 +1685,36 @@ fprintf(stderr, "\t+++ %p[%d] %s %s-%s-%s requires[%d] %p[%d] Flags %p\n", p, i,
 
 	}
     }
+    pi = teFreeIterator(pi);
 
     /* Save predecessor count. */
-    if ((p = ts->order) != NULL)
-    for (i = 0; i < ts->orderCount; i++, p++) {
-	/* XXX Only added packages are ordered (for now). */
-	switch (p->type) {
-	case TR_ADDED:
-	    /*@switchbreak@*/ break;
-	case TR_REMOVED:
-	default:
-	    continue;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	}
+    pi = teInitIterator(ts);
+    /* XXX Only added packages are ordered (for now). */
+    while ((p = teNext(pi, TR_ADDED)) != NULL) {
 
 	p->npreds = p->tsi.tsi_count;
 /*@-modfilesystem -nullpass@*/
 if (_te_debug)
-fprintf(stderr, "\t+++ %p[%d] %s npreds %d\n", p, i, p->NEVR, p->npreds);
+fprintf(stderr, "\t+++ %p[%d] %s npreds %d\n", p, teGetOc(pi), p->NEVR, p->npreds);
 /*@=modfilesystem =nullpass@*/
 
     }
+    pi = teFreeIterator(pi);
 
     /* T4. Scan for zeroes. */
     rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, depth)\n"));
 
 rescan:
+    if (pi) pi = teFreeIterator(pi);
     q = r = NULL;
     qlen = 0;
-    if ((p = ts->order) != NULL)
-    for (i = 0; i < ts->orderCount; i++, p++) {
+    pi = teInitIterator(ts);
+    /* XXX Only added packages are ordered (for now). */
+    while ((p = teNext(pi, TR_ADDED)) != NULL) {
 
-	/* XXX Only added packages are ordered (for now). */
-	switch (p->type) {
-	case TR_ADDED:
-	    /*@switchbreak@*/ break;
-	case TR_REMOVED:
-	default:
-	    continue;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	}
-
-	/* Prefer packages in presentation order. */
+	/* Prefer packages in chainsaw or presentation order. */
 	if (!chainsaw)
-	    p->tsi.tsi_qcnt = (ts->orderCount - i);
+	    p->tsi.tsi_qcnt = (ts->orderCount - teGetOc(pi));
 
 	if (p->tsi.tsi_count != 0)
 	    continue;
@@ -1800,6 +1727,7 @@ fprintf(stderr, "\t+++ addQ ++ qlen %d p %p(%s)", qlen, p, p->NEVR);
 prtTSI(" p", &p->tsi);
 /*@=modfilesystem =nullpass@*/
     }
+    pi = teFreeIterator(pi);
 
     /* T5. Output front of queue (T7. Remove from queue.) */
     /*@-branchstate@*/ /* FIX: r->tsi.tsi_next released */
@@ -1860,62 +1788,36 @@ prtTSI(" p", &p->tsi);
 
 	/* T9. Initialize predecessor chain. */
 	nzaps = 0;
-	if ((q = ts->order) != NULL)
-	for (i = 0; i < ts->orderCount; i++, q++) {
-
-	    /* XXX Only added packages are ordered (for now). */
-	    switch (q->type) {
-	    case TR_ADDED:
-		/*@switchbreak@*/ break;
-	    case TR_REMOVED:
-	    default:
-		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
-	    }
-
+	qi = teInitIterator(ts);
+	/* XXX Only added packages are ordered (for now). */
+	while ((q = teNext(qi, TR_ADDED)) != NULL) {
 	    q->tsi.tsi_chain = NULL;
 	    q->tsi.tsi_reqx = 0;
 	    /* Mark packages already sorted. */
 	    if (q->tsi.tsi_count == 0)
 		q->tsi.tsi_count = -1;
 	}
+	qi = teFreeIterator(qi);
 
 	/* T10. Mark all packages with their predecessors. */
-	if ((q = ts->order) != NULL)
-	for (i = 0; i < ts->orderCount; i++, q++) {
-
-	    /* XXX Only added packages are ordered (for now). */
-	    switch (q->type) {
-	    case TR_ADDED:
-		/*@switchbreak@*/ break;
-	    case TR_REMOVED:
-	    default:
-		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
-	    }
-
+	qi = teInitIterator(ts);
+	/* XXX Only added packages are ordered (for now). */
+	while ((q = teNext(qi, TR_ADDED)) != NULL) {
 	    if ((tsi = q->tsi.tsi_next) == NULL)
 		continue;
 	    q->tsi.tsi_next = NULL;
 	    markLoop(tsi, q);
 	    q->tsi.tsi_next = tsi;
 	}
+	qi = teFreeIterator(qi);
 
 	/* T11. Print all dependency loops. */
+	ri = teInitIterator(ts);
+	/* XXX Only added packages are ordered (for now). */
+	while ((r = teNext(ri, TR_ADDED)) != NULL)
 	/*@-branchstate@*/
-	if ((r = ts->order) != NULL)
-	for (i = 0; i < ts->orderCount; i++, r++) {
+	{
 	    int printed;
-
-	    /* XXX Only added packages are ordered (for now). */
-	    switch (r->type) {
-	    case TR_ADDED:
-		/*@switchbreak@*/ break;
-	    case TR_REMOVED:
-	    default:
-		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
-	    }
 
 	    printed = 0;
 
@@ -1965,6 +1867,7 @@ prtTSI(" p", &p->tsi);
 	    }
 	}
 	/*@=branchstate@*/
+	ri = teFreeIterator(ri);
 
 	/* If a relation was eliminated, then continue sorting. */
 	/* XXX TODO: add control bit. */
@@ -1987,18 +1890,9 @@ prtTSI(" p", &p->tsi);
      */
     orderList = xcalloc(numAddedPackages, sizeof(*orderList));
     j = 0;
-    if ((p = ts->order) != NULL)
-    for (i = 0, j = 0; i < ts->orderCount; i++, p++) {
-
-	/* XXX Only added packages are ordered (for now). */
-	switch (p->type) {
-	case TR_ADDED:
-	    /*@switchbreak@*/ break;
-	case TR_REMOVED:
-	default:
-	    continue;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	}
+    pi = teInitIterator(ts);
+    /* XXX Only added packages are ordered (for now). */
+    while ((p = teNext(pi, TR_ADDED)) != NULL) {
 
 	/* Clean up tsort remnants (if any). */
 	while ((tsi = p->tsi.tsi_next) != NULL) {
@@ -2011,15 +1905,17 @@ prtTSI(" p", &p->tsi);
 
 	/* Prepare added package ordering permutation. */
 	orderList[j].alIndex = p->u.addedIndex;
-	orderList[j].orIndex = i;
+	orderList[j].orIndex = teGetOc(pi);
 	j++;
     }
+    pi = teFreeIterator(pi);
     assert(j <= numAddedPackages);
 
     qsort(orderList, numAddedPackages, sizeof(*orderList), orderListIndexCmp);
 
     newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
-    for (i = 0, newOrderCount = 0; i < orderingCount; i++) {
+    for (i = 0, newOrderCount = 0; i < orderingCount; i++)
+    {
 	struct orderListIndex_s key;
 	orderListIndex needle;
 
@@ -2029,28 +1925,35 @@ prtTSI(" p", &p->tsi);
 	/* bsearch should never, ever fail */
 	if (needle == NULL) continue;
 
+	j = needle->orIndex;
 	/*@-assignexpose@*/
-	newOrder[newOrderCount++] = ts->order[needle->orIndex];
+	q = ts->order + j;
+	newOrder[newOrderCount++] = *q;		/* structure assignment */
 	/*@=assignexpose@*/
 	for (j = needle->orIndex + 1; j < ts->orderCount; j++) {
-	    if (ts->order[j].type == TR_REMOVED &&
-		ts->order[j].u.removed.dependsOnIndex == needle->alIndex) {
+	    q = ts->order + j;
+	    if (q->type == TR_REMOVED &&
+		q->u.removed.dependsOnIndex == needle->alIndex) {
 		/*@-assignexpose@*/
-		newOrder[newOrderCount++] = ts->order[j];
+		newOrder[newOrderCount++] = *q;	/* structure assignment */
 		/*@=assignexpose@*/
 	    } else
 		/*@innerbreak@*/ break;
 	}
     }
 
-    for (i = 0; i < ts->orderCount; i++) {
-	if (ts->order[i].type == TR_REMOVED &&
-	    ts->order[i].u.removed.dependsOnIndex == -1)  {
+    /*@-compmempass -usereleased@*/ /* FIX: ts->order[].{NEVR,name} released */
+    pi = teInitIterator(ts);
+    /*@=compmempass =usereleased@*/
+    while ((p = teNext(pi, TR_REMOVED)) != NULL) {
+	if (p->u.removed.dependsOnIndex == -1) {
 	    /*@-assignexpose@*/
-	    newOrder[newOrderCount++] = ts->order[i];
+	    newOrder[newOrderCount] = *p;	/* structure assignment */
 	    /*@=assignexpose@*/
+	    newOrderCount++;
 	}
     }
+    pi = teFreeIterator(pi);
     assert(newOrderCount == ts->orderCount);
 
     ts->order = _free(ts->order);
@@ -2101,12 +2004,9 @@ int rpmdepCheck(rpmTransactionSet ts,
     rpmdbMatchIterator mi = NULL;
     Header h = NULL;
     problemsSet ps = NULL;
-    transactionElement p;
-#ifdef	DYING
-    int numAddedPackages;
-#endif
+    teIterator pi = NULL; transactionElement p;
     int closeatexit = 0;
-    int i, j, xx;
+    int j, xx;
     int rc;
 
     /* Do lazy, readonly, open of rpm database. */
@@ -2115,10 +2015,6 @@ int rpmdepCheck(rpmTransactionSet ts,
 	    goto exit;
 	closeatexit = 1;
     }
-
-#ifdef	DYING
-    numAddedPackages = alGetSize(ts->addedPackages);
-#endif
 
     ps = xcalloc(1, sizeof(*ps));
     ps->alloced = 5;
@@ -2135,8 +2031,9 @@ int rpmdepCheck(rpmTransactionSet ts,
      * Look at all of the added packages and make sure their dependencies
      * are satisfied.
      */
-    if ((p = ts->order) != NULL)
-    for (i = 0; i < ts->orderCount; i++, p++) {
+    pi = teInitIterator(ts);
+    /* XXX Only added packages are checked (for now). */
+    while ((p = teNext(pi, TR_ADDED)) != NULL) {
 	char * pkgNVR = NULL, * n, * v, * r;
 	rpmDepSet provides;
 	uint_32 multiLib;
@@ -2151,12 +2048,6 @@ int rpmdepCheck(rpmTransactionSet ts,
 	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
-#ifdef	DYING
-	pkgNVR = alGetNVR(ts->addedPackages, p->u.addedIndex);
-	if (pkgNVR == NULL)	/* XXX can't happen */
-	    break;
-	multiLib = alGetMultiLib(ts->addedPackages, p->u.addedIndex);
-#else
 	h = alGetHeader(ts->addedPackages, p->u.addedIndex, 0);
 	if (h == NULL)		/* XXX can't happen */
 	    break;
@@ -2164,7 +2055,6 @@ int rpmdepCheck(rpmTransactionSet ts,
 	pkgNVR = _free(pkgNVR);
 	pkgNVR = hGetNVR(h, NULL);
 	multiLib = p->multiLib;
-#endif
 
         rpmMessage(RPMMESS_DEBUG,  "========== +++ %s\n" , pkgNVR);
 	rc = checkPackageDeps(ts, ps, h, NULL, multiLib);
@@ -2203,6 +2093,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	if (rc)
 	    goto exit;
     }
+    pi = teFreeIterator(pi);
 
     /*
      * Look at the removed packages and make sure they aren't critical.
@@ -2299,6 +2190,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 
 exit:
     mi = rpmdbFreeIterator(mi);
+    pi = teFreeIterator(pi);
     if (ps) {
 	ps->problems = _free(ps->problems);
 	ps = _free(ps);
