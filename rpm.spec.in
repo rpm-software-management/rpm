@@ -464,7 +464,10 @@ exit 0
 - python: eliminate hash.[ch] and upgrade.[ch], methods too.
 - fix :armor query extension, tgpg mktmp handling (#80684).
 - use rpmfiFClass() underneath --fileclass.
-- use rpmfiFDepends() underneath --fileprovide/--filerequire.
+- use rpmfiFDepends() underneath --fileprovide and --filerequire.
+- python: add fi.FColor() and fi.FClass() methods.
+- calculate dependency color and refernces.
+- python: add ds.Color() and ds.Refs() methods.
 
 * Sat Dec 28 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.45
 - error if querying with iterator on different sized arrays.

@@ -38,7 +38,11 @@ struct rpmds_s {
 /*@only@*/ /*@null@*/
     const char ** EVR;		/*!< Epoch-Version-Release. */
 /*@only@*/ /*@null@*/
-    int_32 * Flags;		/*!< Flags identifying context/comparison. */
+    int_32 * Flags;		/*!< Bit(s) identifying context/comparison. */
+/*@only@*/ /*@null@*/
+    int_32 * Color;		/*!< Bit(s) calculated from file color(s). */
+/*@only@*/ /*@null@*/
+    int_32 * Refs;		/*!< No. of file refs. */
     rpmTag tagN;		/*!< Header tag. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
     int_32 Count;		/*!< No. of elements */
@@ -236,6 +240,40 @@ int rpmdsNoPromote(/*@null@*/ const rpmds ds)
  */
 int rpmdsSetNoPromote(/*@null@*/ rpmds ds, int nopromote)
 	/*@modifies ds @*/;
+
+/**
+ * Return current dependency color.
+ * @param ds		dependency set
+ * @return		current dependency color
+ */
+int_32 rpmdsColor(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/**
+ * Return current dependency color.
+ * @param ds		dependency set
+ * @param color		new dependency color
+ * @return		previous dependency color
+ */
+int_32 rpmdsSetColor(/*@null@*/ const rpmds ds, int_32 color)
+	/*@*/;
+
+/**
+ * Return current dependency file refs.
+ * @param ds		dependency set
+ * @return		current dependency file refs, -1 on global
+ */
+int_32 rpmdsRefs(/*@null@*/ const rpmds ds)
+	/*@*/;
+
+/**
+ * Return current dependency color.
+ * @param ds		dependency set
+ * @param refs		new dependency refs
+ * @return		previous dependency refs
+ */
+int_32 rpmdsSetRefs(/*@null@*/ const rpmds ds, int_32 refs)
+	/*@*/;
 
 /**
  * Notify of results of dependency match.

@@ -85,6 +85,22 @@ rpmds_TagN(rpmdsObject * s, PyObject * args)
     return Py_BuildValue("i", rpmdsTagN(s->ds));
 }
 
+static PyObject *
+rpmds_Color(rpmdsObject * s, PyObject * args)
+	/*@*/
+{
+    if (!PyArg_ParseTuple(args, ":Color")) return NULL;
+    return Py_BuildValue("i", rpmdsColor(s->ds));
+}
+
+static PyObject *
+rpmds_Refs(rpmdsObject * s, PyObject * args)
+	/*@*/
+{
+    if (!PyArg_ParseTuple(args, ":Refs")) return NULL;
+    return Py_BuildValue("i", rpmdsRefs(s->ds));
+}
+
 static int
 rpmds_compare(rpmdsObject * a, rpmdsObject * b)
 	/*@*/
@@ -213,6 +229,10 @@ static struct PyMethodDef rpmds_methods[] = {
 	"ds.Flags -> Flags	- Return current Flags.\n" },
  {"TagN",	(PyCFunction)rpmds_TagN,	METH_VARARGS,
 	"ds.TagN -> TagN	- Return current TagN.\n" },
+ {"Color",	(PyCFunction)rpmds_Color,	METH_VARARGS,
+	"ds.Color -> Color	- Return current Color.\n" },
+ {"Refs",	(PyCFunction)rpmds_Refs,	METH_VARARGS,
+	"ds.Refs -> Refs	- Return current Refs.\n" },
  {"next",	(PyCFunction)rpmds_Next,	METH_VARARGS,
 "ds.next() -> (N, EVR, Flags)\n\
 - Retrieve next dependency triple.\n" }, 

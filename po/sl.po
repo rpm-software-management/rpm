@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.356 2002/12/29 18:19:50 jbj Exp $
+# $Id: sl.po,v 1.357 2002/12/30 02:38:21 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-29 12:52-0500\n"
+"POT-Creation-Date: 2002-12-29 21:35-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1458,7 +1458,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:355
-#: rpmdb/header.c:3332 rpmdb/header.c:3361 rpmdb/header.c:3385
+#: rpmdb/header.c:3334 rpmdb/header.c:3363 rpmdb/header.c:3387
 msgid "(not a number)"
 msgstr "(ni ¹tevilo)"
 
@@ -2541,16 +2541,16 @@ msgstr ")"
 msgid "OK"
 msgstr "V REDU"
 
-#: lib/rpmds.c:481 lib/rpmds.c:840
+#: lib/rpmds.c:540 lib/rpmds.c:899
 #, fuzzy
 msgid "NO "
 msgstr "NI DOBRO"
 
-#: lib/rpmds.c:481 lib/rpmds.c:840
+#: lib/rpmds.c:540 lib/rpmds.c:899
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:805
+#: lib/rpmds.c:864
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2559,13 +2559,13 @@ msgstr ""
 "odvisnost \"B\" potrebuje \"epoch\" (privzeto enak kot \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:839
+#: lib/rpmds.c:898
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:863
+#: lib/rpmds.c:922
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "Za paket %s-%s-%s: zahteva %s ni zadovoljena\n"
@@ -3327,11 +3327,11 @@ msgstr "v izrazu je za : prièakovan {"
 msgid "| expected at end of expression"
 msgstr "na koncu izraza je prièakovan |"
 
-#: rpmdb/header.c:2832
+#: rpmdb/header.c:2833
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3136
+#: rpmdb/header.c:3138
 msgid "array iterator used with different sized arrays"
 msgstr ""
 

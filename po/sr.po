@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-29 12:52-0500\n"
+"POT-Creation-Date: 2002-12-29 21:35-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-2\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1445,7 +1445,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:355
-#: rpmdb/header.c:3332 rpmdb/header.c:3361 rpmdb/header.c:3385
+#: rpmdb/header.c:3334 rpmdb/header.c:3363 rpmdb/header.c:3387
 msgid "(not a number)"
 msgstr "(nije broj)"
 
@@ -2535,28 +2535,28 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:481 lib/rpmds.c:840
+#: lib/rpmds.c:540 lib/rpmds.c:899
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:481 lib/rpmds.c:840
+#: lib/rpmds.c:540 lib/rpmds.c:899
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:805
+#: lib/rpmds.c:864
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
 
-#: lib/rpmds.c:839
+#: lib/rpmds.c:898
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:863
+#: lib/rpmds.c:922
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s nije naveden u %s"
@@ -3316,11 +3316,11 @@ msgstr "{ oèekivano posle : u izrazu"
 msgid "| expected at end of expression"
 msgstr "| oèekivano na kraju izraza"
 
-#: rpmdb/header.c:2832
+#: rpmdb/header.c:2833
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3136
+#: rpmdb/header.c:3138
 msgid "array iterator used with different sized arrays"
 msgstr ""
 

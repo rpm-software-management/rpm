@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
-"POT-Creation-Date: 2002-12-29 12:52-0500\n"
+"POT-Creation-Date: 2002-12-29 21:35-0500\n"
 "PO-Revision-Date: 2002-08-19 22:26+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1414,7 +1414,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:355
-#: rpmdb/header.c:3332 rpmdb/header.c:3361 rpmdb/header.c:3385
+#: rpmdb/header.c:3334 rpmdb/header.c:3363 rpmdb/header.c:3387
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
@@ -2438,15 +2438,15 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:481 lib/rpmds.c:840
+#: lib/rpmds.c:540 lib/rpmds.c:899
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/rpmds.c:481 lib/rpmds.c:840
+#: lib/rpmds.c:540 lib/rpmds.c:899
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:805
+#: lib/rpmds.c:864
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2455,13 +2455,13 @@ msgstr ""
 "\"B\"-beroendet behöver en epok (antar samma epok som \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:839
+#: lib/rpmds.c:898
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:863
+#: lib/rpmds.c:922
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s har ouppfyllda %s: %s\n"
@@ -3208,11 +3208,11 @@ msgstr "{ förväntades efter : i uttryck"
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
-#: rpmdb/header.c:2832
+#: rpmdb/header.c:2833
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3136
+#: rpmdb/header.c:3138
 msgid "array iterator used with different sized arrays"
 msgstr ""
 

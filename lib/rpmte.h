@@ -437,11 +437,19 @@ rpmds rpmteDS(rpmte te, rpmTag tag)
 /**
  * Retrieve file info tag set from transaction element.
  * @param te		transaction element
- * @param tag		file info tag
+ * @param tag		file info tag (RPMTAG_BASENAMES)
  * @return		file info tag set
  */
 rpmfi rpmteFI(rpmte te, rpmTag tag)
 	/*@*/;
+
+/**
+ * Calculate transaction lemnt dependency colors/refs from file info.
+ * @param te		transaction element
+ * @param tag		dependency tag (RPMTAG_PROVIDENAME, RPMTAG_REQUIRENAME)
+ */
+void rpmteColorDS(rpmte te, rpmTag tagN)
+        /*@modifies te @*/;
 
 /**
  * Return transaction element index.

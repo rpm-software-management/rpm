@@ -88,7 +88,11 @@
 	- python: eliminate hash.[ch] and upgrade.[ch], methods too.
 	- fix :armor query extension, tgpg mktmp handling (#80684).
 	- use rpmfiFClass() underneath --fileclass.
-	- use rpmfiFDepends() underneath --fileprovide/--filerequire.
+	- use rpmfiFDepends() underneath --fileprovide and --filerequire.
+	- python: add fi.FColor() and fi.FClass() methods.
+	- calculate dependency color and refernces.
+	- python: add ds.Color() and ds.Refs() methods.
+
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

@@ -141,7 +141,6 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     p->key = key;
     p->fd = NULL;
-    p->multiLib = 0;
 
     p->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
     p->provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
@@ -152,6 +151,11 @@ static void addTE(rpmts ts, rpmte p, Header h,
     savep = rpmtsSetRelocateElement(ts, p);
     p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     (void) rpmtsSetRelocateElement(ts, savep);
+
+    rpmteColorDS(p, RPMTAG_PROVIDENAME);
+    rpmteColorDS(p, RPMTAG_REQUIRENAME);
+
+    p->multiLib = 0;
 }
 /*@=bounds@*/
 
@@ -432,6 +436,73 @@ rpmfi rpmteFI(rpmte te, rpmTag tag)
     /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
 
+void rpmteColorDS(rpmte te, rpmTag tag)
+{
+    rpmfi fi = rpmteFI(te, RPMTAG_BASENAMES);
+    rpmds ds = rpmteDS(te, tag);
+    char deptype = 'R';
+    char mydt;
+    const int_32 * ddict;
+    int_32 * colors;
+    int_32 * refs;
+    int_32 val;
+    int Count;
+    size_t nb;
+    unsigned ix;
+    int ndx, i;
+
+    if (!(te && (Count = rpmdsCount(ds)) > 0 && rpmfiFC(fi) > 0))
+	return;
+
+    switch (tag) {
+    default:
+	return;
+	/*@notreached@*/ break;
+    case RPMTAG_PROVIDENAME:
+	deptype = 'P';
+	break;
+    case RPMTAG_REQUIRENAME:
+	deptype = 'R';
+	break;
+    }
+
+    nb = Count * sizeof(*colors);
+    colors = memset(alloca(nb), 0, nb);
+    nb = Count * sizeof(*refs);
+    refs = memset(alloca(nb), -1, nb);
+
+    /* Calculate dependency color and reference count. */
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	/* XXX ignore all but lsnibble for now. */
+	val = (rpmfiFColor(fi) & 0x0f);
+	ddict = NULL;
+	ndx = rpmfiFDepends(fi, &ddict);
+	if (ddict != NULL)
+	while (ndx-- > 0) {
+	    ix = *ddict++;
+	    mydt = ((ix >> 24) & 0xff);
+	    if (mydt != deptype)
+		/*@innercontinue@*/ continue;
+	    ix &= 0x00ffffff;
+assert (ix < Count);
+	    colors[ix] |= val;
+	    refs[ix]++;
+	}
+    }
+
+    /* Set color/refs values in dependency set. */
+    ds = rpmdsInit(ds);
+    while ((i = rpmdsNext(ds)) >= 0) {
+	val = colors[i];
+	(void) rpmdsSetColor(ds, val);
+	val = refs[i];
+	if (val >= 0)
+	    val++;
+	(void) rpmdsSetRefs(ds, val);
+    }
+}
 int rpmtsiOc(rpmtsi tsi)
 {
     return tsi->ocsave;

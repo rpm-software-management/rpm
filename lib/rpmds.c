@@ -101,6 +101,8 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     /*@=branchstate@*/
 
     ds->DNEVR = _free(ds->DNEVR);
+    ds->Color = _free(ds->Color);
+    ds->Refs = _free(ds->Refs);
 
     (void) rpmdsUnlink(ds, ds->Type);
     /*@-refcounttrans -usereleased@*/
@@ -174,6 +176,8 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
 	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
                                 ds->Flags, ds->Count * sizeof(*ds->Flags));
 /*@=boundsread@*/
+	ds->Color = xcalloc(Count, sizeof(*ds->Color));
+	ds->Refs = xcalloc(Count, sizeof(*ds->Refs));
 
 /*@-modfilesys@*/
 if (_rpmds_debug < 0)
@@ -443,9 +447,8 @@ rpmTag rpmdsTagN(const rpmds ds)
 {
     rpmTag tagN = 0;
 
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+    if (ds != NULL)
 	tagN = ds->tagN;
-    }
     return tagN;
 }
 
@@ -467,6 +470,62 @@ int rpmdsSetNoPromote(rpmds ds, int nopromote)
 	ds->nopromote = nopromote;
     }
     return onopromote;
+}
+
+int_32 rpmdsColor(const rpmds ds)
+{
+    int_32 Color = 0;
+
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+/*@-boundsread@*/
+	if (ds->Color != NULL)
+	    Color = ds->Color[ds->i];
+/*@=boundsread@*/
+    }
+    return Color;
+}
+
+int_32 rpmdsSetColor(const rpmds ds, int_32 color)
+{
+    int_32 ocolor = 0;
+
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+/*@-boundsread@*/
+	if (ds->Color != NULL) {
+	    ocolor = ds->Color[ds->i];
+	    ds->Color[ds->i] = color;
+	}
+/*@=boundsread@*/
+    }
+    return ocolor;
+}
+
+int_32 rpmdsRefs(const rpmds ds)
+{
+    int_32 Refs = 0;
+
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+/*@-boundsread@*/
+	if (ds->Refs != NULL)
+	    Refs = ds->Refs[ds->i];
+/*@=boundsread@*/
+    }
+    return Refs;
+}
+
+int_32 rpmdsSetRefs(const rpmds ds, int_32 refs)
+{
+    int_32 orefs = 0;
+
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+/*@-boundsread@*/
+	if (ds->Refs != NULL) {
+	    orefs = ds->Refs[ds->i];
+	    ds->Refs[ds->i] = refs;
+	}
+/*@=boundsread@*/
+    }
+    return orefs;
 }
 
 void rpmdsNotify(rpmds ds, const char * where, int rc)

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-12-29 12:52-0500\n"
+"POT-Creation-Date: 2002-12-29 21:35-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1418,7 +1418,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:39 lib/formats.c:71 lib/formats.c:106 lib/formats.c:355
-#: rpmdb/header.c:3332 rpmdb/header.c:3361 rpmdb/header.c:3385
+#: rpmdb/header.c:3334 rpmdb/header.c:3363 rpmdb/header.c:3387
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
@@ -2474,15 +2474,15 @@ msgstr ")"
 msgid "OK"
 msgstr "확인"
 
-#: lib/rpmds.c:481 lib/rpmds.c:840
+#: lib/rpmds.c:540 lib/rpmds.c:899
 msgid "NO "
 msgstr "아니오"
 
-#: lib/rpmds.c:481 lib/rpmds.c:840
+#: lib/rpmds.c:540 lib/rpmds.c:899
 msgid "YES"
 msgstr "예"
 
-#: lib/rpmds.c:805
+#: lib/rpmds.c:864
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2491,13 +2491,13 @@ msgstr ""
 "\"B\" 의존성은 중요시 되는 것(epoch)을 필요로 합니다 (\"A\" 로 가정합니다)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:839
+#: lib/rpmds.c:898
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:863
+#: lib/rpmds.c:922
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "%s 패키지의 필요사항(내역)이 만족하지 않음: %s\n"
@@ -3257,11 +3257,11 @@ msgstr "표현식의 ':' 뒤에 '{' 가 와야합니다"
 msgid "| expected at end of expression"
 msgstr "표현식의 끝부분에 '|' 가 와야합니다"
 
-#: rpmdb/header.c:2832
+#: rpmdb/header.c:2833
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:3136
+#: rpmdb/header.c:3138
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
