@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-23 16:19-0400\n"
+"POT-Creation-Date: 2000-04-25 15:13-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1987,156 +1987,166 @@ msgid " failed - "
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:434
+#: lib/depends.c:439
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:463
+#: lib/depends.c:468
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:792
+#: lib/depends.c:797
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:841
+#: lib/depends.c:846
 #, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr ""
 
-#: lib/depends.c:844
+#: lib/depends.c:849
 #, c-format
 msgid "%s: %s satisfied by added package (shouldn't happen).\n"
 msgstr ""
 
-#: lib/depends.c:862
+#: lib/depends.c:867
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:895
+#: lib/depends.c:896
+#, c-format
+msgid "%s: %s satisfied by Depends cache.\n"
+msgstr ""
+
+#: lib/depends.c:909
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:923
+#: lib/depends.c:937
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:941
+#: lib/depends.c:955
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:959
+#: lib/depends.c:973
 #, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr ""
 
-#: lib/depends.c:972
+#: lib/depends.c:986
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:982
+#: lib/depends.c:996
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1030
+#: lib/depends.c:1048
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1092
+#: lib/depends.c:1110
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1222
+#: lib/depends.c:1240
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
 
-#: lib/depends.c:1426
+#: lib/depends.c:1444
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: lib/db0.c:608
+#: lib/db0.c:565
 #, c-format
 msgid "bad db file %s"
 msgstr ""
 
-#: lib/db0.c:617
+#: lib/db0.c:574
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: lib/db0.c:622 lib/url.c:445
+#: lib/db0.c:579 lib/url.c:445
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr ""
 
-#: lib/db0.c:634
+#: lib/db0.c:591
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: lib/db0.c:635
+#: lib/db0.c:592
 msgid "exclusive"
 msgstr ""
 
-#: lib/db0.c:635
+#: lib/db0.c:592
 msgid "shared"
 msgstr ""
 
-#: lib/db3.c:243
+#: lib/db3.c:249
 #, c-format
 msgid "dbiSetConfig: unrecognized db option: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/db3.c:269
+#: lib/db3.c:277
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:277
+#: lib/db3.c:285
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:285
+#: lib/db3.c:293
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: lib/db3.c:440
+#: lib/db3.c:456
 #, c-format
 msgid "closed  db environment %s/%s(%s)\n"
 msgstr ""
 
-#: lib/db3.c:451
+#: lib/db3.c:468
 #, c-format
 msgid "removed db environment %s/%s(%s)\n"
 msgstr ""
 
-#: lib/db3.c:1050
+#: lib/db3.c:505
 #, c-format
-msgid "closed db index        %s/%s(%s)\n"
+msgid "opening db environment %s/%s(%s) %s\n"
 msgstr ""
 
-#: lib/db3.c:1225
+#: lib/db3.c:1117
 #, c-format
-msgid "opened %s/%s(%s) %s\n"
+msgid "closed  db index       %s/%s(%s)\n"
+msgstr ""
+
+#: lib/db3.c:1195
+#, c-format
+msgid "opening db index       %s/%s(%s) %s\n"
 msgstr ""
 
 #: lib/falloc.c:135
@@ -2150,7 +2160,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:69 lib/formats.c:86 lib/formats.c:106 lib/formats.c:138
-#: lib/header.c:2188 lib/header.c:2204 lib/header.c:2223
+#: lib/header.c:2190 lib/header.c:2206 lib/header.c:2225
 msgid "(not a number)"
 msgstr ""
 
@@ -2183,74 +2193,74 @@ msgstr ""
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:250 lib/header.c:813
+#: lib/header.c:250 lib/header.c:815
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1172
+#: lib/header.c:1174
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: lib/header.c:1581
+#: lib/header.c:1583
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: lib/header.c:1609
+#: lib/header.c:1611
 msgid "missing } after %{"
 msgstr ""
 
-#: lib/header.c:1621
+#: lib/header.c:1623
 msgid "empty tag format"
 msgstr ""
 
-#: lib/header.c:1631
+#: lib/header.c:1633
 msgid "empty tag name"
 msgstr ""
 
-#: lib/header.c:1646
+#: lib/header.c:1648
 msgid "unknown tag"
 msgstr ""
 
-#: lib/header.c:1672
+#: lib/header.c:1674
 msgid "] expected at end of array"
 msgstr ""
 
-#: lib/header.c:1688
+#: lib/header.c:1690
 msgid "unexpected ]"
 msgstr ""
 
-#: lib/header.c:1690
+#: lib/header.c:1692
 msgid "unexpected }"
 msgstr ""
 
-#: lib/header.c:1744
+#: lib/header.c:1746
 msgid "? expected in expression"
 msgstr ""
 
-#: lib/header.c:1751
+#: lib/header.c:1753
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: lib/header.c:1761 lib/header.c:1796
+#: lib/header.c:1763 lib/header.c:1798
 msgid "} expected in expression"
 msgstr ""
 
-#: lib/header.c:1769
+#: lib/header.c:1771
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: lib/header.c:1783
+#: lib/header.c:1785
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: lib/header.c:1804
+#: lib/header.c:1806
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:1972
+#: lib/header.c:1974
 msgid "(unknown type)"
 msgstr ""
 
@@ -2827,22 +2837,22 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: lib/rpmdb.c:136
+#: lib/rpmdb.c:135
 #, c-format
 msgid "error getting record %s from %s index"
 msgstr ""
 
-#: lib/rpmdb.c:157
+#: lib/rpmdb.c:156
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: lib/rpmdb.c:162
+#: lib/rpmdb.c:161
 #, c-format
 msgid "error removing record %s from %s"
 msgstr ""
 
-#: lib/rpmdb.c:343
+#: lib/rpmdb.c:345
 msgid ""
 "\n"
 "--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
@@ -2850,145 +2860,145 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:358
+#: lib/rpmdb.c:360
 #, c-format
-msgid "dbiOpenIndex: cannot open %s index"
+msgid "dbiOpen: cannot open %s index"
 msgstr ""
 
-#: lib/rpmdb.c:481 lib/rpmdb.c:1791
+#: lib/rpmdb.c:473 lib/rpmdb.c:1795
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:558
+#: lib/rpmdb.c:551
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:743
+#: lib/rpmdb.c:736
 #, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr ""
 
-#: lib/rpmdb.c:1077
+#: lib/rpmdb.c:1076
 #, c-format
 msgid "key \"%s\" not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:1085
+#: lib/rpmdb.c:1084
 #, c-format
 msgid "key \"%s\" not removed from %s"
 msgstr ""
 
-#: lib/rpmdb.c:1111
+#: lib/rpmdb.c:1110
 #, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr ""
 
-#: lib/rpmdb.c:1145
+#: lib/rpmdb.c:1144
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1152
+#: lib/rpmdb.c:1151
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1160
+#: lib/rpmdb.c:1159
 #, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1164
+#: lib/rpmdb.c:1163
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1307
+#: lib/rpmdb.c:1310
 msgid "cannot allocate new instance in database"
 msgstr ""
 
-#: lib/rpmdb.c:1355
+#: lib/rpmdb.c:1359
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1368
+#: lib/rpmdb.c:1372
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1375
+#: lib/rpmdb.c:1379
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1379
+#: lib/rpmdb.c:1383
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1697
+#: lib/rpmdb.c:1701
 #, c-format
 msgid "cannot read header at %d for lookup"
 msgstr ""
 
-#: lib/rpmdb.c:1816
+#: lib/rpmdb.c:1820
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1820
+#: lib/rpmdb.c:1824
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: lib/rpmdb.c:1826
+#: lib/rpmdb.c:1830
 #, c-format
 msgid "creating directory: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1828
+#: lib/rpmdb.c:1832
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: lib/rpmdb.c:1835
+#: lib/rpmdb.c:1839
 #, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:1844
+#: lib/rpmdb.c:1848
 #, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:1866
+#: lib/rpmdb.c:1870
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 
-#: lib/rpmdb.c:1898
+#: lib/rpmdb.c:1902
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rpmdb.c:1916
+#: lib/rpmdb.c:1920
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:1924
+#: lib/rpmdb.c:1928
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:1926
+#: lib/rpmdb.c:1930
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:1932
+#: lib/rpmdb.c:1936
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

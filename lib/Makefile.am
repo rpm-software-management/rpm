@@ -35,7 +35,7 @@ falloc.lo: falloc.c $(top_srcdir)/system.h rpmio.h falloc.h
 db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 	for F in $*.o $*.lo ; do \
-	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb-3.0 ; \
+	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb-3.0 -lpthread ; \
 	    @__OBJCOPY@ `\
 		@__NM@ -g --defined-only $${F}.o | \
 		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \

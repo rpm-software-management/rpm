@@ -42,6 +42,14 @@ struct _dbiIndexSet {
     int count;				/*!< number of records */
 };
 
+/* XXX hack to get prototypes correct */
+#if !defined(DB_VERSION_MAJOR)
+#define	DB_ENV	void
+#define	DBC	void
+#define	DBT	void
+#define	DB_LSN	void
+#endif
+
 /**
  * Private methods for accessing an index database.
  */
@@ -120,18 +128,22 @@ struct _dbiVec {
 
 /**
  */
-    int (*copen) (dbiIndex dbi);
+    int (*copen) (dbiIndex dbi, DBC ** dbcp);
 
 /**
  */
-    int (*cclose) (dbiIndex dbi);
+    int (*cclose) (dbiIndex dbi, DBC * dbcursor);
 
 /**
+ * Delete item using db->del or dbcursor->c_del.
+ * @param dbi	index database handle
+ * @param keyp	key data
+ * @param keylen key data length
  */
-    int (*join) (dbiIndex dbi);
+    int (*cdel) (dbiIndex dbi, void * keyp, size_t keylen);
 
 /**
- * Retrieve item using dbcursor->c_get.
+ * Retrieve item using db->get or dbcursor->c_get.
  * @param dbi	index database handle
  * @param keyp	address of key data
  * @param keylen address of key data length
@@ -141,20 +153,38 @@ struct _dbiVec {
     int (*cget) (dbiIndex dbi, void ** keyp, size_t * keylen,
 			void ** datap, size_t * datalen);
 
-};
+/**
+ * Save item using db->put or dbcursor->c_put.
+ * @param dbi	index database handle
+ * @param keyp	key data
+ * @param keylen key data length
+ * @param datap	data pointer
+ * @param datalen data length
+ */
+    int (*cput) (dbiIndex dbi, void * keyp, size_t keylen,
+			void * datap, size_t datalen);
 
-/* XXX hack to get prototypes correct */
-#if !defined(DB_VERSION_MAJOR)
-#define	DB_ENV	void
-#define	DBT	void
-#define	DB_LSN	void
-#endif
+/**
+ */
+    int (*byteswapped) (dbiIndex dbi);
+
+};
 
 /**
  * Describes an index database (implemented on Berkeley db[123] API).
  */
 struct _dbiIndex {
-    int			dbi_flags;	/*<! */
+    const char *	dbi_root;
+    const char *	dbi_home;
+    const char *	dbi_file;
+    const char *	dbi_subfile;
+
+    int			dbi_cflags;	/*<! db_create/db_env_create flags */
+    int			dbi_oeflags;	/*<! common (db,dbenv}->open flags */
+    int			dbi_eflags;	/*<! dbenv->open flags */
+    int			dbi_oflags;	/*<! db->open flags */
+    int			dbi_tflags;	/*<! dbenv->txn_begin flags */
+
     int			dbi_type;	/*<! db index type */
     int			dbi_mode;	/*<! mode to use on open */
     int			dbi_perms;	/*<! file permission to use on open */
@@ -164,6 +194,7 @@ struct _dbiIndex {
     int			dbi_use_cursors;
     int			dbi_get_rmw_cursor;
     int			dbi_no_fsync;
+    int			dbi_temporary;
 
 	/* dbenv parameters */
     int			dbi_lorder;
@@ -221,8 +252,7 @@ struct _dbiIndex {
     void *	dbi_db;			/*<! Berkeley db[123] handle */
     void *	dbi_dbenv;
     void *	dbi_dbinfo;
-    void *	dbi_dbjoin;
-    void *	dbi_dbcursor;
+    void *	dbi_rmw;		/*<! db cursor (with DB_WRITECURSOR) */
     void *	dbi_pkgs;
 
 /*@observer@*/ const struct _dbiVec * dbi_vec;	/*<! private methods */
@@ -235,7 +265,8 @@ struct _dbiIndex {
 struct rpmdb_s {
     const char *	db_root;	/*<! path prefix */
     const char *	db_home;	/*<! directory path */
-    int			db_flags;	/*<! */
+    int			db_flags;
+
     int			db_mode;	/*<! open mode */
     int			db_perms;	/*<! open permissions */
 
@@ -264,46 +295,84 @@ extern "C" {
 #endif
 
 /**
- * Return base file name for legacy index databases.
- * @param	rpmtag rpm tag
- * @return	base file name
+ * Return new configured index database handle instance.
+ * @param rpmdb		rpm database
  */
-char * db0basename(int rpmtag);
-
 /*@only@*/ /*@null@*/ dbiIndex db3New(rpmdb rpmdb, int rpmtag);
 
+/**
+ * Destroy index database handle instance.
+ * @param dbi		index database handle
+ */
 void db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi);
 
 /**
- * @param db		rpm database
+ * Return handle for an index database.
+ * @param rpmdb		rpm database
+ * @param rpmtag	rpm tag
+ * @return		index database handle
+ */
+dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag);
+
+/**
+ * Store (key,data) pair in index database.
+ * @param dbi		index database handle
+ * @param rpmdb		rpm database
+ * @return		0 on success
+ */
+int dbiPut(dbiIndex dbi, const void * key, size_t keylen, const void * data, size_t datalen);
+
+/**
+ * Close index database.
+ * @param dbi		index database handle
+ * @param flag		(unused)
+ * @return		0 on success
+ */
+int dbiClose(dbiIndex dbi, int flag);
+
+/**
+ * Return base file name for index database (legacy).
+ * @param rpmtag	rpm tag
+ * @return		base file name
+ */
+char * db0basename(int rpmtag);
+
+/**
+ * Remove package header from rpm database and indices.
+ * @param rpmdb		rpm database
+ * @param offset	location in Packages dbi
+ * @param tolerant	(legacy) print error messages?
+ * @return		0 on success
  */
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 
 /**
- * @param db		rpm database
+ * Add package header to rpm database and indices.
+ * @param rpmdb		rpm database
+ * @param rpmtag	rpm tag
  */
-int rpmdbAdd(rpmdb db, Header dbentry);
+int rpmdbAdd(rpmdb rpmdb, Header dbentry);
 
 /**
- * @param db		rpm database
+ * @param rpmdb		rpm database
  */
-int rpmdbUpdateRecord(rpmdb db, int secOffset, Header secHeader);
+int rpmdbUpdateRecord(rpmdb rpmdb, int secOffset, Header secHeader);
 
 /**
  */
 unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi);
 
 /**
- * @param db		rpm database
+ * @param rpmdb		rpm database
  */
-int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, /*@out@*/dbiIndexSet * matchList, 
+int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, /*@out@*/dbiIndexSet * matchList, 
 		    int numItems);
 
 /* XXX only for the benefit of runTransactions() */
 /**
- * @param db		rpm database
+ * @param rpmdb		rpm database
  */
-int findMatches(rpmdb db, const char * name, const char * version,
+int findMatches(rpmdb rpmdb, const char * name, const char * version,
 	const char * release, /*@out@*/ dbiIndexSet * matches);
 
 #ifdef __cplusplus

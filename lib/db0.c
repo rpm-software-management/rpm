@@ -18,6 +18,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include "falloc.h"
 #include "misc.h"
 
+#define	DBC	void
 #include "rpmdb.h"
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
@@ -77,55 +78,11 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
     return rc;
 }
 
-#if defined(__USE_DB2)
-static int db_init(const char *home, int dbflags,
-			DB_ENV **dbenvp, DB_INFO **dbinfop)
-{
-    DB_ENV *dbenv = xcalloc(1, sizeof(*dbenv));
-    DB_INFO *dbinfo = xcalloc(1, sizeof(*dbinfo));
-    int rc;
-
-    if (dbenvp) *dbenvp = NULL;
-    if (dbinfop) *dbinfop = NULL;
-
-    dbenv->db_errfile = stderr;
-    dbenv->db_errpfx = "rpmdb";
-    dbenv->mp_size = 1024 * 1024;
-
-    rc = db_appinit(home, NULL, dbenv, dbflags);
-    if (rc)
-	goto errxit;
-
-    dbinfo->db_pagesize = 1024;
-
-    if (dbenvp)
-	*dbenvp = dbenv;
-    else
-	free(dbenv);
-
-    if (dbinfop)
-	*dbinfop = dbinfo;
-    else
-	free(dbinfo);
-
-    return 0;
-
-errxit:
-    if (dbenv)	free(dbenv);
-    if (dbinfo)	free(dbinfo);
-    return rc;
-}
-#endif
-
 static int db0sync(dbiIndex dbi, unsigned int flags) {
     DB * db = GetDB(dbi);
     int rc;
 
-#if defined(__USE_DB2)
     rc = db->sync(db, flags);
-#else
-    rc = db->sync(db, flags);
-#endif
 
     switch (rc) {
     default:
@@ -141,6 +98,11 @@ static int db0sync(dbiIndex dbi, unsigned int flags) {
     }
 
     return rc;
+}
+
+static int db0byteswapped(dbiIndex dbi)
+{
+    return 0;
 }
 
 static int db0SearchIndex(dbiIndex dbi, const void * str, size_t len,
@@ -160,11 +122,7 @@ static int db0SearchIndex(dbiIndex dbi, const void * str, size_t len,
     data.data = NULL;
     data.size = 0;
 
-#if defined(__USE_DB2)
-    rc = db->get(db, NULL, &key, &data, 0);
-#else
     rc = db->get(db, &key, &data, 0);
-#endif
 
     switch (rc) {
     default:
@@ -231,11 +189,7 @@ static int db0UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
 	data.data = dbir;
 	data.size = set->count * sizeof(*dbir);
 
-#if defined(__USE_DB2)
-	rc = db->put(db, NULL, &key, &data, 0);
-#else
 	rc = db->put(db, &key, &data, 0);
-#endif
 
 	switch (rc) {
 	default:
@@ -249,11 +203,7 @@ static int db0UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
 	}
     } else {
 
-#if defined(__USE_DB2)
-	rc = db->del(db, NULL, &key, 0);
-#else
 	rc = db->del(db, &key, 0);
-#endif
 
 	switch (rc) {
 	default:
@@ -283,15 +233,19 @@ static void * doGetRecord(FD_t pkgs, unsigned int offset)
 
     h = headerRead(pkgs, HEADER_MAGIC_NO);
 
-    if (h == NULL) return NULL;
+    if (h == NULL)
+	goto exit;
 
-    /* the RPM used to build much of RH 5.1 could produce packages whose
-       file lists did not have leading /'s. Now is a good time to fix
-       that */
+    /*
+     * The RPM used to build much of RH 5.1 could produce packages whose
+     * file lists did not have leading /'s. Now is a good time to fix that.
+     */
 
-    /* If this tag isn't present, either no files are in the package or
-       we're dealing with a package that has just the compressed file name
-       list */
+    /*
+     * If this tag isn't present, either no files are in the package or
+     * we're dealing with a package that has just the compressed file name
+     * list.
+     */
     if (!headerGetEntryMinMemory(h, RPMTAG_OLDFILENAMES, NULL, 
 			   (void **) &fileNames, &fileCount)) goto exit;
 
@@ -319,41 +273,29 @@ static void * doGetRecord(FD_t pkgs, unsigned int offset)
 			  newFileNames, fileCount);
     }
 
-    /* The file list was moved to a more compressed format which not
-       only saves memory (nice), but gives fingerprinting a nice, fat
-       speed boost (very nice). Go ahead and convert old headers to
-       the new style (this is a noop for new headers) */
+    /*
+     * The file list was moved to a more compressed format which not
+     * only saves memory (nice), but gives fingerprinting a nice, fat
+     * speed boost (very nice). Go ahead and convert old headers to
+     * the new style (this is a noop for new headers).
+     */
     compressFilelist(h);
 
 exit:
-    uh = headerUnload(h);
-    headerFree(h);
+    if (h) {
+	uh = headerUnload(h);
+	headerFree(h);
+    }
     return uh;
 }
 
 static int db0copen(dbiIndex dbi) {
     int rc = 0;
-#if defined(__USE_DB2)
-    {	DBC * dbcursor = NULL;
-	rc = dbp->cursor(dbp, NULL, &dbcursor, 0);
-	if (rc == 0)
-	    dbi->dbi_dbcursor = dbcursor;
-    }
-#endif
-    dbi->dbi_lastoffset = 0;
     return rc;
 }
 
 static int db0cclose(dbiIndex dbi) {
     int rc = 0;
-#if defined(__USE_DB2)
-#endif
-    dbi->dbi_lastoffset = 0;
-    return rc;
-}
-
-static int db0join(dbiIndex dbi) {
-    int rc = 1;
     return rc;
 }
 
@@ -361,72 +303,90 @@ static int db0cget(dbiIndex dbi, void ** keyp, size_t * keylen,
                 void ** datap, size_t * datalen)
 {
     DBT key, data;
-    DB * db;
-    int rc;
+    int rc = 0;
 
     if (dbi == NULL)
 	return 1;
 
-    if (dbi->dbi_pkgs) {
-	if (dbi->dbi_lastoffset == 0) {
-	    dbi->dbi_lastoffset = fadFirstOffset(dbi->dbi_pkgs);
+    memset(&key, 0, sizeof(key));
+    memset(&data, 0, sizeof(data));
+    if (keyp)		key.data = *keyp;
+    if (keylen)		key.size = *keylen;
+    if (datap)		data.data = *datap;
+    if (datalen)	data.size = *datalen;
+
+    if (dbi->dbi_rpmtag == 0) {
+	unsigned int offset;
+	unsigned int newSize;
+
+	if (key.data == NULL) {	/* XXX simulated DB_NEXT */
+	    if (dbi->dbi_lastoffset == 0) {
+		dbi->dbi_lastoffset = fadFirstOffset(dbi->dbi_pkgs);
+	    } else {
+		dbi->dbi_lastoffset = fadNextOffset(dbi->dbi_pkgs, dbi->dbi_lastoffset);
+	    }
+	    key.data = &dbi->dbi_lastoffset;
+	    key.size = sizeof(dbi->dbi_lastoffset);
+	}
+
+	memcpy(&offset, key.data, sizeof(offset));
+	/* XXX hack to pass sizeof header to fadAlloc */
+	newSize = data.size;
+
+	if (offset == 0) {	/* XXX simulated offset 0 record */
+	    offset = fadAlloc(dbi->dbi_pkgs, newSize);
+	    if (offset == 0)
+		return -1;
+	    offset--;	/* XXX hack: caller will increment */
+	    /* XXX hack: return offset as data, free in db0cput */
+	    data.data = xmalloc(sizeof(offset));
+	    memcpy(data.data, &offset, sizeof(offset));
+	    data.size = sizeof(offset);
+	} else {		/* XXX simulated retrieval */
+	    data.data = doGetRecord(dbi->dbi_pkgs, offset);
+	    data.size = 0;	/* XXX WRONG */
+	    if (data.data == NULL)
+		rc = 1;
+	}
+    } else {
+	DB * db;
+	int _printit;
+
+	if ((db = dbi->dbi_db) == NULL)
+	    return 1;
+
+	if (key.data == NULL) {
+	    rc = db->seq(db, &key, &data, (dbi->dbi_lastoffset++ ? R_NEXT : R_FIRST));
+	    _printit = (rc == 1 ? 0 : _debug);
+	    rc = cvtdberr(dbi, "db->seq", rc, _printit);
 	} else {
-	    dbi->dbi_lastoffset = fadNextOffset(dbi->dbi_pkgs, dbi->dbi_lastoffset);
+	    rc = db->get(db, &key, &data, 0);
+	    _printit = (rc == 1 ? 0 : _debug);
+	    rc = cvtdberr(dbi, "db0cget", rc, _printit);
 	}
-	if (keyp)
-	    *keyp = &dbi->dbi_lastoffset;
-	if (keylen)
-	    *keylen = sizeof(dbi->dbi_lastoffset);
-	return 0;
     }
-
-    if (dbi->dbi_db == NULL)
-	return 1;
-    db = GetDB(dbi);
-    _mymemset(&key, 0, sizeof(key));
-    _mymemset(&data, 0, sizeof(data));
-
-    key.data = NULL;
-    key.size = 0;
-
-#if defined(__USE_DB2)
-    {	DBC * dbcursor;
-
-	if ((dbcursor = dbi->dbi_dbcursor) == NULL) {
-	    rc = db2copen(dbi);
-	    if (rc)
-		return rc;
-	    dbcursor = dbi->dbi_dbcursor;
-	}
-
-	rc = dbcursor->c_get(dbcursor, &key, &data,
-			(dbi->dbi_lastoffset++ ? DB_NEXT : DB_FIRST));
-	if (rc == DB_NOTFOUND)
-	    db2cclose(dbcursor)
-    }
-#else
-    rc = db->seq(db, &key, &data, (dbi->dbi_lastoffset++ ? R_NEXT : R_FIRST));
-#endif
 
     switch (rc) {
     default:
     case RET_ERROR:	/* -1 */
+	rc = -1;
+	break;
     case RET_SPECIAL:	/* 1 */
 	rc = 1;
-	if (keyp)
-	    *keyp = NULL;
 	break;
     case RET_SUCCESS:	/* 0 */
 	rc = 0;
-	if (keyp)
-	    *keyp = key.data;
+	if (keyp)	*keyp = key.data;
+	if (keylen)	*keylen = key.size;
+	if (datap)	*datap = data.data;
+	if (datalen)	*datalen = data.size;
 	break;
     }
 
     return rc;
 }
 
-static int db0del(dbiIndex dbi, void * keyp, size_t keylen)
+static int db0cdel(dbiIndex dbi, void * keyp, size_t keylen)
 {
     int rc = 0;
 
@@ -450,80 +410,86 @@ static int db0del(dbiIndex dbi, void * keyp, size_t keylen)
     return rc;
 }
 
+#ifndef	DYING
 static int db0get(dbiIndex dbi, void * keyp, size_t keylen,
 		void ** datap, size_t * datalen)
 {
-    unsigned int newSize = 0;
+    DBT key, data;
     int rc = 0;
 
-    if (datap) *datap = NULL;
-    if (datalen) {
-	/* XXX hack to pass sizeof header to fadAlloc */
-	newSize = *datalen;
-	*datalen = 0;
-    }
+    memset(&key, 0, sizeof(key));
+    memset(&data, 0, sizeof(data));
+    if (keyp)		key.data = keyp;
+    if (keylen)		key.size = keylen;
+    if (datap)		data.data = *datap;
+    if (datalen)	data.size = *datalen;
 
     if (dbi->dbi_rpmtag == 0) {
 	unsigned int offset;
+	unsigned int newSize;
 
-	memcpy(&offset, keyp, sizeof(offset));
+	memcpy(&offset, key.data, sizeof(offset));
+	/* XXX hack to pass sizeof header to fadAlloc */
+	newSize = data.size;
 
-	if (offset == 0) {
+	if (offset == 0) {	/* XXX simulated offset 0 record */
 	    offset = fadAlloc(dbi->dbi_pkgs, newSize);
 	    if (offset == 0)
 		return -1;
 	    offset--;	/* XXX hack: caller will increment */
-	    *datap = xmalloc(sizeof(offset));
-	    memcpy(*datap, &offset, sizeof(offset));
-	    *datalen = sizeof(offset);
-	} else {
-	    void * uh = doGetRecord(dbi->dbi_pkgs, offset);
-	    if (uh == NULL)
-		return 1;
-	    if (datap)
-		*datap = uh;
-	    if (datalen)
-		*datalen = 0;	/* XXX WRONG */
+	    /* XXX hack: return offset as data, free in db0cput */
+	    data.data = xmalloc(sizeof(offset));
+	    memcpy(data.data, &offset, sizeof(offset));
+	    data.size = sizeof(offset);
+	} else {		/* XXX simulated retrieval */
+	    data.data = doGetRecord(dbi->dbi_pkgs, offset);
+	    data.size = 0;	/* XXX WRONG */
+	    if (data.data == NULL)
+		rc = 1;
 	}
     } else {
-	DBT key, data;
 	DB * db = GetDB(dbi);
-
-	_mymemset(&key, 0, sizeof(key));
-	_mymemset(&data, 0, sizeof(data));
-
-	key.data = keyp;
-	key.size = keylen;
-	data.data = NULL;
-	data.size = 0;
+	int _printit;
 
 	rc = db->get(db, &key, &data, 0);
-	rc = cvtdberr(dbi, "db->get", rc, _debug);
+	_printit = (rc == 1 ? 0 : _debug);
+	rc = cvtdberr(dbi, "db0get", rc, _printit);
+    }
 
-	if (rc == 0) {
-	    *datap = data.data;
-	    *datalen = data.size;
-	}
+    if (rc == 0) {
+	if (datap)	*datap = data.data;
+	if (datalen)	*datalen = data.size;
     }
 
     return rc;
 }
+#endif	/* DYING */
 
-static int db0put(dbiIndex dbi, void * keyp, size_t keylen,
+static int db0cput(dbiIndex dbi, void * keyp, size_t keylen,
 		void * datap, size_t datalen)
 {
+    DBT key, data;
     int rc = 0;
+
+    memset(&key, 0, sizeof(key));
+    memset(&data, 0, sizeof(data));
+    key.data = keyp;
+    key.size = keylen;
+    data.data = datap;
+    data.size = datalen;
 
     if (dbi->dbi_rpmtag == 0) {
 	unsigned int offset;
 
-	memcpy(&offset, keyp, sizeof(offset));
+	memcpy(&offset, key.data, sizeof(offset));
 
-	if (offset == 0) {
-	    if (datalen == sizeof(offset))
-		free(datap);
-	} else {
-	    Header h = headerLoad(datap);
+	if (offset == 0) {	/* XXX simulated offset 0 record */
+	    /* XXX hack: return offset as data, free in db0cput */
+	    if (data.size == sizeof(offset)) {
+		free(data.data);
+	    }
+	} else {		/* XXX simulated DB_KEYLAST */
+	    Header h = headerLoad(data.data);
 	    int newSize = headerSizeof(h, HEADER_MAGIC_NO);
 
 	    (void)Fseek(dbi->dbi_pkgs, offset, SEEK_SET);
@@ -535,16 +501,7 @@ static int db0put(dbiIndex dbi, void * keyp, size_t keylen,
 	    headerFree(h);
 	}
     } else {
-	DBT key, data;
 	DB * db = GetDB(dbi);
-
-	_mymemset(&key, 0, sizeof(key));
-	_mymemset(&data, 0, sizeof(data));
-
-	key.data = keyp;
-	key.size = keylen;
-	data.data = datap;
-	data.size = datalen;
 
 	rc = db->put(db, &key, &data, 0);
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
@@ -646,11 +603,11 @@ static int db0open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     }
 
 exit:
-    if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
+    if (rc == 0 && dbip) {
 	rc = 0;
 	*dbip = dbi;
 if (_debug < 0)
-fprintf(stderr, "*** db%dopen: %s\n", dbi->dbi_major, urlfn);
+fprintf(stderr, "*** db%dopen: rpmtag %d dbi %p %s\n", dbi->dbi_major, rpmtag, dbi, urlfn);
     } else {
 	rc = 1;
 	db3Free(dbi);
@@ -671,5 +628,6 @@ fprintf(stderr, "*** db%dopen: %s\n", dbi->dbi_major, urlfn);
 struct _dbiVec db0vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db0open, db0close, db0sync, db0SearchIndex, db0UpdateIndex,
-    db0del, db0get, db0put, db0copen, db0cclose, db0join, db0cget
+    db0cdel, db0get, db0cput, db0copen, db0cclose, db0cdel, db0cget, db0cput,
+    db0byteswapped
 };

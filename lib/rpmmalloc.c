@@ -4,9 +4,9 @@
 #define	EXIT_FAILURE	1
 #endif
 
-void *vmefail(void)
+void *vmefail(size_t size)
 {
-    fprintf(stderr, _("memory alloc returned NULL.\n"));
+    fprintf(stderr, _("memory alloc (%u bytes) returned NULL.\n"), size);
     exit(EXIT_FAILURE);
     /*@notreached@*/
     return NULL;
@@ -20,7 +20,7 @@ void * xmalloc (size_t size)
     if (size == 0) size++;
     value = malloc (size);
     if (value == 0)
-	value = vmefail();
+	value = vmefail(size);
     return value;
 }
 
@@ -31,7 +31,7 @@ void * xcalloc (size_t nmemb, size_t size)
     if (nmemb == 0) nmemb++;
     value = calloc (nmemb, size);
     if (value == 0)
-	value = vmefail();
+	value = vmefail(size);
     return value;
 }
 
@@ -41,15 +41,16 @@ void * xrealloc (void *ptr, size_t size)
     if (size == 0) size++;
     value = realloc (ptr, size);
     if (value == 0)
-	value = vmefail();
+	value = vmefail(size);
     return value;
 }
 
 char * xstrdup (const char *str)
 {
-    char *newstr = (char *) malloc (strlen(str) + 1);
+    size_t size = strlen(str) + 1;
+    char *newstr = (char *) malloc (size);
     if (newstr == 0)
-	newstr = (char *) vmefail();
+	newstr = (char *) vmefail(size);
     strcpy (newstr, str);
     return newstr;
 }

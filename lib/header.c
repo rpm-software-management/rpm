@@ -511,9 +511,11 @@ static void *doHeaderUnload(Header h, /*@out@*/int * lengthPtr)
 
 void *headerUnload(Header h)
 {
+    void * uh;
     int length;
 
-    return doHeaderUnload(h, &length);
+    uh = doHeaderUnload(h, &length);
+    return uh;
 }
 
 /********************************************************************/

@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.53 2000/04/23 20:37:57 jbj Exp $
+# $Id: macros.in,v 1.54 2000/04/25 19:41:37 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -212,10 +212,9 @@
 #	3	native db3 interface.
 #	-1	db3 -> db2 -> db1 -> db0 (as available).
 # There are two macros so that --rebuilddb can convert old_db_api -> new_db_api.
-%_dbapi			3
+%_dbapi			0
 %_dbapi_rebuild		3
 
-# This is a colon separated list of tokens for Berkeley db configuration.
 #
 #   token		Berkeley db flag or value
 # =================================================
@@ -235,21 +234,26 @@
 #   txn_nosync		DB_TXN_NOSYNC
 #   hash		DB_HASH
 #
+# See http://www.sleepycat.com for Berkeley db-3.0.55 configuration.
+#
 # The (intended) default value for Red Hat Linux is
 #	hash:mpool:shared:lock
 #
+# Additional rpm specific configuration:
 #   teardown	Should the DB3 environment be removed after use (experimental)?
 #   usecursors	Should DB3 cursors be used in get/put/del (experimental)?
 #
-%__dbi_flags		create:mpool
+%__dbi_flags		mpool
 %__dbi_type		hash
 %__dbi_perms		perms=0644
 %__dbi_major		db%{_dbapi}
-%__dbi_other		teardown:usecursors
+%__dbi_other		usecursors
 %__dbi_verbose		verbose
 %__dbi_mp_mmapsize	mp_mmapsize=16Mb
 %__dbi_mp_size		mp_size=2Mb
 
+# This is a colon (or white space) separated list of tokens for Berkeley
+# dbi configuration.
 %_dbi_config	\
   %{__dbi_flags}\
   %{__dbi_type}\
@@ -261,6 +265,7 @@
   %{__dbi_mp_size}\
 %{nil}
 
+# This is the list of tags for which indices will be built.
 %_dbi_indices	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername
 
 #==============================================================================

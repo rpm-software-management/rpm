@@ -204,7 +204,7 @@ char *alloca ();
 /*@only@*/ void * xcalloc (size_t nmemb, size_t size);
 /*@only@*/ void * xrealloc (void *ptr, size_t size);
 /*@only@*/ char * xstrdup (const char *str);
-void *vmefail(void);
+void *vmefail(size_t size);
 
 #if HAVE_MCHECK_H
 #include <mcheck.h>
@@ -213,10 +213,10 @@ void *vmefail(void);
 
 /* Memory allocation via macro defs to get meaningful locations from mtrace() */
 #if HAVE_MCHECK_H && defined(__GNUC__)
-#define	xmalloc(_size) 		(malloc(_size) ? : vmefail())
-#define	xcalloc(_nmemb, _size)	(calloc((_nmemb), (_size)) ? : vmefail())
-#define	xrealloc(_ptr, _size)	(realloc((_ptr), (_size)) ? : vmefail())
-#define	xstrdup(_str)	(strcpy((malloc(strlen(_str)+1) ? : vmefail()), (_str)))
+#define	xmalloc(_size) 		(malloc(_size) ? : vmefail(_size))
+#define	xcalloc(_nmemb, _size)	(calloc((_nmemb), (_size)) ? : vmefail(_size))
+#define	xrealloc(_ptr, _size)	(realloc((_ptr), (_size)) ? : vmefail(_size))
+#define	xstrdup(_str)	(strcpy((malloc(strlen(_str)+1) ? : vmefail(strlen(_str)+1)), (_str)))
 #endif	/* HAVE_MCHECK_H && defined(__GNUC__) */
 
 /* Retrofit glibc __progname */
