@@ -85,8 +85,8 @@ static struct availablePackage * alAddPackage(struct availableList * al,
 
     headerNVR(p->h, &p->name, &p->version, &p->release);
 
-    p->hasEpoch = headerGetEntry(h, RPMTAG_EPOCH, NULL, (void **) &p->epoch, 
-				  NULL);
+    if (!headerGetEntry(h, RPMTAG_EPOCH, NULL, (void **) &p->epoch, NULL))
+	p->epoch = NULL;
 
     if (!headerGetEntry(h, RPMTAG_PROVIDENAME, NULL, (void **) &p->provides,
 	&p->providesCount)) {
@@ -211,7 +211,7 @@ static void parseEVR(char *evr, const char **ep, const char **vp, const char **r
 	version = s;
 	if (*epoch == '\0') epoch = "0";
     } else {
-	epoch = "0";
+	epoch = NULL;	/* XXX disable epoch compare if missing */
 	version = evr;
     }
     if (se) {
@@ -336,7 +336,7 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
 int headerMatchesDepFlags(Header h, const char *reqName, const char * reqEVR, int reqFlags)
 {
     const char *name, *version, *release;
-    int_32 * epochval;
+    int_32 * epoch;
     char *pkgEVR;
     int pkgFlags = RPMSENSE_EQUAL;
     int type, count;
@@ -349,8 +349,8 @@ int headerMatchesDepFlags(Header h, const char *reqName, const char * reqEVR, in
 
     pkgEVR = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
     *pkgEVR = '\0';
-    if (headerGetEntry(h, RPMTAG_EPOCH, &type, (void **) &epochval, &count))
-	sprintf(pkgEVR, "%d:", *epochval);
+    if (headerGetEntry(h, RPMTAG_EPOCH, &type, (void **) &epoch, &count))
+	sprintf(pkgEVR, "%d:", *epoch);
     strcat(pkgEVR, version);
     strcat(pkgEVR, "-");
     strcat(pkgEVR, release);
@@ -896,7 +896,8 @@ static int checkDependentConflicts(rpmTransactionSet rpmdep,
     dbiIndexSet matches;
     int rc;
 
-    if (rpmdep->db == NULL) return 0;
+    if (rpmdep->db == NULL)
+	return 0;
 
     if (rpmdbFindByConflicts(rpmdep->db, key, &matches)) {
 	return 0;
@@ -1102,10 +1103,13 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
     return 0;
 }
 
-static char *buildEVR(const char *v, const char *r)
+static char *buildEVR(int_32 *e, const char *v, const char *r)
 {
-    char *pEVR = malloc(strlen(v) + 1 + strlen(r) + 1);
-    strcpy(pEVR, v);
+    char *pEVR = malloc(21 + strlen(v) + 1 + strlen(r) + 1);
+    *pEVR = '\0';
+    if (e)
+	sprintf(pEVR, "%d:", *e);
+    strcat(pEVR, v);
     strcat(pEVR, "-");
     strcat(pEVR, r);
     return pEVR;
@@ -1148,7 +1152,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
        are satisfied */
     p = rpmdep->addedPackages.list;
     for (i = 0; i < rpmdep->addedPackages.size; i++, p++) {
-	pEVR = buildEVR(p->version, p->release);
+	pEVR = buildEVR(p->epoch, p->version, p->release);
 
 	if (checkPackageDeps(rpmdep, &ps, p->h, NULL, NULL, 0))
 	    goto exit;
@@ -1186,6 +1190,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     /* now look at the removed packages and make sure they aren't critical */
     for (i = 0; i < rpmdep->numRemovedPackages; i++) {
 	const char *name, *version, *release;
+	int_32 *epoch;
 
 	h = rpmdbGetRecord(rpmdep->db, rpmdep->removedPackages[i]);
 	if (h == NULL) {
@@ -1196,7 +1201,9 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 	}
 	
 	headerNVR(h, &name, &version, &release);
-	pEVR = buildEVR(version, release);
+	if (!headerGetEntry(h, RPMTAG_EPOCH, &type, (void **)&epoch, &count))
+	    epoch = NULL;
+	pEVR = buildEVR(epoch, version, release);
 
 	if (checkDependentPackages(rpmdep, &ps, name, pEVR, RPMSENSE_EQUAL))
 	    goto exit;

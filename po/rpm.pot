@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-14 01:03-0400\n"
+"POT-Creation-Date: 1999-09-14 11:50-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1991,7 +1991,7 @@ msgstr ""
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:878 ../lib/depends.c:1215
+#: ../lib/depends.c:878 ../lib/depends.c:1219
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""

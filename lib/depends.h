@@ -10,7 +10,8 @@ struct availablePackage {
     int * providesFlags;		/* unused */
     const char ** files;
     const char * name, * version, * release;
-    int epoch, hasEpoch, providesCount, filesCount;
+    int_32 *epoch;
+    int providesCount, filesCount;
     const void * key;
     rpmRelocation * relocs;
     FD_t fd;

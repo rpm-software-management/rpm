@@ -388,7 +388,6 @@ int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *
     void *sig;
     int ret = -1;
     
-    rpmMessage(RPMMESS_VERBOSE, _("Generating signature: %d\n"), sigTag);
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
 	stat(file, &statbuf);
@@ -403,11 +402,13 @@ int rpmAddSignature(Header header, const char *file, int_32 sigTag, const char *
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
+	rpmMessage(RPMMESS_VERBOSE, _("Generating signature using PGP.\n"));
 	ret = makePGPSignature(file, &sig, &size, passPhrase);
 	if (ret == 0)
 	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
 	break;
     case RPMSIGTAG_GPG:
+	rpmMessage(RPMMESS_VERBOSE, _("Generating signature using GPG.\n"));
         ret = makeGPGSignature(file, &sig, &size, passPhrase);
 	if (ret == 0)
 	    headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
