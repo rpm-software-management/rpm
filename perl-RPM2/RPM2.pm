@@ -3,10 +3,9 @@ package RPM2;
 use 5.00503;
 use strict;
 use DynaLoader;
-use Data::Dumper;
 use Cwd qw/realpath/;
-use File::Basename;
-use File::Spec;
+use File::Basename qw/basename dirname/;
+use File::Spec ();
 
 use vars qw/$VERSION/;
 $VERSION = '0.65';
@@ -313,6 +312,29 @@ sub files {
   return @{$self->{files}};
 }
 
+sub changelog {
+  my $self = shift;
+
+  if (not exists $self->{changelog}) {
+    my @cltimes = $self->tag('CHANGELOGTIME');
+    my @clnames = $self->tag('CHANGELOGNAME');
+    my @cltexts = $self->tag('CHANGELOGTEXT');
+
+    my @changelog;
+    foreach (0 .. $#cltimes) {
+      push(@changelog,
+           { time => $cltimes[$_],
+             name => $clnames[$_],
+             text => $cltexts[$_],
+           });
+    }
+
+    $self->{changelog} = \@changelog;
+  }
+
+  return @{$self->{changelog}};
+}
+
 package RPM2::PackageIterator;
 
 sub new_iterator {
@@ -530,9 +552,10 @@ before running the transaction:
 	$db = undef;
 	$i  = undef;
 
-That is to explicitly cause the RPM2::DB and RPM2::PackageIterator objects to go
-out of scope.
+That is to explicitly cause the RPM2::DB and RPM2::PackageIterator objects to
+go out of scope.
 
+=over 4
 
 =item open_rpm_db(-path => "/path/to/db")
 
@@ -550,42 +573,42 @@ remove packages.  It, also, exposes the dependency ordering functionality.
 It takes as an optional argument verify signature flags.  The following 
 flags are available:
 
-=over 4
-
-=item RPM2->vsf_default   
+=item RPM2->vsf_default
 
 You don't ever have to specify this, but you could if you wanted to do so.
 This will check headers, not require a files payload, and support all the
 various hash and signature formats that rpm supports.
 
-=item RPM2->vsf_nohdrchk   
+=item RPM2->vsf_nohdrchk
 
 Don't check the header.
 
-=item RPM2->vsf_needpayload   
+=item RPM2->vsf_needpayload
 
 Require that a files payload be part of the RPM (Chip is this right?).
 
-=item RPM2->vsf_nosha1header   
+=item RPM2->vsf_nosha1header
 
 
-=item RPM2->vsf_nomd5header   
+=item RPM2->vsf_nomd5header
 
-=item RPM2->vsf_nodsaheader   
+=item RPM2->vsf_nodsaheader
 
-=item RPM2->vsf_norsaheader   
+=item RPM2->vsf_norsaheader
 
-=item RPM2->vsf_nosha1   
+=item RPM2->vsf_nosha1
 
-=item RPM2->vsf_nomd5   
+=item RPM2->vsf_nomd5
 
-=item RPM2->vsf_nodsa   
+=item RPM2->vsf_nodsa
 
-=item RPM2->vsf_norsa  
+=item RPM2->vsf_norsa
 
 =back
 
 =head1 RPM DB object methods
+
+=over 4
 
 =item find_all_iter()
 
@@ -627,59 +650,114 @@ This one iterates over requires.
 
 Ditto, except it returns a list.
 
+=back
+
 =head1 RPM Database Iterator Methods
 
-Once you have a a database iterator, then you simply need to step 
+Once you have a a database iterator, then you simply need to step
 through all the different package headers in the result set via the
-iterator.  
+iterator.
+
+=over 4
 
 =item next()
 
 Return the next package header in the result set.
 
-=item expand_iter
+=item expand_iter()
 
 Return the list of all the package headers in the result set of the iterator.
 
+=back
+
 =head1 RPM Header object methods
 
-stuff goes here
+In addition to the following methods, all tags have simple accessors;
+$hdr->epoch() is equivalent to $hdr->tag('epoch').
+
+The <=> and cmp operators can be used to compare versions of two packages.
+
+=over 4
+
+=item $hdr->tag($tagname)
+
+Returns the value of the tag $tagname.
+
+=item $hdr->tagformat($format)
+
+TODO.
+
+=item $hdr->is_source_package()
+
+Returns a true value if the package is a source package, false otherwise.
+
+=item $hdr->filename()
+
+Returns the filename of the package.
+
+=item $hdr->offset()
+
+Returns the rpm database offset for the package.
+
+=item $hdr->as_nvre()
+
+Returns a string formatted like:
+
+   epoch:name-version-release
+
+If epoch is undefined for this package, it and the leading colon are omitted.
+
+=item $hdr->files()
+
+TODO.
+
+=item $hdr->changelog()
+
+Returns a list of hash refs containing the change log data of the package.
+The hash keys represent individual change log entries, and their keys are:
+C<time> (the time of the changelog entry), C<name> (the "name", ie. often
+the email address of the author of the entry), and C<text> (the text of the
+entry).
+
+=back
 
 =head1 Transaction object methods
 
-Transactions are what allow you to install, upgrade, and remove rpms.  
+Transactions are what allow you to install, upgrade, and remove rpms.
 Transactions are created, have elements added to them (i.e. package headers)
 and are ran.  When run the updates to the system and the rpm database are
 treated as on "transaction" which is assigned a transaction id.  This can
 be queried in install packages as the INSTALLTID, and for repackaged packages
 they have the REMOVETID set.
 
+=over 4
+
 =item add_install($pkg, $upgrade)
 
-Adds a package to a transaction for installation.  If you want this to 
-be done as a package upgrade, then be sure to set the second optional 
+Adds a package to a transaction for installation.  If you want this to
+be done as a package upgrade, then be sure to set the second optional
 parameter to 1.  It will return 0 on failure and 1 on success.  Note,
 this should be obvious, but the package header must come from an rpm file,
 not from the RPM database.
 
-=item add_erase($pkg) 
+=item add_erase($pkg)
 
 Adds a package to a transaction for erasure.  The package header should
 come from the database (i.e. via an iterator) and not an rpm file.
 
 =item element_count()
 
-Returns the number of elements in a transaction (this is the sum of the 
+Returns the number of elements in a transaction (this is the sum of the
 install and erase elements.
 
 =item close_db()
 
-Closes the rpm database.  This is needed for some ordering of 
+Closes the rpm database.  This is needed for some ordering of
 transactions for non-install purposes.
 
 =item check()
 
-Verify that the dependencies for this transaction are met.  Returns 
+Verify that the dependencies for this transaction are met.  Returns
 0 on failure and 1 on success.
 
 =item order()
@@ -688,13 +766,15 @@ Order the elements in dependency order.
 
 =item elements()
 
-Return a list of elements as they are presently ordered.  Note, this returns the 
-NEVR's not the package headers.
+Return a list of elements as they are presently ordered.  Note, this
+returns the NEVR's not the package headers.
 
 =item run()
 
-Run the transaction.  This will automatically check for dependency satisfaction, and
-order the transaction.  
+Run the transaction.  This will automatically check for dependency
+satisfaction, and order the transaction.
+
+=back
 
 =head1 TODO
 

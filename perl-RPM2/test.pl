@@ -11,7 +11,7 @@ use strict;
 
 use Test;
 use strict;
-BEGIN { plan tests => 59 };
+BEGIN { plan tests => 63 };
 use RPM2;
 ok(1); # If we made it this far, we're ok.
 
@@ -92,6 +92,11 @@ ok($pkg);
 ok($pkg->name eq 'test-rpm');
 ok($pkg->tagformat("--%{NAME}--") eq '--test-rpm--');
 ok($pkg->is_source_package);
+my @cl = $pkg->changelog();
+ok(scalar(@cl) == 1);
+ok($cl[0]->{time} == 1018735200); # Sun Apr 14 2002
+ok($cl[0]->{name} eq 'Chip Turner <cturner@localhost.localdomain>');
+ok($cl[0]->{text} eq '- Initial build.');
 
 my $pkg2 = RPM2->open_package("test-rpm-1.0-1.noarch.rpm");
 ok($pkg2->filename);
@@ -165,7 +170,7 @@ $db = undef;
 
 #
 # OK, lets remove that rpm with a new transaction
-my $t = RPM2->create_transaction();
+$t = RPM2->create_transaction();
 ok(ref($t) eq 'RPM2::Transaction');
 # We need to find the package we installed, and try to erase it
 ok($t->add_erase($pkg[0]));
