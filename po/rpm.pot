@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-03-12 13:03-0500\n"
+"POT-Creation-Date: 1999-03-13 18:59-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2273,9 +2273,9 @@ msgstr ""
 msgid "loop in prerequisite chain: %s"
 msgstr ""
 
-#: ../lib/falloc.c:148
+#: ../lib/falloc.c:149
 #, c-format
-msgid "free list corrupt (%u)- contact support@redhat.com\n"
+msgid "free list corrupt (%u)- contact rpm-list@redhat.com\n"
 msgstr ""
 
 #: ../lib/formats.c:97 ../lib/formats.c:114 ../lib/formats.c:134

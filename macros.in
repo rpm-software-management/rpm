@@ -1,3 +1,4 @@
+# $Id: macros.in,v 1.15 1999/03/14 00:34:58 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -52,8 +53,10 @@
 %_topdir		%{_usrsrc}/redhat
 
 #==============================================================================
-# ---- rpm per-platform macros.
-#	Per-platform macros.
+# ---- per-platform macros.
+#	Macros that are specific to an individual platform. The values here
+#	will be used if the per-platform macro file does not exist..
+#
 %_arch			@RPMCANONARCH@
 %_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@

@@ -2,9 +2,9 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST = CHANGES CREDITS README.amiga RPM-PGP-KEY \
+EXTRA_DIST = CHANGES CREDITS README.amiga INSTALL RPM-PGP-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
-	docs/[a-z]* gendiff groups $(man_MANS) po/*.in po/*.po po/rpm.pot \
+	docs/[a-z]* gendiff $(man_MANS) po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt rpm.spec rpm.8ru rpm2cpio.8ru
 
 SUBDIRS = popt build lib po intl misc tools scripts tests .
@@ -59,12 +59,13 @@ install-data-local:
 	@rm -f $(DESTDIR)/$(libdir)/rpmpopt
 	@ln -s rpm/rpmpopt $(DESTDIR)/$(libdir)/rpmpopt
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/BUILD
-	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/noarch
 	@case "@build_cpu@" in \
 	*86) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i386 ;;\
 	alpha*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/alpha ;;\
+	sparc*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparc ;;\
 	esac
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@
+	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/noarch
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SOURCES
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SPECS
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SRPMS

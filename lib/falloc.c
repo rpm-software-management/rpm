@@ -144,9 +144,10 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	if (faLseek(fa, nextFreeBlock, SEEK_SET) < 0) return 0;
 	if (faRead(fa, &header, sizeof(header)) != sizeof(header)) return 0;
 
+/* XXX W2DO? exit(1) forces the user to discover rpm --rebuilddb */
 	if (!header.isFree) {
 	    fprintf(stderr, _("free list corrupt (%u)- contact "
-			"support@redhat.com\n"), nextFreeBlock);
+			"rpm-list@redhat.com\n"), nextFreeBlock);
 	    exit(1);
 	}
 

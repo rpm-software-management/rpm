@@ -1,0 +1,162 @@
+
+
+To build RPM you will need several other packages:
+--------------------------------------------------
+
+
+The zlib library for compression support available from
+	http://www.cdrom.com/pub/infozip/zlib/
+
+The berkeley db library db.1.85, or db.2* (currently the latest is
+db-2.6.4) with compatibility mode for db.1.85 defined.  The developers
+of RPM did not upgrade RPM to use the current version of libdb because
+they are uncomfortable with changes in the softwares license.  Now db2
+has a special exception license within glibc-2.1 so whatever license
+discomfort there is/was is quickly becoming moot.  The remaining issue
+is that the db_185 compatibility does not work in glibc-2.1.  This is
+available from
+	http://www.sleepycat.com/download.html.
+
+The instructions for building db-2.6.4:
+
+	cd build_unix 
+	../dist/configure --enable-compat185
+	make
+	make install
+
+
+It may be desired to install bzip2 and gzip so that RPM can use these
+formats.  Gzip, is necessary to build packages that contain compressed
+tar balls, these are quite common on the Internet.
+These are availible from
+	http://www.digistar.com/bzip2/index.html
+	http://www.gnu.org/
+
+If National Language Support (NLS) is desired 
+you will need gnu gettext available from
+	http://www.gnu.org/
+
+If you need support of RPM 1.x databases, which are in an old RPM
+format. You will need the GNU db library gdbm to build the rpmconvert
+binary. This is availible from :
+	http://www.gnu.org/
+
+For best results you should compile with GCC and GNU Make.  Users have
+reported difficulty with other build tools.  available from
+	http://www.gnu.org/
+
+
+To compile RPM:
+--------------
+
+If your libraries are in a standard place you will need to change
+the configure environment.
+
+Here is an example:
+	LIBS='-L/opt/libz/ -L/opt/BerkeleyDB/lib/' \
+	CPPFLAGS='-I/opt/libz/ -I/opt/BerkeleyDB/include' \
+	./configure
+
+now build the system with:
+
+	make
+
+if you wish to make a tarfile of the binaries so that you may easily
+install on other machines (ed note: what about putting gzip and bzip2
+in the tar, modifying the /etc/rpmrc?):
+
+	make tar
+
+when installing do not forget to init the database (rpm --initdb)
+
+
+
+Non Linux Configuration Issues:
+------------------------------
+
+
+OS dependencies:
+----------------
+
+Under Red Hat Linux all libraries (in fact all files distributed with
+the OS) are under RPM control and this section is not an issue.
+
+RPM will need to be informed of all the dependencies which were
+satisfied before RPM was installed.  Typically this only refers to
+libraries that are installed by the OS, but may include other
+libraries and packages which are availible at the time RPM is
+installed and will not under RPM control.  Another common example of
+libraries which may need dependency provisions are precompiled
+libraries which are installed by the OS package manager during system
+build time.  The list of dependencies you will wish to load into RPM
+will depend on exactly how you bootstrap RPM onto your system and what
+parts of the sytem you put into packages as well as on the specific OS
+you are using.
+
+You should satisfy dependencies for all shells and interpreters. A
+reasonable list of OS installed shells can be generated with:
+
+   cat /etc/shells
+
+You should satisfy dependencies for all system libraries. For each of
+the system library directories you should run 
+
+   echo * | find-provides.sh
+
+(On Linux a list of system library directories can be found in
+/etc/ld.so.conf, other OS require an experienced system administrator
+to know where the libraries are.)
+
+
+You may add as many "provides: " lines as you like to /etc/rpmrc/ but
+they can not be continued.  Each line is limited to 8K bytes. Here is
+a example (truncated) of the provides lines used by one user of
+Digital Unix.
+
+provides: /bin/sh /usr/bin/ksh /usr/bin/csh 
+provides: libc.so.osf.1 libm.so.osf.1 libcurses.so.xpg4 libdb.so.osf.1
+provides: libX11.so libXaw.so.6.0 libXext.so libXm.so.motif1.2 libXmu.so
+provides: libdnet_stub.so.osf.1 libsecurity.so.osf.1 libpthread.so.osf.1
+provides: libexc.so.osf.1 libmach.so.osf.1 libdps.so libdpstk.so 
+
+
+
+rpmfilename:
+-----------
+
+If you plan on packaging for more then one OS you may want to edit
+/etc/rpmrc and change the line which has rpmfilename to something
+which include both the %{OS} and %{ARCH}.  This will cause the name of
+the generated rpm files to the operating system name as well as the
+architecture which the rpm runs under.  The line to change looks like:
+
+> rpmfilename:    %{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm
+
+you may wish to include both the %{OS} and %{ARCH} in the final base
+name, so that it's easier to distinguish between what package is
+appropriate for a particular arch-os-version combo.  We suggest
+
+> rpmfilename:    %{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{OS}-%{ARCH}.rpm
+
+There is no %{OS_VERSION} tag, so if you need to also distinguish between
+RPMs for certain versions of the OS, you can hard-code the version in
+the rpmrc on the build machine, so that .rpm files are generated with
+the version as part of the filename.
+
+For example when one user builds RPMs for Digital Unix 4.0b and 4.0d,
+optimization is important and he will build one set of RPMs for the
+EV4 processor and another set for the EV56 processor.  He specifies
+both the OS version (if it's important, as it is for a few packages)
+and the processor version by default by setting a special rpmfilename:
+on the particular build machine.
+
+The "rpmfilename: "tag on one machine (Digital Unix 4.0d, EV56 PWS 433)
+looks like:
+
+rpmfilename: %{OS}/4.0d/%{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{OS}-%{ARCH}-ev56.rpm
+
+For package `foo-1.1', at build time that would translate into:
+
+	osf1/4.0d/alpha/foo-1.1-1.osf1-alphaev56.rpm
+
+
