@@ -29,5 +29,9 @@
 #define RPMTAG_URL                      1020
 #define RPMTAG_OS                       1021
 #define RPMTAG_ARCH                     1022
+#define RPMTAG_PREIN                    1023
+#define RPMTAG_POSTIN                   1024
+#define RPMTAG_PREUN                    1025
+#define RPMTAG_POSTUN                   1026
 
 #endif
