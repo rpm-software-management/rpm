@@ -617,6 +617,7 @@ static pid_t psmRegisterFork(rpmpsm psm)
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
 
+  if (psm->reaper) {
     if (psmtbl.psms)
     for (i = 0; i < psmtbl.npsms; i++) {
 	if (empty == -1 && psmtbl.psms[i] == NULL)
@@ -643,6 +644,7 @@ fprintf(stderr, "  Register: %p[%d:%d:%d] = %p\n", psmtbl.psms, empty, psmtbl.np
 /*@=modfilesys@*/
 
     (void) enableSignal(SIGCHLD);
+  }
 
     psm->reaped = 0;
     if ((psm->child = fork()) != 0) {
@@ -795,7 +797,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     psm->child = 0;
     psm->reaped = 0;
     psm->status = 0;
-    psm->reaper = 1;
+    psm->reaper = 0;
 
     /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
     xx = headerNVR(h, &n, &v, &r);
