@@ -22,6 +22,7 @@ struct SpecRec {
     StringBuf prep;
     StringBuf build;
     StringBuf install;
+    StringBuf doc;
     StringBuf clean;
     struct PackageRec *packages;
     /* The first package record is the "main" package and contains
