@@ -466,7 +466,7 @@ AH_TEMPLATE([LEADING_UNDERSCORE],[Define to 1 if your system compiles object nam
 dnl XXX Choose /usr/lib or /usr/lib64 for library installs.
 MARK64=
 case "${target_cpu}" in
-x86_64*)        MARK64=64 ;;
+x86_64*|powerpc64*|ppc64*|sparc64*|s390x*)        MARK64=64 ;;
 esac
 AC_SUBST(MARK64)
 
