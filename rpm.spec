@@ -219,11 +219,12 @@ fi
 /usr/include/popt.h
 
 %changelog
-* Thu Mar 23 10:48:35 EST 2000
+* Fri Mar 24 2000 Jeff Johnson <jbj@redhat.com>
 - use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
 - configure.in fiddles for BSD systems (Patrick Schoo).
 - API: change dbi to pass by reference, not value.
 - cram all of db1, db_185, and db2 interfaces into rpmlib.
+- convert db1 -> db2 on-disk format using --rebuilddb.
 
 * Mon Mar 13 2000 Jeff Johnson <jbj@redhat.com>
 - start rpm-3.1 development.
