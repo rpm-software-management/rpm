@@ -33,7 +33,8 @@ int debug = MYDEBUG;
 int verbose = 0;
 char *inputdir = "/mnt/redhat/comps/dist/5.2";
 char *outputdir = "/tmp/OUT";
-char *onlylang = NULL;
+int nlangs = 0;
+char *onlylang[128];
 
 int gentran = 0;
 
@@ -312,8 +313,8 @@ gettextfile(int fd, const char *file, FILE *fp, int *poTags)
 
 	/* XXX generate catalog for single language */
 	onlymsgstr = NULL;
-	if (onlylang != NULL &&
-	   (onlymsgstr = hasLang(onlylang, langs, s)) == NULL)
+	if (nlangs > 0 && onlylang[0] != NULL &&
+	   (onlymsgstr = hasLang(onlylang[0], langs, s)) == NULL)
 		continue;
 	
 
@@ -659,7 +660,7 @@ headerInject(Header h, int *poTags, message_list_ty *mlp)
 
     for (tp = poTags; *tp != 0; tp++) {
 	char **s, *e;
-	int i, type, count;
+	int n, type, count;
 
 	if (!headerGetRawEntry(h, *tp, &type, (void **)&s, &count))
 	    continue;
@@ -683,20 +684,22 @@ DPRINTF(1, ("\t(fuzzy)\n"));
 		goto bottom;
 	}
 
-	/* Search for the msgstr ... */
-	if ((mvp = message_variant_search(mp, onlylang)) == NULL) {
-DPRINTF(1, ("\t(not found)\n"));
-		goto bottom;
-	}
+	for (n = 0; n < nlangs; n++) {
+	    /* Search for the msgstr ... */
+	    if ((mvp = message_variant_search(mp, onlylang[n])) == NULL) {
+DPRINTF(1, ("\t(%s not found)\n", onlylang[n]));
+		continue;
+	    }
 
-	/* Skip untranslated ... */
-	if (strlen(mvp->msgstr) <= 0) {
-DPRINTF(1, ("\t(untranslated)\n"));
-		goto bottom;
-	}
+	    /* Skip untranslated ... */
+	    if (strlen(mvp->msgstr) <= 0) {
+DPRINTF(1, ("\t(%s untranslated)\n", onlylang[n]));
+		continue;
+	    }
 
-DPRINTF(1, ("\tmsgstr(%s)\n", onlylang));
-	headerAddI18NString(h, *tp, (char *)mvp->msgstr, onlylang);
+DPRINTF(1, ("\tmsgstr(%s)\n", onlylang[n]));
+	    headerAddI18NString(h, *tp, (char *)mvp->msgstr, onlylang[n]);
+	}
 
 bottom:
 	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
@@ -960,7 +963,7 @@ main(int argc, char **argv)
 	message_print_style_escape(1);
 	break;
     case 'l':
-	onlylang = optarg;
+	onlylang[nlangs++] = strdup(optarg);
 	break;
     case 'I':
 	inputdir = optarg;
@@ -996,8 +999,8 @@ main(int argc, char **argv)
 	    }
 	}
     } else if (!strcmp(program_name, RPMPUTTEXT)) {
-	if (onlylang == NULL) {
-		fprintf(stderr, _("rpmputtext: must specify language\n"));
+	if (nlangs <= 0) {
+		fprintf(stderr, _("rpmputtext: must specify language with -l\n"));
 		exit(1);
 	}
 	if (optind == argc) {
