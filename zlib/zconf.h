@@ -136,6 +136,9 @@
 #    endif
 #  endif
 #endif
+#if defined(__LCLINT__)
+#  define STDC
+#endif
 #if !defined(STDC) && (defined(__STDC__) || defined(__cplusplus))
 #  define STDC
 #endif
