@@ -98,7 +98,8 @@ static void printUsage(void) {
     puts(_("       rpm {--setperms} [-afpg] [target]"));
     puts(_("       rpm {--setugids} [-afpg] [target]"));
     puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
-    puts(_("                        [--dbpath <dir>] [--nodeps] package1 ... packageN"));
+    puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
+    puts(_("                        package1 ... packageN"));
     puts(_("       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
     puts(_("                        [--sign] [--test] [--timecheck <s>] specfile"));
     puts(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
@@ -269,6 +270,8 @@ static void printHelp(void) {
     puts(         "    --erase <package>");
     printHelpLine("    -e <package>          ",
 		  _("erase (uninstall) package"));
+    printHelpLine("      --allmatches        ",
+		  _("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"));
     printHelpLine("      --dbpath <dir>      ",
 		  _("use <dir> as the directory for the database"));
     printHelpLine("      --nodeps            ",
@@ -463,7 +466,7 @@ int main(int argc, char ** argv) {
     int showHash = 0, installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
     int buildAmount = 0, oldPackage = 0, clean = 0, signIt = 0;
     int shortCircuit = 0, queryTags = 0, excldocs = 0;
-    int incldocs = 0, noScripts = 0, noDeps = 0;
+    int incldocs = 0, noScripts = 0, noDeps = 0, allMatches = 0;
     int noPgp = 0, dump = 0, initdb = 0, ignoreArch = 0, showrc = 0;
     int gotDbpath = 0, building = 0, ignoreOs = 0, noFiles = 0, verifyFlags;
     int noMd5 = 0;
@@ -495,6 +498,7 @@ int main(int argc, char ** argv) {
     struct poptOption optionsTable[] = {
 	    { "addsign", '\0', 0, 0, GETOPT_ADDSIGN },
 	    { "all", 'a', 0, 0, 'a' },
+	    { "allmatches", 'a', 0, &allMatches, 0 },
 	    { "build", 'b', POPT_ARG_STRING, 0, 'b' },
 	    { "buildarch", '\0', POPT_ARG_STRING, 0, 0 },
 	    { "buildos", '\0', POPT_ARG_STRING, 0, 0 },
@@ -945,6 +949,10 @@ int main(int argc, char ** argv) {
 	argerror(_("--ignoreos may only be specified during package "
 		   "installation"));
 
+    if (allMatches && bigMode != MODE_UNINSTALL)
+	argerror(_("--allmatches may only be specified during package "
+		   "erasure"));
+
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
 	bigMode != MODE_VERIFY && noScripts)
 	argerror(_("--noscripts may only be specified during package "
@@ -1168,6 +1176,7 @@ int main(int argc, char ** argv) {
 	if (noScripts) uninstallFlags |= RPMUNINSTALL_NOSCRIPTS;
 	if (test) uninstallFlags |= RPMUNINSTALL_TEST;
 	if (noDeps) interfaceFlags |= UNINSTALL_NODEPS;
+	if (allMatches) interfaceFlags |= UNINSTALL_ALLMATCHES;
 
 	ec = doUninstall(rootdir, poptGetArgs(optCon), uninstallFlags, 
 		interfaceFlags);

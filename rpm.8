@@ -260,6 +260,9 @@ The general form of an rpm uninstall command is
 .PP
 	\fB    rpm \-e <package_name>+\fP
 .PP
+.IP "\fB\-\-allmatches\fP"
+Remove all versions of the package which match \fI<package_name>\fR. Normally
+an error is issued if \fI<package_name>\fR matches multiple packages.
 .IP "\fB\-\-noscripts\fP"
 Don't execute the preuninstall or postuninstall scripts.
 .IP "\fB\-\-nodeps\fP"
