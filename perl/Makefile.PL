@@ -3,13 +3,14 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 
 WriteMakefile(
+	      #'LD'	=> 'gcc -shared -Wl,-Bsymbolic',
 	      'NAME'	=> 'rpm',
-	      'OBJECT'	=> 'rpm.o constant.o',
+	      'OBJECT'	=> 'rpm.o constant.o /usr/lib/libdb1.a',
 	      'VERSION_FROM' => 'rpm.pm', # finds $VERSION
-	      'LIBS'	=> ['-lrpm -lz -ldb1'],   # e.g., '-lm' 
+	      'LIBS'	=> ['-lrpm -lz'],   # e.g., '-lm' 
 	      'CCFLAGS' => '-Dbool=char -DHAS_BOOL',
-	      'OPTIMIZE'=> '-Wall -g',
-	      #'DEFINE'	=> '',     # e.g., '-DHAVE_SOMETHING' 
+	      'OPTIMIZE'=> '-g',
+	      'DEFINE'	=> '-Wall',
 	      'INC'	=> '-I/usr/include/rpm',     # e.g., '-I/usr/include/other'
 	      'depend'	=> { 'rpm.c' => 'transaction.xs header.xs db.xs' },
 );
