@@ -18,7 +18,19 @@
  */
 
 /*!\file elgamal.h
- * \brief ElGamal algorithm, headers.
+ * \brief ElGamal algorithm.
+ *
+ * For more information on this algorithm, see:
+ *  "Handbook of Applied Cryptography",
+ *  11.5.2: "The ElGamal signature scheme", p. 454-459
+ *
+ * Two of the signature variants in Note 11.70 are implemented.
+ *
+ * \todo Implement ElGamal encryption and decryption.
+ *
+ * \todo Explore the possibility of using simultaneous multiple exponentiation,
+ *       as described in HAC, 14.87 (iii).
+ *
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup DL_m DL_elgamal_m
  */

@@ -26,7 +26,6 @@
 #ifndef _DLDP_H
 #define _DLDP_H
 
-#include "beecrypt.h"
 #include "mpbarrett.h"
 
 /**

@@ -341,7 +341,6 @@ int dldp_pgonMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits)
 	{
 		/* generate safe p */
 		mpprndsafe_w(&dp->p, rgc, pbits, mpptrials(pbits), temp);
-		/*@=globs@*/
 
 		/* set n */
 		mpbsubone(&dp->p, temp);

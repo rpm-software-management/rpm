@@ -279,6 +279,7 @@ AC_DEFUN(BEECRYPT_GNU_CC,[
     esac
   fi
   if test "$ac_enable_debug" = yes; then
+    BEECRYPT_CFLAGS_REM([-O2])
     CFLAGS="$CFLAGS -Wall"
   else
     # Generic optimizations, including cpu tuning
@@ -587,80 +588,82 @@ AC_DEFUN(BEECRYPT_ASM_SOURCES,[
   echo > aesopt.s
   echo > blowfishopt.s
   echo > sha1opt.s
-  case $bc_target_arch in
-  arm)
-    AC_CONFIG_COMMANDS([mpopt.arm],[
-      m4 $srcdir/gas/mpopt.arm.m4 > mpopt.s
-      ])
-    ;;
-  alpha*)
-    AC_CONFIG_COMMANDS([mpopt.alpha],[
-      m4 $srcdir/gas/mpopt.alpha.m4 > mpopt.s
-      ])
-    ;;
-  athlon* | i[[3456]]86 | pentium*)
-    AC_CONFIG_COMMANDS([mpopt.x86],[
-      m4 $srcdir/gas/mpopt.x86.m4 > mpopt.s
-      ])
-    AC_CONFIG_COMMANDS([sha1opt.x86],[
-      m4 $srcdir/gas/sha1opt.x86.m4 > sha1opt.s
-      ])
-    ;;
-  ia64)
-    AC_CONFIG_COMMANDS([mpopt.ia64],[
-      m4 $srcdir/gas/mpopt.ia64.m4 > mpopt.s
-      ])
-    ;;
-  m68k)
-    AC_CONFIG_COMMANDS([mpopt.m68k],[
-      m4 $srcdir/gas/mpopt.m68k.m4 > mpopt.s
-      ])
-    ;;
-  powerpc)
-    AC_CONFIG_COMMANDS([mpopt.ppc],[
-      m4 $srcdir/gas/mpopt.ppc.m4 > mpopt.s
-      ])
-    AC_CONFIG_COMMANDS([blowfishopt.ppc],[
-      m4 $srcdir/gas/blowfishopt.ppc.m4 > blowfishopt.s
-      ])
-    ;;
-  powerpc64)
-    AC_CONFIG_COMMANDS([mpopt.ppc64],[
-      m4 $srcdir/gas/mpopt.ppc64.m4 > mpopt.s
-      ])
-    ;;
-  s390x)
-    AC_CONFIG_COMMANDS([mpopt.s390x],[
-      m4 $srcdir/gas/mpopt.s390x.m4 > mpopt.s
-      ])
-    ;;
-  sparcv8)
-    AC_CONFIG_COMMANDS([mpopt.sparcv8],[
-      m4 $srcdir/gas/mpopt.sparcv8.m4 > mpopt.s
-      ])
-    ;;
-  sparcv8plus)
-    AC_CONFIG_COMMANDS([mpopt.sparcv8plus],[
-      m4 $srcdir/gas/mpopt.sparcv8plus.m4 > mpopt.s
-      ])
-    ;;
-  x86_64)
-    AC_CONFIG_COMMANDS([mpopt.x86_64],[
-      m4 $srcdir/gas/mpopt.x86_64.m4 > mpopt.s
-      ])
-    ;;
-  esac
-  if test "$ac_with_arch" = yes; then
-    # Code is i586-specific!
+  if test "$ac_enable_debug" != yes; then
     case $bc_target_arch in
-    athlon* | i[[56]]86 | pentium*)
-      AC_CONFIG_COMMANDS([aesopt.i586],[
-        m4 $srcdir/gas/aesopt.i586.m4 > aesopt.s
+    arm)
+      AC_CONFIG_COMMANDS([mpopt.arm],[
+        m4 $srcdir/gas/mpopt.arm.m4 > mpopt.s
         ])
-      AC_CONFIG_COMMANDS([blowfishopt.i586],[
-        m4 $srcdir/gas/blowfishopt.i586.m4 > blowfishopt.s
+      ;;
+    alpha*)
+      AC_CONFIG_COMMANDS([mpopt.alpha],[
+        m4 $srcdir/gas/mpopt.alpha.m4 > mpopt.s
+        ])
+      ;;
+    athlon* | i[[3456]]86 | pentium*)
+      AC_CONFIG_COMMANDS([mpopt.x86],[
+        m4 $srcdir/gas/mpopt.x86.m4 > mpopt.s
+        ])
+      AC_CONFIG_COMMANDS([sha1opt.x86],[
+        m4 $srcdir/gas/sha1opt.x86.m4 > sha1opt.s
+        ])
+      ;;
+    ia64)
+      AC_CONFIG_COMMANDS([mpopt.ia64],[
+        m4 $srcdir/gas/mpopt.ia64.m4 > mpopt.s
+        ])
+      ;;
+    m68k)
+      AC_CONFIG_COMMANDS([mpopt.m68k],[
+        m4 $srcdir/gas/mpopt.m68k.m4 > mpopt.s
+        ])
+      ;;
+    powerpc)
+      AC_CONFIG_COMMANDS([mpopt.ppc],[
+        m4 $srcdir/gas/mpopt.ppc.m4 > mpopt.s
+        ])
+      AC_CONFIG_COMMANDS([blowfishopt.ppc],[
+        m4 $srcdir/gas/blowfishopt.ppc.m4 > blowfishopt.s
+        ])
+      ;;
+    powerpc64)
+      AC_CONFIG_COMMANDS([mpopt.ppc64],[
+        m4 $srcdir/gas/mpopt.ppc64.m4 > mpopt.s
+        ])
+      ;;
+    s390x)
+      AC_CONFIG_COMMANDS([mpopt.s390x],[
+        m4 $srcdir/gas/mpopt.s390x.m4 > mpopt.s
+        ])
+      ;;
+    sparcv8)
+      AC_CONFIG_COMMANDS([mpopt.sparcv8],[
+        m4 $srcdir/gas/mpopt.sparcv8.m4 > mpopt.s
+        ])
+      ;;
+    sparcv8plus)
+      AC_CONFIG_COMMANDS([mpopt.sparcv8plus],[
+        m4 $srcdir/gas/mpopt.sparcv8plus.m4 > mpopt.s
+        ])
+      ;;
+    x86_64)
+      AC_CONFIG_COMMANDS([mpopt.x86_64],[
+        m4 $srcdir/gas/mpopt.x86_64.m4 > mpopt.s
         ])
       ;;
     esac
+    if test "$ac_with_arch" = yes; then
+      # Code is i586-specific!
+      case $bc_target_arch in
+      athlon* | i[[56]]86 | pentium*)
+        AC_CONFIG_COMMANDS([aesopt.i586],[
+          m4 $srcdir/gas/aesopt.i586.m4 > aesopt.s
+          ])
+        AC_CONFIG_COMMANDS([blowfishopt.i586],[
+          m4 $srcdir/gas/blowfishopt.i586.m4 > blowfishopt.s
+          ])
+        ;;
+      esac
+    fi
   fi
   ])

@@ -182,7 +182,7 @@ int dhaes_pContextFree(dhaes_pContext* ctxt)
 
 /**
  */
-static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* privkey, const mpnumber* pubkey, const mpnumber* message, cipherOperation op)
+static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* private, const mpnumber* public, const mpnumber* message, cipherOperation op)
 	/*@modifies ctxt @*/
 {
 	register int rc;
@@ -196,7 +196,7 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* privkey, co
 
 	/* compute the shared secret, Diffie-Hellman style */
 	mpnzero(&secret);
-	if (dlsvdp_pDHSecret(&ctxt->param, privkey, pubkey, &secret))
+	if (dlsvdp_pDHSecret(&ctxt->param, private, public, &secret))
 	{
 		mpnfree(&secret);
 		free(digest);

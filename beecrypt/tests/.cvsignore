@@ -26,6 +26,7 @@ testdsa
 testhmacmd5
 testhmacsha1
 testmd5
+testmp
 testrsa
 testsha1
 testsha256

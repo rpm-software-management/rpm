@@ -53,8 +53,6 @@ int main()
 			printf("failed test vector 1\n");
 			failures++;
 		}
-		else
-			printf("ok\n");
 
 		mpnfree(&gq);
 

@@ -36,7 +36,7 @@ AUTOMAKE_OPTIONS = gnu check-news no-dependencies
 
 LINT = splint
 
-SUBDIRS = docs gas masm mwerks python tests
+SUBDIRS = docs gas masm python tests
 
 SUFFIXES = .s
 
@@ -56,14 +56,19 @@ libbeecrypt_la_DEPENDENCIES = $(BEECRYPT_OBJECTS) $(BEECRYPT_JAVA_OBJECTS)
 
 libbeecrypt_la_LIBADD = aesopt.lo blowfishopt.lo mpopt.lo sha1opt.lo
 
-libbeecrypt_la_LDFLAGS = -version-info $(LIBBEECRYPT_LT_CURRENT):$(LIBBEECRYPT_LT_REVISION):$(LIBBEECRYPT_LT_AGE)
+libbeecrypt_la_LDFLAGS = -no-undefined -version-info $(LIBBEECRYPT_LT_CURRENT):$(LIBBEECRYPT_LT_REVISION):$(LIBBEECRYPT_LT_AGE)
 
 pkginclude_HEADERS = aes.h base64.h beecrypt.h beecrypt.api.h beecrypt.gnu.h blockmode.h blockpad.h blowfish.h dhaes.h dldp.h dlkp.h dlpk.h dlsvdp-dh.h dsa.h elgamal.h endianness.h entropy.h fips186.h hmac.h hmacmd5.h hmacsha1.h hmacsha256.h md5.h memchunk.h mp.h mpbarrett.h mpnumber.h mpprime.h mtprng.h rsa.h rsakp.h rsapk.h sha1.h sha256.h timestamp.h
 
 noinst_HEADERS = aesopt.h beecrypt.win.h \
 	blowfishopt.h debug.h mpopt.h sha1opt.h system.h
 
-EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README README.DLL README.WIN32 autogen.sh beecrypt.mcp beecrypt.gnu.h.in beecrypt.rc beecrypt.spec javaglue.h
+EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README README.DLL README.WIN32 beecrypt.gnu.h.in beecrypt.rc beecrypt.spec javaglue.h autogen.sh Makefile.mak
+
+DISTCLEANFILES = mpopt.s aesopt.s blowfishopt.s sha1opt.s
+
+bench:
+	(cd tests && $(MAKE) $(AM_MAKEFLAGS) bench)
 
 .PHONY: beetest
 beetest: all

@@ -52,3 +52,18 @@ benchme_SOURCES = benchme.c
 benchhf_SOURCES = benchhf.c
 
 benchbc_SOURCES = benchbc.c
+
+# Run every benchmark test twice
+bench: benchme benchhf benchbc
+	./benchme
+	./benchme
+	./benchhf MD5
+	./benchhf MD5
+	./benchhf SHA-1
+	./benchhf SHA-1
+	./benchhf SHA-256
+	./benchhf SHA-256
+	./benchbc AES 128
+	./benchbc AES 128
+	./benchbc Blowfish 128
+	./benchbc Blowfish 128

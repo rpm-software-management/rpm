@@ -18,9 +18,15 @@
  */
 
 /*!\file dsa.h
- * \brief Digital Signature Algorithm, headers.
+ * \brief Digital Signature Algorithm, as specified by NIST FIPS 186.
+ *
+ * FIPS 186 specifies the DSA algorithm as having a large prime \f$p\f$,
+ * a cofactor \f$q\f$ and a generator \f$g\f$ of a subgroup of
+ * \f$\mathds{Z}^{*}_p\f$ with order \f$q\f$. The private and public key
+ * values are \f$x\f$ and \f$y\f$ respectively.
+ *
  * \author Bob Deblier <bob.deblier@pandora.be>
- * \ingroup DL_m DL_dsa_m
+ * \ingroup DL_dsa_m
  */
 
 #ifndef _DSA_H

@@ -721,6 +721,7 @@ int mpbinv_w(const mpbarrett* b, size_t xsize, const mpw* xdata, mpw* result, mp
 	 */
 
 	register size_t size = b->size;
+	register int full;
 
 	mpw* udata = wksp;
 	mpw* vdata = udata+size+1;
@@ -734,128 +735,71 @@ int mpbinv_w(const mpbarrett* b, size_t xsize, const mpw* xdata, mpw* result, mp
 	mpzero(size+1, bdata);
 	mpsetw(size+1, ddata, 1);
 
-	if (mpodd(b->size, b->modl))
+	if ((full = mpeven(b->size, b->modl)))
 	{
-		/* use simplified binary extended gcd algorithm */
-
-		while (1)
-		{
-			while (mpeven(size+1, udata))
-			{
-				mpdivtwo(size+1, udata);
-
-				if (mpodd(size+1, bdata))
-					(void) mpsubx(size+1, bdata, size, b->modl);
-
-				mpsdivtwo(size+1, bdata);
-			}
-			while (mpeven(size+1, vdata))
-			{
-				mpdivtwo(size+1, vdata);
-
-				if (mpodd(size+1, ddata))
-					(void) mpsubx(size+1, ddata, size, b->modl);
-
-				mpsdivtwo(size+1, ddata);
-			}
-			if (mpge(size+1, udata, vdata))
-			{
-				(void) mpsub(size+1, udata, vdata);
-				(void) mpsub(size+1, bdata, ddata);
-			}
-			else
-			{
-				(void) mpsub(size+1, vdata, udata);
-				(void) mpsub(size+1, ddata, bdata);
-			}
-
-			if (mpz(size+1, udata))
-			{
-				if (mpisone(size+1, vdata))
-				{
-					if (result)
-					{
-						mpsetx(size, result, size+1, ddata);
-						/*@-usedef@*/
-						if (*ddata & MP_MSBMASK)
-						{
-							/* keep adding the modulus until we get a carry */
-							while (!mpadd(size, result, b->modl));
-						}
-						/*@=usedef@*/
-					}
-					return 1;
-				}
-				return 0;
-			}
-		}
-	}
-	else
-	{
-		/* use full binary extended gcd algorithm */
 		mpsetw(size+1, adata, 1);
 		mpzero(size+1, cdata);
+	}
 
-		while (1)
+	while (1)
+	{
+		while (mpeven(size+1, udata))
 		{
-			while (mpeven(size+1, udata))
-			{
-				mpdivtwo(size+1, udata);
+			mpdivtwo(size+1, udata);
 
-				if (mpodd(size+1, adata) || mpodd(size+1, bdata))
+			if ((full && mpodd(size+1, adata)) || mpodd(size+1, bdata))
+			{
+				if (full) (void) mpaddx(size+1, adata, xsize, xdata);
+				(void) mpsubx(size+1, bdata, size, b->modl);
+			}
+
+			if (full) mpsdivtwo(size+1, adata);
+			mpsdivtwo(size+1, bdata);
+		}
+		while (mpeven(size+1, vdata))
+		{
+			mpdivtwo(size+1, vdata);
+
+			if ((full && mpodd(size+1, cdata)) || mpodd(size+1, ddata))
+			{
+				if (full) (void) mpaddx(size+1, cdata, xsize, xdata);
+				(void) mpsubx(size+1, ddata, size, b->modl);
+			}
+
+			if (full) mpsdivtwo(size+1, cdata);
+			mpsdivtwo(size+1, ddata);
+		}
+		if (mpge(size+1, udata, vdata))
+		{
+			(void) mpsub(size+1, udata, vdata);
+			if (full) (void) mpsub(size+1, adata, cdata);
+			(void) mpsub(size+1, bdata, ddata);
+		}
+		else
+		{
+			(void) mpsub(size+1, vdata, udata);
+			if (full) (void) mpsub(size+1, cdata, adata);
+			(void) mpsub(size+1, ddata, bdata);
+		}
+
+		if (mpz(size+1, udata))
+		{
+			if (mpisone(size+1, vdata))
+			{
+				if (result)
 				{
-					(void) mpaddx(size+1, adata, xsize, xdata);
-					(void) mpsubx(size+1, bdata, size, b->modl);
-				}
-
-				mpsdivtwo(size+1, adata);
-				mpsdivtwo(size+1, bdata);
-			}
-			while (mpeven(size+1, vdata))
-			{
-				mpdivtwo(size+1, vdata);
-
-				if (mpodd(size+1, cdata) || mpodd(size+1, ddata))
-				{
-					(void) mpaddx(size+1, cdata, xsize, xdata);
-					(void) mpsubx(size+1, ddata, size, b->modl);
-				}
-
-				mpsdivtwo(size+1, cdata);
-				mpsdivtwo(size+1, ddata);
-			}
-			if (mpge(size+1, udata, vdata))
-			{
-				(void) mpsub(size+1, udata, vdata);
-				(void) mpsub(size+1, adata, cdata);
-				(void) mpsub(size+1, bdata, ddata);
-			}
-			else
-			{
-				(void) mpsub(size+1, vdata, udata);
-				(void) mpsub(size+1, cdata, adata);
-				(void) mpsub(size+1, ddata, bdata);
-			}
-
-			if (mpz(size+1, udata))
-			{
-				if (mpisone(size+1, vdata))
-				{
-					if (result)
+					mpsetx(size, result, size+1, ddata);
+					/*@-usedef@*/
+					if (*ddata & MP_MSBMASK)
 					{
-						mpsetx(size, result, size+1, ddata);
-						/*@-usedef@*/
-						if (*ddata & MP_MSBMASK)
-						{
-							/* keep adding the modulus until we get a carry */
-							while (!mpadd(size, result, b->modl));
-						}
-						/*@=usedef@*/
+						/* keep adding the modulus until we get a carry */
+						while (!mpadd(size, result, b->modl));
 					}
-					return 1;
+					/*@=usedef@*/
 				}
-				return 0;
+				return 1;
 			}
+			return 0;
 		}
 	}
 }

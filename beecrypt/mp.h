@@ -18,7 +18,22 @@
  */
 
 /*!\file mp.h
- * \brief Multi-precision integer routines, headers.
+ * \brief Multi-precision integer routines.
+ *
+ * The routines declared here are all low-level operations, most of them
+ * suitable to be implemented in assembler. Prime candidates are in order
+ * of importance (according to gprof):
+ * <ul>
+ *  <li>mpaddmul
+ *  <li>mpsetmul 
+ *  <li>mpaddsqrtrc
+ *  <li>mpsub
+ *  <li>mpadd
+ * </ul>
+ *
+ * With some smart use of available assembler instructions, it's possible
+ * to speed these routines up by a factor of 2 to 4.
+ *
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup MP_m
  */

@@ -69,9 +69,7 @@ int main()
 	if (rsapricrt(&keypair, &cipher, &decipher))
 		failures++;
 	
-	if (mpeqx(m.size, m.data, decipher.size, decipher.data))
-		printf("ok\n");
-	else
+	if (mpnex(m.size, m.data, decipher.size, decipher.data))
 		failures++;
 
 	mpnfree(&decipher);
