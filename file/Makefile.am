@@ -1,5 +1,4 @@
-# don't enforce GNU packaging standards
-AUTOMAKE_OPTIONS = foreign no-dependencies
+AUTOMAKE_OPTIONS = 1.4 foreign
 
 noinst_HEADERS = debug.h system.h
 

@@ -20,8 +20,7 @@ libtool
 ltconfig
 ltmain.sh
 missing
-stamp-h
-stamp-h.in
+stamp-h*
 file
 file.1
 magic.4
