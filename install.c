@@ -80,7 +80,7 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
 	else
 	    chptr++;
 
-	printf("%-28s", chptr);
+	installFlags |= INSTALL_PRINTLABEL;
     } else if (isVerbose())
 	printf("Installing %s\n", arg);
 
