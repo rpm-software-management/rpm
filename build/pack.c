@@ -475,6 +475,7 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 	addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, getBuildTime(), 1);
 	addEntry(outHeader, RPMTAG_BUILDHOST, STRING_TYPE, buildHost(), 1);
 	addEntry(outHeader, RPMTAG_SOURCERPM, STRING_TYPE, sourcerpm, 1);
+	addEntry(outHeader, RPMTAG_RPMVERSION, STRING_TYPE, VERSION, 1);
 	if (pr->icon) {
 	    sprintf(filename, "%s/%s", getVar(RPMVAR_SOURCEDIR), pr->icon);
 	    stat(filename, &statbuf);
@@ -700,6 +701,7 @@ int packageSource(Spec s, char *passPhrase)
     addEntry(outHeader, RPMTAG_ARCH, STRING_TYPE, getArchName(), 1);
     addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, getBuildTime(), 1);
     addEntry(outHeader, RPMTAG_BUILDHOST, STRING_TYPE, buildHost(), 1);
+    addEntry(outHeader, RPMTAG_RPMVERSION, STRING_TYPE, VERSION, 1);
     if (scount) 
         addEntry(outHeader, RPMTAG_SOURCE, STRING_ARRAY_TYPE, sources, scount);
     if (pcount)
