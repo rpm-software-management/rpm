@@ -570,7 +570,7 @@ static rpmds rpmdsDup(const rpmds ods)
     ds->Nt = ods->Nt;
 
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-/*@-nullderef@*/
+/*@-nullderef -nullpass@*/
 assert(ds->EVR != NULL);
 assert(ds->Flags != NULL);
 
@@ -585,7 +585,7 @@ assert(ds->Flags != NULL);
 	? ods->Flags
 	: memcpy(xmalloc(nb), ods->Flags, nb) );
     ds->Ft = ods->Ft;
-/*@=nullderef@*/
+/*@=nullderef =nullpass@*/
 
 /*@-compmempass@*/ /* FIX: ds->Flags is kept, not only */
     return rpmdsLink(ds, (ds ? ds->Type : NULL));

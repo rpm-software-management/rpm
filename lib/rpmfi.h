@@ -379,9 +379,11 @@ uint_32 rpmfiFColor(/*@null@*/ rpmfi fi)
  * @param fi		file info set
  * @return		current file class, 0 on invalid
  */
+/*@-exportlocal@*/
 /*@observer@*/ /*@null@*/
 extern const char * rpmfiFClass(/*@null@*/ rpmfi fi)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Return current file depends dictionary from file info set.

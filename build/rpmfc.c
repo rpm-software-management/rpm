@@ -1496,12 +1496,17 @@ assert(ac == c);
 	p = (const void **) fc->provides->N;
 	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
 			p, c);
+	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+/*@-nullpass@*/
 	p = (const void **) fc->provides->EVR;
+assert(p != NULL);
 	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 			p, c);
 	p = (const void **) fc->provides->Flags;
+assert(p != NULL);
 	xx = headerAddEntry(pkg->header, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
 			p, c);
+/*@=nullpass@*/
     }
 /*@=branchstate@*/
 
@@ -1511,12 +1516,17 @@ assert(ac == c);
 	p = (const void **) fc->requires->N;
 	xx = headerAddEntry(pkg->header, RPMTAG_REQUIRENAME, RPM_STRING_ARRAY_TYPE,
 			p, c);
+	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+/*@-nullpass@*/
 	p = (const void **) fc->requires->EVR;
+assert(p != NULL);
 	xx = headerAddEntry(pkg->header, RPMTAG_REQUIREVERSION, RPM_STRING_ARRAY_TYPE,
 			p, c);
 	p = (const void **) fc->requires->Flags;
+assert(p != NULL);
 	xx = headerAddEntry(pkg->header, RPMTAG_REQUIREFLAGS, RPM_INT32_TYPE,
 			p, c);
+/*@=nullpass@*/
     }
 /*@=branchstate@*/
 
