@@ -289,8 +289,9 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 		continue;
 	    }
 
-	    numFailed += rpmInstallSourcePackage(rootdir, fd, NULL,
-			    showProgress, (void *) notifyFlags, NULL);
+	    if (!(installFlags & RPMINSTALL_TEST))
+		numFailed += rpmInstallSourcePackage(rootdir, fd, NULL,
+				showProgress, (void *) notifyFlags, NULL);
 
 	    fdClose(fd);
 	}
