@@ -555,4 +555,4 @@ fi
 - depends.c: rpmDepSet is (almost) opaque, move to rpmds.[ch].
 - rpmds: create dsProblem(), dsiGetDNEVR() retrieved DNEVR, not N.
 - depends.h: hack around teIterator() et al from include for now.
-
+- rpmds: move trigger dependencies into a rpmDepSet as well.

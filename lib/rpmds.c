@@ -44,9 +44,12 @@ fprintf(stderr, "*** ds %p --\n", ds);
     if (ds->tagN == RPMTAG_OBSOLETENAME) {
 	tagEVR = RPMTAG_OBSOLETEVERSION;
 	tagF = RPMTAG_OBSOLETEFLAGS;
-    } else {
+    } else
+    if (ds->tagN == RPMTAG_TRIGGERNAME) {
+	tagEVR = RPMTAG_TRIGGERVERSION;
+	tagF = RPMTAG_TRIGGERFLAGS;
+    } else
 	return NULL;
-    }
 
     /*@-branchstate@*/
     if (ds->Count > 0) {
@@ -93,9 +96,13 @@ rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
 	Type = "Obsoletes";
 	tagEVR = RPMTAG_OBSOLETEVERSION;
 	tagF = RPMTAG_OBSOLETEFLAGS;
-    } else {
+    } else
+    if (tagN == RPMTAG_TRIGGERNAME) {
+	Type = "Trigger";
+	tagEVR = RPMTAG_TRIGGERVERSION;
+	tagF = RPMTAG_TRIGGERFLAGS;
+    } else
 	goto exit;
-    }
 
     ds = xcalloc(1, sizeof(*ds));
     ds->i = -1;
@@ -240,13 +247,14 @@ int dsiNext(/*@null@*/ rpmDepSet ds)
 	    ds->DNEVR = dsDNEVR(t, ds);
 	    /*@=nullstate@*/
 
-/*@-modfilesystem@*/
-if (_ds_debug)
-fprintf(stderr, "*** ds %p[%d] %s: %s\n", ds, i, (ds->Type ? ds->Type : "???"), ds->DNEVR);
-/*@=modfilesystem@*/
-
 	}
     }
+
+/*@-modfilesystem@*/
+if (_ds_debug && i != -1)
+fprintf(stderr, "*** ds %p[%d] %s: %s\n", ds, i, (ds && ds->Type ? ds->Type : "?Type?"), (ds->DNEVR ? ds->DNEVR : "?DNEVR?"));
+/*@=modfilesystem@*/
+
     return i;
 }
 

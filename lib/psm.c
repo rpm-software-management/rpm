@@ -1686,43 +1686,38 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 	/*@modifies psm, triggeredH, *triggersAlreadyRun, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
+    int scareMem = 1;
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    rpmDepSet trigger = memset(alloca(sizeof(*trigger)), 0, sizeof(*trigger));
+    rpmDepSet trigger = NULL;
     const char ** triggerScripts;
     const char ** triggerProgs;
     int_32 * triggerIndices;
-    const char * triggerPackageName;
     const char * sourceName;
     rpmRC rc = RPMRC_OK;
     int xx;
-    int skip;
-
-    trigger->Type = "Trigger";
-    trigger->tagN = RPMTAG_TRIGGERNAME;
-    trigger->h = headerLink(triggeredH, "triggeredH");
-    trigger->i = -1;
-
-    if (!(	hge(triggeredH, RPMTAG_TRIGGERNAME, &trigger->Nt, 
-			(void **) &trigger->N, &trigger->Count) &&
-		hge(triggeredH, RPMTAG_TRIGGERFLAGS, &trigger->Ft,
-			(void **) &trigger->Flags, NULL) &&
-		hge(triggeredH, RPMTAG_TRIGGERVERSION, &trigger->EVRt,
-			(void **) &trigger->EVR, NULL))
-	)
-	return 0;
 
     xx = headerNVR(sourceH, &sourceName, NULL, NULL);
 
-    trigger = dsiInit(trigger);
+    trigger = dsiInit(dsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem));
     if (trigger != NULL)
     while (dsiNext(trigger) >= 0) {
 	rpmTagType tit, tst, tpt;
+	const char * Name;
+	int_32 Flags = dsiGetFlags(trigger);
+#ifdef	LEGACY
+	int skip;
+#endif
 
-	if (!(trigger->Flags[trigger->i] & psm->sense)) continue;
-	if (strcmp(trigger->N[trigger->i], sourceName)) continue;
+	if ((Name = dsiGetN(trigger)) == NULL)
+	    continue;   /* XXX can't happen */
+
+	if (strcmp(Name, sourceName))
+	    continue;
+	if (!(Flags & psm->sense))
+	    continue;
 
 #ifdef	LEGACY
 	/*
@@ -1731,13 +1726,13 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 	 * over that here. I suspect that we'll change our minds on this
 	 * and remove that, so I'm going to just 'do the right thing'.
 	 */
-	skip = strlen(trigger->N[trigger->i]);
+	skip = strlen(Name);
 	if (!strncmp(trigger->EVR[trigger->i], trigger->N[trigger->i], skip) &&
 	    (trigger->EVR[trigger->i][skip] == '-'))
 	    skip++;
 	else
-#endif
 	    skip = 0;
+#endif
 
 	if (!headerMatchesDepFlags(sourceH, trigger))
 	    continue;
@@ -1751,14 +1746,12 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 	    )
 	    continue;
 
-	xx = headerNVR(triggeredH, &triggerPackageName, NULL, NULL);
-
 	{   int arg1;
 	    int index;
 
-	    arg1 = rpmdbCountPackages(ts->rpmdb, triggerPackageName);
+	    arg1 = rpmdbCountPackages(ts->rpmdb, Name);
 	    if (arg1 < 0) {
-		/* XXX W2DO? same as "execution of script failed" */
+		/* XXX W2DO? fails as "execution of script failed" */
 		rc = RPMRC_FAIL;
 	    } else {
 		arg1 += psm->countCorrection;
@@ -1786,13 +1779,7 @@ static int handleOneTrigger(PSM_t psm, Header sourceH, Header triggeredH,
 	break;
     }
 
-    if (trigger != NULL) {
-	trigger->N = hfd(trigger->N, trigger->Nt);
-	trigger->Flags = hfd(trigger->Flags, trigger->Ft);
-	trigger->EVR = hfd(trigger->EVR, trigger->EVRt);
-	trigger->DNEVR = _free(trigger->DNEVR);
-	trigger->h = headerFree(trigger->h, "triggeredH");
-    }
+    trigger = dsFree(trigger);
 
     return rc;
 }
