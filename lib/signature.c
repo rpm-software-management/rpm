@@ -23,12 +23,14 @@
 #include "rpmlead.h"
 #include "rpmerr.h"
 
+typedef int (*md5func)(char * fn, unsigned char * digest);
+
 static int makePGPSignature(char *file, void **sig, int_32 *size,
 			    char *passPhrase);
 static int checkSize(int fd, int size, int sigsize);
 static int verifySizeSignature(char *datafile, int_32 size, char *result);
 static int verifyMD5Signature(char *datafile, unsigned char *sig,
-			      char *result);
+			      char *result, md5func fn);
 static int verifyPGPSignature(char *datafile, void *sig,
 			      int count, char *result);
 static int checkPassPhrase(char *passPhrase);
@@ -274,7 +276,12 @@ int verifySignature(char *file, int_32 sigTag, void *sig, int count,
 	}
 	break;
       case SIGTAG_MD5:
-	if (verifyMD5Signature(file, sig, result)) {
+	if (verifyMD5Signature(file, sig, result, mdbinfile)) {
+	    return 1;
+	}
+	break;
+      case SIGTAG_LITTLEENDIANMD5:
+	if (verifyMD5Signature(file, sig, result, mdbinfileBroken)) {
 	    return 1;
 	}
 	break;
@@ -305,11 +312,12 @@ static int verifySizeSignature(char *datafile, int_32 size, char *result)
     return 0;
 }
 
-static int verifyMD5Signature(char *datafile, unsigned char *sig, char *result)
+static int verifyMD5Signature(char *datafile, unsigned char *sig, 
+			      char *result, md5func fn)
 {
     unsigned char md5sum[16];
 
-    mdbinfile(datafile, md5sum);
+    fn(datafile, md5sum);
     if (memcmp(md5sum, sig, 16)) {
 	sprintf(result, "MD5 sum mismatch\n"
 		"Expected: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"

@@ -31,9 +31,11 @@
 /*                                                */
 /**************************************************/
 
-#define SIGTAG_SIZE         1000
-#define SIGTAG_MD5          1001
-#define SIGTAG_PGP          1002
+#define SIGTAG_SIZE         	1000
+/* the md5 sum was broken on big endian machines for a while */
+#define SIGTAG_LITTLEENDIANMD5	1001
+#define SIGTAG_PGP          	1002
+#define SIGTAG_MD5		1003
 
 /**************************************************/
 /*                                                */
