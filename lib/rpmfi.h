@@ -147,6 +147,7 @@ struct rpmfi_s {
 /*@owned@*/
     FSM_t fsm;			/*!< File state machine data. */
     int keep_header;		/*!< Keep header? */
+    uint_32 color;		/*!< Color bit(s) from file color union. */
 /*@owned@*/
     sharedFileInfo replaced;	/*!< (TR_ADDED) */
 /*@owned@*/
@@ -368,9 +369,17 @@ int_32 rpmfiFInode(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
+ * Return union of all file color bits from file info set.
+ * @param fi		file info set
+ * @return		current color
+ */
+uint_32 rpmfiColor(/*@null@*/ rpmfi fi)
+	/*@*/;
+
+/**
  * Return current file color bits from file info set.
  * @param fi		file info set
- * @return		current file color, 0 on invalid
+ * @return		current file color
  */
 uint_32 rpmfiFColor(/*@null@*/ rpmfi fi)
 	/*@*/;

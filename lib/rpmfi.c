@@ -266,9 +266,19 @@ int_32 rpmfiFInode(rpmfi fi)
     return finode;
 }
 
+uint_32 rpmfiColor(rpmfi fi)
+{
+    uint_32 color = 0;
+
+    if (fi != NULL)
+	/* XXX ignore all but lsnibble for now. */
+	color = fi->color & 0xf;
+    return color;
+}
+
 uint_32 rpmfiFColor(rpmfi fi)
 {
-    int_32 fcolor = 0;
+    uint_32 fcolor = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
@@ -1102,6 +1112,10 @@ rpmfi rpmfiNew(rpmts ts, Header h, rpmTag tagN, int scareMem)
     xx = hge(h, RPMTAG_FILESIZES, NULL, (void **) &fi->fsizes, NULL);
 
     xx = hge(h, RPMTAG_FILECOLORS, NULL, (void **) &fi->fcolors, NULL);
+    fi->color = 0;
+    if (fi->fcolors != NULL)
+    for (i = 0; i < fi->fc; i++)
+	fi->color |= fi->fcolors[i];
     xx = hge(h, RPMTAG_CLASSDICT, NULL, (void **) &fi->cdict, &fi->ncdict);
     xx = hge(h, RPMTAG_FILECLASS, NULL, (void **) &fi->fcdictx, NULL);
 
@@ -1168,7 +1182,47 @@ if (fi->actions == NULL)
     if (ts != NULL)
     if (fi != NULL)
     if ((p = rpmtsRelocateElement(ts)) != NULL && rpmteType(p) == TR_ADDED) {
+	const char * fmt = rpmGetPath("%{?_autorelocate_path}", NULL);
+	const char * errstr;
+	char * newPath;
+	const char * march = NULL;
+	const char * harch = NULL;
 	Header foo;
+
+	/* XXX add os (or platform) checks. */
+	rpmGetArchInfo(&march, NULL);
+
+	/* XXX error handling. */
+	newPath = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+	fmt = _free(fmt);
+
+	if (newPath != NULL && *newPath != '\0'
+	 && hge(h, RPMTAG_ARCH, NULL, (void **) &harch, NULL)
+	 && harch != NULL && !rpmMachineScore(RPM_MACHTABLE_INSTARCH, harch) )
+	{
+
+#if __ia64__
+	    /* XXX On ia64, change leading /emul/ix86 -> /emul/ia32, ick. */
+	    if (strlen(newPath) >= (sizeof("/emul/i386")-1)
+	     && newPath[0] == '/' && newPath[1] == 'e' && newPath[2] == 'm'
+	     && newPath[3] == 'u' && newPath[4] == 'l' && newPath[5] == '/'
+	     && newPath[6] == 'i' && newPath[8] == '8' && newPath[9] == '6')
+	    {
+		newPath[7] = 'a';
+		newPath[8] = '3';
+		newPath[9] = '2';
+	    }
+#endif
+	    p->relocs =
+		xrealloc(p->relocs, (p->nrelocs + 2) * sizeof(*p->relocs));
+	    p->relocs[p->nrelocs].oldPath = xstrdup("/");
+	    p->relocs[p->nrelocs].newPath = xstrdup(newPath);
+	    p->nrelocs++;
+	    p->relocs[p->nrelocs].oldPath = NULL;
+	    p->relocs[p->nrelocs].newPath = NULL;
+	}
+	newPath = _free(newPath);
+
 /* XXX DYING */
 if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));

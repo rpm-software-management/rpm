@@ -203,10 +203,10 @@ Please install rpm-4.0.4 first, and do
 	rpm --rebuilddb
 to convert your database from db1 to db3 format.
 "
-#    exit 1
+    exit 1
 fi
 /usr/sbin/groupadd -g 37 @RPMGROUP@				> /dev/null 2>&1
-/usr/sbin/useradd  -r -d /var/lib/rpm -u 37 -g 37 @RPMUSER@	> /dev/null 2>&1
+/usr/sbin/useradd  -r -d /var/lib/rpm -u 37 -g 37 @RPMUSER@ -s /sbin/nologin	> /dev/null 2>&1
 %endif
 exit 0
 
@@ -221,8 +221,8 @@ exit 0
 %postun
 /sbin/ldconfig
 if [ $1 = 0 ]; then
-    /usr/sbin/userdel rpm
-    /usr/sbin/groupdel rpm
+    /usr/sbin/userdel @RPMUSER@
+    /usr/sbin/groupdel @RPMGROUP@
 fi
 exit 0
 

@@ -131,13 +131,15 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->epoch = NULL;
 /*@=branchstate@*/
 
+    p->nrelocs = 0;
+    p->relocs = NULL;
     if (relocs != NULL) {
 	rpmRelocation * r;
 	int i;
 
-	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++)
-	    {};
-	p->relocs = xmalloc((i + 1) * sizeof(*p->relocs));
+	for (r = relocs; r->oldPath || r->newPath; r++)
+	    p->nrelocs++;
+	p->relocs = xmalloc((p->nrelocs + 1) * sizeof(*p->relocs));
 
 	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
 	    p->relocs[i].oldPath = r->oldPath ? xstrdup(r->oldPath) : NULL;
@@ -145,8 +147,6 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	}
 	p->relocs[i].oldPath = NULL;
 	p->relocs[i].newPath = NULL;
-    } else {
-	p->relocs = NULL;
     }
 
     p->key = key;
