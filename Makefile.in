@@ -1,14 +1,10 @@
 include Makefile.inc
 
-CPP = @CPP@
-prefix= @prefix@
-exec_prefix = @exec_prefix@
 srcdir= @srcdir@
-libdir= $(prefix)/lib
+
 INSTALL= @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
-LIBRPMRC_FILENAME=$(libdir)/rpmrc
 #LIBEFENCE = -lefence
 
 #DEBUG = -g
@@ -36,10 +32,10 @@ NLSPACKAGE=rpm
 
 # -----------------------------------------------------------------------
 
-SUBDIRS = lib build tools po misc
-OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o
-PROGS = rpm rpm2cpio
-LOADLIBES = -lbuild -lrpm @LIBMISC@ @LIBS@ @ZLIB@ @LIBINTL@ @LIBSOCKET@
+SUBDIRS = misc lib build tools @PO@
+OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o @GETTEXTSTUB@
+PROGS = @RPMSTATIC@ rpm.shared rpm2cpio
+LOADLIBES = -lbuild -lrpm @LIBMISC@ @LIBS@ @ZLIB@ @LIBINTL@ @LIBSOCKET@ @LIBDL@
 
 ifeq (.depend,$(wildcard .depend))
 TARGET=everything
@@ -49,9 +45,13 @@ endif
 
 all: $(TARGET)
 
-rpm: lib/librpm.a build/libbuild.a gettextstub.o $(OBJS)
-	$(CC) -o rpm -static $(LDFLAGS) $(OBJS) $(LOADLIBES) $(LIBEFENCE)
-	$(CC) -o rpm.shared $(LDFLAGS) $(OBJS) gettextstub.o $(LOADLIBES) $(LIBEFENCE)
+rpm: lib/librpm.a build/libbuild.a @GETTEXTSTUB@ $(OBJS)
+	$(CC) -o rpm -static $(LDFLAGS) @GETTEXTSTUB@ $(OBJS) $(LOADLIBES) \
+		$(LIBEFENCE)
+
+rpm.shared: lib/librpm.a build/libbuild.a @GETTEXTSTUB@ $(OBJS)
+	$(CC) -o rpm.shared $(LDFLAGS) @GETTEXTSTUB@ $(OBJS) $(LOADLIBES) \
+		$(LIBEFENCE)
 
 rpm2cpio: lib/librpm.a rpm2cpio.o
 	$(CC) -o rpm2cpio $(LDFLAGS) rpm2cpio.o $(LOADLIBES) 
@@ -159,6 +159,7 @@ archive: rcstag
 	@tar cSpf - * | (cd /tmp/rpm-$(VERSION); tar xSpf -)
 	@cd /tmp/rpm-$(VERSION); \
 	    make distclean; \
+	    rm -f *.tar.gz; \
 	    find . -name "RCS" -exec rm {} \;
 	@cd /tmp; tar czSpf rpm-$(VERSION).tar.gz rpm-$(VERSION)
 	@rm -rf /tmp/rpm-$(VERSION)
