@@ -29,6 +29,9 @@
 # define LIBELFBITS 32
 #endif
 
+#if !defined(ALLOW_UNALIGNED)
+# define ALLOW_UNALIGNED	0
+#endif
 
 ElfW2(LIBELFBITS,Phdr) *
 elfw2(LIBELFBITS,getphdr) (elf)

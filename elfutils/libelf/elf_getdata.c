@@ -27,9 +27,7 @@
 #include "common.h"
 
 
-#if _STRING_ARCH_unaligned
-# define ALLOW_ALIGNED	1
-#else
+#if !defined(ALLOW_ALIGNED)
 # define ALLOW_ALIGNED	0
 #endif
 

@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script. -*-m4-*-
-AC_INIT(src/readelf.c)
+AC_INIT(libelf/elf_begin.c)
 AM_CONFIG_HEADER(config.h)
 AC_PREREQ(2.53)			dnl Minimum Autoconf version required.
 AC_CANONICAL_HOST
@@ -120,19 +120,28 @@ dnl tests, because the choice of the file model can (in principle) affect
 dnl whether functions and headers are available, whether they work, etc.
 AC_SYS_LARGEFILE
 
+dnl AC_OUTPUT([Makefile
+dnl 	   m4/Makefile
+dnl 	   doc/Makefile
+dnl 	   lib/Makefile
+dnl 	   intl/Makefile
+dnl 	   libelf/Makefile
+dnl 	   libebl/Makefile
+dnl 	   libdwarf/Makefile
+dnl 	   libasm/Makefile
+dnl 	   src/Makefile
+dnl 	   libelf-po/Makefile.in
+dnl 	   libebl-po/Makefile.in
+dnl 	   libdwarf-po/Makefile.in
+dnl 	   libasm-po/Makefile.in
+dnl 	   po/Makefile.in
+dnl 	   tests/Makefile])
+
 AC_OUTPUT([Makefile
 	   m4/Makefile
 	   doc/Makefile
 	   lib/Makefile
 	   intl/Makefile
 	   libelf/Makefile
-	   libebl/Makefile
-	   libdwarf/Makefile
-	   libasm/Makefile
-	   src/Makefile
 	   libelf-po/Makefile.in
-	   libebl-po/Makefile.in
-	   libdwarf-po/Makefile.in
-	   libasm-po/Makefile.in
-	   po/Makefile.in
-	   tests/Makefile])
+	   po/Makefile.in])

@@ -27,7 +27,12 @@
 
 #include "gelf.h"
 #include "libelfP.h"
+
+#ifdef	XXXHACK
 #include "../libebl/elf-knowledge.h"
+#else
+#include "elf-knowledge.h"
+#endif
 
 #ifndef LIBELFBITS
 # define LIBELFBITS 32

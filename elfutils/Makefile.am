@@ -5,8 +5,10 @@ MAINT_CHARSET = latin1
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = m4 doc intl lib libltdl libelf libebl libdwarf libasm src \
-	  libelf-po libebl-po libdwarf-po libasm-po po tests
+#SUBDIRS = m4 doc intl lib libltdl libelf libebl libdwarf libasm src \
+#	  libelf-po libebl-po libdwarf-po libasm-po po tests
+
+SUBDIRS = m4 doc intl lib libltdl libelf libelf-po po
 
 EXTRA_DIST = config.rpath splint.rc
 

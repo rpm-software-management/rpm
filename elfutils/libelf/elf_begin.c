@@ -32,6 +32,9 @@
 #include "libelfP.h"
 #include "common.h"
 
+#if !defined(ALLOW_UNALIGNED)
+# define ALLOW_UNALIGNED	0
+#endif
 
 /* Create descriptor for archive in memory.  */
 static inline Elf *

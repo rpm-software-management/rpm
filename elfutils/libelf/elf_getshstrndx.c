@@ -27,6 +27,9 @@
 #include "libelfP.h"
 #include "common.h"
 
+#if !defined(ALLOW_UNALIGNED)
+# define ALLOW_UNALIGNED	0
+#endif
 
 int
 elf_getshstrndx (elf, dst)
