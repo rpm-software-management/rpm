@@ -514,6 +514,7 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
 
 int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
     Header oldHeader;
+    int oldSize;
 
     oldHeader = rpmdbGetRecord(db, offset);
     if (!oldHeader) {
@@ -522,8 +523,10 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader) {
 	return 1;
     }
 
-    if (headerSizeof(oldHeader, HEADER_MAGIC_NO) !=
-	headerSizeof(newHeader, HEADER_MAGIC_NO)) {
+    oldSize = headerSizeof(oldHeader, HEADER_MAGIC_NO);
+    headerFree(oldHeader);
+
+    if (oldSize != headerSizeof(newHeader, HEADER_MAGIC_NO)) {
 	rpmMessage(RPMMESS_DEBUG, "header changed size!");
 	if (rpmdbRemove(db, offset, 1))
 	    return 1;

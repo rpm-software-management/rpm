@@ -270,14 +270,19 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		if (matches.recs[i].recOffset != otherOffset) {
 		    if (!(flags & RPMINSTALL_UPGRADETOOLD)) 
 			if (rpmEnsureOlder(db, name, version, release, 
-					matches.recs[i].recOffset)) 
+					matches.recs[i].recOffset)) {
+			    headerFree(h);
+			    dbiFreeIndexRecord(matches);
 			    return 2;
+			}
 		    *intptr++ = matches.recs[i].recOffset;
 		}
 	    }
 	    *intptr++ = 0;
 	}
     }
+
+    dbiFreeIndexRecord(matches);
 
     fileList = NULL;
     if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
@@ -826,6 +831,8 @@ static int packageAlreadyInstalled(rpmdb db, char * name, char * version,
 
 	    headerFree(sech);
 	}
+
+	dbiFreeIndexRecord(matches);
     }
 
     return 0;
