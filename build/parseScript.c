@@ -148,7 +148,7 @@ int parseScript(Spec spec, int parsePart)
 	nextPart = PART_NONE;
     } else {
 	while (! (nextPart = isPart(spec->line))) {
-	    appendLineStringBuf(sb, spec->line);
+	    appendStringBuf(sb, spec->line);
 	    if (readLine(spec, STRIP_NOTHING) > 0) {
 		nextPart = PART_NONE;
 		break;

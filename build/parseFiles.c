@@ -88,7 +88,7 @@ int parseFiles(Spec spec)
 	nextPart = PART_NONE;
     } else {
 	while (! (nextPart = isPart(spec->line))) {
-	    appendLineStringBuf(pkg->fileList, spec->line);
+	    appendStringBuf(pkg->fileList, spec->line);
 	    if (readLine(spec, STRIP_NOTHING) > 0) {
 		nextPart = PART_NONE;
 		break;

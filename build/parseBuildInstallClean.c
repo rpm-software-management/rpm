@@ -36,7 +36,7 @@ int parseBuildInstallClean(Spec spec, int parsePart)
     }
     
     while (! (nextPart = isPart(spec->line))) {
-	appendLineStringBuf(*sbp, spec->line);
+	appendStringBuf(*sbp, spec->line);
 	if (readLine(spec, STRIP_NOTHING) > 0) {
 	    return PART_NONE;
 	}

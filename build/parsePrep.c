@@ -46,7 +46,7 @@ int parsePrep(Spec spec)
     while (! (nextPart = isPart(spec->line))) {
 	/* Need to expand the macros inline.  That way we  */
 	/* can give good line number information on error. */
-	appendLineStringBuf(buf, spec->line);
+	appendStringBuf(buf, spec->line);
 	if (readLine(spec, STRIP_NOTHING) > 0) {
 	    nextPart = PART_NONE;
 	    break;

@@ -29,7 +29,7 @@ int parseChangelog(Spec spec)
     }
     
     while (! (nextPart = isPart(spec->line))) {
-	appendLineStringBuf(sb, spec->line);
+	appendStringBuf(sb, spec->line);
 	if (readLine(spec, STRIP_NOTHING) > 0) {
 	    nextPart = PART_NONE;
 	    break;
