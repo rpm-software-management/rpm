@@ -2,6 +2,11 @@ New in RPM 2.0 (or previously undocumented):
 
 *** Install
 
+--replacepkgs	- will install a package even if it's already in the database
+--replacefiles  - will install a package even if the files it contains conflict
+		  with others
+--force		- same as "--replacepkgs --replacefiles"
+
 *** Uninstall
 
 *** Upgrade
