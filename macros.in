@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: @RPMCONFIGDIR@/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.141 2003/12/23 07:51:10 jbj Exp $
+# $Id: macros.in,v 1.142 2003/12/25 19:02:01 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -324,10 +324,10 @@ package or when debugging this package.\
 %_use_internal_dependency_generator	1
 
 #
-# Filter GLIBC_PRIVATE Provides:/Requires:
+# Filter GLIBC_PRIVATE Provides: and Requires:
 %_filter_GLIBC_PRIVATE			0
 
-# Path to selinux src policy file context patterns.
+# Path to selinux source policy file context patterns.
 %__file_context_path /etc/security/selinux/src/policy/file_contexts/file_contexts
 
 #
@@ -335,7 +335,7 @@ package or when debugging this package.\
 # RPMTAG_FILECONTEXTS to packages when building.
 #
 # Undefined, missing or %{nil} will disable.
-#%_build_file_context_path	%{__file_context_path}
+%_build_file_context_path	%{__file_context_path}
 
 #
 # Path to selinux src policy file context patterns used to set
@@ -348,7 +348,7 @@ package or when debugging this package.\
 # Path to selinux src policy file context patterns used to verify
 # file contexts on file system.
 #
-# Undefined, missing or %{nil} will use package content.
+# Undefined, missing or %{nil} will use package content (if available).
 %_verify_file_context_path 	%{__file_context_path}
 
 #

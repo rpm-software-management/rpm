@@ -8,6 +8,7 @@
 
 #include "rpmps.h"
 #include "rpmsw.h"
+#include "rpmsx.h"
 
 /*@-exportlocal@*/
 /*@unchecked@*/
@@ -183,6 +184,9 @@ struct rpmts_s {
     rpmal availablePackages;	/*!< Universe of available packages. */
     int numAvailablePackages;	/*!< No. available package instances. */
 #endif
+
+/*@refcounted@*/ /*@null@*/
+    rpmsx sx;			/*!< Security context patterns. */
 
 /*@null@*/
     rpmte relocateElement;	/*!< Element to use when relocating packages. */
@@ -583,9 +587,27 @@ int rpmtsSetChrootDone(rpmts ts, int chrootDone)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
+ * Get file security context patterns.
+ * @param ts		transaction set
+ * @return		file security context patterns
+ */
+/*@null@*/
+rpmsx rpmtsREContext(rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Get file security context patterns.
+ * @param ts		transaction set
+ * @param sx		security context patterns
+ * @return		0 on success
+ */
+int rpmtsSetREContext(rpmts ts, rpmsx sx)
+	/*@*/;
+
+/** \ingroup rpmts
  * Get transaction id, i.e. transaction time stamp.
  * @param ts		transaction set
- * @return		chrootDone flag
+ * @return		transaction id
  */
 int_32 rpmtsGetTid(rpmts ts)
 	/*@*/;

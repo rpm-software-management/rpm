@@ -299,6 +299,8 @@ struct poptOption rpmVerifyPoptTable[] = {
 	&rpmQVKArgs.qva_flags, VERIFY_RDEV,
         N_("don't verify mode of files"), NULL },
 
+ { "nocontexts", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmQVKArgs.qva_flags, VERIFY_CONTEXTS,
+	N_("don't verify file contexts"), NULL},
  { "nofiles", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_FILES,
 	N_("don't verify files in package"), NULL},
 #ifdef	DYING

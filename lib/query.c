@@ -801,6 +801,22 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
     if (qva->qva_flags & VERIFY_HDRCHK)
 	vsflags |= RPMVSF_NOHDRCHK;
 
+#ifdef	NOTYET
+    /* Initialize security context patterns (if not already done). */
+    if (!(qva->qva_flags & VERIFY_CONTEXTS)) {
+	rpmsx sx = rpmtsREContext(ts);
+	if (sx == NULL) {
+	    arg = rpmGetPath("%{?_verify_file_context_path}", NULL);
+	    if (arg != NULL && *arg != '\0') {
+		sx = rpmsxNew(arg);
+		(void) rpmtsSetREContext(ts, sx);
+	    }
+	    arg = _free(arg);
+	}
+	sx = rpmsxFree(sx);
+    }
+#endif
+
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
     if (qva->qva_source == RPMQV_ALL) {
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
