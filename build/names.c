@@ -53,7 +53,7 @@ char *getUname(uid_t uid)
     if (pw) {
 	unames[x] = strdup(pw->pw_name);
     } else {
-	unames[x] = "";
+	unames[x] = NULL;
     }
     return unames[x];
 }
@@ -122,7 +122,7 @@ char *getGname(gid_t gid)
     if (gr) {
 	gnames[x] = strdup(gr->gr_name);
     } else {
-	gnames[x] = "";
+	gnames[x] = NULL;
     }
     return gnames[x];
 }
