@@ -110,7 +110,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 	const char * tmpSpecFile;
 	char * cmd, *s;
 	int res;
-	static const char *zcmds[] = { "cat", "gzip", "bunzip2", "cat" };
+	static const char *zcmds[] = { "cat", "gunzip", "bunzip2", "cat" };
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
 
