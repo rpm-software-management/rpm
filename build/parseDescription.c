@@ -26,7 +26,8 @@ int parseDescription(Spec spec)
     int flag = PART_SUBNAME;
     Package pkg;
     int rc, argc;
-    char arg, **argv = NULL;
+    int arg;
+    char **argv = NULL;
     poptContext optCon = NULL;
 
     name = NULL;

@@ -17,6 +17,8 @@
 	- strntoul() in lib/cpio.c was returning a pointer to freed
 	  memory
 	- headerAppend() was doing a bad memcpy()
+	- added a CC=@CC@ to popt/Makefile.in
+	- handle signed return types from poptGetNextOpt() properly
 
 2.4.103 -> 2.4.104:
 	- fixed popt/Makefile.in to use CPP from configure

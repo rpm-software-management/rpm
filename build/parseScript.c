@@ -52,7 +52,8 @@ int parseScript(Spec spec, int parsePart)
     char reqargs[BUFSIZ];
 
     int rc, argc;
-    char arg, **argv = NULL;
+    int arg;
+    char **argv = NULL;
     poptContext optCon = NULL;
     
     name = NULL;

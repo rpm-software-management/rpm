@@ -24,7 +24,8 @@ int parseFiles(Spec spec)
     int nextPart;
     Package pkg;
     int rc, argc;
-    char arg, **argv = NULL;
+    int arg;
+    char **argv = NULL;
     int flag = PART_SUBNAME;
     poptContext optCon = NULL;
 
