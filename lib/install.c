@@ -47,7 +47,7 @@ static int mkdirIfNone(char * directory, mode_t perms);
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
 			         char ** fileMd5List, int fileCount, 
 				 enum instActions * instActions, 
-			 	 char ** prefixedFileList, 
+			 	 char ** prefixedFileList, int * oldVersion,
 				 struct replacedFile ** repListPtr, int flags);
 static int fileCompare(const void * one, const void * two);
 static int installSources(char * prefix, int fd, char ** specFilePtr);
@@ -99,6 +99,9 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     char * sptr, * dptr;
     int length;
     char * s;
+    dbIndexSet matches;
+    int * oldVersions = { 0 };
+    int * intptr;
 
     rc = pkgReadHeader(fd, &h, &isSource);
     if (rc) return rc;
@@ -119,7 +122,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     }
 
     /* we make a copy of the header here so we have one which we can add
-       entries to */
+       entries to - though this shouldn't be necessary anymore XXX */
     h2 = copyHeader(h);
     freeHeader(h);
     h = h2;
@@ -147,6 +150,32 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 				flags)) {
 	freeHeader(h);
 	return 2;
+    }
+
+    if (flags & INSTALL_UPGRADE) {
+	/* 
+	   We need to get a list of all old version of this package. We let
+	   this install procede normally then, but:
+
+		1) we don't report conflicts between the new package and
+		   the old versions installed
+		2) when we're done, we uninstall the old versions
+
+	   Note if the version being installed is already installed, we don't
+	   put that in the list -- that situation is handled normally.
+	*/
+
+	rc = rpmdbFindPackage(db, name, &matches);
+	if (rc == -1) return 1;
+	
+	if (!rc) {
+	    intptr = oldVersions = alloca((matches.count + 1) * sizeof(int));
+	    for (i = 0; i < matches.count; i++) {
+		if (matches.recs[i].recOffset != otherOffset)
+		    *intptr++ = matches.recs[i].recOffset;
+	    }
+	    *intptr++ = 0;
+	}
     }
 
     fileList = NULL;
@@ -185,7 +214,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 
 	rc = instHandleSharedFiles(db, 0, fileList, fileMd5s, fileCount, 
 				   instActions, prefixedFileList, 
-				   &replacedList, flags);
+				   oldVersions, &replacedList, flags);
 
 	free(fileMd5s);
 	if (rc) {
@@ -345,6 +374,15 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 
     if (runScript(prefix, h, RPMTAG_POSTIN)) {
 	return 1;
+    }
+
+    if (flags & INSTALL_UPGRADE) {
+	message(MESS_DEBUG, "removing old versions of package\n");
+	intptr = oldVersions;
+	while (*intptr) {
+	    rpmRemovePackage(prefix, db, *intptr, 0);
+	    intptr++;
+	}
     }
 
     return 0;
@@ -756,12 +794,13 @@ static int mkdirIfNone(char * directory, mode_t perms) {
 static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList, 
 			         char ** fileMd5List, int fileCount, 
 			         enum instActions * instActions, 
-			 	 char ** prefixedFileList, 
+			 	 char ** prefixedFileList, int * notErrors,
 				 struct replacedFile ** repListPtr, int flags) {
     struct sharedFile * sharedList;
     int sharedCount;
     int i, type;
-    Header sech;
+    int * intptr;
+    Header sech = NULL;
     int secOffset = 0;
     int secFileCount;
     char ** secFileMd5List, ** secFileList;
@@ -831,7 +870,13 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 	message(MESS_DEBUG, "file %s is shared\n", 
 		secFileList[sharedList[i].secFileNumber]);
 
-	if (!(flags & INSTALL_REPLACEFILES)) {
+	intptr = notErrors;
+	while (*intptr) {
+	    if (*intptr == sharedList[i].secRecOffset) break;
+	    intptr++;
+	}
+
+	if (!(flags & INSTALL_REPLACEFILES) && !(*intptr)) {
 	    error(RPMERR_PKGINSTALLED, "%s conflicts with file from %s-%s-%s",
 		  fileList[sharedList[i].mainFileNumber],
 		  name, version, release);
