@@ -362,6 +362,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 		    return 1;
 		}
 	    }
+	    free(provides);
 	}
     }
 

@@ -277,6 +277,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
  	scriptArg = 1;
     } else {
 	scriptArg = dbiIndexSetCount(matches) + 1;
+	dbiFreeIndexRecord(matches);
     }
 
     if (rootdir) {
