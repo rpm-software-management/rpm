@@ -67,8 +67,8 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
 dnl Checks for libraries.
-AC_CHECK_FUNC(gettext, [], 
-  AC_CHECK_LIB(intl, gettext, [LIBINTL="-lintl"], 
+AC_CHECK_FUNC(gettext, [HAVEGETTEXT="yes"], 
+  AC_CHECK_LIB(intl, gettext, [LIBINTL="-lintl" HAVEGETTEXT="y"], 
                AC_MSG_WARN([sorry this package needs libintl.a (from the 
 gettext package)])
              )
@@ -83,8 +83,8 @@ if test "$XGETTEXT" != ""; then
 	fi
 fi
 
-if test "$XGETTEXT" != "" -a "$LIBINTL" != ""; then
-	echo "xgettext and libintl.a exist; will build i18n support"
+if test "$XGETTEXT" != "" -a "$HAVEGETTEXT" != ""; then
+	echo "xgettext and gettext() exist; will build i18n support"
 	INTLDEF=-D_\\\(String\\\)=gettext\\\(String\\\)
 	PO=po
 	GETTEXTSTUB=""
