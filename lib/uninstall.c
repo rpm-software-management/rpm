@@ -1,27 +1,185 @@
 #include <alloca.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
+#include "install.h"
+#include "messages.h"
+#include "misc.h"
 #include "rpmerr.h"
 #include "rpmlib.h"
+
+enum fileActions { REMOVE, BACKUP, KEEP };
+
+static int sharedFileCmp(const void * one, const void * two);
+static int handleSharedFiles(rpmdb db, int offset, char ** fileList, 
+			     char ** fileMd5List, int fileCount, 
+			     enum fileActions * fileActions);
+static int removeFile(char * file, char state, unsigned int flags, char * md5, 
+		      enum fileActions action, char * rmmess, int test);
+
+static int sharedFileCmp(const void * one, const void * two) {
+    if (((struct sharedFile *) one)->mainFileNumber <
+	((struct sharedFile *) one)->mainFileNumber)
+	return -1;
+    else if (((struct sharedFile *) one)->mainFileNumber ==
+	((struct sharedFile *) one)->mainFileNumber)
+	return 0;
+    else 
+	return 1;
+}
+
+int findSharedFiles(rpmdb db, int offset, char ** fileList, int fileCount,
+		    struct sharedFile ** listPtr, int * listCountPtr) {
+    int i, j;
+    struct sharedFile * list = NULL;
+    int itemsUsed = 0;
+    int itemsAllocated = 0;
+    dbIndexSet matches;
+
+    itemsAllocated = 5;
+    list = malloc(sizeof(struct sharedFile) * itemsAllocated);
+
+    for (i = 0; i < fileCount; i++) {
+	if (!rpmdbFindByFile(db, fileList[i], &matches)) {
+	    for (j = 0; j < matches.count; j++) {
+		if (matches.recs[j].recOffset != offset) {
+		    if (itemsUsed == itemsAllocated) {
+			itemsAllocated += 10;
+			list = realloc(list, sizeof(struct sharedFile) * 
+					    itemsAllocated);
+		    }
+		    list[itemsUsed].mainFileNumber = i;
+		    list[itemsUsed].secRecOffset = matches.recs[j].recOffset;
+		    list[itemsUsed].secFileNumber = matches.recs[j].fileNumber;
+		    itemsUsed++;
+		}
+	    }
+	}
+    }
+
+    qsort(list, itemsUsed, sizeof(struct sharedFile), sharedFileCmp);
+
+    *listPtr = list;
+    *listCountPtr = itemsUsed;
+
+    return 0;
+}
+
+static int handleSharedFiles(rpmdb db, int offset, char ** fileList, 
+			     char ** fileMd5List, int fileCount, 
+			     enum fileActions * fileActions) {
+    Header sech;
+    int secOffset = 0;
+    struct sharedFile * sharedList;
+    int sharedCount;
+    char * name, * version, * release;
+    int secFileCount;
+    char ** secFileMd5List, ** secFileList;
+    char * secFileStatesList;
+    int type;
+    int i;
+    int rc = 0;
+
+    if (findSharedFiles(db, offset, fileList, fileCount, &sharedList, 
+			&sharedCount)) {
+	return 1;
+    }
+
+    if (!sharedCount) {
+	return 0;
+    }
+
+    for (i = 0; i < sharedCount; i++) {
+	if (secOffset != sharedList[i].secRecOffset) {
+	    if (secOffset) {
+		free(secFileMd5List);
+		free(secFileList);
+	    }
+
+	    secOffset = sharedList[i].secRecOffset;
+	    sech = rpmdbGetRecord(db, secOffset);
+	    if (!sech) {
+		error(RPMERR_DBCORRUPT, "cannot read header at %d for "
+		      "uninstall", offset);
+		rc = 1;
+		break;
+	    }
+
+	    getEntry(sech, RPMTAG_NAME, &type, (void **) &name, 
+		     &secFileCount);
+	    getEntry(sech, RPMTAG_VERSION, &type, (void **) &version, 
+		     &secFileCount);
+	    getEntry(sech, RPMTAG_RELEASE, &type, (void **) &release, 
+		     &secFileCount);
+
+	    message(MESS_DEBUG, "package %s-%s-%s contain shared files\n", 
+		    name, version, release);
+
+	    if (!getEntry(sech, RPMTAG_FILENAMES, &type, 
+			  (void **) &secFileList, &secFileCount)) {
+		error(RPMERR_DBCORRUPT, "package %s contains no files\n",
+		      name);
+		freeHeader(sech);
+		rc = 1;
+		break;
+	    }
+
+	    getEntry(sech, RPMTAG_FILESTATES, &type, 
+		     (void **) &secFileStatesList, &secFileCount);
+	    getEntry(sech, RPMTAG_FILEMD5S, &type, 
+		     (void **) &secFileMd5List, &secFileCount);
+
+	    freeHeader(sech);
+	}
+
+	message(MESS_DEBUG, "file %s is shared\n",
+		fileList[sharedList[i].mainFileNumber]);
+	
+	switch (secFileStatesList[sharedList[i].secFileNumber]) {
+	  case RPMFILE_STATE_REPLACED:
+	    message(MESS_DEBUG, "     file has already been replaced\n");
+	    break;
+    
+	  case RPMFILE_STATE_NORMAL:
+	    if (!strcmp(fileMd5List[sharedList[i].mainFileNumber],
+			secFileMd5List[sharedList[i].secFileNumber])) {
+		message(MESS_DEBUG, "    file is truely shared - saving\n");
+	    }
+	    fileActions[sharedList[i].mainFileNumber] = KEEP;
+	    break;
+	}
+    }
+
+    free(secFileMd5List);
+    free(secFileList);
+    free(sharedList);
+
+    return rc;
+}
 
 int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
     Header h;
     int i;
-    int count;
+    int fileCount;
     char * rmmess;
     char * fnbuffer = NULL;
     int fnbuffersize = 0;
     int prefixLength = strlen(prefix);
-    char ** fileList;
+    char ** fileList, ** fileMd5List;
     int type;
+    uint_32 * fileFlagsList;
     char * fileStatesList;
+    enum { REMOVE, BACKUP, KEEP } * fileActions;
 
     h = rpmdbGetRecord(db, offset);
     if (!h) {
 	error(RPMERR_DBCORRUPT, "cannot read header at %d for uninstall",
 	      offset);
-	return 0;
+	return 1;
     }
 
     /* dependency checking should go in here */
@@ -31,10 +189,13 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
     } else {
 	rmmess = "removing";
     }
+
+    message(MESS_DEBUG, "running preuninstall script (if any)\n");
+    runScript(prefix, h, RPMTAG_PREUN);
     
     message(MESS_DEBUG, "%s files test = %d\n", rmmess, test);
     if (!getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
-	 &count)) {
+	 &fileCount)) {
 	puts("(contains no files)");
     } else {
 	if (prefix[0]) {
@@ -42,10 +203,19 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
 	    fnbuffer = alloca(fnbuffersize);
 	}
 
-	getEntry(h, RPMTAG_FILESTATES, &type, 
-		 (void **) &fileStatesList, &count);
+	fileActions = alloca(sizeof(*fileActions) * fileCount);
+	for (i = 0; i < fileCount; i++) fileActions[i] = REMOVE;
 
-	for (i = 0; i < count; i++) {
+	getEntry(h, RPMTAG_FILESTATES, &type, (void **) &fileStatesList, 
+		 &fileCount);
+	getEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5List, 
+		 &fileCount);
+	getEntry(h, RPMTAG_FILEFLAGS, &type, (void **) &fileFlagsList, 
+		 &fileCount);
+
+	handleSharedFiles(db, offset, fileList, fileMd5List, fileCount, fileActions);
+
+	for (i = 0; i < fileCount; i++) {
 	    if (prefix[0]) {
 		if ((strlen(fileList[i]) + prefixLength + 1) > fnbuffersize) {
 		    fnbuffersize = (strlen(fileList[i]) + prefixLength) * 2;
@@ -57,27 +227,96 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
 	    } else {
 		fnbuffer = fileList[i];
 	    }
-	
-	    switch (fileStatesList[i]) { 
-	      case RPMFILE_STATE_REPLACED:
-		message(MESS_DEBUG, "%s has already been replaced\n", 
-			fnbuffer);
-		break;
 
-	      case RPMFILE_STATE_NORMAL:
-		message(MESS_DEBUG, "%s - %s\n", fnbuffer, rmmess);
-		/* unlink(fnbuffer); */
-		break;
-	    }
+	    removeFile(fnbuffer, fileStatesList[i], fileFlagsList[i],
+		       fileMd5List[i], fileActions[i], rmmess, test);
 	}
 
 	free(fileList);
+	free(fileMd5List);
     }
+
+    message(MESS_DEBUG, "running postuninstall script (if any)\n");
+    runScript(prefix, h, RPMTAG_POSTUN);
+
+    freeHeader(h);
 
     message(MESS_DEBUG, "%s database entry\n", rmmess);
     if (!test)
 	rpmdbRemove(db, offset, 0);
 
-    return 1;
+    return 0;
 }
 
+int runScript(char * prefix, Header h, int tag) {
+    int count, type;
+    char * script;
+    char * fn;
+    int fd;
+    int isdebug = isDebug();
+    int child;
+    int status;
+
+    if (getEntry(h, tag, &type, (void **) &script, &count)) {
+	fn = tmpnam(NULL);
+	message(MESS_DEBUG, "script found - running from file %s\n", fn);
+	fd = open(fn, O_CREAT | O_RDWR);
+	unlink(fn);
+	if (fd < 0) {
+            error(RPMERR_SCRIPT, "error creating file for (un)install script");
+	    return 1;
+	}
+	write(fd, script, strlen(script));
+	
+	/* run the script via /bin/sh - just feed the commands to the
+	   shell as stdin */
+	child = fork();
+	if (!child) {
+	    lseek(fd, 0, SEEK_SET);
+	    close(0);
+	    dup2(fd, 0);
+	    close(fd);
+
+	    if (strcmp(prefix, "/")) {
+		message(MESS_DEBUG, "performing chroot(%s)\n", prefix);
+		chroot(prefix);
+	    }
+
+	    if (isdebug)
+		execl("/bin/sh", "/bin/sh", "-x", NULL);
+	    else
+		execl("/bin/sh", "/bin/sh", NULL);
+	    printf("I SHOULDN'T BE HERE");
+	    exit(-1);
+	}
+	close(fd);
+	waitpid(child, &status, 0);
+
+	if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+	    error(RPMERR_SCRIPT, "execution of script failed\n");
+	    return 1;
+	}
+    }
+
+    return 0;
+}
+
+static int removeFile(char * file, char state, unsigned int flags, char * md5, 
+		      enum fileActions action, char * rmmess, int test) {
+	
+    switch (state) {
+      case RPMFILE_STATE_REPLACED:
+	message(MESS_DEBUG, "%s has already been replaced\n", file);
+	break;
+
+      case RPMFILE_STATE_NORMAL:
+	if (action == REMOVE) {
+	    /* if it's a config file, we may not want to remove
+	       it */
+	}
+
+	message(MESS_DEBUG, "%s - removed\n", file, rmmess);
+	/* unlink(fnbuffer); */
+	break;
+    }
+}
