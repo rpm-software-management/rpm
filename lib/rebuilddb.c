@@ -49,28 +49,28 @@ int rpmdbRebuild(char * rootdir) {
     recnum = rpmdbFirstRecNum(olddb);
     while (recnum > 0) {
 	if (!(h = rpmdbGetRecord(olddb, recnum))) {
-	    rpmError(RPMERR_INTERNAL, _("cannot read database record at %d"),
+	    rpmError(RPMERR_INTERNAL,
+			_("record number %d in database is bad -- skipping it"),
 			recnum);
-	    failed = 1;
 	    break;
-	}
-
-	/* let's sanity check this record a bit, otherwise just skip it */
-	if (headerIsEntry(h, RPMTAG_NAME) &&
-	    headerIsEntry(h, RPMTAG_VERSION) &&
-	    headerIsEntry(h, RPMTAG_RELEASE) &&
-	    headerIsEntry(h, RPMTAG_RELEASE) &&
-	    headerIsEntry(h, RPMTAG_BUILDTIME)) {
-	    if (rpmdbAdd(newdb, h)) {
-		rpmError(RPMERR_INTERNAL, 
-			 _("cannot add record originally at %d"), recnum);
-		failed = 1;
-		break;
-	    }
 	} else {
-	    rpmError(RPMERR_INTERNAL, 
-		     _("record number %d in database is bad -- skipping it"), 
-		     recnum);
+	    /* let's sanity check this record a bit, otherwise just skip it */
+	    if (headerIsEntry(h, RPMTAG_NAME) &&
+		headerIsEntry(h, RPMTAG_VERSION) &&
+		headerIsEntry(h, RPMTAG_RELEASE) &&
+		headerIsEntry(h, RPMTAG_RELEASE) &&
+		headerIsEntry(h, RPMTAG_BUILDTIME)) {
+		if (rpmdbAdd(newdb, h)) {
+		    rpmError(RPMERR_INTERNAL,
+			_("cannot add record originally at %d"), recnum);
+		    failed = 1;
+		    break;
+		}
+	    } else {
+		rpmError(RPMERR_INTERNAL,
+			_("record number %d in database is bad -- skipping it"), 
+			recnum);
+	    }
 	}
 	recnum = rpmdbNextRecNum(olddb, recnum);
     }

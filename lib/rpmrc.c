@@ -868,6 +868,10 @@ static void defaultMachine(char ** arch, char ** os) {
 		if (cpu_version == CPU_PA_RISC1_2)
 		    strcpy(un.machine, "parisc");
 #	    endif
+#	    if defined(CPU_PA_RISC2_0)
+		if (cpu_version == CPU_PA_RISC2_0)
+		    strcpy(un.machine, "parisc");
+#	    endif
 	}
 #	endif
 

@@ -315,6 +315,8 @@ if (multiToken) { \
     return RPMERR_BADSPEC; \
 }
 
+extern int noLang;	/* XXX FIXME: pass as arg */
+
 static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 			     char *lang)
 {
@@ -372,7 +374,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
       case RPMTAG_PACKAGER:
 	if (! *lang) {
 	    headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
-	} else {
+	} else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
 	    headerAddI18NString(pkg->header, tag, field, lang);
 	}
 	break;

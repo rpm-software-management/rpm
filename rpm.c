@@ -56,9 +56,10 @@ static int incldocs;
 static int initdb;
 static int justdb;
 static int noDeps;
-static int noOrder;
 static int noFiles;
+extern int noLang;
 static int noMd5;
+static int noOrder;
 static int noPgp;
 static int noScripts;
 static int noTriggers;
@@ -113,9 +114,10 @@ static struct poptOption optionsTable[] = {
 	{ "justdb", '\0', 0, &justdb, 0 },
 	{ "list", 'l', 0, 0, 'l' },
 	{ "nodeps", '\0', 0, &noDeps, 0 },
-	{ "noorder", '\0', 0, &noOrder, 0 },
 	{ "nofiles", '\0', 0, &noFiles, 0 },
+	{ "nolang", '\0', 0, &noLang, 0 },
 	{ "nomd5", '\0', 0, &noMd5, 0 },
+	{ "noorder", '\0', 0, &noOrder, 0 },
 	{ "nopgp", '\0', 0, &noPgp, 0 },
 	{ "noscripts", '\0', 0, &noScripts, 0 },
 	{ "notriggers", '\0', 0, &noTriggers, 0 },
@@ -543,9 +545,10 @@ int main(int argc, char ** argv) {
     initdb = 0;
     justdb = 0;
     noDeps = 0;
-    noOrder = 0;
     noFiles = 0;
+    noLang = 0;
     noMd5 = 0;
+    noOrder = 0;
     noPgp = 0;
     noScripts = 0;
     noTriggers = 0;
@@ -611,6 +614,7 @@ int main(int argc, char ** argv) {
     optCon = poptGetContext("rpm", argc, argv, optionsTable, 0);
     poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
     poptReadDefaultConfig(optCon, 1);
+    poptSetExecPath(optCon, RPMCONFIGDIR, 1);
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	optArg = poptGetOptArg(optCon);
@@ -1181,7 +1185,7 @@ int main(int argc, char ** argv) {
 		exit(1);
 
 	    if (build(specFile, buildAmount, passPhrase, buildRootOverride,
-			0, test, cookie,rcfile,arch,os,buildplatforms)) {
+			0, test, cookie, rcfile, arch, os, buildplatforms)) {
 		exit(1);
 	    }
 	    free(cookie);
@@ -1237,7 +1241,7 @@ int main(int argc, char ** argv) {
 	while ((pkg = poptGetArg(optCon)))
 	    if (build(pkg, buildAmount, passPhrase, buildRootOverride,
 			bigMode == MODE_TARBUILD, test, NULL,
-                        rcfile,arch,os,buildplatforms)) {
+                        rcfile, arch, os, buildplatforms)) {
 		exit(1);
 	    }
 	break;

@@ -4,6 +4,8 @@
 
 #include "popt/popt.h"
 
+extern int noLang;		/* XXX FIXME: pass as arg */
+
 /* These have to be global scope to make up for *stupid* compilers */
     static char *name;
     static char *lang;
@@ -107,8 +109,10 @@ int parseDescription(Spec spec)
     }
     
     stripTrailingBlanksStringBuf(sb);
-    headerAddI18NString(pkg->header, RPMTAG_DESCRIPTION,
+    if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
+	headerAddI18NString(pkg->header, RPMTAG_DESCRIPTION,
 			getStringBuf(sb), lang);
+    }
     
     freeStringBuf(sb);
      

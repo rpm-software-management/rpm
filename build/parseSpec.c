@@ -244,6 +244,8 @@ void closeSpec(Spec spec)
     spec->file = NULL;
 }
 
+int noLang = 0;		/* XXX FIXME: pass as arg */
+
 int parseSpec(Spec *specp, char *specFile, char *buildRoot,
 	      int inBuildArch, char *passPhrase, char *cookie)
 {

@@ -431,6 +431,9 @@ Header headerLoad(void *pv)
 	entry->info.count = htonl(pe->count);
 	entry->info.offset = -1;
 
+	if (entry->info.type < RPM_MIN_TYPE ||
+	    entry->info.type > RPM_MAX_TYPE) return NULL;
+
 	src = dataStart + htonl(pe->offset);
 	entry->length = dataLength(entry->info.type, src, 
 				   entry->info.count, 1);

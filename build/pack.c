@@ -159,9 +159,9 @@ int writeRPM(Header header, char *fileName, int type,
     Header sig;
     struct rpmlead lead;
 
-    if (csa->cpioList != NULL) {
+    if (csa->cpioFdIn < 0) {
 	csa->cpioArchiveSize = 0;
-	/* Add the a bogus archive size to the Header */
+	/* Add a bogus archive size to the Header */
 	headerAddEntry(header, RPMTAG_ARCHIVESIZE, RPM_INT32_TYPE,
 		&csa->cpioArchiveSize, 1);
     }
@@ -197,7 +197,7 @@ int writeRPM(Header header, char *fileName, int type,
     }
 
     /* Now set the real archive size in the Header */
-    if (csa->cpioList != NULL) {
+    if (csa->cpioFdIn < 0) {
 	headerModifyEntry(header, RPMTAG_ARCHIVESIZE,
 		RPM_INT32_TYPE, &csa->cpioArchiveSize, 1);
     }
@@ -221,7 +221,7 @@ int writeRPM(Header header, char *fileName, int type,
     headerGetEntry(header, RPMTAG_RELEASE, NULL, (void **)&release, NULL);
     sprintf(buf, "%s-%s-%s", name, version, release);
 
-    if (csa->cpioList != NULL) {
+    if (csa->cpioFdIn < 0) {
 	rpmGetArchInfo(NULL, &arch);
 	rpmGetOsInfo(NULL, &os);
     } else if (csa->lead != NULL) {	/* XXX FIXME: exorcize lead/arch/os */
@@ -310,7 +310,7 @@ static int cpio_gzip(int fdo, CSA_t *csa) {
     char *failedFile;
 
     cfd->cpioIoType = cpioIoTypeGzFd;
-    cfd->cpioGzFd = gzdopen(fdo, "w9");
+    cfd->cpioGzFd = gzdopen(dup(fdo), "w9");
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
     gzclose(cfd->cpioGzFd);

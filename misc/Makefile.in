@@ -29,6 +29,7 @@ distclean: clean
 
 depend:
 	topdir_path=`( cd $(top_srcdir) && pwd )` ; \
+	/bin/rm -f .depend ; \
 	    $(CPP) $(CFLAGS) -MM $(srcdir)/*.c | \
 		sed s+$$topdir_path+$(top_srcdir)+g > .depend
 

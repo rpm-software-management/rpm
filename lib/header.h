@@ -160,6 +160,7 @@ void headerSort(Header h);
 
 /* Entry Types */
 
+#define	RPM_MIN_TYPE		0
 #define RPM_NULL_TYPE		0
 #define RPM_CHAR_TYPE		1
 #define RPM_INT8_TYPE		2
@@ -170,6 +171,7 @@ void headerSort(Header h);
 #define RPM_BIN_TYPE		7
 #define RPM_STRING_ARRAY_TYPE	8
 #define RPM_I18NSTRING_TYPE	9
+#define	RPM_MAX_TYPE		9
 
 /* Tags -- general use tags should start at 1000 (RPM's tag space starts
    there) */
