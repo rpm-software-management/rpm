@@ -714,18 +714,18 @@ int rpmdbCheckSignals(void)
  * Block all signals, returning previous signal mask.
  */
 static int blockSignals(/*@unused@*/ rpmdb db, /*@out@*/ sigset_t * oldMask)
-	/*@globals rpmsigTbl, fileSystem @*/
-	/*@modifies *oldMask, rpmsigTbl, fileSystem @*/
+	/*@globals fileSystem @*/
+	/*@modifies *oldMask, fileSystem @*/
 {
     sigset_t newMask;
 
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, oldMask);
-    sigdelset(&newMask, SIGINT);
-    sigdelset(&newMask, SIGQUIT);
-    sigdelset(&newMask, SIGHUP);
-    sigdelset(&newMask, SIGTERM);
-    sigdelset(&newMask, SIGPIPE);
+    (void) sigdelset(&newMask, SIGINT);
+    (void) sigdelset(&newMask, SIGQUIT);
+    (void) sigdelset(&newMask, SIGHUP);
+    (void) sigdelset(&newMask, SIGTERM);
+    (void) sigdelset(&newMask, SIGPIPE);
     return sigprocmask(SIG_BLOCK, &newMask, NULL);
 }
 

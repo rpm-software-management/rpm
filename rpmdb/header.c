@@ -2398,6 +2398,7 @@ typedef struct headerSprintfArgs_s {
     const char * errmsg;
     rpmec ec;
     sprintfToken format;
+/*@relnull@*/
     HeaderIterator hi;
 /*@owned@*/
     char * val;
@@ -2432,7 +2433,9 @@ fprintf(stderr, "*** hsaInit(%d): fmt %p ext[%d] %p #%d 1? %d format \"%s\" type
 	if (tag != NULL && tag->tag == -2)
 	    hsa->hi = headerInitIterator(hsa->h);
     }
+/*@-nullret@*/
     return hsa;
+/*@=nullret@*/
 }
 
 /**
@@ -2475,7 +2478,9 @@ fprintf(stderr, "*** hsaNext(%d): fmt %p ext[%d] %p #%d 1? %d format \"%s\" type
 }
 #endif
 
+/*@-dependenttrans -onlytrans@*/
     return fmt;
+/*@=dependenttrans =onlytrans@*/
 }
 
 /**
@@ -2503,7 +2508,9 @@ fprintf(stderr, "*** hsaFini(%d): fmt %p ext[%d] %p #%d 1? %d format \"%s\" type
 	hsa->hi = headerFreeIterator(hsa->hi);
 	hsa->i = 0;
     }
+/*@-nullret@*/
     return hsa;
+/*@=nullret@*/
 }
 
 /**
@@ -3462,7 +3469,7 @@ char * headerSprintf(Header h, const char * fmt,
 	(hsa->format->type == PTOK_ARRAY
 	    ? &hsa->format->u.array.format->u.tag :
 	NULL));
-    isxml = (tag != NULL && tag->tag == -2 && !strcmp(tag->type, "xml"));
+    isxml = (tag != NULL && tag->tag == -2 && tag->type != NULL && !strcmp(tag->type, "xml"));
 
     if (isxml) {
 	need = sizeof("<rpmHeader>\n") - 1;
