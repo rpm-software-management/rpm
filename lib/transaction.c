@@ -360,42 +360,8 @@ static Header relocateFileList(struct availablePackage * alp,
     skipDirList = xcalloc(sizeof(*skipDirList), dirCount);
 
     newDirIndexes = alloca(sizeof(*newDirIndexes) * fileCount);
-    memcpy(newDirIndexes, dirIndex, sizeof(*newDirIndexes) * fileCount);
+    memcpy(newDirIndexes, dirIndexes, sizeof(*newDirIndexes) * fileCount);
     dirIndexes = newDirIndexes;
-
-    /* Start off by relocating directories. */
-    for (i = dirCount - 1; i >= 0; i--) {
-	for (j = numRelocations - 1; j >= 0; j--) {
-	    int len;
-
-	    len = strlen(relocations[j].oldPath);
-	    if (strncmp(relocations[j].oldPath, dirNames[i], len))
-		continue;
-
-	    /* Only subdirectories or complete file paths may be relocated. We
-	       don't check for '\0' as our directory names all end in '/'. */
-	    if (!(dirNames[i][len] == '/'))
-		continue;
-
-	    if (relocations[j].newPath) { /* Relocate the path */
-		const char *s = relocations[j].newPath;
-		char *t = alloca(strlen(s) + strlen(dirNames[i]) - len + 1);
-
-		strcpy(t, s);
-		strcat(t, dirNames[i] + len);
-		rpmMessage(RPMMESS_DEBUG, _("relocating directory %s to %s\n"),
-			dirNames[i], t);
-		dirNames[i] = t;
-		relocated = 1;
-	    } else if (actions) {
-		/* On install, a relocate to NULL means skip the file */
-		skipDirList[i] = 1;
-		rpmMessage(RPMMESS_DEBUG, _("excluding directory %s\n"), 
-			   dirNames[i]);
-	    }
-	    break;
-	}
-    }
 
     /* Now relocate individual files. */
 
@@ -487,32 +453,56 @@ static Header relocateFileList(struct availablePackage * alp,
 	dirCount++;
     }
 
-/*XXX FIXME: this needs to be updated to deal with compressed lists! will
-      be straightforward */
+    /* Start off by relocating directories. */
+    for (i = dirCount - 1; i >= 0; i--) {
+	for (j = numRelocations - 1; j >= 0; j--) {
+	    int len;
+
+	    len = strlen(relocations[j].oldPath);
+	    if (strncmp(relocations[j].oldPath, dirNames[i], len))
+		continue;
+
+	    /* Only subdirectories or complete file paths may be relocated. We
+	       don't check for '\0' as our directory names all end in '/'. */
+	    if (!(dirNames[i][len] == '/'))
+		continue;
+
+	    if (relocations[j].newPath) { /* Relocate the path */
+		const char *s = relocations[j].newPath;
+		char *t = alloca(strlen(s) + strlen(dirNames[i]) - len + 1);
+
+		strcpy(t, s);
+		strcat(t, dirNames[i] + len);
+		rpmMessage(RPMMESS_DEBUG, _("relocating directory %s to %s\n"),
+			dirNames[i], t);
+		dirNames[i] = t;
+		relocated = 1;
+	    } else if (actions) {
+		/* On install, a relocate to NULL means skip the file */
+		skipDirList[i] = 1;
+		rpmMessage(RPMMESS_DEBUG, _("excluding directory %s\n"), 
+			   dirNames[i]);
+	    }
+	    break;
+	}
+    }
 
     /* Save original filenames in header and replace (relocated) filenames. */
     if (relocated) {
-	const char ** origNames;
-	int origDirCount;
-	int_32 * origDirIndexes;
+	int c;
+	void * p;
+	int t;
 
-	headerGetEntry(h, RPMTAG_COMPFILELIST, NULL, (void **) &origNames, 
-		       NULL);
-	headerAddEntry(h, RPMTAG_ORIGCOMPFILELIST, RPM_STRING_ARRAY_TYPE,
-			  origNames, fileCount);
-	xfree(origNames);
+	headerGetEntry(h, RPMTAG_COMPFILELIST, &t, &p, &c);
+	headerAddEntry(h, RPMTAG_ORIGCOMPFILELIST, t, p, c);
+	xfree(p);
 
-	headerGetEntry(h, RPMTAG_COMPDIRLIST, NULL, (void **) &origNames, 
-		       &origDirCount);
-	headerAddEntry(h, RPMTAG_ORIGCOMPDIRLIST, RPM_STRING_ARRAY_TYPE,
-			  origNames, origDirCount);
-	xfree(origNames);
+	headerGetEntry(h, RPMTAG_COMPFILEDIRS, &t, &p, &c);
+	headerAddEntry(h, RPMTAG_ORIGCOMPFILEDIRS, t, p, c);
+	xfree(p);
 
-	headerGetEntry(h, RPMTAG_COMPFILEDIRS, NULL, (void **) &origDirIndexes, 
-		       NULL);
-	headerAddEntry(h, RPMTAG_ORIGCOMPDIRLIST, RPM_STRING_ARRAY_TYPE,
-			  origDirIndexes, fileCount);
-	xfree(origNames);
+	headerGetEntry(h, RPMTAG_COMPDIRLIST, &t, &p, &c);
+	headerAddEntry(h, RPMTAG_ORIGCOMPDIRLIST, t, p, c);
 
 	headerModifyEntry(h, RPMTAG_COMPFILELIST, RPM_STRING_ARRAY_TYPE,
 			  baseFileNames, fileCount);
