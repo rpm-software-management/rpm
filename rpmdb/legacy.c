@@ -79,11 +79,13 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 
     (void) elf_version(EV_CURRENT);
 
+/*@-evalorder@*/
     if ((elf = elf_begin (fdno, ELF_C_READ, NULL)) == NULL
      || elf_kind(elf) != ELF_K_ELF
      || gelf_getehdr(elf, &ehdr) == NULL
      || !(ehdr.e_type == ET_DYN || ehdr.e_type == ET_EXEC))
 	goto exit;
+/*@=evalorder@*/
 
     bingo = 0;
     /*@-branchstate -uniondef @*/

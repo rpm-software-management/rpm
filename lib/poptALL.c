@@ -332,12 +332,8 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
 /*@=globs =mods@*/
 
-#if defined(ENABLE_NLS)
+#if defined(ENABLE_NLS) && !defined(__LCLINT__)
     (void) setlocale(LC_ALL, "" );
-
-#ifdef	__LCLINT__
-#define LOCALEDIR	"/usr/share/locale"
-#endif
     (void) bindtextdomain(PACKAGE, LOCALEDIR);
     (void) textdomain(PACKAGE);
 #endif

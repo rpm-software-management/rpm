@@ -4,7 +4,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id: zconf.h,v 1.6 2002/03/17 15:46:23 jbj Exp $ */
+/* @(#) $Id: zconf.h,v 1.7 2002/04/07 19:52:43 jbj Exp $ */
 
 #ifndef _ZCONF_H
 #define _ZCONF_H
@@ -132,7 +132,7 @@
                         /* Type declarations */
 
 #ifndef OF /* function prototypes */
-#  ifdef STDC
+#  if defined(STDC) || defined(__LCLINT__)
 #    define OF(args)  args
 #  else
 #    define OF(args)  ()
