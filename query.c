@@ -13,6 +13,7 @@
 #include "lib/messages.h"
 #include "rpmlib.h"
 #include "query.h"
+#include "url.h"
 
 static char * permsString(int mode);
 static void printHeader(Header h, int queryFlags, char * queryFormat);
@@ -624,6 +625,8 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
     int recNumber;
     int retcode = 0;
     char *end = NULL;
+    struct urlContext context;
+    int isUrl;
 
     if (source != QUERY_SRPM && source != QUERY_RPM) {
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
@@ -634,12 +637,24 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
     switch (source) {
       case QUERY_SRPM:
       case QUERY_RPM:
-	fd = open(arg, O_RDONLY);
+	if (urlIsURL(arg)) {
+	    isUrl = 1;
+	    fd = urlGetFd(arg, &context);
+	} else {
+	    isUrl = 0;
+	    fd = open(arg, O_RDONLY);
+	}
+
 	if (fd < 0) {
 	    fprintf(stderr, "open of %s failed: %s\n", arg, strerror(errno));
 	} else {
 	    rc = pkgReadHeader(fd, &h, &isSource, NULL, NULL);
+
 	    close(fd);
+	    if (isUrl) {
+		urlFinishedFd(&context);
+	    }
+
 	    switch (rc) {
 		case 0:
 		    if (!h) {
