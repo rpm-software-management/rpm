@@ -58,6 +58,7 @@
 #define RPMTAG_EXCLUSIVE                1042
 #define RPMTAG_ICON                     1043
 #define RPMTAG_SOURCERPM                1044
+#define RPMTAG_FILEVERIFYFLAGS          1045
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
@@ -69,6 +70,19 @@
 #define INSTALL_REPLACEPKG	1
 #define INSTALL_REPLACEFILES	2
 #define INSTALL_TEST		4
+
+#define VERIFY_NONE             0
+#define VERIFY_MD5              1
+#define VERIFY_FILESIZE         (1 << 1)
+#define VERIFY_LINKTO           (1 << 2)
+#define VERIFY_UID              (1 << 3)
+#define VERIFY_GID              (1 << 4)
+#define VERIFY_USERNAME         (1 << 5)
+#define VERIFY_GROUPNAME        (1 << 6)
+#define VERIFY_MTIME            (1 << 7)
+#define VERIFY_MODE             (1 << 8)
+#define VERIFY_RDEV             (1 << 9)
+#define VERIFY_ALL              0xffffffff
 
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 
@@ -90,8 +104,12 @@
 #define RPMVAR_MESSAGELEVEL		15
 #define RPMVAR_REQUIREICON		16
 #define RPMVAR_TIMECHECK		17
-
-#define RPMVAR_LASTVAR	     14		/* this is important to keep right! */
+#define RPMVAR_SIGTYPE                  18
+#define RPMVAR_PGP_PATH                 19
+#define RPMVAR_PGP_NAME                 20
+#define RPMVAR_PGP_SECRING              21
+#define RPMVAR_PGP_PUBRING              22
+#define RPMVAR_LASTVAR	                23 /* IMPORTANT to keep right! */
 
 char *getVar(int var);
 void setVar(int var, char *val);
