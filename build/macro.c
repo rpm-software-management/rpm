@@ -4,19 +4,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
 
 #include "macro.h"
 #include "misc.h"
 
 #ifdef DEBUG_MACROS
-#include <stdio.h>
 #define rpmError fprintf
 #define RPMERR_BADSPEC stderr
-static void dumpTable(void);
 #else
 #include "lib/rpmlib.h"
 #endif
 
+static void dumpTable(struct MacroContext *mc);
 static void expandMacroTable(struct MacroContext *mc);
 static int compareMacros(const void *ap, const void *bp);
 static struct MacroEntry *findEntry(struct MacroContext *mc, char *name);
@@ -285,17 +285,17 @@ static void expandMacroTable(struct MacroContext *mc)
 
 /***********************************************************************/
 
-#ifdef DEBUG_MACROS
-static void dumpTable()
+static void dumpTable(struct MacroContext *mc)
 {
     int i;
     
-    for (i = 0; i < firstFree; i++) {
-	printf("%s->%s.\n", macroTable[i].name,
-	       macroTable[i].expansion);
+    for (i = 0; i < mc->firstFree; i++) {
+	printf("%s->%s.\n", mc->macroTable[i].name,
+	       mc->macroTable[i].expansion);
     }
 }
 
+#ifdef DEBUG_MACROS
 void main(void)
 {
     char buf[1024];

@@ -2,6 +2,8 @@
 	- handle files with spaces (put double quotes around them)
         - new rpmrc setting, buildshell, can be used to set shell
           used for build scripts (default is /bin/sh)
+	- fix bug where macros were being improperly set for
+	  Patch: and Source: lines
 
 2.4.99 -> 2.4.100:
 	- fixed handling of --rebuild and --recompile

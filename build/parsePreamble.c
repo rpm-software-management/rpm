@@ -324,10 +324,6 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	multiToken = 1;
     }
 
-    if (macro) {
-	addMacro(&spec->macros, macro, field);
-    }
-    
     switch (tag) {
       case RPMTAG_NAME:
       case RPMTAG_VERSION:
@@ -407,6 +403,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
       case RPMTAG_SOURCE:
       case RPMTAG_PATCH:
 	SINGLE_TOKEN_ONLY;
+	macro = NULL;
 	if ((rc = addSource(spec, pkg, field, tag))) {
 	    return rc;
 	}
@@ -465,6 +462,10 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	return RPMERR_INTERNAL;
     }
 
+    if (macro) {
+	addMacro(&spec->macros, macro, field);
+    }
+    
     return 0;
 }
 
