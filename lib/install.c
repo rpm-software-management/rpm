@@ -115,6 +115,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     int * oldVersions;
     int * intptr;
     int_8 thisArch, * pkgArch;
+    int scriptArg;
 
     oldVersions = alloca(sizeof(int));
     *oldVersions = 0;
@@ -167,6 +168,13 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	return 2;
     }
 
+    rc = rpmdbFindPackage(db, name, &matches);
+    if (rc == -1) return 2;
+    if (rc)
+ 	scriptArg = 1;
+    else
+	scriptArg = matches.count + 1;
+
     if (flags & INSTALL_UPGRADE) {
 	/* 
 	   We need to get a list of all old version of this package. We let
@@ -180,9 +188,6 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	   put that in the list -- that situation is handled normally.
 	*/
 
-	rc = rpmdbFindPackage(db, name, &matches);
-	if (rc == -1) return 2;
-	
 	if (!rc) {
 	    intptr = oldVersions = alloca((matches.count + 1) * sizeof(int));
 	    for (i = 0; i < matches.count; i++) {
@@ -262,8 +267,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     }
 
     message(MESS_DEBUG, "running preinstall script (if any)\n");
-    if (runScript(prefix, h, RPMTAG_PREIN, flags & INSTALL_NOSCRIPTS,
-		  flags & INSTALL_UPGRADE)) {
+    if (runScript(prefix, h, RPMTAG_PREIN, scriptArg, 
+		  flags & INSTALL_NOSCRIPTS)) {
 	free(fileList);
 	if (replacedList) free(replacedList);
 	return 2;
@@ -419,8 +424,8 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 
     message(MESS_DEBUG, "running postinstall script (if any)\n");
 
-    if (runScript(prefix, h, RPMTAG_POSTIN, flags & INSTALL_NOSCRIPTS,
-		  flags & INSTALL_UPGRADE)) {
+    if (runScript(prefix, h, RPMTAG_POSTIN, scriptArg,
+		  flags & INSTALL_NOSCRIPTS)) {
 	return 2;
     }
 
@@ -428,7 +433,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	message(MESS_DEBUG, "removing old versions of package\n");
 	intptr = oldVersions;
 	while (*intptr) {
-	    rpmRemovePackage(prefix, db, *intptr, 1, 0);
+	    rpmRemovePackage(prefix, db, *intptr, 0);
 	    intptr++;
 	}
     }
