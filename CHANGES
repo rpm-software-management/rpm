@@ -50,7 +50,7 @@
 	- glibc2: always enable dynamic mtrace if available.
 	- fix: versioned provides devolved to existence test with conflicts.
 	- fix: with unspecified epochs, skip dependency epoch compare.
-	- python: shared module needs -lrpm -lbz2.
+	- python: shared module linked correctly.
 	- do versioned provides/conflicts resolution correctly.
 	- rpmpopt: display versioned provides/obsoletes.
 	- revert to shared libbz2.so now that bzip2 is in base install.
