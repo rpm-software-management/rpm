@@ -1,3 +1,4 @@
+/*@-boundsread@*/
 /** \ingroup header
  * \file lib/formats.c
  */
@@ -51,6 +52,7 @@ static /*@only@*/ char * permsFormat(int_32 type, const void * data, char * form
     char * val;
     char * buf;
 
+/*@-boundswrite@*/
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
@@ -62,6 +64,7 @@ static /*@only@*/ char * permsFormat(int_32 type, const void * data, char * form
 	/*@=formatconst@*/
 	buf = _free(buf);
     }
+/*@=boundswrite@*/
 
     return val;
 }
@@ -83,6 +86,7 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
     char buf[15];
     int anint = *((int_32 *) data);
 
+/*@-boundswrite@*/
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
@@ -110,6 +114,7 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
 	sprintf(val, formatPrefix, buf);
 	/*@=formatconst@*/
     }
+/*@=boundswrite@*/
 
     return val;
 }
@@ -171,6 +176,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
 
     nt += 512;	/* XXX slop for armor and crc */
 
+/*@-boundswrite@*/
     val = t = xmalloc(nt + padding + 1);
     *t = '\0';
     t = stpcpy(t, "-----BEGIN PGP ");
@@ -193,6 +199,7 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
     t = stpcpy(t, "-----END PGP ");
     t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
     t = stpcpy(t, "-----\n");
+/*@=boundswrite@*/
 
     /*@-branchstate@*/
     if (s != data) s = _free(s);
@@ -216,6 +223,7 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 {
     char * val;
 
+/*@-boundswrite@*/
     if (type != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
@@ -242,6 +250,7 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
 	    enc = _free(enc);
 	}
     }
+/*@=boundswrite@*/
 
     return val;
 }
@@ -287,6 +296,7 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
     char buf[10];
     int anint = *((int_32 *) data);
 
+/*@-boundswrite@*/
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
@@ -305,6 +315,7 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 	sprintf(val, formatPrefix, buf);
 	/*@=formatconst@*/
     }
+/*@=boundswrite@*/
 
     return val;
 }
@@ -331,10 +342,12 @@ static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
 	return 1;
     }
 
+/*@-boundswrite@*/
     *type = RPM_STRING_ARRAY_TYPE;
     *((const char ***) data) = list;
 
     *freeData = 0;
+/*@=boundswrite@*/
 
     return 0; 
 }
@@ -359,6 +372,7 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
     rpmTagType ipt;
     char ** array;
 
+/*@-boundswrite@*/
     if (hge(h, RPMTAG_INSTALLPREFIX, type, (void **)data, count)) {
 	if (freeData) *freeData = 0;
 	return 0;
@@ -368,7 +382,8 @@ static int instprefixTag(Header h, /*@null@*/ /*@out@*/ rpmTagType * type,
 	if (type) *type = RPM_STRING_TYPE;
 	array = hfd(array, ipt);
 	return 0;
-    } 
+    }
+/*@=boundswrite@*/
 
     return 1;
 }
@@ -408,6 +423,7 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 	return 1;
     }
 
+/*@-boundswrite@*/
     *type = RPM_INT32_TYPE;
     *freeData = 1;
 
@@ -422,6 +438,7 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
 	return 1;
 
     *data = usages;
+/*@=boundswrite@*/
 
     filenames = _free(filenames);
 
@@ -437,6 +454,7 @@ static int fssizesTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval freeData	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
+/*@-bounds@*/
 static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
@@ -500,6 +518,7 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
 
     return 0;
 }
+/*@=bounds@*/
 
 /**
  * Retrieve trigger type info.
@@ -510,6 +529,7 @@ static int triggercondsTag(Header h, /*@out@*/ rpmTagType * type,
  * @retval freeData	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
+/*@-bounds@*/
 static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
@@ -554,6 +574,7 @@ static int triggertypeTag(Header h, /*@out@*/ rpmTagType * type,
 
     return 0;
 }
+/*@=bounds@*/
 
 /**
  * Retrieve file paths.
@@ -572,9 +593,11 @@ static int filenamesTag(Header h, /*@out@*/ rpmTagType * type,
     *type = RPM_STRING_ARRAY_TYPE;
 
     rpmBuildFileList(h, (const char ***) data, count);
+/*@-boundswrite@*/
     *freeData = 1;
 
     *freeData = 0;	/* XXX WTFO? */
+/*@=boundswrite@*/
 
     return 0; 
 }
@@ -612,10 +635,12 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
     int rc;
 
+/*@-boundswrite@*/
     *type = RPM_STRING_TYPE;
     *data = NULL;
     *count = 0;
     *freeData = 0;
+/*@=boundswrite@*/
 
     if (dstring && *dstring) {
 	char *domain, *de;
@@ -654,12 +679,14 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	    unsetenv(language);
 /*@i@*/	++_nl_msg_cat_cntr;
 
+/*@-boundswrite@*/
 	if (domain && msgid) {
 	    *data = /*@-unrecog@*/ dgettext(domain, msgid) /*@=unrecog@*/;
 	    *data = xstrdup(*data);	/* XXX xstrdup has side effects. */
 	    *count = 1;
 	    *freeData = 1;
 	}
+/*@=boundswrite@*/
 	dstring = _free(dstring);
 	if (*data)
 	    return 0;
@@ -669,6 +696,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 
     rc = hge(h, tag, type, (void **)data, count);
 
+/*@-boundswrite@*/
     if (rc && (*data) != NULL) {
 	*data = xstrdup(*data);
 	*freeData = 1;
@@ -678,6 +706,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
     *freeData = 0;
     *data = NULL;
     *count = 0;
+/*@=boundswrite@*/
     return 1;
 }
 
@@ -759,3 +788,4 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_MORE, NULL, { (void *) headerDefaultFormats } }
 } ;
 /*@=type@*/
+/*@=boundsread@*/

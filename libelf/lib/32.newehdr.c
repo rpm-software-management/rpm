@@ -39,7 +39,9 @@ _elf_newehdr(Elf *elf, unsigned cls)
 	return _elf_getehdr(elf, cls);
     }
     else if (!elf->e_ehdr) {
+/*@-boundsread@*/
 	size = _msize(cls, _elf_version, ELF_T_EHDR);
+/*@=boundsread@*/
 	elf_assert(size);
 	if ((elf->e_ehdr = (char*)malloc(size))) {
 	    memset(elf->e_ehdr, 0, size);
@@ -75,10 +77,12 @@ elf64_newehdr(Elf *elf) {
 
 unsigned long
 gelf_newehdr(Elf *elf, int cls) {
+/*@-boundsread@*/
     if (!valid_class(cls) || !_msize(cls, _elf_version, ELF_T_EHDR)) {
 	seterr(ERROR_UNKNOWN_CLASS);
 	return 0;
     }
+/*@=boundsread@*/
     if (!_elf_newehdr(elf, cls)) {
 	return 0;
     }

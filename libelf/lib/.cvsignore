@@ -3,8 +3,10 @@
 .libs
 Makefile
 Makefile.in
-*.o
 *.la
+*.lcd
 *.lo
+*.o
 stamp-h
 stamp-h2
+sys_elf.h

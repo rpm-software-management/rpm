@@ -7,4 +7,5 @@ Makefile.in
 db3lobjs
 tagtbl.c
 *.la
+*.lcd
 *.lo

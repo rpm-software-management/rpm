@@ -88,9 +88,11 @@ add_bytes(unsigned char *ptr, size_t len)
 {
     long csum = 0;
 
+/*@-boundsread@*/
     while (len--) {
 	csum += *ptr++;
     }
+/*@=boundsread@*/
     return csum;
 }
 

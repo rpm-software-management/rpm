@@ -57,19 +57,19 @@ void sha1Process(sha1Param* p)
 
 /** \ingroup HASH_sha1_m
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@unused@*/
 int  sha1Reset  (sha1Param* p)
 	/*@modifies p */;
 
 /** \ingroup HASH_sha1_m
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@unused@*/
 int  sha1Update (sha1Param* p, const byte* data, int size)
 	/*@modifies p */;
 
 /** \ingroup HASH_sha1_m
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@unused@*/
 int  sha1Digest (sha1Param* p, /*@out@*/ uint32* data)
 	/*@modifies p, data */;
 

@@ -202,6 +202,7 @@ static void cleanOSE(/*@special@*/ struct optionStackEntry *os)
     os->argb = PBM_FREE(os->argb);
 }
 
+/*@-boundswrite@*/
 void poptResetContext(poptContext con)
 {
     int i;
@@ -234,8 +235,10 @@ void poptResetContext(poptContext con)
     return;
     /*@=nullstate@*/
 }
+/*@=boundswrite@*/
 
 /* Only one of longName, shortName should be set, not both. */
+/*@-boundswrite@*/
 static int handleExec(/*@special@*/ poptContext con,
 		/*@null@*/ const char * longName, char shortName)
 	/*@uses con->execs, con->numExecs, con->flags, con->doExec,
@@ -293,6 +296,7 @@ static int handleExec(/*@special@*/ poptContext con,
     return 1;
     /*@=nullstate@*/
 }
+/*@=boundswrite@*/
 
 /* Only one of longName, shortName may be set at a time */
 static int handleAlias(/*@special@*/ poptContext con,
@@ -435,6 +439,7 @@ static int execCommand(poptContext con)
 }
 /*@=bounds =boundswrite @*/
 
+/*@-boundswrite@*/
 /*@observer@*/ /*@null@*/ static const struct poptOption *
 findOption(const struct poptOption * opt, /*@null@*/ const char * longName,
 		char shortName,
@@ -501,6 +506,7 @@ findOption(const struct poptOption * opt, /*@null@*/ const char * longName,
 
     return opt;
 }
+/*@=boundswrite@*/
 
 static const char * findNextArg(/*@special@*/ poptContext con,
 		unsigned argx, int delete_arg)
@@ -539,6 +545,7 @@ static const char * findNextArg(/*@special@*/ poptContext con,
     return arg;
 }
 
+/*@-boundswrite@*/
 static /*@only@*/ /*@null@*/ const char *
 expandNextArg(/*@special@*/ poptContext con, const char * s)
 	/*@uses con->optionStack, con->os,
@@ -587,6 +594,7 @@ expandNextArg(/*@special@*/ poptContext con, const char * s)
     t = realloc(t, strlen(t) + 1);	/* XXX memory leak, hard to plug */
     return t;
 }
+/*@=boundswrite@*/
 
 static void poptStripArg(/*@special@*/ poptContext con, int which)
 	/*@uses con->arg_strip, con->optionStack @*/
@@ -604,6 +612,7 @@ static void poptStripArg(/*@special@*/ poptContext con, int which)
     /*@=compdef@*/
 }
 
+/*@-boundswrite@*/
 static int poptSaveLong(const struct poptOption * opt, long aLong)
 	/*@modifies opt->arg @*/
 {
@@ -631,7 +640,9 @@ static int poptSaveLong(const struct poptOption * opt, long aLong)
     }
     return 0;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 static int poptSaveInt(const struct poptOption * opt, long aLong)
 	/*@modifies opt->arg @*/
 {
@@ -659,7 +670,9 @@ static int poptSaveInt(const struct poptOption * opt, long aLong)
     }
     return 0;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 /* returns 'val' element, -1 on last item, POPT_ERROR_* on error */
 int poptGetNextOpt(poptContext con)
 {
@@ -969,6 +982,7 @@ int poptGetNextOpt(poptContext con)
 
     return (opt ? opt->val : -1);	/* XXX can't happen */
 }
+/*@=boundswrite@*/
 
 const char * poptGetOptArg(poptContext con)
 {
@@ -998,6 +1012,7 @@ const char * poptPeekArg(poptContext con)
     return ret;
 }
 
+/*@-boundswrite@*/
 const char ** poptGetArgs(poptContext con)
 {
     if (con == NULL ||
@@ -1011,6 +1026,7 @@ const char ** poptGetArgs(poptContext con)
     return (con->leftovers + con->nextLeftover);
     /*@=nullret =nullstate @*/
 }
+/*@=boundswrite@*/
 
 poptContext poptFreeContext(poptContext con)
 {
@@ -1073,6 +1089,7 @@ int poptAddAlias(poptContext con, struct poptAlias alias,
     return poptAddItem(con, item, 0);
 }
 
+/*@-boundswrite@*/
 /*@-mustmod@*/ /* LCL: con not modified? */
 int poptAddItem(poptContext con, poptItem newItem, int flags)
 {
@@ -1117,6 +1134,7 @@ int poptAddItem(poptContext con, poptItem newItem, int flags)
     return 0;
 }
 /*@=mustmod@*/
+/*@=boundswrite@*/
 
 const char * poptBadOption(poptContext con, int flags)
 {
@@ -1186,6 +1204,7 @@ const char * poptGetInvocationName(poptContext con)
     return (con->os->argv ? con->os->argv[0] : "");
 }
 
+/*@-boundswrite@*/
 int poptStrippedArgv(poptContext con, int argc, char ** argv)
 {
     int numargs = argc;
@@ -1209,3 +1228,4 @@ int poptStrippedArgv(poptContext con, int argc, char ** argv)
     
     return numargs;
 }
+/*@=boundswrite@*/

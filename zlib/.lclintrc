@@ -12,17 +12,56 @@
 -unrecogcomments	# XXX ignore doxygen markings
 
 +strict			# lclint level
--includenest 16		# getting deep, sigh
 
-# --- not yet
--retvalint		# painful
-
--protoparammatch	# 22
-
+# --- in progress
+-abstract
+-aliasunique
+-branchstate
+-casebreak
+-castfcnptr
+-commenterror
+-compdef
+-compmempass
+-dependenttrans
+-evalorder
+-globs
+-globstate
+-immediatetrans
+-infloopsuncon
+-internalglobs
+-kepttrans
+-looploopbreak
+-looploopcontinue
+-loopswitchbreak
+-modfilesys
+-modnomods
+-modobserveruncon
+-moduncon
+-modunconnomods
+-mustmod
+-noeffect
 -noeffectuncon		# 22
-
--sizeoftype		# 110
+-nullderef
+-nullpass
+-nullret
 -nullstate		# 36
+-observertrans
+-oldstyle
+-paramuse
+-protoparammatch	# 22
+-readonlytrans
+-redef
+-retalias
+-retvalint		# painful
+-sizeoftype		# 110
+-statictrans
+-switchswitchbreak
+-temptrans
+-type
+-unqualifiedtrans
+-unsignedcompare
+-usereleased
+-whileempty
 
 # --- +partial artifacts
 -declundef
@@ -47,8 +86,6 @@
 -incondefs		# <bits/{ipc,pthreadtypes}.h> heartburn
 -matchfields		# <bits/ipc.h> heartburn
 -namechecks		# tedious ANSI compliance checks
--numenummembers 1024	# RPMTAG has 138 members
--numstructfields 256	# Java jni.h has 229 fields
 -ptrarith		# tedious
 
 -compdestroy

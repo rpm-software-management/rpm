@@ -42,7 +42,7 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, ran
 
 /**
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@unused@*/
 int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mp32number* g, const mp32number* hm, const mp32number* y, const mp32number* r, const mp32number* s)
 	/*@*/;
 

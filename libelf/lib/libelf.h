@@ -210,13 +210,15 @@ extern off_t elf_getbase __P((Elf *elf))
 	/*@*/;
 /*@null@*/
 extern Elf_Data *elf_getdata __P((Elf_Scn *scn, /*@null@*/ Elf_Data *data))
-	/*@modifies *scn @*/;
+	/*@modifies *scn @*/
+	/*@ensures maxRead(data->d_buf) == data->d_size @*/;
 /*@null@*/
 extern Elf32_Ehdr *elf32_getehdr __P((Elf *elf))
 	/*@modifies *elf @*/;
 /*@null@*/
 extern char *elf_getident __P((Elf *elf, size_t *ptr))
-	/*@modifies *elf, *ptr @*/;
+	/*@modifies *elf, *ptr @*/
+	/*@requires maxSet(ptr) >= 0 @*/;
 /*@null@*/
 extern Elf32_Phdr *elf32_getphdr __P((Elf *elf))
 	/*@modifies *elf @*/;

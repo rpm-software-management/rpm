@@ -34,7 +34,7 @@
  *          Addison-Wesley, 1983. ISBN 0-201-06672-6.
  */
 
-/* @(#) $Id$ */
+/* @(#) $Id: trees.c,v 1.8 2002/03/17 15:46:23 jbj Exp $ */
 
 /* #define GEN_TREES_H */
 
@@ -747,10 +747,7 @@ local void build_tree(deflate_state * s, tree_desc * desc)
  * @param tree		the tree to be scanned
  * @param max_code	and its largest code of non zero frequency
  */
-local void scan_tree (s, tree, max_code)
-    deflate_state *s;
-    ct_data *tree;   /* the tree to be scanned */
-    int max_code;    /* and its largest code of non zero frequency */
+local void scan_tree (deflate_state *s, ct_data *tree, int max_code)
 {
     int n;                     /* iterates over all tree elements */
     int prevlen = -1;          /* last emitted length */

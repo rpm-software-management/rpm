@@ -11,8 +11,6 @@
 
 #include "debug.h"
 
-/*@access rpmds @*/
-
 /**
  * Enable noisy range comparison debugging message?
  */
@@ -99,7 +97,9 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 
     (void) rpmdsUnlink(ds, ds->Type);
     /*@-refcounttrans -usereleased@*/
+/*@-boundswrite@*/
     memset(ds, 0, sizeof(*ds));		/* XXX trash and burn */
+/*@=boundswrite@*/
     ds = _free(ds);
     /*@=refcounttrans =usereleased@*/
     return NULL;
@@ -161,9 +161,11 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
 
 	xx = hge(h, tagEVR, &ds->EVRt, (void **) &ds->EVR, NULL);
 	xx = hge(h, tagF, &ds->Ft, (void **) &ds->Flags, NULL);
+/*@-boundsread@*/
 	if (!scareMem && ds->Flags != NULL)
 	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
                                 ds->Flags, ds->Count * sizeof(*ds->Flags));
+/*@=boundsread@*/
 
 /*@-modfilesystem@*/
 if (_rpmds_debug < 0)
@@ -186,6 +188,7 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
 
     nb = 0;
     if (dspfx)	nb += strlen(dspfx) + 1;
+/*@-boundsread@*/
     if (ds->N[ds->i])	nb += strlen(ds->N[ds->i]);
     if (ds->Flags[ds->i] & RPMSENSE_SENSEMASK) {
 	if (nb)	nb++;
@@ -197,7 +200,9 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
 	if (nb)	nb++;
 	nb += strlen(ds->EVR[ds->i]);
     }
+/*@=boundsread@*/
 
+/*@-boundswrite@*/
     t = tbuf = xmalloc(nb + 1);
     if (dspfx) {
 	t = stpcpy(t, dspfx);
@@ -216,6 +221,7 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
 	t = stpcpy(t, ds->EVR[ds->i]);
     }
     *t = '\0';
+/*@=boundswrite@*/
     return tbuf;
 }
 
@@ -252,6 +258,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
     xx = hge(h, RPMTAG_EPOCH, NULL, (void **)&ep, NULL);
 
     t = xmalloc(sizeof(*N) + strlen(n) + 1);
+/*@-boundswrite@*/
     N = (const char **) t;
     t += sizeof(*N);
     N[0] = t;
@@ -267,6 +274,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 	t += strlen(t);
     }
     t = stpcpy( stpcpy( stpcpy( t, v), "-"), r);
+/*@=boundswrite@*/
 
     ds = xcalloc(1, sizeof(*ds));
     ds->h = NULL;
@@ -277,10 +285,14 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
     ds->Nt = -1;	/* XXX to insure that hfd will free */
     ds->EVR = EVR;
     ds->EVRt = -1;	/* XXX to insure that hfd will free */
+/*@-boundswrite@*/
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
+/*@=boundswrite@*/
     ds->i = 0;
     {	char pre[2];
+/*@-boundsread@*/
 	pre[0] = ds->Type[0];
+/*@=boundsread@*/
 	pre[1] = '\0';
 	/*@-nullstate@*/ /* LCL: ds->Type may be NULL ??? */
 	ds->DNEVR = rpmdsNewDNEVR(pre, ds);
@@ -319,15 +331,19 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
     ds->tagN = tagN;
     ds->Count = 1;
     /*@-assignexpose@*/
+/*@-boundswrite@*/
     ds->N = xmalloc(sizeof(*ds->N));		ds->N[0] = N;
     ds->Nt = -1;	/* XXX to insure that hfd will free */
     ds->EVR = xmalloc(sizeof(*ds->EVR));	ds->EVR[0] = EVR;
     ds->EVRt = -1;	/* XXX to insure that hfd will free */
     /*@=assignexpose@*/
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
+/*@=boundswrite@*/
     ds->i = 0;
     {	char t[2];
+/*@-boundsread@*/
 	t[0] = ds->Type[0];
+/*@=boundsread@*/
 	t[1] = '\0';
 	ds->DNEVR = rpmdsNewDNEVR(t, ds);
     }
@@ -362,8 +378,10 @@ const char * rpmdsDNEVR(const rpmds ds)
     const char * DNEVR = NULL;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+/*@-boundsread@*/
 	if (ds->DNEVR != NULL)
 	    DNEVR = ds->DNEVR;
+/*@=boundsread@*/
     }
     return DNEVR;
 }
@@ -373,8 +391,10 @@ const char * rpmdsN(const rpmds ds)
     const char * N = NULL;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+/*@-boundsread@*/
 	if (ds->N != NULL)
 	    N = ds->N[ds->i];
+/*@=boundsread@*/
     }
     return N;
 }
@@ -384,8 +404,10 @@ const char * rpmdsEVR(const rpmds ds)
     const char * EVR = NULL;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+/*@-boundsread@*/
 	if (ds->EVR != NULL)
 	    EVR = ds->EVR[ds->i];
+/*@=boundsread@*/
     }
     return EVR;
 }
@@ -395,8 +417,10 @@ int_32 rpmdsFlags(const rpmds ds)
     int_32 Flags = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+/*@-boundsread@*/
 	if (ds->Flags != NULL)
 	    Flags = ds->Flags[ds->i];
+/*@=boundsread@*/
     }
     return Flags;
 }
@@ -483,6 +507,7 @@ void parseEVR(char * evr,
     char *s, *se;
 
     s = evr;
+/*@-boundsread@*/
     while (*s && xisdigit(*s)) s++;	/* s points to epoch terminator */
     se = strrchr(s, '-');		/* se points to version terminator */
 
@@ -497,16 +522,21 @@ void parseEVR(char * evr,
 	epoch = NULL;	/* XXX disable epoch compare if missing */
 	version = evr;
     }
+/*@=boundsread@*/
     if (se) {
+/*@-boundswrite@*/
 	*se++ = '\0';
+/*@=boundswrite@*/
 	release = se;
     } else {
 	release = NULL;
     }
 
+/*@-boundswrite@*/
     if (ep) *ep = epoch;
     if (vp) *vp = version;
     if (rp) *rp = release;
+/*@=boundswrite@*/
 }
 
 int rpmdsCompare(const rpmds A, const rpmds B)
@@ -518,6 +548,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     int result;
     int sense;
 
+/*@-boundsread@*/
     /* Different names don't overlap. */
     if (strcmp(A->N[A->i], B->N[B->i])) {
 	result = 0;
@@ -560,6 +591,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	    sense = rpmvercmp(aR, bR);
 	}
     }
+/*@=boundsread@*/
     aEVR = _free(aEVR);
     bEVR = _free(bEVR);
 
@@ -617,8 +649,10 @@ int rangeMatchesDepFlags (Header h, const rpmds req)
     rpmds provides = NULL;
     int result = 0;
 
+/*@-boundsread@*/
     if (!(req->Flags[req->i] & RPMSENSE_SENSEMASK) || !req->EVR[req->i] || *req->EVR[req->i] == '\0')
 	return 1;
+/*@=boundsread@*/
 
     /* Get provides information from header */
     provides = rpmdsInit(rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem));
@@ -640,8 +674,10 @@ int rangeMatchesDepFlags (Header h, const rpmds req)
     while (rpmdsNext(provides) >= 0) {
 
 	/* Filter out provides that came along for the ride. */
+/*@-boundsread@*/
 	if (strcmp(provides->N[provides->i], req->N[req->i]))
 	    continue;
+/*@=boundsread@*/
 
 	result = rpmdsCompare(provides, req);
 
@@ -667,12 +703,15 @@ int headerMatchesDepFlags(const Header h, const rpmds req)
     rpmds pkg;
     int rc = 1;	/* XXX assume match, names already match here */
 
+/*@-boundsread@*/
     if (!((req->Flags[req->i] & RPMSENSE_SENSEMASK) && req->EVR[req->i] && *req->EVR[req->i]))
 	return rc;
+/*@=boundsread@*/
 
     /* Get package information from header */
     (void) headerNVR(h, &pkgN, &v, &r);
 
+/*@-boundswrite@*/
     t = alloca(21 + strlen(v) + 1 + strlen(r) + 1);
     pkgEVR = t;
     *t = '\0';
@@ -682,6 +721,7 @@ int headerMatchesDepFlags(const Header h, const rpmds req)
 	    t++;
     }
     (void) stpcpy( stpcpy( stpcpy(t, v) , "-") , r);
+/*@=boundswrite@*/
 
     if ((pkg = rpmdsSingle(RPMTAG_PROVIDENAME, pkgN, pkgEVR, pkgFlags)) != NULL) {
 	rc = rpmdsCompare(pkg, req);

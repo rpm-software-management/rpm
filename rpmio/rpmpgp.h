@@ -1,5 +1,6 @@
 #ifndef	H_RPMPGP
 #define	H_RPMPGP
+/*@-bounds@*/
 
 /** \ingroup rpmio
  * \file rpmio/rpmpgp.h
@@ -1290,4 +1291,5 @@ uint32 pgpCRC(const byte *octets, size_t len)
 #endif
 /*@=fcnuse@*/
 
+/*@=bounds@*/
 #endif	/* H_RPMPGP */

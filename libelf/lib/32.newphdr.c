@@ -46,7 +46,9 @@ _elf_newphdr(Elf *elf, size_t count, unsigned cls)
 	seterr(ERROR_CLASSMISMATCH);
     }
     else if (elf->e_ehdr || _elf_cook(elf)) {
+/*@-boundsread@*/
 	size = _msize(cls, _elf_version, ELF_T_PHDR);
+/*@=boundsread@*/
 	elf_assert(size);
 	if (count) {
 	    if (!(phdr = (char*)malloc(count * size))) {

@@ -6,7 +6,6 @@
 #include "system.h"
 
 #include <rpmcli.h>
-#include "legacy.h"	/* XXX _noDirTokens */
 
 #include "debug.h"
 

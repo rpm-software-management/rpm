@@ -89,9 +89,13 @@ scn_data_layout(Elf_Scn *scn, unsigned v, unsigned type, size_t *algn, unsigned 
 	    len = max(len, sd->sd_data.d_off + fsize);
 	}
 
+/*@-boundsread@*/
 	*flag |= sd->sd_data_flags;
+/*@=boundsread@*/
     }
+/*@-boundswrite@*/
     *algn = scn_align;
+/*@=boundswrite@*/
     return (off_t)len;
 }
 
@@ -127,7 +131,9 @@ _elf32_layout(Elf *elf, unsigned *flag)
     unsigned shnum;
     Elf_Scn *scn;
 
+/*@-boundswrite@*/
     *flag = elf->e_elf_flags | elf->e_phdr_flags;
+/*@=boundswrite@*/
 
     if ((version = ehdr->e_version) == EV_NONE) {
 	version = EV_CURRENT;
@@ -136,14 +142,18 @@ _elf32_layout(Elf *elf, unsigned *flag)
 	seterr(ERROR_UNKNOWN_VERSION);
 	return -1;
     }
+/*@-boundsread@*/
     if ((encoding = ehdr->e_ident[EI_DATA]) == ELFDATANONE) {
 	encoding = native_encoding;
     }
+/*@=boundsread@*/
     if (!valid_encoding(encoding)) {
 	seterr(ERROR_UNKNOWN_ENCODING);
 	return -1;
     }
+/*@-boundsread@*/
     entsize = _fsize(ELFCLASS32, version, ELF_T_EHDR);
+/*@=boundsread@*/
     elf_assert(entsize);
     rewrite(ehdr->e_ehsize, entsize, elf->e_ehdr_flags);
     off = entsize;
@@ -179,7 +189,9 @@ _elf32_layout(Elf *elf, unsigned *flag)
 
 	elf_assert(scn->s_index == shnum);
 
+/*@-boundsread@*/
 	*flag |= scn->s_scn_flags | scn->s_shdr_flags;
+/*@=boundsread@*/
 
 	if (scn->s_index == SHN_UNDEF) {
 	    rewrite(shdr->sh_entsize, 0, scn->s_shdr_flags);
@@ -272,6 +284,7 @@ _elf32_layout(Elf *elf, unsigned *flag)
     rewrite(ehdr->e_shnum, shnum, elf->e_ehdr_flags);
     rewrite(ehdr->e_shentsize, entsize, elf->e_ehdr_flags);
 
+/*@-boundsread@*/
     rewrite(ehdr->e_ident[EI_MAG0], ELFMAG0, elf->e_ehdr_flags);
     rewrite(ehdr->e_ident[EI_MAG1], ELFMAG1, elf->e_ehdr_flags);
     rewrite(ehdr->e_ident[EI_MAG2], ELFMAG2, elf->e_ehdr_flags);
@@ -282,6 +295,7 @@ _elf32_layout(Elf *elf, unsigned *flag)
     rewrite(ehdr->e_version, version, elf->e_ehdr_flags);
 
     *flag |= elf->e_ehdr_flags;
+/*@=boundsread@*/
 
     return off;
 }
@@ -303,7 +317,9 @@ _elf64_layout(Elf *elf, unsigned *flag)
     unsigned shnum;
     Elf_Scn *scn;
 
+/*@-boundswrite@*/
     *flag = elf->e_elf_flags | elf->e_phdr_flags;
+/*@=boundswrite@*/
 
     if ((version = ehdr->e_version) == EV_NONE) {
 	version = EV_CURRENT;
@@ -312,14 +328,18 @@ _elf64_layout(Elf *elf, unsigned *flag)
 	seterr(ERROR_UNKNOWN_VERSION);
 	return -1;
     }
+/*@-boundsread@*/
     if ((encoding = ehdr->e_ident[EI_DATA]) == ELFDATANONE) {
 	encoding = native_encoding;
     }
+/*@=boundsread@*/
     if (!valid_encoding(encoding)) {
 	seterr(ERROR_UNKNOWN_ENCODING);
 	return -1;
     }
+/*@-boundsread@*/
     entsize = _fsize(ELFCLASS64, version, ELF_T_EHDR);
+/*@=boundsread@*/
     elf_assert(entsize);
     rewrite(ehdr->e_ehsize, entsize, elf->e_ehdr_flags);
     off = entsize;
@@ -355,7 +375,9 @@ _elf64_layout(Elf *elf, unsigned *flag)
 
 	elf_assert(scn->s_index == shnum);
 
+/*@-boundsread@*/
 	*flag |= scn->s_scn_flags | scn->s_shdr_flags;
+/*@=boundsread@*/
 
 	if (scn->s_index == SHN_UNDEF) {
 	    rewrite(shdr->sh_entsize, 0, scn->s_shdr_flags);
@@ -378,9 +400,11 @@ _elf64_layout(Elf *elf, unsigned *flag)
 	entsize = scn_entsize(elf, version, shdr->sh_type);
 	if (entsize > 1) {
 	    /* Some architectures use 64-bit hash entries.  */
+/*@-boundsread@*/
 	    if (shdr->sh_type != SHT_HASH
 		|| shdr->sh_entsize != _fsize(elf->e_class, version, ELF_T_ADDR))
 		rewrite(shdr->sh_entsize, entsize, scn->s_shdr_flags);
+/*@=boundsread@*/
 	}
 
 	if (layout) {
@@ -451,6 +475,7 @@ _elf64_layout(Elf *elf, unsigned *flag)
     rewrite(ehdr->e_shnum, shnum, elf->e_ehdr_flags);
     rewrite(ehdr->e_shentsize, entsize, elf->e_ehdr_flags);
 
+/*@-boundsread@*/
     rewrite(ehdr->e_ident[EI_MAG0], ELFMAG0, elf->e_ehdr_flags);
     rewrite(ehdr->e_ident[EI_MAG1], ELFMAG1, elf->e_ehdr_flags);
     rewrite(ehdr->e_ident[EI_MAG2], ELFMAG2, elf->e_ehdr_flags);
@@ -461,6 +486,7 @@ _elf64_layout(Elf *elf, unsigned *flag)
     rewrite(ehdr->e_version, version, elf->e_ehdr_flags);
 
     *flag |= elf->e_ehdr_flags;
+/*@=boundsread@*/
 
     return off;
 }
@@ -474,6 +500,7 @@ static int
 _elf_update_pointers(Elf *elf, char *outbuf, size_t len)
 	/*@globals _elf_errno @*/
 	/*@modifies *elf, _elf_errno @*/
+	/*@requires maxSet(outbuf) >= (len - 1) @*/
 {
     Elf_Scn *scn;
     Scn_Data *sd;
@@ -500,7 +527,9 @@ _elf_update_pointers(Elf *elf, char *outbuf, size_t len)
     }
     if (elf->e_rawdata == elf->e_data) {
 	/* update frozen raw image */
+/*@-boundswrite@*/ /* FIX: realloc ensures annotation? */
 	memcpy(data, outbuf, len);
+/*@=boundswrite@*/
 	elf->e_data = elf->e_rawdata = data;
 	/* cooked data is stored outside the raw image */
 	return 0;
@@ -511,7 +540,9 @@ _elf_update_pointers(Elf *elf, char *outbuf, size_t len)
 	    seterr(ERROR_IO_2BIG);
 	    return -1;
 	}
+/*@-boundsread@*/
 	memcpy(rawdata, outbuf, len);
+/*@=boundsread@*/
 	elf->e_rawdata = rawdata;
     }
     if (data == elf->e_data) {
@@ -568,7 +599,9 @@ _elf_update_pointers(Elf *elf, char *outbuf, size_t len)
 		    seterr(ERROR_IO_2BIG);
 		    return -1;
 		}
+/*@-boundsread@*/
 		memcpy(rawdata, outbuf + off, len);
+/*@=boundsread@*/
 		if (sd->sd_data.d_buf == sd->sd_memdata) {
 		    sd->sd_data.d_buf = rawdata;
 		}
@@ -599,11 +632,15 @@ _elf32_write(Elf *elf, char *outbuf, size_t len)
     elf_assert(len);
     elf_assert(elf->e_ehdr);
     ehdr = (Elf32_Ehdr*)elf->e_ehdr;
+/*@-boundsread@*/
     encode = ehdr->e_ident[EI_DATA];
+/*@=boundsread@*/
 
     src.d_buf = ehdr;
     src.d_type = ELF_T_EHDR;
+/*@-boundsread@*/
     src.d_size = _msize(ELFCLASS32, _elf_version, ELF_T_EHDR);
+/*@=boundsread@*/
     src.d_version = _elf_version;
     dst.d_buf = outbuf;
     dst.d_size = ehdr->e_ehsize;
@@ -631,7 +668,9 @@ _elf32_write(Elf *elf, char *outbuf, size_t len)
 
 	src.d_buf = &scn->s_uhdr;
 	src.d_type = ELF_T_SHDR;
+/*@-boundsread@*/
 	src.d_size = _msize(ELFCLASS32, EV_CURRENT, ELF_T_SHDR);
+/*@=boundsread@*/
 	src.d_version = EV_CURRENT;
 	dst.d_buf = outbuf + ehdr->e_shoff + scn->s_index * ehdr->e_shentsize;
 	dst.d_size = ehdr->e_shentsize;
@@ -683,13 +722,17 @@ _elf32_write(Elf *elf, char *outbuf, size_t len)
     }
 
     /* cleanup */
+/*@-boundswrite@*/
     if (elf->e_readable && _elf_update_pointers(elf, outbuf, len)) {
 	return -1;
     }
+/*@=boundswrite@*/
     /* NOTE: ehdr is no longer valid! */
     ehdr = (Elf32_Ehdr*)elf->e_ehdr; elf_assert(ehdr);
     elf->e_encoding = ehdr->e_ident[EI_DATA];
+/*@-boundsread@*/
     elf->e_version = ehdr->e_ident[EI_VERSION];
+/*@=boundsread@*/
     elf->e_elf_flags &= ~ELF_F_DIRTY;
     elf->e_ehdr_flags &= ~ELF_F_DIRTY;
     elf->e_phdr_flags &= ~ELF_F_DIRTY;
@@ -728,11 +771,15 @@ _elf64_write(Elf *elf, char *outbuf, size_t len)
     elf_assert(len);
     elf_assert(elf->e_ehdr);
     ehdr = (Elf64_Ehdr*)elf->e_ehdr;
+/*@-boundsread@*/
     encode = ehdr->e_ident[EI_DATA];
+/*@=boundsread@*/
 
     src.d_buf = ehdr;
     src.d_type = ELF_T_EHDR;
+/*@-boundsread@*/
     src.d_size = _msize(ELFCLASS64, _elf_version, ELF_T_EHDR);
+/*@=boundsread@*/
     src.d_version = _elf_version;
     dst.d_buf = outbuf;
     dst.d_size = ehdr->e_ehsize;
@@ -760,7 +807,9 @@ _elf64_write(Elf *elf, char *outbuf, size_t len)
 
 	src.d_buf = &scn->s_uhdr;
 	src.d_type = ELF_T_SHDR;
+/*@-boundsread@*/
 	src.d_size = _msize(ELFCLASS64, EV_CURRENT, ELF_T_SHDR);
+/*@=boundsread@*/
 	src.d_version = EV_CURRENT;
 	dst.d_buf = outbuf + ehdr->e_shoff + scn->s_index * ehdr->e_shentsize;
 	dst.d_size = ehdr->e_shentsize;
@@ -812,13 +861,17 @@ _elf64_write(Elf *elf, char *outbuf, size_t len)
     }
 
     /* cleanup */
+/*@-boundswrite@*/
     if (elf->e_readable && _elf_update_pointers(elf, outbuf, len)) {
 	return -1;
     }
+/*@=boundswrite@*/
     /* NOTE: ehdr is no longer valid! */
     ehdr = (Elf64_Ehdr*)elf->e_ehdr; elf_assert(ehdr);
     elf->e_encoding = ehdr->e_ident[EI_DATA];
+/*@-boundsread@*/
     elf->e_version = ehdr->e_ident[EI_VERSION];
+/*@=boundsread@*/
     elf->e_elf_flags &= ~ELF_F_DIRTY;
     elf->e_ehdr_flags &= ~ELF_F_DIRTY;
     elf->e_phdr_flags &= ~ELF_F_DIRTY;
@@ -871,6 +924,7 @@ _elf_output(Elf *elf, int fd, size_t len, off_t (*_elf_write)(Elf*, char*, size_
 	    return -1;
 	}
     }
+/*@-boundswrite@*/ /* FIX: mmap ensures annotation */
     buf = (void*)mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (buf != (char*)-1) {
 /*@-nullpass@*/
@@ -882,6 +936,7 @@ _elf_output(Elf *elf, int fd, size_t len, off_t (*_elf_write)(Elf*, char*, size_
 /*@=nullpass@*/
 	return err;
     }
+/*@=boundswrite@*/
 #endif /* HAVE_MMAP */
     if (!(buf = (char*)malloc(len))) {
 	seterr(ERROR_MEM_OUTBUF);

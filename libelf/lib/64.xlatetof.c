@@ -226,6 +226,7 @@ static const char rcsid[] = "@(#) Id: 64.xlatetof.c,v 1.14 2002/06/11 18:53:22 m
     seq(copy_xword(e,io,st_size),	\
     /**/))))))
 
+/*@-boundswrite@*/ /* FIX: memmove precondition? */
 static size_t
 byte_copy(unsigned char *dst, const unsigned char *src, size_t n)
 	/*@modifies *dst @*/
@@ -281,6 +282,7 @@ copy_type(rela_64,11,Elf64_Rela,copy_rela_11)
 copy_type(rel_64,11,Elf64_Rel,copy_rel_11)
 copy_type(shdr_64,11,Elf64_Shdr,copy_shdr_11)
 copy_type(sym_64,11,Elf64_Sym,copy_sym_11)
+/*@=boundswrite@*/
 
 typedef size_t (*xlator)(unsigned char* dst, const unsigned char* src, size_t n)
 	/*@modifies *dst @*/;
@@ -397,11 +399,13 @@ _elf64_xltsize(const Elf_Data *src, unsigned dv, unsigned encode, int tof) {
 	seterr(ERROR_UNKNOWN_TYPE);
 	return (size_t)-1;
     }
+/*@-boundsread@*/
     if (!(op = translator(sv, dv, encode, type, tof))) {
 	seterr(ERROR_UNKNOWN_TYPE);
 	return (size_t)-1;
     }
     return (*op)(NULL, src->d_buf, src->d_size);
+/*@=boundsread@*/
 }
 
 /*
@@ -441,18 +445,24 @@ elf64_xlate(/*@returned@*/ Elf_Data *dst, const Elf_Data *src, unsigned encode, 
 	seterr(ERROR_UNKNOWN_TYPE);
 	return NULL;
     }
+/*@-boundsread@*/
     op = translator(sv, dv, encode, type, tof);
+/*@=boundsread@*/
     if (!op) {
 	seterr(ERROR_UNKNOWN_TYPE);
 	return NULL;
     }
+/*@-boundsread@*/
     dsize = (*op)(NULL, src->d_buf, src->d_size);
+/*@=boundsread@*/
     if (dst->d_size < dsize) {
 	seterr(ERROR_DST2SMALL);
 	return NULL;
     }
     if (dsize) {
+/*@-boundsread@*/
 	tmp = (*op)(dst->d_buf, src->d_buf, src->d_size);
+/*@=boundsread@*/
 	elf_assert(tmp == dsize);
     }
     dst->d_size = dsize;

@@ -131,6 +131,7 @@ singleOptionDefaultValue(int lineLength,
     char * l = le;
 
     if (le == NULL) return NULL;	/* XXX can't happen */
+/*@-boundswrite@*/
     *le = '\0';
     *le++ = '(';
     strcpy(le, defstr);	le += strlen(le);
@@ -177,6 +178,7 @@ singleOptionDefaultValue(int lineLength,
     }
     *le++ = ')';
     *le = '\0';
+/*@=boundswrite@*/
 
     return l;
 }
@@ -207,6 +209,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
     if (opt->longName)	nb += strlen(opt->longName);
     if (argDescrip)	nb += strlen(argDescrip);
 
+/*@-boundswrite@*/
     left = malloc(nb);
     if (left == NULL) return;	/* XXX can't happen */
     left[0] = '\0';
@@ -223,6 +226,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 		((opt->argInfo & POPT_ARGFLAG_ONEDASH) ? "-" : "--"),
 		opt->longName);
     if (!*left) goto out;
+
     if (argDescrip) {
 	char * le = left + strlen(left);
 
@@ -306,6 +310,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 	    *le++ = ']';
 	*le = '\0';
     }
+/*@=boundswrite@*/
 
     if (help)
 	fprintf(fp,"  %-*s   ", maxLeftCol, left);
@@ -634,6 +639,7 @@ static int showShortOptions(const struct poptOption * opt, FILE * fp,
     }
     /*@=branchstate@*/
 
+/*@-boundswrite@*/
     if (opt != NULL)
     for (; (opt->longName || opt->shortName || opt->arg); opt++) {
 	if (opt->shortName && !(opt->argInfo & POPT_ARG_MASK))
@@ -642,6 +648,7 @@ static int showShortOptions(const struct poptOption * opt, FILE * fp,
 	    if (opt->arg)	/* XXX program error */
 		(void) showShortOptions(opt->arg, fp, str);
     } 
+/*@=boundswrite@*/
 
     if (s != str || *s != '\0')
 	return 0;

@@ -5,6 +5,7 @@ Makefile
 Makefile.in
 .libs
 *.la
+*.lcd
 *.lo
 tdigest
 tdir

@@ -2,7 +2,7 @@
 
 #include "system.h"
 
-#include "header.h"
+#include <rpmlib.h>
 #include "rpmlead.h"
 #include "signature.h"
 

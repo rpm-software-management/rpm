@@ -1,3 +1,4 @@
+/*@-boundsread@*/
 /** \ingroup rpmcli
  * \file lib/poptI.c
  *  Popt tables for install modes.
@@ -240,3 +241,4 @@ struct poptOption rpmInstallPoptTable[] = {
    POPT_TABLEEND
 };
 /*@=bitwisesigned =compmempass @*/
+/*@=boundsread@*/

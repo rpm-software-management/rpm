@@ -13,8 +13,7 @@
 +strict			# lclint level
 
 # --- in progress
-#+bounds		# 629
-#+boundswrite		# 317
++slovak-fcns
 -redecl
 
 # --- +partial artifacts
@@ -28,6 +27,7 @@
 -varuse
 
 # --- not-yet at strict level
++bounds			# 0
 -bitwisesigned		# 255
 -elseifcomplete		# 95 occurences
 -exportconst		# 839 occurences

@@ -120,6 +120,7 @@ fnpyKey * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds,
  * @retval keyp		added package key pointer (or NULL)
  * @return		associated package key, NULL if none
  */
+/*@null@*/
 fnpyKey rpmalSatisfiesDepend(const rpmal al, const rpmds ds,
 		/*@null@*/ alKey * keyp)
 	/*@globals fileSystem @*/

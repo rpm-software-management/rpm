@@ -102,8 +102,10 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
 
     switch (what) {
     case RPMCALLBACK_INST_OPEN_FILE:
+/*@-boundsread@*/
 	if (filename == NULL || filename[0] == '\0')
 	    return NULL;
+/*@=boundsread@*/
 	fd = Fopen(filename, "r.ufdio");
 	/*@-type@*/ /* FIX: still necessary? */
 	if (fd)

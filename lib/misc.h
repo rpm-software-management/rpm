@@ -38,8 +38,10 @@ void freeSplitString( /*@only@*/ char ** list)
 	/*@modifies *s */
 {
     char * t;
+/*@-boundswrite@*/
     for (t = s + strlen(s) - 1; *t == c && t >= s; t--)
 	*t = '\0';
+/*@=boundswrite@*/
     return s;
 }
 

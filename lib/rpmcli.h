@@ -12,8 +12,10 @@
 /** \ingroup rpmcli
  * Should version 3 packages be produced?
  */
+/*@-redecl@*/
 /*@unchecked@*/
 extern int _noDirTokens;
+/*@=redecl@*/
 
 #ifdef __cplusplus
 extern "C" {

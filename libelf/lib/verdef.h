@@ -84,6 +84,7 @@ static void
 __load_verdaux(verdaux_mtype *dst, const verdaux_ftype *src, unsigned enc)
 	/*@modifies *dst @*/
 {
+/*@-boundsread@*/
     if (enc == ELFDATA2LSB) {
 	dst->vda_name = __load_u32L(src->vda_name);
 	dst->vda_next = __load_u32L(src->vda_next);
@@ -92,12 +93,14 @@ __load_verdaux(verdaux_mtype *dst, const verdaux_ftype *src, unsigned enc)
 	dst->vda_name = __load_u32M(src->vda_name);
 	dst->vda_next = __load_u32M(src->vda_next);
     }
+/*@=boundsread@*/
 }
 
 static void
 __load_verdef(verdef_mtype *dst, const verdef_ftype *src, unsigned enc)
 	/*@modifies *dst @*/
 {
+/*@-boundsread@*/
     if (enc == ELFDATA2LSB) {
 	dst->vd_version = __load_u16L(src->vd_version);
 	dst->vd_flags   = __load_u16L(src->vd_flags);
@@ -116,6 +119,7 @@ __load_verdef(verdef_mtype *dst, const verdef_ftype *src, unsigned enc)
 	dst->vd_aux     = __load_u32M(src->vd_aux);
 	dst->vd_next    = __load_u32M(src->vd_next);
     }
+/*@=boundsread@*/
 }
 
 typedef verdaux_ftype		verdaux_stype;

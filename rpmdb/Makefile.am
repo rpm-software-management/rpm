@@ -52,9 +52,10 @@ install-data-local:
 	sed -e "s|^dependency_libs='|& -lrpmio|" < librpmdb.la > .librpmdb.la && \
 	mv .librpmdb.la librpmdb.la
 
-tagtbl.c: $(top_srcdir)/lib/rpmlib.h 
-	@echo '#include "system.h"' > $@
-	@echo '#include "lib/rpmlib.h"' >> $@
+tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmlib.h 
+	@echo '/*@-bounds@*/' > $@
+	@echo '#include "system.h"' >> $@
+	@echo '#include <rpmlib.h>' >> $@
 	@echo '' >> $@
 	@echo '/*@observer@*/ /*@unchecked@*/' >> $@
 	@echo 'static const struct headerTagTableEntry_s rpmTagTbl[] = {' >> $@
@@ -67,6 +68,7 @@ tagtbl.c: $(top_srcdir)/lib/rpmlib.h
 	@echo '' >> $@
 	@echo '/*@unchecked@*/' >> $@
 	@echo 'const int rpmTagTableSize = sizeof(rpmTagTbl) / sizeof(rpmTagTbl[0]) - 1;' >> $@
+	@echo '/*@=bounds@*/' >> $@
 
 db.h:
 	@ln -sf ../$(WITH_DB_SUBDIR)/db.h $@
@@ -82,6 +84,9 @@ clean-local:
 
 # XXX TODO: figger why .created addition here dinna work
 BUILT_SOURCES = tagtbl.c # .created
+
+rpmdb.lcd: Makefile.am ${librpmdb_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
+	-lclint ${DEFS} ${INCLUDES} ${librpmdb_la_SOURCES} -dump $@ 2>/dev/null
 
 .PHONY:	sources
 sources:

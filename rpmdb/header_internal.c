@@ -21,9 +21,11 @@ char ** headerGetLangs(Header h)
     if ((table = (char **)xcalloc((count+1), sizeof(char *))) == NULL)
 	return NULL;
 
+/*@-boundswrite@*/
     for (i = 0, e = *s; i < count > 0; i++, e += strlen(e)+1)
 	table[i] = e;
     table[count] = NULL;
+/*@=boundswrite@*/
 
     /*@-nullret@*/ return table; /*@=nullret@*/	/* LCL: double indirection? */
 }

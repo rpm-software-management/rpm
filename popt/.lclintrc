@@ -14,7 +14,7 @@
 
 # --- in progress
 #+bounds		# 56
-#+boundswrite		# 40
++boundswrite		# 40
 
 # --- +partial artifacts
 -exportlocal		# 14

@@ -47,6 +47,11 @@ noinst_HEADERS = \
 	libelf.h nlist.h gelf.h sys_elf.h \
 	byteswap.h errors.h ext_types.h private.h elf_repl.h $(HDRS_V)
 
+BUILT_SOURCES = libelf.lcd
+
+libelf.lcd: Makefile.am ${libelf_la_SOURCES} ${noinst_HEADERS}
+	-lclint ${DEFS} ${INCLUDES} ${libelf_la_SOURCES} -dump $@ 2>/dev/null
+
 .PHONY: sources
 sources:
 	@echo $(libelf_la_SOURCES:%=libelf/lib/%)

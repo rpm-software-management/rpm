@@ -93,9 +93,11 @@ _elf_fsize(unsigned cls, Elf_Type type, unsigned ver)
     else if (!valid_type(type)) {
 	seterr(ERROR_UNKNOWN_TYPE);
     }
+/*@-boundsread@*/
     else if (!(n = _fsize(cls, ver, type))) {
 	seterr(ERROR_UNKNOWN_TYPE);
     }
+/*@=boundsread@*/
     return n;
 }
 
@@ -147,9 +149,11 @@ gelf_msize(Elf *elf, Elf_Type type, size_t count, unsigned ver) {
 	else if (!valid_type(type)) {
 	    seterr(ERROR_UNKNOWN_TYPE);
 	}
+/*@-boundsread@*/
 	else if (!(n = _msize(elf->e_class, ver, type))) {
 	    seterr(ERROR_UNKNOWN_TYPE);
 	}
+/*@=boundsread@*/
 	else {
 	    return count * n;
 	}

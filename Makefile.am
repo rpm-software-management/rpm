@@ -102,6 +102,16 @@ rpm2cpio_LDADD =	$(myLDADD) @LIBMISC@
 
 $(PROGRAMS): 		$(myLDADD) @WITH_APIDOCS_TARGET@
 
+.PHONY:	splint
+splint:
+	splint \
+	    -load build/rpmbuild.lcd \
+	    -load lib/rpmlib.lcd \
+	    -load rpmdb/rpmdb.lcd \
+	    -load rpmio/rpmio.lcd \
+	    -load popt/popt.lcd \
+		$(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES)
+
 .PHONY:	lclint
 lclint:
 	lclint -Dlint $(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES) \

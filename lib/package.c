@@ -1,3 +1,4 @@
+/*@-boundsread@*/
 /** \ingroup header
  * \file lib/package.c
  */
@@ -159,7 +160,9 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
     int i;
 
     {	struct stat st;
+/*@-boundswrite@*/
 	memset(&st, 0, sizeof(st));
+/*@=boundswrite@*/
 	(void) fstat(Fileno(fd), &st);
 	/* if fd points to a socket, pipe, etc, st.st_size is *always* zero */
 	if (S_ISREG(st.st_mode) && st.st_size < sizeof(*l))
@@ -378,7 +381,9 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 
 /** @todo Implement disable/enable/warn/error/anal policy. */
 
+/*@-boundswrite@*/
     buf[0] = '\0';
+/*@=boundswrite@*/
     switch (rpmVerifySignature(ts, buf)) {
     case RPMSIG_OK:		/* Signature is OK. */
 	rpmMessage(RPMMESS_DEBUG, "%s: %s", fn, buf);
@@ -406,7 +411,9 @@ exit:
 	headerMergeLegacySigs(h, sig);
 
 	/* Bump reference count for return. */
+/*@-boundswrite@*/
 	*hdrp = headerLink(h, "ReadPackageFile *hdrp");
+/*@=boundswrite@*/
     }
     h = headerFree(h, "ReadPackageFile");
     if (ts->sig != NULL)
@@ -416,3 +423,4 @@ exit:
     sig = rpmFreeSignature(sig);
     return rc;
 }
+/*@=boundsread@*/

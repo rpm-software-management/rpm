@@ -86,6 +86,7 @@ static void
 __load_vernaux(vernaux_mtype *dst, const vernaux_ftype *src, unsigned enc)
 	/*@modifies *dst @*/
 {
+/*@-boundsread@*/
     if (enc == ELFDATA2LSB) {
 	dst->vna_hash  = __load_u32L(src->vna_hash);
 	dst->vna_flags = __load_u16L(src->vna_flags);
@@ -100,12 +101,14 @@ __load_vernaux(vernaux_mtype *dst, const vernaux_ftype *src, unsigned enc)
 	dst->vna_name  = __load_u32M(src->vna_name);
 	dst->vna_next  = __load_u32M(src->vna_next);
     }
+/*@=boundsread@*/
 }
 
 static void
 __load_verneed(verneed_mtype *dst, const verneed_ftype *src, unsigned enc)
 	/*@modifies *dst @*/
 {
+/*@-boundsread@*/
     if (enc == ELFDATA2LSB) {
 	dst->vn_version = __load_u16L(src->vn_version);
 	dst->vn_cnt     = __load_u16L(src->vn_cnt);
@@ -120,6 +123,7 @@ __load_verneed(verneed_mtype *dst, const verneed_ftype *src, unsigned enc)
 	dst->vn_aux     = __load_u32M(src->vn_aux);
 	dst->vn_next    = __load_u32M(src->vn_next);
     }
+/*@=boundsread@*/
 }
 
 typedef vernaux_ftype		vernaux_stype;

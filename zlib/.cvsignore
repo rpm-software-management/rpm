@@ -26,5 +26,6 @@ mkinstalldirs
 stamp-h
 stamp-h.in
 *.la
+*.lcd
 *.lo
 zlib-*.tar.gz

@@ -90,13 +90,17 @@ elf_end(Elf *elf) {
 	elf_assert(elf->e_parent->e_magic == ELF_MAGIC);
 	elf_assert(elf->e_parent->e_kind == ELF_K_AR);
 	siblings = &elf->e_parent->e_members;
+/*@-boundsread@*/
 	while (*siblings) {
 	    if (*siblings == elf) {
+/*@-boundswrite@*/
 		*siblings = elf->e_link;
+/*@=boundswrite@*/
 		break;
 	    }
 	    siblings = &(*siblings)->e_link;
 	}
+/*@=boundsread@*/
 	elf_end(elf->e_parent);
 	_elf_free(elf->e_arhdr);
     }

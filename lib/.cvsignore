@@ -6,4 +6,5 @@ getdate.c
 tagtable.c
 .libs
 *.la
+*.lcd
 *.lo

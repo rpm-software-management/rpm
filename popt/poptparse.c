@@ -10,6 +10,7 @@
 
 #define POPT_ARGV_ARRAY_GROW_DELTA 5
 
+/*@-boundswrite@*/
 int poptDupArgv(int argc, const char **argv,
 		int * argcPtr, const char *** argvPtr)
 {
@@ -50,7 +51,9 @@ int poptDupArgv(int argc, const char **argv,
 	*argcPtr = argc;
     return 0;
 }
+/*@=boundswrite@*/
 
+/*@-bounds@*/
 int poptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
 {
     const char * src;
@@ -116,3 +119,4 @@ exit:
     if (argv) free(argv);
     return rc;
 }
+/*@=bounds@*/

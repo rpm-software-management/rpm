@@ -2,6 +2,7 @@
 
 #include "system.h"
 
+#include <rpmlib.h>
 #include "rpmlead.h"
 #include "signature.h"
 #include "debug.h"

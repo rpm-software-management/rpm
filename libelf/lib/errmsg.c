@@ -65,9 +65,11 @@ elf_errmsg(int err) {
 	err = _elf_errno;
     }
 
+/*@-boundsread@*/
     if (err < 0 || err >= ERROR_NUM || _messages[err] == NULL) {
 	err = ERROR_UNKNOWN;
     }
+/*@=boundsread@*/
 
 #if HAVE_CATGETS
     if (_libelf_cat == (nl_catd)0) {

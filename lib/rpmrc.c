@@ -1,3 +1,4 @@
+/*@-bounds@*/
 /*@-mods@*/
 #include "system.h"
 
@@ -1880,3 +1881,4 @@ int rpmShowRC(FILE * fp)
     return 0;
 }
 /*@=mods@*/
+/*@=bounds@*/

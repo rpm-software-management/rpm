@@ -13,8 +13,8 @@
 +strict			# lclint level
 
 # --- in progress
-#+bounds		# 675
-#+boundswrite		# 94
++boundsread		# 0
++boundswrite		# 0
 
 -branchstate		# 77
 -compdef		# 85
@@ -33,9 +33,9 @@
 -unsignedcompare	# 11
 -usereleased		# 50
 
--immediatetrans		# 19
--kepttrans		# 15
--temptrans		# 15
+-immediatetrans		# 18
+-kepttrans		# 11
+-temptrans		# 20
 
 # --- +partial artifacts
 -declundef

@@ -326,8 +326,10 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 	    /*@=assignexpose =dependenttrans =observertrans@*/
 	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
 			? strlen(dieNeedle->dirName) : 0);
+/*@-boundswrite@*/
 	    die = bsearch(dieNeedle, al->dirs, al->numDirs,
 			       sizeof(*dieNeedle), dieCompare);
+/*@=boundswrite@*/
 	    if (die == NULL)
 		continue;
 
@@ -339,7 +341,9 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 		die->numFiles--;
 		if (i > die->numFiles)
 		    /*@innercontinue@*/ continue;
+/*@-bounds@*/
 		memmove(fie, fie+1, (die->numFiles - i));
+/*@=bounds@*/
 	    }
 	    if (die->numFiles > 0) {
 		if (last > i)
@@ -352,7 +356,9 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 	    al->numDirs--;
 	    if ((die - al->dirs) > al->numDirs)
 		continue;
+/*@-bounds@*/
 	    memmove(die, die+1, (al->numDirs - (die - al->dirs)));
+/*@=bounds@*/
 	}
 
 	if (origNumDirs > al->numDirs) {
@@ -366,7 +372,9 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
     alp->provides = rpmdsFree(alp->provides);
     alp->fi = rpmfiFree(alp->fi, 1);
 
+/*@-boundswrite@*/
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
+/*@=boundswrite@*/
     return;
 }
 

@@ -1,3 +1,4 @@
+/*@+boundswrite@*/
 /*
 begin.c - implementation of the elf_begin(3) and elf_memory(3) functions.
 Copyright (C) 1995 - 2001 Michael Riepe <michael@stud.uni-hannover.de>
@@ -52,9 +53,11 @@ static const char fmag[] = ARFMAG;
 static unsigned long
 getnum(const char *str, size_t len, int base, int *err)
 	/*@modifies *err @*/
+	/*@requires maxSet(err) >= 0 @*/
 {
     unsigned long result = 0;
 
+/*@-boundsread@*/
     while (len && *str == ' ') {
 	str++; len--;
     }
@@ -64,6 +67,7 @@ getnum(const char *str, size_t len, int base, int *err)
     while (len && *str == ' ') {
 	str++; len--;
     }
+/*@=boundsread@*/
     if (len) {
 	*err = len;
     }
@@ -90,10 +94,14 @@ _elf_init_ar(Elf *elf)
 	if (memcmp(hdr->ar_fmag, fmag, sizeof(fmag) - 1)) {
 	    break;
 	}
+/*@-boundsread@*/
 	if (hdr->ar_name[0] != '/') {
 	    break;
 	}
+/*@-boundswrite@*/
 	size = getnum(hdr->ar_size, sizeof(hdr->ar_size), 10, &err);
+/*@=boundswrite @*/
+/*@=boundsread@*/
 	if (err || !size) {
 	    break;
 	}
@@ -101,6 +109,7 @@ _elf_init_ar(Elf *elf)
 	if (offset + size > elf->e_size) {
 	    break;
 	}
+/*@-boundsread@*/
 	if (hdr->ar_name[1] == '/' && hdr->ar_name[2] == ' ') {
 	    elf->e_strtab = elf->e_data + offset;
 	    elf->e_strlen = size;
@@ -109,6 +118,7 @@ _elf_init_ar(Elf *elf)
 	if (elf->e_symtab || hdr->ar_name[1] != ' ') {
 	    break;
 	}
+/*@=boundsread@*/
 	elf->e_symtab = elf->e_data + offset;
 	elf->e_symlen = size;
 	offset += size + (size & 1);
@@ -148,6 +158,7 @@ _elf_arhdr(Elf *arf)
     }
 
     name = hdr->ar_name;
+/*@-boundsread@*/
     for (namelen = sizeof(hdr->ar_name); namelen > 0; namelen--) {
 	if (name[namelen - 1] != ' ') {
 	    break;
@@ -159,7 +170,9 @@ _elf_arhdr(Elf *arf)
 		seterr(ERROR_ARSTRTAB);
 		return NULL;
 	    }
+/*@-boundswrite@*/
 	    tmp = getnum(&name[1], namelen - 1, 10, &err);
+/*@=boundswrite@*/
 	    if (err) {
 		seterr(ERROR_ARSPECIAL);
 		return NULL;
@@ -188,11 +201,13 @@ _elf_arhdr(Elf *arf)
     else if (namelen > 0 && name[namelen - 1] == '/') {
 	namelen--;
     }
-    /* XXX some broken software omits the trailing slash
+/*@=boundsread@*/
+    /* XXX some broken software omits the trailing slash */
+#if 0
     else {
 	namelen = 0;
     }
-    */
+#endif
 
     if (!(arhdr = (Elf_Arhdr*)malloc(sizeof(*arhdr) +
 		     sizeof(hdr->ar_name) + namelen + 2))) {
@@ -202,11 +217,13 @@ _elf_arhdr(Elf *arf)
 
     arhdr->ar_name = NULL;
     arhdr->ar_rawname = (char*)(arhdr + 1);
+/*@-boundsread -boundswrite @*/
     arhdr->ar_date = getnum(hdr->ar_date, sizeof(hdr->ar_date), 10, &err);
     arhdr->ar_uid = getnum(hdr->ar_uid, sizeof(hdr->ar_uid), 10, &err);
     arhdr->ar_gid = getnum(hdr->ar_gid, sizeof(hdr->ar_gid), 10, &err);
     arhdr->ar_mode = getnum(hdr->ar_mode, sizeof(hdr->ar_mode), 8, &err);
     arhdr->ar_size = getnum(hdr->ar_size, sizeof(hdr->ar_size), 10, &err);
+/*@=boundsread =boundswrite @*/
     if (err) {
 	free(arhdr);
 	seterr(ERROR_ARHDR);
@@ -218,6 +235,7 @@ _elf_arhdr(Elf *arf)
 	return NULL;
     }
 
+/*@-boundswrite@*/
     memcpy(arhdr->ar_rawname, hdr->ar_name, sizeof(hdr->ar_name));
     arhdr->ar_rawname[sizeof(hdr->ar_name)] = '\0';
 
@@ -226,6 +244,7 @@ _elf_arhdr(Elf *arf)
 	memcpy(arhdr->ar_name, name, namelen);
 	arhdr->ar_name[namelen] = '\0';
     }
+/*@=boundswrite@*/
 
     return arhdr;
 }
@@ -238,9 +257,11 @@ _elf_check_type(Elf *elf, size_t size)
     if (size >= EI_NIDENT && !memcmp(elf->e_data, ELFMAG, SELFMAG)) {
 	elf->e_kind = ELF_K_ELF;
 	elf->e_idlen = EI_NIDENT;
+/*@-boundsread@*/
 	elf->e_class = elf->e_data[EI_CLASS];
 	elf->e_encoding = elf->e_data[EI_DATA];
 	elf->e_version = elf->e_data[EI_VERSION];
+/*@=boundsread@*/
     }
     else if (size >= SARMAG && !memcmp(elf->e_data, ARMAG, SARMAG)) {
 	_elf_init_ar(elf);
@@ -303,7 +324,9 @@ elf_begin(int fd, Elf_Cmd cmd, Elf *ref) {
 	seterr(ERROR_MEM_ELF);
 	return NULL;
     }
+/*@-boundswrite@*/ /* structure assignment */
     *elf = _elf_init;
+/*@=boundswrite@*/
     elf->e_fd = fd;
     elf->e_parent = ref;
     elf->e_size = elf->e_dsize = size;
@@ -363,6 +386,7 @@ elf_begin(int fd, Elf_Cmd cmd, Elf *ref) {
 	     * original image, we have to re-read the archive file.
 	     * Will fail if the archive's file descriptor is disabled.
 	     */
+/*@-boundswrite@*/
 	    if (!ref->e_cooked) {
 		ref->e_cooked = 1;
 	    }
@@ -373,6 +397,7 @@ elf_begin(int fd, Elf_Cmd cmd, Elf *ref) {
 		free(elf);
 		return NULL;
 	    }
+/*@=boundswrite@*/
 	}
 	elf->e_next = offset + size + (size & 1);
 	elf->e_disabled = ref->e_disabled;
@@ -385,6 +410,7 @@ elf_begin(int fd, Elf_Cmd cmd, Elf *ref) {
 	ref->e_off = elf->e_next;
     }
     else if (size) {
+/*@-boundswrite@*/
 #if HAVE_MMAP
 	/*
 	 * Using mmap on writable files will interfere with elf_update
@@ -398,6 +424,7 @@ elf_begin(int fd, Elf_Cmd cmd, Elf *ref) {
 	    free(elf);
 	    return NULL;
 	}
+/*@=boundswrite@*/
     }
 
     _elf_check_type(elf, size);
@@ -422,7 +449,9 @@ elf_memory(char *image, size_t size) {
 	seterr(ERROR_MEM_ELF);
 	return NULL;
     }
+/*@-boundswrite@*/ /* structure assignment */
     *elf = _elf_init;
+/*@=boundswrite@*/
     elf->e_size = elf->e_dsize = size;
     elf->e_data = elf->e_rawdata = image;
     elf->e_readable = 1;
@@ -444,3 +473,4 @@ gelf_getclass(Elf *elf) {
 }
 
 #endif /* __LIBELF64 */
+/*@=boundswrite@*/

@@ -1,4 +1,4 @@
-/*@-mustmod -sizeoftype @*/
+/*@-bounds -mustmod -sizeoftype @*/
 /*-
  * Copyright (c) 1992, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -353,4 +353,4 @@ COPY:	    			b = t;
 /*@=usereleased@*/
 	return (0);
 }
-/*@=mustmod =sizeoftype @*/
+/*@=bounds =mustmod =sizeoftype @*/

@@ -1,3 +1,4 @@
+/*@-bounds@*/
 /** \ingroup rpmcli
  * \file lib/poptQV.c
  *  Popt tables for query/verify modes.
@@ -312,3 +313,4 @@ struct poptOption rpmSignPoptTable[] = {
 
    POPT_TABLEEND
 };
+/*@=bounds@*/

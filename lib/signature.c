@@ -45,6 +45,7 @@ int rpmLookupSignatureType(int action)
     case RPMLOOKUPSIG_QUERY:
 	if (disabled)
 	    break;	/* Disabled */
+/*@-boundsread@*/
       { const char *name = rpmExpand("%{?_signature}", NULL);
 	if (!(name && *name != '\0'))
 	    rc = 0;
@@ -60,6 +61,7 @@ int rpmLookupSignatureType(int action)
 	    rc = -1;	/* Invalid %_signature spec in macro file */
 	name = _free(name);
       }	break;
+/*@=boundsread@*/
     }
     return rc;
 }
@@ -80,13 +82,17 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 	char *pgpvbin;
 	struct stat st;
 
+/*@-boundsread@*/
 	if (!(pgpbin && pgpbin[0] != '\0')) {
 	    pgpbin = _free(pgpbin);
 	    saved_pgp_version = -1;
 	    return NULL;
 	}
+/*@=boundsread@*/
+/*@-boundswrite@*/
 	pgpvbin = (char *)alloca(strlen(pgpbin) + sizeof("v"));
 	(void)stpcpy(stpcpy(pgpvbin, pgpbin), "v");
+/*@=boundswrite@*/
 
 	if (stat(pgpvbin, &st) == 0)
 	    saved_pgp_version = PGP_5;
@@ -96,8 +102,10 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 	    saved_pgp_version = PGP_NOTDETECTED;
     }
 
+/*@-boundswrite@*/
     if (pgpVer && pgpbin)
 	*pgpVer = saved_pgp_version;
+/*@=boundswrite@*/
     return pgpbin;
 }
 
@@ -160,8 +168,10 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
 
+/*@-boundswrite@*/
     if (headerp)
 	*headerp = NULL;
+/*@=boundswrite@*/
 
     buf[0] = 0;
     switch (sig_type) {
@@ -198,7 +208,9 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 	    if (! headerGetEntry(h, RPMSIGTAG_SIZE, &type,
 				(void **)&archSize, &count))
 		break;
+/*@-boundsread@*/
 	    rc = checkSize(fd, sigSize, pad, *archSize);
+/*@=boundsread@*/
 	}
 	if (pad && timedRead(fd, buf, pad) != pad)
 	    rc = RPMRC_SHORTREAD;
@@ -207,8 +219,10 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 	break;
     }
 
+/*@-boundswrite@*/
     if (headerp && rc == RPMRC_OK)
 	*headerp = headerLink(h, NULL);
+/*@=boundswrite@*/
 
     h = headerFree(h, NULL);
 
@@ -267,7 +281,9 @@ static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
     char *const *av;
     int rc;
 
+/*@-boundswrite@*/
     (void) stpcpy( stpcpy(sigfile, file), ".sig");
+/*@=boundswrite@*/
 
     addMacro(NULL, "__plaintext_filename", NULL, file, -1);
     addMacro(NULL, "__signature_filename", NULL, sigfile, -1);
@@ -285,8 +301,10 @@ static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
 	(void) close(inpipe[1]);
 
 	(void) dosetenv("PGPPASSFD", "3", 1);
+/*@-boundsread@*/
 	if (pgp_path && *pgp_path != '\0')
 	    (void) dosetenv("PGPPATH", pgp_path, 1);
+/*@=boundsread@*/
 
 	/* dosetenv("PGPPASS", passPhrase, 1); */
 
@@ -295,14 +313,18 @@ static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
 	    case PGP_2:
 		cmd = rpmExpand("%{?__pgp_sign_cmd}", NULL);
 		rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
+/*@-boundsread@*/
 		if (!rc)
 		    rc = execve(av[0], av+1, environ);
+/*@=boundsread@*/
 		break;
 	    case PGP_5:
 		cmd = rpmExpand("%{?__pgp5_sign_cmd}", NULL);
 		rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
+/*@-boundsread@*/
 		if (!rc)
 		    rc = execve(av[0], av+1, environ);
+/*@=boundsread@*/
 		break;
 	    case PGP_UNKNOWN:
 	    case PGP_NOTDETECTED:
@@ -337,10 +359,13 @@ static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
 	return 1;
     }
 
+/*@-boundswrite@*/
     *pktlen = st.st_size;
     rpmMessage(RPMMESS_DEBUG, _("PGP sig size: %d\n"), *pktlen);
     *pkt = xmalloc(*pktlen);
+/*@=boundswrite@*/
 
+/*@-boundsread@*/
     {	FD_t fd;
 
 	rc = 0;
@@ -351,13 +376,16 @@ static int makePGPSignature(const char * file, /*@out@*/ byte ** pkt,
 	    (void) Fclose(fd);
 	}
 	if (rc != *pktlen) {
+/*@-boundswrite@*/
 	    *pkt = _free(*pkt);
+/*@=boundswrite@*/
 	    rpmError(RPMERR_SIGGEN, _("unable to read the signature\n"));
 	    return 1;
 	}
     }
 
     rpmMessage(RPMMESS_DEBUG, _("Got %d bytes of PGP sig\n"), *pktlen);
+/*@=boundsread@*/
 
     return 0;
 }
@@ -384,7 +412,9 @@ static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
     char *const *av;
     int rc;
 
+/*@-boundswrite@*/
     (void) stpcpy( stpcpy(sigfile, file), ".sig");
+/*@=boundswrite@*/
 
     addMacro(NULL, "__plaintext_filename", NULL, file, -1);
     addMacro(NULL, "__signature_filename", NULL, sigfile, -1);
@@ -399,13 +429,17 @@ static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
 	(void) dup2(inpipe[0], 3);
 	(void) close(inpipe[1]);
 
+/*@-boundsread@*/
 	if (gpg_path && *gpg_path != '\0')
 	    (void) dosetenv("GNUPGHOME", gpg_path, 1);
+/*@=boundsread@*/
 
 	cmd = rpmExpand("%{?__gpg_sign_cmd}", NULL);
 	rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
+/*@-boundsread@*/
 	if (!rc)
 	    rc = execve(av[0], av+1, environ);
+/*@=boundsread@*/
 
 	rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
@@ -435,10 +469,13 @@ static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
 	return 1;
     }
 
+/*@-boundswrite@*/
     *pktlen = st.st_size;
     rpmMessage(RPMMESS_DEBUG, _("GPG sig size: %d\n"), *pktlen);
     *pkt = xmalloc(*pktlen);
+/*@=boundswrite@*/
 
+/*@-boundsread@*/
     {	FD_t fd;
 
 	rc = 0;
@@ -449,13 +486,16 @@ static int makeGPGSignature(const char * file, /*@out@*/ byte ** pkt,
 	    (void) Fclose(fd);
 	}
 	if (rc != *pktlen) {
+/*@-boundswrite@*/
 	    *pkt = _free(*pkt);
+/*@=boundswrite@*/
 	    rpmError(RPMERR_SIGGEN, _("unable to read the signature\n"));
 	    return 1;
 	}
     }
 
     rpmMessage(RPMMESS_DEBUG, _("Got %d bytes of GPG sig\n"), *pktlen);
+/*@=boundsread@*/
 
     return 0;
 }
@@ -666,13 +706,17 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	case RPMSIGTAG_GPG:
 	{   const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
 
+/*@-boundsread@*/
 	    if (gpg_path && *gpg_path != '\0')
   		(void) dosetenv("GNUPGHOME", gpg_path, 1);
+/*@=boundsread@*/
 
 	    cmd = rpmExpand("%{?__gpg_check_password_cmd}", NULL);
 	    rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
+/*@-boundsread@*/
 	    if (!rc)
 		rc = execve(av[0], av+1, environ);
+/*@=boundsread@*/
 
 	    rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
@@ -685,22 +729,28 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	    pgpVersion pgpVer;
 
 	    (void) dosetenv("PGPPASSFD", "3", 1);
+/*@-boundsread@*/
 	    if (pgp_path && *pgp_path != '\0')
 		xx = dosetenv("PGPPATH", pgp_path, 1);
+/*@=boundsread@*/
 
 	    if ((path = rpmDetectPGPVersion(&pgpVer)) != NULL) {
 		switch(pgpVer) {
 		case PGP_2:
 		    cmd = rpmExpand("%{?__pgp_check_password_cmd}", NULL);
 		    rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
+/*@-boundsread@*/
 		    if (!rc)
 			rc = execve(av[0], av+1, environ);
+/*@=boundsread@*/
 		    /*@innerbreak@*/ break;
 		case PGP_5:	/* XXX legacy */
 		    cmd = rpmExpand("%{?__pgp5_check_password_cmd}", NULL);
 		    rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
+/*@-boundsread@*/
 		    if (!rc)
 			rc = execve(av[0], av+1, environ);
+/*@=boundsread@*/
 		    /*@innerbreak@*/ break;
 		case PGP_UNKNOWN:
 		case PGP_NOTDETECTED:
@@ -736,10 +786,12 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
     switch (sigTag) {
     case RPMSIGTAG_DSA:
     case RPMSIGTAG_GPG:
+/*@-boundsread@*/
       { const char *name = rpmExpand("%{?_gpg_name}", NULL);
 	aok = (name && *name != '\0');
 	name = _free(name);
       }
+/*@=boundsread@*/
 	if (!aok) {
 	    rpmError(RPMERR_SIGGEN,
 		_("You must set \"%%_gpg_name\" in your macro file\n"));
@@ -749,10 +801,12 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_PGP5: 	/* XXX legacy */
     case RPMSIGTAG_PGP:
+/*@-boundsread@*/
       { const char *name = rpmExpand("%{?_pgp_name}", NULL);
 	aok = (name && *name != '\0');
 	name = _free(name);
       }
+/*@=boundsread@*/
 	if (!aok) {
 	    rpmError(RPMERR_SIGGEN,
 		_("You must set \"%%_pgp_name\" in your macro file\n"));
@@ -791,6 +845,7 @@ static /*@observer@*/ const char * rpmSigString(rpmVerifySignatureReturn res)
     return str;
 }
 
+/*@-boundswrite@*/
 static rpmVerifySignatureReturn
 verifySizeSignature(const rpmts ts, /*@out@*/ char * t)
 	/*@modifies *t @*/
@@ -824,7 +879,9 @@ exit:
     t = stpcpy(t, "\n");
     return res;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 static rpmVerifySignatureReturn
 verifyMD5Signature(const rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX md5ctx)
@@ -867,7 +924,9 @@ exit:
     t = stpcpy(t, "\n");
     return res;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 /**
  * Verify header immutable region SHA1 digest.
  * @param ts		transaction set
@@ -915,6 +974,7 @@ exit:
     t = stpcpy(t, "\n");
     return res;
 }
+/*@=boundswrite@*/
 
 /**
  * Retrieve pubkey from rpm database.
@@ -959,9 +1019,11 @@ rpmtsFindPubkey(rpmts ts)
 	    if (!headerGetEntry(h, RPMTAG_PUBKEYS, &pt, (void **)&pubkeys, &pc))
 		continue;
 	    ix = rpmdbGetIteratorFileNum(mi);
+/*@-boundsread@*/
 	    if (ix >= pc
 	     || b64decode(pubkeys[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
 		ix = -1;
+/*@=boundsread@*/
 	    pubkeys = headerFreeData(pubkeys, pt);
 	    break;
 	}
@@ -993,7 +1055,9 @@ rpmtsFindPubkey(rpmts ts)
 	/* XXX Verify the pubkey signature. */
 
 	/* Packet looks good, save the signer id. */
+/*@-boundsread@*/
 	memcpy(ts->pksignid, sigp->signid, sizeof(ts->pksignid));
+/*@=boundsread@*/
 
 	rpmMessage(RPMMESS_DEBUG, "========== %s pubkey id %s\n",
 		(sigp->pubkey_algo == PGPPUBKEYALGO_DSA ? "DSA" :
@@ -1052,6 +1116,7 @@ static inline unsigned char nibble(char c)
     return 0;
 }
 
+/*@-boundswrite@*/
 /**
  * Verify PGP (aka RSA/MD5) signature.
  * @param ts		transaction set
@@ -1160,6 +1225,7 @@ exit:
     t = stpcpy(t, "\n");
     return res;
 }
+/*@=boundswrite@*/
 
 /**
  * Verify GPG (aka DSA) signature.
@@ -1168,6 +1234,7 @@ exit:
  * @param sha1ctx
  * @return 		RPMSIG_OK on success
  */
+/*@-boundswrite@*/
 static rpmVerifySignatureReturn
 verifyGPGSignature(rpmts ts, /*@out@*/ char * t,
 		/*@null@*/ DIGEST_CTX sha1ctx)
@@ -1249,6 +1316,7 @@ exit:
     t = stpcpy(t, "\n");
     return res;
 }
+/*@=boundswrite@*/
 
 rpmVerifySignatureReturn
 rpmVerifySignature(const rpmts ts, char * result)

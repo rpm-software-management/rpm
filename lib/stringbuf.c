@@ -60,13 +60,16 @@ StringBuf freeStringBuf(StringBuf sb)
 
 void truncStringBuf(StringBuf sb)
 {
+/*@-boundswrite@*/
     sb->buf[0] = '\0';
+/*@=boundswrite@*/
     sb->tail = sb->buf;
     sb->free = sb->allocated;
 }
 
 void stripTrailingBlanksStringBuf(StringBuf sb)
 {
+/*@-bounds@*/
     while (sb->free != sb->allocated) {
 	if (! xisspace(*(sb->tail - 1)))
 	    break;
@@ -74,6 +77,7 @@ void stripTrailingBlanksStringBuf(StringBuf sb)
 	sb->tail--;
     }
     sb->tail[0] = '\0';
+/*@=bounds@*/
 }
 
 char * getStringBuf(StringBuf sb)
@@ -94,6 +98,7 @@ void appendStringBufAux(StringBuf sb, const char *s, int nl)
 	sb->tail = sb->buf + (sb->allocated - sb->free);
     }
     
+/*@-boundswrite@*/
     /*@-mayaliasunique@*/ /* FIX: shrug */
     strcpy(sb->tail, s);
     /*@=mayaliasunique@*/
@@ -105,4 +110,5 @@ void appendStringBufAux(StringBuf sb, const char *s, int nl)
 	sb->tail++;
 	sb->free--;
     }
+/*@=boundswrite@*/
 }

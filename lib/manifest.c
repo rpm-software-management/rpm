@@ -14,6 +14,7 @@
 
 /*@access StringBuf @*/
 
+/*@-boundswrite@*/
 char * rpmPermsString(int mode)
 {
     char *perms = xstrdup("----------");
@@ -60,8 +61,10 @@ char * rpmPermsString(int mode)
 
     return perms;
 }
+/*@=boundswrite@*/
 
 /**@todo Infinite loops through manifest files exist, operator error for now. */
+/*@-boundsread@*/
 int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
 {
     StringBuf sb = newStringBuf();
@@ -77,6 +80,7 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     int rc = 0;
     int i;
 
+/*@-boundswrite@*/
     if (f != NULL)
     while (1) {
 	char line[BUFSIZ];
@@ -154,13 +158,16 @@ int rpmReadPackageManifest(FD_t fd, int * argcPtr, const char *** argvPtr)
     }
     if (argcPtr)
 	*argcPtr = ac;
+/*@=boundswrite@*/
 
 exit:
     /*@-branchstate@*/
     if (argvPtr == NULL || (rc != 0 && av)) {
 	if (av)
+/*@-boundswrite@*/
 	for (i = 0; i < ac; i++)
 	    /*@-unqualifiedtrans@*/av[i] = _free(av[i]); /*@=unqualifiedtrans@*/
+/*@=boundswrite@*/
 	/*@-dependenttrans@*/ av = _free(av); /*@=dependenttrans@*/
     }
     /*@=branchstate@*/
@@ -169,3 +176,4 @@ exit:
     return rc;
     /*@=nullstate@*/
 }
+/*@=boundsread@*/

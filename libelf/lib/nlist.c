@@ -53,6 +53,7 @@ symbol_name(Elf *elf, const void *syms, const char *names, size_t nlimit, size_t
 {
     size_t off;
 
+/*@-boundsread@*/
     if (elf->e_class == ELFCLASS32) {
 	off = ((Elf32_Sym*)syms)[index].st_name;
     }
@@ -64,6 +65,7 @@ symbol_name(Elf *elf, const void *syms, const char *names, size_t nlimit, size_t
     else {
 	return NULL;
     }
+/*@=boundsread@*/
     if (off >= 0 && off < nlimit) {
 	return &names[off];
     }
@@ -74,6 +76,7 @@ static void
 copy_symbol(Elf *elf, struct nlist *np, const void *syms, size_t index)
 	/*@modifies *np @*/
 {
+/*@-boundsread@*/
     if (elf->e_class == ELFCLASS32) {
 	np->n_value = ((Elf32_Sym*)syms)[index].st_value;
 	np->n_scnum = ((Elf32_Sym*)syms)[index].st_shndx;
@@ -84,6 +87,7 @@ copy_symbol(Elf *elf, struct nlist *np, const void *syms, size_t index)
 	np->n_scnum = ((Elf64_Sym*)syms)[index].st_shndx;
     }
 #endif /* __LIBELF64 */
+/*@=boundsread@*/
     /*
      * this needs more work
      */
@@ -92,6 +96,7 @@ copy_symbol(Elf *elf, struct nlist *np, const void *syms, size_t index)
     np->n_numaux = 0;
 }
 
+/*@-boundswrite@*/ /* LCL: segfault here */
 static int
 _elf_nlist(Elf *elf, struct nlist *nl)
 	/*@modifies *elf, *nl @*/
@@ -228,6 +233,7 @@ _elf_nlist(Elf *elf, struct nlist *nl)
     free(table);
     return 0;
 }
+/*@=boundswrite@*/
 
 int
 nlist(const char *filename, struct nlist *nl) {
@@ -247,10 +253,12 @@ nlist(const char *filename, struct nlist *nl) {
 	elf_version(oldver);
     }
     if (result) {
+/*@-boundsread@*/
 	while (nl->n_name && *nl->n_name) {
 	    nl->n_value = 0;
 	    nl++;
 	}
+/*@=boundsread@*/
     }
     return result;
 }

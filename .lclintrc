@@ -15,7 +15,15 @@
 # --- in progress
 #+bounds
 #+boundswrite
++slovak-fcns
 -redecl
+
+-macroparams
+-declundef
+-enummemuse
+-fcnuse
+-typeuse
+-varuse
 
 # --- not-yet at strict level
 -bitwisesigned		# pita

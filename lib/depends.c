@@ -1,3 +1,4 @@
+/*@-boundsread@*/
 /** \ingroup rpmts
  * \file lib/depends.c
  */
@@ -88,9 +89,11 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 
     /* Filter out duplicate erasures. */
     if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
+/*@-boundswrite@*/
 	if (bsearch(&dboffset, ts->removedPackages, ts->numRemovedPackages,
 			sizeof(*ts->removedPackages), intcmp) != NULL)
 	    return 0;
+/*@=boundswrite@*/
     }
 
     if (ts->numRemovedPackages == ts->allocedRemovedPackages) {
@@ -100,8 +103,10 @@ static int removePackage(rpmts ts, Header h, int dboffset,
     }
 
     if (ts->removedPackages != NULL) {	/* XXX can't happen. */
+/*@-boundswrite@*/
 	ts->removedPackages[ts->numRemovedPackages] = dboffset;
 	ts->numRemovedPackages++;
+/*@=boundswrite@*/
 	if (ts->numRemovedPackages > 1)
 	    qsort(ts->removedPackages, ts->numRemovedPackages,
 			sizeof(*ts->removedPackages), intcmp);
@@ -115,8 +120,10 @@ static int removePackage(rpmts ts, Header h, int dboffset,
     }
 
     p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL, dboffset, depends);
+/*@-boundswrite@*/
     ts->order[ts->orderCount] = p;
     ts->orderCount++;
+/*@=boundswrite@*/
 
     return 0;
 }
@@ -173,7 +180,9 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     if (p != NULL && duplicate && oc < ts->orderCount) {
     /* XXX FIXME removed transaction element side effects need to be weeded */
 /*@-type -unqualifiedtrans@*/
+/*@-boundswrite@*/
 	ts->order[oc] = rpmteFree(ts->order[oc]);
+/*@=boundswrite@*/
 /*@=type =unqualifiedtrans@*/
     }
 
@@ -185,7 +194,9 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     }
 
     p = rpmteNew(ts, h, TR_ADDED, key, relocs, -1, pkgKey);
+/*@-boundswrite@*/
     ts->order[oc] = p;
+/*@=boundswrite@*/
     if (!duplicate)
 	ts->orderCount++;
     
@@ -193,7 +204,9 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 			rpmteDS(p, RPMTAG_PROVIDENAME),
 			rpmteFI(p, RPMTAG_BASENAMES));
     if (pkgKey == RPMAL_NOMATCH) {
+/*@-boundswrite@*/
 	ts->order[oc] = rpmteFree(ts->order[oc]);
+/*@=boundswrite@*/
 	ec = 1;
 	goto exit;
     }
@@ -381,8 +394,10 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep)
 		datap = data->data;
 		datalen = data->size;
 
+/*@-boundswrite@*/
 		if (xx == 0 && datap && datalen == 4)
 		    memcpy(&rc, datap, datalen);
+/*@=boundswrite@*/
 		xx = dbiCclose(dbi, dbcursor, 0);
 	    }
 /*@=branchstate@*/
@@ -895,6 +910,7 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
  * @retval nzaps	address of no. of relations removed
  * @return		(possibly NULL) formatted "q <- p" releation (malloc'ed)
  */
+/*@-boundswrite@*/
 /*@-mustmod@*/ /* FIX: hack modifies, but -type disables */
 static /*@owned@*/ /*@null@*/ const char *
 zapRelation(rpmte q, rpmte p,
@@ -953,6 +969,7 @@ zapRelation(rpmte q, rpmte p,
     return dp;
 }
 /*@=mustmod@*/
+/*@=boundswrite@*/
 
 static void prtTSI(const char * msg, tsortInfo tsi)
 	/*@globals fileSystem@*/
@@ -1034,7 +1051,9 @@ fprintf(stderr, "addRelation: q %p(%s) from %p[%d:%d]\n", q, rpmteN(q), ts->orde
     /* XXX TODO: add control bit. */
     if (selected[i] != 0)
 	return 0;
+/*@-boundswrite@*/
     selected[i] = 1;
+/*@=boundswrite@*/
 /*@-nullpass@*/
 if (_tso_debug)
 fprintf(stderr, "addRelation: selected[%d] = 1\n", i);
@@ -1098,6 +1117,7 @@ static int orderListIndexCmp(const void * one, const void * two)	/*@*/
  * @retval qp		address of first element
  * @retval rp		address of last element
  */
+/*@-boundswrite@*/
 /*@-mustmod@*/
 static void addQ(/*@dependent@*/ rpmte p,
 		/*@in@*/ /*@out@*/ rpmte * qp,
@@ -1141,7 +1161,9 @@ static void addQ(/*@dependent@*/ rpmte p,
     }
 }
 /*@=mustmod@*/
+/*@=boundswrite@*/
 
+/*@-bounds@*/
 int rpmtsOrder(rpmts ts)
 {
     rpmds requires;
@@ -1619,6 +1641,7 @@ assert(newOrderCount == ts->orderCount);
 
     return 0;
 }
+/*@=bounds@*/
 
 /**
  * Close a single database index.
@@ -1640,6 +1663,7 @@ static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
     for (dbix = 0; dbix < dbiTagsMax; dbix++) {
 	if (dbiTags[dbix] != rpmtag)
 	    continue;
+/*@-boundswrite@*/
 	if (db->_dbi[dbix] != NULL) {
 	    int xx;
 	    /*@-unqualifiedtrans@*/		/* FIX: double indirection. */
@@ -1648,6 +1672,7 @@ static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
 	    db->_dbi[dbix] = NULL;
 	    /*@=unqualifiedtrans@*/
 	}
+/*@=boundswrite@*/
 	break;
     }
     return rc;
@@ -1789,3 +1814,4 @@ exit:
     /*@=branchstate@*/
     return rc;
 }
+/*@=boundsread@*/

@@ -35,7 +35,9 @@ _buildscn(Elf *elf)
     elf_assert(elf->e_ehdr);
     elf_assert(_elf_scn_init.s_magic == SCN_MAGIC);
     while ((scn = (Elf_Scn*)malloc(sizeof(*scn)))) {
+/*@-boundswrite@*/
 	*scn = _elf_scn_init;
+/*@=boundswrite@*/
 	scn->s_elf = elf;
 	scn->s_scn_flags = ELF_F_DIRTY;
 	scn->s_shdr_flags = ELF_F_DIRTY;

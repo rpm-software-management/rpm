@@ -83,6 +83,7 @@ static char*
 _elf_item(Elf *elf, Elf_Type type, size_t n, size_t off, int *flag)
 	/*@globals _elf_errno @*/
 	/*@modifies *elf, *flag, _elf_errno @*/
+	/*@requires maxSet(flag) >= 0 @*/
 {
     Elf_Data src, dst;
 
@@ -96,7 +97,9 @@ _elf_item(Elf *elf, Elf_Type type, size_t n, size_t off, int *flag)
 
     src.d_type = type;
     src.d_version = elf->e_version;
+/*@-boundsread@*/
     src.d_size = n * _fsize(elf->e_class, src.d_version, type);
+/*@=boundsread@*/
     elf_assert(src.d_size);
     if (off + src.d_size < off /* modulo overflow */
      || off + src.d_size > elf->e_size) {
@@ -105,7 +108,9 @@ _elf_item(Elf *elf, Elf_Type type, size_t n, size_t off, int *flag)
     }
 
     dst.d_version = _elf_version;
+/*@-boundsread@*/
     dst.d_size = n * _msize(elf->e_class, dst.d_version, type);
+/*@=boundsread@*/
     elf_assert(dst.d_size);
 
     elf_assert(elf->e_data);
@@ -128,16 +133,20 @@ _elf_item(Elf *elf, Elf_Type type, size_t n, size_t off, int *flag)
     }
 
     if (_elf_xlatetom(elf, &dst, &src)) {
+/*@-boundsread@*/
 	if (!*flag) {
 	    elf->e_cooked = 1;
 	}
+/*@=boundsread@*/
 	return (char*)dst.d_buf;
     }
 
+/*@-boundsread@*/
     if (*flag) {
 	free(dst.d_buf);
 	*flag = 0;
     }
+/*@=boundsread@*/
     return NULL;
 }
 
@@ -153,14 +162,18 @@ _elf_cook_file(Elf *elf)
     size_t num, off, align_addr;
     int flag;
 
+/*@-boundswrite@*/
     elf->e_ehdr = _elf_item(elf, ELF_T_EHDR, 1, 0, &flag);
+/*@=boundswrite@*/
     if (!elf->e_ehdr) {
 	return 0;
     }
     if (flag) {
 	elf->e_free_ehdr = 1;
     }
+/*@-boundsread@*/
     align_addr = _fsize(elf->e_class, elf->e_version, ELF_T_ADDR);
+/*@=boundsread@*/
     elf_assert(align_addr);
     if (elf->e_class == ELFCLASS32) {
 	num = ((Elf32_Ehdr*)elf->e_ehdr)->e_phnum;
@@ -188,7 +201,9 @@ _elf_cook_file(Elf *elf)
 	    seterr(ERROR_ALIGN_PHDR);
 	    return 0;
 	}
+/*@-boundswrite@*/
 	elf->e_phdr = _elf_item(elf, ELF_T_PHDR, num, off, &flag);
+/*@=boundswrite@*/
 	if (!elf->e_phdr) {
 	    return 0;
 	}
@@ -326,9 +341,13 @@ _elf_cook_file(Elf *elf)
 	    sd->sd_data.d_size = scn->s_size;
 	    sd->sd_data.d_version = _elf_version;
 	}
+/*@-boundsread@*/
 	elf_assert(scn == &head[0].scn);
+/*@=boundsread@*/
 	elf->e_scn_1 = &head[0].scn;
+/*@-boundswrite@*/
 	head[0].scn.s_freeme = 1;
+/*@=boundswrite@*/
     }
     return 1;
 }

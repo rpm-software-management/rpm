@@ -24,7 +24,6 @@
 
 #include "debug.h"
 
-/*@access rpmfi @*/
 /*@access rpmte @*/
 
 /*@unchecked@*/
@@ -80,7 +79,9 @@ int rpmfiSetFX(rpmfi fi, int fx)
     if (fi != NULL && fx >= 0 && fx < fi->fc) {
 	i = fi->i;
 	fi->i = fx;
+/*@-boundsread@*/
 	fi->j = fi->dil[fi->i];
+/*@=boundsread@*/
     }
     return i;
 }
@@ -106,8 +107,10 @@ const char * rpmfiBN(rpmfi fi)
     const char * BN = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
 	if (fi->bnl != NULL)
 	    BN = fi->bnl[fi->i];
+/*@=boundsread@*/
     }
     return BN;
 }
@@ -117,8 +120,10 @@ const char * rpmfiDN(rpmfi fi)
     const char * DN = NULL;
 
     if (fi != NULL && fi->j >= 0 && fi->j < fi->dc) {
+/*@-boundsread@*/
 	if (fi->dnl != NULL)
 	    DN = fi->dnl[fi->j];
+/*@=boundsread@*/
     }
     return DN;
 }
@@ -133,9 +138,11 @@ const char * rpmfiFN(rpmfi fi)
 	if (fi->fn == NULL)
 	    fi->fn = xmalloc(fi->fnlen);
 	FN = t = fi->fn;
+/*@-boundswrite@*/
 	*t = '\0';
 	t = stpcpy(t, fi->dnl[fi->dil[fi->i]]);
 	t = stpcpy(t, fi->bnl[fi->i]);
+/*@=boundswrite@*/
     }
     /*@=branchstate@*/
     return FN;
@@ -146,8 +153,10 @@ int_32 rpmfiFFlags(rpmfi fi)
     int_32 FFlags = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
 	if (fi->fflags != NULL)
 	    FFlags = fi->fflags[fi->i];
+/*@=boundsread@*/
     }
     return FFlags;
 }
@@ -157,8 +166,10 @@ int_32 rpmfiVFlags(rpmfi fi)
     int_32 VFlags = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
 	if (fi->vflags != NULL)
 	    VFlags = fi->vflags[fi->i];
+/*@=boundsread@*/
     }
     return VFlags;
 }
@@ -168,8 +179,10 @@ int_16 rpmfiFMode(rpmfi fi)
     int_16 fmode = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
 	if (fi->fmodes != NULL)
 	    fmode = fi->fmodes[fi->i];
+/*@=boundsread@*/
     }
     return fmode;
 }
@@ -179,8 +192,10 @@ rpmfileState rpmfiFState(rpmfi fi)
     char fstate = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
 	if (fi->fstates != NULL)
 	    fstate = fi->fstates[fi->i];
+/*@=boundsread@*/
     }
     return fstate;
 }
@@ -190,8 +205,10 @@ const unsigned char * rpmfiMD5(rpmfi fi)
     unsigned char * md5 = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
 	if (fi->md5s != NULL)
 	    md5 = fi->md5s + (16 * fi->i);
+/*@=boundsread@*/
     }
     return md5;
 }
@@ -201,8 +218,10 @@ const char * rpmfiFLink(rpmfi fi)
     const char * flink = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
 	if (fi->flinks != NULL)
 	    flink = fi->flinks[fi->i];
+/*@=boundsread@*/
     }
     return flink;
 }
@@ -212,8 +231,10 @@ int_32 rpmfiFSize(rpmfi fi)
     int_32 fsize = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
 	if (fi->fsizes != NULL)
 	    fsize = fi->fsizes[fi->i];
+/*@=boundsread@*/
     }
     return fsize;
 }
@@ -223,8 +244,10 @@ int_16 rpmfiFRdev(rpmfi fi)
     int_16 frdev = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
 	if (fi->frdevs != NULL)
 	    frdev = fi->frdevs[fi->i];
+/*@=boundsread@*/
     }
     return frdev;
 }
@@ -234,8 +257,10 @@ int_32 rpmfiFMtime(rpmfi fi)
     int_32 fmtime = 0;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
 	if (fi->fmtimes != NULL)
 	    fmtime = fi->fmtimes[fi->i];
+/*@=boundsread@*/
     }
     return fmtime;
 }
@@ -245,8 +270,10 @@ const char * rpmfiFUser(rpmfi fi)
     const char * fuser = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
 	if (fi->fuser != NULL)
 	    fuser = fi->fuser[fi->i];
+/*@=boundsread@*/
     }
     return fuser;
 }
@@ -256,8 +283,10 @@ const char * rpmfiFGroup(rpmfi fi)
     const char * fgroup = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+/*@-boundsread@*/
 	if (fi->fgroup != NULL)
 	    fgroup = fi->fgroup[fi->i];
+/*@=boundsread@*/
     }
     return fgroup;
 }
@@ -269,8 +298,10 @@ int rpmfiNext(rpmfi fi)
     if (fi != NULL && ++fi->i >= 0) {
 	if (fi->i < fi->fc) {
 	    i = fi->i;
+/*@-boundsread@*/
 	    if (fi->dil != NULL)
 		fi->j = fi->dil[fi->i];
+/*@=boundsread@*/
 	} else
 	    fi->i = -1;
 
@@ -364,7 +395,9 @@ fileTypes whatis(uint_16 mode)
     if (S_ISCHR(mode))	return CDEV;
     if (S_ISBLK(mode))	return BDEV;
     if (S_ISLNK(mode))	return LINK;
+/*@-unrecog@*/
     if (S_ISSOCK(mode))	return SOCK;
+/*@=unrecog@*/
     if (S_ISFIFO(mode))	return PIPE;
     return REG;
 }

@@ -49,7 +49,9 @@ gelf_getshdr(Elf_Scn *scn, GElf_Shdr *dst) {
 	dst = &buf;
     }
     if (scn->s_elf->e_class == ELFCLASS64) {
+/*@-boundswrite@*/ /* structure assignment */
 	*dst = scn->s_shdr64;
+/*@=boundswrite@*/
     }
     else if (scn->s_elf->e_class == ELFCLASS32) {
 	Elf32_Shdr *src = &scn->s_shdr32;
@@ -79,7 +81,9 @@ gelf_getshdr(Elf_Scn *scn, GElf_Shdr *dst) {
 	    seterr(ERROR_MEM_SHDR);
 	    return NULL;
 	}
+/*@-boundswrite@*/ /* structure assignment */
 	*dst = buf;
+/*@=boundswrite@*/
     }
     return dst;
 }
@@ -93,7 +97,9 @@ gelf_update_shdr(Elf_Scn *scn, GElf_Shdr *src) {
     elf_assert(scn->s_elf);
     elf_assert(scn->s_elf->e_magic == ELF_MAGIC);
     if (scn->s_elf->e_class == ELFCLASS64) {
+/*@-boundsread@*/ /* structure assignment */
 	scn->s_shdr64 = *src;
+/*@=boundsread@*/
     }
     else if (scn->s_elf->e_class == ELFCLASS32) {
 	Elf32_Shdr *dst = &scn->s_shdr32;

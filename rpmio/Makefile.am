@@ -45,6 +45,19 @@ $(top_builddir)/beecrypt/listobjs:
 clean-local:
 	rm -f $(BEECRYPTLOBJS) *.o .created
 
+BUILT_SOURCES = rpmio.lcd
+
+rpmio.lcd: Makefile.am ${librpmio_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
+	-lclint -load ../beecrypt/beecrypt.lcd $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES) -dump $@ 2>/dev/null
+
+.PHONY:	sources
+sources:
+	@echo $(librpmio_la_SOURCES:%=rpmio/%)
+
+.PHONY:	lclint
+lclint:
+	lclint $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
+
 tdigest_SOURCES = tdigest.c
 tdigest_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
@@ -76,14 +89,6 @@ trpmio_SOURCES = trpmio.c
 trpmio_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 dumpasn1_SOURCES = dumpasn1.c
-
-.PHONY:	sources
-sources:
-	@echo $(librpmio_la_SOURCES:%=rpmio/%)
-
-.PHONY:	lclint
-lclint:
-	lclint $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
 
 tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 

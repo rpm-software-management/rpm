@@ -21,7 +21,9 @@ int writeLead(FD_t fd, const struct rpmlead *lead)
 {
     struct rpmlead l;
 
+/*@-boundswrite@*/
     memcpy(&l, lead, sizeof(*lead));
+/*@=boundswrite@*/
     
     l.magic[0] = RPMLEAD_MAGIC0;
     l.magic[1] = RPMLEAD_MAGIC1;
@@ -41,7 +43,9 @@ int writeLead(FD_t fd, const struct rpmlead *lead)
 
 int readLead(FD_t fd, struct rpmlead *lead)
 {
+/*@-boundswrite@*/
     memset(lead, 0, sizeof(*lead));
+/*@=boundswrite@*/
     /*@-type@*/ /* FIX: remove timed read */
     if (timedRead(fd, (char *)lead, sizeof(*lead)) != sizeof(*lead)) {
 	rpmError(RPMERR_READ, _("read failed: %s (%d)\n"), Fstrerror(fd), 

@@ -25,9 +25,10 @@ libtool
 listobjs
 ltconfig
 ltmain.sh
-*.o
 *.la
+*.lcd
 *.lo
+*.o
 *.S
 stamp-h
 stamp-h1

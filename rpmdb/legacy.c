@@ -53,6 +53,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	initted++;
     }
 
+/*@-boundswrite@*/
     if (pidp) *pidp = 0;
 
     if (fsizep) {
@@ -61,6 +62,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	    return -1;
 	*fsizep = st->st_size;
     }
+/*@=boundswrite@*/
 
     fdno = open(path, O_RDONLY);
     if (fdno < 0)
@@ -107,6 +109,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
     }
     /*@=branchstate =uniondef @*/
 
+/*@-boundswrite@*/
     if (pidp != NULL && bingo) {
 	int pipes[2];
 	int xx;
@@ -131,6 +134,7 @@ static int open_dso(const char * path, /*@null@*/ pid_t * pidp, /*@null@*/ size_
 	fdno = pipes[0];
 	xx = close(pipes[1]);
     }
+/*@=boundswrite@*/
 
 exit:
     if (elf) (void) elf_end(elf);
@@ -224,10 +228,12 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
     }
 
 exit:
+/*@-boundswrite@*/
     if (fsizep)
 	*fsizep = fsize;
     if (!rc)
 	memcpy(digest, md5sum, md5len);
+/*@=boundswrite@*/
     md5sum = _free(md5sum);
 
     return rc;
@@ -246,6 +252,7 @@ static int dncmp(const void * a, const void * b)
     return strcmp(*first, *second);
 }
 
+/*@-bounds@*/
 void compressFilelist(Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -336,6 +343,7 @@ exit:
 
     xx = hre(h, RPMTAG_OLDFILENAMES);
 }
+/*@=bounds@*/
 
 /*
  * This is pretty straight-forward. The only thing that even resembles a trick

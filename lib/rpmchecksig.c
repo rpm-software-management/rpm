@@ -30,6 +30,7 @@ static int _print_pkts = 0;
 
 /**
  */
+/*@-boundsread@*/
 static int manageFile(FD_t *fdp, const char **fnp, int flags,
 		/*@unused@*/ int rc)
 	/*@globals rpmGlobalMacroContext,
@@ -44,6 +45,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 	return 1;
     }
 
+/*@-boundswrite@*/
     /* close and reset *fdp to NULL */
     if (*fdp && (fnp == NULL || *fnp == NULL)) {
 	(void) Fclose(*fdp);
@@ -76,6 +78,7 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 	fd = fdFree(fd, "manageFile return");
 	return 0;
     }
+/*@=boundswrite@*/
 
     /* no operation */
     if (*fdp && fnp && *fnp) {
@@ -85,10 +88,12 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
     /* XXX never reached */
     return 1;
 }
+/*@=boundsread@*/
 
 /**
  * Copy header+payload, calculating digest(s) on the fly.
  */
+/*@-boundsread@*/
 static int copyFile(FD_t *sfdp, const char **sfnp,
 		FD_t *tfdp, const char **tfnp)
 	/*@globals rpmGlobalMacroContext,
@@ -125,6 +130,7 @@ exit:
     if (*tfdp)	(void) manageFile(tfdp, NULL, 0, rc);
     return rc;
 }
+/*@=boundsread@*/
 
 /** \ingroup rpmcli
  * Create/modify elements in signature header.
@@ -156,15 +162,20 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
     
     tmprpm[0] = '\0';
     /*@-branchstate@*/
+/*@-boundsread@*/
     if (argv)
-    while ((rpm = *argv++) != NULL) {
+    while ((rpm = *argv++) != NULL)
+/*@=boundsread@*/
+    {
 
 	fprintf(stdout, "%s:\n", rpm);
 
 	if (manageFile(&fd, &rpm, O_RDONLY, 0))
 	    goto exit;
 
+/*@-boundswrite@*/
 	memset(l, 0, sizeof(*l));
+/*@=boundswrite@*/
 	if (readLead(fd, l)) {
 	    rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), rpm);
 	    goto exit;
@@ -264,8 +275,10 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    goto exit;
 
 	/* Write the lead/signature of the output rpm */
+/*@-boundswrite@*/
 	strcpy(tmprpm, rpm);
 	strcat(tmprpm, ".XXXXXX");
+/*@=boundswrite@*/
 	(void) mktemp(tmprpm);
 	trpm = tmprpm;
 
@@ -352,7 +365,10 @@ static int rpmImportPubkey(const rpmts ts,
     if (argv == NULL) return res;
 
     /*@-branchstate@*/
-    while ((fn = *argv++) != NULL) {
+/*@-boundsread@*/
+    while ((fn = *argv++) != NULL)
+/*@=boundsread@*/
+    {
 	const char * d = NULL;
 	const char * enc = NULL;
 	const char * n = NULL;
@@ -380,6 +396,7 @@ static int rpmImportPubkey(const rpmts ts,
 	(void) pgpPrtPkts(pkt, pktlen, dig, 0);
 	digp = &dig->pubkey;
 
+/*@-boundswrite@*/
 	v = t = xmalloc(16+1);
 	t = stpcpy(t, pgpHexStr(digp->signid, sizeof(digp->signid)));
 
@@ -397,6 +414,7 @@ static int rpmImportPubkey(const rpmts ts,
 	evr = t = xmalloc(sizeof("4X:-")+strlen(v)+strlen(r));
 	t = stpcpy(t, (digp->version == 4 ? "4:" : "3:"));
 	t = stpcpy( stpcpy( stpcpy(t, v), "-"), r);
+/*@=boundswrite@*/
 
 	/* Check for pre-existing header. */
 
@@ -572,7 +590,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
 
     {
+/*@-boundswrite@*/
 	memset(l, 0, sizeof(*l));
+/*@=boundswrite@*/
 	if (readLead(fd, l)) {
 	    rpmError(RPMERR_READLEAD, _("%s: readLead failed\n"), fn);
 	    res++;
@@ -696,6 +716,8 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    }
 
 	    res3 = rpmVerifySignature(ts, result);
+
+/*@-bounds@*/
 	    if (res3) {
 		if (rpmIsVerbose()) {
 		    b = stpcpy(b, "    ");
@@ -815,6 +837,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		    }
 		}
 	    }
+/*@=bounds@*/
 	}
 	hi = headerFreeIterator(hi);
 

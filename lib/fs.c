@@ -1,3 +1,4 @@
+/*@-boundsread@*/
 /*@-mods@*/
 /**
  * \file lib/fs.c
@@ -27,8 +28,10 @@ void freeFilesystems(void)
 {
     if (filesystems) {
 	int i;
+/*@-boundswrite@*/
 	for (i = 0; i < numFilesystems; i++)
 	    filesystems[i].mntPoint = _free(filesystems[i].mntPoint);
+/*@=boundswrite@*/
 	filesystems = _free(filesystems);
     }
     if (fsnames) {
@@ -219,10 +222,12 @@ static int getFilesystemList(void)
     filesystems[numFilesystems].mntPoint = NULL;
     filesystems[numFilesystems].rdonly = 0;
 
+/*@-boundswrite@*/
     fsnames = xcalloc((numFilesystems + 1), sizeof(*fsnames));
     for (i = 0; i < numFilesystems; i++)
 	fsnames[i] = filesystems[i].mntPoint;
     fsnames[numFilesystems] = NULL;
+/*@=boundswrite@*/
 
     return 0; 
 }
@@ -234,8 +239,10 @@ int rpmGetFilesystemList(const char *** listptr, int * num)
 	if (getFilesystemList())
 	    return 1;
 
+/*@-boundswrite@*/
     if (listptr) *listptr = fsnames;
     if (num) *num = numFilesystems;
+/*@=boundswrite@*/
 
     return 0;
 }
@@ -268,6 +275,7 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 	if (maxLen < len) maxLen = len;
     }
     
+/*@-boundswrite@*/
     buf = alloca(maxLen + 1);
     lastDir = alloca(maxLen + 1);
     dirName = alloca(maxLen + 1);
@@ -330,17 +338,21 @@ int rpmGetFilesystemUsage(const char ** fileList, int_32 * fssizes, int numFiles
 	strcpy(lastDir, buf);
 	usages[lastfs] += fssizes[i];
     }
+/*@=boundswrite@*/
 
     sourceDir = _free(sourceDir);
 
+/*@-boundswrite@*/
     /*@-branchstate@*/
     if (usagesPtr)
 	*usagesPtr = usages;
     else
 	usages = _free(usages);
     /*@=branchstate@*/
+/*@=boundswrite@*/
 
     return 0;
 }
 /*@=usereleased =onlytrans@*/
 /*@=mods@*/
+/*@=boundsread@*/

@@ -21,6 +21,7 @@ static void configLine(poptContext con, char * line)
     poptItem item = alloca(sizeof(*item));
     int i, j;
     
+/*@-boundswrite@*/
     memset(item, 0, sizeof(*item));
 
     /*@-type@*/
@@ -80,6 +81,7 @@ static void configLine(poptContext con, char * line)
 	item->argc = j;
     }
     /*@=modobserver@*/
+/*@=boundswrite@*/
 	
     /*@-nullstate@*/ /* FIX: item->argv[] may be NULL */
     if (!strcmp(entryType, "alias"))
@@ -124,6 +126,7 @@ int poptReadConfigFile(poptContext con, const char * fn)
     if (close(fd) == -1)
 	return POPT_ERROR_ERRNO;
 
+/*@-boundswrite@*/
     dst = buf = alloca(fileLength + 1);
 
     chptr = file;
@@ -155,6 +158,7 @@ int poptReadConfigFile(poptContext con, const char * fn)
 	}
     }
     /*@=infloops@*/
+/*@=boundswrite@*/
 
     return 0;
 }

@@ -1,5 +1,6 @@
 #ifndef	H_RPMIO_INTERNAL
 #define	H_RPMIO_INTERNAL
+/*@-bounds@*/
 
 /** \ingroup rpmio
  * \file rpmio/rpmio_internal.h
@@ -550,4 +551,5 @@ int rpmioSlurp(const char * fn,
 }
 #endif
 
+/*@=bounds@*/
 #endif	/* H_RPMIO_INTERNAL */

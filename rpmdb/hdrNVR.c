@@ -11,6 +11,7 @@ int headerNVR(Header h, const char **np, const char **vp, const char **rp)
     int type;
     int count;
 
+/*@-boundswrite@*/
     if (np) {
 	if (!(headerGetEntry(h, RPMTAG_NAME, &type, (void **) np, &count)
 	    && type == RPM_STRING_TYPE && count == 1))
@@ -26,5 +27,6 @@ int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 	    && type == RPM_STRING_TYPE && count == 1))
 		*rp = NULL;
     }
+/*@=boundswrite@*/
     return 0;
 }

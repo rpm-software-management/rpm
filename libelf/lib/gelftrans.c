@@ -89,7 +89,9 @@ get_addr_and_class(const Elf_Data *data, int ndx, Elf_Type type, unsigned *cls)
 	seterr(ERROR_BADTYPE);
 	return NULL;
     }
+/*@-boundsread@*/
     n = _msize(elf->e_class, data->d_version, type);
+/*@=boundsread@*/
     if (n == 0) {
 	seterr(ERROR_UNIMPLEMENTED);
 	return NULL;
@@ -103,7 +105,9 @@ get_addr_and_class(const Elf_Data *data, int ndx, Elf_Type type, unsigned *cls)
 	return NULL;
     }
     if (cls) {
+/*@-boundswrite@*/ /* structure assignment */
 	*cls = elf->e_class;
+/*@=boundswrite@*/
     }
     return (char*)data->d_buf + n * ndx;
 }
@@ -122,7 +126,9 @@ gelf_getsym(Elf_Data *src, int ndx, GElf_Sym *dst) {
 	return NULL;
     }
     if (cls == ELFCLASS64) {
+/*@-boundswrite@*/ /* structure assignment */
 	*dst = *(Elf64_Sym*)tmp;
+/*@=boundswrite@*/
     }
     else if (cls == ELFCLASS32) {
 	Elf32_Sym *src = (Elf32_Sym*)tmp;
@@ -144,7 +150,9 @@ gelf_getsym(Elf_Data *src, int ndx, GElf_Sym *dst) {
 	    seterr(ERROR_MEM_SYM);
 	    return NULL;
 	}
+/*@-boundswrite@*/ /* structure assignment */
 	*dst = buf;
+/*@=boundswrite@*/
     }
     return dst;
 }
@@ -159,7 +167,9 @@ gelf_update_sym(Elf_Data *dst, int ndx, GElf_Sym *src) {
 	return 0;
     }
     if (cls == ELFCLASS64) {
+/*@-boundswrite@*/ /* structure assignment */
 	*(Elf64_Sym*)tmp = *src;
+/*@=boundswrite@*/
     }
     else if (cls == ELFCLASS32) {
 	Elf32_Sym *dst = (Elf32_Sym*)tmp;
@@ -192,7 +202,9 @@ gelf_getdyn(Elf_Data *src, int ndx, GElf_Dyn *dst) {
 	return NULL;
     }
     if (cls == ELFCLASS64) {
+/*@-boundswrite@*/ /* structure assignment */
 	*dst = *(Elf64_Dyn*)tmp;
+/*@=boundswrite@*/
     }
     else if (cls == ELFCLASS32) {
 	Elf32_Dyn *src = (Elf32_Dyn*)tmp;
@@ -210,7 +222,9 @@ gelf_getdyn(Elf_Data *src, int ndx, GElf_Dyn *dst) {
 	    seterr(ERROR_MEM_DYN);
 	    return NULL;
 	}
+/*@-boundswrite@*/ /* structure assignment */
 	*dst = buf;
+/*@=boundswrite@*/
     }
     return dst;
 }
@@ -225,7 +239,9 @@ gelf_update_dyn(Elf_Data *dst, int ndx, GElf_Dyn *src) {
 	return 0;
     }
     if (cls == ELFCLASS64) {
+/*@-boundswrite@*/ /* structure assignment */
 	*(Elf64_Dyn*)tmp = *src;
+/*@=boundswrite@*/
     }
     else if (cls == ELFCLASS32) {
 	Elf32_Dyn *dst = (Elf32_Dyn*)tmp;
@@ -254,7 +270,9 @@ gelf_getrela(Elf_Data *src, int ndx, GElf_Rela *dst) {
 	return NULL;
     }
     if (cls == ELFCLASS64) {
+/*@-boundswrite@*/ /* structure assignment */
 	*dst = *(Elf64_Rela*)tmp;
+/*@=boundswrite@*/
     }
     else if (cls == ELFCLASS32) {
 	Elf32_Rela *src = (Elf32_Rela*)tmp;
@@ -274,7 +292,9 @@ gelf_getrela(Elf_Data *src, int ndx, GElf_Rela *dst) {
 	    seterr(ERROR_MEM_RELA);
 	    return NULL;
 	}
+/*@-boundswrite@*/ /* structure assignment */
 	*dst = buf;
+/*@=boundswrite@*/
     }
     return dst;
 }
@@ -289,7 +309,9 @@ gelf_update_rela(Elf_Data *dst, int ndx, GElf_Rela *src) {
 	return 0;
     }
     if (cls == ELFCLASS64) {
+/*@-boundswrite@*/ /* structure assignment */
 	*(Elf64_Rela*)tmp = *src;
+/*@=boundswrite@*/
     }
     else if (cls == ELFCLASS32) {
 	Elf32_Rela *dst = (Elf32_Rela*)tmp;
@@ -325,7 +347,9 @@ gelf_getrel(Elf_Data *src, int ndx, GElf_Rel *dst) {
 	return NULL;
     }
     if (cls == ELFCLASS64) {
+/*@-boundswrite@*/ /* structure assignment */
 	*dst = *(Elf64_Rel*)tmp;
+/*@=boundswrite@*/
     }
     else if (cls == ELFCLASS32) {
 	Elf32_Rel *src = (Elf32_Rel*)tmp;
@@ -344,7 +368,9 @@ gelf_getrel(Elf_Data *src, int ndx, GElf_Rel *dst) {
 	    seterr(ERROR_MEM_REL);
 	    return NULL;
 	}
+/*@-boundswrite@*/ /* structure assignment */
 	*dst = buf;
+/*@=boundswrite@*/
     }
     return dst;
 }
@@ -359,7 +385,9 @@ gelf_update_rel(Elf_Data *dst, int ndx, GElf_Rel *src) {
 	return 0;
     }
     if (cls == ELFCLASS64) {
+/*@-boundswrite@*/ /* structure assignment */
 	*(Elf64_Rel*)tmp = *src;
+/*@=boundswrite@*/
     }
     else if (cls == ELFCLASS32) {
 	Elf32_Rel *dst = (Elf32_Rel*)tmp;

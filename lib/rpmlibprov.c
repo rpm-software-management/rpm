@@ -92,13 +92,16 @@ int rpmGetRpmlibProvides(const char *** provNames, int ** provFlags,
     int * flags;
     int n = 0;
     
+/*@-boundswrite@*/
     while (rpmlibProvides[n].featureName != NULL)
         n++;
+/*@=boundswrite@*/
 
     names = xcalloc((n+1), sizeof(*names));
     versions = xcalloc((n+1), sizeof(*versions));
     flags = xcalloc((n+1), sizeof(*flags));
     
+/*@-boundswrite@*/
     for (n = 0; rpmlibProvides[n].featureName != NULL; n++) {
         names[n] = rpmlibProvides[n].featureName;
         flags[n] = rpmlibProvides[n].featureFlags;
@@ -125,6 +128,7 @@ int rpmGetRpmlibProvides(const char *** provNames, int ** provFlags,
     else
 	versions = _free(versions);
     /*@=branchstate@*/
+/*@=boundswrite@*/
 
     /*@-compmempass@*/ /* FIX: rpmlibProvides[] reachable */
     return n;

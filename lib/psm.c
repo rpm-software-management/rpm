@@ -1,3 +1,4 @@
+/*@-boundsread@*/
 /** \ingroup rpmts payload
  * \file lib/psm.c
  * Package state machine to handle a package from a transaction set.
@@ -165,6 +166,7 @@ static int rpmInstallLoadMacros(rpmfi fi, Header h)
  * @param newH		header to
  * @return		0 on success, 1 on failure
  */
+/*@-boundswrite@*/
 static int mergeFiles(rpmfi fi, Header h, Header newH)
 	/*@modifies h @*/
 {
@@ -342,6 +344,7 @@ static int mergeFiles(rpmfi fi, Header h, Header newH)
     }
     return 0;
 }
+/*@=boundswrite@*/
 
 /**
  * Mark files in database shared with this package as "replaced".
@@ -1929,3 +1932,4 @@ fprintf(stderr, "*** PSM_RDB_LOAD: header #%u not found\n", fi->record);
     /*@=nullstate@*/
 }
 /*@=nullpass@*/
+/*@=boundsread@*/

@@ -70,6 +70,7 @@ char * hGetNEVR(Header h, const char ** np)
 
     (void) headerNVR(h, &n, &v, &r);
     NVR = t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
+/*@-boundswrite@*/
     t = stpcpy(t, n);
     t = stpcpy(t, "-");
     t = stpcpy(t, v);
@@ -77,6 +78,7 @@ char * hGetNEVR(Header h, const char ** np)
     t = stpcpy(t, r);
     if (np)
 	*np = n;
+/*@=boundswrite@*/
     return NVR;
 }
 
@@ -185,10 +187,13 @@ static int rpmtsOpenSDB(rpmts ts)
  * @param b		2nd instance address
  * @return		result of comparison
  */
-static int sugcmp(const void * a, const void * b)       /*@*/
+static int sugcmp(const void * a, const void * b)
+	/*@*/
 {
+/*@-boundsread@*/
     const char * astr = *(const char **)a;
     const char * bstr = *(const char **)b;
+/*@=boundsread@*/
     return strcmp(astr, bstr);
 }
 

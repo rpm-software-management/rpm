@@ -1,3 +1,4 @@
+/*@-boundsread@*/
 /**
  * \file lib/misc.c
  */
@@ -461,3 +462,4 @@ int rpmHeaderGetEntry(Header h, int_32 tag, int_32 *type,
     }
     /*@notreached@*/
 }
+/*@=boundsread@*/

@@ -12,6 +12,11 @@
 
 +strict			# lclint level
 
+# --- in progress
+#+bounds		# 0
++boundswrite		# 0
++slovak-fcns
+
 # --- +partial artifacts
 -declundef
 -exportheadervar

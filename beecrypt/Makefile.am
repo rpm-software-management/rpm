@@ -66,6 +66,9 @@ beetest: all
 	make -C tests beetest
 	./tests/beetest
 
+beecrypt.lcd: Makefile.am ${libbeecrypt_la_SOURCES} ${pkginclude_HEADERS} ${noinst_HEADERS}
+	lclint $(DEFS) $(INCLUDES) ${libbeecrypt_la_SOURCES} -dump $@
+
 # XXX don't bite into gcj java dependencies (yet)
 .PHONY: sources
 sources:

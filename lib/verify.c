@@ -39,6 +39,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     int rc;
 
     /* Prepend the path to root (if specified). */
+/*@-bounds@*/
     if (rootDir && *rootDir != '\0'
      && !(rootDir[0] == '/' && rootDir[1] == '\0'))
     {
@@ -56,8 +57,11 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	t = stpcpy(t, fn);
 	fn = t;
     }
+/*@=bounds@*/
 
+/*@-boundswrite@*/
     *result = RPMVERIFY_NONE;
+/*@=boundswrite@*/
 
     /*
      * Check to see if the file was installed - if not pretend all is OK.
@@ -73,7 +77,9 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     }
 
     if (fn == NULL || Lstat(fn, &sb) != 0) {
+/*@-bounds@*/
 	*result |= RPMVERIFY_LSTATFAIL;
+/*@=bounds@*/
 	return 1;
     }
 
@@ -114,6 +120,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
      */
     flags &= ~(omitMask | RPMVERIFY_LSTATFAIL|RPMVERIFY_READFAIL|RPMVERIFY_READLINKFAIL);
 
+/*@-bounds@*/
     if (flags & RPMVERIFY_MD5) {
 	unsigned char md5sum[16];
 	size_t fsize;
@@ -202,6 +209,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	if (name == NULL || fgroup == NULL || strcmp(name, fgroup))
 	    *result |= RPMVERIFY_GROUP;
     }
+/*@=bounds@*/
 
     return 0;
 }
@@ -265,6 +273,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
     int ec = 0;		/* assume no problems */
     int i;
 
+/*@-boundswrite@*/
     te = t = buf;
     *te = '\0';
 
@@ -338,6 +347,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    *t = '\0';
 	}
     }
+/*@=boundswrite@*/
     fi = rpmfiUnlink(fi, "verifyHeader");
 	
     return ec;
@@ -381,6 +391,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	    nb += strlen(altNEVR+2) + sizeof(", ") - 1;
 	}
 	te = t = alloca(nb);
+/*@-boundswrite@*/
 	*te = '\0';
 	pkgNEVR = (ps->probs->pkgNEVR ? ps->probs->pkgNEVR : "?pkgNEVR?");
 	sprintf(te, _("Unsatisifed dependencies for %s: "), pkgNEVR);
@@ -400,6 +411,7 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
 	    te = t;
 	    *t = '\0';
 	}
+/*@=boundswrite@*/
 	rc = 1;
     }
     /*@=branchstate@*/
@@ -481,11 +493,13 @@ int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
 	ec = rpmQueryVerify(qva, ts, (const char *) argv);
 	/*@=nullpass@*/
     } else {
+/*@-boundsread@*/
 	if (argv != NULL)
 	while ((arg = *argv++) != NULL) {
 	    ec += rpmQueryVerify(qva, ts, arg);
 	    rpmtsClean(ts);
 	}
+/*@=boundsread@*/
     }
     (void) rpmtsSetVerifySigFlags(ts, 0);
 

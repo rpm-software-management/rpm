@@ -37,6 +37,7 @@ const char *const tagName(int tag)
     }
 
     strcpy(nameBuf, "(unknown)");
+/*@-boundswrite@*/
     for (i = 0; i < rpmTagTableSize; i++) {
 	if (tag != rpmTagTable[i].val)
 	    continue;
@@ -47,6 +48,7 @@ const char *const tagName(int tag)
 	    *s = xtolower(*s);
 	break;
     }
+/*@=boundswrite@*/
     return nameBuf;
 }
 

@@ -15,8 +15,12 @@ extern "C" {
  * @param mode		file mode
  * @return		(malloc'd) formatted mode string
  */
+/*@-incondefs@*/
+/*@only@*/
 char * rpmPermsString(int mode)	
-	/*@*/;
+	/*@*/
+	/*@ensures maxSet(result) == 10 /\ maxRead(result) == 10 @*/;
+/*@=incondefs@*/
 
 /**
  * Read manifest, glob items, and append to existing args.

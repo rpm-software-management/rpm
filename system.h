@@ -175,7 +175,7 @@ char *realpath(const char *path, char resolved_path []);
 #if defined(__LCLINT__)
 /*@-declundef -incondefs @*/ /* LCL: missing annotation */
 /*@only@*/ /*@out@*/ void * alloca (size_t __size)
-	/*@ensures MaxSet(result) == (__size - 1) @*/
+	/*@ensures maxSet(result) == (__size - 1) @*/
 	/*@*/;
 /*@=declundef =incondefs @*/
 #endif
@@ -265,13 +265,13 @@ extern int _tolower(int) __THROW	/*@*/;
  */
 /*@mayexit@*/ /*@only@*/ /*@out@*/ void * xmalloc (size_t size)
 	/*@globals errno @*/
-	/*@ensures MaxSet(result) == (size - 1) @*/
+	/*@ensures maxSet(result) == (size - 1) @*/
 	/*@modifies errno @*/;
 
 /**
  */
 /*@mayexit@*/ /*@only@*/ void * xcalloc (size_t nmemb, size_t size)
-	/*@ensures MaxSet(result) == (nmemb - 1) @*/
+	/*@ensures maxSet(result) == (nmemb - 1) @*/
 	/*@*/;
 
 /**
@@ -279,7 +279,7 @@ extern int _tolower(int) __THROW	/*@*/;
  */
 /*@mayexit@*/ /*@only@*/ void * xrealloc (/*@null@*/ /*@only@*/ void * ptr,
 					size_t size)
-	/*@ensures MaxSet(result) == (size - 1) @*/
+	/*@ensures maxSet(result) == (size - 1) @*/
 	/*@modifies *ptr @*/;
 
 /**

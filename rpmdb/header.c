@@ -419,6 +419,7 @@ static int dataLength(int_32 type, hPTR_t p, int_32 count, int onDisk)
  * @param regionid	region offset
  * @return		no. bytes of data in region, -1 on error
  */
+/*@-boundswrite@*/
 static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 		entryInfo pe, char * dataStart, int regionid)
 	/*@modifies *entry, *dataStart @*/
@@ -514,9 +515,11 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 
     return dl;
 }
+/*@=boundswrite@*/
 
 /** \ingroup header
  */
+/*@-boundswrite@*/
 static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
 		/*@out@*/ int * lengthPtr)
 	/*@modifies h, *lengthPtr @*/
@@ -764,6 +767,7 @@ errxit:
     /*@=usereleased@*/
     return (void *) ei;
 }
+/*@=boundswrite@*/
 
 /** \ingroup header
  * Convert header to on-disk representation.
@@ -798,8 +802,10 @@ indexEntry findEntry(/*@null@*/ Header h, int_32 tag, int_32 type)
 
     key.info.tag = tag;
 
+/*@-boundswrite@*/
     entry2 = entry = 
 	bsearch(&key, h->index, h->indexUsed, sizeof(*h->index), indexCmp);
+/*@=boundswrite@*/
     if (entry == NULL)
 	return NULL;
 
@@ -834,6 +840,7 @@ indexEntry findEntry(/*@null@*/ Header h, int_32 tag, int_32 type)
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
+/*@-boundswrite@*/
 static
 int headerRemoveEntry(Header h, int_32 tag)
 	/*@modifies h @*/
@@ -872,12 +879,14 @@ int headerRemoveEntry(Header h, int_32 tag)
 
     return 0;
 }
+/*@=boundswrite@*/
 
 /** \ingroup header
  * Convert header to in-memory representation.
  * @param uh		on-disk header blob (i.e. with offsets)
  * @return		header
  */
+/*@-boundswrite@*/
 static /*@null@*/
 Header headerLoad(/*@kept@*/ void * uh)
 	/*@modifies uh @*/
@@ -1054,6 +1063,7 @@ errxit:
     return h;
     /*@=refcounttrans =globstate@*/
 }
+/*@=boundswrite@*/
 
 /** \ingroup header
  * Convert header to on-disk representation, and then reload.
@@ -1062,6 +1072,7 @@ errxit:
  * @param tag		region tag
  * @return		on-disk header (with offsets)
  */
+/*@-boundswrite@*/
 static /*@null@*/
 Header headerReload(/*@only@*/ Header h, int tag)
 	/*@modifies h @*/
@@ -1089,6 +1100,7 @@ Header headerReload(/*@only@*/ Header h, int tag)
     }
     return nh;
 }
+/*@=boundswrite@*/
 
 /** \ingroup header
  * Make a copy and convert header to in-memory representation.
@@ -1130,6 +1142,7 @@ Header headerCopyLoad(const void * uh)
  * @param magicp	read (and verify) 8 bytes of (magic, 0)?
  * @return		header (or NULL on error)
  */
+/*@-boundswrite@*/
 static /*@null@*/
 Header headerRead(FD_t fd, enum hMagic magicp)
 	/*@modifies fd @*/
@@ -1197,6 +1210,7 @@ exit:
     return h;
     /*@-mustmod@*/
 }
+/*@=boundswrite@*/
 
 /** \ingroup header
  * Write (with unload) header to file handle.
@@ -1265,6 +1279,7 @@ int headerIsEntry(/*@null@*/Header h, int_32 tag)
  * @param minMem	string pointers refer to header memory?
  * @return		1 on success, otherwise error.
  */
+/*@-boundswrite@*/
 static int copyEntry(const indexEntry entry,
 		/*@null@*/ /*@out@*/ hTYP_t type,
 		/*@null@*/ /*@out@*/ hPTR_t * p,
@@ -1369,6 +1384,7 @@ static int copyEntry(const indexEntry entry,
     if (c) *c = count;
     return rc;
 }
+/*@=boundswrite@*/
 
 /**
  * Does locale match entry in header i18n table?
@@ -1515,6 +1531,7 @@ headerFindI18NString(Header h, indexEntry entry)
  * @param minMem	string pointers reference header memory?
  * @return		1 on success, 0 on not found
  */
+/*@-boundswrite@*/
 static int intGetEntry(Header h, int_32 tag,
 		/*@null@*/ /*@out@*/ hTAG_t type,
 		/*@null@*/ /*@out@*/ hPTR_t * p,
@@ -1553,6 +1570,7 @@ static int intGetEntry(Header h, int_32 tag,
     /* XXX 1 on success */
     return ((rc == 1) ? 1 : 0);
 }
+/*@=boundswrite@*/
 
 /** \ingroup header
  * Free data allocated when retrieved from header.
@@ -1622,6 +1640,7 @@ int headerGetEntryMinMemory(Header h, int_32 tag,
     return intGetEntry(h, tag, type, p, c, 1);
 }
 
+/*@-boundswrite@*/
 int headerGetRawEntry(Header h, int_32 tag, int_32 * type, hPTR_t * p,
 		int_32 * c)
 {
@@ -1645,9 +1664,11 @@ int headerGetRawEntry(Header h, int_32 tag, int_32 * type, hPTR_t * p,
     /* XXX 1 on success */
     return ((rc == 1) ? 1 : 0);
 }
+/*@=boundswrite@*/
 
 /**
  */
+/*@-boundswrite@*/
 static void copyData(int_32 type, /*@out@*/ void * dstPtr, const void * srcPtr,
 		int_32 c, int dataLength)
 	/*@modifies *dstPtr @*/
@@ -1678,6 +1699,7 @@ static void copyData(int_32 type, /*@out@*/ void * dstPtr, const void * srcPtr,
 	break;
     }
 }
+/*@=boundswrite@*/
 
 /**
  * Return (malloc'ed) copy of entry data.
@@ -1687,6 +1709,7 @@ static void copyData(int_32 type, /*@out@*/ void * dstPtr, const void * srcPtr,
  * @retval lengthPtr	no. bytes in returned data
  * @return 		(malloc'ed) copy of entry data
  */
+/*@-boundswrite@*/
 static void * grabData(int_32 type, hPTR_t p, int_32 c,
 		/*@out@*/ int * lengthPtr)
 	/*@modifies *lengthPtr @*/
@@ -1700,6 +1723,7 @@ static void * grabData(int_32 type, hPTR_t p, int_32 c,
 	*lengthPtr = length;
     return data;
 }
+/*@=boundswrite@*/
 
 /** \ingroup header
  * Add tag to header.
@@ -1760,6 +1784,7 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, const void * p, int_32 c)
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
+/*@-boundswrite@*/
 static
 int headerAppendEntry(Header h, int_32 tag, int_32 type,
 		const void * p, int_32 c)
@@ -1796,6 +1821,7 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type,
 
     return 1;
 }
+/*@=boundswrite@*/
 
 /** \ingroup header
  * Add or append element to tag array in header.
@@ -1837,6 +1863,7 @@ int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
  * @param lang		locale
  * @return		1 on success, 0 on failure
  */
+/*@-bounds@*/
 static
 int headerAddI18NString(Header h, int_32 tag, const char * string,
 		const char * lang)
@@ -1971,6 +1998,7 @@ int headerAddI18NString(Header h, int_32 tag, const char * string,
 
     return 0;
 }
+/*@=bounds@*/
 
 /** \ingroup header
  * Modify tag in header.
@@ -2039,6 +2067,7 @@ static char escapedChar(const char ch)	/*@*/
  * @param num		number of elements
  * @return		NULL always
  */
+/*@-boundswrite@*/
 static /*@null@*/ sprintfToken
 freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
 	/*@modifies *format @*/
@@ -2071,9 +2100,11 @@ freeFormat( /*@only@*/ /*@null@*/ sprintfToken format, int num)
     format = _free(format);
     return NULL;
 }
+/*@=boundswrite@*/
 
 /**
  */
+/*@-boundswrite@*/
 static void findTag(char * name, const headerTagTableEntry tags, 
 		    const headerSprintfExtension extensions,
 		    /*@out@*/ headerTagTableEntry * tagMatch,
@@ -2123,6 +2154,7 @@ static void findTag(char * name, const headerTagTableEntry tags,
 	return;
     }
 }
+/*@=boundswrite@*/
 
 /* forward ref */
 static int parseExpression(sprintfToken token, char * str, 
@@ -2133,6 +2165,7 @@ static int parseExpression(sprintfToken token, char * str,
 
 /**
  */
+/*@-boundswrite@*/
 static int parseFormat(/*@null@*/ char * str, const headerTagTableEntry tags,
 		const headerSprintfExtension extensions,
 		/*@out@*/sprintfToken * formatPtr, /*@out@*/int * numTokensPtr,
@@ -2383,9 +2416,11 @@ static int parseFormat(/*@null@*/ char * str, const headerTagTableEntry tags,
 
     return 0;
 }
+/*@=boundswrite@*/
 
 /**
  */
+/*@-boundswrite@*/
 static int parseExpression(sprintfToken token, char * str, 
 		const headerTagTableEntry tags, 
 		const headerSprintfExtension extensions,
@@ -2511,6 +2546,7 @@ static int parseExpression(sprintfToken token, char * str,
 
     return 0;
 }
+/*@=boundswrite@*/
 
 /**
  * @return		0 on success, 1 on failure
@@ -2528,9 +2564,11 @@ static int getExtension(Header h, headerTagTagFunction fn,
 	ext->avail = 1;
     }
 
+/*@-boundswrite@*/
     if (typeptr) *typeptr = ext->type;
     if (data) *data = ext->data;
     if (countptr) *countptr = ext->count;
+/*@=boundswrite@*/
 
     return 0;
 }
@@ -2589,7 +2627,9 @@ static char * formatValue(sprintfTag tag, Header h,
 	type = RPM_INT32_TYPE;
     }
 
+/*@-boundswrite@*/
     (void) stpcpy( stpcpy(buf, "%"), tag->format);
+/*@=boundswrite@*/
 
     if (tag->type) {
 	ext = extensions;
@@ -2696,6 +2736,7 @@ static char * formatValue(sprintfTag tag, Header h,
 	    static char hex[] = "0123456789abcdef";
 	    const char * s = data;
 
+/*@-boundswrite@*/
 	    need = 2*count + tag->pad;
 	    val = t = xmalloc(need+1);
 	    while (count-- > 0) {
@@ -2705,6 +2746,7 @@ static char * formatValue(sprintfTag tag, Header h,
 		*t++ = hex[ (i     ) & 0xf ];
 	    }
 	    *t = '\0';
+/*@=boundswrite@*/
 #endif
 	}
 	break;
@@ -2718,6 +2760,7 @@ static char * formatValue(sprintfTag tag, Header h,
 
     /*@-branchstate@*/
     if (val && need > 0) {
+/*@-boundswrite@*/
 	if (((*vallenp) + need) >= (*allocedp)) {
 	    if ((*allocedp) <= need)
 		(*allocedp) += need;
@@ -2732,6 +2775,7 @@ static char * formatValue(sprintfTag tag, Header h,
 	te = stpcpy(t, val);
 	(*vallenp) += (te - t);
 	val = _free(val);
+/*@=boundswrite@*/
     }
     /*@=branchstate@*/
 
@@ -2762,6 +2806,7 @@ static char * singleSprintf(Header h, sprintfToken token,
 	break;
 
     case PTOK_STRING:
+/*@-boundswrite@*/
 	need = token->u.string.len;
 	if (need <= 0) break;
 	if (((*vallenp) + need) >= (*allocedp)) {
@@ -2777,6 +2822,7 @@ static char * singleSprintf(Header h, sprintfToken token,
 	t = (*valp) + (*vallenp);
 	te = stpcpy(t, token->u.string.string);
 	(*vallenp) += (te - t);
+/*@=boundswrite@*/
 	break;
 
     case PTOK_TAG:
@@ -2798,6 +2844,7 @@ static char * singleSprintf(Header h, sprintfToken token,
 
 	need = condNumFormats * 20;
 	if (condFormat == NULL || need <= 0) break;
+/*@-boundswrite@*/
 	if (((*vallenp) + need) >= (*allocedp)) {
 	    if ((*allocedp) <= need)
 		(*allocedp) += need;
@@ -2808,6 +2855,7 @@ static char * singleSprintf(Header h, sprintfToken token,
 	    (*valp) = xrealloc((*valp), (*allocedp)+1);	
 /*@=unqualifiedtrans@*/
 	}
+/*@=boundswrite@*/
 
 	t = (*valp) + (*vallenp);
 	for (i = 0; i < condNumFormats; i++)
@@ -2837,6 +2885,7 @@ static char * singleSprintf(Header h, sprintfToken token,
 	    /*@loopbreak@*/ break;
 	}
 
+/*@-boundswrite@*/
 	if (numElements == -1) {
 	    need = sizeof("(none)") - 1;
 	    if (((*vallenp) + need) >= (*allocedp)) {
@@ -2874,6 +2923,7 @@ static char * singleSprintf(Header h, sprintfToken token,
 					valp, vallenp, allocedp);
 	    }
 	}
+/*@=boundswrite@*/
 	break;
     }
 
@@ -2914,7 +2964,9 @@ freeExtensionCache(const headerSprintfExtension extensions,
     int i = 0;
 
     while (ext->type != HEADER_EXT_LAST) {
+/*@-boundswrite@*/
 	if (cache[i].freeit) cache[i].data = _free(cache[i].data);
+/*@=boundswrite@*/
 
 	i++;
 	if (ext->type == HEADER_EXT_MORE)
@@ -2999,11 +3051,13 @@ static char * octalFormat(int_32 type, hPTR_t data,
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
+/*@-boundswrite@*/
 	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "o");
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, *((int_32 *) data));
 	/*@=formatconst@*/
+/*@=boundswrite@*/
     }
 
     return val;
@@ -3020,11 +3074,13 @@ static char * hexFormat(int_32 type, hPTR_t data,
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
+/*@-boundswrite@*/
 	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "x");
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, *((int_32 *) data));
 	/*@=formatconst@*/
+/*@=boundswrite@*/
     }
 
     return val;
@@ -3045,6 +3101,7 @@ static char * realDateFormat(int_32 type, hPTR_t data,
 	struct tm * tstruct;
 	char buf[50];
 
+/*@-boundswrite@*/
 	val = xmalloc(50 + padding);
 	strcat(formatPrefix, "s");
 
@@ -3058,6 +3115,7 @@ static char * realDateFormat(int_32 type, hPTR_t data,
 	/*@-formatconst@*/
 	sprintf(val, formatPrefix, buf);
 	/*@=formatconst@*/
+/*@=boundswrite@*/
     }
 
     return val;
@@ -3084,6 +3142,7 @@ static char * dayFormat(int_32 type, hPTR_t data,
 
 /**
  */
+/*@-boundswrite@*/
 static char * shescapeFormat(int_32 type, hPTR_t data, 
 		char * formatPrefix, int padding, /*@unused@*/int element)
 	/*@modifies formatPrefix @*/
@@ -3122,6 +3181,7 @@ static char * shescapeFormat(int_32 type, hPTR_t data,
 
     return result;
 }
+/*@=boundswrite@*/
 
 /*@-type@*/ /* FIX: cast? */
 const struct headerSprintfExtension_s headerDefaultFormats[] = {
@@ -3237,8 +3297,10 @@ int headerNextIterator(HeaderIterator hi,
     hi->next_index++;
     /*@=noeffect@*/
 
+/*@-boundswrite@*/
     if (tag)
 	*tag = entry->info.tag;
+/*@=boundswrite@*/
 
     rc = copyEntry(entry, type, p, c, 0);
 

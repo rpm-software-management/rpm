@@ -1,3 +1,4 @@
+/*@-boundsread@*/
 /** \ingroup rpmts
  * \file lib/transaction.c
  */
@@ -213,6 +214,7 @@ static int filecmp(rpmfi afi, rpmfi bfi)
 /**
  */
 /* XXX only ts->{probs,rpmdb} modified */
+/*@-bounds@*/
 static int handleInstInstalledFiles(const rpmts ts,
 		rpmte p, rpmfi fi,
 		sharedFileInfo shared,
@@ -299,6 +301,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 
     return 0;
 }
+/*@=bounds@*/
 
 /**
  */
@@ -325,6 +328,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 
     xx = hge(h, RPMTAG_FILESTATES, NULL, (void **) &otherStates, NULL);
 
+/*@-boundswrite@*/
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
 	otherFileNum = shared->otherFileNum;
@@ -335,6 +339,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 
 	fi->actions[fileNum] = FA_SKIP;
     }
+/*@=boundswrite@*/
 
     mi = rpmdbFreeIterator(mi);
 
@@ -363,6 +368,7 @@ static int fpsCompare (const void * one, const void * two)
     if (adnlen == 1 && asnlen != 0) adnlen = 0;
     if (bdnlen == 1 && bsnlen != 0) bdnlen = 0;
 
+/*@-boundswrite@*/
     afn = t = alloca(adnlen+asnlen+abnlen+2);
     if (adnlen) t = stpcpy(t, a->entry->dirName);
     *t++ = '/';
@@ -376,6 +382,7 @@ static int fpsCompare (const void * one, const void * two)
     if (b->subDir && bsnlen) t = stpcpy(t, b->subDir);
     if (bbnlen) t = stpcpy(t, b->baseName);
     if (bfn[0] == '/' && bfn[1] == '/') bfn++;
+/*@=boundswrite@*/
 
     rc = strcmp(afn, bfn);
 /*@-modfilesys@*/
@@ -454,7 +461,9 @@ fiFps->baseName);
 
     const struct fingerPrint_s * bingoFps;
 
+/*@-boundswrite@*/
     bingoFps = bsearch(fiFps, otherFps, otherFc, sizeof(*otherFps), fpsCompare);
+/*@=boundswrite@*/
     if (bingoFps == NULL) {
 /*@-modfilesys@*/
 fprintf(stderr, "*** NULL %s/%s%s\n",
@@ -574,6 +583,7 @@ static void handleOverlappedFiles(const rpmts ts,
 		/*@innerbreak@*/ break;
 	}
 
+/*@-boundswrite@*/
 	switch (rpmteType(p)) {
 	case TR_ADDED:
 	  { struct stat sb;
@@ -648,6 +658,7 @@ assert(otherFi != NULL);
 	    fi->actions[i] = FA_ERASE;
 	    /*@switchbreak@*/ break;
 	}
+/*@=boundswrite@*/
 
 	/* Update disk space info for a file. */
 	rpmtsUpdateDSI(ts, fi->fps[i].entry->dev,
@@ -678,6 +689,7 @@ static int ensureOlder(rpmts ts,
     if (p == NULL || h == NULL)
 	return 1;
 
+/*@-boundswrite@*/
     nb = strlen(rpmteNEVR(p)) + (rpmteE(p) != NULL ? strlen(rpmteE(p)) : 0) + 1;
     t = alloca(nb);
     *t = '\0';
@@ -686,6 +698,7 @@ static int ensureOlder(rpmts ts,
     if (rpmteV(p) != NULL)	t = stpcpy(t, rpmteV(p));
     *t++ = '-';
     if (rpmteR(p) != NULL)	t = stpcpy(t, rpmteR(p));
+/*@=boundswrite@*/
     
     req = rpmdsSingle(RPMTAG_REQUIRENAME, rpmteN(p), reqEVR, reqFlags);
     rc = headerMatchesDepFlags(h, req);
@@ -1461,3 +1474,4 @@ fi->actions = actions;
 	return 0;
     /*@=nullstate@*/
 }
+/*@=boundsread@*/

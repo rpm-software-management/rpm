@@ -2,7 +2,7 @@
 
 #include "system.h"
 
-#include "rpmio.h"
+#include <rpmlib.h>
 #include "rpmlead.h"
 #include "debug.h"
 

@@ -4,8 +4,6 @@ EXTRA_DIST = algorithm.txt ChangeLog Doxyfile FAQ INDEX README \
 	zlib.3 zlib.spec \
 	amiga/* contrib/* msdos/* nt/* os2/*
 
-BUILT_SOURCES = Doxyfile
-
 # crc32.h
 noinst_HEADERS = \
 	deflate.h infblock.h infcodes.h inffast.h inffixed.h \
@@ -25,6 +23,11 @@ example_LDFLAGS = -L. -lz
 
 minigzip_SOURCES = minigzip.c
 minigzip_LDFLAGS = -L. -lz
+
+BUILT_SOURCES = Doxyfile zlib.lcd
+
+zlib.lcd: Makefile.am ${libz_la_SOURCES} ${noinst_HEADERS}
+	-lclint ${DEFS} ${INCLUDES} ${libz_la_SOURCES} -dump $@ 2>/dev/null
 
 .PHONY: sources
 sources:

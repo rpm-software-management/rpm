@@ -596,7 +596,7 @@ int rpmtsGetKeys(rpmts ts,
  * @retval np		name tag value
  * @return		name-version-release string
  */
-/*@only@*/ char * hGetNEVR(Header h, /*@out@*/ const char ** np )
+/*@only@*/ char * hGetNEVR(Header h, /*@null@*/ /*@out@*/ const char ** np )
 	/*@modifies *np @*/;
 
 #ifdef __cplusplus

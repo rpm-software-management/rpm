@@ -8,6 +8,12 @@ EXTRA_DIST = \
 	ChangeLog COPYING.LIB INSTALL README VERSION \
 	libelf.spec po/*.in po/*.po po/@PACKAGE@.pot
 
+BUILT_SOURCES = libelf.lcd
+
+libelf.lcd: Makefile.am
+	make -C lib libelf.lcd
+	cp lib/libelf.lcd .
+
 .PHONY: sources
 sources:
 	make -C lib sources

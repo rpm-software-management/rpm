@@ -51,7 +51,9 @@ static void printFileInfo(char * te, const char * name,
     if (now == 0) {
 	now = time(NULL);
 	tm = localtime(&now);
+/*@-boundsread@*/
 	if (tm) nowtm = *tm;	/* structure assignment */
+/*@=boundsread@*/
     }
 
     if (owner) 
@@ -130,6 +132,7 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
 
 /**
  */
+/*@-boundsread@*/
 static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
 		int xfile)
 	/*@*/
@@ -154,7 +157,9 @@ static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
     if (nlink == 0) nlink = 1;
     return nlink;
 }
+/*@=boundsread@*/
 
+/*@-boundswrite@*/
 int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -406,6 +411,7 @@ exit:
     fileGroupList = hfd(fileGroupList, fgt);
     return rc;
 }
+/*@=boundswrite@*/
 
 /**
  */
@@ -437,10 +443,12 @@ printNewSpecfile(Spec spec)
 	    Package pkg;
 	    char *fe;
 
+/*@-bounds@*/
 	    strcpy(fmt, t->t_msgid);
 	    for (fe = fmt; *fe && *fe != '('; fe++)
 		{} ;
 	    if (*fe == '(') *fe = '\0';
+/*@=bounds@*/
 	    h = NULL;
 	    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 		const char *pkgname;
@@ -457,7 +465,9 @@ printNewSpecfile(Spec spec)
 	    continue;
 
 	fmt[0] = '\0';
+/*@-boundswrite@*/
 	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tn), "}");
+/*@=boundswrite@*/
 	msgstr = _free(msgstr);
 
 	/* XXX this should use queryHeader(), but prints out tn as well. */
@@ -467,6 +477,7 @@ printNewSpecfile(Spec spec)
 	    return;
 	}
 
+/*@-boundswrite@*/
 	switch(t->t_tag) {
 	case RPMTAG_SUMMARY:
 	case RPMTAG_GROUP:
@@ -498,10 +509,12 @@ printNewSpecfile(Spec spec)
 		sl->sl_lines[t->t_startx + 2] = xstrdup("\n\n");
 	    /*@switchbreak@*/ break;
 	}
+/*@=boundswrite@*/
     }
     /*@=branchstate@*/
     msgstr = _free(msgstr);
 
+/*@-boundsread@*/
     for (i = 0; i < sl->sl_nlines; i++) {
 	const char * s = sl->sl_lines[i];
 	if (s == NULL)
@@ -510,6 +523,7 @@ printNewSpecfile(Spec spec)
 	if (strchr(s, '\n') == NULL && s[strlen(s)-1] != '\n')
 	    printf("\n");
     }
+/*@=boundsread@*/
 }
 
 void rpmDisplayQueryTags(FILE * fp)
@@ -583,6 +597,7 @@ int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
 /*@null@*/ Spec	(*freeSpecVec) (Spec spec) = NULL;
 /*@=redecl@*/
 
+/*@-bounds@*/
 int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 {
     const char ** av = NULL;
@@ -970,6 +985,7 @@ restart:
    
     return res;
 }
+/*@=bounds@*/
 
 int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 {

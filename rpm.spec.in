@@ -290,7 +290,7 @@ fi
 %config(noreplace,missingok)	/etc/cron.daily/rpm
 %config(noreplace,missingok)	/etc/logrotate.d/rpm
 %dir				/etc/rpm
-%config(noreplace,missingok)	/etc/rpm/macros.*
+#%config(noreplace,missingok)	/etc/rpm/macros.*
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
 
 %define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)

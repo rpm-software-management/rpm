@@ -217,7 +217,7 @@ struct Elf_Scn {
     unsigned	s_shdr_flags;		/* shdr flags (ELF_F_*) */
 /*@null@*/
     Scn_Data*	s_data_1;		/* first data buffer */
-/*@null@*/
+/*@kept@*/ /*@null@*/
     Scn_Data*	s_data_n;		/* last data buffer */
 /*@null@*/
     Scn_Data*	s_rawdata;		/* raw data buffer */
@@ -314,11 +314,14 @@ extern int _elf_fill;
 /*@null@*/
 extern void *_elf_read __P((Elf* elf, /*@returned@*/ /*@null@*/ void* buffer, size_t off, size_t len))
 	/*@globals _elf_errno @*/
-	/*@modifies *buffer, _elf_errno @*/;
+	/*@modifies *buffer, _elf_errno @*/
+	/*@requires maxSet(buffer) >= (len - 1) @*/
+	/*@ensures maxRead(buffer) >= len @*/;
 /*@null@*/
 extern void *_elf_mmap __P((Elf* elf))
 	/*@globals _elf_errno @*/
-	/*@modifies _elf_errno @*/;
+	/*@modifies _elf_errno @*/
+	/*@ensures maxSet(result) == elf->e_size /\ maxRead(result) == elf->e_size @*/;
 extern int _elf_cook __P((Elf* elf))
 	/*@globals _elf_errno @*/
 	/*@modifies *elf, _elf_errno @*/;

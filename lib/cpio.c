@@ -1,3 +1,4 @@
+/*@-boundsread@*/
 /** \ingroup payload
  * \file lib/cpio.c
  *  Handle cpio payloads within rpm packages.
@@ -39,10 +40,12 @@ static int strntoul(const char *str, /*@out@*/char **endptr, int base, int num)
     buf[num] = '\0';
 
     ret = strtoul(buf, &end, base);
+/*@-boundswrite@*/
     if (*end != '\0')
 	*endptr = ((char *)str) + (end - buf);	/* XXX discards const */
     else
 	*endptr = ((char *)str) + strlen(buf);
+/*@=boundswrite@*/
 
     return ret;
 }
@@ -60,11 +63,13 @@ int cpioTrailerWrite(FSM_t fsm)
 	(struct cpioCrcPhysicalHeader *)fsm->rdbuf;
     int rc;
 
+/*@-boundswrite@*/
     memset(hdr, '0', PHYS_HDR_SIZE);
     memcpy(hdr->magic, CPIO_NEWC_MAGIC, sizeof(hdr->magic));
     memcpy(hdr->nlink, "00000001", 8);
     memcpy(hdr->namesize, "0000000b", 8);
     memcpy(fsm->rdbuf + PHYS_HDR_SIZE, CPIO_TRAILER, sizeof(CPIO_TRAILER));
+/*@=boundswrite@*/
 
     /* XXX DWRITE uses rdnb for I/O length. */
     fsm->rdnb = PHYS_HDR_SIZE + sizeof(CPIO_TRAILER);
@@ -104,7 +109,9 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
 
     len = strlen(fsm->path) + 1; SET_NUM_FIELD(hdr->namesize, len, field);
     memcpy(hdr->checksum, "00000000", 8);
+/*@-boundswrite@*/
     memcpy(fsm->rdbuf + PHYS_HDR_SIZE, fsm->path, len);
+/*@=boundswrite@*/
 
     /* XXX DWRITE uses rdnb for I/O length. */
     fsm->rdnb = PHYS_HDR_SIZE + len;
@@ -130,7 +137,9 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
     if (!rc && fsm->rdnb != fsm->wrlen)
 	rc = CPIOERR_READ_FAILED;
     if (rc) return rc;
+/*@-boundswrite@*/
     memcpy(&hdr, fsm->wrbuf, fsm->rdnb);
+/*@=boundswrite@*/
 
     if (strncmp(CPIO_CRC_MAGIC, hdr.magic, sizeof(CPIO_CRC_MAGIC)-1) &&
 	strncmp(CPIO_NEWC_MAGIC, hdr.magic, sizeof(CPIO_NEWC_MAGIC)-1))
@@ -170,8 +179,10 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
 	    fsm->path = NULL;
 	    return rc;
 	}
+/*@-boundswrite@*/
 	memcpy(t, fsm->wrbuf, fsm->rdnb);
 	t[nameSize] = '\0';
+/*@=boundswrite@*/
 	fsm->path = t;
     }
 
@@ -238,3 +249,4 @@ const char *const cpioStrerror(int rc)
     /*@=branchstate@*/
     return msg;
 }
+/*@=boundsread@*/

@@ -53,7 +53,9 @@ gelf_getphdr(Elf *elf, int ndx, GElf_Phdr *dst) {
 	seterr(ERROR_BADINDEX);
 	return NULL;
     }
+/*@-boundsread@*/
     n = _msize(elf->e_class, _elf_version, ELF_T_PHDR);
+/*@=boundsread@*/
     if (n == 0) {
 	seterr(ERROR_UNIMPLEMENTED);
 	return NULL;
@@ -62,7 +64,9 @@ gelf_getphdr(Elf *elf, int ndx, GElf_Phdr *dst) {
 	dst = &buf;
     }
     if (elf->e_class == ELFCLASS64) {
+/*@-boundswrite@*/ /* structure assignment */
 	*dst = *(Elf64_Phdr*)(tmp + ndx * n);
+/*@=boundswrite@*/
     }
     else if (elf->e_class == ELFCLASS32) {
 	Elf32_Phdr *src = (Elf32_Phdr*)(tmp + ndx * n);
@@ -90,7 +94,9 @@ gelf_getphdr(Elf *elf, int ndx, GElf_Phdr *dst) {
 	    seterr(ERROR_MEM_PHDR);
 	    return NULL;
 	}
+/*@-boundswrite@*/ /* structure assignment */
 	*dst = buf;
+/*@=boundswrite@*/
     }
     return dst;
 }
@@ -112,13 +118,17 @@ gelf_update_phdr(Elf *elf, int ndx, GElf_Phdr *src) {
 	seterr(ERROR_BADINDEX);
 	return 0;
     }
+/*@-boundsread@*/
     n = _msize(elf->e_class, _elf_version, ELF_T_PHDR);
+/*@=boundsread@*/
     if (n == 0) {
 	seterr(ERROR_UNIMPLEMENTED);
 	return 0;
     }
     if (elf->e_class == ELFCLASS64) {
+/*@-boundswrite@*/ /* structure assignment */
 	*(Elf64_Phdr*)(tmp + ndx * n) = *src;
+/*@=boundswrite@*/
     }
     else if (elf->e_class == ELFCLASS32) {
 	Elf32_Phdr *dst = (Elf32_Phdr*)(tmp + ndx * n);

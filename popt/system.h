@@ -2,7 +2,17 @@
 #include "config.h"
 #endif
 
+#if defined (__GLIBC__) && defined(__LCLINT__)
+/*@-declundef@*/
+/*@unchecked@*/
+extern __const __int32_t *__ctype_tolower;
+/*@unchecked@*/
+extern __const __int32_t *__ctype_toupper;
+/*@=declundef@*/
+#endif
+
 #include <ctype.h>
+
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>

@@ -22,7 +22,6 @@
 int _rpmte_debug = 0;
 
 /*@access alKey @*/
-/*@access rpmte @*/
 /*@access rpmtsi @*/
 /*@access rpmts @*/
 
@@ -67,7 +66,9 @@ static void delTE(rpmte p)
 
     p->h = headerFree(p->h, "delTE");
 
+/*@-boundswrite@*/
     memset(p, 0, sizeof(*p));	/* XXX trash and burn */
+/*@=boundswrite@*/
     /*@-nullstate@*/ /* FIX: p->{NEVR,name} annotations */
     return;
     /*@=nullstate@*/

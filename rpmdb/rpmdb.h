@@ -1,5 +1,6 @@
 #ifndef H_RPMDB
 #define H_RPMDB
+/*@-bounds@*/
 
 /** \ingroup rpmdb dbi db1 db3
  * \file rpmdb/rpmdb.h
@@ -1023,4 +1024,5 @@ int mergesort(void *base, size_t nmemb, size_t size,
 }
 #endif
 
+/*@=bounds@*/
 #endif	/* H_RPMDB */
