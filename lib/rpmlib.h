@@ -71,6 +71,7 @@
 #define INSTALL_REPLACEPKG	1
 #define INSTALL_REPLACEFILES	2
 #define INSTALL_TEST		4
+#define INSTALL_PRINTLABEL	8
 
 #define VERIFY_NONE             0
 #define VERIFY_MD5              1
