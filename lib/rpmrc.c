@@ -1190,6 +1190,15 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
     addMacro(NULL, "_target_cpu", NULL, ca, RMIL_RPMRC);
     delMacro(NULL, "_target_os");
     addMacro(NULL, "_target_os", NULL, co, RMIL_RPMRC);
+/*
+ * XXX Make sure that per-arch optflags is initialized correctly.
+ */
+  { char *optflags = rpmGetVarArch(RPMVAR_OPTFLAGS, ca);
+    if (optflags != NULL) {
+	delMacro(NULL, "optflags");
+	addMacro(NULL, "optflags", NULL, optflags, RMIL_RPMRC);
+    }
+  }
 
     if (canontarget)
 	*canontarget = ct;
