@@ -692,7 +692,7 @@ if test $rpm_cv_glob = no ; then
 main() {
   glob_t gl ;
   gl.gl_stat = stat;
-  exit(glob("doc/*/*.8", 0, NULL, &gl) || gl.gl_pathc < 1);
+  exit(glob("doc/*/*.8", GLOB_PERIOD, NULL, &gl) || gl.gl_pathc < 1);
 } ],
     rpm_cv_glob_ext=yes, rpm_cv_glob_ext=no, rpm_cv_glob_ext=no)
     AC_MSG_RESULT([$rpm_cv_glob_ext])
