@@ -1,17 +1,40 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(rpm.c)
 
+topdir=`pwd`
+
 dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
-AC_PROG_CPP
+
+AC_AIX
+AC_MINIX
+AC_ISC_POSIX
+
+AC_PROG_AWK
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
 dnl Checks for libraries.
-AC_CHECK_FUNC(gettext)
-AC_CHECK_LIB(intl, gettext, [LIBINTL="-lintl"])
+AC_CHECK_FUNC(gettext, [], 
+  AC_CHECK_LIB(intl, gettext, [LIBINTL="-lintl"], 
+               AC_MSG_WARN([sorry this package needs libintl.a (from the 
+gettext package)])
+             )
+            )
+
 AC_CHECK_LIB(gdbm, dbminit, [], AC_MSG_WARN([sorry this package needs libgdbm.a (from the gdbm package)]))
-AC_CHECK_LIB(db, dbopen, [], AC_MSG_WARN([sorry this package needs libdb.a (from the db package)]))
+
+AC_CHECK_FUNC(dbopen, [],
+  AC_CHECK_LIB(db, dbopen, [], AC_MSG_WARN([sorry this package needs libdb.a 
+(from the db package)]))
+           )
+
+AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -lnsl"])
+
 
 ZLIB=
 for zlib in z gz ; do
@@ -26,14 +49,35 @@ AC_SUBST(ZLIB)
 
 
 dnl Checks for header files.
+AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS(sys/socket.h ftw.h getopt.h \
-  regex.h regexp.h endian.h machine/endian.h asm/byteorder.h malloc.h)
+AC_CHECK_HEADERS(sys/socket.h ftw.h getopt.h regex.h regexp.h endian.h)
+AC_CHECK_HEADERS(machine/endian.h sys/byteorder.h machine/types.h)
+AC_CHECK_HEADERS(netinet_in_systm.h malloc.h string.h sys/select.h)
+AC_CHECK_HEADERS(fcntl.h limits.h paths.h sys/file.h sys/time.h unistd.h)
+AC_CHECK_HEADERS(sys/socket.h sys/utsname.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_UID_T
+AC_TYPE_MODE_T
+AC_TYPE_OFF_T
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_STRUCT_ST_RDEV
+AC_HEADER_TIME
+AC_STRUCT_TM
+
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
+AC_FUNC_MEMCMP
+AC_TYPE_SIGNAL
+AC_FUNC_VPRINTF
 AC_CHECK_FUNC(vfork)
-AC_CHECK_FUNCS(S_ISSOCK S_ISFIFO)
+AC_CHECK_FUNC(setenv)
+AC_CHECK_FUNC(inet_aton)
 AC_CHECK_FUNC(realpath, REALPATH='', REALPATH='realpath.o' LIBMISC='-lmisc')
 AC_CHECK_FUNC(ftw, FTW='', FTW='ftw.o' LIBMISC='-lmisc')
 AC_CHECK_FUNC(getopt_long, GETOPT='' GETOPT1='', GETOPT='getopt.o' GETOPT1='getopt1.o' LIBMISC='-lmisc')
@@ -61,7 +105,9 @@ AC_SUBST(GETOPT)
 AC_SUBST(GETOPT1)
 AC_SUBST(LIBMISC)
 AC_SUBST(LIBINTL)
+AC_SUBST(LIBSOCKET)
 AC_SUBST(varprefix)
 AC_SUBST(tmpdir)
+AC_SUBST(topdir)
 
-AC_OUTPUT(Makefile lib-rpmrc lib/Makefile build/Makefile tools/Makefile po/Makefile misc/Makefile)
+AC_OUTPUT(Makefile Makefile.inc lib-rpmrc lib/Makefile build/Makefile tools/Makefile po/Makefile misc/Makefile)
