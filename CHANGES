@@ -1,5 +1,6 @@
 2.91 -> 2.92
-	- fix: --target=arch works.
+	- fix: rpm --target=arch ... resurrected.
+	- fix: rpm -q --specfile --specedit now works even with BuildArch:.
 
 2.90 -> 2.91
 	- fix: memory leaks in rpmRunTransactions plugged.

@@ -379,11 +379,14 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
 	}
 
 	if (parsePart == PART_BUILDARCHITECTURES) {
+#if 0	/* XXX W2DO??? */
 	    spec->buildArchitectureSpecs =
 		malloc(sizeof(Spec) * spec->buildArchitectureCount);
-	    x = 0;
+#else
+	    spec->buildArchitectureSpecs = newSpec();
+#endif
 	    index = 0;
-	    while (x < spec->buildArchitectureCount) {
+	    for (x = 0; x < spec->buildArchitectureCount; x++) {
 		if (rpmMachineScore(RPM_MACHTABLE_BUILDARCH,
 				    spec->buildArchitectures[x])) {
 		    rpmGetMachine(&saveArch, NULL);
@@ -400,7 +403,6 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
 		    free(saveArch);
 		    index++;
 		}
-		x++;
 	    }
 	    spec->buildArchitectureCount = index;
 	    if (! index) {
@@ -408,6 +410,18 @@ int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
 		rpmError(RPMERR_BADSPEC, _("No buildable architectures"));
 		return RPMERR_BADSPEC;
 	    }
+
+	    /* XXX HACK: swap BuildArch sl/st with child */
+	    if (spec->sl && spec->st) {
+		Spec nspec = *spec->buildArchitectureSpecs;
+		struct speclines *sl = spec->sl;
+		struct spectags *st = spec->st;
+		spec->sl = nspec->sl;
+		spec->st = nspec->st;
+		nspec->sl = sl;
+		nspec->st = st;
+	    }
+
 	    closeSpec(spec);
 	    *specp = spec;
 	    return 0;
