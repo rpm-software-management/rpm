@@ -277,41 +277,40 @@ void headerWrite(FD_t fd, Header h, int magicp)
 
 Header headerRead(FD_t fd, int magicp)
 {
+    int_32 block[40];
     int_32 reserved;
     int_32 * p;
     int_32 il, dl;
     int_32 magic;
     Header h;
-    void * block;
+    void * dataBlock;
     int totalSize;
+    int i;
+
+    i = 2;
+    if (magicp == HEADER_MAGIC_YES)
+	i += 2;
+
+    if (timedRead(fd, block, i * sizeof(*block)) != (i * sizeof(*block)))
+	return NULL;
+    i = 0;
 
     if (magicp == HEADER_MAGIC_YES) {
-	if (timedRead(fd, &magic, sizeof(magic)) != sizeof(magic))
-	    return NULL;
+	magic = block[i++];
 	if (memcmp(&magic, header_magic, sizeof(magic))) {
 	    return NULL;
 	}
 
-	if (timedRead(fd, &reserved, sizeof(reserved)) != sizeof(reserved))
-	    return NULL;
+	reserved = block[i++];
     }
     
-    /* First read the index length (count of index entries) */
-    if (timedRead(fd, &il, sizeof(il)) != sizeof(il)) 
-	return NULL;
-
-    il = ntohl(il);
-
-    /* Then read the data length (number of bytes) */
-    if (timedRead(fd, &dl, sizeof(dl)) != sizeof(dl)) 
-	return NULL;
-
-    dl = ntohl(dl);
+    il = ntohl(block[i++]);
+    dl = ntohl(block[i++]);
 
     totalSize = sizeof(int_32) + sizeof(int_32) + 
 		(il * sizeof(struct entryInfo)) + dl;
 
-    block = p = malloc(totalSize);
+    dataBlock = p = malloc(totalSize);
     *p++ = htonl(il);
     *p++ = htonl(dl);
 
@@ -319,9 +318,9 @@ Header headerRead(FD_t fd, int magicp)
     if (timedRead(fd, p, totalSize) != totalSize)
 	return NULL;
     
-    h = headerLoad(block);
+    h = headerLoad(dataBlock);
 
-    free(block);
+    free(dataBlock);
 
     return h;
 }
