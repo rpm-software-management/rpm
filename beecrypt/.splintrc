@@ -15,10 +15,7 @@
 # --- in progress
 +likelybounds
 -bufferoverflowhigh
--aliasunique
--mayaliasunique
--compdef		# 83
--noeffectuncon		# 11
+#-compdef		# 83
 
 -elseifcomplete
 -whileempty

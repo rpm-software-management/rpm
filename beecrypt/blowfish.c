@@ -385,10 +385,12 @@ int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, /*@unused@
 #ifndef ASM_BLOWFISHSETIV
 int blowfishSetIV(blowfishParam* bp, const byte* iv)
 {
+/*@-mayaliasunique@*/
 	if (iv)
 		memcpy(bp->fdback, iv, sizeof(bp->fdback));
 	else
 		memset(bp->fdback, 0, sizeof(bp->fdback));
+/*@=mayaliasunique@*/
 
 	return 0;
 }

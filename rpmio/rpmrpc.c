@@ -683,7 +683,7 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 
     /* This is device */
     if (S_ISCHR (st->st_mode) || S_ISBLK (st->st_mode)){
-	int maj, min;
+	unsigned maj, min;
 	
 	if (!is_num (idx2) || sscanf(columns [idx2], " %d,", &maj) != 1)
 	    goto error;
@@ -692,7 +692,7 @@ vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 	    goto error;
 	
 #ifdef HAVE_ST_RDEV
-	st->st_rdev = ((maj & 0xff) << 8) | (min & 0xffff00ff);
+	st->st_rdev = ((maj & 0x000000ffU) << 8) | (min & 0x000000ffU);
 #endif
 	st->st_size = 0;
 	

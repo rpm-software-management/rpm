@@ -1,3 +1,4 @@
+/*@-compdef@*/
 /*
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited, B.V.
  *
@@ -360,3 +361,4 @@ decrypt_end:
 	return cleartext;
 	/*@=usereleased@*/
 }
+/*@=compdef@*/

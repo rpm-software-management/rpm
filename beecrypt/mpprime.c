@@ -906,7 +906,9 @@ static void mpprndbits(mpbarrett* p, size_t msbclr, size_t lsbset, randomGenerat
 	if (p == (mpbarrett*) 0 || p->modl == (mpw*) 0)
 		return;
 
+/*@-noeffectuncon@*/
 	(void) rc->rng->next(rc->param, (byte*) p->modl, MP_WORDS_TO_BYTES(size));
+/*@=noeffectuncon@*/
 
 	if (msbclr != 0)
 		p->modl[0] &= (MP_ALLMASK >> msbclr);

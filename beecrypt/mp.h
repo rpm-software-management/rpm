@@ -71,7 +71,10 @@ BEECRYPTAPI /*@unused@*/
 void mpcopy(size_t size, /*@out@*/ mpw* dst, const mpw* src)
 	/*@modifies dst @*/;
 #ifndef ASM_MPCOPY
-# define mpcopy(size, dst, src) memcpy(dst, src, MP_WORDS_TO_BYTES((unsigned)size))
+# define mpcopy(size, dst, src) \
+	/*@-aliasunique -mayaliasunique @*/ \
+	memcpy(dst, src, MP_WORDS_TO_BYTES((unsigned)size)) \
+	/*@=aliasunique =mayaliasunique @*/
 #endif
 
 /**

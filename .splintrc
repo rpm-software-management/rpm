@@ -13,11 +13,12 @@
 +strict			# lclint level
 
 # --- in progress
-+bounds
++likelybounds
 +slovak-fcns
 +access-slovak
 -redecl
 -bufferoverflowhigh
+-whileempty
 
 -macroparams
 -declundef

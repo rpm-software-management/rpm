@@ -39,7 +39,9 @@ int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 
 	while (nblocks > 0)
 	{
+/*@-noeffectuncon@*/
 		(void) bc->encrypt(bp, dst, src);
+/*@=noeffectuncon@*/
 
 		dst += blockwords;
 		src += blockwords;
@@ -55,7 +57,9 @@ int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 
 	while (nblocks > 0)
 	{
+/*@-noeffectuncon@*/
 		(void) bc->decrypt(bp, dst, src);
+/*@=noeffectuncon@*/
 
 		dst += blockwords;
 		src += blockwords;
@@ -77,7 +81,9 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 		for (i = 0; i < blockwords; i++)
 			dst[i] = src[i] ^ fdback[i];
 
+/*@-noeffectuncon@*/
 		(void) bc->encrypt(bp, dst, dst);
+/*@=noeffectuncon@*/
 
 		dst += blockwords;
 		src += blockwords;
@@ -90,7 +96,9 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 			for (i = 0; i < blockwords; i++)
 				dst[i] = src[i] ^ dst[i-blockwords];
 
+/*@-noeffectuncon@*/
 			(void) bc->encrypt(bp, dst, dst);
+/*@=noeffectuncon@*/
 
 			dst += blockwords;
 			src += blockwords;
@@ -119,7 +127,9 @@ int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 			register uint32_t tmp;
 			register int i;
 
+/*@-noeffectuncon@*/
 			(void) bc->decrypt(bp, buf, src);
+/*@=noeffectuncon@*/
 
 			for (i = 0; i < blockwords; i++)
 			{

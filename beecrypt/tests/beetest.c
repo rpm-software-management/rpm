@@ -1,3 +1,4 @@
+/*@-compdef@*/
 /*
  * beetest.c
  *
@@ -126,7 +127,9 @@ static int testVectorElGamalV1(const dlkp_p* keypair)
 		mpnsize(&digest, 5);
 		memset(digest.data, 0, digest.size * sizeof(*digest.data));
 
+/*@-noeffectuncon@*/
 		(void) rngc.rng->next(rngc.param, digest.data, digest.size);
+/*@=noeffectuncon@*/
 
 		(void) elgv1sign(&keypair->param.p, &keypair->param.n, &keypair->param.g, &rngc, &digest, &keypair->x, &r, &s);
 
@@ -166,7 +169,9 @@ static int testVectorElGamalV3(const dlkp_p* keypair)
 		mpnsize(&digest, 5);
 		memset(digest.data, 0, digest.size * sizeof(*digest.data));
 
+/*@-noeffectuncon@*/
 		(void) rngc.rng->next(rngc.param, digest.data, digest.size);
+/*@=noeffectuncon@*/
 
 		(void) elgv3sign(&keypair->param.p, &keypair->param.n, &keypair->param.g, &rngc, &digest, &keypair->x, &r, &s);
 
@@ -487,7 +492,9 @@ static void testExpMods(void)
 		#endif
 		/* now run a test with x having 160 bits */
 		mpnsize(&x, 5);
+/*@-noeffectuncon@*/
 		(void) rngc.rng->next(rngc.param, x.data, x.size);
+/*@=noeffectuncon@*/
 		printf("  (1024 bits ^ 160 bits) mod 1024 bits:");
 		#if HAVE_TIME_H
 		tstart = clock();
@@ -555,7 +562,9 @@ static void testRSA(void)
 		#endif
 
 		mpnsize(&hm, 4);
+/*@-noeffectuncon@*/
 		(void) rngc.rng->next(rngc.param, hm.data, hm.size);
+/*@=noeffectuncon@*/
 
 		printf("  RSA sign:");
 		#if HAVE_TIME_H
@@ -648,7 +657,9 @@ static void testDLAlgorithms(void)
 		#endif
 
 		mpnsize(&hm, 5);
+/*@-noeffectuncon@*/
 		(void) rngc.rng->next(rngc.param, hm.data, hm.size);
+/*@=noeffectuncon@*/
 		
 		printf("  DSA sign:");
 		#if HAVE_TIME_H
@@ -678,7 +689,9 @@ static void testDLAlgorithms(void)
 		printf(" 100x in %.3f seconds\n", ttime);
 		#endif
 		(void) dlkp_pFree(&kp);
+/*@-usedef@*/
 		(void) dldp_pFree(&dp);
+/*@=usedef@*/
 
 		printf("  generating P (1024 bits) Q (768 bits) G with order (P-1)\n");
 		#if HAVE_TIME_H
@@ -775,3 +788,4 @@ int main(/*@unused@*/ int argc, /*@unused@*/ char *argv[])
 
 	return 0;
 }
+/*@=compdef@*/

@@ -1,4 +1,4 @@
-/*@-sizeoftype@*/
+/*@-compdef -sizeoftype@*/
 /*
  * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
  *
@@ -66,17 +66,17 @@ static entropySource entropySourceList[] =
 	{ "console", entropy_console },
 	{ "wincrypt", entropy_wincrypt },
 #else
+# if HAVE_DEV_URANDOM
+	{ "urandom", entropy_dev_urandom },
+# endif
+# if HAVE_DEV_RANDOM
+	{ "random", entropy_dev_random },
+# endif
 # if HAVE_DEV_AUDIO
 	{ "audio", entropy_dev_audio },
 # endif
 # if HAVE_DEV_DSP
 	{ "dsp", entropy_dev_dsp },
-# endif
-# if HAVE_DEV_RANDOM
-	{ "random", entropy_dev_random },
-# endif
-# if HAVE_DEV_URANDOM
-	{ "urandom", entropy_dev_urandom },
 # endif
 # if HAVE_DEV_TTY
 	{ "tty", entropy_dev_tty },
@@ -917,12 +917,17 @@ int blockCipherContextECB(blockCipherContext* ctxt, void* dst, const void* src, 
 	switch (ctxt->op)
 	{
 	case NOCRYPT:
+/*@-mayaliasunique@*/
 		memcpy(dst, src, nblocks * ctxt->algo->blocksize);
+/*@=mayaliasunique@*/
 		return 0;
+		/*@notreached@*/ break;
 	case ENCRYPT:
 		return blockEncryptECB(ctxt->algo, ctxt->param, dst, src, nblocks);
+		/*@notreached@*/ break;
 	case DECRYPT:
 		return blockDecryptECB(ctxt->algo, ctxt->param, dst, src, nblocks);
+		/*@notreached@*/ break;
 	}
 	/*@notreached@*/
 	return -1;
@@ -935,12 +940,17 @@ int blockCipherContextCBC(blockCipherContext* ctxt, void* dst, const void* src, 
 	switch (ctxt->op)
 	{
 	case NOCRYPT:
+/*@-mayaliasunique@*/
 		memcpy(dst, src, nblocks * ctxt->algo->blocksize);
+/*@=mayaliasunique@*/
 		return 0;
+		/*@notreached@*/ break;
 	case ENCRYPT:
 		return blockEncryptCBC(ctxt->algo, ctxt->param, dst, src, nblocks);
+		/*@notreached@*/ break;
 	case DECRYPT:
 		return blockDecryptCBC(ctxt->algo, ctxt->param, dst, src, nblocks);
+		/*@notreached@*/ break;
 	}
 	/*@notreached@*/
 	return -1;
@@ -965,4 +975,4 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD wDataSeg, LPVOID lpReserved)
    	return TRUE;
 }
 #endif
-/*@=sizeoftype@*/
+/*@=compdef =sizeoftype@*/

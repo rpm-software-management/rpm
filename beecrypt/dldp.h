@@ -117,9 +117,8 @@ int  dldp_pEqual(const dldp_p* a, const dldp_p* b)
 /**
  */
 BEECRYPTAPI /*@unused@*/
-int dldp_pgoqMake(/*@special@*/ dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t qbits, int cofactor)
-	/*@defines dp->p, dp->q, dp->n @*/
-	/*@modifies dp->p, dp->q, dp->r, dp->g, dp->n, rgc @*/;
+int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, size_t pbits, size_t qbits, int cofactor)
+	/*@modifies dp, rgc @*/;
 
 /**
  */

@@ -891,10 +891,12 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 #ifndef ASM_AESSETIV
 int aesSetIV(aesParam* ap, const byte* iv)
 {
+/*@-mayaliasunique@*/
 	if (iv)
 		memcpy(ap->fdback, iv, 16);
 	else
 		memset(ap->fdback, 0, 16);
+/*@=mayaliasunique@*/
 
 	return 0;
 }

@@ -61,12 +61,16 @@ int hmacSetup(byte* kxi, byte* kxo, const hashFunction* hash, hashFunctionParam*
 		if (hash->digest(param, kxi))
 			return -1;
 
+/*@-mayaliasunique@*/
 		memcpy(kxo, kxi, keybytes = hash->digestsize);
+/*@=mayaliasunique@*/
 	}
 	else if (keybytes > 0)
 	{
+/*@-mayaliasunique@*/
 		memcpy(kxi, key, keybytes);
 		memcpy(kxo, key, keybytes);
+/*@=mayaliasunique@*/
 	}
 	else
 		return -1;
