@@ -57,7 +57,7 @@ extern BEECRYPTAPI const hashFunction sha256;
 /*@-exportlocal@*/
 /** \ingroup HASH_sha256_m
  * This function performs the SHA-256 hash algorithm on 64 byte blocks of data.
- * @param mp		hash parameter block
+ * @param sp		hash parameter block
  */
 BEECRYPTAPI
 void sha256Process(sha256Param* sp)
@@ -66,7 +66,7 @@ void sha256Process(sha256Param* sp)
 
 /** \ingroup HASH_sha256_m
  * This function resets the parameter block so that it's ready for a new hash.
- * @param mp		hash parameter block
+ * @param sp		hash parameter block
  * @return		0 on success
  */
 BEECRYPTAPI
@@ -75,7 +75,7 @@ int  sha256Reset  (sha256Param* sp)
 
 /** \ingroup HASH_sha256_m
  * This function should be used to pass successive blocks of data to be hashed.
- * @param mp		hash parameter block
+ * @param sp		hash parameter block
  * @param *data		bytes to hash
  * @param size		no. of bytes to hash
  * @return		0 on success

@@ -91,7 +91,7 @@ int md5Update  (md5Param* mp, const byte* data, size_t size)
 /** \ingroup HASH_md5_m
  * This function finishes the current hash computation, returning the digest
  * value in \a digest.
- * @param sp		hash parameter block
+ * @param mp		hash parameter block
  * @retval *digest	16 byte MD5 digest
  * @return		0 on success
  */

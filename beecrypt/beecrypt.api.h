@@ -80,12 +80,16 @@ static inline uint32_t _rotr32(uint32_t x, const unsigned char n)
 
 typedef uint8_t		byte;
 
+/*@-typeuse@*/
 typedef int8_t		javabyte;
 typedef int16_t		javashort;
 typedef int32_t		javaint;
+/*@=typeuse@*/
 typedef int64_t		javalong;
 
+/*@-typeuse@*/
 typedef uint16_t	javachar;
+/*@=typeuse@*/
 
 #if (MP_WBITS == 64)
 typedef uint64_t	mpw;
@@ -96,7 +100,9 @@ typedef uint32_t	mphw;
 typedef uint64_t	mpdw;
 # endif
 typedef uint32_t	mpw;
+/*@-typeuse@*/
 typedef uint16_t	mphw;
+/*@=typeuse@*/
 #else
 # error
 #endif
