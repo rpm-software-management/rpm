@@ -1,6 +1,7 @@
 4.4 -> 4.4.1:
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.
 	- automagically detect and emit "python(abi) = 2.4" dependencies.
+	- popt 1.10.1 to preserve newer.
 
 4.3.3 -> 4.4:
 	- pentium3/pentium4 arch support (pluto@PLD).

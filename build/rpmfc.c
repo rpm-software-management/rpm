@@ -452,12 +452,19 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
   { "perl script text",		RPMFC_PERL|RPMFC_INCLUDE },
   { "Perl5 module source text", RPMFC_PERL|RPMFC_MODULE|RPMFC_INCLUDE },
 
+  { " /usr/bin/python",		RPMFC_PYTHON|RPMFC_INCLUDE },
+
+  /* XXX "a /usr/bin/python -t script text executable" */
+  /* XXX "python 2.3 byte-compiled" */
+  { "python ",			RPMFC_PYTHON|RPMFC_INCLUDE },
+
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
   { "Zip archive data",		RPMFC_COMPRESSED|RPMFC_ARCHIVE|RPMFC_INCLUDE },
   { "tar archive",		RPMFC_ARCHIVE|RPMFC_INCLUDE },
   { "cpio archive",		RPMFC_ARCHIVE|RPMFC_INCLUDE },
   { "RPM v3",			RPMFC_ARCHIVE|RPMFC_INCLUDE },
+  { "RPM v4",			RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
   { " image",			RPMFC_IMAGE|RPMFC_INCLUDE },
   { " font",			RPMFC_FONT|RPMFC_INCLUDE },
@@ -465,8 +472,6 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
 
   { " commands",		RPMFC_SCRIPT|RPMFC_INCLUDE },
   { " script",			RPMFC_SCRIPT|RPMFC_INCLUDE },
-
-  { "python compiled",		RPMFC_WHITE|RPMFC_INCLUDE },
 
   { "empty",			RPMFC_WHITE|RPMFC_INCLUDE },
 
@@ -721,7 +726,9 @@ static int rpmfcSCRIPT(rpmfc fc)
     }
     if (fc->fcolor->vals[fc->ix] & RPMFC_PYTHON) {
 	xx = rpmfcHelper(fc, 'P', "python");
+#ifdef	NOTYET
 	if (is_executable)
+#endif
 	    xx = rpmfcHelper(fc, 'R', "python");
     }
 
@@ -1051,6 +1058,7 @@ typedef struct rpmfcApplyTbl_s {
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL) },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PYTHON) },
     { NULL, 0 }
 };
 
@@ -1074,6 +1082,18 @@ int rpmfcApply(rpmfc fc)
 
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
+
+	/* XXX Insure that /usr/lib{,64}/python files are marked RPMFC_PYTHON */
+	/* XXX HACK: classification by path is intrinsically stupid. */
+	{   const char *fn = strstr(fc->fn[fc->ix], "/usr/lib");
+	    if (fn) {
+		fn += sizeof("/usr/lib")-1;
+		if (fn[0] == '6' && fn[1] == '4')
+		    fn += 2;
+		if (!strncmp(fn, "/python", sizeof("/python")-1))
+		    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
+	    }
+	}
 
 	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
 	    if (!(fc->fcolor->vals[fc->ix] & fcat->colormask))
@@ -1209,7 +1229,10 @@ assert(ftype != NULL);	/* XXX figger a proper return path. */
 	se = ftype;
         rpmMessage(RPMMESS_DEBUG, "%s: %s\n", s, se);
 
+	/* Save the path. */
 	xx = argvAdd(&fc->fn, s);
+
+	/* Save the file type string. */
 	xx = argvAdd(&fcav, se);
 
 	/* Add (filtered) entry to sorted class dictionary. */

@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.1
+Release: 0.3
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -28,7 +28,7 @@ Conflicts: patch < 2.5
 %ifos linux
 Prereq: fileutils shadow-utils
 %endif
-Requires: popt = 1.10
+Requires: popt = 1.10.1
 Obsoletes: rpm-perl < %{version}
 
 # XXX necessary only to drag in /usr/lib/libelf.a, otherwise internal elfutils.
@@ -112,7 +112,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.10
+Version: 1.10.1
 
 %description -n popt
 Popt is a C library for parsing command line parameters. Popt was
@@ -412,6 +412,7 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/perldeps.pl
 %rpmattr	%{__prefix}/lib/rpm/perl.prov
 %rpmattr	%{__prefix}/lib/rpm/perl.req
+%rpmattr	%{__prefix}/lib/rpm/pythondeps.sh
 
 %rpmattr	%{__prefix}/lib/rpm/rpm[bt]
 %rpmattr	%{__prefix}/lib/rpm/rpmdeps
@@ -495,6 +496,9 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Mon Dec  6 2004 Jeff Johnson <jbj@jbj.org> 4.4.1-0.2
+- automagically detect and emit "python(abi) = 2.4" dependencies.
+- popt 1.10.1 to preserve newer.
+
 * Sun Dec  5 2004 Jeff Johnson <jbj@jbj.org> 4.4.1-0.1
 - force *.py->*.pyo byte code compilation with brp-python-bytecompile.
-- automagically detect and emit "python(abi) = 2.4" dependencies.
