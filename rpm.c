@@ -55,25 +55,26 @@ void printUsage(void) {
     puts(_("usage: rpm {--help}"));
     puts(_("       rpm {--version}"));
     puts(_("       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"));
-    puts(_("                          [--replacepkgs] [--replacefiles] [--search]"));
-    puts(_("                          [--root <dir>] [--excludedocs] [--includedocs]"));
-    puts(_("                          [--noscripts] file1.rpm ... filen.rpm"));
+    puts(_("                          [--replacepkgs] [--replacefiles] [--root <dir>]"));
+    puts(_("                          [--excludedocs] [--includedocs] [--noscripts]"));
+    puts(_("                          [--rcfile <file>] file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
-    puts(_("                          [--search] [--oldpackage] [--root <dir>]"));
-    puts(_("                          [--excludedocs] [--includedocs]")); 
-    puts(_("                          file1.rpm ... filen.rpm"));
+    puts(_("                          [--oldpackage] [--root <dir>] [--noscripts]"));
+    puts(_("                          [--excludedocs] [--includedocs] [--rcfile <file>]"));
+    puts(_("                          file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] "));
-    puts(_("                        [--scripts] [--root <dir>] [targets]"));
-    puts(_("       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]"));
-    puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] "));
+    puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
+    puts(_("			    [targets]"));
+    puts(_("       rpm {--verify -V -y] [-afFpP] [--root <dir>] [--rcfile <file>]"));
+    puts(_("                        [targets]"));
+    puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        package1 package2 ... packageN"));
-    puts(_("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--keep-temps]"));
+    puts(_("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
     puts(_("                        [--sign] [--test] [--time-check <s>] specfile"));
-    puts(_("       rpm {--rebuild} [-v] source1.rpm source2.rpm ... sourceN.rpm"));
-    puts(_("       rpm {--recompile} [-v] source1.rpm source2.rpm ... sourceN.rpm"));
-    puts(_("       rpm {--where} package1 package2 ... packageN"));
-    puts(_("       rpm {--resign} package1 package2 ... packageN"));
-    puts(_("       rpm {--checksig} package1 package2 ... packageN"));
+    puts(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
+    puts(_("       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
+    puts(_("       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"));
+    puts(_("       rpm {--checksig} [--rcfile <file>] package1 package2 ... packageN"));
     puts(_("       rpm {--querytags}"));
 }
 
@@ -84,7 +85,11 @@ void printHelp(void) {
 
     puts(_("usage:"));
     puts(_("   --help		- print this message"));
-    puts(_("   --version		- print the version of rpm being used"));
+    puts(_("   --version	- print the version of rpm being used"));
+    puts(_("all modes support the following arguments"));
+    puts(_("      --rcfile <file>     - use <file> instead of /etc/rpmrc and $HOME/.rpmrc"));
+    puts(_("       -v		      - be a little more verbose"));
+    puts(_("       -vv		      - be incredible verbose (for debugging)"));
     puts(_("   -q                   - query mode"));
     puts(_("      --root <dir>        - use <dir> as the top level directory"));
     puts(_("      --queryformat <s>   - use s as the header format (implies -i)"));
@@ -110,7 +115,6 @@ void printHelp(void) {
     puts(_(""));
     puts(_("    --install <packagefile>"));
     puts(_("    -i <packagefile>	- install package"));
-    puts(_("       -v	        - be a little verbose "));
     puts(_("       -h"));
     puts(_("      --hash            - print hash marks as package installs (good with -v)"));
     puts(_("      --percent         - print percentages as package installs"));
@@ -118,7 +122,6 @@ void printHelp(void) {
     puts(_("      --replacefiles    - install even if the package replaces installed files"));
     puts(_("      --force           - short hand for --replacepkgs --replacefiles"));
     puts(_("      --test            - don't install, but tell if it would work or not"));
-    puts(_("      --search          - search the paths listed in /etc/rpmrc for rpms"));
     puts(_("      --noscripts       - don't execute any installation scripts"));
     puts(_("      --excludedocs     - do not install documentation"));
     puts(_("      --includedocs     - install documentation"));
@@ -144,13 +147,8 @@ void printHelp(void) {
     puts(_("      --short-circuit   - skip straight to specified stage (only for c,i)"));
     puts(_("      --clean           - remove build tree when done"));
     puts(_("      --sign            - generate PGP signature"));
-    puts(_("      --keep-temps      - do not delete scripts (or any temp files) in /tmp"));
-    puts(_("      --test            - do not execute any stages, implies --keep-temps"));
-    puts(_("			  in /tmp - useful for testing"));
+    puts(_("      --test            - do not execute any stages"));
     puts(_("      --time-check <s>  - set the time check to S seconds (0 disables it)"));
-    puts(_(""));
-    puts(_("    --where <pkg>+      - search paths listed in /etc/rpmrc for rpms"));
-    puts(_("                          matching <pkg>"));
     puts(_(""));
     puts(_("    --rebuild <source_package>"));
     puts(_("                        - install source package, build binary package,"));
@@ -234,12 +232,14 @@ int main(int argc, char ** argv) {
     int incldocs = 0;
     int queryScripts = 0;
     int noScripts = 0;
+    char * rcfile = NULL;
     char * queryFormat = NULL;
     char buildChar = ' ';
     char * prefix = "/";
     char * specFile;
     char *passPhrase = "";
     char * smallArgv[2] = { NULL, NULL };
+    char ** currarg;
     int ec = 0;
     struct option options[] = {
 	    { "all", 0, 0, 'a' },
@@ -267,6 +267,7 @@ int main(int argc, char ** argv) {
 	    { "queryformat", 1, 0, 0 },
 	    { "querytags", 0, &queryTags, 0 },
 	    { "quiet", 0, &quiet, 0 },
+	    { "rcfile", 1, 0, 0 },
 	    { "recompile", 0, 0, 0 },
 	    { "rebuild", 0, 0, 0 },
 	    { "replacefiles", 0, &replaceFiles, 0 },
@@ -296,7 +297,19 @@ int main(int argc, char ** argv) {
     bindtextdomain(NLSPACKAGE, "/usr/lib/locale");
     textdomain(NLSPACKAGE);
 
-    if (readConfigFiles())  /* reading this early makes it easy to override */
+    /* make a first pass through the arguments, looking for --rcfile. We
+       need to handle that before dealing with the rest of the arguments */
+    currarg = argv;
+    while (*currarg) {
+	if (!strcmp(*currarg, "--rcfile")) {
+	    rcfile = *(currarg + 1);
+	    break;
+	}
+	currarg++;
+    } 
+
+    /* reading this early makes it easy to override */
+    if (readConfigFiles(rcfile))  
 	exit(1);
 
     while (1) {
