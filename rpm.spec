@@ -7,7 +7,7 @@ Group: Utilities/System
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-2.5/rpm-%{version}.tar.gz
 Copyright: GPL
 BuildRoot: /tmp/rpm
-Requires: patch >= 2.5
+Conflicts: patch < 2.5
 
 %package devel
 Summary: Header files and libraries for programs that manipulate rpm packages
