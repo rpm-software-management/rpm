@@ -1,9 +1,11 @@
 #! /usr/bin/ksh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
+# $Id: osf.prov,v 1.2 1998/05/29 16:34:27 mooney Exp $
+#
 # This file is distributed under the terms of the GNU Public License
 #
-# find-provides is part of RPM, the RedHat Package Manager.  find-provides
+# find-provides is part of RPM, the Red Hat Package Manager.  find-provides
 # reads a list of full pathnames (in a package) on stdin, and outputs all
 # shared libraries provided by (contained in) the package.
 #
@@ -53,6 +55,9 @@
 #	               FLAGS: 0x00000001
 #
 
+PATH=/usr/bin:/usr/sbin:/sbin:/usr/ccs/bin
+export PATH
+
 for f in `cat -`
 do
 	odump -D $f 2>/dev/null | awk '
@@ -64,6 +69,18 @@ do
 
 			found_soname = 0;
 			found_iversion = 0;
+
+			#
+			# what character should be used to separate the soname from any
+			# version info?  Using a . is actually a bad idea, since some
+			# free/3rd party libraries may be built so that the library
+			# soname may have version info in it too.  If we use . as the
+			# separator, it may not be possible to tell where the soname
+			# ends and the internal version info begins.  It might be
+			# better to use a - or a : here.  If you do so, be sure to
+			# change this setting in find-requires, too.
+			#
+			soname_version_delimiter=".";
 		}
 
 		# Uncomment the next line for some debugging info.
@@ -103,7 +120,7 @@ do
 					numfields = split(version, versions, ":")
 					if (numfields > 1) {
 						for (i = 1; i < numfields; i++) {
-							print soname, ".", versions[i]
+							print soname, soname_version_delimiter, versions[i]
 						}
 						#
 						# let our END routine print out the *last* version
@@ -143,7 +160,7 @@ do
 			# Uncomment the next line for debugging info
 			#{ print "END: NR: ", NR }
 			if ( (found_soname == 1) && (found_iversion == 1) ) {
-				print soname, ".", version
+				print soname, soname_version_delimiter, version
 				exit
 			} else if (found_soname == 1) {
 				#
