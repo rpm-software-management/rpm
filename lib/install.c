@@ -880,11 +880,8 @@ enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
 	newAttr = newLink;
      }
 
-    if (!strcmp(dbAttr, newAttr)) {
-	/* this file is the same in all versions of this package */
-	message(MESS_DEBUG, "	old == new, keeping\n");
-	return KEEP;
-    }
+    /* this order matters - we'd prefer to CREATE the file is at all 
+       possible in case something else (like the timestamp) has changed */
 
     if (!strcmp(dbAttr, buffer)) {
 	/* this config file has never been modified, so 
@@ -892,6 +889,12 @@ enum instActions decideFileFate(char * filespec, short dbMode, char * dbMd5,
 	message(MESS_DEBUG, "	old == current, replacing "
 		"with new version\n");
 	return CREATE;
+    }
+
+    if (!strcmp(dbAttr, newAttr)) {
+	/* this file is the same in all versions of this package */
+	message(MESS_DEBUG, "	old == new, keeping\n");
+	return KEEP;
     }
 
     /* the config file on the disk has been modified, but
