@@ -7,6 +7,8 @@
 #include "signature.h"
 #include "header.h"
 
+#include <err.h>	/* XXX !HAVE_ERR_H: get from misc */
+
 typedef enum injmode_e { INJ_UNKNOWN, INJ_ADD, INJ_DELETE, INJ_MODIFY } injmode_t;
 
 injmode_t injmode = INJ_UNKNOWN;

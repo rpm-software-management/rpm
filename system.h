@@ -212,15 +212,16 @@ void *vmefail(void);
 #endif	/* HAVE_MCHECK_H && defined(__GNUC__) */
 
 /* Retrofit glibc __progname */
-char *__progname;
 #if defined __GLIBC__ && __GLIBC__ >= 2
 #define	setprogname(pn)
 #else
+#define	__progname	program_name
 #define	setprogname(pn)	\
-  { if ((__progname = strrchr(pn, '/')) __progname++; \
+  { if ((__progname = strrchr(pn, '/')) != NULL) __progname++; \
     else __progname = pn;		\
   }
 #endif
+char *__progname;
 
 #if HAVE_NETDB_H
 #ifndef __LCLINT__

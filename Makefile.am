@@ -17,11 +17,13 @@ INCLUDES = \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/popt \
-	@INCPATH@
+	@INCPATH@ \
+	-I$(top_srcdir)/misc
 
 mylibs=	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/popt/libpopt.la
+	$(top_builddir)/popt/libpopt.la \
+	@LIBMISC@
 
 LDFLAGS = @LDFLAGS_STATIC@
 
@@ -42,9 +44,9 @@ noinst_HEADERS = \
 	acconfig.h	build.h		system.h
 
 rpm_SOURCES =		build.c rpm.c
-rpm_LDADD =		$(mylibs) @LIBMISC@
+rpm_LDADD =		$(mylibs)
 
-$(PROGRAMS): 		$(mylibs) @LIBMISC@
+$(PROGRAMS): 		$(mylibs)
 
 .PHONY:	lclint
 lclint:
@@ -57,7 +59,7 @@ rpm2cpio_LDADD =	$(mylibs)
 
 rpmconvert_SOURCES =	convertdb.c oldrpmdb.c
 ## Libmisc.a is required for rpmconvert.
-rpmconvert_LDADD =	$(mylibs) @LIBMISC@ -lgdbm
+rpmconvert_LDADD =	$(mylibs) -lgdbm
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm

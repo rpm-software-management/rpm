@@ -1,5 +1,7 @@
 #include "system.h"
 
+#include <err.h>	/* XXX !HAVE_ERR_H: get from misc */
+
 void *vmefail(void)
 {
     err(EXIT_FAILURE, "virtual memory exhausted");

@@ -6,7 +6,8 @@ INCLUDES = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/popt \
-	@INCPATH@
+	@INCPATH@ \
+	-I$(top_srcdir)/misc
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \

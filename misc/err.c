@@ -31,6 +31,7 @@
 #define __ptr_t                 void *
 #endif
 
+#include <stdarg.h>
 #include <err.h>
 
 #define VA(call)							      \
