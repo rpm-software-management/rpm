@@ -4,14 +4,15 @@ db_dist="../db/dist"
 
 rm -f config.cache
 
-# XXX hack to get db-3.3.4 to configure properly
-ln -sf ../dist $db_dist/dist
+# XXX hacks to get db-3.3.4 to configure properly
+ln -sf ../dist $db_dist/../db/dist
+ln -sf ../dist $db_dist
 
 CFALGS="-O2" $db_dist/configure \
 	$(echo $* | sed -e "s% --cache-file=.*$% --enable-shared --enable-static --enable-debug --enable-rpc --with-uniquename=rpmdb --srcdir=$db_dist%")
 
 # XXX hack to get db-3.3.4 to configure properly
-rm -f $db_dist/dist
+rm -f $db_dist/../db/dist $db_dist/dist
 
 mv Makefile Makefile.orig
 cat Makefile.orig | sed -e 's/ -g$/ -g -O2/' -e '/^install:/c\
