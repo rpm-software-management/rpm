@@ -19,6 +19,7 @@
 #define GETOPT_INSTALL		1014
 #define GETOPT_RELOCATE		1016
 #define GETOPT_SHOWRC		1018
+#define GETOPT_EXCLUDEPATH	1019
 
 char * version = VERSION;
 
@@ -82,6 +83,7 @@ static struct poptOption optionsTable[] = {
  { "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH,		NULL, NULL},
  { "erase", 'e', 0, 0, 'e',			NULL, NULL},
  { "excludedocs", '\0', 0, &excldocs, 0,	NULL, NULL},
+ { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,	NULL, NULL},
  { "force", '\0', 0, &force, 0,			NULL, NULL},
  { "ftpport", '\0', POPT_ARG_STRING, &ftpPort, 0,	NULL, NULL},
  { "ftpproxy", '\0', POPT_ARG_STRING, &ftpProxy, 0,	NULL, NULL},
@@ -178,7 +180,8 @@ static void printUsage(void) {
     puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"));
     puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
-    puts(_("                        [--badreloc] [--notriggers] file1.rpm ... fileN.rpm"));
+    puts(_("                        [--badreloc] [--notriggers] [--excludepath <path>]"));
+    puts(_("                        file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                        [--oldpackage] [--root <dir>] [--noscripts]"));
     puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"));
@@ -186,7 +189,8 @@ static void printUsage(void) {
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"));
     puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
-    puts(_("                        [--badreloc] file1.rpm ... fileN.rpm"));
+    puts(_("                        [--badreloc] [--excludepath <path>] file1.rpm ..."));
+    puts(_("                        fileN.rpm"));
     puts(_("       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
@@ -339,6 +343,8 @@ static void printHelp(void) {
     puts(         _("    --install <packagefile>"));
     printHelpLine(_("    -i <packagefile>      "),
 		  _("install package"));
+    printHelpLine(_("      --excludepath <path>"),
+		  _("skip files in path <path>"));
     printHelpLine(_("      --relocate <oldpath>=<newpath>"),
 		  _("relocate files from <oldpath> to <newpath>"));
     printHelpLine(  "      --badreloc",
@@ -832,6 +838,16 @@ int main(int argc, char ** argv) {
 	    relocations[numRelocations++].newPath = errString;
 	    break;
 
+	  case GETOPT_EXCLUDEPATH:
+	    if (*optArg != '/') 
+		argerror(_("exclude paths must begin with a /"));
+
+	    relocations = realloc(relocations, 
+				  sizeof(*relocations) * (numRelocations + 1));
+	    relocations[numRelocations].oldPath = optArg;
+	    relocations[numRelocations++].newPath = NULL;
+	    break;
+
 	  default:
 	    fprintf(stderr, _("Internal error in argument processing (%d) :-(\n"), arg);
 	    exit(EXIT_FAILURE);
@@ -912,7 +928,7 @@ int main(int argc, char ** argv) {
 	argerror(_("only one of --prefix or --relocate may be used"));
 
     if (bigMode != MODE_INSTALL && relocations)
-	argerror(_("--relocate may only be used when installing new packages"));
+	argerror(_("--relocate and --excludepath may only be used when installing new packages"));
 
     if (bigMode != MODE_INSTALL && prefix)
 	argerror(_("--prefix may only be used when installing new packages"));
