@@ -7,6 +7,7 @@
 	- fixed typos for HP archs in lib/rpmrc.c
 	- uname() results should go through *_canon tables before anything
 	  else happens
+	- set -x in debug shells, not -xs
 
 2.4.5 -> 2.4.6:
 	- added os_canon entries for BSD/OS and NextStep

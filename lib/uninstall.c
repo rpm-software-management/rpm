@@ -367,7 +367,7 @@ int runScript(char * prefix, Header h, int scriptTag, int progTag,
 	write(fd, "\n", 1);
 
 	if (isdebug && !strcmp(program, "/bin/sh")) 
-	    write(fd, "set -xs\n", 8);
+	    write(fd, "set -x\n", 8);
 
 	if (installPrefixEnv)
 	    write(fd, installPrefixEnv, strlen(installPrefixEnv));
