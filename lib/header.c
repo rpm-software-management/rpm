@@ -562,11 +562,9 @@ void *headerUnload(Header h) {
 
 void headerDump(Header h, FILE *f, int flags, 
 		const struct headerTagTableEntry * tags) {
-    int i, c, ct;
+    int i;
     struct indexEntry *p;
     const struct headerTagTableEntry * tage;
-    char *dp;
-    char ch;
     char *type, *tag;
 
     /* First write out the length of the index (count of index entries) */
@@ -604,10 +602,11 @@ void headerDump(Header h, FILE *f, int flags,
 		p->info.count);
 
 	if (flags & HEADER_DUMP_INLINE) {
+	    char *dp = p->data;
+	    int c = p->info.count;
+	    int ct = 0;
+
 	    /* Print the data inline */
-	    dp = p->data;
-	    c = p->info.count;
-	    ct = 0;
 	    switch (p->info.type) {
 	    case RPM_INT32_TYPE:
 		while (c--) {
@@ -650,7 +649,7 @@ void headerDump(Header h, FILE *f, int flags,
 		break;
 	    case RPM_CHAR_TYPE:
 		while (c--) {
-		    ch = (char) *((char *) dp);
+		    char ch = (char) *((char *) dp);
 		    fprintf(f, "       Data: %.3d 0x%2x %c (%d)\n", ct++,
 			    (unsigned)(ch & 0xff),
 			    (isprint(ch) ? ch : ' '),

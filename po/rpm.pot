@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-01-06 13:15-0500\n"
+"POT-Creation-Date: 1999-01-06 15:57-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2156,22 +2156,22 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: ../lib/dbindex.c:14
+#: ../lib/dbindex.c:34
 #, c-format
 msgid "cannot open file %s: "
 msgstr ""
 
-#: ../lib/dbindex.c:59
+#: ../lib/dbindex.c:79
 #, c-format
 msgid "error getting record %s from %s"
 msgstr ""
 
-#: ../lib/dbindex.c:87
+#: ../lib/dbindex.c:107
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: ../lib/dbindex.c:94
+#: ../lib/dbindex.c:114
 #, c-format
 msgid "error removing record %s into %s"
 msgstr ""
@@ -2211,8 +2211,8 @@ msgid "free list corrupt (%u)- contact support@redhat.com\n"
 msgstr ""
 
 #: ../lib/formats.c:97 ../lib/formats.c:114 ../lib/formats.c:134
-#: ../lib/formats.c:166 ../lib/header.c:1972 ../lib/header.c:1988
-#: ../lib/header.c:2008
+#: ../lib/formats.c:166 ../lib/header.c:1971 ../lib/header.c:1987
+#: ../lib/header.c:2007
 msgid "(not a number)"
 msgstr ""
 
@@ -2236,84 +2236,84 @@ msgstr ""
 msgid "file %s is on an unknown device"
 msgstr ""
 
-#: ../lib/header.c:671
+#: ../lib/header.c:670
 #, c-format
 msgid "Data type %d not supprted\n"
 msgstr ""
 
 #. This should not be allowed
-#: ../lib/header.c:905
+#: ../lib/header.c:904
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: ../lib/header.c:935
+#: ../lib/header.c:934
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: ../lib/header.c:994
+#: ../lib/header.c:993
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: ../lib/header.c:1328
+#: ../lib/header.c:1327
 msgid "? expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1335
+#: ../lib/header.c:1334
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: ../lib/header.c:1345 ../lib/header.c:1377
+#: ../lib/header.c:1344 ../lib/header.c:1376
 msgid "} expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1352
+#: ../lib/header.c:1351
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: ../lib/header.c:1365
+#: ../lib/header.c:1364
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: ../lib/header.c:1384
+#: ../lib/header.c:1383
 msgid "| expected at end of expression"
 msgstr ""
 
-#: ../lib/header.c:1478
+#: ../lib/header.c:1477
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: ../lib/header.c:1506
+#: ../lib/header.c:1505
 msgid "missing } after %{"
 msgstr ""
 
-#: ../lib/header.c:1518
+#: ../lib/header.c:1517
 msgid "empty tag format"
 msgstr ""
 
-#: ../lib/header.c:1528
+#: ../lib/header.c:1527
 msgid "empty tag name"
 msgstr ""
 
-#: ../lib/header.c:1543
+#: ../lib/header.c:1542
 msgid "unknown tag"
 msgstr ""
 
-#: ../lib/header.c:1569
+#: ../lib/header.c:1568
 msgid "] expected at end of array"
 msgstr ""
 
-#: ../lib/header.c:1585
+#: ../lib/header.c:1584
 msgid "unexpected ]"
 msgstr ""
 
-#: ../lib/header.c:1587
+#: ../lib/header.c:1586
 msgid "unexpected }"
 msgstr ""
 
-#: ../lib/header.c:1762
+#: ../lib/header.c:1761
 msgid "(unknown type)"
 msgstr ""
 

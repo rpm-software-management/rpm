@@ -35,7 +35,7 @@
 
 /* Don't think this behaves just like standard cpio. It's pretty close, but
    it has some behaviors which are more to RPM's liking. I tried to document
-   them inline in cpio.c, but I may have missed some. */
+   them in cpio.c, but I may have missed some. */
 
 #define CPIO_MAP_PATH		(1 << 0)
 #define CPIO_MAP_MODE		(1 << 1)

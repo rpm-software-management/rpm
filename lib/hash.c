@@ -22,7 +22,9 @@ struct hashTable_s {
 static struct hashBucket * findEntry(hashTable ht, const void * key);
 
 int hashEqualityString(const void * key1, const void * key2) {
-    return strcmp(key1, key2);
+    char *k1 = (char *)key1;
+    char *k2 = (char *)key2;
+    return strcmp(k1, k2);
 }
 
 unsigned int hashFunctionString(const void * string) {

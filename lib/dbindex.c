@@ -2,6 +2,26 @@
 
 #include "rpmlib.h"
 
+int dbiIndexSetCount(dbiIndexSet set) {
+    return set.count;
+}
+
+/* structure return */
+dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber) {
+    dbiIndexRecord rec;
+    rec.recOffset = recOffset;
+    rec.fileNumber = fileNumber;
+    return rec;
+}
+
+unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno) {
+    return set.recs[recno].recOffset;
+}
+
+unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
+    return set.recs[recno].fileNumber;
+}
+
 dbiIndex * dbiOpenIndex(char * filename, int flags, int perms, DBTYPE type) {
     dbiIndex * db;
         

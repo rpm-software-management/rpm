@@ -47,29 +47,14 @@ dbiIndexSet dbiCreateIndexRecord(void);
 void dbiFreeIndexRecord(dbiIndexSet set);
 int dbiGetFirstKey(dbiIndex * dbi, const char ** key);
 
-extern inline int dbiIndexSetCount(dbiIndexSet set);
-extern inline int dbiIndexSetCount(dbiIndexSet set) {
-    return set.count;
-}
+extern int dbiIndexSetCount(dbiIndexSet set);
 
 /* structure return */
-extern inline dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber);
-extern inline dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber) {
-    dbiIndexRecord rec;
-    rec.recOffset = recOffset;
-    rec.fileNumber = fileNumber;
-    return rec;
-}
+extern dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber);
 
-extern inline unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
-extern inline unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno) {
-    return set.recs[recno].recOffset;
-}
+extern unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
 
-extern inline unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
-extern inline unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
-    return set.recs[recno].fileNumber;
-}
+extern unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
 
 #ifdef __cplusplus
 }
