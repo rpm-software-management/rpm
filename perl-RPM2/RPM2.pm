@@ -6,6 +6,7 @@ use DynaLoader;
 use Data::Dumper;
 use Cwd qw/realpath/;
 use File::Basename;
+use File::Spec;
 
 use vars qw/$VERSION/;
 $VERSION = '0.61';
