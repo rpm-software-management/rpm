@@ -323,6 +323,9 @@ for zlib in z gz ; do
 	       )
 done
 
+dnl XXX these are needed only by rpmgettext right now
+AM_FUNC_ERROR_AT_LINE
+
 dnl ==> AM_GNU_GETTEXT does this (and more)
 dnl AC_CHECK_HEADERS(unistd.h limits.h locale.h malloc.h string.h sys/param.h)
 
@@ -395,6 +398,7 @@ AC_TYPE_PID_T
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
+AC_FUNC_VPRINTF
 
 AC_FUNC_FNMATCH
 if test $ac_cv_func_fnmatch_works = no; then
@@ -409,10 +413,13 @@ dnl XXX AC_FUNC_STRCOLL
 dnl XXX AC_FUNC_STRFTIME
 dnl XXX AC_FUNC_UTIME_NULL
 dnl XXX AC_FUNC_VFORK
-dnl XXX AC_FUNC_VPRINTF
 dnl XXX AC_CHECK_FUNCS(gethostname lchown mkdir mkfifo rmdir select uname)
 
-AC_REPLACE_FUNCS(getcwd getwd glob inet_aton putenv realpath strdup strerror strtol strtoul strspn strstr)
+AC_REPLACE_FUNCS(getcwd getwd glob inet_aton putenv realpath)
+AC_REPLACE_FUNCS(strdup strerror strtol strtoul strspn strstr)
+
+dnl XXX stpcpy/stpncpy needed by rpmgettext
+AC_REPLACE_FUNCS(stpcpy stpncpy strcasecmp strncasecmp strcspn)
 
 AC_CHECK_FUNCS(setlocale)
 

@@ -7,3 +7,5 @@ rpmheader
 rpmarchive
 rpmsignature
 dumpdb
+rpmgettext
+rpmputtext

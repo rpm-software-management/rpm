@@ -28,7 +28,7 @@ static void dpf(char *format, ...)
 #define	DPRINTF(_lvl, _fmt)
 #endif
 
-const char *progname = NULL;
+const char *program_name = NULL;
 int debug = MYDEBUG;
 int verbose = 0;
 char *inputdir = "/mnt/redhat/comps/dist/5.2";
@@ -963,7 +963,7 @@ main(int argc, char **argv)
     extern int optind;
     int errflg = 0;
 
-    progname = basename(argv[0]);
+    program_name = basename(argv[0]);
 
     while((c = getopt(argc, argv, "deEl:I:O:Tv")) != EOF)
     switch (c) {
@@ -1003,7 +1003,7 @@ main(int argc, char **argv)
     /* XXX I don't want to read rpmrc yet */
     rpmSetVar(RPMVAR_TMPPATH, "/tmp");
 
-    if (!strcmp(progname, RPMGETTEXT)) {
+    if (!strcmp(program_name, RPMGETTEXT)) {
 	if (optind == argc) {
 	    rc = rpmgettext(0, STDINFN, stdout);
 	} else {
@@ -1012,7 +1012,7 @@ main(int argc, char **argv)
 		    break;
 	    }
 	}
-    } else if (!strcmp(progname, RPMPUTTEXT)) {
+    } else if (!strcmp(program_name, RPMPUTTEXT)) {
 	if (optind == argc) {
 	    rc = rpmputtext(0, STDINFN, stdout);
 	} else {
@@ -1021,7 +1021,7 @@ main(int argc, char **argv)
 		    break;
 	    }
 	}
-    } else if (!strcmp(progname, RPMCHKTEXT)) {
+    } else if (!strcmp(program_name, RPMCHKTEXT)) {
 	if (optind == argc) {
 	    rc = rpmchktext(0, STDINFN, stdout);
 	} else {

@@ -3,14 +3,19 @@
 AUTOMAKE_OPTIONS = 1.3 foreign
 
 EXTRA_DIST = \
-	alloca.c	fakefork.c	fnmatch.c	getcwd.c	\
-	getmntent.c	getwd.c		glob.c		inet_aton.c	\
-	memcmp.c	mktime.c	myrealloc.c	putenv.c	\
-	realpath.c	strdup.c	strerror.c	strftime.c	\
-	strspn.c	strstr.c	strtol.c	strtoul.c
+	alloca.c	error.c		fakefork.c	fnmatch.c	\
+	getcwd.c	getmntent.c	getwd.c		glob.c		\
+	inet_aton.c	memcmp.c	mktime.c	myrealloc.c	\
+	putenv.c	realpath.c	stpcpy.c	stpncpy.c	\
+	strcasecmp.c	strncasecmp.c	strcspn.c	strdup.c	\
+	strerror.c	strftime.c	strcspn.c	strstr.c	\
+	strtol.c	strtoul.c
 
 noinst_HEADERS = \
-	inet_aton.h	fnmatch.h	glob.h
+	error.h		fnmatch.h	glob.h		inet_aton.h	\
+	libgettext.h	message.h	po-lex.h	str-list.h	\
+	fstrcmp.h
+
 noinst_LIBRARIES = libmisc.a
 
 libmisc_a_SOURCES =

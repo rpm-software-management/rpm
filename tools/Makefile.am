@@ -7,6 +7,8 @@ INCLUDES = -I../build -I../lib -I../intl -I../misc @INCPATH@
 LDFLAGS = -L../popt -L../build -L../lib -L../misc
 LDADD = -lrpm
 
+EXTRA_DIST =	fstrcmp.c message.c str-list.c
+
 noinst_PROGRAMS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb \
 	rpmgettext rpmputtext
 
