@@ -537,6 +537,26 @@ fileTypes whatis(uint_16 mode)
 	/*@*/;
 
 /**
+ * Return file info comparison.
+ * @param afi		1st file info
+ * @param bfi		2nd file info
+ * @return		0 if identical
+ */
+int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
+	/*@*/;
+
+/**
+ * Return file disposition.
+ * @param ofi		old file info
+ * @param nfi		new file info
+ * @param skipMissing	OK to skip missing files?
+ * @return		file dispostion
+ */
+fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies nfi, fileSystem, internalState @*/;
+
+/**
  * Return formatted string representation of package disposition.
  * @param fi		file info set
  * @return		formatted string

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "POT-Creation-Date: 2003-06-05 09:50-0400\n"
-"PO-Revision-Date: 2003-06-24 15:24+0200\n"
+"PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
 "MIME-Version: 1.0\n"
@@ -101,9 +101,7 @@ msgstr "Options de la base de données"
 
 #: rpmqv.c:93
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
-msgstr ""
-"Options de construction avec [ <fichier_spec> | <tarball> | <paquetage "
-"source> ]:"
+msgstr "Options de construction avec [ <fichier_spec> | <tarball> | <paquetage source> ]:"
 
 #: rpmqv.c:99
 msgid "Install/Upgrade/Erase options:"
@@ -131,9 +129,7 @@ msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 #: rpmqv.c:137
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
-msgstr ""
-"Ce programme peut être librement redistribué sous les termes de la licence "
-"GNU GPL\n"
+msgstr "Ce programme peut être librement redistribué sous les termes de la licence GNU GPL\n"
 
 #: rpmqv.c:295
 #, c-format
@@ -162,8 +158,7 @@ msgstr "source de requête inattendue"
 
 #: rpmqv.c:413
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
-msgstr ""
-"seuls l'installation, la mise à jour, rmsource et rmspec peuvent être forcés"
+msgstr "seuls l'installation, la mise à jour, rmsource et rmspec peuvent être forcés"
 
 #: rpmqv.c:415
 msgid "files may only be relocated during package installation"
@@ -176,14 +171,11 @@ msgstr "impossible d'utiliser --prefix avec --relocate ou --excludepath"
 #: rpmqv.c:421
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
-msgstr ""
-"--relocate et --excludepath ne peuvent être utilisés qu'à l'installation de "
-"nouveaux paquetages"
+msgstr "--relocate et --excludepath ne peuvent être utilisés qu'à l'installation de nouveaux paquetages"
 
 #: rpmqv.c:424
 msgid "--prefix may only be used when installing new packages"
-msgstr ""
-"--prefix ne peut être utilisé qu'à l'installation de nouveaux paquetages"
+msgstr "--prefix ne peut être utilisé qu'à l'installation de nouveaux paquetages"
 
 #: rpmqv.c:427
 msgid "arguments to --prefix must begin with a /"
@@ -231,8 +223,7 @@ msgstr "--ignoresize ne peut être utilisé qu'à l'installation de paquetages"
 
 #: rpmqv.c:472
 msgid "--allmatches may only be specified during package erasure"
-msgstr ""
-"--allmatches ne peut être utilisé qu'à la désinstallation de paquetages"
+msgstr "--allmatches ne peut être utilisé qu'à la désinstallation de paquetages"
 
 #: rpmqv.c:476
 msgid "--allfiles may only be specified during package installation"
@@ -240,48 +231,37 @@ msgstr "--allfiles ne peut être utilisé qu'à l'installation de paquetages"
 
 #: rpmqv.c:481
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr ""
-"--justdb ne peut être utilisé qu'à l'installation/la désinstallation de "
-"paquetages"
+msgstr "--justdb ne peut être utilisé qu'à l'installation/la désinstallation de paquetages"
 
 #: rpmqv.c:486
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
-msgstr ""
-"les options désactivant les scripts ne peuvent être utilisées qu'à la (dés)"
-"installation"
+msgstr "les options désactivant les scripts ne peuvent être utilisées qu'à la (dés)installation"
 
 #: rpmqv.c:491
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
-msgstr ""
-"les options desactivant les triggers ne peuvent être utilisées qu'à la (dés)"
-"installation"
+msgstr "les options desactivant les triggers ne peuvent être utilisées qu'à la (dés)installation"
 
 #: rpmqv.c:495
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
-msgstr ""
-"--nodeps ne peut être spécifié que pour la (re)construction, la "
-"recompilation, l'(dés)installation, et la vérification"
+msgstr "--nodeps ne peut être spécifié que pour la (re)construction, la recompilation, l'(dés)installation, et la vérification"
 
 #: rpmqv.c:500
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
-msgstr ""
-"--test ne peut être spécifié que pour la (dés)installation et la construction"
+msgstr "--test ne peut être spécifié que pour la (dés)installation et la construction"
 
 #: rpmqv.c:505
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
-msgstr ""
-"--root (-r) ne peut être utilisé que pour la (dés)installation, les requêtes "
-"et la reconstruction de la base de données"
+msgstr "--root (-r) ne peut être utilisé que pour la (dés)installation, les requêtes et la reconstruction de la base de données"
 
 #: rpmqv.c:517
 msgid "arguments to --root (-r) must begin with a /"
@@ -364,7 +344,7 @@ msgstr "Incapable d'ouvrir un fichier temporaire.\n"
 #: build/build.c:218
 #, c-format
 msgid "Executing(%s): %s\n"
-msgstr "Execution_de(%s): %s\n"
+msgstr "Exécution_de(%s): %s\n"
 
 #. @=boundsread@
 #: build/build.c:228
@@ -382,10 +362,7 @@ msgid ""
 "\n"
 "\n"
 "RPM build errors:\n"
-msgstr ""
-"\n"
-"\n"
-"Erreur de construction de RPM:\n"
+msgstr "\n\nErreur de construction de RPM:\n"
 
 #: build/expression.c:225
 msgid "syntax error while parsing ==\n"
@@ -854,7 +831,7 @@ msgstr "ligne %d: deuxième liste %%files\n"
 #: build/parsePreamble.c:243
 #, c-format
 msgid "Architecture is excluded: %s\n"
-msgstr "Architecture excluses: %s\n"
+msgstr "Architecture excluse: %s\n"
 
 #: build/parsePreamble.c:248
 #, c-format
@@ -874,7 +851,7 @@ msgstr "OS non inclus: %s\n"
 #: build/parsePreamble.c:281
 #, c-format
 msgid "%s field must be present in package: %s\n"
-msgstr "Le champ %s doit être présent dans le package: %s\n"
+msgstr "Le champ %s doit être présent dans le paquetage: %s\n"
 
 #: build/parsePreamble.c:310
 #, c-format
@@ -915,7 +892,7 @@ msgstr "ligne %d: tag vide: %s\n"
 #: build/parsePreamble.c:520 build/parsePreamble.c:527
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
-msgstr "ligne %d: caractère illégal '-' dans %s: %s\n"
+msgstr "ligne %d: caractère '-' illégal dans %s: %s\n"
 
 #: build/parsePreamble.c:588 build/parseSpec.c:429
 #, c-format
@@ -1044,9 +1021,7 @@ msgstr "ligne %d: deuxième %%prep\n"
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
-msgstr ""
-"ligne %d: le lexème de dépendance doit commencer par un alphanumérique, '_' "
-"ou '/': %s\n"
+msgstr "ligne %d: le lexème de dépendance doit commencer par un alphanumérique, '_' ou '/': %s\n"
 
 #: build/parseReqs.c:113
 #, c-format
@@ -1136,9 +1111,7 @@ msgstr "buildroot déjà spécifié, %s ignoré\n"
 #: build/poptBT.c:160
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr ""
-"construction jusqu'à la section %prep (deballage des sources et applications "
-"des patchs) du <fichier_spec>"
+msgstr "construction jusqu'à la section %prep (deballage des sources et applications des patchs) du <fichier_spec>"
 
 #: build/poptBT.c:161 build/poptBT.c:164 build/poptBT.c:167 build/poptBT.c:170
 #: build/poptBT.c:173 build/poptBT.c:176 build/poptBT.c:179
@@ -1147,15 +1120,11 @@ msgstr "<fichier_spec>"
 
 #: build/poptBT.c:163
 msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr ""
-"construction jusqu'à la section %build (%prep, et compilation) du "
-"<fichier_spec>"
+msgstr "construction jusqu'à la section %build (%prep, et compilation) du <fichier_spec>"
 
 #: build/poptBT.c:166
 msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr ""
-"construction jusqu'à la section %install (%prep, %build, et installation) du "
-"<fichier_spec>"
+msgstr "construction jusqu'à la section %install (%prep, %build, et installation) du <fichier_spec>"
 
 #: build/poptBT.c:169
 #, c-format
@@ -1164,8 +1133,7 @@ msgstr "vérifier la section %files du <fichier_spec>"
 
 #: build/poptBT.c:172
 msgid "build source and binary packages from <specfile>"
-msgstr ""
-"construire les paquetages sources et binaires à partir du <fichier_spec>"
+msgstr "construire les paquetages sources et binaires à partir du <fichier_spec>"
 
 #: build/poptBT.c:175
 msgid "build binary package only from <specfile>"
@@ -1178,9 +1146,7 @@ msgstr "construction du paquetage source seulement à partir du <fichier_spec>"
 #: build/poptBT.c:182
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr ""
-"construire jusqu'à la section %prep (déballage des sources et application "
-"des patchs) à partir du <tarball>"
+msgstr "construire jusqu'à la section %prep (déballage des sources et application des patchs) à partir du <tarball>"
 
 #: build/poptBT.c:183 build/poptBT.c:186 build/poptBT.c:189 build/poptBT.c:192
 #: build/poptBT.c:195 build/poptBT.c:198 build/poptBT.c:201
@@ -1189,15 +1155,11 @@ msgstr "<tarball>"
 
 #: build/poptBT.c:185
 msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr ""
-"construire jusqu'à la section %build (%prep, puis compilation) à partir du "
-"<tarball>"
+msgstr "construire jusqu'à la section %build (%prep, puis compilation) à partir du <tarball>"
 
 #: build/poptBT.c:188
 msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr ""
-"construire jusqu'à la section %build (%prep, %build, puis installation) à "
-"partir du <tarball>"
+msgstr "construire jusqu'à la section %build (%prep, %build, puis installation) à partir du <tarball>"
 
 #: build/poptBT.c:191
 #, c-format
@@ -1227,9 +1189,7 @@ msgstr "<paquetage source>"
 #: build/poptBT.c:207
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
-msgstr ""
-"construire jusqu'à la section %install (%prep, %build, et installation) à "
-"partir du <paquetage source>"
+msgstr "construire jusqu'à la section %install (%prep, %build, et installation) à partir du <paquetage source>"
 
 #: build/poptBT.c:211
 msgid "override build root"
@@ -1304,8 +1264,7 @@ msgstr "surcharger la plate-forme cible"
 
 #: build/poptBT.c:248
 msgid "lookup i18N strings in specfile catalog"
-msgstr ""
-"chercher les chaînes de caractères i18n dans le catalogue du fichier spec"
+msgstr "chercher les chaînes de caractères i18n dans le catalogue du fichier spec"
 
 #: build/spec.c:237
 #, c-format
@@ -1330,9 +1289,7 @@ msgstr "ne peut faire la requête sur %s: %s\n"
 #: build/spec.c:718
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
-msgstr ""
-"échec de la requête sur le fichier spec %s, impossible de faire l'analyser "
-"syntaxique\n"
+msgstr "échec de la requête sur le fichier spec %s, impossible de faire l'analyser syntaxique\n"
 
 #: lib/cpio.c:207
 #, c-format
@@ -1407,8 +1364,7 @@ msgstr "(fourni par un paquetage)"
 #: lib/depends.c:851
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
-msgstr ""
-"ignorer la(les) relation(s) entre les noms de paquetages [%d]\\t%s -> %s\n"
+msgstr "ignorer la(les) relation(s) entre les noms de paquetages [%d]\t%s -> %s\n"
 
 #: lib/depends.c:972
 #, c-format
@@ -1425,9 +1381,7 @@ msgstr "========== enregistrement des relations de Ttri\n"
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, "
 "depth)\n"
-msgstr ""
-"========== Ttri des paquetages (ordre, #prédécesseurs, #succeseurs, arbre, "
-"profondeur)\n"
+msgstr "========== Ttri des paquetages (ordre, #prédécesseurs, #succeseurs, arbre, profondeur)\n"
 
 #: lib/depends.c:1381
 #, c-format
@@ -1631,15 +1585,12 @@ msgstr ""
 
 #: lib/package.c:770
 msgid "packaging version 1 is not supported by this version of RPM\n"
-msgstr ""
-"la version 1 de l'emballage n'est pas supportée par cette version de RPM\n"
+msgstr "la version 1 de l'emballage n'est pas supportée par cette version de RPM\n"
 
 #: lib/package.c:778
 msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
-msgstr ""
-"seuls les emaballages avec un numéro de version majeur <= 4 sont supportés "
-"par cette version de rpm\n"
+msgstr "seuls les emaballages avec un numéro de version majeur <= 4 sont supportés par cette version de rpm\n"
 
 #: lib/package.c:789 lib/rpmchecksig.c:229 lib/rpmchecksig.c:720
 #, c-format
@@ -1789,16 +1740,13 @@ msgstr "rajouter à la transaction les paquetages suggérés"
 
 #: lib/poptI.c:155
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr ""
-"installer tous les fichiers, meme si les configurations disent le contraire"
+msgstr "installer tous les fichiers, meme si les configurations disent le contraire"
 
 #: lib/poptI.c:159
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
-msgstr ""
-"retirer tous les paquetages qui correspondent à <paquetage> (normalement on "
-"retourne une erreur si le <paquetage> correspond à plusieurs paquetages"
+msgstr "retirer tous les paquetages qui correspondent à <paquetage> (normalement on retourne une erreur si le <paquetage> correspond à plusieurs paquetages"
 
 #: lib/poptI.c:164 tools/rpmgraph.c:273
 msgid "use anaconda \"presentation order\""
@@ -1814,9 +1762,7 @@ msgstr "reloger des fichiers d'un paquetage non relogeable"
 
 #: lib/poptI.c:176
 msgid "save erased package files by renaming into sub-directory"
-msgstr ""
-"sauver les fichiers du paquetage désinstallé en les renommant dans un sous-"
-"répertoire"
+msgstr "sauver les fichiers du paquetage désinstallé en les renommant dans un sous-répertoire"
 
 #: lib/poptI.c:179
 msgid "erase (uninstall) package"
@@ -1856,9 +1802,7 @@ msgstr "<paquetage>+"
 
 #: lib/poptI.c:198
 msgid "print hash marks as package installs (good with -v)"
-msgstr ""
-"afficher des marqueurs au fur et à mesure que le paquetage s'installe (avec -"
-"v c'est bien(tm))"
+msgstr "afficher des marqueurs au fur et à mesure que le paquetage s'installe (avec -v c'est bien(tm))"
 
 #: lib/poptI.c:201
 msgid "don't verify package architecture"
@@ -1882,8 +1826,7 @@ msgstr "installer le(s) paquetage(s)"
 
 #: lib/poptI.c:215
 msgid "update the database, but do not modify the filesystem"
-msgstr ""
-"mettre à jour la base données, mais ne pas modifier le système de fichiers"
+msgstr "mettre à jour la base données, mais ne pas modifier le système de fichiers"
 
 #: lib/poptI.c:221
 msgid "do not verify package dependencies"
@@ -1895,9 +1838,7 @@ msgstr "ne pas vérifier les sommes MD5 des fichiers"
 
 #: lib/poptI.c:230
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr ""
-"ne pas ré-arranger l'ordre d'installation des paquetages pour satisfaire les "
-"dépendances"
+msgstr "ne pas ré-arranger l'ordre d'installation des paquetages pour satisfaire les dépendances"
 
 #: lib/poptI.c:235
 msgid "do not suggest missing dependency resolution(s)"
@@ -1951,9 +1892,7 @@ msgstr "n'exécuter aucun scriptlet %%triggerpostun"
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
-msgstr ""
-"mettre à jour avec un paquetage plus ancien (une m-à-j avec --force fait ça "
-"automatiquement"
+msgstr "mettre à jour avec un paquetage plus ancien (une m-à-j avec --force fait ça automatiquement"
 
 #: lib/poptI.c:281
 msgid "print percentages as package installs"
@@ -1977,8 +1916,7 @@ msgstr "<vieux>=<nouveau>"
 
 #: lib/poptI.c:290
 msgid "save erased package files by repackaging"
-msgstr ""
-"sauvegarder les fichiers du paquetage désinstallé en les ré-empaquetant"
+msgstr "sauvegarder les fichiers du paquetage désinstallé en les ré-empaquetant"
 
 #: lib/poptI.c:293
 msgid "install even if the package replaces installed files"
@@ -1990,9 +1928,7 @@ msgstr "réinstalle si le paquetage est déjà installé"
 
 #: lib/poptI.c:298
 msgid "deinstall new, reinstall old, package(s), back to <date>"
-msgstr ""
-"désinstaller le(s) nouveau(x), ré-installer le(s) vieux paquetages, comme "
-"c'était le cas pour cette <date>"
+msgstr "désinstaller le(s) nouveau(x), ré-installer le(s) vieux paquetages, comme c'était le cas pour cette <date>"
 
 #: lib/poptI.c:299
 msgid "<date>"
@@ -2020,8 +1956,7 @@ msgstr "vérifier/demander un package possèdant un fichier"
 
 #: lib/poptQV.c:101
 msgid "query/verify package(s) with file identifier"
-msgstr ""
-"questionner/vérifier le(s) paquetage(s) grâce à un identifieur de fichier"
+msgstr "questionner/vérifier le(s) paquetage(s) grâce à un identifieur de fichier"
 
 #: lib/poptQV.c:103
 msgid "query/verify package(s) in group"
@@ -2029,8 +1964,7 @@ msgstr "vérifier/questionner le(s) paquetage(s) d'un même groupe"
 
 #: lib/poptQV.c:105
 msgid "query/verify package(s) with header identifier"
-msgstr ""
-"questionner/vérifier le(s) paquetage(s) grâce à un identifieur d'entête"
+msgstr "questionner/vérifier le(s) paquetage(s) grâce à un identifieur d'entête"
 
 #: lib/poptQV.c:107
 msgid "query/verify a package file"
@@ -2038,8 +1972,7 @@ msgstr "vérifier/questionner un fichier paquetage"
 
 #: lib/poptQV.c:109
 msgid "query/verify package(s) with package identifier"
-msgstr ""
-"questionner/vérifier le(s) paquetage(s) grâce à un identifieur de paquetage"
+msgstr "questionner/vérifier le(s) paquetage(s) grâce à un identifieur de paquetage"
 
 #: lib/poptQV.c:111
 msgid "rpm query mode"
@@ -2059,9 +1992,7 @@ msgstr "<spec>"
 
 #: lib/poptQV.c:117
 msgid "query/verify package(s) from install transaction"
-msgstr ""
-"questionner/vérifier le(s) paquetage(s) à partir de la transaction "
-"d'installation"
+msgstr "questionner/vérifier le(s) paquetage(s) à partir de la transaction d'installation"
 
 #: lib/poptQV.c:119
 msgid "query the package(s) triggered by the package"
@@ -2241,12 +2172,12 @@ msgstr "Impossible de recharger l'entête de signature\n"
 #: lib/psm.c:1715
 #, c-format
 msgid "user %s does not exist - using root\n"
-msgstr "l'utilisateur %s n'existe pas - utilisation de root\n"
+msgstr "utilisateur %s inexistant - utilisation de root\n"
 
 #: lib/psm.c:1724
 #, c-format
 msgid "group %s does not exist - using root\n"
-msgstr "le groupe %s n'existe pas - utilisation de root\n"
+msgstr "groupe %s inexistant - utilisation de root\n"
 
 #: lib/psm.c:1772
 #, c-format
@@ -2312,8 +2243,7 @@ msgstr "le paquetage n'as pas de liste de possesseurs/groupes de fichiers\n"
 
 #: lib/query.c:299
 msgid "package has neither file owner or id lists\n"
-msgstr ""
-"le paquetage n'a ni la liste des id ni celle des possesseurs de fichiers\n"
+msgstr "le paquetage n'a ni la liste des id ni celle des possesseurs de fichiers\n"
 
 #: lib/query.c:428 lib/query.c:475 lib/rpminstall.c:123 lib/rpminstall.c:462
 #: lib/rpminstall.c:593 lib/rpminstall.c:1007 lib/rpmts.c:563
@@ -2329,8 +2259,7 @@ msgstr "échec de la requête sur %s\n"
 
 #: lib/query.c:453
 msgid "old format source packages cannot be queried\n"
-msgstr ""
-"les vieux formats de paquetage source ne peuvent être sujet aux requêtes\n"
+msgstr "les vieux formats de paquetage source ne peuvent être sujet aux requêtes\n"
 
 #: lib/query.c:488 lib/rpminstall.c:606
 #, c-format
@@ -2384,7 +2313,7 @@ msgstr "fichier %s: %s\n"
 #: lib/query.c:723
 #, c-format
 msgid "file %s is not owned by any package\n"
-msgstr "le fichier n'appartient à aucun paquetage\n"
+msgstr "le fichier %s n'appartient à aucun paquetage\n"
 
 #: lib/query.c:748
 #, c-format
@@ -2521,8 +2450,7 @@ msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
-"La dépendance \"B\" a besoin d'une epoch (on suppose qu'elle est la même que "
-"pour \"A\")\n"
+"La dépendance \"B\" a besoin d'une epoch (on suppose qu'elle est la même que pour \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
 #: lib/rpmds.c:904
@@ -2672,8 +2600,7 @@ msgstr "Installation de %s\n"
 #: lib/rpminstall.c:1222
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-msgstr ""
-"Roulement arrière des paquetages (+%d/-%d) jusqu'à %-24.24s (0x%08x):\n"
+msgstr "Roulement arrière des paquetages (+%d/-%d) jusqu'à %-24.24s (0x%08x):\n"
 
 #: lib/rpmlead.c:55
 #, c-format
@@ -2682,15 +2609,11 @@ msgstr "échec de lecture: %s (%d)\n"
 
 #: lib/rpmlibprov.c:29
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr ""
-"Les dépendances de type PreReq:, Provides: et Obsoletes: supportent les "
-"versions."
+msgstr "Les dépendances de type PreReq:, Provides: et Obsoletes: supportent les versions."
 
 #: lib/rpmlibprov.c:32
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr ""
-"Le(s) nom(s) de fichier sont stockés en tant que triplets (NomRep,NomFich,"
-"IndexRep), pas en tant que chemin."
+msgstr "Le(s) nom(s) de fichier sont stockés en tant que triplets (NomRep,NomFich,IndexRep), pas en tant que chemin."
 
 #: lib/rpmlibprov.c:35
 msgid "package payload is compressed using bzip2."
@@ -2698,8 +2621,7 @@ msgstr "La charge utile du paquetage est compressée avec bzip2."
 
 #: lib/rpmlibprov.c:38
 msgid "package payload file(s) have \"./\" prefix."
-msgstr ""
-"le(s) fichier(s) de la charge utile du paquetage ont \"./\" comme préfixe."
+msgstr "le(s) fichier(s) de la charge utile du paquetage ont \"./\" comme préfixe."
 
 #: lib/rpmlibprov.c:41
 msgid "package name-version-release is not implicitly provided."
@@ -2711,8 +2633,7 @@ msgstr "les tags d'entête sont toujours triés après avoir été chargés."
 
 #: lib/rpmlibprov.c:47
 msgid "the scriptlet interpreter can use arguments from header."
-msgstr ""
-"l'interprète du scriptlet peut utiliser des arguments à partir des entêtes."
+msgstr "l'interprète du scriptlet peut utiliser des arguments à partir des entêtes."
 
 #: lib/rpmlibprov.c:50
 msgid "a hardlink file set may be installed without being complete."
@@ -2720,9 +2641,7 @@ msgstr "un lien en dur pourrait être installé sans être complet."
 
 #: lib/rpmlibprov.c:53
 msgid "package scriptlets may access the rpm database while installing."
-msgstr ""
-"les scriptlets du paquetage pourrait accéder à la base de données rpm "
-"pendant l'installation."
+msgstr "les scriptlets du paquetage pourrait accéder à la base de données rpm pendant l'installation."
 
 #. @observer@
 #: lib/rpmps.c:200
@@ -2752,15 +2671,12 @@ msgstr "le chemin %s du paquetage %s n'est pas relogeable"
 #: lib/rpmps.c:228
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
-msgstr ""
-"le fichier %s entre en conflit avec les tentatives d'installation de %s et %s"
+msgstr "le fichier %s entre en conflit avec les tentatives d'installation de %s et %s"
 
 #: lib/rpmps.c:233
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
-msgstr ""
-"le fichier %s de l'installation de %s entre en conflit avec le fichier du "
-"paquetage %s"
+msgstr "le fichier %s de l'installation de %s entre en conflit avec le fichier du paquetage %s"
 
 #: lib/rpmps.c:238
 #, c-format
@@ -2770,21 +2686,17 @@ msgstr "le paquetage %s (plus récent que %s) est déjà installé"
 #: lib/rpmps.c:243
 #, c-format
 msgid "installing package %s needs %ld%cB on the %s filesystem"
-msgstr ""
-"installer le paquetage %s nécessite %ld%co sur le système de fichiers %s"
+msgstr "installer le paquetage %s nécessite %ld%co sur le système de fichiers %s"
 
 #: lib/rpmps.c:253
 #, c-format
 msgid "installing package %s needs %ld inodes on the %s filesystem"
-msgstr ""
-"installer le paquetage %s nécessite %ld i-noeuds sur le système de fichiers %"
-"s"
+msgstr "installer le paquetage %s nécessite %ld i-noeuds sur le système de fichiers %s"
 
 #: lib/rpmps.c:258
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr ""
-"échec du(des) appel(s) système(s) de la pré-transaction du paquetage %s: %s"
+msgstr "échec du(des) appel(s) système(s) de la pré-transaction du paquetage %s: %s"
 
 #: lib/rpmps.c:262
 #, c-format
@@ -2793,7 +2705,7 @@ msgstr "%s est nécessaire pour %s%s"
 
 #: lib/rpmps.c:264 lib/rpmps.c:269
 msgid "(installed) "
-msgstr "(installé) "
+msgstr "(déjà installé) "
 
 #: lib/rpmps.c:267
 #, c-format
@@ -2903,7 +2815,7 @@ msgstr "Impossible d'ouvrir %s en lecture: %s.\n"
 #: lib/rpmts.c:159
 #, c-format
 msgid "cannot open Packages database in %s\n"
-msgstr "Impossible d'ouvrir la base de données Package dans %s\n"
+msgstr "impossible d'ouvrir la base de données Package dans %s\n"
 
 #: lib/rpmts.c:243
 #, c-format
@@ -3063,16 +2975,12 @@ msgstr "%%_signature spécifiée invalide dans le fichier de macros\n"
 #: lib/signature.c:911
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
-msgstr ""
-"Vous devez affecter une valeur à \"%%_gpg_name\" dans votre fichier de "
-"macros\n"
+msgstr "Vous devez affecter une valeur à \"%%_gpg_name\" dans votre fichier de macros\n"
 
 #: lib/signature.c:926
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
-msgstr ""
-"Vous devez affecter une valeur à \"%%_pgp_name\" dans votre fichier de "
-"macros\n"
+msgstr "Vous devez affecter une valeur à \"%%_pgp_name\" dans votre fichier de macros\n"
 
 #: lib/signature.c:975
 msgid "Header+Payload size: "
@@ -3193,7 +3101,7 @@ msgstr "ouverture  db environnement %s/%s %s\n"
 #: rpmdb/db3.c:779
 #, c-format
 msgid "closed   db index       %s/%s\n"
-msgstr "fermeture  db index       %s/%s\n"
+msgstr "fermeture     index db    %s/%s\n"
 
 #: rpmdb/db3.c:846
 #, c-format
@@ -3203,14 +3111,12 @@ msgstr "vérif.     db index       %s/%s\n"
 #: rpmdb/db3.c:986
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
-msgstr ""
-"trouvés(%d) mutex posix non-partagés, rajout de DB_PRIVATE, utilisation des "
-"verrous fcntl\n"
+msgstr "trouvés(%d) mutex posix non-partagés, rajout de DB_PRIVATE, utilisation des verrous fcntl\n"
 
 #: rpmdb/db3.c:1090
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
-msgstr "ouverture  index db       %s/%s %s mode=0x%x\n"
+msgstr "ouverture     index db    %s/%s %s mode=0x%x\n"
 
 #: rpmdb/db3.c:1328
 #, c-format
@@ -3228,7 +3134,7 @@ msgstr "partagé"
 #: rpmdb/db3.c:1334
 #, c-format
 msgid "locked   db index       %s/%s\n"
-msgstr "verrouillage db index       %s/%s\n"
+msgstr "verrouillage  index db    %s/%s\n"
 
 #: rpmdb/dbconfig.c:329
 #, c-format
@@ -3335,9 +3241,7 @@ msgstr "initialiser la base de données"
 
 #: rpmdb/poptDB.c:20
 msgid "rebuild database inverted lists from installed package headers"
-msgstr ""
-"refaire les listes inversées de la base de données à partir des entêtes des "
-"paquetages installés"
+msgstr "refaire les listes inversées de la base de données à partir des entêtes des paquetages installés"
 
 #: rpmdb/poptDB.c:23
 msgid "verify database files"
@@ -3398,8 +3302,7 @@ msgstr "%s: impossible de lire l'entête à 0x%x\n"
 #: rpmdb/rpmdb.c:2673
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
-msgstr ""
-"erreur(%d) en affectant l'article de l'entête nº%d pour l'enlèvement de %s\n"
+msgstr "erreur(%d) en affectant l'article de l'entête nº%d pour l'enlèvement de %s\n"
 
 #: rpmdb/rpmdb.c:2788
 #, c-format
@@ -3501,9 +3404,7 @@ msgstr "impossible d'ajouter l'article qui était au départ à %u\n"
 
 #: rpmdb/rpmdb.c:3860
 msgid "failed to rebuild database: original database remains in place\n"
-msgstr ""
-"Ne peut reconstruire la base de données: la base originale reste telle "
-"qu'elle est\n"
+msgstr "Ne peut reconstruire la base de données: la base originale reste telle qu'elle est\n"
 
 #: rpmdb/rpmdb.c:3868
 msgid "failed to replace old database with new database!\n"
@@ -3512,9 +3413,7 @@ msgstr "Ne peut remplacer la vieille base de données par la nouvelle!\n"
 #: rpmdb/rpmdb.c:3870
 #, c-format
 msgid "replace files in %s with files from %s to recover"
-msgstr ""
-"remplacer les fichiers dans %s avec les fichiers de %s pour faire une "
-"récupération"
+msgstr "remplacer les fichiers dans %s avec les fichiers de %s pour faire une récupération"
 
 #: rpmdb/rpmdb.c:3880
 #, c-format
@@ -3739,9 +3638,7 @@ msgstr "ne pas vérifier la signature de l'entete+charge_utile"
 
 #: tools/rpmcache.c:518
 msgid "don't update cache database, only print package paths"
-msgstr ""
-"ne pas mettre à jour le cache de la base de données, afficher seulement les "
-"chemins du paquetage"
+msgstr "ne pas mettre à jour le cache de la base de données, afficher seulement les chemins du paquetage"
 
 #: tools/rpmcache.c:522
 msgid "follow command line symlinks"
@@ -3793,7 +3690,6 @@ msgstr "%s: échec de l'opération sur le cache: ec %d.\n"
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: échec de la lecture de la liste de paquetages: %s\n"
-
 #: ../rpmpopt:34 ../rpmpopt:290 ../rpmpopt:363
 msgid "list install/erase scriptlets from package(s)"
 msgstr "lister les scriptlets de (dés)installation du(des) paquetage(s)"
@@ -3836,26 +3732,19 @@ msgstr "lister les scripts trigger du(des) paquetage(s)"
 
 #: ../rpmpopt:84 ../rpmpopt:331 ../rpmpopt:403
 msgid "list package(s) by install time, most recent first"
-msgstr ""
-"lister le(s) paquetage(s) trié(s) par date d'installation, le plus récent "
-"d'abord"
+msgstr "lister le(s) paquetage(s) trié(s) par date d'installation, le plus récent d'abord"
 
 #: ../rpmpopt:87 ../rpmpopt:334 ../rpmpopt:406
 msgid "list all files from each package"
 msgstr "lister tous les fichiers de chaque paquetages"
 
 #: ../rpmpopt:90 ../rpmpopt:93
-msgid ""
-"find package name that contains a provided capability (needs rpmdb-redhat "
-"package installed)"
-msgstr ""
-"trouver le nom du paquetage qui contient une fourniture (a besoin du "
-"paquetage rpmdb-redhat)"
+msgid "find package name that contains a provided capability (needs rpmdb-redhat package installed)"
+msgstr "trouver le nom du paquetage qui contient une fourniture (a besoin du paquetage rpmdb-redhat)"
 
 #: ../rpmpopt:103
 msgid "set buildroot <policy> (e.g. compress man pages)"
-msgstr ""
-"fixer une <politique> du buildroot (par ex. la compression des pages de man)"
+msgstr "fixer une <politique> du buildroot (par ex. la compression des pages de man)"
 
 #: ../rpmpopt:104
 msgid "<policy>"

@@ -80,129 +80,12 @@ static int sharedCmp(const void * one, const void * two)
 }
 
 /**
- */
-/*@-boundsread@*/
-static fileAction decideFileFate(const rpmts ts,
-		const rpmfi ofi, rpmfi nfi)
-	/*@globals h_errno, fileSystem, internalState @*/
-	/*@modifies nfi, fileSystem, internalState @*/
-{
-    const char * fn = rpmfiFN(nfi);
-    int newFlags = rpmfiFFlags(nfi);
-    char buffer[1024];
-    fileTypes dbWhat, newWhat, diskWhat;
-    struct stat sb;
-    int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
-
-    if (lstat(fn, &sb)) {
-	/*
-	 * The file doesn't exist on the disk. Create it unless the new
-	 * package has marked it as missingok, or allfiles is requested.
-	 */
-	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES)
-	 && (newFlags & RPMFILE_MISSINGOK))
-	{
-	    rpmMessage(RPMMESS_DEBUG, _("%s skipped due to missingok flag\n"),
-			fn);
-	    return FA_SKIP;
-	} else {
-	    return FA_CREATE;
-	}
-    }
-
-    diskWhat = whatis((int_16)sb.st_mode);
-    dbWhat = whatis(rpmfiFMode(ofi));
-    newWhat = whatis(rpmfiFMode(nfi));
-
-    /*
-     * RPM >= 2.3.10 shouldn't create config directories -- we'll ignore
-     * them in older packages as well.
-     */
-    if (newWhat == XDIR)
-	return FA_CREATE;
-
-    if (diskWhat != newWhat)
-	return save;
-    else if (newWhat != dbWhat && diskWhat != dbWhat)
-	return save;
-    else if (dbWhat != newWhat)
-	return FA_CREATE;
-    else if (dbWhat != LINK && dbWhat != REG)
-	return FA_CREATE;
-
-    /*
-     * This order matters - we'd prefer to CREATE the file if at all
-     * possible in case something else (like the timestamp) has changed.
-     */
-    if (dbWhat == REG) {
-	const unsigned char * omd5, * nmd5;
-	if (domd5(fn, buffer, 0, NULL))
-	    return FA_CREATE;	/* assume file has been removed */
-	omd5 = rpmfiMD5(ofi);
-	if (omd5 && !memcmp(omd5, buffer, 16))
-	    return FA_CREATE;	/* unmodified config file, replace. */
-	nmd5 = rpmfiMD5(nfi);
-/*@-nullpass@*/
-	if (omd5 && nmd5 && !memcmp(omd5, nmd5, 16))
-	    return FA_SKIP;	/* identical file, don't bother. */
-/*@=nullpass@*/
-    } else /* dbWhat == LINK */ {
-	const char * oFLink, * nFLink;
-	memset(buffer, 0, sizeof(buffer));
-	if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
-	    return FA_CREATE;	/* assume file has been removed */
-	oFLink = rpmfiFLink(ofi);
-	if (oFLink && !strcmp(oFLink, buffer))
-	    return FA_CREATE;	/* unmodified config file, replace. */
-	nFLink = rpmfiFLink(nfi);
-/*@-nullpass@*/
-	if (oFLink && nFLink && !strcmp(oFLink, nFLink))
-	    return FA_SKIP;	/* identical file, don't bother. */
-/*@=nullpass@*/
-    }
-
-    /*
-     * The config file on the disk has been modified, but
-     * the ones in the two packages are different. It would
-     * be nice if RPM was smart enough to at least try and
-     * merge the difference ala CVS, but...
-     */
-    return save;
-}
-/*@=boundsread@*/
-
-/**
- */
-/*@-boundsread@*/
-static int filecmp(rpmfi afi, rpmfi bfi)
-	/*@*/
-{
-    fileTypes awhat = whatis(rpmfiFMode(afi));
-    fileTypes bwhat = whatis(rpmfiFMode(bfi));
-
-    if (awhat != bwhat) return 1;
-
-    if (awhat == LINK) {
-	const char * alink = rpmfiFLink(afi);
-	const char * blink = rpmfiFLink(bfi);
-	if (alink == blink) return 0;
-	if (alink == NULL) return 1;
-	if (blink == NULL) return -1;
-	return strcmp(alink, blink);
-    } else if (awhat == REG) {
-	const unsigned char * amd5 = rpmfiMD5(afi);
-	const unsigned char * bmd5 = rpmfiMD5(bfi);
-	if (amd5 == bmd5) return 0;
-	if (amd5 == NULL) return 1;
-	if (bmd5 == NULL) return -1;
-	return memcmp(amd5, bmd5, 16);
-    }
-
-    return 0;
-}
-/*@=boundsread@*/
-
-/**
+ * @param ts		transaction set
+ * @param p
+ * @param fi		file info set
+ * @param shared
+ * @param sharedCount
+ * @param reportConflicts
  */
 /* XXX only ts->{probs,rpmdb} modified */
 /*@-bounds@*/
@@ -215,7 +98,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 {
     uint_32 tscolor = rpmtsColor(ts);
     uint_32 otecolor, tecolor;
-    uint_32 oficolor, ficolor;
+    uint_32 oFColor, FColor;
     const char * altNEVR = NULL;
     rpmfi otherFi = NULL;
     int numReplaced = 0;
@@ -260,13 +143,13 @@ static int handleInstInstalledFiles(const rpmts ts,
 
 	otherFileNum = shared->otherFileNum;
 	(void) rpmfiSetFX(otherFi, otherFileNum);
-	oficolor = rpmfiFColor(otherFi);
-	oficolor &= tscolor;
+	oFColor = rpmfiFColor(otherFi);
+	oFColor &= tscolor;
 
 	fileNum = shared->pkgFileNum;
 	(void) rpmfiSetFX(fi, fileNum);
-	ficolor = rpmfiFColor(fi);
-	ficolor &= tscolor;
+	FColor = rpmfiFColor(fi);
+	FColor &= tscolor;
 
 	isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
 
@@ -279,9 +162,22 @@ static int handleInstInstalledFiles(const rpmts ts,
 	if (XFA_SKIPPING(fi->actions[fileNum]))
 	    continue;
 
-	if (filecmp(otherFi, fi)) {
-	    /* Report conflicts only for packages/files of same color. */
-	    if (tscolor == 0 || (tecolor == otecolor && ficolor == oficolor))
+	if (rpmfiCompare(otherFi, fi)) {
+
+	    /* Resolve file conflicts to prefer Elf64 (if not forced). */
+	    if (tscolor != 0 && FColor != 0 && FColor != oFColor
+	     && reportConflicts)
+	    {
+		if (oFColor & 0x2) {
+		    fi->actions[fileNum] = FA_SKIP;
+		    reportConflicts = 0;
+		} else
+		if (FColor & 0x2) {
+		    fi->actions[fileNum] = FA_CREATE;
+		    reportConflicts = 0;
+		}
+	    }
+
 	    if (reportConflicts) {
 		rpmpsAppend(ps, RPMPROB_FILE_CONFLICT,
 			rpmteNEVR(p), rpmteKey(p),
@@ -289,7 +185,8 @@ static int handleInstInstalledFiles(const rpmts ts,
 			altNEVR,
 			0);
 	    }
-	    if (!isCfgFile) {
+	    /* Save file identifier to mark as state REPLACED. */
+	    if ( !(isCfgFile || XFA_SKIPPING(fi->actions[fileNum])) ) {
 		/*@-assignexpose@*/ /* FIX: p->replaced, not fi */
 		if (!shared->isRemoved)
 		    fi->replaced[numReplaced++] = *shared;
@@ -297,9 +194,11 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    }
 	}
 
+	/* Determine config file dispostion, skipping missing files (if any). */
 	if (isCfgFile) {
-	    fileAction action;
-	    action = decideFileFate(ts, otherFi, fi);
+	    int skipMissing =
+		((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
+	    fileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
 	    fi->actions[fileNum] = action;
 	}
 	fi->replacedSizes[fileNum] = rpmfiFSize(otherFi);
@@ -527,6 +426,8 @@ static void handleOverlappedFiles(const rpmts ts,
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while ((i = rpmfiNext(fi)) >= 0) {
+	uint_32 tscolor = rpmtsColor(ts);
+	uint_32 oFColor, FColor;
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
 	rpmfi otherFi;
@@ -542,6 +443,8 @@ static void handleOverlappedFiles(const rpmts ts,
 	fiFps = fi->fps + i;
 	FFlags = rpmfiFFlags(fi);
 	FMode = rpmfiFMode(fi);
+	FColor = rpmfiFColor(fi);
+	FColor &= tscolor;
 
 	fixupSize = 0;
 
@@ -603,10 +506,17 @@ static void handleOverlappedFiles(const rpmts ts,
 		/*@innerbreak@*/ break;
 	}
 
+	oFColor = rpmfiFColor(otherFi);
+	oFColor &= tscolor;
+
 /*@-boundswrite@*/
 	switch (rpmteType(p)) {
 	case TR_ADDED:
 	  { struct stat sb;
+	    int reportConflicts =
+		!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES);
+	    int done = 0;
+
 	    if (otherPkgNum < 0) {
 		/* XXX is this test still necessary? */
 		if (fi->actions[i] != FA_UNKNOWN)
@@ -623,14 +533,40 @@ static void handleOverlappedFiles(const rpmts ts,
 
 assert(otherFi != NULL);
 	    /* Mark added overlapped non-identical files as a conflict. */
-	    if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES)
-	     && filecmp(otherFi, fi))
-	    {
-		rpmpsAppend(ps, RPMPROB_NEW_FILE_CONFLICT,
+	    if (rpmfiCompare(otherFi, fi)) {
+
+		/* Resolve file conflicts to prefer Elf64 (if not forced) ... */
+		if (tscolor != 0 && reportConflicts) {
+		    if (FColor & 0x2) {
+			/* ... last Elf64 file is installed ... */
+			if (!XFA_SKIPPING(fi->actions[i]))
+			    otherFi->actions[otherFileNum] = FA_SKIP;
+			fi->actions[i] = FA_CREATE;
+			reportConflicts = 0;
+		    } else
+		    if (oFColor & 0x2) {
+			/* ... first Elf64 file is installed ... */
+			if (XFA_SKIPPING(fi->actions[i]))
+			    otherFi->actions[otherFileNum] = FA_CREATE;
+			fi->actions[i] = FA_SKIP;
+			reportConflicts = 0;
+		    } else
+		    if (FColor == 0 && oFColor == 0) {
+			/* ... otherwise, do both, last in wins. */
+			otherFi->actions[otherFileNum] = FA_CREATE;
+			fi->actions[i] = FA_CREATE;
+			reportConflicts = 0;
+		    }
+		    done = 1;
+		}
+
+		if (reportConflicts) {
+		    rpmpsAppend(ps, RPMPROB_NEW_FILE_CONFLICT,
 			rpmteNEVR(p), rpmteKey(p),
 			fn, NULL,
 			rpmteNEVR(otherFi->te),
 			0);
+		}
 	    }
 
 	    /* Try to get the disk accounting correct even if a conflict. */
@@ -641,7 +577,8 @@ assert(otherFi != NULL);
 		fi->actions[i] = (FFlags & RPMFILE_NOREPLACE)
 			? FA_ALTNAME : FA_SKIP;
 	    } else {
-		fi->actions[i] = FA_CREATE;
+		if (!done)
+		    fi->actions[i] = FA_CREATE;
 	    }
 	  } /*@switchbreak@*/ break;
 
@@ -752,7 +689,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	/*@modifies fi, rpmGlobalMacroContext @*/
 {
     uint_32 tscolor = rpmtsColor(ts);
-    uint_32 ficolor;
+    uint_32 FColor;
     int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
     char ** netsharedPaths = NULL;
@@ -817,8 +754,8 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	}
 
 	/* Ignore colored files not in our rainbow. */
-	ficolor = rpmfiFColor(fi);
-	if (tscolor && ficolor && !(tscolor & ficolor)) {
+	FColor = rpmfiFColor(fi);
+	if (tscolor && FColor && !(tscolor & FColor)) {
 	    drc[ix]--;	dff[ix] = 1;
 	    fi->actions[i] = FA_SKIPCOLOR;
 	    continue;

@@ -498,6 +498,120 @@ fileTypes whatis(uint_16 mode)
     return REG;
 }
 
+/*@-boundsread@*/
+int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
+	/*@*/
+{
+    fileTypes awhat = whatis(rpmfiFMode(afi));
+    fileTypes bwhat = whatis(rpmfiFMode(bfi));
+
+    if (awhat != bwhat) return 1;
+
+    if (awhat == LINK) {
+	const char * alink = rpmfiFLink(afi);
+	const char * blink = rpmfiFLink(bfi);
+	if (alink == blink) return 0;
+	if (alink == NULL) return 1;
+	if (blink == NULL) return -1;
+	return strcmp(alink, blink);
+    } else if (awhat == REG) {
+	const unsigned char * amd5 = rpmfiMD5(afi);
+	const unsigned char * bmd5 = rpmfiMD5(bfi);
+	if (amd5 == bmd5) return 0;
+	if (amd5 == NULL) return 1;
+	if (bmd5 == NULL) return -1;
+	return memcmp(amd5, bmd5, 16);
+    }
+
+    return 0;
+}
+/*@=boundsread@*/
+
+/*@-boundsread@*/
+fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
+{
+    const char * fn = rpmfiFN(nfi);
+    int newFlags = rpmfiFFlags(nfi);
+    char buffer[1024];
+    fileTypes dbWhat, newWhat, diskWhat;
+    struct stat sb;
+    int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
+
+    if (lstat(fn, &sb)) {
+	/*
+	 * The file doesn't exist on the disk. Create it unless the new
+	 * package has marked it as missingok, or allfiles is requested.
+	 */
+	if (skipMissing && (newFlags & RPMFILE_MISSINGOK)) {
+	    rpmMessage(RPMMESS_DEBUG, _("%s skipped due to missingok flag\n"),
+			fn);
+	    return FA_SKIP;
+	} else {
+	    return FA_CREATE;
+	}
+    }
+
+    diskWhat = whatis((int_16)sb.st_mode);
+    dbWhat = whatis(rpmfiFMode(ofi));
+    newWhat = whatis(rpmfiFMode(nfi));
+
+    /*
+     * RPM >= 2.3.10 shouldn't create config directories -- we'll ignore
+     * them in older packages as well.
+     */
+    if (newWhat == XDIR)
+	return FA_CREATE;
+
+    if (diskWhat != newWhat)
+	return save;
+    else if (newWhat != dbWhat && diskWhat != dbWhat)
+	return save;
+    else if (dbWhat != newWhat)
+	return FA_CREATE;
+    else if (dbWhat != LINK && dbWhat != REG)
+	return FA_CREATE;
+
+    /*
+     * This order matters - we'd prefer to CREATE the file if at all
+     * possible in case something else (like the timestamp) has changed.
+     */
+    if (dbWhat == REG) {
+	const unsigned char * omd5, * nmd5;
+	if (domd5(fn, buffer, 0, NULL))
+	    return FA_CREATE;	/* assume file has been removed */
+	omd5 = rpmfiMD5(ofi);
+	if (omd5 && !memcmp(omd5, buffer, 16))
+	    return FA_CREATE;	/* unmodified config file, replace. */
+	nmd5 = rpmfiMD5(nfi);
+/*@-nullpass@*/
+	if (omd5 && nmd5 && !memcmp(omd5, nmd5, 16))
+	    return FA_SKIP;	/* identical file, don't bother. */
+/*@=nullpass@*/
+    } else /* dbWhat == LINK */ {
+	const char * oFLink, * nFLink;
+	memset(buffer, 0, sizeof(buffer));
+	if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
+	    return FA_CREATE;	/* assume file has been removed */
+	oFLink = rpmfiFLink(ofi);
+	if (oFLink && !strcmp(oFLink, buffer))
+	    return FA_CREATE;	/* unmodified config file, replace. */
+	nFLink = rpmfiFLink(nfi);
+/*@-nullpass@*/
+	if (oFLink && nFLink && !strcmp(oFLink, nFLink))
+	    return FA_SKIP;	/* identical file, don't bother. */
+/*@=nullpass@*/
+    }
+
+    /*
+     * The config file on the disk has been modified, but
+     * the ones in the two packages are different. It would
+     * be nice if RPM was smart enough to at least try and
+     * merge the difference ala CVS, but...
+     */
+    return save;
+}
+/*@=boundsread@*/
+
 /*@observer@*/
 const char *const rpmfiTypeString(rpmfi fi)
 {
