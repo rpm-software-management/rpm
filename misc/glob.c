@@ -36,6 +36,14 @@
 # define REAL_DIR_ENTRY(dp) (dp->d_ino != 0)
 #endif /* POSIX */
 
+#include <errno.h>
+#ifndef errno
+extern int errno;
+#endif
+#ifndef __set_errno
+# define __set_errno(val) errno = (val)
+#endif
+
 /* Outcomment the following line for production quality code.  */
 /* #define NDEBUG 1 */
 
