@@ -247,7 +247,7 @@ static int db2sync(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
-static int db2SearchIndex(dbiIndex dbi, const char * str, size_t len,
+static int db2SearchIndex(dbiIndex dbi, const void * str, size_t len,
 		dbiIndexSet * set)
 {
     DBT key, data;

@@ -390,7 +390,7 @@ union _dbswap {
     _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
   }
 
-static int db3SearchIndex(dbiIndex dbi, const char * str, size_t len,
+static int db3SearchIndex(dbiIndex dbi, const void * str, size_t len,
 		dbiIndexSet * set)
 {
     DBT key, data;

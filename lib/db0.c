@@ -118,7 +118,7 @@ static int db0sync(dbiIndex dbi, unsigned int flags) {
     return rc;
 }
 
-static int db0SearchIndex(dbiIndex dbi, const char * str, size_t len,
+static int db0SearchIndex(dbiIndex dbi, const void * str, size_t len,
 		dbiIndexSet * set)
 {
     DBT key, data;
