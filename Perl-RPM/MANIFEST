@@ -20,4 +20,4 @@ t/01_database.t
 t/02_headers.t
 t/03_errors.t
 t/04_utils.t
-utils/rpmprune.PL	Sample script
+utils/rpmprune		Sample script
