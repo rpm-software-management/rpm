@@ -56,13 +56,12 @@ for SUBST in $SUBSTS ; do
   ARCH_INSTALL_POST='%{nil}'
   MULTILIBNO=
   case "${ARCH}-${OS}" in
-    sparc64-linux) ARCH_INSTALL_POST=${pkglibdir}/brp-sparc64-linux; LIB=lib64 ;;
     sparc-linux) MULTILIBNO=1 ;;
     sparcv9-linux) MULTILIBNO=1 ;;
     sparc64-linux) ARCH_INSTALL_POST=${pkglibdir}/brp-sparc64-linux; LIB=lib64; MULTILIBNO=2 ;;
   esac
 
-  if [ "$MULTILIBNO" ]; then
+  if [ -n "$MULTILIBNO" ]; then
     MULTILIBSED='-e /^@MULTILIB/d -e s,@MULTILIBNO@,'$MULTILIBNO,
   else
     MULTILIBSED='-e /^@MULTILIBSTART@/,/^@MULTILIBEND@/d'
