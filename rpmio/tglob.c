@@ -9,7 +9,7 @@
 
 static int _debug = 0;
 
-extern int noNeon;
+int noNeon;
 
 #define	HTTPSPATH	"https://localhost/rawhide/test/*.rpm"
 #if 0

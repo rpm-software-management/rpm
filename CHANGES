@@ -31,6 +31,8 @@
 	- add --delsign to purge packages of digital signatures.
 	- neon used by default for http/https transport.
 	- upgrade to db-4.3.21 final internal.
+	- remove noNeon runtime switch, http through neon only.
+	- remove http put to be able to build against upstream neon.
 
 4.3.2 -> 4.3.3:
 	- bump micro version.

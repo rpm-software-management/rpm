@@ -94,9 +94,6 @@ int noLibio = 0;
 int noLibio = 1;
 #endif
 
-/*@unchecked@*/
-int noNeon = 0;
-
 #define TIMEOUT_SECS 60
 
 /**
@@ -398,22 +395,6 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
 
-#define	NEONBLOWSCHUNKS
-#ifdef	NEONBLOWSCHUNKS
-    if (fd->req == NULL)
-#endif
-    if (fd->wr_chunked) {
-	char chunksize[20];	/* HACK: big enough. */
-	sprintf(chunksize, "%x\r\n", (unsigned)count);
-#ifndef	NEONBLOWSCHUNKS
-	/* HACK: flimsy wiring for davWrite */
-	if (fd->req != NULL)
-	    rc = davWrite(fd, chunksize, strlen(chunksize));
-	else
-#endif
-	    rc = write(fdno, chunksize, strlen(chunksize));
-	if (rc == -1)	fd->syserrno = errno;
-    }
     if (count == 0) return 0;
 
     fdstat_enter(fd, FDSTAT_WRITE);
@@ -425,23 +406,6 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 	rc = write(fdno, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
 /*@=boundsread@*/
     fdstat_exit(fd, FDSTAT_WRITE, rc);
-
-#ifdef	NEONBLOWSCHUNKS
-    if (fd->req == NULL)
-#endif
-    if (fd->wr_chunked) {
-	int ec;
-/*@-boundsread@*/
-#ifndef	NEONBLOWSCHUNKS
-	/* HACK: flimsy wiring for davWrite */
-	if (fd->req != NULL)
-	    ec = davWrite(fd, "\r\n", sizeof("\r\n")-1);
-	else
-#endif
-	    ec = write(fdno, "\r\n", sizeof("\r\n")-1);
-/*@=boundsread@*/
-	if (ec == -1)	fd->syserrno = errno;
-    }
 
 DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
@@ -1964,38 +1928,6 @@ int ufdClose( /*@only@*/ void * cookie)
 	/* XXX Why not (u->urltype == URL_IS_HTTPS) ??? */
 	if (u->scheme != NULL && !strncmp(u->scheme, "http", sizeof("http")-1))
 	{
-	    if (fd->wr_chunked) {
-		int rc;
-
-#ifdef	NEONBLOWSCHUNKS
-		if (!noNeon) {
-		    fd->wr_chunked = 0;
-		    /* HACK: flimsy wiring for davWrite */
-		    rc = ne_send_request_chunk(fd->req, (void *)NULL, (size_t)0);
-		    rc = ne_finish_request(fd->req);
-		    rc = davResp(u, fd, NULL);
-		} else
-#endif
-		{
-		    /* XXX HTTP PUT requires terminating 0 length chunk. */
-		    (void) fdWrite(fd, NULL, 0);
-		    fd->wr_chunked = 0;
-		    /* XXX HTTP PUT requires terminating entity-header. */
-if (_ftp_debug)
-fprintf(stderr, "-> \r\n");
-		    (void) fdWrite(fd, "\r\n", sizeof("\r\n")-1);
-#ifndef	NEONBLOWSCHUNKS
-		    if (!noNeon) {
-			rc = ne_finish_request(fd->req);
-			rc = davResp(u, fd, NULL);
-		    } else
-#endif
-			rc = httpResp(u, fd, NULL);
-		}
-if ((_ftp_debug || _rpmio_debug) && rc)	/* HACK: PUT rc not returned to Fclose. */
-fprintf(stderr, "*** ufdClose: httpResp rc %d errno(%d) %s\n", rc, fd->syserrno, strerror(fd->syserrno));
-	    }
-
 	    /*
 	     * HTTP has 4 (or 5 if persistent malloc) refs on the fd:
 	     *	"persist ctrl"				url.c:177
@@ -2078,55 +2010,6 @@ exit:
 }
 /*@=nullstate@*/
 
-/*@-nullstate@*/	/* FIX: u->{ctrl,data}->url undef after XurlLink. */
-static /*@null@*/ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
-		/*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
-	/*@globals h_errno, internalState @*/
-	/*@modifies *uret, internalState @*/
-{
-    urlinfo u = NULL;
-    FD_t fd = NULL;
-
-#if 0	/* XXX makeTempFile() heartburn */
-    assert(!(flags & O_RDWR));
-#endif
-    if (urlSplit(url, &u))
-	goto exit;
-
-    if (u->ctrl == NULL)
-	u->ctrl = fdNew("persist ctrl (httpOpen)");
-    if (u->ctrl->nrefs > 2 && u->data == NULL)
-	u->data = fdNew("persist data (httpOpen)");
-
-    if (u->ctrl->url == NULL)
-	fd = fdLink(u->ctrl, "grab ctrl (httpOpen persist ctrl)");
-    else if (u->data->url == NULL)
-	fd = fdLink(u->data, "grab ctrl (httpOpen persist data)");
-    else
-	fd = fdNew("grab ctrl (httpOpen)");
-
-    if (fd) {
-	fdSetIo(fd, ufdio);
-	fd->ftpFileDoneNeeded = 0;
-	fd->rd_timeoutsecs = httpTimeoutSecs;
-	fd->contentLength = fd->bytesRemain = -1;
-	fd->url = urlLink(u, "url (httpOpen)");
-	fd = fdLink(fd, "grab data (httpOpen)");
-assert(u->urltype == URL_IS_HTTP);
-	fd->urlType = u->urltype;
-    }
-
-exit:
-/*@-boundswrite@*/
-    if (uret)
-	*uret = u;
-/*@=boundswrite@*/
-    /*@-refcounttrans@*/
-    return fd;
-    /*@=refcounttrans@*/
-}
-/*@=nullstate@*/
-
 static /*@null@*/ FD_t ufdOpen(const char * url, int flags, mode_t mode)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
@@ -2164,7 +2047,6 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
-      if (!noNeon) {
 	fd = davOpen(url, flags, mode, &u);
 	if (fd == NULL || u == NULL)
 	    break;
@@ -2184,27 +2066,6 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	    fd->wr_chunked = ((!strcmp(cmd, "PUT"))
 		?  fd->wr_chunked : 0);
 	}
-      } else {
-	fd = httpOpen(url, flags, mode, &u);
-	if (fd == NULL || u == NULL)
-	    break;
-
-	cmd = ((flags & O_WRONLY)
-		?  ((flags & O_APPEND) ? "PUT" :
-		   ((flags & O_CREAT) ? "PUT" : "PUT"))
-		: "GET");
-	u->openError = httpReq(fd, cmd, path);
-	if (u->openError < 0) {
-	    /* XXX make sure that we can exit through ufdClose */
-	    fd = fdLink(fd, "error ctrl (ufdOpen HTTP)");
-	    fd = fdLink(fd, "error data (ufdOpen HTTP)");
-	} else {
-	    fd->bytesRemain = ((!strcmp(cmd, "GET"))
-		?  fd->contentLength : -1);
-	    fd->wr_chunked = ((!strcmp(cmd, "PUT"))
-		?  fd->wr_chunked : 0);
-	}
-      }
 	break;
     case URL_IS_DASH:
 	assert(!(flags & O_RDWR));

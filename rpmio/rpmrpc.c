@@ -20,11 +20,6 @@
 /*@access FD_t @*/
 /*@access urlinfo @*/
 
-/*@-redecl@*/
-/*@unchecked@*/
-extern int noNeon;
-/*@=redecl@*/
-
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
  * @param p		memory to free
@@ -98,9 +93,8 @@ int Mkdir (const char * path, mode_t mode)
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
-	if (!noNeon)
-	    return davMkdir(path, mode);
-	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
+	return davMkdir(path, mode);
+	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -126,10 +120,11 @@ int Chdir (const char * path)
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
 #ifdef	NOTYET
-	if (!noNeon)
-	    return davChdir(path);
+	return davChdir(path);
+#else
+	return -2;
 #endif
-	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
+	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -154,9 +149,8 @@ int Rmdir (const char * path)
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
-	if (!noNeon)
-	    return davRmdir(path);
-	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
+	return davRmdir(path);
+	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -185,9 +179,8 @@ int Rename (const char * oldpath, const char * newpath)
     switch (oldut) {
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
-	if (!noNeon)
-	    return davRename(oldpath, newpath);
-	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
+	return davRename(oldpath, newpath);
+	/*@notreached@*/ break;
     case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
@@ -280,9 +273,8 @@ int Unlink(const char * path) {
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
-	if (!noNeon)
-	    return davUnlink(path);
-	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
+	return davUnlink(path);
+	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -1282,9 +1274,8 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
-	if (!noNeon)
-	    return davStat(path, st);
-	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
+	return davStat(path, st);
+	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -1311,9 +1302,8 @@ fprintf(stderr, "*** Lstat(%s,%p)\n", path, st);
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
-	if (!noNeon)
-	    return davLstat(path, st);
-	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
+	return davLstat(path, st);
+	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -1339,10 +1329,11 @@ int Readlink(const char * path, char * buf, size_t bufsiz)
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
 #ifdef	NOTYET
-	if (!noNeon)
-	    return davReadlink(path, buf, bufsiz);
+	return davReadlink(path, buf, bufsiz);
+#else
+	return -2;
 #endif
-	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
+	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/
@@ -1441,12 +1432,6 @@ fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)e
     switch (ut) {
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
-	if (noNeon) {		/* XXX WRONG WRONG WRONG */
-	    flags &= ~GLOB_TILDE;
-	    pattern = lpath;
-	    break;
-	}
-	/*@fallthrough@*/
     case URL_IS_FTP:
 /*@-type@*/
 	pglob->gl_closedir = Closedir;
@@ -1491,9 +1476,8 @@ fprintf(stderr, "*** Opendir(%s)\n", path);
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:	
     case URL_IS_HTTP:
-	if (!noNeon)
-	    return davOpendir(path);
-	/*@fallthrough@*/	/* XXX WRONG WRONG WRONG */
+	return davOpendir(path);
+	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
 	/*@fallthrough@*/

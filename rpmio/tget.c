@@ -9,7 +9,7 @@
 
 static int _debug = 0;
 
-extern int noNeon;
+int noNeon;
 
 #define	HTTPSPATH	"https://localhost/test.txt"
 #define	HTTPPATH	"http://localhost/test.txt"

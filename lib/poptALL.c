@@ -85,9 +85,6 @@ extern int _rpmts_stats;
 
 /*@unchecked@*/
 extern int noLibio;
-
-/*@unchecked@*/
-extern int noNeon;
 /*@=exportheadervar@*/
 
 /*@unchecked@*/
@@ -279,8 +276,6 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
 	N_("disable use of libio(3) API"), NULL},
 #endif
- { "noneon", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noNeon, 1,
-	N_("disable use of libneon for HTTP"), NULL},
  { "nosignature", '\0', 0, 0, RPMCLI_POPT_NOSIGNATURE,
         N_("don't verify package signature(s)"), NULL },
 
