@@ -24,7 +24,6 @@ TODO:
 #include "messages.h"
 #include "rpmlib.h"
 #include "stringbuf.h"
-#include "var.h"
 #include "misc.h"
 
 #define LINE_BUF_SIZE 1024

@@ -28,7 +28,6 @@
 #include "pack.h"
 #include "messages.h"
 #include "md5.h"
-#include "var.h"
 
 #define BINARY_HEADER 0
 #define SOURCE_HEADER 1
