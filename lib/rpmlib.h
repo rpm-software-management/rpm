@@ -100,6 +100,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMTAG_CHANGELOGNAME            1081
 #define RPMTAG_CHANGELOGTEXT            1082
 #define RPMTAG_BROKENMD5                1083 /* internal */
+#define RPMTAG_PREREQ                   1084 /* internal */
 
 #define RPMTAG_EXTERNAL_TAG		1000000
 
@@ -148,7 +149,9 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMSENSE_EQUAL           (1 << 3)
 #define RPMSENSE_PROVIDES        (1 << 4) /* only used internally by builds */
 #define RPMSENSE_CONFLICTS       (1 << 5) /* only used internally by builds */
-#define RPMSENSE_SENSEMASK       15       /* Mask to get senses */
+#define RPMSENSE_PREREQ          (1 << 6)
+#define RPMSENSE_SENSEMASK       15       /* Mask to get senses, ie serial, */
+                                          /* less, greater, equal.          */
 
 #define RPMSENSE_TRIGGER_IN      (1 << 16)
 #define RPMSENSE_TRIGGER_UN      (1 << 17)

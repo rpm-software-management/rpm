@@ -299,8 +299,18 @@ static int parseRequiresConflicts(struct PackageRec *p, char *line,
     struct ReqComp *rc;
 
     while (req || (req = strtok(line, " ,\t\n"))) {
-	flags = (flag == RPMTAG_CONFLICTFLAGS) ?
-	    RPMSENSE_CONFLICTS : RPMSENSE_ANY;
+	switch (flag) {
+	  case RPMTAG_CONFLICTFLAGS:
+	    flags = RPMSENSE_CONFLICTS;
+	    break;
+	  case RPMTAG_PREREQ:
+	    flags = RPMSENSE_PREREQ;
+	    addReqProv(p, RPMSENSE_ANY, "/bin/sh", NULL);
+	    break;
+	  default:
+	    flags = RPMSENSE_ANY;
+	    break;
+	}
 	if (flag == RPMTAG_CONFLICTFLAGS && req[0] == '/') {
 	    rpmError(RPMERR_BADSPEC,
 		     "No file names in Conflicts: %s", req);
@@ -380,6 +390,7 @@ static struct PackageRec *new_packagerec(void)
     p->numReq = 0;
     p->numProv = 0;
     p->numConflict = 0;
+    p->numPreReq = 0;
     p->trigger.alloced = 0;
     p->trigger.used = 0;
     p->trigger.triggerScripts = NULL;
@@ -845,6 +856,7 @@ struct preamble_line {
     {RPMTAG_ICON,          0, "icon"},
     {RPMTAG_PROVIDES,      0, "provides"},
     {RPMTAG_REQUIREFLAGS,  0, "requires"},
+    {RPMTAG_PREREQ,        0, "prereq"},
     {RPMTAG_CONFLICTFLAGS, 0, "conflicts"},
     {RPMTAG_DEFAULTPREFIX, 0, "prefix"},
     {RPMTAG_BUILDROOT,     0, "buildroot"},
@@ -1359,6 +1371,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		      break;
 		  case RPMTAG_REQUIREFLAGS:
 		  case RPMTAG_CONFLICTFLAGS:
+		  case RPMTAG_PREREQ:
 		      if (parseRequiresConflicts(cur_package, s, tag)) {
 			  return NULL;
 		      }

@@ -77,6 +77,7 @@ struct PackageRec {
     StringBuf filelist;
     StringBuf doc;   /* Used to buffer up %doc lines until fully parsed */
     int numReq;
+    int numPreReq;
     int numProv;
     int numConflict;
     struct ReqProv *reqprov;

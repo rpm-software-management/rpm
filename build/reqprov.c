@@ -76,7 +76,10 @@ int addReqProv(struct PackageRec *p, int flags,
     } else if (flags & RPMSENSE_CONFLICTS) {
 	rpmMessage(RPMMESS_DEBUG, "Adding conflict: %s\n", name);
 	p->numConflict++;
-    } else {
+    } else if (flags & RPMSENSE_PREREQ) {
+	rpmMessage(RPMMESS_DEBUG, "Adding prereq: %s\n", name);
+	p->numPreReq++;
+    } else {	
 	rpmMessage(RPMMESS_DEBUG, "Adding require: %s\n", name);
 	p->numReq++;
     }
@@ -300,7 +303,7 @@ int processReqProv(Header h, struct PackageRec *p)
     char **nameArray, **namePtr;
     char **versionArray, **versionPtr;
     int_32 *flagArray, *flagPtr;
-    
+    int x;
 
     if (p->numProv) {
 	rd = p->reqprov;
@@ -349,30 +352,36 @@ int processReqProv(Header h, struct PackageRec *p)
 	free(flagArray);
     }
 
-    if (p->numReq) {
+    x = p->numReq + p->numPreReq;
+    if (x) {
 	rd = p->reqprov;
-	nameArray = namePtr = malloc(p->numReq * sizeof(*nameArray));
-	versionArray = versionPtr = malloc(p->numReq * sizeof(*versionArray));
-	flagArray = flagPtr = malloc(p->numReq * sizeof(*flagArray));
-	rpmMessage(RPMMESS_VERBOSE, "Requires (%d):", p->numReq);
+	nameArray = namePtr = malloc(x * sizeof(*nameArray));
+	versionArray = versionPtr = malloc(x * sizeof(*versionArray));
+	flagArray = flagPtr = malloc(x * sizeof(*flagArray));
+	rpmMessage(RPMMESS_VERBOSE, "[Pre]Requires (%d):", x);
 	while (rd) {
 	    if (! ((rd->flags & RPMSENSE_PROVIDES) ||
 		   (rd->flags & RPMSENSE_CONFLICTS))) {
-		rpmMessage(RPMMESS_VERBOSE, " %s", rd->name);
+		if (rd->flags & RPMSENSE_PREREQ) {
+		    rpmMessage(RPMMESS_VERBOSE, " [%s]", rd->name);
+		} else {
+		    rpmMessage(RPMMESS_VERBOSE, " %s", rd->name);
+		}
 		*namePtr++ = rd->name;
 		*versionPtr++ = rd->version ? rd->version : "";
-		*flagPtr++ = rd->flags & RPMSENSE_SENSEMASK;
+		*flagPtr++ = (rd->flags & RPMSENSE_SENSEMASK) |
+		    (rd->flags & RPMSENSE_PREREQ);
 	    }
 	    rd = rd->next;
 	}
 	rpmMessage(RPMMESS_VERBOSE, "\n");
 
 	headerAddEntry(h, RPMTAG_REQUIRENAME, RPM_STRING_ARRAY_TYPE,
-		 nameArray, p->numReq);
+		 nameArray, x);
 	headerAddEntry(h, RPMTAG_REQUIREVERSION, RPM_STRING_ARRAY_TYPE,
-		 versionArray, p->numReq);
+		 versionArray, x);
 	headerAddEntry(h, RPMTAG_REQUIREFLAGS, RPM_INT32_TYPE,
-		 flagArray, p->numReq);
+		 flagArray, x);
 
 	free(nameArray);
 	free(versionArray);
