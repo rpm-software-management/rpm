@@ -129,6 +129,12 @@
 /* define if the statfs() call takes 4 arguments */
 #undef STAT_STATFS4
 
+/* define if support rpm-1.0 packages is desired */
+#undef ENABLE_V1_PACKAGES
+
+/* define if experimental support rpm-4.0 packages is desired */
+#undef ENABLE_V4_PACKAGES
+
 ^L
 /* Leave that blank line there!!  Autoheader needs it.
    If you're adding to this file, keep in mind:

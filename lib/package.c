@@ -9,134 +9,9 @@
 #include "rpmlead.h"
 #include "signature.h"
 
+#if defined(ENABLE_V1_PACKAGES)
 /* 0 = success */
 /* !0 = error */
-static int readOldHeader(FD_t fd, Header * hdr, int * isSource);
-
-/* 0 = success */
-/* 1 = bad magic */
-/* 2 = error */
-static int readPackageHeaders(FD_t fd, struct rpmlead * leadPtr, 
-			      Header * sigs, Header * hdrPtr) {
-    Header hdrBlock;
-    struct rpmlead leadBlock;
-    Header * hdr;
-    struct rpmlead * lead;
-    struct oldrpmlead * oldLead;
-    int_8 arch;
-    int isSource;
-    char * defaultPrefix;
-    struct stat sb;
-    int_32 true = 1;
-
-    hdr = hdrPtr ? hdrPtr : &hdrBlock;
-    lead = leadPtr ? leadPtr : &leadBlock;
-
-    oldLead = (struct oldrpmlead *) lead;
-
-    fstat(fdFileno(fd), &sb);
-    /* if fd points to a socket, pipe, etc, sb.st_size is *always* zero */
-    if (S_ISREG(sb.st_mode) && sb.st_size < sizeof(*lead)) return 1;
-
-    if (readLead(fd, lead)) {
-	return 2;
-    }
-
-    if (lead->magic[0] != RPMLEAD_MAGIC0 || lead->magic[1] != RPMLEAD_MAGIC1 ||
-	lead->magic[2] != RPMLEAD_MAGIC2 || lead->magic[3] != RPMLEAD_MAGIC3) {
-	return 1;
-    }
-
-    if (lead->major == 1) {
-	rpmMessage(RPMMESS_DEBUG, _("package is a version one package!\n"));
-
-	if (lead->type == RPMLEAD_SOURCE) {
-	    rpmMessage(RPMMESS_DEBUG, _("old style source package -- "
-			"I'll do my best\n"));
-	    oldLead->archiveOffset = ntohl(oldLead->archiveOffset);
-	    rpmMessage(RPMMESS_DEBUG, _("archive offset is %d\n"), 
-			oldLead->archiveOffset);
-	    (void)fdLseek(fd, oldLead->archiveOffset, SEEK_SET);
-	    
-	    /* we can't put togeher a header for old format source packages,
-	       there just isn't enough information there. We'll return
-	       NULL <gulp> */
-
-	    *hdr = NULL;
-	} else {
-	    rpmMessage(RPMMESS_DEBUG, _("old style binary package\n"));
-	    readOldHeader(fd, hdr, &isSource);
-	    arch = lead->archnum;
-	    headerAddEntry(*hdr, RPMTAG_ARCH, RPM_INT8_TYPE, &arch, 1);
-	    arch = 1;		  /* old versions of RPM only supported Linux */
-	    headerAddEntry(*hdr, RPMTAG_OS, RPM_INT8_TYPE, &arch, 1);
-	}
-    } else if (lead->major == 2 || lead->major == 3) {
-	if (rpmReadSignature(fd, sigs, lead->signature_type)) {
-	   return 2;
-	}
-	*hdr = headerRead(fd, (lead->major >= 3) ?
-			  HEADER_MAGIC_YES : HEADER_MAGIC_NO);
-	if (*hdr == NULL) {
-	    if (sigs != NULL) headerFree(*sigs);
-	    return 2;
-	}
-
-	/* We switched the way we do relocateable packages. We fix some of
-	   it up here, though the install code still has to be a bit 
-	   careful. This fixup makes queries give the new values though,
-	   which is quite handy. */
-	if (headerGetEntry(*hdr, RPMTAG_DEFAULTPREFIX, NULL,
-			   (void **) &defaultPrefix, NULL)) {
-	    defaultPrefix = strcpy(alloca(strlen(defaultPrefix) + 1), 
-				   defaultPrefix);
-	    stripTrailingSlashes(defaultPrefix);
-	    headerAddEntry(*hdr, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
-			   &defaultPrefix, 1); 
-	}
-
-    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
-        if (lead->type == RPMLEAD_SOURCE) {
-	    if (!headerIsEntry(*hdr, RPMTAG_SOURCEPACKAGE))
-	    	headerAddEntry(*hdr, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,
-				&true, 1);
-	}
-    } else {
-	rpmError(RPMERR_NEWPACKAGE, _("only packages with major numbers <= 3 "
-		"are supported by this version of RPM"));
-	return 2;
-    } 
-
-    if (hdrPtr == NULL) headerFree(*hdr);
-    
-    return 0;
-}
-
-/* 0 = success */
-/* 1 = bad magic */
-/* 2 = error */
-int rpmReadPackageInfo(FD_t fd, Header * signatures, Header * hdr) {
-    return readPackageHeaders(fd, NULL, signatures, hdr);
-}
-
-/* 0 = success */
-/* 1 = bad magic */
-/* 2 = error */
-int rpmReadPackageHeader(FD_t fd, Header * hdr, int * isSource, int * major,
-		  int * minor) {
-    int rc;
-    struct rpmlead lead;
-
-    rc = readPackageHeaders(fd, &lead, NULL, hdr);
-    if (rc) return rc;
-   
-    if (isSource) *isSource = lead.type == RPMLEAD_SOURCE;
-    if (major) *major = lead.major;
-    if (minor) *minor = lead.minor;
-   
-    return 0;
-}
-
 static int readOldHeader(FD_t fd, Header * hdr, int * isSource) {
     struct oldrpmHeader oldheader;
     struct oldrpmHeaderSpec spec;
@@ -310,5 +185,138 @@ static int readOldHeader(FD_t fd, Header * hdr, int * isSource) {
 
     oldhdrFree(&oldheader);
 
+    return 0;
+}
+#endif	/* ENABLE_V1_PACKAGES */
+
+/* 0 = success */
+/* 1 = bad magic */
+/* 2 = error */
+static int readPackageHeaders(FD_t fd, struct rpmlead * leadPtr, 
+			      Header * sigs, Header * hdrPtr) {
+    Header hdrBlock;
+    struct rpmlead leadBlock;
+    Header * hdr;
+    struct rpmlead * lead;
+    int_8 arch;
+    int isSource;
+    char * defaultPrefix;
+    struct stat sb;
+    int_32 true = 1;
+
+    hdr = hdrPtr ? hdrPtr : &hdrBlock;
+    lead = leadPtr ? leadPtr : &leadBlock;
+
+    fstat(fdFileno(fd), &sb);
+    /* if fd points to a socket, pipe, etc, sb.st_size is *always* zero */
+    if (S_ISREG(sb.st_mode) && sb.st_size < sizeof(*lead)) return 1;
+
+    if (readLead(fd, lead)) {
+	return 2;
+    }
+
+    if (lead->magic[0] != RPMLEAD_MAGIC0 || lead->magic[1] != RPMLEAD_MAGIC1 ||
+	lead->magic[2] != RPMLEAD_MAGIC2 || lead->magic[3] != RPMLEAD_MAGIC3) {
+	return 1;
+    }
+
+    switch(lead->major) {
+#if defined(ENABLE_V1_PACKAGES)
+    case 1:
+	rpmMessage(RPMMESS_DEBUG, _("package is a version one package!\n"));
+
+	if (lead->type == RPMLEAD_SOURCE) {
+	    struct oldrpmlead * oldLead = (struct oldrpmlead *) lead;
+
+	    rpmMessage(RPMMESS_DEBUG, _("old style source package -- "
+			"I'll do my best\n"));
+	    oldLead->archiveOffset = ntohl(oldLead->archiveOffset);
+	    rpmMessage(RPMMESS_DEBUG, _("archive offset is %d\n"), 
+			oldLead->archiveOffset);
+	    (void)fdLseek(fd, oldLead->archiveOffset, SEEK_SET);
+	    
+	    /* we can't put togeher a header for old format source packages,
+	       there just isn't enough information there. We'll return
+	       NULL <gulp> */
+
+	    *hdr = NULL;
+	} else {
+	    rpmMessage(RPMMESS_DEBUG, _("old style binary package\n"));
+	    readOldHeader(fd, hdr, &isSource);
+	    arch = lead->archnum;
+	    headerAddEntry(*hdr, RPMTAG_ARCH, RPM_INT8_TYPE, &arch, 1);
+	    arch = 1;		  /* old versions of RPM only supported Linux */
+	    headerAddEntry(*hdr, RPMTAG_OS, RPM_INT8_TYPE, &arch, 1);
+	}
+	break;
+#endif	/* ENABLE_V1_PACKAGES */
+
+    case 2:
+    case 3:
+	if (rpmReadSignature(fd, sigs, lead->signature_type)) {
+	   return 2;
+	}
+	*hdr = headerRead(fd, (lead->major >= 3) ?
+			  HEADER_MAGIC_YES : HEADER_MAGIC_NO);
+	if (*hdr == NULL) {
+	    if (sigs != NULL) headerFree(*sigs);
+	    return 2;
+	}
+
+	/* We switched the way we do relocateable packages. We fix some of
+	   it up here, though the install code still has to be a bit 
+	   careful. This fixup makes queries give the new values though,
+	   which is quite handy. */
+	if (headerGetEntry(*hdr, RPMTAG_DEFAULTPREFIX, NULL,
+			   (void **) &defaultPrefix, NULL)) {
+	    defaultPrefix = strcpy(alloca(strlen(defaultPrefix) + 1), 
+				   defaultPrefix);
+	    stripTrailingSlashes(defaultPrefix);
+	    headerAddEntry(*hdr, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
+			   &defaultPrefix, 1); 
+	}
+
+    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
+        if (lead->type == RPMLEAD_SOURCE) {
+	    if (!headerIsEntry(*hdr, RPMTAG_SOURCEPACKAGE))
+	    	headerAddEntry(*hdr, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,
+				&true, 1);
+	}
+	break;
+
+    default:
+	rpmError(RPMERR_NEWPACKAGE, _("only packages with major numbers <= 3 "
+		"are supported by this version of RPM"));
+	return 2;
+	break;
+    } 
+
+    if (hdrPtr == NULL) headerFree(*hdr);
+    
+    return 0;
+}
+
+/* 0 = success */
+/* 1 = bad magic */
+/* 2 = error */
+int rpmReadPackageInfo(FD_t fd, Header * signatures, Header * hdr) {
+    return readPackageHeaders(fd, NULL, signatures, hdr);
+}
+
+/* 0 = success */
+/* 1 = bad magic */
+/* 2 = error */
+int rpmReadPackageHeader(FD_t fd, Header * hdr, int * isSource, int * major,
+		  int * minor) {
+    int rc;
+    struct rpmlead lead;
+
+    rc = readPackageHeaders(fd, &lead, NULL, hdr);
+    if (rc) return rc;
+   
+    if (isSource) *isSource = lead.type == RPMLEAD_SOURCE;
+    if (major) *major = lead.major;
+    if (minor) *minor = lead.minor;
+   
     return 0;
 }
