@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.22 2000/06/01 14:16:58 jbj Exp $
+# $Id: rpmrc.in,v 2.23 2000/06/02 19:46:53 jbj Exp $
 
 #############################################################
 
@@ -8,8 +8,8 @@
 # Values for RPM_OPT_FLAGS for various platforms
 
 optflags: i386 -O2 -m486 -fno-strength-reduce
-optflags: i486 -O2 -m486 -fno-strength-reduce
-optflags: i586 -O2 -m486 -fno-strength-reduce
+optflags: i486 -O2 -march=1486
+optflags: i586 -O2 -march=i586
 optflags: i686 -O2 -march=i686
 optflags: athlon -O2 -march=athlon
 optflags: ia64 -O2
