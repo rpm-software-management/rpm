@@ -71,6 +71,8 @@ static struct packageFieldsRec subpackageFields[] = {
     { RPMTAG_NAME,            0, 0 },
     { RPMTAG_COPYRIGHT,       0, 0 },
     { RPMTAG_PACKAGER,        0, 0 },
+    { RPMTAG_DEFAULTPREFIX,   0, 0 },
+    { RPMTAG_BUILDPREFIX,     0, 0 },
     { 0, 0, 0 },
 };
 
@@ -177,7 +179,7 @@ int verifySpec(Spec s)
 	    sprintf(name, "%s-%s", s->name, pr->subname);
 	}
 	printf("* Package: %s\n", name);
-	
+
 	if (checkHeaderTags(pr->header, fields)) {
 	    res = 1;
 	}
