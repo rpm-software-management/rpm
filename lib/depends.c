@@ -47,7 +47,8 @@ static void alCreate(struct availableList * al) {
 
 static void alFreeIndex(struct availableList * al) {
     if (al->index.size) {
-	free(al->index.index);
+	if (al->index.index)
+		free(al->index.index);
 	al->index.index = NULL;
 	al->index.size = 0;
     }
@@ -571,6 +572,7 @@ static int checkDependentConflicts(rpmTransactionSet rpmdep,
     }
 
     rc = checkPackageSet(rpmdep, psp, package, &matches);
+    dbiFreeIndexRecord(matches);
 
     return rc;
 }
@@ -903,7 +905,10 @@ int rpmdepOrder(rpmTransactionSet rpmdep, void *** keysListPtr) {
     }
 
     order[orderNum] = NULL;
-    *keysListPtr = order;
+    if (keysListPtr != NULL)
+	*keysListPtr = order;
+    else
+	free(order);
 
     return 0;
 }

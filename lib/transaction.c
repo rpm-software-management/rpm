@@ -174,6 +174,7 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 3, al->size, NULL, notifyData));
 	    continue;
 	}
 
+/* XXX FIXME: There is a memory leak here ... */
 	fi->actions = calloc(sizeof(*fi->actions), fi->fc);
 	fi->h = hdrs[alp - al->list] = relocateFileList(alp, probs, alp->h, 
 						         fi->actions);
@@ -232,7 +233,12 @@ NOTIFY((fi->h, RPMCALLBACK_TRANS_PROGRESS, i, ts->numRemovedPackages,
 	headerGetEntryMinMemory(fi->h, RPMTAG_FILESTATES, NULL, 
 				(void *) &fi->fstates, NULL);
 
+/* XXX FIXME: ... or there is a memory leak here ... */
 	/* Note that as FA_UNKNOWN = 0, this does the right thing */
+	if (fi->actions) {
+	    free(fi->actions);
+	    fi->actions = NULL;
+	}
 	fi->actions = calloc(sizeof(*fi->actions), fi->fc);
         fi->fps = alloca(fi->fc * sizeof(*fi->fps));
     }
@@ -281,6 +287,7 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - flList), flEntries,
 		shared->otherFileNum = matches[i].recs[j].fileNumber;
 		shared++;
 	    }
+	    dbiFreeIndexRecord(matches[i]);
 	}
 	shared->otherPkg = -1;
 	free(matches);
@@ -346,6 +353,7 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 8, al->size, NULL, notifyData));
 	    if (fi->fc) {
 		headerFree(hdrs[alp - al->list]);
 		free(fi->actions);
+		fi->actions = NULL;
 	    }
 	}
 
@@ -393,8 +401,10 @@ NOTIFY((NULL, RPMCALLBACK_TRANS_START, 9, al->size, NULL, notifyData));
 
 	headerFree(hdrs[alp - al->list]);
 
-	if (fi->fc)
+	if (fi->fc) {
 	    free(fi->actions);
+	    fi->actions = NULL;
+	}
 
 	if (!alp->fd && fd)
 	    notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0, alp->key, 
@@ -418,6 +428,17 @@ NOTIFY((fi->h, RPMCALLBACK_UNINST_PROGRESS, i, ts->numRemovedPackages,
     }
 NOTIFY((NULL, RPMCALLBACK_UNINST_STOP, 0, ts->numRemovedPackages,
     NULL, notifyData));
+
+/* XXX FIXME: ... or possibly there is a memory leak here. */
+    if (fi->actions) {
+	free(fi->actions);
+	fi->actions = NULL;
+    }
+/* XXX FIXME: This smells like a memory leak. */
+    if (fi->replaced) {
+	free(fi->replaced);
+	fi->replaced = NULL;
+    }
 
     if (ourrc) 
     	return -1;
