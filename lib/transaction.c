@@ -31,8 +31,9 @@ struct fileInfo {
 };
 
 static rpmProblemSet psCreate(void);
-static void psAppend(rpmProblemSet probs, rpmProblemType type, void * key, 
-		     Header h, char * str1, Header altHeader);
+static void psAppend(rpmProblemSet probs, rpmProblemType type, 
+		     const void * key, Header h, char * str1, 
+		     Header altHeader);
 static int archOkay(Header h);
 static int osOkay(Header h);
 static Header relocateFileList(struct availablePackage * alp, 
@@ -82,6 +83,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     int flEntries;
     int last;
     int beingRemoved;
+    char * currDir, * chptr;
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -198,6 +200,13 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	}
     }
 
+    chptr = currentDirectory();
+    currDir = alloca(strlen(chptr) + 1);
+    strcpy(currDir, chptr);
+    free(chptr);
+    chdir("/");
+    chroot(ts->root);
+
     for (pkgNum = 0, fi = flList; pkgNum < flEntries; pkgNum++, fi++) {
 	matches = malloc(sizeof(*matches) * fi->fc);
 	if (rpmdbFindFpList(ts->db, fi->fps, matches, fi->fc)) return 1;
@@ -247,6 +256,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 
 	handleOverlappedFiles(fi, ht, probs);
     }
+
+    chroot(".");
+    chdir(currDir);
 
     htFree(ht);
 
@@ -316,8 +328,8 @@ static rpmProblemSet psCreate(void) {
     return probs;
 }
 
-static void psAppend(rpmProblemSet probs, rpmProblemType type, void * key, 
-		     Header h, char * str1, Header altH) {
+static void psAppend(rpmProblemSet probs, rpmProblemType type, 
+		     const void * key, Header h, char * str1, Header altH) {
     if (probs->numProblems == probs->numProblemsAlloced) {
 	if (probs->numProblemsAlloced)
 	    probs->numProblemsAlloced *= 2;
