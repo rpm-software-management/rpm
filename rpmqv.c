@@ -343,11 +343,6 @@ static struct poptOption optionsTable[] = {
 #endif
 
 #ifdef	IAM_RPMQV
-#if 0
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
-	N_("Query/Verify options:"),
-	NULL },
-#endif
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQueryPoptTable, 0,
 	N_("Query options (with -q or --query):"),
 	NULL },
@@ -1058,7 +1053,7 @@ int main(int argc, const char ** argv)
     }
 
     if (qva->qva_sourceCount) {
-	if (qva->qva_sourceCount > 1)
+	if (qva->qva_sourceCount > 2)
 	    argerror(_("one type of query/verify may be performed at a "
 			"time"));
     }

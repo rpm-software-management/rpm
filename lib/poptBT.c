@@ -57,7 +57,6 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 {
     struct rpmBuildArguments * rba = &rpmBTArgs;
 
-fprintf(stderr, "*** buildArgCallback\n");
     switch (opt->val) {
     case POPT_REBUILD:
     case POPT_RECOMPILE:

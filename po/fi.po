@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-01-01 18:02-0500\n"
+"POT-Creation-Date: 2001-01-01 18:15-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -557,7 +557,7 @@ msgstr ""
 "tarkista paketin asennus k‰ytt‰en samoja paketin m‰‰rittelyparametrej‰ kuin "
 "-q "
 
-#: lib/poptBT.c:182 lib/verify.c:56 rpm.c:377 rpm.c:419 rpm.c:454 rpmqv.c:291
+#: lib/poptBT.c:181 lib/verify.c:56 rpm.c:377 rpm.c:419 rpm.c:454 rpmqv.c:291
 #: rpmqv.c:600 rpmqv.c:648 rpmqv.c:682
 msgid "do not verify package dependencies"
 msgstr "‰l‰ tarkista paketin riippuvuuksia"
@@ -763,15 +763,15 @@ msgstr "bin‰‰ripaketti (valmistele, k‰‰nn‰, asenna, paketoi)"
 msgid "bin/src package (prep, compile, install, package)"
 msgstr "bin/src-paketti (valmistele, k‰‰nn‰, asenna, paketoi)"
 
-#: lib/poptBT.c:193 rpm.c:480
+#: lib/poptBT.c:192 rpm.c:480
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "siirry suoraan m‰‰riteltyyn vaiheeseen (vain c ja i yhteydess‰)"
 
-#: lib/poptBT.c:174 rpm.c:482
+#: lib/poptBT.c:173 rpm.c:482
 msgid "remove build tree when done"
 msgstr "poista k‰‰nnˆspuu, kun valmis"
 
-#: lib/poptBT.c:189 rpm.c:484
+#: lib/poptBT.c:188 rpm.c:484
 #, fuzzy
 msgid "remove sources when done"
 msgstr "poista l‰hdekoodit ja m‰‰rittelytiedosto, kun valmis"
@@ -781,7 +781,7 @@ msgstr "poista l‰hdekoodit ja m‰‰rittelytiedosto, kun valmis"
 msgid "remove spec file when done"
 msgstr "poista l‰hdekoodit ja m‰‰rittelytiedosto, kun valmis"
 
-#: lib/poptBT.c:195 rpm.c:488 rpmqv.c:224
+#: lib/poptBT.c:194 rpm.c:488 rpmqv.c:224
 #, fuzzy
 msgid "generate PGP/GPG signature"
 msgstr "generoi PGP-allekirjoitus"
@@ -1282,7 +1282,7 @@ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: lib/poptBT.c:176 rpmqv.c:208
+#: lib/poptBT.c:175 rpmqv.c:208
 msgid "generate headers compatible with rpm4 packaging"
 msgstr ""
 
@@ -2975,135 +2975,135 @@ msgid ""
 msgstr ""
 "t‰m‰ versio RPM:st‰ tukee vain suuremmman kuin 3 versionumeron paketteja"
 
-#: lib/poptBT.c:95
+#: lib/poptBT.c:94
 msgid "buildroot already specified"
 msgstr ""
 
-#: lib/poptBT.c:121
+#: lib/poptBT.c:120
 #, fuzzy, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "valmistele (pura l‰hdekoodi ja tee korjaukset)"
 
-#: lib/poptBT.c:122 lib/poptBT.c:125 lib/poptBT.c:128 lib/poptBT.c:131
-#: lib/poptBT.c:134 lib/poptBT.c:137 lib/poptBT.c:140
+#: lib/poptBT.c:121 lib/poptBT.c:124 lib/poptBT.c:127 lib/poptBT.c:130
+#: lib/poptBT.c:133 lib/poptBT.c:136 lib/poptBT.c:139
 msgid "<specfile>"
 msgstr ""
 
-#: lib/poptBT.c:124
+#: lib/poptBT.c:123
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:127
+#: lib/poptBT.c:126
 #, fuzzy
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "asenna paketti"
 
-#: lib/poptBT.c:130
+#: lib/poptBT.c:129
 #, fuzzy, c-format
 msgid "verify %files section from <specfile>"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/poptBT.c:133
+#: lib/poptBT.c:132
 #, fuzzy
 msgid "build source and binary packages from <specfile>"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/poptBT.c:136
+#: lib/poptBT.c:135
 #, fuzzy
 msgid "build binary package only from <specfile>"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/poptBT.c:139
+#: lib/poptBT.c:138
 #, fuzzy
 msgid "build source package only from <specfile>"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/poptBT.c:143
+#: lib/poptBT.c:142
 #, fuzzy, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "valmistele (pura l‰hdekoodi ja tee korjaukset)"
 
-#: lib/poptBT.c:144 lib/poptBT.c:147 lib/poptBT.c:150 lib/poptBT.c:153
-#: lib/poptBT.c:156 lib/poptBT.c:159 lib/poptBT.c:162
+#: lib/poptBT.c:143 lib/poptBT.c:146 lib/poptBT.c:149 lib/poptBT.c:152
+#: lib/poptBT.c:155 lib/poptBT.c:158 lib/poptBT.c:161
 msgid "<tarball>"
 msgstr ""
 
-#: lib/poptBT.c:146
+#: lib/poptBT.c:145
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:149
+#: lib/poptBT.c:148
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:152
+#: lib/poptBT.c:151
 #, fuzzy, c-format
 msgid "verify %files section from <tarball>"
 msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 
-#: lib/poptBT.c:155
+#: lib/poptBT.c:154
 #, fuzzy
 msgid "build source and binary packages from <tarball>"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/poptBT.c:158
+#: lib/poptBT.c:157
 #, fuzzy
 msgid "build binary package only from <tarball>"
 msgstr "ryhm‰ss‰ %s ei ole paketteja\n"
 
-#: lib/poptBT.c:161
+#: lib/poptBT.c:160
 #, fuzzy
 msgid "build source package only from <tarball>"
 msgstr "k‰‰nn‰ paketit k‰yttˆj‰rjestelm‰lle <kj>"
 
-#: lib/poptBT.c:165
+#: lib/poptBT.c:164
 #, fuzzy
 msgid "build binary package from <source package>"
 msgstr "bin‰‰ripaketti (valmistele, k‰‰nn‰, asenna, paketoi)"
 
-#: lib/poptBT.c:166 lib/poptBT.c:169
+#: lib/poptBT.c:165 lib/poptBT.c:168
 #, fuzzy
 msgid "<source package>"
 msgstr "kysele kaikki paketit"
 
-#: lib/poptBT.c:168
+#: lib/poptBT.c:167
 #, fuzzy
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "asenna paketti"
 
-#: lib/poptBT.c:172
+#: lib/poptBT.c:171
 #, fuzzy
 msgid "override build root"
 msgstr "k‰yt‰ <hakem> k‰‰nnˆspuun juurena"
 
-#: lib/poptBT.c:178
+#: lib/poptBT.c:177
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr ""
 
-#: lib/poptBT.c:180
+#: lib/poptBT.c:179
 #, fuzzy
 msgid "do not execute any stages of the build"
 msgstr "‰l‰ suorita mit‰‰n vaiheita"
 
-#: lib/poptBT.c:184
+#: lib/poptBT.c:183
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: lib/poptBT.c:187
+#: lib/poptBT.c:186
 msgid "do not accept i18N msgstr's from specfile"
 msgstr ""
 
-#: lib/poptBT.c:191
+#: lib/poptBT.c:190
 #, fuzzy
 msgid "remove specfile when done"
 msgstr "poista l‰hdekoodit ja m‰‰rittelytiedosto, kun valmis"
 
-#: lib/poptBT.c:197
+#: lib/poptBT.c:196
 msgid "override target platform"
 msgstr ""
 
-#: lib/poptBT.c:199
+#: lib/poptBT.c:198
 msgid "lookup i18N strings in specfile catalog"
 msgstr ""
 

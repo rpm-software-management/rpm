@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-01 18:02-0500\n"
+"POT-Creation-Date: 2001-01-01 18:15-0500\n"
 "PO-Revision-Date: 2000-08-23 22:24+0100\n"
 "Last-Translator: Milan Kerslager <milan.kerslager@spsselib.hiedu.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -523,7 +523,7 @@ msgstr ""
 "ovìøit instalaci balíèku pou¾itím stejných voleb pro specifikaci balíèku, "
 "jako pro -q"
 
-#: lib/poptBT.c:182 lib/verify.c:56 rpm.c:377 rpm.c:419 rpm.c:454 rpmqv.c:291
+#: lib/poptBT.c:181 lib/verify.c:56 rpm.c:377 rpm.c:419 rpm.c:454 rpmqv.c:291
 #: rpmqv.c:600 rpmqv.c:648 rpmqv.c:682
 msgid "do not verify package dependencies"
 msgstr "nekontrolovat závislosti balíèkù"
@@ -722,15 +722,15 @@ msgstr "binární balíèek (pøíprava, kompilace, instalace, zabalení)"
 msgid "bin/src package (prep, compile, install, package)"
 msgstr "bin/src balíèek (pøíprava, kompilace, instalace, zabalení)"
 
-#: lib/poptBT.c:193 rpm.c:480
+#: lib/poptBT.c:192 rpm.c:480
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "pøeskoèit pøímo na urèenou etapu (pouze pro c,i)"
 
-#: lib/poptBT.c:174 rpm.c:482
+#: lib/poptBT.c:173 rpm.c:482
 msgid "remove build tree when done"
 msgstr "po dokonèení odstranit sestavovací strom"
 
-#: lib/poptBT.c:189 rpm.c:484
+#: lib/poptBT.c:188 rpm.c:484
 msgid "remove sources when done"
 msgstr "po dokonèení odstranit zdrojové kódy"
 
@@ -738,7 +738,7 @@ msgstr "po dokonèení odstranit zdrojové kódy"
 msgid "remove spec file when done"
 msgstr "po dokonèení odstranit spec soubor"
 
-#: lib/poptBT.c:195 rpm.c:488 rpmqv.c:224
+#: lib/poptBT.c:194 rpm.c:488 rpmqv.c:224
 msgid "generate PGP/GPG signature"
 msgstr "generovat PGP/GPG podpis"
 
@@ -1215,7 +1215,7 @@ msgstr "znovu vytvoøit databázi z existujících databázových hlavièek"
 msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: lib/poptBT.c:176 rpmqv.c:208
+#: lib/poptBT.c:175 rpmqv.c:208
 msgid "generate headers compatible with rpm4 packaging"
 msgstr ""
 
@@ -2854,136 +2854,136 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
 msgstr "tato verze RPM podporuje práci s balíèky s hlavním (major) èíslem <= 4"
 
-#: lib/poptBT.c:95
+#: lib/poptBT.c:94
 msgid "buildroot already specified"
 msgstr "buildroot ji¾ byl nastaven"
 
-#: lib/poptBT.c:121
+#: lib/poptBT.c:120
 #, fuzzy, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "pøíprava (rozbalí zdroje a aplikuje záplaty)"
 
-#: lib/poptBT.c:122 lib/poptBT.c:125 lib/poptBT.c:128 lib/poptBT.c:131
-#: lib/poptBT.c:134 lib/poptBT.c:137 lib/poptBT.c:140
+#: lib/poptBT.c:121 lib/poptBT.c:124 lib/poptBT.c:127 lib/poptBT.c:130
+#: lib/poptBT.c:133 lib/poptBT.c:136 lib/poptBT.c:139
 msgid "<specfile>"
 msgstr ""
 
-#: lib/poptBT.c:124
+#: lib/poptBT.c:123
 #, fuzzy
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr "provádím %%prep èást podle spec souboru"
 
-#: lib/poptBT.c:127
+#: lib/poptBT.c:126
 #, fuzzy
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "provádím %%install èást podle spec souboru"
 
-#: lib/poptBT.c:130
+#: lib/poptBT.c:129
 #, fuzzy, c-format
 msgid "verify %files section from <specfile>"
 msgstr "kontrola èásti %%files ve spec souboru"
 
-#: lib/poptBT.c:133
+#: lib/poptBT.c:132
 #, fuzzy
 msgid "build source and binary packages from <specfile>"
 msgstr "vytvoøení zdrojového a binárního balíèku podle spec souboru"
 
-#: lib/poptBT.c:136
+#: lib/poptBT.c:135
 #, fuzzy
 msgid "build binary package only from <specfile>"
 msgstr "vytvoøení binárního balíèku podle spec souboru"
 
-#: lib/poptBT.c:139
+#: lib/poptBT.c:138
 #, fuzzy
 msgid "build source package only from <specfile>"
 msgstr "vytvoøení zdrojového balíèku podle spec souboru"
 
-#: lib/poptBT.c:143
+#: lib/poptBT.c:142
 #, fuzzy, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "pøíprava (rozbalí zdroje a aplikuje záplaty)"
 
-#: lib/poptBT.c:144 lib/poptBT.c:147 lib/poptBT.c:150 lib/poptBT.c:153
-#: lib/poptBT.c:156 lib/poptBT.c:159 lib/poptBT.c:162
+#: lib/poptBT.c:143 lib/poptBT.c:146 lib/poptBT.c:149 lib/poptBT.c:152
+#: lib/poptBT.c:155 lib/poptBT.c:158 lib/poptBT.c:161
 msgid "<tarball>"
 msgstr ""
 
-#: lib/poptBT.c:146
+#: lib/poptBT.c:145
 #, fuzzy
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "provádím %%prep èást z tar souboru"
 
-#: lib/poptBT.c:149
+#: lib/poptBT.c:148
 #, fuzzy
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr "provádím %%install èást z tar souboru"
 
-#: lib/poptBT.c:152
+#: lib/poptBT.c:151
 #, fuzzy, c-format
 msgid "verify %files section from <tarball>"
 msgstr "kontrola èásti %%files z tar souboru"
 
-#: lib/poptBT.c:155
+#: lib/poptBT.c:154
 #, fuzzy
 msgid "build source and binary packages from <tarball>"
 msgstr "vytvoøení zdrojového a binárního balíèku z tar souboru"
 
-#: lib/poptBT.c:158
+#: lib/poptBT.c:157
 #, fuzzy
 msgid "build binary package only from <tarball>"
 msgstr "vytvoøení binárního balíèku z tar souboru"
 
-#: lib/poptBT.c:161
+#: lib/poptBT.c:160
 #, fuzzy
 msgid "build source package only from <tarball>"
 msgstr "vytvoøení zdrojového balíèku z tar souboru"
 
-#: lib/poptBT.c:165
+#: lib/poptBT.c:164
 #, fuzzy
 msgid "build binary package from <source package>"
 msgstr "vytvoøení binárního balíèku ze zdrojového"
 
-#: lib/poptBT.c:166 lib/poptBT.c:169
+#: lib/poptBT.c:165 lib/poptBT.c:168
 #, fuzzy
 msgid "<source package>"
 msgstr "¾ádné balíèky\n"
 
-#: lib/poptBT.c:168
+#: lib/poptBT.c:167
 #, fuzzy
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "provádím %%install èást ze zdrojového balíèku"
 
-#: lib/poptBT.c:172
+#: lib/poptBT.c:171
 msgid "override build root"
 msgstr "build root pøedefinován"
 
-#: lib/poptBT.c:178
+#: lib/poptBT.c:177
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr ""
 
-#: lib/poptBT.c:180
+#: lib/poptBT.c:179
 msgid "do not execute any stages of the build"
 msgstr "nespou¹tìt ¾ádné etapy vytváøení balíèku"
 
-#: lib/poptBT.c:184
+#: lib/poptBT.c:183
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: lib/poptBT.c:187
+#: lib/poptBT.c:186
 #, fuzzy
 msgid "do not accept i18N msgstr's from specfile"
 msgstr "ignorovat I18N zprávy ve spec souboru"
 
-#: lib/poptBT.c:191
+#: lib/poptBT.c:190
 msgid "remove specfile when done"
 msgstr "po dokonèení odstranit spec soubor"
 
-#: lib/poptBT.c:197
+#: lib/poptBT.c:196
 msgid "override target platform"
 msgstr "cílová platforma pøedefinována"
 
-#: lib/poptBT.c:199
+#: lib/poptBT.c:198
 #, fuzzy
 msgid "lookup i18N strings in specfile catalog"
 msgstr "vyhledat I18N øetìzce katalogu spec souboru"

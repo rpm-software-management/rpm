@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-01-01 18:02-0500\n"
+"POT-Creation-Date: 2001-01-01 19:05-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -503,7 +503,7 @@ msgid ""
 "options as -q"
 msgstr ""
 
-#: lib/poptBT.c:182 lib/verify.c:56 rpm.c:377 rpm.c:419 rpm.c:454 rpmqv.c:291
+#: lib/poptBT.c:181 lib/verify.c:56 rpm.c:377 rpm.c:419 rpm.c:454 rpmqv.c:291
 #: rpmqv.c:600 rpmqv.c:648 rpmqv.c:682
 msgid "do not verify package dependencies"
 msgstr ""
@@ -697,15 +697,15 @@ msgstr ""
 msgid "bin/src package (prep, compile, install, package)"
 msgstr ""
 
-#: lib/poptBT.c:193 rpm.c:480
+#: lib/poptBT.c:192 rpm.c:480
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: lib/poptBT.c:174 rpm.c:482
+#: lib/poptBT.c:173 rpm.c:482
 msgid "remove build tree when done"
 msgstr ""
 
-#: lib/poptBT.c:189 rpm.c:484
+#: lib/poptBT.c:188 rpm.c:484
 msgid "remove sources when done"
 msgstr ""
 
@@ -713,7 +713,7 @@ msgstr ""
 msgid "remove spec file when done"
 msgstr ""
 
-#: lib/poptBT.c:195 rpm.c:488 rpmqv.c:224
+#: lib/poptBT.c:194 rpm.c:488 rpmqv.c:224
 msgid "generate PGP/GPG signature"
 msgstr ""
 
@@ -824,37 +824,37 @@ msgid ""
 msgstr ""
 
 #: rpm.c:671 rpm.c:677 rpm.c:686 rpm.c:708 rpm.c:714 rpm.c:721 rpm.c:729
-#: rpm.c:737 rpm.c:758 rpm.c:821 rpmqv.c:894 rpmqv.c:903 rpmqv.c:909
-#: rpmqv.c:915 rpmqv.c:922 rpmqv.c:957 rpmqv.c:965 rpmqv.c:971 rpmqv.c:979
-#: rpmqv.c:1047
+#: rpm.c:737 rpm.c:758 rpm.c:821 rpmqv.c:896 rpmqv.c:905 rpmqv.c:911
+#: rpmqv.c:917 rpmqv.c:924 rpmqv.c:959 rpmqv.c:967 rpmqv.c:973 rpmqv.c:981
+#: rpmqv.c:1049
 msgid "only one major mode may be specified"
 msgstr ""
 
-#: rpm.c:679 rpmqv.c:896
+#: rpm.c:679 rpmqv.c:898
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr ""
 
-#: rpm.c:681 rpmqv.c:898
+#: rpm.c:681 rpmqv.c:900
 msgid "Use -e or --erase instead.\n"
 msgstr ""
 
-#: rpm.c:764 rpmqv.c:941
+#: rpm.c:764 rpmqv.c:943
 msgid "relocations must begin with a /"
 msgstr ""
 
-#: rpm.c:766 rpmqv.c:943
+#: rpm.c:766 rpmqv.c:945
 msgid "relocations must contain a ="
 msgstr ""
 
-#: rpm.c:769 rpmqv.c:946
+#: rpm.c:769 rpmqv.c:948
 msgid "relocations must have a / following the ="
 msgstr ""
 
-#: rpm.c:778 rpmqv.c:930
+#: rpm.c:778 rpmqv.c:932
 msgid "exclude paths must begin with a /"
 msgstr ""
 
-#: rpm.c:787 rpmqv.c:1000
+#: rpm.c:787 rpmqv.c:1002
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
@@ -862,105 +862,105 @@ msgstr ""
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
 
-#: rpm.c:793 rpmqv.c:1006
+#: rpm.c:793 rpmqv.c:1008
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: rpm.c:828 rpmqv.c:1062
+#: rpm.c:828 rpmqv.c:1065
 msgid "one type of query/verify may be performed at a time"
 msgstr ""
 
-#: rpm.c:833 rpmqv.c:1066
+#: rpm.c:833 rpmqv.c:1069
 msgid "unexpected query flags"
 msgstr ""
 
-#: rpm.c:836 rpmqv.c:1069
+#: rpm.c:836 rpmqv.c:1072
 msgid "unexpected query format"
 msgstr ""
 
-#: rpm.c:839 rpmqv.c:1072
+#: rpm.c:839 rpmqv.c:1075
 msgid "unexpected query source"
 msgstr ""
 
-#: rpm.c:842 rpmqv.c:1082
+#: rpm.c:842 rpmqv.c:1085
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 
-#: rpm.c:845 rpmqv.c:1087
+#: rpm.c:845 rpmqv.c:1090
 msgid "files may only be relocated during package installation"
 msgstr ""
 
-#: rpm.c:848 rpmqv.c:1090
+#: rpm.c:848 rpmqv.c:1093
 msgid "only one of --prefix or --relocate may be used"
 msgstr ""
 
-#: rpm.c:851 rpmqv.c:1093
+#: rpm.c:851 rpmqv.c:1096
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 
-#: rpm.c:854 rpmqv.c:1096
+#: rpm.c:854 rpmqv.c:1099
 msgid "--prefix may only be used when installing new packages"
 msgstr ""
 
-#: rpm.c:857 rpmqv.c:1099
+#: rpm.c:857 rpmqv.c:1102
 msgid "arguments to --prefix must begin with a /"
 msgstr ""
 
-#: rpm.c:860 rpmqv.c:1102
+#: rpm.c:860 rpmqv.c:1105
 msgid "--hash (-h) may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:864 rpmqv.c:1106
+#: rpm.c:864 rpmqv.c:1109
 msgid "--percent may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:868 rpmqv.c:1110
+#: rpm.c:868 rpmqv.c:1113
 msgid "--replacefiles may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:872 rpmqv.c:1114
+#: rpm.c:872 rpmqv.c:1117
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:876 rpmqv.c:1118
+#: rpm.c:876 rpmqv.c:1121
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:880 rpmqv.c:1122
+#: rpm.c:880 rpmqv.c:1125
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:884 rpmqv.c:1126
+#: rpm.c:884 rpmqv.c:1129
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 
-#: rpm.c:888 rpmqv.c:1130
+#: rpm.c:888 rpmqv.c:1133
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:892 rpmqv.c:1134
+#: rpm.c:892 rpmqv.c:1137
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:896 rpmqv.c:1138
+#: rpm.c:896 rpmqv.c:1141
 msgid "--ignoresize may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:900 rpmqv.c:1142
+#: rpm.c:900 rpmqv.c:1145
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 
-#: rpm.c:904 rpmqv.c:1146
+#: rpm.c:904 rpmqv.c:1149
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:908 rpmqv.c:1150
+#: rpm.c:908 rpmqv.c:1153
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 
-#: rpm.c:913 rpmqv.c:1157
+#: rpm.c:913 rpmqv.c:1160
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
@@ -972,115 +972,115 @@ msgid ""
 "verification"
 msgstr ""
 
-#: rpm.c:921 rpmqv.c:1167
+#: rpm.c:921 rpmqv.c:1170
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
 msgstr ""
 
-#: rpm.c:926 rpmqv.c:1172
+#: rpm.c:926 rpmqv.c:1175
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 
-#: rpm.c:930 rpmqv.c:1177
+#: rpm.c:930 rpmqv.c:1180
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
 
-#: rpm.c:942 rpmqv.c:1189
+#: rpm.c:942 rpmqv.c:1192
 msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
-#: rpm.c:948 rpmqv.c:1196
+#: rpm.c:948 rpmqv.c:1199
 msgid "--oldpackage may only be used during upgrades"
 msgstr ""
 
-#: rpm.c:951 rpmqv.c:1201
+#: rpm.c:951 rpmqv.c:1204
 msgid "--nopgp may only be used during signature checking"
 msgstr ""
 
-#: rpm.c:954 rpmqv.c:1204
+#: rpm.c:954 rpmqv.c:1207
 msgid "--nogpg may only be used during signature checking"
 msgstr ""
 
-#: rpm.c:957 rpmqv.c:1209
+#: rpm.c:957 rpmqv.c:1212
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 
-#: rpm.c:968 rpmqv.c:1225
+#: rpm.c:968 rpmqv.c:1228
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpm.c:973 rpmqv.c:1230
+#: rpm.c:973 rpmqv.c:1233
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: rpm.c:988 rpmqv.c:1246
+#: rpm.c:988 rpmqv.c:1249
 msgid "pgp not found: "
 msgstr ""
 
-#: rpm.c:992 rpmqv.c:1250
+#: rpm.c:992 rpmqv.c:1253
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpm.c:994 rpmqv.c:1252
+#: rpm.c:994 rpmqv.c:1255
 msgid "Pass phrase check failed\n"
 msgstr ""
 
-#: rpm.c:997 rpmqv.c:1255
+#: rpm.c:997 rpmqv.c:1258
 msgid "Pass phrase is good.\n"
 msgstr ""
 
-#: rpm.c:1002 rpmqv.c:1260
+#: rpm.c:1002 rpmqv.c:1263
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpm.c:1008 rpmqv.c:1266
+#: rpm.c:1008 rpmqv.c:1269
 msgid "--sign may only be used during package building"
 msgstr ""
 
-#: rpm.c:1023 rpmqv.c:1282
+#: rpm.c:1023 rpmqv.c:1285
 msgid "exec failed\n"
 msgstr ""
 
-#: rpm.c:1042 rpmqv.c:1552
+#: rpm.c:1042 rpmqv.c:1555
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: rpm.c:1053 rpmqv.c:1574
+#: rpm.c:1053 rpmqv.c:1577
 msgid "no packages given for signature check"
 msgstr ""
 
-#: rpm.c:1064 rpmqv.c:1585
+#: rpm.c:1064 rpmqv.c:1588
 msgid "no packages given for signing"
 msgstr ""
 
-#: rpm.c:1080 rpmqv.c:1422
+#: rpm.c:1080 rpmqv.c:1425
 msgid "no packages given for uninstall"
 msgstr ""
 
-#: rpm.c:1131 rpmqv.c:1473
+#: rpm.c:1131 rpmqv.c:1476
 msgid "no packages given for install"
 msgstr ""
 
-#: rpm.c:1154 rpmqv.c:1513
+#: rpm.c:1154 rpmqv.c:1516
 msgid "extra arguments given for query of all packages"
 msgstr ""
 
-#: rpm.c:1159 rpmqv.c:1518
+#: rpm.c:1159 rpmqv.c:1521
 msgid "no arguments given for query"
 msgstr ""
 
-#: rpm.c:1176 rpmqv.c:1540
+#: rpm.c:1176 rpmqv.c:1543
 msgid "extra arguments given for verify of all packages"
 msgstr ""
 
-#: rpm.c:1180 rpmqv.c:1544
+#: rpm.c:1180 rpmqv.c:1547
 msgid "no arguments given for verify"
 msgstr ""
 
@@ -1170,7 +1170,7 @@ msgstr ""
 msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: lib/poptBT.c:176 rpmqv.c:208
+#: lib/poptBT.c:175 rpmqv.c:208
 msgid "generate headers compatible with rpm4 packaging"
 msgstr ""
 
@@ -1376,7 +1376,7 @@ msgstr ""
 msgid "  Package specification options:"
 msgstr ""
 
-#: lib/poptQV.c:68 rpmqv.c:556
+#: lib/poptQV.c:69 rpmqv.c:556
 msgid "query/verify all packages"
 msgstr ""
 
@@ -1504,28 +1504,28 @@ msgstr ""
 msgid "rebuild database indices from existing database headers"
 msgstr ""
 
-#: rpmqv.c:1001
+#: rpmqv.c:1003
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr ""
 
-#: rpmqv.c:1076
+#: rpmqv.c:1079
 msgid "--dbpath given for operation that does not use a database"
 msgstr ""
 
-#: rpmqv.c:1163
+#: rpmqv.c:1166
 msgid ""
 "--notriggers may only be specified during package installation and erasure"
 msgstr ""
 
-#: rpmqv.c:1322
+#: rpmqv.c:1325
 msgid "no packages files given for rebuild"
 msgstr ""
 
-#: rpmqv.c:1391
+#: rpmqv.c:1394
 msgid "no spec files given for build"
 msgstr ""
 
-#: rpmqv.c:1393
+#: rpmqv.c:1396
 msgid "no tar files given for build"
 msgstr ""
 
@@ -2776,202 +2776,202 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
 msgstr ""
 
-#: lib/poptBT.c:95
+#: lib/poptBT.c:94
 msgid "buildroot already specified"
 msgstr ""
 
-#: lib/poptBT.c:121
+#: lib/poptBT.c:120
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:122 lib/poptBT.c:125 lib/poptBT.c:128 lib/poptBT.c:131
-#: lib/poptBT.c:134 lib/poptBT.c:137 lib/poptBT.c:140
+#: lib/poptBT.c:121 lib/poptBT.c:124 lib/poptBT.c:127 lib/poptBT.c:130
+#: lib/poptBT.c:133 lib/poptBT.c:136 lib/poptBT.c:139
 msgid "<specfile>"
 msgstr ""
 
-#: lib/poptBT.c:124
+#: lib/poptBT.c:123
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:127
+#: lib/poptBT.c:126
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:130
+#: lib/poptBT.c:129
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:133
+#: lib/poptBT.c:132
 msgid "build source and binary packages from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:136
+#: lib/poptBT.c:135
 msgid "build binary package only from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:139
+#: lib/poptBT.c:138
 msgid "build source package only from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:143
+#: lib/poptBT.c:142
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:144 lib/poptBT.c:147 lib/poptBT.c:150 lib/poptBT.c:153
-#: lib/poptBT.c:156 lib/poptBT.c:159 lib/poptBT.c:162
+#: lib/poptBT.c:143 lib/poptBT.c:146 lib/poptBT.c:149 lib/poptBT.c:152
+#: lib/poptBT.c:155 lib/poptBT.c:158 lib/poptBT.c:161
 msgid "<tarball>"
 msgstr ""
 
-#: lib/poptBT.c:146
+#: lib/poptBT.c:145
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:149
+#: lib/poptBT.c:148
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:152
+#: lib/poptBT.c:151
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:155
+#: lib/poptBT.c:154
 msgid "build source and binary packages from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:158
+#: lib/poptBT.c:157
 msgid "build binary package only from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:161
+#: lib/poptBT.c:160
 msgid "build source package only from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:165
+#: lib/poptBT.c:164
 msgid "build binary package from <source package>"
 msgstr ""
 
-#: lib/poptBT.c:166 lib/poptBT.c:169
+#: lib/poptBT.c:165 lib/poptBT.c:168
 msgid "<source package>"
 msgstr ""
 
-#: lib/poptBT.c:168
+#: lib/poptBT.c:167
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 
-#: lib/poptBT.c:172
+#: lib/poptBT.c:171
 msgid "override build root"
 msgstr ""
 
-#: lib/poptBT.c:178
+#: lib/poptBT.c:177
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr ""
 
-#: lib/poptBT.c:180
+#: lib/poptBT.c:179
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: lib/poptBT.c:184
+#: lib/poptBT.c:183
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: lib/poptBT.c:187
+#: lib/poptBT.c:186
 msgid "do not accept i18N msgstr's from specfile"
 msgstr ""
 
-#: lib/poptBT.c:191
+#: lib/poptBT.c:190
 msgid "remove specfile when done"
 msgstr ""
 
-#: lib/poptBT.c:197
+#: lib/poptBT.c:196
 msgid "override target platform"
 msgstr ""
 
-#: lib/poptBT.c:199
+#: lib/poptBT.c:198
 msgid "lookup i18N strings in specfile catalog"
 msgstr ""
 
-#: lib/poptQV.c:70
+#: lib/poptQV.c:71
 msgid "query/verify package(s) owning file"
 msgstr ""
 
-#: lib/poptQV.c:72
+#: lib/poptQV.c:73
 msgid "query/verify package(s) in group"
 msgstr ""
 
-#: lib/poptQV.c:74
+#: lib/poptQV.c:75
 msgid "query/verify a package file (i.e. a binary *.rpm file)"
 msgstr ""
 
-#: lib/poptQV.c:76
+#: lib/poptQV.c:77
 msgid "rpm query mode"
 msgstr ""
 
-#: lib/poptQV.c:80
+#: lib/poptQV.c:81
 msgid "display known query tags"
 msgstr ""
 
-#: lib/poptQV.c:82
+#: lib/poptQV.c:83
 msgid "query a spec file"
 msgstr ""
 
-#: lib/poptQV.c:82
+#: lib/poptQV.c:83
 msgid "<spec>"
 msgstr ""
 
-#: lib/poptQV.c:84
+#: lib/poptQV.c:85
 msgid "query the package(s) triggered by the package"
 msgstr ""
 
-#: lib/poptQV.c:86
+#: lib/poptQV.c:87
 msgid "rpm verify mode"
 msgstr ""
 
-#: lib/poptQV.c:88
+#: lib/poptQV.c:89
 msgid "rpm verify mode (legacy)"
 msgstr ""
 
-#: lib/poptQV.c:90
+#: lib/poptQV.c:91
 msgid "query/verify the package(s) which require a dependency"
 msgstr ""
 
-#: lib/poptQV.c:92
+#: lib/poptQV.c:93
 msgid "query/verify the package(s) which provide a dependency"
 msgstr ""
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:136
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:138
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:140
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:142
 msgid "list files in package"
 msgstr ""
 
-#: lib/poptQV.c:144
+#: lib/poptQV.c:146
 msgid "use the following query format"
 msgstr ""
 
-#: lib/poptQV.c:146
+#: lib/poptQV.c:148
 msgid "substitute i18n sections into spec file"
 msgstr ""
 
-#: lib/poptQV.c:148
+#: lib/poptQV.c:150
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/poptQV.c:150
+#: lib/poptQV.c:152
 msgid "display a verbose file listing"
 msgstr ""
 
