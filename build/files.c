@@ -821,10 +821,15 @@ static void genCpioListAndHeader(struct FileList *fl,
 	/* Make the cpio list */
 	if (! (flp->flags & RPMFILE_GHOST)) {
 	    clp->fsPath = xstrdup(flp->diskURL);
-	    {	char * t = buf;
+	    if (isSrc) {
+		clp->archivePath = xstrdup(flp->fileURL + skipLen);
+	    } else {
+		char * t = buf;
 		t = stpcpy(t, "./");
 		t = stpcpy(t, (flp->fileURL + skipLen));
 		clp->archivePath = xstrdup(buf);
+		/* Adding "./" prefix has legacy issues. */
+		rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
 	    }
 	    clp->finalMode = flp->fl_mode;
 	    clp->finalUid = flp->fl_uid;

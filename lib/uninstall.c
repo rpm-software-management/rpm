@@ -393,7 +393,12 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
     }
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmError(RPMERR_SCRIPT, _("execution of script failed"));
+	const char *n, *v, *r;
+	/* XXX FIXME: need to identify what script failed as well. */
+	headerNVR(h, &n, &v, &r);
+	rpmError(RPMERR_SCRIPT,
+		_("execution of %s-%s-%s script failed, exit status %d"),
+		n, v, r, WEXITSTATUS(status));
 	return 1;
     }
 

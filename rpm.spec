@@ -5,7 +5,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.47
+Release: 0.48
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -254,6 +254,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Jul 10 2000 Jeff Johnson <jbj@redhat.com>
+- identify package when install scriptlet fails (#12448).
+- remove build mode help from rpm.c, use rpmb instead.
+- support for rpmlib(...) internal feature dependencies.
+
 * Sun Jul  9 2000 Jeff Johnson <jbj@redhat.com>
 - add pre-transaction syscall's to handle /etc/init.d change.
 - don't bother saving '/' as fingerprint subdir.

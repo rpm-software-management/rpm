@@ -298,12 +298,20 @@ int writeRPM(Header h, const char *fileName, int type,
 		&csa->cpioArchiveSize, 1);
     }
 
+    /* Choose how filenames are represented. */
     if (_noDirTokens)
 	expandFilelist(h);
-    else
-    	compressFilelist(h);
+    else {
+	/* Binary packages with dirNames cannot be installed by legacy rpm. */
+	if (type == RPMLEAD_BINARY) {
+	    compressFilelist(h);
+	    rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
+	}
+    }
 
-    providePackageNVR(h);
+    /* Binary packages now have explicit Provides: name = version-release. */
+    if (type == RPMLEAD_BINARY)
+	providePackageNVR(h);
 
     /* Save payload information */
     switch(type) {
@@ -328,10 +336,7 @@ int writeRPM(Header h, const char *fileName, int type,
 	    headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
 		"bzip2", 1);
 	    /* Add prereq on rpm version that understands bzip2 payloads */
-	    /* XXX 1st arg is unused */
-	    addReqProv(NULL, h,
-			RPMSENSE_PREREQ|(RPMSENSE_GREATER|RPMSENSE_EQUAL),
-			"rpm", "3.0.5", 0);
+	    rpmlibNeedsFeature(h, "PayloadIsBzip2", "3.0.5-1");
 	}
 	strcpy(buf, rpmio_flags);
 	buf[s - rpmio_flags] = '\0';

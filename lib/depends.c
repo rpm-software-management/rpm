@@ -424,7 +424,7 @@ const char *rpmNAME = PACKAGE;
 const char *rpmEVR = VERSION;
 int rpmFLAGS = RPMSENSE_EQUAL;
 
-static int rangesOverlap(const char *AName, const char *AEVR, int AFlags,
+int rpmRangesOverlap(const char *AName, const char *AEVR, int AFlags,
 	const char *BName, const char *BEVR, int BFlags)
 {
     const char *aDepend = printDepend(NULL, AName, AEVR, AFlags);
@@ -540,7 +540,7 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
 	if (strcmp(provides[i], reqName))
 	    continue;
 
-	result = rangesOverlap(provides[i], providesEVR[i], provideFlags[i],
+	result = rpmRangesOverlap(provides[i], providesEVR[i], provideFlags[i],
 			reqName, reqEVR, reqFlags);
 
 	/* If this provide matches the require, we're done. */
@@ -579,7 +579,7 @@ int headerMatchesDepFlags(Header h,
     }
     (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
 
-    return rangesOverlap(name, pkgEVR, pkgFlags, reqName, reqEVR, reqFlags);
+    return rpmRangesOverlap(name, pkgEVR, pkgFlags, reqName, reqEVR, reqFlags);
 
 }
 
@@ -880,7 +880,7 @@ alFileSatisfiesDepend(struct availableList * al,
 		t++;
 	}
 	(void) stpcpy( stpcpy( stpcpy(t, p->version) , "-") , p->release);
-	rc = rangesOverlap(p->name, pEVR, pFlags, keyName, keyEVR, keyFlags);
+	rc = rpmRangesOverlap(p->name, pEVR, pFlags, keyName, keyEVR, keyFlags);
 	if (keyType && keyDepend && rc)
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added package)\n"),
 			keyType, keyDepend+2);
@@ -900,7 +900,7 @@ alFileSatisfiesDepend(struct availableList * al,
 
 	    proEVR = (p->providesEVR ? p->providesEVR[i] : NULL);
 	    proFlags = (p->provideFlags ? p->provideFlags[i] : 0);
-	    rc = rangesOverlap(p->provides[i], proEVR, proFlags,
+	    rc = rpmRangesOverlap(p->provides[i], proEVR, proFlags,
 			keyName, keyEVR, keyFlags);
 	    if (rc) break;
 	}
@@ -1026,14 +1026,13 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 #endif
 
 	/*
-	 * New features in rpm spec files add implicit dependencies on rpm
-	 * version. Provide implicit rpm version in last ditch effort to
-	 * satisfy an rpm dependency.
+	 * New features in rpm packaging implicitly add versioned dependencies
+	 * on rpmlib provides. The dependencies look like "rpmlib(YaddaYadda)".
+	 * Check those dependencies now.
 	 */
-	if (!strcmp(keyName, rpmNAME)) {
-	    i = rangesOverlap(keyName, keyEVR, keyFlags, rpmNAME, rpmEVR, rpmFLAGS);
-	    if (i) {
-		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmlib version)\n"),
+	if (!strncmp(keyName, "rpmlib(", sizeof("rpmlib(")-1)) {
+	    if (rpmCheckRpmlibProvides(keyName, keyEVR, keyFlags)) {
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmlib provides)\n"),
 			keyType, keyDepend+2);
 		goto exit;
 	    }

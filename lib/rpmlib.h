@@ -584,7 +584,6 @@ void rpmtransFree( /*@only@*/ rpmTransactionSet rpmdep);
 void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd);
 
 /* this checks for dependency satisfaction, but *not* ordering */
-
 /**
  */
 int rpmdepCheck(rpmTransactionSet rpmdep,
@@ -613,6 +612,17 @@ void rpmdepFreeConflicts( /*@only@*/ struct rpmDependencyConflict * conflicts,
 #define	RPMTRANS_FLAG_ALLFILES		(1 << 6)
 #define	RPMTRANS_FLAG_KEEPOBSOLETE	(1 << 7)
 #define	RPMTRANS_FLAG_MULTILIB		(1 << 8)
+
+/**
+ */
+int rpmRangesOverlap(const char *AName, const char *AEVR, int AFlags,
+        const char *BName, const char *BEVR, int BFlags);
+
+/**
+ */
+int rpmCheckRpmlibProvides(const char * keyName, const char * keyEVR,
+	int keyFlags);
+
 
 typedef enum rpmProblemType_e { RPMPROB_BADARCH, 
 				RPMPROB_BADOS,

@@ -542,6 +542,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 	}
 	headerAddOrAppendEntry(pkg->header, tag, RPM_STRING_ARRAY_TYPE,
 			&field, 1);
+	rpmlibNeedsFeature(pkg->header, "PreTransactionSyscalls", "4.0-1");
 	macro = NULL;
 	break;
 

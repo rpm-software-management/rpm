@@ -238,13 +238,6 @@ static void printUsage(void) {
     puts(_("       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
     puts(_("                        [--justdb] [--notriggers] package1 ... packageN"));
-    puts(_("       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
-    puts(_("                        [--sign] [--nobuild] [--timecheck <s>] ]"));
-    puts(_("                        [--target=platform1[,platform2...]]"));
-    puts(_("                        [--rmsource] [--rmspec] specfile"));
-    puts(_("       rpm {--rmsource} [--rcfile <file>] [-v] specfile"));
-    puts(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
-    puts(_("       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"));
     puts(_("       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"));
     puts(_("       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"));
