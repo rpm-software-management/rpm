@@ -24,8 +24,6 @@ struct availablePackage {
 
 enum indexEntryType { IET_NAME, IET_PROVIDES, IET_FILE };
 
-enum selectionStatus { UNSELECTED = 0, SELECTED, INPROCESS };
-
 struct availableIndexEntry {
     struct availablePackage * package;
     char * entry;
@@ -84,7 +82,7 @@ static int checkPackageSet(rpmDependencies rpmdep, struct problemsSet * psp,
 static int addOrderedPack(rpmDependencies rpmdep, 
 			struct availablePackage * package,
 			void ** ordering, int * orderNumPtr, 
-			enum selectionStatus * selected, 
+			int * selected, int selectionClass,
 			int satisfyDepends, char ** errorStack);
 
 static void alCreate(struct availableList * al) {
@@ -779,23 +777,33 @@ static int dbrecMatchesDepFlags(rpmDependencies rpmdep, int recOffset,
     return rc;
 }
 
+/* selection status is one of:
+
+	-1:	selected
+	0:	not selected
+	> 0:	selection class
+
+   the current selection pass is included as a separate parameter, and is
+   incremented when satisfying a prerequisite */
+
 static int addOrderedPack(rpmDependencies rpmdep, 
 			struct availablePackage * package,
 			void ** ordering, int * orderNumPtr, 
-			enum selectionStatus * selected, 
+			int * selected, int selectionClass,
 			int satisfyDepends, char ** errorStack) {
     char ** requires, ** requiresVersion;
     int_32 * requireFlags;
     int requiresCount;
+    int matchNum;
     int packageNum = package - rpmdep->addedPackages.list;
-    int i;
+    int i, rc;
     struct availablePackage * match;
     char * errorString;
     char ** stack;
 
     *errorStack++ = package->name;
 
-    if (selected[packageNum] == INPROCESS) {
+    if (selected[packageNum] > 0) {
 	i = 0;
 	stack = errorStack - 1;
 	while (*(--stack)) {
@@ -816,7 +824,7 @@ static int addOrderedPack(rpmDependencies rpmdep,
 	return 1;
     }
 
-    selected[packageNum] = INPROCESS;
+    selected[packageNum] = selectionClass;
 
     if (headerGetEntry(package->h, RPMTAG_REQUIRENAME, NULL, 
 			(void **) &requires, &requiresCount)) {
@@ -837,25 +845,33 @@ static int addOrderedPack(rpmDependencies rpmdep,
 		if (match == package) continue;
 
 		/* the package has already been selected */
-		if (selected[match - rpmdep->addedPackages.list] == SELECTED)
+		matchNum = match - rpmdep->addedPackages.list;
+		if (selected[matchNum] == -1 ||
+		    selected[matchNum] == selectionClass)
 		    continue;
-
-		if (addOrderedPack(rpmdep, match, ordering, orderNumPtr,
-				   selected, 1, errorStack)) return 1;
+		
+		if (requireFlags[i] & RPMSENSE_PREREQ)
+		    rc = addOrderedPack(rpmdep, match, ordering, orderNumPtr,
+				        selected, selectionClass + 1, 1,
+				        errorStack);
+		else
+		    rc = addOrderedPack(rpmdep, match, ordering, orderNumPtr,
+				        selected, selectionClass, 1,
+				        errorStack);
 	    }
 	}
     }
 
     /* whew -- add this package */
     ordering[(*orderNumPtr)++] = package->key;
-    selected[packageNum] = SELECTED;
+    selected[packageNum] = -1;
 
     return 0;
 }
 
 int rpmdepOrder(rpmDependencies rpmdep, void *** keysListPtr) {
     int i;
-    enum selectionStatus * selected;
+    int * selected;
     void ** order;
     int orderNum;
     char ** errorStack;
@@ -873,9 +889,9 @@ int rpmdepOrder(rpmDependencies rpmdep, void *** keysListPtr) {
     orderNum = 0;
 
     for (i = 0; i < rpmdep->addedPackages.size; i++) {
-	if (selected[i] == UNSELECTED) {
+	if (!selected[i]) {
 	    if (addOrderedPack(rpmdep, rpmdep->addedPackages.list + i,
-			       order, &orderNum, selected, 0, errorStack)) {
+			       order, &orderNum, selected, 1, 0, errorStack)) {
 		free(order);
 		return 1;
 	    }
