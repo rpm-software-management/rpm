@@ -205,7 +205,7 @@ msgstr "   Beim Installieren, Aktualisieren und Anfragen (mit -p) ist es erlaubt
 
 #: ../rpm.c:163
 msgid "   of file names as well as the following options:\n"
-msgstr "   von Dateinamen zu benutzen. Auﬂerdem die folgenden Optionen:"
+msgstr "   von Dateinamen zu benutzen. Auﬂerdem die folgenden Optionen:\n"
 
 #: ../rpm.c:165
 msgid "hostname or IP of ftp proxy"
