@@ -74,7 +74,7 @@ void printUsage(void) {
 void printHelp(void) {
     printVersion();
     printBanner();
-    puts(_(""));
+    puts("");
 
     puts(_("usage:"));
     puts(_("   --help		- print this message"));
@@ -104,7 +104,7 @@ void printHelp(void) {
     puts(_("        --requires"));
     puts(_("        -R                - list package dependencies"));
     puts(_("        --scripts         - print the various [un]install scripts"));
-    puts(_(""));
+    puts("");
     puts(_("    --querytags         - list the tags that can be used in a query format"));
 }
 

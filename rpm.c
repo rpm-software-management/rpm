@@ -176,7 +176,7 @@ static void printBanner(void) {
 static void printUsage(void) {
     printVersion();
     printBanner();
-    puts(_(""));
+    puts("");
 
     puts(_("usage: rpm {--help}"));
     puts(_("       rpm {--version}"));
@@ -260,7 +260,7 @@ static void printHelpLine(char * prefix, char * help) {
 static void printHelp(void) {
     printVersion();
     printBanner();
-    puts(_(""));
+    puts("");
 
     puts(         _("usage:"));
     printHelpLine(  "   --help                 ", 
