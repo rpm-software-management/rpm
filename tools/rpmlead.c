@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#include "pack.h"
+#include "rpmlead.h"
 
 int main(int argc, char **argv)
 {
@@ -17,8 +17,8 @@ int main(int argc, char **argv)
 	fd = open(argv[1], O_RDONLY, 0644);
     }
 
-    read(fd, &buffer, RPM_LEAD_SIZE);
-    write(1, &buffer, RPM_LEAD_SIZE);
+    read(fd, &buffer, RPMLEAD_SIZE);
+    write(1, &buffer, RPMLEAD_SIZE);
     
     return 0;
 }
