@@ -33,6 +33,8 @@
 	- do a better job of checking for a spec file in tarballs
 	  (Pavel Roskin)
 	- fixed --triggers alias (Michael Andres)
+	- added :hex query format
+	- fixed --querytags to display virtual tags
 
 2.5.1 -> 2.5.2:
 	- added -bs to build just a source package

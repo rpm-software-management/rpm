@@ -534,8 +534,18 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 void queryPrintTags(void) {
     const struct headerTagTableEntry * t;
     int i;
+    struct headerSprintfExtension * ext = rpmHeaderFormats;
 
     for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
 	printf("%s\n", t->name + 7);
+    }
+
+    while (ext->name) {
+	if (ext->type == HEADER_EXT_TAG)
+	    printf("%s\n", ext->name + 7), ext++;
+	else if (ext->type == HEADER_EXT_MORE)
+	    ext = ext->u.more;
+	else
+	    ext++;
     }
 }
