@@ -954,14 +954,13 @@ static int addFile(struct FileList *fl, const char *name, struct stat *statp)
     fileUid = statp->st_uid;
     fileGid = statp->st_gid;
 
-    /* %attr ? */
-    if (S_ISDIR(fileMode) && fl->cur_ar.ar_dmodestr) {
-	if (fl->cur_ar.ar_dmodestr[0] != '-') {
+    if (S_ISDIR(fileMode)) {
+	if (fl->cur_ar.ar_dmodestr != NULL) {
 	    fileMode &= S_IFMT;
 	    fileMode |= fl->cur_ar.ar_dmode;
 	}
     } else {
-	if (fl->cur_ar.ar_fmodestr) {
+	if (fl->cur_ar.ar_fmodestr != NULL) {
 	    fileMode &= S_IFMT;
 	    fileMode |= fl->cur_ar.ar_fmode;
 	}
@@ -1076,6 +1075,8 @@ static int processPackageFiles(Spec spec, Package pkg,
     AttrRec specialDocAttrRec;
     char *specialDoc = NULL;
     
+    specialDocAttrRec = empty_ar;
+
     pkg->cpioList = NULL;
     pkg->cpioCount = 0;
 
@@ -1178,22 +1179,9 @@ static int processPackageFiles(Spec spec, Package pkg,
 
 	if (fl.isSpecialDoc) {
 	    /* Save this stuff for last */
+	    FREE(specialDoc);
 	    specialDoc = strdup(fileName);
-	    specialDocAttrRec = fl.cur_ar;
-	    if (specialDocAttrRec.ar_fmodestr) {
-		specialDocAttrRec.ar_fmodestr =
-		    strdup(specialDocAttrRec.ar_fmodestr);
-	    }
-	    if (specialDocAttrRec.ar_dmodestr) {
-		specialDocAttrRec.ar_dmodestr =
-		    strdup(specialDocAttrRec.ar_dmodestr);
-	    }
-	    if (specialDocAttrRec.ar_user) {
-		specialDocAttrRec.ar_user = strdup(specialDocAttrRec.ar_user);
-	    }
-	    if (specialDocAttrRec.ar_group) {
-		specialDocAttrRec.ar_group = strdup(specialDocAttrRec.ar_group);
-	    }
+	    dupAttrRec(&fl.cur_ar, &specialDocAttrRec);
 	} else {
 	    processBinaryFile(pkg, &fl, fileName);
 	}
@@ -1205,9 +1193,9 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, test);
 	}
 
-	/* fl.cur_ar now takes on "ownership" of the specialDocAttrRec */
-	/* allocated string data.                                       */
-	fl.cur_ar = specialDocAttrRec;
+	dupAttrRec(&specialDocAttrRec, &fl.cur_ar);
+	freeAttrRec(&specialDocAttrRec);
+
 	fl.isDir = 0;
 	fl.inFtw = 0;
 	fl.currentFlags = 0;
