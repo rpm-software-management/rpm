@@ -992,6 +992,8 @@ static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
 	    fi->actions[fileNum] = FA_SKIP;
     }
 
+    headerFree(h);
+
     return 0;
 }
 
