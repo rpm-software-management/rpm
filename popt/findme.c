@@ -32,7 +32,7 @@ char * findProgramPath(char * argv0) {
 	    *chptr = '\0';
 	sprintf(buf, "%s/%s", start, argv0);
 
-	if (access(buf, X_OK))
+	if (!access(buf, X_OK))
 	    return buf;
 
 	if (chptr) 
