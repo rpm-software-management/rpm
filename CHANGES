@@ -3,6 +3,7 @@
         - do dependecy generation on -bl
         - check files on all packages on -bl
 	- integrate Jeff Johnson's memleak patches
+	- added OSF1 autodep scripts
 
 2.4.107 -> 2.4.108:
         - make --clean work with no %setup

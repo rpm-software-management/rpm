@@ -1,6 +1,6 @@
 Summary: Red Hat Package Manager
 Name: rpm
-%define version 2.4.104
+%define version 2.4.109
 Version: %{version}
 Release: 1
 Group: Utilities/System
