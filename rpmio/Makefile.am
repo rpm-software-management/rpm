@@ -44,7 +44,7 @@ tkey: librpmio.la tkey.o
 
 tdigest.o: tdigest.c
 tdigest: librpmio.la tdigest.o
-	$(LINK) -o $@ tdigest.o librpmio.la $(top_builddir)/popt/libpopt.la
+	$(LINK) @LDFLAGS_STATIC@ -o $@ tdigest.o librpmio.la $(top_builddir)/popt/libpopt.la
 
 tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 

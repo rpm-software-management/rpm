@@ -606,16 +606,6 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
-/*
- * XXX Doing a db->del followed by a db->put for the same record
- * causes the nelem/page count to go awry, causing db->verify failure.
- * Turn off the message for now.
- */
-
-/*@-redecl -exportheadervar -declundef@*/
-/*@unused@*/ extern int db_hash_nelem_debug;
-/*@=redecl =exportheadervar =declundef@*/
-
 static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	/*@modifies dbi, fileSystem @*/
 {

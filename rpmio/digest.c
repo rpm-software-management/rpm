@@ -142,6 +142,12 @@ SHA1Transform(DIGEST_CTX ctx)
 {
     uint32 * in = (uint32 *) ctx->in;
     uint32 A, B, C, D, E;     /* Local vars */
+#ifdef	SHA_DEBUG
+int i;
+#define	DPRINTF(_a)	fprintf _a
+#else
+#define	DPRINTF(_a)
+#endif
 
     /* Set up first buffer and local data buffer */
     A = ctx->digest[0];
@@ -150,89 +156,175 @@ SHA1Transform(DIGEST_CTX ctx)
     D = ctx->digest[3];
     E = ctx->digest[4];
 
+#ifdef	SHA_DEBUG
+for (i = 0; i < 16; i++)
+DPRINTF((stderr, "W[%2d]: %08X\n", i, in[i]));
+#endif
     /* Heavy mangling, in 4 sub-rounds of 20 interations each. */
+#ifdef	SHA_DEBUG
+i = 0;
+#endif
     subRound( A, B, C, D, E, f1, K1, in[ 0] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f1, K1, in[ 1] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f1, K1, in[ 2] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f1, K1, in[ 3] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f1, K1, in[ 4] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f1, K1, in[ 5] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f1, K1, in[ 6] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f1, K1, in[ 7] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f1, K1, in[ 8] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f1, K1, in[ 9] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f1, K1, in[10] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f1, K1, in[11] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f1, K1, in[12] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f1, K1, in[13] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f1, K1, in[14] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f1, K1, in[15] );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f1, K1, expand( in, 16 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f1, K1, expand( in, 17 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f1, K1, expand( in, 18 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f1, K1, expand( in, 19 ) );
 
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f2, K2, expand( in, 20 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f2, K2, expand( in, 21 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f2, K2, expand( in, 22 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f2, K2, expand( in, 23 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f2, K2, expand( in, 24 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f2, K2, expand( in, 25 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f2, K2, expand( in, 26 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f2, K2, expand( in, 27 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f2, K2, expand( in, 28 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f2, K2, expand( in, 29 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f2, K2, expand( in, 30 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f2, K2, expand( in, 31 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f2, K2, expand( in, 32 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f2, K2, expand( in, 33 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f2, K2, expand( in, 34 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f2, K2, expand( in, 35 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f2, K2, expand( in, 36 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f2, K2, expand( in, 37 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f2, K2, expand( in, 38 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f2, K2, expand( in, 39 ) );
 
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f3, K3, expand( in, 40 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f3, K3, expand( in, 41 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f3, K3, expand( in, 42 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f3, K3, expand( in, 43 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f3, K3, expand( in, 44 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f3, K3, expand( in, 45 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f3, K3, expand( in, 46 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f3, K3, expand( in, 47 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f3, K3, expand( in, 48 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f3, K3, expand( in, 49 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f3, K3, expand( in, 50 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f3, K3, expand( in, 51 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f3, K3, expand( in, 52 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f3, K3, expand( in, 53 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f3, K3, expand( in, 54 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f3, K3, expand( in, 55 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f3, K3, expand( in, 56 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f3, K3, expand( in, 57 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f3, K3, expand( in, 58 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f3, K3, expand( in, 59 ) );
 
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f4, K4, expand( in, 60 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f4, K4, expand( in, 61 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f4, K4, expand( in, 62 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f4, K4, expand( in, 63 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f4, K4, expand( in, 64 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f4, K4, expand( in, 65 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f4, K4, expand( in, 66 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f4, K4, expand( in, 67 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f4, K4, expand( in, 68 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f4, K4, expand( in, 69 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f4, K4, expand( in, 70 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f4, K4, expand( in, 71 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f4, K4, expand( in, 72 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f4, K4, expand( in, 73 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f4, K4, expand( in, 74 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, A,B,C,D,E ));
     subRound( A, B, C, D, E, f4, K4, expand( in, 75 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, E,A,B,C,D ));
     subRound( E, A, B, C, D, f4, K4, expand( in, 76 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, D,E,A,B,C ));
     subRound( D, E, A, B, C, f4, K4, expand( in, 77 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, C,D,E,A,B ));
     subRound( C, D, E, A, B, f4, K4, expand( in, 78 ) );
+DPRINTF((stderr, "%5d: %08X %08X %08X %08X %08X\n", i++, B,C,D,E,A ));
     subRound( B, C, D, E, A, f4, K4, expand( in, 79 ) );
 
     /* Build message digest */
@@ -404,6 +496,10 @@ rpmDigestInit(rpmDigestFlags flags)
 {
     DIGEST_CTX ctx = xcalloc(1, sizeof(*ctx));
 
+#ifdef	SHA_DEBUG
+int i;
+DPRINTF((stderr, "*** Init(%x)\n", flags));
+#endif
     ctx->flags = flags;
 
     if (flags & RPMDIGEST_MD5) {
@@ -429,6 +525,10 @@ rpmDigestInit(rpmDigestFlags flags)
 	ctx->digest[ 4 ] = 0xc3d2e1f0;
 	/* md5 sums are little endian (no swap) so big endian needs the swap. */
 	ctx->doByteReverse = (IS_BIG_ENDIAN()) ? 0 : 1;
+#ifdef	SHA_DEBUG
+for (i =0; i < 5; i++)
+DPRINTF((stderr, "H[%2d]: %X\n", i, ctx->digest[i]));
+#endif
     }
 
     if (flags & RPMDIGEST_REVERSE)

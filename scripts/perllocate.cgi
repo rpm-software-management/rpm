@@ -46,7 +46,7 @@ sub set_static_vars {
 # so we have a list of them and a comment of what they are for.
 
 
-  $VERSION = ( qw$Revision: 1.1 $ )[1];
+  $VERSION = ( qw$Revision: 1.2 $ )[1];
   
   @ORIG_ARGV = @ARGV;
   

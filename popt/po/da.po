@@ -1,99 +1,113 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: popt 1.6.1\n"
-"POT-Creation-Date: 2001-02-22 17:41-0500\n"
-"PO-Revision-Date: 2000-03-07 05:17+01:00\n"
-"Last-Translator: K. Christiansen <kenneth@gnu.org>\n"
-"Language-Team: Danish/Dansk <dansk@klid.dk>\n"
+"Project-Id-Version: popt 1.6.3\n"
+"POT-Creation-Date: 2001-07-16 21:53-0400\n"
+"PO-Revision-Date: Sun Jan 21 2001 04:30:32+0200\n"
+"Last-Translator: Martin Hansen <mah@k64.dk>\n"
+"Language-Team: Dansk <dansk@klid.dk>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
+"X-Generator: KTranslator v 0.6.0\n"
 
 #: popt.c:29
 msgid "unknown errno"
-msgstr ""
+msgstr "ukendt fejlnr."
 
-#: popt.c:758
+#: popt.c:892
 #, c-format
 msgid "option type (%d) not implemented in popt\n"
-msgstr ""
+msgstr "tilvalgstype (%d) er ikke implementeret i popt\n"
 
-#: popt.c:893
+#: popt.c:1100
 msgid "missing argument"
-msgstr ""
+msgstr "mangler argument"
 
-#: popt.c:895
+#: popt.c:1102
 msgid "unknown option"
-msgstr ""
+msgstr "ukendt tilvalg"
 
-#: popt.c:897
+#: popt.c:1104
 msgid "mutually exclusive logical operations requested"
+msgstr "de ønskede handlinger udelukker hinanden"
+
+#: popt.c:1106
+msgid "opt->arg should not be NULL"
 msgstr ""
 
-#: popt.c:899
+#: popt.c:1108
 msgid "aliases nested too deeply"
-msgstr ""
+msgstr "aliaser er for dybt indlejret"
 
-#: popt.c:901
+#: popt.c:1110
 msgid "error in parameter quoting"
-msgstr ""
+msgstr "fejl i parameter citering"
 
-#: popt.c:903
+#: popt.c:1112
 msgid "invalid numeric value"
-msgstr ""
+msgstr "ugyldig numerisk værdi"
 
-#: popt.c:905
+#: popt.c:1114
 msgid "number too large or too small"
+msgstr "nummer for stort, eller for lille"
+
+#: popt.c:1116
+msgid "memory allocation failed"
 msgstr ""
 
-#: popt.c:909
+#: popt.c:1120
 msgid "unknown error"
-msgstr ""
+msgstr "ukendt fejl"
 
-#: popthelp.c:28
+#: popthelp.c:47
 msgid "Show this help message"
 msgstr "Vis denne hjælpemeddelelse"
 
-#: popthelp.c:29
+#: popthelp.c:48
 msgid "Display brief usage message"
 msgstr "Vis kortfattet brugsanvisning"
 
-#: popthelp.c:60
+#: popthelp.c:51
+#, fuzzy
+msgid "Display option defaults in message"
+msgstr "Vis kortfattet brugsanvisning"
+
+#: popthelp.c:93
 msgid "NONE"
-msgstr ""
+msgstr "INGEN"
 
-#: popthelp.c:61
+#: popthelp.c:94
 msgid "VAL"
-msgstr ""
+msgstr "VAL"
 
-#: popthelp.c:62
+#: popthelp.c:95
 msgid "INT"
-msgstr ""
+msgstr "INT"
 
-#: popthelp.c:63
+#: popthelp.c:96
 msgid "LONG"
-msgstr ""
+msgstr "LONG"
 
-#: popthelp.c:64
+#: popthelp.c:97
 msgid "STRING"
-msgstr ""
+msgstr "STRING"
 
-#: popthelp.c:65
+#: popthelp.c:98
 msgid "FLOAT"
-msgstr ""
+msgstr "FLOAT"
 
-#: popthelp.c:66
+#: popthelp.c:99
 msgid "DOUBLE"
-msgstr ""
+msgstr "DOUBLE"
 
-#: popthelp.c:67
+#: popthelp.c:100
 msgid "ARG"
-msgstr ""
+msgstr "ARG"
 
-#: popthelp.c:241
+#: popthelp.c:434
 msgid "Usage:"
-msgstr ""
+msgstr "Brug:"
 
-#: popthelp.c:260
+#: popthelp.c:456
 msgid "[OPTION...]"
-msgstr ""
+msgstr "[TILVALG...]"

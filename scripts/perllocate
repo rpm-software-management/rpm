@@ -96,7 +96,7 @@ sub set_static_vars {
   
   $DEFAULT_DB = '/usr/local/var/locatedb';
 
-  $VERSION = (qw$Revision: 1.1 $)[1];
+  $VERSION = (qw$Revision: 1.2 $)[1];
   
   # set a known path.
  

@@ -1,5 +1,5 @@
 /*
- * $Id: RPM.h,v 1.15 2001/06/20 05:15:46 rjray Exp $
+ * $Id: RPM.h,v 1.16 2001/09/15 13:49:11 jbj Exp $
  *
  * Various C-specific decls/includes/etc. for the RPM linkage
  */

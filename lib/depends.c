@@ -2150,14 +2150,17 @@ int rpmdepCheck(rpmTransactionSet ts,
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    int npkgs = ts->addedPackages.size;
-    struct availablePackage * p;
-    int i, j;
-    int rc;
     rpmdbMatchIterator mi = NULL;
     Header h = NULL;
-    problemsSet ps = alloca(sizeof(*ps));
+    struct availablePackage * p;
+    problemsSet ps;
+    int npkgs;
+    int i, j;
+    int rc;
 
+    npkgs = ts->addedPackages.size;
+
+    ps = xcalloc(1, sizeof(*ps));
     ps->alloced = 5;
     ps->num = 0;
     ps->problems = xcalloc(ps->alloced, sizeof(*ps->problems));
@@ -2295,5 +2298,6 @@ int rpmdepCheck(rpmTransactionSet ts,
 exit:
     mi = rpmdbFreeIterator(mi);
     ps->problems = _free(ps->problems);
+    ps = _free(ps);
     return rc;
 }

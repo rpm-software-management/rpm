@@ -325,6 +325,7 @@ int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
     memset(psm, 0, sizeof(*psm));
     psm->ts = ts;
     psm->fi = fi;
+    psm->stepName = "verify";
     psm->scriptTag = RPMTAG_VERIFYSCRIPT;
     psm->progTag = RPMTAG_VERIFYSCRIPTPROG;
     rc = psmStage(psm, PSM_SCRIPT);

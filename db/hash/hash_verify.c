@@ -32,13 +32,6 @@ static int __ham_vrfy_item __P((DB *,
     VRFY_DBINFO *, db_pgno_t, PAGE *, u_int32_t, u_int32_t));
 
 /*
- * XXX Doing a db->del followed by a db->put for the same record
- * causes the nelem/page count to go awry, causing db->verify failure.
- * Turn off the message for now.
- */
-int db_hash_nelem_debug = 0;
-
-/*
  * __ham_vrfy_meta --
  *	Verify the hash-specific part of a metadata page.
  *
@@ -146,12 +139,10 @@ __ham_vrfy_meta(dbp, vdp, m, pgno, flags)
 	 * which could make nelem go "negative".
 	 */
 	if (m->nelem > 0x80000000) {
-	    if (db_hash_nelem_debug) {
 		EPRINT((dbp->dbenv,
 		    "Suspiciously high nelem of %lu on page %lu",
 		    (u_long)m->nelem, (u_long)pgno));
 		isbad = 1;
-	    }
 		pip->h_nelem = 0;
 	} else
 		pip->h_nelem = m->nelem;

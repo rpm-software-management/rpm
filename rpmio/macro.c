@@ -793,6 +793,7 @@ freeArgs(MacroBuf mb)
 
 /**
  * Parse arguments (to next new line) for parameterized macro.
+ * @todo Use popt rather than getopt to parse args.
  * @param mb		macro expansion state
  * @param me		macro entry slot
  * @param se		arguments to parse
@@ -856,7 +857,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, const char * se, char lastc)
 
     /* Build argv array */
     argv = (const char **) alloca((argc + 1) * sizeof(char *));
-    be[-1] = ' ';	/*  be - 1 == b + strlen(b) == buf + strlen(buf)  */
+    be[-1] = ' '; /* assert((be - 1) == (b + strlen(b) == buf + strlen(buf))) */
     be[0] = '\0';
     b = buf;
     for (c = 0; c < argc; c++) {
@@ -864,8 +865,27 @@ grabArgs(MacroBuf mb, const MacroEntry me, const char * se, char lastc)
 	b = strchr(b, ' ');
 	*b++ = '\0';
     }
-    /* now should be  b == be  */
+    /* assert(b == be);  */
     argv[argc] = NULL;
+
+    /* Citation from glibc/posix/getopt.c:
+     *    Index in ARGV of the next element to be scanned.
+     *    This is used for communication to and from the caller
+     *    and for communication between successive calls to `getopt'.
+     *
+     *    On entry to `getopt', zero means this is the first call; initialize.
+     *
+     *    When `getopt' returns -1, this is the index of the first of the
+     *    non-option elements that the caller should itself scan.
+     *
+     *    Otherwise, `optind' communicates from one call to the next
+     *    how much of ARGV has been scanned so far.
+     */
+    /* 1003.2 says this must be 1 before any call.  */
+
+#ifdef __GLIBC__
+    optind = 1;
+#endif
 
     opts = me->opts;
 

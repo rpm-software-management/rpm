@@ -47,13 +47,6 @@ void freeSplitString( /*@only@*/ char ** list)
 int rpmfileexists(const char * urlfn)
 	/*@modifies fileSystem @*/;
 
-#ifdef DYING
-/**
- */
-int rpmvercmp(const char * a, const char * b)
-	/*@*/;
-#endif
-
 /*
  * These are like the libc functions, but they malloc() the space which
  * is needed.

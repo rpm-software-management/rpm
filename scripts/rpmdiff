@@ -415,7 +415,7 @@ sub set_static_vars {
   
   $NUM_DIFFERENCES = 0;
 
-  $RCS_REVISION = ' $Revision: 1.6 $ ';
+  $RCS_REVISION = ' $Revision: 1.7 $ ';
   
   # set a known path.
  

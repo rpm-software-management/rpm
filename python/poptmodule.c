@@ -6,7 +6,7 @@
 
 #define PY_POPT_VERSION "0.2"
 
-static const char *rcs_id = "$Id: poptmodule.c,v 1.5 2001/08/27 18:39:17 jbj Exp $";
+static const char *rcs_id = "$Id: poptmodule.c,v 1.6 2001/09/15 13:49:38 jbj Exp $";
 
 static char *module_doc = "Python bindings for the popt library\n\
 \n\

@@ -1,6 +1,6 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.24 2001/06/20 05:15:46 rjray Exp $
+# $Id: Makefile.PL,v 1.25 2001/09/15 13:49:11 jbj Exp $
 
 use Config;
 use ExtUtils::MakeMaker;

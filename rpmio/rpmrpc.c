@@ -837,16 +837,16 @@ static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 
 	/* XXX possibly should do "NLST -lais" to get st_ino/st_blocks also */
 	u->openError = ftpReq(fd, "NLST", "-la");
+
+	if (bn == NULL || nbn <= 0) {
+	    rc = -2;
+	    goto exit;
+	}
 	break;
     }
 
     if (u->openError < 0) {
 	fd = fdLink(fd, "error data (ftpStat)");
-	rc = -2;
-	goto exit;
-    }
-
-    if (bn == NULL || nbn <= 0) {
 	rc = -2;
 	goto exit;
     }

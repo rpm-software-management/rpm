@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: popt 1.6.1\n"
-"POT-Creation-Date: 2001-02-22 17:41-0500\n"
-"PO-Revision-Date: 2000-06-16 02:12+0000\n"
+"Project-Id-Version: popt 1.6.3\n"
+"POT-Creation-Date: 2001-07-16 21:53-0400\n"
+"PO-Revision-Date: 2001-06-08 01:35+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
 "MIME-Version: 1.0\n"
@@ -11,89 +11,101 @@ msgstr ""
 
 #: popt.c:29
 msgid "unknown errno"
-msgstr ""
+msgstr "óþekkt villunúmer"
 
-#: popt.c:758
+#: popt.c:892
 #, c-format
 msgid "option type (%d) not implemented in popt\n"
-msgstr ""
+msgstr "rofagerðin (%d) er ekki studd í popt\n"
 
-#: popt.c:893
+#: popt.c:1100
 msgid "missing argument"
-msgstr ""
+msgstr "vantar viðfang"
 
-#: popt.c:895
+#: popt.c:1102
 msgid "unknown option"
-msgstr ""
+msgstr "óþekktur rofi"
 
-#: popt.c:897
+#: popt.c:1104
 msgid "mutually exclusive logical operations requested"
-msgstr ""
+msgstr "beðið um rofa sem slökkva hvor á öðrum"
 
-#: popt.c:899
+#: popt.c:1106
+msgid "opt->arg should not be NULL"
+msgstr "opt->arg ætti ekki að vera NULL"
+
+#: popt.c:1108
 msgid "aliases nested too deeply"
-msgstr ""
+msgstr "alíasar of flóknir"
 
-#: popt.c:901
+#: popt.c:1110
 msgid "error in parameter quoting"
-msgstr ""
+msgstr "villa í viðföngum (gæsalappir og svo frv.)"
 
-#: popt.c:903
+#: popt.c:1112
 msgid "invalid numeric value"
-msgstr ""
+msgstr "ógilt tölulegt gildi"
 
-#: popt.c:905
+#: popt.c:1114
 msgid "number too large or too small"
-msgstr ""
+msgstr "talan of stór eða smá"
 
-#: popt.c:909
+#: popt.c:1116
+msgid "memory allocation failed"
+msgstr "ekki tókst að taka frá minni"
+
+#: popt.c:1120
 msgid "unknown error"
-msgstr ""
+msgstr "óþekkt villa"
 
-#: popthelp.c:28
+#: popthelp.c:47
 msgid "Show this help message"
 msgstr "Sýna þessa hjálp"
 
-#: popthelp.c:29
+#: popthelp.c:48
 msgid "Display brief usage message"
 msgstr "Sýna stuttar notkunarleiðbeiningar"
 
-#: popthelp.c:60
+#: popthelp.c:51
+msgid "Display option defaults in message"
+msgstr "Sýna sjálfgefin gildi rofa í skilaboðum"
+
+#: popthelp.c:93
 msgid "NONE"
-msgstr ""
+msgstr "ENGIN"
 
-#: popthelp.c:61
+#: popthelp.c:94
 msgid "VAL"
-msgstr ""
+msgstr "VAL"
 
-#: popthelp.c:62
+#: popthelp.c:95
 msgid "INT"
-msgstr ""
+msgstr "INT"
 
-#: popthelp.c:63
+#: popthelp.c:96
 msgid "LONG"
-msgstr ""
+msgstr "LONG"
 
-#: popthelp.c:64
+#: popthelp.c:97
 msgid "STRING"
-msgstr ""
+msgstr "STRING"
 
-#: popthelp.c:65
+#: popthelp.c:98
 msgid "FLOAT"
-msgstr ""
+msgstr "FLOAT"
 
-#: popthelp.c:66
+#: popthelp.c:99
 msgid "DOUBLE"
-msgstr ""
+msgstr "DOUBLE"
 
-#: popthelp.c:67
+#: popthelp.c:100
 msgid "ARG"
-msgstr ""
+msgstr "ARG"
 
-#: popthelp.c:241
+#: popthelp.c:434
 msgid "Usage:"
-msgstr ""
+msgstr "Notkun:"
 
-#: popthelp.c:260
+#: popthelp.c:456
 msgid "[OPTION...]"
-msgstr ""
+msgstr "[ROFI...]"

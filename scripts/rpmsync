@@ -3,8 +3,8 @@
 
 # rpmsync - written by Ken Estes kestes@staff.mail.com
 
-# $Revision: 1.1 $
-# $Date: 2001/03/15 13:58:16 $
+# $Revision: 1.2 $
+# $Date: 2001/09/15 13:49:39 $
 # $Author: jbj $
 # $Source: /home/boston/jkeating/rpmcvs/cvs/devel/rpm/scripts/rpmsync,v $
 # $Name:  $
@@ -1162,7 +1162,7 @@ sub set_static_vars {
 
 		  ':/data1/archive/redhat');
 
-  $VERSION = ( qw$Revision: 1.1 $ )[1];
+  $VERSION = ( qw$Revision: 1.2 $ )[1];
 
   $VERBOSE=0;
   $SKIP_CHECK=0;

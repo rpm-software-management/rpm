@@ -38,7 +38,7 @@ pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = javadeps
 
 rpmsort_SOURCES =	rpmsort.c
-rpmsort_LDFLAGS =
+rpmsort_LDFLAGS =	@LDFLAGS_STATIC@
 
 javadeps_SOURCES =	javadeps.c
 

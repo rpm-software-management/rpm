@@ -187,11 +187,22 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 PYVER = 1.5
 
-INCLUDES =  	-I$(top_srcdir) 	-I$(top_srcdir)/lib 	-I$(top_srcdir)/rpmdb 	-I$(top_srcdir)/rpmio 	-I$(top_srcdir)/popt 	-I/usr/include/python${PYVER} 	@INCPATH@
+INCLUDES = \
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/lib \
+	-I$(top_srcdir)/rpmdb \
+	-I$(top_srcdir)/rpmio \
+	-I$(top_srcdir)/popt \
+	-I/usr/include/python${PYVER} \
+	@INCPATH@
 
 
 EXTRA_DIST = hash.h upgrade.h
-mylibs =  	$(top_builddir)/lib/librpm.la 	$(top_builddir)/rpmdb/librpmdb.la 	$(top_builddir)/rpmio/librpmio.la 	$(top_builddir)/popt/libpopt.la
+mylibs = \
+	$(top_builddir)/lib/librpm.la \
+	$(top_builddir)/rpmdb/librpmdb.la \
+	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/popt/libpopt.la
 
 
 LDADD = 
