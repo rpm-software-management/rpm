@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 1999-12-11 12:52-0500\n"
+"POT-Creation-Date: 1999-12-11 20:34-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1595,61 +1595,61 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1120
+#: build/files.c:1121
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: build/files.c:1199
+#: build/files.c:1212
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "Fehler: kann Datei %s nicht öffnen\n"
 
-#: build/files.c:1206 build/pack.c:482
+#: build/files.c:1219 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1549 build/parsePrep.c:30
+#: build/files.c:1562 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1604
+#: build/files.c:1617
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Konnte pgp nicht durchführen"
 
-#: build/files.c:1609
+#: build/files.c:1622
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Konnte Signatur-Ziel (»sigtarget«) nicht lesen"
 
-#: build/files.c:1691
+#: build/files.c:1704
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "pgp fehlgeschlagen"
 
 # , c-format
-#: build/files.c:1695
+#: build/files.c:1708
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
-#: build/files.c:1784
+#: build/files.c:1797
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
 # , c-format
-#: build/files.c:1812 build/files.c:1821
+#: build/files.c:1825 build/files.c:1834
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "anlegen von %s fehlgeschlagen\n"
 
 # , c-format
-#: build/files.c:1927
+#: build/files.c:1940
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -2630,7 +2630,7 @@ msgstr "Fataler Fehler: "
 msgid "internal error (rpm bug?): "
 msgstr ""
 
-#: lib/misc.c:421 lib/misc.c:426 lib/misc.c:432
+#: lib/misc.c:423 lib/misc.c:428 lib/misc.c:434
 #, fuzzy, c-format
 msgid "error creating temporary file %s"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
@@ -2772,164 +2772,164 @@ msgid "error: could not read database record\n"
 msgstr "Fehler: konnte Datenbank-Eintrag nicht lesen\n"
 
 #. XXX Fstrerror
-#: lib/query.c:468
+#: lib/query.c:471
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/query.c:487
+#: lib/query.c:490
 msgid "old format source packages cannot be queried\n"
 msgstr "altes Sourceformat-Paket kann nicht angefragt werden\n"
 
-#: lib/query.c:496 lib/rpminstall.c:228
+#: lib/query.c:499 lib/rpminstall.c:228
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
 
-#: lib/query.c:499
+#: lib/query.c:502
 #, c-format
 msgid "query of %s failed\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:527
+#: lib/query.c:535
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:552
+#: lib/query.c:560
 msgid "could not read database record!\n"
 msgstr "kann Datenbank-Eintrag nicht lesen!\n"
 
-#: lib/query.c:563
+#: lib/query.c:571
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
-#: lib/query.c:573
+#: lib/query.c:581
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "kein Paket triggert %s\n"
 
-#: lib/query.c:583
+#: lib/query.c:591
 #, c-format
 msgid "no package requires %s\n"
 msgstr "kein Paket verlangt %s\n"
 
 # oder besser: ... listet %s auf? -ke-
-#: lib/query.c:594
+#: lib/query.c:602
 #, c-format
 msgid "no package provides %s\n"
 msgstr "kein Paket stellt %s bereit\n"
 
 # , c-format
-#: lib/query.c:610
+#: lib/query.c:618
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/query.c:613
+#: lib/query.c:621
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/query.c:626
+#: lib/query.c:634
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:629
+#: lib/query.c:637
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:632
+#: lib/query.c:640
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "Eintrag %d konnte nicht gelesen werden\n"
 
-#: lib/query.c:644 lib/rpminstall.c:418
+#: lib/query.c:652 lib/rpminstall.c:418
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/query.c:647
+#: lib/query.c:655
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: lib/query.c:669
+#: lib/query.c:677
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "%s: Öffnen fehlgeschlagen\n"
 
-#: lib/query.c:728
+#: lib/query.c:736
 #, fuzzy
 msgid "query package owning file"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/query.c:730
+#: lib/query.c:738
 #, fuzzy
 msgid "query packages in group"
 msgstr "Paket hat keinen Namen"
 
-#: lib/query.c:732
+#: lib/query.c:740
 #, fuzzy
 msgid "query a package file"
 msgstr "Anfrage an alle Pakete"
 
-#: lib/query.c:736
+#: lib/query.c:744
 #, fuzzy
 msgid "query a spec file"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:738
+#: lib/query.c:746
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/query.c:740
+#: lib/query.c:748
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
 
-#: lib/query.c:742
+#: lib/query.c:750
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
 
-#: lib/query.c:781
+#: lib/query.c:789
 #, fuzzy
 msgid "list all configuration files"
 msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
 
-#: lib/query.c:783
+#: lib/query.c:791
 #, fuzzy
 msgid "list all documentation files"
 msgstr "Dokumentation installieren"
 
-#: lib/query.c:785
+#: lib/query.c:793
 #, fuzzy
 msgid "dump basic file information"
 msgstr "Paketinformationen anzeigen"
 
-#: lib/query.c:787
+#: lib/query.c:795
 #, fuzzy
 msgid "list files in package"
 msgstr "Paket installieren"
 
-#: lib/query.c:791
+#: lib/query.c:799
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:793
+#: lib/query.c:801
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:796
+#: lib/query.c:804
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:798
+#: lib/query.c:806
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "Dateiliste des Pakets anzeigen"
@@ -3087,7 +3087,7 @@ msgid "opening database mode 0x%x in %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
 # , c-format
-#: lib/rpmdb.c:157 lib/url.c:449
+#: lib/rpmdb.c:157 lib/url.c:447
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -3682,24 +3682,24 @@ msgstr ""
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:225
+#: lib/url.c:223
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Passworf für %s@%s: "
 
-#: lib/url.c:250 lib/url.c:276
+#: lib/url.c:248 lib/url.c:274
 #, fuzzy, c-format
 msgid "error: %sport must be a number\n"
 msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 
-#: lib/url.c:413
+#: lib/url.c:411
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 
 # , c-format
 #. XXX Fstrerror
-#: lib/url.c:472
+#: lib/url.c:470
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "anlegen von %s fehlgeschlagen\n"

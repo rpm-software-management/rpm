@@ -456,18 +456,21 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 
   switch (source) {
     case RPMQV_RPM:
-    { const char *myargv[2], **argv = myargv;;
+    { int argc = 0;
+      const char ** argv = NULL;
+      int i;
 
-      /* XXX prepare for remglob */
-      argv[0] = arg;
-      argv[1] = NULL;
-      while ((arg = *argv++) != NULL) {
-	FD_t fd = Fopen(arg, "r.ufdio");
+      rc = remoteGlob(arg, &argc, &argv);
+      if (rc)
+	return 1;
+      for (i = 0; i < argc; i++) {
+	FD_t fd;
+	fd = Fopen(argv[i], "r.ufdio");
 	if (Ferror(fd)) {
 	    /* XXX Fstrerror */
-	    fprintf(stderr, _("open of %s failed: %s\n"), arg,
+	    fprintf(stderr, _("open of %s failed: %s\n"), argv[i],
 #ifndef	NOTYET
-			urlStrerror(arg));
+			urlStrerror(argv[i]));
 #else
 			Fstrerror(fd));
 #endif
@@ -493,13 +496,18 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    headerFree(h);
 	    break;
 	case 1:
-	    fprintf(stderr, _("%s does not appear to be a RPM package\n"), arg);
+	    fprintf(stderr, _("%s does not appear to be a RPM package\n"), argv[i]);
 	    /*@fallthrough@*/
 	case 2:
-	    fprintf(stderr, _("query of %s failed\n"), arg);
+	    fprintf(stderr, _("query of %s failed\n"), argv[i]);
 	    retcode = 1;
 	    break;
 	}
+      }
+      if (argv) {
+	for (i = 0; i < argc; i++)
+	    xfree(argv[i]);
+	xfree(argv);
       }
     }	break;
 

@@ -17,7 +17,9 @@
 	- rename new FILENAMES tags to BASENAMES/DIRNAMES/DIRINDEXES.
 	- fix: don't look at password when searching urlCache.
 	- add contentLength sanity check on rpmdb headerWrite.
-	- fix: fprint abort in empty chroots.
+	- fix: fprint abort on stat("/", ...) in empty chroots.
+	- perform glob on remote ftp queries.
+	- fix: ftpAbort must close the data channel to read abort status.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

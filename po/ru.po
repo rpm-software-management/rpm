@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-11 12:52-0500\n"
+"POT-Creation-Date: 1999-12-11 20:34-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1485,58 +1485,58 @@ msgstr "Файл %4d: 0%o %s.%s\t %s\n"
 msgid "File needs leading \"/\": %s"
 msgstr "Файл должен начинаться с \"/\": %s"
 
-#: build/files.c:1120
+#: build/files.c:1121
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Файл не найден: %s"
 
-#: build/files.c:1199
+#: build/files.c:1212
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "Не могу открыть файл %%files: %s"
 
-#: build/files.c:1206 build/pack.c:482
+#: build/files.c:1219 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr "строка: %s"
 
-#: build/files.c:1549 build/parsePrep.c:30
+#: build/files.c:1562 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Неверная пара хозяин/группа: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1604
+#: build/files.c:1617
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Не могу исполнить %s"
 
-#: build/files.c:1609
+#: build/files.c:1622
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Не могу форкнуть %s"
 
-#: build/files.c:1691
+#: build/files.c:1704
 #, c-format
 msgid "%s failed"
 msgstr "%s не удалось"
 
-#: build/files.c:1695
+#: build/files.c:1708
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "запись всех данных в %s не удалась"
 
-#: build/files.c:1784
+#: build/files.c:1797
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Определяю требования пакета...\n"
 
-#: build/files.c:1812 build/files.c:1821
+#: build/files.c:1825 build/files.c:1834
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Ошибка определения сервисов, предоставляемых пакетом"
 
-#: build/files.c:1927
+#: build/files.c:1940
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываю файлы: %s\n"
@@ -2482,7 +2482,7 @@ msgstr "фатальная ошибка: "
 msgid "internal error (rpm bug?): "
 msgstr "внутренняя ошибка (бага rpm): "
 
-#: lib/misc.c:421 lib/misc.c:426 lib/misc.c:432
+#: lib/misc.c:423 lib/misc.c:428 lib/misc.c:434
 #, c-format
 msgid "error creating temporary file %s"
 msgstr "ошибка создания временного файла %s"
@@ -2618,150 +2618,150 @@ msgid "error: could not read database record\n"
 msgstr "ошибка: не могу прочесть запись базы данных\n"
 
 #. XXX Fstrerror
-#: lib/query.c:468
+#: lib/query.c:471
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "открытие %s не удалось\n"
 
-#: lib/query.c:487
+#: lib/query.c:490
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к SRPM в старом формате не поддерживаются\n"
 
-#: lib/query.c:496 lib/rpminstall.c:228
+#: lib/query.c:499 lib/rpminstall.c:228
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s не похож на пакет RPM...\n"
 
-#: lib/query.c:499
+#: lib/query.c:502
 #, c-format
 msgid "query of %s failed\n"
 msgstr "ошибка запроса %s\n"
 
-#: lib/query.c:527
+#: lib/query.c:535
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "запрос spec-файла %s не удался, не могу разобрать файл\n"
 
-#: lib/query.c:552
+#: lib/query.c:560
 msgid "could not read database record!\n"
 msgstr "не могу прочесть запись базы данных!\n"
 
-#: lib/query.c:563
+#: lib/query.c:571
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "группа %s не содержит никаких пакетов\n"
 
-#: lib/query.c:573
+#: lib/query.c:581
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ни один из пакетов не взводит триггер %s\n"
 
-#: lib/query.c:583
+#: lib/query.c:591
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ни один из пакетов не требует %s\n"
 
-#: lib/query.c:594
+#: lib/query.c:602
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ни один из пакетов не предоставляет %s\n"
 
-#: lib/query.c:610
+#: lib/query.c:618
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:613
+#: lib/query.c:621
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/query.c:626
+#: lib/query.c:634
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неверный номер пакета: %s\n"
 
-#: lib/query.c:629
+#: lib/query.c:637
 #, c-format
 msgid "package record number: %d\n"
 msgstr "запись пакета номер %d\n"
 
-#: lib/query.c:632
+#: lib/query.c:640
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "запись %d не читается\n"
 
-#: lib/query.c:644 lib/rpminstall.c:418
+#: lib/query.c:652 lib/rpminstall.c:418
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
 
-#: lib/query.c:647
+#: lib/query.c:655
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "ошибка при поиске пакета %s\n"
 
-#: lib/query.c:669
+#: lib/query.c:677
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: неудача rpmdbOpen()\n"
 
-#: lib/query.c:728
+#: lib/query.c:736
 msgid "query package owning file"
 msgstr "найти пакет, которому принадлежит файл"
 
-#: lib/query.c:730
+#: lib/query.c:738
 msgid "query packages in group"
 msgstr "запрос пакетов в группе"
 
-#: lib/query.c:732
+#: lib/query.c:740
 msgid "query a package file"
 msgstr "запросить файл пакета"
 
-#: lib/query.c:736
+#: lib/query.c:744
 msgid "query a spec file"
 msgstr "запросить spec-файл"
 
-#: lib/query.c:738
+#: lib/query.c:746
 msgid "query the pacakges triggered by the package"
 msgstr "запросить пакеты с триггер-скриптами на пакет"
 
-#: lib/query.c:740
+#: lib/query.c:748
 msgid "query the packages which require a capability"
 msgstr "найти пакеты, требующие сервиса"
 
-#: lib/query.c:742
+#: lib/query.c:750
 msgid "query the packages which provide a capability"
 msgstr "найти пакеты, предоставляющие сервис"
 
-#: lib/query.c:781
+#: lib/query.c:789
 msgid "list all configuration files"
 msgstr "показать все конфигурационные файлы"
 
-#: lib/query.c:783
+#: lib/query.c:791
 msgid "list all documentation files"
 msgstr "показать все файлы документации"
 
-#: lib/query.c:785
+#: lib/query.c:793
 msgid "dump basic file information"
 msgstr "вывести базовую информацию о файле"
 
-#: lib/query.c:787
+#: lib/query.c:795
 msgid "list files in package"
 msgstr "показать файлы пакета"
 
-#: lib/query.c:791
+#: lib/query.c:799
 msgid "use the following query format"
 msgstr "исп. следующий формат запроса"
 
-#: lib/query.c:793
+#: lib/query.c:801
 msgid "substitute i18n sections from the following catalogue"
 msgstr "подставить секции i18n из следующего каталога"
 
-#: lib/query.c:796
+#: lib/query.c:804
 msgid "display the states of the listed files"
 msgstr "показать состояние показанных файлов"
 
-#: lib/query.c:798
+#: lib/query.c:806
 msgid "display a verbose file listing"
 msgstr "вывести детальный список файлов пакета"
 
@@ -2914,7 +2914,7 @@ msgstr "Ok"
 msgid "opening database mode 0x%x in %s\n"
 msgstr "открываю базу в режиме 0x%x в %s\n"
 
-#: lib/rpmdb.c:157 lib/url.c:449
+#: lib/rpmdb.c:157 lib/url.c:447
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "не могу открыть %s: %s"
@@ -3481,22 +3481,22 @@ msgstr ""
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:225
+#: lib/url.c:223
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Пароль для %s@%s: "
 
-#: lib/url.c:250 lib/url.c:276
+#: lib/url.c:248 lib/url.c:274
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "ошибка: %sport должен быть числом\n"
 
-#: lib/url.c:413
+#: lib/url.c:411
 msgid "url port must be a number\n"
 msgstr "url port должен быть числом\n"
 
 #. XXX Fstrerror
-#: lib/url.c:472
+#: lib/url.c:470
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "не могу создать %s\n"

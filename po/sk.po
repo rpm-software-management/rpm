@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 1999-12-11 12:52-0500\n"
+"POT-Creation-Date: 1999-12-11 20:34-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1489,58 +1489,58 @@ msgstr "Súbor %4d: 0%o %s.%s\t %s\n"
 msgid "File needs leading \"/\": %s"
 msgstr "Súbor potrebuje na zaèiatku \"/\": %s"
 
-#: build/files.c:1120
+#: build/files.c:1121
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Súbor nebol nájdený: %s"
 
-#: build/files.c:1199
+#: build/files.c:1212
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "chybe: nie je mo¾né otvori» %%files súbor: %s"
 
-#: build/files.c:1206 build/pack.c:482
+#: build/files.c:1219 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr "riadok: %s"
 
-#: build/files.c:1549 build/parsePrep.c:30
+#: build/files.c:1562 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Chybný vlastník/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1604
+#: build/files.c:1617
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nie je mo¾né spusti» %s"
 
-#: build/files.c:1609
+#: build/files.c:1622
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nie je mo¾né vytvori» proces %s"
 
-#: build/files.c:1691
+#: build/files.c:1704
 #, c-format
 msgid "%s failed"
 msgstr "%s zlyhalo"
 
-#: build/files.c:1695
+#: build/files.c:1708
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
 
-#: build/files.c:1784
+#: build/files.c:1797
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
 
-#: build/files.c:1812 build/files.c:1821
+#: build/files.c:1825 build/files.c:1834
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
 
-#: build/files.c:1927
+#: build/files.c:1940
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Spracovávajú sa súbory: %s\n"
@@ -2486,7 +2486,7 @@ msgstr "fatálna chyba: "
 msgid "internal error (rpm bug?): "
 msgstr "interná chyba (chyba rpm?): "
 
-#: lib/misc.c:421 lib/misc.c:426 lib/misc.c:432
+#: lib/misc.c:423 lib/misc.c:428 lib/misc.c:434
 #, c-format
 msgid "error creating temporary file %s"
 msgstr "chyba pri vytváraní doèasného súboru %s"
@@ -2622,151 +2622,151 @@ msgid "error: could not read database record\n"
 msgstr "chyba: nie je mo¾né preèíta» záznam v databáze\n"
 
 #. XXX Fstrerror
-#: lib/query.c:468
+#: lib/query.c:471
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo\n"
 
-#: lib/query.c:487
+#: lib/query.c:490
 msgid "old format source packages cannot be queried\n"
 msgstr "nie je mo¾né pýta» sa zdrojových balíkov v starom formáte\n"
 
-#: lib/query.c:496 lib/rpminstall.c:228
+#: lib/query.c:499 lib/rpminstall.c:228
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s zrejme nie je RPM balík\n"
 
-#: lib/query.c:499
+#: lib/query.c:502
 #, c-format
 msgid "query of %s failed\n"
 msgstr "otázka na %s zlyhala\n"
 
-#: lib/query.c:527
+#: lib/query.c:535
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "otázka na spec-súbor %s zlyhala, nie je mo¾né analyzova»\n"
 
-#: lib/query.c:552
+#: lib/query.c:560
 msgid "could not read database record!\n"
 msgstr "nie je mo¾né preèíta» záznam v databáze!\n"
 
-#: lib/query.c:563
+#: lib/query.c:571
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s neobsahuje ¾iadne balíky\n"
 
-#: lib/query.c:573
+#: lib/query.c:581
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¾iadny z balíkov nespú¹»a %s\n"
 
-#: lib/query.c:583
+#: lib/query.c:591
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¾iadny z balíkov nevy¾aduje %s\n"
 
-#: lib/query.c:594
+#: lib/query.c:602
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¾iadny z balíkov neposkytuje %s\n"
 
-#: lib/query.c:610
+#: lib/query.c:618
 #, c-format
 msgid "file %s: %s\n"
 msgstr "súbor %s: %s\n"
 
-#: lib/query.c:613
+#: lib/query.c:621
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/query.c:626
+#: lib/query.c:634
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "chybné èíslo balíku: %s\n"
 
-#: lib/query.c:629
+#: lib/query.c:637
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "po¾aduje sa záznam èíslo %d\n"
 
-#: lib/query.c:632
+#: lib/query.c:640
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "záznam %d nie je mo¾né preèíta»\n"
 
-#: lib/query.c:644 lib/rpminstall.c:418
+#: lib/query.c:652 lib/rpminstall.c:418
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nain¹talovaný\n"
 
-#: lib/query.c:647
+#: lib/query.c:655
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "chyba pri hµadaní balíka %s\n"
 
-#: lib/query.c:669
+#: lib/query.c:677
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() zlyhalo\n"
 
-#: lib/query.c:728
+#: lib/query.c:736
 msgid "query package owning file"
 msgstr "opýta» sa balíku vlastniaceho súbor"
 
-#: lib/query.c:730
+#: lib/query.c:738
 msgid "query packages in group"
 msgstr "opýta» sa v¹etkých balíkov v skupine"
 
-#: lib/query.c:732
+#: lib/query.c:740
 msgid "query a package file"
 msgstr "opýta» sa súboru balíka"
 
-#: lib/query.c:736
+#: lib/query.c:744
 msgid "query a spec file"
 msgstr "opýta» sa spec súboru"
 
-#: lib/query.c:738
+#: lib/query.c:746
 msgid "query the pacakges triggered by the package"
 msgstr "opýta» sa balíkov spustených balíkom"
 
-#: lib/query.c:740
+#: lib/query.c:748
 msgid "query the packages which require a capability"
 msgstr "opýta» sa balíkov vy¾adujúcich schopnos»"
 
-#: lib/query.c:742
+#: lib/query.c:750
 msgid "query the packages which provide a capability"
 msgstr "opýta» sa balíkov poskytujúcich schopnos»"
 
-#: lib/query.c:781
+#: lib/query.c:789
 msgid "list all configuration files"
 msgstr "zobrazi» v¹etky konfiguraèné súbory"
 
-#: lib/query.c:783
+#: lib/query.c:791
 #, fuzzy
 msgid "list all documentation files"
 msgstr "zobrazi» v¹etky dokumentaèné súbory"
 
-#: lib/query.c:785
+#: lib/query.c:793
 msgid "dump basic file information"
 msgstr "zobrazi» základné informácie o balíku"
 
-#: lib/query.c:787
+#: lib/query.c:795
 msgid "list files in package"
 msgstr "zobrazi» súbory v balíku"
 
-#: lib/query.c:791
+#: lib/query.c:799
 msgid "use the following query format"
 msgstr "pou¾i» nasledovný formát otázky"
 
-#: lib/query.c:793
+#: lib/query.c:801
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:796
+#: lib/query.c:804
 msgid "display the states of the listed files"
 msgstr "zobrazii» stav daných súborov"
 
-#: lib/query.c:798
+#: lib/query.c:806
 msgid "display a verbose file listing"
 msgstr "zobrazi» podrobný zoznam súborov balíka"
 
@@ -2919,7 +2919,7 @@ msgstr "V PORIADKU"
 msgid "opening database mode 0x%x in %s\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: lib/rpmdb.c:157 lib/url.c:449
+#: lib/rpmdb.c:157 lib/url.c:447
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
@@ -3483,22 +3483,22 @@ msgstr ""
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:225
+#: lib/url.c:223
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Heslo pre %s@%s: "
 
-#: lib/url.c:250 lib/url.c:276
+#: lib/url.c:248 lib/url.c:274
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "chyba: %sport musí by» èíslo\n"
 
-#: lib/url.c:413
+#: lib/url.c:411
 msgid "url port must be a number\n"
 msgstr "url port musí by» èíslo\n"
 
 #. XXX Fstrerror
-#: lib/url.c:472
+#: lib/url.c:470
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nepodarilo sa vytvori» %s\n"

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 1999-12-11 12:52-0500\n"
+"POT-Creation-Date: 1999-12-11 20:34-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1477,58 +1477,58 @@ msgstr "Plik %4d: 0%o %s.%s\t %s\n"
 msgid "File needs leading \"/\": %s"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s"
 
-#: build/files.c:1120
+#: build/files.c:1121
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Nie znaleziono pliku: %s"
 
-#: build/files.c:1199
+#: build/files.c:1212
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "Nie mo¿na otworzyæ %%files pliku: %s"
 
-#: build/files.c:1206 build/pack.c:482
+#: build/files.c:1219 build/pack.c:482
 #, c-format
 msgid "line: %s"
 msgstr "linia: %s"
 
-#: build/files.c:1549 build/parsePrep.c:30
+#: build/files.c:1562 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "B³êdny u¿ytkownik/grupa: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1604
+#: build/files.c:1617
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nie mo¿na uruchomiæ %s"
 
-#: build/files.c:1609
+#: build/files.c:1622
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nie mo¿na wykonaæ fork na %s"
 
-#: build/files.c:1691
+#: build/files.c:1704
 #, c-format
 msgid "%s failed"
 msgstr "%s nie powiod³o siê"
 
-#: build/files.c:1695
+#: build/files.c:1708
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "zapisanie wszystkich danych do %s nie powiod³o siê"
 
-#: build/files.c:1784
+#: build/files.c:1797
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Wyszukiwanie wymaganych zasobów...\n"
 
-#: build/files.c:1812 build/files.c:1821
+#: build/files.c:1825 build/files.c:1834
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Wyszukiwanie nie powiod³o siê"
 
-#: build/files.c:1927
+#: build/files.c:1940
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Przetwarzanie plików: %s\n"
@@ -2475,7 +2475,7 @@ msgstr "fatalny b³±d: "
 msgid "internal error (rpm bug?): "
 msgstr "b³±d wewnêtrzny (b³±d w rpm'ie?): "
 
-#: lib/misc.c:421 lib/misc.c:426 lib/misc.c:432
+#: lib/misc.c:423 lib/misc.c:428 lib/misc.c:434
 #, c-format
 msgid "error creating temporary file %s"
 msgstr "b³±d w tworzeniu pliku tymczasowego %s"
@@ -2614,150 +2614,150 @@ msgid "error: could not read database record\n"
 msgstr "b³±d: nie mo¿na odczytaæ rekordu bazy\n"
 
 #. XXX Fstrerror
-#: lib/query.c:468
+#: lib/query.c:471
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiod³o siê\n"
 
-#: lib/query.c:487
+#: lib/query.c:490
 msgid "old format source packages cannot be queried\n"
 msgstr "pakiety w starym formacie nie mog± byæ odpytywane\n"
 
-#: lib/query.c:496 lib/rpminstall.c:228
+#: lib/query.c:499 lib/rpminstall.c:228
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s nie wygl±da na pakiet RPM\n"
 
-#: lib/query.c:499
+#: lib/query.c:502
 #, c-format
 msgid "query of %s failed\n"
 msgstr "odpytywanie %s nie powiod³o siê\n"
 
-#: lib/query.c:527
+#: lib/query.c:535
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "odpytywanie pliku spec %s nie powiod³o siê, nie mo¿na interpretowaæ\n"
 
-#: lib/query.c:552
+#: lib/query.c:560
 msgid "could not read database record!\n"
 msgstr "nie mo¿na odczytaæ rekordu bazy!\n"
 
-#: lib/query.c:563
+#: lib/query.c:571
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupa %s nie zawiera ¿adnych pakietów\n"
 
-#: lib/query.c:573
+#: lib/query.c:581
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "¿aden pakiet nie zahacza %s\n"
 
-#: lib/query.c:583
+#: lib/query.c:591
 #, c-format
 msgid "no package requires %s\n"
 msgstr "¿aden pakiet nie wymaga %s\n"
 
-#: lib/query.c:594
+#: lib/query.c:602
 #, c-format
 msgid "no package provides %s\n"
 msgstr "¿aden pakiet nie udostêpnia %s\n"
 
-#: lib/query.c:610
+#: lib/query.c:618
 #, c-format
 msgid "file %s: %s\n"
 msgstr "plik %s: %s\n"
 
-#: lib/query.c:613
+#: lib/query.c:621
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/query.c:626
+#: lib/query.c:634
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "b³êdny numer pakietu: %s\n"
 
-#: lib/query.c:629
+#: lib/query.c:637
 #, c-format
 msgid "package record number: %d\n"
 msgstr "numer rekordu pakietu: %d\n"
 
-#: lib/query.c:632
+#: lib/query.c:640
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "nie mo¿na odczytaæ rekordu %d\n"
 
-#: lib/query.c:644 lib/rpminstall.c:418
+#: lib/query.c:652 lib/rpminstall.c:418
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
 
-#: lib/query.c:647
+#: lib/query.c:655
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "b³±d szukania pakietu %s\n"
 
-#: lib/query.c:669
+#: lib/query.c:677
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() nie powiod³o siê\n"
 
-#: lib/query.c:728
+#: lib/query.c:736
 msgid "query package owning file"
 msgstr "sprawdzanie do jakiego pakietu nale¿y plik"
 
-#: lib/query.c:730
+#: lib/query.c:738
 msgid "query packages in group"
 msgstr "odpytywanie pakietów w grupie"
 
-#: lib/query.c:732
+#: lib/query.c:740
 msgid "query a package file"
 msgstr "odpytywanie pakietu"
 
-#: lib/query.c:736
+#: lib/query.c:744
 msgid "query a spec file"
 msgstr "odpytywanie pliku spec"
 
-#: lib/query.c:738
+#: lib/query.c:746
 msgid "query the pacakges triggered by the package"
 msgstr "odpytywanie pakietów zahaczanych przez pakiet"
 
-#: lib/query.c:740
+#: lib/query.c:748
 msgid "query the packages which require a capability"
 msgstr "odpytywanie pakietów wymagaj±cych zasobu"
 
-#: lib/query.c:742
+#: lib/query.c:750
 msgid "query the packages which provide a capability"
 msgstr "odpytywanie pakietów udostêpniaj±cych zasób"
 
-#: lib/query.c:781
+#: lib/query.c:789
 msgid "list all configuration files"
 msgstr "wy¶wietl wszystkie pliki konfiguracyjne"
 
-#: lib/query.c:783
+#: lib/query.c:791
 msgid "list all documentation files"
 msgstr "wy¶wietl wszystkie pliki dokumentacji"
 
-#: lib/query.c:785
+#: lib/query.c:793
 msgid "dump basic file information"
 msgstr "podaj postawowe informacje o pliku"
 
-#: lib/query.c:787
+#: lib/query.c:795
 msgid "list files in package"
 msgstr "wy¶wietl pliki zawarte w pakiecie"
 
-#: lib/query.c:791
+#: lib/query.c:799
 msgid "use the following query format"
 msgstr "u¿yj nastêpuj±cego formatu zapytania"
 
-#: lib/query.c:793
+#: lib/query.c:801
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:796
+#: lib/query.c:804
 msgid "display the states of the listed files"
 msgstr "wy¶wietl status pokazywanych plików"
 
-#: lib/query.c:798
+#: lib/query.c:806
 msgid "display a verbose file listing"
 msgstr "wy¶wietl wiêcej informacji o plikach z listy"
 
@@ -2910,7 +2910,7 @@ msgstr "OK"
 msgid "opening database mode 0x%x in %s\n"
 msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 
-#: lib/rpmdb.c:157 lib/url.c:449
+#: lib/rpmdb.c:157 lib/url.c:447
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s"
@@ -3474,22 +3474,22 @@ msgstr ""
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:225
+#: lib/url.c:223
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Has³o dla %s@%s: "
 
-#: lib/url.c:250 lib/url.c:276
+#: lib/url.c:248 lib/url.c:274
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "b³±d: %sport musi byæ liczb±\n"
 
-#: lib/url.c:413
+#: lib/url.c:411
 msgid "url port must be a number\n"
 msgstr "port musi byæ liczb±\n"
 
 #. XXX Fstrerror
-#: lib/url.c:472
+#: lib/url.c:470
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "utworzenie %s nie powiod³o siê\n"

@@ -1105,13 +1105,14 @@ fprintf(stderr, "*** PBF fileURL %s\n", fileURL);
     diskURL = rpmGenPath(fl->buildRootURL, NULL, fileURL);
 
     if (doGlob) {
+	int i;
+#ifdef	DYING
 	const char * diskRoot;
 	const char * globURL;
 	char * globRoot = NULL;
 	glob_t glob_result;
 	size_t maxb, nb;
 	int ut;
-	int i;
 	
 	glob_result.gl_pathc = 0;
 	glob_result.gl_pathv = NULL;
@@ -1157,6 +1158,18 @@ fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", maxb, nb, nb,
 	    rc = addFile(fl, globURL, NULL);
 	}
 	Globfree(&glob_result);
+#else
+	int argc = 0;
+	const char ** argv = NULL;
+	rc = remoteGlob(diskURL, &argc, &argv);
+	if (rc == 0) {
+	    for (i = 0; i < argc; i++) {
+		rc = addFile(fl, argv[i], NULL);
+		xfree(argv[i]);
+	    }
+	    xfree(argv);
+	}
+#endif	/* DYING */
     } else {
 	rc = addFile(fl, diskURL, NULL);
     }

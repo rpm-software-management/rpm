@@ -146,14 +146,12 @@ static int urlStrcmp(const char *str1, const char *str2)
     return 0;
 }
 
-#define	urlFind(_a, _b)	XurlFind(_a, _b, __LINE__)
-static void XurlFind(urlinfo *uret, int mustAsk, unsigned line)
+static void urlFind(urlinfo *uret, int mustAsk)
 {
     urlinfo u;
     int ucx;
     int i;
 
-fprintf(stderr, "*** urlFind(%p,%d) %s:%u\n", uret, mustAsk, __FILE__, line);
     if (uret == NULL)
 	return;
 
@@ -467,7 +465,7 @@ int urlGetFile(const char * url, const char * dest) {
     tfd = Fopen(dest, "w.ufdio");
 if (_url_debug)
 fprintf(stderr, "*** urlGetFile sfd %p %s tfd %p %s\n", sfd, url, tfd, dest);
-    if (Ferror(tfd)) {
+    if (tfd == NULL || Ferror(tfd)) {
 	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_DEBUG, _("failed to create %s: %s\n"), dest, Fstrerror(tfd));
 	if (tfd)

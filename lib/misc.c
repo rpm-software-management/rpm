@@ -1,5 +1,7 @@
 #include "system.h"
 
+static int _debug = 0;
+
 #include <rpmlib.h>
 #include <rpmurl.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath */
@@ -645,4 +647,104 @@ int myGlobPatternP (const char *patternURL)
 	}
 
     return (0);
+}
+
+int remoteGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
+{
+    int ac = 0;
+    const char ** av = NULL;
+    int argc = 0;
+    const char ** argv = NULL;
+    const char * path;
+    const char * globURL;
+    char * globRoot = NULL;
+    size_t maxb, nb;
+    glob_t gl;
+    int ut;
+    int i, j;
+    int rc;
+
+    rc = poptParseArgvString(patterns, &ac, &av);
+    if (rc)
+	return rc;
+
+    for (j = 0; j < ac; j++) {
+	if (!myGlobPatternP(av[j])) {
+	    if (argc == 0)
+		argv = xmalloc((argc+2) * sizeof(*argv));
+	    else
+		argv = xrealloc(argv, (argc+2) * sizeof(*argv));
+if (_debug)
+fprintf(stderr, "*** remoteGlob argv[%d] \"%s\"\n", argc, av[j]);
+	    argv[argc++] = xstrdup(av[j]);
+	    continue;
+	}
+	
+	gl.gl_pathc = 0;
+	gl.gl_pathv = NULL;
+	rc = Glob(av[j], 0, NULL, &gl);
+	if (rc)
+	    goto exit;
+
+	/* XXX Prepend the URL leader for globs that have stripped it off */
+	maxb = 0;
+	for (i = 0; i < gl.gl_pathc; i++) {
+	    if ((nb = strlen(&(gl.gl_pathv[i][0]))) > maxb)
+		maxb = nb;
+	}
+	
+	ut = urlPath(av[j], &path);
+	nb = ((ut > URL_IS_DASH) ? (path - av[j]) : 0);
+	maxb += nb;
+	maxb += 1;
+	globURL = globRoot = xmalloc(maxb);
+
+	switch (ut) {
+	case URL_IS_HTTP:
+	case URL_IS_FTP:
+	case URL_IS_PATH:
+	case URL_IS_DASH:
+	    strncpy(globRoot, av[j], nb);
+	    break;
+	case URL_IS_UNKNOWN:
+	    break;
+	}
+	globRoot += nb;
+	*globRoot = '\0';
+if (_debug)
+fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", maxb, nb, nb, av[j], globURL, globURL);
+	
+	if (argc == 0)
+	    argv = xmalloc((gl.gl_pathc+1) * sizeof(*argv));
+	else if (gl.gl_pathc > 0)
+	    argv = xrealloc(argv, (argc+gl.gl_pathc+1) * sizeof(*argv));
+	for (i = 0; i < gl.gl_pathc; i++) {
+	    const char * globFile = &(gl.gl_pathv[i][0]);
+	    if (globRoot > globURL && globRoot[-1] == '/')
+		while (*globFile == '/') globFile++;
+	    strcpy(globRoot, globFile);
+if (_debug)
+fprintf(stderr, "*** remoteGlob argv[%d] \"%s\"\n", argc, globURL);
+	    argv[argc++] = xstrdup(globURL);
+	}
+	Globfree(&gl);
+	xfree(globURL);
+    }
+    argv[argc] = NULL;
+    if (argvPtr)
+	*argvPtr = argv;
+    if (argcPtr)
+	*argcPtr = argc;
+    rc = 0;
+
+exit:
+    if (av)
+	xfree(av);
+    if ((rc || argvPtr == NULL) && argv) {
+	for (i = 0; i < argc; i++)
+	    xfree(argv[i]);
+	xfree(argv);
+	argv = NULL;
+    }
+    return rc;
 }
