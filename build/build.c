@@ -40,7 +40,7 @@ static char *do_patch(Spec spec, int c, int strip, char *dashb);
 int isCompressed(char *file);
 static void doSweep(Spec s);
 
-static char build_subdir[1024];
+char build_subdir[1024];
 
 struct Script *openScript(Spec spec, int builddir, char *name)
 {

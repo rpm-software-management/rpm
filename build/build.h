@@ -10,6 +10,8 @@ int execInstall(Spec s);
 int execClean(Spec s);
 int verifyList(Spec s);
 
+extern char build_subdir[1024];
+
 #define RPMBUILD_PREP        1
 #define RPMBUILD_BUILD      (1 << 1)
 #define RPMBUILD_INSTALL    (1 << 2)
