@@ -398,7 +398,7 @@ void faFree(faFile fa, unsigned int offset) {
 }
 
 void faClose(faFile fa) {
-    close(fdFileno(fa->fd));
+    fdClose(fa->fd);
     free(fa);
 }
 
