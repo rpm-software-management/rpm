@@ -35,7 +35,8 @@
 typedef struct
 {
 	uint32  size;
-/*@owned@*/ uint32* data;
+/*@owned@*/ /*@relnull@*/
+	uint32* data;
 } mp32number;
 
 #ifdef __cplusplus
@@ -69,7 +70,7 @@ void mp32nfree(mp32number* n)
 /**
  */
 BEECRYPTAPI
-void mp32ncopy(/*@out@*/ mp32number* n, const mp32number* copy)
+void mp32ncopy(mp32number* n, const mp32number* copy)
 	/*@modifies n->size, n->data @*/;
 
 /**

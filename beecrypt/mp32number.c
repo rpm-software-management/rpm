@@ -32,15 +32,13 @@
 #include "mp32.h"
 #include "debug.h"
 
-/*@-nullstate@*/	/* n->data may be NULL */
 void mp32nzero(mp32number* n)
 {
 	n->size = 0;
 	n->data = (uint32*) 0;
 }
-/*@=nullstate@*/
 
-/*@-nullstate -compdef @*/	/* n->data may be NULL */
+/*@-compdef @*/	/* n->data not initialized */
 void mp32nsize(mp32number* n, uint32 size)
 {
 	if (size)
@@ -71,9 +69,8 @@ void mp32nsize(mp32number* n, uint32 size)
 	else
 		{};
 }
-/*@=nullstate =compdef @*/
+/*@=compdef @*/
 
-/*@-nullstate@*/	/* n->data may be NULL */
 void mp32ninit(mp32number* n, uint32 size, const uint32* data)
 {
 	n->size = size;
@@ -87,9 +84,7 @@ void mp32ninit(mp32number* n, uint32 size, const uint32* data)
 	if (n->data && data)
 		mp32copy(size, n->data, data);
 }
-/*@=nullstate@*/
 
-/*@-nullstate@*/	/* n->data may be NULL */
 void mp32nfree(mp32number* n)
 {
 	if (n->data)
@@ -99,13 +94,10 @@ void mp32nfree(mp32number* n)
 	}
 	n->size = 0;
 }
-/*@=nullstate@*/
 
 void mp32ncopy(mp32number* n, const mp32number* copy)
 {
-	/*@-compdef@*/
 	mp32nset(n, copy->size, copy->data);
-	/*@=compdef@*/
 }
 
 void mp32nwipe(mp32number* n)
@@ -114,7 +106,6 @@ void mp32nwipe(mp32number* n)
 		mp32zero(n->size, n->data);
 }
 
-/*@-nullstate@*/	/* n->data may be NULL */
 void mp32nset(mp32number* n, uint32 size, const uint32* data)
 {
 	if (size)
@@ -128,7 +119,7 @@ void mp32nset(mp32number* n, uint32 size, const uint32* data)
 			n->data = (uint32*) malloc(size * sizeof(uint32));
 
 		if (n->data && data)
-			/*@-nullpass@*/	/* LCL: data != NULL */
+			/*@-nullpass@*/ /* data is notnull */
 			mp32copy(n->size = size, n->data, data);
 			/*@=nullpass@*/
 		else
@@ -146,9 +137,7 @@ void mp32nset(mp32number* n, uint32 size, const uint32* data)
 	else
 		{};
 }
-/*@=nullstate@*/
 
-/*@-nullstate@*/	/* n->data may be NULL */
 void mp32nsetw(mp32number* n, uint32 val)
 {
 	if (n->data)
@@ -170,9 +159,8 @@ void mp32nsetw(mp32number* n, uint32 val)
 		n->data = (uint32*) 0;
 	}
 }
-/*@=nullstate@*/
 
-/*@-nullstate -compdef -usedef @*/	/* n->data may be NULL */
+/*@-usedef @*/	/* n->data may be NULL */
 void mp32nsethex(mp32number* n, const char* hex)
 {
 	uint32 length = strlen(hex);
@@ -222,5 +210,5 @@ void mp32nsethex(mp32number* n, const char* hex)
 		n->data = (uint32*)0;
 	}
 }
-/*@=nullstate =compdef =usedef @*/
+/*@=usedef @*/
 /*@=sizeoftype@*/

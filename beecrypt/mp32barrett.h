@@ -34,8 +34,10 @@
 typedef struct
 {
 	uint32	size;
-/*@owned@*/ uint32* modl;	/* (size) words */
-/*@dependent@*/ /*@null@*/ uint32* mu;	/* (size+1) words */
+/*@owned@*/
+	uint32* modl;	/* (size) words */
+/*@dependent@*/ /*@null@*/
+	uint32* mu;	/* (size+1) words */
 } mp32barrett;
 
 #ifdef __cplusplus
