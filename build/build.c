@@ -49,7 +49,7 @@ static void doRmSource(Spec spec)
 static char *_preScriptEnvironment = 
 	"RPM_SOURCE_DIR=\"%{_sourcedir}\"\n"
 	"RPM_BUILD_DIR=\"%{_builddir}\"\n"
-	"RPM_OPT_FLAGS=\"%{_optflags}\"\n"
+	"RPM_OPT_FLAGS=\"%{optflags}\"\n"
 	"export  RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS\n"
 ;
 
