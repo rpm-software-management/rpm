@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0\n"
-"POT-Creation-Date: 2000-08-04 15:48-0400\n"
-"PO-Revision-Date: 2000-07-27 15:59+0100\n"
+"POT-Creation-Date: 2000-08-07 15:28-0400\n"
+"PO-Revision-Date: 2000-08-08 22:37+0100\n"
 "Last-Translator: Milan Kerslager <milan.kerslager@spsselib.hiedu.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -3222,7 +3222,7 @@ msgstr "odstraòuji 0 %s polo¾ek.\n"
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuji \"%s\" z indexu %s.\n"
 
-#: lib/rpmdb.c:1728
+#: lib/rpmdb.c:1736
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstraòuji %d polo¾ek z indexu %s.\n"
@@ -3242,7 +3242,7 @@ msgstr "pøidávám 0 %s polo¾ek.\n"
 msgid "adding \"%s\" to %s index.\n"
 msgstr "pøidávám \"%s\" do indexu %s\n"
 
-#: lib/rpmdb.c:1952
+#: lib/rpmdb.c:1960
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "pøidávám %d polo¾ek do indexu %s.\n"
