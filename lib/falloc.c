@@ -43,7 +43,7 @@ FDIO_t fadio = /*@-compmempass@*/ &fadio_s /*@=compmempass@*/ ;
 /* =============================================================== */
 
 /* flags are the same as for open(2) - NULL returned on error */
-FD_t fadOpen(const char * path, int flags, int perms)
+FD_t fadOpen(const char * path, int flags, mode_t perms)
 {
     struct faFileHeader newHdr;
     FD_t fd;

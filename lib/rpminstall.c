@@ -31,7 +31,7 @@ static void * showProgress(const Header h, const rpmCallbackType what,
 			   const unsigned long total,
 			   const void * pkgKey, void * data) {
     char * s;
-    int flags = (int) data;
+    int flags = (int) ((long)data);
     void * rc = NULL;
     const char * filename = pkgKey;
     static FD_t fd;
@@ -338,7 +338,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags,
 	rpmProblemSet probs = NULL;
 ;
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
-	rc = rpmRunTransactions(rpmdep, showProgress, (void *) notifyFlags, 
+	rc = rpmRunTransactions(rpmdep, showProgress, (void *) ((long)notifyFlags), 
 				    NULL, &probs, transFlags, probFilter);
 
 	if (rc < 0) {
@@ -365,7 +365,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv, int transFlags,
 
 	    if (!(transFlags & RPMTRANS_FLAG_TEST))
 		numFailed += rpmInstallSourcePackage(rootdir, fd, NULL,
-				showProgress, (void *) notifyFlags, NULL);
+				showProgress, (void *) ((long)notifyFlags), NULL);
 
 	    Fclose(fd);
 	}
