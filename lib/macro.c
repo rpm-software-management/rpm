@@ -579,7 +579,7 @@ freeArgs(MacroBuf *mb)
 }
 
 static const char *
-grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
+grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se, char lastc)
 {
     char buf[BUFSIZ], *b, *be;
     char aname[16];
@@ -602,20 +602,20 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
 
     addMacro(mb->mc, "0", NULL, b, mb->depth);
     
-    /* Copy args into buf until newline */
+    /* Copy args into buf until lastc */
     *be++ = ' ';
     b = be;	/* Save beginning of args */
     while ((c = *se) != 0) {
 	char *a;
 	se++;
-	if (c == '\n')
+	if (c == lastc)
 		break;
 	if (isblank(c))
 		continue;
 	if (argc > 1)
 		*be++ = ' ';
 	a = be;
-	while (!(isblank(c) || c == '\n')) {
+	while (!(isblank(c) || c == lastc)) {
 		*be++ = c;
 		if ((c = *se) == '\0')
 			break;
@@ -625,7 +625,6 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
 	argc++;
     }
 
-#if 0
 /*
  * The macro %* analoguous to the shell's $* means "Pass all non-macro
  * parameters." Consequently, there needs to be a macro that means "Pass all
@@ -636,7 +635,6 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
  */
     /* Add unexpanded args as macro */
     addMacro(mb->mc, "**", NULL, b, mb->depth);
-#endif
 
 #ifdef NOTYET
     /* XXX if macros can be passed as args ... */
@@ -717,7 +715,7 @@ grabArgs(MacroBuf *mb, const MacroEntry *me, const char *se)
     }
 
     /* Add arg count as macro */
-    sprintf(aname, "%d", (argc - optind + 1));
+    sprintf(aname, "%d", (argc - optind));
     addMacro(mb->mc, "#", NULL, aname, mb->depth);
 
     /* Add unexpanded args as macro */
@@ -834,7 +832,7 @@ expandMacro(MacroBuf *mb)
     int c;
     int rc = 0;
     int negate;
-    int grab;
+    char grab;
     int chkexist;
 
     if (++mb->depth > max_macro_depth) {
@@ -866,7 +864,7 @@ expandMacro(MacroBuf *mb)
 	if (mb->depth > 1)	/* XXX full expansion for outermost level */
 		t = mb->t;	/* save expansion pointer for printExpand */
 	negate = 0;
-	grab = 0;
+	grab = '\0';
 	chkexist = 0;
 	switch ((c = *s)) {
 	default:		/* %name substitution */
@@ -885,12 +883,22 @@ expandMacro(MacroBuf *mb)
 			se++;
 		while((c = *se) && (isalnum(c) || c == '_'))
 			se++;
-		if (*se == '*')
+		/* Recognize non-alnum macros too */
+		switch (*se) {
+		case '*':
 			se++;
+			if (*se == '*') se++;
+			break;
+		case '#':
+			se++;
+			break;
+		default:
+			break;
+		}
 		fe = se;
 		/* For "%name " macros ... */
 		if ((c = *fe) && isblank(c))
-			grab = 1;
+			grab = '\n';
 		break;
 	case '(':		/* %(...) shell escape */
 		if ((se = matchchar(s, c, ')')) == NULL) {
@@ -926,11 +934,18 @@ expandMacro(MacroBuf *mb)
 				break;
 			}
 		}
-		for (fe = f; (c = *fe) && !strchr(":}", c);)
+		for (fe = f; (c = *fe) && !strchr(" :}", c);)
 			fe++;
-		if (c == ':') {
+		switch (c) {
+		case ':':
 			g = fe + 1;
 			ge = se - 1;
+			break;
+		case ' ':
+			grab = se[-1];
+			break;
+		default:
+			break;
 		}
 		break;
 	}
@@ -1074,10 +1089,13 @@ expandMacro(MacroBuf *mb)
 
 	/* Setup args for "%name " macros with opts */
 	if (me && me->opts != NULL) {
-		if (grab)
-			se = grabArgs(mb, me, fe);
-		else {
-		    addMacro(mb->mc, "*", NULL, "", mb->depth);
+		if (grab) {
+			se = grabArgs(mb, me, fe, grab);
+		} else {
+			addMacro(mb->mc, "**", NULL, "", mb->depth);
+			addMacro(mb->mc, "*", NULL, "", mb->depth);
+			addMacro(mb->mc, "#", NULL, "0", mb->depth);
+			addMacro(mb->mc, "0", NULL, me->name, mb->depth);
 		}
 	}
 
