@@ -5,6 +5,7 @@ use ExtUtils::MakeMaker;
          RPM.xs             RPM.c
          RPM/Constants.xs   RPM/Constants.c
          RPM/Database.xs    RPM/Database.c
+         RPM/Error.xs       RPM/Error.c
          RPM/Header.xs      RPM/Header.c
         );
 

@@ -9,8 +9,8 @@ require DynaLoader;
 require Exporter;
 
 @ISA = qw(Exporter DynaLoader);
-$VERSION = '0.26';
-$revision = do { my @r=(q$Revision: 1.6 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = '0.27';
+$revision = do { my @r=(q$Revision: 1.7 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT = qw(rpm_osname rpm_archname);
 @EXPORT_OK = @EXPORT;
@@ -21,6 +21,7 @@ bootstrap RPM $VERSION;
 bootstrap_Constants($VERSION);
 bootstrap_Header($VERSION);
 bootstrap_Database($VERSION);
+bootstrap_Error($VERSION);
 
 1;
 
@@ -30,13 +31,12 @@ __END__
 
 RPM - Perl interface to the API for the RPM Package Manager
 
-=head1 SYNOPSIS
-
-    use RPM;
-
-    $pkg = new RPM "file.arch.rpm";
-
 =head1 DESCRIPTION
+
+The B<Perl-RPM> package is an extension for natively linking the
+functionality of the B<RPM Package Manager> with the extension facility of
+Perl. The aim is to offer all the functionality made available via the C
+API in the form of Perl object classes.
 
 At present, the package-manipulation functionality is not yet implemented.
 The B<RPM::Database> and B<RPM::Header> packages do provide access to the

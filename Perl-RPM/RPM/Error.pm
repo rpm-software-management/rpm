@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   $Id: Error.pm,v 1.2 2000/05/30 01:03:13 rjray Exp $
+#   $Id: Error.pm,v 1.3 2000/08/02 08:45:16 rjray Exp $
 #
 #   Description:    Error-management support that cooperates with the primary
 #                   Perl/C error glue.
@@ -33,8 +33,8 @@ require RPM;
 
 @ISA = qw(Exporter);
 
-$VERSION = $RPM::VERSION;
-$revision = do { my @r=(q$Revision: 1.2 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = '0.27';
+$revision = do { my @r=(q$Revision: 1.3 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT = qw(clear_errors set_error_callback rpm_error);
 @EXPORT_OK = @EXPORT;
@@ -99,6 +99,10 @@ when invoked, will be passed the numeric code and the message string being
 raised as the error. Note that the callback may be invoked by internal error
 flagging in the core B<rpm> library, as well as by calls to B<rpm_error>
 above.
+
+Before any user-provided callback is invoked, the C<$RPM::err> variable is
+set. While accessing it in a callback would be redundant, users should not
+be concerned about interrupting other internal processes (in theory, that is).
 
 =back
 
