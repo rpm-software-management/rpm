@@ -2431,7 +2431,7 @@ msgstr ""
 #: lib/db3.c:1102
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
-msgstr "не могу получить %s доступ к базе данных"
+msgstr ""
 
 #: lib/db3.c:1109
 #, c-format
@@ -2693,7 +2693,7 @@ msgstr "подставить секции i18n из следующего каталога"
 
 #: lib/poptBT.c:116
 msgid "build source and binary package from spec file"
-msgstr "найдено %d исходных и %d бинарных пакетов\n"
+msgstr ""
 
 #: lib/poptBT.c:118
 msgid "build binary package from spec file"
@@ -2721,7 +2721,7 @@ msgstr ""
 
 #: lib/poptBT.c:131
 msgid "build source and binary package from tar ball"
-msgstr "найдено %d исходных и %d бинарных пакетов\n"
+msgstr ""
 
 #: lib/poptBT.c:133
 msgid "build binary package from tar ball"
@@ -3127,7 +3127,7 @@ msgstr "не могу открыть %s на %s:%d"
 #: lib/rpmdb.c:293
 #, c-format
 msgid "cannot open %s index"
-msgstr "не могу открыть %s\n"
+msgstr ""
 
 #: lib/rpmdb.c:308
 #, c-format
@@ -3191,7 +3191,7 @@ msgstr ""
 #: lib/rpmdb.c:1077
 #, c-format
 msgid "error(%d) counting packages"
-msgstr "ошибка при поиске пакета %s\n"
+msgstr ""
 
 #: lib/rpmdb.c:1136 lib/rpmdb.c:1663 lib/uninstall.c:97
 #, c-format
@@ -3216,7 +3216,7 @@ msgstr "удаляю индекс имен\n"
 #: lib/rpmdb.c:1878
 #, c-format
 msgid "error(%d) allocating new package instance"
-msgstr "ошибка при поиске пакета %s\n"
+msgstr ""
 
 #: lib/rpmdb.c:1935
 #, c-format
@@ -3339,7 +3339,7 @@ msgstr "получено %d пакетов\n"
 #: lib/rpminstall.c:220 lib/rpminstall.c:389
 #, c-format
 msgid "cannot open file %s: %s\n"
-msgstr "не могу открыть файл %s: %s"
+msgstr ""
 
 #: lib/rpminstall.c:238 lib/rpminstall.c:529
 #, c-format
@@ -3906,7 +3906,7 @@ msgstr "url port должен быть числом\n"
 #: rpmio/url.c:445
 #, c-format
 msgid "failed to open %s: %s\n"
-msgstr "не могу открыть %s: %s"
+msgstr "не могу открыть %s: %s\n"
 
 #. XXX Fstrerror
 #: rpmio/url.c:462
