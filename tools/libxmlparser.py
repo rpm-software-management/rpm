@@ -20,7 +20,7 @@ class RpmLibxml2Parser:
     def pad(self):
 	return (' ' * (self.n * self.lvl))
 
-    def start_element(self, name, attrs):
+    def start_element_handler(self, name, attrs):
 	l = self.pad() + '<' + name
 	if attrs.has_key(u'name'):
 	    l = l + ' name="' + attrs[u'name'] + '"'
@@ -31,7 +31,7 @@ class RpmLibxml2Parser:
 	self.lvl = self.lvl + 1
 	self.cdata = 1
     
-    def end_element(self, name):
+    def end_element_handler(self, name):
 	self.lvl = self.lvl - 1
 	l = '</' + name + '>'
 	if self.lvl < 2:
@@ -40,7 +40,7 @@ class RpmLibxml2Parser:
 	self.spew(l)
 	self.cdata = 0
 
-    def char_data(self, data):
+    def character_data_handler(self, data):
 	if self.cdata == 1:
 	    if not data.isspace():
 		self.cdata = 2
@@ -48,23 +48,22 @@ class RpmLibxml2Parser:
 	    self.spew(data)
 
     def processNode(self):
-#	self.n = self.p.Depth() + 1
-	if self.p.NodeType() == 1:	# Element
+	if self.p.NodeType() == libxml2.XML_READER_TYPE_ELEMENT:	# 1
 	    name = self.p.Name()
 	    attrs = {}
 	    while self.p.MoveToNextAttribute():
 		attrs[self.p.Name()] = self.p.Value()
-	    self.start_element(name, attrs)
-	elif self.p.NodeType() == 3:	# Text within element
-	    self.char_data(self.p.Value())
-	elif self.p.NodeType() == 10:	# Start element
-	    self.char_data(self.p.Value())
-	elif self.p.NodeType() == 14:	# Text
-	    self.char_data(self.p.Value())
-	elif self.p.NodeType() == 15:	# End element
-	    self.end_element(self.p.Name())
+	    self.start_element_handler(name, attrs)
+	elif self.p.NodeType() == libxml2.XML_READER_TYPE_TEXT:		# 3
+	    self.character_data_handler(self.p.Value())
+	elif self.p.NodeType() == libxml2.XML_READER_TYPE_DOCUMENT_TYPE:# 10
+	    self.character_data_handler(self.p.Value())
+	elif self.p.NodeType() == libxml2.XML_READER_TYPE_SIGNIFICANT_WHITESPACE:# 14
+	    self.character_data_handler(self.p.Value())
+	elif self.p.NodeType() == libxml2.XML_READER_TYPE_END_ELEMENT:	# 15
+	    self.end_element_handler(self.p.Name())
 	else:
-	    print "%d %d %s %d %s" % (self.p.Depth(), self.p.NodeType(),
+	    print "%d %d %s IsEmptyElement:%d %s" % (self.p.Depth(), self.p.NodeType(),
                               self.p.Name(), self.p.IsEmptyElement(),
                               self.p.Value())
 	    while self.p.MoveToNextAttribute():
@@ -74,7 +73,7 @@ class RpmLibxml2Parser:
     def read(self, *args):
 	return self.p.Read(*args)
 
-    def ParseFile(self):
+    def parseFile(self):
 	ret = self.read()
 	while ret == 1:
 	    self.processNode()
@@ -83,6 +82,6 @@ class RpmLibxml2Parser:
 
 fn = 'time.xml'
 p = RpmLibxml2Parser(fn)
-ret = p.ParseFile()
+ret = p.parseFile()
 if ret != 0:
     print "Error parsing and validating %s" % (fn)

@@ -8,9 +8,9 @@ class RpmExpatParser:
 	    print "unable to open %s" % (fn)
 	    return
 	self.p = xml.parsers.expat.ParserCreate()
-	self.p.StartElementHandler = self.start_element
-	self.p.EndElementHandler = self.end_element
-	self.p.CharacterDataHandler = self.char_data
+	self.p.StartElementHandler = self.start_element_handler
+	self.p.EndElementHandler = self.end_element_handler
+	self.p.CharacterDataHandler = self.character_data_handler
 	self.n = 2
 	self.lvl = 0
 	self.cdata = 0
@@ -22,7 +22,7 @@ class RpmExpatParser:
     def pad(self):
 	return (' ' * (self.n * self.lvl))
 
-    def start_element(self, name, attrs):
+    def start_element_handler(self, name, attrs):
 	l = self.pad() + '<' + name
 	if attrs.has_key(u'name'):
 	    l = l + ' name="' + attrs[u'name'] + '"'
@@ -33,7 +33,7 @@ class RpmExpatParser:
 	self.lvl = self.lvl + 1
 	self.cdata = 1
     
-    def end_element(self, name):
+    def end_element_handler(self, name):
 	self.lvl = self.lvl - 1
 	l = '</' + name + '>'
 	if self.lvl < 2:
@@ -42,7 +42,7 @@ class RpmExpatParser:
 	self.spew(l)
 	self.cdata = 0
 
-    def char_data(self, data):
+    def character_data_handler(self, data):
 	if self.cdata == 1:
 	    if not data.isspace():
 		self.cdata = 2
@@ -52,9 +52,10 @@ class RpmExpatParser:
     def read(self, *args):
 	return self.f.read(*args)
 
-    def ParseFile(self):
+    def parseFile(self):
 	return self.p.ParseFile(self)
 
 p = RpmExpatParser('time.xml')
-ret = p.ParseFile()
-print ret
+ret = p.parseFile()
+if ret != 1:
+    print "Error parsing and validating %s" % (fn)
