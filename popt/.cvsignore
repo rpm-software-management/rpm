@@ -7,3 +7,5 @@ config.log
 config.cache
 config.satus
 config.status
+.depend
+CHANGES
