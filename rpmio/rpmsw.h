@@ -7,7 +7,7 @@
 
 /** \ingroup rpmio
  */
-typedef unsigned long rpmtime_t;
+typedef unsigned long int rpmtime_t;
 
 /** \ingroup rpmio
  */
@@ -18,9 +18,12 @@ typedef struct rpmsw_s * rpmsw;
 struct rpmsw_s {
     union {
 	struct timeval tv;
-	unsigned long long ticks;
+	unsigned long long int ticks;
+	unsigned long int tocks[2];
     } u;
 };
+
+#define	RPMSW_SCALE	(1000 * 1000)
 
 #ifdef __cplusplus
 extern "C" {

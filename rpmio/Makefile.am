@@ -6,7 +6,7 @@ LINT = splint
 
 EXTRA_DIST = tdigest.c tdir.c tficl.c tfts.c tglob.c tinv.c tkey.c trpmio.c
 
-EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio dumpasn1
+EXTRA_PROGRAMS = tdigest tdir tfts tglob tinv tkey tring trpmio tsw dumpasn1
 
 INCLUDES = -I. \
 	-I$(top_srcdir) \
@@ -91,6 +91,9 @@ tring_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
 
 trpmio_SOURCES = trpmio.c
 trpmio_LDADD = librpmio.la $(top_builddir)/popt/libpopt.la
+
+tsw_SOURCES = tsw.c
+tsw_LDFLAGS = librpmio.la
 
 dumpasn1_SOURCES = dumpasn1.c
 

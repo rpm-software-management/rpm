@@ -319,31 +319,41 @@ static int rpmsqWaitUnregister(rpmsq sq)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
+    struct rpmsw_s end;
     int same_thread = 0;
     int ret = 0;
     int xx;
 
-    if (same_thread) ret = sighold(SIGCHLD);
+    if (same_thread)
+	ret = sighold(SIGCHLD);
+    else
+	ret = pthread_mutex_lock(&sq->mutex);
 
+    /* Start the child. */
     if (sq->pipes[0] >= 0)
 	xx = close(sq->pipes[0]);
     if (sq->pipes[1] >= 0)
 	xx = close(sq->pipes[1]);
     sq->pipes[0] = sq->pipes[1] = -1;
 
+    (void) rpmswNow(&sq->begin);
+
     /*@-infloops@*/
     while (ret == 0 && sq->reaped != sq->child) {
-	if (same_thread) {
+	if (same_thread)
 	    ret = sigpause(SIGCHLD);
-	} else {
-	    ret = pthread_mutex_lock(&sq->mutex);
+	else
 	    ret = pthread_cond_wait(&sq->cond, &sq->mutex);
-	    xx = pthread_mutex_unlock(&sq->mutex);
-	}
     }
     /*@=infloops@*/
 
-    if (same_thread) xx = sigrelse(SIGCHLD);
+    sq->msecs = rpmswDiff(rpmswNow(&end), &sq->begin)/1000;
+    sq->script_msecs += sq->msecs;
+
+    if (same_thread)
+	xx = sigrelse(SIGCHLD);
+    else
+	xx = pthread_mutex_unlock(&sq->mutex);
 
 #ifdef _RPMSQ_DEBUG
 /*@-modfilesys@*/

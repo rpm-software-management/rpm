@@ -15,23 +15,63 @@ static rpmtime_t rpmsw_cycles = 1;
 /*@unchecked@*/
 static int rpmsw_type = 0;
 
-#if defined(__i386__)
-static inline unsigned long long do_rdtsc ( void )
-	/*@*/
-{
-   unsigned long long x;
-   __asm__ volatile (".byte 0x0f, 0x31" : "=A" (x));
-   return x;
-}
-#endif
+/*@unchecked@*/
+static int rpmsw_initialized = 0;
+
+#if 0	/* XXX defined(__i386__) */
+/* Swiped from glibc-2.3.2 sysdeps/i386/i686/hp-timing.h */
+
+#define	HP_TIMING_ZERO(Var)	(Var) = (0)
+#define	HP_TIMING_NOW(Var)	__asm__ __volatile__ ("rdtsc" : "=A" (Var))
+
+/* It's simple arithmetic for us.  */
+#define	HP_TIMING_DIFF(Diff, Start, End)	(Diff) = ((End) - (Start))
+
+/* We have to jump through hoops to get this correctly implemented.  */
+#define HP_TIMING_ACCUM(Sum, Diff) \
+  do {									      \
+    char __not_done;							      \
+    hp_timing_t __oldval = (Sum);					      \
+    hp_timing_t __diff = (Diff) - GL(dl_hp_timing_overhead);		      \
+    do									      \
+      {									      \
+	hp_timing_t __newval = __oldval + __diff;			      \
+	int __temp0, __temp1;						      \
+	__asm__ __volatile__ ("xchgl %4, %%ebx\n\t"			      \
+			      "lock; cmpxchg8b %1\n\t"			      \
+			      "sete %0\n\t"				      \
+			      "movl %4, %%ebx"				      \
+			      : "=q" (__not_done), "=m" (Sum),		      \
+				"=A" (__oldval), "=c" (__temp0),	      \
+				"=SD" (__temp1)				      \
+			      : "1" (Sum), "2" (__oldval),		      \
+				"3" (__newval >> 32),			      \
+				"4" (__newval & 0xffffffff)		      \
+			      : "memory");				      \
+      }									      \
+    while (__not_done);							      \
+  } while (0)
+
+/* No threads, no extra work.  */
+#define HP_TIMING_ACCUM_NT(Sum, Diff)	(Sum) += (Diff)
+
+/* Print the time value.  */
+#define HP_TIMING_PRINT(Buf, Len, Val) \
+  do {									      \
+    char __buf[20];							      \
+    char *__cp = _itoa (Val, __buf + sizeof (__buf), 10, 0);		      \
+    int __len = (Len);							      \
+    char *__dest = (Buf);						      \
+    while (__len-- > 0 && __cp < __buf + sizeof (__buf))		      \
+      *__dest++ = *__cp++;						      \
+    memcpy (__dest, " clock cycles", MIN (__len, sizeof (" clock cycles")));  \
+  } while (0)
+#endif	/* __i386__ */
 
 rpmsw rpmswNow(rpmsw sw)
 {
-    static int oneshot = 0;
-    if (oneshot == 0) {
-	oneshot = 1;
+    if (!rpmsw_initialized)
 	rpmswInit();
-    }
     if (sw == NULL)
 	return NULL;
     switch (rpmsw_type) {
@@ -39,9 +79,9 @@ rpmsw rpmswNow(rpmsw sw)
 	if (gettimeofday(&sw->u.tv, NULL))
 	    return NULL;
 	break;
-#if defined(__i386__)
+#if defined(HP_TIMING_NOW)
     case 1:
-	sw->u.ticks = do_rdtsc();
+	HP_TIMING_NOW(sw->u.ticks);
 	break;
 #endif
     }
@@ -54,7 +94,7 @@ rpmsw rpmswNow(rpmsw sw)
  * @param *btv		begin timeval
  * @return		difference in milli-seconds
  */
-/*@unused@*/ static inline
+static inline
 rpmtime_t tvsub(/*@null@*/ const struct timeval * etv,
 		/*@null@*/ const struct timeval * btv)
 	/*@*/
@@ -78,10 +118,10 @@ rpmtime_t rpmswDiff(rpmsw end, rpmsw begin)
     case 0:
 	diff = tvsub(&end->u.tv, &begin->u.tv);
 	break;
-#if defined(__i386__)
+#if defined(HP_TIMING_NOW)
     case 1:
 	if (end->u.ticks > begin->u.ticks)
-	    diff = end->u.ticks - begin->u.ticks;
+	    HP_TIMING_DIFF(diff, begin->u.ticks, end->u.ticks);
 	break;
 #endif
     }
@@ -92,6 +132,7 @@ rpmtime_t rpmswDiff(rpmsw end, rpmsw begin)
     return diff;
 }
 
+#if defined(HP_TIMING_NOW)
 static rpmtime_t rpmswCalibrate(void)
 	/*@*/
 {
@@ -114,39 +155,64 @@ static rpmtime_t rpmswCalibrate(void)
     }
     ticks = rpmswDiff(rpmswNow(&end), &begin);
 
-    if (ticks < 1)
-	ticks = 1;
     return ticks;
 }
+#endif
 
 rpmtime_t rpmswInit(void)
 {
     struct rpmsw_s begin, end;
+    rpmtime_t cycles, usecs;
+    int i;
 
-    rpmsw_type = 0;
+    rpmsw_initialized = 1;
+
     rpmsw_overhead = 0;
-    rpmsw_cycles = 1;
+    rpmsw_cycles = 0;
 
-#if 0
-    (void) rpmswNow(&begin);
-#if defined(__i386)
-    rpmsw_type = 1;
-    rpmsw_cycles = rpmswCalibrate();
-    rpmsw_type = 0;
-#endif
-    rpmsw_overhead = rpmswDiff(rpmswNow(&end), &begin);
-#if defined(__i386)
-    rpmsw_type = 1;
-    if (rpmsw_overhead > 1)
-	rpmsw_cycles /= rpmsw_overhead;
-#endif
-    if (rpmsw_cycles < 1)
+    /* Convergence is futile overkill ... */
+    for (i = 0; i < 1; i++) {
+#if defined(HP_TIMING_NOW)
+	rpmtime_t save_cycles = rpmsw_cycles;
+
+	/* We want cycles, not cycles/usec, here. */
 	rpmsw_cycles = 1;
+
+	/* Start wall clock. */
+	rpmsw_type = 0;
+	(void) rpmswNow(&begin);
+
+	/* Get no. of cycles in 20ms nanosleep */
+	rpmsw_type = 1;
+	cycles = rpmswCalibrate();
+	if (i)
+	    cycles -= (save_cycles * rpmsw_overhead);
+
+	/* Compute wall clock delta in usecs. */
+	rpmsw_type = 0;
+	usecs = rpmswDiff(rpmswNow(&end), &begin);
+
+	rpmsw_type = 1;
+
+	/* Compute cycles/usec */
+	if (usecs > 1)
+	    cycles /= usecs;
+
+	rpmsw_cycles = save_cycles;
+	rpmsw_cycles *= i;
+	rpmsw_cycles += cycles;
+	rpmsw_cycles /= (i+1);
 #endif
 
-    rpmsw_overhead = 0;
-    (void) rpmswNow(&begin);
-    rpmsw_overhead = rpmswDiff(rpmswNow(&end), &begin);
+	/* Calculate timing overhead in usecs. */
+	(void) rpmswNow(&begin);
+	usecs = rpmswDiff(rpmswNow(&end), &begin);
+
+	rpmsw_overhead *= i;
+	rpmsw_overhead += usecs;
+	rpmsw_overhead /= (i+1);
+
+    }
 
     return rpmsw_overhead;
 }

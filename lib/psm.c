@@ -467,9 +467,11 @@ static pid_t psmWait(rpmpsm psm)
 {
     (void) rpmsqWait(&psm->sq);
 
-    rpmMessage(RPMMESS_DEBUG, _("%s: waitpid(%d) rc %d status %x\n"),
+    rpmMessage(RPMMESS_DEBUG, _("%s: waitpid(%d) rc %d status %x secs %u.%03u\n"),
 	psm->stepName, (unsigned)psm->sq.child,
-	(unsigned)psm->sq.reaped, psm->sq.status);
+	(unsigned)psm->sq.reaped, psm->sq.status,
+	(unsigned)psm->sq.msecs/1000,
+	(unsigned)psm->sq.msecs%1000);
 
     return psm->sq.reaped;
 }

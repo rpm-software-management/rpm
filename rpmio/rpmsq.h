@@ -11,6 +11,8 @@
 #include <sys/signal.h>
 #include <search.h>		/* XXX insque(3)/remque(3) protos. */
 
+#include <rpmsw.h>
+
 typedef struct rpmsig_s * rpmsig;
 
 typedef struct rpmsqElem * rpmsq;
@@ -32,10 +34,13 @@ struct rpmsqElem {
     pid_t child;		/*!< Currently running child. */
     volatile pid_t reaped;	/*!< Reaped waitpid(3) return. */
     volatile int status;	/*!< Reaped waitpid(3) status. */
+    struct rpmsw_s begin;	/*!< Start time. */
+    rpmtime_t msecs;		/*!< Instance duration (msecs). */
+    rpmtime_t script_msecs;	/*!< Accumulated script duration (msecs). */
     int reaper;			/*!< Register SIGCHLD handler? */
-    int pipes[2];
+    int pipes[2];		/*!< Parent/child interlock. */
     void * id;			/*!< Blocking thread id (pthread_t). */
-    pthread_mutex_t mutex;
+    pthread_mutex_t mutex;	/*!< Signal delivery to thread condvar. */
     pthread_cond_t cond;
 };
 
