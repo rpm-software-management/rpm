@@ -425,7 +425,7 @@ int showMatches(QVA_t *qva, rpmdbMatchIterator mi, QVF_t showPackage)
 
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	int rc;
-	if ((rc = showPackage(qva, NULL, h)) != 0)
+	if ((rc = showPackage(qva, rpmdbGetIteratorRpmDB(mi), h)) != 0)
 	    ec = rc;
     }
     rpmdbFreeIterator(mi);

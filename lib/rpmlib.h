@@ -384,6 +384,13 @@ typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 void rpmdbFreeIterator( /*@only@*/ rpmdbMatchIterator mi);
 
 /**
+ * Return rpm database used by iterator.
+ * @param mi		rpm database iterator
+ * @return		rpm database handle
+ */
+rpmdb rpmdbGetIteratorRpmDB(rpmdbMatchIterator mi);
+
+/**
  * Return join key for current position of rpm database iterator.
  * @param mi		rpm database iterator
  * @return		current join key

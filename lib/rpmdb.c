@@ -1206,6 +1206,12 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
     free(mi);
 }
 
+rpmdb rpmdbGetIteratorRpmDB(rpmdbMatchIterator mi) {
+    if (mi == NULL)
+	return 0;
+    return mi->mi_rpmdb;
+}
+
 unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi) {
     if (mi == NULL)
 	return 0;
