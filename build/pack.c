@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <time.h>
 #include <ftw.h>
+#include <netinet/in.h>
 
 #include "header.h"
 #include "specP.h"
