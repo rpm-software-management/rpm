@@ -117,10 +117,10 @@ static struct poptOption optionsTable[] = {
  { "build", 'b', POPT_ARG_STRING, 0, 'b',	NULL, NULL},
  { "checksig", 'K', 0, 0, 'K',			NULL, NULL},
  { "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH,		NULL, NULL},
- { "define", '\0', POPT_ARG_STRING, &noUsageMsg, GETOPT_DEFINEMACRO,NULL, NULL},
+ { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,NULL, NULL},
  { "dirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 0,	NULL, NULL},
  { "erase", 'e', 0, 0, 'e',			NULL, NULL},
- { "eval", '\0', POPT_ARG_STRING, &noUsageMsg, GETOPT_EVALMACRO, NULL, NULL},
+ { "eval", '\0', POPT_ARG_STRING, 0, GETOPT_EVALMACRO, NULL, NULL},
  { "excludedocs", '\0', 0, &excldocs, 0,	NULL, NULL},
  { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,	NULL, NULL},
  { "force", '\0', 0, &force, 0,			NULL, NULL},
@@ -851,12 +851,14 @@ int main(int argc, const char ** argv)
 	  case GETOPT_DEFINEMACRO:
 	    rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
 	    rpmDefineMacro(&rpmCLIMacroContext, optArg, RMIL_CMDLINE);
+	    noUsageMsg = 1;
 	    break;
 
 	  case GETOPT_EVALMACRO:
 	  { const char *val = rpmExpand(optArg, NULL);
 	    fprintf(stdout, "%s\n", val);
 	    xfree(val);
+	    noUsageMsg = 1;
 	  } break;
 
 	  case GETOPT_TIMECHECK:

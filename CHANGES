@@ -37,6 +37,7 @@
 	- include RPM-GPG-KEY in file manifest.
 	- simplify --last popt alias, date like -qi (bjerrick@easystreet.com).
 	- fix: alloca'd memory used outside of scope (alpha segfault).
+	- fix: define/eval options assumed sizeof(int) == sizeof(void *).
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.
