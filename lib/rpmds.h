@@ -352,7 +352,7 @@ int rangeMatchesDepFlags (Header h, const rpmDepSet req)
  * @param req		dependency
  * @return		1 if dependency overlaps, 0 otherwise
  */
-int headerMatchesDepFlags(Header h, const rpmDepSet req)
+int headerMatchesDepFlags(const Header h, const rpmDepSet req)
 	/*@*/;
 
 #ifdef __cplusplus

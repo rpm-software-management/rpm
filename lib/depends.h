@@ -9,12 +9,12 @@
 #include <header.h>
 #include <rpmhash.h>
 
+#include "rpmal.h"
+
 typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
 typedef /*@abstract@*/ struct transactionElement_s *	transactionElement;
 
 typedef /*@abstract@*/ struct teIterator_s *		teIterator;
-
-typedef /*@abstract@*/ struct availableList_s *		availableList;
 
 /*@unchecked@*/
 /*@-exportlocal@*/
@@ -71,6 +71,8 @@ struct transactionElement_s {
 	TR_REMOVED	/*!< Package will be removed. */
     } type;		/*!< Package disposition (installed/removed). */
 
+/*@refcounted@*/ /*@null@*/
+    Header h;			/*!< Package header. */
 /*@only@*/
     const char * NEVR;		/*!< Package name-version-release. */
 /*@owned@*/

@@ -12,22 +12,11 @@
 
 #include "debug.h"
 
-/*@access Header@*/		/* XXX compared with NULL */
-/*@access FD_t@*/		/* XXX compared with NULL */
-
-typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;
-typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
-typedef /*@abstract@*/ struct availableIndexEntry_s *	availableIndexEntry;
-typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
-
-/*@access availableIndexEntry@*/
-/*@access availableIndex@*/
-/*@access fileIndexEntry@*/
-/*@access dirInfo@*/
 /*@access availableList@*/
 
-/*@access availablePackage@*/
+#ifdef	DYING
 /*@access tsortInfo@*/
+#endif
 
 /*@access alKey@*/
 /*@access alNum@*/
@@ -35,21 +24,13 @@ typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
 
 /*@access rpmFNSet@*/
 
+typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
+/*@access availablePackage@*/
+
 /** \ingroup rpmdep
  * Info about a single package to be installed.
  */
 struct availablePackage_s {
-/*@refcounted@*/
-    Header h;			/*!< Package header. */
-/*@dependent@*/
-    const char * name;		/*!< Header name. */
-/*@dependent@*/
-    const char * version;	/*!< Header version. */
-/*@dependent@*/
-    const char * release;	/*!< Header release. */
-/*@dependent@*//*@null@*/
-    int_32 * epoch;		/*!< Header epoch (if any). */
-
 /*@refcounted@*/ /*@null@*/
     rpmDepSet provides;		/*!< Provides: dependencies. */
 /*@refcounted@*/ /*@null@*/
@@ -62,6 +43,9 @@ struct availablePackage_s {
     fnpyKey key;		/*!< Associated file name/python object */
 
 };
+
+typedef /*@abstract@*/ struct availableIndexEntry_s *	availableIndexEntry;
+/*@access availableIndexEntry@*/
 
 /** \ingroup rpmdep
  * A single available item (e.g. a Provides: dependency).
@@ -78,6 +62,9 @@ struct availableIndexEntry_s {
     } type;			/*!< Type of available item. */
 };
 
+typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
+/*@access availableIndex@*/
+
 /** \ingroup rpmdep
  * Index of all available items.
  */
@@ -87,6 +74,9 @@ struct availableIndex_s {
     int size;			/*!< No. of available items. */
     int k;			/*!< Current index. */
 };
+
+typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;
+/*@access fileIndexEntry@*/
 
 /** \ingroup rpmdep
  * A file to be installed/removed.
@@ -98,6 +88,9 @@ struct fileIndexEntry_s {
     alNum pkgNum;		/*!< Containing package index. */
     int fileFlags;	/* MULTILIB */
 };
+
+typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
+/*@access dirInfo@*/
 
 /** \ingroup rpmdep
  * A directory to be installed/removed.
@@ -172,6 +165,7 @@ static inline alKey alNum2Key(/*@unused@*/ /*@null@*/ const availableList al,
     /*@=nullret =temptrans =retalias @*/
 }
 
+#ifdef	DYING
 /**
  * Return available package.
  * @param al		available list
@@ -196,21 +190,7 @@ fprintf(stderr, "*** alp[%d] %p\n", pkgNum, alp);
 /*@=modfilesys@*/
     return alp;
 }
-
-Header alGetHeader(availableList al, alKey pkgKey, int unlink)
-{
-    availablePackage alp = alGetPkg(al, pkgKey);
-    Header h = NULL;
-
-    if (alp != NULL && alp->h != NULL) {
-	h = headerLink(alp->h, "alGetHeader");
-	if (unlink) {
-	    alp->h = headerFree(alp->h, "alGetHeader unlink");
-	    alp->h = NULL;
-	}
-    }
-    return h;
-}
+#endif
 
 availableList alCreate(int delta)
 {
@@ -243,8 +223,6 @@ availableList alFree(availableList al)
     for (i = 0; i < al->size; i++, alp++) {
 	alp->provides = dsFree(alp->provides);
 	alp->fns = fnsFree(alp->fns);
-	alp->h = headerFree(alp->h, "alFree");
-
     }
 
     if ((die = al->dirs) != NULL)
@@ -317,7 +295,7 @@ void alDelPackage(availableList al, alKey pkgKey)
 
 /*@-modfilesys@*/
 if (_al_debug)
-fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->version, alp->release);
+fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 /*@=modfilesys@*/
 
     /* Delete directory/file info entries from added package list. */
@@ -381,7 +359,6 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 
     alp->provides = dsFree(alp->provides);
     alp->fns = fnsFree(alp->fns);
-    alp->h = headerFree(alp->h, "alDelPackage");
 
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
     /*@-nullstate@*/ /* FIX: al->list->h may be NULL */
@@ -389,14 +366,11 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
     /*@=nullstate@*/
 }
 
-alKey alAddPackage(availableList al, alKey pkgKey, fnpyKey key, Header h,
+alKey alAddPackage(availableList al, alKey pkgKey, fnpyKey key,
 		rpmDepSet provides, rpmFNSet fns)
-	/*@modifies al, h @*/
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     availablePackage alp;
     alNum pkgNum = alKey2Num(al, pkgKey);
-    int xx;
 
     if (pkgNum >= 0 && pkgNum < al->size) {
 	alDelPackage(al, pkgKey);
@@ -412,19 +386,13 @@ alKey alAddPackage(availableList al, alKey pkgKey, fnpyKey key, Header h,
     alp = al->list + pkgNum;
     /*@=nullptrarith@*/
 
-    alp->h = headerLink(h, "alAddPackage");
-
     /*@-assignexpose -temptrans @*/
     alp->key = key;
     /*@=assignexpose =temptrans @*/
 
-    xx = headerNVR(alp->h, &alp->name, &alp->version, &alp->release);
-    if (!hge(h, RPMTAG_EPOCH, NULL, (void **) &alp->epoch, NULL))
-	alp->epoch = NULL;
-
 /*@-modfilesys@*/
 if (_al_debug)
-fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->version, alp->release);
+fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
 /*@=modfilesys@*/
 
     /*@-assignexpose -temptrans@*/

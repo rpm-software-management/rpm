@@ -4,12 +4,13 @@
 
 #include "system.h"
 
+#include <rpmmacro.h>	/* XXX for rpmExpand */
+
+
 #define _NEED_TEITERATOR	1
 #include "psm.h"
-#include "rpmds.h"
 
-#include "rpmal.h"
-#include <rpmmacro.h>	/* XXX for rpmExpand */
+#include "rpmds.h"
 
 #include "fprint.h"
 #include "legacy.h"	/* XXX mdfile */
@@ -665,38 +666,8 @@ static void handleOverlappedFiles(const rpmTransactionSet ts, TFI_t fi)
  * @param h		installed header
  * @return		0 if not newer, 1 if okay
  */
-#ifdef	DYING
 static int ensureOlder(rpmTransactionSet ts,
-		const Header h, /*@null@*/ const Header old,
-		/*@dependent@*/ /*@null@*/ const void * key)
-	/*@modifies ts @*/
-{
-    int result, rc = 0;
-
-    if (old == NULL) return 1;
-
-    result = rpmVersionCompare(old, h);
-    if (result <= 0)
-	rc = 0;
-    else if (result > 0) {
-	const char * pkgNEVR = hGetNEVR(h, NULL);
-	const char * altNEVR = hGetNEVR(old, NULL);
-	/*@-evalorder@*/ /* LCL: is confused */
-	rpmProblemSetAppend(ts->probs, RPMPROB_OLDPACKAGE,
-		pkgNEVR, key,
-		NULL, NULL,
-		altNEVR,
-		0);
-	/*@=evalorder@*/
-	pkgNEVR = _free(pkgNEVR);
-	altNEVR = _free(altNEVR);
-	rc = 1;
-    }
-
-    return rc;
-}
-#else
-static int ensureOlder(rpmTransactionSet ts, transactionElement p, Header h)
+		const transactionElement p, const Header h)
 	/*@modifies ts @*/
 {
     int_32 reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
@@ -736,7 +707,6 @@ static int ensureOlder(rpmTransactionSet ts, transactionElement p, Header h)
 
     return rc;
 }
-#endif
 
 /**
  */
@@ -958,7 +928,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     teIterator tei;
     int xx;
 
-int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
+int keep_header = 0;
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -1058,8 +1028,6 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
     while ((p = teNext(tei, TR_ADDED)) != NULL) {
 	rpmdbMatchIterator mi;
 
-	pkgKey = p->u.addedKey;
-
 	/*@-branchstate@*/ /* FIX: p->key ??? */
 	if (!archOkay(p->arch) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
 	    rpmProblemSetAppend(ts->probs, RPMPROB_BADARCH,
@@ -1151,9 +1119,9 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	case TR_ADDED:
 	    fi->record = 0;
 
-	    pkgKey = ts->order[oc].u.addedKey;
+/*@i@*/	    fi->h = headerLink(ts->order[oc].h, "xfer to fi->h");
+	    ts->order[oc].h = headerFree(ts->order[oc].h, "xfer to fi->h");
 
-	    fi->h = alGetHeader(ts->addedPackages, pkgKey, 1);
 #ifdef DYING	/* XXX MULTILIB multiLib from transactionElement */
 	    fi->multiLib = alGetMultiLib(ts->addedPackages, i);
 #else
@@ -1572,6 +1540,7 @@ fi->relocs = relocs;
 		/*@=noeffectuncon @*/
 		fi->fd = NULL;
 	    }
+fi->h = headerFree(fi->h, "TR_ADDED fini");
 	    freeFi(fi);
 	    /*@switchbreak@*/ break;
 	case TR_REMOVED:
@@ -1583,6 +1552,7 @@ fi->relocs = relocs;
 		if (psmStage(psm, PSM_PKGERASE))
 		    ourrc++;
 	    }
+fi->h = headerFree(fi->h, "TR_REMOVED fini");
 	    freeFi(fi);
 	    /*@switchbreak@*/ break;
 	}

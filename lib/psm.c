@@ -6,7 +6,6 @@
 #include "system.h"
 
 #include "psm.h"
-#include "rpmal.h"
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
@@ -1180,7 +1179,6 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
     int isSource;
     rpmRC rc;
     int i;
-    alKey pkgKey = (alKey)0;
 
     /*@-mods -temptrans -assignexpose@*/
     ts->notify = notify;
@@ -1207,12 +1205,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 
     fi->type = TR_ADDED;
 
-    fi->h = alGetHeader(ts->addedPackages, pkgKey, 1);
-    /* XXX can't happen */
-    if (fi->h == NULL) {
-	rc = RPMRC_FAIL;
-	goto exit;
-    }
+    fi->h = headerLink(h, "InstallSourcePackage");
 
     fi->multiLib = 0;	/* MULTILIB for src.rpm's? */
 

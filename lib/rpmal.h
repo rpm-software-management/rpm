@@ -6,21 +6,7 @@
  * Structures used for managing added/available package lists.
  */
 
-/**
- * A package from an availableList.
- */
-typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
-
-/**
- * Return available package header.
- * @param al		available list
- * @param pkgKey	available package key
- * @param unlink	Should alp->h be unlinked?
- * @return		available package header
- */
-Header alGetHeader(/*@null@*/ availableList al, /*@null@*/ alKey pkgKey,
-		int unlink)
-	/*@modifies al @*/;
+typedef /*@abstract@*/ struct availableList_s *		availableList;
 
 /**
  * Initialize available packckages, items, and directory list.
@@ -55,14 +41,13 @@ void alDelPackage(availableList al, /*@null@*/ alKey pkgKey)
  * @param al		available list
  * @param pkgKey	package key, RPMAL_NOMATCH to force an append
  * @param key		associated file name/python object
- * @param h		package header
  * @param provides	provides dependency set
  * @param fns		file info set
  * @return		available package index
  */
 alKey alAddPackage(availableList al, /*@null@*/ alKey pkgKey,
-		fnpyKey key, Header h, rpmDepSet provides, rpmFNSet fns)
-	/*@modifies al, h, provides, fns @*/;
+		fnpyKey key, rpmDepSet provides, rpmFNSet fns)
+	/*@modifies al, provides, fns @*/;
 
 /**
  * Add package provides to available list index.

@@ -795,7 +795,7 @@ exit:
     return result;
 }
 
-int headerMatchesDepFlags(Header h, const rpmDepSet req)
+int headerMatchesDepFlags(const Header h, const rpmDepSet req)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char * pkgN, * v, * r;

@@ -2,7 +2,7 @@
  * \file lib/depends.c
  */
 
-#define	_DS_SCAREMEM	1
+#define	_DS_SCAREMEM	0
 
 #include "system.h"
 
@@ -15,7 +15,6 @@
 #define _NEED_TEITERATOR	1
 #include "depends.h"
 
-#include "rpmal.h"
 #include "rpmdb.h"		/* XXX response cache needs dbiOpen et al. */
 
 #include "debug.h"
@@ -172,6 +171,9 @@ static void delTE(transactionElement p)
     p->epoch = _free(p->epoch);
     p->name = _free(p->name);
     p->NEVR = _free(p->NEVR);
+
+    p->h = headerFree(p->h, "delTE");
+
     memset(p, 0, sizeof(*p));	/* XXX trash and burn */
     /*@-nullstate@*/ /* FIX: p->{NEVR,name} annotations */
     return;
@@ -438,13 +440,14 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     addTE(p, h, fd, key, relocs);
 
     p->type = TR_ADDED;
-    pkgKey = alAddPackage(ts->addedPackages, pkgKey, p->key, h,
+    pkgKey = alAddPackage(ts->addedPackages, pkgKey, p->key,
 			p->provides, p->fns);
     if (pkgKey == RPMAL_NOMATCH) {
 	ec = 1;
 	goto exit;
     }
     p->u.addedKey = pkgKey;
+    p->h = headerLink(h, "rpmtransAddPackage");
 
     p->multiLib = 0;
 
@@ -565,7 +568,7 @@ void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, fnpyKey key)
     rpmFNSet fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
 
     /* XXX FIXME: return code RPMAL_NOMATCH is error */
-    (void) alAddPackage(ts->availablePackages, RPMAL_NOMATCH, key, h,
+    (void) alAddPackage(ts->availablePackages, RPMAL_NOMATCH, key,
 		provides, fns);
     fns = fnsFree(fns);
     provides = dsFree(provides);
