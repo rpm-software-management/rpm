@@ -11,4 +11,6 @@ int getArchNum(void);
 char *getOsName(void);
 char *getArchName(void);
 
+int vercmp(char * one, char * two);
+
 #endif
