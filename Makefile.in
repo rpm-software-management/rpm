@@ -3,6 +3,7 @@ include Makefile.inc
 srcdir= @srcdir@
 VPATH = @srcdir@
 top_srcdir= @top_srcdir@
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 
 INSTALL= @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -97,7 +98,7 @@ newtree:
 	rm -f RCS
 	ln -sf /usr/rhs/RCS/rpm-2.0 RCS
 	for d in $(SUBDIRS) $(OTHERSUBDIRS); do \
-		mkdir -p $$d ;\
+		$(mkinstalldirs) $$d ;\
 		(cd $$d; rm -f RCS; ln -sf /usr/rhs/RCS/rpm-2.0/$$d RCS) \
 		  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac;\
 	done && test -z "$$fail"
@@ -106,34 +107,35 @@ $(PROGS): $(OBJS)
 
 install: all
 	[ -d $(installprefix)/$(RPMBINDIR) ] || \
-		mkdir -p $(installprefix)/$(RPMBINDIR)
+		$(mkinstalldirs) $(installprefix)/$(RPMBINDIR)
 	[ -d $(installprefix)/$(RPMNLSDIR) ] || \
-		mkdir -p $(installprefix)/$(RPMNLSDIR)
-	[ -d $(installprefix)/$(BINDIR) ] || mkdir -p $(installprefix)/$(BINDIR)
-	[ -d $(installprefix)/$(MANDIR) ] || mkdir -p $(installprefix)/$(MANDIR)
-	[ -d $(installprefix)/$(ETCDIR) ] || mkdir -p $(installprefix)/$(ETCDIR)
-	[ -d $(installprefix)/$(LIBDIR) ] || mkdir -p $(installprefix)/$(LIBDIR)
-	[ -d $(installprefix)/$(INCDIR) ] || mkdir -p $(installprefix)/$(INCDIR)
+		$(mkinstalldirs) $(installprefix)/$(RPMNLSDIR)
+	[ -d $(installprefix)/$(BINDIR) ] || \
+		$(mkinstalldirs) $(installprefix)/$(BINDIR)
+	[ -d $(installprefix)/$(MANDIR) ] || \
+		$(mkinstalldirs) $(installprefix)/$(MANDIR)
+	[ -d $(installprefix)/$(ETCDIR) ] || \
+		$(mkinstalldirs) $(installprefix)/$(ETCDIR)
+	[ -d $(installprefix)/$(LIBDIR) ] || \
+		$(mkinstalldirs) $(installprefix)/$(LIBDIR)
+	[ -d $(installprefix)/$(INCDIR) ] || \
+		$(mkinstalldirs) $(installprefix)/$(INCDIR)
 	[ -d $(installprefix)/$(RPMCONFIGDIR) ] ||  \
-		mkdir -p $(installprefix)/$(RPMCONFIGDIR)
+		$(mkinstalldirs) $(installprefix)/$(RPMCONFIGDIR)
 	if [ -x ./rpm ]; then \
 	    $(INSTALL_PROGRAM) -s -m 755 rpm $(installprefix)/$(RPMBINDIR); \
 	else \
 	    $(INSTALL_PROGRAM) -s -m 755 rpm.shared $(installprefix)/$(RPMBINDIR)/rpm; \
 	fi
-	$(INSTALL_PROGRAM) -m 755 $(srcdir)/gendiff $(installprefix)/$(RPMCONFIGDIR)
-	ln -sf $(RPMCONFIGDIR)/gendiff $(installprefix)/$(BINDIR)/gendiff
-	$(INSTALL_PROGRAM) -m 755 $(topdir)/find-provides.sh $(installprefix)/$(BINDIR)/find-provides
-	ln -sf $(RPMCONFIGDIR)/find-provides $(installprefix)/$(BINDIR)/find-provides
+	$(INSTALL_PROGRAM) -m 755 $(srcdir)/gendiff $(installprefix)/$(BINDIR)
+	$(INSTALL_PROGRAM) -m 755 $(topdir)/mkinstalldirs $(installprefix)/$(RPMCONFIGDIR)/mkinstalldirs
+	$(INSTALL_PROGRAM) -m 755 $(topdir)/find-provides.sh $(installprefix)/$(RPMCONFIGDIR)/find-provides
 	$(INSTALL_PROGRAM) -m 755 $(topdir)/find-requires.sh $(installprefix)/$(RPMCONFIGDIR)/find-requires
-	ln -sf $(RPMCONFIGDIR)/find-requires $(installprefix)/$(BINDIR)/find-requires
 	$(INSTALL_PROGRAM) -s -m 755 rpm2cpio $(installprefix)/$(BINDIR)
 	$(INSTALL_DATA) -m 644 $(srcdir)/rpm.8 $(installprefix)/$(MANDIR)
 	$(INSTALL_DATA) -m 644 $(srcdir)/rpm2cpio.8 $(installprefix)/$(MANDIR)
 	$(INSTALL_DATA) -m 644 $(topdir)/lib-rpmrc $(installprefix)/$(RPMCONFIGDIR)/rpmrc
-	ln -sf $(RPMCONFIGDIR)/rpmrc $(installprefix)/$(LIBDIR)/rpmrc
 	$(INSTALL_DATA) -m 644 $(srcdir)/rpmpopt $(installprefix)/$(RPMCONFIGDIR)/rpmpopt
-	ln -sf $(RPMCONFIGDIR)/rpmpopt $(installprefix)/$(LIBDIR)/rpmpopt
 	(cd lib; $(MAKE) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 	for d in $(INSTSUBDIRS); do \
 		(cd $$d; $(MAKE) installprefix=$(installprefix) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install) ;\
@@ -143,15 +145,15 @@ install: all
 tar:
 	rm -rf /tmp/rpm-$(VERSION)
 	make installprefix=/tmp/rpm-$(VERSION)$(ROOT) install
-	mkdir -p /tmp/rpm-$(VERSION)@prefix@/src/redhat/SOURCES
-	mkdir -p /tmp/rpm-$(VERSION)@prefix@/src/redhat/SPECS
-	mkdir -p /tmp/rpm-$(VERSION)@prefix@/src/redhat/SRPMS
-	mkdir -p /tmp/rpm-$(VERSION)@prefix@/src/redhat/RPMS
-	mkdir -p /tmp/rpm-$(VERSION)@prefix@/src/redhat/BUILD
-	mkdir -p /tmp/rpm-$(VERSION)@varprefix@/lib/rpm
-	mkdir -p /tmp/rpm-$(VERSION)/var/tmp
+	$(mkinstalldirs) /tmp/rpm-$(VERSION)@prefix@/src/redhat/SOURCES
+	$(mkinstalldirs) /tmp/rpm-$(VERSION)@prefix@/src/redhat/SPECS
+	$(mkinstalldirs) /tmp/rpm-$(VERSION)@prefix@/src/redhat/SRPMS
+	$(mkinstalldirs) /tmp/rpm-$(VERSION)@prefix@/src/redhat/RPMS
+	$(mkinstalldirs) /tmp/rpm-$(VERSION)@prefix@/src/redhat/BUILD
+	$(mkinstalldirs) /tmp/rpm-$(VERSION)@varprefix@/lib/rpm
+	$(mkinstalldirs) /tmp/rpm-$(VERSION)/var/tmp
 #	Couldn't figure de ARCH value   
-#	mkdir -p /tmp/rpm-$(VERSION)/usr/local/src/redhat/RPMS/i386
+#	$(mkinstalldirs) /tmp/rpm-$(VERSION)/usr/local/src/redhat/RPMS/i386
 	cd /tmp/rpm-$(VERSION) ; tar cvf /tmp/rpm-$(VERSION).tar .
 
 .PHONY:		clean
