@@ -309,6 +309,9 @@ static int readPackageHeaders(FD_t fd, /*@out@*/struct rpmlead * leadPtr,
 	    if (!headerIsEntry(*hdr, RPMTAG_SOURCEPACKAGE))
 	    	headerAddEntry(*hdr, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,
 				&true, 1);
+	} else {
+    /* Retrofit "Provide: name = EVR" for binary packages. */
+	    providePackageNVR(*hdr);
 	}
 	break;
 

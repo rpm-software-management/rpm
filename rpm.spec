@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.1
 Version: %{version}
-Release: 0.5
+Release: 0.7
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -123,11 +123,13 @@ fi
 %post devel -p /sbin/ldconfig
 %postun devel -p /sbin/ldconfig
 
-%post python -p /sbin/ldconfig
-%postun python -p /sbin/ldconfig
-
 %post -n popt -p /sbin/ldconfig
 %postun -n popt -p /sbin/ldconfig
+%endif
+
+%ifos Xlinux
+%post python -p /sbin/ldconfig
+%postun python -p /sbin/ldconfig
 %endif
 
 %files
@@ -221,6 +223,7 @@ fi
 - API: pass *SearchIndex() length of key (0 will use strlen(key)).
 - API: remove rpmdb{First,Next}RecNum routines.
 - drop rpm-python subpackage until bindings are fixed.
+- add explcit "Provides: name = [epoch:]version-release" to headers.
 
 * Tue Apr 11 2000 Jeff Johnson <jbj@redhat.com>
 - solaris2.6: avoid bsearch with empty dir list (Ric Klaren - klaren@cs.utwente.nl)

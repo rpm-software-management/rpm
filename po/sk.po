@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-04-13 12:17-0400\n"
+"POT-Creation-Date: 2000-04-13 14:16-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1668,12 +1668,12 @@ msgstr "Nie je mo¾né zapísa» balík: %s"
 msgid "Wrote: %s\n"
 msgstr "Zapísané: %s\n"
 
-#: build/pack.c:518
+#: build/pack.c:520
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nie je mo¾né vytvori» meno výstupného súboru pre balík %s: %s\n"
 
-#: build/pack.c:535
+#: build/pack.c:537
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nie je mo¾né zapísa» do %s: "
@@ -2099,81 +2099,86 @@ msgid "error removing record %s into %s"
 msgstr "chyba pri odstraòovaní záznamu %s z %s"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:430
+#: lib/depends.c:434
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:459
+#: lib/depends.c:463
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:788
+#: lib/depends.c:792
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:836
+#: lib/depends.c:841
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:853
+#: lib/depends.c:844
+#, fuzzy, c-format
+msgid "%s: %s satisfied by added package (shouldn't happen).\n"
+msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
+
+#: lib/depends.c:862
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:886
+#: lib/depends.c:895
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:914
+#: lib/depends.c:923
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:932
+#: lib/depends.c:941
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:949
+#: lib/depends.c:959
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "súbor %s nie je vlastnený ¾iadnym balíkom\n"
 
-#: lib/depends.c:961
+#: lib/depends.c:972
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:971
+#: lib/depends.c:982
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1019
+#: lib/depends.c:1030
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "po¾iadavka balíka %s nie je uspokojená: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1081
+#: lib/depends.c:1092
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "balík %s koliduje: %s\n"
 
-#: lib/depends.c:1211
+#: lib/depends.c:1222
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "sluèka v re»azi po¾iadaviek: %s"
 
-#: lib/depends.c:1415
+#: lib/depends.c:1426
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre kontrolu závislostí"
@@ -2528,7 +2533,7 @@ msgstr "posunutie v archíve je %d\n"
 msgid "old style binary package\n"
 msgstr "binárny balík v starom ¹týle\n"
 
-#: lib/package.c:316
+#: lib/package.c:319
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr "táto verzia RPM podporuje iba balíky s hlavným èíslom <= 3"
@@ -2831,25 +2836,25 @@ msgstr "otvára sa nová databáza\n"
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: lib/rebuilddb.c:140
+#: lib/rebuilddb.c:143
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: lib/rebuilddb.c:156
+#: lib/rebuilddb.c:159
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: lib/rebuilddb.c:164
+#: lib/rebuilddb.c:167
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: lib/rebuilddb.c:166
+#: lib/rebuilddb.c:169
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: lib/rebuilddb.c:172
+#: lib/rebuilddb.c:175
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"

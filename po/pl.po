@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-04-13 12:17-0400\n"
+"POT-Creation-Date: 2000-04-13 14:16-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1657,12 +1657,12 @@ msgstr "Nie mo¿na zapisaæ pakietu: %s"
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
 
-#: build/pack.c:518
+#: build/pack.c:520
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nie mo¿na wygenerowaæ wyj¶ciowej nazwy dla pakietu %s: %s\n"
 
-#: build/pack.c:535
+#: build/pack.c:537
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nie mo¿na utworzyæ %s"
@@ -2089,81 +2089,86 @@ msgid "error removing record %s into %s"
 msgstr "b³±d usuwania rekordu %s z %s"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:430
+#: lib/depends.c:434
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:459
+#: lib/depends.c:463
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:788
+#: lib/depends.c:792
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:836
+#: lib/depends.c:841
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:853
+#: lib/depends.c:844
+#, fuzzy, c-format
+msgid "%s: %s satisfied by added package (shouldn't happen).\n"
+msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
+
+#: lib/depends.c:862
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:886
+#: lib/depends.c:895
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:914
+#: lib/depends.c:923
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:932
+#: lib/depends.c:941
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:949
+#: lib/depends.c:959
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
 
-#: lib/depends.c:961
+#: lib/depends.c:972
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:971
+#: lib/depends.c:982
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1019
+#: lib/depends.c:1030
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1081
+#: lib/depends.c:1092
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "pakiet %s jest w konflikcie: %s\n"
 
-#: lib/depends.c:1211
+#: lib/depends.c:1222
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
 
-#: lib/depends.c:1415
+#: lib/depends.c:1426
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "nie mo¿na odczytaæ nag³ówka %d dla sprawdzenia zale¿no¶ci"
@@ -2518,7 +2523,7 @@ msgstr "ofsetem archiwum jest %d\n"
 msgid "old style binary package\n"
 msgstr "stary styl pakietu binarnego\n"
 
-#: lib/package.c:316
+#: lib/package.c:319
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
@@ -2823,25 +2828,25 @@ msgstr "otwieranie nowej bazy danych\n"
 msgid "record number %d in database is bad -- skipping."
 msgstr "rekord numer %d w bazie danych jest b³êdny -- rekord pominiêto"
 
-#: lib/rebuilddb.c:140
+#: lib/rebuilddb.c:143
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nie mo¿na dodaæ rekordu oryginalnie przy %d"
 
-#: lib/rebuilddb.c:156
+#: lib/rebuilddb.c:159
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "przebudowanie bazy nie powiod³o siê; stara pozosta³a na miejscu\n"
 
-#: lib/rebuilddb.c:164
+#: lib/rebuilddb.c:167
 msgid "failed to replace old database with new database!\n"
 msgstr "zamiana starej bazy na now± nie powiod³a siê!\n"
 
-#: lib/rebuilddb.c:166
+#: lib/rebuilddb.c:169
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "naprawcze zastêpowanie plików w %s plikami z %s"
 
-#: lib/rebuilddb.c:172
+#: lib/rebuilddb.c:175
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"

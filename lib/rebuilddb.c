@@ -135,6 +135,9 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 		    continue;
 	    }
 
+	    /* Retrofit "Provide: name = EVR" for binary packages. */
+	    providePackageNVR(h);
+
 	    if (rpmdbAdd(newdb, h)) {
 		rpmError(RPMERR_INTERNAL,
 			_("cannot add record originally at %d"), _RECNUM);

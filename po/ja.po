@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-04-13 12:17-0400\n"
+"POT-Creation-Date: 2000-04-13 14:16-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.41 2000/04/13 16:00:35 jbj Exp $
+# $Id: ja.po,v 1.42 2000/04/13 17:59:11 jbj Exp $
 #: rpm.c:200
 #, c-format
 msgid "rpm: %s\n"
@@ -1699,12 +1699,12 @@ msgstr "パッケージの書き込みに失敗しました: %s"
 msgid "Wrote: %s\n"
 msgstr "書き込み中: %s\n"
 
-#: build/pack.c:518
+#: build/pack.c:520
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の 出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:535
+#: build/pack.c:537
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -2136,7 +2136,7 @@ msgid "error removing record %s into %s"
 msgstr "レコード %s を %s に削除でエラー"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:430
+#: lib/depends.c:434
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2145,74 +2145,79 @@ msgstr ""
 "\"B\" の依存性は epoch を必要とします(\"A\"と同じであると仮定して)\n"
 "\tA %s\tB %s\n"
 
-#: lib/depends.c:459
+#: lib/depends.c:463
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:788
+#: lib/depends.c:792
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr "%s: %s はファイルリストに加えることによって満されます。\n"
 
-#: lib/depends.c:836
+#: lib/depends.c:841
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "%s: %s はパッケージに加えることによって満されます。\n"
 
-#: lib/depends.c:853
+#: lib/depends.c:844
+#, fuzzy, c-format
+msgid "%s: %s satisfied by added package (shouldn't happen).\n"
+msgstr "%s: %s はパッケージに加えることによって満されます。\n"
+
+#: lib/depends.c:862
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr "%s: %s は provide に加えることによって満されます。\n"
 
-#: lib/depends.c:886
+#: lib/depends.c:895
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr "%s: %s は rpmrc が提供することによって満されます。\n"
 
-#: lib/depends.c:914
+#: lib/depends.c:923
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr "%s: %s は db ファイルがリストを作ることによって満されます。\n"
 
-#: lib/depends.c:932
+#: lib/depends.c:941
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr "%s: %s は db が提供することによって満されます。\n"
 
-#: lib/depends.c:949
+#: lib/depends.c:959
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "%s: %s は db パッケージによって満されています。\n"
 
-#: lib/depends.c:961
+#: lib/depends.c:972
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr "%s: %s は rpmlib のバージョンによって満されています。\n"
 
-#: lib/depends.c:971
+#: lib/depends.c:982
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr "%s: %s は満されていません。\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1019
+#: lib/depends.c:1030
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "パッケージ %s は require が満たされていません: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1081
+#: lib/depends.c:1092
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s と競合するパッケージがあります: %s\n"
 
-#: lib/depends.c:1211
+#: lib/depends.c:1222
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "prerequisite チェーンのループ: %s"
 
-#: lib/depends.c:1415
+#: lib/depends.c:1426
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "依存性チェックのために %d でヘッダを読めません"
@@ -2577,7 +2582,7 @@ msgstr "アーカイブオフセットは %d\n"
 msgid "old style binary package\n"
 msgstr "古いスタイルのバイナリパッケージ\n"
 
-#: lib/package.c:316
+#: lib/package.c:319
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
@@ -2902,26 +2907,26 @@ msgstr "新しいデータベースのオープン\n"
 msgid "record number %d in database is bad -- skipping."
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: lib/rebuilddb.c:140
+#: lib/rebuilddb.c:143
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: lib/rebuilddb.c:156
+#: lib/rebuilddb.c:159
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: lib/rebuilddb.c:164
+#: lib/rebuilddb.c:167
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: lib/rebuilddb.c:166
+#: lib/rebuilddb.c:169
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: lib/rebuilddb.c:172
+#: lib/rebuilddb.c:175
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"

@@ -503,6 +503,8 @@ int packageBinaries(Spec spec)
 			&capability, 1);
     }
 
+	providePackageNVR(pkg->header);
+
 	genSourceRpmName(spec);
 	headerAddEntry(pkg->header, RPMTAG_SOURCERPM, RPM_STRING_TYPE,
 		       spec->sourceRpmName, 1);

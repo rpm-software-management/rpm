@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-04-13 12:17-0400\n"
+"POT-Creation-Date: 2000-04-13 14:16-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -1732,12 +1732,12 @@ msgstr "%s:n kirjoitus ei onnistu"
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:518
+#: build/pack.c:520
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:535
+#: build/pack.c:537
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
@@ -2168,81 +2168,86 @@ msgid "error removing record %s into %s"
 msgstr "virhe poistettaessa tietuetta %s %s:st‰"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:430
+#: lib/depends.c:434
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:459
+#: lib/depends.c:463
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:788
+#: lib/depends.c:792
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:836
+#: lib/depends.c:841
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:853
+#: lib/depends.c:844
+#, fuzzy, c-format
+msgid "%s: %s satisfied by added package (shouldn't happen).\n"
+msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
+
+#: lib/depends.c:862
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:886
+#: lib/depends.c:895
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:914
+#: lib/depends.c:923
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:932
+#: lib/depends.c:941
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:949
+#: lib/depends.c:959
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "tiedostoa %s ei omista mik‰‰n paketti\n"
 
-#: lib/depends.c:961
+#: lib/depends.c:972
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:971
+#: lib/depends.c:982
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1019
+#: lib/depends.c:1030
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
 #. conflicts exist.
-#: lib/depends.c:1081
+#: lib/depends.c:1092
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "paketti %s ei ole %s:ss‰"
 
-#: lib/depends.c:1211
+#: lib/depends.c:1222
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "silmukka edellytysten ketjussa: %s"
 
-#: lib/depends.c:1415
+#: lib/depends.c:1426
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "en voi lukea headeria %d:ss‰ riippuvuutta tarkistaessa"
@@ -2601,7 +2606,7 @@ msgstr ""
 msgid "old style binary package\n"
 msgstr ""
 
-#: lib/package.c:316
+#: lib/package.c:319
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
@@ -2918,25 +2923,25 @@ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 msgid "record number %d in database is bad -- skipping."
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: lib/rebuilddb.c:140
+#: lib/rebuilddb.c:143
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "en voi lis‰t‰ tietuetta %d:st‰"
 
-#: lib/rebuilddb.c:156
+#: lib/rebuilddb.c:159
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:164
+#: lib/rebuilddb.c:167
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:166
+#: lib/rebuilddb.c:169
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rebuilddb.c:172
+#: lib/rebuilddb.c:175
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "en voinut avata %s: %s"

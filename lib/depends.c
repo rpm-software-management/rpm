@@ -307,7 +307,9 @@ static void alMakeIndex(struct availableList * al)
 
     if (ai->size) return;
 
+#ifdef	DYING
     ai->size = al->size;
+#endif
     for (i = 0; i < al->size; i++) 
 	ai->size += al->list[i].providesCount;
 
@@ -316,11 +318,13 @@ static void alMakeIndex(struct availableList * al)
 
 	k = 0;
 	for (i = 0; i < al->size; i++) {
+#ifdef	DYING
 	    ai->index[k].package = al->list + i;
 	    ai->index[k].entry = al->list[i].name;
 	    ai->index[k].entryLen = strlen(al->list[i].name);
 	    ai->index[k].type = IET_NAME;
 	    k++;
+#endif
 
 	    for (j = 0; j < al->list[i].providesCount; j++) {
 		ai->index[k].package = al->list + i;
@@ -819,6 +823,7 @@ alFileSatisfiesDepend(struct availableList * al,
     rc = 0;
     switch (match->type) {
     case IET_NAME:
+#ifdef	DYING
     {	const char *pEVR;
 	char *t;
 	int pFlags = RPMSENSE_EQUAL;
@@ -835,6 +840,10 @@ alFileSatisfiesDepend(struct availableList * al,
 	if (keyType && keyDepend && rc)
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by added package.\n"), keyType, keyDepend);
     }	break;
+#else
+	rpmError(RPMERR_INTERNAL, _("%s: %s satisfied by added package (shouldn't happen).\n"), keyType, keyDepend);
+	break;
+#endif
     case IET_PROVIDES:
 	for (i = 0; i < p->providesCount; i++) {
 	    const char *proEVR;
@@ -933,6 +942,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	    goto exit;
 	}
 
+#ifdef	DYING
 	mi = rpmdbInitIterator(rpmdep->db, RPMDBI_NAME, keyName, 0);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
@@ -949,6 +959,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 	    rpmMessage(RPMMESS_DEBUG, _("%s: %s satisfied by db packages.\n"), keyType, keyDepend);
 	    goto exit;
 	}
+#endif
 
 	/*
 	 * New features in rpm spec files add implicit dependencies on rpm

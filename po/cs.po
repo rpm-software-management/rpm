@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-13 12:17-0400\n"
+"POT-Creation-Date: 2000-04-13 14:16-0400\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -1694,12 +1694,12 @@ msgstr "Nelze zapsat %s"
 msgid "Wrote: %s\n"
 msgstr "rpm: %s\n"
 
-#: build/pack.c:518
+#: build/pack.c:520
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:535
+#: build/pack.c:537
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nelze otevøít soubor %s: "
@@ -2130,81 +2130,86 @@ msgid "error removing record %s into %s"
 msgstr "chyba pøi odstraòování záznamu %s do %s"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:430
+#: lib/depends.c:434
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:459
+#: lib/depends.c:463
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:788
+#: lib/depends.c:792
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:836
+#: lib/depends.c:841
 #, fuzzy, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr "¾ádný balíèek nevlastní soubor %s\n"
 
-#: lib/depends.c:853
+#: lib/depends.c:844
+#, fuzzy, c-format
+msgid "%s: %s satisfied by added package (shouldn't happen).\n"
+msgstr "¾ádný balíèek nevlastní soubor %s\n"
+
+#: lib/depends.c:862
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:886
+#: lib/depends.c:895
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:914
+#: lib/depends.c:923
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:932
+#: lib/depends.c:941
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:949
+#: lib/depends.c:959
 #, fuzzy, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr "¾ádný balíèek nevlastní soubor %s\n"
 
-#: lib/depends.c:961
+#: lib/depends.c:972
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:971
+#: lib/depends.c:982
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1019
+#: lib/depends.c:1030
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "polo¾ka 'vy¾aduje' balíèku %s není splnìna: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1081
+#: lib/depends.c:1092
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "balíèek %s koliduje: %s\n"
 
-#: lib/depends.c:1211
+#: lib/depends.c:1222
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr "smyèka v øetìzu podmínek: %s"
 
-#: lib/depends.c:1415
+#: lib/depends.c:1426
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr "nelze èíst hlavièku u %d pro kontrolu závislostí"
@@ -2564,7 +2569,7 @@ msgstr "offset archivu je %d\n"
 msgid "old style binary package\n"
 msgstr "binární balíèek starého typu\n"
 
-#: lib/package.c:316
+#: lib/package.c:319
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
@@ -2880,25 +2885,25 @@ msgstr "otevírá se nová databáze\n"
 msgid "record number %d in database is bad -- skipping."
 msgstr "záznam èíslo %d v databázi je chybný -- vynechává se"
 
-#: lib/rebuilddb.c:140
+#: lib/rebuilddb.c:143
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "nelze pøidat záznam - pùvodnì u %d"
 
-#: lib/rebuilddb.c:156
+#: lib/rebuilddb.c:159
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "databázi nelze pøestavit; pùvodní databáze zùstává na svém místì\n"
 
-#: lib/rebuilddb.c:164
+#: lib/rebuilddb.c:167
 msgid "failed to replace old database with new database!\n"
 msgstr "starou databázi nelze nahradit novou databází!\n"
 
-#: lib/rebuilddb.c:166
+#: lib/rebuilddb.c:169
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "aby se obnovily, nahrazuje soubory v %s soubory z %s"
 
-#: lib/rebuilddb.c:172
+#: lib/rebuilddb.c:175
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nelze odstranit %s: %s\n"

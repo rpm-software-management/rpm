@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-04-13 12:17-0400\n"
+msgstr "POT-Creation-Date: 2000-04-13 14:16-0400\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:425
 #, c-format
@@ -1784,13 +1784,13 @@ msgstr "Não consegui abrir: %s\n"
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:518
+#: build/pack.c:520
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
 # , c-format
-#: build/pack.c:535
+#: build/pack.c:537
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "Não consegui abrir: %s\n"
@@ -2232,81 +2232,86 @@ msgid "error removing record %s into %s"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:430
+#: lib/depends.c:434
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:459
+#: lib/depends.c:463
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:788
+#: lib/depends.c:792
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
 msgstr ""
 
-#: lib/depends.c:836
+#: lib/depends.c:841
 #, c-format
 msgid "%s: %s satisfied by added package.\n"
 msgstr ""
 
-#: lib/depends.c:853
+#: lib/depends.c:844
+#, c-format
+msgid "%s: %s satisfied by added package (shouldn't happen).\n"
+msgstr ""
+
+#: lib/depends.c:862
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
 msgstr ""
 
-#: lib/depends.c:886
+#: lib/depends.c:895
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
 msgstr ""
 
-#: lib/depends.c:914
+#: lib/depends.c:923
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
 msgstr ""
 
-#: lib/depends.c:932
+#: lib/depends.c:941
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
 msgstr ""
 
-#: lib/depends.c:949
+#: lib/depends.c:959
 #, c-format
 msgid "%s: %s satisfied by db packages.\n"
 msgstr ""
 
-#: lib/depends.c:961
+#: lib/depends.c:972
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
 msgstr ""
 
-#: lib/depends.c:971
+#: lib/depends.c:982
 #, c-format
 msgid "%s: %s unsatisfied.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1019
+#: lib/depends.c:1030
 #, fuzzy, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr "não foi passado pacote para instalação"
 
 #. conflicts exist.
-#: lib/depends.c:1081
+#: lib/depends.c:1092
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "não foi passado pacote para desinstalação"
 
-#: lib/depends.c:1211
+#: lib/depends.c:1222
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
 
-#: lib/depends.c:1415
+#: lib/depends.c:1426
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
@@ -2672,7 +2677,7 @@ msgstr ""
 msgid "old style binary package\n"
 msgstr ""
 
-#: lib/package.c:316
+#: lib/package.c:319
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
@@ -2988,26 +2993,26 @@ msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 
-#: lib/rebuilddb.c:140
+#: lib/rebuilddb.c:143
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rebuilddb.c:156
+#: lib/rebuilddb.c:159
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:164
+#: lib/rebuilddb.c:167
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:166
+#: lib/rebuilddb.c:169
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
 # , c-format
-#: lib/rebuilddb.c:172
+#: lib/rebuilddb.c:175
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Não consegui abrir: %s\n"

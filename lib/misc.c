@@ -817,3 +817,71 @@ int rpmHeaderGetEntry(Header h, int_32 tag, int_32 *type,
     }
     /*@notreached@*/
 }
+
+/*
+ * Up to rpm 3.0.4, packages implicitly provided their own name-version-release.
+ * Retrofit an explicit "Provides: name = epoch:version-release.
+ */
+void providePackageNVR(Header h)
+{
+    const char *name, *version, *release;
+    int_32 * epoch;
+    const char *pEVR;
+    char *p;
+    int pFlags = RPMSENSE_EQUAL;
+    const char ** provides = NULL;
+    const char ** providesEVR = NULL;
+    int_32 * provideFlags = NULL;
+    int providesCount;
+    int type;
+    int i;
+    int bingo = 1;
+
+    /* Generate provides for this package name-version-release. */
+    headerNVR(h, &name, &version, &release);
+    pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
+    *p = '\0';
+    if (headerGetEntry(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
+	sprintf(p, "%d:", *epoch);
+	while (*p++)
+	    ;
+    }
+    (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
+
+    /*
+     * Rpm prior to 3.0.3 does not have versioned provides.
+     * If no provides version info is available, then just add.
+     */
+    if (!headerGetEntry(h, RPMTAG_PROVIDEVERSION, &type,
+		(void **) &providesEVR, &providesCount))
+	goto exit;
+
+    headerGetEntry(h, RPMTAG_PROVIDEFLAGS, &type,
+	(void **) &provideFlags, &providesCount);
+
+    if (!headerGetEntry(h, RPMTAG_PROVIDENAME, &type,
+		(void **) &provides, &providesCount)) {
+	goto exit;
+    }
+
+    for (i = 0; i < providesCount; i++) {
+	if (!(provideFlags[i] == RPMSENSE_EQUAL &&
+	    !strcmp(name, provides[i]) && !strcmp(pEVR, providesEVR[i])))
+	    continue;
+	bingo = 0;
+	break;
+    }
+
+exit:
+    if (provides) xfree(provides);
+    if (providesEVR) xfree(providesEVR);
+
+    if (bingo) {
+	headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
+		&name, 1);
+	headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+		&pEVR, 1);
+	headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+		&pFlags, 1);
+    }
+}

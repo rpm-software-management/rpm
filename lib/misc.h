@@ -44,6 +44,8 @@ int myGlobPatternP (const char *patternURL);
 int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
 			/*@out@*/ const char *** argvPtr);
 
+void providePackageNVR(Header h);
+
 #ifdef __cplusplus
 }
 #endif
