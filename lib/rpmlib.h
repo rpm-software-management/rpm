@@ -220,6 +220,7 @@ extern const struct headerSprintfExtension_s rpmHeaderFormats[];
  * Tags identify data in package headers.
  * @note tags should not have value 0!
  */
+/** @todo: Somehow supply type **/
 typedef enum rpmTag_e {
 
     RPMTAG_HEADERIMAGE		= HEADER_IMAGE,		/*!< Current image. */
