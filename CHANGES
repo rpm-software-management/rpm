@@ -15,6 +15,7 @@
 	  device related mode bits as well)
 	- fixed allocation of temporary paths (Eugene Kanter noticed this)
 	- made tools/dumpdb read the rpmrc so it can find the database
+	- added --nomd5 for -V and -K
 
 2.3.1 -> 2.3.2:
 	- fixed bug in new rpmVersionCompare() which made it worse then
