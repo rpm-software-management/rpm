@@ -16,7 +16,7 @@ make-subdirs:
 		(cd $$d; $(MAKE)) ;\
 	done
 
-rpm: rpm.o $(OBJS)
+rpm: rpm.o $(OBJS) lib/librpm.a
 
 clean:
 	for d in $(SUBDIRS); do \
