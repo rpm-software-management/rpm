@@ -1,0 +1,36 @@
+#!/bin/sh
+
+run() {
+    prog=$1; shift
+    name=$1; shift
+    answer=$1; shift
+
+    echo Running test $name.
+
+    result=`./$prog $*`
+    if [ "$answer" != "$result" ]; then
+	echo "Test \"$*\" failed with: $result"
+	exit 2
+    fi
+}
+
+make -q testcases
+
+run test1 "test1 - 1" "arg1: 1 arg2: (none)" --arg1
+run test1 "test1 - 2" "arg1: 0 arg2: foo" --arg2 foo
+run test1 "test1 - 3" "arg1: 1 arg2: something" --arg1 --arg2 something
+run test1 "test1 - 4" "arg1: 0 arg2: another" --simple another
+run test1 "test1 - 5" "arg1: 1 arg2: alias" --two
+run test1 "test1 - 6" "arg1: 1 arg2: (none) rest: --arg2" --arg1 -- --arg2 
+run test1 "test1 - 7" "arg1: 0 arg2: abcd rest: --arg1" --simple abcd -- --arg1 
+run test1 "test1 - 8" "arg1: 1 arg2: (none) rest: --arg2" --arg1 --takerest --arg2 
+run test1 "test1 - 9" "arg1: 0 arg2: foo" -2 foo
+run test1 "test1 - 10" "arg1: 0 arg2: (none) arg3: 50" -3 50
+run test1 "test1 - 11" "arg1: 0 arg2: bar" -T bar
+run test1 "test1 - 12" "arg1: 1 arg2: (none)" -O 
+run test1 "test1 - 13" "arg1: 1 arg2: foo" -OT foo
+run test1 "test1 - 14" "" --echo-args
+run test1 "test1 - 15" "--arg1" --echo-args --arg1
+run test1 "test1 - 16" "--arg2 something" -T something -e
+run test1 "test1 - 17" "--arg2 something -- more args" -T something -a more args
+run test1 "test1 - 18" "--echo-args -a" --echo-args -e -a
