@@ -519,6 +519,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 #define BLOCKSIZE 1024
 
+/* -1 fileCount means install all files */
 static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 			  int fileCount, notifyFunction notify, 
 			  char ** specFile, char * tmpPath, int archiveSize) {
@@ -546,7 +547,11 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
     int len;
     int childDead = 0;
 
+    /* no files to install */
     if (!fileCount) return 0;
+
+    /* install all files, so don't pass a filelist to cpio */
+    if (fileCount == -1) fileCount = 0;
 
     /* fd should be a gzipped cpio archive */
 
@@ -1329,7 +1334,7 @@ static int installSources(Header h, char * rootdir, int fd,
 	fflush(stdout);
     }
 
-    if (installArchive(realSourceDir, fd, NULL, 0, notify, &specFile, 
+    if (installArchive(realSourceDir, fd, NULL, -1, notify, &specFile, 
 		       tmpPath, archiveSizePtr ? *archiveSizePtr : 0)) {
 	return 1;
     }
@@ -1590,6 +1595,8 @@ static int copyFile(char * sourceName, char * destName) {
     int source, dest, i;
     char buf[16384];
 
+    message(MESS_DEBUG, "coping %s to %s\n", sourceName, destName);
+
     source = open(sourceName, O_RDONLY);
     if (source < 0) {
 	error(RPMERR_INTERNAL, "file %s missing from source directory",
@@ -1605,12 +1612,12 @@ static int copyFile(char * sourceName, char * destName) {
     }
 
     while ((i = read(source, buf, sizeof(buf))) > 0) {
-	if (write(source, buf, i) != i) {
+	if (write(dest, buf, i) != i) {
 	    if (errno == ENOSPC) {
 		error(RPMERR_NOSPACE, "out of disk space writing file %s",
 			destName);
 	    } else {
-		error(RPMERR_CREATE, "error writing to writing file %s: %s",
+		error(RPMERR_CREATE, "error writing to file %s: %s",
 			destName, strerror(errno));
 	    }
 	    close(source);
