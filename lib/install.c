@@ -33,6 +33,7 @@ enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
 struct callbackInfo {
     unsigned long archiveSize;
     rpmNotifyFunction notify;
+    char ** specFilePtr;
 };
 
 struct fileMemory {
@@ -68,7 +69,7 @@ static int filecmp(short mode1, char * md51, char * link1,
 static enum instActions decideFileFate(char * filespec, short dbMode, 
 				char * dbMd5, char * dbLink, short newMode, 
 				char * newMd5, char * newLink, int brokenMd5);
-static int installArchive(char * prefix, int fd, struct fileInfo * files,
+static int installArchive(int fd, struct fileInfo * files,
 			  int fileCount, rpmNotifyFunction notify, 
 			  char ** specFile, int archiveSize);
 static int packageAlreadyInstalled(rpmdb db, char * name, char * version, 
@@ -85,8 +86,6 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
 			char * newPrefix, int * relocationSize);
 static int archOkay(Header h);
 static int osOkay(Header h);
-static int moveFile(char * sourceName, char * destName);
-static int copyFile(char * sourceName, char * destName);
 static int ensureOlder(rpmdb db, Header new, int dbOffset);
 static void assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** files, 
@@ -515,7 +514,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	}
 
 	/* the file pointer for fd is pointing at the cpio archive */
-	if (installArchive(archivePrefix, fd, files, fileCount, notify, 
+	if (installArchive(fd, files, fileCount, notify, 
 			   NULL, archiveSizePtr ? *archiveSizePtr : 0)) {
 	    headerFree(h);
 	    if (replacedList) free(replacedList);
@@ -580,17 +579,25 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 static void callback(struct cpioCallbackInfo * cpioInfo, void * data) {
     struct callbackInfo * ourInfo = data;
+    char * chptr;
 
-    ourInfo->notify(cpioInfo->bytesProcessed, ourInfo->archiveSize);
+    if (ourInfo->notify)
+	ourInfo->notify(cpioInfo->bytesProcessed, ourInfo->archiveSize);
+
+    if (ourInfo->specFilePtr) {
+	chptr = cpioInfo->file + strlen(cpioInfo->file) - 5;
+	if (!strcmp(chptr, ".spec")) 
+	    *ourInfo->specFilePtr = strdup(cpioInfo->file);
+    }
 }
 
 /* NULL files means install all files */
-static int installArchive(char * prefix, int fd, struct fileInfo * files,
+static int installArchive(int fd, struct fileInfo * files,
 			  int fileCount, rpmNotifyFunction notify, 
 			  char ** specFile, int archiveSize) {
     gzFile stream;
     int rc, i;
-    struct cpioFileMapping * map;
+    struct cpioFileMapping * map = NULL;
     char * failedFile;
     struct callbackInfo info;
 
@@ -604,28 +611,32 @@ static int installArchive(char * prefix, int fd, struct fileInfo * files,
 
     info.archiveSize = archiveSize;
     info.notify = notify;
+    info.specFilePtr = specFile;
 
     if (specFile) *specFile = NULL;
 
-    map = alloca(sizeof(*map) * fileCount);
-    for (i = 0; i < fileCount; i++) {
-	map[i].archivePath = files[i].cpioPath;
-	map[i].finalPath = files[i].rootedPath;
-	map[i].finalMode = files[i].mode;
-	map[i].finalUid = files[i].uid;
-	map[i].finalGid = files[i].gid;
-	map[i].mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID |
-			  CPIO_MAP_GID;
+    if (files) {
+	map = alloca(sizeof(*map) * fileCount);
+	for (i = 0; i < fileCount; i++) {
+	    map[i].archivePath = files[i].cpioPath;
+	    map[i].finalPath = files[i].rootedPath;
+	    map[i].finalMode = files[i].mode;
+	    map[i].finalUid = files[i].uid;
+	    map[i].finalGid = files[i].gid;
+	    map[i].mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID |
+			      CPIO_MAP_GID;
+	}
+
+	qsort(map, fileCount, sizeof(*map), cpioFileMapCmp);
     }
 
     if (notify)
 	notify(0, archiveSize);
 
-    qsort(map, fileCount, sizeof(*map), cpioFileMapCmp);
-
     stream = gzdopen(fd, "r");
     rc = cpioInstallArchive(stream, map, fileCount, 
-			    (notify && archiveSize) ? callback : NULL, 
+			    ((notify && archiveSize) || specFile) ? 
+				callback : NULL, 
 			    &info, &failedFile);
 
     if (rc) {
@@ -973,11 +984,17 @@ static int installSources(Header h, char * rootdir, int fd,
 			  char * labelFormat) {
     char * specFile;
     char * sourceDir, * specDir;
+    int specFileIndex = -1;
     char * realSourceDir, * realSpecDir;
     char * instSpecFile, * correctSpecFile;
-    char * tmpPath, * name, * release, * version;
+    char * name, * release, * version;
+    int fileCount = 0;
     uint_32 * archiveSizePtr = NULL;
     int type, count;
+    struct fileMemory fileMem;
+    struct fileInfo * files;
+    int i;
+    char * chptr;
 
     rpmMessage(RPMMESS_DEBUG, "installing a source package\n");
 
@@ -1007,13 +1024,40 @@ static int installSources(Header h, char * rootdir, int fd,
     rpmMessage(RPMMESS_DEBUG, "sources in: %s\n", realSourceDir);
     rpmMessage(RPMMESS_DEBUG, "spec file in: %s\n", realSpecDir);
 
-    if (rootdir) {
-	tmpPath = alloca(strlen(rootdir) + 
-			 strlen(rpmGetVar(RPMVAR_TMPPATH)) + 20);
-	strcpy(tmpPath, rootdir);
-	strcat(tmpPath, rpmGetVar(RPMVAR_TMPPATH));
-    } else
-	tmpPath = rpmGetVar(RPMVAR_TMPPATH);
+    if (h && headerIsEntry(h, RPMTAG_FILENAMES)) {
+	/* we can't remap v1 packages */
+	assembleFileList(h, &fileMem, &fileCount, &files, 0);
+
+	for (i = 0; i < fileCount; i++)
+	    files[i].rootedPath = files[i].relativePath;
+
+#if 0 /* Unfortunately this doesnt work as RPMs building code seems broken */
+	for (i = 0; i < fileCount; i++)
+	    if (files[i].flags & RPMFILE_SPECFILE) break;
+#endif
+	i = fileCount;
+	if (i == fileCount) {
+	    /* find the spec file by name */
+	    for (i = 0; i < fileCount; i++) {
+		chptr = files[i].cpioPath + strlen(files[i].cpioPath) - 5;
+		if (!strcmp(chptr, ".spec")) break;
+	    }
+	}
+
+	if (i < fileCount) {
+	    specFileIndex = i;
+
+	    files[i].rootedPath = alloca(strlen(realSpecDir) + 
+					 strlen(files[i].cpioPath) + 5);
+	    strcpy(files[i].rootedPath, realSpecDir);
+	    strcat(files[i].rootedPath, "/");
+	    strcat(files[i].rootedPath, files[i].cpioPath);
+	} else {
+	    rpmError(RPMERR_NOSPEC, "source package contains no .spec file");
+	    if (fileCount > 0) freeFileMemory(fileMem);
+	    return 2;
+	}
+    }
 
     if (labelFormat && h) {
 	headerGetEntry(h, RPMTAG_NAME, &type, (void *) &name, &count);
@@ -1026,42 +1070,60 @@ static int installSources(Header h, char * rootdir, int fd,
 	fflush(stdout);
     }
 
-/*
-    FIXME
-
-    if (installArchive(realSourceDir, fd, NULL, -1, notify, &specFile, 
-		       tmpPath, archiveSizePtr ? *archiveSizePtr : 0)) {
+    i = open(".", O_RDONLY);
+    chdir(realSourceDir);
+    if (installArchive(fd, fileCount > 0 ? files : NULL,
+			  fileCount, notify, 
+			  specFileIndex >=0 ? NULL : &specFile, 
+			  archiveSizePtr ? *archiveSizePtr : 0)) {
+	if (fileCount > 0) freeFileMemory(fileMem);
 	return 2;
     }
-*/
 
-    if (!specFile) {
-	rpmError(RPMERR_NOSPEC, "source package contains no .spec file");
-	return 1;
+    if (i >= 0) {
+	fchdir(i);
+	close(i);
+    } else {
+	chdir("/");
     }
 
-    /* This logic doesn't work is realSpecDir and realSourceDir are on
-       different filesystems XXX */
-    instSpecFile = alloca(strlen(realSourceDir) + strlen(specFile) + 2);
-    strcpy(instSpecFile, realSourceDir);
-    strcat(instSpecFile, "/");
-    strcat(instSpecFile, specFile);
+    if (specFileIndex == -1) {
+	if (!specFile) {
+	    rpmError(RPMERR_NOSPEC, "source package contains no .spec file");
+	    return 1;
+	}
 
-    correctSpecFile = alloca(strlen(realSpecDir) + strlen(specFile) + 2);
-    strcpy(correctSpecFile, realSpecDir);
-    strcat(correctSpecFile, "/");
-    strcat(correctSpecFile, specFile);
+	/* This logic doesn't work is realSpecDir and realSourceDir are on
+	   different filesystems, but we only do this on v1 source packages
+	   so I don't really care much. */
+	instSpecFile = alloca(strlen(realSourceDir) + strlen(specFile) + 2);
+	strcpy(instSpecFile, realSourceDir);
+	strcat(instSpecFile, "/");
+	strcat(instSpecFile, specFile);
 
-    rpmMessage(RPMMESS_DEBUG, 
-		"renaming %s to %s\n", instSpecFile, correctSpecFile);
-    if (rename(instSpecFile, correctSpecFile)) {
-	/* try copying the file */
-	if (moveFile(instSpecFile, correctSpecFile))
+	correctSpecFile = alloca(strlen(realSpecDir) + strlen(specFile) + 2);
+	strcpy(correctSpecFile, realSpecDir);
+	strcat(correctSpecFile, "/");
+	strcat(correctSpecFile, specFile);
+
+	free(specFile);
+
+	rpmMessage(RPMMESS_DEBUG, 
+		    "renaming %s to %s\n", instSpecFile, correctSpecFile);
+	if (rename(instSpecFile, correctSpecFile)) {
+	    rpmError(RPMERR_RENAME, "rename of %s to %s failed: %s",
+		     instSpecFile, correctSpecFile, strerror(errno));
 	    return 2;
-    }
+	}
 
-    if (specFilePtr)
-	*specFilePtr = strdup(correctSpecFile);
+	if (specFilePtr)
+	    *specFilePtr = strdup(correctSpecFile);
+    } else {
+	if (specFilePtr)
+	    *specFilePtr = strdup(files[specFileIndex].rootedPath);
+
+	if (fileCount > 0) freeFileMemory(fileMem);
+    }
 
     return 0;
 }
@@ -1292,61 +1354,4 @@ static int osOkay(Header h) {
     }
 
     return 1;
-}
-
-static int moveFile(char * sourceName, char * destName) {
-    if (copyFile(sourceName, destName)) return 1;
-
-    unlink(sourceName);
-    return 0;
-}
-
-static int copyFile(char * sourceName, char * destName) {
-    int source, dest, i;
-    char buf[16384];
-
-    rpmMessage(RPMMESS_DEBUG, "coping %s to %s\n", sourceName, destName);
-
-    source = open(sourceName, O_RDONLY);
-    if (source < 0) {
-	rpmError(RPMERR_INTERNAL, "file %s missing from source directory",
-		    sourceName);
-	return 1;
-    }
-
-    dest = creat(destName, 0644);
-    if (dest < 0) {
-	rpmError(RPMERR_CREATE, "failed to create file %s", destName);
-	close(source);
-	return 1;
-    }
-
-    while ((i = read(source, buf, sizeof(buf))) > 0) {
-	if (write(dest, buf, i) != i) {
-	    if (errno == ENOSPC) {
-		rpmError(RPMERR_NOSPACE, "out of disk space writing file %s",
-			destName);
-	    } else {
-		rpmError(RPMERR_CREATE, "error writing to file %s: %s",
-			destName, strerror(errno));
-	    }
-	    close(source);
-	    close(dest);
-	    unlink(destName);
-	    return 1;
-	}
-    }
-
-    if (i < 0) {
-	rpmError(RPMERR_CREATE, "error reading from file %s: %s",
-		sourceName, strerror(errno));
-    }
-
-    close(source);
-    close(dest);
-    
-    if (i < 0)
-	return 1;
-
-    return 0;
 }
