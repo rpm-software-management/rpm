@@ -37,7 +37,7 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
 static int archOkay(Header h);
 static int osOkay(Header h);
 static Header relocateFileList(struct availablePackage * alp, 
-			       rpmProblemSet probs);
+			       rpmProblemSet probs, Header h);
 static int psTrim(rpmProblemSet filter, rpmProblemSet target);
 static int sharedCmp(const void * one, const void * two);
 static enum fileActions decideFileFate(char * filespec, short dbMode, 
@@ -117,7 +117,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    dbiFreeIndexRecord(dbi);
 	}
 
-	hdrs[pkgNum] = relocateFileList(alp, probs);
+	hdrs[pkgNum] = relocateFileList(alp, probs, alp->h);
 
 	if (headerGetEntry(alp->h, RPMTAG_FILENAMES, NULL, NULL, &fileCount))
 	    totalFileCount += fileCount;
@@ -299,6 +299,21 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	} else {
 	    fd = notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0, 
 			al->list[pkgNum].key, notifyData);
+	    if (fd) {
+		Header h;
+
+		headerFree(hdrs[pkgNum]);
+		rc = rpmReadPackageHeader(fd, &h, NULL, NULL, NULL);
+		if (rc) {
+		    notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0, 
+				al->list[pkgNum].key, notifyData);
+		    ourrc++;
+		    fd = NULL;
+		} else {
+		    hdrs[pkgNum] = relocateFileList(alp, probs, h);
+		    headerFree(h);
+		}
+	    }
 	}
 
 	if (fd) {
@@ -429,7 +444,7 @@ void rpmProblemSetFree(rpmProblemSet probs) {
 }
 
 static Header relocateFileList(struct availablePackage * alp, 
-			       rpmProblemSet probs) {
+			       rpmProblemSet probs, Header origH) {
     int numValid, numRelocations;
     int i, j, madeSwap, rc;
     rpmRelocation * nextReloc, * relocations = NULL;
@@ -442,8 +457,8 @@ static Header relocateFileList(struct availablePackage * alp,
     int_32 fileCount;
     Header h;
 
-    if (!rawRelocations) return headerLink(alp->h);
-    h = headerCopy(alp->h);
+    if (!rawRelocations) return headerLink(origH);
+    h = headerCopy(origH);
 
     if (!headerGetEntry(h, RPMTAG_PREFIXES, NULL,
 			(void **) &validRelocations, &numValid))
