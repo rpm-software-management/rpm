@@ -1,9 +1,13 @@
 rpm alias --provides --qf '[%{PROVIDES}\n]'
 
-rpm alias --scripts --qf 'preinstall script:\n%{RPMTAG_PREIN}\npostinstall \
-script:\n%{RPMTAG_POSTIN}\npreuninstall \
-script:\n%{RPMTAG_PREUN}\npostuninstall \
-script:\n%{RPMTAG_POSTUN}\nverify script:\n%{VERIFYSCRIPT}\n'
+rpm alias --scripts --qf 'preinstall script:\n%{RPMTAG_PREIN}\
+postinstall script:\
+%{RPMTAG_POSTIN}\
+preuninstall script:\
+%{RPMTAG_PREUN}\
+postuninstall script: %{RPMTAG_POSTUN}\
+verify script:\
+%{VERIFYSCRIPT}\n'
 
 rpm alias --setperms -q --qf '[%{FILEMODES:octal} %{FILENAMES}\n]' \
 		   --pipe "sed 's/^.../chmod /' | sh"
