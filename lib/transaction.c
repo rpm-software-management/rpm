@@ -94,7 +94,7 @@ static void freeFi(TFI_t *fi)
 	if (fi->bnl) {
 	    free(fi->bnl); fi->bnl = NULL;
 	    free(fi->dnl); fi->dnl = NULL;
-	    free(fi->dil); fi->dil = NULL;
+	    xfree(fi->dil); fi->dil = NULL;
 	}
 	if (fi->flinks) {
 	    free(fi->flinks); fi->flinks = NULL;
@@ -1557,8 +1557,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
 	if (fi->fc == 0)
 	    continue;
-	free(fi->dnl); fi->dnl = NULL;
 	free(fi->bnl); fi->bnl = NULL;
+	free(fi->dnl); fi->dnl = NULL;
+	xfree(fi->dil); fi->dil = NULL;
 	switch (fi->type) {
 	case TR_ADDED:
 	    free(fi->fmd5s); fi->fmd5s = NULL;
