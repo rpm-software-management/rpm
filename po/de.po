@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-04-11 12:21-0400\n"
+"POT-Creation-Date: 2000-04-12 09:57-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2216,18 +2216,18 @@ msgstr ""
 msgid "cannot open file %s: %s"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/dbindex.c:207
+#: lib/dbindex.c:209
 #, c-format
 msgid "error getting record %s from %s"
 msgstr "Fehler beim Eintrag %s von %s"
 
-#: lib/dbindex.c:221
+#: lib/dbindex.c:223
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "Fehler bei Schreiben des Eintrags %s nach %s"
 
 # FIXME
-#: lib/dbindex.c:226
+#: lib/dbindex.c:228
 #, c-format
 msgid "error removing record %s into %s"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
@@ -2787,250 +2787,255 @@ msgstr ""
 msgid "can't query %s: %s\n"
 msgstr "Fehler: kann %s nicht öffnen\n"
 
-#: lib/query.c:432
+#: lib/query.c:446
 #, c-format
 msgid "record number %u\n"
 msgstr ""
 
-#: lib/query.c:436
+#: lib/query.c:450
 msgid "error: could not read database record\n"
 msgstr "Fehler: konnte Datenbank-Eintrag nicht lesen\n"
 
 #. XXX Fstrerror
-#: lib/query.c:481
+#: lib/query.c:495
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/query.c:499
+#: lib/query.c:513
 msgid "old format source packages cannot be queried\n"
 msgstr "altes Sourceformat-Paket kann nicht angefragt werden\n"
 
-#: lib/query.c:508 lib/rpminstall.c:231
+#: lib/query.c:522 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
 
-#: lib/query.c:512
+#: lib/query.c:526
 #, c-format
 msgid "query of %s failed\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:545
+#: lib/query.c:559
 #, fuzzy, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:570
+#: lib/query.c:586
 msgid "could not read database record!\n"
 msgstr "kann Datenbank-Eintrag nicht lesen!\n"
 
-#: lib/query.c:581
+#: lib/query.c:597
+#, fuzzy
+msgid "no packages\n"
+msgstr "Anfrage an alle Pakete"
+
+#: lib/query.c:608 lib/query.c:616
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
-#: lib/query.c:590
+#: lib/query.c:627 lib/query.c:635
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "kein Paket triggert %s\n"
 
-#: lib/query.c:599
+#: lib/query.c:646 lib/query.c:654
 #, c-format
 msgid "no package requires %s\n"
 msgstr "kein Paket verlangt %s\n"
 
 # oder besser: ... listet %s auf? -ke-
-#: lib/query.c:609
+#: lib/query.c:666 lib/query.c:674
 #, c-format
 msgid "no package provides %s\n"
 msgstr "kein Paket stellt %s bereit\n"
 
 # , c-format
-#: lib/query.c:624
+#: lib/query.c:691 lib/query.c:709
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/query.c:627
+#: lib/query.c:694 lib/query.c:712
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/query.c:649
+#: lib/query.c:735
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:652
+#: lib/query.c:738
 #, fuzzy, c-format
 msgid "package record number: %d\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:655
+#: lib/query.c:742 lib/query.c:751
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "Eintrag %d konnte nicht gelesen werden\n"
 
-#: lib/query.c:667 lib/rpminstall.c:436
+#: lib/query.c:763 lib/rpminstall.c:436
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/query.c:670
+#: lib/query.c:766
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: lib/query.c:695
+#: lib/query.c:791
 #, fuzzy
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "%s: Öffnen fehlgeschlagen\n"
 
-#: lib/query.c:754
+#: lib/query.c:850
 #, fuzzy
 msgid "query package owning file"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/query.c:756
+#: lib/query.c:852
 #, fuzzy
 msgid "query packages in group"
 msgstr "Paket hat keinen Namen"
 
-#: lib/query.c:758
+#: lib/query.c:854
 #, fuzzy
 msgid "query a package file"
 msgstr "Anfrage an alle Pakete"
 
-#: lib/query.c:762
+#: lib/query.c:858
 #, fuzzy
 msgid "query a spec file"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:764
+#: lib/query.c:860
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/query.c:766
+#: lib/query.c:862
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> benötigen"
 
-#: lib/query.c:768
+#: lib/query.c:864
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "Anfrage nach Paketen, die die Fähigkeit <i> bereitstellen"
 
-#: lib/query.c:807
+#: lib/query.c:903
 #, fuzzy
 msgid "list all configuration files"
 msgstr "Nur Konfigurationsdateien auflisten (impliziert -l)"
 
-#: lib/query.c:809
+#: lib/query.c:905
 #, fuzzy
 msgid "list all documentation files"
 msgstr "Dokumentation installieren"
 
-#: lib/query.c:811
+#: lib/query.c:907
 #, fuzzy
 msgid "dump basic file information"
 msgstr "Paketinformationen anzeigen"
 
-#: lib/query.c:813
+#: lib/query.c:909
 #, fuzzy
 msgid "list files in package"
 msgstr "Paket installieren"
 
-#: lib/query.c:817
+#: lib/query.c:913
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:819
+#: lib/query.c:915
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/query.c:821
+#: lib/query.c:917
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:823
+#: lib/query.c:919
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "Dateiliste des Pakets anzeigen"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:227
+#: lib/rebuilddb.c:33 lib/rpmdb.c:220
 msgid "no dbpath has been set"
 msgstr "»dbpath« ist nicht gesetzt"
 
-#: lib/rebuilddb.c:59
+#: lib/rebuilddb.c:58
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: lib/rebuilddb.c:63
+#: lib/rebuilddb.c:62
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "die temporäre Datenbank %s existiert schon"
 
-#: lib/rebuilddb.c:69
+#: lib/rebuilddb.c:68
 #, fuzzy, c-format
 msgid "creating directory: %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/rebuilddb.c:71
+#: lib/rebuilddb.c:70
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: lib/rebuilddb.c:82
+#: lib/rebuilddb.c:81
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: lib/rebuilddb.c:91
+#: lib/rebuilddb.c:90
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: lib/rebuilddb.c:102
+#: lib/rebuilddb.c:112
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr ""
 "Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
 
-#: lib/rebuilddb.c:120
-#, c-format
-msgid "duplicated database entry: %s-%s-%s -- skipping."
-msgstr ""
-
-#: lib/rebuilddb.c:132
-#, c-format
-msgid "cannot add record originally at %d"
-msgstr "kann einen Eintrag hinzufügen, ursprünglich bei %d"
-
-#: lib/rebuilddb.c:138
+#: lib/rebuilddb.c:131
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 "Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
 
-#: lib/rebuilddb.c:153
+#: lib/rebuilddb.c:146
+#, c-format
+msgid "duplicated database entry: %s-%s-%s -- skipping."
+msgstr ""
+
+#: lib/rebuilddb.c:162
+#, c-format
+msgid "cannot add record originally at %d"
+msgstr "kann einen Eintrag hinzufügen, ursprünglich bei %d"
+
+#: lib/rebuilddb.c:186
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:161
+#: lib/rebuilddb.c:194
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:163
+#: lib/rebuilddb.c:196
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
 # , c-format
-#: lib/rebuilddb.c:169
+#: lib/rebuilddb.c:202
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
@@ -3120,72 +3125,72 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:198
+#: lib/rpmdb.c:191
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:447
+#: lib/rpmdb.c:442
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "Fehler: kann nicht öffnen %s%s/packages.rpm\n"
 
-#: lib/rpmdb.c:476
+#: lib/rpmdb.c:598
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: lib/rpmdb.c:485
+#: lib/rpmdb.c:607
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "Paket %s in %s nicht gefunden"
 
-#: lib/rpmdb.c:503
+#: lib/rpmdb.c:625
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "kann Kopfzeilen bei %d nicht lesen, um danach zu suchen"
 
-#: lib/rpmdb.c:528
+#: lib/rpmdb.c:650
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
 # FIXME
-#: lib/rpmdb.c:534
+#: lib/rpmdb.c:656
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 # FIXME
-#: lib/rpmdb.c:542
+#: lib/rpmdb.c:664
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
-#: lib/rpmdb.c:546 lib/rpmdb.c:743
+#: lib/rpmdb.c:668 lib/rpmdb.c:865
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
 # reservieren???
-#: lib/rpmdb.c:681
+#: lib/rpmdb.c:803
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "kann keinen Platz für die Datenbank bekommen"
 
-#: lib/rpmdb.c:720
+#: lib/rpmdb.c:842
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:732
+#: lib/rpmdb.c:854
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:739
+#: lib/rpmdb.c:861
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""

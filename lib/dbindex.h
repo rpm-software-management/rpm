@@ -77,7 +77,7 @@ struct _dbiVec {
  * @param set	items retrieved from index database
  * @return	-1 error, 0 success, 1 not found
  */
-    int (*SearchIndex) (dbiIndex dbi, const char * str, dbiIndexSet * set);
+    int (*SearchIndex) (dbiIndex dbi, const void * str, size_t len, dbiIndexSet * set);
 
 /**
  * Change/delete items that match criteria.
@@ -199,7 +199,7 @@ int dbiSyncIndex(dbiIndex dbi);
  * @param set	items retrieved from index database
  * @return	-1 error, 0 success, 1 not found
  */
-int dbiSearchIndex(dbiIndex dbi, const char * str, /*@out@*/ dbiIndexSet * set);
+int dbiSearchIndex(dbiIndex dbi, const char * str, size_t len, /*@out@*/ dbiIndexSet * set);
 
 /**
  * Change/delete items that match criteria.

@@ -12,6 +12,8 @@
 	- solaris2.6: avoid bsearch with empty dir list (Ric Klaren - klaren@cs.utwente.nl)
 	- db3: save join keys in endian neutral binary format.
 	- treat legacy falloc.c as "special" db[01] index for package headers.
+	- API: pass *SearchIndex() length of key (0 will use strlen(key)).
+	- API: remove rpmdb{First,Next}RecNum routines.
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

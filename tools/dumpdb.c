@@ -4,10 +4,7 @@
 
 int main(int argc, char ** argv)
 {
-    Header h;
-    int offset;
-    int dspBlockNum = 0;			/* default to all */
-    int blockNum = 0;
+    unsigned int dspBlockNum = 0;		/* default to all */
     rpmdb db;
 
     setprogname(argv[0]);	/* Retrofit glibc __progname */
@@ -25,25 +22,56 @@ int main(int argc, char ** argv)
 	exit(1);
     }
 
-    offset = rpmdbFirstRecNum(db);
-    while (offset) {
-	blockNum++;
+    {	Header h = NULL;
+	unsigned int blockNum = 0;
+#ifdef	DYING
+	unsigned int offset;
+#define	_RECNUM	offset
 
-	if (!dspBlockNum || dspBlockNum == blockNum) {
+	for (offset = rpmdbFirstRecNum(db);
+	     offset > 0;
+	     offset = rpmdbNextRecNum(db, offset))
+	{
+	    if (h) {
+		headerFree(h);
+		h = NULL;
+	    }
 	    h = rpmdbGetRecord(db, offset);
 	    if (!h) {
-		fprintf(stderr, _("headerRead failed\n"));
+		fprintf(stderr, _("rpmdbGetRecord() failed at offset %d\n"),
+			offset);
 		exit(1);
 	    }
-	  
-	    headerDump(h, stdout, 1, rpmTagTable);
-	    fprintf(stdout, "Offset: %d\n", offset);
-	    headerFree(h);
-	}
-    
-	if (dspBlockNum && blockNum > dspBlockNum) exit(0);
+#else
+	rpmdbMatchIterator mi;
+#define	_RECNUM	rpmdbGetIteratorOffset(mi)
 
-	offset = rpmdbNextRecNum(db, offset);
+	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+#endif
+
+	    blockNum++;
+	    if (!(dspBlockNum != 0 && dspBlockNum != blockNum))
+		continue;
+
+	    headerDump(h, stdout, 1, rpmTagTable);
+	    fprintf(stdout, "Offset: %d\n", _RECNUM);
+    
+	    if (dspBlockNum && blockNum > dspBlockNum)
+		exit(0);
+
+#ifndef DYING
+	}
+	rpmdbFreeIterator(mi);
+#else
+	}
+
+	if (h) {
+	    headerFree(h);
+	    h = NULL;
+	}
+#endif
+
     }
 
     rpmdbClose(db);

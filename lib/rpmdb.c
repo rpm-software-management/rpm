@@ -11,6 +11,7 @@
 #include "dbindex.h"
 /*@access dbiIndexSet@*/
 /*@access dbiIndexRecord@*/
+/*@access rpmdbMatchIterator@*/
 
 #include "falloc.h"
 #include "fprint.h"
@@ -28,35 +29,27 @@ struct _dbiIndex rpmdbi[] = {
     { "packages.rpm", 0,
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-#define	RPMDBI_PACKAGES		0
     { "nameindex.rpm", RPMTAG_NAME,
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-#define	RPMDBI_NAME		1
     { "fileindex.rpm", RPMTAG_BASENAMES,
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-#define	RPMDBI_FILE		2
     { "groupindex.rpm", RPMTAG_GROUP,
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-#define	RPMDBI_GROUP		3
     { "requiredby.rpm", RPMTAG_REQUIRENAME,
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-#define	RPMDBI_REQUIREDBY	4
     { "providesindex.rpm", RPMTAG_PROVIDENAME,
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-#define	RPMDBI_PROVIDES		5
     { "conflictsindex.rpm", RPMTAG_CONFLICTNAME,
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-#define	RPMDBI_CONFLICTS	6
     { "triggerindex.rpm", RPMTAG_TRIGGERNAME,
 	DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR, 0,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
-#define	RPMDBI_TRIGGER		7
     { NULL }
 #define	RPMDBI_MIN		0
 #define	RPMDBI_MAX		8
@@ -263,6 +256,7 @@ void rpmdbClose (rpmdb db)
     free(db);
 }
 
+#ifdef	DYING
 int rpmdbFirstRecNum(rpmdb db) {
     dbiIndex dbi = db->_dbi[RPMDBI_PACKAGES];
     unsigned int offset = 0;
@@ -293,6 +287,7 @@ int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset) {
     memcpy(&lastOffset, keyp, sizeof(lastOffset));
     return lastOffset;
 }
+#endif	/* DYING */
 
 Header rpmdbGetRecord(rpmdb db, unsigned int offset)
 {
@@ -338,7 +333,7 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
     fpc = fpCacheCreate(20);
     fp1 = fpLookup(fpc, dirName, baseName, 1);
 
-    rc = dbiSearchIndex(db->_dbi[RPMDBI_FILE], baseName, &allMatches);
+    rc = dbiSearchIndex(db->_dbi[RPMDBI_FILE], baseName, 0, &allMatches);
     if (rc) {
 	dbiFreeIndexSet(allMatches);
 	allMatches = NULL;
@@ -411,27 +406,27 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 }
 
 int rpmdbFindByProvides(rpmdb db, const char * filespec, dbiIndexSet * matches) {
-    return dbiSearchIndex(db->_dbi[RPMDBI_PROVIDES], filespec, matches);
+    return dbiSearchIndex(db->_dbi[RPMDBI_PROVIDES], filespec, 0, matches);
 }
 
 int rpmdbFindByRequiredBy(rpmdb db, const char * filespec, dbiIndexSet * matches) {
-    return dbiSearchIndex(db->_dbi[RPMDBI_REQUIREDBY], filespec, matches);
+    return dbiSearchIndex(db->_dbi[RPMDBI_REQUIREDBY], filespec, 0, matches);
 }
 
 int rpmdbFindByConflicts(rpmdb db, const char * filespec, dbiIndexSet * matches) {
-    return dbiSearchIndex(db->_dbi[RPMDBI_CONFLICTS], filespec, matches);
+    return dbiSearchIndex(db->_dbi[RPMDBI_CONFLICTS], filespec, 0, matches);
 }
 
 int rpmdbFindByTriggeredBy(rpmdb db, const char * filespec, dbiIndexSet * matches) {
-    return dbiSearchIndex(db->_dbi[RPMDBI_TRIGGER], filespec, matches);
+    return dbiSearchIndex(db->_dbi[RPMDBI_TRIGGER], filespec, 0, matches);
 }
 
 int rpmdbFindByGroup(rpmdb db, const char * group, dbiIndexSet * matches) {
-    return dbiSearchIndex(db->_dbi[RPMDBI_GROUP], group, matches);
+    return dbiSearchIndex(db->_dbi[RPMDBI_GROUP], group, 0, matches);
 }
 
 int rpmdbFindPackage(rpmdb db, const char * name, dbiIndexSet * matches) {
-    return dbiSearchIndex(db->_dbi[RPMDBI_NAME], name, matches);
+    return dbiSearchIndex(db->_dbi[RPMDBI_NAME], name, 0, matches);
 }
 
 int rpmdbCountPackages(rpmdb db, const char * name)
@@ -439,7 +434,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     dbiIndexSet matches = NULL;
     int rc;
 
-    rc = dbiSearchIndex(db->_dbi[RPMDBI_NAME], name, &matches);
+    rc = dbiSearchIndex(db->_dbi[RPMDBI_NAME], name, 0, &matches);
 
     switch (rc) {
     default:
@@ -462,13 +457,140 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     return rc;
 }
 
+struct _rpmdbMatchIterator {
+    const void *	mi_key;
+    size_t		mi_keylen;
+    rpmdb		mi_db;
+    dbiIndex		mi_dbi;
+    int			mi_dbix;
+    dbiIndexSet		mi_set;
+    int			mi_setx;
+    Header		mi_h;
+    unsigned int	mi_offset;
+};
+
+void rpmdbFreeIterator(rpmdbMatchIterator mi)
+{
+    if (mi->mi_h) {
+	headerFree(mi->mi_h);
+	mi->mi_h = NULL;
+    }
+    if (mi->mi_set) {
+	dbiFreeIndexSet(mi->mi_set);
+	mi->mi_set = NULL;
+    } else {
+	dbiIndex dbi = mi->mi_db->_dbi[RPMDBI_PACKAGES];
+	(void) (*dbi->dbi_vec->cclose) (dbi);
+    }
+    if (mi->mi_key) {
+	xfree(mi->mi_key);
+	mi->mi_key = NULL;
+    }
+    free(mi);
+}
+
+unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi) {
+    return mi->mi_offset;
+}
+
+Header rpmdbNextIterator(rpmdbMatchIterator mi)
+{
+    dbiIndex dbi = mi->mi_db->_dbi[RPMDBI_PACKAGES];
+    void * uh;
+    size_t uhlen;
+    void * keyp = &mi->mi_offset;
+    size_t keylen = sizeof(mi->mi_offset);
+    int rc;
+
+    if (mi == NULL)
+	return NULL;
+
+    /* XXX skip over instances with 0 join key */
+    do {
+	if (mi->mi_set) {
+	    if (!(mi->mi_setx < mi->mi_set->count))
+		return NULL;
+	    mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
+	    mi->mi_setx++;
+	} else {
+	    rc = (*dbi->dbi_vec->cget) (dbi, &keyp, &keylen, NULL, NULL);
+	    if (rc)
+		return NULL;
+	    memcpy(&mi->mi_offset, keyp, sizeof(mi->mi_offset));
+	}
+    } while (mi->mi_offset == 0);
+
+    /* Retrieve header */
+    rc = (*dbi->dbi_vec->get) (dbi, keyp, keylen, &uh, &uhlen);
+    if (rc)
+	return NULL;
+
+    if (mi->mi_h) {
+	headerFree(mi->mi_h);
+	mi->mi_h = NULL;
+    }
+    mi->mi_h = headerLoad(uh);
+
+    return mi->mi_h;
+}
+
+rpmdbMatchIterator rpmdbInitIterator(rpmdb db, int dbix, const void * key, size_t keylen)
+{
+    rpmdbMatchIterator mi;
+    dbiIndex dbi = NULL;
+    dbiIndexSet set = NULL;
+
+    dbi = db->_dbi[dbix];
+
+    if (key) {
+	int rc;
+	rc = dbiSearchIndex(dbi, key, keylen, &set);
+	switch (rc) {
+	default:
+	case -1:		/* error */
+	case 1:		/* not found */
+	    if (set)
+		dbiFreeIndexSet(set);
+	    return NULL;
+	    /*@notreached@*/ break;
+	case 0:		/* success */
+	    break;
+	}
+    }
+
+    mi = xcalloc(sizeof(*mi), 1);
+    if (key) {
+	if (keylen == 0)
+	    keylen = strlen(key);
+
+	{   char * k = xmalloc(keylen + 1);
+	    memcpy(k, key, keylen);
+	    k[keylen] = '\0';	/* XXX for strings */
+	    mi->mi_key = k;
+	}
+
+	mi->mi_keylen = keylen;
+    } else {
+	mi->mi_key = NULL;
+	mi->mi_keylen = 0;
+    }
+    mi->mi_db = db;
+    mi->mi_dbi = dbi;
+    mi->mi_dbix = dbix;
+    mi->mi_set = set;
+    mi->mi_setx = 0;
+    mi->mi_h = NULL;
+    mi->mi_offset = 0;
+    return mi;
+}
+
 static void removeIndexEntry(dbiIndex dbi, const char * key, dbiIndexRecord rec,
 		             int tolerant, const char * idxName)
 {
     dbiIndexSet matches = NULL;
     int rc;
     
-    rc = dbiSearchIndex(dbi, key, &matches);
+    rc = dbiSearchIndex(dbi, key, 0, &matches);
     switch (rc) {
       case 0:
 	if (dbiRemoveIndexRecord(matches, rec)) {
@@ -596,7 +718,7 @@ static int addIndexEntry(dbiIndex dbi, const char *index, dbiIndexRecord rec)
     dbiIndexSet set = NULL;
     int rc;
 
-    rc = dbiSearchIndex(dbi, index, &set);
+    rc = dbiSearchIndex(dbi, index, 0, &set);
 
     switch (rc) {
     case -1:			/* error */
@@ -967,7 +1089,9 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
     /* Gather all matches from the database */
     for (i = 0; i < numItems; i++) {
 	dbiIndexSet matches = NULL;
-	switch (dbiSearchIndex(db->_dbi[RPMDBI_FILE], fpList[i].baseName, &matches)) {
+	int rc;
+	rc = dbiSearchIndex(db->_dbi[RPMDBI_FILE], fpList[i].baseName, 0, &matches);
+	switch (rc) {
 	default:
 	    break;
 	case 2:

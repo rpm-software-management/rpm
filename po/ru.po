@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-04-11 12:21-0400\n"
+"POT-Creation-Date: 2000-04-12 09:57-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2080,17 +2080,17 @@ msgstr ""
 msgid "cannot open file %s: %s"
 msgstr "не могу открыть файл %s: %s"
 
-#: lib/dbindex.c:207
+#: lib/dbindex.c:209
 #, c-format
 msgid "error getting record %s from %s"
 msgstr "ошибка получения записи %s из %s"
 
-#: lib/dbindex.c:221
+#: lib/dbindex.c:223
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "ошибка сохранения записи %s в %s"
 
-#: lib/dbindex.c:226
+#: lib/dbindex.c:228
 #, c-format
 msgid "error removing record %s into %s"
 msgstr "ошибка удаления записи %s из %s"
@@ -2633,232 +2633,237 @@ msgstr "пакет не содержит списков ни хозяев файлов, ни их ID"
 msgid "can't query %s: %s\n"
 msgstr "не могу удалить %s: %s\n"
 
-#: lib/query.c:432
+#: lib/query.c:446
 #, c-format
 msgid "record number %u\n"
 msgstr "запись номер %u\n"
 
-#: lib/query.c:436
+#: lib/query.c:450
 msgid "error: could not read database record\n"
 msgstr "ошибка: не могу прочесть запись базы данных\n"
 
 #. XXX Fstrerror
-#: lib/query.c:481
+#: lib/query.c:495
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "открытие %s не удалось\n"
 
-#: lib/query.c:499
+#: lib/query.c:513
 msgid "old format source packages cannot be queried\n"
 msgstr "запросы к SRPM в старом формате не поддерживаются\n"
 
-#: lib/query.c:508 lib/rpminstall.c:231
+#: lib/query.c:522 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s не похож на пакет RPM...\n"
 
-#: lib/query.c:512
+#: lib/query.c:526
 #, c-format
 msgid "query of %s failed\n"
 msgstr "ошибка запроса %s\n"
 
-#: lib/query.c:545
+#: lib/query.c:559
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "запрос spec-файла %s не удался, не могу разобрать файл\n"
 
-#: lib/query.c:570
+#: lib/query.c:586
 msgid "could not read database record!\n"
 msgstr "не могу прочесть запись базы данных!\n"
 
-#: lib/query.c:581
+#: lib/query.c:597
+#, fuzzy
+msgid "no packages\n"
+msgstr "найдено %d пакетов\n"
+
+#: lib/query.c:608 lib/query.c:616
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "группа %s не содержит никаких пакетов\n"
 
-#: lib/query.c:590
+#: lib/query.c:627 lib/query.c:635
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ни один из пакетов не взводит триггер %s\n"
 
-#: lib/query.c:599
+#: lib/query.c:646 lib/query.c:654
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ни один из пакетов не требует %s\n"
 
-#: lib/query.c:609
+#: lib/query.c:666 lib/query.c:674
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ни один из пакетов не предоставляет %s\n"
 
-#: lib/query.c:624
+#: lib/query.c:691 lib/query.c:709
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:627
+#: lib/query.c:694 lib/query.c:712
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не принадлежит ни одному из пакетов\n"
 
-#: lib/query.c:649
+#: lib/query.c:735
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "неверный номер пакета: %s\n"
 
-#: lib/query.c:652
+#: lib/query.c:738
 #, c-format
 msgid "package record number: %d\n"
 msgstr "запись пакета номер %d\n"
 
-#: lib/query.c:655
+#: lib/query.c:742 lib/query.c:751
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "запись %d не читается\n"
 
-#: lib/query.c:667 lib/rpminstall.c:436
+#: lib/query.c:763 lib/rpminstall.c:436
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
 
-#: lib/query.c:670
+#: lib/query.c:766
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "ошибка при поиске пакета %s\n"
 
-#: lib/query.c:695
+#: lib/query.c:791
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: неудача rpmdbOpen()\n"
 
-#: lib/query.c:754
+#: lib/query.c:850
 msgid "query package owning file"
 msgstr "найти пакет, которому принадлежит файл"
 
-#: lib/query.c:756
+#: lib/query.c:852
 msgid "query packages in group"
 msgstr "запрос пакетов в группе"
 
-#: lib/query.c:758
+#: lib/query.c:854
 msgid "query a package file"
 msgstr "запросить файл пакета"
 
-#: lib/query.c:762
+#: lib/query.c:858
 msgid "query a spec file"
 msgstr "запросить spec-файл"
 
-#: lib/query.c:764
+#: lib/query.c:860
 msgid "query the pacakges triggered by the package"
 msgstr "запросить пакеты с триггер-скриптами на пакет"
 
-#: lib/query.c:766
+#: lib/query.c:862
 msgid "query the packages which require a capability"
 msgstr "найти пакеты, требующие сервиса"
 
-#: lib/query.c:768
+#: lib/query.c:864
 msgid "query the packages which provide a capability"
 msgstr "найти пакеты, предоставляющие сервис"
 
-#: lib/query.c:807
+#: lib/query.c:903
 msgid "list all configuration files"
 msgstr "показать все конфигурационные файлы"
 
-#: lib/query.c:809
+#: lib/query.c:905
 msgid "list all documentation files"
 msgstr "показать все файлы документации"
 
-#: lib/query.c:811
+#: lib/query.c:907
 msgid "dump basic file information"
 msgstr "вывести базовую информацию о файле"
 
-#: lib/query.c:813
+#: lib/query.c:909
 msgid "list files in package"
 msgstr "показать файлы пакета"
 
-#: lib/query.c:817
+#: lib/query.c:913
 msgid "use the following query format"
 msgstr "исп. следующий формат запроса"
 
-#: lib/query.c:819
+#: lib/query.c:915
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "подставить секции i18n из следующего каталога"
 
-#: lib/query.c:821
+#: lib/query.c:917
 msgid "display the states of the listed files"
 msgstr "показать состояние показанных файлов"
 
-#: lib/query.c:823
+#: lib/query.c:919
 msgid "display a verbose file listing"
 msgstr "вывести детальный список файлов пакета"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:227
+#: lib/rebuilddb.c:33 lib/rpmdb.c:220
 msgid "no dbpath has been set"
 msgstr "не установлена dbpath"
 
-#: lib/rebuilddb.c:59
+#: lib/rebuilddb.c:58
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраиваю базу в корневом каталоге %s\n"
 
-#: lib/rebuilddb.c:63
+#: lib/rebuilddb.c:62
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "временная база данных %s уже существует"
 
-#: lib/rebuilddb.c:69
+#: lib/rebuilddb.c:68
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "создаю каталог: %s\n"
 
-#: lib/rebuilddb.c:71
+#: lib/rebuilddb.c:70
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ошибка создания каталога %s: %s"
 
-#: lib/rebuilddb.c:82
+#: lib/rebuilddb.c:81
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "открываю старую базу\n"
 
-#: lib/rebuilddb.c:91
+#: lib/rebuilddb.c:90
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "открываю новую базу\n"
 
-#: lib/rebuilddb.c:102
+#: lib/rebuilddb.c:112
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "запись номер %d в базе неверна, пропускаю"
 
-#: lib/rebuilddb.c:120
-#, c-format
-msgid "duplicated database entry: %s-%s-%s -- skipping."
-msgstr ""
-
-#: lib/rebuilddb.c:132
-#, c-format
-msgid "cannot add record originally at %d"
-msgstr "не могу добавить запись (первоначально в %d)"
-
-#: lib/rebuilddb.c:138
+#: lib/rebuilddb.c:131
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "запись номер %d в базе неверна, пропускаю"
 
-#: lib/rebuilddb.c:153
+#: lib/rebuilddb.c:146
+#, c-format
+msgid "duplicated database entry: %s-%s-%s -- skipping."
+msgstr ""
+
+#: lib/rebuilddb.c:162
+#, c-format
+msgid "cannot add record originally at %d"
+msgstr "не могу добавить запись (первоначально в %d)"
+
+#: lib/rebuilddb.c:186
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "перестроение базы не удалось, старая база остается на месте\n"
 
-#: lib/rebuilddb.c:161
+#: lib/rebuilddb.c:194
 msgid "failed to replace old database with new database!\n"
 msgstr "замена старой базы на новую не удалась!\n"
 
-#: lib/rebuilddb.c:163
+#: lib/rebuilddb.c:196
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "для восстановления заменяет файлы в %s файлами из %s"
 
-#: lib/rebuilddb.c:169
+#: lib/rebuilddb.c:202
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "удаление каталога %s не удалось: %s\n"
@@ -2947,7 +2952,7 @@ msgstr ")"
 msgid "OK"
 msgstr "Ok"
 
-#: lib/rpmdb.c:198
+#: lib/rpmdb.c:191
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -2956,62 +2961,62 @@ msgstr ""
 "базы нового формата"
 
 #. error
-#: lib/rpmdb.c:447
+#: lib/rpmdb.c:442
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "не могу открыть %s/packages.rpm\n"
 
-#: lib/rpmdb.c:476
+#: lib/rpmdb.c:598
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "пакет %s не найден в %s"
 
-#: lib/rpmdb.c:485
+#: lib/rpmdb.c:607
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "пакет %s не найден в %s"
 
-#: lib/rpmdb.c:503
+#: lib/rpmdb.c:625
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "не могу прочесть хедер в %d для поиска"
 
-#: lib/rpmdb.c:528
+#: lib/rpmdb.c:650
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "удаляю запись базы данных\n"
 
-#: lib/rpmdb.c:534
+#: lib/rpmdb.c:656
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляю индекс групп\n"
 
-#: lib/rpmdb.c:542
+#: lib/rpmdb.c:664
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "удаляю индекс имен\n"
 
-#: lib/rpmdb.c:546 lib/rpmdb.c:743
+#: lib/rpmdb.c:668 lib/rpmdb.c:865
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:681
+#: lib/rpmdb.c:803
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "не могу выделить место для базы данных"
 
-#: lib/rpmdb.c:720
+#: lib/rpmdb.c:842
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:732
+#: lib/rpmdb.c:854
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "переименовываю %s в %s\n"
 
-#: lib/rpmdb.c:739
+#: lib/rpmdb.c:861
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""

@@ -1,12 +1,12 @@
 # Swedish messages for RPM
 # Copyright © 1999 Free Software Foundation, Inc.
 # Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
-# $Revision: 1.84 $
+# $Revision: 1.85 $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-04-11 12:21-0400\n"
+"POT-Creation-Date: 2000-04-12 09:57-0400\n"
 "PO-Revision-Date: 2000-02-21 12:20+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2053,17 +2053,17 @@ msgstr ""
 msgid "cannot open file %s: %s"
 msgstr "kan inte öppna fil %s: %s"
 
-#: lib/dbindex.c:207
+#: lib/dbindex.c:209
 #, c-format
 msgid "error getting record %s from %s"
 msgstr "fel när post %s hämtades från %s"
 
-#: lib/dbindex.c:221
+#: lib/dbindex.c:223
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "fel när post %s sparades i %s"
 
-#: lib/dbindex.c:226
+#: lib/dbindex.c:228
 #, c-format
 msgid "error removing record %s into %s"
 msgstr "fel när post %s togs bort ur %s"
@@ -2615,232 +2615,237 @@ msgstr "paketet har varken filägare eller id-listor"
 msgid "can't query %s: %s\n"
 msgstr "kan inte ta bort %s: %s\n"
 
-#: lib/query.c:432
+#: lib/query.c:446
 #, c-format
 msgid "record number %u\n"
 msgstr "post nummer %u\n"
 
-#: lib/query.c:436
+#: lib/query.c:450
 msgid "error: could not read database record\n"
 msgstr "fel: kunde inte lästa databaspost\n"
 
 #. XXX Fstrerror
-#: lib/query.c:481
+#: lib/query.c:495
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades öppna %s: %s\n"
 
-#: lib/query.c:499
+#: lib/query.c:513
 msgid "old format source packages cannot be queried\n"
 msgstr "källpaket i gammalt format går ej att fråga om\n"
 
-#: lib/query.c:508 lib/rpminstall.c:231
+#: lib/query.c:522 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s verkar inte vara ett RPM-paket\n"
 
-#: lib/query.c:512
+#: lib/query.c:526
 #, c-format
 msgid "query of %s failed\n"
 msgstr "fråga om %s misslyckades\n"
 
-#: lib/query.c:545
+#: lib/query.c:559
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "fråga om spec-fil %s misslyckades, kan inte parsa\n"
 
-#: lib/query.c:570
+#: lib/query.c:586
 msgid "could not read database record!\n"
 msgstr "kunde inte lästa databaspost!\n"
 
-#: lib/query.c:581
+#: lib/query.c:597
+#, fuzzy
+msgid "no packages\n"
+msgstr "hittade %d paket\n"
+
+#: lib/query.c:608 lib/query.c:616
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupp %s innehåller inga paket\n"
 
-#: lib/query.c:590
+#: lib/query.c:627 lib/query.c:635
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "inga paketutlösare %s\n"
 
-#: lib/query.c:599
+#: lib/query.c:646 lib/query.c:654
 #, c-format
 msgid "no package requires %s\n"
 msgstr "inget paket behöver %s\n"
 
-#: lib/query.c:609
+#: lib/query.c:666 lib/query.c:674
 #, c-format
 msgid "no package provides %s\n"
 msgstr "inget paket tillhandahåller %s\n"
 
-#: lib/query.c:624
+#: lib/query.c:691 lib/query.c:709
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:627
+#: lib/query.c:694 lib/query.c:712
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "fil %s ägs inte av något paket\n"
 
-#: lib/query.c:649
+#: lib/query.c:735
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "felaktigt paketnummer: %s\n"
 
-#: lib/query.c:652
+#: lib/query.c:738
 #, c-format
 msgid "package record number: %d\n"
 msgstr "paketpost nummer: %d\n"
 
-#: lib/query.c:655
+#: lib/query.c:742 lib/query.c:751
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "post %d kunde inte läsas\n"
 
-#: lib/query.c:667 lib/rpminstall.c:436
+#: lib/query.c:763 lib/rpminstall.c:436
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
 
-#: lib/query.c:670
+#: lib/query.c:766
 #, c-format
 msgid "error looking for package %s\n"
 msgstr "fel vid sökning efter paket %s\n"
 
-#: lib/query.c:695
+#: lib/query.c:791
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() misslyckades\n"
 
-#: lib/query.c:754
+#: lib/query.c:850
 msgid "query package owning file"
 msgstr "undersök paket som äger fil"
 
-#: lib/query.c:756
+#: lib/query.c:852
 msgid "query packages in group"
 msgstr "undersök paket i grupp"
 
-#: lib/query.c:758
+#: lib/query.c:854
 msgid "query a package file"
 msgstr "undersök en paketfil"
 
-#: lib/query.c:762
+#: lib/query.c:858
 msgid "query a spec file"
 msgstr "fråga om en spec-fil"
 
-#: lib/query.c:764
+#: lib/query.c:860
 msgid "query the pacakges triggered by the package"
 msgstr "undersök paket utlösta av paketet"
 
-#: lib/query.c:766
+#: lib/query.c:862
 msgid "query the packages which require a capability"
 msgstr "fråga om paket som behöver en egenskap"
 
-#: lib/query.c:768
+#: lib/query.c:864
 msgid "query the packages which provide a capability"
 msgstr "fråga om paket som tillhandahåller en egenskap"
 
-#: lib/query.c:807
+#: lib/query.c:903
 msgid "list all configuration files"
 msgstr "lista alla konfigurationsfiler"
 
-#: lib/query.c:809
+#: lib/query.c:905
 msgid "list all documentation files"
 msgstr "lista alla dokumentationsfiler"
 
-#: lib/query.c:811
+#: lib/query.c:907
 msgid "dump basic file information"
 msgstr "visa filinformation"
 
-#: lib/query.c:813
+#: lib/query.c:909
 msgid "list files in package"
 msgstr "lista filer i paketet"
 
-#: lib/query.c:817
+#: lib/query.c:913
 msgid "use the following query format"
 msgstr "använd följande frågeformat"
 
-#: lib/query.c:819
+#: lib/query.c:915
 #, fuzzy
 msgid "substitute i18n sections into spec file"
 msgstr "ersätt översatta sektioner från följande katalog"
 
-#: lib/query.c:821
+#: lib/query.c:917
 msgid "display the states of the listed files"
 msgstr "visa tillstånd för de listade filerna"
 
-#: lib/query.c:823
+#: lib/query.c:919
 msgid "display a verbose file listing"
 msgstr "visa en utförlig fillistning"
 
-#: lib/rebuilddb.c:34 lib/rpmdb.c:227
+#: lib/rebuilddb.c:33 lib/rpmdb.c:220
 msgid "no dbpath has been set"
 msgstr "ingen dbpath har satts"
 
-#: lib/rebuilddb.c:59
+#: lib/rebuilddb.c:58
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "bygger om databas %s till %s\n"
 
-#: lib/rebuilddb.c:63
+#: lib/rebuilddb.c:62
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "tillfällig databas %s existerar redan"
 
-#: lib/rebuilddb.c:69
+#: lib/rebuilddb.c:68
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "skapar katalog: %s\n"
 
-#: lib/rebuilddb.c:71
+#: lib/rebuilddb.c:70
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "fel när katalog skapades %s: %s"
 
-#: lib/rebuilddb.c:82
+#: lib/rebuilddb.c:81
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "öppnar gammal databas\n"
 
-#: lib/rebuilddb.c:91
+#: lib/rebuilddb.c:90
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "öppnar ny databas\n"
 
-#: lib/rebuilddb.c:102
+#: lib/rebuilddb.c:112
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr "post nummer %d i databasen är felaktig -- hoppar över den"
 
-#: lib/rebuilddb.c:120
-#, c-format
-msgid "duplicated database entry: %s-%s-%s -- skipping."
-msgstr ""
-
-#: lib/rebuilddb.c:132
-#, c-format
-msgid "cannot add record originally at %d"
-msgstr "kan inte lägga till post ursprungligen vid %d"
-
-#: lib/rebuilddb.c:138
+#: lib/rebuilddb.c:131
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "post nummer %d i databasen är felaktig -- hoppar över den"
 
-#: lib/rebuilddb.c:153
+#: lib/rebuilddb.c:146
+#, c-format
+msgid "duplicated database entry: %s-%s-%s -- skipping."
+msgstr ""
+
+#: lib/rebuilddb.c:162
+#, c-format
+msgid "cannot add record originally at %d"
+msgstr "kan inte lägga till post ursprungligen vid %d"
+
+#: lib/rebuilddb.c:186
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "kunde inte bygga om databasen; orginaldatabasen finns kvar\n"
 
-#: lib/rebuilddb.c:161
+#: lib/rebuilddb.c:194
 msgid "failed to replace old database with new database!\n"
 msgstr "kunde inte ersätta gammal databas med ny databas!\n"
 
-#: lib/rebuilddb.c:163
+#: lib/rebuilddb.c:196
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "byt ut filer i %s med filer från %s för att återställa"
 
-#: lib/rebuilddb.c:169
+#: lib/rebuilddb.c:202
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunde inte ta bort katalogen %s: %s\n"
@@ -2928,7 +2933,7 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmdb.c:198
+#: lib/rpmdb.c:191
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -2937,62 +2942,62 @@ msgstr ""
 "i nytt format"
 
 #. error
-#: lib/rpmdb.c:447
+#: lib/rpmdb.c:442
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "kan inte öppna paket: %s\n"
 
-#: lib/rpmdb.c:476
+#: lib/rpmdb.c:598
 #, fuzzy, c-format
 msgid "package not found with key \"%s\" in %s"
 msgstr "fann ej paket %s i %s"
 
-#: lib/rpmdb.c:485
+#: lib/rpmdb.c:607
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "fann ej paket %s i %s"
 
-#: lib/rpmdb.c:503
+#: lib/rpmdb.c:625
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "kan inte läsa huvud vid %d för uppslagning"
 
-#: lib/rpmdb.c:528
+#: lib/rpmdb.c:650
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "tar bort databasposter\n"
 
-#: lib/rpmdb.c:534
+#: lib/rpmdb.c:656
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "tar bort gruppindex\n"
 
-#: lib/rpmdb.c:542
+#: lib/rpmdb.c:664
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "tar bort namnindex\n"
 
-#: lib/rpmdb.c:546 lib/rpmdb.c:743
+#: lib/rpmdb.c:668 lib/rpmdb.c:865
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:681
+#: lib/rpmdb.c:803
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "kan inte allokera plats för databas"
 
-#: lib/rpmdb.c:720
+#: lib/rpmdb.c:842
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:732
+#: lib/rpmdb.c:854
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "byter namn på %s till %s\n"
 
-#: lib/rpmdb.c:739
+#: lib/rpmdb.c:861
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""

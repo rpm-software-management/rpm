@@ -9,11 +9,6 @@
 #include <header.h>
 #include <popt.h>
 
-#if DEAD
-typedef /*@abstract@*/ struct _dbiIndexRecord * dbiIndexRecord;
-typedef /*@abstract@*/ struct _dbiIndex * dbiIndex;
-#endif
-
 typedef /*@abstract@*/ struct _dbiIndexSet * dbiIndexSet;
 
 #ifdef __cplusplus
@@ -383,6 +378,7 @@ void rpmdbClose ( /*@only@*/ rpmdb db);
  */
 int rpmdbOpenForTraversal(const char * prefix, /*@out@*/ rpmdb * dbp);
 
+#ifdef	DYING
 /**
  * @param db		rpm database
  */
@@ -392,6 +388,7 @@ int rpmdbFirstRecNum(rpmdb db);
  * @return		0 at end, -1 on error
  */
 int rpmdbNextRecNum(rpmdb db, unsigned int lastOffset);
+#endif
 
 /**
  * @param db		rpm database
@@ -444,6 +441,7 @@ int rpmdbFindByLabel(rpmdb db, const char * label,
  */
 int rpmdbFindByHeader(rpmdb db, Header h,
 	/*@out@*/ dbiIndexSet * matches);
+
 /**
  * Return number of instances of package in rpm database.
  * @param db		rpm database
@@ -451,6 +449,35 @@ int rpmdbFindByHeader(rpmdb db, Header h,
  * @return		number of instances of package in database
  */
 int rpmdbCountPackages(rpmdb db, const char *name);
+
+/**
+ */
+typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
+
+/**
+ */
+void rpmdbFreeIterator( /*@only@*/ rpmdbMatchIterator mi);
+
+/**
+ */
+unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi);
+
+/**
+ */
+Header rpmdbNextIterator(rpmdbMatchIterator mi);
+
+/**
+ */
+/*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, int dbix,
+			const void * key, size_t keylen);
+#define	RPMDBI_PACKAGES		0
+#define	RPMDBI_NAME		1
+#define	RPMDBI_FILE		2
+#define	RPMDBI_GROUP		3
+#define	RPMDBI_REQUIREDBY	4
+#define	RPMDBI_PROVIDES		5
+#define	RPMDBI_CONFLICTS	6
+#define	RPMDBI_TRIGGER		7
 
 /* we pass these around as an array with a sentinel */
 typedef struct rpmRelocation_s {
@@ -799,6 +826,7 @@ typedef	int (*QVF_t) (QVA_t *qva, rpmdb db, Header h);
 /**
  * @param db		rpm database
  */
+int XshowMatches(QVA_t *qva, /*@only@*/ rpmdbMatchIterator mi, QVF_t showPackage);
 int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage);
 
 #define QUERY_FOR_LIST		(1 << 1)

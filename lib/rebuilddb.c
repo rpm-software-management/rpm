@@ -11,18 +11,17 @@ extern int __do_dbenv_remove;   /* XXX in dbindex.c, shared with rebuilddb.c */
 /** */
 int rpmdbRebuild(const char * rootdir)
 {
-    rpmdb olddb, newdb;
+    rpmdb olddb;
     const char * dbpath = NULL;
     const char * rootdbpath = NULL;
+    rpmdb newdb;
     const char * newdbpath = NULL;
     const char * newrootdbpath = NULL;
     const char * tfn;
-    int recnum; 
-    Header h;
     int nocleanup = 1;
     int failed = 0;
     int rc = 0;
-    int _filterDbDups;		/* XXX always eliminate duplicate entries */
+    int _filterDbDups;	/* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
     int _preferDbiMajor;
 
     _filterDbDups = rpmExpandNumeric("%{_filterdbdups}");
@@ -95,24 +94,51 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 	goto exit;
     }
 
-    recnum = rpmdbFirstRecNum(olddb);
-    while (recnum > 0) {
-	if ((h = rpmdbGetRecord(olddb, recnum)) == NULL) {
-	    rpmError(RPMERR_INTERNAL,
+    {	Header h = NULL;
+
+#ifdef	DYING
+	int recnum; 
+#define	_RECNUM	recnum
+	for (recnum = rpmdbFirstRecNum(olddb);
+	     recnum > 0;
+	     recnum = rpmdbNextRecNum(olddb, recnum))
+	{
+	    if (h) {
+		headerFree(h);
+		h = NULL;
+	    }
+	    if ((h = rpmdbGetRecord(olddb, recnum)) == NULL) {
+		rpmError(RPMERR_INTERNAL,
 			_("record number %d in database is bad -- skipping it"),
 			recnum);
-	    break;
-	} else {
+		continue;
+	    }
+#else
+	rpmdbMatchIterator mi;
+#define	_RECNUM	rpmdbGetIteratorOffset(mi)
+
+	mi = rpmdbInitIterator(olddb, RPMDBI_PACKAGES, NULL, 0);
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+#endif
+
 	    /* let's sanity check this record a bit, otherwise just skip it */
-	    if (headerIsEntry(h, RPMTAG_NAME) &&
+	    if (!(headerIsEntry(h, RPMTAG_NAME) &&
 		headerIsEntry(h, RPMTAG_VERSION) &&
 		headerIsEntry(h, RPMTAG_RELEASE) &&
-		headerIsEntry(h, RPMTAG_BUILDTIME)) {
+		headerIsEntry(h, RPMTAG_BUILDTIME)))
+	    {
+		rpmError(RPMERR_INTERNAL,
+			_("record number %d in database is bad -- skipping."), 
+			_RECNUM);
+		continue;
+	    }
+
+	    /* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
+	    if (_filterDbDups) {
 		dbiIndexSet matches = NULL;
 		int skip;
 
-		/* XXX always eliminate duplicate entries */
-		if (_filterDbDups && !rpmdbFindByHeader(newdb, h, &matches)) {
+		if (!rpmdbFindByHeader(newdb, h, &matches)) {
 		    const char * name, * version, * release;
 		    headerNVR(h, &name, &version, &release);
 
@@ -127,21 +153,28 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 		    matches = NULL;
 		}
 
-		if (skip == 0 && rpmdbAdd(newdb, h)) {
-		    rpmError(RPMERR_INTERNAL,
-			_("cannot add record originally at %d"), recnum);
-		    failed = 1;
-		    break;
-		}
-	    } else {
-		rpmError(RPMERR_INTERNAL,
-			_("record number %d in database is bad -- skipping."), 
-			recnum);
+		if (skip)
+		    continue;
 	    }
 
-	    headerFree(h);
+	    if (rpmdbAdd(newdb, h)) {
+		rpmError(RPMERR_INTERNAL,
+			_("cannot add record originally at %d"), _RECNUM);
+		failed = 1;
+		break;
+	    }
+#ifndef	DYING
 	}
-	recnum = rpmdbNextRecNum(olddb, recnum);
+	rpmdbFreeIterator(mi);
+#else
+	}
+
+	if (h) {
+	    headerFree(h);
+	    h = NULL;
+	}
+#endif
+
     }
 
     if (!nocleanup)

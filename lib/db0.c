@@ -118,17 +118,20 @@ static int db0sync(dbiIndex dbi, unsigned int flags) {
     return rc;
 }
 
-static int db0SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set) {
+static int db0SearchIndex(dbiIndex dbi, const char * str, size_t len,
+		dbiIndexSet * set)
+{
     DBT key, data;
     DB * db = GetDB(dbi);
     int rc;
 
     if (set) *set = NULL;
+    if (len == 0) len = strlen(str);
     _mymemset(&key, 0, sizeof(key));
     _mymemset(&data, 0, sizeof(data));
 
     key.data = (void *)str;
-    key.size = strlen(str);
+    key.size = len;
     data.data = NULL;
     data.size = 0;
 

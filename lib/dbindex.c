@@ -197,10 +197,12 @@ int dbiFreeCursor(dbiIndex dbi) {
     return rc;
 }
 
-int dbiSearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set) {
+int dbiSearchIndex(dbiIndex dbi, const char * str, size_t len,
+		dbiIndexSet * set)
+{
     int rc;
 
-    rc = (*dbi->dbi_vec->SearchIndex) (dbi, str, set);
+    rc = (*dbi->dbi_vec->SearchIndex) (dbi, str, len, set);
 
     switch (rc) {
     case -1:

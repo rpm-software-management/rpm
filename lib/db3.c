@@ -390,7 +390,8 @@ union _dbswap {
     _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
   }
 
-static int db3SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set)
+static int db3SearchIndex(dbiIndex dbi, const char * str, size_t len,
+		dbiIndexSet * set)
 {
     DBT key, data;
     DB * db = GetDB(dbi);
@@ -398,21 +399,16 @@ static int db3SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set)
     int rc;
 
     if (set) *set = NULL;
+    if (len == 0) len = strlen(str);
     _mymemset(&key, 0, sizeof(key));
     _mymemset(&data, 0, sizeof(data));
 
     key.data = (void *)str;
-    key.size = strlen(str);
+    key.size = len;
     data.data = NULL;
     data.size = 0;
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
-#if defined(__USE_DB3)
-    if (dbi->dbi_dbcursor) {
-	DBC *dbcursor = dbi->dbi_dbcursor;
-	rc = dbcursor->c_get(dbcursor, &key, &data, DB_SET);	/* DB_RMW */
-    } else
-#endif
     rc = db->get(db, NULL, &key, &data, 0);
     _printit = (rc == DB_NOTFOUND ? 0 : _debug);
     rc = cvtdberr(dbi, "db->get", rc, _printit);
@@ -485,20 +481,6 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
 	    dbir[i].fileNumber = fileNumber.ui;
 	}
 	
-#if defined(__USE_DB3)
-	if (dbi->dbi_dbcursor) {
-	    DBC *dbcursor = dbi->dbi_dbcursor;
-	    int xx;
-
-	    rc = dbcursor->c_get(dbcursor, &key, &data, (DB_SET|DB_RMW));
-	    xx = cvtdberr(dbi, "db->c_get RMW put", rc, _debug);
-	    data.data = dbir;
-	    data.size = set->count * sizeof(*dbir);
-	    rc = dbcursor->c_put(dbcursor, &key, &data,
-		(rc == DB_NOTFOUND ? DB_KEYFIRST : DB_CURRENT));
-	    rc = cvtdberr(dbi, "db->c_put RMW", rc, _debug);
-	} else
-#endif
 	{
 	    data.data = dbir;
 	    data.size = set->count * sizeof(*dbir);
@@ -512,19 +494,6 @@ static int db3UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set)
     } else {
 
 #if defined(__USE_DB2) || defined(__USE_DB3)
-#if defined(__USE_DB3)
-	if (dbi->dbi_dbcursor) {
-	    DBC *dbcursor = dbi->dbi_dbcursor;
-	    int xx;
-
-	    rc = dbcursor->c_get(dbcursor, &key, &data, (DB_SET|DB_RMW));
-	    xx = cvtdberr(dbi, "db->c_get RMW del", rc, _debug);
-	    if (rc != DB_NOTFOUND) {
-		rc = dbcursor->c_del(dbcursor, 0);
-		rc = cvtdberr(dbi, "db->c_del RMW", rc, _debug);
-	    }
-	} else
-#endif
 	{
 	    rc = db->del(db, NULL, &key, 0);
 	    rc = cvtdberr(dbi, "db->del", rc, _debug);
