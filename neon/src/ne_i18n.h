@@ -1,6 +1,6 @@
 /* 
    Internationalization of neon
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -32,6 +32,7 @@
 #define N_(str) (str)
 
 /* Initialize i18n in neon */
-void neon_i18n_init(void);
+void neon_i18n_init(void)
+	/*@*/;
 
 #endif /* NEON_I18N_H */

@@ -39,12 +39,14 @@ BEGIN_NEON_DECLS
 /* Returns a human-readable version string like:
  * "neon 0.2.0: Library build, OpenSSL support"
  */
-const char *ne_version_string(void);
+const char *ne_version_string(void)
+	/*@*/;
 
 /* Returns non-zero if library version is not of major version
  * 'major', or if minor version is not greater than or equal to
  * 'minor'. */
-int ne_version_match(int major, int minor);
+int ne_version_match(int major, int minor)
+	/*@*/;
 
 #define NE_FEATURE_SSL (1) /* SSL/TLS support */
 #define NE_FEATURE_ZLIB (2) /* zlib compression in compress interface */
@@ -55,7 +57,8 @@ int ne_version_match(int major, int minor);
 
 /* Returns non-zero if neon has support for given feature code
  * NE_FEATURE_*. */
-int ne_has_support(int feature);
+int ne_has_support(int feature)
+	/*@*/;
 
 /* CONSIDER: mutt has a nicer way of way of doing debugging output... maybe
  * switch to like that. */
@@ -80,7 +83,8 @@ int ne_has_support(int feature);
 /* Send debugging output to 'stream', for all of the given debug
  * channels.  To disable debugging, pass 'stream' as NULL and 'mask'
  * as 0. */
-void ne_debug_init(FILE *stream, int mask);
+void ne_debug_init(FILE *stream, int mask)
+	/*@*/;
 
 /* The current debug mask and stream set by the last call to
  * ne_debug_init. */
@@ -89,7 +93,8 @@ extern FILE *ne_debug_stream;
 
 /* Produce debug output if any of channels 'ch' is enabled for
  * debugging. */
-void ne_debug(int ch, const char *, ...) ne_attribute((format(printf, 2, 3)));
+void ne_debug(int ch, const char *, ...) ne_attribute((format(printf, 2, 3)))
+	/*@*/;
 
 /* Storing an HTTP status result */
 typedef struct {
@@ -110,7 +115,8 @@ typedef struct {
  *    0 on success, *s will be filled in.
  *   -1 on parse error.
  */
-int ne_parse_statusline(const char *status_line, ne_status *s);
+int ne_parse_statusline(const char *status_line, ne_status *s)
+	/*@*/;
 
 END_NEON_DECLS
 

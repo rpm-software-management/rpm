@@ -39,15 +39,22 @@
 #define ne_free ne_free_ml
 
 /* Prototypes of allocation functions: */
-void *ne_malloc_ml(size_t size, const char *file, int line);
-void *ne_calloc_ml(size_t size, const char *file, int line);
-void *ne_realloc_ml(void *ptr, size_t s, const char *file, int line);
-char *ne_strdup_ml(const char *s, const char *file, int line);
-char *ne_strndup_ml(const char *s, size_t n, const char *file, int line);
-void ne_free_ml(void *ptr);
+void *ne_malloc_ml(size_t size, const char *file, int line)
+	/*@*/;
+void *ne_calloc_ml(size_t size, const char *file, int line)
+	/*@*/;
+void *ne_realloc_ml(void *ptr, size_t s, const char *file, int line)
+	/*@*/;
+char *ne_strdup_ml(const char *s, const char *file, int line)
+	/*@*/;
+char *ne_strndup_ml(const char *s, size_t n, const char *file, int line)
+	/*@*/;
+void ne_free_ml(void *ptr)
+	/*@*/;
 
 /* Dump the list of currently allocated blocks to 'f'. */
-void ne_alloc_dump(FILE *f);
+void ne_alloc_dump(FILE *f)
+	/*@*/;
 
 /* Current number of bytes in allocated but not free'd. */
 extern size_t ne_alloc_used;

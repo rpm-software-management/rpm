@@ -1,6 +1,6 @@
 /* 
    HTTP Request Handling
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -43,7 +43,9 @@ typedef struct {
     ne_cookie *cookies;
 } ne_cookie_cache;
 
-extern ne_request_hooks ne_cookie_hooks;
+/* Register cookie handling for given session using given cache. */
+void ne_cookie_register(ne_session *sess, ne_cookie_cache *cache)
+	/*@*/;
 
 END_NEON_DECLS
 

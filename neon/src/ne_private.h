@@ -41,7 +41,8 @@ struct host_info {
 /* Store every registered callback in a generic container, and cast
  * the function pointer when calling it.  */
 struct hook {
-    void (*fn)(void);
+    void (*fn)(void)
+	/*@*/;
     void *userdata;
     const char *id; /* non-NULL for accessors. */
     struct hook *next;
@@ -109,13 +110,16 @@ struct ne_session_s {
 
 /* Pushes block of 'count' bytes at 'buf'. Returns non-zero on
  * error. */
-typedef int (*ne_push_fn)(void *userdata, const char *buf, size_t count);
+typedef int (*ne_push_fn)(void *userdata, const char *buf, size_t count)
+	/*@*/;
 
 /* Pulls the request body for the given request, passing blocks to the
  * given callback. */
-int ne__pull_request_body(ne_request *req, ne_push_fn fn, void *ud);
+int ne__pull_request_body(ne_request *req, ne_push_fn fn, void *ud)
+	/*@*/;
 
 /* Do the SSL negotiation. */
-int ne__negotiate_ssl(ne_request *req);
+int ne__negotiate_ssl(ne_request *req)
+	/*@*/;
 
 #endif /* HTTP_PRIVATE_H */

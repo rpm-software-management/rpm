@@ -1,6 +1,6 @@
 /* 
    WebDAV Class 2 locking operations
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,7 +22,8 @@
 #ifndef NE_LOCKS_H
 #define NE_LOCKS_H
 
-#include "ne_request.h" /* for ne_session + http_req */
+#include "ne_request.h" /* for ne_session + ne_request */
+#include "ne_uri.h" /* for ne_uri */
 
 BEGIN_NEON_DECLS
 
@@ -37,16 +38,15 @@ enum ne_lock_type {
     ne_locktype_write
 };
 
-/* A lock object. Lock objects are kept on doubly-linked lists. */
+/* A lock object. */
 struct ne_lock {
-    char *uri; /* the URI which this lock covers. */
+    ne_uri uri;
     int depth; /* the depth of the lock (NE_DEPTH_*). */
     enum ne_lock_type type;
     enum ne_lock_scope scope;
     char *token; /* the lock token: uniquely identifies this lock. */
     char *owner; /* string describing the owner of the lock. */
     long timeout; /* timeout in seconds. (or NE_TIMEOUT_*) */
-    struct ne_lock *next, *prev;
 };
 /* NB: struct ne_lock Would be typedef'ed to ne_lock except lock is
  * a verb and a noun, so we already have ne_lock the function. Damn
@@ -55,71 +55,130 @@ struct ne_lock {
 #define NE_TIMEOUT_INFINITE -1
 #define NE_TIMEOUT_INVALID -2
 
-typedef struct ne_lock_session_s ne_lock_session;
+/* Create a depth zero, exclusive write lock, with default timeout
+ * (allowing a server to pick a default).  token, owner and uri are
+ * unset. */
+struct ne_lock *ne_lock_create(void)
+	/*@*/;
 
-/* TODO: 
- * "session" is a bad word, and it's already used for ne_session,
- * maybe think up a better name. lock_store is quite good.
+/* HINT: to initialize uri host/port/scheme for the lock's URI, use
+ * ne_fill_server_uri from ne_session.h. */
+
+/* Deep-copy a lock structure: strdup's any of path, token, owner,
+ * hostport which are set. */
+struct ne_lock *ne_lock_copy(const struct ne_lock *lock)
+	/*@*/;
+
+/* Free a lock structure; free's any of any of the URI, token and
+ * owner which are set, but not the lock object itself. */
+void ne_lock_free(struct ne_lock *lock)
+	/*@*/;
+
+/* Like ne_lock_free; but free's the lock object itself too. */
+void ne_lock_destroy(struct ne_lock *lock)
+	/*@*/;
+
+/* ne_lock_store: an opaque type which is used to store a set of lock
+ * objects. */
+typedef struct ne_lock_store_s ne_lock_store;
+
+/* Create a lock store. */
+ne_lock_store *ne_lockstore_create(void)
+	/*@*/;
+
+/* Register the lock store 'store' with the HTTP session 'sess': any
+ * operations made using 'sess' which operate on a locked resource,
+ * can use the locks from 'store' if needed. */
+void ne_lockstore_register(ne_lock_store *store, ne_session *sess)
+	/*@*/;
+
+/* Destroy a lock store, free'ing any locks remaining inside. */
+void ne_lockstore_destroy(ne_lock_store *store)
+	/*@*/;
+
+/* Add a lock to the store: the store then "owns" the lock object, and
+ * you must not free it. The lock MUST have all of:
+ *  - a completed URI structure: scheme, host, port, and path all set
+ *  - a valid lock token
+ *  - a valid depth
  */
+void ne_lockstore_add(ne_lock_store *store, struct ne_lock *lock)
+	/*@*/;
 
-/* Register the locking hooks with an ne_session.  Owned locks
- * persist for the duration of this session. The lock session lasts
- * exactly as long as the corresponding ne_session. Once you call
- * ne_session_destroy(sess), any use of the lock session has
- * undefined results.  */
-ne_lock_session *ne_lock_register(ne_session *sess);
+/* Remove given lock object from store: 'lock' MUST point to a lock
+ * object which is known to be in the store. */
+void ne_lockstore_remove(ne_lock_store *store, struct ne_lock *lock)
+	/*@*/;
 
-/* Add a lock to the given session. The lock will subsequently be
- * submitted as required in an If: header with any requests created
- * using the ne_session which the lock session is tied to.  Requests
- * indicate to the locking layer which locks they might need using
- * ne_lock_using_*, as described below. */
-void ne_lock_add(ne_lock_session *sess, struct ne_lock *lock);
+/* Returns the first lock in the lock store, or NULL if the store is
+ * empty. */
+struct ne_lock *ne_lockstore_first(ne_lock_store *store)
+	/*@*/;
 
-/* Remove lock, which must have been previously added to the
- * session using 'ne_lock_add' above. */
-void ne_lock_remove(ne_lock_session *sess, struct ne_lock *lock);
+/* After ne_lockstore_first has been called; returns the next lock in
+ * the lock store, or NULL if there are no more locks stored.
+ * Behaviour is undefined if ne_lockstore_first has not been called on
+ * 'store' since the store was created, or the last time this function
+ * returned NULL for the store.. */
+struct ne_lock *ne_lockstore_next(ne_lock_store *store)
+	/*@*/;
 
-typedef void (*ne_lock_walkfunc)(struct ne_lock *lock, void *userdata);
+/* Find a lock in the store for the given server, and with the given
+ * path. */
+struct ne_lock *ne_lockstore_findbyuri(ne_lock_store *store, 
+				       const ne_uri *uri)
+	/*@*/;
 
-/* For each lock added to the session, call func, passing the lock
- * and the given userdata. Returns the number of locks. func may be
- * pass as NULL, in which case, can be used to simply return number
- * of locks in the session. */
-int ne_lock_iterate(ne_lock_session *sess, 
-		    ne_lock_walkfunc func, void *userdata);
+/* Issue a LOCK request for the given lock.  Requires that the uri,
+ * depth, type, scope, and timeout members of 'lock' are filled in.
+ * owner and token must be malloc-allocated if not NULL; and may be
+ * free()d by this function.  On successful return, lock->token will
+ * contain the lock token. */
+int ne_lock(ne_session *sess, struct ne_lock *lock)
+	/*@*/;
 
-/* Issue a LOCK request for the given lock. */
-int ne_lock(ne_session *sess, struct ne_lock *lock);
 /* Issue an UNLOCK request for the given lock */
-int ne_unlock(ne_session *sess, struct ne_lock *lock);
+int ne_unlock(ne_session *sess, const struct ne_lock *lock)
+	/*@*/;
 
-/* Find a lock in the session with given URI */
-struct ne_lock *ne_lock_find(ne_lock_session *sess, const char *uri);
+/* Refresh a lock. Updates lock->timeout appropriately. */
+int ne_lock_refresh(ne_session *sess, struct ne_lock *lock)
+	/*@*/;
 
-/* Deep-copy a lock structure. */
-struct ne_lock *ne_lock_copy(const struct ne_lock *lock);
-
-/* Free a lock structure */
-void ne_lock_free(struct ne_lock *lock);
-
-/* Callback for lock discovery.  If 'lock' is NULL, 
- * something went wrong retrieving lockdiscover for the resource,
- * look at 'status' for the details. */
+/* Callback for lock discovery.  If 'lock' is NULL, something went
+ * wrong performing lockdiscovery for the resource, look at 'status'
+ * for the details.
+ * 
+ * If lock is non-NULL, at least lock->uri and lock->token will be
+ * filled in; and status will be NULL. */
 typedef void (*ne_lock_result)(void *userdata, const struct ne_lock *lock, 
-			       const char *uri, const ne_status *status);
+			       const char *uri, const ne_status *status)
+	/*@*/;
 
-/* Perform lock discovery on the given URI.  'result' is called
- * with the results (possibly >1 times).  */
-int ne_lock_discover(ne_session *sess, const char *uri, 
-		     ne_lock_result result, void *userdata);
+/* Perform lock discovery on the given path.  'result' is called with
+ * the results (possibly >1 times).  */
+int ne_lock_discover(ne_session *sess, const char *path,
+		     ne_lock_result result, void *userdata)
+	/*@*/;
 
-/*** For use by method functions */
 
-/* Indicate that this request is of depth n on given uri */
-void ne_lock_using_resource(ne_request *req, const char *uri, int depth);
-/* Indicate that this request will modify parent collection of given URI */
-void ne_lock_using_parent(ne_request *req, const char *uri);
+/* The ne_lock_using_* functions should be used before dispatching a
+ * request which modify resources.  If a lock store has been
+ * registered with the session associated with the request, and locks
+ * are present in the lock store which cover the resources which are
+ * being modified by the request, then the appropriate lock tokens are
+ * submitted in the request headers. */
+
+/* Indicate that request 'req' will modify the resource at 'path', and
+ * is an operation of given 'depth'. */
+void ne_lock_using_resource(ne_request *req, const char *path, int depth)
+	/*@*/;
+
+/* Indicate that request 'req' will modify the parent collection of
+ * the resource found at 'path' (for instance when removing the
+ * resource from the collection). */
+void ne_lock_using_parent(ne_request *req, const char *path)
+	/*@*/;
 
 END_NEON_DECLS
 

@@ -51,22 +51,26 @@ typedef struct ne_request_s ne_request;
  * 'path' must conform to the 'abs_path' grammar in RFC2396, with an
  * optional "? query" part, and MUST be URI-escaped by the caller. */
 ne_request *ne_request_create(ne_session *sess,
-			      const char *method, const char *path);
+			      const char *method, const char *path)
+	/*@*/;
 
 /* The request body will be taken from 'size' bytes of 'buffer'. */
 void ne_set_request_body_buffer(ne_request *req, const char *buffer,
-				size_t size);
+				size_t size)
+	/*@*/;
 
 /* The request body will be taken from 'length' bytes read from the
  * file descriptor 'fd', starting from file offset 'offset'. */
 void ne_set_request_body_fd(ne_request *req, int fd,
-                            off_t offset, off_t length);
+                            off_t offset, off_t length)
+	/*@*/;
 
 #ifdef NE_LFS
 /* Alternate version of ne_set_request_body_fd taking off64_t 
  * offset type for systems supporting _LARGEFILE64_SOURCE. */
 void ne_set_request_body_fd64(ne_request *req, int fd,
-                              off64_t offset, off64_t length);
+                              off64_t offset, off64_t length)
+	/*@*/;
 #endif
 
 /* "Pull"-based request body provider: a callback which is invoked to
@@ -81,20 +85,23 @@ void ne_set_request_body_fd64(ne_request *req, int fd,
  *         0           : ignore 'buffer' contents, end of body.
  *     0 < x <= buflen : buffer contains x bytes of body data.  */
 typedef ssize_t (*ne_provide_body)(void *userdata, 
-				   char *buffer, size_t buflen);
+				   char *buffer, size_t buflen)
+	/*@*/;
 
 /* Install a callback which is invoked as needed to provide the
  * request body, a block at a time.  The total size of the request
  * body is 'length'; the callback must ensure that it returns no more
  * than 'length' bytes in total. */
 void ne_set_request_body_provider(ne_request *req, off_t length,
-				  ne_provide_body provider, void *userdata);
+				  ne_provide_body provider, void *userdata)
+	/*@*/;
 
 #ifdef NE_LFS
 /* Duplicate version of ne_set_request_body_provider, taking an off64_t
  * offset. */
 void ne_set_request_body_provider64(ne_request *req, off64_t length,
-                                    ne_provide_body provider, void *userdata);
+                                    ne_provide_body provider, void *userdata)
+	/*@*/;
 #endif
 
 /* Handling response bodies... you provide TWO callbacks:
@@ -109,22 +116,26 @@ void ne_set_request_body_provider64(ne_request *req, off64_t length,
 /* 'acceptance' callback type. Return non-zero to accept the response,
  * else zero to ignore it. */
 typedef int (*ne_accept_response)(
-    void *userdata, ne_request *req, const ne_status *st);
+    void *userdata, ne_request *req, const ne_status *st)
+	/*@*/;
 
 /* An 'acceptance' callback which only accepts 2xx-class responses.
  * Ignores userdata. */
-int ne_accept_2xx(void *userdata, ne_request *req, const ne_status *st);
+int ne_accept_2xx(void *userdata, ne_request *req, const ne_status *st)
+	/*@*/;
 
 /* An acceptance callback which accepts all responses.  Ignores
  * userdata. */
-int ne_accept_always(void *userdata, ne_request *req, const ne_status *st);
+int ne_accept_always(void *userdata, ne_request *req, const ne_status *st)
+	/*@*/;
 
 /* Callback for reading a block of data.  Returns zero on success, or
  * -1 on error.  If returning an error, the response will be aborted
  * and the callback will not be invoked again.  The request dispatch
  * (or ne_read_response_block call) will fail with NE_ERROR; the
  * session error string should have been set by the callback. */
-typedef int (*ne_block_reader)(void *userdata, const char *buf, size_t len);
+typedef int (*ne_block_reader)(void *userdata, const char *buf, size_t len)
+	/*@*/;
 
 /* Add a response reader for the given request, with the given
  * acceptance function. userdata is passed as the first argument to
@@ -138,25 +149,29 @@ typedef int (*ne_block_reader)(void *userdata, const char *buf, size_t len);
  * been read, the callback will be called with a 'len' argument of
  * zero.  */
 void ne_add_response_body_reader(ne_request *req, ne_accept_response accpt,
-				 ne_block_reader reader, void *userdata);
+				 ne_block_reader reader, void *userdata)
+	/*@*/;
 
 /* Handle response headers. Each handler is associated with a specific
  * header field (indicated by name). The handler is then passed the
  * value of this header field. */
 
 /* The header handler callback type */
-typedef void (*ne_header_handler)(void *userdata, const char *value);
+typedef void (*ne_header_handler)(void *userdata, const char *value)
+	/*@*/;
 
 /* Adds a response header handler for the given request. userdata is passed
  * as the first argument to the header handler, and the 'value' is the
  * header field value (i.e. doesn't include the "Header-Name: " part").
  */
 void ne_add_response_header_handler(ne_request *req, const char *name, 
-				    ne_header_handler hdl, void *userdata);
+				    ne_header_handler hdl, void *userdata)
+	/*@*/;
 
 /* Add handler which is passed ALL header values regardless of name */
 void ne_add_response_header_catcher(ne_request *req, 
-				    ne_header_handler hdl, void *userdata);
+				    ne_header_handler hdl, void *userdata)
+	/*@*/;
 
 /* Stock header handlers:
  *  'duplicate': *(char **)userdata = strdup(value)
@@ -167,17 +182,21 @@ void ne_add_response_header_catcher(ne_request *req,
  *                                    ne_handle_numeric_handler, &mynum);
  * ... arranges mynum to be set to the value of the Content-Length header.
  */
-void ne_duplicate_header(void *userdata, const char *value);
-void ne_handle_numeric_header(void *userdata, const char *value);
+void ne_duplicate_header(void *userdata, const char *value)
+	/*@*/;
+void ne_handle_numeric_header(void *userdata, const char *value)
+	/*@*/;
 
 /* Adds a header to the request with given name and value. */
 void ne_add_request_header(ne_request *req, const char *name, 
-			   const char *value);
+			   const char *value)
+	/*@*/;
 /* Adds a header to the request with given name, using printf-like
  * format arguments for the value. */
 void ne_print_request_header(ne_request *req, const char *name,
 			     const char *format, ...) 
-    ne_attribute((format(printf, 3, 4)));
+    ne_attribute((format(printf, 3, 4)))
+	/*@*/;
 
 /* ne_request_dispatch: Sends the given request, and reads the
  * response. Response-Status information can be retrieve with
@@ -191,17 +210,21 @@ void ne_print_request_header(ne_request *req, const char *name,
  *  NE_ERROR      for other errors, and ne_get_error() should
  *                  return a meaningful error string
  */
-int ne_request_dispatch(ne_request *req);
+int ne_request_dispatch(ne_request *req)
+	/*@*/;
 
 /* Returns a pointer to the response status information for the given
  * request; pointer is valid until request object is destroyed. */
-const ne_status *ne_get_status(const ne_request *req) ne_attribute((const));
+const ne_status *ne_get_status(const ne_request *req) ne_attribute((const))
+	/*@*/;
 
 /* Returns pointer to session associated with request. */
-ne_session *ne_get_session(const ne_request *req);
+ne_session *ne_get_session(const ne_request *req)
+	/*@*/;
 
 /* Destroy memory associated with request pointer */
-void ne_request_destroy(ne_request *req);
+void ne_request_destroy(ne_request *req)
+	/*@*/;
 
 /* "Caller-pulls" request interface.  This is an ALTERNATIVE interface
  * to ne_request_dispatch: either use that, or do all this yourself:
@@ -215,8 +238,10 @@ void ne_request_destroy(ne_request *req);
  * ne_end_request and ne_begin_request both return an NE_* code; if
  * ne_end_request returns NE_RETRY, you must restart the loop from (1)
  * above. */
-int ne_begin_request(ne_request *req);
-int ne_end_request(ne_request *req);
+int ne_begin_request(ne_request *req)
+	/*@*/;
+int ne_end_request(ne_request *req)
+	/*@*/;
 
 /* Read a block of the response.  buffer must be at least 128 bytes.
  * 'buflen' must be length of buffer.
@@ -226,32 +251,39 @@ int ne_end_request(ne_request *req);
  *   0 - end of response
  *  >0 - number of bytes read into buffer.
  */
-ssize_t ne_read_response_block(ne_request *req, char *buffer, size_t buflen);
+ssize_t ne_read_response_block(ne_request *req, char *buffer, size_t buflen)
+	/*@*/;
 
 /* Include the HTTP/1.1 header "Expect: 100-continue" in request 'req'
  * if 'flag' is non-zero.  Warning: 100-continue support is not
  * implemented correctly in some HTTP/1.1 servers, enabling this
  * feature may cause requests to hang or time out. */
-void ne_set_request_expect100(ne_request *req, int flag);
+void ne_set_request_expect100(ne_request *req, int flag)
+	/*@*/;
 
 /**** Request hooks handling *****/
 
-typedef void (*ne_free_hooks)(void *cookie);
+typedef void (*ne_free_hooks)(void *cookie)
+	/*@*/;
 
 /* Hook called when a create is created; passed the request method,
  * and the string used as the Request-URI (which may be an abs_path,
  * or an absoluteURI, depending on whether an HTTP proxy is in
  * use).  */
 typedef void (*ne_create_request_fn)(ne_request *req, void *userdata,
-				     const char *method, const char *requri);
+				     const char *method, const char *requri)
+	/*@*/;
 void ne_hook_create_request(ne_session *sess, 
-			    ne_create_request_fn fn, void *userdata);
+			    ne_create_request_fn fn, void *userdata)
+	/*@*/;
 
 /* Hook called before the request is sent.  'header' is the raw HTTP
  * header before the trailing CRLF is added: add in more here. */
 typedef void (*ne_pre_send_fn)(ne_request *req, void *userdata, 
-			       ne_buffer *header);
-void ne_hook_pre_send(ne_session *sess, ne_pre_send_fn fn, void *userdata);
+			       ne_buffer *header)
+	/*@*/;
+void ne_hook_pre_send(ne_session *sess, ne_pre_send_fn fn, void *userdata)
+	/*@*/;
 
 /* Hook called after the request is sent. May return:
  *  NE_OK     everything is okay
@@ -261,23 +293,31 @@ void ne_hook_pre_send(ne_session *sess, ne_pre_send_fn fn, void *userdata);
  * also be set appropriately (ne_set_error).
  */
 typedef int (*ne_post_send_fn)(ne_request *req, void *userdata,
-			       const ne_status *status);
-void ne_hook_post_send(ne_session *sess, ne_post_send_fn fn, void *userdata);
+			       const ne_status *status)
+	/*@*/;
+void ne_hook_post_send(ne_session *sess, ne_post_send_fn fn, void *userdata)
+	/*@*/;
 
 /* Hook called when the function is destroyed. */
-typedef void (*ne_destroy_req_fn)(ne_request *req, void *userdata);
+typedef void (*ne_destroy_req_fn)(ne_request *req, void *userdata)
+	/*@*/;
 void ne_hook_destroy_request(ne_session *sess,
-			     ne_destroy_req_fn fn, void *userdata);
+			     ne_destroy_req_fn fn, void *userdata)
+	/*@*/;
 
-typedef void (*ne_destroy_sess_fn)(void *userdata);
+typedef void (*ne_destroy_sess_fn)(void *userdata)
+	/*@*/;
 /* Hook called when the session is destroyed. */
 void ne_hook_destroy_session(ne_session *sess,
-			     ne_destroy_sess_fn fn, void *userdata);
+			     ne_destroy_sess_fn fn, void *userdata)
+	/*@*/;
 
 /* Store an opaque context for the request, 'priv' is returned by a
  * call to ne_request_get_private with the same ID. */
-void ne_set_request_private(ne_request *req, const char *id, void *priv);
-void *ne_get_request_private(ne_request *req, const char *id);
+void ne_set_request_private(ne_request *req, const char *id, void *priv)
+	/*@*/;
+void *ne_get_request_private(ne_request *req, const char *id)
+	/*@*/;
 
 END_NEON_DECLS
 

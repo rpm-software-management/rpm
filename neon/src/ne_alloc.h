@@ -33,7 +33,8 @@
 BEGIN_NEON_DECLS
 
 /* Set callback which is called if malloc() returns NULL. */
-void ne_oom_callback(void (*callback)(void));
+void ne_oom_callback(void (*callback)(void))
+	/*@*/;
 
 #ifndef NEON_MEMLEAK
 /* Replacements for standard C library memory allocation functions,

@@ -44,10 +44,12 @@ BEGIN_NEON_DECLS
  * of the resource which is subject of this response.  The return
  * value of a 'start_response' callback is passed as the 'response'
  * parameter to the corresponding 'end_response' parameter. */
-typedef void *ne_207_start_response(void *userdata, const char *href);
+typedef void *ne_207_start_response(void *userdata, const char *href)
+	/*@*/;
 typedef void ne_207_end_response(void *userdata, void *response,
                                  const ne_status *status,
-                                 const char *description);
+                                 const char *description)
+	/*@*/;
 
 /* Similarly, start and end callbacks for each propstat within the
  * response.  The return value of the 'start_response' callback for
@@ -57,35 +59,44 @@ typedef void ne_207_end_response(void *userdata, void *response,
  * 'end_propstat' callback.  If the start_propstat callback returns
  * NULL, parsing is aborted (the XML parser error must be set by the
  * callback). */
-typedef void *ne_207_start_propstat(void *userdata, void *response);
+typedef void *ne_207_start_propstat(void *userdata, void *response)
+	/*@*/;
 typedef void ne_207_end_propstat(void *userdata, void *propstat,
                                  const ne_status *status,
-                                 const char *description);
+                                 const char *description)
+	/*@*/;
 
 typedef struct ne_207_parser_s ne_207_parser;
 
 /* Create 207 parser an add the handlers the the given parser's
  * handler stack. */
-ne_207_parser *ne_207_create(ne_xml_parser *parser, void *userdata);
+ne_207_parser *ne_207_create(ne_xml_parser *parser, void *userdata)
+	/*@*/;
 
 /* Register response handling callbacks. */
 void ne_207_set_response_handlers(ne_207_parser *p,
                                   ne_207_start_response *start,
-                                  ne_207_end_response *end);
+                                  ne_207_end_response *end)
+	/*@*/;
 
 /* Register propstat handling callbacks. */
 void ne_207_set_propstat_handlers(ne_207_parser *p, 
                                   ne_207_start_propstat *start,
-                                  ne_207_end_propstat *end);
+                                  ne_207_end_propstat *end)
+	/*@*/;
 
 /* Destroy the parser */
-void ne_207_destroy(ne_207_parser *p);
+void ne_207_destroy(ne_207_parser *p)
+	/*@*/;
 
 /* An acceptance function which only accepts 207 responses */
-int ne_accept_207(void *userdata, ne_request *req, const ne_status *status);
+int ne_accept_207(void *userdata, ne_request *req, const ne_status *status)
+	/*@*/;
 
-void *ne_207_get_current_propstat(ne_207_parser *p);
-void *ne_207_get_current_response(ne_207_parser *p);
+void *ne_207_get_current_propstat(ne_207_parser *p)
+	/*@*/;
+void *ne_207_get_current_response(ne_207_parser *p)
+	/*@*/;
 
 /* Dispatch request 'req', returning:
  *  NE_ERROR: for a dispatch error, or a non-2xx response, or a
@@ -93,7 +104,8 @@ void *ne_207_get_current_response(ne_207_parser *p);
  *  NE_OK: for a 2xx response or a 207 response which contained
  *            only 2xx-class propstats.
  * The request object is destroyed in both cases. */
-int ne_simple_request(ne_session *sess, ne_request *req);
+int ne_simple_request(ne_session *sess, ne_request *req)
+	/*@*/;
 
 END_NEON_DECLS
 

@@ -30,11 +30,13 @@ BEGIN_NEON_DECLS
 
 /* Perform a GET request on resource at 'path', writing the entity
  * body which is returned to 'fd'. */
-int ne_get(ne_session *sess, const char *path, int fd);
+int ne_get(ne_session *sess, const char *path, int fd)
+	/*@*/;
 
 /* Perform a PUT request on resource at 'path', reading the entity
  * body to submit from 'fd'. */
-int ne_put(ne_session *sess, const char *path, int fd);
+int ne_put(ne_session *sess, const char *path, int fd)
+	/*@*/;
 
 #define NE_DEPTH_ZERO (0)
 #define NE_DEPTH_ONE (1)
@@ -53,23 +55,29 @@ int ne_put(ne_session *sess, const char *path, int fd);
  * NE_DEPTH_INFINITE to request that the collection and its contents
  * are to be copied.  */
 int ne_copy(ne_session *sess, int overwrite, int depth,
-	    const char *src, const char *dest);
+	    const char *src, const char *dest)
+	/*@*/;
 
 /* Move resource from 'src' to dest 'path'. */
 int ne_move(ne_session *sess, int overwrite,
-	    const char *src, const char *dest);
+	    const char *src, const char *dest)
+	/*@*/;
 
 /* Delete resource at 'path'. */
-int ne_delete(ne_session *sess, const char *path);
+int ne_delete(ne_session *sess, const char *path)
+	/*@*/;
 /* Create a collection at 'path', which MUST have a trailing slash. */
-int ne_mkcol(ne_session *sess, const char *path);
+int ne_mkcol(ne_session *sess, const char *path)
+	/*@*/;
 
 /* Adds a Depth: header to a request */
-void ne_add_depth_header(ne_request *req, int depth);
+void ne_add_depth_header(ne_request *req, int depth)
+	/*@*/;
 
 /* Retrieve modification time of resource at location 'path', place in
  * *modtime.  (uses HEAD) */
-int ne_getmodtime(ne_session *sess, const char *path, time_t *modtime);
+int ne_getmodtime(ne_session *sess, const char *path, time_t *modtime)
+	/*@*/;
 
 typedef struct {
     const char *type, *subtype;
@@ -79,7 +87,8 @@ typedef struct {
 
 /* Sets (*ne_content_type)userdata appropriately. 
  * Caller must free ->value after use */
-void ne_content_type_handler(void *userdata, const char *value);
+void ne_content_type_handler(void *userdata, const char *value)
+	/*@*/;
 
 /* Server capabilities: */
 typedef struct {
@@ -92,7 +101,8 @@ typedef struct {
 /* Determines server capabilities (using OPTIONS).  Pass 'path' as "*"
  * to determine proxy server capabilities if using a proxy server. */
 int ne_options(ne_session *sess, const char *path,
-	       ne_server_capabilities *caps);
+	       ne_server_capabilities *caps)
+	/*@*/;
 
 /* Defines a range of bytes, starting at 'start' and ending
  * at 'end'.  'total' is the number of bytes in the range.
@@ -116,10 +126,12 @@ typedef struct {
  *      fseek(myfile, resume_from, SEEK_SET);
  *      ne_get_range(sess, path, &range, myfile); */
 int ne_get_range(ne_session *sess, const char *path, 
-		 ne_content_range *range, int fd);
+		 ne_content_range *range, int fd)
+	/*@*/;
 
 /* Post using buffer as request-body: stream response into f */
-int ne_post(ne_session *sess, const char *path, int fd, const char *buffer);
+int ne_post(ne_session *sess, const char *path, int fd, const char *buffer)
+	/*@*/;
 
 END_NEON_DECLS
 

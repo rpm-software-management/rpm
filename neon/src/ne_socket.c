@@ -51,7 +51,10 @@
 #include <netinet/in.h>
 #endif
 #ifdef HAVE_NETINET_TCP_H
+#if defined(__LCLINT__)
+#else
 #include <netinet/tcp.h>
+#endif
 #endif
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>

@@ -22,6 +22,7 @@ CC = @CC@
 AR = @AR@
 RANLIB = @RANLIB@
 LIBTOOL = @LIBTOOL@
+LINT = splint
 
 # Flags
 CPPFLAGS = @DEFS@ @CPPFLAGS@
@@ -89,6 +90,16 @@ check-incl:
 	 echo Checking $$f...; \
 	 echo "#include \"$$f\"" > checkincl.c; \
 	 $(COMPILE) -c checkincl.c -o checkincl.o || exit 1; done
+
+neon_SOURCES = $(OBJECTS:.@NEON_OBJEXT@=.c)
+
+.PHONY: sources
+sources:
+	@echo $(neon_SOURCES:%=neon/%)
+                                                                                
+.PHONY: lint
+lint:
+	$(LINT) $(DEFS) $(INCLUDES) $(neon_SOURCES)
 
 neonreq = ne_request.h ne_session.h ne_utils.h ne_string.h ne_socket.h \
 	ne_alloc.h $(top_builddir)/config.h ne_private.h

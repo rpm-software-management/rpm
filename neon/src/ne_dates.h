@@ -1,6 +1,6 @@
 /* 
    Date manipulation routines
-   Copyright (C) 1999-2001, Joe Orton <joe@light.plus.com>
+   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -31,18 +31,29 @@ BEGIN_NEON_DECLS
 /* Date manipulation routines as per RFC1123 and RFC1036 */
 
 /* Return current date/time in RFC1123 format */
-char *ne_rfc1123_date(time_t anytime);
+char *ne_rfc1123_date(time_t anytime)
+	/*@*/;
+
+/* Returns time from date/time using the subset of the ISO8601 format
+ * referenced in RFC2518 (e.g as used in the creationdate property in
+ * the DAV: namespace). */
+time_t ne_iso8601_parse(const char *date)
+	/*@*/;
 
 /* Returns time from date/time in RFC1123 format */
-time_t ne_rfc1123_parse(const char *date);
+time_t ne_rfc1123_parse(const char *date)
+	/*@*/;
 
-time_t ne_rfc1036_parse(const char *date);
+time_t ne_rfc1036_parse(const char *date)
+	/*@*/;
 
 /* Parses asctime date string */
-time_t ne_asctime_parse(const char *date);
+time_t ne_asctime_parse(const char *date)
+	/*@*/;
 
 /* Parse an HTTP-date as per RFC2616 */
-time_t ne_httpdate_parse(const char *date);
+time_t ne_httpdate_parse(const char *date)
+	/*@*/;
 
 END_NEON_DECLS
 

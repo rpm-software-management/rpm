@@ -58,6 +58,7 @@ typedef gnutls_session ne_ssl_socket;
 
 #endif /* HAVE_GNUTLS */
 
-ne_ssl_socket ne__sock_sslsock(ne_socket *sock);
+ne_ssl_socket ne__sock_sslsock(ne_socket *sock)
+	/*@*/;
 
 #endif /* NE_PRIVSSL_H */

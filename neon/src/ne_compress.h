@@ -36,9 +36,11 @@ typedef struct ne_decompress_s ne_decompress;
  * free any internal state.  If an error occurs during decompression,
  * the request will be aborted and session error string set. */
 ne_decompress *ne_decompress_reader(ne_request *req, ne_accept_response accpt,
-				    ne_block_reader rdr, void *userdata);
+				    ne_block_reader rdr, void *userdata)
+	/*@*/;
 
 /* Destroys decompression state. */
-void ne_decompress_destroy(ne_decompress *ctx);
+void ne_decompress_destroy(ne_decompress *ctx)
+	/*@*/;
 
 #endif /* NE_COMPRESS_H */

@@ -41,7 +41,8 @@ BEGIN_NEON_DECLS
  * cancel the request. (if non-zero, username and password are
  * ignored.)  */
 typedef int (*ne_auth_creds)(void *userdata, const char *realm, int attempt,
-			     char *username, char *password);
+			     char *username, char *password)
+	/*@*/;
 
 /* TOP TIP: if you just wish to try authenticating once (even if the
  * user gets the username/password wrong), have your implementation of
@@ -51,11 +52,14 @@ typedef int (*ne_auth_creds)(void *userdata, const char *realm, int attempt,
  * authentication.  userdata is passed as the first argument to the
  * callback.  The callback is called *indefinitely* until either it
  * returns non-zero, or authentication is successful.  */
-void ne_set_server_auth(ne_session *sess, ne_auth_creds creds, void *userdata);
-void ne_set_proxy_auth(ne_session *sess, ne_auth_creds creds, void *userdata);
+void ne_set_server_auth(ne_session *sess, ne_auth_creds creds, void *userdata)
+	/*@*/;
+void ne_set_proxy_auth(ne_session *sess, ne_auth_creds creds, void *userdata)
+	/*@*/;
 
 /* Clear any stored authentication details for the given session. */
-void ne_forget_auth(ne_session *sess);
+void ne_forget_auth(ne_session *sess)
+	/*@*/;
 
 END_NEON_DECLS
 

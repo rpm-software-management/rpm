@@ -1,0 +1,106 @@
+-I. -I.. -I../../expat -I../../zlib -DHAVE_CONFIG_H -D_LARGFILE_SOURCE
+
++partial
++forcehints
+
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
+#+bounds
+
+-branchstate
+-boolops
+-bufferoverflowhigh
+-compdef
+-compdestroy
+-compmempass
+-declundef
+-enummemuse
+-exportlocal
+-fcnuse
+-fielduse
+-fixedformalarray
+-fullinitblock
+-globs
+-globstate
+-infloopsuncon
+-initallelements
+-internalglobs
+-mayaliasunique
+-mods
+-moduncon
+-modunconnomods
+-modnomods
+-modobserveruncon
+-multithreaded
+-noeffect
+-noeffectuncon
+-noparams
+-nullpass
+-nullret
+-nullstate
+-oldstyle
+-paramuse
+-predboolptr
+-protoparammatch
++ptrnegate
+-redef
+-retalias
+-retvalint
+-retvalother
+-sizeoftype
+-staticinittrans
+-type
+-typeuse
+-unrecog
+-usereleased
+
+-immediatetrans
+-kepttrans
+-observertrans
+-readonlytrans
+-statictrans
+-temptrans
+-unqualifiedtrans
+
+-casebreak
+-loopswitchbreak
+-switchswitchbreak
+
+-forempty
+
+-exportconst
+-exportfcn
+-exporttype
+-exportvar
+
+# --- not-yet at strict level
+-bitwisesigned		# 86
+-elseifcomplete		# 2
+-forblock		# 6
+-ifblock		# 231
+-incondefs		# 64
+-namechecks		# tedious ANSI compliance checks
+-ptrarith		# tedious
+
+-mustdefine		# 25
+-shiftimplementation	# 148 ctype.h
+
+-strictops		# 37
+-whileblock		# 16
+
+# --- not-yet at checks level
+-mustfree		# 26
+-usedef			# 31
+
+# --- not-yet at standard level
++boolint		# 38
++charint		# 147
++ignorequals		# 49
++matchanyintegral	# 77

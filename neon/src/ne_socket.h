@@ -52,28 +52,34 @@ typedef struct ne_inet_addr_s ne_inet_addr;
 /* While neon itself doesn't require per-process global
  * initialization, some platforms do, and so does the OpenSSL
  * library. */
-int ne_sock_init(void);
+int ne_sock_init(void)
+	/*@*/;
 
 /* Shutdown any underlying libraries. */
-void ne_sock_exit(void);
+void ne_sock_exit(void)
+	/*@*/;
 
 /* Resolve the given hostname.  'flags' must be zero.  Hex
  * string IPv6 addresses (e.g. `::1') may be enclosed in brackets
  * (e.g. `[::1]'). */
-ne_sock_addr *ne_addr_resolve(const char *hostname, int flags);
+ne_sock_addr *ne_addr_resolve(const char *hostname, int flags)
+	/*@*/;
 
 /* Returns zero if name resolution was successful, non-zero on
  * error. */
-int ne_addr_result(const ne_sock_addr *addr);
+int ne_addr_result(const ne_sock_addr *addr)
+	/*@*/;
 
 /* Returns the first network address associated with the 'addr'
  * object.  Undefined behaviour if ne_addr_result returns non-zero for
  * 'addr'; otherwise, never returns NULL.  */
-const ne_inet_addr *ne_addr_first(ne_sock_addr *addr);
+const ne_inet_addr *ne_addr_first(ne_sock_addr *addr)
+	/*@*/;
 
 /* Returns the next network address associated with the 'addr' object,
  * or NULL if there are no more. */
-const ne_inet_addr *ne_addr_next(ne_sock_addr *addr);
+const ne_inet_addr *ne_addr_next(ne_sock_addr *addr)
+	/*@*/;
 
 /* NB: the pointers returned by ne_addr_first and ne_addr_next are
  * valid until ne_addr_destroy is called for the corresponding
@@ -81,10 +87,12 @@ const ne_inet_addr *ne_addr_next(ne_sock_addr *addr);
 
 /* If name resolution fails, copies the error string into 'buffer',
  * which is of size 'bufsiz'.  'buffer' is returned. */
-char *ne_addr_error(const ne_sock_addr *addr, char *buffer, size_t bufsiz);
+char *ne_addr_error(const ne_sock_addr *addr, char *buffer, size_t bufsiz)
+	/*@*/;
 
 /* Destroys an address object created by ne_addr_resolve. */
-void ne_addr_destroy(ne_sock_addr *addr);
+void ne_addr_destroy(ne_sock_addr *addr)
+	/*@*/;
 
 /* Network address type; IPv4 or IPv6 */
 typedef enum {
@@ -96,36 +104,44 @@ typedef enum {
  * byte order) of given type.  'raw' must be four bytes for an IPv4
  * address, 16 bytes for an IPv6 address.  May return NULL if address
  * type is not supported. */
-ne_inet_addr *ne_iaddr_make(ne_iaddr_type type, const unsigned char *raw);
+ne_inet_addr *ne_iaddr_make(ne_iaddr_type type, const unsigned char *raw)
+	/*@*/;
 
 /* Compare two network addresses i1 and i2; return non-zero if they
  * are not equal. */
-int ne_iaddr_cmp(const ne_inet_addr *i1, const ne_inet_addr *i2);
+int ne_iaddr_cmp(const ne_inet_addr *i1, const ne_inet_addr *i2)
+	/*@*/;
 
 /* Returns the type of the given network address. */
-ne_iaddr_type ne_iaddr_typeof(const ne_inet_addr *ia);
+ne_iaddr_type ne_iaddr_typeof(const ne_inet_addr *ia)
+	/*@*/;
 
 /* Prints the string representation of network address 'ia' into the
  * 'buffer', which is of size 'bufsiz'.  Returns 'buffer'. */
-char *ne_iaddr_print(const ne_inet_addr *ia, char *buffer, size_t bufsiz);
+char *ne_iaddr_print(const ne_inet_addr *ia, char *buffer, size_t bufsiz)
+	/*@*/;
 
 /* Free a network address created using ne_iaddr_make. */
-void ne_iaddr_free(ne_inet_addr *addr);
+void ne_iaddr_free(ne_inet_addr *addr)
+	/*@*/;
 
 /* Create a TCP socket; returns NULL on error. */
-ne_socket *ne_sock_create(void);
+ne_socket *ne_sock_create(void)
+	/*@*/;
 
 /* Connect the socket to server at address 'addr' on port 'port'.
  * Returns non-zero if a connection could not be established. */
 int ne_sock_connect(ne_socket *sock, const ne_inet_addr *addr, 
-                    unsigned int port);
+                    unsigned int port)
+	/*@*/;
 
 /* ne_sock_read reads up to 'count' bytes into 'buffer'.
  * Returns:
  *   NE_SOCK_* on error,
  *   >0 length of data read into buffer.
  */
-ssize_t ne_sock_read(ne_socket *sock, char *buffer, size_t count);
+ssize_t ne_sock_read(ne_socket *sock, char *buffer, size_t count)
+	/*@*/;
 
 /* ne_sock_peek reads up to 'count' bytes into 'buffer', but the data
  * will still be returned on a subsequent call to ne_sock_read or 
@@ -134,7 +150,8 @@ ssize_t ne_sock_read(ne_socket *sock, char *buffer, size_t count);
  *   NE_SOCK_* on error,
  *   >0 length of data read into buffer.
  */
-ssize_t ne_sock_peek(ne_socket *sock, char *buffer, size_t count);
+ssize_t ne_sock_peek(ne_socket *sock, char *buffer, size_t count)
+	/*@*/;
 
 /* Block for up to 'n' seconds until data becomes available for reading
  * on the socket. Returns:
@@ -142,7 +159,8 @@ ssize_t ne_sock_peek(ne_socket *sock, char *buffer, size_t count);
  *  NE_SOCK_TIMEOUT if no data arrives in 'n' seconds.
  *  0 if data arrived on the socket.
  */
-int ne_sock_block(ne_socket *sock, int n);
+int ne_sock_block(ne_socket *sock, int n)
+	/*@*/;
 
 /* Writes 'count' bytes of 'data' to the socket.
  * Returns 0 on success, NE_SOCK_* on error. */
@@ -154,39 +172,49 @@ int ne_sock_fullwrite(ne_socket *sock, const char *data, size_t count);
  * NE_SOCK_* on error,
  * >0 number of bytes read (including NUL terminator)
  */
-ssize_t ne_sock_readline(ne_socket *sock, char *buffer, size_t len);
+ssize_t ne_sock_readline(ne_socket *sock, char *buffer, size_t len)
+	/*@*/;
 
 /* Read exactly 'len' bytes into buffer; returns 0 on success, SOCK_*
  * on error. */
-ssize_t ne_sock_fullread(ne_socket *sock, char *buffer, size_t len);
+ssize_t ne_sock_fullread(ne_socket *sock, char *buffer, size_t len)
+	/*@*/;
 
 /* Accept a connection on listening socket 'fd'. */
-int ne_sock_accept(ne_socket *sock, int fd);
+int ne_sock_accept(ne_socket *sock, int fd)
+	/*@*/;
 
 /* Returns the file descriptor used for socket 'sock'. */
-int ne_sock_fd(const ne_socket *sock);
+int ne_sock_fd(const ne_socket *sock)
+	/*@*/;
 
 /* Close the socket, and destroy the socket object. Returns non-zero
  * on error. */
-int ne_sock_close(ne_socket *sock);
+int ne_sock_close(ne_socket *sock)
+	/*@*/;
 
 /* Return current error string for socket. */
-const char *ne_sock_error(const ne_socket *sock);
+const char *ne_sock_error(const ne_socket *sock)
+	/*@*/;
 
 /* Set read timeout for socket. */
-void ne_sock_read_timeout(ne_socket *sock, int timeout);
+void ne_sock_read_timeout(ne_socket *sock, int timeout)
+	/*@*/;
 
 /* Returns the standard TCP port for the given service, or zero if
  * none is known. */
-int ne_service_lookup(const char *name);
+int ne_service_lookup(const char *name)
+	/*@*/;
 
 /* Negotiate an SSL connection on socket as an SSL server, using given
  * SSL context. */
-int ne_sock_accept_ssl(ne_socket *sock, ne_ssl_context *ctx);
+int ne_sock_accept_ssl(ne_socket *sock, ne_ssl_context *ctx)
+	/*@*/;
 
 /* Negotiate an SSL connection on socket as an SSL client, using given
  * SSL context. */
-int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx);
+int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx)
+	/*@*/;
 
 END_NEON_DECLS
 
