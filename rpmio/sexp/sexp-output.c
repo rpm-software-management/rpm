@@ -9,7 +9,7 @@
 
 static char *hexDigits = "0123456789ABCDEF";
 
-static char *base64Digits = 
+static char *base64Digits =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /***********************/
@@ -35,10 +35,10 @@ void varPutChar(sexpOutputStream *os, int c)
   os->bits = (os->bits << 8) | c;
   os->nBits += 8;
   while (os->nBits >= os->byteSize)
-    { 
-      if ((os->byteSize==6 || os->byteSize==4 
+    {
+      if ((os->byteSize==6 || os->byteSize==4
 	   || c == '}' || c == '{' || c == '#' || c == '|')
-	  && os->maxcolumn > 0 
+	  && os->maxcolumn > 0
 	  && os->column >= os->maxcolumn)
 	os->newLine(os,os->mode);
       if (os->byteSize == 4)
@@ -59,7 +59,7 @@ void varPutChar(sexpOutputStream *os, int c)
  * record mode in output stream for automatic line breaks
  */
 void changeOutputByteSize(sexpOutputStream *os, int newByteSize, int mode)
-{ 
+{
   if (newByteSize != 4 && newByteSize !=6 && newByteSize !=8)
     ErrorMessage(ERROR,"Illegal output base %d.",newByteSize,0);
   if (newByteSize !=8 && os->byteSize != 8)
@@ -73,11 +73,11 @@ void changeOutputByteSize(sexpOutputStream *os, int newByteSize, int mode)
 }
 
 /* flushOutput(os)
- * flush out any remaining bits 
+ * flush out any remaining bits
  */
 void flushOutput(sexpOutputStream * os)
 { if (os->nBits > 0)
-    { 
+    {
       if (os->byteSize == 4)
 	os->putChar(os,hexDigits[(os->bits << (4 - os->nBits)) & 0x0F]);
       else if (os->byteSize == 6)
@@ -88,7 +88,7 @@ void flushOutput(sexpOutputStream * os)
       os->base64Count++;
     }
   if (os->byteSize == 6) /* and add switch here */
-    while ((os->base64Count & 3) != 0) 
+    while ((os->base64Count & 3) != 0)
       { if (os->maxcolumn > 0 && os->column >= os->maxcolumn)
 	  os->newLine(os,os->mode);
 	os->putChar(os,'=');
@@ -98,7 +98,7 @@ void flushOutput(sexpOutputStream * os)
 
 /* newLine(os,mode)
  * Outputs a newline symbol to the output stream os.
- * For ADVANCED mode, also outputs indentation as one blank per 
+ * For ADVANCED mode, also outputs indentation as one blank per
  * indentation level (but never indents more than half of maxcolumn).
  * Resets column for next output character.
  */
@@ -109,7 +109,7 @@ void newLine(sexpOutputStream *os, int mode)
       os->column = 0;
     }
   if (mode == ADVANCED)
-    for (i=0;i<os->indent&&(4*i)<os->maxcolumn;i++) 
+    for (i=0;i<os->indent&&(4*i)<os->maxcolumn;i++)
       os->putChar(os,' ');
 }
 
@@ -156,12 +156,12 @@ void printDecimal(sexpOutputStream *os, long int n)
  * Print out simple string ss on output stream os as verbatim string.
  */
 void canonicalPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
-{ 
+{
   long int len = simpleStringLength(ss);
   long int i;
   octet * c = simpleStringString(ss);
 
-  if (c == NULL) 
+  if (c == NULL)
     ErrorMessage(ERROR,"Can't print NULL string verbatim",0,0);
   /* print out len: */
   printDecimal(os,len);
@@ -198,7 +198,7 @@ void canonicalPrintList(sexpOutputStream *os, sexpList *list)
   iter = sexpListIter(list);
   while (iter != NULL) {
     object = sexpIterObject(iter);
-    if (object != NULL) 
+    if (object != NULL)
 	canonicalPrintObject(os,object);
     iter = sexpIterNext(iter);
   }
@@ -273,30 +273,30 @@ void advancedPrintTokenSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
   if (os->maxcolumn>0 && os->column > (os->maxcolumn - len))
     os->newLine(os,ADVANCED);
   c = simpleStringString(ss);
-  for (i=0;i<len;i++) 
+  for (i=0;i<len;i++)
     os->putChar(os,(int)(*c++));
 }
 
 /* advancedLengthSimpleStringToken(ss)
- * Returns length for printing simple string ss as a token 
+ * Returns length for printing simple string ss as a token
  */
 int advancedLengthSimpleStringToken(sexpSimpleString *ss)
 { return simpleStringLength(ss); }
 
 
-/* VERBATIM */ 
+/* VERBATIM */
 
 /* advancedPrintVerbatimSimpleString(os,ss)
  * Print out simple string ss on output stream os as verbatim string.
  * Again, can't fragment string, so max-column is just a suggestion...
  */
 void advancedPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
-{ 
+{
   long int len = simpleStringLength(ss);
   long int i;
   octet *c;
   c = simpleStringString(ss);
-  if (c == NULL) 
+  if (c == NULL)
     ErrorMessage(ERROR,"Can't print NULL string verbatim",0,0);
   if (os->maxcolumn>0 && os->column > (os->maxcolumn - len))
     os->newLine(os,ADVANCED);
@@ -325,11 +325,11 @@ void advancedPrintBase64SimpleString(sexpOutputStream *os, sexpSimpleString *ss)
   long int i,len;
   octet *c = simpleStringString(ss);
   len = simpleStringLength(ss);
-  if (c == NULL) 
+  if (c == NULL)
     ErrorMessage(ERROR,"Can't print NULL string base 64",0,0);
   varPutChar(os,'|');
   changeOutputByteSize(os,6,ADVANCED);
-  for (i=0;i<len;i++) 
+  for (i=0;i<len;i++)
     varPutChar(os,(int)(*c++));
   flushOutput(os);
   changeOutputByteSize(os,8,ADVANCED);
@@ -346,11 +346,11 @@ void advancedPrintHexSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
   long int i,len;
   octet *c = simpleStringString(ss);
   len = simpleStringLength(ss);
-  if (c == NULL) 
+  if (c == NULL)
     ErrorMessage(ERROR,"Can't print NULL string hexadecimal",0,0);
   os->putChar(os,'#');
   changeOutputByteSize(os,4,ADVANCED);
-  for (i=0;i<len;i++) 
+  for (i=0;i<len;i++)
     varPutChar(os,(int)(*c++));
   flushOutput(os);
   changeOutputByteSize(os,8,ADVANCED);
@@ -379,13 +379,13 @@ int canPrintAsQuotedString(sexpSimpleString *ss)
   len = simpleStringLength(ss);
   if (len < 0) return FALSE;
   for (i=0;i<len;i++,c++)
-    if (!isTokenChar((int)(*c)) && *c != ' ') 
+    if (!isTokenChar((int)(*c)) && *c != ' ')
       return FALSE;
   return TRUE;
 }
 
 /* advancedPrintQuotedStringSimpleString(os,ss)
- * Prints out simple string ss as a quoted string 
+ * Prints out simple string ss as a quoted string
  * This code assumes that all characters are tokenchars and blanks,
  *  so no escape sequences need to be generated.
  * May run over max-column, but there is no fragmentation allowed...
@@ -395,7 +395,7 @@ void advancedPrintQuotedStringSimpleString(sexpOutputStream *os, sexpSimpleStrin
   long int len = simpleStringLength(ss);
   octet *c = simpleStringString(ss);
   os->putChar(os,'\"');
-  for (i=0;i<len;i++) 
+  for (i=0;i<len;i++)
     { if ( os->maxcolumn>0 && os->column >= os->maxcolumn-2 )
 	{
 	  os->putChar(os,'\\');
@@ -422,15 +422,15 @@ int advancedLengthSimpleStringQuotedString(sexpSimpleString *ss)
  */
 void advancedPrintSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 { long int len = simpleStringLength(ss);
-  if (canPrintAsToken(os,ss)) 
+  if (canPrintAsToken(os,ss))
     advancedPrintTokenSimpleString(os,ss);
   else if (canPrintAsQuotedString(ss))
     advancedPrintQuotedStringSimpleString(os,ss);
-  else if (len <= 4 && os->byteSize == 8) 
+  else if (len <= 4 && os->byteSize == 8)
     advancedPrintHexSimpleString(os,ss);
   else if (os->byteSize == 8)
     advancedPrintBase64SimpleString(os,ss);
-  else 
+  else
     ErrorMessage(ERROR,"Can't print advanced mode with restricted output character set.",0,0);
 }
 
@@ -441,7 +441,7 @@ void advancedPrintString(sexpOutputStream *os, sexpString *s)
 {
   sexpSimpleString *ph = sexpStringPresentationHint(s);
   sexpSimpleString *ss = sexpStringString(s);
-  if (ph != NULL) 
+  if (ph != NULL)
     { os->putChar(os,'[');
       advancedPrintSimpleString(os,ph);
       os->putChar(os,']');
@@ -463,15 +463,15 @@ int advancedLengthSimpleStringBase64(sexpSimpleString *ss)
  */
 int advancedLengthSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 { long int len = simpleStringLength(ss);
-  if (canPrintAsToken(os,ss)) 
+  if (canPrintAsToken(os,ss))
     return advancedLengthSimpleStringToken(ss);
   else if (canPrintAsQuotedString(ss))
     return advancedLengthSimpleStringQuotedString(ss);
-  else if (len <= 4 && os->byteSize == 8) 
+  else if (len <= 4 && os->byteSize == 8)
     return advancedLengthSimpleStringHexadecimal(ss);
   else if (os->byteSize == 8)
     return advancedLengthSimpleStringBase64(ss);
-  else 
+  else
     return 0;  /* an error condition */
 }
 
@@ -482,7 +482,7 @@ int advancedLengthString(sexpOutputStream *os, sexpString *s)
 { int len = 0;
   sexpSimpleString *ph = sexpStringPresentationHint(s);
   sexpSimpleString *ss = sexpStringString(s);
-  if (ph != NULL) 
+  if (ph != NULL)
     len += 2+advancedLengthSimpleString(os,ph);
   if (ss != NULL)
     len += advancedLengthSimpleString(os,ss);
@@ -502,7 +502,7 @@ int advancedLengthList(sexpOutputStream *os, sexpList *list)
       if (object != NULL)
 	{ if (isObjectString(object))
 	    len += advancedLengthString(os,((sexpString *)object));
-	  /* else */ 
+	  /* else */
 	  if (isObjectList(object))
 	    len += advancedLengthList(os,((sexpList *)object));
 	  len++;                     /* for space after item */
@@ -531,7 +531,7 @@ void advancedPrintList(sexpOutputStream *os, sexpList *list)
   iter = sexpListIter(list);
   while (iter != NULL)
     { object = sexpIterObject(iter);
-      if (object != NULL) 
+      if (object != NULL)
 	{ if (!firstelement)
 	    { if (vertical) os->newLine(os,ADVANCED);
 	      else          os->putChar(os,' ');
@@ -548,7 +548,7 @@ void advancedPrintList(sexpOutputStream *os, sexpList *list)
 }
 
 /* advancedPrintObject(os,object)
- * Prints out object on output stream os 
+ * Prints out object on output stream os
  */
 void advancedPrintObject(sexpOutputStream *os, sexpObject *object)
 {
@@ -558,7 +558,7 @@ void advancedPrintObject(sexpOutputStream *os, sexpObject *object)
     advancedPrintString(os,(sexpString *)object);
   else if (isObjectList(object))
     advancedPrintList(os,(sexpList *)object);
-  else 
+  else
     ErrorMessage(ERROR,"NULL object can't be printed.",0,0);
 }
 

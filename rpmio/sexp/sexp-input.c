@@ -24,17 +24,17 @@ char alpha[256];            /* alpha[c] is true if c is alphabetic A-Z a-z */
 
 /* initializeCharacterTables
  * initializes all of the above arrays
- */ 
+ */
 /*@-mods@*/
 void initializeCharacterTables(void)
 { int i;
   for (i=0;i<256;i++) upper[i] = i;
   for (i='a'; i<='z'; i++) upper[i] = i - 'a' + 'A';
-  for (i=0;   i<=255; i++) 
+  for (i=0;   i<=255; i++)
     alpha[i] = decdigit[i] = whitespace[i] = base64digit[i] = FALSE;
   whitespace[' ']  = whitespace['\n'] = whitespace['\t'] = TRUE;
   whitespace['\v'] = whitespace['\r'] = whitespace['\f'] = TRUE;
-  for (i='0';i<='9';i++) 
+  for (i='0';i<='9';i++)
     { base64digit[i] = hexdigit[i] = decdigit[i] = TRUE;
       decvalue[i] = hexvalue[i] = i-'0';
       base64value[i] = (i-'0')+52;
@@ -43,7 +43,7 @@ void initializeCharacterTables(void)
     { hexdigit[i] = hexdigit[upper[i]] = TRUE;
       hexvalue[i] = hexvalue[upper[i]] = i-'a'+10;
     }
-  for (i='a';i<='z';i++) 
+  for (i='a';i<='z';i++)
     { base64digit[i] = base64digit[upper[i]] = TRUE;
       alpha[i] = alpha[upper[i]] = TRUE;
       base64value[i] = i-'a'+26;
@@ -121,12 +121,12 @@ void changeInputByteSize(sexpInputStream *is, int newByteSize)
  * (This version uses the standard input stream.)
  * getChar places next 8-bit character into is->nextChar.
  * It also updates the count of number of 8-bit characters read.
- * The value EOF is obtained when no more input is available.  
+ * The value EOF is obtained when no more input is available.
  * This code handles 4-bit/6-bit/8-bit channels.
  */
 void getChar(sexpInputStream *is)
 { int c;
-  if (is->nextChar == EOF) 
+  if (is->nextChar == EOF)
     { is->byteSize = 8;
       return;
     }
@@ -144,13 +144,13 @@ void getChar(sexpInputStream *is)
 	  changeInputByteSize(is,8);
 	  return;
 	}
-      else if (is->byteSize != 8 && isWhiteSpace(c)) 
+      else if (is->byteSize != 8 && isWhiteSpace(c))
 	; /* ignore white space in hex and base64 regions */
-      else if (is->byteSize == 6 && c == '=') 
+      else if (is->byteSize == 6 && c == '=')
 	; /* ignore equals signs in base64 regions */
       else if (is->byteSize==8)
-	{ 
-	  is->count++; 
+	{
+	  is->count++;
 	  return;
 	}
       else if (is->byteSize<8)
@@ -202,7 +202,7 @@ sexpInputStream *newSexpInputStream(void)
 void skipWhiteSpace(sexpInputStream *is)
 {
   while (isWhiteSpace(is->nextChar)) is->getChar(is);
-}     
+}
 
 /* skipChar(is,c)
  * Skip the following input character on input stream is, if it is
@@ -210,9 +210,9 @@ void skipWhiteSpace(sexpInputStream *is)
  */
 void skipChar(sexpInputStream *is, int c)
 {
-  if (is->nextChar==c) 
+  if (is->nextChar==c)
     is->getChar(is);
-  else 
+  else
     ErrorMessage(ERROR, "character %x (hex) found where %c (char) expected",
 		 (int) is->nextChar,
 		 (int) c);
@@ -225,7 +225,7 @@ void scanToken(sexpInputStream *is, sexpSimpleString *ss)
 {
   skipWhiteSpace(is);
   while (isTokenChar(is->nextChar))
-    { 
+    {
       appendCharToSimpleString(is->nextChar,ss);
       is->getChar(is);
     }
@@ -243,7 +243,7 @@ sexpObject *scanToEOF(sexpInputStream *is)
   setSexpStringString(s,ss);
   skipWhiteSpace(is);
   while (is->nextChar != EOF)
-    { 
+    {
       appendCharToSimpleString(is->nextChar,ss);
       is->getChar(is);
     }
@@ -256,7 +256,7 @@ sexpObject *scanToEOF(sexpInputStream *is)
 unsigned long int scanDecimal(sexpInputStream *is)
 { unsigned long int value = 0L;
   int i = 0;
-  while (isDecDigit(is->nextChar)) 
+  while (isDecDigit(is->nextChar))
     { value = value*10 + decvalue[is->nextChar];
       is->getChar(is);
       if (i++ > 8)
@@ -274,8 +274,8 @@ void scanVerbatimString(sexpInputStream *is, sexpSimpleString *ss, long int leng
   skipWhiteSpace(is);
   skipChar(is,':');
   if (length == -1L) /* no length was specified */
-    ErrorMessage(ERROR,"Verbatim string had no declared length.",0,0);    
-  for (i=0;i<length;i++) 
+    ErrorMessage(ERROR,"Verbatim string had no declared length.",0,0);
+  for (i=0;i<length;i++)
     { appendCharToSimpleString(is->nextChar,ss);
       is->getChar(is);
     }
@@ -284,7 +284,7 @@ void scanVerbatimString(sexpInputStream *is, sexpSimpleString *ss, long int leng
 
 /* scanQuotedString(is,ss,length)
  * Reads quoted string of given length into simple string ss.
- * Handles ordinary C escapes. 
+ * Handles ordinary C escapes.
  * If of indefinite length, length is -1.
  */
 void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length)
@@ -292,7 +292,7 @@ void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length
   int c;
   skipChar(is,'"');
   while (length == -1 || simpleStringLength(ss) <= length)
-    { 
+    {
       if (is->nextChar == '\"')
 	{ if (length == -1 || (simpleStringLength(ss) == length))
 	    { skipChar(is,'\"');
@@ -321,7 +321,7 @@ void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length
 		    { val = ((val << 3) | (c - '0'));
 		      if (j<2) { is->getChar(is); c = is->nextChar; }
 		    }
-		  else 
+		  else
 		    ErrorMessage(ERROR,"Octal character \\%o... too short.",
 				 val,0);
 		}
@@ -340,7 +340,7 @@ void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length
 		    { val = ((val << 4) | hexvalue[c]);
 		      if (j<1) { is->getChar(is); c = is->nextChar; }
 		    }
-		  else 
+		  else
 		    ErrorMessage(ERROR,"Hex character \\x%x... too short.",
 				 val,0);
 		}
@@ -360,7 +360,7 @@ void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length
 	    ErrorMessage(WARNING,"Escape character \\%c... unknown.",
 			 c,0);
 	} /* end of handling escape sequence */
-      else 
+      else
 	appendCharToSimpleString(is->nextChar,ss);
       is->getChar(is);
     gotnextchar: ;
@@ -384,7 +384,7 @@ void scanHexString(sexpInputStream *is, sexpSimpleString *ss, long int length)
   if (simpleStringLength(ss) != length && length >= 0)
     ErrorMessage(WARNING,
 		 "Hex string has length %d different than declared length %d",
-		 (int)simpleStringLength(ss), 
+		 (int)simpleStringLength(ss),
 		 (int)length);
 }
 
@@ -404,14 +404,14 @@ void scanBase64String(sexpInputStream *is, sexpSimpleString *ss, long int length
   if (simpleStringLength(ss) != length && length >= 0)
     ErrorMessage(WARNING,
 		 "Base64 string has length %d different than declared length %d",
-		 (int)simpleStringLength(ss), 
+		 (int)simpleStringLength(ss),
 		 (int)length);
 }
 
 /* scanSimpleString(is)
  * Reads and returns a simple string from the input stream.
  * Determines type of simple string from the initial character, and
- * dispatches to appropriate routine based on that. 
+ * dispatches to appropriate routine based on that.
  */
 sexpSimpleString *scanSimpleString(sexpInputStream *is)
 {
@@ -423,13 +423,13 @@ sexpSimpleString *scanSimpleString(sexpInputStream *is)
    * before checking the other cases, so that a token may begin with ":",
    * which would otherwise be treated as a verbatim string missing a length.
    */
-  if (isTokenChar(is->nextChar) && !isDecDigit(is->nextChar)) 
+  if (isTokenChar(is->nextChar) && !isDecDigit(is->nextChar))
     scanToken(is,ss);
   else if (isDecDigit(is->nextChar)
 	   || is->nextChar == '\"'
 	   || is->nextChar == '#'
 	   || is->nextChar == '|'
-	   || is->nextChar == ':')    
+	   || is->nextChar == ':')
     { if (isDecDigit(is->nextChar)) length = scanDecimal(is);
       else                          length = -1L;
       if (is->nextChar == '\"')     scanQuotedString(is,ss,length);
@@ -437,7 +437,7 @@ sexpSimpleString *scanSimpleString(sexpInputStream *is)
       else if (is->nextChar == '|') scanBase64String(is,ss,length);
       else if (is->nextChar == ':') scanVerbatimString(is,ss,length);
     }
-  else 
+  else
     ErrorMessage(ERROR,"illegal character at position %d: %d (decimal)",
 		 is->count, is->nextChar );
   if (simpleStringLength(ss) == 0)
@@ -477,7 +477,7 @@ sexpList *scanList(sexpInputStream *is)
   skipChar(is,'(');
   skipWhiteSpace(is);
   list = newSexpList();
-  if (is->nextChar == ')') 
+  if (is->nextChar == ')')
     { /* ErrorMessage(ERROR,"List () with no contents is illegal.",0,0); */
       ; /* OK */
     }
@@ -488,12 +488,12 @@ sexpList *scanList(sexpInputStream *is)
   while (TRUE)
     { skipWhiteSpace(is);
       if (is->nextChar == ')') /* we just grabbed last element of list */
-	{ 
+	{
 	  skipChar(is,')');
 	  closeSexpList(list);
 	  return list;
 	}
-      else 
+      else
         { object = scanObject(is);
 	  sexpAddSexpListObject(list,object);
 	}

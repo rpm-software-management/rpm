@@ -34,13 +34,13 @@ void ErrorMessage(int level, const char *msg, int c1, int c2)
 /**********************/
 
 /* initializeMemory()
- * take care of memory initialization 
+ * take care of memory initialization
  */
 void initializeMemory(void)
 { ; } /* nothing in this implementation -- use malloc */
 
 /* sexpAlloc(n)
- * Allocates n bytes of storage. 
+ * Allocates n bytes of storage.
  * Terminates execution if no memory available.
  */
 char *sexpAlloc(int n)
@@ -68,15 +68,15 @@ sexpSimpleString *newSimpleString(void)
   ss->string = (octet *)sexpAlloc(16);
   return ss;
 }
-			      
+			
 /* simpleStringLength(ss)
- * returns length of simple string 
+ * returns length of simple string
  */
 long int simpleStringLength(sexpSimpleString *ss)
 { return ss->length; }
 
 /* simpleStringString(ss)
- * returns pointer to character array of simple string 
+ * returns pointer to character array of simple string
  */
 octet *simpleStringString(sexpSimpleString *ss)
 { return ss->string; }
@@ -93,10 +93,10 @@ sexpSimpleString *reallocateSimpleString(sexpSimpleString *ss)
     ss = newSimpleString();
     if (ss == NULL) return NULL;
   }
-  if (ss->string == NULL) 
+  if (ss->string == NULL)
     ss->string = (octet *)sexpAlloc(16);
   else
-    { 
+    {
       newsize = 16 + 3*(ss->length)/2;
       newstring = (octet *)sexpAlloc(newsize);
       for (i=0;i<ss->length;i++) newstring[i] = ss->string[i];
@@ -146,7 +146,7 @@ sexpString *newSexpString(void)
 }
 
 /* sexpStringPresentationHint()
- * returns presentation hint field of the string 
+ * returns presentation hint field of the string
  */
 sexpSimpleString *sexpStringPresentationHint(sexpString *s)
 { return s->presentationHint; }
@@ -170,7 +170,7 @@ sexpSimpleString *sexpStringString(sexpString *s)
 { return s->string; }
 
 /* closeSexpString()
- * finish up string computations after created 
+ * finish up string computations after created
  */
 void closeSexpString(sexpString *s)
 { ; }  /* do nothing in this implementation */
@@ -222,7 +222,7 @@ void closeSexpList(sexpList *list)
 */
 
 /* sexpListIter()
- * return the iterator for going over a list 
+ * return the iterator for going over a list
  */
 sexpIter *sexpListIter(sexpList *list)
 { return (sexpIter *)list; }

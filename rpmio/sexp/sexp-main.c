@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include "sexp.h"
 
-static const char *help = 
+static const char *help =
 "The program `sexp' reads, parses, and prints out S-expressions.\n"
 " INPUT:\n"
 "   Input is normally taken from stdin, but this can be changed:\n"
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
       else if (*c == 'c') /* canonical output */
 	swc = TRUE;
       else if (*c == 'h') /* help */
-	{ 
+	{
 	  printf("%s",help);
 	  fflush(stdout);
 	  exit(0);
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 	  os->outputFile = fopen(argv[i],"w");
 	  if (os->outputFile==NULL)
 	    ErrorMessage(ERROR,"Can't open output file.",0,0);
-	}	  
+	}	
       else if (*c == 'p') /* prompt for input */
 	swp = TRUE;
       else if (*c == 's') /* treat input as one big string */
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
   if (swp == 0) is->getChar(is);
   else is->nextChar = -2;  /* this is not EOF */
   while (is->nextChar != EOF)
-    { 
+    {
       if (swp)
 	{ printf("Input:\n"); fflush(stdout); }
 
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 
       if (swc)
 	{ if (swp)
-	    { printf("Canonical output:"); fflush(stdout); 
+	    { printf("Canonical output:"); fflush(stdout);
 	      os->newLine(os,ADVANCED);
 	    }
 	  canonicalPrintObject(os,object);
