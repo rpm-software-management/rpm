@@ -58,7 +58,8 @@ rpm2cpio_SOURCES =	rpm2cpio.c
 rpm2cpio_LDADD =	$(mylibs)
 
 rpmconvert_SOURCES =	convertdb.c oldrpmdb.c
-rpmconvert_LDADD =	$(mylibs) -lgdbm
+## Libmisc.a is required for rpmconvert.
+rpmconvert_LDADD =	$(mylibs) @LIBMISC@ -lgdbm
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm
@@ -73,7 +74,13 @@ install-data-local:
 	sparc*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/sparc ;;\
 	powerpc*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/ppc ;;\
 	esac
-	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@
+	@case "@build_os@" in \
+	mint) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/m68kmint ;; \
+	esac
+	@case "@build_os@" in \
+	mint) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/m68kmint ;;\
+	*) @$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@ ;;\
+	esac
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/noarch
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SOURCES
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SPECS

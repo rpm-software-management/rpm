@@ -155,6 +155,11 @@ static struct poptOption optionsTable[] = {
  { 0, 0, 0, 0, 0,	NULL, NULL }
 };
 
+#ifdef __MINT__
+/* MiNT cannot dynamically increase the stack.  */
+long _stksize = 64 * 1024L;
+#endif
+
 static void argerror(char * desc) {
     fprintf(stderr, _("rpm: %s\n"), desc);
     exit(EXIT_FAILURE);

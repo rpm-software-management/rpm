@@ -31,4 +31,8 @@ rpmgettext_LDADD =	$(mylibs) @LIBMISC@
 rpmputtext_SOURCES =	rpmgettext.c
 rpmputtext_LDADD =	$(mylibs) @LIBMISC@
 
+## Dumpdb requires fprint.o (in libmisc) and this requires realpath
+## (from libmisc).
+dumpdb_LDADD = $(mylibs) @LIBMISC@
+
 $(PROGRAMS): $(mylibs)

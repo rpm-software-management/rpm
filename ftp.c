@@ -46,6 +46,15 @@ int inet_aton(const char *cp, struct in_addr *inp);
 #include "url.h"
 #include "ftp.h"
 
+#ifdef __MINT__
+# ifndef EAGAIN
+#  define EAGAIN EWOULDBLOCK
+# endif
+# ifndef O_NONBLOCK
+#  define O_NONBLOCK O_NDELAY
+# endif
+#endif
+
 static int ftpDebug = 0;
 static int ftpTimeoutSecs = TIMEOUT_SECS;
 static int httpTimeoutSecs = TIMEOUT_SECS;

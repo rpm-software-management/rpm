@@ -255,6 +255,16 @@ AC_CHECK_FUNC(socket, [], [
     AC_CHECK_LIB(socket, socket, [LIBS="$LIBS -lsocket"])
 ])
 
+dnl Better not use fchmod at all.
+AC_CHECK_FUNC(fchmod)
+
+dnl Temporary hack for MiNT.  Some functions (writev, snprintf) are
+dnl not in the libc but in libport (for political reasons).  This check
+dnl can hopefully be removed soon.  Please use the default action
+dnl for this macro (not LIBS=...), otherwise the check for dbopen
+dnl will fail.
+AC_CHECK_LIB(port, writev)
+
 AC_CHECK_FUNC(dbopen, [],
   AC_CHECK_LIB(db1, dbopen, [],
     AC_CHECK_LIB(db, dbopen, [],
@@ -724,6 +734,9 @@ armv4l*)	RPMCANONARCH=armv4l ;;
 armv4b*)	RPMCANONARCH=armv4b ;;
 arm*)		RPMCANONARCH=arm ;;
 *)		RPMCANONARCH=unknown ;;
+esac
+case "${build_os_noversion}" in
+mint)		RPMCANONARCH=m68kmint ;;
 esac
 RPMCANONVENDOR="$build_vendor"
 case "${build_vendor}" in

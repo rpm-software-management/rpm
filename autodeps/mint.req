@@ -1,0 +1,5 @@
+#!/bin/sh
+#
+# No shared libs on MiNT yet, sigh.
+
+echo > /dev/null

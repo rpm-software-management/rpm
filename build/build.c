@@ -83,7 +83,9 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	    rpmError(RPMERR_SCRIPT, _("Unable to open temp file"));
 	    return RPMERR_SCRIPT;
     }
+#ifdef HAVE_FCHMOD
     (void)fchmod(fdFileno(fd), 0600);
+#endif
     f = fdFdopen(fd, "w");
     
     strcpy(buf, _preScriptEnvironment);

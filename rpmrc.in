@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.11 1999/06/09 19:06:48 jbj Exp $
+# $Id: rpmrc.in,v 2.12 1999/06/17 21:35:40 jbj Exp $
 
 #############################################################
 
@@ -22,6 +22,13 @@ optflags: mipseb -O2
 optflags: mipsel -O2
 optflags: armv4b -O2 -fsigned-char -fomit-frame-pointer
 optflags: armv4l -O2 -fsigned-char -fomit-frame-pointer
+optflags: atarist -O2 -fomit-frame-pointer
+optflags: atariste -O2 -fomit-frame-pointer
+optflags: ataritt -O2 -fomit-frame-pointer
+optflags: falcon -O2 -fomit-frame-pointer
+optflags: atariclone -O2 -fomit-frame-pointer
+optflags: milan -O2 -fomit-frame-pointer
+optflags: hades -O2 -fomit-frame-pointer
 
 #############################################################
 # Canonical arch names and numbers
@@ -54,6 +61,15 @@ arch_canon:	mipsel:	mipsel	11
 arch_canon:     armv4b:	armv4b 	12
 arch_canon:     armv4l:	armv4l 	12
 
+arch_canon:	m68kmint: m68kmint 13
+arch_canon:	atarist: m68kmint 13
+arch_canon:	atariste: m68kmint 13
+arch_canon:	ataritt: m68kmint 13
+arch_canon:	falcon: m68kmint 13
+arch_canon:	atariclone: m68kmint 13
+arch_canon:	milan: m68kmint 13
+arch_canon:	hades: m68kmint 13
+
 #############################################################
 # Canonical OS names and numbers
 
@@ -78,6 +94,7 @@ os_canon:      machten: machten 13
 os_canon:  CYGWIN32_NT: cygwin32 14
 os_canon:  CYGWIN32_95: cygwin32 15
 os_canon:      UNIX_SV: MP_RAS: 16
+os_canon:         MiNT: FreeMiNT 17
 
 #############################################################
 # For a given uname().machine, the default build arch
@@ -106,6 +123,14 @@ buildarchtranslate: sun4c: sparc
 buildarchtranslate: sun4d: sparc
 buildarchtranslate: sun4m: sparc
 buildarchtranslate: sun4u: sparc64
+
+buildarchtranslate: atarist: m68kmint
+buildarchtranslate: atariste: m68kmint
+buildarchtranslate: ataritt: m68kmint
+buildarchtranslate: falcon: m68kmint
+buildarchtranslate: atariclone:	m68kmint
+buildarchtranslate: milan: m68kmint
+buildarchtranslate: hades: m68kmint	
 
 #############################################################
 # Architecture compatibility
@@ -153,6 +178,14 @@ arch_compat: parisc: noarch
 arch_compat: armv4b: noarch
 arch_compat: armv4l: noarch
 
+arch_compat: atarist: m68kmint noarch
+arch_compat: atariste: m68kmint noarch
+arch_compat: ataritt: m68kmint noarch
+arch_compat: falcon: m68kmint noarch
+arch_compat: atariclone: m68kmint noarch
+arch_compat: milan: m68kmint noarch
+arch_compat: hades: m68kmint noarch
+
 os_compat:   IRIX64: IRIX
 os_compat: solaris2.7: solaris2.3 solaris2.4 solaris2.5 solaris2.6
 os_compat: solaris2.6: solaris2.3 solaris2.4 solaris2.5
@@ -171,6 +204,11 @@ os_compat: hpux9.05: hpux9.04
 os_compat: osf4.0: osf3.2
 
 os_compat: ncr-sysv4.3: ncr-sysv4.2
+
+os_compat: FreeMiNT: mint MiNT TOS
+os_compat: MiNT: FreeMiNT mint TOS
+os_compat: mint: FreeMiNT MiNT TOS
+os_compat: TOS: FreeMiNT MiNT mint
 
 buildarch_compat: i986: i886
 buildarch_compat: i886: i786
@@ -195,9 +233,18 @@ buildarch_compat: armv4b: noarch
 buildarch_compat: armv4l: noarch
 buildarch_compat: parisc: noarch
 
+buildarch_compat: atarist: m68kmint noarch
+buildarch_compat: atariste: m68kmint noarch
+buildarch_compat: ataritt: m68kmint noarch
+buildarch_compat: falcon: m68kmint noarch
+buildarch_compat: atariclone: m68kmint noarch
+buildarch_compat: milan: m68kmint noarch
+buildarch_compat: hades: m68kmint noarch
+
 #############################################################
 #macrofiles:	@RPMCONFIGDIR@/macros:@SYSCONFIGDIR@/macros:~/.rpmmacros
 
 macrofiles:	@RPMCONFIGDIR@/macros:@RPMCONFIGDIR@/%{_target}/macros:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/.rpmmacros
 
 #include: @RPMCONFIGDIR@/%{_target}/rpmrc
+
