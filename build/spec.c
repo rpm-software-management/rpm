@@ -150,9 +150,11 @@ int addSource(Spec spec, Package pkg, char *field, int tag)
     if (tag != RPMTAG_ICON) {
 	/* We already know that a ':' exists, and that there */
 	/* are no spaces before it.                          */
+	/* This also now allows for spaces and tabs between  */
+	/* the number and the ':'                            */
 
 	nump = buf;
-	while (*fieldp != ':') {
+	while ((*fieldp != ':') && (*fieldp != ' ') && (*fieldp != '\t')) {
 	    *nump++ = *fieldp++;
 	}
 	*nump = '\0';

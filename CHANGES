@@ -13,6 +13,7 @@
 	- make --justdb install files in normal state
 	- %{fssizes} segv'd for packages with empty file lists
 	- updated HP-UX, OSF1, Irix 6.x dependency scripts (Tim Mooney)
+	- allow whitespace in source/patche lines
 	
 2.5 -> 2.5.1:
 	- fail if sources are not regular files
