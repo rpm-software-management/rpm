@@ -14,8 +14,14 @@
  * needed on buffers full of bytes, and then call MD5Final, which
  * will fill a supplied 16-byte array with the digest.
  */
-#include <string.h>		/* for memcpy() */
+
+#if defined HAVE_ENDIAN_H
 #include <endian.h>
+#elif defined HAVE_MACHINE_ENDIAN_H
+#include <machine/endian.h>
+#endif
+
+#include <string.h>		/* for memcpy() */
 #include "md5.h"
 
 void byteReverse(unsigned char *buf, unsigned longs);
