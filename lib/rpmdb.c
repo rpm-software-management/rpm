@@ -1741,7 +1741,7 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int hdrNum)
 
 	    for (i = 0; i < rpmcnt; i++) {
 #if 0
-		rpmMessage(RPMMESS_DEBUG, _("%6d %s\n"), i, rpmvals[i]);
+		rpmMessage(RPMMESS_DEBUG,  ("%6d %s\n"), i, rpmvals[i]);
 #endif
 		/*
 		 * This is almost right, but, if there are duplicate tag

@@ -281,7 +281,7 @@ static void printUsage(void) {
     fp = stdout;
 
     fprintf(fp, _("Usage: %s {--help}\n"), __progname);
-    fprintf(fp, _("       %s {--version}\n"), __progname);
+    fprintf(fp,  ("       %s {--version}\n"), __progname);
 
 #ifdef	IAM_RPMDB
     fprintf(fp, _("       %s {--initdb}   [--dbpath <dir>]\n"), __progname);
@@ -299,7 +299,7 @@ static void printUsage(void) {
     puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
     puts(_("                        [--badreloc] [--notriggers] [--excludepath <path>]"));
     puts(_("                        [--ignoresize] file1.rpm ... fileN.rpm"));
-    fprintf(fp, _("       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"), __progname);
+    fprintf(fp,  ("       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"), __progname);
     puts(_("                        [--oldpackage] [--root <dir>] [--noscripts]"));
     puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"));
     puts(_("                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
@@ -315,7 +315,7 @@ static void printUsage(void) {
 #endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMQV
-    fprintf(fp, _("       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"), __progname);
+    fprintf(fp,  ("       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"), __progname);
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
     puts(_("                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"));
@@ -325,14 +325,14 @@ static void printUsage(void) {
     fprintf(fp, _("       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]\n"), __progname);
     puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"));
     puts(_("                        [--nomd5] [targets]"));
-    fprintf(fp, _("       %s {--querytags}\n"), __progname);
+    fprintf(fp,  ("       %s {--querytags}\n"), __progname);
     fprintf(fp, _("       %s {--setperms} [-afpg] [target]\n"), __progname);
     fprintf(fp, _("       %s {--setugids} [-afpg] [target]\n"), __progname);
 #endif	/* IAM_RPMQV */
 
 #ifdef	IAM_RPMBT
     fprintf(fp, _("       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  <file>]\n"), __progname);
-    puts(_("                        [--sign] [--nobuild] ]"));
+    puts( ("                        [--sign] [--nobuild] ]"));
     puts(_("                        [--target=platform1[,platform2...]]"));
     puts(_("                        [--rmsource] [--rmspec] specfile"));
     fprintf(fp, _("       %s {--rmsource} [--rcfile <file>] [-v] specfile\n"), __progname);
