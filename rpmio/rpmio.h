@@ -344,12 +344,12 @@ int	Closedir(/*@only@*/ DIR * dir)
  */
 /*@{*/
 
-/** \ingroup rpmio
+/**
  */
 off_t	fdSize(FD_t fd)
 	/*@modifies fd, fileSystem@*/;
 
-/** \ingroup rpmio
+/**
  */
 /*@null@*/ FD_t fdDup(int fdno)
 	/*@modifies fileSystem@*/;
@@ -360,7 +360,7 @@ off_t	fdSize(FD_t fd)
 
 /* XXX Legacy interfaces needed by gnorpm, rpmfind et al */
 
-/** \ingroup rpmio
+/**
  */
 /*@-shadow -declundef -fcnuse@*/
 int fdFileno(void * cookie)
@@ -369,22 +369,22 @@ int fdFileno(void * cookie)
 
 
 /*@-exportlocal@*/
-/** \ingroup rpmio
+/**
  */
 /*@null@*/ FD_t fdOpen(const char *path, int flags, mode_t mode)
 	/*@modifies fileSystem @*/;
 
-/** \ingroup rpmio
+/**
  */
 ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	/*@modifies *cookie, *buf, fileSystem @*/;
 
-/** \ingroup rpmio
+/**
  */
 ssize_t	fdWrite(void * cookie, const char * buf, size_t count)
 	/*@modifies *cookie, fileSystem @*/;
 
-/** \ingroup rpmio
+/**
  */
 int fdClose( /*@only@*/ void * cookie)
 	/*@modifies *cookie, fileSystem @*/;
@@ -397,18 +397,18 @@ int fdClose( /*@only@*/ void * cookie)
 #define	fdFree(_fd, _msg)	fdio->_fdderef(_fd, _msg, __FILE__, __LINE__)
 #define	fdNew(_msg)		fdio->_fdnew(_msg, __FILE__, __LINE__)
 
-/** \ingroup rpmio
+/**
  */
 int fdWritable(FD_t fd, int secs)
 	/*@modifies fd @*/;
 
-/** \ingroup rpmio
+/**
  */
 int fdReadable(FD_t fd, int secs)
 	/*@modifies fd @*/;
 /*@=exportlocal@*/
 
-/** \ingroup rpmio
+/**
  * FTP and HTTP error codes.
  */
 /*@-typeuse@*/
@@ -428,38 +428,38 @@ typedef enum ftperrCode_e {
 } ftperrCode;
 /*@=typeuse@*/
 
-/** \ingroup rpmio
+/**
  */
 /*@-redecl@*/
 /*@observer@*/ const char *const ftpStrerror(int errorNumber)	/*@*/;
 /*@=redecl@*/
 
-/** \ingroup rpmio
+/**
  */
 /*@unused@*/
 /*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd)
 	/*@modifies fd @*/;
 
-/** \ingroup rpmio
+/**
  */
 /*@-redecl@*/
 /*@unused@*/
 /*@observer@*/ const char * urlStrerror(const char * url)	/*@*/;
 /*@=redecl@*/
 
-/** \ingroup rpmio
+/**
  */
 /*@-exportlocal@*/
 int ufdCopy(FD_t sfd, FD_t tfd)
 	/*@modifies sfd, tfd, fileSystem @*/;
 /*@=exportlocal@*/
 
-/** \ingroup rpmio
+/**
  */
 int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd)
 	/*@modifies sfd, tfd, fileSystem @*/;
 
-/** \ingroup rpmio
+/**
  */
 int timedRead(FD_t fd, /*@out@*/ void * bufptr, int length)
 	/*@modifies fd, *bufptr, fileSystem @*/;
@@ -467,27 +467,27 @@ int timedRead(FD_t fd, /*@out@*/ void * bufptr, int length)
 
 
 /*@-exportlocal@*/
-/** \ingroup rpmio
+/**
  */
 /*@observer@*/ extern FDIO_t fdio;
 
-/** \ingroup rpmio
+/**
  */
 /*@observer@*/ extern FDIO_t fpio;
 
-/** \ingroup rpmio
+/**
  */
 /*@observer@*/ extern FDIO_t ufdio;
 
-/** \ingroup rpmio
+/**
  */
 /*@observer@*/ extern FDIO_t gzdio;
 
-/** \ingroup rpmio
+/**
  */
 /*@observer@*/ extern FDIO_t bzdio;
 
-/** \ingroup rpmio
+/**
  */
 /*@observer@*/ extern FDIO_t fadio;
 /*@=exportlocal@*/

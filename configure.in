@@ -4,7 +4,7 @@ dnl Don't add checks for things we can't work around, unless those checks
 dnl failing causes the script to bomb out with a message. If we can't fix
 dnl it, why check it?
 
-AC_INIT(rpm.c)
+AC_INIT(rpmqv.c)
 AC_CANONICAL_SYSTEM
 
 AM_INIT_AUTOMAKE(rpm, 4.1)

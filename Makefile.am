@@ -7,7 +7,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	config.site db db3/configure gendiff installplatform platform* \
 	po/*.in po/*.po po/rpm.pot \
-	rpm.magic rpmpopt-$(VERSION) rpmqv.c
+	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
 
 # XXX TODO: perl
 SUBDIRS = intl po @WITH_DB_SUBDIR@ popt rpmio rpmdb lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .

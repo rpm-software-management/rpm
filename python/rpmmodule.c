@@ -831,7 +831,7 @@ static PyTypeObject rpmdbMIType = {
  */
 /*@{*/
 
-/** \ingroup python
+/**
  */
 static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args) {
     int first;
@@ -870,7 +870,7 @@ static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args) {
     return Py_BuildValue("i", first);
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args) {
     int where;
@@ -892,7 +892,7 @@ static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args) {
     return Py_BuildValue("i", where);
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * handleDbResult(rpmdbMatchIterator mi) {
     PyObject * list, *o;
@@ -911,7 +911,7 @@ static PyObject * handleDbResult(rpmdbMatchIterator mi) {
     return list;
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * rpmdbByFile(rpmdbObject * s, PyObject * args) {
     char * str;
@@ -921,7 +921,7 @@ static PyObject * rpmdbByFile(rpmdbObject * s, PyObject * args) {
     return handleDbResult(rpmdbInitIterator(s->db, RPMTAG_BASENAMES, str, 0));
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * rpmdbByName(rpmdbObject * s, PyObject * args) {
     char * str;
@@ -931,7 +931,7 @@ static PyObject * rpmdbByName(rpmdbObject * s, PyObject * args) {
     return handleDbResult(rpmdbInitIterator(s->db, RPMTAG_NAME, str, 0));
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * rpmdbByProvides(rpmdbObject * s, PyObject * args) {
     char * str;
@@ -941,7 +941,7 @@ static PyObject * rpmdbByProvides(rpmdbObject * s, PyObject * args) {
     return handleDbResult(rpmdbInitIterator(s->db, RPMTAG_PROVIDENAME, str, 0));
 }
 
-/** \ingroup python
+/**
  */
 static rpmdbMIObject *
 py_rpmdbInitIterator (rpmdbObject * s, PyObject * args) {
@@ -973,7 +973,7 @@ py_rpmdbInitIterator (rpmdbObject * s, PyObject * args) {
     return mio;
 }
 
-/** \ingroup python
+/**
  */
 static struct PyMethodDef rpmdbMethods[] = {
 	{"firstkey",	    (PyCFunction) rpmdbFirst,	1 },
@@ -985,13 +985,13 @@ static struct PyMethodDef rpmdbMethods[] = {
 	{NULL,		NULL}		/* sentinel */
 };
 
-/** \ingroup python
+/**
  */
 static PyObject * rpmdbGetAttr(rpmdbObject * s, char * name) {
     return Py_FindMethod(rpmdbMethods, (PyObject * ) s, name);
 }
 
-/** \ingroup python
+/**
  */
 static void rpmdbDealloc(rpmdbObject * s) {
     if (s->offsets) {
@@ -1004,7 +1004,7 @@ static void rpmdbDealloc(rpmdbObject * s) {
 }
 
 #ifndef DYINGSOON
-/** \ingroup python
+/**
  */
 static int
 rpmdbLength(rpmdbObject * s) {
@@ -1023,7 +1023,7 @@ rpmdbLength(rpmdbObject * s) {
     return count;
 }
 
-/** \ingroup python
+/**
  */
 static hdrObject *
 rpmdbSubscript(rpmdbObject * s, PyObject * key) {
@@ -1058,7 +1058,7 @@ rpmdbSubscript(rpmdbObject * s, PyObject * key) {
     return h;
 }
 
-/** \ingroup python
+/**
  */
 static PyMappingMethods rpmdbAsMapping = {
 	(inquiry) rpmdbLength,		/* mp_length */
@@ -1067,7 +1067,7 @@ static PyMappingMethods rpmdbAsMapping = {
 };
 #endif
 
-/** \ingroup python
+/**
  */
 static PyTypeObject rpmdbType = {
 	PyObject_HEAD_INIT(&PyType_Type)
