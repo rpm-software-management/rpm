@@ -1714,12 +1714,36 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		   notifyData);
 	    break;
 	case TR_REMOVED:
+	  { unsigned int offset = fi->record;
+	    Header dbh;
+
+	    /* If install failed, then we shouldn't erase. */
 	    if (ts->order[oc].u.removed.dependsOnIndex == lastFailed)
 		break;
-	    if (removeBinaryPackage(ts->rootDir, ts->rpmdb, fi->record,
-				    transFlags, fi->actions, ts->scriptFd))
+
+	    {	rpmdbMatchIterator mi = NULL;
+
+		mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
+				&offset, sizeof(offset));
+
+		dbh = rpmdbNextIterator(mi);
+		if (dbh == NULL) {
+		    rpmdbFreeIterator(mi);
+		    ourrc++;
+		    break;
+		}
+		dbh = headerLink(dbh);
+		rpmdbFreeIterator(mi);
+	    }
+
+	    if (removeBinaryPackage(ts->rootDir, ts->rpmdb, offset, dbh,
+				transFlags,
+				notify, notifyData, dbh, fi->actions,
+				ts->scriptFd))
 		ourrc++;
-	    break;
+
+	    headerFree(dbh);
+	  } break;
 	}
 	(void) rpmdbSync(ts->rpmdb);
     }

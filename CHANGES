@@ -95,6 +95,9 @@
 
 3.0.5 -> 3.0.6
 	- python bindings to query and verify signatures.
+	- add callbacks on package erasure.
+	- fix: preserve cpio errno when using Fclose with libio.
+	- fix: initialize sigs everywhere in python header object.
 
 3.0.4 -> 3.0.5
 	- configure.in fiddles for BSD systems (Patrick Schoo).

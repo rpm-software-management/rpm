@@ -25,8 +25,6 @@ enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
 extern "C" {
 #endif
 
-int removeBinaryPackage(const char * root, rpmdb db, unsigned int offset,
-		int flags, enum fileActions * actions, FD_t scriptFd);
 int runInstScript(const char * prefix, Header h, int scriptTag, int progTag,
 		int arg, int norunScripts, FD_t err);
 /* this looks for triggers in the database which h would set off */
@@ -36,12 +34,21 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
    database to calculate arguments to the trigger */
 int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
 		int countCorrection, FD_t scriptFd);
+
+/*@observer@*/ const char *const fileActionString(enum fileActions a);
+
 int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 		int flags, rpmCallbackFunction notify, 
 		void * notifyData, const void * pkgKey, 
 		enum fileActions * actions,
 		struct sharedFileInfo * sharedList, FD_t scriptFd);
-/*@observer@*/ const char *const fileActionString(enum fileActions a);
+int removeBinaryPackage(const char * root, rpmdb db, unsigned int offset,
+		Header h,
+		int flags, rpmCallbackFunction notify, 
+		void * notifyData, const void * pkgKey, 
+		enum fileActions * actions,
+		FD_t scriptFd);
+
 
 #ifdef __cplusplus
 }
