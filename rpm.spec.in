@@ -141,9 +141,9 @@ mkdir -p ${RPM_BUILD_ROOT}/etc/logrotate.d
 install -m 755 scripts/rpm.log ${RPM_BUILD_ROOT}/etc/logrotate.d/rpm
 
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
-cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
-%%_dbapi		1
-E_O_F
+#cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
+#%%_dbapi		1
+#E_O_F
 
 %endif
 
@@ -163,13 +163,13 @@ rm -rf $RPM_BUILD_ROOT
 
 %pre
 %ifos linux
-if [ -f /var/lib/rpm/Packages -a -f /var/lib/rpm/packages.rpm ]; then
-#    echo "
-#You have both
-#	/var/lib/rpm/packages.rpm	db1 format installed package headers
-#	/var/lib/rpm/Packages		db3 format installed package headers
-#Please remove (or at least rename) one of those files, and re-install.
-#"
+if [ -f /var/lib/rpm/packages.rpm ]; then
+    echo "
+
+This version of rpm does not have db1 support, install rpm-4.0.2 and
+do rpm --rebuilddb to convert your database from db1 to db3 format.
+
+"
     exit 1
 fi
 /usr/sbin/groupadd -g 37 rpm
@@ -181,18 +181,9 @@ exit 0
 %ifos linux
 /sbin/ldconfig
 %endif
-if [ -f /var/lib/rpm/packages.rpm ]; then
-    : # do nothing
-elif [ -f /var/lib/rpm/Packages ]; then
-    # undo db1 configuration
-    rm -f /etc/rpm/macros.db1
-   /bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]*
-else
-    # initialize db3 database
-    rm -f /etc/rpm/macros.db1
-    /bin/rpm --initdb
-   /bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]*
-fi
+# initialize db3 database
+/bin/rpm --initdb
+/bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]*
 
 %ifos linux
 %postun
@@ -224,7 +215,7 @@ fi
 %config(missingok)	/etc/cron.daily/rpm
 %config(missingok)	/etc/logrotate.d/rpm
 %dir			/etc/rpm
-%config(missingok)	/etc/rpm/macros.db1
+#%config(missingok)	/etc/rpm/macros.db1
 %endif
 
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%{__prefix}/bin/rpm2cpio
