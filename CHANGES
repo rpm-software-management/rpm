@@ -18,6 +18,7 @@
 	- sqlite: revert to original narrow scoping of cOpen/cClose.
 	- fix: length of gpg V4 hash seed was incorrect (#146896).
 	- add support for V4 rfc-2440 signatures.
+	- run-time endian test rather than chasing <endian.h> (#146752).
 
 4.3.3 -> 4.4:
 	- pentium3/pentium4 arch support (pluto@PLD).
