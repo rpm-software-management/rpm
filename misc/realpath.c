@@ -18,11 +18,7 @@
 #include <unistd.h>
 #endif
 #include <stdio.h>
-#ifdef HAVE_STRING_H
 #include <string.h>
-#else
-#include <strings.h>
-#endif
 #ifdef _POSIX_VERSION
 #include <limits.h>			/* for PATH_MAX */
 #else
