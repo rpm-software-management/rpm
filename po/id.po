@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-03-15 13:52-0500\n"
+"POT-Creation-Date: 2001-03-16 11:04-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1592,163 +1592,163 @@ msgstr ""
 msgid "syntax error in expression\n"
 msgstr ""
 
-#: build/files.c:234
+#: build/files.c:249
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:285 build/files.c:370 build/files.c:545
+#: build/files.c:303 build/files.c:392 build/files.c:570
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr ""
 
-#: build/files.c:296 build/files.c:490 build/files.c:556
+#: build/files.c:314 build/files.c:515 build/files.c:581
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr ""
 
-#: build/files.c:334 build/files.c:515
+#: build/files.c:352 build/files.c:540
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr ""
 
-#: build/files.c:386
+#: build/files.c:408
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:424
+#: build/files.c:446
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:434
+#: build/files.c:456
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:446
+#: build/files.c:468
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:583
+#: build/files.c:608
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:593
+#: build/files.c:618
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:730
+#: build/files.c:756
 msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:736
+#: build/files.c:762
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:764
+#: build/files.c:790
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr ""
 
-#: build/files.c:778
+#: build/files.c:804
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:790
+#: build/files.c:816
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:957
+#: build/files.c:983
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr ""
 
-#: build/files.c:1047
+#: build/files.c:1125
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1234
+#: build/files.c:1312
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1244
+#: build/files.c:1322
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:1287 build/files.c:1808 build/parsePrep.c:44
+#: build/files.c:1365 build/files.c:1892 build/parsePrep.c:44
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1299
+#: build/files.c:1377
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1376
+#: build/files.c:1455
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1406
+#: build/files.c:1485
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1460
+#: build/files.c:1539
 msgid "Could not open %%files file %s: %s\n"
 msgstr ""
 
-#: build/files.c:1469 build/pack.c:122
+#: build/files.c:1548 build/pack.c:122
 #, c-format
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:1796
+#: build/files.c:1880
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1864
+#: build/files.c:1948
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr ""
 
-#: build/files.c:1869
+#: build/files.c:1953
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: build/files.c:1951
+#: build/files.c:2035
 #, c-format
 msgid "%s failed\n"
 msgstr ""
 
-#: build/files.c:1955
+#: build/files.c:2039
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: build/files.c:2082
+#: build/files.c:2166
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2110 build/files.c:2124
+#: build/files.c:2194 build/files.c:2208
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/files.c:2237
+#: build/files.c:2321
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""

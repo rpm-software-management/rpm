@@ -135,7 +135,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome, const char * dbfile,
 
 	xx = db_env_create(&dbenv, 0);
 	xx = cvtdberr(dbi, "db_env_create", rc, _debug);
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 1
+#if DB_VERSION_MAJOR == 3 && (DB_VERSION_MINOR == 1 || DB_VERSION_MINOR == 2)
 	xx = dbenv->remove(dbenv, dbhome, 0);
 #else
 	xx = dbenv->remove(dbenv, dbhome, NULL, 0);
@@ -213,7 +213,7 @@ static int db_init(dbiIndex dbi, const char *dbhome, const char *dbfile,
  /* dbenv->set_tx_max(???) */
  /* dbenv->set_tx_recover(???) */
     if (dbi->dbi_no_fsync) {
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 1
+#if DB_VERSION_MAJOR == 3 && (DB_VERSION_MINOR == 1 || DB_VERSION_MINOR == 2)
 	xx = db_env_set_func_fsync(db3_fsync_disable);
 #else
 	xx = dbenv->set_func_fsync(dbenv, db3_fsync_disable);
@@ -231,7 +231,7 @@ static int db_init(dbiIndex dbi, const char *dbhome, const char *dbfile,
 #endif	/* __USE_DB3 */
 
 #if defined(__USE_DB3)
-#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 1
+#if DB_VERSION_MAJOR == 3 && (DB_VERSION_MINOR == 1 || DB_VERSION_MINOR == 2)
     rc = dbenv->open(dbenv, dbhome, eflags, dbi->dbi_perms);
 #else
     rc = dbenv->open(dbenv, dbhome, NULL, eflags, dbi->dbi_perms);
@@ -689,10 +689,12 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 			rc = db->set_h_ffactor(db, dbi->dbi_h_ffactor);
 			rc = cvtdberr(dbi, "db->set_h_ffactor", rc, _debug);
 		    }
+#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 1
 		    if (dbi->dbi_h_hash_fcn) {
 			rc = db->set_h_hash(db, dbi->dbi_h_hash_fcn);
 			rc = cvtdberr(dbi, "db->set_h_hash", rc, _debug);
 		    }
+#endif
 		    if (dbi->dbi_h_nelem) {
 			rc = db->set_h_nelem(db, dbi->dbi_h_nelem);
 			rc = cvtdberr(dbi, "db->set_h_nelem", rc, _debug);
@@ -701,10 +703,13 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 			rc = db->set_flags(db, dbi->dbi_h_flags);
 			rc = cvtdberr(dbi, "db->set_h_flags", rc, _debug);
 		    }
+/* XXX db-3.2.9 has added a DB arg to the callback. */
+#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 1
 		    if (dbi->dbi_h_dup_compare_fcn) {
 			rc = db->set_dup_compare(db, dbi->dbi_h_dup_compare_fcn);
 			rc = cvtdberr(dbi, "db->set_dup_compare", rc, _debug);
 		    }
+#endif
 		    break;
 		case DB_BTREE:
 		case DB_RECNO:

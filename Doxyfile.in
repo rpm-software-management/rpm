@@ -362,6 +362,8 @@ INPUT                  = \
 	./lib/hash.h \
 	./lib/header.c \
 	./lib/header.h \
+	./lib/manifest.c \
+	./lib/manifest.h \
 	./lib/md5.c \
 	./lib/md5.h \
 	./lib/md5sum.c \

@@ -19,6 +19,11 @@ int _depends_debug = 0;
 /*@access rpmdb@*/		/* XXX compared with NULL */
 /*@access rpmTransactionSet@*/
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
 static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
     if (this)   free((void *)this);
     return NULL;

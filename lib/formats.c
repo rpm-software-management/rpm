@@ -5,67 +5,9 @@
 #include "system.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for %_i18ndomains */
+#include "manifest.h"
 #include "misc.h"
 #include "debug.h"
-
-/**
- * Return ls-like formatted mode string.
- * @param mode		file mode
- * @return		formatted mode string (malloc'ed)
- */
-static /*@only@*/ char * permsString(int mode)	/*@*/
-{
-    char * perms = xmalloc(11);
-
-    strcpy(perms, "-----------");
-   
-    if (mode & S_ISVTX) perms[10] = 't';
-
-    /*@-unrecog@*/
-    if (mode & S_IRUSR) perms[1] = 'r';
-    if (mode & S_IWUSR) perms[2] = 'w';
-    if (mode & S_IXUSR) perms[3] = 'x';
- 
-    if (mode & S_IRGRP) perms[4] = 'r';
-    if (mode & S_IWGRP) perms[5] = 'w';
-    if (mode & S_IXGRP) perms[6] = 'x';
-
-    if (mode & S_IROTH) perms[7] = 'r';
-    if (mode & S_IWOTH) perms[8] = 'w';
-    if (mode & S_IXOTH) perms[9] = 'x';
-    /*@=unrecog@*/
-
-    if (mode & S_ISUID) {
-	if (mode & S_IXUSR) 
-	    perms[3] = 's'; 
-	else
-	    perms[3] = 'S'; 
-    }
-
-    if (mode & S_ISGID) {
-	if (mode & S_IXGRP) 
-	    perms[6] = 's'; 
-	else
-	    perms[6] = 'S'; 
-    }
-
-    if (S_ISDIR(mode)) 
-	perms[0] = 'd';
-    else if (S_ISLNK(mode)) {
-	perms[0] = 'l';
-    }
-    else if (S_ISFIFO(mode)) 
-	perms[0] = 'p';
-    else if (S_ISSOCK(mode)) 
-	perms[0] = 'l';
-    else if (S_ISCHR(mode)) {
-	perms[0] = 'c';
-    } else if (S_ISBLK(mode)) {
-	perms[0] = 'b';
-    }
-
-    return perms;
-}
 
 /**
  * @param type		tag type
@@ -113,7 +55,7 @@ static /*@only@*/ char * permsFormat(int_32 type, const void * data, char * form
     } else {
 	val = xmalloc(15 + padding);
 	strcat(formatPrefix, "s");
-	buf = permsString(*((int_32 *) data));
+	buf = rpmPermsString(*((int_32 *) data));
 	sprintf(val, formatPrefix, buf);
 	free(buf);
     }

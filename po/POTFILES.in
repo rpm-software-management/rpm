@@ -37,6 +37,7 @@ lib/fs.c
 lib/fsm.c
 lib/hash.c
 lib/header.c
+lib/manifest.c
 lib/md5.c
 lib/md5sum.c
 lib/misc.c

@@ -239,6 +239,12 @@ Query an (uninstalled) package \fI<package_file>\fP.
 The \fI<package_file>\fP may be specified as an ftp or http style URL, in which case
 the package header will be downloaded and queried. See \fBFTP/HTTP
 OPTIONS\fP for information on RPM's built-in ftp and http client support.
+The <package_file> argument(s), if not an rpm package, will be interpreted
+as an ASCII package manifest. Comments are permitted, starting with a '#',
+and each line of the package manifest file includes white space seperated
+glob expressions, including URL's with remote glob expressions, that will
+be expanded to paths that are substituted in place of the package manifest
+as <package_file> arguments to the query.
 .IP "\fB\-\-specfile \fI<specfile>\fP"
 Parse and query \fI<specfile>\fP as if it were a package. Although not all
 the information (e.g. file lists) is available, this type of query permits
@@ -299,7 +305,8 @@ files in the package with information about the files taken from the
 original package and stored in the rpm database.  Among other things,
 verifying compares the size, MD5 sum, permissions, type, owner and group
 of each file.  Any discrepencies are displayed.  The package specification
-options are the same as for package querying.
+options are the same as for package querying (including package manifest
+files as arguments).
 
 Files that were not installed from the package, for example documentation
 files excluded on installation using the "\fB\-\-excludedocs\fP" option,

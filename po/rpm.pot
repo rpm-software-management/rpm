@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-03-16 11:04-0500\n"
+"POT-Creation-Date: 2001-03-22 17:35-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2303,11 +2303,11 @@ msgstr ""
 msgid "cannot get %s lock on database\n"
 msgstr ""
 
-#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:766
+#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:771
 msgid "exclusive"
 msgstr ""
 
-#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:766
+#: lib/db1.c:450 lib/db2.c:786 lib/db3.c:771
 msgid "shared"
 msgstr ""
 
@@ -2336,12 +2336,12 @@ msgstr ""
 msgid "opening db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: lib/db2.c:784 lib/db3.c:764
+#: lib/db2.c:784 lib/db3.c:769
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: lib/db2.c:791 lib/db3.c:771
+#: lib/db2.c:791 lib/db3.c:776
 #, c-format
 msgid "locked  db index       %s/%s\n"
 msgstr ""
@@ -2367,104 +2367,104 @@ msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/depends.c:565
+#: lib/depends.c:570
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:594
+#: lib/depends.c:599
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:962
+#: lib/depends.c:967
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1021
+#: lib/depends.c:1026
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1073
+#: lib/depends.c:1078
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1092
+#: lib/depends.c:1097
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1109
+#: lib/depends.c:1114
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1131
+#: lib/depends.c:1136
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1144
+#: lib/depends.c:1149
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1158
+#: lib/depends.c:1163
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:1174
+#: lib/depends.c:1179
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1195
+#: lib/depends.c:1200
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1256
+#: lib/depends.c:1261
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1323
+#: lib/depends.c:1328
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1538
+#: lib/depends.c:1543
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1677
+#: lib/depends.c:1682
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1724
+#: lib/depends.c:1729
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1769
+#: lib/depends.c:1774
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1818
+#: lib/depends.c:1823
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1849
+#: lib/depends.c:1854
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2478,7 +2478,7 @@ msgid ""
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 
-#: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
+#: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
 #: lib/header.c:2597 lib/header.c:2614 lib/header.c:2634
 msgid "(not a number)"
 msgstr ""
@@ -2986,124 +2986,123 @@ msgstr ""
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
 
-#: lib/query.c:167
+#: lib/query.c:121
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr ""
 
-#: lib/query.c:251
+#: lib/query.c:205
 msgid "(contains no files)"
 msgstr ""
 
-#: lib/query.c:302
+#: lib/query.c:256
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:304
+#: lib/query.c:258
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:306
+#: lib/query.c:260
 msgid "not installed "
 msgstr ""
 
-#: lib/query.c:308
+#: lib/query.c:262
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:310
+#: lib/query.c:264
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: lib/query.c:315
+#: lib/query.c:269
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:334 lib/query.c:379
+#: lib/query.c:288 lib/query.c:333
 msgid "package has neither file owner or id lists\n"
 msgstr ""
 
-#: lib/query.c:438
+#: lib/query.c:392
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#. XXX Fstrerror
-#: lib/query.c:555
+#: lib/query.c:514 lib/query.c:546
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:576
-msgid "old format source packages cannot be queried\n"
-msgstr ""
-
-#: lib/query.c:585 lib/rpminstall.c:320
-#, c-format
-msgid "%s does not appear to be a RPM package\n"
-msgstr ""
-
-#: lib/query.c:590
+#: lib/query.c:525
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:624
+#: lib/query.c:531
+msgid "old format source packages cannot be queried\n"
+msgstr ""
+
+#: lib/query.c:556 lib/rpmchecksig.c:87
+#, c-format
+msgid "%s: Fread failed: %s\n"
+msgstr ""
+
+#: lib/query.c:599
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:647
+#: lib/query.c:622
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:658
+#: lib/query.c:633
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:668
+#: lib/query.c:643
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:678
+#: lib/query.c:653
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:689
+#: lib/query.c:664
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:720
+#: lib/query.c:695
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:724
+#: lib/query.c:699
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:750
+#: lib/query.c:725
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:753
+#: lib/query.c:728
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:758
+#: lib/query.c:733
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:769 lib/rpminstall.c:566
+#: lib/query.c:744 lib/rpminstall.c:566
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -3120,11 +3119,6 @@ msgstr ""
 #: lib/rpmchecksig.c:81
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
-msgstr ""
-
-#: lib/rpmchecksig.c:87
-#, c-format
-msgid "%s: Fread failed: %s\n"
 msgstr ""
 
 #: lib/rpmchecksig.c:121 lib/rpmchecksig.c:253
@@ -3390,6 +3384,11 @@ msgstr ""
 #: lib/rpminstall.c:306 lib/rpminstall.c:487
 #, c-format
 msgid "cannot open file %s: %s\n"
+msgstr ""
+
+#: lib/rpminstall.c:320
+#, c-format
+msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
 #: lib/rpminstall.c:328 lib/rpminstall.c:634

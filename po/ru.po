@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-03-15 13:52-0500\n"
+"POT-Creation-Date: 2001-03-16 11:04-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1692,169 +1692,169 @@ msgstr "&& и || не поддерживаются для строк"
 msgid "syntax error in expression\n"
 msgstr "синтаксическая ошибка в выражении"
 
-#: build/files.c:234
+#: build/files.c:249
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "Ошибка TIMECHECK: %s\n"
 
-#: build/files.c:285 build/files.c:370 build/files.c:545
+#: build/files.c:303 build/files.c:392 build/files.c:570
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Отсутствует '(' в %s %s"
 
-#: build/files.c:296 build/files.c:490 build/files.c:556
+#: build/files.c:314 build/files.c:515 build/files.c:581
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "отсутствует ')' в %s(%s"
 
-#: build/files.c:334 build/files.c:515
+#: build/files.c:352 build/files.c:540
 #, fuzzy, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Неверный токен %s: %s"
 
-#: build/files.c:386
+#: build/files.c:408
 #, fuzzy, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Не пробел следует после %s(): %s"
 
-#: build/files.c:424
+#: build/files.c:446
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Неверный синтаксис: %s(%s)"
 
-#: build/files.c:434
+#: build/files.c:456
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Неверные права: %s(%s)"
 
-#: build/files.c:446
+#: build/files.c:468
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Неверные права на каталог %s(%s)"
 
-#: build/files.c:583
+#: build/files.c:608
 #, fuzzy
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Необычная длина locale: \"%.*s\" в %%lang(%s)"
 
-#: build/files.c:593
+#: build/files.c:618
 #, fuzzy
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Дубликат locale %.*s в %%lang(%s)"
 
-#: build/files.c:730
+#: build/files.c:756
 #, fuzzy
 msgid "Hit limit for %%docdir\n"
 msgstr "Лимит для %%docdir превышен"
 
-#: build/files.c:736
+#: build/files.c:762
 #, fuzzy
 msgid "Only one arg for %%docdir\n"
 msgstr "Только один аргумент для %%docdir"
 
 #. We already got a file -- error
-#: build/files.c:764
+#: build/files.c:790
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Два файла в одной строке: %s"
 
-#: build/files.c:778
+#: build/files.c:804
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s"
 
-#: build/files.c:790
+#: build/files.c:816
 #, fuzzy
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Нельзя смешивать спец. %%doc с другими формами: %s"
 
-#: build/files.c:957
+#: build/files.c:983
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "Файл указан дважды: %s"
 
-#: build/files.c:1047
+#: build/files.c:1125
 #, fuzzy, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символическая ссылка указывает на BuildRoot: %s -> %s"
 
-#: build/files.c:1234
+#: build/files.c:1312
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Файл не соответстует префиксу (%s): %s"
 
-#: build/files.c:1244
+#: build/files.c:1322
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Файл не найден: %s"
 
-#: build/files.c:1287 build/files.c:1808 build/parsePrep.c:44
+#: build/files.c:1365 build/files.c:1892 build/parsePrep.c:44
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара хозяин/группа: %s\n"
 
-#: build/files.c:1299
+#: build/files.c:1377
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Файл %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1376
+#: build/files.c:1455
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s"
 
-#: build/files.c:1406
+#: build/files.c:1485
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не найден: %s"
 
-#: build/files.c:1460
+#: build/files.c:1539
 #, fuzzy
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Невозможно открыть файл %%files: %s"
 
-#: build/files.c:1469 build/pack.c:122
+#: build/files.c:1548 build/pack.c:122
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "строка: %s"
 
-#: build/files.c:1796
+#: build/files.c:1880
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Неверный файл %s: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1864
+#: build/files.c:1948
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Невозможно вылнить %s: %s"
 
-#: build/files.c:1869
+#: build/files.c:1953
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Сбой ветвления %s: %s"
 
-#: build/files.c:1951
+#: build/files.c:2035
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "%s не удалось"
 
-#: build/files.c:1955
+#: build/files.c:2039
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "запись всех данных в %s не удалась"
 
-#: build/files.c:2082
+#: build/files.c:2166
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Поиск %s (используя %s): ...\n"
 
-#: build/files.c:2110 build/files.c:2124
+#: build/files.c:2194 build/files.c:2208
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Невозможно найти %s:"
 
-#: build/files.c:2237
+#: build/files.c:2321
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываются файлы: %s-%s-%s\n"
