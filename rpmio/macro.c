@@ -8,6 +8,13 @@
 #define	FREE(_x)	{ if (_x) free((void *)_x); (_x) = NULL; }
 
 #ifdef DEBUG_MACROS
+#include <sys/types.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <getopt.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #define rpmError fprintf
 #define RPMERR_BADSPEC stderr
 #undef	_
@@ -517,7 +524,7 @@ static void
 pushMacro(MacroEntry **mep, const char *n, const char *o, const char *b, int level)
 {
 	MacroEntry *prev = (*mep ? *mep : NULL);
-	MacroEntry *me = malloc(sizeof(*me));
+	MacroEntry *me = (MacroEntry *) malloc(sizeof(*me));
 
 	me->prev = prev;
 	me->name = (prev ? prev->name : strdup(n));
@@ -1400,7 +1407,7 @@ rpmGetPath(const char *path, ...)
 
 #if defined(EVAL_MACROS)
 
-char *macrofiles = "/usr/lib/rpm/macros:/etc/rpm/macros";
+char *macrofiles = "/usr/lib/rpm/macros:/etc/rpm/macros:~/.rpmmacros";
 
 int
 main(int argc, char *argv[])
