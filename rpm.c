@@ -219,6 +219,8 @@ int main(int argc, char ** argv) {
 	    { 0, 0, 0, 0 } 
 	} ;
 
+    if (readConfigFiles())  /* reading this early makes it easy to override */
+	exit(-1);
 
     while (1) {
 	arg = getopt_long(argc, argv, "QqhpvPfFilsagGducr:b:", options, 
