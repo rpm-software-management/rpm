@@ -66,8 +66,9 @@ char * rpmProblemString(rpmProblem prob) {
       case RPMPROB_DISKSPACE:
 	sprintf(buf, _("installing package %s-%s-%s needs %d%c on the %s"
 		       " filesystem"), name, version, release, 
-		       prob.ulong1 > (1024*1024) ? prob.ulong1 / 1024 / 1024 :
-				prob.ulong1 / 1024,
+		       prob.ulong1 > (1024*1024) ? 
+			(prob.ulong1 + 1024 * 1024 - 1) / (1024 * 1024) :
+				(prob.ulong1 + 1023) / 1024,
 		       prob.ulong1 > (1024*1024) ? 'M' : 'k',
 		       prob.str1);
 	break;
