@@ -7,7 +7,7 @@ use Data::Dumper;
 use Cwd qw/realpath/;
 
 use vars qw/$VERSION/;
-$VERSION = '0.60';
+$VERSION = '0.61';
 use vars qw/@ISA/;
 @ISA = qw/DynaLoader/;
 
