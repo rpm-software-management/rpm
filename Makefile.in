@@ -2,7 +2,7 @@
 
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
 #DEBUG = -g
-OPTS = -O2
+OPTS = 
 CFLAGS = $(WARNINGS) $(DEBUG) $(OPTS) -Ilib -Ibuild -I../lib -I../build
 LDFLAGS = $(DEBUG) -Llib -Lbuild -L../lib -L../build
 #LIBEFENCE = -lefence
@@ -20,16 +20,18 @@ LIBDIR=$(prefix)/lib
 INCDIR=$(prefix)/include/rpm
 ETCDIR=$(ROOT)/etc
 PGPDIR=$(LIBDIR)/rpm
+NLSDIR=$(prefix)/lib/locale
+NLSPACKAGE=rpm
 
 .EXPORT_ALL_VARIABLES:
 
 ### End exported variables
 # -----------------------------------------------------------------------
 
-SUBDIRS = lib build tools
+SUBDIRS = lib build tools po
 OBJS = query.o install.o verify.o checksig.o ftp.o
 PROGS = rpm rpmconvert rpm2cpio
-LOADLIBES = -lbuild -lrpm -ldb /usr/lib/libgz.a $(LIBEFENCE)
+LOADLIBES = -lbuild -lrpm -ldb -lintl /usr/lib/libgz.a $(LIBEFENCE)
 
 ifeq (.depend,$(wildcard .depend))
 TARGET=everything
@@ -44,7 +46,7 @@ rpm: lib/librpm.a build/libbuild.a rpm.o
 	$(CC) -o rpm.shared $(LDFLAGS) rpm.o $(OBJS) $(LOADLIBES)
 
 rpm.o: rpm.c query.h install.h lib/rpmlib.h Makefile
-	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" -c rpm.c
+	$(CC) $(CFLAGS) -DNLSPACKAGE=\"$(NLSPACKAGE)\" -DNLSDIR=\"$(NLSDIR)\" -DVERSION=\"$(VERSION)\" -c rpm.c
 
 everything: make-subdirs $(PROGS)
 
@@ -72,6 +74,7 @@ install: all
 		install -m 644 -o 0 -g 0 rpmrc $(ETCDIR)/rpmrc; \
 	fi
 	(cd lib; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install)
+	(cd po; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install)
 	install -m 755 -o 0 -g 0 -d $(PGPDIR)
 	install -m 600 pubring.pgp $(PGPDIR)
 	install -m 444 RPM-PGP-KEY $(PGPDIR)
