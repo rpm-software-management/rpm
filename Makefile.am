@@ -25,7 +25,7 @@ rpmbin_PROGRAMS = rpm
 bin_PROGRAMS =		rpm2cpio
 bin_SCRIPTS =		gendiff
 
-noinst_PROGRAMS =	@BUILD_RPM_CONVERT@
+noinst_PROGRAMS =	@BUILD_RPMCONVERT@
 
 man_MANS = rpm.8 rpm2cpio.8	# rpm.8ru rpm2cpio.8ru
 

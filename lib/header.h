@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-#if defined(__alpha__)
+#if defined(__alpha__) || defined(__alpha)
 typedef long int int_64;
 typedef int int_32;
 typedef short int int_16;

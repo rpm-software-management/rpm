@@ -20,7 +20,7 @@ static int strCompare(const void * a, const void * b) {
     const char * const * two = a;
 
     return strcmp(*one, *two);
-};
+}
 
 fingerPrint fpLookup(const char * fullName, int scareMemory) {
     return doLookup(fullName, scareMemory, NULL);

@@ -7,7 +7,7 @@
 #include "install.h"
 
 static int _ie = 0x44332211;
-static union _endian { int i; char b[4]; } *_endian = (union _endian *)&_ie;;
+static union _endian { int i; char b[4]; } *_endian = (union _endian *)&_ie;
 #define	IS_BIG_ENDIAN()		(_endian->b[0] == '\x44')
 #define	IS_LITTLE_ENDIAN()	(_endian->b[0] == '\x11')
 

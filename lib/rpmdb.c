@@ -54,7 +54,7 @@ static int intMatchCmp(const void * one, const void * two) {
 	return 1;
 
     return 0;
-};
+}
 
 int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp) {
     const char * dbpath;

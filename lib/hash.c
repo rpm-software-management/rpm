@@ -41,7 +41,7 @@ unsigned int hashFunctionString(const void * string) {
     }
 
     return ((len << 16) + (sum << 8) + xorValue);
-};
+}
 
 hashTable htCreate(int numBuckets, int keySize, hashFunctionType fn,
 		   hashEqualityType eq) {
