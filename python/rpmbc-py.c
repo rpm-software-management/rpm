@@ -310,7 +310,8 @@ mp32sizeinbase(uint32 xsize, uint32 * xdata, uint32 base)
     if (xsize == 0)
 	return 1;
 
-    nbits = mp32bitcnt(xsize, xdata);
+    /* XXX assumes positive integer. */
+    nbits = 32 * xsize - mp32mszcnt(xsize, xdata);
     if ((base & (base-1)) == 0) {	/* exact power of 2 */
 	uint32 lbits = mp_bases[base].big_base;
 	res = (nbits + (lbits - 1)) / lbits;
@@ -350,7 +351,12 @@ fprintf(stderr, "***    nmod: %p[%d]\t", bdata, size), mp32println(stderr, size,
 	mp32ndivmod(bdata, size, adata, 1, &zbase, wksp);
 if (_bc_debug)
 fprintf(stderr, "*** ndivmod: %p[%d]\t", bdata, size), mp32println(stderr, size, bdata);
+	if (mp32z(size, bdata))
+	    break;
     }
+    /* XXX Fill leading zeroes (if any). */
+    while (nt--)
+	t[nt] = '0';
     return t;
 }
 
@@ -439,11 +445,13 @@ fprintf(stderr, "*** rpmbc_format(%p,%d,%d):\t", z, zbase, withname), mp32printl
 
     (void) mp32str(te, nt, zsize, zdata, zbase);
 
-    /* Nuke (occaisionally, a single) leading zeroes. */
+    /* Nuke leading zeroes. */
     nt = 0;
     while (t[nt] == '0')
 	nt++;
-    if (nt > 0 && t[nt] != '\0')
+    if (t[nt] == '\0')	/* all zeroes special case. */
+	nt--;
+    if (nt > 0)
     do {
 	*t = t[nt];
     } while (*t++ != '\0');
