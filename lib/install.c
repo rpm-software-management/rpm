@@ -1494,7 +1494,7 @@ static int osOkay(Header h) {
     if (type == INT8_TYPE) {
 	/* v1 packages and v2 packages both used improper OS numbers, so just
 	   deal with it hope things work */
-	return 0;
+	return 1;
     } else {
 	/* new os handling */
 	if (!rpmOsScore(pkgOs)) {
