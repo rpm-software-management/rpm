@@ -1756,17 +1756,15 @@ typedef enum rpmVerifySignatureReturn_e {
  * @param file		file name of header+payload
  * @param sigTag	type of signature
  * @param sig		signature itself
- * @param count		no. of bytes in signature
+ * @param siglen	no. of bytes in signature
  * @retval result	detailed text result of signature verification
  * @return		result of signature verification
  */
 rpmVerifySignatureReturn rpmVerifySignature(const char *file,
-		int_32 sigTag, const void * sig, int count,
+		int_32 sigTag, const void * sig, int siglen,
 		const rpmDigest dig, /*@out@*/ char * result)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies *result,
-		fileSystem, internalState  @*/;
+	/*@globals fileSystem @*/
+	/*@modifies *result, fileSystem @*/;
 
 /** \ingroup signature
  * Destroy signature header from package.

@@ -11,6 +11,7 @@
 -unrecogcomments	# XXX ignore doxygen markings
 
 +strict			# lclint level
+-includenest 16		# getting deep, sigh
 
 # --- +partial artifacts
 -declundef

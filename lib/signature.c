@@ -3,25 +3,12 @@
  * \file lib/signature.c
  */
 
-/* signature.c - RPM signature functions */
-
-/* NOTES
- *
- * Things have been cleaned up wrt PGP.  We can now handle
- * signatures of any length (which means you can use any
- * size key you like).  We also honor PGPPATH finally.
- */
-
 #include "system.h"
 
-#if HAVE_ASM_BYTEORDER_H
-#include <asm/byteorder.h>
-#endif
-
+#include "rpmio_internal.h"
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 
-#include "rpmpgp.h"
 #include "misc.h"	/* XXX for dosetenv() and makeTempFile() */
 #include "rpmlead.h"
 #include "signature.h"
@@ -69,7 +56,7 @@ int rpmLookupSignatureType(int action)
 
 const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 {
-    /* Actually this should support having more then one pgp version. */ 
+    /* Actually this should support having more then one pgp version. */
     /* At the moment only one version is possible since we only       */
     /* have one %_pgpbin and one %_pgp_path.                          */
 
@@ -79,7 +66,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
     if (saved_pgp_version == PGP_UNKNOWN) {
 	char *pgpvbin;
 	struct stat st;
-	
+
 	if (!(pgpbin && pgpbin[0] != '%')) {
 	  pgpbin = _free(pgpbin);
 	  saved_pgp_version = -1;
@@ -111,7 +98,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
  * @return 			rpmRC return code
  */
 static inline rpmRC checkSize(FD_t fd, int siglen, int pad, int datalen)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     struct stat st;
@@ -218,7 +205,7 @@ int rpmWriteSignature(FD_t fd, Header h)
     static byte buf[8] = "\000\000\000\000\000\000\000\000";
     int sigSize, pad;
     int rc;
-    
+
     rc = headerWrite(fd, h, HEADER_MAGIC_YES);
     if (rc)
 	return rc;
@@ -247,7 +234,7 @@ Header rpmFreeSignature(Header h)
 static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 		/*@out@*/ int_32 * size, /*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
+		fileSystem @*/
 	/*@modifies *sig, *size, fileSystem @*/
 {
     char * sigfile = alloca(1024);
@@ -259,7 +246,7 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 
     inpipe[0] = inpipe[1] = 0;
     (void) pipe(inpipe);
-    
+
     if (!(pid = fork())) {
 	const char *pgp_path = rpmExpand("%{_pgp_path}", NULL);
 	const char *name = rpmExpand("+myname=\"%{_pgp_name}\"", NULL);
@@ -318,7 +305,7 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
     *size = st.st_size;
     rpmMessage(RPMMESS_DEBUG, _("PGP sig size: %d\n"), *size);
     *sig = xmalloc(*size);
-    
+
     {	FD_t fd;
 	int rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
@@ -337,7 +324,7 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
     }
 
     rpmMessage(RPMMESS_DEBUG, _("Got %d bytes of PGP sig\n"), *size);
-    
+
     return 0;
 }
 
@@ -349,7 +336,7 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
 		/*@out@*/ int_32 * size, /*@null@*/ const char * passPhrase)
 	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
+		fileSystem @*/
 	/*@modifies *sig, *size, fileSystem @*/
 {
     char * sigfile = alloca(1024);
@@ -362,7 +349,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
 
     inpipe[0] = inpipe[1] = 0;
     (void) pipe(inpipe);
-    
+
     if (!(pid = fork())) {
 	const char *gpg_path = rpmExpand("%{_gpg_path}", NULL);
 	const char *name = rpmExpand("%{_gpg_name}", NULL);
@@ -404,7 +391,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
     *size = st.st_size;
     rpmMessage(RPMMESS_DEBUG, _("GPG sig size: %d\n"), *size);
     *sig = xmalloc(*size);
-    
+
     {	FD_t fd;
 	int rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
@@ -423,7 +410,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
     }
 
     rpmMessage(RPMMESS_DEBUG, _("Got %d bytes of GPG sig\n"), *size);
-    
+
     return 0;
 }
 
@@ -435,7 +422,7 @@ int rpmAddSignature(Header h, const char * file, int_32 sigTag,
     byte buf[16];
     void *sig;
     int ret = -1;
-    
+
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
 	(void) stat(file, &st);
@@ -469,7 +456,7 @@ int rpmAddSignature(Header h, const char * file, int_32 sigTag,
 /*@-globuse@*/
 static rpmVerifySignatureReturn
 verifySizeSignature(const char * datafile, int_32 size, /*@out@*/ char * result)
-	/*@globals fileSystem@*/
+	/*@globals fileSystem @*/
 	/*@modifies *result, fileSystem @*/
 {
     struct stat st;
@@ -487,84 +474,81 @@ verifySizeSignature(const char * datafile, int_32 size, /*@out@*/ char * result)
 }
 /*@=globuse@*/
 
-#define	X(_x)	(unsigned)((_x) & 0xff)
-
 /*@-globuse@*/
 static rpmVerifySignatureReturn
-verifyMD5Signature(const char * datafile, const byte * sig, 
-			      /*@out@*/ char * result, md5func fn)
-	/*@globals fileSystem@*/
+verifyMD5Signature(const char * datafile, const byte * sig, int siglen,
+		const rpmDigest dig, /*@out@*/ char * result, md5func fn)
+	/*@globals fileSystem @*/
 	/*@modifies *result, fileSystem @*/
 {
-    byte md5sum[16];
+    char * t = result;
+    byte * md5sum = NULL;
+    size_t md5len = 0;
+    int res = RPMSIG_BAD;
 
-    memset(md5sum, 0, sizeof(md5sum));
-    /*@-noeffectuncon@*/ /* FIX: check rc */
-    (void) fn(datafile, md5sum);
-    /*@=noeffectuncon@*/
-    if (memcmp(md5sum, sig, 16)) {
-	sprintf(result, "MD5 sum mismatch\n"
-		"Expected: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
-		"%02x%02x%02x%02x%02x\n"
-		"Saw     : %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
-		"%02x%02x%02x%02x%02x\n",
-		X(sig[0]),  X(sig[1]),  X(sig[2]),  X(sig[3]),
-		X(sig[4]),  X(sig[5]),  X(sig[6]),  X(sig[7]),
-		X(sig[8]),  X(sig[9]),  X(sig[10]), X(sig[11]),
-		X(sig[12]), X(sig[13]), X(sig[14]), X(sig[15]),
-		X(md5sum[0]),  X(md5sum[1]),  X(md5sum[2]),  X(md5sum[3]),
-		X(md5sum[4]),  X(md5sum[5]),  X(md5sum[6]),  X(md5sum[7]),
-		X(md5sum[8]),  X(md5sum[9]),  X(md5sum[10]), X(md5sum[11]),
-		X(md5sum[12]), X(md5sum[13]), X(md5sum[14]), X(md5sum[15]) );
-	return RPMSIG_BAD;
+    /*@-branchstate@*/
+    if (dig != NULL) {
+/*@-type@*/
+	DIGEST_CTX ctx = rpmDigestDup(dig->md5ctx);
+	(void) rpmDigestFinal(ctx, (void **)&md5sum, &md5len, 0);
+/*@=type@*/
+    } else {
+	int xx;
+	md5len = 16;
+	md5sum = xcalloc(1, md5len);
+	xx = fn(datafile, md5sum);
     }
+    /*@=branchstate@*/
 
-    sprintf(result, "MD5 sum OK: %02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
-                    "%02x%02x%02x%02x%02x\n",
-	    X(md5sum[0]),  X(md5sum[1]),  X(md5sum[2]),  X(md5sum[3]),
-	    X(md5sum[4]),  X(md5sum[5]),  X(md5sum[6]),  X(md5sum[7]),
-	    X(md5sum[8]),  X(md5sum[9]),  X(md5sum[10]), X(md5sum[11]),
-	    X(md5sum[12]), X(md5sum[13]), X(md5sum[14]), X(md5sum[15]) );
+    if (md5len != siglen || memcmp(md5sum, sig, md5len)) {
+	res = RPMSIG_BAD;
+	t = stpcpy(t, "  Expected: ");
+	(void) pgpHexCvt(t, sig, siglen);
+	t += strlen(t);
+	t = stpcpy(t, "    Actual: ");
+    } else {
+	res = RPMSIG_OK;
+	t = stpcpy(t, "MD5 sum OK: ");
+    }
+    (void) pgpHexCvt(t, md5sum, md5len);
 
-    return RPMSIG_OK;
+    md5sum = _free(md5sum);
+
+    return res;
 }
 /*@=globuse@*/
 
 static rpmVerifySignatureReturn
-verifyPGPSignature(const char * datafile, const byte * sig, int count,
-		/*@unused@*/ const rpmDigest dig, /*@out@*/ char * result)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState@*/
-	/*@modifies *result, fileSystem, internalState @*/
+verifyPGPSignature(/*@unused@*/ const char * datafile,
+		/*@unused@*/ const byte * sig,
+		/*@unused@*/ int siglen,
+		const rpmDigest dig, /*@out@*/ char * result)
+	/*@modifies *result */
 {
-    int pid, status, outpipe[2];
+    int res, resbc;
+
+    *result = '\0';
+
+    /*@-type@*/
+    if (rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c)) {
+	res = resbc = RPMSIG_OK;
+    } else {
+	res = resbc = RPMSIG_BAD;
+    }
+    /*@=type@*/
+
+#ifdef DYING
+  { int pid, status, outpipe[2];
 /*@only@*/ /*@null@*/ const char * sigfile = NULL;
     byte buf[BUFSIZ];
     FILE *file;
-    int res = RPMSIG_OK;
     const char *path;
     pgpVersion pgpVer;
-    int rc;
-
-/*@-type@*/
-    rc = rsavrfy(&dig->rsa_pk, &dig->rsahm, &dig->c);
-
-if (rc == 0 || rpmIsVerbose()) {
-
-fprintf(stderr, "=============================== RSA verify %s: rc %d\n",
-        datafile, rc);
-    (void) pgpPrtPkts(sig, count, dig, 1);
-    printf("\t n = ");	(void)fflush(stdout); mp32println(dig->rsa_pk.n.size, dig->rsa_pk.n.modl);
-    printf("\t e = ");	(void)fflush(stdout); mp32println(dig->rsa_pk.e.size, dig->rsa_pk.e.data);
-    printf("\t c = ");	(void)fflush(stdout); mp32println(dig->c.size, dig->c.data);
-    printf("\t m = ");	(void)fflush(stdout); mp32println(dig->rsahm.size, dig->rsahm.data);
-}
-/*@=type@*/
 
     /* What version do we have? */
     if ((path = rpmDetectPGPVersion(&pgpVer)) == NULL) {
 	errno = ENOENT;
-	rpmError(RPMERR_EXEC, 
+	rpmError(RPMERR_EXEC,
 		 _("Could not run pgp.  Use --nopgp to skip PGP checks.\n"));
 	_exit(RPMERR_EXEC);
     }
@@ -584,13 +568,13 @@ fprintf(stderr, "=============================== RSA verify %s: rc %d\n",
   }
     sfd = Fopen(sigfile, "w.fdio");
     if (sfd != NULL && !Ferror(sfd)) {
-	(void) Fwrite(sig, sizeof(char), count, sfd);
+	(void) Fwrite(sig, sizeof(char), siglen, sfd);
 	(void) Fclose(sfd);
     }
 #else
     {	FD_t sfd;
 	if (!makeTempFile(NULL, &sigfile, &sfd)) {
-	    (void) Fwrite(sig, sizeof(*sig), count, sfd);
+	    (void) Fwrite(sig, sizeof(*sig), siglen, sfd);
 	    (void) Fclose(sfd);
 	    sfd = NULL;
 	}
@@ -639,7 +623,7 @@ fprintf(stderr, "=============================== RSA verify %s: rc %d\n",
 	    break;
 	}
 
-	rpmError(RPMERR_EXEC, 
+	rpmError(RPMERR_EXEC,
 		 _("Could not run pgp.  Use --nopgp to skip PGP checks.\n"));
 	_exit(RPMERR_EXEC);
     }
@@ -673,41 +657,53 @@ fprintf(stderr, "=============================== RSA verify %s: rc %d\n",
     if (!res && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	res = RPMSIG_BAD;
     }
-    
+  }
+
+    if (res != resbc) {
+	fprintf(stderr, "=============================== RSA verify %s: rc %d\n",
+			datafile, resbc);
+	(void) pgpPrtPkts(sig, siglen, dig, 1);
+	printf("\t n = ");	(void) fflush(stdout);
+		mp32println(dig->rsa_pk.n.size, dig->rsa_pk.n.modl);
+	printf("\t e = ");	(void) fflush(stdout);
+		mp32println(dig->rsa_pk.e.size, dig->rsa_pk.e.data);
+	printf("\t c = ");	(void) fflush(stdout);
+		mp32println(dig->c.size, dig->c.data);
+	printf("\t m = ");	(void)fflush(stdout);
+		mp32println(dig->rsahm.size, dig->rsahm.data);
+    }
+#endif	/* DYING */
+
     return res;
 }
 
 static rpmVerifySignatureReturn
-verifyGPGSignature(const char * datafile, const byte * sig, int count,
-		/*@unused@*/ const rpmDigest dig, /*@out@*/ char * result)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState@*/
-	/*@modifies *result, fileSystem, internalState @*/
+verifyGPGSignature(/*@unused@*/ const char * datafile,
+		/*@unused@*/ const byte * sig,
+		/*@unused@*/ int siglen,
+		const rpmDigest dig, /*@out@*/ char * result)
+	/*@modifies *result @*/
 {
+    int res, resbc;
+
+    *result = '\0';
+
+    /*@-type@*/
+    if (dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm, &dig->y, &dig->r, &dig->s))
+	res = resbc = RPMSIG_OK;
+    else
+	res = resbc = RPMSIG_BAD;
+    /*@=type@*/
+
+#ifdef DYING
+  {
     int pid, status, outpipe[2];
 /*@only@*/ /*@null@*/ const char * sigfile = NULL;
     byte buf[BUFSIZ];
     FILE *file;
     int res = RPMSIG_OK;
-    int rc;
-  
+
 /*@-type@*/
-    rc = dsavrfy(&dig->p, &dig->q, &dig->g, &dig->hm,
-		&dig->y, &dig->r, &dig->s);
-
-if (rc == 0 || rpmIsVerbose()) {
-
-fprintf(stderr, "=============================== DSA verify %s: rc %d\n",
-        datafile, rc);
-    (void) pgpPrtPkts(sig, count, dig, 1);
-    printf("\t p = ");	(void)fflush(stdout); mp32println(dig->p.size, dig->p.modl);
-    printf("\t q = ");	(void)fflush(stdout); mp32println(dig->q.size, dig->q.modl);
-    printf("\t g = ");	(void)fflush(stdout); mp32println(dig->g.size, dig->g.data);
-    printf("\t y = ");	(void)fflush(stdout); mp32println(dig->y.size, dig->y.data);
-    printf("\t r = ");	(void)fflush(stdout); mp32println(dig->r.size, dig->r.data);
-    printf("\t s = ");	(void)fflush(stdout); mp32println(dig->s.size, dig->s.data);
-    printf("\thm = ");	(void)fflush(stdout); mp32println(dig->hm.size, dig->hm.data);
-}
 /*@=type@*/
 
     /* Write out the signature */
@@ -718,13 +714,13 @@ fprintf(stderr, "=============================== DSA verify %s: rc %d\n",
   }
     sfd = Fopen(sigfile, "w.fdio");
     if (sfd != NULL && !Ferror(sfd)) {
-	(void) Fwrite(sig, sizeof(char), count, sfd);
+	(void) Fwrite(sig, sizeof(char), siglen, sfd);
 	(void) Fclose(sfd);
     }
 #else
     {	FD_t sfd;
 	if (!makeTempFile(NULL, &sigfile, &sfd)) {
-	    (void) Fwrite(sig, sizeof(*sig), count, sfd);
+	    (void) Fwrite(sig, sizeof(*sig), siglen, sfd);
 	    (void) Fclose(sfd);
 	    sfd = NULL;
 	}
@@ -748,10 +744,10 @@ fprintf(stderr, "=============================== DSA verify %s: rc %d\n",
 	    (void) dosetenv("GNUPGHOME", gpg_path, 1);
 
 	(void) execlp("gpg", "gpg",
-	       "--batch", "--no-verbose", 
+	       "--batch", "--no-verbose",
 	       "--verify", sigfile, datafile,
 	       NULL);
-	rpmError(RPMERR_EXEC, 
+	rpmError(RPMERR_EXEC,
 		 _("Could not run gpg.  Use --nogpg to skip GPG checks.\n"));
 	_exit(RPMERR_EXEC);
     }
@@ -768,20 +764,43 @@ fprintf(stderr, "=============================== DSA verify %s: rc %d\n",
 	}
 	(void) fclose(file);
     }
-  
+
     (void) waitpid(pid, &status, 0);
     if (sigfile) (void) unlink(sigfile);
     sigfile = _free(sigfile);
     if (!res && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	res = RPMSIG_BAD;
     }
-    
+
+  }
+
+    if (res != resbc) {
+	fprintf(stderr, "=============================== DSA verify %s: rc %d\n",
+			datafile, resbc);
+	(void) pgpPrtPkts(sig, siglen, dig, 1);
+	printf("\t p = ");	(void) fflush(stdout);
+		mp32println(dig->p.size, dig->p.modl);
+	printf("\t q = ");	(void) fflush(stdout);
+		mp32println(dig->q.size, dig->q.modl);
+	printf("\t g = ");	(void) fflush(stdout);
+		mp32println(dig->g.size, dig->g.data);
+	printf("\t y = ");	(void) fflush(stdout);
+		mp32println(dig->y.size, dig->y.data);
+	printf("\t r = ");	(void) fflush(stdout);
+		mp32println(dig->r.size, dig->r.data);
+	printf("\t s = ");	(void) fflush(stdout);
+		mp32println(dig->s.size, dig->s.data);
+	printf("\thm = ");	(void) fflush(stdout);
+		mp32println(dig->hm.size, dig->hm.data);
+    }
+#endif
+
     return res;
 }
 
 static int checkPassPhrase(const char * passPhrase, const int sigTag)
 	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
+		fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     int passPhrasePipe[2];
@@ -890,7 +909,7 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 	}
 	break;
     case RPMSIGTAG_PGP5: 	/* XXX legacy */
-    case RPMSIGTAG_PGP: 
+    case RPMSIGTAG_PGP:
       { const char *name = rpmExpand("%{_pgp_name}", NULL);
 	aok = (name && *name != '%');
 	name = _free(name);
@@ -920,21 +939,21 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 
 rpmVerifySignatureReturn
 rpmVerifySignature(const char * file, int_32 sigTag, const void * sig,
-		int count, const rpmDigest dig, char * result)
+		int siglen, const rpmDigest dig, char * result)
 {
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
 	return verifySizeSignature(file, *(int_32 *)sig, result);
 	/*@notreached@*/ break;
     case RPMSIGTAG_MD5:
-	return verifyMD5Signature(file, sig, result, mdbinfile);
+	return verifyMD5Signature(file, sig, siglen, dig, result, mdbinfile);
 	/*@notreached@*/ break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	return verifyPGPSignature(file, sig, count, dig, result);
+	return verifyPGPSignature(file, sig, siglen, dig, result);
 	/*@notreached@*/ break;
     case RPMSIGTAG_GPG:
-	return verifyGPGSignature(file, sig, count, dig, result);
+	return verifyGPGSignature(file, sig, siglen, dig, result);
 	/*@notreached@*/ break;
     case RPMSIGTAG_LEMD5_1:
     case RPMSIGTAG_LEMD5_2:

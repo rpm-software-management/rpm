@@ -2155,7 +2155,10 @@ static int gzdFlush(FD_t fd)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    return gzflush(gzdFileno(fd), Z_SYNC_FLUSH);	/* XXX W2DO? */
+    gzFile *gzfile;
+    gzfile = gzdFileno(fd);
+    if (gzfile == NULL) return -2;
+    return gzflush(gzfile, Z_SYNC_FLUSH);	/* XXX W2DO? */
 }
 /*@=globuse@*/
 
@@ -2170,10 +2173,13 @@ static ssize_t gzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     ssize_t rc;
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+
     gzfile = gzdFileno(fd);
+    if (gzfile == NULL) return -2;	/* XXX can't happen */
+
     fdstat_enter(fd, FDSTAT_READ);
+    /*@-compdef@*/ /* LCL: *buf is undefined */
     rc = gzread(gzfile, buf, count);
-    /*@-compdef@*/
 /*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
 /*@=modfilesys@*/
@@ -2208,6 +2214,8 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
     if (fd->digest && count > 0) (void) rpmDigestUpdate(fd->digest, buf, count);
 
     gzfile = gzdFileno(fd);
+    if (gzfile == NULL) return -2;	/* XXX can't happen */
+
     fdstat_enter(fd, FDSTAT_WRITE);
     rc = gzwrite(gzfile, (void *)buf, count);
 /*@-modfilesys@*/
@@ -2243,7 +2251,10 @@ static inline int gzdSeek(void * cookie, _libio_pos_t pos, int whence)
 
     if (fd == NULL) return -2;
     assert(fd->bytesRemain == -1);	/* XXX FIXME */
+
     gzfile = gzdFileno(fd);
+    if (gzfile == NULL) return -2;	/* XXX can't happen */
+
     fdstat_enter(fd, FDSTAT_SEEK);
     rc = gzseek(gzfile, p, whence);
 /*@-modfilesys@*/
@@ -2274,8 +2285,8 @@ static int gzdClose( /*@only@*/ void * cookie)
     int rc;
 
     gzfile = gzdFileno(fd);
+    if (gzfile == NULL) return -2;	/* XXX can't happen */
 
-    if (gzfile == NULL) return -2;
     fdstat_enter(fd, FDSTAT_CLOSE);
     rc = gzclose(gzfile);
 
