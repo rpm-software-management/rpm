@@ -57,7 +57,9 @@
 	- fix: command line install had header memory leak.
 	- check for NULL on all memory allocations.
 	- free rpmrc mallocs on exit.
-	- permit run time leak detection.
+	- glibc2: permit run time leak detection.
+	- fix: removed files fingerprint memory leak.
+	- fix: resurrect allfiles flag from rpm-2.5.x.
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

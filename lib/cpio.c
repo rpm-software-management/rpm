@@ -347,7 +347,7 @@ static int checkDirectory(char * filename)
 
     if (lastDirAlloced < (length + 1)) {
 	lastDirAlloced = length + 100;
-	lastDir = xrealloc(lastDir, lastDirAlloced);
+	lastDir = xrealloc(lastDir, lastDirAlloced);	/* XXX memory leak */
     }
 
     strcpy(lastDir, buf);

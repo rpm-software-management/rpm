@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-20 23:21-0400\n"
+"POT-Creation-Date: 1999-09-21 17:19-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1196,23 +1196,23 @@ msgstr ""
 msgid "no packages given for uninstall"
 msgstr ""
 
-#: ../rpm.c:1291
+#: ../rpm.c:1292
 msgid "no packages given for install"
 msgstr ""
 
-#: ../rpm.c:1314
+#: ../rpm.c:1315
 msgid "extra arguments given for query of all packages"
 msgstr ""
 
-#: ../rpm.c:1319
+#: ../rpm.c:1320
 msgid "no arguments given for query"
 msgstr ""
 
-#: ../rpm.c:1336
+#: ../rpm.c:1337
 msgid "extra arguments given for verify of all packages"
 msgstr ""
 
-#: ../rpm.c:1340
+#: ../rpm.c:1341
 msgid "no arguments given for verify"
 msgstr ""
 
@@ -1993,7 +1993,7 @@ msgstr ""
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:977 ../lib/depends.c:1282
+#: ../lib/depends.c:977 ../lib/depends.c:1281
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
@@ -3242,7 +3242,7 @@ msgstr ""
 msgid "excluding %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:486
+#: ../lib/transaction.c:489
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

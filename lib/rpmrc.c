@@ -259,9 +259,9 @@ static void machAddEquiv(struct machEquivTable * table, char * name,
 	    table->list = xrealloc(table->list, (table->count + 1)
 				    * sizeof(*table->list));
 	else
-	    table->list = xmalloc(sizeof(*table->list));
+	    table->list = xmalloc(sizeof(*table->list)); /* XXX memory leak */
 
-	table->list[table->count].name = xstrdup(name);
+	table->list[table->count].name = xstrdup(name); /* XXX memory leak */
 	table->list[table->count++].score = distance;
     }
 }

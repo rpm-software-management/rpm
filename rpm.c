@@ -1268,24 +1268,25 @@ int main(int argc, char ** argv)
 	if (ignoreOs) probFilter |= RPMPROB_FILTER_IGNOREOS;
 	if (ignoreSize) probFilter |= RPMPROB_FILTER_DISKSPACE;
 
-	if (allFiles) installFlags |= RPMTRANS_FLAG_ALLFILES;
-	if (justdb) installFlags |= RPMTRANS_FLAG_JUSTDB;
 	if (test) installFlags |= RPMTRANS_FLAG_TEST;
+	/* RPMTRANS_FLAG_BUILD_PROBS */
 	if (noScripts) installFlags |= RPMTRANS_FLAG_NOSCRIPTS;
+	if (justdb) installFlags |= RPMTRANS_FLAG_JUSTDB;
 	if (noTriggers) installFlags |= RPMTRANS_FLAG_NOTRIGGERS;
-
-	if (showPercents) interfaceFlags |= INSTALL_PERCENT;
-	if (showHash) interfaceFlags |= INSTALL_HASH;
-	if (noDeps) interfaceFlags |= INSTALL_NODEPS;
-	if (noOrder) interfaceFlags |= INSTALL_NOORDER;
-	if (upgrade) interfaceFlags |= INSTALL_UPGRADE;
-
 	if (!incldocs) {
 	    if (excldocs)
 		installFlags |= RPMTRANS_FLAG_NODOCS;
 	    else if (rpmExpandNumeric("%{_excludedocs}"))
 		installFlags |= RPMTRANS_FLAG_NODOCS;
 	}
+	if (allFiles) installFlags |= RPMTRANS_FLAG_ALLFILES;
+	/* RPMTRANS_FLAG_KEEPOBSOLETE */
+
+	if (showPercents) interfaceFlags |= INSTALL_PERCENT;
+	if (showHash) interfaceFlags |= INSTALL_HASH;
+	if (noDeps) interfaceFlags |= INSTALL_NODEPS;
+	if (noOrder) interfaceFlags |= INSTALL_NOORDER;
+	if (upgrade) interfaceFlags |= INSTALL_UPGRADE;
 
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for install"));

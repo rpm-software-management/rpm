@@ -138,7 +138,7 @@ static rpmProblemSet psCreate(void)
 {
     rpmProblemSet probs;
 
-    probs = xmalloc(sizeof(*probs));
+    probs = xmalloc(sizeof(*probs));	/* XXX memory leak */
     probs->numProblems = probs->numProblemsAlloced = 0;
     probs->probs = NULL;
 
@@ -470,7 +470,7 @@ static enum fileTypes whatis(short mode)
 static enum fileActions decideFileFate(const char * filespec, short dbMode,
 			const char * dbMd5, const char * dbLink, short newMode,
 			const char * newMd5, const char * newLink, int newFlags,
-				int brokenMd5)
+				int brokenMd5, int transFlags)
 {
     char buffer[1024];
     const char * dbAttr, * newAttr;
@@ -480,9 +480,12 @@ static enum fileActions decideFileFate(const char * filespec, short dbMode,
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
 
     if (lstat(filespec, &sb)) {
-	/* the file doesn't exist on the disk create it unless the new
-	   package has marked it as missingok */
-	if (newFlags & RPMFILE_MISSINGOK) {
+	/*
+	 * The file doesn't exist on the disk. Create it unless the new
+	 * package has marked it as missingok, or allfiles is requested.
+	 */
+	if (!(transFlags & RPMTRANS_FLAG_ALLFILES) &&
+	   (newFlags & RPMFILE_MISSINGOK)) {
 	    rpmMessage(RPMMESS_DEBUG, _("%s skipped due to missingok flag\n"),
 			filespec);
 	    return FA_SKIP;
@@ -538,8 +541,7 @@ static enum fileActions decideFileFate(const char * filespec, short dbMode,
        possible in case something else (like the timestamp) has changed */
 
     if (!strcmp(dbAttr, buffer)) {
-	/* this config file has never been modified, so
-	   just replace it */
+	/* this config file has never been modified, so just replace it */
 	return FA_CREATE;
     }
 
@@ -548,11 +550,12 @@ static enum fileActions decideFileFate(const char * filespec, short dbMode,
 	return FA_SKIP;
     }
 
-    /* the config file on the disk has been modified, but
-       the ones in the two packages are different. It would
-       be nice if RPM was smart enough to at least try and
-       merge the difference ala CVS, but... */
-	   
+    /*
+     * The config file on the disk has been modified, but
+     * the ones in the two packages are different. It would
+     * be nice if RPM was smart enough to at least try and
+     * merge the difference ala CVS, but...
+     */
     return save;
 }
 
@@ -577,7 +580,7 @@ static int filecmp(short mode1, const char * md51, const char * link1,
 static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount, int reportConflicts,
-				    rpmProblemSet probs)
+				    rpmProblemSet probs, int transFlags)
 {
     Header h;
     int i;
@@ -640,7 +643,8 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
 			fi->fmd5s[fileNum],
 			fi->flinks[fileNum],
 			fi->fflags[fileNum],
-			!headerIsEntry(h, RPMTAG_RPMVERSION));
+			!headerIsEntry(h, RPMTAG_RPMVERSION),
+			transFlags);
 	}
 
 	fi->replacedSizes[fileNum] = otherSizes[otherFileNum];
@@ -650,7 +654,7 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
     free(otherLinks);
     headerFree(h);
 
-    fi->replaced = xrealloc(fi->replaced,
+    fi->replaced = xrealloc(fi->replaced,	/* XXX memory leak */
 			   sizeof(*fi->replaced) * (numReplaced + 1));
     fi->replaced[numReplaced].otherPkg = 0;
 
@@ -992,7 +996,7 @@ static void skipFiles(TFI_t * fi, int noDocs)
 
 int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		       void * notifyData, rpmProblemSet okProbs,
-		       rpmProblemSet * newProbs, int flags, int ignoreSet)
+		       rpmProblemSet * newProbs, int transFlags, int ignoreSet)
 {
     int i, j;
     int rc, ourrc = 0;
@@ -1220,7 +1224,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
-	    skipFiles(fi, flags & RPMTRANS_FLAG_NODOCS);
+	    skipFiles(fi, transFlags & RPMTRANS_FLAG_NODOCS);
 	    break;
 	}
 
@@ -1332,7 +1336,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    case TR_ADDED:
 		handleInstInstalledFiles(fi, ts->db, shared, nexti - i,
 		!(beingRemoved || (ignoreSet & RPMPROB_FILTER_REPLACEOLDFILES)),
-			 probs);
+			 probs, transFlags);
 		break;
 	    case TR_REMOVED:
 		if (!beingRemoved)
@@ -1386,6 +1390,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    free(fi->fps); fi->fps = NULL;
 	    break;
 	case TR_REMOVED:
+	    free(fi->fps); fi->fps = NULL;
 	    break;
 	}
     }
@@ -1393,7 +1398,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     /* ===============================================
      * If unfiltered problems exist, free memory and return.
      */
-    if ((flags & RPMTRANS_FLAG_BUILD_PROBS) ||
+    if ((transFlags & RPMTRANS_FLAG_BUILD_PROBS) ||
            (probs->numProblems && (!okProbs || psTrim(okProbs, probs)))) {
 	*newProbs = probs;
 
@@ -1439,7 +1444,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	    if (fd) {
 		if (installBinaryPackage(ts->root, ts->db, fd,
-					 hdrs[i], flags, notify,
+					 hdrs[i], transFlags, notify,
 					 notifyData, alp->key, fi->actions,
 					 fi->fc ? fi->replaced : NULL,
 					 ts->scriptFd)) {
@@ -1461,7 +1466,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    if (ts->order[oc].u.removed.dependsOnIndex == lastFailed)
 		break;
 	    if (removeBinaryPackage(ts->root, ts->db, fi->record,
-				    flags, fi->actions, ts->scriptFd))
+				    transFlags, fi->actions, ts->scriptFd))
 		ourrc++;
 	    break;
 	}

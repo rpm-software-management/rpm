@@ -135,7 +135,7 @@ static void copyEntry(struct indexEntry * entry, /*@out@*/int_32 *type,
 	    ptrEntry = *p = xmalloc(tableSize);
 	    chptr = entry->data;
 	} else {
-	    ptrEntry = *p = xmalloc(tableSize + entry->length);
+	    ptrEntry = *p = xmalloc(tableSize + entry->length);	/* XXX memory leak */
 	    chptr = ((char *) *p) + tableSize;
 	    memcpy(chptr, entry->data, entry->length);
 	}

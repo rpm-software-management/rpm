@@ -222,7 +222,7 @@ int unameToUid(char * thisUname, uid_t * uid) {
 	strcmp(thisUname, lastUname)) {
 	if (lastUnameAlloced < thisUnameLen + 1) {
 	    lastUnameAlloced = thisUnameLen + 10;
-	    lastUname = xrealloc(lastUname, lastUnameAlloced);
+	    lastUname = xrealloc(lastUname, lastUnameAlloced);	/* XXX memory leak */
 	}
 	strcpy(lastUname, thisUname);
 
@@ -262,7 +262,7 @@ int gnameToGid(char * thisGname, gid_t * gid) {
 	strcmp(thisGname, lastGname)) {
 	if (lastGnameAlloced < thisGnameLen + 1) {
 	    lastGnameAlloced = thisGnameLen + 10;
-	    lastGname = xrealloc(lastGname, lastGnameAlloced);
+	    lastGname = xrealloc(lastGname, lastGnameAlloced);	/* XXX memory leak */
 	}
 	strcpy(lastGname, thisGname);
 

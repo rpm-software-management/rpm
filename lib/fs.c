@@ -124,7 +124,7 @@ static int getFilesystemList(void)
 	getmntinfo_r(&mounts, flags, &mntCount, &bufSize);
 #   endif
 
-    filesystems = xcalloc((numAlloced + 1), sizeof(*filesystems));
+    filesystems = xcalloc((numAlloced + 1), sizeof(*filesystems));	/* XXX memory leak */
 
     while (1) {
 #	if GETMNTENT_ONE
@@ -161,7 +161,7 @@ static int getFilesystemList(void)
 	}
 
 	filesystems[num].dev = sb.st_dev;
-	filesystems[num].mntPoint = xstrdup(mntdir);
+	filesystems[num].mntPoint = xstrdup(mntdir);	/* XXX memory leak */
 	num++;
     }
 
@@ -174,7 +174,7 @@ static int getFilesystemList(void)
     filesystems[num].dev = 0;
     filesystems[num].mntPoint = NULL;
 
-    fsnames = xcalloc((num + 1), sizeof(*fsnames));
+    fsnames = xcalloc((num + 1), sizeof(*fsnames));	/* XXX memory leak */
     for (i = 0; i < num; i++)
 	fsnames[i] = filesystems[i].mntPoint;
     fsnames[num] = NULL;
