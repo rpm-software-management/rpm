@@ -52,7 +52,7 @@ rpmlua rpmluaNew()
 	{NULL, NULL},
     };
     /*@observer@*/ /*@unchecked@*/
-    static const luaL_reg *lib = lualibs;
+    const luaL_reg *lib = lualibs;
     /*@=readonlytrans@*/
 
     lua->L = L;
