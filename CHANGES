@@ -13,6 +13,7 @@
 	- fix: /etc/security/selinux/file_contexts is default path.
 	- fix: no transaction lock if --test was specified (#119783).
 	- perl: skip new-fangled head[34] while generating deps (#118243).
+	- perl: use __perl for perl variable macros (#115156).
 
 4.2.2 -> 4.3:
 	- upgrade to zlib-1.2.beta7.
