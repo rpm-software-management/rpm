@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
-"POT-Creation-Date: 2002-08-02 11:52-0400\n"
+"POT-Creation-Date: 2002-08-02 12:45-0400\n"
 "PO-Revision-Date: 2002-07-11 22:49+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2356,27 +2356,27 @@ msgstr "%s: headerGetEntry misslyckades\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ingen signatur tillgänglig (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:929
+#: lib/rpmchecksig.c:933
 msgid "NOT OK"
 msgstr "EJ OK"
 
-#: lib/rpmchecksig.c:930 lib/rpmchecksig.c:944
+#: lib/rpmchecksig.c:934 lib/rpmchecksig.c:948
 msgid " (MISSING KEYS:"
 msgstr " (SAKNADE NYCKLAR:"
 
-#: lib/rpmchecksig.c:932 lib/rpmchecksig.c:946
+#: lib/rpmchecksig.c:936 lib/rpmchecksig.c:950
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:933 lib/rpmchecksig.c:947
+#: lib/rpmchecksig.c:937 lib/rpmchecksig.c:951
 msgid " (UNTRUSTED KEYS:"
 msgstr " (EJ BETRODDA NYCKLAR:"
 
-#: lib/rpmchecksig.c:935 lib/rpmchecksig.c:949
+#: lib/rpmchecksig.c:939 lib/rpmchecksig.c:953
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:943
+#: lib/rpmchecksig.c:947
 msgid "OK"
 msgstr "OK"
 

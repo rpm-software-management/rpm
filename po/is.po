@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-02 11:52-0400\n"
+"POT-Creation-Date: 2002-08-02 12:45-0400\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -2343,27 +2343,27 @@ msgstr "%s: gat ekki lesið manifest: %s\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:929
+#: lib/rpmchecksig.c:933
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:930 lib/rpmchecksig.c:944
+#: lib/rpmchecksig.c:934 lib/rpmchecksig.c:948
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:932 lib/rpmchecksig.c:946
+#: lib/rpmchecksig.c:936 lib/rpmchecksig.c:950
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:933 lib/rpmchecksig.c:947
+#: lib/rpmchecksig.c:937 lib/rpmchecksig.c:951
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:935 lib/rpmchecksig.c:949
+#: lib/rpmchecksig.c:939 lib/rpmchecksig.c:953
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:943
+#: lib/rpmchecksig.c:947
 msgid "OK"
 msgstr ""
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-08-02 11:52-0400\n"
+"POT-Creation-Date: 2002-08-02 12:45-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2383,27 +2383,27 @@ msgstr "%s: readLead이 실패했습니다\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 유효한 서명이 없습니다 (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:929
+#: lib/rpmchecksig.c:933
 msgid "NOT OK"
 msgstr "올바르지 않음"
 
-#: lib/rpmchecksig.c:930 lib/rpmchecksig.c:944
+#: lib/rpmchecksig.c:934 lib/rpmchecksig.c:948
 msgid " (MISSING KEYS:"
 msgstr " (키를 찾을 수 없음:"
 
-#: lib/rpmchecksig.c:932 lib/rpmchecksig.c:946
+#: lib/rpmchecksig.c:936 lib/rpmchecksig.c:950
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:933 lib/rpmchecksig.c:947
+#: lib/rpmchecksig.c:937 lib/rpmchecksig.c:951
 msgid " (UNTRUSTED KEYS:"
 msgstr " (키를 신뢰할 수 없음:"
 
-#: lib/rpmchecksig.c:935 lib/rpmchecksig.c:949
+#: lib/rpmchecksig.c:939 lib/rpmchecksig.c:953
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:943
+#: lib/rpmchecksig.c:947
 msgid "OK"
 msgstr "확인"
 
