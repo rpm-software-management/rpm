@@ -11,7 +11,7 @@ AM_PROG_LIBTOOL
 
 AC_PROG_INSTALL
 
-if test $CC = gcc; then
+if test "X$CC" = Xgcc; then
     CFLAGS="-Wall $CFLAGS"
 fi
 addlib() {
