@@ -10,7 +10,8 @@
 #define PyObject_HEAD   int _PyObjectHead;
 #endif
 
-#include "rpmcli.h"	/* XXX for rpmCheckSig */
+#include <rpmcli.h>	/* XXX for rpmCheckSig */
+#include <rpmdb.h>
 
 #include "legacy.h"
 #include "misc.h"
@@ -19,7 +20,6 @@
 
 #include "header-py.h"
 #include "rpmal-py.h"
-#include "rpmdb-py.h"
 #include "rpmds-py.h"
 #include "rpmfd-py.h"
 #include "rpmfi-py.h"
@@ -178,33 +178,6 @@ static PyObject * findUpgradeSet(PyObject * self, PyObject * args)
     return result;
 }
 
-#ifdef	_LEGACY_BINDINGS_TOO
-/**
- */
-static PyObject * rpmInitDB(PyObject * self, PyObject * args)
-{
-    char *root;
-    int forWrite = 0;
-
-    if (!PyArg_ParseTuple(args, "i|s", &forWrite, &root)) return NULL;
-
-    if (rpmdbInit(root, forWrite ? O_RDWR | O_CREAT: O_RDONLY)) {
-	char * errmsg = "cannot initialize database in %s";
-	char * errstr = NULL;
-	int errsize;
-
-	errsize = strlen(errmsg) + strlen(root);
-	errstr = alloca(errsize);
-	snprintf(errstr, errsize, errmsg, root);
-	PyErr_SetString(pyrpmError, errstr);
-	return NULL;
-    }
-
-    Py_INCREF(Py_None);
-    return(Py_None);
-}
-#endif
-
 /**
  */
 static PyObject * errorCB = NULL;
@@ -279,32 +252,6 @@ static PyObject * errorString (PyObject * self, PyObject * args)
 
 /**
  */
-static PyObject * checkSig (PyObject * self, PyObject * args)
-{
-    char * filename;
-    int flags;
-    int rc = 255;
-
-    if (PyArg_ParseTuple(args, "si", &filename, &flags)) {
-	rpmts ts;
-	const char * av[2];
-	QVA_t ka = memset(alloca(sizeof(*ka)), 0, sizeof(*ka));
-
-	av[0] = filename;
-	av[1] = NULL;
-	ka->qva_mode = 'K';
-	ka->qva_flags = (VERIFY_DIGEST|VERIFY_SIGNATURE);
-	ka->sign = 0;
-	ka->passPhrase = NULL;
-	ts = rpmtsCreate();
-	rc = rpmcliSign(ts, ka, av);
-	rpmtsFree(ts);
-    }
-    return Py_BuildValue("i", rc);
-}
-
-/**
- */
 static PyObject * setVerbosity (PyObject * self, PyObject * args)
 {
     int level;
@@ -348,20 +295,10 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS,
 	NULL },
-    { "headerFromPackage", (PyCFunction) rpmHeaderFromPackage, METH_VARARGS,
-	NULL },
     { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS,
 	NULL },
     { "rhnLoad", (PyCFunction) rhnLoad, METH_VARARGS,
 	NULL },
-#ifdef  _LEGACY_BINDINGS_TOO
-    { "initdb", (PyCFunction) rpmInitDB, METH_VARARGS,
-	NULL },
-    { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS,
-	NULL },
-    { "rebuilddb", (PyCFunction) rebuildDB, METH_VARARGS,
-	NULL },
-#endif
     { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS,
 	NULL },
     { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS,
@@ -375,8 +312,6 @@ static PyMethodDef rpmModuleMethods[] = {
     { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS,
 	NULL },
     { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS,
-	NULL },
-    { "checksig", (PyCFunction) checkSig, METH_VARARGS,
 	NULL },
     { "setVerbosity", (PyCFunction) setVerbosity, METH_VARARGS,
 	NULL },
@@ -407,7 +342,6 @@ void initrpm(void)
 #if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     if (PyType_Ready(&hdr_Type) < 0) return;
     if (PyType_Ready(&rpmal_Type) < 0) return;
-    if (PyType_Ready(&rpmdb_Type) < 0) return;
     if (PyType_Ready(&rpmds_Type) < 0) return;
     if (PyType_Ready(&rpmfd_Type) < 0) return;
     if (PyType_Ready(&rpmfi_Type) < 0) return;
@@ -445,9 +379,6 @@ void initrpm(void)
     Py_INCREF(&rpmal_Type);
     PyModule_AddObject(m, "al", (PyObject *) &rpmal_Type);
 
-    Py_INCREF(&rpmdb_Type);
-    PyModule_AddObject(m, "db", (PyObject *) &rpmdb_Type);
-
     Py_INCREF(&rpmds_Type);
     PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);
 
@@ -471,7 +402,6 @@ void initrpm(void)
 #else
     hdr_Type.ob_type = &PyType_Type;
     rpmal_Type.ob_type = &PyType_Type;
-    rpmdb_Type.ob_type = &PyType_Type;
     rpmds_Type.ob_type = &PyType_Type;
     rpmfd_Type.ob_type = &PyType_Type;
     rpmfi_Type.ob_type = &PyType_Type;

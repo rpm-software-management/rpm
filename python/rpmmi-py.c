@@ -11,8 +11,8 @@
 #endif
 
 #include <rpmlib.h>
+#include <rpmdb.h>
 
-#include "rpmdb-py.h"
 #include "rpmmi-py.h"
 #include "header-py.h"
 
@@ -40,11 +40,7 @@
  * \code
  *	import rpm
  *	ts = rpm.TransactionSet()
- *	mi = ts.dbMatch()
- *	while mi:
- *	    h = mi.next()
- *	    if not h:
- *		break
+ *	for h in ts.dbMatch():
  *	    print h['name']
  * \endcode
  *
@@ -54,10 +50,7 @@
  *	import rpm
  *	ts = rpm.TransactionSet()
  *	mi = ts.dbMatch('name', "kernel")
- *	while mi:
- *	    h = mi.next()
- *	    if not h:
- *		break;
+ *	for h in mi:
  *	    print "%s-%s-%s" % (h['name'], h['version'], h['release'])
  * \endcode
  *
@@ -68,10 +61,7 @@
  *	ts = rpm.TransactionSet()
  *	mi = ts.dbMatch()
  *	mi.pattern('name', rpm.RPMMIRE_GLOB, "XFree*")
- *	while mi:
- *	    h = mi.next{}
- *	    if not h:
- *		break;
+ *	for h in mi:
  *	    print "%s-%s-%s" % (h['name'], h['version'], h['release'])
  * \endcode
  *
@@ -82,27 +72,6 @@
  */
 /*@{*/
 
-/**
- */
-static PyObject *
-rpmmi_Next(rpmmiObject * s, PyObject *args)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
-{
-    Header h;
-    
-    if (!PyArg_ParseTuple(args, ":Next"))
-	return NULL;
-
-    if (s->mi == NULL || (h = rpmdbNextIterator(s->mi)) == NULL) {
-	if (s->mi) s->mi = rpmdbFreeIterator(s->mi);
-	Py_INCREF(Py_None);
-	return Py_None;
-    }
-    return (PyObject *) hdr_Wrap(h);
-}
-
-#if Py_TPFLAGS_HAVE_ITER
 /**
  */
 static PyObject *
@@ -128,7 +97,27 @@ rpmmi_iternext(rpmmiObject * s)
     }
     return (PyObject *) hdr_Wrap(h);
 }
-#endif
+
+/**
+ */
+static PyObject *
+rpmmi_Next(rpmmiObject * s, PyObject *args)
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
+{
+    PyObject * result;
+    
+    if (!PyArg_ParseTuple(args, ":Next"))
+	return NULL;
+
+    result = rpmmi_iternext(s);
+
+    if (result == NULL) {
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+    return result;
+}
 
 /**
  */
@@ -164,7 +153,7 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args)
 static struct PyMethodDef rpmmi_methods[] = {
     {"next",	    (PyCFunction) rpmmi_Next,		METH_VARARGS,
 "mi.next() -> hdr\n\
-- Retrieve next header that matches.\n" },
+- Retrieve next header that matches. Iterate directly in python if possible.\n" },
     {"pattern",	    (PyCFunction) rpmmi_Pattern,	METH_VARARGS,
 "mi.pattern(TagN, mire_type, pattern)\n\
 - Set a secondary match pattern on tags from retrieved header.\n" },
@@ -185,7 +174,7 @@ static void rpmmi_dealloc(/*@only@*/ /*@null@*/ rpmmiObject * s)
 
 /** \ingroup python
  */
-static PyObject * rpmmi_getattr (rpmdbObject *s, char *name)
+static PyObject * rpmmi_getattr (rpmmiObject *s, char *name)
 	/*@*/
 {
     return Py_FindMethod (rpmmi_methods, (PyObject *) s, name);
@@ -249,13 +238,8 @@ PyTypeObject rpmmi_Type = {
 
 rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi)
 {
-    rpmmiObject * mio;
+    rpmmiObject * mio = (rpmmiObject *) PyObject_NEW(rpmmiObject, &rpmmi_Type);
 
-    if (mi == NULL) {
-	Py_INCREF(Py_None);
-        return (rpmmiObject *) Py_None;
-    }
-    mio = (rpmmiObject *) PyObject_NEW(rpmmiObject, &rpmmi_Type);
     if (mio == NULL) {
         PyErr_SetString(pyrpmError, "out of memory creating rpmmiObject");
         return NULL;

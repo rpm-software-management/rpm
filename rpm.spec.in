@@ -521,9 +521,13 @@ fi
 - python: bare bones rollback bindings.
 - python: enable threads on callbacks and longish rpmlib calls.
 - python: expose RPMTAG_SOURCEPACKAGE to identify source headers.
-- python: eliminate headerFromPackage() tuple return, deprecated.
+- python: eliminate rpm.headerFromPackage() tuple return, deprecated.
 - python: add ts.hdrFromFdno(fdno) method.
 - fix: check for lead magic, better error message on failure (#69751).
+- python: the death of rpmdb-py.[ch], use ts.fooDB() methods instead.
+- python: the death of rpm.headerFromPackage(), use ts.hdrFromFdno().
+- python: permit direct ts.dbMatch() python iterations.
+- python: the death of rpm.checksig(), use ts.hdrFromFdno() instead.
 
 * Sun Aug  4 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.68
 - resurrect --rollback.

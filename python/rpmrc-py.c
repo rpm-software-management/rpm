@@ -22,7 +22,6 @@ extern PyTypeObject PyDictIter_Type;
 #if Py_TPFLAGS_HAVE_ITER	/* XXX backport to python-1.5.2 */
 #include "header-py.h"	/* XXX debug only */
 #include "rpmal-py.h"	/* XXX debug only */
-#include "rpmdb-py.h"	/* XXX debug only */
 #include "rpmds-py.h"	/* XXX debug only */
 #include "rpmfd-py.h"	/* XXX debug only */
 #include "rpmfi-py.h"	/* XXX debug only */
@@ -110,7 +109,6 @@ static const char * lbl(void * s)
 
     if (o->ob_type == &hdr_Type)	return "hdr";
     if (o->ob_type == &rpmal_Type)	return "rpmal";
-    if (o->ob_type == &rpmdb_Type)	return "rpmdb";
     if (o->ob_type == &rpmds_Type)	return "rpmds";
     if (o->ob_type == &rpmfd_Type)	return "rpmfd";
     if (o->ob_type == &rpmfi_Type)	return "rpmfi";

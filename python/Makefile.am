@@ -66,7 +66,7 @@ poptmodule.so$(EXEEXT): $(poptmodule_so_OBJECTS)
 # 	rpmrc-py.c rpmte-py.c rpmts-py.c
 # rpmmodule.c header-py.c
 splint_srcs = hash.c upgrade.c \
- 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfi-py.c rpmmi-py.c \
+ 	rpmal-py.c rpmds-py.c rpmfd-py.c rpmfi-py.c rpmmi-py.c \
 	rpmrc-py.c rpmte-py.c rpmts-py.c
 
 .PHONY:	lclint

@@ -43,7 +43,5 @@ PyObject * rhnLoad(PyObject * self, PyObject * args)
 	/*@*/;
 PyObject * hdrLoad(PyObject * self, PyObject * args)
 	/*@*/;
-PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args)
-	/*@*/;
 
 #endif

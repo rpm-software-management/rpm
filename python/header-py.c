@@ -33,16 +33,21 @@
  * Header objects can be returned by database queries or loaded from a
  * binary package on disk.
  * 
- * The headerFromPackage function returns the package header from a
- * package on disk.
+ * The ts.hdrFromFdno() function returns the package header from a
+ * package on disk, verifying package signatures and digests of the
+ * package while reading.
  *
- * Note: rpm.headerFromPackage() used to return a (hdr, isSource) tuple.
+ * Note: The older method rpm.headerFromPackage() which has been replaced
+ * by ts.hdrFromFdno() used to return a (hdr, isSource) tuple.
+ *
  * If you need to distinguish source/binary headers, do:
  * \code
  * 	import os, rpm
  *
- * 	fd = os.open("/tmp/foo-1.0-1.i386.rpm", os.O_RDONLY)
- * 	hdr = rpm.headerFromPackage(fd)
+ *	ts = rpm.TranssactionSet()
+ * 	fdno = os.open("/tmp/foo-1.0-1.i386.rpm", os.O_RDONLY)
+ * 	hdr = ts.hdrFromFdno(fdno)
+ *	os.close(fdno)
  *	if hdr[rpm.RPMTAG_SOURCEPACKAGE]:
  *	   print "header is from a source package"
  *	else:
@@ -72,7 +77,7 @@
  * 	print hdr['release']
  * \endcode
  *
- * This method of access is a bit slower because the name must be
+ * This method of access is a teensy bit slower because the name must be
  * translated into the tag number dynamically. You also must make sure
  * the strings in header lookups don't get translated, or the lookups
  * will fail.
@@ -863,49 +868,6 @@ hdrObject * hdr_Wrap(Header h)
 Header hdrGetHeader(hdrObject * s)
 {
     return s->h;
-}
-
-/**
- * @deprecated Use ts.hdrFromFdno() instead.
- */
-PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args)
-{
-    hdrObject * hdr;
-    Header h;
-    FD_t fd;
-    int rawFd;
-    rpmRC rc;
-
-    if (!PyArg_ParseTuple(args, "i", &rawFd)) return NULL;
-
-    fd = fdDup(rawFd);
-    {	rpmts ts;
-	ts = rpmtsCreate();
-	rc = rpmReadPackageFile(ts, fd, "rpmHeaderFromPackage", &h);
-	rpmtsFree(ts);
-    }
-    Fclose(fd);
-
-    switch (rc) {
-    case RPMRC_BADSIZE:
-    case RPMRC_OK:
-	hdr = hdr_Wrap(h);
-	h = headerFree(h);	/* XXX ref held by hdr */
-	break;
-
-    case RPMRC_NOTFOUND:
-	Py_INCREF(Py_None);
-	hdr = (hdrObject *) Py_None;
-	break;
-
-    case RPMRC_FAIL:
-    case RPMRC_SHORTREAD:
-    default:
-	PyErr_SetString(pyrpmError, "error reading package");
-	return NULL;
-    }
-
-    return Py_BuildValue("N", hdr);
 }
 
 /**
