@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.85 2000/07/26 16:24:10 jbj Exp $
+# $Id: sl.po,v 1.86 2000/07/28 17:59:04 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-26 12:22-0400\n"
+"POT-Creation-Date: 2000-07-26 12:38-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"

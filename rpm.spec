@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.59
+Release: 0.60
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -261,6 +261,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Jul 28 2000 Jeff Johnson <jbj@redhat.com>
+- resurrect firstkey/nextkey python bindings.
+
 * Wed Jul 26 2000 Jeff Johnson <jbj@redhat.com>
 - fix: look for any/all dbapi when rebuilding.
 

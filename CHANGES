@@ -83,6 +83,7 @@
 	- fix: don't attempt dbiOpen with anything but requested dbN.
 	- create rpmbuild/rpmquery/rpmverify/rpmsign symlinks.
 	- fix: look for any/all dbapi when rebuilding.
+	- resurrect firstkey/nextkey python bindings.
 
 3.0.4 -> 3.0.5
 	- configure.in fiddles for BSD systems (Patrick Schoo).

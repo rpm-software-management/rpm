@@ -29,6 +29,8 @@ typedef struct hdrObject_s hdrObject;
 /* rpmdb functions */
 static void rpmdbDealloc(rpmdbObject * s);
 static PyObject * rpmdbGetAttr(rpmdbObject * s, char * name);
+static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args);
+static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args);
 static PyObject * rpmdbByName(rpmdbObject * s, PyObject * args);
 static PyObject * rpmdbByProvides(rpmdbObject * s, PyObject * args);
 static PyObject * rpmdbByFile(rpmdbObject * s, PyObject * args);
@@ -92,6 +94,7 @@ static void mungeFilelist(Header h);
 struct rpmdbObject_s {
     PyObject_HEAD;
     rpmdb db;
+    rpmdbMatchIterator mi;
 } ;
 
 struct rpmdbMIObject_s {
@@ -232,6 +235,8 @@ static PyTypeObject rpmtransType = {
 };
 
 static struct PyMethodDef rpmdbMethods[] = {
+	{"firstkey",	    (PyCFunction) rpmdbFirst, 1 },
+	{"nextkey",	    (PyCFunction) rpmdbNext, 1 },
 	{"findbyfile",	    (PyCFunction) rpmdbByFile, 1 },
 	{"findbyname",	    (PyCFunction) rpmdbByName, 1 },
 	{"findbyprovides",  (PyCFunction) rpmdbByProvides, 1 },
@@ -549,6 +554,7 @@ static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
 
     o = PyObject_NEW(rpmdbObject, &rpmdbType);
     o->db = NULL;
+    o->mi = NULL;
 
     if (rpmdbOpen(root, &o->db, forWrite ? O_RDWR | O_CREAT: O_RDONLY, 0644)) {
 	char * errmsg = "cannot open database in %s";
@@ -810,12 +816,57 @@ static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
 }
 
 /* methods for rpmdb object */
+static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args) {
+    Header h;
+    int first;
+
+    if (!PyArg_ParseTuple (args, "")) return NULL;
+
+    s->mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, NULL, 0);
+
+    if (s->mi == NULL) {
+	PyErr_SetString(pyrpmError, "cannot find first entry in database\n");
+	return NULL;
+    }
+
+    h = rpmdbNextIterator(s->mi);	/* XXX ref held by iterator */
+    first = rpmdbGetIteratorOffset(s->mi);
+    if (h == NULL) {
+	rpmdbFreeIterator(s->mi);
+	s->mi = NULL;
+    }
+
+    return Py_BuildValue("i", first);
+}
+
+static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args) {
+    Header h;
+    int where;
+
+    if (!PyArg_ParseTuple (args, "i", &where)) return NULL;
+
+    if (s->mi)
+
+    h = rpmdbNextIterator(s->mi);	/* XXX ref held by iterator */
+    if (h == NULL) {
+	rpmdbFreeIterator(s->mi);
+	s->mi = NULL;
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+    where = rpmdbGetIteratorOffset(s->mi);
+
+    return Py_BuildValue("i", where);
+}
 
 static PyObject * rpmdbGetAttr(rpmdbObject * s, char * name) {
     return Py_FindMethod(rpmdbMethods, (PyObject * ) s, name);
 }
 
 static void rpmdbDealloc(rpmdbObject * s) {
+    if (s->mi) {
+	rpmdbFreeIterator(s->mi);
+    }
     if (s->db) {
 	rpmdbClose(s->db);
     }
