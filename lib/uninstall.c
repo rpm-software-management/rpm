@@ -12,6 +12,14 @@ static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
 #define	SUFFIX_RPMSAVE	".rpmsave"
 
+/**
+ * Remove (or rename) file according to file disposition.
+ * @param file		file
+ * @param flags
+ * @param mode		file type
+ * @param action	file disposition
+ * @return
+ */
 static int removeFile(const char * file, unsigned int flags, short mode, 
 		      enum fileActions action)
 {
@@ -74,8 +82,7 @@ static int removeFile(const char * file, unsigned int flags, short mode,
     return 0;
 }
 
-/** */
-int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
+int removeBinaryPackage(const char * rootdir, rpmdb rpmdb, unsigned int offset,
 			Header h,
 			int flags, rpmCallbackFunction notify,
 			void * notifyData, const void * pkgKey,
@@ -97,23 +104,23 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
      * When we run scripts, we pass an argument which is the number of 
      * versions of this package that will be installed when we are finished.
      */
-    if ((scriptArg = rpmdbCountPackages(db, name)) < 0)
+    if ((scriptArg = rpmdbCountPackages(rpmdb, name)) < 0)
 	return 1;
     scriptArg -= 1;
 
     if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* run triggers from this package which are keyed on installed 
 	   packages */
-	if (runImmedTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1, scriptFd))
+	if (runImmedTriggers(rootdir, rpmdb, RPMSENSE_TRIGGERUN, h, -1, scriptFd))
 	    return 2;
 
 	/* run triggers which are set off by the removal of this package */
-	if (runTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1, scriptFd))
+	if (runTriggers(rootdir, rpmdb, RPMSENSE_TRIGGERUN, h, -1, scriptFd))
 	    return 1;
     }
 
     if (!(flags & RPMTRANS_FLAG_TEST)) {
-	rc = runInstScript(prefix, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg,
+	rc = runInstScript(rootdir, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg,
 		          (flags & RPMTRANS_FLAG_NOSCRIPTS), scriptFd);
 	if (rc)
 	    return 1;
@@ -133,15 +140,15 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	int type;
 	char * fileName;
 	int fnmaxlen;
-	int prefixlen = (prefix && !(prefix[0] == '/' && prefix[1] == '\0'))
-			? strlen(prefix) : 0;
+	int rdlen = (rootdir && !(rootdir[0] == '/' && rootdir[1] == '\0'))
+			? strlen(rootdir) : 0;
 
 	headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dirIndexes,
 	               NULL);
 	headerGetEntry(h, RPMTAG_DIRNAMES, NULL, (void **) &dirNames,
 	               NULL);
 
-	/* Get buffer for largest possible prefix + dirname + filename. */
+	/* Get buffer for largest possible rootdir + dirname + filename. */
 	fnmaxlen = 0;
 	for (i = 0; i < fileCount; i++) {
 		size_t fnlen;
@@ -150,14 +157,14 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 		if (fnlen > fnmaxlen)
 		    fnmaxlen = fnlen;
 	}
-	fnmaxlen += prefixlen + sizeof("/");	/* XXX one byte too many */
+	fnmaxlen += rootdir + sizeof("/");	/* XXX one byte too many */
 
 	fileName = alloca(fnmaxlen);
 
-	if (prefixlen) {
-	    strcpy(fileName, prefix);
+	if (rdlen) {
+	    strcpy(fileName, rootdir);
 	    (void)rpmCleanPath(fileName);
-	    prefixlen = strlen(fileName);
+	    rdlen = strlen(fileName);
 	} else
 	    *fileName = '\0';
 
@@ -177,7 +184,7 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 	for (i = fileCount - 1; i >= 0; i--) {
 
 	    /* XXX this assumes that dirNames always starts/ends with '/' */
-	    (void)stpcpy(stpcpy(fileName+prefixlen, dirNames[dirIndexes[i]]), baseNames[i]);
+	    (void)stpcpy(stpcpy(fileName+rdlen, dirNames[dirIndexes[i]]), baseNames[i]);
 
 	    rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
 			fileName, fileActionString(actions[i]));
@@ -204,24 +211,36 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
 
     if (!(flags & RPMTRANS_FLAG_TEST)) {
 	rpmMessage(RPMMESS_DEBUG, _("running postuninstall script (if any)\n"));
-	rc = runInstScript(prefix, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG,
+	rc = runInstScript(rootdir, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG,
 			scriptArg, (flags & RPMTRANS_FLAG_NOSCRIPTS), scriptFd);
 	/* XXX postun failures are not cause for erasure failure. */
     }
 
     if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* Run postun triggers which are set off by this package's removal. */
-	rc = runTriggers(prefix, db, RPMSENSE_TRIGGERPOSTUN, h, -1, scriptFd);
+	rc = runTriggers(rootdir, rpmdb, RPMSENSE_TRIGGERPOSTUN, h,
+			-1, scriptFd);
 	if (rc)
 	    return 2;
     }
 
     if (!(flags & RPMTRANS_FLAG_TEST))
-	rpmdbRemove(db, offset);
+	rpmdbRemove(rpmdb, offset);
 
     return 0;
 }
 
+/**
+ * @param h		header
+ * @param root		path to top of install tree
+ * @param progArgc
+ * @param progArgv
+ * @param script
+ * @param arg1
+ * @param arg2
+ * @param errfd
+ * @return
+ */
 static int runScript(Header h, const char * root, int progArgc, const char ** progArgv, 
 		     const char * script, int arg1, int arg2, FD_t errfd)
 {
@@ -401,7 +420,6 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
     return 0;
 }
 
-/** */
 int runInstScript(const char * root, Header h, int scriptTag, int progTag,
 	          int arg, int norunScripts, FD_t err)
 {
@@ -432,9 +450,22 @@ int runInstScript(const char * root, Header h, int scriptTag, int progTag,
     return rc;
 }
 
-static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourceH,
-			    Header triggeredH, int arg1correction, int arg2,
-			    char * triggersAlreadyRun, FD_t scriptFd)
+/**
+ * @param root		path to top of install tree
+ * @param db		rpm database
+ * @param sense
+ * @param sourceH
+ * @param triggeredH
+ * @param arg1correction
+ * @param arg2
+ * @param triggersAlreadyRun
+ * @param scriptFd
+ * @return
+ */
+static int handleOneTrigger(const char * root, rpmdb db, int sense,
+			Header sourceH, Header triggeredH,
+			int arg1correction, int arg2,
+			char * triggersAlreadyRun, FD_t scriptFd)
 {
     const char ** triggerNames;
     const char ** triggerEVR;
@@ -520,7 +551,6 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
     return rc;
 }
 
-/** */
 int runTriggers(const char * root, rpmdb db, int sense, Header h,
 		int countCorrection, FD_t scriptFd)
 {
@@ -549,7 +579,6 @@ int runTriggers(const char * root, rpmdb db, int sense, Header h,
     return rc;
 }
 
-/** */
 int runImmedTriggers(const char * root, rpmdb db, int sense, Header h,
 		     int countCorrection, FD_t scriptFd)
 {
