@@ -780,7 +780,7 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_RHNPLATFORM,	0, 0, 1, "rhnplatform"},
     {RPMTAG_DISTTAG,		0, 0, 0, "disttag"},
     /*@-nullassign@*/	/* LCL: can't add null annotation */
-    {0, 0, 0, 0}
+    {0, 0, 0, 0, 0}
     /*@=nullassign@*/
 };
 

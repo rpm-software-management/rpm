@@ -1,7 +1,8 @@
 #ifndef _H_RPMFC_
 #define _H_RPMFC_
 
-#include "rpmfile.h"
+#undef	FILE_RCSID
+#include "magic.h"
 
 /*@-exportlocal@*/
 /*@unchecked@*/
@@ -10,7 +11,7 @@ extern int _rpmfc_debug;
 
 /**
  */
-typedef struct rpmfc_s * rpmfc;
+typedef /*@abstract@*/ struct rpmfc_s * rpmfc;
 
 /**
  */
@@ -163,8 +164,8 @@ rpmfc rpmfcNew(void)
  */
 /*@-exportlocal@*/
 int rpmfcClassify(rpmfc fc, ARGV_t argv)
-	/*@globals global_fmagic, fileSystem, internalState @*/
-	/*@modifies fc, global_fmagic, fileSystem, internalState @*/;
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fc, fileSystem, internalState @*/;
 /*@=exportlocal@*/
 
 /**

@@ -16,7 +16,6 @@
 
 #include "debug.h"
 
-/*@access fmagic @*/
 /*@access rpmds @*/
 
 /**
@@ -1151,9 +1150,8 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
     size_t slen;
     int fcolor;
     int xx;
-fmagic fm = global_fmagic;
-int action = 0;
-int wid = 0;	/* XXX don't prepend filename: */
+    int msflags = 0;	/* XXX what MAGIC_FOO flags? */
+    magic_t ms = NULL;
 
     if (fc == NULL || argv == NULL)
 	return 0;
@@ -1168,27 +1166,30 @@ int wid = 0;	/* XXX don't prepend filename: */
     xx = argvAdd(&fc->cdict, "");
     xx = argvAdd(&fc->cdict, "directory");
 
-/*@-assignexpose@*/
-    fm->magicfile = default_magicfile;
-/*@=assignexpose@*/
-    /* XXX TODO fm->flags = ??? */
+    ms = magic_open(msflags);
+    /* XXX check errors. */
 
-    xx = fmagicSetup(fm, fm->magicfile, action);
+    xx = magic_load(ms, "/usr/lib/rpm/magic");
+    /* XXX check errors. */
+
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
+	const char * ftype;
+
 	s = argv[fc->ix];
 assert(s != NULL);
 	slen = strlen(s);
 
-	fm->obp = fm->obuf;
-	*fm->obp = '\0';
-	fm->nob = sizeof(fm->obuf);
-	xx = fmagicProcess(fm, s, wid);
-
 	/* XXX all files with extension ".pm" are perl modules for now. */
+/*@-branchstate@*/
 	if (slen >= sizeof(".pm") && !strcmp(s+slen-(sizeof(".pm")-1), ".pm"))
-	    strcpy(fm->obuf, "Perl5 module source text");
+	    ftype = "Perl5 module source text";
+	else {
+	    ftype = magic_file(ms, s);
+assert(ftype != NULL);
+	}
+/*@=branchstate@*/
 
-	se = fm->obuf;
+	se = ftype;
         rpmMessage(RPMMESS_DEBUG, "%s: %s\n", s, se);
 
 	xx = argvAdd(&fc->fn, s);
@@ -1222,7 +1223,8 @@ assert(se != NULL);
 
     fcav = argvFree(fcav);
 
-    /* XXX TODO dump fmagic baggage. */
+    if (ms != NULL)
+	magic_close(ms);
 
     return 0;
 }
