@@ -50,6 +50,7 @@
 	- glibc2: always enable dynamic mtrace if available.
 	- fix: versioned provides devolved to existence test with conflicts.
 	- fix: with unspecified epochs, skip dependency epoch compare.
+	- python: shared module needs -lrpm -lbz2.
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

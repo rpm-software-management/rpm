@@ -33,9 +33,7 @@
 /* <unistd.h> should be included before any preprocessor test
    of _POSIX_VERSION.  */
 #ifdef HAVE_UNISTD_H
-/*@-skipposixheaders@*/
 #include <unistd.h>
-/*@=skipposixheaders@*/
 #endif
 
 #if TIME_WITH_SYS_TIME

@@ -299,7 +299,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
     int rc, i;
     struct cpioFileMapping * map = NULL;
     int mappedFiles = 0;
-    const char * failedFile;
+    const char * failedFile = NULL;
     struct callbackInfo info;
 
     if (!files) {
@@ -359,19 +359,21 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 		(failedFile != NULL ? _(" on file ") : ""),
 		(failedFile != NULL ? failedFile : ""),
 		cpioStrerror(rc));
-	return 1;
-    }
-
-    if (notify) {
+	rc = 1;
+    } else if (notify) {
 	if (archiveSize)
 	    (void)notify(h, RPMCALLBACK_INST_PROGRESS, archiveSize, archiveSize,
 	       pkgKey, notifyData);
 	else
 	    (void)notify(h, RPMCALLBACK_INST_PROGRESS, 100, 100,
 		pkgKey, notifyData);
+	rc = 0;
     }
 
-    return 0;
+    if (failedFile)
+	xfree(failedFile);
+
+    return rc;
 }
 
 /* 0 success */

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-14 11:50-0400\n"
+"POT-Creation-Date: 1999-09-17 18:43-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: ../build.c:24 ../lib/rpminstall.c:223 ../lib/rpminstall.c:374
+#: ../build.c:24 ../lib/rpminstall.c:222 ../lib/rpminstall.c:374
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
@@ -1401,7 +1401,7 @@ msgstr ""
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1147 ../build/pack.c:432
+#: ../build/files.c:1147 ../build/pack.c:434
 #, c-format
 msgid "line: %s"
 msgstr ""
@@ -1498,7 +1498,7 @@ msgstr ""
 msgid "Unable to write package: %s"
 msgstr ""
 
-#: ../build/pack.c:329 ../lib/signature.c:391
+#: ../build/pack.c:329
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
@@ -1518,42 +1518,42 @@ msgstr ""
 msgid "create archive failed on file %s: %s"
 msgstr ""
 
-#: ../build/pack.c:402
+#: ../build/pack.c:404
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: ../build/pack.c:409
+#: ../build/pack.c:411
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr ""
 
-#: ../build/pack.c:488
+#: ../build/pack.c:490
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:495
+#: ../build/pack.c:497
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:502
+#: ../build/pack.c:504
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr ""
 
-#: ../build/pack.c:509
+#: ../build/pack.c:511
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr ""
 
-#: ../build/pack.c:517
+#: ../build/pack.c:519
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: ../build/pack.c:533
+#: ../build/pack.c:535
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
@@ -1904,51 +1904,51 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: ../lib/cpio.c:362
+#: ../lib/cpio.c:375
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr ""
 
-#: ../lib/cpio.c:368
+#: ../lib/cpio.c:381
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: ../lib/cpio.c:547
+#: ../lib/cpio.c:572
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: ../lib/cpio.c:999
+#: ../lib/cpio.c:1034
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: ../lib/cpio.c:1002
+#: ../lib/cpio.c:1037
 msgid "Bad magic"
 msgstr ""
 
-#: ../lib/cpio.c:1003
+#: ../lib/cpio.c:1038
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: ../lib/cpio.c:1021
+#: ../lib/cpio.c:1056
 msgid "Header size too big"
 msgstr ""
 
-#: ../lib/cpio.c:1022
+#: ../lib/cpio.c:1057
 msgid "Unknown file type"
 msgstr ""
 
-#: ../lib/cpio.c:1023
+#: ../lib/cpio.c:1058
 msgid "Missing hard link"
 msgstr ""
 
-#: ../lib/cpio.c:1024
+#: ../lib/cpio.c:1059
 msgid "Internal error"
 msgstr ""
 
-#: ../lib/cpio.c:1033
+#: ../lib/cpio.c:1068
 msgid " failed - "
 msgstr ""
 
@@ -1957,51 +1957,51 @@ msgstr ""
 msgid "cannot open file %s: %s"
 msgstr ""
 
-#: ../lib/dbindex.c:80
+#: ../lib/dbindex.c:84
 #, c-format
 msgid "error getting record %s from %s"
 msgstr ""
 
-#: ../lib/dbindex.c:107
+#: ../lib/dbindex.c:111
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: ../lib/dbindex.c:114
+#: ../lib/dbindex.c:118
 #, c-format
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:382
+#: ../lib/depends.c:381
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:619
+#: ../lib/depends.c:623
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:767
+#: ../lib/depends.c:768
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:820
+#: ../lib/depends.c:819
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:878 ../lib/depends.c:1219
+#: ../lib/depends.c:876 ../lib/depends.c:1222
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:975
+#: ../lib/depends.c:971
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
 
-#: ../lib/falloc.c:149
+#: ../lib/falloc.c:159
 #, c-format
 msgid ""
 "free list corrupt (%u)- please run\n"
@@ -2011,9 +2011,9 @@ msgid ""
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
 
-#: ../lib/formats.c:65 ../lib/formats.c:83 ../lib/formats.c:104
-#: ../lib/formats.c:137 ../lib/header.c:2085 ../lib/header.c:2102
-#: ../lib/header.c:2122
+#: ../lib/formats.c:66 ../lib/formats.c:84 ../lib/formats.c:105
+#: ../lib/formats.c:138 ../lib/header.c:2113 ../lib/header.c:2130
+#: ../lib/header.c:2150
 msgid "(not a number)"
 msgstr ""
 
@@ -2022,7 +2022,7 @@ msgstr ""
 msgid "mntctl() failed to return fugger size: %s"
 msgstr ""
 
-#: ../lib/fs.c:75 ../lib/fs.c:251
+#: ../lib/fs.c:75 ../lib/fs.c:254
 #, c-format
 msgid "failed to stat %s: %s"
 msgstr ""
@@ -2036,60 +2036,60 @@ msgstr ""
 msgid "failed to open %s: %s"
 msgstr ""
 
-#: ../lib/fs.c:272
+#: ../lib/fs.c:275
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr ""
 
-#: ../lib/ftp.c:655
+#: ../lib/ftp.c:666
 msgid "Success"
 msgstr ""
 
-#: ../lib/ftp.c:658
+#: ../lib/ftp.c:669
 msgid "Bad server response"
 msgstr ""
 
-#: ../lib/ftp.c:661
+#: ../lib/ftp.c:672
 msgid "Server IO error"
 msgstr ""
 
-#: ../lib/ftp.c:664
+#: ../lib/ftp.c:675
 msgid "Server timeout"
 msgstr ""
 
-#: ../lib/ftp.c:667
+#: ../lib/ftp.c:678
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: ../lib/ftp.c:670
+#: ../lib/ftp.c:681
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: ../lib/ftp.c:673
+#: ../lib/ftp.c:684
 msgid "Failed to connect to server"
 msgstr ""
 
-#: ../lib/ftp.c:676
+#: ../lib/ftp.c:687
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: ../lib/ftp.c:679
+#: ../lib/ftp.c:690
 msgid "IO error to local file"
 msgstr ""
 
-#: ../lib/ftp.c:682
+#: ../lib/ftp.c:693
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: ../lib/ftp.c:685
+#: ../lib/ftp.c:696
 msgid "File not found on server"
 msgstr ""
 
-#: ../lib/ftp.c:688
+#: ../lib/ftp.c:699
 msgid "Abort in progress"
 msgstr ""
 
-#: ../lib/ftp.c:692
+#: ../lib/ftp.c:703
 msgid "Unknown or unexpected error"
 msgstr ""
 
@@ -2098,155 +2098,155 @@ msgstr ""
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: ../lib/header.c:199
+#: ../lib/header.c:200
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: ../lib/header.c:741
+#: ../lib/header.c:763
 #, c-format
 msgid "Data type %d not supprted\n"
 msgstr ""
 
-#: ../lib/header.c:1085
+#: ../lib/header.c:1110
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: ../lib/header.c:1485
+#: ../lib/header.c:1511
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: ../lib/header.c:1513
+#: ../lib/header.c:1539
 msgid "missing } after %{"
 msgstr ""
 
-#: ../lib/header.c:1525
+#: ../lib/header.c:1551
 msgid "empty tag format"
 msgstr ""
 
-#: ../lib/header.c:1535
+#: ../lib/header.c:1561
 msgid "empty tag name"
 msgstr ""
 
-#: ../lib/header.c:1550
+#: ../lib/header.c:1576
 msgid "unknown tag"
 msgstr ""
 
-#: ../lib/header.c:1576
+#: ../lib/header.c:1602
 msgid "] expected at end of array"
 msgstr ""
 
-#: ../lib/header.c:1592
+#: ../lib/header.c:1618
 msgid "unexpected ]"
 msgstr ""
 
-#: ../lib/header.c:1594
+#: ../lib/header.c:1620
 msgid "unexpected }"
 msgstr ""
 
-#: ../lib/header.c:1646
+#: ../lib/header.c:1673
 msgid "? expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1653
+#: ../lib/header.c:1680
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: ../lib/header.c:1663 ../lib/header.c:1695
+#: ../lib/header.c:1690 ../lib/header.c:1722
 msgid "} expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1670
+#: ../lib/header.c:1697
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: ../lib/header.c:1683
+#: ../lib/header.c:1710
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: ../lib/header.c:1702
+#: ../lib/header.c:1729
 msgid "| expected at end of expression"
 msgstr ""
 
-#: ../lib/header.c:1869
+#: ../lib/header.c:1896
 msgid "(unknown type)"
 msgstr ""
 
-#: ../lib/install.c:129 ../lib/uninstall.c:160
+#: ../lib/install.c:141 ../lib/uninstall.c:178
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
 
-#: ../lib/install.c:147
+#: ../lib/install.c:159
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:155
+#: ../lib/install.c:167
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:183
+#: ../lib/install.c:195
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: ../lib/install.c:346
+#: ../lib/install.c:358
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: ../lib/install.c:347
+#: ../lib/install.c:359
 msgid " on file "
 msgstr ""
 
-#: ../lib/install.c:388
+#: ../lib/install.c:402
 msgid "installing a source package\n"
 msgstr ""
 
-#: ../lib/install.c:399 ../lib/install.c:421
+#: ../lib/install.c:413 ../lib/install.c:435
 #, c-format
 msgid "cannot create %s"
 msgstr ""
 
-#: ../lib/install.c:406 ../lib/install.c:428
+#: ../lib/install.c:420 ../lib/install.c:442
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: ../lib/install.c:410
+#: ../lib/install.c:424
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:432
+#: ../lib/install.c:446
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:465 ../lib/install.c:501
+#: ../lib/install.c:480 ../lib/install.c:508
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:522
+#: ../lib/install.c:529
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: ../lib/install.c:524 ../lib/install.c:818 ../lib/uninstall.c:26
+#: ../lib/install.c:531 ../lib/install.c:807 ../lib/uninstall.c:26
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: ../lib/install.c:614
+#: ../lib/install.c:621
 msgid "source package expected, binary found"
 msgstr ""
 
-#: ../lib/install.c:674
+#: ../lib/install.c:676
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
@@ -2259,18 +2259,18 @@ msgstr ""
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: ../lib/install.c:772
+#: ../lib/install.c:767
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: ../lib/install.c:814
+#: ../lib/install.c:803
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:898
-msgid "running postinstall script (if any)\n"
+#: ../lib/install.c:877
+msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
 #: ../lib/lookup.c:35
@@ -2407,58 +2407,58 @@ msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
 msgstr ""
 
-#: ../lib/problems.c:40
+#: ../lib/problems.c:43
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../lib/problems.c:43
+#: ../lib/problems.c:46
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
 
-#: ../lib/problems.c:63
+#: ../lib/problems.c:66
 #, c-format
 msgid "package %s-%s-%s is for a different architecture"
 msgstr ""
 
-#: ../lib/problems.c:68
+#: ../lib/problems.c:71
 #, c-format
 msgid "package %s-%s-%s is for a different operating system"
 msgstr ""
 
-#: ../lib/problems.c:73
+#: ../lib/problems.c:76
 #, c-format
 msgid "package %s-%s-%s is already installed"
 msgstr ""
 
-#: ../lib/problems.c:78
+#: ../lib/problems.c:81
 #, c-format
 msgid "path %s is not relocateable for package %s-%s-%s"
 msgstr ""
 
-#: ../lib/problems.c:83
+#: ../lib/problems.c:86
 #, c-format
 msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
 msgstr ""
 
-#: ../lib/problems.c:89
+#: ../lib/problems.c:92
 #, c-format
 msgid ""
 "file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
 msgstr ""
 
-#: ../lib/problems.c:95
+#: ../lib/problems.c:98
 #, c-format
 msgid "package %s-%s-%s (which is newer then %s-%s-%s) is already installed"
 msgstr ""
 
-#: ../lib/problems.c:101
+#: ../lib/problems.c:104
 #, c-format
 msgid "installing package %s-%s-%s needs %ld%cb on the %s filesystem"
 msgstr ""
 
-#: ../lib/problems.c:113
+#: ../lib/problems.c:116
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
 msgstr ""
@@ -2468,192 +2468,192 @@ msgstr ""
 msgid "error in format: %s\n"
 msgstr ""
 
-#: ../lib/query.c:179
+#: ../lib/query.c:181
 msgid "(contains no files)"
 msgstr ""
 
-#: ../lib/query.c:232
+#: ../lib/query.c:234
 msgid "normal        "
 msgstr ""
 
-#: ../lib/query.c:234
+#: ../lib/query.c:236
 msgid "replaced      "
 msgstr ""
 
-#: ../lib/query.c:236
+#: ../lib/query.c:238
 msgid "not installed "
 msgstr ""
 
-#: ../lib/query.c:238
+#: ../lib/query.c:240
 msgid "net shared    "
 msgstr ""
 
-#: ../lib/query.c:240
+#: ../lib/query.c:242
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: ../lib/query.c:244
+#: ../lib/query.c:246
 msgid "(no state)    "
 msgstr ""
 
-#: ../lib/query.c:260 ../lib/query.c:290
+#: ../lib/query.c:262 ../lib/query.c:292
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: ../lib/query.c:395
+#: ../lib/query.c:401
 #, c-format
 msgid "record number %u\n"
 msgstr ""
 
-#: ../lib/query.c:399
+#: ../lib/query.c:405
 msgid "error: could not read database record\n"
 msgstr ""
 
-#: ../lib/query.c:437
+#: ../lib/query.c:443
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: ../lib/query.c:450
+#: ../lib/query.c:456
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: ../lib/query.c:459 ../lib/rpminstall.c:204
+#: ../lib/query.c:465 ../lib/rpminstall.c:203
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../lib/query.c:462
+#: ../lib/query.c:468
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: ../lib/query.c:489
+#: ../lib/query.c:495
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: ../lib/query.c:514
+#: ../lib/query.c:520
 msgid "could not read database record!\n"
 msgstr ""
 
-#: ../lib/query.c:525
+#: ../lib/query.c:531
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: ../lib/query.c:535
+#: ../lib/query.c:541
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: ../lib/query.c:545
+#: ../lib/query.c:551
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: ../lib/query.c:555
+#: ../lib/query.c:561
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: ../lib/query.c:570
+#: ../lib/query.c:576
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: ../lib/query.c:573
+#: ../lib/query.c:579
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: ../lib/query.c:586
+#: ../lib/query.c:592
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: ../lib/query.c:589
+#: ../lib/query.c:595
 #, c-format
 msgid "package record number: %d\n"
 msgstr ""
 
-#: ../lib/query.c:592
+#: ../lib/query.c:598
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: ../lib/query.c:604 ../lib/rpminstall.c:385
+#: ../lib/query.c:610 ../lib/rpminstall.c:385
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: ../lib/query.c:607
+#: ../lib/query.c:613
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: ../lib/query.c:629
+#: ../lib/query.c:635
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: ../lib/query.c:686
+#: ../lib/query.c:692
 msgid "query package owning file"
 msgstr ""
 
-#: ../lib/query.c:688
+#: ../lib/query.c:694
 msgid "query packages in group"
 msgstr ""
 
-#: ../lib/query.c:690
+#: ../lib/query.c:696
 msgid "query a package file"
 msgstr ""
 
-#: ../lib/query.c:694
+#: ../lib/query.c:700
 msgid "query a spec file"
 msgstr ""
 
-#: ../lib/query.c:696
+#: ../lib/query.c:702
 msgid "query the pacakges triggered by the package"
 msgstr ""
 
-#: ../lib/query.c:698
+#: ../lib/query.c:704
 msgid "query the packages which require a capability"
 msgstr ""
 
-#: ../lib/query.c:700
+#: ../lib/query.c:706
 msgid "query the packages which provide a capability"
 msgstr ""
 
-#: ../lib/query.c:737
+#: ../lib/query.c:743
 msgid "list all configuration files"
 msgstr ""
 
-#: ../lib/query.c:739
+#: ../lib/query.c:745
 msgid "list all documentation files"
 msgstr ""
 
-#: ../lib/query.c:741
+#: ../lib/query.c:747
 msgid "dump basic file information"
 msgstr ""
 
-#: ../lib/query.c:743
+#: ../lib/query.c:749
 msgid "list files in package"
 msgstr ""
 
-#: ../lib/query.c:747
+#: ../lib/query.c:753
 msgid "use the following query format"
 msgstr ""
 
-#: ../lib/query.c:749
+#: ../lib/query.c:755
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: ../lib/query.c:752
+#: ../lib/query.c:758
 msgid "display the states of the listed files"
 msgstr ""
 
-#: ../lib/query.c:754
+#: ../lib/query.c:760
 msgid "display a verbose file listing"
 msgstr ""
 
@@ -2662,8 +2662,8 @@ msgstr ""
 msgid "rebuilding database in rootdir %s\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:23 ../lib/rpmdb.c:65 ../lib/rpmdb.c:84
-#: ../lib/rpmdb.c:101
+#: ../lib/rebuilddb.c:23 ../lib/rpmdb.c:69 ../lib/rpmdb.c:88
+#: ../lib/rpmdb.c:105
 msgid "no dbpath has been set"
 msgstr ""
 
@@ -2802,167 +2802,167 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: ../lib/rpmdb.c:163
+#: ../lib/rpmdb.c:181
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:173 ../lib/url.c:428
+#: ../lib/rpmdb.c:190 ../lib/url.c:430
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:186 ../lib/rpmdb.c:193
+#: ../lib/rpmdb.c:203 ../lib/rpmdb.c:211
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: ../lib/rpmdb.c:187
+#: ../lib/rpmdb.c:204
 msgid "exclusive"
 msgstr ""
 
-#: ../lib/rpmdb.c:194
+#: ../lib/rpmdb.c:212
 msgid "shared"
 msgstr ""
 
-#: ../lib/rpmdb.c:221
+#: ../lib/rpmdb.c:243
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
-#: ../lib/rpmdb.c:384
+#: ../lib/rpmdb.c:392
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:395
+#: ../lib/rpmdb.c:403
 #, c-format
 msgid "package %s not found in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:420 ../lib/uninstall.c:90
+#: ../lib/rpmdb.c:428 ../lib/uninstall.c:85
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: ../lib/rpmdb.c:428
+#: ../lib/rpmdb.c:436
 msgid "package has no name"
 msgstr ""
 
-#: ../lib/rpmdb.c:430
+#: ../lib/rpmdb.c:438
 msgid "removing name index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:435
+#: ../lib/rpmdb.c:443
 msgid "package has no group\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:437
+#: ../lib/rpmdb.c:445
 msgid "removing group index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:444
+#: ../lib/rpmdb.c:452
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:459
+#: ../lib/rpmdb.c:467
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:471
+#: ../lib/rpmdb.c:479
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:482
+#: ../lib/rpmdb.c:490
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:499
+#: ../lib/rpmdb.c:507
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:508
+#: ../lib/rpmdb.c:516
 msgid "package has no files\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:590
+#: ../lib/rpmdb.c:598
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: ../lib/rpmdb.c:656
+#: ../lib/rpmdb.c:664
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: ../lib/rpmdb.c:665
+#: ../lib/rpmdb.c:673
 msgid "header changed size!"
 msgstr ""
 
-#: ../lib/rpminstall.c:129
+#: ../lib/rpminstall.c:128
 msgid "counting packages to install\n"
 msgstr ""
 
-#: ../lib/rpminstall.c:133
+#: ../lib/rpminstall.c:132
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: ../lib/rpminstall.c:142
+#: ../lib/rpminstall.c:141
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: ../lib/rpminstall.c:153
+#: ../lib/rpminstall.c:152
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
-#: ../lib/rpminstall.c:162
+#: ../lib/rpminstall.c:161
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: ../lib/rpminstall.c:166
+#: ../lib/rpminstall.c:165
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: ../lib/rpminstall.c:183
+#: ../lib/rpminstall.c:182
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: ../lib/rpminstall.c:192 ../lib/rpminstall.c:324
+#: ../lib/rpminstall.c:191 ../lib/rpminstall.c:324
 #, c-format
 msgid "cannot open file %s\n"
 msgstr ""
 
-#: ../lib/rpminstall.c:208 ../lib/rpminstall.c:461
+#: ../lib/rpminstall.c:207 ../lib/rpminstall.c:461
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: ../lib/rpminstall.c:244
+#: ../lib/rpminstall.c:243
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: ../lib/rpminstall.c:256
+#: ../lib/rpminstall.c:255
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: ../lib/rpminstall.c:259
+#: ../lib/rpminstall.c:258
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: ../lib/rpminstall.c:276
+#: ../lib/rpminstall.c:275
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
@@ -3093,145 +3093,154 @@ msgstr ""
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: ../lib/signature.c:105
+#: ../lib/signature.c:106
 #, c-format
 msgid "sigsize         : %d\n"
 msgstr ""
 
-#: ../lib/signature.c:106
+#: ../lib/signature.c:107
 #, c-format
 msgid "Header + Archive: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:107
+#: ../lib/signature.c:108
 #, c-format
 msgid "expected size   : %d\n"
 msgstr ""
 
-#: ../lib/signature.c:111
+#: ../lib/signature.c:112
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 
-#: ../lib/signature.c:133
+#: ../lib/signature.c:134
 msgid "No signature\n"
 msgstr ""
 
-#: ../lib/signature.c:136
+#: ../lib/signature.c:137
 msgid "Old PGP signature\n"
 msgstr ""
 
-#: ../lib/signature.c:148
+#: ../lib/signature.c:149
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr ""
 
-#: ../lib/signature.c:152
+#: ../lib/signature.c:153
 msgid "New Header signature\n"
 msgstr ""
 
 #. 8-byte pad
-#: ../lib/signature.c:159 ../lib/signature.c:201
+#: ../lib/signature.c:160 ../lib/signature.c:202
 #, c-format
 msgid "Signature size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:160 ../lib/signature.c:202
+#: ../lib/signature.c:161 ../lib/signature.c:203
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr ""
 
-#: ../lib/signature.c:263
+#: ../lib/signature.c:265
 #, c-format
 msgid "Couldn't exec pgp (%s)"
 msgstr ""
 
-#: ../lib/signature.c:274
+#: ../lib/signature.c:276
 msgid "pgp failed"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: ../lib/signature.c:281
+#: ../lib/signature.c:283
 msgid "pgp failed to write signature"
 msgstr ""
 
-#: ../lib/signature.c:286
+#: ../lib/signature.c:288
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:297 ../lib/signature.c:373
+#: ../lib/signature.c:299 ../lib/signature.c:376
 msgid "unable to read the signature"
 msgstr ""
 
-#: ../lib/signature.c:302
+#: ../lib/signature.c:304
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: ../lib/signature.c:339 ../lib/signature.c:676
+#: ../lib/signature.c:342 ../lib/signature.c:685
 msgid "Couldn't exec gpg"
 msgstr ""
 
-#: ../lib/signature.c:350
+#: ../lib/signature.c:353
 msgid "gpg failed"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: ../lib/signature.c:357
+#: ../lib/signature.c:360
 msgid "gpg failed to write signature"
 msgstr ""
 
-#: ../lib/signature.c:362
+#: ../lib/signature.c:365
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:378
+#: ../lib/signature.c:381
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: ../lib/signature.c:485 ../lib/signature.c:546
+#: ../lib/signature.c:408
+msgid "Generating signature using PGP.\n"
+msgstr ""
+
+#: ../lib/signature.c:414
+msgid "Generating signature using GPG.\n"
+msgstr ""
+
+#: ../lib/signature.c:491 ../lib/signature.c:553
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 
-#: ../lib/signature.c:544 ../lib/signature.c:616
+#: ../lib/signature.c:551 ../lib/signature.c:624
 msgid "exec failed!\n"
 msgstr ""
 
-#: ../lib/signature.c:618
+#: ../lib/signature.c:626
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 
-#: ../lib/signature.c:705
+#: ../lib/signature.c:714
 msgid "Couldn't exec pgp"
 msgstr ""
 
+#. @notreached@
 #. This case should have been screened out long ago.
-#: ../lib/signature.c:709 ../lib/signature.c:762
+#: ../lib/signature.c:718 ../lib/signature.c:771
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: ../lib/signature.c:742
+#: ../lib/signature.c:751
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr ""
 
-#: ../lib/signature.c:754
+#: ../lib/signature.c:763
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr ""
 
-#: ../lib/transaction.c:353
+#: ../lib/transaction.c:358
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:360
+#: ../lib/transaction.c:365
 #, c-format
 msgid "excluding %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:476
+#: ../lib/transaction.c:481
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
@@ -3251,49 +3260,49 @@ msgstr ""
 msgid "removal of %s failed: %s"
 msgstr ""
 
-#: ../lib/uninstall.c:100
+#: ../lib/uninstall.c:97
 #, c-format
 msgid "cannot read packages named %s for uninstall"
 msgstr ""
 
-#: ../lib/uninstall.c:128
+#: ../lib/uninstall.c:130
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: ../lib/uninstall.c:173
+#: ../lib/uninstall.c:190
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: ../lib/uninstall.c:187
+#: ../lib/uninstall.c:203
 msgid "removing database entry\n"
 msgstr ""
 
-#: ../lib/uninstall.c:339
+#: ../lib/uninstall.c:362
 msgid "execution of script failed"
 msgstr ""
 
-#: ../lib/url.c:142
+#: ../lib/url.c:144
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: ../lib/url.c:166 ../lib/url.c:192
+#: ../lib/url.c:168 ../lib/url.c:194
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: ../lib/url.c:277
+#: ../lib/url.c:279
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX PARANOIA
-#: ../lib/url.c:314
+#: ../lib/url.c:316
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: ../lib/url.c:443
+#: ../lib/url.c:445
 #, c-format
 msgid "failed to create %s\n"
 msgstr ""
