@@ -324,7 +324,7 @@ int isCompressed(char *file)
 static char *do_untar(Spec spec, int c)
 {
     static char buf[1024];
-    static char file[1024];
+    char file[1024];
     char *s, *taropts;
     struct sources *sp;
 
@@ -362,8 +362,8 @@ static char *do_untar(Spec spec, int c)
 static char *do_patch(Spec spec, int c, int strip, char *db)
 {
     static char buf[1024];
-    static char file[1024];
-    static char dashb[1024];
+    char file[1024];
+    char dashb[1024];
     char *s;
     struct sources *sp;
 
@@ -588,6 +588,8 @@ int verifyList(Spec s)
 
 int doBuild(Spec s, int flags)
 {
+
+    strcpy(build_subdir, ".");
 
     if (flags & RPMBUILD_LIST) {
 	if (verifyList(s)) {
