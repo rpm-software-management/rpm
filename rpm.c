@@ -223,8 +223,9 @@ static void printUsage(void) {
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
     puts(_("                        [--justdb] [--notriggers] rpackage1 ... packageN"));
     puts(_("       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
-    puts(_("                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"));
-    puts(_("                        [--buildarch <arch>] [--rmsource] specfile"));
+    puts(_("                        [--sign] [--test] [--timecheck <s>] ]"));
+    puts(_("                        [--buildplatform=platform1[,platform2...]]"));
+    puts(_("                        [--rmsource] specfile"));
     puts(_("       rpm {--rmsource} [--rcfile <file>] [-v] specfile"));
     puts(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
@@ -451,10 +452,8 @@ static void printHelp(void) {
 		  _("generate PGP signature"));
     printHelpLine("      --buildroot <dir>     ",
 		  _("use <dir> as the build root"));
-    printHelpLine("      --buildarch <arch>  ",
-		  _("build the packages for architecture <arch>"));
-    printHelpLine("      --buildos <os>  ",
-		  _("build the packages for ositecture <os>"));
+    printHelpLine("      --platform=platform1[,platform2,... platformN]",
+		  _("build the packages for the platform1...platformN build targets."));
     printHelpLine("      --test              ",
 		  _("do not execute any stages"));
     printHelpLine("      --timecheck <s>     ",
@@ -578,9 +577,13 @@ int main(int argc, char ** argv) {
 	if (!strcmp(*currarg, "--rcfile")) {
 	    rcfile = *(++currarg);
 	} else if (!strcmp(*currarg, "--buildarch")) {
-	    arch = *(++currarg);
+	    fprintf(stderr, "--buildarch has been obsoleted.  Use the --buildplatform option\n"); 
+	    fprintf(stderr, "with a platform specific rpmrc file with a Buildarch: tag set\n");
+	    exit(1);
 	} else if (!strcmp(*currarg, "--buildos")) {
-	    os = *(++currarg);
+	    fprintf(stderr, "--buildos has been obsoleted.  Use the --buildplatform option\n"); 
+	    fprintf(stderr, "with a platform specific rpmrc file with a Buildos: tag set\n");
+	    exit(1);
 	} else if (!strcmp(*currarg, "--showrc")) {
 	    showrc = 1;
 	    building = 1;

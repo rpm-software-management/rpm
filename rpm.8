@@ -1,5 +1,5 @@
 .\" rpm - Red Hat Package Manager
-.TH rpm 8 "19 August 1997" "Red Hat Software" "Red Hat Linux"
+.TH rpm 8 "06 August 1998" "Red Hat Software" "Red Hat Linux"
 .SH NAME
 rpm \- Red Hat Package Manager
 .SH SYNOPSIS
@@ -351,6 +351,11 @@ Useful for testing out spec files.
 Embed a PGP signature in the package.  This signature can be used
 to verify the integrity and the origin of the package.  See the
 section on PGP SIGNATURES for /etc/rpmrc details.
+.IP "\fB\-\-buildplatform=[platform1[,platform2,...platformN]\fP"
+This will build the package for platforms 1 to N.  This is meant for cross
+compiling.  It requires that you have the platform specific rpmrc files
+referenced in existing rpmrc files, and a complete cross compiling build
+environment. 
 
 .SH REBUILD AND RECOMPILE OPTIONS
 
