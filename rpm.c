@@ -1,18 +1,20 @@
-#include <gdbm.h>
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <getopt.h>
+#include <unistd.h>
 
 #include "install.h"
+#include "lib/rpmerr.h"
 #include "lib/messages.h"
 #include "query.h"
 #include "rpmlib.h"
+#include "build/build.h"
 
 char * version = VERSION;
 
 enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
-	     MODE_UNKNOWN };
+	     MODE_BUILD, MODE_UNKNOWN };
 
 static void argerror(char * desc);
 
@@ -25,6 +27,7 @@ void printHelp(void);
 void printVersion(void);
 void printBanner(void);
 void printUsage(void);
+void build(char * arg, int buildAmount);
 
 void printVersion(void) {
     printf("RPM version %s\n", version);
@@ -129,6 +132,41 @@ void printHelp(void) {
     puts("                          and remove spec file, sources, patches, and icons.");
 }
 
+void build(char * arg, int buildAmount) {
+    FILE *f;
+    Spec s;
+    char * specfile;
+    
+    setVerbosity(MESS_VERBOSE);
+
+    if (arg[0] == '/') {
+	specfile = arg;
+    } else {
+	/* XXX this is broken if PWD is near 1024 */
+
+	specfile = alloca(1024);
+	getcwd(specfile, 1024);
+	strcat(specfile, "/");
+	strcat(specfile, arg);
+    }
+
+    f = fopen(specfile, "r");
+    if ((s = parseSpec(f, specfile))) {
+	if (doBuild(s, buildAmount)) {
+	    fprintf(stderr, "Build failed.\n");
+	}
+    } else {
+	/* Spec parse failed -- could be Exclude: Exclusive: */
+	if (errCode() == RPMERR_BADARCH) {
+	    fprintf(stderr, "%s doesn't build on this architecture\n", arg);
+	} else {
+	    fprintf(stderr, "Build failed.\n");
+	}
+    }
+    
+    fclose(f);
+}
+
 int main(int argc, char ** argv) {
     int long_index;
     enum modes bigMode = MODE_UNKNOWN;
@@ -145,9 +183,13 @@ int main(int argc, char ** argv) {
     int showHash = 0;
     int installFlags = 0;
     int interfaceFlags = 0;
+    int buildAmount = 0;
+    int clean = 0;
     char * prefix = "/";
     struct option options[] = {
 	    { "all", 0, 0, 'a' },
+	    { "build", 1, 0, 'b' },
+	    { "clean", 0, &clean, 0 },
 	    { "configfiles", 0, 0, 'c' },
 	    { "docfiles", 0, 0, 'd' },
 	    { "file", 0, 0, 'f' },
@@ -179,7 +221,7 @@ int main(int argc, char ** argv) {
 
 
     while (1) {
-	arg = getopt_long(argc, argv, "QqhpvPfFilsagGducr:", options, 
+	arg = getopt_long(argc, argv, "QqhpvPfFilsagGducr:b:", options, 
 			  &long_index);
 	if (arg == -1) break;
 
@@ -199,6 +241,36 @@ int main(int argc, char ** argv) {
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
 		argerror("only one major mode may be specified");
 	    bigMode = MODE_UNINSTALL;
+	    break;
+	
+	  case 'b':
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_BUILD)
+		argerror("only one major mode may be specified");
+	    bigMode = MODE_BUILD;
+
+	    if (strlen(optarg) > 1)
+		argerror("--build (-b) requires one of a,b,i,c,p,l as "
+			 "its sole argument");
+
+	    switch (optarg[0]) {
+	      /* these fallthroughs are intentional */
+	      case 'a':
+		buildAmount |= RPMBUILD_SOURCE;
+	      case 'b':
+		buildAmount |= RPMBUILD_BINARY;
+	      case 'i':
+		buildAmount |= RPMBUILD_INSTALL;
+	      case 'c':
+		buildAmount |= RPMBUILD_BUILD;
+	      case 'p':
+		buildAmount |= RPMBUILD_PREP;
+		break;
+
+	      case 'l':
+		buildAmount |= RPMBUILD_LIST;
+		break;
+	    }
+
 	    break;
 	
 	  case 'v':
@@ -287,6 +359,8 @@ int main(int argc, char ** argv) {
 	    break;
 
 	  case 'r':
+	    if (optarg[1] != '/') 
+		argerror("arguments to --root (-r) must begin with a /");
 	    prefix = optarg;
 	    break;
 
@@ -321,13 +395,38 @@ int main(int argc, char ** argv) {
 
     if (bigMode != MODE_INSTALL && replacePackages)
 	argerror("--replacepkgs may only be specified during package installation");
+  
+    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && test)
+	argerror("--test may only be specified during package installation "
+		 "and uninstallation");
+
+    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && prefix[1])
+	argerror("--test may only be specified during package installation "
+		 "and uninstallation");
+
+    if (bigMode != MODE_BUILD && clean) 
+	argerror("--clean may only be used during package building");
 
     switch (bigMode) {
       case MODE_UNKNOWN:
 	if (!version && !help) printUsage();
 	exit(0);
 
+      case MODE_BUILD:
+	if (clean)
+	    buildAmount |= RPMBUILD_CLEAN;
+
+	if (optind == argc) 
+	    argerror("no spec files given for build");
+
+	while (optind < argc) 
+	    build(argv[optind++], buildAmount);
+	break;
+
       case MODE_UNINSTALL:
+	if (optind == argc) 
+	    argerror("no packages given for uninstall");
+
 	while (optind < argc) 
 	    doUninstall(prefix, argv[optind++], test, 0);
 	break;
@@ -340,6 +439,9 @@ int main(int argc, char ** argv) {
 
 	if (showPercents) interfaceFlags |= RPMINSTALL_PERCENT;
 	if (showHash) interfaceFlags |= RPMINSTALL_HASH;
+
+	if (optind == argc) 
+	    argerror("no packages given for install");
 
 	while (optind < argc) 
 	    doInstall(prefix, argv[optind++], installFlags, interfaceFlags);
