@@ -323,6 +323,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
     gi->keyp = keyp;
     gi->keylen = keylen;
 
+    gi->flags = 0;
     gi->active = 0;
     gi->i = -1;
     gi->hdrPath = NULL;
@@ -345,6 +346,7 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 {
     char hnum[32];
     rpmRC rpmrc = RPMRC_NOTFOUND;
+    int xx;
 
     if (gi == NULL)
 	return rpmrc;
@@ -424,7 +426,6 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	rpmrc = rpmgiWalkReadHeader(gi);
 
 	if (gi->h == NULL || rpmrc != RPMRC_OK) {
-	    int xx;
 	    xx = Fts_close(gi->ftsp);
 	    gi->ftsp = NULL;
 	    goto enditer;
@@ -436,9 +437,18 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
     }
 /*@=branchstate@*/
 
+    if (gi->flags & 0x1) {
+	xx = rpmtsAddInstallElement(gi->ts, gi->h, (fnpyKey)gi->hdrPath, 0, NULL);
+	/* TODO save header and path in rpmte. */
+    }
+
     return RPMRC_OK;
 
 enditer:
+    if (gi->flags & 0x2) {
+	xx = rpmtsCheck(gi->ts);
+	xx = rpmtsOrder(gi->ts);
+    }
     gi->h = headerFree(gi->h);
     gi->hdrPath = _free(gi->hdrPath);
     gi->i = -1;
@@ -465,10 +475,11 @@ rpmts rpmgiTs(rpmgi gi)
 /*@=compdef =refcounttrans =retexpose =usereleased@*/
 }
 
-rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int flags)
+rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int ftsOpts, int flags)
 {
     rpmRC rpmrc = rpmgiGlobArgv(gi, argv);
-    gi->ftsOpts = flags;
+    gi->ftsOpts = ftsOpts;
+    gi->flags = flags;
     return rpmrc;
 }
 

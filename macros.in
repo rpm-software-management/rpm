@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: @RPMCONFIGDIR@/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.153 2004/10/15 00:14:29 jbj Exp $
+# $Id: macros.in,v 1.154 2004/10/20 02:34:17 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -776,11 +776,40 @@ print (t)\
 #	perl-Date-Calc>perl-Bit-Vector	\
 #	glibc-debug>glibc-devel
 
+%_dependency_whiteout_8_0		\
+	mysql>perl-DBD-MySQL		\
+	perl>perl-Filter		\
+	perl>mrtg			\
+	perl>mod_perl			\
+	perl-Date-Calc>perl-Bit-Vector	\
+
+%_dependency_whiteout_fc3		\
+	coreutils>pam			\
+	nautilus>nautilus-cd-burner	\
+	aspell>aspell-en		\
+	kernel>initscripts		\
+	kernel-smp>initscripts		\
+	xorg-x11-libs>xorg-x11-Mesa-libGL \
+	openldap>cyrus-sasl-md5		\
+	openldap>cyrus-sasl		\
+	openjade>docbook-dtds		\
+	gtk+>gdk-pixbuf			\
+	xorg-x11>xinitrc		\
+	gnome-python2>gnome-python2-bonobo \
+	httpd-suexec>httpd		\
+	xemacs-sumo>apel-xemacs		\
+	php>php-pear			\
+	openoffice.org-libs>openoffice.org
+
 %_dependency_whiteout			\
 	libtermcap>bash			\
 	modutils>vixie-cron		\
 	ypbind>yp-tools			\
 	ghostscript-fonts>ghostscript	\
+	%{?_dependency_whiteout_fc3}	\
+	%{?_dependency_whiteout_fc2}	\
+	%{?_dependency_whiteout_fc1}	\
+	%{?_dependency_whiteout_9}	\
 	%{?_dependency_whiteout_8_0}	\
 	%{?_dependency_whiteout_7_2}	\
 	%{?_dependency_whiteout_7_1}	\

@@ -27,6 +27,7 @@ struct rpmgi_s {
     const void * keyp;		/*!< Iterator key. */
     size_t keylen;		/*!< Iterator key length. */
 
+    int flags;			/*!< Iterator control bits. */
     int active;			/*!< Iterator is active? */
     int i;			/*!< Element index. */
 /*@null@*/
@@ -153,9 +154,11 @@ rpmts rpmgiTs(/*@null@*/ rpmgi gi)
 /**
  * Load iterator args.
  * @param gi		generalized iterator
+ * @param ftsOpts	fts(3) flags
+ * @param flags		iterator flags
  * @returns		RPMRC_OK
  */
-rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t, int flags)
+rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t, int ftsOpts, int flags)
 	/*@modifies gi @*/;
 
 #ifdef __cplusplus

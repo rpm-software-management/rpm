@@ -989,7 +989,7 @@ zapRelation(rpmte q, rpmte p,
 	if (zap && !(Flags & RPMSENSE_PREREQ)) {
 	    rpmMessage(msglvl,
 			_("removing %s \"%s\" from tsort relations.\n"),
-			(rpmteNEVR(p) ?  rpmteNEVR(p) : "???"), dp);
+			(rpmteNEVRA(p) ?  rpmteNEVRA(p) : "???"), dp);
 	    rpmteTSI(p)->tsi_count--;
 	    if (tsi_prev) tsi_prev->tsi_next = tsi->tsi_next;
 	    tsi->tsi_next = NULL;
@@ -1360,7 +1360,7 @@ rescan:
 			rpmteTSI(q)->tsi_qcnt, rpmteTree(q), rpmteDepth(q),
 			(2 * rpmteDepth(q)), "",
 			deptypechar,
-			(rpmteNEVR(q) ? rpmteNEVR(q) : "???"));
+			(rpmteNEVRA(q) ? rpmteNEVRA(q) : "???"));
 
 	treex = rpmteTree(q);
 	depth = rpmteDepth(q);
@@ -1483,8 +1483,8 @@ rescan:
 
 		/* Print next member of loop. */
 		buf[0] = '\0';
-		if (rpmteNEVR(p) != NULL)
-		    (void) stpcpy(buf, rpmteNEVR(p));
+		if (rpmteNEVRA(p) != NULL)
+		    (void) stpcpy(buf, rpmteNEVRA(p));
 		rpmMessage(msglvl, "    %-40s %s\n", buf,
 			(dp ? dp : "not found!?!"));
 

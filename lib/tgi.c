@@ -4,6 +4,8 @@
 #include <rpmgi.h>
 #include <rpmcli.h>
 
+#include <rpmte.h>
+
 #include <rpmmacro.h>
 #include <rpmmessages.h>
 #include <popt.h>
@@ -12,6 +14,8 @@
 
 static const char * gitagstr = "packages";
 static const char * gikeystr = NULL;
+static rpmtransFlags transFlags = 0;
+static int giflags = 0x3;
 static int ftsOpts = 0;
 
 static const char * queryFormat = NULL;
@@ -43,6 +47,10 @@ static struct poptOption optionsTable[] = {
 	N_("iterate tag index"), NULL },
  { "key", '\0', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT, &gikeystr, 0,
 	N_("tag value key"), NULL },
+
+ { "anaconda", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+ 	&transFlags, RPMTRANS_FLAG_ANACONDA|RPMTRANS_FLAG_DEPLOOPS,
+	N_("use anaconda \"presentation order\""), NULL},
 
  { "qf", '\0', POPT_ARG_STRING, &queryFormat, 0,
         N_("use the following query format"), "QUERYFORMAT" },
@@ -86,7 +94,6 @@ main(int argc, char *const argv[])
     const char ** av;
     int ac;
     int rc = 0;
-    int xx;
 
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
@@ -106,6 +113,8 @@ main(int argc, char *const argv[])
     /* XXX ftswalk segfault with no args. */
 
     ts = rpmtsCreate();
+    (void) rpmtsSetFlags(ts, transFlags);
+
     vsflags = rpmExpandNumeric("%{?_vsflags_query}");
     if (rpmcliQueryFlags & VERIFY_DIGEST)
 	vsflags |= _RPMVSF_NODIGESTS;
@@ -122,20 +131,49 @@ main(int argc, char *const argv[])
     gi = rpmgiNew(ts, gitag, gikeystr, 0);
 
     av = poptGetArgs(optCon);
-    (void) rpmgiSetArgs(gi, av, ftsOpts);
+    (void) rpmgiSetArgs(gi, av, ftsOpts, giflags);
 
     ac = 0;
     while (rpmgiNext(gi) == RPMRC_OK) {
-	const char * arg = rpmgiPathOrQF(gi);
-	Header h = rpmgiHeader(gi);
-	const char * fn = rpmgiHdrPath(gi);
+	if (!(giflags & 0x3)) {
+	    const char * arg = rpmgiPathOrQF(gi);
+#ifdef	UNUSED
+	    Header h = rpmgiHeader(gi);
+	    const char * fn = rpmgiHdrPath(gi);
+	    int xx;
+#endif
 
-	fprintf(stderr, "%5d %s\n", ac, arg);
-	arg = _free(arg);
+	    fprintf(stderr, "%5d %s\n", ac, arg);
+	    arg = _free(arg);
+	}
 	ac++;
+    }
 
-	xx = rpmtsAddInstallElement(ts, h, (fnpyKey)fn, 0, NULL);
+    if (giflags & 0x3) {
+	rpmtsi tsi;
+	rpmte q;
+	int i;
+	
+fprintf(stderr, "======================= ordered %d elements\n\
+    # Tree Depth Degree Package\n\
+=======================\n", rpmtsNElements(ts));
 
+	i = 0;
+	tsi = rpmtsiInit(ts);
+	while((q = rpmtsiNext(tsi, 0)) != NULL) {
+	    char deptypechar;
+
+	    if (i == rpmtsUnorderedSuccessors(ts, -1))
+		fprintf(stderr, "======================= leaf nodes only:\n");
+
+	    deptypechar = (rpmteType(q) == TR_REMOVED ? '-' : '+');
+	    fprintf(stderr, "%5d%5d%6d%7d %*s%c%s\n",
+		i, rpmteTree(q), rpmteDepth(q), rpmteDegree(q),
+		(2 * rpmteDepth(q)), "",
+		deptypechar, rpmteNEVRA(q));
+	    i++;
+	}
+	tsi = rpmtsiFree(tsi);
     }
 
     gi = rpmgiFree(gi);

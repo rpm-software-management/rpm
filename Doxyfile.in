@@ -458,6 +458,8 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/lib/rpmds.h \
                          @top_srcdir@/lib/rpmfi.c \
                          @top_srcdir@/lib/rpmfi.h \
+                         @top_srcdir@/lib/rpmgi.c \
+                         @top_srcdir@/lib/rpmgi.h \
                          @top_srcdir@/lib/rpminstall.c \
                          @top_srcdir@/lib/rpmlead.c \
                          @top_srcdir@/lib/rpmlead.h \
