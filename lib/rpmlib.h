@@ -54,6 +54,9 @@
 #define RPMTAG_ROOT                     1038
 #define RPMTAG_FILEUSERNAME             1039
 #define RPMTAG_FILEGROUPNAME            1040
+#define RPMTAG_EXCLUDE                  1041
+#define RPMTAG_EXCLUSIVE                1042
+#define RPMTAG_ICON                     1043
 
 #define RPMFILE_STATE_NORMAL 		0
 #define RPMFILE_STATE_REPLACED 		1
