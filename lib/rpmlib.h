@@ -821,10 +821,10 @@ int rpmdbPruneIterator(/*@null@*/ rpmdbMatchIterator mi,
  * Tag value pattern match mode.
  */
 typedef enum rpmMireMode_e {
-    RPMMIRE_DEFAULT	= 0,	/*!< regex with \., .* and ^...$ */
+    RPMMIRE_DEFAULT	= 0,	/*!< regex with \., .* and ^...$ added */
     RPMMIRE_STRCMP	= 1,	/*!< strcmp on strings */
     RPMMIRE_REGEX	= 2,	/*!< regex patterns */
-    RPMMIRE_GLOB	= 3	/*!< glob patterns */
+    RPMMIRE_GLOB	= 3	/*!< glob patterns through fnmatch(3) */
 } rpmMireMode;
 
 /** \ingroup rpmdb
@@ -837,36 +837,6 @@ typedef enum rpmMireMode_e {
  */
 int rpmdbSetIteratorRE(/*@null@*/ rpmdbMatchIterator mi, rpmTag tag,
 		rpmMireMode mode, /*@null@*/ const char * pattern)
-	/*@modifies mi @*/;
-
-/** \ingroup rpmdb
- * Modify iterator to filter out headers that do not match version.
- * @deprecated Use
- *	rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_DEFAULT, version)
- * instead.
- * @todo Eliminate from API.
- * @param mi		rpm database iterator
- * @param version	version to match (can be a regex pattern)
- * @return		0 on success
- */
-/*@unused@*/
-int rpmdbSetIteratorVersion(/*@null@*/ rpmdbMatchIterator mi,
-		/*@null@*/ const char * version)
-	/*@modifies mi @*/;
-
-/** \ingroup rpmdb
- * Modify iterator to filter out headers that do not match release.
- * @deprecated Use
- *	rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT, release)
- * instead.
- * @todo Eliminate from API.
- * @param mi		rpm database iterator
- * @param release	release to match (can be a regex pattern)
- * @return		0 on success
- */
-/*@unused@*/
-int rpmdbSetIteratorRelease(/*@null@*/ rpmdbMatchIterator mi,
-		/*@null@*/ const char * release)
 	/*@modifies mi @*/;
 
 /** \ingroup rpmdb

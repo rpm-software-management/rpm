@@ -108,6 +108,9 @@
 	- eliminate db1 support.
 	- enable CDB by default.
 	- use DBT_DB_MALLOC to eliminate re-malloc'ing header blobs.
+	- rework most of rpmdb.c prepatory to implementing duplicates.
+	- fix: 2 memory leaks in headerSprintf.
+	- fix: db mire's access out-of-bounds memory.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

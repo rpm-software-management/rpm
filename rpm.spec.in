@@ -521,6 +521,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon May  6 2002 Jeff Johnson <jbj@redhat.com>
+- rework most of rpmdb.c prepatory to implementing duplicates.
+- fix: 2 memory leaks in headerSprintf.
+- fix: db mire's access out-of-bounds memory.
+
 * Fri May  3 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.12
 - use DBT_DB_MALLOC to eliminate re-malloc'ing header blobs.
 

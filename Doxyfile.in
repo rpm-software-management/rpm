@@ -398,7 +398,6 @@ INPUT                  = \
 	@top_srcdir@/lib/stringbuf.h \
 	@top_srcdir@/lib/transaction.c \
 	@top_srcdir@/lib/verify.c \
-	@top_srcdir@/rpmdb/db1.c \
 	@top_srcdir@/rpmdb/db3.c \
 	@top_srcdir@/rpmdb/dbconfig.c \
 	@top_srcdir@/rpmdb/fprint.c \

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-05-02 19:33-0400\n"
+"POT-Creation-Date: 2002-05-06 15:34-0400\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1502,7 +1502,7 @@ msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: rpmdb/header.c:2979 rpmdb/header.c:3000 rpmdb/header.c:3022
+#: rpmdb/header.c:2985 rpmdb/header.c:3006 rpmdb/header.c:3028
 msgid "(not a number)"
 msgstr "(숫자가 아닙니다)"
 
@@ -2841,63 +2841,15 @@ msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 "%s-%s-%s: 고정 헤더 영역 축약(immutable header region digest) 검사에 실패함\n"
 
-#: rpmdb/db1.c:98 rpmdb/db3.c:85
+#: rpmdb/db3.c:85
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "%3$s 의 db%1$d 오류(%2$d): %4$s\n"
 
-#: rpmdb/db1.c:101 rpmdb/db3.c:88
+#: rpmdb/db3.c:88
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d 오류(%d): %s\n"
-
-#: rpmdb/db1.c:168
-#, c-format
-msgid ""
-"Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
-msgstr ""
-"오프셋 %d(0x%08x)의 패키지 연결부분(chain)이 손상되었습니다, 접근을 재시도 합"
-"니다 ...\n"
-
-#: rpmdb/db1.c:180
-#, c-format
-msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
-msgstr "손상된 오프셋 %d(0x%08x)의 연결부분(chain)에 재접근 합니다.\n"
-
-#. @=branchstate@
-#: rpmdb/db1.c:506
-#, c-format
-msgid "closed  db file        %s\n"
-msgstr "닫힌   db 파일    %s\n"
-
-#: rpmdb/db1.c:509
-#, c-format
-msgid "removed db file        %s\n"
-msgstr "삭제된 db 파일    %s\n"
-
-#: rpmdb/db1.c:544
-#, c-format
-msgid "bad db file %s\n"
-msgstr "잘못된 db 파일    %s\n"
-
-#: rpmdb/db1.c:549
-#, c-format
-msgid "opening db file        %s mode 0x%x\n"
-msgstr "열린   db 파일    %s 모드 0x%x\n"
-
-#. XXX check errno validity
-#: rpmdb/db1.c:572
-#, c-format
-msgid "cannot get %s lock on database\n"
-msgstr "잠겨있는 데이터베이스의 %s (을)를 얻을 수 없습니다\n"
-
-#: rpmdb/db1.c:573 rpmdb/db3.c:1068
-msgid "exclusive"
-msgstr "제외함(exclusive)"
-
-#: rpmdb/db1.c:573 rpmdb/db3.c:1068
-msgid "shared"
-msgstr "공유됨"
 
 #: rpmdb/db3.c:114
 #, c-format
@@ -2914,27 +2866,35 @@ msgstr "삭제된 db 환경    %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "열린   db 환경    %s/%s\n"
 
-#: rpmdb/db3.c:561
+#: rpmdb/db3.c:605
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "닫힌   db 인덱스  %s/%s\n"
 
-#: rpmdb/db3.c:628
+#: rpmdb/db3.c:672
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "검증된 db 인덱스  %s/%s\n"
 
-#: rpmdb/db3.c:850
+#: rpmdb/db3.c:894
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "열린   db 인덱스  %s/%s %s 모드=0x%x\n"
 
-#: rpmdb/db3.c:1066
+#: rpmdb/db3.c:1110
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "잠겨있는 %2$s/%3$s 의 %1$s (을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db3.c:1072
+#: rpmdb/db3.c:1112
+msgid "exclusive"
+msgstr "제외함(exclusive)"
+
+#: rpmdb/db3.c:1112
+msgid "shared"
+msgstr "공유됨"
+
+#: rpmdb/db3.c:1116
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "잠긴   db 인덱스  %s/%s\n"
@@ -2966,72 +2926,72 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE 카운트는 반드시 '1' 이어야 합니다.\n"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2208
+#: rpmdb/header.c:2210
 msgid "missing { after %"
 msgstr "'%' 뒤에 '{' 를 찾을 수 없습니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2238
+#: rpmdb/header.c:2240
 msgid "missing } after %{"
 msgstr "'%{' 뒤에 '}' 를 찾을 수 없습니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2252
+#: rpmdb/header.c:2254
 msgid "empty tag format"
 msgstr "태그 형식이 비어있습니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2266
+#: rpmdb/header.c:2268
 msgid "empty tag name"
 msgstr "태그 이름이 비어있습니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2283
+#: rpmdb/header.c:2285
 msgid "unknown tag"
 msgstr "알 수 없는 태그 입니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2310
+#: rpmdb/header.c:2312
 msgid "] expected at end of array"
 msgstr "배열의 끝부분에 ']' 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2328
+#: rpmdb/header.c:2330
 msgid "unexpected ]"
 msgstr "불필요한 ']' 가 사용되고 있습니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2332
+#: rpmdb/header.c:2334
 msgid "unexpected }"
 msgstr "불필요한 '}' 가 사용되고 있습니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2398
+#: rpmdb/header.c:2401
 msgid "? expected in expression"
 msgstr "표현식에 '?' 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2407
+#: rpmdb/header.c:2410
 msgid "{ expected after ? in expression"
 msgstr "표현식에서 '?' 뒤에 '{' 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2420 rpmdb/header.c:2462
+#: rpmdb/header.c:2423 rpmdb/header.c:2468
 msgid "} expected in expression"
 msgstr "표현식에 '}' 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2430
+#: rpmdb/header.c:2433
 msgid ": expected following ? subexpression"
 msgstr "하부 표현식(subexpression)의 '?' 다음에 ':' 이 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2447
+#: rpmdb/header.c:2453
 msgid "{ expected after : in expression"
 msgstr "표현식에서 ':' 뒤에 '{' 가 필요합니다"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2472
+#: rpmdb/header.c:2478
 msgid "| expected at end of expression"
 msgstr "표현식의 끝부분에 '|' 가 필요합니다"
 
@@ -3054,153 +3014,148 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "(기존의) rpm[23] 패키징과 호환하는 헤더를 생성합니다"
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:161
+#: rpmdb/rpmdb.c:162
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 "DB 태그 초기화[dbiTagsInit]: 인증되지 않은 태그 이름: \"%s\" (은)는 무시됩니"
 "다\n"
 
-#: rpmdb/rpmdb.c:254
+#: rpmdb/rpmdb.c:234
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "db%2$d (을)를 이용하여 %1$s 인덱스를 열 수 없습니다 - %3$s (%4$d)\n"
 
-#: rpmdb/rpmdb.c:276
+#: rpmdb/rpmdb.c:256
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "%s 인덱스를 열 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:377
+#: rpmdb/rpmdb.c:695
+msgid "no dbpath has been set\n"
+msgstr "db경로가 설정되어 있지 않습니다\n"
+
+#: rpmdb/rpmdb.c:983 rpmdb/rpmdb.c:1110 rpmdb/rpmdb.c:1157 rpmdb/rpmdb.c:2007
+#: rpmdb/rpmdb.c:2107 rpmdb/rpmdb.c:2385 rpmdb/rpmdb.c:2787
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 "%3$s 인덱스에서 \"%2$s\" 레코드를 얻는 도중 오류(%1$d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:518
-#, c-format
-msgid "error(%d) storing record %s into %s\n"
-msgstr "%3$s (으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
-
-#: rpmdb/rpmdb.c:538
-#, c-format
-msgid "error(%d) removing record %s from %s\n"
-msgstr "%3$s 에서 %2$s 레코드를 삭제하는 도중 오류(%1$d)가 발생했습니다\n"
-
-#: rpmdb/rpmdb.c:797
-msgid "no dbpath has been set\n"
-msgstr "db경로가 설정되어 있지 않습니다\n"
-
-#. error
-#: rpmdb/rpmdb.c:1183
-#, c-format
-msgid "error(%d) counting packages\n"
-msgstr "패키지의 수를 세는 도중 오류(%d)가 발생했습니다\n"
-
-#: rpmdb/rpmdb.c:1986 rpmdb/rpmdb.c:3386
-#, c-format
-msgid "record number %u in database is bad -- skipping.\n"
-msgstr "데이터베이스의 레코드 번호 %u (이)가 잘못되었습니다 -- 생략합니다.\n"
-
-#: rpmdb/rpmdb.c:2052
+#: rpmdb/rpmdb.c:1930
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr "rpmdb: 손상된 헤더 #%u (이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2326
+#: rpmdb/rpmdb.c:2189
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x 의 헤더를 읽을 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:2495
+#: rpmdb/rpmdb.c:2354
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%2$s 인덱스에서 \"%1$s\" (을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2499
+#: rpmdb/rpmdb.c:2358
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%2$s 인덱스에서 %1$d 항목들(entries)을 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2692
+#: rpmdb/rpmdb.c:2406 rpmdb/rpmdb.c:2803
+#, c-format
+msgid "error(%d) storing record %s into %s\n"
+msgstr "%3$s (으)로 %2$s 레코드를 저장하는 도중 오류(%1$d)가 발생했습니다\n"
+
+#: rpmdb/rpmdb.c:2416
+#, c-format
+msgid "error(%d) removing record %s from %s\n"
+msgstr "%3$s 에서 %2$s 레코드를 삭제하는 도중 오류(%1$d)가 발생했습니다\n"
+
+#: rpmdb/rpmdb.c:2557
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "새로운 패키지를 배치하는 도중 오류(%d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2887
+#: rpmdb/rpmdb.c:2763
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%2$s 인덱스에 \"%1$s\" (을)를 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:2891
+#: rpmdb/rpmdb.c:2767
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%2$s 인덱스에 %1$d 항목들(entries)을 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:3272
+#: rpmdb/rpmdb.c:3137
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "db3를 재구축 한 후에 %s (을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:3305
+#: rpmdb/rpmdb.c:3172
 msgid "no dbpath has been set"
 msgstr "db경로가 설정되어 있지 않습니다"
 
-#: rpmdb/rpmdb.c:3332
+#: rpmdb/rpmdb.c:3199
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "%2$s 에 데이터베이스 %1$s (을)를 재구축 합니다\n"
 
-#: rpmdb/rpmdb.c:3336
+#: rpmdb/rpmdb.c:3203
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "임시 데이터베이스 %s (이)가 이미 존재합니다\n"
 
-#: rpmdb/rpmdb.c:3342
+#: rpmdb/rpmdb.c:3209
 #, c-format
 msgid "creating directory %s\n"
 msgstr "%s 디렉토리를 생성합니다\n"
 
-#: rpmdb/rpmdb.c:3344
+#: rpmdb/rpmdb.c:3211
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "%s 디렉토리를 생성함: %s\n"
 
-#: rpmdb/rpmdb.c:3351
+#: rpmdb/rpmdb.c:3218
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "dbapi %d (을)를 통해 이전 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3362
+#: rpmdb/rpmdb.c:3229
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "dbapi %d (을)를 통해 새로운 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3426
+#: rpmdb/rpmdb.c:3253
+#, c-format
+msgid "record number %u in database is bad -- skipping.\n"
+msgstr "데이터베이스의 레코드 번호 %u (이)가 잘못되었습니다 -- 생략합니다.\n"
+
+#: rpmdb/rpmdb.c:3293
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "%u 에 레코드를 추가할 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:3444
+#: rpmdb/rpmdb.c:3311
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "데이터베이스를 재구축하는데 실패함: 원본 데이터베이스는 그대로 유지됩니다\n"
 
-#: rpmdb/rpmdb.c:3452
+#: rpmdb/rpmdb.c:3319
 msgid "failed to replace old database with new database!\n"
 msgstr "이전 데이터베이스를 새로운 데이터베이스로 교체하는데 실패했습니다!\n"
 
-#: rpmdb/rpmdb.c:3454
+#: rpmdb/rpmdb.c:3321
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "복구하기 위해 $2$s 의 파일을 $1$s 의 파일로 교체합니다"
 
-#: rpmdb/rpmdb.c:3464
+#: rpmdb/rpmdb.c:3331
 #, c-format
 msgid "removing directory %s\n"
 msgstr "%s 디렉토리를 삭제합니다\n"
 
-#: rpmdb/rpmdb.c:3466
+#: rpmdb/rpmdb.c:3333
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
@@ -3412,6 +3367,33 @@ msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s (을)를 생성하는데 실패함: %s\n"
+
+#~ msgid ""
+#~ "Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
+#~ msgstr ""
+#~ "오프셋 %d(0x%08x)의 패키지 연결부분(chain)이 손상되었습니다, 접근을 재시"
+#~ "도 합니다 ...\n"
+
+#~ msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
+#~ msgstr "손상된 오프셋 %d(0x%08x)의 연결부분(chain)에 재접근 합니다.\n"
+
+#~ msgid "closed  db file        %s\n"
+#~ msgstr "닫힌   db 파일    %s\n"
+
+#~ msgid "removed db file        %s\n"
+#~ msgstr "삭제된 db 파일    %s\n"
+
+#~ msgid "bad db file %s\n"
+#~ msgstr "잘못된 db 파일    %s\n"
+
+#~ msgid "opening db file        %s mode 0x%x\n"
+#~ msgstr "열린   db 파일    %s 모드 0x%x\n"
+
+#~ msgid "cannot get %s lock on database\n"
+#~ msgstr "잠겨있는 데이터베이스의 %s (을)를 얻을 수 없습니다\n"
+
+#~ msgid "error(%d) counting packages\n"
+#~ msgstr "패키지의 수를 세는 도중 오류(%d)가 발생했습니다\n"
 
 #~ msgid ""
 #~ "free list corrupt (%u)- please run\n"

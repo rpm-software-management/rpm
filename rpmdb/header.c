@@ -2128,7 +2128,7 @@ static int parseExpression(sprintfToken token, char * str,
 
 /**
  */
-static int parseFormat(char * str, const headerTagTableEntry tags,
+static int parseFormat(/*@null@*/ char * str, const headerTagTableEntry tags,
 		const headerSprintfExtension extensions,
 		/*@out@*/sprintfToken * formatPtr, /*@out@*/int * numTokensPtr,
 		/*@null@*/ /*@out@*/ char ** endPtr, int state,
@@ -2146,6 +2146,7 @@ static int parseFormat(char * str, const headerTagTableEntry tags,
 
     /* upper limit on number of individual formats */
     numTokens = 0;
+    if (str != NULL)
     for (chptr = str; *chptr != '\0'; chptr++)
 	if (*chptr == '%') numTokens++;
     numTokens = numTokens * 2 + 1;
@@ -2156,6 +2157,7 @@ static int parseFormat(char * str, const headerTagTableEntry tags,
     /*@-infloops@*/ /* LCL: can't detect done termination */
     dst = start = str;
     currToken = -1;
+    if (start != NULL)
     while (*start != '\0') {
 	switch (*start) {
 	case '%':
@@ -2362,7 +2364,8 @@ static int parseFormat(char * str, const headerTagTableEntry tags,
     }
     /*@=infloops@*/
 
-    *dst = '\0';
+    if (dst != NULL)
+        *dst = '\0';
 
     currToken++;
     for (i = 0; i < currToken; i++) {
@@ -2435,10 +2438,13 @@ static int parseExpression(sprintfToken token, char * str,
     }
 
     if (*chptr == '|') {
-	(void) parseFormat(xstrdup(""), tags, extensions,
-			&token->u.cond.elseFormat, 
-			&token->u.cond.numElseTokens, &end, PARSER_IN_EXPR, 
-			errmsg);
+	if (parseFormat(NULL, tags, extensions, &token->u.cond.elseFormat, 
+		&token->u.cond.numElseTokens, &end, PARSER_IN_EXPR, errmsg))
+	{
+	    token->u.cond.ifFormat =
+		freeFormat(token->u.cond.ifFormat, token->u.cond.numIfTokens);
+	    return 1;
+	}
     } else {
 	chptr++;
 
@@ -2962,7 +2968,7 @@ char * headerSprintf(Header h, const char * fmt,
 
     fmtString = _free(fmtString);
     extCache = freeExtensionCache(exts, extCache);
-    format = _free(format);
+    format = freeFormat(format, numTokens);
 
     return val;
 }

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-05-02 19:33-0400\n"
+"POT-Creation-Date: 2002-05-06 15:34-0400\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -1474,7 +1474,7 @@ msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:29 lib/formats.c:53 lib/formats.c:84 lib/formats.c:281
-#: rpmdb/header.c:2979 rpmdb/header.c:3000 rpmdb/header.c:3022
+#: rpmdb/header.c:2985 rpmdb/header.c:3006 rpmdb/header.c:3028
 msgid "(not a number)"
 msgstr ""
 
@@ -2763,60 +2763,14 @@ msgstr ""
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
-#: rpmdb/db1.c:98 rpmdb/db3.c:85
+#: rpmdb/db3.c:85
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr ""
 
-#: rpmdb/db1.c:101 rpmdb/db3.c:88
+#: rpmdb/db3.c:88
 #, c-format
 msgid "db%d error(%d): %s\n"
-msgstr ""
-
-#: rpmdb/db1.c:168
-#, c-format
-msgid ""
-"Broken package chain at offset %d(0x%08x), attempting to reconnect ...\n"
-msgstr ""
-
-#: rpmdb/db1.c:180
-#, c-format
-msgid "Reconnecting broken chain at offset %d(0x%08x).\n"
-msgstr ""
-
-#. @=branchstate@
-#: rpmdb/db1.c:506
-#, c-format
-msgid "closed  db file        %s\n"
-msgstr ""
-
-#: rpmdb/db1.c:509
-#, c-format
-msgid "removed db file        %s\n"
-msgstr ""
-
-#: rpmdb/db1.c:544
-#, c-format
-msgid "bad db file %s\n"
-msgstr ""
-
-#: rpmdb/db1.c:549
-#, c-format
-msgid "opening db file        %s mode 0x%x\n"
-msgstr ""
-
-#. XXX check errno validity
-#: rpmdb/db1.c:572
-#, c-format
-msgid "cannot get %s lock on database\n"
-msgstr ""
-
-#: rpmdb/db1.c:573 rpmdb/db3.c:1068
-msgid "exclusive"
-msgstr ""
-
-#: rpmdb/db1.c:573 rpmdb/db3.c:1068
-msgid "shared"
 msgstr ""
 
 #: rpmdb/db3.c:114
@@ -2834,27 +2788,35 @@ msgstr ""
 msgid "opening  db environment %s/%s %s\n"
 msgstr ""
 
-#: rpmdb/db3.c:561
+#: rpmdb/db3.c:605
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:628
+#: rpmdb/db3.c:672
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:850
+#: rpmdb/db3.c:894
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db3.c:1066
+#: rpmdb/db3.c:1110
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1072
+#: rpmdb/db3.c:1112
+msgid "exclusive"
+msgstr ""
+
+#: rpmdb/db3.c:1112
+msgid "shared"
+msgstr ""
+
+#: rpmdb/db3.c:1116
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr ""
@@ -2886,72 +2848,72 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2208
+#: rpmdb/header.c:2210
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2238
+#: rpmdb/header.c:2240
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2252
+#: rpmdb/header.c:2254
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2266
+#: rpmdb/header.c:2268
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2283
+#: rpmdb/header.c:2285
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2310
+#: rpmdb/header.c:2312
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2328
+#: rpmdb/header.c:2330
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2332
+#: rpmdb/header.c:2334
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2398
+#: rpmdb/header.c:2401
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2407
+#: rpmdb/header.c:2410
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2420 rpmdb/header.c:2462
+#: rpmdb/header.c:2423 rpmdb/header.c:2468
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2430
+#: rpmdb/header.c:2433
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2447
+#: rpmdb/header.c:2453
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2472
+#: rpmdb/header.c:2478
 msgid "| expected at end of expression"
 msgstr ""
 
@@ -2972,149 +2934,144 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:161
+#: rpmdb/rpmdb.c:162
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:254
+#: rpmdb/rpmdb.c:234
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:276
+#: rpmdb/rpmdb.c:256
 #, c-format
 msgid "cannot open %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:377
+#: rpmdb/rpmdb.c:695
+msgid "no dbpath has been set\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:983 rpmdb/rpmdb.c:1110 rpmdb/rpmdb.c:1157 rpmdb/rpmdb.c:2007
+#: rpmdb/rpmdb.c:2107 rpmdb/rpmdb.c:2385 rpmdb/rpmdb.c:2787
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:518
-#, c-format
-msgid "error(%d) storing record %s into %s\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:538
-#, c-format
-msgid "error(%d) removing record %s from %s\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:797
-msgid "no dbpath has been set\n"
-msgstr ""
-
-#. error
-#: rpmdb/rpmdb.c:1183
-#, c-format
-msgid "error(%d) counting packages\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:1986 rpmdb/rpmdb.c:3386
-#, c-format
-msgid "record number %u in database is bad -- skipping.\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:2052
+#: rpmdb/rpmdb.c:1930
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2326
+#: rpmdb/rpmdb.c:2189
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2495
+#: rpmdb/rpmdb.c:2354
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2499
+#: rpmdb/rpmdb.c:2358
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2692
+#: rpmdb/rpmdb.c:2406 rpmdb/rpmdb.c:2803
+#, c-format
+msgid "error(%d) storing record %s into %s\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:2416
+#, c-format
+msgid "error(%d) removing record %s from %s\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:2557
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2887
+#: rpmdb/rpmdb.c:2763
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2891
+#: rpmdb/rpmdb.c:2767
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3272
+#: rpmdb/rpmdb.c:3137
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3305
+#: rpmdb/rpmdb.c:3172
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3332
+#: rpmdb/rpmdb.c:3199
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3336
+#: rpmdb/rpmdb.c:3203
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3342
+#: rpmdb/rpmdb.c:3209
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3344
+#: rpmdb/rpmdb.c:3211
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3351
+#: rpmdb/rpmdb.c:3218
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3362
+#: rpmdb/rpmdb.c:3229
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3426
+#: rpmdb/rpmdb.c:3253
+#, c-format
+msgid "record number %u in database is bad -- skipping.\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:3293
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3444
+#: rpmdb/rpmdb.c:3311
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3452
+#: rpmdb/rpmdb.c:3319
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3454
+#: rpmdb/rpmdb.c:3321
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3464
+#: rpmdb/rpmdb.c:3331
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3466
+#: rpmdb/rpmdb.c:3333
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
