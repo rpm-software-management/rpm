@@ -141,7 +141,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
 		/* XXX watchout for rootdir = NULL */
 		tfn = rpmGetPath( (rootdir ? rootdir : ""),
-		    "%{_tmppath}", mktemp(tfnbuf), NULL);
+		    "%{_tmppath}/", mktemp(tfnbuf), NULL);
 	    }
 
 	    rpmMessage(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);

@@ -33,10 +33,10 @@ pkglib_SCRIPTS = find-provides find-requires mkinstalldirs \
 
 noinst_HEADERS = \
 	acconfig.h	build.h		checksig.h	ftp.h	\
-	install.h	system.h	url.h	\
+	install.h	system.h	url.h	        http.h\
 	verify.h
 
-rpm_SOURCES =		build.c checksig.c ftp.c install.c rpm.c url.c \
+rpm_SOURCES =		build.c checksig.c ftp.c http.c install.c rpm.c url.c \
 			verify.c
 rpm_LDADD =		$(mylibs) @LIBMISC@
 

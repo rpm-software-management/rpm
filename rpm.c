@@ -36,6 +36,8 @@ static int excldocs;
 static int force;
 static char * ftpPort;
 static char * ftpProxy;
+static char * httpPort;
+static char * httpProxy;
 static int showHash;
 static int help;
 static int ignoreArch;
@@ -89,6 +91,8 @@ static struct poptOption optionsTable[] = {
  { "ftpproxy", '\0', POPT_ARG_STRING, &ftpProxy, 0,	NULL, NULL},
  { "hash", 'h', 0, &showHash, 0,		NULL, NULL},
  { "help", '\0', 0, &help, 0,			NULL, NULL},
+ { "httpport", '\0', POPT_ARG_STRING, &httpPort, 0,	NULL, NULL},
+ { "httpproxy", '\0', POPT_ARG_STRING, &httpProxy, 0,	NULL, NULL},
  {  NULL, 'i', 0, 0, 'i',			NULL, NULL},
  { "ignorearch", '\0', 0, &ignoreArch, 0,	NULL, NULL},
  { "ignoreos", '\0', 0, &ignoreOs, 0,		NULL, NULL},
@@ -179,6 +183,7 @@ static void printUsage(void) {
     puts(_("                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
     puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"));
+    puts(_("                        [--httpproxy <host>] [--httpport <port>] "));
     puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
     puts(_("                        [--badreloc] [--notriggers] [--excludepath <path>]"));
     puts(_("                        file1.rpm ... fileN.rpm"));
@@ -187,6 +192,7 @@ static void printUsage(void) {
     puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"));
     puts(_("                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
+    puts(_("                        [--httpproxy <host>] [--httpport <port>] "));
     puts(_("                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"));
     puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
     puts(_("                        [--badreloc] [--excludepath <path>] file1.rpm ..."));
@@ -195,6 +201,7 @@ static void printUsage(void) {
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
     puts(_("                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"));
+    puts(_("                        [--httpproxy <host>] [--httpport <port>] "));
     puts(_("                        [--ftpport <port>] [--provides] [--triggers] [--dump]"));
     puts(_("                        [--changelog] [--dbpath <dir>] [targets]"));
     puts(_("       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"));
@@ -277,6 +284,10 @@ static void printHelp(void) {
 		  _("hostname or IP of ftp proxy"));
     printHelpLine(_("      --ftpport <port>    "),
 		  _("port number of ftp server (or proxy)"));
+    printHelpLine(_("      --httpproxy <host>   "),
+		  _("hostname or IP of http proxy"));
+    printHelpLine(_("      --httpport <port>    "),
+		  _("port number of http server (or proxy)"));
     puts(         _("      Package specification options:"));
     printHelpLine(  "        -a                ",
 		  _("query all packages"));
@@ -517,6 +528,8 @@ int main(int argc, char ** argv) {
     force = 0;
     ftpProxy = NULL;
     ftpPort = NULL;
+    httpProxy = NULL;
+    httpPort = NULL;
     showHash = 0;
     help = 0;
     ignoreArch = 0;
@@ -1042,6 +1055,12 @@ int main(int argc, char ** argv) {
 	argerror(_("ftp options can only be used during package queries, "
 		 "installs, and upgrades"));
 
+    if ((httpProxy || httpPort) && !(bigMode == MODE_INSTALL ||
+	((bigMode == MODE_QUERY && querySource == QUERY_RPM)) ||
+	((bigMode == MODE_VERIFY && querySource == VERIFY_RPM))))
+	argerror(_("http options can only be used during package queries, "
+		 "installs, and upgrades"));
+
     if (oldPackage || (force && upgrade))
 	installFlags |= RPMINSTALL_UPGRADETOOLD;
 
@@ -1062,6 +1081,14 @@ int main(int argc, char ** argv) {
     if (ftpPort) {
 	rpmSetVar(RPMVAR_FTPPORT, ftpPort);
 	addMacro(&globalMacroContext, "_ftpport", NULL, ftpPort, RMIL_CMDLINE);
+    }
+    if (httpProxy) {
+	rpmSetVar(RPMVAR_HTTPPROXY, httpProxy);
+	addMacro(&globalMacroContext, "_httpproxy", NULL, httpProxy, RMIL_CMDLINE);
+    }
+    if (httpPort) {
+	rpmSetVar(RPMVAR_HTTPPORT, httpPort);
+	addMacro(&globalMacroContext, "_httpport", NULL, httpPort, RMIL_CMDLINE);
     }
 
     if (signIt) {

@@ -6,6 +6,7 @@
 
 #include "url.h"
 #include "ftp.h"
+#include "http.h"
 
 static struct urlstring {
     const char *leadin;
@@ -299,6 +300,7 @@ FD_t ufdOpen(const char *url, int flags, mode_t mode)
 	    break;
 	if ((fd = fdNew()) == NULL)
 	    break;
+        httpProxySetup(url,&u);
 	fd->fd_url = u;
 	fd->fd_fd = httpOpen(u);
 	break;

@@ -218,7 +218,7 @@ static int getHostAddress(const char * host, struct in_addr * address) {
     return 0;
 }
 
-static int tcpConnect(const char *host, int port)
+int tcpConnect(const char *host, int port)
 {
     struct sockaddr_in sin;
     int sock = -1;
@@ -251,38 +251,6 @@ static int tcpConnect(const char *host, int port)
 if (ftpDebug)
 fprintf(stderr,"++ connect %s:%d on fd %d\n", inet_ntoa(sin.sin_addr), ntohs(sin.sin_port), sock);
 
-    return sock;
-}
-
-int httpOpen(urlinfo *u)
-{
-    int sock;
-    const char *host;
-    int port;
-    char *buf;
-    size_t len;
-
-    if (u == NULL || ((host = u->host) == NULL))
-	return FTPERR_BAD_HOSTNAME;
-
-    if ((port = u->port) < 0) port = 80;
-
-    if ((sock = tcpConnect(host, port)) < 0)
-	return sock;
-
-    len = strlen(u->path) + sizeof("GET \r\n");
-    buf = alloca(len);
-    strcpy(buf, "GET ");
-    strcat(buf, u->path);
-    strcat(buf, "\r\n");
-
-    if (write(sock, buf, len) != len) {
-	close(sock);
-	return FTPERR_SERVER_IO_ERROR;
-    }
-
-if (ftpDebug)
-fprintf(stderr, "-> %s", buf);
     return sock;
 }
 
@@ -527,10 +495,6 @@ fprintf(stderr, "-> %s", retrCommand);
 
     u ->ftpGetFileDoneNeeded = 1;
     return 0;
-}
-
-int httpGetFile(FD_t sfd, FD_t tfd) {
-    return copyData(sfd, tfd);
 }
 
 int ftpGetFile(FD_t sfd, FD_t tfd)
