@@ -1,8 +1,4 @@
 /*
- * beecrypt.h
- *
- * BeeCrypt library hooks & stubs, header
- *
  * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
  *
  * This library is free software; you can redistribute it and/or
@@ -20,6 +16,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*!\file beecrypt.h
+ * \brief BeeCrypt API, headers.
+ *
+ * These API functions provide an abstract way for using most of
+ * the various algorithms implemented by the library.
+ *
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup ES_m PRNG_m HASH_m HMAC_m BC_m
+ */
+
 
 #ifndef _BEECRYPT_H
 #define _BEECRYPT_H

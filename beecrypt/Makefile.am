@@ -39,6 +39,7 @@ LINT = splint
 SUBDIRS = docs gas masm mwerks tests
 
 SUFFIXES = .s
+
 .s.lo:
 	$(LTCOMPILE) -c -o $@ `test -f $< || echo '$(srcdir)/'`$<
 

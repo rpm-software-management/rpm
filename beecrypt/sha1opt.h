@@ -38,7 +38,13 @@ extern "C" {
 # endif
 #endif
 
-#ifdef __GNUC__
+#if defined(__GNUC__)
+# if defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
+#  define ASM_SHA1PROCESS
+# endif
+#endif
+
+#if defined(__INTEL_COMPILER)
 # if defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
 #  define ASM_SHA1PROCESS
 # endif

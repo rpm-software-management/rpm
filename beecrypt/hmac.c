@@ -96,6 +96,7 @@ int hmacReset(const byte* kxi, const hashFunction* hash, hashFunctionParam* para
 		return -1;
 	if (hash->update(param, kxi, hash->blocksize))
 		return -1;
+
 	return 0;
 }
 

@@ -61,11 +61,9 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t nsize)
 		/* if p <= q, perform a swap to make p larger than q */
 		if (mple(pqsize, kp->p.modl, kp->q.modl))
 		{
-			/*@-sizeoftype@*/
 			memcpy(&r, &kp->q, sizeof(r));
 			memcpy(&kp->q, &kp->p, sizeof(kp->q));
 			memcpy(&kp->p, &r, sizeof(kp->p));
-			/*@=sizeoftype@*/
 		}
 
 		mpbzero(&r);
@@ -90,19 +88,15 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t nsize)
 			if (mple(pqsize, kp->p.modl, r.modl))
 			{
 				mpbfree(&kp->q);
-				/*@-sizeoftype@*/
 				memcpy(&kp->q, &kp->p, sizeof(kp->q));
 				memcpy(&kp->p, &r, sizeof(kp->p));
-				/*@=sizeoftype@*/
 				mpbzero(&r);
 				newn = 1;
 			}
 			else if (mple(pqsize, kp->q.modl, r.modl))
 			{
 				mpbfree(&kp->q);
-				/*@-sizeoftype@*/
 				memcpy(&kp->q, &r, sizeof(kp->q));
-				/*@=sizeoftype@*/
 				mpbzero(&r);
 				newn = 1;
 			}

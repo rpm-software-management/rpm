@@ -94,14 +94,16 @@ void sha256Process(register sha256Param* p)
 	#else
 	w = p->data;
 	t = 16;
-	while (t--) {
+	while (t--)
+	{
 		temp = swapu32(*w);
 		*(w++) = temp;
 	}
 	#endif
 
 	t = 48;
-	while (t--) {
+	while (t--)
+	{
 		temp = sig1(w[-2]) + w[-7] + sig0(w[-15]) + w[-16];
 		*(w++) = temp;
 	}

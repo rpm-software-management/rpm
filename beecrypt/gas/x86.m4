@@ -18,6 +18,19 @@ dnl  You should have received a copy of the GNU Lesser General Public
 dnl  License along with this library; if not, write to the Free Software
 dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+ifelse(substr(ASM_ARCH,0,6),athlon,`
+define(USE_BSWAP)
+')
+ifelse(substr(ASM_ARCHi,0,7),pentium,`
+define(USE_BSWAP)
+')
+ifelse(ASM_ARCH,i586,`
+define(USE_BSWAP)
+')
+ifelse(ASM_ARCH,i686,`
+define(USE_BSWAP)
+')
 ifelse(ASM_ARCH,pentium4,`
-  define(`USE_SSE2')
+define(USE_BSWAP)
+define(USE_SSE2)
 ')

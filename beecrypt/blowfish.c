@@ -19,7 +19,7 @@
 
 /*!\file blowfish.c
  * \brief Blowfish block cipher.
- * 
+ *
  * For more information on this blockcipher, see:
  * "Applied Cryptography", second edition
  *  Bruce Schneier

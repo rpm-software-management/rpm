@@ -22,7 +22,7 @@
  *
  * For more information on this algorithm, see:
  *  "Handbook of Applied Cryptography"
- *  11.5.2 "The ElGamal signature scheme", p. 454-459
+ *  11.5.2: "The ElGamal signature scheme", p. 454-459
  *
  * Two of the signature variants in Note 11.70 are described.
  *

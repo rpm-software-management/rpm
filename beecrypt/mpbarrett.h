@@ -18,7 +18,7 @@
  */
 
 /*!\file mpbarrett.h
- * \brief Multi-precision integer routines using Barrett modular reduction, headers.   
+ * \brief Multi-precision integer routines using Barrett modular reduction, headers.
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup MP_m
  */

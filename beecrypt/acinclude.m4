@@ -391,6 +391,7 @@ AC_DEFUN(BEECRYPT_INTEL_CC,[
     ])
   if test "$bc_cv_prog_INTEL_CC" = yes; then
     if test "$ac_enable_debug" != yes; then
+      BEECRYPT_CFLAGS_REM([-g])
       CFLAGS="$CFLAGS -O3"
       case $bc_target_cpu in
       i586 | pentium | pentium-mmx)
@@ -511,7 +512,7 @@ AC_DEFUN(BEECRYPT_ASM_GSYM_PREFIX,[
       *)                 bc_cv_asm_gsym_prefix="" ;;
       esac
     ])
-  AC_SUBST(ASM_GSYM_PREFIX,$bc_cv_asm_sym_prefix)
+  AC_SUBST(ASM_GSYM_PREFIX,$bc_cv_asm_gsym_prefix)
   ])
 
 
