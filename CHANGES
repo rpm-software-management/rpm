@@ -1,6 +1,8 @@
 2.4.10 -> 2.4.11:
 	- HAVE_SYS_SOCKET_H was mistakingly MACHINE_SYS_SOCKET_H in
 	  config.h.in
+	- \%description was trying to do %d expansion in query formats
+	- made %% work in query formats
 
 2.4.9 -> 2.4.10:
 	- obsolete entries could cause segv's during upgrades

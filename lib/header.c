@@ -1308,6 +1308,21 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
     while (*start && !done) {
 	switch (*start) {
 	  case '%':
+	    /* handle %% */
+	    if (*(start + 1) == '%') {
+		if (currToken < 0 || format[currToken].type != PTOK_STRING) {
+		    currToken++;
+		    format[currToken].type = PTOK_STRING;
+		    dst = format[currToken].u.string.string = start;
+		}
+
+		start++;
+
+		*dst++ = *start++;
+
+		break; /* out of switch */
+	    } 
+
 	    currToken++;
 	    *dst++ = '\0';
 	    start++;
@@ -1638,7 +1653,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 
       case PTOK_STRING:
 	val = malloc(token->u.string.len + 1);
-	sprintf(val, token->u.string.string);
+	strcpy(val, token->u.string.string);
 	break;
 
       case PTOK_TAG:
