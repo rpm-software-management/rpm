@@ -41,7 +41,7 @@
 %_buildos		Linux
 %_bzip2bin		@BZIP2BIN@
 %_dbpath		%{_var}/lib/rpm
-%_defaultdocdir		%{_usr}/doc
+%_defaultdocdir		/usr/doc
 %_fixperms		@FIXPERMS@
 %_gzipbin		@GZIPBIN@
 %_rpmdir		%{_topdir}/RPMS

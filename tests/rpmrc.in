@@ -11,7 +11,7 @@ topdir:		@testdir@@prefix@/src/redhat
 tmppath:	@testdir@@tmpdir@
 gzipbin:	@testdir@@GZIPBIN@
 bzip2bin:	@testdir@@BZIP2BIN@
-defaultdocdir:  @testdir@@prefix@/doc
+defaultdocdir:  @prefix@/doc
 fixperms:	a+rX,g-w,o-w
 rpmfilename:    %{ARCH}/%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}.rpm
 instchangelog:	5
