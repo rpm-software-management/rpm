@@ -66,7 +66,7 @@ for SUBST in $SUBSTS ; do
     ppc-linux) MULTILIBNO=1 ;;
     ppc64-linux) LIB=lib64; MULTILIBNO=2 ;;
     i?86-linux|pentium?-linux|athlon-linux) MULTILIBNO=1 ;;
-    x86_64-linux) LIB=lib64; MULTILIBNO=2 ;;
+    x86_64-linux|amd64-linux|ia32e-linux) LIB=lib64; MULTILIBNO=2 ;;
   esac
 
   if [ -n "$MULTILIBNO" ]; then
