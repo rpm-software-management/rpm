@@ -97,8 +97,10 @@ uint_32 hGetColor(Header h)
     if (hge(h, RPMTAG_FILECOLORS, NULL, (void **)&fcolors, &ncolors)
      && fcolors != NULL && ncolors > 0)
     {
+/*@-boundsread@*/
 	for (i = 0; i < ncolors; i++)
 	    hcolor |= fcolors[i];
+/*@=boundsread@*/
     }
     hcolor &= 0x0f;
 

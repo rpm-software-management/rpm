@@ -233,40 +233,6 @@ int rpmdsNoPromote(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
- * Return current dependency color.
- * @param ds		dependency set
- * @return		current dependency color
- */
-uint_32 rpmdsColor(/*@null@*/ const rpmds ds)
-	/*@*/;
-
-/**
- * Return current dependency color.
- * @param ds		dependency set
- * @param color		new dependency color
- * @return		previous dependency color
- */
-uint_32 rpmdsSetColor(/*@null@*/ const rpmds ds, uint_32 color)
-	/*@modifies ds @*/;
-
-/**
- * Return current dependency file refs.
- * @param ds		dependency set
- * @return		current dependency file refs, -1 on global
- */
-int_32 rpmdsRefs(/*@null@*/ const rpmds ds)
-	/*@*/;
-
-/**
- * Return current dependency color.
- * @param ds		dependency set
- * @param refs		new dependency refs
- * @return		previous dependency refs
- */
-int_32 rpmdsSetRefs(/*@null@*/ const rpmds ds, int_32 refs)
-	/*@modifies ds @*/;
-
-/**
  * Set "Don't promote Epoch:" flag.
  * @param ds		dependency set
  * @param nopromote	Should an unspecified Epoch: be treated as Epoch: 0?

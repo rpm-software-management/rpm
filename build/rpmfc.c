@@ -983,14 +983,18 @@ assert(s != NULL);
 	else
 	    s = fn;
 
+/*@-boundswrite@*/
 	buf[0] = '\0';
 	t = buf;
+/*@-nullpass@*/ /* LCL: s is not null. */
 	t = stpcpy(t, s);
+/*@=nullpass@*/
 
 #if !defined(__alpha__)
 	if (isElf64)
 	    t = stpcpy(t, "()(64bit)");
 #endif
+/*@=boundswrite@*/
 	t++;
 
 	/* Add to package dependencies. */
@@ -998,7 +1002,9 @@ assert(s != NULL);
 	xx = rpmdsMerge(depsp, ds);
 
 	/* Add to file dependencies. */
+/*@-boundswrite@*/
 	xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(t, fc->ix, ds));
+/*@=boundswrite@*/
 
 	ds = rpmdsFree(ds);
     }

@@ -126,7 +126,7 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 {
     uint_32 tscolor = rpmtsColor(ts);
-    int scareMem = 1;
+    int scareMem = 0;
     rpmfi fi = NULL;
     char * t, * te;
     char * prefix = NULL;

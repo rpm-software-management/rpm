@@ -238,9 +238,6 @@ static int handleInstInstalledFiles(const rpmts ts,
 	mi = rpmdbFreeIterator(mi);
     }
 
-    if (otherFi == NULL)
-	return 1;
-
     /* Compute package color. */
     tecolor = rpmteColor(p);
     tecolor &= tscolor;
@@ -252,6 +249,9 @@ static int handleInstInstalledFiles(const rpmts ts,
     while (rpmfiNext(otherFi) >= 0)
 	otecolor |= rpmfiFColor(otherFi);
     otecolor &= tscolor;
+
+    if (otherFi == NULL)
+	return 1;
 
     fi->replaced = xcalloc(sharedCount, sizeof(*fi->replaced));
 

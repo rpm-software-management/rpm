@@ -415,9 +415,11 @@ extern const char * rpmteNEVR(rpmte te)
  * @param te		transaction element
  * @return		name-version-release.arch string
  */
+/*@-exportlocal@*/
 /*@observer@*/
 extern const char * rpmteNEVRA(rpmte te)
 	/*@*/;
+/*@=exportlocal@*/
 
 /**
  * Retrieve file handle from transaction element.

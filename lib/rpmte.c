@@ -116,9 +116,13 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     nb = strlen(p->NEVR) + 1;
     if (p->arch)
-	nb += strlen(arch) + 1;
-    p->NEVRA = t = xmalloc(nb);
-    (void) stpcpy( stpcpy( stpcpy(t, p->NEVR), "."), p->arch);
+	nb += strlen(p->arch) + 1;
+    t = xmalloc(nb);
+    p->NEVRA = t;
+    *t = '\0';
+    t = stpcpy(t, p->NEVR);
+    if (p->arch)
+	t = stpcpy( stpcpy( t, "."), p->arch);
 
     ep = NULL;
     xx = hge(h, RPMTAG_EPOCH, NULL, (void **)&ep, NULL);
@@ -163,6 +167,9 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     rpmteColorDS(p, RPMTAG_PROVIDENAME);
     rpmteColorDS(p, RPMTAG_REQUIRENAME);
+/*@-compdef@*/
+    return;
+/*@=compdef@*/
 }
 /*@=bounds@*/
 

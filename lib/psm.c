@@ -1852,7 +1852,6 @@ psm->te->h = headerLink(fi->h);
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int_32 installTime = (int_32) time(NULL);
-	    int_32 tscolor = rpmtsColor(ts);
 	    int fc = rpmfiFC(fi);
 
 	    if (fi->h == NULL) break;	/* XXX can't happen */

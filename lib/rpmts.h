@@ -80,8 +80,8 @@ struct diskspaceInfo_s {
     signed long bneeded;	/*!< No. of blocks needed. */
     signed long ineeded;	/*!< No. of inodes needed. */
     int bsize;			/*!< File system block size. */
-    signed long bavail;		/*!< No. of blocks available. */
-    signed long iavail;		/*!< No. of inodes available. */
+    signed long long bavail;	/*!< No. of blocks available. */
+    signed long long iavail;	/*!< No. of inodes available. */
 };
 
 /** \ingroup rpmts
@@ -794,23 +794,6 @@ uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
  */
 /*@null@*/
 rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
-	/*@modifies ts @*/;
-
-/**
- * Retrieve color bits of transaction set.
- * @param ts		transaction set
- * @return		color bits
- */
-uint_32 rpmtsColor(rpmts ts)
-	/*@*/;
-
-/**
- * Set color bits of transaction set.
- * @param ts		transaction set
- * @param color		new color bits
- * @return		previous color bits
- */
-uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
