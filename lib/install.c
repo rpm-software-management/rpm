@@ -93,6 +93,7 @@ static int ensureOlder(rpmdb db, Header new, int dbOffset);
 static void assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** files, 
 			     int stripPrefixLength);
+static void setFileOwners(Header h, struct fileInfo * files, int fileCount);
 static void freeFileMemory(struct fileMemory fileMem);
 
 /* 0 success */
@@ -135,8 +136,6 @@ static void freeFileMemory(struct fileMemory fileMem) {
 static void assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** filesPtr, 
 			     int stripPrefixLength) {
-    char ** fileOwners;
-    char ** fileGroups;
     uint_32 * fileFlags;
     uint_32 * fileSizes;
     uint_16 * fileModes;
@@ -151,8 +150,6 @@ static void assembleFileList(Header h, struct fileMemory * mem,
     files = *filesPtr = mem->files = malloc(sizeof(*mem->files) * fileCount);
     
     headerGetEntry(h, RPMTAG_FILEMD5S, NULL, (void **) &mem->md5s, NULL);
-    headerGetEntry(h, RPMTAG_FILEUSERNAME, NULL, (void **) &fileOwners, NULL);
-    headerGetEntry(h, RPMTAG_FILEGROUPNAME, NULL, (void **) &fileGroups, NULL);
     headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlags, NULL);
     headerGetEntry(h, RPMTAG_FILEMODES, NULL, (void **) &fileModes, NULL);
     headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, NULL);
@@ -170,7 +167,18 @@ static void assembleFileList(Header h, struct fileMemory * mem,
 	file->link = mem->links[i];
 	file->size = fileSizes[i];
 	file->flags = fileFlags[i];
+    }
+}
 
+static void setFileOwners(Header h, struct fileInfo * files, int fileCount) {
+    char ** fileOwners;
+    char ** fileGroups;
+    int i;
+
+    headerGetEntry(h, RPMTAG_FILEUSERNAME, NULL, (void **) &fileOwners, NULL);
+    headerGetEntry(h, RPMTAG_FILEGROUPNAME, NULL, (void **) &fileGroups, NULL);
+
+    for (i = 0; i < fileCount; i++) {
 	if (unameToUid(fileOwners[i], &files[i].uid)) {
 	    rpmError(RPMERR_NOUSER, "user %s does not exist - using root", 
 			fileOwners[i]);
@@ -206,6 +214,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     int_32 installTime;
     char * fileStates;
     int i, j;
+    int remFlags;
     int installFile = 0;
     int otherOffset = 0;
     char * ext = NULL, * newpath;
@@ -528,6 +537,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     }
 
     if (files) {
+	setFileOwners(h, files, fileCount);
+
 	for (i = 0; i < fileCount; i++) {
 	    switch (files[i].action) {
 	      case BACKUP:
@@ -680,8 +691,14 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     if (toRemove && flags & RPMINSTALL_UPGRADE) {
 	rpmMessage(RPMMESS_DEBUG, "removing old versions of package\n");
 	intptr = toRemove;
+
+	if (flags & RPMINSTALL_NOSCRIPTS)
+	    remFlags = RPMUNINSTALL_NOSCRIPTS;
+	else
+	    remFlags = 0;
+
 	while (*intptr) {
-	    rpmRemovePackage(rootdir, db, *intptr, 0);
+	    rpmRemovePackage(rootdir, db, *intptr, remFlags);
 	    intptr++;
 	}
     }

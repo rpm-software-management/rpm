@@ -9,6 +9,8 @@
 	- fixed bug w/ printing string arrays in conditionals
 	- handle modern patch programs (> 2.1)
 	- handle packages w/ duplicate dependency names
+	- --noscripts didn't get handled properly for removed packages
+	- fixed handling of packages where %prereq creates users/groups
 
 2.4.7 -> 2.4.8:
 	- added noarch build compatibilities for ppc, m68k
