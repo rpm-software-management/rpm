@@ -16,6 +16,8 @@ $(NLSPACKAGE).pot: $(POTFILES)
 clean:
 	rm -f *mo
 
+depend:
+
 install:
 	install -m 755 -o 0 -g 0 -d $(NLSDIR)
 	for n in $(CATALOGS); do \
