@@ -13,7 +13,8 @@ lib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = rpmrpc.c rpmio.c url.c macro.c \
 	ugid.c rpmmalloc.c rpmerr.c messages.c
 librpmio_la_LDFLAGS = -L$(top_builddir)/popt/.libs -lpopt
-librpmio_la_LIBADD = @LIBMISC@
+# XXX solaris2.5.1 likes not
+#librpmio_la_LIBADD = @LIBMISC@
 
 # XXX Drill out -L ldflags remnants until libtool-1.4 appears
 install-data-local:
