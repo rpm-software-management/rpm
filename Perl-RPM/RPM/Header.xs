@@ -14,7 +14,7 @@
 #  define HDR_ITER_CONST
 #endif
 
-static char * const rcsid = "$Id: Header.xs,v 1.23 2001/04/29 22:44:54 rjray Exp $";
+static char * const rcsid = "$Id: Header.xs,v 1.24 2001/05/15 06:22:36 rjray Exp $";
 static int scalar_tag(pTHX_ SV *, int);
 
 /*
@@ -206,9 +206,12 @@ static SV* rpmhdr_create(pTHX_ const char* data, int type, int size,
     }
 
     if (scalar)
+    {
         new_item = newSVsv(*av_fetch(new_list, 0, FALSE));
+        av_undef(new_list);
+    }
     else
-        new_item = newRV((SV *)new_list);
+        new_item = newRV_noinc((SV *)new_list);
 
     return new_item;
 }
@@ -334,7 +337,6 @@ RPM__Header rpmhdr_TIEHASH(pTHX_ char* class, SV* source, int flags)
     sv_magic((SV *)RETVAL, Nullsv, 'P', Nullch, 0);
     sv_magic((SV *)RETVAL, t_magic, '~', Nullch, 0);
     SvREFCNT_dec(t_magic);
-    /*fprintf(stderr, "rpmhdr_TIEHASH (%s)\n", retvalp->name);*/
 
     return RETVAL;
 }
@@ -393,18 +395,15 @@ SV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
         {
             /* In some cases (particarly the iterators) we could be called
                with the data already available, but not hashed just yet. */
-            SV* new_item = rpmhdr_create(aTHX_ data_in, type_in, size_in,
-                                         scalar_tag(aTHX_ Nullsv, tag_by_num));
+            FETCH = rpmhdr_create(aTHX_ data_in, type_in, size_in,
+                                  scalar_tag(aTHX_ Nullsv, tag_by_num));
 
-            hv_store(hdr->storage, uc_name, namelen, new_item, FALSE);
+            hv_store(hdr->storage, uc_name, namelen, FETCH, FALSE);
             hv_store(hdr->storage, strcat(uc_name, "_t"), (namelen + 2),
                      newSViv(type_in), FALSE);
-
-            FETCH = newSVsv(new_item);
         }
         else
         {
-            SV* new_item;
             char* new_item_p;
             int new_item_type;
             int size;
@@ -419,13 +418,15 @@ SV* rpmhdr_FETCH(pTHX_ RPM__Header self, SV* key,
                 Safefree(uc_name);
                 return FETCH;
             }
-            new_item = rpmhdr_create(aTHX_ new_item_p, new_item_type, size,
-                                     scalar_tag(aTHX_ Nullsv, tag_by_num));
+            FETCH = rpmhdr_create(aTHX_ new_item_p, new_item_type, size,
+                                  scalar_tag(aTHX_ Nullsv, tag_by_num));
 
-            hv_store(hdr->storage, uc_name, namelen, new_item, FALSE);
+            hv_store(hdr->storage, uc_name, namelen, FETCH, FALSE);
             hv_store(hdr->storage, strcat(uc_name, "_t"), (namelen + 2),
                      newSViv(new_item_type), FALSE);
-            FETCH = newSVsv(new_item);
+            /* For some reason, I don't seem to need this next line in the
+               block above (the data_in branch) */
+            FETCH = newSVsv(FETCH);
         }
     }
 
