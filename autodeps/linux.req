@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# note this works for both a.out and ELF executables
+
+filelist=$(xargs file -L 2>/dev/null | grep "executable" | cut -d: -f1)
+
+for f in $filelist; do
+    ldd $f | grep -v 'statically linked' | awk '{ print $1 }'
+done | sort -u
