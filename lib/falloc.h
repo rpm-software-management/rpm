@@ -18,7 +18,7 @@ typedef struct FaPlace * faPlace;
 /* flags here is the same as for open(2) - NULL returned on error */
 faFile faOpen(char * path, int flags, int perms);
 unsigned int faAlloc(faFile fa, unsigned int size); /* returns 0 on failure */
-int faFree(faFile fa, unsigned int offset);
+void faFree(faFile fa, unsigned int offset);
 void faClose(faFile fa);
 
 unsigned int faFirstOffset(faFile fa);
