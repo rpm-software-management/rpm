@@ -79,7 +79,7 @@ static int maxArgWidth(const struct poptOption * opt) {
     int this;
     
     while (opt->longName || opt->shortName || opt->arg) {
-	if (opt->argInfo == POPT_ARG_INCLUDE_TABLE) {
+	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
 	    this = maxArgWidth(opt->arg);
 	} else {
 	    this = opt->shortName ? 2 : 0;
@@ -113,7 +113,7 @@ static void singleTableHelp(FILE * f, const struct poptOption * table,
 
     opt = table;
     while (opt->longName || opt->shortName || opt->arg) {
-	if (opt->argInfo == POPT_ARG_INCLUDE_TABLE) {
+	if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) {
 	    if (opt->descrip)
 		fprintf(f, "\n%s\n", opt->descrip);
 	    singleTableHelp(f, opt->arg, left);
@@ -157,7 +157,8 @@ static int singleOptionUsage(FILE * f, int cursor,
     const char * item = shortStr;
 
     if (opt->shortName) {
-	if (!opt->argInfo) return cursor;	/* we did these already */
+	if (!(opt->argInfo & POPT_ARG_MASK)) 
+	    return cursor;	/* we did these already */
 	len++;
 	*shortStr = opt->shortName;
 	shortStr[1] = '\0';
@@ -190,7 +191,7 @@ int singleTableUsage(FILE * f, int cursor, const struct poptOption * table) {
     while (opt->longName || opt->shortName || opt->arg) {
 	if (opt->longName || opt->shortName)
 	    cursor = singleOptionUsage(f, cursor, opt);
-	else if (opt->argInfo == POPT_ARG_INCLUDE_TABLE) 
+	else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE) 
 	    cursor = singleTableUsage(f, cursor, opt->arg);
 	opt++;
     }
@@ -209,9 +210,9 @@ static int showShortOptions(const struct poptOption * opt, FILE * f,
     }
 
     while (opt->longName || opt->shortName || opt->arg) {
-	if (opt->shortName && !opt->argInfo)
+	if (opt->shortName && !(opt->argInfo & POPT_ARG_MASK))
 	    str[strlen(str)] = opt->shortName;
-	else if (opt->argInfo == POPT_ARG_INCLUDE_TABLE)
+	else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_INCLUDE_TABLE)
 	    showShortOptions(opt->arg, f, str);
 
 	opt++;
