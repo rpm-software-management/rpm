@@ -79,6 +79,7 @@ struct rpmoption optionTable[] = {
     { "fixperms",		RPMVAR_FIXPERMS,		0 },
     { "ftpport",		RPMVAR_FTPPORT,			0 },
     { "ftpproxy",		RPMVAR_FTPPROXY,		0 },
+    { "gzipbin",		RPMVAR_GZIPBIN,			0 },
     { "messagelevel",		RPMVAR_MESSAGELEVEL,		0 },
     { "netsharedpath",		RPMVAR_NETSHAREDPATH,		0 },
     { "optflags",		RPMVAR_OPTFLAGS,		1 },

@@ -46,8 +46,6 @@ AC_PROG_RANLIB
 
 AC_CHECK_TOOL(AR, ar, :)
 
-CPIOBIN="cpio"
-GZIPBIN="gzip"
 if test "$cross_compiling" != "yes"; then
     AC_MSG_CHECKING(checking for GNU cpio...)
     if test -z "$CPIOBIN"; then
@@ -67,6 +65,7 @@ if test "$cross_compiling" != "yes"; then
     if test -z "$CPIOBIN"; then
 	    AC_MSG_RESULT(no)
 	    AC_MSG_WARN(RPM will not work without GNU cpio 2.4.2 or later.)
+	    CPIOBIN="cpio"
     else
 	    AC_MSG_RESULT(yes)
     fi
@@ -84,6 +83,7 @@ if test "$cross_compiling" != "yes"; then
     fi
 
     if test -z "$GZIPBIN"; then
+	    GZIPBIN="gzip"
 	    AC_MSG_RESULT(no)
 	    AC_MSG_WARN(RPM will not work without GNU gzip.)
     else

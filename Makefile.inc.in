@@ -16,7 +16,7 @@ CFLAGS = @CFLAGS@ @INCPATH@ $(WARNINGS) $(OPTS) -I$(topdir) \
 	-DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" \
 	-DLIBRPMALIAS_FILENAME="\"$(LIBRPMALIAS_FILENAME)"\" \
 	-DVERSION=\"$(VERSION)\" 
-LDFLAGS = @LDFLAGS@ @LIBS@ -Llib -Lbuild -Lmisc -L$(topdir)/lib \
+LDFLAGS = @LDFLAGS@ -Llib -Lbuild -Lmisc -L$(topdir)/lib \
 		-L$(topdir)/build -L$(topdir)/misc
 VERSION = 2.4
 CC = @CC@
