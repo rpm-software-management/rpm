@@ -19,8 +19,6 @@
 
 int _fsm_debug = 0;
 
-static int all_hardlinks_in_package = 0;
-
 /* XXX Failure to remove is not (yet) cause for failure. */
 /*@-exportlocal -exportheadervar@*/
 int strict_erasures = 0;
@@ -349,7 +347,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
 
     /* Find hard link set. */
     for (fsm->li = fsm->links; fsm->li; fsm->li = fsm->li->next) {
-	if (fsm->li->inode == st->st_ino && fsm->li->dev == st->st_dev)
+	if (fsm->li->sb.st_ino == st->st_ino && fsm->li->sb.st_dev == st->st_dev)
 	    break;
     }
 
@@ -357,10 +355,9 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
     if (fsm->li == NULL) {
 	fsm->li = xcalloc(1, sizeof(*fsm->li));
 	fsm->li->next = NULL;
+	fsm->li->sb = *st;	/* structure assignment */
 	fsm->li->nlink = st->st_nlink;
-	fsm->li->dev = st->st_dev;
-	fsm->li->inode = st->st_ino;
-	fsm->li->linkIndex = -1;
+	fsm->li->linkIndex = fsm->ix;
 	fsm->li->createdPath = -1;
 
 	fsm->li->filex = xcalloc(st->st_nlink, sizeof(fsm->li->filex[0]));
@@ -729,6 +726,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
     int rc;
 
     st->st_size = (writeData ? ost->st_size : 0);
+
     if (S_ISDIR(st->st_mode)) {
 	st->st_size = 0;
     } else if (S_ISLNK(st->st_mode)) {
@@ -865,6 +863,7 @@ static int writeLinkedFile(/*@special@*/ FSM_t fsm)
     fsm->ix = -1;
 
     for (i = fsm->li->nlink - 1; i >= 0; i--) {
+
 	if (fsm->li->filex[i] < 0) continue;
 
 	fsm->ix = fsm->li->filex[i];
@@ -963,7 +962,7 @@ static int fsmCommitLinks(/*@special@*/ FSM_t fsm)
     fsm->ix = -1;
 
     for (fsm->li = fsm->links; fsm->li; fsm->li = fsm->li->next) {
-	if (fsm->li->inode == st->st_ino && fsm->li->dev == st->st_dev)
+	if (fsm->li->sb.st_ino == st->st_ino && fsm->li->sb.st_dev == st->st_dev)
 	    break;
     }
 
@@ -1141,6 +1140,35 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
     return rc;
 }
 
+#ifdef	NOTYET
+/**
+ * Check for file on disk.
+ * @param fsm		file state machine data
+ * @return		0 on success
+ */
+static int fsmStat(FSM_t fsm)
+{
+    int saveerrno = errno;
+    int rc = 0;
+
+    if (fsm->path != NULL) {
+	int saveernno = errno;
+	rc = fsmStage(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
+			? FSM_LSTAT : FSM_STAT));
+	if (rc == CPIOERR_LSTAT_FAILED && errno == ENOENT) {
+	    errno = saveerrno;
+	    rc = 0;
+	    fsm->exists = 0;
+	} else if (rc == 0) {
+	    fsm->exists = 1;
+	}
+    } else {
+	/* Skip %ghost files on build. */
+	fsm->exists = 0;
+    }
+    return rc;
+}
+#endif
 
 /*@-compmempass@*/
 int fsmStage(FSM_t fsm, fileStage stage)
@@ -1266,12 +1294,30 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	}
 
 	/* Flush partial sets of hard linked files. */
-	if (!all_hardlinks_in_package) {
+	if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) {
+	    int nlink, j;
 	    while ((fsm->li = fsm->links) != NULL) {
 		fsm->links = fsm->li->next;
 		fsm->li->next = NULL;
-		if (!rc)
-		    rc = writeLinkedFile(fsm);
+
+		/* Re-calculate link count for archive header. */
+		for (j = -1, nlink = 0, i = 0; i < fsm->li->nlink; i++) {
+		    if (fsm->li->filex[i] < 0) continue;
+		    nlink++;
+		    if (j == -1) j = i;
+		}
+		/* XXX force the contents out as well. */
+		if (j != 0) {
+		    fsm->li->filex[0] = fsm->li->filex[j];
+		    fsm->li->filex[j] = -1;
+		}
+		fsm->li->sb.st_nlink = nlink;
+
+		fsm->sb = fsm->li->sb;	/* structure assignment */
+		fsm->osb = fsm->sb;	/* structure assignment */
+
+		if (!rc) rc = writeLinkedFile(fsm);
+
 		fsm->li = freeHardLink(fsm->li);
 	    }
 	}
@@ -1354,6 +1400,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	if (rc) break;
 
 	/* Perform lstat/stat for disk file. */
+#ifdef	NOTYET
+	rc = fsmStat(fsm);
+#else
 	if (fsm->path != NULL) {
 	    rc = fsmStage(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
 			? FSM_LSTAT : FSM_STAT));
@@ -1368,6 +1417,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    /* Skip %ghost files on build. */
 	    fsm->exists = 0;
 	}
+#endif
 	fsm->diskchecked = 1;
 	if (rc) break;
 
@@ -1409,6 +1459,8 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	if (fsm->goal == FSM_PKGBUILD) {
 	    if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
 		struct hardLink * li, * prev;
+
+if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		rc = writeLinkedFile(fsm);
 		if (rc) break;	/* W2DO? */
 
@@ -1681,7 +1733,9 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		    /*@loopbreak@*/ break;
 		}
 	    }
-	    if (fsm->goal == FSM_PKGBUILD && all_hardlinks_in_package) {
+	    if (fsm->goal == FSM_PKGBUILD &&
+		(fsm->mapFlags & CPIO_ALL_HARDLINKS))
+	    {
 		rc = CPIOERR_MISSING_HARDLINK;
             }
 	    fsm->li = freeHardLink(fsm->li);

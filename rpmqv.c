@@ -580,6 +580,18 @@ int main(int argc, const char ** argv)
     }
 #endif	/* IAM_RPMQV */
 
+#ifdef	IAM_RPMK
+	switch (ka->addSign) {
+	case RESIGN_CHK_SIGNATURE:
+	    bigMode = MODE_CHECKSIG;
+	    break;
+	case RESIGN_ADD_SIGNATURE:
+	case RESIGN_NEW_SIGNATURE:
+	    bigMode = MODE_RESIGN;
+	    break;
+	}
+#endif	/* IAM_RPMK */
+
     /* XXX TODO: never happens. */
     if (gotDbpath && (bigMode & ~MODES_FOR_DBPATH))
 	argerror(_("--dbpath given for operation that does not use a "

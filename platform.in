@@ -6,6 +6,7 @@
 %_arch			@RPMRC_ARCH@
 %_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
+%_gnu			@RPMRC_GNU@
 %_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}
 %optflags		@RPMRC_OPTFLAGS@
 
@@ -32,10 +33,57 @@
 %_defaultdocdir		@DEFAULTDOCDIR@
 
 #==============================================================================
+# ---- configure and makeinstall.
+#
+%configure \
+  CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
+  CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
+  FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
+  %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} ; \
+  ./configure %{_target_platform} \\\
+ 	--prefix=%{_prefix} \\\
+	--exec-prefix=%{_exec_prefix} \\\
+	--bindir=%{_bindir} \\\
+	--sbindir=%{_sbindir} \\\
+	--sysconfdir=%{_sysconfdir} \\\
+	--datadir=%{_datadir} \\\
+	--includedir=%{_includedir} \\\
+	--libdir=%{_libdir} \\\
+	--libexecdir=%{_libexecdir} \\\
+	--localstatedir=%{_localstatedir} \\\
+	--sharedstatedir=%{_sharedstatedir} \\\
+	--mandir=%{_mandir} \\\
+	--infodir=%{_infodir}
+
+%makeinstall \
+  make \\\
+	prefix=%{?buildroot:%{buildroot}}%{_prefix} \\\
+	exec_prefix=%{?buildroot:%{buildroot}}%{_exec_prefix} \\\
+	bindir=%{?buildroot:%{buildroot}}%{_bindir} \\\
+	sbindir=%{?buildroot:%{buildroot}}%{_sbindir} \\\
+	sysconfdir=%{?buildroot:%{buildroot}}%{_sysconfdir} \\\
+	datadir=%{?buildroot:%{buildroot}}%{_datadir} \\\
+	includedir=%{?buildroot:%{buildroot}}%{_includedir} \\\
+	libdir=%{?buildroot:%{buildroot}}%{_libdir} \\\
+	libexecdir=%{?buildroot:%{buildroot}}%{_libexecdir} \\\
+	localstatedir=%{?buildroot:%{buildroot}}%{_localstatedir} \\\
+	sharedstatedir=%{?buildroot:%{buildroot}}%{_sharedstatedir} \\\
+	mandir=%{?buildroot:%{buildroot}}%{_mandir} \\\
+	infodir=%{?buildroot:%{buildroot}}%{_infodir} \\\
+  install
+
+@MULTILIBSTART@
+#---------------------------------------------------------------------
+#	Multilibs
+%_multilibno		@MULTILIBNO@
+%_multilibpatt		(/%{_lib}|/usr/%{_lib}(|/gconv)|/usr/local/%{_lib}|/usr/X11R6/%{_lib}|/opt/%{_lib})/[^/]*\\.([oa]|la|so[0-9.]*)$
+@MULTILIBEND@
+
+#==============================================================================
 # ---- Build policy macros.
 #
-#------------------------------------------------------------------------
-#	Expanded at end of %install
+#---------------------------------------------------------------------
+#	Expanded at end of %install scriptlet.
 #
 
 %__arch_install_post   @ARCH_INSTALL_POST@
@@ -47,28 +95,21 @@
 %{nil}
 
 %__spec_install_post\
-     %{__arch_install_post}\
-     %{__os_install_post}\
+    %{__arch_install_post}\
+    %{__os_install_post}\
 %{nil}
 
-#------------------------------------------------------------------------
-#	Expanded at end of %prep
-#
-%__id_u			@__ID_U@
-%__chown_Rhf		@__CHOWN_RHF@
-%__chgrp_Rhf		@__CHGRP_RHF@
-%_fixowner		[ `%{__id_u}` = '0' ] && %{__chown_Rhf} root
-%_fixgroup		[ `%{__id_u}` = '0' ] && %{__chgrp_Rhf} @ROOT_GROUP@
-%_fixperms		%{__chmod} -Rf @FIXPERMS@
+@redhat@#---------------------------------------------------------------------
+@redhat@#	Expanded at end of %prep
+@redhat@#
+@redhat@%__id_u		@__ID_U@
+@redhat@%__chown_Rhf	@__CHOWN_RHF@
+@redhat@%__chgrp_Rhf	@__CHGRP_RHF@
+@redhat@%_fixowner	[ `%{__id_u}` = '0' ] && %{__chown_Rhf} root
+@redhat@%_fixgroup	[ `%{__id_u}` = '0' ] && %{__chgrp_Rhf} @ROOT_GROUP@
+@redhat@%_fixperms	%{__chmod} -Rf @FIXPERMS@
 
-@MULTILIBSTART@
-#------------------------------------------------------------------------
-#	Multilibs
-%_multilibno		@MULTILIBNO@
-%_multilibpatt		(/%{_lib}|/usr/%{_lib}(|/gconv)|/usr/local/%{_lib}|/usr/X11R6/%{_lib}|/opt/%{_lib})/[^/]*\\.([oa]|la|so[0-9.]*)$
-@MULTILIBEND@
-
-@mandrake@#------------------------------------------------------------------------
+@mandrake@#---------------------------------------------------------------------
 @mandrake@#	Mandrake vendor specific macros
 @mandrake@# XXX Add a support e-mail address here, please.
 @mandrake@#

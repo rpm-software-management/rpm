@@ -64,6 +64,7 @@ typedef enum cpioMapFlags_e {
     CPIO_FOLLOW_SYMLINKS= (1 << 4), /* only for building. */
     CPIO_MAP_ABSOLUTE	= (1 << 5),
     CPIO_MAP_ADDDOT	= (1 << 6),
+    CPIO_ALL_HARDLINKS	= (1 << 7), /*!< fail if hardlinks are missing. */
     CPIO_MULTILIB	= (1 << 31) /* internal, only for building. */
 } cpioMapFlags;
 

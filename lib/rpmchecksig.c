@@ -101,7 +101,7 @@ exit:
     return rc;
 }
 
-int rpmReSign(rpmResignFlags add, char * passPhrase, const char ** argv)
+int rpmReSign(rpmResignFlags flags, char * passPhrase, const char ** argv)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -114,9 +114,8 @@ int rpmReSign(rpmResignFlags add, char * passPhrase, const char ** argv)
     int res = EXIT_FAILURE;
     rpmRC rc;
     
-    if (argv == NULL) return 0;
-
     tmprpm[0] = '\0';
+    if (argv)
     while ((rpm = *argv++) != NULL) {
 
 	fprintf(stdout, "%s:\n", rpm);
@@ -160,7 +159,7 @@ int rpmReSign(rpmResignFlags add, char * passPhrase, const char ** argv)
 	/* ASSERT: fd == NULL && ofd == NULL */
 
 	/* Generate the new signatures */
-	if (add != RESIGN_ADD_SIGNATURE) {
+	if (flags != RESIGN_ADD_SIGNATURE) {
 	    sig = rpmFreeSignature(sig);
 	    sig = rpmNewSignature();
 	    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
@@ -229,7 +228,7 @@ exit:
     return res;
 }
 
-int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
+int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -248,8 +247,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
     int res = 0;
     rpmRC rc;
 
-    if (argv == NULL) return 0;
-
+    if (argv)
     while ((rpm = *argv++) != NULL) {
 
 	if (manageFile(&fd, &rpm, O_RDONLY, 0)) {

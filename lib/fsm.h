@@ -90,8 +90,7 @@ struct hardLink {
 /*@owned@*/ struct hardLink * next;
 /*@owned@*/ const char ** nsuffix;
 /*@owned@*/ int * filex;
-    dev_t dev;
-    ino_t inode;
+    struct stat sb;
     int nlink;
     int linksLeft;
     int linkIndex;

@@ -123,7 +123,8 @@ void loadFi(Header h, TFI_t fi)
 
     switch (fi->type) {
     case TR_ADDED:
-	fi->mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+	fi->mapflags =
+		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 	rc = hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
 	rc = hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
 	rc = hge(fi->h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
@@ -134,7 +135,9 @@ void loadFi(Header h, TFI_t fi)
 
 	break;
     case TR_REMOVED:
-	fi->mapflags = CPIO_MAP_ABSOLUTE | CPIO_MAP_ADDDOT | CPIO_MAP_PATH | CPIO_MAP_MODE;
+	fi->mapflags = 
+		CPIO_MAP_ABSOLUTE | CPIO_MAP_ADDDOT | CPIO_ALL_HARDLINKS |
+		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 	rc = hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
 	rc = hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
 	fi->fsizes = memcpy(xmalloc(fi->fc * sizeof(*fi->fsizes)),
@@ -659,7 +662,7 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     fi->fmd5s = hfd(fi->fmd5s, -1);
 
     /* XXX FIXME: don't do per-file mapping, force global flags. */
-    fi->fmapflags = hfd(fi->fmapflags, -1);
+    fi->fmapflags = _free(fi->fmapflags);
     fi->mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 
     fi->uid = getuid();
@@ -1638,8 +1641,8 @@ assert(psm->mi == NULL);
 		break;
 	    }
 
-	    /* XXX failedFile? */
-	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, psm->cfd, NULL, NULL);
+	    rc = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, psm->cfd,
+			NULL, &psm->failedFile);
 	    (void) fsmTeardown(fi->fsm);
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
@@ -1758,9 +1761,18 @@ assert(psm->mi == NULL);
 	}
 
 	if (psm->goal == PSM_PKGSAVE) {
-	    if (!rc)
+	    if (!rc) {
 		rpmMessage(RPMMESS_VERBOSE, _("Wrote: %s\n"),
 			(psm->pkgURL ? psm->pkgURL : "???"));
+	    } else {
+		if (psm->failedFile)
+		    rpmError(RPMERR_CPIO,
+			_("create archive failed on file %s: %s\n"),
+			psm->failedFile, cpioStrerror(rc));
+		else
+		    rpmError(RPMERR_CPIO, _("create archive failed: %s\n"),
+			cpioStrerror(rc));
+	    }
 	}
 
 	if (fi->h && (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE))

@@ -93,7 +93,7 @@ for SUBST in $SUBSTS ; do
 	-e "s,@LIB@,$LIB," \
 	-e "s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST," \
 	-e "s,@DEFAULTDOCDIR@,$DEFAULTDOCDIR," \
-	-e 's,\${,%{_,' \
+	-e '/FLAGS:-/!s,\${,%{_,' \
 	$MULTILIBSED \
 	$VENDORSED \
   | grep -v '^@' \

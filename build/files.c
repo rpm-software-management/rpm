@@ -382,6 +382,7 @@ static int parseForVerify(char * buf, FileList fl)
 #define	isAttrDefault(_ars)	((_ars)[0] == '-' && (_ars)[1] == '\0')
 
 /**
+ * Parse %attr and %defattr from file manifest.
  * @param fl		package file tree walk data
  */
 static int parseForAttr(char * buf, FileList fl)
