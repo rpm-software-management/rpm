@@ -3,7 +3,7 @@ Executing: %prep
 + cd /usr/src/redhat/BUILD
 + cd /usr/src/redhat/BUILD
 + rm -rf hello-1.0
-+ /bin/gzip -dc /usr/src/redhat/SOURCES/hello-1.0.tar.gz
++ /bin/gzip -d
 + tar -xf -
 + STATUS=0
 + [ 0 -ne 0 ]

@@ -4,8 +4,8 @@ D: found 1 packages to uninstall
 D: uninstalling record number 24
 D: will remove files test = 0
 D: /hello-test/../usr/local/bin/hello - removing
-D: /usr/doc/hello-1.0/FAQ - removing
-D: /usr/doc/hello-1.0 - removing
+D: /hello-test/../usr/doc/hello-1.0/FAQ - removing
+D: /hello-test/../usr/doc/hello-1.0 - removing
 D: running postuninstall script (if any)
 D: removing database entry
 D: removing name index
@@ -15,6 +15,6 @@ D: removing requiredby index for /bin/sh
 D: removing requiredby index for ld-linux.so.2
 D: removing requiredby index for libc.so.6
 D: removing conflict index for goodbye
-D: removing file index for /usr/doc/hello-1.0
-D: removing file index for /usr/doc/hello-1.0/FAQ
+D: removing file index for /hello-test/../usr/doc/hello-1.0
+D: removing file index for /hello-test/../usr/doc/hello-1.0/FAQ
 D: removing file index for /hello-test/../usr/local/bin/hello

@@ -1,9 +1,9 @@
 Name        : hello                       Distribution: RPM test suite.
 Version     : 1.0                               Vendor: Red Hat Software
-Release     : 1                             Build Date: Thu Nov 19 12:33:56 1998
-Install date: Thu Nov 19 12:34:00 1998      Build Host: krusty.devel.redhat.com
+Release     : 1                             Build Date: Tue Mar  9 13:42:25 1999
+Install date: Tue Mar  9 13:42:30 1999      Build Host: sparc9.test.redhat.com
 Group       : Utilities                     Source RPM: hello-1.0-1.src.rpm
-Size        : 39336                            License: GPL
+Size        : 31847                            License: GPL
 Packager    : Red Hat Software <bugs@redhat.com>
 URL         : http://www.redhat.com
 Summary     : hello -- hello, world rpm
@@ -13,6 +13,6 @@ preinstall program: /bin/sh
 postinstall program: /bin/sh
 preuninstall program: /bin/sh
 postuninstall program: /bin/sh
-/home/devel/jbj/src/rpm/tests/usr/doc/hello-1.0
-/home/devel/jbj/src/rpm/tests/usr/doc/hello-1.0/FAQ
+/home/devel/jbj/src/rpm/tests/hello-test/../usr/doc/hello-1.0
+/home/devel/jbj/src/rpm/tests/hello-test/../usr/doc/hello-1.0/FAQ
 /home/devel/jbj/src/rpm/tests/hello-test/../usr/local/bin/hello

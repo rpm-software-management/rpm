@@ -7,20 +7,22 @@ D: New Header signature
 D: Signature size: 68
 D: Signature pad : 4
 D: sigsize         : 72
-D: Header + Archive: 16835
-D: expected size   : 16835
+D: Header + Archive: 13292
+D: expected size   : 13292
 D: found 0 source and 1 binary packages
 D: opening database mode: 01002
 D: opening database in //var/lib/rpm/
-D: installing binary packages
+D: installing binary rpms
 Installing ../usr/src/redhat/RPMS/sparc/hello-1.0-1.sparc.rpm
 D: New Header signature
 D: Signature size: 68
 D: Signature pad : 4
 D: sigsize         : 72
-D: Header + Archive: 16835
-D: expected size   : 16835
+D: Header + Archive: 13292
+D: expected size   : 13292
 D: package: hello-1.0-1 files test = 0
 D: relocating /usr/local/bin/hello to /hello-test/../usr/local/bin/hello
+D: relocating /usr/doc/hello-1.0/FAQ to /hello-test/../usr/doc/hello-1.0/FAQ
+D: relocating /usr/doc/hello-1.0 to /hello-test/../usr/doc/hello-1.0
 D: running preinstall script (if any)
 D: running postinstall script (if any)
