@@ -851,6 +851,10 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
     replacedList = malloc(sizeof(*replacedList) * numReplacedAlloced);
 
     for (i = 0; i < sharedCount; i++) {
+	/* if a file isn't going to be installed it doesn't matter who
+	   it's shared with */
+	if (!files[sharedList[i].mainFileNumber].install) continue;
+
 	if (secOffset != sharedList[i].secRecOffset) {
 	    if (secOffset) {
 		headerFree(sech);
