@@ -177,10 +177,48 @@ static const char * rpmgiPathOrQF(rpmgi gi, const char * fn,
     return val;
 }
 
+/*@null@*/
+static Header rpmgiReadHeader(rpmgi gi, const char * fileURL)
+	/*@*/
+{
+    Header h = NULL;
+    rpmRC rpmrc;
+    FD_t fd;
+
+    fd = Fopen(fileURL, "r.ufdio");
+    if (fd == NULL || Ferror(fd)) {
+	rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
+                        Fstrerror(fd));
+	if (fd != NULL) (void) Fclose(fd);
+	return h;
+    }
+
+    rpmrc = rpmReadPackageFile(gi->ts, fd, fileURL, &h);
+
+    (void) Fclose(fd);
+
+    switch (rpmrc) {
+    default:
+    case RPMRC_FAIL:
+	h = headerFree(h);
+	break;
+    case RPMRC_NOTTRUSTED:
+    case RPMRC_NOKEY:
+    case RPMRC_OK:
+	break;
+    case RPMRC_NOTFOUND:
+	/* Try to read a package manifest. Restart ftswalk on success. */
+	break;
+    }
+
+    return h;
+}
+
 const char * rpmgiNext(/*@null@*/ rpmgi gi)
 	/*@modifies gi @*/
 {
     const char * val = NULL;
+    const char * fn;
     Header h = NULL;
 
     if (gi != NULL && ++gi->i >= 0)
@@ -209,7 +247,10 @@ const char * rpmgiNext(/*@null@*/ rpmgi gi)
 	if (gi->argv != NULL && gi->argv[gi->i] != NULL) {
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i]);
-	    val = rpmgiPathOrQF(gi, gi->argv[gi->i], NULL);
+	    fn = gi->argv[gi->i];
+	    h = rpmgiReadHeader(gi, fn);
+	    val = rpmgiPathOrQF(gi, fn, &h);
+	    h = headerFree(h);
 	} else
 	    gi->i = -1;
 	break;
@@ -235,7 +276,10 @@ fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
 	    case FTS_SL:
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->ftsp, gi->i, fts->fts_path);
-		val = rpmgiPathOrQF(gi, fts->fts_path, NULL);
+		fn = fts->fts_path;
+		h = rpmgiReadHeader(gi, fn);
+		val = rpmgiPathOrQF(gi, fn, &h);
+		h = headerFree(h);
 		break;
 	    default:
 		break;
