@@ -1172,7 +1172,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
     int fcolor;
     int xx;
     static const char * magicfile = "/usr/lib/rpm/magic";
-    int msflags = MAGIC_COMPRESS|MAGIC_CHECK;	/* XXX what MAGIC_FOO flags? */
+    int msflags = MAGIC_CHECK;	/* XXX MAGIC_COMPRESS flag? */
     magic_t ms = NULL;
 
     if (fc == NULL || argv == NULL)
@@ -1219,7 +1219,7 @@ assert(s != NULL);
 	    ftype = magic_file(ms, s);
 	    if (ftype == NULL) {
 		xx = RPMERR_EXEC;
-		rpmError(xx, _("magic_file(ms, \"%s\") faileds: %s\n"),
+		rpmError(xx, _("magic_file(ms, \"%s\") failed: %s\n"),
 			s, magic_error(ms));
 assert(ftype != NULL);	/* XXX figger a proper return path. */
 	    }

@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.4
+Release: 0.5
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -498,6 +498,7 @@ exit 0
 %changelog
 * Sun Jan  2 2005 Jeff Johnson <jbj@jbj.org> 4.4.1-0.4
 - upgrade to db-4.3.27.
+- revert MAGIC_COMPRESS, real fix is in libmagic (#143782).
 
 * Tue Dec  7 2004 Jeff Johnson <jbj@jbj.org> 4.4.1-0.3
 - use package color as Obsoletes: color.
