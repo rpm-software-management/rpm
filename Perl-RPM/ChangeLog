@@ -1,0 +1,14 @@
+Revision history for Perl extension RPM.
+
+0.01  Thu May  4 12:04:34 2000
+	- original version; created by h2xs 1.19
+
+0.1   Mon May 22 00:59:54 PDT 2000
+	- first alpha release
+
+	Classes for RPM::Header and RPM::Database are (more or less) done.
+	RPM::Constants appears to have everything that is expected to be
+	needed (i.e., any changes should result in shortening the list of
+	exported symbols, rather than lengthening it). A basic top-level
+	RPM namespace is present, but doesn't yet do anything useful. Some
+	basic test scripts are in place, but more are (always) needed.

@@ -1,0 +1,52 @@
+Perl-RPM - Native bindings to the RPM Package Manager API for Perl
+
+Version 0.1 (first alpha)
+
+
+WHAT IS IT
+
+The Perl-RPM package is an attempt to provide Perl-level access to the complete
+application programming interface that is a part of the RPM Package Manager
+(RPM). Rather than have scripts rely on executing RPM commands and parse the
+resultant output, this modules aims to provide Perl programmers the ability
+to do anything that would otherwise have been done in C or C++.
+
+The interface is being designed and laid out as a collection of classes, at
+least some of which are also available as tied-hash implementations.
+
+At this time, the interface only provides access to the database of installed
+packages, and header data retrieval for RPM and SRPM files not yet installed.
+
+
+BUILDING/INSTALLING
+
+This package is set up to configure and build like a typical Perl extension.
+To build:
+
+        perl Makefile.PL
+        make && make test
+
+If the RPM package passes all tests, then:
+
+        make install
+
+You may need super-user access to install.
+
+
+PROBLEMS/BUG REPORTS
+
+Please send any reports of problems or bugs to rjray@blackperl.com.
+
+
+CHANGES
+
+This is the first release. At present, only RPM::Database and RPM::Header
+are implemented.
+
+
+LICENSE
+
+This package is Copyright (C) 2000 by Randy J. Ray (rjray@blackperl.com). You
+may distribute this under the terms of Artistic License, as specified in the
+README file of Perl itself. Please see the file ARTISTIC in your distribution
+of Perl.
