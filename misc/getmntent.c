@@ -11,13 +11,13 @@
 #define COMMENTCHAR '#'
 #endif
 
-struct mntent *getmntent(FILE *filep) {
-    static struct mntent item = { NULL };
+our_mntent *getmntent(FILE *filep) {
+    static our_mntent item = { NULL };
     char buf[1024], * start;
     char * chptr;
 
-    if (item.mnt_dir) {
-	free(item.mnt_dir);
+    if (item.our_mntdir) {
+	free(item.our_mntdir);
     }
     
     while (fgets(buf, sizeof(buf) - 1, filep)) {
@@ -49,7 +49,7 @@ struct mntent *getmntent(FILE *filep) {
 	    while (!isspace(*chptr) && (*chptr)) chptr++;
 	    *chptr = '\0';
 
-	    item.mnt_dir = strdup(start);
+	    item.our_mntdir = strdup(start);
 	    return &item;
 	#endif
     }

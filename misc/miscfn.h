@@ -65,17 +65,18 @@ extern void *myrealloc(void *, size_t);
 #if HAVE_MNTENT_H || !(HAVE_GETMNTENT)
 # if HAVE_MNTENT_H
 #  include <mntent.h>
+#  define our_mntent struct mntent
+#  define our_mntdir mnt_dir
 # else
    #include <stdio.h>
-   struct mntent {
-       char * mnt_dir;
+   struct our_mntent {
+       char * our_mntdir;
    };
-   struct mntent *getmntent(FILE *filep);
+   struct our_mntent *getmntent(FILE *filep);
+#  define our_mntent struct our_mntent
 # endif
 # define GETMNTENT_ONE 1
 # define GETMNTENT_TWO 0
-# define our_mntent struct mntent
-# define our_mntdir mnt_dir
 #elif HAVE_SYS_MNTTAB_H
 # include <stdio.h>
 # include <sys/mnttab.h>
