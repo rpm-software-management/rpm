@@ -88,6 +88,7 @@
 	- (popt): non-linux needs <float.h> (#22732).
 	- (popt): add POPT_ARGFLAG_OPTIONAL for long options with optional arg.
 	- (popt): diddle auto-help to include type of arg expected.
+	- use popt autohelp for rpm helper binaries.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

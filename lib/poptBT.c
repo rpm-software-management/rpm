@@ -22,6 +22,9 @@ struct rpmBuildArguments         rpmBTArgs;
 #define	POPT_NOBUILD		1008
 #define	POPT_SHORTCIRCUIT	1009
 #define	POPT_RMSPEC		1010
+#define	POPT_NODEPS		1011
+#define	POPT_SIGN		1012
+#define	POPT_FORCE		1013
 
 #define	POPT_REBUILD		0x4220
 #define	POPT_RECOMPILE		0x4320
@@ -40,16 +43,21 @@ struct rpmBuildArguments         rpmBTArgs;
 #define	POPT_TP			0x7470
 #define	POPT_TS			0x7473
 
+extern int _noDirTokens;
+static int force = 0;
 int noLang = 0;
 static int noBuild = 0;
+static int noDeps = 0;
+static int signIt = 0;
 static int useCatalog = 0;
 
 static void buildArgCallback( /*@unused@*/ poptContext con,
 	/*@unused@*/ enum poptCallbackReason reason,
 	const struct poptOption * opt, const char * arg, const void * data)
 {
-    struct rpmBuildArguments * rba = (struct rpmBuildArguments *) data;
+    struct rpmBuildArguments * rba = &rpmBTArgs;
 
+fprintf(stderr, "*** buildArgCallback\n");
     switch (opt->val) {
     case POPT_REBUILD:
     case POPT_RECOMPILE:
@@ -72,10 +80,13 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 	    rba->buildChar = (opt->val     ) & 0xff;
 	}
 	break;
-    case POPT_USECATALOG: rba->useCatalog = 1; break;
+    case POPT_FORCE: rba->force = 1; break;
     case POPT_NOBUILD: rba->noBuild = 1; break;
+    case POPT_NODEPS: rba->noDeps = 1; break;
     case POPT_NOLANG: rba->noLang = 1; break;
     case POPT_SHORTCIRCUIT: rba->shortCircuit = 1; break;
+    case POPT_SIGN: rba->sign = 1; break;
+    case POPT_USECATALOG: rba->useCatalog = 1; break;
     case POPT_RMSOURCE: rba->buildAmount |= RPMBUILD_RMSOURCE; break;
     case POPT_RMSPEC: rba->buildAmount |= RPMBUILD_RMSPEC; break;
     case POPT_RMBUILD: rba->buildAmount |= RPMBUILD_RMBUILD; break;
@@ -103,61 +114,89 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 
 /** */
 struct poptOption rpmBuildPoptTable[] = {
-	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
-		buildArgCallback, 0, NULL, NULL },
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
+	buildArgCallback, 0, NULL, NULL },
 
-	{ "bp", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BP,
-		N_("build through %%prep stage from spec file"), NULL},
-	{ "bc", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BC,
-		N_("build through %%build stage from spec file"), NULL},
-	{ "bi", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BI,
-		N_("build through %%install stage from spec file"), NULL},
-	{ "bl", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BL,
-		N_("verify %%files section from spec file"), NULL},
-	{ "ba", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BA,
-		N_("build source and binary package from spec file"), NULL},
-	{ "bb", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BB,
-		N_("build binary package from spec file"), NULL},
-	{ "bs", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BS,
-		N_("build source package from spec file"), NULL},
+ { "bp", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BP,
+	N_("build through %prep (unpack sources and apply patches) from <specfile>"),
+	N_("<specfile>") },
+ { "bc", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BC,
+	N_("build through %build (%prep, then compile) from <specfile>"),
+	N_("<specfile>") },
+ { "bi", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BI,
+	N_("build through %install (%prep, %build, then install) from <specfile>"),
+	N_("<specfile>") },
+ { "bl", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BL,
+	N_("verify %files section from <specfile>"),
+	N_("<specfile>") },
+ { "ba", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BA,
+	N_("build source and binary packages from <specfile>"),
+	N_("<specfile>") },
+ { "bb", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BB,
+	N_("build binary package only from <specfile>"),
+	N_("<specfile>") },
+ { "bs", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_BS,
+	N_("build source package only from <specfile>"),
+	N_("<specfile>") },
 
-	{ "tp", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TP,
-		N_("build through %%prep stage from tar ball"), NULL},
-	{ "tc", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TC,
-		N_("build through %%build stage from tar ball"), NULL},
-	{ "ti", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TI,
-		N_("build through %%install stage from tar ball"), NULL},
-	{ "tl", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TL,
-		N_("verify %%files section from tar ball"), NULL},
-	{ "ta", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TA,
-		N_("build source and binary package from tar ball"), NULL},
-	{ "tb", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TB,
-		N_("build binary package from tar ball"), NULL},
-	{ "ts", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TS,
-		N_("build source package from tar ball"), NULL},
+ { "tp", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TP,
+	N_("build through %prep (unpack sources and apply patches) from <tarball>"),
+	N_("<tarball>") },
+ { "tc", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TC,
+	N_("build through %build (%prep, then compile) from <tarball>"),
+	N_("<tarball>") },
+ { "ti", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TI,
+	N_("build through %install (%prep, %build, then install) from <tarball>"),
+	N_("<tarball>") },
+ { "tl", 0, POPT_ARGFLAG_ONEDASH|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_TL,
+	N_("verify %files section from <tarball>"),
+	N_("<tarball>") },
+ { "ta", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TA,
+	N_("build source and binary packages from <tarball>"),
+	N_("<tarball>") },
+ { "tb", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TB,
+	N_("build binary package only from <tarball>"),
+	N_("<tarball>") },
+ { "ts", 0, POPT_ARGFLAG_ONEDASH, 0, POPT_TS,
+	N_("build source package only from <tarball>"),
+	N_("<tarball>") },
 
-	{ "rebuild", '\0', 0, 0, POPT_REBUILD,
-		N_("build binary package from source package"), NULL},
-	{ "recompile", '\0', 0, 0, POPT_REBUILD,
-		N_("build through %%install stage from source package"), NULL},
+ { "rebuild", '\0', 0, 0, POPT_REBUILD,
+	N_("build binary package from <source package>"),
+	N_("<source package>") },
+ { "recompile", '\0', 0, 0, POPT_REBUILD,
+	N_("build through %install (%prep, %build, then install) from <source package>"),
+	N_("<source package>") },
 
-	{ "buildroot", '\0', POPT_ARG_STRING, 0,  POPT_BUILDROOT,
-		N_("override build root"), "DIRECTORY" },
-	{ "clean", '\0', 0, 0, POPT_RMBUILD,
-		N_("remove build tree when done"), NULL},
-	{ "nobuild", '\0', 0, &noBuild,  POPT_NOBUILD,
-		N_("do not execute any stages of the build"), NULL },
-	{ "nolang", '\0', 0, &noLang, POPT_NOLANG,
-		N_("do not accept I18N msgstr's from specfile"), NULL},
-	{ "rmsource", '\0', 0, 0, POPT_RMSOURCE,
-		N_("remove sources when done"), NULL},
-	{ "rmspec", '\0', 0, 0, POPT_RMSPEC,
-		N_("remove specfile when done"), NULL},
-	{ "short-circuit", '\0', 0, 0,  POPT_SHORTCIRCUIT,
-		N_("skip straight to specified stage (only for c,i)"), NULL },
-	{ "target", '\0', POPT_ARG_STRING, 0,  POPT_TARGETPLATFORM,
-		N_("override target platform"), "CPU-VENDOR-OS" },
-	{ "usecatalog", '\0', 0, &useCatalog, POPT_USECATALOG,
-		N_("lookup I18N strings in specfile catalog"), NULL},
-	{ 0, 0, 0, 0, 0,	NULL, NULL }
+ { "buildroot", '\0', POPT_ARG_STRING, 0,  POPT_BUILDROOT,
+	N_("override build root"), "DIRECTORY" },
+ { "clean", '\0', 0, 0, POPT_RMBUILD,
+	N_("remove build tree when done"), NULL},
+ { "dirtokens", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_noDirTokens, 0,
+	N_("generate headers compatible with rpm4 packaging"), NULL},
+ { "force", '\0', POPT_ARGFLAG_DOC_HIDDEN, &force, POPT_FORCE,
+        N_("ignore ExcludeArch: directives from spec file"), NULL},
+ { "nobuild", '\0', 0, &noBuild,  POPT_NOBUILD,
+	N_("do not execute any stages of the build"), NULL },
+ { "nodeps", '\0', 0, &noDeps, POPT_NODEPS,
+	N_("do not verify package dependencies"), NULL },
+ { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,
+	N_("generate package header(s) compatible with (legacy) rpm[23] packaging"),
+	NULL},
+ { "nolang", '\0', POPT_ARGFLAG_DOC_HIDDEN, &noLang, POPT_NOLANG,
+	N_("do not accept i18N msgstr's from specfile"), NULL},
+ { "rmsource", '\0', 0, 0, POPT_RMSOURCE,
+	N_("remove sources when done"), NULL},
+ { "rmspec", '\0', 0, 0, POPT_RMSPEC,
+	N_("remove specfile when done"), NULL},
+ { "short-circuit", '\0', 0, 0,  POPT_SHORTCIRCUIT,
+	N_("skip straight to specified stage (only for c,i)"), NULL },
+ { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &signIt, POPT_SIGN,
+	N_("generate PGP/GPG signature"), NULL },
+ { "target", '\0', POPT_ARG_STRING, 0,  POPT_TARGETPLATFORM,
+	N_("override target platform"), "CPU-VENDOR-OS" },
+ { "usecatalog", '\0', POPT_ARGFLAG_DOC_HIDDEN, &useCatalog, POPT_USECATALOG,
+	N_("lookup i18N strings in specfile catalog"), NULL},
+
+   POPT_TABLEEND
 };

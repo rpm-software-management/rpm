@@ -1,5 +1,7 @@
 #include "system.h"
 
+#define	_AUTOHELP
+
 #if defined(IAM_RPM)
 #define	IAM_RPMBT
 #define	IAM_RPMDB
@@ -129,7 +131,7 @@ static int signIt = 0;
 static int noMd5 = 0;
 #endif
 
-#if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
+#if defined(IAM_RPMEIU)
 static int noDeps = 0;
 #endif
 
@@ -137,127 +139,247 @@ static int noDeps = 0;
 static int noScripts = 0;
 #endif
 
-#if defined(IAM_RPMEIU) || defined(IAM_RPMBT)
+#if defined(IAM_RPMEIU)
 static int force = 0;
 static int test = 0;
 #endif
 
-/* the structure describing the options we take and the defaults */
-static struct poptOption optionsTable[] = {
- { "help", '\0', 0, &help, 0,			NULL, NULL},
- { "version", '\0', 0, &showVersion, 0,		NULL, NULL},
-
- { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
- { "verbose", 'v', 0, 0, 'v',			NULL, NULL},
-
- { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,
-	N_("define macro <name> with value <body>"), N_("'<name> <body>'") },
- { "eval", '\0', POPT_ARG_STRING, 0, GETOPT_EVALMACRO,
-	N_("print macro expansion to stdout"), N_("<expr>+") },
-
- { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,	NULL, NULL},
- { "dirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 0,	NULL, NULL},
-#if HAVE_LIBIO_H && defined(_IO_BAD_SEEN)
- { "nolibio", '\0', POPT_ARG_VAL, &noLibio, 1,		NULL, NULL},
-#endif
- { "ftpdebug", '\0', POPT_ARG_VAL, &_ftp_debug, -1,		NULL, NULL},
- { "rpmiodebug", '\0', POPT_ARG_VAL, &_rpmio_debug, -1,		NULL, NULL},
- { "urldebug", '\0', POPT_ARG_VAL, &_url_debug, -1,		NULL, NULL},
-
-#if defined(IAM_RPMEIU) || defined(IAM_RPMBT)
- { "force", '\0', 0, &force, 0,			NULL, NULL},
- { "test", '\0', 0, &test, 0,			NULL, NULL},
-#endif
-
- /* XXX colliding options */
-#if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
- {  NULL, 'i', 0, 0, 'i',			NULL, NULL},
-#endif
-
- { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
- { "root", 'r', POPT_ARG_STRING, &rootdir, 0,	NULL, NULL},
-
+static struct poptOption rpmAllPoptTable[] = {
+ { "version", '\0', 0, &showVersion, 0,
+	N_("print the version of rpm being used"),
+	NULL },
+ { "quiet", '\0', 0, &quiet, 0,
+	N_("provide less detailed output"), NULL},
+ { "verbose", 'v', 0, 0, 'v',
+	N_("provide more detailed output"), NULL},
+ { "define", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, GETOPT_DEFINEMACRO,
+	N_("define macro <name> with value <body>"),
+	N_("'<name> <body>'") },
+ { "eval", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, GETOPT_EVALMACRO,
+	N_("print macro expansion of <expr>+"),
+	N_("<expr>+") },
+ { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &pipeOutput, 0,
+	N_("send stdout to <cmd>"),
+	N_("<cmd>") },
+ { "root", 'r', POPT_ARG_STRING, &rootdir, 0,
+	N_("use <dir> as the top level directory"),
+	N_("<dir>") },
  { "macros", '\0', POPT_ARG_STRING, &macrofiles, 0,
 	N_("read <file:...> instead of default macro file(s)"),
 	N_("<file:...>") },
 #ifndef	DYING
- { "rcfile", '\0', POPT_ARG_STRING, &rcfile, 0,	NULL, NULL},
+ { "rcfile", '\0', POPT_ARG_STRING, &rcfile, 0,
+	N_("read <file:...> instead of default rpmrc file(s)"),
+	N_("<file:...>") },
 #else
- { "rcfile", '\0', 0, 0, GETOPT_RCFILE,		NULL, NULL},
+ { "rcfile", '\0', 0, 0, GETOPT_RCFILE,	
+	N_("read <file:...> instead of default rpmrc file(s)"),
+	N_("<file:...>") },
 #endif
- { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,	NULL, NULL},
+ { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,
+	N_("display final rpmrc and macro configuration"),
+	NULL },
 
-#if defined(IAM_RPMQV) || defined(IAM_RPMK)
- { "nomd5", '\0', 0, &noMd5, 0,			NULL, NULL},
+#if HAVE_LIBIO_H && defined(_IO_BAD_SEEN)
+ { "nolibio", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &noLibio, 1,
+	N_("disable use of libio(3) API"), NULL},
 #endif
+ { "ftpdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_ftp_debug, -1,
+	N_("debug protocol data stream"), NULL},
+ { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
+	N_("debug rpmio I/O"), NULL},
+ { "urldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_url_debug, -1,
+	N_("debug URL cache handling"), NULL},
 
-#if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
- { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
-#endif
-#if defined(IAM_RPMQV) || defined(IAM_RPMEIU)
- { "noscripts", '\0', 0, &noScripts, 0,		NULL, NULL},
-#endif
-
-#ifdef	IAM_RPMK
- { "addsign", '\0', 0, 0, GETOPT_ADDSIGN,	NULL, NULL},
- { "checksig", 'K', 0, 0, 'K',			NULL, NULL},
- { "nogpg", '\0', 0, &noGpg, 0,			NULL, NULL},
- { "nopgp", '\0', 0, &noPgp, 0,			NULL, NULL},
- { "resign", '\0', 0, 0, GETOPT_RESIGN,		NULL, NULL},
-#endif
-
-#if defined(IAM_RPMBT) || defined(IAM_RPMK)
- { "sign", '\0', 0, &signIt, 0,			NULL, NULL},
-#endif	/* IAM_RPMBT || IAM_RPMK */
+   POPT_TABLEEND
+};
 
 #ifdef	IAM_RPMDB
- { "initdb", '\0', 0, &initdb, 0,		NULL, NULL},
- { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB,	NULL, NULL},
+static struct poptOption rpmDatabasePoptTable[] = {
+ { "initdb", '\0', 0, &initdb, 0,
+	N_("initialize database"), NULL},
+ { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB,
+	N_("rebuild database inverted lists from installed package headers"),
+	NULL},
+ { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,
+	N_("generate headers compatible with (legacy) rpm[23] packaging"),
+	NULL},
+ { "dirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 0,
+	N_("generate headers compatible with rpm4 packaging"),
+	NULL},
+
+   POPT_TABLEEND
+};
 #endif	/* IAM_RPMDB */
 
+#ifdef	IAM_RPMK
+static struct poptOption rpmSignPoptTable[] = {
+ { "addsign", '\0', 0, 0, GETOPT_ADDSIGN,
+	N_("add a signature to a package"),
+	NULL },
+ { "resign", '\0', 0, 0, GETOPT_RESIGN,
+	N_("sign a package (discard current signature)"),
+	NULL },
+ { "sign", '\0', 0, &signIt, 0,
+	N_("generate PGP/GPG signature"),
+	NULL },
+ { "checksig", 'K', 0, 0, 'K',
+	N_("verify package signature"),
+	NULL },
+ { "nogpg", '\0', 0, &noGpg, 0,
+	N_("skip any PGP signatures"),
+	NULL },
+ { "nopgp", '\0', 0, &noPgp, 0,
+	N_("skip any GPG signatures"),
+	NULL },
+ { "nomd5", '\0', 0, &noMd5, 0,
+	N_("do not verify file md5 checksums"),
+	NULL },
+
+   POPT_TABLEEND
+};
+#endif	/* IAM_RPMK */
+
 #ifdef	IAM_RPMEIU
- { "allfiles", '\0', 0, &allFiles, 0,		NULL, NULL},
- { "allmatches", '\0', 0, &allMatches, 0,	NULL, NULL},
- { "badreloc", '\0', 0, &badReloc, 0,		NULL, NULL},
- { "erase", 'e', 0, 0, 'e',			NULL, NULL},
- { "excludedocs", '\0', 0, &excldocs, 0,	NULL, NULL},
- { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,	NULL, NULL},
- { "freshen", 'F', 0, 0, 'F',			NULL, NULL},
- { "hash", 'h', 0, &showHash, 0,		NULL, NULL},
- { "ignorearch", '\0', 0, &ignoreArch, 0,	NULL, NULL},
- { "ignoreos", '\0', 0, &ignoreOs, 0,		NULL, NULL},
- { "ignoresize", '\0', 0, &ignoreSize, 0,	NULL, NULL},
- { "includedocs", '\0', 0, &incldocs, 0,	NULL, NULL},
-/* info and install both using 'i' is dumb */
- { "install", '\0', 0, 0, GETOPT_INSTALL,	NULL, NULL},
- { "justdb", '\0', 0, &justdb, 0,		NULL, NULL},
- { "noorder", '\0', 0, &noOrder, 0,		NULL, NULL},
- { "notriggers", '\0', 0, &noTriggers, 0,	NULL, NULL},
- { "oldpackage", '\0', 0, &oldPackage, 0,	NULL, NULL},
- { "percent", '\0', 0, &showPercents, 0,	NULL, NULL},
- { "prefix", '\0', POPT_ARG_STRING, &prefix, 0,	NULL, NULL},
- { "relocate", '\0', POPT_ARG_STRING, 0, GETOPT_RELOCATE,	NULL, NULL},
- { "replacefiles", '\0', 0, &replaceFiles, 0,	NULL, NULL},
- { "replacepkgs", '\0', 0, &replacePackages, 0,	NULL, NULL},
- { "upgrade", 'U', 0, 0, 'U',			NULL, NULL},
- { "uninstall", 'u', 0, 0, 'u',			NULL, NULL},
+static struct poptOption rpmInstallPoptTable[] = {
+ { "allfiles", '\0', 0, &allFiles, 0,
+  N_("install all files, even configurations which might otherwise be skipped"),
+	NULL},
+ { "allmatches", '\0', 0, &allMatches, 0,
+	N_("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"),
+	NULL},
+ { "badreloc", '\0', 0, &badReloc, 0,
+	N_("relocate files in non-relocateable package"),
+	NULL},
+ { "erase", 'e', 0, 0, 'e',
+	N_("erase (uninstall) package"),
+	N_("<package>") },
+ { "excludedocs", '\0', 0, &excldocs, 0,
+	N_("do not install documentation"),
+	NULL},
+ { "excludepath", '\0', POPT_ARG_STRING, 0, GETOPT_EXCLUDEPATH,
+	N_("skip files with leading component <path> "),
+	NULL},
+ { "force", '\0', 0, &force, 0,
+	N_("short hand for --replacepkgs --replacefiles"),
+	NULL},
+ { "freshen", 'F', 0, 0, 'F',
+	N_("upgrade package if already installed"),
+	N_("<packagefile>+") },
+ { "hash", 'h', 0, &showHash, 0,
+	N_("print hash marks as package installs (good with -v)"),
+	NULL},
+ { "ignorearch", '\0', 0, &ignoreArch, 0,
+	N_("don't verify package architecture"),
+	NULL},
+ { "ignoreos", '\0', 0, &ignoreOs, 0,
+	N_("don't verify package operating system"),
+	NULL},
+ { "ignoresize", '\0', 0, &ignoreSize, 0,
+	N_("don't check disk space before installing"),
+	NULL},
+ { "includedocs", '\0', 0, &incldocs, 0,
+	N_("install documentation"),
+	NULL},
+ { "install", '\0', 0, 0, GETOPT_INSTALL,
+	N_("install package"),
+	N_("<packagefile>+") },
+ { "justdb", '\0', 0, &justdb, 0,
+	N_("update the database, but do not modify the filesystem"),
+	NULL},
+ { "nodeps", '\0', 0, &noDeps, 0,
+	N_("do not verify package dependencies"),
+	NULL },
+ { "noorder", '\0', 0, &noOrder, 0,
+	N_("do not reorder package installation to satisfy dependencies"),
+	NULL},
+ { "noscripts", '\0', 0, &noScripts, 0,
+	N_("do not execute scripts (if any)"),
+	NULL },
+ { "notriggers", '\0', 0, &noTriggers, 0,
+	N_("don't execute any scriptlets triggered by this package"),
+	NULL},
+ { "oldpackage", '\0', 0, &oldPackage, 0,
+	N_("upgrade to an old version of the package (--force on upgrades does this automatically)"),
+	NULL},
+ { "percent", '\0', 0, &showPercents, 0,
+	N_("print percentages as package installs"),
+	NULL},
+ { "prefix", '\0', POPT_ARG_STRING, &prefix, 0,
+	N_("relocate the package to <dir>, if relocatable"),
+	N_("<dir>") },
+ { "relocate", '\0', POPT_ARG_STRING, 0, GETOPT_RELOCATE,
+	N_("relocate files from <oldpath> to <newpath>"),
+	N_("<oldpath>=<newpath>") },
+ { "replacefiles", '\0', 0, &replaceFiles, 0,
+	N_("install even if the package replaces installed files"),
+	NULL},
+ { "replacepkgs", '\0', 0, &replacePackages, 0,
+	N_("reinstall if the package is already present"),
+	NULL},
+ { "test", '\0', 0, &test, 0,
+	N_("don't install, but tell if it would work or not"),
+	NULL},
+ { "upgrade", 'U', 0, 0, 'U',
+	N_("upgrade package"),
+	N_("<packagefile>+") },
+ { "uninstall", 'u', POPT_ARGFLAG_DOC_HIDDEN, 0, 'u',
+	NULL,
+	NULL},
+
+   POPT_TABLEEND
+};
 #endif	/* IAM_RPMEIU */
 
+/* the structure describing the options we take and the defaults */
+static struct poptOption optionsTable[] = {
+#if !defined(_AUTOHELP)
+ { "help", '\0', 0, &help, 0,			NULL, NULL},
+#endif
+
+ /* XXX colliding options */
+#if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
+ {  NULL, 'i', POPT_ARGFLAG_DOC_HIDDEN, 0, 'i',			NULL, NULL},
+#endif
+
 #ifdef	IAM_RPMQV
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
-		rpmQVSourcePoptTable, 0,	(void *) &rpmQVArgs, NULL },
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
-		rpmQueryPoptTable, 0,		(void *) &rpmQVArgs, NULL },
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
-		rpmVerifyPoptTable, 0,		(void *) &rpmQVArgs, NULL },
+#if 0
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
+	N_("Query/Verify options:"),
+	NULL },
+#endif
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQueryPoptTable, 0,
+	N_("Query options (with -q or --query):"),
+	NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmVerifyPoptTable, 0,
+	N_("Verify options (with -V or --verify):"),
+	NULL },
 #endif	/* IAM_RPMQV */
 
+#ifdef	IAM_RPMK
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmSignPoptTable, 0,
+	N_("Signature options:"),
+	NULL },
+#endif	/* IAM_RPMK */
+
+#ifdef	IAM_RPMDB
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmDatabasePoptTable, 0,
+	N_("Database options:"),
+	NULL },
+#endif	/* IAM_RPMDB */
+
 #ifdef	IAM_RPMBT
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
-		rpmBuildPoptTable, 0,		(void *) &rpmBTArgs, NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmBuildPoptTable, 0,
+	N_("Build options with [ <specfile> | <tarball> | <source package> ]:"),
+	NULL },
 #endif	/* IAM_RPMBT */
 
- { 0, 0, 0, 0, 0,	NULL, NULL }
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmAllPoptTable, 0,
+	N_("Common options for all rpm modes:"),
+	NULL },
+
+   POPT_AUTOHELP
+   POPT_TABLEEND
 };
 
 #ifdef __MINT__
@@ -343,17 +465,6 @@ static void printUsage(void) {
     fprintf(fp, _("       %s {--setperms} [-afpg] [target]\n"), __progname);
     fprintf(fp, _("       %s {--setugids} [-afpg] [target]\n"), __progname);
 #endif	/* IAM_RPMQV */
-
-#ifdef	IAM_RPMBT
-    fprintf(fp, _("       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--macros <file:...>]\n"), __progname);
-    puts( ("                        [--sign] [--nobuild] ]"));
-    puts(_("                        [--target=platform1[,platform2...]]"));
-    puts(_("                        [--rmsource] [--rmspec] specfile"));
-    fprintf(fp, _("       %s {--rmsource} [--macros <file:...>] [-v] specfile\n"), __progname);
-    fprintf(fp, _("       %s {--rebuild} [--macros <file:...>] [-v] source1.rpm ... sourceN.rpm\n"), __progname);
-    fprintf(fp, _("       %s {--recompile} [--macros <file:...>] [-v] source1.rpm ... sourceN.rpm\n"), __progname);
-    fprintf(fp, _("       %s {--freshen -F} file1.rpm ... fileN.rpm\n"), __progname);
-#endif	/* IAM_RPMBT */
 
 #ifdef	IAM_RPMK
     fprintf(fp, _("       %s {--resign} [--macros <file:...>] package1 package2 ... packageN\n"), __progname);
@@ -492,7 +603,7 @@ static void printHelp(void) {
     printHelpLine(  "     --nomd5              ",
 		  _("do not verify file md5 checksums"));
     printHelpLine(  "     --noscripts          ",
-		  _("do not execute verify script (if any)"));
+		  _("do not execute scripts (if any)"));
     puts("");
     printHelpLine(  "   --querytags            ",
 		  _("list the tags that can be used in a query format"));
@@ -576,48 +687,6 @@ static void printHelp(void) {
     printHelpLine(  "     --notriggers         ",
 		  _("don't execute any scripts triggered by this package"));
 #endif	/* IAM_RPMEIU */
-
-#ifdef	IAM_RPMBT
-    puts("");
-    puts(         _("   -b<stage> <spec>       "));
-    printHelpLine(_("   -t<stage> <tarball>    "),
-		  _("build package, where <stage> is one of:"));
-    printHelpLine(  "         p                ",
-		  _("prep (unpack sources and apply patches)"));
-    printHelpLine(  "         l                ",
-		  _("list check (do some cursory checks on %files)"));
-    printHelpLine(  "         c                ",
-		  _("compile (prep and compile)"));
-    printHelpLine(  "         i                ",
-		  _("install (prep, compile, install)"));
-    printHelpLine(  "         b                ",
-		  _("binary package (prep, compile, install, package)"));
-    printHelpLine(  "         a                ",
-		  _("bin/src package (prep, compile, install, package)"));
-    printHelpLine(  "         s                ",
-		  _("package src rpm only"));
-    printHelpLine(  "     --short-circuit      ",
-		  _("skip straight to specified stage (only for c,i)"));
-    printHelpLine(  "     --clean              ",
-		  _("remove build tree when done"));
-    printHelpLine(  "     --rmsource           ",
-		  _("remove sources when done"));
-    printHelpLine(  "     --rmspec             ",
-		  _("remove spec file when done"));
-    printHelpLine(  "     --sign               ",
-		  _("generate PGP/GPG signature"));
-    printHelpLine(_("     --buildroot <dir>    "),
-		  _("use <dir> as the build root"));
-    printHelpLine(_("     --target=<platform>+ "),
-		  _("build the packages for the build targets platform1...platformN."));
-    printHelpLine(  "     --nobuild            ",
-		  _("do not execute any stages"));
-    puts("");
-    printHelpLine(_("   --rebuild <src_pkg>    "),
-		  _("install source package, build binary package and remove spec file, sources, patches, and icons."));
-    printHelpLine(_("   --recompile <src_pkg>  "),
-		  _("like --rebuild, but don't build any package"));
-#endif	/* IAM_RPMBT */
 
 #ifdef IAM_RPMK
     puts("");
@@ -1007,21 +1076,11 @@ int main(int argc, const char ** argv)
 	argerror(_("--dbpath given for operation that does not use a "
 			"database"));
 
-#if defined(IAM_RPMEIU) || defined(IAM_RPMBT)
+#if defined(IAM_RPMEIU)
 
-    if (!(
-#ifdef	IAM_RPMEIU
-	 bigMode == MODE_INSTALL ||
-#endif
-#ifdef	IAM_RPMBT
-	 (bigMode==MODE_BUILD && (ba->buildAmount & RPMBUILD_RMSOURCE))||
-	 (bigMode==MODE_BUILD && (ba->buildAmount & RPMBUILD_RMSPEC))
-#else
-	0
-#endif
-	) && force)
+    if (!( bigMode == MODE_INSTALL ) && force)
 	argerror(_("only installation, upgrading, rmsource and rmspec may be forced"));
-#endif	/* IAM_RPMEIU || IAM_RPMBT */
+#endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMEIU
     if (bigMode != MODE_INSTALL && badReloc)
@@ -1103,9 +1162,7 @@ int main(int argc, const char ** argv)
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && noTriggers)
 	argerror(_("--notriggers may only be specified during package "
 		   "installation and erasure"));
-#endif	/* IAM_RPMEIU */
 
-#if defined(IAM_RPMBT) || defined(IAM_RPMEIU)
     if (noDeps & (bigMode & ~MODES_FOR_NODEPS))
 	argerror(_("--nodeps may only be specified during package "
 		   "building, rebuilding, recompilation, installation,"
@@ -1114,7 +1171,7 @@ int main(int argc, const char ** argv)
     if (test && (bigMode & ~MODES_FOR_TEST))
 	argerror(_("--test may only be specified during package installation, "
 		 "erasure, and building"));
-#endif	/* IAM_RPMBT || IAM_RPMEIU */
+#endif	/* IAM_RPMEIU */
 
     if (rootdir[1] && (bigMode & ~MODES_FOR_ROOT))
 	argerror(_("--root (-r) may only be specified during "
@@ -1154,6 +1211,9 @@ int main(int argc, const char ** argv)
 #endif
 
 #if defined(IAM_RPMBT) || defined(IAM_RPMK)
+#if defined(IAM_RPMBT)
+    signIt = ba->sign;
+#endif
     if (signIt) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
 	    bigMode == MODE_RESIGN || bigMode == MODE_TARBUILD) {
@@ -1279,7 +1339,7 @@ int main(int argc, const char ** argv)
 		break;
 
 	    ba->rootdir = rootdir;
-	    ec = build(specFile, ba, passPhrase, 0, cookie, rcfile, force, noDeps);
+	    ec = build(specFile, ba, passPhrase, cookie, rcfile);
 	    free(cookie);
 	    cookie = NULL;
 	    free((void *)specFile);
@@ -1335,8 +1395,7 @@ int main(int argc, const char ** argv)
 
 	while ((pkg = poptGetArg(optCon))) {
 	    ba->rootdir = rootdir;
-	    ec = build(pkg, ba, passPhrase, bigMode == MODE_TARBUILD,
-			NULL, rcfile, force, noDeps);
+	    ec = build(pkg, ba, passPhrase, NULL, rcfile);
 	    if (ec)
 		break;
 	    rpmFreeMacros(NULL);
@@ -1468,9 +1527,11 @@ int main(int argc, const char ** argv)
 
 	verifyFlags = (VERIFY_FILES|VERIFY_DEPS|VERIFY_SCRIPT|VERIFY_MD5);
 	verifyFlags &= ~qva->qva_flags;
+#ifdef DYING
 	if (noDeps)	verifyFlags &= ~VERIFY_DEPS;
 	if (noScripts)	verifyFlags &= ~VERIFY_SCRIPT;
 	if (noMd5)	verifyFlags &= ~VERIFY_MD5;
+#endif
 
 	qva->qva_prefix = rootdir;
 	qva->qva_flags = verifyFlags;

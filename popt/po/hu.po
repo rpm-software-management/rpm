@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.1\n"
-"POT-Creation-Date: 2000-12-31 15:18-0500\n"
+"POT-Creation-Date: 2001-01-01 17:42-0500\n"
 "PO-Revision-Date: 2000-08-03 23:26+0200\n"
 "Last-Translator: László Németh <nemeth@qwertynet.hu>\n"
 "Language-Team: Hungarian\n"
@@ -9,10 +9,10 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: popthelp.c:27
+#: popthelp.c:28
 msgid "Show this help message"
 msgstr "E súgó megjelenítése"
 
-#: popthelp.c:28
+#: popthelp.c:29
 msgid "Display brief usage message"
 msgstr "Rövid használati utasítás megjelenítése"

@@ -31,7 +31,7 @@ static char * strerror(int errno) {
 #endif
 
 void poptSetExecPath(poptContext con, const char * path, int allowAbsolute) {
-    if (con->execPath) xfree(con->execPath);
+    if (con->execPath) free((void *)con->execPath);
     con->execPath = xstrdup(path);
     con->execAbsolute = allowAbsolute;
 }
@@ -140,11 +140,11 @@ poptContext poptGetContext(const char * name, int argc, const char ** argv,
 static void cleanOSE(struct optionStackEntry *os)
 {
     if (os->nextArg) {
-	xfree(os->nextArg);
+	free((void *)os->nextArg);
 	os->nextArg = NULL;
     }
     if (os->argv) {
-	xfree(os->argv);
+	free((void *)os->argv);
 	os->argv = NULL;
     }
     if (os->argb) {
@@ -175,7 +175,7 @@ void poptResetContext(poptContext con) {
 
     for (i = 0; i < con->finalArgvCount; i++) {
 	if (con->finalArgv[i]) {
-	    xfree(con->finalArgv[i]);
+	    free((void *)con->finalArgv[i]);
 	    con->finalArgv[i] = NULL;
 	}
     }
@@ -661,7 +661,7 @@ int poptGetNextOpt(poptContext con)
 	    }
 	} else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) {
 	    if (con->os->nextArg) {
-		xfree(con->os->nextArg);
+		free((void *)con->os->nextArg);
 		con->os->nextArg = NULL;
 	    }
 	    if (longArg) {
@@ -831,22 +831,22 @@ void poptFreeContext(poptContext con) {
     if (con->os->argb) free(con->os->argb);
 
     for (i = 0; i < con->numAliases; i++) {
-	if (con->aliases[i].longName) xfree(con->aliases[i].longName);
+	if (con->aliases[i].longName) free((void *)con->aliases[i].longName);
 	free(con->aliases[i].argv);
     }
 
     for (i = 0; i < con->numExecs; i++) {
-	if (con->execs[i].longName) xfree(con->execs[i].longName);
-	xfree(con->execs[i].script);
+	if (con->execs[i].longName) free((void *)con->execs[i].longName);
+	free((void *)con->execs[i].script);
     }
-    if (con->execs) xfree(con->execs);
+    if (con->execs) free((void *)con->execs);
 
     free(con->leftovers);
     free(con->finalArgv);
-    if (con->appName) xfree(con->appName);
+    if (con->appName) free((void *)con->appName);
     if (con->aliases) free(con->aliases);
-    if (con->otherHelp) xfree(con->otherHelp);
-    if (con->execPath) xfree(con->execPath);
+    if (con->otherHelp) free((void *)con->otherHelp);
+    if (con->execPath) free((void *)con->execPath);
     if (con->arg_strip) PBM_FREE(con->arg_strip);
     
     free(con);

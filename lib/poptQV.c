@@ -27,7 +27,7 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 	const struct poptOption * opt, /*@unused@*/ const char * arg, 
 	const void * data)
 {
-    QVA_t *qva = (QVA_t *) data;
+    QVA_t *qva = &rpmQVArgs;
 
     switch (opt->val) {
     case 'q':
@@ -62,35 +62,35 @@ static void rpmQVSourceArgCallback( /*@unused@*/ poptContext con,
 }
 
 struct poptOption rpmQVSourcePoptTable[] = {
-	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
-		rpmQVSourceArgCallback, 0, NULL, NULL },
-	{ "all", 'a', 0, 0, 'a',
-		N_("query/verify all packages"), NULL },
-	{ "file", 'f', 0, 0, 'f',
-		N_("query/verify package owning file"), "FILE" },
-	{ "group", 'g', 0, 0, 'g',
-		N_("query/verify packages in group"), "GROUP" },
-	{ "package", 'p', 0, 0, 'p',
-		N_("query/verify a package file"), NULL },
-	{ "query", 'q', 0, NULL, 'q',
-		N_("rpm query mode"), NULL },
-	{ "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, 
-		POPT_QUERYBYNUMBER, NULL, NULL },
-	{ "querytags", '\0', 0, 0, 'Q',
-		N_("display known query tags"), NULL },
-	{ "specfile", '\0', 0, 0, POPT_SPECFILE,
-		N_("query a spec file"), NULL },
-	{ "triggeredby", '\0', 0, 0, POPT_TRIGGEREDBY, 
-		N_("query the pacakges triggered by the package"), "PACKAGE" },
-	{ "verify", 'V', 0, NULL, 'V',
-		N_("rpm verify mode"), NULL },
-	{ NULL, 'y',  POPT_ARGFLAG_DOC_HIDDEN, NULL, 'V',
-		N_("rpm verify mode (legacy)"), NULL },
-	{ "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
-		N_("query the packages which require a capability"), "CAPABILITY" },
-	{ "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
-		N_("query the packages which provide a capability"), "CAPABILITY" },
-	{ 0, 0, 0, 0, 0,	NULL, NULL }
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
+	rpmQVSourceArgCallback, 0, NULL, NULL },
+ { "all", 'a', 0, 0, 'a',
+	N_("query/verify all packages"), NULL },
+ { "file", 'f', 0, 0, 'f',
+	N_("query/verify package(s) owning file"), "FILE" },
+ { "group", 'g', 0, 0, 'g',
+	N_("query/verify package(s) in group"), "GROUP" },
+ { "package", 'p', 0, 0, 'p',
+	N_("query/verify a package file (i.e. a binary *.rpm file)"), NULL },
+ { "query", 'q', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'q',
+	N_("rpm query mode"), NULL },
+ { "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, 
+	POPT_QUERYBYNUMBER, NULL, NULL },
+ { "querytags", '\0', 0, 0, 'Q',
+	N_("display known query tags"), NULL },
+ { "specfile", '\0', 0, 0, POPT_SPECFILE,
+	N_("query a spec file"), N_("<spec>") },
+ { "triggeredby", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_TRIGGEREDBY, 
+	N_("query the package(s) triggered by the package"), "PACKAGE" },
+ { "verify", 'V', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'V',
+	N_("rpm verify mode"), NULL },
+ { NULL, 'y',  POPT_ARGFLAG_DOC_HIDDEN, NULL, 'V',
+	N_("rpm verify mode (legacy)"), NULL },
+ { "whatrequires", '\0', 0, 0, POPT_WHATREQUIRES, 
+	N_("query/verify the package(s) which require a dependency"), "CAPABILITY" },
+ { "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
+	N_("query/verify the package(s) which provide a dependency"), "CAPABILITY" },
+   POPT_TABLEEND
 };
 
 /* ========== Query specific popt args */
@@ -99,7 +99,7 @@ static void queryArgCallback(/*@unused@*/poptContext con, /*@unused@*/enum poptC
 			     const struct poptOption * opt, const char * arg, 
 			     const void * data)
 {
-    QVA_t *qva = (QVA_t *) data;
+    QVA_t *qva = &rpmQVArgs;
 
     switch (opt->val) {
     case 'c': qva->qva_flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
@@ -126,27 +126,29 @@ static void queryArgCallback(/*@unused@*/poptContext con, /*@unused@*/enum poptC
 }
 
 struct poptOption rpmQueryPoptTable[] = {
-	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
-		queryArgCallback, 0, NULL, NULL },
-	{ "configfiles", 'c', 0, 0, 'c',
-		N_("list all configuration files"), NULL },
-	{ "docfiles", 'd', 0, 0, 'd',
-		N_("list all documentation files"), NULL },
-	{ "dump", '\0', 0, 0, POPT_DUMP,
-		N_("dump basic file information"), NULL },
-	{ "list", 'l', 0, 0, 'l',
-		N_("list files in package"), NULL },
-	{ "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
-		POPT_QUERYFORMAT, NULL, NULL },
-	{ "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
-		N_("use the following query format"), "QUERYFORMAT" },
-	{ "specedit", '\0', POPT_ARG_VAL, &specedit, -1,
-		N_("substitute i18n sections into spec file"), NULL },
-	{ "state", 's', 0, 0, 's',
-		N_("display the states of the listed files"), NULL },
-	{ "verbose", 'v', 0, 0, 'v',
-		N_("display a verbose file listing"), NULL },
-	{ 0, 0, 0, 0, 0,	NULL, NULL }
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
+	queryArgCallback, 0, NULL, NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
+	NULL, NULL },
+ { "configfiles", 'c', 0, 0, 'c',
+	N_("list all configuration files"), NULL },
+ { "docfiles", 'd', 0, 0, 'd',
+	N_("list all documentation files"), NULL },
+ { "dump", '\0', 0, 0, POPT_DUMP,
+	N_("dump basic file information"), NULL },
+ { "list", 'l', 0, 0, 'l',
+	N_("list files in package"), NULL },
+ { "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
+	POPT_QUERYFORMAT, NULL, NULL },
+ { "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
+	N_("use the following query format"), "QUERYFORMAT" },
+ { "specedit", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &specedit, -1,
+	N_("substitute i18n sections into spec file"), NULL },
+ { "state", 's', 0, 0, 's',
+	N_("display the states of the listed files"), NULL },
+ { "verbose", 'v', 0, 0, 'v',
+	N_("display a verbose file listing"), NULL },
+   POPT_TABLEEND
 };
 
 /* ======================================================================== */

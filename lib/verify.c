@@ -21,7 +21,10 @@ static union _vendian { int i; char b[4]; } *_endian = (union _vendian *)&_ie;
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
-#define	POPT_NOFILES	1000
+#define	POPT_NODEPS	1000
+#define	POPT_NOFILES	1001
+#define	POPT_NOMD5	1002
+#define	POPT_NOSCRIPTS	1003
 
 /* ========== Verify specific popt args */
 static void verifyArgCallback(/*@unused@*/poptContext con,
@@ -29,20 +32,39 @@ static void verifyArgCallback(/*@unused@*/poptContext con,
 	const struct poptOption * opt, /*@unused@*/const char * arg,
 	const void * data)
 {
-    QVA_t *qva = (QVA_t *) data;
+    QVA_t *qva = &rpmQVArgs;
     switch (opt->val) {
-      case POPT_NOFILES: qva->qva_flags |= VERIFY_FILES; break;
+    case POPT_NODEPS: qva->qva_flags |= VERIFY_DEPS; break;
+    case POPT_NOFILES: qva->qva_flags |= VERIFY_FILES; break;
+    case POPT_NOMD5: qva->qva_flags |= VERIFY_MD5; break;
+    case POPT_NOSCRIPTS: qva->qva_flags |= VERIFY_SCRIPT; break;
     }
 }
 
+static int noDeps = 0;
 static int noFiles = 0;
+static int noMd5 = 0;
+static int noScripts = 0;
+
 /** */
 struct poptOption rpmVerifyPoptTable[] = {
-	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
-		verifyArgCallback, 0, NULL, NULL },
- 	{ "nofiles", '\0', 0, &noFiles, POPT_NOFILES,
-		N_("don't verify files in package"), NULL},
-	{ 0, 0, 0, 0, 0,	NULL, NULL }
+ { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
+	verifyArgCallback, 0, NULL, NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
+	NULL, NULL },
+ { "nodeps", '\0', 0, &noDeps, POPT_NODEPS,
+	N_("do not verify package dependencies"),
+	NULL },
+ { "nofiles", '\0', 0, &noFiles, POPT_NOFILES,
+	N_("don't verify files in package"),
+	NULL},
+ { "nomd5", '\0', 0, &noMd5, POPT_NOMD5,
+	N_("do not verify file md5 checksums"),
+	NULL },
+ { "noscripts", '\0', 0, &noScripts, POPT_NOSCRIPTS,
+        N_("do not execute %verifyscript (if any)"),
+        NULL },
+    POPT_TABLEEND
 };
 
 /* ======================================================================== */

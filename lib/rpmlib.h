@@ -393,8 +393,6 @@ typedef	enum rpmsenseFlags_e {
 #define	isInstallPreReq(_x)	((_x) & _INSTALL_ONLY_MASK)
 #define	isErasePreReq(_x)	((_x) & _ERASE_ONLY_MASK)
 
-#define	xfree(_p)	free((void *)_p)
-
 /* ==================================================================== */
 /** \name RPMRC */
 /*@{*/
@@ -1132,10 +1130,13 @@ struct rpmBuildArguments {
     int buildAmount;		/*!< Bit(s) to control operation. */
     const char *buildRootOverride; /*!< from --buildroot */
     char *targets;		/*!< Target platform(s), comma separated. */
-    int useCatalog;		/*!< from --usecatalog */
-    int noLang;			/*!< from --nolang */
+    int force;			/*!< from --force */
     int noBuild;		/*!< from --nobuild */
+    int noDeps;			/*!< from --nodeps */
+    int noLang;			/*!< from --nolang */
     int shortCircuit;		/*!< from --short-circuit */
+    int sign;			/*!< from --sign */
+    int useCatalog;		/*!< from --usecatalog */
     char buildMode;		/*!< Build mode (one of "btBC") */
     char buildChar;		/*!< Build stage (one of "abcilps ") */
 /*@dependent@*/ const char *rootdir;

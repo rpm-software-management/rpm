@@ -6,8 +6,7 @@ extern "C" {
 #endif
 
 int build(const char *arg, struct rpmBuildArguments *ba, const char *passPhrase,
-	  int fromTarball, char *cookie, const char * rcfile, int force,
-	  int nodeps);
+	  char *cookie, const char * rcfile);
 
 #ifdef __cplusplus
 }

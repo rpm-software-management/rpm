@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.1\n"
-"POT-Creation-Date: 2000-12-31 15:18-0500\n"
+"POT-Creation-Date: 2001-01-01 17:42-0500\n"
 "PO-Revision-Date: 2000-01-06 13:01+0100\n"
 "Last-Translator: Görkem Çetin <kabalak@gmx.net>\n"
 "Language-Team: Gelecek A.Þ <gorkem@gelecek.com.tr>\n"
@@ -9,10 +9,10 @@ msgstr ""
 "Content-Type: text/plain; charset=iso8859-9\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: popthelp.c:27
+#: popthelp.c:28
 msgid "Show this help message"
 msgstr "Bu yardým iletisini gösterir"
 
-#: popthelp.c:28
+#: popthelp.c:29
 msgid "Display brief usage message"
 msgstr "Kýsa bir kullaným iletisi göster"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-30 13:33-0500\n"
+"POT-Creation-Date: 2001-01-01 18:02-0500\n"
 "PO-Revision-Date: 2000-10-09 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -23,64 +23,64 @@ msgstr "ouppfyllda byggberoenden:\n"
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Kan inte öppna spec-filen %s: %s\n"
 
-#: build.c:131 build.c:143
+#: build.c:129 build.c:141
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %m"
 msgstr "Kunde inte öppna \"tar\"-rör: %s\n"
 
 #. Give up
-#: build.c:150
+#: build.c:148
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s"
 msgstr "Kunde inte läsa spec-fil från %s\n"
 
-#: build.c:177
+#: build.c:175
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %m"
 msgstr "Kunde inte byta namn på %s till %s: %s\n"
 
-#: build.c:216
+#: build.c:214
 #, fuzzy, c-format
 msgid "failed to stat %s: %m"
 msgstr "kunde inte ta status på %s: %s"
 
-#: build.c:221
+#: build.c:219
 #, fuzzy, c-format
 msgid "File %s is not a regular file."
 msgstr "Filen är inte en ordinär fil: %s\n"
 
-#: build.c:229
+#: build.c:227
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile."
 msgstr "Filen %s tycks inte vara en spec-fil.\n"
 
 #. parse up the build operators
-#: build.c:289
+#: build.c:285
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Bygger målplattformar: %s\n"
 
-#: build.c:304
+#: build.c:300
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Bygger för målet %s\n"
 
-#: rpm.c:185 rpmqv.c:269
+#: rpm.c:185 rpmqv.c:391
 #, c-format
 msgid "rpm: %s\n"
 msgstr "rpm: %s\n"
 
-#: rpm.c:196 rpmqv.c:280
+#: rpm.c:196 rpmqv.c:402
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
-#: rpm.c:200 rpmqv.c:284
+#: rpm.c:200 rpmqv.c:406
 #, fuzzy
 msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
 msgstr "Copyright (C) 1998 - Red Hat Software"
 
-#: rpm.c:201 rpmqv.c:285
+#: rpm.c:201 rpmqv.c:407
 #, fuzzy
 msgid "This program may be freely redistributed under the terms of the GNU GPL"
 msgstr "Den här programvaran kan distribueras fritt med hänsyn till GNU GPL"
@@ -103,12 +103,12 @@ msgid ""
 msgstr ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 
-#: rpm.c:213 rpmqv.c:306
+#: rpm.c:213 rpmqv.c:428
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 msgstr ""
 "                        [--replacepkgs] [--replacefiles] [--root <kat>]"
 
-#: rpm.c:214 rpmqv.c:307
+#: rpm.c:214 rpmqv.c:429
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgstr "                        [--excludedocs] [--includedocs] [--noscripts]"
 
@@ -118,32 +118,32 @@ msgid ""
 msgstr ""
 "                        [--rcfile <fil>] [--ignorearch] [--dbpath <kat>]"
 
-#: rpm.c:216 rpmqv.c:309
+#: rpm.c:216 rpmqv.c:431
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
 "                        [--prefix <kat>] [--ignoreos] [--nodeps] [--allfiles]"
 
-#: rpm.c:217 rpm.c:226 rpm.c:236 rpmqv.c:310 rpmqv.c:319 rpmqv.c:335
+#: rpm.c:217 rpm.c:226 rpm.c:236 rpmqv.c:432 rpmqv.c:441 rpmqv.c:457
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
 msgstr "                        [--ftpproxy <värd>] [--ftpport <port>]"
 
-#: rpm.c:218 rpm.c:237 rpmqv.c:311 rpmqv.c:320 rpmqv.c:336
+#: rpm.c:218 rpm.c:237 rpmqv.c:433 rpmqv.c:442 rpmqv.c:458
 msgid "                        [--httpproxy <host>] [--httpport <port>]"
 msgstr "                        [--httpproxy <värd>] [--httpport <port>]"
 
-#: rpm.c:219 rpmqv.c:312
+#: rpm.c:219 rpmqv.c:434
 msgid ""
 "                        [--justdb] [--noorder] [--relocate oldpath=newpath]"
 msgstr "                  [--justdb] [--noorder] [--relocate gammalväg=nyväg]"
 
-#: rpm.c:220 rpmqv.c:313
+#: rpm.c:220 rpmqv.c:435
 msgid ""
 "                        [--badreloc] [--notriggers] [--excludepath <path>]"
 msgstr ""
 "                        [--badreloc] [--notriggers] [--excludepath <sökväg>]"
 
-#: rpm.c:221 rpmqv.c:314
+#: rpm.c:221 rpmqv.c:436
 msgid "                        [--ignoresize] file1.rpm ... fileN.rpm"
 msgstr "                        [--ignoresize] fil1.rpm ... filN.rpm"
 
@@ -153,7 +153,7 @@ msgid ""
 msgstr ""
 "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 
-#: rpm.c:223 rpmqv.c:316
+#: rpm.c:223 rpmqv.c:438
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
 msgstr "                        [--oldpackage] [--root <kat>] [--noscripts]"
 
@@ -163,7 +163,7 @@ msgid ""
 msgstr ""
 "                        [--excludedocs] [--includedocs] [--rcfile <fil>]"
 
-#: rpm.c:225 rpmqv.c:318
+#: rpm.c:225 rpmqv.c:440
 msgid ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr ""
@@ -173,22 +173,22 @@ msgstr ""
 msgid "                        [--httpproxy <host>] [--httpport <port>] "
 msgstr "                        [--httpproxy <värd>] [--httpport <port>] "
 
-#: rpm.c:228 rpmqv.c:321
+#: rpm.c:228 rpmqv.c:443
 msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 msgstr ""
 "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 
-#: rpm.c:229 rpmqv.c:322
+#: rpm.c:229 rpmqv.c:444
 msgid "                        [--noorder] [--relocate oldpath=newpath]"
 msgstr "                        [--noorder] [--relocate gammalväg=nyväg]"
 
-#: rpm.c:230 rpmqv.c:323
+#: rpm.c:230 rpmqv.c:445
 msgid ""
 "                        [--badreloc] [--excludepath <path>] [--ignoresize]"
 msgstr ""
 "                        [--badreloc] [--excludepath <sökväg>] [--ignoresize]"
 
-#: rpm.c:231 rpmqv.c:324
+#: rpm.c:231 rpmqv.c:446
 msgid "                        file1.rpm ... fileN.rpm"
 msgstr "                        fil1.rpm ... filN.rpm"
 
@@ -200,19 +200,19 @@ msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
 msgstr "                        [--scripts] [--root <kat>] [--rcfile <fil>]"
 
-#: rpm.c:234 rpmqv.c:333
+#: rpm.c:234 rpmqv.c:455
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr "                        [--whatprovides] [--whatrequires] [--requires]"
 
-#: rpm.c:235 rpmqv.c:334
+#: rpm.c:235 rpmqv.c:456
 msgid "                        [--triggeredby]"
 msgstr "                        [--triggeredby]"
 
-#: rpm.c:238 rpmqv.c:337
+#: rpm.c:238 rpmqv.c:459
 msgid "                        [--provides] [--triggers] [--dump]"
 msgstr "                        [--provides] [--triggers] [--dump]"
 
-#: rpm.c:239 rpmqv.c:338
+#: rpm.c:239 rpmqv.c:460
 msgid "                        [--changelog] [--dbpath <dir>] [targets]"
 msgstr "                        [--changelog] [--dbpath <kat>] [mål]"
 
@@ -220,13 +220,13 @@ msgstr "                        [--changelog] [--dbpath <kat>] [mål]"
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
 msgstr "       rpm {--verify -V -y} [-afpg] [--root <kat>] [--rcfile <fil>]"
 
-#: rpm.c:241 rpmqv.c:340
+#: rpm.c:241 rpmqv.c:462
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
 "                        [--dbpath <kat>] [--nodeps] [--nofiles] [--noscripts]"
 
-#: rpm.c:242 rpmqv.c:341
+#: rpm.c:242 rpmqv.c:463
 msgid "                        [--nomd5] [targets]"
 msgstr "                        [--nomd5] [mål]"
 
@@ -246,11 +246,11 @@ msgstr "       rpm {--freshen -F} fil1.rpm ... filN.rpm"
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
 msgstr "       rpm {--erase -e} [--root <kat>] [--noscripts] [--rcfile <fil>]"
 
-#: rpm.c:247 rpmqv.c:326
+#: rpm.c:247 rpmqv.c:448
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
 msgstr "                        [--dbpath <kat>] [--nodeps] [--allmatches]"
 
-#: rpm.c:248 rpmqv.c:327
+#: rpm.c:248 rpmqv.c:449
 msgid "                        [--justdb] [--notriggers] package1 ... packageN"
 msgstr "                        [--justdb] [--notriggers] paket1 ... paketN"
 
@@ -268,7 +268,7 @@ msgid ""
 msgstr ""
 "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <fil>]"
 
-#: rpm.c:252 rpmqv.c:362
+#: rpm.c:252 rpmqv.c:473
 msgid "                           package1 ... packageN"
 msgstr "                           paket1 ... paketN"
 
@@ -280,15 +280,15 @@ msgstr "       rpm {--rebuilddb} [--rcfile <fil>] [--dbpath <kat>]"
 msgid "       rpm {--querytags}"
 msgstr "       rpm {--querytags}"
 
-#: rpm.c:288 rpmqv.c:398
+#: rpm.c:288 rpmqv.c:509
 msgid "Usage:"
 msgstr "Användning:"
 
-#: rpm.c:290 rpmqv.c:400
+#: rpm.c:290 rpmqv.c:511
 msgid "print this message"
 msgstr "visa detta meddelande"
 
-#: rpm.c:292 rpmqv.c:402
+#: rpm.c:292 rpmqv.c:149 rpmqv.c:513
 msgid "print the version of rpm being used"
 msgstr "visa vilken version av rpm som används"
 
@@ -300,7 +300,7 @@ msgstr "   Alla arbetssätt stödjer följande argument:"
 msgid "    --define '<name> <body>'"
 msgstr "    --define '<namn> <kropp>'"
 
-#: rpm.c:297 rpmqv.c:154 rpmqv.c:407
+#: rpm.c:297 rpmqv.c:156 rpmqv.c:518
 msgid "define macro <name> with value <body>"
 msgstr "definiera makrot <namn> som <kropp>"
 
@@ -316,7 +316,7 @@ msgstr "skriv ut expansionen av makrot <namn> på standard ut"
 msgid "    --pipe <cmd>          "
 msgstr "    --pipe <kommando>     "
 
-#: rpm.c:301 rpmqv.c:411
+#: rpm.c:301 rpmqv.c:162 rpmqv.c:522
 msgid "send stdout to <cmd>"
 msgstr "skicka stdut till <kommando>"
 
@@ -328,15 +328,15 @@ msgstr "      --rcfile <fil>      "
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr "använd <fil> istället för /etc/rpmrc och $HOME/.rpmrc"
 
-#: rpm.c:305 rpmqv.c:415
+#: rpm.c:305 rpmqv.c:180 rpmqv.c:526
 msgid "display final rpmrc and macro configuration"
 msgstr "visa slutliga rpmrc- och makrokonfigurationer"
 
-#: rpm.c:307 rpmqv.c:423
+#: rpm.c:307 rpmqv.c:534
 msgid "be a little more verbose"
 msgstr "var lite mer mångordig"
 
-#: rpm.c:309 rpmqv.c:425
+#: rpm.c:309 rpmqv.c:536
 msgid "be incredibly verbose (for debugging)"
 msgstr "var mycket mångordig (för felsökning)"
 
@@ -353,7 +353,7 @@ msgstr "   istället för filnamn, liksom följande flaggor:"
 msgid "      --ftpproxy <host>   "
 msgstr "      --ftpproxy <värd>   "
 
-#: rpm.c:315 rpmqv.c:432
+#: rpm.c:315 rpmqv.c:543
 msgid "hostname or IP of ftp proxy"
 msgstr "ftp-ombudets (proxy) värdnamn eller IP"
 
@@ -361,7 +361,7 @@ msgstr "ftp-ombudets (proxy) värdnamn eller IP"
 msgid "      --ftpport <port>    "
 msgstr "      --ftpport <port>    "
 
-#: rpm.c:317 rpmqv.c:434
+#: rpm.c:317 rpmqv.c:545
 msgid "port number of ftp server (or proxy)"
 msgstr "ftp-servers (eller ombuds (proxy)) portnummer"
 
@@ -369,7 +369,7 @@ msgstr "ftp-servers (eller ombuds (proxy)) portnummer"
 msgid "      --httpproxy <host>  "
 msgstr "      --httpproxy <värd>  "
 
-#: rpm.c:319 rpmqv.c:436
+#: rpm.c:319 rpmqv.c:547
 msgid "hostname or IP of http proxy"
 msgstr "http-ombudets värdnamn eller IP"
 
@@ -377,11 +377,11 @@ msgstr "http-ombudets värdnamn eller IP"
 msgid "      --httpport <port>   "
 msgstr "      --httpport <port>   "
 
-#: rpm.c:321 rpmqv.c:438
+#: rpm.c:321 rpmqv.c:549
 msgid "port number of http server (or proxy)"
 msgstr "http-servers (eller ombuds) portnummer"
 
-#: rpm.c:325 rpmqv.c:458
+#: rpm.c:325 rpmqv.c:569
 msgid "query mode"
 msgstr "frågeläge"
 
@@ -389,7 +389,7 @@ msgstr "frågeläge"
 msgid "      --dbpath <dir>      "
 msgstr "      --dbpath <kat>      "
 
-#: rpm.c:327 rpm.c:373 rpm.c:398 rpm.c:450 rpm.c:524 rpmqv.c:418
+#: rpm.c:327 rpm.c:373 rpm.c:398 rpm.c:450 rpm.c:524 rpmqv.c:529
 msgid "use <dir> as the directory for the database"
 msgstr "använd <kat> som katalog för databasen"
 
@@ -397,7 +397,7 @@ msgstr "använd <kat> som katalog för databasen"
 msgid "      --queryformat <qfmt>"
 msgstr "      --queryformat <ffmt>"
 
-#: rpm.c:329 rpmqv.c:460
+#: rpm.c:329 rpmqv.c:571
 msgid "use <qfmt> as the header format (implies --info)"
 msgstr "använd <ffmt> som huvudformat (medför --info)"
 
@@ -405,7 +405,7 @@ msgstr "använd <ffmt> som huvudformat (medför --info)"
 msgid "      --root <dir>        "
 msgstr "      --root <kat>        "
 
-#: rpm.c:331 rpm.c:375 rpm.c:433 rpm.c:462 rpm.c:526 rpmqv.c:420
+#: rpm.c:331 rpm.c:375 rpm.c:433 rpm.c:462 rpm.c:526 rpmqv.c:165 rpmqv.c:531
 msgid "use <dir> as the top level directory"
 msgstr "använd <kat> som toppkatalog"
 
@@ -461,31 +461,31 @@ msgstr "undersök paket som behöver <egenskap>"
 msgid "      Information selection options:"
 msgstr "      Flaggor för informationsval:"
 
-#: rpm.c:347 rpmqv.c:464
+#: rpm.c:347 rpmqv.c:575
 msgid "display package information"
 msgstr "visa paketinformation"
 
-#: rpm.c:349 rpmqv.c:466
+#: rpm.c:349 rpmqv.c:577
 msgid "display the package's change log"
 msgstr "visa paketets ändringslogg"
 
-#: rpm.c:351 rpmqv.c:468
+#: rpm.c:351 rpmqv.c:579
 msgid "display package file list"
 msgstr "visa paketets fillista"
 
-#: rpm.c:353 rpmqv.c:470
+#: rpm.c:353 rpmqv.c:581
 msgid "show file states (implies -l)"
 msgstr "visa filers status (implicerar -l)"
 
-#: rpm.c:355 rpmqv.c:472
+#: rpm.c:355 rpmqv.c:583
 msgid "list only documentation files (implies -l)"
 msgstr "visa enbart dokumentationsfiler (implicerar -l)"
 
-#: rpm.c:357 rpmqv.c:474
+#: rpm.c:357 rpmqv.c:585
 msgid "list only configuration files (implies -l)"
 msgstr "visa enbart konfigurationsfiler (implicerar -l)"
 
-#: rpm.c:359 rpmqv.c:476
+#: rpm.c:359 rpmqv.c:587
 msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or "
 "-d)"
@@ -509,25 +509,26 @@ msgstr "visa de olika [av]installationsskripten"
 msgid "show the trigger scripts contained in the package"
 msgstr "visa utlösningsskripten i paketet"
 
-#: rpm.c:371 rpmqv.c:487
+#: rpm.c:371 rpmqv.c:598
 msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
 msgstr "verifiera ett pakets installation med samma urvalsflaggor som till -q"
 
-#: rpm.c:377 rpm.c:419 rpm.c:454 rpmqv.c:489 rpmqv.c:537 rpmqv.c:571
+#: lib/poptBT.c:182 lib/verify.c:56 rpm.c:377 rpm.c:419 rpm.c:454 rpmqv.c:291
+#: rpmqv.c:600 rpmqv.c:648 rpmqv.c:682
 msgid "do not verify package dependencies"
 msgstr "verifiera inte paketberoenden"
 
-#: rpm.c:379 rpmqv.c:493
+#: lib/verify.c:62 rpm.c:379 rpmqv.c:236 rpmqv.c:604
 msgid "do not verify file md5 checksums"
 msgstr "verifiera inte md5-kontrollsummor"
 
-#: rpm.c:381 rpmqv.c:491
+#: rpm.c:381 rpmqv.c:602
 msgid "do not verify file attributes"
 msgstr "verifiera inte filattribut"
 
-#: rpm.c:383 rpmqv.c:498
+#: rpm.c:383 rpmqv.c:609
 msgid "list the tags that can be used in a query format"
 msgstr "visa taggar som kan användas i frågeformat"
 
@@ -539,7 +540,7 @@ msgstr "    --install <paketfil>"
 msgid "    -i <packagefile>      "
 msgstr "    -i <paketfil>         "
 
-#: rpm.c:388 rpmqv.c:512
+#: rpm.c:388 rpmqv.c:285 rpmqv.c:623
 msgid "install package"
 msgstr "installera paket"
 
@@ -555,11 +556,11 @@ msgstr "hoppa över filer i <sökv>"
 msgid "      --relocate <oldpath>=<newpath>"
 msgstr "      --relocate <frånskv>=<tillskv>"
 
-#: rpm.c:392 rpmqv.c:549
+#: rpm.c:392 rpmqv.c:312 rpmqv.c:660
 msgid "relocate files from <oldpath> to <newpath>"
 msgstr "flytta filer från <frånskv> till <tillskv>"
 
-#: rpm.c:394 rpmqv.c:517
+#: rpm.c:394 rpmqv.c:252 rpmqv.c:628
 msgid "relocate files in non-relocateable package"
 msgstr "relokera filer i ej relokerbart paket"
 
@@ -567,50 +568,50 @@ msgstr "relokera filer i ej relokerbart paket"
 msgid "      --prefix <dir>      "
 msgstr "      --prefix <katalog>  "
 
-#: rpm.c:396 rpmqv.c:547
+#: rpm.c:396 rpmqv.c:309 rpmqv.c:658
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "flytta paketet till <katalog>, om flyttbart"
 
-#: rpm.c:400 rpmqv.c:519
+#: rpm.c:400 rpmqv.c:258 rpmqv.c:630
 msgid "do not install documentation"
 msgstr "installera inte dokumentation"
 
-#: rpm.c:402 rpmqv.c:523
+#: rpm.c:402 rpmqv.c:264 rpmqv.c:634
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "kortform för --replacepkgs --replacefiles"
 
-#: rpm.c:404 rpmqv.c:525
+#: rpm.c:404 rpmqv.c:270 rpmqv.c:636
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 "skriv ut brädgårdar allt eftersom paketet installeras (bra tillsammans med "
 "-v)"
 
-#: rpm.c:406 rpmqv.c:514
+#: rpm.c:406 rpmqv.c:246 rpmqv.c:625
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installera alla filer, även konfigurationer som annars kunde hoppats över"
 
-#: rpm.c:409 rpmqv.c:527
+#: rpm.c:409 rpmqv.c:273 rpmqv.c:638
 msgid "don't verify package architecture"
 msgstr "verifiera inte paketarkitektur"
 
-#: rpm.c:411 rpmqv.c:529
+#: rpm.c:411 rpmqv.c:279 rpmqv.c:640
 msgid "don't check disk space before installing"
 msgstr "kontrollera inte diskutrymme före installation"
 
-#: rpm.c:413 rpmqv.c:531
+#: rpm.c:413 rpmqv.c:276 rpmqv.c:642
 msgid "don't verify package operating system"
 msgstr "verifiera inte paketets operativsystem"
 
-#: rpm.c:415 rpmqv.c:533
+#: rpm.c:415 rpmqv.c:282 rpmqv.c:644
 msgid "install documentation"
 msgstr "installera dokumentation"
 
-#: rpm.c:417 rpm.c:452 rpmqv.c:535 rpmqv.c:569
+#: rpm.c:417 rpm.c:452 rpmqv.c:288 rpmqv.c:646 rpmqv.c:680
 msgid "update the database, but do not modify the filesystem"
 msgstr "uppdatera databasen, men ändra inte filsystemet"
 
-#: rpm.c:421 rpm.c:456 rpmqv.c:539 rpmqv.c:573
+#: rpm.c:421 rpm.c:456 rpmqv.c:294 rpmqv.c:650 rpmqv.c:684
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "flytta inte om paketinstallationen för att tillfredsställa beroenden"
 
@@ -618,23 +619,23 @@ msgstr "flytta inte om paketinstallationen för att tillfredsställa beroenden"
 msgid "don't execute any installation scripts"
 msgstr "kör inte installationsskript"
 
-#: rpm.c:425 rpm.c:460 rpmqv.c:577
+#: rpm.c:425 rpm.c:460 rpmqv.c:688
 msgid "don't execute any scripts triggered by this package"
 msgstr "kör inte utlösningsskript utlösta av detta paket"
 
-#: rpm.c:427 rpmqv.c:545
+#: rpm.c:427 rpmqv.c:306 rpmqv.c:656
 msgid "print percentages as package installs"
 msgstr "skriv procent allt eftersom paketet installeras"
 
-#: rpm.c:429 rpmqv.c:551
+#: rpm.c:429 rpmqv.c:315 rpmqv.c:662
 msgid "install even if the package replaces installed files"
 msgstr "installera även om paketet byter ut installerade filer"
 
-#: rpm.c:431 rpmqv.c:553
+#: rpm.c:431 rpmqv.c:318 rpmqv.c:664
 msgid "reinstall if the package is already present"
 msgstr "installera om ifall paketet redan är installerat"
 
-#: rpm.c:435 rpmqv.c:555
+#: rpm.c:435 rpmqv.c:321 rpmqv.c:666
 msgid "don't install, but tell if it would work or not"
 msgstr "installera inte, men tala om ifall det skulle fungera eller inte"
 
@@ -646,11 +647,11 @@ msgstr "    --upgrade <paketfil>"
 msgid "    -U <packagefile>      "
 msgstr "    -U <paketfil>         "
 
-#: rpm.c:440 rpmqv.c:559
+#: rpm.c:440 rpmqv.c:670
 msgid "upgrade package (same options as --install, plus)"
 msgstr "uppgradera paket (samma flaggor som --install, samt)"
 
-#: rpm.c:442 rpmqv.c:561
+#: rpm.c:442 rpmqv.c:303 rpmqv.c:672
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -662,11 +663,11 @@ msgstr ""
 msgid "    --erase <package>"
 msgstr "    --erase <paket>"
 
-#: rpm.c:446 rpmqv.c:565
+#: rpm.c:446 rpmqv.c:255 rpmqv.c:676
 msgid "erase (uninstall) package"
 msgstr "ta bort (avinstallera) paket"
 
-#: rpm.c:448 rpmqv.c:567
+#: rpm.c:448 rpmqv.c:249 rpmqv.c:678
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -674,7 +675,7 @@ msgstr ""
 "ta bort alla paket som matchar <paket> (normalt ger det ett fel om <paket> "
 "specificerar flera paket)"
 
-#: rpm.c:458 rpmqv.c:575
+#: rpm.c:458 rpmqv.c:686
 msgid "do not execute any package specific scripts"
 msgstr "kör inte paketspecifika skript"
 
@@ -686,52 +687,52 @@ msgstr "    -b<steg> <spec>       "
 msgid "    -t<stage> <tarball>   "
 msgstr "    -t<steg> <tarboll>    "
 
-#: rpm.c:466 rpmqv.c:584
+#: rpm.c:466
 msgid "build package, where <stage> is one of:"
 msgstr "tillverka paket, där <steg> är något av:"
 
-#: rpm.c:468 rpmqv.c:586
+#: rpm.c:468
 msgid "prep (unpack sources and apply patches)"
 msgstr "förbered (packa upp källkod samt applicera patchar)"
 
-#: rpm.c:470 rpmqv.c:588
+#: rpm.c:470
 #, c-format
 msgid "list check (do some cursory checks on %files)"
 msgstr "kontrollera (gör några enkla kontroller på %files)"
 
-#: rpm.c:472 rpmqv.c:590
+#: rpm.c:472
 msgid "compile (prep and compile)"
 msgstr "kompilera (förbered och kompilera)"
 
-#: rpm.c:474 rpmqv.c:592
+#: rpm.c:474
 msgid "install (prep, compile, install)"
 msgstr "installera (förbered, kompilera, installera)"
 
-#: rpm.c:476 rpmqv.c:594
+#: rpm.c:476
 msgid "binary package (prep, compile, install, package)"
 msgstr "binärpaketera (förbered, kompilera, installera, paketera)"
 
-#: rpm.c:478 rpmqv.c:596
+#: rpm.c:478
 msgid "bin/src package (prep, compile, install, package)"
 msgstr "binär- och källpaketera (förbered, kompilera, installera, paketera)"
 
-#: lib/poptBT.c:157 rpm.c:480 rpmqv.c:600
+#: lib/poptBT.c:193 rpm.c:480
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "gå direkt till angivet steg (endast för c,i)"
 
-#: lib/poptBT.c:147 rpm.c:482 rpmqv.c:602
+#: lib/poptBT.c:174 rpm.c:482
 msgid "remove build tree when done"
 msgstr "ta bort tillverkningsträd efteråt"
 
-#: lib/poptBT.c:153 rpm.c:484 rpmqv.c:604
+#: lib/poptBT.c:189 rpm.c:484
 msgid "remove sources when done"
 msgstr "ta bort källkod efteråt"
 
-#: rpm.c:486 rpmqv.c:606
+#: rpm.c:486
 msgid "remove spec file when done"
 msgstr "ta bort spec-fil efteråt"
 
-#: rpm.c:488 rpmqv.c:608
+#: lib/poptBT.c:195 rpm.c:488 rpmqv.c:224
 msgid "generate PGP/GPG signature"
 msgstr "tillverka en PGP/GPG-signatur"
 
@@ -739,7 +740,7 @@ msgstr "tillverka en PGP/GPG-signatur"
 msgid "      --buildroot <dir>   "
 msgstr "      --buildroot <kat>   "
 
-#: rpm.c:490 rpmqv.c:610
+#: rpm.c:490
 msgid "use <dir> as the build root"
 msgstr "använd <kat> som tillverkningsrot"
 
@@ -747,11 +748,11 @@ msgstr "använd <kat> som tillverkningsrot"
 msgid "      --target=<platform>+"
 msgstr "      --target=<plattfrm>+"
 
-#: rpm.c:492 rpmqv.c:612
+#: rpm.c:492
 msgid "build the packages for the build targets platform1...platformN."
 msgstr "tillverka paketen för målen plattfrm1...plattfrmN."
 
-#: rpm.c:494 rpmqv.c:614
+#: rpm.c:494
 msgid "do not execute any stages"
 msgstr "utför inga steg"
 
@@ -767,7 +768,7 @@ msgstr "sätt tidskontrollen till <sek> sekunder (0 slår av)"
 msgid "    --rebuild <src_pkg>   "
 msgstr "    --rebuild <källpaket> "
 
-#: rpm.c:499 rpmqv.c:617
+#: rpm.c:499
 msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
@@ -779,7 +780,7 @@ msgstr ""
 msgid "    --recompile <src_pkg> "
 msgstr "    --recompile <källpkt> "
 
-#: rpm.c:501 rpmqv.c:619
+#: rpm.c:501
 msgid "like --rebuild, but don't build any package"
 msgstr "som --rebuild, men tillverka inga paket"
 
@@ -787,7 +788,7 @@ msgstr "som --rebuild, men tillverka inga paket"
 msgid "    --resign <pkg>+       "
 msgstr "    --resign <pkt>+       "
 
-#: rpm.c:505 rpmqv.c:625
+#: rpm.c:505 rpmqv.c:221 rpmqv.c:694
 msgid "sign a package (discard current signature)"
 msgstr "signera ett paket (släng nuvarande signatur)"
 
@@ -795,7 +796,7 @@ msgstr "signera ett paket (släng nuvarande signatur)"
 msgid "    --addsign <pkg>+      "
 msgstr "    --addsign <pkt>+      "
 
-#: rpm.c:507 rpmqv.c:627
+#: rpm.c:507 rpmqv.c:218 rpmqv.c:696
 msgid "add a signature to a package"
 msgstr "lägg till signatur till ett paket"
 
@@ -807,19 +808,19 @@ msgstr "    --checksig <pkt>+"
 msgid "    -K <pkg>+             "
 msgstr "    -K <pkt>+             "
 
-#: rpm.c:510 rpmqv.c:631
+#: rpm.c:510 rpmqv.c:227 rpmqv.c:700
 msgid "verify package signature"
 msgstr "verifiera paketsignatur"
 
-#: rpm.c:512 rpmqv.c:633
+#: rpm.c:512 rpmqv.c:230 rpmqv.c:702
 msgid "skip any PGP signatures"
 msgstr "hoppa över eventuella PGP-signaturer"
 
-#: rpm.c:514 rpmqv.c:635
+#: rpm.c:514 rpmqv.c:233 rpmqv.c:704
 msgid "skip any GPG signatures"
 msgstr "hoppa över eventuella GPG-signaturer"
 
-#: rpm.c:516 rpmqv.c:637
+#: rpm.c:516 rpmqv.c:706
 msgid "skip any MD5 signatures"
 msgstr "hoppa över eventuella MD5-signaturer"
 
@@ -831,7 +832,7 @@ msgstr "förvissa dig om att en giltig databas existerar"
 msgid "rebuild database from existing database"
 msgstr "bygg om databasen från existerande databas"
 
-#: rpm.c:530 rpmqv.c:500
+#: rpm.c:530 rpmqv.c:611
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
@@ -839,7 +840,7 @@ msgstr ""
 "sätt filrättigheterna till de i paketdatabasen med samma "
 "paketspecifikationsflaggor som -q"
 
-#: rpm.c:533 rpmqv.c:503
+#: rpm.c:533 rpmqv.c:614
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
@@ -848,37 +849,37 @@ msgstr ""
 "paketspcifikationsflaggor som -q"
 
 #: rpm.c:671 rpm.c:677 rpm.c:686 rpm.c:708 rpm.c:714 rpm.c:721 rpm.c:729
-#: rpm.c:737 rpm.c:758 rpm.c:821 rpmqv.c:825 rpmqv.c:834 rpmqv.c:840
-#: rpmqv.c:846 rpmqv.c:853 rpmqv.c:888 rpmqv.c:896 rpmqv.c:902 rpmqv.c:910
-#: rpmqv.c:978
+#: rpm.c:737 rpm.c:758 rpm.c:821 rpmqv.c:894 rpmqv.c:903 rpmqv.c:909
+#: rpmqv.c:915 rpmqv.c:922 rpmqv.c:957 rpmqv.c:965 rpmqv.c:971 rpmqv.c:979
+#: rpmqv.c:1047
 msgid "only one major mode may be specified"
 msgstr "enbart ett läge kan specifieras"
 
-#: rpm.c:679 rpmqv.c:827
+#: rpm.c:679 rpmqv.c:896
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr "-u och --uninstall undanbedes och fungerar inte längre.\n"
 
-#: rpm.c:681 rpmqv.c:829
+#: rpm.c:681 rpmqv.c:898
 msgid "Use -e or --erase instead.\n"
 msgstr "Använd -e eller --erase istället.\n"
 
-#: rpm.c:764 rpmqv.c:872
+#: rpm.c:764 rpmqv.c:941
 msgid "relocations must begin with a /"
 msgstr "omflyttningar måste börja med /"
 
-#: rpm.c:766 rpmqv.c:874
+#: rpm.c:766 rpmqv.c:943
 msgid "relocations must contain a ="
 msgstr "omflyttningar måste innehålla ett ="
 
-#: rpm.c:769 rpmqv.c:877
+#: rpm.c:769 rpmqv.c:946
 msgid "relocations must have a / following the ="
 msgstr "omflyttningar måste ha ett / efter ="
 
-#: rpm.c:778 rpmqv.c:861
+#: rpm.c:778 rpmqv.c:930
 msgid "exclude paths must begin with a /"
 msgstr "uteslutna sökvägar måste börja med /"
 
-#: rpm.c:787 rpmqv.c:931
+#: rpm.c:787 rpmqv.c:1000
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
@@ -886,108 +887,108 @@ msgstr ""
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
 
-#: rpm.c:793 rpmqv.c:937
+#: rpm.c:793 rpmqv.c:1006
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Internt fel i argumenthantering (%d) :-(\n"
 
-#: rpm.c:828 rpmqv.c:993
+#: rpm.c:828 rpmqv.c:1062
 msgid "one type of query/verify may be performed at a time"
 msgstr "endast en typ av undersökning/verifiering kan utföras åt gången"
 
-#: rpm.c:833 rpmqv.c:997
+#: rpm.c:833 rpmqv.c:1066
 msgid "unexpected query flags"
 msgstr "oväntade undersökningsflaggor"
 
-#: rpm.c:836 rpmqv.c:1000
+#: rpm.c:836 rpmqv.c:1069
 msgid "unexpected query format"
 msgstr "oväntat undersökningsformat"
 
-#: rpm.c:839 rpmqv.c:1003
+#: rpm.c:839 rpmqv.c:1072
 msgid "unexpected query source"
 msgstr "oväntad undersökningskälla"
 
-#: rpm.c:842 rpmqv.c:1023
+#: rpm.c:842 rpmqv.c:1082
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "enbart installation, uppgradering, rmsource och rmspec kan tvingas fram"
 
-#: rpm.c:845 rpmqv.c:1028
+#: rpm.c:845 rpmqv.c:1087
 msgid "files may only be relocated during package installation"
 msgstr "filer kan relokeras endast under paketinstallation"
 
-#: rpm.c:848 rpmqv.c:1031
+#: rpm.c:848 rpmqv.c:1090
 msgid "only one of --prefix or --relocate may be used"
 msgstr "enbart en av --prefix eller --relocate kan användas"
 
-#: rpm.c:851 rpmqv.c:1034
+#: rpm.c:851 rpmqv.c:1093
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate och --excludepath kan endast användas när nya paket installeras"
 
-#: rpm.c:854 rpmqv.c:1037
+#: rpm.c:854 rpmqv.c:1096
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix kan endast användas när nya paket installeras"
 
-#: rpm.c:857 rpmqv.c:1040
+#: rpm.c:857 rpmqv.c:1099
 msgid "arguments to --prefix must begin with a /"
 msgstr "argument till --prefix måste börja med /"
 
-#: rpm.c:860 rpmqv.c:1043
+#: rpm.c:860 rpmqv.c:1102
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) kan enbart användas vid paketinstallation"
 
-#: rpm.c:864 rpmqv.c:1047
+#: rpm.c:864 rpmqv.c:1106
 msgid "--percent may only be specified during package installation"
 msgstr "--percent kan enbart användas vid paketinstallation"
 
-#: rpm.c:868 rpmqv.c:1051
+#: rpm.c:868 rpmqv.c:1110
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles kan enbart användas vid paketinstallation"
 
-#: rpm.c:872 rpmqv.c:1055
+#: rpm.c:872 rpmqv.c:1114
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs kan enbart användas vid paketinstallation"
 
-#: rpm.c:876 rpmqv.c:1059
+#: rpm.c:876 rpmqv.c:1118
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs kan enbart användas vid paketinstallation"
 
-#: rpm.c:880 rpmqv.c:1063
+#: rpm.c:880 rpmqv.c:1122
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs kan enbart användas vid paketinstallation"
 
-#: rpm.c:884 rpmqv.c:1067
+#: rpm.c:884 rpmqv.c:1126
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "enbart en av --excludedocs och --includedocs läge kan specifieras"
 
-#: rpm.c:888 rpmqv.c:1071
+#: rpm.c:888 rpmqv.c:1130
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch kan enbart användas vid paketinstallation"
 
-#: rpm.c:892 rpmqv.c:1075
+#: rpm.c:892 rpmqv.c:1134
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos kan enbart användas vid paketinstallation"
 
-#: rpm.c:896 rpmqv.c:1079
+#: rpm.c:896 rpmqv.c:1138
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize kan enbart användas vid paketinstallation"
 
-#: rpm.c:900 rpmqv.c:1083
+#: rpm.c:900 rpmqv.c:1142
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches kan enbart användas när paket tas bort"
 
-#: rpm.c:904 rpmqv.c:1087
+#: rpm.c:904 rpmqv.c:1146
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles kan enbart användas vid paketinstallation"
 
-#: rpm.c:908 rpmqv.c:1091
+#: rpm.c:908 rpmqv.c:1150
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "--justdb kan enbart användas vid installation och avinstallation av paket"
 
-#: rpm.c:913 rpmqv.c:1098
+#: rpm.c:913 rpmqv.c:1157
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
@@ -1003,7 +1004,7 @@ msgstr ""
 "--notriggers kan enbart användas vid installation, avinstallation och "
 "verifiering"
 
-#: rpm.c:921 rpmqv.c:1110
+#: rpm.c:921 rpmqv.c:1167
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -1011,14 +1012,14 @@ msgstr ""
 "--nodeps kan enbart användas vid tillverkning, omtillverkning, "
 "omkompilering, installation, avinstallation, och verifiering"
 
-#: rpm.c:926 rpmqv.c:1115
+#: rpm.c:926 rpmqv.c:1172
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 "--test kan enbart användas vid installation, avinstallation och tillverkning"
 
-#: rpm.c:930 rpmqv.c:1120
+#: rpm.c:930 rpmqv.c:1177
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1026,97 +1027,97 @@ msgstr ""
 "--root (-r) kan enbart användas vid installation, avinstallation, förfrågan, "
 "och databasombyggnad"
 
-#: rpm.c:942 rpmqv.c:1132
+#: rpm.c:942 rpmqv.c:1189
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argument till --root (-r) måste börja med /"
 
-#: rpm.c:948 rpmqv.c:1139
+#: rpm.c:948 rpmqv.c:1196
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage kan enbart användas vid paketuppgraderingar"
 
-#: rpm.c:951 rpmqv.c:1144
+#: rpm.c:951 rpmqv.c:1201
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp kan enbart användas vid signaturkontroll"
 
-#: rpm.c:954 rpmqv.c:1147
+#: rpm.c:954 rpmqv.c:1204
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nogpg kan enbart användas vid signaturkontroll"
 
-#: rpm.c:957 rpmqv.c:1152
+#: rpm.c:957 rpmqv.c:1209
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr "--nomd5 kan enbart användas vid signaturkontroll och paketverifiering"
 
-#: rpm.c:968 rpmqv.c:1165
+#: rpm.c:968 rpmqv.c:1225
 msgid "no files to sign\n"
 msgstr "inga filer att signera\n"
 
-#: rpm.c:973 rpmqv.c:1170
+#: rpm.c:973 rpmqv.c:1230
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "kan inte komma åt filen %s\n"
 
-#: rpm.c:988 rpmqv.c:1186
+#: rpm.c:988 rpmqv.c:1246
 msgid "pgp not found: "
 msgstr "pgp hittades inte: "
 
-#: rpm.c:992 rpmqv.c:1190
+#: rpm.c:992 rpmqv.c:1250
 msgid "Enter pass phrase: "
 msgstr "Ange lösenfras: "
 
-#: rpm.c:994 rpmqv.c:1192
+#: rpm.c:994 rpmqv.c:1252
 msgid "Pass phrase check failed\n"
 msgstr "Kontrollen av lösenfrasen misslyckades\n"
 
-#: rpm.c:997 rpmqv.c:1195
+#: rpm.c:997 rpmqv.c:1255
 msgid "Pass phrase is good.\n"
 msgstr "Lösenfrasen är ok.\n"
 
-#: rpm.c:1002 rpmqv.c:1200
+#: rpm.c:1002 rpmqv.c:1260
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Felaktig %%_signature spec i makrofil.\n"
 
-#: rpm.c:1008 rpmqv.c:1206
+#: rpm.c:1008 rpmqv.c:1266
 msgid "--sign may only be used during package building"
 msgstr "--sign kan enbart användas vid pakettillverkning"
 
-#: rpm.c:1023 rpmqv.c:1222
+#: rpm.c:1023 rpmqv.c:1282
 msgid "exec failed\n"
 msgstr "exec misslyckades\n"
 
-#: rpm.c:1042 rpmqv.c:1491
+#: rpm.c:1042 rpmqv.c:1552
 msgid "unexpected arguments to --querytags "
 msgstr "oväntade argument till --querytags "
 
-#: rpm.c:1053 rpmqv.c:1513
+#: rpm.c:1053 rpmqv.c:1574
 msgid "no packages given for signature check"
 msgstr "inga paket angivna för signaturkontroll"
 
-#: rpm.c:1064 rpmqv.c:1524
+#: rpm.c:1064 rpmqv.c:1585
 msgid "no packages given for signing"
 msgstr "inga paket angivna för signering"
 
-#: rpm.c:1080 rpmqv.c:1363
+#: rpm.c:1080 rpmqv.c:1422
 msgid "no packages given for uninstall"
 msgstr "inga paket angivna för avinstallation"
 
-#: rpm.c:1131 rpmqv.c:1414
+#: rpm.c:1131 rpmqv.c:1473
 msgid "no packages given for install"
 msgstr "inga paket angivna för installation"
 
-#: rpm.c:1154 rpmqv.c:1454
+#: rpm.c:1154 rpmqv.c:1513
 msgid "extra arguments given for query of all packages"
 msgstr "extra argument angivna för förfrågan om alla paket"
 
-#: rpm.c:1159 rpmqv.c:1459
+#: rpm.c:1159 rpmqv.c:1518
 msgid "no arguments given for query"
 msgstr "inga parametrar angivna för undersökning"
 
-#: rpm.c:1176 rpmqv.c:1479
+#: rpm.c:1176 rpmqv.c:1540
 msgid "extra arguments given for verify of all packages"
 msgstr "extra argument angivna för verifiering av alla paket"
 
-#: rpm.c:1180 rpmqv.c:1483
+#: rpm.c:1180 rpmqv.c:1544
 msgid "no arguments given for verify"
 msgstr "inga parametrar angivna för verifiering"
 
@@ -1138,147 +1139,225 @@ msgstr "fel vid läsning av pakethuvud\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "kan inte återöppna lasten: %s\n"
 
+#: rpmqv.c:152
+msgid "provide less detailed output"
+msgstr ""
+
 #: rpmqv.c:154
+msgid "provide more detailed output"
+msgstr ""
+
+#: rpmqv.c:157
 #, fuzzy
 msgid "'<name> <body>'"
 msgstr "   --define '<namn> <kropp>'"
 
-#: rpmqv.c:156
+#: rpmqv.c:159
 #, fuzzy
-msgid "print macro expansion to stdout"
+msgid "print macro expansion of <expr>+"
 msgstr "skriv ut expansionen av makrot <namn> på standard ut"
 
-#: rpmqv.c:156
+#: rpmqv.c:160
 msgid "<expr>+"
 msgstr ""
 
-#: rpmqv.c:181
+#: rpmqv.c:163
+msgid "<cmd>"
+msgstr ""
+
+#: rpmqv.c:166 rpmqv.c:310
+msgid "<dir>"
+msgstr ""
+
+#: rpmqv.c:168
 msgid "read <file:...> instead of default macro file(s)"
 msgstr ""
 
-#: rpmqv.c:182
+#: rpmqv.c:169 rpmqv.c:173 rpmqv.c:177
 msgid "<file:...>"
 msgstr ""
 
-#: rpmqv.c:296
+#: rpmqv.c:172 rpmqv.c:176
+msgid "read <file:...> instead of default rpmrc file(s)"
+msgstr ""
+
+#: rpmqv.c:185
+msgid "disable use of libio(3) API"
+msgstr ""
+
+#: rpmqv.c:188
+msgid "debug protocol data stream"
+msgstr ""
+
+#: rpmqv.c:190
+msgid "debug rpmio I/O"
+msgstr ""
+
+#: rpmqv.c:192
+msgid "debug URL cache handling"
+msgstr ""
+
+#: rpmqv.c:200
+msgid "initialize database"
+msgstr ""
+
+#: rpmqv.c:202
+#, fuzzy
+msgid "rebuild database inverted lists from installed package headers"
+msgstr "bygg om databasindex från existerande databashuvuden"
+
+#: rpmqv.c:205
+msgid "generate headers compatible with (legacy) rpm[23] packaging"
+msgstr ""
+
+#: lib/poptBT.c:176 rpmqv.c:208
+msgid "generate headers compatible with rpm4 packaging"
+msgstr ""
+
+#: rpmqv.c:256
+#, fuzzy
+msgid "<package>"
+msgstr "inga paket\n"
+
+#: rpmqv.c:261 rpmqv.c:632
+msgid "skip files with leading component <path> "
+msgstr "hoppa över filer med inledande <sökväg>"
+
+#: rpmqv.c:267
+#, fuzzy
+msgid "upgrade package if already installed"
+msgstr "paket %s-%s-%s är redan installerat"
+
+#: rpmqv.c:268 rpmqv.c:286 rpmqv.c:325
+#, fuzzy
+msgid "<packagefile>+"
+msgstr "        -p <paketfil>+ "
+
+#: rpmqv.c:297 rpmqv.c:606
+#, fuzzy
+msgid "do not execute scripts (if any)"
+msgstr "utför inga steg"
+
+#: rpmqv.c:300 rpmqv.c:654
+msgid "don't execute any scriptlets triggered by this package"
+msgstr "kör inte utlösningsskript utlösta av detta paket"
+
+#: rpmqv.c:313
+#, fuzzy
+msgid "<oldpath>=<newpath>"
+msgstr "     --relocate <frånskv>=<tillskv>"
+
+#: rpmqv.c:324
+#, fuzzy
+msgid "upgrade package"
+msgstr "   --upgrade <paketfil>   "
+
+#: rpmqv.c:348
+msgid "Query/Verify options:"
+msgstr ""
+
+#: rpmqv.c:352
+msgid "Query options (with -q or --query):"
+msgstr ""
+
+#: rpmqv.c:355
+msgid "Verify options (with -V or --verify):"
+msgstr ""
+
+#: rpmqv.c:361
+#, fuzzy
+msgid "Signature options:"
+msgstr "Signaturstorlek  : %d\n"
+
+#: rpmqv.c:367
+msgid "Database options:"
+msgstr ""
+
+#: rpmqv.c:373
+msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
+msgstr ""
+
+#: rpmqv.c:378
+msgid "Common options for all rpm modes:"
+msgstr ""
+
+#: rpmqv.c:418
 #, c-format
 msgid "Usage: %s {--help}\n"
 msgstr "Användning: %s {--help}\n"
 
-#: rpmqv.c:300
+#: rpmqv.c:422
 #, c-format
 msgid "       %s {--initdb}   [--dbpath <dir>]\n"
 msgstr "       %s {--initdb}   [--dbpath <kat>]\n"
 
-#: rpmqv.c:301
+#: rpmqv.c:423
 #, fuzzy, c-format
 msgid "       %s {--rebuilddb} [--macros <file:...>] [--dbpath <dir>]\n"
 msgstr "       %s {--rebuilddb} [--rcfile <fil>] [--dbpath <kat>]\n"
 
-#: rpmqv.c:305
+#: rpmqv.c:427
 #, c-format
 msgid ""
 "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 msgstr ""
 "       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"
 
-#: rpmqv.c:308
+#: rpmqv.c:430
 #, fuzzy
 msgid ""
 "                        [--macros <file:...>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
 "                        [--rcfile <fil>] [--ignorearch] [--dbpath <kat>]"
 
-#: rpmqv.c:317
+#: rpmqv.c:439
 #, fuzzy
 msgid ""
 "                        [--excludedocs] [--includedocs] [--macros <file:...>]"
 msgstr ""
 "                        [--excludedocs] [--includedocs] [--rcfile <fil>]"
 
-#: rpmqv.c:325
+#: rpmqv.c:447
 #, fuzzy, c-format
 msgid ""
 "       %s {--erase -e} [--root <dir>] [--noscripts] [--macros <file:...>]\n"
 msgstr "       %s {--erase -e} [--root <kat>] [--noscripts] [--rcfile <fil>]\n"
 
-#: rpmqv.c:332
+#: rpmqv.c:454
 #, fuzzy
 msgid ""
 "                        [--scripts] [--root <dir>] [--macros <file:...>]"
 msgstr "                        [--scripts] [--root <kat>] [--rcfile <fil>]"
 
-#: rpmqv.c:339
+#: rpmqv.c:461
 #, fuzzy, c-format
 msgid ""
 "       %s {--verify -V -y} [-afpg] [--root <dir>] [--macros <file:...>]\n"
 msgstr "       %s {--verify -V -y} [-afpg] [--root <kat>] [--rcfile <fil>]\n"
 
-#: rpmqv.c:343
+#: rpmqv.c:465
 #, c-format
 msgid "       %s {--setperms} [-afpg] [target]\n"
 msgstr "       %s {--setperms} [-afpg] [mål]\n"
 
-#: rpmqv.c:344
+#: rpmqv.c:466
 #, c-format
 msgid "       %s {--setugids} [-afpg] [target]\n"
 msgstr "       %s {--setugids} [-afpg] [mål]\n"
 
-#: rpmqv.c:348
-#, fuzzy, c-format
-msgid ""
-"       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--macros "
-"<file:...>]\n"
-msgstr ""
-"       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile <fil>]\n"
-
-#: rpmqv.c:350
-msgid "                        [--target=platform1[,platform2...]]"
-msgstr "                        [--target=plattform1[,plattform2...]]"
-
-#: rpmqv.c:351
-msgid "                        [--rmsource] [--rmspec] specfile"
-msgstr "                        [--rmsource] [--rmspec] spec-fil"
-
-#: rpmqv.c:352
-#, fuzzy, c-format
-msgid "       %s {--rmsource} [--macros <file:...>] [-v] specfile\n"
-msgstr "       %s {--rmsource} [--rcfile <fil>] [-v] spec-fil\n"
-
-#: rpmqv.c:353
-#, fuzzy, c-format
-msgid ""
-"       %s {--rebuild} [--macros <file:...>] [-v] source1.rpm ... "
-"sourceN.rpm\n"
-msgstr ""
-"       %s {--rebuild} [--rcfile <fil>] [-v] källa1.rpm ... källaN.rpm\n"
-
-#: rpmqv.c:354
-#, fuzzy, c-format
-msgid ""
-"       %s {--recompile} [--macros <file:...>] [-v] source1.rpm ... "
-"sourceN.rpm\n"
-msgstr ""
-"       %s {--recompile} [--rcfile <fil>] [-v] källa1.rpm ... källaN.rpm\n"
-
-#: rpmqv.c:355
-#, c-format
-msgid "       %s {--freshen -F} file1.rpm ... fileN.rpm\n"
-msgstr "       %s {--freshen -F} fil1.rpm ... filN.rpm\n"
-
-#: rpmqv.c:359
+#: rpmqv.c:470
 #, fuzzy, c-format
 msgid ""
 "       %s {--resign} [--macros <file:...>] package1 package2 ... packageN\n"
 msgstr "       %s {--resign} [--rcfile <fil>] paket1 paket2 ... paketN\n"
 
-#: rpmqv.c:360
+#: rpmqv.c:471
 #, fuzzy, c-format
 msgid ""
 "       %s {--addsign} [--macros <file:...>] package1 package2 ... packageN"
 msgstr "       %s {--addsign} [--rcfile <fil>] paket1 paket2 ... paketN"
 
-#: rpmqv.c:361
+#: rpmqv.c:472
 #, fuzzy, c-format
 msgid ""
 "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--macros "
@@ -1286,268 +1365,227 @@ msgid ""
 msgstr ""
 "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <fil>]\n"
 
-#: rpmqv.c:405
+#: rpmqv.c:516
 msgid "  All modes support the following options:"
 msgstr "  Alla arbetssätt stödjer följande argument:"
 
-#: rpmqv.c:406
+#: rpmqv.c:517
 msgid "   --define '<name> <body>'"
 msgstr "   --define '<namn> <kropp>'"
 
-#: rpmqv.c:408
+#: rpmqv.c:519
 #, fuzzy
 msgid "   --eval '<expr>+'       "
 msgstr "   --eval '<namn>+'       "
 
-#: rpmqv.c:409
+#: rpmqv.c:520
 #, fuzzy
 msgid "print the expansion of macro <expr> to stdout"
 msgstr "skriv ut expansionen av makrot <namn> på standard ut"
 
-#: rpmqv.c:410
+#: rpmqv.c:521
 msgid "   --pipe <cmd>           "
 msgstr "   --pipe <kommando>      "
 
-#: rpmqv.c:412
+#: rpmqv.c:523
 #, fuzzy
 msgid "   --macros <file:...>    "
 msgstr "Använd -e eller --erase istället.\n"
 
-#: rpmqv.c:413
+#: rpmqv.c:524
 msgid "use <file:...> instead of default list of macro files"
 msgstr ""
 
-#: rpmqv.c:417
+#: rpmqv.c:528
 msgid "   --dbpath <dir>         "
 msgstr "   --dbpath <kat>         "
 
-#: rpmqv.c:419
+#: rpmqv.c:530
 msgid "   --root <dir>           "
 msgstr "   --root <kat>           "
 
-#: rpmqv.c:429
+#: rpmqv.c:540
 msgid ""
 "  Install, upgrade and query (with -p) modes allow URL's to be used in place"
 msgstr ""
 "   Installera, uppgradera och fråga (med -p) tillåter URL:er att användas"
 
-#: rpmqv.c:430
+#: rpmqv.c:541
 msgid "  of file names as well as the following options:"
 msgstr "  istället för filnamn, liksom följande flaggor:"
 
-#: rpmqv.c:431
+#: rpmqv.c:542
 msgid "     --ftpproxy <host>    "
 msgstr "     --ftpproxy <värd>    "
 
-#: rpmqv.c:433
+#: rpmqv.c:544
 msgid "     --ftpport <port>     "
 msgstr "     --ftpport <port>     "
 
-#: rpmqv.c:435
+#: rpmqv.c:546
 msgid "     --httpproxy <host>   "
 msgstr "     --httpproxy <värd>   "
 
-#: rpmqv.c:437
+#: rpmqv.c:548
 msgid "     --httpport <port>    "
 msgstr "     --httpport <port>    "
 
-#: rpmqv.c:443
+#: rpmqv.c:554
 msgid "  Package specification options:"
 msgstr "  Flaggor för paketval:"
 
-#: lib/poptQV.c:68 rpmqv.c:445
+#: lib/poptQV.c:68 rpmqv.c:556
 msgid "query/verify all packages"
 msgstr "fråga om/verifiera alla paket"
 
-#: rpmqv.c:446
+#: rpmqv.c:557
 msgid "     -f <file>+           "
 msgstr "     -f <fil>+            "
 
-#: rpmqv.c:447
+#: rpmqv.c:558
 msgid "query/verify package owning <file>"
 msgstr "fråga om/verifiera paket som äger <fil>"
 
-#: rpmqv.c:448
+#: rpmqv.c:559
 msgid "     -p <packagefile>+    "
 msgstr "     -p <paketfil>+       "
 
-#: rpmqv.c:449
+#: rpmqv.c:560
 msgid "query/verify (uninstalled) package <packagefile>"
 msgstr "fråga om/verifiera (oinstallerat) paket <paketfil>"
 
-#: rpmqv.c:450
+#: rpmqv.c:561
 msgid "     --triggeredby <pkg>  "
 msgstr "     --triggeredby <pkt>  "
 
-#: rpmqv.c:451
+#: rpmqv.c:562
 msgid "query/verify packages triggered by <pkg>"
 msgstr "fråga om/verifiera paket utlösta av <pkt>"
 
-#: rpmqv.c:452
+#: rpmqv.c:563
 msgid "     --whatprovides <cap> "
 msgstr "     --whatprovides <egenskap>"
 
-#: rpmqv.c:453
+#: rpmqv.c:564
 msgid "query/verify packages which provide <cap> capability"
 msgstr "fråga om/verifiera paket som tillhandahåller <egenskap>"
 
-#: rpmqv.c:454
+#: rpmqv.c:565
 msgid "     --whatrequires <cap> "
 msgstr "     --whatrequires <egenskap>"
 
-#: rpmqv.c:455
+#: rpmqv.c:566
 msgid "query/verify packages which require <cap> capability"
 msgstr "fråga om/verifiera paket som behöver <egenskap>"
 
-#: rpmqv.c:459
+#: rpmqv.c:570
 msgid "     --queryformat <qfmt> "
 msgstr "     --queryformat <ffmt> "
 
-#: rpmqv.c:462
+#: rpmqv.c:573
 msgid "    Information selection options:"
 msgstr "    Flaggor för informationsval:"
 
-#: rpmqv.c:478
+#: rpmqv.c:589
 msgid "list capabilities provided by package"
 msgstr "visa de egenskaper paketet tillhandahåller"
 
-#: rpmqv.c:480
+#: rpmqv.c:591
 msgid "list capabilities required by package"
 msgstr "visa de egenskaper paketet behöver"
 
-#: rpmqv.c:482
+#: rpmqv.c:593
 msgid "print the various [un]install scriptlets"
 msgstr "visa de olika [av]installationsskripten"
 
-#: rpmqv.c:484
+#: rpmqv.c:595
 msgid "show the trigger scriptlets contained in the package"
 msgstr "visa utlösningsskripten i paketet"
 
-#: rpmqv.c:495
-#, fuzzy
-msgid "do not execute verify script (if any)"
-msgstr "utför inga steg"
-
-#: rpmqv.c:510
+#: rpmqv.c:621
 msgid "   --install <packagefile>"
 msgstr "   --install <paketfil>   "
 
-#: rpmqv.c:511
+#: rpmqv.c:622
 msgid "   -i <packagefile>       "
 msgstr "   -i <paketfil>          "
 
-#: rpmqv.c:520
+#: rpmqv.c:631
 msgid "     --excludepath <path> "
 msgstr "     --excludepath <sökväg>"
 
-#: rpmqv.c:521
-msgid "skip files with leading component <path> "
-msgstr "hoppa över filer med inledande <sökväg>"
-
-#: rpmqv.c:541
+#: rpmqv.c:652
 msgid "don't execute any installation scriptlets"
 msgstr "kör inte installationsskript"
 
-#: rpmqv.c:543
-msgid "don't execute any scriptlets triggered by this package"
-msgstr "kör inte utlösningsskript utlösta av detta paket"
-
-#: rpmqv.c:546
+#: rpmqv.c:657
 msgid "     --prefix <dir>       "
 msgstr "     --prefix <katalog>   "
 
-#: rpmqv.c:548
+#: rpmqv.c:659
 msgid "     --relocate <oldpath>=<newpath>"
 msgstr "     --relocate <frånskv>=<tillskv>"
 
-#: rpmqv.c:557
+#: rpmqv.c:668
 msgid "   --upgrade <packagefile>"
 msgstr "   --upgrade <paketfil>   "
 
-#: rpmqv.c:558
+#: rpmqv.c:669
 msgid "   -U <packagefile>       "
 msgstr "   -U <paketfil>          "
 
-#: rpmqv.c:563
+#: rpmqv.c:674
 msgid "   --erase <package>"
 msgstr "   --erase <paket>  "
 
-#: rpmqv.c:582
-msgid "   -b<stage> <spec>       "
-msgstr "   -b<steg> <spec>        "
-
-#: rpmqv.c:583
-msgid "   -t<stage> <tarball>    "
-msgstr "   -t<steg> <tar-arkiv>   "
-
-#: rpmqv.c:598
-msgid "package src rpm only"
-msgstr "paket endast källrpm"
-
-#: rpmqv.c:609
-msgid "     --buildroot <dir>    "
-msgstr "     --buildroot <kat>    "
-
-#: rpmqv.c:611
-msgid "     --target=<platform>+ "
-msgstr "     --target=<plattform>+"
-
-#: rpmqv.c:616
-msgid "   --rebuild <src_pkg>    "
-msgstr "   --rebuild <källpaket>  "
-
-#: rpmqv.c:618
-msgid "   --recompile <src_pkg>  "
-msgstr "   --recompile <källpaket>"
-
-#: rpmqv.c:624
+#: rpmqv.c:693
 msgid "   --resign <pkg>+        "
 msgstr "   --resign <pkt>+        "
 
-#: rpmqv.c:626
+#: rpmqv.c:695
 msgid "   --addsign <pkg>+       "
 msgstr "   --addsign <pkt>+       "
 
-#: rpmqv.c:629
+#: rpmqv.c:698
 msgid "   --checksig <pkg>+"
 msgstr "   --checksig <pkt>+"
 
-#: rpmqv.c:630
+#: rpmqv.c:699
 msgid "   -K <pkg>+             "
 msgstr "   -K <pkt>+             "
 
-#: rpmqv.c:643
+#: rpmqv.c:712
 msgid "initalize database (unnecessary, legacy use)"
 msgstr "initiera databasen (onödigt, ärvt format)"
 
-#: rpmqv.c:645
+#: rpmqv.c:714
 msgid "rebuild database indices from existing database headers"
 msgstr "bygg om databasindex från existerande databashuvuden"
 
-#: rpmqv.c:932
+#: rpmqv.c:1001
 #, fuzzy
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Använd -e eller --erase istället.\n"
 
-#: rpmqv.c:1007
+#: rpmqv.c:1076
 msgid "--dbpath given for operation that does not use a database"
 msgstr "--dbpath angivet för en operation som inte använder någon databas"
 
-#: rpmqv.c:1104
+#: rpmqv.c:1163
 msgid ""
 "--notriggers may only be specified during package installation and erasure"
 msgstr ""
 "--notriggers kan enbart användas vid installation och avinstallation av paket"
 
-#: rpmqv.c:1262
+#: rpmqv.c:1322
 msgid "no packages files given for rebuild"
 msgstr "inga paketfiler angivna för omtillverkning"
 
-#: rpmqv.c:1331
+#: rpmqv.c:1391
 msgid "no spec files given for build"
 msgstr "ingen spec-filer angivna för tillverkning"
 
-#: rpmqv.c:1333
+#: rpmqv.c:1393
 msgid "no tar files given for build"
 msgstr "inga tar-filer angivna för tillverkning"
 
@@ -2807,108 +2845,153 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM"
 msgstr "endast paket med huvudnummer <= 4 stöds av denna version av RPM"
 
-#: lib/poptBT.c:84
+#: lib/poptBT.c:95
 msgid "buildroot already specified"
 msgstr "buildroot redan specificerad"
 
-#: lib/poptBT.c:110
-msgid "build through %%prep stage from spec file"
+#: lib/poptBT.c:121
+#, fuzzy, c-format
+msgid "build through %prep (unpack sources and apply patches) from <specfile>"
+msgstr "förbered (packa upp källkod samt applicera patchar)"
+
+#: lib/poptBT.c:122 lib/poptBT.c:125 lib/poptBT.c:128 lib/poptBT.c:131
+#: lib/poptBT.c:134 lib/poptBT.c:137 lib/poptBT.c:140
+msgid "<specfile>"
+msgstr ""
+
+#: lib/poptBT.c:124
+#, fuzzy
+msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr "bygg till och med %%prep-steget från spec-fil"
 
-#: lib/poptBT.c:112
-msgid "build through %%build stage from spec file"
-msgstr "bygg till och med %%build-steget från spec-fil"
-
-#: lib/poptBT.c:114
-msgid "build through %%install stage from spec file"
+#: lib/poptBT.c:127
+#, fuzzy
+msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "bygg till och med %%install-steget från spec-fil"
 
-#: lib/poptBT.c:116
-msgid "verify %%files section from spec file"
+#: lib/poptBT.c:130
+#, fuzzy, c-format
+msgid "verify %files section from <specfile>"
 msgstr "verifiera %%files-sektionen i spec-fil"
 
-#: lib/poptBT.c:118
-msgid "build source and binary package from spec file"
+#: lib/poptBT.c:133
+#, fuzzy
+msgid "build source and binary packages from <specfile>"
 msgstr "bygg käll- och binärpaket från spec-fil"
 
-#: lib/poptBT.c:120
-msgid "build binary package from spec file"
+#: lib/poptBT.c:136
+#, fuzzy
+msgid "build binary package only from <specfile>"
 msgstr "bygg binärpaket från spec-fil"
 
-#: lib/poptBT.c:122
-msgid "build source package from spec file"
+#: lib/poptBT.c:139
+#, fuzzy
+msgid "build source package only from <specfile>"
 msgstr "bygg källpaket från spec-fil"
 
-#: lib/poptBT.c:125
-msgid "build through %%prep stage from tar ball"
+#: lib/poptBT.c:143
+#, fuzzy, c-format
+msgid "build through %prep (unpack sources and apply patches) from <tarball>"
+msgstr "förbered (packa upp källkod samt applicera patchar)"
+
+#: lib/poptBT.c:144 lib/poptBT.c:147 lib/poptBT.c:150 lib/poptBT.c:153
+#: lib/poptBT.c:156 lib/poptBT.c:159 lib/poptBT.c:162
+msgid "<tarball>"
+msgstr ""
+
+#: lib/poptBT.c:146
+#, fuzzy
+msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "bygg till och med %%prep-steget från tar-arkiv"
 
-#: lib/poptBT.c:127
-msgid "build through %%build stage from tar ball"
-msgstr "bygg till och med %%build-steget från tar-arkiv"
-
-#: lib/poptBT.c:129
-msgid "build through %%install stage from tar ball"
+#: lib/poptBT.c:149
+#, fuzzy
+msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr "bygg till och med %%install-steget från tar-arkiv"
 
-#: lib/poptBT.c:131
-msgid "verify %%files section from tar ball"
+#: lib/poptBT.c:152
+#, fuzzy, c-format
+msgid "verify %files section from <tarball>"
 msgstr "verifiera %%files-sektionen från tar-arkiv"
 
-#: lib/poptBT.c:133
-msgid "build source and binary package from tar ball"
+#: lib/poptBT.c:155
+#, fuzzy
+msgid "build source and binary packages from <tarball>"
 msgstr "bygg käll- och binärpaket från tar-arkiv"
 
-#: lib/poptBT.c:135
-msgid "build binary package from tar ball"
+#: lib/poptBT.c:158
+#, fuzzy
+msgid "build binary package only from <tarball>"
 msgstr "bygg binärpaket från tar-arkiv"
 
-#: lib/poptBT.c:137
-msgid "build source package from tar ball"
+#: lib/poptBT.c:161
+#, fuzzy
+msgid "build source package only from <tarball>"
 msgstr "bygg källpaket från tar-arkiv"
 
-#: lib/poptBT.c:140
-msgid "build binary package from source package"
+#: lib/poptBT.c:165
+#, fuzzy
+msgid "build binary package from <source package>"
 msgstr "bygg binärpaket från källpaket"
 
-#: lib/poptBT.c:142
-msgid "build through %%install stage from source package"
+#: lib/poptBT.c:166 lib/poptBT.c:169
+#, fuzzy
+msgid "<source package>"
+msgstr "inga paket\n"
+
+#: lib/poptBT.c:168
+#, fuzzy
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
 msgstr "bygg till och med %%install-steget från källpaket"
 
-#: lib/poptBT.c:145
+#: lib/poptBT.c:172
 msgid "override build root"
 msgstr "åsidosätt tillverkningsrot"
 
-#: lib/poptBT.c:149
+#: lib/poptBT.c:178
+msgid "ignore ExcludeArch: directives from spec file"
+msgstr ""
+
+#: lib/poptBT.c:180
 msgid "do not execute any stages of the build"
 msgstr "utför inga steg i tillverkningen"
 
-#: lib/poptBT.c:151
-msgid "do not accept I18N msgstr's from specfile"
+#: lib/poptBT.c:184
+msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
+msgstr ""
+
+#: lib/poptBT.c:187
+#, fuzzy
+msgid "do not accept i18N msgstr's from specfile"
 msgstr "acceptera inte översatta \"msgstr\" från spec-filen"
 
-#: lib/poptBT.c:155
+#: lib/poptBT.c:191
 msgid "remove specfile when done"
 msgstr "ta bort spec-fil efteråt"
 
-#: lib/poptBT.c:159
+#: lib/poptBT.c:197
 msgid "override target platform"
 msgstr "åsidosätt målplattform"
 
-#: lib/poptBT.c:161
-msgid "lookup I18N strings in specfile catalog"
+#: lib/poptBT.c:199
+#, fuzzy
+msgid "lookup i18N strings in specfile catalog"
 msgstr "slå upp översatta strängar i spec-fil katalog"
 
 #: lib/poptQV.c:70
-msgid "query/verify package owning file"
+#, fuzzy
+msgid "query/verify package(s) owning file"
 msgstr "fråga om/verifiera paket som äger fil"
 
 #: lib/poptQV.c:72
-msgid "query/verify packages in group"
+#, fuzzy
+msgid "query/verify package(s) in group"
 msgstr "fråga om/verifiera paket i grupp"
 
 #: lib/poptQV.c:74
-msgid "query/verify a package file"
+#, fuzzy
+msgid "query/verify a package file (i.e. a binary *.rpm file)"
 msgstr "fråga om/verifiera en paketfil"
 
 #: lib/poptQV.c:76
@@ -2923,8 +3006,13 @@ msgstr "visa kända frågetaggar"
 msgid "query a spec file"
 msgstr "fråga om en spec-fil"
 
+#: lib/poptQV.c:82
+msgid "<spec>"
+msgstr ""
+
 #: lib/poptQV.c:84
-msgid "query the pacakges triggered by the package"
+#, fuzzy
+msgid "query the package(s) triggered by the package"
 msgstr "undersök paket utlösta av paketet"
 
 #: lib/poptQV.c:86
@@ -2936,42 +3024,44 @@ msgid "rpm verify mode (legacy)"
 msgstr "rpm verifieringsläge (ärvt)"
 
 #: lib/poptQV.c:90
-msgid "query the packages which require a capability"
-msgstr "fråga om paket som behöver en egenskap"
+#, fuzzy
+msgid "query/verify the package(s) which require a dependency"
+msgstr "fråga om/verifiera paket som behöver <egenskap>"
 
 #: lib/poptQV.c:92
-msgid "query the packages which provide a capability"
-msgstr "fråga om paket som tillhandahåller en egenskap"
+#, fuzzy
+msgid "query/verify the package(s) which provide a dependency"
+msgstr "fråga om/verifiera paket som tillhandahåller <egenskap>"
 
-#: lib/poptQV.c:132
+#: lib/poptQV.c:134
 msgid "list all configuration files"
 msgstr "lista alla konfigurationsfiler"
 
-#: lib/poptQV.c:134
+#: lib/poptQV.c:136
 msgid "list all documentation files"
 msgstr "lista alla dokumentationsfiler"
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:138
 msgid "dump basic file information"
 msgstr "visa filinformation"
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:140
 msgid "list files in package"
 msgstr "lista filer i paketet"
 
-#: lib/poptQV.c:142
+#: lib/poptQV.c:144
 msgid "use the following query format"
 msgstr "använd följande frågeformat"
 
-#: lib/poptQV.c:144
+#: lib/poptQV.c:146
 msgid "substitute i18n sections into spec file"
 msgstr "ersätt översatta sektioner till spec-fil"
 
-#: lib/poptQV.c:146
+#: lib/poptQV.c:148
 msgid "display the states of the listed files"
 msgstr "visa tillstånd för de listade filerna"
 
-#: lib/poptQV.c:148
+#: lib/poptQV.c:150
 msgid "display a verbose file listing"
 msgstr "visa en utförlig fillistning"
 
@@ -3861,26 +3951,31 @@ msgstr "kör (eventuellt) postavinstallationsskript\n"
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d"
 msgstr "körning av skript från %s-%s-%s misslyckades, slutstatus %d"
 
-#: lib/verify.c:44
+#: lib/verify.c:59
 msgid "don't verify files in package"
 msgstr "verifiera inte filerna i paketet"
 
-#: lib/verify.c:219
+#: lib/verify.c:65
+#, fuzzy
+msgid "do not execute %verifyscript (if any)"
+msgstr "utför inga steg"
+
+#: lib/verify.c:241
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr ""
 "paket saknar både användarnamn och id-listor (detta borde aldrig inträffa)"
 
-#: lib/verify.c:237
+#: lib/verify.c:259
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 "paket saknar både gruppnamn och id-listor (detta borde aldrig inträffa)"
 
-#: lib/verify.c:299
+#: lib/verify.c:321
 #, fuzzy, c-format
 msgid "missing    %s"
 msgstr "saknas     %s\n"
 
-#: lib/verify.c:380
+#: lib/verify.c:402
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Ouppfyllda beroenden för %s-%s-%s: "
@@ -4088,6 +4183,73 @@ msgstr "kunde inte öppna %s: %s\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
+
+#, fuzzy
+#~ msgid ""
+#~ "       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--macros "
+#~ "<file:...>]\n"
+#~ msgstr ""
+#~ "       %s {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile <fil>]\n"
+
+#~ msgid "                        [--target=platform1[,platform2...]]"
+#~ msgstr "                        [--target=plattform1[,plattform2...]]"
+
+#~ msgid "                        [--rmsource] [--rmspec] specfile"
+#~ msgstr "                        [--rmsource] [--rmspec] spec-fil"
+
+#, fuzzy
+#~ msgid "       %s {--rmsource} [--macros <file:...>] [-v] specfile\n"
+#~ msgstr "       %s {--rmsource} [--rcfile <fil>] [-v] spec-fil\n"
+
+#, fuzzy
+#~ msgid ""
+#~ "       %s {--rebuild} [--macros <file:...>] [-v] source1.rpm ... "
+#~ "sourceN.rpm\n"
+#~ msgstr ""
+#~ "       %s {--rebuild} [--rcfile <fil>] [-v] källa1.rpm ... källaN.rpm\n"
+
+#, fuzzy
+#~ msgid ""
+#~ "       %s {--recompile} [--macros <file:...>] [-v] source1.rpm ... "
+#~ "sourceN.rpm\n"
+#~ msgstr ""
+#~ "       %s {--recompile} [--rcfile <fil>] [-v] källa1.rpm ... källaN.rpm\n"
+
+#~ msgid "       %s {--freshen -F} file1.rpm ... fileN.rpm\n"
+#~ msgstr "       %s {--freshen -F} fil1.rpm ... filN.rpm\n"
+
+#~ msgid "   -b<stage> <spec>       "
+#~ msgstr "   -b<steg> <spec>        "
+
+#~ msgid "   -t<stage> <tarball>    "
+#~ msgstr "   -t<steg> <tar-arkiv>   "
+
+#~ msgid "package src rpm only"
+#~ msgstr "paket endast källrpm"
+
+#~ msgid "     --buildroot <dir>    "
+#~ msgstr "     --buildroot <kat>    "
+
+#~ msgid "     --target=<platform>+ "
+#~ msgstr "     --target=<plattform>+"
+
+#~ msgid "   --rebuild <src_pkg>    "
+#~ msgstr "   --rebuild <källpaket>  "
+
+#~ msgid "   --recompile <src_pkg>  "
+#~ msgstr "   --recompile <källpaket>"
+
+#~ msgid "build through %%build stage from spec file"
+#~ msgstr "bygg till och med %%build-steget från spec-fil"
+
+#~ msgid "build through %%build stage from tar ball"
+#~ msgstr "bygg till och med %%build-steget från tar-arkiv"
+
+#~ msgid "query the packages which require a capability"
+#~ msgstr "fråga om paket som behöver en egenskap"
+
+#~ msgid "query the packages which provide a capability"
+#~ msgstr "fråga om paket som tillhandahåller en egenskap"
 
 #~ msgid "exec failed!\n"
 #~ msgstr "exec misslyckades!\n"

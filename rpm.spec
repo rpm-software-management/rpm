@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.13
+Release: 0.14
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -309,6 +309,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Jan  1 2001 Jeff Johnson <jbj@redhat.com>
+- use popt autohelp for rpm helper binaries.
+
 * Sun Dec 31 2000 Jeff Johnson <jbj@redhat.com>
 - (popt): fix float/double handling (#19701).
 - (popt): non-linux needs <float.h> (#22732).

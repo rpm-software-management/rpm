@@ -417,7 +417,7 @@ static void mungeFilelist(Header h)
     headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			fileNames, count);
 
-    xfree(fileNames);
+    free((void *)fileNames);
 }
 
 static int psGetArchScore(Header h) {

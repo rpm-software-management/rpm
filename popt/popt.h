@@ -74,25 +74,26 @@ extern "C" {
 #define POPT_CONTEXT_POSIXMEHARDER (1 << 2) /* options can't follow args */
 
 struct poptOption {
-    /*@observer@*/ /*@null@*/ const char * longName;	/* may be NULL */
+/*@observer@*/ /*@null@*/ const char * longName;	/* may be NULL */
     char shortName;		/* may be '\0' */
     int argInfo;
-    /*@shared@*/ /*@null@*/ void * arg;		/* depends on argInfo */
+/*@shared@*/ /*@null@*/ void * arg;		/* depends on argInfo */
     int val;			/* 0 means don't return, just update flag */
-    /*@shared@*/ /*@null@*/ const char * descrip;	/* description for autohelp -- may be NULL */
-    /*@shared@*/ /*@null@*/ const char * argDescrip;	/* argument description for autohelp */
+/*@shared@*/ /*@null@*/ const char * descrip;	/* description for autohelp -- may be NULL */
+/*@shared@*/ /*@null@*/ const char * argDescrip;	/* argument description for autohelp */
 };
 
 struct poptAlias {
-    /*@owned@*/ /*@null@*/ const char * longName;	/* may be NULL */
+/*@owned@*/ /*@null@*/ const char * longName;	/* may be NULL */
     char shortName;		/* may be '\0' */
     int argc;
-    /*@owned@*/ const char ** argv;		/* must be free()able */
+/*@owned@*/ const char ** argv;		/* must be free()able */
 };
 
 extern struct poptOption poptHelpOptions[];
 #define POPT_AUTOHELP { NULL, '\0', POPT_ARG_INCLUDE_TABLE, poptHelpOptions, \
-			0, "Help options", NULL },
+			0, "Help options:", NULL },
+#define POPT_TABLEEND { NULL, '\0', 0, 0, 0, NULL, NULL }
 
 typedef struct poptContext_s * poptContext;
 #ifndef __cplusplus

@@ -87,12 +87,10 @@ static int isSpecFile(const char *specfile)
 }
 
 static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
-	const char *passPhrase, int fromTarball, char *cookie,
-	int force, int nodeps)
+	const char *passPhrase, char *cookie)
 {
     int buildAmount = ba->buildAmount;
     const char *buildRootURL = NULL;
-    int test = ba->noBuild;
     const char * specFile;
     const char * specURL;
     int specut;
@@ -107,7 +105,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
     if (ba->buildRootOverride)
 	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
 
-    if (fromTarball) {
+    if (ba->buildMode == 't') {
 	FILE *fp;
 	const char *specDir;
 	const char * tmpSpecFile;
@@ -237,7 +235,7 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
     if (parseSpec(&spec, specURL, ba->rootdir, buildRootURL, 0, passPhrase,
-		cookie, _anyarch(buildAmount), force)) {
+		cookie, _anyarch(buildAmount), ba->force)) {
 	rc = 1;
 	goto exit;
     }
@@ -247,17 +245,17 @@ static int buildForTarget(const char *arg, struct rpmBuildArguments *ba,
     initSourceHeader(spec);
 
     /* Check build prerequisites */
-    if (!nodeps && checkSpec(spec->sourceHeader)) {
+    if (!ba->noDeps && checkSpec(spec->sourceHeader)) {
 	rc = 1;
 	goto exit;
     }
 
-    if (buildSpec(spec, buildAmount, test)) {
+    if (buildSpec(spec, buildAmount, ba->noBuild)) {
 	rc = 1;
 	goto exit;
     }
     
-    if (fromTarball) Unlink(specURL);
+    if (ba->buildMode == 't') Unlink(specURL);
     rc = 0;
 
 exit:
@@ -269,8 +267,7 @@ exit:
 }
 
 int build(const char * arg, struct rpmBuildArguments * ba,
-	const char * passPhrase, int fromTarball, char * cookie,
-	const char * rcfile, int force, int nodeps)
+	const char * passPhrase, char * cookie, const char * rcfile)
 {
     char *t, *te;
     int rc = 0;
@@ -279,8 +276,7 @@ int build(const char * arg, struct rpmBuildArguments * ba,
     int cleanFlags = ba->buildAmount & buildCleanMask;
 
     if (targets == NULL) {
-	rc =  buildForTarget(arg, ba, passPhrase, fromTarball, cookie,
-		force, nodeps);
+	rc =  buildForTarget(arg, ba, passPhrase, cookie);
 	goto exit;
     }
 
@@ -306,8 +302,7 @@ int build(const char * arg, struct rpmBuildArguments * ba,
 	/* Read in configuration for target. */
 	rpmFreeMacros(NULL);
 	rpmReadConfigFiles(rcfile, target);
-	rc = buildForTarget(arg, ba, passPhrase, fromTarball, cookie,
-		force, nodeps);
+	rc = buildForTarget(arg, ba, passPhrase, cookie);
 	if (rc)
 	    break;
     }
