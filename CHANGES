@@ -17,6 +17,7 @@
 	- implement --timecheck and rpmrc timecheck:
 	- implement -bl
 	- catch duplicate files in file lists
+	- some random sanity checking on the file list
 
 2.2 -> 2.2.1:
 	- made rpmRemovePackage() print message in verbose mode
