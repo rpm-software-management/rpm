@@ -167,7 +167,7 @@ sub process_file {
       # sometimes people do use POSIX qw(foo), or use POSIX(qw(foo)) etc
       # we can strip qw.*$, as well as (.*$:
       $module =~ s/qw.*$//;
-      $module =~ s/\(*$//;
+      $module =~ s/\(.*$//;
 
       $module =~ s/\.pm$//;
 
