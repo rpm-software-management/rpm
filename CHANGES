@@ -118,6 +118,7 @@
 	- fix: fsm reads/writes now return error on partial I/O.
 	- fix: Ferror returned spurious error for gzdio/bzdio.
 	- check for API/ABI creep, diddle up some compatibility.
+	- preliminary abstraction to support per-header methods.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

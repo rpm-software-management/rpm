@@ -31,8 +31,6 @@ BuildRequires: db3-devel
 # XXX linked binaries like /bin/rpm.
 %ifnarch ia64
 Requires: glibc >= 2.1.92
-# XXX needed to avoid libdb.so.2 satisfied by compat/libc5 provides.
-Requires: db1 = 1.85
 %endif
 %endif
 
@@ -131,10 +129,29 @@ rm -rf $RPM_BUILD_ROOT
 
 make DESTDIR="$RPM_BUILD_ROOT" install
 
+%ifos linux
+
+# Save list of packages through cron
+mkdir -p ${RPM_BUILD_ROOT}/etc/cron.daily
+install -m 755 scripts/rpm.daily ${RPM_BUILD_ROOT}/etc/cron.daily/rpm
+
+mkdir -p ${RPM_BUILD_ROOT}/etc/logrotate.d
+install -m 755 scripts/rpm.log ${RPM_BUILD_ROOT}/etc/logrotate.d/rpm
+
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
 %%_dbapi		1
 E_O_F
+
+mkdir -p $RPM_BUILD_ROOT/var/lib/rpm
+for dbi in \
+	Basenames Conflictname Dirnames Group Installtid Name Providename \
+	Provideversion Removetid Requirename Requireversion Triggername
+do
+    touch $RPM_BUILD_ROOT/var/lib/rpm/$dbi
+done
+
+%endif
 
 %if %{with_apidocs}
 gzip -9n apidocs/man/man*/* || :
@@ -151,34 +168,46 @@ gzip -9n apidocs/man/man*/* || :
 rm -rf $RPM_BUILD_ROOT
 
 %pre
+%ifos linux
 if [ -f /var/lib/rpm/Packages -a -f /var/lib/rpm/packages.rpm ]; then
-#    echo "
-#You have both
-#	/var/lib/rpm/packages.rpm	db1 format installed package headers
-#	/var/lib/rpm/Packages		db3 format installed package headers
-#Please remove (or at least rename) one of those files, and re-install.
-#"
+    echo "
+You have both
+	/var/lib/rpm/packages.rpm	db1 format installed package headers
+	/var/lib/rpm/Packages		db3 format installed package headers
+Please remove (or at least rename) one of those files, and re-install.
+"
     exit 1
 fi
+/usr/sbin/groupadd -g 37 rpm				> /dev/null 2>&1
+/usr/sbin/useradd  -d /var/lib/rpm -u 37 -g 37 rpm	> /dev/null 2>&1
+%endif
 exit 0
 
 %post
 %ifos linux
 /sbin/ldconfig
-%endif
 if [ -f /var/lib/rpm/packages.rpm ]; then
-    : # do nothing
+    /bin/chown rpm.rpm /var/lib/rpm/*.rpm
 elif [ -f /var/lib/rpm/Packages ]; then
     # undo db1 configuration
     rm -f /etc/rpm/macros.db1
+    /bin/chown rpm.rpm /var/lib/rpm/[A-Z]*
 else
     # initialize db3 database
     rm -f /etc/rpm/macros.db1
     /bin/rpm --initdb
 fi
+%endif
+exit 0
 
 %ifos linux
-%postun -p /sbin/ldconfig
+%postun
+/sbin/ldconfig
+if [ $1 == 0 ]; then
+    /usr/sbin/userdel rpm
+    /usr/sbin/groupdel rpm
+fi
+
 
 %post devel -p /sbin/ldconfig
 %postun devel -p /sbin/ldconfig
@@ -192,50 +221,79 @@ fi
 %postun python -p /sbin/ldconfig
 %endif
 
+%define	rpmattr		%attr(0755, rpm, rpm)
+%define	rpmdbattr	%rpmattr %verify(not md5 size mtime) %ghost
+
 %files
 %defattr(-,root,root)
 %doc RPM-PGP-KEY RPM-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
-/bin/rpm
-%dir			/etc/rpm
-%config(missingok)	/etc/rpm/macros.db1
-%{__prefix}/bin/rpm2cpio
-%{__prefix}/bin/gendiff
-%{__prefix}/bin/rpmdb
-%{__prefix}/bin/rpm[eiukqv]
-%{__prefix}/bin/rpmsign
-%{__prefix}/bin/rpmquery
-%{__prefix}/bin/rpmverify
+%attr(0755, rpm, rpm)	/bin/rpm
+
+%ifos linux
+%config(noreplace,missingok)	/etc/cron.daily/rpm
+%config(noreplace,missingok)	/etc/logrotate.d/rpm
+%dir				/etc/rpm
+%config(noreplace,missingok)	/etc/rpm/macros.db1
+%attr(0755, rpm, rpm)	%dir /var/lib/rpm
+%rpmdbattr	/var/lib/rpm/Basenames
+%rpmdbattr	/var/lib/rpm/Conflictname
+#%rpmdbattr	/var/lib/rpm/__db.001
+%rpmdbattr	/var/lib/rpm/Dirnames
+%rpmdbattr	/var/lib/rpm/Group
+%rpmdbattr	/var/lib/rpm/Installtid
+%rpmdbattr	/var/lib/rpm/Name
+#%rpmdbattr	/var/lib/rpm/Packages
+%rpmdbattr	/var/lib/rpm/Providename
+%rpmdbattr	/var/lib/rpm/Provideversion
+%rpmdbattr	/var/lib/rpm/Removetid
+%rpmdbattr	/var/lib/rpm/Requirename
+%rpmdbattr	/var/lib/rpm/Requireversion
+%rpmdbattr	/var/lib/rpm/Triggername
+%endif
+
+%rpmattr	%{__prefix}/bin/rpm2cpio
+%rpmattr	%{__prefix}/bin/gendiff
+%rpmattr	%{__prefix}/bin/rpmdb
+%rpmattr	%{__prefix}/bin/rpm[eiukqv]
+%rpmattr	%{__prefix}/bin/rpmsign
+%rpmattr	%{__prefix}/bin/rpmquery
+%rpmattr	%{__prefix}/bin/rpmverify
+
 %{__prefix}/lib/librpm.so.*
+%{__prefix}/lib/librpmdb.so.*
 %{__prefix}/lib/librpmio.so.*
 %{__prefix}/lib/librpmbuild.so.*
 
-%{__prefix}/lib/rpm/config.guess
-%{__prefix}/lib/rpm/config.sub
-%{__prefix}/lib/rpm/convertrpmrc.sh
-%{__prefix}/lib/rpm/macros
-%{__prefix}/lib/rpm/mkinstalldirs
-%{__prefix}/lib/rpm/rpmdb
-%{__prefix}/lib/rpm/rpm[eiukqv]
-%{__prefix}/lib/rpm/rpmpopt*
-%{__prefix}/lib/rpm/rpmrc
+%rpmattr	%{__prefix}/lib/rpm/config.guess
+%rpmattr	%{__prefix}/lib/rpm/config.sub
+%rpmattr	%{__prefix}/lib/rpm/convertrpmrc.sh
+%attr(0644, rpm, rpm)	%{__prefix}/lib/rpm/macros
+%rpmattr	%{__prefix}/lib/rpm/mkinstalldirs
+%rpmattr	%{__prefix}/lib/rpm/rpm.*
+%rpmattr	%{__prefix}/lib/rpm/rpm[deiukqv]
+%attr(0644, rpm, rpm)	%{__prefix}/lib/rpm/rpmpopt*
+%attr(0644, rpm, rpm)	%{__prefix}/lib/rpm/rpmrc
 
-%ifarch i386 i486 i586 i686
-%{__prefix}/lib/rpm/i[3456]86*
+%ifarch i386 i486 i586 i686 athlon
+%attr(-, rpm, rpm)	%{__prefix}/lib/rpm/i[3456]86*
 %endif
 %ifarch alpha
-%{__prefix}/lib/rpm/alpha*
+%attr(-, rpm, rpm)	%{__prefix}/lib/rpm/alpha*
 %endif
 %ifarch sparc sparc64
-%{__prefix}/lib/rpm/sparc*
+%attr(-, rpm, rpm)	%{__prefix}/lib/rpm/sparc*
 %endif
 %ifarch ia64
-%{__prefix}/lib/rpm/ia64*
+%attr(-, rpm, rpm)	%{__prefix}/lib/rpm/ia64*
 %endif
 %ifarch powerpc ppc
-%{__prefix}/lib/rpm/ppc*
+%attr(-, rpm, rpm)	%{__prefix}/lib/rpm/ppc*
+%endif
+%ifarch s390 s390x
+%attr(-, rpm, rpm)	%{__prefix}/lib/rpm/s390*
 %endif
 %ifarch armv3l armv4l
-%{__prefix}/lib/rpm/armv[34][lb]*
+%attr(-, rpm, rpm)	%{__prefix}/lib/rpm/armv[34][lb]*
 %endif
 
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
@@ -257,7 +315,9 @@ fi
 %lang(sv)	%{__prefix}/*/locale/sv/LC_MESSAGES/rpm.mo
 %lang(tr)	%{__prefix}/*/locale/tr/LC_MESSAGES/rpm.mo
 
-%{__prefix}%{__share}/man/man[18]/*.[18]*
+%{__prefix}%{__share}/man/man1/gendiff.1*
+%{__prefix}%{__share}/man/man8/rpm.8*
+%{__prefix}%{__share}/man/man8/rpm2cpio.8*
 %lang(pl) %{__prefix}%{__share}/man/pl/man[18]/*.[18]*
 %lang(ru) %{__prefix}%{__share}/man/ru/man[18]/*.[18]*
 %lang(sk) %{__prefix}%{__share}/man/sk/man[18]/*.[18]*
@@ -271,31 +331,35 @@ fi
 %dir %{__prefix}/src/redhat/SRPMS
 %dir %{__prefix}/src/redhat/RPMS
 %{__prefix}/src/redhat/RPMS/*
-%{__prefix}/bin/rpmbuild
-%{__prefix}/lib/rpm/brp-*
-%{__prefix}/lib/rpm/check-prereqs
-%{__prefix}/lib/rpm/cpanflute
-%{__prefix}/lib/rpm/find-lang.sh
-%{__prefix}/lib/rpm/find-prov.pl
-%{__prefix}/lib/rpm/find-provides
-%{__prefix}/lib/rpm/find-provides.perl
-%{__prefix}/lib/rpm/find-req.pl
-%{__prefix}/lib/rpm/find-requires
-%{__prefix}/lib/rpm/find-requires.perl
-%{__prefix}/lib/rpm/get_magic.pl
-%{__prefix}/lib/rpm/getpo.sh
-%{__prefix}/lib/rpm/http.req
-%{__prefix}/lib/rpm/javadeps
-%{__prefix}/lib/rpm/magic.prov
-%{__prefix}/lib/rpm/magic.req
-%{__prefix}/lib/rpm/perl.prov
-%{__prefix}/lib/rpm/perl.req
-%{__prefix}/lib/rpm/rpm[bt]
-%{__prefix}/lib/rpm/rpmdiff
-%{__prefix}/lib/rpm/rpmdiff.cgi
-%{__prefix}/lib/rpm/u_pkg.sh
-%{__prefix}/lib/rpm/vpkg-provides.sh
-%{__prefix}/lib/rpm/vpkg-provides2.sh
+%rpmattr	%{__prefix}/bin/rpmbuild
+%rpmattr	%{__prefix}/lib/rpm/brp-*
+%rpmattr	%{__prefix}/lib/rpm/check-prereqs
+%rpmattr	%{__prefix}/lib/rpm/config.site
+%rpmattr	%{__prefix}/lib/rpm/cpanflute
+%rpmattr	%{__prefix}/lib/rpm/cross-build
+%rpmattr	%{__prefix}/lib/rpm/find-lang.sh
+%rpmattr	%{__prefix}/lib/rpm/find-prov.pl
+%rpmattr	%{__prefix}/lib/rpm/find-provides
+%rpmattr	%{__prefix}/lib/rpm/find-provides.perl
+%rpmattr	%{__prefix}/lib/rpm/find-req.pl
+%rpmattr	%{__prefix}/lib/rpm/find-requires
+%rpmattr	%{__prefix}/lib/rpm/find-requires.perl
+%rpmattr	%{__prefix}/lib/rpm/get_magic.pl
+%rpmattr	%{__prefix}/lib/rpm/getpo.sh
+%rpmattr	%{__prefix}/lib/rpm/http.req
+%rpmattr	%{__prefix}/lib/rpm/javadeps
+%rpmattr	%{__prefix}/lib/rpm/magic.prov
+%rpmattr	%{__prefix}/lib/rpm/magic.req
+%rpmattr	%{__prefix}/lib/rpm/perl.prov
+%rpmattr	%{__prefix}/lib/rpm/perl.req
+%rpmattr	%{__prefix}/lib/rpm/rpm[bt]
+%rpmattr	%{__prefix}/lib/rpm/rpmdiff
+%rpmattr	%{__prefix}/lib/rpm/rpmdiff.cgi
+%rpmattr	%{__prefix}/lib/rpm/u_pkg.sh
+%rpmattr	%{__prefix}/lib/rpm/vpkg-provides.sh
+%rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
+
+%{__prefix}%{__share}/man/man8/rpmbuild.8*
 
 %if %{with_python_subpackage}
 %files python
@@ -312,6 +376,9 @@ fi
 %{__prefix}/lib/librpm.a
 %{__prefix}/lib/librpm.la
 %{__prefix}/lib/librpm.so
+%{__prefix}/lib/librpmdb.a
+%{__prefix}/lib/librpmdb.la
+%{__prefix}/lib/librpmdb.so
 %{__prefix}/lib/librpmio.a
 %{__prefix}/lib/librpmio.la
 %{__prefix}/lib/librpmio.so

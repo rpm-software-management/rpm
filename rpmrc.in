@@ -1,7 +1,7 @@
 #/*! \page config_rpmrc Default configuration: /usr/lib/rpm/rpmrc
 # \verbatim
 #
-# $Id: rpmrc.in,v 2.37 2001/05/16 19:19:15 jbj Exp $
+# $Id: rpmrc.in,v 2.38 2001/06/19 11:38:51 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -50,6 +50,8 @@ optflags: falcon -O2 -fomit-frame-pointer
 optflags: atariclone -O2 -fomit-frame-pointer
 optflags: milan -O2 -fomit-frame-pointer
 optflags: hades -O2 -fomit-frame-pointer
+optflags: s390 -O2
+optflags: s390x -O2 
 
 #############################################################
 # Canonical arch names and numbers
@@ -97,6 +99,7 @@ arch_canon:	milan: m68kmint		13
 arch_canon:	hades: m68kmint		13
 arch_canon:	s390: s390	14
 arch_canon:	i370: i370	14
+arch_canon:	s390x: s390x	15
 
 #############################################################
 # Canonical OS names and numbers
@@ -168,6 +171,9 @@ buildarchtranslate: atariclone:	m68kmint
 buildarchtranslate: milan: m68kmint
 buildarchtranslate: hades: m68kmint	
 
+buildarchtranslate: s390: s390
+buildarchtranslate: s390x: s390x
+
 #############################################################
 # Architecture compatibility
 
@@ -224,8 +230,9 @@ arch_compat: atariclone: m68kmint noarch
 arch_compat: milan: m68kmint noarch
 arch_compat: hades: m68kmint noarch
 
-arch_compat: s390: i370
 arch_compat: i370: noarch
+arch_compat: s390: noarch
+arch_compat: s390x: noarch
 
 arch_compat: ia64: i686 noarch
 
@@ -299,7 +306,9 @@ buildarch_compat: milan: m68kmint noarch
 buildarch_compat: hades: m68kmint noarch
 
 buildarch_compat: ia64: noarch
+
 buildarch_compat: s390: noarch
+buildarch_compat: s390x: noarch
 
 macrofiles:	@RPMCONFIGDIR@/macros:@RPMCONFIGDIR@/%{_target}/macros:@SYSCONFIGDIR@/macros.specspo:@SYSCONFIGDIR@/macros.db1:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/.rpmmacros
 

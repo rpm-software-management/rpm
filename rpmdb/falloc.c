@@ -388,7 +388,7 @@ static int fadSanity(FD_t fd, int offset, const struct faHeader * fh, int printi
     int rc = 0;
 
     /* Check size range and alignment. */
-    if (!(fh->size > 0 || fh->size <= 0x00200000 && (fh->size & 0x3f) == 0))
+    if (!(fh->size > 0 && fh->size <= 0x00200000 && (fh->size & 0x3f) == 0))
 	rc |= 0x1;
 
     /* Check forward link range, alignment and offset. */

@@ -154,7 +154,7 @@ int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
 /*@unused@*/
 int rpmPackageGetEntry(void *leadp, Header sigs, Header h,
 		int_32 tag, int_32 *type, void **p, int_32 *c)
-	/*@modifies *type, *p, *c @*/;
+	/*@modifies h, *type, *p, *c @*/;
 
 /**
  * Automatically generated table of tag name/value pairs.

@@ -8,14 +8,33 @@
 
 #include "debug.h"
 
-void headerDump(Header h, FILE *f, int flags, 
-		const struct headerTagTableEntry * tags)
+char ** headerGetLangs(Header h)
+{
+    char **s, *e, **table;
+    int i, type, count;
+
+    if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, (const void **)&s, &count))
+	return NULL;
+
+    /* XXX xcalloc never returns NULL. */
+    if ((table = (char **)xcalloc((count+1), sizeof(char *))) == NULL)
+	return NULL;
+
+    for (i = 0, e = *s; i < count > 0; i++, e += strlen(e)+1)
+	table[i] = e;
+    table[count] = NULL;
+
+    /*@-nullret@*/ return table; /*@=nullret@*/	/* LCL: double indirection? */
+}
+
+void headerDump(Header h, FILE *f, int flags,
+	const struct headerTagTableEntry * tags)
 {
     int i;
-    struct indexEntry *p;
+    indexEntry p;
     const struct headerTagTableEntry * tage;
-    const char *tag;
-    char *type;
+    const char * tag;
+    char * type;
 
     /* First write out the length of the index (count of index entries) */
     fprintf(f, "Entry count: %d\n", h->indexUsed);

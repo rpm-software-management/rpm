@@ -126,7 +126,7 @@ void freeNames(void)
  * Return build time stamp.
  * @return		build time stamp
  */
-/*@observer@*/ time_t * const getBuildTime(void)	/*@*/;
+/*@observer@*/ int_32 * const getBuildTime(void)	/*@*/;
 
 /** \ingroup rpmbuild
  * Read next line from spec file.

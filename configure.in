@@ -1014,7 +1014,7 @@ mint)		RPMCANONARCH=m68kmint ;;
 esac
 RPMCANONVENDOR="$build_vendor"
 case "${build_vendor}" in
-unknown|pc|redhat|pld|mandrake|conectiva)
+unknown|pc|ibm|redhat|pld|mandrake|conectiva)
 	test -f /etc/redhat-release &&		RPMCANONVENDOR=redhat
 	test -f /etc/pld-release &&		RPMCANONVENDOR=pld
 	test -f /etc/mandrake-release &&	RPMCANONVENDOR=mandrake

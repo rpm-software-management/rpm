@@ -29,6 +29,7 @@ lib/depends.c
 lib/formats.c
 lib/fs.c
 lib/fsm.c
+lib/hdrinline.c
 lib/header.c
 lib/header_internal.c
 lib/manifest.c

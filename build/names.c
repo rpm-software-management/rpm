@@ -112,9 +112,9 @@ const char *getGnameS(const char *gname)
 }
 /*@=nullderef@*/
 
-time_t *const getBuildTime(void)
+int_32 *const getBuildTime(void)
 {
-    static time_t buildTime[1];
+    static int_32 buildTime[1];
 
     if (buildTime[0] == 0)
 	buildTime[0] = time(NULL);

@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpmio.h>
+#include <rpmlib.h>
 
 #include "debug.h"
 
