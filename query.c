@@ -2,9 +2,12 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
 
+#include "lib/messages.h"
 #include "lib/package.h"
 #include "rpmlib.h"
 #include "query.h"
@@ -14,6 +17,9 @@ static char * getString(Header h, int tag, char * def);
 static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags);
 static int findMatches(rpmdb db, char * name, char * version, char * release,
 		       dbIndexSet * matches);
+static void printFileInfo(char * name, unsigned int size, unsigned short mode,
+			  unsigned int mtime, unsigned short rdev,
+			  char * owner, char * group, int uid, int gid);
 
 static char * getString(Header h, int tag, char * def) {
     char * str;
@@ -40,7 +46,11 @@ static void printHeader(Header h, int queryFlags) {
     char ** fileList;
     char * fileStatesList;
     char * sourcePackage;
-    int_32 * fileFlagsList;
+    char ** fileOwnerList, ** fileGroupList;
+    int_32 * fileFlagsList, * fileMTimeList, * fileSizeList;
+    int_32 * fileUIDList, * fileGIDList;
+    int_16 * fileModeList;
+    int_16 * fileRdevList;
     int i;
 
     getEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
@@ -105,6 +115,22 @@ static void printHeader(Header h, int queryFlags) {
 			 (void **) &fileStatesList, &count);
 		getEntry(h, RPMTAG_FILEFLAGS, &type, 
 			 (void **) &fileFlagsList, &count);
+		getEntry(h, RPMTAG_FILESIZES, &type, 
+			 (void **) &fileSizeList, &count);
+		getEntry(h, RPMTAG_FILEMODES, &type, 
+			 (void **) &fileModeList, &count);
+		getEntry(h, RPMTAG_FILEMTIMES, &type, 
+			 (void **) &fileMTimeList, &count);
+		getEntry(h, RPMTAG_FILERDEVS, &type, 
+			 (void **) &fileRdevList, &count);
+		getEntry(h, RPMTAG_FILEUIDS, &type, 
+			 (void **) &fileUIDList, &count);
+		getEntry(h, RPMTAG_FILEGIDS, &type, 
+			 (void **) &fileGIDList, &count);
+		getEntry(h, RPMTAG_FILEUSERNAME, &type, 
+			 (void **) &fileOwnerList, &count);
+		getEntry(h, RPMTAG_FILEGROUPNAME, &type, 
+			 (void **) &fileGroupList, &count);
 
 		for (i = 0; i < count; i++) {
 		    if (!((queryFlags & QUERY_FOR_DOCS) || 
@@ -114,26 +140,118 @@ static void printHeader(Header h, int queryFlags) {
 			|| ((queryFlags & QUERY_FOR_CONFIG) && 
 			    (fileFlagsList[i] & RPMFILE_CONFIG))) {
 
-			prefix ? fputs(prefix, stdout) : 0;
-			if (queryFlags & QUERY_FOR_STATE) {
-			    switch (fileStatesList[i]) {
-			      case RPMFILE_STATE_NORMAL:
-				fputs("normal   ", stdout); break;
-			      case RPMFILE_STATE_REPLACED:
-				fputs("replaced ", stdout); break;
-			      default:
-				fputs("unknown  ", stdout);
+			if (!isVerbose()) {
+			    prefix ? fputs(prefix, stdout) : 0;
+			    if (queryFlags & QUERY_FOR_STATE) {
+				switch (fileStatesList[i]) {
+				  case RPMFILE_STATE_NORMAL:
+				    fputs("normal   ", stdout); break;
+				  case RPMFILE_STATE_REPLACED:
+				    fputs("replaced ", stdout); break;
+				  default:
+				    fputs("unknown  ", stdout);
+				}
 			    }
-			}
-			
-			puts(fileList[i]);
+			    
+			    puts(fileList[i]);
+			} else if (fileOwnerList) 
+			    printFileInfo(fileList[i], fileSizeList[i],
+					  fileModeList[i], fileMTimeList[i],
+					  fileRdevList[i], fileOwnerList[i], 
+					  fileGroupList[i], fileUIDList[i], 
+					  fileGIDList[i]);
+			else
+			    printFileInfo(fileList[i], fileSizeList[i],
+					  fileModeList[i], fileMTimeList[i],
+					  fileRdevList[i], NULL, 
+					  NULL, fileUIDList[i], 
+					  fileGIDList[i]);
 		    }
 		}
 	    
 		free(fileList);
+		if (fileOwnerList) free(fileOwnerList);
+		if (fileGroupList) free(fileGroupList);
 	    }
 	}
     }
+}
+
+static void printFileInfo(char * name, unsigned int size, unsigned short mode,
+			  unsigned int mtime, unsigned short rdev,
+			  char * owner, char * group, int uid, int gid) {
+    char * perms = "----------";
+    char sizefield[15];
+    char ownerfield[9], groupfield[9];
+    char timefield[100] = "";
+    time_t themtime;
+    time_t currenttime;
+    static int thisYear = 0;
+    static int thisMonth = 0;
+    struct tm * tstruct;
+   
+    if (!thisYear) {
+	currenttime = time(NULL);
+	tstruct = localtime(&currenttime);
+	thisYear = tstruct->tm_year;
+	thisMonth = tstruct->tm_mon;
+    }
+
+    if (mode & S_IRUSR) perms[1]= 'r';
+    if (mode & S_IWUSR) perms[2]= 'w';
+    if (mode & S_IXUSR) perms[3]= 'x';
+
+    if (mode & S_IRGRP) perms[4]= 'r';
+    if (mode & S_IWGRP) perms[5]= 'w';
+    if (mode & S_IXGRP) perms[6]= 'x';
+
+    if (mode & S_IROTH) perms[7]= 'r';
+    if (mode & S_IWOTH) perms[8]= 'w';
+    if (mode & S_IXOTH) perms[9]= 'x';
+
+    if (owner) 
+	strncpy(ownerfield, owner, 8);
+    else
+	sprintf(ownerfield, "%-8d", uid);
+
+    if (group) 
+	strncpy(groupfield, group, 8);
+    else
+	sprintf(groupfield, "%-8d", gid);
+
+    /* this is normally right */
+    sprintf(sizefield, "%10d", size);
+
+    /* this knows too much about dev_t */
+
+    if (S_ISDIR(mode)) 
+	perms[0] = 'd';
+    else if (S_ISLNK(mode)) 
+	perms[0] = 'l';
+    else if (S_ISFIFO(mode)) 
+	perms[0] = 'p';
+    else if (S_ISSOCK(mode)) 
+	perms[0] = 'l';
+    else if (S_ISCHR(mode)) {
+	perms[0] = 'c';
+	sprintf(sizefield, "%3d, %3d", rdev >> 8, rdev & 0xFF);
+    } else if (S_ISBLK(mode)) {
+	perms[0] = 'b';
+	sprintf(sizefield, "%3d, %3d", rdev >> 8, rdev & 0xFF);
+    }
+
+    /* this is important if sizeof(int_32) ! sizeof(time_t) */
+    themtime = mtime;
+    tstruct = localtime(&themtime);
+
+    if (tstruct->tm_year == thisYear || 
+	((tstruct->tm_year + 1) == thisYear && tstruct->tm_mon > thisMonth)) 
+	strftime(timefield, sizeof(timefield) - 1, "%b %d %H:%M", tstruct);
+    else
+	strftime(timefield, sizeof(timefield) - 1, "%b %d  %Y", tstruct);
+
+    printf("%s %8s %8s %10s %s %s\n", perms, ownerfield, groupfield, 
+		sizefield, timefield, name);
 }
 
 static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags) {
@@ -167,7 +285,7 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
     dbIndexSet matches;
 
     if (source != QUERY_SRPM && source != QUERY_RPM) {
-	if (!rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
+	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
 	    exit(1);
 	}
     }
