@@ -624,7 +624,7 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
     /* First find the tag */
     index = findEntry(h, tag);
     if (! index) {
-	**p = NULL;
+	*p = NULL;
 	return 0;
     }
 
