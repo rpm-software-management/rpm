@@ -14,6 +14,7 @@ enum querysources { QUERY_PATH, QUERY_PACKAGE, QUERY_ALL, QUERY_SPATH,
 #define QUERY_FOR_CONFIG	(1 << 4)
 #define QUERY_FOR_SCRIPTS	(1 << 5)
 #define QUERY_BY_NUMBER         (1 << 6)
+#define QUERY_FOR_DEPS          (1 << 7)
 
 int doQuery(char * prefix, enum querysources source, int queryFlags, 
 	     char * arg, char * queryFormat);

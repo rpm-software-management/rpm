@@ -16,9 +16,11 @@
 #include "query.h"
 
 static void printHeader(Header h, int queryFlags, char * queryFormat);
-static void queryHeader(Header h, const char * incomingFormat);
+static const char * queryHeader(Header h, const char * incomingFormat, 
+				int arrayNum);
 static void escapedChar(char ch);
-static const char * handleFormat(Header h, const char * chptr);
+static const char * handleFormat(Header h, const char * chptr, 
+				 const int arrayNum);
 static void showMatches(rpmdb db, dbIndexSet matches, int queryFlags, 
 			char * queryFormat);
 static int findMatches(rpmdb db, char * name, char * version, char * release,
@@ -36,34 +38,38 @@ static char * defaultQueryFormat =
 	    "Install date: %-27{-INSTALLTIME}   Build Host: %{BUILDHOST}\n"
 	    "Group       : %-27{GROUP}   Source RPM: %{SOURCERPM}\n"
 	    "Size        : %{SIZE}\n"
+	    "Provides    : %{PROVIDES}\n"
 	    "Description : %{DESCRIPTION}\n";
 
-static void queryHeader(Header h, const char * chptr) {
+static const char * queryHeader(Header h, const char * chptr, int arrayNum) {
     while (chptr && *chptr) {
 	switch (*chptr) {
 	  case '\\':
 	    chptr++;
-	    if (!*chptr) return;
+	    if (!*chptr) return NULL;
 	    escapedChar(*chptr++);
 	    break;
 
 	  case '%':
 	    chptr++;
-	    if (!*chptr) return;
+	    if (!*chptr) return NULL;
 	    if (*chptr == '%') {
 		putchar('%');
 		chptr++;
 	    }
-	    chptr = handleFormat(h, chptr);
+	    chptr = handleFormat(h, chptr, 0);
 	    break;
 
 	  default:
 	    putchar(*chptr++);
 	}
     }
+
+    return chptr;
 }
 
-static const char * handleFormat(Header h, const char * chptr) {
+static const char * handleFormat(Header h, const char * chptr, 
+				 const int arrayNum) {
     const char * f = chptr;
     const char * tagptr;
     char format[20];
@@ -71,6 +77,7 @@ static const char * handleFormat(Header h, const char * chptr) {
     char tag[100];
     const struct rpmTagTableEntry * t;
     void * p;
+    char ** strarray;
     int type, count;
     int isDate = 0;
     time_t dateint;
@@ -120,16 +127,26 @@ static const char * handleFormat(Header h, const char * chptr) {
     }
  
     if (!getEntry(h, t->val, &type, &p, &count) || !p) {
-	p = "(unknown)";
+	p = "(none)";
 	count = 1;
 	type = STRING_TYPE;
-    } else if (count > 1 || type == STRING_ARRAY_TYPE) {
+    } else if (count > 1 && (type != STRING_ARRAY_TYPE)) {
 	p = "(array)";
 	count = 1;
 	type = STRING_TYPE;
     }
 
     switch (type) {
+      case STRING_ARRAY_TYPE:
+	strcat(format, "s ");
+
+	/* now use this format for each string, with a space in between */
+	strarray = p;
+	while (count--) {
+	    printf(format, *strarray++);
+	}
+	break;
+
       case STRING_TYPE:
 	strcat(format, "s");
 	printf(format, p);
@@ -175,6 +192,7 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
     char * name, * version, * release;
     int_32 count, type;
     char * prefix = NULL;
+    char ** requiresList, ** strlist;
     char ** fileList;
     char * fileStatesList;
     char ** fileOwnerList, ** fileGroupList;
@@ -197,7 +215,25 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 		queryFormat = defaultQueryFormat;
 	    } 
 
-	    queryHeader(h, queryFormat);
+	    queryHeader(h, queryFormat, -1);
+	}
+
+	if (queryFlags & QUERY_FOR_DEPS) {
+	    printf("Requires    : ");
+	    if (!getEntry(h, RPMTAG_REQUIRENAME, &type, 
+		 (void **) &requiresList, &count) || !count) {
+		puts("(nothing)");
+	    } else {
+		char * indent = "";
+
+		strlist = requiresList;
+
+	        while (count--) {
+		    printf("%s%s\n", indent, *strlist++);
+		    indent = "              ";
+		}
+		free(requiresList);
+	    }
 	}
 
 	if (queryFlags & QUERY_FOR_LIST) {
