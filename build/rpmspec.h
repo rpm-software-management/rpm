@@ -106,7 +106,8 @@ struct Spec_s {
 
 /*@owned@*/
     struct OpenFileInfo * fileStack;
-    char lbuf[4*BUFSIZ];
+    char lbuf[10*BUFSIZ];
+    char *lbufPtr;
     char nextpeekc;
 /*@dependent@*/
     char * nextline;

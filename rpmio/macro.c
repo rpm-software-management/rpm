@@ -291,7 +291,7 @@ findEntry(MacroContext mc, const char * name, size_t namelen)
 /*@-boundswrite@*/
 /*@null@*/
 static char *
-rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd, int escapes)
+rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd)
 	/*@globals fileSystem @*/
 	/*@modifies buf, fileSystem @*/
 {
@@ -299,6 +299,8 @@ rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd, int escapes)
     size_t nb = 0;
     size_t nread = 0;
     FILE * f = fdGetFILE(fd);
+    int pc = 0, bc = 0;
+    char *p = buf;
 
     if (f != NULL)
     do {
@@ -309,14 +311,32 @@ rdcl(/*@returned@*/ char * buf, size_t size, FD_t fd, int escapes)
 	nread += nb;			/* trim trailing \r and \n */
 	for (q += nb - 1; nb > 0 && iseol(*q); q--)
 	    nb--;
-	if (!(nb > 0 && *q == '\\')) {	/* continue? */
+	for (; p <= q; p++) {
+	    switch (*p) {
+		case '\\':
+		    switch (*(p+1)) {
+			case '\0': break;
+			default: p++; break;
+		    }
+		    break;
+		case '%':
+		    switch (*(p+1)) {
+			case '{': p++, bc++; break;
+			case '(': p++, pc++; break;
+			case '%': p++; break;
+		    }
+		    break;
+		case '{': if (bc > 0) bc++; break;
+		case '}': if (bc > 0) bc--; break;
+		case '(': if (pc > 0) pc++; break;
+		case ')': if (pc > 0) pc--; break;
+	    }
+	}
+	if (nb <= 0 || (*q != '\\' && !bc && !pc) || *(q+1) == '\0') {
 	    *(++q) = '\0';		/* trim trailing \r, \n */
 	    break;
 	}
-	if (escapes) {			/* copy escape too */
-	    q++;
-	    nb++;
-	}
+	q++; p++; nb++;			/* copy newline too */
 	size -= nb;
 	if (*q == '\r')			/* XXX avoid \r madness */
 	    *q = '\n';
@@ -467,17 +487,6 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
 	while(((_c) = *(_s)) && (_c) != ')') \
 		*(_oe)++ = *(_s)++; \
 	*(_oe) = '\0';		\
-	/*@=boundswrite@*/	\
-    }
-
-#define	COPYBODY(_be, _s, _c)	\
-    {	/*@-boundswrite@*/	\
-	while(((_c) = *(_s)) && !iseol(_c)) { \
-		if ((_c) == '\\') \
-			(_s)++;	\
-		*(_be)++ = *(_s)++; \
-	}			\
-	*(_be) = '\0';		\
 	/*@=boundswrite@*/	\
     }
 
@@ -663,9 +672,39 @@ doDefine(MacroBuf mb, /*@returned@*/ const char * se, int level, int expandbody)
 	se++;	/* XXX skip } */
 	s = se;	/* move scan forward */
     } else {	/* otherwise free-field */
-	COPYBODY(be, s, c);
-
 /*@-boundswrite@*/
+	int bc = 0, pc = 0;
+	while (*s && (bc || pc || !iseol(*s))) {
+	    switch (*s) {
+		case '\\':
+		    switch (*(s+1)) {
+			case '\0': break;
+			default: s++; break;
+		    }
+		    break;
+		case '%':
+		    switch (*(s+1)) {
+			case '{': *be++ = *s++; bc++; break;
+			case '(': *be++ = *s++; pc++; break;
+			case '%': *be++ = *s++; break;
+		    }
+		    break;
+		case '{': if (bc > 0) bc++; break;
+		case '}': if (bc > 0) bc--; break;
+		case '(': if (pc > 0) pc++; break;
+		case ')': if (pc > 0) pc--; break;
+	    }
+	    *be++ = *s++;
+	}
+	*be = '\0';
+
+	if (bc || pc) {
+	    rpmError(RPMERR_BADSPEC,
+		_("Macro %%%s has unterminated body\n"), n);
+	    se = s;	/* XXX W2DO? */
+	    return se;
+	}
+
 	/* Trim trailing blanks/newlines */
 /*@-globs@*/
 	while (--be >= b && (c = *be) && (isblank(c) || iseol(c)))
@@ -1899,7 +1938,7 @@ rpmLoadMacroFile(MacroContext mc, const char * fn)
     /*@=mods@*/
 
     buf[0] = '\0';
-    while(rdcl(buf, sizeof(buf), fd, 1) != NULL) {
+    while(rdcl(buf, sizeof(buf), fd) != NULL) {
 	char c, *n;
 
 	n = buf;
@@ -2340,7 +2379,7 @@ main(int argc, char *argv[])
     rpmDumpMacroTable(NULL, NULL);
 
     if ((fp = fopen(testfile, "r")) != NULL) {
-	while(rdcl(buf, sizeof(buf), fp, 1)) {
+	while(rdcl(buf, sizeof(buf), fp)) {
 	    x = expandMacros(NULL, NULL, buf, sizeof(buf));
 	    fprintf(stderr, "%d->%s\n", x, buf);
 	    memset(buf, 0, sizeof(buf));
@@ -2348,7 +2387,7 @@ main(int argc, char *argv[])
 	fclose(fp);
     }
 
-    while(rdcl(buf, sizeof(buf), stdin, 1)) {
+    while(rdcl(buf, sizeof(buf), stdin)) {
 	x = expandMacros(NULL, NULL, buf, sizeof(buf));
 	fprintf(stderr, "%d->%s\n <-\n", x, buf);
 	memset(buf, 0, sizeof(buf));

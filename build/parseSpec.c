@@ -145,14 +145,49 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
     }
     /* Expand next line from file into line buffer */
     if (!(spec->nextline && *spec->nextline)) {
-	char *from, *to;
-	to = last = spec->lbuf;
+	int pc = 0, bc = 0, nc = 0;
+	char *from, *to, *p;
+	to = spec->lbufPtr ? spec->lbufPtr : spec->lbuf;
 	from = ofi->readPtr;
 	ch = ' ';
 	while (*from && ch != '\n')
 	    ch = *to++ = *from++;
+	spec->lbufPtr = to;
 	*to++ = '\0';
 	ofi->readPtr = from;
+
+	/* Check if we need another line before expanding the buffer. */
+	for (p = spec->lbuf; *p; p++) {
+	    switch (*p) {
+		case '\\':
+		    switch (*(p+1)) {
+			case '\n': p++, nc = 1; break;
+			case '\0': break;
+			default: p++; break;
+		    }
+		    break;
+		case '\n': nc = 0; break;
+		case '%':
+		    switch (*(p+1)) {
+			case '{': p++, bc++; break;
+			case '(': p++, pc++; break;
+			case '%': p++; break;
+		    }
+		    break;
+		case '{': if (bc > 0) bc++; break;
+		case '}': if (bc > 0) bc--; break;
+		case '(': if (pc > 0) pc++; break;
+		case ')': if (pc > 0) pc--; break;
+	    }
+	}
+	
+	/* If it doesn't, ask for one more line. We need a better
+	 * error code for this. */
+	if (pc || bc || nc ) {
+	    spec->nextline = "";
+	    return RPMERR_UNMATCHEDIF;
+	}
+	spec->lbufPtr = spec->lbuf;
 
 	/* Don't expand macros (eg. %define) in false branch of %if clause */
 	if (spec->readStack->reading &&
@@ -265,8 +300,11 @@ retry:
 #endif
 
     /* Copy next file line into the spec line buffer */
-    if ((rc = copyNextLine(spec, ofi, strip)) != 0)
+    if ((rc = copyNextLine(spec, ofi, strip)) != 0) {
+	if (rc == RPMERR_UNMATCHEDIF)
+	    goto retry;
 	return rc;
+    }
 
     s = spec->line;
     SKIPSPACE(s);
