@@ -8,7 +8,6 @@ AR = ar
 RANLIB = @RANLIB@
 OPTS = @DEFS@
 LIBRPMRC_FILENAME=$(libdir)/rpmrc
-INTLDEF = @INTLDEF@
 NLSDIR=$(prefix)/share/locale
 NLSPACKAGE=rpm
 CFLAGS = @CFLAGS@ @INCPATH@ $(WARNINGS) $(OPTS) \
