@@ -4,7 +4,7 @@
 
 #include "popt/popt.h"
 
-static int copyTags[] = {
+static int copyTagsDuringParse[] = {
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
     RPMTAG_COPYRIGHT,
@@ -12,10 +12,10 @@ static int copyTags[] = {
     RPMTAG_DISTRIBUTION,
     RPMTAG_VENDOR,
     RPMTAG_ICON,
+    RPMTAG_URL,
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,
-    RPMTAG_URL,
     0
 };
 
@@ -39,7 +39,6 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 static void initPreambleList(void);
 static int findPreambleTag(Spec spec, int *tag, char **macro, char *lang);
 static int checkForRequired(Header h, char *name);
-static void copyFromMain(Spec spec, Package pkg);
 static int checkForDuplicates(Header h, char *name);
 static void fillOutMainPackage(Header h);
 static char *tagName(int tag);
@@ -208,18 +207,17 @@ static int checkForRequired(Header h, char *name)
     return res;
 }
 
-static void copyFromMain(Spec spec, Package pkg)
+void headerCopyTags(Header headerFrom, Header headerTo, int *tagstocopy)
 {
-    Header headerFrom, headerTo;
-    int *p = copyTags;
-    char *s;
-    int type, count;
+    int *p;
 
-    headerFrom = spec->packages->header;
-    headerTo = pkg->header;
+    if (headerFrom == headerTo)
+	return;
 
-    while (*p) {
+    for (p = tagstocopy; *p != 0; p++) {
 	if (!headerIsEntry(headerTo, *p)) {
+	    char *s;
+	    int type, count;
 	    if (headerGetEntry(headerFrom, *p, &type, (void **) &s, &count)) {
 		headerAddEntry(headerTo, *p, type, s, count);
 		if (type == RPM_STRING_ARRAY_TYPE) {
@@ -227,7 +225,6 @@ static void copyFromMain(Spec spec, Package pkg)
 		}
 	    }
 	}
-	p++;
     }
 }
 
@@ -718,7 +715,7 @@ int parsePreamble(Spec spec, int initialPackage)
     }
 
     if (pkg != spec->packages) {
-	copyFromMain(spec, pkg);
+	headerCopyTags(spec->packages->header, pkg->header, copyTagsDuringParse);
     }
 
     if (checkForRequired(pkg->header, fullName)) {

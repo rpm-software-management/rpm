@@ -18,6 +18,7 @@
 	- added :hex query format
 
 2.5.2 -> 2.5.3:
+	- copy changelog tags to sub-packages just before packaging.
 	- fix infinite recursion on non-ERANGE return from getcwd() during
 	  install (Matt Wilson).
 	- rm .depend for multiple builds in same tree (Will Partain)

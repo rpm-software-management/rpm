@@ -67,6 +67,9 @@
 extern "C" {
 #endif
 
+/* XXX move to lib code */
+void headerCopyTags(Header headerFrom, Header headerTo, int *tagstocopy);
+
 /* from build/names.h */
 
 char *getUname(uid_t uid);

@@ -85,6 +85,13 @@ int packageSources(Spec spec)
 		    csa, spec->passPhrase, &(spec->cookie));
 }
 
+static int copyTags[] = {
+    RPMTAG_CHANGELOGTIME,
+    RPMTAG_CHANGELOGNAME,
+    RPMTAG_CHANGELOGTEXT,
+    0
+};
+
 int packageBinaries(Spec spec)
 {
     CSA_t csabuf, *csa = &csabuf;
@@ -108,6 +115,9 @@ int packageBinaries(Spec spec)
 	    headerAddEntry(pkg->header, RPMTAG_COOKIE,
 			   RPM_STRING_TYPE, spec->cookie, 1);
 	}
+
+	/* Copy changelog from src rpm */
+	headerCopyTags(spec->packages->header, pkg->header, copyTags);
 	
 	headerAddEntry(pkg->header, RPMTAG_RPMVERSION,
 		       RPM_STRING_TYPE, VERSION, 1);
