@@ -8,7 +8,7 @@
 
 #include <regex.h>
 
-#include "selinux.h"
+#include <selinux/selinux.h>
 
 #if defined(__LCLINT__)
 /*@-incondefs@*/

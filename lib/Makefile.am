@@ -11,7 +11,6 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
 	-I$(top_srcdir)/popt \
-	-I/usr/include/selinux \
 	@INCPATH@
 
 EXTRA_DIST = getdate.y

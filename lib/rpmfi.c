@@ -1200,10 +1200,6 @@ rpmfi rpmfiNew(rpmts ts, Header h, rpmTag tagN, int scareMem)
     uint_32 * uip;
     int dnlmax, bnlmax;
     unsigned char * t;
-security_context_t scon;
-int * fcnb;
-char * fctxt;
-int fctxtlen;
     int len;
     int xx;
     int i;
@@ -1308,10 +1304,11 @@ if (fi->actions == NULL)
 	fi->fmd5s = hfd(fi->fmd5s, -1);
     }
 
-    /* XXX TR_REMOVED doesn;t need fmtimes, frdevs or finodes */
+    /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes, or fcontexts */
     xx = hge(h, RPMTAG_FILEMTIMES, NULL, (void **) &fi->fmtimes, NULL);
     xx = hge(h, RPMTAG_FILERDEVS, NULL, (void **) &fi->frdevs, NULL);
     xx = hge(h, RPMTAG_FILEINODES, NULL, (void **) &fi->finodes, NULL);
+    xx = hge(h, RPMTAG_FILECONTEXTS, NULL, (void **) &fi->fcontexts, NULL);
 
     fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
@@ -1428,45 +1425,6 @@ if (fi->actions == NULL)
     fi->dperms = 0755;
     fi->fperms = 0644;
 
-    /* Retrieve file contexts into single contiguous buffer, saving sizes. */
-    fctxt = NULL;
-    fctxtlen = 0;
-    len = fi->fc * sizeof(*fcnb);
-    fcnb = memset(alloca(len), 0, len);
-    fi->fn = xmalloc(fi->fnlen);
-/*@-branchstate@*/
-    for (i = 0; i < fi->fc; i++) {
-/*@-boundswrite@*/
-	*fi->fn = '\0';
-	(void) stpcpy( stpcpy(fi->fn, fi->dnl[fi->dil[i]]), fi->bnl[i]);
-/*@=boundswrite@*/
-	fcnb[i] = lgetfilecon(fi->fn, &scon);
-	if (fcnb[i] <= 0)
-	    continue;
-
-	fctxt = xrealloc(fctxt, fctxtlen + fcnb[i]);
-	memcpy(fctxt+fctxtlen, scon, fcnb[i]);
-	fctxtlen += fcnb[i];
-	(void) freecon(scon);
-    }
-/*@=branchstate@*/
-    fi->fn = _free(fi->fn);
-
-    /* Initialize array ptrs into data following array. */
-    len = ((fi->fc+1) * sizeof(*fi->fcontexts)) + fctxtlen;
-    fi->fcontexts = xmalloc(len);
-    (void) memset(fi->fcontexts, 0, (fi->fc+1) * sizeof(*fi->fcontexts));
-    (void) memcpy(&fi->fcontexts[fi->fc+1], fctxt, fctxtlen);
-    fctxt = _free(fctxt);
-    fctxt = (char *) (&fi->fcontexts[fi->fc+1]);
-    for (i = 0; i < fi->fc; i++) {
-	if (fcnb[i] <= 0)
-	    continue;
-	fi->fcontexts[i] = fctxt;
-	fctxt += fcnb[i];
-    }
-    fi->fcontexts[fi->fc] = NULL;
-
 exit:
 /*@-modfilesys@*/
 if (_rpmfi_debug < 0)
@@ -1519,7 +1477,7 @@ void rpmfiBuildFClasses(Header h,
 	    t = stpcpy(t, FClass);
 	*t++ = '\0';
     }
-    av[ac] = NULL;
+    av[ac] = NULL;	/* XXX tag arrays are not NULL terminated. */
     /*@=branchstate@*/
 
 exit:
@@ -1538,7 +1496,7 @@ void rpmfiBuildFContexts(Header h,
 {
     int scareMem = 1;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
-    const char * FContext;
+    const char * fcontext;
     const char ** av;
     int ac;
     size_t nb;
@@ -1555,9 +1513,9 @@ void rpmfiBuildFContexts(Header h,
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while (rpmfiNext(fi) >= 0) {
-	FContext = rpmfiFContext(fi);
-	if (FContext && *FContext != '\0')
-	    nb += strlen(FContext);
+	fcontext = rpmfiFContext(fi);
+	if (fcontext && *fcontext != '\0')
+	    nb += strlen(fcontext);
 	nb += 1;
     }
 
@@ -1568,13 +1526,13 @@ void rpmfiBuildFContexts(Header h,
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while (rpmfiNext(fi) >= 0) {
-	FContext = rpmfiFContext(fi);
+	fcontext = rpmfiFContext(fi);
 	av[ac++] = t;
-	if (FContext && *FContext != '\0')
-	    t = stpcpy(t, FContext);
+	if (fcontext && *fcontext != '\0')
+	    t = stpcpy(t, fcontext);
 	*t++ = '\0';
     }
-    av[ac] = NULL;
+    av[ac] = NULL;	/* XXX tag arrays are not NULL terminated. */
     /*@=branchstate@*/
 
 exit:
@@ -1645,7 +1603,7 @@ void rpmfiBuildFSContexts(Header h,
 	}
 	ac++;
     }
-    av[ac] = NULL;
+    av[ac] = NULL;	/* XXX tag arrays are not NULL terminated. */
 
 exit:
     fi = rpmfiFree(fi);
@@ -1722,7 +1680,7 @@ void rpmfiBuildREContexts(Header h,
 	}
 	ac++;
     }
-    av[ac] = NULL;
+    av[ac] = NULL;	/* XXX tag arrays are not NULL terminated. */
 
 exit:
     fi = rpmfiFree(fi);
@@ -1821,7 +1779,7 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
 	*t++ = '\0';
     }
     /*@=branchstate@*/
-    av[ac] = NULL;
+    av[ac] = NULL;	/* XXX tag arrays are not NULL terminated. */
 
 exit:
     fi = rpmfiFree(fi);
