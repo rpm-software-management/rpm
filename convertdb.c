@@ -24,6 +24,8 @@ int convertDB(char * dbprefix) {
     Header dbentry;
     unsigned int dboffset;
     char * group;
+    char * gif;
+    int gifSize;
     char ** fileList;
     char ** fileMD5List;
     char ** fileLinktoList;
@@ -91,6 +93,12 @@ int convertDB(char * dbprefix) {
 	addEntry(dbentry, RPMTAG_COPYRIGHT, STRING_TYPE, package.copyright, 1);
 	addEntry(dbentry, RPMTAG_GROUP, STRING_TYPE, group, 1);
 
+	gif = rpmdbGetPackageGif(&olddb, *label, &gifSize);
+	if (gif) {
+	    /*addEntry(dbentry, RPMTAG_GIF, BIN_TYPE, gif, gifSize);*/
+	    free(gif);
+	}
+
 	if (package.fileCount) {
 	    /* some packages have no file lists */
 
@@ -149,7 +157,7 @@ int convertDB(char * dbprefix) {
 		     package.fileCount);
 	    addEntry(dbentry, RPMTAG_FILERDEVS, INT16_TYPE, fileRDevsList, 
 		     package.fileCount);
-	    addEntry(dbentry, RPMTAG_FILESTATES, CHAR_TYPE, fileStatesList, 
+	    addEntry(dbentry, RPMTAG_FILESTATES, INT8_TYPE, fileStatesList, 
 		     package.fileCount);
 
 	    free(fileList);
