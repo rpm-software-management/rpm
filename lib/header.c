@@ -403,7 +403,9 @@ void *unloadHeader(Header h)
 {
     void *p;
     int_32 *pi;
-    Header res;
+
+    /* This magic actually sorts the data */
+    sizeofHeader(h);
 
     pi = p = malloc(2 * sizeof(int_32) +
 		    h->entries_used * sizeof(struct indexEntry) +
@@ -414,11 +416,8 @@ void *unloadHeader(Header h)
     memcpy(pi, h->index, h->entries_used * sizeof(struct indexEntry));
     pi += h->entries_used * sizeof(struct indexEntry);
     memcpy(pi, h->data, h->data_used);
-
-    res = copyHeader(p);
-    free(p);
    
-    return res;
+    return p;
 }
 
 /********************************************************************/
@@ -717,6 +716,7 @@ unsigned int sizeofHeader(Header h)
         *temph = *h;
         *h = *newh;
         freeHeader(temph);
+        free(newh);
     }
    
     size = sizeof(int_32);	/* count of index entries */
