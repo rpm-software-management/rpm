@@ -1,8 +1,6 @@
-# This stuff should be reasonably changeable
+include Makefile.inc
 
-CC = @CC@
 CPP = @CPP@
-OPTS = @DEFS@
 prefix= @prefix@
 exec_prefix = @exec_prefix@
 srcdir= @srcdir@
@@ -18,20 +16,14 @@ installprefix=$(ROOT)
 
 #LIBEFENCE = -lefence
 
+RCSVERSION = $(subst .,-,$(VERSION))
+
 ################################### Leave this stuff alone
 
 ### These are variables meant to be exported
 
 VPATH = $(srcdir)
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
-CFLAGS = @CFLAGS@ $(WARNINGS) $(OPTS) -I$(srcdir) -I$(srcdir)/lib \
-	-I$(srcdir)/build -I$(srcdir)/misc -I$(srcdir)/.. -I$(srcdir)/../lib \
-	-I$(srcdir)/../build -I$(srcdir)/../misc -I/usr/include \
-	-DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DVERSION=\"$(VERSION)\" 
-LDFLAGS = @LDFLAGS@ -Llib -Lbuild -Lmisc -L../lib -L../build -L../misc
-AR = ar r
-RANLIB = ranlib
-VERSION = 2.2.6
 
 BINDIR=$(prefix)/bin
 RPMBINDIR=$(subst usr/bin,bin,$(BINDIR))
@@ -42,14 +34,12 @@ ETCDIR=$(ROOT)/etc
 NLSDIR=$(prefix)/lib/locale
 NLSPACKAGE=rpm
 
-MDEFINES = CFLAGS='$(CFLAGS)' LDFLAGS='$(LDFLAGS)' CC='$(CC)' 
-
 # -----------------------------------------------------------------------
 
 SUBDIRS = lib build tools po misc
 OBJS = rpm.o query.o install.o verify.o checksig.o ftp.o
 PROGS = rpm rpm2cpio
-LOADLIBES = -lbuild -lrpm @LIBMISC@ @LIBS@ @ZLIB@ @LIBINTL@
+LOADLIBES = -lbuild -lrpm @LIBMISC@ @LIBS@ @ZLIB@ @LIBINTL@ @LIBSOCKET@
 
 ifeq (.depend,$(wildcard .depend))
 TARGET=everything
@@ -67,7 +57,8 @@ rpm2cpio: lib/librpm.a rpm2cpio.o
 	$(CC) -o rpm2cpio $(LDFLAGS) rpm2cpio.o $(LOADLIBES) 
 
 rpm.o: rpm.c query.h install.h lib/rpmlib.h Makefile
-	$(CC) $(CFLAGS) -DNLSPACKAGE=\"$(NLSPACKAGE)\" -DNLSDIR=\"$(NLSDIR)\" -c rpm.c
+	$(CC) $(CFLAGS) -DNLSPACKAGE=\"$(NLSPACKAGE)\" -DNLSDIR=\"$(NLSDIR)\" \
+		-c $(srcdir)/rpm.c
 
 # these rules should be in here, but they drive me batty
 #Makefile: Makefile.in misc/Makefile.in lib/Makefile.in build/Makefile.in \
@@ -84,7 +75,7 @@ everything: make-subdirs $(PROGS)
 
 make-subdirs:
 	for d in $(SUBDIRS); do \
-		(cd $$d; $(MAKE) $(MDEFINES)) \
+		(cd $$d; $(MAKE)) \
 		  || case "$(MFLAGS)" in *k*) fail=yes;; *) exit 1;; esac;\
 	done && test -z "$$fail"
 
@@ -118,6 +109,7 @@ install: all
 	(cd lib; make LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 	(cd po; make NLSDIR=$(installprefix)/$(NLSDIR) LIBDIR=$(installprefix)/$(LIBDIR) INCDIR=$(installprefix)/$(INCDIR) install)
 
+.PHONY:		clean
 clean:
 	for d in $(SUBDIRS); do \
 		(cd $$d; $(MAKE) $@) ;\
@@ -125,8 +117,18 @@ clean:
 	rm -f *.a *.o core *~ $(PROGS) rpm.shared
 	find . -name core -exec rm {} \;
 
+.PHONY:		distclean
+distclean:	
+	for d in $(SUBDIRS); do \
+		(cd $$d; $(MAKE) $@) ;\
+	done
+	rm -f *.a *.o core *~ $(PROGS) rpm.shared
+	rm -f .depend Makefile config.h config.cache config.status config.log
+
+
+.PHONY:		depend
 depend:
-	$(CPP) $(CFLAGS) -M *.c > .depend
+	$(CPP) $(CFLAGS) -M $(srcdir)/*.c > .depend
 	for d in $(SUBDIRS); do \
 		(cd $$d; $(MAKE) $@) ;\
 	done
@@ -141,7 +143,13 @@ noconfig:
 	find . -name "Makefile" -exec rm {} \; 
 	rm -f *gz *rpm config.*
 
-archive: 
+rcstag:
+	rcs -q -N$(RCSVERSION): RCS/*,v
+	for d in $(SUBDIRS) docs; do \
+		(cd $$d; rcs -q -N$(RCSVERSION): RCS/*,v) ;\
+	done
+
+archive: rcstag
 	@echo " "
 	@echo "I hope you checked everything out and made sure it builds"
 	@echo "maybe someday Erik will get around to making that automatic."
@@ -150,17 +158,14 @@ archive:
 	@mkdir /tmp/rpm-$(VERSION)
 	@tar cSpf - * | (cd /tmp/rpm-$(VERSION); tar xSpf -)
 	@cd /tmp/rpm-$(VERSION); \
-	    make clean; \
-	    make noconfig; \
-	    find . -name "RCS" -exec rm {} \;  ; \
-	    find . -name ".depend" -exec rm {} \;  
+	    make distclean; \
+	    find . -name "RCS" -exec rm {} \;
 	@cd /tmp; tar czSpf rpm-$(VERSION).tar.gz rpm-$(VERSION)
 	@rm -rf /tmp/rpm-$(VERSION)
 	@cp /tmp/rpm-$(VERSION).tar.gz .
 	@rm -f /tmp/rpm-$(VERSION).tar.gz 
 	@echo " "
-	@echo "The final archive is ./rpm-$(VERSION).tar.gz. You should run"
-	@echo "rcs -n$(VERSION): RCS/*,v on all of the directories btw."
+	@echo "The final archive is ./rpm-$(VERSION).tar.gz."
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
