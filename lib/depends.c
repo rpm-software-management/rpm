@@ -435,8 +435,7 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 		    if (bsearch(&matches.recs[i].recOffset, 
 				rpmdep->removedPackages, 
 				rpmdep->numRemovedPackages, 
-				sizeof(int *), 
-				intcmp)) 
+				sizeof(int), intcmp)) 
 			continue;
 		    break;
 		}
@@ -451,8 +450,7 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 		    if (bsearch(&matches.recs[i].recOffset, 
 				rpmdep->removedPackages, 
 				rpmdep->numRemovedPackages, 
-				sizeof(int *), 
-				intcmp)) 
+				sizeof(int), intcmp)) 
 			continue;
 		    break;
 		}
@@ -466,8 +464,7 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 		    if (bsearch(&matches.recs[i].recOffset, 
 				rpmdep->removedPackages, 
 				rpmdep->numRemovedPackages, 
-				sizeof(int *), 
-				intcmp)) 
+				sizeof(int), intcmp)) 
 			continue;
 
 		    if (dbrecMatchesDepFlags(rpmdep, matches.recs[i].recOffset, 
@@ -496,7 +493,7 @@ static int checkPackageSet(rpmDependencies rpmdep, struct problemsSet * psp,
 
     for (i = 0; i < matches->count; i++) {
 	if (bsearch(&matches->recs[i].recOffset, rpmdep->removedPackages, 
-		    rpmdep->numRemovedPackages, sizeof(int *), intcmp)) 
+		    rpmdep->numRemovedPackages, sizeof(int), intcmp)) 
 	    continue;
 
 	h = rpmdbGetRecord(rpmdep->db, matches->recs[i].recOffset);
