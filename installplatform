@@ -21,6 +21,8 @@ OS="`$RPM --eval '%{_os}'`"
 target_platform="`$RPM --eval '%{_target_platform}'`"
 target="`$RPM --eval '%{_target}'`"
 
+ln -sf ${arch}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${VENDOR}-${OS}
+
 case "$arch" in
   i[3456]86) SUBSTS='s_i386_i386_ s_i386_i486_ s_i386_i586_ s_i386_i686_' ;;
   sparc*) SUBSTS='s_sparc64_sparc_ s_sparc\([^6]\|$\)_sparc64\1_' ;;
@@ -62,7 +64,5 @@ for SUBST in $SUBSTS ; do
   [ "$ARCH" = sparc ] && ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/sparcv9-${VENDOR}-${OS}
 
 done
-
-ln -sf ${ARCH}-${VENDOR}-${OS} ${DESTDIR}/${pkglibdir}/noarch-${VENDOR}-${OS}
 
 rm $TEMPRC

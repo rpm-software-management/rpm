@@ -164,6 +164,11 @@ static struct poptOption optionsTable[] = {
  {  NULL, 'y', 0, 0, 'V',			NULL, NULL},
 #endif
  { "version", '\0', 0, &showVersion, 0,		NULL, NULL},
+
+ /* XXX hack to pass build args correctly */
+ { "buildroot", '\0', POPT_ARG_STRING, 0,  0,	NULL, NULL},
+ { "target", '\0', POPT_ARG_STRING, 0,  0,	NULL, NULL},
+
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
 		rpmQVSourcePoptTable, 0,	(void *) &rpmQVArgs, NULL },
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
