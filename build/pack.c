@@ -353,7 +353,7 @@ static int compare_fe(const void *ap, const void *bp)
     a = (*(struct file_entry **)ap)->file;
     b = (*(struct file_entry **)bp)->file;
 
-    return strcmp(b, a);
+    return strcmp(a, b);
 }
 
 static int process_filelist(Header header, StringBuf sb, int *size, int type)
