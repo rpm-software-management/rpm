@@ -127,6 +127,13 @@ enum fileTypes {
 };
 
 /**
+ * Prototype for headerFreeData() vector.
+ */
+typedef /*@null@*/
+    void * (*HFD_t) (/*@only@*/ /*@null@*/ const void * data, rpmTagType type);
+
+/**
+ * Prototype for headerGetEntry() vector.
  */
 typedef int (*HGE_t) (Header h, int_32 tag, /*@out@*/ int_32 * type,
 			/*@out@*/ void ** p, /*@out@*/int_32 * c)
@@ -137,9 +144,10 @@ typedef int (*HGE_t) (Header h, int_32 tag, /*@out@*/ int_32 * type,
 struct transactionFileInfo_s {
   /* for all packages */
     enum rpmTransactionType type;
-/*@owned@*/ fileAction * actions;	/*!< file disposition */
-/*@owned@*/ struct fingerPrint_s * fps;	/*!< file fingerprints */
-    HGE_t hge;
+/*@owned@*/ fileAction * actions;	/*!< File disposition(s) */
+/*@owned@*/ struct fingerPrint_s * fps;	/*!< File fingerprint(s) */
+    HGE_t hge;			/*!< Vector to headerGetEntry() */
+    HFD_t hfd;			/*!< Vector to headerFreeData() */
     Header h;			/*!< Package header */
 /*@owned@*/ const char * name;
 /*@owned@*/ const char * version;
@@ -149,18 +157,18 @@ struct transactionFileInfo_s {
     const uint_32 * fsizes;	/*!< File sizes (from header) */
 /*@owned@*/ const char ** bnl;	/*!< Base names (from header) */
 /*@owned@*/ const char ** dnl;	/*!< Directory names (from header) */
-    int_32 * dil;			/*!< Directory indices (from header) */
-/*@owned@*/ const char ** obnl;	/*!< Original Base names (from header) */
-/*@owned@*/ const char ** odnl;	/*!< Original Directory names (from header) */
-    int_32 * odil;		/*!< Original Directory indices (from header) */
-/*@owned@*/ const char ** fmd5s;/*!< file MD5 sums (from header) */
-/*@owned@*/ const char ** flinks;	/*!< file links (from header) */
+    int_32 * dil;		/*!< Directory indices (from header) */
+/*@owned@*/ const char ** obnl;	/*!< Original base names (from header) */
+/*@owned@*/ const char ** odnl;	/*!< Original directory names (from header) */
+    int_32 * odil;		/*!< Original directory indices (from header) */
+/*@owned@*/ const char ** fmd5s;/*!< File MD5 sums (from header) */
+/*@owned@*/ const char ** flinks;	/*!< File links (from header) */
 /* XXX setuid/setgid bits are turned off if fuser/fgroup doesn't map. */
-    uint_16 * fmodes;		/*!< file modes (from header) */
-/*@owned@*/ char * fstates;	/*!< file states (from header) */
-/*@owned@*/ const char ** fuser;	/*!< file owner(s) */
-/*@owned@*/ const char ** fgroup;	/*!< file group(s) */
-/*@owned@*/ const char ** flangs;	/*!< file lang(s) */
+    uint_16 * fmodes;		/*!< File modes (from header) */
+/*@owned@*/ char * fstates;	/*!< File states (from header) */
+/*@owned@*/ const char ** fuser;	/*!< File owner(s) */
+/*@owned@*/ const char ** fgroup;	/*!< File group(s) */
+/*@owned@*/ const char ** flangs;	/*!< File lang(s) */
     int fc;			/*!< No. of files. */
     int dc;			/*!< No. of directories. */
     int bnlmax;			/*!< Length (in bytes) of longest base name. */
@@ -169,16 +177,18 @@ struct transactionFileInfo_s {
     int striplen;
     int scriptArg;
     unsigned int archiveSize;
+    mode_t dperms;		/*!< Directory perms (0755) if unmapped. */
+    mode_t fperms;		/*!< File perms (0644) if unmapped. */
 /*@owned@*/ const char ** apath;
     int mapflags;
 /*@owned@*/ int * fmapflags;
     uid_t uid;
-/*@owned@*/ uid_t * fuids;
+/*@owned@*/ /*@null@*/ uid_t * fuids;	/*!< File uid(s) */
     gid_t gid;
-/*@owned@*/ gid_t * fgids;
+/*@owned@*/ /*@null@*/ gid_t * fgids;	/*!< File gid(s) */
     int magic;
 #define	TFIMAGIC	0x09697923
-/*@owned@*/ FSM_t fsm;
+/*@owned@*/ FSM_t fsm;		/*!< File state machine data. */
 
   /* these are for TR_ADDED packages */
 /*@dependent@*/ struct availablePackage * ap;
@@ -193,10 +203,15 @@ extern "C" {
 #endif
 
 /**
+ * Create file state machine instance.
+ * @return		file state machine data
  */
 /*@only@*/ /*@null@*/ FSM_t newFSM(void);
 
 /**
+ * Destroy file state machine instance.
+ * @param fsm		file state machine data
+ * @return		always NULL
  */
 /*@null@*/ FSM_t freeFSM(/*@only@*/ /*@null@*/ FSM_t fsm);
 
@@ -238,6 +253,7 @@ void freeFi(TFI_t fi)
 
 /**
  * Perform package install/remove actions for s single file.
+ * @todo Eliminate.
  * @param ts		transaction set
  * @param fi		transaction element file info
  * @param i		file index
@@ -248,6 +264,7 @@ int pkgAction(const rpmTransactionSet ts, TFI_t fi, int i, fileStage a);
 
 /**
  * Perform package pre-install and remove actions.
+ * @todo Eliminate.
  * @param ts		transaction set
  * @param fi		transaction element file info
  * @param a		file stage
@@ -256,6 +273,13 @@ int pkgAction(const rpmTransactionSet ts, TFI_t fi, int i, fileStage a);
 int pkgActions(const rpmTransactionSet ts, TFI_t fi, fileStage a);
 
 /**
+ * Load external data into file state machine.
+ * @param fsm		file state machine data
+ * @param goal
+ * @param ts		transaction set
+ * @param fi		transaction element file info
+ * @param archiveSize	pointer to archive size
+ * @param failedFile	pointer to first file name that failed.
  * @return		0 on success
  */
 int fsmSetup(FSM_t fsm, fileStage goal,
@@ -263,29 +287,40 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 	unsigned int * archiveSize, const char ** failedFile);
 
 /**
+ * Clean file state machine.
+ * @param fsm		file state machine data
  * @return		0 on success
  */
 int fsmTeardown(FSM_t fsm);
 
 /**
+ * Retrieve transaction set from file state machine iterator.
+ * @param fsm		file state machine data
+ * @return		transaction set
  */
-/*@dependent@*/ rpmTransactionSet fsmGetTs(FSM_t fsm);
+/*@dependent@*/ rpmTransactionSet fsmGetTs(const FSM_t fsm);
 
 /**
+ * Retrieve transaction element file info from file state machine iterator.
+ * @param fsm		file state machine data
+ * @return		transaction element file info
  */
-/*@dependent@*/ TFI_t fsmGetFi(FSM_t fsm);
+/*@dependent@*/ TFI_t fsmGetFi(const FSM_t fsm);
 
 /**
+ * Map next file path and action.
+ * @param fsm		file state machine data
  */
-int fsmGetIndex(FSM_t fsm);
+int fsmMapPath(FSM_t fsm);
 
 /**
- * @return		0 always
+ * Map file stat(2) info.
+ * @param fsm		file state machine data
  */
-int fsmMap(FSM_t fsm);
+int fsmMapAttrs(FSM_t fsm);
 
 /**
- * Archive extraction state machine.
+ * File state machine driver.
  * @param fsm		file state machine data
  * @param stage		next stage
  * @return		0 on success

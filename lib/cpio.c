@@ -48,132 +48,95 @@ struct hardLink {
     int createdPath;
 };
 
-/** \ingroup payload
- */
-enum hardLinkType {
-	HARDLINK_INSTALL=1,
-	HARDLINK_BUILD
-};
-
-/** \ingroup payload
- * Defines a single file to be included in a cpio payload.
- */
-struct cpioFileMapping {
-/*@dependent@*/ const char * archivePath; /*!< Path to store in cpio archive. */
-/*@dependent@*/ const char * dirName;	/*!< Payload file directory. */
-/*@dependent@*/ const char * baseName;	/*!< Payload file base name. */
-/*@dependent@*/ const char * md5sum;	/*!< File MD5 sum (NULL disables). */
-    fileAction action;
-    int commit;
-    mode_t finalMode;		/*!< Mode of payload file (from header). */
-    uid_t finalUid;		/*!< Uid of payload file (from header). */
-    gid_t finalGid;		/*!< Gid of payload file (from header). */
-    cpioMapFlags mapFlags;
-};
-
 /**
  */
-struct mapi {
-/*@dependent@*/ rpmTransactionSet ts;
-/*@dependent@*/ TFI_t fi;
-    int isave;
-    int i;
-    struct cpioFileMapping map;
-};
+typedef struct fsmIterator_s {
+/*@dependent@*/ rpmTransactionSet ts;	/*!< transaction set. */
+/*@dependent@*/ TFI_t fi;		/*!< transaction element file info. */
+    int isave;				/*!< last returned iterator index. */
+    int i;				/*!< iterator index. */
+} * FSMI_t;
 
 /** \ingroup payload
  * File name and stat information.
  */
 struct fsm_s {
-/*@owned@*/ const char * path;
-/*@owned@*/ const char * opath;
-    FD_t cfd;
-    FD_t rfd;
-/*@owned@*/ char * rdbuf;
-/*@dependent@*/ char * rdb;
-    size_t rdsize;
-    size_t rdlen;
-    size_t rdnb;
-    FD_t wfd;
-/*@owned@*/ char * wrbuf;
-/*@dependent@*/ char * wrb;
-    size_t wrsize;
-    size_t wrlen;
-    size_t wrnb;
-/*@owned@*/ void * mapi;
-/*@dependent@*/ const void * map;
-/*@owned@*/ struct hardLink * links;
-/*@dependent@*/ struct hardLink * li;
-    unsigned int * archiveSize;
-/*@dependent@*/ const char ** failedFile;
-/*@owned@*/ short * dnlx;
-/*@shared@*/ const char * subdir;
+/*@owned@*/ const char * path;		/*!< Current file name. */
+/*@owned@*/ const char * opath;		/*!< Original file name. */
+    FD_t cfd;				/*!< Payload file handle. */
+    FD_t rfd;				/*!<  read: File handle. */
+/*@owned@*/ char * rdbuf;		/*!<  read: Buffer. */
+/*@dependent@*/ char * rdb;		/*!<  read: Buffer allocated. */
+    size_t rdsize;			/*!<  read: Buffer allocated size. */
+    size_t rdlen;			/*!<  read: Number of bytes requested. */
+    size_t rdnb;			/*!<  read: Number of bytes returned. */
+    FD_t wfd;				/*!< write: File handle. */
+/*@owned@*/ char * wrbuf;		/*!< write: Buffer. */
+/*@dependent@*/ char * wrb;		/*!< write: Buffer allocated. */
+    size_t wrsize;			/*!< write: Buffer allocated size. */
+    size_t wrlen;			/*!< write: Number of bytes requested. */
+    size_t wrnb;			/*!< write: Number of bytes returned. */
+/*@owned@*/ FSMI_t iter;		/*!< File iterator. */
+    int ix;				/*!< Current file iterator index. */
+/*@owned@*/ struct hardLink * links;	/*!< Pending hard linked file(s). */
+/*@dependent@*/ struct hardLink * li;	/*!< Current hard linked file(s).
+/*@null@*/ unsigned int * archiveSize;	/*!< Pointer to archive size. */
+/*@dependent@*/ const char ** failedFile; /*!< First file name that failed. */
+/*@shared@*/ const char * subdir;	/*!< Current file sub-directory. */
     char subbuf[64];	/* XXX eliminate */
-/*@shared@*/ const char * osuffix;
-/*@shared@*/ const char * nsuffix;
-/*@shared@*/ const char * suffix;
+/*@shared@*/ const char * osuffix;	/*!< Old, preserved, file suffix. */
+/*@shared@*/ const char * nsuffix;	/*!< New, created, file suffix. */
+/*@shared@*/ const char * suffix;	/*!< Current file suffix. */
     char sufbuf[64];	/* XXX eliminate */
-/*@only@*/ char * ldn;
-    int ldnlen;
-    int ldnalloc;
-    int postpone;
-    int diskchecked;
-    int exists;
-    int mkdirsdone;
-    int astriplen;
-    int rc;
-    fileAction action;
-    fileStage goal;
-    fileStage stage;
-    struct stat osb;
-    struct stat sb;
+/*@owned@*/ short * dnlx;		/*!< Last dirpath verified indexes. */
+/*@only@*/ char * ldn;			/*!< Last dirpath verified. */
+    int ldnlen;				/*!< Last dirpath current length. */
+    int ldnalloc;			/*!< Last dirpath allocated length. */
+    int postpone;			/*!< Skip remaining stages? */
+    int diskchecked;			/*!< Has stat(2) been performed? */
+    int exists;				/*!< Does current file exist on disk? */
+    int mkdirsdone;			/*!< Have "orphan" dirs been created? */
+    int astriplen;			/*!< Length of buildroot prefix. */
+    int rc;				/*!< External file stage return code. */
+    int commit;				/*!< Commit synchronously? */
+    cpioMapFlags mapFlags;		/*!< Bit(s) to control mapping. */
+/*@dependent@*/ const char * archivePath; /*!< Path to store in cpio archive. */
+/*@dependent@*/ const char * dirName;	/*!< File directory name. */
+/*@dependent@*/ const char * baseName;	/*!< File base name. */
+/*@dependent@*/ const char * fmd5sum;	/*!< File MD5 sum (NULL disables). */
+    fileAction action;			/*!< File disposition. */
+    fileStage goal;			/*!< Install/build/erase */
+    fileStage stage;			/*!< External file stage. */
+    struct stat sb;			/*!< Current file stat(2) info. */
+    struct stat osb;			/*!< Original file stat(2) info. */
 };
 
-rpmTransactionSet fsmGetTs(FSM_t fsm) {
-    struct mapi * mapi = fsm->mapi;
-    return (mapi ? mapi->ts : NULL);
+rpmTransactionSet fsmGetTs(const FSM_t fsm) {
+    const FSMI_t iter = fsm->iter;
+    return (iter ? iter->ts : NULL);
 }
 
-TFI_t fsmGetFi(FSM_t fsm) {
-    struct mapi * mapi = fsm->mapi;
-    return (mapi ? mapi->fi : NULL);
+TFI_t fsmGetFi(const FSM_t fsm) {
+    const FSMI_t iter = fsm->iter;
+    return (iter ? iter->fi : NULL);
 }
 
 #ifdef	UNUSED
 static int fsmSetIndex(FSM_t fsm, int isave) {
-    struct mapi * mapi = fsm->mapi;
+    FSMI_t iter = fsm->iter;
     int iprev = -1;
-    if (mapi) {
-	iprev = mapi->isave;
-	mapi->isave = isave;
+    if (iter) {
+	iprev = iter->isave;
+	iter->isave = isave;
     }
     return iprev;
 }
-#endif
 
 int fsmGetIndex(FSM_t fsm) {
-    struct mapi * mapi = fsm->mapi;
-    return (mapi ? mapi->isave : -1);
+    const FSMI_t iter = fsm->iter;
+    return (iter ? iter->isave : -1);
 }
-
-/**
- */
-static int fsmFlags(FSM_t fsm, cpioMapFlags mask) {
-    struct mapi * mapi = (struct mapi *) fsm->mapi;
-    int rc = 0;
-    if (mapi) {
-	const struct cpioFileMapping * map = fsm->map;
-	rc = (map->mapFlags & mask);
-    }
-    return rc;
-}
-
-/**
- */
-static int mapCommit(/*@null@*/ const void * this) {
-    const struct cpioFileMapping * map = this;
-    return (map ? map->commit : 0);
-}
+#endif
 
 #define	SUFFIX_RPMORIG	".rpmorig"
 #define	SUFFIX_RPMSAVE	".rpmsave"
@@ -181,66 +144,29 @@ static int mapCommit(/*@null@*/ const void * this) {
 
 /**
  */
-static /*@only@*/ const char * mapArchivePath(/*@null@*/ const void * this) {
-    const struct cpioFileMapping * map = this;
-    return (map ? xstrdup(map->archivePath) : NULL);
-}
-
-/**
- */
-static /*@only@*//*@null@*/ const char * mapFsPath(/*@null@*/ const void * this,
+static /*@only@*//*@null@*/ const char * fsmFsPath(/*@null@*/ const FSM_t fsm,
 	/*@null@*/ const struct stat * st,
 	/*@null@*/ const char * subdir,
 	/*@null@*/ const char * suffix)
 {
-    const struct cpioFileMapping * map = this;
     const char * s = NULL;
 
-    if (map) {
+    if (fsm) {
 	int nb;
 	char * t;
-	nb = strlen(map->dirName) +
+	nb = strlen(fsm->dirName) +
 	    (st && subdir && !S_ISDIR(st->st_mode) ? strlen(subdir) : 0) +
 	    (st && suffix && !S_ISDIR(st->st_mode) ? strlen(suffix) : 0) +
-	    strlen(map->baseName) + 1;
+	    strlen(fsm->baseName) + 1;
 	s = t = xmalloc(nb);
-	t = stpcpy(t, map->dirName);
+	t = stpcpy(t, fsm->dirName);
 	if (st && subdir && !S_ISDIR(st->st_mode))
 	    t = stpcpy(t, subdir);
-	t = stpcpy(t, map->baseName);
+	t = stpcpy(t, fsm->baseName);
 	if (st && suffix && !S_ISDIR(st->st_mode))
 	    t = stpcpy(t, suffix);
     }
     return s;
-}
-
-/**
- */
-static mode_t mapFinalMode(/*@null@*/ const void * this) {
-    const struct cpioFileMapping * map = this;
-    return (map ? map->finalMode : 0);
-}
-
-/**
- */
-static uid_t mapFinalUid(/*@null@*/ const void * this) {
-    const struct cpioFileMapping * map = this;
-    return (map ? map->finalUid : 0);
-}
-
-/**
- */
-static gid_t mapFinalGid(/*@null@*/ const void * this) {
-    const struct cpioFileMapping * map = this;
-    return (map ? map->finalGid : 0);
-}
-
-/**
- */
-static /*@observer@*/ const char * const mapMd5sum(/*@null@*/ const void * this)
-{
-    const struct cpioFileMapping * map = this;
-    return (map ? map->md5sum : NULL);
 }
 
 /**
@@ -260,58 +186,41 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/const void * this) 
 static void *
 mapInitIterator(/*@kept@*/ const void * this, /*@kept@*/ const void * that)
 {
-    struct mapi * mapi;
     rpmTransactionSet ts = (void *)this;
     TFI_t fi = (void *)that;
+    FSMI_t iter = NULL;
 
-    if (fi == NULL)
-	return NULL;
-    mapi = xcalloc(1, sizeof(*mapi));
-    mapi->ts = ts;
-    mapi->fi = fi;
-    mapi->isave = mapi->i = 0;
+    if (fi) {
+	iter = xcalloc(1, sizeof(*iter));
+	iter->ts = ts;
+	iter->fi = fi;
+	iter->isave = iter->i = 0;
 
-    if (ts && ts->notify) {
-	(void)ts->notify(fi->h, RPMCALLBACK_INST_START, 0, fi->archiveSize,
+	if (ts && ts->notify) {
+	    (void)ts->notify(fi->h, RPMCALLBACK_INST_START, 0, fi->archiveSize,
 		(fi->ap ? fi->ap->key : NULL), ts->notifyData);
+	}
     }
 
-    return mapi;
+    return iter;
 }
 
 /**
  */
-static const void * mapNextIterator(void * this) {
-    struct mapi * mapi = this;
-    rpmTransactionSet ts = mapi->ts;
-    TFI_t fi = mapi->fi;
-    struct cpioFileMapping * map = &mapi->map;
+static int mapNextIterator(void * this) {
+    FSMI_t iter = this;
+    const TFI_t fi = iter->fi;
     int i;
 
     do {
-	if (!((i = mapi->i) < fi->fc))
-	    return NULL;
-	mapi->i++;
+	if (!((i = iter->i) < fi->fc))
+	    return -1;
+	iter->i++;
     } while (fi->actions && XFA_SKIPPING(fi->actions[i]));
 
-    mapi->isave = i;
+    iter->isave = i;
 
-    /* src rpms have simple base name in payload. */
-    map->archivePath = (fi->apath ? fi->apath[i] + fi->striplen : fi->bnl[i]);
-    map->dirName = fi->dnl[fi->dil[i]];
-    map->baseName = fi->bnl[i];
-    map->md5sum = (fi->fmd5s ? fi->fmd5s[i] : NULL);
-    map->action = (fi->actions ? fi->actions[i] : FA_UNKNOWN);
-
-#define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
-    map->commit = (ts->transFlags & _tsmask) ? 0 : 1;
-#undef _tsmask
-
-    map->finalMode = fi->fmodes[i];
-    map->finalUid = (fi->fuids ? fi->fuids[i] : fi->uid); /* XXX chmod u-s */
-    map->finalGid = (fi->fgids ? fi->fgids[i] : fi->gid); /* XXX chmod g-s */
-    map->mapFlags = (fi->fmapflags ? fi->fmapflags[i] : fi->mapflags);
-    return map;
+    return i;
 }
 
 int pkgAction(const rpmTransactionSet ts, TFI_t fi, int i, fileStage a)
@@ -421,50 +330,43 @@ int pkgAction(const rpmTransactionSet ts, TFI_t fi, int i, fileStage a)
 
 }
 
-struct dnli {
+typedef struct dnli_s {
 /*@dependent@*/ TFI_t fi;
 /*@only@*/ /*@null@*/ char * active;
     int reverse;
     int isave;
     int i;
-};
+} * DNLI_t;
 
 /**
  */
-static /*@null@*/ void * dnlFreeIterator(/*@only@*/ /*@null@*/ const void * this)
+static /*@null@*/ void * dnlFreeIterator(/*@only@*//*@null@*/ const void * this)
 {
     if (this) {
-	struct dnli * dnli = (void *)this;
+	DNLI_t dnli = (void *)this;
 	if (dnli->active) free(dnli->active);
     }
     return _free(this);
 }
 
-static int dnlCount(void * this)
-{
-    struct dnli * dnli = this;
+static inline int dnlCount(const DNLI_t dnli) {
     return (dnli ? dnli->fi->dc : 0);
 }
 
-static int dnlIndex(void * this)
-{
-    struct dnli * dnli = this;
+static inline int dnlIndex(const DNLI_t dnli) {
     return (dnli ? dnli->isave : -1);
 }
 
 /**
  */
-static /*@only@*/ void * dnlInitIterator(/*@null@*/ const void * this,
-	int reverse)
+static /*@only@*/ void * dnlInitIterator(const FSM_t fsm, int reverse)
 {
-    const struct mapi * mapi = this;
-    struct dnli * dnli;
-    TFI_t fi;
+    TFI_t fi = fsmGetFi(fsm);
+    DNLI_t dnli;
     int i, j;
 
-    if (mapi == NULL)
+    if (fi == NULL)
 	return NULL;
-    fi = mapi->fi;
     dnli = xcalloc(1, sizeof(*dnli));
     dnli->fi = fi;
     dnli->reverse = reverse;
@@ -480,14 +382,18 @@ static /*@only@*/ void * dnlInitIterator(/*@null@*/ const void * this,
 	/* Exclude parent directories that are explicitly included. */
 	for (i = 0; i < fi->fc; i++) {
 	    int dil, dnlen, bnlen;
+
 	    if (!S_ISDIR(fi->fmodes[i]))
 		continue;
+
 	    dil = fi->dil[i];
 	    dnlen = strlen(fi->dnl[dil]);
 	    bnlen = strlen(fi->bnl[i]);
+
 	    for (j = 0; j < fi->dc; j++) {
 		const char * dnl;
 		int jlen;
+
 		if (!dnli->active[j] || j == dil) continue;
 		dnl = fi->dnl[j];
 		jlen = strlen(dnl);
@@ -496,10 +402,12 @@ static /*@only@*/ void * dnlInitIterator(/*@null@*/ const void * this,
 		if (strncmp(dnl+dnlen, fi->bnl[i], bnlen)) continue;
 		if (dnl[dnlen+bnlen] != '/' || dnl[dnlen+bnlen+1] != '\0')
 		    continue;
+		/* This directory is included in the package. */
 		dnli->active[j] = 0;
 		break;
 	    }
 	}
+
 	/* Print only once per package. */
 	if (!reverse) {
 	    j = 0;
@@ -521,16 +429,24 @@ static /*@only@*/ void * dnlInitIterator(/*@null@*/ const void * this,
 
 /**
  */
-static const char * dnlNextIterator(void * this) {
-    struct dnli * dnli = this;
-    TFI_t fi = dnli->fi;
-    int i;
+static const char * dnlNextIterator(/*@null@*/ DNLI_t dnli) {
+    const char * dn = NULL;
 
-    do {
-	i = (!dnli->reverse ? dnli->i++ : --dnli->i);
-    } while (i >= 0  && i < dnli->fi->dc && !dnli->active[i]);
-    dnli->isave = i;
-    return (i >= 0 && i < dnli->fi->dc ? fi->dnl[i] : NULL);
+    if (dnli && dnli->active) {
+	TFI_t fi = dnli->fi;
+	int i;
+
+	do {
+	    i = (!dnli->reverse ? dnli->i++ : --dnli->i);
+	} while (i >= 0 && i < fi->dc && !dnli->active[i]);
+
+	if (i >= 0 && i < fi->dc)
+	    dn = fi->dnl[i];
+	else
+	    i = -1;
+	dnli->isave = i;
+    }
+    return dn;
 }
 
 /**
@@ -552,18 +468,23 @@ static int cpioStrCmp(const void * a, const void * b) {
 
 /**
  */
-static const void * mapFind(void * this, const char * fsmPath) {
-    struct mapi * mapi = this;
-    const TFI_t fi = mapi->fi;
-    const char ** p;
+static int mapFind(void * this, const char * fsmPath) {
+    FSMI_t iter = this;
+    const TFI_t fi = iter->fi;
+    int ix = -1;
 
-    p = bsearch(&fsmPath, fi->apath, fi->fc, sizeof(fsmPath), cpioStrCmp);
-    if (p == NULL) {
-	fprintf(stderr, "*** not mapped %s\n", fsmPath);
-	return NULL;
+    if (fi) {
+	const char ** p;
+
+	p = bsearch(&fsmPath, fi->apath, fi->fc, sizeof(fsmPath), cpioStrCmp);
+	if (p == NULL) {
+	    fprintf(stderr, "*** not mapped %s\n", fsmPath);
+	} else {
+	    iter->i = p - fi->apath;
+	    ix = mapNextIterator(iter);
+	}
     }
-    mapi->i = p - fi->apath;
-    return mapNextIterator(this);
+    return ix;
 }
 
 /**
@@ -606,7 +527,7 @@ static int saveHardLink(FSM_t fsm)
     }
 
     if (fsm->goal == FSM_BUILD) --fsm->li->linksLeft;
-    fsm->li->filex[fsm->li->linksLeft] = fsmGetIndex(fsm);
+    fsm->li->filex[fsm->li->linksLeft] = fsm->ix;
     fsm->li->files[fsm->li->linksLeft] = xstrdup(fsm->path);
     /* XXX this is just an observer pointer. */
     fsm->li->nsuffix[fsm->li->linksLeft] = fsm->nsuffix;
@@ -686,7 +607,7 @@ FSM_t freeFSM(FSM_t fsm)
 	}
 	fsm->dnlx = _free(fsm->dnlx);
 	fsm->ldn = _free(fsm->ldn);
-	fsm->mapi = mapFreeIterator(fsm->mapi);
+	fsm->iter = mapFreeIterator(fsm->iter);
     }
     return _free(fsm);
 }
@@ -878,6 +799,188 @@ static int cpioHeaderRead(FSM_t fsm, struct stat * st)
     return 0;
 }
 
+int fsmSetup(FSM_t fsm, fileStage goal,
+		const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
+		unsigned int * archiveSize, const char ** failedFile)
+{
+    int rc = fsmStage(fsm, FSM_CREATE);
+
+#if 0
+    rpmSetVerbosity(RPMMESS_DEBUG);
+#endif
+
+    fsm->goal = goal;
+    if (cfd) {
+	fsm->cfd = fdLink(cfd, "persist (fsm)");
+	fdSetCpioPos(fsm->cfd, 0);
+    }
+    fsm->iter = mapInitIterator(ts, fi);
+    fsm->archiveSize = archiveSize;
+    fsm->failedFile = failedFile;
+    if (fsm->failedFile)
+	*fsm->failedFile = NULL;
+
+    memset(fsm->sufbuf, 0, sizeof(fsm->sufbuf));
+    if (fsm->goal != FSM_BUILD) {
+	if (ts->id > 0)
+	    sprintf(fsm->sufbuf, ";%08x", ts->id);
+    }
+    return rc;
+}
+
+int fsmTeardown(FSM_t fsm) {
+    int rc = 0;
+    fsm->iter = mapFreeIterator(fsm->iter);
+    if (fsm->cfd) {
+	fsm->cfd = fdFree(fsm->cfd, "persist (fsm)");
+	fsm->cfd = NULL;
+    }
+    fsm->failedFile = NULL;
+    return rc;
+}
+
+int fsmMapPath(FSM_t fsm)
+{
+    const rpmTransactionSet ts = fsmGetTs(fsm);
+    TFI_t fi = fsmGetFi(fsm);	/* XXX const except for fstates */
+    int rc = 0;
+    int i;
+
+    fsm->osuffix = NULL;
+    fsm->nsuffix = NULL;
+    fsm->astriplen = 0;
+    fsm->action = FA_UNKNOWN;
+#define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
+    fsm->commit = (ts && (ts->transFlags & _tsmask) ? 0 : 1);
+#undef _tsmask
+    fsm->mapFlags = 0;
+
+    if (fsm->goal == FSM_INSTALL) {
+	if (fsm->iter == NULL)
+	    return rc;
+	fsm->ix = mapFind(fsm->iter, fsm->path);
+    } else {
+        fsm->ix = mapNextIterator(fsm->iter);
+    }
+
+    if (fsm->goal == FSM_BUILD) {
+	if (fsm->ix < 0) {
+	    rc = CPIOERR_HDR_TRAILER;
+	    return rc;
+	}
+    }
+
+    i = fsm->ix;
+    if (fi && i >= 0 && i < fi->fc) {
+
+	fsm->astriplen = fi->astriplen;
+	fsm->action = (fi->actions ? fi->actions[i] : FA_UNKNOWN);
+	fsm->mapFlags = (fi->fmapflags ? fi->fmapflags[i] : fi->mapflags);
+
+	/* src rpms have simple base name in payload. */
+	fsm->archivePath =
+		(fi->apath ? fi->apath[i] + fi->striplen : fi->bnl[i]);
+	fsm->dirName = fi->dnl[fi->dil[i]];
+	fsm->baseName = fi->bnl[i];
+
+	switch (fsm->action) {
+	case FA_SKIP:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+	    break;
+	case FA_SKIPMULTILIB:	/* XXX RPMFILE_STATE_MULTILIB? */
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+	    break;
+	case FA_UNKNOWN:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+	    break;
+
+	case FA_CREATE:
+	    assert(fi->type == TR_ADDED);
+	    break;
+
+	case FA_SKIPNSTATE:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+	    if (fi->type == TR_ADDED)
+		fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
+	    break;
+
+	case FA_SKIPNETSHARED:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+	    if (fi->type == TR_ADDED)
+		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
+	    break;
+
+	case FA_BACKUP:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+	    switch (fi->type) {
+	    case TR_ADDED:
+		fsm->osuffix = SUFFIX_RPMORIG;
+		break;
+	    case TR_REMOVED:
+		fsm->osuffix = SUFFIX_RPMSAVE;
+		break;
+	    }
+	    break;
+
+	case FA_ALTNAME:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+	    assert(fi->type == TR_ADDED);
+	    fsm->nsuffix = SUFFIX_RPMNEW;
+	    break;
+
+	case FA_SAVE:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+	    assert(fi->type == TR_ADDED);
+	    fsm->osuffix = SUFFIX_RPMSAVE;
+	    break;
+	case FA_REMOVE:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+	    assert(fi->type == TR_REMOVED);
+	    break;
+	default:
+fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
+	    break;
+	}
+
+	if ((fsm->mapFlags & CPIO_MAP_PATH) || fsm->nsuffix) {
+	    const struct stat * st = &fsm->sb;
+	    fsm->path = _free(fsm->path);
+	    fsm->path = fsmFsPath(fsm, st, fsm->subdir,
+		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
+	}
+    }
+    return rc;
+}
+
+int fsmMapAttrs(FSM_t fsm)
+{
+    struct stat * st = &fsm->sb;
+    TFI_t fi = fsmGetFi(fsm);
+    int i = fsm->ix;
+
+    if (fi && i >= 0 && i < fi->fc) {
+	mode_t perms =
+		(S_ISDIR(st->st_mode) ? fi->dperms : fi->fperms);
+	mode_t finalMode =
+		(fi->fmodes ? fi->fmodes[i] : perms);
+	uid_t finalUid =
+		(fi->fuids ? fi->fuids[i] : fi->uid); /* XXX chmod u-s */
+	gid_t finalGid =
+		(fi->fgids ? fi->fgids[i] : fi->gid); /* XXX chmod g-s */
+
+	if (fsm->mapFlags & CPIO_MAP_MODE)
+	    st->st_mode = (st->st_mode & S_IFMT) | finalMode;
+	if (fsm->mapFlags & CPIO_MAP_UID)
+	    st->st_uid = finalUid;
+	if (fsm->mapFlags & CPIO_MAP_GID)
+	    st->st_gid = finalGid;
+
+	fsm->fmd5sum = (fi->fmd5s ? fi->fmd5s[i] : NULL);
+
+    }
+    return 0;
+}
+
 /**
  * Create file from payload stream.
  * @todo Legacy: support brokenEndian MD5 checks?
@@ -887,24 +990,24 @@ static int cpioHeaderRead(FSM_t fsm, struct stat * st)
 static int expandRegular(FSM_t fsm)
 		/*@modifies fileSystem, fsm->cfd @*/
 {
-    const char * filemd5;
+    const char * fmd5sum;
     const struct stat * st = &fsm->sb;
     int left = st->st_size;
     int rc = 0;
 
 /* XXX HACK_ALERT: something fubar with linked files. */
-    filemd5 = (st->st_nlink == 1 ? mapMd5sum(fsm->map) : NULL);
+    fmd5sum = (st->st_nlink == 1 ? fsm->fmd5sum : NULL);
 
     {
 	const char * opath = fsm->opath;
 	const char * path = fsm->path;
 
 	if (fsm->osuffix)
-	    fsm->path = mapFsPath(fsm->map, st, NULL, NULL);
+	    fsm->path = fsmFsPath(fsm, st, NULL, NULL);
 	rc = fsmStage(fsm, FSM_VERIFY);
 	if (rc == 0 && fsm->osuffix) {
 	    fsm->opath = fsm->path;
-	    fsm->path = mapFsPath(fsm->map, st, NULL, fsm->osuffix);
+	    fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
 	    rc = fsmStage(fsm, FSM_RENAME);
 if (!rc)
 rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
@@ -924,7 +1027,7 @@ rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
 	goto exit;
 
     /* XXX This doesn't support brokenEndian checks. */
-    if (filemd5)
+    if (fmd5sum)
 	fdInitMD5(fsm->wfd, 0);
 
     while (left) {
@@ -945,7 +1048,7 @@ rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
 	    (void) fsmStage(fsm, FSM_NOTIFY);
     }
 
-    if (filemd5) {
+    if (fmd5sum) {
 	const char * md5sum = NULL;
 
 	Fflush(fsm->wfd);
@@ -954,7 +1057,7 @@ rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
 	if (md5sum == NULL) {
 	    rc = CPIOERR_MD5SUM_MISMATCH;
 	} else {
-	    if (strcmp(md5sum, filemd5))
+	    if (strcmp(md5sum, fmd5sum))
 		rc = CPIOERR_MD5SUM_MISMATCH;
 	    md5sum = _free(md5sum);
 	}
@@ -996,8 +1099,8 @@ static int writeFile(FSM_t fsm, int writeData)
 	st->st_size = fsm->rdnb;
     }
 
-    if (fsmFlags(fsm, CPIO_MAP_PATH))
-	fsm->path = mapArchivePath(fsm->map);
+    if (fsm->mapFlags & CPIO_MAP_PATH)
+	fsm->path = fsm->archivePath;
     rc = fsmStage(fsm, FSM_HWRITE);
     fsm->path = path;
     if (rc) goto exit;
@@ -1165,8 +1268,8 @@ static int fsmCommitLinks(FSM_t fsm)
     const char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
     struct stat * st = &fsm->sb;
-    struct mapi * mapi = fsm->mapi;
-    int mapiIndex = mapi->i;
+    FSMI_t iter = fsm->iter;
+    int iterIndex = iter->i;
     int rc = 0;
     int i;
 
@@ -1177,14 +1280,14 @@ static int fsmCommitLinks(FSM_t fsm)
 
     for (i = 0; i < fsm->li->nlink; i++) {
 	if (fsm->li->files[i] == NULL) continue;
-	mapi->i = fsm->li->filex[i];
+	iter->i = fsm->li->filex[i];
 	fsm->path = xstrdup(fsm->li->files[i]);
 	rc = fsmStage(fsm, FSM_COMMIT);
 	fsm->path = _free(fsm->path);
 	fsm->li->filex[i] = -1;
     }
 
-    mapi->i = mapiIndex;
+    iter->i = iterIndex;
     fsm->nsuffix = nsuffix;
     fsm->path = path;
     return rc;
@@ -1247,7 +1350,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->wrb = fsm->wrbuf = _free(fsm->wrbuf);
 	fsm->wrb = fsm->wrbuf = xmalloc(fsm->wrsize);
 	fsm->mkdirsdone = 0;
-	fsm->map = NULL;
+	fsm->ix = -1;
 	fsm->links = NULL;
 	fsm->li = NULL;
 	errno = 0;	/* XXX get rid of EBADF */
@@ -1283,13 +1386,13 @@ int fsmStage(FSM_t fsm, fileStage stage)
 
 	/* Generate file path. */
 	if (!rc)
-	    rc = fsmMap(fsm);
+	    rc = fsmMapPath(fsm);
 	if (rc)
 	    break;
 
 	/* Perform lstat/stat for disk file. */
-	rc = fsmStage(fsm,
-		(!fsmFlags(fsm, CPIO_FOLLOW_SYMLINKS) ? FSM_LSTAT : FSM_STAT));
+	rc = fsmStage(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
+			? FSM_LSTAT : FSM_STAT));
 	if (rc == CPIOERR_LSTAT_FAILED && errno == ENOENT) {
 	    errno = saveerrno;
 	    rc = 0;
@@ -1303,12 +1406,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	if (fsm->goal == FSM_BUILD)
 	    *st = *ost;			/* structure assignment */
 
-	if (fsmFlags(fsm, CPIO_MAP_MODE))
-	    st->st_mode = (st->st_mode & S_IFMT) | mapFinalMode(fsm->map);
-	if (fsmFlags(fsm,  CPIO_MAP_UID))
-	    st->st_uid = mapFinalUid(fsm->map);
-	if (fsmFlags(fsm, CPIO_MAP_GID))
-	    st->st_gid = mapFinalGid(fsm->map);
+	(void) fsmMapAttrs(fsm);
 
 	fsm->postpone = XFA_SKIPPING(fsm->action);
 	if (fsm->goal == FSM_INSTALL || fsm->goal == FSM_BUILD) {
@@ -1323,7 +1421,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
     case FSM_MKDIRS:
 	{   const char * path = fsm->path;
 	    mode_t st_mode = st->st_mode;
-	    void * dnli = dnlInitIterator(fsm->mapi, 0);
+	    void * dnli = dnlInitIterator(fsm, 0);
 	    char * dn = fsm->rdbuf;
 	    int dc = dnlCount(dnli);
 	    int i;
@@ -1335,6 +1433,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		char * te;
 
 		dc = dnlIndex(dnli);
+		if (dc < 0) continue;
 		fsm->dnlx[dc] = dnlen;
 		if (dnlen <= 1)
 		    continue;
@@ -1399,7 +1498,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
     case FSM_RMDIRS:
 	if (fsm->dnlx) {
 	    const char * path = fsm->path;
-	    void * dnli = dnlInitIterator(fsm->mapi, 1);
+	    void * dnli = dnlInitIterator(fsm, 1);
 	    char * dn = fsm->rdbuf;
 	    int dc = dnlCount(dnli);
 
@@ -1546,7 +1645,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	break;
     case FSM_FINI:
 	if (fsm->goal == FSM_INSTALL) {
-	    if (!fsm->postpone && mapCommit(fsm->map)) {
+	    if (!fsm->postpone && fsm->commit) {
 		if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
 		    rc = fsmCommitLinks(fsm);
 		} else {
@@ -1561,10 +1660,10 @@ int fsmStage(FSM_t fsm, fileStage stage)
     case FSM_COMMIT:
 	if (!S_ISDIR(st->st_mode) && (fsm->subdir || fsm->suffix)) {
 	    fsm->opath = fsm->path;
-	    fsm->path = mapFsPath(fsm->map, st, NULL, fsm->nsuffix);
+	    fsm->path = fsmFsPath(fsm, st, NULL, fsm->nsuffix);
 	    rc = fsmStage(fsm, FSM_RENAME);
 if (!rc && fsm->nsuffix) {
-const char * opath = mapFsPath(fsm->map, st, NULL, NULL);
+const char * opath = fsmFsPath(fsm, st, NULL, NULL);
 rpmMessage(RPMMESS_WARNING, _("%s created as %s\n"), opath, fsm->path);
 opath = _free(opath);
 }
@@ -1732,7 +1831,7 @@ opath = _free(opath);
 	    stamp.modtime = st->st_mtime;
 	    rc = utime(fsm->path, &stamp);
 	    if (_fsm_debug && (stage & FSM_SYSCALL))
-		rpmMessage(RPMMESS_DEBUG, " %8s (%s, %x) %s\n", cur,
+		rpmMessage(RPMMESS_DEBUG, " %8s (%s, 0x%x) %s\n", cur,
 			fsm->path, (unsigned)st->st_mtime,
 			(rc < 0 ? strerror(errno) : ""));
 	    if (rc < 0)	rc = CPIOERR_UTIME_FAILED;
@@ -1893,13 +1992,13 @@ if (fsm->rdnb != fsm->rdlen) fprintf(stderr, "*** short read, had %d, got %d\n",
 #endif
 	break;
     case FSM_RCLOSE:
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmMessage(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->rfd);
 	if (fsm->rfd) {
+	    if (_fsm_debug && (stage & FSM_SYSCALL))
+		rpmMessage(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->rfd);
 	    (void) Fclose(fsm->rfd);
-	    fsm->rfd = NULL;
+	    errno = saveerrno;
 	}
-	errno = saveerrno;
+	fsm->rfd = NULL;
 	break;
     case FSM_WOPEN:
 	fsm->wfd = Fopen(fsm->path, "w.ufdio");
@@ -1924,13 +2023,13 @@ if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write: had %d, got %d\n",
 #endif
 	break;
     case FSM_WCLOSE:
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmMessage(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->wfd);
 	if (fsm->wfd) {
+	    if (_fsm_debug && (stage & FSM_SYSCALL))
+		rpmMessage(RPMMESS_DEBUG, " %8s (%p)\n", cur, fsm->wfd);
 	    (void) Fclose(fsm->wfd);
-	    fsm->wfd = NULL;
+	    errno = saveerrno;
 	}
-	errno = saveerrno;
+	fsm->wfd = NULL;
 	break;
 
     default:
@@ -1939,141 +2038,6 @@ if (fsm->rdnb != fsm->wrnb) fprintf(stderr, "*** short write: had %d, got %d\n",
 
     if (!(stage & FSM_INTERNAL)) {
 	fsm->rc = (rc == CPIOERR_HDR_TRAILER ? 0 : rc);
-    }
-    return rc;
-}
-
-int fsmSetup(FSM_t fsm, fileStage goal,
-		const rpmTransactionSet ts, const TFI_t fi, FD_t cfd,
-		unsigned int * archiveSize, const char ** failedFile)
-{
-    int rc = fsmStage(fsm, FSM_CREATE);
-
-    rpmSetVerbosity(RPMMESS_DEBUG);
-
-    fsm->goal = goal;
-    if (cfd) {
-	fsm->cfd = fdLink(cfd, "persist (fsm)");
-	fdSetCpioPos(fsm->cfd, 0);
-    }
-    fsm->mapi = mapInitIterator(ts, fi);
-    fsm->archiveSize = archiveSize;
-    fsm->failedFile = failedFile;
-    if (fsm->failedFile)
-	*fsm->failedFile = NULL;
-
-    memset(fsm->sufbuf, 0, sizeof(fsm->sufbuf));
-    if (fsm->goal != FSM_BUILD) {
-	if (ts->id > 0)
-	    sprintf(fsm->sufbuf, ";%08x", ts->id);
-    }
-    return rc;
-}
-
-int fsmTeardown(FSM_t fsm) {
-    int rc = 0;
-    fsm->mapi = mapFreeIterator(fsm->mapi);
-    if (fsm->cfd) {
-	fsm->cfd = fdFree(fsm->cfd, "persist (fsm)");
-	fsm->cfd = NULL;
-    }
-    fsm->failedFile = NULL;
-    return rc;
-}
-
-int fsmMap(FSM_t fsm)
-{
-    struct stat * st = &fsm->sb;
-    TFI_t fi = fsmGetFi(fsm);
-    int i = fsmGetIndex(fsm);
-    int rc = 0;
-
-    fsm->action = FA_UNKNOWN;
-    fsm->osuffix = NULL;
-    fsm->nsuffix = NULL;
-    fsm->astriplen = (fi ? fi->astriplen : 0);
-
-    if (fsm->goal == FSM_INSTALL) {
-	if (fsm->mapi == NULL)
-	    return rc;
-	fsm->map = mapFind(fsm->mapi, fsm->path);
-    } else {
-        fsm->map = mapNextIterator(fsm->mapi);
-    }
-
-    if (fsm->goal == FSM_BUILD) {
-	if (fsm->map == NULL) {
-	    rc = CPIOERR_HDR_TRAILER;
-	    return rc;
-	}
-    }
-
-    if (fsm->map && fi && i >= 0 && i < fi->fc) {
-	fsm->action = fi->actions[i];
-	switch (fsm->action) {
-	case FA_SKIP:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
-	    break;
-	case FA_SKIPMULTILIB:	/* XXX RPMFILE_STATE_MULTILIB? */
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
-	    break;
-	case FA_UNKNOWN:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
-	    break;
-
-	case FA_CREATE:
-	    assert(fi->type == TR_ADDED);
-	    break;
-
-	case FA_SKIPNSTATE:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
-	    if (fi->type == TR_ADDED)
-		fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
-	    break;
-
-	case FA_SKIPNETSHARED:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
-	    if (fi->type == TR_ADDED)
-		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
-	    break;
-
-	case FA_BACKUP:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
-	    switch (fi->type) {
-	    case TR_ADDED:
-		fsm->osuffix = SUFFIX_RPMORIG;
-		break;
-	    case TR_REMOVED:
-		fsm->osuffix = SUFFIX_RPMSAVE;
-		break;
-	    }
-	    break;
-
-	case FA_ALTNAME:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
-	    assert(fi->type == TR_ADDED);
-	    fsm->nsuffix = SUFFIX_RPMNEW;
-	    break;
-
-	case FA_SAVE:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
-	    assert(fi->type == TR_ADDED);
-	    fsm->osuffix = SUFFIX_RPMSAVE;
-	    break;
-	case FA_REMOVE:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
-	    assert(fi->type == TR_REMOVED);
-	    break;
-	default:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), fsm->path);
-	    break;
-	}
-
-	if (fsmFlags(fsm, CPIO_MAP_PATH) || fsm->nsuffix) {
-	    fsm->path = _free(fsm->path);
-	    fsm->path = mapFsPath(fsm->map, st, fsm->subdir,
-		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
-	}
     }
     return rc;
 }

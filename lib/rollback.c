@@ -19,6 +19,7 @@ static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
 void loadFi(Header h, TFI_t fi)
 {
     HGE_t hge;
+    HFD_t hfd;
     uint_32 * uip;
     int len;
     int rc;
@@ -31,6 +32,8 @@ void loadFi(Header h, TFI_t fi)
     hge = (fi->type == TR_ADDED)
 	? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry;
     fi->hge = hge;
+
+    fi->hfd = hfd = headerFreeData;
 
     if (h && fi->h == NULL)	fi->h = headerLink(h);
 
@@ -110,11 +113,16 @@ void loadFi(Header h, TFI_t fi)
 	    fi->bnlmax = len;
     }
 
+    fi->dperms = 0755;
+    fi->fperms = 0644;
+
     return;
 }
 
 void freeFi(TFI_t fi)
 {
+    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
+
     fi->name = _free(fi->name);
     fi->version = _free(fi->version);
     fi->release = _free(fi->release);
@@ -122,15 +130,15 @@ void freeFi(TFI_t fi)
     fi->replacedSizes = _free(fi->replacedSizes);
     fi->replaced = _free(fi->replaced);
 
-    fi->bnl = headerFreeData(fi->bnl, -1);
-    fi->dnl = headerFreeData(fi->dnl, -1);
-    fi->obnl = headerFreeData(fi->obnl, -1);
-    fi->odnl = headerFreeData(fi->odnl, -1);
-    fi->flinks = headerFreeData(fi->flinks, -1);
-    fi->fmd5s = headerFreeData(fi->fmd5s, -1);
-    fi->fuser = headerFreeData(fi->fuser, -1);
-    fi->fgroup = headerFreeData(fi->fgroup, -1);
-    fi->flangs = headerFreeData(fi->flangs, -1);
+    fi->bnl = hfd(fi->bnl, -1);
+    fi->dnl = hfd(fi->dnl, -1);
+    fi->obnl = hfd(fi->obnl, -1);
+    fi->odnl = hfd(fi->odnl, -1);
+    fi->flinks = hfd(fi->flinks, -1);
+    fi->fmd5s = hfd(fi->fmd5s, -1);
+    fi->fuser = hfd(fi->fuser, -1);
+    fi->fgroup = hfd(fi->fgroup, -1);
+    fi->flangs = hfd(fi->flangs, -1);
 
     fi->apath = _free(fi->apath);
     fi->fuids = _free(fi->fuids);
@@ -143,11 +151,11 @@ void freeFi(TFI_t fi)
     case TR_ADDED:
 	    break;
     case TR_REMOVED:
-	fi->fsizes = headerFreeData(fi->fsizes, -1);
-	fi->fflags = headerFreeData(fi->fflags, -1);
-	fi->fmodes = headerFreeData(fi->fmodes, -1);
-	fi->fstates = headerFreeData(fi->fstates, -1);
-	fi->dil = headerFreeData(fi->dil, -1);
+	fi->fsizes = hfd(fi->fsizes, -1);
+	fi->fflags = hfd(fi->fflags, -1);
+	fi->fmodes = hfd(fi->fmodes, -1);
+	fi->fstates = hfd(fi->fstates, -1);
+	fi->dil = hfd(fi->dil, -1);
 	break;
     }
     if (fi->h) {

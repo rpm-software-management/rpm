@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-02-03 21:02-0500\n"
+"POT-Creation-Date: 2001-02-04 13:01-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2185,89 +2185,89 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:346 lib/install.c:834
+#: lib/cpio.c:255 lib/install.c:834
 #, c-format
 msgid "   file: %s%s action: %s\n"
 msgstr ""
 
-#: lib/cpio.c:381
+#: lib/cpio.c:290
 #, c-format
 msgid "%s: cannot remove %s - directory not empty\n"
 msgstr ""
 
-#: lib/cpio.c:386
+#: lib/cpio.c:295
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:397
+#: lib/cpio.c:306
 #, c-format
 msgid "%s removal of %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:412
+#: lib/cpio.c:321
 #, c-format
 msgid "%s: %s saved as %s\n"
 msgstr ""
 
-#: lib/cpio.c:418
+#: lib/cpio.c:327
 #, c-format
 msgid "%s rename of %s to %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:511
+#: lib/cpio.c:419
 msgid "========= Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/cpio.c:513
+#: lib/cpio.c:421
 #, c-format
 msgid "%9d %s\n"
 msgstr ""
 
-#: lib/cpio.c:910
+#: lib/cpio.c:1013
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/cpio.c:1568
+#: lib/cpio.c:1667
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
 
-#: lib/cpio.c:2184
+#: lib/cpio.c:2148
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:2187
+#: lib/cpio.c:2151
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:2188
+#: lib/cpio.c:2152
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:2209
+#: lib/cpio.c:2173
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:2210
+#: lib/cpio.c:2174
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:2211
+#: lib/cpio.c:2175
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:2212
+#: lib/cpio.c:2176
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:2213
+#: lib/cpio.c:2177
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:2222
+#: lib/cpio.c:2186
 msgid " failed - "
 msgstr ""
 
