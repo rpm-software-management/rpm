@@ -39,8 +39,9 @@ arch_canon:	mips:	mips	4
 arch_canon:	ppc:	ppc	5
 # This is really a place holder for 68000
 arch_canon:	m68k:	m68k	6
-# This is wrong.
+# This is wrong. We really need globbing in here :-(
 arch_canon:	IP:	sgi	7
+arch_canon:     IP22:   sgi     7
 
 # I don't know what this number is, but...
 arch_canon:    000050703700:   rs6000  8
@@ -62,6 +63,7 @@ os_canon:      AmigaOS: AmigaOS 5
 os_canon:          AIX: AIX     5
 os_canon:        HP-UX: hpux10  6
 os_canon:         OSF1: osf1    7
+os_canon:      FreeBSD: FreeBSD 8
 
 #############################################################
 # For a given uname().machine, the default build arch
