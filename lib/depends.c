@@ -862,6 +862,9 @@ static int addOrderedPack(rpmDependencies rpmdep,
 		    rc = addOrderedPack(rpmdep, match, ordering, orderNumPtr,
 				        selected, selectionClass, 1,
 				        errorStack);
+
+		/* FIXME: I suspect we should free things here */
+		if (rc) return 1;
 	    }
 	}
     }
