@@ -1,4 +1,4 @@
-RPM/Header.c
-RPM/Database.c
-RPM/Constants.c
+Header.c
+Database.c
+Constants.c
 *.html
