@@ -248,7 +248,7 @@ int rpmVerifyScript(const char * root, Header h, FD_t err)
 static int verifyHeader(QVA_t *qva, Header h)
 {
     char ** fileList;
-    int count, type;
+    int count;
     int verifyResult;
     int i, ec, rc;
     int_32 * fileFlagsList;

@@ -259,7 +259,6 @@ static Header relocateFileList(struct availablePackage * alp,
     rpmRelocation * rawRelocations = alp->relocs;
     rpmRelocation * relocations = NULL;
     const char ** validRelocations;
-    const char ** names;
     char ** baseFileNames, ** dirNames;
     int_32 * dirIndexes;
     int_32 * newDirIndexes;
@@ -530,8 +529,6 @@ static Header relocateFileList(struct availablePackage * alp,
     free(dirNames);
     if (filespec) free(filespec);
     free(skipDirList);
-
-    xfree(names);
 
     return h;
 }

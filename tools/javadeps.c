@@ -212,7 +212,7 @@ usage (void)
 	 "assumed to be zero. \n\n"
 	 "");
   printf("EXAMPLES (Java Keywords): \n\n"
-	 "\t public static final String REVISION = \"$Revision: 2.4 $\";\n"
+	 "\t public static final String REVISION = \"$Revision: 2.5 $\";\n"
 	 "\t public static final String EPOCH = \"4\";\n"
 	 "\t public static final String REQUIRES = \"RPM_Requires: "
 	 "java(gnu.regexp.RE) java(com.ibm.site.util.Options)>=1.5\";\n"
@@ -418,6 +418,7 @@ int findJavaMagic (FILE *fileHandle)
 #undef mod4
 
 
+static int
 my_strcmp (const void *a, const void *b) {
 char **a1; char **b1;
 int ret;
@@ -489,7 +490,7 @@ print_table_add(char *str) {
 /* Given a list separated by whitespace, put each element in the print
    table with an added "\n" */
 
-void 
+static void 
 print_list(char *in_string) {
   char *WhiteSpace_Set = "\t\v\n\r\f ";
   char *newEnd, *out_string;

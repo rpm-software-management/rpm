@@ -152,7 +152,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_ORIGCOMPFILELIST		1120 /* internal */
 #define	RPMTAG_ORIGCOMPDIRLIST		1121 /* internal */
 
-#define	RPMTAG_FIRSTFREE_TAG		1119 /* internal */
+#define	RPMTAG_FIRSTFREE_TAG		1122 /* internal */
 #define	RPMTAG_EXTERNAL_TAG		1000000
 
 #define	RPMFILE_STATE_NORMAL 		0
