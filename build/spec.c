@@ -1025,7 +1025,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		  case RPMTAG_EXCLUSIVEOS:
 		    sprintf(buf2, "%s %s", (tag == RPMTAG_EXCLUDEOS) ?
 			    "%ifos" : "%ifnos",  s);
-		    if (match_arch(buf2)) {
+		    if (match_os(buf2)) {
 			error(RPMERR_BADOS, "OS mismatch!");
 			return NULL;
 		    }
