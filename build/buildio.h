@@ -15,8 +15,10 @@
 typedef /*@abstract@*/ struct cpioSourceArchive_s {
     unsigned int cpioArchiveSize;
     FD_t	cpioFdIn;
+/*@refcounted@*/
     rpmfi	cpioList;
-/*@only@*/ struct rpmlead * lead;	/* XXX FIXME: exorcize lead/arch/os */
+/*@only@*/
+    struct rpmlead * lead;	/* XXX FIXME: exorcize lead/arch/os */
 } * CSA_t;
 
 #ifdef __cplusplus
@@ -49,7 +51,7 @@ extern "C" {
  * return a reloaded contiguous header to the caller.
  *
  * @retval *hdrp	header to write (final header is returned).
- * @retval *sigp	signature header (or NULL)
+ * @retval *pkgidp	header+payload MD5 of package (NULL to disable).
  * @param fileName	file name of package
  * @param type		RPMLEAD_SOURCE/RPMLEAD_BINARY
  * @param csa
@@ -57,7 +59,7 @@ extern "C" {
  * @retval cookie	generated cookie (i.e build host/time)
  * @return		0 on success
  */
-int writeRPM(Header * hdrp, /*@null@*/ Header * sigp,
+int writeRPM(Header * hdrp, /*@null@*/ unsigned char ** pkgidp,
 		const char * fileName,
 		int type,
 		CSA_t csa,
@@ -65,7 +67,7 @@ int writeRPM(Header * hdrp, /*@null@*/ Header * sigp,
 		/*@out@*/ const char ** cookie)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies *hdrp, *sigp, *cookie, csa, csa->cpioArchiveSize,
+	/*@modifies *hdrp, *pkgidp, *cookie, csa, csa->cpioArchiveSize,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 #ifdef __cplusplus

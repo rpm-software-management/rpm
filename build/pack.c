@@ -404,8 +404,8 @@ static int rpmLeadVersion(void)
 }
 
 /*@-boundswrite@*/
-int writeRPM(Header *hdrp, Header *sigp, const char *fileName, int type,
-		    CSA_t csa, char *passPhrase, const char **cookie)
+int writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
+		int type, CSA_t csa, char *passPhrase, const char **cookie)
 {
     FD_t fd = NULL;
     FD_t ifd = NULL;
@@ -423,8 +423,8 @@ int writeRPM(Header *hdrp, Header *sigp, const char *fileName, int type,
     h = headerLink(*hdrp);
     *hdrp = headerFree(*hdrp);
 
-    if (sigp)
-	*sigp = NULL;
+    if (pkgidp)
+	*pkgidp = NULL;
 
 #ifdef	DYING
     if (Fileno(csa->cpioFdIn) < 0) {
@@ -588,9 +588,6 @@ int writeRPM(Header *hdrp, Header *sigp, const char *fileName, int type,
 	rpmError(RPMERR_RELOAD, _("Unable to reload signature header.\n"));
 	goto exit;
     }
-    /* Re-reference reallocated header. */
-    if (sigp != NULL)
-	*sigp = headerLink(sig);
 
     /* Open the output file */
     fd = Fopen(fileName, "w.ufdio");
@@ -698,6 +695,19 @@ int writeRPM(Header *hdrp, Header *sigp, const char *fileName, int type,
 exit:
     SHA1 = _free(SHA1);
     h = headerFree(h);
+
+    /* XXX Fish the pkgid out of the signature header. */
+    if (sig != NULL && pkgidp != NULL) {
+	HGE_t hge = (HGE_t)headerGetEntry;
+	unsigned char * md5 = NULL;
+	rpmTagType type;
+	int_32 c;
+	int xx;
+	xx = hge(sig, RPMSIGTAG_MD5, &type, (void **)&md5, &c);
+	if (type == RPM_BIN_TYPE && md5 != NULL && c == 16)
+	    *pkgidp = md5;
+    }
+
     sig = rpmFreeSignature(sig);
     if (ifd) {
 	(void) Fclose(ifd);
@@ -818,11 +828,13 @@ int packageBinaries(Spec spec)
 	/*@-type@*/ /* LCL: function typedefs */
 	csa->cpioFdIn = fdNew("init (packageBinaries)");
 	/*@-assignexpose -newreftrans@*/
-/*@i@*/	csa->cpioList = pkg->cpioList;
+	csa->cpioList = rpmfiLink(pkg->cpioList, "packageBinaries");
 	/*@=assignexpose =newreftrans@*/
 
 	rc = writeRPM(&pkg->header, NULL, fn, RPMLEAD_BINARY,
 		    csa, spec->passPhrase, NULL);
+
+	csa->cpioList = rpmfiFree(pkg->cpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageBinaries)");
 	/*@=type@*/
 	fn = _free(fn);
@@ -855,30 +867,20 @@ int packageSources(Spec spec)
     
     /* XXX this should be %_srpmdir */
     {	const char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
-	Header sig;
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
 	/*@-type@*/ /* LCL: function typedefs */
 	csa->cpioFdIn = fdNew("init (packageSources)");
 	/*@-assignexpose -newreftrans@*/
-/*@i@*/	csa->cpioList = spec->sourceCpioList;
+	csa->cpioList = rpmfiLink(spec->sourceCpioList, "packageSources");
 	/*@=assignexpose =newreftrans@*/
 
-	sig = NULL;
-	rc = writeRPM(&spec->sourceHeader, &sig, fn, RPMLEAD_SOURCE,
+	spec->sourcePkgId = NULL;
+	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, RPMLEAD_SOURCE,
 		csa, spec->passPhrase, &(spec->cookie));
-	if (rc == 0 && sig != NULL) {
-	    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-	    const unsigned char * md5 = NULL;
-	    rpmTagType type;
-	    int_32 c;
-	    int xx;
-	    xx = hge(sig, RPMSIGTAG_MD5, &type, (void **)&md5, &c);
-	    if (type == RPM_BIN_TYPE && md5 != NULL && c == 16)
-		spec->sourcePkgId = memcpy(xmalloc(16), md5, 16);;
-	    sig = headerFree(sig);
-	}
+
+	csa->cpioList = rpmfiFree(spec->sourceCpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");
 	/*@=type@*/
 	fn = _free(fn);

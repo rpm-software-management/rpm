@@ -145,7 +145,7 @@ struct Spec_s {
 /*@only@*/
     const char * sourceRpmName;
 /*@only@*/
-    const unsigned char * sourcePkgId;
+    unsigned char * sourcePkgId;
 /*@refcounted@*/
     Header sourceHeader;
     rpmfi sourceCpioList;

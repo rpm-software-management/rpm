@@ -1100,15 +1100,15 @@ static int checkHardLinks(FileList fl)
  * @todo Should directories have %doc/%config attributes? (#14531)
  * @todo Remove RPMTAG_OLDFILENAMES, add dirname/basename instead.
  * @param fl		package file tree walk data
- * @param cpioList
+ * @retval *fip		file info for package
  * @param h
  * @param isSrc
  */
 /*@-bounds@*/
 static void genCpioListAndHeader(/*@partial@*/ FileList fl,
-		rpmfi * cpioList, Header h, int isSrc)
+		rpmfi * fip, Header h, int isSrc)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@modifies h, *cpioList, fl->processingFailed, fl->fileList,
+	/*@modifies h, *fip, fl->processingFailed, fl->fileList,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
@@ -1327,7 +1327,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
     }
 
-  { int scareMem = 1;
+  { int scareMem = 0;
     rpmts ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
     rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     char * a, * d;
@@ -1341,15 +1341,18 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
     fi->dnl = _free(fi->dnl);
     fi->bnl = _free(fi->bnl);
+    if (!scareMem) fi->dil = _free(fi->dil);
 
     fi->dnl = xmalloc(fi->fc * sizeof(*fi->dnl) + dpathlen);
     d = (char *)(fi->dnl + fi->fc);
     *d = '\0';
 
     fi->bnl = xmalloc(fi->fc * (sizeof(*fi->bnl) + sizeof(*fi->dil)));
-    /*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
-    fi->dil = (int *)(fi->bnl + fi->fc);
-    /*@=dependenttrans@*/
+/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
+    fi->dil = (!scareMem)
+	? xcalloc(sizeof(*fi->dil), fi->fc)
+	: (int *)(fi->bnl + fi->fc);
+/*@=dependenttrans@*/
 
     fi->apath = xmalloc(fi->fc * sizeof(*fi->apath) + apathlen);
     a = (char *)(fi->apath + fi->fc);
@@ -1385,9 +1388,9 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
-	/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
+/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
 	fi->dnl[fi->dil[i]] = d;
-	/*@=dependenttrans@*/
+/*@=dependenttrans@*/
 	d = stpcpy(d, flp->diskURL);
 
 	/* Make room for the dirName NUL, find start of baseName. */
@@ -1423,10 +1426,10 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 
     }
     /*@-branchstate@*/
-    if (cpioList)
-	*cpioList = fi;
+    if (fip)
+	*fip = fi;
     else
-	fi = _free(fi);
+	fi = rpmfiFree(fi);
     /*@=branchstate@*/
   }
 }
@@ -2050,7 +2053,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	(void) rpmlibNeedsFeature(pkg->header,
 			"PartialHardlinkSets", "4.0.4-1");
 
-    genCpioListAndHeader(&fl, (rpmfi *)&pkg->cpioList, pkg->header, 0);
+    genCpioListAndHeader(&fl, &pkg->cpioList, pkg->header, 0);
 
     if (spec->timeCheck)
 	timeCheck(spec->timeCheck, pkg->header);
@@ -2267,7 +2270,7 @@ int processSourceFiles(Spec spec)
 
     if (! fl.processingFailed) {
 	if (spec->sourceHeader != NULL)
-	    genCpioListAndHeader(&fl, (rpmfi *)&spec->sourceCpioList,
+	    genCpioListAndHeader(&fl, &spec->sourceCpioList,
 			spec->sourceHeader, 1);
     }
 
