@@ -11,6 +11,10 @@
 	- switched to popt from getopt, which allows command line aliasing
 	- read initial aliases from /usr/lib/rpmpopt then /etc/popt and
 	  $HOME/.popt
+	- cleanup up rdev verification (only verifies device files, checks
+	  device related mode bits as well)
+	- fixed allocation of temporary paths (Eugene Kanter noticed this)
+	- made tools/dumpdb read the rpmrc so it can find the database
 
 2.3.1 -> 2.3.2:
 	- fixed bug in new rpmVersionCompare() which made it worse then
