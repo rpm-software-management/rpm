@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Constants.pm,v 1.12 2000/10/10 08:22:21 rjray Exp $
+#   $Id: Constants.pm,v 1.13 2000/10/13 08:47:26 rjray Exp $
 #
 #   Description:    Constants for the RPM package
 #
@@ -26,8 +26,8 @@ use RPM;
 
 @ISA = qw(Exporter);
 
-$VERSION = '0.29';
-$revision = do { my @r=(q$Revision: 1.12 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = '0.291';
+$revision = do { my @r=(q$Revision: 1.13 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT_OK = qw(
                 ADD_SIGNATURE

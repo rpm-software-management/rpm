@@ -9,8 +9,8 @@ require DynaLoader;
 require Exporter;
 
 @ISA = qw(Exporter DynaLoader);
-$VERSION = '0.29';
-$revision = do { my @r=(q$Revision: 1.11 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$VERSION = '0.291';
+$revision = do { my @r=(q$Revision: 1.12 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT = qw(rpm_osname rpm_archname);
 @EXPORT_OK = (@EXPORT, 'vercmp');

@@ -139,3 +139,19 @@ Revision history for Perl extension RPM.
 	4.0 of RPM. Additionally, some flags to the C compiler to work with
 	the gcc that is distributed with Red Hat Linux 7. This version has
 	been tested on both 6.2 and 7 systems.
+
+0.291	Fri Oct 13 01:45:18 PDT 2000
+	- eighth alpha
+
+	The flags that are created from the rpm version are now passed for
+	3.0.X, as well.
+
+	A thread-safing bug was found and fixed in Header.xs. An unused
+	variable was removed.
+
+	Makefile.PL has some large-scale work, including the addition of a
+	template spec file following the __DATA__ token, code to expand this
+	file using the values that MakeMaker has derived for the package,
+	generation of make rules to construct *.rpm and *.srpm files, and
+	generation of "rpmrc" and "rpmmacro" files to use in invoking rpm
+	(to force all operation into the local dir area).
