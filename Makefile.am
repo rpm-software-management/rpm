@@ -60,6 +60,10 @@ install-data-local:
 	@ln -s rpm/rpmpopt $(DESTDIR)/$(libdir)/rpmpopt
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/BUILD
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/noarch
+	@case "@build_cpu@" in \
+	*86) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/i386 ;;\
+	alpha*) $(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/alpha ;;\
+	esac
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/RPMS/@build_cpu@
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SOURCES
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SPECS
