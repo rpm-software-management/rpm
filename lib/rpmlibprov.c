@@ -65,11 +65,13 @@ int rpmCheckRpmlibProvides(const rpmDepSet key)
 
     for (rlp = rpmlibProvides; rlp->featureName != NULL; rlp++) {
 	if (rlp->featureEVR && rlp->featureFlags) {
+	    /*@-immediatetrans@*/
 	    pro->N = (const char **) &rlp->featureName;
 	    pro->EVR = (const char **) &rlp->featureEVR;
 	    pro->Flags = &rlp->featureFlags;
 	    pro->Count = 1;
 	    pro->i = 0;
+	    /*@=immediatetrans@*/
 	    rc = rpmRangesOverlap(key, pro);
 	}
 	if (rc)

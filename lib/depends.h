@@ -99,14 +99,18 @@ struct transactionElement_s {
  * A package dependency set.
  */
 struct rpmDepSet_s {
-/*@shared@*/
-    const char ** N;
-/*@shared@*/
-    const char ** EVR;
-/*@shared@*/
-    const int_32 * Flags;
-    int Count;
-    int i;
+    int i;			/*!< Dependency set element index. */
+    rpmTag tagN;		/*!< Type of dependency set. */
+/*@refcounted@*/ /*@null@*/
+    Header h;			/*!< Header for dependency set (or NULL) */
+/*@only@*/
+    const char ** N;		/*!< Dependency name(s}. */
+/*@only@*/
+    const char ** EVR;		/*!< Dependency epoch-version-release. */
+/*@only@*/
+    const int_32 * Flags;	/*!< Dependency flags. */
+    rpmTagType Nt, EVRt, Ft;
+    int Count;			/*!< No. of dependency elements */
 };
 
 /** \ingroup rpmdep
@@ -191,8 +195,8 @@ struct problemsSet_s {
 extern "C" {
 #endif
 
-/*@access teIterator@*/
-/*@access rpmTransactionSet@*/
+/*@access teIterator @*/
+/*@access rpmTransactionSet @*/
 
 /**
  * Return transaction element index.
@@ -262,6 +266,110 @@ transactionElement teNextIterator(teIterator tei)
     /*@-compdef -usereleased@*/ /* FIX: ts->order may be released */
     return te;
     /*@=compdef =usereleased@*/
+}
+
+/*@access rpmDepSet @*/
+
+/**
+ * Destroy a new dependency set.
+ * @param ds		dependency set
+ * @return		NULL always
+ */
+/*@unused@*/ static inline /*@only@*/ /*@null@*/
+rpmDepSet dsFree(/*@only@*/ /*@null@*/ rpmDepSet ds)
+	/*@modifies ds@*/
+{
+    HFD_t hfd = headerFreeData;
+    rpmTag tagEVR, tagF;
+
+    if (ds == NULL)
+	return ds;
+
+    if (ds->tagN == RPMTAG_PROVIDENAME) {
+	tagEVR = RPMTAG_PROVIDEVERSION;
+	tagF = RPMTAG_PROVIDEFLAGS;
+    } else
+    if (ds->tagN == RPMTAG_REQUIRENAME) {
+	tagEVR = RPMTAG_REQUIREVERSION;
+	tagF = RPMTAG_REQUIREFLAGS;
+    } else
+    if (ds->tagN == RPMTAG_CONFLICTNAME) {
+	tagEVR = RPMTAG_CONFLICTVERSION;
+	tagF = RPMTAG_CONFLICTFLAGS;
+    } else
+    if (ds->tagN == RPMTAG_OBSOLETENAME) {
+	tagEVR = RPMTAG_OBSOLETEVERSION;
+	tagF = RPMTAG_OBSOLETEFLAGS;
+    } else {
+	return NULL;
+    }
+
+    /*@-branchstate@*/
+    if (ds->Count > 0) {
+	ds->N = hfd(ds->N, ds->Nt);
+	ds->EVR = hfd(ds->EVR, ds->EVRt);
+	/*@-evalorder@*/
+	ds->Flags = (ds->h != NULL ? hfd(ds->Flags, ds->Ft) : _free(ds->Flags));
+	/*@=evalorder@*/
+	ds->h = headerFree(ds->h, "dsFree");
+    }
+    /*@=branchstate@*/
+    memset(ds, 0, sizeof(*ds));		/* XXX trash and burn */
+    ds = _free(ds);
+    return NULL;
+}
+
+/**
+ * Create and load a dependency set.
+ * @param h		header
+ * @param tagN		type of dependency
+ * @param scareMem	Use pointers to refcounted header memory?
+ * @return		new dependency set
+ */
+/*@unused@*/ static inline /*@only@*/ /*@null@*/
+rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
+	/*@modifies h @*/
+{
+    HGE_t hge =
+	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
+    rpmTag tagEVR, tagF;
+    rpmDepSet ds = NULL;
+
+    if (tagN == RPMTAG_PROVIDENAME) {
+	tagEVR = RPMTAG_PROVIDEVERSION;
+	tagF = RPMTAG_PROVIDEFLAGS;
+    } else
+    if (tagN == RPMTAG_REQUIRENAME) {
+	tagEVR = RPMTAG_REQUIREVERSION;
+	tagF = RPMTAG_REQUIREFLAGS;
+    } else
+    if (tagN == RPMTAG_CONFLICTNAME) {
+	tagEVR = RPMTAG_CONFLICTVERSION;
+	tagF = RPMTAG_CONFLICTFLAGS;
+    } else
+    if (tagN == RPMTAG_OBSOLETENAME) {
+	tagEVR = RPMTAG_OBSOLETEVERSION;
+	tagF = RPMTAG_OBSOLETEFLAGS;
+    } else {
+	return ds;
+    }
+
+    ds = xcalloc(1, sizeof(*ds));
+    ds->i = -1;
+    ds->tagN = tagN;
+    ds->h = (scareMem ? headerLink(h, "dsNew") : NULL);
+    if (hge(h, tagN, &ds->Nt, (void **) &ds->N, &ds->Count)) {
+	int xx;
+	xx = hge(h, tagEVR, &ds->EVRt, (void **) &ds->EVR, NULL);
+	xx = hge(h, tagF, &ds->Ft, (void **) &ds->Flags, NULL);
+	if (!scareMem && ds->Flags != NULL)
+	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
+                                ds->Flags, ds->Count* sizeof(*ds->Flags));
+    } else
+	ds->h = headerFree(ds->h, "dsNew");
+    /*@-nullret@*/ /* FIX: ds->Flags may be NULL. */
+    return ds;
+    /*@=nullret@*/
 }
 
 /**

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-01 21:47-0500\n"
+"POT-Creation-Date: 2001-11-02 00:20-0500\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -1418,70 +1418,70 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:213 lib/depends.c:861 lib/depends.c:993
+#: lib/depends.c:213 lib/depends.c:857 lib/depends.c:989
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:213 lib/depends.c:861 lib/depends.c:993
+#: lib/depends.c:213 lib/depends.c:857 lib/depends.c:989
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:355
+#: lib/depends.c:357
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/depends.c:589
+#: lib/depends.c:590
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:594
+#: lib/depends.c:595
 #, c-format
 msgid "package %s already added, ignoring\n"
 msgstr ""
 
-#: lib/depends.c:599
+#: lib/depends.c:600
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:860
+#: lib/depends.c:856
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:889
+#: lib/depends.c:885
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:906
+#: lib/depends.c:902
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:929
+#: lib/depends.c:925
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:942
+#: lib/depends.c:938
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:956
+#: lib/depends.c:952
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:972
+#: lib/depends.c:968
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:993
+#: lib/depends.c:989
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
@@ -1489,47 +1489,47 @@ msgstr ""
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1059
+#: lib/depends.c:1044
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1139
+#: lib/depends.c:1111
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1395
+#: lib/depends.c:1365
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1633
+#: lib/depends.c:1603
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1705
+#: lib/depends.c:1677
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1780
+#: lib/depends.c:1752
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1840
+#: lib/depends.c:1812
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1875
+#: lib/depends.c:1847
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1880
+#: lib/depends.c:1852
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""

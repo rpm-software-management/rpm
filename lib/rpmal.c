@@ -142,17 +142,17 @@ int alGetFilesCount(const availableList al, int pkgNum)
 rpmDepSet alGetProvides(const availableList al, int pkgNum)
 {
     availablePackage alp = alGetPkg(al, pkgNum);
-    /*@-immediatetrans -retexpose@*/
-    return (alp != NULL ? &alp->provides : 0);
-    /*@=immediatetrans =retexpose@*/
+    /*@-retexpose@*/
+    return (alp != NULL ? alp->provides : 0);
+    /*@=retexpose@*/
 }
 
 rpmDepSet alGetRequires(const availableList al, int pkgNum)
 {
     availablePackage alp = alGetPkg(al, pkgNum);
-    /*@-immediatetrans -retexpose@*/
-    return (alp != NULL ? &alp->requires : 0);
-    /*@=immediatetrans =retexpose@*/
+    /*@-retexpose@*/
+    return (alp != NULL ? alp->requires : 0);
+    /*@=retexpose@*/
 }
 
 Header alGetHeader(availableList al, int pkgNum, int unlink)
@@ -274,10 +274,9 @@ availableList alFree(availableList al)
     if ((p = al->list) != NULL)
     for (i = 0; i < al->size; i++, p++) {
 
-	p->provides.N = hfd(p->provides.N, -1);
-	p->provides.EVR = hfd(p->provides.EVR, -1);
-	p->requires.N = hfd(p->requires.N, -1);
-	p->requires.EVR = hfd(p->requires.EVR, -1);
+	p->provides = dsFree(p->provides);
+	p->requires = dsFree(p->requires);
+
 	p->baseNames = hfd(p->baseNames, -1);
 	p->h = headerFree(p->h, "alFree");
 
@@ -429,6 +428,7 @@ alAddPackage(availableList al, int pkgNum,
 		/*@null@*/ FD_t fd, /*@null@*/ rpmRelocation * relocs)
 	/*@modifies al, h @*/
 {
+    int scareMem = 1;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmTagType dnt, bnt;
@@ -488,36 +488,8 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, p->name, p->versi
     if (!hge(h, RPMTAG_EPOCH, NULL, (void **) &p->epoch, NULL))
 	p->epoch = NULL;
 
-    if (!hge(h, RPMTAG_PROVIDENAME, NULL, (void **) &p->provides.N,
-		&p->provides.Count))
-    {
-	p->provides.Count = 0;
-	p->provides.N = NULL;
-	p->provides.EVR = NULL;
-	p->provides.Flags = NULL;
-    } else {
-	if (!hge(h, RPMTAG_PROVIDEVERSION,
-			NULL, (void **) &p->provides.EVR, NULL))
-	    p->provides.EVR = NULL;
-	if (!hge(h, RPMTAG_PROVIDEFLAGS,
-			NULL, (void **) &p->provides.Flags, NULL))
-	    p->provides.Flags = NULL;
-    }
-
-    if (!hge(h, RPMTAG_REQUIRENAME, NULL, (void **) &p->requires.N,
-	&p->requires.Count)) {
-	p->requires.Count = 0;
-	p->requires.N = NULL;
-	p->requires.EVR = NULL;
-	p->requires.Flags = NULL;
-    } else {
-	if (!hge(h, RPMTAG_REQUIREVERSION,
-			NULL, (void **) &p->requires.EVR, NULL))
-	    p->requires.EVR = NULL;
-	if (!hge(h, RPMTAG_REQUIREFLAGS,
-			NULL, (void **) &p->requires.Flags, NULL))
-	    p->requires.Flags = NULL;
-    }
+    p->provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
+    p->requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
 
     if (!hge(h, RPMTAG_BASENAMES, &bnt, (void **)&p->baseNames, &p->filesCount))
     {
@@ -656,19 +628,21 @@ void alMakeIndex(availableList al)
     if (ai->size || al->list == NULL) return;
 
     for (i = 0; i < al->size; i++)
-	ai->size += al->list[i].provides.Count;
+	if (al->list[i].provides != NULL)
+	    ai->size += al->list[i].provides->Count;
 
     if (ai->size) {
 	ai->index = xcalloc(ai->size, sizeof(*ai->index));
 
 	k = 0;
 	for (i = 0; i < al->size; i++) {
-	    for (j = 0; j < al->list[i].provides.Count; j++) {
+	    if (al->list[i].provides != NULL)
+	    for (j = 0; j < al->list[i].provides->Count; j++) {
 
 #ifdef	NOTNOW	/* XXX FIXME: multilib colored dependency search */
 		/* If multilib install, skip non-multilib provides. */
 		if (al->list[i].multiLib &&
-		    !isDependsMULTILIB(al->list[i].provides.Flags[j])) {
+		    !isDependsMULTILIB(al->list[i].provides->Flags[j])) {
 			ai->size--;
 			/*@innercontinue@*/ continue;
 		}
@@ -676,9 +650,9 @@ void alMakeIndex(availableList al)
 
 		ai->index[k].package = al->list + i;
 		/*@-assignexpose@*/
-		ai->index[k].entry = al->list[i].provides.N[j];
+		ai->index[k].entry = al->list[i].provides->N[j];
 		/*@=assignexpose@*/
-		ai->index[k].entryLen = strlen(al->list[i].provides.N[j]);
+		ai->index[k].entryLen = strlen(al->list[i].provides->N[j]);
 		ai->index[k].type = IET_PROVIDES;
 		k++;
 	    }
@@ -837,19 +811,21 @@ alAllSatisfiesDepend(const availableList al,
 
 	p = match->package;
 	rc = 0;
-	isave = p->provides.i;	/* XXX hack */
+	if (p->provides != NULL)
+	    isave = p->provides->i;	/* XXX hack */
 	switch (match->type) {
 	case IET_PROVIDES:
-	    for (p->provides.i = 0;
-		 p->provides.i < p->provides.Count;
-		 p->provides.i++)
+	    if (p->provides != NULL)
+	    for (p->provides->i = 0;
+		 p->provides->i < p->provides->Count;
+		 p->provides->i++)
 	    {
 
 		/* Filter out provides that came along for the ride. */
-		if (strcmp(p->provides.N[p->provides.i], key->N[key->i]))
+		if (strcmp(p->provides->N[p->provides->i], key->N[key->i]))
 		    /*@innercontinue@*/ continue;
 
-		rc = rpmRangesOverlap(&p->provides, key);
+		rc = rpmRangesOverlap(p->provides, key);
 		if (rc)
 		    /*@innerbreak@*/ break;
 	    }
@@ -858,7 +834,8 @@ alAllSatisfiesDepend(const availableList al,
 				keyType, keyDepend+2);
 	    /*@switchbreak@*/ break;
 	}
-	p->provides.i = isave;	/* XXX hack */
+	if (p->provides != NULL)
+	    p->provides->i = isave;	/* XXX hack */
 
 	/*@-branchstate@*/
 	if (rc) {

@@ -291,9 +291,11 @@ int headerMatchesDepFlags(Header h, const rpmDepSet req)
     }
     (void) stpcpy( stpcpy( stpcpy(p, version) , "-") , release);
 
+    /*@-immediatetrans@*/
     pkg->N = &name;
     pkg->EVR = &pkgEVR;
     pkg->Flags = &pkgFlags;
+    /*@=immediatetrans@*/
     pkg->Count = 1;
     pkg->i = 0;
 
@@ -513,7 +515,7 @@ char * hGetNVR(Header h, const char ** np )
  * @param tei		transaction element iterator
  * @return		next transaction element of type, NULL on termination
  */
-static /*@dependent@*/
+static /*@dependent@*/ /*@null@*/
 transactionElement teNext(teIterator tei, enum rpmTransactionType type)
         /*@modifies tei @*/
 {
@@ -529,16 +531,15 @@ transactionElement teNext(teIterator tei, enum rpmTransactionType type)
 int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
 			const void * key, int upgrade, rpmRelocation * relocs)
 {
+    int scareMem = 1;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
     const char * name = NULL;
     const char * addNVR = hGetNVR(h, &name);
     const char * pkgNVR = NULL;
-    rpmTagType ont, ovt;
     int duplicate = 0;
     int apx;	/* addedPackages index */
     transactionElement p;
-    rpmDepSet obsoletes = memset(alloca(sizeof(*obsoletes)), 0, sizeof(*obsoletes));
+    rpmDepSet obsoletes;
     int alNum;
     int xx;
     int ec = 0;
@@ -689,20 +690,15 @@ assert(apx == ts->numAddedPackages);
 	mi = rpmdbFreeIterator(mi);
     }
 
-    if (hge(h, RPMTAG_OBSOLETENAME, &ont, (void **) &obsoletes->N, &obsoletes->Count)) {
+    obsoletes = dsNew(h, RPMTAG_OBSOLETENAME, scareMem);
+    if (obsoletes != NULL)
+    for (obsoletes->i = 0; obsoletes->i < obsoletes->Count; obsoletes->i++) {
 
-	xx = hge(h, RPMTAG_OBSOLETEVERSION, &ovt, (void **) &obsoletes->EVR,
-			NULL);
-	xx = hge(h, RPMTAG_OBSOLETEFLAGS, NULL, (void **) &obsoletes->Flags,
-			NULL);
-
-	for (obsoletes->i = 0; obsoletes->i < obsoletes->Count; obsoletes->i++) {
-
-	    /* XXX avoid self-obsoleting packages. */
-	    if (!strcmp(name, obsoletes->N[obsoletes->i]))
+	/* XXX avoid self-obsoleting packages. */
+	if (!strcmp(name, obsoletes->N[obsoletes->i]))
 		continue;
 
-	  { rpmdbMatchIterator mi;
+	{   rpmdbMatchIterator mi;
 	    Header h2;
 
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, obsoletes->N[obsoletes->i], 0);
@@ -722,12 +718,12 @@ assert(apx == ts->numAddedPackages);
 		/*@=branchstate@*/
 	    }
 	    mi = rpmdbFreeIterator(mi);
-	  }
 	}
-
-	obsoletes->EVR = hfd(obsoletes->EVR, ovt);
-	obsoletes->N = hfd(obsoletes->N, ont);
     }
+    /*@-nullstate@*/ /* FIX: obsoletes->EVR may be NULL */
+    obsoletes = dsFree(obsoletes);
+    /*@=nullstate@*/
+
     ec = 0;
 
 exit:
@@ -1012,29 +1008,18 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	/*@globals fileSystem @*/
 	/*@modifies ts, h, psp, fileSystem */
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    rpmTagType rnt, rvt;
-    rpmTagType cnt, cvt;
     const char * name, * version, * release;
-    rpmDepSet requires = memset(alloca(sizeof(*requires)), 0, sizeof(*requires));
-    rpmDepSet conflicts = memset(alloca(sizeof(*conflicts)), 0, sizeof(*conflicts));
-    rpmTagType type;
+    int scareMem = 1;
+    rpmDepSet requires;
+    rpmDepSet conflicts;
     int rc, xx;
     int ourrc = 0;
     availablePackage * suggestion;
 
     xx = headerNVR(h, &name, &version, &release);
 
-    if (!hge(h, RPMTAG_REQUIRENAME, &rnt, (void **) &requires->N, &requires->Count))
-    {
-	requires->Count = 0;
-	rvt = RPM_STRING_ARRAY_TYPE;
-    } else {
-	xx = hge(h, RPMTAG_REQUIREFLAGS, NULL, (void **) &requires->Flags, NULL);
-	xx = hge(h, RPMTAG_REQUIREVERSION, &rvt, (void **) &requires->EVR, NULL);
-    }
-
+    requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
+    if (requires != NULL)
     for (requires->i = 0; requires->i < requires->Count && !ourrc; requires->i++) {
 	const char * keyDepend;
 
@@ -1100,23 +1085,10 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	}
 	keyDepend = _free(keyDepend);
     }
+    requires = dsFree(requires);
 
-    if (requires->Count) {
-	requires->EVR = hfd(requires->EVR, rvt);
-	requires->N = hfd(requires->N, rnt);
-    }
-
-    if (!hge(h, RPMTAG_CONFLICTNAME, &cnt, (void **)&conflicts->N, &conflicts->Count))
-    {
-	conflicts->Count = 0;
-	cvt = RPM_STRING_ARRAY_TYPE;
-    } else {
-	xx = hge(h, RPMTAG_CONFLICTFLAGS, &type,
-		(void **) &conflicts->Flags, &conflicts->Count);
-	xx = hge(h, RPMTAG_CONFLICTVERSION, &cvt,
-		(void **) &conflicts->EVR, &conflicts->Count);
-    }
-
+    conflicts = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
+    if (conflicts != NULL)
     for (conflicts->i = 0; conflicts->i < conflicts->Count && !ourrc; conflicts->i++) {
 	const char * keyDepend;
 
@@ -1168,11 +1140,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	}
 	keyDepend = _free(keyDepend);
     }
-
-    if (conflicts->Count) {
-	conflicts->EVR = hfd(conflicts->EVR, cvt);
-	conflicts->N = hfd(conflicts->N, cnt);
-    }
+    conflicts = dsFree(conflicts);
 
     return ourrc;
 }
@@ -1361,7 +1329,8 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
  * @return		(possibly NULL) formatted "q <- p" releation (malloc'ed)
  */
 static /*@owned@*/ /*@null@*/ const char *
-zapRelation(transactionElement q, transactionElement p, rpmDepSet requires,
+zapRelation(transactionElement q, transactionElement p,
+		/*@null@*/ rpmDepSet requires,
 		int zap, /*@in@*/ /*@out@*/ int * nzaps)
 	/*@modifies q, p, *nzaps, requires @*/
 {
@@ -1379,6 +1348,7 @@ zapRelation(transactionElement q, transactionElement p, rpmDepSet requires,
 	if (tsi->tsi_suc != p)
 	    continue;
 
+	if (requires == NULL) continue;		/* XXX can't happen */
 	if (requires->N == NULL) continue;	/* XXX can't happen */
 	if (requires->EVR == NULL) continue;	/* XXX can't happen */
 	if (requires->Flags == NULL) continue;	/* XXX can't happen */
@@ -1638,6 +1608,8 @@ prtTSI(p->NEVR, &p->tsi);
 
 	requires = alGetRequires(ts->addedPackages, p->u.addedIndex);
 
+	if (requires == NULL)
+	    continue;
 	if (requires->Count <= 0)
 	    continue;
 	if (requires->Flags == NULL) /* XXX can't happen */
@@ -1999,6 +1971,7 @@ static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
 int rpmdepCheck(rpmTransactionSet ts,
 		rpmDependencyConflict * conflicts, int * numConflicts)
 {
+    int scareMem = 1;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmdbMatchIterator mi = NULL;
@@ -2079,7 +2052,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	    goto exit;
 
 	provides = alGetProvides(ts->addedPackages, p->u.addedIndex);
-	if (provides->Count == 0 || provides->N == NULL)
+	if (provides == NULL || provides->Count == 0 || provides->N == NULL)
 	    continue;
 
 	rc = 0;
@@ -2100,7 +2073,8 @@ int rpmdepCheck(rpmTransactionSet ts,
      */
     /*@-branchstate@*/
     if (ts->numRemovedPackages > 0) {
-      rpmDepSet provides = memset(alloca(sizeof(*provides)), 0, sizeof(*provides));
+      rpmDepSet provides;
+
       mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
       xx = rpmdbAppendIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages);
@@ -2118,25 +2092,20 @@ int rpmdepCheck(rpmTransactionSet ts,
 		goto exit;
 	}
 
-	{
-	    rpmTagType pnt;
-
-	    if (hge(h, RPMTAG_PROVIDENAME, &pnt, (void **) &provides->N,
-				&provides->Count))
+	    rc = 0;
+	    provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
+	    if (provides != NULL)
+	    for (provides->i = 0; provides->i < provides->Count; provides->i++)
 	    {
-		rc = 0;
-		for (provides->i = 0; provides->i < provides->Count; provides->i++) {
-		    /* Erasing: check provides against requiredby matches. */
-		    if (!checkDependentPackages(ts, ps, provides->N[provides->i]))
-			/*@innercontinue@*/ continue;
-		    rc = 1;
-		    /*@innerbreak@*/ break;
-		}
-		provides->N = hfd(provides->N, pnt);
-		if (rc)
-		    goto exit;
+		/* Erasing: check provides against requiredby matches. */
+		if (!checkDependentPackages(ts, ps, provides->N[provides->i]))
+		    /*@innercontinue@*/ continue;
+		rc = 1;
+		/*@innerbreak@*/ break;
 	    }
-	}
+	    provides = dsFree(provides);
+	    if (rc)
+		goto exit;
 
 	{   const char ** baseNames, ** dirNames;
 	    int_32 * dirIndexes;

@@ -37,6 +37,7 @@
 	- add header refcount annotations throughout.
 	- depends.c: availablePackage is (almost) opaque.
 	- invent some toy transactionElement iterators.
+	- create rpmDepSet constructors/destructors.
 
 4.0.3 -> 4.0.4:
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-01 21:47-0500\n"
+"POT-Creation-Date: 2001-11-02 00:20-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1461,70 +1461,70 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:213 lib/depends.c:861 lib/depends.c:993
+#: lib/depends.c:213 lib/depends.c:857 lib/depends.c:989
 msgid "YES"
 msgstr "EVET"
 
-#: lib/depends.c:213 lib/depends.c:861 lib/depends.c:993
+#: lib/depends.c:213 lib/depends.c:857 lib/depends.c:989
 msgid "NO "
 msgstr "HAYIR "
 
-#: lib/depends.c:355
+#: lib/depends.c:357
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "%s de Paket veritabaný açýlamadý\n"
 
-#: lib/depends.c:589
+#: lib/depends.c:590
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:594
+#: lib/depends.c:595
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "%s zaten kurulu"
 
-#: lib/depends.c:599
+#: lib/depends.c:600
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:860
+#: lib/depends.c:856
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr "%s: %-45s %-s (arabellekli)\n"
 
-#: lib/depends.c:889
+#: lib/depends.c:885
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s EVET (rpmrc saðlar)\n"
 
-#: lib/depends.c:906
+#: lib/depends.c:902
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s EVET (rpmlib saðlar)\n"
 
-#: lib/depends.c:929
+#: lib/depends.c:925
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s EVET (db dosyalarý)\n"
 
-#: lib/depends.c:942
+#: lib/depends.c:938
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s EVET (db saðlar)\n"
 
-#: lib/depends.c:956
+#: lib/depends.c:952
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s EVET (db paketi)\n"
 
-#: lib/depends.c:972
+#: lib/depends.c:968
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s HAYIR\n"
 
-#: lib/depends.c:993
+#: lib/depends.c:989
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) Baðýmlýlar alanýna eklendi.\n"
@@ -1532,48 +1532,48 @@ msgstr "%s: (%s, %s) Baðýmlýlar alanýna eklendi.\n"
 #. requirements are satisfied.
 #. @switchbreak@
 #. requirements are not satisfied.
-#: lib/depends.c:1059
+#: lib/depends.c:1044
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1139
+#: lib/depends.c:1111
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "%s paketi çeliþiyor: %s\n"
 
-#: lib/depends.c:1395
+#: lib/depends.c:1365
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tsort baðýntýlarýndan %s-%s-%s \"%s\" kaldýrýlýyor\n"
 
 #. Record all relations.
-#: lib/depends.c:1633
+#: lib/depends.c:1603
 msgid "========== recording tsort relations\n"
 msgstr "========== tsort baðýntýlarý kaydediliyor\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1705
+#: lib/depends.c:1677
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== paketler tsort'lanýyor (sýra, #öncüller, #ardýllar, derinlik)\n"
 
-#: lib/depends.c:1780
+#: lib/depends.c:1752
 msgid "========== successors only (presentation order)\n"
 msgstr "========== sadece ardýllar (sunum sýrasý)\n"
 
-#: lib/depends.c:1840
+#: lib/depends.c:1812
 msgid "LOOP:\n"
 msgstr "ÇEVRÝM:\n"
 
-#: lib/depends.c:1875
+#: lib/depends.c:1847
 msgid "========== continuing tsort ...\n"
 msgstr "========== tsort sürüyor ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1880
+#: lib/depends.c:1852
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""

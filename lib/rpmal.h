@@ -10,19 +10,28 @@
  * Info about a single package to be installed.
  */
 struct availablePackage_s {
-    Header h;				/*!< Package header. */
-/*@dependent@*/ const char * name;	/*!< Header name. */
-/*@dependent@*/ const char * version;	/*!< Header version. */
-/*@dependent@*/ const char * release;	/*!< Header release. */
-    struct rpmDepSet_s provides;	/*!< Provides: dependencies. */
-    struct rpmDepSet_s requires;	/*!< Requires: dependencies. */
-/*@owned@*//*@null@*/ const char ** baseNames;	/*!< Header file basenames. */
-/*@dependent@*//*@null@*/ int_32 * epoch;	/*!< Header epoch (if any). */
-    int filesCount;			/*!< No. of files in header. */
+/*@refcounted@*/
+    Header h;			/*!< Package header. */
+/*@dependent@*/
+    const char * name;		/*!< Header name. */
+/*@dependent@*/
+    const char * version;	/*!< Header version. */
+/*@dependent@*/
+    const char * release;	/*!< Header release. */
+/*@owned@*/ /*@null@*/
+    rpmDepSet provides;		/*!< Provides: dependencies. */
+/*@owned@*/ /*@null@*/
+    rpmDepSet requires;		/*!< Requires: dependencies. */
+/*@owned@*//*@null@*/
+    const char ** baseNames;	/*!< Header file basenames. */
+/*@dependent@*//*@null@*/
+    int_32 * epoch;		/*!< Header epoch (if any). */
+    int filesCount;		/*!< No. of files in header. */
 #ifdef	DYING
     uint_32 multiLib;	/* MULTILIB */
 #endif
-/*@kept@*//*@null@*/ const void * key;	/*!< Private data associated with a package (e.g. file name of package). */
+/*@kept@*//*@null@*/
+    const void * key;		/*!< Private data associated with a package (e.g. file name of package). */
 /*@null@*/ rpmRelocation * relocs;
 /*@null@*/ FD_t fd;
 };
@@ -75,6 +84,7 @@ int alGetFilesCount(/*@null@*/ const availableList al, int pkgNum)
  * @param pkgNum	available package index
  * @return		available package provides
  */
+/*@null@*/
 rpmDepSet alGetProvides(/*@null@*/ const availableList al, int pkgNum)
 	/*@*/;
 
@@ -84,6 +94,7 @@ rpmDepSet alGetProvides(/*@null@*/ const availableList al, int pkgNum)
  * @param pkgNum	available package index
  * @return		available package requires
  */
+/*@null@*/
 rpmDepSet alGetRequires(/*@null@*/ const availableList al, int pkgNum)
 	/*@*/;
 
