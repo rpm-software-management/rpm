@@ -8,10 +8,6 @@
 
 /** \ingroup rpmbuild
  */
-typedef struct Spec_s * Spec;
-
-/** \ingroup rpmbuild
- */
 typedef struct Package_s * Package;
 
 /** \ingroup rpmbuild
@@ -235,14 +231,17 @@ extern "C" {
 	/*@modifies spec, fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
- * @param spec		spec file control structure
- * @return		NULL always
+ * Function to query spec file(s).
+ * @param ts		transaction set
+ * @param qva		parsed query/verify options
+ * @param arg		query argument
+ * @return		0 on success, else no. of failures
  */
-/*@-declundef@*/
-extern /*@null@*/ Spec (*freeSpecVec) (Spec spec)	/* XXX FIXME */
-	/*@globals fileSystem, internalState @*/
-	/*@modifies spec, fileSystem, internalState @*/;
-/*@=declundef@*/
+int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
+        /*@globals rpmGlobalMacroContext,
+                fileSystem, internalState @*/
+        /*@modifies ts, qva, rpmGlobalMacroContext,
+                fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
  */

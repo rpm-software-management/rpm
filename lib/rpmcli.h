@@ -230,6 +230,20 @@ typedef	int (*QVF_t) (QVA_t qva, rpmts ts, Header h)
 	/*@modifies qva, ts, fileSystem @*/;
 
 /** \ingroup rpmcli
+ * Function to query spec file.
+ *
+ * @param ts		transaction set
+ * @param qva		parsed query/verify options
+ * @param arg		query argument
+ * @return		0 on success
+ */
+typedef	int (*QSpecF_t) (rpmts ts, QVA_t qva, const char * arg)
+	/*@globals rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies ts, qva, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
+
+/** \ingroup rpmcli
  * Describe query/verify/signature command line operation.
  */
 struct rpmQVKArguments_s {
@@ -241,6 +255,8 @@ struct rpmQVKArguments_s {
     rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
 /*@null@*/
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
+/*@null@*/
+    QSpecF_t qva_specQuery;	/*!< Function to query spec file. */
 /*@unused@*/
     int qva_verbose;		/*!< (unused) */
 /*@only@*/ /*@null@*/

@@ -466,6 +466,8 @@ exit 0
 - add rpmdb_{deadlock,dump,load,svc,stat,verify} utilities.
 - include srpm pkgid in binary headers (#71460).
 - add %check scriptlet to run after %install (#64137).
+- simplify specfile query linkage loop.
+- drill rpmts into parseSpec(), carrying Spec along.
 
 * Fri Dec 20 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.33
 - dynamically link /bin/rpm, link against good old -lpthread.

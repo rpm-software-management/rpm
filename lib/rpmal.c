@@ -781,8 +781,10 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 	    ret = xrealloc(ret, (found + 2) * sizeof(*ret));
 	    if (ret)	/* can't happen */
 		ret[found] = alp->key;
+/*@-dependenttrans@*/
 	    if (keyp)
 		*keyp = match->pkgKey;
+/*@=dependenttrans@*/
 	    found++;
 	}
 	/*@=branchstate@*/
@@ -791,7 +793,9 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
     if (ret)
 	ret[found] = NULL;
 
+/*@-nullstate@*/ /* FIX: *kep may be NULL */
     return ret;
+/*@=nullstate@*/
 }
 
 fnpyKey

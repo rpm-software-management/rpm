@@ -263,12 +263,6 @@ int main(int argc, const char ** argv)
     default:
 	break;
     }
-
-    /* XXX Eliminate query linkage loop */
-    /*@-type@*/	/* FIX: casts? */
-    parseSpecVec = parseSpec;
-    freeSpecVec = freeSpec;
-    /*@=type@*/
 #endif
 
 #if defined(ENABLE_NLS)
@@ -795,7 +789,11 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
     case MODE_QUERY:
 	if (qva->qva_source != RPMQV_ALL && !poptPeekArg(optCon))
 	    argerror(_("no arguments given for query"));
+
+	qva->qva_specQuery = rpmspecQuery;
 	ec = rpmcliQuery(ts, qva, (const char **) poptGetArgs(optCon));
+	qva->qva_specQuery = NULL;
+
 	/* XXX don't overflow single byte exit status */
 	if (ec > 255) ec = 255;
 	break;

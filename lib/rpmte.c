@@ -34,11 +34,7 @@ void rpmteCleanDS(rpmte te)
 
 /**
  * Destroy transaction element data.
- * @param ts		transaction set
  * @param p		transaction element
- * @param h		header
- * @param key		(TR_ADDED) package retrieval key (e.g. file name)
- * @param relocs	(TR_ADDED) package file relocations
  */
 static void delTE(rpmte p)
 	/*@globals fileSystem @*/

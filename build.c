@@ -259,12 +259,17 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     /* Parse the spec file */
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
-    if (parseSpec(&spec, specURL, ba->rootdir, buildRootURL, 0, passPhrase,
-		cookie, _anyarch(buildAmount), ba->force)) {
+    if (parseSpec(ts, specURL, ba->rootdir, buildRootURL, 0, passPhrase,
+		cookie, _anyarch(buildAmount), ba->force))
+    {
 	rc = 1;
 	goto exit;
     }
 #undef	_anyarch
+    if ((spec = rpmtsSetSpec(ts, NULL)) == NULL) {
+	rc = 1;
+	goto exit;
+    }
 
     /* Assemble source header from parsed components */
     initSourceHeader(spec);

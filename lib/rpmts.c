@@ -1101,6 +1101,18 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
     return otransFlags;
 }
 
+Spec rpmtsSpec(rpmts ts)
+{
+    return ts->spec;
+}
+
+Spec rpmtsSetSpec(rpmts ts, Spec spec)
+{
+    Spec ospec = ts->spec;
+    ts->spec = spec;
+    return ospec;
+}
+
 int rpmtsSetNotifyCallback(rpmts ts,
 		rpmCallbackFunction notify, rpmCallbackData notifyData)
 {

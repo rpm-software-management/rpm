@@ -870,10 +870,13 @@ int packageSources(Spec spec)
 		csa, spec->passPhrase, &(spec->cookie));
 	if (rc == 0 && sig != NULL) {
 	    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-	    const unsigned char * s = NULL;
+	    const unsigned char * md5 = NULL;
+	    rpmTagType type;
+	    int_32 c;
 	    int xx;
-	    xx = hge(sig, RPMSIGTAG_MD5, NULL, (void **)&s, NULL);
-	    spec->sourcePkgId = s;
+	    xx = hge(sig, RPMSIGTAG_MD5, &type, (void **)&md5, &c);
+	    if (type == RPM_BIN_TYPE && md5 != NULL && c == 16)
+		spec->sourcePkgId = memcpy(xmalloc(16), md5, 16);;
 	    sig = headerFree(sig);
 	}
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, "init (packageSources)");

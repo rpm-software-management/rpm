@@ -12,7 +12,6 @@
 #endif
 
 #include <rpmcli.h>
-#include <rpmbuild.h>
 
 #include "rpmdb.h"
 #include "rpmfi.h"
@@ -343,121 +342,6 @@ exit:
     return rc;
 }
 
-/**
- * Print copy of spec file, filling in Group/Description/Summary from specspo.
- * @param spec		spec file control structure
- */
-static void
-printNewSpecfile(Spec spec)
-	/*@globals fileSystem @*/
-	/*@modifies spec->sl->sl_lines[], fileSystem @*/
-{
-    Header h;
-    speclines sl = spec->sl;
-    spectags st = spec->st;
-    const char * msgstr = NULL;
-    int i, j;
-
-    if (sl == NULL || st == NULL)
-	return;
-
-    /*@-branchstate@*/
-    for (i = 0; i < st->st_ntags; i++) {
-	spectag t = st->st_t + i;
-	const char * tn = tagName(t->t_tag);
-	const char * errstr;
-	char fmt[1024];
-
-	fmt[0] = '\0';
-	if (t->t_msgid == NULL)
-	    h = spec->packages->header;
-	else {
-	    Package pkg;
-	    char *fe;
-
-/*@-bounds@*/
-	    strcpy(fmt, t->t_msgid);
-	    for (fe = fmt; *fe && *fe != '('; fe++)
-		{} ;
-	    if (*fe == '(') *fe = '\0';
-/*@=bounds@*/
-	    h = NULL;
-	    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-		const char *pkgname;
-		h = pkg->header;
-		(void) headerNVR(h, &pkgname, NULL, NULL);
-		if (!strcmp(pkgname, fmt))
-		    /*@innerbreak@*/ break;
-	    }
-	    if (pkg == NULL || h == NULL)
-		h = spec->packages->header;
-	}
-
-	if (h == NULL)
-	    continue;
-
-	fmt[0] = '\0';
-/*@-boundswrite@*/
-	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tn), "}");
-/*@=boundswrite@*/
-	msgstr = _free(msgstr);
-
-	/* XXX this should use queryHeader(), but prints out tn as well. */
-	msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
-	if (msgstr == NULL) {
-	    rpmError(RPMERR_QFMT, _("can't query %s: %s\n"), tn, errstr);
-	    return;
-	}
-
-/*@-boundswrite@*/
-	switch(t->t_tag) {
-	case RPMTAG_SUMMARY:
-	case RPMTAG_GROUP:
-	    /*@-unqualifiedtrans@*/
-	    sl->sl_lines[t->t_startx] = _free(sl->sl_lines[t->t_startx]);
-	    /*@=unqualifiedtrans@*/
-	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))
-		continue;
-	    {   char *buf = xmalloc(strlen(tn) + sizeof(": ") + strlen(msgstr));
-		(void) stpcpy( stpcpy( stpcpy(buf, tn), ": "), msgstr);
-		sl->sl_lines[t->t_startx] = buf;
-	    }
-	    /*@switchbreak@*/ break;
-	case RPMTAG_DESCRIPTION:
-	    for (j = 1; j < t->t_nlines; j++) {
-		if (*sl->sl_lines[t->t_startx + j] == '%')
-		    /*@innercontinue@*/ continue;
-		/*@-unqualifiedtrans@*/
-		sl->sl_lines[t->t_startx + j] =
-			_free(sl->sl_lines[t->t_startx + j]);
-		/*@=unqualifiedtrans@*/
-	    }
-	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG)) {
-		sl->sl_lines[t->t_startx] = _free(sl->sl_lines[t->t_startx]);
-		continue;
-	    }
-	    sl->sl_lines[t->t_startx + 1] = xstrdup(msgstr);
-	    if (t->t_nlines > 2)
-		sl->sl_lines[t->t_startx + 2] = xstrdup("\n\n");
-	    /*@switchbreak@*/ break;
-	}
-/*@=boundswrite@*/
-    }
-    /*@=branchstate@*/
-    msgstr = _free(msgstr);
-
-/*@-boundsread@*/
-    for (i = 0; i < sl->sl_nlines; i++) {
-	const char * s = sl->sl_lines[i];
-	if (s == NULL)
-	    continue;
-	printf("%s", s);
-	if (strchr(s, '\n') == NULL && s[strlen(s)-1] != '\n')
-	    printf("\n");
-    }
-/*@=boundsread@*/
-}
-
 void rpmDisplayQueryTags(FILE * fp)
 {
     const struct headerTagTableEntry_s * t;
@@ -516,19 +400,6 @@ static inline unsigned char nibble(char c)
     return 0;
 }
 
-/*@-redecl@*/
-/**
- * @todo Eliminate linkage loop into librpmbuild.a
- */
-int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
-		const char *buildRoot, int recursing, const char *passPhrase,
-		char *cookie, int anyarch, int force) = NULL;
-/**
- * @todo Eliminate linkage loop into librpmbuild.a
- */
-/*@null@*/ Spec	(*freeSpecVec) (Spec spec) = NULL;
-/*@=redecl@*/
-
 /*@-bounds@*/ /* LCL: segfault (realpath annotation?) */
 int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 {
@@ -536,7 +407,6 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     int res = 0;
     Header h;
     int rc;
-    int xx;
     const char * s;
     int i;
 
@@ -646,45 +516,9 @@ restart:
     }	break;
 
     case RPMQV_SPECFILE:
-	if (qva->qva_showPackage != showQueryPackage)
-	    return 1;
-
-	/* XXX Eliminate linkage dependency loop */
-	if (parseSpecVec == NULL || freeSpecVec == NULL)
-	    return 1;
-
-      { Spec spec = NULL;
-	Package pkg;
-	char * buildRoot = NULL;
-	int recursing = 0;
-	char * passPhrase = "";
-	char *cookie = NULL;
-	int anyarch = 1;
-	int force = 1;
-
-	/*@-mods@*/ /* FIX: make spec abstract */
-	rc = parseSpecVec(&spec, arg, "/", buildRoot, recursing, passPhrase,
-		cookie, anyarch, force);
-	/*@=mods@*/
-	if (rc || spec == NULL) {
-	    rpmError(RPMERR_QUERY,
-	    		_("query of specfile %s failed, can't parse\n"), arg);
-	    spec = freeSpecVec(spec);
-	    res = 1;
-	    break;
-	}
-
-	if (specedit) {
-	    printNewSpecfile(spec);
-	    spec = freeSpecVec(spec);
-	    res = 0;
-	    break;
-	}
-
-	for (pkg = spec->packages; pkg != NULL; pkg = pkg->next)
-	    xx = qva->qva_showPackage(qva, ts, pkg->header);
-	spec = freeSpecVec(spec);
-      }	break;
+	res = ((qva->qva_specQuery != NULL)
+		? qva->qva_specQuery(ts, qva, arg) : 1);
+	break;
 
     case RPMQV_ALL:
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);

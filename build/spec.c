@@ -7,6 +7,7 @@
 
 #include "buildio.h"
 #include "rpmfi.h"
+#include "rpmts.h"
 
 #include "debug.h"
 
@@ -555,7 +556,8 @@ Spec freeSpec(Spec spec)
     return spec;
 }
 
-/*@only@*/ struct OpenFileInfo * newOpenFileInfo(void)
+/*@only@*/
+struct OpenFileInfo * newOpenFileInfo(void)
 {
     struct OpenFileInfo *ofi;
 
@@ -570,4 +572,160 @@ Spec freeSpec(Spec spec)
     ofi->next = NULL;
 
     return ofi;
+}
+
+/**
+ * Print copy of spec file, filling in Group/Description/Summary from specspo.
+ * @param spec		spec file control structure
+ */
+static void
+printNewSpecfile(Spec spec)
+	/*@globals fileSystem @*/
+	/*@modifies spec->sl->sl_lines[], fileSystem @*/
+{
+    Header h;
+    speclines sl = spec->sl;
+    spectags st = spec->st;
+    const char * msgstr = NULL;
+    int i, j;
+
+    if (sl == NULL || st == NULL)
+	return;
+
+    /*@-branchstate@*/
+    for (i = 0; i < st->st_ntags; i++) {
+	spectag t = st->st_t + i;
+	const char * tn = tagName(t->t_tag);
+	const char * errstr;
+	char fmt[1024];
+
+	fmt[0] = '\0';
+	if (t->t_msgid == NULL)
+	    h = spec->packages->header;
+	else {
+	    Package pkg;
+	    char *fe;
+
+/*@-bounds@*/
+	    strcpy(fmt, t->t_msgid);
+	    for (fe = fmt; *fe && *fe != '('; fe++)
+		{} ;
+	    if (*fe == '(') *fe = '\0';
+/*@=bounds@*/
+	    h = NULL;
+	    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+		const char *pkgname;
+		h = pkg->header;
+		(void) headerNVR(h, &pkgname, NULL, NULL);
+		if (!strcmp(pkgname, fmt))
+		    /*@innerbreak@*/ break;
+	    }
+	    if (pkg == NULL || h == NULL)
+		h = spec->packages->header;
+	}
+
+	if (h == NULL)
+	    continue;
+
+	fmt[0] = '\0';
+/*@-boundswrite@*/
+	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tn), "}");
+/*@=boundswrite@*/
+	msgstr = _free(msgstr);
+
+	/* XXX this should use queryHeader(), but prints out tn as well. */
+	msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+	if (msgstr == NULL) {
+	    rpmError(RPMERR_QFMT, _("can't query %s: %s\n"), tn, errstr);
+	    return;
+	}
+
+/*@-boundswrite@*/
+	switch(t->t_tag) {
+	case RPMTAG_SUMMARY:
+	case RPMTAG_GROUP:
+	    /*@-unqualifiedtrans@*/
+	    sl->sl_lines[t->t_startx] = _free(sl->sl_lines[t->t_startx]);
+	    /*@=unqualifiedtrans@*/
+	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))
+		continue;
+	    {   char *buf = xmalloc(strlen(tn) + sizeof(": ") + strlen(msgstr));
+		(void) stpcpy( stpcpy( stpcpy(buf, tn), ": "), msgstr);
+		sl->sl_lines[t->t_startx] = buf;
+	    }
+	    /*@switchbreak@*/ break;
+	case RPMTAG_DESCRIPTION:
+	    for (j = 1; j < t->t_nlines; j++) {
+		if (*sl->sl_lines[t->t_startx + j] == '%')
+		    /*@innercontinue@*/ continue;
+		/*@-unqualifiedtrans@*/
+		sl->sl_lines[t->t_startx + j] =
+			_free(sl->sl_lines[t->t_startx + j]);
+		/*@=unqualifiedtrans@*/
+	    }
+	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG)) {
+		sl->sl_lines[t->t_startx] = _free(sl->sl_lines[t->t_startx]);
+		continue;
+	    }
+	    sl->sl_lines[t->t_startx + 1] = xstrdup(msgstr);
+	    if (t->t_nlines > 2)
+		sl->sl_lines[t->t_startx + 2] = xstrdup("\n\n");
+	    /*@switchbreak@*/ break;
+	}
+/*@=boundswrite@*/
+    }
+    /*@=branchstate@*/
+    msgstr = _free(msgstr);
+
+/*@-boundsread@*/
+    for (i = 0; i < sl->sl_nlines; i++) {
+	const char * s = sl->sl_lines[i];
+	if (s == NULL)
+	    continue;
+	printf("%s", s);
+	if (strchr(s, '\n') == NULL && s[strlen(s)-1] != '\n')
+	    printf("\n");
+    }
+/*@=boundsread@*/
+}
+
+int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
+{
+    Spec spec = NULL;
+    Package pkg;
+    char * buildRoot = NULL;
+    int recursing = 0;
+    char * passPhrase = "";
+    char *cookie = NULL;
+    int anyarch = 1;
+    int force = 1;
+    int res = 1;
+    int xx;
+
+    if (qva->qva_showPackage == NULL)
+	goto exit;
+
+    /*@-mods@*/ /* FIX: make spec abstract */
+    if (parseSpec(ts, arg, "/", buildRoot, recursing, passPhrase,
+		cookie, anyarch, force)
+      || (spec = rpmtsSetSpec(ts, NULL)) == NULL)
+    {
+	rpmError(RPMERR_QUERY,
+	    		_("query of specfile %s failed, can't parse\n"), arg);
+	goto exit;
+    }
+    /*@=mods@*/
+
+    res = 0;
+    if (specedit) {
+	printNewSpecfile(spec);
+	goto exit;
+    }
+
+    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next)
+	xx = qva->qva_showPackage(qva, ts, pkg->header);
+
+exit:
+    spec = freeSpec(spec);
+    return res;
 }

@@ -190,6 +190,9 @@ struct rpmts_s {
 /*@null@*/
     pgpDig dig;			/*!< Current signature/pubkey parameters. */
 
+/*@null@*/
+    Spec spec;			/*!< Spec file control structure. */
+
 /*@refs@*/
     int nrefs;			/*!< Reference count. */
 
@@ -731,6 +734,23 @@ rpmtransFlags rpmtsFlags(rpmts ts)
  * @return		previous transaction flags
  */
 rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Get spec control structure from transaction set.
+ * @param ts		transaction set
+ * @return		spec control structure
+ */
+Spec rpmtsSpec(rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Set a spec control structure in transaction set.
+ * @param ts		transaction set
+ * @param spec		new spec control structure
+ * @return		previous spec control structure
+ */
+Spec rpmtsSetSpec(rpmts ts, /*@null@*/ Spec spec)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts

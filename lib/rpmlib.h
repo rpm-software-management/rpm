@@ -67,6 +67,10 @@ void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
  */
 typedef /*@abstract@*/ /*@refcounted@*/ struct rpmts_s * rpmts;
 
+/** \ingroup rpmbuild
+ */
+typedef struct Spec_s * Spec;
+
 /** \ingroup rpmtrans
  * An added/available package retrieval key.
  */

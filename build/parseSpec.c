@@ -389,7 +389,7 @@ extern int noLang;		/* XXX FIXME: pass as arg */
 
 /*@todo Skip parse recursion if os is not compatible. @*/
 /*@-boundswrite@*/
-int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
+int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 		const char *buildRootURL, int recursing, const char *passPhrase,
 		char *cookie, int anyarch, int force)
 {
@@ -428,8 +428,6 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
 	spec->gotBuildRootURL = 1;
 	spec->buildRootURL = xstrdup(buildRootURL);
 	addMacro(spec->macros, "buildroot", NULL, buildRoot, RMIL_SPEC);
-if (_debug)
-fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootURL, spec->buildRootURL, buildRoot);
     }
     addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
     spec->recursing = recursing;
@@ -521,9 +519,9 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
 #endif
 		spec->BASpecs[index] = NULL;
-		if (parseSpec(&(spec->BASpecs[index]),
-				  specFile, spec->rootURL, buildRootURL, 1,
-				  passPhrase, cookie, anyarch, force))
+		if (parseSpec(ts, specFile, spec->rootURL, buildRootURL, 1,
+				  passPhrase, cookie, anyarch, force)
+		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
 		{
 			spec->BACount = index;
 			spec = freeSpec(spec);
@@ -564,7 +562,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 	    }
 	    /*@=branchstate@*/
 
-	    *specp = spec;
+	    (void) rpmtsSetSpec(ts, spec);
 	    return 0;
 	}
     }
@@ -626,7 +624,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
   }
 
     closeSpec(spec);
-    *specp = spec;
+    (void) rpmtsSetSpec(ts, spec);
 
     return 0;
 }

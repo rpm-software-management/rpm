@@ -68,6 +68,8 @@
 	- add rpmdb_{deadlock,dump,load,svc,stat,verify} utilities.
 	- include srpm pkgid in binary headers (#71460).
 	- add %check scriptlet to run after %install (#64137).
+	- simplify specfile query linkage loop.
+	- drill rpmts into parseSpec(), carrying Spec along.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

@@ -3,7 +3,7 @@
 #define H_HDRINLINE
 
 /** \ingroup header
- * \file lib/hdrinline.h
+ * \file rpmdb/hdrinline.h
  */
 
 #ifdef __cplusplus

@@ -453,7 +453,7 @@ int processSourceFiles(Spec spec)
 
 /** \ingroup rpmbuild
  * Parse spec file into spec control structure.
- * @retval specp	spec file control structure
+ * @param ts		transaction set (spec file control in ts->spec)
  * @param specFile
  * @param rootURL
  * @param buildRootURL
@@ -464,7 +464,7 @@ int processSourceFiles(Spec spec)
  * @param force
  * @return
  */
-int parseSpec(/*@out@*/ Spec * specp, const char * specFile,
+int parseSpec(rpmts ts, const char * specFile,
 		/*@null@*/ const char * rootURL,
 		/*@null@*/ const char * buildRootURL,
 		int recursing,
@@ -477,32 +477,6 @@ int parseSpec(/*@out@*/ Spec * specp, const char * specFile,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
- * @retval specp	spec file control structure
- * @param specFile
- * @param rootdir
- * @param buildRoot
- * @param recursing	parse is recursive?
- * @param passPhrase
- * @param cookie
- * @param anyarch
- * @param force
- * @return
- */
-/*@-declundef@*/
-extern int (*parseSpecVec) (Spec * specp, const char * specFile,
-		const char * rootdir,
-		/*@null@*/ const char * buildRoot,
-		int recursing,
-		/*@null@*/ const char * passPhrase,
-		/*@null@*/ char * cookie,
-		int anyarch, int force)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem, internalState @*/
-	/*@modifies *specp,
-		rpmGlobalMacroContext, fileSystem, internalState @*/;
-/*@=declundef@*/
-
-/** \ingroup rpmbuild
  * Build stages state machine driver.
  * @param spec		spec file control structure
  * @param what		bit(s) to enable stages of build
@@ -513,8 +487,8 @@ int buildSpec(Spec spec, int what, int test)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->sourceCpioList, spec->cookie,
-		spec->sourceRpmName, spec->macros,
-		spec->BASpecs,
+		spec->sourceRpmName, spec->sourcePkgId,
+		spec->macros, spec->BASpecs,
 		spec->buildRestrictions, spec->BANames,
 		spec->packages->cpioList, spec->packages->fileList,
 		spec->packages->specialDoc, spec->packages->header,
@@ -541,7 +515,7 @@ int packageSources(Spec spec)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies spec->sourceHeader, spec->cookie,
-		spec->sourceRpmName,
+		spec->sourceRpmName, spec->sourcePkgId,
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /*@=redecl@*/

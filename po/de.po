@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-21 15:30-0500\n"
+"POT-Creation-Date: 2002-12-21 21:09-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -92,12 +92,12 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
 
 #. parse up the build operators
-#: build.c:319
+#: build.c:324
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:334
+#: build.c:339
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
@@ -168,119 +168,119 @@ msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Dies darf unter den Bedingungen der »GNU GPL« frei verteilt werden"
 
-#: rpmqv.c:301
+#: rpmqv.c:295
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: rpmqv.c:339 rpmqv.c:345 rpmqv.c:351 rpmqv.c:388
+#: rpmqv.c:333 rpmqv.c:339 rpmqv.c:345 rpmqv.c:382
 msgid "only one major mode may be specified"
 msgstr "Es darf nur ein Hauptmodus angegeben werden"
 
-#: rpmqv.c:367
+#: rpmqv.c:361
 msgid "one type of query/verify may be performed at a time"
 msgstr ""
 "Nur nur eine Art der Anfrage/Überprüfung kann pro Programmlauf durchgeführt "
 "werden"
 
-#: rpmqv.c:371
+#: rpmqv.c:365
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "Unerwartete Quelle der Anfrage"
 
-#: rpmqv.c:374
+#: rpmqv.c:368
 #, fuzzy
 msgid "unexpected query format"
 msgstr "Unerwartete Quelle der Anfrage"
 
-#: rpmqv.c:377
+#: rpmqv.c:371
 msgid "unexpected query source"
 msgstr "Unerwartete Quelle der Anfrage"
 
-#: rpmqv.c:419
+#: rpmqv.c:413
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "nur die Installation und Aktualisierung darf erzwungen werden"
 
-#: rpmqv.c:421
+#: rpmqv.c:415
 msgid "files may only be relocated during package installation"
 msgstr "Dateien können nur während der Paketinstallation verschoben werden"
 
-#: rpmqv.c:424
+#: rpmqv.c:418
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
 
-#: rpmqv.c:427
+#: rpmqv.c:421
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate darf nur bei der Installation neuer Pakete benutzt werden"
 
-#: rpmqv.c:430
+#: rpmqv.c:424
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix darf nur bei der Installation neuer Pakete benutzt werden"
 
-#: rpmqv.c:433
+#: rpmqv.c:427
 msgid "arguments to --prefix must begin with a /"
 msgstr "Argumente zu --prefix müssen mit einem / beginnen"
 
-#: rpmqv.c:436
+#: rpmqv.c:430
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) darf nur während der Paketinstallation angegeben werden"
 
-#: rpmqv.c:440
+#: rpmqv.c:434
 msgid "--percent may only be specified during package installation"
 msgstr "--percent darf nur während der Paketinstallation angegeben werden"
 
-#: rpmqv.c:445
+#: rpmqv.c:439
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles darf nur während der Paketinstallation angegeben werden"
 
-#: rpmqv.c:449
+#: rpmqv.c:443
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs darf nur während der Paketinstallation angegeben werden"
 
-#: rpmqv.c:453
+#: rpmqv.c:447
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs darf nur während der Paketinstallation angegeben werden"
 
-#: rpmqv.c:457
+#: rpmqv.c:451
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs darf nur während der Paketinstallation angegeben werden"
 
-#: rpmqv.c:461
+#: rpmqv.c:455
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 "nur eines der Argumente --excludedocs und --includedocs darf angegeben werden"
 
-#: rpmqv.c:465
+#: rpmqv.c:459
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch darf nur während der Paketinstallation angegeben werden"
 
-#: rpmqv.c:469
+#: rpmqv.c:463
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos darf nur während der Paketinstallation angegeben werden"
 
-#: rpmqv.c:474
+#: rpmqv.c:468
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoreos darf nur während der Paketinstallation angegeben werden"
 
-#: rpmqv.c:478
+#: rpmqv.c:472
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches darf nur während der Paketdeinstallaiton angegeben werden"
 
-#: rpmqv.c:482
+#: rpmqv.c:476
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles darf nur während der Paketinstallation angegeben werden"
 
-#: rpmqv.c:487
+#: rpmqv.c:481
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "--justdb kann nur während der Paketinstallation und -deinstallation "
 "angegeben werden"
 
-#: rpmqv.c:492
+#: rpmqv.c:486
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
@@ -289,7 +289,7 @@ msgstr ""
 "--justdb kann nur während der Paketinstallation und -deinstallation "
 "angegeben werden"
 
-#: rpmqv.c:497
+#: rpmqv.c:491
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
@@ -298,7 +298,7 @@ msgstr ""
 "--justdb kann nur während der Paketinstallation und -deinstallation "
 "angegeben werden"
 
-#: rpmqv.c:501
+#: rpmqv.c:495
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -307,7 +307,7 @@ msgstr ""
 "--nodeps darf nur während der Paketinstallation, -deinstallation und -"
 "überprüfung angegeben werden"
 
-#: rpmqv.c:506
+#: rpmqv.c:500
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -315,7 +315,7 @@ msgstr ""
 "--test darf nur während der Paketinstallation, -deinstallation und -"
 "erstellung angegeben werden"
 
-#: rpmqv.c:511
+#: rpmqv.c:505
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -323,80 +323,80 @@ msgstr ""
 "--root (-r) darf nur während der Paketinstallation, -deinstallation, -"
 "anfrage und Datenbankneuerstellungen angegeben werden"
 
-#: rpmqv.c:523
+#: rpmqv.c:517
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "Argumente zu --root (-r) müssen mit einem / beginnen"
 
-#: rpmqv.c:547
+#: rpmqv.c:541
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpmqv.c:552
+#: rpmqv.c:546
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: rpmqv.c:571
+#: rpmqv.c:565
 #, fuzzy
 msgid "pgp not found: "
 msgstr "Datei auf dem Server nicht gefunden"
 
-#: rpmqv.c:576
+#: rpmqv.c:570
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpmqv.c:578
+#: rpmqv.c:572
 msgid "Pass phrase check failed\n"
 msgstr "Die Passwortüberprüfung ist fehlgeschlagen\n"
 
-#: rpmqv.c:582
+#: rpmqv.c:576
 msgid "Pass phrase is good.\n"
 msgstr "Das Passwort ist richtig.\n"
 
-#: rpmqv.c:587
+#: rpmqv.c:581
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpmqv.c:594
+#: rpmqv.c:588
 msgid "--sign may only be used during package building"
 msgstr "--sign darf nur während der Paketerstellung benutzt werden"
 
-#: rpmqv.c:611
+#: rpmqv.c:605
 #, fuzzy
 msgid "exec failed\n"
 msgstr "%s: Öffnen fehlgeschlagen\n"
 
-#: rpmqv.c:647
+#: rpmqv.c:641
 msgid "no packages files given for rebuild"
 msgstr "Es wurden keine Paketdateien für die Neuerstellung angegeben"
 
-#: rpmqv.c:717
+#: rpmqv.c:711
 msgid "no spec files given for build"
 msgstr "Es wurde kein spec-Datei für die Erstellung angegeben"
 
-#: rpmqv.c:719
+#: rpmqv.c:713
 msgid "no tar files given for build"
 msgstr "Es wurde keine tar-Datei für die Erstellung angegeben"
 
-#: rpmqv.c:741
+#: rpmqv.c:735
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "Es wurden keine Pakete für die Installation angegeben"
 
-#: rpmqv.c:781
+#: rpmqv.c:775
 msgid "no packages given for install"
 msgstr "Es wurden keine Pakete für die Installation angegeben"
 
-#: rpmqv.c:797
+#: rpmqv.c:791
 msgid "no arguments given for query"
 msgstr "Es wurden keine Argumente für die Anfrage angegeben"
 
-#: rpmqv.c:810
+#: rpmqv.c:808
 msgid "no arguments given for verify"
 msgstr "Es wurden keine Argumente für die Überprüfung angegeben"
 
-#: rpmqv.c:827
+#: rpmqv.c:825
 #, fuzzy
 msgid "no arguments given"
 msgstr "Es wurden keine Argumente für die Anfrage angegeben"
@@ -1206,12 +1206,12 @@ msgstr ""
 msgid "malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:545
+#: build/parseSpec.c:543
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "Paket-Architektur nicht überprüfen"
 
-#: build/parseSpec.c:603
+#: build/parseSpec.c:601
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
@@ -1402,20 +1402,30 @@ msgstr ""
 msgid "lookup i18N strings in specfile catalog"
 msgstr ""
 
-#: build/spec.c:233
+#: build/spec.c:234
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: build/spec.c:239
+#: build/spec.c:240
 #, fuzzy, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: build/spec.c:302
+#: build/spec.c:303
 #, fuzzy, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
+
+#: build/spec.c:639
+#, fuzzy, c-format
+msgid "can't query %s: %s\n"
+msgstr "Fehler: kann %s nicht öffnen\n"
+
+#: build/spec.c:714
+#, fuzzy, c-format
+msgid "query of specfile %s failed, can't parse\n"
+msgstr "Anfrage von %s fehlgeschlagen\n"
 
 #: lib/cpio.c:207
 #, fuzzy, c-format
@@ -2400,147 +2410,137 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "%s failed: %s\n"
 msgstr "pgp fehlgeschlagen"
 
-#: lib/query.c:122 lib/rpmts.c:430
+#: lib/query.c:121 lib/rpmts.c:430
 #, fuzzy, c-format
 msgid "incorrect format: %s\n"
 msgstr "Fehler beim Format %s\n"
 
 #. @-boundswrite@
-#: lib/query.c:181
+#: lib/query.c:180
 msgid "(contains no files)"
 msgstr "(beinhaltet keine Dateien)"
 
-#: lib/query.c:246
+#: lib/query.c:245
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:249
+#: lib/query.c:248
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:252
+#: lib/query.c:251
 #, fuzzy
 msgid "not installed "
 msgstr "Paket %s ist nicht installiert\n"
 
-#: lib/query.c:255
+#: lib/query.c:254
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:258
+#: lib/query.c:257
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:261
+#: lib/query.c:260
 #, fuzzy, c-format
 msgid "(unknown %3d) "
 msgstr "(unbekannter Typ)"
 
-#: lib/query.c:279
+#: lib/query.c:278
 #, fuzzy
 msgid "package has not file owner/group lists\n"
 msgstr "Paket hat keinen Namen"
 
-#: lib/query.c:312
+#: lib/query.c:311
 #, fuzzy
 msgid "package has neither file owner or id lists\n"
 msgstr "Paket hat keinen Namen"
 
-#: lib/query.c:408
-#, fuzzy, c-format
-msgid "can't query %s: %s\n"
-msgstr "Fehler: kann %s nicht öffnen\n"
-
-#: lib/query.c:569 lib/query.c:616 lib/rpminstall.c:123 lib/rpminstall.c:458
+#: lib/query.c:439 lib/query.c:486 lib/rpminstall.c:123 lib/rpminstall.c:458
 #: lib/rpminstall.c:589 lib/rpminstall.c:1005 lib/rpmts.c:441
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/query.c:584
+#: lib/query.c:454
 #, c-format
 msgid "query of %s failed\n"
 msgstr "Anfrage von %s fehlgeschlagen\n"
 
-#: lib/query.c:594
+#: lib/query.c:464
 msgid "old format source packages cannot be queried\n"
 msgstr "altes Sourceformat-Paket kann nicht angefragt werden\n"
 
-#: lib/query.c:627 lib/rpminstall.c:602
+#: lib/query.c:497 lib/rpminstall.c:602
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "kein Paket triggert %s\n"
 
-#: lib/query.c:671
-#, fuzzy, c-format
-msgid "query of specfile %s failed, can't parse\n"
-msgstr "Anfrage von %s fehlgeschlagen\n"
-
-#: lib/query.c:692
+#: lib/query.c:526
 #, fuzzy
 msgid "no packages\n"
 msgstr "Anfrage an alle Pakete"
 
-#: lib/query.c:712
+#: lib/query.c:546
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "Gruppe %s beinhaltet kein einziges Paket\n"
 
-#: lib/query.c:722
+#: lib/query.c:556
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "kein Paket triggert %s\n"
 
 # , c-format
-#: lib/query.c:736 lib/query.c:758 lib/query.c:779 lib/query.c:814
+#: lib/query.c:570 lib/query.c:592 lib/query.c:613 lib/query.c:648
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Lesen von %s fehlgeschlagen: %s."
 
-#: lib/query.c:746 lib/query.c:764 lib/query.c:789 lib/query.c:819
+#: lib/query.c:580 lib/query.c:598 lib/query.c:623 lib/query.c:653
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "kein Paket triggert %s\n"
 
-#: lib/query.c:830
+#: lib/query.c:664
 #, c-format
 msgid "no package requires %s\n"
 msgstr "kein Paket verlangt %s\n"
 
 # oder besser: ... listet %s auf? -ke-
-#: lib/query.c:841
+#: lib/query.c:675
 #, c-format
 msgid "no package provides %s\n"
 msgstr "kein Paket stellt %s bereit\n"
 
 # , c-format
-#: lib/query.c:875
+#: lib/query.c:709
 #, fuzzy, c-format
 msgid "file %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/query.c:879
+#: lib/query.c:713
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/query.c:906
+#: lib/query.c:740
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:909
+#: lib/query.c:743
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:914
+#: lib/query.c:748
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "Eintrag %d konnte nicht gelesen werden\n"
 
-#: lib/query.c:925 lib/rpminstall.c:773
+#: lib/query.c:759 lib/rpminstall.c:773
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Paket %s ist nicht installiert\n"
