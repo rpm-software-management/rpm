@@ -2,12 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "rpmio.h"
-#include "header.h"
 #include "stringbuf.h"
-#include "rpmspec.h"
 #include "rpmbuild.h"
-#include "header_internal.h"
 
 #include "xml2rpm.h"
 #include "xmlstruct.h"

@@ -3,11 +3,8 @@
 #include <string.h>
 #include <strings.h>
 
-#include "rpmio.h"
-#include "header.h"
 #include "stringbuf.h"
-#include "rpmspec.h"
-#include "header_internal.h"
+#include "rpmbuild.h"
 
 #include "xmlmisc.h"
 #include "xmlstruct.h"

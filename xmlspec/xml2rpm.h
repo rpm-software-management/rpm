@@ -1,7 +1,7 @@
 #ifndef _XML_TO_RPM_H_
 #define _XML_TO_RPM_H_
 
-#include "rpmspec.h"
+#include "rpmbuild.h"
 
 #include "xmlstruct.h"
 
