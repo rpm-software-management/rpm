@@ -75,6 +75,7 @@ struct option optionTable[] = {
     { "dbpath",			RPMVAR_DBPATH,			0 },
     { "distribution",		RPMVAR_DISTRIBUTION,		0 },
     { "excludedocs",	        RPMVAR_EXCLUDEDOCS,             0 },
+    { "ftpproxy",		RPMVAR_FTPPROXY,		0 },
     { "messagelevel",		RPMVAR_MESSAGELEVEL,		0 },
     { "optflags",		RPMVAR_OPTFLAGS,		1 },
     { "packager",               RPMVAR_PACKAGER,                0 },
