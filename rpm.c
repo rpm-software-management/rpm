@@ -135,7 +135,7 @@ int main(int argc, char ** argv) {
     int test = 0;
     int version = 0;
     int help = 0;
-    char * prefix = "";
+    char * prefix = "/";
     struct option options[] = {
 	    { "query", 0, 0, 'q' },
 	    { "stdin-query", 0, 0, 'Q' },
@@ -304,7 +304,7 @@ int main(int argc, char ** argv) {
 
       case MODE_INSTALL:
 	while (optind < argc) 
-	    doInstall(argv[optind++], test, 0);
+	    doInstall(prefix, argv[optind++], test, 0);
 	break;
 
       case MODE_QUERY:
