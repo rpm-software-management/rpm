@@ -21,7 +21,7 @@
 static int _mpw_debug = 0;
 
 /*@unchecked@*/ /*@observer@*/
-static const char initialiser_name[] = "mpz";
+static const char *initialiser_name = "";
 
 /*@unchecked@*/ /*@observer@*/
 static const struct {
@@ -408,7 +408,7 @@ fprintf(stderr, "    z %p[%d]:\t", zdata, asize+1), mpfprintln(stderr, asize+1, 
 }
 
 static PyObject *
-mpw_format(mpwObject * z, size_t zbase, int withname)
+mpw_format(mpwObject * z, size_t zbase, int addL)
 {
     PyStringObject * so;
     size_t i;
@@ -426,14 +426,13 @@ mpw_format(mpwObject * z, size_t zbase, int withname)
     }
 
 if (_mpw_debug < -1)
-fprintf(stderr, "*** mpw_format(%p,%d,%d):\t", z, zbase, withname), mpfprintln(stderr, z->n.size, z->n.data);
+fprintf(stderr, "*** mpw_format(%p,%d,%d):\t", z, zbase, addL), mpfprintln(stderr, z->n.size, z->n.data);
 
     assert(zbase >= 2 && zbase <= 36);
 
-    if (withname)
+    i = 0;
+    if (addL && initialiser_name != NULL)
 	i = strlen(initialiser_name) + 2; /* e.g. 'mpw(' + ')' */
-    else
-	i = 0;
 
     zsign = mpmsbset(z->n.size, z->n.data);
     nt = mpbitcnt(z->n.size, z->n.data);
@@ -454,7 +453,7 @@ fprintf(stderr, "*** mpw_format(%p,%d,%d):\t", z, zbase, withname), mpfprintln(s
 	zdata = z->n.data + (z->n.size - zsize);
     }
 
-    if (withname && zsize > 1)
+    if (addL && zsize > 1)
 	i++;	/* space for 'L' suffix */
 
     nt = mpsizeinbase(zsize, zdata, zbase);
@@ -484,7 +483,7 @@ fprintf(stderr, "*** mpw_format(%p,%d,%d):\t", z, zbase, withname), mpfprintln(s
 
     /* get the beginning of the string memory and start copying things */
     te = PyString_AS_STRING(so);
-    if (withname) {
+    if (addL && initialiser_name != NULL && *initialiser_name != '\0') {
 	te = stpcpy(te, initialiser_name);
 	*te++ = '('; /*')'*/
     }
@@ -508,10 +507,11 @@ fprintf(stderr, "*** mpw_format(%p,%d,%d):\t", z, zbase, withname), mpfprintln(s
 
     te += strlen(te);
 
-    if (withname) {
+    if (addL) {
 	if (zsize > 1)
 	    *te++ = 'L';
-	*te++ = /*'('*/ ')';
+	if (initialiser_name != NULL && *initialiser_name != '\0')
+	    *te++ = /*'('*/ ')';
     }
     *te = '\0';
 
@@ -1108,7 +1108,8 @@ fprintf(stderr, "    b %p[%d]:\t", m->n.data, m->n.size), mpfprintln(stderr, m->
 
 	zsize -= bsize;
 	znorm = mpsize(zsize, zdata);
-	if (znorm < zsize) {
+	znorm--;	/* XXX hack to preserve positive integer. */
+	if (znorm > 0 && znorm < zsize) {
 	    zsize -= znorm;
 	    zdata += znorm;
 	}
@@ -1560,7 +1561,8 @@ fprintf(stderr, "    z %p[%d]:\t", zdata, zsize), mpfprintln(stderr, zsize, zdat
     mpnset(&r->n, bsize, zdata+zsize);
 
     znorm = mpsize(zsize, zdata);
-    if (znorm < zsize) {
+    znorm--;	/* XXX hack to preserve positive integer. */
+    if (znorm > 0 && znorm < zsize) {
 	zsize -= znorm;
 	zdata += znorm;
     }

@@ -47,39 +47,41 @@ class BasicTestCase(unittest.TestCase):
 	zb = mpz.mpz(0x0000000000000010)
 	zc = mpz.mpz(0x0fedcba000000000)
 
-	print "__hex__:\t", hex(wa), "\t",  hex(za)
-	print "__oct__:\t", oct(wa), "\t",  oct(za)
+	print "__int__:\t", int(wb), "\t",  int(zb)
+	print "__long__:\t", long(wb), "\t",  long(zb)
+	print "__float__:\t", float(wb), "\t",  float(zb)
 
-	print "__int__:\t", mpw.__int__(wb), "\t",  mpz.MPZType.__int__(zb)
-	print "__long__:\t", mpw.__long__(wb), "\t",  mpz.MPZType.__long__(zb)
-	print "__float__:\t", mpw.__float__(wb), "\t",  mpz.MPZType.__float__(zb)
+	zs = hex(za)
+	zs = zs[4:len(zs)-1]
+	print "__hex__:\t", hex(wa), "\t", zs
+	zs = oct(za)
+	zs = zs[4:len(zs)-1]
+	print "__oct__:\t", oct(wa), "\t", zs
 
-	print "__neg__:\t", hex(mpw.__neg__(wa)), "\t",  hex(mpz.MPZType.__neg__(za))
-	print "__pos__:\t", hex(mpw.__pos__(wa)), "\t",  hex(mpz.MPZType.__pos__(za))
-	print "__abs__:\t", hex(mpw.__abs__(wa)), "\t",  hex(mpz.MPZType.__abs__(za))
-	print "__invert__:\t", hex(mpw.__invert__(wa)), "\t",  hex(mpz.MPZType.__invert__(za))
+	print "__neg__:\t", (-wa), "\t",  long(-za)
+	print "__pos__:\t", (+wa), "\t",  long(mpz.MPZType.__pos__(za))
+	print "__abs__:\t", abs(wa), "\t",  long(abs(za))
+	print "__invert__:\t", (~wa), "\t",  long(~za)
 
-	print "__add__:\t", hex(mpw.__add__(wa, wb)), "\t",  hex(mpz.MPZType.__add__(za, zb))
-	print "__sub__:\t", hex(mpw.__sub__(wa, wb)), "\t",  hex(mpz.MPZType.__sub__(za, zb))
-	print "__mul__:\t", hex(mpw.__mul__(wa, wb)), "\t",  hex(mpz.MPZType.__mul__(za, zb))
-	print "__div__:\t", hex(mpw.__div__(wa, wb)), "\t",  hex(mpz.MPZType.__div__(za, zb))
-	print "__mod__:\t", hex(mpw.__mod__(wa, wb)), "\t",  hex(mpz.MPZType.__mod__(za, zb))
-	wq, wr = mpw.__divmod__(wa, wb)
-	zq, zr = mpz.MPZType.__divmod__(za, zb)
-	print "__divmod__ q:\t", hex(wq), "\t",  hex(zq)
-	print "__divmod__ r:\t", hex(wr), "\t",  hex(zr)
+	print "__add__:\t", (wa + wb), "\t",  long(za + zb)
+	print "__sub__:\t", (wa - wb), "\t",  long(za - zb)
+	print "__mul__:\t", (wa * wb), "\t",  long(za * zb)
+	print "__div__:\t", (wa / wb), "\t",  long(za / zb)
+	print "__mod__:\t", (wa % wb), "\t",  long(za % zb)
+	wq, wr = divmod(wa, wb)
+	zq, zr = divmod(za, zb)
+	print "__divmod__ q:\t", wq, "\t",  long(zq)
+	print "__divmod__ r:\t", wr, "\t",  long(zr)
 
-	print "__pow__:\t", hex(mpw.__pow__(wb, wb)), "\t",  hex(mpz.MPZType.__pow__(zb, zb))
+	print "__pow__:\t", (wb ** wb), "\t",  long(zb ** zb)
 
-	print "__lshift__:\t", hex(mpw.__lshift__(wa, wb)), "\t",  hex(mpz.MPZType.__lshift__(za, zb))
-	print "__rshift__:\t", hex(mpw.__rshift__(wa, wb)), "\t",  hex(mpz.MPZType.__rshift__(za, zb))
-	print "__and__:\t", hex(mpw.__and__(wa, wc)), "\t",  hex(mpz.MPZType.__and__(za, zc))
-	print "__xor__:\t", hex(mpw.__xor__(wa, wa)), "\t",  hex(mpz.MPZType.__xor__(za, za))
-	print "__or__:\t", hex(mpw.__or__(wa, wc)), "\t",  hex(mpz.MPZType.__or__(za, zc))
+	print "__lshift__:\t", (wa << wb), "\t",  long(za << zb)
+	print "__rshift__:\t", (wa >> wb), "\t",  long(za >> zb)
+	print "__and__:\t", (wa & wc), "\t",  long(za & zc)
+	print "__xor__:\t", (wa ^ wa), "\t",  long(za ^ za)
+	print "__or__:\t", (wa | wc), "\t",  long(za | zc)
 
 #	print mpw.__complex__(b)
-#	print mpw.__oct__(a*b)
-#	print mpw.__hex__(a*b)
 #	print mpw.__coerce__(b, i)
 
 	del wa
