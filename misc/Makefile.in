@@ -1,0 +1,41 @@
+CC = @CC@
+CPP = @CPP@
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+LIBOBJECTS = @REALPATH@ @FTW@ @GETOPT@ @GETOPT1@
+LIBMISC = libmisc.a
+AR = ar r
+RANLIB = ranlib
+
+# -----------------------------------------------------------------------
+
+ifeq (.depend,$(wildcard .depend))
+TARGET=everything
+else
+TARGET=depend everything
+endif
+
+all: $(TARGET)
+
+everything: $(LIBMISC)
+
+$(LIBMISC): $(LIBOBJECTS) 
+	$(AR) $@ $(LIBOBJECTS)
+	$(RANLIB) $@
+
+$(PROGS): $(LIBOBJECTS)
+
+clean:
+	rm -f *.a *.o *~ $(PROGS)
+
+realclean: clean
+	rm -f .depend Makefile
+
+depend:
+	$(CPP) $(CFLAGS) -M $(srcdir)/*.c > .depend
+
+ifeq (.depend,$(wildcard .depend))
+include .depend
+endif
