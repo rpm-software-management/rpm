@@ -190,9 +190,6 @@ mkdir -p ${RPM_BUILD_ROOT}/etc/logrotate.d
 install -m 644 scripts/rpm.log ${RPM_BUILD_ROOT}/etc/logrotate.d/rpm
 
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
-cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
-%%_dbapi		1
-E_O_F
 
 mkdir -p $RPM_BUILD_ROOT/var/lib/rpm
 for dbi in \
@@ -238,12 +235,13 @@ rm -rf $RPM_BUILD_ROOT
 
 %pre
 %ifos linux
-if [ -f /var/lib/rpm/Packages -a -f /var/lib/rpm/packages.rpm ]; then
+if [ -f /var/lib/rpm/packages.rpm ]; then
     echo "
-You have both
+You have (unsupported)
 	/var/lib/rpm/packages.rpm	db1 format installed package headers
-	/var/lib/rpm/Packages		db3 format installed package headers
-Please remove (or at least rename) one of those files, and re-install.
+Please install rpm-4.0.4 first, and do
+	rpm --rebuilddb
+to convert your database from db1 to db3 format.
 "
     exit 1
 fi
@@ -255,17 +253,8 @@ exit 0
 %post
 %ifos linux
 /sbin/ldconfig
-if [ -f /var/lib/rpm/packages.rpm ]; then
-    /bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/*.rpm
-elif [ -f /var/lib/rpm/Packages ]; then
-    # undo db1 configuration
-    rm -f /etc/rpm/macros.db1
-    /bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]*
-else
-    # initialize db3 database
-    rm -f /etc/rpm/macros.db1
-    /bin/rpm --initdb
-fi
+/bin/rpm --initdb
+/bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]*
 %endif
 exit 0
 
@@ -522,6 +511,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Fri Jun 21 2002 Jeff Johnson <jbj@redhat.com>
+- fix: reading macro files can corrupt memory if BUFSIZ is teensy.
+- fix: assertion failure iff incomplete package install (#66837).
+
 * Thu Jun 20 2002 Jeff Johnson <jbj@redhat.com>
 - add translated man pages from PLD.
 - resurrect libelf with Elf64, prelink verify should work everywhere.

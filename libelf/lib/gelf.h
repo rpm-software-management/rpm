@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #ifndef _GELF_H
 #define _GELF_H
+/*@-declundef -enummemuse -fcnuse -typeuse -varuse @*/
 
 #if __LIBELF_INTERNAL__
 #include <libelf.h>
@@ -187,4 +188,5 @@ extern size_t             gelf_msize __P((Elf *elf, Elf_Type type, size_t count,
 }
 #endif /* __cplusplus */
 
+/*@=declundef =enummemuse =fcnuse =typeuse =varuse @*/
 #endif /* _GELF_H */

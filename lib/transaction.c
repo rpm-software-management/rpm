@@ -569,8 +569,7 @@ static void handleOverlappedFiles(const rpmts ts,
 	    otherFileNum = findFps(fiFps, otherFps, otherFc);
 	    (void) rpmfiSetFX(otherFi, otherFileNum);
 
-	    /* XXX is this test still necessary? */
-assert(otherFi->actions[otherFileNum] != FA_UNKNOWN);
+	    /* XXX Happens iff fingerprint for incomplete package install. */
 	    if (otherFi->actions[otherFileNum] != FA_UNKNOWN)
 		/*@innerbreak@*/ break;
 	}

@@ -180,7 +180,8 @@ char * rpmExpand	(/*@null@*/ const char * arg, ...)
  * @param path		path to canonicalize (in-place)
  * @return		canonicalized path (malloc'ed)
  */
-/*@null@*/ char * rpmCleanPath	(/*@null@*/ char * path)
+/*@null@*/
+char * rpmCleanPath	(/*@returned@*/ /*@null@*/ char * path)
 	/*@modifies *path @*/;
 
 /**

@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #ifndef _LIBELF_H
 #define _LIBELF_H
+/*@-declundef -enummemuse -fcnuse -typeuse -varuse @*/
 
 #include <sys/types.h>
 
@@ -330,4 +331,5 @@ extern size_t elf_delscn __P((Elf *elf, /*@only@*/ Elf_Scn *scn))
 }
 #endif /* __cplusplus */
 
+/*@=declundef =enummemuse =fcnuse =typeuse =varuse @*/
 #endif /* _LIBELF_H */

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-06-20 18:00-0400\n"
+"POT-Creation-Date: 2002-06-21 13:54-0400\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1563,39 +1563,39 @@ msgstr "========= Directorias não incluidas explicitamente no pacote:\n"
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1198
+#: lib/fsm.c:1199
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "directoria %s criada com as permissões %04o.\n"
 
-#: lib/fsm.c:1489
+#: lib/fsm.c:1490
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 "o ficheiro de arquivo %s não foi encontrado na lista de ficheiros do "
 "cabeçalho\n"
 
-#: lib/fsm.c:1612 lib/fsm.c:1738
+#: lib/fsm.c:1613 lib/fsm.c:1739
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s gravado como %s\n"
 
-#: lib/fsm.c:1764
+#: lib/fsm.c:1765
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir de %s falhou: Directoria não está vazia\n"
 
-#: lib/fsm.c:1770
+#: lib/fsm.c:1771
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir de %s falhou: %s\n"
 
-#: lib/fsm.c:1780
+#: lib/fsm.c:1781
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s unlink de %s falhou: %s\n"
 
-#: lib/fsm.c:1800
+#: lib/fsm.c:1801
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s criado como %s\n"
@@ -2823,7 +2823,7 @@ msgid "%s skipped due to missingok flag\n"
 msgstr "%s ignorado devido à opção missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:895
+#: lib/transaction.c:894
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "a excluir a directoria %s\n"
@@ -3174,93 +3174,93 @@ msgstr "a remover a directoria %s\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "falhou a remoção da directoria %s: %s\n"
 
-#: rpmio/macro.c:225
+#: rpmio/macro.c:227
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== activo %d vazio %d\n"
 
 #. XXX just in case
-#: rpmio/macro.c:354
+#: rpmio/macro.c:360
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(vazio)"
 
-#: rpmio/macro.c:397
+#: rpmio/macro.c:403
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(vazio)\n"
 
-#: rpmio/macro.c:632
+#: rpmio/macro.c:631
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "A macro %%%s tem o conteúdo incompleto\n"
 
-#: rpmio/macro.c:661
+#: rpmio/macro.c:660
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "A macro %%%s tem um nome inválido (%%define)\n"
 
-#: rpmio/macro.c:667
+#: rpmio/macro.c:666
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "A macro %%%s tem as opções incompletas\n"
 
-#: rpmio/macro.c:672
+#: rpmio/macro.c:671
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "A macro %%%s tem o conteúdo em branco\n"
 
-#: rpmio/macro.c:678
+#: rpmio/macro.c:677
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "A macro %%%s não conseguiu ser expandida\n"
 
-#: rpmio/macro.c:715
+#: rpmio/macro.c:712
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "A macro %%%s tem um nome ilegal (%%undefine)\n"
 
-#: rpmio/macro.c:831
+#: rpmio/macro.c:826
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "A macro %%%s (%s) não foi usada abaixo do nível %d\n"
 
-#: rpmio/macro.c:951
+#: rpmio/macro.c:946
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Opção desconhecida %c em %s(%s)\n"
 
-#: rpmio/macro.c:1154
+#: rpmio/macro.c:1141
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Nível de recursividade(%d) maior que o máximo(%d)\n"
 
-#: rpmio/macro.c:1224 rpmio/macro.c:1241
+#: rpmio/macro.c:1211 rpmio/macro.c:1228
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c não terminado: %s\n"
 
-#: rpmio/macro.c:1282
+#: rpmio/macro.c:1269
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Segue-se uma macro impossível de analisar ao %%\n"
 
-#: rpmio/macro.c:1411
+#: rpmio/macro.c:1398
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "A macro %%%.*s não foi encontrada, por isso foi ignorada\n"
 
-#: rpmio/macro.c:1488
+#: rpmio/macro.c:1469
 msgid "Target buffer overflow\n"
 msgstr "Sobrecarga do tampão de destino\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1687 rpmio/macro.c:1693
+#: rpmio/macro.c:1664 rpmio/macro.c:1670
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Ficheiro %s: %s\n"
 
-#: rpmio/macro.c:1696
+#: rpmio/macro.c:1673
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "O ficheiro %s tem menos de %u bytes\n"

@@ -1,7 +1,10 @@
 .deps
 .depend
-Makefile
 .libs
+Makefile
+Makefile.in
+*.o
 *.la
 *.lo
-sys_elf.h
+stamp-h
+stamp-h2

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-06-20 18:00-0400\n"
+"POT-Creation-Date: 2002-06-21 13:54-0400\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1548,37 +1548,37 @@ msgstr "========= 패키지에 디렉토리가 포함되어 있지 않음:\n"
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1198
+#: lib/fsm.c:1199
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "%2$04o의 허가권(perms)을 가진 %1$s 디렉토리가 생성되었습니다.\n"
 
-#: lib/fsm.c:1489
+#: lib/fsm.c:1490
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "헤더 파일 목록에서 아카이브 파일 %s(을)를 찾을 수 없습니다\n"
 
-#: lib/fsm.c:1612 lib/fsm.c:1738
+#: lib/fsm.c:1613 lib/fsm.c:1739
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s(이)가 %s(으)로 저장되었습니다\n"
 
-#: lib/fsm.c:1764
+#: lib/fsm.c:1765
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: 빈 디렉토리가 아닙니다\n"
 
-#: lib/fsm.c:1770
+#: lib/fsm.c:1771
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: %s\n"
 
-#: lib/fsm.c:1780
+#: lib/fsm.c:1781
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s %s 링크 해제에 실패함: %s\n"
 
-#: lib/fsm.c:1800
+#: lib/fsm.c:1801
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s(이)가 %s(으)로 생성되었습니다\n"
@@ -2812,7 +2812,7 @@ msgid "%s skipped due to missingok flag\n"
 msgstr "missingok 플래그로 인해 %s(을)를 생략합니다\n"
 
 #. @innercontinue@
-#: lib/transaction.c:895
+#: lib/transaction.c:894
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "%s 디렉토리를 제외시킵니다\n"
@@ -3168,93 +3168,93 @@ msgstr "%s 디렉토리를 삭제합니다\n"
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
 
-#: rpmio/macro.c:225
+#: rpmio/macro.c:227
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr "======================== %d 활성 %d 비어있음\n"
 
 #. XXX just in case
-#: rpmio/macro.c:354
+#: rpmio/macro.c:360
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr "%3d>%*s(비어있음)"
 
-#: rpmio/macro.c:397
+#: rpmio/macro.c:403
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr "%3d<%*s(비어있음)\n"
 
-#: rpmio/macro.c:632
+#: rpmio/macro.c:631
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr "매크로 %%%s에 종료되지 않은 내용(body)이 있습니다\n"
 
-#: rpmio/macro.c:661
+#: rpmio/macro.c:660
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr "매크로 %%%s에 부적합한 이름이 있습니다 (%%define)\n"
 
-#: rpmio/macro.c:667
+#: rpmio/macro.c:666
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr "매크로 %%%s에 종료되지 않은 옵션이 있습니다\n"
 
-#: rpmio/macro.c:672
+#: rpmio/macro.c:671
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr "매크로 %%%s에 비어있는 내용(body)이 있습니다\n"
 
-#: rpmio/macro.c:678
+#: rpmio/macro.c:677
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr "매크로 %%%s(을)를 확장(expand)하는데 실패했습니다\n"
 
-#: rpmio/macro.c:715
+#: rpmio/macro.c:712
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr "매크로 %%%s에 부적합한 이름이 있습니다 (%%undefine)\n"
 
-#: rpmio/macro.c:831
+#: rpmio/macro.c:826
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "매크로 %%%s (%s)는 레벨 %d 이하에서는 사용할 수 없습니다\n"
 
-#: rpmio/macro.c:951
+#: rpmio/macro.c:946
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%2$s(%3$s)에 알 수 없는 옵션 %1$c(이)가 있습니다\n"
 
-#: rpmio/macro.c:1154
+#: rpmio/macro.c:1141
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "반복 횟수(%d)가 최대치(%d) 보다 큽니다\n"
 
-#: rpmio/macro.c:1224 rpmio/macro.c:1241
+#: rpmio/macro.c:1211 rpmio/macro.c:1228
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c(이)가 종료되지 않음: %s\n"
 
-#: rpmio/macro.c:1282
+#: rpmio/macro.c:1269
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "'%%' 다음에 처리할 수 없는(unparseable) 매크로가 있습니다\n"
 
-#: rpmio/macro.c:1411
+#: rpmio/macro.c:1398
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "매크로 %%%.*s를 찾을 수 없습니다, 생략합니다\n"
 
-#: rpmio/macro.c:1488
+#: rpmio/macro.c:1469
 msgid "Target buffer overflow\n"
 msgstr "목표대상(Target) 버퍼 오버플로우\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:1687 rpmio/macro.c:1693
+#: rpmio/macro.c:1664 rpmio/macro.c:1670
 #, c-format
 msgid "File %s: %s\n"
 msgstr "%s 파일: %s\n"
 
-#: rpmio/macro.c:1696
+#: rpmio/macro.c:1673
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s 파일이 %u 바이트 보다 적습니다\n"

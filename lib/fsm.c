@@ -451,6 +451,7 @@ static int saveHardLink(/*@special@*/ /*@partial@*/ FSM_t fsm)
 /** \ingroup payload
  * Destroy set of hard links.
  * @param li		set of hard links
+ * @return		NULL always
  */
 static /*@null@*/ void * freeHardLink(/*@only@*/ /*@null@*/ struct hardLink_s * li)
 	/*@modifies li @*/

@@ -229,10 +229,8 @@ struct FDIO_s {
 /**
  * strerror(3) clone.
  */
-/*@-redecl@*/
 /*@observer@*/ const char * Fstrerror(/*@null@*/ FD_t fd)
 	/*@*/;
-/*@=redecl@*/
 
 /**
  * fread(3) clone.
