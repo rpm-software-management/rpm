@@ -27,6 +27,7 @@ TODO:
 #include "stringbuf.h"
 #include "misc.h"
 #include "reqprov.h"
+#include "trigger.h"
 
 #define LINE_BUF_SIZE 1024
 #define FREE(x) { if (x) free(x); }
@@ -250,10 +251,7 @@ static void free_reqprov(struct ReqProv *p)
     }
 }
 
-static struct ReqComp {
-    char *token;
-    int flags;
-} ReqComparisons[] = {
+struct ReqComp ReqComparisons[] = {
     { "<=", REQUIRE_LESS | REQUIRE_EQUAL},
     { "<=S", REQUIRE_LESS | REQUIRE_EQUAL | REQUIRE_SERIAL},
     { "=<", REQUIRE_LESS | REQUIRE_EQUAL},
@@ -347,6 +345,11 @@ static struct PackageRec *new_packagerec(void)
     p->numReq = 0;
     p->numProv = 0;
     p->numConflict = 0;
+    p->trigger.alloced = 0;
+    p->trigger.used = 0;
+    p->trigger.triggerScripts = NULL;
+    p->trigger.trigger = NULL;
+    p->trigger.triggerCount = 0;
     p->next = NULL;
 
     return p;
@@ -362,6 +365,7 @@ void free_packagerec(struct PackageRec *p)
     FREE(p->icon);
     FREE(p->fileFile);
     free_reqprov(p->reqprov);
+    freeTriggers(p->trigger);
     if (p->next) {
         free_packagerec(p->next);
     }
@@ -694,6 +698,8 @@ static int find_preamble_line(char *line, char **s)
 #define FILES_PART       10
 #define CHANGELOG_PART   11
 #define DESCRIPTION_PART 12
+#define TRIGGERON_PART   13
+#define TRIGGEROFF_PART  14
 
 static struct part_rec {
     int part;
@@ -712,6 +718,8 @@ static struct part_rec {
     {FILES_PART,       0, "%files"},
     {CHANGELOG_PART,   0, "%changelog"},
     {DESCRIPTION_PART, 0, "%description"},
+    {TRIGGERON_PART,   0, "%triggeron"},
+    {TRIGGEROFF_PART,  0, "%triggeroff"},
     {0, 0, 0}
 };
 
@@ -802,6 +810,7 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
     char buf[LINE_BUF_SIZE]; /* read buffer          */
     char buf2[LINE_BUF_SIZE];
     char fileFile[LINE_BUF_SIZE];
+    char triggerArgs[LINE_BUF_SIZE];
     char *line;              /* "parsed" read buffer */
     
     int x, serial, tag, cur_part, t1;
@@ -869,6 +878,18 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		addEntry(spec->packages->header, RPMTAG_CHANGELOG, STRING_TYPE,
 			 getStringBuf(sb), 1);
 		break;
+	      case TRIGGERON_PART:
+		if (addTrigger(cur_package, TRIGGER_ON,
+			       getStringBuf(sb), triggerArgs)) {
+		    return NULL;
+		}
+		break;
+	      case TRIGGEROFF_PART:
+		if (addTrigger(cur_package, TRIGGER_OFF,
+			       getStringBuf(sb), triggerArgs)) {
+		    return NULL;
+		}
+		break;
 	    }
 	    if (t1) {
 		addEntry(cur_package->header, t1,
@@ -925,7 +946,20 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	    }
 
 	    message(MESS_DEBUG, "fileFile = %s\n", 
-			fileFile ? fileFile : "(null)");
+			fileFile[0] ? fileFile : "(null)");
+
+	    /* If trigger, pull off the args */
+	    if (tag == TRIGGERON_PART || tag == TRIGGEROFF_PART) {
+		s1 = strstr(s, "--");
+		if (s1) {
+		    strcpy(triggerArgs, s1+2);
+		    *s1 = '\0';
+		    s = strtok(s, " \n\t");
+		} else {
+		    strcpy(triggerArgs, s);
+		    s = NULL;
+		}
+	    }
 	    
 	    /* Handle -n in part tags */
 	    lookupopts = 0;
@@ -978,7 +1012,8 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 		    cur_package->fileFile = strdup(fileFile);
 		}
 	    }
-	    
+
+	    /* This line has no content -- it was just a control line */
 	    continue;
         }
 
@@ -1172,6 +1207,10 @@ Spec parseSpec(FILE *f, char *specfile, char *buildRootOverride)
 	  case POSTIN_PART:
 	  case PREUN_PART:
 	  case POSTUN_PART:
+	    appendLineStringBuf(sb, line);
+	    break;
+	  case TRIGGERON_PART:
+	  case TRIGGEROFF_PART:
 	    appendLineStringBuf(sb, line);
 	    break;
 	  case FILES_PART:
