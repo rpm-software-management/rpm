@@ -1,0 +1,7 @@
+/* $Id: typemap,v 1.1 1999/07/14 16:52:52 jbj Exp $ */
+
+TYPEMAP
+
+Header * T_PTROBJ
+const char * T_PV
+

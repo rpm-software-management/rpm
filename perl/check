@@ -1,0 +1,36 @@
+#!/usr/bin/perl
+
+use ExtUtils::testlib;
+use rpm;
+
+my $testfile = "foo.i386.rpm";
+
+my $header = rpm::Header($testfile);
+
+if ($header) {
+  my @foo_test = ();
+  my %foo_test = ();
+  my $key;
+
+  print "call to the header function SUCCEEDED\n";
+  @foo_test = $header->ItemByVal(1081);
+  print "values returned ", @foo_test, "\n\n\n";
+
+  %foo_test = $header->List();
+  foreach $key (sort keys %foo_test) {
+    my $foo_it;
+    print "Item [$key] has [", scalar @{$foo_test{$key}}, "] values: ";
+    foreach $foo_it (@{$foo_test{$key}}) {
+      print "[$foo_it] ";
+    }
+    print "\n";
+  }
+  
+  print "The number of header tags is: ", scalar $header->Tags(), "\n";
+
+} else {
+  print "call to the header function FAILED\n";
+}
+
+
+
