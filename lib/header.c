@@ -68,11 +68,18 @@ struct indexEntry {
 struct sprintfTag {
     /* if NULL tag element is invalid */
     headerTagTagFunction ext;   
+    int extNum;
     int_32 tag;
     int justOne;
     char * format;
     char * type;
     int pad;
+};
+
+struct extensionCache {
+    int_32 type, count;
+    int avail, freeit;
+    void * data;
 };
 
 struct sprintfToken {
@@ -104,19 +111,21 @@ int parseFormat(char * format, const struct headerTagTableEntry * tags,
 		char ** endPtr, char ** error);
 static char * singleSprintf(Header h, struct sprintfToken * token,
 			    const struct headerSprintfExtension * extensions,
-			    int element);
+			    struct extensionCache * extCache, int element);
 static char escapedChar(const char ch);
 static char * escapeString(const char * src);
 static char * formatValue(struct sprintfTag * tag, Header h, 
 			  const struct headerSprintfExtension * extensions,
-			  int element);
-
+			  struct extensionCache * extcache, int element);
 static char * octalFormat(int_32 type, const void * data, 
 		          char * formatPrefix, int padding, int element);
 static char * dateFormat(int_32 type, const void * data, 
 		          char * formatPrefix, int padding, int element);
 static char * shescapeFormat(int_32 type, const void * data, 
 		          char * formatPrefix, int padding, int element);
+static int getExtension(Header h, headerTagTagFunction fn, int_32 * typeptr,
+			void ** data, int_32 * countptr, 
+			struct extensionCache * ext);
 
 const struct headerSprintfExtension headerDefaultFormats[] = {
     { HEADER_EXT_FORMAT, "octal", { octalFormat } },
@@ -1068,10 +1077,10 @@ int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		if (!strcasecmp(entry->name, tagname)) break;
 
 	    if (!entry->name) {
-		ext = extensions;
+		ext = extensions, i =0;
 		while (ext->type != HEADER_EXT_LAST) {
 		    if (ext->type == HEADER_EXT_TAG && 
-			!strcmp(ext->name, tagname)) {
+			!strcasecmp(ext->name, tagname)) {
 			break;
 		    }
 
@@ -1079,15 +1088,17 @@ int parseFormat(char * str, const struct headerTagTableEntry * tags,
 			ext = ext->u.more;
 		    else
 			ext++;
+		    i++;
 		}
 
-		if (ext->type == HEADER_EXT_TAG) {
+		if (ext->type != HEADER_EXT_TAG) {
 		    *error = "unknown tag";
 		    freeFormat(format, numTokens);
 		    return 1;
 		}
 
 		format[currToken].u.tag.ext = ext->u.tagFunction;
+		format[currToken].u.tag.extNum = i;
 	    } else {
 		format[currToken].u.tag.ext = NULL;
 		format[currToken].u.tag.tag = entry->val;
@@ -1148,9 +1159,25 @@ int parseFormat(char * str, const struct headerTagTableEntry * tags,
     return 0;
 }
 
+static int getExtension(Header h, headerTagTagFunction fn, int_32 * typeptr,
+			void ** data, int_32 * countptr, 
+			struct extensionCache * ext) {
+    if (!ext->avail) {
+	if (fn(h, &ext->type, &ext->data, &ext->count, &ext->freeit))
+	    return 1;
+	ext->avail = 1;
+    }
+
+    *typeptr = ext->type;
+    *data = ext->data;
+    *countptr = ext->count;
+
+    return 0;
+}
+
 static char * formatValue(struct sprintfTag * tag, Header h, 
 			  const struct headerSprintfExtension * extensions,
-			  int element) {
+			  struct extensionCache * extCache, int element) {
     int len;
     char buf[20];
     int_32 count, type;
@@ -1158,12 +1185,13 @@ static char * formatValue(struct sprintfTag * tag, Header h,
     unsigned int intVal;
     char * val = NULL;
     char ** strarray;
+    int mayfree = 0;
     headerTagFormatFunction tagtype = NULL;
     const struct headerSprintfExtension * ext;
-    int freeit = 0;
 
     if (tag->ext) {
-	if (tag->ext(h, &type, &data, &count, &freeit)) {
+	if (getExtension(h, tag->ext, &type, &data, &count, 
+			 extCache + tag->extNum)) {
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
 	    data = "(none)";
@@ -1174,7 +1202,8 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	    type = RPM_STRING_TYPE;	
 	    data = "(none)";
 	}
-	freeit = type == (RPM_STRING_ARRAY_TYPE);
+
+	mayfree = 1;
     }
 
     strcpy(buf, "%");
@@ -1207,10 +1236,12 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	if (!val) {
 	    strcat(buf, "s");
 
-	    len = strlen(data) + tag->pad + 20;
+	    len = strlen(strarray[element]) + tag->pad + 20;
 	    val = malloc(len);
-	    sprintf(val, strarray[element], data);
+	    sprintf(val, buf, strarray[element]);
 	}
+
+	if (mayfree) free(data);
 
 	break;
 
@@ -1257,21 +1288,18 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 	strcpy(val, "(unknown type)");
     }
 
-    if (freeit) free(data);
-
     return val;
 }
 
 static char * singleSprintf(Header h, struct sprintfToken * token,
 			    const struct headerSprintfExtension * extensions,
-			    int element) {
+			    struct extensionCache * extCache, int element) {
     char * val, * thisItem;
     int thisItemLen;
     int len, alloced;
     int i, j;
     int numElements;
     int type;
-    int freeit;
     void * data;
 
     /* we assume the token and header have been validated already! */
@@ -1286,7 +1314,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 	break;
 
       case PTOK_TAG:
-	val = formatValue(&token->u.tag, h, extensions, 
+	val = formatValue(&token->u.tag, h, extensions, extCache,
 			  token->u.tag.justOne ? 1 : element);
 	break;
 
@@ -1297,10 +1325,11 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 		token->u.array.format[i].u.tag.justOne) continue;
 
 	    if (token->u.array.format[i].u.tag.ext) {
-		 if (token->u.array.format[i].u.tag.ext(h, &type, &data, 
-						        &numElements, &freeit)) 
+		if (getExtension(h, token->u.array.format[i].u.tag.ext,
+				 &type, &data, &numElements, 
+				 extCache + 
+				   token->u.array.format[i].u.tag.extNum))
 		     continue;
-		 if (freeit) free(data);
 	    } else {
 		if (!headerGetEntry(h, token->u.array.format[i].u.tag.tag, 
 				    &type, (void **) &val, &numElements))
@@ -1322,7 +1351,7 @@ static char * singleSprintf(Header h, struct sprintfToken * token,
 	    for (j = 0; j < numElements; j++) {
 		for (i = 0; i < token->u.array.numTokens; i++) {
 		    thisItem = singleSprintf(h, token->u.array.format + i, 
-					     extensions, j);
+					     extensions, extCache, j);
 		    thisItemLen = strlen(thisItem);
 		    if ((thisItemLen + len) >= alloced) {
 			alloced = (thisItemLen + len) + 200;
@@ -1361,6 +1390,22 @@ static char * escapeString(const char * src) {
     return rc;
 }
 
+static struct extensionCache * allocateExtensionCache(
+		     const struct headerSprintfExtension * extensions) {
+    const struct headerSprintfExtension * ext = extensions;
+    int i = 0;
+
+    while (ext->type != HEADER_EXT_LAST) {
+	i++;
+	if (ext->type == HEADER_EXT_MORE)
+	    ext = ext->u.more;
+	else
+	    ext++;
+    }
+
+    return calloc(i, sizeof(struct extensionCache *));
+}
+
 char * headerSprintf(Header h, const char * origFmt, 
 		     const struct headerTagTableEntry * tags,
 		     const struct headerSprintfExtension * extensions,
@@ -1373,6 +1418,7 @@ char * headerSprintf(Header h, const char * origFmt,
     int answerAlloced;
     int pieceLength;
     int i;
+    struct extensionCache * extCache;
  
     fmtString = escapeString(origFmt);
    
@@ -1381,13 +1427,15 @@ char * headerSprintf(Header h, const char * origFmt,
 	return NULL;
     }
 
+    extCache = allocateExtensionCache(extensions);
+
     answerAlloced = 1024;
     answerLength = 0;
     answer = malloc(answerAlloced);
     *answer = '\0';
 
     for (i = 0; i < numTokens; i++) {
-	piece = singleSprintf(h, format + i, extensions, 0);
+	piece = singleSprintf(h, format + i, extensions, extCache, 0);
 	if (piece) {
 	    pieceLength = strlen(piece);
 	    if ((answerLength + pieceLength) >= answerAlloced) {

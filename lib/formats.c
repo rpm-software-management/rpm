@@ -15,9 +15,12 @@ static char * fflagsFormat(int_32 type, const void * data,
 		           char * formatPrefix, int padding, int element);
 static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
 		      int * freeData);
+static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
+		      int * freeData);
 static char * permsString(int mode);
 
 const struct headerSprintfExtension rpmHeaderFormats[] = {
+    { HEADER_EXT_TAG, "RPMTAG_FSSIZES", { fssizesTag } },
     { HEADER_EXT_TAG, "RPMTAG_FSNAMES", { fsnamesTag } },
     { HEADER_EXT_FORMAT, "depflags", { depflagsFormat } },
     { HEADER_EXT_FORMAT, "fflags", { fflagsFormat } },
@@ -167,4 +170,25 @@ static int fsnamesTag(Header h, int_32 * type, void ** data, int_32 * count,
     *freeData = 0;
 
     return 0; 
+}
+
+static int fssizesTag(Header h, int_32 * type, void ** data, int_32 * count,
+		      int * freeData) {
+    char ** filenames;
+    int_32 * filesizes;
+    uint_32 * usages;
+    int numFiles;
+
+    headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &filenames, NULL);
+    headerGetEntry(h, RPMTAG_FILESIZES, NULL, (void **) &filesizes, &numFiles);
+
+    if (rpmGetFilesystemUsage(filenames, filesizes, numFiles, &usages, 0))	
+	return 1;
+
+    *type = RPM_INT32_TYPE;
+    *count = 20;
+    *freeData = 1;
+    *data = usages;
+
+    return 0;
 }

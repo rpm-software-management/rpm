@@ -365,6 +365,7 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 #define RPMMESS_BACKUP          -34     /* backup made during [un]install */
 #define RPMERR_MTAB		-35	/* failed to read mount table */
 #define RPMERR_STAT		-36	/* failed to stat something */
+#define RPMERR_BADDEV		-37	/* file on device not listed in mtab */
 
 /* spec.c build.c pack.c */
 #define RPMERR_UNMATCHEDIF      -107    /* unclosed %ifarch or %ifos */
@@ -419,5 +420,7 @@ int rpmVerifySignature(char *file, int_32 sigTag, void *sig, int count,
 		       char *result);
 
 int rpmGetFilesystemList(char *** listptr);
+int rpmGetFilesystemUsage(char ** filelist, int_32 * fssizes, int numFiles,
+			  uint_32 ** usagesPtr, int flags);
 
 #endif
