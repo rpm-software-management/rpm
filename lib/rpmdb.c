@@ -42,8 +42,7 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     
     strcpy(filename, prefix); 
     strcat(filename, "/var/lib/rpm/nameindex.rpm");
-    db.nameIndex = openDBIndex("/var/lib/rpm/nameindex.rpm", 
-				 mode, 0644);
+    db.nameIndex = openDBIndex(filename, mode, 0644);
     if (!db.nameIndex) {
 	faClose(db.pkgs);
 	error(RPMERR_DBOPEN, "failed to open %s\n", filename);
@@ -52,8 +51,7 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     
     strcpy(filename, prefix); 
     strcat(filename, "/var/lib/rpm/fileindex.rpm");
-    db.fileIndex = openDBIndex("/var/lib/rpm/fileindex.rpm", 
-				 mode, 0644);
+    db.fileIndex = openDBIndex(filename, mode, 0644);
     if (!db.fileIndex) {
 	faClose(db.pkgs);
 	closeDBIndex(db.nameIndex);
@@ -63,8 +61,7 @@ int rpmdbOpen (char * prefix, rpmdb *rpmdbp, int mode, int perms) {
     
     strcpy(filename, prefix); 
     strcat(filename, "/var/lib/rpm/groupindex.rpm");
-    db.groupIndex = openDBIndex("/var/lib/rpm/groupindex.rpm", 
-				 mode, 0644);
+    db.groupIndex = openDBIndex(filename, mode, 0644);
     if (!db.groupIndex) {
 	faClose(db.pkgs);
 	closeDBIndex(db.nameIndex);

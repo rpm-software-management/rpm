@@ -223,14 +223,14 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
 	handleSharedFiles(db, offset, fileList, fileMd5List, fileCount, fileActions);
 
 	for (i = 0; i < fileCount; i++) {
-	    if (prefix[0]) {
+	    if (strcmp(prefix, "/")) {
 		if ((strlen(fileList[i]) + prefixLength + 1) > fnbuffersize) {
 		    fnbuffersize = (strlen(fileList[i]) + prefixLength) * 2;
 		    fnbuffer = alloca(fnbuffersize);
 		}
-		strcpy(fnbuffer, "");
+		strcpy(fnbuffer, prefix);
 		strcat(fnbuffer, "/");
-		strcpy(fnbuffer, fileList[i]);
+		strcat(fnbuffer, fileList[i]);
 	    } else {
 		fnbuffer = fileList[i];
 	    }
@@ -288,6 +288,7 @@ int runScript(char * prefix, Header h, int tag) {
 	    if (strcmp(prefix, "/")) {
 		message(MESS_DEBUG, "performing chroot(%s)\n", prefix);
 		chroot(prefix);
+		chdir("/");
 	    }
 
 	    if (isdebug)
