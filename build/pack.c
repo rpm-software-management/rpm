@@ -17,6 +17,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <netdb.h>
+#include <glob.h>
 
 #include "header.h"
 #include "specP.h"
@@ -356,6 +357,43 @@ static int compare_fe(const void *ap, const void *bp)
     return strcmp(a, b);
 }
 
+/* glob_pattern_p() taken from bash
+ * Copyright (C) 1985, 1988, 1989 Free Software Foundation, Inc.
+ */
+
+/* Return nonzero if PATTERN has any special globbing chars in it.  */
+int glob_pattern_p (pattern)
+    char *pattern;
+{
+    register char *p = pattern;
+    register char c;
+    int open = 0;
+  
+    while ((c = *p++) != '\0')
+	switch (c) {
+	case '?':
+	case '*':
+	    return (1);
+	case '[':      /* Only accept an open brace if there is a close */
+	    open++;    /* brace to match it.  Bracket expressions must be */
+	    continue;  /* complete, according to Posix.2 */
+	case ']':
+	    if (open)
+		return (1);
+	    continue;      
+	case '\\':
+	    if (*p++ == '\0')
+		return (0);
+	}
+
+    return (0);
+}
+
+int glob_error(const char *foo, int bar)
+{
+    return 1;
+}
+
 static int process_filelist(Header header, StringBuf sb, int *size, int type)
 {
     char buf[1024];
@@ -367,6 +405,8 @@ static int process_filelist(Header header, StringBuf sb, int *size, int type)
     char *str;
     int count = 0;
     int c;
+    int x;
+    glob_t glob_result;
 
     fes = NULL;
     *size = 0;
@@ -413,7 +453,28 @@ static int process_filelist(Header header, StringBuf sb, int *size, int type)
 		return(RPMERR_BADSPEC);
 	    }
 
-	    c = add_file(&fes, filename, isdoc, isconf, isdir);
+	    if (glob_pattern_p(filename)) {
+	        if (glob(filename, 0, glob_error, &glob_result)) {
+		    error(RPMERR_BADSPEC,
+			  "No matches: %s", filename);
+		    return(RPMERR_BADSPEC);
+		}
+		if (glob_result.gl_pathc < 1) {
+		    error(RPMERR_BADSPEC,
+			  "No matches: %s", filename);
+		    return(RPMERR_BADSPEC);
+		}
+		x = 0;
+		c = 0;
+		while (x < glob_result.gl_pathc) {
+		    c += add_file(&fes, glob_result.gl_pathv[x],
+				  isdoc, isconf, isdir);
+		    x++;
+		}
+		globfree(&glob_result);
+	    } else {
+	        c = add_file(&fes, filename, isdoc, isconf, isdir);
+	    }
 	} else {
 	    /* Source package are the simple case */
 	    fest = malloc(sizeof(struct file_entry));
