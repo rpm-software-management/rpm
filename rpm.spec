@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.64
+Release: 0.65
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -18,7 +18,9 @@ Prereq: gawk fileutils textutils sh-utils mktemp
 Requires: popt, bzip2 >= 0.9.0c-2
 # XXX glibc-2.1.92 has incompatible locale changes that affect statically
 # XXX linked binaries like /bin/rpm.
+%ifnarch ia64
 Requires: glibc >= 2.1.92
+%endif
 BuildRequires: db3-devel
 BuildRequires: bzip2 >= 0.9.0c-2
 BuildRequires: python-devel >= 1.5.2
