@@ -892,16 +892,13 @@ static inline void cpuid(unsigned int op, int *eax, int *ebx, int *ecx, int *edx
 #ifdef	__LCLINT__
     *eax = *ebx = *ecx = *edx = 0;
 #endif
-#ifdef PIC
-	__asm__("pushl %%ebx; cpuid; movl %%ebx,%1; popl %%ebx"
-		: "=a"(*eax), "=g"(*ebx), "=&c"(*ecx), "=&d"(*edx)
-		: "a" (op));
-#else
-	__asm__("cpuid"
-		: "=a" (*eax), "=b" (*ebx), "=c" (*ecx), "=d" (*edx)
-		: "a" (op));
-#endif
-
+    asm volatile (
+	"pushl	%%ebx		\n"
+	"cpuid			\n"
+	"movl	%%ebx,	%%esi	\n"
+	"popl	%%ebx		\n"
+    : "=a" (*eax), "=S" (*ebx), "=c" (*ecx), "=d" (*edx)
+    : "a" (op));
 }
 
 /*
@@ -910,15 +907,8 @@ static inline void cpuid(unsigned int op, int *eax, int *ebx, int *ecx, int *edx
 static inline unsigned int cpuid_eax(unsigned int op)
 	/*@*/
 {
-	unsigned int val;
-
-#ifdef PIC
-	__asm__("pushl %%ebx; cpuid; popl %%ebx"
-		: "=a" (val) : "a" (op) : "ecx", "edx");
-#else
-	__asm__("cpuid"
-		: "=a" (val) : "a" (op) : "ebx", "ecx", "edx");
-#endif
+	unsigned int tmp, val;
+	cpuid(op, &val, &tmp, &tmp, &tmp);
 	return val;
 }
 
@@ -926,14 +916,7 @@ static inline unsigned int cpuid_ebx(unsigned int op)
 	/*@*/
 {
 	unsigned int tmp, val;
-
-#ifdef PIC
-	__asm__("pushl %%ebx; cpuid; movl %%ebx,%1; popl %%ebx"
-		: "=a" (tmp), "=g" (val) : "a" (op) : "ecx", "edx");
-#else
-	__asm__("cpuid"
-		: "=a" (tmp), "=b" (val) : "a" (op) : "ecx", "edx");
-#endif
+	cpuid(op, &tmp, &val, &tmp, &tmp);
 	return val;
 }
 
@@ -941,30 +924,16 @@ static inline unsigned int cpuid_ecx(unsigned int op)
 	/*@*/
 {
 	unsigned int tmp, val;
-#ifdef PIC
-	__asm__("pushl %%ebx; cpuid; popl %%ebx"
-		: "=a" (tmp), "=c" (val) : "a" (op) : "edx");
-#else
-	__asm__("cpuid"
-		: "=a" (tmp), "=c" (val) : "a" (op) : "ebx", "edx");
-#endif
+	cpuid(op, &tmp, &tmp, &val, &tmp);
 	return val;
-
 }
 
 static inline unsigned int cpuid_edx(unsigned int op)
 	/*@*/
 {
 	unsigned int tmp, val;
-#ifdef PIC
-	__asm__("pushl %%ebx; cpuid; popl %%ebx"
-		: "=a" (tmp), "=d" (val) : "a" (op) : "ecx");
-#else
-	__asm__("cpuid"
-		: "=a" (tmp), "=d" (val) : "a" (op) : "ebx", "ecx");
-#endif
+	cpuid(op, &tmp, &tmp, &tmp, &val);
 	return val;
-
 }
 
 /*@unchecked@*/
