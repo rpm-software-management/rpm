@@ -1,4 +1,4 @@
-// vim:ts=8:sts=4
+/* vim:ts=8:sts=4 */
 
 #include <stdio.h>
 #include <stdlib.h>
