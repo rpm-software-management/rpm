@@ -25,20 +25,6 @@ rpmps_Debug(/*@unused@*/ rpmpsObject * s, PyObject * args)
     return Py_None;
 }
 
-/*@null@*/
-static PyObject *
-rpmps_NumProblems(rpmpsObject * s, PyObject * args)
-	/*@*/
-{
-    int rc;
-
-    if (!PyArg_ParseTuple(args, ":NumProblems")) return NULL;
-    rc = rpmpsNumProblems(s->ps);
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_NumProblems(%p,%p) rc %d\n", s, args, rc);
-    return Py_BuildValue("i", rc);
-}
-
 static PyObject *
 rpmps_iter(rpmpsObject * s)
 	/*@*/
@@ -107,8 +93,6 @@ fprintf(stderr, "*** rpmps_Next(%p,%p)\n", s, args);
 static struct PyMethodDef rpmps_methods[] = {
  {"Debug",	(PyCFunction)rpmps_Debug,	METH_VARARGS,
 	NULL},
- {"NumProblems",(PyCFunction)rpmps_NumProblems,	METH_VARARGS,
-	"ps.NumProblems -> NumProblems	- Return no. of elements.\n" },
  {NULL,		NULL}		/* sentinel */
 };
 /*@=fullinitblock@*/
