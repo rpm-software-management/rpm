@@ -883,8 +883,7 @@ static void skipFiles(struct fileInfo * fi, int noDocs)
     char ** netsharedPaths = NULL;
     const char ** fileLangs;
     const char ** languages;
-    const char * oneLang[2] = { NULL, NULL };
-    int freeLanguages = 0;
+    const char *s;
 
     if (!noDocs)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
@@ -899,15 +898,17 @@ static void skipFiles(struct fileInfo * fi, int noDocs)
 			NULL))
 	fileLangs = NULL;
 
-    if ((oneLang[0] = getenv("LINGUAS"))) {
-	languages = (const char **)
-		splitString(oneLang[0], strlen(oneLang[0]), ':');
-	freeLanguages = 1;
-    } else if ((oneLang[0] = getenv("LANG"))) {
-	languages = oneLang;
-    } else {
-	oneLang[0] = "en";
-	languages = oneLang;
+    s = rpmExpand("%{_install_langs}", NULL);
+    if (!(s && *s != '%')) {
+	if (s) xfree(s);
+	s = NULL;
+    }
+    if (s) {
+	languages = (const char **) splitString(s, strlen(s), ':');
+	xfree(s);
+    /* XXX LINGUAS/LANG is used by the installer so leave alone for now */
+    } else if ((s = getenv("LINGUAS")) || (s = getenv("LANG")) || (s = "en")) {
+	languages = (const char **) splitString(s, strlen(s), ':');
     }
 
     for (i = 0; i < fi->fc; i++) {
@@ -945,15 +946,17 @@ static void skipFiles(struct fileInfo * fi, int noDocs)
 	if (fileLangs && languages && *fileLangs[i]) {
 	    const char **lang, *l, *le;
 	    for (lang = languages; *lang; lang++) {
+		if (!strcmp(*lang, "all"))
+		    break;
 		for (l = fileLangs[i]; *l; l = le) {
 		    for (le = l; *le && *le != '|'; le++)
 			;
 		    if ((le-l) > 0 && !strncmp(*lang, l, (le-l)))
-			goto lingo;
+			break;
 		    if (*le == '|') le++;	/* skip over | */
 		}
+		if (*l)	break;
 	    }
-	lingo:
 	    if (*lang == NULL) {
 		fi->actions[i] = FA_SKIPNSTATE;
 		continue;
@@ -969,7 +972,7 @@ static void skipFiles(struct fileInfo * fi, int noDocs)
 
     if (netsharedPaths) freeSplitString(netsharedPaths);
     if (fileLangs) free(fileLangs);
-    if (freeLanguages) freeSplitString((char **)languages);
+    if (languages) freeSplitString((char **)languages);
 }
 
 #define	NOTIFY(_x)	if (notify) notify _x

@@ -31,6 +31,7 @@
 	- fix: use pgp5 rather than pgp-2.6.3 if both are in %_pgpbin (#4564).
 	- match "de" when locale is specified as "de_DE.ISO-8859-1@Munich".
 	- add versions to obsoletes.
+	- add %_install_langs to configure languages to be installed.
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).
