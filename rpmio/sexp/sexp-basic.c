@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include "sexp.h"
 
+/*@access sexpIter @*/
+
 /******************/
 /* ERROR MESSAGES */
 /******************/
@@ -233,21 +235,25 @@ void closeSexpList(/*@unused@*/ sexpList *list)
 /* sexpListIter()
  * return the iterator for going over a list
  */
-sexpIter *sexpListIter(sexpList *list)
-{ return (sexpIter *)list; }
+sexpIter sexpListIter(sexpList *list)
+{
+/*@-castexpose@*/
+    return (sexpIter)list;
+/*@=castexpose@*/
+}
 
 /* sexpIterNext()
  * advance iterator to next element of list, or else return null
  */
-sexpIter *sexpIterNext(sexpIter *iter)
+sexpIter sexpIterNext(sexpIter iter)
 { if (iter == NULL) return NULL;
-  return (sexpIter *)(((sexpList *)iter)->rest);
+  return (sexpIter)(((sexpList *)iter)->rest);
 }
 
 /* sexpIterObject ()
  * return object corresponding to current state of iterator
  */
-sexpObject *sexpIterObject(sexpIter *iter)
+sexpObject *sexpIterObject(sexpIter iter)
 { if (iter == NULL) return NULL;
   return ((sexpList *)iter)->first;
 }

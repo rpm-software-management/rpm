@@ -12,12 +12,8 @@
 +strict			# lclint level
 
 # --- in progress
--compdef		# 5
--evalorder
--exportheadervar
--exportlocal
--fcnuse
--ifempty
+-compdef		# 3
+-evalorder		# 10
 -infloopsuncon		# 6
 -noeffect		# 4
 -noeffectuncon		# 51
@@ -25,22 +21,18 @@
 -shiftimplementation
 -shiftnegative
 -temptrans		# 6
--usereleased
+-usereleased		# 5
 
 # --- +partial artifacts
 
 # --- not-yet at strict level
--bitwisesigned		#
+-bitwisesigned		# 16
 -elseifcomplete		#
--exportconst		#
--exportfcn		#
--exporttype		#
--exportvar		#
--fielduse		#
+-exportfcn		# 76
+-exporttype		# 8
 -forblock		# tedious
 -ifblock		# tedious
 -namechecks		# tedious ANSI compliance checks
--ptrarith		#
 
 -compdestroy		#
 -mustdefine		#

@@ -196,7 +196,7 @@ void canonicalPrintString(sexpOutputStream *os, sexpString *s)
  * Prints out the list "list" onto output stream os
  */
 void canonicalPrintList(sexpOutputStream *os, sexpList *list)
-{ sexpIter *iter;
+{ sexpIter iter;
   sexpObject *object;
   varPutChar(os,'(');
   iter = sexpListIter(list);
@@ -498,7 +498,7 @@ int advancedLengthString(sexpOutputStream *os, sexpString *s)
  */
 int advancedLengthList(sexpOutputStream *os, sexpList *list)
 { int len = 1;                       /* for left paren */
-  sexpIter *iter;
+  sexpIter iter;
   sexpObject *object;
   iter = sexpListIter(list);
   while (iter != NULL)
@@ -526,7 +526,7 @@ int advancedLengthList(sexpOutputStream *os, sexpList *list)
 void advancedPrintList(sexpOutputStream *os, sexpList *list)
 { int vertical = FALSE;
   int firstelement = TRUE;
-  sexpIter *iter;
+  sexpIter iter;
   sexpObject *object;
   os->putChar(os,'(');
   os->indent++;

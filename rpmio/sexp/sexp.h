@@ -54,14 +54,16 @@ typedef struct sexp_list {
 /* sexpObject */
 /* so we can have a pointer to something of either type */
 typedef union sexp_object {
+/*@unused@*/
   sexpString string;
+/*@unused@*/
   sexpList list;
 } sexpObject;
 
 /* sexpIter */
 /* an "iterator" for going over lists */
 /* In this implementation, it is the same as a list */
-typedef sexpList sexpIter;
+typedef /*@abstract@*/ sexpList * sexpIter;
 
 typedef struct sexp_inputstream {
   int nextChar;        /* character currently being scanned */
@@ -140,13 +142,14 @@ void sexpAddSexpListObject(sexpList *list, sexpObject *object)
 	/*@modifies list, fileSystem @*/;
 void closeSexpList(sexpList *list)
 	/*@*/;
-sexpIter *sexpListIter(sexpList *list)
+/*@observer@*/
+sexpIter sexpListIter(sexpList *list)
 	/*@*/;
-/*@null@*/
-sexpIter *sexpIterNext(sexpIter *iter)
+/*@exposed@*/ /*@observer@*/ /*@null@*/
+sexpIter sexpIterNext(sexpIter iter)
 	/*@*/;
-/*@null@*/
-sexpObject *sexpIterObject(sexpIter *iter)
+/*@exposed@*/ /*@observer@*/ /*@null@*/
+sexpObject *sexpIterObject(sexpIter iter)
 	/*@*/;
 int isObjectString(sexpObject *object)
 	/*@*/;
@@ -155,7 +158,8 @@ int isObjectList(sexpObject *object)
 
 /* sexp-input */
 void initializeCharacterTables(void)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 int isWhiteSpace(int c)
 	/*@*/;
 int isDecDigit(int c)
@@ -166,6 +170,7 @@ int isBase64Digit(int c)
 	/*@*/;
 int isTokenChar(int c)
 	/*@*/;
+/*@unused@*/
 int isAlpha(int c)
 	/*@*/;
 void changeInputByteSize(sexpInputStream *is, int newByteSize)
@@ -254,9 +259,11 @@ void advancedPrintTokenSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 	/*@modifies os @*/;
 int advancedLengthSimpleStringToken(sexpSimpleString *ss)
 	/*@*/;
+/*@unused@*/
 void advancedPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 	/*@globals fileSystem @*/
 	/*@modifies os, fileSystem @*/;
+/*@unused@*/
 int advancedLengthSimpleStringVerbatim(sexpSimpleString *ss)
 	/*@*/;
 void advancedPrintBase64SimpleString(sexpOutputStream *os, sexpSimpleString *ss)

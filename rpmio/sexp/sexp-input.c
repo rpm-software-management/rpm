@@ -35,8 +35,11 @@ static char alpha[256];      /* alpha[c] is true if c is alphabetic A-Z a-z */
 /* initializeCharacterTables
  * initializes all of the above arrays
  */
-/*@-mods@*/
 void initializeCharacterTables(void)
+	/*@globals alpha, base64digit, base64value, decdigit, decvalue,
+		hexdigit, hexvalue, tokenchar, upper, whitespace @*/
+	/*@modifies alpha, base64digit, base64value, decdigit, decvalue,
+		hexdigit, hexvalue, tokenchar, upper, whitespace @*/
 { int i;
   for (i=0;i<256;i++) upper[i] = i;
   for (i='a'; i<='z'; i++) upper[i] = i - 'a' + 'A';
@@ -75,7 +78,6 @@ void initializeCharacterTables(void)
   tokenchar['+'] = TRUE;
   tokenchar['='] = TRUE;
 }
-/*@=mods@*/
 
 /* isWhiteSpace(c)
  * Returns TRUE if c is a whitespace character (space, tab, etc. ).
@@ -155,9 +157,9 @@ void getChar(sexpInputStream *is)
 	  return;
 	}
       else if (is->byteSize != 8 && isWhiteSpace(c))
-	; /* ignore white space in hex and base64 regions */
+	{} /* ignore white space in hex and base64 regions */
       else if (is->byteSize == 6 && c == '=')
-	; /* ignore equals signs in base64 regions */
+	{} /* ignore equals signs in base64 regions */
       else if (is->byteSize==8)
 	{
 	  is->count++;
