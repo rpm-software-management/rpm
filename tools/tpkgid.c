@@ -3,64 +3,29 @@
 #include <fts.h>
 
 #include <rpmlib.h>
+#include <rpmmacro.h>
 #include <rpmpgp.h>
 
 #include "depends.h"
+#include "misc.h"	/* XXX myGlobPatternP */
 
 #include "debug.h"
 
 static int _debug = 0;
 
-#define	BHPATH	"/mnt/redhat/beehive/comps/dist"
-#define	BHCOLL	"7.2"
-
-#define	BHN	"@(basesystem|bash|filesystem|glibc-common|glibc|ldconfig|libtermcap|mktemp|setup|termcap)"
-
-#define	BHVR	"*"
-#define	BHA	"@(i[3456]86|noarch)"
-
-const char * bhpath = BHPATH;
-int bhpathlen = sizeof(BHPATH)-1;
-
+const char * bhpath;
+int bhpathlen = 0;
 int bhlvl = -1;
 
-static char * const ftsSet[] = {
-    BHPATH, NULL,
-};
+static char ** ftsSet;
 
 struct ftsglob_s {
     const char ** patterns;
     int fnflags;
 };
 
-const char * lvl0[] = {
-    BHPATH, NULL
-};
-
-const char * lvl1[] = {
-    BHCOLL, NULL
-};
-
-const char * lvl2[] = {
-    BHN, NULL
-};
-
-const char * lvl3[] = {
-    BHVR, NULL
-};
-
-const char * lvl4[] = {
-    BHA, NULL
-};
-
-static struct ftsglob_s bhglobs[] = {
-    { lvl0,	(FNM_PATHNAME | FNM_PERIOD | FNM_EXTMATCH) },
-    { lvl1,	(FNM_PATHNAME | FNM_PERIOD | FNM_EXTMATCH) },
-    { lvl2,	(FNM_PATHNAME | FNM_PERIOD | FNM_EXTMATCH) },
-    { lvl3,	(FNM_PATHNAME | FNM_PERIOD | FNM_EXTMATCH) },
-    { lvl4,	(FNM_PATHNAME | FNM_PERIOD | FNM_EXTMATCH) },
-};
-static int nbhglobs = sizeof(bhglobs)/sizeof(bhglobs[0]);
+static struct ftsglob_s * bhglobs;
+static int nbhglobs = 5;
 
 static int indent = 2;
 
@@ -103,48 +68,79 @@ static void freeItems(void) {
     nitems = 0;
 }
 
-static int ftsPrintPaths(FILE * fp) {
+static void ftsPrintPaths(FILE * fp) {
     int i;
-    for (i = 0; i < nitems; i++) {
-	Item item = items[i];
-	fprintf(fp, "%s\n", item->path);
-    }
-    return 0;
+    for (i = 0; i < nitems; i++)
+	fprintf(fp, "%s\n", items[i]->path);
 }
 
-static int ftsStashLatest(FTSENT * fts, Header h) {
-    rpmDepSet add = dsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
-    int rc = -1;
+static int ftsStashLatest(FTSENT * fts, rpmTransactionSet ts)
+{
+    Header h = NULL;
+    rpmDepSet add;
+    int ec = -1;	/* assume not found */
     int i = 0;
+
+    rpmMessage(RPMMESS_DEBUG, "============== %s\n", fts->fts_accpath);
+
+    /* Read header from file. */
+    {   FD_t fd = Fopen(fts->fts_accpath, "r");
+	rpmRC rc;
+	int xx;
+
+	if (fd == NULL || Ferror(fd)) {
+	    if (fd) xx = Fclose(fd);
+	    return ec;	/* XXX -1 */
+	}
+	rc = rpmReadPackageFile(ts, fd, fts->fts_path, &h);
+	xx = Fclose(fd);
+	if (rc != RPMRC_OK)
+	    return ec;	/* XXX -1 */
+    }
+
+    add = dsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
 
     if (items != NULL && nitems > 0) {
 	Item needle = memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
-	Item * found = &needle;
+	Item * found, * fneedle = &needle;
 	
 	needle->this = add;
 
-	found = bsearch(found, items, nitems,
+	found = bsearch(fneedle, items, nitems,
                        sizeof(*found), cmpItem);
-	if (found != NULL) {
-	    rc = dsCompare(needle->this, (*found)->this);
+
+	/* Rewind to the first item with same name. */
+	while (found > items && cmpItem(found-1, fneedle) == 0)
+	    found--;
+
+	/* Check that all saved items are newer than this item. */
+	if (found != NULL)
+	while (found < (items + nitems) && cmpItem(found, fneedle) == 0) {
+	    ec = dsCompare(needle->this, (*found)->this);
+	    if (ec == 0) {
+		found++;
+		continue;
+	    }
 	    i = found - items;
+	    break;
 	}
     }
 
     /*
-     * At this point, rc is
-     *	-1	no header with the same name has been seen.
-     *	0	header exists, but previous EVR is newer.
-     *	1	header exists, but previous EVR is same/older.
+     * At this point, ec is
+     *	-1	no item with the same name has been seen.
+     *	0	item exists, but already saved item EVR is newer.
+     *	1	item exists, but already saved item EVR is same/older.
      */
-    if (rc == 0) {
+    if (ec == 0) {
 	goto exit;
-    } else if (rc == 1) {
+    } else if (ec == 1) {
 	items[i] = freeItem(items[i]);
     } else {
 	i = nitems++;
 	items = xrealloc(items, nitems * sizeof(*items));
     }
+
     items[i] = newItem();
     items[i]->path = xstrdup(fts->fts_path);
     items[i]->this = dsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
@@ -160,8 +156,9 @@ static int ftsStashLatest(FTSENT * fts, Header h) {
 #endif
 
 exit:
+    h = headerFree(h, NULL);
     add = dsFree(add);
-    return rc;
+    return ec;
 }
 
 static const char * ftsInfoStrings[] = {
@@ -188,14 +185,12 @@ static const char * ftsInfoStr(int fts_info) {
     return ftsInfoStrings[ fts_info ];
 }
 
-static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts) {
+static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts)
+{
     struct ftsglob_s * bhg;
     const char ** patterns;
     const char * pattern;
     const char * s;
-    FD_t fd = NULL;
-    Header h = NULL;
-    rpmRC rc;
     int lvl;
     int xx;
 
@@ -217,7 +212,8 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts) {
 	    break;
 
 #if 0
-	fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
+	if (_debug)
+	    fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
 		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
 		fts->fts_name);
 #endif
@@ -255,14 +251,16 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts) {
 	break;
     case FTS_DP:	/* postorder directory */
 #if 0
-	fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
+	if (_debug)
+	    fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
 		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
 		fts->fts_name);
 #endif
 	break;
     case FTS_F:		/* regular file */
 #if 0
-	fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
+	if (_debug)
+	    fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
 		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
 		fts->fts_name);
 #endif
@@ -275,21 +273,13 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts) {
 	s = fts->fts_name + fts->fts_namelen + 1 - sizeof(".rpm");
 	if (strcmp(s, ".rpm"))
 	    break;
-	rpmMessage(RPMMESS_DEBUG, "============== %s\n", fts->fts_accpath);
-	fd = Fopen(fts->fts_accpath, "r");
-	if (fd == NULL || Ferror(fd))
-	    break;
-	rc = rpmReadPackageFile(ts, fd, fts->fts_path, &h);
-	xx = Fclose(fd);
-	fd = NULL;
-	if (rc != RPMRC_OK)
-	    break;
-	xx = ftsStashLatest(fts, h);
+	xx = ftsStashLatest(fts, ts);
 	break;
     case FTS_NS:	/* stat(2) failed */
     case FTS_DNR:	/* unreadable directory */
     case FTS_ERR:	/* error; errno is set */
-	fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
+	if (_debug)
+	    fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
 		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
 		fts->fts_name);
 	break;
@@ -302,75 +292,82 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmTransactionSet ts) {
     case FTS_SLNONE:	/* symbolic link without target */
     case FTS_W:		/* whiteout object */
     default:
-	fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
+	if (_debug)
+	    fprintf(stderr, "FTS_%s\t%*s %s\n", ftsInfoStr(fts->fts_info),
 		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
 		fts->fts_name);
 	break;
     }
 
-    h = headerFree(h, "ftsPrint exit");
-    if (fd)
-	xx = Fclose(fd);
     return 0;
 }
 
-static int depth = 0;
-static int level = 0;
-static int globx = 0;
+static void initGlobs(const char ** argv)
+{
+    char buf[BUFSIZ];
+    int i;
 
-static void go (const char * sb, const char * se) {
-    const char * s = sb;
-    int blvl = 0;
-    int plvl = 0;
-    int c;
+    buf[0] = '\0';
+    if (argv != NULL && * argv != NULL) {
+	const char * arg;
+	int single = (myGlobPatternP(argv[0]) && argv[1] == NULL);
+	char * t;
 
-    globx = -1;
-    while ( s < se && (c = *s) != '\0' ) {
-	s++;
-	switch (c) {
-	case '+':
-	case '@':
-	case '!':
-	    continue;
-	case '?':
-	case '*':
-	    if (*s == '(')
-		continue;
-	    if (globx < 0)
-		globx = (s - sb - 1);
-	    continue;
-	case '[':
-	    blvl++;
-	    continue;
-	case ']':
-	    if (!blvl)
-		continue;
-	    --blvl;
-	    if (!blvl && globx < 0)
-		globx = (s - sb - 1);
-	    continue;
-	case '(':
-	    plvl++;
-	    continue;
-	case '|':
-	    continue;
-	case ')':
-	    if (!plvl)
-		continue;
-	    --plvl;
-	    if (!plvl && globx < 0)
-		globx = (s - sb - 1);
-	    continue;
-	case '\\':
-	    if (*s)
-		s++;
-	    continue;
-	case '/':
-	    depth++;
-	    continue;
+	t = buf;
+	if (!single)
+	    t = stpcpy(t, "@(");
+	while ((arg = *argv++) != NULL) {
+	    t = stpcpy(t, arg);
+	    *t++ = '|';
+	}
+	t[-1] = (single ? '\0' : ')');
+    }
+
+    bhpath = rpmExpand("%{_bhpath}", NULL);
+    bhpathlen = strlen(bhpath);
+
+    ftsSet = xcalloc(2, sizeof(*ftsSet));
+    ftsSet[0] = rpmExpand("%{_bhpath}", NULL);
+
+    nbhglobs = 5;
+    bhglobs = xcalloc(nbhglobs, sizeof(*bhglobs));
+    for (i = 0; i < nbhglobs; i++) {
+	const char * pattern;
+	const char * macro;
+
+	switch (i) {
+	case 0:
+	    macro = "%{_bhpath}";
+	    break;
+	case 1:
+	    macro = "%{_bhcoll}";
+	    break;
+	case 2:
+	    macro = (buf[0] == '\0' ? "%{_bhN}" : buf);
+	    break;
+	case 3:
+	    macro = "%{_bhVR}";
+	    break;
+	case 4:
+	    macro = "%{_bhA}";
+	    break;
 	default:
+	    macro = NULL;
+	    break;
+	}
+	bhglobs[i].patterns = xcalloc(2, sizeof(*bhglobs[i].patterns));
+	if (macro == NULL)
+	    continue;
+	pattern = rpmExpand(macro, NULL);
+	if (pattern == NULL || *pattern == '\0') {
+	    pattern = _free(pattern);
 	    continue;
 	}
+	bhglobs[i].patterns[0] = pattern;
+	bhglobs[i].fnflags = (FNM_PATHNAME | FNM_PERIOD | FNM_EXTMATCH);
+	if (bhglobs[i].patterns[0] != NULL)
+	    rpmMessage(RPMMESS_DEBUG, "\t%d \"%s\"\n",
+		i, bhglobs[i].patterns[0]);
     }
 }
 
@@ -391,10 +388,7 @@ main(int argc, const char *argv[])
     FTS * ftsp;
     int ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
     FTSENT * fts;
-    char buf[BUFSIZ];
-    const char ** args;
-    const char * arg;
-    char * t;
+    const char ** av;
     int rc;
     int ec = 1;
     int xx;
@@ -419,69 +413,18 @@ main(int argc, const char *argv[])
     ts = rpmtransCreateSet(db, rootDir);
     (void) rpmtsOpenDB(ts, O_RDONLY);
 
-    args = poptGetArgs(optCon);
+    av = poptGetArgs(optCon);
     
-    t = buf;
-    *t = '\0';
-    t = stpcpy(t, BHPATH);
-    *t++ = '/';
-    t = stpcpy(t, BHCOLL);
-    *t++ = '/';
-
-    if (args == NULL)
-	t = stpcpy(t, BHN);
-    else {
-	t = stpcpy(t, "@(");
-	while ((arg = *args++) != NULL) {
-	    t = stpcpy(t, arg);
-	    *t++ = '|';
-	}
-	t[-1] = ')';
-    }
-
-    *t++ = '/';
-    t = stpcpy(t, BHVR);
-    *t++ = '/';
-    t = stpcpy(t, BHA);
-
-    level = 0;
-    depth = (buf[0] == '/') ? -1 : 0;
-    globx = -1;
-    go(buf, buf+strlen(buf));
-
-#if 0
-    lvl0[0] = buf;
-#endif
+    initGlobs(av);
 
     ftsp = Fts_open(ftsSet, ftsOpts, NULL);
     while((fts = Fts_read(ftsp)) != NULL)
 	xx = ftsPrint(ftsp, fts, ts);
     xx = Fts_close(ftsp);
 
-    (void) ftsPrintPaths(stdout);
-    (void) freeItems();
+    ftsPrintPaths(stdout);
+    freeItems();
 
-#ifdef	NOTYET
-if (!_debug) {
-    {	rpmProblem conflicts = NULL;
-	int numConflicts = 0;
-
-	(void) rpmdepCheck(ts, &conflicts, &numConflicts);
-
-	/*@-branchstate@*/
-	if (conflicts) {
-	    rpmMessage(RPMMESS_ERROR, _("failed dependencies:\n"));
-	    printDepProblems(stderr, conflicts, numConflicts);
-	    conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
-	}
-	/*@=branchstate@*/
-    }
-
-    (void) rpmdepOrder(ts);
-}
-#endif
-
-exit:
     ts = rpmtransFree(ts);
 
     return ec;

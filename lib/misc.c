@@ -270,6 +270,12 @@ int myGlobPatternP (const char *patternURL)
     (void) urlPath(patternURL, &p);
     while ((c = *p++) != '\0')
 	switch (c) {
+	case '+':
+	case '@':
+	case '!':
+	    if (*p == '(')
+		return (1);
+	    continue;
 	case '?':
 	case '*':
 	    return (1);

@@ -13,8 +13,6 @@ INCLUDES = \
 
 EXTRA_DIST = db3.c db1.c falloc.c
 
-EXTRA_PROGRAMS = tpkgid
-
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = header.h hdrinline.h rpmdb.h
 noinst_HEADERS = falloc.h fprint.h header_internal.h legacy.h rpmhash.h
@@ -38,10 +36,6 @@ librpmdb_la_SOURCES = \
 librpmdb_la_LDFLAGS = -release @VERSION@ @libdb3@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(DB3LOBJS)
 librpmdb_la_DEPENDENCIES = $(DBLIBOBJS) .created
-
-tpkgid_SOURCES = tpkgid.c
-tpkgid_LDFLAGS = -all-static $(mylibpaths) $(mylibs)
-tpkgid_LDADD = ./librpmdb.la
 
 # XXX Add internal libtool dependence
 install-data-local:
