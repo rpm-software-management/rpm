@@ -421,6 +421,10 @@ AC_TRY_LINK([#include <time.h>],printf("%ld", timezone),
       HAS_TIMEZONE=yes,HAS_TIMEZONE=no)
 AC_MSG_RESULT($HAS_TIMEZONE)
 
+dnl Check for missing typedefs
+AC_TYPE_MODE_T
+AC_TYPE_PID_T
+
 dnl Checks for library functions.
 AC_CHECK_FUNC(inet_aton, AC_DEFINE(HAVE_INET_ATON), MISCOBJS="$MISCOBJS inet_aton.o")
 AC_CHECK_FUNC(realpath, AC_DEFINE(HAVE_REALPATH), MISCOBJS="$MISCOBJS realpath.o")

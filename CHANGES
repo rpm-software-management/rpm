@@ -20,6 +20,7 @@
 	- add new fully recursive macro.c
 
 2.5.4 -> 2.5.5:
+	- portable mode_t/pid_t typedefs.
 	- fix check for trailing / in Prefix:
 	- remove 2 character language name assumption.
         - add /usr/lib/rpm/find-lang.sh (W. L. Estes <wlestes@uncg.edu>)
