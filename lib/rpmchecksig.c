@@ -9,7 +9,7 @@
 
 #include "rpmlead.h"
 #include "signature.h"
-#include "misc.h"	/* XXX fpor makeTempFile() */
+#include "misc.h"	/* XXX for makeTempFile() */
 
 int rpmReSign(int add, char *passPhrase, const char **argv)
 {

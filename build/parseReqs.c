@@ -139,10 +139,19 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index)
 	    switch(tag) {
 	    case RPMTAG_BUILDPREREQ:
 	    case RPMTAG_PREREQ:
+	    case RPMTAG_PROVIDES:
+	    case RPMTAG_OBSOLETES:
+#if 0
 		rpmError(RPMERR_BADSPEC,
 			 _("line %d: Version not permitted: %s"),
 			 spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
+#else
+		/* Add prereq on rpm version that implements versioning */
+		addReqProv(spec, h,
+			RPMSENSE_PREREQ|(RPMSENSE_GREATER|RPMSENSE_EQUAL),
+			"rpm", "3.0.3", index);
+#endif
 		break;
 	    default:
 		break;

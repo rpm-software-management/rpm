@@ -8,9 +8,6 @@ int addReqProv(Spec spec, Header h,
 	       int flag, const char *name, const char *version, int index)
 {
     const char **names;
-    const char **versions = NULL;
-    int *flags = NULL;
-    int *indexes = NULL;
     int nametag = 0;
     int versiontag = 0;
     int flagtag = 0;
@@ -52,34 +49,39 @@ int addReqProv(Spec spec, Header h,
 	version = "";
     }
     
+    /* Check for duplicate dependencies. */
     if (headerGetEntry(h, nametag, NULL, (void **) &names, &len)) {
+	const char **versions = NULL;
+	int *flags = NULL;
+	int *indexes = NULL;
+
 	if (flagtag) {
-	    headerGetEntry(h, versiontag, NULL,
-			   (void **) &versions, NULL);
+	    headerGetEntry(h, versiontag, NULL, (void **) &versions, NULL);
 	    headerGetEntry(h, flagtag, NULL, (void **) &flags, NULL);
 	}
 	if (indextag) {
-	    headerGetEntry(h, indextag, NULL,
-			   (void **) &indexes, NULL);
+	    headerGetEntry(h, indextag, NULL, (void **) &indexes, NULL);
 	}
-	while (len) {
+	while (len > 0) {
 	    len--;
-	    if (!strcmp(names[len], name)) {
-		if (!flagtag ||
-		    (!strcmp(versions[len], version) && flags[len] == flag)) {
-		    if (!indextag || (index == indexes[len])) {
-			/* The same */
-			FREE(names);
-			FREE(versions);
-			return 0;
-		    }
-		}
-	    }
+	    if (strcmp(names[len], name))
+		continue;
+	    if (flagtag && versions != NULL &&
+			(strcmp(versions[len], version) || flags[len] != flag))
+		continue;
+	    if (indextag && indexes != NULL && indexes[len] != index)
+		continue;
+
+	    /* This is a duplicate dependency. */
+	    break;
 	}
 	FREE(names);
 	FREE(versions);
+	if (len >= 0)
+	    return 0;
     }
 
+    /* Add this dependency. */
     headerAddOrAppendEntry(h, nametag, RPM_STRING_ARRAY_TYPE, &name, 1);
     if (flagtag) {
 	headerAddOrAppendEntry(h, versiontag,

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-08-24 11:10-0400\n"
+"POT-Creation-Date: 1999-08-24 16:47-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1816,12 +1816,12 @@ msgstr ""
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:143
+#: ../build/parseReqs.c:146
 #, c-format
 msgid "line %d: Version not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:163
+#: ../build/parseReqs.c:172
 #, c-format
 msgid "line %d: Version required: %s"
 msgstr ""
@@ -1980,31 +1980,31 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:377
+#: ../lib/depends.c:419
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:607
+#: ../lib/depends.c:653
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:732
+#: ../lib/depends.c:783
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:771
+#: ../lib/depends.c:822
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:824 ../lib/depends.c:1127
+#: ../lib/depends.c:875 ../lib/depends.c:1175
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:916
+#: ../lib/depends.c:969
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
