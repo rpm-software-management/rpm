@@ -105,26 +105,28 @@ void generateTriggerEntries(Header h, struct PackageRec *p)
 
     /* Add the entries */
 
-    nameArray = malloc(p->trigger.triggerCount * sizeof(*nameArray));
-    versionArray = malloc(p->trigger.triggerCount * sizeof(*versionArray));
-    flagArray = malloc(p->trigger.triggerCount * sizeof(*flagArray));
-    indexArray = malloc(p->trigger.triggerCount * sizeof(*indexArray));
-    
-    te = p->trigger.trigger;
-    i = 0;
-    while (te) {
-	nameArray[i] = te->name;
-	versionArray[i] = te->version ? te->version : "";
-	flagArray[i] = te->flags;
-	indexArray[i] = te->index;
-	i++;
-	te = te->next;
+    if (p->trigger.triggerCount) {
+	nameArray = malloc(p->trigger.triggerCount * sizeof(*nameArray));
+	versionArray = malloc(p->trigger.triggerCount * sizeof(*versionArray));
+	flagArray = malloc(p->trigger.triggerCount * sizeof(*flagArray));
+	indexArray = malloc(p->trigger.triggerCount * sizeof(*indexArray));
+	
+	te = p->trigger.trigger;
+	i = 0;
+	while (te) {
+	    nameArray[i] = te->name;
+	    versionArray[i] = te->version ? te->version : "";
+	    flagArray[i] = te->flags;
+	    indexArray[i] = te->index;
+	    i++;
+	    te = te->next;
+	}
+	
+	headerAddEntry(h, RPMTAG_TRIGGERNAME, RPM_STRING_ARRAY_TYPE, nameArray, i);
+	headerAddEntry(h, RPMTAG_TRIGGERVERSION, RPM_STRING_ARRAY_TYPE, versionArray, i);
+	headerAddEntry(h, RPMTAG_TRIGGERFLAGS, RPM_INT32_TYPE, flagArray, i);
+	headerAddEntry(h, RPMTAG_TRIGGERINDEX, RPM_INT32_TYPE, indexArray, i);
     }
-
-    headerAddEntry(h, RPMTAG_TRIGGERNAME, RPM_STRING_ARRAY_TYPE, nameArray, i);
-    headerAddEntry(h, RPMTAG_TRIGGERVERSION, RPM_STRING_ARRAY_TYPE, versionArray, i);
-    headerAddEntry(h, RPMTAG_TRIGGERFLAGS, RPM_INT32_TYPE, flagArray, i);
-    headerAddEntry(h, RPMTAG_TRIGGERINDEX, RPM_INT32_TYPE, indexArray, i);
 }
 
 void freeTriggers(struct TriggerStruct t)
