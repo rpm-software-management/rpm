@@ -2,7 +2,14 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl -I$(top_srcdir)/misc @INCPATH@
+INCLUDES = \
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/build \
+	-I$(top_srcdir)/lib \
+	-I$(top_srcdir)/intl \
+	-I$(top_srcdir)/misc \
+	-I$(top_srcdir)/popt \
+	@INCPATH@
 
 EXTRA_DIST =	fstrcmp.c message.c str-list.c rpmchecksig.c
 

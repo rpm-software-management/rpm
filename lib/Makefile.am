@@ -2,7 +2,11 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build @INCPATH@
+INCLUDES = \
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/build \
+	-I$(top_srcdir)/popt \
+	@INCPATH@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \

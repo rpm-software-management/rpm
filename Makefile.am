@@ -11,7 +11,12 @@ EXTRA_PROGRAMS = rpmconvert
 
 SUBDIRS = popt build lib po intl misc tools scripts tests .
 
-INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/intl @INCPATH@
+INCLUDES = \
+	-I$(top_srcdir)/build \
+	-I$(top_srcdir)/lib \
+	-I$(top_srcdir)/intl \
+	-I$(top_srcdir)/popt \
+	@INCPATH@
 
 mylibs=	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \

@@ -2,7 +2,11 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/lib @INCPATH@
+INCLUDES = \
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/lib \
+	-I$(top_srcdir)/popt \
+	@INCPATH@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = rpmbuild.h rpmspec.h
