@@ -17,7 +17,8 @@ pythondir = $(prefix)/lib/python1.5/site-packages
 python_PROGRAMS = rpmmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
-librpmmodule_la_SOURCES = rpmmodule.c
+EXTRA_DIST = hash.h upgrade.h
+librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c
 
 rpmmodule.so: rpmmodule.lo
 	gcc -shared  rpmmodule.lo  -ldb1 -L/usr/local/lib -lz -lc -o $@

@@ -156,7 +156,8 @@ pythondir = $(prefix)/lib/python1.5/site-packages
 python_PROGRAMS = rpmmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
-librpmmodule_la_SOURCES = rpmmodule.c
+EXTRA_DIST = hash.h upgrade.h
+librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -168,7 +169,7 @@ CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 librpmmodule_la_LDFLAGS = 
 librpmmodule_la_LIBADD = 
-librpmmodule_la_OBJECTS =  rpmmodule.lo
+librpmmodule_la_OBJECTS =  rpmmodule.lo hash.lo upgrade.lo
 PROGRAMS =  $(python_PROGRAMS)
 
 rpmmodule_so_SOURCES = rpmmodule.so.c
@@ -188,7 +189,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/rpmmodule.P .deps/rpmmodule.so.P
+DEP_FILES =  .deps/hash.P .deps/rpmmodule.P .deps/rpmmodule.so.P \
+.deps/upgrade.P
 SOURCES = $(librpmmodule_la_SOURCES) rpmmodule.so.c
 OBJECTS = $(librpmmodule_la_OBJECTS) rpmmodule.so.o
 
