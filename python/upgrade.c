@@ -367,7 +367,6 @@ static int findPackagesWithRelocatedFiles(struct pkgSet *psp,
 			DEBUG (("Found file in %s: %s%s\n", name,
 				availDirs[availDirIndexes[i]], availFiles[i]))
 			(*pip)->selected = 1;
-			break;
 		    }
 		}
 		free(availFiles);

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-02-08 17:41-0500\n"
+"POT-Creation-Date: 2001-02-09 15:54-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -503,7 +503,7 @@ msgid ""
 "options as -q"
 msgstr ""
 
-#: lib/poptBT.c:180 lib/verify.c:56 rpm.c:393 rpm.c:435 rpm.c:470 rpmqv.c:263
+#: lib/poptBT.c:183 lib/verify.c:56 rpm.c:393 rpm.c:435 rpm.c:470 rpmqv.c:263
 #: rpmqv.c:533 rpmqv.c:581 rpmqv.c:615
 msgid "do not verify package dependencies"
 msgstr ""
@@ -697,15 +697,15 @@ msgstr ""
 msgid "bin/src package (prep, compile, install, package)"
 msgstr ""
 
-#: lib/poptBT.c:191 rpm.c:496
+#: lib/poptBT.c:194 rpm.c:496
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: lib/poptBT.c:172 rpm.c:498
+#: lib/poptBT.c:173 rpm.c:498
 msgid "remove build tree when done"
 msgstr ""
 
-#: lib/poptBT.c:187 rpm.c:500
+#: lib/poptBT.c:190 rpm.c:500
 msgid "remove sources when done"
 msgstr ""
 
@@ -713,7 +713,7 @@ msgstr ""
 msgid "remove spec file when done"
 msgstr ""
 
-#: lib/poptBT.c:193 rpm.c:504 rpmqv.c:201
+#: lib/poptBT.c:196 rpm.c:504 rpmqv.c:201
 msgid "generate PGP/GPG signature"
 msgstr ""
 
@@ -1169,7 +1169,7 @@ msgstr ""
 msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: lib/poptBT.c:174 rpmqv.c:188
+#: lib/poptBT.c:175 rpmqv.c:188
 msgid "generate headers compatible with rpm4 packaging"
 msgstr ""
 
@@ -2185,41 +2185,41 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:285
+#: lib/cpio.c:284
 msgid "========= Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/cpio.c:287
+#: lib/cpio.c:286
 #, c-format
 msgid "%9d %s\n"
 msgstr ""
 
-#: lib/cpio.c:1408
+#: lib/cpio.c:1397
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/cpio.c:1508 lib/cpio.c:1620
+#: lib/cpio.c:1499 lib/cpio.c:1615
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/cpio.c:1645
+#: lib/cpio.c:1640
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/cpio.c:1650
+#: lib/cpio.c:1645
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1659
+#: lib/cpio.c:1654
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1676
+#: lib/cpio.c:1671
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -2498,7 +2498,7 @@ msgid ""
 msgstr ""
 
 #: lib/formats.c:86 lib/formats.c:112 lib/formats.c:141 lib/formats.c:182
-#: lib/header.c:2532 lib/header.c:2549 lib/header.c:2569
+#: lib/header.c:2551 lib/header.c:2568 lib/header.c:2588
 msgid "(not a number)"
 msgstr ""
 
@@ -2536,88 +2536,88 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:207 lib/header.c:1017 lib/install.c:236
+#: lib/header.c:207 lib/header.c:1036 lib/install.c:236
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: lib/header.c:1440
+#: lib/header.c:1459
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1885
+#: lib/header.c:1904
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1915
+#: lib/header.c:1934
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1929
+#: lib/header.c:1948
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1941
+#: lib/header.c:1960
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1958
+#: lib/header.c:1977
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:1985
+#: lib/header.c:2004
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2003
+#: lib/header.c:2022
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2007
+#: lib/header.c:2026
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2067
+#: lib/header.c:2086
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2076
+#: lib/header.c:2095
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2089 lib/header.c:2130
+#: lib/header.c:2108 lib/header.c:2149
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2099
+#: lib/header.c:2118
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2115
+#: lib/header.c:2134
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans@
-#: lib/header.c:2140
+#: lib/header.c:2159
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2311
+#: lib/header.c:2330
 msgid "(unknown type)"
 msgstr ""
 
@@ -2672,7 +2672,7 @@ msgstr ""
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/install.c:797 lib/install.c:879 lib/uninstall.c:70 lib/uninstall.c:92
+#: lib/install.c:797 lib/install.c:879 lib/uninstall.c:69 lib/uninstall.c:91
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
@@ -2695,123 +2695,127 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 
-#: lib/poptBT.c:94
+#: lib/poptBT.c:95
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
 msgstr ""
 
-#: lib/poptBT.c:119
+#: lib/poptBT.c:120
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:120 lib/poptBT.c:123 lib/poptBT.c:126 lib/poptBT.c:129
-#: lib/poptBT.c:132 lib/poptBT.c:135 lib/poptBT.c:138
+#: lib/poptBT.c:121 lib/poptBT.c:124 lib/poptBT.c:127 lib/poptBT.c:130
+#: lib/poptBT.c:133 lib/poptBT.c:136 lib/poptBT.c:139
 msgid "<specfile>"
 msgstr ""
 
-#: lib/poptBT.c:122
+#: lib/poptBT.c:123
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:125
+#: lib/poptBT.c:126
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:128
+#: lib/poptBT.c:129
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:131
+#: lib/poptBT.c:132
 msgid "build source and binary packages from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:134
+#: lib/poptBT.c:135
 msgid "build binary package only from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:137
+#: lib/poptBT.c:138
 msgid "build source package only from <specfile>"
 msgstr ""
 
-#: lib/poptBT.c:141
+#: lib/poptBT.c:142
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:142 lib/poptBT.c:145 lib/poptBT.c:148 lib/poptBT.c:151
-#: lib/poptBT.c:154 lib/poptBT.c:157 lib/poptBT.c:160
+#: lib/poptBT.c:143 lib/poptBT.c:146 lib/poptBT.c:149 lib/poptBT.c:152
+#: lib/poptBT.c:155 lib/poptBT.c:158 lib/poptBT.c:161
 msgid "<tarball>"
 msgstr ""
 
-#: lib/poptBT.c:144
+#: lib/poptBT.c:145
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:147
+#: lib/poptBT.c:148
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:150
+#: lib/poptBT.c:151
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:153
+#: lib/poptBT.c:154
 msgid "build source and binary packages from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:156
+#: lib/poptBT.c:157
 msgid "build binary package only from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:159
+#: lib/poptBT.c:160
 msgid "build source package only from <tarball>"
 msgstr ""
 
-#: lib/poptBT.c:163
+#: lib/poptBT.c:164
 msgid "build binary package from <source package>"
 msgstr ""
 
-#: lib/poptBT.c:164 lib/poptBT.c:167
+#: lib/poptBT.c:165 lib/poptBT.c:168
 msgid "<source package>"
 msgstr ""
 
-#: lib/poptBT.c:166
+#: lib/poptBT.c:167
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 
-#: lib/poptBT.c:170
+#: lib/poptBT.c:171
 msgid "override build root"
 msgstr ""
 
-#: lib/poptBT.c:176
+#: lib/poptBT.c:177
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr ""
 
-#: lib/poptBT.c:178
+#: lib/poptBT.c:179
+msgid "debug file state machine"
+msgstr ""
+
+#: lib/poptBT.c:181
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: lib/poptBT.c:182
+#: lib/poptBT.c:185
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: lib/poptBT.c:185
+#: lib/poptBT.c:188
 msgid "do not accept i18N msgstr's from specfile"
 msgstr ""
 
-#: lib/poptBT.c:189
+#: lib/poptBT.c:192
 msgid "remove specfile when done"
 msgstr ""
 
-#: lib/poptBT.c:195
+#: lib/poptBT.c:198
 msgid "override target platform"
 msgstr ""
 
-#: lib/poptBT.c:197
+#: lib/poptBT.c:200
 msgid "lookup i18N strings in specfile catalog"
 msgstr ""
 

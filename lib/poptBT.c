@@ -44,6 +44,7 @@ struct rpmBuildArguments         rpmBTArgs;
 #define	POPT_TS			0x7473
 
 extern int _noDirTokens;
+extern int _fsm_debug;
 static int force = 0;
 int noLang = 0;
 static int noBuild = 0;
@@ -174,6 +175,8 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("generate headers compatible with rpm4 packaging"), NULL},
  { "force", '\0', POPT_ARGFLAG_DOC_HIDDEN, &force, POPT_FORCE,
         N_("ignore ExcludeArch: directives from spec file"), NULL},
+ { "fsmdebug", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN), &_fsm_debug, -1,
+	N_("debug file state machine"), NULL},
  { "nobuild", '\0', 0, &noBuild,  POPT_NOBUILD,
 	N_("do not execute any stages of the build"), NULL },
  { "nodeps", '\0', 0, &noDeps, POPT_NODEPS,

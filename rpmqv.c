@@ -1234,8 +1234,8 @@ int main(int argc, const char ** argv)
       case MODE_REBUILD:
       case MODE_RECOMPILE:
       { const char * pkg;
-        if (rpmIsNormal())
-	    rpmSetVerbosity(RPMMESS_VERBOSE);
+        while (!rpmIsVerbose())
+	    rpmIncreaseVerbosity();
 
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages files given for rebuild"));
@@ -1272,8 +1272,8 @@ int main(int argc, const char ** argv)
       case MODE_BUILD:
       case MODE_TARBUILD:
       { const char * pkg;
-        if (rpmIsNormal())
-	    rpmSetVerbosity(RPMMESS_VERBOSE);
+        while (!rpmIsVerbose())
+	    rpmIncreaseVerbosity();
        
 	switch (ba->buildChar) {
 	  case 'a':

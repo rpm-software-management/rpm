@@ -45,8 +45,7 @@ int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 	    rpmdbFreeIterator(mi);
 	    return 2;
 	}
-	/* XXX was headerLink but iterators destroy dbh data. */
-	h = headerCopy(h);
+	h = headerLink(h);
 	rpmdbFreeIterator(mi);
     }
 

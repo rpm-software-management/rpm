@@ -19,10 +19,6 @@
 /*@access TFI_t @*/
 /*@access FSM_t @*/
 
-#define CPIO_NEWC_MAGIC	"070701"
-#define CPIO_CRC_MAGIC	"070702"
-#define CPIO_TRAILER	"TRAILER!!!"
-
 #define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
 
 static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
@@ -37,7 +33,6 @@ int _fsm_debug = 0;
  */
 struct hardLink {
 /*@owned@*/ struct hardLink * next;
-/*@owned@*/ const char ** files;	/* nlink of these, used by install */
 /*@owned@*/ const char ** nsuffix;
 /*@owned@*/ int * filex;
     dev_t dev;
@@ -215,10 +210,14 @@ static /*@null@*/ void * dnlFreeIterator(/*@only@*//*@null@*/ const void * this)
     return _free(this);
 }
 
+/**
+ */
 static inline int dnlCount(const DNLI_t dnli) {
     return (dnli ? dnli->fi->dc : 0);
 }
 
+/**
+ */
 static inline int dnlIndex(const DNLI_t dnli) {
     return (dnli ? dnli->isave : -1);
 }
@@ -360,6 +359,8 @@ static int mapFind(void * this, const char * fsmPath) {
 static int saveHardLink(FSM_t fsm)
 {
     struct stat * st = &fsm->sb;
+    int rc = 0;
+    int ix = -1;
     int j;
 
     /* Find hard link set. */
@@ -368,7 +369,7 @@ static int saveHardLink(FSM_t fsm)
 	    break;
     }
 
-    /* New har link encountered, add new set. */
+    /* New hard link encountered, add new link to set. */
     if (fsm->li == NULL) {
 	fsm->li = xcalloc(1, sizeof(*fsm->li));
 	fsm->li->next = NULL;
@@ -381,7 +382,6 @@ static int saveHardLink(FSM_t fsm)
 	fsm->li->filex = xcalloc(st->st_nlink, sizeof(fsm->li->filex[0]));
 	memset(fsm->li->filex, -1, (st->st_nlink * sizeof(fsm->li->filex[0])));
 	fsm->li->nsuffix = xcalloc(st->st_nlink, sizeof(*fsm->li->nsuffix));
-	fsm->li->files = xcalloc(st->st_nlink, sizeof(*fsm->li->files));
 
 	if (fsm->goal == FSM_PKGBUILD)
 	    fsm->li->linksLeft = st->st_nlink;
@@ -394,7 +394,6 @@ static int saveHardLink(FSM_t fsm)
 
     if (fsm->goal == FSM_PKGBUILD) --fsm->li->linksLeft;
     fsm->li->filex[fsm->li->linksLeft] = fsm->ix;
-    fsm->li->files[fsm->li->linksLeft] = xstrdup(fsm->path);
     /*@-observertrans@*/
     fsm->li->nsuffix[fsm->li->linksLeft] = fsm->nsuffix;
     /*@=observertrans@*/
@@ -417,23 +416,23 @@ fprintf(stderr, "*** %p link[%d:%d] %d filex %d %s\n", fsm->li, fsm->li->linksLe
     {	TFI_t fi = fsmGetFi(fsm);
 
 	for (j = fsm->li->linksLeft - 1; j >= 0; j--) {
-	    int i;
-	    i = fsm->li->filex[j];
-	    if (i < 0 || XFA_SKIPPING(fi->actions[i]))
+	    ix = fsm->li->filex[j];
+	    if (ix < 0 || XFA_SKIPPING(fi->actions[ix]))
 		continue;
 	    break;
 	}
     }
 
     /* Are all links skipped or not encountered yet? */
-    if (j < 0)
+    if (ix < 0 || j < 0)
 	return 1;	/* XXX W2DO? */
 
     /* Save the non-skipped file name and map index. */
     fsm->li->linkIndex = j;
     fsm->path = _free(fsm->path);
-    fsm->path = xstrdup(fsm->li->files[j]);
-    return 0;
+    fsm->ix = ix;
+    rc = fsmStage(fsm, FSM_MAP);
+    return rc;
 }
 
 /**
@@ -443,15 +442,6 @@ fprintf(stderr, "*** %p link[%d:%d] %d filex %d %s\n", fsm->li, fsm->li->linksLe
 static /*@null@*/ void * freeHardLink(/*@only@*/ /*@null@*/ struct hardLink * li)
 {
     if (li) {
-	if (li->files) {
-	    int i;
-	    for (i = 0; i < li->nlink; i++) {
-		/*@-unqualifiedtrans@*/
-		li->files[i] = _free(li->files[i]);
-		/*@=unqualifiedtrans@*/
-	    }
-	}
-	li->files = _free(li->files);
 	li->nsuffix = _free(li->nsuffix);	/* XXX elements are shared */
 	li->filex = _free(li->filex);
     }
@@ -731,8 +721,6 @@ fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action
 	    break;
 
 	case FA_CREATE:
-if (_fsm_debug && !(fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGCOMMIT))
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 	    assert(fi->type == TR_ADDED);
 	    break;
 
@@ -1001,33 +989,37 @@ static int writeLinkedFile(FSM_t fsm)
 	/*@modifies fsm @*/
 {
     const char * path = fsm->path;
-    int rc = 0;
+    const char * nsuffix = fsm->nsuffix;
+    int iterIndex = fsm->ix;
+    int ec = 0;
+    int rc;
     int i;
+
+    fsm->path = NULL;
+    fsm->nsuffix = NULL;
+    fsm->ix = -1;
 
     for (i = fsm->li->nlink - 1; i >= 0; i--) {
 	if (fsm->li->filex[i] < 0) continue;
-	if (fsm->li->files[i] == NULL) continue;
 
-	fsm->path = fsm->li->files[i];
-	fsm->li->filex[i] = -1;
-	fsm->li->files[i] = NULL;
+	fsm->ix = fsm->li->filex[i];
+	rc = fsmStage(fsm, FSM_MAP);
 
 	/* Write data after last link. */
 	rc = writeFile(fsm, (i == 0));
-	if (rc) break;
+	if (rc && fsm->failedFile && *fsm->failedFile == NULL) {
+	    ec = rc;
+	    *fsm->failedFile = xstrdup(fsm->path);
+	}
 
-#ifdef	DYING
-	/*@-unqualifiedtrans@*/
-	fsm->li->files[i] = _free(fsm->li->files[i]);
-	/*@=unqualifiedtrans@*/
-#endif
+	fsm->path = _free(fsm->path);
+	fsm->li->filex[i] = -1;
     }
 
-    if (rc && fsm->failedFile && *fsm->failedFile == NULL)
-	*fsm->failedFile = xstrdup(fsm->path);
-
+    fsm->ix = iterIndex;
+    fsm->nsuffix = nsuffix;
     fsm->path = path;
-    return rc;
+    return ec;
 }
 
 /**
@@ -1036,40 +1028,47 @@ static int fsmMakeLinks(FSM_t fsm)
 {
     const char * path = fsm->path;
     const char * opath = fsm->opath;
-    int rc = 0;
+    const char * nsuffix = fsm->nsuffix;
+    int iterIndex = fsm->ix;
+    int ec = 0;
+    int rc;
     int i;
 
-    fsm->opath = fsm->li->files[fsm->li->createdPath];
+    fsm->path = NULL;
+    fsm->opath = NULL;
+    fsm->nsuffix = NULL;
+    fsm->ix = -1;
+
+    fsm->ix = fsm->li->filex[fsm->li->createdPath];
+    rc = fsmStage(fsm, FSM_MAP);
+    fsm->opath = fsm->path;
+    fsm->path = NULL;
     for (i = 0; i < fsm->li->nlink; i++) {
 	if (fsm->li->filex[i] < 0) continue;
-	if (fsm->li->files[i] == NULL) continue;
 	if (i == fsm->li->createdPath) continue;
 
-	fsm->path = fsm->li->files[i];
+	fsm->ix = fsm->li->filex[i];
+	rc = fsmStage(fsm, FSM_MAP);
 	rc = fsmStage(fsm, FSM_VERIFY);
 	if (!rc) continue;
 	if (rc != CPIOERR_LSTAT_FAILED) break;
 
 	/* XXX link(fsm->opath, fsm->path) */
 	rc = fsmStage(fsm, FSM_LINK);
-	if (rc) break;
-
-#ifdef	DYING	/* XXX late commit needs to rename. */
-	/*@-unqualifiedtrans@*/
-	fsm->li->files[i] = _free(fsm->li->files[i]);
-	/*@=unqualifiedtrans@*/
-#endif
+	if (rc && fsm->failedFile && *fsm->failedFile == NULL) {
+	    ec = rc;
+	    *fsm->failedFile = xstrdup(fsm->path);
+	}
 
 	fsm->li->linksLeft--;
     }
+    fsm->opath = _free(fsm->opath);
 
-    if (rc && fsm->failedFile && *fsm->failedFile == NULL)
-	*fsm->failedFile = xstrdup(fsm->path);
-
+    fsm->ix = iterIndex;
+    fsm->nsuffix = nsuffix;
     fsm->path = path;
     fsm->opath = opath;
-
-    return rc;
+    return ec;
 }
 
 /**
@@ -1094,13 +1093,11 @@ static int fsmCommitLinks(FSM_t fsm)
 
     for (i = 0; i < fsm->li->nlink; i++) {
 	if (fsm->li->filex[i] < 0) continue;
-	if (fsm->li->files[i] == NULL) continue;
 	fsm->ix = fsm->li->filex[i];
 	rc = fsmStage(fsm, FSM_MAP);
 	rc = fsmStage(fsm, FSM_COMMIT);
 	fsm->path = _free(fsm->path);
 	fsm->li->filex[i] = -1;
-	fsm->li->files[i] = _free(fsm->li->files[i]);
     }
 
     fsm->ix = iterIndex;
@@ -1277,14 +1274,6 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->nsuffix = NULL;
 
 	if (fsm->goal == FSM_PKGINSTALL) {
-#ifdef	DYING
-	    /* Detect and create directories not explicitly in package. */
-	    if (!fsm->mkdirsdone) {
-		rc = fsmStage(fsm, FSM_MKDIRS);
-		fsm->mkdirsdone = 1;
-	    }
-#endif
-
 	    /* Read next header from payload, checking for end-of-payload. */
 	    rc = fsmStage(fsm, FSM_NEXT);
 	}
@@ -1499,16 +1488,19 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	    if (fsm->osuffix)
 		fsm->path = fsmFsPath(fsm, st, NULL, NULL);
 	    rc = fsmStage(fsm, FSM_VERIFY);
+
 	    if (rc == 0 && fsm->osuffix) {
 		const char * opath = fsm->opath;
 		fsm->opath = fsm->path;
 		fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
 		rc = fsmStage(fsm, FSM_RENAME);
-if (!rc)
-rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
+		if (!rc)
+		    rpmMessage(RPMMESS_WARNING,
+			_("%s saved as %s\n"), fsm->opath, fsm->path);
 		fsm->path = _free(fsm->path);
 		fsm->opath = opath;
 	    }
+
 	    fsm->path = path;
 	    if (rc != CPIOERR_LSTAT_FAILED) return rc;
 	    rc = expandRegular(fsm);
@@ -1551,7 +1543,10 @@ rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
 		rc = fsmStage(fsm, FSM_MKFIFO);
 		st->st_mode = st_mode;	/* XXX restore st->st_mode */
 	    }
-	} else if (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode) || S_ISSOCK(st->st_mode)) {
+	} else if (S_ISCHR(st->st_mode) ||
+		   S_ISBLK(st->st_mode) ||
+		   S_ISSOCK(st->st_mode))
+	{
 	    rc = fsmStage(fsm, FSM_VERIFY);
 	    if (rc == CPIOERR_LSTAT_FAILED)
 		rc = fsmStage(fsm, FSM_MKNOD);
@@ -1708,13 +1703,18 @@ rpmMessage(RPMMESS_WARNING, _("%s saved as %s\n"), fsm->opath, fsm->path);
 	while ((fsm->li = fsm->links) != NULL) {
 	    fsm->links = fsm->li->next;
 	    fsm->li->next = NULL;
-	    if (fsm->goal == FSM_PKGINSTALL && fsm->commit && fsm->li->linksLeft) {
+	    if (fsm->goal == FSM_PKGINSTALL && fsm->commit && fsm->li->linksLeft)
+	    {
 		for (i = 0 ; i < fsm->li->linksLeft; i++) {
 		    if (fsm->li->filex[i] < 0) continue;
 		    rc = CPIOERR_MISSING_HARDLINK;
-		    if (!(fsm->li->files && fsm->li->files[i])) continue;
-		    if (fsm->failedFile && *fsm->failedFile == NULL)
-			*fsm->failedFile = xstrdup(fsm->li->files[i]);
+		    if (fsm->failedFile && *fsm->failedFile == NULL) {
+			fsm->ix = fsm->li->filex[i];
+			if (!fsmStage(fsm, FSM_MAP)) {
+			    *fsm->failedFile = fsm->path;
+			    fsm->path = NULL;
+			}
+		    }
 		    break;
 		}
 	    }

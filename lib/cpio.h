@@ -65,6 +65,10 @@ typedef enum cpioMapFlags_e {
     CPIO_MULTILIB		= (1 << 31) /* internal, only for building. */
 } cpioMapFlags;
 
+#define CPIO_NEWC_MAGIC	"070701"
+#define CPIO_CRC_MAGIC	"070702"
+#define CPIO_TRAILER	"TRAILER!!!"
+
 /** \ingroup payload
  * Cpio archive header information.
  */

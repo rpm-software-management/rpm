@@ -25,7 +25,7 @@ typedef /*@abstract@*/ struct fsm_s * FSM_t;
 #define	_fd(_a)		((_a) | (FSM_INTERNAL | FSM_DEAD))
 typedef enum fileStage_e {
     FSM_UNKNOWN =   0,
-    FSM_INIT	=  _fd(1),
+    FSM_INIT	=  _fi(1),
     FSM_PRE	=  _fd(2),
     FSM_PROCESS	=  _fv(3),
     FSM_POST	=  _fd(4),
@@ -39,14 +39,14 @@ typedef enum fileStage_e {
     FSM_PKGUNDO		= _fd(11),
 
     FSM_CREATE	=  _fd(17),
-    FSM_MAP	=  _fd(18),
+    FSM_MAP	=  _fi(18),
     FSM_MKDIRS	=  _fi(19),
     FSM_RMDIRS	=  _fi(20),
     FSM_MKLINKS	=  _fi(21),
     FSM_NOTIFY	=  _fd(22),
     FSM_DESTROY	=  _fd(23),
     FSM_VERIFY	=  _fd(24),
-    FSM_COMMIT	=  _fd(25),
+    FSM_COMMIT	=  _fi(25),
 
     FSM_UNLINK	=  _fs(33),
     FSM_RENAME	=  _fs(34),

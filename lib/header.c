@@ -566,6 +566,25 @@ assert(rdlen == dl);
     return h;
 }
 
+Header headerCopyLoad(void *uh)
+{
+    int_32 *ei = (int_32 *) uh;
+    int_32 il = ntohl(ei[0]);		/* index length */
+    int_32 dl = ntohl(ei[1]);		/* data length */
+    int pvlen = sizeof(il) + sizeof(dl) +
+               (il * sizeof(struct entryInfo)) + dl;
+    void * nuh = memcpy(xmalloc(pvlen), uh, pvlen);
+    Header h;
+
+    h = headerLoad(nuh);
+    if (h == NULL) {
+	free(nuh);
+	return h;
+    }
+    h->region_allocated = 1;
+    return h;
+}
+
 static /*@only@*/ void * doHeaderUnload(Header h, /*@out@*/ int * lengthPtr)
 	/*@modifies h, *lengthPtr @*/
 {

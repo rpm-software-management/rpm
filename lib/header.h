@@ -211,6 +211,13 @@ unsigned int headerSizeof(Header h, enum hMagic magicp)
 Header headerLoad(/*@kept@*/ void *p)	/*@*/;
 
 /** \ingroup header
+ * Make a copy and convert header to in-memory representation.
+ * @param p		on-disk header (with offsets)
+ * @return		header
+ */
+Header headerCopyLoad(void *p)	/*@*/;
+
+/** \ingroup header
  * Convert header to on-disk representation.
  * @param h		header (with pointers)
  * @return		on-disk header (with offsets)
