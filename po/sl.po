@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.27 2000/04/13 17:59:12 jbj Exp $
+# $Id: sl.po,v 1.28 2000/04/19 16:59:04 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-04-13 14:16-0400\n"
+"POT-Creation-Date: 2000-04-19 09:49-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2008,76 +2008,43 @@ msgstr "ni mo¾no preimenovati %s v %s: %s\n"
 msgid "can't unlink %s: %s\n"
 msgstr "ni mo¾no zbrisati %s: %s\n"
 
-#: lib/cpio.c:599
+#: lib/cpio.c:597
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1048
+#: lib/cpio.c:1047
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(napaka 0x%x)"
 
-#: lib/cpio.c:1051
+#: lib/cpio.c:1050
 msgid "Bad magic"
 msgstr "Okvarjeno magièno ¹tevilo"
 
-#: lib/cpio.c:1052
+#: lib/cpio.c:1051
 msgid "Bad/unreadable  header"
 msgstr "Okvarjena/neberljiva glava"
 
-#: lib/cpio.c:1070
+#: lib/cpio.c:1069
 msgid "Header size too big"
 msgstr "Glava predolga"
 
-#: lib/cpio.c:1071
+#: lib/cpio.c:1070
 msgid "Unknown file type"
 msgstr "Neznan tip datoteke"
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1071
 msgid "Missing hard link"
 msgstr "Trda povezava manjka"
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1072
 msgid "Internal error"
 msgstr "Interna napaka"
 
-#: lib/cpio.c:1082
+#: lib/cpio.c:1081
 msgid " failed - "
 msgstr " neuspe¹no - "
-
-#: lib/dbindex.c:103
-#, fuzzy, c-format
-msgid "bad db file %s"
-msgstr "okvarjeno stanje datoteke: %s"
-
-#: lib/dbindex.c:143
-msgid ""
-"\n"
-"--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
-"    db1 to db2 on-disk format.\n"
-"\n"
-msgstr ""
-
-#: lib/dbindex.c:156
-#, c-format
-msgid "cannot open file %s: %s"
-msgstr "ni mo¾no odpreti datoteke %s: %s"
-
-#: lib/dbindex.c:209
-#, c-format
-msgid "error getting record %s from %s"
-msgstr "napaka pri branju zapisa %s iz %s"
-
-#: lib/dbindex.c:223
-#, c-format
-msgid "error storing record %s into %s"
-msgstr "napaka pri pisanju zapisa %s v %s"
-
-#: lib/dbindex.c:228
-#, c-format
-msgid "error removing record %s into %s"
-msgstr "napaka pri brisanju zapisa %s iz %s"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
 #: lib/depends.c:434
@@ -2388,11 +2355,6 @@ msgstr "opozorilo: %s shranjen kot %s"
 #: lib/install.c:908
 msgid "running postinstall scripts (if any)\n"
 msgstr "poganjamo ponamestitvene skripte (èe obstajajo)\n"
-
-#: lib/lookup.c:44
-#, c-format
-msgid "cannot read header at %d for lookup"
-msgstr "ni mo¾no prebrati glave pri %d za vpogled"
 
 #: lib/macro.c:161
 #, c-format
@@ -2783,65 +2745,65 @@ msgstr "izpis stanja seznama datotek"
 msgid "display a verbose file listing"
 msgstr "izpis ob¹irnega seznama datotek"
 
-#: lib/rebuilddb.c:33 lib/rpmdb.c:220
+#: lib/rebuilddb.c:34 lib/rpmdb.c:451
 msgid "no dbpath has been set"
 msgstr "dbpath ni nastavljena"
 
-#: lib/rebuilddb.c:58
+#: lib/rebuilddb.c:59
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "ponovna izgradnja podatkovne zbirke %s v %s\n"
 
-#: lib/rebuilddb.c:62
+#: lib/rebuilddb.c:63
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "zaèasna podatkovna zbirka %s ¾e obstaja"
 
-#: lib/rebuilddb.c:68
+#: lib/rebuilddb.c:69
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "ustvarjamo imenik: %s\n"
 
-#: lib/rebuilddb.c:70
+#: lib/rebuilddb.c:71
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "napaka pri ustvarjanju imenika %s: %s"
 
-#: lib/rebuilddb.c:81
+#: lib/rebuilddb.c:82
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "odpiramo staro podatkovno zbirko\n"
 
-#: lib/rebuilddb.c:90
+#: lib/rebuilddb.c:91
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "odpiramo novo podatkovno zbirko\n"
 
-#: lib/rebuilddb.c:111
+#: lib/rebuilddb.c:112
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "zapis ¹t. %d v zbirki je okvarjen -- preskakujemo."
 
-#: lib/rebuilddb.c:143
+#: lib/rebuilddb.c:144
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "zapisa ni mo¾no dodati na %d"
 
-#: lib/rebuilddb.c:159
+#: lib/rebuilddb.c:160
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 "ponovna izgradnja podatkovne zbirke neuspe¹na; stara ostaja na istem mestu\n"
 
-#: lib/rebuilddb.c:167
+#: lib/rebuilddb.c:168
 msgid "failed to replace old database with new database!\n"
 msgstr "zamenjava stare podatkovne zbirke z novo neuspe¹na!\n"
 
-#: lib/rebuilddb.c:169
+#: lib/rebuilddb.c:170
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "posku¹amo povrniti z nadomestitvijo datotek v %s z datotekami iz %s"
 
-#: lib/rebuilddb.c:175
+#: lib/rebuilddb.c:176
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"
@@ -2929,72 +2891,115 @@ msgstr ")"
 msgid "OK"
 msgstr "V REDU"
 
-#: lib/rpmdb.c:191
+#: lib/rpmdb.c:89
+#, c-format
+msgid "error getting record %s from %s"
+msgstr "napaka pri branju zapisa %s iz %s"
+
+#: lib/rpmdb.c:110
+#, c-format
+msgid "error storing record %s into %s"
+msgstr "napaka pri pisanju zapisa %s v %s"
+
+#: lib/rpmdb.c:115
+#, c-format
+msgid "error removing record %s into %s"
+msgstr "napaka pri brisanju zapisa %s iz %s"
+
+#: lib/rpmdb.c:267
+#, fuzzy, c-format
+msgid "bad db file %s"
+msgstr "okvarjeno stanje datoteke: %s"
+
+#: lib/rpmdb.c:308
+msgid ""
+"\n"
+"--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
+"    db1 to db2 on-disk format.\n"
+"\n"
+msgstr ""
+
+#: lib/rpmdb.c:321
+#, c-format
+msgid "cannot open file %s: %s"
+msgstr "ni mo¾no odpreti datoteke %s: %s"
+
+#: lib/rpmdb.c:523
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr "staro obliko podatkove zbirke pretvorite v novo z --rebuilddb"
 
 #. error
-#: lib/rpmdb.c:390
+#: lib/rpmdb.c:699
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "paketa ni mo¾no odpreti: %s\n"
 
-#: lib/rpmdb.c:613
-#, fuzzy, c-format
-msgid "package not found with key \"%s\" in %s"
-msgstr "paketa %s ni najti v %s"
-
-#: lib/rpmdb.c:622
+#: lib/rpmdb.c:1021
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "paketa %s ni najti v %s"
 
-#: lib/rpmdb.c:640
+#: lib/rpmdb.c:1029
+#, fuzzy, c-format
+msgid "key \"%s\" not removed from %s"
+msgstr "paketa %s ni najti v %s"
+
+#: lib/rpmdb.c:1055
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "ni mo¾no prebrati glave pri %d za vpogled"
 
-#: lib/rpmdb.c:665
+#: lib/rpmdb.c:1086
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "odstranjujemo vnose v podatkovni zbirki\n"
 
-#: lib/rpmdb.c:671
+#: lib/rpmdb.c:1093
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
-#: lib/rpmdb.c:679
+#: lib/rpmdb.c:1101
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "odstranjujemo seznam imen\n"
 
-#: lib/rpmdb.c:683 lib/rpmdb.c:880
+#: lib/rpmdb.c:1105
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:818
+#: lib/rpmdb.c:1245
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "ni mo¾no zagotoviti prostora za podatkovno zbirko"
 
-#: lib/rpmdb.c:857
+#: lib/rpmdb.c:1291
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:869
+#: lib/rpmdb.c:1304
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "preimenujemo %s v %s\n"
 
-#: lib/rpmdb.c:876
+#: lib/rpmdb.c:1311
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
+
+#: lib/rpmdb.c:1315
+#, c-format
+msgid "%6d %s\n"
+msgstr ""
+
+#: lib/rpmdb.c:1626
+#, c-format
+msgid "cannot read header at %d for lookup"
+msgstr "ni mo¾no prebrati glave pri %d za vpogled"
 
 #: lib/rpminstall.c:126
 msgid "counting packages to install\n"
@@ -3387,27 +3392,27 @@ msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/transaction.c:400
+#: lib/transaction.c:399
 #, c-format
 msgid "excluding file %s%s\n"
 msgstr "izkljuèujemo datoteko %s%s\n"
 
-#: lib/transaction.c:426 lib/transaction.c:509
+#: lib/transaction.c:425 lib/transaction.c:508
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "izkljuèujemo imenik %s\n"
 
-#: lib/transaction.c:431
+#: lib/transaction.c:430
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "prestavljamo %s v %s\n"
 
-#: lib/transaction.c:502
+#: lib/transaction.c:501
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "prestavljamo imenik %s v %s\n"
 
-#: lib/transaction.c:654
+#: lib/transaction.c:653
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s preskoèen zaradi manjkajoèe zastavice OK\n"
@@ -3516,6 +3521,10 @@ msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "
 #: lib/verify.c:381
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "rpmVerify: rpmdbOpen() neuspe¹en\n"
+
+#, fuzzy
+#~ msgid "package not found with key \"%s\" in %s"
+#~ msgstr "paketa %s ni najti v %s"
 
 #~ msgid "dbrecMatchesDepFlags() failed to read header"
 #~ msgstr "dbrecMatchesDepFlags() ni uspel prebrati glave"

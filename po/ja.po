@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-04-13 14:16-0400\n"
+"POT-Creation-Date: 2000-04-19 09:49-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.42 2000/04/13 17:59:11 jbj Exp $
+# $Id: ja.po,v 1.43 2000/04/19 16:59:03 jbj Exp $
 #: rpm.c:200
 #, c-format
 msgid "rpm: %s\n"
@@ -2061,79 +2061,46 @@ msgstr "%s を %s にする名前の変更ができません: %s\n"
 msgid "can't unlink %s: %s\n"
 msgstr "%s を削除(unlink)できません: %s\n"
 
-#: lib/cpio.c:599
+#: lib/cpio.c:597
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1048
+#: lib/cpio.c:1047
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "(エラー 0x%x)"
 
-#: lib/cpio.c:1051
+#: lib/cpio.c:1050
 msgid "Bad magic"
 msgstr "不正なマジック"
 
-#: lib/cpio.c:1052
+#: lib/cpio.c:1051
 msgid "Bad/unreadable  header"
 msgstr "不正な/不可読なヘッダ"
 
-#: lib/cpio.c:1070
+#: lib/cpio.c:1069
 msgid "Header size too big"
 msgstr "ヘッダサイズが大きすぎます"
 
-#: lib/cpio.c:1071
+#: lib/cpio.c:1070
 #, fuzzy
 msgid "Unknown file type"
 msgstr "不明なファイルタイプ"
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1071
 msgid "Missing hard link"
 msgstr "ハードリンクが見つかりません"
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1072
 #, fuzzy
 msgid "Internal error"
 msgstr "内部エラー"
 
-#: lib/cpio.c:1082
+#: lib/cpio.c:1081
 #, fuzzy
 msgid " failed - "
 msgstr "失敗 - "
-
-#: lib/dbindex.c:103
-#, fuzzy, c-format
-msgid "bad db file %s"
-msgstr "不正なファイルの状態: %s"
-
-#: lib/dbindex.c:143
-msgid ""
-"\n"
-"--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
-"    db1 to db2 on-disk format.\n"
-"\n"
-msgstr ""
-
-#: lib/dbindex.c:156
-#, fuzzy, c-format
-msgid "cannot open file %s: %s"
-msgstr "ファイル %s をオープンできません: %s"
-
-#: lib/dbindex.c:209
-#, c-format
-msgid "error getting record %s from %s"
-msgstr "レコード %s の取得のエラー (%s から)"
-
-#: lib/dbindex.c:223
-#, c-format
-msgid "error storing record %s into %s"
-msgstr "レコード %s を %s にストアでエラー "
-
-#: lib/dbindex.c:228
-#, c-format
-msgid "error removing record %s into %s"
-msgstr "レコード %s を %s に削除でエラー"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
 #: lib/depends.c:434
@@ -2450,11 +2417,6 @@ msgstr "警告: %s は %s として保存されます"
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "ポストインストールスクリプト(が有れば)を実行します\n"
-
-#: lib/lookup.c:44
-#, c-format
-msgid "cannot read header at %d for lookup"
-msgstr "検索のための %d で ヘッダを読むことができません"
 
 #: lib/macro.c:161
 #, c-format
@@ -2868,65 +2830,65 @@ msgstr "列挙したファイルの状態を表示します"
 msgid "display a verbose file listing"
 msgstr "ファイルリストを冗長に表示します"
 
-#: lib/rebuilddb.c:33 lib/rpmdb.c:220
+#: lib/rebuilddb.c:34 lib/rpmdb.c:451
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません"
 
-#: lib/rebuilddb.c:58
+#: lib/rebuilddb.c:59
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "rootdir %s 中でデータベースを再構築します\n"
 
-#: lib/rebuilddb.c:62
+#: lib/rebuilddb.c:63
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "一時的なデータベース %s はすでに存在しています"
 
-#: lib/rebuilddb.c:68
+#: lib/rebuilddb.c:69
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "ディレクトリの作成: %s\n"
 
-#: lib/rebuilddb.c:70
+#: lib/rebuilddb.c:71
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ディレクトリ %s の作成エラー: %s"
 
-#: lib/rebuilddb.c:81
+#: lib/rebuilddb.c:82
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "古いデータベースのオープン\n"
 
-#: lib/rebuilddb.c:90
+#: lib/rebuilddb.c:91
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "新しいデータベースのオープン\n"
 
-#: lib/rebuilddb.c:111
+#: lib/rebuilddb.c:112
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "データベース中のレコード番号 %d は不正です -- スキップします"
 
-#: lib/rebuilddb.c:143
+#: lib/rebuilddb.c:144
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d に オリジナルのレコードを付加できません"
 
-#: lib/rebuilddb.c:159
+#: lib/rebuilddb.c:160
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 "データベースの再構築に失敗; オリジナルデータベースがまだそこに残っています\n"
 
-#: lib/rebuilddb.c:167
+#: lib/rebuilddb.c:168
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースに置き換えるのに失敗!\n"
 
-#: lib/rebuilddb.c:169
+#: lib/rebuilddb.c:170
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "%s 中のファイルをリカバーするために %s からファイルと置き換えます"
 
-#: lib/rebuilddb.c:175
+#: lib/rebuilddb.c:176
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリ %s の削除失敗: %s\n"
@@ -3016,72 +2978,115 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:191
+#: lib/rpmdb.c:89
+#, c-format
+msgid "error getting record %s from %s"
+msgstr "レコード %s の取得のエラー (%s から)"
+
+#: lib/rpmdb.c:110
+#, c-format
+msgid "error storing record %s into %s"
+msgstr "レコード %s を %s にストアでエラー "
+
+#: lib/rpmdb.c:115
+#, c-format
+msgid "error removing record %s into %s"
+msgstr "レコード %s を %s に削除でエラー"
+
+#: lib/rpmdb.c:267
+#, fuzzy, c-format
+msgid "bad db file %s"
+msgstr "不正なファイルの状態: %s"
+
+#: lib/rpmdb.c:308
+msgid ""
+"\n"
+"--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
+"    db1 to db2 on-disk format.\n"
+"\n"
+msgstr ""
+
+#: lib/rpmdb.c:321
+#, fuzzy, c-format
+msgid "cannot open file %s: %s"
+msgstr "ファイル %s をオープンできません: %s"
+
+#: lib/rpmdb.c:523
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:390
+#: lib/rpmdb.c:699
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "%s/packages.rpm をオープンできません\n"
 
-#: lib/rpmdb.c:613
-#, fuzzy, c-format
-msgid "package not found with key \"%s\" in %s"
-msgstr "パッケージ %s は %s 中に見つかりません"
-
-#: lib/rpmdb.c:622
+#: lib/rpmdb.c:1021
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "パッケージ %s は %s 中に見つかりません"
 
-#: lib/rpmdb.c:640
+#: lib/rpmdb.c:1029
+#, fuzzy, c-format
+msgid "key \"%s\" not removed from %s"
+msgstr "パッケージ %s は %s 中に見つかりません"
+
+#: lib/rpmdb.c:1055
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "検索のための %d で ヘッダを読むことができません"
 
-#: lib/rpmdb.c:665
+#: lib/rpmdb.c:1086
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "データベースエントリを削除します\n"
 
-#: lib/rpmdb.c:671
+#: lib/rpmdb.c:1093
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "group インデックスを削除します\n"
 
-#: lib/rpmdb.c:679
+#: lib/rpmdb.c:1101
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "name インデックス削除します\n"
 
-#: lib/rpmdb.c:683 lib/rpmdb.c:880
+#: lib/rpmdb.c:1105
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:818
+#: lib/rpmdb.c:1245
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "データベース用の空き容量が足りません"
 
-#: lib/rpmdb.c:857
+#: lib/rpmdb.c:1291
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:869
+#: lib/rpmdb.c:1304
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%s を %s へ名前を変更します\n"
 
-#: lib/rpmdb.c:876
+#: lib/rpmdb.c:1311
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
+
+#: lib/rpmdb.c:1315
+#, c-format
+msgid "%6d %s\n"
+msgstr ""
+
+#: lib/rpmdb.c:1626
+#, c-format
+msgid "cannot read header at %d for lookup"
+msgstr "検索のための %d で ヘッダを読むことができません"
 
 #: lib/rpminstall.c:126
 msgid "counting packages to install\n"
@@ -3495,27 +3500,27 @@ msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/transaction.c:400
+#: lib/transaction.c:399
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "ファイルの除外: %s%s\n"
 
-#: lib/transaction.c:426 lib/transaction.c:509
+#: lib/transaction.c:425 lib/transaction.c:508
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/transaction.c:431
+#: lib/transaction.c:430
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "%s を %s に再配置しています\n"
 
-#: lib/transaction.c:502
+#: lib/transaction.c:501
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
 
-#: lib/transaction.c:654
+#: lib/transaction.c:653
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s は missingok フラグのためスキップします\n"
@@ -3629,6 +3634,10 @@ msgstr "%s-%s-%s のための依存性を満たしていません:"
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "rpmVerify: rpmdbOen() に失敗しました\n"
+
+#, fuzzy
+#~ msgid "package not found with key \"%s\" in %s"
+#~ msgstr "パッケージ %s は %s 中に見つかりません"
 
 #~ msgid "dbrecMatchesDepFlags() failed to read header"
 #~ msgstr "dbrecMatchesDepFlags() がヘッダを読むのに失敗しました"

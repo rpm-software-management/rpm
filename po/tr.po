@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-13 14:16-0400\n"
+"POT-Creation-Date: 2000-04-19 09:49-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2092,79 +2092,46 @@ msgstr "%s okunamadý: %s"
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:599
+#: lib/cpio.c:597
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1048
+#: lib/cpio.c:1047
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "hata: "
 
-#: lib/cpio.c:1051
+#: lib/cpio.c:1050
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1052
+#: lib/cpio.c:1051
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1070
+#: lib/cpio.c:1069
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1071
+#: lib/cpio.c:1070
 #, fuzzy
 msgid "Unknown file type"
 msgstr "(bilinmeyen tip)"
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1071
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1072
 #, fuzzy
 msgid "Internal error"
 msgstr "ölümcül hata: "
 
-#: lib/cpio.c:1082
+#: lib/cpio.c:1081
 #, fuzzy
 msgid " failed - "
 msgstr "PGP hata verdi"
-
-#: lib/dbindex.c:103
-#, fuzzy, c-format
-msgid "bad db file %s"
-msgstr "%s açýlamadý: %s"
-
-#: lib/dbindex.c:143
-msgid ""
-"\n"
-"--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
-"    db1 to db2 on-disk format.\n"
-"\n"
-msgstr ""
-
-#: lib/dbindex.c:156
-#, fuzzy, c-format
-msgid "cannot open file %s: %s"
-msgstr "%s dosyasý açýlamýyor: "
-
-#: lib/dbindex.c:209
-#, c-format
-msgid "error getting record %s from %s"
-msgstr "%s kaydýna %s dosyasýnda eriþilemiyor:"
-
-#: lib/dbindex.c:223
-#, c-format
-msgid "error storing record %s into %s"
-msgstr "%s kaydý %s dosyasýna yazýlamýyor"
-
-#: lib/dbindex.c:228
-#, c-format
-msgid "error removing record %s into %s"
-msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
 #: lib/depends.c:434
@@ -2473,11 +2440,6 @@ msgstr ""
 #: lib/install.c:908
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
-
-#: lib/lookup.c:44
-#, c-format
-msgid "cannot read header at %d for lookup"
-msgstr "%d kaydýndan baþlýk bilgisi okunamadý"
 
 #: lib/macro.c:161
 #, c-format
@@ -2884,64 +2846,64 @@ msgstr ""
 msgid "display a verbose file listing"
 msgstr "Paketin içerdiði dosyalarý gösterme"
 
-#: lib/rebuilddb.c:33 lib/rpmdb.c:220
+#: lib/rebuilddb.c:34 lib/rpmdb.c:451
 msgid "no dbpath has been set"
 msgstr "dbpath deðeri girilmemiþ"
 
-#: lib/rebuilddb.c:58
+#: lib/rebuilddb.c:59
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rebuilddb.c:62
+#: lib/rebuilddb.c:63
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "geçici veritabaný %s mevcut"
 
-#: lib/rebuilddb.c:68
+#: lib/rebuilddb.c:69
 #, fuzzy, c-format
 msgid "creating directory: %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rebuilddb.c:70
+#: lib/rebuilddb.c:71
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/rebuilddb.c:81
+#: lib/rebuilddb.c:82
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rebuilddb.c:90
+#: lib/rebuilddb.c:91
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "mevcut veritabanýný kullanýlarak veritabýnýný yeniden oluþturur"
 
-#: lib/rebuilddb.c:111
+#: lib/rebuilddb.c:112
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "veritabanýndaki %d numaralý kayýt hatalý -- atlanýyor"
 
-#: lib/rebuilddb.c:143
+#: lib/rebuilddb.c:144
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "%d de yer alan kayýt saklayamýyor"
 
-#: lib/rebuilddb.c:159
+#: lib/rebuilddb.c:160
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rebuilddb.c:167
+#: lib/rebuilddb.c:168
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rebuilddb.c:169
+#: lib/rebuilddb.c:170
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rebuilddb.c:175
+#: lib/rebuilddb.c:176
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s açýlamadý: %s"
@@ -3031,73 +2993,116 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmdb.c:191
+#: lib/rpmdb.c:89
+#, c-format
+msgid "error getting record %s from %s"
+msgstr "%s kaydýna %s dosyasýnda eriþilemiyor:"
+
+#: lib/rpmdb.c:110
+#, c-format
+msgid "error storing record %s into %s"
+msgstr "%s kaydý %s dosyasýna yazýlamýyor"
+
+#: lib/rpmdb.c:115
+#, c-format
+msgid "error removing record %s into %s"
+msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
+
+#: lib/rpmdb.c:267
+#, fuzzy, c-format
+msgid "bad db file %s"
+msgstr "%s açýlamadý: %s"
+
+#: lib/rpmdb.c:308
+msgid ""
+"\n"
+"--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
+"    db1 to db2 on-disk format.\n"
+"\n"
+msgstr ""
+
+#: lib/rpmdb.c:321
+#, fuzzy, c-format
+msgid "cannot open file %s: %s"
+msgstr "%s dosyasý açýlamýyor: "
+
+#: lib/rpmdb.c:523
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:390
+#: lib/rpmdb.c:699
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "hata: %s%s/packages.rpm açýlamýyor\n"
 
-#: lib/rpmdb.c:613
-#, fuzzy, c-format
-msgid "package not found with key \"%s\" in %s"
-msgstr "%s pakedi %s içerisinde bulunamadý"
-
-#: lib/rpmdb.c:622
+#: lib/rpmdb.c:1021
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "%s pakedi %s içerisinde bulunamadý"
 
-#: lib/rpmdb.c:640
+#: lib/rpmdb.c:1029
+#, fuzzy, c-format
+msgid "key \"%s\" not removed from %s"
+msgstr "%s pakedi %s içerisinde bulunamadý"
+
+#: lib/rpmdb.c:1055
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "%d kaydýndan baþlýk bilgisi okunamadý"
 
-#: lib/rpmdb.c:665
+#: lib/rpmdb.c:1086
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:671
+#: lib/rpmdb.c:1093
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:679
+#: lib/rpmdb.c:1101
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "%s kaydýnýn %s dosyasýndan silinmesinde hata"
 
-#: lib/rpmdb.c:683 lib/rpmdb.c:880
+#: lib/rpmdb.c:1105
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
 # reservieren???
-#: lib/rpmdb.c:818
+#: lib/rpmdb.c:1245
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "Veritabaný için yer bulunamadý"
 
-#: lib/rpmdb.c:857
+#: lib/rpmdb.c:1291
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:869
+#: lib/rpmdb.c:1304
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:876
+#: lib/rpmdb.c:1311
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
+
+#: lib/rpmdb.c:1315
+#, c-format
+msgid "%6d %s\n"
+msgstr ""
+
+#: lib/rpmdb.c:1626
+#, c-format
+msgid "cannot read header at %d for lookup"
+msgstr "%d kaydýndan baþlýk bilgisi okunamadý"
 
 #: lib/rpminstall.c:126
 #, fuzzy
@@ -3513,27 +3518,27 @@ msgstr "rpmrc dosyanýzda \"pgp_name:\" tanýmlanmýþ olmalý"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "rpmrc dosyanýzda \"pgp_name:\" tanýmlanmýþ olmalý"
 
-#: lib/transaction.c:400
+#: lib/transaction.c:399
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "%s alýnýyor\n"
 
-#: lib/transaction.c:426 lib/transaction.c:509
+#: lib/transaction.c:425 lib/transaction.c:508
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/transaction.c:431
+#: lib/transaction.c:430
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:502
+#: lib/transaction.c:501
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "%s dizinin oluþturulmasýnda hata: %s"
 
-#: lib/transaction.c:654
+#: lib/transaction.c:653
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
@@ -3643,6 +3648,10 @@ msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "%s: Eriþilemedi\n"
+
+#, fuzzy
+#~ msgid "package not found with key \"%s\" in %s"
+#~ msgstr "%s pakedi %s içerisinde bulunamadý"
 
 #~ msgid "could not read database record!\n"
 #~ msgstr "veritabaný kaydý okunamadý!\n"

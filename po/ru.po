@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-04-13 14:16-0400\n"
+"POT-Creation-Date: 2000-04-19 09:49-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2024,76 +2024,43 @@ msgstr "не могу переименовать %s в %s: %s\n"
 msgid "can't unlink %s: %s\n"
 msgstr "не могу удалить %s: %s\n"
 
-#: lib/cpio.c:599
+#: lib/cpio.c:597
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:1048
+#: lib/cpio.c:1047
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(ошибка 0x%x)"
 
-#: lib/cpio.c:1051
+#: lib/cpio.c:1050
 msgid "Bad magic"
 msgstr "Неверный magic"
 
-#: lib/cpio.c:1052
+#: lib/cpio.c:1051
 msgid "Bad/unreadable  header"
 msgstr "Неверный/нечитаемый заголовок"
 
-#: lib/cpio.c:1070
+#: lib/cpio.c:1069
 msgid "Header size too big"
 msgstr "Заголовок слишком велик"
 
-#: lib/cpio.c:1071
+#: lib/cpio.c:1070
 msgid "Unknown file type"
 msgstr "Неизвестный тип файла"
 
-#: lib/cpio.c:1072
+#: lib/cpio.c:1071
 msgid "Missing hard link"
 msgstr "Отсутствует жесткая ссылка"
 
-#: lib/cpio.c:1073
+#: lib/cpio.c:1072
 msgid "Internal error"
 msgstr "Внутренняя ошибка"
 
-#: lib/cpio.c:1082
+#: lib/cpio.c:1081
 msgid " failed - "
 msgstr "не удалось - "
-
-#: lib/dbindex.c:103
-#, fuzzy, c-format
-msgid "bad db file %s"
-msgstr "неверное состояние файла: %s"
-
-#: lib/dbindex.c:143
-msgid ""
-"\n"
-"--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
-"    db1 to db2 on-disk format.\n"
-"\n"
-msgstr ""
-
-#: lib/dbindex.c:156
-#, c-format
-msgid "cannot open file %s: %s"
-msgstr "не могу открыть файл %s: %s"
-
-#: lib/dbindex.c:209
-#, c-format
-msgid "error getting record %s from %s"
-msgstr "ошибка получения записи %s из %s"
-
-#: lib/dbindex.c:223
-#, c-format
-msgid "error storing record %s into %s"
-msgstr "ошибка сохранения записи %s в %s"
-
-#: lib/dbindex.c:228
-#, c-format
-msgid "error removing record %s into %s"
-msgstr "ошибка удаления записи %s из %s"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
 #: lib/depends.c:434
@@ -2399,11 +2366,6 @@ msgstr "предупреждение: %s сохранен как %s"
 #, fuzzy
 msgid "running postinstall scripts (if any)\n"
 msgstr "исполняю скрипт postinstall (если есть)\n"
-
-#: lib/lookup.c:44
-#, c-format
-msgid "cannot read header at %d for lookup"
-msgstr "не могу прочесть хедер в %d для поиска"
 
 #: lib/macro.c:161
 #, c-format
@@ -2793,64 +2755,64 @@ msgstr "показать состояние показанных файлов"
 msgid "display a verbose file listing"
 msgstr "вывести детальный список файлов пакета"
 
-#: lib/rebuilddb.c:33 lib/rpmdb.c:220
+#: lib/rebuilddb.c:34 lib/rpmdb.c:451
 msgid "no dbpath has been set"
 msgstr "не установлена dbpath"
 
-#: lib/rebuilddb.c:58
+#: lib/rebuilddb.c:59
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "перестраиваю базу в корневом каталоге %s\n"
 
-#: lib/rebuilddb.c:62
+#: lib/rebuilddb.c:63
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "временная база данных %s уже существует"
 
-#: lib/rebuilddb.c:68
+#: lib/rebuilddb.c:69
 #, c-format
 msgid "creating directory: %s\n"
 msgstr "создаю каталог: %s\n"
 
-#: lib/rebuilddb.c:70
+#: lib/rebuilddb.c:71
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "ошибка создания каталога %s: %s"
 
-#: lib/rebuilddb.c:81
+#: lib/rebuilddb.c:82
 #, fuzzy, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr "открываю старую базу\n"
 
-#: lib/rebuilddb.c:90
+#: lib/rebuilddb.c:91
 #, fuzzy, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr "открываю новую базу\n"
 
-#: lib/rebuilddb.c:111
+#: lib/rebuilddb.c:112
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "запись номер %d в базе неверна, пропускаю"
 
-#: lib/rebuilddb.c:143
+#: lib/rebuilddb.c:144
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "не могу добавить запись (первоначально в %d)"
 
-#: lib/rebuilddb.c:159
+#: lib/rebuilddb.c:160
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr "перестроение базы не удалось, старая база остается на месте\n"
 
-#: lib/rebuilddb.c:167
+#: lib/rebuilddb.c:168
 msgid "failed to replace old database with new database!\n"
 msgstr "замена старой базы на новую не удалась!\n"
 
-#: lib/rebuilddb.c:169
+#: lib/rebuilddb.c:170
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "для восстановления заменяет файлы в %s файлами из %s"
 
-#: lib/rebuilddb.c:175
+#: lib/rebuilddb.c:176
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "удаление каталога %s не удалось: %s\n"
@@ -2939,7 +2901,40 @@ msgstr ")"
 msgid "OK"
 msgstr "Ok"
 
-#: lib/rpmdb.c:191
+#: lib/rpmdb.c:89
+#, c-format
+msgid "error getting record %s from %s"
+msgstr "ошибка получения записи %s из %s"
+
+#: lib/rpmdb.c:110
+#, c-format
+msgid "error storing record %s into %s"
+msgstr "ошибка сохранения записи %s в %s"
+
+#: lib/rpmdb.c:115
+#, c-format
+msgid "error removing record %s into %s"
+msgstr "ошибка удаления записи %s из %s"
+
+#: lib/rpmdb.c:267
+#, fuzzy, c-format
+msgid "bad db file %s"
+msgstr "неверное состояние файла: %s"
+
+#: lib/rpmdb.c:308
+msgid ""
+"\n"
+"--> Please run \"rpm --rebuilddb\" as root to convert your database from\n"
+"    db1 to db2 on-disk format.\n"
+"\n"
+msgstr ""
+
+#: lib/rpmdb.c:321
+#, c-format
+msgid "cannot open file %s: %s"
+msgstr "не могу открыть файл %s: %s"
+
+#: lib/rpmdb.c:523
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
@@ -2948,65 +2943,75 @@ msgstr ""
 "базы нового формата"
 
 #. error
-#: lib/rpmdb.c:390
+#: lib/rpmdb.c:699
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "не могу открыть %s/packages.rpm\n"
 
-#: lib/rpmdb.c:613
-#, fuzzy, c-format
-msgid "package not found with key \"%s\" in %s"
-msgstr "пакет %s не найден в %s"
-
-#: lib/rpmdb.c:622
+#: lib/rpmdb.c:1021
 #, fuzzy, c-format
 msgid "key \"%s\" not found in %s"
 msgstr "пакет %s не найден в %s"
 
-#: lib/rpmdb.c:640
+#: lib/rpmdb.c:1029
+#, fuzzy, c-format
+msgid "key \"%s\" not removed from %s"
+msgstr "пакет %s не найден в %s"
+
+#: lib/rpmdb.c:1055
 #, fuzzy, c-format
 msgid "rpmdbRemove: cannot read header at 0x%x"
 msgstr "не могу прочесть хедер в %d для поиска"
 
-#: lib/rpmdb.c:665
+#: lib/rpmdb.c:1086
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "удаляю запись базы данных\n"
 
-#: lib/rpmdb.c:671
+#: lib/rpmdb.c:1093
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "удаляю индекс групп\n"
 
-#: lib/rpmdb.c:679
+#: lib/rpmdb.c:1101
 #, fuzzy, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr "удаляю индекс имен\n"
 
-#: lib/rpmdb.c:683 lib/rpmdb.c:880
+#: lib/rpmdb.c:1105
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:818
+#: lib/rpmdb.c:1245
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "не могу выделить место для базы данных"
 
-#: lib/rpmdb.c:857
+#: lib/rpmdb.c:1291
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:869
+#: lib/rpmdb.c:1304
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "переименовываю %s в %s\n"
 
-#: lib/rpmdb.c:876
+#: lib/rpmdb.c:1311
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
+
+#: lib/rpmdb.c:1315
+#, c-format
+msgid "%6d %s\n"
+msgstr ""
+
+#: lib/rpmdb.c:1626
+#, c-format
+msgid "cannot read header at %d for lookup"
+msgstr "не могу прочесть хедер в %d для поиска"
 
 #: lib/rpminstall.c:126
 msgid "counting packages to install\n"
@@ -3404,27 +3409,27 @@ msgstr "Вы должны установить \"%%_gpg_name:\" в вашем макрофайле"
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr "Вы должны установить \"%%_pgp_name:\" в вашем макрофайле"
 
-#: lib/transaction.c:400
+#: lib/transaction.c:399
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
 msgstr "исключаю %s\n"
 
-#: lib/transaction.c:426 lib/transaction.c:509
+#: lib/transaction.c:425 lib/transaction.c:508
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "создаю каталог: %s\n"
 
-#: lib/transaction.c:431
+#: lib/transaction.c:430
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "перемещаю %s в %s\n"
 
-#: lib/transaction.c:502
+#: lib/transaction.c:501
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "перемещаю %s в %s\n"
 
-#: lib/transaction.c:654
+#: lib/transaction.c:653
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущен из-за флага missingok\n"
@@ -3531,6 +3536,10 @@ msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 #: lib/verify.c:381
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "rpmVerify: неудача rpmdbOpen()\n"
+
+#, fuzzy
+#~ msgid "package not found with key \"%s\" in %s"
+#~ msgstr "пакет %s не найден в %s"
 
 #~ msgid "dbrecMatchesDepFlags() failed to read header"
 #~ msgstr "ошибка dbrecMatchesDepFlags() при чтении хедера"
