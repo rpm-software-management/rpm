@@ -437,7 +437,7 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
  * @param mi		rpm database iterator
  * @param version	version to check for
  */
-void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version);
+void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, /*@kept@*/ const char * version);
 
 /**
  * Modify iterator to filter out headers that do not match release.
@@ -445,7 +445,7 @@ void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version);
  * @param mi		rpm database iterator
  * @param release	release to check for
  */
-void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release);
+void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, /*@kept@*/ const char * release);
 
 /**
  * Modify iterator to mark header for lazy write.
@@ -474,7 +474,8 @@ Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l)
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		NULL on failure
  */
-/*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
+/*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(
+			/*@kept@*/ rpmdb rpmdb, int rpmtag,
 			const void * key, size_t keylen);
 
 /**

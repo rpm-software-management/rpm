@@ -1488,16 +1488,19 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     alMakeIndex(&rpmdep->addedPackages);
     alMakeIndex(&rpmdep->availablePackages);
 
-    /* look at all of the added packages and make sure their dependencies
-       are satisfied */
+    /* Look at all of the added packages and make sure their dependencies
+     * are satisfied.
+     */
     p = rpmdep->addedPackages.list;
     for (i = 0; i < rpmdep->addedPackages.size; i++, p++) {
 
-	if (checkPackageDeps(rpmdep, &ps, p->h, NULL, p->multiLib))
+	rc = checkPackageDeps(rpmdep, &ps, p->h, NULL, p->multiLib);
+	if (rc)
 	    goto exit;
 
 	/* Adding: check name against conflicts matches. */
-	if (checkDependentConflicts(rpmdep, &ps, p->name))
+	rc = checkDependentConflicts(rpmdep, &ps, p->name);
+	if (rc)
 	    goto exit;
 
 	if (p->providesCount == 0 || p->provides == NULL)
@@ -1511,7 +1514,8 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 		break;
 	    }
 	}
-	if (rc)	goto exit;
+	if (rc)
+	    goto exit;
     }
 
     /* now look at the removed packages and make sure they aren't critical */
@@ -1525,7 +1529,8 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 	    headerNVR(h, &name, NULL, NULL);
 
 	    /* Erasing: check name against requiredby matches. */
-	    if (checkDependentPackages(rpmdep, &ps, name))
+	    rc = checkDependentPackages(rpmdep, &ps, name);
+	    if (rc)
 		goto exit;
 	}
 
@@ -1570,7 +1575,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 			fileName = xrealloc(fileName, fileAlloced);
 		    }
 		    *fileName = '\0';
-		    stpcpy( stpcpy(fileName, dirNames[dirIndexes[j]]) , baseNames[j]);
+		    (void) stpcpy( stpcpy(fileName, dirNames[dirIndexes[j]]) , baseNames[j]);
 		    /* Erasing: check filename against requiredby matches. */
 		    if (checkDependentPackages(rpmdep, &ps, fileName)) {
 			rc = 1;
@@ -1588,6 +1593,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 
       }
       rpmdbFreeIterator(mi);
+      mi = NULL;
     }
 
     if (!ps.num) {
@@ -1597,12 +1603,12 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 	*numConflicts = ps.num;
     }
     ps.problems = NULL;
-
-    return 0;
+    rc = 0;
 
 exit:
     if (mi)
 	rpmdbFreeIterator(mi);
-    if (ps.problems)	free(ps.problems);
-    return 1;
+    if (ps.problems)
+	free(ps.problems);
+    return rc;
 }

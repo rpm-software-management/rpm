@@ -64,7 +64,7 @@ struct _dbiVec {
  * @param rpmtag	rpm tag
  * @return		0 on success
  */
-    int (*open) (rpmdb rpmdb, int rpmtag, dbiIndex * dbip);
+    int (*open) (rpmdb rpmdb, int rpmtag, /*@out@*/ dbiIndex * dbip);
 
 /**
  * Close index database.
@@ -72,7 +72,7 @@ struct _dbiVec {
  * @param flags		(unused)
  * @return		0 on success
  */
-    int (*close) (dbiIndex dbi, unsigned int flags);
+    int (*close) (/*@only@*/ dbiIndex dbi, unsigned int flags);
 
 /**
  * Flush pending operations to disk.
@@ -83,16 +83,25 @@ struct _dbiVec {
     int (*sync) (dbiIndex dbi, unsigned int flags);
 
 /**
+ * Open database cursor.
+ * @param dbi		index database handle
+ * @param dbcp		address of database cursor
+ * @param flags		(unused)
  */
-    int (*copen) (dbiIndex dbi, DBC ** dbcp, unsigned int flags);
+    int (*copen) (dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags);
 
 /**
+ * Close database cursor.
+ * @param dbi		index database handle
+ * @param dbcursor	database cursor
+ * @param flags		(unused)
  */
     int (*cclose) (dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags);
 
 /**
  * Delete (key,data) pair(s) using db->del or dbcursor->c_del.
  * @param dbi		index database handle
+ * @param dbcursor	database cursor
  * @param keyp		key data
  * @param keylen	key data length
  * @param flags		(unused)
@@ -103,6 +112,7 @@ struct _dbiVec {
 /**
  * Retrieve (key,data) pair using db->get or dbcursor->c_get.
  * @param dbi		index database handle
+ * @param dbcursor	database cursor
  * @param keypp		address of key data
  * @param keylenp	address of key data length
  * @param datapp	address of data pointer
@@ -110,12 +120,15 @@ struct _dbiVec {
  * @param flags		(unused)
  * @return		0 on success
  */
-    int (*cget) (dbiIndex dbi, DBC * dbcursor, void ** keypp, size_t * keylenp,
-			void ** datapp, size_t * datalenp, unsigned int flags);
+    int (*cget) (dbiIndex dbi, DBC * dbcursor,
+			/*@out@*/ void ** keypp, /*@out@*/ size_t * keylenp,
+			/*@out@*/ void ** datapp, /*@out@*/ size_t * datalenp,
+			unsigned int flags);
 
 /**
  * Store (key,data) pair using db->put or dbcursor->c_put.
  * @param dbi		index database handle
+ * @param dbcursor	database cursor
  * @param keyp		key data
  * @param keylen	key data length
  * @param datap		data pointer
@@ -123,8 +136,10 @@ struct _dbiVec {
  * @param flags		(unused)
  * @return		0 on success
  */
-    int (*cput) (dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
-			const void * datap, size_t datalen, unsigned int flags);
+    int (*cput) (dbiIndex dbi, DBC * dbcursor,
+			const void * keyp, size_t keylen,
+			const void * datap, size_t datalen,
+			unsigned int flags);
 
 /**
  * Is database byte swapped?
@@ -267,7 +282,7 @@ extern "C" {
  * Return new configured index database handle instance.
  * @param rpmdb		rpm database
  */
-/*@only@*/ /*@null@*/ dbiIndex db3New(rpmdb rpmdb, int rpmtag);
+/*@only@*/ /*@null@*/ dbiIndex db3New(/*@keep@*/ rpmdb rpmdb, int rpmtag);
 
 /**
  * Destroy index database handle instance.
@@ -282,21 +297,24 @@ void db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi);
  * @param flags		(unused)
  * @return		index database handle
  */
-dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags);
+/*@only@*/ /*@null@*/ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag,
+		unsigned int flags);
 
 /**
+ * @param dbi		index database handle
  * @param flags		(unused)
  */
-int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int flags);
-int XdbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int flags, const char *f, unsigned int l);
+int dbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags);
+int XdbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags, const char *f, unsigned int l);
 #define	dbiCopen(_a,_b,_c) \
 	XdbiCopen(_a, _b, _c, __FILE__, __LINE__)
 
 /**
+ * @param dbi		index database handle
  * @param flags		(unused)
  */
-int dbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags);
-int XdbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags, const char *f, unsigned int l);
+int dbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags);
+int XdbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags, const char *f, unsigned int l);
 #define	dbiCclose(_a,_b,_c) \
 	XdbiCclose(_a, _b, _c, __FILE__, __LINE__)
 
@@ -343,7 +361,7 @@ int dbiPut(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
  * @param flags		(unused)
  * @return		0 on success
  */
-int dbiClose(dbiIndex dbi, unsigned int flags);
+int dbiClose(/*@only@*/ dbiIndex dbi, unsigned int flags);
 
 /**
  * Flush pending operations to disk.

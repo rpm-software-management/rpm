@@ -543,7 +543,7 @@ int rpmReadRC(const char * rcfiles)
 	/* Expand ~/ to $HOME/ */
 	fn[0] = '\0';
 	if (r[0] == '~' && r[1] == '/') {
-	    char *home = getenv("HOME");
+	    const char * home = getenv("HOME");
 	    if (home == NULL) {
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
 		if (rcfiles == defrcfiles && myrcfiles != r)
@@ -552,10 +552,17 @@ int rpmReadRC(const char * rcfiles)
 		rc = 1;
 		break;
 	    }
+	    if (strlen(home) > (sizeof(fn) - strlen(r))) {
+		rpmError(RPMERR_RPMRC, _("Cannot read %s, HOME is too large."),
+				r);
+		rc = 1;
+		break;
+	    }
 	    strcpy(fn, home);
 	    r++;
 	}
-	strcat(fn, r);
+	strncat(fn, r, sizeof(fn) - (strlen(fn) + 1));
+	fn[sizeof(fn)-1] = '\0';
 
 	/* Read another rcfile */
 	fd = Fopen(fn, "r.fpio");

@@ -2,6 +2,13 @@
 
 static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
+#ifdef	__LCLINT__
+typedef	unsigned int u_int32_t;
+typedef	unsigned short u_int16_t;
+typedef	unsigned char u_int8_t;
+typedef	int int32_t;
+#endif
+
 #include <db3/db.h>
 
 #include <rpmlib.h>
@@ -9,10 +16,9 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include <rpmurl.h>	/* XXX urlPath proto */
 
 #include "rpmdb.h"
+/*@access rpmdb@*/
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
-
-static const char * db3basename = "packages.db3";
 
 #if DB_VERSION_MAJOR == 3
 #define	__USE_DB3	1
@@ -29,6 +35,7 @@ struct dbOption {
 
 #define	_POPT_SET_BIT	(POPT_ARG_VAL|POPT_ARGFLAG_OR)
 
+/*@-immediatetrans@*/
 struct dbOption rdbOptions[] = {
  /* XXX DB_CXX_NO_EXCEPTIONS */
  { "xa_create",	_POPT_SET_BIT,		&db3dbi.dbi_cflags, DB_XA_CREATE },
@@ -133,8 +140,9 @@ struct dbOption rdbOptions[] = {
  { "re_pad",	POPT_ARG_INT,		&db3dbi.dbi_re_pad, 0 },
  { "re_source",	POPT_ARG_STRING,	&db3dbi.dbi_re_source, 0 },
 
- { NULL, 0 }
+ { NULL, 0, NULL, 0 }
 };
+/*@=immediatetrans@*/
 
 static int dbSaveLong(const struct dbOption * opt, long aLong) {
     if (opt->argInfo & POPT_ARGFLAG_NOT)
@@ -154,7 +162,7 @@ static int dbSaveLong(const struct dbOption * opt, long aLong) {
 	break;
     default:
 	return POPT_ERROR_BADOPERATION;
-	break;
+	/*@notreached@*/ break;
     }
     return 0;
 }
@@ -440,7 +448,7 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit) {
 }
 
 static int db_fini(dbiIndex dbi, const char * dbhome, const char * dbfile,
-		const char * dbsubfile)
+		/*@unused@*/ const char * dbsubfile)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV * dbenv = dbi->dbi_dbenv;
@@ -487,12 +495,12 @@ static int db_fini(dbiIndex dbi, const char * dbhome, const char * dbfile,
     return rc;
 }
 
-static int db3_fsync_disable(int fd) {
+static int db3_fsync_disable(/*@unused@*/ int fd) {
     return 0;
 }
 
 static int db_init(dbiIndex dbi, const char *dbhome, const char *dbfile,
-		const char * dbsubfile, DB_ENV **dbenvp)
+		/*@unused@*/ const char * dbsubfile, /*@out@*/ DB_ENV **dbenvp)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV *dbenv = NULL;
@@ -624,7 +632,8 @@ static int db3c_del(dbiIndex dbi, DBC * dbcursor, u_int32_t flags)
     return rc;
 }
 
-static int db3c_dup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp, u_int32_t flags)
+/*@unused@*/ static int db3c_dup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
+		u_int32_t flags)
 {
     int rc;
 
@@ -666,7 +675,7 @@ static int db3c_put(dbiIndex dbi, DBC * dbcursor,
     return rc;
 }
 
-static inline int db3c_close(dbiIndex dbi, DBC * dbcursor)
+static inline int db3c_close(dbiIndex dbi, /*@only@*/ DBC * dbcursor)
 {
     int rc;
 
@@ -675,7 +684,7 @@ static inline int db3c_close(dbiIndex dbi, DBC * dbcursor)
     return rc;
 }
 
-static inline int db3c_open(dbiIndex dbi, DBC ** dbcp)
+static inline int db3c_open(dbiIndex dbi, /*@out@*/ DBC ** dbcp)
 {
     DB * db = dbi->dbi_db;
     DB_TXN * txnid = NULL;
@@ -696,7 +705,8 @@ static inline int db3c_open(dbiIndex dbi, DBC ** dbcp)
     return rc;
 }
 
-static int db3cclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags)
+static int db3cclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor,
+		/*@unused@*/ unsigned int flags)
 {
     int rc = 0;
 
@@ -706,14 +716,15 @@ static int db3cclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags)
     if (dbcursor == NULL)
 	dbcursor = dbi->dbi_rmw;
     if (dbcursor) {
-	rc = db3c_close(dbi, dbcursor);
 	if (dbcursor == dbi->dbi_rmw)
 	    dbi->dbi_rmw = NULL;
+	rc = db3c_close(dbi, dbcursor);
     }
     return rc;
 }
 
-static int db3copen(dbiIndex dbi, DBC ** dbcp, unsigned int flags)
+static int db3copen(dbiIndex dbi, /*@out@*/ DBC ** dbcp,
+		/*@unused@*/ unsigned int flags)
 {
     DBC * dbcursor;
     int rc = 0;
@@ -734,8 +745,10 @@ static int db3copen(dbiIndex dbi, DBC ** dbcp, unsigned int flags)
     return rc;
 }
 
-static int db3cput(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
-		const void * datap, size_t datalen, unsigned int flags)
+static int db3cput(dbiIndex dbi, DBC * dbcursor,
+		const void * keyp, size_t keylen,
+		const void * datap, size_t datalen,
+		/*@unused@*/ unsigned int flags)
 {
     DB * db = dbi->dbi_db;
     DB_TXN * txnid = NULL;
@@ -761,7 +774,9 @@ static int db3cput(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keyle
     return rc;
 }
 
-static int db3cdel(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen, unsigned int flags)
+static int db3cdel(dbiIndex dbi, DBC * dbcursor,
+		const void * keyp, size_t keylen,
+		/*@unused@*/ unsigned int flags)
 {
     DB * db = dbi->dbi_db;
     DB_TXN * txnid = NULL;
@@ -791,8 +806,10 @@ static int db3cdel(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keyle
     return rc;
 }
 
-static int db3cget(dbiIndex dbi, DBC * dbcursor, void ** keyp, size_t * keylen,
-		void ** datap, size_t * datalen, unsigned int flags)
+static int db3cget(dbiIndex dbi, DBC * dbcursor,
+		/*@out@*/ void ** keyp, /*@out@*/ size_t * keylen,
+		/*@out@*/ void ** datap, /*@out@*/ size_t * datalen,
+		/*@unused@*/ unsigned int flags)
 {
     DB * db = dbi->dbi_db;
     DB_TXN * txnid = NULL;
@@ -842,7 +859,7 @@ static int db3byteswapped(dbiIndex dbi)
     return rc;
 }
 
-static int db3close(dbiIndex dbi, unsigned int flags)
+static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     const char * urlfn = NULL;
@@ -908,7 +925,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
-static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
+static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 {
     const char * urlfn = NULL;
     const char * dbhome;
@@ -1053,7 +1070,6 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
 	    if (rc == 0 && dbi->dbi_get_rmw_cursor) {
 		DBC * dbcursor = NULL;
-		int xx;
 		xx = db->cursor(db, txnid, &dbcursor,
 			((oflags & DB_RDONLY) ? 0 : DB_WRITECURSOR));
 		xx = cvtdberr(dbi, "db->cursor", xx, _debug);
@@ -1072,6 +1088,7 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		    l.l_start = 0;
 		    l.l_len = 0;
 		    l.l_type = (dbi->dbi_mode & O_RDWR) ? F_WRLCK : F_RDLCK;
+		    l.l_pid = 0;
 
 		    if (fcntl(fdno, F_SETLK, (void *) &l)) {
 			rpmError(RPMERR_FLOCK,

@@ -1,4 +1,4 @@
--I. -I.. -I../build -I../popt -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -I.. -I../build -I../rpmio -I../popt -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
 

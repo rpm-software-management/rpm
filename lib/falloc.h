@@ -1,6 +1,8 @@
 #ifndef H_FALLOC
 #define H_FALLOC
 
+/*@access FD_t@*/
+
 /* File space allocation routines. Best fit allocation is used, free blocks
    are compacted. Minimal fragmentation is more important then speed. This
    uses 32 bit offsets on all platforms and should be byte order independent */
@@ -9,19 +11,19 @@
 extern "C" {
 #endif
 
-static inline long int fadGetFileSize(FD_t fd) {
+/*@unused@*/ static inline long int fadGetFileSize(FD_t fd) {
     return fd->fileSize;
 }
 
-static inline void fadSetFileSize(FD_t fd, long int fileSize) {
+/*@unused@*/ static inline void fadSetFileSize(FD_t fd, long int fileSize) {
     fd->fileSize = fileSize;
 }
 
-static inline unsigned int fadGetFirstFree(FD_t fd) {
+/*@unused@*/ static inline unsigned int fadGetFirstFree(FD_t fd) {
     return fd->firstFree;
 }
 
-static inline void fadSetFirstFree(FD_t fd, unsigned int firstFree) {
+/*@unused@*/ static inline void fadSetFirstFree(FD_t fd, unsigned int firstFree) {
     fd->firstFree = firstFree;
 }
 

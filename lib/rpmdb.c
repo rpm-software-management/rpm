@@ -140,7 +140,7 @@ INLINE int dbiByteSwapped(dbiIndex dbi) {
     return (*dbi->dbi_vec->byteswapped) (dbi);
 }
 
-INLINE int XdbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int flags,
+INLINE int XdbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags,
 	const char * f, unsigned int l)
 {
 if (_debug < 0 || dbi->dbi_debug)
@@ -148,7 +148,7 @@ fprintf(stderr, "+++ RMW %s (%s:%u)\n", tagName(dbi->dbi_rpmtag), f, l);
     return (*dbi->dbi_vec->copen) (dbi, dbcp, flags);
 }
 
-INLINE int XdbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags,
+INLINE int XdbiCclose(dbiIndex dbi, /*@only@*/ DBC * dbcursor, unsigned int flags,
 	const char * f, unsigned int l)
 {
 if (_debug < 0 || dbi->dbi_debug)
@@ -229,7 +229,7 @@ fprintf(stderr, "    %s Close\n", tagName(dbi->dbi_rpmtag));
     return (*dbi->dbi_vec->close) (dbi, flags);
 }
 
-dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags)
+dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, /*@unused@*/ unsigned int flags)
 {
     int dbix;
     dbiIndex dbi = NULL;
@@ -660,7 +660,7 @@ void dbiFreeIndexSet(dbiIndexSet set) {
 /**
  * Disable all signals, returning previous signal mask.
  */
-static void blockSignals(rpmdb rpmdb, sigset_t * oldMask)
+static void blockSignals(rpmdb rpmdb, /*@out@*/ sigset_t * oldMask)
 {
     sigset_t newMask;
 
@@ -801,7 +801,7 @@ errxit:
 }
 
 static int openDatabase(const char * prefix, const char * dbpath, int _dbapi,
-	rpmdb *dbp, int mode, int perms, int flags)
+	/*@out@*/ rpmdb *dbp, int mode, int perms, int flags)
 {
     rpmdb rpmdb;
     int rc;
@@ -944,6 +944,7 @@ static Header rpmdbGetRecord(rpmdb rpmdb, unsigned int offset)
     xx = dbiCopen(dbi, &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, &keyp, &keylen, &uh, &uhlen, 0);
     xx = dbiCclose(dbi, dbcursor, 0);
+    dbcursor = NULL;
     if (rc)
 	return NULL;
     return headerLoad(uh);
@@ -1086,6 +1087,7 @@ int rpmdbCountPackages(rpmdb rpmdb, const char * name)
 	xx = dbiCopen(dbi, &dbcursor, 0);
 	rc = dbiSearch(dbi, dbcursor, name, 0, &matches);
 	xx = dbiCclose(dbi, dbcursor, 0);
+	dbcursor = NULL;
     }
 
     if (rc == 0)	/* success */
@@ -1105,8 +1107,9 @@ int rpmdbCountPackages(rpmdb rpmdb, const char * name)
 /* 0 found matches */
 /* 1 no matches */
 /* 2 error */
-static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor, const char * name, const char * version,
-			const char * release, dbiIndexSet * matches)
+static int dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
+	const char * name, const char * version, const char * release,
+	/*@out@*/ dbiIndexSet * matches)
 {
     int gotMatches;
     int rc;
@@ -1200,7 +1203,10 @@ static int dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, const char * arg, dbiInd
     /* did they give us just a name? */
     rc = dbiFindMatches(dbi, dbcursor, arg, NULL, NULL, matches);
     if (rc != 1) return rc;
-    if (*matches) dbiFreeIndexSet(*matches);
+    if (*matches) {
+	dbiFreeIndexSet(*matches);
+	*matches = NULL;
+    }
 
     /* maybe a name and a release */
     localarg = alloca(strlen(arg) + 1);
@@ -1290,6 +1296,7 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
 	    xx = dbiCopen(dbi, &dbcursor, 0);
 	    dbiUpdateRecord(dbi, dbcursor, mi->mi_prevoffset, mi->mi_h);
 	    xx = dbiCclose(dbi, dbcursor, 0);
+	    dbcursor = NULL;
 	}
 	headerFree(mi->mi_h);
 	mi->mi_h = NULL;
@@ -1467,7 +1474,7 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi,
 	const void * keyp, size_t keylen, int fpNum)
 {
     dbiIndex dbi = NULL;
-    DBC * dbcursor;
+    DBC * dbcursor = NULL;
     dbiIndexSet set = NULL;
     int rc;
     int xx;
@@ -1482,10 +1489,10 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi,
     if (keylen == 0)
 	keylen = strlen(keyp);
 
-    dbcursor = NULL;
     xx = dbiCopen(dbi, &dbcursor, 0);
     rc = dbiSearch(dbi, dbcursor, keyp, keylen, &set);
     xx = dbiCclose(dbi, dbcursor, 0);
+    dbcursor = NULL;
 
     if (rc == 0) {	/* success */
 	int i;
@@ -1562,7 +1569,7 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
     dbi->dbi_lastoffset = 0;		/* db0: rewind to beginning */
 
     if (rpmtag != RPMDBI_PACKAGES && keyp) {
-	DBC * dbcursor;
+	DBC * dbcursor = NULL;
 	int rc;
 	int xx;
 
@@ -1571,12 +1578,14 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
 	    xx = dbiCopen(dbi, &dbcursor, 0);
 	    rc = dbiFindByLabel(dbi, dbcursor, keyp, &set);
 	    xx = dbiCclose(dbi, dbcursor, 0);
+	    dbcursor = NULL;
 	} else if (rpmtag == RPMTAG_BASENAMES) {
 	    rc = rpmdbFindByFile(rpmdb, keyp, &set);
 	} else {
 	    xx = dbiCopen(dbi, &dbcursor, 0);
 	    rc = dbiSearch(dbi, dbcursor, keyp, keylen, &set);
 	    xx = dbiCclose(dbi, dbcursor, 0);
+	    dbcursor = NULL;
 	}
 	if (rc)	{	/* error/not found */
 	    if (set)
@@ -1679,7 +1688,7 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int hdrNum)
 
 	for (dbix = 0; dbix < dbiTagsMax; dbix++) {
 	    dbiIndex dbi;
-	    DBC * dbcursor;
+	    DBC * dbcursor = NULL;
 	    const char *av[1];
 	    const char ** rpmvals = NULL;
 	    int rpmtype = 0;
@@ -1704,6 +1713,7 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int hdrNum)
 		xx = dbiCopen(dbi, &dbcursor, 0);
 		xx = dbiDel(dbi, dbcursor, &hdrNum, sizeof(hdrNum), 0);
 		xx = dbiCclose(dbi, dbcursor, 0);
+		dbcursor = NULL;
 		/* XXX HACK sync is on the bt with multiple db access */
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
@@ -1753,6 +1763,7 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int hdrNum)
 	    }
 
 	    xx = dbiCclose(dbi, dbcursor, 0);
+	    dbcursor = NULL;
 
 	    /* XXX HACK sync is on the bt with multiple db access */
 	    if (!dbi->dbi_no_dbsync)
@@ -1837,7 +1848,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 
     {
 	unsigned int firstkey = 0;
-	DBC * dbcursor;
+	DBC * dbcursor = NULL;
 	void * keyp = &firstkey;
 	size_t keylen = sizeof(firstkey);
 	void * datap = NULL;
@@ -1870,6 +1881,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 	xx = dbiSync(dbi, 0);
 
 	xx = dbiCclose(dbi, dbcursor, 0);
+	dbcursor = NULL;
 
     }
 
@@ -1883,7 +1895,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
     {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 
 	for (dbix = 0; dbix < dbiTagsMax; dbix++) {
-	    DBC * dbcursor;
+	    DBC * dbcursor = NULL;
 	    const char *av[1];
 	    const char **rpmvals = NULL;
 	    int rpmtype = 0;
@@ -1907,6 +1919,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 		xx = dbiCopen(dbi, &dbcursor, 0);
 		xx = dbiUpdateRecord(dbi, dbcursor, hdrNum, h);
 		xx = dbiCclose(dbi, dbcursor, 0);
+		dbcursor = NULL;
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
 		{   const char *n, *v, *r;
@@ -1988,6 +2001,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 		rc += addIndexEntry(dbi, dbcursor, rpmvals[i], rec);
 	    }
 	    xx = dbiCclose(dbi, dbcursor, 0);
+	    dbcursor = NULL;
 
 	    /* XXX HACK sync is on the bt with multiple db access */
 	    if (!dbi->dbi_no_dbsync)

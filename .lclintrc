@@ -1,4 +1,4 @@
--I. -I./build -I./lib -I./popt -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -I./build -I./lib -I./rpmio -I./popt -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
 
@@ -6,6 +6,9 @@
 -warnposix
 
 +unixlib
+
+# XXX ignore doxygen markings
+-unrecogcomments
 
 # don't-bother-me-yet parameters
 #-branchstate

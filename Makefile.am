@@ -97,7 +97,7 @@ $(PROGRAMS): 		$(myLDADD)
 
 .PHONY:	lclint
 lclint:
-	lclint $(DEFS) $(INCLUDES) $(rpm_SOURCES)
+	lclint $(DEFS) $(INCLUDES) $(rpm_SOURCES) $(rpmb_SOURCES) rpmqv.c
 
 CVSTAG = r$(subst .,-,$(VERSION))
 

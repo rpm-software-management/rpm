@@ -38,18 +38,19 @@ typedef struct transactionFileInfo {
   /* for all packages */
     enum rpmTransactionType type;
     enum fileActions * actions;
-    fingerPrint * fps;
-    uint_32 * fflags, * fsizes;
+/*@dependent@*/ fingerPrint * fps;
+    uint_32 * fflags;
+    uint_32 * fsizes;
     const char ** bnl;	    /* base names */
     const char ** dnl;	    /* dir names */
     const int * dil;	    /* dir index list */
-    char ** fmd5s;
+    const char ** fmd5s;
     uint_16 * fmodes;
     Header h;
     int fc;
     char * fstates;
   /* these are for TR_ADDED packages */
-    char ** flinks;
+    const char ** flinks;
     struct availablePackage * ap;
     struct sharedFileInfo * replaced;
     uint_32 * replacedSizes;
@@ -425,7 +426,7 @@ static Header relocateFileList(struct availablePackage * alp,
 	    fileAlloced = len * 2;
 	    filespec = xrealloc(filespec, fileAlloced);
 	}
-	stpcpy( stpcpy(filespec, dirNames[dirIndexes[i]]) , baseNames[i]);
+	(void) stpcpy( stpcpy(filespec, dirNames[dirIndexes[i]]) , baseNames[i]);
 
 	for (j = numRelocations - 1; j >= 0; j--)
 	    if (!strcmp(relocations[j].oldPath, filespec)) break;
@@ -510,7 +511,7 @@ static Header relocateFileList(struct availablePackage * alp,
 		const char *s = relocations[j].newPath;
 		char *t = alloca(strlen(s) + strlen(dirNames[i]) - oplen + 1);
 
-		stpcpy( stpcpy(t, s) , dirNames[i] + oplen);
+		(void) stpcpy( stpcpy(t, s) , dirNames[i] + oplen);
 		rpmMessage(RPMMESS_DEBUG, _("relocating directory %s to %s\n"),
 			dirNames[i], t);
 		dirNames[i] = t;
@@ -1083,7 +1084,7 @@ static void handleOverlappedFiles(TFI_t * fi, hashTable ht,
     if (filespec) free(filespec);
 }
 
-static int ensureOlder(rpmdb db, Header new, Header old, rpmProblemSet probs,
+static int ensureOlder(/*@unused@*/ rpmdb rpmdb, Header new, Header old, rpmProblemSet probs,
 			/*@dependent@*/ const void * key)
 {
     int result, rc = 0;
@@ -1107,7 +1108,7 @@ static void skipFiles(TFI_t * fi, int noDocs)
     char ** netsharedPaths = NULL;
     const char ** fileLangs;
     const char ** languages;
-    const char *s;
+    const char * s;
 
     if (!noDocs)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
@@ -1241,6 +1242,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	for (i = 0; (i < filesystemCount) && di; i++) {
 #if STATFS_IN_SYS_STATVFS
 	    struct statvfs sfb;
+	    memset(&sfb, 0, sizeof(sfb));
 	    if (statvfs(filesystems[i], &sfb))
 #else
 	    struct statfs sfb;
@@ -1250,8 +1252,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
  * filesystem type, and is always 0 when statfs is called on a mounted
  * filesystem, as we're doing.
  */
+	    memset(&sfb, 0, sizeof(sfb));
 	    if (statfs(filesystems[i], &sfb, sizeof(sfb), 0))
 #  else
+	    memset(&sfb, 0, sizeof(sfb));
 	    if (statfs(filesystems[i], &sfb))
 #  endif
 #endif

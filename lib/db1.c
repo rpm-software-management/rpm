@@ -20,6 +20,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #define	DBC	void
 #include "rpmdb.h"
+/*@access rpmdb@*/
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
 
@@ -120,7 +121,7 @@ static int db1sync(dbiIndex dbi, unsigned int flags) {
     return rc;
 }
 
-static int db1byteswapped(dbiIndex dbi)
+static int db1byteswapped(/*@unused@*/dbiIndex dbi)
 {
     return 0;
 }
@@ -196,17 +197,18 @@ exit:
     return uh;
 }
 
-static int db1copen(dbiIndex dbi, DBC ** dbcp, unsigned int flags) {
+static int db1copen(/*@unused@*/ dbiIndex dbi, /*@unused@*/ DBC ** dbcp, /*@unused@*/ unsigned int flags) {
     return 0;
 }
 
-static int db1cclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags) {
+static int db1cclose(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, /*@unused@*/ unsigned int flags) {
     dbi->dbi_lastoffset = 0;
     return 0;
 }
 
-static int db1cget(dbiIndex dbi, DBC * dbcursor, void ** keyp, size_t * keylen,
-                void ** datap, size_t * datalen, unsigned int flags)
+static int db1cget(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, void ** keyp,
+		size_t * keylen, void ** datap, size_t * datalen,
+		/*@unused@*/ unsigned int flags)
 {
     DBT key, data;
     int rc = 0;
@@ -283,8 +285,8 @@ static int db1cget(dbiIndex dbi, DBC * dbcursor, void ** keyp, size_t * keylen,
     return rc;
 }
 
-static int db1cdel(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
-		unsigned int flags)
+static int db1cdel(dbiIndex dbi, /*@unused@*/ DBC * dbcursor, const void * keyp,
+		size_t keylen, /*@unused@*/ unsigned int flags)
 {
     int rc = 0;
 
@@ -309,8 +311,10 @@ static int db1cdel(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keyle
     return rc;
 }
 
-static int db1cput(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
-		const void * datap, size_t datalen, unsigned int flags)
+static int db1cput(dbiIndex dbi, /*@unused@*/ DBC * dbcursor,
+		const void * keyp, size_t keylen,
+		const void * datap, size_t datalen,
+		/*@unused@*/ unsigned int flags)
 {
     DBT key, data;
     int rc = 0;
@@ -355,7 +359,8 @@ static int db1cput(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keyle
     return rc;
 }
 
-static int db1close(dbiIndex dbi, unsigned int flags) {
+static int db1close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
+{
     rpmdb rpmdb = dbi->dbi_rpmdb;
     const char * base = db1basename(dbi->dbi_rpmtag);
     const char * urlfn = rpmGenPath(rpmdb->db_root, rpmdb->db_home, base);

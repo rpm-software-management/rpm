@@ -15,7 +15,7 @@
 #include <zlib.h>
 #include <sys/types.h>
 
-#include <rpmio.h>
+#include <rpmio_internal.h>
 
 /**
  * Note:  CPIO_CHECK_ERRNO bit is set only if errno is valid. These have to

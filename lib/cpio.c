@@ -8,7 +8,6 @@
 
 #include "system.h"
 
-#include <rpmio_internal.h>
 #include "cpio.h"
 
 #define	xfree(_p)	free((void *)_p)
