@@ -31,6 +31,8 @@
 
 FILE_RCSID("@(#)Id: fsmagic.c,v 1.36 2002/07/03 19:00:41 christos Exp ")
 
+int fmagic_flags = 0;
+
 int
 fsmagic(const char *fn, struct stat *sb)
 {
@@ -41,7 +43,7 @@ fsmagic(const char *fn, struct stat *sb)
 	 * On 4.2BSD and similar systems, use lstat() to identify symlinks.
 	 */
 #if defined(S_IFLNK) || defined(__LCLINT__)
-	if (!lflag)
+	if (!(fmagic_flags & FMAGIC_FLAGS_FOLLOW))
 		ret = lstat(fn, sb);
 	else
 #endif
@@ -55,7 +57,7 @@ fsmagic(const char *fn, struct stat *sb)
 		return 1;
 	}
 
-	if (iflag) {
+	if ((fmagic_flags & FMAGIC_FLAGS_MIME)) {
 		if ((sb->st_mode & S_IFMT) != S_IFREG) {
 			ckfputs("application/x-not-regular-file", stdout);
 			return 1;
@@ -84,7 +86,7 @@ fsmagic(const char *fn, struct stat *sb)
 		 * like ordinary files.  Otherwise, just report that they
 		 * are block special files and go on to the next file.
 		 */
-		if (sflag)
+		if ((fmagic_flags & FMAGIC_FLAGS_SPECIAL))
 			break;
 #ifdef HAVE_STRUCT_STAT_ST_RDEV
 # ifdef dv_unit
@@ -108,7 +110,7 @@ fsmagic(const char *fn, struct stat *sb)
 		 * like ordinary files.  Otherwise, just report that they
 		 * are block special files and go on to the next file.
 		 */
-		if (sflag)
+		if ((fmagic_flags & FMAGIC_FLAGS_SPECIAL))
 			break;
 #ifdef HAVE_STRUCT_STAT_ST_RDEV
 # ifdef dv_unit
@@ -182,7 +184,7 @@ fsmagic(const char *fn, struct stat *sb)
 /*@=branchstate@*/
 
 			/* Otherwise, handle it. */
-			if (lflag) {
+			if ((fmagic_flags & FMAGIC_FLAGS_FOLLOW)) {
 				process(buf, strlen(buf));
 				return 1;
 			} else { /* just print what it points to */
@@ -218,8 +220,8 @@ fsmagic(const char *fn, struct stat *sb)
 	 * the fact that it is empty will be detected and reported correctly
 	 * when we read the file.)
 	 */
-	if (!sflag && sb->st_size == 0) {
-		ckfputs(iflag ? "application/x-empty" : "empty", stdout);
+	if (!(fmagic_flags & FMAGIC_FLAGS_SPECIAL) && sb->st_size == 0) {
+		ckfputs((fmagic_flags & FMAGIC_FLAGS_MIME) ? "application/x-empty" : "empty", stdout);
 		return 1;
 	}
 	return 0;
@@ -255,7 +257,7 @@ tryit(const char *fn, unsigned char *buf, int nb, int zfl)
 		return 'a';
 
 	/* abandon hope, all ye who remain here */
-	ckfputs(iflag ? "application/octet-stream" : "data", stdout);
+	ckfputs((fmagic_flags & FMAGIC_FLAGS_MIME) ? "application/octet-stream" : "data", stdout);
 		return '\0';
 }
 
@@ -281,7 +283,7 @@ process(const char *inname, int wid)
 		inname = stdname;
 	}
 
-	if (wid > 0 && !bflag)
+	if (wid > 0 && !(fmagic_flags & FMAGIC_FLAGS_BRIEF))
 	     (void) printf("%s:%*s ", inname, 
 			   (int) (wid - strlen(inname)), "");
 
@@ -314,10 +316,10 @@ process(const char *inname, int wid)
 	}
 
 	if (nbytes == 0)
-		ckfputs(iflag ? "application/x-empty" : "empty", stdout);
+		ckfputs((fmagic_flags & FMAGIC_FLAGS_MIME) ? "application/x-empty" : "empty", stdout);
 	else {
 		buf[nbytes++] = '\0';	/* null-terminate it */
-		match = tryit(inname, buf, nbytes, zflag);
+		match = tryit(inname, buf, nbytes, (fmagic_flags & FMAGIC_FLAGS_UNCOMPRESS));
 	}
 
 #ifdef BUILTIN_ELF

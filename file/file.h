@@ -124,22 +124,18 @@ extern int lineno;		/* current line number in magic file	*/
 /*@unchecked@*/
 extern struct mlist mlist;	/* list of arrays of magic entries	*/
 
-/*@-exportlocal@*/
-/*@unchecked@*/
-extern int debug;		/* enable debugging?			*/
-/*@unchecked@*/
-extern int bflag;		/* brief output format	 		*/
-/*@unchecked@*/
-extern int iflag;		/* Output types as mime-types		*/
-/*@unchecked@*/
-extern int kflag;		/* Keep going after the first match	*/
-/*@unchecked@*/
-extern int lflag;		/* follow symbolic links?		*/
-/*@unchecked@*/
-extern int sflag;		/* read/analyze block special files?	*/
-/*@unchecked@*/
-extern int zflag;		/* process compressed files?		*/
-/*@=exportlocal@*/
+enum fmagic_e {
+    FMAGIC_FLAGS_NONE		= 0,
+    FMAGIC_FLAGS_DEBUG		= (1 << 0),
+    FMAGIC_FLAGS_BRIEF		= (1 << 1),	/*!< brief output format */
+    FMAGIC_FLAGS_MIME		= (1 << 2),	/*!< output as mime-types */
+    FMAGIC_FLAGS_CONTINUE	= (1 << 3),	/*!< continue after 1st match */
+    FMAGIC_FLAGS_FOLLOW		= (1 << 4),	/*!< follow symlinks? */
+    FMAGIC_FLAGS_SPECIAL	= (1 << 5),	/*!< analyze block devices? */
+    FMAGIC_FLAGS_UNCOMPRESS	= (1 << 6)	/*!< uncompress files? */
+};
+
+extern int fmagic_flags;
 
 /*@mayexit@*/
 extern int   apprentice(const char *fn, int action)

@@ -53,21 +53,6 @@ int os2_apptype (const char *fn, char *buf, int nb);
 
 			/* Global command-line options 		*/
 /*@unchecked@*/
-	int	debug = 0; 	/* debugging 				*/
-/*@unchecked@*/
-	int	bflag = 0;	/* brief output format	 		*/
-/*@unchecked@*/
-	int	iflag = 0;
-/*@unchecked@*/
-	int	kflag = 0;	/* Keep going after the first match	*/
-/*@unchecked@*/
-	int	lflag = 0;	/* follow Symlinks (BSD only) 		*/
-/*@unchecked@*/
-	int	sflag = 0;	/* read block special files		*/
-/*@unchecked@*/
-	int	zflag = 0;	/* follow (uncompress) compressed files */
-
-/*@unchecked@*/
 static	int	nobuffer = 0;   /* Do not buffer stdout */
 
 /*@unchecked@*/ /*@null@*/
@@ -171,10 +156,10 @@ help(void)
  */
 int
 main(int argc, char **argv)
-	/*@globals debug, bflag, zflag, sflag, iflag, nobuffer, kflag,
+	/*@globals fmagic_flags, nobuffer,
 		default_magicfile, lineno, magicfile, mlist, optind, progname,
 		fileSystem, internalState @*/
-	/*@modifies argv, debug, bflag, zflag, sflag, iflag, nobuffer, kflag,
+	/*@modifies argv, fmagic_flags, nobuffer,
 		default_magicfile, lineno, magicfile, mlist, optind, progname,
 		fileSystem, internalState @*/
 {
@@ -262,7 +247,7 @@ main(int argc, char **argv)
 			/*@switchbreak@*/ break;
 #endif
 		case 'b':
-			++bflag;
+			fmagic_flags |= FMAGIC_FLAGS_BRIEF;
 			/*@switchbreak@*/ break;
 		case 'c':
 			action = CHECK;
@@ -271,7 +256,7 @@ main(int argc, char **argv)
 			action = COMPILE;
 			/*@switchbreak@*/ break;
 		case 'd':
-			++debug;
+			fmagic_flags |= FMAGIC_FLAGS_DEBUG;
 			/*@switchbreak@*/ break;
 		case 'f':
 			if (!app) {
@@ -284,14 +269,14 @@ main(int argc, char **argv)
 			++didsomefiles;
 			/*@switchbreak@*/ break;
 		case 'i':
-			iflag++;
+			fmagic_flags |= FMAGIC_FLAGS_MIME;
 			mime = malloc(strlen(magicfile) + sizeof(".mime"));
 			(void)strcpy(mime, magicfile);
 			(void)strcat(mime, ".mime");
 			magicfile = mime;
 			/*@switchbreak@*/ break;
 		case 'k':
-			kflag = 1;
+			fmagic_flags |= FMAGIC_FLAGS_CONTINUE;
 			/*@switchbreak@*/ break;
 		case 'm':
 			magicfile = optarg;
@@ -300,7 +285,7 @@ main(int argc, char **argv)
 			++nobuffer;
 			/*@switchbreak@*/ break;
 		case 's':
-			sflag++;
+			fmagic_flags |= FMAGIC_FLAGS_SPECIAL;
 			/*@switchbreak@*/ break;
 		case 'v':
 			(void) fprintf(stdout, "%s-%d.%d\n", progname,
@@ -309,11 +294,11 @@ main(int argc, char **argv)
 				       magicfile);
 			return 1;
 		case 'z':
-			zflag++;
+			fmagic_flags |= FMAGIC_FLAGS_UNCOMPRESS;
 			/*@switchbreak@*/ break;
 #ifdef S_IFLNK
 		case 'L':
-			++lflag;
+			fmagic_flags |= FMAGIC_FLAGS_FOLLOW;
 			/*@switchbreak@*/ break;
 #endif
 		case '?':
@@ -323,9 +308,8 @@ main(int argc, char **argv)
 		}
 	}
 
-	if (errflg) {
+	if (errflg)
 		usage();
-	}
 
 	if (!app) {
 		ret = apprentice(magicfile, action);
@@ -335,11 +319,9 @@ main(int argc, char **argv)
 	}
 
 	if (optind == argc) {
-		if (!didsomefiles) {
+		if (!didsomefiles)
 			usage();
-		}
-	}
-	else {
+	} else {
 		int i, wid, nw;
 		for (wid = 0, i = optind; i < argc; i++) {
 			nw = strlen(argv[i]);
@@ -355,5 +337,6 @@ main(int argc, char **argv)
 	muntrace(); /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
 	/*@=noeffect@*/
 #endif
+
 	return 0;
 }

@@ -436,10 +436,10 @@ ascmagic(unsigned char *buf, int nbytes)
 	 */
 	switch (is_tar(buf, nbytes)) {
 	case 1:
-		ckfputs(iflag ? "application/x-tar" : "tar archive", stdout);
+		ckfputs((fmagic_flags & FMAGIC_FLAGS_MIME) ? "application/x-tar" : "tar archive", stdout);
 		return 1;
 	case 2:
-		ckfputs(iflag ? "application/x-tar, POSIX"
+		ckfputs((fmagic_flags & FMAGIC_FLAGS_MIME) ? "application/x-tar, POSIX"
 				: "POSIX tar archive", stdout);
 		return 1;
 	}
@@ -594,7 +594,7 @@ subtype_identified:
 		}
 	}
 
-	if (iflag) {
+	if ((fmagic_flags & FMAGIC_FLAGS_MIME)) {
 		if (subtype_mime != NULL)
 			ckfputs(subtype_mime, stdout);
 		else

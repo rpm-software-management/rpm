@@ -1,3 +1,5 @@
+*.lo
+*.la
 .deps
 .depend
 .depend-done

@@ -426,7 +426,7 @@ sm_get(union VALUETYPE *p, unsigned char *s, struct magic *m, int nbytes)
 	}
 /*@=branchstate@*/
 
-	if (debug) {
+	if (fmagic_flags & FMAGIC_FLAGS_DEBUG) {
 		sm_debug(offset, (char *) p, sizeof(union VALUETYPE));
 		mdump(m);
 	}
@@ -760,7 +760,7 @@ sm_get(union VALUETYPE *p, unsigned char *s, struct magic *m, int nbytes)
 
 		memcpy(p, s + offset, sizeof(union VALUETYPE));
 
-		if (debug) {
+		if (fmagic_flags & FMAGIC_FLAGS_DEBUG) {
 			sm_debug(offset, (char *) p, sizeof(union VALUETYPE));
 			mdump(m);
 		}
@@ -882,21 +882,21 @@ sm_check(union VALUETYPE *p, struct magic *m)
 
 	switch (m->reln) {
 	case 'x':
-		if (debug)
+		if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
 			(void) fprintf(stderr, "%u == *any* = 1\n", v);
 		matched = 1;
 		break;
 
 	case '!':
 		matched = v != l;
-		if (debug)
+		if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
 			(void) fprintf(stderr, "%u != %u = %d\n",
 				       v, l, matched);
 		break;
 
 	case '=':
 		matched = v == l;
-		if (debug)
+		if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
 			(void) fprintf(stderr, "%u == %u = %d\n",
 				       v, l, matched);
 		break;
@@ -904,13 +904,13 @@ sm_check(union VALUETYPE *p, struct magic *m)
 	case '>':
 		if (m->flag & UNSIGNED) {
 			matched = v > l;
-			if (debug)
+			if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
 				(void) fprintf(stderr, "%u > %u = %d\n",
 					       v, l, matched);
 		}
 		else {
 			matched = (int32_t) v > (int32_t) l;
-			if (debug)
+			if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
 				(void) fprintf(stderr, "%d > %d = %d\n",
 					       v, l, matched);
 		}
@@ -919,13 +919,13 @@ sm_check(union VALUETYPE *p, struct magic *m)
 	case '<':
 		if (m->flag & UNSIGNED) {
 			matched = v < l;
-			if (debug)
+			if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
 				(void) fprintf(stderr, "%u < %u = %d\n",
 					       v, l, matched);
 		}
 		else {
 			matched = (int32_t) v < (int32_t) l;
-			if (debug)
+			if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
 				(void) fprintf(stderr, "%d < %d = %d\n",
 					       v, l, matched);
 		}
@@ -933,14 +933,14 @@ sm_check(union VALUETYPE *p, struct magic *m)
 
 	case '&':
 		matched = (v & l) == l;
-		if (debug)
+		if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
 			(void) fprintf(stderr, "((%x & %x) == %x) = %d\n",
 				       v, l, l, matched);
 		break;
 
 	case '^':
 		matched = (v & l) != l;
-		if (debug)
+		if (fmagic_flags & FMAGIC_FLAGS_DEBUG)
 			(void) fprintf(stderr, "((%x & %x) != %x) = %d\n",
 				       v, l, l, matched);
 		break;
@@ -1073,7 +1073,7 @@ sm_match(struct magic *m, uint32_t nmagic, unsigned char *s, int nbytes)
 		}
 		firstline = 0;
 		returnval = 1;
-		if (!kflag)	/* don't keep searching */
+		if (!(fmagic_flags & FMAGIC_FLAGS_CONTINUE))	/* don't keep searching */
 			return 1;
 	}
 	return returnval;  /* This is hit if -k is set or there is no match */
