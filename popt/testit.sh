@@ -37,10 +37,10 @@ run test1 "test1 - 12" "arg1: 1 arg2: (none)" -O
 run test1 "test1 - 13" "arg1: 1 arg2: foo" -OT foo
 run test1 "test1 - 14" "arg1: 0 arg2: (none) inc: 1" --inc
 run test1 "test1 - 15" "arg1: 0 arg2: foo inc: 1" -i --arg2 foo
-export POSIX_ME_HARDER=1
+POSIX_ME_HARDER=1 ; export POSIX_ME_HARDER
 run test1 "test1 - 16" "arg1: 1 arg2: (none) rest: foo --arg2 something" --arg1 foo --arg2 something
 unset POSIX_ME_HARDER
-export POSIXLY_CORRECT=1
+POSIXLY_CORRECT=1 ; export POSIXLY_CORRECT
 run test1 "test1 - 17" "arg1: 1 arg2: (none) rest: foo --arg2 something" --arg1 foo --arg2 something
 unset POSIXLY_CORRECT
 run test1 "test1 - 18" "callback: c sampledata bar arg1: 1 arg2: (none)" --arg1 --cb bar
