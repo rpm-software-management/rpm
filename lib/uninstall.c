@@ -418,8 +418,9 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 	else
 	    skip = 0;
 
-	if (!headerMatchesDepFlags(sourceH, triggerVersions[i] + skip, 
-				   triggerFlags[i])) continue;
+	if (!headerMatchesDepFlags(sourceH, triggerNames[i],
+		triggerVersions[i] + skip, triggerFlags[i]))
+	    continue;
 
 	headerGetEntry(triggeredH, RPMTAG_TRIGGERINDEX, NULL,
 		       (void **) &triggerIndices, NULL);

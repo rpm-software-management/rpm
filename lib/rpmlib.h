@@ -79,7 +79,8 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_SOURCERPM		1044
 #define	RPMTAG_FILEVERIFYFLAGS		1045
 #define	RPMTAG_ARCHIVESIZE		1046
-#define	RPMTAG_PROVIDES                 1047
+#define	RPMTAG_PROVIDENAME		1047
+#define	RPMTAG_PROVIDES	RPMTAG_PROVIDENAME	/* backward comaptibility */
 #define	RPMTAG_REQUIREFLAGS		1048
 #define	RPMTAG_REQUIRENAME		1049
 #define	RPMTAG_REQUIREVERSION		1050
@@ -135,6 +136,10 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMTAG_BUILDREQUIRES		1109 /* internal */
 #define	RPMTAG_BUILDCONFLICTS		1110 /* internal */
 #define	RPMTAG_BUILDMACROS		1111
+#define	RPMTAG_PROVIDEFLAGS		1112
+#define	RPMTAG_PROVIDEVERSION		1113
+#define	RPMTAG_OBSOLETEFLAGS		1114
+#define	RPMTAG_OBSOLETEVERSION		1115
 
 #define	RPMTAG_EXTERNAL_TAG		1000000
 
@@ -178,8 +183,8 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMSENSE_CONFLICTS	(1 << 5) /* only used internally by builds */
 #define	RPMSENSE_PREREQ		(1 << 6)
 #define	RPMSENSE_OBSOLETES	(1 << 7) /* only used internally by builds */
-#define	RPMSENSE_SENSEMASK	15       /* Mask to get senses, ie serial, */
-                                          /* less, greater, equal.          */
+#define	RPMSENSE_SENSEMASK	15	 /* Mask to get senses, ie serial, */
+                                         /* less, greater, equal.          */
 
 #define	RPMSENSE_TRIGGERIN	(1 << 16)
 #define	RPMSENSE_TRIGGERUN	(1 << 17)
@@ -244,7 +249,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 /* #define	RPMVAR_HTTPPROXY		53 -- No longer used */
 /* #define	RPMVAR_HTTPPORT			54 -- No longer used */
 
-#define	RPMVAR_NUM			55     /* number of RPMVAR entries */
+#define	RPMVAR_NUM			55	/* number of RPMVAR entries */
 
 #define	xfree(_p)	free((void *)_p)
 

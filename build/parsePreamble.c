@@ -476,7 +476,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	}
 	break;
       case RPMTAG_OBSOLETES:
-      case RPMTAG_PROVIDES:
+      case RPMTAG_PROVIDEFLAGS:
       case RPMTAG_BUILDREQUIRES:
       case RPMTAG_BUILDCONFLICTS:
       case RPMTAG_BUILDPREREQ:
@@ -554,7 +554,7 @@ static struct PreambleRec {
 /*    {RPMTAG_EXCLUDE,		0, 0, "exclude"}, */
 /*    {RPMTAG_EXCLUSIVE,	0, 0, "exclusive"}, */
     {RPMTAG_ICON,		0, 0, "icon"},
-    {RPMTAG_PROVIDES,		0, 0, "provides"},
+    {RPMTAG_PROVIDEFLAGS,	0, 0, "provides"},
     {RPMTAG_REQUIREFLAGS,	0, 0, "requires"},
     {RPMTAG_PREREQ,		0, 0, "prereq"},
     {RPMTAG_CONFLICTFLAGS,	0, 0, "conflicts"},

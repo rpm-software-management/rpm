@@ -446,7 +446,7 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant) {
 	removeIndexEntry(db->groupIndex, group, rec, tolerant, "group index");
     }
 
-    if (headerGetEntry(h, RPMTAG_PROVIDES, &type, (void **) &providesList, 
+    if (headerGetEntry(h, RPMTAG_PROVIDENAME, &type, (void **) &providesList, 
 	 &count)) {
 	for (i = 0; i < count; i++) {
 	    rpmMessage(RPMMESS_DEBUG, _("removing provides index for %s\n"), 
@@ -573,7 +573,7 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     count = 0;
     headerGetEntry(dbentry, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 	           &count);
-    headerGetEntry(dbentry, RPMTAG_PROVIDES, &type, (void **) &providesList, 
+    headerGetEntry(dbentry, RPMTAG_PROVIDENAME, &type, (void **) &providesList, 
 	           &providesCount);
     headerGetEntry(dbentry, RPMTAG_REQUIRENAME, &type, 
 		   (void **) &requiredbyList, &requiredbyCount);

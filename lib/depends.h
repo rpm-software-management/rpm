@@ -7,7 +7,7 @@ struct availablePackage {
     Header h;
     char ** provides;
     char ** files;
-    char * name, * version, * release;
+    const char * name, * version, * release;
     int epoch, hasEpoch, providesCount, filesCount;
     const void * key;
     rpmRelocation * relocs;
@@ -18,7 +18,7 @@ enum indexEntryType { IET_NAME, IET_PROVIDES, IET_FILE };
 
 struct availableIndexEntry {
     struct availablePackage * package;
-    char * entry;
+    const char * entry;
     enum indexEntryType type;
 } ;
 
@@ -65,7 +65,7 @@ struct problemsSet {
 extern "C" {
 #endif
 
-int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags);
+int headerMatchesDepFlags(Header h, const char *reqName, const char * reqInfo, int reqFlags);
 
 #ifdef __cplusplus
 }

@@ -5,6 +5,15 @@
 #include "depends.h"
 #include "misc.h"
 
+static int headerNVR(Header h, const char **np, const char **vp, const char **rp)
+{
+    int type, count;
+    headerGetEntry(h, RPMTAG_NAME, &type, (void **) np, &count);
+    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) vp, &count);
+    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) rp, &count);
+    return 0;
+}
+
 struct orderListIndex {
     int alIndex;
     int orIndex;
@@ -74,13 +83,12 @@ static struct availablePackage * alAddPackage(struct availableList * al,
     p = al->list + al->size++;
     p->h = headerLink(h);
 
-    headerGetEntry(p->h, RPMTAG_NAME, NULL, (void **) &p->name, NULL);
-    headerGetEntry(p->h, RPMTAG_VERSION, NULL, (void **) &p->version, NULL);
-    headerGetEntry(p->h, RPMTAG_RELEASE, NULL, (void **) &p->release, NULL);
+    headerNVR(p->h, &p->name, &p->version, &p->release);
+
     p->hasEpoch = headerGetEntry(h, RPMTAG_EPOCH, NULL, (void **) &p->epoch, 
 				  NULL);
 
-    if (!headerGetEntry(h, RPMTAG_PROVIDES, NULL, (void **) &p->provides,
+    if (!headerGetEntry(h, RPMTAG_PROVIDENAME, NULL, (void **) &p->provides,
 	&p->providesCount)) {
 	p->providesCount = 0;
 	p->provides = NULL;
@@ -171,27 +179,6 @@ static void alMakeIndex(struct availableList * al)
 
 	qsort(ai->index, ai->size, sizeof(*ai->index), indexcmp);
     }
-}
-
-static struct availablePackage * alSatisfiesDepend(struct availableList * al, 
-					    char * reqName, char * reqVersion, 
-					    int reqFlags)
-{
-    struct availableIndexEntry needle, * match;
-
-    if (!al->index.size) return NULL;
-
-    needle.entry = reqName;
-    match = bsearch(&needle, al->index.index, al->index.size,
-		    sizeof(*al->index.index), indexcmp);
- 
-    if (!match) return NULL;
-    if (match->type != IET_NAME) return match->package;
-
-    if (headerMatchesDepFlags(match->package->h, reqVersion, reqFlags))
-	return match->package;
-
-    return NULL;
 }
 
 static int intcmp(const void * a, const void *b)
@@ -381,8 +368,186 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
     free(conflicts);
 }
 
-static int dbrecMatchesDepFlags(rpmTransactionSet rpmdep, int recOffset, 
-			        char * reqVersion, int reqFlags)
+static void parseEVR(char *evr, const char **ep, const char **vp, const char **rp)
+{
+    const char *epoch = NULL;
+    const char *version = evr;		/* assume only version is present */
+    const char *release = NULL;
+    char *s, *se;
+
+    s = evr;
+    while (*s && isdigit(*s)) s++;	/* s points to epoch terminator */
+    se = strrchr(s, '-');		/* se points to version terminator */
+
+    if (*s == ':' || se) {
+	if (*s == ':') {
+	    epoch = evr;
+	    *s++ = '\0';
+	    version = s;
+	    if (*epoch == '\0') epoch = "0";
+	} else {
+	    epoch = NULL;
+	    version = evr;
+	}
+	if (se) {
+	    *se++ = '\0';
+	    release = se;
+	}
+    }
+    if (ep) *ep = epoch;
+    if (vp) *vp = version;
+    if (rp) *rp = release;
+}
+
+typedef int (*dbrecMatch_t) (Header h, const char *reqName, const char * reqInfo, int reqFlags);
+
+static int rangeMatchesDepFlags (Header h, const char *reqName, const char * reqInfo, int reqFlags)
+{
+    char ** provides;
+    char ** providesVersion;
+    int * providesFlags;
+    int providesCount;
+    const char * proEpoch = NULL;
+    const char * proVersion = NULL;
+    const char * proRelease = NULL;
+    char *Pevr;
+    const char * reqEpoch = NULL;
+    const char * reqVersion = NULL;
+    const char * reqRelease = NULL;
+    char *Revr;
+    int result;
+    int sense;
+    int type;
+    int i;
+
+    if (!(reqFlags & RPMSENSE_SENSEMASK) || !reqInfo || !strlen(reqInfo))
+	return 1;
+
+    /* Get provides information from header */
+    /*
+     * Rpm prior to 3.0.3 does not have versioned provides.
+     * If no provides version info is available, match any requires.
+     */
+    if (!headerGetEntry(h, RPMTAG_PROVIDEVERSION, &type,
+		(void **) &providesVersion, &providesCount))
+	return 1;
+
+    headerGetEntry(h, RPMTAG_PROVIDEFLAGS, &type,
+	(void **) &providesFlags, &providesCount);
+
+    if (!headerGetEntry(h, RPMTAG_PROVIDENAME, &type,
+		(void **) &provides, &providesCount)) {
+	if (providesVersion) xfree(providesVersion);
+	return 0;	/* XXX should never happen */
+    }
+
+    /* Parse requires version into components */
+    Revr = strdup(reqInfo);
+    parseEVR(Revr, &reqEpoch, &reqVersion, &reqRelease);
+
+    result = 0;
+    for (i = 0; i < providesCount; i++) {
+
+	if (strcmp(reqName, provides[i]))
+	    continue;
+
+	/* Parse provides version into components */
+	Pevr = strdup(providesVersion[i]);
+	parseEVR(Pevr, &proEpoch, &proVersion, &proRelease);
+
+	/* Compare {provides,requires} [epoch:]version[-release] range */
+	sense = ((proEpoch != NULL && reqEpoch != NULL)
+			? rpmvercmp(proEpoch, reqEpoch) : 0);
+	if (sense == 0) {
+	    sense = rpmvercmp(proVersion, reqVersion);
+	    if (sense == 0 && proRelease && *proRelease &&
+	      reqRelease && *reqRelease) {
+		sense = rpmvercmp(proRelease, reqRelease);
+	    }
+	}
+	free(Pevr); Pevr = NULL;
+
+	if ((reqFlags & RPMSENSE_LESS) && sense < 0) {
+	    result = 1;
+	} else if ((reqFlags & RPMSENSE_EQUAL) && sense == 0) {
+	    result = (providesFlags[i] & RPMSENSE_EQUAL) ? 1 : 0;
+	} else if ((reqFlags & RPMSENSE_GREATER) && sense > 0) {
+	    result = 1;
+	}
+
+	/* If this provide matches the require, we're done */
+	if (result)
+	    break;
+    }
+
+    if (provides) xfree(provides);
+    if (providesVersion) xfree(providesVersion);
+    if (Revr) free(Revr);
+
+    return result;
+}
+
+int headerMatchesDepFlags(Header h, const char *reqName, const char * reqInfo, int reqFlags)
+{
+    const char * epoch, * version, * release;
+    const char * reqEpoch = NULL;
+    const char * reqVersion = NULL;
+    const char * reqRelease = NULL;
+    char *Revr;
+    int type, count;
+    int_32 * epochval;
+    char buf[20];
+    int result;
+    int sense;
+
+    if (!(reqFlags & RPMSENSE_SENSEMASK) || !reqInfo || !strlen(reqInfo))
+	return 1;
+
+    /* Get package information from header */
+    headerGetEntry(h, RPMTAG_EPOCH, &type, (void **) &epochval, &count);
+    if (epochval == NULL) {
+#if defined(RPMSENSE_SERIAL)
+	/* XXX old behavior looks fishy */
+	if (reqFlags & RPMSENSE_SERIAL)
+	    return 0;
+#endif	/* RPMSENSE_SERIAL */
+	epoch = "0";	/* assume package is epoch 0 */
+    } else {
+	sprintf(buf, "%d", *epochval);
+	epoch = buf;
+    }
+    headerGetEntry(h, RPMTAG_VERSION, &type, (void **)&version, &count);
+    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **)&release, &count);
+
+    /* Parse requires version into components */
+    Revr = strdup(reqInfo);
+    parseEVR(Revr, &reqEpoch, &reqVersion, &reqRelease);
+
+    /* Compare {package,requires} [epoch:]version[-release] */
+    sense = ((reqEpoch != NULL) ? rpmvercmp(epoch, reqEpoch) : 0);
+    if (sense == 0) {
+	sense = rpmvercmp(version, reqVersion);
+	if (sense == 0 && reqRelease && *reqRelease) {
+	    sense = rpmvercmp(release, reqRelease);
+	}
+    }
+    if (Revr) free(Revr);
+
+    result = 0;
+    if ((reqFlags & RPMSENSE_LESS) && sense < 0) {
+	result = 1;
+    } else if ((reqFlags & RPMSENSE_EQUAL) && sense == 0) {
+	result = 1;
+    } else if ((reqFlags & RPMSENSE_GREATER) && sense > 0) {
+	result = 1;
+    }
+
+    return result;
+}
+
+static inline int dbrecMatchesDepFlags(rpmTransactionSet rpmdep, int recOffset, 
+			        const char * reqName, const char * reqVersion,
+				int reqFlags, dbrecMatch_t matchDepFlags)
 {
     Header h;
     int rc;
@@ -393,17 +558,37 @@ static int dbrecMatchesDepFlags(rpmTransactionSet rpmdep, int recOffset,
 	return 0;
     }
 
-    rc = headerMatchesDepFlags(h, reqVersion, reqFlags);
+    rc = matchDepFlags(h, reqName, reqVersion, reqFlags);
 
     headerFree(h);
 
     return rc;
 }
 
+static struct availablePackage * alSatisfiesDepend(struct availableList * al, 
+		 const char * reqName, const char * reqVersion, int reqFlags)
+{
+    struct availableIndexEntry needle, * match;
+
+    if (!al->index.size) return NULL;
+
+    needle.entry = reqName;
+    match = bsearch(&needle, al->index.index, al->index.size,
+		    sizeof(*al->index.index), indexcmp);
+ 
+    if (!match) return NULL;
+    if (match->type != IET_NAME) return match->package;
+
+    if (headerMatchesDepFlags(match->package->h, reqName, reqVersion, reqFlags))
+	return match->package;
+
+    return NULL;
+}
+
 /* 2 == error */
 /* 1 == dependency not satisfied */
-static int unsatisfiedDepend(rpmTransactionSet rpmdep, char * reqName, 
-			     char * reqVersion, int reqFlags, 
+static int unsatisfiedDepend(rpmTransactionSet rpmdep, const char * reqName, 
+			     const char * reqVersion, int reqFlags, 
 			     struct availablePackage ** suggestion)
 {
     dbiIndexSet matches;
@@ -448,8 +633,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, char * reqName,
 	    }
 	}
 
-	if (!reqFlags && !rpmdbFindByProvides(rpmdep->db, reqName, 
-					      &matches)) {
+	if (!rpmdbFindByProvides(rpmdep->db, reqName, &matches)) {
 	    for (i = 0; i < dbiIndexSetCount(matches); i++) {
 		unsigned int recOffset = dbiIndexRecordOffset(matches, i);
 		if (bsearch(&recOffset,
@@ -457,7 +641,10 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, char * reqName,
 			    rpmdep->numRemovedPackages, 
 			    sizeof(int), intcmp)) 
 		    continue;
-		break;
+		if (dbrecMatchesDepFlags(rpmdep, recOffset,
+			 reqName, reqVersion, reqFlags, rangeMatchesDepFlags)) {
+		    break;
+		}
 	    }
 
 	    dbiFreeIndexRecord(matches);
@@ -473,8 +660,8 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, char * reqName,
 			    sizeof(int), intcmp)) 
 		    continue;
 
-		if (dbrecMatchesDepFlags(rpmdep, recOffset, 
-					 reqVersion, reqFlags)) {
+		if (dbrecMatchesDepFlags(rpmdep, recOffset,
+			 reqName, reqVersion, reqFlags, headerMatchesDepFlags)) {
 		    break;
 		}
 	    }
@@ -494,11 +681,11 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep, char * reqName,
 static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 			Header h, const char * requirement)
 {
-    char ** requires, ** requiresVersion;
-    char * name, * version, * release;
-    char ** conflicts, ** conflictsVersion;
+    const char * name, * version, * release;
+    const char ** requires, ** requiresVersion;
+    const char ** conflicts, ** conflictsVersion;
     int requiresCount = 0, conflictsCount;
-    int type, count;
+    int type;
     int i, rc;
     int ourrc = 0;
     int * requireFlags, * conflictsFlags;
@@ -532,11 +719,7 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 	rc = unsatisfiedDepend(rpmdep, requires[i], requiresVersion[i], 
 			       requireFlags[i], &suggestion);
 	if (rc == 1) {
-	    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
-	    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, 
-				&count);
-	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, 
-				&count);
+	    headerNVR(h, &name, &version, &release);
 
 	    rpmMessage(RPMMESS_DEBUG, _("package %s require not satisfied: %s\n"),
 		    name, requires[i]);
@@ -575,11 +758,7 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 
 	/* 1 == unsatisfied, 0 == satsisfied */
 	if (rc == 0) {
-	    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
-	    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, 
-				&count);
-	    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, 
-				&count);
+	    headerNVR(h, &name, &version, &release);
 
 	    rpmMessage(RPMMESS_DEBUG, _("package %s conflicts: %s\n"),
 		    name, conflicts[i]);
@@ -620,7 +799,7 @@ static int checkPackageDeps(rpmTransactionSet rpmdep, struct problemsSet * psp,
 }
 
 static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp, 
-			    char * package, dbiIndexSet * matches)
+			    const char * package, dbiIndexSet * matches)
 {
     int i;
     Header h;
@@ -651,7 +830,7 @@ static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
 }
 
 static int checkDependentPackages(rpmTransactionSet rpmdep, 
-			    struct problemsSet * psp, char * key)
+			    struct problemsSet * psp, const char * key)
 {
     dbiIndexSet matches;
     int rc;
@@ -667,7 +846,7 @@ static int checkDependentPackages(rpmTransactionSet rpmdep,
 }
 
 static int checkDependentConflicts(rpmTransactionSet rpmdep, 
-			    struct problemsSet * psp, char * package)
+			    struct problemsSet * psp, const char * package)
 {
     dbiIndexSet matches;
     int rc;
@@ -684,81 +863,6 @@ static int checkDependentConflicts(rpmTransactionSet rpmdep,
     return rc;
 }
 
-int headerMatchesDepFlags(Header h, const char * reqInfo, int reqFlags)
-{
-    const char * epoch, * version, * release;
-    const char * reqEpoch = NULL;
-    const char * reqVersion = reqInfo;
-    const char * reqRelease = NULL;
-    const char *s, *se;
-    int type, count;
-    int_32 * epochval;
-    char buf[20];
-    int result = 0;
-    int sense;
-
-    if (!(reqFlags & RPMSENSE_SENSEMASK) || !reqInfo || !strlen(reqInfo))
-	return 1;
-
-    /* Get package information from header */
-    headerGetEntry(h, RPMTAG_EPOCH, &type, (void **) &epochval, &count);
-    if (epochval == NULL) {
-#if defined(RPMSENSE_SERIAL)
-	/* XXX old behavior looks fishy */
-	if (reqFlags & RPMSENSE_SERIAL)
-	    return 0;
-#endif	/* RPMSENSE_SERIAL */
-	epoch = "0";	/* assume package is epoch 0 */
-    } else {
-	sprintf(buf, "%d", *epochval);
-	epoch = buf;
-    }
-    headerGetEntry(h, RPMTAG_VERSION, &type, (void **)&version, &count);
-    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **)&release, &count);
-
-    /* Parse requires version into components */
-    s = reqInfo;
-    while (*s && isdigit(*s)) s++;	/* s points to epoch terminator */
-    se = strrchr(s, '-');		/* se points to version terminator */
-
-    if (*s == ':' || se) {
-	char *rv = alloca(strlen(reqInfo) + 1);
-	strcpy(rv, reqInfo);
-	if (*s == ':') {
-	    reqEpoch = rv;
-	    rv[s - reqInfo] = '\0';
-	    reqVersion = rv + (s - reqInfo) + 1;
-	   if (*reqEpoch == '\0') reqEpoch = "0";
-	} else {
-	    reqEpoch = epoch;	/* XXX assume same epoch as package */
-	    reqVersion = rv;
-	}
-	if (se) {
-	    rv[se - reqInfo] = '\0';
-	    reqRelease = rv + (se - reqInfo) + 1;
-	}
-    }
-
-    /* Compare {package,requires} [epoch:]version[-release] */
-    sense = ((reqEpoch != NULL) ? rpmvercmp(epoch, reqEpoch) : 0);
-    if (sense == 0) {
-	sense = rpmvercmp(version, reqVersion);
-	if (sense == 0 && reqRelease && *reqRelease) {
-	    sense = rpmvercmp(release, reqRelease);
-	}
-    }
-
-    if ((reqFlags & RPMSENSE_LESS) && sense < 0) {
-	result = 1;
-    } else if ((reqFlags & RPMSENSE_EQUAL) && sense == 0) {
-	result = 1;
-    } else if ((reqFlags & RPMSENSE_GREATER) && sense > 0) {
-	result = 1;
-    }
-
-    return result;
-}
-
 /* selection status is one of:
 
 	-1:	selected
@@ -772,9 +876,9 @@ static int addOrderedPack(rpmTransactionSet rpmdep,
 			struct availablePackage * package,
 			int * ordering, int * orderNumPtr, 
 			int * selected, int selectionClass,
-			int satisfyDepends, char ** errorStack)
+			int satisfyDepends, const char ** errorStack)
 {
-    char ** requires, ** requiresVersion;
+    const char ** requires, ** requiresVersion;
     int_32 * requireFlags;
     int requiresCount;
     int matchNum;
@@ -782,7 +886,7 @@ static int addOrderedPack(rpmTransactionSet rpmdep,
     int i, rc;
     struct availablePackage * match;
     char * errorString;
-    char ** stack;
+    const char ** stack;
 
     *errorStack++ = package->name;
 
@@ -877,7 +981,7 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
     int * selected;
     int * ordering;
     int orderingCount;
-    char ** errorStack;
+    const char ** errorStack;
     struct transactionElement * newOrder;
     int newOrderCount = 0;
     struct orderListIndex * orderList, * needle, key;
@@ -961,7 +1065,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 {
     struct availablePackage * p;
     int i, j;
-    char ** provides, ** files;
+    const char ** provides, ** files;
     int providesCount, fileCount;
     int type;
     char * name;
@@ -994,7 +1098,8 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 	    return 1;
 	}
 
-	if (headerGetEntry(p->h, RPMTAG_PROVIDES, &type, (void **) &provides, 
+	/* XXX FIXME: provide with versions??? */
+	if (headerGetEntry(p->h, RPMTAG_PROVIDENAME, &type, (void **) &provides, 
 		 &providesCount)) {
 	    for (j = 0; j < providesCount; j++) {
 		if (checkDependentConflicts(rpmdep, &ps, provides[j])) {
@@ -1025,7 +1130,8 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 	    return 1;
 	}
 
-	if (headerGetEntry(h, RPMTAG_PROVIDES, NULL, (void **) &provides, 
+	/* XXX FIXME: provide with versions??? */
+	if (headerGetEntry(h, RPMTAG_PROVIDENAME, NULL, (void **) &provides, 
 		 &providesCount)) {
 	    for (j = 0; j < providesCount; j++) {
 		if (checkDependentPackages(rpmdep, &ps, provides[j])) {

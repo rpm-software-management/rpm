@@ -19,7 +19,9 @@ int addReqProv(Spec spec, Header h,
     int extra = 0;
     
     if (flag & RPMSENSE_PROVIDES) {
-	nametag = RPMTAG_PROVIDES;
+	nametag = RPMTAG_PROVIDENAME;
+	versiontag = RPMTAG_PROVIDEVERSION;
+	flagtag = RPMTAG_PROVIDEFLAGS;
     } else if (flag & RPMSENSE_OBSOLETES) {
 	nametag = RPMTAG_OBSOLETES;
     } else if (flag & RPMSENSE_CONFLICTS) {

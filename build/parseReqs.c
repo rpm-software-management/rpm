@@ -42,7 +42,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index)
     int tagflags, flags;
 
     switch (tag) {
-    case RPMTAG_PROVIDES:
+    case RPMTAG_PROVIDEFLAGS:
 	tagflags = RPMSENSE_PROVIDES;
 	h = pkg->header;
 	break;
@@ -148,7 +148,6 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index)
 	    }
 
 	    switch(tag) {
-	    case RPMTAG_PROVIDES:
 	    case RPMTAG_OBSOLETES:
 	    case RPMTAG_BUILDPREREQ:
 	    case RPMTAG_PREREQ:
