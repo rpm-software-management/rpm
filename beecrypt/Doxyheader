@@ -1,0 +1,107 @@
+/*! \mainpage beecrypt API Documentation.
+The structures in the library are geared towards exchange with Java
+and its security and cryptography classes. This library can also be
+accessed from Java by installing BeeCrypt for Java, a JCE 1.2 crypto
+provider and the counterpart of this library.
+
+
+Included in the library are:
+    - entropy sources for initializing pseudo-random generators
+    - pseudo-random generators: FIPS-186, Mersenne Twister
+    - block ciphers: Blowfish
+    - hash functions: MD5, SHA-1, SHA-256
+    - keyed hash functions: MD5/HMAC, SHA-1/HMAC, SHA-256/HMAC
+    - multi-precision integer library, with assembler-optimized routines
+	  for several processors
+    - probabilistic primality testing, with optimized small prime trial
+	  division
+    - discrete logarithm parameter generation over a prime field
+    - Diffie-Hellman key agreement
+    - ElGamal signature scheme (two variants)
+	- RSA keypair generation with chinese remainder theorem variables
+	- RSA public & private key operations
+	- DHAES encryption scheme
+
+Planned for the near future are:
+    - compliance with and compliance statements for IEEE P1363
+    - DSA (i.e. the rest of FIPS-186)
+    - more blockciphers (Rijndael a.k.a AES, Twofish, ... )
+	- more hash functions (RIPEMD-160, SHA-384, SHA-512, HAVAL, Tiger)
+	- Elliptic Curves (ECDSA, ... )
+
+The library has been tested on the following platforms:
+    - FreeBSD 4.0 alpha
+    - FreeBSD 4.0, 4.2 x86
+		- includes assembler optimization (tuned for Pentium and higher)
+    - Linux glibc 2.x alpha
+    - Linux glibc 2.x arm
+	- includes assembler optimization
+    - Linux glibc 2.x ppc
+	- includes assembler optimization (for generic 32-bit PowerPC)
+    - Linux glibc 2.x sparc
+	- includes assembler optimization for sparc v8
+    - Linux glibc 2.x x86
+	- includes assembler optimization (tuned for Pentium and higher)
+    - Solaris 2.6/2.7/2.8 sparc (with Forte or gnu compilers)
+	- includes assembler optimization for sparc v8, v8plus and v9
+    - Solaris 2.7/2.8 x86 (with Forte or gnu compilers)
+	- includes assembler optimization (tuned for Pentium and higher)
+    - Tru64 Unix alpha
+    - Win32 (Windows 95, 98, NT 4.0, 2000)
+	- includes assembler optimization (tuned for Pentium and higher)
+
+The library is currently in the process of being ported to:
+	- Cygwin (the DLL builds now, but needs to be tested)
+	- Darwin (Darwin 1.2 doesn't seem to run on our PowerMac 7300/166,
+	  and 1.0.2 was flaky, so any volunteer effort would be appreciated)
+	- QNX (I currently don't have a testing system anymore)
+ */
+
+/** \defgroup	ES_m	Entropy sources
+ */
+/** \defgroup	ES_audio_m	Entropy sources: /dev/audio
+ */
+/** \defgroup	ES_dsp_m	Entropy sources: /dev/dsp
+ */
+/** \defgroup	ES_random_m	Entropy sources: /dev/random
+ */
+/** \defgroup	ES_urandom_m	Entropy sources: /dev/urandom
+ */
+/** \defgroup	ES_tty_m	Entropy sources: /dev/tty
+ */
+/** \defgroup	PRNG_m	Pseudo-Random Number Generators
+ */
+/** \defgroup	PRNG_fips186_m	Pseudo-Random Number Generator: FIPS-186
+ */
+/** \defgroup	HASH_m	Hash Functions
+ */
+/** \defgroup	HASH_md5_m	Hash Functions: md5
+ */
+/** \defgroup	HASH_sha1_m	Hash Functions: sha1
+ */
+/** \defgroup	HASH_sha256_m	Hash Functions: sha256
+ */
+/** \defgroup	HMAC_m	Keyed Hash Functions, a.k.a. Message Authentication Codes
+ */
+/** \defgroup	HMAC_md5_m	Keyed Hash Functions: md5
+ */
+/** \defgroup	HMAC_sha1_m	Keyed Hash Functions: sha1
+ */
+/** \defgroup	HMAC_sha256_m	Keyed Hash Functions: sha256
+ */
+/** \defgroup	BC_m	Block ciphers
+ */
+/** \defgroup	BC_blowfish_m	Block ciphers: Blowfish
+ */
+/** \defgroup	RSA_m	RSA Encryption/Signature Primitives
+ */
+/** \defgroup	DSA_m	DSA Encryption/Signature Primitives
+ */
+/** \defgroup	ELGAMAL_m	ElGamal Signature Primitives
+ */
+/** \defgroup	DH_m	Diffie-Hellman Encryption
+ */
+/** \defgroup	DL_m	Discrete Logartithms
+ */
+/** \defgroup	MP_m	Multiple Precision Integer Arithmetic
+ */

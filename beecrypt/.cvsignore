@@ -6,6 +6,7 @@ Doxyfile
 Makefile
 Makefile.in
 apidocs
+beecrypt-*.tar.gz
 config.cache
 config.guess
 config.gnu.h
