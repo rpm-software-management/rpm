@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.22 1999/04/16 05:44:38 jbj Exp $
+# $Id: macros.in,v 1.23 1999/04/20 18:21:08 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -137,9 +137,30 @@
 
 #==============================================================================
 # ---- configure macros.
-#	Macro(s) similar to those used by configure.
+#	Macro(s) slavishly copied from config.status.
+#	CAVEAT: Only _prefix is currently used (read: supported). Please
+#	don't expect or rely on these macros keeping their current values
+#	(or even being defined) in future versions of rpm.
 #
 %_prefix		@prefix@
+%_exec_prefix		%{_prefix}
+%_bindir		%{_exec_prefix}/bin
+%_sbindir		%{_exec_prefix}/sbin
+%_libexecdir		%{_exec_prefix}/libexec
+%_datadir		%{_prefix}/share
+%_sysconfdir		%{_prefix}/etc
+%_sharedstatedir	%{_prefix}/com
+%_localstatedir		%{_prefix}/var
+%_libdir		%{_exec_prefix}/lib
+%_includedir		%{_prefix}/include
+%_oldincludedir		/usr/include
+%_infodir		%{_prefix}/include
+%_mandir		%{_prefix}/man
+
+#==============================================================================
+# ---- config.guess platform macros.
+#	Macro(s) similar to the tokens used by configure.
+#
 %_build			%{_host}
 %_build_alias		%{_host_alias}
 %_build_cpu		%{_host_cpu}
