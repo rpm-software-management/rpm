@@ -219,6 +219,7 @@ struct dnli {
 /*@dependent@*/ TFI_t fi;
 /*@only@*/ /*@null@*/ char * active;
     int reverse;
+    int isave;
     int i;
 };
 
@@ -242,7 +243,7 @@ static int dnlCount(void * this)
 static int dnlIndex(void * this)
 {
     struct dnli * dnli = this;
-    return (dnli ? dnli->i : -1);
+    return (dnli ? dnli->isave : -1);
 }
 
 /**
@@ -306,7 +307,7 @@ static /*@only@*/ void * dnlInitIterator(/*@null@*/ const void * this,
 		rpmMessage(RPMMESS_DEBUG, _("%9d %s\n"), i, fi->dnl[i]);
 	    }
 	    if (j)
-		rpmMessage(RPMMESS_DEBUG, _("=========\n"));
+		rpmMessage(RPMMESS_DEBUG, "=========\n");
 	}
     }
     return dnli;
@@ -322,6 +323,7 @@ static const char * dnlNextIterator(void * this) {
     do {
 	i = (!dnli->reverse ? dnli->i++ : --dnli->i);
     } while (i >= 0  && i < dnli->fi->dc && !dnli->active[i]);
+    dnli->isave = i;
     return (i >= 0 && i < dnli->fi->dc ? fi->dnl[i] : NULL);
 }
 
@@ -1028,7 +1030,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 
     if (stage & FSM_INTERNAL) {
 	if (_fsm_debug && !(stage == FSM_VERIFY || stage == FSM_NOTIFY))
-	    rpmMessage(RPMMESS_DEBUG, _(" %8s %06o%3d (%4d,%4d)%10d %s %s\n"),
+	    rpmMessage(RPMMESS_DEBUG, " %8s %06o%3d (%4d,%4d)%10d %s %s\n",
 		cur,
 		st->st_mode, st->st_nlink, st->st_uid, st->st_gid, st->st_size,
 		(fsm->path ? fsm->path : ""),
@@ -1037,7 +1039,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
     } else {
 	fsm->stage = stage;
 	if (_fsm_debug || !(stage & FSM_QUIET))
-	    rpmMessage(RPMMESS_DEBUG, _("%-8s  %06o%3d (%4d,%4d)%10d %s %s\n"),
+	    rpmMessage(RPMMESS_DEBUG, "%-8s  %06o%3d (%4d,%4d)%10d %s %s\n",
 		cur,
 		st->st_mode, st->st_nlink, st->st_uid, st->st_gid, st->st_size,
 		(fsm->path ? fsm->path : ""),
@@ -1113,7 +1115,11 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	{   const char * path = fsm->path;
 	    mode_t st_mode = st->st_mode;
 	    void * dnli = dnlInitIterator(fsm->mapi, 0);
+#ifdef DYING
 	    char dn[BUFSIZ];		/* XXX add to fsm */
+#else
+	    char * dn = xcalloc(1, BUFSIZ);
+#endif
 	    int dc = dnlCount(dnli);
 	    int i;
 
@@ -1181,6 +1187,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	 	fsm->ldnlen = dnlen;
 	    }
 	    dnli = dnlFreeIterator(dnli);
+	    free(dn);
 	    fsm->path = path;
 	    st->st_mode = st_mode;		/* XXX restore st->st_mode */
 	}
@@ -1189,7 +1196,11 @@ int fsmStage(FSM_t fsm, fileStage stage)
 	if (fsm->dnlx) {
 	    const char * path = fsm->path;
 	    void * dnli = dnlInitIterator(fsm->mapi, 1);
+#ifdef	DYING
 	    char dn[BUFSIZ];		/* XXX add to fsm */
+#else
+	    char * dn = calloc(1, BUFSIZ);
+#endif
 	    int dc = dnlCount(dnli);
 
 	    dn[0] = '\0';
@@ -1217,6 +1228,7 @@ int fsmStage(FSM_t fsm, fileStage stage)
 		} while ((te - dn) > fsm->dnlx[dc]);
 	    }
 	    dnli = dnlFreeIterator(dnli);
+	    free(dn);
 	    fsm->path = path;
 	}
 	break;
@@ -1265,20 +1277,6 @@ fprintf(stderr, "*** %p link[%d:%d] %d filex %d %s\n", fsm->li, fsm->li->linksLe
 		}
 	    }
 	}
-#ifdef	DYING
-
-	/* XXX FIXME 0 length hard linked files are broke here. */
-	if (S_ISREG(st->st_mode) && st->st_nlink > 1 &&
-	    !st->st_size && fsm->li->createdPath == -1)
-	{
-	    fsm->postpone = 1;		/* defer file creation */
-	} else if (S_ISREG(st->st_mode) && st->st_nlink > 1 &&
-		   fsm->li->createdPath != -1)
-	{
-	    rc = fsmStage(fsm, FSM_MKLINKS);
-	    fsm->postpone = 1;		/* defer file creation */
-	}
-#endif
 
 	else {
 #ifndef	DYING
@@ -1312,20 +1310,11 @@ fprintf(stderr, "*** %p link[%d:%d] %d filex %d %s\n", fsm->li, fsm->li->linksLe
 	    mode_t st_mode = st->st_mode;
 	    rc = fsmStage(fsm, FSM_VERIFY);
 	    if (rc == CPIOERR_LSTAT_FAILED) {
-#ifdef	DYING
-		st->st_mode = S_IFDIR | 0000;	/* XXX abuse st->st_mode */
-#else
 		st->st_mode &= ~07777; 		/* XXX abuse st->st_mode */
 		st->st_mode |=  00700;
-#endif
 		rc = fsmStage(fsm, FSM_MKDIR);
 		st->st_mode = st_mode;		/* XXX restore st->st_mode */
 	    }
-#ifdef	DYING
-	    /* XXX check old dir perms and warn */
-	    if (!rc)
-		rc = fsmStage(fsm, FSM_CHMOD);
-#endif
 	} else if (S_ISLNK(st->st_mode)) {
 	    const char * opath = fsm->opath;
 	    char buf[2048];			/* XXX add to fsm */
@@ -1369,47 +1358,13 @@ fprintf(stderr, "*** %p link[%d:%d] %d filex %d %s\n", fsm->li, fsm->li->linksLe
 	    break;
 	/* XXX nlink > 1, insure that path/createdPath is non-skipped. */
 	if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
-#ifdef	DYING
-	    fsm->li->createdPath = --fsm->li->linksLeft;
-#else
 	    fsm->li->createdPath = fsm->li->linkIndex;
-#endif
 	    rc = fsmStage(fsm, FSM_MKLINKS);
 	}
 	    /* FSM_POST -> {FSM_COMMIT,FSM_UNDO} */
 	break;
     case FSM_MKLINKS:
-#ifdef	DYING
-	{   const char * path = fsm->path;
-	    const char * opath = fsm->opath;
-
-	    rc = 0;
-	    fsm->opath = fsm->li->files[fsm->li->createdPath];
-	    for (i = 0; i < fsm->li->nlink; i++) {
-		if (i == fsm->li->createdPath) continue;
-		if (fsm->li->files[i] == NULL) continue;
-
-		fsm->path = fsm->li->files[i];
-		rc = fsmStage(fsm, FSM_VERIFY);
-		if (rc != CPIOERR_LSTAT_FAILED) break;
-
-		/* XXX link(fsm->opath, fsm->path) */
-		rc = fsmStage(fsm, FSM_LINK);
-		if (rc) break;
-
-		/*@-unqualifiedtrans@*/
-		fsm->li->files[i] = _free(fsm->li->files[i]);
-		/*@=unqualifiedtrans@*/
-		fsm->li->linksLeft--;
-	    }
-	    if (rc && fsm->failedFile)
-		*fsm->failedFile = xstrdup(fsm->path);
-	    fsm->path = path;
-	    fsm->opath = opath;
-	}
-#else
 	rc = fsmMakeLinks(fsm);
-#endif
 	break;
     case FSM_NOTIFY:		/* XXX move from fsm to psm -> tsm */
 	{   rpmTransactionSet ts = fsmGetTs(fsm);

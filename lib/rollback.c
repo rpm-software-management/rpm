@@ -132,9 +132,7 @@ void freeFi(TFI_t fi)
     fi->fgroup = headerFreeData(fi->fgroup, -1);
     fi->flangs = headerFreeData(fi->flangs, -1);
 
-#ifdef	HACK_ALERT	/* XXX something's fubar here. */
     fi->apath = _free(fi->apath);
-#endif
     fi->fuids = _free(fi->fuids);
     fi->fgids = _free(fi->fgids);
     fi->fmapflags = _free(fi->fmapflags);
