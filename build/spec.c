@@ -764,7 +764,7 @@ static void addListEntry(Header h, int_32 tag, char *line)
     if (argc) {
 	addEntry(h, tag, STRING_ARRAY_TYPE, argvs, argc);
     }
-    free(argv);
+    free(argvs);
 }
 
 static void parseForDocFiles(struct PackageRec *package, char *line)
