@@ -1526,6 +1526,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	int preTransCount;
 
 	memset(fi, 0, sizeof(*fi));
+	fi->magic = TFIMAGIC;
 	preTrans = NULL;
 	preTransCount = 0;
 

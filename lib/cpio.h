@@ -114,7 +114,7 @@ typedef void (*cpioCallback) (struct cpioCallbackInfo * filespec, void * data);
  * @retval failedFile	file name (malloc'ed) that caused failure (if any)
  * @return		0 on success
  */
-int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
+int cpioInstallArchive(FD_t cfd, const void * mappings,
 		       int numMappings, cpioCallback cb, void * cbData,
 		       /*@out@*/const char ** failedFile)
 	/*@modifies fileSystem, cfd, *failedFile @*/;
@@ -130,11 +130,12 @@ int cpioInstallArchive(FD_t cfd, const struct cpioFileMapping * mappings,
  * @retval failedFile	file name (malloc'ed) that caused failure (if any)
  * @return		0 on success
  */
-int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
+int cpioBuildArchive(FD_t cfd, const void * mappings,
 		     int numMappings, cpioCallback cb, void * cbData,
 		     unsigned int * archiveSize, /*@out@*/const char ** failedFile)
 	/*@modifies fileSystem, cfd, *archiveSize, *failedFile @*/;
 
+#ifdef	DYING
 /** \ingroup payload
  * Compare two cpio file map entries (qsort/bsearch).
  * This is designed to be qsort/bsearch compatible.
@@ -143,6 +144,7 @@ int cpioBuildArchive(FD_t cfd, const struct cpioFileMapping * mappings,
  * @return		result of comparison
  */
 int cpioFileMapCmp(const void * a, const void * b)	/*@*/;
+#endif
 
 /** \ingroup payload
  * Return formatted error message on payload handling failure.

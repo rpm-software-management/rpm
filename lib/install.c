@@ -190,12 +190,13 @@ static int assembleFileList(TFI_t fi, Header h,
 	fsizes = fi->fsizes;
 	actions = fi->actions;
     } else {
-	headerGetEntry(h, RPMTAG_DIRNAMES, NULL, (void **) &dnl, NULL);
+	headerGetEntryMinMemory(h, RPMTAG_DIRNAMES, NULL, (void **) &dnl, NULL);
 	mem->dnl = dnl;
 	headerGetEntry(h, RPMTAG_DIRINDEXES, NULL, (void **) &dil, NULL);
+	headerGetEntryMinMemory(h, RPMTAG_BASENAMES,NULL, (void **) &bnl, NULL);
 	mem->bnl = bnl;
-	headerGetEntry(h, RPMTAG_BASENAMES, NULL, (void **) &bnl, NULL);
-	if (!headerGetEntry(h, RPMTAG_FILEMD5S, NULL, (void **) &fmd5s, NULL))
+	if (!headerGetEntryMinMemory(h, RPMTAG_FILEMD5S, NULL,
+				(void **) &fmd5s, NULL))
 	    fmd5s = NULL;
 	mem->md5sums = fmd5s;
 	headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fflags, NULL);
@@ -591,7 +592,8 @@ static void callback(struct cpioCallbackInfo * cpioInfo, void * data)
  * @param archiveSize	@todo Document.
  * @return		0 on success
  */
-static int installArchive(FD_t fd, XFI_t files, int fileCount,
+static int installArchive(const rpmTransactionSet ts, TFI_t fi,
+			FD_t fd, XFI_t files, int fileCount,
 			rpmCallbackFunction notify, rpmCallbackData notifyData,
 			const void * pkgKey, Header h,
 			/*@out@*/ const char ** specFile, int archiveSize)
@@ -646,7 +648,9 @@ static int installArchive(FD_t fd, XFI_t files, int fileCount,
 	    mappedFiles++;
 	}
 
+#ifdef	DYING
 	qsort(map, mappedFiles, sizeof(*map), cpioFileMapCmp);
+#endif
     }
 
     if (notify)
@@ -722,7 +726,7 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
     int fileCount = 0;
     uint_32 * archiveSizePtr = NULL;
     fileMemory fileMem = NULL;
-    XFI_t files = NULL;
+    XFI_t files = NULL, file;
     int i;
     const char * currDir = NULL;
     uid_t currUid = getuid();
@@ -797,30 +801,29 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
 	/* we can't remap v1 packages */
 	assembleFileList(NULL, h, &fileMem, &fileCount, &files, 0);
 
-	for (i = 0; i < fileCount; i++) {
-	    files[i].uid = currUid;
-	    files[i].gid = currGid;
+	for (i = 0, file = files; i < fileCount; i++, file++) {
+	    file->uid = currUid;
+	    file->gid = currGid;
 	}
 
 	if (headerIsEntry(h, RPMTAG_COOKIE))
-	    for (i = 0; i < fileCount; i++)
-		if (files[i].flags & RPMFILE_SPECFILE) break;
+	    for (i = 0, file = files; i < fileCount; i++, file++)
+		if (file->flags & RPMFILE_SPECFILE) break;
 
 	if (i == fileCount) {
 	    /* find the spec file by name */
-	    for (i = 0; i < fileCount; i++) {
-		const char * t = files[i].cpioPath;
-		t += strlen(files[i].cpioPath) - 5;
+	    for (i = 0, file = files; i < fileCount; i++, file++) {
+		const char * t = file->cpioPath;
+		t += strlen(file->cpioPath) - 5;
 		if (!strcmp(t, ".spec")) break;
 	    }
 	}
 
 	if (i < fileCount) {
-	    char *t = alloca(strlen(_specdir) + strlen(files[i].cpioPath) + 5);
+	    char *t = alloca(strlen(_specdir) + strlen(file->cpioPath) + 5);
 	    (void)stpcpy(stpcpy(t, _specdir), "/");
-	    rpmCleanPath(t);
-	    files[i].dn = t;
-	    files[i].bn = files[i].cpioPath;
+	    file->dn = t;
+	    file->bn = file->cpioPath;
 	    specFileIndex = i;
 	} else {
 	    rpmError(RPMERR_NOSPEC,
@@ -839,7 +842,7 @@ static int installSources(Header h, const char * rootDir, FD_t fd,
 
     currDir = currentDirectory();
     Chdir(_sourcedir);
-    if (installArchive(fd, fileCount > 0 ? files : NULL,
+    if (installArchive(NULL, NULL, fd, fileCount > 0 ? files : NULL,
 			  fileCount, notify, notifyData, NULL, h,
 			  specFileIndex >= 0 ? NULL : &specFile,
 			  archiveSizePtr ? *archiveSizePtr : 0)) {
@@ -1163,7 +1166,7 @@ int installBinaryPackage(const rpmTransactionSet ts, Header h, TFI_t fi)
 	    }
 
 	    /* the file pointer for fd is pointing at the cpio archive */
-	    rc = installArchive(alp->fd, files, fileCount,
+	    rc = installArchive(ts, fi, alp->fd, files, fileCount,
 			ts->notify, ts->notifyData, alp->key,
 			h, NULL, archiveSize);
 	    if (rc)

@@ -1,5 +1,6 @@
 4.0.2 -> 4.0.3
 	- cpio mappings carry dirname/basename, not absolute path.
+	- fix: check waitpid return code.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

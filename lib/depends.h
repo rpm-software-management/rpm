@@ -118,6 +118,8 @@ struct transactionElement {
     } u;
 } ;
 
+/**
+ */
 struct transactionFileInfo_s {
   /* for all packages */
     enum rpmTransactionType type;
@@ -136,6 +138,8 @@ struct transactionFileInfo_s {
     int dc;			/*!< No. of directories. */
     int bnlmax;			/*!< Length (in bytes) of longest base name. */
     int dnlmax;			/*!< Length (in bytes) of longest dir name. */
+    int magic;
+#define	TFIMAGIC	0x09697923
   /* these are for TR_ADDED packages */
     const char ** flinks;	/*!< file links (from header) */
     struct availablePackage * ap;

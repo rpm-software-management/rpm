@@ -157,6 +157,10 @@ typedef /*@abstract@*/ struct rpmlogRec_s {
     const char	* message;
 } * rpmlogRec;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Return number of rpmError() ressages.
  * @return		number of messages
@@ -174,10 +178,6 @@ int rpmlogGetNrecs(void);
  * @param f		file handle (NULL uses stderr)
  */
 void rpmlogPrint(FILE *f);
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * Close desriptor used to write to system logger.
