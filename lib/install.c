@@ -1091,6 +1091,11 @@ static enum instActions decideFileFate(char * filespec, short dbMode,
     dbWhat = whatis(dbMode);
     newWhat = whatis(newMode);
 
+    /* RPM >= 2.3.10 shouldn't create config directories -- we'll ignore
+       them in older packages as well */
+    if (newWhat == XDIR)
+	return CREATE;
+
     if (diskWhat != newWhat) {
 	rpmMessage(RPMMESS_DEBUG, "	file type on disk is different then package - "
 			"saving\n");
