@@ -17,307 +17,283 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
-#include <sched.h>
+#include "system.h"
+
 #include <pthread.h>
-
 #include <signal.h>
-#include <unistd.h>
-#include <sys/syscall.h>
-#include <sys/wait.h>
 
-#include <errno.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
+#include <rpmlib.h>
+#include <rpmts.h>
+#include "psm.h"
+
+#include "debug.h"
+
+#define _PSM_DEBUG      0
+/*@unchecked@*/
+int _psm_debug = _PSM_DEBUG;
 
 #define	SHELL_PATH	"/bin/sh"	/* Path of the shell.  */
 #define	SHELL_NAME	"sh"		/* Name to give it.  */
 
-static struct sigaction intr;
-static struct sigaction quit;
 
-static int syssa_refcnt;
+/**
+ */
+/*@unchecked@*/
+static sigset_t caught;
 
-static pthread_mutex_t syssa_lock = PTHREAD_MUTEX_INITIALIZER;
+/**
+ */
+/*@unchecked@*/
+static struct psmtbl_s {
+    int nalloced;
+    int npsms;
+/*@null@*/
+    rpmpsm * psms;
+} psmtbl = { 0, 0, NULL };
 
-/* =============================================================== */
+/* forward ref */
+static void handler(int signum)
+	/*@globals caught, psmtbl, fileSystem @*/
+	/*@modifies caught, psmtbl, fileSystem @*/;
 
-/* We need some help from the assembler to generate optimal code.  We
-   define some macros here which later will be used.  */
-asm (".L__X'%ebx = 1\n\t"
-     ".L__X'%ecx = 2\n\t"
-     ".L__X'%edx = 2\n\t"
-     ".L__X'%eax = 3\n\t"
-     ".L__X'%esi = 3\n\t"
-     ".L__X'%edi = 3\n\t"
-     ".L__X'%ebp = 3\n\t"
-     ".L__X'%esp = 3\n\t"
-     ".macro bpushl name reg\n\t"
-     ".if 1 - \\name\n\t"
-     ".if 2 - \\name\n\t"
-     "pushl %ebx\n\t"
-     ".else\n\t"
-     "xchgl \\reg, %ebx\n\t"
-     ".endif\n\t"
-     ".endif\n\t"
-     ".endm\n\t"
-     ".macro bpopl name reg\n\t"
-     ".if 1 - \\name\n\t"
-     ".if 2 - \\name\n\t"
-     "popl %ebx\n\t"
-     ".else\n\t"
-     "xchgl \\reg, %ebx\n\t"
-     ".endif\n\t"
-     ".endif\n\t"
-     ".endm\n\t"
-     ".macro bmovl name reg\n\t"
-     ".if 1 - \\name\n\t"
-     ".if 2 - \\name\n\t"
-     "movl \\reg, %ebx\n\t"
-     ".endif\n\t"
-     ".endif\n\t"
-     ".endm\n\t");
+/**
+ */
+/*@unchecked@*/
+static pthread_mutex_t satbl_lock = PTHREAD_MUTEX_INITIALIZER;
 
-/* Define a macro which expands inline into the wrapper code for a system
-   call.  */
-#undef INLINE_SYSCALL
-#define INLINE_SYSCALL(name, nr, args...) \
-  ({									      \
-    unsigned int resultvar = INTERNAL_SYSCALL (name, , nr, args);	      \
-    if (__builtin_expect (INTERNAL_SYSCALL_ERROR_P (resultvar, ), 0))	      \
-      {									      \
-	errno = (INTERNAL_SYSCALL_ERRNO (resultvar, ));			      \
-	resultvar = 0xffffffff;						      \
-      }									      \
-    (int) resultvar; })
+/**
+ */
+/*@unchecked@*/
+/*@-fullinitblock@*/
+static struct sigtbl_s {
+    int signum;
+    int active;
+    void (*handler) (int signum);
+    struct sigaction oact;
+} satbl[] = {
+    { SIGINT,   0, handler },
+#define	satbl_sigint	(&satbl[0])
+    { SIGQUIT,  0, handler },
+#define	satbl_sigquit	(&satbl[1])
+    { SIGCHLD,	0, handler },
+#define	satbl_sigchld	(&satbl[2])
+#define	sigchld_active	satbl_sigchld->active
+#define	DO_LOCK()	pthread_mutex_lock(&satbl_lock);
+#define	DO_UNLOCK()	pthread_mutex_unlock(&satbl_lock);
+#define	INIT_LOCK()	\
+	{ pthread_mutex_init (&satbl_lock, NULL); sigchld_active = 0; }
+#define	ADD_REF()	sigchld_active++
+#define	SUB_REF()	--sigchld_active
 
-/* Define a macro which expands inline into the wrapper code for a system
-   call.  This use is for internal calls that do not need to handle errors
-   normally.  It will never touch errno.  This returns just what the kernel
-   gave back.  */
-# define INTERNAL_SYSCALL(name, err, nr, args...) \
-  ({									      \
-    unsigned int resultvar;						      \
-    asm volatile (							      \
-    LOADARGS_##nr							      \
-    "movl %1, %%eax\n\t"						      \
-    "int $0x80\n\t"						      \
-    RESTOREARGS_##nr							      \
-    : "=a" (resultvar)							      \
-    : "i" (__NR_##name) ASMFMT_##nr(args) : "memory", "cc");		      \
-    (int) resultvar; })
+#define	CLEANUP_HANDLER(__handler, __arg, __oldtypeptr) \
+	pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, (__oldtypeptr)); \
+	pthread_cleanup_push((__handler), (__arg));
+#define	CLEANUP_RESET(__execute, __oldtype) \
+	pthread_cleanup_pop(__execute); \
+	pthread_setcanceltype ((__oldtype), &(__oldtype));
 
-#undef INTERNAL_SYSCALL_DECL
-#define INTERNAL_SYSCALL_DECL(err) do { } while (0)
+    { SIGHUP,   0, handler },
+#define	satbl_sighup	(&satbl[3])
+    { SIGTERM,  0, handler },
+#define	satbl_sigterm	(&satbl[4])
+    { SIGPIPE,  0, handler },
+#define	satbl_sigpipe	(&satbl[5])
+    { -1,	0, NULL },
+};
+typedef struct sigtbl_s * sigtbl;
+/*@=fullinitblock@*/
 
-#undef INTERNAL_SYSCALL_ERROR_P
-#define INTERNAL_SYSCALL_ERROR_P(val, err) \
-  ((unsigned int) (val) >= 0xfffff001u)
+/**
+ */
+/*@-incondefs@*/
+static void handler(int signum)
+{
+    sigtbl tbl;
 
-#undef INTERNAL_SYSCALL_ERRNO
-#define INTERNAL_SYSCALL_ERRNO(val, err)	(-(val))
+    for (tbl = satbl; tbl->signum >= 0; tbl++) {
+	if (tbl->signum != signum)
+	    continue;
+	if (!tbl->active)
+	    continue;
+	(void) sigaddset(&caught, signum);
+	switch (signum) {
+	case SIGCHLD:
+	    while (1) {
+		int status = 0;
+		pid_t reaped = waitpid(0, &status, WNOHANG);
+		int i;
 
-#define LOADARGS_0
-# define LOADARGS_1 \
-    "bpushl .L__X'%k3, %k3\n\t"						      \
-    "bmovl .L__X'%k3, %k3\n\t"
-#define LOADARGS_2	LOADARGS_1
-#define LOADARGS_3	LOADARGS_1
-#define LOADARGS_4	LOADARGS_1
-#define LOADARGS_5	LOADARGS_1
+		if (reaped <= 0)
+		    /*@innerbreak@*/ break;
 
-#define RESTOREARGS_0
-# define RESTOREARGS_1 \
-    "bpopl .L__X'%k3, %k3\n\t"
-#define RESTOREARGS_2	RESTOREARGS_1
-#define RESTOREARGS_3	RESTOREARGS_1
-#define RESTOREARGS_4	RESTOREARGS_1
-#define RESTOREARGS_5	RESTOREARGS_1
+		if (psmtbl.psms)
+		for (i = 0; i < psmtbl.npsms; i++) {
+		    rpmpsm psm = psmtbl.psms[i];
+		    if (psm->child != reaped)
+			/*@innercontinue@*/ continue;
 
-#define ASMFMT_0()
-#define ASMFMT_1(arg1) \
-	, "acdSD" (arg1)
-#define ASMFMT_2(arg1, arg2) \
-	, "adSD" (arg1), "c" (arg2)
-#define ASMFMT_3(arg1, arg2, arg3) \
-	, "aSD" (arg1), "c" (arg2), "d" (arg3)
-#define ASMFMT_4(arg1, arg2, arg3, arg4) \
-	, "aD" (arg1), "c" (arg2), "d" (arg3), "S" (arg4)
-#define ASMFMT_5(arg1, arg2, arg3, arg4, arg5) \
-	, "a" (arg1), "c" (arg2), "d" (arg3), "S" (arg4), "D" (arg5)
+#if _PSM_DEBUG
+/*@-modfilesys@*/
+if (_psm_debug)
+fprintf(stderr, "      Reap: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, i, psmtbl.npsms, psmtbl.nalloced, psm, psm->child);
+/*@=modfilesys@*/
+#endif
 
-/* We have to and actually can handle cancelable system().  The big
-   problem: we have to kill the child process if necessary.  To do
-   this a cleanup handler has to be registered and is has to be able
-   to find the PID of the child.  The main problem is to reliable have
-   the PID when needed.  It is not necessary for the parent thread to
-   return.  It might still be in the kernel when the cancellation
-   request comes.  Therefore we have to use the clone() calls ability
-   to have the kernel write the PID into the user-level variable.  */
-# define FORK() \
-  INLINE_SYSCALL (clone, 3, CLONE_PARENT_SETTID | SIGCHLD, 0, &pid)
-
-/* =============================================================== */
+		    psm->reaped = reaped;
+		    psm->status = status;
+		    /*@innerbreak@*/ break;
+		}
+	    }
+	    /*@switchbreak@*/ break;
+	default:
+	    /*@switchbreak@*/ break;
+	}
+	break;
+    }
+}
+/*@=incondefs@*/
 
 /* The cancellation handler.  */
 static void
-cancel_handler (void *arg)
+sigchld_cancel (void *arg)
 {
-  pid_t child = *(pid_t *) arg;
-  pid_t result;
-  int err;
+    pid_t child = *(pid_t *) arg;
+    pid_t result;
+    int err;
 
-  err = kill(child, SIGKILL);
+    err = kill(child, SIGKILL);
 
-  do {
-    result = waitpid(child, NULL, 0);
-  } while (result == (pid_t)-1 && errno == EINTR);
+    do {
+	result = waitpid(child, NULL, 0);
+    } while (result == (pid_t)-1 && errno == EINTR);
 
-  pthread_mutex_lock(&syssa_lock);
-  if (--syssa_refcnt == 0) {
-      (void) sigaction (SIGQUIT, &quit, (struct sigaction *) NULL);
-      (void) sigaction (SIGINT, &intr, (struct sigaction *) NULL);
-  }
-  pthread_mutex_unlock(&syssa_lock);
+    DO_LOCK ();
+    if (SUB_REF () == 0) {
+	(void) sigaction (SIGQUIT, &satbl_sigquit->oact, (struct sigaction *) NULL);
+	(void) sigaction (SIGINT, &satbl_sigint->oact, (struct sigaction *) NULL);
+    }
+    DO_UNLOCK ();
 }
 
 /* Execute LINE as a shell command, returning its status.  */
 static int
 do_system (const char *line)
 {
-  int oldtype;
-  int status;
-  int save;
-  pid_t pid;
-  pid_t result;
-  struct sigaction sa;
-  sigset_t omask;
+    int oldtype;
+    int status = -1;
+    pid_t pid;
+    pid_t result;
+    struct sigaction sa;
+    sigset_t omask;
 
-fprintf(stderr, "*** %s(%p) %s\n", __FUNCTION__, line, line);
-  sa.sa_handler = SIG_IGN;
-  sa.sa_flags = 0;
-  sigemptyset (&sa.sa_mask);
+    sa.sa_handler = SIG_IGN;
+    sa.sa_flags = 0;
+    sigemptyset (&sa.sa_mask);
 
-  pthread_mutex_lock(&syssa_lock);
-  if (syssa_refcnt++ == 0) {
-      if (sigaction (SIGINT, &sa, &intr) < 0) {
-	  --syssa_refcnt;
-	  goto out;
-      }
-      if (sigaction (SIGQUIT, &sa, &quit) < 0) {
-	  save = errno;
-	  --syssa_refcnt;
-	  goto out_restore_sigint;
-      }
-  }
-  pthread_mutex_unlock(&syssa_lock);
+    DO_LOCK ();
+    if (ADD_REF () == 0) {
+	if (sigaction (SIGINT, &sa, &satbl_sigint->oact) < 0) {
+	    SUB_REF ();
+	    goto out;
+	}
+	if (sigaction (SIGQUIT, &sa, &satbl_sigquit->oact) < 0) {
+	    SUB_REF ();
+	    goto out_restore_sigint;
+	}
+    }
+    DO_UNLOCK ();
 
-  /* We reuse the bitmap in the 'sa' structure.  */
-  sigaddset (&sa.sa_mask, SIGCHLD);
-  save = errno;
-  if (sigprocmask (SIG_BLOCK, &sa.sa_mask, &omask) < 0) {
-          pthread_mutex_lock(&syssa_lock);
-	  if (--syssa_refcnt == 0)
-	    {
-	      save = errno;
-	      (void) sigaction (SIGQUIT, &quit, (struct sigaction *) NULL);
-	    out_restore_sigint:
-	      (void) sigaction (SIGINT, &intr, (struct sigaction *) NULL);
-	      errno = save;
-	    }
-	out:
-          pthread_mutex_unlock(&syssa_lock);
-	  return -1;
+    /* We reuse the bitmap in the 'sa' structure.  */
+    sigaddset (&sa.sa_mask, SIGCHLD);
+    if (sigprocmask (SIG_BLOCK, &sa.sa_mask, &omask) < 0) {
+	DO_LOCK ();
+	if (SUB_REF () == 0)
+	    goto out_restore_sigquit_and_sigint;
+	goto out;
     }
 
-  pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
-  pthread_cleanup_push(cancel_handler, &pid);
+    CLEANUP_HANDLER(sigchld_cancel, &pid, &oldtype);
 
-/* int clone(int (*fn)(void *arg), void *child_stack, int flags, void *arg,
-             pid_t *tid, struct user_desc *tls); */
-/* INLINE_SYSCALL (clone, 3, CLONE_PARENT_SETTID | SIGCHLD, 0, &pid) */
+    pid = fork ();
+    if (pid == (pid_t) 0) {
+	/* Child side.  */
+	const char *new_argv[4];
+	new_argv[0] = SHELL_NAME;
+	new_argv[1] = "-c";
+	new_argv[2] = line;
+	new_argv[3] = NULL;
 
-/* pid = clone(sub, NULL, (CLONE_PARENT_SETTID | SIGCHLD), line,
-		&pid???, &tls???); */
+	/* Restore the signals.  */
+	(void) sigaction (SIGINT, &satbl_sigint->oact, NULL);
+	(void) sigaction (SIGQUIT, &satbl_sigquit->oact, NULL);
+	(void) sigprocmask (SIG_SETMASK, &omask, NULL);
 
-  pid = FORK ();
-  if (pid == (pid_t) 0) {
-    /* Child side.  */
-    const char *new_argv[4];
-    new_argv[0] = SHELL_NAME;
-    new_argv[1] = "-c";
-    new_argv[2] = line;
-    new_argv[3] = NULL;
+	INIT_LOCK ();
 
-    /* Restore the signals.  */
-    (void) sigaction (SIGINT, &intr, (struct sigaction *) NULL);
-    (void) sigaction (SIGQUIT, &quit, (struct sigaction *) NULL);
-    (void) sigprocmask (SIG_SETMASK, &omask, (sigset_t *) NULL);
+	/* Exec the shell.  */
+	(void) execve (SHELL_PATH, (char *const *) new_argv, __environ);
+	_exit (127);
+    } else if (pid < (pid_t) 0) {
+	/* The fork failed.  */
+	goto out;
+    } else {
+	/* Parent side.  */
+	do {
+	    result = waitpid(pid, &status, 0);
+	} while (result == (pid_t)-1 && errno == EINTR);
+	if (result != pid)
+	    status = -1;
+    }
 
-    { pthread_mutex_init (&syssa_lock, NULL); syssa_refcnt = 0; }
+    CLEANUP_RESET(0, oldtype);
 
-    /* Exec the shell.  */
-    (void) execve (SHELL_PATH, (char *const *) new_argv, __environ);
-    _exit (127);
-  } else if (pid < (pid_t) 0) {
-    /* The fork failed.  */
-    status = -1;
-  } else {
-    /* Parent side.  */
-    do {
-      result = waitpid(pid, &status, 0);
-    } while (result == (pid_t)-1 && errno == EINTR);
-    if (result != pid)
-      status = -1;
-  }
-
-  pthread_cleanup_pop(0);
-  pthread_setcanceltype (oldtype, &oldtype);
-
-  save = errno;
-  pthread_mutex_lock(&syssa_lock);
-  if ((--syssa_refcnt == 0
-       && (sigaction (SIGINT, &intr, (struct sigaction *) NULL)
-	   | sigaction (SIGQUIT, &quit, (struct sigaction *) NULL)) != 0)
-      || sigprocmask (SIG_SETMASK, &omask, (sigset_t *) NULL) != 0)
-  {
+    DO_LOCK ();
+    if ((SUB_REF () == 0
+       && (sigaction (SIGINT, &satbl_sigint->oact, NULL)
+	   | sigaction (SIGQUIT, &satbl_sigquit->oact, NULL)) != 0)
+       || sigprocmask (SIG_SETMASK, &omask, (sigset_t *) NULL) != 0)
+    {
 	status = -1;
-  }
-  pthread_mutex_unlock(&syssa_lock);
+    }
+    goto out;
 
-  return status;
+out_restore_sigquit_and_sigint:
+    (void) sigaction (SIGQUIT, &satbl_sigquit->oact, NULL);
+out_restore_sigint:
+    (void) sigaction (SIGINT, &satbl_sigint->oact, NULL);
+out:
+    DO_UNLOCK ();
+    return status;
 }
 
 static int
-system (const char * line)
+xsystem (const char * line)
 {
 
-fprintf(stderr, "*** %s(%p) %s\n", __FUNCTION__, line, line);
-  if (line == NULL)
-    /* Check that we have a command processor available.  It might
-       not be available after a chroot(), for example.  */
-    return do_system ("exit 0") == 0;
+    if (line == NULL)
+	/* Check that we have a command processor available.  It might
+	   not be available after a chroot(), for example.  */
+	return do_system ("exit 0") == 0;
 
-  return do_system (line);
+    return do_system (line);
 }
 
 static void *
 other_thread(void *dat)
 {
     const char * s = (const char *)dat;
-fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, dat);
-    return ((void *) system(s));
+    return ((void *) xsystem(s));
 }
 
 int main(int argc, char *argv[])
 {
-  pthread_t pth;
+    pthread_t pth;
 
-  pthread_create(&pth, NULL, other_thread, "/bin/pwd" );
+    pthread_create(&pth, NULL, other_thread, "/bin/sleep 30" );
 
-  pthread_join(pth, NULL);
+    sleep(2);
+    pthread_cancel(pth);
 
-  return 0;
+    pthread_join(pth, NULL);
+    return 0;
 }
-

@@ -101,7 +101,7 @@ tthread: tthread.o librpm.la
 	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs) @WITH_LIBELF_LIB@
 
 tsystem: tsystem.o
-	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< -L/lib/tls -lpthread
+	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< -lpthread
 
 tplatform: tplatform.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
