@@ -117,7 +117,8 @@ static struct rpmOption optionTable[] = {
     { "require_distribution",	RPMVAR_REQUIREDISTRIBUTION,	0, 0 },
     { "require_icon",		RPMVAR_REQUIREICON,		0, 0 },
     { "require_vendor",		RPMVAR_REQUIREVENDOR,		0, 0 },
-    { "root",			RPMVAR_ROOT,			0, 0 },
+/* root is obsolete - use buildroot instead                             */
+/*    { "root",			RPMVAR_ROOT,			0, 0 }, */
     { "rpmdir",			RPMVAR_RPMDIR,			0, 0 },
     { "rpmfilename",		RPMVAR_RPMFILENAME,		0, 1 },
     { "signature",		RPMVAR_SIGTYPE,			0, 0 },
