@@ -315,6 +315,9 @@ const char * pgpMpiHex(const byte *p)
     return prbuf;
 }
 
+/*@-boundswrite@*/
+/**
+ */
 static void pgpHexSet(const char * pre, int lbits,
 		/*@out@*/ mp32number * mpn, const byte * p)
 	/*@globals fileSystem @*/
@@ -337,6 +340,7 @@ fprintf(stderr, "*** %s %s\n", pre, t);
 if (_debug && _print)
 fprintf(stderr, "\t %s ", pre), mp32println(stderr, mpn->size, mpn->data);
 }
+/*@=boundswrite@*/
 
 int pgpPrtSubType(const byte *h, unsigned int hlen)
 {
@@ -887,6 +891,7 @@ int pgpPrtKey(pgpTag tag, const byte *h, unsigned int hlen)
     return rc;
 }
 
+/*@-boundswrite@*/
 int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
 {
     pgpPrtVal("", pgpTagTbl, tag);
@@ -902,6 +907,7 @@ int pgpPrtUserID(pgpTag tag, const byte *h, unsigned int hlen)
 /*@=mods@*/
     return 0;
 }
+/*@=boundswrite@*/
 
 int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
 {
@@ -1004,6 +1010,7 @@ struct pgpDig_s * pgpNewDig(void)
     return dig;
 }
 
+/*@-boundswrite@*/
 void pgpCleanDig(struct pgpDig_s * dig)
 {
     if (dig != NULL) {
@@ -1037,6 +1044,7 @@ void pgpCleanDig(struct pgpDig_s * dig)
     return;
     /*@=nullstate@*/
 }
+/*@=boundswrite@*/
 
 struct pgpDig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpDig_s * dig)
 	/*@modifies dig @*/
@@ -1109,6 +1117,7 @@ int pgpPrtPkts(const byte * pkts, unsigned int plen,
     return 0;
 }
 
+/*@-boundswrite@*/
 pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 {
     const byte * b = NULL;
@@ -1231,3 +1240,4 @@ exit:
 	*pktlen = blen;
     return ec;
 }
+/*@=boundswrite@*/

@@ -80,6 +80,7 @@ void mp32bfree(mp32barrett* b)
 	b->size = 0;
 }
 
+/*@-boundswrite@*/
 /*@-nullstate -compdef @*/	/* b->modl may be null @*/
 void mp32bcopy(mp32barrett* b, const mp32barrett* copy)
 {
@@ -118,7 +119,9 @@ void mp32bcopy(mp32barrett* b, const mp32barrett* copy)
 		{};
 }
 /*@=nullstate =compdef @*/
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 /*@-nullstate -compdef @*/	/* b->modl may be null @*/
 /**
  * mp32bset
@@ -156,7 +159,9 @@ void mp32bset(mp32barrett* b, uint32 size, const uint32 *data)
 	}
 }
 /*@=nullstate =compdef @*/
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 /*@-nullstate -compdef @*/	/* b->modl may be null @*/
 void mp32bsethex(mp32barrett* b, const char* hex)
 {
@@ -217,11 +222,13 @@ void mp32bsethex(mp32barrett* b, const char* hex)
 	}
 }
 /*@=nullstate =compdef @*/
+/*@=boundswrite@*/
 
 /**
  *  Computes the Barrett 'mu' coefficient.
  *  needs workspace of (6*size+4) words
  */
+/*@-boundswrite@*/
 void mp32bmu_w(mp32barrett* b, uint32* wksp)
 {
 	register uint32  size = b->size;
@@ -242,11 +249,13 @@ void mp32bmu_w(mp32barrett* b, uint32* wksp)
 	/* de-normalize */
 	mp32rshift(size, b->modl, shift);
 }
+/*@=boundswrite@*/
 
 /**
  *  Generates a random number in the range 1 < r < b-1.
  *  need workspace of (size) words
  */
+/*@-boundswrite@*/
 void mp32brnd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* result, uint32* wksp)
 {
 	uint32 msz = mp32mszcnt(b->size, b->modl);
@@ -268,11 +277,13 @@ void mp32brnd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* result
 			(void) mp32sub(b->size, result, wksp);
 	} while (mp32leone(b->size, result));
 }
+/*@=boundswrite@*/
 
 /**
  *  Generates a random odd number in the range 1 < r < b-1.
  *  needs workspace of (size) words
  */
+/*@-boundswrite@*/
 void mp32brndodd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* result, uint32* wksp)
 {
 	uint32 msz = mp32mszcnt(b->size, b->modl);
@@ -298,6 +309,7 @@ void mp32brndodd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* res
 		}
 	} while (mp32leone(b->size, result));
 }
+/*@=boundswrite@*/
 
 /**
  *  Generates a random invertible (modulo b) in the range 1 < r < b-1.
@@ -321,6 +333,7 @@ void mp32brndinv_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* res
  *  Computes the barrett modular reduction of a number x, which has twice the size of b.
  *  needs workspace of (2*size+2) words
  */
+/*@-boundswrite@*/
 void mp32bmod_w(const mp32barrett* b, const uint32* xdata, uint32* result, uint32* wksp)
 {
 	register uint32 rc;
@@ -379,10 +392,12 @@ void mp32bmod_w(const mp32barrett* b, const uint32* xdata, uint32* result, uint3
 	}
 	mp32copy(b->size, result, wksp+1);
 }
+/*@=boundswrite@*/
 
 /**
  *  Copies (b-1) into result.
  */
+/*@-boundswrite@*/
 void mp32bsubone(const mp32barrett* b, uint32* result)
 {
 	register uint32 size = b->size;
@@ -390,10 +405,12 @@ void mp32bsubone(const mp32barrett* b, uint32* result)
 	mp32copy(size, result, b->modl);
 	(void) mp32subw(size, result, 1);
 }
+/*@=boundswrite@*/
 
 /**
  *  Computes the negative (modulo b) of x, where x must contain a value between 0 and b-1.
  */
+/*@-boundswrite@*/
 void mp32bneg(const mp32barrett* b, const uint32* xdata, uint32* result)
 {
 	register uint32  size = b->size;
@@ -402,6 +419,7 @@ void mp32bneg(const mp32barrett* b, const uint32* xdata, uint32* result)
 	mp32neg(size, result);
 	(void) mp32add(size, result, b->modl);
 }
+/*@=boundswrite@*/
 
 /**
  *  Computes the sum (modulo b) of x and y.

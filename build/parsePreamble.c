@@ -66,6 +66,7 @@ static void addOrAppendListEntry(Header h, int_32 tag, char * line)
 
 /**
  */
+/*@-boundswrite@*/
 static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
 	/*@globals internalState@*/
 	/*@modifies *name, *flag, internalState @*/
@@ -96,6 +97,7 @@ static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
 
     return (strtok(NULL, " \t\n")) ? 1 : 0;
 }
+/*@=boundswrite@*/
 
 /**
  */
@@ -140,6 +142,7 @@ static struct tokenBits_s buildScriptBits[] = {
 
 /**
  */
+/*@-boundswrite@*/
 static int parseBits(const char * s, const tokenBits tokbits,
 		/*@out@*/ rpmsenseFlags * bp)
 	/*@modifies *bp @*/
@@ -173,6 +176,7 @@ static int parseBits(const char * s, const tokenBits tokbits,
     if (c == 0 && bp) *bp = bits;
     return (c ? RPMERR_BADSPEC : 0);
 }
+/*@=boundswrite@*/
 
 /**
  */
@@ -339,6 +343,7 @@ static void fillOutMainPackage(Header h)
 
 /**
  */
+/*@-boundswrite@*/
 static int readIcon(Header h, const char * file)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
@@ -397,6 +402,7 @@ exit:
     fn = _free(fn);
     return rc;
 }
+/*@=boundswrite@*/
 
 spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 {
@@ -442,6 +448,7 @@ extern int noLang;
 
 /**
  */
+/*@-boundswrite@*/
 static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 			     const char *lang)
 	/*@globals rpmGlobalMacroContext,
@@ -702,6 +709,7 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
     
     return 0;
 }
+/*@=boundswrite@*/
 
 /* This table has to be in a peculiar order.  If one tag is the */
 /* same as another, plus a few letters, it must come first.     */
@@ -776,6 +784,7 @@ static inline void initPreambleList(void)
 
 /**
  */
+/*@-boundswrite@*/
 static int findPreambleTag(Spec spec, /*@out@*/int * tag,
 		/*@null@*/ /*@out@*/ const char ** macro, /*@out@*/ char * lang)
 	/*@modifies *tag, *macro, *lang @*/
@@ -831,7 +840,9 @@ static int findPreambleTag(Spec spec, /*@out@*/int * tag,
 	/*@=onlytrans =observertrans =dependenttrans@*/
     return 0;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 int parsePreamble(Spec spec, int initialPackage)
 {
     int nextPart;
@@ -927,3 +938,4 @@ int parsePreamble(Spec spec, int initialPackage)
 
     return nextPart;
 }
+/*@=boundswrite@*/

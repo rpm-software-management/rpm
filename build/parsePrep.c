@@ -64,6 +64,7 @@ static int checkOwners(const char * urlfn)
  * @param removeEmpties	include -E?
  * @return		expanded %patch macro (NULL on error)
  */
+/*@-boundswrite@*/
 /*@observer@*/ static char *doPatch(Spec spec, int c, int strip, const char *db,
 		     int reverse, int removeEmpties)
 	/*@globals rpmGlobalMacroContext,
@@ -150,6 +151,7 @@ static int checkOwners(const char * urlfn)
     urlfn = _free(urlfn);
     return buf;
 }
+/*@=boundswrite@*/
 
 /**
  * Expand %setup macro into %prep scriptlet.
@@ -158,6 +160,7 @@ static int checkOwners(const char * urlfn)
  * @param quietly	should -vv be omitted from tar?
  * @return		expanded %setup macro (NULL on error)
  */
+/*@-boundswrite@*/
 /*@observer@*/ static const char *doUntar(Spec spec, int c, int quietly)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
@@ -268,6 +271,7 @@ static int checkOwners(const char * urlfn)
     urlfn = _free(urlfn);
     return buf;
 }
+/*@=boundswrite@*/
 
 /**
  * Parse %setup macro.
@@ -432,6 +436,7 @@ static int doSetupMacro(Spec spec, char *line)
  * @param line		current line from spec file
  * @return		0 on success
  */
+/*@-boundswrite@*/
 static int doPatchMacro(Spec spec, char *line)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem@*/
@@ -539,6 +544,7 @@ static int doPatchMacro(Spec spec, char *line)
     
     return 0;
 }
+/*@=boundswrite@*/
 
 int parsePrep(Spec spec)
 {

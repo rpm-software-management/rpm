@@ -31,6 +31,7 @@
 #include "rsapk.h"
 #include "debug.h"
 
+/*@-boundswrite@*/
 int rsapkInit(rsapk* pk)
 {
 	memset(pk, 0, sizeof(*pk));
@@ -41,6 +42,7 @@ int rsapkInit(rsapk* pk)
 
 	return 0;
 }
+/*@=boundswrite@*/
 
 int rsapkFree(rsapk* pk)
 {

@@ -280,6 +280,7 @@ static int processScriptFiles(Spec spec, Package pkg)
     return 0;
 }
 
+/*@-boundswrite@*/
 int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
 		Header *sigs, CSA_t csa)
 {
@@ -368,6 +369,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
 
     return 0;
 }
+/*@=boundswrite@*/
 
 #ifdef	DYING
 /*@unchecked@*/
@@ -402,6 +404,7 @@ static int rpmLeadVersion(void)
     return rpmlead_version;
 }
 
+/*@-boundswrite@*/
 int writeRPM(Header *hdrp, const char *fileName, int type,
 		    CSA_t csa, char *passPhrase, const char **cookie)
 {
@@ -711,6 +714,7 @@ exit:
 
     return rc;
 }
+/*@=boundswrite@*/
 
 /*@unchecked@*/
 static int_32 copyTags[] = {
@@ -720,6 +724,7 @@ static int_32 copyTags[] = {
     0
 };
 
+/*@-boundswrite@*/
 int packageBinaries(Spec spec)
 {
     struct cpioSourceArchive_s csabuf;
@@ -818,7 +823,9 @@ int packageBinaries(Spec spec)
     
     return 0;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 int packageSources(Spec spec)
 {
     struct cpioSourceArchive_s csabuf;
@@ -856,3 +863,4 @@ int packageSources(Spec spec)
     }
     return rc;
 }
+/*@=boundswrite@*/

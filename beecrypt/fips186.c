@@ -43,12 +43,14 @@ const randomGenerator fips186prng = { "FIPS 186", sizeof(fips186Param), (const r
 
 /**
  */
+/*@-boundswrite@*/
 static int fips186init(register sha1Param* p)
 	/*@modifies p @*/
 {
 	mp32copy(5, p->h, fips186hinit);
 	return 0;
 }
+/*@=boundswrite@*/
 
 int fips186Setup(fips186Param* fp)
 {
@@ -123,6 +125,7 @@ int fips186Seed(fips186Param* fp, const uint32* data, int size)
 	return -1;
 }
 
+/*@-boundswrite@*/
 int fips186Next(fips186Param* fp, uint32* data, int size)
 {
 	if (fp)
@@ -187,6 +190,7 @@ int fips186Next(fips186Param* fp, uint32* data, int size)
 	}
 	return -1;
 }
+/*@=boundswrite@*/
 
 int fips186Cleanup(fips186Param* fp)
 {

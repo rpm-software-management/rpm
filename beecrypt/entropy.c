@@ -155,6 +155,7 @@ int entropy_provider_cleanup()
  * Mask the low-order bit of a bunch of sound samples, analyze them and
  * return an error in case they are all zeroes or ones.
  */
+/*@-boundswrite@*/
 static int entropy_noise_filter(void* sampledata, int samplecount, int samplesize, int channels, int swap)
 	/*@globals errno @*/
 	/*@modifies sampledata, errno @*/
@@ -328,6 +329,7 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 
 	return 0;
 }
+/*@=boundswrite@*/
 
 /**
  * Bit deskewing technique: the classical Von Neumann method.
@@ -341,6 +343,7 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 #if WIN32
 static int entropy_noise_gather(HWAVEIN wavein, int samplesize, int channels, int swap, int timeout, uint32 *data, int size)
 #else
+/*@-boundswrite@*/
 /*@-mustmod@*/ /* data is modified, annotations incorrect */
 static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, int timeout, /*@out@*/ uint32 *data, int size)
 	/*@globals errno, fileSystem @*/
@@ -573,6 +576,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 	return 0;
 }
 /*@=mustmod@*/
+/*@=boundswrite@*/
 #endif
 
 #if WIN32
@@ -970,6 +974,7 @@ static int opendevice(const char *device)
  * @param size
  * @return
  */
+/*@-boundswrite@*/
 static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 	/*@*/
 {
@@ -1072,6 +1077,7 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 	/*@=branchstate@*/
 	return 0;
 }
+/*@=boundswrite@*/
 #endif
 
 #if HAVE_DEV_TTY
@@ -1081,6 +1087,7 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
  * @param size
  * @return
  */
+/*@-boundswrite@*/
 static int entropy_ttybits(int fd, uint32* data, int size)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -1218,6 +1225,7 @@ static int entropy_ttybits(int fd, uint32* data, int size)
 
 	return 0;
 }
+/*@=boundswrite@*/
 #endif
 
 #if HAVE_DEV_AUDIO

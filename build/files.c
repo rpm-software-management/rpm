@@ -216,6 +216,7 @@ static void dumpAttrRec(const char * msg, AttrRec ar)
 
 /**
  */
+/*@-boundswrite@*/
 static char *strtokWithQuotes(char *s, char *delim)
 	/*@modifies *s @*/
 {
@@ -256,6 +257,7 @@ static char *strtokWithQuotes(char *s, char *delim)
     return token;
     /*@=retalias =temptrans @*/
 }
+/*@=boundswrite@*/
 
 /**
  */
@@ -311,6 +313,7 @@ VFA_t verifyAttrs[] = {
  * @param fl		package file tree walk data
  * @return		0 on success
  */
+/*@-boundswrite@*/
 static int parseForVerify(char * buf, FileList fl)
 	/*@modifies buf, fl->processingFailed,
 		fl->currentVerifyFlags, fl->defVerifyFlags,
@@ -398,6 +401,7 @@ static int parseForVerify(char * buf, FileList fl)
 
     return 0;
 }
+/*@=boundswrite@*/
 
 #define	isAttrDefault(_ars)	((_ars)[0] == '-' && (_ars)[1] == '\0')
 
@@ -407,6 +411,7 @@ static int parseForVerify(char * buf, FileList fl)
  * @param fl		package file tree walk data
  * @return		0 on success
  */
+/*@-boundswrite@*/
 static int parseForDev(char * buf, FileList fl)
 	/*@modifies buf, fl->processingFailed,
 		fl->noGlob, fl->devtype, fl->devmajor, fl->devminor @*/
@@ -500,6 +505,7 @@ exit:
     }
     return rc;
 }
+/*@=boundswrite@*/
 
 /**
  * Parse %attr and %defattr from file manifest.
@@ -507,6 +513,7 @@ exit:
  * @param fl		package file tree walk data
  * @return		0 on success
  */
+/*@-boundswrite@*/
 static int parseForAttr(char * buf, FileList fl)
 	/*@modifies buf, fl->processingFailed,
 		fl->cur_ar, fl->def_ar,
@@ -631,6 +638,7 @@ static int parseForAttr(char * buf, FileList fl)
     
     return 0;
 }
+/*@=boundswrite@*/
 
 /**
  * Parse %config from file manifest.
@@ -638,6 +646,7 @@ static int parseForAttr(char * buf, FileList fl)
  * @param fl		package file tree walk data
  * @return		0 on success
  */
+/*@-boundswrite@*/
 static int parseForConfig(char * buf, FileList fl)
 	/*@modifies buf, fl->processingFailed,
 		fl->currentFlags @*/
@@ -695,6 +704,7 @@ static int parseForConfig(char * buf, FileList fl)
 
     return 0;
 }
+/*@=boundswrite@*/
 
 /**
  */
@@ -709,6 +719,7 @@ static int langCmp(const void * ap, const void * bp)	/*@*/
  * @param fl		package file tree walk data
  * @return		0 on success
  */
+/*@-bounds@*/
 static int parseForLang(char * buf, FileList fl)
 	/*@modifies buf, fl->processingFailed,
 		fl->currentLangs, fl->nLangs @*/
@@ -795,9 +806,11 @@ static int parseForLang(char * buf, FileList fl)
 
     return 0;
 }
+/*@=bounds@*/
 
 /**
  */
+/*@-boundswrite@*/
 static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies *lang, rpmGlobalMacroContext @*/
@@ -839,9 +852,11 @@ static int parseForRegexLang(const char * fileName, /*@out@*/ char ** lang)
 	*lang = buf;
     return 0;
 }
+/*@=boundswrite@*/
 
 /**
  */
+/*@-boundswrite@*/
 static int parseForRegexMultiLib(const char *fileName)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies rpmGlobalMacroContext @*/
@@ -871,6 +886,7 @@ static int parseForRegexMultiLib(const char *fileName)
 
     return 0;
 }
+/*@=boundswrite@*/
 
 /**
  */
@@ -906,6 +922,7 @@ VFA_t virtualFileAttributes[] = {
  * @retval fileName
  * @return		0 on success
  */
+/*@-boundswrite@*/
 static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 			  FileList fl, /*@out@*/ const char ** fileName)
 	/*@globals rpmGlobalMacroContext @*/
@@ -1031,6 +1048,7 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 
     return res;
 }
+/*@=boundswrite@*/
 
 /**
  */
@@ -1101,6 +1119,7 @@ static int checkHardLinks(FileList fl)
  * @param h
  * @param isSrc
  */
+/*@-bounds@*/
 static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 		rpmfi * cpioList, Header h, int isSrc)
 	/*@globals rpmGlobalMacroContext,
@@ -1453,9 +1472,11 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     /*@=branchstate@*/
   }
 }
+/*@=bounds@*/
 
 /**
  */
+/*@-boundswrite@*/
 static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
 			int count)
 	/*@*/
@@ -1468,6 +1489,7 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
     fileList = _free(fileList);
     return NULL;
 }
+/*@=boundswrite@*/
 
 /**
  * Add a file to the package manifest.
@@ -1476,6 +1498,7 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
  * @param statp		file stat (possibly NULL)
  * @return		0 on success
  */
+/*@-boundswrite@*/
 static int addFile(FileList fl, const char * diskURL,
 		/*@null@*/ struct stat * statp)
 	/*@globals rpmGlobalMacroContext,
@@ -1690,6 +1713,7 @@ static int addFile(FileList fl, const char * diskURL,
 
     return 0;
 }
+/*@=boundswrite@*/
 
 /**
  * Add a file to a binary package.
@@ -1698,6 +1722,7 @@ static int addFile(FileList fl, const char * diskURL,
  * @param fileURL
  * @return		0 on success
  */
+/*@-boundswrite@*/
 static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 		const char * fileURL)
 	/*@globals rpmGlobalMacroContext,
@@ -1770,9 +1795,11 @@ exit:
 	fl->processingFailed = 1;
     return rc;
 }
+/*@=boundswrite@*/
 
 /**
  */
+/*@-boundswrite@*/
 static int processPackageFiles(Spec spec, Package pkg,
 			       int installSpecialDoc, int test)
 	/*@globals rpmGlobalMacroContext,
@@ -2037,6 +2064,7 @@ exit:
 	fl.docDirs[fl.docDirCount] = _free(fl.docDirs[fl.docDirCount]);
     return fl.processingFailed;
 }
+/*@=boundswrite@*/
 
 void initSourceHeader(Spec spec)
 {
@@ -2238,6 +2266,7 @@ int processSourceFiles(Spec spec)
 
 /**
  */
+/*@-boundswrite@*/
 static StringBuf getOutputFrom(char * dir, char * argv[],
 			const char * writePtr, int writeBytesLeft,
 			int failNonZero)
@@ -2375,6 +2404,7 @@ top:
     }
     return readBuff;
 }
+/*@=boundswrite@*/
 
 /**
  */
@@ -2435,6 +2465,7 @@ DepMsg_t depMsgs[] = {
 
 /**
  */
+/*@-bounds@*/
 static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -2578,6 +2609,7 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
     myargv = _free(myargv);
     return rc;
 }
+/*@=bounds@*/
 
 /**
  */

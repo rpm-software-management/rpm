@@ -158,6 +158,7 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
     return NULL;
 }
 
+/*@-boundswrite@*/
 void urlFreeCache(void)
 {
     if (_url_cache) {
@@ -176,6 +177,7 @@ void urlFreeCache(void)
     _url_cache = _free(_url_cache);
     _url_count = 0;
 }
+/*@=boundswrite@*/
 
 static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
 	/*@*/
@@ -188,12 +190,11 @@ static int urlStrcmp(/*@null@*/ const char * str1, /*@null@*/ const char * str2)
     return 0;
 }
 
+/*@-boundswrite@*/
 /*@-mods@*/
 static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
-	/*@globals rpmGlobalMacroContext,
-		fileSystem@*/
-	/*@modifies *uret, rpmGlobalMacroContext,
-		fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem@*/
+	/*@modifies *uret, rpmGlobalMacroContext, fileSystem @*/
 {
     urlinfo u;
     int ucx;
@@ -328,6 +329,7 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
     return;
 }
 /*@=mods@*/
+/*@=boundswrite@*/
 
 /**
  */
@@ -359,6 +361,7 @@ urltype urlIsURL(const char * url)
     return URL_IS_UNKNOWN;
 }
 
+/*@-boundswrite@*/
 /* Return path portion of url (or pointer to NUL if url == NULL) */
 urltype urlPath(const char * url, const char ** pathp)
 {
@@ -394,11 +397,13 @@ urltype urlPath(const char * url, const char ** pathp)
 	/*@=observertrans@*/
     return urltype;
 }
+/*@=boundswrite@*/
 
 /*
  * Split URL into components. The URL can look like
  *	service://user:password@host:port/path
  */
+/*@-boundswrite@*/
 /*@-modfilesys@*/
 int urlSplit(const char * url, urlinfo *uret)
 {
@@ -495,6 +500,7 @@ int urlSplit(const char * url, urlinfo *uret)
     return 0;
 }
 /*@=modfilesys@*/
+/*@=boundswrite@*/
 
 int urlGetFile(const char * url, const char * dest)
 {

@@ -66,6 +66,7 @@ static int addTriggerIndex(Package pkg, const char *file,
 /* We then pass the remaining arguments to parseRCPOT, along with   */
 /* an index we just determined.                                     */
 
+/*@-boundswrite@*/
 int parseScript(Spec spec, int parsePart)
 {
     /* There are a few options to scripts: */
@@ -315,3 +316,4 @@ exit:
     
     return rc;
 }
+/*@=boundswrite@*/

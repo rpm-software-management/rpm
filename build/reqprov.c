@@ -117,6 +117,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
     return 0;
 }
 
+/*@-boundswrite@*/
 int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
 {
     char * reqname = alloca(sizeof("rpmlib()") + strlen(feature));
@@ -127,3 +128,4 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
    return addReqProv(NULL, h, RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL),
 	reqname, featureEVR, 0);
 }
+/*@=boundswrite@*/

@@ -162,6 +162,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
     if ((mask & rpmlogMask) == 0)
 	return;
 
+/*@-boundswrite@*/
     msgbuf = xmalloc(msgnb);
     *msgbuf = '\0';
 
@@ -204,6 +205,7 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	}
     }
     /*@=branchstate@*/
+/*@=boundswrite@*/
 
     /* rpmMessage behavior */
 

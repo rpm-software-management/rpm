@@ -94,12 +94,14 @@ static int matchTok(const char *token, const char *line)
     return rc;
 }
 
+/*@-boundswrite@*/
 void handleComments(char *s)
 {
     SKIPSPACE(s);
     if (*s == '#')
 	*s = '\0';
 }
+/*@=boundswrite@*/
 
 /**
  */
@@ -116,6 +118,7 @@ static void forceIncludeFile(Spec spec, const char * fileName)
 
 /**
  */
+/*@-boundswrite@*/
 static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem @*/
@@ -175,7 +178,9 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 
     return 0;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 int readLine(Spec spec, int strip)
 {
 #ifdef	DYING
@@ -354,6 +359,7 @@ retry:
     return 0;
     /*@=compmempass@*/
 }
+/*@=boundswrite@*/
 
 void closeSpec(Spec spec)
 {
@@ -374,6 +380,7 @@ extern int noLang;		/* XXX FIXME: pass as arg */
 /*@=redecl@*/
 
 /*@todo Skip parse recursion if os is not compatible. @*/
+/*@-boundswrite@*/
 int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
 		const char *buildRootURL, int recursing, const char *passPhrase,
 		char *cookie, int anyarch, int force)
@@ -614,3 +621,4 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
 
     return 0;
 }
+/*@=boundswrite@*/

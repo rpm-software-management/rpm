@@ -392,6 +392,7 @@ int hashFunctionContextUpdateMC(hashFunctionContext* ctxt, const memchunk* m)
 	return ctxt->algo->update(ctxt->param, m->data, m->size);
 }
 
+/*@-boundswrite@*/
 int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mp32number* n)
 {
 	if (ctxt == (hashFunctionContext*) 0)
@@ -427,6 +428,7 @@ int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mp32number* n
 	}
 	return -1;
 }
+/*@=boundswrite@*/
 
 int hashFunctionContextDigest(hashFunctionContext* ctxt, mp32number* dig)
 {
@@ -628,6 +630,7 @@ int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext* ctxt, const memch
 	return ctxt->algo->update(ctxt->param, m->data, m->size);
 }
 
+/*@-boundswrite@*/
 int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mp32number* n)
 {
 	if (ctxt == (keyedHashFunctionContext*) 0)
@@ -663,6 +666,7 @@ int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mp3
 	}
 	return -1;
 }
+/*@=boundswrite@*/
 
 int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, mp32number* dig)
 {

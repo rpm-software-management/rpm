@@ -14,7 +14,7 @@
 
 # --- in progress
 #+bounds
-#+boundswrite
++boundswrite
 +slovak-fcns
 -redecl
 

@@ -1,6 +1,5 @@
 #ifndef	H_RPMIO_INTERNAL
 #define	H_RPMIO_INTERNAL
-/*@-bounds@*/
 
 /** \ingroup rpmio
  * \file rpmio/rpmio_internal.h
@@ -220,9 +219,11 @@ void fdSetIo(FD_t fd, /*@kept@*/ /*@null@*/ FDIO_t io)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
+/*@-boundswrite@*/
     /*@-assignexpose@*/
     fd->fps[fd->nfps].io = io;
     /*@=assignexpose@*/
+/*@=boundswrite@*/
 }
 /*@=nullstate@*/
 
@@ -256,9 +257,11 @@ void fdSetFp(FD_t fd, /*@kept@*/ /*@null@*/ void * fp)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
+/*@-boundswrite@*/
     /*@-assignexpose@*/
     fd->fps[fd->nfps].fp = fp;
     /*@=assignexpose@*/
+/*@=boundswrite@*/
 }
 /*@=nullstate@*/
 
@@ -279,7 +282,9 @@ void fdSetFdno(FD_t fd, int fdno)
 	/*@modifies fd @*/
 {
     FDSANE(fd);
+/*@-boundswrite@*/
     fd->fps[fd->nfps].fdno = fdno;
+/*@=boundswrite@*/
 }
 
 /** \ingroup rpmio
@@ -326,7 +331,9 @@ void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 	/*@modifies fd @*/
 {
     if (fd == NULL || fd->stats == NULL) return;
+/*@-boundswrite@*/
     fd->stats->ops[opx].count++;
+/*@=boundswrite@*/
     (void) gettimeofday(&fd->stats->begin, NULL);
 }
 
@@ -355,6 +362,7 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
     if (fd == NULL) return;
     if (rc == -1) fd->syserrno = errno;
     if (fd->stats == NULL) return;
+/*@-boundswrite@*/
     (void) gettimeofday(&end, NULL);
     if (rc >= 0) {
 	switch(opx) {
@@ -369,10 +377,12 @@ void fdstat_exit(/*@null@*/ FD_t fd, int opx, ssize_t rc)
     }
     fd->stats->ops[opx].msecs += tvsub(&end, &fd->stats->begin);
     fd->stats->begin = end;	/* structure assignment */
+/*@=boundswrite@*/
 }
 
 /** \ingroup rpmio
  */
+/*@-boundsread@*/
 /*@unused@*/ static inline
 void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	/*@globals fileSystem @*/
@@ -403,6 +413,7 @@ void fdstat_print(/*@null@*/ FD_t fd, const char * msg, FILE * fp)
 	}
     }
 }
+/*@=boundsread@*/
 
 /** \ingroup rpmio
  */
@@ -516,10 +527,12 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	fddig->hashctx = NULL;
 	break;
     }
+/*@-boundswrite@*/
     if (i < 0) {
 	if (datap) *datap = NULL;
 	if (lenp) *lenp = 0;
     }
+/*@=boundswrite@*/
 
     fd->ndigests = imax;
     if (i < imax)
@@ -551,5 +564,4 @@ int rpmioSlurp(const char * fn,
 }
 #endif
 
-/*@=bounds@*/
 #endif	/* H_RPMIO_INTERNAL */

@@ -26,6 +26,7 @@ static ugstr_t gnames[1024];
 /*@unchecked@*/
 static int gid_used = 0;
     
+/*@-boundswrite@*/
 void freeNames(void)
 {
     int x;
@@ -34,7 +35,9 @@ void freeNames(void)
     for (x = 0; x < gid_used; x++)
 	gnames[x] = _free(gnames[x]);
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 const char *getUname(uid_t uid)
 {
     struct passwd *pw;
@@ -56,7 +59,9 @@ const char *getUname(uid_t uid)
     unames[x] = (pw ? xstrdup(pw->pw_name) : NULL);
     return unames[x];
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 const char *getUnameS(const char *uname)
 {
     struct passwd *pw;
@@ -78,7 +83,9 @@ const char *getUnameS(const char *uname)
     unames[x] = (pw ? xstrdup(pw->pw_name) : xstrdup(uname));
     return unames[x];
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 uid_t getUidS(const char *uname)
 {
     struct passwd *pw;
@@ -100,7 +107,9 @@ uid_t getUidS(const char *uname)
     unames[x] = (pw ? xstrdup(pw->pw_name) : xstrdup(uname));
     return uids[x];
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 const char *getGname(gid_t gid)
 {
     struct group *gr;
@@ -122,7 +131,9 @@ const char *getGname(gid_t gid)
     gnames[x] = (gr ? xstrdup(gr->gr_name) : NULL);
     return gnames[x];
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 const char *getGnameS(const char *gname)
 {
     struct group *gr;
@@ -144,7 +155,9 @@ const char *getGnameS(const char *gname)
     gnames[x] = (gr ? xstrdup(gr->gr_name) : xstrdup(gname));
     return gnames[x];
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 gid_t getGidS(const char *gname)
 {
     struct group *gr;
@@ -166,6 +179,7 @@ gid_t getGidS(const char *gname)
     gnames[x] = (gr ? xstrdup(gr->gr_name) : xstrdup(gname));
     return gids[x];
 }
+/*@=boundswrite@*/
 
 int_32 *const getBuildTime(void)
 {
@@ -176,6 +190,7 @@ int_32 *const getBuildTime(void)
     return buildTime;
 }
 
+/*@-boundswrite@*/
 const char *const buildHost(void)
 {
     static char hostname[1024];
@@ -198,4 +213,5 @@ const char *const buildHost(void)
     }
     return(hostname);
 }
+/*@=boundswrite@*/
 /*@=mods@*/

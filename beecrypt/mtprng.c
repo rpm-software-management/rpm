@@ -102,6 +102,7 @@ int mtprngSetup(mtprngParam* mp)
 	return -1;
 }
 
+/*@-boundswrite@*/
 int mtprngSeed(mtprngParam* mp, const uint32* data, int size)
 {
 	if (mp)
@@ -152,7 +153,9 @@ int mtprngSeed(mtprngParam* mp, const uint32* data, int size)
 	}
 	return -1;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 int mtprngNext(mtprngParam* mp, uint32* data, int size)
 {
 	if (mp)
@@ -210,6 +213,7 @@ int mtprngNext(mtprngParam* mp, uint32* data, int size)
 	}
 	return -1;
 }
+/*@=boundswrite@*/
 
 int mtprngCleanup(mtprngParam* mp)
 {

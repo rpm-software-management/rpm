@@ -29,6 +29,7 @@
 #include "blockpad.h"
 #include "debug.h"
 
+/*@-boundswrite@*/
 memchunk* pkcs5Pad(int blockbytes, memchunk* tmp)
 {
 	if (tmp)
@@ -43,6 +44,7 @@ memchunk* pkcs5Pad(int blockbytes, memchunk* tmp)
 
 	return tmp;
 }
+/*@=boundswrite@*/
 
 memchunk* pkcs5Unpad(int blockbytes, memchunk* tmp)
 {
@@ -72,6 +74,7 @@ memchunk* pkcs5Unpad(int blockbytes, memchunk* tmp)
 	/*@=temptrans@*/
 }
 
+/*@-boundswrite@*/
 memchunk* pkcs5PadCopy(int blockbytes, const memchunk* src)
 {
 	memchunk* tmp;
@@ -90,7 +93,9 @@ memchunk* pkcs5PadCopy(int blockbytes, const memchunk* src)
 
 	return tmp;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 memchunk* pkcs5UnpadCopy(/*@unused@*/ int blockbytes, const memchunk* src)
 {
 	memchunk* tmp;
@@ -117,3 +122,4 @@ memchunk* pkcs5UnpadCopy(/*@unused@*/ int blockbytes, const memchunk* src)
 
 	return tmp;
 }
+/*@=boundswrite@*/

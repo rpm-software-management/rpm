@@ -72,6 +72,7 @@ static int useCatalog = 0;
 
 /**
  */
+/*@-boundswrite@*/
 static void buildArgCallback( /*@unused@*/ poptContext con,
 	/*@unused@*/ enum poptCallbackReason reason,
 	const struct poptOption * opt, const char * arg,
@@ -131,6 +132,7 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 	break;
     }
 }
+/*@=boundswrite@*/
 
 /**
  */

@@ -137,6 +137,7 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
 
 /* =============================================================== */
 
+/*@-boundswrite@*/
 /*@-modfilesys@*/
 static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
 	/*@*/
@@ -199,6 +200,7 @@ static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
     return buf;
 }
 /*@=modfilesys@*/
+/*@=boundswrite@*/
 
 /* =============================================================== */
 off_t fdSize(FD_t fd)
@@ -373,7 +375,9 @@ ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
     fdstat_enter(fd, FDSTAT_READ);
+/*@-boundswrite@*/
     rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+/*@=boundswrite@*/
     fdstat_exit(fd, FDSTAT_READ, rc);
 
     if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
@@ -582,6 +586,7 @@ int fdReadable(FD_t fd, int secs)
     /*@notreached@*/
 }
 
+/*@-boundswrite@*/
 int fdFgets(FD_t fd, char * buf, size_t len)
 {
     int fdno;
@@ -644,6 +649,7 @@ fprintf(stderr, "*** read: fd %p rc %d EOF errno %d %s \"%s\"\n", fd, rc, errno,
 
     return (ec >= 0 ? nb : ec);
 }
+/*@=boundswrite@*/
 
 /* =============================================================== */
 /* Support for FTP/HTTP I/O.
@@ -728,9 +734,11 @@ static int mygethostbyname(const char * host,
     /*@=unrecog =multithreaded @*/
     if (!hostinfo) return 1;
 
+/*@-boundswrite@*/
     /*@-nullderef@*/
     memcpy(address, hostinfo->h_addr_list[0], sizeof(*address));
     /*@=nullderef@*/
+/*@=boundswrite@*/
     return 0;
 }
 #endif
@@ -766,7 +774,9 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
     int fdno = -1;
     int rc;
 
+/*@-boundswrite@*/
     memset(&sin, 0, sizeof(sin));
+/*@=boundswrite@*/
     sin.sin_family = AF_INET;
     sin.sin_port = htons(port);
     sin.sin_addr.s_addr = INADDR_ANY;
@@ -810,6 +820,7 @@ errxit:
     return rc;
 }
 
+/*@-boundswrite@*/
 static int checkResponse(void * uu, FD_t ctrl,
 		/*@out@*/ int *ecp, /*@out@*/ char ** str)
 	/*@globals fileSystem @*/
@@ -972,6 +983,7 @@ fprintf(stderr, "<- %s\n", s);
 
     return ec;
 }
+/*@=boundswrite@*/
 
 static int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str)
 	/*@globals fileSystem @*/
@@ -1018,6 +1030,7 @@ static int ftpCommand(urlinfo u, char ** str, ...)
     len += sizeof("\r\n")-1;
     va_end(ap);
 
+/*@-boundswrite@*/
     t = te = alloca(len + 1);
 
     va_start(ap, str);
@@ -1027,6 +1040,7 @@ static int ftpCommand(urlinfo u, char ** str, ...)
     }
     te = stpcpy(te, "\r\n");
     va_end(ap);
+/*@=boundswrite@*/
 
 if (_ftp_debug)
 fprintf(stderr, "-> %s", t);
@@ -1067,9 +1081,11 @@ static int ftpLogin(urlinfo u)
  	uid_t uid = getuid();
 	struct passwd * pw;
 	if (uid && (pw = getpwuid(uid)) != NULL) {
+/*@-boundswrite@*/
 	    char *myp = alloca(strlen(pw->pw_name) + sizeof("@"));
 	    strcpy(myp, pw->pw_name);
 	    strcat(myp, "@");
+/*@=boundswrite@*/
 	    password = myp;
 	} else {
 	    password = "root@";
@@ -1130,6 +1146,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     char * chptr;
     int rc;
 
+/*@-boundswrite@*/
     URLSANE(u);
     if (ftpCmd == NULL)
 	return FTPERR_UNKNOWN;	/* XXX W2DO? */
@@ -1202,6 +1219,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     while (*chptr++ != '\0') {
 	if (*chptr == ',') *chptr = '.';
     }
+/*@=boundswrite@*/
 
     /*@-moduncon@*/
     if (!inet_aton(passReply, &dataAddress.sin_addr)) {
@@ -1372,8 +1390,10 @@ static int urlConnect(const char * url, /*@out@*/ urlinfo * uret)
 	}
     }
 
+/*@-boundswrite@*/
     if (uret != NULL)
 	*uret = urlLink(u, "urlConnect");
+/*@=boundswrite@*/
     u = urlFree(u, "urlSplit (urlConnect)");	
 
     return rc;
@@ -1462,8 +1482,10 @@ static int ftpAbort(urlinfo u, FD_t data)
 	tosecs = data->rd_timeoutsecs;
 	data->rd_timeoutsecs = 10;
 	if (fdReadable(data, data->rd_timeoutsecs) > 0) {
+/*@-boundswrite@*/
 	    while (timedRead(data, u->buf, u->bufAlloced) > 0)
 		u->buf[0] = '\0';
+/*@=boundswrite@*/
 	}
 	data->rd_timeoutsecs = tosecs;
 	/* XXX ftp abort needs to close the data channel to receive status */
@@ -1576,6 +1598,7 @@ Transfer-Encoding: chunked\r\n\
 \r\n\
 ") + strlen(httpCmd) + strlen(path) + sizeof(VERSION) + strlen(host) + 20;
 
+/*@-boundswrite@*/
     req = alloca(len);
     *req = '\0';
 
@@ -1597,6 +1620,7 @@ Accept: text/plain\r\n\
 \r\n\
 ",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, host, port);
 }
+/*@=boundswrite@*/
 
 if (_ftp_debug)
 fprintf(stderr, "-> %s", req);
@@ -1659,7 +1683,6 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     int bytesRead;
     int total;
 
-    *buf = '\0';	/* LCL: insistent bugger. */
     /* XXX preserve timedRead() behavior */
     if (fdGetIo(fd) == fdio) {
 	struct stat sb;
@@ -1691,7 +1714,9 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	    /*@switchbreak@*/ break;
 	}
 
+/*@-boundswrite@*/
 	rc = fdRead(fd, buf + total, count - total);
+/*@=boundswrite@*/
 
 	if (rc < 0) {
 	    switch (errno) {
@@ -1954,8 +1979,10 @@ fprintf(stderr, "-> \r\n");
     }
 
 exit:
+/*@-boundswrite@*/
     if (uret)
 	*uret = u;
+/*@=boundswrite@*/
     /*@-refcounttrans@*/
     return fd;
     /*@=refcounttrans@*/
@@ -1999,8 +2026,10 @@ static /*@null@*/ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
     }
 
 exit:
+/*@-boundswrite@*/
     if (uret)
 	*uret = u;
+/*@=boundswrite@*/
     /*@-refcounttrans@*/
     return fd;
     /*@=refcounttrans@*/
@@ -2596,9 +2625,6 @@ size_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd) {
     int rc;
 
     FDSANE(fd);
-#ifdef __LCLINT__
-    *(char *)buf = '\0';
-#endif
 /*@-modfilesys@*/
 DBGIO(fd, (stderr, "==> Fread(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned)nmemb, (fd ? fd : NULL), fdbg(fd)));
 /*@=modfilesys@*/
@@ -2758,6 +2784,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
  * - bzopen:	's' is smallmode
  * - HACK:	'.' terminates, rest is type of I/O
  */
+/*@-boundswrite@*/
 static inline void cvtfmode (const char *m,
 				/*@out@*/ char *stdio, size_t nstdio,
 				/*@out@*/ char *other, size_t nother,
@@ -2820,6 +2847,7 @@ static inline void cvtfmode (const char *m,
     if (f != NULL)
 	*f = flags;
 }
+/*@=boundswrite@*/
 
 #if _USE_LIBIO
 #if defined(__GLIBC__) && __GLIBC__ == 2 && __GLIBC_MINOR__ == 0
@@ -2828,6 +2856,7 @@ typedef _IO_cookie_io_functions_t cookie_io_functions_t;
 #endif
 #endif
 
+/*@-boundswrite@*/
 FD_t Fdopen(FD_t ofd, const char *fmode)
 {
     char stdio[20], other[20], zstdio[20];
@@ -2939,6 +2968,7 @@ DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ?
 /*@=modfilesys@*/
     /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 }
+/*@=boundswrite@*/
 
 FD_t Fopen(const char *path, const char *fmode)
 {
@@ -3095,6 +3125,7 @@ int Fcntl(FD_t fd, int op, void *lip)
 /* Helper routines that may be generally useful.
  */
 
+/*@-boundswrite@*/
 int rpmioSlurp(const char * fn, const byte ** bp, ssize_t * blenp)
 {
     static ssize_t blenmax = (8 * BUFSIZ);
@@ -3146,6 +3177,7 @@ exit:
 
     return rc;
 }
+/*@=boundswrite@*/
 
 static struct FDIO_s fpio_s = {
   ufdRead, ufdWrite, fdSeek, ufdClose, XfdLink, XfdFree, XfdNew, fdFileno,

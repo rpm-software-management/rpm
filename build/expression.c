@@ -181,6 +181,7 @@ static const char *prToken(int val)
 /**
  * @param state		expression parser state
  */
+/*@-boundswrite@*/
 static int rdToken(ParseState state)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
@@ -317,6 +318,7 @@ static int rdToken(ParseState state)
 
   return 0;
 }
+/*@=boundswrite@*/
 
 static Value doLogical(ParseState state)
 	/*@globals rpmGlobalMacroContext @*/
@@ -461,6 +463,7 @@ static Value doMultiplyDivide(ParseState state)
 /**
  * @param state		expression parser state
  */
+/*@-boundswrite@*/
 static Value doAddSubtract(ParseState state)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies state->nextToken, state->p, state->tokenValue,
@@ -520,6 +523,7 @@ static Value doAddSubtract(ParseState state)
   if (v2) valueFree(v2);
   return v1;
 }
+/*@=boundswrite@*/
 
 /**
  * @param state		expression parser state

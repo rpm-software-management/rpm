@@ -207,6 +207,7 @@ int dldp_pgoqMake(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 
 	return -1;
 }
 
+/*@-bounds@*/
 int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 {
 	/*
@@ -242,6 +243,7 @@ int dldp_pgoqMakeSafe(dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 	}
 	return -1;
 }
+/*@=bounds@*/
 
 int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 {

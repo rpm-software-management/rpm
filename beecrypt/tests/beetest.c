@@ -1,3 +1,4 @@
+/*@-boundswrite@*/
 /*
  * beetest.c
  *
@@ -1175,3 +1176,4 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	return 0;
 }
 #endif
+/*@=boundswrite@*/

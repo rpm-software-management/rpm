@@ -34,6 +34,7 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
  * @retval secs		secs since the unix epoch
  * @return 		0 on success, -1 on error
  */
+/*@-boundswrite@*/
 static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
 	/*@modifies *secs @*/
 {
@@ -98,6 +99,7 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
 
     return 0;
 }
+/*@=boundswrite@*/
 
 /**
  * Add %changelog section to header.
@@ -105,6 +107,7 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
  * @param sb		changelog strings
  * @return		0 on success
  */
+/*@-boundswrite@*/
 static int addChangelog(Header h, StringBuf sb)
 	/*@modifies h @*/
 {
@@ -201,6 +204,7 @@ static int addChangelog(Header h, StringBuf sb)
 
     return 0;
 }
+/*@=boundswrite@*/
 
 int parseChangelog(Spec spec)
 {

@@ -47,6 +47,7 @@
 #include "mp32.h"
 #include "debug.h"
 
+/*@-boundswrite@*/
 int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, randomGeneratorContext* rgc, const mp32number* hm, const mp32number* x, mp32number* r, mp32number* s)
 {
 	register uint32  psize = p->size;
@@ -116,6 +117,7 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, ran
 
 	return rc;
 }
+/*@=boundswrite@*/
 
 int dsavrfy(const mp32barrett* p, const mp32barrett* q, const mp32number* g, const mp32number* hm, const mp32number* y, const mp32number* r, const mp32number* s)
 {

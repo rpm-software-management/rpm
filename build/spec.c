@@ -61,6 +61,7 @@ static inline
     return NULL;
 }
 
+/*@-boundswrite@*/
 int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 {
     const char *pname;
@@ -101,6 +102,7 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 	/*@-dependenttrans@*/ *pkg = p; /*@=dependenttrans@*/
     return ((p == NULL) ? 1 : 0);
 }
+/*@=boundswrite@*/
 
 Package newPackage(Spec spec)
 {
@@ -250,6 +252,7 @@ int parseNoSource(Spec spec, const char * field, int tag)
     return 0;
 }
 
+/*@-boundswrite@*/
 int addSource(Spec spec, Package pkg, const char *field, int tag)
 {
     struct Source *p;
@@ -344,6 +347,7 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     
     return 0;
 }
+/*@=boundswrite@*/
 
 /**
  */
@@ -364,6 +368,7 @@ static inline /*@only@*/ /*@null@*/ speclines newSl(void)
 
 /**
  */
+/*@-boundswrite@*/
 static inline /*@null@*/ speclines freeSl(/*@only@*/ /*@null@*/ speclines sl)
 	/*@modifies sl @*/
 {
@@ -376,6 +381,7 @@ static inline /*@null@*/ speclines freeSl(/*@only@*/ /*@null@*/ speclines sl)
     sl->sl_lines = _free(sl->sl_lines);
     return _free(sl);
 }
+/*@=boundswrite@*/
 
 /**
  */
@@ -421,7 +427,9 @@ Spec newSpec(void)
     spec->st = newSt();
 
     spec->fileStack = NULL;
+/*@-boundswrite@*/
     spec->lbuf[0] = '\0';
+/*@=boundswrite@*/
     spec->line = spec->lbuf;
     spec->nextline = NULL;
     spec->nextpeekc = '\0';
@@ -526,6 +534,7 @@ Spec freeSpec(Spec spec)
     spec->buildRestrictions = headerFree(spec->buildRestrictions, "spec->>buildRestrictions");
 
     if (!spec->recursing) {
+/*@-boundswrite@*/
 	if (spec->BASpecs != NULL)
 	while (spec->BACount--) {
 	    /*@-unqualifiedtrans@*/
@@ -533,6 +542,7 @@ Spec freeSpec(Spec spec)
 			freeSpec(spec->BASpecs[spec->BACount]);
 	    /*@=unqualifiedtrans@*/
 	}
+/*@=boundswrite@*/
 	/*@-compdef@*/
 	spec->BASpecs = _free(spec->BASpecs);
 	/*@=compdef@*/
@@ -558,7 +568,9 @@ Spec freeSpec(Spec spec)
     ofi->fd = NULL;
     ofi->fileName = NULL;
     ofi->lineNum = 0;
+/*@-boundswrite@*/
     ofi->readBuf[0] = '\0';
+/*@=boundswrite@*/
     ofi->readPtr = NULL;
     ofi->next = NULL;
 

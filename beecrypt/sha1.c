@@ -50,6 +50,7 @@ static const uint32 hinit[5] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476,
 const hashFunction sha1 = { "SHA-1", sizeof(sha1Param), 64, 5 * sizeof(uint32), (hashFunctionReset) sha1Reset, (hashFunctionUpdate) sha1Update, (hashFunctionDigest) sha1Digest };
 /*@=sizeoftype@*/
 
+/*@-boundswrite@*/
 int sha1Reset(register sha1Param *p)
 {
 	mp32copy(5, p->h, hinit);
@@ -58,6 +59,7 @@ int sha1Reset(register sha1Param *p)
 	p->offset = 0;
 	return 0;
 }
+/*@=boundswrite@*/
 
 #define SUBROUND1(a, b, c, d, e, w, k) \
 	e = ROTL32(a, 5) + ((b&(c^d))^d) + e + w + k;	\
@@ -194,6 +196,7 @@ void sha1Process(register sha1Param *p)
 }
 #endif
 
+/*@-boundswrite@*/
 int sha1Update(register sha1Param *p, const byte *data, int size)
 {
 	register int proclength;
@@ -215,9 +218,11 @@ int sha1Update(register sha1Param *p, const byte *data, int size)
 	}
 	return 0;
 }
+/*@=boundswrite@*/
 
 /** \ingroup HASH_sha1_m
  */
+/*@-boundswrite@*/
 static void sha1Finish(register sha1Param *p)
 	/*@modifies p @*/
 {
@@ -249,7 +254,9 @@ static void sha1Finish(register sha1Param *p)
 	sha1Process(p);
 	p->offset = 0;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 int sha1Digest(register sha1Param *p, uint32 *data)
 {
 	sha1Finish(p);
@@ -257,3 +264,4 @@ int sha1Digest(register sha1Param *p, uint32 *data)
 	(void) sha1Reset(p);
 	return 0;
 }
+/*@=boundswrite@*/

@@ -273,6 +273,7 @@ static char *columns [MAXCOLS];	/* Points to the string in column n */
 /*@unchecked@*/
 static int   column_ptr [MAXCOLS]; /* Index from 0 to the starting positions of the columns */
 
+/*@-boundswrite@*/
 static int
 vfs_split_text (char *p)
 	/*@globals columns, column_ptr @*/
@@ -294,6 +295,7 @@ vfs_split_text (char *p)
     }
     return numcols;
 }
+/*@=boundswrite@*/
 
 static int
 is_num (int idx)
@@ -478,6 +480,7 @@ static int vfs_parse_filemode (const char *p)
     return res;
 }
 
+/*@-boundswrite@*/
 static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
 	/*@modifies *t @*/
 {	/* This thing parses from idx in columns[] array */
@@ -585,7 +588,9 @@ static int vfs_parse_filedate(int idx, /*@out@*/ time_t *t)
         *t = 0;
     return idx;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 static int
 vfs_parse_ls_lga (char * p, /*@out@*/ struct stat * st,
 		/*@out@*/ const char ** filename,
@@ -789,6 +794,7 @@ error:
 	g_free (p_copy);
     return 0;
 }
+/*@=boundswrite@*/
 
 typedef enum {
 	DO_FTP_STAT	= 1,
@@ -810,6 +816,7 @@ static /*@only@*/ char * ftpBuf = NULL;
 	
 #define alloca_strdup(_s)       strcpy(alloca(strlen(_s)+1), (_s))
 
+/*@-boundswrite@*/
 /*@-mods@*/
 static int ftpNLST(const char * url, ftpSysCall_t ftpSysCall,
 		/*@out@*/ /*@null@*/ struct stat * st,
@@ -1000,6 +1007,7 @@ exit:
     return rc;
 }
 /*@=mods@*/
+/*@=boundswrite@*/
 
 static const char * statstr(const struct stat * st,
 		/*@returned@*/ /*@out@*/ char * buf)
@@ -1082,6 +1090,7 @@ struct __dirstream {
 static int ftpmagicdir = 0x8440291;
 #define	ISFTPMAGIC(_dir) (!memcmp((_dir), &ftpmagicdir, sizeof(ftpmagicdir)))
 
+/*@-boundswrite@*/
 /*@-type@*/ /* FIX: abstract DIR */
 /*@null@*/
 static DIR * ftpOpendir(const char * path)
@@ -1216,6 +1225,7 @@ fprintf(stderr, "*** ftpOpendir(%s)\n", path);
 
     return dir;
 }
+/*@=boundswrite@*/
 
 /*@null@*/
 static struct dirent * ftpReaddir(DIR * dir)

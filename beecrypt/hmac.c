@@ -34,6 +34,7 @@
 #define HMAC_IPAD	0x36
 #define HMAC_OPAD	0x5c
 
+/*@-boundswrite@*/
 int hmacSetup(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param, const uint32* key, int keybits)
 {
 	register int i, rc;
@@ -99,6 +100,7 @@ int hmacSetup(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param,
 
 	return hmacReset(hp, hash, param);
 }
+/*@=boundswrite@*/
 
 int hmacReset(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param)
 {

@@ -56,6 +56,7 @@ static const uint32 hinit[8] = {
 const hashFunction sha256 = { "SHA-256", sizeof(sha256Param), 64, 8 * sizeof(uint32), (hashFunctionReset) sha256Reset, (hashFunctionUpdate) sha256Update, (hashFunctionDigest) sha256Digest };
 /*@=sizeoftype@*/
 
+/*@-boundswrite@*/
 int sha256Reset(register sha256Param *p)
 {
 	mp32copy(8, p->h, hinit);
@@ -64,6 +65,7 @@ int sha256Reset(register sha256Param *p)
 	p->offset = 0;
 	return 0;
 }
+/*@=boundswrite@*/
 
 #define R(x,s)  ((x) >> (s))
 #define S(x,s) ROTR32(x, s)
@@ -187,6 +189,7 @@ void sha256Process(register sha256Param *p)
 }
 #endif
 
+/*@-boundswrite@*/
 int sha256Update(register sha256Param *p, const byte *data, int size)
 {
 	register int proclength;
@@ -208,9 +211,11 @@ int sha256Update(register sha256Param *p, const byte *data, int size)
 	}
 	return 0;
 }
+/*@=boundswrite@*/
 
 /**
  */
+/*@-boundswrite@*/
 static void sha256Finish(register sha256Param *p)
 	/*@globals internalState @*/
 	/*@modifies p, internalState @*/
@@ -243,7 +248,9 @@ static void sha256Finish(register sha256Param *p)
 	sha256Process(p);
 	p->offset = 0;
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 int sha256Digest(register sha256Param *p, uint32 *data)
 {
 	sha256Finish(p);
@@ -251,3 +258,4 @@ int sha256Digest(register sha256Param *p, uint32 *data)
 	(void) sha256Reset(p);
 	return 0;
 }
+/*@=boundswrite@*/

@@ -38,6 +38,7 @@ static const char* to_b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy
 /* encode 64 characters per line */
 #define CHARS_PER_LINE	64
 
+/*@-boundswrite@*/
 char* b64enc(const memchunk* chunk)
 {
 	int div = chunk->size / 3;
@@ -99,7 +100,9 @@ char* b64enc(const memchunk* chunk)
 	return string;
 	/*@=dependenttrans@*/
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 memchunk* b64dec(const char* string)
 {
 	/* return a decoded memchunk, or a null pointer in case of failure */
@@ -235,11 +238,13 @@ memchunk* b64dec(const char* string)
 
 	return rc;
 }
+/*@=boundswrite@*/
 
 int b64encode_chars_per_line = B64ENCODE_CHARS_PER_LINE;
 
 const char * b64encode_eolstr = B64ENCODE_EOLSTR;
 
+/*@-boundswrite@*/
 /*@-internalglobs -modfilesys @*/
 char * b64encode (const void * data, int ns)
 {
@@ -323,6 +328,7 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
     /*@=mustfree =compdef @*/
 }
 /*@=globs =internalglobs =modfilesys @*/
+/*@=boundswrite@*/
 
 /*@-internalglobs -modfilesys @*/
 #define CRC24_INIT 0xb704ceL
@@ -358,6 +364,7 @@ char * b64crc (const unsigned char * data, int ns)
 const char * b64decode_whitespace = B64DECODE_WHITESPACE;
 
 /*@-internalglobs -modfilesys @*/
+/*@-boundswrite@*/
 int b64decode (const char * s, void ** datap, int *lenp)
 {
     unsigned char b64dec[256];
@@ -454,4 +461,5 @@ fprintf(stderr, "%7u %02x %02x %02x %02x -> %02x %02x %02x\n",
 
     return 0;
 }
+/*@=boundswrite@*/
 /*@=globs =internalglobs =modfilesys @*/

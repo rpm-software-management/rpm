@@ -51,6 +51,7 @@ Cambridge, MA 02139, USA.  */
 
 /**
  */
+/*@-boundswrite@*/
 /*@-nullstate@*/
 static int
 myftw_dir (DIR **dirs, int level, int descriptors,
@@ -173,6 +174,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
   return errno == 0 ? 0 : -1;
 }
 /*@=nullstate@*/
+/*@=boundswrite@*/
 
 /* Call a function on every element in a directory tree.  */
 

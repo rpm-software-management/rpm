@@ -71,6 +71,7 @@ void mp32nsize(mp32number* n, uint32 size)
 }
 /*@=compdef @*/
 
+/*@-boundswrite@*/
 void mp32ninit(mp32number* n, uint32 size, const uint32* data)
 {
 	n->size = size;
@@ -84,6 +85,7 @@ void mp32ninit(mp32number* n, uint32 size, const uint32* data)
 	if (n->data && data)
 		mp32copy(size, n->data, data);
 }
+/*@=boundswrite@*/
 
 void mp32nfree(mp32number* n)
 {
@@ -106,6 +108,7 @@ void mp32nwipe(mp32number* n)
 		mp32zero(n->size, n->data);
 }
 
+/*@-boundswrite@*/
 void mp32nset(mp32number* n, uint32 size, const uint32* data)
 {
 	if (size)
@@ -137,7 +140,9 @@ void mp32nset(mp32number* n, uint32 size, const uint32* data)
 	else
 		{};
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 void mp32nsetw(mp32number* n, uint32 val)
 {
 	if (n->data)
@@ -159,7 +164,9 @@ void mp32nsetw(mp32number* n, uint32 val)
 		n->data = (uint32*) 0;
 	}
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 /*@-usedef @*/	/* n->data may be NULL */
 void mp32nsethex(mp32number* n, const char* hex)
 {
@@ -212,3 +219,4 @@ void mp32nsethex(mp32number* n, const char* hex)
 }
 /*@=usedef @*/
 /*@=sizeoftype@*/
+/*@=boundswrite@*/

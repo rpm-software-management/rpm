@@ -756,6 +756,7 @@ static const blockMode aesModes[2] =
 const blockCipher aes = { "AES", sizeof(aesParam), 16, 128, 256, 64, (blockCipherSetup) aesSetup, (blockCipherSetIV) aesSetIV, (blockCipherEncrypt) aesEncrypt, (blockCipherDecrypt) aesDecrypt, aesModes };
 /*@=sizeoftype@*/
 
+/*@-boundswrite@*/
 int aesSetup(aesParam* ap, const uint32* key, int keybits, cipherOperation op)
 {
 	if (((keybits & 63) == 0) && (keybits >= 128) && (keybits <= 256))
@@ -885,6 +886,7 @@ int aesSetup(aesParam* ap, const uint32* key, int keybits, cipherOperation op)
 	}
 	return -1;
 }
+/*@=boundswrite@*/
 
 #ifndef ASM_AESSETIV
 int aesSetIV(aesParam* ap, const uint32* iv)
@@ -987,6 +989,7 @@ int aesSetIV(aesParam* ap, const uint32* iv)
 		rk[3];
 
 #ifndef ASM_AESENCRYPT
+/*@-boundswrite@*/
 int aesEncrypt(aesParam* ap, uint32* dst, const uint32* src)
 {
 	register uint32 s0, s1, s2, s3;
@@ -1044,6 +1047,7 @@ int aesEncrypt(aesParam* ap, uint32* dst, const uint32* src)
 
 	return 0;
 }
+/*@=boundswrite@*/
 #endif
 
 #define dtfs(i) \
@@ -1125,6 +1129,7 @@ int aesEncrypt(aesParam* ap, uint32* dst, const uint32* src)
    		rk[3];
 
 #ifndef ASM_AESDECRYPT
+/*@-boundswrite@*/
 int aesDecrypt(aesParam* ap, uint32* dst, const uint32* src)
 {
 	register uint32 s0, s1, s2, s3;
@@ -1182,6 +1187,7 @@ int aesDecrypt(aesParam* ap, uint32* dst, const uint32* src)
 
 	return 0;
 }
+/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_AESECBENCRYPT
@@ -1217,6 +1223,7 @@ int aesECBDecrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
 #endif
 
 #ifndef ASM_AESCBCENCRYPT
+/*@-boundswrite@*/
 int aesCBCEncrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
 {
 	if (count > 0)
@@ -1255,6 +1262,7 @@ int aesCBCEncrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
 	}
 	return 0;
 }
+/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_AESCBCDECRYPT

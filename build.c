@@ -95,6 +95,7 @@ static int isSpecFile(const char * specfile)
 
 /**
  */
+/*@-boundswrite@*/
 static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -288,6 +289,7 @@ exit:
     buildRootURL = _free(buildRootURL);
     return rc;
 }
+/*@=boundswrite@*/
 
 int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 {

@@ -22,3 +22,4 @@ stamp-h
 stamp-h1
 stamp-h.in
 libelf-*.tar.gz
+*.lcd

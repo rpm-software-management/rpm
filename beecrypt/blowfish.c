@@ -408,6 +408,7 @@ int blowfishSetIV(blowfishParam* bp, const uint32* iv)
 #endif
 
 #ifndef ASM_BLOWFISHENCRYPT
+/*@-boundswrite@*/
 int blowfishEncrypt(blowfishParam* bp, uint32* dst, const uint32* src)
 {
 	#if WORDS_BIGENDIAN
@@ -437,9 +438,11 @@ int blowfishEncrypt(blowfishParam* bp, uint32* dst, const uint32* src)
 
 	return 0;
 }
+/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_BLOWFISHDECRYPT
+/*@-boundswrite@*/
 int blowfishDecrypt(blowfishParam* bp, uint32* dst, const uint32* src)
 {
 	#if WORDS_BIGENDIAN
@@ -469,6 +472,7 @@ int blowfishDecrypt(blowfishParam* bp, uint32* dst, const uint32* src)
 
 	return 0;
 }
+/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_BLOWFISHECBENCRYPT
@@ -504,6 +508,7 @@ int blowfishECBDecrypt(blowfishParam* bp, int count, uint32* dst, const uint32* 
 #endif
 
 #ifndef ASM_BLOWFISHCBCENCRYPT
+/*@-boundswrite@*/
 int blowfishCBCEncrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src)
 {
 	if (count > 0)
@@ -536,6 +541,7 @@ int blowfishCBCEncrypt(blowfishParam* bp, int count, uint32* dst, const uint32* 
 	}
 	return 0;
 }
+/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_BLOWFISHCBCDECRYPT

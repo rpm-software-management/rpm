@@ -14,7 +14,7 @@
 
 # --- in progress
 #+bounds		# 334
-#+boundswrite		# 152
++boundswrite		# 152
 
 # --- +partial artifacts
 -declundef

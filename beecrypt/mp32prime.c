@@ -1159,6 +1159,7 @@ static int mp32pmilraba_w(const mp32barrett* p, const uint32* adata, uint32 s, c
 /**
  * needs workspace of (8*size+2) words
  */
+/*@-boundswrite@*/
 int mp32pmilrab_w(const mp32barrett* p, randomGeneratorContext* rc, int t, uint32* wksp)
 {
 	/*
@@ -1208,10 +1209,12 @@ int mp32pmilrab_w(const mp32barrett* p, randomGeneratorContext* rc, int t, uint3
 
     return 1;
 }
+/*@=boundswrite@*/
 
 /**
  * needs workspace of (7*size+2) words
  */
+/*@-boundswrite@*/
 void mp32prnd_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mp32number* f, uint32* wksp)
 {
 	/*
@@ -1259,10 +1262,12 @@ void mp32prnd_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, 
 		}
 	}
 }
+/*@=boundswrite@*/
 
 /**
  * needs workspace of (7*size+2) words
  */
+/*@-boundswrite@*/
 void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, const mp32barrett* q, const mp32number* f, mp32number* r, int cofactor, uint32* wksp)
 {
 	/*
@@ -1367,7 +1372,9 @@ void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, i
 		}
 	}
 }
+/*@=boundswrite@*/
 
+/*@-boundswrite@*/
 void mp32prndsafe_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int t, uint32* wksp)
 {
 	/*
@@ -1425,3 +1432,4 @@ void mp32prndsafe_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int
 		/*@=usedef@*/
 	}
 }
+/*@=boundswrite@*/

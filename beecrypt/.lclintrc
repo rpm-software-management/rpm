@@ -14,7 +14,7 @@
 
 # --- in progress
 #+bounds		# 416
-#+boundswrite		# 169
++boundswrite		# 169
 
 # --- not-yet at strict level
 -exportconst		# 4

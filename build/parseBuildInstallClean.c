@@ -9,6 +9,7 @@
 
 /*@access StringBuf @*/
 
+/*@-boundswrite@*/
 int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 {
     int nextPart, rc;
@@ -52,3 +53,4 @@ int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 
     return nextPart;
 }
+/*@=boundswrite@*/

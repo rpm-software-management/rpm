@@ -5,6 +5,8 @@
 Doxyfile
 Makefile
 Makefile.in
+aclocal.m4
+autom4te-*
 apidocs
 config.cache
 config.guess
@@ -14,14 +16,17 @@ config.log
 config.status
 config.sub
 configure
+depcomp
 doxygen
 find-requires
 find-provides
+install-sh
 lib-rpmrc
 libtool
 ltconfig
 ltmain.sh
 macros
+missing
 platform
 rpm
 rpmdb
