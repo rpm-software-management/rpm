@@ -130,6 +130,7 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 	    fprintf(stdout, "%%%% %f\n", (total
 				? ((float) ((((float) amount) / total) * 100))
 				: 100.0));
+	    fflush(stdout);
 	} else if (flags & INSTALL_HASH) {
 	    printHash(amount, total);
 	}
