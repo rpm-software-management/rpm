@@ -1,0 +1,55 @@
+This is the readme for RPM version 2.2.5, written by 
+<Kristof.Depraetere@rug.ac.be>
+
+1 Requirements.
+
+First make sure you have at least IXEmul v44.0 installed.
+These packages are needed to be able to compile rpm:
+  * gettext
+  * gdbm
+  * zlib
+  
+These extra packages are needed to run rpm:
+  * cpio
+
+2 Installation.
+
+These are the things you'll have to do to install this package.
+  
+  * cd <your-build-directory>
+  * tar -xzvf rpm-2.2.5-src.tar.gz
+  * cd rpm-2.2.5
+  * configure --prefix=/ade
+  * make
+  * make install
+  
+Now it's time to edit the file "ade:lib/rpmrc" to correspond to your
+system setup. Change the following entry:
+  * topdir: /place/where/you/want/to/store/RPM/packages
+
+Also edit the file "etc:rpmrc". Replace the <topdir> entry with 
+a <builddir> entry (note UNIX style path names):
+  * builddir: /place/where/RPM/will/build/packages
+
+It is recommended to let <topdir> and <builddir> point to two different
+partitions.
+  
+Now create the following directories in <topdir>:
+  * RPMS
+  * RPMS/m68k
+  * SOURCES
+  * SRPMS
+  * SPECS
+  
+Create the "rpm" directory in "ade:lib".
+  makedir ade:lib/rpm
+
+Now it's time to initialise the rpm database with:
+  rpm --initdb
+  
+3 Problems and bugs.
+
+Please contact me <Kristof.Depraetere@rug.ac.be> if you experience 
+any problems with or find bugs in this package.
+
+Please remember: "A bug not know of is a bug not fixed".  
