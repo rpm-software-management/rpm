@@ -3,21 +3,44 @@ Basic TestCases for BTree and hash DBs, with and without a DBEnv, with
 various DB flags, etc.
 """
 
-import os
-import sys
-import errno
-import shutil
-import string
-import tempfile
-from pprint import pprint
 import unittest
 
 import rpm
-import mpz
 
 from test_all import verbose
 
 DASH = '-'
+
+Methods = ( '__add__', '__sub__', '__mul__', '__div__', '__mod__', '__lshift__', '__rshift__', '__and__', '__xor__', '__or__')
+
+class Factory(object):
+    def __init__(self, false_self, method_name):
+	self.false_self = false_self
+	self.method_name = method_name
+
+    def __call__(self, val):
+	xself = long(self.false_self)
+	yself = int(self.false_self)
+	xm = long.__getattribute__(xself, self.method_name)
+	ym = rpm.mpw.__getattribute__(yself, self.method_name)
+	xa = xm(long(val))
+	ya = ym(int(val))
+	print "  Comparing", xa, ya
+	assert xa == ya
+	return xa
+
+class Long(long):
+    def __getattribute__(self, name):
+	print "__getattribute__ ~%s~" % name
+	if name not in ('__add__', '__sub__'):
+	    return long.getattr(self, name)
+        return Factory(self, name)
+
+#a1 = Bar(1)
+#a2 = Bar(2)
+#print a1.__add__(a2)
+#print "Done"
+#print a1 + a2
 
 #----------------------------------------------------------------------
 
@@ -51,6 +74,9 @@ class BasicTestCase(unittest.TestCase):
 	wa = rpm.mpw(self.a)
 	wb = rpm.mpw(self.b)
 	wc = rpm.mpw(self.c)
+#	xa - Long(self.a)
+#	xb = Long(self.b)
+#	xc = Long(self.c)
 	za = long(self.a)
 	zb = long(self.b)
 	zc = long(self.c)
@@ -135,10 +161,52 @@ class BasicTestCase(unittest.TestCase):
             print '\n', '-=' * 30
             print "Running %s.test03_Signs..." % \
                   self.__class__.__name__
-	a = 9876543210
-	wa = -rpm.mpw(a);
-	za = -long(a);
-	print "-9876543210:\t", wa, "\t",  za
+	wp = rpm.mpw(10)
+	wm = -wp
+	wpp = wp + 1
+	wmm = -wpp
+	zp = long(10)
+	zm = -zp
+	zpp = zp + 1
+	zmm = -zpp
+	print "add --:\t", (wm+wm), "\t", (zm+zm)
+	print "add -+:\t", (wm+wp), "\t", (zm+zp)
+	print "add +-:\t", (wp+wm), "\t", (zp+zm)
+	print "add ++:\t", (wp+wp), "\t", (zp+zp)
+	print "sub --:\t", (wm-wm), "\t", (zm-zm)
+	print "sub -+:\t", (wm-wp), "\t", (zm-zp)
+	print "sub +-:\t", (wp-wm), "\t", (zp-zm)
+	print "sub ++:\t", (wp-wp), "\t", (zp-zp)
+	print "mul --:\t", (wm*wm), "\t", (zm*zm)
+	print "mul -+:\t", (wm*wp), "\t", (zm*zp)
+	print "mul +-:\t", (wp*wm), "\t", (zp*zm)
+	print "mul ++:\t", (wp*wp), "\t", (zp*zp)
+	print "div --:\t", (wm/wm), "\t", (zm/zm)
+	print "div -+:\t", (wm/wp), "\t", (zm/zp)
+	print "div +-:\t", (wp/wm), "\t", (zp/zm)
+	print "div ++:\t", (wp/wp), "\t", (zp/zp)
+	print "pow --:\t", (wm**wm), "\t", (zm**zm)
+	print "pow -+:\t", (wm**wp), "\t", (zm**zp)
+	print "pow +-:\t", (wp**wm), "\t", (zp**zm)
+	print "pow ++:\t", (wp**wp), "\t", (zp**zp)
+
+	wpa = rpm.mpw(13)
+	wma = -wpa
+	wpb = wpa - 3
+	wmb = -wpb
+	zpa = long(13)
+	zma = -zpa
+	zpb = zpa - 3
+	zmb = -zpb
+	print "mod --:\t", (wma%wmb), "\t", (zma%zmb)
+	print "mod -+:\t", (wma%wpb), "\t", (zma%zpb)
+	print "mod +-:\t", (wpa%wmb), "\t", (zpa%zmb)
+	print "mod ++:\t", (wpa%wpb), "\t", (zpa%zpb)
+
+	print "rem --:\t", divmod(wma, wmb), "\t", divmod(zma, zmb)
+	print "rem -+:\t", divmod(wma, wpb), "\t", divmod(zma, zpb)
+	print "rem +-:\t", divmod(wpa, wmb), "\t", divmod(zpa, zmb)
+	print "rem ++:\t", divmod(wpa, wpb), "\t", divmod(zpa, zpb)
 	pass
 
     #----------------------------------------

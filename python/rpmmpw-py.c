@@ -1422,9 +1422,10 @@ fprintf(stderr, "sub ++: borrow\n");
     case '*':
 	zsize = xsize + msize;
 	zdata = alloca(zsize * sizeof(*zdata));
+	zsign = x->ob_size * m->ob_size;
 	mpmul(zdata, xsize, xdata, msize, mdata);
 	z = mpw_FromMPW(zsize, zdata, 1);
-	if (zsign)
+	if (zsign < 0)
 	    z->ob_size = -z->ob_size;
 	break;
     case '/':
@@ -1437,6 +1438,7 @@ fprintf(stderr, "sub ++: borrow\n");
 
 	zsize = asize + 1;
 	zdata = alloca(zsize * sizeof(*zdata));
+	zsign = x->ob_size * m->ob_size;
 	wksp = alloca((bsize+1) * sizeof(*wksp));
 
 	shift = mpnorm(bsize, bdata);
@@ -1446,7 +1448,7 @@ fprintf(stderr, "sub ++: borrow\n");
 	zsize -= bsize;
 
 	z = mpw_FromMPW(zsize, zdata, 1);
-	if (zsign)
+	if (zsign < 0)
 	    z->ob_size = -z->ob_size;
 	break;
     case '%':
@@ -1458,13 +1460,28 @@ fprintf(stderr, "sub ++: borrow\n");
 
 	zsize = asize;
 	zdata = alloca(zsize * sizeof(*zdata));
+	zsign = x->ob_size * m->ob_size;
 	wksp = alloca((bsize+1) * sizeof(*wksp));
 
 	mpnmod(zdata, asize, adata, bsize, bdata, wksp);
 
+	if (zsign < 0) {
+	    if (m->ob_size < 0) {
+		(void) mpsubx(zsize, zdata, bsize, bdata);
+		mpneg(zsize, zdata);
+	    } else {
+		zsign = 0;
+		mpneg(zsize, zdata);
+		(void) mpaddx(zsize, zdata, bsize, bdata);
+	    }
+	}
 	z = mpw_FromMPW(zsize, zdata, 1);
-	if (zsign)
+	if (zsign < 0) {
 	    z->ob_size = -z->ob_size;
+	} else if (zsign > 0) {
+	    if (x->ob_size < 0)
+		z->ob_size = -z->ob_size;
+	}
 	break;
     case '<':
 	/* XXX FIXME: enlarge? negative count? sign?. */
@@ -1520,10 +1537,15 @@ fprintf(stderr, "sub ++: borrow\n");
     {	mpnumber zn;
 
 	mpnzero(&zn);
-	mpnpow_w(&zn, xsize, xdata, msize, mdata);
+	if (msize == 0 || (msize == 1 && *mdata == 0))
+	    mpnsetw(&zn, 1);
+	else if (m->ob_size < 0)
+	    mpnsetw(&zn, 0);
+	else
+	    mpnpow_w(&zn, xsize, xdata, msize, mdata);
 	z = mpw_FromMPW(zn.size, zn.data, 1);
 	mpnfree(&zn);
-	if (zsign)
+	if (zsign < 0)
 	    z->ob_size = -z->ob_size;
     }	break;
     case 'G':
@@ -1884,6 +1906,7 @@ mpw_divmod(PyObject * v, PyObject * w)
     size_t zsize;
     mpw* zdata;
     mpw* wksp;
+    int qsign = 0;
 
     if (a == NULL || b == NULL)
 	goto exit;
@@ -1910,6 +1933,7 @@ mpw_divmod(PyObject * v, PyObject * w)
 	bsize -= bnorm;
 	bdata += bnorm;
     }
+    qsign = a->ob_size * b->ob_size;
     wksp = alloca((bsize+1) * sizeof(*wksp));
 
     mpndivmod(zdata, asize, adata, bsize, bdata, wksp);
@@ -1924,12 +1948,26 @@ fprintf(stderr, "    z %p[%d]:\t", zdata, zsize), mpfprintln(stderr, zsize, zdat
     r = mpw_FromMPW(bsize, zdata+zsize, 1);
     if (r == NULL)
 	goto exit;
+    if (qsign < 0) {
+	if (b->ob_size < 0) {
+	    (void) mpsubx(MPW_SIZE(r), MPW_DATA(r), bsize, bdata);
+	    mpneg(MPW_SIZE(r), MPW_DATA(r));
+	} else {
+	    mpneg(MPW_SIZE(r), MPW_DATA(r));
+	    (void) mpaddx(MPW_SIZE(r), MPW_DATA(r), bsize, bdata);
+	}
+	(void) mpaddw(zsize, zdata, (mpw)1);
+    }
+    if (b->ob_size < 0)
+	r->ob_size = -r->ob_size;
 
     q = mpw_FromMPW(zsize, zdata, 1);
     if (q == NULL) {
 	Py_DECREF(r);
 	goto exit;
     }
+    if (qsign < 0)
+	q->ob_size = -q->ob_size;
 
 if (_mpw_debug) {
 prtmpw("q", q);
