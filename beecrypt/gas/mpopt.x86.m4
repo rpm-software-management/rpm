@@ -1,39 +1,28 @@
-/*
- * mp32opt.i386.S
- *
- * Assembler optimized multiprecision integer routines for Intel 386 and higher
- *
- * Compile target is GNU Assembler
- *
- * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- */
-
-#include "beecrypt.gas.h"
-
-	.file "mp32opt.i386.S"
-
-	.text
+dnl  mpopt.x86.m4
+dnl
+dnl  Copyright (c) 2003 Bob Deblier
+dnl 
+dnl  Author: Bob Deblier <bob.deblier@pandora.be>
+dnl 
+dnl  This library is free software; you can redistribute it and/or
+dnl  modify it under the terms of the GNU Lesser General Public
+dnl  License as published by the Free Software Foundation; either
+dnl  version 2.1 of the License, or (at your option) any later version.
+dnl 
+dnl  This library is distributed in the hope that it will be useful,
+dnl  but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+dnl  Lesser General Public License for more details.
+dnl 
+dnl  You should have received a copy of the GNU Lesser General Public
+dnl  License along with this library; if not, write to the Free Software
+dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ 
+include(config.m4)
+include(ASM_SRCDIR/x86.m4)
 
 
 C_FUNCTION_BEGIN(mpzero)
-LABEL(mpzero)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -44,11 +33,10 @@ LABEL(mpzero)
 
 	popl %edi
 	ret
-C_FUNCTION_END(mpzero, LOCAL(mpzero_size))
+C_FUNCTION_END(mpzero)
 
 
 C_FUNCTION_BEGIN(mpfill)
-LABEL(mpfill)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -59,32 +47,29 @@ LABEL(mpfill)
 
 	popl %edi
 	ret
-C_FUNCTION_END(mpfill, LOCAL(mpfill_size))
+C_FUNCTION_END(mpfill)
 
 
 C_FUNCTION_BEGIN(mpeven)
-LABEL(mpeven)
 	movl 4(%esp),%ecx
 	movl 8(%esp),%eax
 	movl -4(%eax,%ecx,4),%eax
 	notl %eax
-	andl $1,%eax
+	andl `$'1,%eax
 	ret
-C_FUNCTION_END(mpeven, LOCAL(mpeven_size))
+C_FUNCTION_END(mpeven)
 
 
 C_FUNCTION_BEGIN(mpodd)
-LABEL(mpodd)
 	movl 4(%esp),%ecx
 	movl 8(%esp),%eax
 	movl -4(%eax,%ecx,4),%eax
-	andl $1,%eax
+	andl `$'1,%eax
 	ret
-C_FUNCTION_END(mpodd, LOCAL(mpodd_size))
+C_FUNCTION_END(mpodd)
 
 
 C_FUNCTION_BEGIN(mpaddw)
-LABEL(mpaddw)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -110,11 +95,10 @@ LOCAL(mpaddw_skip):
 
 	popl %edi
 	ret
-C_FUNCTION_END(mpaddw, LOCAL(mpaddw_size))
+C_FUNCTION_END(mpaddw)
 
 
 C_FUNCTION_BEGIN(mpsubw)
-LABEL(mpsubw)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -139,11 +123,10 @@ LOCAL(mpsubw_skip):
 	negl %eax
 	popl %edi
 	ret
-C_FUNCTION_END(mpsubw, LOCAL(mpsubw_size))
+C_FUNCTION_END(mpsubw)
 
 
 C_FUNCTION_BEGIN(mpadd)
-LABEL(mpadd)
 	pushl %edi
 	pushl %esi
 
@@ -157,7 +140,9 @@ LABEL(mpadd)
 	.align 4
 LOCAL(mpadd_loop):
 	movl (%esi,%ecx,4),%eax
-	adcl %eax,(%edi,%ecx,4)
+	movl (%edi,%ecx,4),%edx
+	adcl %eax,%edx
+	movl %edx,(%edi,%ecx,4)
 	decl %ecx
 	jns LOCAL(mpadd_loop)
 
@@ -167,11 +152,10 @@ LOCAL(mpadd_loop):
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mpadd, LOCAL(mpadd_size))
+C_FUNCTION_END(mpadd)
 
 
 C_FUNCTION_BEGIN(mpsub)
-LABEL(mpsub)
 	pushl %edi
 	pushl %esi
 
@@ -185,7 +169,9 @@ LABEL(mpsub)
 	.align 4
 LOCAL(mpsub_loop):
 	movl (%esi,%ecx,4),%eax
-	sbbl %eax,(%edi,%ecx,4)
+	movl (%edi,%ecx,4),%edx
+	sbbl %eax,%edx
+	movl %edx,(%edi,%ecx,4)
 	decl %ecx
 	jns LOCAL(mpsub_loop)
 
@@ -194,11 +180,10 @@ LOCAL(mpsub_loop):
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mpsub, LOCAL(mpsub_size))
+C_FUNCTION_END(mpsub)
 
 
 C_FUNCTION_BEGIN(mpdivtwo)
-LABEL(mpdivtwo)
 	pushl %edi
 
 	movl 8(%esp),%ecx
@@ -206,32 +191,33 @@ LABEL(mpdivtwo)
 
 	leal (%edi,%ecx,4),%edi
 	negl %ecx
-	clc
+	xorl %eax,%eax
 
 	.align 4
 LOCAL(mpdivtwo_loop):
-	rcrl $1,(%edi,%ecx,4)
+	rcrl `$'1,(%edi,%ecx,4)
 	inc %ecx
 	jnz LOCAL(mpdivtwo_loop)
 
 	popl %edi
 	ret
-C_FUNCTION_END(mpdivtwo, LOCAL(mpdivtwo_size))
+C_FUNCTION_END(mpdivtwo)
 
 
 C_FUNCTION_BEGIN(mpmultwo)
-LABEL(mpmultwo)
 	pushl %edi
 
 	movl 8(%esp),%ecx
 	movl 12(%esp),%edi
 
-	clc
+	xorl %edx,%edx
 	decl %ecx
 
 	.align 4
 LOCAL(mpmultwo_loop):
-	rcll $1,(%edi,%ecx,4)
+	movl (%edi,%ecx,4),%eax
+	adcl %eax,%eax
+	movl %eax,(%edi,%ecx,4)
 	decl %ecx 
 	jns LOCAL(mpmultwo_loop)
 
@@ -240,13 +226,34 @@ LOCAL(mpmultwo_loop):
 
 	popl %edi
 	ret
-C_FUNCTION_END(mpmultwo, LOCAL(mpmultwo_size))
+C_FUNCTION_END(mpmultwo)
 
 
 C_FUNCTION_BEGIN(mpsetmul)
-LABEL(mpsetmul)
 	pushl %edi
 	pushl %esi
+ifdef(`USE_SSE2',`
+	movl 12(%esp),%ecx
+	movl 16(%esp),%edi
+	movl 20(%esp),%esi
+	movd 24(%esp),%mm1
+
+	pxor %mm0,%mm0
+	decl %ecx
+
+	.align 4
+LOCAL(mpsetmul_loop):
+	movd (%esi,%ecx,4),%mm2
+	pmuludq %mm1,%mm2
+	paddq %mm2,%mm0
+	movd %mm0,(%edi,%ecx,4)
+	decl %ecx
+	psrlq `$'32,%mm0
+	jns LOCAL(mpsetmul_loop)
+
+	movd %mm0,%eax
+	emms
+',`
 	pushl %ebx
 	pushl %ebp
 
@@ -264,7 +271,7 @@ LOCAL(mpsetmul_loop):
 	movl (%esi,%ecx,4),%eax
 	mull %ebp
 	addl %ebx,%eax
-	adcl $0,%edx
+	adcl `$'0,%edx
 	movl %eax,(%edi,%ecx,4)
 	decl %ecx
 	jns LOCAL(mpsetmul_loop)
@@ -273,16 +280,40 @@ LOCAL(mpsetmul_loop):
 
 	popl %ebp
 	popl %ebx
+')
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mpsetmul, LOCAL(mpsetmul_size))
+C_FUNCTION_END(mpsetmul)
 
 
 C_FUNCTION_BEGIN(mpaddmul)
-LABEL(mpaddmul)
 	pushl %edi
 	pushl %esi
+ifdef(`USE_SSE2',`
+	movl 12(%esp),%ecx
+	movl 16(%esp),%edi
+	movl 20(%esp),%esi
+	movd 24(%esp),%mm1
+
+	pxor %mm0,%mm0
+	decl %ecx
+
+	.align 4
+LOCAL(mpaddmul_loop):
+	movd (%esi,%ecx,4),%mm2
+	movd (%edi,%ecx,4),%mm3
+	pmuludq %mm1,%mm2
+	paddq %mm2,%mm3
+	paddq %mm3,%mm0
+	movd %mm0,(%edi,%ecx,4)
+	decl %ecx
+	psrlq $32,%mm0
+	jns LOCAL(mpaddmul_loop)
+
+	movd %mm0,%eax
+	emms
+',`
 	pushl %ebx
 	pushl %ebp
 
@@ -311,16 +342,43 @@ LOCAL(mpaddmul_loop):
 
 	popl %ebp
 	popl %ebx
+')
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mpaddmul, LOCAL(mpaddmul_size))
+C_FUNCTION_END(mpaddmul)
 
 
 C_FUNCTION_BEGIN(mpaddsqrtrc)
-LABEL(mpaddsqrtrc)
 	pushl %edi
 	pushl %esi
+ifdef(`USE_SSE2',`
+	movl 12(%esp),%ecx
+	movl 16(%esp),%edi
+	movl 20(%esp),%esi
+
+	pxor %mm0,%mm0
+	decl %ecx
+
+	.align 4
+LOCAL(mpaddsqrtrc_loop):
+	movd (%esi,%ecx,4),%mm2
+	pmuludq %mm2,%mm2
+	movd 4(%edi,%ecx,8),%mm3
+	paddq %mm2,%mm3
+	movd 0(%edi,%ecx,8),%mm4
+	paddq %mm3,%mm0
+	movd %mm0,4(%edi,%ecx,8)
+	psrlq $32,%mm0
+	paddq %mm4,%mm0
+	movd %mm0,0(%edi,%ecx,8)
+	decl %ecx
+	psrlq $32,%mm0
+	jns LOCAL(mpaddsqrtrc_loop)
+
+	movd %mm0,%eax
+	emms
+',`
 	pushl %ebx
 
 	movl 16(%esp),%ecx
@@ -346,7 +404,8 @@ LOCAL(mpaddsqrtrc_loop):
 	movl %ebx,%eax
 
 	popl %ebx
+')
 	popl %esi
 	popl %edi
 	ret
-C_FUNCTION_END(mpaddsqrtrc, LOCAL(mpaddsqrtrc_size))
+C_FUNCTION_END(mpaddsqrtrc)

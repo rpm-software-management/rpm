@@ -1,41 +1,28 @@
-/*
- * mp32opt.sparcv9.S
- *
- * Assembler optimized multiprecision integer routines for UltraSparc (64 bits instructions, will run on 32 bit OS)
- *
- * Compile target is GNU Assembler, Sun Solaris Assembler
- *
- * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- */
+dnl  mpopt.sparcv8plus.m4
+dnl
+dnl  Copyright (c) 2003 Bob Deblier
+dnl 
+dnl  Author: Bob Deblier <bob.deblier@pandora.be>
+dnl 
+dnl  This library is free software; you can redistribute it and/or
+dnl  modify it under the terms of the GNU Lesser General Public
+dnl  License as published by the Free Software Foundation; either
+dnl  version 2.1 of the License, or (at your option) any later version.
+dnl 
+dnl  This library is distributed in the hope that it will be useful,
+dnl  but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+dnl  Lesser General Public License for more details.
+dnl 
+dnl  You should have received a copy of the GNU Lesser General Public
+dnl  License along with this library; if not, write to the Free Software
+dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-#include "beecrypt.gas.h"
+include(config.m4)
+include(ASM_SRCDIR/sparc.m4)
 
-	.file "mp32opt.sparcv9.S"
-
-	.text
 
 C_FUNCTION_BEGIN(mpaddw)
-LABEL(mpaddw)
-
-	.register %g2,#scratch
-
 	sll %o0,2,%g1
 	dec 4,%g1
 	clr %o0
@@ -53,14 +40,10 @@ LOCAL(mpaddw_loop):
 LOCAL(mpaddw_skip):
 	retl
 	movcs %icc,1,%o0
-C_FUNCTION_END(mpaddw, LOCAL(mpaddw_size))
+C_FUNCTION_END(mpaddw)
 
 
 C_FUNCTION_BEGIN(mpsubw)
-LABEL(mpsubw)
-
-	.register %g2,#scratch
-
 	sll %o0,2,%g1
 	dec 4,%g1
 	clr %o0
@@ -78,15 +61,10 @@ LOCAL(mpsubw_loop):
 LOCAL(mpsubw_skip):
 	retl
 	movcs %icc,1,%o0
-C_FUNCTION_END(mpsubw, LOCAL(mpsubw_size))
+C_FUNCTION_END(mpsubw)
 
 
 C_FUNCTION_BEGIN(mpadd)
-LABEL(mpadd)
-
-	.register %g2,#scratch
-	.register %g3,#scratch
-
 	sll %o0,2,%g1
 	dec 4,%g1
 	addcc %g0,%g0,%o0
@@ -99,15 +77,10 @@ LOCAL(mpadd_loop):
 	dec 4,%g1
 	retl
 	movcs %icc,1,%o0
-C_FUNCTION_END(mpadd, LOCAL(mpadd_size))
+C_FUNCTION_END(mpadd)
 
 
 C_FUNCTION_BEGIN(mpsub)
-LABEL(mpsub)
-
-	.register %g2,#scratch
-	.register %g3,#scratch
-
 	sll %o0,2,%g1
 	dec 4,%g1
 	addcc %g0,%g0,%o0
@@ -120,15 +93,10 @@ LOCAL(mpsub_loop):
 	dec 4,%g1
 	retl
 	movcs %icc,1,%o0
-C_FUNCTION_END(mpsub, LOCAL(mpsub_size))
+C_FUNCTION_END(mpsub)
 
 
 C_FUNCTION_BEGIN(mpmultwo)
-LABEL(mpmultwo)
-
-	.register %g2,#scratch
-	.register %g3,#scratch
-
 	sll %o0,2,%g1
 	dec 4,%g1
 	addcc %g0,%g0,%o0
@@ -140,15 +108,10 @@ LOCAL(mpmultwo_loop):
 	dec 4,%g1
 	retl
 	movcs %icc,1,%o0
-C_FUNCTION_END(mpmultwo, LOCAL(mpmultwo_size))
+C_FUNCTION_END(mpmultwo)
 
 
 C_FUNCTION_BEGIN(mpsetmul)
-LABEL(mpsetmul)
-
-	.register %g2,#scratch
-	.register %g3,#scratch
-
 	sll %o0,2,%g1
 	dec 4,%g1
 	clr %o0
@@ -162,15 +125,10 @@ LOCAL(mpsetmul_loop):
 	dec 4,%g1
 	retl
 	srlx %o0,32,%o0
-C_FUNCTION_END(mpsetmul, LOCAL(mpsetmul_size))
+C_FUNCTION_END(mpsetmul)
 
 
 C_FUNCTION_BEGIN(mpaddmul)
-LABEL(mpaddmul)
-
-	.register %g2,#scratch
-	.register %g3,#scratch
-
 	sll %o0,2,%g1
 	dec 4,%g1
 	clr %o0
@@ -186,22 +144,16 @@ LOCAL(mpaddmul_loop):
 	dec 4,%g1
 	retl
 	srlx %o0,32,%o0
-C_FUNCTION_END(mpaddmul, LOCAL(mpaddmul_size))
+C_FUNCTION_END(mpaddmul)
 
 
 C_FUNCTION_BEGIN(mpaddsqrtrc)
-LABEL(mpaddsqrtrc)
-
-	.register %g2,#scratch
-	.register %g3,#scratch
-
 	sll %o0,2,%g1
 	dec 4,%g1
 	add %o1,%g1,%o1
 	add %o1,%g1,%o1
 	clr %o0
 LOCAL(mpaddsqrtrc_loop):
-	/* load from o1 into g4 as xuint; simulate xuint carry by doing an xuint comparison; carry if result smaller than initial value */
 	lduw [%o2+%g1],%g2
 	ldx [%o1],%g4
 	mulx %g2,%g2,%g2
@@ -216,4 +168,4 @@ LOCAL(mpaddsqrtrc_loop):
 	dec 4,%g1
 	retl
 	nop
-C_FUNCTION_END(mpaddsqrtrc, LOCAL(mpaddsqrtrc_size))
+C_FUNCTION_END(mpaddsqrtrc)

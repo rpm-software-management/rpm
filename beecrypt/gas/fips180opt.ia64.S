@@ -27,7 +27,7 @@
  *
  */
 
-#include "beecrypt.gas.h"
+#include "config.gas.h"
 
 #define saved_pfs	r14
 #define saved_lc	r15
@@ -38,13 +38,13 @@
 
 	.text
 
-#define K00	0x5a827999
-#define K20	0x6ed9eba1
-#define K40	0x8f1bbcdc
-#define K60	0xca62c1d6
+	.equ	K00,	0x5a827999
+	.equ	K20,	0x6ed9eba1
+	.equ	K40,	0x8f1bbcdc
+	.equ	K60,	0xca62c1d6
 
-#define PARAM_H		0
-#define PARAM_DATA	20
+	.equ    PARAM_H,        0
+	.equ    PARAM_DATA,     20
 
 /* for optimization, I have to see how I can parallellize the code
 

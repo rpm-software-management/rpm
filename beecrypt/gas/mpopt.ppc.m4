@@ -1,39 +1,28 @@
-/*
- * mp32opt.powerpc.S
- *
- * Assembler optimized multiprecision integer routines for PowerPC
- *
- * Compile target is GNU Assembler
- *
- * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- */
-
-#include "beecrypt.gas.h"
-
-	.file "mp32opt.powerpc.S"
-
-	.text
+dnl  mpopt.ppc.m4
+dnl
+dnl  Copyright (c) 2003 Bob Deblier
+dnl 
+dnl  Author: Bob Deblier <bob.deblier@pandora.be>
+dnl 
+dnl  This library is free software; you can redistribute it and/or
+dnl  modify it under the terms of the GNU Lesser General Public
+dnl  License as published by the Free Software Foundation; either
+dnl  version 2.1 of the License, or (at your option) any later version.
+dnl 
+dnl  This library is distributed in the hope that it will be useful,
+dnl  but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+dnl  Lesser General Public License for more details.
+dnl 
+dnl  You shoulwz have received a copy of the GNU Lesser General Public
+dnl  License along with this library; if not, write to the Free Software
+dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ 
+include(config.m4)
+include(ASM_SRCDIR/ppc.m4)
 
 
 C_FUNCTION_BEGIN(mpaddw)
-LABEL(mpaddw)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
@@ -48,14 +37,12 @@ LOCAL(mpaddw_loop):
 	stw r6,0(r4)
 	bdnz LOCAL(mpaddw_loop)
 LOCAL(mpaddw_skip):
-	/* return the carry */
 	addze r3,r0
 	blr
-C_FUNCTION_END(mpaddw, LOCAL(mpaddw_size))
+C_FUNCTION_END(mpaddw)
 
 
 C_FUNCTION_BEGIN(mpsubw)
-LABEL(mpsubw)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
@@ -70,15 +57,13 @@ LOCAL(mpsubw_loop):
 	stwu r6, -4(r4)
 	bdnz LOCAL(mpsubw_loop)
 LOCAL(mpsubw_skip):
-	/* return the carry */
 	subfe r3,r0,r0
 	neg r3,r3
 	blr
-C_FUNCTION_END(mpsubw, LOCAL(mpsubw_size))
+C_FUNCTION_END(mpsubw)
 
 
 C_FUNCTION_BEGIN(mpadd)
-LABEL(mpadd)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
@@ -96,14 +81,12 @@ LOCAL(mpadd_loop):
 	stwu r6,-4(r4)
 	bdnz LOCAL(mpadd_loop)
 LOCAL(mpadd_skip):
-	/* return the carry */
 	addze r3,r0
 	blr
-C_FUNCTION_END(mpadd, LOCAL(mpadd_size))
+C_FUNCTION_END(mpadd)
 
 
 C_FUNCTION_BEGIN(mpsub)
-LABEL(mpsub)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
@@ -121,15 +104,13 @@ LOCAL(mpsub_loop):
 	stwu r6,-4(r4)
 	bdnz LOCAL(mpsub_loop)
 LOCAL(mpsub_skip):
-	/* return the carry */
 	subfe r3,r0,r0
 	neg r3,r3
 	blr
-C_FUNCTION_END(mpsub, LOCAL(mpsub_size))
+C_FUNCTION_END(mpsub)
 
 
 C_FUNCTION_BEGIN(mpmultwo)
-LABEL(mpmultwo)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
@@ -144,14 +125,12 @@ LOCAL(mpmultwo_loop):
 	stwu r6,-4(r4)
 	bdnz LOCAL(mpmultwo_loop)
 LOCAL(mpmultwo_skip):
-	/* return the carry */
 	addze r3,r0
 	blr
-C_FUNCTION_END(mpmultwo, LOCAL(mpmultwo_size))
+C_FUNCTION_END(mpmultwo)
 
 
 C_FUNCTION_BEGIN(mpsetmul)
-LABEL(mpsetmul)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
@@ -166,11 +145,10 @@ LOCAL(mpsetmul_loop):
 	stwu r8,-4(r4)
 	bdnz LOCAL(mpsetmul_loop)
 	blr
-C_FUNCTION_END(mpsetmul, LOCAL(mpsetmul_size))
+C_FUNCTION_END(mpsetmul)
 
 
 C_FUNCTION_BEGIN(mpaddmul)
-LABEL(mpaddmul)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
@@ -188,11 +166,10 @@ LOCAL(mpaddmul_loop):
 	stw r9,0(r4)
 	bdnz LOCAL(mpaddmul_loop)
 	blr
-C_FUNCTION_END(mpaddmul, LOCAL(mpaddmul_size))
+C_FUNCTION_END(mpaddmul)
 
 
 C_FUNCTION_BEGIN(mpaddsqrtrc)
-LABEL(mpaddsqrtrc)
 	mtctr r3
 	slwi r0,r3,2
 	add r4,r4,r0
@@ -215,4 +192,4 @@ LOCAL(mpaddsqrtrc_loop):
 	stwu r6,-8(r4)
 	bdnz LOCAL(mpaddsqrtrc_loop)
 	blr
-C_FUNCTION_END(mpaddsqrtrc, LOCAL(mpaddsqrtrc_size))
+C_FUNCTION_END(mpaddsqrtrc)
