@@ -298,9 +298,9 @@ extern struct poptOption rpmVerifyPoptTable[];
  * @param ts		transaction set
  * @return		result of last non-zero showPackage() return
  */
-int showMatches(QVA_t qva, rpmts ts)
-	/*@globals fileSystem@*/
-	/*@modifies qva, fileSystem @*/;
+int rpmcliShowMatches(QVA_t qva, rpmts ts)
+	/*@globals rpmGlobalMacroContext, fileSystem@*/
+	/*@modifies qva, rpmGlobalMacroContext, fileSystem @*/;
 
 /** \ingroup rpmcli
  * Display list of tags that can be used in --queryformat.
@@ -545,9 +545,9 @@ struct rpmInstallArguments_s {
  */
 int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia,
 		/*@null@*/ const char ** fileArgv)
-	/*@globals packagesTotal, rpmGlobalMacroContext,
+	/*@globals rpmcliPackagesTotal, rpmGlobalMacroContext,
 		fileSystem, internalState@*/
-	/*@modifies ts, ia, packagesTotal, rpmGlobalMacroContext,
+	/*@modifies ts, ia, rpmcliPackagesTotal, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
@@ -594,14 +594,16 @@ typedef /*@abstract@*/ struct IDTindex_s {
  * @param idtx		id index
  * @return		NULL always
  */
-/*@null@*/ IDTX IDTXfree(/*@only@*/ /*@null@*/ IDTX idtx)
+/*@null@*/
+IDTX IDTXfree(/*@only@*/ /*@null@*/ IDTX idtx)
 	/*@modifies idtx @*/;
 
 /**
  * Create id index.
  * @return		new id index
  */
-/*@only@*/ IDTX IDTXnew(void)
+/*@only@*/
+IDTX IDTXnew(void)
 	/*@*/;
 
 /**
@@ -610,7 +612,8 @@ typedef /*@abstract@*/ struct IDTindex_s {
  * @param need		additional no. of elements needed
  * @return 		id index (with room for "need" elements)
  */
-/*@only@*/ /*@null@*/ IDTX IDTXgrow(/*@only@*/ /*@null@*/ IDTX idtx, int need)
+/*@only@*/ /*@null@*/
+IDTX IDTXgrow(/*@only@*/ /*@null@*/ IDTX idtx, int need)
 	/*@modifies idtx @*/;
 
 /**
@@ -618,7 +621,8 @@ typedef /*@abstract@*/ struct IDTindex_s {
  * @param idtx		id index
  * @return 		id index
  */
-/*@only@*/ /*@null@*/ IDTX IDTXsort(/*@only@*/ /*@null@*/ IDTX idtx)
+/*@only@*/ /*@null@*/
+IDTX IDTXsort(/*@only@*/ /*@null@*/ IDTX idtx)
 	/*@modifies idtx @*/;
 
 /**
@@ -627,7 +631,8 @@ typedef /*@abstract@*/ struct IDTindex_s {
  * @param tag		rpm tag
  * @return 		id index
  */
-/*@only@*/ /*@null@*/ IDTX IDTXload(rpmts ts, rpmTag tag)
+/*@only@*/ /*@null@*/
+IDTX IDTXload(rpmts ts, rpmTag tag)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState  @*/;
 
@@ -638,8 +643,8 @@ typedef /*@abstract@*/ struct IDTindex_s {
  * @param tag		rpm tag
  * @return 		id index
  */
-/*@only@*/ /*@null@*/ IDTX IDTXglob(rpmts ts,
-		const char * globstr, rpmTag tag)
+/*@only@*/ /*@null@*/
+IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
@@ -652,8 +657,10 @@ typedef /*@abstract@*/ struct IDTindex_s {
  */
 int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia,
 		/*@null@*/ const char ** argv)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
+	/*@globals rpmcliPackagesTotal, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies ts, ia, rpmcliPackagesTotal, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /** \ingroup rpmcli
  */

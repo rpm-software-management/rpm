@@ -170,7 +170,6 @@ static int dbiTagToDbix(int rpmtag)
 /**
  * Initialize database (index, tag) tuple from configuration.
  */
-/*@-bounds@*/ /* LCL: segfault */
 static void dbiTagsInit(void)
 	/*@globals rpmGlobalMacroContext, dbiTags, dbiTagsMax @*/
 	/*@modifies rpmGlobalMacroContext, dbiTags, dbiTagsMax @*/
@@ -210,10 +209,8 @@ static void dbiTagsInit(void)
 	    *oe++ = '\0';
 	rpmtag = tagValue(o);
 	if (rpmtag < 0) {
-
-/*@-modfilesys@*/
-	    fprintf(stderr, _("dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"), o);
-/*@=modfilesys@*/
+	    rpmMessage(RPMMESS_WARNING,
+		_("dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"), o);
 	    continue;
 	}
 	if (dbiTagToDbix(rpmtag) >= 0)
@@ -225,7 +222,6 @@ static void dbiTagsInit(void)
 
     dbiTagStr = _free(dbiTagStr);
 }
-/*@=bounds@*/
 
 /*@-redecl@*/
 #define	DB1vec		NULL
@@ -265,9 +261,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
 	return dbi;
 /*@=compdef@*/
 
-/*@-globs -mods @*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
-/*@=globs =mods @*/
     if (_dbapi_rebuild < 1 || _dbapi_rebuild > 3)
 	_dbapi_rebuild = 3;
     _dbapi_wanted = (_rebuildinprogress ? -1 : db->db_api);
@@ -278,9 +272,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
 	if (_dbapi < 0 || _dbapi >= 4 || mydbvecs[_dbapi] == NULL) {
 	    return NULL;
 	}
-	/*@-mods@*/
 	errno = 0;
-	/*@=mods@*/
 	dbi = NULL;
 	rc = (*mydbvecs[_dbapi]->open) (db, rpmtag, &dbi);
 	if (rc) {
@@ -298,9 +290,7 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
 	while (_dbapi-- > 1) {
 	    if (mydbvecs[_dbapi] == NULL)
 		continue;
-	    /*@-mods@*/
 	    errno = 0;
-	    /*@=mods@*/
 	    dbi = NULL;
 	    rc = (*mydbvecs[_dbapi]->open) (db, rpmtag, &dbi);
 	    if (rc == 0 && dbi)
@@ -921,7 +911,7 @@ int rpmdbSync(rpmdb db)
     return rc;
 }
 
-/*@-mods@*/
+/*@-mods@*/	/* FIX: dbTemplate structure assignment */
 static /*@only@*/ /*@null@*/
 rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
@@ -981,22 +971,18 @@ static int openDatabase(/*@null@*/ const char * prefix,
 		int mode, int perms, int flags)
 	/*@globals dbrock, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies dbrock, *dbp, fileSystem, internalState @*/
+	/*@modifies dbrock, *dbp, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 	/*@requires maxSet(dbp) >= 0 @*/
 {
     rpmdb db;
     int rc, xx;
     static int _tags_initialized = 0;
-#ifdef	DYING
-    static int _dbenv_removed = 0;
-#endif
     int justCheck = flags & RPMDB_FLAG_JUSTCHECK;
     int minimal = flags & RPMDB_FLAG_MINIMAL;
 
     if (!_tags_initialized || dbiTagsMax == 0) {
-	/*@-mods@*/
 	dbiTagsInit();
-	/*@=mods@*/
 	_tags_initialized++;
     }
 
@@ -1011,43 +997,11 @@ static int openDatabase(/*@null@*/ const char * prefix,
     if (mode & O_WRONLY) 
 	return 1;
 
-    /*@-mods@*/
     db = newRpmdb(prefix, dbpath, mode, perms, flags);
-    /*@=mods@*/
     if (db == NULL)
 	return 1;
 
-#ifdef DYING
-    if (!_dbenv_removed) {
-	static int _enable_cdb = -1;
-
-	/* XXX hack in suoport for CDB, otherwise nuke the state. */
-	/*@-mods@*/
-	if (_enable_cdb < 0)
-	    _enable_cdb = rpmExpandNumeric("%{?__dbi_cdb:1}");
-	/*@=mods@*/
-
-	if (!_enable_cdb) {
-	    char * fn;
-	    int i;
-
-	    i = sizeof("//__db.000");
-	    if (db->db_root) i += strlen(db->db_root);
-	    if (db->db_home) i += strlen(db->db_home);
-	    fn = alloca(i);
-	    for (i = 0; i < 16; i++) {
-		sprintf(fn, "%s/%s/__db.%03d",
-			(db->db_root ? db->db_root : ""),
-			(db->db_home ? db->db_home : ""),  i);
-		(void) rpmCleanPath(fn);
-		(void) unlink(fn);
-	    }
-	}
-	_dbenv_removed++;
-    }
-#else
     (void) enableSignals();
-#endif
 
     db->db_api = _dbapi;
 
@@ -1080,8 +1034,8 @@ static int openDatabase(/*@null@*/ const char * prefix,
 	    switch (rpmtag) {
 	    case RPMDBI_PACKAGES:
 		if (dbi == NULL) rc |= 1;
-		/* XXX open only Packages, indices created on the fly. */
 #if 0
+		/* XXX open only Packages, indices created on the fly. */
 		if (db->db_api == 3)
 #endif
 		    goto exit;
@@ -1132,12 +1086,9 @@ fprintf(stderr, "--> db %p ++ %d %s at %s:%u\n", db, db->nrefs, msg, fn, ln);
 }
 
 /* XXX python/rpmmodule.c */
-/*@-globs@*/ /* FIX: rpmGlobalMacroContext not in <rpmlib.h> */
 int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 {
-    /*@-mods@*/
     int _dbapi = rpmExpandNumeric("%{_dbapi}");
-    /*@=mods@*/
 /*@-boundswrite@*/
     return openDatabase(prefix, NULL, _dbapi, dbp, mode, perms, 0);
 /*@=boundswrite@*/
@@ -1146,9 +1097,7 @@ int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 int rpmdbInit (const char * prefix, int perms)
 {
     rpmdb db = NULL;
-    /*@-mods@*/
     int _dbapi = rpmExpandNumeric("%{_dbapi}");
-    /*@=mods@*/
     int rc;
 
 /*@-boundswrite@*/
@@ -1169,9 +1118,7 @@ int rpmdbInit (const char * prefix, int perms)
 int rpmdbVerify(const char * prefix)
 {
     rpmdb db = NULL;
-    /*@-mods@*/
     int _dbapi = rpmExpandNumeric("%{_dbapi}");
-    /*@=mods@*/
     int rc = 0;
 
 /*@-boundswrite@*/
@@ -1201,12 +1148,22 @@ int rpmdbVerify(const char * prefix)
     }
     return rc;
 }
-/*@=globs@*/
 
+/**
+ * Find file matches in database.
+ * @param db		rpm database
+ * @param filespec
+ * @param key
+ * @param data
+ * @param matches
+ * @return		0 on success, 1 on not found, -2 on error
+ */
 static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 		DBT * key, DBT * data, /*@out@*/ dbiIndexSet * matches)
-	/*@globals fileSystem @*/
-	/*@modifies db, *key, *data, *matches, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies db, *key, *data, *matches, rpmGlobalMacroContext,
+		fileSystem @*/
+	/*@requires maxSet(matches) >= 0 @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -1223,9 +1180,7 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
     int rc;
     int xx;
 
-/*@-boundswrite@*/
     *matches = NULL;
-/*@=boundswrite@*/
     if (filespec == NULL) return -2;
 
     /*@-branchstate@*/
@@ -1285,9 +1240,7 @@ if (rc == 0)
 	return rc;
     }
 
-/*@-boundswrite@*/
     *matches = xcalloc(1, sizeof(**matches));
-/*@=boundswrite@*/
     rec = dbiIndexNewItem(0, 0);
     i = 0;
     if (allMatches != NULL)
@@ -1345,9 +1298,7 @@ if (rc == 0)
     fpc = fpCacheFree(fpc);
 
     if ((*matches)->count == 0) {
-/*@-boundswrite@*/
 	*matches = dbiFreeIndexSet(*matches);
-/*@=boundswrite@*/
 	return 1;
     }
 
@@ -1425,9 +1376,10 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 		/*@null@*/ const char * version,
 		/*@null@*/ const char * release,
 		/*@out@*/ dbiIndexSet * matches)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, *dbcursor, *key, *data, *matches, fileSystem @*/
-	/*@requires maxSet(*matches) >= 0 @*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies dbi, *dbcursor, *key, *data, *matches,
+		rpmGlobalMacroContext, fileSystem @*/
+	/*@requires maxSet(matches) >= 0 @*/
 {
     int gotMatches = 0;
     int rc;
@@ -1493,20 +1445,16 @@ key->size = strlen(name);
     /*@=branchstate@*/
 
     if (gotMatches) {
-/*@-boundswrite@*/
 	(*matches)->count = gotMatches;
-/*@=boundswrite@*/
 	rc = RPMRC_OK;
     } else
 	rc = RPMRC_NOTFOUND;
 
 exit:
-/*@-boundswrite@*/
 /*@-unqualifiedtrans@*/ /* FIX: double indirection */
     if (rc && matches && *matches)
 	*matches = dbiFreeIndexSet(*matches);
 /*@=unqualifiedtrans@*/
-/*@=boundswrite@*/
     return rc;
 }
 
@@ -1524,9 +1472,10 @@ exit:
  */
 static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		/*@null@*/ const char * arg, /*@out@*/ dbiIndexSet * matches)
-	/*@globals fileSystem @*/
-	/*@modifies dbi, *dbcursor, *key, *data, *matches, fileSystem @*/
-	/*@requires maxSet(*matches) >= 0 @*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies dbi, *dbcursor, *key, *data, *matches,
+		rpmGlobalMacroContext, fileSystem @*/
+	/*@requires maxSet(matches) >= 0 @*/
 {
     const char * release;
     char * localarg;
@@ -1541,11 +1490,9 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     rc = dbiFindMatches(dbi, dbcursor, key, data, arg, NULL, NULL, matches);
     if (rc != RPMRC_NOTFOUND) return rc;
 
-/*@-boundswrite@*/
     /*@-unqualifiedtrans@*/ /* FIX: double indirection */
     *matches = dbiFreeIndexSet(*matches);
     /*@=unqualifiedtrans@*/
-/*@=boundswrite@*/
 
     /* maybe a name and a release */
     localarg = alloca(strlen(arg) + 1);
@@ -1572,16 +1519,14 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 
 /*@-boundswrite@*/
     *s = '\0';
+/*@=boundswrite@*/
     rc = dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, NULL, matches);
     /*@=nullstate@*/
-/*@=boundswrite@*/
     if (rc != RPMRC_NOTFOUND) return rc;
 
-/*@-boundswrite@*/
     /*@-unqualifiedtrans@*/ /* FIX: double indirection */
     *matches = dbiFreeIndexSet(*matches);
     /*@=unqualifiedtrans@*/
-/*@=boundswrite@*/
     
     /* how about name-version-release? */
 
@@ -1607,10 +1552,10 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 
 /*@-boundswrite@*/
     *s = '\0';
+/*@=boundswrite@*/
     /*@-nullstate@*/	/* FIX: *matches may be NULL. */
     return dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, release, matches);
     /*@=nullstate@*/
-/*@=boundswrite@*/
 }
 
 typedef struct miRE_s {
@@ -1941,9 +1886,8 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 
 /*@-boundsread@*/
     if (defmode == (rpmMireMode)-1) {
-	/*@-globs -mods @*/
 	const char *t = rpmExpand("%{?_query_selector_match}", NULL);
-	/*@=globs =mods @*/
+
 	if (*t == '\0' || !strcmp(t, "default"))
 	    defmode = RPMMIRE_DEFAULT;
 	else if (!strcmp(t, "strcmp"))
@@ -2389,8 +2333,8 @@ static void rpmdbSortIterator(/*@null@*/ rpmdbMatchIterator mi)
 
 /*@-bounds@*/ /* LCL: segfault */
 static int rpmdbGrowIterator(/*@null@*/ rpmdbMatchIterator mi, int fpNum)
-	/*@globals fileSystem @*/
-	/*@modifies mi, fileSystem @*/
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies mi, rpmGlobalMacroContext, fileSystem @*/
 {
     DBC * dbcursor;
     DBT * key;

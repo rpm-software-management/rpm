@@ -75,8 +75,8 @@ extern "C" {
  */
 int rpmdbFindFpList(/*@null@*/ rpmdb db, fingerPrint  * fpList,
 		/*@out@*/ dbiIndexSet * matchList, int numItems)
-	/*@globals fileSystem@*/
-	/*@modifies db, *matchList, fileSystem @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem @*/
+	/*@modifies db, *matchList, rpmGlobalMacroContext, fileSystem @*/;
 
 /* Be carefull with the memory... assert(*fullName == '/' || !scareMemory) */
 

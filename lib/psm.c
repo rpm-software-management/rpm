@@ -43,6 +43,7 @@
 
 /*@access rpmfi @*/
 /*@access rpmte @*/	/* XXX rpmInstallSourcePackage */
+/*@access rpmts @*/	/* XXX ts->notify */
 
 int rpmVersionCompare(Header first, Header second)
 {

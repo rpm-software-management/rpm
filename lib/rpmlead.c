@@ -15,6 +15,7 @@
 #include "rpmlead.h"
 #include "debug.h"
 
+/*@unchecked@*/ /*@observer@*/
 static unsigned char lead_magic[] = {
     RPMLEAD_MAGIC0, RPMLEAD_MAGIC1, RPMLEAD_MAGIC2, RPMLEAD_MAGIC3
 };
@@ -26,10 +27,10 @@ int writeLead(FD_t fd, const struct rpmlead *lead)
     struct rpmlead l;
 
 /*@-boundswrite@*/
-    memcpy(&l, lead, sizeof(*lead));
-/*@=boundswrite@*/
+    memcpy(&l, lead, sizeof(l));
     
-    memcpy(&l.magic, lead_magic, sizeof(lead_magic));
+    memcpy(&l.magic, lead_magic, sizeof(l.magic));
+/*@=boundswrite@*/
     l.type = htons(l.type);
     l.archnum = htons(l.archnum);
     l.osnum = htons(l.osnum);

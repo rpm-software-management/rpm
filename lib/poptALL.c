@@ -95,9 +95,9 @@ static void printVersion(FILE * fp)
  */
 /*@mayexit@*/
 void rpmcliConfigured(void)
-	/*@globals rpmCLIMacroContext, rpmGlobalMacroContext,
+	/*@globals rpmcliInitialized, rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
-	/*@modifies rpmCLIMacroContext, rpmGlobalMacroContext,
+	/*@modifies rpmcliInitialized, rpmCLIMacroContext, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
 

@@ -483,7 +483,7 @@ void rpmDisplayQueryTags(FILE * fp)
     }
 }
 
-int showMatches(QVA_t qva, rpmts ts)
+int rpmcliShowMatches(QVA_t qva, rpmts ts)
 {
     Header h;
     int ec = 0;
@@ -683,7 +683,7 @@ restart:
 		/*@loopbreak@*/ break;
 	    }
 	    if (!res)
-		res = showMatches(qva, ts);
+		res = rpmcliShowMatches(qva, ts);
 	}
 	break;
 
@@ -694,7 +694,7 @@ restart:
 		_("group %s does not contain any packages\n"), arg);
 	    res = 1;
 	} else {
-	    res = showMatches(qva, ts);
+	    res = rpmcliShowMatches(qva, ts);
 	}
 	break;
 
@@ -704,7 +704,7 @@ restart:
 	    rpmError(RPMERR_QUERYINFO, _("no package triggers %s\n"), arg);
 	    res = 1;
 	} else {
-	    res = showMatches(qva, ts);
+	    res = rpmcliShowMatches(qva, ts);
 	}
 	break;
 
@@ -729,7 +729,7 @@ restart:
 			"pkgid", arg);
 	    res = 1;
 	} else {
-	    res = showMatches(qva, ts);
+	    res = rpmcliShowMatches(qva, ts);
 	}
     }	break;
 
@@ -747,7 +747,7 @@ restart:
 			"hdrid", arg);
 	    res = 1;
 	} else {
-	    res = showMatches(qva, ts);
+	    res = rpmcliShowMatches(qva, ts);
 	}
 	break;
 
@@ -772,7 +772,7 @@ restart:
 			"fileid", arg);
 	    res = 1;
 	} else {
-	    res = showMatches(qva, ts);
+	    res = rpmcliShowMatches(qva, ts);
 	}
     }	break;
 
@@ -802,7 +802,7 @@ restart:
 			"tid", arg);
 	    res = 1;
 	} else {
-	    res = showMatches(qva, ts);
+	    res = rpmcliShowMatches(qva, ts);
 	}
     }	break;
 
@@ -812,7 +812,7 @@ restart:
 	    rpmError(RPMERR_QUERYINFO, _("no package requires %s\n"), arg);
 	    res = 1;
 	} else {
-	    res = showMatches(qva, ts);
+	    res = rpmcliShowMatches(qva, ts);
 	}
 	break;
 
@@ -823,7 +823,7 @@ restart:
 		rpmError(RPMERR_QUERYINFO, _("no package provides %s\n"), arg);
 		res = 1;
 	    } else {
-		res = showMatches(qva, ts);
+		res = rpmcliShowMatches(qva, ts);
 	    }
 	    break;
 	}
@@ -863,7 +863,7 @@ restart:
 	    }
 	    res = 1;
 	} else {
-	    res = showMatches(qva, ts);
+	    res = rpmcliShowMatches(qva, ts);
 	}
 	fn = _free(fn);
     }	break;
@@ -896,7 +896,7 @@ restart:
 		_("record %u could not be read\n"), recOffset);
 	    res = 1;
 	} else {
-	    res = showMatches(qva, ts);
+	    res = rpmcliShowMatches(qva, ts);
 	}
     }	break;
 
@@ -907,7 +907,7 @@ restart:
 	    rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
 	    res = 1;
 	} else {
-	    res = showMatches(qva, ts);
+	    res = rpmcliShowMatches(qva, ts);
 	}
 	break;
     }

@@ -302,8 +302,8 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
  * @return		0 on success
  */
 int rpmtsInitDB(rpmts ts, int dbmode)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Rebuild the database used by the transaction.
@@ -320,8 +320,8 @@ int rpmtsRebuildDB(rpmts ts)
  * @return		0 on success
  */
 int rpmtsVerifyDB(rpmts ts)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies ts, fileSystem, internalState @*/;
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmts
  * Return transaction database iterator.

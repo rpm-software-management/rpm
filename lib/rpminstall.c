@@ -41,8 +41,10 @@ int rpmcliProgressTotal = 0;
  * @param total		final
  */
 static void printHash(const unsigned long amount, const unsigned long total)
-	/*@globals rpmcliHashesCurrent, rpmcliProgressCurrent, fileSystem @*/
-	/*@modifies rpmcliHashesCurrent, rpmcliProgressCurrent, fileSystem @*/
+	/*@globals rpmcliHashesCurrent, rpmcliHashesTotal,
+		rpmcliProgressCurrent, fileSystem @*/
+	/*@modifies rpmcliHashesCurrent, rpmcliHashesTotal,
+		rpmcliProgressCurrent, fileSystem @*/
 {
     int hashesNeeded;
 
@@ -800,8 +802,8 @@ int rpmInstallSource(rpmts ts, const char * arg,
 	fprintf(stdout, _("Installing %s\n"), arg);
 
     {
-	rpmVSFlags ovsflags;
-	ovsflags = rpmtsSetVSFlags(ts, (rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD));
+	rpmVSFlags ovsflags =
+		rpmtsSetVSFlags(ts, (rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD));
 	rpmRC rpmrc = rpmInstallSourcePackage(ts, fd, specFilePtr, cookie);
 	rc = (rpmrc == RPMRC_OK ? 0 : 1);
 	ovsflags = rpmtsSetVSFlags(ts, ovsflags);
@@ -1000,9 +1002,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 }
 
 /** @todo Transaction handling, more, needs work. */
-int rpmRollback(rpmts ts,
-		/*@unused@*/ struct rpmInstallArguments_s * ia,
-		const char ** argv)
+int rpmRollback(rpmts ts, struct rpmInstallArguments_s * ia, const char ** argv)
 {
     int ifmask= (INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL|INSTALL_ERASE);
     unsigned thistid = 0xffffffff;
@@ -1092,10 +1092,14 @@ int rpmRollback(rpmts ts,
 	/* Install the previously erased packages for this transaction. */
 	while (rp != NULL && rp->val.u32 == thistid) {
 
+/*@-nullpass@*/ /* FIX: rp->key may be NULL */
 	    rpmMessage(RPMMESS_DEBUG, "\t+++ %s\n", rp->key);
+/*@=nullpass@*/
 
+/*@-abstract@*/
 	    rc = rpmtsAddInstallElement(ts, rp->h, (fnpyKey)rp->key,
 			       0, ia->relocations);
+/*@=abstract@*/
 	    if (rc != 0)
 		goto exit;
 
@@ -1176,13 +1180,15 @@ int rpmRollback(rpmts ts,
 	    goto exit;
 
 	/* Clean up after successful rollback. */
-	if (!rpmIsDebug()) {
+	if (rtids && !rpmIsDebug()) {
 	    int i;
+	    if (rtids->idt)
 	    for (i = 0; i < rtids->nidt; i++) {
 		IDT rrp = rtids->idt + i;
 		if (rrp->val.u32 != thistid)
-		    continue;
-		(void) unlink(rrp->key);
+		    /*@innercontinue@*/ continue;
+		if (rrp->key)	/* XXX can't happen */
+		    (void) unlink(rrp->key);
 	    }
 	}
 
