@@ -114,8 +114,6 @@ example_LDFLAGS = -L. -lz
 
 minigzip_SOURCES = minigzip.c
 minigzip_LDFLAGS = -L. -lz
-
-BUILT_SOURCES = Doxyfile zlib.lcd
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -172,8 +170,7 @@ DIST_COMMON = README $(noinst_HEADERS) ChangeLog Doxyfile.in \
 	mkinstalldirs
 SOURCES = $(libz_la_SOURCES) $(example_SOURCES) $(minigzip_SOURCES)
 
-all: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
@@ -416,7 +413,6 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
@@ -468,6 +464,8 @@ uninstall-am: uninstall-info-am
 	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
 	tags uninstall uninstall-am uninstall-info-am
 
+
+#BUILT_SOURCES = Doxyfile zlib.lcd
 
 zlib.lcd: Makefile.am ${libz_la_SOURCES} ${noinst_HEADERS}
 	-lclint ${DEFS} ${INCLUDES} ${libz_la_SOURCES} -dump $@ 2>/dev/null

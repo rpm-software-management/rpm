@@ -30,7 +30,7 @@ install-data-local:
 	sed -e "s|^dependency_libs='|& -lrpm|" < librpmbuild.la > .librpmbuild.la && \
 	mv .librpmbuild.la librpmbuild.la
 
-BUILT_SOURCES = rpmbuild.lcd
+#BUILT_SOURCES = rpmbuild.lcd
 
 rpmbuild.lcd: Makefile.am ${librpmbuild_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-lclint ${DEFS} ${INCLUDES} ${librpmbuild_la_SOURCES} -dump $@ 2>/dev/null

@@ -361,6 +361,7 @@ dnl Checks for libraries.
 WITH_LIBELF_SUBDIR=
 WITH_LIBELF_INCLUDE=
 WITH_LIBELF_LIB=
+WITH_LIBELF_ARCHIVE=
 AC_CHECK_HEADER([libelf/gelf.h], [
 	AC_DEFINE(HAVE_LIBELF_GELF_H, 1, [Define to 1 if you have the <libelf/gelf.h> header file.])
 	WITH_LIBELF_INCLUDE="-I/usr/include/libelf"
@@ -374,11 +375,13 @@ AC_CHECK_HEADER([libelf/gelf.h], [
 	    WITH_LIBELF_SUBDIR=libelf
 	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_LIBELF_SUBDIR}/lib"
 	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_LIBELF_SUBDIR}/lib/libelf.la"
+	    WITH_LIBELF_ARCHIVE="\${top_builddir}/${WITH_LIBELF_SUBDIR}/lib/.libs/libelf.a"
 	fi
 ])
 AC_SUBST(WITH_LIBELF_SUBDIR)
 AC_SUBST(WITH_LIBELF_INCLUDE)
 AC_SUBST(WITH_LIBELF_LIB)
+AC_SUBST(WITH_LIBELF_ARCHIVE)
 
 AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])

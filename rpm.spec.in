@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.31
+Release: 0.32
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -511,11 +511,14 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Fri Jun 21 2002 Jeff Johnson <jbj@redhat.com>
+* Mon Jun 24 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.32
+- python: link internal libelf (if used) directly into rpmmodule.so.
+
+* Fri Jun 21 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.31
 - fix: reading macro files can corrupt memory if BUFSIZ is teensy.
 - fix: assertion failure iff incomplete package install (#66837).
 
-* Thu Jun 20 2002 Jeff Johnson <jbj@redhat.com>
+* Thu Jun 20 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.29
 - add translated man pages from PLD.
 - resurrect libelf with Elf64, prelink verify should work everywhere.
 

@@ -45,7 +45,7 @@ $(top_builddir)/beecrypt/listobjs:
 clean-local:
 	rm -f $(BEECRYPTLOBJS) *.o .created
 
-BUILT_SOURCES = rpmio.lcd
+#BUILT_SOURCES = rpmio.lcd
 
 rpmio.lcd: Makefile.am ${librpmio_la_SOURCES} ${pkginc_HEADERS} ${noinst_HEADERS}
 	-lclint -load ../beecrypt/beecrypt.lcd $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES) -dump $@ 2>/dev/null

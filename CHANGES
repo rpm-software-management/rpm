@@ -142,6 +142,7 @@
 	- resurrect libelf with Elf64, prelink verify should work everywhere.
 	- fix: reading macro files can corrupt memory if BUFSIZ is teensy.
 	- fix: assertion failure iff incomplete package install (#66837).
+	- python: link internal libelf (if used) directly into rpmmodule.so.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

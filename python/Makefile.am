@@ -13,6 +13,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir)/popt \
 	-I/usr/include/python${PYVER} \
+	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 
 noinst_HEADERS = hash.h header-py.h \
@@ -24,7 +25,8 @@ mylibs= \
 	$(top_builddir)/lib/.libs/librpm.so \
 	$(top_builddir)/rpmdb/.libs/librpmdb.so \
 	$(top_builddir)/rpmio/.libs/librpmio.so \
-	$(top_builddir)/popt/.libs/libpopt.so
+	$(top_builddir)/popt/.libs/libpopt.so \
+	@WITH_LIBELF_ARCHIVE@
 
 LDADD =
 

@@ -37,7 +37,8 @@ myLDADD = \
 	$(top_builddir)/popt/libpopt.la \
 	@WITH_LIBELF_LIB@ \
 	@WITH_ZLIB_LIB@ \
-	@INTLLIBS@ @LIBMISC@
+	@INTLLIBS@ \
+	@LIBMISC@
 
 rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
