@@ -209,8 +209,12 @@ retry:
 	match = !matchTok(os, s);
     } else if (! strncmp("%if", s, 3)) {
 	s += 3;
-        match = parseExpressionBoolean(spec, s + 3);
-	if (match < 0) return RPMERR_BADSPEC;
+        match = parseExpressionBoolean(spec, s);
+	if (match < 0) {
+	    rpmError(RPMERR_UNMATCHEDIF, _("%s:%d: parseExpressionBoolean returns %d"),
+		     ofi->fileName, ofi->lineNum, match);
+	    return RPMERR_BADSPEC;
+	}
     } else if (! strncmp("%else", s, 5)) {
 	s += 5;
 	if (! spec->readStack->next) {

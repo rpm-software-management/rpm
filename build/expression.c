@@ -16,7 +16,7 @@
 #include "rpmbuild.h"
 #include "rpmlib.h"
 
-/* #define DEBUG_PARSER */
+/* #define DEBUG_PARSER 1 */
 
 #ifdef DEBUG_PARSER
 #include <stdio.h>
@@ -68,8 +68,10 @@ static void valueFree(Value v)
 }
 
 #ifdef DEBUG_PARSER
-static void valueDump(Value v, FILE *fp)
+static void valueDump(const char *msg, Value v, FILE *fp)
 {
+  if (msg)
+    fprintf(fp, "%s ", msg);
   if (v) {
     if (v->type == VALUE_TYPE_INTEGER)
       fprintf(fp, "INTEGER %d\n", v->data.i);
@@ -103,29 +105,68 @@ typedef struct _parseState
  * Token parser.
  */
 
-#define TOK_EOF          0
-#define TOK_INTEGER      1
-#define TOK_STRING       2
-#define TOK_IDENTIFIER   3
-#define TOK_ADD          4
-#define TOK_MINUS        5
-#define TOK_MULTIPLY     6
-#define TOK_DIVIDE       7
-#define TOK_OPEN_P       8
-#define TOK_CLOSE_P      9
-#define TOK_EQ          10
-#define TOK_NEQ         11
-#define TOK_LT          12
-#define TOK_LE          13
-#define TOK_GT          14
-#define TOK_GE          15
-#define TOK_NOT         16
-#define TOK_LOGICAL_AND 17
-#define TOK_LOGICAL_OR  18
+#define TOK_EOF          1
+#define TOK_INTEGER      2
+#define TOK_STRING       3
+#define TOK_IDENTIFIER   4
+#define TOK_ADD          5
+#define TOK_MINUS        6
+#define TOK_MULTIPLY     7
+#define TOK_DIVIDE       8
+#define TOK_OPEN_P       9
+#define TOK_CLOSE_P     10
+#define TOK_EQ          11
+#define TOK_NEQ         12
+#define TOK_LT          13
+#define TOK_LE          14
+#define TOK_GT          15
+#define TOK_GE          16
+#define TOK_NOT         17
+#define TOK_LOGICAL_AND 18
+#define TOK_LOGICAL_OR  19
 
 #define	EXPRBUFSIZ	BUFSIZ
 
-static int readToken(ParseState state)
+typedef struct exprTokTableEntry {
+    const char *name;
+    int val;
+} ETTE_t;
+
+ETTE_t exprTokTable[] = {
+    { "EOF",	TOK_EOF },
+    { "I",	TOK_INTEGER },
+    { "S",	TOK_STRING },
+    { "ID",	TOK_IDENTIFIER },
+    { "+",	TOK_ADD },
+    { "-",	TOK_MINUS },
+    { "*",	TOK_MULTIPLY },
+    { "/",	TOK_DIVIDE },
+    { "( ",	TOK_OPEN_P },
+    { " )",	TOK_CLOSE_P },
+    { "==",	TOK_EQ },
+    { "!=",	TOK_NEQ },
+    { "<",	TOK_LT },
+    { "<=",	TOK_LE },
+    { ">",	TOK_GT },
+    { ">=",	TOK_GE },
+    { "!",	TOK_NOT },
+    { "&&",	TOK_LOGICAL_AND },
+    { "||",	TOK_LOGICAL_OR },
+    { NULL, 0 }
+};
+
+static const char *prToken(int val)
+{
+    ETTE_t *et;
+    
+    for (et = exprTokTable; et->name != NULL; et++) {
+	if (val == et->val)
+	    return et->name;
+    }
+    return "???";
+}
+
+static int rdToken(ParseState state)
 {
   int token;
   Value v = NULL;
@@ -158,7 +199,13 @@ static int readToken(ParseState state)
     token = TOK_CLOSE_P;
     break;
   case '=':
-    token = TOK_EQ;
+    if (p[1] == '=') {
+      token = TOK_EQ;
+      p++;
+    } else {
+      rpmError(RPMERR_BADSPEC, _("syntax error while parsing =="));
+      return -1;
+    }
     break;
   case '!':
     if (p[1] == '=') {
@@ -186,7 +233,7 @@ static int readToken(ParseState state)
       token = TOK_LOGICAL_AND;
       p++;
     } else {
-      rpmError(RPMERR_BADSPEC, _("parse error in tokenizer"));
+      rpmError(RPMERR_BADSPEC, _("syntax error while parsing &&"));
       return -1;
     }
     break;
@@ -195,7 +242,7 @@ static int readToken(ParseState state)
       token = TOK_LOGICAL_OR;
       p++;
     } else {
-      rpmError(RPMERR_BADSPEC, _("parse error in tokenizer"));
+      rpmError(RPMERR_BADSPEC, _("syntax error while parsing ||"));
       return -1;
     }
     break;
@@ -246,8 +293,8 @@ static int readToken(ParseState state)
   state->nextToken = token;
   state->tokenValue = v;
 
-  DEBUG(printf("readToken: token=%d\n", token));
-  DEBUG(valueDump(state->tokenValue, stdout));
+  DEBUG(printf("rdToken: \"%s\" (%d)\n", prToken(token), token));
+  DEBUG(valueDump("rdToken:", state->tokenValue, stdout));
 
   return 0;
 }
@@ -263,7 +310,7 @@ static Value doPrimary(ParseState state)
 
   switch (state->nextToken) {
   case TOK_OPEN_P:
-    if (readToken(state))
+    if (rdToken(state))
       return NULL;
     v = doLogical(state);
     if (state->nextToken != TOK_CLOSE_P) {
@@ -275,7 +322,7 @@ static Value doPrimary(ParseState state)
   case TOK_INTEGER:
   case TOK_STRING:
     v = state->tokenValue;
-    if (readToken(state))
+    if (rdToken(state))
       return NULL;
     break;
 
@@ -290,13 +337,13 @@ static Value doPrimary(ParseState state)
     }
 
     v = valueMakeString(body);
-    if (readToken(state))
+    if (rdToken(state))
       return NULL;
     break;
   }
 
   case TOK_MINUS:
-    if (readToken(state))
+    if (rdToken(state))
       return NULL;
 
     v = doPrimary(state);
@@ -312,7 +359,7 @@ static Value doPrimary(ParseState state)
     break;
 
   case TOK_NOT:
-    if (readToken(state))
+    if (rdToken(state))
       return NULL;
 
     v = doPrimary(state);
@@ -331,7 +378,7 @@ static Value doPrimary(ParseState state)
     break;
   }
 
-  DEBUG(valueDump(v, stdout));
+  DEBUG(valueDump("doPrimary:", v, stdout));
   return v;
 }
 
@@ -349,7 +396,7 @@ static Value doMultiplyDivide(ParseState state)
 	 || state->nextToken == TOK_DIVIDE) {
     int op = state->nextToken;
 
-    if (readToken(state))
+    if (rdToken(state))
       return NULL;
 
     if (v2) valueFree(v2);
@@ -394,7 +441,7 @@ static Value doAddSubtract(ParseState state)
   while (state->nextToken == TOK_ADD || state->nextToken == TOK_MINUS) {
     int op = state->nextToken;
 
-    if (readToken(state))
+    if (rdToken(state))
       return NULL;
 
     if (v2) valueFree(v2);
@@ -451,7 +498,7 @@ static Value doRelational(ParseState state)
   while (state->nextToken >= TOK_EQ && state->nextToken <= TOK_GE) {
     int op = state->nextToken;
 
-    if (readToken(state))
+    if (rdToken(state))
       return NULL;
 
     if (v2) valueFree(v2);
@@ -538,7 +585,7 @@ static Value doLogical(ParseState state)
 	 || state->nextToken == TOK_LOGICAL_OR) {
     int op = state->nextToken;
 
-    if (readToken(state))
+    if (rdToken(state))
       return NULL;
 
     if (v2) valueFree(v2);
@@ -581,7 +628,7 @@ int parseExpressionBoolean(Spec spec, char *expr)
   /* Initialize the expression parser state. */
   state.str = state.p = strdup(expr);
   state.spec = spec;
-  readToken(&state);
+  rdToken(&state);
 
   /* Parse the expression. */
   v = doLogical(&state);
@@ -597,7 +644,7 @@ int parseExpressionBoolean(Spec spec, char *expr)
     return -1;
   }
 
-  DEBUG(valueDump(v, stdout));
+  DEBUG(valueDump("parseExprBoolean:", v, stdout));
 
   switch (v->type) {
   case VALUE_TYPE_INTEGER:
@@ -621,12 +668,12 @@ char * parseExpressionString(Spec spec, char *expr)
   char *result = NULL;
   Value v;
 
-  DEBUG(printf("parseExprBoolean(?, '%s')\n", expr));
+  DEBUG(printf("parseExprString(?, '%s')\n", expr));
 
   /* Initialize the expression parser state. */
   state.str = state.p = strdup(expr);
   state.spec = spec;
-  readToken(&state);
+  rdToken(&state);
 
   /* Parse the expression. */
   v = doLogical(&state);
@@ -642,15 +689,14 @@ char * parseExpressionString(Spec spec, char *expr)
     return NULL;
   }
 
-  DEBUG(valueDump(v, stdout));
+  DEBUG(valueDump("parseExprString:", v, stdout));
 
   switch (v->type) {
   case VALUE_TYPE_INTEGER: {
     char buf[128];
     sprintf(buf, "%d", v->data.i);
     result = strdup(buf);
-    break;
-  }
+  } break;
   case VALUE_TYPE_STRING:
     result = strdup(v->data.s);
     break;

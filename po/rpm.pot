@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-07-17 14:56-0400\n"
+"POT-Creation-Date: 1999-07-19 08:32-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1248,48 +1248,56 @@ msgstr ""
 msgid "Bad exit status from %s (%s)"
 msgstr ""
 
-#: ../build/expression.c:189 ../build/expression.c:198
-msgid "parse error in tokenizer"
+#: ../build/expression.c:206
+msgid "syntax error while parsing =="
 msgstr ""
 
-#: ../build/expression.c:240
+#: ../build/expression.c:236
+msgid "syntax error while parsing &&"
+msgstr ""
+
+#: ../build/expression.c:245
+msgid "syntax error while parsing ||"
+msgstr ""
+
+#: ../build/expression.c:287
 msgid "parse error in expression"
 msgstr ""
 
-#: ../build/expression.c:270
+#: ../build/expression.c:317
 msgid "unmatched ("
 msgstr ""
 
-#: ../build/expression.c:288
+#: ../build/expression.c:335
 msgid "undefined identifier"
 msgstr ""
 
-#: ../build/expression.c:307
+#: ../build/expression.c:354
 msgid "- only on numbers"
 msgstr ""
 
-#: ../build/expression.c:323
+#: ../build/expression.c:370
 msgid "! only on numbers"
 msgstr ""
 
-#: ../build/expression.c:362 ../build/expression.c:407
-#: ../build/expression.c:464 ../build/expression.c:551
+#: ../build/expression.c:409 ../build/expression.c:454
+#: ../build/expression.c:511 ../build/expression.c:598
 msgid "types must match"
 msgstr ""
 
-#: ../build/expression.c:375
+#: ../build/expression.c:422
 msgid "* / not suported for strings"
 msgstr ""
 
-#: ../build/expression.c:423
+#: ../build/expression.c:470
 msgid "- not suported for strings"
 msgstr ""
 
-#: ../build/expression.c:564
+#: ../build/expression.c:611
 msgid "&& and || not suported for strings"
 msgstr ""
 
-#: ../build/expression.c:595 ../build/expression.c:640
+#: ../build/expression.c:642 ../build/expression.c:687
 msgid "syntax error in expression"
 msgstr ""
 
@@ -1867,30 +1875,35 @@ msgstr ""
 msgid "line %d: %s"
 msgstr ""
 
+#: ../build/parseSpec.c:214
+#, c-format
+msgid "%s:%d: parseExpressionBoolean returns %d"
+msgstr ""
+
 #. Got an else with no %if !
-#: ../build/parseSpec.c:218
+#: ../build/parseSpec.c:222
 msgid "%s:%d: Got a %%else with no if"
 msgstr ""
 
 #. Got an end with no %if !
-#: ../build/parseSpec.c:229
+#: ../build/parseSpec.c:233
 msgid "%s:%d: Got a %%endif with no if"
 msgstr ""
 
-#: ../build/parseSpec.c:243 ../build/parseSpec.c:252
+#: ../build/parseSpec.c:247 ../build/parseSpec.c:256
 msgid "malformed %%include statement"
 msgstr ""
 
-#: ../build/parseSpec.c:333
+#: ../build/parseSpec.c:337
 #, c-format
 msgid "Timecheck value must be an integer: %s"
 msgstr ""
 
-#: ../build/parseSpec.c:416
+#: ../build/parseSpec.c:420
 msgid "No buildable architectures"
 msgstr ""
 
-#: ../build/parseSpec.c:461
+#: ../build/parseSpec.c:465
 msgid "Package has no %%description: %s"
 msgstr ""
 

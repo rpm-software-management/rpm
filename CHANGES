@@ -7,6 +7,7 @@
 	- move checksig/resign major modes into rpmlib.
 	- add python bindings to rpm-devel (linux only).
 	- make query (rpm -qvl) behave like (POSIX?) ls for older files (#4050).
+	- fix: %if parsing skipped 3 chars too many.
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).
