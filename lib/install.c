@@ -48,7 +48,6 @@ struct fileMemory {
 struct fileInfo {
     char * cpioPath;
     char * relativePath;		/* relative to root */
-    char * rootedPath;			/* absolute relative to / */
     char * md5;
     char * link;
     uid_t uid;
@@ -159,10 +158,6 @@ static void assembleFileList(Header h, struct fileMemory * mem,
     headerGetEntry(h, RPMTAG_FILELINKTOS, NULL, (void **) &mem->links, NULL);
 
     for (i = 0, file = files; i < fileCount; i++, file++) {
-	/* It would be nice to take care of assembling the rooted 
-	   path here, but making the caller do it lets us use alloca()
-	   and makes the memory management easier. */
-	file->rootedPath = NULL;
 	file->state = RPMFILE_STATE_NORMAL;
 	file->action = UNKNOWN;
 	file->install = 1;
@@ -364,6 +359,11 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     if (hasOthers) 
 	dbiFreeIndexRecord(matches);
 
+    if (rootdir) {
+	chdir("/");
+	chroot(rootdir);
+    }
+
     if (headerIsEntry(h, RPMTAG_FILENAMES)) {
 	char ** netsharedPaths;
 	char ** nsp;
@@ -381,14 +381,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	   on making a backup copy. If that's not the right thing to do
 	   instHandleSharedFiles() below will take care of the problem */
 	for (i = 0; i < fileCount; i++) {
-	    if (rootLength > 1) {
-		files[i].rootedPath = alloca(strlen(files[i].relativePath) + 
-				rootLength + 3);
-		strcpy(files[i].rootedPath, rootdir);
-		strcat(files[i].rootedPath, files[i].relativePath);
-	    } else 
-		files[i].rootedPath = files[i].relativePath;
-
 	    /* netsharedPaths are not relative to the current root (though 
 	       they do need to take the package prefix into account */
 	    for (nsp = netsharedPaths; nsp && *nsp; nsp++) {
@@ -401,7 +393,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 	    if (nsp && *nsp) {
 		rpmMessage(RPMMESS_DEBUG, "file %s in netshared path\n", 
-				files[i].rootedPath);
+				files[i].relativePath);
 		files[i].action = SKIP;
 		files[i].state = RPMFILE_STATE_NETSHARED;
 	    } else if ((files[i].flags & RPMFILE_DOC) && 
@@ -414,16 +406,16 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		files[i].action = CREATE;
 		if ((files[i].flags & RPMFILE_CONFIG) &&
 		    !S_ISDIR(files[i].mode)) {
-		    if (exists(files[i].rootedPath)) {
+		    if (exists(files[i].relativePath)) {
 			if (files[i].flags & RPMFILE_NOREPLACE) {
 			    rpmMessage(RPMMESS_DEBUG, 
 				"%s exists - creating with alternate name\n", 
-				files[i].rootedPath);
+				files[i].relativePath);
 			    files[i].action = ALTNAME;
 			} else {
 			    rpmMessage(RPMMESS_DEBUG, 
 				"%s exists - backing up\n", 
-				files[i].rootedPath);
+				files[i].relativePath);
 			    files[i].action = BACKUP;
 			}
 		    }
@@ -435,6 +427,9 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 				   oldVersions, &replacedList, flags);
 
 	if (rc) {
+	    if (rootdir) {
+		chroot(".");
+	    }
 	    if (replacedList) free(replacedList);
 	    if (freeFileMem) freeFileMemory(fileMem);
 	    return 2;
@@ -444,6 +439,10 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     }
     
     if (flags & RPMINSTALL_TEST) {
+	if (rootdir) {
+	    chroot(".");
+	}
+
 	rpmMessage(RPMMESS_DEBUG, "stopping install as we're running --test\n");
 	if (replacedList) free(replacedList);
 	if (freeFileMem) freeFileMemory(fileMem);
@@ -451,10 +450,15 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
     }
 
     rpmMessage(RPMMESS_DEBUG, "running preinstall script (if any)\n");
-    if (runScript(rootdir, h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg, 
+    if (runScript("/", h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg, 
 		  flags & RPMINSTALL_NOSCRIPTS)) {
 	if (replacedList) free(replacedList);
 	if (freeFileMem) freeFileMemory(fileMem);
+
+	if (rootdir) {
+	    chroot(".");
+	}
+
 	return 2;
     }
 
@@ -469,16 +473,13 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	      case ALTNAME:
 		ext = NULL;
 		installFile = 1;
-		/* replace the rooted path (which is the path used to create
-		   the file) with a .rpmnew one; any existing .rpmnew file
-		   is removed on installation */
 
-		newpath = alloca(strlen(files[i].rootedPath) + 20);
-		strcpy(newpath, files[i].rootedPath);
+		newpath = alloca(strlen(files[i].relativePath) + 20);
+		strcpy(newpath, files[i].relativePath);
 		strcat(newpath, ".rpmnew");
 		rpmError(RPMMESS_ALTNAME, "warning: %s created as %s",
-			files[i].rootedPath, newpath);
-		files[i].rootedPath = newpath;
+			files[i].relativePath, newpath);
+		files[i].relativePath = newpath;
 		
 		break;
 
@@ -507,17 +508,22 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    }
 
 	    if (ext) {
-		newpath = alloca(strlen(files[i].rootedPath) + 20);
-		strcpy(newpath, files[i].rootedPath);
+		newpath = alloca(strlen(files[i].relativePath) + 20);
+		strcpy(newpath, files[i].relativePath);
 		strcat(newpath, ext);
 		rpmError(RPMMESS_BACKUP, "warning: %s saved as %s", 
-			files[i].rootedPath, newpath);
+			files[i].relativePath, newpath);
 
-		if (rename(files[i].rootedPath, newpath)) {
+		if (rename(files[i].relativePath, newpath)) {
 		    rpmError(RPMERR_RENAME, "rename of %s to %s failed: %s",
-			  files[i].rootedPath, newpath, strerror(errno));
+			  files[i].relativePath, newpath, strerror(errno));
 		    if (replacedList) free(replacedList);
 		    if (freeFileMem) freeFileMemory(fileMem);
+
+		    if (rootdir) {
+			chroot(".");
+		    }
+
 		    return 2;
 		}
 	    }
@@ -550,6 +556,11 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    headerFree(h);
 	    if (replacedList) free(replacedList);
 	    if (freeFileMem) freeFileMemory(fileMem);
+
+	    if (rootdir) {
+		chroot(".");
+	    }
+
 	    return 2;
 	}
 
@@ -567,6 +578,10 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 
 	installTime = time(NULL);
 	headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &installTime, 1);
+    }
+
+    if (rootdir) {
+	chroot(".");
     }
 
     if (replacedList) {
@@ -653,7 +668,7 @@ static int installArchive(int fd, struct fileInfo * files,
 	    if (!files[i].install) continue;
 
 	    map[mappedFiles].archivePath = files[i].cpioPath;
-	    map[mappedFiles].finalPath = files[i].rootedPath;
+	    map[mappedFiles].finalPath = files[i].relativePath;
 	    map[mappedFiles].finalMode = files[i].mode;
 	    map[mappedFiles].finalUid = files[i].uid;
 	    map[mappedFiles].finalGid = files[i].gid;
@@ -875,7 +890,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
 
     fileList = malloc(sizeof(*fileList) * fileCount);
     for (i = 0; i < fileCount; i++)
-	fileList[i] = files[i].rootedPath;
+	fileList[i] = files[i].relativePath;
 
     if (findSharedFiles(db, 0, fileList, fileCount, &sharedList, 
 			&sharedCount)) {
@@ -996,7 +1011,7 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
 	if (files[sharedList[i].mainFileNumber].flags & RPMFILE_CONFIG ||
 	    secFileFlagsList[sharedList[i].secFileNumber] & RPMFILE_CONFIG) {
 	    files[sharedList[i].mainFileNumber].action = 
-		decideFileFate(files[mainNum].rootedPath, 
+		decideFileFate(files[mainNum].relativePath, 
 			       secFileModesList[secNum],
 			       secFileMd5List[secNum], secFileLinksList[secNum],
 			       files[mainNum].mode, files[mainNum].md5,
@@ -1081,7 +1096,7 @@ static int installSources(Header h, char * rootdir, int fd,
 	assembleFileList(h, &fileMem, &fileCount, &files, 0);
 
 	for (i = 0; i < fileCount; i++)
-	    files[i].rootedPath = files[i].relativePath;
+	    files[i].relativePath = files[i].relativePath;
 
 #if 0 /* Unfortunately this doesnt work as RPMs building code seems broken */
 	for (i = 0; i < fileCount; i++)
@@ -1099,11 +1114,11 @@ static int installSources(Header h, char * rootdir, int fd,
 	if (i < fileCount) {
 	    specFileIndex = i;
 
-	    files[i].rootedPath = alloca(strlen(realSpecDir) + 
+	    files[i].relativePath = alloca(strlen(realSpecDir) + 
 					 strlen(files[i].cpioPath) + 5);
-	    strcpy(files[i].rootedPath, realSpecDir);
-	    strcat(files[i].rootedPath, "/");
-	    strcat(files[i].rootedPath, files[i].cpioPath);
+	    strcpy(files[i].relativePath, realSpecDir);
+	    strcat(files[i].relativePath, "/");
+	    strcat(files[i].relativePath, files[i].cpioPath);
 	} else {
 	    rpmError(RPMERR_NOSPEC, "source package contains no .spec file");
 	    if (fileCount > 0) freeFileMemory(fileMem);
@@ -1175,7 +1190,7 @@ static int installSources(Header h, char * rootdir, int fd,
 	    *specFilePtr = strdup(correctSpecFile);
     } else {
 	if (specFilePtr)
-	    *specFilePtr = strdup(files[specFileIndex].rootedPath);
+	    *specFilePtr = strdup(files[specFileIndex].relativePath);
 
 	if (fileCount > 0) freeFileMemory(fileMem);
     }
