@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-21 21:09-0500\n"
+"POT-Creation-Date: 2002-12-23 15:42-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -893,7 +893,7 @@ msgstr "linie %d: Tomt mærke: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linie %d: Ugyldigt tegn '-' i %s: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:425
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot kan ikke være \"/\": %s\n"
@@ -1059,50 +1059,50 @@ msgstr "linie %d: skriptprogram skal starte med '/': %s\n"
 msgid "line %d: Second %s\n"
 msgstr "linie %d: Anden %s\n"
 
-#: build/parseSpec.c:159
+#: build/parseSpec.c:160
 #, c-format
 msgid "line %d: %s\n"
 msgstr "linie %d: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:211
+#: build/parseSpec.c:212
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr ""
 "Kunne ikke åbne %s: %s\n"
 "\n"
 
-#: build/parseSpec.c:227
+#: build/parseSpec.c:228
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "Ikke-lukket %%if\n"
 
-#: build/parseSpec.c:299
+#: build/parseSpec.c:300
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean returnerer %d\n"
 
-#: build/parseSpec.c:308
+#: build/parseSpec.c:309
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Fik et %%else uden et %%if\n"
 
-#: build/parseSpec.c:320
+#: build/parseSpec.c:321
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Fik et %%endif uden et %%if\n"
 
-#: build/parseSpec.c:334 build/parseSpec.c:343
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "forkert udført '%%include'-kommando\n"
 
-#: build/parseSpec.c:543
+#: build/parseSpec.c:544
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "Ingen arkitekturer, der kan opbygges\n"
 
-#: build/parseSpec.c:601
+#: build/parseSpec.c:602
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Pakke har ingen %%description: %s\n"
@@ -3138,40 +3138,40 @@ msgstr "lukkede db-miljø  %s/%s\n"
 msgid "removed  db environment %s/%s\n"
 msgstr "fjernede db-miljø  %s/%s\n"
 
-#: rpmdb/db3.c:287
+#: rpmdb/db3.c:291
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "åbner   db-miljø  %s/%s %s\n"
 
-#: rpmdb/db3.c:769
+#: rpmdb/db3.c:764
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "lukkede db-indeks %s/%s\n"
 
-#: rpmdb/db3.c:836
+#: rpmdb/db3.c:831
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "lukkede db-indeks %s/%s\n"
 
-#: rpmdb/db3.c:1066
+#: rpmdb/db3.c:1069
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "åbner   db-indeks %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1303
+#: rpmdb/db3.c:1306
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan ikke opnå %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "exclusive"
 msgstr "eksklusiv"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "shared"
 msgstr "delt"
 
-#: rpmdb/db3.c:1309
+#: rpmdb/db3.c:1312
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste   db-index  %s/%s\n"

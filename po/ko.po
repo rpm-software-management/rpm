@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
-"POT-Creation-Date: 2002-12-21 21:09-0500\n"
+"POT-Creation-Date: 2002-12-23 15:42-0500\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -886,7 +886,7 @@ msgstr "%d 번째 행: 태그가 비어있습니다: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "%d 번째 행: %s에 부적합한 문자 '-' 가 있음: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:425
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot를 \"/\" 로 지정할 수 없음: %s\n"
@@ -1052,47 +1052,47 @@ msgstr "%d 번째 행: 스크립트 프로그램은 반드시 '/' 로 시작해야 합니다: %s\n"
 msgid "line %d: Second %s\n"
 msgstr "%d 번째 행: 두번째 %s\n"
 
-#: build/parseSpec.c:159
+#: build/parseSpec.c:160
 #, c-format
 msgid "line %d: %s\n"
 msgstr "%d 번째 행: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:211
+#: build/parseSpec.c:212
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: build/parseSpec.c:227
+#: build/parseSpec.c:228
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "%%if가 닫히지 않았습니다\n"
 
-#: build/parseSpec.c:299
+#: build/parseSpec.c:300
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean에서 %d 값이 반환되었습니다\n"
 
-#: build/parseSpec.c:308
+#: build/parseSpec.c:309
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: %%else가 %%if 없이 사용되었습니다\n"
 
-#: build/parseSpec.c:320
+#: build/parseSpec.c:321
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: %%endif가 %%if 없이 사용되었습니다\n"
 
-#: build/parseSpec.c:334 build/parseSpec.c:343
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "%%include 문이 올바르지 않습니다\n"
 
-#: build/parseSpec.c:543
+#: build/parseSpec.c:544
 msgid "No compatible architectures found for build\n"
 msgstr "패키지 제작에 호환하는 아키텍쳐를 찾을 수 없습니다\n"
 
-#: build/parseSpec.c:601
+#: build/parseSpec.c:602
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "패키지에 %%description이 없음: %s\n"
@@ -3114,40 +3114,40 @@ msgstr "닫힌    db 환경        %s/%s\n"
 msgid "removed  db environment %s/%s\n"
 msgstr "삭제된  db 환경        %s/%s\n"
 
-#: rpmdb/db3.c:287
+#: rpmdb/db3.c:291
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "여는중  db 환경        %s/%s %s\n"
 
-#: rpmdb/db3.c:769
+#: rpmdb/db3.c:764
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "닫힌    db 인덱스      %s/%s\n"
 
-#: rpmdb/db3.c:836
+#: rpmdb/db3.c:831
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "검증된  db 인덱스      %s/%s\n"
 
-#: rpmdb/db3.c:1066
+#: rpmdb/db3.c:1069
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "여는중  db 인덱스      %s/%s %s 모드=0x%x\n"
 
-#: rpmdb/db3.c:1303
+#: rpmdb/db3.c:1306
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%2$s/%3$s의 잠금된(lock) %1$s(을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "exclusive"
 msgstr "폐쇄적(exclusive)"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "shared"
 msgstr "공유됨"
 
-#: rpmdb/db3.c:1309
+#: rpmdb/db3.c:1312
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "잠금된  db 인덱스      %s/%s\n"

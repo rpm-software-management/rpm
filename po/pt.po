@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-12-21 21:09-0500\n"
+"POT-Creation-Date: 2002-12-23 15:42-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -896,7 +896,7 @@ msgstr "linha %d: Opção em branco: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linha %d: Carácter '-' ilegal no %s: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:425
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "O BuildRoot não pode ser o \"/\": %s\n"
@@ -1062,47 +1062,47 @@ msgstr "linha %d: o programa de 'script' tem de começar por '/': %s\n"
 msgid "line %d: Second %s\n"
 msgstr "linha %d: Segundo %s\n"
 
-#: build/parseSpec.c:159
+#: build/parseSpec.c:160
 #, c-format
 msgid "line %d: %s\n"
 msgstr "linha %d: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:211
+#: build/parseSpec.c:212
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Incapaz de aceder ao %s: %s\n"
 
-#: build/parseSpec.c:227
+#: build/parseSpec.c:228
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "%%if não fechado\n"
 
-#: build/parseSpec.c:299
+#: build/parseSpec.c:300
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: o parseExpressionBoolean devolve %d\n"
 
-#: build/parseSpec.c:308
+#: build/parseSpec.c:309
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Descobri um %%else sem um %%if\n"
 
-#: build/parseSpec.c:320
+#: build/parseSpec.c:321
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Descobri um %%endif sem um %%if\n"
 
-#: build/parseSpec.c:334 build/parseSpec.c:343
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "instrução %%include desorganizada\n"
 
-#: build/parseSpec.c:543
+#: build/parseSpec.c:544
 msgid "No compatible architectures found for build\n"
 msgstr "Não foram encontradas arquitecturas compatíveis para as quais criar\n"
 
-#: build/parseSpec.c:601
+#: build/parseSpec.c:602
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "O pacote não tem uma %%description: %s\n"
@@ -3125,40 +3125,40 @@ msgstr "fechei o ambiente do db %s/%s\n"
 msgid "removed  db environment %s/%s\n"
 msgstr "removi o ambiente do db %s/%s\n"
 
-#: rpmdb/db3.c:287
+#: rpmdb/db3.c:291
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "a aceder ao ambiente do db %s/%s %s\n"
 
-#: rpmdb/db3.c:769
+#: rpmdb/db3.c:764
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "fechei o índice do db   %s/%s\n"
 
-#: rpmdb/db3.c:836
+#: rpmdb/db3.c:831
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "verifiquei o índice do db %s/%s\n"
 
-#: rpmdb/db3.c:1066
+#: rpmdb/db3.c:1069
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "a abrir o índice do db  %s/%s %s modo=0x%x\n"
 
-#: rpmdb/db3.c:1303
+#: rpmdb/db3.c:1306
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "não consigo trancar o %s no %s/%s\n"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "exclusive"
 msgstr "exclusivo"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "shared"
 msgstr "partilhado"
 
-#: rpmdb/db3.c:1309
+#: rpmdb/db3.c:1312
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "tranquei o índice do db %s/%s\n"

@@ -10,6 +10,7 @@ static int _debug = 0;
 
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
+#include "rpmts.h"
 #include "debug.h"
 
 /*@access FD_t @*/	/* compared with NULL */

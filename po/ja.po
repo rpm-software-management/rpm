@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-21 21:09-0500\n"
+"POT-Creation-Date: 2002-12-23 15:42-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -922,7 +922,7 @@ msgstr "%d 行目: 空のタグ: %s"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "%d 行目: %s 中に不正な文字 '-' : %s"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:425
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "%d 行目: BuildRoot は \"/\" にすることはできません: %s"
@@ -1089,48 +1089,48 @@ msgstr "%d 行目: スクリプトプログラムは '/' で始まらなければなりません: %s"
 msgid "line %d: Second %s\n"
 msgstr "%d 行目: 2番目の %s"
 
-#: build/parseSpec.c:159
+#: build/parseSpec.c:160
 #, fuzzy, c-format
 msgid "line %d: %s\n"
 msgstr "%d 行目: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:211
+#: build/parseSpec.c:212
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "オープンできません: %s\n"
 
-#: build/parseSpec.c:227
+#: build/parseSpec.c:228
 #, fuzzy, c-format
 msgid "Unclosed %%if\n"
 msgstr "%%if が閉じていません"
 
-#: build/parseSpec.c:299
+#: build/parseSpec.c:300
 #, fuzzy, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s%d: parseExpressionBoolean が %d を返しました"
 
-#: build/parseSpec.c:308
+#: build/parseSpec.c:309
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: if がないのに %%else があります"
 
-#: build/parseSpec.c:320
+#: build/parseSpec.c:321
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: if がないのに %%endif があります"
 
-#: build/parseSpec.c:334 build/parseSpec.c:343
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, fuzzy, c-format
 msgid "malformed %%include statement\n"
 msgstr "おかしな %%include ステートメントです"
 
-#: build/parseSpec.c:543
+#: build/parseSpec.c:544
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "作成(build)可能なアーキテクチャはありません"
 
-#: build/parseSpec.c:601
+#: build/parseSpec.c:602
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "パッケージには %%description がありません: %s"
@@ -3229,40 +3229,40 @@ msgstr "%s 用の file インデックスを削除します\n"
 msgid "removed  db environment %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:287
+#: rpmdb/db3.c:291
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:769
+#: rpmdb/db3.c:764
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:836
+#: rpmdb/db3.c:831
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"
 
-#: rpmdb/db3.c:1066
+#: rpmdb/db3.c:1069
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: rpmdb/db3.c:1303
+#: rpmdb/db3.c:1306
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "データベースの %s をロックできません"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "exclusive"
 msgstr "除外"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "shared"
 msgstr "共有"
 
-#: rpmdb/db3.c:1309
+#: rpmdb/db3.c:1312
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "%s 用の file インデックスを削除します\n"

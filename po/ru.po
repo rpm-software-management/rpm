@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-21 21:09-0500\n"
+"POT-Creation-Date: 2002-12-23 15:42-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -895,7 +895,7 @@ msgstr "строка %d: Пустой тэг: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "строка %d: Недопустимый символ '-' в %s: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:425
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot не может быть \"/\": %s\n"
@@ -1061,47 +1061,47 @@ msgstr "строка %d: Программы в сценариях должны начинаться с '/': %s\n"
 msgid "line %d: Second %s\n"
 msgstr "строка %d: Второе %s\n"
 
-#: build/parseSpec.c:159
+#: build/parseSpec.c:160
 #, c-format
 msgid "line %d: %s\n"
 msgstr "строка %d: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:211
+#: build/parseSpec.c:212
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/parseSpec.c:227
+#: build/parseSpec.c:228
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "Незакрытый %%if\n"
 
-#: build/parseSpec.c:299
+#: build/parseSpec.c:300
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean код возврата: %d\n"
 
-#: build/parseSpec.c:308
+#: build/parseSpec.c:309
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Найден %%else без %%if\n"
 
-#: build/parseSpec.c:320
+#: build/parseSpec.c:321
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Найден %%endif без %%if\n"
 
-#: build/parseSpec.c:334 build/parseSpec.c:343
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "неверное объявление %%include\n"
 
-#: build/parseSpec.c:543
+#: build/parseSpec.c:544
 msgid "No compatible architectures found for build\n"
 msgstr "Не найдены совместимые архитектуры для сборки.\n"
 
-#: build/parseSpec.c:601
+#: build/parseSpec.c:602
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Пакет не имеет %%description: %s\n"
@@ -3081,40 +3081,40 @@ msgstr "закрыто окружение базы данных %s/%s\n"
 msgid "removed  db environment %s/%s\n"
 msgstr "удалено окружение базы данных %s/%s\n"
 
-#: rpmdb/db3.c:287
+#: rpmdb/db3.c:291
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "открывается окружение базы данных %s/%s %s\n"
 
-#: rpmdb/db3.c:769
+#: rpmdb/db3.c:764
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "закрыт индекс базы данных %s/%s\n"
 
-#: rpmdb/db3.c:836
+#: rpmdb/db3.c:831
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "проверен индекс базы данных %s/%s\n"
 
-#: rpmdb/db3.c:1066
+#: rpmdb/db3.c:1069
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1303
+#: rpmdb/db3.c:1306
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "невозможно получить блокировку %s на %s/%s\n"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "exclusive"
 msgstr "исключительный"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "shared"
 msgstr "разделяемый"
 
-#: rpmdb/db3.c:1309
+#: rpmdb/db3.c:1312
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "заблокирован индекс базы данных %s/%s\n"

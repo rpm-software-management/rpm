@@ -543,39 +543,39 @@ assert(argv[ac] != NULL);
 }
 /*@=bounds@*/
 
-static rpmds rpmdsDup(const rpmds this)
-	/*@modifies this @*/
+static rpmds rpmdsDup(const rpmds ods)
+	/*@modifies ods @*/
 {
     rpmds ds = xcalloc(1, sizeof(*ds));
     size_t nb;
 
-    ds->h = (this->h != NULL ? headerLink(this->h) : NULL);
+    ds->h = (ods->h != NULL ? headerLink(ods->h) : NULL);
 /*@-assignexpose@*/
-    ds->Type = this->Type;
+    ds->Type = ods->Type;
 /*@=assignexpose@*/
-    ds->tagN = this->tagN;
-    ds->Count = this->Count;
-    ds->i = this->i;
-    ds->l = this->l;
-    ds->u = this->u;
+    ds->tagN = ods->tagN;
+    ds->Count = ods->Count;
+    ds->i = ods->i;
+    ds->l = ods->l;
+    ds->u = ods->u;
 
     nb = (ds->Count+1) * sizeof(*ds->N);
     ds->N = (ds->h != NULL
-	? memcpy(xmalloc(nb), this->N, nb)
-	: rpmdsDupArgv(this->N, this->Count) );
-    ds->Nt = this->Nt;
+	? memcpy(xmalloc(nb), ods->N, nb)
+	: rpmdsDupArgv(ods->N, ods->Count) );
+    ds->Nt = ods->Nt;
 
     nb = (ds->Count+1) * sizeof(*ds->EVR);
     ds->EVR = (ds->h != NULL
-	? memcpy(xmalloc(nb), this->EVR, nb)
-	: rpmdsDupArgv(this->EVR, this->Count) );
-    ds->EVRt = this->EVRt;
+	? memcpy(xmalloc(nb), ods->EVR, nb)
+	: rpmdsDupArgv(ods->EVR, ods->Count) );
+    ds->EVRt = ods->EVRt;
 
     nb = (ds->Count * sizeof(*ds->Flags));
     ds->Flags = (ds->h != NULL
-	? this->Flags
-	: memcpy(xmalloc(nb), this->Flags, nb) );
-    ds->Ft = this->Ft;
+	? ods->Flags
+	: memcpy(xmalloc(nb), ods->Flags, nb) );
+    ds->Ft = ods->Ft;
 
 /*@-compmempass@*/ /* FIX: ds->Flags is kept, not only */
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
@@ -584,11 +584,11 @@ static rpmds rpmdsDup(const rpmds this)
 }
 
 /*@-bounds@*/
-int rpmdsFind(rpmds ds, rpmds this)
+int rpmdsFind(rpmds ds, rpmds ods)
 {
     int comparison;
 
-    if (ds == NULL || this == NULL)
+    if (ds == NULL || ods == NULL)
 	return -1;
 
     ds->l = 0;
@@ -596,11 +596,11 @@ int rpmdsFind(rpmds ds, rpmds this)
     while (ds->l < ds->u) {
 	ds->i = (ds->l + ds->u) / 2;
 
-	comparison = strcmp(this->N[this->i], ds->N[ds->i]);
+	comparison = strcmp(ods->N[ods->i], ds->N[ds->i]);
 	if (comparison == 0)
-	    comparison = strcmp(this->EVR[this->i], ds->EVR[ds->i]);
+	    comparison = strcmp(ods->EVR[ods->i], ds->EVR[ds->i]);
 	if (comparison == 0)
-	    comparison = (this->Flags[this->i] - ds->Flags[ds->i]);
+	    comparison = (ods->Flags[ods->i] - ds->Flags[ds->i]);
 
 	if (comparison < 0)
 	    ds->u = ds->i;
@@ -614,7 +614,7 @@ int rpmdsFind(rpmds ds, rpmds this)
 /*@=bounds@*/
 
 /*@-bounds@*/
-int rpmdsMerge(rpmds * dsp, rpmds this)
+int rpmdsMerge(rpmds * dsp, rpmds ods)
 {
     rpmds ds;
     const char ** N;
@@ -623,16 +623,16 @@ int rpmdsMerge(rpmds * dsp, rpmds this)
     int j;
 int save;
 
-    if (dsp == NULL || this == NULL)
+    if (dsp == NULL || ods == NULL)
 	return -1;
 
     /* If not initialized yet, dup the 1st entry. */
 /*@-branchstate@*/
     if (*dsp == NULL) {
-	save = this->Count;
-	this->Count = 1;
-	*dsp = rpmdsDup(this);
-	this->Count = save;
+	save = ods->Count;
+	ods->Count = 1;
+	*dsp = rpmdsDup(ods);
+	ods->Count = save;
     }
 /*@=branchstate@*/
     ds = *dsp;
@@ -640,14 +640,14 @@ int save;
     /*
      * Add new entries.
      */
-save = this->i;
-    this = rpmdsInit(this);
-    if (this != NULL)
-    while (rpmdsNext(this) >= 0) {
+save = ods->i;
+    ods = rpmdsInit(ods);
+    if (ods != NULL)
+    while (rpmdsNext(ods) >= 0) {
 	/*
 	 * If this entry is already present, don't bother.
 	 */
-	if (rpmdsFind(ds, this) >= 0)
+	if (rpmdsFind(ds, ods) >= 0)
 	    continue;
 
 	/*
@@ -655,14 +655,14 @@ save = this->i;
 	 */
 	for (j = ds->Count; j > ds->u; j--)
 	    ds->N[j] = ds->N[j-1];
-	ds->N[ds->u] = this->N[this->i];
+	ds->N[ds->u] = ods->N[ods->i];
 	N = rpmdsDupArgv(ds->N, ds->Count+1);
 	ds->N = _free(ds->N);
 	ds->N = N;
 	
 	for (j = ds->Count; j > ds->u; j--)
 	    ds->EVR[j] = ds->EVR[j-1];
-	ds->EVR[ds->u] = this->EVR[this->i];
+	ds->EVR[ds->u] = ods->EVR[ods->i];
 	EVR = rpmdsDupArgv(ds->EVR, ds->Count+1);
 	ds->EVR = _free(ds->EVR);
 	ds->EVR = EVR;
@@ -672,7 +672,7 @@ save = this->i;
 	    memcpy(Flags, ds->Flags, ds->u * sizeof(*Flags));
 	if (ds->u < ds->Count)
 	    memcpy(Flags + ds->u + 1, ds->Flags + ds->u, (ds->Count - ds->u) * sizeof(*Flags));
-	Flags[ds->u] = this->Flags[this->i];
+	Flags[ds->u] = ods->Flags[ods->i];
 	ds->Flags = _free(ds->Flags);
 	ds->Flags = Flags;
 
@@ -681,7 +681,7 @@ save = this->i;
 
     }
 /*@-nullderef@*/
-this->i = save;
+ods->i = save;
 /*@=nullderef@*/
     return 0;
 }

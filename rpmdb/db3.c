@@ -191,13 +191,13 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
 	/*@-moduncon@*/ /* FIX: annotate db3 methods */
 	xx = db_env_create(&dbenv, 0);
 	/*@=moduncon@*/
-	xx = cvtdberr(dbi, "db_env_create", rc, _debug);
+	xx = cvtdberr(dbi, "db_env_create", xx, _debug);
 #if (DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0) || (DB_VERSION_MAJOR == 4)
 	xx = dbenv->remove(dbenv, dbhome, 0);
 #else
 	xx = dbenv->remove(dbenv, dbhome, NULL, 0);
 #endif
-	xx = cvtdberr(dbi, "dbenv->remove", rc, _debug);
+	xx = cvtdberr(dbi, "dbenv->remove", xx, _debug);
 
 	if (dbfile)
 	    rpmMessage(RPMMESS_DEBUG, _("removed  db environment %s/%s\n"),
@@ -218,6 +218,10 @@ static int db3_fsync_disable(/*@unused@*/ int fd)
 #include <pthread.h>
 #endif
 
+/**
+ * Check that posix mutexes are shared.
+ * @return		0 == shared.
+ */
 static int db3_pthread_nptl(void)
 	/*@*/
 {
@@ -291,12 +295,6 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     if (dbi->dbi_host == NULL)
 	dbi->dbi_ecflags &= ~DB_CLIENT;
 
-#if HAVE_LIBPTHREAD
-    /* XXX Set DB_ENV_PRIVATE if not nptl. */
-    if (db3_pthread_nptl())
-	dbi->dbi_ecflags |= DB_ENV_PRIVATE;
-#endif
-
     /* XXX Set a default shm_key. */
     if ((dbi->dbi_eflags & DB_SYSTEM_MEM) && dbi->dbi_shmkey == 0) {
 #if defined(HAVE_FTOK)
@@ -308,11 +306,8 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 
     rc = db_env_create(&dbenv, dbi->dbi_ecflags);
     rc = cvtdberr(dbi, "db_env_create", rc, _debug);
-    if (rc)
+    if (dbenv == NULL || rc)
 	goto errxit;
-
-    if (dbenv == NULL)
-	return 1;
 
   { int xx;
     /*@-noeffectuncon@*/ /* FIX: annotate db3 methods */
@@ -407,7 +402,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 	tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
 	/*@=mods@*/
 	xx = dbenv->set_tmp_dir(dbenv, tmpdir);
-	xx = cvtdberr(dbi, "dbenv->set_tmp_dir", rc, _debug);
+	xx = cvtdberr(dbi, "dbenv->set_tmp_dir", xx, _debug);
 	tmpdir = _free(tmpdir);
     }
   }
@@ -964,6 +959,14 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      * Avoid incompatible DB_CREATE/DB_RDONLY flags on DBENV->open.
      */
     if (dbi->dbi_use_dbenv) {
+
+#if HAVE_LIBPTHREAD
+	/* Set DB_PRIVATE if posix mutexes are not shared. */
+	if (db3_pthread_nptl()) {
+	    dbi->dbi_eflags |= DB_PRIVATE;
+	}
+#endif
+
 	if (access(dbhome, W_OK) == -1) {
 
 	    /* dbhome is unwritable, don't attempt DB_CREATE on DB->open ... */
@@ -1297,7 +1300,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 			/* Warning iff using non-private CDB locking. */
 			rc = ((dbi->dbi_use_dbenv &&
 				(dbi->dbi_eflags & DB_INIT_CDB) &&
-				!(dbi->dbi_ecflags & DB_ENV_PRIVATE))
+				!(dbi->dbi_eflags & DB_PRIVATE))
 			    ? 0 : 1);
 			rpmError( (rc ? RPMERR_FLOCK : RPMWARN_FLOCK),
 				_("cannot get %s lock on %s/%s\n"),

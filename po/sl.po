@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.344 2002/12/22 02:11:19 jbj Exp $
+# $Id: sl.po,v 1.345 2002/12/23 20:59:03 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-21 21:09-0500\n"
+"POT-Creation-Date: 2002-12-23 15:42-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -909,7 +909,7 @@ msgstr "vrstica %d: Prazna znaèka: %s"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:425
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot ne more biti \"/\": %s"
@@ -1077,48 +1077,48 @@ msgstr "vrstica %d: skriptni program se mora zaèeti z ,/`: %s"
 msgid "line %d: Second %s\n"
 msgstr "vrstica %d: Drugi %s"
 
-#: build/parseSpec.c:159
+#: build/parseSpec.c:160
 #, fuzzy, c-format
 msgid "line %d: %s\n"
 msgstr "vrstica %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:211
+#: build/parseSpec.c:212
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Ni mo¾no odpreti %s: %s\n"
 
-#: build/parseSpec.c:227
+#: build/parseSpec.c:228
 #, fuzzy, c-format
 msgid "Unclosed %%if\n"
 msgstr "Nezakljuèeni %%if"
 
-#: build/parseSpec.c:299
+#: build/parseSpec.c:300
 #, fuzzy, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean vrne %d"
 
-#: build/parseSpec.c:308
+#: build/parseSpec.c:309
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: Najden je bil %%else brez pripadajoèega if"
 
-#: build/parseSpec.c:320
+#: build/parseSpec.c:321
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Najden je bil %%endif brez pripadajoèega if"
 
-#: build/parseSpec.c:334 build/parseSpec.c:343
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, fuzzy, c-format
 msgid "malformed %%include statement\n"
 msgstr "Deformiran stavek %%include"
 
-#: build/parseSpec.c:543
+#: build/parseSpec.c:544
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "Arhitektura za izgradnjo ni prisotna"
 
-#: build/parseSpec.c:601
+#: build/parseSpec.c:602
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "V paketu manjka %%description: %s"
@@ -3182,40 +3182,40 @@ msgstr "zaprto  db okolje %s/%s\n"
 msgid "removed  db environment %s/%s\n"
 msgstr "odstranjeno db okolje %s/%s\n"
 
-#: rpmdb/db3.c:287
+#: rpmdb/db3.c:291
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "odpiranje db okolja %s/%s %s\n"
 
-#: rpmdb/db3.c:769
+#: rpmdb/db3.c:764
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "zaprto  db kazalo       %s/%s\n"
 
-#: rpmdb/db3.c:836
+#: rpmdb/db3.c:831
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "zaprto  db kazalo       %s/%s\n"
 
-#: rpmdb/db3.c:1066
+#: rpmdb/db3.c:1069
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "odpiranje db kazala       %s/%s %s naèin=0x%x\n"
 
-#: rpmdb/db3.c:1303
+#: rpmdb/db3.c:1306
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "shared"
 msgstr "skupno"
 
-#: rpmdb/db3.c:1309
+#: rpmdb/db3.c:1312
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "zaklenjeno  db kazalo       %s/%s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-21 21:09-0500\n"
+"POT-Creation-Date: 2002-12-23 15:42-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -901,7 +901,7 @@ msgstr "satýr %d: Etiket boþ: %s\n"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "satýr %d:  %s içinde '-' karakteri kuraldýþý: %s\n"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:425
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot \"/\" olamaz: %s\n"
@@ -1067,47 +1067,47 @@ msgstr "satýr %d: betik programý '/' ile baþlamalý: %s\n"
 msgid "line %d: Second %s\n"
 msgstr "satýr %d: %s saniye\n"
 
-#: build/parseSpec.c:159
+#: build/parseSpec.c:160
 #, c-format
 msgid "line %d: %s\n"
 msgstr "satýr %d: %s\n"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:211
+#: build/parseSpec.c:212
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "%s açýlamadý: %s\n"
 
-#: build/parseSpec.c:227
+#: build/parseSpec.c:228
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr "%%if kapanmamýþ\n"
 
-#: build/parseSpec.c:299
+#: build/parseSpec.c:300
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr "%s:%d: parseExpressionBoolean %d ile döner\n"
 
-#: build/parseSpec.c:308
+#: build/parseSpec.c:309
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: %%if'siz bir  %%else alýndý\n"
 
-#: build/parseSpec.c:320
+#: build/parseSpec.c:321
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: %%if'siz bir %%endif alýndý\n"
 
-#: build/parseSpec.c:334 build/parseSpec.c:343
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "%%include deyimi bozuk\n"
 
-#: build/parseSpec.c:543
+#: build/parseSpec.c:544
 msgid "No compatible architectures found for build\n"
 msgstr "Kurgulamak için uyumlu mimari yok\n"
 
-#: build/parseSpec.c:601
+#: build/parseSpec.c:602
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %%description içermiyor: %s\n"
@@ -3137,40 +3137,40 @@ msgstr "kapandý      db ortamý %s/%s\n"
 msgid "removed  db environment %s/%s\n"
 msgstr "silindi       db ortamý %s/%s\n"
 
-#: rpmdb/db3.c:287
+#: rpmdb/db3.c:291
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "açýlýyor      db ortamý %s/%s %s\n"
 
-#: rpmdb/db3.c:769
+#: rpmdb/db3.c:764
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "kapandý      db endeks %s/%s\n"
 
-#: rpmdb/db3.c:836
+#: rpmdb/db3.c:831
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "doðrulandý    db endeks %s/%s\n"
 
-#: rpmdb/db3.c:1066
+#: rpmdb/db3.c:1069
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "açýlýyor       db endeks %s/%s %s kip=0x%x\n"
 
-#: rpmdb/db3.c:1303
+#: rpmdb/db3.c:1306
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%s kilit  %s/%s'den alýnamadý\n"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "exclusive"
 msgstr "baðdaþýk"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "shared"
 msgstr "paylaþýmlý"
 
-#: rpmdb/db3.c:1309
+#: rpmdb/db3.c:1312
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kilitli      db endeks %s/%s\n"

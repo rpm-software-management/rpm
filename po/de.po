@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-21 21:09-0500\n"
+"POT-Creation-Date: 2002-12-23 15:42-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -992,7 +992,7 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: build/parsePreamble.c:588 build/parseSpec.c:425
+#: build/parsePreamble.c:588 build/parseSpec.c:426
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
@@ -1169,49 +1169,49 @@ msgid "line %d: Second %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
-#: build/parseSpec.c:159
+#: build/parseSpec.c:160
 #, fuzzy, c-format
 msgid "line %d: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
 #. XXX Fstrerror
-#: build/parseSpec.c:211
+#: build/parseSpec.c:212
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen\n"
 
-#: build/parseSpec.c:227
+#: build/parseSpec.c:228
 #, c-format
 msgid "Unclosed %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:299
+#: build/parseSpec.c:300
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr ""
 
-#: build/parseSpec.c:308
+#: build/parseSpec.c:309
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:320
+#: build/parseSpec.c:321
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr ""
 
-#: build/parseSpec.c:334 build/parseSpec.c:343
+#: build/parseSpec.c:335 build/parseSpec.c:344
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:543
+#: build/parseSpec.c:544
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "Paket-Architektur nicht überprüfen"
 
-#: build/parseSpec.c:601
+#: build/parseSpec.c:602
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
@@ -3315,40 +3315,40 @@ msgstr ""
 msgid "removed  db environment %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:287
+#: rpmdb/db3.c:291
 #, fuzzy, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:769
+#: rpmdb/db3.c:764
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:836
+#: rpmdb/db3.c:831
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:1066
+#: rpmdb/db3.c:1069
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:1303
+#: rpmdb/db3.c:1306
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1308
 msgid "shared"
 msgstr "geteilt"
 
-#: rpmdb/db3.c:1309
+#: rpmdb/db3.c:1312
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"

@@ -269,22 +269,22 @@ rpmds rpmdsInit(/*@null@*/ rpmds ds)
 /**
  * Find a dependency set element using binary search.
  * @param ds		dependency set to search
- * @param this		dependency set element to find.
+ * @param ods		dependency set element to find.
  * @return		dependency index (or -1 if not found)
  */
 /*@null@*/
-int rpmdsFind(rpmds ds, /*@null@*/ rpmds this)
-	/*@modifies ds, this @*/;
+int rpmdsFind(rpmds ds, /*@null@*/ rpmds ods)
+	/*@modifies ds, ods @*/;
 
 /**
  * Merge a dependency set maintaining (N,EVR,Flags) sorted order.
  * @retval *dsp		(merged) dependency set
- * @param this		dependency set to merge
+ * @param ods		dependency set to merge
  * @return		(merged) dependency index
  */
 /*@null@*/
-int rpmdsMerge(/*@out@*/ rpmds * dsp, /*@null@*/ rpmds this)
-	/*@modifies *dsp, this @*/;
+int rpmdsMerge(/*@out@*/ rpmds * dsp, /*@null@*/ rpmds ods)
+	/*@modifies *dsp, ods @*/;
 
 /**
  * Compare two versioned dependency ranges, looking for overlap.
