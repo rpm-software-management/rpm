@@ -10,7 +10,7 @@ AC_PREREQ(2.12)         dnl Minimum Autoconf version required.
 
 AM_INIT_AUTOMAKE(rpm, 2.90)
 
-AC_CANONICAL_HOST
+AC_CANONICAL_SYSTEM
 dnl XXX AM_MAINTAINER_MODE
 
 dnl Set of available languages.
