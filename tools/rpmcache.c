@@ -13,7 +13,6 @@
 #include "rpmds.h"
 #include "rpmts.h"
 
-#include "misc.h"	/* XXX myGlobPatternP */
 #include "debug.h"
 
 static int _debug = 0;
@@ -446,7 +445,7 @@ static void initGlobs(/*@unused@*/ rpmts ts, const char ** argv)
     buf[0] = '\0';
     if (argv != NULL && * argv != NULL) {
 	const char * arg;
-	int single = (myGlobPatternP(argv[0]) && argv[1] == NULL);
+	int single = (Glob_pattern_p(argv[0], 0) && argv[1] == NULL);
 	char * t;
 
 	t = buf;

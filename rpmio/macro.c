@@ -92,21 +92,17 @@ typedef /*@abstract@*/ struct MacroBuf_s {
 
 /*@-exportlocal -exportheadervar@*/
 
-#define	MAX_MACRO_DEPTH	16
+#define	_MAX_MACRO_DEPTH	16
 /*@unchecked@*/
-int max_macro_depth = MAX_MACRO_DEPTH;
+int max_macro_depth = _MAX_MACRO_DEPTH;
 
-#ifdef	DEBUG_MACROS
+#define	_PRINT_MACRO_TRACE	0
 /*@unchecked@*/
-int print_macro_trace = 0;
+int print_macro_trace = _PRINT_MACRO_TRACE;
+
+#define	_PRINT_EXPAND_TRACE	0
 /*@unchecked@*/
-int print_expand_trace = 0;
-#else
-/*@unchecked@*/
-int print_macro_trace = 0;
-/*@unchecked@*/
-int print_expand_trace = 0;
-#endif
+int print_expand_trace = _PRINT_EXPAND_TRACE;
 /*@=exportlocal =exportheadervar@*/
 
 #define	MACRO_CHUNK_SIZE	16
@@ -241,7 +237,7 @@ rpmDumpMacroTable(MacroContext mc, FILE * fp)
  * Find entry in macro table.
  * @param mc		macro context
  * @param name		macro name
- * @param namelen	no. of byes
+ * @param namelen	no. of bytes
  * @return		address of slot in macro table with name (or NULL)
  */
 /*@-boundswrite@*/
@@ -1483,6 +1479,235 @@ expandMacro(MacroBuf mb)
 }
 
 /* =============================================================== */
+/* XXX dupe'd to avoid change in linkage conventions. */
+
+#define POPT_ERROR_NOARG        -10     /*!< missing argument */
+#define POPT_ERROR_BADQUOTE     -15     /*!< error in paramter quoting */
+#define POPT_ERROR_MALLOC       -21     /*!< memory allocation failed */
+
+#define POPT_ARGV_ARRAY_GROW_DELTA 5
+
+/*@-boundswrite@*/
+static int poptDupArgv(int argc, const char **argv,
+		int * argcPtr, const char *** argvPtr)
+{
+    size_t nb = (argc + 1) * sizeof(*argv);
+    const char ** argv2;
+    char * dst;
+    int i;
+
+    if (argc <= 0 || argv == NULL)	/* XXX can't happen */
+	return POPT_ERROR_NOARG;
+    for (i = 0; i < argc; i++) {
+	if (argv[i] == NULL)
+	    return POPT_ERROR_NOARG;
+	nb += strlen(argv[i]) + 1;
+    }
+	
+    dst = malloc(nb);
+    if (dst == NULL)			/* XXX can't happen */
+	return POPT_ERROR_MALLOC;
+    argv2 = (void *) dst;
+    dst += (argc + 1) * sizeof(*argv);
+
+    /*@-branchstate@*/
+    for (i = 0; i < argc; i++) {
+	argv2[i] = dst;
+	dst += strlen(strcpy(dst, argv[i])) + 1;
+    }
+    /*@=branchstate@*/
+    argv2[argc] = NULL;
+
+    if (argvPtr) {
+	*argvPtr = argv2;
+    } else {
+	free(argv2);
+	argv2 = NULL;
+    }
+    if (argcPtr)
+	*argcPtr = argc;
+    return 0;
+}
+/*@=boundswrite@*/
+
+/*@-bounds@*/
+static int poptParseArgvString(const char * s, int * argcPtr, const char *** argvPtr)
+{
+    const char * src;
+    char quote = '\0';
+    int argvAlloced = POPT_ARGV_ARRAY_GROW_DELTA;
+    const char ** argv = malloc(sizeof(*argv) * argvAlloced);
+    int argc = 0;
+    int buflen = strlen(s) + 1;
+    char * buf = memset(alloca(buflen), 0, buflen);
+    int rc = POPT_ERROR_MALLOC;
+
+    if (argv == NULL) return rc;
+    argv[argc] = buf;
+
+    for (src = s; *src != '\0'; src++) {
+	if (quote == *src) {
+	    quote = '\0';
+	} else if (quote != '\0') {
+	    if (*src == '\\') {
+		src++;
+		if (!*src) {
+		    rc = POPT_ERROR_BADQUOTE;
+		    goto exit;
+		}
+		if (*src != quote) *buf++ = '\\';
+	    }
+	    *buf++ = *src;
+	} else if (isspace(*src)) {
+	    if (*argv[argc] != '\0') {
+		buf++, argc++;
+		if (argc == argvAlloced) {
+		    argvAlloced += POPT_ARGV_ARRAY_GROW_DELTA;
+		    argv = realloc(argv, sizeof(*argv) * argvAlloced);
+		    if (argv == NULL) goto exit;
+		}
+		argv[argc] = buf;
+	    }
+	} else switch (*src) {
+	  case '"':
+	  case '\'':
+	    quote = *src;
+	    /*@switchbreak@*/ break;
+	  case '\\':
+	    src++;
+	    if (!*src) {
+		rc = POPT_ERROR_BADQUOTE;
+		goto exit;
+	    }
+	    /*@fallthrough@*/
+	  default:
+	    *buf++ = *src;
+	    /*@switchbreak@*/ break;
+	}
+    }
+
+    if (strlen(argv[argc])) {
+	argc++, buf++;
+    }
+
+    rc = poptDupArgv(argc, argv, argcPtr, argvPtr);
+
+exit:
+    if (argv) free(argv);
+    return rc;
+}
+/*@=bounds@*/
+/* =============================================================== */
+static int _debug = 0;
+
+int rpmGlob(const char * patterns, int * argcPtr, const char *** argvPtr)
+{
+    int ac = 0;
+    const char ** av = NULL;
+    int argc = 0;
+    const char ** argv = NULL;
+    char * globRoot = NULL;
+    size_t maxb, nb;
+    int i, j;
+    int rc;
+
+    rc = poptParseArgvString(patterns, &ac, &av);
+    if (rc)
+	return rc;
+
+    for (j = 0; j < ac; j++) {
+	const char * globURL;
+	const char * path;
+	int ut = urlPath(av[j], &path);
+	glob_t gl;
+
+	if (!Glob_pattern_p(av[j], 0) && strchr(path, '~') == NULL) {
+	    argv = xrealloc(argv, (argc+2) * sizeof(*argv));
+	    argv[argc] = xstrdup(av[j]);
+if (_debug)
+fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, argv[argc]);
+	    argc++;
+	    continue;
+	}
+	
+	gl.gl_pathc = 0;
+	gl.gl_pathv = NULL;
+	rc = Glob(av[j], GLOB_TILDE, Glob_error, &gl);
+	if (rc)
+	    goto exit;
+
+	/* XXX Prepend the URL leader for globs that have stripped it off */
+	maxb = 0;
+	for (i = 0; i < gl.gl_pathc; i++) {
+	    if ((nb = strlen(&(gl.gl_pathv[i][0]))) > maxb)
+		maxb = nb;
+	}
+	
+	nb = ((ut > URL_IS_DASH && ut != URL_IS_FTP) ? (path - av[j]) : 0);
+	maxb += nb;
+	maxb += 1;
+	globURL = globRoot = xmalloc(maxb);
+
+	switch (ut) {
+	case URL_IS_HTTP:
+	case URL_IS_PATH:
+	case URL_IS_DASH:
+	    strncpy(globRoot, av[j], nb);
+	    /*@switchbreak@*/ break;
+	case URL_IS_FTP:
+	case URL_IS_UNKNOWN:
+	    /*@switchbreak@*/ break;
+	}
+	globRoot += nb;
+	*globRoot = '\0';
+if (_debug)
+fprintf(stderr, "*** GLOB maxb %d diskURL %d %*s globURL %p %s\n", (int)maxb, (int)nb, (int)nb, av[j], globURL, globURL);
+	
+	argv = xrealloc(argv, (argc+gl.gl_pathc+1) * sizeof(*argv));
+
+	if (argv != NULL)
+	for (i = 0; i < gl.gl_pathc; i++) {
+	    const char * globFile = &(gl.gl_pathv[i][0]);
+	    if (globRoot > globURL && globRoot[-1] == '/')
+		while (*globFile == '/') globFile++;
+	    strcpy(globRoot, globFile);
+if (_debug)
+fprintf(stderr, "*** rpmGlob argv[%d] \"%s\"\n", argc, globURL);
+	    argv[argc++] = xstrdup(globURL);
+	}
+	/*@-immediatetrans@*/
+	Globfree(&gl);
+	/*@=immediatetrans@*/
+	globURL = _free(globURL);
+    }
+
+    if (argv != NULL && argc > 0) {
+	argv[argc] = NULL;
+	if (argvPtr)
+	    *argvPtr = argv;
+	if (argcPtr)
+	    *argcPtr = argc;
+	rc = 0;
+    } else
+	rc = 1;
+
+
+exit:
+    av = _free(av);
+/*@-branchstate@*/
+    if (rc || argvPtr == NULL) {
+/*@-dependenttrans -unqualifiedtrans@*/
+	if (argv != NULL)
+	for (i = 0; i < argc; i++)
+	    argv[i] = _free(argv[i]);
+	argv = _free(argv);
+/*@=dependenttrans =unqualifiedtrans@*/
+    }
+/*@=branchstate@*/
+    return rc;
+}
+
+/* =============================================================== */
 
 int
 expandMacros(void * spec, MacroContext mc, char * sbuf, size_t slen)
@@ -1595,10 +1820,42 @@ rpmLoadMacros(MacroContext mc, int level)
     }
 }
 
-void
-rpmInitMacros(/*@unused@*/ MacroContext mc, const char *macrofiles)
+int
+rpmLoadMacroFile(MacroContext mc, const char * fn)
 {
-    char *m, *mfile, *me;
+    FD_t fd = Fopen(fn, "r.fpio");
+    char buf[BUFSIZ];
+    int rc = -1;
+
+    if (fd == NULL || Ferror(fd)) {
+	if (fd) (void) Fclose(fd);
+	return rc;
+    }
+
+    /* XXX Assume new fangled macro expansion */
+    /*@-mods@*/
+    max_macro_depth = 16;
+    /*@=mods@*/
+
+    while(rdcl(buf, sizeof(buf), fd, 1) != NULL) {
+	char c, *n;
+
+	n = buf;
+	SKIPBLANK(n, c);
+
+	if (c != '%')
+		/*@innercontinue@*/ continue;
+	n++;	/* skip % */
+	rc = rpmDefineMacro(mc, n, RMIL_MACROFILES);
+    }
+    rc = Fclose(fd);
+    return rc;
+}
+
+void
+rpmInitMacros(MacroContext mc, const char * macrofiles)
+{
+    char *mfiles, *m, *me;
 
     if (macrofiles == NULL)
 	return;
@@ -1606,11 +1863,14 @@ rpmInitMacros(/*@unused@*/ MacroContext mc, const char *macrofiles)
     if (mc == NULL) mc = rpmGlobalMacroContext;
 #endif
 
-    for (mfile = m = xstrdup(macrofiles); mfile && *mfile != '\0'; mfile = me) {
-	FD_t fd;
-	char buf[BUFSIZ];
+    mfiles = xstrdup(macrofiles);
+    for (m = mfiles; m && *m != '\0'; m = me) {
+	const char ** av;
+	int ac;
+	int i;
 
-	for (me = mfile; (me = strchr(me, ':')) != NULL; me++) {
+	for (me = m; (me = strchr(me, ':')) != NULL; me++) {
+	    /* Skip over URI's. */
 	    if (!(me[1] == '/' && me[2] == '/'))
 		/*@innerbreak@*/ break;
 	}
@@ -1618,44 +1878,19 @@ rpmInitMacros(/*@unused@*/ MacroContext mc, const char *macrofiles)
 	if (me && *me == ':')
 	    *me++ = '\0';
 	else
-	    me = mfile + strlen(mfile);
+	    me = m + strlen(m);
 
-	/* Expand ~/ to $HOME */
-	buf[0] = '\0';
-	if (mfile[0] == '~' && mfile[1] == '/') {
-	    char *home;
-	    if ((home = getenv("HOME")) != NULL) {
-		mfile += 2;
-		strncpy(buf, home, sizeof(buf));
-		strncat(buf, "/", sizeof(buf) - strlen(buf));
-	    }
-	}
-	strncat(buf, mfile, sizeof(buf) - strlen(buf));
-	buf[sizeof(buf)-1] = '\0';
-
-	fd = Fopen(buf, "r.fpio");
-	if (fd == NULL || Ferror(fd)) {
-	    if (fd) (void) Fclose(fd);
+	/* Glob expand the macro file path element, expanding ~ to $HOME. */
+	ac = 0;
+	av = NULL;
+	i = rpmGlob(m, &ac, &av);
+        if (i != 0)
 	    continue;
-	}
 
-	/* XXX Assume new fangled macro expansion */
-	/*@-mods@*/
-	max_macro_depth = 16;
-	/*@=mods@*/
-
-	while(rdcl(buf, sizeof(buf), fd, 1) != NULL) {
-	    char c, *n;
-
-	    n = buf;
-	    SKIPBLANK(n, c);
-
-	    if (c != '%')
-		/*@innercontinue@*/ continue;
-	    n++;	/* skip % */
-	    (void) rpmDefineMacro(NULL, n, RMIL_MACROFILES);
-	}
-	(void) Fclose(fd);
+	/* Read macros from each file. */
+	for (i = 0; i < ac; i++)
+	    (void) rpmLoadMacroFile(mc, av[i]);
+	av = _free(av);
     }
     m = _free(m);
 

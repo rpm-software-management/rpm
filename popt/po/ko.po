@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-30 08:12-0500\n"
+"POT-Creation-Date: 2004-02-29 07:48-0500\n"
 "PO-Revision-Date: 2001-09-06 20:06+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=EUC-KR\n"
 "Content-Transfer-Encoding: 8-bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: popt.c:35
 msgid "unknown errno"
@@ -59,54 +59,54 @@ msgstr "메모리 할당에 실패했습니다"
 msgid "unknown error"
 msgstr "알 수 없는 오류입니다"
 
-#: popthelp.c:58 popthelp.c:73
+#: popthelp.c:64 popthelp.c:75
 msgid "Show this help message"
 msgstr "이 도움말을 보여줍니다"
 
-#: popthelp.c:59 popthelp.c:74
+#: popthelp.c:65 popthelp.c:76
 msgid "Display brief usage message"
 msgstr "간단한 사용법을 보여줍니다"
 
-#: popthelp.c:62 popthelp.c:77
+#: popthelp.c:79
 msgid "Display option defaults in message"
 msgstr "기본적인 옵션을 보여줍니다"
 
-#: popthelp.c:122
+#: popthelp.c:124
 msgid "NONE"
 msgstr "없음(NONE)"
 
-#: popthelp.c:124
+#: popthelp.c:126
 msgid "VAL"
 msgstr "값(VAL)"
 
-#: popthelp.c:128
+#: popthelp.c:130
 msgid "INT"
 msgstr "정수(INT)"
 
-#: popthelp.c:129
+#: popthelp.c:131
 msgid "LONG"
 msgstr "정수(LONG)"
 
-#: popthelp.c:130
+#: popthelp.c:132
 msgid "STRING"
 msgstr "문자열(STRING)"
 
-#: popthelp.c:131
+#: popthelp.c:133
 msgid "FLOAT"
 msgstr "소수(FLOAT)"
 
-#: popthelp.c:132
+#: popthelp.c:134
 msgid "DOUBLE"
 msgstr "소수(DOUBLE)"
 
-#: popthelp.c:133
+#: popthelp.c:135
 msgid "ARG"
 msgstr "인수(ARG)"
 
-#: popthelp.c:508
+#: popthelp.c:548
 msgid "Usage:"
 msgstr "사용법:"
 
-#: popthelp.c:532
+#: popthelp.c:572
 msgid "[OPTION...]"
 msgstr "[옵션...]"

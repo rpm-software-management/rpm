@@ -68,6 +68,18 @@ void	rpmDumpMacroTable	(/*@null@*/ MacroContext mc,
 	/*@modifies *fp, fileSystem @*/;
 
 /**
+ * Return URL path(s) from a (URL prefixed) pattern glob.
+ * @patterns		glob pattern
+ * @retval *argcPtr	no. of paths
+ * @retval *argvPtr	array of paths (malloc'd contiguous blob)
+ * @return		0 on success
+ */
+int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
+		/*@out@*/ const char *** argvPtr)
+	/*@globals fileSystem@*/
+	/*@modifies *argcPtr, *argvPtr, fileSystem @*/;
+
+/**
  * Expand macro into buffer.
  * @deprecated Use rpmExpand().
  * @todo Eliminate from API.
@@ -129,8 +141,18 @@ void	rpmLoadMacros	(/*@null@*/ MacroContext mc, int level)
 	/*@modifies rpmGlobalMacroContext @*/;
 
 /**
- * Initialize global macro context from set of macrofile(s).
+ * Load macro context from a macro file.
  * @param mc		(unused)
+ * @param macrofiles	colon separated list of macro files (NULL does nothing)
+ */
+int	rpmLoadMacroFile(/*@null@*/ MacroContext mc, const char * macrofiles)
+	/*@globals rpmGlobalMacroContext,
+		h_errno, fileSystem, internalState @*/
+	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/;
+
+/**
+ * Initialize macro context from set of macrofile(s).
+ * @param mc		macro context
  * @param macrofiles	colon separated list of macro files (NULL does nothing)
  */
 void	rpmInitMacros	(/*@null@*/ MacroContext mc, const char * macrofiles)

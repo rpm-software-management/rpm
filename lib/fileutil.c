@@ -68,7 +68,7 @@ int rpmSyscall(const char * cmd, int noexec)
 
     /* Check: parse only with 2 or more args, last arg cannot be glob. */
     if (noexec) {
-	if (argc > 2 && myGlobPatternP(argv[argc-1])) {
+	if (argc > 2 && Glob_pattern_p(argv[argc-1], 0)) {
 	    rc = 1;
 	    goto exit;
 	}

@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-12 16:27+0000\n"
+"POT-Creation-Date: 2004-02-29 07:48-0500\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 #, fuzzy
@@ -520,74 +520,74 @@ msgstr ""
 msgid "File not found: %s\n"
 msgstr "Fil ikke funnet: %s\n"
 
-#: build/files.c:1772
+#: build/files.c:1773
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1778
+#: build/files.c:1779
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead feilet\n"
 
-#: build/files.c:1782 lib/rpmchecksig.c:580
+#: build/files.c:1783 lib/rpmchecksig.c:580
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1789
+#: build/files.c:1790
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: readLead feilet\n"
 
-#: build/files.c:1840
+#: build/files.c:1842
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1864
+#: build/files.c:1866
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linje %d: Filnavn ikke tillatt: %s\n"
 
-#: build/files.c:1881 lib/rpminstall.c:361
+#: build/files.c:1883 lib/rpminstall.c:361
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1941
+#: build/files.c:1943
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åpne spec fil %s: %s\n"
 
-#: build/files.c:1952 build/pack.c:156
+#: build/files.c:1954 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "Installerer %s\n"
 
-#: build/files.c:2348
+#: build/files.c:2350
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil %s: %s\n"
 
-#: build/files.c:2360 build/parsePrep.c:50
+#: build/files.c:2362 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig eier/gruppe: %s\n"
 
-#: build/files.c:2404
+#: build/files.c:2406
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "ingen pakke utløser %s\n"
 
-#: build/files.c:2427
+#: build/files.c:2429
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2455
+#: build/files.c:2457
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -730,7 +730,7 @@ msgstr "Kunne ikke åpne spec fil %s: %s\n"
 msgid "Could not open %s: %s\n"
 msgstr "Kunne ikke åpne %s: %s\n"
 
-#: build/pack.c:632 lib/psm.c:1420
+#: build/pack.c:632 lib/psm.c:1520
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunne ikke skrive pakke: %s\n"
@@ -760,7 +760,7 @@ msgstr "Kunne ikke lese \"payload\" fra %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kunne ikke skrive \"payload\" til %s: %s\n"
 
-#: build/pack.c:725 lib/psm.c:1689
+#: build/pack.c:725 lib/psm.c:1789
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
@@ -1493,47 +1493,52 @@ msgstr ""
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:770
+#: lib/fsm.c:773
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/fsm.c:778
+#: lib/fsm.c:781
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/fsm.c:1336
+#: lib/fsm.c:1350
 #, c-format
-msgid "%s directory created with perms %04o.\n"
+msgid "%s directory created with perms %04o, no context.\n"
 msgstr ""
 
-#: lib/fsm.c:1635
+#: lib/fsm.c:1354
+#, c-format
+msgid "%s directory created with perms %04o, context %s.\n"
+msgstr ""
+
+#: lib/fsm.c:1657
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1762 lib/fsm.c:1898
+#: lib/fsm.c:1784 lib/fsm.c:1920
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s lagret som %s\n"
 
-#: lib/fsm.c:1925
+#: lib/fsm.c:1947
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir av %s feilet: Katalogen er ikke tom\n"
 
-#: lib/fsm.c:1931
+#: lib/fsm.c:1953
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir av %s feilet: %s\n"
 
-#: lib/fsm.c:1946
+#: lib/fsm.c:1968
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s unlink av %s feilet: %s\n"
 
-#: lib/fsm.c:1968
+#: lib/fsm.c:1990
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s opprettet som %s\n"
@@ -2211,66 +2216,78 @@ msgstr "kildepakke inneholder ikke en .spec-fil\n"
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr ""
 
-#: lib/psm.c:554
+#: lib/psm.c:541
+#, c-format
+msgid "setexeccon(%s) fails from context \"%s\": %s\n"
+msgstr ""
+
+#: lib/psm.c:545
+#, c-format
+msgid ""
+"setexeccon(%s) fails from context \"%s\": %s\n"
+"Continuing ...\n"
+msgstr ""
+
+#: lib/psm.c:631
 #, c-format
 msgid "%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:562
+#: lib/psm.c:639
 #, c-format
 msgid "%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:730
+#: lib/psm.c:818
 #, c-format
 msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:751
+#: lib/psm.c:851
 #, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr ""
 
-#: lib/psm.c:757
+#: lib/psm.c:857
 #, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1188
+#: lib/psm.c:1288
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1323
+#: lib/psm.c:1423
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1432
+#: lib/psm.c:1532
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "Kunne ikke åpne spec fil %s: %s\n"
 
-#: lib/psm.c:1510
+#: lib/psm.c:1610
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1511
+#: lib/psm.c:1611
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1697
+#: lib/psm.c:1797
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "klarte ikke å åpne %s: %s\n"
 
-#: lib/psm.c:1700
+#: lib/psm.c:1800
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s feilet\n"
 
-#: lib/query.c:118 lib/rpmts.c:566
+#: lib/query.c:118 lib/rpmts.c:575
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "ukorrekt format: %s\n"
@@ -2319,7 +2336,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "pakken har verken fileier eller id-lister\n"
 
 #: lib/query.c:428 lib/query.c:475 lib/rpminstall.c:123 lib/rpminstall.c:476
-#: lib/rpminstall.c:607 lib/rpminstall.c:1032 lib/rpmts.c:577
+#: lib/rpminstall.c:607 lib/rpminstall.c:1032 lib/rpmts.c:586
 #: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2903,76 +2920,76 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kunne ikke åpne spec fil %s: %s\n"
 
-#: lib/rpmsx.c:343
+#: lib/rpmsx.c:358
 #, c-format
 msgid "%s:  no newline on line number %d (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:360
+#: lib/rpmsx.c:375
 #, c-format
 msgid "%s:  line number %d is missing fields (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:391
+#: lib/rpmsx.c:406
 #, c-format
 msgid "%s:  unable to compile regular expression %s on line number %d:  %s\n"
 msgstr ""
 
-#: lib/rpmsx.c:406 lib/rpmsx.c:421
+#: lib/rpmsx.c:421 lib/rpmsx.c:436
 #, c-format
 msgid "%s:  invalid type specifier %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmsx.c:434
+#: lib/rpmsx.c:449
 #, c-format
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:163
+#: lib/rpmts.c:164
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kan ikke åpne pakkedatabase i %s\n"
 
-#: lib/rpmts.c:253
+#: lib/rpmts.c:262
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "ugyldig pakkenummer: %s\n"
 
-#: lib/rpmts.c:271
+#: lib/rpmts.c:280
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "Mangler '(' i %s %s\n"
 
-#: lib/rpmts.c:279
+#: lib/rpmts.c:288
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "ugyldig pakkenummer: %s\n"
 
-#: lib/rpmts.c:456
+#: lib/rpmts.c:465
 #, fuzzy, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "kan ikke åpne database i %s\n"
 
-#: lib/rpmts.c:598
+#: lib/rpmts.c:607
 #, fuzzy, c-format
 msgid "Adding: %s\n"
 msgstr "Installerer %s\n"
 
-#: lib/rpmts.c:610
+#: lib/rpmts.c:619
 #, fuzzy, c-format
 msgid "Suggesting: %s\n"
 msgstr "Henter %s\n"
 
-#: lib/rpmts.c:1098
+#: lib/rpmts.c:1107
 #, fuzzy
 msgid "mounted filesystems:\n"
 msgstr "henter liste over monterte filsystemer\n"
 
-#: lib/rpmts.c:1100
+#: lib/rpmts.c:1109
 msgid "    i    dev bsize       bavail       iavail mount point\n"
 msgstr ""
 
-#: lib/rpmts.c:1156
+#: lib/rpmts.c:1165
 #, c-format
 msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
 msgstr ""
@@ -3140,7 +3157,7 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:891
+#: lib/transaction.c:893
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "ekskluderer katalog %s\n"
@@ -3153,7 +3170,7 @@ msgstr "ekskluderer katalog %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1004
+#: lib/transaction.c:1013
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
@@ -3166,7 +3183,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1092
+#: lib/transaction.c:1101
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3174,7 +3191,7 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1173
+#: lib/transaction.c:1182
 msgid "computing file dispositions\n"
 msgstr ""
 

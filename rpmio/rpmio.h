@@ -395,6 +395,17 @@ int Access(const char * path, int amode)
 	/*@globals errno, fileSystem @*/
 	/*@modifies errno, fileSystem @*/;
 
+/**
+ * glob_pattern_p(3) clone.
+ */
+int Glob_pattern_p (const char *pattern, int quote)
+	/*@*/;
+
+/**
+ * glob_error(3) clone.
+ */
+int Glob_error(const char * epath, int eerrno)
+	/*@*/;
 
 /**
  * glob(3) clone.

@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-30 08:12-0500\n"
+"POT-Creation-Date: 2004-02-29 07:48-0500\n"
 "PO-Revision-Date: 2001-01-17 01:01+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: popt.c:35
 msgid "unknown errno"
@@ -59,55 +59,55 @@ msgstr ""
 msgid "unknown error"
 msgstr "erro descoñecido"
 
-#: popthelp.c:58 popthelp.c:73
+#: popthelp.c:64 popthelp.c:75
 msgid "Show this help message"
 msgstr "Amosar esta mensaxe de axuda"
 
-#: popthelp.c:59 popthelp.c:74
+#: popthelp.c:65 popthelp.c:76
 msgid "Display brief usage message"
 msgstr "Amosar brevemente o xeito de utilización"
 
-#: popthelp.c:62 popthelp.c:77
+#: popthelp.c:79
 #, fuzzy
 msgid "Display option defaults in message"
 msgstr "Amosar brevemente o xeito de utilización"
 
-#: popthelp.c:122
+#: popthelp.c:124
 msgid "NONE"
 msgstr "NADA"
 
-#: popthelp.c:124
+#: popthelp.c:126
 msgid "VAL"
 msgstr "VAL"
 
-#: popthelp.c:128
+#: popthelp.c:130
 msgid "INT"
 msgstr "INT"
 
-#: popthelp.c:129
+#: popthelp.c:131
 msgid "LONG"
 msgstr "LONG"
 
-#: popthelp.c:130
+#: popthelp.c:132
 msgid "STRING"
 msgstr "CADEA"
 
-#: popthelp.c:131
+#: popthelp.c:133
 msgid "FLOAT"
 msgstr "FLOAT"
 
-#: popthelp.c:132
+#: popthelp.c:134
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
-#: popthelp.c:133
+#: popthelp.c:135
 msgid "ARG"
 msgstr "ARG"
 
-#: popthelp.c:508
+#: popthelp.c:548
 msgid "Usage:"
 msgstr "Uso:"
 
-#: popthelp.c:532
+#: popthelp.c:572
 msgid "[OPTION...]"
 msgstr "[OPCIÓN...]"

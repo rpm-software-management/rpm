@@ -1829,11 +1829,12 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 		fl->totalFileSize, fl->fileCount,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
+    int quote = 1;	/* XXX permit quoted glob characters. */
     int doGlob;
     const char *diskURL = NULL;
     int rc = 0;
     
-    doGlob = myGlobPatternP(fileURL);
+    doGlob = Glob_pattern_p(fileURL, quote);
 
     /* Check that file starts with leading "/" */
     {	const char * fileName;
@@ -1871,7 +1872,7 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 
 	/*@-branchstate@*/
 	rc = rpmGlob(diskURL, &argc, &argv);
-	if (rc == 0 && argc >= 1 && !myGlobPatternP(argv[0])) {
+	if (rc == 0 && argc >= 1 && !Glob_pattern_p(argv[0], quote)) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
 /*@-boundswrite@*/

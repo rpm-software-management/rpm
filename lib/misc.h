@@ -104,19 +104,6 @@ int makeTempFile(/*@null@*/ const char * prefix,
 /*@only@*/ char * currentDirectory(void)
 	/*@*/;
 
-/**
- */
-/*@-exportlocal@*/
-int myGlobPatternP (const char *patternURL)	/*@*/;
-/*@=exportlocal@*/
-
-/**
- */
-int rpmGlob(const char * patterns, /*@out@*/ int * argcPtr,
-		/*@out@*/ const char *** argvPtr)
-	/*@globals fileSystem@*/
-	/*@modifies *argcPtr, *argvPtr, fileSystem @*/;
-
 #ifdef __cplusplus
 }
 #endif

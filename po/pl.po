@@ -9,14 +9,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.3-20030515\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-12 16:27+0000\n"
+"POT-Creation-Date: 2004-02-29 07:48-0500\n"
 "PO-Revision-Date: 2003-06-08 22:42+0200\n"
 "Last-Translator: Jakub Bogusz <qboosh@pld.org.pl>\n"
 "Language-Team: Polish <translation-team-pl@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-2\n"
 "Content-Transfer-Encoding: 8-bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: build.c:40
 msgid "Failed build dependencies:\n"
@@ -530,67 +530,67 @@ msgstr "Plik nie zgadza siê z prefiksem (%s): %s\n"
 msgid "File not found: %s\n"
 msgstr "Nie znaleziono pliku: %s\n"
 
-#: build/files.c:1772
+#: build/files.c:1773
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1778
+#: build/files.c:1779
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: odczyt klucza publicznego nie powiód³ siê.\n"
 
-#: build/files.c:1782 lib/rpmchecksig.c:580
+#: build/files.c:1783 lib/rpmchecksig.c:580
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: nie jest opakowanym kluczem publicznym.\n"
 
-#: build/files.c:1789
+#: build/files.c:1790
 #, fuzzy, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: odczyt klucza publicznego nie powiód³ siê.\n"
 
-#: build/files.c:1840
+#: build/files.c:1842
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Plik musi siê zaczynaæ od \"/\": %s\n"
 
-#: build/files.c:1864
+#: build/files.c:1866
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob niedozwolony: %s\n"
 
-#: build/files.c:1881 lib/rpminstall.c:361
+#: build/files.c:1883 lib/rpminstall.c:361
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Nie znaleziono pliku poprzez glob: %s\n"
 
-#: build/files.c:1941
+#: build/files.c:1943
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nie mo¿na otworzyæ pliku %s dla %%files: %s\n"
 
-#: build/files.c:1952 build/pack.c:156
+#: build/files.c:1954 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linia: %s\n"
 
-#: build/files.c:2348
+#: build/files.c:2350
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "B³êdny plik: %s: %s\n"
 
-#: build/files.c:2360 build/parsePrep.c:50
+#: build/files.c:2362 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "B³êdny u¿ytkownik/grupa: %s\n"
 
-#: build/files.c:2404
+#: build/files.c:2406
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Szukanie niespakietowanych plików: %s\n"
 
-#: build/files.c:2427
+#: build/files.c:2429
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -599,7 +599,7 @@ msgstr ""
 "Znaleziono zainstalowane (ale niespakietowane) pliki:\n"
 "%s"
 
-#: build/files.c:2455
+#: build/files.c:2457
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Przetwarzanie plików: %s-%s-%s\n"
@@ -738,7 +738,7 @@ msgstr "Nie mo¿na ponownie odczytaæ nag³ówka sygnatury.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Nie mo¿na otworzyæ %s: %s\n"
 
-#: build/pack.c:632 lib/psm.c:1420
+#: build/pack.c:632 lib/psm.c:1520
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie mo¿na zapisaæ pakietu: %s\n"
@@ -768,7 +768,7 @@ msgstr "Nie mo¿na odczytaæ danych z %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie mo¿na zapisaæ danych do %s: %s\n"
 
-#: build/pack.c:725 lib/psm.c:1689
+#: build/pack.c:725 lib/psm.c:1789
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -1498,47 +1498,52 @@ msgstr "========== Katalogi nie w³±czone explicite do pakietu:\n"
 msgid "%10d %s\n"
 msgstr "%10d %s\n"
 
-#: lib/fsm.c:770
+#: lib/fsm.c:773
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "u¿ytkownik %s nie istnieje - u¿yto konta root\n"
 
-#: lib/fsm.c:778
+#: lib/fsm.c:781
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupa %s nie istnieje - u¿yto grupy root\n"
 
-#: lib/fsm.c:1336
-#, c-format
-msgid "%s directory created with perms %04o.\n"
+#: lib/fsm.c:1350
+#, fuzzy, c-format
+msgid "%s directory created with perms %04o, no context.\n"
 msgstr "katalog %s utworzony z uprawnieniami %04o.\n"
 
-#: lib/fsm.c:1635
+#: lib/fsm.c:1354
+#, fuzzy, c-format
+msgid "%s directory created with perms %04o, context %s.\n"
+msgstr "katalog %s utworzony z uprawnieniami %04o.\n"
+
+#: lib/fsm.c:1657
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "plik archiwum %s nie znaleziony na li¶cie plików w nag³ówku\n"
 
-#: lib/fsm.c:1762 lib/fsm.c:1898
+#: lib/fsm.c:1784 lib/fsm.c:1920
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s zapisano jako %s\n"
 
-#: lib/fsm.c:1925
+#: lib/fsm.c:1947
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir %s nie powiod³o siê: katalog nie jest pusty\n"
 
-#: lib/fsm.c:1931
+#: lib/fsm.c:1953
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s nie powiod³o siê: %s\n"
 
-#: lib/fsm.c:1946
+#: lib/fsm.c:1968
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s unlink %s nie powiod³o siê: %s\n"
 
-#: lib/fsm.c:1968
+#: lib/fsm.c:1990
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s utworzony jako %s\n"
@@ -2198,65 +2203,77 @@ msgstr "pakiet ¼ród³owy nie zawiera pliku .spec\n"
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 
-#: lib/psm.c:554
+#: lib/psm.c:541
+#, c-format
+msgid "setexeccon(%s) fails from context \"%s\": %s\n"
+msgstr ""
+
+#: lib/psm.c:545
+#, c-format
+msgid ""
+"setexeccon(%s) fails from context \"%s\": %s\n"
+"Continuing ...\n"
+msgstr ""
+
+#: lib/psm.c:631
 #, c-format
 msgid "%s: %s(%s-%s-%s) skipping redundant \"%s\".\n"
 msgstr "%s: %s(%s-%s-%s) pomijanie nadmiarowego \"%s\".\n"
 
-#: lib/psm.c:562
+#: lib/psm.c:639
 #, c-format
 msgid "%s: %s(%s-%s-%s) %ssynchronous scriptlet start\n"
 msgstr "%s: %s(%s-%s-%s) %ssynchroniczny start skryptu\n"
 
-#: lib/psm.c:730
+#: lib/psm.c:818
 #, c-format
 msgid "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 msgstr "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 
-#: lib/psm.c:751
+#: lib/psm.c:851
 #, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "skrypt %s(%s-%s-%s) nie powiód³ siê, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:757
+#: lib/psm.c:857
 #, c-format
 msgid "%s(%s-%s-%s) scriptlet failed, exit status %d\n"
 msgstr "skrypt %s(%s-%s-%s) nie powiód³ siê, status wyj¶cia %d\n"
 
-#: lib/psm.c:1188
+#: lib/psm.c:1288
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s ma %d plików, test = %d\n"
 
-#: lib/psm.c:1323
+#: lib/psm.c:1423
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: skrypt %s nie powiód³ siê (%d), pomijanie %s\n"
 
-#: lib/psm.c:1432
+#: lib/psm.c:1532
 msgid "Unable to reload signature header\n"
 msgstr "Nie mo¿na ponownie odczytaæ nag³ówka sygnatury\n"
 
-#: lib/psm.c:1510
+#: lib/psm.c:1610
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozpakowanie archiwum nie powiod³o siê%s%s: %s\n"
 
-#: lib/psm.c:1511
+#: lib/psm.c:1611
 msgid " on file "
 msgstr " na pliku "
 
-#: lib/psm.c:1697
+#: lib/psm.c:1797
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s nie powiód³ siê na pliku %s: %s\n"
 
-#: lib/psm.c:1700
+#: lib/psm.c:1800
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s nie powiod³o siê: %s\n"
 
-#: lib/query.c:118 lib/rpmts.c:566
+#: lib/query.c:118 lib/rpmts.c:575
 #, c-format
 msgid "incorrect format: %s\n"
 msgstr "b³êdny format: %s\n"
@@ -2304,7 +2321,7 @@ msgid "package has neither file owner or id lists\n"
 msgstr "pakiet nie ma list w³a¶cicieli ani id plików\n"
 
 #: lib/query.c:428 lib/query.c:475 lib/rpminstall.c:123 lib/rpminstall.c:476
-#: lib/rpminstall.c:607 lib/rpminstall.c:1032 lib/rpmts.c:577
+#: lib/rpminstall.c:607 lib/rpminstall.c:1032 lib/rpmts.c:586
 #: tools/rpmgraph.c:120 tools/rpmgraph.c:157
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2887,75 +2904,75 @@ msgstr "Nie mo¿na odczytaæ %s, HOME jest zbyt du¿e.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie mo¿na otworzyæ %s do odczytu: %s.\n"
 
-#: lib/rpmsx.c:343
+#: lib/rpmsx.c:358
 #, c-format
 msgid "%s:  no newline on line number %d (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:360
+#: lib/rpmsx.c:375
 #, c-format
 msgid "%s:  line number %d is missing fields (only read %s)\n"
 msgstr ""
 
-#: lib/rpmsx.c:391
+#: lib/rpmsx.c:406
 #, c-format
 msgid "%s:  unable to compile regular expression %s on line number %d:  %s\n"
 msgstr ""
 
-#: lib/rpmsx.c:406 lib/rpmsx.c:421
+#: lib/rpmsx.c:421 lib/rpmsx.c:436
 #, c-format
 msgid "%s:  invalid type specifier %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmsx.c:434
+#: lib/rpmsx.c:449
 #, c-format
 msgid "%s:  invalid context %s on line number %d\n"
 msgstr ""
 
-#: lib/rpmts.c:163
+#: lib/rpmts.c:164
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie mo¿na otworzyæ bazy danych Packages w %s\n"
 
-#: lib/rpmts.c:253
+#: lib/rpmts.c:262
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "b³êdny numer pakietu: %s\n"
 
-#: lib/rpmts.c:271
+#: lib/rpmts.c:280
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "Brak '(' w %s %s\n"
 
-#: lib/rpmts.c:279
+#: lib/rpmts.c:288
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "b³êdny numer pakietu: %s\n"
 
-#: lib/rpmts.c:456
+#: lib/rpmts.c:465
 #, c-format
 msgid "cannot open Solve database in %s\n"
 msgstr "nie mo¿na otworzyæ bazy danych Solve w %s\n"
 
-#: lib/rpmts.c:598
+#: lib/rpmts.c:607
 #, c-format
 msgid "Adding: %s\n"
 msgstr "Dodawane: %s\n"
 
-#: lib/rpmts.c:610
+#: lib/rpmts.c:619
 #, c-format
 msgid "Suggesting: %s\n"
 msgstr "Sugerowane: %s\n"
 
-#: lib/rpmts.c:1098
+#: lib/rpmts.c:1107
 msgid "mounted filesystems:\n"
 msgstr "podmontowane systemy plików:\n"
 
-#: lib/rpmts.c:1100
+#: lib/rpmts.c:1109
 msgid "    i    dev bsize       bavail       iavail mount point\n"
 msgstr "    i    urz bloków  bl.wolnych    i.wolnych punkt montowania\n"
 
-#: lib/rpmts.c:1156
+#: lib/rpmts.c:1165
 #, c-format
 msgid "%5d 0x%04x %5u %12ld %12ld %s\n"
 msgstr "%5d 0x%04x %5u %12ld %12ld %s\n"
@@ -3120,7 +3137,7 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Sygnatura: NIEZNANA (%d)\n"
 
 #. @innercontinue@
-#: lib/transaction.c:891
+#: lib/transaction.c:893
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "wy³±czanie katalogu %s\n"
@@ -3133,7 +3150,7 @@ msgstr "wy³±czanie katalogu %s\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1004
+#: lib/transaction.c:1013
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "sprawdzanie poprawno¶ci %d elementów\n"
@@ -3146,7 +3163,7 @@ msgstr "sprawdzanie poprawno¶ci %d elementów\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1092
+#: lib/transaction.c:1101
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "obliczanie %d odcisków plików\n"
@@ -3154,7 +3171,7 @@ msgstr "obliczanie %d odcisków plików\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1173
+#: lib/transaction.c:1182
 msgid "computing file dispositions\n"
 msgstr "obliczanie dyspozycji plików\n"
 

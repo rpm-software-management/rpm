@@ -32,7 +32,7 @@ static struct rpmlibProvides_s rpmlibProvides[] = {
     N_("file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path.")},
     { "rpmlib(PayloadIsBzip2)",		"3.0.5-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
-    N_("package payload is compressed using bzip2.") },
+    N_("package payload can be compressed using bzip2.") },
     { "rpmlib(PayloadFilesHavePrefix)",	"4.0-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
     N_("package payload file(s) have \"./\" prefix.") },

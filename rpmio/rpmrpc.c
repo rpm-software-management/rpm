@@ -1411,6 +1411,52 @@ fprintf(stderr, "*** Access(%s,%d)\n", path, amode);
     return access(path, amode);
 }
 
+/* glob_pattern_p() taken from bash
+ * Copyright (C) 1985, 1988, 1989 Free Software Foundation, Inc.
+ *
+ * Return nonzero if PATTERN has any special globbing chars in it.
+ */
+int Glob_pattern_p (const char * pattern, int quote)
+{
+    const char *p;
+    int open = 0;
+    char c;
+  
+    (void) urlPath(pattern, &p);
+    while ((c = *p++) != '\0')
+	switch (c) {
+	case '?':
+	case '*':
+	    return (1);
+	case '\\':
+	    if (quote && p[1] != '\0')
+		p++;
+	    continue;
+
+	case '[':
+	    open = 1;
+	    continue;
+	case ']':
+	    if (open)
+		return (1);
+	    continue;      
+
+	case '+':
+	case '@':
+	case '!':
+	    if (*p == '(')
+		return (1);
+	    continue;
+	}
+
+    return (0);
+}
+
+int Glob_error(/*@unused@*/const char * epath, /*@unused@*/ int eerrno)
+{
+    return 1;
+}
+
 int Glob(const char *pattern, int flags,
 	int errfunc(const char * epath, int eerrno), glob_t *pglob)
 {
@@ -1431,8 +1477,11 @@ fprintf(stderr, "*** Glob(%s,0x%x,%p,%p)\n", pattern, (unsigned)flags, (void *)e
 	pglob->gl_stat = Stat;
 /*@=type@*/
 	flags |= GLOB_ALTDIRFUNC;
+	flags &= ~GLOB_TILDE;
 	break;
     case URL_IS_HTTP:		/* XXX WRONG WRONG WRONG */
+	flags &= ~GLOB_TILDE;
+	/*@fallthrough@*/
     case URL_IS_PATH:
 	pattern = lpath;
 	/*@fallthrough@*/
