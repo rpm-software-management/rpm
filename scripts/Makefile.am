@@ -4,6 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST = \
 	brp-compress brp-redhat brp-strip brp-strip-comment-note \
+	brp-strip-shared \
 	brp-sparc64-linux check-prereqs convertrpmrc.sh find-lang.sh \
 	find-prov.pl find-req.pl cpanflute find-provides.perl \
 	find-requires.perl get_magic.pl getpo.sh http.req \
@@ -17,6 +18,7 @@ all:
 configdir = ${prefix}/lib/rpm
 config_SCRIPTS = \
 	brp-compress brp-redhat brp-strip brp-strip-comment-note \
+	brp-strip-shared \
 	brp-sparc64-linux check-prereqs convertrpmrc.sh find-lang.sh \
 	find-prov.pl find-req.pl cpanflute find-provides.perl \
 	find-requires.perl get_magic.pl getpo.sh http.req \

@@ -1,0 +1,17 @@
+#!/bin/sh
+# Conectiva brp - strip shared libraries. Based on Red Hat's brp-strip.
+# Thu Apr 20 - Guilherme Manika <gwm@conectiva.com.br>
+#              Created file
+
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+# Strip ELF shared objects
+# Please note we don't restrict our search to executable files because
+# our libraries are not (should not be, at least) +x.
+for f in `find $RPM_BUILD_ROOT -type f -a -exec file {} \; | \
+	grep ' shared object,' | \
+	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped/\1/p'`; do
+	strip --strip-unneeded $f
+done
