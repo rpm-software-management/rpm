@@ -181,8 +181,7 @@ int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbIndexSet * matches);
 int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile);
 int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags, 
 		      notifyFunction notify, char * labelFormat);
-int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, 
-		     int upgrade, int test);
+int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test);
 int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 int rpmdbAdd(rpmdb db, Header dbentry);
 int rpmdbUpdateRecord(rpmdb db, int secOffset, Header secHeader);
