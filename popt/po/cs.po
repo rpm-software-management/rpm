@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.1\n"
-"POT-Creation-Date: 2001-01-15 16:14-0500\n"
+"POT-Creation-Date: 2001-01-16 08:53-0500\n"
 "PO-Revision-Date: 2000-08-23 22:24+0100\n"
 "Last-Translator: Milan Kerslager <milan.kerslager@spsselib.hiedu.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -35,7 +35,7 @@ msgid "aliases nested too deeply"
 msgstr ""
 
 #: popt.c:901
-msgid "error in paramter quoting"
+msgid "error in parameter quoting"
 msgstr ""
 
 #: popt.c:903

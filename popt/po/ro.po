@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.1\n"
-"POT-Creation-Date: 2001-01-15 16:14-0500\n"
+"POT-Creation-Date: 2001-01-16 08:53-0500\n"
 "PO-Revision-Date: 2000-06-14 23:23+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -35,7 +35,8 @@ msgid "aliases nested too deeply"
 msgstr "recursivitate infinita la optiunile sinonime"
 
 #: popt.c:901
-msgid "error in paramter quoting"
+#, fuzzy
+msgid "error in parameter quoting"
 msgstr "eroare la insertie parametru"
 
 #: popt.c:903

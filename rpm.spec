@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.26
+Release: 0.27
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -309,6 +309,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Tue Jan 16 2001 Jeff Johnson <jbj@redhat.com>
+- tsort prefers presentation order.
+
 * Mon Jan 15 2001 Jeff Johnson <jbj@redhat.com>
 - fix: extra newline in many error messages (#23947).
 - fix: rpm -Va with db1 needs per-iterator, not per-index, offset.

@@ -9,7 +9,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.1\n"
-"POT-Creation-Date: 2001-01-15 16:14-0500\n"
+"POT-Creation-Date: 2001-01-16 08:53-0500\n"
 "PO-Revision-Date: 1999-03-18 23:11+0100\n"
 "Last-Translator: Nobody yet\n"
 "Language-Team: walon <linux-wa@chanae.alphanet.ch>\n"
@@ -43,7 +43,7 @@ msgid "aliases nested too deeply"
 msgstr ""
 
 #: popt.c:901
-msgid "error in paramter quoting"
+msgid "error in parameter quoting"
 msgstr ""
 
 #: popt.c:903

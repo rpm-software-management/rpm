@@ -359,8 +359,8 @@ union _dbswap {
  * @param setp		address of items retrieved from index database
  * @return		-1 error, 0 success, 1 not found
  */
-static int dbiSearch(dbiIndex dbi, DBC * dbcursor,
-	const void * keyp, size_t keylen, dbiIndexSet * setp)
+static int dbiSearch(dbiIndex dbi, DBC * dbcursor, const char * keyp, size_t keylen,
+		dbiIndexSet * setp)
 {
     void * datap;
     size_t datalen;
@@ -438,9 +438,9 @@ static int dbiSearch(dbiIndex dbi, DBC * dbcursor,
  * @return	0 success, 1 not found
  */
 /*@-compmempass@*/
-static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor,
-	const void * keyp, size_t keylen, dbiIndexSet set)
+static int dbiUpdateIndex(dbiIndex dbi, DBC * dbcursor, const char * keyp, dbiIndexSet set)
 {
+    size_t keylen = strlen(keyp);
     void * datap;
     size_t datalen;
     int rc;
@@ -1577,8 +1577,8 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
     return mi;
 }
 
-static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor,
-	const void * keyp, size_t keylen, dbiIndexItem rec)
+static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor, const char * keyp,
+		dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
     int rc;
@@ -1591,7 +1591,7 @@ static INLINE int removeIndexEntry(dbiIndex dbi, DBC * dbcursor,
 	rc = 1;		/* error message already generated from dbindex.c */
     else {			/* success */
 	if (!dbiPruneSet(set, rec, 1, sizeof(*rec), 1) &&
-	    dbiUpdateIndex(dbi, dbcursor, keyp, keylen, set))
+	    dbiUpdateIndex(dbi, dbcursor, keyp, set))
 	    rc = 1;
     }
 
@@ -1616,16 +1616,11 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 	    h = headerLink(h);
 	rpmdbFreeIterator(mi);
     }
+
     if (h == NULL) {
 	rpmError(RPMERR_DBCORRUPT, _("%s: cannot read header at 0x%x\n"),
 	      "rpmdbRemove", hdrNum);
 	return 1;
-    }
-
-    /* Add remove transaction id to header. */
-    if (rid > 0) {
-	int_32 tid = rid;
-	headerAddEntry(h, RPMTAG_REMOVETID, RPM_INT32_TYPE, &tid, 1);
     }
 
     {	const char *n, *v, *r;
@@ -1697,49 +1692,13 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 	    }
 
 	    for (i = 0; i < rpmcnt; i++) {
-		const void * valp;
-		size_t vallen;
-
-		/* Identify value pointer and length. */
-		switch (rpmtype) {
-		case RPM_CHAR_TYPE:
-		case RPM_INT8_TYPE:
-		    vallen = 1;
-		    valp = rpmvals + i;
-		    break;
-		case RPM_INT16_TYPE:
-		    vallen = sizeof(int_16);
-		    valp = rpmvals + i;
-		    break;
-		case RPM_INT32_TYPE:
-		    vallen = sizeof(int_32);
-		    valp = rpmvals + i;
-		    break;
-		case RPM_BIN_TYPE:
-		    vallen = rpmcnt;
-		    valp = rpmvals;
-		    rpmcnt = 1;		/* XXX break out of loop. */
-		    break;
-		case RPM_STRING_TYPE:
-		    vallen = strlen((char *)rpmvals);
-		    valp = rpmvals;
-		    rpmcnt = 1;		/* XXX break out of loop. */
-		    break;
-		case RPM_STRING_ARRAY_TYPE:
-		case RPM_I18NSTRING_TYPE:
-		default:
-		    vallen = strlen(rpmvals[i]);
-		    valp = rpmvals[i];
-		    break;
-		}
-
 		/*
 		 * This is almost right, but, if there are duplicate tag
 		 * values, there will be duplicate attempts to remove
 		 * the header instance. It's easier to just ignore errors
 		 * than to do things correctly.
 		 */
-		xx = removeIndexEntry(dbi, dbcursor, valp, vallen, rec);
+		xx = removeIndexEntry(dbi, dbcursor, rpmvals[i], rec);
 	    }
 
 	    xx = dbiCclose(dbi, dbcursor, 0);
@@ -1768,13 +1727,12 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
     return 0;
 }
 
-static INLINE int addIndexEntry(dbiIndex dbi, DBC * dbcursor,
-	const void * keyp, size_t keylen, dbiIndexItem rec)
+static INLINE int addIndexEntry(dbiIndex dbi, DBC * dbcursor, const char *index, dbiIndexItem rec)
 {
     dbiIndexSet set = NULL;
     int rc;
 
-    rc = dbiSearch(dbi, dbcursor, keyp, keylen, &set);
+    rc = dbiSearch(dbi, dbcursor, index, 0, &set);
 
     if (rc > 0) {
 	rc = 1;			/* error */
@@ -1784,7 +1742,7 @@ static INLINE int addIndexEntry(dbiIndex dbi, DBC * dbcursor,
 	    set = xcalloc(1, sizeof(*set));
 	}
 	dbiAppendSet(set, rec, 1, sizeof(*rec), 0);
-	if (dbiUpdateIndex(dbi, dbcursor, keyp, keylen, set))
+	if (dbiUpdateIndex(dbi, dbcursor, index, set))
 	    rc = 1;
     }
 
@@ -1808,12 +1766,6 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
     unsigned int hdrNum;
     int rc = 0;
     int xx;
-
-    if (iid > 0) {
-	int_32 tid = iid;
-	headerRemoveEntry(h, RPMTAG_REMOVETID);
-	headerAddEntry(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);
-    }
 
     /*
      * If old style filename tags is requested, the basenames need to be
@@ -1879,6 +1831,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 
 	for (dbix = 0; dbix < dbiTagsMax; dbix++) {
 	    DBC * dbcursor = NULL;
+	    const char *av[1];
 	    const char **rpmvals = NULL;
 	    int rpmtype = 0;
 	    int rpmcnt = 0;
@@ -1941,42 +1894,22 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 	    dbi = dbiOpen(rpmdb, rpmtag, 0);
 
 	    xx = dbiCopen(dbi, &dbcursor, 0);
+	    if (rpmtype == RPM_STRING_TYPE) {
+		rpmMessage(RPMMESS_DEBUG, _("adding \"%s\" to %s index.\n"), 
+			(const char *)rpmvals, tagName(dbi->dbi_rpmtag));
 
-	    {	const char * s = NULL;
-		int nelem = rpmcnt;
- 
-		switch (rpmtype) {
-		case RPM_CHAR_TYPE:
-		case RPM_INT8_TYPE:
-		case RPM_INT16_TYPE:
-		case RPM_INT32_TYPE:
-		default:
-		    break;
-		case RPM_BIN_TYPE:
-		    nelem = 1;
-		    break;
-		case RPM_I18NSTRING_TYPE:
-		case RPM_STRING_TYPE:
-		    s = (char *)rpmvals;
-		    break;
-		case RPM_STRING_ARRAY_TYPE:
-		    if (rpmcnt == 1) s = rpmvals[0];
-		    break;
-		}
-		if (s) {
-		    rpmMessage(RPMMESS_DEBUG,
-			_("adding \"%s\" to %s index.\n"), 
-			s, tagName(dbi->dbi_rpmtag));
-		} else {
-		    rpmMessage(RPMMESS_DEBUG,
-			_("adding %d entries to %s index.\n"),
-			nelem, tagName(dbi->dbi_rpmtag));
-		}
+		/* XXX force uniform headerGetEntry return */
+		av[0] = (const char *) rpmvals;
+		rpmvals = av;
+		rpmcnt = 1;
+	    } else {
+
+		rpmMessage(RPMMESS_DEBUG, _("adding %d entries to %s index.\n"), 
+			rpmcnt, tagName(dbi->dbi_rpmtag));
+
 	    }
 
 	    for (i = 0; i < rpmcnt; i++) {
-		const void * valp;
-		size_t vallen;
 
 		/*
 		 * Include the tagNum in all indices. rpm-3.0.4 and earlier
@@ -2005,41 +1938,7 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 		    break;
 		}
 
-		/* Identify value pointer and length. */
-		switch (rpmtype) {
-		case RPM_CHAR_TYPE:
-		case RPM_INT8_TYPE:
-		    vallen = 1;
-		    valp = rpmvals + i;
-		    break;
-		case RPM_INT16_TYPE:
-		    vallen = sizeof(int_16);
-		    valp = rpmvals + i;
-		    break;
-		case RPM_INT32_TYPE:
-		    vallen = sizeof(int_32);
-		    valp = rpmvals + i;
-		    break;
-		case RPM_BIN_TYPE:
-		    vallen = rpmcnt;
-		    valp = rpmvals;
-		    rpmcnt = 1;		/* XXX break out of loop. */
-		    break;
-		case RPM_I18NSTRING_TYPE:
-		case RPM_STRING_TYPE:
-		    vallen = strlen((char *)rpmvals);
-		    valp = rpmvals;
-		    rpmcnt = 1;		/* XXX break out of loop. */
-		    break;
-		case RPM_STRING_ARRAY_TYPE:
-		default:
-		    vallen = strlen(rpmvals[i]);
-		    valp = rpmvals[i];
-		    break;
-		}
-
-		rc += addIndexEntry(dbi, dbcursor, valp, vallen, rec);
-
+		rc += addIndexEntry(dbi, dbcursor, rpmvals[i], rec);
 	    }
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;

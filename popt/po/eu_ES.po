@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-01-15 16:14-0500\n"
+"POT-Creation-Date: 2001-01-16 08:53-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,7 +40,7 @@ msgid "aliases nested too deeply"
 msgstr ""
 
 #: popt.c:901
-msgid "error in paramter quoting"
+msgid "error in parameter quoting"
 msgstr ""
 
 #: popt.c:903

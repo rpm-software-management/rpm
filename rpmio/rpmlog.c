@@ -34,7 +34,7 @@ void rpmlogPrint(FILE *f)
     for (i = 0; i < nrecs; i++) {
 	rpmlogRec rec = recs + i;
 	if (rec->message && *rec->message)
-	    fprintf(f, "    %s\n", rec->message);
+	    fprintf(f, "    %s", rec->message);
     }
 }
 

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2001-01-15 14:34-0500\n"
+"POT-Creation-Date: 2001-01-16 12:32-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2570,30 +2570,26 @@ msgstr "paketti %s ei ole %s:ssä"
 msgid "package %s conflicts: %s\n"
 msgstr "paketti %s ei ole %s:ssä"
 
-#: lib/depends.c:2061
+#: lib/depends.c:1522
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
 #. Record all relations.
-#: lib/depends.c:2199
+#: lib/depends.c:1660
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:2253
+#: lib/depends.c:1707
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:2318
-msgid "========== successors only (presentation order)\n"
-msgstr ""
-
-#: lib/depends.c:2399
+#: lib/depends.c:1796
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2430
+#: lib/depends.c:1827
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3535,104 +3531,104 @@ msgstr ""
 msgid "error(%d) counting packages\n"
 msgstr "virhe etsittäessä pakettia %s\n"
 
-#: lib/rpmdb.c:1079 lib/rpmdb.c:1620
+#: lib/rpmdb.c:1079 lib/rpmdb.c:1621
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "en voi lukea headeria %d:stä päivittäessä"
 
-#: lib/rpmdb.c:1685
+#: lib/rpmdb.c:1680
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
-#: lib/rpmdb.c:1694
+#: lib/rpmdb.c:1689
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
-#: lib/rpmdb.c:1872
+#: lib/rpmdb.c:1824
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "virhe etsittäessä pakettia %s\n"
 
-#: lib/rpmdb.c:1968
+#: lib/rpmdb.c:1898
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1972
+#: lib/rpmdb.c:1907
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "virhe poistettaessa tietuetta %s %s:stä"
 
-#: lib/rpmdb.c:2344
+#: lib/rpmdb.c:2243
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2370
+#: lib/rpmdb.c:2269
 msgid "no dbpath has been set"
 msgstr "dbpath ei ole asetettu"
 
-#: lib/rpmdb.c:2395
+#: lib/rpmdb.c:2294
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: lib/rpmdb.c:2399
+#: lib/rpmdb.c:2298
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "väliaikainen tietokanta %s on jo olemassa"
 
-#: lib/rpmdb.c:2405
+#: lib/rpmdb.c:2304
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/rpmdb.c:2407
+#: lib/rpmdb.c:2306
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/rpmdb.c:2414
+#: lib/rpmdb.c:2313
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: lib/rpmdb.c:2425
+#: lib/rpmdb.c:2324
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: lib/rpmdb.c:2448
+#: lib/rpmdb.c:2347
 #, fuzzy, c-format
 msgid "record number %d in database is bad -- skipping.\n"
 msgstr "tietue numero %d tietokannassa viallinen -- ohitan sen"
 
-#: lib/rpmdb.c:2485
+#: lib/rpmdb.c:2384
 #, fuzzy, c-format
 msgid "cannot add record originally at %d\n"
 msgstr "en voi lisätä tietuetta %d:stä"
 
-#: lib/rpmdb.c:2503
+#: lib/rpmdb.c:2402
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2511
+#: lib/rpmdb.c:2410
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2513
+#: lib/rpmdb.c:2412
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2523
+#: lib/rpmdb.c:2422
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "virhe luotaessa hakemistoa %s: %s"
 
-#: lib/rpmdb.c:2525
+#: lib/rpmdb.c:2424
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "en voinut avata %s: %s"

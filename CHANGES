@@ -106,6 +106,7 @@
 	- fix: extra newline in many error messages (#23947).
 	- fix: rpm -Va with db1 needs per-iterator, not per-index, offset.
 	- add install/remove transaction id tags.
+	- tsort prefers presentation order.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
