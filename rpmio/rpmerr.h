@@ -10,6 +10,8 @@
 
 #define	_em(_e)	\
     (((_e) << 16) | RPMLOG_MAKEPRI(RPMLOG_ERRMSG, RPMLOG_ERR))
+#define	_en(_e)	\
+    (((_e) << 16) | RPMLOG_MAKEPRI(RPMLOG_ERRMSG, RPMLOG_NOTICE))
 
 /**
  * Tokens used by rpmError().
@@ -88,7 +90,7 @@ typedef enum rpmerrCode_e {
 
     RPMERR_BADSIGTYPE	= _em(200), /*!< Unknown signature type */
     RPMERR_SIGGEN	= _em(201), /*!< Error generating signature */
-    RPMERR_SIGVFY	= _em(202)  /*!< */
+    RPMERR_SIGVFY	= _en(202)  /*!< */
 } rpmerrCode;
 
 /**

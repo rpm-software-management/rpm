@@ -20,7 +20,6 @@ extern int noLang;		/* XXX FIXME: pass as arg */
 	{ 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
-/** */
 int parseDescription(Spec spec)
 {
     int nextPart;

@@ -8,9 +8,8 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-/** */
 int addReqProv(/*@unused@*/ Spec spec, Header h,
-	       int flag, const char *name, const char *version, int index)
+	       int depFlags, const char *depName, const char *depEVR, int index)
 {
     const char **names;
     int nametag = 0;
@@ -20,41 +19,41 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
     int len;
     int extra = 0;
     
-    if (flag & RPMSENSE_PROVIDES) {
+    if (depFlags & RPMSENSE_PROVIDES) {
 	nametag = RPMTAG_PROVIDENAME;
 	versiontag = RPMTAG_PROVIDEVERSION;
 	flagtag = RPMTAG_PROVIDEFLAGS;
-	extra = flag & RPMSENSE_FIND_PROVIDES;
-    } else if (flag & RPMSENSE_OBSOLETES) {
+	extra = depFlags & RPMSENSE_FIND_PROVIDES;
+    } else if (depFlags & RPMSENSE_OBSOLETES) {
 	nametag = RPMTAG_OBSOLETENAME;
 	versiontag = RPMTAG_OBSOLETEVERSION;
 	flagtag = RPMTAG_OBSOLETEFLAGS;
-    } else if (flag & RPMSENSE_CONFLICTS) {
+    } else if (depFlags & RPMSENSE_CONFLICTS) {
 	nametag = RPMTAG_CONFLICTNAME;
 	versiontag = RPMTAG_CONFLICTVERSION;
 	flagtag = RPMTAG_CONFLICTFLAGS;
-    } else if (flag & RPMSENSE_PREREQ) {
+    } else if (depFlags & RPMSENSE_PREREQ) {
 	nametag = RPMTAG_REQUIRENAME;
 	versiontag = RPMTAG_REQUIREVERSION;
 	flagtag = RPMTAG_REQUIREFLAGS;
-	extra = flag & _ALL_REQUIRES_MASK;
-    } else if (flag & RPMSENSE_TRIGGER) {
+	extra = depFlags & _ALL_REQUIRES_MASK;
+    } else if (depFlags & RPMSENSE_TRIGGER) {
 	nametag = RPMTAG_TRIGGERNAME;
 	versiontag = RPMTAG_TRIGGERVERSION;
 	flagtag = RPMTAG_TRIGGERFLAGS;
 	indextag = RPMTAG_TRIGGERINDEX;
-	extra = flag & RPMSENSE_TRIGGER;
+	extra = depFlags & RPMSENSE_TRIGGER;
     } else {
 	nametag = RPMTAG_REQUIRENAME;
 	versiontag = RPMTAG_REQUIREVERSION;
 	flagtag = RPMTAG_REQUIREFLAGS;
-	extra = flag & _ALL_REQUIRES_MASK;
+	extra = depFlags & _ALL_REQUIRES_MASK;
     }
 
-    flag = (flag & (RPMSENSE_SENSEMASK | RPMSENSE_MULTILIB)) | extra;
+    depFlags = (depFlags & (RPMSENSE_SENSEMASK | RPMSENSE_MULTILIB)) | extra;
 
-    if (!version)
-	version = "";
+    if (depEVR == NULL)
+	depEVR = "";
     
     /* Check for duplicate dependencies. */
     if (headerGetEntry(h, nametag, NULL, (void **) &names, &len)) {
@@ -72,11 +71,11 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 
 	while (len > 0) {
 	    len--;
-	    if (strcmp(names[len], name))
+	    if (strcmp(names[len], depName))
 		continue;
 	    if (flagtag && versions != NULL &&
-		(strcmp(versions[len], version) ||
-	((flags[len] | RPMSENSE_MULTILIB) != (flag | RPMSENSE_MULTILIB))))
+		(strcmp(versions[len], depEVR) ||
+	((flags[len] | RPMSENSE_MULTILIB) != (depFlags | RPMSENSE_MULTILIB))))
 		continue;
 	    if (indextag && indexes != NULL && indexes[len] != index)
 		continue;
@@ -84,7 +83,7 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
 	    /* This is a duplicate dependency. */
 	    duplicate = 1;
 
-	    if (flagtag && isDependsMULTILIB(flag) &&
+	    if (flagtag && isDependsMULTILIB(depFlags) &&
 		!isDependsMULTILIB(flags[len]))
 		    flags[len] |= RPMSENSE_MULTILIB;
 
@@ -97,12 +96,12 @@ int addReqProv(/*@unused@*/ Spec spec, Header h,
     }
 
     /* Add this dependency. */
-    headerAddOrAppendEntry(h, nametag, RPM_STRING_ARRAY_TYPE, &name, 1);
+    headerAddOrAppendEntry(h, nametag, RPM_STRING_ARRAY_TYPE, &depName, 1);
     if (flagtag) {
 	headerAddOrAppendEntry(h, versiontag,
-			       RPM_STRING_ARRAY_TYPE, &version, 1);
+			       RPM_STRING_ARRAY_TYPE, &depEVR, 1);
 	headerAddOrAppendEntry(h, flagtag,
-			       RPM_INT32_TYPE, &flag, 1);
+			       RPM_INT32_TYPE, &depFlags, 1);
     }
     if (indextag)
 	headerAddOrAppendEntry(h, indextag, RPM_INT32_TYPE, &index, 1);

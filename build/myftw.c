@@ -47,6 +47,8 @@ Cambridge, MA 02139, USA.  */
 
 /* Traverse one level of a directory tree.  */
 
+/**
+ */
 static int
 myftw_dir (DIR **dirs, int level, int descriptors,
 	   char *dir, size_t len, 
@@ -166,8 +168,6 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 
 /* Call a function on every element in a directory tree.  */
 
-
-/** */
 int myftw (const char *dir,
 	   int descriptors,
 	   myftwFunc func,

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-10 17:13-0500\n"
+"POT-Creation-Date: 2001-01-11 08:57-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1608,243 +1608,243 @@ msgstr "не задан spec-файл для сборки пакета"
 msgid "no tar files given for build"
 msgstr "не заданы tar-файлы для сборки пакета"
 
-#: build/build.c:113 build/pack.c:355
+#: build/build.c:114 build/pack.c:369
 msgid "Unable to open temp file."
 msgstr "Невозможно открыть временный файл"
 
-#: build/build.c:192
+#: build/build.c:193
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Выполняется(%s): %s\n"
 
-#: build/build.c:198
+#: build/build.c:199
 #, c-format
 msgid "Exec of %s failed (%s): %s"
 msgstr "Выполнить %s не удалось (%s): %s"
 
-#: build/build.c:206
+#: build/build.c:207
 #, c-format
 msgid "Bad exit status from %s (%s)"
 msgstr "Неверный код возврата из %s (%s)"
 
-#: build/build.c:305
+#: build/build.c:306
 msgid ""
 "\n"
 "\n"
 "RPM build errors:\n"
 msgstr ""
 
-#: build/expression.c:208
+#: build/expression.c:215
 msgid "syntax error while parsing =="
 msgstr "синтаксическая ошибка при анализе =="
 
-#: build/expression.c:238
+#: build/expression.c:245
 msgid "syntax error while parsing &&"
 msgstr "синтаксическая ошибка при анализе &&"
 
-#: build/expression.c:247
+#: build/expression.c:254
 msgid "syntax error while parsing ||"
 msgstr "синтаксическая ошибка при анализе ||"
 
-#: build/expression.c:287
+#: build/expression.c:294
 msgid "parse error in expression"
 msgstr "ошибка анализа выражения"
 
-#: build/expression.c:316
+#: build/expression.c:326
 msgid "unmatched ("
 msgstr "незакрытая ("
 
-#: build/expression.c:346
+#: build/expression.c:356
 msgid "- only on numbers"
 msgstr "- только для чисел"
 
-#: build/expression.c:362
+#: build/expression.c:372
 msgid "! only on numbers"
 msgstr "! только для чисел"
 
-#: build/expression.c:401 build/expression.c:446 build/expression.c:501
-#: build/expression.c:590
+#: build/expression.c:414 build/expression.c:462 build/expression.c:520
+#: build/expression.c:612
 msgid "types must match"
 msgstr "типы должны совпадать"
 
-#: build/expression.c:414
+#: build/expression.c:427
 msgid "* / not suported for strings"
 msgstr "* / не поддерживается для строк"
 
-#: build/expression.c:462
+#: build/expression.c:478
 msgid "- not suported for strings"
 msgstr "- не поддерживается для строк"
 
-#: build/expression.c:603
+#: build/expression.c:625
 msgid "&& and || not suported for strings"
 msgstr "&& и || не поддерживаются для строк"
 
-#: build/expression.c:637 build/expression.c:685
+#: build/expression.c:658 build/expression.c:705
 msgid "syntax error in expression"
 msgstr "синтаксическая ошибка в выражении"
 
-#: build/files.c:206
+#: build/files.c:226
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "Ошибка TIMECHECK: %s\n"
 
-#: build/files.c:251 build/files.c:333 build/files.c:496
+#: build/files.c:276 build/files.c:360 build/files.c:527
 #, c-format
 msgid "Missing '(' in %s %s"
 msgstr "Отсутствует '(' в %s %s"
 
-#: build/files.c:262 build/files.c:450 build/files.c:507
+#: build/files.c:287 build/files.c:479 build/files.c:538
 #, c-format
 msgid "Missing ')' in %s(%s"
 msgstr "отсутствует ')' в %s(%s"
 
-#: build/files.c:300 build/files.c:475
+#: build/files.c:325 build/files.c:504
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr "Неверный токен %s: %s"
 
-#: build/files.c:349
+#: build/files.c:376
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr "Не пробел следует после %s(): %s"
 
-#: build/files.c:387
+#: build/files.c:414
 #, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr "Неверный синтаксис: %s(%s)"
 
-#: build/files.c:397
+#: build/files.c:424
 #, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr "Неверные права: %s(%s)"
 
-#: build/files.c:409
+#: build/files.c:436
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr "Неверные права на каталог %s(%s)"
 
-#: build/files.c:533
+#: build/files.c:564
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr "Необычная длина locale: \"%.*s\" в %%lang(%s)"
 
-#: build/files.c:543
+#: build/files.c:574
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr "Дубликат locale %.*s в %%lang(%s)"
 
-#: build/files.c:668
+#: build/files.c:706
 msgid "Hit limit for %%docdir"
 msgstr "Лимит для %%docdir превышен"
 
-#: build/files.c:674
+#: build/files.c:712
 msgid "Only one arg for %%docdir"
 msgstr "Только один аргумент для %%docdir"
 
 #. We already got a file -- error
-#: build/files.c:702
+#: build/files.c:740
 #, c-format
 msgid "Two files on one line: %s"
 msgstr "Два файла в одной строке: %s"
 
-#: build/files.c:715
+#: build/files.c:753
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr "Файл должен начинаться с \"/\": %s"
 
-#: build/files.c:727
+#: build/files.c:765
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr "Нельзя смешивать спец. %%doc с другими формами: %s"
 
-#: build/files.c:817
+#: build/files.c:859
 #, c-format
 msgid "File listed twice: %s"
 msgstr "Файл указан дважды: %s"
 
-#: build/files.c:926
+#: build/files.c:968
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr "Символическая ссылка указывает на BuildRoot: %s -> %s"
 
-#: build/files.c:1016
+#: build/files.c:1062
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Файл не соответстует префиксу (%s): %s"
 
-#: build/files.c:1026
+#: build/files.c:1072
 #, c-format
 msgid "File not found: %s"
 msgstr "Файл не найден: %s"
 
-#: build/files.c:1069
+#: build/files.c:1115
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара хозяин/группа: %s\n"
 
-#: build/files.c:1081
+#: build/files.c:1127
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Файл %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1155
+#: build/files.c:1203
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Файл должен начинаться с \"/\": %s"
 
-#: build/files.c:1184
+#: build/files.c:1232
 #, c-format
 msgid "File not found by glob: %s"
 msgstr "Файл не найден: %s"
 
-#: build/files.c:1236
+#: build/files.c:1286
 msgid "Could not open %%files file %s: %s"
 msgstr "Невозможно открыть файл %%files: %s"
 
-#: build/files.c:1245 build/pack.c:100
+#: build/files.c:1295 build/pack.c:108
 #, c-format
 msgid "line: %s"
 msgstr "строка: %s"
 
-#: build/files.c:1571
+#: build/files.c:1621
 #, c-format
 msgid "Bad file: %s: %s"
 msgstr "Неверный файл %s: %s"
 
-#: build/files.c:1583 build/parsePrep.c:41
+#: build/files.c:1633 build/parsePrep.c:41
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Неверная пара владелец/группа: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1638
+#: build/files.c:1690
 #, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Невозможно вылнить %s: %s"
 
-#: build/files.c:1643
+#: build/files.c:1695
 #, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Сбой ветвления %s: %s"
 
-#: build/files.c:1725
+#: build/files.c:1777
 #, c-format
 msgid "%s failed"
 msgstr "%s не удалось"
 
-#: build/files.c:1729
+#: build/files.c:1781
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "запись всех данных в %s не удалась"
 
-#: build/files.c:1850
+#: build/files.c:1906
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Поиск %s (используя %s): ...\n"
 
-#: build/files.c:1878 build/files.c:1892
+#: build/files.c:1934 build/files.c:1948
 #, c-format
 msgid "Failed to find %s:"
 msgstr "Невозможно найти %s:"
 
-#: build/files.c:2001
+#: build/files.c:2061
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываются файлы: %s-%s-%s\n"
@@ -1870,126 +1870,126 @@ msgstr ""
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Невозможно канонизировать имя компьютера: %s\n"
 
-#: build/pack.c:48
+#: build/pack.c:52
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr "ошибка создания архива на файле %s: %s"
 
-#: build/pack.c:68
+#: build/pack.c:74
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr "cpio_copy: ошибка записи: %s"
 
-#: build/pack.c:75
+#: build/pack.c:81
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr "cpio_copy: ошибка чтения: %s"
 
-#: build/pack.c:151
+#: build/pack.c:165
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "Невозможно открыть файл PreIn: %s"
 
-#: build/pack.c:158
+#: build/pack.c:172
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "Невозможно открыть файл PreUn: %s"
 
-#: build/pack.c:165
+#: build/pack.c:179
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "Невозможно открыть файл PostIn: %s"
 
-#: build/pack.c:172
+#: build/pack.c:186
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "Невозможно открыть файл PostUn: %s"
 
-#: build/pack.c:180
+#: build/pack.c:194
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr "Невозможно открыть файл VerifyScript: %s"
 
-#: build/pack.c:195
+#: build/pack.c:209
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr "Невозможно открыть файл Trigger script: %s"
 
-#: build/pack.c:221
+#: build/pack.c:235
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: открытие %s: %s\n"
 
-#: build/pack.c:231
+#: build/pack.c:245
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: чтение %s: %s\n"
 
-#: build/pack.c:252
+#: build/pack.c:266
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s  не является пакетом RPM\n"
 
-#: build/pack.c:258
+#: build/pack.c:272
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: читается заголовок из %s\n"
 
-#: build/pack.c:367
+#: build/pack.c:381
 msgid "Bad CSA data"
 msgstr "Неверные данные CSA"
 
-#: build/pack.c:408
+#: build/pack.c:422
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Генерируется подпись: %d\n"
 
-#: build/pack.c:418
+#: build/pack.c:432
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/pack.c:455
+#: build/pack.c:469
 #, c-format
 msgid "Unable to write package: %s"
 msgstr "Невозможно записать пакет: %s"
 
-#: build/pack.c:470
+#: build/pack.c:484
 #, c-format
 msgid "Unable to open sigtarget %s: %s"
 msgstr "Невозможно открыть цель подписи %s: %s"
 
-#: build/pack.c:480
+#: build/pack.c:494
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s"
 msgstr "Невозможно прочитать пиктограмму %s: %s"
 
-#: build/pack.c:494
+#: build/pack.c:508
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s"
 msgstr "Невозможно записать пакет %s: %s"
 
-#: build/pack.c:504
+#: build/pack.c:518
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s"
 msgstr "Невозможно прочитать пиктограмму %s: %s"
 
-#: build/pack.c:510
+#: build/pack.c:524
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s"
 msgstr "Невозможно записать пакет %s: %s"
 
-#: build/pack.c:537
+#: build/pack.c:551
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
 
-#: build/pack.c:602
+#: build/pack.c:616
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Невозможно сгенерировать имя файла для пакета %s: %s\n"
 
-#: build/pack.c:619
+#: build/pack.c:633
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
@@ -1999,50 +1999,50 @@ msgstr "невозможно создать %s: %s\n"
 msgid "line %d: second %s"
 msgstr "строка %d: второе %s"
 
-#: build/parseChangelog.c:110
+#: build/parseChangelog.c:120
 msgid "%%changelog entries must start with *"
 msgstr "записи %%changelog должны начинаться с *"
 
-#: build/parseChangelog.c:118
+#: build/parseChangelog.c:128
 msgid "incomplete %%changelog entry"
 msgstr "неполная запись %%changelog"
 
-#: build/parseChangelog.c:133
+#: build/parseChangelog.c:143
 msgid "bad date in %%changelog: %s"
 msgstr "неверная дата в %%changelog: %s"
 
-#: build/parseChangelog.c:138
+#: build/parseChangelog.c:148
 msgid "%%changelog not in decending chronological order"
 msgstr "%%changelog не в нисходящем хронологическом порядке"
 
-#: build/parseChangelog.c:146 build/parseChangelog.c:157
+#: build/parseChangelog.c:156 build/parseChangelog.c:167
 msgid "missing name in %%changelog"
 msgstr "пропущено имя в %%changelog"
 
-#: build/parseChangelog.c:164
+#: build/parseChangelog.c:174
 msgid "no description in %%changelog"
 msgstr "нет описания в %%changelog"
 
-#: build/parseDescription.c:40
+#: build/parseDescription.c:39
 msgid "line %d: Error parsing %%description: %s"
 msgstr "строка %d: Ошибка анализа %%description: %s"
 
-#: build/parseDescription.c:53 build/parseFiles.c:47 build/parseScript.c:185
+#: build/parseDescription.c:52 build/parseFiles.c:47 build/parseScript.c:187
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "строка %d: Неверная опция %s: %s"
 
-#: build/parseDescription.c:66 build/parseFiles.c:59 build/parseScript.c:197
+#: build/parseDescription.c:65 build/parseFiles.c:59 build/parseScript.c:199
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr "строка %d: Слишком много имен: %s"
 
-#: build/parseDescription.c:76 build/parseFiles.c:68 build/parseScript.c:206
+#: build/parseDescription.c:75 build/parseFiles.c:68 build/parseScript.c:208
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "строка %d: Пакет не существует: %s"
 
-#: build/parseDescription.c:88
+#: build/parseDescription.c:87
 #, c-format
 msgid "line %d: Second description"
 msgstr "строка %d: Второе описание"
@@ -2055,118 +2055,118 @@ msgstr "строка %d: Ошибка разбора %%files: %s"
 msgid "line %d: Second %%files list"
 msgstr "строка %d: Второй список %%files"
 
-#: build/parsePreamble.c:189
+#: build/parsePreamble.c:211
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr "Архитектура исключена: %s"
 
-#: build/parsePreamble.c:194
+#: build/parsePreamble.c:216
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr "Архитектура не включена: %s"
 
-#: build/parsePreamble.c:199
+#: build/parsePreamble.c:221
 #, c-format
 msgid "OS is excluded: %s"
 msgstr "ОС исключена: %s"
 
-#: build/parsePreamble.c:204
+#: build/parsePreamble.c:226
 #, c-format
 msgid "OS is not included: %s"
 msgstr "ОС не включена: %s"
 
-#: build/parsePreamble.c:218
+#: build/parsePreamble.c:242
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr "Поле %s обязано присутствовать в пакете: %s"
 
-#: build/parsePreamble.c:243
+#: build/parsePreamble.c:269
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr "Дублирующиеся записи %s в пакете: %s"
 
-#: build/parsePreamble.c:291
+#: build/parsePreamble.c:323
 #, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "Невозможно открыть пиктограмму %s: %s"
 
-#: build/parsePreamble.c:309
+#: build/parsePreamble.c:341
 #, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "Невозможно прочитать пиктограмму %s: %s"
 
-#: build/parsePreamble.c:322
+#: build/parsePreamble.c:354
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr "Неизвестный тип пиктограммы: %s"
 
-#: build/parsePreamble.c:388
+#: build/parsePreamble.c:421
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "строка %d: Неверный тэг: %s"
 
 #. Empty field
-#: build/parsePreamble.c:396
+#: build/parsePreamble.c:429
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "строка %d: Пустой тэг: %s"
 
-#: build/parsePreamble.c:418 build/parsePreamble.c:425
+#: build/parsePreamble.c:451 build/parsePreamble.c:458
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "строка %d: Недопустимый символ '-' в %s: %s"
 
-#: build/parsePreamble.c:482 build/parseSpec.c:374
+#: build/parsePreamble.c:515 build/parseSpec.c:382
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "BuildRoot не может быть \"/\": %s"
 
-#: build/parsePreamble.c:495
+#: build/parsePreamble.c:528
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr "строка %d: Префикс не может заканчиваться на \"/\": %s"
 
-#: build/parsePreamble.c:507
+#: build/parsePreamble.c:540
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "строка %d: Docdir должен начинаться с '/': %s"
 
-#: build/parsePreamble.c:519
+#: build/parsePreamble.c:552
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "строка %d: Поле Epoch/Serial должно быть числом: %s"
 
-#: build/parsePreamble.c:559 build/parsePreamble.c:570
+#: build/parsePreamble.c:592 build/parsePreamble.c:603
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s"
 msgstr "строка %d: Неверное число %s: %s\n"
 
-#: build/parsePreamble.c:596
+#: build/parsePreamble.c:629
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "строка %d: Неверный формат BuildArchitecture: %s"
 
-#: build/parsePreamble.c:605
+#: build/parsePreamble.c:638
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "Внутренняя ошибка: Неизвестный ярлык %d"
 
-#: build/parsePreamble.c:743
+#: build/parsePreamble.c:782
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Неверная спецификация пакета: %s"
 
-#: build/parsePreamble.c:749
+#: build/parsePreamble.c:788
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Пакет уже существует: %s"
 
-#: build/parsePreamble.c:774
+#: build/parsePreamble.c:813
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "строка %d: Неизвестный тэг: %s"
 
-#: build/parsePreamble.c:796
+#: build/parsePreamble.c:835
 msgid "Spec file can't use BuildRoot"
 msgstr "Файл spec не может использовать BuildRoot"
 
@@ -2230,7 +2230,7 @@ msgstr "строка %d: Неверный аргумент для %%patch: %s"
 msgid "line %d: second %%prep"
 msgstr "строка %d: второй %%prep"
 
-#: build/parseReqs.c:99
+#: build/parseReqs.c:100
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
@@ -2238,99 +2238,99 @@ msgstr ""
 "строка %d: Токены зависимостей должны начинаться с буквы, цифры, '_' или "
 "'/': %s"
 
-#: build/parseReqs.c:110
+#: build/parseReqs.c:111
 #, c-format
 msgid "line %d: File name not permitted: %s"
 msgstr "строка %d: Имена файлов не разрешаются: %s"
 
-#: build/parseReqs.c:142
+#: build/parseReqs.c:143
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr "строка %d: Версии в именах файлов недопустимы: %s"
 
-#: build/parseReqs.c:172
+#: build/parseReqs.c:173
 #, c-format
 msgid "line %d: Version required: %s"
 msgstr "строка %d: Требуется версия: %s"
 
-#: build/parseScript.c:151
+#: build/parseScript.c:153
 #, c-format
 msgid "line %d: triggers must have --: %s"
 msgstr "строка %d: триггеры должны содержать --: %s"
 
-#: build/parseScript.c:161 build/parseScript.c:222
+#: build/parseScript.c:163 build/parseScript.c:224
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr "строка %d: Ошибка анализа %s: %s"
 
-#: build/parseScript.c:172
+#: build/parseScript.c:174
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
 msgstr "строка %d: Программы в скриптах должны начинаться с '/': %s"
 
-#: build/parseScript.c:214
+#: build/parseScript.c:216
 #, c-format
 msgid "line %d: Second %s"
 msgstr "строка %d: Второе %s"
 
-#: build/parseSpec.c:128
+#: build/parseSpec.c:136
 #, c-format
 msgid "line %d: %s"
 msgstr "строка %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:176
+#: build/parseSpec.c:184
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/parseSpec.c:188
+#: build/parseSpec.c:196
 msgid "Unclosed %%if"
 msgstr "Незакрытый %%if"
 
-#: build/parseSpec.c:259
+#: build/parseSpec.c:267
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr "%s:%d: parseExpressionBoolean код возврата: %d"
 
 #. Got an else with no %if !
-#: build/parseSpec.c:267
+#: build/parseSpec.c:275
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: Найден %%else без %%if"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:278
+#: build/parseSpec.c:286
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: Найден %%endif без %%if"
 
-#: build/parseSpec.c:292 build/parseSpec.c:301
+#: build/parseSpec.c:300 build/parseSpec.c:309
 msgid "malformed %%include statement"
 msgstr "неверное объявление %%include"
 
-#: build/parseSpec.c:480
+#: build/parseSpec.c:488
 msgid "No buildable architectures"
 msgstr "Нет архитектур, для которых возможна сборка"
 
-#: build/parseSpec.c:535
+#: build/parseSpec.c:543
 msgid "Package has no %%description: %s"
 msgstr "Пакет не имеет %%description: %s"
 
-#: build/spec.c:37
+#: build/spec.c:41
 #, c-format
 msgid "archive = %s, fs = %s\n"
 msgstr "архив = %s, fs = %s\n"
 
-#: build/spec.c:246
+#: build/spec.c:228
 #, c-format
 msgid "line %d: Bad number: %s"
 msgstr "строка %d: Неверное число: %s"
 
-#: build/spec.c:252
+#: build/spec.c:234
 #, c-format
 msgid "line %d: Bad no%s number: %d"
 msgstr "строка %d: Неверное число no%s: %d"
 
-#: build/spec.c:311
+#: build/spec.c:292
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "строка %d: Неверное число %s: %s\n"

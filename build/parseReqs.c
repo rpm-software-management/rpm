@@ -8,6 +8,8 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
+/**
+ */
 static struct ReqComp {
     char *token;
     int sense;
@@ -29,7 +31,6 @@ static struct ReqComp {
 #define	SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
 
-/** */
 int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	       int index, int tagflags)
 {

@@ -100,6 +100,8 @@
 	- fix: remove rebuilddb debugging leakage.
 	- successors from tsort are processed in presentation order.
 	- fix: find-requires.perl needed update (#23450).
+	- fix: don't hang on build error.
+	- fix: remove "error: " prefix from signature verification message.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

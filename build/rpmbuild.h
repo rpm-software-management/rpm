@@ -15,7 +15,7 @@
 /* but this will be needed */
 #include "rpmspec.h"
 
-/**
+/** \ingroup rpmbuild
  * Bit(s) to control buildSpec() operation.
  */
 typedef enum rpmBuildFlags_e {
@@ -32,8 +32,6 @@ typedef enum rpmBuildFlags_e {
     RPMBUILD_RMSPEC	= (1 << 10)	/*!< Remove spec file. */
 } rpmBuildFlags;
 
-/* from build/misc.h */
-
 #include <ctype.h>
 
 #define FREE(x) { if (x) free((void *)x); x = NULL; }
@@ -43,7 +41,7 @@ typedef enum rpmBuildFlags_e {
 #define PART_SUBNAME  0
 #define PART_NAME     1
 
-/**
+/** \ingroup rpmbuild
  * Spec file parser states.
  */
 typedef enum rpmParseState_e {
@@ -64,10 +62,9 @@ typedef enum rpmParseState_e {
     PART_TRIGGERUN	= 14,	/*!< */
     PART_VERIFYSCRIPT	= 15,	/*!< */
     PART_BUILDARCHITECTURES= 16,/*!< */
-    PART_TRIGGERPOSTUN	= 17	/*!< */
+    PART_TRIGGERPOSTUN	= 17,	/*!< */
+    PART_LAST		= 18	/*!< */
 } rpmParseState;
-
-/* from build/read.h */
 
 #define STRIP_NOTHING             0
 #define STRIP_TRAILINGSPACE (1 << 0)
@@ -77,12 +74,12 @@ typedef enum rpmParseState_e {
 extern "C" {
 #endif
 
-/**
+/** \ingroup rpmbuild
  * Destroy uid/gid caches.
  */
 void freeNames(void);
 
-/**
+/** \ingroup rpmbuild
  * Return cached user name from user id.
  * @todo Implement using hash.
  * @param		user id
@@ -90,7 +87,7 @@ void freeNames(void);
  */
 /*@observer@*/ const char *getUname(uid_t uid);
 
-/**
+/** \ingroup rpmbuild
  * Return cached user name.
  * @todo Implement using hash.
  * @param		user name
@@ -98,7 +95,7 @@ void freeNames(void);
  */
 /*@observer@*/ const char *getUnameS(const char *uname);
 
-/**
+/** \ingroup rpmbuild
  * Return cached group name from group id.
  * @todo Implement using hash.
  * @param		group id
@@ -106,7 +103,7 @@ void freeNames(void);
  */
 /*@observer@*/ const char *getGname(gid_t gid);
 
-/**
+/** \ingroup rpmbuild
  * Return cached group name.
  * @todo Implement using hash.
  * @param		group name
@@ -114,156 +111,295 @@ void freeNames(void);
  */
 /*@observer@*/ const char *getGnameS(const char *gname);
 
-/**
+/** \ingroup rpmbuild
  * Return build hostname.
  * @return		build hostname
  */
 /*@observer@*/ const char *const buildHost(void);
 
-/**
+/** \ingroup rpmbuild
  * Return build time stamp.
  * @return		build time stamp
  */
 /*@observer@*/ time_t *const getBuildTime(void);
 
-/**
+/** \ingroup rpmbuild
+ * Read next line from spec file.
+ * @param spec		spec file control structure
+ * @param strip		truncate comments?
  * @return		0 on success, 1 on EOF, <0 on error
  */
 int readLine(Spec spec, int strip);
 
-/** */
+/** \ingroup rpmbuild
+ * Stop reading from spec file, freeing resources.
+ * @param spec		spec file control structure
+ */
 void closeSpec(Spec spec);
 
-/** */
+/** \ingroup rpmbuild
+ * Truncate comment lines.
+ * @param s		skip white space, truncate line at '#'
+ */
 void handleComments(char *s);
 
-/* from build/part.h */
-
-/**
+/** \ingroup rpmbuild
  * Check line for section separator, return next parser state.
  * @param		line from spec file
  * @return		next parser state
  */
 rpmParseState isPart(const char *line);
 
-/* from build/misc.h */
-
-/** */
+/** \ingroup rpmbuild
+ * Parse a number.
+ * @param		line from spec file
+ * @retval res		pointer to int
+ * @return		0 on success, 1 on failure
+ */
 int parseNum(const char *line, /*@out@*/int *res);
 
-/* from build/parse.h */
-
-/** */
+/** \ingroup rpmbuild
+ * Add changelog entry to header.
+ * @param h		header
+ * @param time		time of change
+ * @param name		person who made the change
+ * @param text		description of change
+ */
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text);
 
-/**
+/** \ingroup rpmbuild
+ * Parse %%build/%%install/%%clean section(s) of a spec file.
+ * @param spec		spec file control structure
+ * @param parsePart	current rpmParseState
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parseBuildInstallClean(Spec spec, rpmParseState parsePart);
 
-/**
+/** \ingroup rpmbuild
+ * Parse %%changelog section of a spec file.
+ * @param spec		spec file control structure
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parseChangelog(Spec spec);
 
-/**
+/** \ingroup rpmbuild
+ * Parse %%description section of a spec file.
+ * @param spec		spec file control structure
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parseDescription(Spec spec);
 
-/**
+/** \ingroup rpmbuild
+ * Parse %%files section of a spec file.
+ * @param spec		spec file control structure
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parseFiles(Spec spec);
 
-/**
+/** \ingroup rpmbuild
+ * Parse tags from preamble of a spec file.
+ * @param spec		spec file control structure
+ * @param initialPackage
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parsePreamble(Spec spec, int initialPackage);
 
-/**
+/** \ingroup rpmbuild
+ * Parse %%prep section of a spec file.
+ * @param spec		spec file control structure
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parsePrep(Spec spec);
 
-/** */
+/** \ingroup rpmbuild
+ * Parse dependency relations from spec file and/or autogenerated output buffer.
+ * @param spec		spec file control structure
+ * @param pkg		package control structure
+ * @param field		text to parse (e.g. "foo < 0:1.2-3, bar = 5:6.7")
+ * @param tag		tag, identifies type of dependency
+ * @param index		(0 always)
+ * @param flags		dependency flags already known from context
+ * @return		0 on success, RPMERR_BADSPEC on failure
+ */
 int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index,
 	       int flags);
 
-/**
+/** \ingroup rpmbuild
+ * Parse %%pre et al scriptlets from a spec file.
+ * @param spec		spec file control structure
+ * @param parsePart	current rpmParseState
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 int parseScript(Spec spec, int parsePart);
 
-/** */
+/** \ingroup rpmbuild
+ * Parse %%trigger et al scriptlets from a spec file.
+ * @param spec		spec file control structure
+ * @param pkg		package control structure
+ * @param field
+ * @param tag
+ * @return
+ */
 int parseTrigger(Spec spec, Package pkg, char *field, int tag);
 
-/* from build/expression.h */
+/** \ingroup rpmbuild
+ * Evaluate boolean expression.
+ * @param spec		spec file control structure
+ * @param expr		expression to parse
+ * @return
+ */
+int parseExpressionBoolean(Spec spec, const char * expr);
 
-/** */
-int parseExpressionBoolean(Spec, char *);
+/** \ingroup rpmbuild
+ * Evaluate string expression.
+ * @param spec		spec file control structure
+ * @param expr		expression to parse
+ * @return
+ */
+char *parseExpressionString(Spec spec, const char * expr);
 
-/** */
-char *parseExpressionString(Spec, char *);
-
-/* from build/build.h */
-
-/** */
+/** \ingroup rpmbuild
+ * Run a build script, assembled from spec file scriptlet section.
+ *
+ * @param spec		spec file control structure
+ * @param what		type of script
+ * @param name		name of scriptlet section
+ * @param sb		lines that compose script body
+ * @param test		don't execute scripts or package if testing
+ * @return		0 on success, RPMERR_SCRIPT on failure
+ */
 int doScript(Spec spec, int what, const char *name, StringBuf sb, int test);
 
-/* from build/package.h */
-
-/** */
+/** \ingroup rpmbuild
+ * Find sub-package control structure by name.
+ * @param spec		spec file control structure
+ * @param name		(sub-)package name
+ * @param flag		if PART_SUBNAME, then 1st package name is prepended
+ * @retval pkg		package control structure
+ * @return		0 on success, 1 on failure
+ */
 int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg);
 
-/** */
+/** \ingroup rpmbuild
+ * Create and initialize package control structure.
+ * @param spec		spec file control structure
+ * @return		package control structure
+ */
 /*@only@*/ Package newPackage(Spec spec);
 
-/** */
+/** \ingroup rpmbuild
+ * Destroy all packages associated with spec file.
+ * @param spec		spec file control structure
+ */
 void freePackages(Spec spec);
 
-/** */
-void freePackage(/*@only@*/ Package p);
+/** \ingroup rpmbuild
+ * Destroy package control structure.
+ * @param pkg		package control structure
+ */
+void freePackage(/*@only@*/ Package pkg);
 
-/* from build/reqprov.h */
-
-/** */
+/** \ingroup rpmbuild
+ * Add dependency to header, filtering duplicates.
+ * @param spec		spec file control structure
+ * @param h		header
+ * @param depFlags	(e.g. Requires: foo < 0:1.2-3, both "Requires:" and "<")
+ * @param depName	(e.g. Requires: foo < 0:1.2-3, "foo")
+ * @param depEVR	(e.g. Requires: foo < 0:1.2-3, "0:1.2-3")
+ * @param index		(0 always)
+ * @return		0 always
+ */
 int addReqProv(/*@unused@*/Spec spec, Header h,
-		int flag, const char *name, const char *version, int index);
+		int flag, const char *depName, const char *depEVR, int index);
 
-/** */
+/** \ingroup rpmbuild
+ * Add rpmlib feature dependency.
+ * @param h		header
+ * @param feature	rpm feature name (i.e. "rpmlib(Foo)" for feature Foo)
+ * @param featureEVR	rpm feature epoch/version/release
+ * @return		0 always
+ */
 int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR);
 
-/* from build/files.h */
-
-/** */
+/** \ingroup rpmbuild
+ * Post-build processing for binary package(s).
+ * @param spec		spec file control structure
+ * @param installSpecialDoc
+ * @param test		don't execute scripts or package if testing
+ * @return		0 on success
+ */
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test);
 
-/** */
+/** \ingroup rpmbuild
+ * Create and initialize header for source package.
+ * @param spec		spec file control structure
+ */
 void initSourceHeader(Spec spec);
 
-/** */
+/** \ingroup rpmbuild
+ * Post-build processing for source package.
+ * @param spec		spec file control structure
+ * @return		0 on success
+ */
 int processSourceFiles(Spec spec);
 
 /* global entry points */
 
-/** */
+/** \ingroup rpmbuild
+ * Parse spec file into spec control structure.
+ * @retval specp	spec file control structure
+ * @param specFile
+ * @param rootdir
+ * @param buildRoot
+ * @param inBuildArch
+ * @param passPhrase
+ * @param cookie
+ * @param anyarch
+ * @param force
+ * @return
+ */
 int parseSpec(Spec *specp, const char *specFile, const char *rootdir,
 		const char *buildRoot, int inBuildArch, const char *passPhrase,
 		char *cookie, int anyarch, int force);
 
-/** */
-extern int (*parseSpecVec) (Spec *specp, const char *specFile, const char *rootdir,
-		const char *buildRoot, int inBuildArch, const char *passPhrase,
+/** \ingroup rpmbuild
+ * @retval specp	spec file control structure
+ * @param specFile
+ * @param rootdir
+ * @param buildRoot
+ * @param inBuildArch
+ * @param passPhrase
+ * @param cookie
+ * @param anyarch
+ * @param force
+ * @return
+ */
+extern int (*parseSpecVec) (Spec *specp, const char *specFile,
+		const char *rootdir, const char *buildRoot,
+		int inBuildArch, const char *passPhrase,
 		char *cookie, int anyarch, int force);	/* XXX FIXME */
 
-/** */
+/** \ingroup rpmbuild
+ * Build stages state machine driver.
+ * @param spec		spec file control structure
+ * @param what		bit(s) to enable stages of build
+ * @param test		don't execute scripts or package if testing
+ * @return		0 on success
+ */
 int buildSpec(Spec spec, int what, int test);
 
-/** */
+/** \ingroup rpmbuild
+ * Generate binary package(s).
+ * @param spec		spec file control structure
+ * @return		0 on success
+ */
 int packageBinaries(Spec spec);
 
-/** */
+/** \ingroup rpmbuild
+ * Generate source package.
+ * @param spec		spec file control structure
+ * @return		0 on success
+ */
 int packageSources(Spec spec);
 
 #ifdef __cplusplus

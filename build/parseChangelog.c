@@ -8,7 +8,6 @@
 #include "rpmbuild.h"
 #include "debug.h"
 
-/** */
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
     int_32 mytime = time;	/* XXX convert to header representation */
@@ -29,7 +28,12 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
     }
 }
 
-/* datestr is of the form 'Wed Jan 1 1997' */
+/**
+ * Parse date string to seconds.
+ * @param datestr	date string (e.g. 'Wed Jan 1 1997')
+ * @retval secs		secs since the unix epoch
+ * @return 		0 on success, -1 on error
+ */
 static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
 {
     struct tm time;
@@ -92,6 +96,12 @@ static int dateToTimet(const char * datestr, /*@out@*/ time_t * secs)
     return 0;
 }
 
+/**
+ * Add %changelog section to header.
+ * @param h		header
+ * @param sb		changelog strings
+ * @return		0 on success
+ */
 static int addChangelog(Header h, StringBuf sb)
 {
     char *s;
@@ -185,7 +195,6 @@ static int addChangelog(Header h, StringBuf sb)
     return 0;
 }
 
-/** */
 int parseChangelog(Spec spec)
 {
     int nextPart, res, rc;

@@ -16,6 +16,8 @@
 
 extern int _noDirTokens;
 
+/**
+ */
 static inline int genSourceRpmName(Spec spec)
 {
     if (spec->sourceRpmName == NULL) {
@@ -31,6 +33,8 @@ static inline int genSourceRpmName(Spec spec)
     return 0;
 }
 
+/**
+ */
 static int cpio_doio(FD_t fdo, CSA_t * csa, const char * fmodeMacro)
 {
     FD_t cfd;
@@ -58,6 +62,8 @@ static int cpio_doio(FD_t fdo, CSA_t * csa, const char * fmodeMacro)
     return rc;
 }
 
+/**
+ */
 static int cpio_copy(FD_t fdo, CSA_t *csa)
 {
     char buf[BUFSIZ];
@@ -79,6 +85,8 @@ static int cpio_copy(FD_t fdo, CSA_t *csa)
     return 0;
 }
 
+/**
+ */
 static StringBuf addFileToTagAux(Spec spec, const char *file, StringBuf sb)
 {
     char buf[BUFSIZ];
@@ -107,6 +115,8 @@ static StringBuf addFileToTagAux(Spec spec, const char *file, StringBuf sb)
     return sb;
 }
 
+/**
+ */
 static int addFileToTag(Spec spec, const char *file, Header h, int tag)
 {
     StringBuf sb = newStringBuf();
@@ -126,6 +136,8 @@ static int addFileToTag(Spec spec, const char *file, Header h, int tag)
     return 0;
 }
 
+/**
+ */
 static int addFileToArrayTag(Spec spec, char *file, Header h, int tag)
 {
     StringBuf sb = newStringBuf();
@@ -141,6 +153,8 @@ static int addFileToArrayTag(Spec spec, char *file, Header h, int tag)
     return 0;
 }
 
+/**
+ */
 static int processScriptFiles(Spec spec, Package pkg)
 {
     struct TriggerFileEntry *p;

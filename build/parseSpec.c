@@ -38,6 +38,8 @@ static struct PartRec {
     {0, 0, 0}
 };
 
+/**
+ */
 static inline void initParts(struct PartRec *p)
 {
     for (; p->token != NULL; p++)
@@ -63,6 +65,8 @@ rpmParseState isPart(const char *line)
     return (p->token ? p->part : PART_NONE);
 }
 
+/**
+ */
 static int matchTok(const char *token, const char *line)
 {
     const char *b, *be = line;
@@ -91,6 +95,8 @@ void handleComments(char *s)
 	*s = '\0';
 }
 
+/**
+ */
 static void forceIncludeFile(Spec spec, const char * fileName)
 {
     OFI_t * ofi;
@@ -101,6 +107,8 @@ static void forceIncludeFile(Spec spec, const char * fileName)
     spec->fileStack = ofi;
 }
 
+/**
+ */
 static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 {
     char *last;
@@ -398,7 +406,7 @@ fprintf(stderr, "*** PS buildRootURL(%s) %p macro set to %s\n", spec->buildRootU
     /* in the spec's line buffer.  Except for parsePreamble(),   */
     /* which handles the initial entry into a spec file.         */
     
-    while (parsePart != PART_NONE) {
+    while (parsePart < PART_LAST && parsePart != PART_NONE) {
 	switch (parsePart) {
 	  case PART_PREAMBLE:
 	    parsePart = parsePreamble(spec, initialPackage);

@@ -15,6 +15,8 @@ extern MacroContext rpmGlobalMacroContext;
 #define SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
 #define SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
 
+/**
+ */
 static inline void freeTriggerFiles(/*@only@*/ struct TriggerFileEntry *p)
 {
     struct TriggerFileEntry *o, *q = p;
@@ -29,6 +31,8 @@ static inline void freeTriggerFiles(/*@only@*/ struct TriggerFileEntry *p)
     }
 }
 
+/**
+ */
 static inline void freeCpioList(/*@only@*/ struct cpioFileMapping *cpioList, int cpioCount)
 {
     struct cpioFileMapping *p = cpioList;
@@ -43,6 +47,8 @@ static inline void freeCpioList(/*@only@*/ struct cpioFileMapping *cpioList, int
     FREE(cpioList);
 }
 
+/**
+ */
 static inline void freeSources(/*@only@*/ struct Source *s)
 {
     struct Source *r, *t = s;
@@ -55,7 +61,6 @@ static inline void freeSources(/*@only@*/ struct Source *s)
     }
 }
 
-/** */
 int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 {
     const char *pname;
@@ -95,7 +100,6 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
     return ((p == NULL) ? 1 : 0);
 }
 
-/** */
 Package newPackage(Spec spec)
 {
     Package p;
@@ -144,7 +148,6 @@ Package newPackage(Spec spec)
     return p;
 }
 
-/** */
 void freePackage(/*@only@*/ Package p)
 {
     if (p == NULL)
@@ -170,7 +173,6 @@ void freePackage(/*@only@*/ Package p)
     free(p);
 }
 
-/** */
 void freePackages(Spec spec)
 {
     Package p;
@@ -182,6 +184,8 @@ void freePackages(Spec spec)
     }
 }
 
+/**
+ */
 static inline /*@owned@*/ struct Source *findSource(Spec spec, int num, int flag)
 {
     struct Source *p;
@@ -195,28 +199,6 @@ static inline /*@owned@*/ struct Source *findSource(Spec spec, int num, int flag
     return NULL;
 }
 
-#ifdef	UNUSED
-static char *getSourceAux(Spec spec, int num, int flag, int full)
-{
-    struct Source *p = spec->sources;
-
-    p = findSource(spec, num, flag);
-
-    return (p) ? (full ? p->fullSource : p->source) : NULL;
-}
-
-static char *getSource(Spec spec, int num, int flag)
-{
-    return getSourceAux(spec, num, flag, 0);
-}
-
-static char *getFullSource(Spec spec, int num, int flag)
-{
-    return getSourceAux(spec, num, flag, 1);
-}
-#endif	/* UNUSED */
-
-/** */
 int parseNoSource(Spec spec, const char *field, int tag)
 {
     const char *f, *fe;
@@ -261,7 +243,6 @@ int parseNoSource(Spec spec, const char *field, int tag)
     return 0;
 }
 
-/** */
 int addSource(Spec spec, Package pkg, const char *field, int tag)
 {
     struct Source *p;
@@ -352,6 +333,8 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
     return 0;
 }
 
+/**
+ */
 static inline struct speclines * newSl(void)
 {
     struct speclines *sl = NULL;
@@ -364,6 +347,8 @@ static inline struct speclines * newSl(void)
     return sl;
 }
 
+/**
+ */
 static inline void freeSl(/*@only@*/struct speclines *sl)
 {
     int i;
@@ -375,6 +360,8 @@ static inline void freeSl(/*@only@*/struct speclines *sl)
     free(sl);
 }
 
+/**
+ */
 static inline struct spectags * newSt(void)
 {
     struct spectags *st = NULL;
@@ -387,6 +374,8 @@ static inline struct spectags * newSt(void)
     return st;
 }
 
+/**
+ */
 static inline void freeSt(/*@only@*/struct spectags *st)
 {
     int i;
@@ -401,7 +390,6 @@ static inline void freeSt(/*@only@*/struct spectags *st)
     free(st);
 }
 
-/** */
 Spec newSpec(void)
 {
     Spec spec;
@@ -462,7 +450,6 @@ Spec newSpec(void)
     return spec;
 }
 
-/** */
 void freeSpec(/*@only@*/ Spec spec)
 {
     struct OpenFileInfo *ofi;
@@ -527,7 +514,6 @@ void freeSpec(/*@only@*/ Spec spec)
     free(spec);
 }
 
-/** */
 /*@only@*/ struct OpenFileInfo * newOpenFileInfo(void)
 {
     struct OpenFileInfo *ofi;

@@ -12,6 +12,8 @@
 
 static int _build_debug = 0;
 
+/**
+ */
 static void doRmSource(Spec spec)
 {
     struct Source *p;
@@ -41,9 +43,8 @@ static void doRmSource(Spec spec)
 }
 
 /*
- * The _preScript string is expanded to export values to a script environment.
+ * @todo Single use by %%doc in files.c prevents static.
  */
-/** */
 int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 {
     const char * rootURL = spec->rootURL;

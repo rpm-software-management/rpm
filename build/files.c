@@ -26,6 +26,8 @@
 
 #define MAXDOCDIR 1024
 
+/**
+ */
 typedef struct {
     struct stat fl_st;
 #define	fl_dev	fl_st.st_dev
@@ -47,6 +49,8 @@ typedef struct {
     const char *langs;	/* XXX locales separated with | */
 } FileListRec;
 
+/**
+ */
 typedef struct {
     const char *ar_fmodestr;
     const char *ar_dmodestr;
@@ -56,8 +60,12 @@ typedef struct {
     mode_t	ar_dmode;
 } AttrRec;
 
+/**
+ */
 static int multiLib = 0;	/* MULTILIB */
 
+/**
+ */
 struct FileList {
     const char *buildRootURL;
     const char *prefix;
@@ -89,6 +97,8 @@ struct FileList {
     int fileListRecsUsed;
 };
 
+/**
+ */
 static void nullAttrRec(/*@out@*/AttrRec *ar)
 {
     ar->ar_fmodestr = NULL;
@@ -99,6 +109,8 @@ static void nullAttrRec(/*@out@*/AttrRec *ar)
     ar->ar_dmode = 0;
 }
 
+/**
+ */
 static void freeAttrRec(AttrRec *ar)
 {
     FREE(ar->ar_fmodestr);
@@ -108,6 +120,8 @@ static void freeAttrRec(AttrRec *ar)
     /* XXX doesn't free ar (yet) */
 }
 
+/**
+ */
 static void dupAttrRec(AttrRec *oar, /*@out@*/ AttrRec *nar)
 {
     if (oar == nar)	/* XXX pathological paranoia */
@@ -122,6 +136,8 @@ static void dupAttrRec(AttrRec *oar, /*@out@*/ AttrRec *nar)
 }
 
 #if 0
+/**
+ */
 static void dumpAttrRec(const char *msg, AttrRec *ar) {
     if (msg)
 	fprintf(stderr, "%s:\t", msg);
@@ -152,6 +168,8 @@ static void dumpAttrRec(const char *msg, AttrRec *ar) {
    not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+/**
+ */
 static char *strtokWithQuotes(char *s, char *delim)
 {
     static char *olds = NULL;
@@ -190,6 +208,8 @@ static char *strtokWithQuotes(char *s, char *delim)
     return token;
 }
 
+/**
+ */
 static void timeCheck(int tc, Header h)
 {
     int *mtime;
@@ -209,12 +229,15 @@ static void timeCheck(int tc, Header h)
     FREE(files);
 }
 
+/**
+ */
 typedef struct VFA {
 	char *	attribute;
 	int	flag;
 } VFA_t;
 
-/** */
+/**
+ */
 VFA_t verifyAttrs[] = {
 	{ "md5",	RPMVERIFY_MD5 },
 	{ "size",	RPMVERIFY_FILESIZE },
@@ -227,6 +250,8 @@ VFA_t verifyAttrs[] = {
 	{ NULL, 0 }
 };
 
+/**
+ */
 static int parseForVerify(char *buf, struct FileList *fl)
 {
     char *p, *pe, *q;
@@ -310,6 +335,8 @@ static int parseForVerify(char *buf, struct FileList *fl)
 
 #define	isAttrDefault(_ars)	((_ars)[0] == '-' && (_ars)[1] == '\0')
 
+/**
+ */
 static int parseForAttr(char *buf, struct FileList *fl)
 {
     char *p, *pe, *q;
@@ -425,6 +452,8 @@ static int parseForAttr(char *buf, struct FileList *fl)
     return 0;
 }
 
+/**
+ */
 static int parseForConfig(char *buf, struct FileList *fl)
 {
     char *p, *pe, *q;
@@ -481,6 +510,8 @@ static int parseForConfig(char *buf, struct FileList *fl)
     return 0;
 }
 
+/**
+ */
 static int parseForLang(char *buf, struct FileList *fl)
 {
     char *p, *pe, *q;
@@ -561,6 +592,8 @@ static int parseForLang(char *buf, struct FileList *fl)
     return 0;
 }
 
+/**
+ */
 static int parseForRegexLang(const char *fileName, /*@out@*/char **lang)
 {
     static int initialized = 0;
@@ -600,6 +633,8 @@ static int parseForRegexLang(const char *fileName, /*@out@*/char **lang)
     return 0;
 }
 
+/**
+ */
 static int parseForRegexMultiLib(const char *fileName)
 {
     static int initialized = 0;
@@ -628,7 +663,8 @@ static int parseForRegexMultiLib(const char *fileName)
     return 0;
 }
 
-/** */
+/**
+ */
 VFA_t virtualFileAttributes[] = {
 	{ "%dir",	0 },	/* XXX why not RPMFILE_DIR? */
 	{ "%doc",	RPMFILE_DOC },
@@ -648,6 +684,8 @@ VFA_t virtualFileAttributes[] = {
 	{ NULL, 0 }
 };
 
+/**
+ */
 static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char *buf,
 			  struct FileList *fl, const char **fileName)
 {
@@ -763,6 +801,8 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char *buf,
     return res;
 }
 
+/**
+ */
 static int compareFileListRecs(const void *ap, const void *bp)
 {
     const char *a = ((FileListRec *)ap)->fileURL;
@@ -770,6 +810,8 @@ static int compareFileListRecs(const void *ap, const void *bp)
     return strcmp(a, b);
 }
 
+/**
+ */
 static int isDoc(struct FileList *fl, const char *fileName)
 {
     int x = fl->docDirCount;
@@ -960,6 +1002,8 @@ static void genCpioListAndHeader(struct FileList *fl,
 		       &multiLibMask, 1);
 }
 
+/**
+ */
 static void freeFileList(FileListRec *fileList, int count)
 {
     while (count--) {
@@ -970,6 +1014,8 @@ static void freeFileList(FileListRec *fileList, int count)
     FREE(fileList);
 }
 
+/**
+ */
 static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp)
 {
     const char *fileURL = diskURL;
@@ -1139,6 +1185,8 @@ static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp
     return 0;
 }
 
+/**
+ */
 static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
 	const char *fileURL)
 {
@@ -1196,6 +1244,8 @@ exit:
     return rc;
 }
 
+/**
+ */
 static int processPackageFiles(Spec spec, Package pkg,
 			       int installSpecialDoc, int test)
 {
@@ -1600,6 +1650,8 @@ int processSourceFiles(Spec spec)
     return fl.processingFailed;
 }
 
+/**
+ */
 static StringBuf getOutputFrom(char *dir, char *argv[],
 			const char *writePtr, int writeBytesLeft,
 			int failNonZero)
@@ -1732,7 +1784,8 @@ top:
     return readBuff;
 }
 
-/** */
+/**
+ */
 typedef struct {
     const char *msg;
     const char *argv[4];
@@ -1743,7 +1796,8 @@ typedef struct {
     int xor;
 } DepMsg_t;
 
-/** */
+/**
+ */
 DepMsg_t depMsgs[] = {
   { "Provides",		{ "%{__find_provides}", NULL, NULL, NULL },
 	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
@@ -1784,6 +1838,8 @@ DepMsg_t depMsgs[] = {
   { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
 };
 
+/**
+ */
 static int generateDepends(Spec spec, Package pkg,
 			   struct cpioFileMapping *cpioList, int cpioCount,
 			   int multiLib)
@@ -1898,6 +1954,8 @@ static int generateDepends(Spec spec, Package pkg,
     return rc;
 }
 
+/**
+ */
 static void printDepMsg(DepMsg_t *dm, int count, const char **names,
 	const char **versions, int *flags)
 {
@@ -1937,6 +1995,8 @@ static void printDepMsg(DepMsg_t *dm, int count, const char **names,
 	rpmMessage(RPMMESS_NORMAL, "\n");
 }
 
+/**
+ */
 static void printDeps(Header h)
 {
     const char **names = NULL;

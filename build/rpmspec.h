@@ -6,13 +6,13 @@
  *  The Spec and Package data structures used during build.
  */
 
-/**
+/** \ingroup rpmbuild
  */
 typedef struct SpecStruct *Spec;
 
 #include "rpmmacro.h"
 
-/**
+/** \ingroup rpmbuild
  */
 struct TriggerFileEntry {
     int index;
@@ -29,7 +29,7 @@ struct TriggerFileEntry {
 
 #define RPMBUILD_DEFAULT_LANG "C"
 
-/**
+/** \ingroup rpmbuild
  */
 struct Source {
 /*@owned@*/ char *fullSource;
@@ -39,14 +39,14 @@ struct Source {
 /*@owned@*/ struct Source *next;
 };
 
-/**
+/** \ingroup rpmbuild
  */
 typedef struct ReadLevelEntry {
     int reading;
 /*@dependent@*/ struct ReadLevelEntry *next;
 } RLE_t;
 
-/**
+/** \ingroup rpmbuild
  */
 typedef struct OpenFileInfo {
 /*@only@*/ const char *fileName;
@@ -57,7 +57,7 @@ typedef struct OpenFileInfo {
 /*@owned@*/ struct OpenFileInfo *next;
 } OFI_t;
 
-/**
+/** \ingroup rpmbuild
  */
 struct spectag {
     int t_tag;
@@ -67,7 +67,7 @@ struct spectag {
 /*@only@*/ const char *t_msgid;
 };
 
-/**
+/** \ingroup rpmbuild
  */
 struct spectags {
 /*@owned@*/ struct spectag *st_t;
@@ -75,7 +75,7 @@ struct spectags {
     int st_ntags;
 };
 
-/**
+/** \ingroup rpmbuild
  */
 struct speclines {
 /*@only@*/ char **sl_lines;
@@ -83,7 +83,7 @@ struct speclines {
     int sl_nlines;
 };
 
-/**
+/** \ingroup rpmbuild
  * The structure used to store values parsed from a spec file.
  */
 struct SpecStruct {
@@ -138,7 +138,7 @@ struct SpecStruct {
 /*@owned@*/ struct PackageStruct *packages;	/*!< Package list. */
 };
 
-/**
+/** \ingroup rpmbuild
  * The structure used to store values for a package.
  */
 struct PackageStruct {
@@ -173,7 +173,7 @@ struct PackageStruct {
 /*@dependent@*/ struct PackageStruct *next;
 };
 
-/**
+/** \ingroup rpmbuild
  */
 typedef struct PackageStruct *Package;
 
@@ -181,31 +181,38 @@ typedef struct PackageStruct *Package;
 extern "C" {
 #endif
 
-/**
+/** \ingroup rpmbuild
+ * Create and initialize Spec structure.
  */
 /*@only@*/ Spec newSpec(void);
 
-/**
+/** \ingroup rpmbuild
+ * Destroy Spec structure.
+ * @param spec		spec file control structure
  */
 void freeSpec(/*@only@*/ Spec spec);
 
-/**
+/** \ingroup rpmbuild
+ * @param spec		spec file control structure
  */
 extern void (*freeSpecVec) (Spec spec);	/* XXX FIXME */
 
-/**
+/** \ingroup rpmbuild
  */
 struct OpenFileInfo * newOpenFileInfo(void);
 
-/**
+/** \ingroup rpmbuild
+ * @param spec		spec file control structure
  */
 struct spectag *stashSt(Spec spec, Header h, int tag, const char *lang);
 
-/**
+/** \ingroup rpmbuild
+ * @param spec		spec file control structure
  */
 int addSource(Spec spec, Package pkg, const char *field, int tag);
 
-/**
+/** \ingroup rpmbuild
+ * @param spec		spec file control structure
  */
 int parseNoSource(Spec spec, const char *field, int tag);
 

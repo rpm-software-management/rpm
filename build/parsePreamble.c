@@ -9,6 +9,8 @@
 #include <rpmbuild.h>
 #include "debug.h"
 
+/**
+ */
 static int_32 copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
     RPMTAG_VERSION,
@@ -27,6 +29,8 @@ static int_32 copyTagsDuringParse[] = {
     0
 };
 
+/**
+ */
 static int requiredTags[] = {
     RPMTAG_NAME,
     RPMTAG_VERSION,
@@ -37,6 +41,8 @@ static int requiredTags[] = {
     0
 };
 
+/**
+ */
 static void addOrAppendListEntry(Header h, int_32 tag, char *line)
 {
     int argc;
@@ -51,6 +57,8 @@ static void addOrAppendListEntry(Header h, int_32 tag, char *line)
 /* Parse a simple part line that only take -n <pkg> or <pkg> */
 /* <pkg> is return in name as a pointer into a static buffer */
 
+/**
+ */
 static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
 {
     char *tok;
@@ -80,6 +88,8 @@ static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
     return (strtok(NULL, " \t\n")) ? 1 : 0;
 }
 
+/**
+ */
 static inline int parseYesNo(const char *s)
 {
     return ((!s || (s[0] == 'n' || s[0] == 'N' || s[0] == '0') ||
@@ -92,6 +102,8 @@ struct tokenBits {
     int bits;
 };
 
+/**
+ */
 static struct tokenBits installScriptBits[] = {
     { "interp",		RPMSENSE_INTERP },
     { "prereq",		RPMSENSE_PREREQ },
@@ -104,6 +116,8 @@ static struct tokenBits installScriptBits[] = {
     { NULL, 0 }
 };
 
+/**
+ */
 static struct tokenBits buildScriptBits[] = {
     { "prep",		RPMSENSE_SCRIPT_PREP },
     { "build",		RPMSENSE_SCRIPT_BUILD },
@@ -112,6 +126,8 @@ static struct tokenBits buildScriptBits[] = {
     { NULL, 0 }
 };
 
+/**
+ */
 static int parseBits(const char * s, struct tokenBits * tokbits, int * bp)
 {
     struct tokenBits *tb;
@@ -143,6 +159,8 @@ static int parseBits(const char * s, struct tokenBits * tokbits, int * bp)
     return (c ? RPMERR_BADSPEC : 0);
 }
 
+/**
+ */
 static inline char * findLastChar(char * s)
 {
     char *res = s;
@@ -156,6 +174,8 @@ static inline char * findLastChar(char * s)
     return res;
 }
 
+/**
+ */
 static int isMemberInEntry(Header header, const char *name, int tag)
 {
     const char ** names;
@@ -171,6 +191,8 @@ static int isMemberInEntry(Header header, const char *name, int tag)
     return (count >= 0 ? 1 : 0);
 }
 
+/**
+ */
 static int checkForValidArchitectures(Spec spec)
 {
 #ifndef	DYING
@@ -208,6 +230,8 @@ static int checkForValidArchitectures(Spec spec)
     return 0;
 }
 
+/**
+ */
 static int checkForRequired(Header h, const char *name)
 {
     int res = 0;
@@ -224,6 +248,8 @@ static int checkForRequired(Header h, const char *name)
     return res;
 }
 
+/**
+ */
 static int checkForDuplicates(Header h, const char *name)
 {
     int res = 0;
@@ -249,6 +275,8 @@ static int checkForDuplicates(Header h, const char *name)
     return res;
 }
 
+/**
+ */
 static struct optionalTag {
     int		ot_tag;
     const char *ot_mac;
@@ -260,6 +288,8 @@ static struct optionalTag {
     { -1, NULL }
 };
 
+/**
+ */
 static void fillOutMainPackage(Header h)
 {
     struct optionalTag *ot;
@@ -274,6 +304,8 @@ static void fillOutMainPackage(Header h)
     }
 }
 
+/**
+ */
 static int readIcon(Header h, const char *file)
 {
     const char *fn = NULL;
@@ -330,7 +362,6 @@ exit:
     return rc;
 }
 
-/** */
 struct spectag *
 stashSt(Spec spec, Header h, int tag, const char *lang)
 {
@@ -369,6 +400,8 @@ if (multiToken) { \
 
 extern int noLang;	/* XXX FIXME: pass as arg */
 
+/**
+ */
 static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 			     const char *lang)
 {
@@ -615,6 +648,8 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, const char *macro,
 /* This table has to be in a peculiar order.  If one tag is the */
 /* same as another, plus a few letters, it must come first.     */
 
+/**
+ */
 static struct PreambleRec {
     int tag;
     int len;
@@ -664,6 +699,8 @@ static struct PreambleRec {
     {0, 0, 0, 0}
 };
 
+/**
+ */
 static inline void initPreambleList(void)
 {
     struct PreambleRec *p;
@@ -671,6 +708,8 @@ static inline void initPreambleList(void)
 	p->len = strlen(p->token);
 }
 
+/**
+ */
 static int findPreambleTag(Spec spec, /*@out@*/int *tag, /*@out@*/char **macro, char *lang)
 {
     char *s;

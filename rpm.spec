@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.22
+Release: 0.23
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -309,6 +309,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Jan 11 2001 Jeff Johnson <jbj@redhat.com>
+- fix: don't hang on build error.
+- fix: remove "error: " prefix from signature verification message.
+
 * Wed Jan 10 2001 Jeff Johnson <jbj@redhat.com>
 - successors from tsort are processed in presentation order.
 - fix: find-requires.perl needed update (#23450).

@@ -27,12 +27,10 @@
 #define DEBUG(x)
 #endif
 
-/*
+/**
  * Encapsulation of a "value"
  */
-
-typedef struct _value
-{
+typedef struct _value {
   enum { VALUE_TYPE_INTEGER, VALUE_TYPE_STRING } type;
   union {
     const char *s;
@@ -40,6 +38,8 @@ typedef struct _value
   } data;
 } *Value;
 
+/**
+ */
 static Value valueMakeInteger(int i)
 {
   Value v;
@@ -50,6 +50,8 @@ static Value valueMakeInteger(int i)
   return v;
 }
 
+/**
+ */
 static Value valueMakeString(/*@only@*/ const char *s)
 {
   Value v;
@@ -60,6 +62,8 @@ static Value valueMakeString(/*@only@*/ const char *s)
   return v;
 }
 
+/**
+ */
 static void valueFree( /*@only@*/ Value v)
 {
   if (v) {
@@ -88,23 +92,22 @@ static void valueDump(const char *msg, Value v, FILE *fp)
 #define valueSameType(v1,v2) ((v1)->type == (v2)->type)
 
 
-/*
+/**
  * Parser state.
  */
-
 typedef struct _parseState {
-  /*@owned@*/ char *str;	/* expression string */
-  /*@dependent@*/ char *p;	/* current position in expression string */
-  int nextToken;		/* current lookahead token */
-  Value tokenValue;		/* valid when TOK_INTEGER or TOK_STRING */
-  Spec spec;			/* spec file that we are parsing inside of */
+  /*@owned@*/ char *str;	/*!< expression string */
+  /*@dependent@*/ char *p;	/*!< current position in expression string */
+  int nextToken;		/*!< current lookahead token */
+  Value tokenValue;		/*!< valid when TOK_INTEGER or TOK_STRING */
+  Spec spec;			/*!< spec file that we are parsing inside of */
 } *ParseState;
 
 
-/*
- * Token parser.
+/**
+ * \name Parser tokens
  */
-
+/*@{*/
 #define TOK_EOF          1
 #define TOK_INTEGER      2
 #define TOK_STRING       3
@@ -124,6 +127,7 @@ typedef struct _parseState {
 #define TOK_NOT         17
 #define TOK_LOGICAL_AND 18
 #define TOK_LOGICAL_OR  19
+/*@}*/
 
 #define	EXPRBUFSIZ	BUFSIZ
 
@@ -168,6 +172,9 @@ static const char *prToken(int val)
 }
 #endif	/* DEBUG_PARSER */
 
+/**
+ * @param state		expression parser state
+ */
 static int rdToken(ParseState state)
 {
   int token;
@@ -301,6 +308,9 @@ static int rdToken(ParseState state)
 
 static Value doLogical(ParseState state);
 
+/**
+ * @param state		expression parser state
+ */
 static Value doPrimary(ParseState state)
 {
   Value v;
@@ -374,6 +384,9 @@ static Value doPrimary(ParseState state)
   return v;
 }
 
+/**
+ * @param state		expression parser state
+ */
 static Value doMultiplyDivide(ParseState state)
 {
   Value v1, v2 = NULL;
@@ -420,6 +433,9 @@ static Value doMultiplyDivide(ParseState state)
   return v1;
 }
 
+/**
+ * @param state		expression parser state
+ */
 static Value doAddSubtract(ParseState state)
 {
   Value v1, v2 = NULL;
@@ -475,6 +491,9 @@ static Value doAddSubtract(ParseState state)
   return v1;
 }
 
+/**
+ * @param state		expression parser state
+ */
 static Value doRelational(ParseState state)
 {
   Value v1, v2 = NULL;
@@ -563,6 +582,9 @@ static Value doRelational(ParseState state)
   return v1;
 }
 
+/**
+ * @param state		expression parser state
+ */
 static Value doLogical(ParseState state)
 {
   Value v1, v2 = NULL;
@@ -609,8 +631,7 @@ static Value doLogical(ParseState state)
   return v1;
 }
 
-/** */
-int parseExpressionBoolean(Spec spec, char *expr)
+int parseExpressionBoolean(Spec spec, const char *expr)
 {
   struct _parseState state;
   int result = -1;
@@ -657,8 +678,7 @@ int parseExpressionBoolean(Spec spec, char *expr)
   return result;
 }
 
-/** */
-char * parseExpressionString(Spec spec, char *expr)
+char * parseExpressionString(Spec spec, const char *expr)
 {
   struct _parseState state;
   char *result = NULL;
