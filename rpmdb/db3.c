@@ -508,10 +508,10 @@ static int db3copen(dbiIndex dbi, DB_TXN * txnid,
     int flags;
     int rc;
 
+   /* XXX DB_WRITECURSOR cannot be used with sunrpc dbenv. */
     assert(db != NULL);
     if ((dbiflags & DB_WRITECURSOR) &&
-	(dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY)
-	  && !((dbi->dbi_ecflags & DB_CLIENT) && dbi->dbi_host))
+	(dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
     {
 	flags = DB_WRITECURSOR;
     } else
