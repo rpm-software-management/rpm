@@ -638,7 +638,7 @@ int execClean(Spec s)
 
 int verifyList(Spec s)
 {
-    return 0;
+    return packageBinaries(s, NULL, PACK_NOPACKAGE);
 }
 
 int doBuild(Spec s, int flags, char *passPhrase)
@@ -646,11 +646,8 @@ int doBuild(Spec s, int flags, char *passPhrase)
 
     strcpy(build_subdir, ".");
 
-    if (flags & RPMBUILD_LIST) {
-	if (verifyList(s)) {
-	    return 1;
-	}
-    }
+    if (flags & RPMBUILD_LIST)
+	return verifyList(s);
 
     /* We always need to parse the %prep section */
     if (execPrep(s, (flags & RPMBUILD_PREP))) {
@@ -672,7 +669,7 @@ int doBuild(Spec s, int flags, char *passPhrase)
     markBuildTime();
     
     if (flags & RPMBUILD_BINARY) {
-	if (packageBinaries(s, passPhrase)) {
+	if (packageBinaries(s, passPhrase, PACK_PACKAGE)) {
 	    return 1;
 	}
 	if (execClean(s)) {

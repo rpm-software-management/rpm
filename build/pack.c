@@ -351,7 +351,7 @@ static int cpio_gzip(int fd, char *tempdir, char *writePtr,
 }
 
 
-int packageBinaries(Spec s, char *passPhrase)
+int packageBinaries(Spec s, char *passPhrase, int doPackage)
 {
     char name[1024];
     char *nametmp;
@@ -439,7 +439,11 @@ int packageBinaries(Spec s, char *passPhrase)
 	}
 	sprintf(name, "%s-%s-%s", nametmp, packageVersion, packageRelease);
 
-        message(MESS_VERBOSE, "Binary Packaging: %s\n", name);
+	if (doPackage == PACK_PACKAGE) {
+	    message(MESS_VERBOSE, "Binary Packaging: %s\n", name);
+	} else {
+	    message(MESS_VERBOSE, "File List Check: %s\n", name);
+	}
        
 	/**** Generate the Header ****/
 	
@@ -561,13 +565,15 @@ int packageBinaries(Spec s, char *passPhrase)
 	/**** Make the RPM ****/
 
 	/* Make the output RPM filename */
-	sprintf(filename, "%s/%s/%s.%s.rpm", getVar(RPMVAR_RPMDIR),
-		getArchName(), name, getArchName());
+	if (doPackage == PACK_PACKAGE) {
+	    sprintf(filename, "%s/%s/%s.%s.rpm", getVar(RPMVAR_RPMDIR),
+		    getArchName(), name, getArchName());
 
-	if (generateRPM(name, filename, RPMLEAD_BINARY, outHeader, NULL,
-			getStringBuf(cpioFileList), passPhrase, prefix)) {
-	    /* Build failed */
-	    return 1;
+	    if (generateRPM(name, filename, RPMLEAD_BINARY, outHeader, NULL,
+			    getStringBuf(cpioFileList), passPhrase, prefix)) {
+		/* Build failed */
+		return 1;
+	    }
 	}
 
 	freeStringBuf(cpioFileList);
