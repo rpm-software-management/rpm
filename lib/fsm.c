@@ -568,10 +568,10 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     }
 
     ec = fsm->rc = 0;
-    rc = fsmStage(fsm, FSM_CREATE);
+    rc = fsmNext(fsm, FSM_CREATE);
     if (rc && !ec) ec = rc;
 
-    rc = fsmStage(fsm, fsm->goal);
+    rc = fsmNext(fsm, fsm->goal);
     if (rc && !ec) ec = rc;
 
 /*@-boundswrite@*/
@@ -587,7 +587,7 @@ int fsmTeardown(FSM_t fsm)
     int rc = fsm->rc;
 
     if (!rc)
-	rc = fsmStage(fsm, FSM_DESTROY);
+	rc = fsmNext(fsm, FSM_DESTROY);
 
     fsm->iter = mapFreeIterator(fsm->iter);
     if (fsm->cfd != NULL) {
@@ -847,7 +847,7 @@ static int writeFile(/*@special@*/ FSM_t fsm, int writeData)
 	 * I don't think that's a specified standard.
 	 */
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
-	rc = fsmStage(fsm, FSM_READLINK);
+	rc = fsmNext(fsm, FSM_READLINK);
 	if (rc) goto exit;
 	st->st_size = fsm->rdnb;
 	symbuf = alloca_strdup(fsm->rdbuf);	/* XXX save readlink return. */
@@ -1240,7 +1240,7 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
 	    /*@=usedef =compdef =nullpass =nullderef@*/
 
 	    /* Validate next component of path. */
-	    rc = fsmStage(fsm, FSM_LSTAT);
+	    rc = fsmUNSAFE(fsm, FSM_LSTAT);
 	    *te = '/';
 
 	    /* Directory already exists? */
@@ -1301,7 +1301,7 @@ static int fsmStat(FSM_t fsm)
 
     if (fsm->path != NULL) {
 	int saveernno = errno;
-	rc = fsmStage(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
+	rc = fsmNext(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
 			? FSM_LSTAT : FSM_STAT));
 	if (rc == CPIOERR_LSTAT_FAILED && errno == ENOENT) {
 	    errno = saveerrno;
@@ -1984,7 +1984,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	} else if (S_ISLNK(st->st_mode)) {
 	    if (S_ISLNK(ost->st_mode)) {
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
-		rc = fsmStage(fsm, FSM_READLINK);
+		rc = fsmNext(fsm, FSM_READLINK);
 		errno = saveerrno;
 		if (rc) break;
 		if (!strcmp(fsm->opath, fsm->rdbuf))	return 0;
@@ -2151,7 +2151,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	break;
 
     case FSM_NEXT:
-	rc = fsmStage(fsm, FSM_HREAD);
+	rc = fsmNext(fsm, FSM_HREAD);
 	if (rc) break;
 	if (!strcmp(fsm->path, CPIO_TRAILER)) { /* Detect end-of-payload. */
 	    fsm->path = _free(fsm->path);

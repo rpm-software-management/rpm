@@ -399,7 +399,9 @@ int rpmsqThread(void * (*start) (void * arg), void * arg)
 
     ret = pthread_create(&pth, NULL, start, arg);
     if (ret == 0) {
+#if 0
 fprintf(stderr, "    Thread(%p): %p\n", ME(), pth);
+#endif
 	ret = pthread_join(pth, NULL);
     }
     return ret;
