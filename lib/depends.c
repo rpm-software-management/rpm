@@ -6,26 +6,35 @@
 #include "rpmerr.h"
 #include "rpmlib.h"
 
-struct addedPackage {
+struct availablePackage {
     Header h;
     char ** provides;
     char * name, * version, * release;
     int serial, hasSerial, providesCount;
 } ;
 
-struct providesEntry {
-    struct addedPackage * package;
+struct availableIndexEntry {
+    struct availablePackage * package;
     char * entry;
+    int isProvides;
 } ;
+
+struct availableIndex {
+    struct availableIndexEntry * index;
+    int size;
+} ;
+
+struct availableList {
+    struct availablePackage * list;
+    struct availableIndex index;
+    int size, alloced;
+};
 
 struct rpmDependencyCheck {
     rpmdb db;					/* may be NULL */
     int * removedPackages;
     int numRemovedPackages, allocedRemovedPackages;
-    struct addedPackage * addedPackages;
-    int numAddedPackages, allocedAddedPackages;
-    struct providesEntry * providesTable;
-    int numProvides;
+    struct availableList addedPackages, availablePackages;
 };
 
 struct problemsSet {
@@ -34,8 +43,14 @@ struct problemsSet {
     int alloced;
 };
 
+static void alMakeIndex(struct availableList * al);
+static void alCreate(struct availableList * al);
+static void alFreeIndex(struct availableList * al);
+static void alFree(struct availableList * al);
+static void alAddPackage(struct availableList * al, Header h);
+
 static int intcmp(const void * a, const void *b);
-static int providescmp(const void * a, const void *b);
+static int indexcmp(const void * a, const void *b);
 static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName, 
 			 char * reqVersion, int reqFlags);
 static int checkDependentPackages(rpmDependencies rpmdep, 
@@ -45,10 +60,118 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 static int dbrecMatchesDepFlags(rpmDependencies rpmdep, int recOffset, 
 			        char * reqVersion, int reqFlags);
 static int headerMatchesDepFlags(Header h, char * reqVersion, int reqFlags);
+int alSatisfiesDepend(struct availableList * al, char * reqName, 
+                      char * reqVersion, int reqFlags);
 
-int providescmp(const void * a, const void *b) {
-    const struct providesEntry * aptr = a;
-    const struct providesEntry * bptr = b;
+static void alCreate(struct availableList * al) {
+    al->list = malloc(sizeof(*al->list) * 5);
+    al->alloced = 5;
+    al->size = 0;
+
+    al->index.index = NULL;
+    alFreeIndex(al);
+};
+
+static void alFreeIndex(struct availableList * al) {
+    if (al->index.size) {
+	free(al->index.index);
+	al->index.index = NULL;
+	al->index.size = 0;
+    }
+}
+
+static void alFree(struct availableList * al) {
+     int i;
+
+     for (i = 0; i < al->size; i++) {
+	if (al->list[i].provides)
+	    free(al->list[i].provides);
+     }
+
+    if (al->size) free(al->list);
+    alFreeIndex(al);
+}
+
+static void alAddPackage(struct availableList * al, Header h) {
+    struct availablePackage * p;
+    int i, type;
+
+    if (al->size == al->alloced) {
+	al->alloced += 5;
+	al->list = realloc(al->list, sizeof(*al->list) * al->alloced);
+    }
+
+    p = al->list + al->size++;
+    p->h = h;
+
+    getEntry(p->h, RPMTAG_NAME, &type, (void **) &p->name, &i);
+    getEntry(p->h, RPMTAG_VERSION, &type, (void **) &p->version, &i);
+    getEntry(p->h, RPMTAG_RELEASE, &type, (void **) &p->release, &i);
+    p->hasSerial = getEntry(h, RPMTAG_SERIAL, &type, (void **) &p->serial, &i);
+
+    if (!getEntry(h, RPMTAG_PROVIDES, &type, (void **) &p->provides,
+	&p->providesCount)) {
+	p->providesCount = 0;
+	p->provides = NULL;
+    }
+
+    alFreeIndex(al);
+}
+
+static void alMakeIndex(struct availableList * al) {
+    struct availableIndex * ai = &al->index;
+    int i, j, k;
+
+    if (ai->size) return;
+
+    ai->size = al->size;
+    for (i = 0; i < al->size; i++) {
+	ai->size += al->list[i].providesCount;
+    }
+
+    if (ai->size) {
+	ai->index = malloc(sizeof(*ai->index) * ai->size);
+	k = 0;
+	for (i = 0; i < al->size; i++) {
+	    ai->index[k].package = al->list + i;
+	    ai->index[k].entry = al->list[i].name;
+	    ai->index[k].isProvides = 0;
+	    k++;
+
+	    for (j = 0; j < al->list[i].providesCount; j++) {
+		ai->index[k].package = al->list + i;
+		ai->index[k].entry = al->list[i].provides[j];
+		ai->index[k].isProvides = 1;
+		k++;
+	    }
+	}
+
+	qsort(ai->index, ai->size, sizeof(*ai->index), (void *) indexcmp);
+    }
+}
+
+int alSatisfiesDepend(struct availableList * al, char * reqName, 
+		      char * reqVersion, int reqFlags) {
+    struct availableIndexEntry needle, * match;
+
+    if (!al->index.size) return 0;
+
+    needle.entry = reqName;
+    match = bsearch(&needle, al->index.index, al->index.size,
+		    sizeof(*al->index.index), (void *) indexcmp);
+ 
+    if (!match) return 0;
+    if (match->isProvides) return 1;
+
+    if (headerMatchesDepFlags(match->package->h, reqVersion, reqFlags))
+	return 1;
+
+    return 0;
+}
+
+int indexcmp(const void * a, const void *b) {
+    const struct availableIndexEntry * aptr = a;
+    const struct availableIndexEntry * bptr = b;
 
     return strcmp(aptr->entry, bptr->entry);
 }
@@ -75,11 +198,8 @@ rpmDependencies rpmdepDependencies(rpmdb db) {
     rpmdep->removedPackages = malloc(sizeof(int) * 
 				     rpmdep->allocedRemovedPackages);
 
-    rpmdep->numAddedPackages = 0;
-    rpmdep->allocedAddedPackages = 5;
-    rpmdep->providesTable = NULL;
-    rpmdep->addedPackages = malloc(sizeof(struct addedPackage) * 
-				     rpmdep->allocedAddedPackages);
+    alCreate(&rpmdep->addedPackages);
+    alCreate(&rpmdep->availablePackages);
 
     return rpmdep;
 }
@@ -90,7 +210,7 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h) {
     char * name;
     int count, type, i;
 
-    rpmdepAddPackage(rpmdep, h);
+    alAddPackage(&rpmdep->addedPackages, h);
 
     if (!rpmdep->db) return;
 
@@ -106,33 +226,7 @@ void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h) {
 }
 
 void rpmdepAddPackage(rpmDependencies rpmdep, Header h) {
-    struct addedPackage * p;
-    int i, type;
-
-    if (rpmdep->numAddedPackages == rpmdep->allocedAddedPackages) {
-	rpmdep->allocedAddedPackages += 5;
-	rpmdep->addedPackages = realloc(rpmdep->addedPackages,
-		    sizeof(struct addedPackage) * rpmdep->allocedAddedPackages);
-    }
-
-    p = rpmdep->addedPackages + rpmdep->numAddedPackages++;
-    p->h = h;
-
-    getEntry(p->h, RPMTAG_NAME, &type, (void **) &p->name, &i);
-    getEntry(p->h, RPMTAG_VERSION, &type, (void **) &p->version, &i);
-    getEntry(p->h, RPMTAG_RELEASE, &type, (void **) &p->release, &i);
-    p->hasSerial = getEntry(h, RPMTAG_SERIAL, &type, (void **) &p->serial, &i);
-
-    if (!getEntry(h, RPMTAG_PROVIDES, &type, (void **) &p->provides,
-	&p->providesCount)) {
-	p->providesCount = 0;
-	p->provides = NULL;
-    }
-
-    if (rpmdep->providesTable) {
-	free(rpmdep->providesTable);
-	rpmdep->providesTable = NULL;
-    }
+    alAddPackage(&rpmdep->addedPackages, h);
 }
 
 void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset) {
@@ -146,24 +240,17 @@ void rpmdepRemovePackage(rpmDependencies rpmdep, int dboffset) {
 }
 
 void rpmdepDone(rpmDependencies rpmdep) {
-     int i;
-
-     for (i = 0; i < rpmdep->numAddedPackages; i++) {
-	if (rpmdep->addedPackages[i].provides)
-	    free(rpmdep->addedPackages[i].provides);
-     }
-
-     free(rpmdep->addedPackages);
+     alFree(&rpmdep->addedPackages);
+     alFree(&rpmdep->availablePackages);
      free(rpmdep->removedPackages);
-     if (rpmdep->providesTable) free(rpmdep->providesTable);
 
      free(rpmdep);
 }
 
 int rpmdepCheck(rpmDependencies rpmdep, 
 		struct rpmDependencyConflict ** conflicts, int * numConflicts) {
-    struct addedPackage * p;
-    int i, j, k;
+    struct availablePackage * p;
+    int i, j;
     char ** provides;
     int providesCount;
     int type;
@@ -181,35 +268,13 @@ int rpmdepCheck(rpmDependencies rpmdep,
     qsort(rpmdep->removedPackages, rpmdep->numRemovedPackages,
 	  sizeof(int), intcmp);
 
-    if (!rpmdep->providesTable) {
-	rpmdep->numProvides = 0;
-	for (i = 0; i < rpmdep->numAddedPackages; i++) {
-	    rpmdep->numProvides += rpmdep->addedPackages[i].providesCount;
-	}
-
-	if (rpmdep->numProvides) {
-	    rpmdep->providesTable = alloca(sizeof(*rpmdep->providesTable) * 
-					   rpmdep->numProvides);
-	    k = 0;
-	    for (i = 0; i < rpmdep->numAddedPackages; i++) {
-		for (j = 0; j < rpmdep->addedPackages[i].providesCount; j++) {
-		    rpmdep->providesTable[k].package = 
-				rpmdep->addedPackages + i;
-		    rpmdep->providesTable[k].entry = 
-				rpmdep->addedPackages[i].provides[j];
-		    k++;
-		}
-	    }
-	}
-    }
-
-    qsort(rpmdep->providesTable, rpmdep->numProvides, 
-	  sizeof(*rpmdep->providesTable), (void *) providescmp);
+    alMakeIndex(&rpmdep->addedPackages);
+    alMakeIndex(&rpmdep->availablePackages);
     
     /* look at all of the added packages and make sure their dependencies
        are satisfied */
-    p = rpmdep->addedPackages;
-    for (i = 0; i < rpmdep->numAddedPackages; i++, p++) {
+    p = rpmdep->addedPackages.list;
+    for (i = 0; i < rpmdep->addedPackages.size; i++, p++) {
 	if (checkPackageDeps(rpmdep, &ps, p->h, NULL)) {
 	    free(ps.problems);
 	    return 1;
@@ -260,16 +325,12 @@ static int unsatisfiedDepend(rpmDependencies rpmdep, char * reqName,
 			 char * reqVersion, int reqFlags) {
     dbIndexSet matches;
     int i;
-    struct providesEntry prent, * provider;
 
     message(MESS_DEBUG, "dependencies: looking for %s\n", reqName);
 
-    prent.entry = reqName;
-    if ((provider = bsearch(&prent, rpmdep->providesTable, rpmdep->numProvides,
-		sizeof(*rpmdep->providesTable), (void *) providescmp))) {
- 	if (headerMatchesDepFlags(provider->package->h, reqVersion, reqFlags))
-	    return 0;
-    }
+    if (alSatisfiesDepend(&rpmdep->addedPackages, reqName, reqVersion, 
+			  reqFlags))
+	return 0;
 
     if (!rpmdep->db) return 1;
 
@@ -353,7 +414,8 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
     for (i = 0; i < requiresCount; i++) {
 	if (requirement && strcmp(requirement, requires[i])) continue;
 
-	rc = unsatisfiedDepend(rpmdep, requires[i], "", requireFlags[i]);
+	rc = unsatisfiedDepend(rpmdep, requires[i], requiresVersion[i], 
+			       requireFlags[i]);
 	if (rc == 1) {
 	    getEntry(h, RPMTAG_NAME, &type, (void **) &name, &count);
 	    getEntry(h, RPMTAG_VERSION, &type, (void **) &version, &count);
