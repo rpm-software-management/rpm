@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.4
 Version: %{version}
-Release: 0.39
+Release: 0.40
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -171,9 +171,12 @@ fi
 %lang(pl) /usr/man/pl/man[18]/*.[18]*
 %lang(ru) /usr/man/ru/man[18]/*.[18]*
 
-%files -n build
+%files build
 %defattr(-,root,root)
 /usr/lib/rpm/check-prereqs
+/usr/lib/rpm/cpanflute
+/usr/lib/rpm/find-provides.perl
+/usr/lib/rpm/find-requires.perl
 /usr/lib/rpm/get_magic.pl
 /usr/lib/rpm/http.req
 /usr/lib/rpm/magic.prov
@@ -217,6 +220,7 @@ fi
 * Tue Feb 15 2000 Jeff Johnson <jbj@redhat.com>
 - new rpm-build package to isolate rpm dependencies on perl/bash2.
 - always remove duplicate identical package entries on --rebuilddb.
+- add scripts for autogenerating CPAN dependencies.
 
 * Wed Feb  9 2000 Jeff Johnson <jbj@redhat.com>
 - brp-compress deals with hard links correctly.
