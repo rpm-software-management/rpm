@@ -279,8 +279,10 @@ if test "$LCHOWN" = no; then
     AC_ARG_ENABLE([broken-chown],
     [  --enable-broken-chown  this system's chown follows symbolic links], 
 	    result=yes, result=unknown)
-    if echo "$build" | egrep "(aix)|(hpux)|(nextstep)" > /dev/null ; then
+    if echo "$build" | egrep "(aix)|(hpux)" > /dev/null ; then
 	result=yes
+    elif echo "$build" | egrep "(nextstep)" > /dev/null ; then
+	result=no
     fi
     if test $result = unknown; then
 	if test `id | cut -f 2 -d \= | cut -f 1 -d \(` = 0; then
