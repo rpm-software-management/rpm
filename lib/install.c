@@ -202,13 +202,14 @@ static void trimChangelog(Header h) {
 	    return;
 	}
 	numToKeep = strtol(buf, &end, 10);
-	xfree(buf);
-    }
 
-    if (!(end && *end == '\0')) {
-	rpmError(RPMERR_RPMRC, _("%%instchangelog value in macro file should "
-		    "be a number, but isn't"));
-	return;
+	if (!(end && *end == '\0')) {
+	    rpmError(RPMERR_RPMRC, _("%%instchangelog value in macro file "
+		 "should be a number, but isn't"));
+	    xfree(buf);
+	    return;
+	}
+	xfree(buf);
     }
 
     if (numToKeep < 0) return;

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-03-22 13:09-0500\n"
+"POT-Creation-Date: 1999-03-22 15:42-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2433,77 +2433,77 @@ msgstr ""
 msgid "group %s does not exist - using root"
 msgstr ""
 
-#: ../lib/install.c:209
+#: ../lib/install.c:207
 msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr ""
 
-#: ../lib/install.c:275
+#: ../lib/install.c:276
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: ../lib/install.c:333
+#: ../lib/install.c:334
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: ../lib/install.c:338
+#: ../lib/install.c:339
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: ../lib/install.c:368
+#: ../lib/install.c:369
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: ../lib/install.c:404
+#: ../lib/install.c:405
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:408 ../lib/install.c:745 ../lib/uninstall.c:337
+#: ../lib/install.c:409 ../lib/install.c:746 ../lib/uninstall.c:337
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: ../lib/install.c:491
+#: ../lib/install.c:492
 msgid "running postinstall script (if any)\n"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: ../lib/install.c:599
+#: ../lib/install.c:600
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: ../lib/install.c:600
+#: ../lib/install.c:601
 msgid " on file "
 msgstr ""
 
-#: ../lib/install.c:639
+#: ../lib/install.c:640
 msgid "installing a source package\n"
 msgstr ""
 
-#: ../lib/install.c:645 ../lib/install.c:651
+#: ../lib/install.c:646 ../lib/install.c:652
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: ../lib/install.c:656
+#: ../lib/install.c:657
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:657
+#: ../lib/install.c:658
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:690 ../lib/install.c:722
+#: ../lib/install.c:691 ../lib/install.c:723
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:743
+#: ../lib/install.c:744
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
