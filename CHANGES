@@ -5,6 +5,8 @@
 	  from 2.3.2 through 2.3.8 -- this was fixed and some hacks were
 	  done to keep verification working
 	- updated README
+	- added --allmatches to allow erasing multiple versions/releases
+	  of a package
 	
 2.3.7 -> 2.3.8:
 	- added -t? options to build packages from tarballs which contain
