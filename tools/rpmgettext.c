@@ -11,12 +11,8 @@
 #include "signature.h"
 #include "header.h"
 
-/* include libgen.h here and only here!  It has the prototype for basename()
- * on many OSes, but some of the prototypes in libgen.h clash with prototypes
- * from other header files (e.g. regex.h) on some OSes (e.g. AIX 4.x).
- */
-#ifdef HAVE_LIBGEN_H
-#include <libgen.h>
+#if !defined(HAVE_BASENAME)
+extern char *basename (const char *__filename);
 #endif
 
 #define	MYDEBUG	2
