@@ -44,7 +44,7 @@ char * oldhdrReadFromStream(FD_t fd, struct oldrpmHeader * header) {
     unsigned int archiveOffset;
     unsigned int groupLength;
 
-    if (timedRead(fd, &lit, sizeof(lit)) != sizeof(lit)) {
+    if (timedRead(fd, (char *)&lit, sizeof(lit)) != sizeof(lit)) {
 	return strerror(errno);
     }
 
@@ -145,7 +145,7 @@ char * oldhdrReadFromFile(char * filename, struct oldrpmHeader * header) {
     char * rc;
     FD_t fd;
 
-    fd = fdio->open(filename, O_RDONLY, 0);
+    fd = Fopen(filename, "r.fdio");
     if (Ferror(fd))
 	/* XXX Fstrerror */
 	return strerror(errno);

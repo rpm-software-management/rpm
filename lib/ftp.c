@@ -178,7 +178,7 @@ static int checkResponse(int fd, int secs, int *ecp, /*@out@*/ char ** str) {
 
 int ftpCheckResponse(urlinfo u, /*@out@*/ char ** str) {
     int ec = 0;
-    int rc =  checkResponse(Fileno(u->ftpControl), ftpTimeoutSecs, &ec, str);
+    int rc =  checkResponse(fdio->fileno(u->ftpControl), ftpTimeoutSecs, &ec, str);
 
     switch (ec) {
     case 550:
@@ -379,11 +379,11 @@ int ftpOpen(urlinfo u)
     }
 
     fdSetFdno(u->ftpControl, tcpConnect(host, port));
-    if (Fileno(u->ftpControl) < 0)
-	return Fileno(u->ftpControl);
+    if (fdio->fileno(u->ftpControl) < 0)
+	return fdio->fileno(u->ftpControl);
 
     /* ftpCheckResponse() assumes the socket is nonblocking */
-    if (fcntl(Fileno(u->ftpControl), F_SETFL, O_NONBLOCK)) {
+    if (fcntl(fdio->fileno(u->ftpControl), F_SETFL, O_NONBLOCK)) {
 	rc = FTPERR_FAILED_CONNECT;
 	goto errxit;
     }
@@ -401,7 +401,8 @@ int ftpOpen(urlinfo u)
     if ((rc = ftpCommand(u, "TYPE", "I", NULL)))
 	goto errxit;
 
-    return Fileno(u->ftpControl);
+    fdLink(u->ftpControl, "open ftpControl");
+    return fdio->fileno(u->ftpControl);
 
 errxit:
     fdio->close(u->ftpControl);
@@ -414,6 +415,7 @@ int ftpFileDone(urlinfo u) {
 
     if (u->ftpFileDoneNeeded) {
 	u->ftpFileDoneNeeded = 0;
+	fdFree(u->ftpControl, "ftpFileDone (from ftpFileDone)");
 	if (ftpCheckResponse(u, NULL))
 	    return FTPERR_BAD_SERVER_RESPONSE;
     }
@@ -480,13 +482,13 @@ int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
 	return FTPERR_PASSIVE_ERROR;
 
     fdSetFdno(fd, socket(AF_INET, SOCK_STREAM, IPPROTO_IP));
-    if (Fileno(fd) < 0)
+    if (fdio->fileno(fd) < 0)
 	return FTPERR_FAILED_CONNECT;
     /* XXX setsockopt SO_LINGER */
     /* XXX setsockopt SO_KEEPALIVE */
     /* XXX setsockopt SO_TOS IPTOS_THROUGHPUT */
 
-    while (connect(Fileno(fd), (struct sockaddr *) &dataAddress, 
+    while (connect(fdio->fileno(fd), (struct sockaddr *) &dataAddress, 
 	        sizeof(dataAddress)) < 0) {
 	if (errno == EINTR)
 	    continue;
@@ -505,5 +507,6 @@ int ftpFileDesc(urlinfo u, const char *cmd, FD_t fd)
     }
 
     u->ftpFileDoneNeeded = 1;
+    fdLink(u->ftpControl, "ftpFileDone");
     return 0;
 }

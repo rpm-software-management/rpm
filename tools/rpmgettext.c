@@ -836,7 +836,7 @@ rpmgettext(FD_t fd, const char *file, FILE *ofp)
 	    }
 	}
 
-	fd = fdio->open(fni, O_RDONLY, 0644);
+	fd = Fopen(fni, "r.fdio");
 	if (Ferror(fd)) {
 	    /* XXX Fstrerror */
 	    fprintf(stderr, _("rpmgettext: open %s: %s\n"), fni, strerror(errno));

@@ -244,7 +244,7 @@ static int readIcon(Header h, const char *file)
 
     icon = xmalloc(statbuf.st_size);
     *icon = '\0';
-    fd = fdio->open(fn, O_RDONLY, 0);
+    fd = Fopen(fn, "r.fdio");
     /* XXX Fstrerror */
     /* XXX Ferror check */
     nb = Fread(icon, statbuf.st_size, 1, fd);

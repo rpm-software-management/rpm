@@ -341,7 +341,7 @@ static int expandRegular(FD_t cfd, struct cpioHeader * hdr,
 	}
     }
 
-    ofd = fdio->open(hdr->path, O_CREAT | O_WRONLY, 0);
+    ofd = Fopen(hdr->path, "w.fdio");	/* XXX Fopen adds O_TRUNC */
     if (Ferror(ofd)) 
 	return CPIOERR_OPEN_FAILED;
 
@@ -746,7 +746,8 @@ static int writeFile(FD_t cfd, struct stat sb, struct cpioFileMapping * map,
 	size_t nmapped;
 #endif
 
-	datafd = fdio->open(map->fsPath, O_RDONLY, 0);
+	/* XXX unbuffered mmap generates *lots* of fdio debugging */
+	datafd = Fopen(map->fsPath, "r.fdio");
 	if (Ferror(datafd))
 	    return CPIOERR_OPEN_FAILED;
 

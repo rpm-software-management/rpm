@@ -57,7 +57,6 @@ lib/rpmrc.c
 lib/signature.c
 lib/stringbuf.c
 lib/transaction.c
-lib/tread.c
 lib/uninstall.c
 lib/url.c
 lib/verify.c

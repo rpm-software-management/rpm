@@ -522,7 +522,7 @@ Header headerRead(FD_t fd, int magicp)
     if (magicp == HEADER_MAGIC_YES)
 	i += 2;
 
-    if (timedRead(fd, block, i * sizeof(*block)) != (i * sizeof(*block)))
+    if (timedRead(fd, (char *)block, i * sizeof(*block)) != (i * sizeof(*block)))
 	return NULL;
     i = 0;
 
@@ -552,7 +552,7 @@ Header headerRead(FD_t fd, int magicp)
     *p++ = htonl(dl);
 
     totalSize -= sizeof(int_32) + sizeof(int_32);
-    if (timedRead(fd, p, totalSize) != totalSize)
+    if (timedRead(fd, (char *)p, totalSize) != totalSize)
 	return NULL;
     
     h = headerLoad(dataBlock);

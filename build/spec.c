@@ -519,7 +519,7 @@ void freeSpec(/*@only@*/ Spec spec)
     struct OpenFileInfo *ofi;
 
     ofi = xmalloc(sizeof(struct OpenFileInfo));
-    ofi->file = NULL;
+    ofi->fd = NULL;
     ofi->fileName = NULL;
     ofi->lineNum = 0;
     ofi->readBuf[0] = '\0';

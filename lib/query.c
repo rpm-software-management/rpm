@@ -458,7 +458,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
       case RPMQV_RPM:
       {	FD_t fd;
 
-	fd = ufdio->open(arg, O_RDONLY, 0);
+	fd = Fopen(arg, "r.ufdio");
 	if (Ferror(fd)) {
 	    /* XXX Fstrerror */
 	    fprintf(stderr, _("open of %s failed: %s\n"), arg,urlStrerror(arg));

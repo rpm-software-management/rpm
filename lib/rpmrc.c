@@ -270,9 +270,11 @@ static void machFindEquivs(struct machCache * cache,
     if (table->list) xfree(table->list);
     table->list = NULL;
 
-    /* We have a general graph built using strings instead of pointers.
-       Yuck. We have to start at a point at traverse it, remembering how
-       far away everything is. */
+    /*
+     *	We have a general graph built using strings instead of pointers.
+     *	Yuck. We have to start at a point at traverse it, remembering how
+     *	far away everything is.
+     */
     machAddEquiv(table, key, 1);
     machCacheEntryVisit(cache, table, key, 2);
 }
@@ -533,6 +535,9 @@ int rpmReadRC(const char * rcfiles)
 	if (r[0] == '~' && r[1] == '/') {
 	    char *home = getenv("HOME");
 	    if (home == NULL) {
+	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
+		if (rcfiles == defrcfiles && myrcfiles != r)
+		    continue;
 		rpmError(RPMERR_RPMRC, _("Cannot expand %s"), r);
 		rc = 1;
 		break;
@@ -543,8 +548,8 @@ int rpmReadRC(const char * rcfiles)
 	strcat(fn, r);
 
 	/* Read another rcfile */
-	fd = ufdio->open(fn, O_RDONLY, 0);
-	if (Ferror(fd)) {
+	fd = Fopen(fn, "r.ufdio");
+	if (fd == NULL || Ferror(fd)) {
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
 	    if (rcfiles == defrcfiles && myrcfiles != r)
 		continue;
@@ -553,9 +558,9 @@ int rpmReadRC(const char * rcfiles)
 		 fn, strerror(errno));
 	    rc = 1;
 	    break;
+	} else {
+	    rc = doReadRC(fd, fn);
 	}
-	rc = doReadRC(fd, fn);
-	Fclose(fd);
  	if (rc) break;
     }
     if (myrcfiles)	free(myrcfiles);
@@ -575,7 +580,7 @@ int rpmReadRC(const char * rcfiles)
     return rc;
 }
 
-static int doReadRC(FD_t fd, const char * filename)
+static int doReadRC( /*@killref@*/ FD_t fd, const char * filename)
 {
     const char *s;
     char *se, *next;
@@ -583,16 +588,25 @@ static int doReadRC(FD_t fd, const char * filename)
     struct rpmOption searchOption, * option;
     int rc;
 
+    /* XXX fstat doesn't work on ufdio, default to 64K  */
   { struct stat sb;
-    fstat(Fileno(fd), &sb);
-    next = alloca(sb.st_size + 2);
-    if (Fread(next, sb.st_size, 1, fd) != sb.st_size) {
+    int fdno = Fileno(fd);
+    size_t nb;
+    fstat(fdno, &sb);
+    nb = (sb.st_size > 0 ?  sb.st_size : 8*BUFSIZ);
+    next = alloca(nb + 2);
+    next[0] = '\0';
+    rc = Fread(next, nb, 1, fd);
+    if (Ferror(fd) || (sb.st_size > 0 && rc != nb)) {	/* XXX Feof(fd) */
 	rpmError(RPMERR_RPMRC, _("Failed to read %s: %s."), filename,
 		 strerror(errno));
-	return 1;
-    }
-    next[sb.st_size] = '\n';
-    next[sb.st_size + 1] = '\0';
+	rc = 1;
+    } else
+	rc = 0;
+    Fclose(fd);
+    if (rc) return rc;
+    next[nb] = '\n';
+    next[nb + 1] = '\0';
   }
 
     while (*next) {
@@ -658,15 +672,14 @@ static int doReadRC(FD_t fd, const char * filename)
 		    /*@notreached@*/
 		}
 
-		fdinc = fdio->open(fn, O_RDONLY, 0);
-		if (Ferror(fdinc)) {
+		fdinc = Fopen(fn, "r.ufdio");
+		if (fdinc == NULL || Ferror(fdinc)) {
 		    /* XXX Fstrerror */
 		    rpmError(RPMERR_RPMRC, _("cannot open %s at %s:%d"),
 			fn, filename, linenum);
 		    rc = 1;
 		} else {
 		    rc = doReadRC(fdinc, fn);
-		    Fclose(fdinc);
 		}
 		if (fn) xfree(fn);
 		if (rc) return rc;
@@ -789,68 +802,74 @@ static void defaultMachine(const char ** arch, const char ** os) {
 
 #if !defined(__linux__)
 #ifdef SNI
-        /* USUALLY un.sysname on sinix does start with the word "SINIX"
-         * let's be absolutely sure
-         */
-        sprintf(un.sysname,"SINIX");
+	/* USUALLY un.sysname on sinix does start with the word "SINIX"
+	 * let's be absolutely sure
+	 */
+	sprintf(un.sysname,"SINIX");
 #endif
 	if (!strcmp(un.sysname, "AIX")) {
 	    strcpy(un.machine, __power_pc() ? "ppc" : "rs6000");
-            sprintf(un.sysname,"aix%s.%s",un.version,un.release);
+	    sprintf(un.sysname,"aix%s.%s",un.version,un.release);
 	}
-        else if (!strcmp(un.sysname, "SunOS")) {
-           if (!strncmp(un.release,"4", 1)) /* SunOS 4.x */ {
-	      int fd;
-              for (fd=0;(un.release[fd] != 0 && (fd < sizeof(un.release)));fd++)
-                 if (!isdigit(un.release[fd]) && (un.release[fd] != '.')) {
-                    un.release[fd] = 0;
-                    break;
-                 }
-              sprintf(un.sysname,"sunos%s",un.release);
-           }
+	else if (!strcmp(un.sysname, "SunOS")) {
+	    if (!strncmp(un.release,"4", 1)) /* SunOS 4.x */ {
+		int fd;
+		for (fd = 0;
+		    (un.release[fd] != 0 && (fd < sizeof(un.release)));
+		    fd++) {
+		      if (!isdigit(un.release[fd]) && (un.release[fd] != '.')) {
+			un.release[fd] = 0;
+			break;
+		      }
+		    }
+		    sprintf(un.sysname,"sunos%s",un.release);
+	    }
 
-           else /* Solaris 2.x: n.x.x becomes n-3.x.x */
-              sprintf(un.sysname,"solaris%1d%s",atoi(un.release)-3,un.release+1+(atoi(un.release)/10));
-        }
-        else if (!strcmp(un.sysname, "HP-UX"))
-           /*make un.sysname look like hpux9.05 for example*/
-           sprintf(un.sysname,"hpux%s",strpbrk(un.release,"123456789"));
-        else if (!strcmp(un.sysname, "OSF1"))
-           /*make un.sysname look like osf3.2 for example*/
-           sprintf(un.sysname,"osf%s",strpbrk(un.release,"123456789"));
-        else if (!strncmp(un.sysname, "IP", 2))
-           un.sysname[2] = '\0';
-        else if (!strncmp(un.sysname, "SINIX", 5)) {
-           sprintf(un.sysname, "sinix%s",un.release);
-           if (!strncmp(un.machine, "RM", 2))
-              sprintf(un.machine, "mips");
-        }
-        else if ((!strncmp(un.machine, "34", 2) || \
-                 !strncmp(un.machine, "33", 2)) && \
-                 !strncmp(un.release, "4.0", 3)) {
-           /* we are on ncr-sysv4 */
-	   char *prelid = NULL;
-           FD_t fd = fdio->open("/etc/.relid", O_RDONLY, 0700);
-           if (!Ferror(fd)) {
-              chptr = (char *) xcalloc(1, 256);
-              if (chptr != NULL) {
-                 int irelid = Fread(chptr, 256, 1, fd);
-                 Fclose(fd);
-                 /* example: "112393 RELEASE 020200 Version 01 OS" */
-                 if (irelid > 0) {
-                    if ((prelid=strstr(chptr, "RELEASE "))){
-                       prelid += strlen("RELEASE ")+1;
-                       sprintf(un.sysname,"ncr-sysv4.%.*s",1,prelid);
-                    }
-		 }
-                 free (chptr);
-              }
-           }
-           if (prelid == NULL)	/* parsing /etc/.relid file failed? */
-              strcpy(un.sysname,"ncr-sysv4");
-           /* wrong, just for now, find out how to look for i586 later*/
-           strcpy(un.machine,"i486");
-        }
+	    else /* Solaris 2.x: n.x.x becomes n-3.x.x */
+		sprintf(un.sysname, "solaris%1d%s", atoi(un.release)-3,
+			un.release+1+(atoi(un.release)/10));
+	}
+	else if (!strcmp(un.sysname, "HP-UX"))
+	    /*make un.sysname look like hpux9.05 for example*/
+	    sprintf(un.sysname, "hpux%s", strpbrk(un.release,"123456789"));
+	else if (!strcmp(un.sysname, "OSF1"))
+	    /*make un.sysname look like osf3.2 for example*/
+	    sprintf(un.sysname,"osf%s",strpbrk(un.release,"123456789"));
+	else if (!strncmp(un.sysname, "IP", 2))
+	    un.sysname[2] = '\0';
+	else if (!strncmp(un.sysname, "SINIX", 5)) {
+	    sprintf(un.sysname, "sinix%s",un.release);
+	    if (!strncmp(un.machine, "RM", 2))
+		sprintf(un.machine, "mips");
+	}
+	else if ((!strncmp(un.machine, "34", 2) ||
+		!strncmp(un.machine, "33", 2)) && \
+		!strncmp(un.release, "4.0", 3))
+	{
+	    /* we are on ncr-sysv4 */
+	    char *prelid = NULL;
+	    FD_t fd;
+	    fd = Fopen("/etc/.relid", "r.fdio");
+	    if (!Ferror(fd)) {
+		chptr = (char *) xcalloc(1, 256);
+		if (chptr != NULL) {
+		    int irelid = Fread(chptr, 256, 1, fd);
+		    Fclose(fd);
+		    /* example: "112393 RELEASE 020200 Version 01 OS" */
+		    if (irelid > 0) {
+			if ((prelid=strstr(chptr, "RELEASE "))){
+			    prelid += strlen("RELEASE ")+1;
+			    sprintf(un.sysname,"ncr-sysv4.%.*s",1,prelid);
+			}
+		    }
+		    free (chptr);
+		}
+	    }
+	    if (prelid == NULL)	/* parsing /etc/.relid file failed? */
+		strcpy(un.sysname,"ncr-sysv4");
+	    /* wrong, just for now, find out how to look for i586 later*/
+	    strcpy(un.machine,"i486");
+	}
 #endif	/* __linux__ */
 
 	/* get rid of the hyphens in the sysname */
@@ -1190,7 +1209,7 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 	const char *a;
 	defaultMachine(&a, NULL);
 	ca = (a) ? xstrdup(a) : NULL;
-     }
+    }
     for (x = 0; ca[x]; x++)
 	ca[x] = tolower(ca[x]);
 

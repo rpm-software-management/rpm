@@ -42,7 +42,7 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     memset(u, 0, sizeof(*u));
     u->proxyp = -1;
     u->port = -1;
-    u->ftpControl = fdio->new(fdio, "ftpControl", __FILE__, __LINE__);
+    u->ftpControl = fdio->new(fdio, "url ftpControl", __FILE__, __LINE__);
     u->ftpFileDoneNeeded = 0;
     u->nrefs = 0;
     return XurlLink(u, msg, file, line);
@@ -54,8 +54,9 @@ DBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, li
     if (--u->nrefs > 0)
 	return;
     if (u->ftpControl) {
-	fdio->close(u->ftpControl);
-	fdio->deref(u->ftpControl, "ftpControl", __FILE__, __LINE__);
+	if (fdio->fileno(u->ftpControl) >= 0)
+	    fdio->close(u->ftpControl);
+	fdio->deref(u->ftpControl, "url ftpControl (from urlFree)", __FILE__, __LINE__);
 	u->ftpControl = NULL;
     }
     FREE(u->url);
@@ -367,7 +368,7 @@ int urlGetFile(const char * url, const char * dest) {
     FD_t tfd = NULL;
     urlinfo sfu;
 
-    sfd = ufdio->open(url, O_RDONLY, 0);
+    sfd = Fopen(url, "r.ufdio");
     if (sfd == NULL || Ferror(sfd)) {
 	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_DEBUG, _("failed to open %s\n"), url);
@@ -385,7 +386,7 @@ int urlGetFile(const char * url, const char * dest) {
 	    dest = fileName;
     }
 
-    tfd = fdio->open(dest, O_CREAT|O_WRONLY|O_TRUNC, 0600);
+    tfd = Fopen(dest, "w.fdio");
     if (Ferror(tfd)) {
 	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_DEBUG, _("failed to create %s\n"), dest);

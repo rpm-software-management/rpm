@@ -45,7 +45,7 @@ static char *_preScriptChdir =
 int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 {
     FD_t fd;
-    FILE *f;
+    FD_t xfd;
     const char *scriptName;
     int pid;
     int status;
@@ -85,34 +85,34 @@ int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 	    return RPMERR_SCRIPT;
     }
 #ifdef HAVE_FCHMOD
-    (void)fchmod(Fileno(fd), 0600);
+    (void)fchmod(Fileno(fd), 0600);	/* XXX fubar on ufdio */
 #endif
-    f = fdFdopen(fd, "w");
+    xfd = Fdopen(fd, "w.fdio");
     
     strcpy(buf, _preScriptEnvironment);
     expandMacros(spec, spec->macros, buf, sizeof(buf));
     strcat(buf, "\n");
-    fputs(buf, f);
+    fputs(buf, fpio->ffileno(xfd));
 
-    fprintf(f, rpmIsVerbose() ? "set -x\n\n" : "exec > /dev/null\n\n");
+    fprintf(fpio->ffileno(xfd), rpmIsVerbose() ? "set -x\n\n" : "exec > /dev/null\n\n");
 
 /* XXX umask 022; cd %{_builddir} */
     strcpy(buf, _preScriptChdir);
     expandMacros(spec, spec->macros, buf, sizeof(buf));
-    fputs(buf, f);
+    fputs(buf, fpio->ffileno(xfd));
 
     if (what != RPMBUILD_PREP && what != RPMBUILD_RMBUILD) {
 	if (spec->buildSubdir)
-	    fprintf(f, "cd %s\n", spec->buildSubdir);
+	    fprintf(fpio->ffileno(xfd), "cd %s\n", spec->buildSubdir);
     }
     if (what == RPMBUILD_RMBUILD) {
 	if (spec->buildSubdir)
-	    fprintf(f, "rm -rf %s\n", spec->buildSubdir);
+	    fprintf(fpio->ffileno(xfd), "rm -rf %s\n", spec->buildSubdir);
     } else
-	fprintf(f, "%s", getStringBuf(sb));
-    fprintf(f, "\nexit 0\n");
+	fprintf(fpio->ffileno(xfd), "%s", getStringBuf(sb));
+    fprintf(fpio->ffileno(xfd), "\nexit 0\n");
     
-    fclose(f);
+    Fclose(xfd);
 
     if (test) {
 	FREE(scriptName);

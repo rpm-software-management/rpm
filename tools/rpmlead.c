@@ -14,7 +14,7 @@ int main(int argc, char **argv)
     if (argc == 1) {
 	fdi = fdDup(STDIN_FILENO);
     } else {
-	fdi = ufdio->open(argv[1], O_RDONLY, 0644);
+	fdi = Fopen(argv[1], "r.ufdio");
 	if (Ferror(fdi)) {
 	    perror(argv[1]);
 	    exit(EXIT_FAILURE);

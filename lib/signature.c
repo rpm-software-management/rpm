@@ -292,7 +292,7 @@ static int makePGPSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
     
     {	FD_t fd;
 	int rc;
-	fd = fdio->open(sigfile, O_RDONLY, 0);
+	fd = Fopen(sigfile, "r.fdio");
 	rc = timedRead(fd, *sig, *size);
 	unlink(sigfile);
 	Fclose(fd);
@@ -369,7 +369,7 @@ static int makeGPGSignature(const char *file, /*@out@*/void **sig, /*@out@*/int_
     
     {	FD_t fd;
 	int rc;
-	fd = fdio->open(sigfile, O_RDONLY, 0);
+	fd = Fopen(sigfile, "r.fdio");
 	rc = timedRead(fd, *sig, *size);
 	unlink(sigfile);
 	Fclose(fd);
@@ -506,7 +506,7 @@ static int verifyPGPSignature(const char *datafile, void *sig,
     sigfile = tempnam(tmppath, "rpmsig");
     xfree(tmppath);
   }
-    sfd = fdio->open(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    sfd = Fopen(sigfile, "w.fdio");
     (void)Fwrite(sig, count, 1, sfd);
     Fclose(sfd);
 
@@ -601,7 +601,7 @@ static int verifyGPGSignature(const char *datafile, void *sig,
     sigfile = tempnam(tmppath, "rpmsig");
     xfree(tmppath);
   }
-    sfd = fdio->open(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    sfd = Fopen(sigfile, "w.fdio");
     (void)Fwrite(sig, count, 1, sfd);
     Fclose(sfd);
 

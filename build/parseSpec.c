@@ -168,8 +168,8 @@ int readLine(Spec spec, int strip)
 
 retry:
     /* Make sure the current file is open */
-    if (ofi->file == NULL) {
-	if (!(ofi->file = Fopen(ofi->fileName, "r"))) {
+    if (ofi->fd == NULL) {
+	if ((ofi->fd = Fopen(ofi->fileName, "r.ufdio")) == NULL) {
 	    /* XXX Fstrerror */
 	    rpmError(RPMERR_BADSPEC, _("Unable to open: %s\n"),
 		     ofi->fileName);
@@ -180,7 +180,7 @@ retry:
 
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
-	if (!fgets(ofi->readBuf, BUFSIZ, ofi->file)) {
+	if (!fgets(ofi->readBuf, BUFSIZ, fpio->ffileno(ofi->fd))) {
 	    /* EOF */
 	    if (spec->readStack->next) {
 		rpmError(RPMERR_UNMATCHEDIF, _("Unclosed %%if"));
@@ -189,7 +189,7 @@ retry:
 
 	    /* remove this file from the stack */
 	    spec->fileStack = ofi->next;
-	    fclose(ofi->file);
+	    Fclose(ofi->fd);
 	    FREE(ofi->fileName);
 	    free(ofi);
 
@@ -317,7 +317,7 @@ void closeSpec(Spec spec)
     while (spec->fileStack) {
 	ofi = spec->fileStack;
 	spec->fileStack = spec->fileStack->next;
-	if (ofi->file) fclose(ofi->file);
+	if (ofi->fd) Fclose(ofi->fd);
 	FREE(ofi->fileName);
 	free(ofi);
     }

@@ -61,7 +61,7 @@ size_t	Fwrite	(const void *buf, size_t size, size_t nmemb, FD_t fd);
 int	Fseek	(FD_t fd, long int offset, int whence);
 int	Fclose	( /*@killref@*/ FD_t fd);
 FD_t	Fdopen	(FD_t fd, const char * fmode);
-FILE *	Fopen	(const char * path, const char * fmode);
+FD_t	Fopen	(const char * path, const char * fmode);
 
 int	Ferror	(FD_t fd);
 int	Fileno	(FD_t fd);
@@ -87,7 +87,9 @@ void fdSetIoCookie(FD_t fd, FDIO_t iop);
 long int fdGetCpioPos(FD_t fd);
 extern /*@null@*/ FD_t fdDup(int fdno);
 void fdSetCpioPos(FD_t fd, long int cpioPos);
+#ifdef UNUSED
 extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
+#endif
 
 #if 0
 #define	fdRead		fdio->read
@@ -139,6 +141,7 @@ const char *const ftpStrerror(int errorNumber);
 #endif
 
 /*@observer@*/ extern FDIO_t ufdio;
+#define	timedRead	ufdio->read
 
 /*
  * Support for first fit File Allocation I/O.
@@ -158,8 +161,6 @@ void fadSetFirstFree(FD_t fd, unsigned int firstFree);
 
 #include <zlib.h>
 
-extern /*@null@*/ FD_t gzdFdopen( /*@only@*/ void * cookie, const char * mode);
-
 /*@observer@*/ extern FDIO_t gzdio;
 
 #endif	/* HAVE_ZLIB_H */
@@ -170,8 +171,6 @@ extern /*@null@*/ FD_t gzdFdopen( /*@only@*/ void * cookie, const char * mode);
  */
 
 #include <bzlib.h>
-
-extern /*@null@*/ FD_t bzdFdopen( /*@only@*/ void * cookie, const char * mode);
 
 /*@observer@*/ extern FDIO_t bzdio;
 

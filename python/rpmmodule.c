@@ -558,7 +558,7 @@ static PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args) {
     PyObject * list;
 
     if (!PyArg_ParseTuple(args, "s", &filespec)) return NULL;
-    fd = fdio->open(filespec, O_RDONLY, 0);
+    fd = Fopen(filespec, "r.fdio");
 
     if (!fd) {
 	PyErr_SetFromErrno(pyrpmError);

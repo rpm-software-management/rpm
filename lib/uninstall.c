@@ -313,7 +313,7 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 	if (rpmIsVerbose()) {
 	    out = fdDup(Fileno(errfd));
 	} else {
-	    out = fdio->open("/dev/null", O_WRONLY, 0);
+	    out = Fopen("/dev/null", "w.fdio");
 	    if (Ferror(out))
 		out = fdDup(Fileno(errfd));
 	}

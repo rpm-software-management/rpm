@@ -46,7 +46,7 @@ static void * showProgress(const Header h, const rpmCallbackType what,
 
     switch (what) {
       case RPMCALLBACK_INST_OPEN_FILE:
-	fd = fdio->open(filename, O_RDONLY, 0);
+	fd = Fopen(filename, "r.fdio");
 	return fd;
 
       case RPMCALLBACK_INST_CLOSE_FILE:
@@ -186,7 +186,7 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
        would create all sorts of confusion later. */
 
     for (filename = packages; *filename; filename++) {
-	fd = fdio->open(*filename, O_RDONLY, 0);
+	fd = Fopen(*filename, "r.fdio");
 	if (Ferror(fd)) {
 	    /* XXX Fstrerror */
 	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s\n"), *filename);
@@ -328,7 +328,7 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 
     if (numSourcePackages && !stopInstall) {
 	for (i = 0; i < numSourcePackages; i++) {
-	    fd = fdio->open(sourcePackages[i], O_RDONLY, 0);
+	    fd = Fopen(sourcePackages[i], "r.fdio");
 	    if (Ferror(fd)) {
 		/* XXX Fstrerror */
 		rpmMessage(RPMMESS_ERROR, _("cannot open file %s\n"), 
@@ -456,7 +456,7 @@ int rpmInstallSource(const char * rootdir, const char * arg, const char ** specF
     FD_t fd;
     int rc;
 
-    fd = ufdio->open(arg, O_RDONLY, 0);
+    fd = Fopen(arg, "r.ufdio");
     if (Ferror(fd)) {
 	/* XXX Fstrerror */
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s\n"), arg);

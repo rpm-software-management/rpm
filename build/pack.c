@@ -14,11 +14,7 @@ static StringBuf addFileToTagAux(Spec spec, char *file, StringBuf sb);
 static int addFileToTag(Spec spec, char *file, Header h, int tag);
 static int addFileToArrayTag(Spec spec, char *file, Header h, int tag);
 
-#if	ENABLE_BZIP2_PAYLOAD
-static int cpio_bzip2(FD_t fdo, CSA_t *csa);
-#endif	/* ENABLE_BZIP2_PAYLOAD */
-
-static int cpio_gzip(FD_t fdo, CSA_t *csa);
+static int cpio_doio(FD_t fdo, CSA_t *csa, const char * fmode);
 static int cpio_copy(FD_t fdo, CSA_t *csa);
 
 static inline int genSourceRpmName(Spec spec)
@@ -183,7 +179,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead, Header *sig
     int rc;
 
     if (fileName != NULL) {
-	fdi = fdio->open(fileName, O_RDONLY, 0644);
+	fdi = Fopen(fileName, "r.fdio");
 	if (Ferror(fdi)) {
 	    /* XXX Fstrerror */
 	    rpmError(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"), fileName,
@@ -276,7 +272,7 @@ int writeRPM(Header h, const char *fileName, int type,
 	rc = RPMERR_NOSPACE;
     } else { /* Write the archive and get the size */
 	if (csa->cpioList != NULL) {
-	    rc = cpio_gzip(fd, csa);
+	    rc = cpio_doio(fd, csa, "w9.gzdio");
 	} else if (Fileno(csa->cpioFdIn) >= 0) {
 	    rc = cpio_copy(fd, csa);
 	} else {
@@ -312,7 +308,7 @@ int writeRPM(Header h, const char *fileName, int type,
     }
 
     /* Open the output file */
-    fd = fdio->open(fileName, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    fd = Fopen(fileName, "w.fdio");
     if (Ferror(fd)) {
 	/* XXX Fstrerror */
 	rpmError(RPMERR_CREATE, _("Could not open %s\n"), fileName);
@@ -376,7 +372,7 @@ int writeRPM(Header h, const char *fileName, int type,
     rpmFreeSignature(sig);
 	
     /* Append the header and archive */
-    ifd = fdio->open(sigtarget, O_RDONLY, 0);
+    ifd = Fopen(sigtarget, "r.fdio");
     while ((count = Fread(buf, sizeof(buf), 1, ifd)) > 0) {
 	if (count == -1) {
 	    rpmError(RPMERR_READERROR, _("Unable to read sigtarget: %s"),
@@ -409,45 +405,13 @@ int writeRPM(Header h, const char *fileName, int type,
     return 0;
 }
 
-#if ENABLE_BZIP2_PAYLOAD
-static int cpio_bzip2(FD_t fdo, CSA_t *csa)
+static int cpio_doio(FD_t fdo, CSA_t * csa, const char * fmode)
 {
     FD_t cfd;
     int rc;
     const char *failedFile = NULL;
 
-#if 0
-    cfd = bzdFdopen(fdDup(Fileno(fdo)), "w9");
-#else
-    cfd = Fdopen(fdDup(Fileno(fdo)), "w9.bzdio");
-#endif
-    rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
-			  &csa->cpioArchiveSize, &failedFile);
-    if (rc) {
-	rpmError(RPMERR_CPIO, _("create archive failed on file %s: %s"),
-		failedFile, cpioStrerror(rc));
-      rc = 1;
-    }
-
-    Fclose(cfd);
-    if (failedFile)
-	xfree(failedFile);
-
-    return rc;
-}
-#endif	/* ENABLE_BZIP2_PAYLOAD */
-
-static int cpio_gzip(FD_t fdo, CSA_t *csa)
-{
-    FD_t cfd;
-    int rc;
-    const char *failedFile = NULL;
-
-#if 0
-    cfd = gzdFdopen(fdDup(Fileno(fdo)), "w9");
-#else
-    cfd = Fdopen(fdDup(Fileno(fdo)), "w9.gzdio");
-#endif
+    cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
     rc = cpioBuildArchive(cfd, csa->cpioList, csa->cpioCount, NULL, NULL,
 			  &csa->cpioArchiveSize, &failedFile);
     if (rc) {
