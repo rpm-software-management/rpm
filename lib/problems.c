@@ -10,9 +10,149 @@
 #include "misc.h"
 #include "debug.h"
 
+/*@access Header@*/
 /*@access rpmProblemSet@*/
 /*@access rpmProblem@*/
 /*@access rpmDependencyConflict@*/
+/*@access availablePackage@*/
+
+rpmProblemSet rpmProblemSetCreate(void)
+{
+    rpmProblemSet probs;
+
+    probs = xcalloc(1, sizeof(*probs));	/* XXX memory leak */
+    probs->numProblems = probs->numProblemsAlloced = 0;
+    probs->probs = NULL;
+
+    return probs;
+}
+
+void rpmProblemSetFree(rpmProblemSet tsprobs)
+{
+    int i;
+
+    for (i = 0; i < tsprobs->numProblems; i++) {
+	rpmProblem p = tsprobs->probs + i;
+	p->h = headerFree(p->h);
+	p->pkgNEVR = _free(p->pkgNEVR);
+	p->altNEVR = _free(p->altNEVR);
+	p->str1 = _free(p->str1);
+    }
+    tsprobs = _free(tsprobs);
+}
+
+void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
+		const availablePackage alp,
+		const char * dn, const char * bn,
+		Header altH, unsigned long ulong1)
+{
+    rpmProblem p;
+    char *t;
+
+    if (tsprobs->numProblems == tsprobs->numProblemsAlloced) {
+	if (tsprobs->numProblemsAlloced)
+	    tsprobs->numProblemsAlloced *= 2;
+	else
+	    tsprobs->numProblemsAlloced = 2;
+	tsprobs->probs = xrealloc(tsprobs->probs,
+			tsprobs->numProblemsAlloced * sizeof(*tsprobs->probs));
+    }
+
+    p = tsprobs->probs + tsprobs->numProblems;
+    tsprobs->numProblems++;
+    memset(p, 0, sizeof(*p));
+    p->type = type;
+    /*@-assignexpose@*/
+    p->key = alp->key;
+    /*@=assignexpose@*/
+    p->ulong1 = ulong1;
+    p->ignoreProblem = 0;
+    p->str1 = NULL;
+    p->h = NULL;
+    p->pkgNEVR = NULL;
+    p->altNEVR = NULL;
+
+    if (dn != NULL || bn != NULL) {
+	t = xcalloc(1,	(dn != NULL ? strlen(dn) : 0) +
+			(bn != NULL ? strlen(bn) : 0) + 1);
+	p->str1 = t;
+	if (dn != NULL) t = stpcpy(t, dn);
+	if (bn != NULL) t = stpcpy(t, bn);
+    }
+
+    if (alp != NULL) {
+	p->h = headerLink(alp->h);
+	t = xcalloc(1,	strlen(alp->name) +
+			strlen(alp->version) +
+			strlen(alp->release) + sizeof("--"));
+	p->pkgNEVR = t;
+	t = stpcpy(t, alp->name);
+	t = stpcpy(t, "-");
+	t = stpcpy(t, alp->version);
+	t = stpcpy(t, "-");
+	t = stpcpy(t, alp->release);
+    }
+
+    if (altH != NULL) {
+	const char * n, * v, * r;
+	(void) headerNVR(altH, &n, &v, &r);
+	t = xcalloc(1, strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
+	p->altNEVR = t;
+	t = stpcpy(t, n);
+	t = stpcpy(t, "-");
+	t = stpcpy(t, v);
+	t = stpcpy(t, "-");
+	t = stpcpy(t, r);
+    }
+}
+
+#define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
+
+int rpmProblemSetTrim(rpmProblemSet tsprobs, rpmProblemSet filter)
+{
+    rpmProblem t;
+    rpmProblem f;
+    int gotProblems = 0;
+
+    if (tsprobs == NULL || tsprobs->numProblems == 0)
+	return 0;
+
+    if (filter == NULL)
+	return (tsprobs->numProblems == 0 ? 0 : 1);
+
+    t = tsprobs->probs;
+    f = filter->probs;
+
+    /*@-branchstate@*/
+    while ((f - filter->probs) < filter->numProblems) {
+	if (!f->ignoreProblem) {
+	    f++;
+	    continue;
+	}
+	while ((t - tsprobs->probs) < tsprobs->numProblems) {
+	    /*@-nullpass@*/	/* LCL: looks good to me */
+	    if (f->h == t->h && f->type == t->type && t->key == f->key &&
+		     XSTRCMP(f->str1, t->str1))
+		/*@innerbreak@*/ break;
+	    /*@=nullpass@*/
+	    t++;
+	    gotProblems = 1;
+	}
+
+	/* XXX This can't happen, but let's be sane in case it does. */
+	if ((t - tsprobs->probs) == tsprobs->numProblems)
+	    break;
+
+	t->ignoreProblem = f->ignoreProblem;
+	t++, f++;
+    }
+    /*@=branchstate@*/
+
+    if ((t - tsprobs->probs) < tsprobs->numProblems)
+	gotProblems = 1;
+
+    return gotProblems;
+}
 
 /* XXX FIXME: merge into problems */
 /* XXX used in verify.c rpmlibprov.c */
@@ -196,18 +336,18 @@ void rpmProblemPrint(FILE *fp, rpmProblem prob)
     msg = _free(msg);
 }
 
-void rpmProblemSetPrint(FILE *fp, rpmProblemSet probs)
+void rpmProblemSetPrint(FILE *fp, rpmProblemSet tsprobs)
 {
     int i;
 
-    if (probs == NULL)
+    if (tsprobs == NULL)
 	return;
 
     if (fp == NULL)
 	fp = stderr;
 
-    for (i = 0; i < probs->numProblems; i++) {
-	rpmProblem myprob = probs->probs + i;
+    for (i = 0; i < tsprobs->numProblems; i++) {
+	rpmProblem myprob = tsprobs->probs + i;
 	if (!myprob->ignoreProblem)
 	    rpmProblemPrint(fp, myprob);
     }

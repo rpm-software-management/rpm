@@ -902,6 +902,26 @@ int rpmdbRebuild(/*@null@*/ const char * prefix)
 /*@{*/
 
 /**
+ * A package in a transaction set.
+ */
+typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
+
+/**
+ * Raw data for an element of a problem set.
+ */
+typedef /*@abstract@*/ struct rpmProblem_s * rpmProblem;
+
+/**
+ * Transaction problems found by rpmRunTransactions().
+ */
+typedef /*@abstract@*/ struct rpmProblemSet_s * rpmProblemSet;
+
+/**
+ * Dependency problems found by rpmdepCheck().
+ */
+typedef /*@abstract@*/ struct rpmDependencyConflict_s * rpmDependencyConflict;
+
+/**
  * Enumerate transaction set problem types.
  */
 typedef enum rpmProblemType_e {
@@ -914,14 +934,14 @@ typedef enum rpmProblemType_e {
     RPMPROB_NEW_FILE_CONFLICT, /*!< file ... conflicts between attemped installs of ... */
     RPMPROB_FILE_CONFLICT,/*!< file ... from install of ... conflicts with file from package ... */
     RPMPROB_OLDPACKAGE,	/*!< package ... (which is newer than ...) is already installed */
-    RPMPROB_DISKSPACE,	/*!< installing package ... needs ... on the ...  filesystem */
-    RPMPROB_DISKNODES,	/*!< installing package ... needs ... on the ...  filesystem */
+    RPMPROB_DISKSPACE,	/*!< installing package ... needs ... on the ... filesystem */
+    RPMPROB_DISKNODES,	/*!< installing package ... needs ... on the ... filesystem */
     RPMPROB_BADPRETRANS	/*!< (unimplemented) */
  } rpmProblemType;
 
 /**
  */
-typedef /*@abstract@*/ struct rpmProblem_s {
+struct rpmProblem_s {
 /*@only@*/ /*@null@*/ const char * pkgNEVR;
 /*@only@*/ /*@null@*/ const char * altNEVR;
 /*@kept@*/ /*@null@*/ const void * key;
@@ -930,15 +950,15 @@ typedef /*@abstract@*/ struct rpmProblem_s {
     int ignoreProblem;
 /*@only@*/ /*@null@*/ const char * str1;
     unsigned long ulong1;
-} * rpmProblem;
+};
 
 /**
  */
-typedef /*@abstract@*/ struct rpmProblemSet_s {
+struct rpmProblemSet_s {
     int numProblems;		/*!< Current probs array size. */
     int numProblemsAlloced;	/*!< Allocated probs array size. */
     rpmProblem probs;		/*!< Array of specific problems. */
-} * rpmProblemSet;
+};
 
 /**
  */
@@ -947,9 +967,8 @@ void printDepFlags(FILE *fp, const char *version, int flags)
 	/*@modifies *fp, fileSystem @*/;
 
 /**
- * Dependency problems found by rpmdepCheck().
  */
-typedef /*@abstract@*/ struct rpmDependencyConflict_s {
+struct rpmDependencyConflict_s {
     const char * byName;	/*!< package name */
     const char * byVersion;	/*!< package version */
     const char * byRelease;	/*!< package release */
@@ -966,7 +985,7 @@ typedef /*@abstract@*/ struct rpmDependencyConflict_s {
 	RPMDEP_SENSE_REQUIRES,		/*!< requirement not satisfied. */
 	RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
     } sense;
-} * rpmDependencyConflict;
+};
 
 /**
  * Print results of rpmdepCheck() dependency check.
@@ -991,6 +1010,19 @@ void printDepProblems(FILE * fp, const rpmDependencyConflict conflicts,
 /*@=redecl@*/
 
 /**
+ * Create problem set.
+ */
+/*@only@*/ rpmProblemSet rpmProblemSetCreate(void)
+	/*@*/;
+
+/**
+ * Destroy problem set.
+ * @param tsprobs	problem set
+ */
+void rpmProblemSetFree( /*@only@*/ rpmProblemSet tsprobs)
+	/*@modifies tsprobs @*/;
+
+/**
  * Output formatted string representation of problem to file handle.
  * @deprecated API: prob used to be passed by value, now passed by reference.
  * @param fp		file handle
@@ -1005,16 +1037,35 @@ void rpmProblemPrint(FILE *fp, rpmProblem prob)
  * @param fp		file handle
  * @param probs		problem set
  */
-void rpmProblemSetPrint(FILE *fp, rpmProblemSet probs)
+void rpmProblemSetPrint(FILE *fp, rpmProblemSet tsprobs)
 	/*@globals fileSystem @*/
-	/*@modifies probs, *fp, fileSystem @*/;
+	/*@modifies tsprobs, *fp, fileSystem @*/;
 
 /**
- * Destroy problem set.
- * @param probs		problem set
+ * Append problem to set.
  */
-void rpmProblemSetFree( /*@only@*/ rpmProblemSet probs)
-	/*@modifies probs @*/;
+void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
+		const availablePackage alp,
+		const char * dn, const char * bn,
+		Header altH, unsigned long ulong1)
+	/*@modifies tsprobs, alp @*/;
+
+/**
+ * Filter a problem set.
+ * As the problem sets are generated in an order solely dependent
+ * on the ordering of the packages in the transaction, and that
+ * ordering can't be changed, the problem sets must be parallel to
+ * one another. Additionally, the filter set must be a subset of the
+ * target set, given the operations available on transaction set.
+ * This is good, as it lets us perform this trim in linear time, rather
+ * then logarithmic or quadratic.
+ *
+ * @param tsprobs	transaction problem set
+ * @param filter	problem filter (or NULL)
+ * @return		0 no problems, 1 if problems remain
+ */
+int rpmProblemSetTrim(/*@null@*/ rpmProblemSet tsprobs, /*@null@*/ rpmProblemSet filter)
+	/*@modifies tsprobs @*/;
 
 /*@}*/
 /* ==================================================================== */
@@ -1449,7 +1500,7 @@ int rpmdepOrder(rpmTransactionSet ts)
 	/*@modifies conflicts @*/;
 
 /** \ingroup rpmtrans
- * Bit(s) to control rpmRunTransaction() operation.
+ * Bit(s) to control rpmRunTransactions() operation.
  */
 typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NONE		= 0,

@@ -9,7 +9,6 @@
 #include <header.h>
 #include <rpmhash.h>
 
-typedef /*@abstract@*/ struct availablePackage_s *	availablePackage;
 typedef /*@abstract@*/ struct availableIndexEntry_s *	availableIndexEntry;
 typedef /*@abstract@*/ struct availableIndex_s *	availableIndex;
 typedef /*@abstract@*/ struct fileIndexEntry_s *	fileIndexEntry;

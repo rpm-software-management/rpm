@@ -28,8 +28,6 @@ int _fi_debug = 0;
 
 /*@access rpmTransactionSet @*/
 /*@access TFI_t @*/
-/*@access rpmProblemSet@*/
-/*@access rpmProblem@*/
 /*@access PSM_t @*/
 
 /*@access availablePackage@*/
@@ -75,7 +73,8 @@ int rpmVersionCompare(Header first, Header second)
     return rpmvercmp(one, two);
 }
 
-rpmProblemSet psCreate(void)
+#ifdef	DYING
+rpmProblemSet rpmProblemSetCreate(void)
 {
     rpmProblemSet probs;
 
@@ -86,7 +85,7 @@ rpmProblemSet psCreate(void)
     return probs;
 }
 
-void psAppend(rpmProblemSet probs, rpmProblemType type,
+void rpmProblemSetAppend(rpmProblemSet probs, rpmProblemType type,
 		const availablePackage alp,
 		const char * dn, const char * bn,
 		Header altH, unsigned long ulong1)
@@ -149,6 +148,8 @@ void psAppend(rpmProblemSet probs, rpmProblemType type,
 	t = stpcpy(t, r);
     }
 }
+#endif	/* DYING */
+
 /**
  */
 static /*@observer@*/ const char *const ftstring (fileTypes ft)
@@ -282,7 +283,7 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		    /*@innerbreak@*/ break;
 	    /* XXX actions check prevents problem from being appended twice. */
 	    if (j == numValid && !allowBadRelocate && actions)
-		psAppend(ts->probs, RPMPROB_BADRELOCATE, alp,
+		rpmProblemSetAppend(ts->probs, RPMPROB_BADRELOCATE, alp,
 			 relocations[i].oldPath, NULL, NULL, 0);
 	    del =
 		strlen(relocations[i].newPath) - strlen(relocations[i].oldPath);
@@ -619,7 +620,7 @@ fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
     /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
 }
 
-void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int scareMem)
+void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int keep_header)
 {
     HGE_t hge;
     HFD_t hfd;
@@ -632,7 +633,7 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int scareMem)
 	fi->fsm = newFSM();
 
     /* XXX avoid gcc noise on pointer (4th arg) cast(s) */
-    hge = (scareMem && fi->type == TR_ADDED)
+    hge = (keep_header && fi->type == TR_ADDED)
 	? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry;
     fi->hge = hge;
     fi->hae = (HAE_t) headerAddEntry;
@@ -683,7 +684,7 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int scareMem)
     if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 
-    fi->scareMem = scareMem;
+    fi->keep_header = keep_header;
     switch (fi->type) {
     case TR_ADDED:
 	fi->mapflags =
@@ -704,7 +705,7 @@ void loadFi(const rpmTransactionSet ts, TFI_t fi, Header h, int scareMem)
 	    foo = headerFree(foo);
 	}
 
-    if (!scareMem) {
+    if (!fi->keep_header) {
 	fi->fmtimes = memcpy(xmalloc(fi->fc * sizeof(*fi->fmtimes)),
 				fi->fmtimes, fi->fc * sizeof(*fi->fmtimes));
 	fi->frdevs = memcpy(xmalloc(fi->fc * sizeof(*fi->frdevs)),
@@ -776,7 +777,7 @@ void freeFi(TFI_t fi)
 
     switch (fi->type) {
     case TR_ADDED:
-	if (!fi->scareMem) {
+	if (!fi->keep_header) {
 	    fi->fmtimes = hfd(fi->fmtimes, -1);
 	    fi->frdevs = hfd(fi->frdevs, -1);
 	    fi->fsizes = hfd(fi->fsizes, -1);

@@ -48,13 +48,12 @@ extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
 
 /*@access FD_t@*/		/* XXX compared with NULL */
 /*@access Header@*/		/* XXX compared with NULL */
+/*@access rpmProblemSet@*/	/* XXX need rpmProblemSetOK() */
 /*@access dbiIndexSet@*/
 /*@access rpmdb@*/
 /*@access rpmTransactionSet@*/
 /*@access TFI_t@*/
 /*@access PSM_t@*/
-/*@access rpmProblemSet@*/
-/*@access rpmProblem@*/
 
 /*@access availablePackage@*/
 
@@ -78,7 +77,9 @@ struct diskspaceInfo {
    probably right :-( */
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
 
+#ifdef	DYING
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
+#endif
 
 /**
  */
@@ -198,18 +199,19 @@ static int osOkay(Header h)
     return 1;
 }
 
-void rpmProblemSetFree(rpmProblemSet probs)
+#ifdef	DYING
+void rpmProblemSetFree(rpmProblemSet tsprobs)
 {
     int i;
 
-    for (i = 0; i < probs->numProblems; i++) {
-	rpmProblem p = probs->probs + i;
+    for (i = 0; i < tsprobs->numProblems; i++) {
+	rpmProblem p = tsprobs->probs + i;
 	p->h = headerFree(p->h);
 	p->pkgNEVR = _free(p->pkgNEVR);
 	p->altNEVR = _free(p->altNEVR);
 	p->str1 = _free(p->str1);
     }
-    free(probs);
+    free(tsprobs);
 }
 
 /**
@@ -222,15 +224,15 @@ void rpmProblemSetFree(rpmProblemSet probs)
  * This is good, as it lets us perform this trim in linear time, rather
  * then logarithmic or quadratic.
  *
+ * @param tsprobs	transaction problem set
  * @param filter	filter
- * @param target	problem set
  * @return		0 no problems, 1 if problems remain
  */
-static int psTrim(rpmProblemSet filter, rpmProblemSet target)
-	/*@modifies target @*/
+static int rpmProblemSetTrim(rpmProblemSet tsprobs, rpmProblemSet filter)
+	/*@modifies tsprobs @*/
 {
+    rpmProblem t = tsprobs->probs;
     rpmProblem f = filter->probs;
-    rpmProblem t = target->probs;
     int gotProblems = 0;
 
     /*@-branchstate@*/
@@ -239,7 +241,7 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target)
 	    f++;
 	    continue;
 	}
-	while ((t - target->probs) < target->numProblems) {
+	while ((t - tsprobs->probs) < tsprobs->numProblems) {
 	    /*@-nullpass@*/	/* LCL: looks good to me */
 	    if (f->h == t->h && f->type == t->type && t->key == f->key &&
 		     XSTRCMP(f->str1, t->str1))
@@ -249,7 +251,7 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target)
 	    gotProblems = 1;
 	}
 
-	if ((t - target->probs) == target->numProblems) {
+	if ((t - tsprobs->probs) == tsprobs->numProblems) {
 	    /* this can't happen ;-) let's be sane if it doesn though */
 	    break;
 	}
@@ -259,11 +261,12 @@ static int psTrim(rpmProblemSet filter, rpmProblemSet target)
     }
     /*@=branchstate@*/
 
-    if ((t - target->probs) < target->numProblems)
+    if ((t - tsprobs->probs) < tsprobs->numProblems)
 	gotProblems = 1;
 
     return gotProblems;
 }
+#endif	/* DYING */
 
 /**
  */
@@ -408,7 +411,6 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
 {
     HGE_t hge = fi->hge;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    rpmProblemSet probs = ts->probs;
     rpmtransFlags transFlags = ts->transFlags;
     rpmTagType oltype, omtype;
     Header h;
@@ -459,7 +461,7 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
 			fi->fmd5s[fileNum],
 			fi->flinks[fileNum])) {
 	    if (reportConflicts)
-		psAppend(probs, RPMPROB_FILE_CONFLICT, fi->ap,
+		rpmProblemSetAppend(ts->probs, RPMPROB_FILE_CONFLICT, fi->ap,
 			fi->dnl[fi->dil[fileNum]], fi->bnl[fileNum], h, 0);
 	    if (!(otherFlags[otherFileNum] | fi->fflags[fileNum])
 			& RPMFILE_CONFIG) {
@@ -547,10 +549,6 @@ static void handleOverlappedFiles(const rpmTransactionSet ts, TFI_t fi)
 	/*@globals fileSystem @*/
 	/*@modifies ts, fi, fileSystem @*/
 {
-    struct diskspaceInfo * dsl = ts->di;
-    rpmProblemSet probs = (ts->ignoreSet & RPMPROB_FILTER_REPLACENEWFILES)
-	? NULL : ts->probs;
-    hashTable ht = ts->ht;
     struct diskspaceInfo * ds = NULL;
     uint_32 fixupSize = 0;
     char * filespec = NULL;
@@ -575,8 +573,8 @@ static void handleOverlappedFiles(const rpmTransactionSet ts, TFI_t fi)
 
 	(void) stpcpy( stpcpy( filespec, fi->dnl[fi->dil[i]]), fi->bnl[i]);
 
-	if (dsl) {
-	    ds = dsl;
+	if (ts->di) {
+	    ds = ts->di;
 	    while (ds->bsize && ds->dev != fi->fps[i].entry->dev) ds++;
 	    if (!ds->bsize) ds = NULL;
 	    fixupSize = 0;
@@ -588,7 +586,8 @@ static void handleOverlappedFiles(const rpmTransactionSet ts, TFI_t fi)
 	 * will be installed and removed so the records for an overlapped
 	 * files will be sorted in exactly the same order.
 	 */
-	(void) htGetEntry(ht, &fi->fps[i], (const void ***) &recs, &numRecs, NULL);
+	(void) htGetEntry(ts->ht, &fi->fps[i],
+			(const void ***) &recs, &numRecs, NULL);
 
 	/*
 	 * If this package is being added, look only at other packages
@@ -660,13 +659,14 @@ static void handleOverlappedFiles(const rpmTransactionSet ts, TFI_t fi)
 	    }
 
 	    /* Mark added overlapped non-identical files as a conflict. */
-	    if (probs && filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
+	    if ((ts->ignoreSet & RPMPROB_FILTER_REPLACENEWFILES)
+	     && filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
 			recs[otherPkgNum]->fmd5s[otherFileNum],
 			recs[otherPkgNum]->flinks[otherFileNum],
 			fi->fmodes[i],
 			fi->fmd5s[i],
 			fi->flinks[i])) {
-		psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, fi->ap,
+		rpmProblemSetAppend(ts->probs, RPMPROB_NEW_FILE_CONFLICT, fi->ap,
 				filespec, NULL, recs[otherPkgNum]->ap->h, 0);
 	    }
 
@@ -750,9 +750,8 @@ static void handleOverlappedFiles(const rpmTransactionSet ts, TFI_t fi)
 
 /**
  */
-static int ensureOlder(availablePackage alp, Header old,
-		rpmProblemSet probs)
-	/*@modifies alp, probs @*/
+static int ensureOlder(rpmTransactionSet ts, availablePackage alp, Header old)
+	/*@modifies ts, alp @*/
 {
     int result, rc = 0;
 
@@ -763,7 +762,8 @@ static int ensureOlder(availablePackage alp, Header old,
 	rc = 0;
     else if (result > 0) {
 	rc = 1;
-	psAppend(probs, RPMPROB_OLDPACKAGE, alp, NULL, NULL, old, 0);
+	rpmProblemSetAppend(ts->probs, RPMPROB_OLDPACKAGE, alp,
+			NULL, NULL, old, 0);
     }
 
     return rc;
@@ -1071,7 +1071,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     PSM_t psm = &psmbuf;
     void * tsi;
     int xx;
-int scareMem = 0;
+int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -1088,7 +1088,7 @@ int scareMem = 0;
     ts->notify = notify;
     ts->notifyData = notifyData;
     /*@-assignexpose@*/
-    ts->probs = *newProbs = psCreate();
+    ts->probs = *newProbs = rpmProblemSetCreate();
     /*@=assignexpose@*/
     ts->ignoreSet = ignoreSet;
     ts->currDir = _free(ts->currDir);
@@ -1172,17 +1172,19 @@ int scareMem = 0;
 	alp++)
     {
 	if (!archOkay(alp->h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREARCH))
-	    psAppend(ts->probs, RPMPROB_BADARCH, alp, NULL, NULL, NULL, 0);
+	    rpmProblemSetAppend(ts->probs, RPMPROB_BADARCH, alp,
+			NULL, NULL, NULL, 0);
 
 	if (!osOkay(alp->h) && !(ts->ignoreSet & RPMPROB_FILTER_IGNOREOS))
-	    psAppend(ts->probs, RPMPROB_BADOS, alp, NULL, NULL, NULL, 0);
+	    rpmProblemSetAppend(ts->probs, RPMPROB_BADOS, alp,
+			NULL, NULL, NULL, 0);
 
 	if (!(ts->ignoreSet & RPMPROB_FILTER_OLDPACKAGE)) {
 	    rpmdbMatchIterator mi;
 	    Header oldH;
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, alp->name, 0);
 	    while ((oldH = rpmdbNextIterator(mi)) != NULL)
-		xx = ensureOlder(alp, oldH, ts->probs);
+		xx = ensureOlder(ts, alp, oldH);
 	    mi = rpmdbFreeIterator(mi);
 	}
 
@@ -1196,7 +1198,7 @@ int scareMem = 0;
 			RPMMIRE_DEFAULT, alp->release);
 
 	    while (rpmdbNextIterator(mi) != NULL) {
-		psAppend(ts->probs, RPMPROB_PKG_INSTALLED, alp,
+		rpmProblemSetAppend(ts->probs, RPMPROB_PKG_INSTALLED, alp,
 			NULL, NULL, NULL, 0);
 		/*@innerbreak@*/ break;
 	    }
@@ -1247,7 +1249,7 @@ int scareMem = 0;
 	    /* XXX watchout: fi->type must be set for tsGetAlp() to "work" */
 	    fi->ap = tsGetAlp(tsi);
 	    fi->record = 0;
-	    loadFi(ts, fi, fi->ap->h, scareMem);
+	    loadFi(ts, fi, fi->ap->h, keep_header);
 /* XXX free fi->ap->h here if/when possible */
 	    if (fi->fc == 0)
 		continue;
@@ -1436,12 +1438,12 @@ int scareMem = 0;
 		    /*@innercontinue@*/ continue;
 
 		if (adj_fs_blocks(dip->bneeded) > dip->bavail)
-		    psAppend(ts->probs, RPMPROB_DISKSPACE, fi->ap,
+		    rpmProblemSetAppend(ts->probs, RPMPROB_DISKSPACE, fi->ap,
 				ts->filesystems[i], NULL, NULL,
 	 	   (adj_fs_blocks(dip->bneeded) - dip->bavail) * dip->bsize);
 
 		if (adj_fs_blocks(dip->ineeded) > dip->iavail)
-		    psAppend(ts->probs, RPMPROB_DISKNODES, fi->ap,
+		    rpmProblemSetAppend(ts->probs, RPMPROB_DISKNODES, fi->ap,
 				ts->filesystems[i], NULL, NULL,
 	 	    (adj_fs_blocks(dip->ineeded) - dip->iavail));
 	    }
@@ -1488,8 +1490,10 @@ int scareMem = 0;
     /* ===============================================
      * If unfiltered problems exist, free memory and return.
      */
-    if ((ts->transFlags & RPMTRANS_FLAG_BUILD_PROBS) ||
-           (ts->probs->numProblems && (!okProbs || psTrim(okProbs, ts->probs))))
+    if ((ts->transFlags & RPMTRANS_FLAG_BUILD_PROBS)
+     || (ts->probs->numProblems &&
+		(okProbs != NULL || rpmProblemSetTrim(ts->probs, okProbs)))
+       )
     {
 	*newProbs = ts->probs;
 

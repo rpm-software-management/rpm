@@ -80,7 +80,7 @@ struct transactionFileInfo_s {
 #define	TFIMAGIC	0x09697923
 /*@owned@*/ FSM_t fsm;		/*!< File state machine data. */
 
-    int scareMem;		/*!< Keep header? */
+    int keep_header;		/*!< Keep header? */
 /*@refs@*/ int nrefs;		/*!< Reference count. */
 
   /* these are for TR_ADDED packages */
@@ -173,20 +173,22 @@ struct psm_s {
 extern "C" {
 #endif
 
+#ifdef	DYING
 /**
  * Create problem set.
  */
-rpmProblemSet psCreate(void)
+/*@only@*/ rpmProblemSet rpmProblemSetCreate(void)
 	/*@*/;
 
 /**
  * Append problem to set.
  */
-void psAppend(rpmProblemSet probs, rpmProblemType type,
+void rpmProblemSetAppend(rpmProblemSet tsprobs, rpmProblemType type,
 		const availablePackage alp,
 		const char * dn, const char * bn,
 		Header altH, unsigned long ulong1)
-	/*@modifies probs, alp @*/;
+	/*@modifies tsprobs, alp @*/;
+#endif	/* DYING */
 
 /**
  * Return file type from mode_t.
@@ -216,10 +218,10 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
  * @param ts		transaction set
  * @param fi		transaction element file info
  * @param h		header
- * @param scareMem	use header memory?
+ * @param keep_header	use header memory?
  */
 void loadFi(/*@null@*/ const rpmTransactionSet ts, TFI_t fi,
-		Header h, int scareMem)
+		Header h, int keep_header)
 	/*@modifies ts, fi, h @*/;
 
 /**
