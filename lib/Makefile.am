@@ -40,7 +40,7 @@ librpm_la_SOURCES = \
 # XXX Add internal libtool dependence
 install-data-local:
 	@cd $(DESTDIR)/$(libdir) && \
-	sed -e "s|^dependency_libs='|& -lrpmdb -lrpmio|" < librpm.la > .librpm.la && \
+	sed -e "s|^dependency_libs='|& -lrpmdb -lrpmio -lpopt|" < librpm.la > .librpm.la && \
 	mv .librpm.la librpm.la
 
 tagtable.c: rpmlib.h 

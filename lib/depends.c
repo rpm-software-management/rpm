@@ -385,8 +385,9 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
     p->fd = (fd != NULL ? fdLink(fd, "alAddPackage") : NULL);
 
     if (relocs) {
-	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++);
-	p->relocs = xmalloc(sizeof(*p->relocs) * (i + 1));
+	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++)
+	    ;
+	p->relocs = xmalloc((i + 1) * sizeof(*p->relocs));
 
 	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
 	    p->relocs[i].oldPath = r->oldPath ? xstrdup(r->oldPath) : NULL;
@@ -738,6 +739,13 @@ rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb, const char * rootDir)
 static void removePackage(rpmTransactionSet ts, int dboffset, int depends)
 	/*@modifies ts @*/
 {
+    int i;
+
+    /* Filter out duplicate erasures. */
+    if (ts->removedPackages != NULL)
+    for (i = 0; i < ts->numRemovedPackages; i++)
+	if (dboffset == ts->removedPackages[i]) return;
+
     if (ts->numRemovedPackages == ts->allocedRemovedPackages) {
 	ts->allocedRemovedPackages += ts->delta;
 	ts->removedPackages = xrealloc(ts->removedPackages,
@@ -1081,16 +1089,19 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
     }
 
 #ifndef	DYING
-  { const char * rcProvidesString;
+  { static /*@observer@*/ const char noProvidesString[] = "nada";
+    static /*@observer@*/ const char * rcProvidesString = noProvidesString;
     const char * start;
     int i;
 
-    if (!(keyFlags & RPMSENSE_SENSEMASK) &&
-	(rcProvidesString = rpmGetVar(RPMVAR_PROVIDES))) {
+    if (rcProvidesString == noProvidesString)
+	rcProvidesString = rpmGetVar(RPMVAR_PROVIDES);
+
+    if (rcProvidesString != NULL && !(keyFlags & RPMSENSE_SENSEMASK)) {
 	i = strlen(keyName);
-	/*@-nullpass -observertrans -mayaliasunique@*/
+	/*@-observertrans -mayaliasunique@*/
 	while ((start = strstr(rcProvidesString, keyName))) {
-	/*@=nullpass =observertrans =mayaliasunique@*/
+	/*@=observertrans =mayaliasunique@*/
 	    if (xisspace(start[i]) || start[i] == '\0' || start[i] == ',') {
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (rpmrc provides)\n"),
 			keyType, keyDepend+2);
@@ -1897,7 +1908,7 @@ rescan:
      * the new package. This would be easier if we could sort the
      * addedPackages array, but we store indexes into it in various places.
      */
-    orderList = xmalloc(sizeof(*orderList) * npkgs);
+    orderList = xmalloc(npkgs * sizeof(*orderList));
     for (i = 0, j = 0; i < ts->orderCount; i++) {
 	if (ts->order[i].type == TR_ADDED) {
 	    orderList[j].alIndex = ts->order[i].u.addedIndex;
@@ -1909,7 +1920,7 @@ rescan:
 
     qsort(orderList, npkgs, sizeof(*orderList), orderListIndexCmp);
 
-    newOrder = xmalloc(sizeof(*newOrder) * ts->orderCount);
+    newOrder = xmalloc(ts->orderCount * sizeof(*newOrder));
     for (i = 0, newOrderCount = 0; i < orderingCount; i++) {
 	struct orderListIndex * needle, key;
 

@@ -748,10 +748,17 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    }
 
 	    /* ... DB_RDONLY maps dphome perms across files ...  */
-	    oflags |= DB_RDONLY;
+	    if (dbi->dbi_temporary) {
+		oflags |= DB_CREATE;
+		dbi->dbi_oeflags |= DB_CREATE;
+		oflags &= ~DB_RDONLY;
+		dbi->dbi_oflags &= ~DB_RDONLY;
+	    } else {
+		oflags |= DB_RDONLY;
+		/* ... and DB_WRITECURSOR won't be needed ...  */
+		dbi->dbi_oflags |= DB_RDONLY;
+	    }
 
-	    /* ... and DB_WRITECURSOR won't be needed ...  */
-	    dbi->dbi_oflags |= DB_RDONLY;
 	} else {	/* dbhome is writable, check for persistent dbenv. */
 	    const char * dbf = rpmGetPath(dbhome, "/__db.001", NULL);
 

@@ -910,8 +910,13 @@ t = te;
     }
    
     /* Insure that there are no memcpy underruns/overruns. */
+#if 0
     assert(((char *)pe) == dataStart);
     assert((((char *)ei)+len) == te);
+#else
+    if (((char *)pe) != dataStart) goto errxit;
+    if ((((char *)ei)+len) != te) goto errxit;
+#endif
 
     if (lengthPtr)
 	*lengthPtr = len;
@@ -923,10 +928,9 @@ t = te;
 
 errxit:
     /*@-usereleased@*/
-    if (ei) {
+    if (ei)
 	free(ei);
-	ei = NULL;
-    }
+    ei = NULL;
     /*@=usereleased@*/
     return (void *) ei;
 }

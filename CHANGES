@@ -57,6 +57,8 @@
 	- harden rpmdb iterators from damaged header instance segfaults.
 	- add cron/logrotate scripts to save installed package filenames.
 	- upgrade to db-3.3.4.
+	- fix: filter duplicate package removals (#35828).
+	- add armv3l arch.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

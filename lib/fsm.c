@@ -574,7 +574,6 @@ assert(fi->type == TR_ADDED);
 	    break;
 
 	case FA_SAVE:
-fprintf(stderr, "*** %s:%s %s\n", fiTypeString(fi), fileActionString(fsm->action), (fsm->path ? fsm->path : ""));
 assert(fi->type == TR_ADDED);
 	    fsm->osuffix = SUFFIX_RPMSAVE;
 	    break;
