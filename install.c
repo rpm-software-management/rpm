@@ -6,6 +6,7 @@
 #include "install.h"
 #include "lib/rpmlib.h"
 #include "messages.h"
+#include "query.h"
 
 static int hashesPrinted = 0;
 
@@ -100,6 +101,8 @@ void doUninstall(char * prefix, char * arg, int test, int uninstallFlags) {
     dbIndexSet matches;
     int i;
     int mode;
+    int rc;
+    int count;
 
     if (test) 
 	mode = O_RDONLY;
@@ -111,15 +114,27 @@ void doUninstall(char * prefix, char * arg, int test, int uninstallFlags) {
 	exit(1);
     }
    
-    if (rpmdbFindPackage(db, arg, &matches)) {
+    rc = findPackageByLabel(db, arg, &matches);
+    if (rc == 1) 
 	fprintf(stderr, "package %s is not installed\n", arg);
-    } else {
-	if (matches.count > 1) {
+    else if (rc == 2) 
+	fprintf(stderr, "error searching for package %s\n", arg);
+    else {
+	count = 0;
+	for (i = 0; i < matches.count; i++)
+	    if (matches.recs[i].recOffset) count++;
+
+	if (count > 1) {
 	    fprintf(stderr, "\"%s\" specifies multiple packages\n", arg);
 	}
 	else { 
 	    for (i = 0; i < matches.count; i++) {
-		rpmRemovePackage(prefix, db, matches.recs[i].recOffset, test);
+		if (matches.recs[i].recOffset) {
+		    message(MESS_DEBUG, "uninstalling record number %d\n",
+				matches.recs[i].recOffset);
+		    rpmRemovePackage(prefix, db, matches.recs[i].recOffset, 
+				     test);
+		}
 	    }
 	}
 
