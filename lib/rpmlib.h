@@ -246,9 +246,8 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMVAR_BUILDPLATFORM            46
 #define	RPMVAR_BUILDARCH                47
 #define	RPMVAR_BUILDOS                  48
-#define	RPMVAR_SETENV                   49
 
-#define	RPMVAR_NUM			50     /* number of RPMVAR entries */
+#define	RPMVAR_NUM			49     /* number of RPMVAR entries */
 
 char * rpmGetVar(int var);
 int rpmGetBooleanVar(int var);

@@ -144,7 +144,7 @@ int build(char *arg, int buildAmount, char *passPhrase,
                  char * rcfile, char * arch, char * os, 
                  char *buildplatforms)
 {
-    char * platform;
+    char *platform, *t;
     int rc;
 
     if (buildplatforms == NULL) {
@@ -157,7 +157,9 @@ int build(char *arg, int buildAmount, char *passPhrase,
 
     printf("building these platforms: %s\n", buildplatforms);
 
-    while((platform = strsep(&buildplatforms,",")) != NULL) {
+    t = buildplatforms;
+    while((platform = strtok(t, ",")) != NULL) {
+	t = NULL;
 	printf("building %s\n", platform);
 
 	rpmSetVar(RPMVAR_BUILDPLATFORM,platform);

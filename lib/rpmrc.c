@@ -120,7 +120,9 @@ static struct rpmOption optionTable[] = {
 /*    { "root",			RPMVAR_ROOT,			0, 0,	1, 0 }, */
     { "rpmdir",			RPMVAR_RPMDIR,			0, 0,	1, 1 },
     { "rpmfilename",		RPMVAR_RPMFILENAME,		0, 1,	1, 2 },
-    { "setenv",			RPMVAR_SETENV,			0, 1,	0, 0 },
+#if defined(RPMVAR_SETENV)
+    { "setenv",			RPMVAR_SETENV,			0, 1,	0. 0 },
+#endif
     { "signature",		RPMVAR_SIGTYPE,			0, 0,	0, 0 },
     { "sourcedir",		RPMVAR_SOURCEDIR,		0, 0,	1, 1 },
     { "specdir",		RPMVAR_SPECDIR,			0, 0,	1, 1 },
@@ -651,6 +653,7 @@ static int doReadRC(int fd, char * filename) {
  *	and run it through expandMacros() before parsing here -- all %define
  *	lines will work just fine without adding more syntax here.
  */
+#if defined(RPMVAR_SETENV)
 	    case RPMVAR_SETENV:
 	      {
  		char * macroname, *envname;
@@ -684,6 +687,7 @@ static int doReadRC(int fd, char * filename) {
 		addMacro(&globalMacroContext, start, NULL, macroname, RMIL_RPMRC);
 		setenv(envname,start,1);
 	      } break;
+#endif	/* defined(RPMVAR_SETENV) */
 
 	    case RPMVAR_INCLUDE:
 	      {	int fdinc;
