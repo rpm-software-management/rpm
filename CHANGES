@@ -13,7 +13,19 @@
 	- make --justdb install files in normal state
 	- %{fssizes} segv'd for packages with empty file lists
 	- updated HP-UX, OSF1, Irix 6.x dependency scripts (Tim Mooney)
-	- allow whitespace in source/patche lines
+	- added arm and MachTen arch/os info
+	- added --filesbypkg query format
+	- updated README to have proper URLs
+	- updated rpm.spec for proper paths and cleanliness
+	- dependency resolution could hang when Provides: line is used in
+	  rpmrc (Tim Mooney)
+	- updated mips rpmrc entries (Alex deVries)
+	- version/release conditional triggers weren't ignoring the trigger	
+	  package name at the front of the TRIGGERVERSION
+	- added --notriggers for -i and -e
+	- made --triggers a synonym for --triggerscripts
+	- ftp installs were trying to use /var/tmp/tmp
+	- allow whitespace in source/patch lines
 	
 2.5 -> 2.5.1:
 	- fail if sources are not regular files

@@ -2,22 +2,21 @@ This is RPM, the Red Hat Package Manager.
 
 The latest releases are always available at:
 
-	ftp://ftp.redhat.com/pub/redhat/code/rpm
+	ftp://ftp.rpm.org/pub/rpm
 
 Additional RPM documentation (papers, slides, HOWTOs) can also be
-found at the same site.
+found at the same site, as well as http://www.rpm.org.
 
 There is a mailing list for discussion of RPM issues, rpm-list@redhat.com.
 To subscribe, send a message to rpm-list-request@redhat.com with the word
 "subscribe" in the subject line.
 
-RPM was written and is maintained by:
+RPM was originally written by:
 
     Erik Troan <ewt@redhat.com>
     Marc Ewing <marc@redhat.com>
 
 See the CREDITS file for a list of folks who have helped us out
-tremendously.  RPM is Copyright (c) 1997 by Red Hat Software, Inc.,
-and may be distributed under the terms of the GPL (see COPYING).
-
--Marc
+tremendously.  RPM is Copyright (c) 1998 by Red Hat Software, Inc.,
+and may be distributed under the terms of the GPL and LGPL (see  the
+file COPYING for details).
