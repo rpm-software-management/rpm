@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Error.xs,v 1.4 2002/04/11 23:07:01 rjray Exp $";
+static char * const rcsid = "$Id: Error.xs,v 1.5 2002/05/10 07:38:21 rjray Exp $";
 
 static CV* err_callback;
 
@@ -29,7 +29,7 @@ static void rpm_catch_errors(void)
     error_string = rpmErrorString();
 
     /* Set the string part, first */
-    sv_setsv(rpm_errSV, newSVpv(error_string, strlen(error_string)));
+    sv_setsv(rpm_errSV, newSVpv((char*)error_string, strlen(error_string)));
     /* Set the IV part */
     sv_setiv(rpm_errSV, error_code);
     /* Doing that didn't erase the PV part, but it cleared the flag: */
@@ -44,7 +44,7 @@ static void rpm_catch_errors(void)
         SAVETMPS;
         PUSHMARK(sp);
         XPUSHs(sv_2mortal(newSViv(error_code)));
-        XPUSHs(sv_2mortal(newSVpv(error_string, strlen(error_string))));
+        XPUSHs(sv_2mortal(newSVpv((char*)error_string, strlen(error_string))));
         PUTBACK;
 
         /* The actual call */
