@@ -31,11 +31,8 @@
    
 */
 
-
-#include <stdio.h>
-#include <stdlib.h>
+#include "system.h"
 #include <stdarg.h>
-#include <string.h>
 
 /*---------typedefs---------*/
 
@@ -88,6 +85,7 @@ void dumpRequires(symbolTable_t *symbolTable);
 void genSymbolTable (FILE *fileHandle, symbolTable_t *symbolTable);
 void findClassName  (FILE *fileHandle, symbolTable_t *symbolTable);
 void freeSymbolTable (symbolTable_t *symbolTable);
+void processJavaFile (FILE *fileHandle);
 
 /*--------- functions ---------*/
 
@@ -186,7 +184,7 @@ void die(char *format, ...) {
      This function throws a fatal error and 
      accepts arguments like printf does*/
 
-  char  *newformat, *newmsg;
+  char  *newformat, *newmsg = NULL;
   va_list ap;
 
   if ( !(newformat = malloc(1024)) || !(newmsg = malloc(1024)) )
@@ -250,7 +248,7 @@ size_t my_fread(void *ptr, size_t size, size_t nitems, FILE *stream) {
     error = ferror(stream);
     die("Error reading from file, or unexpected EOF\n");
   }
-  return ;
+  return rc;
 }
 
 
@@ -679,7 +677,6 @@ void genSymbolTable (FILE *fileHandle, symbolTable_t *symbolTable)
 void 
 findClassName (FILE *fileHandle, symbolTable_t *symbolTable) {
   char ignore[10];
-  char *string;
   unsigned short type = 0;
   unsigned short class = 0;
   
@@ -842,7 +839,7 @@ main(int argc, char **argv)
   
   /* parse arguments which are filenames.  */
 
-  for (0; argv[i] != NULL; i++) {
+  for (i = 0; argv[i] != NULL; i++) {
     
     /*open the correct file and process it*/
     
