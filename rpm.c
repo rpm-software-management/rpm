@@ -20,7 +20,6 @@
 #define GETOPT_SHOWRC		1018
 #define GETOPT_EXCLUDEPATH	1019
 #define	GETOPT_DEFINEMACRO	1020
-#define	GETOPT_PREFIX		1021	/* XXX hack to avoid prefix dump */
 
 char * version = VERSION;
 
@@ -121,7 +120,7 @@ static struct poptOption optionsTable[] = {
  { "oldpackage", '\0', 0, &oldPackage, 0,	NULL, NULL},
  { "percent", '\0', 0, &showPercents, 0,	NULL, NULL},
  { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
- { "prefix", '\0', POPT_ARG_STRING, &prefix, GETOPT_PREFIX,	NULL, NULL},
+ { "prefix", '\0', POPT_ARG_STRING, &prefix, 0,	NULL, NULL},
  { "query", 'q', 0, NULL, 'q',			NULL, NULL},
  { "querytags", '\0', 0, &queryTags, 0,		NULL, NULL},
  { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
@@ -831,13 +830,6 @@ int main(int argc, char ** argv)
 
 	  case GETOPT_DEFINEMACRO:
 	    rpmDefineMacro(NULL, optArg, RMIL_CMDLINE);
-	    break;
-
-	  case GETOPT_PREFIX:
-	    relocations = realloc(relocations, 
-				  sizeof(*relocations) * (numRelocations + 1));
-	    relocations[numRelocations].oldPath = NULL;
-	    relocations[numRelocations++].newPath = optArg;
 	    break;
 
 	  case GETOPT_TIMECHECK:

@@ -63,6 +63,7 @@ static void alFreeIndex(struct availableList * al) {
 
 static void alFree(struct availableList * al) {
     int i;
+    rpmRelocation * r;
 
     for (i = 0; i < al->size; i++) {
 	if (al->list[i].provides)
@@ -70,6 +71,17 @@ static void alFree(struct availableList * al) {
 	if (al->list[i].files)
 	    free(al->list[i].files);
 	headerFree(al->list[i].h);
+
+	if (al->list[i].relocs) {
+	    r = al->list[i].relocs;
+	    while (r->oldPath || r->newPath) {
+		if (r->oldPath) free(r->oldPath);
+		if (r->newPath) free(r->newPath);
+		r++;
+	    }
+
+	    free(al->list[i].relocs);
+	}
     }
 
     if (al->alloced) free(al->list);
@@ -80,6 +92,8 @@ static struct availablePackage * alAddPackage(struct availableList * al,
 					      Header h, const void * key,
 			 		      FD_t fd, rpmRelocation * relocs) {
     struct availablePackage * p;
+    rpmRelocation * r;
+    int i;
 
     if (al->size == al->alloced) {
 	al->alloced += 5;
@@ -116,9 +130,22 @@ static struct availablePackage * alAddPackage(struct availableList * al,
 	headerRemoveEntry(h, RPMTAG_FILEGIDS);
     
     p->key = key;
-    p->relocs = relocs;
     p->fd = fd;
 
+    if (relocs) {
+	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++);
+	p->relocs = malloc(sizeof(*p->relocs) * (i + 1));
+
+	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
+	    p->relocs[i].oldPath = r->oldPath ? strdup(r->oldPath) : NULL;
+	    p->relocs[i].newPath = r->newPath ? strdup(r->newPath) : NULL;
+	}
+	p->relocs[i].oldPath = NULL;
+	p->relocs[i].newPath = NULL;
+    } else {
+	p->relocs = NULL;
+    }
+    
     alFreeIndex(al);
 
     return p;

@@ -233,7 +233,7 @@ int doInstall(const char * rootdir, const char ** argv, int transFlags,
 
 		    if (headerGetEntry(h, RPMTAG_PREFIXES, NULL,
 				       (void **) &paths, &c) && (c == 1)) {
-			defaultReloc->oldPath = paths[0];
+			defaultReloc->oldPath = strdup(paths[0]);
 			free(paths);
 		    } else {
 			headerGetEntry(h, RPMTAG_NAME, NULL, (void **) &name,
@@ -259,8 +259,10 @@ int doInstall(const char * rootdir, const char ** argv, int transFlags,
 		    return numPackages;
 		}
 
-		if (defaultReloc)
+		if (defaultReloc) {
+		    free(defaultReloc->oldPath);
 		    defaultReloc->oldPath = NULL;
+		}
 
 		fdClose(fd);
 		numBinaryPackages++;
