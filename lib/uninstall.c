@@ -32,8 +32,8 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
     int_16 * fileModesList;
     int scriptArg;
 
-    if (flags & RPMUNINSTALL_JUSTDB)
-	flags |= RPMUNINSTALL_NOSCRIPTS;
+    if (flags & RPMTRANS_FLAG_JUSTDB)
+	flags |= RPMTRANS_FLAG_NOSCRIPTS;
 
     h = rpmdbGetRecord(db, offset);
     if (h == NULL) {
@@ -56,7 +56,7 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
     scriptArg = dbiIndexSetCount(matches) - 1;
     dbiFreeIndexRecord(matches);
 
-    if (!(flags & RPMUNINSTALL_NOTRIGGERS)) {
+    if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* run triggers from this package which are keyed on installed 
 	   packages */
 	if (runImmedTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1, scriptFd)) {
@@ -68,17 +68,17 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
 	    return 1;
     }
 
-    if (!(flags & RPMUNINSTALL_TEST)) {
+    if (!(flags & RPMTRANS_FLAG_TEST)) {
 	if (runInstScript(prefix, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg, 
-		          flags & RPMUNINSTALL_NOSCRIPTS, scriptFd)) {
+		          flags & RPMTRANS_FLAG_NOSCRIPTS, scriptFd)) {
 	    headerFree(h);
 	    return 1;
 	}
     }
     
     rpmMessage(RPMMESS_DEBUG, _("will remove files test = %d\n"), 
-		flags & RPMUNINSTALL_TEST);
-    if (!(flags & RPMUNINSTALL_JUSTDB) &&
+		flags & RPMTRANS_FLAG_TEST);
+    if (!(flags & RPMTRANS_FLAG_JUSTDB) &&
 	headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 	               &fileCount)) {
 	if (prefix[0]) {
@@ -111,7 +111,7 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
 	    rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
 			fnbuffer, fileActionString(actions[i]));
 
-	    if (!(flags & RPMUNINSTALL_TEST))
+	    if (!(flags & RPMTRANS_FLAG_TEST))
 		removeFile(fnbuffer, fileFlagsList[i], fileModesList[i], 
 			   actions[i]);
 	}
@@ -120,13 +120,13 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
 	free(fileMd5List);
     }
 
-    if (!(flags & RPMUNINSTALL_TEST)) {
+    if (!(flags & RPMTRANS_FLAG_TEST)) {
 	rpmMessage(RPMMESS_DEBUG, _("running postuninstall script (if any)\n"));
 	runInstScript(prefix, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG, scriptArg, 
-		      flags & RPMUNINSTALL_NOSCRIPTS, scriptFd);
+		      flags & RPMTRANS_FLAG_NOSCRIPTS, scriptFd);
     }
 
-    if (!(flags & RPMUNINSTALL_NOTRIGGERS)) {
+    if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* Run postun triggers which are set off by this package's removal */
 	if (runTriggers(prefix, db, RPMSENSE_TRIGGERPOSTUN, h, 0, scriptFd)) {
 	    return 2;
@@ -136,7 +136,7 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
     headerFree(h);
 
     rpmMessage(RPMMESS_DEBUG, _("removing database entry\n"));
-    if (!(flags & RPMUNINSTALL_TEST))
+    if (!(flags & RPMTRANS_FLAG_TEST))
 	rpmdbRemove(db, offset, 0);
 
     return 0;

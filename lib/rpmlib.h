@@ -150,20 +150,6 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMFILE_LICENSE			(1 << 7)
 #define	RPMFILE_README			(1 << 8)
 
-#define	RPMINSTALL_TEST			(1 << 2)
-#define	RPMINSTALL_UPGRADETOOLD		(1 << 4)
-#define	RPMINSTALL_NODOCS		(1 << 5)
-#define	RPMINSTALL_NOSCRIPTS		(1 << 6)
-#define	RPMINSTALL_ALLFILES		(1 << 9)
-#define	RPMINSTALL_JUSTDB		(1 << 10)
-#define	RPMINSTALL_KEEPOBSOLETE		(1 << 11)
-#define	RPMINSTALL_NOTRIGGERS		(1 << 13)
-
-#define	RPMUNINSTALL_TEST		(1 << 0)
-#define	RPMUNINSTALL_NOSCRIPTS		(1 << 1)
-#define	RPMUNINSTALL_JUSTDB		(1 << 2)
-#define	RPMUNINSTALL_NOTRIGGERS		(1 << 3)
-
 #define RPMVERIFY_NONE		0
 #define RPMVERIFY_MD5		(1 << 0)
 #define RPMVERIFY_FILESIZE	(1 << 1)
@@ -381,6 +367,12 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
 
 #define RPMTRANS_FLAG_TEST		(1 << 0)
 #define RPMTRANS_FLAG_BUILD_PROBS	(1 << 1)
+#define	RPMTRANS_FLAG_NOSCRIPTS		(1 << 2)
+#define	RPMTRANS_FLAG_JUSTDB		(1 << 3)
+#define	RPMTRANS_FLAG_NOTRIGGERS	(1 << 4)
+#define	RPMTRANS_FLAG_NODOCS		(1 << 5)
+#define	RPMTRANS_FLAG_ALLFILES		(1 << 6)
+#define	RPMTRANS_FLAG_KEEPOBSOLETE	(1 << 7)
 
 typedef enum rpmProblemType_e { RPMPROB_BADARCH, 
 				RPMPROB_BADOS,
@@ -419,6 +411,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 #define RPMPROB_FILTER_FORCERELOCATE	(1 << 3)
 #define RPMPROB_FILTER_REPLACENEWFILES	(1 << 4)
 #define RPMPROB_FILTER_REPLACEOLDFILES	(1 << 5)
+#define RPMPROB_FILTER_UPGRADETOOLD	(1 << 6)
 
 /** messages.c **/
 

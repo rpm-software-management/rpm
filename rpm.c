@@ -1046,7 +1046,7 @@ int main(int argc, char ** argv) {
     }
 #endif
 
-    if (oldPackage && upgrade)
+    if (oldPackage && !upgrade)
 	argerror(_("--oldpackage may only be used during upgrades"));
 
     if ((ftpProxy || ftpPort) && !(bigMode == MODE_INSTALL ||
@@ -1060,9 +1060,6 @@ int main(int argc, char ** argv) {
 	((bigMode == MODE_VERIFY && querySource == VERIFY_RPM))))
 	argerror(_("http options can only be used during package queries, "
 		 "installs, and upgrades"));
-
-    if (oldPackage || (force && upgrade))
-	installFlags |= RPMINSTALL_UPGRADETOOLD;
 
     if (noPgp && bigMode != MODE_CHECKSIG)
 	argerror(_("--nopgp may only be used during signature checking"));
@@ -1267,34 +1264,37 @@ int main(int argc, char ** argv) {
 	if (!poptPeekArg(optCon))
 	    argerror(_("no packages given for uninstall"));
 
-	if (noScripts) uninstallFlags |= RPMUNINSTALL_NOSCRIPTS;
-	if (noTriggers) uninstallFlags |= RPMUNINSTALL_NOTRIGGERS;
-	if (test) uninstallFlags |= RPMUNINSTALL_TEST;
-	if (justdb) uninstallFlags |= RPMUNINSTALL_JUSTDB;
+	if (noScripts) uninstallFlags |= RPMTRANS_FLAG_NOSCRIPTS;
+	if (noTriggers) uninstallFlags |= RPMTRANS_FLAG_NOTRIGGERS;
+	if (test) uninstallFlags |= RPMTRANS_FLAG_TEST;
+	if (justdb) uninstallFlags |= RPMTRANS_FLAG_JUSTDB;
 	if (noDeps) interfaceFlags |= UNINSTALL_NODEPS;
 	if (allMatches) interfaceFlags |= UNINSTALL_ALLMATCHES;
 
-	ec = doUninstall(rootdir, (const char **)poptGetArgs(optCon), uninstallFlags, 
-		interfaceFlags);
+	ec = doUninstall(rootdir, (const char **)poptGetArgs(optCon), 
+			 uninstallFlags, interfaceFlags);
 	break;
 
       case MODE_INSTALL:
 	if (force) {
 	    probFilter |= RPMPROB_FILTER_REPLACEPKG | 
 			  RPMPROB_FILTER_REPLACEOLDFILES |
-			  RPMPROB_FILTER_REPLACENEWFILES;
+			  RPMPROB_FILTER_REPLACENEWFILES |
+			  RPMPROB_FILTER_UPGRADETOOLD;
 	}
 	if (replaceFiles) probFilter |= RPMPROB_FILTER_REPLACEOLDFILES |
 			                RPMPROB_FILTER_REPLACENEWFILES;
 	if (badReloc) probFilter |= RPMPROB_FILTER_FORCERELOCATE;
 	if (replacePackages) probFilter |= RPMPROB_FILTER_REPLACEPKG;
-	if (test) installFlags |= RPMINSTALL_TEST;
-	if (noScripts) installFlags |= RPMINSTALL_NOSCRIPTS;
-	if (noTriggers) installFlags |= RPMINSTALL_NOTRIGGERS;
+	if (oldPackage) probFilter |= RPMPROB_FILTER_UPGRADETOOLD;
 	if (ignoreArch) probFilter |= RPMPROB_FILTER_IGNOREARCH; 
 	if (ignoreOs) probFilter |= RPMPROB_FILTER_IGNOREOS;
-	if (allFiles) installFlags |= RPMINSTALL_ALLFILES;
-	if (justdb) installFlags |= RPMINSTALL_JUSTDB;
+
+	if (allFiles) installFlags |= RPMTRANS_FLAG_ALLFILES;
+	if (justdb) installFlags |= RPMTRANS_FLAG_JUSTDB;
+	if (test) installFlags |= RPMTRANS_FLAG_TEST;
+	if (noScripts) installFlags |= RPMTRANS_FLAG_NOSCRIPTS;
+	if (noTriggers) installFlags |= RPMTRANS_FLAG_NOTRIGGERS;
 
 	if (showPercents) interfaceFlags |= INSTALL_PERCENT;
 	if (showHash) interfaceFlags |= INSTALL_HASH;
@@ -1304,9 +1304,9 @@ int main(int argc, char ** argv) {
 
 	if (!incldocs) {
 	    if (excldocs)
-		installFlags |= RPMINSTALL_NODOCS;
+		installFlags |= RPMTRANS_FLAG_NODOCS;
 	    else if (rpmGetBooleanVar(RPMVAR_EXCLUDEDOCS))
-		installFlags |= RPMINSTALL_NODOCS;
+		installFlags |= RPMTRANS_FLAG_NODOCS;
 	}
 
 	if (!poptPeekArg(optCon))
@@ -1325,8 +1325,8 @@ int main(int argc, char ** argv) {
 	    relocations[numRelocations].newPath = NULL;
 	}
 
-	ec += doInstall(rootdir, (const char **)poptGetArgs(optCon), installFlags, 
-			interfaceFlags, probFilter, relocations);
+	ec += doInstall(rootdir, (const char **)poptGetArgs(optCon), 
+			installFlags, interfaceFlags, probFilter, relocations);
 	break;
 
       case MODE_QUERY:

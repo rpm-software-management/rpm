@@ -68,7 +68,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     int i, j;
     struct availableList * al = &ts->addedPackages;
     int rc, ourrc = 0;
-    int instFlags = 0, rmFlags = 0;
     rpmProblem prob;
     struct availablePackage * alp;
     rpmProblemSet probs;
@@ -89,11 +88,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     /* FIXME: what if the same package is included in ts twice? */
 
     /* FIXME: we completely ignore net shared paths here! */
-
-    if (flags & RPMTRANS_FLAG_TEST) {
-	instFlags |= RPMINSTALL_TEST; 
-	rmFlags |= RPMUNINSTALL_TEST;
-    }
 
     probs = psCreate();
     *newProbs = probs;
@@ -320,7 +314,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	if (fd) {
 	    if (installBinaryPackage(ts->root, ts->db, fd, 
-				     hdrs[alp - al->list], instFlags, notify, 
+				     hdrs[alp - al->list], flags, notify, 
 				     notifyData, alp->key, fi->actions, 
 				     fi->fc ? fi->replaced : NULL,
 				     ts->scriptFd))
@@ -342,7 +336,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     /* fi is left at the first package which is to be removed */
     for (i = 0; i < ts->numRemovedPackages; i++, fi++) {
 	if (removeBinaryPackage(ts->root, ts->db, ts->removedPackages[i], 
-				rmFlags, fi->actions, ts->scriptFd))
+				flags, fi->actions, ts->scriptFd))
 	    ourrc++;
     }
 

@@ -283,8 +283,8 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     int freeFileMem = 0;
     char * currDir = NULL, * tmpptr;
 
-    if (flags & RPMINSTALL_JUSTDB)
-	flags |= RPMINSTALL_NOSCRIPTS;
+    if (flags & RPMTRANS_FLAG_JUSTDB)
+	flags |= RPMTRANS_FLAG_NOSCRIPTS;
 
     headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
     headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
@@ -292,7 +292,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 
 
     rpmMessage(RPMMESS_DEBUG, _("package: %s-%s-%s files test = %d\n"), 
-		name, version, release, flags & RPMINSTALL_TEST);
+		name, version, release, flags & RPMTRANS_FLAG_TEST);
 
     rc = rpmdbFindPackage(db, name, &matches);
     if (rc == -1) return 2;
@@ -317,7 +317,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	chroot(rootdir);
     }
 
-    if (!(flags & RPMINSTALL_JUSTDB) && headerIsEntry(h, RPMTAG_FILENAMES)) {
+    if (!(flags & RPMTRANS_FLAG_JUSTDB) && headerIsEntry(h, RPMTAG_FILENAMES)) {
 	/* old format relocateable packages need the entire default
 	   prefix stripped to form the cpio list, while all other packages 
 	   need the leading / stripped */
@@ -342,7 +342,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 	files = NULL;
     }
     
-    if (flags & RPMINSTALL_TEST) {
+    if (flags & RPMTRANS_FLAG_TEST) {
 	if (rootdir) {
 	    chroot(".");
 	    chdir(currDir);
@@ -355,7 +355,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 
     rpmMessage(RPMMESS_DEBUG, _("running preinstall script (if any)\n"));
     if (runInstScript("/", h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg, 
-		      flags & RPMINSTALL_NOSCRIPTS, scriptFd)) {
+		      flags & RPMTRANS_FLAG_NOSCRIPTS, scriptFd)) {
 	if (freeFileMem) freeFileMemory(fileMem);
 
 	if (rootdir) {
@@ -472,7 +472,7 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
 
 	free(fileStates);
 	if (freeFileMem) freeFileMemory(fileMem);
-    } else if (flags & RPMINSTALL_JUSTDB) {
+    } else if (flags & RPMTRANS_FLAG_JUSTDB) {
 	char ** fileNames;
 
 	if (headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &fileNames,
@@ -509,11 +509,11 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     rpmMessage(RPMMESS_DEBUG, _("running postinstall script (if any)\n"));
 
     if (runInstScript(rootdir, h, RPMTAG_POSTIN, RPMTAG_POSTINPROG, scriptArg,
-		      flags & RPMINSTALL_NOSCRIPTS, scriptFd)) {
+		      flags & RPMTRANS_FLAG_NOSCRIPTS, scriptFd)) {
 	return 2;
     }
 
-    if (!(flags & RPMINSTALL_NOTRIGGERS)) {
+    if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* Run triggers this package sets off */
 	if (runTriggers(rootdir, db, RPMSENSE_TRIGGERIN, h, 0, scriptFd)) {
 	    return 2;

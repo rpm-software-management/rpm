@@ -78,7 +78,7 @@ static void * showProgress(const Header h, const rpmCallbackType what,
     return rc;
 }	
 
-int doInstall(const char * rootdir, const char ** argv, int installFlags, 
+int doInstall(const char * rootdir, const char ** argv, int transFlags, 
 	      int interfaceFlags, int probFilter, 
 	      rpmRelocation * relocations) {
     rpmdb db = NULL;
@@ -98,18 +98,14 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
     int stopInstall = 0;
     size_t nb;
     int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
-    int transFlags = 0;
     rpmProblemSet probs, finalProbs;
     int dbIsOpen = 0;
     const char ** sourcePackages;
 
-    if (installFlags & RPMINSTALL_TEST) 
+    if (transFlags & RPMTRANS_FLAG_TEST) 
 	mode = O_RDONLY;
     else
 	mode = O_RDWR | O_CREAT;
-
-    if (installFlags & RPMINSTALL_TEST)
-	transFlags |= RPMTRANS_FLAG_TEST;
 
     rpmMessage(RPMMESS_DEBUG, _("counting packages to install\n"));
     for (filename = argv, numPackages = 0; *filename; filename++, numPackages++)
@@ -289,7 +285,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 		continue;
 	    }
 
-	    if (!(installFlags & RPMINSTALL_TEST))
+	    if (!(transFlags & RPMTRANS_FLAG_TEST))
 		numFailed += rpmInstallSourcePackage(rootdir, fd, NULL,
 				showProgress, (void *) notifyFlags, NULL);
 
@@ -309,7 +305,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
     return numFailed;
 }
 
-int doUninstall(const char * rootdir, const char ** argv, int uninstallFlags,
+int doUninstall(const char * rootdir, const char ** argv, int transFlags,
 		 int interfaceFlags) {
     rpmdb db;
     dbiIndexSet matches;
@@ -323,14 +319,10 @@ int doUninstall(const char * rootdir, const char ** argv, int uninstallFlags,
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
     int stopUninstall = 0;
-    int transFlags = 0;
     int numPackages = 0;
     rpmProblemSet probs;
 
-    if (uninstallFlags & RPMUNINSTALL_TEST)
-	transFlags |= RPMTRANS_FLAG_TEST;
-
-    if (uninstallFlags & RPMUNINSTALL_TEST) 
+    if (transFlags & RPMTRANS_FLAG_TEST) 
 	mode = O_RDONLY;
     else
 	mode = O_RDWR | O_EXCL;

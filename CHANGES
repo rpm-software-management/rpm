@@ -10,6 +10,8 @@
 	- fixed config file problems during chroot upgrades
 	- fixed %attr brokenness for directories
 	- augment linux provides/requires for glibc 2.1 backward compatibility.
+	- fixed --noscript, --notriggers, --excludedocs, and a bunch
+	  of other install/remove flags
 
 2.5.x -> 2.90
 	- added --excludepath
