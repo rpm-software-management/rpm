@@ -896,16 +896,14 @@ static void rebuildCompatTables(int type, char * name) {
 
 static void getMachineInfo(int type, char ** name, int * num) {
     struct canonEntry * canon;
+    int which = currTables[type];
 
-    if (!tables[currTables[type]].hasCanon) {
-	if (num) *num = 255;
-	if (name) *name = current[type];
-	return;
-    }
+    /* use the normal canon tables, even if we're looking up build stuff */
+    if (which >= 2) which -= 2;
 
     canon = lookupInCanonTable(current[type], 
-			       tables[currTables[type]].canons,
-			       tables[currTables[type]].canonsLength);
+			       tables[which].canons,
+			       tables[which].canonsLength);
 
     if (canon) {
 	if (num) *num = canon->num;
@@ -913,8 +911,11 @@ static void getMachineInfo(int type, char ** name, int * num) {
     } else {
 	if (num) *num = 255;
 	if (name) *name = current[type];
-	rpmMessage(RPMMESS_WARNING, "Unknown system: %s\n", current[type]);
-	rpmMessage(RPMMESS_WARNING, "Please contact rpm-list@redhat.com\n");
+
+	if (tables[currTables[type]].hasCanon) {
+	    rpmMessage(RPMMESS_WARNING, "Unknown system: %s\n", current[type]);
+	    rpmMessage(RPMMESS_WARNING, "Please contact rpm-list@redhat.com\n");
+	}
     }
 }
 
