@@ -51,7 +51,7 @@ poptContext poptGetContext(const char * name, int argc, char ** argv,
 
     con->os = con->optionStack;
     con->os->argc = argc;
-    con->os->argv = (const char **)argv;	/* XXX don't change the API */
+    con->os->argv = (const char **) argv;	/* XXX don't change the API */
     con->os->argb = NULL;
 
     if (!(flags & POPT_CONTEXT_KEEP_FIRST))

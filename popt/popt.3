@@ -5,9 +5,9 @@ popt \- Parse command line options
 .nf
 .B #include <popt.h>
 .sp
-.BI "poptContext poptGetContext(char * " name ", int " argc ,
-.BI "                           char ** "argv ,
-.BI "                           struct poptOption * " options ,
+.BI "poptContext poptGetContext(const char * " name ", int " argc ,
+.BI "                           har ** "argv ,
+.BI "                           const struct poptOption * " options ,
 .BI "                           int " flags );
 .sp
 .BI "void poptFreeContext(poptContext " con );
@@ -20,13 +20,13 @@ popt \- Parse command line options
 .sp
 .BI "char * poptGetArg(poptContext " con );
 .sp
-.BI "char * poptPeekArg(poptContext " con );
+.BI "const char * poptPeekArg(poptContext " con );
 .sp
-.BI "char ** poptGetArgs(poptContext " con );
+.BI "const char ** poptGetArgs(poptContext " con );
 .sp
-.BI "const char * poptStrerror(const int " error );
+.BI "const char *const poptStrerror(const int " error );
 .sp
-.BI "char * poptBadOption(poptContext " con ", int " flags );
+.BI "const char * poptBadOption(poptContext " con ", int " flags );
 .sp
 .BI "int poptReadDefaultConfig(poptContext " con ", int " flags );
 .sp
@@ -36,9 +36,12 @@ popt \- Parse command line options
 .BI "                 int " flags );
 .sp
 .BI "int poptParseArgvString(char * " s ", int *  " argcPtr , 
-.BI "                        char *** " argvPtr );
+.BI "                        const char *** " argvPtr );
 .sp
-.BI "int poptStuffArgs(poptContext " con ", char ** " argv );
+.BI "int poptDupArgv(int " argc ", const char ** " argv ", int * " argcPtr ",
+.BI "                        const char *** " argvPtr ");"
+.sp
+.BI "int poptStuffArgs(poptContext " con ", const char ** " argv );
 .sp
 .fi
 .SH DESCRIPTION
@@ -242,9 +245,9 @@ modified outside the popt library.
 .RB "New popt contexts are created by " poptGetContext() ":"
 .sp
 .nf
-.BI "poptContext poptGetContext(char * " name ", int "argc ",
+.BI "poptContext poptGetContext(const char * " name ", int "argc ",
 .BI "                           char ** "argv ",
-.BI "                           struct poptOption * "options ",
+.BI "                           const struct poptOption * "options ",
 .BI "                           int "flags ");"
 .fi
 .sp
@@ -351,7 +354,7 @@ processed.
 .PP
 .nf
 .HP
-.BI "char * poptPeekArg(poptContext " con ");"
+.BI "const char * poptPeekArg(poptContext " con ");"
 .fi
 The next leftover argument is returned but not marked as processed.
 This allows an application to look ahead into the argument list,
@@ -359,7 +362,7 @@ without modifying the list.
 .PP
 .nf
 .HP
-.BI "char ** poptGetArgs(poptContext " con ");"
+.BI "const char ** poptGetArgs(poptContext " con ");"
 .fi
 All the leftover arguments are returned in a manner identical to 
 .IR argv ".  The final element in the returned array points to "
@@ -457,14 +460,14 @@ Two functions are available to make it easy for applications to provide
 good error messages.
 .HP
 .nf
-.BI "const char * poptStrerror(const int " error ");"
+.BI "const char *const poptStrerror(const int " error ");"
 .fi
 This function takes a popt error code and returns a string describing
 .RB "the error, just as with the standard " strerror() " function."
 .PP
 .HP
 .nf
-.BI "char * poptBadOption(poptContext " con ", int " flags ");"
+.BI "const char * poptBadOption(poptContext " con ", int " flags ");"
 .fi
 .RB "If an error occurred during " poptGetNextOpt() ", this function "
 .RI "returns the option that caused the error. If the " flags " argument"
@@ -551,10 +554,10 @@ currently reserved for future expansion. The new alias is specified
 .sp
 .nf
 struct poptAlias {
-     char * longName; /* may be NULL */
+     const char * longName; /* may be NULL */
      char shortName; /* may be '\\0' */
      int argc;
-     char ** argv; /* must be free()able */
+     const char ** argv; /* must be free()able */
 };
 .fi
 .sp
@@ -571,20 +574,25 @@ using rules similiar to normal shell parsing.
 .sp
 .nf
 .B "#include <popt.h>"
-.BI "int poptParseArgvString(char * " s ", int *  "argcPtr ",
+.BI "int poptParseArgvString(char * " s ", int * " argcPtr ",
 .BI "                        char *** " argvPtr ");"
+.BI "int poptDupArgv(int " argc ", const char ** " argv ", int * " argcPtr ",
+.BI "                        const char *** " argvPtr ");"
 .fi
 .sp
 .RI "The string s is parsed into an " argv "-style array. The integer "
-.RI "pointed to by the second parameter, " argcPtr ", contains the number "
-of elements parsed, and the pointer pointed to by the final parameter is 
-set to point to the newly created array. The array is dynamically 
-.RB "allocated and should be " free() "ed when the application is finished "
-with it.
+.RI "pointed to by the " argcPtr " parameter contains the number of elements "
+.RI "parsed, and the final " argvPtr " parameter contains the address of the"
+newly created array.
+.RB "The routine " poptDupArgv() " can be used to make a copy of an existing "
+argument array.
 .sp
 .RI "The " argvPtr 
-.RB "created by " poptParseArgvString() " is suitable to pass directly "
+.RB "created by " poptParseArgvString() " or " poptDupArgv() " is suitable to pass directly "
 .RB "to " poptGetContext() .
+Both routines return a single dynamically allocated contiguous
+.RB "block of storage and should be " free() "ed when the application is"
+finished with the storage.
 .SH "HANDLING EXTRA ARGUMENTS"
 Some applications implement the equivalent of option aliasing but need
 .RB "to do so through special logic. The " poptStuffArgs() " function "
@@ -593,7 +601,7 @@ allows an application to insert new arguments into the current
 .sp
 .nf
 .B "#include <popt.h>"
-.BI "int poptStuffArgs(poptContext "con ", char ** " argv ");"
+.BI "int poptStuffArgs(poptContext "con ", const char ** " argv ");"
 .fi
 .sp
 .RI "The passed " argv 
