@@ -29,6 +29,9 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#if defined _LIBC || defined HAVE___FSETLOCKING
+# include <stdio_ext.h>
+#endif
 #include <sys/types.h>
 
 #ifdef __GNUC__
@@ -49,13 +52,7 @@ char *alloca ();
 #endif
 
 #include <stdlib.h>
-
 #include <string.h>
-#if !HAVE_STRCHR && !defined _LIBC
-# ifndef strchr
-#  define strchr index
-# endif
-#endif
 
 #include "gettextP.h"
 
@@ -71,6 +68,7 @@ char *alloca ();
 #  define mempcpy __mempcpy
 # endif
 # define HAVE_MEMPCPY	1
+# define HAVE___FSETLOCKING	1
 
 /* We need locking here since we can be called from different places.  */
 # include <bits/libc-lock.h>
@@ -80,6 +78,15 @@ __libc_lock_define_initialized (static, lock);
 
 #ifndef internal_function
 # define internal_function
+#endif
+
+/* Some optimizations for glibc.  */
+#ifdef _LIBC
+# define FEOF(fp)		feof_unlocked (fp)
+# define FGETS(buf, n, fp)	fgets_unlocked (buf, n, fp)
+#else
+# define FEOF(fp)		feof (fp)
+# define FGETS(buf, n, fp)	fgets (buf, n, fp)
 #endif
 
 /* For those losing systems which don't have `alloca' we have to add
@@ -128,7 +135,7 @@ const char *
 _nl_expand_alias (name)
     const char *name;
 {
-  static const char *locale_alias_path = LOCALE_ALIAS_PATH;
+  static const char *locale_alias_path;
   struct alias_map *retval;
   const char *result = NULL;
   size_t added;
@@ -136,6 +143,9 @@ _nl_expand_alias (name)
 #ifdef _LIBC
   __libc_lock_lock (lock);
 #endif
+
+  if (locale_alias_path == NULL)
+    locale_alias_path = LOCALE_ALIAS_PATH;
 
   do
     {
@@ -212,8 +222,13 @@ read_alias_file (fname, fname_len)
   if (fp == NULL)
     return 0;
 
+#ifdef HAVE___FSETLOCKING
+  /* No threads present.  */
+  __fsetlocking (fp, FSETLOCKING_BYCALLER);
+#endif
+
   added = 0;
-  while (!feof (fp))
+  while (!FEOF (fp))
     {
       /* It is a reasonable approach to use a fix buffer here because
 	 a) we are only interested in the first two fields
@@ -225,7 +240,7 @@ read_alias_file (fname, fname_len)
       char *value;
       char *cp;
 
-      if (fgets (buf, sizeof buf, fp) == NULL)
+      if (FGETS (buf, sizeof buf, fp) == NULL)
 	/* EOF reached.  */
 	break;
 
@@ -235,7 +250,7 @@ read_alias_file (fname, fname_len)
 	{
 	  char altbuf[BUFSIZ];
 	  do
-	    if (fgets (altbuf, sizeof altbuf, fp) == NULL)
+	    if (FGETS (altbuf, sizeof altbuf, fp) == NULL)
 	      /* Make sure the inner loop will be left.  The outer loop
 		 will exit at the `feof' test.  */
 	      break;
@@ -244,21 +259,21 @@ read_alias_file (fname, fname_len)
 
       cp = buf;
       /* Ignore leading white space.  */
-      while (isspace (cp[0]))
+      while (isspace ((unsigned char) cp[0]))
 	++cp;
 
       /* A leading '#' signals a comment line.  */
       if (cp[0] != '\0' && cp[0] != '#')
 	{
 	  alias = cp++;
-	  while (cp[0] != '\0' && !isspace (cp[0]))
+	  while (cp[0] != '\0' && !isspace ((unsigned char) cp[0]))
 	    ++cp;
 	  /* Terminate alias name.  */
 	  if (cp[0] != '\0')
 	    *cp++ = '\0';
 
 	  /* Now look for the beginning of the value.  */
-	  while (isspace (cp[0]))
+	  while (isspace ((unsigned char) cp[0]))
 	    ++cp;
 
 	  if (cp[0] != '\0')
@@ -267,7 +282,7 @@ read_alias_file (fname, fname_len)
 	      size_t value_len;
 
 	      value = cp++;
-	      while (cp[0] != '\0' && !isspace (cp[0]))
+	      while (cp[0] != '\0' && !isspace ((unsigned char) cp[0]))
 		++cp;
 	      /* Terminate value.  */
 	      if (cp[0] == '\n')

@@ -1,4 +1,4 @@
-/* Copyright (C) 1995-1999, 2000, 2001 Free Software Foundation, Inc.
+/* Copyright (C) 1995-1999, 2000, 2001, 2002 Free Software Foundation, Inc.
    Contributed by Ulrich Drepper <drepper@gnu.ai.mit.edu>, 1995.
 
    This program is free software; you can redistribute it and/or modify it
@@ -28,11 +28,6 @@
 #endif
 
 #include <string.h>
-#if !HAVE_STRCHR && !defined _LIBC
-# ifndef strchr
-#  define strchr index
-# endif
-#endif
 
 #if defined _LIBC || defined HAVE_ARGZ_H
 # include <argz.h>
@@ -90,6 +85,10 @@ argz_count__ (argz, len)
 }
 # undef __argz_count
 # define __argz_count(argz, len) argz_count__ (argz, len)
+#else
+# ifdef _LIBC
+#  define __argz_count(argz, len) INTUSE(__argz_count) (argz, len)
+# endif
 #endif	/* !_LIBC && !HAVE___ARGZ_COUNT */
 
 #if !defined _LIBC && !defined HAVE___ARGZ_STRINGIFY
@@ -114,6 +113,11 @@ argz_stringify__ (argz, len, sep)
 }
 # undef __argz_stringify
 # define __argz_stringify(argz, len, sep) argz_stringify__ (argz, len, sep)
+#else
+# ifdef _LIBC
+#  define __argz_stringify(argz, len, sep) \
+  INTUSE(__argz_stringify) (argz, len, sep)
+# endif
 #endif	/* !_LIBC && !HAVE___ARGZ_STRINGIFY */
 
 #if !defined _LIBC && !defined HAVE___ARGZ_NEXT
@@ -356,11 +360,11 @@ _nl_normalize_codeset (codeset, name_len)
   size_t cnt;
 
   for (cnt = 0; cnt < name_len; ++cnt)
-    if (isalnum (codeset[cnt]))
+    if (isalnum ((unsigned char) codeset[cnt]))
       {
 	++len;
 
-	if (isalpha (codeset[cnt]))
+	if (isalpha ((unsigned char) codeset[cnt]))
 	  only_digit = 0;
       }
 
@@ -374,9 +378,9 @@ _nl_normalize_codeset (codeset, name_len)
 	wp = retval;
 
       for (cnt = 0; cnt < name_len; ++cnt)
-	if (isalpha (codeset[cnt]))
-	  *wp++ = tolower (codeset[cnt]);
-	else if (isdigit (codeset[cnt]))
+	if (isalpha ((unsigned char) codeset[cnt]))
+	  *wp++ = tolower ((unsigned char) codeset[cnt]);
+	else if (isdigit ((unsigned char) codeset[cnt]))
 	  *wp++ = codeset[cnt];
 
       *wp = '\0';

@@ -1,5 +1,5 @@
 /* Message catalogs for internationalization.
-   Copyright (C) 1995-1997, 2000, 2001 Free Software Foundation, Inc.
+   Copyright (C) 1995-1997, 2000-2002 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU Library General Public License as published
@@ -24,10 +24,11 @@
 /* The LC_MESSAGES locale category is the category used by the functions
    gettext() and dgettext().  It is specified in POSIX, but not in ANSI C.
    On systems that don't define it, use an arbitrary value instead.
-   On Solaris, <locale.h> defines __LOCALE_H then includes <libintl.h> (i.e.
-   this file!) and then only defines LC_MESSAGES.  To avoid a redefinition
-   warning, don't define LC_MESSAGES in this case.  */
-#if !defined LC_MESSAGES && !defined __LOCALE_H
+   On Solaris, <locale.h> defines __LOCALE_H (or _LOCALE_H in Solaris 2.5)
+   then includes <libintl.h> (i.e. this file!) and then only defines
+   LC_MESSAGES.  To avoid a redefinition warning, don't define LC_MESSAGES
+   in this case.  */
+#if !defined LC_MESSAGES && !(defined __LOCALE_H || (defined _LOCALE_H && defined __sun))
 # define LC_MESSAGES 1729
 #endif
 
@@ -42,11 +43,13 @@
 # define gettext gettext
 #endif
 
-#ifndef PARAMS
-# if __STDC__ || defined __cplusplus
-#  define PARAMS(args) args
+/* Use _INTL_PARAMS, not PARAMS, in order to avoid clashes with identifiers
+   used by programs.  Similarly, test __PROTOTYPES, not PROTOTYPES.  */
+#ifndef _INTL_PARAMS
+# if __STDC__ || defined __GNUC__ || defined __SUNPRO_C || defined __cplusplus || __PROTOTYPES
+#  define _INTL_PARAMS(args) args
 # else
-#  define PARAMS(args) ()
+#  define _INTL_PARAMS(args) ()
 # endif
 #endif
 
@@ -57,49 +60,56 @@ extern "C" {
 /* Look up MSGID in the current default message catalog for the current
    LC_MESSAGES locale.  If not found, returns MSGID itself (the default
    text).  */
-extern char *gettext PARAMS ((const char *__msgid));
+extern char *gettext _INTL_PARAMS ((const char *__msgid));
 
 /* Look up MSGID in the DOMAINNAME message catalog for the current
    LC_MESSAGES locale.  */
-extern char *dgettext PARAMS ((const char *__domainname, const char *__msgid));
+extern char *dgettext _INTL_PARAMS ((const char *__domainname,
+				     const char *__msgid));
 
 /* Look up MSGID in the DOMAINNAME message catalog for the current CATEGORY
    locale.  */
-extern char *dcgettext PARAMS ((const char *__domainname, const char *__msgid,
-				int __category));
+extern char *dcgettext _INTL_PARAMS ((const char *__domainname,
+				      const char *__msgid,
+				      int __category));
 
 
 /* Similar to `gettext' but select the plural form corresponding to the
    number N.  */
-extern char *ngettext PARAMS ((const char *__msgid1, const char *__msgid2,
-			       unsigned long int __n));
+extern char *ngettext _INTL_PARAMS ((const char *__msgid1,
+				     const char *__msgid2,
+				     unsigned long int __n));
 
 /* Similar to `dgettext' but select the plural form corresponding to the
    number N.  */
-extern char *dngettext PARAMS ((const char *__domainname, const char *__msgid1,
-				const char *__msgid2, unsigned long int __n));
+extern char *dngettext _INTL_PARAMS ((const char *__domainname,
+				      const char *__msgid1,
+				      const char *__msgid2,
+				      unsigned long int __n));
 
 /* Similar to `dcgettext' but select the plural form corresponding to the
    number N.  */
-extern char *dcngettext PARAMS ((const char *__domainname, const char *__msgid1,
-				 const char *__msgid2, unsigned long int __n,
-				 int __category));
+extern char *dcngettext _INTL_PARAMS ((const char *__domainname,
+				       const char *__msgid1,
+				       const char *__msgid2,
+				       unsigned long int __n,
+				       int __category));
 
 
 /* Set the current default message catalog to DOMAINNAME.
    If DOMAINNAME is null, return the current default.
    If DOMAINNAME is "", reset to the default of "messages".  */
-extern char *textdomain PARAMS ((const char *__domainname));
+extern char *textdomain _INTL_PARAMS ((const char *__domainname));
 
 /* Specify that the DOMAINNAME message catalog will be found
    in DIRNAME rather than in the system locale data base.  */
-extern char *bindtextdomain PARAMS ((const char *__domainname,
-				     const char *__dirname));
+extern char *bindtextdomain _INTL_PARAMS ((const char *__domainname,
+					   const char *__dirname));
 
 /* Specify the character encoding in which the messages from the
    DOMAINNAME message catalog will be returned.  */
-extern char *bind_textdomain_codeset PARAMS ((const char *__domainname,
-					      const char *__codeset));
+extern char *bind_textdomain_codeset _INTL_PARAMS ((const char *__domainname,
+						    const char *__codeset));
 
 
 /* Optimized version of the functions above.  */
