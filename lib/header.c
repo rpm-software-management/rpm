@@ -800,6 +800,9 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
      */
 
 #if 0
+  { const char *s, *ll, *CC, *EE, *dd;
+    char *lbuf, *t.
+
     /* Copy the buffer and parse out components on the fly. */
     lbuf = alloca(le - l + 1);
     for (s = l, ll = t = lbuf; *s; s++, t++) {
@@ -828,6 +831,7 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
 	for (t = CC; *t; t++)	*t = toupper(*t);
 
     /* There are a total of 16 cases to attempt to match. */
+  }
 #endif
 
     /* Next, try stripping optional dialect and matching.  */
@@ -856,8 +860,9 @@ static char *headerFindI18NString(Header h, struct indexEntry *entry)
     const char *lang, *l, *le;
     struct indexEntry * table;
 
-    if ((lang = getenv("LC_ALL")) == NULL &&
-        (lang = getenv("LANGUAGE")) == NULL &&
+    /* XXX Drepper sez' this is the order. */
+    if ((lang = getenv("LANGUAGE")) == NULL &&
+	(lang = getenv("LC_ALL")) == NULL &&
         (lang = getenv("LC_MESSAGES")) == NULL &&
 	(lang = getenv("LANG")) == NULL)
 	    return entry->data;
