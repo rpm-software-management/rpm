@@ -15,8 +15,8 @@
 #include "rpmerr.h"
 #include "rpmlib.h"
 
-static char * SCRIPT_PATH = "export PATH=/sbin:/bin:/usr/sbin:/usr/bin:"
-			                 "/usr/X11R6/bin\n";
+static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:"
+			                 "/usr/X11R6/bin\nexport PATH\n";
 
 enum fileActions { REMOVE, BACKUP, KEEP };
 
@@ -174,7 +174,8 @@ static int handleSharedFiles(rpmdb db, int offset, char ** fileList,
     return rc;
 }
 
-int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
+int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, 
+		     int upgrade, int flags) {
     Header h;
     int i;
     int fileCount;
@@ -205,7 +206,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     }
 
     message(MESS_DEBUG, "running preuninstall script (if any)\n");
-    runScript(prefix, h, RPMTAG_PREUN, flags & UNINSTALL_NOSCRIPTS);
+    runScript(prefix, h, RPMTAG_PREUN, flags & UNINSTALL_NOSCRIPTS, upgrade);
     
     message(MESS_DEBUG, "%s files test = %d\n", rmmess, flags & UNINSTALL_TEST);
     if (!getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
@@ -260,7 +261,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     }
 
     message(MESS_DEBUG, "running postuninstall script (if any)\n");
-    runScript(prefix, h, RPMTAG_POSTUN, flags & UNINSTALL_NOSCRIPTS);
+    runScript(prefix, h, RPMTAG_POSTUN, flags & UNINSTALL_NOSCRIPTS, upgrade);
 
     freeHeader(h);
 
@@ -271,7 +272,8 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     return 0;
 }
 
-int runScript(char * prefix, Header h, int tag, int norunScripts) {
+int runScript(char * prefix, Header h, int tag, 
+	      int norunScripts, int upgrade) {
     int count, type;
     char * script;
     char * fn;
@@ -279,6 +281,9 @@ int runScript(char * prefix, Header h, int tag, int norunScripts) {
     int isdebug = isDebug();
     int child;
     int status;
+    char * upgradeArg;
+
+    upgradeArg = (upgrade) ? "upgrade" : "";
 
     if (norunScripts) return 0;
     
@@ -310,9 +315,9 @@ int runScript(char * prefix, Header h, int tag, int norunScripts) {
 	    }
 
 	    if (isdebug)
-		execl("/bin/sh", "/bin/sh", "-x", NULL);
+		execl("/bin/sh", "/bin/sh", "-x", "-s", upgradeArg, NULL);
 	    else
-		execl("/bin/sh", "/bin/sh", NULL);
+		execl("/bin/sh", "/bin/sh", "-s", upgradeArg, NULL);
 	    exit(-1);
 	}
 	close(fd);
