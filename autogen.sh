@@ -26,7 +26,7 @@ if [ "$1" = "--noconfigure" ]; then
 fi
 
 if [ X"$@" = X  -a "X`uname -s`" = "XLinux" ]; then
-    ./configure --disable-shared --prefix=/usr
+    ./configure --prefix=/usr
 else
-    ./configure --disable-shared "$@"
+    ./configure "$@"
 fi

@@ -152,72 +152,18 @@ AM_C_PROTOTYPES
 AC_PROG_AWK
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+
+AM_DISABLE_SHARED
 AM_PROG_LIBTOOL
 
 AC_CHECK_TOOL(AR, ar, :)
 
 if test "$cross_compiling" != "yes"; then
     MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/opt/gnu/bin"
-    AC_MSG_CHECKING(for gzip location)
-    if test -z "$GZIPBIN"; then
-	    oldifs="$IFS"
-	    IFS=:
-	    for n in $MYPATH; do
-		    if test -f $n/gzip; then
-			    GZIPBIN="$n/gzip";
-			    break
-		    fi
-	    done
-	    IFS="$oldifs"
-    fi
 
-    if test -z "$GZIPBIN"; then
-	    GZIPBIN="/bin/gzip"
-	    AC_MSG_RESULT(no)
-	    AC_MSG_WARN(Can't find gzip, assuming $GZIPBIN)
-    else
-	    AC_MSG_RESULT($GZIPBIN)
-    fi
-
-    AC_MSG_CHECKING(for bzip2 location)
-    if test -z "$BZIP2BIN"; then
-	    oldifs="$IFS"
-	    IFS=:
-	    for n in $MYPATH; do
-		    if test -f $n/bzip2; then
-			    BZIP2BIN="$n/bzip2";
-			    break
-		    fi
-	    done
-	    IFS="$oldifs"
-    fi
-
-    if test -z "$BZIP2BIN"; then
-	    BZIP2BIN="/usr/bin/bzip2"
-	    AC_MSG_RESULT(no)
-	    AC_MSG_WARN(Can't find bzip2, assuming $BZIP2BIN)
-    else
-	    AC_MSG_RESULT($BZIP2BIN)
-    fi
-
-    AC_MSG_CHECKING(for pgp location)
-    if test -z "$PGPBIN"; then
-	    oldifs="$IFS"
-	    IFS=:
-	    for n in $MYPATH; do
-		    if test -f $n/pgp; then
-			    PGPBIN="$n/pgp";
-			    break
-		    fi
-	    done
-	    IFS="$oldifs"
-    fi
-
-    if test -z "$PGPBIN"; then
-	    PGPBIN="/usr/bin/pgp"
-    else
-	    AC_MSG_RESULT($PGPBIN)
-    fi
+    AC_PATH_PROG(GZIPBIN, gzip, /bin/gzip, $MYPATH)
+    AC_PATH_PROG(BZIP2BIN, bzip2, /usr/bin/bzip2, $MYPATH)
+    AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
 
     AC_MSG_CHECKING(old version of patch)
     PATCHVERSION=`patch --version 2>&1`
@@ -738,9 +684,6 @@ AC_SUBST(tmpdir)
 AC_SUBST(LIBS)
 
 AC_SUBST(RPM)
-AC_SUBST(GZIPBIN)
-AC_SUBST(BZIP2BIN)
-AC_SUBST(PGPBIN)
 AC_SUBST(FIXPERMS)
 AC_SUBST(LIBMISC)
 AC_SUBST(MKDIR_P)
