@@ -118,15 +118,25 @@ shell-like rules.
 
 %build
 
+%if %{with_python_subpackage}
+WITH_PYTHON="--with-python=%{with_python_version}"
+%else
+WITH_PYTHON="--without-python"
+%endif
+
 %ifos linux
 %ifarch x86_64 s390 s390x 
 CFLAGS="$RPM_OPT_FLAGS -fPIC"; export CFLAGS
 %else
 CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 %endif
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man' --with-python=%{with_python_version} --without-javaglue
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc \
+	--localstatedir=/var --infodir='${prefix}%{__share}/info' \
+	--mandir='${prefix}%{__share}/man' \
+	$WITH_PYTHON --without-javaglue
 %else
-CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix}
+CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON \
+	--without-javaglue
 %endif
 
 make
