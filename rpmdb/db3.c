@@ -612,9 +612,9 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
  * Turn off the message for now.
  */
 
-/*@-redecl -exportheadervar@*/
-extern int db_hash_nelem_debug;
-/*@=redecl =exportheadervar@*/
+/*@-redecl -exportheadervar -declundef@*/
+/*@unused@*/ extern int db_hash_nelem_debug;
+/*@=redecl =exportheadervar =declundef@*/
 
 static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	/*@modifies dbi, fileSystem @*/

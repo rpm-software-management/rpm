@@ -217,6 +217,8 @@
 	- always use dl size in regionSwab() return.
 	- ppc: revert ppcmac to ppc.
 	- ppc: autoconf test for va_copy.
+	- python: add exception to detect bad data in hdrUnload.
+	- change dir creation message from warning to debug for now.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

@@ -770,7 +770,9 @@ Header headerLoad(void * uh)
     /*@-assignexpose@*/
     h->hv = *hdrVec;		/* structure assignment */
     /*@=assignexpose@*/
+    /*@-assignexpose -kepttrans@*/
     h->blob = uh;
+    /*@=assignexpose =kepttrans@*/
     h->indexAlloced = il + 1;
     h->indexUsed = il;
     h->index = xcalloc(h->indexAlloced, sizeof(*h->index));

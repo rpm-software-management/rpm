@@ -160,25 +160,27 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords) 
     char * buf;
     PyObject * rc;
     int len, legacy = 0;
+    Header h;
     static char *kwlist[] = { "legacyHeader", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, keywords, "|i", kwlist, &legacy))
 	return NULL; 
 
+    h = headerLink(s->h);
     /* XXX this legacy switch is a hack, needs to be removed. */
     if (legacy) {
-	Header h;
+	h = headerCopy(s->h);	/* XXX strip region tags, etc */
+	headerFree(s->h);
+    }
+    len = headerSizeof(h, 0);
+    buf = headerUnload(h);
+    h = headerFree(h);
 
-	h = headerCopy(s->h);
-	len = headerSizeof(h, 0);
-	buf = headerUnload(h);
-/* XXX there's a missing headerFree(h); here */
-    } else {
-	len = headerSizeof(s->h, 0);
-	buf = headerUnload(s->h);
+    if (buf == NULL || len == 0) {
+	PyErr_SetString(pyrpmError, "can't unload bad header\n");
+	return NULL;
     }
 
-/* XXX there's a missing check on buf == NULL here. */
     rc = PyString_FromStringAndSize(buf, len);
     free(buf);
 

@@ -1124,7 +1124,7 @@ static int fsmMkdirs(/*@special@*/ FSM_t fsm)
 		st->st_mode = S_IFDIR | (fi->dperms & 07777);
 		rc = fsmStage(fsm, FSM_MKDIR);
 		if (!rc)
-		    rpmMessage(RPMMESS_WARNING,
+		    rpmMessage(RPMMESS_DEBUG,
 			_("%s directory created with perms %04o.\n"),
 			fsm->path, (unsigned)(st->st_mode & 07777));
 		*te = '/';
