@@ -280,13 +280,13 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     if ((flags & RPMTRANS_FLAG_BUILD_PROBS) || 
            (probs->numProblems && (!okProbs || psTrim(okProbs, probs)))) {
 	*newProbs = probs;
-	for (i = 0; i < al->size; i++)
-	    headerFree(hdrs[i]);
 
 	for (alp = al->list, fi = flList; (alp - al->list) < al->size; 
 			alp++, fi++) {
-	    if (fi->fc)
+	    if (fi->fc) {
+		headerFree(hdrs[alp - al->list]);
 		free(fi->actions);
+	    }
 	}
 
 	return al->size + ts->numRemovedPackages;
@@ -321,7 +321,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    if (installBinaryPackage(ts->root, ts->db, fd, 
 				     hdrs[alp - al->list], instFlags, notify, 
 				     notifyData, alp->key, fi->actions, 
-				     fi->replaced))
+				     fi->fc ? fi->replaced : NULL))
 		ourrc++;
 	} else {
 	    ourrc++;
