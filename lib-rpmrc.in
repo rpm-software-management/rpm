@@ -37,6 +37,7 @@ arch_canon: 	sparc:	sparc	3
 arch_canon: 	sun4:	sparc	3
 arch_canon: 	sun4m:	sparc	3
 arch_canon: 	sun4c:	sparc	3
+arch_canon:     sun4d:  sparc   3
 # This is really a place holder for MIPS.
 arch_canon:	mips:	mips	4
 arch_canon:	ppc:	ppc	5
