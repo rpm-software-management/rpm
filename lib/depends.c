@@ -506,11 +506,6 @@ int headerMatchesDepFlags(Header h, const char *reqName, const char * reqInfo, i
     /* Get package information from header */
     headerGetEntry(h, RPMTAG_EPOCH, &type, (void **) &epochval, &count);
     if (epochval == NULL) {
-#if defined(RPMSENSE_SERIAL)
-	/* XXX old behavior looks fishy */
-	if (reqFlags & RPMSENSE_SERIAL)
-	    return 0;
-#endif	/* RPMSENSE_SERIAL */
 	epoch = "0";	/* assume package is epoch 0 */
     } else {
 	sprintf(buf, "%d", *epochval);

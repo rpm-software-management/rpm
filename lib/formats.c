@@ -144,10 +144,6 @@ static char * depflagsFormat(int_32 type, const void * data,
 	    strcat(buf, ">");
 	if (anint & RPMSENSE_EQUAL)
 	    strcat(buf, "=");
-#if defined(RPMSENSE_SERIAL)
-	if (anint & RPMSENSE_SERIAL)
-	    strcat(buf, "S");
-#endif	/* RPMSENSE_SERIAL */
 
 	val = malloc(5 + padding);
 	strcat(formatPrefix, "s");

@@ -176,7 +176,7 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define RPMVERIFY_ALL		~(RPMVERIFY_NONE)
 
 #define	RPMSENSE_ANY		0
-#define	RPMSENSE_SERIAL		(1 << 0)
+#define	RPMSENSE_SERIAL		(1 << 0) /* eliminated, backward compatibilty */
 #define	RPMSENSE_LESS		(1 << 1)
 #define	RPMSENSE_GREATER	(1 << 2)
 #define	RPMSENSE_EQUAL		(1 << 3)
