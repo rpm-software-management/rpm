@@ -72,6 +72,77 @@ struct dbiBStats_s {
 };
 /*@=fielduse@*/
 
+#ifdef	NOTNOW
+static const char * bfstring(unsigned int x, const char * xbf)
+{
+    const char * s = xbf;
+    static char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+    static char buf[256];
+    char * t, * te;
+    unsigned radix;
+    unsigned c, i, k;
+
+    radix = (s != NULL ? *s++ : 16);
+
+    if (radix <= 1 || radix >= 32)
+	radix = 16;
+
+    t = buf;
+    switch (radix) {
+    case 8:	*t++ = '0';	break;
+    case 16:	*t++ = '0';	*t++ = 'x';	break;
+    }
+
+    i = 0;
+    k = x;
+    do { i++; k /= radix; } while (k);
+
+    te = t + i;
+
+    k = x;
+    do { --i; t[i] = digits[k % radix]; k /= radix; } while (k);
+
+    t = te;
+    i = '<';
+    if (s != NULL)
+    while ((c = *s++) != '\0') {
+	if (c > ' ') continue;
+
+	k = (1 << (c - 1));
+	if (!(x & k)) continue;
+
+	if (t == te) *t++ = '=';
+
+	*t++ = i;
+	i = ',';
+	while (*s > ' ')
+	    *t++ = *s++;
+    }
+    if (t > te)	*t++ = '>';
+    *t = '\0';
+    return buf;
+}
+
+static const char * dbtFlags =
+	"\20\1APPMALLOC\2ISSET\3MALLOC\4PARTIAL\5REALLOC\6USERMEM\7DUPOK";
+
+static const char * dbenvOpenFlags =
+	"\20\1CREATE\2NO_EXCEPTIONS\3FORCE\4NOMMAP\5RDONLY\6RECOVER\7THREAD\10TXN_NOSYNC\11USE_ENVIRON\12USE_ENVIRON_ROOT\13CDB\14LOCK\15LOG\16MPOOL\17TXN\20JOINENV\21LOCKDOWN\22PRIVATE\23RECOVER_FATAL\24SYSTEM_MEM";
+
+static const char * dbOpenFlags =
+	"\20\1CREATE\2NO_EXCEPTIONS\3FORCE\4NOMMAP\5RDONLY\6RECOVER\7THREAD\10TXN_NOSYNC\11USE_ENVIRON\12USE_ENVIRON_ROOT\13EXCL\14FCNTL_LOCKING\15RDWRMASTER\16TRUNCATE\17EXTENT\20APPLY_LOGREG";
+
+static const char * dbenvSetFlags =
+	"\20\1CREATE\2NO_EXCEPTIONS\3FORCE\4NOMMAP\5RDONLY\6RECOVER\7THREAD\10TXN_NOSYNC\11USE_ENVIRON\12USE_ENVIRON_ROOT\13CDB_ALLDB\14NOLOCKING\15NOPANIC\16PANIC_ENV\17REGION_INIT\20YIELDCPU";
+
+static const char * dbSetFlags =
+	"\20\1DUP\2DUPSORT\3RECNUM\4RENUMBER\5REVSPLITOFF\6SNAPSHOT";
+
+static const char * dbiModeFlags =
+	"\20\1WRONLY\2RDWR\7CREAT\10EXCL\11NOCTTY\12TRUNC\13APPEND\14NONBLOCK\15SYNC\16ASYNC\17DIRECT\20LARGEFILE\21DIRECTORY\22NOFOLLOW";
+#endif	/* NOTNOW */
+
+
 /*@-globuse -mustmod @*/	/* FIX: rpmError not annotated yet. */
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 	/*@globals fileSystem @*/
@@ -320,11 +391,13 @@ static int db3cclose(dbiIndex dbi, /*@only@*/ /*@null@*/ DBC * dbcursor,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
-    int rc;
+    int rc = -2;
 
-    assert(dbcursor != NULL);
-    rc = dbcursor->c_close(dbcursor);
-    rc = cvtdberr(dbi, "dbcursor->c_close", rc, _debug);
+    /* XXX db3copen error pathways come through here. */
+    if (dbcursor != NULL) {
+	rc = dbcursor->c_close(dbcursor);
+	rc = cvtdberr(dbi, "dbcursor->c_close", rc, _debug);
+    }
     return rc;
 }
 

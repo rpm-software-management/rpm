@@ -26,14 +26,20 @@ struct _dbiIndex db3dbi;
  *  Analogue to struct poptOption
  */
 struct dbOption {
-/*@observer@*/ /*@null@*/const char * longName;	/* may be NULL */
-    const char shortName;	/* may be '\0' */
+/*@observer@*/ /*@null@*/
+    const char * longName;	/*!< may be NULL */
+    const char shortName;	/*!< may be '\0' */
     int argInfo;
-/*@null@*/ void * arg;		/* depends on argInfo */
-    int val;			/* 0 means don't return, just update flag */
-/*@observer@*/ /*@null@*/ const char * descrip; /*!< description for autohelp -- may be NULL */
-/*@observer@*/ /*@null@*/ const char * argDescrip; /*!< argument description for autohelp */
+/*@null@*/ void * arg;		/*!< depends on argInfo */
+    int val;			/*!< 0 means don't return, just update flag */
+/*@observer@*/ /*@null@*/
+    const char * descrip;	/*!< description for autohelp -- may be NULL */
+/*@observer@*/ /*@null@*/
+    const char * argDescrip;	/*!< argument description for autohelp */
 };
+
+/*@unchecked@*/
+static int dbi_use_cursors;
 
 /*@-compmempass -immediatetrans -exportlocal -exportheadervar@*/
 /** \ingroup db3
@@ -140,7 +146,7 @@ struct dbOption rdbOptions[] = {
 	NULL, NULL },
  { "teardown",	0,POPT_ARG_NONE,	&db3dbi.dbi_tear_down, 0,
 	NULL, NULL },
- { "usecursors",0,POPT_ARG_NONE,	&db3dbi.dbi_use_cursors, 0,
+ { "usecursors",0,POPT_ARG_NONE,	&dbi_use_cursors, 0,
 	NULL, NULL },
  { "usedbenv",	0,POPT_ARG_NONE,	&db3dbi.dbi_use_dbenv, 0,
 	NULL, NULL },
@@ -488,7 +494,6 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     /*@=sizeoftype@*/
 
     dbi->dbi_byteswapped = 0;	/* -1 unknown, 0 native order, 1 alien order */
-    dbi->dbi_use_cursors = 1;		/* db3 cursors are always used now. */
 
     if (!dbi->dbi_use_dbenv) {		/* db3 dbenv is always used now. */
 	dbi->dbi_use_dbenv = 1;

@@ -5,6 +5,8 @@
 
 #include "system.h"
 
+#define	_USE_COPY_LOAD	/* XXX don't use DB_DBT_MALLOC (yet) */
+
 /*@unchecked@*/
 static int _rpmdb_debug = 0;
 
@@ -1366,7 +1368,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
     if (mi == NULL || mi->mi_h == NULL)
 	return 0;
 
-    if (mi->mi_modified && mi->mi_prevoffset) {
+    if (dbi && mi->mi_dbc && mi->mi_modified && mi->mi_prevoffset) {
 	DBT * key = &mi->mi_key;
 	DBT * data = &mi->mi_data;
 	sigset_t signalMask;
@@ -1378,7 +1380,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	data->size = headerSizeof(mi->mi_h, HEADER_MAGIC_NO);
 	if (data->data != NULL) {
 	    (void) blockSignals(dbi->dbi_rpmdb, &signalMask);
-	    rc = dbiPut(dbi, mi->mi_dbc, key, data, 0);
+	    rc = dbiPut(dbi, mi->mi_dbc, key, data, DB_KEYLAST);
 	    if (rc) {
 		rpmError(RPMERR_DBPUTINDEX,
 			_("error(%d) storing record #%d into %s\n"),
@@ -1888,7 +1890,9 @@ top:
 	    key->size = keylen = mi->mi_keylen;
 	    data->data = uh;
 	    data->size = uhlen;
+#if !defined(_USE_COPY_LOAD)
 	    data->flags |= DB_DBT_MALLOC;
+#endif
 	    rc = dbiGet(dbi, mi->mi_dbc, key, data,
 			(key->data == NULL ? DB_NEXT : DB_SET));
 	    data->flags = 0;
@@ -1928,7 +1932,9 @@ top:
     if (uh == NULL) {
 	key->data = keyp;
 	key->size = keylen;
+#if !defined(_USE_COPY_LOAD)
 	data->flags |= DB_DBT_MALLOC;
+#endif
 	rc = dbiGet(dbi, mi->mi_dbc, key, data, DB_SET);
 	data->flags = 0;
 	keyp = key->data;
@@ -1948,16 +1954,21 @@ top:
 	return NULL;
 
     /* Did the header blob load correctly? */
+#if !defined(_USE_COPY_LOAD)
 /*@-onlytrans@*/
     mi->mi_h = headerLoad(uh);
 /*@=onlytrans@*/
+    if (mi->mi_h)
+	mi->mi_h->flags |= HEADERFLAG_ALLOCATED;
+#else
+    mi->mi_h = headerCopyLoad(uh);
+#endif
     if (mi->mi_h == NULL || !headerIsEntry(mi->mi_h, RPMTAG_NAME)) {
 	rpmError(RPMERR_BADHEADER,
 		_("rpmdb: damaged header instance #%u retrieved, skipping.\n"),
 		mi->mi_offset);
 	goto top;
     }
-    mi->mi_h->flags |= HEADERFLAG_ALLOCATED;
 
     /*
      * Skip this header if iterator selector (if any) doesn't match.
@@ -2267,21 +2278,27 @@ memset(data, 0, sizeof(*data));
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMDBI_PACKAGES:
-	      dbi = dbiOpen(db, rpmtag, 0);
-	      if (dbi != NULL) {
-
+		dbi = dbiOpen(db, rpmtag, 0);
+		if (dbi == NULL)	/* XXX shouldn't happen */
+		    continue;
+	      
 /*@-immediatetrans@*/
 		key->data = &hdrNum;
 /*@=immediatetrans@*/
 		key->size = sizeof(hdrNum);
 
 		rc = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
-		rc = dbiDel(dbi, dbcursor, key, data, 0);
+		rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+		if (rc) {
+		    rpmError(RPMERR_DBGETINDEX,
+			_("error(%d) setting header #%d record for %s removal\n"),
+			rc, hdrNum, tagName(dbi->dbi_rpmtag));
+		} else
+		    rc = dbiDel(dbi, dbcursor, key, data, 0);
 		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 		dbcursor = NULL;
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
-	      }
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    }
@@ -2416,7 +2433,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		    /*@innercontinue@*/ continue;
 		} else {			/* error */
 		    rpmError(RPMERR_DBGETINDEX,
-			_("error(%d) getting \"%s\" records from %s index\n"),
+			_("error(%d) setting \"%s\" records from %s index\n"),
 			rc, key->data, tagName(dbi->dbi_rpmtag));
 		    ret += 1;
 		    /*@innercontinue@*/ continue;
@@ -2434,7 +2451,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
 		if (set->count > 0) {
 		    (void) set2dbt(dbi, data, set);
-		    rc = dbiPut(dbi, dbcursor, key, data, 0);
+		    rc = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
 		    if (rc) {
 			rpmError(RPMERR_DBPUTINDEX,
 				_("error(%d) storing record \"%s\" into %s\n"),
@@ -2577,7 +2594,7 @@ memset(data, 0, sizeof(*data));
 /*@=kepttrans@*/
 	data->size = datalen;
 
-	ret = dbiPut(dbi, dbcursor, key, data, 0);
+	ret = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
 	xx = dbiSync(dbi, 0);
 
 	xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
@@ -2621,15 +2638,16 @@ memset(data, 0, sizeof(*data));
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPMDBI_PACKAGES:
-	      dbi = dbiOpen(db, rpmtag, 0);
-	      if (dbi != NULL) {
+		dbi = dbiOpen(db, rpmtag, 0);
+		if (dbi == NULL)	/* XXX shouldn't happen */
+		    continue;
 		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 key->data = (void *) &hdrNum;
 key->size = sizeof(hdrNum);
 data->data = headerUnload(h);
 data->size = headerSizeof(h, HEADER_MAGIC_NO);
     if (data->data != NULL) {
-	xx = dbiPut(dbi, dbcursor, key, data, 0);
+	xx = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
 	xx = dbiSync(dbi, 0);
     }
 data->data = _free(data->data);
@@ -2642,7 +2660,6 @@ data->size = 0;
 		    xx = headerNVR(h, &n, &v, &r);
 		    rpmMessage(RPMMESS_DEBUG, "  +++ %10u %s-%s-%s\n", hdrNum, n, v, r);
 		}
-	      }
 		continue;
 		/*@notreached@*/ /*@switchbreak@*/ break;
 	    /* XXX preserve legacy behavior */
@@ -2829,7 +2846,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 		(void) dbiAppendSet(set, rec, 1, sizeof(*rec), 0);
 
 		(void) set2dbt(dbi, data, set);
-		rc = dbiPut(dbi, dbcursor, key, data, 0);
+		rc = dbiPut(dbi, dbcursor, key, data, DB_KEYLAST);
 
 		if (rc) {
 		    rpmError(RPMERR_DBPUTINDEX,

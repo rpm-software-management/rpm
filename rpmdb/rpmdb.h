@@ -290,7 +290,6 @@ struct _dbiIndex {
 
     int	dbi_verify_on_close;
     int	dbi_tear_down;		/*!< tear down dbenv on close */
-    int	dbi_use_cursors;	/*!< access with cursors? (always) */
     int	dbi_use_dbenv;		/*!< use db environment? */
     int	dbi_permit_dups;	/*!< permit duplicate entries? */
     int	dbi_no_fsync;		/*!< no-op fsync for db */
@@ -300,9 +299,10 @@ struct _dbiIndex {
     int	dbi_debug;
     int	dbi_byteswapped;
 
-/*@null@*/ char * dbi_host;
-    long dbi_cl_timeout;
-    long dbi_sv_timeout;
+/*@null@*/
+    char * dbi_host;
+    unsigned long dbi_cl_timeout;
+    unsigned long dbi_sv_timeout;
 
 	/* dbenv parameters */
     int	dbi_lorder;
