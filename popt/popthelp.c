@@ -9,6 +9,11 @@
    ftp://ftp.rpm.org/pub/rpm/dist. */
 
 #include "system.h"
+
+#define	POPT_WCHAR_HACK
+#ifdef 	POPT_WCHAR_HACK
+#include <wchar.h>			/* for mbsrtowcs */
+#endif
 #include "poptint.h"
 
 /*@access poptContext@*/
@@ -57,10 +62,6 @@ struct poptOption poptHelpOptions[] = {
   { NULL, '\0', POPT_ARG_CALLBACK, (void *)&displayArgs, '\0', NULL, NULL },
   { "help", '?', 0, NULL, '?', N_("Show this help message"), NULL },
   { "usage", '\0', 0, NULL, 'u', N_("Display brief usage message"), NULL },
-#ifdef	NOTYET
-  { "defaults", '\0', POPT_ARG_NONE, &show_option_defaults, 0,
-	N_("Display option defaults in message"), NULL },
-#endif
     POPT_TABLEEND
 } ;
 
@@ -136,13 +137,13 @@ getArgDescrip(const struct poptOption * opt,
 
 /**
  * Display default value for an option.
- * @param lineLength
+ * @param lineLength	display positions remaining
  * @param opt		option(s)
  * @param translation_domain	translation domain
  * @return
  */
 static /*@only@*/ /*@null@*/ char *
-singleOptionDefaultValue(int lineLength,
+singleOptionDefaultValue(size_t lineLength,
 		const struct poptOption * opt,
 		/*@-paramuse@*/ /* FIX: i18n macros disabled with lclint */
 		/*@null@*/ const char * translation_domain)
@@ -209,24 +210,25 @@ singleOptionDefaultValue(int lineLength,
 /**
  * Display help text for an option.
  * @param fp		output file handle
- * @param maxLeftCol
+ * @param maxLeftCol	largest argument display width
  * @param opt		option(s)
  * @param translation_domain	translation domain
  */
-static void singleOptionHelp(FILE * fp, int maxLeftCol, 
+static void singleOptionHelp(FILE * fp, size_t maxLeftCol, 
 		const struct poptOption * opt,
 		/*@null@*/ const char * translation_domain)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
-    int indentLength = maxLeftCol + 5;
-    int lineLength = 79 - indentLength;
+    size_t indentLength = maxLeftCol + 5;
+    size_t lineLength = 79 - indentLength;
     const char * help = D_(translation_domain, opt->descrip);
     const char * argDescrip = getArgDescrip(opt, translation_domain);
     size_t helpLength;
     char * defs = NULL;
     char * left;
-    int nb = maxLeftCol + 1;
+    size_t nb = maxLeftCol + 1;
+    int displaypad = 0;
 
     /* Make sure there's more than enough room in target buffer. */
     if (opt->longName)	nb += strlen(opt->longName);
@@ -326,8 +328,25 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 		break;
 	    }
 	} else {
+	    size_t lelen;
+
 	    *le++ = '=';
-	    strcpy(le, argDescrip);		le += strlen(le);
+	    strcpy(le, argDescrip);
+	    lelen = strlen(le);
+	    le += lelen;
+
+#ifdef	POPT_WCHAR_HACK
+	    {	const char * scopy = argDescrip;
+		mbstate_t t;
+		size_t n;
+
+		memset (&t, '\0', sizeof (t));	/* In initial state.  */
+		/* Determine number of characters.  */
+		n = mbsrtowcs (NULL, &scopy, strlen(scopy), &t);
+
+		displaypad = (lelen-n);
+	    }
+#endif
 	}
 	if (opt->argInfo & POPT_ARGFLAG_OPTIONAL)
 	    *le++ = ']';
@@ -336,7 +355,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 /*@=boundswrite@*/
 
     if (help)
-	fprintf(fp,"  %-*s   ", maxLeftCol, left);
+	fprintf(fp,"  %-*s   ", maxLeftCol+displaypad, left);
     else {
 	fprintf(fp,"  %s\n", left); 
 	goto out;
@@ -382,15 +401,17 @@ out:
 }
 
 /**
+ * Find display width for longest argument string.
  * @param opt		option(s)
  * @param translation_domain	translation domain
+ * @return		display width
  */
-static int maxArgWidth(const struct poptOption * opt,
+static size_t maxArgWidth(const struct poptOption * opt,
 		       /*@null@*/ const char * translation_domain)
 	/*@*/
 {
-    int max = 0;
-    int len = 0;
+    size_t max = 0;
+    size_t len = 0;
     const char * s;
     
     if (opt != NULL)
@@ -410,8 +431,24 @@ static int maxArgWidth(const struct poptOption * opt,
 	    }
 
 	    s = getArgDescrip(opt, translation_domain);
+
+#ifdef POPT_WCHAR_HACK
+	    /* XXX Calculate no. of display characters. */
+	    if (s) {
+		const char * scopy = s;
+		mbstate_t t;
+		size_t n;
+
+		memset (&t, '\0', sizeof (t));	/* In initial state.  */
+		/* Determine number of characters.  */
+		n = mbsrtowcs (NULL, &scopy, strlen(scopy), &t);
+		len += sizeof("=")-1 + n;
+	    }
+#else
 	    if (s)
 		len += sizeof("=")-1 + strlen(s);
+#endif
+
 	    if (opt->argInfo & POPT_ARGFLAG_OPTIONAL) len += sizeof("[]")-1;
 	    if (len > max) max = len;
 	}
@@ -427,11 +464,11 @@ static int maxArgWidth(const struct poptOption * opt,
  * @param fp		output file handle
  * @param items		alias/exec array
  * @param nitems	no. of alias/exec entries
- * @param left
+ * @param left		largest argument display width
  * @param translation_domain	translation domain
  */
 static void itemHelp(FILE * fp,
-		/*@null@*/ poptItem items, int nitems, int left,
+		/*@null@*/ poptItem items, int nitems, size_t left,
 		/*@null@*/ const char * translation_domain)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
@@ -454,11 +491,11 @@ static void itemHelp(FILE * fp,
  * @param con		context
  * @param fp		output file handle
  * @param table		option(s)
- * @param left
+ * @param left		largest argument display width
  * @param translation_domain	translation domain
  */
 static void singleTableHelp(poptContext con, FILE * fp,
-		/*@null@*/ const struct poptOption * table, int left,
+		/*@null@*/ const struct poptOption * table, size_t left,
 		/*@null@*/ const char * translation_domain)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
@@ -523,7 +560,7 @@ static int showHelpIntro(poptContext con, FILE * fp)
 
 void poptPrintHelp(poptContext con, FILE * fp, /*@unused@*/ int flags)
 {
-    int leftColWidth;
+    size_t leftColWidth;
 
     (void) showHelpIntro(con, fp);
     if (con->otherHelp)
@@ -536,8 +573,9 @@ void poptPrintHelp(poptContext con, FILE * fp, /*@unused@*/ int flags)
 }
 
 /**
+ * Display usage text for an option.
  * @param fp		output file handle
- * @param cursor
+ * @param cursor	current display position
  * @param opt		option(s)
  * @param translation_domain	translation domain
  */
@@ -568,8 +606,22 @@ static size_t singleOptionUsage(FILE * fp, size_t cursor,
 
     if (len == 4) return cursor;
 
+#ifdef POPT_WCHAR_HACK
+    /* XXX Calculate no. of display characters. */
+    if (argDescrip) {
+	const char * scopy = argDescrip;
+	mbstate_t t;
+	size_t n;
+
+	memset (&t, '\0', sizeof (t));	/* In initial state.  */
+	/* Determine number of characters.  */
+	n = mbsrtowcs (NULL, &scopy, strlen(scopy), &t);
+	len += sizeof("=")-1 + n;
+    }
+#else
     if (argDescrip) 
-	len += strlen(argDescrip) + 1;
+	len += sizeof("=")-1 + strlen(argDescrip);
+#endif
 
     if ((cursor + len) > 79) {
 	fprintf(fp, "\n       ");
@@ -596,7 +648,7 @@ static size_t singleOptionUsage(FILE * fp, size_t cursor,
 /**
  * Display popt alias and exec usage.
  * @param fp		output file handle
- * @param cursor
+ * @param cursor	current display position
  * @param item		alias/exec array
  * @param nitems	no. of ara/exec entries
  * @param translation_domain	translation domain
@@ -639,7 +691,7 @@ typedef struct poptDone_s {
  * Display usage text for a table of options.
  * @param con		context
  * @param fp		output file handle
- * @param cursor
+ * @param cursor	current display position
  * @param opt		option(s)
  * @param translation_domain	translation domain
  * @param done		tables already processed

@@ -34,6 +34,7 @@
 	- find-debuginfo.sh: permit stripping unwritable by non-root (#112429).
 	- missing build dependency (#111104).
 	- spelling corrections (#112728).
+	- pad to display length, not strlen, for i18n popt args (#106240).
 
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.
