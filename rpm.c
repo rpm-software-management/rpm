@@ -49,7 +49,9 @@ static int incldocs;
 static int initdb;
 static int justdb;
 static int noDeps;
+#ifdef	DELETE
 static int noFiles;
+#endif
 static int noGpg;
 static int noMd5;
 static int noOrder;
@@ -73,7 +75,7 @@ static int test;
 
 static int rpm_version;
 
-static struct rpmQueryArguments queryArgs;
+static struct rpmQVArguments rpmQVArgs;
 static struct rpmBuildArguments buildArgs;
 
 /* the structure describing the options we take and the defaults */
@@ -108,7 +110,9 @@ static struct poptOption optionsTable[] = {
  { "install", '\0', 0, 0, GETOPT_INSTALL,	NULL, NULL},
  { "justdb", '\0', 0, &justdb, 0,		NULL, NULL},
  { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
+#ifdef	DELETE
  { "nofiles", '\0', 0, &noFiles, 0,		NULL, NULL},
+#endif
  { "nogpg", '\0', 0, &noGpg, 0,			NULL, NULL},
  { "nomd5", '\0', 0, &noMd5, 0,			NULL, NULL},
  { "noorder", '\0', 0, &noOrder, 0,		NULL, NULL},
@@ -133,7 +137,6 @@ static struct poptOption optionsTable[] = {
  { "root", 'r', POPT_ARG_STRING, &rootdir, 0,	NULL, NULL},
  { "showrc", '\0', 0, &showrc, GETOPT_SHOWRC,	NULL, NULL},
  { "sign", '\0', 0, &signIt, 0,			NULL, NULL},
- { "specedit", '\0', POPT_ARG_STRING, &specedit, 0,	NULL, NULL},
  { "tarball", 't', POPT_ARG_STRING, 0, 't',	NULL, NULL},
  { "test", '\0', 0, &test, 0,			NULL, NULL},
  { "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK,	NULL, NULL},
@@ -144,9 +147,11 @@ static struct poptOption optionsTable[] = {
  {  NULL, 'y', 0, 0, 'V',			NULL, NULL},
  { "version", '\0', 0, &rpm_version, 0,		NULL, NULL},
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
-		rpmQuerySourcePoptTable, 0,	(void *) &queryArgs, NULL },
+		rpmQVSourcePoptTable, 0,	(void *) &rpmQVArgs, NULL },
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
-		rpmQueryPoptTable, 0,		(void *) &queryArgs, NULL },
+		rpmQueryPoptTable, 0,		(void *) &rpmQVArgs, NULL },
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
+		rpmVerifyPoptTable, 0,		(void *) &rpmQVArgs, NULL },
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
 		rpmBuildPoptTable, 0,		(void *) &buildArgs, NULL },
  { 0, 0, 0, 0, 0,	NULL, NULL }
@@ -498,8 +503,7 @@ static void printHelp(void) {
 
 int main(int argc, char ** argv) {
     enum modes bigMode = MODE_UNKNOWN;
-    enum rpmQuerySources querySource = QUERY_PACKAGE;
-    enum verifysources verifySource = VERIFY_PACKAGE;
+    enum rpmQVSources QVSource = RPMQV_PACKAGE;
     int arg;
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
     int gotDbpath = 0, verifyFlags;
@@ -545,7 +549,9 @@ int main(int argc, char ** argv) {
     initdb = 0;
     justdb = 0;
     noDeps = 0;
+#ifdef	DELETE
     noFiles = 0;
+#endif
     noGpg = 0;
     noMd5 = 0;
     noOrder = 0;
@@ -609,8 +615,8 @@ int main(int argc, char ** argv) {
 
     poptResetContext(optCon);
 
-    if (queryArgs.queryFormat) free(queryArgs.queryFormat);
-    memset(&queryArgs, 0, sizeof(queryArgs));
+    if (rpmQVArgs.queryFormat) free(rpmQVArgs.queryFormat);
+    memset(&rpmQVArgs, 0, sizeof(rpmQVArgs));
     if (buildArgs.buildRootOverride) xfree(buildArgs.buildRootOverride);
     if (buildArgs.targets) free(buildArgs.targets);
     memset(&buildArgs, 0, sizeof(buildArgs));
@@ -715,62 +721,58 @@ int main(int argc, char ** argv) {
 	    upgrade = 1;
 	    break;
 
+#ifdef DYING
 	  case 'p':
-	    if (querySource != QUERY_PACKAGE && querySource != QUERY_RPM)
+	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_RPM)
 		argerror(_("one type of query/verify may be performed at a " "time"));
-	    querySource = QUERY_RPM;
-	    verifySource = VERIFY_RPM;
+	    QVSource = RPMQV_RPM;
 	    break;
 
 	  case 'g':
-	    if (querySource != QUERY_PACKAGE && querySource != QUERY_GROUP)
+	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_GROUP)
 		argerror(_("one type of query/verify may be performed at a "
 				"time"));
-	    querySource = QUERY_GROUP;
-	    verifySource = VERIFY_GRP;
+	    QVSource = RPMQV_GROUP;
 	    break;
 
 	  case 'f':
-	    if (querySource != QUERY_PACKAGE && querySource != QUERY_PATH)
+	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_PATH)
 		argerror(_("one type of query/verify may be performed at a "
 				"time"));
-	    querySource = QUERY_PATH;
-	    verifySource = VERIFY_PATH;
+	    QVSource = RPMQV_PATH;
 	    break;
 
 	  case 'a':
-	    if (querySource != QUERY_PACKAGE && querySource != QUERY_ALL)
+	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_ALL)
 		argerror(_("one type of query/verify may be performed at a "
 				"time"));
-	    querySource = QUERY_ALL;
-	    verifySource = VERIFY_EVERY;
+	    QVSource = RPMQV_ALL;
 	    break;
 
-#ifdef FOO
 	  case GETOPT_WHATREQUIRES:
-	    if (querySource != QUERY_PACKAGE && 
-		querySource != QUERY_WHATREQUIRES)
+	    if (QVSource != RPMQV_PACKAGE && 
+		QVSource != RPMQV_WHATREQUIRES)
 		argerror(_("one type of query/verify may be performed at a "
 				"time"));
-	    querySource = QUERY_WHATREQUIRES;
+	    QVSource = RPMQV_WHATREQUIRES;
 	    break;
 
 	  case GETOPT_WHATPROVIDES:
-	    if (querySource != QUERY_PACKAGE && 
-		querySource != QUERY_WHATPROVIDES)
+	    if (QVSource != RPMQV_PACKAGE && 
+		QVSource != RPMQV_WHATPROVIDES)
 		argerror(_("one type of query/verify may be performed at a "
 				"time"));
-	    querySource = QUERY_WHATPROVIDES;
+	    QVSource = RPMQV_WHATPROVIDES;
 	    break;
 
 	  case GETOPT_TRIGGEREDBY:
-	    if (querySource != QUERY_PACKAGE && 
-		querySource != QUERY_TRIGGEREDBY)
+	    if (QVSource != RPMQV_PACKAGE && 
+		QVSource != RPMQV_TRIGGEREDBY)
 		argerror(_("one type of query/verify may be performed at a "
 				"time"));
-	    querySource = QUERY_TRIGGEREDBY;
+	    QVSource = RPMQV_TRIGGEREDBY;
 	    break;
-#endif
+#endif	/* DYING */
 
 	  case GETOPT_REBUILD:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
@@ -916,11 +918,11 @@ int main(int argc, char ** argv) {
 	    bigMode = MODE_QUERYTAGS;
     }
 
-    if (queryArgs.sourceCount) {
-	if (querySource != QUERY_PACKAGE || queryArgs.sourceCount > 1)
+    if (rpmQVArgs.sourceCount) {
+	if (QVSource != RPMQV_PACKAGE || rpmQVArgs.sourceCount > 1)
 	    argerror(_("one type of query/verify may be performed at a "
 			"time"));
-	querySource = queryArgs.source;
+	QVSource = rpmQVArgs.source;
     }
 
     if (buildArgs.buildRootOverride && bigMode != MODE_BUILD &&
@@ -938,14 +940,14 @@ int main(int argc, char ** argv) {
 	bigMode != MODE_RECOMPILE && bigMode != MODE_TARBUILD) 
 	argerror(_("--timecheck may only be used during package builds"));
     
-    if (bigMode != MODE_QUERY && queryArgs.flags) 
+    if (bigMode != MODE_QUERY && rpmQVArgs.flags) 
 	argerror(_("unexpected query specifiers"));
 
-    if (bigMode != MODE_QUERY && queryArgs.queryFormat) 
+    if (bigMode != MODE_QUERY && rpmQVArgs.queryFormat) 
 	argerror(_("unexpected query specifiers"));
 
     if (bigMode != MODE_QUERY && bigMode != MODE_VERIFY &&
-	querySource != QUERY_PACKAGE) 
+	QVSource != RPMQV_PACKAGE) 
 	argerror(_("unexpected query source"));
 
     if (!(bigMode == MODE_INSTALL ||
@@ -1036,9 +1038,11 @@ int main(int argc, char ** argv) {
 	argerror(_("--nodeps may only be specified during package "
 		   "building, installation, erasure, and verification"));
 
+#ifdef	DELETE
     if (bigMode != MODE_VERIFY && noFiles)
 	argerror(_("--nofiles may only be specified during package "
 		   "verification"));
+#endif
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL &&
 	bigMode != MODE_BUILD && bigMode != MODE_TARBUILD && test )
@@ -1075,14 +1079,14 @@ int main(int argc, char ** argv) {
 	argerror(_("--oldpackage may only be used during upgrades"));
 
     if ((ftpProxy || ftpPort) && !(bigMode == MODE_INSTALL ||
-	((bigMode == MODE_QUERY && querySource == QUERY_RPM)) ||
-	((bigMode == MODE_VERIFY && querySource == VERIFY_RPM))))
+	((bigMode == MODE_QUERY && QVSource == RPMQV_RPM)) ||
+	((bigMode == MODE_VERIFY && QVSource == RPMQV_RPM))))
 	argerror(_("ftp options can only be used during package queries, "
 		 "installs, and upgrades"));
 
     if ((httpProxy || httpPort) && !(bigMode == MODE_INSTALL ||
-	((bigMode == MODE_QUERY && querySource == QUERY_RPM)) ||
-	((bigMode == MODE_VERIFY && querySource == VERIFY_RPM))))
+	((bigMode == MODE_QUERY && QVSource == RPMQV_RPM)) ||
+	((bigMode == MODE_VERIFY && QVSource == RPMQV_RPM))))
 	argerror(_("http options can only be used during package queries, "
 		 "installs, and upgrades"));
 
@@ -1375,34 +1379,41 @@ int main(int argc, char ** argv) {
 	break;
 
       case MODE_QUERY:
-	if (querySource == QUERY_ALL) {
+	if (QVSource == RPMQV_ALL) {
 	    if (poptPeekArg(optCon))
 		argerror(_("extra arguments given for query of all packages"));
 
-	    ec = rpmQuery(rootdir, QUERY_ALL, queryArgs.flags, NULL, 
-			 queryArgs.queryFormat);
+	    ec = rpmQuery(rootdir, RPMQV_ALL, rpmQVArgs.flags, NULL, 
+			 rpmQVArgs.queryFormat);
 	} else {
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for query"));
 	    while ((pkg = poptGetArg(optCon)))
-		ec = rpmQuery(rootdir, querySource, queryArgs.flags, pkg, 
-			     queryArgs.queryFormat);
+		ec = rpmQuery(rootdir, QVSource, rpmQVArgs.flags, pkg, 
+			     rpmQVArgs.queryFormat);
 	}
 	break;
 
       case MODE_VERIFY:
-	verifyFlags = 0;
+	verifyFlags = (VERIFY_FILES|VERIFY_DEPS|VERIFY_SCRIPT|VERIFY_MD5);
+#ifdef	DELETE
 	if (!noFiles) verifyFlags |= VERIFY_FILES;
-	if (!noDeps) verifyFlags |= VERIFY_DEPS;
-	if (!noScripts) verifyFlags |= VERIFY_SCRIPT;
-	if (!noMd5) verifyFlags |= VERIFY_MD5;
+#else
+	verifyFlags &= ~rpmQVArgs.flags;
+#endif
+	if (noDeps)	verifyFlags &= ~VERIFY_DEPS;
+	if (noScripts)	verifyFlags &= ~VERIFY_SCRIPT;
+	if (noMd5)	verifyFlags &= ~VERIFY_MD5;
 
-	if (verifySource == VERIFY_EVERY) {
-	    ec = doVerify(rootdir, VERIFY_EVERY, NULL, verifyFlags);
+	if (QVSource == RPMQV_ALL) {
+	    if (poptPeekArg(optCon))
+		argerror(_("extra arguments given for verify of all packages"));
+	    ec = rpmVerify(rootdir, RPMQV_ALL, verifyFlags, NULL);
 	} else {
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for verify"));
-	    ec = doVerify(rootdir, verifySource, poptGetArgs(optCon), verifyFlags);
+	    while ((pkg = poptGetArg(optCon)))
+		ec = rpmVerify(rootdir, QVSource, verifyFlags, pkg);
 	}
 	break;
     }
@@ -1415,7 +1426,7 @@ int main(int argc, char ** argv) {
     }
 
     /* keeps memory leak checkers quiet */
-    if (queryArgs.queryFormat) free(queryArgs.queryFormat);
+    if (rpmQVArgs.queryFormat) free(rpmQVArgs.queryFormat);
 
     return ec;
 }

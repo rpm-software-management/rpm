@@ -6,11 +6,28 @@
 #include "url.h"
 #include "verify.h"
 
-static int verifyHeader(const char * prefix, Header h, int verifyFlags);
-static int verifyMatches(const char * prefix, rpmdb db, dbiIndexSet matches,
-			  int verifyFlags);
-static int verifyDependencies(rpmdb db, Header h);
+#define	POPT_NOFILES	1000
 
+/* ========== Verify specific popt args */
+static void verifyArgCallback(poptContext con, enum poptCallbackReason reason,
+			     const struct poptOption * opt, const char * arg, 
+			     struct rpmQVArguments * data)
+{
+    switch (opt->val) {
+      case POPT_NOFILES: data->flags |= VERIFY_FILES; break;
+    }
+}
+
+static int noFiles = 0;
+struct poptOption rpmVerifyPoptTable[] = {
+	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
+		verifyArgCallback, 0, NULL, NULL },
+ 	{ "nofiles", '\0', 0, &noFiles, POPT_NOFILES,
+		N_("don't verify files in package"), NULL},
+	{ 0, 0, 0, 0, 0,	NULL, NULL }
+};
+
+/* ======================================================================== */
 static int verifyHeader(const char * prefix, Header h, int verifyFlags) {
     const char ** fileList;
     int count, type;
@@ -152,25 +169,65 @@ static int verifyMatches(const char * prefix, rpmdb db, dbiIndexSet matches,
     return ec;
 }
 
-int doVerify(const char * prefix, enum verifysources source, const char ** argv,
-	      int verifyFlags) {
+int rpmVerify(const char * prefix, enum rpmQVSources source, int verifyFlags,
+	      const char *arg)
+{
     Header h;
     int offset;
-    int ec, rc;
+    int rc;
     int isSource;
-    rpmdb db;
+    rpmdb db = NULL;
     dbiIndexSet matches;
+    int recNumber;
+    int retcode = 0;
+    char *end = NULL;
 
-    ec = 0;
-    if (source == VERIFY_RPM && !(verifyFlags & VERIFY_DEPS)) {
-	db = NULL;
-    } else {
-	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
+    switch (source) {
+    case RPMQV_RPM:
+	if (!(verifyFlags & VERIFY_DEPS))
+	    break;
+	/* fall thru */
+    default:
+	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644))
 	    return 1;	/* XXX was exit(EXIT_FAILURE) */
-	}
+	break;
     }
 
-    if (source == VERIFY_EVERY) {
+    switch (source) {
+      case RPMQV_RPM:
+      {	FD_t fd;
+
+	fd = ufdOpen(arg, O_RDONLY, 0);
+	if (fdFileno(fd) < 0) {
+	    fprintf(stderr, _("open of %s failed\n"), arg);
+	    ufdClose(fd);
+	    retcode = 1;
+	    break;
+	}
+
+	retcode = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+
+	ufdClose(fd);
+
+	switch (retcode) {
+	case 0:
+	    retcode = verifyPackage(prefix, db, h, verifyFlags);
+	    headerFree(h);
+	    break;
+	case 1:
+	    fprintf(stderr, _("%s does not appear to be a RPM package\n"), arg);
+	    /* fallthrough */
+	case 2:
+	    fprintf(stderr, _("query of %s failed\n"), arg);
+	    retcode = 1;
+	    break;
+	}
+      }	break;
+
+      case RPMQV_SPECFILE:	/* XXX FIXME */
+	break;
+
+      case RPMQV_ALL:
 	for (offset = rpmdbFirstRecNum(db);
 	     offset != 0;
 	     offset = rpmdbNextRecNum(db, offset)) {
@@ -181,84 +238,113 @@ int doVerify(const char * prefix, enum verifysources source, const char ** argv,
 		}
 		
 		if ((rc = verifyPackage(prefix, db, h, verifyFlags)) != 0)
-		    ec = rc;
+		    retcode = rc;
 		headerFree(h);
 	}
-    } else {
-	while (*argv) {
-	    const char *arg = *argv++;
+	break;
+      case RPMQV_GROUP:
+	if (rpmdbFindByGroup(db, arg, &matches)) {
+	    fprintf(stderr, _("group %s does not contain any packages\n"), 
+			arg);
+	} else {
+	    retcode = verifyMatches(prefix, db, matches, verifyFlags);
+	    dbiFreeIndexRecord(matches);
+	}
+	break;
 
-	    rc = 0;
-	    switch (source) {
-	    case VERIFY_RPM:
-	      { FD_t fd;
+      case RPMQV_WHATPROVIDES:
+	if (rpmdbFindByProvides(db, arg, &matches)) {
+	    fprintf(stderr, _("no package provides %s\n"), arg);
+	    retcode = 1;
+	} else {
+	    retcode = verifyMatches(prefix, db, matches, verifyFlags);
+	    dbiFreeIndexRecord(matches);
+	}
+	break;
 
-		fd = ufdOpen(arg, O_RDONLY, 0);
-		if (fd == NULL) {
-		    fprintf(stderr, _("open of %s failed\n"), arg);
-		    break;
-		}
+      case RPMQV_TRIGGEREDBY:
+	if (rpmdbFindByTriggeredBy(db, arg, &matches)) {
+	    fprintf(stderr, _("no package triggers %s\n"), arg);
+	    retcode = 1;
+	} else {
+	    retcode = verifyMatches(prefix, db, matches, verifyFlags);
+	    dbiFreeIndexRecord(matches);
+	}
+	break;
 
-		if (fdFileno(fd) >= 0) {
-		    rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
-		}
+      case RPMQV_WHATREQUIRES:
+	if (rpmdbFindByRequiredBy(db, arg, &matches)) {
+	    fprintf(stderr, _("no package requires %s\n"), arg);
+	    retcode = 1;
+	} else {
+	    retcode = verifyMatches(prefix, db, matches, verifyFlags);
+	    dbiFreeIndexRecord(matches);
+	}
+	break;
 
-		ufdClose(fd);
-
-		switch (rc) {
-		case 0:
-			rc = verifyPackage(prefix, db, h, verifyFlags);
-			headerFree(h);
-			break;
-		case 1:
-			fprintf(stderr, _("%s is not an RPM\n"), arg);
-			break;
-		}
-	      }	break;
-
-	    case VERIFY_GRP:
-		if (rpmdbFindByGroup(db, arg, &matches)) {
-		    fprintf(stderr, 
-				_("group %s does not contain any packages\n"), 
-				arg);
-		} else {
-		    rc = verifyMatches(prefix, db, matches, verifyFlags);
-		    dbiFreeIndexRecord(matches);
-		}
+      case RPMQV_PATH:
+	if (rpmdbFindByFile(db, arg, &matches)) {
+	    int myerrno = 0;
+	    if (access(arg, F_OK) != 0)
+		myerrno = errno;
+	    switch (myerrno) {
+	    default:
+		fprintf(stderr, _("file %s: %s\n"), arg, strerror(myerrno));
 		break;
-
-	    case VERIFY_PATH:
-		if (rpmdbFindByFile(db, arg, &matches)) {
-		    fprintf(stderr, _("file %s is not owned by any package\n"), 
-				arg);
-		} else {
-		    rc = verifyMatches(prefix, db, matches, verifyFlags);
-		    dbiFreeIndexRecord(matches);
-		}
-		break;
-
-	    case VERIFY_PACKAGE:
-		rc = rpmdbFindByLabel(db, arg, &matches);
-		if (rc == 1) 
-		    fprintf(stderr, _("package %s is not installed\n"), arg);
-		else if (rc == 2) {
-		    fprintf(stderr, _("error looking for package %s\n"), arg);
-		} else {
-		    rc = verifyMatches(prefix, db, matches, verifyFlags);
-		    dbiFreeIndexRecord(matches);
-		}
-		break;
-
-	    case VERIFY_EVERY:
+	    case 0:
+		fprintf(stderr, _("file %s is not owned by any package\n"), arg);
 		break;
 	    }
-	    if (rc)
-		ec = rc;
+	    retcode = 1;
+	} else {
+	    retcode = verifyMatches(prefix, db, matches, verifyFlags);
+	    dbiFreeIndexRecord(matches);
 	}
+	break;
+
+      case RPMQV_PACKAGE:
+	rc = rpmdbFindByLabel(db, arg, &matches);
+	if (rc == 1) {
+	    retcode = 1;
+	    fprintf(stderr, _("package %s is not installed\n"), arg);
+	} else if (rc == 2) {
+	    retcode = 1;
+	    fprintf(stderr, _("error looking for package %s\n"), arg);
+	} else {
+	    retcode = verifyMatches(prefix, db, matches, verifyFlags);
+	    dbiFreeIndexRecord(matches);
+	}
+	break;
+
+      case RPMQV_DBOFFSET:
+	recNumber = strtoul(arg, &end, 10);
+	if ((*end) || (end == arg) || (recNumber == ULONG_MAX)) {
+	    fprintf(stderr, _("invalid package number: %s\n"), arg);
+	    return 1;
+	}
+	rpmMessage(RPMMESS_DEBUG, _("verifying package: %d\n"), recNumber);
+	h = rpmdbGetRecord(db, recNumber);
+	if (h == NULL)  {
+	    fprintf(stderr, _("record %d could not be read\n"), recNumber);
+	    retcode = 1;
+	} else {
+	    rc = verifyMatches(prefix, db, matches, verifyFlags);
+	    headerFree(h);
+	}
+	break;
     }
    
-    if (source != VERIFY_RPM) {
-	rpmdbClose(db);
+    switch(source) {
+    case RPMQV_RPM:
+	if (!(verifyFlags & VERIFY_DEPS))
+	    break;
+	/* fall thru */
+    default:
+	if (db) {
+	    rpmdbClose(db);
+	    db = NULL;
+	}
+	break;
     }
-    return ec;
+    return retcode;
 }

@@ -6,7 +6,7 @@
 
 #include "build/rpmbuild.h"
 #include "popt/popt.h"
-#include "url.h"
+#include "../url.h"
 
 static char * permsString(int mode);
 static void printHeader(Header h, int queryFlags, const char * queryFormat);
@@ -25,19 +25,46 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 #define POPT_DUMP		1005
 #define POPT_SPECFILE		1006
 
-static void queryArgCallback(poptContext con, enum poptCallbackReason reason,
+/* ========== Query/Verify source popt args */
+static void rpmQVSourceArgCallback(poptContext con, enum poptCallbackReason reason,
 			     const struct poptOption * opt, const char * arg, 
-			     struct rpmQueryArguments * data);
+			     struct rpmQVArguments* data) {
 
-struct poptOption rpmQuerySourcePoptTable[] = {
+    switch (opt->val) {
+      case 'a': data->source |= RPMQV_ALL; data->sourceCount++; break;
+      case 'f': data->source |= RPMQV_PATH; data->sourceCount++; break;
+      case 'g': data->source |= RPMQV_GROUP; data->sourceCount++; break;
+      case 'p': data->source |= RPMQV_RPM; data->sourceCount++; break;
+      case POPT_WHATPROVIDES: data->source |= RPMQV_WHATPROVIDES; 
+			      data->sourceCount++; break;
+      case POPT_WHATREQUIRES: data->source |= RPMQV_WHATREQUIRES; 
+			      data->sourceCount++; break;
+      case POPT_TRIGGEREDBY: data->source |= RPMQV_TRIGGEREDBY;
+			      data->sourceCount++; break;
+
+/* XXX SPECFILE is not verify sources */
+      case POPT_SPECFILE:
+	data->source |= RPMQV_SPECFILE;
+	data->sourceCount++;
+	break;
+      case POPT_QUERYBYNUMBER:
+	data->source |= RPMQV_DBOFFSET; 
+	data->sourceCount++;
+	break;
+    }
+}
+
+struct poptOption rpmQVSourcePoptTable[] = {
 	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
-		queryArgCallback, 0, NULL, NULL },
+		rpmQVSourceArgCallback, 0, NULL, NULL },
 	{ "file", 'f', 0, 0, 'f',
 		N_("query package owning file"), "FILE" },
 	{ "group", 'g', 0, 0, 'g',
 		N_("query packages in group"), "GROUP" },
 	{ "package", 'p', 0, 0, 'p',
 		N_("query a package file"), NULL },
+	{ "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, 
+		POPT_QUERYBYNUMBER, NULL, NULL },
 	{ "specfile", '\0', 0, 0, POPT_SPECFILE,
 		N_("query a spec file"), NULL },
 	{ "triggeredby", '\0', 0, 0, POPT_TRIGGEREDBY, 
@@ -49,34 +76,12 @@ struct poptOption rpmQuerySourcePoptTable[] = {
 	{ 0, 0, 0, 0, 0,	NULL, NULL }
 };
 
-struct poptOption rpmQueryPoptTable[] = {
-	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
-		queryArgCallback, 0, NULL, NULL },
-	{ "configfiles", 'c', 0, 0, 'c',
-		N_("list all configuration files"), NULL },
-	{ "docfiles", 'd', 0, 0, 'd',
-		N_("list all documetnation files"), NULL },
-	{ "dump", '\0', 0, 0, POPT_DUMP,
-		N_("dump basic file information"), NULL },
-	{ "list", 'l', 0, 0, 'l',
-		N_("list files in package"), NULL },
-	{ "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
-		POPT_QUERYFORMAT, NULL, NULL },
-	{ "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, 
-		POPT_QUERYBYNUMBER, NULL, NULL },
-	{ "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
-		N_("use the following query format"), "QUERYFORMAT" },
-	{ "state", 's', 0, 0, 's',
-		N_("display the states of the listed files"), NULL },
-	{ "verbose", 'v', 0, 0, 'v',
-		N_("display a verbose file listing"), NULL },
-	{ 0, 0, 0, 0, 0,	NULL, NULL }
-};
+/* ========== Query specific popt args */
+extern char *specedit;
 
 static void queryArgCallback(poptContext con, enum poptCallbackReason reason,
 			     const struct poptOption * opt, const char * arg, 
-			     struct rpmQueryArguments * data) {
-    int len;
+			     struct rpmQVArguments * data) {
 
     switch (opt->val) {
       case 'c': data->flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
@@ -84,25 +89,11 @@ static void queryArgCallback(poptContext con, enum poptCallbackReason reason,
       case 'l': data->flags |= QUERY_FOR_LIST; break;
       case 's': data->flags |= QUERY_FOR_STATE | QUERY_FOR_LIST; break;
       case POPT_DUMP: data->flags |= QUERY_FOR_DUMPFILES | QUERY_FOR_LIST; break;
-
-      case 'a': data->source |= QUERY_ALL; data->sourceCount++; break;
-      case 'f': data->source |= QUERY_PATH; data->sourceCount++; break;
-      case 'g': data->source |= QUERY_GROUP; data->sourceCount++; break;
-      case 'p': data->source |= QUERY_RPM; data->sourceCount++; break;
       case 'v': rpmIncreaseVerbosity();	 break;
-      case POPT_SPECFILE: data->source |= QUERY_SPECFILE; data->sourceCount++; break;
-      case POPT_WHATPROVIDES: data->source |= QUERY_WHATPROVIDES; 
-			      data->sourceCount++; break;
-      case POPT_WHATREQUIRES: data->source |= QUERY_WHATREQUIRES; 
-			      data->sourceCount++; break;
-      case POPT_QUERYBYNUMBER: data->source |= QUERY_DBOFFSET; 
-			      data->sourceCount++; break;
-      case POPT_TRIGGEREDBY: data->source |= QUERY_TRIGGEREDBY;
-			      data->sourceCount++; break;
 
       case POPT_QUERYFORMAT:
 	if (data->queryFormat) {
-	    len = strlen(data->queryFormat) + strlen(arg) + 1;
+	    int len = strlen(data->queryFormat) + strlen(arg) + 1;
 	    data->queryFormat = realloc(data->queryFormat, len);
 	    strcat(data->queryFormat, arg);
 	} else {
@@ -113,6 +104,32 @@ static void queryArgCallback(poptContext con, enum poptCallbackReason reason,
     }
 }
 
+struct poptOption rpmQueryPoptTable[] = {
+	{ NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA, 
+		queryArgCallback, 0, NULL, NULL },
+	{ "configfiles", 'c', 0, 0, 'c',
+		N_("list all configuration files"), NULL },
+	{ "docfiles", 'd', 0, 0, 'd',
+		N_("list all documentation files"), NULL },
+	{ "dump", '\0', 0, 0, POPT_DUMP,
+		N_("dump basic file information"), NULL },
+	{ "list", 'l', 0, 0, 'l',
+		N_("list files in package"), NULL },
+	{ "qf", '\0', POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN, 0, 
+		POPT_QUERYFORMAT, NULL, NULL },
+	{ "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
+		N_("use the following query format"), "QUERYFORMAT" },
+	{ "specedit", '\0', POPT_ARG_STRING, &specedit, 0,
+		N_("substitute i18n sections from the following catalogue"),
+			"METACATALOGUE" },
+	{ "state", 's', 0, 0, 's',
+		N_("display the states of the listed files"), NULL },
+	{ "verbose", 'v', 0, 0, 'v',
+		N_("display a verbose file listing"), NULL },
+	{ 0, 0, 0, 0, 0,	NULL, NULL }
+};
+
+/* ======================================================================== */
 static int queryHeader(Header h, const char * chptr) {
     char * str;
     char * error;
@@ -484,7 +501,7 @@ printNewSpecfile(Spec spec)
     }
 }
 
-int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags, 
+int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags, 
 	     const char * arg, const char * queryFormat) {
     Header h;
     int offset;
@@ -503,13 +520,13 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
 	    exit(1);
 	}
 	break;
-    case QUERY_RPM:
-    case QUERY_SPECFILE:
+    case RPMQV_RPM:
+    case RPMQV_SPECFILE:
 	break;
     }
 
     switch (source) {
-      case QUERY_RPM:
+      case RPMQV_RPM:
       { FD_t fd;
 
 	fd = ufdOpen(arg, O_RDONLY, 0);
@@ -544,7 +561,7 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
 	}
       } break;
 
-      case QUERY_SPECFILE:
+      case RPMQV_SPECFILE:
       { Spec spec = NULL;
 	Package pkg;
 	char * buildRoot = NULL;
@@ -585,7 +602,7 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
 	freeSpec(spec);
       }	break;
 
-      case QUERY_ALL:
+      case RPMQV_ALL:
 	offset = rpmdbFirstRecNum(db);
 	while (offset) {
 	    h = rpmdbGetRecord(db, offset);
@@ -599,7 +616,7 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
 	}
 	break;
 
-      case QUERY_GROUP:
+      case RPMQV_GROUP:
 	if (rpmdbFindByGroup(db, arg, &matches)) {
 	    fprintf(stderr, _("group %s does not contain any packages\n"), arg);
 	    retcode = 1;
@@ -609,7 +626,7 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
 	}
 	break;
 
-      case QUERY_WHATPROVIDES:
+      case RPMQV_WHATPROVIDES:
 	if (rpmdbFindByProvides(db, arg, &matches)) {
 	    fprintf(stderr, _("no package provides %s\n"), arg);
 	    retcode = 1;
@@ -619,7 +636,7 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
 	}
 	break;
 
-      case QUERY_TRIGGEREDBY:
+      case RPMQV_TRIGGEREDBY:
 	if (rpmdbFindByTriggeredBy(db, arg, &matches)) {
 	    fprintf(stderr, _("no package triggers %s\n"), arg);
 	    retcode = 1;
@@ -629,7 +646,7 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
 	}
 	break;
 
-      case QUERY_WHATREQUIRES:
+      case RPMQV_WHATREQUIRES:
 	if (rpmdbFindByRequiredBy(db, arg, &matches)) {
 	    fprintf(stderr, _("no package requires %s\n"), arg);
 	    retcode = 1;
@@ -639,7 +656,7 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
 	}
 	break;
 
-      case QUERY_PATH:
+      case RPMQV_PATH:
 	if (rpmdbFindByFile(db, arg, &matches)) {
 	    int myerrno = 0;
 	    if (access(arg, F_OK) != 0)
@@ -659,7 +676,7 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
 	}
 	break;
 
-      case QUERY_DBOFFSET:
+      case RPMQV_DBOFFSET:
 	recNumber = strtoul(arg, &end, 10);
 	if ((*end) || (end == arg) || (recNumber == ULONG_MAX)) {
 	    fprintf(stderr, _("invalid package number: %s\n"), arg);
@@ -676,7 +693,7 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
 	}
 	break;
 
-      case QUERY_PACKAGE:
+      case RPMQV_PACKAGE:
 	rc = rpmdbFindByLabel(db, arg, &matches);
 	if (rc == 1) {
 	    retcode = 1;
@@ -695,8 +712,8 @@ int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags,
     default:
 	rpmdbClose(db);
 	break;
-    case QUERY_RPM:
-    case QUERY_SPECFILE:
+    case RPMQV_RPM:
+    case RPMQV_SPECFILE:
 	break;
     }
 

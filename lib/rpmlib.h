@@ -592,9 +592,20 @@ int rpmGetFilesystemList(const char *** listptr, int * num);
 int rpmGetFilesystemUsage(const char ** filelist, int_32 * fssizes, int numFiles,
 			  uint_32 ** usagesPtr, int flags);
 
-enum rpmQuerySources { QUERY_PACKAGE = 0, QUERY_PATH, QUERY_ALL, QUERY_RPM, 
-		       QUERY_GROUP, QUERY_WHATPROVIDES, QUERY_WHATREQUIRES,
-		       QUERY_DBOFFSET, QUERY_TRIGGEREDBY, QUERY_SPECFILE };
+/* XXX SPECFILE is not verify sources */
+enum rpmQVSources { RPMQV_PACKAGE = 0, RPMQV_PATH, RPMQV_ALL, RPMQV_RPM, 
+		       RPMQV_GROUP, RPMQV_WHATPROVIDES, RPMQV_WHATREQUIRES,
+		       RPMQV_TRIGGEREDBY, RPMQV_DBOFFSET, RPMQV_SPECFILE };
+
+extern struct poptOption rpmQVSourcePoptTable[];
+
+struct rpmQVArguments {
+    enum rpmQVSources source;
+    int sourceCount;		/* > 1 is an error */
+    int flags;
+    int verbose;
+    char * queryFormat;
+};
 
 #define QUERY_FOR_LIST		(1 << 1)
 #define QUERY_FOR_STATE		(1 << 2)
@@ -602,18 +613,10 @@ enum rpmQuerySources { QUERY_PACKAGE = 0, QUERY_PATH, QUERY_ALL, QUERY_RPM,
 #define QUERY_FOR_CONFIG	(1 << 4)
 #define QUERY_FOR_DUMPFILES     (1 << 8)
 
-extern struct poptOption rpmQuerySourcePoptTable[];
+extern char *specedit;
 extern struct poptOption rpmQueryPoptTable[];
 
-struct rpmQueryArguments {
-    int flags;
-    enum rpmQuerySources source;
-    int sourceCount;		/* > 1 is an error */
-    char * queryFormat;
-    int verbose;
-};
-
-int rpmQuery(const char * prefix, enum rpmQuerySources source, int queryFlags, 
+int rpmQuery(const char * prefix, enum rpmQVSources source, int queryFlags, 
 	     const char * arg, const char * queryFormat);
 void rpmDisplayQueryTags(FILE * f);
 

@@ -7,11 +7,13 @@
 	- fix: optflags not implicitly set to canonical arch value.
 	- fix: prefer pgp2.6.3 over pgp5 if both are installed.
 	- make sure that rpm-the-package auto-requires glibc.
+	- add rpmputtext/rpmgettext to rpm packages.
 	- fix: non-apache servers need "GET ... HTTP/1.0" by the book.
 	- fix: %doc wrongly inherits lang from last entry in %files.
 	- resurrect toplevel tar target.
 	- spec file removal separate from source removal (Shing-Gene Yung).
 	- add rpm prefix to MD5 routines to avoid name conflict on solaris.
+	- fix: resurrect -Vp, -Vf and -Vg functionality.
 
 2.94 -> 2.95
 	- fix: last update transaction set segfault bug in installer.

@@ -3,15 +3,14 @@
 
 #include <rpmlib.h>
 
-#define VERIFY_FILES		(1 << 0)
-#define VERIFY_DEPS		(1 << 1)
-#define VERIFY_SCRIPT		(1 << 2)
-#define VERIFY_MD5		(1 << 3)
+#define VERIFY_FILES		(1 << 1)
+#define VERIFY_DEPS		(1 << 2)
+#define VERIFY_SCRIPT		(1 << 3)
+#define VERIFY_MD5		(1 << 4)
 
-enum verifysources { VERIFY_PATH, VERIFY_PACKAGE, VERIFY_EVERY, VERIFY_RPM, 
-			VERIFY_GRP };
+extern struct poptOption rpmVerifyPoptTable[];
 
-int doVerify(const char * prefix, enum verifysources source, const char ** argv,
-	      int verifyFlags);
+int rpmVerify(const char * prefix, enum rpmQVSources source, int verifyFlags,
+	const char *arg);
 
 #endif
