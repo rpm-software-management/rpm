@@ -8,7 +8,7 @@
 #include <rpmte.h>		/* XXX rpmElementType */
 
 #define	_RPMGI_INTERNAL
-#define	_RPMTS_INTERNAL
+#define	_RPMTS_INTERNAL		/* XXX ts->probs et al */
 #include <rpmgi.h>
 
 #include <rpmdb.h>
@@ -176,13 +176,14 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 	    break;
 
 	/* Not a header, so try for a manifest. */
-	gi->argv[gi->i] = NULL;		/* HACK */
+	gi->argv[gi->i] = NULL;		/* Mark the insertion point */
 	rpmrc = rpmgiLoadManifest(gi, fn);
 	if (rpmrc != RPMRC_OK) {
-	    gi->argv[gi->i] = fn;	/* HACK */
+	    gi->argv[gi->i] = fn;	/* Manifest failed, restore fn */
 	    break;
 	}
 	fn = _free(fn);
+	rpmrc = RPMRC_NOTFOUND;
     } while (1);
 
     if (rpmrc == RPMRC_OK && h != NULL)
@@ -263,6 +264,7 @@ static rpmRC rpmgiWalkReadHeader(rpmgi gi)
     if (rpmrc == RPMRC_OK) {
 	Header h = NULL;
 	if (!(gi->flags & RPMGI_NOHEADER)) {
+	    /* XXX rpmrc = rpmgiLoadReadHeader(gi); */
 	    if (gi->fts != NULL)	/* XXX can't happen */
 		h = rpmgiReadHeader(gi, gi->fts->fts_path);
 	}
@@ -424,6 +426,7 @@ rpmgi rpmgiFree(rpmgi gi)
 	(void) Fclose(gi->fd);
 	gi->fd = NULL;
     }
+    gi->tsi = rpmtsiFree(gi->tsi);
     gi->mi = rpmdbFreeIterator(gi->mi);
     gi->ts = rpmtsFree(gi->ts);
 
@@ -455,6 +458,7 @@ rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
     gi->hdrPath = NULL;
     gi->h = NULL;
 
+    gi->tsi = NULL;
     gi->mi = NULL;
     gi->fd = NULL;
     gi->argv = xcalloc(1, sizeof(*gi->argv));
@@ -512,6 +516,29 @@ rpmRC rpmgiNext(/*@null@*/ rpmgi gi)
 	    goto enditer;
 	}
 	break;
+    case RPMDBI_ADDED:
+    {	rpmte p;
+
+	if (!gi->active) {
+	    gi->tsi = rpmtsiInit(gi->ts);
+	    gi->active = 1;
+	}
+	if ((p = rpmtsiNext(gi->tsi, TR_ADDED)) != NULL) {
+	    Header h = rpmteHeader(p);
+	    if (h != NULL)
+		if (!(gi->flags & RPMGI_NOHEADER)) {
+		    gi->h = headerLink(h);
+		sprintf(hnum, "%u", (unsigned)gi->i);
+		gi->hdrPath = rpmExpand("added h# ", hnum, NULL);
+		rpmrc = RPMRC_OK;
+		h = headerFree(h);
+	    }
+	}
+	if (rpmrc != RPMRC_OK) {
+	    gi->tsi = rpmtsiFree(gi->tsi);
+	    goto enditer;
+	}
+    }	break;
     case RPMDBI_HDLIST:
 	if (!gi->active) {
 	    const char * path = "/usr/share/comps/%{_arch}/hdlist";
@@ -573,8 +600,8 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 /*@=branchstate@*/
 
     if ((gi->flags & RPMGI_TSADD) && gi->h != NULL) {
-	xx = rpmtsAddInstallElement(gi->ts, gi->h, (fnpyKey)gi->hdrPath, 0, NULL);
-	/* XXX add header to rpmte */
+	/* XXX rpmgi hack: Save header in transaction element. */
+	xx = rpmtsAddInstallElement(gi->ts, gi->h, (fnpyKey)gi->hdrPath, 2, NULL);
     }
 
     return rpmrc;
@@ -622,6 +649,9 @@ enditer:
 	ts->probs = rpmpsFree(ts->probs);	/* XXX hackery */
 
 	xx = rpmtsOrder(ts);
+
+	gi->tag = RPMDBI_ADDED;			/* XXX hackery */
+	gi->flags &= ~(RPMGI_TSADD|RPMGI_TSORDER);
 
     }
 

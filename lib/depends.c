@@ -139,7 +139,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char * arch;
     const char * os;
-    rpmds add;
+    rpmds oldChk, newChk;
     rpmds obsoletes;
     alKey pkgKey;	/* addedPackages key */
     int xx;
@@ -165,11 +165,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	goto addheader;
     }
 
-    add = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
+    oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
+    newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_GREATER));
     /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
     for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
-	const char * parch;
-	const char * pos;
 	rpmds this;
 
 	/* XXX Only added packages need be checked for dupes. */
@@ -177,12 +176,13 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    continue;
 
 	/* XXX Never check source headers. */
-/*@-type @*/
-	if (p->isSource)
+	if (rpmteIsSource(p))
 	    continue;
-/*@=type @*/
 
 	if (tscolor) {
+	    const char * parch;
+	    const char * pos;
+
 	    if (arch == NULL || (parch = rpmteA(p)) == NULL)
 		continue;
 	    if (os == NULL || (pos = rpmteO(p)) == NULL)
@@ -191,13 +191,29 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 		continue;
 	}
 
+	/* OK, binary rpm's with same arch and os.  Check NEVR. */
 	if ((this = rpmteDS(p, RPMTAG_NAME)) == NULL)
 	    continue;	/* XXX can't happen */
 
-	rc = rpmdsCompare(add, this);
+	/* If newer NEVR was previously added, then skip adding older. */
+	rc = rpmdsCompare(newChk, this);
 	if (rc != 0) {
 	    const char * pkgNEVR = rpmdsDNEVR(this);
-	    const char * addNEVR = rpmdsDNEVR(add);
+	    const char * addNEVR = rpmdsDNEVR(oldChk);
+	    if (rpmIsVerbose())
+		rpmMessage(RPMMESS_WARNING,
+		    _("package %s was already added, skipping %s\n"),
+		    (pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
+		    (addNEVR ? addNEVR + 2 : "?addNEVR?"));
+	    ec = 1;
+	    break;
+	}
+
+	/* If older NEVR was previously added, then replace old with new. */
+	rc = rpmdsCompare(oldChk, this);
+	if (rc != 0) {
+	    const char * pkgNEVR = rpmdsDNEVR(this);
+	    const char * addNEVR = rpmdsDNEVR(newChk);
 	    if (rpmIsVerbose())
 		rpmMessage(RPMMESS_WARNING,
 		    _("package %s was already added, replacing with %s\n"),
@@ -209,7 +225,12 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	}
     }
     pi = rpmtsiFree(pi);
-    add = rpmdsFree(add);
+    oldChk = rpmdsFree(oldChk);
+    newChk = rpmdsFree(newChk);
+
+    /* If newer NEVR was already added, exit now. */
+    if (ec)
+	goto exit;
 
 addheader:
     if (oc >= ts->orderAlloced) {
@@ -253,7 +274,12 @@ addheader:
 	ts->numAddedPackages++;
     }
 
-    if (!upgrade)
+    /* XXX rpmgi hack: Save header in transaction element if requested. */
+    if (upgrade & 0x2)
+	(void) rpmteSetHeader(p, h);
+
+    /* If not upgrading, then we're done. */
+    if (!(upgrade & 0x1))
 	goto exit;
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */

@@ -131,13 +131,17 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 
     nb = strlen(p->NEVR) + 1;
-    if (p->arch)
+    if (p->isSource)
+	nb += sizeof("src");
+    else if (p->arch)
 	nb += strlen(p->arch) + 1;
     t = xmalloc(nb);
     p->NEVRA = t;
     *t = '\0';
     t = stpcpy(t, p->NEVR);
-    if (p->arch)
+    if (p->isSource)
+	t = stpcpy( t, ".src");
+    else if (p->arch)
 	t = stpcpy( stpcpy( t, "."), p->arch);
 
     ep = NULL;
@@ -241,8 +245,23 @@ unsigned int rpmteDBInstance(rpmte te)
 /* Set the DB Instance value */
 void rpmteSetDBInstance(rpmte te, unsigned int instance) 
 {
-    if(te != NULL) 
+    if (te != NULL) 
 	te->db_instance = instance;
+}
+
+Header rpmteHeader(rpmte te)
+{
+    return (te != NULL && te->h != NULL ? headerLink(te->h) : NULL);
+}
+
+Header rpmteSetHeader(rpmte te, Header h)
+{
+    if (te != NULL)  {
+	te->h = headerFree(te->h);
+	if (h != NULL)
+	    te->h = headerLink(h);
+    }
+    return NULL;
 }
 
 rpmElementType rpmteType(rpmte te)
@@ -278,6 +297,11 @@ const char * rpmteA(rpmte te)
 const char * rpmteO(rpmte te)
 {
     return (te != NULL ? te->os : NULL);
+}
+
+int rpmteIsSource(rpmte te)
+{
+    return (te != NULL ? te->isSource : NULL);
 }
 
 uint_32 rpmteColor(rpmte te)

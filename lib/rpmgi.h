@@ -6,6 +6,7 @@
  */
 
 #include <rpmlib.h>
+#include <rpmte.h>
 #include <rpmts.h>
 #include <fts.h>
 #include <argv.h>
@@ -49,6 +50,9 @@ struct rpmgi_s {
     const char * hdrPath;	/*!< Path to current iterator header. */
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Current iterator header. */
+
+/*@null@*/
+    rpmtsi tsi;
 
 /*@null@*/
     rpmdbMatchIterator mi;

@@ -177,6 +177,23 @@ rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 	/*@modifies ts, h, rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /**
+ * Retrieve header from transaction element.
+ * @param te		transaction element
+ * @return		header
+ */
+extern Header rpmteHeader(rpmte te)
+	/*@modifies te @*/;
+
+/**
+ * Save header into transaction element.
+ * @param te		transaction element
+ * @param h		header
+ * @return		NULL always
+ */
+extern Header rpmteSetHeader(rpmte te, Header h)
+	/*@modifies te, h @*/;
+
+/**
  * Retrieve type of transaction element.
  * @param te		transaction element
  * @return		type
@@ -236,6 +253,14 @@ extern const char * rpmteA(rpmte te)
  */
 /*@observer@*/ /*@null@*/
 extern const char * rpmteO(rpmte te)
+	/*@*/;
+
+/**
+ * Retrieve isSource attribute of transaction element.
+ * @param te		transaction element
+ * @return		isSource attribute
+ */
+extern int rpmteIsSource(rpmte te)
 	/*@*/;
 
 /**
