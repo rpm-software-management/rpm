@@ -150,6 +150,9 @@ static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
 {
     int nlink = 0;
 
+    /* XXX rpm-3.3.12 has not RPMTAG_FILEINODES */
+    if (!(fileRdevList && fileInodeList && nfiles > 0))
+	return 1;
     while (nfiles-- > 0) {
 	if (fileRdevList[nfiles] != fileRdevList[xfile])
 	    continue;

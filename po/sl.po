@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.50 2000/06/01 05:36:19 jbj Exp $
+# $Id: sl.po,v 1.51 2000/06/05 14:18:41 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-06-01 01:32-0400\n"
+"POT-Creation-Date: 2000-06-05 09:49-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3211,120 +3211,120 @@ msgstr "neznana napaka %d ob rokovanju s paketom %s-%s-%s"
 msgid "error in format: %s\n"
 msgstr "napaka v obliki: %s\n"
 
-#: lib/query.c:198
+#: lib/query.c:201
 msgid "(contains no files)"
 msgstr "(ne vsebuje datotek)"
 
-#: lib/query.c:257
+#: lib/query.c:260
 msgid "normal        "
 msgstr "normalno      "
 
-#: lib/query.c:259
+#: lib/query.c:262
 msgid "replaced      "
 msgstr "nadome¹èeno   "
 
-#: lib/query.c:261
+#: lib/query.c:264
 msgid "not installed "
 msgstr "ni name¹èeno  "
 
-#: lib/query.c:263
+#: lib/query.c:266
 msgid "net shared    "
 msgstr "omre¾ni       "
 
-#: lib/query.c:265
+#: lib/query.c:268
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(neznano %3d) "
 
-#: lib/query.c:269
+#: lib/query.c:272
 msgid "(no state)    "
 msgstr "(brez stanja) "
 
-#: lib/query.c:286 lib/query.c:329
+#: lib/query.c:289 lib/query.c:332
 msgid "package has neither file owner or id lists"
 msgstr "paket ne vsebuje ne lastnika datotek niti seznamov id"
 
-#: lib/query.c:373
+#: lib/query.c:376
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "ni mo¾no zbrisati %s: %s\n"
 
 #. XXX Fstrerror
-#: lib/query.c:490
+#: lib/query.c:493
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "odpiranje %s neuspe¹no: %s\n"
 
-#: lib/query.c:508
+#: lib/query.c:511
 msgid "old format source packages cannot be queried\n"
 msgstr "poizvedba po izvornih paketih v stari obliki ni mo¾na\n"
 
-#: lib/query.c:517 lib/rpminstall.c:231
+#: lib/query.c:520 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr "%s najverjetneje ni paket RPM\n"
 
-#: lib/query.c:521
+#: lib/query.c:524
 #, c-format
 msgid "query of %s failed\n"
 msgstr "poizvedba po %s neuspe¹na\n"
 
-#: lib/query.c:554
+#: lib/query.c:557
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "poizvedba po datoteki spec %s neuspe¹na, razèlemba ni mo¾na\n"
 
-#: lib/query.c:577
+#: lib/query.c:580
 #, fuzzy
 msgid "no packages\n"
 msgstr "najdeno %d paketov\n"
 
-#: lib/query.c:587
+#: lib/query.c:590
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "skupina %s ne vsebuje nobenega paketa\n"
 
-#: lib/query.c:597
+#: lib/query.c:600
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "noben paket ne pro¾i %s\n"
 
-#: lib/query.c:607
+#: lib/query.c:610
 #, c-format
 msgid "no package requires %s\n"
 msgstr "noben paket ne potrebuje %s\n"
 
-#: lib/query.c:618
+#: lib/query.c:621
 #, c-format
 msgid "no package provides %s\n"
 msgstr "noben paket ne nudi %s\n"
 
-#: lib/query.c:634
+#: lib/query.c:637
 #, c-format
 msgid "file %s: %s\n"
 msgstr "datoteka %s: %s\n"
 
-#: lib/query.c:637
+#: lib/query.c:640
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "datoteka %s ni del nobenega paketa\n"
 
-#: lib/query.c:662
+#: lib/query.c:665
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "neveljavna ¹tevilka paketa: %s\n"
 
-#: lib/query.c:665
+#: lib/query.c:668
 #, fuzzy, c-format
 msgid "package record number: %u\n"
 msgstr "¹tevilka zapisa paketa: %d\n"
 
-#: lib/query.c:669
+#: lib/query.c:672
 #, c-format
 msgid "record %d could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:680 lib/rpminstall.c:435
+#: lib/query.c:683 lib/rpminstall.c:435
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -3453,143 +3453,143 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:337
+#: lib/rpmdb.c:341
 #, fuzzy, c-format
 msgid "error getting \"%s\" records from %s index"
 msgstr "napaka pri branju zapisa %s iz %s"
 
-#: lib/rpmdb.c:454
+#: lib/rpmdb.c:458
 #, c-format
 msgid "error storing record %s into %s"
 msgstr "napaka pri pisanju zapisa %s v %s"
 
-#: lib/rpmdb.c:463
+#: lib/rpmdb.c:467
 #, fuzzy, c-format
 msgid "error removing record %s from %s"
 msgstr "napaka pri brisanju zapisa %s iz %s"
 
-#: lib/rpmdb.c:685 lib/rpmdb.c:2194
+#: lib/rpmdb.c:689 lib/rpmdb.c:2200
 msgid "no dbpath has been set"
 msgstr "dbpath ni nastavljena"
 
-#: lib/rpmdb.c:782
+#: lib/rpmdb.c:786
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr "staro obliko podatkove zbirke pretvorite v novo z --rebuilddb"
 
 #. error
-#: lib/rpmdb.c:986
+#: lib/rpmdb.c:990
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "paketa ni mo¾no odpreti: %s\n"
 
-#: lib/rpmdb.c:1052 lib/rpmdb.c:1568 lib/uninstall.c:90
+#: lib/rpmdb.c:1056 lib/rpmdb.c:1574 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "ni mo¾no prebrati glave pri %d za vpogled"
 
-#: lib/rpmdb.c:1619
+#: lib/rpmdb.c:1625
 #, fuzzy, c-format
 msgid "removing 0 %s entries.\n"
 msgstr "odstranjujemo vnose v podatkovni zbirki\n"
 
-#: lib/rpmdb.c:1630
+#: lib/rpmdb.c:1636
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstranjujemo seznam skupin\n"
 
-#: lib/rpmdb.c:1639
+#: lib/rpmdb.c:1645
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "odstranjujemo seznam imen\n"
 
-#: lib/rpmdb.c:1646 lib/rpmdb.c:1869
+#: lib/rpmdb.c:1652 lib/rpmdb.c:1875
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1782
+#: lib/rpmdb.c:1788
 #, fuzzy
 msgid "cannot allocate new instance in database"
 msgstr "ni mo¾no zagotoviti prostora za podatkovno zbirko"
 
-#: lib/rpmdb.c:1837
+#: lib/rpmdb.c:1843
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1853
+#: lib/rpmdb.c:1859
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "preimenujemo %s v %s\n"
 
-#: lib/rpmdb.c:1862
+#: lib/rpmdb.c:1868
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2219
+#: lib/rpmdb.c:2225
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "ponovna izgradnja podatkovne zbirke %s v %s\n"
 
-#: lib/rpmdb.c:2223
+#: lib/rpmdb.c:2229
 #, c-format
 msgid "temporary database %s already exists"
 msgstr "zaèasna podatkovna zbirka %s ¾e obstaja"
 
-#: lib/rpmdb.c:2229
+#: lib/rpmdb.c:2235
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "ustvarjamo imenik: %s\n"
 
-#: lib/rpmdb.c:2231
+#: lib/rpmdb.c:2237
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr "napaka pri ustvarjanju imenika %s: %s"
 
-#: lib/rpmdb.c:2238
+#: lib/rpmdb.c:2244
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "odpiramo staro podatkovno zbirko\n"
 
-#: lib/rpmdb.c:2247
+#: lib/rpmdb.c:2253
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "odpiramo novo podatkovno zbirko\n"
 
-#: lib/rpmdb.c:2270
+#: lib/rpmdb.c:2276
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr "zapis ¹t. %d v zbirki je okvarjen -- preskakujemo."
 
-#: lib/rpmdb.c:2302
+#: lib/rpmdb.c:2308
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr "zapisa ni mo¾no dodati na %d"
 
-#: lib/rpmdb.c:2320
+#: lib/rpmdb.c:2326
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "ponovna izgradnja podatkovne zbirke neuspe¹na; stara ostaja na istem mestu\n"
 
-#: lib/rpmdb.c:2328
+#: lib/rpmdb.c:2334
 msgid "failed to replace old database with new database!\n"
 msgstr "zamenjava stare podatkovne zbirke z novo neuspe¹na!\n"
 
-#: lib/rpmdb.c:2330
+#: lib/rpmdb.c:2336
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "posku¹amo povrniti z nadomestitvijo datotek v %s z datotekami iz %s"
 
-#: lib/rpmdb.c:2340
+#: lib/rpmdb.c:2346
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "ustvarjamo imenik: %s\n"
 
-#: lib/rpmdb.c:2342
+#: lib/rpmdb.c:2348
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"

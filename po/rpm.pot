@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-03 16:13-0400\n"
+"POT-Creation-Date: 2000-06-05 09:49-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3053,119 +3053,119 @@ msgstr ""
 msgid "error in format: %s\n"
 msgstr ""
 
-#: lib/query.c:198
+#: lib/query.c:201
 msgid "(contains no files)"
 msgstr ""
 
-#: lib/query.c:257
+#: lib/query.c:260
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:259
+#: lib/query.c:262
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:261
+#: lib/query.c:264
 msgid "not installed "
 msgstr ""
 
-#: lib/query.c:263
+#: lib/query.c:266
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:265
+#: lib/query.c:268
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: lib/query.c:269
+#: lib/query.c:272
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:286 lib/query.c:329
+#: lib/query.c:289 lib/query.c:332
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: lib/query.c:373
+#: lib/query.c:376
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/query.c:490
+#: lib/query.c:493
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:508
+#: lib/query.c:511
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:517 lib/rpminstall.c:231
+#: lib/query.c:520 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: lib/query.c:521
+#: lib/query.c:524
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:554
+#: lib/query.c:557
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:577
+#: lib/query.c:580
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:587
+#: lib/query.c:590
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:597
+#: lib/query.c:600
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:607
+#: lib/query.c:610
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:618
+#: lib/query.c:621
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:634
+#: lib/query.c:637
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:637
+#: lib/query.c:640
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:662
+#: lib/query.c:665
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:665
+#: lib/query.c:668
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:669
+#: lib/query.c:672
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:680 lib/rpminstall.c:435
+#: lib/query.c:683 lib/rpminstall.c:435
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""

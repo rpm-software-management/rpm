@@ -1,5 +1,5 @@
 msgid ""
-msgstr "POT-Creation-Date: 2000-06-01 01:32-0400\n"
+msgstr "POT-Creation-Date: 2000-06-05 09:49-0400\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:422
 #, c-format
@@ -3286,121 +3286,121 @@ msgstr ""
 msgid "error in format: %s\n"
 msgstr ""
 
-#: lib/query.c:198
+#: lib/query.c:201
 msgid "(contains no files)"
 msgstr ""
 
-#: lib/query.c:257
+#: lib/query.c:260
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:259
+#: lib/query.c:262
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:261
+#: lib/query.c:264
 #, fuzzy
 msgid "not installed "
 msgstr "aucun package n'a été spécifié pour l'installation"
 
-#: lib/query.c:263
+#: lib/query.c:266
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:265
+#: lib/query.c:268
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: lib/query.c:269
+#: lib/query.c:272
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:286 lib/query.c:329
+#: lib/query.c:289 lib/query.c:332
 msgid "package has neither file owner or id lists"
 msgstr ""
 
-#: lib/query.c:373
+#: lib/query.c:376
 #, fuzzy, c-format
 msgid "can't query %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
 #. XXX Fstrerror
-#: lib/query.c:490
+#: lib/query.c:493
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "La construction a échoué.\n"
 
-#: lib/query.c:508
+#: lib/query.c:511
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:517 lib/rpminstall.c:231
+#: lib/query.c:520 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: lib/query.c:521
+#: lib/query.c:524
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:554
+#: lib/query.c:557
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:577
+#: lib/query.c:580
 #, fuzzy
 msgid "no packages\n"
 msgstr "aucun package n'a été spécifié pour l'installation"
 
-#: lib/query.c:587
+#: lib/query.c:590
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:597
+#: lib/query.c:600
 #, fuzzy, c-format
 msgid "no package triggers %s\n"
 msgstr "aucun package n'a été spécifié pour l'installation"
 
-#: lib/query.c:607
+#: lib/query.c:610
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:618
+#: lib/query.c:621
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:634
+#: lib/query.c:637
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:637
+#: lib/query.c:640
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:662
+#: lib/query.c:665
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:665
+#: lib/query.c:668
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:669
+#: lib/query.c:672
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:680 lib/rpminstall.c:435
+#: lib/query.c:683 lib/rpminstall.c:435
 #, fuzzy, c-format
 msgid "package %s is not installed\n"
 msgstr "aucun package n'a été spécifié pour l'installation"
@@ -3530,140 +3530,140 @@ msgid ""
 "\n"
 msgstr ""
 
-#: lib/rpmdb.c:337
+#: lib/rpmdb.c:341
 #, fuzzy, c-format
 msgid "error getting \"%s\" records from %s index"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmdb.c:454
+#: lib/rpmdb.c:458
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: lib/rpmdb.c:463
+#: lib/rpmdb.c:467
 #, fuzzy, c-format
 msgid "error removing record %s from %s"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmdb.c:685 lib/rpmdb.c:2194
+#: lib/rpmdb.c:689 lib/rpmdb.c:2200
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:782
+#: lib/rpmdb.c:786
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:986
+#: lib/rpmdb.c:990
 #, fuzzy, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmdb.c:1052 lib/rpmdb.c:1568 lib/uninstall.c:90
+#: lib/rpmdb.c:1056 lib/rpmdb.c:1574 lib/uninstall.c:90
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
 
-#: lib/rpmdb.c:1619
+#: lib/rpmdb.c:1625
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1630
+#: lib/rpmdb.c:1636
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1639
+#: lib/rpmdb.c:1645
 #, fuzzy, c-format
 msgid "removing %d entries from %s index:\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmdb.c:1646 lib/rpmdb.c:1869
+#: lib/rpmdb.c:1652 lib/rpmdb.c:1875
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1782
+#: lib/rpmdb.c:1788
 msgid "cannot allocate new instance in database"
 msgstr ""
 
-#: lib/rpmdb.c:1837
+#: lib/rpmdb.c:1843
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1853
+#: lib/rpmdb.c:1859
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1862
+#: lib/rpmdb.c:1868
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:2219
+#: lib/rpmdb.c:2225
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmdb.c:2223
+#: lib/rpmdb.c:2229
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: lib/rpmdb.c:2229
+#: lib/rpmdb.c:2235
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmdb.c:2231
+#: lib/rpmdb.c:2237
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: lib/rpmdb.c:2238
+#: lib/rpmdb.c:2244
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2247
+#: lib/rpmdb.c:2253
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2270
+#: lib/rpmdb.c:2276
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 
-#: lib/rpmdb.c:2302
+#: lib/rpmdb.c:2308
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rpmdb.c:2320
+#: lib/rpmdb.c:2326
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2328
+#: lib/rpmdb.c:2334
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2330
+#: lib/rpmdb.c:2336
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2340
+#: lib/rpmdb.c:2346
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmdb.c:2342
+#: lib/rpmdb.c:2348
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"

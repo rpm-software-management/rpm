@@ -252,8 +252,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Jun  5 2000 Jeff Johnson <jbj@redhat.com>
+- add optflags for i486 and i586.
+- fix: segfault with legacy packages missing RPMTAG_FILEINODES.
+
 * Tue May 30 2000 Matt Wilson <msw@redhat.com>
-- fix configure and makeinstall macros
+- change %configure, add %makeinstall macros to handle FHS changes.
 
 * Tue May 30 2000 Jeff Johnson <jbj@redhat.com>
 - mark packaging with version 4 to reflect filename/provide changes.

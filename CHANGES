@@ -43,13 +43,16 @@
 	- add calculated nlink field to -qlv output (like ls -al).
 	- builds against bzip2 1.0
 	- detects and builds properly against the new fopencookie API in
-          glibc 2.2
+          glibc 2.2.
 	- change popt exec alias in oreder to exec rpm children.
 	- split rpm into 5 pieces along major mode fault lines with popt glue.
 	- turn on new, more complete version of %%configure.
 	- add %%makeinstall analogue of new %%configure for autoconf packages.
 	- mark packaging with version 4 to reflect filename/provide changes.
 	- change next version from 3.1 to 4.0 to reflect package format change.
+	- change %configure, add %makeinstall macros to handle FHS changes.
+	- add optflags for i486 and i586.
+	- fix: segfault with legacy packages missing RPMTAG_FILEINODES.
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.
