@@ -71,4 +71,7 @@
 /* Define as 1 if chown() or chgrp() follows symlinks */
 #define CHOWN_FOLLOWS_SYMLINK 0
 
+/* Define as 1 if you have <sys/select.h> */
+#define HAVE_SYS_SELECT_H 0
+
 #endif

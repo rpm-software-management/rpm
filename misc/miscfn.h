@@ -54,4 +54,8 @@ extern void *myrealloc(void *, size_t);
 #include <limits.h>
 #endif
 
+#if HAVE_SYS_SELECT_H
+#include <sys/select.h>
+#endif
+
 #endif

@@ -218,7 +218,7 @@ dnl Checks for header files we can live without.
 AC_HEADER_STDC
 AC_HEADER_MAJOR
 AC_CHECK_HEADERS(netinet/in_systm.h limits.h)
-AC_CHECK_HEADERS(alloca.h dirent.h sys/socket.h)
+AC_CHECK_HEADERS(alloca.h dirent.h sys/socket.h sys/select.h)
 AC_CHECK_HEADERS(machine/types.h string.h)
 AC_CHECK_HEADERS(glob.h,,MISCOBJS="$MISCOBJS glob.o")
 AC_CHECK_HEADERS(fnmatch.h,,MISCOBJS="$MISCOBJS fnmatch.o")
