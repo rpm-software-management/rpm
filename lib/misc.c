@@ -1,8 +1,8 @@
 #include <errno.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
 
