@@ -129,7 +129,7 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 	}
 
 	if (u->proxyh == NULL && (proxy = rpmGetVar(RPMVAR_FTPPROXY)) != NULL) {
-	    char *uu = (u->user ? u->user : "anonymous");
+	    const char *uu = (u->user ? u->user : "anonymous");
 	    char *nu = malloc(strlen(u->user) + strlen(uu) + sizeof("@"));
 	    strcpy(nu, uu);
 	    strcat(nu, "@");
