@@ -1,4 +1,4 @@
-#ifndef	_H_bUILDIO_
+#ifndef	_H_BUILDIO_
 #define	_H_BUILDIO_
 
 /* XXX this information will move elsewhere soon */
