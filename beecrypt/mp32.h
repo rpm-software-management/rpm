@@ -439,7 +439,7 @@ void mp32print(uint32 xsize, const uint32* xdata)
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 void mp32println(uint32 xsize, const uint32* xdata)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;

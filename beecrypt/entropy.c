@@ -1477,7 +1477,7 @@ dev_random_end:
 	# if HAVE_SYNCH_H
 	mutex_unlock(&dev_random_lock);
 	# elif HAVE_PTHREAD_H
-	pthread_mutex_unlock(&dev_random_lock);
+	(void) pthread_mutex_unlock(&dev_random_lock);
 	# endif
 	#endif
 	return rc;
@@ -1521,7 +1521,7 @@ dev_urandom_end:
 	# if HAVE_SYNCH_H
 	mutex_unlock(&dev_urandom_lock);
 	# elif HAVE_PTHREAD_H
-	pthread_mutex_unlock(&dev_urandom_lock);
+	(void) pthread_mutex_unlock(&dev_urandom_lock);
 	# endif
 	#endif
 	return rc;
@@ -1562,7 +1562,7 @@ dev_tty_end:
 	# if HAVE_SYNCH_H
 	mutex_unlock(&dev_tty_lock);
 	# elif HAVE_PTHREAD_H
-	pthread_mutex_unlock(&dev_tty_lock);
+	(void) pthread_mutex_unlock(&dev_tty_lock);
 	# endif
 	#endif
 

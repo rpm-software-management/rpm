@@ -65,7 +65,7 @@ extern "C" {
  * Return the number of entropy sources available.
  * @return		number of entropy sources available
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int entropySourceCount(void)
 	/*@*/;
 
@@ -74,7 +74,7 @@ int entropySourceCount(void)
  * @param index		entropy source index
  * @return		entropy source pointer (or NULL)
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const entropySource* entropySourceGet(int index)
 	/*@*/;
 
@@ -196,7 +196,7 @@ extern "C" {
  * Return the number of generators available.
  * @return		number of generators available
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int randomGeneratorCount(void)
 	/*@*/;
 
@@ -205,7 +205,7 @@ int randomGeneratorCount(void)
  * @param index		generator index
  * @return		generator pointer (or NULL)
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const randomGenerator* randomGeneratorGet(int index)
 	/*@*/;
 
@@ -226,7 +226,7 @@ const randomGenerator* randomGeneratorFind(const char* name)
  * generator. Otherwise, use "fips186prng".
  * @return		generator pointer
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const randomGenerator* randomGeneratorDefault(void)
 	/*@*/;
 
@@ -250,14 +250,14 @@ extern "C" {
 /** \ingroup PRNG_m
  * Initialize a randomGenerator instance.
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int randomGeneratorContextInit(randomGeneratorContext* ctxt, /*@observer@*/ /*@dependent@*/ const randomGenerator* rng)
 	/*@modifies ctxt->rng, ctxt->param @*/;
 
 /** \ingroup PRNG_m
  * Destroy a randomGenerator instance.
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int randomGeneratorContextFree(/*@special@*/ randomGeneratorContext* ctxt)
 	/*@uses ctxt->rng @*/
 	/*@releases ctxt->param @*/
@@ -336,7 +336,7 @@ extern "C" {
  * Return the number of hash functions available.
  * @return		number of hash functions available
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int hashFunctionCount(void)
 	/*@*/;
 
@@ -345,7 +345,7 @@ int hashFunctionCount(void)
  * @param index		hash function index
  * @return		hash function pointer (or NULL)
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const hashFunction* hashFunctionGet(int index)
 	/*@*/;
 
@@ -410,7 +410,7 @@ int hashFunctionContextReset(hashFunctionContext* ctxt)
 
 /** \ingroup HASH_m
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int hashFunctionContextUpdate(hashFunctionContext* ctxt, const byte* data, int size)
 	/*@modifies ctxt */;
 
@@ -529,7 +529,7 @@ extern "C" {
  * Return the number of keyed hash functions available.
  * @return		number of keyed hash functions available
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int keyedHashFunctionCount(void)
 	/*@*/;
 
@@ -538,7 +538,7 @@ int keyedHashFunctionCount(void)
  * @param index		keyed hash function index
  * @return		keyed hash function pointer (or NULL)
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const keyedHashFunction* keyedHashFunctionGet(int index)
 	/*@*/;
 
@@ -662,11 +662,13 @@ typedef enum
 /** \ingroup BC_m
  * Block cipher modes.
  */
+/*@-enummemuse@*/
 typedef enum
 {
 	ECB,
 	CBC
 } cipherMode;
+/*@=enummemuse@*/
 
 /** \ingroup BC_m
  * @param param		blockcipher parameters
@@ -772,7 +774,7 @@ extern "C" {
  * Return the number of blockciphers available.
  * @return		number of blockciphers available
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 int blockCipherCount(void)
 	/*@*/;
 
@@ -781,7 +783,7 @@ int blockCipherCount(void)
  * @param index		blockcipher index
  * @return		blockcipher pointer (or NULL)
  */
-BEEDLLAPI /*@observer@*/ /*@null@*/
+BEEDLLAPI /*@observer@*/ /*@null@*/ /*@unused@*/
 const blockCipher* blockCipherGet(int index)
 	/*@*/;
 

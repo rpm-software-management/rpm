@@ -91,8 +91,10 @@ int mtprngSetup(mtprngParam* mp)
 		if (mutex_init(&mp->lock, USYNC_THREAD, (void *) 0))
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
+		/*@-nullpass@*/
 		if (pthread_mutex_init(&mp->lock, (pthread_mutexattr_t *) 0))
 			return -1;
+		/*@=nullpass@*/
 		#  endif
 		# endif
 		#endif

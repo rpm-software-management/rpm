@@ -105,7 +105,7 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
 	/* Append eol string if desired. */
 	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
 	    if (lc >= b64encode_chars_per_line) {
-		for (e = b64encode_eolstr; *e; e++)
+		for (e = b64encode_eolstr; *e != '\0'; e++)
 		    *te++ = *e;
 		lc = 0;
 	    }
@@ -118,7 +118,7 @@ fprintf(stderr, "%7u %02x %02x %02x -> %02x %02x %02x %02x\n",
 	/* Append eol string if desired. */
 	if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
 	    if (lc != 0) {
-		for (e = b64encode_eolstr; *e; e++)
+		for (e = b64encode_eolstr; *e != '\0'; e++)
 		    *te++ = *e;
 	    }
 	}
@@ -159,7 +159,7 @@ int b64decode (const char * s, void ** datap, int *lenp)
     /* Mark whitespace characters. */
     if (b64decode_whitespace) {
 	const char *e;
-	for (e = b64decode_whitespace; *e; e++) {
+	for (e = b64decode_whitespace; *e != '\0'; e++) {
 	    if (b64dec[ (unsigned)*e ] == 0x80)
 	        b64dec[ (unsigned)*e ] = 0x81;
 	}
@@ -167,7 +167,7 @@ int b64decode (const char * s, void ** datap, int *lenp)
     
     /* Validate input buffer */
     ns = 0;
-    for (t = s; *t; t++) {
+    for (t = s; *t != '\0'; t++) {
 	switch (b64dec[ (unsigned)*t ]) {
 	case 0x80:	/* invalid chararcter */
 	    return 3;

@@ -94,7 +94,7 @@ void mp32nsetw  (mp32number* n, uint32 val)
 
 /**
  */
-BEEDLLAPI
+BEEDLLAPI /*@unused@*/
 void mp32nsethex(mp32number* n, const char* hex)
 	/*@modifies n->size, n->data @*/;
 

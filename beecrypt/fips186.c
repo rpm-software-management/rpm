@@ -66,8 +66,10 @@ int fips186Setup(fips186Param* fp)
 		if (mutex_init(&fp->lock, USYNC_THREAD, (void *) 0))
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
+		/*@-nullpass@*/
 		if (pthread_mutex_init(&fp->lock, (pthread_mutexattr_t *) 0))
 			return -1;
+		/*@=nullpass@*/
 		#  endif
 		# endif
 		#endif
