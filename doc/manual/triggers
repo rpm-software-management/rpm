@@ -7,7 +7,7 @@ of the normal installation scripts (i.e. %pre) which allows one package
 "triggered package"]) to execute an action when the installation status
 of another package (the "target" of the trigger) changes.
 
-<h2>A Simple Example</h2>
+\subsection triggers_example A Simple Example
 
 Say the package "mymailer" needs an /etc/mymailer/mailer symlink which points
 to the mail transport agent to use. If sendmail is installed, the link should
@@ -100,7 +100,7 @@ this case, if any of the targets will remain after the uninstall, the
 trigger doesn't do anything (as it's probably being triggered by an
 upgrade).
 
-<h2>Trigger Syntax</h2>
+\subsection triggers_syntax Trigger Syntax
 
 Trigger specifications are of the form:
 
@@ -123,7 +123,7 @@ Will put a trigger in package 'package' which runs when the installation
 status of either fileutils > 3.0 or perl < 1.2 is changed. The script will
 be run through /usr/bin/perl rather then /bin/sh (which is the default).
 
-<h2>An Unusual Case</h2>
+\subsection triggers_unusual An Unusual Case
 
 There is one other type of trigger available -- %triggerpostun. These are
 triggers that are run after their target package has been removed; they will
@@ -133,7 +133,7 @@ While this type of trigger is almost never useful, they allow a package to
 fix errors introduced by the %postun of another package (or by an earlier 
 version of that package).
 
-<h2>Order of Script Execution</h2>
+\subsection triggers_order Order of Script Execution
 
 For reference, here's the order in which scripts are executed on a single
 package upgrade:

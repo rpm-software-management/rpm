@@ -6,7 +6,7 @@ with one another. These can be used to require a python interpretor
 for a python based application for example. RPM ensures dependencies
 are satisfied whenever packages are installed, erased, or upgraded.
 
-<h2>Requiring Packages</h2>
+\subsection dependencies_package Requiring Packages
 
 To require the packages python and perl, use:
 
@@ -114,14 +114,14 @@ You can't continue a "Requires: " line. If you have multiple
 "Requires: " lines then the package requires all packages mentioned on
 all of the lines to be installed.
 
-<h2>Prereqs</h2>
+\subsection dependencies_prereqs Prereqs
 
 Prereqs are different from requires only in that a PreReq is guaranteed
 to be installed before the package that contains the PreReq.  PreReq's
 are used only to order packages, otherwise PreReq's are exactly the same
 as a Requires: dependency.
 
-<h2>Virtual Packages</h2>
+\subsection dependencies_virtual Virtual Packages
 
 Sometimes you need to make sure the system your package is being installed 
 on has a package which provides a certain capability, even though you don't
@@ -150,7 +150,7 @@ on machines that are only partly managed by rpm. A virtual package with
 differs from a package that has /bin/sh in the %files list in that the
 package can be safely removed without removing /bin/sh.
 
-<h2>Automatic Dependencies</h2>
+\subsection dependencies_automatic Automatic Dependencies
 
 To reduce the amount of work required by the package builder, RPM scans
 the file list of a package when it is being built. Any files in the file
@@ -169,7 +169,7 @@ example, the libc-5.3.12 package has provides information added for
 libm.so.5 and libc.so.5. We expect this automatic dependency generation
 to eliminate the need for most packages to use explicit Requires: lines.
 
-<h2>Custom Automatic Dependency</h2>
+\subsection dependencies_custom Custom Automatic Dependency
 
 The automatic dependency programs are found via macro expansion.  Thus
 sites can very the amount of dependnecy processing that are performed
@@ -206,7 +206,7 @@ The default rpm configuration has only
 	%__find_requires	/usr/lib/rpm/find-requires
 which can be overridden (or even undefined) within a spec file.
 
-<h2>Interpreters and Shells</h2>
+\subsection dependencies_interpreters Interpreters and Shells
 
 Modules for interpreted languages like perl and tcl impose additional
 dependency requirements on packages. A script written for an interpreter
@@ -254,7 +254,7 @@ be processed by the find-requires. Since a shell script depends on all the
 programs which it runs.
 
 
-<h2>Installing and Erasing Packages with Dependencies</h2>
+\subsection dependencies_installing Installing and Erasing Packages with Dependencies
 
 For the most part, dependencies should be transparent to the user. However,
 a few things will change.
@@ -274,7 +274,7 @@ no installed packages will have their dependency conditions break due to
 the packages being removed. If you wish to turn off dependency checking for 
 a particular command, use the --nodeps flag.
 
-<h2>Conflicts</h2>
+\subsection dependencies_conflicts Conflicts
 
 While conflicts were implemented in earlier versions of RPM they never 
 worked properly until RPM 2.3.4 (well, we hope they work properly now
@@ -292,7 +292,7 @@ may codify this with a line like:
 The syntax of the "Conflicts" tag is identical to the syntax of the Requires
 tag and conflict checking may be overridden by using the --nodeps flag.
 
-<h2>Querying for Dependencies</h2>
+\subsection dependencies_querying Querying for Dependencies
 
 Two new query information selection options are now available. The first, 
 --provides, prints a list of all of the capabilities a package provides. 
@@ -306,7 +306,7 @@ provide the <item> virtual package. Note that querying for package that
 provides "python" will not return anything, as python is a package, not
 a virtual package.
 
-<h2>Verifying Dependencies</h2>
+\subsection dependencies_verifying Verifying Dependencies
 
 As of RPM 2.2.2, -V (aka --verify) verifies package dependencies
 by default. You can tell rpm to ignore dependencies during system
@@ -315,7 +315,7 @@ and not file attributes (including file existence), use the --nofiles
 flag. Note that "rpm -Va --nofiles --nodeps" will not verify anything at
 all, nor generate an error message.
 
-<h2>Branching Version</h2>
+\subsection dependencies_branching Branching Version
 
 It is quite common to need to branch a set of sources in version
 control. It is not so obvious how those branches should be repesented
@@ -354,7 +354,7 @@ Another alternative scheme might be:
 	Release: <release instance>
 \endverbatim
 
-<h2>Build dependencies</h2>
+\subsection dependencies_build Build dependencies
 
 The following dependencies are availible at build time.  These are
 similar to the install time version but these apply only during

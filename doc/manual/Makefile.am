@@ -1,6 +1,17 @@
 ## Process this file with automake to produce Makefile.in
 
 EXTRA_DIST	= \
-	builddependencies buildroot dependencies format macros \
-	multiplebuilds queryformat spec relocatable signatures triggers
-
+	builddependencies \
+	buildroot \
+	conditionalbuilds \
+	dependencies \
+	format \
+	hregions \
+	macros \
+	multiplebuilds \
+	queryformat \
+	relocatable \
+	signatures \
+	spec \
+	triggers \
+	tsort

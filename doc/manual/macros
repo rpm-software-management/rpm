@@ -10,7 +10,7 @@ lists" (i.e. those read in using %files -f <file>).  In addition, macros
 can be nested, hiding the previous definition for the duration of the
 expansion of the macro which contains nested macros.
 
-<h2>Defining a Macro</h2>
+\subsection macros_defining Defining a Macro
 
 To define a macro use:
 
@@ -39,7 +39,7 @@ following shell-like macros are available:
 At the end of invocation of a parameterized macro, the above macros are
 (at the moment, silently) discarded.
 
-<h2>Writing a Macro</h2>
+\subsection macros_writing Writing a Macro
 
 Within the body of a macro, there are several constructs that permit
 testing for the presence of optional parameters. The simplest construct
@@ -57,7 +57,7 @@ deleted). Note the 2nd % needed to escape the arguments to /bin/date.
 There is currently an 8K limit on the size that this macro can expand
 to.
 
-<h2>Builtin Macros</h2>
+\subsection macros_builtin Builtin Macros
 
 There are several builtin macros (with reserved names) that are needed
 to perform useful operations. The current list is
@@ -92,7 +92,7 @@ In addition, rpm itself defines numerous macros. To display the current
 set, add "%dump" to the beginning of any spec file, process with rpm, and
 examine the output from stderr.
 
-<h2>Example of a Macro</h2>
+\subsection macros_example Example of a Macro
 
 Here is an example %patch definition from /usr/lib/rpm/macros:
 
@@ -130,7 +130,7 @@ There are two "private" helper macros:
 	%patch_suffix	the gory details of overriding the (default) ".orig"
 \endverbatim
 
-<h2>Using a Macro</h2>
+\subsection macros_using Using a Macro
 
 To use a macro, write:
 
@@ -148,7 +148,7 @@ The %{...} form allows you to place the expansion adjacent to other text.
 The %<name> form, if a parameterized macro, will do argc/argv processing
 of the rest of the line as described above.
 
-<h2>Command Line Options</h2>
+\subsection macros_commandline Command Line Options
 
 When the command line option "--define 'macroname value'" allows the
 user to specify the value that a macro should have during the build.
@@ -167,7 +167,7 @@ Note: This works only macros defined in rpm configuration files, not for
 macros defined in specfiles. You can use %{echo: %{your_macro_here}} if
 you wish to see the expansion of a macro defined in a spec file.
  
-<h2>Configuration using Macros</h2>
+\subsection macros_configuration Configuration using Macros
 
 Starting in rpm 3.0, macros rather than rpmrc lines are used to configure rpm.
 In general, all the rpmrc configuration lines documented in "Maximum RPM"
@@ -209,7 +209,7 @@ Here are 2 common FAQ for experienced users of rpm:
 		%_topdir        whatever
 \endverbatim
 
-<h2>Macro Analogues of Autoconf Variables</h2>
+\subsection macros_autoconf Macro Analogues of Autoconf Variables
 
 Several macro definitions provided by the default rpm macro set have uses in
 packaging similar to the autoconf variables that are used in building packages:

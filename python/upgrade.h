@@ -1,6 +1,10 @@
 #ifndef H_UPGRADE
 #define H_UPGRADE
 
+/** \ingroup python
+ * \file python/upgrade.h
+ */
+
 struct packageInfo {
     Header h;
     char selected;

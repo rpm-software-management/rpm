@@ -6,10 +6,10 @@ up and extended, the signature section in the RPM file format
 has been made easily extensible with new signature types, and
 packages can have multiple signatures.
 
-<h2>PGP</h2>
+\subsection signatures_pgp PGP
 
-RPM's previous usage of PGP was cumbersome, and only supported
-1024 bit keys.  Both of these problems have been corrected.
+Legacy usage of PGP in rpm-2.0 was cumbersome, and only supported
+1024 bit keys.  Both of these problems have been corrected in rpm-2.1.
 
 Whereas previously you needed many rpmrc entries to clue in
 RPM about keyring locations and such, RPM now behaves as PGP
@@ -33,7 +33,7 @@ supply values for
 	%_pgp_path	the path to the key ring
 \endverbatim
 
-<h2>Signature Creation</h2>
+\subsection signatures_signing Signing Packages
 
 Signature creation is the same as previous releases: just add
 a --sign to your build command line.  You can sign a package
@@ -56,7 +56,7 @@ packages, which means that packages built without --sign can
 be "verified" to some extent.  The MD5 signature should catch
 problems like corrupt packages, faulty downloads, etc.
 
-<h2>Signature Verification</h2>
+\subsection signatures_verifying Verifying Package Signatures
 
 Package signature verification is the same as previous releases:
 

@@ -19,7 +19,7 @@ definition:
 	%package -n newname
 \endverbatim
 
-<h2>Summary and Description</h2>
+\subsection specfile_summary Summary: and Description: Tags
 
 The Summary: tag should be use to give a short (50 char or so) summary
 of the package.  Most package's Description: line should be changed to
@@ -66,7 +66,7 @@ are considered "pre-formatted" and will be left alone.  Adjacent
 lines without leading whitespace are considered a single paragraph
 and may be subject to formatting by glint or another RPM tool.
 
-<h2>Other Tags</h2>
+\subsection specfile_url URL: and Packager: Tags
 
 Two new tags are "URL:" and "Packager:".  "URL:" is a place to put a
 URL for more information and/or documentation on the software
@@ -76,7 +76,7 @@ address of the person who "maintains" the RPM package (which may be
 different from the person who actually maintains the program the
 package contains).
 
-<h2>BuildArchitectures</h2>
+\subsection specfile_buildarchitectures BuildArchitectures: Tag
 
 This tag specifies the arctecture which the resulting binary package
 will run on.  Typically this is a CPU architecture like sparc,
@@ -84,7 +84,7 @@ i386. The string 'noarch' is reserved for specifying that the
 resulting binary package is platform independent.  Typical platform
 independent packages are html, perl, python, java, and ps packages.
 
-<h2>Files Attributes</h2>
+\subsection specfile_virtual Virtual File Attribute(s) in %files Section
 
 A %ghost tag on a file indicates that this file is not to be included
 in the package.  It is typically used when the attributes of the file
@@ -101,14 +101,14 @@ The %config(noreplace) indicates that the file in the package should
 be installed with extension .rpmnew if there is already a modified file
 with the same name on the installed machine.
 
--The virtual file attribute token %verify tells `-V/--verify' to ignore
+The virtual file attribute token %verify tells `-V/--verify' to ignore
 certain features on files which may be modified by (say) a postinstall
 script so that false problems are not displayed during package verification.
 \verbatim
 	%verify(not size md5 mtime) %{prefix}/bin/javaswarm
 \endverbatim
 
-<h2>Shell Gobbing of %files</h2>
+\subsection specfile_globbing Shell Gobbing of %files Section
 
 The usual rules for shell globbing apply.  Most special characters can
 be escaped by prefixing them with a '\'.  Spaces are used to separate
@@ -136,7 +136,7 @@ easiest to do with a shell script like this:
 	%files -f filelist.rpm
 \endverbatim
 
-<h2>Fine Adjustment of Automatic Dependencies</h2>
+\subsection specfile_automatic Fine Adjustment of Automatic Dependencies
 
 Rpm currently supports separate "Autoreq:" and "Autoprov:" tags in a
 spec file to independently control the running of find-requires and
@@ -163,7 +163,7 @@ Similarly there is an Autoprov tag to turn off the automatic provision
 generation and a Autoreqprov to turn off both the automatic provides and
 the automatic requires generation.
 
-<h2>nosrc rpms</h2>
+\subsection specfile_nosrc NoSource: Tag
 
 Files ending in .nosrc.rpm are generally source RPM packages whose spec
 files have one or more NoSource: or NoPatch: directives in them.  Both
@@ -186,7 +186,7 @@ The end result of all this, though, is that you can't rebuild
 ``no-source'' RPM packages using `rpm --rebuild' unless you also have
 the sources or patches which are not included in the .nosrc.rpm.
 
-<h2>BuildRequires</h2>
+\subsection specfile_buildrequires BuildRequires: Tag
 
 Build dependencies are identical to install dependencies except:
 

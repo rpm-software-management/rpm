@@ -299,18 +299,7 @@ WARN_LOGFILE           =
 
 INPUT                  = \
 	./Doxyheader \
-	./doc/manual/builddependencies \
-	./doc/manual/buildroot \
-	./doc/manual/conditionalbuilds \
-	./doc/manual/dependencies \
-	./doc/manual/format \
-	./doc/manual/macros \
-	./doc/manual/multiplebuilds \
-	./doc/manual/queryformat \
-	./doc/manual/signatures \
-	./doc/manual/relocatable \
-	./doc/manual/spec \
-	./doc/manual/triggers \
+	./macros \
 	./build.c \
 	./build.h \
 	./config.h \
@@ -339,6 +328,20 @@ INPUT                  = \
 	./build/rpmbuild.h \
 	./build/rpmspec.h \
 	./build/spec.c \
+	./doc/manual/builddependencies \
+	./doc/manual/buildroot \
+	./doc/manual/conditionalbuilds \
+	./doc/manual/dependencies \
+	./doc/manual/format \
+	./doc/manual/hregions \
+	./doc/manual/macros \
+	./doc/manual/multiplebuilds \
+	./doc/manual/queryformat \
+	./doc/manual/signatures \
+	./doc/manual/relocatable \
+	./doc/manual/spec \
+	./doc/manual/triggers \
+	./doc/manual/tsort \
 	./lib/cpio.c \
 	./lib/cpio.h \
 	./lib/db1.c \
@@ -416,7 +419,10 @@ INPUT                  = \
 	./popt/popthelp.c \
 	./popt/poptint.h \
 	./popt/poptparse.c \
+	./python/hash.c \
 	./python/rpmmodule.c \
+	./python/upgrade.c \
+	./python/upgrade.h \
 	./tools/dump.c \
 	./tools/dumpdb.c \
 	./tools/javadeps.c \

@@ -4,7 +4,7 @@ As it is impossible to please everyone with one style of query output, RPM
 allows you to specify what information should be printed during a query
 operation and how it should be formatted.
 
-<h2>Tags</h2>
+\subsection queryformat_tags Tags
 
 All of the information a package contains, apart from signatures and the
 actual files, is in a part of the package called the header. Each piece
@@ -36,7 +36,7 @@ the same reason.
 A tag can consist of one element or an array of elements. Each element can
 be a string or number only.
 
-<h2>Query Formats</h2>
+\subsection queryformat_format Query Formats
 
 A query format is passed to RPM after the --queryformat argument, and normally
 should be enclosed in single quotes. This query format is then used to print
@@ -63,7 +63,7 @@ right align the size to, use:
     rpm -qa --queryformat "%-30{NAME} %10{SIZE}\n"
 \endverbatim
 
-<h2>Arrays</h2>
+\subsection queryformat_arrays Arrays
 
 RPM uses many parallel arrays internally. For example, file sizes and 
 file names are kept as an array of numbers and an array of strings
@@ -114,7 +114,7 @@ which will give you the expected output.
     cdp /usr/man/man1/cdp.1
 \endverbatim
 
-<h2>Formatting Tags</h2>
+\subsection queryformat_formatting Formatting Tags
 
 One of the weaknesses with query formats is that it doesn't recognize
 that the INSTALLTIME tag (for example) should be printed as a date instead
@@ -133,7 +133,7 @@ name after the tag name. Here are some examples:
 The :shescape may be used on plain strings to get a string which can pass
 through a single level of shell and give the original string.
 
-<h2>Query Expressions</h2>
+\subsection queryformat_expressions Query Expressions
 
 Simple conditionals may be evaluated through query expressions. Expressions
 are delimited by %|...|. The only type of expression currently supported
@@ -148,7 +148,7 @@ the SOMETAG tag is present, and "missing" otherwise:
 Notice that the subformats "present" and "missing" must be inside of curly
 braces.
 
-<h2>Viewing the Verify Flags</h2>
+\subsection queryformat_example Example: Viewing the Verify Flags
 
 The follwing example query is run against dev becuase I know %verify
 is used there.

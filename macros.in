@@ -1,4 +1,7 @@
-# $Id: macros.in,v 1.72 2001/03/04 15:34:53 jbj Exp $
+#/*! \page mconfig Current default macro definitions
+# \verbatim
+#
+# $Id: macros.in,v 1.73 2001/03/17 19:55:09 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -713,3 +716,6 @@ done \
 # %files -f %{name}.lang
 #
 %find_lang	@RPMCONFIGDIR@/find-lang.sh %{buildroot}
+
+# \endverbatim
+#*/

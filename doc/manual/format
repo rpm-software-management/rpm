@@ -4,9 +4,10 @@ This document describes the RPM file format version 3.0, which is used
 by RPM versions 2.1 and greater.  The format is subject to change, and
 you should not assume that this document is kept up to date with the
 latest RPM code.  That said, the 3.0 format should not change for
-quite a while, and when it does, it will not be 3.0 anymore :-).  In
-any case, THE PROPER WAY TO ACCESS THESE STRUCTURES IS THROUGH THE RPM
-LIBRARY!!
+quite a while, and when it does, it will not be 3.0 anymore :-).
+
+\warning In any case, THE PROPER WAY TO ACCESS THESE STRUCTURES IS THROUGH
+THE RPM LIBRARY!!
 
 The RPM file format covers both source and binary packages.  An RPM
 package file is divided in 4 logical sections:
@@ -14,8 +15,8 @@ package file is divided in 4 logical sections:
 \verbatim
 . Lead      -- 96 bytes of "magic" and other info
 . Signature -- collection of "digital signatures"
-. Header    -- holding area for all the package information
-. Payload   -- compressed archive of all the files in the package
+. Header    -- holding area for all the package information (aka "metadata")
+. Payload   -- compressed archive of the file(s) in the package (aka "payload")
 \endverbatim
 
 All 2 and 4 byte "integer" quantities (int16 and int32) are stored in
@@ -23,7 +24,7 @@ network byte order.  When data is presented, the first number is the
 byte number, or address, in hex, followed by the byte values in hex,
 followed by character "translations" (where appropriate).
 
-<h2>Lead</h2>
+\subsection pkgformat_lead Lead
 
 The Lead is basically for file(1).  All the information contained in
 the Lead is duplicated or superceded by information in the Header.
@@ -94,7 +95,7 @@ is 5, which indicates the new "Header-style" signatures.
 The remaining 16 bytes (80-95) are currently unused and are reserved
 for future expansion.
 
-<h2>Signature</h2>
+\subsection pkgformat_signature Signature
 
 A 3.0 format signature (denoted by signature type 5 in the Lead), uses
 the same structure as the Header.  For historical reasons, this
@@ -122,7 +123,7 @@ the size of the PGP key used to sign the package.
 As of RPM 2.1, all packages carry at least SIZE and MD5 signatures,
 and the Signature section is padded to a multiple of 8 bytes.
 
-<h2>Header</h2>
+\subsection pkgformat_header Header
 
 The Header contains all the information about a package: name,
 version, file list, etc.  It uses the same "header structure" as the
@@ -131,12 +132,12 @@ tags for the Header would take too much space to list here, and the
 list grows fairly frequently.  For the complete list see lib/rpmlib.h
 in the RPM sources.
 
-<h2>Payload</h2>
+\subsection pkgformat_payload Payload
 
 The Payload is currently a gzipped cpio archive.  The cpio
 archive type used is SVR4 with a CRC checksum.
 
-<h2>The Header Structure</h2>
+\subsection pkgformat_header_structure The Header Structure
 
 The header structure is a little complicated, but actually performs a
 very simple function.  It acts almost like a small database in that it
@@ -245,7 +246,7 @@ could start at byte 589, byte that is an improper boundary for an INT32.
 As a result, 3 null bytes are inserted and the date for the SIZE actually
 starts at byte 592: "00 09 9b 31", which is 629553).
 
-<h2>Tools</h2>
+\subsection pkgformat_tools Tools
 
 The tools directory in the RPM sources contains a number of small
 programs that use the RPM library to pick apart packages.  These

@@ -1,4 +1,4 @@
-/*! \page builddpendencies How to generate build depedencies
+/*! \page builddpendencies Generating buiild dependencies automatically
 
 As we start updating packages for the next Red Hat distro, I'd like to see
 packages start to make use of build dependencies. Basically build

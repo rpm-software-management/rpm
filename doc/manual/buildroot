@@ -6,7 +6,7 @@ that your package can be built (installed into and packaged from)
 a user-definable directory.  This helps package building by normal
 users.
 
-<h2>The Spec File</h2>
+\subsection buildroot_specfile The Spec File
 
 Simply use
 \verbatim
@@ -59,7 +59,7 @@ would be changed to:
   /usr/bin/fooprog
 \endverbatim
 
-<h2>Building With a Build Root</h2>
+\subsection buildroot_building Building With a Build Root
 
 RPM will use the buildroot listed in the spec file as the default
 buildroot.  There are two ways to override this.  First, you can
@@ -67,7 +67,7 @@ have "buildroot: <dir>" in your rpmrc.  Second, you can override
 the default, and any entry in an rpmrc by using "--buildroot <dir>"
 on the RPM command line.
 
-<h2>Caveats using Build Roots</h2>
+\subsection buildroot_caveats Caveats using Build Roots
 
 Care should be taken when using buildroots that the install directory
 is owned by the correct package.  For example the file
