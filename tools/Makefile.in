@@ -4,7 +4,7 @@ VPATH = $(srcdir)
 include $(srcdir)/../Makefile.inc
 
 PROGS = rpmlead rpmheader rpmarchive rpmsignature dump dumpdb
-LOADLIBES = @LIBS@ @ZLIB@
+LOADLIBES = @LIBS@ @ZLIB@ @LIBMISC@
 
 ifeq (.depend,$(wildcard .depend))
 TARGET=everything
