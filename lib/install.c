@@ -391,6 +391,7 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		    error(RPMERR_RENAME, "rename of %s to %s failed: %s\n",
 			  prefixedFileList[i], newpath, strerror(errno));
 		    if (replacedList) free(replacedList);
+		    free(newpath);
 		    return 2;
 		}
 
@@ -510,6 +511,8 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    intptr++;
 	}
     }
+
+    freeHeader(h);
 
     return 0;
 }
@@ -638,7 +641,7 @@ static int installArchive(char * prefix, int fd, struct fileToInstall * files,
 
 	execvp(args[0], args);
 
-	exit(-1);
+	_exit(-1);
     }
 
     close(p[0]);
@@ -819,7 +822,7 @@ static int setFileOwnerships(char * rootdir, char ** fileList,
     }
 
     if (doFork)
-	exit(0);
+	_exit(0);
 
     return 0;
 }
