@@ -371,7 +371,7 @@ int packageBinaries(Spec s, char *passPhrase)
     char *dist;
     char *packager;
     char *packageVersion, *packageRelease;
-    char *prefix;
+    char *prefix, *prefixSave;
     int prefixLen;
     int size;
     StringBuf cpioFileList;
@@ -388,6 +388,10 @@ int packageBinaries(Spec s, char *passPhrase)
 	error(RPMERR_BADSPEC, "No release field");
 	return RPMERR_BADSPEC;
     }
+    /* after the getEntry() these are just pointers into the   */
+    /* header structure, which can be moved around by addEntry */
+    version = strdup(version);
+    release = strdup(release);
 
     sprintf(sourcerpm, "%s-%s-%s.%ssrc.rpm", s->name, version, release,
 	    (s->numNoPatch + s->numNoSource) ? "no" : "");
@@ -423,6 +427,10 @@ int packageBinaries(Spec s, char *passPhrase)
 		      (void *) &packageRelease, NULL)) {
 	    packageRelease = release;
 	}
+        /* after the getEntry() these are just pointers into the   */
+        /* header structure, which can be moved around by addEntry */
+        packageVersion = strdup(packageVersion);
+        packageRelease = strdup(packageRelease);
 	
 	/* Figure out the name of this package */
 	if (!getEntry(pr->header, RPMTAG_NAME, NULL, (void *)&nametmp, NULL)) {
@@ -494,10 +502,13 @@ int packageBinaries(Spec s, char *passPhrase)
 	
 	/**** Process the file list ****/
 
-	prefix = NULL;
+	prefixSave = prefix = NULL;
 	prefixLen = 0;
 	if (getEntry(outHeader, RPMTAG_DEFAULTPREFIX,
 		     NULL, (void **)&prefix, NULL)) {
+            /* after the getEntry() this is just pointers into the     */
+            /* header structure, which can be moved around by addEntry */
+	    prefixSave = prefix = strdup(prefix);
 	    while (*prefix && (*prefix == '/')) {
 		prefix++;
 	    }
@@ -506,9 +517,10 @@ int packageBinaries(Spec s, char *passPhrase)
 		prefixLen = 0;
 	    } else {
 		prefixLen = strlen(prefix);
+	        message(MESS_VERBOSE, "Package Prefix = %s\n", prefix);
 	    }
 	}
-
+	
 	if (process_filelist(outHeader, pr, pr->filelist, &size, nametmp,
 			     packageVersion, packageRelease, RPMLEAD_BINARY,
 			     prefix)) {
@@ -520,7 +532,7 @@ int packageBinaries(Spec s, char *passPhrase)
 	    /* count may already be 0, but this is safer */
 	    count = 0;
 	}
-	
+
 	cpioFileList = newStringBuf();
 	while (count--) {
 	    file = *farray++;
@@ -529,8 +541,8 @@ int packageBinaries(Spec s, char *passPhrase)
 	    }
 	    if (prefix) {
 		if (strncmp(prefix, file, prefixLen)) {
-		    error(RPMERR_BADSPEC, "File doesn't match prefix: %s",
-			  file);
+		    error(RPMERR_BADSPEC, "File doesn't match prefix (%s): %s",
+			  prefix, file);
 		    return 1;
 		}
 		file += prefixLen + 1; /* 1 for "/" */
@@ -560,9 +572,18 @@ int packageBinaries(Spec s, char *passPhrase)
 
 	freeStringBuf(cpioFileList);
 	freeHeader(outHeader);
+       
+        if (prefixSave)
+	    free(prefixSave);
+        free(packageVersion);
+        free(packageRelease);
+       
 	pr = pr->next;
     }
-	
+
+    free(version);
+    free(release);
+   
     return 0;
 }
 
