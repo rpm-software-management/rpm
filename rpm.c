@@ -371,7 +371,7 @@ int main(int argc, char ** argv) {
     while (1) {
 	long_index = 0;
 
-	arg = getopt_long(argc, argv, "QqVyUYhpvKPfFilseagGDducr:b:", options, 
+	arg = getopt_long(argc, argv, "RQqVyUYhpvKPfFilseagGDducr:b:", options, 
 			  &long_index);
 	if (arg == -1) break;
 
