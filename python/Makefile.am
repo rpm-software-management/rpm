@@ -19,6 +19,7 @@ LDADD =
 pythondir = $(prefix)/lib/python1.5/site-packages
 python_PROGRAMS = rpmmodule.so
 rpmmodule_so_SOURCES =
+# XXX rpmmodule_so_LDFLAGS = -L../lib/.libs -lrpm -L../popt/.libs -lpopt $(LIBS) -shared -Wl,-soname,rpmmodule.so
 rpmmodule_so_LDFLAGS = -lrpm -lpopt $(LIBS) -shared -Wl,-soname,rpmmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
