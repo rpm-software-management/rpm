@@ -117,7 +117,9 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 	
 	dup2(toProg[0], 0);   /* Make stdin the in pipe */
 	dup2(fromProg[1], 1); /* Make stdout the out pipe */
-	close(2);             /* Toss stderr */
+
+	close(toProg[0]);
+	close(fromProg[1]);
 
 	chdir(dir);
 	
