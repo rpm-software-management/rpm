@@ -1270,11 +1270,53 @@ static int runImmedTriggers(PSM_t psm)
     return rc;
 }
 
+/*@observer@*/ static const char *const pkgStageString(pkgStage a) {
+    switch(a) {
+    case PSM_UNKNOWN:		return "unknown";
+
+    case PSM_PKGINSTALL:	return "  install";
+    case PSM_PKGERASE:		return "    erase";
+    case PSM_PKGCOMMIT:		return "   commit";
+    case PSM_PKGSAVE:		return "repackage";
+
+    case PSM_INIT:		return "init";
+    case PSM_PRE:		return "pre";
+    case PSM_PROCESS:		return "process";
+    case PSM_POST:		return "post";
+    case PSM_UNDO:		return "undo";
+    case PSM_FINI:		return "fini";
+
+    case PSM_CREATE:		return "create";
+    case PSM_NOTIFY:		return "notify";
+    case PSM_DESTROY:		return "destroy";
+    case PSM_COMMIT:		return "commit";
+
+    case PSM_CHROOT_IN:		return "chrootin";
+    case PSM_CHROOT_OUT:	return "chrootout";
+    case PSM_SCRIPT:		return "script";
+    case PSM_TRIGGERS:		return "triggers";
+    case PSM_IMMED_TRIGGERS:	return "immedtriggers";
+
+    case PSM_RPMIO_FLAGS:	return "rpmioflags";
+
+    case PSM_RPMDB_LOAD:	return "rpmdbload";
+    case PSM_RPMDB_ADD:		return "rpmdbadd";
+    case PSM_RPMDB_REMOVE:	return "rpmdbremove";
+
+    default:			return "???";
+    }
+    /*@noteached@*/
+}
+
+/**
+ * @todo Packages w/o files never get a callback, hence don't get displayed
+ * on install with -v.
+ */
 int psmStage(PSM_t psm, pkgStage stage)
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
-    HGE_t hge = (HGE_t)fi->hge;
+    HGE_t hge = fi->hge;
     HFD_t hfd = fi->hfd;
     rpmRC rc = psm->rc;
     int saveerrno;
@@ -1286,6 +1328,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 	rpmMessage(RPMMESS_DEBUG, _("%s: %s-%s-%s has %d files, test = %d\n"),
 		psm->stepName, fi->name, fi->version, fi->release,
 		fi->fc, (ts->transFlags & RPMTRANS_FLAG_TEST));
+
 	if (psm->goal == PSM_PKGINSTALL) {
 	    /*
 	     * When we run scripts, we pass an argument which is the number of 
@@ -1298,6 +1341,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 		break;
 	    }
 
+assert(psm->mi == NULL);
 	    psm->mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, fi->name, 0);
 	    rpmdbSetIteratorVersion(psm->mi, fi->version);
 	    rpmdbSetIteratorRelease(psm->mi, fi->release);
@@ -1309,6 +1353,43 @@ int psmStage(PSM_t psm, pkgStage stage)
 	    }
 	    rpmdbFreeIterator(psm->mi);
 	    psm->mi = NULL;
+	    rc = RPMRC_OK;
+
+	    if (fi->fc > 0 && fi->fstates == NULL) {
+		fi->fstates = xmalloc(sizeof(*fi->fstates) * fi->fc);
+		memset(fi->fstates, RPMFILE_STATE_NORMAL, fi->fc);
+	    }
+
+	    if (fi->fc <= 0)				break;
+	    if (ts->transFlags & RPMTRANS_FLAG_JUSTDB)	break;
+	
+	    /*
+	     * Old format relocateable packages need the entire default
+	     * prefix stripped to form the cpio list, while all other packages
+	     * need the leading / stripped.
+	     */
+	    {   const char * p;
+		rc = hge(fi->h, RPMTAG_DEFAULTPREFIX, NULL, (void **) &p, NULL);
+		fi->striplen = (rc ? strlen(p) + 1 : 1); 
+	    }
+	    fi->mapflags =
+		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+	
+	    if (headerIsEntry(fi->h, RPMTAG_ORIGBASENAMES))
+		buildOrigFileList(fi->h, &fi->apath, NULL);
+	    else
+		rpmBuildFileList(fi->h, &fi->apath, NULL);
+	
+	    if (fi->fuser == NULL)
+		hge(fi->h, RPMTAG_FILEUSERNAME, NULL,
+				(void **) &fi->fuser, NULL);
+	    if (fi->fgroup == NULL)
+		hge(fi->h, RPMTAG_FILEGROUPNAME, NULL,
+				(void **) &fi->fgroup, NULL);
+	    if (fi->fuids == NULL)
+		fi->fuids = xcalloc(sizeof(*fi->fuids), fi->fc);
+	    if (fi->fgids == NULL)
+		fi->fgids = xcalloc(sizeof(*fi->fgids), fi->fc);
 	    rc = RPMRC_OK;
 	}
 	if (psm->goal == PSM_PKGERASE) {
@@ -1333,6 +1414,8 @@ int psmStage(PSM_t psm, pkgStage stage)
 	}
 	break;
     case PSM_PRE:
+	if (ts->transFlags & RPMTRANS_FLAG_TEST)	break;
+
 	if (psm->goal == PSM_PKGINSTALL) {
 	    psm->scriptTag = RPMTAG_PREIN;
 	    psm->progTag = RPMTAG_PREINPROG;
@@ -1449,6 +1532,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 	}
 	break;
     case PSM_PROCESS:
+	if (ts->transFlags & RPMTRANS_FLAG_TEST)	break;
 	if (psm->goal == PSM_PKGINSTALL) {
 	    struct availablePackage * alp = fi->ap;
 
@@ -1533,6 +1617,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 	}
 	break;
     case PSM_POST:
+	if (ts->transFlags & RPMTRANS_FLAG_TEST)	break;
 	if (psm->goal == PSM_PKGINSTALL) {
 	    int_32 installTime = time(NULL);
 
@@ -1635,15 +1720,30 @@ int psmStage(PSM_t psm, pkgStage stage)
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
 	psm->failedFile = _free(psm->failedFile);
+
+	fi->fgids = _free(fi->fgids);
+	fi->fuids = _free(fi->fuids);
+	fi->fgroup = hfd(fi->fgroup, -1);
+	fi->fuser = hfd(fi->fuser, -1);
+	fi->apath = _free(fi->apath);
+	fi->fstates = _free(fi->fstates);
+
 	break;
 
     case PSM_PKGINSTALL:
-	break;
     case PSM_PKGERASE:
+    case PSM_PKGSAVE:
+	psm->goal = stage;
+	psm->rc = RPMRC_OK;
+	psm->stepName = pkgStageString(stage);
+
+	rc = psmStage(psm, PSM_INIT);
+	if (!rc) rc = psmStage(psm, PSM_PRE);
+	if (!rc) rc = psmStage(psm, PSM_PROCESS);
+	if (!rc) rc = psmStage(psm, PSM_POST);
+	(void) psmStage(psm, PSM_FINI);
 	break;
     case PSM_PKGCOMMIT:
-	break;
-    case PSM_PKGSAVE:
 	break;
 
     case PSM_CREATE:
@@ -1692,6 +1792,7 @@ int psmStage(PSM_t psm, pkgStage stage)
 	}
 	break;
     case PSM_SCRIPT:
+	if (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS)	break;
 	rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
 		psm->stepName, tag2sln(psm->scriptTag));
 	rc = runInstScript(psm);
@@ -1723,17 +1824,17 @@ int psmStage(PSM_t psm, pkgStage stage)
     }	break;
 
     case PSM_RPMDB_LOAD:
-    {	rpmdbMatchIterator mi = NULL;
-
-	mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
+assert(psm->mi == NULL);
+	psm->mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
 				&fi->record, sizeof(fi->record));
 
-	fi->h = rpmdbNextIterator(mi);
+	fi->h = rpmdbNextIterator(psm->mi);
 	if (fi->h)
 	    fi->h = headerLink(fi->h);
-	rpmdbFreeIterator(mi);
-	rc = (fi->h ? 0 : 2);
-    }	break;
+	rpmdbFreeIterator(psm->mi);
+	psm->mi = NULL;
+	rc = (fi->h ? RPMRC_OK : RPMRC_FAIL);
+	break;
     case PSM_RPMDB_ADD:
 	if (ts->transFlags & RPMTRANS_FLAG_TEST)	break;
 	rc = rpmdbAdd(ts->rpmdb, ts->id, fi->h);
@@ -1746,143 +1847,6 @@ int psmStage(PSM_t psm, pkgStage stage)
     default:
 	break;
     }
-
-    return rc;
-}
-
-/**
- * @todo Packages w/o files never get a callback, hence don't get displayed
- * on install with -v.
- */
-int installBinaryPackage(PSM_t psm)
-{
-    const rpmTransactionSet ts = psm->ts;
-    TFI_t fi = psm->fi;
-    HGE_t hge = (HGE_t)fi->hge;
-    int ec = 2;		/* assume error return */
-    rpmRC rc = RPMRC_OK;
-
-psm->goal = PSM_PKGINSTALL;
-psm->stepName = "  install";
-
-    rc = psmStage(psm, PSM_INIT);
-    if (rc)
-	goto exit;
-
-    if (fi->fc > 0 && fi->fstates == NULL) {
-	fi->fstates = xmalloc(sizeof(*fi->fstates) * fi->fc);
-	memset(fi->fstates, RPMFILE_STATE_NORMAL, fi->fc);
-    }
-
-    if (fi->fc > 0 && !(ts->transFlags & RPMTRANS_FLAG_JUSTDB)) {
-	const char * p;
-
-	/*
-	 * Old format relocateable packages need the entire default
-	 * prefix stripped to form the cpio list, while all other packages
-	 * need the leading / stripped.
-	 */
-	rc = hge(fi->h, RPMTAG_DEFAULTPREFIX, NULL, (void **) &p, NULL);
-	fi->striplen = (rc ? strlen(p) + 1 : 1); 
-	fi->mapflags =
-		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
-
-	if (headerIsEntry(fi->h, RPMTAG_ORIGBASENAMES))
-	    buildOrigFileList(fi->h, &fi->apath, NULL);
-	else
-	    rpmBuildFileList(fi->h, &fi->apath, NULL);
-
-	if (fi->fuser == NULL)
-	    hge(fi->h, RPMTAG_FILEUSERNAME, NULL, (void **) &fi->fuser, NULL);
-	if (fi->fgroup == NULL)
-	    hge(fi->h, RPMTAG_FILEGROUPNAME, NULL, (void **) &fi->fgroup, NULL);
-	if (fi->fuids == NULL)
-	    fi->fuids = xcalloc(sizeof(*fi->fuids), fi->fc);
-	if (fi->fgids == NULL)
-	    fi->fgids = xcalloc(sizeof(*fi->fgids), fi->fc);
-
-    }
-
-    if (ts->transFlags & RPMTRANS_FLAG_TEST) {
-	ec = 0;
-	goto exit;
-    }
-
-    rc = psmStage(psm, PSM_PRE);
-    if (rc)
-	goto exit;
-
-    rc = psmStage(psm, PSM_PROCESS);
-    if (rc)
-	goto exit;
-
-    rc = psmStage(psm, PSM_POST);
-    if (rc)
-	goto exit;
-
-    ec = 0;
-
-exit:
-    (void) psmStage(psm, PSM_FINI);
-
-    return ec;
-}
-
-int removeBinaryPackage(PSM_t psm)
-{
-    rpmRC rc = RPMRC_OK;
-
-psm->goal = PSM_PKGERASE;
-psm->stepName = "    erase";
-
-    rc = psmStage(psm, PSM_INIT);
-    if (rc)
-	goto exit;
-
-    rc = psmStage(psm, PSM_PRE);
-    if (rc)
-	goto exit;
-
-    rc = psmStage(psm, PSM_PROCESS);
-    /* XXX WTFO? erase failures are not cause for stopping. */
-
-    rc = psmStage(psm, PSM_POST);
-    if (rc)
-	goto exit;
-
-exit:
-    (void) psmStage(psm, PSM_FINI);
-
-    return rc;
-}
-
-int repackage(PSM_t psm)
-{
-    rpmRC rc = RPMRC_OK;
-
-psm->goal = PSM_PKGSAVE;
-psm->stepName = "repackage";
-
-    rc = psmStage(psm, PSM_INIT);
-    if (rc)
-	goto exit;
-
-    /* Write the lead, signature, and header into the package. */
-    rc = psmStage(psm, PSM_PRE);
-    if (rc)
-	goto exit;
-
-    /* Write the payload into the package. */
-    rc = psmStage(psm, PSM_PROCESS);
-    if (rc)
-	goto exit;
-
-    rc = psmStage(psm, PSM_POST);
-    if (rc)
-	goto exit;
-
-exit:
-    (void) psmStage(psm, PSM_FINI);
 
     return rc;
 }

@@ -1800,7 +1800,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		break;
 	    case TR_REMOVED:
 		if (ts->transFlags & RPMTRANS_FLAG_REPACKAGE)
-		    repackage(psm);
+		    (void) psmStage(psm, PSM_PKGSAVE);
 		break;
 	    }
 	}
@@ -1860,7 +1860,7 @@ assert(alp == fi->ap);
 		    ts->transFlags |= RPMTRANS_FLAG_MULTILIB;
 
 if (fi->ap == NULL) fi->ap = alp;	/* XXX WTFO? */
-		if (installBinaryPackage(psm)) {
+		if (psmStage(psm, PSM_PKGINSTALL)) {
 		    ourrc++;
 		    lastFailed = i;
 		}
@@ -1889,7 +1889,7 @@ if (fi->ap == NULL) fi->ap = alp;	/* XXX WTFO? */
 	    if (ts->order[oc].u.removed.dependsOnIndex == lastFailed)
 		break;
 
-	    if (removeBinaryPackage(psm))
+	    if (psmStage(psm, PSM_PKGERASE))
 		ourrc++;
 
 	    break;

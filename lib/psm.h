@@ -191,29 +191,10 @@ void freeFi(TFI_t fi)
 /*@observer@*/ const char *const fileActionString(fileAction a);
 
 /**
- * Install binary package (from transaction set).
+ * Package state machine driver.
  * @param psm		package state machine data
- * @return		0 on success, 1 on bad magic, 2 on error
- */
-int installBinaryPackage(PSM_t psm)
-	/*@modifies psm @*/;
-
-/**
- * Erase binary package (from transaction set).
- * @param psm		package state machine data
+ * @param stage		next stage
  * @return		0 on success
- */
-int removeBinaryPackage(PSM_t psm)
-	/*@modifies psm @*/;
-
-/**
- * @param psm		package state machine data
- * @return		0 on success
- */
-int repackage(PSM_t psm)
-	/*@modifies psm @*/;
-
-/**
  */
 int psmStage(PSM_t psm, pkgStage stage)
 	/*@modifies psm @*/;

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-03-02 12:08-0500\n"
+"POT-Creation-Date: 2001-03-02 14:26-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1808,7 +1808,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:484 lib/psm.c:1429
+#: build/pack.c:484 lib/psm.c:1512
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -1838,7 +1838,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:566 lib/psm.c:1621
+#: build/pack.c:566 lib/psm.c:1706
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2921,26 +2921,26 @@ msgstr ""
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1286
+#: lib/psm.c:1328
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1342
+#: lib/psm.c:1425
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:1479
+#: lib/psm.c:1563
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1480
+#: lib/psm.c:1564
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1695
+#: lib/psm.c:1796
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
