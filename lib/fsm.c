@@ -1274,9 +1274,7 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
     int dc = dnlCount(dnli);
     int rc = 0;
     int i;
-/*@-compdef@*/
     rpmts ts = fsmGetTs(fsm);
-/*@=compdef@*/
     rpmsx sx = rpmtsREContext(ts);
 
     fsm->path = NULL;
@@ -1346,9 +1344,9 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
 			rc = fsmNext(fsm, FSM_LSETFCON);
 		    }
 		    if (fsm->fcontext == NULL)
-		    rpmMessage(RPMMESS_DEBUG,
+			rpmMessage(RPMMESS_DEBUG,
 			    _("%s directory created with perms %04o, no context.\n"),
-			fsm->path, (unsigned)(st->st_mode & 07777));
+			    fsm->path, (unsigned)(st->st_mode & 07777));
 		    else
 			rpmMessage(RPMMESS_DEBUG,
 			    _("%s directory created with perms %04o, context %s.\n"),
@@ -2182,7 +2180,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->path, fsm->fcontext,
 		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0 && errno != ENOTSUP) rc = CPIOERR_LSETFCON_FAILED;
+	if (rc < 0) rc = (errno == ENOTSUP ? 0 : CPIOERR_LSETFCON_FAILED);
 	break;
     case FSM_CHOWN:
 	rc = chown(fsm->path, st->st_uid, st->st_gid);

@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.19
+Release: 0.20
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -173,6 +173,8 @@ do
     touch $RPM_BUILD_ROOT/var/lib/rpm/$dbi
 done
 
+# - serialize rpmtsRun() using fcntl on /var/lock/rpm/transaction.
+mkdir -p ${RPM_BUILD_ROOT}/var/lock/rpm
 %endif
 
 %if %{with_apidocs}
@@ -264,6 +266,7 @@ exit 0
 #%config(noreplace,missingok)	/etc/rpm/macros.*
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lock/rpm
 
 %define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
 %rpmdbattr	/var/lib/rpm/*
@@ -482,6 +485,11 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Mar 10 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.20
+- add sparcv8 and enable elf32/elf64 Zon sparc64 (#117302).
+- fix: --querybynumber looped.
+- fix: ENOTSUP filter from lsetfilecon borkage.
+
 * Tue Mar  9 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.19
 - fix: sq->reaped needs sighold(SIGCHLD)/sigrelease(SIGCHLD) (#117620).
 
@@ -490,11 +498,13 @@ exit 0
 
 * Mon Mar  1 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.17
 - permit globs in macrofiles: directive (#117217).
+- fix: segfault generating transaction serialization lock path.
+- use /etc/security/selinux/file_contexts instead.
 
 * Wed Feb 25 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.15
 - serialize rpmtsRun() using fcntl on /var/lock/rpm/transaction.
 
-* Sun Feb 22 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.14
+* Sun Feb 22 2004 Jeff Johnson <jbj@jbj,org> 4.3-0.14
 - add ia32e arch.
 - stable sort for policy specifications, patterns before paths.
 - set "rpm_script_t" exec type for scriptlets iff /bin/sh, else default.
@@ -502,7 +512,7 @@ exit 0
 
 * Fri Feb 20 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.13
 - fix: only first "mkdir -p" directory had context set.
-                                                                                
+
 * Wed Feb 18 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.12
 - python: add patch to rpm-4_3 to initialize RE contexts.
 
@@ -514,11 +524,8 @@ exit 0
 
 * Wed Feb 11 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.10
 - re-add --enable-posixmutexes to build.
-                                                                                
-* Mon Jan 19 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.9
-- python: return None for NEVRAO, [] for everything else.
 
-* Mon Jan 19 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.8
+* Mon Jan 19 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.9
 - python: return None for NEVRAO, [] for everything else.
 
 * Mon Jan 12 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.7
