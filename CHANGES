@@ -4,6 +4,9 @@
 	- added rpmdbOpenForTraversal()
 	- proxy http (Alex deVries).
 	- add BuildPrereq: in spec file and src rpm.
+	- added rpmtransSetScriptFd()
+	- fixed config file problems during chroot upgrades
+	- fixed %attr brokenness for directories
 
 2.5.x -> 2.90
 	- added --excludepath
