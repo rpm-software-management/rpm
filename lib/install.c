@@ -1616,20 +1616,26 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
     newh = headerNew();
     it = headerInitIterator(h);
     while (headerNextIterator(it, &tag, &type, &data, &count))
-	if (tag != RPMTAG_FILENAMES)
+	if (tag != RPMTAG_FILENAMES) {
 	    headerAddEntry(newh, tag, type, data, count);
+	if (type == RPM_STRING_ARRAY_TYPE) free(data);
+    }
 
     headerFreeIterator(it);
 
     newFileList = alloca(sizeof(char *) * fileCount);
     for (i = 0; i < fileCount; i++) {
-	if (!strncmp(fileList[i], defaultPrefix, defaultPrefixLength)) {
+	if (!strcmp(fileList[i], defaultPrefix)) {
+	    /* special case as there is no '/' on this */
+	    newFileList[i] = newPrefix;
+	} else if (!strncmp(fileList[i], defaultPrefix, defaultPrefixLength)) {
 	    newFileList[i] = alloca(strlen(fileList[i]) + newPrefixLength -
 				 defaultPrefixLength + 2);
 	    sprintf(newFileList[i], "%s/%s", newPrefix, 
 		    fileList[i] + defaultPrefixLength + 1);
 	} else {
-	    rpmMessage(RPMMESS_DEBUG, "BAD - unprefixed file in relocatable package");
+	    rpmMessage(RPMMESS_DEBUG, "BAD - unprefixed file in relocatable "
+			"package");
 	    newFileList[i] = alloca(strlen(fileList[i]) - 
 					defaultPrefixLength + 2);
 	    sprintf(newFileList[i], "/%s", fileList[i] + 
@@ -1637,7 +1643,8 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
 	}
     }
 
-    headerAddEntry(newh, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, newFileList, fileCount);
+    headerAddEntry(newh, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, newFileList, 
+		   fileCount);
     headerAddEntry(newh, RPMTAG_INSTALLPREFIX, RPM_STRING_TYPE, newPrefix, 1);
 
     *relocationLength = newPrefixLength + 1;
