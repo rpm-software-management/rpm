@@ -487,7 +487,7 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
 		(void) rpmfiSetDX(fi, i);
 		iDN = rpmfiDN(fi);
 		if (!strcmp(DN, iDN))
-		    break;
+		    /*@innerbreak@*/ break;
 	    }
 	    dirUnique[dx] = i;
 	}
