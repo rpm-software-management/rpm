@@ -1,3 +1,7 @@
+1.2.2 -> 1.2.3
+	- fixed memset() in help message generation (Dale Hawkins)
+	- added extern "C" stuff to popt.h for C++ compilers (Dale Hawkins)
+
 1.2.1 -> 1.2.2
 	- fixed bug in chaind alias happens which seems to have only
 	  affected --triggers in rpm

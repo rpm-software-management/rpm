@@ -261,7 +261,7 @@ static int showShortOptions(const struct poptOption * opt, FILE * f,
 
     if (!str) {
 	str = s;
-	memset(str, 0, sizeof(str));
+	memset(str, 0, sizeof(s));
     }
 
     while (opt->longName || opt->shortName || opt->arg) {
