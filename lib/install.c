@@ -184,7 +184,7 @@ static void assembleFileList(Header h, struct fileMemory * mem,
 	}
 
 	if (gnameToGid(fileGroups[i], &files[i].gid)) {
-	    rpmError(RPMERR_NOGROUP, "user %s does not exist - using root", 
+	    rpmError(RPMERR_NOGROUP, "group %s does not exist - using root", 
 			fileGroups[i]);
 	    files[i].gid = 0;
 	    /* turn off the sgid bit */
