@@ -641,8 +641,11 @@ static int fsmMapFContext(FSM_t fsm)
 	    fsm->fcontext = rpmsxFContext(sx, fsm->path, st->st_mode);
 	    sx = rpmsxFree(sx);
 	} else {
+	    int i = fsm->ix;
+
 	    /* Get file security context from package. */
-	    fsm->fcontext = rpmfiFContext(fi);
+	    if (fi && i >= 0 && i < fi->fc)
+		fsm->fcontext = (fi->fcontexts ? fi->fcontexts[i] : NULL);
 	}
     }
     return 0;

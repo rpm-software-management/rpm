@@ -134,7 +134,7 @@ CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
 ./configure --prefix=%{__prefix} --sysconfdir=/etc \
 	--localstatedir=/var --infodir='${prefix}%{__share}/info' \
 	--mandir='${prefix}%{__share}/man' \
-	$WITH_PYTHON --without-javaglue
+	$WITH_PYTHON --enable-posixmutexes --without-javaglue
 %else
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} $WITH_PYTHON \
 	--without-javaglue
@@ -482,7 +482,16 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Mon Jan 19 2004 Jeff Johnson <jbj@jbj.org> 4.2-0.8
+* Sun Feb 15 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.11
+- fix: set fcontext from pkg when file_contexts doesn't exist (#114040).
+
+* Wed Feb 11 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.10
+- re-add --enable-posixmutexes to build.
+                                                                                
+* Mon Jan 19 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.9
+- python: return None for NEVRAO, [] for everything else.
+
+* Mon Jan 19 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.8
 - python: return None for NEVRAO, [] for everything else.
 
 * Mon Jan 12 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.7

@@ -13,6 +13,8 @@
 	- use -fPIC -DPIC on all platforms, not just mandatory (#112713).
 	- python: return None for NEVRAO, [] for everything else.
 	- python: throw exception on bad arg to labelCompare (#113661).
+	- re-add --enable-posixmutexes to build.
+	- fix: set fcontext from pkg when file_contexts doesn't exist (#114040).
 
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.
