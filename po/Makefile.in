@@ -31,12 +31,12 @@ distclean: clean
 depend:
 
 install:
-	$(INSTALL) -m 755 -o 0 -g 0 -d $(NLSDIR)
+	$(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(NLSDIR)
 	for n in $(CATALOGS); do \
 	    l=`basename $$n .mo`; \
-	    $(INSTALL) -m 755 -o 0 -g 0 -d $(NLSDIR)/$$l; \
-	    $(INSTALL) -m 755 -o 0 -g 0 -d $(NLSDIR)/$$l/LC_MESSAGES; \
-	    $(INSTALL) -m 644 -o 0 -g 0 $$n $(NLSDIR)/$$l/LC_MESSAGES/rpm.mo; \
+	    $(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(NLSDIR)/$$l; \
+	    $(INSTALL) -m 755 -o 0 -g 0 -d $(installprefix)/$(NLSDIR)/$$l/LC_MESSAGES; \
+	    $(INSTALL) -m 644 -o 0 -g 0 $$n $(installprefix)/$(NLSDIR)/$$l/LC_MESSAGES/rpm.mo; \
 	done
 
 %.mo: %.po
