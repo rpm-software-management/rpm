@@ -645,6 +645,9 @@ i386|i486|i586|i686|ix86)	RPMCANONARCH=i386 ;;
 alpha*)		RPMCANONARCH=alpha ;;
 sparc*)		RPMCANONARCH=sparc ;;
 powerpc*)	RPMCANONARCH=ppc ;;
+armv4l*)	RPMCANONARCH=armv4l ;;
+armv4b*)	RPMCANONARCH=armv4b ;;
+arm*)		RPMCANONARCH=arm ;;
 *)		RPMCANONARCH=unknown ;;
 esac
 RPMCANONVENDOR="$build_vendor"

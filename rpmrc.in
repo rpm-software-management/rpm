@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.6 1999/04/01 22:26:49 jbj Exp $
+# $Id: rpmrc.in,v 2.7 1999/04/04 20:10:34 jbj Exp $
 
 #############################################################
 
@@ -22,7 +22,7 @@ optflags: mipseb -O2
 optflags: mipsel -O2
 optflags: armv4 -O2 -fsigned-char -fomit-frame-pointer
 optflags: armv4b -O2 -fsigned-char -fomit-frame-pointer
-optflags: armv4l -O -fsigned-char -fomit-frame-pointer
+optflags: armv4l -O2 -fsigned-char -fomit-frame-pointer
 
 #############################################################
 # Canonical arch names and numbers
