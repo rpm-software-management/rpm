@@ -1558,6 +1558,7 @@ initScan(const ENCODING **encodingTable,
          const char *ptr,
          const char *end,
          const char **nextTokPtr)
+	/*@modifies *enc, *nextTokPtr @*/
 {
   const ENCODING **encPtr;
 

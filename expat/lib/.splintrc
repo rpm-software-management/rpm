@@ -3,7 +3,7 @@
 +partial
 +forcehints
 
--warnunixlib
+#-warnunixlib
 -warnposix
 
 +unixlib
@@ -16,6 +16,8 @@
 +bounds
 -boundsread
 -boundswrite
+
+-compdestroy		# 5
 
 -enummemuse		# 6
 -fcnuse			# 61
@@ -48,12 +50,10 @@
 -type			# 59
 -usereleased		# 8
 
--dependenttrans		# 4
--immediatetrans		# 18
--kepttrans		# 9
--onlytrans		# 1
+-immediatetrans		# 9
+-kepttrans		# 5
 -temptrans		# 51
--unqualifiedtrans	# 16
+-unqualifiedtrans	# 12
 
 -casebreak		# 2
 -ifempty

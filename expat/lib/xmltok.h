@@ -282,27 +282,29 @@ int XmlParseXmlDecl(int isGeneralTextEntity,
                     const char **badPtr,
                     const char **versionPtr,
                     const char **versionEndPtr,
-                    const char **encodingNamePtr,
-                    const ENCODING **namedEncodingPtr,
-                    int *standalonePtr)
-	/*@*/;
+                    const char **encodingName,
+                    const ENCODING **encoding,
+                    int *standalone)
+	/*@modifies ptr, *badPtr, *versionPtr, *versionEndPtr,
+		*encodingName, *encoding, *standalone @*/;
 
-int XmlInitEncoding(INIT_ENCODING *, const ENCODING **, const char *name)
+int XmlInitEncoding(INIT_ENCODING *p, const ENCODING **encPtr, const char *name)
 	/*@modifies p, *encPtr @*/;
 const ENCODING *XmlGetUtf8InternalEncoding(void)
 	/*@*/;
 const ENCODING *XmlGetUtf16InternalEncoding(void)
 	/*@*/;
 int FASTCALL XmlUtf8Encode(int charNumber, char *buf)
-	/*@*/;
+	/*@modifies buf @*/;
 int FASTCALL XmlUtf16Encode(int charNumber, unsigned short *buf)
-	/*@*/;
+	/*@modifies buf @*/;
 int XmlSizeOfUnknownEncoding(void)
 	/*@*/;
 
 typedef int (*CONVERTER)(void *userData, const char *p)
 	/*@*/;
 
+/*@null@*/
 ENCODING *
 XmlInitUnknownEncoding(void *mem,
                        int *table,
@@ -317,9 +319,11 @@ int XmlParseXmlDeclNS(int isGeneralTextEntity,
                       const char **badPtr,
                       const char **versionPtr,
                       const char **versionEndPtr,
-                      const char **encodingNamePtr,
-                      const ENCODING **namedEncodingPtr,
-                      int *standalonePtr);
+                      const char **encodingName,
+                      const ENCODING **encoding,
+                      int *standalone)
+	/*@modifies ptr, *badPtr, *versionPtr, *versionEndPtr,
+		*encodingName, *encoding, *standalone @*/;
 
 int XmlInitEncodingNS(INIT_ENCODING *p, const ENCODING **encPtr,
 		const char *name)

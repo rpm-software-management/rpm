@@ -152,6 +152,7 @@ typedef struct prefix {
 
 typedef struct {
   const XML_Char *str;
+/*@dependent@*/
   const XML_Char *localPart;
   const XML_Char *prefix;
   int strLen;
@@ -218,8 +219,10 @@ typedef struct block {
 typedef struct {
   BLOCK *blocks;
   BLOCK *freeBlocks;
+/*@dependent@*/
   const XML_Char *end;
   XML_Char *ptr;
+/*@owned@*/
   XML_Char *start;
   const XML_Memory_Handling_Suite *mem;
 } STRING_POOL;
@@ -235,6 +238,7 @@ typedef struct attribute_id {
 } ATTRIBUTE_ID;
 
 typedef struct {
+/*@observer@*/
   const ATTRIBUTE_ID *id;
   XML_Bool isCdata;
   const XML_Char *value;
@@ -373,17 +377,19 @@ addBinding(XML_Parser parser, PREFIX *prefix,
 		const XML_Char *uri, BINDING **bindingsPtr)
 	/*@modifies parser, *bindingsPtr @*/;
 static int
-defineAttribute(ELEMENT_TYPE *type, ATTRIBUTE_ID *,
+defineAttribute(ELEMENT_TYPE *type, ATTRIBUTE_ID *attId,
 		XML_Bool isCdata, XML_Bool isId, const XML_Char *dfltValue,
 		XML_Parser parser)
 	/*@modifies type, attId @*/;
 static enum XML_Error
-storeAttributeValue(XML_Parser parser, const ENCODING *, XML_Bool isCdata,
-		const char *, const char *, STRING_POOL *)
+storeAttributeValue(XML_Parser parser, const ENCODING *enc, XML_Bool isCdata,
+                    const char *ptr, const char *end,
+                    STRING_POOL *pool)
 	/*@modifies parser, pool @*/;
 static enum XML_Error
-appendAttributeValue(XML_Parser parser, const ENCODING *, XML_Bool isCdata,
-		const char *, const char *, STRING_POOL *)
+appendAttributeValue(XML_Parser parser, const ENCODING *enc, XML_Bool isCdata,
+                     const char *ptr, const char *end,
+                     STRING_POOL *pool)
 	/*@modifies parser, pool @*/;
 /*@null@*/
 static ATTRIBUTE_ID *
@@ -391,7 +397,7 @@ getAttributeId(XML_Parser parser, const ENCODING *enc, const char *start,
 		const char *end)
 	/*@modifies parser @*/;
 static int
-setElementTypePrefix(XML_Parser parser, ELEMENT_TYPE *)
+setElementTypePrefix(XML_Parser parser, ELEMENT_TYPE *elementType)
 	/*@modifies parser, elementType @*/;
 static enum XML_Error
 storeEntityValue(XML_Parser parser, const ENCODING *enc, const char *start,
@@ -417,7 +423,7 @@ static XML_Bool
 setContext(XML_Parser parser, const XML_Char *context)
 	/*@modifies parser @*/;
 
-static void FASTCALL normalizePublicId(XML_Char *s)
+static void FASTCALL normalizePublicId(XML_Char *publicId)
 	/*@modifies publicId @*/;
 
 static DTD * dtdCreate(const XML_Memory_Handling_Suite *ms)
@@ -433,7 +439,9 @@ static int
 dtdCopy(DTD *newDtd, const DTD *oldDtd, const XML_Memory_Handling_Suite *ms)
 	/*@modifies newDtd @*/;
 static int
-copyEntityTable(HASH_TABLE *, STRING_POOL *, const HASH_TABLE *)
+copyEntityTable(HASH_TABLE *newTable,
+                STRING_POOL *newPool,
+                const HASH_TABLE *oldTable)
 	/*@modifies newTable, newPool @*/;
 
 /*@null@*/
@@ -441,31 +449,32 @@ static NAMED *
 lookup(HASH_TABLE *table, KEY name, size_t createSize)
 	/*@modifies table @*/;
 static void FASTCALL
-hashTableInit(HASH_TABLE *, const XML_Memory_Handling_Suite *ms)
+hashTableInit(HASH_TABLE *p, const XML_Memory_Handling_Suite *ms)
 	/*@modifies p @*/;
-static void FASTCALL hashTableClear(HASH_TABLE *)
+static void FASTCALL hashTableClear(HASH_TABLE *table)
 	/*@modifies table @*/;
-static void FASTCALL hashTableDestroy(HASH_TABLE *)
+static void FASTCALL hashTableDestroy(HASH_TABLE *table)
 	/*@modifies *table @*/;
 static void FASTCALL
-hashTableIterInit(HASH_TABLE_ITER *, const HASH_TABLE *)
+hashTableIterInit(HASH_TABLE_ITER *iter, const HASH_TABLE *table)
 	/*@modifies iter @*/;
 /*@null@*/
-static NAMED * FASTCALL hashTableIterNext(HASH_TABLE_ITER *)
+static NAMED * FASTCALL hashTableIterNext(HASH_TABLE_ITER *iter)
 	/*@modifies iter @*/;
 
 static void FASTCALL
-poolInit(STRING_POOL *, const XML_Memory_Handling_Suite *ms)
+poolInit(STRING_POOL *pool, const XML_Memory_Handling_Suite *ms)
 	/*@modifies pool @*/;
-static void FASTCALL poolClear(STRING_POOL *)
+static void FASTCALL poolClear(STRING_POOL *pool)
 	/*@modifies pool @*/;
-static void FASTCALL poolDestroy(STRING_POOL *)
+static void FASTCALL poolDestroy(STRING_POOL *pool)
 	/*@modifies *pool @*/;
 /*@null@*/
 static XML_Char *
 poolAppend(STRING_POOL *pool, const ENCODING *enc,
 		const char *ptr, const char *end)
 	/*@modifies pool @*/;
+/*@null@*/
 static XML_Char *
 poolStoreString(STRING_POOL *pool, const ENCODING *enc,
 		const char *ptr, const char *end)
@@ -496,6 +505,7 @@ getElementType(XML_Parser parser, const ENCODING *enc,
 		const char *ptr, const char *end)
 	/*@modifies parser @*/;
 
+/*@null@*/
 static XML_Parser
 parserCreate(const XML_Char *encodingName,
 		/*@null@*/ const XML_Memory_Handling_Suite *memsuite,
@@ -523,17 +533,20 @@ struct XML_ParserStruct {
      macro works. */
   void *m_userData;
   void *m_handlerArg;
-/*@null@*/
+/*@null@*/ /*@owned@*/
   char *m_buffer;
   const XML_Memory_Handling_Suite m_mem;
   /* first character to be parsed */
+/*@dependent@*/
   const char *m_bufferPtr;
   /* past last character to be parsed */
+/*@dependent@*/
   char *m_bufferEnd;
   /* allocated end of buffer */
 /*@null@*/
   const char *m_bufferLim;
   long m_parseEndByteIndex;
+/*@dependent@*/
   const char *m_parseEndPtr;
   XML_Char *m_dataBuf;
 /*@dependent@*/
@@ -570,20 +583,23 @@ struct XML_ParserStruct {
   XML_Bool m_ns_triplets;
   void *m_unknownEncodingMem;
   void *m_unknownEncodingData;
+/*@null@*/
   void *m_unknownEncodingHandlerData;
   void (*m_unknownEncodingRelease)(void *);
   PROLOG_STATE m_prologState;
   Processor *m_processor;
   enum XML_Error m_errorCode;
+/*@owned@*/
   const char *m_eventPtr;
   const char *m_eventEndPtr;
+/*@dependent@*/
   const char *m_positionPtr;
   OPEN_INTERNAL_ENTITY *m_openInternalEntities;
   XML_Bool m_defaultExpandInternalEntities;
   int m_tagLevel;
   ENTITY *m_declEntity;
   const XML_Char *m_doctypeName;
-/*@dependent@*/
+/*@observer@*/
   const XML_Char *m_doctypeSysid;
   const XML_Char *m_doctypePubid;
 /*@dependent@*/
@@ -606,6 +622,7 @@ struct XML_ParserStruct {
   int m_nSpecifiedAtts;
   int m_idAttIndex;
   ATTRIBUTE *m_atts;
+/*@null@*/
   NS_ATT *m_nsAtts;
   unsigned long m_nsAttsVersion;
   unsigned char m_nsAttsPower;
@@ -896,7 +913,7 @@ parserInit(XML_Parser parser, const XML_Char *encodingName)
                           ? poolCopyString(&tempPool, encodingName)
                           : NULL);
   curBase = NULL;
-  XmlInitEncoding(&initEncoding, &encoding, 0);
+  (void) XmlInitEncoding(&initEncoding, &encoding, 0);
   userData = NULL;
   handlerArg = NULL;
   startElementHandler = NULL;
@@ -1150,7 +1167,8 @@ XML_ExternalEntityParserCreate(XML_Parser oldParser,
 
 /*@-mustmod@*/
 static void FASTCALL
-destroyBindings(BINDING *bindings, XML_Parser parser)
+destroyBindings(/*@only@*/BINDING *bindings, XML_Parser parser)
+	/*@modifies bindings @*/
 {
   for (;;) {
     BINDING *b = bindings;
@@ -1909,6 +1927,7 @@ storeRawNames(XML_Parser parser)
   return XML_TRUE;
 }
 
+/*@-mods@*/
 static enum XML_Error PTRCALL
 contentProcessor(XML_Parser parser,
                  const char *start,
@@ -1924,6 +1943,7 @@ contentProcessor(XML_Parser parser,
     return XML_ERROR_NO_MEMORY;
   return result;
 }
+/*@=mods@*/
 
 static enum XML_Error PTRCALL
 externalEntityInitProcessor(XML_Parser parser,
@@ -2272,7 +2292,7 @@ doContent(XML_Parser parser,
         result = storeAtts(parser, enc, s, &name, &bindings);
         if (result)
           return result;
-        poolFinish(&tempPool);
+/*@i@*/ poolFinish(&tempPool);
         if (startElementHandler) {
           startElementHandler(handlerArg, name.str, (const XML_Char **)atts);
           noElmHandlers = XML_FALSE;
@@ -5866,6 +5886,7 @@ build_node(XML_Parser parser,
            XML_Content *dest,
            XML_Content **contpos,
            XML_Char **strpos)
+	/*@modifies *dest, *contpos, *strpos @*/
 {
   DTD * const dtd = _dtd;  /* save one level of indirection */
   dest->type = dtd->scaffold[src_node].type;

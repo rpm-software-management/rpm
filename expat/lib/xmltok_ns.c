@@ -85,6 +85,7 @@ NS(findEncoding)(const ENCODING *enc, const char *ptr, const char *end)
   return NS(encodings)[i];
 }
 
+/*@-mustmod@*/	/* LCL: segfault */
 int
 NS(XmlParseXmlDecl)(int isGeneralTextEntity,
                     const ENCODING *enc,
@@ -109,3 +110,4 @@ NS(XmlParseXmlDecl)(int isGeneralTextEntity,
                         encoding,
                         standalone);
 }
+/*@=mustmod@*/

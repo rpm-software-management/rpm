@@ -1447,10 +1447,11 @@ PREFIX(isPublicId)(const ENCODING *enc, const char *ptr, const char *end,
    first attsMax attributes are stored in atts.
 */
 
+/*@-mods@*/
 static int PTRCALL
 PREFIX(getAtts)(const ENCODING *enc, const char *ptr,
                 int attsMax, ATTRIBUTE *atts)
-	/*@modifies atts @*/
+	/*@modifies *atts @*/
 {
   enum { other, inName, inValue } state = inName;
   int nAtts = 0;
@@ -1540,6 +1541,7 @@ PREFIX(getAtts)(const ENCODING *enc, const char *ptr,
   }
   /*@notreached@*/
 }
+/*@=mods@*/
 
 static int PTRFASTCALL
 PREFIX(charRefNumber)(const ENCODING *enc, const char *ptr)
@@ -1653,7 +1655,6 @@ PREFIX(sameName)(const ENCODING *enc, const char *ptr1, const char *ptr2)
         return 0;
     LEAD_CASE(4) LEAD_CASE(3) LEAD_CASE(2)
 #undef LEAD_CASE
-      /*@fallthrough@*/
       if (*ptr1++ != *ptr2++)
         return 0;
       break;
