@@ -17,7 +17,7 @@
 
 /* The lead needs to be 8 byte aligned */
 
-int writeLead(FD_t fd, struct rpmlead *lead)
+int writeLead(FD_t fd, const struct rpmlead *lead)
 {
     struct rpmlead l;
 

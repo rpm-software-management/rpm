@@ -86,7 +86,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	/* if the current directory doesn't exist, we might fail. 
 	   oh well. likewise if it's too long.  */
 	dir[0] = '\0';
-	if ( /*@-unrecog@*/ realpath(".", dir) /*@=unrecog@*/ != NULL) {
+	if (realpath(".", dir) != NULL) {
 	    end = dir + strlen(dir);
 	    if (end[-1] != '/')	*end++ = '/';
 	    end = stpncpy(end, cleanDirName, sizeof(dir) - (end - dir));

@@ -80,12 +80,14 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
     rc = error;
 
     if (printit && rc) {
+	/*@-moduncon@*/
 	if (msg)
 	    rpmError(RPMERR_DBERR, _("db%d error(%d) from %s: %s\n"),
 		dbi->dbi_api, rc, msg, db_strerror(error));
 	else
 	    rpmError(RPMERR_DBERR, _("db%d error(%d): %s\n"),
 		dbi->dbi_api, rc, db_strerror(error));
+	/*@=moduncon@*/
     }
 
     return rc;
@@ -115,7 +117,9 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
     if (rpmdb->db_remove_env || dbi->dbi_tear_down) {
 	int xx;
 
+	/*@-moduncon@*/
 	xx = db_env_create(&dbenv, 0);
+	/*@=moduncon@*/
 	xx = cvtdberr(dbi, "db_env_create", rc, _debug);
 #if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR != 0
 	xx = dbenv->remove(dbenv, dbhome, 0);
@@ -139,6 +143,7 @@ static int db3_fsync_disable(/*@unused@*/ int fd)
     return 0;
 }
 
+/*@-moduncon@*/
 static int db_init(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
 		/*@unused@*/ /*@null@*/ const char * dbsubfile,
@@ -272,6 +277,7 @@ errxit:
     }
     return rc;
 }
+/*@=moduncon@*/
 
 static int db3sync(dbiIndex dbi, unsigned int flags)
 	/*@modifies fileSystem @*/
@@ -606,6 +612,7 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
+/*@-moduncon@*/
 static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	/*@modifies dbi, fileSystem @*/
 {
@@ -672,7 +679,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
     if (dbi->dbi_verify_on_close && !dbi->dbi_temporary) {
 	DB_ENV * dbenv = NULL;
 
+	/*@-moduncon@*/
 	rc = db_env_create(&dbenv, 0);
+	/*@=moduncon@*/
 	rc = cvtdberr(dbi, "db_env_create", rc, _debug);
 	if (rc || dbenv == NULL) goto exit;
 
@@ -702,7 +711,9 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
 	if (rc) goto exit;
 
+	/*@-moduncon@*/
 	rc = db_create(&db, dbenv, 0);
+	/*@=moduncon@*/
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 
 	if (db != NULL) {
@@ -736,6 +747,7 @@ exit:
 
     return rc;
 }
+/*@=moduncon@*/
 
 static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	/*@modifies *dbip, fileSystem @*/
@@ -920,7 +932,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     if (rc == 0) {
 	static int _lockdbfd = 0;
 
+	/*@-moduncon@*/
 	rc = db_create(&db, dbenv, dbi->dbi_cflags);
+	/*@=moduncon@*/
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
 	    if (rc == 0 && dbi->dbi_lorder) {

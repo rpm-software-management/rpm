@@ -963,23 +963,23 @@ int main(int argc, const char ** argv)
 	case 'i':
 	    ba->buildAmount |= RPMBUILD_INSTALL;
 	    if ((ba->buildChar == 'i') && ba->shortCircuit)
-		break;
+		/*@innerbreak@*/ break;
 	    /*@fallthrough@*/
 	case 'c':
 	    ba->buildAmount |= RPMBUILD_BUILD;
 	    if ((ba->buildChar == 'c') && ba->shortCircuit)
-		break;
+		/*@innerbreak@*/ break;
 	    /*@fallthrough@*/
 	case 'p':
 	    ba->buildAmount |= RPMBUILD_PREP;
-	    break;
+	    /*@innerbreak@*/ break;
 	    
 	case 'l':
 	    ba->buildAmount |= RPMBUILD_FILECHECK;
-	    break;
+	    /*@innerbreak@*/ break;
 	case 's':
 	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 
 	if (!poptPeekArg(optCon)) {

@@ -18,7 +18,8 @@ extern "C" {
  * @param lead		data address
  * @return		0 on success, 1 on error
  */
-int writeLead(FD_t fd, struct rpmlead *lead);
+int writeLead(FD_t fd, const struct rpmlead *lead)
+	/*@modifies fd @*/;
 
 /** \ingroup lead
  * Read lead from file handle.

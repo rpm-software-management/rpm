@@ -25,6 +25,7 @@ extern struct MacroContext_s rpmGlobalMacroContext;
  */
 static inline
 /*@null@*/ struct TriggerFileEntry * freeTriggerFiles(/*@only@*/ /*@null@*/ struct TriggerFileEntry * p)
+	/*@modifies p @*/
 {
     struct TriggerFileEntry *o, *q = p;
     
@@ -46,6 +47,7 @@ static inline
  */
 static inline
 /*@null@*/ struct Source * freeSources(/*@only@*/ /*@null@*/ struct Source * s)
+	/*@modifies s @*/
 {
     struct Source *r, *t = s;
 
@@ -189,6 +191,7 @@ Package freePackages(Package packages)
 /**
  */
 static inline /*@owned@*/ struct Source *findSource(Spec spec, int num, int flag)
+	/*@*/
 {
     struct Source *p;
 
@@ -338,6 +341,7 @@ int addSource(Spec spec, Package pkg, const char *field, int tag)
 /**
  */
 static inline /*@only@*/ /*@null@*/ speclines newSl(void)
+	/*@*/
 {
     speclines sl = NULL;
     if (specedit) {
@@ -352,6 +356,7 @@ static inline /*@only@*/ /*@null@*/ speclines newSl(void)
 /**
  */
 static inline /*@null@*/ speclines freeSl(/*@only@*/ /*@null@*/ speclines sl)
+	/*@modifies sl @*/
 {
     int i;
     if (sl == NULL) return NULL;
@@ -366,6 +371,7 @@ static inline /*@null@*/ speclines freeSl(/*@only@*/ /*@null@*/ speclines sl)
 /**
  */
 static inline /*@only@*/ /*@null@*/ spectags newSt(void)
+	/*@*/
 {
     spectags st = NULL;
     if (specedit) {
@@ -380,6 +386,7 @@ static inline /*@only@*/ /*@null@*/ spectags newSt(void)
 /**
  */
 static inline /*@null@*/ spectags freeSt(/*@only@*/ /*@null@*/ spectags st)
+	/*@modifies st @*/
 {
     int i;
     if (st == NULL) return NULL;

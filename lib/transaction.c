@@ -20,6 +20,12 @@ extern const char * chroot_prefix;
 /* portability fiddles */
 #if STATFS_IN_SYS_STATVFS
 # include <sys/statvfs.h>
+#if defined(__LCLINT__)
+/*@-declundef -exportheader @*/ /* LCL: missing annotation */
+extern int statvfs (const char * file, /*@out@*/ struct statvfs * buf)
+	/*@modifies *buf, fileSystem @*/;
+/*@=declundef =exportheader @*/
+#endif
 #else
 # if STATFS_IN_SYS_VFS
 #  include <sys/vfs.h>
@@ -446,9 +452,11 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 		relocations[j    ].oldPath == NULL || /* XXX can't happen */
 	strcmp(relocations[j - 1].oldPath, relocations[j].oldPath) <= 0)
 		continue;
+	    /*@-usereleased@*/ /* LCL: ??? */
 	    tmpReloc = relocations[j - 1];
 	    relocations[j - 1] = relocations[j];
 	    relocations[j] = tmpReloc;
+	    /*@=usereleased@*/
 	    madeSwap = 1;
 	}
 	if (!madeSwap) break;
@@ -1778,9 +1786,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     if (!ts->chrootDone) {
 	(void) chdir("/");
-	/*@-unrecog -superuser @*/
+	/*@-superuser -noeffect @*/
 	(void) chroot(ts->rootDir);
-	/*@=unrecog =superuser @*/
+	/*@=superuser =noeffect @*/
 	ts->chrootDone = 1;
 	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 1;
 	/*@-onlytrans@*/
@@ -1807,10 +1815,8 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     }
     tsi = tsFreeIterator(tsi);
 
-    /*@-moduncon@*/
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, ts->flEntries,
 	NULL, ts->notifyData));
-    /*@=moduncon@*/
 
     /* ===============================================
      * Compute file disposition for each package in transaction set.
@@ -1820,10 +1826,8 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	dbiIndexSet * matches;
 	int knownBad;
 
-	/*@-moduncon@*/
 	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, (fi - ts->flList),
 			ts->flEntries, NULL, ts->notifyData));
-	/*@=moduncon@*/
 
 	if (fi->fc == 0) continue;
 
@@ -1946,19 +1950,17 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     tsi = tsFreeIterator(tsi);
 
     if (ts->chrootDone) {
-	/*@-unrecog -superuser @*/
+	/*@-superuser -noeffect @*/
 	(void) chroot(".");
-	/*@=unrecog =superuser @*/
+	/*@=superuser =noeffect @*/
 	ts->chrootDone = 0;
 	if (ts->rpmdb) ts->rpmdb->db_chrootDone = 0;
 	chroot_prefix = NULL;
 	(void) chdir(ts->currDir);
     }
 
-    /*@-moduncon@*/
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->flEntries,
 	NULL, ts->notifyData));
-    /*@=moduncon@*/
 
     /* ===============================================
      * Free unused memory as soon as possible.

@@ -36,7 +36,7 @@ struct dbOption {
 /*@observer@*/ /*@null@*/ const char * argDescrip; /*!< argument description for autohelp */
 };
 
-/*@-immediatetrans -exportlocal -exportheadervar@*/
+/*@-compmempass -immediatetrans -exportlocal -exportheadervar@*/
 /** \ingroup db3
  */
 struct dbOption rdbOptions[] = {
@@ -246,7 +246,7 @@ struct dbOption rdbOptions[] = {
 
  { NULL, 0,0, NULL, 0, NULL, NULL }
 };
-/*@=immediatetrans =exportlocal =exportheadervar@*/
+/*@=compmempass =immediatetrans =exportlocal =exportheadervar@*/
 
 static int dbSaveLong(const struct dbOption * opt, int argInfo, long aLong)
 	/*@modifies opt->arg @*/

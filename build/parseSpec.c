@@ -43,6 +43,7 @@ static struct PartRec {
 /**
  */
 static inline void initParts(struct PartRec *p)
+	/*@modifies p->len @*/
 {
     for (; p->token != NULL; p++)
 	p->len = strlen(p->token);
@@ -70,6 +71,7 @@ rpmParseState isPart(const char *line)
 /**
  */
 static int matchTok(const char *token, const char *line)
+	/*@*/
 {
     const char *b, *be = line;
     size_t toklen = strlen(token);
@@ -100,6 +102,7 @@ void handleComments(char *s)
 /**
  */
 static void forceIncludeFile(Spec spec, const char * fileName)
+	/*@modifies spec->fileStack @*/
 {
     OFI_t * ofi;
 
@@ -112,6 +115,7 @@ static void forceIncludeFile(Spec spec, const char * fileName)
 /**
  */
 static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
+	/*@modifies spec->nextline @*/
 {
     char *last;
     char ch;

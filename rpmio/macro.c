@@ -1132,12 +1132,12 @@ expandMacro(MacroBuf mb)
 		case '*':
 			se++;
 			if (*se == '*') se++;
-			break;
+			/*@innerbreak@*/ break;
 		case '#':
 			se++;
-			break;
+			/*@innerbreak@*/ break;
 		default:
-			break;
+			/*@innerbreak@*/ break;
 		}
 		fe = se;
 		/* For "%name " macros ... */
@@ -1186,12 +1186,12 @@ expandMacro(MacroBuf mb)
 		case ':':
 			g = fe + 1;
 			ge = se - 1;
-			break;
+			/*@innerbreak@*/ break;
 		case ' ':
 			grab = se[-1];
-			break;
+			/*@innerbreak@*/ break;
 		default:
-			break;
+			/*@innerbreak@*/ break;
 		}
 		break;
 	}

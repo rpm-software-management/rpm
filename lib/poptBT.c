@@ -118,6 +118,7 @@ static void buildArgCallback( /*@unused@*/ poptContext con,
 
 /**
  */
+/*@-bitwisesigned -compmempass@*/
 struct poptOption rpmBuildPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
 	buildArgCallback, 0, NULL, NULL },
@@ -207,3 +208,4 @@ struct poptOption rpmBuildPoptTable[] = {
 
    POPT_TABLEEND
 };
+/*@=bitwisesigned =compmempass@*/

@@ -92,8 +92,10 @@ int mtprngSetup(mtprngParam* mp)
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
 		/*@-nullpass@*/
+		/*@-moduncon@*/
 		if (pthread_mutex_init(&mp->lock, (pthread_mutexattr_t *) 0))
 			return -1;
+		/*@=moduncon@*/
 		/*@=nullpass@*/
 		#  endif
 		# endif
@@ -122,8 +124,10 @@ int mtprngSeed(mtprngParam* mp, const uint32* data, int size)
 		if (mutex_lock(&mp->lock))
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
+		/*@-moduncon@*/
 		if (pthread_mutex_lock(&mp->lock))
 			return -1;
+		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -143,8 +147,10 @@ int mtprngSeed(mtprngParam* mp, const uint32* data, int size)
 		if (mutex_unlock(&mp->lock))
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
+		/*@-moduncon@*/
 		if (pthread_mutex_unlock(&mp->lock))
 			return -1;
+		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -168,8 +174,10 @@ int mtprngNext(mtprngParam* mp, uint32* data, int size)
 		if (mutex_lock(&mp->lock))
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
+		/*@-moduncon@*/
 		if (pthread_mutex_lock(&mp->lock))
 			return -1;
+		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -195,8 +203,10 @@ int mtprngNext(mtprngParam* mp, uint32* data, int size)
 		if (mutex_unlock(&mp->lock))
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
+		/*@-moduncon@*/
 		if (pthread_mutex_unlock(&mp->lock))
 			return -1;
+		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -218,8 +228,10 @@ int mtprngCleanup(mtprngParam* mp)
 		if (mutex_destroy(&mp->lock))
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
+		/*@-moduncon@*/
 		if (pthread_mutex_destroy(&mp->lock))
 			return -1;
+		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif

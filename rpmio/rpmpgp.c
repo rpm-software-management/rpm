@@ -784,19 +784,19 @@ printf("\t     y = "),  mp32println(_dig->y.size, _dig->y.data);
 	case 0x00:
 	    pgpPrtVal(" simple ", pgpHashTbl, p[2]);
 	    p += 2;
-	    break;
+	    /*@innerbreak@*/ break;
 	case 0x01:
 	    pgpPrtVal(" salted ", pgpHashTbl, p[2]);
 	    pgpPrtHex("", p+3, 8);
 	    p += 10;
-	    break;
+	    /*@innerbreak@*/ break;
 	case 0x03:
 	    pgpPrtVal(" iterated/salted ", pgpHashTbl, p[2]);
 	    i = (16 + (p[11] & 0xf)) << ((p[11] >> 4) + 6);
 	    pgpPrtHex("", p+3, 8);
 	    pgpPrtInt(" iter", i);
 	    p += 11;
-	    break;
+	    /*@innerbreak@*/ break;
 	}
 	break;
     default:

@@ -67,8 +67,10 @@ int fips186Setup(fips186Param* fp)
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
 		/*@-nullpass@*/
+		/*@-moduncon@*/
 		if (pthread_mutex_init(&fp->lock, (pthread_mutexattr_t *) 0))
 			return -1;
+		/*@=moduncon@*/
 		/*@=nullpass@*/
 		#  endif
 		# endif
@@ -94,8 +96,10 @@ int fips186Seed(fips186Param* fp, const uint32* data, int size)
 		if (mutex_lock(&fp->lock))
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
+		/*@-moduncon@*/
 		if (pthread_mutex_lock(&fp->lock))
 			return -1;
+		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -110,8 +114,10 @@ int fips186Seed(fips186Param* fp, const uint32* data, int size)
 		if (mutex_unlock(&fp->lock))
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
+		/*@-moduncon@*/
 		if (pthread_mutex_unlock(&fp->lock))
 			return -1;
+		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -133,8 +139,10 @@ int fips186Next(fips186Param* fp, uint32* data, int size)
 		if (mutex_lock(&fp->lock))
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
+		/*@-moduncon@*/
 		if (pthread_mutex_lock(&fp->lock))
 			return -1;
+		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -171,8 +179,10 @@ int fips186Next(fips186Param* fp, uint32* data, int size)
 		if (mutex_unlock(&fp->lock))
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
+		/*@-moduncon@*/
 		if (pthread_mutex_unlock(&fp->lock))
 			return -1;
+		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif
@@ -194,8 +204,10 @@ int fips186Cleanup(fips186Param* fp)
 		if (mutex_destroy(&fp->lock))
 			return -1;
 		#  elif defined(HAVE_PTHREAD_H)
+		/*@-moduncon@*/
 		if (pthread_mutex_destroy(&fp->lock))
 			return -1;
+		/*@=moduncon@*/
 		#  endif
 		# endif
 		#endif

@@ -211,6 +211,7 @@ static void dumpAttrRec(const char * msg, AttrRec ar)
 /**
  */
 static char *strtokWithQuotes(char *s, char *delim)
+	/*@*/
 {
     static char *olds = NULL;
     char *token;

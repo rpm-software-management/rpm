@@ -670,10 +670,10 @@ static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
 	/*@modifies *address, fileSystem @*/
 {
     if (xisdigit(host[0])) {
-	/*@-unrecog@*/
+	/*@-unrecog -moduncon @*/
 	if (!inet_aton(host, address))
 	    return FTPERR_BAD_HOST_ADDR;
-	/*@=unrecog@*/
+	/*@=unrecog =moduncon @*/
     } else {
 	if (mygethostbyname(host, address)) {
 	    errno = /*@-unrecog@*/ h_errno /*@=unrecog@*/;
@@ -717,7 +717,9 @@ static int tcpConnect(FD_t ctrl, const char * host, int port)
 
 if (_ftp_debug)
 fprintf(stderr,"++ connect %s:%d on fdno %d\n",
-/*@-unrecog@*/ inet_ntoa(sin.sin_addr) /*@=unrecog@*/ ,
+/*@-unrecog -moduncon @*/
+inet_ntoa(sin.sin_addr)
+/*@=unrecog =moduncon @*/ ,
 (int)ntohs(sin.sin_port), fdno);
 
     fdSetFdno(ctrl, (fdno >= 0 ? fdno : -1));
@@ -1113,10 +1115,12 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	if (*chptr == ',') *chptr = '.';
     }
 
+    /*@-moduncon@*/
     if (!inet_aton(passReply, &dataAddress.sin_addr)) {
 	rc = FTPERR_PASSIVE_ERROR;
 	goto errxit;
     }
+    /*@=moduncon@*/
 
     rc = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     fdSetFdno(data, (rc >= 0 ? rc : -1));
@@ -1963,8 +1967,11 @@ FDIO_t ufdio = /*@-compmempass@*/ &ufdio_s /*@=compmempass@*/ ;
 /* Support for GZIP library.
  */
 #ifdef	HAVE_ZLIB_H
+/*@-moduncon@*/
 
+/*@-noparams@*/
 #include <zlib.h>
+/*@=noparams@*/
 
 static inline /*@dependent@*/ /*@null@*/ void * gzdFileno(FD_t fd)
 	/*@*/
@@ -2162,12 +2169,14 @@ static struct FDIO_s gzdio_s = {
 };
 FDIO_t gzdio = /*@-compmempass@*/ &gzdio_s /*@=compmempass@*/ ;
 
+/*@=moduncon@*/
 #endif	/* HAVE_ZLIB_H */
 
 /* =============================================================== */
 /* Support for BZIP2 library.
  */
 #if HAVE_BZLIB_H
+/*@-moduncon@*/
 
 #include <bzlib.h>
 
@@ -2338,6 +2347,7 @@ static struct FDIO_s bzdio_s = {
 };
 FDIO_t bzdio = /*@-compmempass@*/ &bzdio_s /*@=compmempass@*/ ;
 
+/*@=moduncon@*/
 #endif	/* HAVE_BZLIB_H */
 
 /* =============================================================== */

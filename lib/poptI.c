@@ -70,7 +70,9 @@ static void installArgCallback( /*@unused@*/ poptContext con,
       }	break;
     case POPT_ROLLBACK:
       {	time_t tid;
+	/*@-moduncon@*/
 	tid = get_date(arg, NULL);
+	/*@=moduncon@*/
 	if (tid == (time_t)-1)
 	    argerror(_("malformed rollback time"));
 	ia->rbtid = tid;
@@ -80,6 +82,7 @@ static void installArgCallback( /*@unused@*/ poptContext con,
 
 /**
  */
+/*@-bitwisesigned -compmempass@*/
 struct poptOption rpmInstallPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA,
 	installArgCallback, 0, NULL, NULL },
@@ -211,3 +214,4 @@ struct poptOption rpmInstallPoptTable[] = {
 
    POPT_TABLEEND
 };
+/*@=bitwisesigned =compmempass@*/

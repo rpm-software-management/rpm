@@ -18,6 +18,7 @@ extern struct HV_s * hdrVec;
 /** \ingroup header
  */
 /*@unused@*/ static inline HV_t h2hv(Header h)
+	/*@*/
 {
     /*@-abstract -castexpose -refcounttrans@*/
     return ((HV_t)h);

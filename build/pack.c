@@ -343,6 +343,7 @@ static unsigned char header_magic[8] = {
 static int rpmpkg_version = -1;
 
 static int rpmLeadVersion(void)
+	/*@*/
 {
     int rpmlead_version;
 

@@ -1682,6 +1682,7 @@ static void markLoop(/*@special@*/ struct tsortInfo * tsi,
 }
 
 static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
+	/*@*/
 {
     if (isLegacyPreReq(f))
 	return "PreReq:";
@@ -2149,7 +2150,7 @@ rescan:
  * @return              0 on success
  */
 static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
-	/*@ modifies db, fileSystem @*/
+	/*@modifies db, fileSystem @*/
 {
     int dbix;
     int rc = 0;

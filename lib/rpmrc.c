@@ -133,7 +133,8 @@ static int optionCompare(const void * a, const void * b)
 		      ((struct rpmOption *) b)->name);
 }
 
-static void rpmRebuildTargetVars(/*@null@*/ const char **target, /*@null@*/ const char ** canontarget);
+static void rpmRebuildTargetVars(/*@null@*/ const char **target, /*@null@*/ const char ** canontarget)
+	/*@modifies *target, *canontarget @*/;
 
 static /*@observer@*/ /*@null@*/ machCacheEntry
 machCacheFindEntry(const machCache cache, const char * key)

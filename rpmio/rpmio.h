@@ -9,7 +9,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
+/*@-noparams@*/
 #include <glob.h>
+/*@=noparams@*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

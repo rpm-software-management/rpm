@@ -527,10 +527,10 @@ if (rc == 0 || rpmIsVerbose()) {
 fprintf(stderr, "=============================== RSA verify %s: rc %d\n",
         datafile, rc);
     (void) pgpPrtPkts(sig, count, dig, 1);
-    printf("\t n = ");	flush(stdout); mp32println(dig->rsa_pk.n.size, dig->rsa_pk.n.modl);
-    printf("\t e = ");	flush(stdout); mp32println(dig->rsa_pk.e.size, dig->rsa_pk.e.data);
-    printf("\t c = ");	flush(stdout); mp32println(dig->c.size, dig->c.data);
-    printf("\t m = ");	flush(stdout); mp32println(dig->rsahm.size, dig->rsahm.data);
+    printf("\t n = ");	(void)fflush(stdout); mp32println(dig->rsa_pk.n.size, dig->rsa_pk.n.modl);
+    printf("\t e = ");	(void)fflush(stdout); mp32println(dig->rsa_pk.e.size, dig->rsa_pk.e.data);
+    printf("\t c = ");	(void)fflush(stdout); mp32println(dig->c.size, dig->c.data);
+    printf("\t m = ");	(void)fflush(stdout); mp32println(dig->rsahm.size, dig->rsahm.data);
 }
 
     /* What version do we have? */
@@ -669,13 +669,13 @@ if (rc == 0 || rpmIsVerbose()) {
 fprintf(stderr, "=============================== DSA verify %s: rc %d\n",
         datafile, rc);
     (void) pgpPrtPkts(sig, count, dig, 1);
-    printf("\t p = ");	flush(stdout); mp32println(dig->p.size, dig->p.modl);
-    printf("\t q = ");	flush(stdout); mp32println(dig->q.size, dig->q.modl);
-    printf("\t g = ");	flush(stdout); mp32println(dig->g.size, dig->g.data);
-    printf("\t y = ");	flush(stdout); mp32println(dig->y.size, dig->y.data);
-    printf("\t r = ");	flush(stdout); mp32println(dig->r.size, dig->r.data);
-    printf("\t s = ");	flush(stdout); mp32println(dig->s.size, dig->s.data);
-    printf("\thm = ");	flush(stdout); mp32println(dig->hm.size, dig->hm.data);
+    printf("\t p = ");	(void)fflush(stdout); mp32println(dig->p.size, dig->p.modl);
+    printf("\t q = ");	(void)fflush(stdout); mp32println(dig->q.size, dig->q.modl);
+    printf("\t g = ");	(void)fflush(stdout); mp32println(dig->g.size, dig->g.data);
+    printf("\t y = ");	(void)fflush(stdout); mp32println(dig->y.size, dig->y.data);
+    printf("\t r = ");	(void)fflush(stdout); mp32println(dig->r.size, dig->r.data);
+    printf("\t s = ");	(void)fflush(stdout); mp32println(dig->s.size, dig->s.data);
+    printf("\thm = ");	(void)fflush(stdout); mp32println(dig->hm.size, dig->hm.data);
 }
 
     /* Write out the signature */
@@ -802,14 +802,14 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 		case PGP_2:
 		    (void) execlp(path, "pgp", "+batchmode=on", "+verbose=0",
 			name, "-sf", NULL);
-		    break;
+		    /*@innerbreak@*/ break;
 		case PGP_5:	/* XXX legacy */
 		    (void) execlp(path,"pgps", "+batchmode=on", "+verbose=0",
 			name, "-f", NULL);
-		    break;
+		    /*@innerbreak@*/ break;
 		case PGP_UNKNOWN:
 		case PGP_NOTDETECTED:
-		    break;
+		    /*@innerbreak@*/ break;
 		}
 	    }
 	    rpmError(RPMERR_EXEC, _("Couldn't exec pgp\n"));

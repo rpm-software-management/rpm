@@ -13,7 +13,6 @@
  */
 
 #include <sys/types.h>
-#include <zlib.h>
 
 #include <rpmio_internal.h>
 #include <rpmlib.h>

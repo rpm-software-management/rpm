@@ -247,10 +247,17 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
 		    break;
 		*le++ = '[';
 		switch (ops) {
-		case POPT_ARGFLAG_OR:	*le++ = '|';	break;
-		case POPT_ARGFLAG_AND:	*le++ = '&';	break;
-		case POPT_ARGFLAG_XOR:	*le++ = '^';	break;
-		default:				break;
+		case POPT_ARGFLAG_OR:
+		    *le++ = '|';
+		    /*@innerbreak@*/ break;
+		case POPT_ARGFLAG_AND:
+		    *le++ = '&';
+		    /*@innerbreak@*/ break;
+		case POPT_ARGFLAG_XOR:
+		    *le++ = '^';
+		    /*@innerbreak@*/ break;
+		default:
+		    /*@innerbreak@*/ break;
 		}
 		*le++ = '=';
 		if (negate) *le++ = '~';

@@ -1261,6 +1261,7 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
  */
 /*@dependent@*/ static char *
 headerFindI18NString(Header h, indexEntry entry)
+	/*@*/
 {
     const char *lang, *l, *le;
     indexEntry table;
@@ -2360,10 +2361,16 @@ static char * formatValue(sprintfTag tag, Header h,
     case RPM_INT32_TYPE:
 	switch (type) {
 	case RPM_CHAR_TYPE:	
-	case RPM_INT8_TYPE:	intVal = *(((int_8 *) data) + element); break;
-	case RPM_INT16_TYPE:	intVal = *(((uint_16 *) data) + element); break;
+	case RPM_INT8_TYPE:
+	    intVal = *(((int_8 *) data) + element);
+	    /*@innerbreak@*/ break;
+	case RPM_INT16_TYPE:
+	    intVal = *(((uint_16 *) data) + element);
+	    /*@innerbreak@*/ break;
 	default:		/* keep -Wall quiet */
-	case RPM_INT32_TYPE:	intVal = *(((int_32 *) data) + element); break;
+	case RPM_INT32_TYPE:
+	    intVal = *(((int_32 *) data) + element);
+	    /*@innerbreak@*/ break;
 	}
 
 	if (tagtype)

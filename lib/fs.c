@@ -55,6 +55,7 @@ int mntctl(int command, int size, char *buffer);
  * @return		0 on success, 1 on error
  */
 static int getFilesystemList(void)
+	/*@*/
 {
     int size;
     void * buf;
@@ -130,6 +131,7 @@ static int getFilesystemList(void)
  * @return		0 on success, 1 on error
  */
 static int getFilesystemList(void)
+	/*@*/
 {
     int numAlloced = 10;
     struct stat sb;
@@ -164,7 +166,7 @@ static int getFilesystemList(void)
     while (1) {
 #	if GETMNTENT_ONE
 	    /* this is Linux */
-	    /*@-modunconnomods@*/
+	    /*@-modunconnomods -moduncon @*/
 	    our_mntent * itemptr = getmntent(mtab);
 	    if (!itemptr) break;
 	    item = *itemptr;	/* structure assignment */
@@ -175,7 +177,7 @@ static int getFilesystemList(void)
 		rdonly = 1;
 	    /*@=compdef@*/
 #endif
-	    /*@=modunconnomods@*/
+	    /*@=modunconnomods =moduncon @*/
 #	elif GETMNTENT_TWO
 	    /* Solaris, maybe others */
 	    if (getmntent(mtab, &item)) break;

@@ -982,9 +982,9 @@ static int runScript(PSM_t psm, Header h,
 	    /*@fallthrough@*/
 	case URL_IS_UNKNOWN:
 	    if (!ts->chrootDone && !(rootDir[0] == '/' && rootDir[1] == '\0')) {
-		/*@-unrecog -superuser @*/
+		/*@-superuser -noeffect @*/
 		(void) chroot(rootDir);
-		/*@=unrecog =superuser @*/
+		/*@=superuser =noeffect @*/
 	    }
 	    (void) chdir("/");
 	    (void) execv(argv[0], (char *const *)argv);
@@ -1268,7 +1268,9 @@ static int runImmedTriggers(PSM_t psm)
     return rc;
 }
 
-/*@observer@*/ static const char *const pkgStageString(pkgStage a) {
+/*@observer@*/ static const char *const pkgStageString(pkgStage a)
+	/*@*/
+{
     switch(a) {
     case PSM_UNKNOWN:		return "unknown";
 
@@ -1858,9 +1860,9 @@ assert(psm->mi == NULL);
 	    }
 
 	    (void) chdir("/");
-	    /*@-unrecog -superuser @*/
+	    /*@-superuser@*/
 	    rc = chroot(ts->rootDir);
-	    /*@=unrecog =superuser @*/
+	    /*@=superuser@*/
 	    psm->chrootDone = ts->chrootDone = 1;
 	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 1;
 	    /*@-onlytrans@*/
@@ -1871,9 +1873,9 @@ assert(psm->mi == NULL);
     case PSM_CHROOT_OUT:
 	/* Restore root directory if changed. */
 	if (psm->chrootDone) {
-	    /*@-unrecog -superuser @*/
+	    /*@-superuser@*/
 	    rc = chroot(".");
-	    /*@=unrecog =superuser @*/
+	    /*@=superuser@*/
 	    psm->chrootDone = ts->chrootDone = 0;
 	    if (ts->rpmdb != NULL) ts->rpmdb->db_chrootDone = 0;
 	    chroot_prefix = NULL;

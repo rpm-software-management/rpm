@@ -110,8 +110,7 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 /*@=nullpass =nullptrarith @*/
 
 /**
- * returns: 1 if signature verifies
- *          0 otherwise, can also indicate errors
+ * @return	1 if signature verifies, 0 otherwise (can also indicate errors)
  */
 int rsavrfy(const rsapk* pk, const mp32number* m, const mp32number* c)
 {

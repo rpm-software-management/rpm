@@ -11,8 +11,25 @@ static int _debug = 0;
 #include <signal.h>
 #include <sys/signal.h>
 
+#ifndef	DYING	/* XXX already in "system.h" */
+/*@-noparams@*/
 #include <fnmatch.h>
+/*@=noparams@*/
+#if defined(__LCLINT__)
+/*@-declundef -exportheader -redecl @*/ /* LCL: missing annotation */
+extern int fnmatch (const char *pattern, const char *string, int flags)
+	/*@*/;
+/*@=declundef =exportheader =redecl @*/
+#endif
+#endif
+
 #include <regex.h>
+#if defined(__LCLINT__)
+/*@-declundef -exportheader @*/ /* LCL: missing modifies (only is bogus) */
+extern void regfree (/*@only@*/ regex_t *preg)
+	/*@modifies *preg @*/;
+/*@=declundef =exportheader @*/
+#endif
 
 #include <rpmcli.h>
 
@@ -1489,7 +1506,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 	mire->pattern = _free(mire->pattern);
 	if (mire->preg != NULL) {
 	    regfree(mire->preg);
-	    /*@+voidabstract -usereleased @*/ /* FIX: ??? */
+	    /*@+voidabstract -usereleased @*/ /* LCL: regfree has bogus only */
 	    mire->preg = _free(mire->preg);
 	    /*@=voidabstract =usereleased @*/
 	}
@@ -1560,7 +1577,9 @@ static int miregexec(miRE mire, const char * val)
 	}
 	break;
     case RPMMIRE_GLOB:
+	/*@-moduncon@*/
 	rc = fnmatch(mire->pattern, val, mire->fnflags);
+	/*@=moduncon@*/
 	if (rc && rc != FNM_NOMATCH)
 	    rc = -1;
 	break;
@@ -1732,7 +1751,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 	allpat = _free(allpat);
 	if (preg) {
 	    regfree(preg);
-	    /*@+voidabstract -usereleased @*/ /* FIX: ??? */
+	    /*@+voidabstract -usereleased @*/ /* LCL: regfree has bogus only */
 	    preg = _free(preg);
 	    /*@=voidabstract@*/
 	}

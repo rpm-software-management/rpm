@@ -63,7 +63,8 @@ typedef /*@only@*/ /*@null@*/
 		const unsigned long amount, 
 		const unsigned long total,
 		/*@null@*/ const void * pkgKey,
-		/*@null@*/ rpmCallbackData data);
+		/*@null@*/ rpmCallbackData data)
+	/*@modifies internalState@*/;
 
 /**
  */

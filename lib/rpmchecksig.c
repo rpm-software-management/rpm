@@ -355,8 +355,8 @@ fprintf(stderr, "========================= Red Hat RSA Public Key\n");
 		(void) pgpPrtPkts(pgppk, pgppklen, dig, 0);
 
 	    {	const char * prefix = "3020300c06082a864886f70d020505000410";
-		int nbits = 1024;
-		int nb = (nbits + 7) >> 3;
+		unsigned int nbits = 1024;
+		unsigned int nb = (nbits + 7) >> 3;
 		const char * hexstr;
 		char * t;
 
@@ -446,11 +446,11 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 				strncat(untrustedKeys, tempKey + offset, 8);
 			      }
 			    }
-			}   break;
+			}   /*@innerbreak@*/ break;
 			default:
 			    strcat(buffer, "PGP ");
 			    res2 = 1;
-			    break;
+			    /*@innerbreak@*/ break;
 			}
 			break;
 		      case RPMSIGTAG_GPG:
@@ -462,11 +462,11 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 			    tempKey = strstr(result, "key ID");
 			    if (tempKey)
 				strncat(missingKeys, tempKey+7, 8);
-			    break;
+			    /*@innerbreak@*/ break;
 			default:
 			    strcat(buffer, "GPG ");
 			    res2 = 1;
-			    break;
+			    /*@innerbreak@*/ break;
 			}
 			break;
 		      default:
@@ -554,7 +554,7 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 	mp32nfree(&dig->r);
 	mp32nfree(&dig->s);
 
-	rsapkFree(&dig->rsa_pk);
+	(void) rsapkFree(&dig->rsa_pk);
 	mp32nfree(&dig->m);
 	mp32nfree(&dig->c);
 	mp32nfree(&dig->rsahm);
@@ -574,7 +574,7 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
     mp32nfree(&dig->r);
     mp32nfree(&dig->s);
 
-    rsapkFree(&dig->rsa_pk);
+    (void) rsapkFree(&dig->rsa_pk);
     mp32nfree(&dig->m);
     mp32nfree(&dig->c);
     mp32nfree(&dig->rsahm);

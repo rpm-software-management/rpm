@@ -12,89 +12,64 @@
 
 #-deepbreak		# shortcut 485 occurences
 
-+checks			# lclint level
-
-# --- lclint-3.0.0.15 is pickier than lclint-2.5r
--usedef			# 296 occurences in 3.0.0.15
-#-formatconst		# new in 3.0.0.15
-#-unsignedcompare	# new in 3.0.0.15
-#-multithreaded		# new in 3.0.0.15
-#-bufferoverflowhigh	# new in 3.0.0.15
-#-superuser		# new in 3.0.0.15
-#-portability		# new in 3.0.0.15
-#-compdef
-#-nullstate
-#-compmempass
-#-nullderef
-#-nullpass
-#-unrecog
-#-readonlytrans	
-#-noparams
-#-usereleased
-#-firstcase
-#-shadow
-#-retvalint
-#-incondefs
-#-nullptrarith
-#-fcnuse
-#-fielduse
-#-varuse
-#-exportlocal
-#-exportheadervar
++strict			# lclint level
 
 # --- not-yet at strict level
-#+ptrarith
-#+bitwisesigned
-#+strictops
-#+sizeoftype
+-bitwisesigned		# pita
+-elseifcomplete		# 95 occurences
+-evalorderuncon		# 32 occurences
+-exportconst		# 839 occurences
+-exportfcn
+-exporttype
+-exportvar
+-fielduse		# 1 occurence <bits/sigset.h>
+-forblock		# tedious
+-globs
+-globstate
+-ifblock		# tedious
+-incondefs		# <sys/{select,mman}.h> tedium
+-internalglobs		# 38 occurences
+-looploopcontinue	# 86 occurences
+-loopswitchbreak	# 286 occurences
+-matchfields		# <bits/ipc.h> heartburn
+-modfilesys		# 153 occurences
+-modnomods		# 927 occurences
+-modobserveruncon	# 192 occurences
+-mods			# 281 occurences, errno will be a pita
+-mustmod		# <sys/select.h> heartburn
+-mutrep			# <sys/select.h> heartburn
+-namechecks		# tedious ANSI compliance wrto db3
+-noeffectuncon		# 228 occurences
+-numenummembers 1024	# RPMTAG has 138 members
+-numstructfields 256	# Java jni.h has 229 fields
+-ptrarith		# tedious
+-sizeoftype		# <sys/select.h> tedium
+-strictops
+-strictusereleased
+-stringliterallen 4096	# redhat*PubKey's are big
+-usedef			# 303 occurences, HGE_t needs special annotatitions
+-warnmissingglobs
+-whileblock		# tedious
 
-#+mod-uncon		# shortcut alloca is painful
-#+mod-nomods		# 927 occurences
-+modglobsnomods
-+modstrictglobsnomods
-
-#+mod-uncon-nomods	# ~118 occurences
+# --- random anal-retentive parameters
 #+mod-internal-strict
-#+mod-file-sys		# 153 occurences
 #+globnoglobs		# 1 occurence
-#+internalglobs		# 38 occurences
 #+internalglobnoglobs		# ???
 #+modglobsunchecked	# 73 occurences
-+warnmissingglobs
 #+warnmissingglobsnomods	# ???
 #+impcheckedstrictglobs	# 358 occurences
 #+impcheckedstrictstatics # 1057 occurences
-#+strictusereleas
 #+strictbranchstate
 #+strictdestroy
-#+modobserveruncon	# 192 occurences
-+macroempty
 #+ansi-reserved-internal
-#+evalorderuncon	# 32 occurences
-#+elseifcomplete	# 95 occurences
-#+loopswitchbreak	# 286 occurences
-#+switchswitchbreak	# 32 occurences
-#+looploopcontinue	# 86 occurences
-+forempty
-#+whileblock
-#+forblock
-#+ifblock
-#+noeffectuncon		# 228 occurences
-+topuse
-+unusedspecial
-+oldstyle
 #+sys-dir-errors	# 749
 #controlnestdepth 15
-#stringliterallen 509
-#numstructfields 127
-#numenummembers 127
 
 # --- not-yet at checks level
 -predboolptr		# 773 occurences
 +enumint		# 93 occurences
 -allglobs		# 131 occurrences
 -ansi-reserved		# goofy
--infloopsuncon		# goofy
 
 -proto-param-match	# 51 occurences
 
@@ -103,22 +78,6 @@
 -mustfree		# alloca is painful
 
 # --- not-yet at standard level
--boolops		# w->n
--predboolint		# w->n
--type			#
-
-# -weak paramaters
-#+boolint
-#-boolops
-#+ignorequals
-#+ignoresigns
-#-mustfree
-#+longintegral
-#+matchanyintegral
-#-nullpass
-#-observertrans
-#-predboolint
-#-predboolothers
-#-retvalint
-#-retvalother
-#-shiftsigned
+-boolops		# 1898 occurences
+-predboolint		# 1248 occurences
+-type			# 3019 occurences

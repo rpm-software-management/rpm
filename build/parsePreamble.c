@@ -253,7 +253,7 @@ static int checkForValidArchitectures(Spec spec)
  * @return		0 if OK
  */
 static int checkForRequired(Header h, const char * NVR)
-	/* LCL: parse error here with modifies */
+	/*@modifies h @*/ /* LCL: parse error here with modifies */
 {
     int res = 0;
     rpmTag * p;

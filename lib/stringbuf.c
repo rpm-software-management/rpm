@@ -66,9 +66,10 @@ void truncStringBuf(StringBuf sb)
 void stripTrailingBlanksStringBuf(StringBuf sb)
 {
     while (sb->free != sb->allocated) {
-	if (! xisspace(*(sb->tail - 1))) {
+	/*@-moduncon@*/
+	if (! xisspace(*(sb->tail - 1)))
 	    break;
-	}
+	/*@=moduncon@*/
 	sb->free++;
 	sb->tail--;
     }

@@ -150,6 +150,7 @@ int dosetenv(const char * name, const char * value, int overwrite)
 }
 
 static int rpmMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
+	/*@modifies fileSystem @*/
 {
     char * d, * de;
     int created = 0;
@@ -413,6 +414,7 @@ exit:
 static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
 			    /*@out@*/ int * fileCountPtr, rpmTag baseNameTag,
 			    rpmTag dirNameTag, rpmTag dirIndexesTag)
+	/*@modifies h @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;

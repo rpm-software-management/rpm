@@ -1323,8 +1323,10 @@ int entropy_dev_dsp(uint32 *data, int size)
 	if (mutex_lock(&dev_dsp_lock))
 		return -1;
 	# elif HAVE_PTHREAD_H
+	/*@-moduncon@*/
 	if (pthread_mutex_lock(&dev_dsp_lock))
 		return -1;
+	/*@=moduncon@*/
 	# endif
 	#endif
 
@@ -1432,7 +1434,9 @@ dev_dsp_end:
 	# if HAVE_SYNCH_H
 	mutex_unlock(&dev_dsp_lock);
 	# elif HAVE_PTHREAD_H
-	pthread_mutex_unlock(&dev_dsp_lock);
+	/*@-moduncon@*/
+	(void) pthread_mutex_unlock(&dev_dsp_lock);
+	/*@=moduncon@*/
 	# endif
 	#endif
 
@@ -1454,8 +1458,10 @@ int entropy_dev_random(uint32* data, int size)
 	if (mutex_lock(&dev_random_lock))
 		return -1;
 	# elif HAVE_PTHREAD_H
+	/*@-moduncon@*/
 	if (pthread_mutex_lock(&dev_random_lock))
 		return -1;
+	/*@=moduncon@*/
 	# endif
 	#endif
 
@@ -1477,7 +1483,9 @@ dev_random_end:
 	# if HAVE_SYNCH_H
 	mutex_unlock(&dev_random_lock);
 	# elif HAVE_PTHREAD_H
+	/*@-moduncon@*/
 	(void) pthread_mutex_unlock(&dev_random_lock);
+	/*@=moduncon@*/
 	# endif
 	#endif
 	return rc;
@@ -1498,8 +1506,10 @@ int entropy_dev_urandom(uint32* data, int size)
 	if (mutex_lock(&dev_urandom_lock))
 		return -1;
 	# elif HAVE_PTHREAD_H
+	/*@-moduncon@*/
 	if (pthread_mutex_lock(&dev_urandom_lock))
 		return -1;
+	/*@=moduncon@*/
 	# endif
 	#endif
 
@@ -1521,7 +1531,9 @@ dev_urandom_end:
 	# if HAVE_SYNCH_H
 	mutex_unlock(&dev_urandom_lock);
 	# elif HAVE_PTHREAD_H
+	/*@-moduncon@*/
 	(void) pthread_mutex_unlock(&dev_urandom_lock);
+	/*@=moduncon@*/
 	# endif
 	#endif
 	return rc;
@@ -1540,8 +1552,10 @@ int entropy_dev_tty(uint32* data, int size)
 	if (mutex_lock(&dev_tty_lock))
 		return -1;
 	# elif HAVE_PTHREAD_H
+	/*@-moduncon@*/
 	if (pthread_mutex_lock(&dev_tty_lock))
 		return -1;
+	/*@=moduncon@*/
 	# endif
 	#endif
 
@@ -1562,7 +1576,9 @@ dev_tty_end:
 	# if HAVE_SYNCH_H
 	mutex_unlock(&dev_tty_lock);
 	# elif HAVE_PTHREAD_H
+	/*@-moduncon@*/
 	(void) pthread_mutex_unlock(&dev_tty_lock);
+	/*@=moduncon@*/
 	# endif
 	#endif
 

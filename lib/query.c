@@ -29,6 +29,7 @@ static void printFileInfo(char * te, const char * name,
 			  unsigned short rdev, unsigned int nlink,
 			  const char * owner, const char * group,
 			  int uid, int gid, const char * linkto)
+	/*@modifies *te @*/
 {
     char sizefield[15];
     char ownerfield[9], groupfield[9];
@@ -108,6 +109,7 @@ static void printFileInfo(char * te, const char * name,
 /**
  */
 static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
+	/*@*/
 {
     const char * errstr;
     const char * str;
@@ -122,6 +124,7 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
  */
 static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
 		int xfile)
+	/*@*/
 {
     int nlink = 0;
 
@@ -389,6 +392,7 @@ exit:
  */
 static void
 printNewSpecfile(Spec spec)
+	/*@modifies fileSystem @*/
 {
     Header h;
     speclines sl = spec->sl;
@@ -749,7 +753,9 @@ restart:
 
 	if (*s == '\0') {
 	    char fnbuf[PATH_MAX];
-	    fn = /*@-unrecog@*/ realpath(arg, fnbuf) /*@=unrecog@*/;
+	    /*@-unrecog -moduncon @*/
+	    fn = realpath(arg, fnbuf);
+	    /*@=unrecog =moduncon @*/;
 	    if (fn)
 		fn = xstrdup(fn);
 	    else
@@ -767,11 +773,11 @@ restart:
 	    default:
 		rpmError(RPMERR_QUERY,
 			_("file %s: %s\n"), fn, strerror(myerrno));
-		break;
+		/*@innerbreak@*/ break;
 	    case 0:
 		rpmError(RPMERR_QUERYINFO,
 			_("file %s is not owned by any package\n"), fn);
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	    retcode = 1;
 	} else {

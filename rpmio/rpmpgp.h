@@ -1061,7 +1061,8 @@ int pgpPrtComment(pgpPkt pkt, const byte *h, unsigned int hlen)
 
 /**
  */
-int pgpPrtPkt(const byte *p);
+int pgpPrtPkt(const byte *p)
+	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
 
 /**

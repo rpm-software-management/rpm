@@ -179,7 +179,7 @@ int ftpCmd(const char * cmd, const char * url, const char * arg2)
 /** \ingroup rpmio
  */
 int ufdClose( /*@only@*/ void * cookie)
-	/*@modified cookie, fileSystem @*/;
+	/*@modifies cookie, fileSystem @*/;
 
 /** \ingroup rpmio
  */

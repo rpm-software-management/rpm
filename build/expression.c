@@ -41,6 +41,7 @@ typedef struct _value {
 /**
  */
 static Value valueMakeInteger(int i)
+	/*@*/
 {
   Value v;
 
@@ -53,6 +54,7 @@ static Value valueMakeInteger(int i)
 /**
  */
 static Value valueMakeString(/*@only@*/ const char *s)
+	/*@*/
 {
   Value v;
 
@@ -65,6 +67,7 @@ static Value valueMakeString(/*@only@*/ const char *s)
 /**
  */
 static void valueFree( /*@only@*/ Value v)
+	/*@modifies v @*/
 {
   if (v) {
     if (v->type == VALUE_TYPE_STRING)
@@ -75,6 +78,7 @@ static void valueFree( /*@only@*/ Value v)
 
 #ifdef DEBUG_PARSER
 static void valueDump(const char *msg, Value v, FILE *fp)
+	/*@*/
 {
   if (msg)
     fprintf(fp, "%s ", msg);
@@ -162,6 +166,7 @@ ETTE_t exprTokTable[] = {
 };
 
 static const char *prToken(int val)
+	/*@*/
 {
     ETTE_t *et;
     
@@ -177,6 +182,7 @@ static const char *prToken(int val)
  * @param state		expression parser state
  */
 static int rdToken(ParseState state)
+	/*@modifies state->nextToken @*/
 {
   int token;
   Value v = NULL;
@@ -310,12 +316,14 @@ static int rdToken(ParseState state)
   return 0;
 }
 
-static Value doLogical(ParseState state);
+static Value doLogical(ParseState state)
+	/*@*/;
 
 /**
  * @param state		expression parser state
  */
 static Value doPrimary(ParseState state)
+	/*@modifies state->nextToken @*/
 {
   Value v;
 
@@ -392,6 +400,7 @@ static Value doPrimary(ParseState state)
  * @param state		expression parser state
  */
 static Value doMultiplyDivide(ParseState state)
+	/*@modifies state->nextToken @*/
 {
   Value v1, v2 = NULL;
 
@@ -441,6 +450,7 @@ static Value doMultiplyDivide(ParseState state)
  * @param state		expression parser state
  */
 static Value doAddSubtract(ParseState state)
+	/*@modifies state->nextToken @*/
 {
   Value v1, v2 = NULL;
 
@@ -499,6 +509,7 @@ static Value doAddSubtract(ParseState state)
  * @param state		expression parser state
  */
 static Value doRelational(ParseState state)
+	/*@modifies state->nextToken @*/
 {
   Value v1, v2 = NULL;
 
@@ -590,6 +601,7 @@ static Value doRelational(ParseState state)
  * @param state		expression parser state
  */
 static Value doLogical(ParseState state)
+	/*@modifies state->nextToken @*/
 {
   Value v1, v2 = NULL;
 

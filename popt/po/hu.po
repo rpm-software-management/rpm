@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.6.3\n"
-"POT-Creation-Date: 2001-09-21 10:20-0400\n"
+"POT-Creation-Date: 2001-10-13 13:15-0400\n"
 "PO-Revision-Date: 2000-08-03 23:26+0200\n"
 "Last-Translator: László Németh <nemeth@qwertynet.hu>\n"
 "Language-Team: Hungarian\n"
@@ -103,10 +103,10 @@ msgstr ""
 msgid "ARG"
 msgstr ""
 
-#: popthelp.c:438
+#: popthelp.c:445
 msgid "Usage:"
 msgstr ""
 
-#: popthelp.c:460
+#: popthelp.c:467
 msgid "[OPTION...]"
 msgstr ""

@@ -57,6 +57,7 @@ const char * fsmFsPath(/*@special@*/ /*@null@*/ const FSM_t fsm,
 		/*@null@*/ const char * subdir,
 		/*@null@*/ const char * suffix)
 	/*@uses fsm->dirName, fsm->baseName */
+	/*@*/
 {
     const char * s = NULL;
 
@@ -84,6 +85,7 @@ const char * fsmFsPath(/*@special@*/ /*@null@*/ const FSM_t fsm,
  * @retval		NULL always
  */
 static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/const void * p)
+	/*@modifies *p @*/
 {
     return _free((void *)p);
 }
@@ -96,6 +98,7 @@ static /*@null@*/ void * mapFreeIterator(/*@only@*//*@null@*/const void * p)
  */
 static void *
 mapInitIterator(/*@kept@*/ const void * a, /*@kept@*/ const void * b)
+	/*@*/
 {
     rpmTransactionSet ts = (void *)a;
     TFI_t fi = (void *)b;
@@ -117,7 +120,9 @@ mapInitIterator(/*@kept@*/ const void * a, /*@kept@*/ const void * b)
  * @param a		file info iterator
  * @return		next index, -1 on termination
  */
-static int mapNextIterator(void * a) {
+static int mapNextIterator(void * a)
+	/*@modifies *a @*/
+{
     FSMI_t iter = a;
     const TFI_t fi = iter->fi;
     int i = -1;
@@ -568,10 +573,10 @@ assert(fi->type == TR_ADDED);
 	    switch (fi->type) {
 	    case TR_ADDED:
 		fsm->osuffix = SUFFIX_RPMORIG;
-		break;
+		/*@innerbreak@*/ break;
 	    case TR_REMOVED:
 		fsm->osuffix = SUFFIX_RPMSAVE;
-		break;
+		/*@innerbreak@*/ break;
 	    }
 	    break;
 
@@ -1663,20 +1668,20 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    case ENOTEMPTY:
 	/* XXX make sure that build side permits %missingok on directories. */
 			if (fsm->fflags & RPMFILE_MISSINGOK)
-			    break;
+			    /*@innerbreak@*/ break;
 
 			/* XXX common error message. */
 			rpmError(
 			    (strict_erasures ? RPMERR_RMDIR : RPMDEBUG_RMDIR),
 			    _("%s rmdir of %s failed: Directory not empty\n"), 
 				fiTypeString(fi), fsm->path);
-			break;
+			/*@innerbreak@*/ break;
 		    default:
 			rpmError(
 			    (strict_erasures ? RPMERR_RMDIR : RPMDEBUG_RMDIR),
 				_("%s rmdir of %s failed: %s\n"),
 				fiTypeString(fi), fsm->path, strerror(errno));
-			break;
+			/*@innerbreak@*/ break;
 		    }
 		} else {
 		    rc = fsmStage(fsm, FSM_UNLINK);

@@ -15,6 +15,7 @@
  */
 static int addTriggerIndex(Package pkg, const char *file,
 	const char *script, const char *prog)
+	/*@modifies pkg->triggerFiles @*/
 {
     struct TriggerFileEntry *tfe;
     struct TriggerFileEntry *list = pkg->triggerFiles;
