@@ -58,7 +58,7 @@ void printUsage(void) {
     puts("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] ");
     puts("                        [--root <dir>] [targets]");
     puts("       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]");
-    puts("       rpm {--uninstall -u] [--root <dir>] package1 package2 ... packageN");
+    puts("       rpm {--erase -e] [--root <dir>] package1 package2 ... packageN");
     puts("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--keep-temps]");
     puts("                        [--sign] [--test] [--time-check <s>] specfile");
     puts("       rpm {--rebuild} [-v] source1.rpm source2.rpm ... sourceN.rpm");
@@ -113,8 +113,8 @@ void printHelp(void) {
     puts("      --oldpackage      - upgrade to an old version of the package (--force");
     puts("                          on upgrades does this automatically)");
     puts("");
-    puts("    --uninstall <package>");
-    puts("    -u <package>        - uninstall package");
+    puts("    --erase <package>");
+    puts("    -e <package>        - uninstall (erase) package");
     puts("      --root <dir>	- use <dir> as the top level directory");
     puts("");
     puts("    -b<stage> <spec>    - build package, where <stage> is one of:");
@@ -216,6 +216,7 @@ int main(int argc, char ** argv) {
 	    { "clean", 0, &clean, 0 },
 	    { "configfiles", 0, 0, 'c' },
 	    { "docfiles", 0, 0, 'd' },
+	    { "erase", 0, 0, 'e' },
 	    { "file", 0, 0, 'f' },
 	    { "force", 0, &force, 0 },
 	    { "group", 0, 0, 'g' },
@@ -254,7 +255,7 @@ int main(int argc, char ** argv) {
     while (1) {
 	long_index = 0;
 
-	arg = getopt_long(argc, argv, "QqVyUYhpvKPfFilsagGducr:b:", options, 
+	arg = getopt_long(argc, argv, "QqVyUYhpvKPfFilseagGducr:b:", options, 
 			  &long_index);
 	if (arg == -1) break;
 
@@ -290,6 +291,15 @@ int main(int argc, char ** argv) {
 	    break;
 
 	  case 'u':
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
+		argerror("only one major mode may be specified");
+	    bigMode = MODE_UNINSTALL;
+	    message(MESS_WARNING, "-u and --uninstall are depricated and will"
+		    " be removed soon.\n");
+	    message(MESS_WARNING, "Use -e or --erase instead.\n");
+	    break;
+	
+	  case 'e':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
 		argerror("only one major mode may be specified");
 	    bigMode = MODE_UNINSTALL;
