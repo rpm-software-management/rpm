@@ -34,7 +34,9 @@ int readSignature(int fd, short sig_type, void **sig)
 	}
 	break;
     case RPMSIG_PGP262_1024:
-	read(fd, pgpbuf, 256);
+	if (read(fd, pgpbuf, 256) != 256) {
+	   return 0;
+	}
 	if (sig) {
 	    *sig = malloc(152);
 	    memcpy(*sig, pgpbuf, 152);
