@@ -902,7 +902,7 @@ expandMacro(MacroBuf *mb)
 	fn = (fe - f);
 	gn = (ge - g);
 	if (fn <= 0) {
-		rpmError(RPMERR_BADSPEC, _("Empty token"));
+		rpmError(RPMERR_BADSPEC, _("A %% is followed by an unparseable macro"));
 		s = se;
 		continue;
 	}
