@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.1\n"
-"POT-Creation-Date: 2002-12-03 20:58-0500\n"
+"POT-Creation-Date: 2002-12-07 17:44-0500\n"
 "PO-Revision-Date: 2002-08-19 22:26+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2428,15 +2428,15 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:477 lib/rpmds.c:647
+#: lib/rpmds.c:477 lib/rpmds.c:817
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/rpmds.c:477 lib/rpmds.c:647
+#: lib/rpmds.c:477 lib/rpmds.c:817
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:613
+#: lib/rpmds.c:783
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2445,13 +2445,13 @@ msgstr ""
 "\"B\"-beroendet behöver en epok (antar samma epok som \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:646
+#: lib/rpmds.c:816
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:670
+#: lib/rpmds.c:840
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s har ouppfyllda %s: %s\n"

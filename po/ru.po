@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-03 20:58-0500\n"
+"POT-Creation-Date: 2002-12-07 17:44-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2444,15 +2444,15 @@ msgstr ")"
 msgid "OK"
 msgstr "ОК"
 
-#: lib/rpmds.c:477 lib/rpmds.c:647
+#: lib/rpmds.c:477 lib/rpmds.c:817
 msgid "NO "
 msgstr "НЕT"
 
-#: lib/rpmds.c:477 lib/rpmds.c:647
+#: lib/rpmds.c:477 lib/rpmds.c:817
 msgid "YES"
 msgstr "ДА"
 
-#: lib/rpmds.c:613
+#: lib/rpmds.c:783
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2462,13 +2462,13 @@ msgstr ""
 "\"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:646
+#: lib/rpmds.c:816
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:670
+#: lib/rpmds.c:840
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "пакет %s содержит неудовлетворенные %s: %s\n"

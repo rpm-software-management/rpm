@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-03 20:58-0500\n"
+"POT-Creation-Date: 2002-12-07 17:44-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2476,15 +2476,15 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: lib/rpmds.c:477 lib/rpmds.c:647
+#: lib/rpmds.c:477 lib/rpmds.c:817
 msgid "NO "
 msgstr "NE "
 
-#: lib/rpmds.c:477 lib/rpmds.c:647
+#: lib/rpmds.c:477 lib/rpmds.c:817
 msgid "YES"
 msgstr "ANO"
 
-#: lib/rpmds.c:613
+#: lib/rpmds.c:783
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2493,13 +2493,13 @@ msgstr ""
 "Závislost \"B\" potøebuje období (pøedpokládáno stejné jako \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:646
+#: lib/rpmds.c:816
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:670
+#: lib/rpmds.c:840
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "balíèek %s-%s-%s má nesplnìné po¾adavky: %s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-12-03 20:58-0500\n"
+"POT-Creation-Date: 2002-12-07 17:44-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -2476,15 +2476,15 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:477 lib/rpmds.c:647
+#: lib/rpmds.c:477 lib/rpmds.c:817
 msgid "NO "
 msgstr "NÃO"
 
-#: lib/rpmds.c:477 lib/rpmds.c:647
+#: lib/rpmds.c:477 lib/rpmds.c:817
 msgid "YES"
 msgstr "SIM"
 
-#: lib/rpmds.c:613
+#: lib/rpmds.c:783
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2493,13 +2493,13 @@ msgstr ""
 "A dependência \"B\" precisa duma época (assumindo a mesma que \"A\")\n"
 "\t %s\tB %s\n"
 
-#: lib/rpmds.c:646
+#: lib/rpmds.c:816
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s     A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:670
+#: lib/rpmds.c:840
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "o pacote %s tem requisitos não satisfeitos: %s\n"
