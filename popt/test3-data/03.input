@@ -1,0 +1,210 @@
+#
+# WARNING: NO LINE IN THIS FILE SHOULD BE LONGER THAN 999 characters!
+#
+# a vague real world example
+#
+# the vers no of this file. useful for debug
+confversion=1.0.0.0
+
+# date and time of expiry of this license
+expires=19:57:56 03/16/01
+
+# max no of simultaneous sessions
+sessions=-1
+
+# hostid(s) of licensed host(s): matisse
+hostid=72738c36
+
+# degas (exodus)
+hostid=80b0cafb
+
+# max
+hostid=80c104e4
+
+# breton
+hostid=80cf520f
+
+# vaneyck
+hostid=809fc805
+
+# port at which SSM should listen (unless -p)
+port=6666
+
+# the name of the realserver that we proxy for
+realservername=goya:554
+
+# the ip addr of real server we proxy fo
+realserverip=127.0.0.1:554
+
+# are we using an SDMUX to receive rev STP pkts?
+sdmux=0
+
+# allow run time config through TCP connection
+runtimeconf=1
+
+# should we connect to SOC for delivinit/update etc?
+soc=1
+
+# address of the SOC
+socaddr=127.0.0.1
+
+# no of secs before we timeout SOC connection
+socconntimeout=3
+
+# SOC port for sending delivinit query
+socqport=4110
+
+# SOC port for sending delivery update
+socuport=4111
+
+# run in load test mode? (ignore player disconnect)
+loadtest=0
+
+# port of SSM to redirect to on probe bw < desc bw
+tunnelssmport=5541
+
+# allow TCP (RTSP interleaved) streaming?
+allowtcptransport=0
+
+# enable RDT rev packets?
+realrevpkts=0
+
+# allow asm switches? 0=no,1=yes,2=all within maxasmtime,3=1 within maxasmtime
+# 4=same as 2 but also whenever told by CSM after maxasmtime+tell CSM
+asmrules=4;
+# max time to which we will allow asm switches
+maxasmtime=10
+
+# time to wait after switch before starting below
+asmwaittime=4
+
+# time over which to calc post asm switch input rate
+asmcalctime=4
+
+# time after LETSWITCH within which to permit switch
+maxletswitchtime=20
+
+# change setbw? 0=no,1=block,2=sub w/1st,3=sub w/curr,4=tell CSM,5=allow w/asm
+# 6=sub w/cur enc rate & tell CSM & generate setbw on switch
+setbw=6;
+# minimum time between setbw requests from player
+setbwblocktime=15
+
+# max time within which we allow post asm setbw
+asmsetbwtime=3
+
+# post switch wait time (secs) before we send setbw
+setbwwaittime=1
+
+# max setbw as % of [init/post switch] input rate
+inputmaxsetbw=100
+
+# max setbw as % of current encoding rate
+encratemaxsetbw=100
+
+# % increase in encratemaxsetbw for live streams
+livesetbwdelta=2
+
+# temporarily here. encoding rate bits/sec
+encrate=34000
+
+# max output rate = maxoutproberate % probe rate
+maxoutproberate=85
+
+# max output rate = maxoutencrate % curr enc rate
+maxoutencrate=140
+
+# worst case outrate. should be > encratemaxsetbw
+minoutencrate=108
+
+# max out rate = er+erprgamma%(maxoutpr%pr-er)
+erprgamma=70
+
+# the CSM UTP: % loss above which CSM will enter CC
+utp=15
+
+# CSM alpha for narrowband
+nbalpha=77
+
+# CSM alpha for broadband
+bbalpha=83
+
+# periodic sendTS? 0 = sendTS only at SR_COMPUTE
+tsfrequency=10
+
+# SReoc as a % of the encoding rate
+recoveryrate=140
+
+# maximum server side buffer (in packets)
+maxbuffer=2000
+
+# client side buffer (in milliseconds)
+csmbuffer=12000
+
+# probe bw > probedelta % describe bw for us to work
+probedelta=120
+
+# the number of probes to do at the beginning
+numprobes=4
+
+# number of packets to burst during each probe
+probebuffpkts=5
+
+# time (in microsecs) interval between probes
+probeinterval=600000
+
+# client logs to none(0),disk(1),soc(2),both(3)
+clientlog=2
+
+# 0=none,1=brief,2=detailed,3=extensive
+loglevel=2
+
+# connected to monitor?
+monitor=0
+
+# 0=none, 1=test
+testmode=0
+
+# are we using the emulator?
+emulator=0
+
+# emulator IP address
+emuaddr=127.0.0.1
+
+# emulator TCP control port to connect to
+emuport=4200
+
+#
+# aux serv config
+#
+# start aux server? 0=no, 1=yes
+auxsvr=0
+
+# IP address of mgmt server
+mngsvrip=127.0.0.1
+
+# port where mgmt server listens
+mngsvrport=15550
+
+# IP address of SSM that we are monitoring
+ssmip=127.0.0.1
+
+# port where aux server should listen
+auxsvrport=14445
+
+# frequency of aux server checks
+auxsvrchkfreq=2
+
+auxsvrchkperiod=60;
+#
+# congestion simulation info
+#
+# congestion simulation?
+simulation=0
+
+# size of the network buffer
+netbuffer=5
+
+# time (in secs) between drop rate recalculation
+siminterval=3
+

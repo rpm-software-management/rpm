@@ -26,7 +26,9 @@ stamp-h1
 stamp-h.in
 test1
 test2
+test3
 *.la
 *.lcd
 *.lo
+*.swp
 popt-*.tar.gz

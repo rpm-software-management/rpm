@@ -172,6 +172,7 @@
 	- teach gendiff about unreadable files (#42666).
 	- python: sanity check fixes on rpmts/rpmte methods.
 	- have rpmdb-redhat autoconfigure rpm to use %%_solve_dbpath.
+	- popt: parse file into string of options (#56860).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

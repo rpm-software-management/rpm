@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-15 10:05-0400\n"
+"POT-Creation-Date: 2002-07-20 15:03-0400\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1110,36 +1110,36 @@ msgstr "satýr %d: %%setup argumaný hatalý: %s\n"
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "satýr %d: %%setup seçeneði %s hatalý: %s\n"
 
-#: build/parsePrep.c:481
+#: build/parsePrep.c:479
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "satýr %d: %%patch -b'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:490
+#: build/parsePrep.c:488
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "satýr %d: %%patch -z'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:502
+#: build/parsePrep.c:500
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "satýr %d: %%patch -p'ye argüman gerekli: %s\n"
 
-#: build/parsePrep.c:509
+#: build/parsePrep.c:507
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "satýr %d: %%patch -p'nin argümaný hatalý: %s\n"
 
-#: build/parsePrep.c:516
+#: build/parsePrep.c:514
 msgid "Too many patches!\n"
 msgstr "Yamalar çok fazla!\n"
 
-#: build/parsePrep.c:520
+#: build/parsePrep.c:518
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "satýr %d: %%patch argüman hatasý: %s\n"
 
-#: build/parsePrep.c:556
+#: build/parsePrep.c:554
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "satýr %d: %%prep saniye\n"
@@ -1527,7 +1527,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:383
-#: rpmdb/header.c:3122 rpmdb/header.c:3145 rpmdb/header.c:3169
+#: rpmdb/header.c:3121 rpmdb/header.c:3144 rpmdb/header.c:3168
 msgid "(not a number)"
 msgstr "(bir sayý deðil)"
 
@@ -2126,7 +2126,7 @@ msgstr "imza üretir"
 
 #. @=boundsread@
 #. @-modfilesys@
-#: lib/psm.c:244 rpmdb/header.c:387 rpmdb/header_internal.c:164
+#: lib/psm.c:244 rpmdb/header.c:386 rpmdb/header_internal.c:164
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "%d veri türü desteklenmiyor\n"
@@ -2429,16 +2429,16 @@ msgstr ")"
 msgid "OK"
 msgstr "Tamam"
 
-#: lib/rpmds.c:448 lib/rpmds.c:615
+#: lib/rpmds.c:448 lib/rpmds.c:619
 msgid "NO "
 msgstr "HAYIR "
 
-#: lib/rpmds.c:448 lib/rpmds.c:615
+#: lib/rpmds.c:448 lib/rpmds.c:619
 msgid "YES"
 msgstr "EVET"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:583
+#: lib/rpmds.c:584
 #, fuzzy, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2447,13 +2447,13 @@ msgstr ""
 "\"B\" baðýmlýlýðý bir dönemsellik gerektirir (tabii ki \"A\" da)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:614
+#: lib/rpmds.c:618
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:638
+#: lib/rpmds.c:642
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "paket %s-%s-%s gereksinimi tatmin edici deðil: %s\n"
@@ -2950,6 +2950,54 @@ msgstr "missingok flamasýndan dolayý %s atlandý\n"
 msgid "excluding directory %s\n"
 msgstr "%s dizini dýþlanýyor\n"
 
+#. ===============================================
+#. * For packages being installed:
+#. * - verify package arch/os.
+#. * - verify package epoch:version-release is newer.
+#. * - count files.
+#. * For packages being removed:
+#. * - count files.
+#.
+#: lib/transaction.c:1019
+#, c-format
+msgid "sanity checking %d elments\n"
+msgstr ""
+
+#. ===============================================
+#. * Initialize transaction element file info for package:
+#.
+#.
+#. * FIXME?: we'd be better off assembling one very large file list and
+#. * calling fpLookupList only once. I'm not sure that the speedup is
+#. * worth the trouble though.
+#.
+#: lib/transaction.c:1100
+#, c-format
+msgid "computing %d file fingerprints\n"
+msgstr ""
+
+#. ===============================================
+#. * Compute file disposition for each package in transaction set.
+#.
+#: lib/transaction.c:1177
+msgid "computing file dispositions\n"
+msgstr ""
+
+#. ===============================================
+#. * Save removed files before erasing.
+#.
+#: lib/transaction.c:1343
+msgid "repackage about-to-be-erased packages\n"
+msgstr ""
+
+#. ===============================================
+#. * Install and remove packages.
+#.
+#: lib/transaction.c:1369
+#, c-format
+msgid "install/erase %d elements\n"
+msgstr ""
+
 #: lib/verify.c:288
 #, c-format
 msgid "missing    %s"
@@ -3018,99 +3066,99 @@ msgstr "paylaþýmlý"
 msgid "locked   db index       %s/%s\n"
 msgstr "kilitli      db endeks %s/%s\n"
 
-#: rpmdb/dbconfig.c:401
+#: rpmdb/dbconfig.c:324
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "tanýnmayan db seçeneði: \"%s\" yoksayýldý\n"
 
-#: rpmdb/dbconfig.c:439
+#: rpmdb/dbconfig.c:364
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s geçersiz sayýsal deðer içeriyor, atlandý\n"
 
-#: rpmdb/dbconfig.c:448
+#: rpmdb/dbconfig.c:373
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s ya çok büyük ya da çok küçük 'long' deðer içeriyor, atlandý\n"
 
-#: rpmdb/dbconfig.c:457
+#: rpmdb/dbconfig.c:382
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ya çok büyük ya da çok küçük 'integer' deðer içeriyor, atlandý\n"
 
 #. This should not be allowed
 #. @-modfilesys@
-#: rpmdb/header.c:346
+#: rpmdb/header.c:345
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() RPM_STRING_TYPE sayýsý 1 olmalý.\n"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2298
+#: rpmdb/header.c:2297
 msgid "missing { after %"
 msgstr "%% den sonraki { yok"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2328
+#: rpmdb/header.c:2327
 msgid "missing } after %{"
 msgstr "%%{ den sonraki } yok"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2342
+#: rpmdb/header.c:2341
 msgid "empty tag format"
 msgstr "etiket biçemi boþ"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2356
+#: rpmdb/header.c:2355
 msgid "empty tag name"
 msgstr "etiket ismi boþ"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2373
+#: rpmdb/header.c:2372
 msgid "unknown tag"
 msgstr "bilinmeyen etiket"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2400
+#: rpmdb/header.c:2399
 msgid "] expected at end of array"
 msgstr "dizinin sonunda ] gerekli"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2418
+#: rpmdb/header.c:2417
 msgid "unexpected ]"
 msgstr "beklenmeyen ]"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2422
+#: rpmdb/header.c:2421
 msgid "unexpected }"
 msgstr "beklenmeyen }"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2491
+#: rpmdb/header.c:2490
 msgid "? expected in expression"
 msgstr "ifade içerisinde ? gerekli"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2500
+#: rpmdb/header.c:2499
 msgid "{ expected after ? in expression"
 msgstr "ifade içerisinde ? dan sonra { gerekli"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2513 rpmdb/header.c:2558
+#: rpmdb/header.c:2512 rpmdb/header.c:2557
 msgid "} expected in expression"
 msgstr "ifade içinde } gerekli"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2523
+#: rpmdb/header.c:2522
 msgid ": expected following ? subexpression"
 msgstr "? alt ifadesinden sonra : gerekli"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2543
+#: rpmdb/header.c:2542
 msgid "{ expected after : in expression"
 msgstr "ifade içersinde : den sonra { gerekli"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2568
+#: rpmdb/header.c:2567
 msgid "| expected at end of expression"
 msgstr "ifadenin sonunda | gerekli"
 
@@ -3131,17 +3179,17 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "(eski) rpm[23] paketleme ile uyumlu baþlýklarý üretir"
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:168
+#: rpmdb/rpmdb.c:166
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: tanýmlanmamýþ etiket adý: \"%s\" yoksayýldý\n"
 
-#: rpmdb/rpmdb.c:243
+#: rpmdb/rpmdb.c:241
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "%s indeksi db%d - %s (%d) kullanarak açýlamadý\n"
 
-#: rpmdb/rpmdb.c:265
+#: rpmdb/rpmdb.c:263
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "%s indeksi açýlamadý\n"
@@ -3150,147 +3198,147 @@ msgstr "%s indeksi açýlamadý\n"
 msgid "no dbpath has been set\n"
 msgstr "belirtilmiþ bir dbpath deðeri yok\n"
 
-#: rpmdb/rpmdb.c:1028 rpmdb/rpmdb.c:1157 rpmdb/rpmdb.c:1207 rpmdb/rpmdb.c:2090
-#: rpmdb/rpmdb.c:2196 rpmdb/rpmdb.c:2906
+#: rpmdb/rpmdb.c:1036 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:1219 rpmdb/rpmdb.c:2118
+#: rpmdb/rpmdb.c:2224 rpmdb/rpmdb.c:2934
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "hata(%d): \"%s\" kayýt %s indeksinden alýnýyor\n"
 
-#: rpmdb/rpmdb.c:1423
+#: rpmdb/rpmdb.c:1451
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "hata(%d): %s kayýt %s içine yazýlýyor\n"
 
-#: rpmdb/rpmdb.c:2010
+#: rpmdb/rpmdb.c:2038
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr "rpmdb: bozuk baþlýk örneði #%u alýndý, atlanýyor.\n"
 
-#: rpmdb/rpmdb.c:2279
+#: rpmdb/rpmdb.c:2307
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x de baþlýk okunamadý\n"
 
-#: rpmdb/rpmdb.c:2342
+#: rpmdb/rpmdb.c:2370
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "hata(%d): \"%s\" kayýt %s indeksinden alýnýyor\n"
 
-#: rpmdb/rpmdb.c:2457
+#: rpmdb/rpmdb.c:2485
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "\"%s\" %s indeksinden siliniyor.\n"
 
-#: rpmdb/rpmdb.c:2461
+#: rpmdb/rpmdb.c:2489
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%d girdi %s indeksinden siliniyor.\n"
 
-#: rpmdb/rpmdb.c:2489
+#: rpmdb/rpmdb.c:2517
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "hata(%d): \"%s\" kayýt %s indeksinden alýnýyor\n"
 
-#: rpmdb/rpmdb.c:2510
+#: rpmdb/rpmdb.c:2538
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "hata(%d): %s kayýt %s içine yazýlýyor\n"
 
-#: rpmdb/rpmdb.c:2520
+#: rpmdb/rpmdb.c:2548
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "hata(%d) %s kaydýn %s dosyasýndan silinmesi\n"
 
-#: rpmdb/rpmdb.c:2667
+#: rpmdb/rpmdb.c:2695
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "yeni paket örneðini tutma hatasý(%d)\n"
 
-#: rpmdb/rpmdb.c:2881
+#: rpmdb/rpmdb.c:2909
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "\"%s\" %s indeksine ekleniyor.\n"
 
-#: rpmdb/rpmdb.c:2885
+#: rpmdb/rpmdb.c:2913
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%d girdi %s indeksine ekleniyor.\n"
 
-#: rpmdb/rpmdb.c:2925
+#: rpmdb/rpmdb.c:2953
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "hata(%d): %s kayýt %s içine yazýlýyor\n"
 
-#: rpmdb/rpmdb.c:3274
+#: rpmdb/rpmdb.c:3302
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "baþarýlý db3 yeniden oluþturma ertesinde %s kaldýrýlýyor\n"
 
-#: rpmdb/rpmdb.c:3311
+#: rpmdb/rpmdb.c:3339
 msgid "no dbpath has been set"
 msgstr "belirtilmiþ bir dbpath yok"
 
-#: rpmdb/rpmdb.c:3343
+#: rpmdb/rpmdb.c:3371
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "%s veritabaný %s içinde yeniden oluþturuluyor\n"
 
-#: rpmdb/rpmdb.c:3347
+#: rpmdb/rpmdb.c:3375
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "geçici veritabaný %s zaten mevcut\n"
 
-#: rpmdb/rpmdb.c:3353
+#: rpmdb/rpmdb.c:3381
 #, c-format
 msgid "creating directory %s\n"
 msgstr "%s dizini oluþturuluyor\n"
 
-#: rpmdb/rpmdb.c:3355
+#: rpmdb/rpmdb.c:3383
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "%s dizini oluþturuluyor: %s\n"
 
-#: rpmdb/rpmdb.c:3362
+#: rpmdb/rpmdb.c:3390
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "eski veritabaný dbapi %d ile açýlýyor\n"
 
-#: rpmdb/rpmdb.c:3373
+#: rpmdb/rpmdb.c:3403
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "yeni veritabaný dbapi %d ile açýlýyor\n"
 
-#: rpmdb/rpmdb.c:3397
+#: rpmdb/rpmdb.c:3429
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "veritabanýndaki %u. kayýt hatalý -- atlanýyor\n"
 
-#: rpmdb/rpmdb.c:3437
+#: rpmdb/rpmdb.c:3469
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kayýt özgün olarak %u e eklenemedi\n"
 
-#: rpmdb/rpmdb.c:3455
+#: rpmdb/rpmdb.c:3487
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "veritabaný yeniden oluþturulamadý: mevcut veritabaný deðiþmeden\n"
 "yerinde býrakýldý\n"
 
-#: rpmdb/rpmdb.c:3463
+#: rpmdb/rpmdb.c:3495
 msgid "failed to replace old database with new database!\n"
 msgstr "eski veritabanýnýn yenisiyle deðiþtirilirmesi baþarýsýz!\n"
 
-#: rpmdb/rpmdb.c:3465
+#: rpmdb/rpmdb.c:3497
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "kurtarmak için %s içindeki dosyalar %s deki dosyalarla deðiþtiriliyor"
 
-#: rpmdb/rpmdb.c:3475
+#: rpmdb/rpmdb.c:3507
 #, c-format
 msgid "removing directory %s\n"
 msgstr "%s dizini siliniyor\n"
 
-#: rpmdb/rpmdb.c:3477
+#: rpmdb/rpmdb.c:3509
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s dizininin silinmesi baþarýsýz: %s\n"

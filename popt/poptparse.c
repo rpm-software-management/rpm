@@ -120,3 +120,108 @@ exit:
     return rc;
 }
 /*@=bounds@*/
+
+/* still in the dev stage.
+ * return values, perhaps 1== file erro
+ * 2== line to long
+ * 3== umm.... more?
+ */
+int poptConfigFileToString(FILE *fp, char ** argstrp, /*@unused@*/ int flags)
+{
+    char line[999];
+    char * argstr;
+    char * p;
+    char * q;
+    char * x;
+    int t;
+    int argvlen = 0;
+    size_t maxlinelen = sizeof(line);
+    size_t linelen;
+    int maxargvlen = 480;
+    int linenum = 0;
+
+    *argstrp = NULL;
+
+    /*   |   this_is   =   our_line
+     *	     p             q      x
+     */
+
+    if (fp == NULL)
+	return POPT_ERROR_NULLARG;
+
+    argstr = calloc(maxargvlen, sizeof(*argstr));
+    if (argstr == NULL) return POPT_ERROR_MALLOC;
+
+    while (fgets(line, (int)maxlinelen, fp) != NULL) {
+	linenum++;
+	p = line;
+
+	/* loop until first non-space char or EOL */
+	while( *p != '\0' && isspace(*p) )
+	    p++;
+
+	linelen = strlen(p);
+	if (linelen >= maxlinelen-1)
+	    return POPT_ERROR_OVERFLOW;	/* XXX line too long */
+
+	if (*p == '\0' || *p == '\n') continue;	/* line is empty */
+	if (*p == '#') continue;		/* comment line */
+
+	q = p;
+
+	while (*q != '\0' && (!isspace(*q)) && *q != '=')
+	    q++;
+
+	if (isspace(*q)) {
+	    /* a space after the name, find next non space */
+	    *q++='\0';
+	    while( *q != '\0' && isspace((int)*q) ) q++;
+	}
+	if (*q == '\0') {
+	    /* single command line option (ie, no name=val, just name) */
+	    q[-1] = '\0';		/* kill off newline from fgets() call */
+	    argvlen += (t = q - p) + (sizeof(" --")-1);
+	    if (argvlen >= maxargvlen) {
+		maxargvlen = (t > maxargvlen) ? t*2 : maxargvlen*2;
+		argstr = realloc(argstr, maxargvlen);
+		if (argstr == NULL) return POPT_ERROR_MALLOC;
+	    }
+	    strcat(argstr, " --");
+	    strcat(argstr, p);
+	    continue;
+	}
+	if (*q != '=')
+	    continue;	/* XXX for now, silently ignore bogus line */
+		
+	/* *q is an equal sign. */
+	*q++ = '\0';
+
+	/* find next non-space letter of value */
+	while (*q != '\0' && isspace(*q))
+	    q++;
+	if (*q == '\0')
+	    continue;	/* XXX silently ignore missing value */
+
+	/* now, loop and strip all ending whitespace */
+	x = p + linelen;
+	while (isspace(*--x))
+	    *x = 0;	/* null out last char if space (including fgets() NL) */
+
+	/* rest of line accept */
+	t = x - p;
+	argvlen += t + (sizeof("' --='")-1);
+	if (argvlen >= maxargvlen) {
+	    maxargvlen = (t > maxargvlen) ? t*2 : maxargvlen*2;
+	    argstr = realloc(argstr, maxargvlen);
+	    if (argstr == NULL) return POPT_ERROR_MALLOC;
+	}
+	strcat(argstr, " --");
+	strcat(argstr, p);
+	strcat(argstr, "=\"");
+	strcat(argstr, q);
+	strcat(argstr, "\"");
+    }
+
+    *argstrp = argstr;
+    return 0;
+}

@@ -615,27 +615,26 @@ static void poptStripArg(/*@special@*/ poptContext con, int which)
     /*@=compdef@*/
 }
 
-/*@-boundswrite@*/
-static int poptSaveLong(const struct poptOption * opt, long aLong)
-	/*@modifies opt->arg @*/
+int poptSaveLong(long * arg, int argInfo, long aLong)
 {
-    if (opt->arg == NULL)
+    /* XXX Check alignment, may fail on funky platforms. */
+    if (arg == NULL || (((unsigned long)arg) & (sizeof(*arg)-1)))
 	return POPT_ERROR_NULLARG;
 
-    if (opt->argInfo & POPT_ARGFLAG_NOT)
+    if (argInfo & POPT_ARGFLAG_NOT)
 	aLong = ~aLong;
-    switch (opt->argInfo & POPT_ARGFLAG_LOGICALOPS) {
+    switch (argInfo & POPT_ARGFLAG_LOGICALOPS) {
     case 0:
-	*((long *) opt->arg) = aLong;
+	*arg = aLong;
 	break;
     case POPT_ARGFLAG_OR:
-	*((long *) opt->arg) |= aLong;
+	*arg |= aLong;
 	break;
     case POPT_ARGFLAG_AND:
-	*((long *) opt->arg) &= aLong;
+	*arg &= aLong;
 	break;
     case POPT_ARGFLAG_XOR:
-	*((long *) opt->arg) ^= aLong;
+	*arg ^= aLong;
 	break;
     default:
 	return POPT_ERROR_BADOPERATION;
@@ -643,29 +642,27 @@ static int poptSaveLong(const struct poptOption * opt, long aLong)
     }
     return 0;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
-static int poptSaveInt(const struct poptOption * opt, long aLong)
-	/*@modifies opt->arg @*/
+int poptSaveInt(/*@null@*/ int * arg, int argInfo, long aLong)
 {
-    if (opt->arg == NULL)
+    /* XXX Check alignment, may fail on funky platforms. */
+    if (arg == NULL || (((unsigned long)arg) & (sizeof(*arg)-1)))
 	return POPT_ERROR_NULLARG;
 
-    if (opt->argInfo & POPT_ARGFLAG_NOT)
+    if (argInfo & POPT_ARGFLAG_NOT)
 	aLong = ~aLong;
-    switch (opt->argInfo & POPT_ARGFLAG_LOGICALOPS) {
+    switch (argInfo & POPT_ARGFLAG_LOGICALOPS) {
     case 0:
-	*((int *) opt->arg) = aLong;
+	*arg = aLong;
 	break;
     case POPT_ARGFLAG_OR:
-	*((int *) opt->arg) |= aLong;
+	*arg |= aLong;
 	break;
     case POPT_ARGFLAG_AND:
-	*((int *) opt->arg) &= aLong;
+	*arg &= aLong;
 	break;
     case POPT_ARGFLAG_XOR:
-	*((int *) opt->arg) ^= aLong;
+	*arg ^= aLong;
 	break;
     default:
 	return POPT_ERROR_BADOPERATION;
@@ -673,7 +670,6 @@ static int poptSaveInt(const struct poptOption * opt, long aLong)
     }
     return 0;
 }
-/*@=boundswrite@*/
 
 /*@-boundswrite@*/
 /* returns 'val' element, -1 on last item, POPT_ERROR_* on error */
@@ -821,11 +817,11 @@ int poptGetNextOpt(poptContext con)
 
 	if (opt == NULL) return POPT_ERROR_BADOPT;	/* XXX can't happen */
 	if (opt->arg && (opt->argInfo & POPT_ARG_MASK) == POPT_ARG_NONE) {
-	    if (poptSaveInt(opt, 1L))
+	    if (poptSaveInt((int *)opt->arg, opt->argInfo, 1L))
 		return POPT_ERROR_BADOPERATION;
 	} else if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_VAL) {
 	    if (opt->arg) {
-		if (poptSaveInt(opt, (long)opt->val))
+		if (poptSaveInt((int *)opt->arg, opt->argInfo, (long)opt->val))
 		    return POPT_ERROR_BADOPERATION;
 	    }
 	} else if ((opt->argInfo & POPT_ARG_MASK) != POPT_ARG_NONE) {
@@ -894,12 +890,12 @@ int poptGetNextOpt(poptContext con)
 		    if ((opt->argInfo & POPT_ARG_MASK) == POPT_ARG_LONG) {
 			if (aLong == LONG_MIN || aLong == LONG_MAX)
 			    return POPT_ERROR_OVERFLOW;
-			if (poptSaveLong(opt, aLong))
+			if (poptSaveLong((long *)opt->arg, opt->argInfo, aLong))
 			    return POPT_ERROR_BADOPERATION;
 		    } else {
 			if (aLong > INT_MAX || aLong < INT_MIN)
 			    return POPT_ERROR_OVERFLOW;
-			if (poptSaveInt(opt, aLong))
+			if (poptSaveInt((int *)opt->arg, opt->argInfo, aLong))
 			    return POPT_ERROR_BADOPERATION;
 		    }
 		}   /*@switchbreak@*/ break;

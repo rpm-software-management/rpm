@@ -416,9 +416,7 @@ static int doSetupMacro(Spec spec, char *line)
 	for (fm = fixmacs; *fm; fm++) {
 	    const char *fix;
 /*@-boundsread@*/
-	    /*@-nullpass@*/
 	    fix = rpmExpand(*fm, " .", NULL);
-	    /*@=nullpass@*/
 	    if (fix && *fix != '%')
 		appendLineStringBuf(spec->prep, fix);
 	    fix = _free(fix);

@@ -514,6 +514,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Jul 20 2002 Jeff Johnson <jbj@redhat.com>
+- popt: parse file into string of options (#56860).
+
 * Mon Jul 15 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.50
 - have rpmdb-redhat autoconfigure rpm to use %%_solve_dbpath.
 

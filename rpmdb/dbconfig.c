@@ -22,22 +22,6 @@
 struct _dbiIndex db3dbi;
 /*@=exportlocal =exportheadervar@*/
 
-/** \ingroup db3
- *  Analogue to struct poptOption
- */
-struct dbOption {
-/*@observer@*/ /*@null@*/
-    const char * longName;	/*!< may be NULL */
-    const char shortName;	/*!< may be '\0' */
-    int argInfo;
-/*@null@*/ void * arg;		/*!< depends on argInfo */
-    int val;			/*!< 0 means don't return, just update flag */
-/*@observer@*/ /*@null@*/
-    const char * descrip;	/*!< description for autohelp -- may be NULL */
-/*@observer@*/ /*@null@*/
-    const char * argDescrip;	/*!< argument description for autohelp */
-};
-
 /*@unchecked@*/
 static int dbi_use_cursors;
 
@@ -45,7 +29,7 @@ static int dbi_use_cursors;
 /** \ingroup db3
  */
 /*@unchecked@*/
-struct dbOption rdbOptions[] = {
+struct poptOption rdbOptions[] = {
  /* XXX DB_CXX_NO_EXCEPTIONS */
  { "client",	0,POPT_BIT_SET,	&db3dbi.dbi_ecflags, DB_CLIENT,
 	NULL, NULL },
@@ -252,62 +236,6 @@ struct dbOption rdbOptions[] = {
 };
 /*@=compmempass =immediatetrans =exportlocal =exportheadervar@*/
 
-/*@-boundswrite@*/
-static int dbSaveLong(const struct dbOption * opt, int argInfo, long aLong)
-	/*@modifies opt->arg @*/
-{
-    if (argInfo & POPT_ARGFLAG_NOT)
-	aLong = ~aLong;
-    if (opt->arg != NULL)
-    switch (argInfo & POPT_ARGFLAG_LOGICALOPS) {
-    case 0:
-	*((long *) opt->arg) = aLong;
-	break;
-    case POPT_ARGFLAG_OR:
-	*((long *) opt->arg) |= aLong;
-	break;
-    case POPT_ARGFLAG_AND:
-	*((long *) opt->arg) &= aLong;
-	break;
-    case POPT_ARGFLAG_XOR:
-	*((long *) opt->arg) ^= aLong;
-	break;
-    default:
-	return POPT_ERROR_BADOPERATION;
-	/*@notreached@*/ break;
-    }
-    return 0;
-}
-/*@=boundswrite@*/
-
-/*@-boundswrite@*/
-static int dbSaveInt(const struct dbOption * opt, int argInfo, long aLong)
-	/*@modifies opt->arg @*/
-{
-    if (argInfo & POPT_ARGFLAG_NOT)
-	aLong = ~aLong;
-    if (opt->arg != NULL)
-    switch (argInfo & POPT_ARGFLAG_LOGICALOPS) {
-    case 0:
-	*((int *) opt->arg) = aLong;
-	break;
-    case POPT_ARGFLAG_OR:
-	*((int *) opt->arg) |= aLong;
-	break;
-    case POPT_ARGFLAG_AND:
-	*((int *) opt->arg) &= aLong;
-	break;
-    case POPT_ARGFLAG_XOR:
-	*((int *) opt->arg) ^= aLong;
-	break;
-    default:
-	return POPT_ERROR_BADOPERATION;
-	/*@notreached@*/ break;
-    }
-    return 0;
-}
-/*@=boundswrite@*/
-
 dbiIndex db3Free(dbiIndex dbi)
 {
     if (dbi) {
@@ -338,18 +266,12 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     char * dbOpts;
 
     sprintf(dbiTagMacro, "%%{_dbi_config_%s}", tagName(rpmtag));
-    /*@-nullpass@*/
     dbOpts = rpmExpand(dbiTagMacro, NULL);
-    /*@=nullpass@*/
     if (!(dbOpts && *dbOpts && *dbOpts != '%')) {
 	dbOpts = _free(dbOpts);
-	/*@-nullpass@*/
 	dbOpts = rpmExpand("%{_dbi_config}", NULL);
-	/*@=nullpass@*/
 	if (!(dbOpts && *dbOpts && *dbOpts != '%')) {
-	    /*@-nullpass@*/
 	    dbOpts = rpmExpand(db3_config_default, NULL);
-	    /*@=nullpass@*/
 	}
     }
 
@@ -360,8 +282,9 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 	char *p, *pe;
 
 	memset(&db3dbi, 0, sizeof(db3dbi));
+/*=========*/
 	for (o = dbOpts; o && *o; o = oe) {
-	    struct dbOption *opt;
+	    struct poptOption *opt;
 	    const char * tok;
 	    int argInfo;
 
@@ -411,16 +334,18 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 	    switch (argInfo & POPT_ARG_MASK) {
 
 	    case POPT_ARG_NONE:
-		(void) dbSaveInt(opt, argInfo, 1L);
+		(void) poptSaveInt((int *)opt->arg, argInfo, 1L);
 		/*@switchbreak@*/ break;
 	    case POPT_ARG_VAL:
-		(void) dbSaveInt(opt, argInfo, (long)opt->val);
+		(void) poptSaveInt((int *)opt->arg, argInfo, (long)opt->val);
 	    	/*@switchbreak@*/ break;
 	    case POPT_ARG_STRING:
 	    {	const char ** t = opt->arg;
 		/*@-mods@*/
 		if (t) {
+/*@-unqualifiedtrans@*/ /* FIX: opt->arg annotation in popt.h */
 		    *t = _free(*t);
+/*@=unqualifiedtrans@*/
 		    *t = xstrdup( (p ? p : "") );
 		}
 		/*@=mods@*/
@@ -449,7 +374,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 				opt->longName);
 			continue;
 		    }
-		    (void) dbSaveLong(opt, argInfo, aLong);
+		    (void) poptSaveLong((long *)opt->arg, argInfo, aLong);
 		    /*@switchbreak@*/ break;
 		} else {
 		    if (aLong > INT_MAX || aLong < INT_MIN) {
@@ -458,13 +383,14 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 				opt->longName);
 			continue;
 		    }
-		    (void) dbSaveInt(opt, argInfo, aLong);
+		    (void) poptSaveInt((int *)opt->arg, argInfo, aLong);
 		}
 	      }	/*@switchbreak@*/ break;
 	    default:
 		/*@switchbreak@*/ break;
 	    }
 	}
+/*=========*/
     }
     /*@=branchstate@*/
 
@@ -521,7 +447,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 {
     static char buf[256];
-    struct dbOption *opt;
+    struct poptOption *opt;
     char * oe;
 
     oe = buf;

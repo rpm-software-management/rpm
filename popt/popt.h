@@ -381,6 +381,58 @@ int poptParseArgvString(const char * s,
 	/*@modifies *argcPtr, *argvPtr @*/;
 
 /** \ingroup popt
+ * Parses an input configuration file and returns an string that is a 
+ * command line.  For use with popt.  You must free the return value when done.
+ *
+ * Given the file:
+\verbatim
+# this line is ignored
+    #   this one too
+aaa
+  bbb
+    ccc   
+bla=bla
+
+this_is   =   fdsafdas
+     bad_line=        
+  reall bad line  
+  reall bad line  = again
+5555=   55555   
+  test = with lots of spaces
+\endverbatim
+*
+* The result is:
+\verbatim
+--aaa --bbb --ccc --bla="bla" --this_is="fdsafdas" --5555="55555" --test="with lots of spaces"
+\endverbatim
+*
+* Passing this to poptParseArgvString() yields an argv of:
+\verbatim
+'--aaa'
+'--bbb' 
+'--ccc' 
+'--bla=bla' 
+'--this_is=fdsafdas' 
+'--5555=55555' 
+'--test=with lots of spaces' 
+\endverbatim
+ *
+ * @bug NULL is returned if file line is too long.
+ * @bug Silently ignores invalid lines.
+ *
+ * @param fp		file handle to read
+ * @param *argstrp	return string of options (malloc'd)
+ * @param flags		unused
+ * @return		0 on success
+ * @see			poptParseArgvString
+ */
+/*@-fcnuse@*/
+int poptConfigFileToString(FILE *fp, /*@out@*/ char ** argstrp, int flags)
+	/*@globals fileSystem @*/
+	/*@modifies *fp, *argstrp, fileSystem @*/;
+/*@=fcnuse@*/
+
+/** \ingroup popt
  * Return formatted error string for popt failure.
  * @param error		popt error
  * @return		error string
@@ -450,6 +502,34 @@ void poptSetOtherOptionHelp(poptContext con, const char * text)
 int poptStrippedArgv(poptContext con, int argc, char ** argv)
 	/*@modifies *argv @*/;
 /*@=fcnuse@*/
+
+/**
+ * Save a long, performing logical operation with value.
+ * @warning Alignment check may be too strict on certain platorms.
+ * @param arg		integer pointer, aligned on int boundary.
+ * @param argInfo	logical operation (see POPT_ARGFLAG_*)
+ * @param aLong		value to use
+ * @return		0 on success, POPT_ERROR_NULLARG/POPT_ERROR_BADOPERATION
+ */
+/*@-incondefs@*/
+int poptSaveLong(/*@null@*/ long * arg, int argInfo, long aLong)
+	/*@modifies *arg @*/
+	/*@requires maxSet(arg) >= 0 /\ maxRead(arg) == 0 @*/;
+/*@=incondefs@*/
+
+/**
+ * Save an integer, performing logical operation with value.
+ * @warning Alignment check may be too strict on certain platorms.
+ * @param arg		integer pointer, aligned on int boundary.
+ * @param argInfo	logical operation (see POPT_ARGFLAG_*)
+ * @param aLong		value to use
+ * @return		0 on success, POPT_ERROR_NULLARG/POPT_ERROR_BADOPERATION
+ */
+/*@-incondefs@*/
+int poptSaveInt(/*@null@*/ int * arg, int argInfo, long aLong)
+	/*@modifies *arg @*/
+	/*@requires maxSet(arg) >= 0 /\ maxRead(arg) == 0 @*/;
+/*@=incondefs@*/
 
 /*@=type@*/
 #ifdef  __cplusplus

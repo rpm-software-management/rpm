@@ -13,13 +13,16 @@ INCLUDES = -I. -I$(top_srcdir)
 
 noinst_HEADERS = findme.h poptint.h system.h
 
-noinst_PROGRAMS = test1 test2
+noinst_PROGRAMS = test1 test2 test3
 test1_SOURCES = test1.c
 test1_LDFLAGS = -all-static
 test1_LDADD = $(lib_LTLIBRARIES)
 test2_SOURCES = test2.c
 test2_LDFLAGS = -all-static
 test2_LDADD = $(lib_LTLIBRARIES)
+test3_SOURCES = test3.c
+test3_LDFLAGS = -all-static
+test3_LDADD = $(lib_LTLIBRARIES)
 
 noinst_SCRIPTS = testit.sh
 

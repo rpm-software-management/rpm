@@ -431,21 +431,21 @@ int rpmReadPackageFile(rpmts ts, FD_t fd,
 	rpmMessage(RPMMESS_DEBUG, "%s: %s", fn, buf);
 	rc = RPMRC_OK;
 	break;
-    case RPMSIG_NOKEY:		/* Key is unavailable. */
     case RPMSIG_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
+    case RPMSIG_NOKEY:		/* Key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-	if (!rpmtsStashKeyid(ts))
-	    rpmMessage(RPMMESS_WARNING, "%s: %s", fn, buf);
+    {	int lvl = (rpmtsStashKeyid(ts) ? RPMMESS_DEBUG : RPMMESS_WARNING);
+	rpmMessage(lvl, "%s: %s", fn, buf);
 	rc = RPMRC_OK;
-	break;
-    case RPMSIG_UNKNOWN:	/* Signature is unknown. */
+    }	break;
+    case RPMSIG_UNKNOWN:	/* Signature is unknown type. */
 	rpmMessage(RPMMESS_WARNING, "%s: %s", fn, buf);
 	rc = RPMRC_OK;
 	break;
     default:
     case RPMSIG_BAD:		/* Signature does not verify. */
 	rpmMessage(RPMMESS_ERROR, "%s: %s", fn, buf);
-	rc = RPMRC_OK;
+	rc = RPMRC_FAIL;
 	break;
     }
 

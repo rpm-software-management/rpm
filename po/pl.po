@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-15 10:05-0400\n"
+"POT-Creation-Date: 2002-07-20 15:03-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1125,37 +1125,37 @@ msgstr "linia %d: B³êdny argument dla %%setup %c: %s"
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linia %d: B³êdna opcja %%setup %s: %s"
 
-#: build/parsePrep.c:481
+#: build/parsePrep.c:479
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -b: %s"
 
-#: build/parsePrep.c:490
+#: build/parsePrep.c:488
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -z: %s"
 
-#: build/parsePrep.c:502
+#: build/parsePrep.c:500
 #, fuzzy, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr "linia %d: Wymagany argument dla %%patch -p: %s"
 
-#: build/parsePrep.c:509
+#: build/parsePrep.c:507
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch -p: %s"
 
-#: build/parsePrep.c:516
+#: build/parsePrep.c:514
 #, fuzzy
 msgid "Too many patches!\n"
 msgstr "Zbyt wiele ³at!"
 
-#: build/parsePrep.c:520
+#: build/parsePrep.c:518
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr "linia %d: B³êdny argument dla %%patch: %s"
 
-#: build/parsePrep.c:556
+#: build/parsePrep.c:554
 #, fuzzy, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linia %d: druga sekcja %%prep"
@@ -1541,7 +1541,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
 
 #: lib/formats.c:31 lib/formats.c:57 lib/formats.c:92 lib/formats.c:383
-#: rpmdb/header.c:3122 rpmdb/header.c:3145 rpmdb/header.c:3169
+#: rpmdb/header.c:3121 rpmdb/header.c:3144 rpmdb/header.c:3168
 msgid "(not a number)"
 msgstr "(nie jest liczb±)"
 
@@ -2163,7 +2163,7 @@ msgstr "generuj sygnaturê PGP/GPG"
 
 #. @=boundsread@
 #. @-modfilesys@
-#: lib/psm.c:244 rpmdb/header.c:387 rpmdb/header_internal.c:164
+#: lib/psm.c:244 rpmdb/header.c:386 rpmdb/header_internal.c:164
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Typ danych %d nie jest obs³ugiwany\n"
@@ -2470,30 +2470,30 @@ msgstr ")"
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmds.c:448 lib/rpmds.c:615
+#: lib/rpmds.c:448 lib/rpmds.c:619
 #, fuzzy
 msgid "NO "
 msgstr "NIE DOBRZE"
 
-#: lib/rpmds.c:448 lib/rpmds.c:615
+#: lib/rpmds.c:448 lib/rpmds.c:619
 msgid "YES"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:583
+#: lib/rpmds.c:584
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:614
+#: lib/rpmds.c:618
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:638
+#: lib/rpmds.c:642
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "zale¿no¶ci pakietu %s nie zosta³y spe³nione: %s\n"
@@ -2999,6 +2999,55 @@ msgstr "%s pominiêty z powodu flagi missingok\n"
 msgid "excluding directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
+#. ===============================================
+#. * For packages being installed:
+#. * - verify package arch/os.
+#. * - verify package epoch:version-release is newer.
+#. * - count files.
+#. * For packages being removed:
+#. * - count files.
+#.
+#: lib/transaction.c:1019
+#, c-format
+msgid "sanity checking %d elments\n"
+msgstr ""
+
+#. ===============================================
+#. * Initialize transaction element file info for package:
+#.
+#.
+#. * FIXME?: we'd be better off assembling one very large file list and
+#. * calling fpLookupList only once. I'm not sure that the speedup is
+#. * worth the trouble though.
+#.
+#: lib/transaction.c:1100
+#, c-format
+msgid "computing %d file fingerprints\n"
+msgstr ""
+
+#. ===============================================
+#. * Compute file disposition for each package in transaction set.
+#.
+#: lib/transaction.c:1177
+msgid "computing file dispositions\n"
+msgstr ""
+
+#. ===============================================
+#. * Save removed files before erasing.
+#.
+#: lib/transaction.c:1343
+#, fuzzy
+msgid "repackage about-to-be-erased packages\n"
+msgstr "ten pakiet jest pakietem w wersji jeden!\n"
+
+#. ===============================================
+#. * Install and remove packages.
+#.
+#: lib/transaction.c:1369
+#, c-format
+msgid "install/erase %d elements\n"
+msgstr ""
+
 #: lib/verify.c:288
 #, fuzzy, c-format
 msgid "missing    %s"
@@ -3067,100 +3116,100 @@ msgstr ""
 msgid "locked   db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/dbconfig.c:401
+#: rpmdb/dbconfig.c:324
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:439
+#: rpmdb/dbconfig.c:364
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:448
+#: rpmdb/dbconfig.c:373
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
 
-#: rpmdb/dbconfig.c:457
+#: rpmdb/dbconfig.c:382
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
 #. This should not be allowed
 #. @-modfilesys@
-#: rpmdb/header.c:346
+#: rpmdb/header.c:345
 #, fuzzy
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE licznik musi byæ 1.\n"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2298
+#: rpmdb/header.c:2297
 msgid "missing { after %"
 msgstr "brak { po %"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2328
+#: rpmdb/header.c:2327
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2342
+#: rpmdb/header.c:2341
 msgid "empty tag format"
 msgstr "pusty format etykiety"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2356
+#: rpmdb/header.c:2355
 msgid "empty tag name"
 msgstr "pusta nazwa etykiety"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2373
+#: rpmdb/header.c:2372
 msgid "unknown tag"
 msgstr "nieznana etykieta"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2400
+#: rpmdb/header.c:2399
 msgid "] expected at end of array"
 msgstr "spodziewany ] na koñcu tablicy"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2418
+#: rpmdb/header.c:2417
 msgid "unexpected ]"
 msgstr "nie spodziewany ]"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2422
+#: rpmdb/header.c:2421
 msgid "unexpected }"
 msgstr "nie spodziewany }"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2491
+#: rpmdb/header.c:2490
 msgid "? expected in expression"
 msgstr "spodziewany ? w wyra¿eniu"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2500
+#: rpmdb/header.c:2499
 msgid "{ expected after ? in expression"
 msgstr "spodziewany { po ? w wyra¿eniu"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2513 rpmdb/header.c:2558
+#: rpmdb/header.c:2512 rpmdb/header.c:2557
 msgid "} expected in expression"
 msgstr "spodziewany } w wyra¿eniu"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2523
+#: rpmdb/header.c:2522
 msgid ": expected following ? subexpression"
 msgstr "spodziewany : po podwyra¿eniu ?"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2543
+#: rpmdb/header.c:2542
 msgid "{ expected after : in expression"
 msgstr "spodziewany { po : w wyra¿eniu"
 
 #. @-observertrans -readonlytrans@
-#: rpmdb/header.c:2568
+#: rpmdb/header.c:2567
 msgid "| expected at end of expression"
 msgstr "spodziewany | na koñcu wyra¿enia"
 
@@ -3183,17 +3232,17 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
 #. @-modfilesys@
-#: rpmdb/rpmdb.c:168
+#: rpmdb/rpmdb.c:166
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:243
+#: rpmdb/rpmdb.c:241
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "nie mo¿na otworzyæ %s przy %s:%d"
 
-#: rpmdb/rpmdb.c:265
+#: rpmdb/rpmdb.c:263
 #, fuzzy, c-format
 msgid "cannot open %s index\n"
 msgstr "nie mo¿na otworzyæ %s\n"
@@ -3203,146 +3252,146 @@ msgstr "nie mo¿na otworzyæ %s\n"
 msgid "no dbpath has been set\n"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana"
 
-#: rpmdb/rpmdb.c:1028 rpmdb/rpmdb.c:1157 rpmdb/rpmdb.c:1207 rpmdb/rpmdb.c:2090
-#: rpmdb/rpmdb.c:2196 rpmdb/rpmdb.c:2906
+#: rpmdb/rpmdb.c:1036 rpmdb/rpmdb.c:1169 rpmdb/rpmdb.c:1219 rpmdb/rpmdb.c:2118
+#: rpmdb/rpmdb.c:2224 rpmdb/rpmdb.c:2934
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "b³±d pobierania rekordu %s z %s"
 
-#: rpmdb/rpmdb.c:1423
+#: rpmdb/rpmdb.c:1451
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "b³±d zapisywania rekordu %s do %s"
 
-#: rpmdb/rpmdb.c:2010
+#: rpmdb/rpmdb.c:2038
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2279
+#: rpmdb/rpmdb.c:2307
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla poszukiwania"
 
-#: rpmdb/rpmdb.c:2342
+#: rpmdb/rpmdb.c:2370
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "b³±d pobierania rekordu %s z %s"
 
-#: rpmdb/rpmdb.c:2457
+#: rpmdb/rpmdb.c:2485
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "usuwanie indeksu grupy\n"
 
-#: rpmdb/rpmdb.c:2461
+#: rpmdb/rpmdb.c:2489
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "usuwanie indeksu nazw\n"
 
-#: rpmdb/rpmdb.c:2489
+#: rpmdb/rpmdb.c:2517
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "b³±d pobierania rekordu %s z %s"
 
-#: rpmdb/rpmdb.c:2510
+#: rpmdb/rpmdb.c:2538
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "b³±d zapisywania rekordu %s do %s"
 
-#: rpmdb/rpmdb.c:2520
+#: rpmdb/rpmdb.c:2548
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "b³±d usuwania rekordu %s z %s"
 
-#: rpmdb/rpmdb.c:2667
+#: rpmdb/rpmdb.c:2695
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "b³±d szukania pakietu %s\n"
 
-#: rpmdb/rpmdb.c:2881
+#: rpmdb/rpmdb.c:2909
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "zmiana nazwy %s na %s\n"
 
-#: rpmdb/rpmdb.c:2885
+#: rpmdb/rpmdb.c:2913
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "zmiana nazwy %s na %s\n"
 
-#: rpmdb/rpmdb.c:2925
+#: rpmdb/rpmdb.c:2953
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "b³±d zapisywania rekordu %s do %s"
 
-#: rpmdb/rpmdb.c:3274
+#: rpmdb/rpmdb.c:3302
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3311
+#: rpmdb/rpmdb.c:3339
 msgid "no dbpath has been set"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana"
 
-#: rpmdb/rpmdb.c:3343
+#: rpmdb/rpmdb.c:3371
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "odbudowywujê bazê danych w rootdir %s\n"
 
-#: rpmdb/rpmdb.c:3347
+#: rpmdb/rpmdb.c:3375
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "tymczasowa baza danych %s ju¿ istnieje"
 
-#: rpmdb/rpmdb.c:3353
+#: rpmdb/rpmdb.c:3381
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: rpmdb/rpmdb.c:3355
+#: rpmdb/rpmdb.c:3383
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: rpmdb/rpmdb.c:3362
+#: rpmdb/rpmdb.c:3390
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otwieranie starej bazy danych\n"
 
-#: rpmdb/rpmdb.c:3373
+#: rpmdb/rpmdb.c:3403
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otwieranie nowej bazy danych\n"
 
-#: rpmdb/rpmdb.c:3397
+#: rpmdb/rpmdb.c:3429
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "rekord numer %d w bazie danych jest b³êdny -- rekord pominiêto"
 
-#: rpmdb/rpmdb.c:3437
+#: rpmdb/rpmdb.c:3469
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nie mo¿na dodaæ rekordu oryginalnie przy %d"
 
-#: rpmdb/rpmdb.c:3455
+#: rpmdb/rpmdb.c:3487
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "przebudowanie bazy nie powiod³o siê; stara pozosta³a na miejscu\n"
 
-#: rpmdb/rpmdb.c:3463
+#: rpmdb/rpmdb.c:3495
 msgid "failed to replace old database with new database!\n"
 msgstr "zamiana starej bazy na now± nie powiod³a siê!\n"
 
-#: rpmdb/rpmdb.c:3465
+#: rpmdb/rpmdb.c:3497
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "naprawcze zastêpowanie plików w %s plikami z %s"
 
-#: rpmdb/rpmdb.c:3475
+#: rpmdb/rpmdb.c:3507
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: rpmdb/rpmdb.c:3477
+#: rpmdb/rpmdb.c:3509
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"
@@ -4883,9 +4932,6 @@ msgstr "%s: readLead nie powiod³o siê\n"
 #, fuzzy
 #~ msgid "%s: %-45s YES (added package)\n"
 #~ msgstr "plik %s nie nale¿y do ¿adnego pakietu\n"
-
-#~ msgid "package is a version one package!\n"
-#~ msgstr "ten pakiet jest pakietem w wersji jeden!\n"
 
 #~ msgid "old style source package -- I'll do my best\n"
 #~ msgstr "stary styl pakietu ¼ród³owego -- Zrobiê co w mojej mocy\n"

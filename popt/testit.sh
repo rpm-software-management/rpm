@@ -14,6 +14,30 @@ run() {
     fi
 }
 
+run_diff() {
+    prog=$1; shift
+    name=$1; shift
+    in_file=$1; shift
+    answer_file=$1; shift
+
+    out=$builddir/tmp.out
+    diff_file=$builddir/tmp.diff
+
+    echo Running test $name.
+
+    $builddir/$prog $in_file > $out
+    ret=$?
+    diff $out $answer_file > $diff_file
+    diff_ret=$?
+
+    if [ "$diff_ret" != "0" ]; then
+       echo "Test \"$name\" failed output is in $out, diff is:"
+       cat $diff_file
+       exit 2
+    fi
+    rm $out $diff_file
+}
+
 builddir=`pwd`
 srcdir=$builddir
 cd ${srcdir}
@@ -67,6 +91,10 @@ run test1 "test1 - 37" "arg1: 0 arg2: (none) oStr: yadda" --optional=yadda
 run test1 "test1 - 38" "arg1: 0 arg2: (none) oStr: yadda" --optional yadda
 run test1 "test1 - 39" "arg1: 0 arg2: (none) oStr: ping rest: pong" --optional=ping pong
 run test1 "test1 - 40" "arg1: 0 arg2: (none) oStr: ping rest: pong" --optional ping pong
+
+run_diff test3 "test3 - 41" test3-data/01.input test3-data/01.answer
+run_diff test3 "test3 - 42" test3-data/02.input test3-data/02.answer
+run_diff test3 "test3 - 43" test3-data/03.input test3-data/03.answer
 
 echo ""
 echo "Passed."

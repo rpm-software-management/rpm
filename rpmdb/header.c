@@ -32,9 +32,6 @@
 #define PARSER_IN_ARRAY 1
 #define PARSER_IN_EXPR  2
 
-/*@unchecked@*/
-static int _h_debug = 0;
-
 /** \ingroup header
  */
 /*@observer@*/ /*@unchecked@*/
@@ -103,9 +100,11 @@ Header headerLink(Header h)
 {
     if (h != NULL)
 	h->nrefs++;
+/*@-nullret@*/
     /*@-refcounttrans @*/
     return h;
     /*@=refcounttrans @*/
+/*@=nullret@*/
 }
 
 /** \ingroup header

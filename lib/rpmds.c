@@ -579,10 +579,14 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     if (aE && *aE && bE && *bE)
 	sense = rpmvercmp(aE, bE);
     else if (aE && *aE && atol(aE) > 0) {
+#ifndef	LEGACY_COMPATIBILITY_NEEDS_THIS
 	/* XXX legacy epoch-less requires/conflicts compatibility */
 	rpmMessage(RPMMESS_DEBUG, _("the \"B\" dependency needs an epoch (assuming same as \"A\")\n\tA %s\tB %s\n"),
 		aDepend, bDepend);
 	sense = 0;
+#else
+	sense = 1;
+#endif
     } else if (bE && *bE && atol(bE) > 0)
 	sense = -1;
 

@@ -132,9 +132,7 @@ static void dbiTagsInit(void)
     char * o, * oe;
     int rpmtag;
 
-    /*@-nullpass@*/
     dbiTagStr = rpmExpand("%{_dbi_tags}", NULL);
-    /*@=nullpass@*/
     if (!(dbiTagStr && *dbiTagStr && *dbiTagStr != '%')) {
 	dbiTagStr = _free(dbiTagStr);
 	dbiTagStr = xstrdup(_dbiTagStr_default);
@@ -718,9 +716,11 @@ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
 	_initialized = 1;
     }
 
+/*@-boundswrite@*/
     /*@-assignexpose@*/
     *db = dbTemplate;	/* structure assignment */
     /*@=assignexpose@*/
+/*@=boundswrite@*/
 
     db->_dbi = NULL;
 
@@ -741,9 +741,7 @@ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
 	db = _free(db);
 	/*@-globstate@*/ return NULL; /*@=globstate@*/
     }
-    /*@-nullpass@*/
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
-    /*@=nullpass@*/
     db->db_remove_env = 0;
     db->db_filter_dups = _db_filter_dups;
     db->db_ndbi = dbiTagsMax;
@@ -762,6 +760,7 @@ static int openDatabase(/*@null@*/ const char * prefix,
 	/*@globals rpmGlobalMacroContext,
 		fileSystem @*/
 	/*@modifies *dbp, fileSystem @*/
+	/*@requires maxSet(dbp) >= 0 @*/
 {
     rpmdb db;
     int rc, xx;
@@ -906,7 +905,9 @@ int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
     /*@-mods@*/
     int _dbapi = rpmExpandNumeric("%{_dbapi}");
     /*@=mods@*/
+/*@-boundswrite@*/
     return openDatabase(prefix, NULL, _dbapi, dbp, mode, perms, 0);
+/*@=boundswrite@*/
 }
 
 int rpmdbInit (const char * prefix, int perms)
@@ -917,8 +918,10 @@ int rpmdbInit (const char * prefix, int perms)
     /*@=mods@*/
     int rc;
 
+/*@-boundswrite@*/
     rc = openDatabase(prefix, NULL, _dbapi, &db, (O_CREAT | O_RDWR),
 		perms, RPMDB_FLAG_JUSTCHECK);
+/*@=boundswrite@*/
     if (db != NULL) {
 	int xx;
 	xx = rpmdbOpenAll(db);
@@ -938,8 +941,9 @@ int rpmdbVerify(const char * prefix)
     /*@=mods@*/
     int rc = 0;
 
+/*@-boundswrite@*/
     rc = openDatabase(prefix, NULL, _dbapi, &db, O_RDONLY, 0644, 0);
-    if (rc) return rc;
+/*@=boundswrite@*/
 
     if (db != NULL) {
 	int dbix;
@@ -986,7 +990,9 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
     int rc;
     int xx;
 
+/*@-boundswrite@*/
     *matches = NULL;
+/*@=boundswrite@*/
     if (filespec == NULL) return -2;
 
     /*@-branchstate@*/
@@ -995,8 +1001,10 @@ static int rpmdbFindByFile(rpmdb db, /*@null@*/ const char * filespec,
 	size_t len;
 
     	len = baseName - filespec + 1;
+/*@-boundswrite@*/
 	t = strncpy(alloca(len + 1), filespec, len);
 	t[len] = '\0';
+/*@=boundswrite@*/
 	dirName = t;
 	baseName++;
     } else {
@@ -1044,7 +1052,9 @@ if (rc == 0)
 	return rc;
     }
 
+/*@-boundswrite@*/
     *matches = xcalloc(1, sizeof(**matches));
+/*@=boundswrite@*/
     rec = dbiIndexNewItem(0, 0);
     i = 0;
     if (allMatches != NULL)
@@ -1102,7 +1112,9 @@ if (rc == 0)
     fpc = fpCacheFree(fpc);
 
     if ((*matches)->count == 0) {
+/*@-boundswrite@*/
 	*matches = dbiFreeIndexSet(*matches);
+/*@=boundswrite@*/
 	return 1;
     }
 
@@ -1237,25 +1249,31 @@ key->size = strlen(name);
 	}
 
 	h = rpmdbNextIterator(mi);
+/*@-boundswrite@*/
 	if (h)
 	    (*matches)->recs[gotMatches++] = (*matches)->recs[i];
 	else
 	    (*matches)->recs[i].hdrNum = 0;
+/*@=boundswrite@*/
 	mi = rpmdbFreeIterator(mi);
     }
     /*@=branchstate@*/
 
     if (gotMatches) {
+/*@-boundswrite@*/
 	(*matches)->count = gotMatches;
+/*@=boundswrite@*/
 	rc = RPMRC_OK;
     } else
 	rc = RPMRC_NOTFOUND;
 
 exit:
+/*@-boundswrite@*/
 /*@-unqualifiedtrans@*/ /* FIX: double indirection */
     if (rc && matches && *matches)
 	*matches = dbiFreeIndexSet(*matches);
 /*@=unqualifiedtrans@*/
+/*@=boundswrite@*/
     return rc;
 }
 
@@ -1290,9 +1308,11 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     rc = dbiFindMatches(dbi, dbcursor, key, data, arg, NULL, NULL, matches);
     if (rc != RPMRC_NOTFOUND) return rc;
 
+/*@-boundswrite@*/
     /*@-unqualifiedtrans@*/ /* FIX: double indirection */
     *matches = dbiFreeIndexSet(*matches);
     /*@=unqualifiedtrans@*/
+/*@=boundswrite@*/
 
     /* maybe a name and a release */
     localarg = alloca(strlen(arg) + 1);
@@ -1317,13 +1337,18 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     /*@-nullstate@*/	/* FIX: *matches may be NULL. */
     if (s == localarg) return RPMRC_NOTFOUND;
 
+/*@-boundswrite@*/
     *s = '\0';
     rc = dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, NULL, matches);
+    /*@=nullstate@*/
+/*@=boundswrite@*/
     if (rc != RPMRC_NOTFOUND) return rc;
 
+/*@-boundswrite@*/
     /*@-unqualifiedtrans@*/ /* FIX: double indirection */
     *matches = dbiFreeIndexSet(*matches);
     /*@=unqualifiedtrans@*/
+/*@=boundswrite@*/
     
     /* how about name-version-release? */
 
@@ -1347,9 +1372,12 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 
     if (s == localarg) return RPMRC_NOTFOUND;
 
+/*@-boundswrite@*/
     *s = '\0';
+    /*@-nullstate@*/	/* FIX: *matches may be NULL. */
     return dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, release, matches);
     /*@=nullstate@*/
+/*@=boundswrite@*/
 }
 
 typedef struct miRE_s {
@@ -1656,9 +1684,9 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 
 /*@-boundsread@*/
     if (defmode == (rpmMireMode)-1) {
-	/*@-globs -mods -nullpass @*/
+	/*@-globs -mods @*/
 	const char *t = rpmExpand("%{?_query_selector_match}", NULL);
-	/*@=globs =mods =nullpass @*/
+	/*@=globs =mods @*/
 	if (*t == '\0' || !strcmp(t, "default"))
 	    defmode = RPMMIRE_DEFAULT;
 	else if (!strcmp(t, "strcmp"))
@@ -3362,21 +3390,25 @@ int rpmdbRebuild(const char * prefix)
     rpmMessage(RPMMESS_DEBUG, _("opening old database with dbapi %d\n"),
 		_dbapi);
     _rebuildinprogress = 1;
+/*@-boundswrite@*/
     if (openDatabase(prefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
 		     RPMDB_FLAG_MINIMAL)) {
 	rc = 1;
 	goto exit;
     }
+/*@=boundswrite@*/
     _dbapi = olddb->db_api;
     _rebuildinprogress = 0;
 
     rpmMessage(RPMMESS_DEBUG, _("opening new database with dbapi %d\n"),
 		_dbapi_rebuild);
     (void) rpmDefineMacro(NULL, "_rpmdb_rebuild %{nil}", -1);
+/*@-boundswrite@*/
     if (openDatabase(prefix, newdbpath, _dbapi_rebuild, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
 	rc = 1;
 	goto exit;
     }
+/*@=boundswrite@*/
     _dbapi_rebuild = newdb->db_api;
     
     {	Header h = NULL;
