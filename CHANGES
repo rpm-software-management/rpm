@@ -1,5 +1,6 @@
 4.3.1 -> 4.4:
 	- use package build time as EVR comparison tie breaker.
+	- fix: don't add leading space to %* argv expansion (#119059).
 
 4.3 -> 4.3.1:
 
