@@ -60,6 +60,8 @@
 	- expose cursors in dbi interfaces, remove internal cursors.
 	- remove incremental link.
 	- portability: sparc-sun-solaris2.5.1.
+	- fix: don't count removed files if removed packages is empty set.
+	- fix: permit '\0' as special case key (e.g. "/" in Basenames).
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

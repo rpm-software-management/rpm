@@ -5,7 +5,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.36
+Release: 0.37
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -255,6 +255,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Jun 14 2000 Jeff Johnson <jbj@redhat.com>
+- fix: don't count removed files if removed packages is empty set.
+- fix: permit '\0' as special case key (e.g. "/" in Basenames).
+
 * Tue Jun 13 2000 Jeff Johnson <jbj@redhat.com>
 - make librpmio standalone.
 - fix: avoid clobbering db cursor in removeBinaryPackage.

@@ -155,16 +155,35 @@ fprintf(stderr, "--- RMW %s (%s:%u)\n", tagName(dbi->dbi_rpmtag), f, l);
     return (*dbi->dbi_vec->cclose) (dbi, dbcursor, flags);
 }
 
-INLINE int dbiDel(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen, unsigned int flags) {
+INLINE int dbiDel(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen, unsigned int flags)
+{
+    int NULkey;
+    int rc;
+
+    /* XXX make sure that keylen is correct for "" lookup */
+    NULkey = (keyp && *((char *)keyp) == '\0' && keylen == 0);
+    if (NULkey) keylen++;
+    rc = (*dbi->dbi_vec->cdel) (dbi, dbcursor, keyp, keylen, flags);
+    if (NULkey) keylen--;
+
 if (_debug < 0 || dbi->dbi_debug)
-fprintf(stderr, "    Del %s key (%p,%ld) %s\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""));
-    return (*dbi->dbi_vec->cdel) (dbi, dbcursor, keyp, keylen, flags);
+fprintf(stderr, "    Del %s key (%p,%ld) %s rc %d\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""), rc);
+
+    return rc;
 }
 
 INLINE int dbiGet(dbiIndex dbi, DBC * dbcursor, void ** keypp, size_t * keylenp,
-	void ** datapp, size_t * datalenp, unsigned int flags) {
+	void ** datapp, size_t * datalenp, unsigned int flags)
+{
+    int NULkey;
     int rc;
+
+    /* XXX make sure that keylen is correct for "" lookup */
+    NULkey = (keypp && *keypp && *((char *)(*keypp)) == '\0' && keylenp && *keylenp == 0);
+    if (NULkey) (*keylenp)++;
     rc = (*dbi->dbi_vec->cget) (dbi, dbcursor, keypp, keylenp, datapp, datalenp, flags);
+    if (NULkey) (*keylenp)--;
+
 if (_debug < 0 || dbi->dbi_debug) {
 char keyval[32];
 int dataval = 0xdeadbeef;
@@ -183,13 +202,24 @@ fprintf(stderr, "    Get %s key (%p,%ld) data (%p,%ld) \"%s\" %x rc %d\n",
 }
 
 INLINE int dbiPut(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
-	const void * datap, size_t datalen, unsigned int flags) {
+	const void * datap, size_t datalen, unsigned int flags)
+{
+    int NULkey;
+    int rc;
+
+    /* XXX make sure that keylen is correct for "" lookup */
+    NULkey = (keyp && *((char *)keyp) == '\0' && keylen == 0);
+    if (NULkey) keylen++;
+    rc = (*dbi->dbi_vec->cput) (dbi, dbcursor, keyp, keylen, datap, datalen, flags);
+    if (NULkey) keylen--;
+
 if (_debug < 0 || dbi->dbi_debug) {
 int dataval = 0xdeadbeef;
 if (datap) memcpy(&dataval, datap, sizeof(dataval));
-fprintf(stderr, "    Put %s key (%p,%ld) data (%p,%ld) \"%s\" %x\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, datap, (long)datalen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""), dataval);
+fprintf(stderr, "    Put %s key (%p,%ld) data (%p,%ld) \"%s\" %x rc %d\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, datap, (long)datalen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""), dataval, rc);
 }
-    return (*dbi->dbi_vec->cput) (dbi, dbcursor, keyp, keylen, datap, datalen, flags);
+
+    return rc;
 }
 
 INLINE int dbiClose(dbiIndex dbi, unsigned int flags) {

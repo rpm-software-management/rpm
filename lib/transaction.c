@@ -1305,7 +1305,8 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
     /* FIXME: it seems a bit silly to read in all of these headers twice */
     /* The ordering doesn't matter here */
-    {	rpmdbMatchIterator mi;
+    if (ts->numRemovedPackages > 0) {
+	rpmdbMatchIterator mi;
 	Header h;
 
 	mi = rpmdbInitIterator(ts->db, RPMDBI_PACKAGES, NULL, 0);
