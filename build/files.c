@@ -87,7 +87,7 @@ int process_filelist(Header header, struct PackageRec *pr,
     if (type == RPMLEAD_BINARY && pr->fileFile) {
 	sprintf(buf, "%s/%s/%s", rpmGetVar(RPMVAR_BUILDDIR),
 		build_subdir, pr->fileFile);
-	rpmMessage(RPMMESS_DEBUG, "Reading file names from: %sXX\n", buf);
+	rpmMessage(RPMMESS_DEBUG, "Reading file names from: %s\n", buf);
 	if ((file = fopen(buf, "r")) == NULL) {
 	    perror("open fileFile");
 	    exit(1);
