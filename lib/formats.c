@@ -339,8 +339,10 @@ static int triggertypeTag(Header h, int_32 * type, void ** data,
 
 	    if (flags[j] & RPMSENSE_TRIGGERIN)
 		conds[i] = strdup("in");
-	    else
+	    else if (flags[j] & RPMSENSE_TRIGGERUN)
 		conds[i] = strdup("un");
+	    else
+		conds[i] = strdup("postun");
 	    break;
 	}
     }
