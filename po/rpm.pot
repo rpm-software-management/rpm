@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-02-04 17:21-0500\n"
+"POT-Creation-Date: 1999-02-15 21:09-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -204,55 +204,55 @@ msgstr ""
 msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
 msgstr ""
 
-#: ../ftp.c:531
+#: ../ftp.c:617
 msgid "Success"
 msgstr ""
 
-#: ../ftp.c:534
+#: ../ftp.c:620
 msgid "Bad server response"
 msgstr ""
 
-#: ../ftp.c:537
+#: ../ftp.c:623
 msgid "Server IO error"
 msgstr ""
 
-#: ../ftp.c:540
+#: ../ftp.c:626
 msgid "Server timeout"
 msgstr ""
 
-#: ../ftp.c:543
+#: ../ftp.c:629
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: ../ftp.c:546
+#: ../ftp.c:632
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: ../ftp.c:549
+#: ../ftp.c:635
 msgid "Failed to connect to server"
 msgstr ""
 
-#: ../ftp.c:552
+#: ../ftp.c:638
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: ../ftp.c:555
+#: ../ftp.c:641
 msgid "IO error to local file"
 msgstr ""
 
-#: ../ftp.c:558
+#: ../ftp.c:644
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: ../ftp.c:561
+#: ../ftp.c:647
 msgid "File not found on server"
 msgstr ""
 
-#: ../ftp.c:564
+#: ../ftp.c:650
 msgid "Abort in progress"
 msgstr ""
 
-#: ../ftp.c:568
+#: ../ftp.c:654
 msgid "Unknown or unexpected error"
 msgstr ""
 
@@ -1422,30 +1422,31 @@ msgstr ""
 msgid "error reading header from package\n"
 msgstr ""
 
-#: ../url.c:105
+#: ../url.c:118
 #, c-format
 msgid "Password for %s@%s: "
 msgstr ""
 
-#: ../url.c:169
+#: ../url.c:136 ../url.c:158
+#, c-format
+msgid "error: %sport must be a number\n"
+msgstr ""
+
+#: ../url.c:227
 msgid "url port must be a number\n"
 msgstr ""
 
-#: ../url.c:207
+#: ../url.c:263
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: ../url.c:230
-msgid "error: ftpport must be a number\n"
-msgstr ""
-
-#: ../lib/rpmdb.c:168 ../url.c:335
+#: ../lib/rpmdb.c:168 ../url.c:370
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
 
-#: ../url.c:350
+#: ../url.c:385
 #, c-format
 msgid "failed to create %s\n"
 msgstr ""
@@ -1568,7 +1569,7 @@ msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
 #: ../build/files.c:291 ../build/files.c:303 ../build/files.c:372
-#: ../build/files.c:384 ../build/files.c:410
+#: ../build/files.c:384 ../build/files.c:415
 #, c-format
 msgid "Bad %s() syntax: %s"
 msgstr ""
@@ -1582,152 +1583,152 @@ msgstr ""
 msgid "No files after %%defattr(): %s"
 msgstr ""
 
-#: ../build/files.c:420
+#: ../build/files.c:425
 #, c-format
 msgid "Bad %s() mode spec: %s"
 msgstr ""
 
-#: ../build/files.c:432
+#: ../build/files.c:437
 #, c-format
 msgid "Bad %s() dirmode spec: %s"
 msgstr ""
 
-#: ../build/files.c:483
+#: ../build/files.c:488
 msgid "Bad %%config() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:501
+#: ../build/files.c:506
 msgid "Invalid %%config token: %s"
 msgstr ""
 
-#: ../build/files.c:524 ../build/files.c:536 ../build/files.c:549
+#: ../build/files.c:529 ../build/files.c:541 ../build/files.c:554
 msgid "Bad %%lang() syntax: %s"
 msgstr ""
 
-#: ../build/files.c:555
+#: ../build/files.c:560
 msgid "%%lang() entries are 2 characters: %s"
 msgstr ""
 
-#: ../build/files.c:561
+#: ../build/files.c:566
 msgid "Only one entry in %%lang(): %s"
 msgstr ""
 
-#: ../build/files.c:643
+#: ../build/files.c:648
 msgid "Hit limit for %%docdir"
 msgstr ""
 
-#: ../build/files.c:649
+#: ../build/files.c:654
 msgid "Only one arg for %%docdir"
 msgstr ""
 
 #. We already got a file -- error
-#: ../build/files.c:674
+#: ../build/files.c:679
 #, c-format
 msgid "Two files on one line: %s"
 msgstr ""
 
-#: ../build/files.c:687
+#: ../build/files.c:692
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:699
+#: ../build/files.c:704
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: ../build/files.c:787
+#: ../build/files.c:792
 #, c-format
 msgid "File listed twice: %s"
 msgstr ""
 
-#: ../build/files.c:939
+#: ../build/files.c:944
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: ../build/files.c:949 ../build/files.c:1068
+#: ../build/files.c:954 ../build/files.c:1069
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: ../build/files.c:996
+#: ../build/files.c:997
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: ../build/files.c:1002
+#: ../build/files.c:1003
 #, c-format
 msgid "File %4d: 0%o %s.%s\t %s\n"
 msgstr ""
 
-#: ../build/files.c:1052
+#: ../build/files.c:1053
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:1109
+#: ../build/files.c:1110
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1116 ../build/pack.c:448
+#: ../build/files.c:1117 ../build/pack.c:448
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: ../build/files.c:1384 ../build/parsePrep.c:40
+#: ../build/files.c:1385 ../build/parsePrep.c:40
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: ../build/files.c:1438
+#: ../build/files.c:1439
 #, c-format
 msgid "Couldn't exec %s"
 msgstr ""
 
-#: ../build/files.c:1442
+#: ../build/files.c:1443
 #, c-format
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1492
+#: ../build/files.c:1493
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: ../build/files.c:1496
+#: ../build/files.c:1497
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: ../build/files.c:1530
+#: ../build/files.c:1531
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1537
+#: ../build/files.c:1538
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1556
+#: ../build/files.c:1557
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1563
+#: ../build/files.c:1564
 msgid "Failed to find requires"
 msgstr ""
 
-#: ../build/files.c:1597
+#: ../build/files.c:1598
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1612
+#: ../build/files.c:1613
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1624
+#: ../build/files.c:1625
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1648
+#: ../build/files.c:1649
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
@@ -1903,113 +1904,113 @@ msgstr ""
 msgid "line %d: Second %%files list"
 msgstr ""
 
-#: ../build/parsePreamble.c:156
+#: ../build/parsePreamble.c:157
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:161
+#: ../build/parsePreamble.c:162
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:166
+#: ../build/parsePreamble.c:167
 #, c-format
 msgid "OS is excluded: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:171
+#: ../build/parsePreamble.c:172
 #, c-format
 msgid "OS is not included: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:207
+#: ../build/parsePreamble.c:208
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:229
+#: ../build/parsePreamble.c:230
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:274
+#: ../build/parsePreamble.c:275
 #, c-format
 msgid "Unable to stat icon: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:285
+#: ../build/parsePreamble.c:286
 #, c-format
 msgid "Unable to read icon: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:295
+#: ../build/parsePreamble.c:296
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:330
+#: ../build/parsePreamble.c:331
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr ""
 
 #. Empty field
-#: ../build/parsePreamble.c:338
+#: ../build/parsePreamble.c:339
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:361 ../build/parsePreamble.c:368
+#: ../build/parsePreamble.c:362 ../build/parsePreamble.c:369
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:399
+#: ../build/parsePreamble.c:400
 #, c-format
 msgid "line %d: BuildRoot can not be \"/\": %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:412
+#: ../build/parsePreamble.c:413
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:424
+#: ../build/parsePreamble.c:425
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:435
+#: ../build/parsePreamble.c:436
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:500
+#: ../build/parsePreamble.c:501
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:510
+#: ../build/parsePreamble.c:511
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: ../build/parsePreamble.c:655
+#: ../build/parsePreamble.c:656
 #, c-format
 msgid "Bad package specification: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:661
+#: ../build/parsePreamble.c:662
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:688
+#: ../build/parsePreamble.c:689
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:713
+#: ../build/parsePreamble.c:714
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -2233,31 +2234,31 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:371 ../lib/depends.c:530
+#: ../lib/depends.c:372 ../lib/depends.c:531
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:436
+#: ../lib/depends.c:437
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:623
+#: ../lib/depends.c:624
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:666
+#: ../lib/depends.c:667
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:766
+#: ../lib/depends.c:767
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:818
+#: ../lib/depends.c:819
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -3136,17 +3137,17 @@ msgstr ""
 msgid "Invalid signature spec in rc file"
 msgstr ""
 
-#: ../lib/transaction.c:570
+#: ../lib/transaction.c:576
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:576
+#: ../lib/transaction.c:582
 #, c-format
 msgid "excluding %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:663
+#: ../lib/transaction.c:669
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

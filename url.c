@@ -6,7 +6,6 @@
 
 #include "url.h"
 #include "ftp.h"
-#include "http.h"
 
 static struct urlstring {
     const char *leadin;
@@ -23,12 +22,15 @@ void freeUrlinfo(urlinfo *u)
 {
     if (u->ftpControl >= 0)
 	close(u->ftpControl);
+    FREE(u->url);
     FREE(u->service);
     FREE(u->user);
     FREE(u->password);
     FREE(u->host);
     FREE(u->portstr);
     FREE(u->path);
+    FREE(u->proxyu);
+    FREE(u->proxyh);
 
     FREE(u);
 }
@@ -39,8 +41,10 @@ urlinfo *newUrlinfo(void)
     if ((u = malloc(sizeof(*u))) == NULL)
 	return NULL;
     memset(u, 0, sizeof(*u));
+    u->proxyp = -1;
     u->port = -1;
     u->ftpControl = -1;
+    u->ftpGetFileDoneNeeded = 0;
     return u;
 }
 
@@ -89,15 +93,24 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 	}
 	*empty = u;
     } else {
+	/* Swap original url and path into the cached structure */
 	const char *up = uCache[i]->path;
 	uCache[i]->path = u->path;
 	u->path = up;
+	up = uCache[i]->url;
+	uCache[i]->url = u->url;
+	u->url = up;
 	freeUrlinfo(u);
     }
 
+    /* This URL is now cached. */
     *uret = u = uCache[i];
 
+    /* Perform one-time FTP initialization */
     if (!strcmp(u->service, "ftp")) {
+	char *proxy;
+	char *proxyport;
+
 	if (mustAsk || (u->user != NULL && u->password == NULL)) {
 	    char * prompt;
 	    FREE(u->password);
@@ -105,7 +118,51 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
 	    sprintf(prompt, _("Password for %s@%s: "), u->user, u->host);
 	    u->password = strdup(getpass(prompt));
 	}
+
+	if (u->proxyh == NULL && (proxy = rpmGetVar(RPMVAR_FTPPROXY)) != NULL) {
+	    char *nu = malloc(strlen(u->user) + strlen(u->host) + sizeof("@"));
+	    strcpy(nu, u->user);
+	    strcat(nu, "@");
+	    strcat(nu, u->host);
+	    u->proxyu = nu;
+	    u->proxyh = strdup(proxy);
+	}
+
+	if (u->proxyp < 0 && (proxyport = rpmGetVar(RPMVAR_FTPPORT)) != NULL) {
+	    int port;
+	    char *end;
+	    port = strtol(proxyport, &end, 0);
+	    if (*end) {
+		fprintf(stderr, _("error: %sport must be a number\n"),
+			u->service);
+		return;
+	    }
+	    u->proxyp = port;
+	}
     }
+
+    /* Perform one-time HTTP initialization */
+    if (!strcmp(u->service, "http")) {
+	char *proxy;
+	char *proxyport;
+
+	if (u->proxyh == NULL && (proxy = rpmGetVar(RPMVAR_HTTPPROXY)) != NULL) {
+	    u->proxyh = strdup(proxy);
+	}
+
+	if (u->proxyp < 0 && (proxyport = rpmGetVar(RPMVAR_HTTPPORT)) != NULL) {
+	    int port;
+	    char *end;
+	    port = strtol(proxyport, &end, 0);
+	    if (*end) {
+		fprintf(stderr, _("error: %sport must be a number\n"),
+			u->service);
+		return;
+	    }
+	    u->proxyp = port;
+	}
+    }
+
     return;
 }
 
@@ -124,6 +181,7 @@ int urlSplit(const char * url, urlinfo **uret)
 	freeUrlinfo(u);
 	return -1;
     }
+    u->url = strdup(url);
     do {
 	while (*se && *se != '/') se++;
 	if (*se == '\0') {
@@ -201,42 +259,18 @@ static int urlConnect(const char * url, urlinfo ** uret)
 	return -1;
 
     if (!strcmp(u->service, "ftp") && u->ftpControl < 0) {
-	char *proxy;
-	char *proxyport;
 
 	rpmMessage(RPMMESS_DEBUG, _("logging into %s as %s, pw %s\n"),
 		u->host,
 		u->user ? u->user : "ftp",
 		u->password ? u->password : "(username)");
 
-	/* XXX FIXME: this doesn't work with urlinfo caching */
-	if ((proxy = rpmGetVar(RPMVAR_FTPPROXY)) != NULL) {
-	    char *nu = malloc(strlen(u->user) + strlen(u->host) + sizeof("@"));
-	    strcpy(nu, u->user);
-	    strcat(nu, "@");
-	    strcat(nu, u->host);
-	    free((void *)u->user);
-	    u->user = nu;
-	    free((void *)u->host);
-	    u->host = strdup(proxy);
-	}
-
-	/* XXX FIXME: this doesn't work with urlinfo caching */
-	if ((proxyport = rpmGetVar(RPMVAR_FTPPORT)) != NULL) {
-	    int port;
-	    char *end;
-	    port = strtol(proxyport, &end, 0);
-	    if (*end) {
-		fprintf(stderr, _("error: ftpport must be a number\n"));
-		return -1;
-	    }
-	    u->port = port;
-	}
-
 	u->ftpControl = ftpOpen(u);
 
- 	if (u->ftpControl < 0)
+ 	if (u->ftpControl < 0) {	/* XXX save ftpOpen error */
+	    u->openError = u->ftpControl;
 	    return u->ftpControl;
+	}
 
     }
 
@@ -300,10 +334,10 @@ FD_t ufdOpen(const char *url, int flags, mode_t mode)
 	    break;
 	if ((fd = fdNew()) == NULL)
 	    break;
-        if (httpProxySetup(url,&u)) 
-	    break;
 	fd->fd_url = u;
 	fd->fd_fd = httpOpen(u);
+	if (fd->fd_fd < 0)		/* XXX Save httpOpen error */
+	    u->openError = fd->fd_fd;
 	break;
     case URL_IS_PATH:
 	if (urlSplit(url, &u))
@@ -380,4 +414,13 @@ int urlGetFile(const char * url, const char * dest) {
     fdClose(tfd);
 
     return rc;
+}
+
+/* XXX This only works for httpOpen/ftpOpen failures */
+const char *urlStrerror(const char *url)
+{
+    urlinfo *u;
+    if (urlSplit(url, &u))
+	return "Malformed URL";
+    return ftpStrerror(u->openError);
 }

@@ -24,6 +24,5 @@ int	ftpGetFile(FD_t sfd, FD_t tfd);
 int	ftpGetFileDesc(FD_t);
 int	ftpAbort(FD_t fd);
 int	ftpClose(FD_t fd);
-int tcpConnect(const char *host, int port);
 
 #endif

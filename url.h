@@ -10,15 +10,20 @@ typedef enum {
 } urltype;
 
 typedef struct urlinfo {
+    const char *url;		/* copy of original url */
     const char *service;
     const char *user;
     const char *password;
     const char *host;
     const char *portstr;
     const char *path;
+    const char *proxyu;		/* FTP: proxy user */
+    const char *proxyh;		/* FTP/HTTP: proxy host */
+    int proxyp;			/* FTP/HTTP: proxy port */
     int	port;
     int ftpControl;
     int ftpGetFileDoneNeeded;
+    int openError;		/* Type of open failure */
 } urlinfo;
 
 #ifndef	IPPORT_HTTP
@@ -36,6 +41,7 @@ void	freeUrlinfo(urlinfo *u);
 
 FD_t	ufdOpen(const char * pathname, int flags, mode_t mode);
 int	ufdClose(FD_t fd);
+const char *urlStrerror(const char *url);
 
 int	urlGetFile(const char * url, const char * dest);
 
