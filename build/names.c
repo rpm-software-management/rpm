@@ -1,4 +1,4 @@
-/* names.c -- user/group name/id chache (plus hostname and buildtime */
+/* names.c -- user/group name/id cache (plus hostname and buildtime) */
 
 #include <stdio.h>
 #include <sys/types.h>
