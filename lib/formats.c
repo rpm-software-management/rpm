@@ -188,10 +188,11 @@ static int instprefixTag(Header h, int_32 * type, void ** data, int_32 * count,
     if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, type, data, count)) {
 	*freeData = 0;
 	return 0;
-    } else if (headerGetEntry(h, RPMTAG_INSTPREFIXES, type, (void **) &array, 
+    } else if (headerGetEntry(h, RPMTAG_INSTPREFIXES, NULL, (void **) &array, 
 			      count)) {
 	*((char **) data) = strdup(array[0]);
 	*freeData = 1;
+	*type = RPM_STRING_TYPE;
 	free(array);
 	return 0;
     } 
