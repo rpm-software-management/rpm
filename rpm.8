@@ -10,10 +10,10 @@ build, install, query, verify, update, and uninstall individual
 software packages.  A \fIpackage\fP consists of an archive of files,
 and package information, including name, version, and description.
 
-There are seven basic modes of operation, and each takes a different
+There are eight basic modes of operation, and each takes a different
 set of options.  They are \fIInstall\fP, \fIQuery\fP,
 \fIVerify\fP, \fISignature check\fP, \fIUninstall\fP, \fIBuild\fP,
-and \fIRebuild Database\fP.
+\fIRebuild Database\fP, and \fIShow RC\fP.
 
 Install mode:
 .br
@@ -64,6 +64,10 @@ The general form of an rpm install command is
 .PP
 	\fBrpm \-i [install\-options] <package_file>+\fP
 .PP
+The <package_file> may be specified as an ftp style URL, in which case
+the package will be downloaded before being installed. See \fBFTP
+OPTIONS\fP for information on RPM's built in ftp support.
+.PP
 .IP "\fB\-\-force\fP"
 Same as using both \-\-replacepkgs, \-\-replacefiles, and 
 \-\-oldpackage.
@@ -85,6 +89,8 @@ system.
 Do the installation on the system rooted at \fI<dir>\fP.  Note that
 this means the database will be updated under \fI<dir>\fP and any
 \fIpre\fP or \fIpost\fP scripts are run after a chroot() to \fI<dir>\fP.
+.IP "\fB\-\-nodeps\fP"
+Don't do a dependency check before installing the new package.
 .IP "\fB\-\-noscripts\fP"
 Don't execute the preinstall or postinstall scripts.
 .IP "\fB\-\-excludedocs\fP"
@@ -151,7 +157,10 @@ Query package owning \fI<file>\fP.
 .IP "\fB\-F\fP"
 Like \fB\-f\fP but read file names from stdin.
 .IP "\fB\-p \fI<package_file>\fP"
-Query an (uninstalled) package \fI<package_file>\fP.
+Query an (uninstalled) package \fI<package_file>\fP. 
+The <package_file> may be specified as an ftp style URL, in which case
+the package header will be downloaded and queried. See \fBFTP
+OPTIONS\fP for information on RPM's built in ftp support.
 .IP "\fB\-P\fP"
 Like \fB\-p\fP but read package file names from stdin.
 
@@ -241,6 +250,8 @@ Don't check dependencies before uninstalling the packages.
 .IP "\fB\-\-test\fP"
 Don't really uninstall anything, just go through the motions. 
 \fB\-vv\fP option.
+.IP "\fB\-\-nodeps\fP"
+Don't check for broken dependencies before removing the package.
 
 .SH BUILD OPTIONS
 The general form of an rpm build command is
@@ -345,6 +356,43 @@ The general form of an rpm rebuild database command is
 .PP
 
 The only options this mode supports are \fB-\-dbpath\fP and \fB-\-root\fP.
+
+.SH SHOWRC 
+
+Running 
+
+.PP
+	\fBrpm \-\-showrc\fP
+
+.PP
+shows the values RPM will use for all of the options that may be set
+in \fIrpmrc\fP files.
+
+.SH FTP OPTIONS
+
+RPM includes a simple FTP client to simplify installing and querying packages 
+which are available over the internet. Package files for install, upgrade,
+and query operations may be specified as an ftp style URL:
+
+.PP
+	\fBftp://<user>@<password>:hostname/path/to/package.rpm\fP
+.PP
+If the \fB@password\fP portion is omitted, the password will be prompted
+for (once per user/hostname pair). If both the user and password are
+omitted, anonymous ftp is used. In all cases passive (PASV) ftp transfers are
+used.
+
+RPM allows the folowing options to be used with ftp URLs:
+
+.IP "\fB\--ftpproxy <hostname>\fP"
+The host <hostname> will be used as a proxy server for all transfers, which
+allows users to ftp through firewall machines which use proxy systems.  This
+option may also be specified in an \fIrpmrc\fP file.
+
+.IP "\fB\--ftpport <port>\fP"
+Specifies the TCP port number to use for the ftp connection instead of
+the default port.
+This option may also be specified in an \fIrpmrc\fP file.
 
 .SH FILES
 .nf
