@@ -373,6 +373,7 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 #define RPMERR_MTAB		-35	/* failed to read mount table */
 #define RPMERR_STAT		-36	/* failed to stat something */
 #define RPMERR_BADDEV		-37	/* file on device not listed in mtab */
+#define RPMMESS_ALTNAME         -38     /* file written as .rpmnew */
 
 /* spec.c build.c pack.c */
 #define RPMERR_UNMATCHEDIF      -107    /* unclosed %ifarch or %ifos */

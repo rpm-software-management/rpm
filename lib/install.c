@@ -29,7 +29,7 @@
 #include "rpmdb.h"
 #include "rpmlib.h"
 
-enum instActions { UNKNOWN, CREATE, BACKUP, KEEP, SAVE, SKIP };
+enum instActions { UNKNOWN, CREATE, BACKUP, KEEP, SAVE, SKIP, ALTNAME };
 enum fileTypes { XDIR, BDEV, CDEV, SOCK, PIPE, REG, LINK } ;
 
 struct callbackInfo {
@@ -415,9 +415,17 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 		if ((files[i].flags & RPMFILE_CONFIG) &&
 		    !S_ISDIR(files[i].mode)) {
 		    if (exists(files[i].rootedPath)) {
-			rpmMessage(RPMMESS_DEBUG, "%s exists - backing up\n", 
-				    files[i].rootedPath);
-			files[i].action = BACKUP;
+			if (files[i].flags & RPMFILE_NOREPLACE) {
+			    rpmMessage(RPMMESS_DEBUG, 
+				"%s exists - creating with alternate name\n", 
+				files[i].rootedPath);
+			    files[i].action = ALTNAME;
+			} else {
+			    rpmMessage(RPMMESS_DEBUG, 
+				"%s exists - backing up\n", 
+				files[i].rootedPath);
+			    files[i].action = BACKUP;
+			}
 		    }
 		}
 	    }
@@ -456,6 +464,22 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	      case BACKUP:
 		ext = ".rpmorig";
 		installFile = 1;
+		break;
+
+	      case ALTNAME:
+		ext = NULL;
+		installFile = 1;
+		/* replace the rooted path (which is the path used to create
+		   the file) with a .rpmnew one; any existing .rpmnew file
+		   is removed on installation */
+
+		newpath = alloca(strlen(files[i].rootedPath) + 20);
+		strcpy(newpath, files[i].rootedPath);
+		strcat(newpath, ".rpmnew");
+		rpmError(RPMMESS_ALTNAME, "warning: %s created as %s",
+			files[i].rootedPath, newpath);
+		files[i].rootedPath = newpath;
+		
 		break;
 
 	      case SAVE:
@@ -756,18 +780,19 @@ static enum instActions decideFileFate(char * filespec, short dbMode,
 	return CREATE;
 
     if (diskWhat != newWhat) {
-	rpmMessage(RPMMESS_DEBUG, "	file type on disk is different then package - "
-			"saving\n");
+	rpmMessage(RPMMESS_DEBUG, 
+	    "\tfile type on disk is different then package - saving\n");
 	return SAVE;
     } else if (newWhat != dbWhat && diskWhat != dbWhat) {
-	rpmMessage(RPMMESS_DEBUG, "	file type in database is different then disk"
-			" and package file - saving\n");
+	rpmMessage(RPMMESS_DEBUG, "\tfile type in database is different then "
+		   "disk and package file - saving\n");
 	return SAVE;
     } else if (dbWhat != newWhat) {
-	rpmMessage(RPMMESS_DEBUG, "	file type changed - replacing\n");
+	rpmMessage(RPMMESS_DEBUG, "\tfile type changed - replacing\n");
 	return CREATE;
     } else if (dbWhat != LINK && dbWhat != REG) {
-	rpmMessage(RPMMESS_DEBUG, "	can't check file for changes - replacing\n");
+	rpmMessage(RPMMESS_DEBUG, 
+		"\tcan't check file for changes - replacing\n");
 	return CREATE;
     }
 
