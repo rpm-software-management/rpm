@@ -1,6 +1,6 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.20 2001/03/11 08:55:55 rjray Exp $
+# $Id: Makefile.PL,v 1.21 2001/04/27 09:07:08 rjray Exp $
 
 use Config;
 use ExtUtils::MakeMaker;
@@ -88,7 +88,7 @@ list near line 78. Stopped"
 WriteMakefile(
               NAME         => 'RPM',
               DISTNAME     => 'Perl-RPM',
-              VERSION_FROM => 'RPM.pm',
+              VERSION      => '0.31',
               LIBS         => $rpm_libs,
               DEFINE       => $rpm_defines,
               PM           => \%PM,
@@ -97,7 +97,8 @@ WriteMakefile(
               OBJECT       => $OBJECT,
               INC          => "-I. -I$rpm_libdir",
               DIR          => [],
-#              XSOPT        => '-nolinenumbers',
+#              XSOPT        => '-noversioncheck -nolinenumbers',
+              XSOPT        => '-noversioncheck',
               dist         => { COMPRESS => 'gzip -9f' },
               clean        => { FILES => $CLEAN }
              );
