@@ -15,7 +15,8 @@ struct rpmTagTableEntry {
     int val;
 };
 
-int pkgReadHeader(int fd, Header * hdr, int * isSource);
+int pkgReadHeader(int fd, Header * hdr, int * isSource, int * major,
+		  int * minor);
    /* 0 = success */
    /* 1 = bad magic */
    /* 2 = error */
@@ -202,7 +203,8 @@ int rpmdbFindByRequiredBy(rpmdb db, char * filespec, dbIndexSet * matches);
 
 int rpmArchScore(char * arch);
 int rpmOsScore(char * arch);
-int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile);
+int rpmInstallSourcePackage(char * prefix, int fd, char ** specFile,
+			    notifyFunction notify, char * labelFormat);
 int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * prefix, 
 		     int flags, notifyFunction notify, char * labelFormat);
 int rpmEnsureOlder(rpmdb db, char * name, char * newVersion, 
