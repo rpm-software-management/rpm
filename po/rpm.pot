@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-21 17:19-0400\n"
+"POT-Creation-Date: 1999-09-21 18:42-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2804,105 +2804,105 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: ../lib/rpmdb.c:181
+#: ../lib/rpmdb.c:184
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:190 ../lib/url.c:430
+#: ../lib/rpmdb.c:193 ../lib/url.c:430
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:203 ../lib/rpmdb.c:211
+#: ../lib/rpmdb.c:206 ../lib/rpmdb.c:214
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: ../lib/rpmdb.c:204
+#: ../lib/rpmdb.c:207
 msgid "exclusive"
 msgstr ""
 
-#: ../lib/rpmdb.c:212
+#: ../lib/rpmdb.c:215
 msgid "shared"
 msgstr ""
 
-#: ../lib/rpmdb.c:243
+#: ../lib/rpmdb.c:246
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
-#: ../lib/rpmdb.c:392
+#: ../lib/rpmdb.c:395
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:403
+#: ../lib/rpmdb.c:406
 #, c-format
 msgid "package %s not found in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:428 ../lib/uninstall.c:85
+#: ../lib/rpmdb.c:431 ../lib/uninstall.c:85
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: ../lib/rpmdb.c:436
+#: ../lib/rpmdb.c:439
 msgid "package has no name"
 msgstr ""
 
-#: ../lib/rpmdb.c:438
+#: ../lib/rpmdb.c:441
 msgid "removing name index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:443
+#: ../lib/rpmdb.c:446
 msgid "package has no group\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:445
+#: ../lib/rpmdb.c:448
 msgid "removing group index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:452
+#: ../lib/rpmdb.c:455
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:467
+#: ../lib/rpmdb.c:470
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:479
+#: ../lib/rpmdb.c:482
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:490
+#: ../lib/rpmdb.c:493
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:507
+#: ../lib/rpmdb.c:510
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:516
+#: ../lib/rpmdb.c:519
 msgid "package has no files\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:598
+#: ../lib/rpmdb.c:601
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: ../lib/rpmdb.c:664
+#: ../lib/rpmdb.c:667
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: ../lib/rpmdb.c:673
+#: ../lib/rpmdb.c:676
 msgid "header changed size!"
 msgstr ""
 
