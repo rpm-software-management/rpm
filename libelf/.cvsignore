@@ -13,10 +13,12 @@ config.status
 config.sub
 configure
 depcomp
+install-sh
 libtool
 ltconfig
 ltmain.sh
 missing
+mkinstalldirs
 pic
 stamp-h
 stamp-h1

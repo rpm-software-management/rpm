@@ -32,22 +32,21 @@ HDRS_V = verdef.h verneed.h
 
 CFLAGS = @CFLAGS@ @PICFLAGS@
 
-#lib_LTLIBRARIES = libelf.la
-noinst_LTLIBRARIES = libelf.la
+lib_LTLIBRARIES = libelf.la
+#noinst_LTLIBRARIES = libelf.la
 
 libelf_la_SOURCES = \
 	$(SRCS1) $(SRCS2) $(SRCS3) $(SRCS4) $(SRCS5) $(SRCS64) $(SRCS_V)
 libelf_la_LIBADD = @LIBOBJS@
 
-#pkgincdir = $(includedir)/@PACKAGE@
-#pkginc_HEADERS = libelf.h nlist.h gelf.h sys_elf.h
+pkgincdir = $(includedir)/@PACKAGE@
+pkginc_HEADERS = libelf.h nlist.h gelf.h sys_elf.h
 
 # private header files
 noinst_HEADERS = \
-	libelf.h nlist.h gelf.h sys_elf.h \
 	byteswap.h errors.h ext_types.h private.h elf_repl.h $(HDRS_V)
 
-BUILT_SOURCES = libelf.lcd
+#BUILT_SOURCES = libelf.lcd
 
 libelf.lcd: Makefile.am ${libelf_la_SOURCES} ${noinst_HEADERS}
 	-lclint ${DEFS} ${INCLUDES} ${libelf_la_SOURCES} -dump $@ 2>/dev/null

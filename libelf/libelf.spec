@@ -1,13 +1,19 @@
 Summary: An ELF object file access shared library.
 Name: libelf
-Version: 0.7.0
-Release: 5
+Version: 0.8.2
+Release: 0.1
 Copyright: distributable
 Group: System Environment/Libraries
-Source: ftp://www.ibiblio.org/pub/Linux/libs/libelf-0.7.0.tar.gz
-Patch: libelf-0.7.0.patch
-Patch2: libelf-0.7.0-hash.patch
-Buildroot: /var/tmp/libelf-root
+#
+# XXX Originally from
+#	http://www.stud.uni-hannover.de/~michael/software/libelf-0.8.2.tar.gz
+# Modified tarball from "make dist"
+#	cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel login
+#	(no password, just carriage return)
+#	cvs -d :pserver:anonymous@cvs.rpm.org:/cvs/devel get libelf
+#
+Source: libelf-0.8.2.tar.gz
+BuildRoot: %{_tmppath}/%{name}-root
 
 %description
 The libelf package contains a shared library for accessing ELF object files.
@@ -24,9 +30,7 @@ files. Libelf allows you to access the internals of the ELF object file
 format, so you can see the different sections of an ELF file.
 
 %prep
-%setup
-%patch -p1
-%patch2 -p1
+%setup -q
 
 %build
 %{__libtoolize} --copy --force
@@ -48,6 +52,11 @@ make
 %{_prefix}/include/libelf
 
 %changelog
+* Mon Jun 24 2002 Jeff Johnson <jbj@redhat.com> 0.8.2-0.1
+- update to 0.8.2
+- re-swaddle in autotools wrappings.
+- add splint annotations.
+
 * Mon Jun 17 2002 Jakub Jelinek <jakub@redhat.com> 0.7.0-5
 - build libelf shared and split into libelf and libelf-devel
   subpackages (#66184)

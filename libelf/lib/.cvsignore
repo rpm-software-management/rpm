@@ -10,3 +10,4 @@ Makefile.in
 stamp-h
 stamp-h2
 sys_elf.h
+libelf.so.*
