@@ -6,4 +6,5 @@ rpm=${rpm:=rpm}
 destdir="`pwd`"
 destdir="`dirname $destdir`"
 
+rm -rf $destdir/var/lib/rpm/*
 ${DBGX} $rpm --initdb

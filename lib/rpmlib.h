@@ -466,6 +466,7 @@ typedef void (*rpmErrorCallBackType)(void);
 
 void rpmError(int code, char * format, ...);
 int rpmErrorCode(void);
+char *rpmErrorCodeString(void);
 char *rpmErrorString(void);
 rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType);
 

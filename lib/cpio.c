@@ -528,8 +528,7 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
     ch.path = NULL;
     do {
 	if ((rc = getNextHeader(cfd, &ch))) {
-	    fprintf(stderr, _("error %d reading header: %s\n"),
-		rc, strerror(errno));
+	    fprintf(stderr, _("getNextHeader: %s\n"), cpioStrerror(rc));
 	    return CPIOERR_BAD_HEADER;
 	}
 

@@ -118,6 +118,9 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     int minimal = flags & RPMDB_FLAG_MINIMAL;
     const char * akey;
 
+    if (mode & O_WRONLY) 
+	return 1;
+
     /* we should accept NULL as a valid prefix */
     if (!prefix) prefix="";
 
@@ -132,13 +135,11 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     
     filename = alloca(strlen(prefix) + strlen(dbpath) + 40);
 
-    if (mode & O_WRONLY) 
-	return 1;
-
     strcpy(filename, prefix); 
     strcat(filename, dbpath);
 
-    rpmMessage(RPMMESS_DEBUG, _("opening database in %s\n"), filename);
+    rpmMessage(RPMMESS_DEBUG, _("opening database mode 0x%x in %s\n"),
+	mode, filename);
 
     strcat(filename, "packages.rpm");
 

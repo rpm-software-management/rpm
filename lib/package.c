@@ -95,6 +95,7 @@ static int readPackageHeaders(FD_t fd, struct rpmlead * leadPtr,
 			   &defaultPrefix, 1); 
 	}
 
+    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
         if (lead->type == RPMLEAD_SOURCE) {
 	    if (!headerIsEntry(*hdr, RPMTAG_SOURCEPACKAGE))
 	    	headerAddEntry(*hdr, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,

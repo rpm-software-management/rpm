@@ -83,7 +83,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
     Header h;
     int isSource;
     int tmpnum = 0;
-    rpmTransactionSet rpmdep;
+    rpmTransactionSet rpmdep = NULL;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
     int stopInstall = 0;
@@ -192,8 +192,6 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 		fdClose(fd);
 	    } else {
 		if (!dbIsOpen) {
-		    rpmMessage(RPMMESS_DEBUG, _("opening database "
-				"mode: 0%o\n"), mode);
 		    if (rpmdbOpen(rootdir, &db, mode, 0644)) {
 			const char *dn;
 			dn = rpmGetPath( (rootdir ? rootdir : ""), 
@@ -271,8 +269,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 
     if (numBinaryPackages) rpmtransFree(rpmdep);
 
-
-    if (!stopInstall) {
+    if (numSourcePackages && !stopInstall) {
 	for (i = 0; i < numSourcePackages; i++) {
 	    fd = fdOpen(sourcePackages[i], O_RDONLY, 0);
 	    if (fdFileno(fd) < 0) {
@@ -295,7 +292,7 @@ int doInstall(const char * rootdir, const char ** argv, int installFlags,
 
     /* FIXME how do we close our various fd's? */
 
-    if (db != NULL) rpmdbClose(db);
+    if (dbIsOpen) rpmdbClose(db);
 
     return numFailed;
 }

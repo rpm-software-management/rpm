@@ -32,7 +32,7 @@ typedef /*@abstract@*/ struct {
 extern "C" {
 #endif
 
-dbiIndex * dbiOpenIndex(char * filename, int flags, int perms, DBTYPE type);
+dbiIndex * dbiOpenIndex(const char * filename, int flags, int perms, DBTYPE type);
 void dbiCloseIndex(dbiIndex * dbi);
 void dbiSyncIndex(dbiIndex * dbi);
 int dbiSearchIndex(dbiIndex * dbi, const char * str, dbiIndexSet * set);

@@ -22,21 +22,19 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
     return set.recs[recno].fileNumber;
 }
 
-dbiIndex * dbiOpenIndex(char * filename, int flags, int perms, DBTYPE type) {
-    dbiIndex * db;
+dbiIndex * dbiOpenIndex(const char * filename, int flags, int perms, DBTYPE type) {
+    dbiIndex * dbi;
         
-    db = malloc(sizeof(*db));
-    db->indexname = strdup(filename);
-    db->db = dbopen(filename, flags, perms, type, NULL);
-    if (!db->db) {
-	free(db->indexname);
-	free(db);
-	rpmError(RPMERR_DBOPEN, _("cannot open file %s: "), filename, 
+    dbi = malloc(sizeof(*dbi));
+    dbi->db = dbopen(filename, flags, perms, type, NULL);
+    if (!dbi->db) {
+	free(dbi);
+	rpmError(RPMERR_DBOPEN, _("cannot open file %s: %s"), filename, 
 			      strerror(errno));
 	return NULL;
     }
-
-    return db;
+    dbi->indexname = strdup(filename);
+    return dbi;
 }
 
 void dbiCloseIndex(dbiIndex * dbi) {

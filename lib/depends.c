@@ -32,7 +32,7 @@ static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
 			    char * package, dbiIndexSet * matches);
 static int addOrderedPack(rpmTransactionSet rpmdep, 
 			struct availablePackage * package,
-			void ** ordering, int * orderNumPtr, 
+			const void ** ordering, int * orderNumPtr, 
 			int * selected, int selectionClass,
 			int satisfyDepends, char ** errorStack);
 
@@ -235,9 +235,9 @@ int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
     int count, i, j;
     char ** obsoletes;
 
-    if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE)) {
+    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
+    if (!headerIsEntry(h, RPMTAG_SOURCERPM))
 	return 1;
-    }
 
     /* FIXME: handling upgrades like this is *almost* okay. It doesn't
        check to make sure we're upgrading to a newer version, and it
@@ -785,7 +785,7 @@ static int dbrecMatchesDepFlags(rpmTransactionSet rpmdep, int recOffset,
 
 static int addOrderedPack(rpmTransactionSet rpmdep, 
 			struct availablePackage * package,
-			void ** ordering, int * orderNumPtr, 
+			const void ** ordering, int * orderNumPtr, 
 			int * selected, int selectionClass,
 			int satisfyDepends, char ** errorStack) {
     char ** requires, ** requiresVersion;

@@ -4,7 +4,6 @@ rpm=${rpm:=rpm}
 destdir="`pwd`"
 destdir="`dirname $destdir`"
 
-rm -rf $destdir/var/lib/rpm/*
 $rpm -i -vv --nodeps --prefix="`pwd`/../usr" $myrpm | \
 	sed -e "s,$destdir,,g" > $0.out
 
