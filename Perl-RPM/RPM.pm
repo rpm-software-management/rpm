@@ -10,7 +10,7 @@ require Exporter;
 
 @ISA = qw(Exporter DynaLoader);
 $VERSION = '0.291';
-$revision = do { my @r=(q$Revision: 1.12 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.13 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT = qw(rpm_osname rpm_archname);
 @EXPORT_OK = (@EXPORT, 'vercmp');
@@ -22,7 +22,7 @@ bootstrap_Constants($VERSION);
 bootstrap_Header($VERSION);
 bootstrap_Database($VERSION);
 bootstrap_Error($VERSION);
-bootstrap_Package($VERSION);
+#bootstrap_Package($VERSION);
 
 1;
 
