@@ -8,8 +8,6 @@
 #include <netinet/ip.h>
 #include <arpa/inet.h>
 
-#include "inet_aton.h"
-
 int
 inet_aton(const char *cp, struct in_addr *inp)
 {

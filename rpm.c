@@ -919,17 +919,19 @@ int main(int argc, char ** argv) {
     if (rmsource && bigMode == MODE_UNKNOWN)
 	bigMode = MODE_BUILD;
     
-    if (initdb)
+    if (initdb) {
 	if (bigMode != MODE_UNKNOWN) 
 	    argerror(_("only one major mode may be specified"));
 	else
 	    bigMode = MODE_INITDB;
+    }
 
-    if (queryTags)
+    if (queryTags) {
 	if (bigMode != MODE_UNKNOWN) 
 	    argerror(_("only one major mode may be specified"));
 	else
 	    bigMode = MODE_QUERYTAGS;
+    }
 
     if (buildRootOverride && bigMode != MODE_BUILD &&
 	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
