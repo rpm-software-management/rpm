@@ -1,3 +1,4 @@
+use Config;
 use ExtUtils::MakeMaker;
 
 %XS = qw(
@@ -25,6 +26,17 @@ symlink '../typemap', 'RPM/typemap';
 # Cruft that MakeMaker wouldn't inherently know about
 $CLEAN = join(' ', values %XS) . " $OBJECT";
 $CLEAN .= ' pod2html-* */pod2html-* *.html */*.html RPM/typemap';
+
+#
+# Check for non-Perl dependancies:
+#
+print "Checking for required software components...\n";
+@packages = `rpm -qa`;
+unless (grep(/rpm\-devel/, @packages) && grep(/popt/, @packages))
+{
+    die "The Perl-RPM package relies on both the popt and rpm-devel packages
+being installed. Stopped";
+}
 
 WriteMakefile(
               NAME         => 'RPM',
