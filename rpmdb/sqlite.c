@@ -36,8 +36,6 @@
 
 #include "system.h"
 
-#include <endian.h>
-
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmurl.h>     /* XXX urlPath proto */
@@ -103,6 +101,14 @@ struct __sql_mem {
   void * mem_ptr;
   SQL_MEM * next;
 };
+
+union _dbswap {
+    unsigned int ui;
+    unsigned char uc[4];
+};
+
+/*@unchecked@*/
+static unsigned int endian = 0x11223344;
 
 /*===================================================================*/
 /*
@@ -205,7 +211,7 @@ static size_t sqlite_encode_binary(const unsigned char *in, size_t n,
 		unsigned char *out)
 	/*@modifies out @*/
 {
-  long i, j, e, m;
+  int i, j, e, m;
   int cnt[256];
   if (n == 0) {
     out[0] = 'x';
@@ -259,7 +265,7 @@ static size_t sqlite_encode_binary(const unsigned char *in, size_t n,
 static size_t sqlite_decode_binary(const unsigned char *in, unsigned char *out)
 	/*@modifies out @*/
 {
-  long i;
+  int i;
   int c, e;
   e = *(in++);
   i = 0;
@@ -491,7 +497,7 @@ static int sql_initDB(dbiIndex dbi)
       }
 
       if ( rc == 0 ) {
-	sprintf(cmd, "INSERT INTO 'db_info' values('%d');", __BYTE_ORDER);
+	sprintf(cmd, "INSERT INTO 'db_info' values('%d');", ((union _dbswap *)&endian)->uc[0]);
 	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, &pzErrmsg);
       }
     }
@@ -945,6 +951,7 @@ static int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     assert(sqldb != NULL && sqldb->db != NULL);
 
 #ifdef SQL_TRACE_CURSOR
+    /* XXX FIXME: ptr alignment is fubar here. */
     rpmMessage(RPMMESS_DEBUG, "  cdel on %s  key 0x%x (%d), data 0x%x (%d), flags %d\n",
 		dbi->dbi_subfile,
 		*(long *)key->data, key->size,
@@ -961,6 +968,7 @@ static int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     data_enc_string[data_len]='\0';
 
 #ifdef SQL_TRACE_ENCODINGS
+    /* XXX FIXME: ptr alignment is fubar here. */
     rpmMessage(RPMMESS_DEBUG, " encoded key  0x%x (%d)\n", *(long *)key_enc_string, key_len);
     rpmMessage(RPMMESS_DEBUG, " encoded data 0x%x (%d)\n", *(long *)data_enc_string, data_len);
 #endif
@@ -1076,6 +1084,7 @@ if (key->data == NULL) key->data = &mykeydata;
 	  int key_len;
 
 #ifdef SQL_TRACE_CURSOR
+    /* XXX FIXME: ptr alignment is fubar here. */
 	  rpmMessage(RPMMESS_DEBUG, "  cget on %s  find   key 0x%x (%d), flags %d\n",
 		dbi->dbi_subfile,
 		key->data == NULL ? 0 : *(long *)key->data, key->size,
@@ -1087,6 +1096,7 @@ if (key->data == NULL) key->data = &mykeydata;
 	  key_enc_string[key_len]='\0';
 
 #ifdef SQL_TRACE_ENCODINGS
+    /* XXX FIXME: ptr alignment is fubar here. */
 	  rpmMessage(RPMMESS_DEBUG, " encoded key  0x%x (%d)\n",
 		 *(long *)key_enc_string, key_len);
 #endif
@@ -1117,6 +1127,7 @@ repeat:
 	rc = DB_NOTFOUND; /* At the end of the list */
       else {
 #ifdef SQL_TRACE_ENCODINGS
+    /* XXX FIXME: ptr alignment is fubar here. */
 	rpmMessage(RPMMESS_DEBUG, " encoded key  0x%x\n",
 		 *(long *)sqlcursor->resultp[((sqlcursor->row_iterator*2)+0)]);
 	rpmMessage(RPMMESS_DEBUG, " encoded data 0x%x\n",
@@ -1165,6 +1176,7 @@ repeat:
 	}
 
 	/* We need to skip this entry... (we've already returned it) */
+    /* XXX FIXME: ptr alignment is fubar here. */
 	if ( dbi->dbi_rpmtag == RPMDBI_PACKAGES &&
 		sqlcursor->all > 1 &&
 		key->size ==4 && *(long *)key->data == 0 
@@ -1177,6 +1189,7 @@ repeat:
 	}
 
 #ifdef SQL_TRACE_CURSOR
+    /* XXX FIXME: ptr alignment is fubar here. */
 	rpmMessage(RPMMESS_DEBUG, "  cget on %s  found  key 0x%x (%d)\n",
 		dbi->dbi_subfile,
 		key->data == NULL ? 0 : *(long *)key->data, key->size
@@ -1243,6 +1256,7 @@ static int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     assert(sqldb != NULL && sqldb->db != NULL);
 
 #ifdef SQL_TRACE_CURSOR
+    /* XXX FIXME: ptr alignment is fubar here. */
     rpmMessage(RPMMESS_DEBUG, "  cput on %s  key 0x%x (%d), data 0x%x (%d), flags %d\n",
 		dbi->dbi_subfile,
 		*(long *)key->data, key->size,
@@ -1259,6 +1273,7 @@ static int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     data_enc_string[data_len]='\0';
 
 #ifdef SQL_TRACE_ENCODINGS
+    /* XXX FIXME: ptr alignment is fubar here. */
     rpmMessage(RPMMESS_DEBUG, " encoded key 0x%x (%d)\n", *(long *)key_enc_string, key_len);
     rpmMessage(RPMMESS_DEBUG, " encoded data 0x%x (%d)\n", *(long *)data_enc_string, data_len);
 #endif
@@ -1291,7 +1306,7 @@ static int sql_byteswapped (dbiIndex dbi)
     int nrow;
     int ncolumn;
     char * pzErrmsg;
-    long db_endian;
+    union _dbswap db_endian;
 
 #ifdef SQL_TRACE_FUNCTIONS
     rpmMessage(RPMMESS_DEBUG, "sql_byteswapped()\n");
@@ -1305,16 +1320,16 @@ static int sql_byteswapped (dbiIndex dbi)
 	&resultp, &nrow, &ncolumn, &pzErrmsg);
 
     if (sql_rc == 0 && nrow > 0) {
-      db_endian=strtol(resultp[1], NULL, 10);
+      db_endian.uc[0] = strtol(resultp[1], NULL, 10);
 
-      if ( db_endian == __BYTE_ORDER )
+      if ( db_endian.uc[0] == ((union _dbswap *)&endian)->uc[0] )
 	rc = 0; /* Native endian */
       else
 	rc = 1; /* swapped */
 
 #if 0
-      rpmMessage(RPMMESS_DEBUG, "DB Endian %ld ?= %ld = %d\n",
-		db_endian, __BYTE_ORDER, rc);
+      rpmMessage(RPMMESS_DEBUG, "DB Endian %ld ?= %d = %d\n",
+		db_endian.uc[0], ((union _dbswap *)&endian)->uc[0], rc);
 #endif
     } else {
       if ( sql_rc ) {
