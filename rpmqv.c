@@ -165,7 +165,9 @@ static struct poptOption optionsTable[] = {
 #endif
 
  /* XXX colliding options */
+#ifdef	DYING
  { "all", 'a', 0, 0, 'a',			NULL, NULL},
+#endif
 #if defined(IAM_RPMQV) || defined(IAM_RPMEIU) || defined(IAM_RPMBT)
  {  NULL, 'i', 0, 0, 'i',			NULL, NULL},
 #endif
@@ -638,7 +640,9 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMQV
     QVA_t *qva = &rpmQVArgs;
+#ifdef	DYING
     enum rpmQVSources QVSource = RPMQV_PACKAGE;
+#endif
 #endif
 
 #ifdef	IAM_RPMBT
@@ -760,6 +764,7 @@ int main(int argc, const char ** argv)
 #ifdef	IAM_RPMQV
     if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
     memset(qva, 0, sizeof(*qva));
+    qva->qva_source = RPMQV_PACKAGE;
     qva->qva_mode = ' ';
     qva->qva_char = ' ';
 #endif
@@ -855,6 +860,7 @@ int main(int argc, const char ** argv)
 	  } break;
 #endif	/* IAM_RPMEIU */
 
+#ifdef	DYING
 #ifdef	IAM_RPMQV
 	  case 'q':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
@@ -896,6 +902,7 @@ int main(int argc, const char ** argv)
 	    QVSource = RPMQV_ALL;
 	    break;
 #endif	/* IAM_RPMQV */
+#endif
 
 #ifdef	IAM_RPMDB
 	  case GETOPT_REBUILDDB:
@@ -998,10 +1005,9 @@ int main(int argc, const char ** argv)
     }
 
     if (qva->qva_sourceCount) {
-	if (QVSource != RPMQV_PACKAGE || qva->qva_sourceCount > 1)
+	if (qva->qva_sourceCount > 1)
 	    argerror(_("one type of query/verify may be performed at a "
 			"time"));
-	QVSource = qva->qva_source;
     }
     if (qva->qva_flags && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query flags"));
@@ -1009,7 +1015,7 @@ int main(int argc, const char ** argv)
     if (qva->qva_queryFormat && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query format"));
 
-    if (QVSource != RPMQV_PACKAGE && (bigMode & ~MODES_QV)) 
+    if (qva->qva_source != RPMQV_PACKAGE && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query source"));
 #endif
 
@@ -1459,7 +1465,7 @@ int main(int argc, const char ** argv)
       { const char * pkg;
 
 	qva->qva_prefix = rootdir;
-	if (QVSource == RPMQV_ALL) {
+	if (qva->qva_source == RPMQV_ALL) {
 	    if (poptPeekArg(optCon))
 		argerror(_("extra arguments given for query of all packages"));
 
@@ -1468,7 +1474,7 @@ int main(int argc, const char ** argv)
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for query"));
 	    while ((pkg = poptGetArg(optCon)))
-		ec += rpmQuery(qva, QVSource, pkg);
+		ec += rpmQuery(qva, qva->qva_source, pkg);
 	}
       }	break;
 
@@ -1484,7 +1490,7 @@ int main(int argc, const char ** argv)
 
 	qva->qva_prefix = rootdir;
 	qva->qva_flags = verifyFlags;
-	if (QVSource == RPMQV_ALL) {
+	if (qva->qva_source == RPMQV_ALL) {
 	    if (poptPeekArg(optCon))
 		argerror(_("extra arguments given for verify of all packages"));
 	    ec = rpmVerify(qva, RPMQV_ALL, NULL);
@@ -1492,7 +1498,7 @@ int main(int argc, const char ** argv)
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for verify"));
 	    while ((pkg = poptGetArg(optCon)))
-		ec += rpmVerify(qva, QVSource, pkg);
+		ec += rpmVerify(qva, qva->qva_source, pkg);
 	}
       }	break;
 

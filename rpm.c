@@ -100,7 +100,9 @@ extern struct rpmBuildArguments		rpmBTArgs;
 static struct poptOption optionsTable[] = {
  { "addsign", '\0', 0, 0, GETOPT_ADDSIGN,	NULL, NULL},
 /* all and allmatches both using 'a' is dumb */
+#ifdef	DYING
  { "all", 'a', 0, 0, 'a',			NULL, NULL},
+#endif
  { "allfiles", '\0', 0, &allFiles, 0,		NULL, NULL},
  { "allmatches", '\0', 0, &allMatches, 0,	NULL, NULL},
  { "badreloc", '\0', 0, &badReloc, 0,		NULL, NULL},
@@ -539,7 +541,9 @@ int main(int argc, const char ** argv)
 {
     enum modes bigMode = MODE_UNKNOWN;
     QVA_t *qva = &rpmQVArgs;
+#ifdef	DYING
     enum rpmQVSources QVSource = RPMQV_PACKAGE;
+#endif
     int arg;
     int installFlags = 0, uninstallFlags = 0, interfaceFlags = 0;
     int verifyFlags;
@@ -658,6 +662,7 @@ int main(int argc, const char ** argv)
 
     if (qva->qva_queryFormat) xfree(qva->qva_queryFormat);
     memset(qva, 0, sizeof(*qva));
+    qva->qva_source = RPMQV_PACKAGE;
     qva->qva_mode = ' ';
     qva->qva_char = ' ';
 
@@ -671,6 +676,7 @@ int main(int argc, const char ** argv)
 	    bigMode = MODE_CHECKSIG;
 	    break;
 	    
+#ifdef	DYING
 	  case 'q':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
 		argerror(_("only one major mode may be specified"));
@@ -683,6 +689,7 @@ int main(int argc, const char ** argv)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_VERIFY;
 	    break;
+#endif
 
 	  case 'u':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
@@ -728,6 +735,7 @@ int main(int argc, const char ** argv)
 	    upgrade = 1;
 	    break;
 
+#ifdef	DYING
 	  case 'p':
 	    if (QVSource != RPMQV_PACKAGE && QVSource != RPMQV_RPM)
 		argerror(_("one type of query/verify may be performed at a " "time"));
@@ -754,6 +762,7 @@ int main(int argc, const char ** argv)
 				"time"));
 	    QVSource = RPMQV_ALL;
 	    break;
+#endif
 
 	  case GETOPT_RESIGN:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
@@ -849,10 +858,9 @@ int main(int argc, const char ** argv)
     }
 
     if (qva->qva_sourceCount) {
-	if (QVSource != RPMQV_PACKAGE || qva->qva_sourceCount > 1)
+	if (qva->qva_sourceCount > 1)
 	    argerror(_("one type of query/verify may be performed at a "
 			"time"));
-	QVSource = qva->qva_source;
     }
 
     if (qva->qva_flags && (bigMode & ~MODES_QV)) 
@@ -861,7 +869,7 @@ int main(int argc, const char ** argv)
     if (qva->qva_queryFormat && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query format"));
 
-    if (QVSource != RPMQV_PACKAGE && (bigMode & ~MODES_QV)) 
+    if (qva->qva_source != RPMQV_PACKAGE && (bigMode & ~MODES_QV)) 
 	argerror(_("unexpected query source"));
 
     if (!(bigMode == MODE_INSTALL) && force)
@@ -1174,7 +1182,7 @@ int main(int argc, const char ** argv)
 
       case MODE_QUERY:
 	qva->qva_prefix = rootdir;
-	if (QVSource == RPMQV_ALL) {
+	if (qva->qva_source == RPMQV_ALL) {
 	    if (poptPeekArg(optCon))
 		argerror(_("extra arguments given for query of all packages"));
 
@@ -1183,7 +1191,7 @@ int main(int argc, const char ** argv)
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for query"));
 	    while ((pkg = poptGetArg(optCon)))
-		ec += rpmQuery(qva, QVSource, pkg);
+		ec += rpmQuery(qva, qva->qva_source, pkg);
 	}
 	break;
 
@@ -1196,7 +1204,7 @@ int main(int argc, const char ** argv)
 
 	qva->qva_prefix = rootdir;
 	qva->qva_flags = verifyFlags;
-	if (QVSource == RPMQV_ALL) {
+	if (qva->qva_source == RPMQV_ALL) {
 	    if (poptPeekArg(optCon))
 		argerror(_("extra arguments given for verify of all packages"));
 	    ec = rpmVerify(qva, RPMQV_ALL, NULL);
@@ -1204,7 +1212,7 @@ int main(int argc, const char ** argv)
 	    if (!poptPeekArg(optCon))
 		argerror(_("no arguments given for verify"));
 	    while ((pkg = poptGetArg(optCon)))
-		ec += rpmVerify(qva, QVSource, pkg);
+		ec += rpmVerify(qva, qva->qva_source, pkg);
 	}
 	break;
     }

@@ -1363,7 +1363,6 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi,
 {
     dbiIndex dbi = NULL;
     dbiIndexSet set = NULL;
-    int i;
     int rc;
     int xx;
 
@@ -1381,12 +1380,8 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi,
     rc = dbiSearch(dbi, keyp, keylen, &set);
     xx = dbiCclose(dbi, NULL, 0);
 
-    switch (rc) {
-    default:
-    case -1:		/* error */
-    case 1:		/* not found */
-	break;
-    case 0:		/* success */
+    if (rc == 0) {	/* success */
+	int i;
 	for (i = 0; i < set->count; i++)
 	    set->recs[i].fpNum = fpNum;
 
@@ -1400,7 +1395,6 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi,
 		set->count * sizeof(*(mi->mi_set->recs)));
 	    mi->mi_set->count += set->count;
 	}
-	break;
     }
 
     if (set)
@@ -1476,16 +1470,10 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
 	    rc = dbiSearch(dbi, keyp, keylen, &set);
 	    xx = dbiCclose(dbi, NULL, 0);
 	}
-	switch (rc) {
-	default:
-	case -1:	/* error */
-	case 1:		/* not found */
+	if (rc)	{	/* error/not found */
 	    if (set)
 		dbiFreeIndexSet(set);
 	    return NULL;
-	    /*@notreached@*/ break;
-	case 0:		/* success */
-	    break;
 	}
     }
 
@@ -1530,19 +1518,14 @@ static inline int removeIndexEntry(dbiIndex dbi, const char * keyp,
     
     rc = dbiSearch(dbi, keyp, 0, &set);
 
-    switch (rc) {
-    case -1:			/* error */
-	rc = 1;
-	break;   /* error message already generated from dbindex.c */
-    case 1:			/* not found */
+    if (rc < 0)			/* not found */
 	rc = 0;
-	break;
-    case 0:			/* success */
-	if (dbiPruneSet(set, rec, 1, sizeof(*rec), 1))
-	    break;
-	if (dbiUpdateIndex(dbi, keyp, set))
+    else if (rc > 0)		/* error */
+	rc = 1;		/* error message already generated from dbindex.c */
+    else {			/* success */
+	if (!dbiPruneSet(set, rec, 1, sizeof(*rec), 1) &&
+	    dbiUpdateIndex(dbi, keyp, set))
 	    rc = 1;
-	break;
     }
 
     if (set) {
@@ -1697,20 +1680,16 @@ static inline int addIndexEntry(dbiIndex dbi, const char *index, dbiIndexItem re
 
     rc = dbiSearch(dbi, index, 0, &set);
 
-    switch (rc) {
-    default:
-    case -1:			/* error */
-	rc = 1;
-	break;
-    case 1:			/* not found */
-	rc = 0;
-	set = xcalloc(1, sizeof(*set));
-	/*@fallthrough@*/
-    case 0:			/* success */
+    if (rc > 0) {
+	rc = 1;			/* error */
+    } else {
+	if (rc < 0) {		/* not found */
+	    rc = 0;
+	    set = xcalloc(1, sizeof(*set));
+	}
 	dbiAppendSet(set, rec, 1, sizeof(*rec), 0);
 	if (dbiUpdateIndex(dbi, index, set))
 	    rc = 1;
-	break;
     }
 
     if (set) {

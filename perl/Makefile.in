@@ -155,6 +155,9 @@ __SSH = @__SSH@
 __STRIP = @__STRIP@
 __TAR = @__TAR@
 l = @l@
+libdb1 = @libdb1@
+libdb2 = @libdb2@
+libdb3 = @libdb3@
 testdir = @testdir@
 tmpdir = @tmpdir@
 varprefix = @varprefix@
@@ -228,7 +231,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pr $$/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \

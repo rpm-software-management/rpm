@@ -41,7 +41,7 @@ falloc.lo: falloc.c $(top_srcdir)/system.h $(top_srcdir)/rpmio/rpmio.h falloc.h
 db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 	for F in $*.o $*.lo ; do \
-	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb-3.0 ; \
+	    @__LD@ -r -o $${F}.o $${F} @libdb3@ ; \
 	    @__OBJCOPY@ `\
 		@__NM@ -g --defined-only $${F}.o | \
 		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
@@ -52,7 +52,7 @@ db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
 db2.lo: db2.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 	for F in $*.o $*.lo ; do \
-	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb ; \
+	    @__LD@ -r -o $${F}.o $${F} @libdb2@ ; \
 	    @__OBJCOPY@ `\
 		@__NM@ -g --defined-only $${F}.o | \
 		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
@@ -63,7 +63,7 @@ db2.lo: db2.c $(top_srcdir)/system.h rpmlib.h rpmdb.h
 db1.lo: db1.c falloc.lo $(top_srcdir)/system.h rpmlib.h rpmdb.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 	for F in $*.o $*.lo ; do \
-	    @__LD@ -r -o $${F}.o $${F} falloc.lo -L/usr/lib -ldb1 ; \
+	    @__LD@ -r -o $${F}.o $${F} falloc.lo @libdb1@ ; \
 	    @__OBJCOPY@ `\
 		@__NM@ -g --defined-only $${F}.o | \
 		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \

@@ -446,7 +446,6 @@ static int db_fini(dbiIndex dbi, const char * dbhome, const char * dbfile,
     DB_ENV * dbenv = dbi->dbi_dbenv;
 
 #if defined(__USE_DB3)
-    char **dbconfig = NULL;
     int rc;
 
     if (dbenv == NULL) {
@@ -466,7 +465,11 @@ static int db_fini(dbiIndex dbi, const char * dbhome, const char * dbfile,
 
 	xx = db_env_create(&dbenv, 0);
 	xx = cvtdberr(dbi, "db_env_create", rc, _debug);
-	xx = dbenv->remove(dbenv, dbhome, dbconfig, 0);
+#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 1
+	xx = dbenv->remove(dbenv, dbhome, 0);
+#else
+	xx = dbenv->remove(dbenv, dbhome, NULL, 0);
+#endif
 	xx = cvtdberr(dbi, "dbenv->remove", rc, _debug);
 
 	if (dbfile)
@@ -540,8 +543,12 @@ static int db_init(dbiIndex dbi, const char *dbhome, const char *dbfile,
  /* dbenv->set_tx_max(???) */
  /* dbenv->set_tx_recover(???) */
     if (dbi->dbi_no_fsync) {
+#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 1
+	xx = db_env_set_func_fsync(db3_fsync_disable);
+#else
 	xx = dbenv->set_func_fsync(dbenv, db3_fsync_disable);
-	xx = cvtdberr(dbi, "dbenv->set_func_fsync", xx, _debug);
+#endif
+	xx = cvtdberr(dbi, "db_env_set_func_fsync", xx, _debug);
     }
   }
 #else	/* __USE_DB3 */
@@ -554,7 +561,11 @@ static int db_init(dbiIndex dbi, const char *dbhome, const char *dbfile,
 #endif	/* __USE_DB3 */
 
 #if defined(__USE_DB3)
+#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 1
+    rc = dbenv->open(dbenv, dbhome, eflags, dbi->dbi_perms);
+#else
     rc = dbenv->open(dbenv, dbhome, NULL, eflags, dbi->dbi_perms);
+#endif
     rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
     if (rc)
 	goto errxit;
