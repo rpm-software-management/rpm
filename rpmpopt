@@ -1,14 +1,26 @@
-rpm alias provides --qf '[%{PROVIDES}\n]'
+rpm alias --provides --qf '[%{PROVIDES}\n]'
 
-rpm alias scripts --qf 'preinstall script:\n%{RPMTAG_PREIN}\npostinstall \
+rpm alias --scripts --qf 'preinstall script:\n%{RPMTAG_PREIN}\npostinstall \
 script:\n%{RPMTAG_POSTIN}\npreuninstall \
 script:\n%{RPMTAG_PREUN}\npostuninstall \
 script:\n%{RPMTAG_POSTUN}\nverify script:\n%{VERIFYSCRIPT}\n'
 
-rpm alias setperms -q --qf '[%{FILEMODES:octal} %{FILENAMES}\n]' \
+rpm alias --setperms -q --qf '[%{FILEMODES:octal} %{FILENAMES}\n]' \
 		   --pipe "sed 's/^.../chmod /' | sh"
 
-rpm alias setugids -q --qf \
+rpm alias --setugids -q --qf \
 		   '[chown %{FILEUSERNAME}:%{FILEGROUPNAME} %{FILENAMES}\n]' \
 		   --pipe "sh"
 
+rpm alias --requires -q --qf \
+	    "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]"
+rpm alias -R --requires
+
+rpm alias --info --qf 'Name        : %-27{NAME} Distribution: %{DISTRIBUTION}\
+Version     : %-27{VERSION}       Vendor: %{VENDOR}\
+Release     : %-27{RELEASE}   Build Date: %{BUILDTIME:date}\
+Install date: %-27{INSTALLTIME:date}   Build Host: %{BUILDHOST}\
+Group       : %-27{GROUP}   Source RPM: %{SOURCERPM}\
+Size        : %{SIZE}\
+Summary     : %{SUMMARY}\
+Description :\n%{DESCRIPTION}\n'
