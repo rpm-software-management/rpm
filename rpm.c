@@ -1,5 +1,4 @@
 #include <ctype.h>
-#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -476,7 +475,7 @@ int main(int argc, char ** argv) {
 	    { "replacepkgs", '\0', 0, &replacePackages, 0 },
 	    { "resign", '\0', 0, 0, GETOPT_RESIGN },
 	    { "requires", 'R', 0, 0, 'R' },
-	    { "root", 'r', POPT_ARG_STRING, 0, 'r' },
+	    { "root", 'r', POPT_ARG_STRING, &rootdir, 0 },
 	    { "short-circuit", '\0', 0, &shortCircuit, 0 },
 	    { "showrc", '\0', 0, 0, 0 },
 	    { "sign", '\0', 0, &signIt, 0 },
