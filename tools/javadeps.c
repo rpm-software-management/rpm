@@ -162,7 +162,7 @@ usage (void)
   printf("\n\n");
   printf("DESCRIPTION:\n\n");
   printf("List the dependencies or the fully qualified class names, of the \n"
-	 "classfiles listed on the command line. \n");
+	 "classfiles listed on the command line. \n\n");
   printf("OPTIONS:\n\n");
   printf("--requires  For each class files listed in the arguments,\n"
 	 " -r         print the list of class files that would be\n"
@@ -230,7 +230,7 @@ usage (void)
 	 "                  output of --provides.\n\n"
 	 "'RPM_Requires: '  This string lists additional requirements of\n"
 	 "                  the java class.  The string should be a white \n"
-	 "                  space ([\\t\v\\n\\r\\f\\ ]) separated list of \n"
+	 "                  space ([\\t   \v\\n\\r\\f\\ ]) separated list of \n"
 	 "                  dependency strings.  Each dependency string must\n"
 	 "                  be of the same format as would be valid in the \n"
 	 "                  Requires or Provides line of the specfile.  This\n"
@@ -243,7 +243,7 @@ usage (void)
 	 "assumed to be zero. \n\n"
 	 "");
   printf("EXAMPLES (Java Keywords): \n\n"
-	 "\t public static final String REVISION = \"$Revision: 2.6 $\";\n"
+	 "\t public static final String REVISION = \"$Revision: 2.7 $\";\n"
 	 "\t public static final String EPOCH = \"4\";\n"
 	 "\t public static final String REQUIRES = \"RPM_Requires: "
 	 "java(gnu.regexp.RE) java(com.ibm.site.util.Options)>=1.5\";\n"
