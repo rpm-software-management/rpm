@@ -143,24 +143,19 @@ static /*@only@*/ char * fflagsFormat(int_32 type, const void * data,
  * @param type		tag type
  * @param data		tag value
  * @param formatPrefix
- * @param padding
+ * @param padding	(unused)
  * @param element	(unused)
  * @return		formatted string
  */
 static /*@only@*/ char * armorFormat(int_32 type, const void * data, 
-		/*@unused@*/ char * formatPrefix, int padding, int element)
+		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
+		int element)
 	/*@*/
 {
     const char * enc;
     const unsigned char * s;
     size_t ns;
     int atype;
-#ifdef	DYING
-    char * t;
-    char * val;
-    size_t nt;
-    int lc;
-#endif
 
     switch (type) {
     case RPM_BIN_TYPE:
@@ -186,53 +181,8 @@ static /*@only@*/ char * armorFormat(int_32 type, const void * data,
 	/*@notreached@*/ break;
     }
 
-#ifdef	DYING
-    nt = ((ns + 2) / 3) * 4;
-    /*@-globs@*/
-    /* Add additional bytes necessary for eol string(s). */
-    if (b64encode_chars_per_line > 0 && b64encode_eolstr != NULL) {
-	lc = (nt + b64encode_chars_per_line - 1) / b64encode_chars_per_line;
-       if (((nt + b64encode_chars_per_line - 1) % b64encode_chars_per_line) != 0)
-        ++lc;
-	nt += lc * strlen(b64encode_eolstr);
-    }
-    /*@=globs@*/
-
-    nt += 512;	/* XXX slop for armor and crc */
-
-/*@-boundswrite@*/
-    val = t = xmalloc(nt + padding + 1);
-    *t = '\0';
-    t = stpcpy(t, "-----BEGIN PGP ");
-    t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
-    /*@-globs@*/
-    t = stpcpy( stpcpy(t, "-----\nVersion: rpm-"), RPMVERSION);
-    /*@=globs@*/
-    t = stpcpy(t, " (beecrypt-2.2.0)\n\n");
-
-    if ((enc = b64encode(s, ns)) != NULL) {
-	t = stpcpy(t, enc);
-	enc = _free(enc);
-	if ((enc = b64crc(s, ns)) != NULL) {
-	    *t++ = '=';
-	    t = stpcpy(t, enc);
-	    enc = _free(enc);
-	}
-    }
-	
-    t = stpcpy(t, "-----END PGP ");
-    t = stpcpy(t, pgpValStr(pgpArmorTbl, atype));
-    t = stpcpy(t, "-----\n");
-/*@=boundswrite@*/
-
-    /*@-branchstate@*/
-    if (s != data) s = _free(s);
-    /*@=branchstate@*/
-
-    return val;
-#else
+    /* XXX this doesn't use padding directly, assumes enough slop in retval. */
     return pgpArmorWrap(atype, s, ns);
-#endif
 }
 
 /**
@@ -399,11 +349,12 @@ static /*@only@*/ char * depflagsFormat(int_32 type, const void * data,
 {
     char * val;
     char buf[10];
-    int anint = *((int_32 *) data);
+    int anint;
 
     if (type != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
+	anint = *((int_32 *) data);
 	buf[0] = '\0';
 
 /*@-boundswrite@*/

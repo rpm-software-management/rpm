@@ -1735,7 +1735,13 @@ static int recurseDir(FileList fl, const char * diskURL)
  * @return		0 on success
  */
 static int processPubkeyFile(Package pkg, FileList fl, const char * fileURL)
-	/*@*/
+	/*@globals check_fileList, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies pkg->header, *fl, fl->processingFailed,
+		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
+		fl->totalFileSize, fl->fileCount,
+		check_fileList, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
 {
     const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
     const char * fn = NULL;
@@ -2046,7 +2052,9 @@ static int processPackageFiles(Spec spec, Package pkg,
 	    specialDoc = xstrdup(fileName);
 	    dupAttrRec(&fl.cur_ar, specialDocAttrRec);
 	} else if (fl.currentFlags & RPMFILE_PUBKEY) {
+/*@-nullstate@*/	/* FIX: pkg->fileFile might be NULL */
 	    (void) processPubkeyFile(pkg, &fl, fileName);
+/*@=nullstate@*/
 	} else {
 /*@-nullstate@*/	/* FIX: pkg->fileFile might be NULL */
 	    (void) processBinaryFile(pkg, &fl, fileName);
@@ -2365,7 +2373,9 @@ static int checkFiles(StringBuf fileList)
 
     rpmMessage(RPMMESS_NORMAL, _("Checking for unpackaged file(s): %s\n"), s);
 
+/*@-boundswrite@*/
     rc = rpmfcExec(av_ckfile, fileList, &sb_stdout, 0);
+/*@=boundswrite@*/
     if (rc < 0)
 	goto exit;
     

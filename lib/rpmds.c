@@ -269,6 +269,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 /*@-boundswrite@*/
     N = (const char **) t;
     t += sizeof(*N);
+    *t = '\0';
     N[0] = t;
     t = stpcpy(t, n);
 
@@ -276,12 +277,11 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
 		(ep ? 20 : 0) + strlen(v) + strlen(r) + sizeof("-"));
     EVR = (const char **) t;
     t += sizeof(*EVR);
+    *t = '\0';
     EVR[0] = t;
     if (ep) {
 	sprintf(t, "%d:", *ep);
-/*@-compdef@*/
 	t += strlen(t);
-/*@=compdef@*/
     }
     t = stpcpy( stpcpy( stpcpy( t, v), "-"), r);
 /*@=boundswrite@*/
@@ -583,7 +583,6 @@ static rpmds rpmdsDup(const rpmds ods)
 
 }
 
-/*@-bounds@*/
 int rpmdsFind(rpmds ds, rpmds ods)
 {
     int comparison;
@@ -611,9 +610,7 @@ int rpmdsFind(rpmds ds, rpmds ods)
     }
     return -1;
 }
-/*@=bounds@*/
 
-/*@-bounds@*/
 int rpmdsMerge(rpmds * dsp, rpmds ods)
 {
     rpmds ds;
@@ -685,7 +682,6 @@ ods->i = save;
 /*@=nullderef@*/
     return 0;
 }
-/*@=bounds@*/
 
 /**
  * Split EVR into epoch, version, and release components.
@@ -700,6 +696,7 @@ void parseEVR(char * evr,
 		/*@exposed@*/ /*@out@*/ const char ** vp,
 		/*@exposed@*/ /*@out@*/ const char ** rp)
 	/*@modifies *ep, *vp, *rp @*/
+	/*@requires maxSet(ep) >= 0 /\ maxSet(vp) >= 0 /\ maxSet(rp) >= 0 @*/
 {
     const char *epoch;
     const char *version;		/* assume only version is present */
@@ -707,7 +704,6 @@ void parseEVR(char * evr,
     char *s, *se;
 
     s = evr;
-/*@-boundsread@*/
     while (*s && xisdigit(*s)) s++;	/* s points to epoch terminator */
     se = strrchr(s, '-');		/* se points to version terminator */
 
@@ -722,7 +718,6 @@ void parseEVR(char * evr,
 	epoch = NULL;	/* XXX disable epoch compare if missing */
 	version = evr;
     }
-/*@=boundsread@*/
     if (se) {
 /*@-boundswrite@*/
 	*se++ = '\0';
@@ -732,11 +727,9 @@ void parseEVR(char * evr,
 	release = NULL;
     }
 
-/*@-boundswrite@*/
     if (ep) *ep = epoch;
     if (vp) *vp = version;
     if (rp) *rp = release;
-/*@=boundswrite@*/
 }
 
 int rpmdsCompare(const rpmds A, const rpmds B)
@@ -768,10 +761,12 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     }
 
     /* Both AEVR and BEVR exist. */
+/*@-boundswrite@*/
     aEVR = xstrdup(A->EVR[A->i]);
     parseEVR(aEVR, &aE, &aV, &aR);
     bEVR = xstrdup(B->EVR[B->i]);
     parseEVR(bEVR, &bE, &bV, &bR);
+/*@=boundswrite@*/
 
     /* Compare {A,B} [epoch:]version[-release] */
     sense = 0;

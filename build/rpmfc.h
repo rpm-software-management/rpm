@@ -109,7 +109,8 @@ int rpmfcExec(ARGV_t av, StringBuf sb_stdin, /*@out@*/ StringBuf * sb_stdoutp,
 		int failnonzero)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies *sb_stdoutp, rpmGlobalMacroContext,
-		fileSystem, internalState @*/;
+		fileSystem, internalState @*/
+        /*@requires maxSet(sb_stdoutp) >= 0 @*/;
 
 /**
  * Return file color given file(1) string.

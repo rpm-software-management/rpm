@@ -2748,7 +2748,7 @@ static int getExtension(Header h, headerTagTagFunction fn,
 		/*@out@*/ hPTR_t * data,
 		/*@out@*/ hCNT_t countptr,
 		rpmec ec)
-	/*@modifies *typeptr, *data, *countptr, ext @*/
+	/*@modifies *typeptr, *data, *countptr, ec @*/
 	/*@requires maxSet(typeptr) >= 0 /\ maxSet(data) >= 0
 		/\ maxSet(countptr) >= 0 @*/
 {
@@ -2785,7 +2785,7 @@ static char * formatValue(sprintfTag tag, Header h,
 		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies ec, *valp, *vallenp, *allocedp, *errmsg @*/
 	/*@requires maxSet(valp) >= 0 /\ maxSet(vallenp) >= 0
-		/\ maxSet(allocedp) >= 0 @*/
+		/\ maxSet(allocedp) >= 0 /\ maxSet(errmsg) >= 0 @*/
 {
     char * val = NULL;
     int need = 0;
@@ -2801,31 +2801,36 @@ static char * formatValue(sprintfTag tag, Header h,
     headerSprintfExtension ext;
 
     memset(buf, 0, sizeof(buf));
-    /*@-branchstate@*/
     if (tag->ext) {
-/*@-boundswrite@*/
+/*@-boundswrite -branchstate @*/
 	if (getExtension(h, tag->ext, &type, &data, &count, ec + tag->extNum))
 	{
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
 	    data = "(none)";
 	}
-/*@=boundswrite@*/
+/*@=boundswrite =branchstate @*/
     } else {
-/*@-boundswrite@*/
+/*@-boundswrite -branchstate @*/
 	if (!headerGetEntry(h, tag->tag, &type, (void **)&data, &count)) {
 	    count = 1;
 	    type = RPM_STRING_TYPE;	
 	    data = "(none)";
 	}
+/*@=boundswrite =branchstate @*/
 
 	/* XXX this test is unnecessary, array sizes are checked */
 	switch (type) {
 	default:
 	    if (element >= count) {
+		/*@-modobserver -observertrans@*/
 		data = headerFreeData(data, type);
+		/*@=modobserver =observertrans@*/
+
+		/*@-observertrans -readonlytrans@*/
 		if (errmsg)
-		    errmsg = _("(index out of range)");
+		    *errmsg = _("(index out of range)");
+		/*@=observertrans =readonlytrans@*/
 		return NULL;
 	    }
 	    break;
@@ -2833,10 +2838,8 @@ static char * formatValue(sprintfTag tag, Header h,
 	case RPM_STRING_TYPE:
 	    break;
 	}
-/*@=boundswrite@*/
 	datafree = 1;
     }
-    /*@=branchstate@*/
 
     if (tag->arrayCount) {
 	/*@-branchstate -observertrans -modobserver@*/
@@ -2978,10 +2981,10 @@ static char * formatValue(sprintfTag tag, Header h,
     }
     /*@=branchstate@*/
 
-    /*@-observertrans -modobserver@*/
+    /*@-branchstate -observertrans -modobserver@*/
     if (datafree)
 	data = headerFreeData(data, type);
-    /*@=observertrans =modobserver@*/
+    /*@=branchstate =observertrans =modobserver@*/
 
     /*@-branchstate@*/
     if (val && need > 0) {
@@ -3027,7 +3030,7 @@ static char * singleSprintf(Header h, sprintfToken token,
 		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies h, ec, *valp, *vallenp, *allocedp, *errmsg @*/
 	/*@requires maxSet(valp) >= 0 /\ maxSet(vallenp) >= 0
-		/\ maxSet(allocedp) >= 0 @*/
+		/\ maxSet(allocedp) >= 0 /\ maxSet(errmsg) >= 0 @*/
 {
     char * t, * te;
     int i, j;
@@ -3127,14 +3130,16 @@ static char * singleSprintf(Header h, sprintfToken token,
 	    if (numElements > 1 && count != numElements)
 	    switch (type) {
 	    default:
+		/*@-observertrans -readonlytrans@*/
 		if (errmsg)
 		    *errmsg =
 			_("array iterator used with different sized arrays");
+		/*@=observertrans =readonlytrans@*/
 		return NULL;
-		/*@notreached@*/ break;
+		/*@notreached@*/ /*@switchbreak@*/ break;
 	    case RPM_BIN_TYPE:
 	    case RPM_STRING_TYPE:
-		break;
+		/*@switchbreak@*/ break;
 	    }
 	    if (count > numElements)
 		numElements = count;

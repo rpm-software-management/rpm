@@ -497,6 +497,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 			(void **) &validRelocations, &numValid))
 	numValid = 0;
 
+assert(p != NULL);
     numRelocations = 0;
     if (p->relocs)
 	while (p->relocs[numRelocations].newPath ||
