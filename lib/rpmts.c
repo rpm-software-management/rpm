@@ -311,7 +311,7 @@ int rpmtsAvailable(rpmts ts, const rpmds ds)
 /*@=nullstate@*/
 }
 
-rpmps rpmtsGetProblems(rpmts ts)
+rpmps rpmtsProblems(rpmts ts)
 {
     rpmps ps = NULL;
     if (ts) {
@@ -326,13 +326,13 @@ rpmps rpmtsGetProblems(rpmts ts)
 void rpmtsClean(rpmts ts)
 {
     if (ts) {
-	rpmtei pi; rpmte p;
+	rpmtsi pi; rpmte p;
 
 	/* Clean up after dependency checks. */
-	pi = rpmteiInit(ts);
-	while ((p = rpmteiNext(pi, 0)) != NULL)
+	pi = rpmtsiInit(ts);
+	while ((p = rpmtsiNext(pi, 0)) != NULL)
 	    rpmteCleanDS(p);
-	pi = rpmteiFree(pi);
+	pi = rpmtsiFree(pi);
 
 	ts->addedPackages = rpmalFree(ts->addedPackages);
 	ts->numAddedPackages = 0;
@@ -353,7 +353,7 @@ void rpmtsClean(rpmts ts)
 rpmts rpmtsFree(rpmts ts)
 {
     if (ts) {
-	rpmtei pi; rpmte p;
+	rpmtsi pi; rpmte p;
 	int oc;
 
 	(void) rpmtsUnlink(ts, "tsCreate");
@@ -379,12 +379,12 @@ rpmts rpmtsFree(rpmts ts)
 	ts->rootDir = _free(ts->rootDir);
 	ts->currDir = _free(ts->currDir);
 
-	for (pi = rpmteiInit(ts), oc = 0; (p = rpmteiNext(pi, 0)) != NULL; oc++) {
+	for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
 /*@-type -unqualifiedtrans @*/
 	    ts->order[oc] = rpmteFree(ts->order[oc]);
 /*@=type =unqualifiedtrans @*/
 	}
-	pi = rpmteiFree(pi);
+	pi = rpmtsiFree(pi);
 /*@-type +voidabstract @*/	/* FIX: double indirection */
 	ts->order = _free(ts->order);
 /*@=type =voidabstract @*/
@@ -678,7 +678,7 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     if (fc <= 0)
 	return;
 
-    ps = rpmtsGetProblems(ts);
+    ps = rpmtsProblems(ts);
     for (i = 0; i < ts->filesystemCount; i++, dsi++) {
 
 	/* XXX Avoid FAT and other file systems that have not inodes. */
@@ -775,12 +775,12 @@ int rpmtsGetKeys(const rpmts ts, fnpyKey ** ep, int * nep)
 
     if (nep) *nep = ts->orderCount;
     if (ep) {
-	rpmtei pi;	rpmte p;
+	rpmtsi pi;	rpmte p;
 	fnpyKey * e;
 
 	*ep = e = xmalloc(ts->orderCount * sizeof(*e));
-	pi = rpmteiInit(ts);
-	while ((p = rpmteiNext(pi, 0)) != NULL) {
+	pi = rpmtsiInit(ts);
+	while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	    switch (rpmteType(p)) {
 	    case TR_ADDED:
 		/*@-dependenttrans@*/
@@ -794,7 +794,7 @@ int rpmtsGetKeys(const rpmts ts, fnpyKey ** ep, int * nep)
 	    }
 	    e++;
 	}
-	pi = rpmteiFree(pi);
+	pi = rpmtsiFree(pi);
     }
     return rc;
 }

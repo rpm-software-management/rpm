@@ -494,7 +494,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
 
-     (void) rpmtsAddPackage(ts, h, NULL, 0, NULL);
+     (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
     fi = rpmfiNew(ts, fi, h, RPMTAG_BASENAMES, scareMem);
     h = headerFree(h, "InstallSourcePackage");

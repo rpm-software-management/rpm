@@ -4,25 +4,13 @@
 
 #include "system.h"
 
-#include <alloca.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <time.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <glob.h>	/* XXX rpmio.h */
-#include <dirent.h>	/* XXX rpmio.h */
-#include <locale.h>
-#include <time.h>
-
 #include "Python.h"
-#include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 
 #include "rpmdb.h"
 #include "rpmps.h"
 
+#include "rpmte.h"
 #define	_RPMTS_INTERNAL	/* XXX for ts->rdb */
 #include "rpmts.h"
 
@@ -35,12 +23,12 @@
 #include "header-py.h"
 #include "rpmal-py.h"
 #include "rpmds-py.h"
+#include "rpmfd-py.h"
 #include "rpmfi-py.h"
+#include "rpmte-py.h"
 #include "rpmts-py.h"
 
 #include "debug.h"
-
-extern int _rpmio_debug;
 
 #ifdef __LCLINT__
 #undef	PyObject_HEAD
@@ -360,110 +348,6 @@ static PyObject * setVerbosity (PyObject * self, PyObject * args)
 
 /**
  */
-typedef struct FDlist_t FDlist;
-
-/**
- */
-struct FDlist_t {
-    FILE *f;
-    FD_t fd;
-    char *note;
-    FDlist *next;
-} ;
-
-/**
- */
-static FDlist *fdhead = NULL;
-
-/**
- */
-static FDlist *fdtail = NULL;
-
-/**
- */
-static int closeCallback(FILE * f)
-{
-    FDlist *node, *last;
-
-    printf ("close callback on %p\n", f);
-    
-    node = fdhead;
-    last = NULL;
-    while (node) {
-        if (node->f == f)
-            break;
-        last = node;
-        node = node->next;
-    }
-    if (node) {
-        if (last)
-            last->next = node->next;
-        else
-            fdhead = node->next;
-        printf ("closing %s %p\n", node->note, node->fd);
-	free (node->note);
-        node->fd = fdLink(node->fd, "closeCallback");
-        Fclose (node->fd);
-        while (node->fd)
-            node->fd = fdFree(node->fd, "closeCallback");
-        free (node);
-    }
-    return 0; 
-}
-
-/**
- */
-static PyObject * doFopen(PyObject * self, PyObject * args)
-{
-    char * path, * mode;
-    FDlist *node;
-    
-    if (!PyArg_ParseTuple(args, "ss", &path, &mode))
-	return NULL;
-    
-    node = malloc (sizeof(FDlist));
-    
-    node->fd = Fopen(path, mode);
-    node->fd = fdLink(node->fd, "doFopen");
-    node->note = strdup (path);
-
-    if (!node->fd) {
-	PyErr_SetFromErrno(pyrpmError);
-        free (node);
-	return NULL;
-    }
-    
-    if (Ferror(node->fd)) {
-	const char *err = Fstrerror(node->fd);
-        free(node);
-	if (err) {
-	    PyErr_SetString(pyrpmError, err);
-	    return NULL;
-	}
-    }
-    node->f = fdGetFp(node->fd);
-    printf ("opening %s fd = %p f = %p\n", node->note, node->fd, node->f);
-    if (!node->f) {
-	PyErr_SetString(pyrpmError, "FD_t has no FILE*");
-        free(node);
-	return NULL;
-    }
-
-    node->next = NULL;
-    if (!fdhead) {
-	fdhead = fdtail = node;
-    } else if (fdtail) {
-        fdtail->next = node;
-    } else {
-        fdhead = node;
-    }
-    fdtail = node;
-    
-    return PyFile_FromFile (node->f, path, mode, closeCallback);
-}
-
-/**
- */
 static PyMethodDef rpmModuleMethods[] = {
     { "TransactionSet", (PyCFunction) rpmts_Create, METH_VARARGS,
 "rpm.TransactionSet([rootDir, [db]]) -> ts\n\
@@ -503,8 +387,6 @@ static PyMethodDef rpmModuleMethods[] = {
     { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS,
 	NULL },
     { "checksig", (PyCFunction) checkSig, METH_VARARGS,
-	NULL },
-    { "Fopen", (PyCFunction) doFopen, METH_VARARGS,
 	NULL },
     { "setVerbosity", (PyCFunction) setVerbosity, METH_VARARGS,
 	NULL },
@@ -555,6 +437,10 @@ void initrpm(void)
     Py_INCREF(&rpmds_Type);
     PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);
 
+    rpmfd_Type.ob_type = &PyType_Type;
+    Py_INCREF(&rpmfd_Type);
+    PyModule_AddObject(m, "fd", (PyObject *) &rpmfd_Type);
+
     rpmfi_Type.ob_type = &PyType_Type;
     Py_INCREF(&rpmfi_Type);
     PyModule_AddObject(m, "fi", (PyObject *) &rpmfi_Type);
@@ -566,6 +452,10 @@ void initrpm(void)
     rpmmi_Type.ob_type = &PyType_Type;
     Py_INCREF(&rpmmi_Type);
     PyModule_AddObject(m, "mi", (PyObject *) &rpmmi_Type);
+
+    rpmte_Type.ob_type = &PyType_Type;
+    Py_INCREF(&rpmte_Type);
+    PyModule_AddObject(m, "te", (PyObject *) &rpmte_Type);
 
     rpmts_Type.ob_type = &PyType_Type;
     Py_INCREF(&rpmts_Type);
@@ -686,14 +576,8 @@ void initrpm(void)
     REGISTER_ENUM(RPMPROB_DISKNODES);
     REGISTER_ENUM(RPMPROB_BADPRETRANS);
 
-#ifdef	DEAD
-    REGISTER_ENUM(CHECKSIG_PGP);	/* XXX use VERIFY_SIGNATURE */
-    REGISTER_ENUM(CHECKSIG_GPG);	/* XXX use VERIFY_SIGNATURE */
-    REGISTER_ENUM(CHECKSIG_MD5);	/* XXX use VERIFY_DIGEST */
-#else
     REGISTER_ENUM(VERIFY_DIGEST);
     REGISTER_ENUM(VERIFY_SIGNATURE);
-#endif
 
     REGISTER_ENUM(RPMLOG_EMERG);
     REGISTER_ENUM(RPMLOG_ALERT);
@@ -709,6 +593,8 @@ void initrpm(void)
     REGISTER_ENUM(RPMMIRE_REGEX);
     REGISTER_ENUM(RPMMIRE_GLOB);
 
+    PyDict_SetItemString(d, "RPMAL_NOMATCH", o=PyInt_FromLong( (long)RPMAL_NOMATCH ));
+    Py_DECREF(o);
 }
 
 /*@}*/

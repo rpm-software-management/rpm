@@ -14,7 +14,8 @@ INCLUDES = -I. \
 	@INCPATH@
 
 noinst_HEADERS = db-py.h hash.h header-py.h \
-	rpmal-py.h rpmds-py.h rpmfi-py.h rpmts-py.h upgrade.h
+	rpmal-py.h rpmds-py.h rpmfd-py.h rpmfi-py.h rpmte-py.h rpmts-py.h \
+	upgrade.h
 
 mylibs= \
 	$(top_builddir)/lib/.libs/librpm.so \
@@ -35,7 +36,8 @@ poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
 librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c \
-	db-py.c header-py.c rpmal-py.c rpmds-py.c rpmfi-py.c rpmts-py.c
+	db-py.c header-py.c rpmal-py.c rpmds-py.c rpmfd-py.c rpmfi-py.c \
+	rpmte-py.c rpmts-py.c
 
 rpmmodule.so$(EXEEXT): $(librpmmodule_la_OBJECTS)
 	$(CC) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)

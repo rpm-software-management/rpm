@@ -454,7 +454,7 @@ restart:
 	    }
 
 	    /*@-abstract@*/
-	    rc = rpmtsAddPackage(ts, eiu->h, (fnpyKey)fileName,
+	    rc = rpmtsAddInstallElement(ts, eiu->h, (fnpyKey)fileName,
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
 			relocations);
 	    /*@=abstract@*/
@@ -537,7 +537,7 @@ restart:
 	    stopInstall = 1;
 	}
 
-	ps = rpmtsGetProblems(ts);
+	ps = rpmtsProblems(ts);
 	if (!stopInstall && ps) {
 	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
 	    printDepProblems(stderr, ps);
@@ -579,7 +579,7 @@ restart:
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
 
 	rc = rpmtsRun(ts, NULL, probFilter);
-	ps = rpmtsGetProblems(ts);
+	ps = rpmtsProblems(ts);
 
 	if (rc < 0) {
 	    eiu->numFailed += eiu->numRPMS;
@@ -679,7 +679,7 @@ int rpmErase(rpmts ts,
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 		if (recOffset) {
-		    (void) rpmtsRemovePackage(ts, h, recOffset);
+		    (void) rpmtsAddEraseElement(ts, h, recOffset);
 		    numPackages++;
 		}
 	    }
@@ -694,7 +694,7 @@ int rpmErase(rpmts ts,
 	    stopUninstall = 1;
 	}
 
-	ps = rpmtsGetProblems(ts);
+	ps = rpmtsProblems(ts);
 	if (!stopUninstall && ps) {
 	    rpmMessage(RPMMESS_ERROR, _("removing these packages would break "
 			      "dependencies:\n"));
@@ -708,7 +708,7 @@ int rpmErase(rpmts ts,
     if (!stopUninstall) {
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_REVERSE));
 	numFailed += rpmtsRun(ts, NULL, 0);
-	ps = rpmtsGetProblems(ts);
+	ps = rpmtsProblems(ts);
 	ps = rpmpsFree(ps);
     }
 
@@ -1013,7 +1013,7 @@ int rpmRollback(rpmts ts,
 
 	    rpmMessage(RPMMESS_DEBUG, "\t+++ %s\n", rp->key);
 
-	    rc = rpmtsAddPackage(ts, rp->h, (fnpyKey)rp->key,
+	    rc = rpmtsAddInstallElement(ts, rp->h, (fnpyKey)rp->key,
 			       0, ia->relocations);
 	    if (rc != 0)
 		goto exit;
@@ -1038,7 +1038,7 @@ int rpmRollback(rpmts ts,
 	    rpmMessage(RPMMESS_DEBUG,
 			"\t--- rpmdb instance #%u\n", ip->instance);
 
-	    rc = rpmtsRemovePackage(ts, ip->instance);
+	    rc = rpmtsAddEraseElement(ts, ip->instance);
 	    if (rc != 0)
 		goto exit;
 
@@ -1065,7 +1065,7 @@ int rpmRollback(rpmts ts,
 			packagesTotal, ctime(&tid));
 
 	rc = rpmtsCheck(ts);
-	ps = rpmtsGetProblems(ts);
+	ps = rpmtsProblems(ts);
 	if (rc != 0 && ps) {
 	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
 	    printDepProblems(stderr, ps);
@@ -1079,7 +1079,7 @@ int rpmRollback(rpmts ts,
 	    goto exit;
 
 	rc = rpmtsRun(ts, NULL, (ia->probFilter|RPMPROB_FILTER_OLDPACKAGE));
-	ps = rpmtsGetProblems(ts);
+	ps = rpmtsProblems(ts);
 	if (rc > 0)
 	    rpmpsPrint(stderr, ps);
 	ps = rpmpsFree(ps);

@@ -104,9 +104,11 @@ struct rpmts_s {
     rpmal addedPackages;	/*!< Set of packages being installed. */
     int numAddedPackages;	/*!< No. added package instances. */
 
+#ifndef	DYING
 /*@only@*/
     rpmal availablePackages;	/*!< Universe of available packages. */
     int numAvailablePackages;	/*!< No. available package instances. */
+#endif
 
 /*@owned@*/
     rpmte * order;		/*!< Packages sorted by dependencies. */
@@ -288,12 +290,12 @@ int rpmtsAvailable(rpmts ts, const rpmds ds)
 	/*@modifies ts, fileSystem @*/;
 
 /**
- * Return (and clear) current transaction set problems.
+ * Return current transaction set problems.
  * @param ts		transaction set
  * @return		current problem set (or NULL)
  */
 /*@null@*/
-rpmps rpmtsGetProblems(rpmts ts)
+rpmps rpmtsProblems(rpmts ts)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts
@@ -544,12 +546,13 @@ rpmts rpmtsCreate(void)
  * @param relocs	package file relocations
  * @return		0 on success, 1 on I/O error, 2 needs capabilities
  */
-int rpmtsAddPackage(rpmts ts, Header h,
+int rpmtsAddInstallElement(rpmts ts, Header h,
 		/*@exposed@*/ /*@null@*/ const fnpyKey key, int upgrade,
 		/*@null@*/ rpmRelocation * relocs)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, h, fileSystem, internalState @*/;
 
+#ifdef	DYING
 /** \ingroup rpmts
  * Add package to universe of possible packages to install in transaction set.
  * @warning The key parameter is non-functional.
@@ -561,6 +564,7 @@ int rpmtsAddPackage(rpmts ts, Header h,
 void rpmtsAvailablePackage(rpmts ts, Header h,
 		/*@exposed@*/ /*@null@*/ fnpyKey key)
 	/*@modifies h, ts @*/;
+#endif
 
 /** \ingroup rpmts
  * Add package to be erased to transaction set.
@@ -569,7 +573,7 @@ void rpmtsAvailablePackage(rpmts ts, Header h,
  * @param dboffset	rpm database instance
  * @return		0 on success
  */
-int rpmtsRemovePackage(rpmts ts, Header h, int dboffset)
+int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 	/*@modifies ts, h @*/;
 
 /** \ingroup rpmts

@@ -19,11 +19,11 @@
 #include "debug.h"
 
 /*@unchecked@*/
-int _te_debug = 0;
+int _rpmte_debug = 0;
 
 /*@access alKey @*/
-/*@access rpmtei @*/
 /*@access rpmte @*/
+/*@access rpmtsi @*/
 /*@access rpmts @*/
 
 void rpmteCleanDS(rpmte te)
@@ -419,72 +419,72 @@ rpmfi rpmteFI(rpmte te, rpmTag tag)
     /*@=compdef =refcounttrans =retalias =retexpose =usereleased @*/
 }
 
-int rpmteiGetOc(rpmtei tei)
+int rpmtsiOc(rpmtsi tsi)
 {
-    return tei->ocsave;
+    return tsi->ocsave;
 }
 
-rpmtei XrpmteiFree(/*@only@*//*@null@*/ rpmtei tei,
+rpmtsi XrpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi,
 		const char * fn, unsigned int ln)
 {
-    if (tei)
-	tei->ts = rpmtsUnlink(tei->ts, "tsIterator");
+    if (tsi)
+	tsi->ts = rpmtsUnlink(tsi->ts, "rpmtsiInit");
 /*@-modfilesys@*/
-if (_te_debug)
-fprintf(stderr, "*** tei %p -- %s:%d\n", tei, fn, ln);
+if (_rpmte_debug)
+fprintf(stderr, "*** tsi %p -- %s:%d\n", tsi, fn, ln);
 /*@=modfilesys@*/
-    return _free(tei);
+    return _free(tsi);
 }
 
-rpmtei XrpmteiInit(rpmts ts, const char * fn, unsigned int ln)
+rpmtsi XrpmtsiInit(rpmts ts, const char * fn, unsigned int ln)
 {
-    rpmtei tei = NULL;
+    rpmtsi tsi = NULL;
 
-    tei = xcalloc(1, sizeof(*tei));
-    tei->ts = rpmtsLink(ts, "rpmtei");
-    tei->reverse = ((rpmtsFlags(ts) & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
-    tei->oc = (tei->reverse ? (rpmtsNElements(ts) - 1) : 0);
-    tei->ocsave = tei->oc;
+    tsi = xcalloc(1, sizeof(*tsi));
+    tsi->ts = rpmtsLink(ts, "rpmtsi");
+    tsi->reverse = ((rpmtsFlags(ts) & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
+    tsi->oc = (tsi->reverse ? (rpmtsNElements(ts) - 1) : 0);
+    tsi->ocsave = tsi->oc;
 /*@-modfilesys@*/
-if (_te_debug)
-fprintf(stderr, "*** tei %p ++ %s:%d\n", tei, fn, ln);
+if (_rpmte_debug)
+fprintf(stderr, "*** tsi %p ++ %s:%d\n", tsi, fn, ln);
 /*@=modfilesys@*/
-    return tei;
+    return tsi;
 }
 
 /**
  * Return next transaction element.
- * @param tei		transaction element iterator
+ * @param tsi		transaction element iterator
  * @return		transaction element, NULL on termination
  */
 static /*@dependent@*/ /*@null@*/
-rpmte rpmteiNextIterator(rpmtei tei)
-	/*@modifies tei @*/
+rpmte rpmtsiNextElement(rpmtsi tsi)
+	/*@modifies tsi @*/
 {
     rpmte te = NULL;
     int oc = -1;
 
-    if (tei == NULL || tei->ts == NULL || rpmtsNElements(tei->ts) <= 0)
+    if (tsi == NULL || tsi->ts == NULL || rpmtsNElements(tsi->ts) <= 0)
 	return te;
 
-    if (tei->reverse) {
-	if (tei->oc >= 0)			oc = tei->oc--;
+    if (tsi->reverse) {
+	if (tsi->oc >= 0)			oc = tsi->oc--;
     } else {
-    	if (tei->oc < rpmtsNElements(tei->ts))	oc = tei->oc++;
+    	if (tsi->oc < rpmtsNElements(tsi->ts))	oc = tsi->oc++;
     }
-    tei->ocsave = oc;
+    tsi->ocsave = oc;
 /*@-branchstate@*/
     if (oc != -1)
-	te = rpmtsElement(tei->ts, oc);
+	te = rpmtsElement(tsi->ts, oc);
 /*@=branchstate@*/
     return te;
 }
 
-rpmte rpmteiNext(rpmtei tei, rpmElementType type)
+rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
 {
     rpmte te;
 
-    while ((te = rpmteiNextIterator(tei)) != NULL) {
+    while ((te = rpmtsiNextElement(tsi)) != NULL) {
 	if (type == 0 || (te->type & type) != 0)
 	    break;
     }

@@ -6,6 +6,8 @@
  * Structure(s) used for dependency tag sets.
  */
 
+/**
+ */
 /*@unchecked@*/
 extern int _rpmds_debug;
 

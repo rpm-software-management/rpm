@@ -485,7 +485,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 
 	    /* XXX actions check prevents problem from being appended twice. */
 	    if (j == numValid && !allowBadRelocate && actions) {
-		rpmps ps = rpmtsGetProblems(ts);
+		rpmps ps = rpmtsProblems(ts);
 		rpmpsAppend(ps, RPMPROB_BADRELOCATE,
 			rpmteNEVR(p), rpmteKey(p),
 			relocations[i].oldPath, NULL, NULL, 0);

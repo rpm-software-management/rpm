@@ -1,19 +1,26 @@
 /** \ingroup python
- * \file python/rpmmodule.c
+ * \file python/rpmts-py.c
  */
 
 #include "system.h"
 
 #include "Python.h"
 
+#include <rpmlib.h>
 #include "rpmdb.h"
 #include "rpmps.h"
 
-#define	_RPMTS_INTERNAL	/* XXX for ts->rdb */
+#include "rpmal.h"
+#include "rpmds.h"
+#include "rpmfi.h"
+#include "rpmte.h"
+
+#define	_RPMTS_INTERNAL	/* XXX for ts->rdb, ts->availablePackage */
 #include "rpmts.h"
 
 #include "db-py.h"
 #include "header-py.h"
+#include "rpmte-py.h"
 #include "rpmts-py.h"
 
 #include "debug.h"
@@ -33,8 +40,8 @@
  *
  * A rpm.ts object has the following methods:
  *
- * - add(header,data,mode)	Add a binary package to a transaction set.
- * @param header the header to be added
+ * - addInstall(hdr,data,mode)  Add an install element to a transaction set.
+ * @param hdr	the header to be added
  * @param data	user data that will be passed to the transaction callback
  *		during transaction execution
  * @param mode 	optional argument that specifies if this package should
@@ -43,13 +50,13 @@
  *		dependencies but no action should be performed with it
  *		('a').
  *
- * - remove
+ * - addErase(name) Add an erase element to a transaction set.
+ * @param name	the package name to be erased
  *
- * - depcheck()	Perform a dependency and conflict check on the
- *		transaction set. After headers have been added to a
- *		transaction set, a dependency check can be performed
- *		to make sure that all package dependencies are
- *		satisfied.
+ * - check()	Perform a dependency check on the transaction set. After
+ *		headers have been added to a transaction set, a dependency
+ *		check can be performed to make sure that all package
+ *		dependencies are satisfied.
  * @return	None If there are no unresolved dependencies
  *		Otherwise a list of complex tuples is returned, one tuple per
  *		unresolved dependency, with
@@ -81,6 +88,9 @@
  *     The constants rpm.RPMDEP_SENSE_CONFLICTS and
  *     rpm.RPMDEP_SENSE_REQUIRES are set to show a dependency as a
  *     requirement or a conflict.
+ *
+ * - order()	Do a topological sort of added element relations.
+ * @return	None
  *
  * - run(flags,problemSetFilter,callback,data) Attempt to execute a
  *	transaction set. After the transaction set has been populated
@@ -116,10 +126,31 @@
  *	- rpm.RPMPROB_FILTER_DISKSPACE - 
  */
 
+/**
+ * Add package to universe of possible packages to install in transaction set.
+ * @param ts		transaction set
+ * @param h		header
+ * @param key		package private data
+ */
+static void rpmtsAddAvailableElement(rpmts ts, Header h,
+		/*@exposed@*/ /*@null@*/ fnpyKey key)
+	/*@modifies h, ts @*/
+{
+    int scareMem = 0;
+    rpmds provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
+    rpmfi fi = rpmfiNew(ts, NULL, h, RPMTAG_BASENAMES, scareMem);
+
+    /* XXX FIXME: return code RPMAL_NOMATCH is error */
+    (void) rpmalAdd(&ts->availablePackages, RPMAL_NOMATCH, key,
+		provides, fi);
+    fi = rpmfiFree(fi, 1);
+    provides = rpmdsFree(provides);
+}
+
 /** \ingroup python
  */
 static PyObject *
-rpmts_Add(rpmtsObject * s, PyObject * args)
+rpmts_AddInstall(rpmtsObject * s, PyObject * args)
 {
     hdrObject * h;
     PyObject * key;
@@ -145,9 +176,9 @@ rpmts_Add(rpmtsObject * s, PyObject * args)
     	isUpgrade = 1;
 
     if (how && !strcmp(how, "a"))
-	rpmtsAvailablePackage(s->ts, hdrGetHeader(h), key);
+	rpmtsAddAvailableElement(s->ts, hdrGetHeader(h), key);
     else
-	rpmtsAddPackage(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
+	rpmtsAddInstallElement(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
 
     /* This should increment the usage count for me */
     if (key) {
@@ -161,7 +192,7 @@ rpmts_Add(rpmtsObject * s, PyObject * args)
 /** \ingroup python
  */
 static PyObject *
-rpmts_Remove(rpmtsObject * s, PyObject * args)
+rpmts_AddErase(rpmtsObject * s, PyObject * args)
 {
     char * name;
     int count;
@@ -181,7 +212,7 @@ rpmts_Remove(rpmtsObject * s, PyObject * args)
         while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 	    if (recOffset) {
-	        rpmtsRemovePackage(s->ts, h, recOffset);
+	        rpmtsAddEraseElement(s->ts, h, recOffset);
 	    }
 	}
     }
@@ -206,7 +237,7 @@ rpmts_Check(rpmtsObject * s, PyObject * args)
     if (!PyArg_ParseTuple(args, "|i:Check", &allSuggestions)) return NULL;
 
     xx = rpmtsCheck(s->ts);
-    ps = rpmtsGetProblems(s->ts);
+    ps = rpmtsProblems(s->ts);
     if (ps) {
 	list = PyList_New(0);
 
@@ -395,7 +426,7 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
     (void) rpmtsSetFlags(s->ts, flags);
 
     rc = rpmtsRun(s->ts, NULL, ignoreSet);
-    ps = rpmtsGetProblems(s->ts);
+    ps = rpmtsProblems(s->ts);
 
     if (cbInfo.pythonError) {
 	ps = rpmpsFree(ps);
@@ -426,14 +457,44 @@ static PyObject * rpmts_Run(rpmtsObject * s, PyObject * args)
     return list;
 }
 
+#if Py_TPFLAGS_HAVE_ITER
+static PyObject *
+rpmts_Next(rpmtsObject * s)
+{
+    rpmte te;
+
+    if (s == NULL || s->tsi == NULL)
+	return NULL;
+
+    te = rpmtsiNext(s->tsi, s->tsiFilter);
+    if (te == NULL) {
+	s->tsi = rpmtsiFree(s->tsi);
+	s->tsiFilter = 0;
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+
+    return (PyObject *) rpmte_Wrap(te);
+}
+
+static PyObject *
+rpmts_Iter(rpmtsObject * s)
+{
+    s->tsi = rpmtsiInit(s->ts);
+    s->tsiFilter = 0;
+    Py_INCREF(s);
+    return (PyObject *) s;
+}
+#endif
+
 /** \ingroup python
  */
 static struct PyMethodDef rpmts_methods[] = {
-    {"add",		(PyCFunction) rpmts_Add,	METH_VARARGS,
+    {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
 	NULL },
-    {"remove",		(PyCFunction) rpmts_Remove,	METH_VARARGS,
+    {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS,
 	NULL },
-    {"depcheck",	(PyCFunction) rpmts_Check,	METH_VARARGS,
+    {"check",		(PyCFunction) rpmts_Check,	METH_VARARGS,
 	NULL },
     {"order",		(PyCFunction) rpmts_Order,	METH_VARARGS,
 	NULL },
@@ -441,7 +502,13 @@ static struct PyMethodDef rpmts_methods[] = {
 	NULL },
     {"run",		(PyCFunction) rpmts_Run,	METH_VARARGS,
 	NULL },
-	{NULL,		NULL}		/* sentinel */
+#if Py_TPFLAGS_HAVE_ITER
+    {"next",		(PyCFunction)rpmts_Next,	METH_VARARGS,
+	NULL},
+    {"iter",		(PyCFunction)rpmts_Iter,	METH_VARARGS,
+	NULL},
+#endif
+    {NULL,		NULL}		/* sentinel */
 };
 
 /** \ingroup python
@@ -527,8 +594,8 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	0,				/* tp_iter */
-	0,				/* tp_iternext */
+	(getiterfunc)rpmts_Iter,	/* tp_iter */
+	(iternextfunc)rpmts_Next,	/* tp_iternext */
 	rpmts_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */

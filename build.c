@@ -31,11 +31,11 @@ static int checkSpec(rpmts ts, Header h)
      && !headerIsEntry(h, RPMTAG_CONFLICTNAME))
 	return 0;
 
-    rc = rpmtsAddPackage(ts, h, NULL, 0, NULL);
+    rc = rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
     rc = rpmtsCheck(ts);
 
-    ps = rpmtsGetProblems(ts);
+    ps = rpmtsProblems(ts);
     if (rc == 0 && ps) {
 	rpmMessage(RPMMESS_ERROR, _("Failed build dependencies:\n"));
 	printDepProblems(stderr, ps);

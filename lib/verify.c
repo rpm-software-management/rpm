@@ -357,10 +357,10 @@ static int verifyDependencies(/*@unused@*/ QVA_t qva, rpmts ts,
     int i;
 
     rpmtsClean(ts);
-    (void) rpmtsAddPackage(ts, h, NULL, 0, NULL);
+    (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
     xx = rpmtsCheck(ts);
-    ps = rpmtsGetProblems(ts);
+    ps = rpmtsProblems(ts);
 
     /*@-branchstate@*/
     if (ps) {

@@ -209,7 +209,8 @@ INCLUDES = -I. \
 
 
 noinst_HEADERS = db-py.h hash.h header-py.h \
-	rpmal-py.h rpmds-py.h rpmfi-py.h rpmts-py.h upgrade.h
+	rpmal-py.h rpmds-py.h rpmfd-py.h rpmfi-py.h rpmte-py.h rpmts-py.h \
+	upgrade.h
 
 
 mylibs = \
@@ -232,7 +233,8 @@ poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
 librpmmodule_la_SOURCES = rpmmodule.c hash.c upgrade.c \
-	db-py.c header-py.c rpmal-py.c rpmds-py.c rpmfi-py.c rpmts-py.c
+	db-py.c header-py.c rpmal-py.c rpmds-py.c rpmfd-py.c rpmfi-py.c \
+	rpmte-py.c rpmts-py.c
 
 subdir = python
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -243,7 +245,8 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 librpmmodule_la_LDFLAGS =
 librpmmodule_la_LIBADD =
 am_librpmmodule_la_OBJECTS = rpmmodule.lo hash.lo upgrade.lo db-py.lo \
-	header-py.lo rpmal-py.lo rpmds-py.lo rpmfi-py.lo rpmts-py.lo
+	header-py.lo rpmal-py.lo rpmds-py.lo rpmfd-py.lo rpmfi-py.lo \
+	rpmte-py.lo rpmts-py.lo
 librpmmodule_la_OBJECTS = $(am_librpmmodule_la_OBJECTS)
 python_PROGRAMS = rpmmodule.so$(EXEEXT) poptmodule.so$(EXEEXT)
 PROGRAMS = $(python_PROGRAMS)
@@ -267,7 +270,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/db-py.Plo ./$(DEPDIR)/hash.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/header-py.Plo ./$(DEPDIR)/poptmodule.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/rpmal-py.Plo ./$(DEPDIR)/rpmds-py.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/rpmfi-py.Plo ./$(DEPDIR)/rpmmodule.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/rpmfd-py.Plo ./$(DEPDIR)/rpmfi-py.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/rpmmodule.Plo ./$(DEPDIR)/rpmte-py.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/rpmts-py.Plo ./$(DEPDIR)/upgrade.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -338,8 +342,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/poptmodule.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rpmal-py.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rpmds-py.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rpmfd-py.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rpmfi-py.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rpmmodule.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rpmte-py.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rpmts-py.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/upgrade.Plo@am__quote@
 

@@ -52,7 +52,7 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args) {
     PyObject *TagN = NULL;
     int type;
     char * pattern;
-    int tag;
+    rpmTag tag;
     
     if (!PyArg_ParseTuple(args, "Ois:Pattern", &TagN, &type, &pattern))
 	return NULL;

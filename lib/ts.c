@@ -185,7 +185,7 @@ static int ftsPrint(FTS * ftsp, FTSENT * fts, rpmts ts)
 		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
 		n, v, r);
 #ifdef NOTYET
-	xx = rpmtsAddPackage(ts, h, fts->fts_path, 1, NULL);
+	xx = rpmtsAddInstallElement(ts, h, fts->fts_path, 1, NULL);
 #endif
 
 	break;
@@ -374,7 +374,7 @@ if (!_debug) {
 
 	xx = rpmtsCheck(ts);
 
-	ps = rpmtsGetProblems(ts);
+	ps = rpmtsProblems(ts);
 	if (ps) {
 	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
 	    printDepProblems(stderr, ps);

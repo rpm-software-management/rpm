@@ -11,6 +11,8 @@ typedef struct rpmtsObject_s {
     rpmdbObject * dbo;
     PyObject * keyList;		/* keeps reference counts correct */
     FD_t scriptFd;
+    rpmtsi tsi;
+    rpmElementType tsiFilter;
 } rpmtsObject;
 
 extern PyTypeObject rpmts_Type;

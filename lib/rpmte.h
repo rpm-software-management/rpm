@@ -7,6 +7,11 @@
  */
 
 /**
+ */
+/*@unchecked@*/
+extern int _rpmte_debug;
+
+/**
  * Transaction element ordering chain linkage.
  */
 typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
@@ -14,7 +19,7 @@ typedef /*@abstract@*/ struct tsortInfo_s *		tsortInfo;
 /**
  * Transaction element iterator.
  */
-typedef /*@abstract@*/ struct rpmtei_s *		rpmtei;
+typedef /*@abstract@*/ struct rpmtsi_s *		rpmtsi;
 
 /** \ingroup rpmte
  * Transaction element type.
@@ -121,7 +126,7 @@ struct rpmte_s {
 /**
  * Iterator across transaction elements, forward on install, backward on erase.
  */
-struct rpmtei_s {
+struct rpmtsi_s {
 /*@refcounted@*/
     rpmts ts;		/*!< transaction set. */
     int reverse;	/*!< reversed traversal? */
@@ -441,33 +446,33 @@ rpmfi rpmteFI(rpmte te, rpmTag tag)
 
 /**
  * Return transaction element index.
- * @param tei		transaction element iterator
+ * @param tsi		transaction element iterator
  * @return		transaction element index
  */
-int rpmteiGetOc(rpmtei tei)
+int rpmtsiOc(rpmtsi tsi)
 	/*@*/;
 
 /**
  * Destroy transaction element iterator.
- * @param tei		transaction element iterator
+ * @param tsi		transaction element iterator
  * @return		NULL always
  */
 /*@unused@*/ /*@null@*/
-rpmtei rpmteiFree(/*@only@*//*@null@*/ rpmtei tei)
+rpmtsi rpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi)
 	/*@*/;
 
 /**
  * Destroy transaction element iterator.
- * @param tei		transaction element iterator
+ * @param tsi		transaction element iterator
  * @param fn
  * @param ln
  * @return		NULL always
  */
 /*@null@*/
-rpmtei XrpmteiFree(/*@only@*//*@null@*/ rpmtei tei,
+rpmtsi XrpmtsiFree(/*@only@*//*@null@*/ rpmtsi tsi,
 		const char * fn, unsigned int ln)
 	/*@*/;
-#define	rpmteiFree(_tei)	XrpmteiFree(_tei, __FILE__, __LINE__)
+#define	rpmtsiFree(_tsi)	XrpmtsiFree(_tsi, __FILE__, __LINE__)
 
 /**
  * Create transaction element iterator.
@@ -475,7 +480,7 @@ rpmtei XrpmteiFree(/*@only@*//*@null@*/ rpmtei tei,
  * @return		transaction element iterator
  */
 /*@unused@*/ /*@only@*/
-rpmtei rpmteiInit(rpmts ts)
+rpmtsi rpmtsiInit(rpmts ts)
 	/*@modifies ts @*/;
 
 /**
@@ -486,20 +491,20 @@ rpmtei rpmteiInit(rpmts ts)
  * @return		transaction element iterator
  */
 /*@unused@*/ /*@only@*/
-rpmtei XrpmteiInit(rpmts ts,
+rpmtsi XrpmtsiInit(rpmts ts,
 		const char * fn, unsigned int ln)
 	/*@modifies ts @*/;
-#define	rpmteiInit(_ts)		XrpmteiInit(_ts, __FILE__, __LINE__)
+#define	rpmtsiInit(_ts)		XrpmtsiInit(_ts, __FILE__, __LINE__)
 
 /**
  * Return next transaction element of type.
- * @param tei		transaction element iterator
+ * @param tsi		transaction element iterator
  * @param type		transaction element type selector (0 for any)
  * @return		next transaction element of type, NULL on termination
  */
 /*@dependent@*/ /*@null@*/
-rpmte rpmteiNext(rpmtei tei, rpmElementType type)
-        /*@modifies tei @*/;
+rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
+        /*@modifies tsi @*/;
 
 #ifdef __cplusplus
 }

@@ -42,7 +42,7 @@
 
 /*@access rpmfi @*/
 
-/*@access rpmtei @*/
+/*@access rpmtsi @*/
 /*@access rpmts @*/
 
 /**
@@ -244,7 +244,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 
     fi->replaced = xcalloc(sharedCount, sizeof(*fi->replaced));
 
-    ps = rpmtsGetProblems(ts);
+    ps = rpmtsProblems(ts);
     for (i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
 
@@ -497,7 +497,7 @@ static void handleOverlappedFiles(const rpmts ts,
     const char * fn;
     int i, j;
   
-    ps = rpmtsGetProblems(ts);
+    ps = rpmtsProblems(ts);
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while ((i = rpmfiNext(fi)) >= 0) {
@@ -692,7 +692,7 @@ static int ensureOlder(rpmts ts,
     req = rpmdsFree(req);
 
     if (rc == 0) {
-	rpmps ps = rpmtsGetProblems(ts);
+	rpmps ps = rpmtsProblems(ts);
 	const char * altNEVR = hGetNEVR(h, NULL);
 	rpmpsAppend(ps, RPMPROB_OLDPACKAGE,
 		rpmteNEVR(p), rpmteKey(p),
@@ -907,18 +907,18 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 /**
  * Return transaction element's file info.
  * @todo Take a rpmfi refcount here.
- * @param tei		transaction element iterator
+ * @param tsi		transaction element iterator
  * @return		transaction element file info
  */
 static /*@null@*/
-rpmfi rpmteiGetFi(const rpmtei tei)
+rpmfi rpmtsiFi(const rpmtsi tsi)
 	/*@*/
 {
     rpmfi fi = NULL;
 
-    if (tei != NULL && tei->ocsave != -1) {
+    if (tsi != NULL && tsi->ocsave != -1) {
 	/*@-type -abstract@*/ /* FIX: rpmte not opaque */
-	rpmte te = rpmtsElement(tei->ts, tei->ocsave);
+	rpmte te = rpmtsElement(tsi->ts, tsi->ocsave);
 	/*@-assignexpose@*/
 	if (te != NULL && (fi = te->fi) != NULL)
 	    fi->te = te;
@@ -945,8 +945,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     fingerPrintCache fpc;
     rpmps ps;
     PSM_t psm = memset(alloca(sizeof(*psm)), 0, sizeof(*psm));
-    rpmtei pi;	rpmte p;
-    rpmtei qi;	rpmte q;
+    rpmtsi pi;	rpmte p;
+    rpmtsi qi;	rpmte q;
     int xx;
 
     /* FIXME: what if the same package is included in ts twice? */
@@ -989,14 +989,14 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      * For packages being removed:
      * - count files.
      */
-    ps = rpmtsGetProblems(ts);
+    ps = rpmtsProblems(ts);
     /* The ordering doesn't matter here */
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, TR_ADDED)) != NULL) {
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	rpmdbMatchIterator mi;
 	int fc;
 
-	if ((fi = rpmteiGetFi(pi)) == NULL)
+	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
@@ -1044,21 +1044,21 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	totalFileCount += fc;
 
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
     ps = rpmpsFree(ps);
 
     /* The ordering doesn't matter here */
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, TR_REMOVED)) != NULL) {
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
 	int fc;
 
-	if ((fi = rpmteiGetFi(pi)) == NULL)
+	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
 	totalFileCount += fc;
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     /* ===============================================
      * Initialize transaction element file info for package:
@@ -1069,15 +1069,15 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      * calling fpLookupList only once. I'm not sure that the speedup is
      * worth the trouble though.
      */
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, 0)) != NULL) {
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	int fc;
 
-	if ((fi = rpmteiGetFi(pi)) == NULL)
+	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
-#ifdef	DYING	/* XXX W2DO? this is now done in rpmteiGetFi, okay ??? */
+#ifdef	DYING	/* XXX W2DO? this is now done in rpmtsiFi, okay ??? */
 	fi->magic = RPMFIMAGIC;
 	fi->te = p;
 #endif
@@ -1098,7 +1098,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
 	fi->fps = (fc > 0 ? xmalloc(fc * sizeof(*fi->fps)) : NULL);
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     if (!rpmtsChrootDone(ts)) {
 	const char * rootDir = rpmtsRootDir(ts);
@@ -1116,11 +1116,11 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* ===============================================
      * Add fingerprint for each file not skipped.
      */
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, 0)) != NULL) {
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	int fc;
 
-	if ((fi = rpmteiGetFi(pi)) == NULL)
+	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
@@ -1137,7 +1137,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	}
 	/*@=branchstate@*/
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount,
 	NULL, ts->notifyData));
@@ -1145,18 +1145,18 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
-    ps = rpmtsGetProblems(ts);
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, 0)) != NULL) {
+    ps = rpmtsProblems(ts);
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	dbiIndexSet * matches;
 	int knownBad;
 	int fc;
 
-	if ((fi = rpmteiGetFi(pi)) == NULL)
+	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
-	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, rpmteiGetOc(pi),
+	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, rpmtsiOc(pi),
 			ts->orderCount, NULL, ts->notifyData));
 
 	if (fc == 0) continue;
@@ -1187,14 +1187,14 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 		int ro;
 		ro = dbiIndexRecordOffset(matches[i], j);
 		knownBad = 0;
-		qi = rpmteiInit(ts);
-		while ((q = rpmteiNext(qi, TR_REMOVED)) != NULL) {
+		qi = rpmtsiInit(ts);
+		while ((q = rpmtsiNext(qi, TR_REMOVED)) != NULL) {
 		    if (ro == knownBad)
 			/*@innerbreak@*/ break;
 		    if (rpmteDBOffset(q) == ro)
 			knownBad = ro;
 		}
-		qi = rpmteiFree(qi);
+		qi = rpmtsiFree(qi);
 
 		shared->pkgFileNum = i;
 		shared->otherPkg = dbiIndexRecordOffset(matches[i], j);
@@ -1262,7 +1262,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    /*@switchbreak@*/ break;
 	}
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
     ps = rpmpsFree(ps);
 
     if (rpmtsChrootDone(ts)) {
@@ -1281,15 +1281,15 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* ===============================================
      * Free unused memory as soon as possible.
      */
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, 0)) != NULL) {
-	if ((fi = rpmteiGetFi(pi)) == NULL)
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	if (rpmfiFC(fi) == 0)
 	    continue;
 	fi->fps = _free(fi->fps);
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     fpc = fpCacheFree(fpc);
     ts->ht = htFree(ts->ht);
@@ -1311,9 +1311,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      * Save removed files before erasing.
      */
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
-	pi = rpmteiInit(ts);
-	while ((p = rpmteiNext(pi, 0)) != NULL) {
-	    fi = rpmteiGetFi(pi);
+	pi = rpmtsiInit(ts);
+	while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	    fi = rpmtsiFi(pi);
 	    switch (rpmteType(p)) {
 	    case TR_ADDED:
 		/*@switchbreak@*/ break;
@@ -1329,21 +1329,21 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 		/*@switchbreak@*/ break;
 	    }
 	}
-	pi = rpmteiFree(pi);
+	pi = rpmtsiFree(pi);
     }
 
     /* ===============================================
      * Install and remove packages.
      */
     lastKey = (alKey)-2;	/* erased packages have -1 */
-    pi = rpmteiInit(ts);
+    pi = rpmtsiInit(ts);
     /*@-branchstate@*/ /* FIX: fi reload needs work */
-    while ((p = rpmteiNext(pi, 0)) != NULL) {
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	alKey pkgKey;
 	int gotfd;
 
 	gotfd = 0;
-	if ((fi = rpmteiGetFi(pi)) == NULL)
+	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	
 	psm->te = p;
@@ -1448,7 +1448,7 @@ fi->actions = actions;
 /*@=type@*/
     }
     /*@=branchstate@*/
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     psm->ts = rpmtsUnlink(psm->ts, "tsRun");
 

@@ -45,7 +45,6 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
 static int
 do_tsort(const char *fileArgv[])
 {
-    const char * rootdir = "/";
     rpmts ts = NULL;
     const char ** pkgURL = NULL;
     char * pkgState = NULL;
@@ -77,10 +76,12 @@ do_tsort(const char *fileArgv[])
 	goto exit;
     }
 
+#ifdef	DYING
     /* Load all the available packages. */
     if (!(noDeps || noAvailable)) {
 	rpmdbMatchIterator mi = NULL;
 	struct rpmdb_s * avdb = NULL;
+	const char * rootdir = "/";
 
 	addMacro(NULL, "_dbpath", NULL, avdbpath, RMIL_CMDLINE);
 	rc = rpmdbOpen(rootdir, &avdb, O_RDONLY, 0644);
@@ -98,6 +99,7 @@ endavail:
 	if (mi) rpmdbFreeIterator(mi);
 	if (avdb) rpmdbClose(avdb);
     }
+#endif
 
     /* Build fully globbed list of arguments in argv[argc]. */
     for (fnp = fileArgv; *fnp; fnp++) {
@@ -170,7 +172,7 @@ restart:
 	}
 
 	if (rc == 0) {
-	    rc = rpmtsAddPackage(ts, h, (fnpyKey)fileName, 0, NULL);
+	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName, 0, NULL);
 	    headerFree(h, "do_tsort"); 
 	    continue;
 	}
@@ -215,7 +217,7 @@ restart:
 
 	rc = rpmtsCheck(ts);
 
-	ps = rpmtsGetProblems(ts);
+	ps = rpmtsProblems(ts);
 	if (ps) {
 	    rpmMessage(RPMMESS_ERROR, _("Failed dependencies:\n"));
 	    printDepProblems(stderr, ps);
@@ -230,7 +232,7 @@ restart:
     if (rc)
 	goto exit;
 
-    {	rpmtei pi;
+    {	rpmtsi pi;
 	rpmte p;
 	rpmte q;
 	unsigned char * selected =
@@ -242,8 +244,8 @@ fprintf(stdout, "digraph XXX {\n");
 fprintf(stdout, "  rankdir=LR\n");
 
 fprintf(stdout, "//===== Packages:\n");
-	pi = rpmteiInit(ts);
-	while ((p = rpmteiNext(pi, oType)) != NULL) {
+	pi = rpmtsiInit(ts);
+	while ((p = rpmtsiNext(pi, oType)) != NULL) {
 fprintf(stdout, "//%5d%5d %s\n", rpmteTree(p), rpmteDepth(p), rpmteN(p));
 	    q = rpmteParent(p);
 	    if (q != NULL)
@@ -253,7 +255,7 @@ fprintf(stdout, "  \"%s\"\n", rpmteN(p));
 fprintf(stdout, "  { rank=max ; \"%s\" }\n", rpmteN(p));
 	    }
 	}
-	pi = rpmteiFree(pi);
+	pi = rpmtsiFree(pi);
 
 fprintf(stdout, "}\n");
 

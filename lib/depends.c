@@ -121,13 +121,13 @@ static int removePackage(rpmts ts, Header h, int dboffset,
     return 0;
 }
 
-int rpmtsAddPackage(rpmts ts, Header h,
+int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     int isSource;
     int duplicate = 0;
-    rpmtei pi; rpmte p;
+    rpmtsi pi; rpmte p;
     rpmds add;
     rpmds obsoletes;
     alKey pkgKey;	/* addedPackages key */
@@ -142,7 +142,7 @@ int rpmtsAddPackage(rpmts ts, Header h,
      */
     add = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
     pkgKey = RPMAL_NOMATCH;
-    for (pi = rpmteiInit(ts), oc = 0; (p = rpmteiNext(pi, 0)) != NULL; oc++) {
+    for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
 	rpmds this;
 
 	/* XXX Only added packages need be checked for dupes. */
@@ -165,7 +165,7 @@ int rpmtsAddPackage(rpmts ts, Header h,
 	    break;
 	}
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
     add = rpmdsFree(add);
 
     isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
@@ -302,10 +302,11 @@ int rpmtsAddPackage(rpmts ts, Header h,
     ec = 0;
 
 exit:
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
     return ec;
 }
 
+#ifdef	DYING
 void rpmtsAvailablePackage(rpmts ts, Header h, fnpyKey key)
 {
     int scareMem = 0;
@@ -318,8 +319,9 @@ void rpmtsAvailablePackage(rpmts ts, Header h, fnpyKey key)
     fi = rpmfiFree(fi, 1);
     provides = rpmdsFree(provides);
 }
+#endif
 
-int rpmtsRemovePackage(rpmts ts, Header h, int dboffset)
+int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 {
     return removePackage(ts, h, dboffset, RPMAL_NOMATCH);
 }
@@ -980,7 +982,7 @@ static inline int addRelation(rpmts ts,
 	/*@globals fileSystem @*/
 	/*@modifies ts, p, *selected, fileSystem @*/
 {
-    rpmtei qi; rpmte q;
+    rpmtsi qi; rpmte q;
     tsortInfo tsi;
     const char * Name;
     fnpyKey key;
@@ -1006,7 +1008,7 @@ fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
 
 /* XXX Set q to the added package that has pkgKey == q->u.addedKey */
 /* XXX FIXME: bsearch is possible/needed here */
-    for (qi = rpmteiInit(ts), i = 0; (q = rpmteiNext(qi, 0)) != NULL; i++) {
+    for (qi = rpmtsiInit(ts), i = 0; (q = rpmtsiNext(qi, 0)) != NULL; i++) {
 
 	/* XXX Only added packages need be checked for matches. */
 	if (rpmteType(q) == TR_REMOVED)
@@ -1015,7 +1017,7 @@ fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
 	if (pkgKey == rpmteAddedKey(q))
 	    break;
     }
-    qi = rpmteiFree(qi);
+    qi = rpmtsiFree(qi);
     if (q == NULL || i == ts->orderCount)
 	return 0;
 
@@ -1150,9 +1152,9 @@ int rpmtsOrder(rpmts ts)
 #else
     int chainsaw = 1;
 #endif
-    rpmtei pi; rpmte p;
-    rpmtei qi; rpmte q;
-    rpmtei ri; rpmte r;
+    rpmtsi pi; rpmte p;
+    rpmtsi qi; rpmte q;
+    rpmtsi ri; rpmte r;
     tsortInfo tsi;
     tsortInfo tsi_next;
     alKey * ordering;
@@ -1196,16 +1198,16 @@ fprintf(stderr, "*** rpmtsOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCou
     ordering = alloca(sizeof(*ordering) * (numOrderList + 1));
     loopcheck = numOrderList;
 
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, oType)) != NULL)
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, oType)) != NULL)
 	rpmteNewTSI(p);
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     /* Record all relations. */
     rpmMessage(RPMMESS_DEBUG, _("========== recording tsort relations\n"));
-    pi = rpmteiInit(ts);
+    pi = rpmtsiInit(ts);
     /* XXX Only added packages are ordered (for now). */
-    while ((p = rpmteiNext(pi, oType)) != NULL) {
+    while ((p = rpmtsiNext(pi, oType)) != NULL) {
 
 	if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) == NULL)
 	    continue;
@@ -1213,7 +1215,7 @@ fprintf(stderr, "*** rpmtsOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCou
 	memset(selected, 0, sizeof(*selected) * ts->orderCount);
 
 	/* Avoid narcisstic relations. */
-	selected[rpmteiGetOc(pi)] = 1;
+	selected[rpmtsiOc(pi)] = 1;
 
 	/* T2. Next "q <- p" relation. */
 
@@ -1279,12 +1281,12 @@ fprintf(stderr, "*** rpmtsOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCou
 
 	}
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     /* Save predecessor count and mark tree roots. */
     treex = 0;
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, oType)) != NULL) {
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, oType)) != NULL) {
 	int npreds;
 
 	npreds = rpmteTSI(p)->tsi_count;
@@ -1301,25 +1303,25 @@ fprintf(stderr, "*** rpmtsOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCou
 
 /*@-modfilesystem -nullpass @*/
 if (_tso_debug)
-/*@i@*/ fprintf(stderr, "\t+++ %p[%d] %s npreds %d\n", p, rpmteiGetOc(pi), rpmteNEVR(p), rpmteNpreds(p));
+/*@i@*/ fprintf(stderr, "\t+++ %p[%d] %s npreds %d\n", p, rpmtsiOc(pi), rpmteNEVR(p), rpmteNpreds(p));
 /*@=modfilesystem =nullpass @*/
 
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     /* T4. Scan for zeroes. */
     rpmMessage(RPMMESS_DEBUG, _("========== tsorting packages (order, #predecessors, #succesors, tree, depth)\n"));
 
 rescan:
-    if (pi != NULL) pi = rpmteiFree(pi);
+    if (pi != NULL) pi = rpmtsiFree(pi);
     q = r = NULL;
     qlen = 0;
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, oType)) != NULL) {
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, oType)) != NULL) {
 
 	/* Prefer packages in chainsaw or presentation order. */
 	if (!chainsaw)
-	    rpmteTSI(p)->tsi_qcnt = (ts->orderCount - rpmteiGetOc(pi));
+	    rpmteTSI(p)->tsi_qcnt = (ts->orderCount - rpmtsiOc(pi));
 
 	if (rpmteTSI(p)->tsi_count != 0)
 	    continue;
@@ -1332,7 +1334,7 @@ if (_tso_debug)
 prtTSI(" p", rpmteTSI(p));
 /*@=modfilesystem =nullpass @*/
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     /* T5. Output front of queue (T7. Remove from queue.) */
     for (; q != NULL; q = rpmteTSI(q)->tsi_suc) {
@@ -1405,15 +1407,15 @@ prtTSI(" p", rpmteTSI(p));
 
 	    /* Relink the queue in presentation order. */
 	    tsi = rpmteTSI(q);
-	    pi = rpmteiInit(ts);
-	    while ((p = rpmteiNext(pi, oType)) != NULL) {
+	    pi = rpmtsiInit(ts);
+	    while ((p = rpmtsiNext(pi, oType)) != NULL) {
 		/* Is this element in the queue? */
 		if (rpmteTSI(p)->tsi_reqx == 0)
 		    /*@innercontinue@*/ continue;
 		tsi->tsi_suc = p;
 		tsi = rpmteTSI(p);
 	    }
-	    pi = rpmteiFree(pi);
+	    pi = rpmtsiFree(pi);
 	    tsi->tsi_suc = NULL;
 	}
     }
@@ -1424,30 +1426,30 @@ prtTSI(" p", rpmteTSI(p));
 
 	/* T9. Initialize predecessor chain. */
 	nzaps = 0;
-	qi = rpmteiInit(ts);
-	while ((q = rpmteiNext(qi, oType)) != NULL) {
+	qi = rpmtsiInit(ts);
+	while ((q = rpmtsiNext(qi, oType)) != NULL) {
 	    rpmteTSI(q)->tsi_chain = NULL;
 	    rpmteTSI(q)->tsi_reqx = 0;
 	    /* Mark packages already sorted. */
 	    if (rpmteTSI(q)->tsi_count == 0)
 		rpmteTSI(q)->tsi_count = -1;
 	}
-	qi = rpmteiFree(qi);
+	qi = rpmtsiFree(qi);
 
 	/* T10. Mark all packages with their predecessors. */
-	qi = rpmteiInit(ts);
-	while ((q = rpmteiNext(qi, oType)) != NULL) {
+	qi = rpmtsiInit(ts);
+	while ((q = rpmtsiNext(qi, oType)) != NULL) {
 	    if ((tsi = rpmteTSI(q)->tsi_next) == NULL)
 		continue;
 	    rpmteTSI(q)->tsi_next = NULL;
 	    markLoop(tsi, q);
 	    rpmteTSI(q)->tsi_next = tsi;
 	}
-	qi = rpmteiFree(qi);
+	qi = rpmtsiFree(qi);
 
 	/* T11. Print all dependency loops. */
-	ri = rpmteiInit(ts);
-	while ((r = rpmteiNext(ri, oType)) != NULL)
+	ri = rpmtsiInit(ts);
+	while ((r = rpmtsiNext(ri, oType)) != NULL)
 	{
 	    int printed;
 
@@ -1501,7 +1503,7 @@ prtTSI(" p", rpmteTSI(p));
 		rpmteTSI(p)->tsi_reqx = 0;
 	    }
 	}
-	ri = rpmteiFree(ri);
+	ri = rpmtsiFree(ri);
 
 	/* If a relation was eliminated, then continue sorting. */
 	/* XXX TODO: add control bit. */
@@ -1517,10 +1519,10 @@ prtTSI(" p", rpmteTSI(p));
     }
 
     /* Clean up tsort remnants (if any). */
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, 0)) != NULL)
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL)
 	rpmteFreeTSI(p);
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     /*
      * The order ends up as installed packages followed by removed packages,
@@ -1530,8 +1532,8 @@ prtTSI(" p", rpmteTSI(p));
      */
     orderList = xcalloc(numOrderList, sizeof(*orderList));
     j = 0;
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, oType)) != NULL) {
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, oType)) != NULL) {
 	/* Prepare added package ordering permutation. */
 	switch (rpmteType(p)) {
 	case TR_ADDED:
@@ -1541,10 +1543,10 @@ prtTSI(" p", rpmteTSI(p));
 	    orderList[j].pkgKey = RPMAL_NOMATCH;
 	    /*@switchbreak@*/ break;
 	}
-	orderList[j].orIndex = rpmteiGetOc(pi);
+	orderList[j].orIndex = rpmtsiOc(pi);
 	j++;
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     qsort(orderList, numOrderList, sizeof(*orderList), orderListIndexCmp);
 
@@ -1602,11 +1604,11 @@ assert(newOrderCount == ts->orderCount);
 
 #ifdef	DYING
     /* Clean up after dependency checks */
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, 0)) != NULL) {
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	rpmteCleanDS(p);
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     ts->addedPackages = rpmalFree(ts->addedPackages);
     ts->numAddedPackages = 0;
@@ -1655,7 +1657,7 @@ static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
 int rpmtsCheck(rpmts ts)
 {
     rpmdbMatchIterator mi = NULL;
-    rpmtei pi = NULL; rpmte p;
+    rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;
     int xx;
     int rc;
@@ -1677,8 +1679,8 @@ int rpmtsCheck(rpmts ts)
      * Look at all of the added packages and make sure their dependencies
      * are satisfied.
      */
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, TR_ADDED)) != NULL) {
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	rpmds provides;
 
         rpmMessage(RPMMESS_DEBUG,  "========== +++ %s\n" , rpmteNEVR(p));
@@ -1718,13 +1720,13 @@ int rpmtsCheck(rpmts ts)
 	if (rc)
 	    goto exit;
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     /*
      * Look at the removed packages and make sure they aren't critical.
      */
-    pi = rpmteiInit(ts);
-    while ((p = rpmteiNext(pi, TR_REMOVED)) != NULL) {
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
 	rpmds provides;
 	rpmfi fi;
 
@@ -1772,13 +1774,13 @@ int rpmtsCheck(rpmts ts)
 	if (rc)
 	    goto exit;
     }
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
 
     rc = 0;
 
 exit:
     mi = rpmdbFreeIterator(mi);
-    pi = rpmteiFree(pi);
+    pi = rpmtsiFree(pi);
     /*@-branchstate@*/
     if (closeatexit)
 	xx = rpmtsCloseDB(ts);
