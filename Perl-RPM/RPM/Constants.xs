@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Constants.xs,v 1.6 2000/08/16 09:31:46 rjray Exp $";
+static char * const rcsid = "$Id: Constants.xs,v 1.7 2000/08/17 09:23:44 rjray Exp $";
 
 static int not_here(pTHX_ char *s)
 {
@@ -1021,6 +1021,18 @@ static int constant(pTHX_ char *name)
         if (strEQ(name, "RPMTAG_NAME"))
 #ifdef RPMTAG_NAME
             return RPMTAG_NAME;
+#else
+            goto not_there;
+#endif
+        if (strEQ(name, "RPMTAG_NOPATCH"))
+#ifdef RPMTAG_NOPATCH
+            return RPMTAG_NOPATCH;
+#else
+            goto not_there;
+#endif
+        if (strEQ(name, "RPMTAG_NOSOURCE"))
+#ifdef RPMTAG_NOSOURCE
+            return RPMTAG_NOSOURCE;
 #else
             goto not_there;
 #endif
