@@ -1010,7 +1010,7 @@ grabArgs(MacroBuf mb, const MacroEntry me, /*@returned@*/ const char * se,
 	for (c = optind; c < argc; c++) {
 	    sprintf(aname, "%d", (c - optind + 1));
 	    addMacro(mb->mc, aname, NULL, argv[c], mb->depth);
-	    *be++ = ' ';
+	    if(be != b) *be++ = ' '; /* Add space between args */
 /*@-nullpass@*/ /* FIX: argv[] can be NULL */
 	    be = stpcpy(be, argv[c]);
 /*@=nullpass@*/
