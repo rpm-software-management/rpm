@@ -36,7 +36,7 @@ static int checkSpec(rpmts ts, Header h)
     rc = rpmtsCheck(ts);
 
     ps = rpmtsProblems(ts);
-    if (rc == 0 && ps) {
+    if (rc == 0 && rpmpsNumProblems(ps) > 0) {
 	rpmMessage(RPMMESS_ERROR, _("Failed build dependencies:\n"));
 	printDepProblems(stderr, ps);
 	rc = 1;
