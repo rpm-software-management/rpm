@@ -224,7 +224,9 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
 
 	handleSharedFiles(db, offset, fileList, fileMd5List, fileCount, fileActions);
 
-	for (i = 0; i < fileCount; i++) {
+	/* go through the filelist backwards to help insure that rmdir()
+	   will work */
+	for (i = fileCount - 1; i >= 0; i--) {
 	    if (strcmp(prefix, "/")) {
 		if ((strlen(fileList[i]) + prefixLength + 1) > fnbuffersize) {
 		    fnbuffersize = (strlen(fileList[i]) + prefixLength) * 2;
