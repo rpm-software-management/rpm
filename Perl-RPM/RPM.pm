@@ -10,7 +10,7 @@ require Exporter;
 
 @ISA = qw(Exporter DynaLoader);
 $VERSION = '0.2';
-$revision = do { my @r=(q$Revision: 1.3 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.4 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT = qw(rpm_osname rpm_archname);
 @EXPORT_OK = @EXPORT;
@@ -90,3 +90,5 @@ L<perl>, L<rpm>
 =head1 AUTHOR
 
 Randy J. Ray <rjray@blackperl.com>
+
+=cut
