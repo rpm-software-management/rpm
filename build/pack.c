@@ -45,6 +45,7 @@ static int cpio_gzip(Header header, int fd, char *tempdir);
 static int writeMagic(Spec s, int fd, char *name, unsigned short type);
 static int add_file(struct file_entry **festack,
 		    char *name, int isdoc, int isconf, int isdir);
+static int compare_fe(const void *ap, const void *bp);
 static int process_filelist(Header header, StringBuf sb, int *size, int type);
 static int add_file_aux(char *file, struct stat *sb, int flag);
 static char *getUname(uid_t uid);
@@ -302,11 +303,22 @@ static int add_file_aux(char *file, struct stat *sb, int flag)
     return 0; /* for ftw() */
 }
 
+static int compare_fe(const void *ap, const void *bp)
+{
+    char *a, *b;
+
+    a = (*(struct file_entry **)ap)->file;
+    b = (*(struct file_entry **)bp)->file;
+
+    return strcmp(b, a);
+}
+
 static int process_filelist(Header header, StringBuf sb, int *size, int type)
 {
     char buf[1024];
     char **files, **fp;
     struct file_entry *fes, *fest;
+    struct file_entry **file_entry_array;
     int isdoc, isconf, isdir;
     char *filename, *s;
     char *str;
@@ -404,43 +416,54 @@ static int process_filelist(Header header, StringBuf sb, int *size, int type)
 	fileModesList = malloc(sizeof(int_16) * count);
 	fileRDevsList = malloc(sizeof(int_16) * count);
 
+	/* Build a reverse sorted file array.  */
+	/* This makes uninstalls a lot easier. */
+	file_entry_array = malloc(sizeof(struct file_entry *) * count);
+	c = 0;
 	fest = fes;
-	c = count;
-	while (c--) {
+	while (fest) {
+	    file_entry_array[c++] = fest;
+	    fest = fest->next;
+	}
+	qsort(file_entry_array, count, sizeof(struct file_entry *), compare_fe);
+	
+	c = 0;
+	while (c < count) {
+	    fest = file_entry_array[c];
 	    if (type == RPMLEAD_BINARY) {
-		fileList[c] = fes->file;
+		fileList[c] = fest->file;
 	    } else {
-		fileList[c] = strrchr(fes->file, '/') + 1;
+		fileList[c] = strrchr(fest->file, '/') + 1;
 	    }
-	    fileUnameList[c] = fes->uname;
-	    fileGnameList[c] = fes->gname;
-	    *size += fes->statbuf.st_size;
-	    if (S_ISREG(fes->statbuf.st_mode)) {
-		mdfile(fes->file, buf);
+	    fileUnameList[c] = fest->uname;
+	    fileGnameList[c] = fest->gname;
+	    *size += fest->statbuf.st_size;
+	    if (S_ISREG(fest->statbuf.st_mode)) {
+		mdfile(fest->file, buf);
 		fileMD5List[c] = strdup(buf);
-		message(MESS_DEBUG, "md5(%s) = %s\n", fes->file, buf);
+		message(MESS_DEBUG, "md5(%s) = %s\n", fest->file, buf);
 	    } else {
 		/* This is stupid */
 		fileMD5List[c] = strdup("");
 	    }
-	    fileSizeList[c] = fes->statbuf.st_size;
-	    fileUIDList[c] = fes->statbuf.st_uid;
-	    fileGIDList[c] = fes->statbuf.st_gid;
-	    fileMtimesList[c] = fes->statbuf.st_mtime;
+	    fileSizeList[c] = fest->statbuf.st_size;
+	    fileUIDList[c] = fest->statbuf.st_uid;
+	    fileGIDList[c] = fest->statbuf.st_gid;
+	    fileMtimesList[c] = fest->statbuf.st_mtime;
 	    fileFlagsList[c] = 0;
-	    if (fes->isdoc) 
+	    if (fest->isdoc) 
 		fileFlagsList[c] |= RPMFILE_DOC;
-	    if (fes->isconf)
+	    if (fest->isconf)
 		fileFlagsList[c] |= RPMFILE_CONFIG;
 
-	    fileModesList[c] = fes->statbuf.st_mode;
-	    fileRDevsList[c] = fes->statbuf.st_rdev;
+	    fileModesList[c] = fest->statbuf.st_mode;
+	    fileRDevsList[c] = fest->statbuf.st_rdev;
 
-	    if (S_ISLNK(fes->statbuf.st_mode)) {
+	    if (S_ISLNK(fest->statbuf.st_mode)) {
 		if (getVar(RPMVAR_ROOT)) {
-		    sprintf(buf, "%s%s", getVar(RPMVAR_ROOT), fes->file);
+		    sprintf(buf, "%s%s", getVar(RPMVAR_ROOT), fest->file);
 		} else {
-		    strcpy(buf, fes->file);
+		    strcpy(buf, fest->file);
 		}
 		readlink(buf, buf, 1024);
 		fileLinktoList[c] = strdup(buf);
@@ -448,8 +471,7 @@ static int process_filelist(Header header, StringBuf sb, int *size, int type)
 		/* This is stupid */
 		fileLinktoList[c] = strdup("");
 	    }
-
-	    fes = fes->next;
+	    c++;
 	}
 
 	/* Add the header entries */
@@ -476,8 +498,12 @@ static int process_filelist(Header header, StringBuf sb, int *size, int type)
 	    free(fileMD5List[c]);
 	    free(fileLinktoList[c]);
 	}
+
+	/* Free the file entry array */
+	free(file_entry_array);
 	
 	/* Free the file entry stack */
+	fest = fes;
 	while (fest) {
 	    fes = fest->next;
 	    free(fest);
@@ -511,6 +537,7 @@ int packageBinaries(Spec s)
     char *version;
     char *release;
     int size;
+    int_8 os, arch;
 
     if (!getEntry(s->packages->header, RPMTAG_VERSION, NULL,
 		  (void *) &version, NULL)) {
@@ -579,6 +606,10 @@ int packageBinaries(Spec s)
 	}
 
 	/* Add some final entries to the header */
+	os = getArchNum();
+	arch = getArchNum();
+	addEntry(outHeader, RPMTAG_OS, INT8_TYPE, &os, 1);
+	addEntry(outHeader, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
 	addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
 	addEntry(outHeader, RPMTAG_SIZE, INT32_TYPE, &size, 1);
 	if (pr->icon) {
@@ -632,6 +663,7 @@ int packageSource(Spec s)
     StringBuf filelist;
     int fd;
     int size;
+    int_8 os, arch;
 
     tempdir = tempnam("/usr/tmp", "rpmbuild");
     mkdir(tempdir, 0700);
@@ -683,6 +715,10 @@ int packageSource(Spec s)
     }
 
     outHeader = copyHeader(s->packages->header);
+    os = getArchNum();
+    arch = getArchNum();
+    addEntry(outHeader, RPMTAG_OS, INT8_TYPE, &os, 1);
+    addEntry(outHeader, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
     addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
     /* XXX - need: distribution, vendor, release, builder, buildhost */
 
