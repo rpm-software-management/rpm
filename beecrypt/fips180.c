@@ -32,9 +32,9 @@
 #include "mp32.h"
 #include "endianness.h"
 
-static const uint32 k[4] = { 0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6 };
+/*@observer@*/ static const uint32 k[4] = { 0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6 };
 
-static const uint32 hinit[5] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0 };
+/*@observer@*/ static const uint32 hinit[5] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0 };
 
 const hashFunction sha1 = { "SHA-1", sizeof(sha1Param), 64, 5 * sizeof(uint32), (hashFunctionReset) sha1Reset, (hashFunctionUpdate) sha1Update, (hashFunctionDigest) sha1Digest };
 
@@ -205,6 +205,7 @@ int sha1Update(register sha1Param *p, const byte *data, int size)
 }
 
 static void sha1Finish(register sha1Param *p)
+	/*@modifies p @*/
 {
 	register byte *ptr = ((byte *) p->data) + p->offset++;
 
@@ -223,6 +224,7 @@ static void sha1Finish(register sha1Param *p)
 	while (p->offset++ < 56)
 		*(ptr++) = 0;
 
+	/*@-shiftsigned@*/ /* p->length is uint64 */
 	#if WORDS_BIGENDIAN
 	p->data[14] = ((uint32)(p->length >> 29));
 	p->data[15] = ((uint32)((p->length << 3) & 0xffffffff));
@@ -230,6 +232,7 @@ static void sha1Finish(register sha1Param *p)
 	p->data[14] = swapu32((uint32)(p->length >> 29));
 	p->data[15] = swapu32((uint32)((p->length << 3) & 0xffffffff));
 	#endif
+	/*@=shiftsigned@*/
 
 	sha1Process(p);
 	p->offset = 0;

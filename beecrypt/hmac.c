@@ -33,7 +33,7 @@
 
 int hmacSetup(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param, const uint32* key, int keybits)
 {
-	int keywords = (keybits >> 5);
+	int keywords = (((uint32)keybits) >> 5);
 
 	if (keywords <= 16)
 	{

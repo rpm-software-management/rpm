@@ -38,8 +38,10 @@
 # include <malloc.h>
 #endif
 
-static int dldp_pgoqGenerator_w(dldp_p*, randomGeneratorContext*, uint32*);
-static int dldp_pgonGenerator_w(dldp_p*, randomGeneratorContext*, uint32*);
+static int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
+	/*@modifies dp, rgc, wksp @*/;
+static int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
+	/*@modifies dp, rgc, wksp @*/;
 
 int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mp32number* x)
 {

@@ -45,19 +45,19 @@ BEEDLLAPI
 int dlpk_pFree(dlpk_p* pk)
 	/*@modifies pk */;
 BEEDLLAPI
-int dlpk_pCopy(dlpk_p* pk, const dlpk_p*)
-	/*@modifies pk */;
+int dlpk_pCopy(dlpk_p* dst, const dlpk_p* src)
+	/*@modifies dst */;
 
 BEEDLLAPI
-int  dlpk_pEqual(const dlpk_p* pk, const dlpk_p*)
+int  dlpk_pEqual(const dlpk_p* a, const dlpk_p* b)
 	/*@*/;
 
 BEEDLLAPI
 int  dlpk_pgoqValidate(const dlpk_p* pk, randomGeneratorContext* rgc, int cofactor)
-	/*@*/;
+	/*@modifies rgc @*/;
 BEEDLLAPI
 int  dlpk_pgonValidate(const dlpk_p* pk, randomGeneratorContext* rgc)
-	/*@*/;
+	/*@modifies rgc @*/;
 
 #ifdef __cplusplus
 }

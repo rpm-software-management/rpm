@@ -47,7 +47,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 	 * Generates an RSA Keypair for use with the Chinese Remainder Theorem
 	 */
 
-	register uint32  pqsize = (nsize+1) >> 1;
+	register uint32  pqsize = ((uint32)(nsize+1)) >> 1;
 	register uint32* temp = (uint32*) malloc((16*pqsize+6)*sizeof(uint32));
 	register uint32  newn = 1;
 
@@ -88,6 +88,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 
 			mp32prnd_w(&r, rgc, pqsize, mp32ptrials(pqsize << 5), &kp->e, temp);
 
+			/*@-usedef@*/ /* r is set */
 			if (mp32le(pqsize, kp->p.modl, r.modl))
 			{
 				mp32bfree(&kp->q);
@@ -108,6 +109,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 				mp32bfree(&r);
 				newn = 0;
 			}
+			/*@=usedef@*/
 		}
 
 		mp32bset(&kp->n, nsize, temp);
@@ -120,6 +122,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 		mp32bsubone(&kp->q, temp);
 		mp32bset(&qsubone, pqsize, temp);
 
+		/*@-usedef@*/	/* psubone/qsubone are set */
 		/* compute phi = (p-1)*(q-1) */
 		mp32mul(temp, pqsize, psubone.modl, pqsize, qsubone.modl);
 		mp32bset(&phi, nsize, temp);
@@ -141,6 +144,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 		(void) mp32binv_w(&kp->p, pqsize, kp->q.modl, kp->c.data, temp);
 
 		free(temp);
+		/*@=usedef@*/
 
 		return 0;
 	}

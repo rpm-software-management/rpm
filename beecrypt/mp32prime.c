@@ -54,107 +54,107 @@
  * but too small to be of cryptographic interest. Hence, use only for candidate primes that are large enough.
  */
 
-static uint32 spp_01[] =	/* primes 3 to 29 */
+/*@observer@*/ static uint32 spp_01[] =	/* primes 3 to 29 */
 { 0xc0cfd797 };
 
-static uint32 spp_02[] =	/* primes 3 to 53 */
+/*@observer@*/ static uint32 spp_02[] =	/* primes 3 to 53 */
 { 0xe221f97c, 0x30e94e1d };
 
-static uint32 spp_03[] =	/* primes 3 to 73 */
+/*@observer@*/ static uint32 spp_03[] =	/* primes 3 to 73 */
 { 0x41cd66ac, 0xc237b226, 0x81a18067 };
 
-static uint32 spp_04[] =	/* primes 3 to 101 */
+/*@observer@*/ static uint32 spp_04[] =	/* primes 3 to 101 */
 { 0x5797d47c, 0x51681549, 0xd734e4fc, 0x4c3eaf7f };
 
-static uint32 spp_05[] =	/* primes 3 to 113 */
+/*@observer@*/ static uint32 spp_05[] =	/* primes 3 to 113 */
 { 0x02c4b8d0, 0xd2e0d937, 0x3935200f, 0xb49be231,
   0x5ce1a307 };
 
-static uint32 spp_06[] =	/* primes 3 to 149 */
+/*@observer@*/ static uint32 spp_06[] =	/* primes 3 to 149 */
 { 0x1e6d8e2a, 0x0ffceafb, 0xbcbfc14a, 0x4c3bc1e1,
   0x009c6a22, 0xa0a7adf5 };
 
-static uint32 spp_07[] =	/* primes 3 to 167 */
+/*@observer@*/ static uint32 spp_07[] =	/* primes 3 to 167 */
 { 0x049265d3, 0x574cefd0, 0x4229bfd6, 0x62a4a46f,
   0x8611ed02, 0x26c655f0, 0x76ebade3 };
 
-static uint32 spp_08[] =	/* primes 3 to 193 */
+/*@observer@*/ static uint32 spp_08[] =	/* primes 3 to 193 */
 { 0xdbf05b6f, 0x5654b3c0, 0xf5243551, 0x43958688,
   0x9f155887, 0x819aed2a, 0xc05b9335, 0x2be98677 };
 
-static uint32 spp_09[] =	/* primes 3 to 223 */
+/*@observer@*/ static uint32 spp_09[] =	/* primes 3 to 223 */
 { 0x5e75cec8, 0xb5de5ea1, 0x5da8302a, 0x2f28b4ad,
   0x2735bdc3, 0x9344c52e, 0x67570925, 0x6feb71ef,
   0x6811d741 };
 
-static uint32 spp_10[] =	/* primes 3 to 239 */
+/*@observer@*/ static uint32 spp_10[] =	/* primes 3 to 239 */
 { 0x3faa5dad, 0xb695ce58, 0x4a579328, 0xeab20f1f,
   0xef00fe27, 0xffc36456, 0x0a65723e, 0x27d8884a,
   0xd59da0a9, 0x92f77529 };
 
-static uint32 spp_11[] =	/* primes 3 to 263 */
+/*@observer@*/ static uint32 spp_11[] =	/* primes 3 to 263 */
 { 0x3c9b6e49, 0xb7cf685b, 0xe7f3a239, 0xfb4084cb,
   0x166885e3, 0x9d4f65b4, 0x0bb0e51c, 0x0a5d36fe,
   0x98c32069, 0xfd5c441c, 0x6d82f115 };
 
-static uint32 spp_12[] =	/* primes 3 to 281 */
+/*@observer@*/ static uint32 spp_12[] =	/* primes 3 to 281 */
 { 0x501201cc, 0x51a492a5, 0x44d3900a, 0xd4f8b32a,
   0x203c8584, 0x06a4457c, 0xab0b4f80, 0x5ab18ac6,
   0xeb9572ac, 0x6e9394fa, 0x522bffb6, 0xf44af2f3 };
 
-static uint32 spp_13[] =	/* primes 3 to 311 */
+/*@observer@*/ static uint32 spp_13[] =	/* primes 3 to 311 */
 { 0x9397b5b4, 0x414dc331, 0x04561364, 0x79958cc8,
   0xfd5ea01f, 0x5d5e9f61, 0xbd0f1cb6, 0x24af7e6a,
   0x3284dbb2, 0x9857622b, 0x8be980a6, 0x5456a5c1,
   0xed928009 };
 
-static uint32 spp_14[] =	/* primes 3 to 331 */
+/*@observer@*/ static uint32 spp_14[] =	/* primes 3 to 331 */
 { 0x0120eb4d, 0x70279230, 0x9ed122fc, 0xe0488be4,
   0x1d0c99f5, 0xd8c039ad, 0x058c90b4, 0x780500fe,
   0xf39c05cc, 0x09817a27, 0xc3e1776a, 0x246b6af2,
   0x946a10d6, 0x6eafaedf };
 
-static uint32 spp_15[] =	/* primes 3 to 353 */
+/*@observer@*/ static uint32 spp_15[] =	/* primes 3 to 353 */
 { 0x03c91dd1, 0x2e893191, 0x94095649, 0x874b41d6,
   0x05810c06, 0x195d70eb, 0xbd54a862, 0x50c52733,
   0x06dc6648, 0x1c251ca4, 0xa02c9a04, 0x78c96f0d,
   0x02f0db0b, 0x39d624ca, 0x0b0441c1 };
 
-static uint32 spp_16[] =	/* primes 3 to 379 */
+/*@observer@*/ static uint32 spp_16[] =	/* primes 3 to 379 */
 { 0x106aa9fb, 0x7646fa6e, 0xb0813c28, 0xc5d5f09f,
   0x077ec3ba, 0x238bfb99, 0xc1b631a2, 0x03e81187,
   0x233db117, 0xcbc38405, 0x6ef04659, 0xa4a11de4,
   0x9f7ecb29, 0xbada8f98, 0x0decece9, 0x2e30c48f };
 
-static uint32 spp_17[] =	/* primes 3 to 401 */
+/*@observer@*/ static uint32 spp_17[] =	/* primes 3 to 401 */
 { 0x5aa88d8c, 0x594bb372, 0xc4bc813f, 0x4a87a266,
   0x1f984840, 0xdab15692, 0x2c2a177d, 0x95843665,
   0x6f36d41a, 0x11c35ccc, 0x2904b7e9, 0xc424eb61,
   0x3b3536a4, 0x0b2745bd, 0xadf1a6c9, 0x7b23e85a,
   0xdc6695c1 };
 
-static uint32 spp_18[] =	/* primes 3 to 421 */
+/*@observer@*/ static uint32 spp_18[] =	/* primes 3 to 421 */
 { 0x0185dbeb, 0x2b8b11d3, 0x7633e9dc, 0x1eec5415,
   0x65c6ce84, 0x31d227ee, 0x28f0328a, 0x60c90118,
   0xae031cc5, 0xa781c824, 0xd1f16d25, 0xf4f0cccf,
   0xf35e9745, 0x79072ec8, 0xcaf1ac8e, 0xefd5566f,
   0xa15fb94f, 0xe34f5d37 };
 
-static uint32 spp_19[] =	/* primes 3 to 443 */
+/*@observer@*/ static uint32 spp_19[] =	/* primes 3 to 443 */
 { 0x0cde6fd1, 0xcf108066, 0xcc548df9, 0x070e102c,
   0x2c651b88, 0x5f24f503, 0xaaffe276, 0xfeb57311,
   0x0c1e4592, 0xa35890d7, 0x678aaeee, 0x9f44800f,
   0xc43f999d, 0x5d06b89f, 0xcb22e533, 0x5a9287bc,
   0x6d75a3e9, 0x1e53906d, 0x413163d5 };
 
-static uint32 spp_20[] =	/* primes 3 to 463 */
+/*@observer@*/ static uint32 spp_20[] =	/* primes 3 to 463 */
 { 0x833a505c, 0xf9922bee, 0xc80265a6, 0xd50e1cce,
   0xa22f6fec, 0x2eb84450, 0xcec64a3c, 0x0e10d472,
   0xdd653b9b, 0x51d81d0e, 0x3a3142ea, 0x49b91e3a,
   0x5e210232, 0x67bda426, 0x738730cf, 0xb8e6e2ae,
   0xc08c9d4b, 0xd2420066, 0xdccf95ef, 0x49a560b7 };
 
-static uint32 spp_21[] =	/* primes 3 to 487 */
+/*@observer@*/ static uint32 spp_21[] =	/* primes 3 to 487 */
 { 0x035417f1, 0xe321c06c, 0xbe32ffce, 0xae752cc9,
   0xa9fe11a6, 0x3d94c946, 0x456edd7d, 0x5a060de1,
   0x84a826a6, 0xf0740c13, 0x48fa1038, 0x911d771d,
@@ -162,7 +162,7 @@ static uint32 spp_21[] =	/* primes 3 to 487 */
   0x491cbd61, 0x55e565af, 0x4a9f4331, 0x0adbb0d7,
   0x06e86f6d };
 
-static uint32 spp_22[] =	/* primes 3 to 509 */
+/*@observer@*/ static uint32 spp_22[] =	/* primes 3 to 509 */
 { 0x309d024b, 0xd5380319, 0x2ca33469, 0x0bafb43a,
   0x0abd5840, 0xfbeb24d1, 0xf49b6330, 0x47902bae,
   0x581ca4cb, 0xa778fdb1, 0x6dc0a6af, 0xef960687,
@@ -170,7 +170,7 @@ static uint32 spp_22[] =	/* primes 3 to 509 */
   0x8ffd0db8, 0xe8fa61a1, 0x6e1c0970, 0xbeb81adc,
   0xf49c82df, 0xf960d36f };
 
-static uint32 spp_23[] =	/* primes 3 to 541 */
+/*@observer@*/ static uint32 spp_23[] =	/* primes 3 to 541 */
 { 0x01ab244a, 0x33bc047e, 0x804590b4, 0xc3207237,
   0xea503fa0, 0x7541b251, 0x57cfd03f, 0xf602c9d0,
   0x3dcd12ba, 0xa4947ae6, 0xc6ee61be, 0xedf6c716,
@@ -178,7 +178,7 @@ static uint32 spp_23[] =	/* primes 3 to 541 */
   0xb6a5129c, 0x7699fb5c, 0xccec6d45, 0x56c9b8ea,
   0xfa05897c, 0xb8c5cf72, 0xb77603d9 };
 
-static uint32 spp_24[] =	/* primes 3 to 569 */
+/*@observer@*/ static uint32 spp_24[] =	/* primes 3 to 569 */
 { 0x25eac89f, 0x8d4da338, 0x337b4985, 0x0d2d1489,
   0x2663177b, 0x4010af3d, 0xd23eeb0b, 0x228f3832,
   0xffcee2e5, 0xcbd1acc9, 0x8f47f251, 0x873380ae,
@@ -186,7 +186,7 @@ static uint32 spp_24[] =	/* primes 3 to 569 */
   0x93c158c1, 0xa9a8227f, 0xf81a90c5, 0x630e9c44,
   0x845c755c, 0x7df35a7d, 0x430c679a, 0x11575655 };
 
-static uint32 spp_25[] =	/* primes 3 to 587 */
+/*@observer@*/ static uint32 spp_25[] =	/* primes 3 to 587 */
 { 0x01b515a8, 0xdca3d6e4, 0x69090373, 0x84febfe8,
   0xf32e06cf, 0x9bde8c89, 0x6b3f992f, 0x2ff23508,
   0xe1c01024, 0x3b8ad0c4, 0xac54e7c7, 0x3f4081d8,
@@ -195,7 +195,7 @@ static uint32 spp_25[] =	/* primes 3 to 587 */
   0x6b3faafc, 0x0f200b35, 0x7485ce4a, 0x2f08f148,
   0xcce6887d };
 
-static uint32 spp_26[] =	/* primes 3 to 607 */
+/*@observer@*/ static uint32 spp_26[] =	/* primes 3 to 607 */
 { 0x3383219d, 0x26454f06, 0xe2789b7f, 0x9c3b940e,
   0x03be2105, 0x798e3ff7, 0x945bd325, 0x997bc262,
   0x025598f8, 0x8577748e, 0xc7155ff8, 0x8a1ff4c9,
@@ -204,7 +204,7 @@ static uint32 spp_26[] =	/* primes 3 to 607 */
   0xde195be8, 0x6e66ba89, 0xb0ab042d, 0x3276976c,
   0x3dbeb3d7, 0x413ea96d };
 
-static uint32 spp_27[] =	/* primes 3 to 619 */
+/*@observer@*/ static uint32 spp_27[] =	/* primes 3 to 619 */
 { 0x02ced4b7, 0xf15179e8, 0x7fcba6da, 0x7b07a6f3,
   0xf9311218, 0xa7b88985, 0xac74b503, 0xbf745330,
   0x6d0a23f5, 0x27a1fa9a, 0xc2b85f1a, 0x26152470,
@@ -213,7 +213,7 @@ static uint32 spp_27[] =	/* primes 3 to 619 */
   0x80751585, 0xc70e20c2, 0x2d15d3fe, 0xc1b40c7f,
   0x8e25dd07, 0xdb09dd86, 0x791aa9e3 };
 
-static uint32 spp_28[] =	/* primes 3 to 647 */
+/*@observer@*/ static uint32 spp_28[] =	/* primes 3 to 647 */
 { 0x6e026454, 0x60adbd18, 0xcd52ce1a, 0x1beab1c0,
   0x36e468e9, 0xf350d69b, 0x1d357d08, 0x3a59f778,
   0xc2cc262b, 0x4a29ce52, 0x509bcf97, 0x349ba2bf,
@@ -222,7 +222,7 @@ static uint32 spp_28[] =	/* primes 3 to 647 */
   0xc74d951d, 0xb361f061, 0xc4d14f00, 0x0d806db4,
   0xcd939110, 0xc7cab492, 0x2f3ea4c4, 0x852ca469 };
 
-static uint32 spp_29[] =	/* primes 3 to 661 */
+/*@observer@*/ static uint32 spp_29[] =	/* primes 3 to 661 */
 { 0x074921f7, 0x6a76cec3, 0xaeb05f74, 0x60b21f16,
   0x49dece2f, 0x21bb3ed9, 0xe4cb4ebc, 0x05d6f408,
   0xed3d408a, 0xdee16505, 0xdc657c6d, 0x93877982,
@@ -232,7 +232,7 @@ static uint32 spp_29[] =	/* primes 3 to 661 */
   0xc7001c45, 0x4a84a45d, 0x66007591, 0x27e85693,
   0x2288d0fb };
 
-static uint32 spp_30[] =	/* primes 3 to 683 */
+/*@observer@*/ static uint32 spp_30[] =	/* primes 3 to 683 */
 { 0x00872313, 0x1f66758a, 0x414bbebb, 0x2f8670bf,
   0x01dc959d, 0x74468901, 0x57c57f40, 0xe210c9c2,
   0x74f54469, 0x7c71cc1d, 0xe2be67a2, 0x03d8d56f,
@@ -242,7 +242,7 @@ static uint32 spp_30[] =	/* primes 3 to 683 */
   0xe61b766e, 0xc0943254, 0x1cd70f0f, 0xd5a0ce6b,
   0x8ab998fb, 0x8ab36e0d };
 
-static uint32 spp_31[] =	/* primes 3 to 719 */
+/*@observer@*/ static uint32 spp_31[] =	/* primes 3 to 719 */
 { 0x1e595df4, 0x3064a8c9, 0xd61ae17b, 0xde1938f0,
   0x22ee6357, 0x35f4cadd, 0x3d39f473, 0xafed7df5,
   0x92ae0fd3, 0xfe910508, 0x9ad9e939, 0x988b0227,
@@ -252,7 +252,7 @@ static uint32 spp_31[] =	/* primes 3 to 719 */
   0x20969ec0, 0x1a480d31, 0x331b3252, 0x01b36fab,
   0x3d5b415b, 0x1a4567e7, 0x3baf6389 };
 
-static uint32 spp_32[] =	/* primes 3 to 739 */
+/*@observer@*/ static uint32 spp_32[] =	/* primes 3 to 739 */
 { 0x02c85ff8, 0x70f24be8, 0x0f62b1ba, 0x6c20bd72,
   0xb837efdf, 0x121206d8, 0x7db56b7d, 0x69fa4c02,
   0x1c107c3c, 0xa206fe8f, 0xa7080ef5, 0x76effc82,
@@ -262,7 +262,7 @@ static uint32 spp_32[] =	/* primes 3 to 739 */
   0x35bbb6e5, 0xdae2783d, 0xd1c0ce7d, 0xec4fc70e,
   0x5186d411, 0xdf36368f, 0x061aa360, 0x11f30179 };
 
-static uint32 spp_33[] =	/* primes 3 to 761 */
+/*@observer@*/ static uint32 spp_33[] =	/* primes 3 to 761 */
 { 0xd0440ea6, 0x8b382bcb, 0x75b4df8b, 0x6f8aa6cd,
   0x494daee4, 0x38b1922e, 0x46cef6ca, 0xdc74a93e,
   0xdf45643d, 0x05cc1aa5, 0x556f9c72, 0x0682676d,
@@ -273,7 +273,7 @@ static uint32 spp_33[] =	/* primes 3 to 761 */
   0x902bfb88, 0x6d99e44c, 0xb3a33020, 0xf05cadbe,
   0x4a8014ad };
 
-static uint32 spp_34[] =	/* primes 3 to 787 */
+/*@observer@*/ static uint32 spp_34[] =	/* primes 3 to 787 */
 { 0x16af5c18, 0xa2bef8ef, 0xf2278332, 0x182d0fbf,
   0x0038cc20, 0x5148b83d, 0x06e3d7d9, 0x32828b18,
   0xe11e0940, 0x28c7eaed, 0xa3395017, 0xe07d8ae9,
@@ -284,7 +284,7 @@ static uint32 spp_34[] =	/* primes 3 to 787 */
   0xb0cfbf96, 0x4c8f27ce, 0x05d6c77a, 0x01f9d332,
   0x36c9d442, 0xad69ed33 };
 
-static uint32 spp_35[] =	/* primes 3 to 811 */
+/*@observer@*/ static uint32 spp_35[] =	/* primes 3 to 811 */
 { 0x02c30b50, 0xedc2e94a, 0x3940a943, 0x968984e8,
   0x5a132fca, 0x78aedf5b, 0x4e307eec, 0xec19323e,
   0x71957e6e, 0xc70aab41, 0x43eb94a6, 0x20e9ca78,
@@ -295,7 +295,7 @@ static uint32 spp_35[] =	/* primes 3 to 811 */
   0xb6f9d10c, 0x8707cd1c, 0x2006396a, 0x192645b9,
   0x105ad4a4, 0xbd28a578, 0x5394c375 };
 
-static uint32 spp_36[] =	/* primes 3 to 827 */
+/*@observer@*/ static uint32 spp_36[] =	/* primes 3 to 827 */
 { 0x005bfd25, 0x83ab7a44, 0x13d4df0f, 0x537c686c,
   0xa8e6b583, 0xe491130e, 0x96dfcc1c, 0x05ba298f,
   0x8701314b, 0x45bf6ff4, 0xecf372ff, 0xe78bccdf,
@@ -306,7 +306,7 @@ static uint32 spp_36[] =	/* primes 3 to 827 */
   0x9513a9cb, 0xe3e67e3a, 0xe501c1c5, 0x22aa8ba9,
   0xf9557895, 0x89161feb, 0xc69941a1, 0x47aa9685 };
 
-static uint32 spp_37[] =	/* primes 3 to 857 */
+/*@observer@*/ static uint32 spp_37[] =	/* primes 3 to 857 */
 { 0x2a89d844, 0x7bf83428, 0x8464b909, 0x31ce3aaa,
   0xed0c2683, 0xb26f15e4, 0x32e95677, 0x65036627,
   0x80802634, 0x4328b107, 0x89fb23c6, 0x11b484ca,
@@ -318,7 +318,7 @@ static uint32 spp_37[] =	/* primes 3 to 857 */
   0x638a6241, 0x8946766c, 0x6392ec57, 0x9bd0c31a,
   0xb4ce65ab };
 
-static uint32 spp_38[] =	/* primes 3 to 877 */
+/*@observer@*/ static uint32 spp_38[] =	/* primes 3 to 877 */
 { 0x06706918, 0xe8355b7f, 0xfd3f024d, 0xa6b012e2,
   0xbb7338f3, 0x0d51a968, 0x0f3d9120, 0x35ed70e0,
   0x2d38d422, 0xe41812d4, 0xe29d637b, 0x318ce6f4,
@@ -330,7 +330,7 @@ static uint32 spp_38[] =	/* primes 3 to 877 */
   0xe85d8e94, 0x34a37006, 0x8cebc960, 0x60ab2f87,
   0x81efeb18, 0x2d0e724b };
 
-static uint32 spp_39[] =	/* primes 3 to 887 */
+/*@observer@*/ static uint32 spp_39[] =	/* primes 3 to 887 */
 { 0x0108d441, 0xce330894, 0xff143672, 0x5fee20c5,
   0x9b8fb49f, 0xbb29ad13, 0x5f0888b0, 0x59181b63,
   0x54380731, 0x8906204b, 0x7e16cc5e, 0x2d8c613b,
@@ -342,7 +342,7 @@ static uint32 spp_39[] =	/* primes 3 to 887 */
   0x19296afb, 0x2ae2f6b0, 0xf6f00832, 0x9e0d7b8f,
   0x61a10c17, 0xa07a962e, 0x5bc81157 };
 
-static uint32 spp_40[] =	/* primes 3 to 929 */
+/*@observer@*/ static uint32 spp_40[] =	/* primes 3 to 929 */
 { 0xa9e9591f, 0x7815617e, 0xcabe352f, 0xa13445c4,
   0xf8e319ba, 0x63042e1c, 0xb0a017d0, 0xe729a699,
   0x5480da4e, 0x5091cab4, 0x12910cf4, 0x7bb0f24e,
@@ -354,7 +354,7 @@ static uint32 spp_40[] =	/* primes 3 to 929 */
   0x30b96bfb, 0x6475393b, 0x5f43a549, 0xd95c5619,
   0x7e274850, 0xad1a6d18, 0xb5eaa41d, 0xd42fda55 };
 
-static uint32 spp_41[] =	/* primes 3 to 947 */
+/*@observer@*/ static uint32 spp_41[] =	/* primes 3 to 947 */
 { 0x2108556d, 0x64bbc9f2, 0xa87149a3, 0x26013838,
   0x4d8e761d, 0xab793496, 0x415dad5b, 0xa6682448,
   0xe3c8495c, 0xd3f2e881, 0xf3546b54, 0xb8b14068,
@@ -367,7 +367,7 @@ static uint32 spp_41[] =	/* primes 3 to 947 */
   0x546974cb, 0x927a6b4e, 0x85bf34af, 0x54cd54d6,
   0xbbec2afb };
 
-static uint32 spp_42[] =	/* primes 3 to 971 */
+/*@observer@*/ static uint32 spp_42[] =	/* primes 3 to 971 */
 { 0x06e1d136, 0xcb78cac5, 0x4da4bfcb, 0x6f2c4a24,
   0xfcf3796b, 0x77719c31, 0xd2791586, 0x0001f03e,
   0x4347621b, 0xf62577e0, 0x280ebfdb, 0x77b4f1e9,
@@ -380,7 +380,7 @@ static uint32 spp_42[] =	/* primes 3 to 971 */
   0x0d57d0f0, 0x76647b0a, 0xb191f543, 0xdc08c392,
   0x3167e5ee, 0x56c66847 };
 
-static uint32 spp_43[] =	/* primes 3 to 991 */
+/*@observer@*/ static uint32 spp_43[] =	/* primes 3 to 991 */
 { 0x0186695f, 0xa95755fc, 0xe74a9a4e, 0x8fbc30df,
   0x119e4901, 0x7edb320f, 0xe8114129, 0xb3bddd0d,
   0x2b0cf0f7, 0x2306fb1d, 0x6a5cae26, 0xe4a286ce,
@@ -393,7 +393,7 @@ static uint32 spp_43[] =	/* primes 3 to 991 */
   0x509f0ff9, 0x5202ec37, 0xe9a0f3f4, 0xdc2d184d,
   0x10575170, 0xe3e7d4d0, 0xaf86a76f };
 
-static uint32 spp_44[] =	/* primes 3 to 1013 */
+/*@observer@*/ static uint32 spp_44[] =	/* primes 3 to 1013 */
 { 0x005ca1a9, 0x2edd0e81, 0x9619289e, 0x1ecfe2d7,
   0xf3949eaf, 0x363a5fe8, 0xf6fee01c, 0xcd480490,
   0x30a1346a, 0xb83c4967, 0x8c7d5882, 0x6caf81ca,
@@ -406,7 +406,7 @@ static uint32 spp_44[] =	/* primes 3 to 1013 */
   0x5b7138fc, 0x36f7989c, 0xe85b07c2, 0xd4d59d42,
   0x1541c765, 0xf6c2111d, 0xb82eca06, 0xb437f757 };
 
-static uint32 spp_45[] =	/* primes 3 to 1033 */
+/*@observer@*/ static uint32 spp_45[] =	/* primes 3 to 1033 */
 { 0x5d59c98b, 0x452d0c02, 0x1291e1ef, 0x6ab50494,
   0xce984e89, 0xdc563773, 0x96b510a6, 0xeef593cb,
   0x73e4eb74, 0x6a1c83ef, 0x9a7bff75, 0x7ee6e25a,
@@ -420,7 +420,7 @@ static uint32 spp_45[] =	/* primes 3 to 1033 */
   0x7da17074, 0xb23e9701, 0x7e0e9f7e, 0x2ed03221,
   0x76712827 };
 
-static uint32 spp_46[] =	/* primes 3 to 1051 */
+/*@observer@*/ static uint32 spp_46[] =	/* primes 3 to 1051 */
 { 0x18e5b310, 0x229f618d, 0xe0f54782, 0xf57fff33,
   0x10546ba8, 0xefc0a69c, 0xac4b573b, 0x749cc43d,
   0xd3ba4df6, 0x1fe2800d, 0x733f4eb7, 0x19a6ea7f,
@@ -434,7 +434,7 @@ static uint32 spp_46[] =	/* primes 3 to 1051 */
   0x531bccbf, 0x17e3c78d, 0x5c43d8f6, 0x866ad640,
   0xfdbbba0f, 0xe997b27b };
 
-static uint32 spp_47[] =	/* primes 3 to 1069 */
+/*@observer@*/ static uint32 spp_47[] =	/* primes 3 to 1069 */
 { 0x06fd3257, 0x047a7639, 0xcb2cfcfb, 0x193180fe,
   0x1f21979a, 0x2376042b, 0x6b2809ba, 0x216e6d5b,
   0x57fec6ff, 0x96b878bb, 0xe1d4371b, 0x2f53c7e0,
@@ -448,7 +448,7 @@ static uint32 spp_47[] =	/* primes 3 to 1069 */
   0x5aa7a694, 0x352122fc, 0xd4c1c770, 0x016d76cb,
   0xc050191f, 0x6ce5ab73, 0x6d43113d };
 
-static uint32 spp_48[] =	/* primes 3 to 1093 */
+/*@observer@*/ static uint32 spp_48[] =	/* primes 3 to 1093 */
 { 0x021bf949, 0x7091b8c3, 0x68cc7c8e, 0x00c1990c,
   0x6027481b, 0x79215ac8, 0xa7517749, 0xa2151377,
   0x9a993d29, 0x58fcb49a, 0x73680292, 0x68527994,
@@ -462,7 +462,7 @@ static uint32 spp_48[] =	/* primes 3 to 1093 */
   0x7dfb5c9c, 0x8ada77cd, 0x0d5b94ef, 0xf021e02e,
   0x307d0801, 0x0312d57c, 0xb5d97576, 0x4697842d };
 
-static uint32 spp_49[] =	/* primes 3 to 1109 */
+/*@observer@*/ static uint32 spp_49[] =	/* primes 3 to 1109 */
 { 0x00a8b455, 0xb6b4a84f, 0x6834364b, 0x936a996f,
   0xbceb3f49, 0x88ee2732, 0x24b48131, 0x2357ae12,
   0x4d520af5, 0xc87eb399, 0x90944c44, 0xc3a75724,
@@ -477,7 +477,7 @@ static uint32 spp_49[] =	/* primes 3 to 1109 */
   0x9781307a, 0xc1aee399, 0x0451d911, 0xc9204d5e,
   0x80edaf17 };
 
-static uint32 spp_50[] =	/* primes 3 to 1151 */
+/*@observer@*/ static uint32 spp_50[] =	/* primes 3 to 1151 */
 { 0xfa1bd62b, 0xaae1e767, 0x47535af3, 0x830fc07d,
   0xebcf3ef7, 0xe5a8e46b, 0x8937c4af, 0xe02aef0a,
   0xce420c7b, 0x2c3f2fac, 0xb9dc94e5, 0x100a7191,
@@ -492,7 +492,7 @@ static uint32 spp_50[] =	/* primes 3 to 1151 */
   0x138b42a3, 0xc1d9593c, 0xe1254fb3, 0x214d2b08,
   0x52532bc5, 0x28bc6467 };
 
-static uint32 spp_51[] =	/* primes 3 to 1171 */
+/*@observer@*/ static uint32 spp_51[] =	/* primes 3 to 1171 */
 { 0x5b7091ea, 0xdbc63f00, 0x64dd01de, 0x204ee72f,
   0xc4644db7, 0x573e04ee, 0x706df728, 0x7a49af78,
   0xc5b99680, 0x528566bc, 0x17d57a00, 0x16a5b12e,
@@ -507,7 +507,7 @@ static uint32 spp_51[] =	/* primes 3 to 1171 */
   0x1fbb5766, 0xb6977732, 0x3f869dd0, 0xe286a091,
   0x7e3f520e, 0xc3203bce, 0x170ef097 };
 
-static uint32 spp_52[] =	/* primes 3 to 1193 */
+/*@observer@*/ static uint32 spp_52[] =	/* primes 3 to 1193 */
 { 0x239afcd4, 0x38799705, 0xab8a0cda, 0x4802bc8f,
   0xb0e87f44, 0xa568f618, 0x7c604708, 0xdfb79072,
   0xe24b49cb, 0x8b2ac531, 0x005cf298, 0x2437b16e,
@@ -522,7 +522,7 @@ static uint32 spp_52[] =	/* primes 3 to 1193 */
   0x66aa84bf, 0x84d4448d, 0x21190291, 0x66db27bd,
   0x515599cd, 0xcd147810, 0x3acf73e7, 0xfe62aed9 };
 
-static uint32 spp_53[] =	/* primes 3 to 1217 */
+/*@observer@*/ static uint32 spp_53[] =	/* primes 3 to 1217 */
 { 0x0eb29f45, 0x5fc46bf0, 0xd4857e41, 0xa0059da0,
   0xda0b3770, 0xf445bac2, 0x37decad9, 0x954f2a17,
   0x849520eb, 0x001349bf, 0xf0264427, 0xb01519ec,
@@ -538,7 +538,7 @@ static uint32 spp_53[] =	/* primes 3 to 1217 */
   0x9a202974, 0xa1069be2, 0xd54ceff7, 0x8e333c48,
   0x4ebbe265 };
 
-static uint32 spp_54[] =	/* primes 3 to 1231 */
+/*@observer@*/ static uint32 spp_54[] =	/* primes 3 to 1231 */
 { 0x0654f0d4, 0xcdacb307, 0x5419612f, 0xae3cf746,
   0xfbab751f, 0xd0887955, 0x28adc68d, 0x26f32877,
   0xeb1b772d, 0xb48e49f6, 0xcb445987, 0xc4966560,
@@ -554,7 +554,7 @@ static uint32 spp_54[] =	/* primes 3 to 1231 */
   0x55e0d645, 0x628c5475, 0x6217c0bd, 0xf119900b,
   0x05ea71dd, 0x714fd2c9 };
 
-static uint32 spp_55[] =	/* primes 3 to 1259 */
+/*@observer@*/ static uint32 spp_55[] =	/* primes 3 to 1259 */
 { 0x02de1de4, 0xcbca29fc, 0x94a50bb7, 0xae89c417,
   0xb8063484, 0x5c71a8c6, 0xa641d997, 0x65355b7e,
   0xed63ea84, 0xeaeead3c, 0x2a49b4d2, 0xefdd333e,
@@ -570,7 +570,7 @@ static uint32 spp_55[] =	/* primes 3 to 1259 */
   0x7b685023, 0x3f0d9c13, 0x7f7c114d, 0xbe550751,
   0xbc8560cb, 0x746a4b6c, 0x373cde1f };
 
-static uint32 spp_56[] =	/* primes 3 to 1283 */
+/*@observer@*/ static uint32 spp_56[] =	/* primes 3 to 1283 */
 { 0x01662c66, 0xdab7a4fa, 0xdba4265a, 0xc2075912,
   0x59e9c885, 0xe1330cb6, 0xc91bee92, 0xf1b334ff,
   0x384f827c, 0xc8057aa7, 0xc3b65fc6, 0xde53dcac,
@@ -586,7 +586,7 @@ static uint32 spp_56[] =	/* primes 3 to 1283 */
   0x4548a055, 0x62ed1c09, 0x1a63309b, 0xf1a9df8b,
   0xf0c59af9, 0x12a62c22, 0xe1e1f49b, 0xb0115c17 };
 
-static uint32 spp_57[] =	/* primes 3 to 1297 */
+/*@observer@*/ static uint32 spp_57[] =	/* primes 3 to 1297 */
 { 0x00b3fde4, 0xe9dbc2a2, 0x1c8f4d4b, 0x53b0ff59,
   0x643cf537, 0x88f9d4ba, 0x69472171, 0x6a2f33d5,
   0xa93b03b2, 0x59142a0e, 0x117006bc, 0x8b4e1475,
@@ -603,7 +603,7 @@ static uint32 spp_57[] =	/* primes 3 to 1297 */
   0x58bafd1a, 0xc6f2f456, 0xe938c1f8, 0x4051aadc,
   0x54d4a035 };
 
-static uint32 spp_58[] =	/* primes 3 to 1307 */
+/*@observer@*/ static uint32 spp_58[] =	/* primes 3 to 1307 */
 { 0x005cda0c, 0x54b07f4f, 0xff0caca0, 0x7cc89b95,
   0x1c021191, 0x164be693, 0x6665357e, 0xbb2f689c,
   0x7157ea4f, 0x98037ce1, 0x5aca14ca, 0x3cf1a386,
@@ -620,7 +620,7 @@ static uint32 spp_58[] =	/* primes 3 to 1307 */
   0xd052c10a, 0xbfc67bf6, 0x915d4435, 0x2688091b,
   0x1eb1c711, 0x7c91eae5 };
 
-static uint32 spp_59[] =	/* primes 3 to 1327 */
+/*@observer@*/ static uint32 spp_59[] =	/* primes 3 to 1327 */
 { 0x0031fc6d, 0x6918c954, 0x9fe61e37, 0xe79cea8a,
   0xe12d234b, 0x7642915b, 0x85e4b88b, 0x83eeba5f,
   0x429d8086, 0x9a31c342, 0x0020beb9, 0xbc48ece8,
@@ -637,7 +637,7 @@ static uint32 spp_59[] =	/* primes 3 to 1327 */
   0xfad8b7e5, 0xd5151c83, 0x9045920b, 0xfa0cecd0,
   0x43e94546, 0xee4f4361, 0x84901bb5 };
 
-static uint32 spp_60[] =	/* primes 3 to 1381 */
+/*@observer@*/ static uint32 spp_60[] =	/* primes 3 to 1381 */
 { 0xa0604bc5, 0x4c251ade, 0xcf22bf07, 0x5a150bb1,
   0x2a67d65a, 0x5045c183, 0x17246627, 0x0d72a8c6,
   0x3e2dd1c4, 0x6694a251, 0xf55bca5e, 0x7d834c87,
@@ -654,7 +654,7 @@ static uint32 spp_60[] =	/* primes 3 to 1381 */
   0xca98bda0, 0x5c0c6ac6, 0x666daad0, 0x14d2ff3f,
   0x7138fa68, 0xddd5e9f0, 0xe92edcaa, 0x62b56483 };
 
-static uint32 spp_61[] =	/* primes 3 to 1423 */
+/*@observer@*/ static uint32 spp_61[] =	/* primes 3 to 1423 */
 { 0x68bd8015, 0x91071573, 0x8a205b51, 0xe1be9357,
   0xdab961de, 0x59c9e43c, 0xb9becf7a, 0x8adba9a9,
   0x926a87bb, 0x7f574190, 0x3ee07b97, 0x83b5ed87,
@@ -672,7 +672,7 @@ static uint32 spp_61[] =	/* primes 3 to 1423 */
   0xba405fde, 0xe85bb37c, 0xdae528dd, 0xe98d3250,
   0xbec22e6b };
 
-static uint32 spp_62[] =	/* primes 3 to 1433 */
+/*@observer@*/ static uint32 spp_62[] =	/* primes 3 to 1433 */
 { 0x4742fdaf, 0xf7e8231a, 0xded68277, 0x58493423,
   0x12b13d2f, 0x5925c539, 0x82d876ef, 0x7ff69e7f,
   0x5b4ff04e, 0x8454faea, 0x620dc960, 0x0c65fd57,
@@ -690,7 +690,7 @@ static uint32 spp_62[] =	/* primes 3 to 1433 */
   0x177c5dc0, 0xfbfbb491, 0xa1e5e03e, 0x5715875c,
   0xa02a0fa4, 0x1fde7abd };
 
-static uint32 spp_63[] =	/* primes 3 to 1451 */
+/*@observer@*/ static uint32 spp_63[] =	/* primes 3 to 1451 */
 { 0x322123be, 0x40a1853c, 0xd02ea217, 0x363a368b,
   0xacb2117a, 0x342a5ee6, 0xa03a7fda, 0x4338eaac,
   0x9d9cc512, 0xffa944f1, 0x767e0a56, 0xc82c051f,
@@ -708,7 +708,7 @@ static uint32 spp_63[] =	/* primes 3 to 1451 */
   0x4d152676, 0xe28268ad, 0xf7c026d3, 0x55a2a944,
   0xf41bc21f, 0x67b73894, 0x5828ad87 };
 
-static uint32 spp_64[] =	/* primes 3 to 1471 */
+/*@observer@*/ static uint32 spp_64[] =	/* primes 3 to 1471 */
 { 0x2465a7bd, 0x85011e1c, 0x9e052792, 0x9fff268c,
   0x82ef7efa, 0x416863ba, 0xa5acdb09, 0x71dba0cc,
   0xac3ee499, 0x9345029f, 0x2cf810b9, 0x9e406aac,
@@ -866,7 +866,7 @@ int mp32ptrials(uint32 bits)
 }
 
 static void mp32prndbits(mp32barrett* p, uint8 msbclr, uint8 lsbset, randomGeneratorContext* rc)
-	/*@modifies p->modl, *rc @*/
+	/*@modifies p, rc @*/
 {
 	register uint32 size;
 
@@ -877,12 +877,12 @@ static void mp32prndbits(mp32barrett* p, uint8 msbclr, uint8 lsbset, randomGener
 	(void) rc->rng->next(rc->param, p->modl, size);
 
 	if (msbclr != 0)
-		p->modl[0] &= (0xffffffff >> msbclr);
+		p->modl[0] &= (((uint32)0xffffffff) >> msbclr);
 
-	p->modl[0] |= (0x80000000 >> msbclr);
+	p->modl[0] |= (((uint32)0x80000000) >> msbclr);
 
 	if (lsbset != 0)
-		p->modl[size] |= (0xffffffff >> (32 - lsbset));
+		p->modl[size] |= (((uint32)0xffffffff) >> (32 - lsbset));
 }
 
 /**
@@ -1094,6 +1094,7 @@ void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, i
 		{
 			mp32prndbits(&s, 1, 0, rc);
 
+			/*@-usedef@*/ /* s is set */
 			if (cofactor == 1)
 			{
 				mp32setlsb(s.size, s.modl);
@@ -1161,6 +1162,7 @@ void mp32prndconone_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, i
 			mp32bfree(&s);
 
 			return;
+			/*@=usedef@*/
 		}
 	}
 }
@@ -1183,6 +1185,7 @@ void mp32prndsafe_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int
 		mp32bzero(&q);
 		mp32binit(&q, size);
 
+		/*@-usedef@*/	/* q is set */
 		while (1)
 		{
 			/*
@@ -1207,16 +1210,17 @@ void mp32prndsafe_w(mp32barrett* p, randomGeneratorContext* rc, uint32 size, int
 			mp32bmu_w(&q, wksp);
 
 			if (!mp32pmilrab_w(&q, rc, t, wksp))
-                continue;
+				continue;
 
-            mp32bmu_w(p, wksp);
+			mp32bmu_w(p, wksp);
 
-            if (!mp32pmilrab_w(p, rc, t, wksp))
+			if (!mp32pmilrab_w(p, rc, t, wksp))
 				continue;
 
 			mp32bfree(&q);
 
 			return;
-        }
-    }
+		}
+		/*@=usedef@*/
+	}
 }

@@ -263,7 +263,9 @@ void mp32brnd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* result
 	{
 		(void) rc->rng->next(rc->param, result, b->size);
 
+		/*@-shiftsigned -usedef@*/
 		result[0] &= (0xffffffff >> msz);
+		/*@=shiftsigned =usedef@*/
 
 		while (mp32ge(b->size, result, wksp))
 			(void) mp32sub(b->size, result, wksp);
@@ -286,7 +288,9 @@ void mp32brndodd_w(const mp32barrett* b, randomGeneratorContext* rc, uint32* res
 	{
 		(void) rc->rng->next(rc->param, result, b->size);
 
+		/*@-shiftsigned -usedef@*/
 		result[0] &= (0xffffffff >> msz);
+		/*@=shiftsigned =usedef@*/
 		mp32setlsb(b->size, result);
 
 		while (mp32ge(b->size, result, wksp))
@@ -527,13 +531,13 @@ void mp32bslide_w(const mp32barrett* b, const uint32 xsize, const uint32* xdata,
 	mp32setx(size, slide, xsize, xdata);                                    /* x^1 mod b */
 }
 
-static byte mp32bslide_presq[16] = 
+/*@observer@*/ static byte mp32bslide_presq[16] = 
 { 0, 1, 1, 2, 1, 3, 2, 3, 1, 4, 3, 4, 2, 4, 3, 4 };
 
-static byte mp32bslide_mulg[16] =
+/*@observer@*/ static byte mp32bslide_mulg[16] =
 { 0, 0, 0, 1, 0, 2, 1, 3, 0, 4, 2, 5, 1, 6, 3, 7 };
 
-static byte mp32bslide_postsq[16] =
+/*@observer@*/ static byte mp32bslide_postsq[16] =
 { 0, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0 };
 
 /**
@@ -551,7 +555,7 @@ void mp32bpowmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint
 	/* K == 4 for the first try */
 	
 	uint32  size = b->size;
-	uint32  temp;
+	uint32  temp = 0;
 
 	while (psize)
 	{
@@ -583,7 +587,7 @@ void mp32bpowmodsld_w(const mp32barrett* b, const uint32* slide, uint32 psize, c
 	 */
 
 	uint32 size = b->size;
-	uint32 temp;
+	uint32 temp = 0;
 
 	mp32setw(size, result, 1);
 
@@ -688,7 +692,7 @@ void mp32btwopowmod_w(const mp32barrett* b, uint32 psize, const uint32* pdata, u
 	/* this routine calls mp32bmod, which needs (size*2+2), this routine needs (size*2) for sdata */
 
 	register uint32 size = b->size;
-	register uint32 temp;
+	register uint32 temp = 0;
 
 	mp32setw(size, result, 1);
 
@@ -809,8 +813,10 @@ int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* 
 					if (result)
 					{
 						mp32setx(size, result, size+1, ddata);
+						/*@-usedef@*/
 						if (*ddata & 0x80000000)
 							(void) mp32add(size, result, b->modl);
+						/*@=usedef@*/
 					}
 					return 1;
 				}
@@ -876,8 +882,10 @@ int mp32binv_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint32* 
 					if (result)
 					{
 						mp32setx(size, result, size+1, ddata);
+						/*@-usedef@*/
 						if (*ddata & 0x80000000)
 							(void) mp32add(size, result, b->modl);
+						/*@=usedef@*/
 					}
 					return 1;
 				}
@@ -942,7 +950,9 @@ void mp32bnrnd(const mp32barrett* b, randomGeneratorContext* rc, mp32number* res
 	mp32nfree(result);
 	mp32nsize(result, size);
 	/*@-nullpass@*/		/* temp may be NULL */
+	/*@-usedef@*/		/* result->data unallocated? */
 	mp32brnd_w(b, rc, result->data, temp);
+	/*@=usedef@*/
 
 	free(temp);
 	/*@=nullpass@*/
@@ -965,7 +975,9 @@ void mp32bnmulmod(const mp32barrett* b, const mp32number* x, const mp32number* y
 
 	mp32mul(opnd+fill, x->size, x->data, y->size, y->data);
 	/*@-nullpass@*/		/* temp may be NULL */
+	/*@-usedef@*/		/* result->data unallocated? */
 	mp32bmod_w(b, opnd, result->data, temp);
+	/*@=usedef@*/
 
 	free(temp);
 	/*@=nullpass@*/
@@ -988,7 +1000,9 @@ void mp32bnsqrmod(const mp32barrett* b, const mp32number* x, mp32number* result)
 
 	mp32sqr(opnd+fill, x->size, x->data);
 	/*@-nullpass@*/		/* temp may be NULL */
+	/*@-usedef@*/		/* result->data unallocated? */
 	mp32bmod_w(b, opnd, result->data, temp);
+	/*@=usedef@*/
 
 	free(temp);
 	/*@=nullpass@*/

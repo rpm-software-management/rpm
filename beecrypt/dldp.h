@@ -71,8 +71,8 @@ BEEDLLAPI
 int dldp_pFree(dldp_p* dp)
 	/*@modifies dp */;
 BEEDLLAPI
-int dldp_pCopy(dldp_p* dp, const dldp_p*)
-	/*@modifies dp */;
+int dldp_pCopy(dldp_p* dst, const dldp_p* src)
+	/*@modifies dst */;
 
 /*
  * Functions for generating keys
@@ -93,7 +93,7 @@ int dldp_pPair   (const dldp_p* dp, randomGeneratorContext* rgc, mp32number* x, 
  */
 
 BEEDLLAPI
-int  dldp_pEqual  (const dldp_p* dp, const dldp_p*)
+int  dldp_pEqual  (const dldp_p* a, const dldp_p* b)
 	/*@*/;
 
 /*
@@ -101,34 +101,34 @@ int  dldp_pEqual  (const dldp_p* dp, const dldp_p*)
  */
 
 BEEDLLAPI
-int dldp_pgoqMake     (dldp_p* dp, randomGeneratorContext* rgc, uint32, uint32, int)
+int dldp_pgoqMake     (dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 qsize, int cofactor)
 	/*@modifies dp, rgc */;
 BEEDLLAPI
-int dldp_pgoqMakeSafe (dldp_p* dp, randomGeneratorContext* rgc, uint32)
+int dldp_pgoqMakeSafe (dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 	/*@modifies dp, rgc */;
 BEEDLLAPI
 int dldp_pgoqGenerator(dldp_p* dp, randomGeneratorContext* rgc)
-	/*@modifies dp */;
+	/*@modifies dp, rgc */;
 BEEDLLAPI
-int  dldp_pgoqValidate (const dldp_p*, randomGeneratorContext* rgc, int)
-	/*@*/;
+int  dldp_pgoqValidate (const dldp_p*, randomGeneratorContext* rgc, int cofactor)
+	/*@modifies rgc @*/;
 
 /*
  * Functions for generating and validating dldp_pgon variant domain parameters
  */
 
 BEEDLLAPI
-int dldp_pgonMake     (dldp_p* dp, randomGeneratorContext* rgc, uint32, uint32)
+int dldp_pgonMake     (dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 qsize)
 	/*@modifies dp, rgc */;
 BEEDLLAPI
-int dldp_pgonMakeSafe (dldp_p* dp, randomGeneratorContext* rgc, uint32)
+int dldp_pgonMakeSafe (dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 	/*@modifies dp, rgc */;
 BEEDLLAPI
 int dldp_pgonGenerator(dldp_p* dp, randomGeneratorContext* rgc)
-	/*@modifies dp */;
+	/*@modifies dp, rgc */;
 BEEDLLAPI
 int  dldp_pgonValidate (const dldp_p* dp, randomGeneratorContext* rgc)
-	/*@*/;
+	/*@modifies rgc @*/;
 
 #ifdef __cplusplus
 }

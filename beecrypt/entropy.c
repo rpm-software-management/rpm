@@ -3,7 +3,7 @@
  *
  * entropy gathering routine for pseudo-random generator initialization
  *
- * Copyright (c) 1998-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -30,6 +30,8 @@
 
 #if WIN32
 # include <mmsystem.h>
+# include <wincrypt.h>
+# include <winerror.h>
 #else 
 # if HAVE_SYS_IOCTL_H
 #  include <sys/ioctl.h>
@@ -47,15 +49,18 @@
 # if HAVE_SYS_SOUNDCARD_H
 #  include <sys/soundcard.h>
 # endif
-# if HAVE_TERMIO_H
+# if HAVE_TERMIOS_H
+#  include <termios.h>
+# elif HAVE_TERMIO_H
 #  include <termio.h>
 # endif
 # if HAVE_SYNCH_H
 #  include <synch.h>
 # elif HAVE_PTHREAD_H
 #  include <pthread.h>
-# else
-#  error need locking mechanism
+# endif
+# if HAVE_AIO_H
+#  include <aio.h>
 # endif
 #endif
 #if HAVE_STDLIB_H
@@ -109,19 +114,211 @@ int entropy_provider_cleanup()
 	}
 	return 0;
 }
+#endif
 
-static int entropy_noisebits_8(HWAVEIN wavein, uint32 *data, int size)
+#if WIN32 || HAVE_DEV_AUDIO || HAVE_DEV_DSP
+/*
+ * Mask the low-order bit of a bunch of sound samples, analyze them and
+ * return an error in case they are all zeroes or ones.
+ */
+static int entropy_noise_filter(void* sampledata, int samplecount, int samplesize, int channels, int swap)
+	/*@*/
+{
+	register int rc = 0, i;
+
+	switch (samplesize)
+	{
+	case 1:
+		{
+			uint8* samples = (uint8*) sampledata;
+
+			switch (channels)
+			{
+			case 1:
+				{
+					int zero_count = 0;
+					int ones_count = 0;
+
+					for (i = 0; i < samplecount; i++)
+					{
+						if (samples[i] &= 0x1)
+							ones_count++;
+						else
+							zero_count++;
+					}
+
+					if ((zero_count == 0) || (ones_count == 0))
+					{
+						#if HAVE_ERRNO_H
+						errno = EIO;
+						#endif
+						rc = -1;
+					}
+				}
+				break;
+
+			case 2:
+				{
+					int zero_count_left = 0;
+					int ones_count_left = 0;
+					int zero_count_right = 0;
+					int ones_count_right = 0;
+
+					for (i = 0; i < samplecount; i++)
+					{
+						if (i & 1)
+						{
+							if (samples[i] &= 0x1)
+								ones_count_left++;
+							else
+								zero_count_left++;
+						}
+						else
+						{
+							if (samples[i] &= 0x1)
+								ones_count_right++;
+							else
+								zero_count_right++;
+						}
+					}
+
+					if ((zero_count_left == 0) || (ones_count_left == 0) ||
+							(zero_count_right == 0) || (ones_count_right == 0))
+					{
+						#if HAVE_ERRNO_H
+						errno = EIO;
+						#endif
+						rc = -1;
+					}
+				}
+				break;
+
+			default:
+				#if HAVE_ERRNO_H
+				errno = EINVAL;
+				#endif
+				rc = -1;
+			}
+		}
+		break;
+
+	case 2:
+		{
+			uint16* samples = (uint16*) sampledata;
+
+			switch (channels)
+			{
+			case 1:
+				{
+					int zero_count = 0;
+					int ones_count = 0;
+
+					for (i = 0; i < samplecount; i++)
+					{
+						if (swap)
+							samples[i] = swapu16(samples[i]);
+
+						if (samples[i] &= 0x1)
+							ones_count++;
+						else
+							zero_count++;
+					}
+
+					if ((zero_count == 0) || (ones_count == 0))
+					{
+						#if HAVE_ERRNO_H
+						errno = EIO;
+						#endif
+						rc = -1;
+					}
+				}
+				break;
+
+			case 2:
+				{
+					int zero_count_left = 0;
+					int ones_count_left = 0;
+					int zero_count_right = 0;
+					int ones_count_right = 0;
+
+					for (i = 0; i < samplecount; i++)
+					{
+						if (swap)
+							samples[i] = swapu16(samples[i]);
+
+						if (i & 1)
+						{
+							if (samples[i] &= 0x1)
+								ones_count_left++;
+							else
+								zero_count_left++;
+						}
+						else
+						{
+							if (samples[i] &= 0x1)
+								ones_count_right++;
+							else
+								zero_count_right++;
+						}
+					}
+
+					if ((zero_count_left == 0) || (ones_count_left == 0) ||
+							(zero_count_right == 0) || (ones_count_right == 0))
+					{
+						#if HAVE_ERRNO_H
+						errno = EIO;
+						#endif
+						rc = -1;
+					}
+				}
+				break;
+
+			default:
+				#if HAVE_ERRNO_H
+				errno = EINVAL;
+				#endif
+				rc = -1;
+			}
+		}
+		break;
+
+	default:
+		#if HAVE_ERRNO_H
+		errno = EINVAL;
+		#endif
+		rc = -1;
+	}
+
+	return 0;
+}
+
+/* bit deskewing technique: the classical Von Neumann method
+	- only use the lsb bit of every sample
+	- there is a chance of bias in 0 or 1 bits, so to deskew this:
+		- look at two successive sampled bits
+		- if they are the same, discard them
+		- if they are different, they're either 0-1 or 1-0; use the first bit of the pair as output
+*/
+
+#if WIN32
+static int entropy_noise_gather(HWAVEIN wavein, int samplesize, int channels, int swap, int timeout, uint32 *data, int size)
+#else
+static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, int timeout, uint32 *data, int size)
+	/*@*/
+#endif
 {
 	uint32 randombits = size << 5;
 	uint32 temp = 0;
+	int rc, i;
+
+	byte* sampledata = (byte*) malloc(1024 * samplesize * channels);
+
+	#if WIN32
+	WAVEHDR header;
 
 	/* first set up a wave header */
-	WAVEHDR header;
-	/* use a 1K buffer */
-	uint8 sample[1024];
-
-	header.lpData = (LPSTR) sample;
-	header.dwBufferLength = 1024 * sizeof(uint8);
+	header.lpData = (LPSTR) sampledata;
+	header.dwBufferLength = 1024 * samplesize * channels;
 	header.dwFlags = 0;
 
 	/* do error handling! */
@@ -129,136 +326,202 @@ static int entropy_noisebits_8(HWAVEIN wavein, uint32 *data, int size)
 	
 	/* the first event is the due to the opening of the wave */
 	ResetEvent(entropy_wavein_event);
-	
+	#else
+	# if ENABLE_AIO
+	struct aiocb my_aiocb;
+	const struct aiocb* my_aiocb_list = &my_aiocb;
+	#  if HAVE_TIME_H
+	struct timespec my_aiocb_timeout;
+	#  else
+	#   error
+	#  endif
+
+	memset(&my_aiocb, 0, sizeof(struct aiocb));
+
+	my_aiocb.aio_fildes = fd;
+	my_aiocb.aio_sigevent.sigev_notify = SIGEV_NONE;
+	# endif
+	#endif
+
+	if (sampledata == (byte*) 0)
+	{
+		#if HAVE_ERRNO_H
+		errno = ENOMEM;
+		#endif
+		return -1;
+	}
+
 	while (randombits)
 	{
-		register int i;
-		
-		while (1)
-		{
-			/* pass the buffer to the wavein and wait for the event */
-			waveInPrepareHeader(wavein, &header, sizeof(WAVEHDR));
-			waveInAddBuffer(wavein, &header, sizeof(WAVEHDR));
+		#if WIN32
+		/* pass the buffer to the wavein and wait for the event */
+		waveInPrepareHeader(wavein, &header, sizeof(WAVEHDR));
+		waveInAddBuffer(wavein, &header, sizeof(WAVEHDR));
 
-			/* in case we have to wait more than 10 seconds, bail out */
-			if (WaitForSingleObject(entropy_wavein_event, 10000) == WAIT_OBJECT_0)
+		/* in case we have to wait more than the specified timeout, bail out */
+		if (WaitForSingleObject(entropy_wavein_event, timeout) == WAIT_OBJECT_0)
+		{
+			rc = header.dwBytesRecorded;
+		}
+		else
+		{
+			waveInStop(wavein);
+			waveInReset(wavein);
+
+			free(sampledata);
+			return -1;
+		}
+		#else
+		# if ENABLE_AIO
+		my_aiocb.aio_buf = sampledata;
+		my_aiocb.aio_nbytes = 1024 * samplesize * channels;
+
+		rc = aio_read(&my_aiocb);
+		# else
+		rc = read(fd, sampledata, 1024 * samplesize * channels);
+		# endif
+
+		if (rc < 0)
+		{
+			free(sampledata);
+			return -1;
+		}
+
+		# if ENABLE_AIO
+		my_aiocb_timeout.tv_sec = (timeout / 1000);
+		my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
+
+		rc = aio_suspend(&my_aiocb_list, 1, &my_aiocb_timeout);
+
+		if (rc < 0)
+		{
+			#if HAVE_ERRNO_H
+			if (errno == EAGAIN)
 			{
-				/* only process if we read the whole thing */
-				if (header.dwBytesRecorded == header.dwBufferLength)
+				/* certain linux glibc versions are buggy and don't aio_suspend properly */
+				nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
+
+				my_aiocb_timeout.tv_sec = (timeout / 1000);
+				my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
+
+				/* and try again */
+				rc = aio_suspend(&my_aiocb_list, 1, &my_aiocb_timeout);
+			}
+			#endif
+		}
+
+		if (rc < 0)
+		{
+			/* cancel any remaining reads */
+			while (rc != AIO_ALLDONE)
+			{
+				rc = aio_cancel(fd, (struct aiocb*) 0);
+
+				if (rc == AIO_NOTCANCELED)
+				{
+					my_aiocb_timeout.tv_sec = (timeout / 1000);
+					my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
+
+					nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
+				}
+
+				if (rc < 0)
 					break;
 			}
-			else
-			{
-				waveInReset(wavein);
-				waveInClose(wavein);
-				return -1;
-			}
+			free(sampledata);
+			return -1;
 		}
-		
-		/* on windows, no swap of sample data is necessary */
-		for (i = 0; randombits && (i < 1024); i += 2)
+
+		rc = aio_error(&my_aiocb);
+
+		if (rc)
 		{
-			if ((sample[i] ^ sample[i+1]) & 0x1)
+			free(sampledata);
+			return -1;
+		}
+
+		rc = aio_return(&my_aiocb);
+
+		if (rc < 0)
+		{
+			free(sampledata);
+			return -1;
+		}
+		# endif
+		#endif
+
+		if (entropy_noise_filter(sampledata, rc / samplesize, samplesize, channels, swap) < 0)
+		{
+			fprintf(stderr, "noise filter indicates too much bias in audio samples\n");
+			free(sampledata);
+			return -1;
+		}
+
+		switch (samplesize)
+		{
+		case 1:
 			{
-				temp <<= 1;
-				if (sample[i] & 0x1)
-					temp |= 0x1;
-				randombits--;
-				if (!(randombits & 0x1F))
-					*(data++) = temp;
+				uint8* samples = (uint8*) sampledata;
+
+				for (i = 0; randombits && (i < 1024); i += 2)
+				{
+					if (samples[i] ^ samples[i+1])
+					{
+						temp <<= 1;
+						temp |= samples[i];
+						randombits--;
+						if (!(randombits & 0x1f))
+							*(data++) = temp;
+					}
+				}
 			}
+			break;
+
+		case 2:
+			{
+				uint16* samples = (uint16*) sampledata;
+
+				for (i = 0; randombits && (i < 1024); i += 2)
+				{
+					if (samples[i] ^ samples[i+1])
+					{
+						temp <<= 1;
+						temp |= samples[i];
+						randombits--;
+						if (!(randombits & 0x1f))
+							*(data++) = temp;
+					}
+				}
+			}
+			break;
+
+		default:
+			free(sampledata);
+			return -1;
 		}
 	}
-	
+
+	#if WIN32
+	waveInStop(wavein);
 	waveInReset(wavein);
-	waveInClose(wavein);
+	#endif
 
-	ReleaseMutex(entropy_wavein_lock);
-
+	free(sampledata);
 	return 0;
 }
+#endif
 
-static int entropy_noisebits_16(HWAVEIN wavein, uint32 *data, int size)
-{
-	uint32 randombits = size << 5;
-	uint32 temp = 0;
-
-	/* first set up a wave header */
-	WAVEHDR header;
-	/* use a 1K buffer */
-	uint16 sample[512];
-
-	header.lpData = (LPSTR) sample;
-	header.dwBufferLength = 512 * sizeof(uint16);
-	header.dwFlags = 0;
-
-	/* do error handling! */
-	waveInStart(wavein);
-	
-	/* the first event is the due to the opening of the wave */
-	ResetEvent(entropy_wavein_event);
-	
-	while (randombits)
-	{
-		register int i;
-		
-		while (1)
-		{
-			/* pass the buffer to the wavein and wait for the event */
-			waveInPrepareHeader(wavein, &header, sizeof(WAVEHDR));
-			waveInAddBuffer(wavein, &header, sizeof(WAVEHDR));
-
-			/* in case we have to wait more than 10 seconds, bail out */
-			if (WaitForSingleObject(entropy_wavein_event, 10000) == WAIT_OBJECT_0)
-			{
-				/* only process if we read the whole thing */
-				if (header.dwBytesRecorded == header.dwBufferLength)
-					break;
-			}
-			else
-			{
-				waveInReset(wavein);
-				waveInClose(wavein);
-				return -1;
-			}
-		}
-		
-		/* on windows, no swap of sample data is necessary */
-		for (i = 0; randombits && (i < 512); i += 2)
-		{
-			if ((sample[i] ^ sample[i+1]) & 0x1)
-			{
-				temp <<= 1;
-				if (sample[i] & 0x1)
-					temp |= 0x1;
-				randombits--;
-				if (!(randombits & 0x1F))
-					*(data++) = temp;
-			}
-		}
-	}
-	
-	waveInReset(wavein);
-	waveInClose(wavein);
-
-	ReleaseMutex(entropy_wavein_lock);
-
-	return 0;
-}
-
+#if WIN32
 int entropy_wavein(uint32* data, int size)
 {
+	const char *timeout_env = getenv("BEECRYPT_ENTROPY_WAVEIN_TIMEOUT");
+
 	WAVEINCAPS		waveincaps;
 	WAVEFORMATEX	waveformatex;
 	HWAVEIN			wavein;
-	MMRESULT		numdevs;
 	MMRESULT		rc;
 	
-	numdevs = waveInGetNumDevs();
-	if (numdevs <= 0)
-		return -1;
-	
-	rc = waveInGetDevCaps(0, &waveincaps, sizeof(WAVEINCAPS));
+	rc = waveInGetDevCaps(WAVE_MAPPER, &waveincaps, sizeof(WAVEINCAPS));
 	if (rc != MMSYSERR_NOERROR)
 		return -1;
 
@@ -348,86 +611,188 @@ int entropy_wavein(uint32* data, int size)
 
 	if (WaitForSingleObject(entropy_wavein_lock, INFINITE) != WAIT_OBJECT_0)
 		return -1;
-		
-	rc = waveInOpen(&wavein, 0, &waveformatex, (DWORD) entropy_wavein_event, (DWORD) 0, CALLBACK_EVENT);
+
+	rc = waveInOpen(&wavein, WAVE_MAPPER, &waveformatex, (DWORD) entropy_wavein_event, (DWORD) 0, CALLBACK_EVENT);
 	if (rc != MMSYSERR_NOERROR)
 	{
-		fprintf(stderr, "waveInOpen returned %d\n", rc);
+		fprintf(stderr, "waveInOpen failed!\n"); fflush(stderr);
 		ReleaseMutex(entropy_wavein_lock);
 		return -1;
 	}
 
-	switch (waveformatex.wBitsPerSample)
+	rc = entropy_noise_gather(wavein, waveformatex.wBitsPerSample >> 3, waveformatex.nChannels, 0, timeout_env ? atoi(timeout_env) : 2000, data, size);
+
+	waveInClose(wavein);
+
+	ReleaseMutex(entropy_wavein_lock);
+
+	return rc;
+}
+
+int entropy_console(uint32* data, int size)
+{
+	register uint32 randombits = size << 5;
+	register uint32 temp = 0;
+
+	HANDLE hStdin;
+	DWORD inRet;
+	INPUT_RECORD inEvent;
+	LARGE_INTEGER hrtsample;
+
+	hStdin = GetStdHandle(STD_INPUT_HANDLE);
+	if (hStdin == INVALID_HANDLE_VALUE)
 	{
-	case 8:
-		return entropy_noisebits_8(wavein, data, size);
-	case 16:
-		return entropy_noisebits_16(wavein, data, size);
-	default:
-		waveInClose(wavein);
-		ReleaseMutex(entropy_wavein_lock);
+		fprintf(stderr, "GetStdHandle error %d\n", GetLastError());
 		return -1;
 	}
+
+	printf("please press random keys on your keyboard\n"); fflush(stdout);
+
+	while (randombits)
+	{
+		if (!ReadConsoleInput(hStdin, &inEvent, 1, &inRet))
+		{
+			fprintf(stderr, "ReadConsoleInput failed\n"); fflush(stderr);
+			return -1;
+		}
+		if ((inRet == 1) && (inEvent.EventType == KEY_EVENT) && inEvent.Event.KeyEvent.bKeyDown)
+		{
+			printf("."); fflush(stdout);
+			if (!QueryPerformanceCounter(&hrtsample))
+			{
+				fprintf(stderr, "QueryPerformanceCounter failed\n"); fflush(stderr);
+				return -1;
+			}
+
+			/* get 8 bits from the sample */
+			temp <<= 8;
+			/* discard the 2 lowest bits */
+			temp |= (uint32)(hrtsample.LowPart >> 2);
+			randombits -= 8;
+
+			if (!(randombits & 0x1f))
+				*(data++) = temp;
+		}
+	}
+
+	printf("\nthanks\n");
+
+	Sleep(1000);
+	
+	if (!FlushConsoleInputBuffer(hStdin))
+	{
+		fprintf(stderr, "FlushConsoleInputBuffer failed\n"); fflush(stderr);
+		return -1;
+	}
+
+	return 0;
 }
+
+int entropy_wincrypt(uint32* data, int size)
+{
+	HCRYPTPROV hCrypt;
+	DWORD provType = PROV_RSA_FULL;
+	BOOL rc;
+
+	/* consider using getenv("BEECRYPT_ENTROPY_WINCRYPT_PROVTYPE") to set provType */
+
+	if (!CryptAcquireContext(&hCrypt, "BeeCrypt", NULL, provType, 0))
+	{
+		#if defined(NTE_BAD_KEYSET)
+		if (GetLastError() == NTE_BAD_KEYSET)
+		{
+			if (!CryptAcquireContext(&hCrypt, "BeeCrypt", NULL, provType, CRYPT_NEWKEYSET))
+				return -1;
+		}
+		else
+			return -1;
+		#else
+		return -1;
+		#endif
+	}
+
+	rc = CryptGenRandom(hCrypt, size << 2, (BYTE*) data);
+
+	CryptReleaseContext(hCrypt, 0);
+
+	return rc ? 0 : -1;
+}
+
 #else
+
 #if HAVE_DEV_AUDIO
-static const char* name_dev_audio = "/dev/audio";
+/*@observer@*/ static const char* name_dev_audio = "/dev/audio";
 static int dev_audio_fd = -1;
-#ifdef _REENTRANT
-#if HAVE_SYNCH_H
+# ifdef _REENTRANT
+#  if HAVE_SYNCH_H
 static mutex_t dev_audio_lock = DEFAULTMUTEX;
-#elif HAVE_PTHREAD_H
+#  elif HAVE_PTHREAD_H
 static pthread_mutex_t dev_audio_lock = PTHREAD_MUTEX_INITIALIZER;
-#else
-#error Need locking mechanism
-#endif
-#endif
+#  else
+#   error Need locking mechanism
+#  endif
+# endif
 #endif
 
 #if HAVE_DEV_DSP
-static const char* name_dev_dsp = "/dev/dsp";
+/*@observer@*/ static const char* name_dev_dsp = "/dev/dsp";
 static int dev_dsp_fd = -1;
-#ifdef _REENTRANT
-#if HAVE_SYNCH_H
+# ifdef _REENTRANT
+#  if HAVE_SYNCH_H
 static mutex_t dev_dsp_lock = DEFAULTMUTEX;
-#elif HAVE_PTHREAD_H
+#  elif HAVE_PTHREAD_H
 static pthread_mutex_t dev_dsp_lock = PTHREAD_MUTEX_INITIALIZER;
-#else
-#error Need locking mechanism
-#endif
-#endif
+#  else
+#   error Need locking mechanism
+#  endif
+# endif
 #endif
 
 #if HAVE_DEV_RANDOM
-static const char* name_dev_random = "/dev/random";
+/*@observer@*/ static const char* name_dev_random = "/dev/random";
 static int dev_random_fd = -1;
-#ifdef _REENTRANT
-#if HAVE_SYNC_H
+# ifdef _REENTRANT
+#  if HAVE_SYNCH_H
 static mutex_t dev_random_lock = DEFAULTMUTEX;
-#elif HAVE_PTHREAD_H
+#  elif HAVE_PTHREAD_H
 static pthread_mutex_t dev_random_lock = PTHREAD_MUTEX_INITIALIZER;
-#else
-#error Need locking mechanism
+#  else
+#   error Need locking mechanism
+#  endif
+# endif
 #endif
-#endif
+
+#if HAVE_DEV_URANDOM
+/*@observer@*/ static const char* name_dev_urandom = "/dev/urandom";
+static int dev_urandom_fd = -1;
+# ifdef _REENTRANT
+#  if HAVE_SYNCH_H
+static mutex_t dev_urandom_lock = DEFAULTMUTEX;
+#  elif HAVE_PTHREAD_H
+static pthread_mutex_t dev_urandom_lock = PTHREAD_MUTEX_INITIALIZER;
+#  else
+#   error Need locking mechanism
+#  endif
+# endif
 #endif
 
 #if HAVE_DEV_TTY
-static const char *dev_tty_name = "/dev/tty";
+/*@observer@*/ static const char *dev_tty_name = "/dev/tty";
 static int dev_tty_fd = -1;
-#ifdef _REENTRANT
-#if HAVE_SYNCH_H
+# ifdef _REENTRANT
+#  if HAVE_SYNCH_H
 static mutex_t dev_tty_lock = DEFAULTMUTEX;
-#elif HAVE_PTHREAD_H
+#  elif HAVE_PTHREAD_H
 static pthread_mutex_t dev_tty_lock = PTHREAD_MUTEX_INITIALIZER;
-#else
-#error Need locking mechanism
-#endif
-#endif
+#  else
+#   error Need locking mechanism
+#  endif
+# endif
 #endif
 
 #if HAVE_SYS_STAT_H
 static int statdevice(const char *device)
+	/*@modifies fileSystem @*/
 {
 	struct stat s;
 
@@ -447,134 +812,118 @@ static int statdevice(const char *device)
 }
 #endif
 
-#if HAVE_FCNTL_H
 static int opendevice(const char *device)
+	/*@modifies fileSystem @*/
 {
-	register int fd, flags, rc;
+	register int fd;
 
-	if ((fd = open(device, O_RDWR | O_NONBLOCK)) < 0)
+	if ((fd = open(device, O_RDONLY)) < 0)
 	{
 		#if HAVE_ERRNO_H && HAVE_STRING_H
 		fprintf(stderr, "open of %s failed: %s\n", device, strerror(errno));
 		#endif
 		return fd;
 	}
-
-	flags = fcntl(fd, F_GETFL, 0);
-	if (flags >= 0)
-	{
-		rc = fcntl(fd, F_SETFL, flags & ~O_NONBLOCK);
-		if (rc < 0)
-		{
-			#if HAVE_ERRNO_H
-			perror("fcntl F_SETFL failed");
-			#endif
-			return rc;
-		}
-	}
-	else
-	{
-		#if HAVE_ERRNO_H
-		perror("fcntl F_GETFL failed");
-		#endif
-		return flags;
-	}
 	
 	return fd;
 }
-#endif
 
-#if HAVE_DEV_AUDIO || HAVE_DEV_DSP
-/* bit deskewing technique: the classical Von Neumann method
-	- only use the lsb bit of every sample
-	- there is a chance of bias in 0 or 1 bits, so to deskew this:
-		- look at two successive sampled bits
-		- if they are the same, discard them
-		- if they are different, they're either 0-1 or 1-0; use the first bit of the pair as output
-*/
-
-static int entropy_be_noisebits(int fd, uint32 *data, int size)
+#if HAVE_DEV_RANDOM || HAVE_DEV_URANDOM
+/* timeout is in milliseconds */
+static int entropy_randombits(int fd, int timeout, uint32* data, int size)
+	/*@modifies data @*/
 {
-	register uint32 randombits = size << 5;
-	register uint32 temp;
-	uint16 sample[2];
+	register byte* bytedata = (byte*) data;
+	register int   bytesize = (size << 2);
+	register int rc;
 
-	while (randombits)
+	#if ENABLE_AIO
+	struct aiocb my_aiocb;
+	const struct aiocb* my_aiocb_list = &my_aiocb;
+	# if HAVE_TIME_H
+	struct timespec my_aiocb_timeout;
+	# else
+	#  error
+	# endif
+
+	memset(&my_aiocb, 0, sizeof(struct aiocb));
+
+	my_aiocb.aio_fildes = fd;
+	my_aiocb.aio_sigevent.sigev_notify = SIGEV_NONE;
+	#endif
+
+	while (bytesize)
 	{
-		if (read(fd, sample, sizeof(sample)) < 0)
+		#if ENABLE_AIO
+		my_aiocb.aio_buf = bytedata;
+		my_aiocb.aio_nbytes = bytesize;
+
+		rc = aio_read(&my_aiocb);
+		#else
+		rc = read(fd, bytedata, bytesize);
+		#endif
+
+		if (rc < 0)
+			return -1;
+
+		#if ENABLE_AIO
+		my_aiocb_timeout.tv_sec = (timeout / 1000);
+		my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
+
+		rc = aio_suspend(&my_aiocb_list, 1, &my_aiocb_timeout);
+
+		if (rc < 0)
 		{
 			#if HAVE_ERRNO_H
-			perror("read failed");
+			if (errno == EAGAIN)
+			{
+				/* certain linux glibc versions are buggy and don't aio_suspend properly */
+				nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
+
+				my_aiocb_timeout.tv_sec = 0;
+				my_aiocb_timeout.tv_nsec = 0;
+
+				/* and try again */
+				rc = aio_suspend(&my_aiocb_list, 1, &my_aiocb_timeout);
+			}
 			#endif
+		}
+
+		if (rc < 0)
+		{
+			/* cancel any remaining reads */
+			while (rc != AIO_ALLDONE)
+			{
+				rc = aio_cancel(fd, (struct aiocb*) 0);
+
+				if (rc == AIO_NOTCANCELED)
+				{
+					my_aiocb_timeout.tv_sec = (timeout / 1000);
+					my_aiocb_timeout.tv_nsec = (timeout % 1000) * 1000000;
+
+					nanosleep(&my_aiocb_timeout, (struct timespec*) 0);
+				}
+
+				if (rc < 0)
+					break;
+			}
+
 			return -1;
 		}
 
-		if ((sample[0] ^ sample[1]) & 0x1)
-		{
-			temp <<= 1;
-			if (sample[0] & 0x1)
-				temp |= 0x1;
-			randombits--;
-			if (!(randombits & 0x1F))
-				*(data++) = temp;
-		}
-	}
-	return 0;
-}
+		rc = aio_error(&my_aiocb);
 
-static int entropy_le_noisebits(int fd, uint32 *data, int size)
-{
-	register uint32 randombits = size << 5;
-	register uint32 temp;
-	uint16 sample[2];
-
-	while (randombits)
-	{
-		if (read(fd, sample, sizeof(sample)) < 0)
-		{
-			#if HAVE_ERRNO_H
-			perror("read failed");
-			#endif
+		if (rc < 0)
 			return -1;
-		}
 
-		if (swapu16(sample[0] ^ sample[1]) & 0x1)
-		{
-			temp <<= 1;
-			if (sample[0] & 0x1)
-				temp |= 0x1;
-			randombits--;
-			if (!(randombits & 0x1F))
-				*(data++) = temp;
-		}
-	}
-	return 0;
-}
-#endif
+		rc = aio_return(&my_aiocb);
 
-#if HAVE_DEV_RANDOM
-static int entropy_randombits(int fd, uint32* data, int size)
-{
-	register uint32 randombytes = size << 2;
-	register uint32 temp;
-	uint8  ch;
-
-	while (randombytes)
-	{
-		if (read(fd, &ch, 1) < 0)
-		{
-			#if HAVE_ERRNO_H
-			perror("read failed");
-			#endif
+		if (rc < 0)
 			return -1;
-		}
+		#endif
 
-		temp <<= 8;
-		temp |= ch;
-
-		randombytes--;
-		if (!(randombytes & 0x3))
-			*(data++) = temp;
+		bytedata += rc;
+		bytesize -= rc;
 	}
 	return 0;
 }
@@ -582,12 +931,18 @@ static int entropy_randombits(int fd, uint32* data, int size)
 
 #if HAVE_DEV_TTY
 static int entropy_ttybits(int fd, uint32* data, int size)
+	/*@modifies data @*/
 {
-	register uint32 randombits = size << 5;
-	register uint32 temp;
+	uint32 randombits = size << 5;
+	uint32 temp = 0;
 	byte dummy;
-	#if HAVE_TERMIO_H
+
+	#if HAVE_TERMIOS_H
+	struct termios tio_save, tio_set;
+	#elif HAVE_TERMIO_H
 	struct termio tio_save, tio_set;
+	#else
+	# need alternative
 	#endif
 	#if HAVE_GETHRTIME
 	hrtime_t hrtsample;
@@ -598,7 +953,31 @@ static int entropy_ttybits(int fd, uint32* data, int size)
 	#endif
 
 	printf("please press random keys on your keyboard\n");
-	#if HAVE_TERMIO_H
+
+	#if HAVE_TERMIOS_H
+	if (tcgetattr(fd, &tio_save) < 0)
+	{
+		#if HAVE_ERRNO_H
+		perror("tcgetattr failed");
+		#endif
+		return -1;
+	}
+
+	tio_set = tio_save;
+	tio_set.c_cc[VMIN] = 1;				/* read 1 tty character at a time */
+	tio_set.c_cc[VTIME] = 0;			/* don't timeout the read */
+	tio_set.c_iflag |= IGNBRK;			/* ignore <ctrl>-c */
+	tio_set.c_lflag &= ~(ECHO|ICANON);	/* don't echo characters */
+
+	/* change the tty settings, and flush input characters */
+	if (tcsetattr(fd, TCSAFLUSH, &tio_set) < 0)
+	{
+		#if HAVE_ERRNO_H
+		perror("tcsetattr failed");
+		#endif
+		return -1;
+	}
+	#elif HAVE_TERMIO_H
 	if (ioctl(fd, TCGETA, &tio_save) < 0)
 	{
 		#if HAVE_ERRNO_H
@@ -661,7 +1040,16 @@ static int entropy_ttybits(int fd, uint32* data, int size)
 	/* give the user 1 second to stop typing */
 	sleep(1);
 
-	#if HAVE_TERMIO_H
+	#if HAVE_TERMIOS_H
+	/* change the tty settings, and flush input characters */
+	if (tcsetattr(fd, TCSAFLUSH, &tio_save) < 0)
+	{
+		#if HAVE_ERRNO_H
+		perror("tcsetattr failed");
+		#endif
+		return -1;
+	}
+	#elif HAVE_TERMIO_H
 	/* restore the tty settings, and flush input characters */
 	if (ioctl(fd, TCSETAF, &tio_save) < 0)
 	{
@@ -681,6 +1069,10 @@ static int entropy_ttybits(int fd, uint32* data, int size)
 #if HAVE_DEV_AUDIO
 int entropy_dev_audio(uint32 *data, int size)
 {
+	const char* timeout_env = getenv("BEECRYPT_ENTROPY_AUDIO_TIMEOUT");
+
+	register int rc;
+
 	#ifdef _REENTRANT
 	# if HAVE_SYNCH_H
 	if (mutex_lock(&dev_audio_lock))
@@ -688,40 +1080,16 @@ int entropy_dev_audio(uint32 *data, int size)
 	# elif HAVE_PTHREAD_H
 	if (pthread_mutex_lock(&dev_audio_lock))
 		return -1;
-	# else
-	#  error need locking mechanism
 	# endif
 	#endif
 
 	#if HAVE_SYS_STAT_H
 	if (statdevice(name_dev_audio) < 0)
-	{
-		#ifdef _REENTRANT
-		# if HAVE_SYNCH_H
-		mutex_unlock(&dev_audio_lock);
-		# elif HAVE_PTHREAD_H
-		pthread_mutex_unlock(&dev_audio_lock);
-		# else
-		#  error need locking mechanism
-		# endif
-		#endif
-		return -1;
-	}
+		goto dev_audio_end;
 	#endif
 	
-	if ((dev_audio_fd = opendevice(name_dev_audio)) < 0)
-	{
-		#ifdef _REENTRANT
-		# if HAVE_SYNCH_H
-		mutex_unlock(&dev_audio_lock);
-		# elif HAVE_PTHREAD_H
-		pthread_mutex_unlock(&dev_audio_lock);
-		# else
-		#  error need locking mechanism
-		# endif
-		#endif
-		return -1;
-	}
+	if ((rc = dev_audio_fd = opendevice(name_dev_audio)) < 0)
+		goto dev_audio_end;
 
 	#if HAVE_SYS_AUDIOIO_H /* i.e. Solaris */
 	{
@@ -738,7 +1106,7 @@ int entropy_dev_audio(uint32 *data, int size)
 		info.record.buffer_size = 4096;
 		info.record.samples = 0;
 
-		if (ioctl(dev_audio_fd, AUDIO_SETINFO, &info) < 0)
+		if ((rc = ioctl(dev_audio_fd, AUDIO_SETINFO, &info)) < 0)
 		{
 			if (errno == EINVAL)
 			{
@@ -747,22 +1115,14 @@ int entropy_dev_audio(uint32 *data, int size)
 				info.record.channels = 1;
 				info.record.precision = 8;
 
-				if (ioctl(dev_audio_fd, AUDIO_SETINFO, &info) < 0)
+				if ((rc = ioctl(dev_audio_fd, AUDIO_SETINFO, &info)) < 0)
 				{
 					#if HAVE_ERRNO_H
 					perror("ioctl AUDIO_SETINFO failed");
 					#endif
 					close(dev_audio_fd);
-					#ifdef _REENTRANT
-					# if HAVE_SYNCH_H
-					mutex_unlock(&dev_audio_lock);
-					# elif HAVE_PTHREAD_H
-					pthread_mutex_unlock(&dev_audio_lock);
-					# else
-					#  error need locking mechanism
-					# endif
-					#endif
-					return -1;
+
+					goto dev_audio_end;
 				}
 			}
 			else
@@ -771,55 +1131,38 @@ int entropy_dev_audio(uint32 *data, int size)
 				perror("ioctl AUDIO_SETINFO failed");
 				#endif
 				close(dev_audio_fd);
-				#ifdef _REENTRANT
-				# if HAVE_SYNCH_H
-				mutex_unlock(&dev_audio_lock);
-				# elif HAVE_PTHREAD_H
-				pthread_mutex_unlock(&dev_audio_lock);
-				# else
-				#  error need locking mechanism
-				# endif
-				#endif
-				return -1;
+
+				goto dev_audio_end;
 			}
 		}
 
-		if (entropy_be_noisebits(dev_audio_fd, data, size) < 0)
-		{
-			close(dev_audio_fd);
-			#ifdef _REENTRANT
-			# if HAVE_SYNCH_H
-			mutex_unlock(&dev_audio_lock);
-			# elif HAVE_PTHREAD_H
-			pthread_mutex_unlock(&dev_audio_lock);
-			# else
-			#  error need locking mechanism
-			# endif
-			#endif
-			return -1;
-		}
+		rc = entropy_noise_gather(dev_audio_fd, info.record.precision >> 3, info.record.channels, 0, timeout_env ? atoi(timeout_env) : 1000, data, size);
 	}
 	#else
 	# error Unknown type of /dev/audio interface
 	#endif
 
 	close(dev_audio_fd);
+
+dev_audio_end:
 	#ifdef _REENTRANT
 	# if HAVE_SYNCH_H
 	mutex_unlock(&dev_audio_lock);
 	# elif HAVE_PTHREAD_H
 	pthread_mutex_unlock(&dev_audio_lock);
-	# else
-	#  error need locking mechanism
 	# endif
 	#endif
-	return 0;
+	return rc;
 }
 #endif
 
 #if HAVE_DEV_DSP
 int entropy_dev_dsp(uint32 *data, int size)
 {
+	const char* timeout_env = getenv("BEECRYPT_ENTROPY_DSP_TIMEOUT");
+
+	register int rc;
+
 	#ifdef _REENTRANT
 	# if HAVE_SYNCH_H
 	if (mutex_lock(&dev_dsp_lock))
@@ -827,187 +1170,119 @@ int entropy_dev_dsp(uint32 *data, int size)
 	# elif HAVE_PTHREAD_H
 	if (pthread_mutex_lock(&dev_dsp_lock))
 		return -1;
-	# else
-	#  error need locking mechanism
 	# endif
 	#endif
 
 	#if HAVE_SYS_STAT_H
-	if (statdevice(name_dev_dsp) < 0)
-	{
-		#ifdef _REENTRANT
-		# if HAVE_SYNCH_H
-		mutex_unlock(&dev_dsp_lock);
-		# elif HAVE_PTHREAD_H
-		pthread_mutex_unlock(&dev_dsp_lock);
-		# else
-		#  error need locking mechanism
-		# endif
-		#endif
-		return -1;
-	}
+	if ((rc = statdevice(name_dev_dsp)) < 0)
+		goto dev_dsp_end;
 	#endif
 	
-	if ((dev_dsp_fd = opendevice(name_dev_dsp)) < 0)
-	{
-		#ifdef _REENTRANT
-		# if HAVE_SYNCH_H
-		mutex_unlock(&dev_dsp_lock);
-		# elif HAVE_PTHREAD_H
-		pthread_mutex_unlock(&dev_dsp_lock);
-		# else
-		#  error need locking mechanism
-		# endif
-		#endif
-		return -1;
-	}
+	if ((rc = dev_dsp_fd = opendevice(name_dev_dsp)) < 0)
+		goto dev_dsp_end;
 
 	#if HAVE_SYS_SOUNDCARD_H /* i.e. Linux audio */
 	{
-		int mask, format, stereo, speed, swap;
+		int mask, format, samplesize, stereo, speed, swap;
 
-		if (ioctl(dev_dsp_fd, SNDCTL_DSP_GETFMTS, &mask) < 0)
+		if ((rc = ioctl(dev_dsp_fd, SNDCTL_DSP_GETFMTS, &mask)) < 0)
 		{
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_GETFMTS failed");
 			#endif
 			close (dev_dsp_fd);
-			#ifdef _REENTRANT
-			# if HAVE_SYNCH_H
-			mutex_unlock(&dev_dsp_lock);
-			# elif HAVE_PTHREAD_H
-			pthread_mutex_unlock(&dev_dsp_lock);
-			# else
-			#  error need locking mechanism
-			# endif
-			#endif
-			return -1;
+
+			goto dev_dsp_end;
 		}
 
 		#if WORDS_BIGENDIAN
 		if (mask & AFMT_S16_BE)
 		{
 			format = AFMT_S16_BE;
+			samplesize = 2;
 			swap = 0;
 		}
 		else if (mask & AFMT_S16_LE)
 		{
 			format = AFMT_S16_LE;
+			samplesize = 2;
 			swap = 1;
 		}
 		#else
 		if (mask & AFMT_S16_LE)
 		{
 			format = AFMT_S16_LE;
+			samplesize = 2;
 			swap = 0;
 		}
 		else if (mask & AFMT_S16_BE)
 		{
 			format = AFMT_S16_BE;
+			samplesize = 2;
 			swap = 1;
 		}
 		#endif
 		else if (mask & AFMT_S8)
 		{
 			format = AFMT_S8;
+			samplesize = 1;
 			swap = 0;
 		}
 		else
 		{
 			/* No linear audio format available */
+			rc = -1;
+
 			close(dev_dsp_fd);
-			#ifdef _REENTRANT
-			# if HAVE_SYNCH_H
-			mutex_unlock(&dev_dsp_lock);
-			# elif HAVE_PTHREAD_H
-			pthread_mutex_unlock(&dev_dsp_lock);
-			# else
-			#  error need locking mechanism
-			# endif
-			#endif
-			return -1;
+
+			goto dev_dsp_end;
 		}
 
-		if (ioctl(dev_dsp_fd, SNDCTL_DSP_SETFMT, &format) < 0)
+		if ((rc = ioctl(dev_dsp_fd, SNDCTL_DSP_SETFMT, &format)) < 0)
 		{
 			#if HAVE_ERRNO_H
 			perror("ioctl SNDCTL_DSP_SETFMT failed");
 			#endif
 			close(dev_dsp_fd);
-			#ifdef _REENTRANT
-			# if HAVE_SYNCH_H
-			mutex_unlock(&dev_dsp_lock);
-			# elif HAVE_PTHREAD_H
-			pthread_mutex_unlock(&dev_dsp_lock);
-			# else
-			#  error need locking mechanism
-			# endif
-			#endif
-			return -1;
+
+			goto dev_dsp_end;
 		}
 
+		/* the next two commands are not critical */
 		stereo = 1;
 		ioctl(dev_dsp_fd, SNDCTL_DSP_STEREO, &stereo);
 
 		speed = 44100;
 		ioctl(dev_dsp_fd, SNDCTL_DSP_SPEED, &speed);
 
-		if (swap)
-		{
-			if (entropy_le_noisebits(dev_dsp_fd, data, size) < 0)
-			{
-				close(dev_dsp_fd);
-				#ifdef _REENTRANT
-				# if HAVE_SYNCH_H
-				mutex_unlock(&dev_dsp_lock);
-				# elif HAVE_PTHREAD_H
-				pthread_mutex_unlock(&dev_dsp_lock);
-				# else
-				#  error need locking mechanism
-				# endif
-				#endif
-				return -1;
-			}
-		}
-		else
-		{
-			if (entropy_be_noisebits(dev_dsp_fd, data, size) < 0)
-			{
-				close(dev_dsp_fd);
-				#ifdef _REENTRANT
-				# if HAVE_SYNCH_H
-				mutex_unlock(&dev_dsp_lock);
-				# elif HAVE_PTHREAD_H
-				pthread_mutex_unlock(&dev_dsp_lock);
-				# else
-				#  error need locking mechanism
-				# endif
-				#endif
-				return -1;
-			}
-		}
+		rc = entropy_noise_gather(dev_dsp_fd, samplesize, 2, swap, timeout_env ? atoi(timeout_env) : 1000, data, size);
 	}
 	#else
 	# error Unknown type of /dev/dsp interface
 	#endif
 
 	close(dev_dsp_fd);
+
+dev_dsp_end:
 	#ifdef _REENTRANT
 	# if HAVE_SYNCH_H
 	mutex_unlock(&dev_dsp_lock);
 	# elif HAVE_PTHREAD_H
 	pthread_mutex_unlock(&dev_dsp_lock);
-	# else
-	#  error need locking mechanism
 	# endif
 	#endif
-	return 0;
+
+	return rc;
 }
 #endif
 
 #if HAVE_DEV_RANDOM
 int entropy_dev_random(uint32* data, int size)
 {
+	const char* timeout_env = getenv("BEECRYPT_ENTROPY_RANDOM_TIMEOUT");
+
+	int rc;
+
 	#ifdef _REENTRANT
 	# if HAVE_SYNCH_H
 	if (mutex_lock(&dev_random_lock))
@@ -1015,73 +1290,81 @@ int entropy_dev_random(uint32* data, int size)
 	# elif HAVE_PTHREAD_H
 	if (pthread_mutex_lock(&dev_random_lock))
 		return -1;
-	# else
-	#  error need locking mechanism
 	# endif
 	#endif
 
 	#if HAVE_SYS_STAT_H
-	if (statdevice(name_dev_random) < 0)
-	{
-		#ifdef _REENTRANT
-		# if HAVE_SYNCH_H
-		mutex_unlock(&dev_random_lock);
-		# elif HAVE_PTHREAD_H
-		pthread_mutex_unlock(&dev_random_lock);
-		# else
-		#  error need locking mechanism
-		# endif
-		#endif
-		return -1;
-	}
+	if ((rc = statdevice(name_dev_random)) < 0)
+		goto dev_random_end;
 	#endif
-	
-	if ((dev_random_fd = opendevice(name_dev_random)) < 0)
-	{
-		#ifdef _REENTRANT
-		# if HAVE_SYNCH_H
-		mutex_unlock(&dev_random_lock);
-		# elif HAVE_PTHREAD_H
-		pthread_mutex_unlock(&dev_random_lock);
-		# else
-		#  error need locking mechanism
-		# endif
-		#endif
-		return -1;
-	}
 
-	if (entropy_randombits(dev_random_fd, data, size) < 0)
-	{
-		close(dev_random_fd);
-		#ifdef _REENTRANT
-		# if HAVE_SYNCH_H
-		mutex_unlock(&dev_random_lock);
-		# elif HAVE_PTHREAD_H
-		pthread_mutex_unlock(&dev_random_lock);
-		# else
-		#  error need locking mechanism
-		# endif
-		#endif
-		return -1;
-	}
+	if ((rc = dev_random_fd = opendevice(name_dev_random)) < 0)
+		goto dev_random_end;
+
+	/* collect entropy, with timeout */
+	rc = entropy_randombits(dev_random_fd, timeout_env ? atoi(timeout_env) : 1000, data, size);
 
 	close(dev_random_fd);
+
+dev_random_end:
 	#ifdef _REENTRANT
 	# if HAVE_SYNCH_H
 	mutex_unlock(&dev_random_lock);
 	# elif HAVE_PTHREAD_H
 	pthread_mutex_unlock(&dev_random_lock);
-	# else
-	#  error need locking mechanism
 	# endif
 	#endif
-	return 0;
+	return rc;
+}
+#endif
+
+#if HAVE_DEV_URANDOM
+int entropy_dev_urandom(uint32* data, int size)
+{
+	const char* timeout_env = getenv("BEECRYPT_ENTROPY_URANDOM_TIMEOUT");
+
+	register int rc;
+
+	#ifdef _REENTRANT
+	# if HAVE_SYNCH_H
+	if (mutex_lock(&dev_urandom_lock))
+		return -1;
+	# elif HAVE_PTHREAD_H
+	if (pthread_mutex_lock(&dev_urandom_lock))
+		return -1;
+	# endif
+	#endif
+
+	#if HAVE_SYS_STAT_H
+	if ((rc = statdevice(name_dev_urandom)) < 0)
+		goto dev_urandom_end;
+	#endif
+	
+	if ((rc = dev_urandom_fd = opendevice(name_dev_urandom)) < 0)
+		goto dev_urandom_end;
+
+	/* collect entropy, with timeout */
+	rc = entropy_randombits(dev_urandom_fd, timeout_env ? atoi(timeout_env) : 1000, data, size);
+
+	close(dev_urandom_fd);
+
+dev_urandom_end:
+	#ifdef _REENTRANT
+	# if HAVE_SYNCH_H
+	mutex_unlock(&dev_urandom_lock);
+	# elif HAVE_PTHREAD_H
+	pthread_mutex_unlock(&dev_urandom_lock);
+	# endif
+	#endif
+	return rc;
 }
 #endif
 
 #if HAVE_DEV_TTY
 int entropy_dev_tty(uint32* data, int size)
 {
+	register int rc;
+
 	#ifdef _REENTRANT
 	# if HAVE_SYNCH_H
 	if (mutex_lock(&dev_tty_lock))
@@ -1089,67 +1372,32 @@ int entropy_dev_tty(uint32* data, int size)
 	# elif HAVE_PTHREAD_H
 	if (pthread_mutex_lock(&dev_tty_lock))
 		return -1;
-	# else
-	#  error need locking mechanism
 	# endif
 	#endif
 
 	#if HAVE_SYS_STAT_H
-	if (statdevice(dev_tty_name) < 0)
-	{
-		#ifdef _REENTRANT
-		# if HAVE_SYNCH_H
-		mutex_unlock(&dev_tty_lock);
-		# elif HAVE_PTHREAD_H
-		pthread_mutex_unlock(&dev_tty_lock);
-		# else
-		#  error need locking mechanism
-		# endif
-		#endif
-		return -1;
-	}
+	if ((rc = statdevice(dev_tty_name)) < 0)
+		goto dev_tty_end;
 	#endif
 	
-	if ((dev_tty_fd = opendevice(dev_tty_name)) < 0)
-	{
-		#ifdef _REENTRANT
-		# if HAVE_SYNCH_H
-		mutex_unlock(&dev_tty_lock);
-		# elif HAVE_PTHREAD_H
-		pthread_mutex_unlock(&dev_tty_lock);
-		# else
-		#  error need locking mechanism
-		# endif
-		#endif
-		return -1;
-	}
+	if ((rc = dev_tty_fd = opendevice(dev_tty_name)) < 0)
+		goto dev_tty_end;
 
-	if (entropy_ttybits(dev_tty_fd, data, size) < 0)
-	{
-		close(dev_tty_fd);
-		#ifdef _REENTRANT
-		# if HAVE_SYNCH_H
-		mutex_unlock(&dev_tty_lock);
-		# elif HAVE_PTHREAD_H
-		pthread_mutex_unlock(&dev_tty_lock);
-		# else
-		#  error need locking mechanism
-		# endif
-		#endif
-		return -1;
-	}
+	rc = entropy_ttybits(dev_tty_fd, data, size);
 
 	close(dev_tty_fd);
+
+dev_tty_end:
 	#ifdef _REENTRANT
 	# if HAVE_SYNCH_H
 	mutex_unlock(&dev_tty_lock);
 	# elif HAVE_PTHREAD_H
 	pthread_mutex_unlock(&dev_tty_lock);
-	# else
-	#  error need locking mechanism
 	# endif
 	#endif
-	return 0;
+
+	return rc;
 }
 #endif
+
 #endif

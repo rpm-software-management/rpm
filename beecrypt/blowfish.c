@@ -37,7 +37,7 @@
 
 #include <string.h>
 
-static uint32 _bf_p[BLOWFISHPSIZE] = {
+/*@observer@*/ static uint32 _bf_p[BLOWFISHPSIZE] = {
 	0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
 	0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,
 	0x452821e6, 0x38d01377, 0xbe5466cf, 0x34e90c6c,
@@ -45,7 +45,7 @@ static uint32 _bf_p[BLOWFISHPSIZE] = {
 	0x9216d5d9, 0x8979fb1b
 };
 
-static uint32 _bf_s[1024] = {
+/*@observer@*/ static uint32 _bf_s[1024] = {
 	0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7,
 	0xb8e1afed, 0x6a267e96, 0xba7c9045, 0xf12c7f99,
 	0x24a19947, 0xb3916cf7, 0x0801f2e2, 0x858efc16,
@@ -307,7 +307,7 @@ static uint32 _bf_s[1024] = {
 #define EROUND(l,r) l ^= *(p++); r ^= ((s[((l>>24)&0xff)+0x000]+s[((l>>16)&0xff)+0x100])^s[((l>>8)&0xff)+0x200])+s[((l>>0)&0xff)+0x300]
 #define DROUND(l,r) l ^= *(p--); r ^= ((s[((l>>24)&0xff)+0x000]+s[((l>>16)&0xff)+0x100])^s[((l>>8)&0xff)+0x200])+s[((l>>0)&0xff)+0x300]
 
-static const blockMode blowfishModes[2] =
+/*@observer@*/ static const blockMode blowfishModes[2] =
 {
 	{ /* ECB */ (blockModeEncrypt) blowfishECBEncrypt, (blockModeDecrypt) blowfishECBDecrypt },
 	{ /* CBC */ (blockModeEncrypt) blowfishCBCEncrypt, (blockModeDecrypt) blowfishCBCDecrypt }
@@ -330,7 +330,7 @@ int blowfishSetup(blowfishParam* bp, const uint32* key, int keybits, /*@unused@*
 
 		if ((keybits & 31) == 0)
 		{
-			register int keywords = (keybits >> 5); /* i.e. in 32 bit words */
+			register int keywords = (((uint32)keybits) >> 5); /* i.e. in 32 bit words */
 
 			for (i = 0; i < BLOWFISHPSIZE; i++)
 			{

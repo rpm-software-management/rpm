@@ -43,7 +43,7 @@ typedef struct
 extern "C" {
 #endif
 
-extern const BEEDLLAPI blockCipher blowfish;
+/*@unused@*/ extern const BEEDLLAPI blockCipher blowfish;
 
 BEEDLLAPI
 int blowfishSetup  (blowfishParam* bp, const uint32*, int, cipherOperation)

@@ -79,7 +79,7 @@ int dhaes_pUsable(const dhaes_pParameters* params)
 	if (mackeybits == 0)
 	{
 		if (cipherkeybits == 0)
-			cipherkeybits = mackeybits = (keybits >> 1);
+			cipherkeybits = mackeybits = (((uint32)keybits) >> 1);
 		else
 			mackeybits = keybits - cipherkeybits;
 	}
@@ -187,6 +187,7 @@ int dhaes_pContextFree(dhaes_pContext* ctxt)
 }
 
 static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mp32number* private, const mp32number* public, const mp32number* message, cipherOperation op)
+	/*@modifies ctxt @*/
 {
 	register int rc;
 
@@ -220,10 +221,11 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mp32number* private, 
 	 * size requirements.
 	 */
 
+	/*@-usedef@*/	/* LCL: digest already set */
 	if (digest.size > 0)
 	{
 		uint32* mackey = digest.data;
-		uint32* cipherkey = digest.data + ((ctxt->mackeybits + 31) >> 5);
+		uint32* cipherkey = digest.data + (((uint32)(ctxt->mackeybits + 31)) >> 5);
 
 		if ((rc = keyedHashFunctionContextSetup(&ctxt->mac, mackey, ctxt->mackeybits)))
 			goto setup_end;
@@ -235,6 +237,7 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mp32number* private, 
 	}
 	else
 		rc = -1;
+	/*@=usedef@*/
 
 setup_end:
 	mp32nwipe(&digest);

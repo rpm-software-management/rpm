@@ -36,11 +36,12 @@
 # include <malloc.h>
 #endif
 
-static uint32 fips186hinit[5] = { 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0, 0x67452301 };
+/*@observer@*/ static uint32 fips186hinit[5] = { 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0, 0x67452301 };
 
 const randomGenerator fips186prng = { "FIPS 186", sizeof(fips186Param), (const randomGeneratorSetup) fips186Setup, (const randomGeneratorSeed) fips186Seed, (const randomGeneratorNext) fips186Next, (const randomGeneratorCleanup) fips186Cleanup };
 
 static int fips186init(register sha1Param* p)
+	/*@modifies p @*/
 {
 	mp32copy(5, p->h, fips186hinit);
 	return 0;

@@ -37,7 +37,8 @@
 # include <ctype.h>
 #endif
 
-static const char* to_b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+/*@observer@*/ static const char* to_b64 =
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /* encode 72 characters per line */
 #define CHARS_PER_LINE	72
@@ -182,6 +183,7 @@ memchunk* b64dec(const char* string)
 						if (isspace(ch))
 							continue;
 
+						bits = 0;
 						if ((ch >= 'A') && (ch <= 'Z'))
 						{
 							bits = (byte) (ch - 'A');

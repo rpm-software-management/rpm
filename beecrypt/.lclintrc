@@ -21,41 +21,41 @@
 #+sizeoftype
 
 #+mod-uncon		# shortcut alloca is painful
-#+mod-nomods		# 927 occurences
+#+mod-nomods
 +modglobsnomods
 +modstrictglobsnomods
 
-#+mod-uncon-nomods	# ~118 occurences
+#+mod-uncon-nomods
 #+mod-internal-strict
-#+mod-file-sys		# 153 occurences
-#+globnoglobs		# 1 occurence
-#+internalglobs		# 38 occurences
-#+internalglobnoglobs		# ???
-#+modglobsunchecked	# 73 occurences
+#+mod-file-sys
+#+globnoglobs
+#+internalglobs
+#+internalglobnoglobs
+#+modglobsunchecked
 +warnmissingglobs
-#+warnmissingglobsnomods	# ???
-#+impcheckedstrictglobs	# 358 occurences
-#+impcheckedstrictstatics # 1057 occurences
+#+warnmissingglobsnomods
+#+impcheckedstrictglobs
+#+impcheckedstrictstatics
 #+strictusereleas
 #+strictbranchstate
 #+strictdestroy
-#+modobserveruncon	# 192 occurences
+#+modobserveruncon
 +macroempty
 #+ansi-reserved-internal
-#+evalorderuncon	# 32 occurences
-#+elseifcomplete	# 95 occurences
-#+loopswitchbreak	# 286 occurences
-#+switchswitchbreak	# 32 occurences
-#+looploopcontinue	# 86 occurences
+#+evalorderuncon
+#+elseifcomplete
+#+loopswitchbreak
+#+switchswitchbreak
+#+looploopcontinue
 #+whileblock
 +forempty
 #+forblock
 #+ifblock
-#+noeffectuncon		# 228 occurences
+#+noeffectuncon
 +topuse
 #+unusedspecial
 +oldstyle
-#+sys-dir-errors	# 749
+#+sys-dir-errors
 #controlnestdepth 15
 #stringliterallen 509
 #numstructfields 127
@@ -76,10 +76,6 @@
 
 -exportlocal		# 59 occurences
 -fcnuse			# 131 occurences
--usedef			# 26 occurences
--varuse			# 5 occurences
--shiftsigned		# 46 occurences
--duplicatequals
 -compdef		# 52 occurences
 
 # --- not-yet at standard level

@@ -40,7 +40,7 @@ typedef struct
 extern "C" {
 #endif
 
-extern BEEDLLAPI const keyedHashFunction hmacsha1;
+/*@unused@*/ extern BEEDLLAPI const keyedHashFunction hmacsha1;
 
 BEEDLLAPI
 int hmacsha1Setup (hmacsha1Param* sp, const uint32* key, int keybits)

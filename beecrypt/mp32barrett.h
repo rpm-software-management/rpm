@@ -41,7 +41,7 @@ extern "C" {
 #endif
 
 BEEDLLAPI
-void mp32bzero(mp32barrett* b)
+void mp32bzero(/*@out@*/ mp32barrett* b)
 	/*@modifies b @*/;
 BEEDLLAPI
 void mp32binit(mp32barrett* b, uint32 size)

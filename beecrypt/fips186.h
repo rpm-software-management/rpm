@@ -72,7 +72,7 @@ typedef struct
 extern "C" {
 #endif
 
-extern BEEDLLAPI const randomGenerator fips186prng;
+/*@unused@*/ extern BEEDLLAPI const randomGenerator fips186prng;
 
 BEEDLLAPI
 int fips186Setup  (fips186Param* fp)

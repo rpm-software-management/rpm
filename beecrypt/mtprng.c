@@ -13,7 +13,7 @@
  * Note: this generator has a very long period, passes statistical test, but
  * needs more study to determine whether it is cryptographically strong enough.
  *
- * Copyright (c) 1998-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -40,7 +40,10 @@
 #include "mp32opt.h"
 
 #if HAVE_STDLIB_H
-#include <stdlib.h>
+# include <stdlib.h>
+#endif
+#if HAVE_MALLOC_H
+# include <malloc.h>
 #endif
 
 #define hiBit(a)		((a) & 0x80000000)
@@ -48,9 +51,10 @@
 #define loBits(a)		((a) & 0x7FFFFFFF)
 #define mixBits(a, b)	(hiBit(a) | loBits(b))
 
-const randomGenerator mtprng = { "Mersenne Twister", sizeof(mtprngParam), (const randomGeneratorSetup) mtprngSetup, (const randomGeneratorSeed) mtprngSeed, (const randomGeneratorNext) mtprngNext, (const randomGeneratorCleanup) mtprngCleanup };
+const randomGenerator mtprng = { "Mersenne Twister", sizeof(mtprngParam), (randomGeneratorSetup) mtprngSetup, (randomGeneratorSeed) mtprngSeed, (randomGeneratorNext) mtprngNext, (randomGeneratorCleanup) mtprngCleanup };
 
 static void mtprngReload(mtprngParam* mp)
+	/*@modifies mp @*/
 {
     register uint32* p0 = mp->state, *p2=p0+2, *pM = p0+M, s0, s1;
     register int j;
@@ -71,30 +75,24 @@ int mtprngSetup(mtprngParam* mp)
 {
 	if (mp)
 	{
-		const entropySource* es = entropySourceDefault();
-
 		#ifdef _REENTRANT
 		# if WIN32
 		if (!(mp->lock = CreateMutex(NULL, FALSE, NULL)))
 			return -1;
 		# else
-		#  if HAVE_SYNCH_H
+		#  if defined(HAVE_SYNCH_H)
 		if (mutex_init(&mp->lock, USYNC_THREAD, (void *) 0))
 			return -1;
-		#  elif HAVE_PTHREAD_H
+		#  elif defined(HAVE_PTHREAD_H)
 		if (pthread_mutex_init(&mp->lock, (pthread_mutexattr_t *) 0))
 			return -1;
-		#  else
-		#   error need locking mechanism
 		#  endif
 		# endif
 		#endif
-		if (es)
-		{
-			mp->left = 0;
 
-			return es->next(mp->state, N+1);
-		}
+		mp->left = 0;
+
+		return entropyGatherNext(mp->state, N+1);
 	}
 	return -1;
 }
@@ -103,7 +101,7 @@ int mtprngSeed(mtprngParam* mp, const uint32* data, int size)
 {
 	if (mp)
 	{
-		uint32	needed = N+1;
+		int	needed = N+1;
 		uint32*	dest = mp->state;
 
 		#ifdef _REENTRANT
@@ -111,14 +109,12 @@ int mtprngSeed(mtprngParam* mp, const uint32* data, int size)
 		if (WaitForSingleObject(mp->lock, INFINITE) != WAIT_OBJECT_0)
 			return -1;
 		# else
-		#  if HAVE_SYNCH_H
+		#  if defined(HAVE_SYNCH_H)
 		if (mutex_lock(&mp->lock))
 			return -1;
-		#  elif HAVE_PTHREAD_H
+		#  elif defined(HAVE_PTHREAD_H)
 		if (pthread_mutex_lock(&mp->lock))
 			return -1;
-		#  else
-		#   error need locking mechanism
 		#  endif
 		# endif
 		#endif
@@ -134,14 +130,12 @@ int mtprngSeed(mtprngParam* mp, const uint32* data, int size)
 		if (!ReleaseMutex(mp->lock))
 			return -1;
 		# else
-		#  if HAVE_SYNCH_H
+		#  if defined(HAVE_SYNCH_H)
 		if (mutex_unlock(&mp->lock))
 			return -1;
-		#  elif HAVE_PTHREAD_H
+		#  elif defined(HAVE_PTHREAD_H)
 		if (pthread_mutex_unlock(&mp->lock))
 			return -1;
-		#  else
-		#   error need locking mechanism
 		#  endif
 		# endif
 		#endif
@@ -161,14 +155,12 @@ int mtprngNext(mtprngParam* mp, uint32* data, int size)
 		if (WaitForSingleObject(mp->lock, INFINITE) != WAIT_OBJECT_0)
 			return -1;
 		# else
-		#  if HAVE_SYNCH_H
+		#  if defined(HAVE_SYNCH_H)
 		if (mutex_lock(&mp->lock))
 			return -1;
-		#  elif HAVE_PTHREAD_H
+		#  elif defined(HAVE_PTHREAD_H)
 		if (pthread_mutex_lock(&mp->lock))
 			return -1;
-		#  else
-		#   error need locking mechanism
 		#  endif
 		# endif
 		#endif
@@ -190,14 +182,12 @@ int mtprngNext(mtprngParam* mp, uint32* data, int size)
 		if (!ReleaseMutex(mp->lock))
 			return -1;
 		# else
-		#  if HAVE_SYNCH_H
+		#  if defined(HAVE_SYNCH_H)
 		if (mutex_unlock(&mp->lock))
 			return -1;
-		#  elif HAVE_PTHREAD_H
+		#  elif defined(HAVE_PTHREAD_H)
 		if (pthread_mutex_unlock(&mp->lock))
 			return -1;
-		#  else
-		#   error need locking mechanism
 		#  endif
 		# endif
 		#endif
@@ -215,14 +205,12 @@ int mtprngCleanup(mtprngParam* mp)
 		if (!CloseHandle(mp->lock))
 			return -1;
 		# else
-		#  if HAVE_SYNCH_H
+		#  if defined(HAVE_SYNCH_H)
 		if (mutex_destroy(&mp->lock))
 			return -1;
-		#  elif HAVE_PTHREAD_H
+		#  elif defined(HAVE_PTHREAD_H)
 		if (pthread_mutex_destroy(&mp->lock))
 			return -1;
-		#  else
-		#   error need locking mechanism
 		#  endif
 		# endif
 		#endif

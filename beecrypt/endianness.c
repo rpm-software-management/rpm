@@ -3,7 +3,7 @@
  *
  * Endianness-dependant encoding/decoding - implementation
  *
- * Copyright (c) 1998-2000 Virtual Unlimited B.V.
+ * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -28,11 +28,12 @@
 #include "endianness.h"
 
 #if HAVE_STRING_H
-#include <string.h>
+# include <string.h>
 #endif
 
 #include <stdio.h>
 
+/*@-shiftsigned@*/
 int16 swap16(int16 n)
 {
 	return (    ((n & 0xff) << 8) |
@@ -47,37 +48,23 @@ uint16 swapu16(uint16 n)
 
 int32 swap32(int32 n)
 {
-	#if (SIZEOF_LONG == 4)
 	return (    ((n & 0xff) << 24) |
 				((n & 0xff00) << 8) |
 				((n & 0xff0000) >> 8) |
 				((n & 0xff000000) >> 24) );
-	#else
-	return (    ((n & 0xffL) << 24) |
-				((n & 0xff00L) << 8) |
-				((n & 0xff0000L) >> 8) |
-				((n & 0xff000000L) >> 24) );
-	#endif
 }
 
 uint32 swapu32(uint32 n)
 {
-	#if (SIZEOF_UNSIGNED_LONG == 4)
 	return (    ((n & 0xffU) << 24) |
 				((n & 0xff00U) << 8) |
 				((n & 0xff0000U) >> 8) |
 				((n & 0xff000000U) >> 24) );
-	#else
-	return (    ((n & 0xffUL) << 24) |
-				((n & 0xff00UL) << 8) |
-				((n & 0xff0000UL) >> 8) |
-				((n & 0xff000000UL) >> 24) );
-	#endif
 }
 
 int64 swap64(int64 n)
 {
-	#if (SIZEOF_LONG == 4)
+	#if HAVE_LONG_LONG
 	return (    ((n & 0xffLL) << 56) |
 				((n & 0xff00LL) << 40) |
 				((n & 0xff0000LL) << 24) |
@@ -95,8 +82,9 @@ int64 swap64(int64 n)
 				((n & 0xff0000000000L) >> 24) |
 				((n & 0xff000000000000L) >> 40) |
 				((n & 0xff00000000000000L) >> 56) );
-        #endif
+	#endif
 }
+/*@=shiftsigned@*/
 
 int encodeByte(javabyte b, byte *data)
 {
@@ -168,7 +156,7 @@ int encodeChar(javachar c, byte* data)
 
 int encodeInts(const javaint* i, byte* data, int count)
 {
-	register int rc = count << 2;
+	register int rc = ((uint32)count) << 2;
 	#if (WORDS_BIGENDIAN)
 	memcpy(data, i, rc);
 	#else
@@ -183,9 +171,28 @@ int encodeInts(const javaint* i, byte* data, int count)
 	return rc;
 }
 
+int encodeIntsPartial(const javaint* i, byte* data, int bytecount)
+{
+	register int rc = bytecount;
+	#if (WORDS_BIGENDIAN)
+	memcpy(data, i, rc);
+	#else
+	javaint tmp;
+
+	while (bytecount > 0)
+	{
+		tmp = swap32(*(i++));
+		memcpy(data, &tmp, (bytecount > 4) ? 4 : bytecount);
+		data += 4;
+		bytecount -= 4;
+	}
+	#endif
+	return rc;
+}
+
 int encodeChars(const javachar* c, byte* data, int count)
 {
-	register int rc = count << 1;
+	register int rc = ((uint32)count) << 1;
 	#if (WORDS_BIGENDIAN)
 	memcpy(data, c, rc);
 	#else
@@ -282,7 +289,7 @@ int decodeChar(javachar* c, const byte* data)
 
 int decodeInts(javaint* i, const byte* data, int count)
 {
-	register int rc = count << 2;
+	register int rc = ((uint32)count) << 2;
 	#if (WORDS_BIGENDIAN)
 	memcpy(i, data, rc);
 	#else
@@ -297,9 +304,35 @@ int decodeInts(javaint* i, const byte* data, int count)
 	return rc;
 }
 
+int decodeIntsPartial(javaint* i, const byte* data, int bytecount)
+{
+	register int rc = bytecount;
+	#if (WORDS_BIGENDIAN)
+	memcpy(i, data, rc);
+	if (rc & 0x3)
+		memset(i + (rc >> 2), 0, 4 - (rc & 0x3));
+	#else
+	javaint tmp;
+	while (bytecount >= 4)
+	{
+		memcpy(&tmp, data, 4);
+		*(i++) = swap32(tmp);
+		data += 4;
+		bytecount -= 4;
+	}
+	if (bytecount)
+	{
+		tmp = 0;
+		memcpy(&tmp, data, bytecount);
+		*(i++) = swap32(tmp);
+	}
+	#endif
+	return rc;
+}
+
 int decodeChars(javachar* c, const byte* data, int count)
 {
-	register int rc = count << 1;
+	register int rc = ((uint32)count) << 1;
 	#if (WORDS_BIGENDIAN)
 	memcpy(c, data, rc);
 	#else

@@ -615,7 +615,7 @@ typedef struct
 	const blockCipherSetIV		setiv;
 	const blockCipherEncrypt	encrypt;
 	const blockCipherDecrypt	decrypt;
-	const blockMode*			mode;
+/*@dependent@*/ const blockMode*	mode;
 } blockCipher;
 
 /*

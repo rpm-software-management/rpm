@@ -62,7 +62,9 @@ typedef INT64_TYPE	int64;
 typedef UINT8_TYPE	uint8;
 typedef UINT16_TYPE	uint16;
 typedef UINT32_TYPE	uint32;
+/*@-duplicatequals@*/
 typedef UINT64_TYPE	uint64;
+/*@=duplicatequals@*/
 
 typedef INT8_TYPE	javabyte;
 typedef INT16_TYPE	javashort;
