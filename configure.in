@@ -287,8 +287,11 @@ if test "$LCHOWN" = no; then
     AC_MSG_CHECKING(whether chown() follows symlinks...)
     AC_ARG_ENABLE([broken-chown],
     [  --enable-broken-chown  this system's chown follows symbolic links], 
-	    result=yes, result=no)
-    if test $result = no; then
+	    result=yes, result=unknown)
+    if echo "$build" | grep "aix" > /dev/null ; then
+	result=yes
+    fi
+    if test $result = unknown; then
 	if test `id | cut -f 2 -d \= | cut -f 1 -d \(` = 0; then
 	    rm -f foo bar
 	    touch foo
