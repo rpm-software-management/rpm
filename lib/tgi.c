@@ -10,7 +10,8 @@
 
 #include "debug.h"
 
-static int gitag = RPMDBI_FTSWALK;
+static const char * gitagstr = "packages";
+static const char * gikeystr = NULL;
 static int ftsOpts = 0;
 
 static const char * queryFormat = NULL;
@@ -38,14 +39,10 @@ static struct poptOption optionsTable[] = {
  { "rpmgidebug", 'd', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmgi_debug, -1,
 	N_("debug generalized iterator"), NULL},
 
- { "rpmdb", '\0', POPT_ARG_VAL, &gitag, RPMDBI_PACKAGES,
-	N_("iterate rpmdb"), NULL },
- { "hdlist", '\0', POPT_ARG_VAL, &gitag, RPMDBI_HDLIST,
-	N_("iterate hdlist"), NULL },
- { "arglist", '\0', POPT_ARG_VAL, &gitag, RPMDBI_ARGLIST,
-	N_("iterate arglist"), NULL },
- { "ftswalk", '\0', POPT_ARG_VAL, &gitag, RPMDBI_FTSWALK,
-	N_("iterate fts(3) walk"), NULL },
+ { "tag", '\0', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT, &gitagstr, 0,
+	N_("iterate tag index"), NULL },
+ { "key", '\0', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT, &gikeystr, 0,
+	N_("tag value key"), NULL },
 
  { "qf", '\0', POPT_ARG_STRING, &queryFormat, 0,
         N_("use the following query format"), "QUERYFORMAT" },
@@ -85,6 +82,7 @@ main(int argc, char *const argv[])
     rpmts ts = NULL;
     rpmVSFlags vsflags;
     rpmgi gi = NULL;
+    int gitag = RPMDBI_PACKAGES;
     const char ** av;
     int ac;
     int rc = 0;
@@ -95,6 +93,16 @@ main(int argc, char *const argv[])
 
     if (ftsOpts == 0)
 	ftsOpts = (FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOSTAT);
+
+    if (gitagstr != NULL) {
+	gitag = tagValue(gitagstr);
+	if (gitag < 0) {
+	    fprintf(stderr, _("unknown --tag argument: %s\n"), gitagstr);
+	    exit(EXIT_FAILURE);
+	}
+    }
+
+    /* XXX ftswalk segfault with no args. */
 
     ts = rpmtsCreate();
     vsflags = rpmExpandNumeric("%{?_vsflags_query}");
@@ -110,7 +118,7 @@ main(int argc, char *const argv[])
 	(void) rpmtsSetTid(ts, tid);
     }
 
-    gi = rpmgiNew(ts, gitag, NULL, 0);
+    gi = rpmgiNew(ts, gitag, gikeystr, 0);
 
     av = poptGetArgs(optCon);
     (void) rpmgiSetArgs(gi, av, ftsOpts);

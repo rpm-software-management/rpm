@@ -311,7 +311,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]\n", gi, gi->argv, gi->argc);
     return NULL;
 }
 
-rpmgi rpmgiNew(rpmts ts, int tag, void * keyp, size_t keylen)
+rpmgi rpmgiNew(rpmts ts, int tag, const void * keyp, size_t keylen)
 {
     rpmgi gi = xcalloc(1, sizeof(*gi));
 

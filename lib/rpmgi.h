@@ -24,7 +24,7 @@ struct rpmgi_s {
 /*@refcounted@*/
     rpmts ts;			/*!< Iterator transaction set. */
     int tag;			/*!< Iterator type. */
-    void * keyp;		/*!< Iterator key. */
+    const void * keyp;		/*!< Iterator key. */
     size_t keylen;		/*!< Iterator key length. */
 
     int active;			/*!< Iterator is active? */
@@ -110,7 +110,7 @@ rpmgi rpmgiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi)
  * @return		new general iterator
  */
 /*@null@*/
-rpmgi rpmgiNew(rpmts ts, int tag, void * keyp, size_t keylen)
+rpmgi rpmgiNew(rpmts ts, int tag, /*@null@*/ const void * keyp, size_t keylen)
 	/*@globals internalState @*/
 	/*@modifies ts, internalState @*/;
 
