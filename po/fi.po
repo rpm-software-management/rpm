@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-29 13:25-0400\n"
+"POT-Creation-Date: 2000-07-29 16:29-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -2473,21 +2473,17 @@ msgstr "en voinut avata %s: %s"
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: lib/db1.c:435 rpmio/url.c:445
-#, fuzzy, c-format
-msgid "failed to open %s: %s\n"
-msgstr "en voinut avata %s: %s"
-
-#: lib/db1.c:451
+#. XXX check errno validity
+#: lib/db1.c:449
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "en voi saada %s lukitusta tietokantaan"
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "shared"
 msgstr "jaettua"
 
@@ -4096,6 +4092,11 @@ msgstr "virhe: ftpport pit‰‰ olla luku\n"
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "virhe: ftpport pit‰‰ olla luku\n"
+
+#: rpmio/url.c:445
+#, fuzzy, c-format
+msgid "failed to open %s: %s\n"
+msgstr "en voinut avata %s: %s"
 
 #. XXX Fstrerror
 #: rpmio/url.c:462

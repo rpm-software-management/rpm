@@ -28,6 +28,8 @@ typedef struct hdrObject_s hdrObject;
 
 /* rpmdb functions */
 static void rpmdbDealloc(rpmdbObject * s);
+static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args);
+static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args);
 static PyObject * rpmdbGetAttr(rpmdbObject * s, char * name);
 static PyObject * rpmdbByName(rpmdbObject * s, PyObject * args);
 static PyObject * rpmdbByProvides(rpmdbObject * s, PyObject * args);
@@ -92,6 +94,9 @@ static void mungeFilelist(Header h);
 struct rpmdbObject_s {
     PyObject_HEAD;
     rpmdb db;
+    int offx;
+    int noffs;
+    int *offsets;
 } ;
 
 struct rpmdbMIObject_s {
@@ -233,6 +238,8 @@ static PyTypeObject rpmtransType = {
 };
 
 static struct PyMethodDef rpmdbMethods[] = {
+	{"firstkey",	    (PyCFunction) rpmdbFirst,	1 },
+	{"nextkey",	    (PyCFunction) rpmdbNext,	1 },
 	{"findbyfile",	    (PyCFunction) rpmdbByFile, 1 },
 	{"findbyname",	    (PyCFunction) rpmdbByName, 1 },
 	{"findbyprovides",  (PyCFunction) rpmdbByProvides, 1 },
@@ -550,6 +557,9 @@ static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
 
     o = PyObject_NEW(rpmdbObject, &rpmdbType);
     o->db = NULL;
+    o->offx = 0;
+    o->noffs = 0;
+    o->offsets = NULL;
 
     if (rpmdbOpen(root, &o->db, forWrite ? O_RDWR | O_CREAT: O_RDONLY, 0644)) {
 	char * errmsg = "cannot open database in %s";
@@ -817,9 +827,69 @@ static PyObject * rpmdbGetAttr(rpmdbObject * s, char * name) {
 }
 
 static void rpmdbDealloc(rpmdbObject * s) {
+    if (s->offsets) {
+	free(s->offsets);
+    }
     if (s->db) {
 	rpmdbClose(s->db);
     }
+}
+
+static PyObject * rpmdbFirst(rpmdbObject * s, PyObject * args) {
+    int first;
+
+    if (!PyArg_ParseTuple (args, "")) return NULL;
+
+    /* Acquire all offsets in one fell swoop. */
+    if (s->offsets == NULL || s->noffs <= 0) {
+	rpmdbMatchIterator mi;
+	Header h;
+
+	if (s->offsets)
+	    free(s->offsets);
+	s->offsets = NULL;
+	s->noffs = 0;
+	mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, NULL, 0);
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    s->noffs++;
+	    s->offsets = realloc(s->offsets, s->noffs * sizeof(s->offsets[0]));
+	    s->offsets[s->noffs-1] = rpmdbGetIteratorOffset(mi);
+	}
+	rpmdbFreeIterator(mi);
+    }
+
+    s->offx = 0;
+    if (s->offsets != NULL && s->offx < s->noffs)
+	first = s->offsets[s->offx++];
+    else
+	first = 0;
+
+    if (!first) {
+	PyErr_SetString(pyrpmError, "cannot find first entry in database\n");
+	return NULL;
+    }
+
+    return Py_BuildValue("i", first);
+}
+
+static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args) {
+    int where;
+
+    if (!PyArg_ParseTuple (args, "i", &where)) return NULL;
+
+    if (s->offsets == NULL || s->offx >= s->noffs) {
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+
+    where = s->offsets[s->offx++];
+
+    if (!where) {
+	Py_INCREF(Py_None);
+	return Py_None;
+    }
+
+    return Py_BuildValue("i", where);
 }
 
 static PyObject * handleDbResult(rpmdbMatchIterator mi) {

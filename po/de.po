@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-07-29 13:25-0400\n"
+"POT-Creation-Date: 2000-07-29 16:29-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2534,22 +2534,17 @@ msgstr "Öffnen von %s fehlgeschlagen: %s"
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-# , c-format
-#: lib/db1.c:435 rpmio/url.c:445
-#, fuzzy, c-format
-msgid "failed to open %s: %s\n"
-msgstr "Öffnen von %s fehlgeschlagen: %s"
-
-#: lib/db1.c:451
+#. XXX check errno validity
+#: lib/db1.c:449
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "shared"
 msgstr "geteilt"
 
@@ -4184,6 +4179,12 @@ msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "Fehler: der FTP-Port muss eine Zahl sein\n"
+
+# , c-format
+#: rpmio/url.c:445
+#, fuzzy, c-format
+msgid "failed to open %s: %s\n"
+msgstr "Öffnen von %s fehlgeschlagen: %s"
 
 # , c-format
 #. XXX Fstrerror

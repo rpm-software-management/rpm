@@ -431,9 +431,7 @@ static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
 	pkgs = fadOpen(fn, dbi->dbi_mode, dbi->dbi_perms);
 	if (Ferror(pkgs)) {
-	    rc = EFAULT;
-	    rpmError(RPMERR_DBOPEN, _("failed to open %s: %s\n"), urlfn,
-		Fstrerror(pkgs));
+	    rc = errno;		/* XXX check errno validity */
 	    goto exit;
 	}
 
@@ -447,7 +445,7 @@ static int db1open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    l.l_type = (dbi->dbi_mode & O_RDWR) ? F_WRLCK : F_RDLCK;
 
 	    if (Fcntl(pkgs, F_SETLK, (void *) &l)) {
-		rc = EFAULT;
+		rc = errno;	/* XXX check errno validity */
 		rpmError(RPMERR_FLOCK, _("cannot get %s lock on database"),
 		    ((dbi->dbi_mode & O_RDWR) ? _("exclusive") : _("shared")));
 		goto exit;

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-07-29 13:25-0400\n"
+"POT-Creation-Date: 2000-07-29 16:29-0400\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -83,7 +83,7 @@ msgstr "ターゲット %s 用に作成中\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.103 2000/07/29 17:30:19 jbj Exp $
+# $Id: ja.po,v 1.104 2000/07/29 20:31:57 jbj Exp $
 #: rpm.c:178 rpmqv.c:257
 #, c-format
 msgid "rpm: %s\n"
@@ -2415,21 +2415,17 @@ msgstr "不正なファイルの状態: %s"
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "データベースモード 0x%x のオープン (%s)\n"
 
-#: lib/db1.c:435 rpmio/url.c:445
-#, fuzzy, c-format
-msgid "failed to open %s: %s\n"
-msgstr "%s のオープンに失敗: %s"
-
-#: lib/db1.c:451
+#. XXX check errno validity
+#: lib/db1.c:449
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "データベースの %s をロックできません"
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "exclusive"
 msgstr "除外"
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "shared"
 msgstr "共有"
 
@@ -4054,6 +4050,11 @@ msgstr "エラー: %sポートは数字でなければなりません\n"
 #, fuzzy
 msgid "url port must be a number\n"
 msgstr "url ポートは数字でなければなりません\n"
+
+#: rpmio/url.c:445
+#, fuzzy, c-format
+msgid "failed to open %s: %s\n"
+msgstr "%s のオープンに失敗: %s"
 
 #. XXX Fstrerror
 #: rpmio/url.c:462

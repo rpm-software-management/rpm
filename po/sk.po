@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-07-29 13:25-0400\n"
+"POT-Creation-Date: 2000-07-29 16:29-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2425,21 +2425,17 @@ msgstr "chybný stav súboru: %s"
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: lib/db1.c:435 rpmio/url.c:445
-#, fuzzy, c-format
-msgid "failed to open %s: %s\n"
-msgstr "nepodarilo sa otvori» %s: %s"
-
-#: lib/db1.c:451
+#. XXX check errno validity
+#: lib/db1.c:449
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "exclusive"
 msgstr "výhradný"
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "shared"
 msgstr "zdieµaný"
 
@@ -4014,6 +4010,11 @@ msgstr "chyba: %sport musí by» èíslo\n"
 #: rpmio/url.c:405
 msgid "url port must be a number\n"
 msgstr "url port musí by» èíslo\n"
+
+#: rpmio/url.c:445
+#, fuzzy, c-format
+msgid "failed to open %s: %s\n"
+msgstr "nepodarilo sa otvori» %s: %s"
 
 #. XXX Fstrerror
 #: rpmio/url.c:462

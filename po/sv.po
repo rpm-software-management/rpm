@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-07-29 13:25-0400\n"
+"POT-Creation-Date: 2000-07-29 16:29-0400\n"
 "PO-Revision-Date: 2000-07-24 22:14+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2319,21 +2319,17 @@ msgstr "felaktig db-fil %s"
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "öppnar db-fil          %s rättighet 0x%x\n"
 
-#: lib/db1.c:435 rpmio/url.c:445
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "kunde inte öppna %s: %s\n"
-
-#: lib/db1.c:451
+#. XXX check errno validity
+#: lib/db1.c:449
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "kan inte få %s lås på databas"
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "shared"
 msgstr "delat"
 
@@ -3913,6 +3909,11 @@ msgstr "fel: %s-port måste vara ett tal\n"
 #: rpmio/url.c:405
 msgid "url port must be a number\n"
 msgstr "url-port måste vara ett tal\n"
+
+#: rpmio/url.c:445
+#, c-format
+msgid "failed to open %s: %s\n"
+msgstr "kunde inte öppna %s: %s\n"
 
 #. XXX Fstrerror
 #: rpmio/url.c:462

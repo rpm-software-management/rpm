@@ -2,7 +2,7 @@
 # Revised by Arnaldo Carvalho de Melo <acme@conectiva.com.br>, 1998.
 #
 msgid ""
-msgstr "POT-Creation-Date: 2000-07-29 13:25-0400\n"
+msgstr "POT-Creation-Date: 2000-07-29 16:29-0400\n"
 
 #: build.c:25 lib/rpminstall.c:451
 #, c-format
@@ -2535,22 +2535,17 @@ msgstr "Não consegui abrir: %s\n"
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-# , c-format
-#: lib/db1.c:435 rpmio/url.c:445
-#, fuzzy, c-format
-msgid "failed to open %s: %s\n"
-msgstr "Não consegui abrir: %s\n"
-
-#: lib/db1.c:451
+#. XXX check errno validity
+#: lib/db1.c:449
 #, fuzzy, c-format
 msgid "cannot get %s lock on database"
 msgstr "não foi passado pacote para desinstalação"
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "exclusive"
 msgstr ""
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "shared"
 msgstr ""
 
@@ -4199,6 +4194,12 @@ msgstr ""
 #: rpmio/url.c:405
 msgid "url port must be a number\n"
 msgstr ""
+
+# , c-format
+#: rpmio/url.c:445
+#, fuzzy, c-format
+msgid "failed to open %s: %s\n"
+msgstr "Não consegui abrir: %s\n"
 
 # , c-format
 #. XXX Fstrerror

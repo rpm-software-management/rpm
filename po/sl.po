@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.88 2000/07/29 17:30:21 jbj Exp $
+# $Id: sl.po,v 1.89 2000/07/29 20:31:58 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.4\n"
-"POT-Creation-Date: 2000-07-29 13:25-0400\n"
+"POT-Creation-Date: 2000-07-29 16:29-0400\n"
 "PO-Revision-Date: 2000-02-17 22:25+01:00\n"
 "Last-Translator: Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2410,21 +2410,17 @@ msgstr "okvarjeno stanje datoteke: %s"
 msgid "opening db file        %s mode 0x%x\n"
 msgstr "odpiramo datoteko z naèinom 0x%x v %s\n"
 
-#: lib/db1.c:435 rpmio/url.c:445
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "neuspe¹no odpiranje %s: %s\n"
-
-#: lib/db1.c:451
+#. XXX check errno validity
+#: lib/db1.c:449
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr "datoteke ni mo¾no %s zakleniti"
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "shared"
 msgstr "deljeno"
 
@@ -3993,6 +3989,11 @@ msgstr "napaka: vrata %s morajo biti ¹tevilka\n"
 #: rpmio/url.c:405
 msgid "url port must be a number\n"
 msgstr "vrata URL morajo biti ¹tevilka\n"
+
+#: rpmio/url.c:445
+#, c-format
+msgid "failed to open %s: %s\n"
+msgstr "neuspe¹no odpiranje %s: %s\n"
 
 #. XXX Fstrerror
 #: rpmio/url.c:462

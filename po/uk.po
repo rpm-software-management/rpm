@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-07-29 13:25-0400\n"
+"POT-Creation-Date: 2000-07-29 16:29-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2273,21 +2273,17 @@ msgstr ""
 msgid "opening db file        %s mode 0x%x\n"
 msgstr ""
 
-#: lib/db1.c:435 rpmio/url.c:445
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr ""
-
-#: lib/db1.c:451
+#. XXX check errno validity
+#: lib/db1.c:449
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "exclusive"
 msgstr ""
 
-#: lib/db1.c:452 lib/db3.c:1097
+#: lib/db1.c:450 lib/db3.c:1097
 msgid "shared"
 msgstr ""
 
@@ -3829,6 +3825,11 @@ msgstr ""
 
 #: rpmio/url.c:405
 msgid "url port must be a number\n"
+msgstr ""
+
+#: rpmio/url.c:445
+#, c-format
+msgid "failed to open %s: %s\n"
 msgstr ""
 
 #. XXX Fstrerror
