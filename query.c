@@ -142,8 +142,6 @@ void doQuery(char * prefix, enum querysources source, int queryFlags,
 
     if (source != QUERY_SRPM && source != QUERY_RPM) {
 	if (!rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
-	    fprintf(stderr, "cannot open %s/var/lib/rpm/packages.rpm\n", 
-		    prefix);
 	    exit(1);
 	}
     }
