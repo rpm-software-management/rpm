@@ -92,6 +92,8 @@ poptContext poptGetContext(char * name, int argc, char ** argv,
 }
 
 void poptResetContext(poptContext con) {
+    int i;
+
     con->os = con->optionStack;
     con->os->currAlias = NULL;
     con->os->nextCharArg = NULL;
@@ -102,6 +104,10 @@ void poptResetContext(poptContext con) {
     con->nextLeftover = 0;
     con->restLeftover = 0;
     con->doExec = NULL;
+
+    for (i = 0; i < con->finalArgvCount; i++)
+	free(con->finalArgv[i]);
+
     con->finalArgvCount = 0;
 }
 
@@ -496,6 +502,7 @@ void poptFreeContext(poptContext con) {
     if (con->appName) free(con->appName);
     if (con->aliases) free(con->aliases);
     if (con->otherHelp) free(con->otherHelp);
+    if (con->execPath) free(con->execPath);
     free(con);
 }
 
