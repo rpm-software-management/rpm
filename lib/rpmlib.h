@@ -378,7 +378,7 @@ typedef enum rpmTag_e {
     RPMTAG_PAYLOADFORMAT	= 1124,
     RPMTAG_PAYLOADCOMPRESSOR	= 1125,
     RPMTAG_PAYLOADFLAGS		= 1126,
-    RPMTAG_MULTILIBS		= 1127,
+    RPMTAG_MULTILIBMASK		= 1127,
     RPMTAG_INSTALLTID		= 1128,
     RPMTAG_REMOVETID		= 1129,
 /*@-enummemuse@*/
@@ -432,7 +432,7 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_EXCLUDE	= (1 << 9),	/*!< from %%exclude */
     RPMFILE_UNPATCHED	= (1 << 10)	/*!< placeholder (SuSE) */
 } rpmfileAttrs;
-#define	RPMFILE_MULTILIB_SHIFT		9
+#define	RPMFILE_MULTILIB_SHIFT		12
 #define	RPMFILE_MULTILIB(N)		((N) << RPMFILE_MULTILIB_SHIFT)
 #define	RPMFILE_MULTILIB_MASK		RPMFILE_MULTILIB(7)
 

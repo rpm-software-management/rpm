@@ -2033,14 +2033,14 @@ psm->te->h = headerLink(fi->h);
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_MULTILIB) {
 		uint_32 multiLib, * newMultiLib, * p;
 
-		if (hge(fi->h, RPMTAG_MULTILIBS, NULL,
+		if (hge(fi->h, RPMTAG_MULTILIBMASK, NULL,
 				(void **) &newMultiLib, NULL) &&
-		    hge(psm->oh, RPMTAG_MULTILIBS, NULL,
+		    hge(psm->oh, RPMTAG_MULTILIBMASK, NULL,
 				(void **) &p, NULL))
 		{
 		    multiLib = *p;
 		    multiLib |= *newMultiLib;
-		    xx = hme(psm->oh, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
+		    xx = hme(psm->oh, RPMTAG_MULTILIBMASK, RPM_INT32_TYPE,
 				      &multiLib, 1);
 		}
 		rc = mergeFiles(fi, psm->oh, fi->h);

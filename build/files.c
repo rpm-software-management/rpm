@@ -102,6 +102,11 @@ typedef struct AttrRec_s {
 /*@unchecked@*/
 static int multiLib = 0;	/* MULTILIB */
 
+/**
+ */
+/*@unchecked@*/
+static int multiLib_oneshot = 0;
+
 /* list of files */
 /*@unchecked@*/ /*@only@*/ /*@null@*/
 static StringBuf check_fileList = NULL;
@@ -306,6 +311,7 @@ static void timeCheck(int tc, Header h)
  */
 typedef struct VFA {
 /*@observer@*/ /*@null@*/ const char * attribute;
+    int not;
     int	flag;
 } VFA_t;
 
@@ -314,15 +320,15 @@ typedef struct VFA {
 /*@-exportlocal -exportheadervar@*/
 /*@unchecked@*/
 VFA_t verifyAttrs[] = {
-    { "md5",	RPMVERIFY_MD5 },
-    { "size",	RPMVERIFY_FILESIZE },
-    { "link",	RPMVERIFY_LINKTO },
-    { "user",	RPMVERIFY_USER },
-    { "group",	RPMVERIFY_GROUP },
-    { "mtime",	RPMVERIFY_MTIME },
-    { "mode",	RPMVERIFY_MODE },
-    { "rdev",	RPMVERIFY_RDEV },
-    { NULL, 0 }
+    { "md5",	0,	RPMVERIFY_MD5 },
+    { "size",	0,	RPMVERIFY_FILESIZE },
+    { "link",	0,	RPMVERIFY_LINKTO },
+    { "user",	0,	RPMVERIFY_USER },
+    { "group",	0,	RPMVERIFY_GROUP },
+    { "mtime",	0,	RPMVERIFY_MTIME },
+    { "mode",	0,	RPMVERIFY_MODE },
+    { "rdev",	0,	RPMVERIFY_RDEV },
+    { NULL, 0,	0 }
 };
 /*@=exportlocal =exportheadervar@*/
 
@@ -915,13 +921,16 @@ static int parseForRegexMultiLib(const char *fileName)
 /*@-exportlocal -exportheadervar@*/
 /*@unchecked@*/
 VFA_t virtualFileAttributes[] = {
-	{ "%dir",	0 },	/* XXX why not RPMFILE_DIR? */
-	{ "%doc",	RPMFILE_DOC },
-	{ "%ghost",	RPMFILE_GHOST },
-	{ "%exclude",	RPMFILE_EXCLUDE },
-	{ "%readme",	RPMFILE_README },
-	{ "%license",	RPMFILE_LICENSE },
-	{ "%multilib",	0 },
+	{ "%dir",	0,	0 },	/* XXX why not RPMFILE_DIR? */
+	{ "%doc",	0,	RPMFILE_DOC },
+	{ "%ghost",	0,	RPMFILE_GHOST },
+	{ "%exclude",	0,	RPMFILE_EXCLUDE },
+	{ "%readme",	0,	RPMFILE_README },
+	{ "%license",	0,	RPMFILE_LICENSE },
+	{ "%multilib",	0,	0 },
+	{ "%multilib(0)", 1,	RPMFILE_MULTILIB_MASK},
+	{ "%multilib(1)", 0,	RPMFILE_MULTILIB(1) },
+	{ "%multilib(2)", 0,	RPMFILE_MULTILIB(2) },
 
 #if WHY_NOT
 	{ "%spec",	RPMFILE_SPEC },
@@ -931,7 +940,7 @@ VFA_t virtualFileAttributes[] = {
 	{ "%noreplace",	RPMFILE_CONFIG|RPMFILE_NOREPLACE },
 #endif
 
-	{ NULL, 0 }
+	{ NULL, 0, 0 }
 };
 /*@=exportlocal =exportheadervar@*/
 
@@ -991,8 +1000,13 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 		    fl->isDir = 1;	/* XXX why not RPMFILE_DIR? */
 		else if (!strcmp(s, "%multilib"))
 		    fl->currentFlags |= multiLib;
-	    } else
-		fl->currentFlags |= vfa->flag;
+	    } else {
+		if (vfa->not)
+		    fl->currentFlags &= ~vfa->flag;
+		else
+		    fl->currentFlags |= vfa->flag;
+	    }
+
 	    /*@innerbreak@*/ break;
 	}
 	/* if we got an attribute, continue with next token */
@@ -1231,10 +1245,15 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/* Leave room for both dirname and basename NUL's */
 	dpathlen += (strlen(flp->diskURL) + 2);
 
-	if (flp->flags & RPMFILE_MULTILIB_MASK)
-	    multiLibMask |=
-		(1u << ((flp->flags & RPMFILE_MULTILIB_MASK))
-		      >> RPMFILE_MULTILIB_SHIFT);
+	/*
+	 * Create union bit mask of all files in the package.
+	 */
+	if (flp->flags & RPMFILE_MULTILIB_MASK) {
+	    int mlno;
+	    mlno = (flp->flags & RPMFILE_MULTILIB_MASK);
+	    mlno >>= RPMFILE_MULTILIB_SHIFT;
+	    multiLibMask |= (1u << mlno);
+	}
 
 	/*
 	 * Make the header, the OLDFILENAMES will get converted to a 
@@ -1353,16 +1372,15 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 			       &(flp->flags), 1);
 
     }
+
     (void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
 		   &(fl->totalFileSize), 1);
 
-    /* XXX This should be added always so that packages look alike.
-     * XXX However, there is logic in files.c/depends.c that checks for
-     * XXX existence (rather than value) that will need to change as well.
-     */
-    if (multiLibMask)
-	(void) headerAddEntry(h, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
+    /* XXX MULTILIBTODO: only binary packages for now. */
+    if (!isSrc) {
+	(void) headerAddEntry(h, RPMTAG_MULTILIBMASK, RPM_INT32_TYPE,
 		       &multiLibMask, 1);
+    }
 
     if (_addDotSlash)
 	(void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
@@ -1702,8 +1720,10 @@ static int addFile(FileList fl, const char * diskURL,
 
 	if (multiLib
 	    && !(flp->flags & RPMFILE_MULTILIB_MASK)
-	    && !parseForRegexMultiLib(fileURL))
+	    && !parseForRegexMultiLib(fileURL)) {
+fprintf(stderr, "*** flp->flags |= 0x%x\n", multiLib);
 	    flp->flags |= multiLib;
+	}
 
 
 	/* Hard links need be counted only once. */
@@ -1896,12 +1916,6 @@ static int processPackageFiles(Spec spec, Package pkg,
     AttrRec specialDocAttrRec = &arbuf;
     char *specialDoc = NULL;
 
-#ifdef MULTILIB
-    multiLib = rpmExpandNumeric("%{_multilibno}");
-    if (multiLib)
-	multiLib = RPMFILE_MULTILIB(multiLib);
-#endif /* MULTILIB */
-    
     nullAttrRec(specialDocAttrRec);
     pkg->cpioList = NULL;
 
@@ -2581,8 +2595,15 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
 	return 0;
     
     writeBuf = newStringBuf();
+
+    /*
+     * Create file manifest buffer to deliver to dependency finder.
+     */
     for (i = 0, writeBytes = 0; i < fi->fc; i++) {
 
+	/*
+	 * On 2nd dependency pass for multilib, skip files already processed.
+	 */
 	if (fi->fmapflags && multiLib == 2) {
 	    if (!(fi->fmapflags[i] & CPIO_MULTILIB))
 		continue;
@@ -2686,8 +2707,6 @@ static int generateDepends(Spec spec, Package pkg, rpmfi cpioList, int multiLib)
 	tagflags &= ~RPMSENSE_MULTILIB;
 	if (multiLib > 1)
 	    tagflags |=  RPMSENSE_MULTILIB;
-	else
-	    tagflags &= ~RPMSENSE_MULTILIB;
 	rc = parseRCPOT(spec, pkg, getStringBuf(readBuf), tag, 0, tagflags);
 	readBuf = freeStringBuf(readBuf);
 
@@ -2724,7 +2743,7 @@ static void printDepMsg(DepMsg_t * dm, int count, const char ** names,
 	rpmMessage(RPMMESS_NORMAL, " %s", *names);
 
 	if (hasFlags && isDependsMULTILIB(*flags))
-	    rpmMessage(RPMMESS_NORMAL, " (multilib)");
+	    rpmMessage(RPMMESS_NORMAL, "*");
 
 	if (hasVersions && !(*versions != NULL && **versions != '\0'))
 	    continue;
@@ -2864,8 +2883,18 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	/*@globals check_fileList, check_fileListLen @*/
 	/*@modifies check_fileList, check_fileListLen @*/
 {
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     Package pkg;
     int res = 0;
+    int_32 * mlmp;
+    int mlm;
+    
+    if (!multiLib_oneshot) {
+	multiLib_oneshot = 1;
+	multiLib = rpmExpandNumeric("%{?_multilibno}");
+	if (multiLib)
+	    multiLib = RPMFILE_MULTILIB(multiLib);
+    }
     
     check_fileList = newStringBuf();
     check_fileListLen = 0;
@@ -2883,15 +2912,18 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
 	    res = rc;
 
-    /* XXX This should be added always so that packages look alike.
-     * XXX However, there is logic in files.c/depends.c that checks for
-     * XXX existence (rather than value) that will need to change as well.
-     */
-	if (headerIsEntry(pkg->header, RPMTAG_MULTILIBS)) {
+	mlm = 0;
+	mlmp = NULL;
+	if (hge(pkg->header, RPMTAG_MULTILIBMASK, NULL, (void **)&mlmp, NULL)
+	&& mlmp != NULL)
+	    mlm = *mlmp;
+
+	if (mlm) {
 	    (void) generateDepends(spec, pkg, pkg->cpioList, 1);
 	    (void) generateDepends(spec, pkg, pkg->cpioList, 2);
 	} else
 	    (void) generateDepends(spec, pkg, pkg->cpioList, 0);
+
 	/*@-noeffect@*/
 	printDeps(pkg->header);
 	/*@=noeffect@*/

@@ -138,6 +138,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int ec = 0;
     int rc;
     int oc;
+uint_32 *mlmp, multiLibMask, oldMultiLibMask;
 
     /*
      * Check for previously added versions with the same name.
@@ -211,27 +212,23 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     (void) rpmteSetAddedKey(p, pkgKey);
 
 #ifdef	NOYET
-  /* XXX this needs a search over ts->order, not ts->addedPackages */
-  { uint_32 *pp = NULL;
+    /* XXX MULTLIBTODO: search over ts->order, not ts->addedPackages */
 
-    /* XXX This should be added always so that packages look alike.
-     * XXX However, there is logic in files.c/depends.c that checks for
-     * XXX existence (rather than value) that will need to change as well.
-     */
-    if (hge(h, RPMTAG_MULTILIBS, NULL, (void **) &pp, NULL))
-	multiLibMask = *pp;
+    multiLibMask = 0;
+    if (hge(h, RPMTAG_MULTILIBMASK, NULL, (void **) &mlmp, NULL)
+    && mlmp != NULL)
+	multiLibMask = *mlmp;
 
     if (multiLibMask) {
-	for (i = 0; i < pkgNum - 1; i++) {
+	for (i = 0; i < ts->orderCount - 1; i++) {
 	    if (!strcmp (rpmteN(p), al->list[i].name)
-		&& hge(al->list[i].h, RPMTAG_MULTILIBS, NULL,
-				  (void **) &pp, NULL)
+		&& hge(al->list[i].h, RPMTAG_MULTILIBMASK, NULL,
+				  (void **) &mlmp, NULL)
 		&& !rpmVersionCompare(p->h, al->list[i].h)
-		&& *pp && !(*pp & multiLibMask))
+		&& *mlmp && !(*mlmp & multiLibMask))
 		    (void) rpmteSetMultiLib(p, multiLibMask);
 	}
     }
-  }
 #endif
 
     if (!duplicate) {
@@ -260,14 +257,17 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    if (rpmVersionCompare(h, h2))
 		xx = removePackage(ts, h2, rpmdbGetIteratorOffset(mi), pkgKey);
 	    else {
-		uint_32 *pp, multiLibMask = 0, oldmultiLibMask = 0;
 
-		if (hge(h2, RPMTAG_MULTILIBS, NULL, (void **) &pp, NULL))
-		    oldmultiLibMask = *pp;
-		if (hge(h, RPMTAG_MULTILIBS, NULL, (void **) &pp, NULL))
-		    multiLibMask = *pp;
-		if (oldmultiLibMask && multiLibMask
-		 && !(oldmultiLibMask & multiLibMask))
+		mlmp = NULL;
+		oldMultiLibMask = 0;
+		if (hge(h2, RPMTAG_MULTILIBMASK, NULL, (void **) &mlmp, NULL))
+		    oldMultiLibMask = *mlmp;
+		mlmp = NULL;
+		multiLibMask = 0;
+		if (hge(h, RPMTAG_MULTILIBMASK, NULL, (void **) &mlmp, NULL))
+		    multiLibMask = *mlmp;
+		if (oldMultiLibMask && multiLibMask
+		 && !(oldMultiLibMask & multiLibMask))
 		{
 		    (void) rpmteSetMultiLib(p, multiLibMask);
 		}
