@@ -6,20 +6,17 @@
 /*****************************
 TODO:
 
-. skip blank lines
-. strip leading/trailing spaces in %preamble and %files
-. multiline descriptions (general backslash processing)
-. source and patch lines (multiple)
-. %exclude and real arch/os checking
-. %dir %doc %config globbing
-. %setup %patch
-. root: option
+. strip blank lines, leading/trailing spaces in %preamble
+. multiline descriptions (general backslash processing ?)
+. %exclude
+. %doc globbing
 
 ******************************/
 
 #include <stdlib.h>
 #include <string.h>
 #include <regex.h>
+#include <limits.h>
 
 #include "header.h"
 #include "spec.h"
@@ -28,6 +25,8 @@ TODO:
 #include "messages.h"
 #include "rpmlib.h"
 #include "stringbuf.h"
+#include "var.h"
+#include "misc.h"
 
 #define LINE_BUF_SIZE 1024
 #define FREE(x) { if (x) free(x); }
@@ -43,6 +42,141 @@ static int check_part(char *line, char **s);
 int lookup_package(Spec s, struct PackageRec **pr, char *name, int flags);
 static void dumpPackage(struct PackageRec *p, FILE *f);
 char *chop_line(char *s);
+
+/**********************************************************************/
+/*                                                                    */
+/* Source and patch structure creation/deletion/lookup                */
+/*                                                                    */
+/**********************************************************************/
+
+static int addSource(Spec spec, char *line)
+{
+    struct sources *p;
+    char *s, *s1, c;
+    char *file;
+    unsigned long int x;
+
+    p = malloc(sizeof(struct sources));
+    p->next = spec->sources;
+    spec->sources = p;
+
+    if (! strncasecmp(line, "source", 6)) {
+	p->ispatch = 0;
+	s = line + 6;
+    } else if (! strncasecmp(line, "patch", 5)) {
+	p->ispatch = 1;
+	s = line + 5;
+    } else {
+	error(RPMERR_BADSPEC, "Not a source/patch line: %s\n", line);
+	return(RPMERR_BADSPEC);
+    }
+
+    s += strspn(s, " \t\n");
+    p->num = 0;
+    if (*s != ':') {
+        x = strspn(s, "0123456789");
+	if (! x) {
+	    error(RPMERR_BADSPEC, "Bad source/patch line: %s\n", line);
+	    return(RPMERR_BADSPEC);
+	}
+	c = s[x];
+	s[x] = '\0';
+	s1 = NULL;
+	p->num = strtoul(s, &s1, 10);
+	if ((*s1) || (s1 == s) || (p->num == ULONG_MAX)) {
+	    s[x] = c;
+	    error(RPMERR_BADSPEC, "Bad source/patch number: %s\n", s);
+	    return(RPMERR_BADSPEC);
+	}
+	s[x] = c;
+	s += x;
+	/* skip spaces */
+	s += strspn(s, " \t\n");
+    }
+
+    if (*s != ':') {
+	error(RPMERR_BADSPEC, "Bad source/patch line: %s\n", line);
+	return(RPMERR_BADSPEC);
+    }
+    
+    /* skip to actual source */
+    s++;
+    s += strspn(s, " \t\n");
+
+    file = strtok(s, " \t\n");
+    if (! file) {
+	error(RPMERR_BADSPEC, "Bad source/patch line: %s\n", line);
+	return(RPMERR_BADSPEC);
+    }
+    p->fullSource = strdup(file);
+    p->source = strrchr(p->fullSource, '/');
+    if (p->source) {
+	p->source++;
+    } else {
+	p->source = p->fullSource;
+    }
+
+    if (p->ispatch) {
+	message(MESS_DEBUG, "Patch(%d) = %s\n", p->num, p->fullSource);
+    } else {
+	message(MESS_DEBUG, "Source(%d) = %s\n", p->num, p->fullSource);
+    }
+    
+    return 0;
+}
+
+static void freeSources(Spec s)
+{
+    struct sources *p1, *p2;
+
+    p1 = s->sources;
+    while (p1) {
+	p2 = p1;
+	p1 = p1->next;
+	free(p2->fullSource);
+	free(p2);
+    }
+}
+
+char *getSource(Spec s, int ispatch, int num)
+{
+    struct sources *p = s->sources;
+
+    while (p) {
+	if ((ispatch == p->ispatch) &&
+	    (num == p->num)) {
+	    break;
+	} else {
+	    p = p->next;
+	}
+    }
+
+    if (p) {
+	return(p->source);
+    } else {
+	return(NULL);
+    }
+}
+
+char *getFullSource(Spec s, int ispatch, int num)
+{
+    struct sources *p = s->sources;
+
+    while (p) {
+	if ((ispatch == p->ispatch) &&
+	    (num == p->num)) {
+	    break;
+	} else {
+	    p = p->next;
+	}
+    }
+
+    if (p) {
+	return(p->fullSource);
+    } else {
+	return(NULL);
+    }
+}
 
 /**********************************************************************/
 /*                                                                    */
@@ -79,6 +213,7 @@ void free_packagerec(struct PackageRec *p)
 void freeSpec(Spec s)
 {
     FREE(s->name);
+    freeSources(s);
     freeStringBuf(s->prep);
     freeStringBuf(s->build);
     freeStringBuf(s->install);
@@ -170,20 +305,42 @@ int lookup_package(Spec s, struct PackageRec **pr, char *name, int flags)
 
 static int match_arch(char *s)
 {
-    if (! strncmp(s, "%ifarch i386", 12)) {
-	return 1;
-    } else {
-	return 0;
+    char *tok, *arch;
+    int sense, match;
+
+    arch = getArchName();
+    match = 0;
+    
+    tok = strtok(s, " \n\t");
+    sense = (! strcmp(tok, "%ifarch")) ? 1 : 0;
+
+    while ((tok = strtok(NULL, " \n\t"))) {
+	if (! strcmp(tok, arch)) {
+	    match |= 1;
+	}
     }
+
+    return (sense == match);
 }
 
 static int match_os(char *s)
 {
-    if (! strncmp(s, "%ifos linux", 11)) {
-	return 1;
-    } else {
-	return 0;
+    char *tok, *os;
+    int sense, match;
+
+    os = getOsName();
+    match = 0;
+    
+    tok = strtok(s, " \n\t");
+    sense = (! strcmp(tok, "%ifos")) ? 1 : 0;
+
+    while ((tok = strtok(NULL, " \n\t"))) {
+	if (! strcmp(tok, os)) {
+	    match |= 1;
+	}
     }
+
+    return (sense == match);
 }
 
 static struct read_level_entry {
@@ -207,12 +364,14 @@ static int read_line(FILE *f, char *line)
 	        return 0;
 	    }
 	}
-	if (! strncmp("%ifarch", line, 7)) {
+	if ((! strncmp("%ifarch", line, 7)) ||
+	    (! strncmp("%ifnarch", line, 8))) {
 	    rl = malloc(sizeof(struct read_level_entry));
 	    rl->next = read_level;
 	    rl->reading = read_level->reading && match_arch(line);
 	    read_level = rl;
-	} else if (! strncmp("%ifos", line, 5)) {
+	} else if ((! strncmp("%ifos", line, 5)) ||
+		   (! strncmp("%ifnos", line, 6))) {
 	    rl = malloc(sizeof(struct read_level_entry));
 	    rl->next = read_level;
 	    rl->reading = read_level->reading && match_os(line);
@@ -262,6 +421,9 @@ struct preamble_line {
     {RPMTAG_VENDOR,       0, "vendor"},
     {RPMTAG_GROUP,        0, "group"},
     {RPMTAG_PACKAGER,     0, "packager"},
+    {RPMTAG_ROOT,         0, "root"},
+    {RPMTAG_SOURCE,       0, "source"},
+    {RPMTAG_PATCH,        0, "patch"},
     {0, 0, 0}
 };
 
@@ -362,6 +524,7 @@ Spec parseSpec(FILE *f)
     Spec spec = (struct SpecRec *) malloc(sizeof(struct SpecRec));
 
     spec->name = NULL;
+    spec->sources = NULL;
     spec->prep = newStringBuf();
     spec->build = newStringBuf();
     spec->install = newStringBuf();
@@ -434,6 +597,7 @@ Spec parseSpec(FILE *f)
 		lookupopts |= LP_CREATE | LP_FAIL_EXISTS;
 	    }
 
+	    /* XXX - should be able to drop the -n in non-%package parts */
 	    if (! lookup_package(spec, &cur_package, s, lookupopts)) {
 		error(RPMERR_INTERNAL, "Package lookup failed!");
 		return NULL;
@@ -483,6 +647,17 @@ Spec parseSpec(FILE *f)
 		  case RPMTAG_URL:
 		    addEntry(cur_package->header, tag, STRING_TYPE, s, 1);
 		    break;
+		  case RPMTAG_ROOT:
+		      /* special case */
+		      message(MESS_DEBUG, "Got root: %s\n", s);
+		      setVar(RPMVAR_ROOT, s);
+		      break;
+		  case RPMTAG_SOURCE:
+		  case RPMTAG_PATCH:
+		      if (addSource(spec, line)) {
+			  return NULL;
+		      }
+		      break;
 		  default:
 		    message(MESS_DEBUG, "Skipping: %s\n", line);
 		}		
