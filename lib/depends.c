@@ -810,6 +810,9 @@ int rpmdepOrder(rpmDependencies rpmdep, void *** keysListPtr) {
     void ** order;
     int orderNum;
 
+    alMakeIndex(&rpmdep->addedPackages);
+    alMakeIndex(&rpmdep->availablePackages);
+
     selected = alloca(sizeof(*selected) * rpmdep->addedPackages.size);
     memset(selected, 0, sizeof(*selected) * rpmdep->addedPackages.size);
 
