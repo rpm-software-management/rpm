@@ -151,7 +151,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	error(RPMERR_BADARCH, "package %s-%s-%s is for a different "
 	      "architecture", name, version, release);
 	freeHeader(h);
-	return 1;
+	return 2;
     }
 
     if (labelFormat) {
@@ -182,7 +182,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	*/
 
 	rc = rpmdbFindPackage(db, name, &matches);
-	if (rc == -1) return 1;
+	if (rc == -1) return 2;
 	
 	if (!rc) {
 	    intptr = oldVersions = alloca((matches.count + 1) * sizeof(int));
@@ -191,7 +191,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 		    if (!(flags & INSTALL_UPGRADETOOLD)) 
 			if (ensureOlder(db, name, version, release, 
 					matches.recs[i].recOffset)) 
-			    return 1;
+			    return 2;
 		    *intptr++ = matches.recs[i].recOffset;
 		}
 	    }
@@ -251,7 +251,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 	if (rc) {
 	    if (replacedList) free(replacedList);
 	    free(fileList);
-	    return 1;
+	    return 2;
 	}
     }
     
@@ -329,7 +329,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
 		    error(RPMERR_RENAME, "rename of %s to %s failed: %s\n",
 			  prefixedFileList[i], newpath, strerror(errno));
 		    if (replacedList) free(replacedList);
-		    return 1;
+		    return 2;
 		}
 
 		free(newpath);
@@ -420,7 +420,7 @@ int rpmInstallPackage(char * prefix, rpmdb db, int fd, int flags,
     message(MESS_DEBUG, "running postinstall script (if any)\n");
 
     if (runScript(prefix, h, RPMTAG_POSTIN)) {
-	return 1;
+	return 2;
     }
 
     if (flags & INSTALL_UPGRADE) {
