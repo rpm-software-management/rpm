@@ -10,7 +10,7 @@
 	- fix -Q
 	- The Great Renaming
 	- use external OS specific script to generate requires lines
-	  (should work with ld.so 1.8.x)
+	  (should work with ld.so 1.8.x) (find-requries)
 
 2.2.7 -> 2.2.8:
 	- added --ftpproxy, --ftpport (and wrote about them in rpm.8)
