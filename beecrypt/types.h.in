@@ -1,11 +1,5 @@
 /*
- * types.h
- *
- * Types.h generic system types file
- *
- * Copyright (c) 2000 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
+ * Copyright (c) 2000, 2003 Virtual Unlimited B.V.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,20 +17,17 @@
  *
  */
 
-#ifndef _BEECRYPT_TYPES_H
-#define _BEECRYPT_TYPES_H
+/*!\file types.h
+ * \brief BeeCrypt API, portability headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ */
 
-#if WIN32 && !__CYGWIN32__
-# ifdef BEECRYPT_DLL_EXPORT
-#  define BEECRYPTAPI __declspec(dllexport)
-# else
-#  define BEECRYPTAPI __declspec(dllimport)
-# endif
-#else
+#ifndef _TYPES_H
+#define _TYPES_H
+
 # define BEECRYPTAPI
-#endif
 
-#include <stdint.h>
+@include_stdint_h@
 
 /* Starting from GCC 3.2, the compiler seems smart enough to figure
  * out that we're trying to do a rotate without having to specify it.
@@ -104,4 +95,6 @@ typedef uint16_t mphw;
 # error
 #endif
 
-#endif /* _BEECRYPT_TYPES_H */
+@typedef_bc_lock_t@
+
+#endif /* _TYPES_H */
