@@ -294,8 +294,9 @@ AC_CHECK_FUNC(socket, [], [
 ])
 
 AC_CHECK_FUNC(dbopen, [],
-  AC_CHECK_LIB(db, dbopen, [], AC_MSG_WARN([sorry this package needs libdb.a 
-(from the db package)]))
+  AC_CHECK_LIB(db1, dbopen, [],
+    AC_CHECK_LIB(db, dbopen, [],
+       AC_MSG_WARN([sorry this package needs libdb.a (from the db package)])))
            )
 
 AC_CHECK_FUNC(fork, [], [echo "using vfork() instead of fork()";
@@ -344,7 +345,8 @@ AC_HEADER_MAJOR
 AC_HEADER_DIRENT
 AC_HEADER_TIME
 
-AC_CHECK_HEADERS(db_185.h fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h)
+AC_CHECK_HEADERS(db_185.h db1/db.h)
+AC_CHECK_HEADERS(fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h)
 
 AC_CHECK_HEADERS(sys/socket.h sys/select.h)
 AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h)

@@ -1,4 +1,4 @@
-2.5.6 -> 2.90
+2.5.x -> 2.90
 	- file lookup finally sane wrt symbolic links :-)
 	- fileindex format changed -- rebuilddb is necessary for rpm 2.90!!
 	- --rebuilddb doesn't open old index files
@@ -36,6 +36,9 @@
 	- add {init,add,expand}Macro args everywhere (new macro.c compatibility)
 	- add new fully recursive macro.c
 	- there must be a { between two % in a query format (unless %% is used)
+
+2.5.6 -> 2.5.7:
+	- use "original db-1.85" if available (Raw Hide glibc 2.1).
 	- make sure files to sign exist before asking for the pass phrase
 
 2.5.5 -> 2.5.6:
