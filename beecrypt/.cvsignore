@@ -5,11 +5,15 @@
 Doxyfile
 Makefile
 Makefile.in
+aclocal.m4
+missing
+mkinstalldirs
 apidocs
 autom4te-*.cache
 beecrypt.spec
 beecrypt-*.tar.gz
 config.h
+config.h.in
 config.cache
 config.guess
 config.log
