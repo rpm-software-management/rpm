@@ -113,4 +113,4 @@ rpmtime_t rpmswSub(rpmop to, rpmop from)
 }
 #endif
 
-#endif	/* H_RPMIO_INTERNAL */
+#endif	/* H_RPMSW */
