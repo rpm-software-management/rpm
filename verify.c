@@ -23,33 +23,35 @@ static void verifyHeader(char * prefix, Header h) {
 
     if (getEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, &count)) {
 	for (i = 0; i < count; i++) {
-	    rpmVerifyFile(prefix, h, i, &verifyResult);
+	    if (rpmVerifyFile(prefix, h, i, &verifyResult))
+		printf("missing  %s\n", fileList[i]);
+	    else {
+		size = md5 = link = mtime = mode = ".";
+		user = group = rdev = ".";
 
-	    size = md5 = link = mtime = mode = ".";
-	    user = group = rdev = ".";
+		if (!verifyResult) continue;
+	    
+		if (verifyResult & VERIFY_MD5)
+		    md5 = "5";
+		if (verifyResult & VERIFY_FILESIZE)
+		    size = "S";
+		if (verifyResult & VERIFY_LINKTO)
+		    link = "L";
+		if (verifyResult & VERIFY_MTIME)
+		    mtime = "T";
+		if (verifyResult & VERIFY_RDEV)
+		    rdev = "D";
+		if (verifyResult & VERIFY_USER)
+		    user = "U";
+		if (verifyResult & VERIFY_GROUP)
+		    group = "G";
+		if (verifyResult & VERIFY_MODE)
+		    mode = "M";
 
-	    if (!verifyResult) continue;
-	
-	    if (verifyResult & VERIFY_MD5)
-		md5 = "5";
-	    if (verifyResult & VERIFY_FILESIZE)
-		size = "S";
-	    if (verifyResult & VERIFY_LINKTO)
-		link = "L";
-	    if (verifyResult & VERIFY_MTIME)
-		mtime = "T";
-	    if (verifyResult & VERIFY_RDEV)
-		rdev = "D";
-	    if (verifyResult & VERIFY_USER)
-		user = "U";
-	    if (verifyResult & VERIFY_GROUP)
-		group = "G";
-	    if (verifyResult & VERIFY_MODE)
-		mode = "M";
-
-	    printf("%s%s%s%s%s%s%s%s %s\n",
-		   size, mode, md5, rdev, link, user, group, mtime, 
-		   fileList[i]);
+		printf("%s%s%s%s%s%s%s%s %s\n",
+		       size, mode, md5, rdev, link, user, group, mtime, 
+		       fileList[i]);
+	    }
 	}
 	
 	free(fileList);
