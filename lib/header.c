@@ -988,6 +988,26 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     return 1;
 }
 
+char **
+headerGetLangs(Header h)
+{
+    char **s, *e, **table;
+    int i, type, count;
+
+    if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, (void **)&s, &count))
+	return NULL;
+
+    if ((table = (char **)calloc((count+1), sizeof(char *))) == NULL)
+	return NULL;
+
+    for (i = 0, e = *s; i < count > 0; i++, e += strlen(e)+1) {
+	table[i] = e;
+    }
+    table[count] = NULL;
+
+    return table;
+}
+
 int headerAddI18NString(Header h, int_32 tag, char * string, char * lang) {
     struct indexEntry * table, * entry;
     char * charArray[2];

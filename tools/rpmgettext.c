@@ -103,26 +103,6 @@ getTypeString(int tval)
     return buf;
 }
 
-static char **
-headerGetLangs(Header h)
-{
-    char **s, *e, **table;
-    int i, type, count;
-
-    if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, (void **)&s, &count))
-	return NULL;
-
-    if ((table = (char **)calloc((count+1), sizeof(char *))) == NULL)
-	return NULL;
-
-    for (i = 0, e = *s; i < count > 0; i++, e += strlen(e)+1) {
-	table[i] = e;
-    }
-    table[count] = NULL;
-
-    return table;
-}
-
 /* ================================================================== */
 
 static const char *
@@ -540,8 +520,7 @@ DPRINTF(100, ("%.*s\n", (int)(se-s), s));
 				message_comment_dot_append(mp, xstrdup(s));
 				break;
 			case ',':	/* flag... */
-				if (strstr (s, "fuzzy") != NULL)
-					mp->is_fuzzy = 1;
+				mp->is_fuzzy = ((strstr(s,"fuzzy")!=NULL) ?1:0);
 				mp->is_c_format = parse_c_format_description_string(s);
 				mp->do_wrap = parse_c_width_description_string(s);
 				break;
@@ -668,63 +647,6 @@ DPRINTF(100, ("\n"));
 
 /* ================================================================== */
 
-static int
-readRPM(char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs, CSA_t *csa)
-{
-    int fdi = 0;
-    Spec spec;
-    int rc;
-
-    DPRINTF(99, ("readRPM(\"%s\",%p,%p,%p,%p)\n", fileName, specp, lead, sigs, csa));
-
-    if (fileName != NULL && (fdi = open(fileName, O_RDONLY, 0644)) < 0) {
-	fprintf(stderr, _("readRPM: open %s: %s\n"), fileName, strerror(errno));
-	exit(1);
-    }
-
-    /* Get copy of lead */
-    if ((rc = read(fdi, lead, sizeof(*lead))) != sizeof(*lead)) {
-	fprintf(stderr, _("readRPM: read %s: %s\n"), fileName, strerror(errno));
-	exit(1);
-    }
-    lseek(fdi, 0, SEEK_SET);	/* XXX FIXME: EPIPE */
-
-    /* Reallocate build data structures */
-    spec = newSpec();
-    spec->packages = newPackage(spec);
-
-    /* XXX the header just allocated will be allocated again */
-    if (spec->packages->header) {
-	headerFree(spec->packages->header);
-	spec->packages->header = NULL;
-    }
-
-   /* Read the rpm lead and header */
-    rc = rpmReadPackageInfo(fdi, sigs, &spec->packages->header);
-    switch (rc) {
-    case 1:
-	fprintf(stderr, _("error: %s is not an RPM package\n"), fileName);
-	exit(1);
-    case 0:
-	break;
-    default:
-	fprintf(stderr, _("error: reading header from %s\n"), fileName);
-	exit(1);
-	break;
-    }
-
-    if (specp)
-	*specp = spec;
-
-    if (csa) {
-	csa->cpioFdIn = fdi;
-    } else if (fdi != 0) {
-	close(fdi);
-    }
-
-    return 0;
-}
-
 /* For all poTags in h, if msgid is in msg list, then substitute msgstr's */
 static int
 headerInject(Header h, int *poTags, message_list_ty *mlp)
@@ -732,12 +654,8 @@ headerInject(Header h, int *poTags, message_list_ty *mlp)
     message_ty *mp;
     message_variant_ty *mvp;
     int *tp;
-    char **langs;
     
     DPRINTF(99, ("headerInject(%p,%p,%p)\n", h, poTags, mlp));
-
-    if ((langs = headerGetLangs(h)) == NULL)
-	return 1;
 
     for (tp = poTags; *tp != 0; tp++) {
 	char **s, *e;
@@ -746,23 +664,44 @@ headerInject(Header h, int *poTags, message_list_ty *mlp)
 	if (!headerGetRawEntry(h, *tp, &type, (void **)&s, &count))
 	    continue;
 
-	/* Search for the msgid */
-	e = *s;
-	if ((mp = message_list_search(mlp, e)) != NULL) {
-DPRINTF(1, ("%s\n\tmsgid\n", getTagString(*tp)));
-	    for (i = 0; i < count; i++) {
-		if ((mvp = message_variant_search(mp, langs[i])) == NULL)
-		    continue;
-DPRINTF(1, ("\tmsgstr(%s)\n", langs[i]));
-		headerAddI18NString(h, *tp, (char *)mvp->msgstr, langs[i]);
-	    }
+	/* Only I18N strings can be injected */
+	if (type != RPM_I18NSTRING_TYPE) {
+	    if (type == RPM_STRING_ARRAY_TYPE)
+		FREE(s);
+	    continue;
 	}
 
+	e = *s;
+	/* Search for the msgid ... */
+	if ((mp = message_list_search(mlp, e)) == NULL)
+		goto bottom;
+DPRINTF(1, ("%s\n\tmsgid\n", getTagString(*tp)));
+
+	/* Skip fuzzy ... */
+	if (mp->is_fuzzy) {
+DPRINTF(1, ("\t(fuzzy)\n"));
+		goto bottom;
+	}
+
+	/* Search for the msgstr ... */
+	if ((mvp = message_variant_search(mp, onlylang)) == NULL) {
+DPRINTF(1, ("\t(not found)\n"));
+		goto bottom;
+	}
+
+	/* Skip untranslated ... */
+	if (strlen(mvp->msgstr) <= 0) {
+DPRINTF(1, ("\t(untranslated)\n"));
+		goto bottom;
+	}
+
+DPRINTF(1, ("\tmsgstr(%s)\n", onlylang));
+	headerAddI18NString(h, *tp, (char *)mvp->msgstr, onlylang);
+
+bottom:
 	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
 	    FREE(s)
     }
-
-    FREE(langs);
 
     return 0;
 }
@@ -880,14 +819,20 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 {
 	string_list_ty *flp;
 	message_list_ty *mlp;
-	char fn[BUFSIZ], fni[BUFSIZ], fno[BUFSIZ];
+	char fn[BUFSIZ];
+	char fnib[BUFSIZ], *fni;
+	char fnob[BUFSIZ], *fno;
 	int j, rc;
+	int deletefni = 0;
+	int deletefno = 1;
 
 	DPRINTF(99, ("rpmputtext(%d,\"%s\",%p)\n", fd, file, ofp));
 
+	/* Read the po file, parsing out xref files */
 	if ((rc = parsepofile(file, &mlp, &flp)) != 0)
 		return rc;
 
+	/* For all xref files ... */
 	for (j = 0; j < flp->nitems && rc == 0; j++) {
 	    char *f, *fe;
 
@@ -897,7 +842,7 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 	    /* Find the text after the name-version-release */
 	    if ((fe = strrchr(f, '-')) == NULL ||
 		(fe = strchr(fe, '.')) == NULL) {
-		fprintf(stderr, _("skipping malformed xref \"%s\"\n"), fn);
+		fprintf(stderr, _("rpmputtext: skipping malformed xref \"%s\"\n"), fn);
 		continue;
 	    }
 	    fe++;	/* skip . */
@@ -914,28 +859,60 @@ rpmputtext(int fd, const char *file, FILE *ofp)
 		    strcat(fe, ".rpm");
 
 		/* Build input "inputdir/arch/fn" */
+		    fni = fnib;
 		    fni[0] = '\0';
 		    if (inputdir) {
 			strcat(fni, inputdir);
 			strcat(fni, "/");
+#ifdef	ADD_BUILD_SUBDIRS
 			strcat(fni, arch);
 			strcat(fni, "/");
+#endif	/* ADD_BUILD_SUBDIRS */
 		    }
 		    strcat(fni, f);
 	
 		/* Build output "outputdir/arch/fn" */
+		    fno = fnob;
 		    fno[0] = '\0';
 		    if (outputdir) {
 			strcat(fno, outputdir);
 			strcat(fno, "/");
+#ifdef	ADD_BUILD_SUBDIRS
 			strcat(fno, arch);
 			strcat(fno, "/");
+#endif	/* ADD_BUILD_SUBDIRS */
 		    }
 		    strcat(fno, f);
 
-		/* XXX skip over noarch/exclusivearch */
-		    if (!access(fni, R_OK))
-			rc = rewriteBinaryRPM(fni, fno, mlp);
+		/* XXX skip over noarch/exclusivearch missing inputs */
+		    if (access(fni, R_OK))
+				continue;
+
+		/* XXX previously rewritten output rpm takes precedence
+		 * XXX over input rpm.
+		 */
+		    deletefni = 0;
+		    if (!access(fno, R_OK)) {
+			deletefni = 1;
+			strcpy(fni, fno);
+			strcat(fni, "-DELETE");
+			if (rename(fno, fni) < 0) {
+			    fprintf(stderr, _("rpmputtext: rename(%s,%s) failed: %s\n"),
+				fno, fni, strerror(errno));
+			    continue;
+			}
+		    }
+
+		    rc = rewriteBinaryRPM(fni, fno, mlp);
+
+		    if (deletefni && unlink(fni) < 0) {
+			 fprintf(stderr, _("rpmputtext: unlink(%s) failed: %s\n"),
+				fni, strerror(errno));
+		    }
+		    if (deletefno && unlink(fno) < 0) {
+			fprintf(stderr, _("rpmputtext: unlink(%s) failed: %s\n"),
+				fno, strerror(errno));
+		    }
 		}
 	    }
 	}
@@ -1013,6 +990,10 @@ main(int argc, char **argv)
 	    }
 	}
     } else if (!strcmp(program_name, RPMPUTTEXT)) {
+	if (onlylang == NULL) {
+		fprintf(stderr, _("rpmputtext: must specify language\n"));
+		exit(1);
+	}
 	if (optind == argc) {
 	    rc = rpmputtext(0, STDINFN, stdout);
 	} else {

@@ -162,6 +162,64 @@ int packageBinaries(Spec spec)
     return 0;
 }
 
+int readRPM(char *fileName, Spec *specp, struct rpmlead *lead, Header *sigs,
+	    CSA_t *csa)
+{
+    int fdi = 0;
+    Spec spec;
+    int rc;
+
+    if (fileName != NULL && (fdi = open(fileName, O_RDONLY, 0644)) < 0) {
+	rpmError(RPMERR_BADMAGIC, _("readRPM: open %s: %s\n"), fileName,
+	    strerror(errno));
+	return RPMERR_BADMAGIC;
+    }
+
+    /* Get copy of lead */
+    if ((rc = read(fdi, lead, sizeof(*lead))) != sizeof(*lead)) {
+	rpmError(RPMERR_BADMAGIC, _("readRPM: read %s: %s\n"), fileName,
+	    strerror(errno));
+	return RPMERR_BADMAGIC;
+    }
+    lseek(fdi, 0, SEEK_SET);	/* XXX FIXME: EPIPE */
+
+    /* Reallocate build data structures */
+    spec = newSpec();
+    spec->packages = newPackage(spec);
+
+    /* XXX the header just allocated will be allocated again */
+    if (spec->packages->header) {
+	headerFree(spec->packages->header);
+	spec->packages->header = NULL;
+    }
+
+   /* Read the rpm lead and header */
+    rc = rpmReadPackageInfo(fdi, sigs, &spec->packages->header);
+    switch (rc) {
+    case 1:
+	rpmError(RPMERR_BADMAGIC, _("readRPM: %s is not an RPM package\n"),
+	    fileName);
+	return RPMERR_BADMAGIC;
+    case 0:
+	break;
+    default:
+	rpmError(RPMERR_BADMAGIC, _("readRPM: reading header from %s\n"), fileName);
+	return RPMERR_BADMAGIC;
+	break;
+    }
+
+    if (specp)
+	*specp = spec;
+
+    if (csa) {
+	csa->cpioFdIn = fdi;
+    } else if (fdi != 0) {
+	close(fdi);
+    }
+
+    return 0;
+}
+
 int writeRPM(Header header, char *fileName, int type,
 		    CSA_t *csa, char *passPhrase, char **cookie)
 {

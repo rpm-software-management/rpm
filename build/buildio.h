@@ -1,7 +1,7 @@
 #ifndef	_H_BUILDIO_
 #define	_H_BUILDIO_
 
-/* XXX this information will move elsewhere soon */
+/* XXX this information will move elsewhere eventually */
 
 #include "cpio.h"
 
@@ -17,6 +17,9 @@ typedef struct cpioSourceArchive {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+int readRPM(char *fileName, Spec *specp, struct rpmlead *lead,
+		Header *sigs, CSA_t *csa);
 
 int writeRPM(Header header, char *fileName, int type,
 		CSA_t *csa, char *passPhrase, char **cookie);

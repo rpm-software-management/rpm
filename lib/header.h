@@ -106,6 +106,9 @@ int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 /* if there are multiple entries with this tag, the first one gets replaced */
 int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 
+/* Return array of lang names */
+char **headerGetLangs(Header h);
+
 /* A NULL lang is interpreted as the C locale.  Here are the rules:
 
 	1) If the tag isn't in the Header, it's added with the passed string
