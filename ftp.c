@@ -267,7 +267,7 @@ int ftpReadData(int sock, int out) {
 int ftpGetFile(int sock, char * remotename, int dest) {
     int dataSocket;
     struct sockaddr_in dataAddress;
-    int i;
+    int i, j;
     char * passReply;
     char * chptr;
     char * retrCommand;
@@ -299,10 +299,10 @@ int ftpGetFile(int sock, char * remotename, int dest) {
        port number portion */
 
     dataAddress.sin_family = AF_INET;
-    if (sscanf(chptr, "%d,%d", (int *) &dataAddress.sin_port, &i) != 2) {
+    if (sscanf(chptr, "%d,%d", &i, &j) != 2) {
 	return FTPERR_PASSIVE_ERROR;
     }
-    dataAddress.sin_port = htons((dataAddress.sin_port << 8) + i);
+    dataAddress.sin_port = htons((i << 8) + j);
 
     chptr = passReply;
     while (*chptr++) {
