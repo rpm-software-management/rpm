@@ -26,6 +26,8 @@
 	  update w/o the filesystem being touched
 	- fixed version comparison of a package w/ a serial tag against
 	  a package w/o one
+	- added BuildArchitectures: tag to spec file to enable builds
+	  for alternate/multiple architectures
 
 2.4.2 -> 2.4.3:
 	- implemented install time prerequisites
