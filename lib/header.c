@@ -1441,6 +1441,8 @@ static int parseFormat(char * str, const struct headerTagTableEntry * tags,
 		return 1;
 	    }
 
+	    dst = start;
+
 	    format[currToken].type = PTOK_ARRAY;
 
 	    break;

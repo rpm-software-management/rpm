@@ -231,7 +231,7 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
     if (numBinaryPackages) {
 	rpmMessage(RPMMESS_DEBUG, "opening database mode: 0%o\n", mode);
 	if (rpmdbOpen(rootdir, &db, mode, 0644)) {
-	    fprintf(stderr, _("error: cannot open %s%s/packages.rpm\n", 
+	    fprintf(stderr, _("error: cannot open %s%s/packages.rpm\n"), 
 			rootdir, rpmGetVar(RPMVAR_DBPATH));
 	    exit(1);
 	}

@@ -2,6 +2,7 @@
 	- intialize reserved portion of lead when writing packages
 	- fixed error messages displayed when opening the database
 	  fails during package installation and removal
+	- query format of the form '[A%{}]' would drop the static string
 
 2.4.10 -> 2.4.11:
 	- HAVE_SYS_SOCKET_H was mistakingly MACHINE_SYS_SOCKET_H in
