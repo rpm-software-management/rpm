@@ -26,6 +26,7 @@ struct option optionTable[] = {
     { "arch_sensitive",		RPMVAR_ARCHSENSITIVE,		0 },
     { "build_arch",	        RPMVAR_BUILDARCH,	        0 },
     { "builddir",		RPMVAR_BUILDDIR,		0 },
+    { "buildprefix",            RPMVAR_BUILDPREFIX,             0 },
     { "distribution",		RPMVAR_DISTRIBUTION,		0 },
     { "docdir",			RPMVAR_DOCDIR,			0 },
     { "excludedocs",	        RPMVAR_EXCLUDEDOCS,             0 },
