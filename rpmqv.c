@@ -415,14 +415,14 @@ static void printUsage(void) {
 
 #ifdef	IAM_RPMDB
     fprintf(fp, _("       %s {--initdb}   [--dbpath <dir>]\n"), __progname);
-    fprintf(fp, _("       %s {--rebuilddb} [--macros <file:...>] [--dbpath <dir>]\n"), __progname);
+    fprintf(fp, _("       %s {--rebuilddb} [--rcfile <file:...>] [--dbpath <dir>]\n"), __progname);
 #endif
 
 #ifdef	IAM_RPMEIU
     fprintf(fp, _("       %s {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]\n"), __progname);
     puts(_("                        [--replacepkgs] [--replacefiles] [--root <dir>]"));
     puts(_("                        [--excludedocs] [--includedocs] [--noscripts]"));
-    puts(_("                        [--macros <file:...>] [--ignorearch] [--dbpath <dir>]"));
+    puts(_("                        [--rcfile <file:...>] [--ignorearch] [--dbpath <dir>]"));
     puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        [--httpproxy <host>] [--httpport <port>]"));
@@ -431,7 +431,7 @@ static void printUsage(void) {
     puts(_("                        [--ignoresize] file1.rpm ... fileN.rpm"));
     fprintf(fp,  ("       %s {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]\n"), __progname);
     puts(_("                        [--oldpackage] [--root <dir>] [--noscripts]"));
-    puts(_("                        [--excludedocs] [--includedocs] [--macros <file:...>]"));
+    puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file:...>]"));
     puts(_("                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        [--httpproxy <host>] [--httpport <port>]"));
@@ -439,21 +439,21 @@ static void printUsage(void) {
     puts(_("                        [--noorder] [--relocate oldpath=newpath]"));
     puts(_("                        [--badreloc] [--excludepath <path>] [--ignoresize]"));
     puts(_("                        file1.rpm ... fileN.rpm"));
-    fprintf(fp, _("       %s {--erase -e} [--root <dir>] [--noscripts] [--macros <file:...>]\n"), __progname);
+    fprintf(fp, _("       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file:...>]\n"), __progname);
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
     puts(_("                        [--justdb] [--notriggers] package1 ... packageN"));
 #endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMQV
     fprintf(fp,  ("       %s {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]\n"), __progname);
-    puts(_("                        [--scripts] [--root <dir>] [--macros <file:...>]"));
+    puts(_("                        [--scripts] [--root <dir>] [--rcfile <file:...>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
     puts(_("                        [--triggeredby]"));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        [--httpproxy <host>] [--httpport <port>]"));
     puts(_("                        [--provides] [--triggers] [--dump]"));
     puts(_("                        [--changelog] [--dbpath <dir>] [targets]"));
-    fprintf(fp, _("       %s {--verify -V -y} [-afpg] [--root <dir>] [--macros <file:...>]\n"), __progname);
+    fprintf(fp, _("       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file:...>]\n"), __progname);
     puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"));
     puts(_("                        [--nomd5] [targets]"));
     fprintf(fp,  ("       %s {--querytags}\n"), __progname);
@@ -462,9 +462,9 @@ static void printUsage(void) {
 #endif	/* IAM_RPMQV */
 
 #ifdef	IAM_RPMK
-    fprintf(fp, _("       %s {--resign} [--macros <file:...>] package1 package2 ... packageN\n"), __progname);
-    fprintf(fp, _("       %s {--addsign} [--macros <file:...>] package1 package2 ... packageN"), __progname);
-    fprintf(fp, _("       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--macros <file:...>]\n"), __progname);
+    fprintf(fp, _("       %s {--resign} [--rcfile <file:...>] package1 package2 ... packageN\n"), __progname);
+    fprintf(fp, _("       %s {--addsign} [--rcfile <file:...>] package1 package2 ... packageN"), __progname);
+    fprintf(fp, _("       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file:...>]\n"), __progname);
     puts(_("                           package1 ... packageN"));
 #endif	/* IAM_RPMK */
 
@@ -515,7 +515,7 @@ static void printHelp(void) {
 		  _("print the expansion of macro <expr> to stdout"));
     printHelpLine(_("   --pipe <cmd>           "),
 		  _("send stdout to <cmd>"));
-    printHelpLine(_("   --macros <file:...>    "),
+    printHelpLine(_("   --rcfile <file:...>    "),
 		  _("use <file:...> instead of default list of macro files"));
     printHelpLine(  "   --showrc               ",
 		  _("display final rpmrc and macro configuration"));

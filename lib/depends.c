@@ -1577,7 +1577,6 @@ static inline int addRelation( const rpmTransactionSet ts,
     selected[matchNum] = 1;
 
     /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-rpmMessage(RPMMESS_DEBUG, _("========== %s <- %s\n"), q->name, p->name);
     p->tsi.tsi_count++;			/* bump p predecessor count */
     tsi = xmalloc(sizeof(*tsi));
     tsi->tsi_suc = p;

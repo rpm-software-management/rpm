@@ -1591,7 +1591,9 @@ char *rpmCleanPath(char * path)
 {
     const char *s;
     char *se, *t, *te;
+    int begin = 1;
 
+/*fprintf(stderr, "*** RCP %s ->\n", path); */
     s = t = te = path;
     while (*s) {
 /*fprintf(stderr, "*** got \"%.*s\"\trest \"%s\"\n", (t-path), path, s); */
@@ -1600,7 +1602,9 @@ char *rpmCleanPath(char * path)
 	    if (s[1] == '/' && s[2] == '/') {
 		*t++ = *s++;
 		*t++ = *s++;
+		break;
 	    }
+	    begin=1;
 	    break;
 	case '/':
 	    /* Move parent dir forward */
@@ -1617,25 +1621,22 @@ char *rpmCleanPath(char * path)
 	    break;
 	case '.':
 	    /* Leading .. is special */
-	    if (t == path && s[1] == '.') {
+	    if (begin && s[1] == '.') {
+/*fprintf(stderr, "    leading \"..\"\n"); */
 		*t++ = *s++;
 		break;
 	    }
 	    /* Single . is special */
-	    if (t == path && s[1] == '\0') {
+	    if (begin && s[1] == '\0') {
 		break;
 	    }
-#if 0	/* Trim leading ./ , embedded ./ , trailing /. */
-	    if ((t == path || t[-1] == '/') && (s[1] == '/' || s[1] == '\0'))
-#else	/* Trim embedded ./ , trailing /. */
-	    if ((t[-1] == '/' && s[1] == '\0') || (t != path && s[1] == '/'))
-#endif
-	    {
+	    /* Trim embedded ./ , trailing /. */
+	    if ((t[-1] == '/' && s[1] == '\0') || (t != path && s[1] == '/')) {
 		s++;
 		continue;
 	    }
 	    /* Trim embedded /../ and trailing /.. */
-	    if (t > path && t[-1] == '/' && s[1] == '.' && (s[2] == '/' || s[2] == '\0')) {
+	    if (!begin && t > path && t[-1] == '/' && s[1] == '.' && (s[2] == '/' || s[2] == '\0')) {
 		t = te;
 		/* Move parent dir forward */
 		if (te > path)
@@ -1648,6 +1649,7 @@ char *rpmCleanPath(char * path)
 	    }
 	    break;
 	default:
+	    begin = 0;
 	    break;
 	}
 	*t++ = *s++;
@@ -1658,6 +1660,7 @@ char *rpmCleanPath(char * path)
 	t--;
     *t = '\0';
 
+/*fprintf(stderr, "\t%s\n", path); */
     return path;
 }
 

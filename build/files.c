@@ -65,6 +65,7 @@ typedef struct {
 static int multiLib = 0;	/* MULTILIB */
 
 /**
+ * Package file tree walk data.
  */
 struct FileList {
     const char *buildRootURL;
@@ -251,6 +252,7 @@ VFA_t verifyAttrs[] = {
 };
 
 /**
+ * @param fl		package file tree walk data
  */
 static int parseForVerify(char *buf, struct FileList *fl)
 {
@@ -336,6 +338,7 @@ static int parseForVerify(char *buf, struct FileList *fl)
 #define	isAttrDefault(_ars)	((_ars)[0] == '-' && (_ars)[1] == '\0')
 
 /**
+ * @param fl		package file tree walk data
  */
 static int parseForAttr(char *buf, struct FileList *fl)
 {
@@ -453,6 +456,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
 }
 
 /**
+ * @param fl		package file tree walk data
  */
 static int parseForConfig(char *buf, struct FileList *fl)
 {
@@ -511,6 +515,13 @@ static int parseForConfig(char *buf, struct FileList *fl)
 }
 
 /**
+ */
+static int langCmp(const void * ap, const void *bp) {
+    return strcmp(*(const char **)ap, *(const char **)bp);
+}
+
+/**
+ * @param fl		package file tree walk data
  */
 static int parseForLang(char *buf, struct FileList *fl)
 {
@@ -589,7 +600,11 @@ static int parseForLang(char *buf, struct FileList *fl)
 	if (*pe == ',') pe++;	/* skip , if present */
     }
   }
-    
+
+    /* Insure that locales are sorted. */
+    if (fl->currentLangs)
+	qsort(fl->currentLangs, fl->nLangs, sizeof(*fl->currentLangs), langCmp);
+
     return 0;
 }
 
@@ -686,6 +701,7 @@ VFA_t virtualFileAttributes[] = {
 };
 
 /**
+ * @param fl		package file tree walk data
  */
 static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char *buf,
 			  struct FileList *fl, const char **fileName)
@@ -813,6 +829,7 @@ static int compareFileListRecs(const void *ap, const void *bp)
 }
 
 /**
+ * @param fl		package file tree walk data
  */
 static int isDoc(struct FileList *fl, const char *fileName)
 {
@@ -827,7 +844,78 @@ static int isDoc(struct FileList *fl, const char *fileName)
 }
 
 /**
+ * Verify that file attributes scope over hardlinks correctly.
+ * @todo only %lang for now, finish other attributes later.
+ * @param fl		package file tree walk data
+ */
+static void checkHardLinks(struct FileList *fl)
+{
+    char nlangs[BUFSIZ];
+    FileListRec *ilp, *jlp;
+    int i, j;
+
+    for (i = 0;  i < fl->fileListRecsUsed; i++) {
+	char *te;
+
+	ilp = fl->fileList + i;
+	if (!(S_ISREG(ilp->fl_mode) && ilp->fl_nlink > 1))
+	    continue;
+	if (ilp->flags & RPMFILE_SPECFILE)
+	    continue;
+
+	te = nlangs;
+	*te = '\0';
+	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
+	    jlp = fl->fileList + j;
+	    if (!S_ISREG(jlp->fl_mode))
+		continue;
+	    if (ilp->fl_nlink != jlp->fl_nlink)
+		continue;
+	    if (ilp->fl_ino != jlp->fl_ino)
+		continue;
+	    if (ilp->fl_dev != jlp->fl_dev)
+		continue;
+	    if (!strcmp(ilp->langs, jlp->langs)) {
+		jlp->flags |= RPMFILE_SPECFILE;
+		continue;
+	    }
+	    if (te == nlangs)
+		te = stpcpy(te, ilp->langs);
+	    *te++ = '|';
+	    te = stpcpy(te, jlp->langs);
+	}
+
+	/* Are locales distributed over hard links correctly? */
+	if (te == nlangs)
+	    continue;
+
+	free((void *)ilp->langs);
+	ilp->langs = xstrdup(nlangs);
+	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
+	    jlp = fl->fileList + j;
+	    if (!S_ISREG(jlp->fl_mode))
+		continue;
+	    if (ilp->fl_nlink != jlp->fl_nlink)
+		continue;
+	    if (ilp->fl_ino != jlp->fl_ino)
+		continue;
+	    if (ilp->fl_dev != jlp->fl_dev)
+		continue;
+	    jlp->flags |= RPMFILE_SPECFILE;
+	    free((void *)jlp->langs);
+	    jlp->langs = xstrdup(nlangs);
+	}
+    }
+
+    for (i = 0;  i < fl->fileListRecsUsed; i++) {
+	ilp = fl->fileList + i;
+	ilp->flags &= ~RPMFILE_SPECFILE;
+    }
+}
+
+/**
  * @todo Should directories have %doc/%config attributes? (#14531)
+ * @param fl		package file tree walk data
  */
 static void genCpioListAndHeader(struct FileList *fl,
 				 struct cpioFileMapping **cpioList,
@@ -1019,6 +1107,7 @@ static void freeFileList(FileListRec *fileList, int count)
 }
 
 /**
+ * @param fl		package file tree walk data
  */
 static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp)
 {
@@ -1190,6 +1279,7 @@ static int addFile(struct FileList *fl, const char * diskURL, struct stat *statp
 }
 
 /**
+ * @param fl		package file tree walk data
  */
 static int processBinaryFile(/*@unused@*/Package pkg, struct FileList *fl,
 	const char *fileURL)
@@ -1436,16 +1526,19 @@ static int processPackageFiles(Spec spec, Package pkg,
     
     freeSplitString(files);
 
-    if (! fl.processingFailed) {
-	genCpioListAndHeader(&fl, &(pkg->cpioList), &(pkg->cpioCount),
+    if (fl.processingFailed)
+	goto exit;
+
+    /* Verify that file attributes scope over hardlinks correctly. */
+    checkHardLinks(&fl);
+
+    genCpioListAndHeader(&fl, &(pkg->cpioList), &(pkg->cpioCount),
 			     pkg->header, 0);
 
-	if (spec->timeCheck) {
-	    timeCheck(spec->timeCheck, pkg->header);
-	}
-    }
+    if (spec->timeCheck)
+	timeCheck(spec->timeCheck, pkg->header);
     
-    /* Clean up */
+exit:
     FREE(fl.buildRootURL);
     FREE(fl.prefix);
 

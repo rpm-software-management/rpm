@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-17 10:57-0500\n"
+"POT-Creation-Date: 2001-01-18 20:21-0500\n"
 "PO-Revision-Date: 2000-10-09 22:31+0200\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1289,7 +1289,7 @@ msgstr "       %s {--initdb}   [--dbpath <kat>]\n"
 
 #: rpmqv.c:418
 #, fuzzy, c-format
-msgid "       %s {--rebuilddb} [--macros <file:...>] [--dbpath <dir>]\n"
+msgid "       %s {--rebuilddb} [--rcfile <file:...>] [--dbpath <dir>]\n"
 msgstr "       %s {--rebuilddb} [--rcfile <fil>] [--dbpath <kat>]\n"
 
 #: rpmqv.c:422
@@ -1302,33 +1302,33 @@ msgstr ""
 #: rpmqv.c:425
 #, fuzzy
 msgid ""
-"                        [--macros <file:...>] [--ignorearch] [--dbpath <dir>]"
+"                        [--rcfile <file:...>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
 "                        [--rcfile <fil>] [--ignorearch] [--dbpath <kat>]"
 
 #: rpmqv.c:434
 #, fuzzy
 msgid ""
-"                        [--excludedocs] [--includedocs] [--macros <file:...>]"
+"                        [--excludedocs] [--includedocs] [--rcfile <file:...>]"
 msgstr ""
 "                        [--excludedocs] [--includedocs] [--rcfile <fil>]"
 
 #: rpmqv.c:442
 #, fuzzy, c-format
 msgid ""
-"       %s {--erase -e} [--root <dir>] [--noscripts] [--macros <file:...>]\n"
+"       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file:...>]\n"
 msgstr "       %s {--erase -e} [--root <kat>] [--noscripts] [--rcfile <fil>]\n"
 
 #: rpmqv.c:449
 #, fuzzy
 msgid ""
-"                        [--scripts] [--root <dir>] [--macros <file:...>]"
+"                        [--scripts] [--root <dir>] [--rcfile <file:...>]"
 msgstr "                        [--scripts] [--root <kat>] [--rcfile <fil>]"
 
 #: rpmqv.c:456
 #, fuzzy, c-format
 msgid ""
-"       %s {--verify -V -y} [-afpg] [--root <dir>] [--macros <file:...>]\n"
+"       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file:...>]\n"
 msgstr "       %s {--verify -V -y} [-afpg] [--root <kat>] [--rcfile <fil>]\n"
 
 #: rpmqv.c:460
@@ -1344,19 +1344,19 @@ msgstr "       %s {--setugids} [-afpg] [mål]\n"
 #: rpmqv.c:465
 #, fuzzy, c-format
 msgid ""
-"       %s {--resign} [--macros <file:...>] package1 package2 ... packageN\n"
+"       %s {--resign} [--rcfile <file:...>] package1 package2 ... packageN\n"
 msgstr "       %s {--resign} [--rcfile <fil>] paket1 paket2 ... paketN\n"
 
 #: rpmqv.c:466
 #, fuzzy, c-format
 msgid ""
-"       %s {--addsign} [--macros <file:...>] package1 package2 ... packageN"
-msgstr "       %s {--addsign} [--rcfile <fil>] paket1 paket2 ... paketN"
+"       %s {--addsign} [--rcfile <file:...>] package1 package2 ... packageN"
+msgstr "       rpm {--addsign} [--rcfile <fil>] paket1 paket2 ... paketN"
 
 #: rpmqv.c:467
 #, fuzzy, c-format
 msgid ""
-"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--macros "
+"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
 "<file:...>]\n"
 msgstr ""
 "       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <fil>]\n"
@@ -1385,8 +1385,8 @@ msgstr "   --pipe <kommando>      "
 
 #: rpmqv.c:518
 #, fuzzy
-msgid "   --macros <file:...>    "
-msgstr "Använd -e eller --erase istället.\n"
+msgid "   --rcfile <file:...>    "
+msgstr "      --rcfile <fil>      "
 
 #: rpmqv.c:519
 msgid "use <file:...> instead of default list of macro files"
@@ -1673,169 +1673,169 @@ msgstr "&& och || stöds inte för strängar"
 msgid "syntax error in expression\n"
 msgstr "syntaxfel i uttryck"
 
-#: build/files.c:226
+#: build/files.c:227
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK-fel: %s\n"
 
-#: build/files.c:276 build/files.c:360 build/files.c:527
+#: build/files.c:278 build/files.c:363 build/files.c:538
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Saknad \"(\" i %s %s"
 
-#: build/files.c:287 build/files.c:479 build/files.c:538
+#: build/files.c:289 build/files.c:483 build/files.c:549
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Saknad \")\" i %s(%s"
 
-#: build/files.c:325 build/files.c:504
+#: build/files.c:327 build/files.c:508
 #, fuzzy, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Ogiltig %s token: %s"
 
-#: build/files.c:376
+#: build/files.c:379
 #, fuzzy, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Annat än blanktecken följer på %s(): %s"
 
-#: build/files.c:414
+#: build/files.c:417
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Felaktig syntax: %s(%s)"
 
-#: build/files.c:424
+#: build/files.c:427
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Felaktig rättighetsspecifikation: %s(%s)"
 
-#: build/files.c:436
+#: build/files.c:439
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Felaktig specifikation av katalogrättigheter: %s(%s)"
 
-#: build/files.c:565
+#: build/files.c:576
 #, fuzzy
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Ovanlig lokallängd: \"%.*s\" i %%langg(%s)"
 
-#: build/files.c:575
+#: build/files.c:586
 #, fuzzy
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Duplicerad lokal %.*s i %%lang(%s)"
 
-#: build/files.c:707
+#: build/files.c:723
 #, fuzzy
 msgid "Hit limit for %%docdir\n"
 msgstr "Slog i gränsen för %%docdir"
 
-#: build/files.c:713
+#: build/files.c:729
 #, fuzzy
 msgid "Only one arg for %%docdir\n"
 msgstr "Endast ett argument till %%docdir"
 
 #. We already got a file -- error
-#: build/files.c:741
+#: build/files.c:757
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Två filer på en rad: %s"
 
-#: build/files.c:755
+#: build/files.c:771
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Filnamn måste börja med \"/\": %s"
 
-#: build/files.c:767
+#: build/files.c:783
 #, fuzzy
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Kan inte blanda special %%doc med andra former: %s"
 
-#: build/files.c:861
+#: build/files.c:949
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "Filen uppräknad två gånger: %s"
 
-#: build/files.c:972
+#: build/files.c:1060
 #, fuzzy, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolisk länk pekar på BuildRoot: %s -> %s"
 
-#: build/files.c:1066
+#: build/files.c:1155
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Filen matchar inte prefixet (%s): %s"
 
-#: build/files.c:1076
+#: build/files.c:1165
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Filen hittades inte: %s"
 
-#: build/files.c:1119 build/files.c:1639 build/parsePrep.c:42
+#: build/files.c:1208 build/files.c:1732 build/parsePrep.c:42
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Felaktig ägare/grupp: %s\n"
 
-#: build/files.c:1131
+#: build/files.c:1220
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Fil %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1207
+#: build/files.c:1297
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Filen behöver inledande \"/\": %s"
 
-#: build/files.c:1237
+#: build/files.c:1327
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Ingen file hittades vid matchningen: %s"
 
-#: build/files.c:1292
+#: build/files.c:1382
 #, fuzzy
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunde inte öppna %%files-fil %s: %s"
 
-#: build/files.c:1301 build/pack.c:108
+#: build/files.c:1391 build/pack.c:108
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "rad: %s"
 
-#: build/files.c:1627
+#: build/files.c:1720
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Felaktig fil: %s: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1696
+#: build/files.c:1789
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunde inte köra %s: %s"
 
-#: build/files.c:1701
+#: build/files.c:1794
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kunde inte grena %s: %s"
 
-#: build/files.c:1783
+#: build/files.c:1876
 #, fuzzy, c-format
 msgid "%s failed\n"
 msgstr "%s misslyckades"
 
-#: build/files.c:1787
+#: build/files.c:1880
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "kunde inte skriva all data till %s"
 
-#: build/files.c:1912
+#: build/files.c:2005
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Letar upp %s: (använder %s)...\n"
 
-#: build/files.c:1940 build/files.c:1954
+#: build/files.c:2033 build/files.c:2047
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Misslyckades med att hitta %s:"
 
-#: build/files.c:2067
+#: build/files.c:2160
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Bearbetar filer: %s-%s-%s\n"
@@ -2483,31 +2483,25 @@ msgstr "paket %s står i konflikt: %s\n"
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "tar bort \"%s\" från %s-indexet.\n"
 
-#. T3. Record next "q <- p" relation (i.e. "p" requires "q").
-#: lib/depends.c:1580
-#, c-format
-msgid "========== %s <- %s\n"
-msgstr ""
-
 #. Record all relations.
-#: lib/depends.c:1663
+#: lib/depends.c:1662
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1710
+#: lib/depends.c:1709
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1755
+#: lib/depends.c:1754
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1804
+#: lib/depends.c:1803
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1835
+#: lib/depends.c:1834
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -4212,6 +4206,32 @@ msgstr "url-port måste vara ett tal\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
+
+#, fuzzy
+#~ msgid ""
+#~ "                        [--macros <file:...>] [--ignorearch] [--dbpath <dir>]"
+#~ msgstr ""
+#~ "                        [--rcfile <fil>] [--ignorearch] [--dbpath <kat>]"
+
+#, fuzzy
+#~ msgid ""
+#~ "                        [--excludedocs] [--includedocs] [--macros <file:...>]"
+#~ msgstr ""
+#~ "                        [--excludedocs] [--includedocs] [--rcfile <fil>]"
+
+#, fuzzy
+#~ msgid ""
+#~ "                        [--scripts] [--root <dir>] [--macros <file:...>]"
+#~ msgstr "                        [--scripts] [--root <kat>] [--rcfile <fil>]"
+
+#, fuzzy
+#~ msgid ""
+#~ "       %s {--addsign} [--macros <file:...>] package1 package2 ... packageN"
+#~ msgstr "       %s {--addsign} [--rcfile <fil>] paket1 paket2 ... paketN"
+
+#, fuzzy
+#~ msgid "   --macros <file:...>    "
+#~ msgstr "Använd -e eller --erase istället.\n"
 
 #~ msgid "Bad owner/group: %s"
 #~ msgstr "Felaktig ägare/grupp: %s"

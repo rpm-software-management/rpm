@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2001-01-17 10:57-0500\n"
+"POT-Creation-Date: 2001-01-18 20:21-0500\n"
 "PO-Revision-Date: 2000-08-01 21:11+01:00\n"
 "Last-Translator: Pedro Morais <morais@poli.org>\n"
 "Language-Team: pt <morais@poli.org>\n"
@@ -1239,7 +1239,7 @@ msgstr ""
 
 #: rpmqv.c:418
 #, c-format
-msgid "       %s {--rebuilddb} [--macros <file:...>] [--dbpath <dir>]\n"
+msgid "       %s {--rebuilddb} [--rcfile <file:...>] [--dbpath <dir>]\n"
 msgstr ""
 
 #: rpmqv.c:422
@@ -1250,29 +1250,29 @@ msgstr ""
 
 #: rpmqv.c:425
 msgid ""
-"                        [--macros <file:...>] [--ignorearch] [--dbpath <dir>]"
+"                        [--rcfile <file:...>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
 
 #: rpmqv.c:434
 msgid ""
-"                        [--excludedocs] [--includedocs] [--macros <file:...>]"
+"                        [--excludedocs] [--includedocs] [--rcfile <file:...>]"
 msgstr ""
 
 #: rpmqv.c:442
 #, c-format
 msgid ""
-"       %s {--erase -e} [--root <dir>] [--noscripts] [--macros <file:...>]\n"
+"       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file:...>]\n"
 msgstr ""
 
 #: rpmqv.c:449
 msgid ""
-"                        [--scripts] [--root <dir>] [--macros <file:...>]"
+"                        [--scripts] [--root <dir>] [--rcfile <file:...>]"
 msgstr ""
 
 #: rpmqv.c:456
 #, c-format
 msgid ""
-"       %s {--verify -V -y} [-afpg] [--root <dir>] [--macros <file:...>]\n"
+"       %s {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file:...>]\n"
 msgstr ""
 
 #: rpmqv.c:460
@@ -1288,19 +1288,19 @@ msgstr ""
 #: rpmqv.c:465
 #, c-format
 msgid ""
-"       %s {--resign} [--macros <file:...>] package1 package2 ... packageN\n"
+"       %s {--resign} [--rcfile <file:...>] package1 package2 ... packageN\n"
 msgstr ""
 
 #: rpmqv.c:466
 #, c-format
 msgid ""
-"       %s {--addsign} [--macros <file:...>] package1 package2 ... packageN"
+"       %s {--addsign} [--rcfile <file:...>] package1 package2 ... packageN"
 msgstr ""
 
 #: rpmqv.c:467
 #, c-format
 msgid ""
-"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--macros "
+"       %s {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile "
 "<file:...>]\n"
 msgstr ""
 
@@ -1325,7 +1325,7 @@ msgid "   --pipe <cmd>           "
 msgstr ""
 
 #: rpmqv.c:518
-msgid "   --macros <file:...>    "
+msgid "   --rcfile <file:...>    "
 msgstr ""
 
 #: rpmqv.c:519
@@ -1598,164 +1598,164 @@ msgstr ""
 msgid "syntax error in expression\n"
 msgstr ""
 
-#: build/files.c:226
+#: build/files.c:227
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:276 build/files.c:360 build/files.c:527
+#: build/files.c:278 build/files.c:363 build/files.c:538
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr ""
 
-#: build/files.c:287 build/files.c:479 build/files.c:538
+#: build/files.c:289 build/files.c:483 build/files.c:549
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr ""
 
-#: build/files.c:325 build/files.c:504
+#: build/files.c:327 build/files.c:508
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr ""
 
-#: build/files.c:376
+#: build/files.c:379
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:414
+#: build/files.c:417
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:424
+#: build/files.c:427
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:436
+#: build/files.c:439
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:565
+#: build/files.c:576
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:575
+#: build/files.c:586
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:707
+#: build/files.c:723
 msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:713
+#: build/files.c:729
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:741
+#: build/files.c:757
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr ""
 
-#: build/files.c:755
+#: build/files.c:771
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:767
+#: build/files.c:783
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:861
+#: build/files.c:949
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr ""
 
-#: build/files.c:972
+#: build/files.c:1060
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1066
+#: build/files.c:1155
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1076
+#: build/files.c:1165
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:1119 build/files.c:1639 build/parsePrep.c:42
+#: build/files.c:1208 build/files.c:1732 build/parsePrep.c:42
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1131
+#: build/files.c:1220
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1207
+#: build/files.c:1297
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1237
+#: build/files.c:1327
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1292
+#: build/files.c:1382
 #, fuzzy
 msgid "Could not open %%files file %s: %s\n"
 msgstr "não consigo abrir ficheiro spec %s: %s\n"
 
-#: build/files.c:1301 build/pack.c:108
+#: build/files.c:1391 build/pack.c:108
 #, c-format
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:1627
+#: build/files.c:1720
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1696
+#: build/files.c:1789
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr ""
 
-#: build/files.c:1701
+#: build/files.c:1794
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: build/files.c:1783
+#: build/files.c:1876
 #, c-format
 msgid "%s failed\n"
 msgstr ""
 
-#: build/files.c:1787
+#: build/files.c:1880
 #, fuzzy, c-format
 msgid "failed to write all data to %s\n"
 msgstr "não consigo abrir ficheiro spec %s: %s\n"
 
-#: build/files.c:1912
+#: build/files.c:2005
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1940 build/files.c:1954
+#: build/files.c:2033 build/files.c:2047
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/files.c:2067
+#: build/files.c:2160
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -2374,31 +2374,25 @@ msgstr ""
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
-#. T3. Record next "q <- p" relation (i.e. "p" requires "q").
-#: lib/depends.c:1580
-#, c-format
-msgid "========== %s <- %s\n"
-msgstr ""
-
 #. Record all relations.
-#: lib/depends.c:1663
+#: lib/depends.c:1662
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1710
+#: lib/depends.c:1709
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1755
+#: lib/depends.c:1754
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1804
+#: lib/depends.c:1803
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1835
+#: lib/depends.c:1834
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
