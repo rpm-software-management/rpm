@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-02 21:16-0500\n"
+"POT-Creation-Date: 2001-11-04 10:27-0500\n"
 "PO-Revision-Date: 2001-09-12 14:18+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1426,110 +1426,99 @@ msgstr "Ingen arkivfilen i huvud"
 msgid " failed - "
 msgstr " misslyckades - "
 
-#: lib/depends.c:108
+#: lib/depends.c:112
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "kan inte öppna paketdatabas i %s\n"
 
-#: lib/depends.c:341
+#: lib/depends.c:345
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:346
+#: lib/depends.c:350
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "paket %s är redan installerat"
 
-#: lib/depends.c:351
+#: lib/depends.c:355
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:600
+#: lib/depends.c:604
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:636
+#: lib/depends.c:640
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s JA (rpmrc tillhandahåller)\n"
 
-#: lib/depends.c:652
+#: lib/depends.c:656
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s JA (rpmlib tillhandahåller)\n"
 
-#: lib/depends.c:674
+#: lib/depends.c:678
 #, fuzzy
 msgid "(db files)"
 msgstr "felaktig db-fil %s\n"
 
-#: lib/depends.c:686
+#: lib/depends.c:690
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s JA (db-tillhandahållande)\n"
 
-#: lib/depends.c:699
+#: lib/depends.c:703
 #, fuzzy
 msgid "(db package)"
 msgstr "inga paket\n"
 
-#: lib/depends.c:747
+#: lib/depends.c:751
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) tillagt till beroendecachen.\n"
 
-#: lib/depends.c:749
+#: lib/depends.c:753 lib/rpmds.c:223 lib/rpmds.c:376
 msgid "NO "
 msgstr "NEJ "
 
-#: lib/depends.c:749
+#: lib/depends.c:753 lib/rpmds.c:223 lib/rpmds.c:376
 msgid "YES"
 msgstr "JA"
 
-#: lib/depends.c:812
-#, c-format
-msgid "package %s-%s-%s require not satisfied: %s\n"
-msgstr "paket %s-%s-%s behov inte uppfyllda: %s\n"
-
-#. conflicts exist.
-#: lib/depends.c:884
-#, c-format
-msgid "package %s conflicts: %s\n"
-msgstr "paket %s står i konflikt: %s\n"
-
-#: lib/depends.c:1147
+#: lib/depends.c:1103
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s-%s-%s \"%s\" från tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1399
+#: lib/depends.c:1350
 msgid "========== recording tsort relations\n"
 msgstr "========== noterar alla relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1473
+#: lib/depends.c:1424
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== tsort:erar paket (ordning, #föregångare, #efterföljare, djup)\n"
 
-#: lib/depends.c:1548
+#: lib/depends.c:1499
 msgid "========== successors only (presentation order)\n"
 msgstr "========== endast efterföljare (presentationsordning)\n"
 
-#: lib/depends.c:1609
+#: lib/depends.c:1560
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1644
+#: lib/depends.c:1595
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsätter med tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1649
+#: lib/depends.c:1600
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2451,6 +2440,16 @@ msgstr "post %u kunde inte läsas\n"
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
 
+#: lib/rpmal.c:728
+#, fuzzy, c-format
+msgid "%9s: %-45s YES (added files)\n"
+msgstr "%s: %-45s JA (lade till filer)\n"
+
+#: lib/rpmal.c:826
+#, fuzzy
+msgid "(added provide)"
+msgstr "%s: %-45s JA (db-tillhandahållande)\n"
+
 #: lib/rpmchecksig.c:49
 #, c-format
 msgid "%s: open failed: %s\n"
@@ -2513,6 +2512,27 @@ msgstr ")"
 #: lib/rpmchecksig.c:721
 msgid "OK"
 msgstr "OK"
+
+#. XXX legacy epoch-less requires/conflicts compatibility
+#: lib/rpmds.c:346
+#, c-format
+msgid ""
+"the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
+"\tA %s\tB %s\n"
+msgstr ""
+"\"B\"-beroendet behöver en epok (antar samma som \"A\")\n"
+"\tA %s\tB %s\n"
+
+#: lib/rpmds.c:375
+#, c-format
+msgid "  %s    A %s\tB %s\n"
+msgstr "  %s    A %s\tB %s\n"
+
+#. @=branchstate@
+#: lib/rpmds.c:401
+#, fuzzy, c-format
+msgid "package %s-%s-%s has unsatisfied %s: %s\n"
+msgstr "paket %s-%s-%s behov inte uppfyllda: %s\n"
 
 #: lib/rpminstall.c:153
 msgid "Preparing..."
@@ -2843,13 +2863,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: storlek(%d)+utfyllnad(%d)\n"
 
-#: lib/transaction.c:239
+#: lib/transaction.c:241
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s överhoppad på grund av missingok-flagga\n"
 
 #. @innercontinue@
-#: lib/transaction.c:878
+#: lib/transaction.c:880
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "hoppar över katalogen %s\n"
@@ -3390,15 +3410,8 @@ msgstr "url-port måste vara ett tal\n"
 msgid "failed to create %s: %s\n"
 msgstr "kunde inte skapa %s: %s\n"
 
-#~ msgid ""
-#~ "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
-#~ "\tA %s\tB %s\n"
-#~ msgstr ""
-#~ "\"B\"-beroendet behöver en epok (antar samma som \"A\")\n"
-#~ "\tA %s\tB %s\n"
-
-#~ msgid "  %s    A %s\tB %s\n"
-#~ msgstr "  %s    A %s\tB %s\n"
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "paket %s står i konflikt: %s\n"
 
 #, fuzzy
 #~ msgid "%9s: %-45s %-s (cached)\n"
@@ -3415,9 +3428,6 @@ msgstr "kunde inte skapa %s: %s\n"
 #, fuzzy
 #~ msgid "%9s: %-45s NO\n"
 #~ msgstr "%s: %-45s NEJ\n"
-
-#~ msgid "%s: %-45s YES (added files)\n"
-#~ msgstr "%s: %-45s JA (lade till filer)\n"
 
 #~ msgid "%s: %-45s YES (added provide)\n"
 #~ msgstr "%s: %-45s JA (lade till tillhandahållande)\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-02 21:16-0500\n"
+"POT-Creation-Date: 2001-11-04 10:27-0500\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1441,111 +1441,100 @@ msgstr "Файл архива не найден в заголовке пакета"
 msgid " failed - "
 msgstr "не удалось - "
 
-#: lib/depends.c:108
+#: lib/depends.c:112
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "не могу открыть базу данных Packages в %s\n"
 
-#: lib/depends.c:341
+#: lib/depends.c:345
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:346
+#: lib/depends.c:350
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "пакет %s уже установлен"
 
-#: lib/depends.c:351
+#: lib/depends.c:355
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:600
+#: lib/depends.c:604
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:636
+#: lib/depends.c:640
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:652
+#: lib/depends.c:656
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:674
+#: lib/depends.c:678
 #, fuzzy
 msgid "(db files)"
 msgstr "неверный файл базы данных %s\n"
 
-#: lib/depends.c:686
+#: lib/depends.c:690
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:699
+#: lib/depends.c:703
 #, fuzzy
 msgid "(db package)"
 msgstr "нет пакетов\n"
 
-#: lib/depends.c:747
+#: lib/depends.c:751
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 
-#: lib/depends.c:749
+#: lib/depends.c:753 lib/rpmds.c:223 lib/rpmds.c:376
 msgid "NO "
 msgstr "НЕT"
 
-#: lib/depends.c:749
+#: lib/depends.c:753 lib/rpmds.c:223 lib/rpmds.c:376
 msgid "YES"
 msgstr "ДА"
 
-#: lib/depends.c:812
-#, c-format
-msgid "package %s-%s-%s require not satisfied: %s\n"
-msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
-
-#. conflicts exist.
-#: lib/depends.c:884
-#, c-format
-msgid "package %s conflicts: %s\n"
-msgstr "пакет %s конфликтует с: %s\n"
-
-#: lib/depends.c:1147
+#: lib/depends.c:1103
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1399
+#: lib/depends.c:1350
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1473
+#: lib/depends.c:1424
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "глубина)\n"
 
-#: lib/depends.c:1548
+#: lib/depends.c:1499
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:1609
+#: lib/depends.c:1560
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1644
+#: lib/depends.c:1595
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1649
+#: lib/depends.c:1600
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2467,6 +2456,16 @@ msgstr "невозможно прочитать запись %u\n"
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
 
+#: lib/rpmal.c:728
+#, fuzzy, c-format
+msgid "%9s: %-45s YES (added files)\n"
+msgstr "%s: %-45s YES (added files)\n"
+
+#: lib/rpmal.c:826
+#, fuzzy
+msgid "(added provide)"
+msgstr "%s: %-45s YES (db provides)\n"
+
 #: lib/rpmchecksig.c:49
 #, c-format
 msgid "%s: open failed: %s\n"
@@ -2529,6 +2528,27 @@ msgstr ")"
 #: lib/rpmchecksig.c:721
 msgid "OK"
 msgstr "OК"
+
+#. XXX legacy epoch-less requires/conflicts compatibility
+#: lib/rpmds.c:346
+#, c-format
+msgid ""
+"the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
+"\tA %s\tB %s\n"
+msgstr ""
+"для зависимости \"B\" нужно указать \"epoch\" (так же как для \"A\")\n"
+"\tA %s\tB %s\n"
+
+#: lib/rpmds.c:375
+#, c-format
+msgid "  %s    A %s\tB %s\n"
+msgstr "  %s    A %s\tB %s\n"
+
+#. @=branchstate@
+#: lib/rpmds.c:401
+#, fuzzy, c-format
+msgid "package %s-%s-%s has unsatisfied %s: %s\n"
+msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #: lib/rpminstall.c:153
 msgid "Preparing..."
@@ -2858,13 +2878,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Подпись: размер(%d)+заполнение(%d)\n"
 
-#: lib/transaction.c:239
+#: lib/transaction.c:241
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущен из-за флага missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:878
+#: lib/transaction.c:880
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "исключается каталог %s\n"
@@ -3410,15 +3430,8 @@ msgstr "url порт должен быть числом\n"
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
 
-#~ msgid ""
-#~ "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
-#~ "\tA %s\tB %s\n"
-#~ msgstr ""
-#~ "для зависимости \"B\" нужно указать \"epoch\" (так же как для \"A\")\n"
-#~ "\tA %s\tB %s\n"
-
-#~ msgid "  %s    A %s\tB %s\n"
-#~ msgstr "  %s    A %s\tB %s\n"
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "пакет %s конфликтует с: %s\n"
 
 #, fuzzy
 #~ msgid "%9s: %-45s %-s (cached)\n"
@@ -3435,9 +3448,6 @@ msgstr "невозможно создать %s: %s\n"
 #, fuzzy
 #~ msgid "%9s: %-45s NO\n"
 #~ msgstr "%s: %-45s NO\n"
-
-#~ msgid "%s: %-45s YES (added files)\n"
-#~ msgstr "%s: %-45s YES (added files)\n"
 
 #~ msgid "%s: %-45s YES (added provide)\n"
 #~ msgstr "%s: %-45s YES (added provide)\n"

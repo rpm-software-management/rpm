@@ -553,3 +553,6 @@ fi
 - create toy rpmDepSet iterators.
 - rpmRangesOverlap renamed to dsCompare, add dsNotify method as well.
 - depends.c: rpmDepSet is (almost) opaque, move to rpmds.[ch].
+- rpmds: create dsProblem(), dsiGetDNEVR() retrieved DNEVR, not N.
+- depends.h: hack around teIterator() et al from include for now.
+

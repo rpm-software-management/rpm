@@ -15,7 +15,6 @@ typedef /*@abstract@*/ struct transactionElement_s *	transactionElement;
 typedef /*@abstract@*/ struct teIterator_s *		teIterator;
 
 typedef /*@abstract@*/ struct availableList_s *		availableList;
-typedef /*@abstract@*/ struct problemsSet_s *		problemsSet;
 
 /*@unchecked@*/
 /*@-exportlocal@*/
@@ -168,19 +167,11 @@ struct rpmTransactionSet_s {
 
 } ;
 
-/** \ingroup rpmdep
- * Problems encountered while checking dependencies.
- */
-struct problemsSet_s {
-    rpmDependencyConflict problems;	/*!< Problems encountered. */
-    int num;			/*!< No. of problems found. */
-    int alloced;		/*!< No. of problems allocated. */
-} ;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#if defined(_NEED_TEITERATOR)
 /*@access teIterator @*/
 /*@access rpmTransactionSet @*/
 
@@ -253,6 +244,7 @@ transactionElement teNextIterator(teIterator tei)
     return te;
     /*@=compdef =usereleased@*/
 }
+#endif	/* defined(_NEED_TEITERATOR) */
 
 /**
  * Return (malloc'd) header name-version-release string.

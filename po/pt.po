@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-02 21:16-0500\n"
+"POT-Creation-Date: 2001-11-04 10:27-0500\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -1420,110 +1420,99 @@ msgstr ""
 msgid " failed - "
 msgstr " falhou - "
 
-#: lib/depends.c:108
+#: lib/depends.c:112
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "não consigo abrir a base de dados Packages em %s\n"
 
-#: lib/depends.c:341
+#: lib/depends.c:345
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:346
+#: lib/depends.c:350
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "o pacote %s já está instalado"
 
-#: lib/depends.c:351
+#: lib/depends.c:355
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:600
+#: lib/depends.c:604
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:636
+#: lib/depends.c:640
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s SIM (oferecidos pelo rpmrc)\n"
 
-#: lib/depends.c:652
+#: lib/depends.c:656
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s SIM (oferecidos pela rpmlib)\n"
 
-#: lib/depends.c:674
+#: lib/depends.c:678
 #, fuzzy
 msgid "(db files)"
 msgstr "ficheiro db inválido %s\n"
 
-#: lib/depends.c:686
+#: lib/depends.c:690
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s SI (oferecidos pelo db)\n"
 
-#: lib/depends.c:699
+#: lib/depends.c:703
 #, fuzzy
 msgid "(db package)"
 msgstr "nenhum pacote\n"
 
-#: lib/depends.c:747
+#: lib/depends.c:751
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) adicionado à cache de dependências.\n"
 
-#: lib/depends.c:749
+#: lib/depends.c:753 lib/rpmds.c:223 lib/rpmds.c:376
 #, fuzzy
 msgid "NO "
 msgstr "NÃO-OK"
 
-#: lib/depends.c:749
+#: lib/depends.c:753 lib/rpmds.c:223 lib/rpmds.c:376
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:812
-#, c-format
-msgid "package %s-%s-%s require not satisfied: %s\n"
-msgstr "requisito %s-%s-%s do pacote não satisfeito: %s\n"
-
-#. conflicts exist.
-#: lib/depends.c:884
-#, c-format
-msgid "package %s conflicts: %s\n"
-msgstr "o pacote %s está em conflito: %s\n"
-
-#: lib/depends.c:1147
+#: lib/depends.c:1103
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "a remover o %s-%s-%s \"%s\" das relações do tsort.\n"
 
 #. Record all relations.
-#: lib/depends.c:1399
+#: lib/depends.c:1350
 msgid "========== recording tsort relations\n"
 msgstr "=========== a guardar as relações do tsort\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1473
+#: lib/depends.c:1424
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1548
+#: lib/depends.c:1499
 msgid "========== successors only (presentation order)\n"
 msgstr "========== só os sucessores (ordem de apresentação)\n"
 
-#: lib/depends.c:1609
+#: lib/depends.c:1560
 msgid "LOOP:\n"
 msgstr "CICLO:\n"
 
-#: lib/depends.c:1644
+#: lib/depends.c:1595
 msgid "========== continuing tsort ...\n"
 msgstr "========== a prosseguir o tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1649
+#: lib/depends.c:1600
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2451,6 +2440,16 @@ msgstr "o registo %d não pôde ser lido\n"
 msgid "package %s is not installed\n"
 msgstr "o pacote %s não está instalado\n"
 
+#: lib/rpmal.c:728
+#, fuzzy, c-format
+msgid "%9s: %-45s YES (added files)\n"
+msgstr "%s: %-45s SIM (ficheiros adicionados)\n"
+
+#: lib/rpmal.c:826
+#, fuzzy
+msgid "(added provide)"
+msgstr "%s: %-45s SI (oferecidos pelo db)\n"
+
 #: lib/rpmchecksig.c:49
 #, c-format
 msgid "%s: open failed: %s\n"
@@ -2513,6 +2512,27 @@ msgstr ")"
 #: lib/rpmchecksig.c:721
 msgid "OK"
 msgstr "OK"
+
+#. XXX legacy epoch-less requires/conflicts compatibility
+#: lib/rpmds.c:346
+#, c-format
+msgid ""
+"the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
+"\tA %s\tB %s\n"
+msgstr ""
+"A dependência \"B\" precisa duma época (assumindo a mesma que \"A\")\n"
+"\t %s\tB %s\n"
+
+#: lib/rpmds.c:375
+#, c-format
+msgid "  %s    A %s\tB %s\n"
+msgstr "  %s     A %s\tB %s\n"
+
+#. @=branchstate@
+#: lib/rpmds.c:401
+#, fuzzy, c-format
+msgid "package %s-%s-%s has unsatisfied %s: %s\n"
+msgstr "requisito %s-%s-%s do pacote não satisfeito: %s\n"
 
 #: lib/rpminstall.c:153
 msgid "Preparing..."
@@ -2841,13 +2861,13 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "'Pad' ou preenchimento da assinatura: %d\n"
 
-#: lib/transaction.c:239
+#: lib/transaction.c:241
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s ignorado devido à opção missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:878
+#: lib/transaction.c:880
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "a excluir a directoria %s\n"
@@ -3384,15 +3404,8 @@ msgstr "o porto do URL tem de ser um número\n"
 msgid "failed to create %s: %s\n"
 msgstr "não consegui criar o %s: %s\n"
 
-#~ msgid ""
-#~ "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
-#~ "\tA %s\tB %s\n"
-#~ msgstr ""
-#~ "A dependência \"B\" precisa duma época (assumindo a mesma que \"A\")\n"
-#~ "\t %s\tB %s\n"
-
-#~ msgid "  %s    A %s\tB %s\n"
-#~ msgstr "  %s     A %s\tB %s\n"
+#~ msgid "package %s conflicts: %s\n"
+#~ msgstr "o pacote %s está em conflito: %s\n"
 
 #, fuzzy
 #~ msgid "%9s: %-45s %-s (cached)\n"
@@ -3409,9 +3422,6 @@ msgstr "não consegui criar o %s: %s\n"
 #, fuzzy
 #~ msgid "%9s: %-45s NO\n"
 #~ msgstr "%s: %-45s NÃO\n"
-
-#~ msgid "%s: %-45s YES (added files)\n"
-#~ msgstr "%s: %-45s SIM (ficheiros adicionados)\n"
 
 #~ msgid "%s: %-45s YES (added provide)\n"
 #~ msgstr "%s: %-45s SIM (oferecidos para adição)\n"

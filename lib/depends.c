@@ -9,7 +9,10 @@
 #include <rpmpgp.h>		/* XXX pgpFreeDig */
 
 #include "rpmds.h"
+
+#define _NEED_TEITERATOR	1
 #include "depends.h"
+
 #include "rpmal.h"
 #include "rpmdb.h"		/* XXX response cache needs dbiOpen et al. */
 
@@ -24,6 +27,7 @@
 /*@access rpmTransactionSet@*/
 
 /*@access rpmDependencyConflict@*/
+/*@access problemsSet@*/
 
 /**
  */
@@ -772,8 +776,6 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
     rpmDepSet requires;
     rpmDepSet conflicts;
     const char * Name;
-    const char * EVR;
-    const char * DNEVR;
     int_32 Flags;
     int rc, xx;
     int ourrc = 0;
@@ -787,15 +789,12 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 
 	if ((Name = dsiGetN(requires)) == NULL)
 	    continue;	/* XXX can't happen */
-	if ((EVR = dsiGetEVR(requires)) == NULL)
-	    continue;	/* XXX can't happen */
-	if ((DNEVR = dsiGetDNEVR(requires)) == NULL)
-	    continue;	/* XXX can't happen */
-	Flags = dsiGetFlags(requires);
 
 	/* Filter out requires that came along for the ride. */
 	if (keyName && strcmp(keyName, Name))
 	    continue;
+
+	Flags = dsiGetFlags(requires);
 
 	/* If this requirement comes from the core package only, not libraries,
 	   then if we're installing the libraries only, don't count it in. */
@@ -808,44 +807,28 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	case 0:		/* requirements are satisfied. */
 	    /*@switchbreak@*/ break;
 	case 1:		/* requirements are not satisfied. */
-	    rpmMessage(RPMMESS_DEBUG,
-			_("package %s-%s-%s require not satisfied: %s\n"),
-			name, version, release,
-			DNEVR+2);
+	{   const void ** suggestedPkgs;
 
-	    if (psp->num == psp->alloced) {
-		psp->alloced += 5;
-		psp->problems = xrealloc(psp->problems, sizeof(*psp->problems) *
-			    psp->alloced);
-	    }
+	    /*@-branchstate@*/
+	    if (suggestion != NULL) {
+		int j;
 
-	    {	rpmDependencyConflict pp = psp->problems + psp->num;
-		pp->byHeader = headerLink(h, "problem(requires)");
-		pp->byName = xstrdup(name);
-		pp->byVersion = xstrdup(version);
-		pp->byRelease = xstrdup(release);
-		pp->needsName = xstrdup(Name);
-		pp->needsVersion = xstrdup(EVR);
-		pp->needsFlags = Flags;
-		pp->sense = RPMDEP_SENSE_REQUIRES;
-
-		if (suggestion != NULL) {
-		    int j;
-		    for (j = 0; suggestion[j] != NULL; j++)
+		for (j = 0; suggestion[j] != NULL; j++)
 			{};
-		    pp->suggestedPackages =
-			xmalloc( (j + 1) * sizeof(*pp->suggestedPackages) );
-		    for (j = 0; suggestion[j] != NULL; j++)
-			pp->suggestedPackages[j] =
-			    alGetKey(ts->availablePackages,
-				alGetPkgIndex(ts->availablePackages, suggestion[j]));
-		    pp->suggestedPackages[j] = NULL;
-		} else {
-		    pp->suggestedPackages = NULL;
-		}
-	    }
 
-	    psp->num++;
+		suggestedPkgs = xmalloc( (j + 1) * sizeof(*suggestedPkgs) );
+		for (j = 0; suggestion[j] != NULL; j++)
+		    suggestedPkgs[j] =
+			alGetKey(ts->availablePackages,
+			    alGetPkgIndex(ts->availablePackages,
+				suggestion[j]));
+		suggestedPkgs[j] = NULL;
+	    } else {
+		suggestedPkgs = NULL;
+	    }
+	    /*@=branchstate@*/
+	    dsProblem(psp, h, requires, suggestedPkgs);
+	}
 	    /*@switchbreak@*/ break;
 	case 2:		/* something went wrong! */
 	default:
@@ -861,15 +844,12 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 
 	if ((Name = dsiGetN(conflicts)) == NULL)
 	    continue;	/* XXX can't happen */
-	if ((EVR = dsiGetEVR(conflicts)) == NULL)
-	    continue;	/* XXX can't happen */
-	if ((DNEVR = dsiGetDNEVR(conflicts)) == NULL)
-	    continue;	/* XXX can't happen */
-	Flags = dsiGetFlags(conflicts);
 
 	/* Filter out conflicts that came along for the ride. */
 	if (keyName != NULL && strcmp(keyName, Name))
 	    continue;
+
+	Flags = dsiGetFlags(conflicts);
 
 	/* If this requirement comes from the core package only, not libraries,
 	   then if we're installing the libraries only, don't count it in. */
@@ -881,28 +861,9 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
 	case 0:		/* conflicts exist. */
-	    rpmMessage(RPMMESS_DEBUG, _("package %s conflicts: %s\n"),
-		    name, DNEVR+2);
-
-	    if (psp->num == psp->alloced) {
-		psp->alloced += 5;
-		psp->problems = xrealloc(psp->problems,
-					sizeof(*psp->problems) * psp->alloced);
-	    }
-
-	    {	rpmDependencyConflict pp = psp->problems + psp->num;
-		pp->byHeader = headerLink(h, "problem(conflicts)");
-		pp->byName = xstrdup(name);
-		pp->byVersion = xstrdup(version);
-		pp->byRelease = xstrdup(release);
-		pp->needsName = xstrdup(Name);
-		pp->needsVersion = xstrdup(EVR);
-		pp->needsFlags = Flags;
-		pp->sense = RPMDEP_SENSE_CONFLICTS;
-		pp->suggestedPackages = NULL;
-	    }
-
-	    psp->num++;
+	    /*@-mayaliasunique@*/ /* LCL: NULL may alias h ??? */
+	    dsProblem(psp, h, conflicts, NULL);
+	    /*@=mayaliasunique@*/
 	    /*@switchbreak@*/ break;
 	case 1:		/* conflicts don't exist. */
 	    /*@switchbreak@*/ break;
@@ -1124,11 +1085,6 @@ zapRelation(transactionElement q, transactionElement p,
 	    continue;
 
 	if (requires == NULL) continue;		/* XXX can't happen */
-#ifdef	DYING
-	if (requires->N == NULL) continue;	/* XXX can't happen */
-	if (requires->EVR == NULL) continue;	/* XXX can't happen */
-	if (requires->Flags == NULL) continue;	/* XXX can't happen */
-#endif
 
 	/*@-type@*/ /* FIX: hack */
 	requires->i = tsi->tsi_reqx;
@@ -1195,11 +1151,6 @@ static inline int addRelation(rpmTransactionSet ts,
     const char * Name;
     long matchNum;
     int i = 0;
-
-#ifdef	DYING
-    if (!requires->N || !requires->EVR || !requires->Flags)
-	return 0;
-#endif
 
     /*@-mods -type@*/	/* FIX: hack to disable noisy debugging */
     {	const char * Type = requires->Type;

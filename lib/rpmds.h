@@ -7,6 +7,19 @@
  */
 
 /**
+ */
+typedef /*@abstract@*/ struct problemsSet_s *		problemsSet;
+
+/**
+ * Problems encountered while checking dependencies.
+ */
+struct problemsSet_s {
+    rpmDependencyConflict problems;	/*!< Problems encountered. */
+    int num;			/*!< No. of problems found. */
+    int alloced;		/*!< No. of problems allocated. */
+} ;
+
+/**
  * A package dependency set.
  */
 struct rpmDepSet_s {
@@ -32,12 +45,6 @@ struct rpmDepSet_s {
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-/*@access rpmDepSet @*/
-
-#if 0
-#define	_DS_DEBUG	1
 #endif
 
 /**
@@ -141,6 +148,13 @@ rpmDepSet dsiInit(/*@returned@*/ /*@null@*/ rpmDepSet ds)
  */
 int dsCompare(const rpmDepSet A, const rpmDepSet B)
 	/*@*/;
+
+/**
+ * Report a Requires: or Conflicts: dependency problem.
+ */
+void dsProblem(problemsSet psp, Header h, const rpmDepSet dep,
+		/*@only@*/ /*@null@*/ const void ** suggestedPackages)
+	/*@modifies psp, h @*/;
 
 /**
  * Compare package provides dependencies from header with a single dependency.

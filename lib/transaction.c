@@ -4,7 +4,9 @@
 
 #include "system.h"
 
+#define _NEED_TEITERATOR	1
 #include "psm.h"
+
 #include "rpmal.h"
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 

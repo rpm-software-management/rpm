@@ -8,20 +8,24 @@
 
 #include "debug.h"
 
+/*@access rpmDependencyConflict @*/
+/*@access problemsSet @*/
+
 /*@access rpmDepSet @*/
 
-#if 0
-#define	_DS_DEBUG	1
-#endif
+/*@unchecked@*/
+static int _ds_debug = 0;
 
 rpmDepSet dsFree(rpmDepSet ds)
 {
     HFD_t hfd = headerFreeData;
     rpmTag tagEVR, tagF;
 
-#ifdef	_DS_DEBUG
+/*@-modfilesystem@*/
+if (_ds_debug)
 fprintf(stderr, "*** ds %p --\n", ds);
-#endif
+/*@=modfilesystem@*/
+
     if (ds == NULL)
 	return ds;
 
@@ -53,10 +57,10 @@ fprintf(stderr, "*** ds %p --\n", ds);
 	/*@=evalorder@*/
 	ds->h = headerFree(ds->h, "dsFree");
     }
+    /*@=branchstate@*/
 
     ds->DNEVR = _free(ds->DNEVR);
 
-    /*@=branchstate@*/
     memset(ds, 0, sizeof(*ds));		/* XXX trash and burn */
     ds = _free(ds);
     return NULL;
@@ -112,10 +116,13 @@ rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
 	ds->h = headerFree(ds->h, "dsNew");
 
 exit:
-    /*@-nullret@*/ /* FIX: ds->Flags may be NULL. */
-#ifdef	_DS_DEBUG
+
+/*@-modfilesystem@*/
+if (_ds_debug)
 fprintf(stderr, "*** ds %p ++ %s[%d]\n", ds, ds->Type, ds->Count);
-#endif
+/*@=modfilesystem@*/
+
+    /*@-nullret@*/ /* FIX: ds->Flags may be NULL. */
     return ds;
     /*@=nullret@*/
 }
@@ -166,7 +173,7 @@ const char * dsiGetDNEVR(rpmDepSet ds)
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	if (ds->DNEVR != NULL)
-	    DNEVR = ds->N[ds->i];
+	    DNEVR = ds->DNEVR;
     }
     return DNEVR;
 }
@@ -232,9 +239,12 @@ int dsiNext(/*@null@*/ rpmDepSet ds)
 	    /*@-nullstate@*/
 	    ds->DNEVR = dsDNEVR(t, ds);
 	    /*@=nullstate@*/
-#ifdef	_DS_DEBUG
-fprintf(stderr, "*** ds %p[%d] %s: %s\n", ds, i, ds->Type, ds->DNEVR);
-#endif
+
+/*@-modfilesystem@*/
+if (_ds_debug)
+fprintf(stderr, "*** ds %p[%d] %s: %s\n", ds, i, (ds->Type ? ds->Type : "???"), ds->DNEVR);
+/*@=modfilesystem@*/
+
 	}
     }
     return i;
@@ -367,6 +377,57 @@ exit:
     aDepend = _free(aDepend);
     bDepend = _free(bDepend);
     return result;
+}
+
+void dsProblem(problemsSet psp, Header h, const rpmDepSet dep,
+		const void ** suggestedPackages)
+{
+    rpmDependencyConflict dcp;
+    const char * Name =  dsiGetN(dep);
+    const char * DNEVR = dsiGetDNEVR(dep);
+    const char * EVR = dsiGetEVR(dep);
+    int_32 Flags = dsiGetFlags(dep);
+    const char * name, * version, * release;
+    int xx;
+
+    xx = headerNVR(h, &name, &version, &release);
+
+    /*@-branchstate@*/
+    if (Name == NULL) Name = "???";
+    if (EVR == NULL) EVR = "???";
+    if (DNEVR == NULL) DNEVR = "?????";
+    /*@=branchstate@*/
+
+    rpmMessage(RPMMESS_DEBUG, _("package %s-%s-%s has unsatisfied %s: %s\n"),
+	    name, version, release,
+	    dep->Type,
+	    DNEVR+2);
+
+    if (psp->num == psp->alloced) {
+	psp->alloced += 5;
+	psp->problems = xrealloc(psp->problems,
+				sizeof(*psp->problems) * psp->alloced);
+    }
+
+    dcp = psp->problems + psp->num;
+    psp->num++;
+
+    dcp->byHeader = headerLink(h, "dsProblem");
+    dcp->byName = xstrdup(name);
+    dcp->byVersion = xstrdup(version);
+    dcp->byRelease = xstrdup(release);
+    dcp->needsName = xstrdup(Name);
+    dcp->needsVersion = xstrdup(EVR);
+    dcp->needsFlags = Flags;
+
+    if (dep->tagN == RPMTAG_REQUIRENAME)
+	dcp->sense = RPMDEP_SENSE_REQUIRES;
+    else if (dep->tagN == RPMTAG_CONFLICTNAME)
+	dcp->sense = RPMDEP_SENSE_CONFLICTS;
+    else
+	dcp->sense = 0;
+
+    dcp->suggestedPackages = suggestedPackages;
 }
 
 int rangeMatchesDepFlags (Header h, const rpmDepSet req)
