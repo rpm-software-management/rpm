@@ -6,6 +6,7 @@
 #include "rpmdb.h"
 
 extern int _useDbiMajor;	/* XXX shared with dbindex.c */
+extern int __do_dbenv_remove;   /* XXX in dbindex.c, shared with rebuilddb.c */
 
 /** */
 int rpmdbRebuild(const char * rootdir)
@@ -143,6 +144,7 @@ fprintf(stderr, "*** rpmdbRebuild: filterdbdups %d preferdb %d\n", _filterDbDups
 	recnum = rpmdbNextRecNum(olddb, recnum);
     }
 
+    __do_dbenv_remove = 1;	/* XXX in dbindex.c, shared with rebuilddb.c */
     rpmdbClose(olddb);
     rpmdbClose(newdb);
 
