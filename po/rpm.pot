@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-01-05 15:54-0500\n"
+"POT-Creation-Date: 2000-01-11 11:56-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2200,7 +2200,7 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: lib/install.c:142 lib/uninstall.c:194
+#: lib/install.c:142 lib/uninstall.c:195
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
@@ -2268,7 +2268,7 @@ msgstr ""
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:27
+#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:28
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
@@ -2872,7 +2872,7 @@ msgstr ""
 msgid "package %s not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:504 lib/uninstall.c:86
+#: lib/rpmdb.c:504 lib/uninstall.c:87
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
@@ -3351,40 +3351,40 @@ msgstr ""
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/uninstall.c:38
+#: lib/uninstall.c:39
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr ""
 
-#: lib/uninstall.c:41
+#: lib/uninstall.c:42
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr ""
 
-#: lib/uninstall.c:49
+#: lib/uninstall.c:50
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr ""
 
-#: lib/uninstall.c:98
+#: lib/uninstall.c:99
 #, c-format
 msgid "cannot read packages named %s for uninstall"
 msgstr ""
 
-#: lib/uninstall.c:131
+#: lib/uninstall.c:132
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:208
+#: lib/uninstall.c:209
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:222
+#: lib/uninstall.c:223
 msgid "removing database entry\n"
 msgstr ""
 
-#: lib/uninstall.c:400
+#: lib/uninstall.c:408
 msgid "execution of script failed"
 msgstr ""
 

@@ -2,6 +2,7 @@
 
 #include <rpmlib.h>
 #include <rpmurl.h>
+#include <rpmmacro.h>	/* XXX for rpmExpand */
 
 #include "depends.h"
 #include "install.h"
