@@ -337,6 +337,9 @@ in seconds, the maximum age of a file being packaged.  Warnings
 will be printed for all files beyond the timecheck age.
 .IP "\fB\-\-clean\fP"
 Remove the build tree after the packages are made.
+.IP "\fB\-\-rmsource\fP"
+Remove the sources and spec file after the build (may also be
+used standalone, eg. "\fBrpm \-\-rmsource foo.spec\fP").
 .IP "\fB\-\-test\fP"
 Do not execute any build stages.
 Useful for testing out spec files.

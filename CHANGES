@@ -2,6 +2,7 @@
 	- added many more i18n strings
         - merged in large rewrite of build code, which includes the following
 	  changes:
+            - new option --rmsource
 	    - all scripts can now take -p <prog>
 	    - more strict about %package placement and use of main package 
 	      preamble
