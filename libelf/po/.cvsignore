@@ -1,0 +1,4 @@
+Makefile
+stamp-po
+*.mo
+*.gmo

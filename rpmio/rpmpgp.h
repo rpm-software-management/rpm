@@ -1196,11 +1196,12 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
 	/*@modifies fileSystem @*/;
 
 /**
- * Print/parse a single OpenPGP packet.
+ * Print/parse next OpenPGP packet.
  * @param pkt		OpenPGP packet
- * @return		-1 on error, otherwise packet length
+ * @param pleft		no. bytes remaining
+ * @return		-1 on error, otherwise this packet length
  */
-int pgpPrtPkt(const byte *pkt)
+int pgpPrtPkt(const byte *pkt, unsigned int pleft)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@=exportlocal@*/
@@ -1208,12 +1209,12 @@ int pgpPrtPkt(const byte *pkt)
 /**
  * Print/parse a OpenPGP packet(s).
  * @param pkts		OpenPGP packet(s)
- * @param plen		packet(s) length (no. of bytes)
+ * @param pktlen		OpenPGP packet(s) length (no. of bytes)
  * @retval dig		parsed output of signature/pubkey packet parameters
  * @param printing	should packets be printed?
  * @return		-1 on error, 0 on success
  */
-int pgpPrtPkts(const byte *pkts, unsigned int plen, pgpDig dig, int printing)
+int pgpPrtPkts(const byte *pkts, unsigned int pktlen, pgpDig dig, int printing)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 

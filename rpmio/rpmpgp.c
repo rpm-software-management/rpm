@@ -321,17 +321,26 @@ const char * pgpMpiHex(const byte *p)
 
 /*@-boundswrite@*/
 /**
+ * @return		0 on success
  */
-static void pgpHexSet(const char * pre, int lbits,
-		/*@out@*/ mp32number * mpn, const byte * p)
+static int pgpHexSet(const char * pre, int lbits,
+		/*@out@*/ mp32number * mpn, const byte * p, const byte * pend)
 	/*@globals fileSystem @*/
 	/*@modifies *mpn, fileSystem @*/
 {
     unsigned int mbits = pgpMpiBits(p);
-    unsigned int nbits = (lbits > mbits ? lbits : mbits);
-    unsigned int nbytes = ((nbits + 7) >> 3);
-    char * t = xmalloc(2*nbytes+1);
-    unsigned int ix = 2 * ((nbits - mbits) >> 3);
+    unsigned int nbits;
+    unsigned int nbytes;
+    char * t;
+    unsigned int ix;
+
+    if ((p + ((mbits+7) >> 3)) > pend)
+	return 1;
+
+    nbits = (lbits > mbits ? lbits : mbits);
+    nbytes = ((nbits + 7) >> 3);
+    t = xmalloc(2*nbytes+1);
+    ix = 2 * ((nbits - mbits) >> 3);
 
 if (_debug)
 fprintf(stderr, "*** mbits %u nbits %u nbytes %u t %p[%d] ix %u\n", mbits, nbits, nbytes, t, (2*nbytes+1), ix);
@@ -343,6 +352,7 @@ fprintf(stderr, "*** %s %s\n", pre, t);
     t = _free(t);
 if (_debug && _print)
 fprintf(stderr, "\t %s ", pre), mp32println(stderr, mpn->size, mpn->data);
+    return 0;
 }
 /*@=boundswrite@*/
 
@@ -460,9 +470,10 @@ static int pgpPrtSigParams(/*@unused@*/ pgpTag tag, byte pubkey_algo, byte sigty
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
+    const byte * pend = h + hlen;
     int i;
 
-    for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
+    for (i = 0; p < pend; i++, p += pgpMpiLen(p)) {
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (i >= 1) break;
 	    /*@-mods@*/
@@ -487,16 +498,20 @@ fprintf(stderr, "\t  m**d = "),  mp32println(stderr, _dig->c.size, _dig->c.data)
 	    if (_dig &&
 	(sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
 	    {
+		int xx;
+		xx = 0;
 		switch (i) {
 		case 0:		/* r */
-		    pgpHexSet(pgpSigDSA[i], 160, &_dig->r, p);
+		    xx = pgpHexSet(pgpSigDSA[i], 160, &_dig->r, p, pend);
 		    /*@switchbreak@*/ break;
 		case 1:		/* s */
-		    pgpHexSet(pgpSigDSA[i], 160, &_dig->s, p);
+		    xx = pgpHexSet(pgpSigDSA[i], 160, &_dig->s, p, pend);
 		    /*@switchbreak@*/ break;
 		default:
+		    xx = 1;
 		    /*@switchbreak@*/ break;
 		}
+		if (xx) return xx;
 	    }
 	    /*@=mods@*/
 	    pgpPrtStr("", pgpSigDSA[i]);
@@ -523,10 +538,8 @@ int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
     {   pgpPktSigV3 v = (pgpPktSigV3)h;
 	time_t t;
 
-	if (v->hashlen != 5) {
-	    fprintf(stderr, " hashlen(%u) != 5\n", (unsigned)v->hashlen);
+	if (v->hashlen != 5)
 	    return 1;
-	}
 
 	pgpPrtVal("V3 ", pgpTagTbl, tag);
 	pgpPrtVal(" ", pgpPubkeyTbl, v->pubkey_algo);
@@ -572,6 +585,9 @@ int pgpPrtSig(pgpTag tag, const byte *h, unsigned int hlen)
 	plen = pgpGrab(v->hashlen, sizeof(v->hashlen));
 	p += sizeof(v->hashlen);
 
+	if ((p + plen) > (h + hlen))
+	    return 1;
+
 if (_debug && _print)
 fprintf(stderr, "   hash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 /*@-mods@*/
@@ -585,6 +601,9 @@ fprintf(stderr, "   hash[%u] -- %s\n", plen, pgpHexStr(p, plen));
 
 	plen = pgpGrab(p,2);
 	p += 2;
+
+	if ((p + plen) > (h + hlen))
+	    return 1;
 
 if (_debug && _print)
 fprintf(stderr, " unhash[%u] -- %s\n", plen, pgpHexStr(p, plen));
@@ -933,7 +952,7 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
     return 0;
 }
 
-int pgpPrtPkt(const byte *pkt)
+int pgpPrtPkt(const byte *pkt, unsigned int pleft)
 {
     unsigned int val = *pkt;
     unsigned int pktlen;
@@ -957,6 +976,9 @@ int pgpPrtPkt(const byte *pkt)
     }
 
     pktlen = 1 + plen + hlen;
+    if (pktlen > pleft)
+	return -1;
+
     h = pkt + 1 + plen;
     switch (tag) {
     case PGPTAG_SIGNATURE:
@@ -1097,10 +1119,11 @@ pgpDig pgpFreeDig(/*@only@*/ /*@null@*/ pgpDig dig)
     return dig;
 }
 
-int pgpPrtPkts(const byte * pkts, unsigned int plen, pgpDig dig, int printing)
+int pgpPrtPkts(const byte * pkts, unsigned int pktlen, pgpDig dig, int printing)
 {
     unsigned int val = *pkts;
     const byte *p;
+    unsigned int pleft;
     int len;
 
     /*@-mods@*/
@@ -1114,10 +1137,12 @@ int pgpPrtPkts(const byte * pkts, unsigned int plen, pgpDig dig, int printing)
 	_digp = NULL;
     /*@=mods@*/
 
-    for (p = pkts; p < (pkts + plen); p += len) {
-	len = pgpPrtPkt(p);
+    for (p = pkts, pleft = pktlen; p < (pkts + pktlen); p += len, pleft -= len) {
+	len = pgpPrtPkt(p, pleft);
         if (len <= 0)
 	    return len;
+	if (len > pleft)	/* XXX shouldn't happen */
+	    break;
     }
     return 0;
 }
