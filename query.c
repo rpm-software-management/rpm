@@ -388,6 +388,7 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 		if (!headerGetEntry(h, RPMTAG_FILEUIDS, &type, 
 			 (void **) &fileUIDList, &count)) {
 		    fileUIDList = NULL;
+		} else {
 		    headerGetEntry(h, RPMTAG_FILEGIDS, &type, 
 			     (void **) &fileGIDList, &count);
 		}
@@ -395,6 +396,7 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 		if (!headerGetEntry(h, RPMTAG_FILEUSERNAME, &type, 
 			 (void **) &fileOwnerList, &count)) {
 		    fileOwnerList = NULL;
+		} else {
 		    headerGetEntry(h, RPMTAG_FILEGROUPNAME, &type, 
 			     (void **) &fileGroupList, &count);
 		}
