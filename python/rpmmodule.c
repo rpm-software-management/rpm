@@ -1534,7 +1534,7 @@ static PyTypeObject rpmtransType = {
  */
 /*@{*/
 
-/** \ingroup python
+/**
  */
 static PyObject * rpmtransCreate(PyObject * self, PyObject * args) {
     rpmtransObject * o;
@@ -1558,7 +1558,7 @@ static PyObject * rpmtransCreate(PyObject * self, PyObject * args) {
     return (void *) o;
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * doAddMacro(PyObject * self, PyObject * args) {
     char * name, * val;
@@ -1572,7 +1572,7 @@ static PyObject * doAddMacro(PyObject * self, PyObject * args) {
     return Py_None;
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * doDelMacro(PyObject * self, PyObject * args) {
     char * name;
@@ -1586,7 +1586,7 @@ static PyObject * doDelMacro(PyObject * self, PyObject * args) {
     return Py_None;
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * archScore(PyObject * self, PyObject * args) {
     char * arch;
@@ -1600,7 +1600,7 @@ static PyObject * archScore(PyObject * self, PyObject * args) {
     return Py_BuildValue("i", score);
 }
 
-/** \ingroup python
+/**
  */
 static int psGetArchScore(Header h) {
     void * pkgArch;
@@ -1613,7 +1613,7 @@ static int psGetArchScore(Header h) {
         return rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch);
 }
 
-/** \ingroup python
+/**
  */
 static int pkgCompareVer(void * first, void * second) {
     struct packageInfo ** a = first;
@@ -1635,7 +1635,7 @@ static int pkgCompareVer(void * first, void * second) {
     return rpmVersionCompare((*b)->h, (*a)->h);
 }
 
-/** \ingroup python
+/**
  */
 static void pkgSort(struct pkgSet * psp) {
     int i;
@@ -1665,7 +1665,7 @@ static void pkgSort(struct pkgSet * psp) {
     psp->numPackages = i;
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * findUpgradeSet(PyObject * self, PyObject * args) {
     PyObject * hdrList, * result;
@@ -1716,7 +1716,7 @@ static PyObject * findUpgradeSet(PyObject * self, PyObject * args) {
     return result;
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     hdrObject * h;
@@ -1761,7 +1761,7 @@ static PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args) {
     return Py_BuildValue("(Ni)", h, isSource);
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * hdrLoad(PyObject * self, PyObject * args) {
     char * obj, * copy=NULL;
@@ -1797,7 +1797,7 @@ static PyObject * hdrLoad(PyObject * self, PyObject * args) {
     return (PyObject *) h;
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * rpmInitDB(PyObject * self, PyObject * args) {
     char *root;
@@ -1821,7 +1821,7 @@ static PyObject * rpmInitDB(PyObject * self, PyObject * args) {
     return(Py_None);
 }
 
-/** \ingroup python
+/**
  */
 static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
     rpmdbObject * o;
@@ -1853,7 +1853,7 @@ static rpmdbObject * rpmOpenDB(PyObject * self, PyObject * args) {
     return o;
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * rebuildDB (PyObject * self, PyObject * args) {
     char * root = "";
@@ -1863,7 +1863,7 @@ static PyObject * rebuildDB (PyObject * self, PyObject * args) {
     return Py_BuildValue("i", rpmdbRebuild(root));
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * rpmReadHeaders (FD_t fd) {
     PyObject * list;
@@ -1905,7 +1905,7 @@ static PyObject * rpmReadHeaders (FD_t fd) {
     return list;
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args) {
     FD_t fd;
@@ -1921,7 +1921,7 @@ static PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args) {
     return list;
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args) {
     char * filespec;
@@ -1942,7 +1942,7 @@ static PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args) {
     return list;
 }
 
-/** \ingroup python
+/**
  * This assumes the order of list matches the order of the new headers, and
  * throws an exception if that isn't true.
  */
@@ -2034,11 +2034,11 @@ static PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args) {
     return Py_None;
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * errorCB = NULL, * errorData = NULL;
 
-/** \ingroup python
+/**
  */
 static void errorcb (void)
 {
@@ -2057,7 +2057,7 @@ static void errorcb (void)
     Py_DECREF (result);
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * errorSetCallback (PyObject * self, PyObject * args) {
     if (errorCB != NULL) {
@@ -2099,13 +2099,13 @@ static PyObject * errorSetCallback (PyObject * self, PyObject * args) {
     return PyCObject_FromVoidPtr(rpmErrorSetCallback (errorcb), NULL);
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * errorString (PyObject * self, PyObject * args) {
     return PyString_FromString(rpmErrorString ());
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * versionCompare (PyObject * self, PyObject * args) {
     hdrObject * h1, * h2;
@@ -2146,7 +2146,7 @@ static PyObject * labelCompare (PyObject * self, PyObject * args) {
     return Py_BuildValue("i", rpmvercmp(r1, r2));
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * checkSig (PyObject * self, PyObject * args) {
     char * filename;
@@ -2163,7 +2163,7 @@ static PyObject * checkSig (PyObject * self, PyObject * args) {
 }
 
 /* hack to get the current header that's in the transaction set */
-/** \ingroup python
+/**
  */
 static PyObject * getTsHeader (PyObject * self, PyObject * args) {
     hdrObject * h;
@@ -2181,11 +2181,11 @@ static PyObject * getTsHeader (PyObject * self, PyObject * args) {
     return (PyObject *) Py_None;
 }
 
-/** \ingroup python
+/**
  */
 typedef struct FDlist_t FDlist;
 
-/** \ingroup python
+/**
  */
 struct FDlist_t {
     FILE *f;
@@ -2194,15 +2194,15 @@ struct FDlist_t {
     FDlist *next;
 } ;
 
-/** \ingroup python
+/**
  */
 static FDlist *fdhead = NULL;
 
-/** \ingroup python
+/**
  */
 static FDlist *fdtail = NULL;
 
-/** \ingroup python
+/**
  */
 static int closeCallback(FILE * f) {
     FDlist *node, *last;
@@ -2233,7 +2233,7 @@ static int closeCallback(FILE * f) {
     return 0; 
 }
 
-/** \ingroup python
+/**
  */
 static PyObject * doFopen(PyObject * self, PyObject * args) {
     char * path, * mode;
@@ -2283,7 +2283,7 @@ static PyObject * doFopen(PyObject * self, PyObject * args) {
     return PyFile_FromFile (node->f, path, mode, closeCallback);
 }
 
-/** \ingroup python
+/**
  */
 static PyMethodDef rpmModuleMethods[] = {
     { "TransactionSet", (PyCFunction) rpmtransCreate, METH_VARARGS, NULL },
@@ -2309,7 +2309,7 @@ static PyMethodDef rpmModuleMethods[] = {
     { NULL }
 } ;
 
-/** \ingroup python
+/**
  */
 void initrpm(void) {
     PyObject * m, * d, *o, * tag = NULL, * dict;

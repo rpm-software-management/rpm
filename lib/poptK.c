@@ -10,7 +10,7 @@
 #include "debug.h"
 
 struct rpmSignArguments_s rpmKArgs =
-	{ RESIGN_CHK_SIGNATURE, CHECKSIG_ALL, 0, NULL };
+	{ RESIGN_NONE, CHECKSIG_ALL, 0, NULL };
 
 #define	POPT_ADDSIGN		1005
 #define	POPT_RESIGN		1006

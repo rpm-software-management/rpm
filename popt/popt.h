@@ -126,6 +126,7 @@ struct poptOption {
 };
 
 /** \ingroup popt
+ * A popt alias argument for poptAddAlias().
  */
 struct poptAlias {
 /*@owned@*/ /*@null@*/ const char * longName;	/*!< may be NULL */
@@ -135,12 +136,33 @@ struct poptAlias {
 };
 
 /** \ingroup popt
+ * A popt alias or exec argument for poptAddItem().
+ */
+typedef struct poptItem_s {
+    struct poptOption option;	/*!< alias/exec name(s) and description. */
+    int argc;			/*!< (alias) no. of args. */
+/*@owned@*/ const char ** argv;	/*!< (alias) args, must be free()able. */
+} * poptItem;
+
+/** \ingroup popt
  * \name Auto-generated help/usage
  */
 /*@{*/
+
+/**
+ * Empty table marker to enable displaying popt alias/exec options.
+ */
+extern struct poptOption poptAliasOptions[];
+#define POPT_AUTOALIAS { NULL, '\0', POPT_ARG_INCLUDE_TABLE, poptAliasOptions, \
+			0, "Options implemented via popt alias/exec:", NULL },
+
+/**
+ * Auto help table options.
+ */
 extern struct poptOption poptHelpOptions[];
 #define POPT_AUTOHELP { NULL, '\0', POPT_ARG_INCLUDE_TABLE, poptHelpOptions, \
 			0, "Help options:", NULL },
+
 #define POPT_TABLEEND { NULL, '\0', 0, 0, 0, NULL, NULL }
 /*@}*/
 
@@ -268,12 +290,24 @@ int poptStuffArgs(poptContext con, /*@keep@*/ const char ** argv)
 /** \ingroup popt
  * Add alias to context.
  * @todo Pass alias by reference, not value.
+ * @deprecated Use poptAddItem instead.
  * @param con		context
  * @param alias		alias to add
  * @param flags		(unused)
- * @return		0 always
+ * @return		0 on success
  */
+/*@unused@*/
 int poptAddAlias(poptContext con, struct poptAlias alias, int flags)
+	/*@modifies con @*/;
+
+/** \ingroup popt
+ * Add alias/exec item to context.
+ * @param con		context
+ * @param item		alias/exec item to add
+ * @param flags		0 for alias, 1 for exec
+ * @return		0 on success
+ */
+int poptAddItem(poptContext con, poptItem newItem, int flags)
 	/*@modifies con @*/;
 
 /** \ingroup popt

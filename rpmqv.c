@@ -105,10 +105,10 @@ static struct poptOption rpmAllPoptTable[] = {
 	N_("provide less detailed output"), NULL},
  { "verbose", 'v', 0, 0, 'v',
 	N_("provide more detailed output"), NULL},
- { "define", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, GETOPT_DEFINEMACRO,
+ { "define", '\0', POPT_ARG_STRING, 0, GETOPT_DEFINEMACRO,
 	N_("define macro <name> with value <body>"),
 	N_("'<name> <body>'") },
- { "eval", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, GETOPT_EVALMACRO,
+ { "eval", '\0', POPT_ARG_STRING, 0, GETOPT_EVALMACRO,
 	N_("print macro expansion of <expr>+"),
 	N_("<expr>+") },
  { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &pipeOutput, 0,
@@ -195,6 +195,7 @@ static struct poptOption optionsTable[] = {
 	N_("Common options for all rpm modes:"),
 	NULL },
 
+   POPT_AUTOALIAS
    POPT_AUTOHELP
    POPT_TABLEEND
 };
@@ -417,7 +418,7 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMK
     memset(ka, 0, sizeof(*ka));
-    ka->addSign = RESIGN_CHK_SIGNATURE;
+    ka->addSign = RESIGN_NONE;
     ka->checksigFlags = CHECKSIG_ALL;
 #endif
 
@@ -584,6 +585,8 @@ int main(int argc, const char ** argv)
 
 #ifdef	IAM_RPMK
 	switch (ka->addSign) {
+	case RESIGN_NONE:
+	    break;
 	case RESIGN_CHK_SIGNATURE:
 	    bigMode = MODE_CHECKSIG;
 	    break;
@@ -591,6 +594,7 @@ int main(int argc, const char ** argv)
 	case RESIGN_NEW_SIGNATURE:
 	    bigMode = MODE_RESIGN;
 	    break;
+
 	}
 #endif	/* IAM_RPMK */
 

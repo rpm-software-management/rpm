@@ -6,24 +6,25 @@
 # whenever a new version of RPM is installed.
 
 rpm	alias --scripts --qf '\
-%|PREIN?{preinstall script\
+%|PREIN?{preinstall scriptlet\
 %|PREINPROG?{ (through %{PREINPROG})}|:\n%{PREIN}\n}:\
 {%|PREINPROG?{preinstall program: %{PREINPROG}\n}|}|\
 \
-%|POSTIN?{postinstall script\
+%|POSTIN?{postinstall scriptlet\
 %|POSTINPROG?{ (through %{POSTINPROG})}|:\n%{POSTIN}\n}:\
 {%|POSTINPROG?{postinstall program: %{POSTINPROG}\n}|}|\
 \
-%|PREUN?{preuninstall script\
+%|PREUN?{preuninstall scriptlet\
 %|PREUNPROG?{ (through %{PREUNPROG})}|:\n%{PREUN}\n}:\
 {%|PREUNPROG?{preuninstall program: %{PREUNPROG}\n}|}|\
 \
-%|POSTUN?{postuninstall script\
+%|POSTUN?{postuninstall scriptlet\
 %|POSTUNPROG?{ (through %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
 {%|POSTUNPROG?{postuninstall program: %{POSTUNPROG}\n}|}|\
 \
-%|VERIFYSCRIPT?{verify script:\n%{VERIFYSCRIPT}\n}|\
-'
+%|VERIFYSCRIPT?{verify scriptlet:\n%{VERIFYSCRIPT}\n}|\
+' \
+	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
 rpm	alias --setperms -q --qf '[\[ -L %{FILENAMES:shescape} \] || chmod %7.7{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
 		   --pipe "grep -v \(none\) | sed 's/chmod .../chmod /' | sh"
@@ -34,17 +35,18 @@ rpm	alias --setugids -q --qf \
 
 
 rpm	alias --conflicts	--qf \
-  "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]"
+  "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]" \
+	--POPTdesc=$"list capabilities this package conflicts with"
 rpm	alias --obsoletes	--qf \
-  "[%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]"
+  "[%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]" \
+	--POPTdesc=$"list other packages removed by installing this package"
 rpm	alias --provides	--qf \
-  "[%{PROVIDENAME} %|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}}:{}|\n]"
-
-# XXX prereq output is part of requires for query
-#rpm alias --prereq	--qf '[%{PREREQ}:depflags\n]'
+  "[%{PROVIDENAME} %|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}}:{}|\n]" \
+	--POPTdesc=$"list capabilities that this package provides"
 
 rpm	alias --requires	--qf \
-  "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]"
+  "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" \
+	--POPTdesc=$"list capabilities required by package(s)"
 rpm	alias -R --requires
 
 rpm	alias --info --qf 'Name        : %-27{NAME}  Relocations: %|PREFIXES?{[%{PREFIXES} ]}:{(not relocateable)}|\n\
@@ -56,19 +58,24 @@ Size        : %-27{SIZE}%|LICENSE?{      License: %{LICENSE}}|\n\
 %|PACKAGER?{Packager    : %{PACKAGER}\n}|\
 %|URL?{URL         : %{URL}\n}|\
 Summary     : %{SUMMARY}\n\
-Description :\n%{DESCRIPTION}\n'
+Description :\n%{DESCRIPTION}\n' \
+	--POPTdesc=$"list descriptive information from package(s)"
 
-rpm	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n\n%{CHANGELOGTEXT}\n\n]'
+rpm	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n\n%{CHANGELOGTEXT}\n\n]' \
+	--POPTdesc=$"list change logs for this package"
 
 rpm	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} script (through %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
 %{TRIGGERSCRIPTS}\n]'
-rpm	alias --triggers --triggerscripts
+rpm	alias --triggers --triggerscripts \
+	--POPTdesc=$"list trigger scriptlets from package(s)"
 
 rpm	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VERSION}-%{RELEASE} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
-	--pipe "sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-45s %-s\n\", $1, substr($0,length($1)+2))}' "
+	--pipe "sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-45s %-s\n\", $1, substr($0,length($1)+2))}' " \
+	--POPTdesc=$"list package(s) by install time, most recent first"
 
-rpm	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]'
+rpm	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
+	--POPTdesc=$"list all files from each package"
 
 rpm alias --redhatprovides -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatprovides
 rpm alias --redhatrequires -q --define '_dbpath /usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat' --whatrequires
@@ -160,7 +167,9 @@ rpm	exec --verify		rpmv --verify
 rpm	alias --with		--define "_with_!#:+       --with-!#:+"
 rpm	alias --without		--define "_without_!#:+    --without-!#:+"
 #==============================================================================
-rpmb	alias --dbpath		--define '_dbpath !#:+'
+rpmb	alias --dbpath		--define '_dbpath !#:+' \
+	--POPTdesc=$"use <dir> as the directory for the database" \
+	--POPTargs=$"<dir>"
 rpmb	alias --ftpport		--define '_ftpport !#:+'
 rpmb	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpmb	alias --httpport	--define '_httpport !#:+'
@@ -169,7 +178,9 @@ rpmb	alias --timecheck	--define '_timecheck !#:+'
 rpmb	alias --with		--define "_with_!#:+       --with-!#:+"
 rpmb	alias --without		--define "_without_!#:+    --without-!#:+"
 #==============================================================================
-rpmbuild	alias --dbpath		--define '_dbpath !#:+'
+rpmbuild	alias --dbpath		--define '_dbpath !#:+' \
+	--POPTdesc=$"use <dir> as the directory for the database" \
+	--POPTargs=$"<dir>"
 rpmbuild	alias --ftpport		--define '_ftpport !#:+'
 rpmbuild	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpmbuild	alias --httpport	--define '_httpport !#:+'
@@ -178,61 +189,74 @@ rpmbuild	alias --timecheck	--define '_timecheck !#:+'
 rpmbuild	alias --with		--define "_with_!#:+     --with-!#:+"
 rpmbuild	alias --without		--define "_without_!#:+  --without-!#:+"
 #==============================================================================
-rpmd	alias --dbpath		--define '_dbpath !#:+'
+rpmd	alias --dbpath		--define '_dbpath !#:+' \
+	--POPTdesc=$"use <dir> as the directory for the database" \
+	--POPTargs=$"<dir>"
 rpmd	alias --ftpport		--define '_ftpport !#:+'
 rpmd	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpmd	alias --httpport	--define '_httpport !#:+'
 rpmd	alias --httpproxy	--define '_httpproxy !#:+'
 #==============================================================================
-rpmdb	alias --dbpath		--define '_dbpath !#:+'
+rpmdb	alias --dbpath		--define '_dbpath !#:+' \
+	--POPTdesc=$"use <dir> as the directory for the database" \
+	--POPTargs=$"<dir>"
 rpmdb	alias --ftpport		--define '_ftpport !#:+'
 rpmdb	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpmdb	alias --httpport	--define '_httpport !#:+'
 rpmdb	alias --httpproxy	--define '_httpproxy !#:+'
 #==============================================================================
-rpme	alias --dbpath		--define '_dbpath !#:+'
+rpme	alias --dbpath		--define '_dbpath !#:+' \
+	--POPTdesc=$"use <dir> as the directory for the database" \
+	--POPTargs=$"<dir>"
 rpme	alias --ftpport		--define '_ftpport !#:+'
 rpme	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpme	alias --httpport	--define '_httpport !#:+'
 rpme	alias --httpproxy	--define '_httpproxy !#:+'
 #==============================================================================
-rpmi	alias --dbpath		--define '_dbpath !#:+'
+rpmi	alias --dbpath		--define '_dbpath !#:+' \
+	--POPTdesc=$"use <dir> as the directory for the database" \
+	--POPTargs=$"<dir>"
 rpmi	alias --ftpport		--define '_ftpport !#:+'
 rpmi	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpmi	alias --httpport	--define '_httpport !#:+'
 rpmi	alias --httpproxy	--define '_httpproxy !#:+'
 #==============================================================================
-rpmk	alias --dbpath		--define '_dbpath !#:+'
+rpmk	alias --dbpath		--define '_dbpath !#:+' \
+	--POPTdesc=$"use <dir> as the directory for the database" \
+	--POPTargs=$"<dir>"
 rpmk	alias --ftpport		--define '_ftpport !#:+'
 rpmk	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpmk	alias --httpport	--define '_httpport !#:+'
 rpmk	alias --httpproxy	--define '_httpproxy !#:+'
 #==============================================================================
-rpmq	alias --dbpath		--define '_dbpath !#:+'
+rpmq	alias --dbpath		--define '_dbpath !#:+' \
+	--POPTdesc=$"use <dir> as the directory for the database" \
+	--POPTargs=$"<dir>"
 rpmq	alias --ftpport		--define '_ftpport !#:+'
 rpmq	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpmq	alias --httpport	--define '_httpport !#:+'
 rpmq	alias --httpproxy	--define '_httpproxy !#:+'
 
 rpmq	alias --scripts --qf '\
-%|PREIN?{preinstall script\
+%|PREIN?{preinstall scriptlet\
 %|PREINPROG?{ (through %{PREINPROG})}|:\n%{PREIN}\n}:\
 {%|PREINPROG?{preinstall program: %{PREINPROG}\n}|}|\
 \
-%|POSTIN?{postinstall script\
+%|POSTIN?{postinstall scriptlet\
 %|POSTINPROG?{ (through %{POSTINPROG})}|:\n%{POSTIN}\n}:\
 {%|POSTINPROG?{postinstall program: %{POSTINPROG}\n}|}|\
 \
-%|PREUN?{preuninstall script\
+%|PREUN?{preuninstall scriptlet\
 %|PREUNPROG?{ (through %{PREUNPROG})}|:\n%{PREUN}\n}:\
 {%|PREUNPROG?{preuninstall program: %{PREUNPROG}\n}|}|\
 \
-%|POSTUN?{postuninstall script\
+%|POSTUN?{postuninstall scriptlet\
 %|POSTUNPROG?{ (through %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
 {%|POSTUNPROG?{postuninstall program: %{POSTUNPROG}\n}|}|\
 \
-%|VERIFYSCRIPT?{verify script:\n%{VERIFYSCRIPT}\n}|\
-'
+%|VERIFYSCRIPT?{verify scriptlet:\n%{VERIFYSCRIPT}\n}|\
+' \
+	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
 rpmq	alias --setperms -q --qf '[\[ -L %{FILENAMES:shescape} \] || chmod %7.7{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
 		   --pipe "grep -v \(none\) | sed 's/chmod .../chmod /' | sh"
@@ -242,17 +266,21 @@ rpmq	alias --setugids -q --qf \
         --pipe "(echo 'ch() { chown -- \"$1\" \"$3\";chgrp -- \"$2\" \"$3\"; }';grep -v \(none\))|sh"
 
 rpmq	alias --conflicts	--qf \
-  "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]"
+  "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]" \
+	--POPTdesc=$"list capabilities this package conflicts with"
 rpmq	alias --obsoletes	--qf \
-  "[%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]"
+  "[%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]" \
+	--POPTdesc=$"list other packages removed by installing this package"
 rpmq	alias --provides	--qf \
-  "[%{PROVIDENAME} %|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}}:{}|\n]"
+  "[%{PROVIDENAME} %|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}}:{}|\n]" \
+	--POPTdesc=$"list capabilities that this package provides"
 
 # XXX prereq output is part of requires for query
 #rpmq	alias --prereq	--qf '[%{PREREQ}:depflags\n]'
 
 rpmq	alias --requires	--qf \
-  "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]"
+  "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" \
+	--POPTdesc=$"list capabilities required by package(s)"
 rpmq	alias -R --requires
 
 rpmq	alias --info --qf 'Name        : %-27{NAME}  Relocations: %|PREFIXES?{[%{PREFIXES} ]}:{(not relocateable)}|\n\
@@ -264,27 +292,36 @@ Size        : %-27{SIZE}%|LICENSE?{      License: %{LICENSE}}|\n\
 %|PACKAGER?{Packager    : %{PACKAGER}\n}|\
 %|URL?{URL         : %{URL}\n}|\
 Summary     : %{SUMMARY}\n\
-Description :\n%{DESCRIPTION}\n'
+Description :\n%{DESCRIPTION}\n' \
+	--POPTdesc=$"list descriptive information from package(s)"
 
-rpmq	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n\n%{CHANGELOGTEXT}\n\n]'
+rpmq	alias --changelog --qf '[* %{CHANGELOGTIME:day} %{CHANGELOGNAME}\n\n%{CHANGELOGTEXT}\n\n]' \
+	--POPTdesc=$"list change logs for this package"
 
 rpmq	alias --triggerscripts --qf '\
 [trigger%{TRIGGERTYPE} script (through %{TRIGGERSCRIPTPROG}) -- %{TRIGGERCONDS}\n\
 %{TRIGGERSCRIPTS}\n]'
-rpmq	alias --triggers --triggerscripts
+rpmq	alias --triggers --triggerscripts \
+	--POPTdesc=$"list trigger scriptlets from package(s)"
 
 rpmq	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VERSION}-%{RELEASE} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
-	--pipe "sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-45s %-s\n\", $1, substr($0,length($1)+2))}' "
+	--pipe "sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-45s %-s\n\", $1, substr($0,length($1)+2))}' " \
+	--POPTdesc=$"list package(s) by install time, most recent first"
 
-rpmq	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]'
+rpmq	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
+	--POPTdesc=$"list all files from each package"
 #==============================================================================
-rpmu	alias --dbpath		--define '_dbpath !#:+'
+rpmu	alias --dbpath		--define '_dbpath !#:+' \
+	--POPTdesc=$"use <dir> as the directory for the database" \
+	--POPTargs=$"<dir>"
 rpmu	alias --ftpport		--define '_ftpport !#:+'
 rpmu	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpmu	alias --httpport	--define '_httpport !#:+'
 rpmu	alias --httpproxy	--define '_httpproxy !#:+'
 #==============================================================================
-rpmv	alias --dbpath		--define '_dbpath !#:+'
+rpmv	alias --dbpath		--define '_dbpath !#:+' \
+	--POPTdesc=$"use <dir> as the directory for the database" \
+	--POPTargs=$"<dir>"
 rpmv	alias --ftpport		--define '_ftpport !#:+'
 rpmv	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpmv	alias --httpport	--define '_httpport !#:+'

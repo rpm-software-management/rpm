@@ -45,14 +45,8 @@ struct optionStackEntry {
     int next;
 /*@only@*/ /*@null@*/ const char * nextArg;
 /*@keep@*/ /*@null@*/ const char * nextCharArg;
-/*@dependent@*/ /*@null@*/ struct poptAlias * currAlias;
+/*@dependent@*/ /*@null@*/ poptItem currAlias;
     int stuffed;
-};
-
-struct execEntry {
-/*@owned@*/ /*@null@*/ const char * longName;
-    char shortName;
-/*@only@*/ /*@null@*/ const char * script;
 };
 
 struct poptContext_s {
@@ -64,15 +58,15 @@ struct poptContext_s {
 /*@keep@*/ const struct poptOption * options;
     int restLeftover;
 /*@only@*/ /*@null@*/ const char * appName;
-/*@only@*/ /*@null@*/ struct poptAlias * aliases;
+/*@only@*/ /*@null@*/ poptItem aliases;
     int numAliases;
     int flags;
-/*@owned@*/ /*@null@*/ struct execEntry * execs;
+/*@owned@*/ /*@null@*/ poptItem execs;
     int numExecs;
 /*@only@*/ /*@null@*/ const char ** finalArgv;
     int finalArgvCount;
     int finalArgvAlloced;
-/*@dependent@*/ /*@null@*/ struct execEntry * doExec;
+/*@dependent@*/ /*@null@*/ poptItem doExec;
 /*@only@*/ const char * execPath;
     int execAbsolute;
 /*@only@*/ const char * otherHelp;

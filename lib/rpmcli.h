@@ -484,7 +484,8 @@ int rpmCheckSig(rpmCheckSigFlags flags, /*@null@*/ const char ** argv)
  * Bit(s) to control rpmReSign() operation.
  */
 typedef enum rpmResignFlags_e {
-    RESIGN_CHK_SIGNATURE = 0,	/*!< from --checksig */
+    RESIGN_NONE = 0,
+    RESIGN_CHK_SIGNATURE = 1,	/*!< from --checksig */
     RESIGN_NEW_SIGNATURE,	/*!< from --resign */
     RESIGN_ADD_SIGNATURE	/*!< from --addsign */
 } rpmResignFlags;

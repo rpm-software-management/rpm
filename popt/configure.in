@@ -72,8 +72,6 @@ then
 fi
 
 AC_CHECK_FUNCS(strerror mtrace)
-dnl AC_CHECK_FUNCS(gettext)
-dnl AC_CHECK_FUNCS(dgettext)
 AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])
 ])

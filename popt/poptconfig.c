@@ -9,61 +9,73 @@
 #include "system.h"
 #include "poptint.h"
 
-/*@-mustmod@*/	/* LCL: *line is modified @*/
+/*@-compmempass@*/	/* FIX: item->option.longName kept, not dependent. */
 static void configLine(poptContext con, char * line)
-	/*@modifies *line, con->execs, con->numExecs @*/
+	/*@modifies con @*/
 {
     int nameLength = strlen(con->appName);
-    const char * opt;
-    struct poptAlias alias;
     const char * entryType;
-    const char * longName = NULL;
-    char shortName = '\0';
+    const char * opt;
+    poptItem item = alloca(sizeof(*item));
+    int i, j;
     
+    memset(item, 0, sizeof(*item));
+
     if (strncmp(line, con->appName, nameLength)) return;
     line += nameLength;
     if (*line == '\0' || !isspace(*line)) return;
+
     while (*line != '\0' && isspace(*line)) line++;
     entryType = line;
-
     while (*line == '\0' || !isspace(*line)) line++;
     *line++ = '\0';
+
     while (*line != '\0' && isspace(*line)) line++;
     if (*line == '\0') return;
     opt = line;
+    if (opt[0] == '-' && opt[1] == '-')
+	item->option.longName = opt + 2;
+    else if (opt[0] == '-' && !opt[2])
+	item->option.shortName = opt[1];
 
     while (*line == '\0' || !isspace(*line)) line++;
     *line++ = '\0';
     while (*line != '\0' && isspace(*line)) line++;
     if (*line == '\0') return;
+    if (poptParseArgvString(line, &item->argc, &item->argv)) return;
 
-    if (opt[0] == '-' && opt[1] == '-')
-	longName = opt + 2;
-    else if (opt[0] == '-' && !opt[2])
-	shortName = opt[1];
-
-    if (!strcmp(entryType, "alias")) {
-	if (poptParseArgvString(line, &alias.argc, &alias.argv)) return;
-	alias.longName = longName, alias.shortName = shortName;
-	(void) poptAddAlias(con, alias, 0);
-    } else if (!strcmp(entryType, "exec")) {
-	con->execs = realloc(con->execs,
-				sizeof(*con->execs) * (con->numExecs + 1));
-	if (con->execs == NULL) return;	/* XXX can't happen */
-	if (longName)
-	    con->execs[con->numExecs].longName = xstrdup(longName);
-	else
-	    con->execs[con->numExecs].longName = NULL;
-
-	con->execs[con->numExecs].shortName = shortName;
-	con->execs[con->numExecs].script = xstrdup(line);
-	
-	/*@-noeffect@*/		/* LCL: broken? */
-	con->numExecs++;
-	/*@=noeffect@*/
+    /*@-modobserver@*/
+    item->option.argInfo = POPT_ARGFLAG_DOC_HIDDEN;
+    for (i = 0, j = 0; i < item->argc; i++, j++) {
+	const char * f;
+	if (!strncmp(item->argv[i], "--POPTdesc=", sizeof("--POPTdesc=")-1)) {
+	    f = item->argv[i] + sizeof("--POPTdesc=");
+	    if (f[0] == '$' && f[1] == '"') f++;
+	    item->option.descrip = f;
+	    item->option.argInfo &= ~POPT_ARGFLAG_DOC_HIDDEN;
+	    j--;
+	} else
+	if (!strncmp(item->argv[i], "--POPTargs=", sizeof("--POPTargs=")-1)) {
+	    f = item->argv[i] + sizeof("--POPTargs=");
+	    if (f[0] == '$' && f[1] == '"') f++;
+	    item->option.argDescrip = f;
+	    item->option.argInfo &= ~POPT_ARGFLAG_DOC_HIDDEN;
+	    item->option.argInfo |= POPT_ARG_STRING;
+	    j--;
+	} else
+	if (j != i)
+	    item->argv[j] = item->argv[i];
     }
+    if (j != i)
+	item->argv[j] = NULL;
+    /*@=modobserver@*/
+	
+    if (!strcmp(entryType, "alias"))
+	(void) poptAddItem(con, item, 0);
+    else if (!strcmp(entryType, "exec"))
+	(void) poptAddItem(con, item, 1);
 }
-/*@=mustmod@*/
+/*@=compmempass@*/
 
 int poptReadConfigFile(poptContext con, const char * fn)
 {

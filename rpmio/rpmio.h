@@ -49,58 +49,58 @@ extern "C" {
  */
 /*@{*/
 
-/** \ingroup rpmio
+/**
  */
 typedef ssize_t fdio_read_function_t (void *cookie, char *buf, size_t nbytes);
 
-/** \ingroup rpmio
+/**
  */
 typedef ssize_t fdio_write_function_t (void *cookie, const char *buf, size_t nbytes);
 
-/** \ingroup rpmio
+/**
  */
 typedef int fdio_seek_function_t (void *cookie, _libio_pos_t pos, int whence);
 
-/** \ingroup rpmio
+/**
  */
 typedef int fdio_close_function_t (void *cookie);
 
 
-/** \ingroup rpmio
+/**
  */
 typedef /*@only@*/ /*@null@*/ FD_t fdio_ref_function_t ( /*@only@*/ void * cookie,
 		const char * msg, const char * file, unsigned line);
 
-/** \ingroup rpmio
+/**
  */
 typedef /*@only@*/ /*@null@*/ FD_t fdio_deref_function_t ( /*@only@*/ FD_t fd,
 		const char * msg, const char * file, unsigned line);
 
 
-/** \ingroup rpmio
+/**
  */
 typedef /*@only@*/ /*@null@*/ FD_t fdio_new_function_t (const char * msg,
 		const char * file, unsigned line);
 
 
-/** \ingroup rpmio
+/**
  */
 typedef int fdio_fileno_function_t (void * cookie);
 
 
-/** \ingroup rpmio
+/**
  */
 typedef FD_t fdio_open_function_t (const char * path, int flags, mode_t mode);
 
-/** \ingroup rpmio
+/**
  */
 typedef FD_t fdio_fopen_function_t (const char * path, const char * fmode);
 
-/** \ingroup rpmio
+/**
  */
 typedef void * fdio_ffileno_function_t (FD_t fd);
 
-/** \ingroup rpmio
+/**
  */
 typedef int fdio_fflush_function_t (FD_t fd);
 /*@}*/
@@ -154,7 +154,7 @@ struct FDIO_s {
  */
 /*@{*/
 
-/** \ingroup rpmio
+/**
  * strerror(3) clone.
  */
 /*@-redecl@*/
@@ -162,36 +162,36 @@ struct FDIO_s {
 	/*@*/;
 /*@=redecl@*/
 
-/** \ingroup rpmio
+/**
  * fread(3) clone.
  */
 size_t Fread(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd)
 	/*@modifies fd, *buf, fileSystem @*/;
 
-/** \ingroup rpmio
+/**
  * fwrite(3) clone.
  */
 size_t Fwrite(const void * buf, size_t size, size_t nmemb, FD_t fd)
 	/*@modifies fd, fileSystem @*/;
 
-/** \ingroup rpmio
+/**
  * fseek(3) clone.
  */
 int Fseek(FD_t fd, _libio_off_t offset, int whence)
 	/*@modifies fileSystem @*/;
 
-/** \ingroup rpmio
+/**
  * fclose(3) clone.
  */
 int Fclose( /*@killref@*/ FD_t fd)
 	/*@modifies fd, fileSystem @*/;
 
-/** \ingroup rpmio
+/**
  */
 /*@null@*/ FD_t	Fdopen(FD_t fd, const char * fmode)
 	/*@modifies fd, fileSystem @*/;
 
-/** \ingroup rpmio
+/**
  * fopen(3) clone.
  */
 /*@null@*/ FD_t	Fopen(/*@null@*/ const char * path,
@@ -199,37 +199,37 @@ int Fclose( /*@killref@*/ FD_t fd)
 	/*@modifies fileSystem @*/;
 
 
-/** \ingroup rpmio
+/**
  * fflush(3) clone.
  */
 int Fflush(/*@null@*/ FD_t fd)
 	/*@modifies fd, fileSystem @*/;
 
-/** \ingroup rpmio
+/**
  * ferror(3) clone.
  */
 int Ferror(/*@null@*/ FD_t fd)
 	/*@*/;
 
-/** \ingroup rpmio
+/**
  * fileno(3) clone.
  */
 int Fileno(FD_t fd)
 	/*@*/;
 
-/** \ingroup rpmio
+/**
  * fcntl(2) clone.
  */
 int Fcntl(FD_t fd, int op, void *lip)
 	/*@modifies fd, *lip, fileSystem @*/;
 
-/** \ingroup rpmio
+/**
  * pread(2) clone.
  */
 ssize_t Pread(FD_t fd, void * buf, size_t count, _libio_off_t offset)
 	/*@modifies fd, *buf, fileSystem @*/;
 
-/** \ingroup rpmio
+/**
  * pwrite(2) clone.
  */
 ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _libio_off_t offset)
@@ -242,68 +242,68 @@ ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _libio_off_t offset)
  */
 /*@{*/
 
-/** \ingroup rpmrpc
+/**
  * mkdir(2) clone.
  */
 int Mkdir(const char * path, mode_t mode)
 	/*@modifies fileSystem @*/;
 
-/** \ingroup rpmrpc
+/**
  * chdir(2) clone.
  */
 int Chdir(const char * path)
 	/*@modifies fileSystem @*/;
 
-/** \ingroup rpmrpc
+/**
  * rmdir(2) clone.
  */
 int Rmdir(const char * path)
 	/*@modifies fileSystem @*/;
 
-/** \ingroup rpmrpc
+/**
  * rename(2) clone.
  */
 int Rename(const char * oldpath, const char * newpath)
 	/*@modifies fileSystem @*/;
 
-/** \ingroup rpmrpc
+/**
  * link(2) clone.
  */
 int Link(const char * oldpath, const char * newpath)
 	/*@modifies fileSystem @*/;
 
-/** \ingroup rpmrpc
+/**
  * unlink(2) clone.
  */
 int Unlink(const char * path)
 	/*@modifies fileSystem @*/;
 
-/** \ingroup rpmrpc
+/**
  * readlink(2) clone.
  */
 int Readlink(const char * path, char * buf, size_t bufsiz)
 	/*@modifies *buf, fileSystem @*/;
 
-/** \ingroup rpmrpc
+/**
  * stat(2) clone.
  */
 int Stat(const char * path, /*@out@*/ struct stat * st)
 	/*@modifies *st, fileSystem @*/;
 
-/** \ingroup rpmrpc
+/**
  * lstat(2) clone.
  */
 int Lstat(const char * path, /*@out@*/ struct stat * st)
 	/*@modifies *st, fileSystem @*/;
 
-/** \ingroup rpmrpc
+/**
  * access(2) clone.
  */
 int Access(const char * path, int amode)
 	/*@modifies fileSystem @*/;
 
 
-/** \ingroup rpmrpc
+/**
  * glob(3) clone.
  */
 int Glob(const char * pattern, int flags,
@@ -311,26 +311,26 @@ int Glob(const char * pattern, int flags,
 		/*@out@*/ glob_t * pglob)
 	/*@modifies *pglob, fileSystem @*/;
 
-/** \ingroup rpmrpc
+/**
  * globfree(3) clone.
  */
 void Globfree( /*@only@*/ glob_t * pglob)
 	/*@modifies *pglob, fileSystem @*/;
 
 
-/** \ingroup rpmrpc
+/**
  * opendir(3) clone.
  */
 /*@null@*/ DIR * Opendir(const char * name)
 	/*@modifies fileSystem @*/;
 
-/** \ingroup rpmrpc
+/**
  * readdir(3) clone.
  */
 /*@null@*/ struct dirent * Readdir(DIR * dir)
 	/*@modifies *dir, fileSystem @*/;
 
-/** \ingroup rpmrpc
+/**
  * closedir(3) clone.
  */
 int	Closedir(/*@only@*/ DIR * dir)
