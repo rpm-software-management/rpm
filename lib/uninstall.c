@@ -242,7 +242,7 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 
     rpmMessage(RPMMESS_DEBUG, "running preuninstall script (if any)\n");
 
-    if (runScript(prefix, h, RPMTAG_PREUN, scriptArg, 
+    if (runScript(prefix, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg, 
 		 flags & RPMUNINSTALL_NOSCRIPTS)) {
 	headerFree(h);
 	return 1;
@@ -301,7 +301,8 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     }
 
     rpmMessage(RPMMESS_DEBUG, "running postuninstall script (if any)\n");
-    runScript(prefix, h, RPMTAG_POSTUN, scriptArg, flags & RPMUNINSTALL_NOSCRIPTS);
+    runScript(prefix, h, RPMTAG_POSTUN, RPMTAG_POSTUNPROG, scriptArg, 
+		flags & RPMUNINSTALL_NOSCRIPTS);
 
     headerFree(h);
 
@@ -312,73 +313,131 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     return 0;
 }
 
-int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
-    int count, type;
+int runScript(char * prefix, Header h, int scriptTag, int progTag,
+	      int arg, int norunScripts) {
     char * script;
     char * fn;
-    int fd;
+    int fd = -1;
     int isdebug = rpmIsDebug();
     int child;
     int status;
+    int ran;
+    struct stat sb;
     char upgradeArg[20];
     char * installPrefix = NULL;
     char * installPrefixEnv = NULL;
+    char * argv[10];
+    char ** argvPtr = argv;
+    char * program;
+    int pipes[2];
 
     sprintf(upgradeArg, "%d", arg);
 
     if (norunScripts) return 0;
 
-    if (headerGetEntry(h, tag, &type, (void **) &script, &count)) {
-	if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, &type, (void **) &installPrefix,
-	    	     &count)) {
-	    installPrefixEnv = alloca(strlen(installPrefix) + 30);
-	    strcpy(installPrefixEnv, "RPM_INSTALL_PREFIX=");
-	    strcat(installPrefixEnv, installPrefix);
+    /* headerGetEntry() sets the data pointer to NULL if the entry doesn
+       not exist */
+    headerGetEntry(h, progTag, NULL, (void **) &program, NULL);
+    headerGetEntry(h, scriptTag, NULL, (void **) &script, NULL);
+
+    if (!program && !script)
+	return 0;
+    else if (!program)
+	program = "/bin/sh";
+
+    if (headerGetEntry(h, RPMTAG_INSTALLPREFIX, NULL, (void **) &installPrefix,
+	    	       NULL)) {
+	installPrefixEnv = alloca(strlen(installPrefix) + 30);
+	strcpy(installPrefixEnv, "RPM_INSTALL_PREFIX=");
+	strcat(installPrefixEnv, installPrefix);
+    }
+
+    rpmMessage(RPMMESS_DEBUG, "running inst helper %s\n", program);
+
+    if (script) {
+	if (prefix) {
+	    fn = alloca(strlen(prefix) + 15);
+	    strcpy(fn, prefix);
+	    strcat(fn, "/");
+	} else {
+	    fn = alloca(15);
+	    *fn = '\0';
 	}
 
-	fn = tmpnam(NULL);
+	srandom(time(NULL));
+	strcat(fn, "/tmp/rpm123456");
+	ran = random() % 100000;
+	do {
+	    fn[strlen(fn) - 6] = '\0';
+	    sprintf(upgradeArg, "%06d", ran++);
+	    strcat(fn, upgradeArg);
+	} while (!access(fn, X_OK));
+	
 	rpmMessage(RPMMESS_DEBUG, "script found - running from file %s\n", fn);
-	fd = open(fn, O_CREAT | O_RDWR);
-	if (!isdebug) unlink(fn);
+	fd = open(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
+
 	if (fd < 0) {
 	    rpmError(RPMERR_SCRIPT, 
-			_("error creating file for (un)install script"));
+			_("error creating file %s for (un)install script"), fn);
 	    return 1;
 	}
+
+	if (!stat(fn, &sb) && S_ISLNK(sb.st_mode)) {
+	    rpmError(RPMERR_SCRIPT, 
+			_("error creating file %s for (un)install script"), fn);
+	    return 1;
+	}
+
+	write(fd, "#!", 2);
+	write(fd, program, strlen(program));
+
+
+	write(fd, "\n", 1);
+
+	if (isdebug && !strcmp(program, "/bin/sh")) 
+	    write(fd, "set -xs\n", 8);
+
 	write(fd, SCRIPT_PATH, strlen(SCRIPT_PATH));
 	write(fd, script, strlen(script));
-	
-	/* run the script via /bin/sh - just feed the commands to the
-	   shell as stdin */
-	if (!(child = fork())) {
-	    if (installPrefixEnv) {
-		doputenv(installPrefixEnv);
-	    }
-
-	    lseek(fd, 0, SEEK_SET);
-	    close(0);
-	    dup2(fd, 0);
-	    close(fd);
-
-	    if (strcmp(prefix, "/")) {
-		rpmMessage(RPMMESS_DEBUG, "performing chroot(%s)\n", prefix);
-		chroot(prefix);
-		chdir("/");
-	    }
-
-	    if (isdebug)
-		execl("/bin/sh", "/bin/sh", "-xs", upgradeArg, NULL);
-	    else
-		execl("/bin/sh", "/bin/sh", "-s", upgradeArg, NULL);
-	    _exit(-1);
-	}
 	close(fd);
-	waitpid(child, &status, 0);
 
-	if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	    rpmError(RPMERR_SCRIPT, _("execution of script failed"));
-	    return 1;
+	program = fn + strlen(prefix);
+    }
+
+    *argvPtr++ = program;
+    if (script) {
+	*argvPtr++ = upgradeArg;
+    }
+    *argvPtr++ = NULL;
+	
+    if (!(child = fork())) {
+	if (installPrefixEnv) {
+	    doputenv(installPrefixEnv);
 	}
+
+	/* make stdin inaccessible */
+	pipe(pipes);
+	close(pipes[1]);
+
+	dup2(pipes[0], 0);
+
+	if (strcmp(prefix, "/")) {
+	    rpmMessage(RPMMESS_DEBUG, "performing chroot(%s)\n", prefix);
+	    chroot(prefix);
+	    chdir("/");
+	}
+
+	execv(argv[0], argv);
+	_exit(-1);
+    }
+
+    waitpid(child, &status, 0);
+
+    if (script && !isdebug) unlink(fn);
+
+    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+	rpmError(RPMERR_SCRIPT, _("execution of script failed"));
+	return 1;
     }
 
     return 0;
