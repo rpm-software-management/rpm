@@ -137,13 +137,10 @@ void build(char * arg, int buildAmount) {
     Spec s;
     char * specfile;
     
-    setVerbosity(MESS_VERBOSE);
-
     if (arg[0] == '/') {
 	specfile = arg;
     } else {
 	/* XXX this is broken if PWD is near 1024 */
-
 	specfile = alloca(1024);
 	getcwd(specfile, 1024);
 	strcat(specfile, "/");
@@ -425,7 +422,10 @@ int main(int argc, char ** argv) {
 	exit(0);
 
       case MODE_REBUILD:
-	if (optind == argc) 
+        if (getVerbosity() == MESS_NORMAL)
+	    setVerbosity(MESS_VERBOSE);
+
+        if (optind == argc) 
 	    argerror("no packages files given for rebuild");
 
 	while (optind < argc) {
@@ -440,6 +440,9 @@ int main(int argc, char ** argv) {
 	break;
 
       case MODE_BUILD:
+        if (getVerbosity() == MESS_NORMAL)
+	    setVerbosity(MESS_VERBOSE);
+       
 	if (clean)
 	    buildAmount |= RPMBUILD_SWEEP;
 
