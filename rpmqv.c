@@ -312,7 +312,7 @@ static void printUsage(void) {
     puts(_("                        file1.rpm ... fileN.rpm"));
     fprintf(fp, _("       %s {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]\n"), __progname);
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
-    puts(_("                        [--justdb] [--notriggers] rpackage1 ... packageN"));
+    puts(_("                        [--justdb] [--notriggers] package1 ... packageN"));
 #endif	/* IAM_RPMEIU */
 
 #ifdef	IAM_RPMQV

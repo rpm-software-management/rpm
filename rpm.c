@@ -237,7 +237,7 @@ static void printUsage(void) {
     puts(_("       rpm {--freshen -F} file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] [--allmatches]"));
-    puts(_("                        [--justdb] [--notriggers] rpackage1 ... packageN"));
+    puts(_("                        [--justdb] [--notriggers] package1 ... packageN"));
     puts(_("       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
     puts(_("                        [--sign] [--nobuild] [--timecheck <s>] ]"));
     puts(_("                        [--target=platform1[,platform2...]]"));
