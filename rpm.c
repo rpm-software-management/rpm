@@ -219,9 +219,11 @@ int main(int argc, char ** argv) {
     int oldPackage = 0;
     int clean = 0;
     int signIt = 0;
+    int shortCircuit = 0;
     int badOption = 0;
     int excldocs = 0;
     int incldocs = 0;
+    char buildChar = ' ';
     char * prefix = "/";
     char * specFile;
     char *passPhrase = "";
@@ -255,6 +257,7 @@ int main(int argc, char ** argv) {
 	    { "replacepkgs", 0, &replacePackages, 0 },
 	    { "resign", 0, 0, 0 },
 	    { "root", 1, 0, 'r' },
+	    { "short-circuit", 0, &shortCircuit, 0 },
 	    { "sign", 0, &signIt, 0 },
 	    { "state", 0, 0, 's' },
 	    { "stdin-files", 0, 0, 'F' },
@@ -347,23 +350,18 @@ int main(int argc, char ** argv) {
 		argerror(_("--build (-b) requires one of a,b,i,c,p,l as "
 			 "its sole argument"));
 
-	    switch (optarg[0]) {
-	      /* these fallthroughs are intentional */
+	    buildChar = optarg[0];
+	    switch (buildChar) {
 	      case 'a':
-		buildAmount |= RPMBUILD_SOURCE;
 	      case 'b':
-		buildAmount |= RPMBUILD_BINARY;
 	      case 'i':
-		buildAmount |= RPMBUILD_INSTALL;
 	      case 'c':
-		buildAmount |= RPMBUILD_BUILD;
 	      case 'p':
-		buildAmount |= RPMBUILD_PREP;
-		break;
-
 	      case 'l':
-		buildAmount |= RPMBUILD_LIST;
 		break;
+	      default:
+		argerror(_("--build (-b) requires one of a,b,i,c,p,l as "
+			 "its sole argument"));
 	    }
 
 	    break;
@@ -478,7 +476,7 @@ int main(int argc, char ** argv) {
 	    break;
 
 	  default:
-	    if (options[long_index].flag) 
+	    if (options[long_index].flag)
 		*options[long_index].flag = 1;
 	    else if (!strcmp(options[long_index].name, "rebuild")) {
 		if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
@@ -557,6 +555,13 @@ int main(int argc, char ** argv) {
     if (bigMode != MODE_BUILD && clean) 
 	argerror(_("--clean may only be used during package building"));
 
+    if (bigMode != MODE_BUILD && shortCircuit) 
+	argerror(_("--short-circuit may only be used during package building"));
+
+    if (shortCircuit && (buildChar != 'c') && (buildChar != 'i')) {
+	argerror(_("--short-circuit may only be used with -bc or -bi"));
+    }
+
     if (oldPackage && !(installFlags & INSTALL_UPGRADE))
 	argerror(_("--oldpackage may only be used during upgrades"));
 
@@ -626,6 +631,29 @@ int main(int argc, char ** argv) {
         if (getVerbosity() == MESS_NORMAL)
 	    setVerbosity(MESS_VERBOSE);
        
+	switch (buildChar) {
+	  /* these fallthroughs are intentional */
+	  case 'a':
+	    buildAmount |= RPMBUILD_SOURCE;
+	  case 'b':
+	    buildAmount |= RPMBUILD_BINARY;
+	  case 'i':
+	    buildAmount |= RPMBUILD_INSTALL;
+	    if ((buildChar == 'i') && shortCircuit)
+		break;
+	  case 'c':
+	    buildAmount |= RPMBUILD_BUILD;
+	    if ((buildChar == 'c') && shortCircuit)
+		break;
+	  case 'p':
+	    buildAmount |= RPMBUILD_PREP;
+	    break;
+	    
+	  case 'l':
+	    buildAmount |= RPMBUILD_LIST;
+	    break;
+	}
+
 	if (clean)
 	    buildAmount |= RPMBUILD_SWEEP;
 
