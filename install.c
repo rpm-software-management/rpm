@@ -48,7 +48,7 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
     if (installFlags & INSTALL_TEST) 
 	mode = O_RDONLY;
     else
-	mode = O_RDWR | O_EXCL;
+	mode = O_RDWR;
 
     if (interfaceFlags & RPMINSTALL_PERCENT)
 	fn = printPercent;
@@ -57,14 +57,10 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
     else
 	fn = NULL;
 	
-    if (!rpmdbOpen(prefix, &db, mode, 0644)) {
-	/* try opening it O_CREAT */
-	mode |= O_CREAT;
-	if (!rpmdbOpen(prefix, &db, mode, 0644)) {
-	    fprintf(stderr, "error: cannot open %s/var/lib/rpm/packages.rpm\n", 
-			prefix);
-	    exit(1);
-	}
+    if (!rpmdbOpen(prefix, &db, mode | O_CREAT, 0644)) {
+	fprintf(stderr, "error: cannot open %s/var/lib/rpm/packages.rpm\n", 
+		    prefix);
+	exit(1);
     }
 
     message(MESS_DEBUG, "installing %s\n", arg);
