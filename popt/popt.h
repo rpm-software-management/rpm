@@ -14,6 +14,8 @@
 					   set first in table; arg points 
 					   to callback, descrip points to 
 					   callback data to pass */
+#define POPT_ARG_MASK		0x0000FFFF
+#define POPT_ARGFLAG_MULTIPLE	0x80000000
 
 #define POPT_ERROR_NOARG	-10
 #define POPT_ERROR_BADOPT	-11
@@ -55,6 +57,7 @@ extern struct poptOption poptHelpOptions[];
 typedef struct poptContext_s * poptContext;
 typedef struct poptOption * poptOption;
 
+#define POPT_CB_USE_INCLUDE_DATA	((void *) -1)
 typedef void (*poptCallbackType)(poptContext con, 
 			         const struct poptOption * opt,
 				 const char * arg, void * data);
