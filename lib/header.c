@@ -431,7 +431,7 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 	*p = h->data + ntohl(index->offset);
 	break;
     case STRING_TYPE:
-	if (*c == 1) {
+	if (ntohl(index->count) == 1) {
 	    /* Special case -- just return a pointer to the string */
 	    *p = h->data + ntohl(index->offset);
 	} else {
