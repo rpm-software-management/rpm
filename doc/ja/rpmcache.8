@@ -25,98 +25,98 @@
 .\" Translated 14 March 2003 by
 .\"   System Design and Research Institute Co.,Ltd. <info@sdri.co.jp>
 .\"
-.\"WORD: RFE		�����׵�	(Request For Enhancement)
+.\"WORD: RFE		改善要求	(Request For Enhancement)
 .\"
 .TH "RPMCACHE" "8" "05 July 2002" "Red Hat, Inc." "Red Hat Linux"
-.SH ̾��
-rpmcache \- RPM �ѥå������Τإå�����򥭥�å��夹��
-.SH ��
+.SH 名前
+rpmcache \- RPM パッケージのへッダ情報をキャッシュする
+.SH 書式
 \fBrpmcache\fR [ \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR ]
-.SH ����
+.SH 説明
 .B rpmcache
-�ϥե�����ĥ꡼���⤭�ޤ��(��⡼�Ȥ�\fBFTP\fR���⤷��ʤ�)��
+はファイルツリーを歩きまわり(リモートの\fBFTP\fRかもしれない)、
 .BR glob (7)
-�μ���Ȥäƥѥ���ե��륿��󥰤���rpm �ѥå������Τإå����ɤ߹��ࡣ
-�ǿ���(���ʤ��Ʊ���ѥå�����̾�Τ�Τ��Ф���
-�ѥå������Υ��ݥå����С�����󡦥�꡼������Ӥ���
-���줬Ʊ���Ǥ���Хӥ�����դ�Ȥä���Ӥ���)�ѥå������Τإå�����
-¾�Τ�ΤȽ�ʣ���ʤ���С�rpm �ǡ����١����˥���å��夵��롣
-�����ʰ�¸�����ä���ѥå������ξ�����Ƥ��뤿��ˡ�rpm �ǡ����١�����
-����å�������Ѥ��뤳�Ȥ��Ǥ��롣
+の式を使ってパスをフィルタリングし、rpm パッケージのへッダを読み込む。
+最新の(すなわち同じパッケージ名のものに対し、
+パッケージのエポック・バージョン・リリースを比較し、
+それが同じであればビルド日付を使って比較した)パッケージのへッダーが
+他のものと重複しなければ、rpm データベースにキャッシュされる。
+不明な依存性を解消するパッケージの場所を提案するために、rpm データベースの
+キャッシュを利用することができる。
 .PP
 .B rpmcache
-��ͭ�Υ��ץ����Ϥʤ���
+固有のオプションはなく、
 .B rpm
-��Ϣ�Υġ���Ƕ��̤Υ��ץ��������Ǥ��롣
-�������ǲ�����������Ƥ��뤫�ˤĤ��Ƥϡ�
+関連のツールで共通のオプションだけである。
+現時点で何が実装されているかについては、
 .B rpmcache
-�λ�����ˡ�Υ�å�����(����: "rpmcache \-\-help")�򻲾ȤΤ��ȡ�
+の使用方法のメッセージ(訳注: "rpmcache \-\-help")を参照のこと。
 .PP
-�����оݤΥե�����ĥ꡼�ξ��� rpm �ޥ�����Ȥä����ꤵ��롣
-�ǽ�Ū�ʾ��ϡ���Ω���� 5 �Ĥ����Ǥ��礷����ΤǤ��롣
+検索対象のファイルツリーの場所は rpm マクロを使って設定される。
+最終的な場所は、独立した 5 つの要素を結合したものである。
 .B rpmcache
-�����ꤹ��Τ˻��Ѥ����ޥ���̾��ʲ��˼�����
-������ɽ�����Ʊ�����֤ǳ����Ǥ���礵��ơ�
-���������ե�����ĥ꡼�ξ�꤬��������롣
+を設定するのに使用されるマクロ名を以下に示す。
+下記の表示順と同じ順番で各要素が結合されて、
+検索されるファイルツリーの場所が生成される。
 .TP
 \fB%_bhpath\fR
-"path"��٥롣
-���������ե�����ĥ꡼�Υѥ�(�ޤ��� URL)����Ƭ��ʬ��
+"path"レベル。
+検索されるファイルツリーのパス(または URL)の先頭部分。
 .BR glob (7)
-�μ��Ϥ����ǤϻȤ��ʤ���
+の式はここでは使えない。
 .TP
 \fB%_bhcoll\fR
-"collection" ��٥롣
-\fB%_bhpath\fR �Υ��֥ǥ��쥯�ȥ꡼�˥ޥå�����ʸ����(�ޤ���
+"collection" レベル。
+\fB%_bhpath\fR のサブディレクトリーにマッチする文字列(または
 .BR glob (7)
-��)��
+式)。
 .TP
 \fB%_bhN\fR
-"name" ��٥롣
-\fB%_bhcoll\fR �Υ��֥ǥ��쥯�ȥ꡼�˥ޥå�����ʸ����(�ޤ���
+"name" レベル。
+\fB%_bhcoll\fR のサブディレクトリーにマッチする文字列(または
 .BR glob (7)
-��)��
-Red Hat �ӥ�ɥ����ƥ���ǤΤ����줫������Υѥå�����̾�˥ޥå������
-����
+式)。
+Red Hat ビルドシステム内でのいずれかの特定のパッケージ名にマッチするよ
+うな
 .BR glob (7)
-���������뤿���
+式を構成するために
 .I PACKAGE_NAME
-���������Ѥ���롣
-�ۤܳμ¤ˡ�Red Hat �ʳ��οʹ֤����Ѥ��뤳�ȤϤʤ���������
+引数が使用される。
+ほぼ確実に、Red Hat 以外の人間が使用することはないだろう。
 .TP
 \fB%_bhVR\fR
-"version-release" ��٥롣
-\fB%_bhN\fR �Υ��֥ǥ��쥯�ȥ꡼�˥ޥå�����ʸ����(�ޤ���
+"version-release" レベル。
+\fB%_bhN\fR のサブディレクトリーにマッチする文字列(または
 .BR glob (7)
-��)��
+式)。
 .TP
 \fB%_bhA\fR
-"arch" ��٥롣
-\fB%_bhVR\fR �Υ��֥ǥ��쥯�ȥ꡼�˥ޥå�����ʸ����(�ޤ���
+"arch" レベル。
+\fB%_bhVR\fR のサブディレクトリーにマッチする文字列(または
 .BR glob (7)
-��)��
+式)。
 .PP
-����å���ǡ����١����ξ���ޤ����ʲ��Υޥ�������Ѥ������ꤵ��롣
+キャッシュデータベースの場所もまた、以下のマクロを使用して設定される。
 .TP
 \fB%_cache_dbpath\fR
-����å���ǡ����١����ξ�ꡣ�ǥե���Ȥ�
-.IR /var/spool/up2date/cache ��
+キャッシュデータベースの場所。デフォルトは
+.IR /var/spool/up2date/cache 。
 .PP
-����å���ǡ����١����Υե����ޥåȤ� rpm �ǡ����١����Τ�Τ���������
-���ޥ�ɥ饤���
+キャッシュデータベースのフォーマットは rpm データベースのものと等しく、
+コマンドラインの
 .B rpm
-�������Ѥ��뤳�Ȥ��Ǥ��롣
-�㤨�С��ѥå������Υ��󥹥ȡ����ɬ�פʰ�¸�����������ѥå�������
-��Ƥ��뤿��˥���å���ǡ����١��������Ѥ���ˤϡ��ʲ������꤬
+から利用することができる。
+例えば、パッケージのインストールに必要な依存性を満たすパッケージを
+提案するためにキャッシュデータベースを利用するには、以下の設定が
 .I /etc/rpm/macros
-�ޤ���
+または
 .I ~/.rpmmacros
-��ɬ�פǤ��롣
+に必要である。
 .TP
 \fB%_solve_dbpath\fR
-��¸�����褹����ƤΤ���˻��Ѥ����ǡ����١����ξ�ꡣ
-.SS Red Hat beehive �ĥ꡼�Τ����(����¤�)������
-����: beehive ��¿ʬ��Red Hat �����β��餫��̾����
+依存性を解決する提案のために使用されるデータベースの場所。
+.SS Red Hat beehive ツリーのための(最低限の)設定例
+訳注: beehive は多分、Red Hat 内部の何らかの名前。
 .PP
 .nf
 %_cache_dbpath  /var/spool/up2date/cache
@@ -127,7 +127,7 @@ Red Hat �ӥ�ɥ����ƥ���ǤΤ����줫������Υѥå�����̾�˥ޥå������
 %_bhVR          *
 %_bhA           @(i[3456]86|noarch)
 .fi
-.SS Red Hat �� FTP �ĥ꡼�Τ����(�Ǿ�)������
+.SS Red Hat の FTP ツリーのための(最小)設定例
 .nf
 %_cache_dbpath  /var/spool/up2date/cache
 %_solve_dbpath  %{_cache_dbpath}
@@ -137,17 +137,17 @@ Red Hat �ӥ�ɥ����ƥ���ǤΤ����줫������Υѥå�����̾�˥ޥå������
 %_bhVR          *
 %_bhA           @(i[3456]86|noarch)
 .fi
-.SH �Х�
-rpm-devel �ѥå��������Ф���Х���������׵�ϡ�bugzilla
+.SH バグ
+rpm-devel パッケージに対するバグ報告や改善要求は、bugzilla
 .UR http://bugzilla.redhat.com/
 http://bugzilla.redhat.com/
 .UE
-��Ȥä��ߤ�����
-.SH ��Ϣ����
+を使って欲しい。
+.SH 関連項目
 .BR rpm (8),
 .BR glob (7),
 .UR http://www.rpm.org/
 .B http://www.rpm.org/
 .UE
-.SH ����
+.SH 著者
 Jeff Johnson <jbj@redhat.com>

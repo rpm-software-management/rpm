@@ -25,50 +25,50 @@
 .\" Translated 14 March 2003 by
 .\"   System Design and Research Institute Co.,Ltd. <info@sdri.co.jp>
 .\"
-.\"WORD: directed graph		ͭ�������
-.\"WORD: patrial order		Ⱦ���
-.\"WORD: topological sort	�ȥݥ������롦������
+.\"WORD: directed graph		有向グラフ
+.\"WORD: patrial order		半順序
+.\"WORD: topological sort	トポロジカル・ソート
 .\"
 .TH "RPMGRAPH" "8" "30 June 2002" "Red Hat, Inc." "Red Hat Linux"
-.SH ̾��
-rpmgraph \- RPM �ѥå������ΰ�¸����դ�ɽ��
-.SH ��
+.SH 名前
+rpmgraph \- RPM パッケージの依存グラフの表示
+.SH 書式
 .B rpmgraph
 .I "PACKAGE_FILE ..."
-.SH ����
+.SH 説明
 .B rpmgraph
-�ϥѥå������ΰ�¸����դ��������뤿���
+はパッケージの依存グラフを生成するために
 .I PACKAGE_FILE
-����Ѥ��롣����
+を使用する。引数
 .I PACKAGE_FILE
-�Τ��줾�줬�ɤ߹��ޤ졢rpm �Υȥ�󥶥������ؤ��ɲä���롣
-�ȥ�󥶥����������Ǥϥȥݥ������롦�����Ȥ�Ȥä�Ⱦ����ط�����ġ�
-Ⱦ����ǽ���դ����줿���Ǥ�ɸ����Ϥ�ɽ������롣
+のそれぞれが読み込まれ、rpm のトランザクションへと追加される。
+トランザクションの要素はトポロジカル・ソートを使って半順序関係を持つ。
+半順序で順序付けされた要素は標準出力に表示される。
 .PP
-��¸����դΥΡ��ɤϥѥå�����̾�ǡ�ͭ������դ��դϳƥΡ��ɤοƤ򼨤���
-�ƥΡ��ɤ�����ϡ��ѥå������ΰ�¸�ط���Ȥä�Ⱦ����ط��ǽ���դ����줿
-�ѥå������κǸ�����ĤǤ��롣
-����ϡ�Ϳ����줿�ѥå������οƤ������Υѥå������κǸ��ɬ�׾��Ȥʤ�
-���Ȥ��̣���롣
+依存グラフのノードはパッケージ名で、有向グラフの辺は各ノードの親を示す。
+親ノードの定義は、パッケージの依存関係を使って半順序関係で順序付けされた
+パッケージの最後の先祖である。
+これは、与えられたパッケージの親が、そのパッケージの最後の必要条件となる
+ことを意味する。
 .PP
-���Ϥ�
+出力は
 .BR dot (1)
-��ͭ������եե����ޥåȤǡ�
+の有向グラフフォーマットで、
 .B graphviz
-�ѥå������˴ޤޤ�륰��ե��ǥ�����
+パッケージに含まれるグラフエディター
 .B dotty
-��Ȥä�ɽ�����������������Ǥ��롣
+を使って表示したり印刷したりできる。
 .B rpmgraph
-��ͭ�Υ��ץ����Ϥʤ���
+固有のオプションはなく、
 .B rpm
-��Ϣ�ġ���Ƕ��̤Υ��ץ��������Ǥ��롣
-�������ǲ�����������Ƥ��뤫�ˤĤ��Ƥϡ�
+関連ツールで共通のオプションだけである。
+現時点で何が実装されているかについては、
 .B rpmgraph
-�λ�����ˡ�Υ�å�����(����: "rpmgraph \-\-help")�򻲾ȤΤ��ȡ�
-.SH ��Ϣ����
+の使用方法のメッセージ(訳注: "rpmgraph \-\-help")を参照のこと。
+.SH 関連項目
 .BR dot "(1), " dotty "(1),"
 .UR http://www.graphviz.org/
 .B http://www.graphviz.org/
 .UE
-.SH ����
+.SH 著者
 Jeff Johnson <jbj@redhat.com>

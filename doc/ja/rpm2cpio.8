@@ -22,24 +22,24 @@
 .\"   System Design and Research Institute Co.,Ltd. <info@sdri.co.jp>
 .\"
 .TH rpm2cpio 8 "11 January 2001" "Red Hat, Inc." "Red Hat Linux"
-.SH ̾��
-rpm2cpio \- RPM (RPM Package Manager)�ѥå��������� cpio ���������֤�
-��Ф���
-.SH ��
+.SH 名前
+rpm2cpio \- RPM (RPM Package Manager)パッケージから cpio アーカイブを
+抽出する
+.SH 書式
 \fBrpm2cpio\fP [filename] 
-.SH ����
+.SH 説明
 .B rpm2cpio
-�ϰ����ǻ��ꤵ����Ĥ� .rpm �ե������ cpio ���������ַ������Ѵ�����
-ɸ����Ϥ˽��Ϥ��롣
-������ '\-' �����ꤵ�줿���ˤϡ�ɸ�����Ϥ��� rpm ���ɤ߹��ࡣ
+は引数で指定される一つの .rpm ファイルを cpio アーカイブ形式に変換し、
+標準出力に出力する。
+引数に '\-' が指定された場合には、標準入力から rpm を読み込む。
 .PP
 .br
 .B "rpm2cpio rpm-1.1-1.i386.rpm"
 .br
 .B "rpm2cpio \- < glint-1.0-1.i386.rpm"
-.SH ��Ϣ����
+.SH 関連項目
 .IR rpm (8)
-.SH ����
+.SH 著者
 .nf
 Erik Troan <ewt@redhat.com>
 .fi

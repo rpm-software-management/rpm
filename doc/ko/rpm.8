@@ -1,333 +1,333 @@
 .\" rpm - Red Hat Package Manager
-.TH rpm 8 "1996³â 7¿ù 15ÀÏ" "·¹µåÇÞ ¼ÒÇÁÆ®¿þ¾î" "·¹µåÇÞ ¸®´ª½º"
-.SH ÀÌ¸§
-rpm \- ·¹µåÇÞ ÆÐÅ°Áö °ü¸®ÀÚ
-.SH °³¿ä
-\fBrpm\fP [¿É¼Çµé] 
-.SH ¼³¸í
-\fBrpm\fP Àº °­·ÂÇÑ \fIÆÐÅ°Áö °ü¸®ÀÚ\fP ·Î¼­ 
-°¢°¢ÀÇ ¼ÒÇÁÆ®¿þ¾î ÆÐÅ°Áö¸¦ ¸¸µé°í ¼³Ä¡ÇÏ°í Áú¹®ÇÏ°í °ËÁõÇÏ°í °»½ÅÇÏ¸ç
-Á¦°ÅÇÒ ¼ö ÀÖ´Ù.
-\fIÆÐÅ°Áö\fP ¶õ  ¼³Ä¡ÇÒ È­ÀÏµé°ú ÀÌ¸§, ¹öÀü, ¼³¸í µîÀ»
-Æ÷ÇÔÇÏ´Â ÆÐÅ°Áö Á¤º¸¸¦ Áö´Ñ ÀúÀå È­ÀÏÀÌ´Ù.
+.TH rpm 8 "1996é° 7æ‰ 15æž" "å‚¾çƒåª’ ç¤¾è¦—é—˜è£¾å¬¢" "å‚¾çƒåª’ è»’å‹˜ä»€"
+.SH æˆšç¡¯
+rpm \- å‚¾çƒåª’ é³¶å¾¹èµ° æ·«è»’åˆ‡
+.SH é¯µæŽ¨
+\fBrpm\fP [è¾›èŠç´š] 
+.SH ç«ºèª¤
+\fBrpm\fP ç²¾ æ‚ªå¾„å»ƒ \fIé³¶å¾¹èµ° æ·«è»’åˆ‡\fP ç¨½è¾ž 
+å”–å”–ç¨Ž ç¤¾è¦—é—˜è£¾å¬¢ é³¶å¾¹èµ°ç ” å¹»ç´šå£± ç«ºå¸–é¦¬å£± éœœåºšé¦¬å£± ä¼Šè£…é¦¬å£± é£´é‡é¦¬æ‚Ÿ
+è–¦æš—æ‹ å‘ª èµ¤é™¥.
+\fIé³¶å¾¹èµ°\fP ç©º  ç«ºå¸–æ‹ é‰¢æžç´šå¼• æˆšç¡¯, ç„ç©¿, ç«ºèª¤ åŽ»è–
+åŒ‚æ•—é¦¬æ¾— é³¶å¾¹èµ° èˆ›å·¦ç ” èµ°è¦³ ç…½èˆŒ é‰¢æžæˆšé™¥.
 
-±âº»ÀûÀÎ 7 °¡Áö µ¿ÀÛ ¸ðµå°¡ ÀÖÀ¸¸ç °¢°¢ ´Ù¸¥ ¿É¼ÇµéÀ» °®´Â´Ù.
-\fI¼³Ä¡\fP, \fIÁú¹®\fP,
-\fI°ËÁõ\fP, \fI¼­¸í È®ÀÎ\fP, \fIÁ¦°Å\fP, \fIÁ¦ÀÛ\fP,
-±×¸®°í \fIµ¥ÀÌÅÍº£ÀÌ½º Àç°Ç¼³\fP ÀÌ ¹Ù·Î ±×°ÍÀÌ´Ù.
+å¥„æ²™æ—‹æ˜” 7 äºœèµ° ç–‘æ‹™ ä¹žçƒäºœ èµ¤ç”Ÿæ‚Ÿ å”–å”– é™¥çŒ® è¾›èŠç´šè– æ¡æ¾—é™¥.
+\fIç«ºå¸–\fP, \fIéœœåºš\fP,
+\fIä¼Šè£…\fP, \fIè¾žèª¤ æºŒæ˜”\fP, \fIè–¦æš—\fP, \fIè–¦æ‹™\fP,
+ç›Šè»’å£± \fIæ±½æˆšæ–—ä»Šæˆšä»€ ä»™é—‡ç«º\fP æˆš éƒŠç¨½ ç›Šä¾æˆšé™¥.
 
-¼³Ä¡ ¸ðµå:
+ç«ºå¸– ä¹žçƒ:
 .br
-.I "\fB    rpm \-i [¼³Ä¡¿É¼Ç] <ÆÐÅ°Áö È­ÀÏ>+\fP"
+.I "\fB    rpm \-i [ç«ºå¸–è¾›èŠ] <é³¶å¾¹èµ° é‰¢æž>+\fP"
 .br
-Áú¹® ¸ðµå:
+éœœåºš ä¹žçƒ:
 .br
-.I "\fB    rpm \-q [Áú¹®¿É¼Ç]\fP"
+.I "\fB    rpm \-q [éœœåºšè¾›èŠ]\fP"
 .br
-°ËÁõ ¸ðµå:
+ä¼Šè£… ä¹žçƒ:
 .br
-.I "\fB    rpm \-V|\-y|\-\-verify [°ËÁõ¿É¼Ç]\fP"
+.I "\fB    rpm \-V|\-y|\-\-verify [ä¼Šè£…è¾›èŠ]\fP"
 .br
-¼­¸í È®ÀÎ ¸ðµå:
+è¾žèª¤ æºŒæ˜” ä¹žçƒ:
 .br
-.I "\fB    rpm \-\-checksig <ÆÐÅ°ÁöÈ­ÀÏ>+\fP"
+.I "\fB    rpm \-\-checksig <é³¶å¾¹èµ°é‰¢æž>+\fP"
 .br
-Á¦°Å ¸ðµå:
+è–¦æš— ä¹žçƒ:
 .br
-.I "\fB    rpm \-e <ÆÐÅ°Áö¸í>+\fP"
+.I "\fB    rpm \-e <é³¶å¾¹èµ°èª¤>+\fP"
 .br
-Á¦ÀÛ ¸ðµå:
+è–¦æ‹™ ä¹žçƒ:
 .br
-.I "\fB    rpm \-b\fIO\fB [Á¦ÀÛ¿É¼Ç] <ÆÐÅ°Áö½ºÆå>+\fP"
+.I "\fB    rpm \-b\fIO\fB [è–¦æ‹™è¾›èŠ] <é³¶å¾¹èµ°ä»€è–™>+\fP"
 .br
 
-.SH ÀÏ¹ÝÀû ¿É¼Ç
-´ÙÀ½ ¿É¼ÇµéÀº °¢±â ´Ù¸¥ ¸ðµå¿¡¼­µµ »ç¿ë°¡´ÉÇÏ´Ù.
+.SH æžé‹¼æ—‹ è¾›èŠ
+é™¥è£½ è¾›èŠç´šç²¾ å”–å¥„ é™¥çŒ® ä¹žçƒæ‹­è¾žäº€ ç´«é‚äºœç®¡é¦¬é™¥.
 .IP "\fB\-vv\fP"
-¾ÆÁÖ ÀÚ¼¼ÇÏ°Ô µð¹ö±ë Á¤º¸¸¦ Ãâ·ÂÇÑ´Ù.
+ç„¼çˆ½ åˆ‡å®¤é¦¬æƒŸ å·¨ç„ç„” èˆ›å·¦ç ” çª’å¾„å»ƒé™¥.
 .IP "\fB\-\-keep\-temps\fP"
-ÀÓ½Ã È­ÀÏÀ» Áö¿ìÁö ¾Ê´Â´Ù. (/tmp/rpm\-*). rpm À» µð¹ö±ëÇÒ ¶§¸¸
-ÁÖ·Î »ç¿ëÇÑ´Ù.
+ç¸¾ç£ é‰¢æžè– èµ°é…”èµ° çœæ¾—é™¥. (/tmp/rpm\-*). rpm è– å·¨ç„ç„”æ‹ å‡¶å¹»
+çˆ½ç¨½ ç´«é‚å»ƒé™¥.
 .IP "\fB\-\-quiet\fP"
-ÃÖ´ëÇÑ Ãâ·ÂÀ» ÀÚÁ¦ÇÏ¸ç ¿À·ÎÁö ¿¡·¯ ¸Þ¼¼Áö¸¸ Ãâ·ÂÇÑ´Ù.
+ç½®ä¼å»ƒ çª’å¾„è– åˆ‡è–¦é¦¬æ‚Ÿ ç¥žç¨½èµ° æ‹­å› äº”å®¤èµ°å¹» çª’å¾„å»ƒé™¥.
 .IP "\fB\-\-help\fP"
-Á» ´õ ±ä »ç¿ë¹ý ¼³¸í¼­¸¦ Ãâ·ÂÇÑ´Ù.
+å²¨ å¸Œ å»¶ ç´«é‚ç‹› ç«ºèª¤è¾žç ” çª’å¾„å»ƒé™¥.
 .IP "\fB\-\-version\fP"
-»ç¿ë ÁßÀÎ rpm ÀÇ ¹öÀüÀ» ÇÑ ÁÙ·Î Ç¥½ÃÇÑ´Ù.
-.IP "\fB\-\-rcfile <È­ÀÏ>\fP"
-\fB/etc/rpmrc\fP ¶Ç´Â \fB$HOME/.rpmrc\fP À» »ç¿ëÇÏÁö ¾Ê°í
-\fB<file>\fP À» »ç¿ëÇÏµµ·Ï ÇÑ´Ù.
+ç´«é‚ æŽ»æ˜” rpm ç¨Ž ç„ç©¿è– å»ƒ åŒç¨½ å¦Šç£å»ƒé™¥.
+.IP "\fB\-\-rcfile <é‰¢æž>\fP"
+\fB/etc/rpmrc\fP æšæ¾— \fB$HOME/.rpmrc\fP è– ç´«é‚é¦¬èµ° çœå£±
+\fB<file>\fP è– ç´«é‚é¦¬äº€ç³» å»ƒé™¥.
 .IP "\fB\-\-root <dir>\fP"
-¸ðµç µ¿ÀÛ¿¡ ´ëÇÏ¿© ÃÖ»óÀ§ µð·ºÅä¸®¸¦ ÁÖ¾îÁø µð·ºÅä¸®·Î ¼³Á¤ÇÏ°í ÀÛ¾÷ÇÑ´Ù.
-¿¹¸¦ µé¾î ¼³Ä¡½Ã ÁÖ¾îÁø µð·ºÅä¸®¸¦ / ¶ó°í »ý°¢ÇÏ°í ±×°ÍÀ» ±âÁØÀ¸·Î
-¼³Ä¡ÇØ³ª°£´Ù.
+ä¹žçª® ç–‘æ‹™æ‹­ ä¼é¦¬é£Ÿ ç½®é›Œæ˜¯ å·¨åˆ‘å¡˜è»’ç ” çˆ½å¬¢é­ å·¨åˆ‘å¡˜è»’ç¨½ ç«ºèˆ›é¦¬å£± æ‹™ç©£å»ƒé™¥.
+æ£®ç ” ç´šå¬¢ ç«ºå¸–ç£ çˆ½å¬¢é­ å·¨åˆ‘å¡˜è»’ç ” / è™žå£± æŒå”–é¦¬å£± ç›Šä¾è– å¥„å±¤ç”Ÿç¨½
+ç«ºå¸–èƒŒèŸ¹å¨ƒé™¥.
 
-.SH ¼³Ä¡ ¿É¼Ç
-rpm ¼³Ä¡ ¸í·ÉÀÇ ÀÏ¹ÝÀûÀÎ ÇüÅÂ´Â ´ÙÀ½°ú °°´Ù.
+.SH ç«ºå¸– è¾›èŠ
+rpm ç«ºå¸– èª¤æ•¬ç¨Ž æžé‹¼æ—‹æ˜” èŽ«æ®¿æ¾— é™¥è£½å¼• æ—­é™¥.
 .PP
-	\fBrpm \-i [¼³Ä¡¿É¼Çµé] <ÆÐÅ°ÁöÈ­ÀÏ>+\fP
+	\fBrpm \-i [ç«ºå¸–è¾›èŠç´š] <é³¶å¾¹èµ°é‰¢æž>+\fP
 .PP
 .IP "\fB\-\-force\fP"
-\-\-replacepkgs, \-\-replacefiles, \-\-oldpackage ¸¦ ¸ðµÎ »ç¿ëÇÑ °Í°ú
-°°´Ù.
+\-\-replacepkgs, \-\-replacefiles, \-\-oldpackage ç ” ä¹žç § ç´«é‚å»ƒ ä¾å¼•
+æ—­é™¥.
 .IP "\fB\-h, \-\-hash\fP"
-ÆÐÅ°Áö¸¦ Ç® ¶§ ÇØ½¬¸¶Å©(#)¸¦ Ç¥½ÃÇÑ´Ù. ÃÑ °¹¼ö´Â 50 °³ÀÌ´Ù.
-Á» ´õ ³ªÀº Ãâ·ÂÀ» À§ÇØ¼­´Â \fB\-v\fP ¸¦ ÇÔ²² »ç¿ëÇÏ¶ó.
+é³¶å¾¹èµ°ç ” ç†± å‡¶ èƒŒç¿’åŽŸæ»´(#)ç ” å¦Šç£å»ƒé™¥. æ¥ å§å‘ªæ¾— 50 é¯µæˆšé™¥.
+å²¨ å¸Œ èŸ¹ç²¾ çª’å¾„è– æ˜¯èƒŒè¾žæ¾— \fB\-v\fP ç ” æ•—è‡† ç´«é‚é¦¬è™ž.
 .IP "\fB\-\-oldpackage\fP"
-»õ·Î¿î ÆÐÅ°Áö¸¦ Áö¿ì°í ´õ ¿¹Àü ÆÐÅ°Áö·Î ±³Ã¼ÇÒ ¶§ »ç¿ëÇÑ´Ù.
+æ­¯ç¨½éŒ˜ é³¶å¾¹èµ°ç ” èµ°é…”å£± å¸Œ æ£®ç©¿ é³¶å¾¹èµ°ç¨½ å˜˜ç«¯æ‹ å‡¶ ç´«é‚å»ƒé™¥.
 .IP "\fB\-\-percent\fP"
-ÆÐÅ°Áö È­ÀÏÀ» Ç® ¶§ ÆÛ¼¾Æ® Ç¥½Ã¸¦ ÇÑ´Ù. ´Ù¸¥ µµ±¸·ÎºÎÅÍ rpm À» ÀÌ¿ëÇÒ ¶§
-»ç¿ëÇÒ ¸ñÀûÀ¸·Î ¸¸µé¾îÁ³´Ù.
+é³¶å¾¹èµ° é‰¢æžè– ç†± å‡¶ éæ¹¿é—˜ å¦Šç£ç ” å»ƒé™¥. é™¥çŒ® äº€å§¥ç¨½æŽ¡æ–— rpm è– æˆšé‚æ‹ å‡¶
+ç´«é‚æ‹ é¯‰æ—‹ç”Ÿç¨½ å¹»ç´šå¬¢ç„¶é™¥.
 .IP "\fB\-\-replacefiles\fP"
-ÀÌ¹Ì ¼³Ä¡µÈ ´Ù¸¥ ÆÐÅ°ÁöÀÇ È­ÀÏÀ» µ¤¾î¾²¸é¼­¶óµµ ÆÐÅ°Áö¸¦ °­Á¦·Î ¼³Ä¡ÇÑ´Ù.
+æˆšè€• ç«ºå¸–å‰ é™¥çŒ® é³¶å¾¹èµ°ç¨Ž é‰¢æžè– æ°—å¬¢åºŠæªŽè¾žè™žäº€ é³¶å¾¹èµ°ç ” æ‚ªè–¦ç¨½ ç«ºå¸–å»ƒé™¥.
 .IP "\fB\-\-replacepkgs\fP"
-ÆÐÅ°Áö°¡ ÀÌ¹Ì ¼³Ä¡µÇ¾î ÀÖ´Ù ÇÏ´õ¶óµµ ´Ù½Ã ¼³Ä¡ÇÑ´Ù.
-.IP "\fB\-\-root \fI<µð·ºÅä¸®>\fP"
-\fI<µð·ºÅä¸®>\fP¸¦ ·çÆ®·Î ÇÏ´Â ½Ã½ºÅÛ¿¡ ¼³Ä¡¸¦ ¼öÇàÇÑ´Ù.
-µ¥ÀÌÅÍº£ÀÌ½º´Â \fI<µð·ºÅä¸®>\fP ¹Ø¿¡¼­ °»½ÅµÇ°í \fIpre\fP ¶Ç´Â \fIpost\fP
-½ºÅ©¸³Æ®´Â \fI<µð·ºÅä¸®>\fP·Î chroot() ÇÑ ÈÄ ½ÇÇàµÊÀ» ÀÇ¹ÌÇÑ´Ù.
+é³¶å¾¹èµ°äºœ æˆšè€• ç«ºå¸–éž å¬¢ èµ¤é™¥ é¦¬å¸Œè™žäº€ é™¥ç£ ç«ºå¸–å»ƒé™¥.
+.IP "\fB\-\-root \fI<å·¨åˆ‘å¡˜è»’>\fP"
+\fI<å·¨åˆ‘å¡˜è»’>\fPç ” æ¬ é—˜ç¨½ é¦¬æ¾— ç£ä»€å¥´æ‹­ ç«ºå¸–ç ” å‘ªæ¥³å»ƒé™¥.
+æ±½æˆšæ–—ä»Šæˆšä»€æ¾— \fI<å·¨åˆ‘å¡˜è»’>\fP è³¼æ‹­è¾ž é£´é‡éž å£± \fIpre\fP æšæ¾— \fIpost\fP
+ä»€æ»´é¨“é—˜æ¾— \fI<å·¨åˆ‘å¡˜è»’>\fPç¨½ chroot() å»ƒ æ¿ å”æ¥³å–«è– ç¨Žè€•å»ƒé™¥.
 .IP "\fB\-\-noscripts\fP"
-preinstall, postinstall ½ºÅ©¸³Æ®¸¦ ½ÇÇàÇÏÁö ¾Ê´Â´Ù.
+preinstall, postinstall ä»€æ»´é¨“é—˜ç ” å”æ¥³é¦¬èµ° çœæ¾—é™¥.
 .IP "\fB\-\-excludedocs\fP"
-¹®¼­¶ó°í Ç¥½ÃµÇ¾î ÀÖ´Â È­ÀÏ(¸ÇÆäÀÌÁö¿Í texinfo ¹®¼­)Àº ¼³Ä¡ÇÏÁö ¾Ê´Â´Ù.
+åºšè¾žè™žå£± å¦Šç£éž å¬¢ èµ¤æ¾— é‰¢æž(å›ºå‡ªæˆšèµ°äºº texinfo åºšè¾ž)ç²¾ ç«ºå¸–é¦¬èµ° çœæ¾—é™¥.
 .IP "\fB\-\-includedocs\fP"
-¹®¼­ È­ÀÏÀ» Æ÷ÇÔÇÑ´Ù. ÀÌ ¿É¼ÇÀº rpmrc È­ÀÏ¿¡ \fIexcludedocs: 1\fP ÀÌ¶ó´Â
-°ÍÀÌ ¸í½ÃµÇ¾î ÀÖÀ» ¶§¸¸ ÇÊ¿äÇÏ´Ù.
+åºšè¾ž é‰¢æžè– åŒ‚æ•—å»ƒé™¥. æˆš è¾›èŠç²¾ rpmrc é‰¢æžæ‹­ \fIexcludedocs: 1\fP æˆšè™žæ¾—
+ä¾æˆš èª¤ç£éž å¬¢ èµ¤è– å‡¶å¹» ç¶æŽ¨é¦¬é™¥.
 .IP "\fB\-\-nodeps\fP"
-ÆÐÅ°Áö¸¦ ¼³Ä¡ÇÏ±â Àü¿¡ ÀÇÁ¸¼ºÀ» °Ë»çÇÏÁö ¾Ê´Â´Ù.
+é³¶å¾¹èµ°ç ” ç«ºå¸–é¦¬å¥„ ç©¿æ‹­ ç¨Žç³Žå¤±è– ä¼Šç´«é¦¬èµ° çœæ¾—é™¥.
 .IP "\fB\-\-test\fP"
-ÆÐÅ°Áö¸¦ ½ÇÁ¦·Î ¼³Ä¡ÇÏÁö´Â ¾Ê°í Ãæµ¹ »çÇ×ÀÌ ÀÖ´ÂÁö Á¡°ËÇÏ°í º¸°íÇÑ´Ù.
+é³¶å¾¹èµ°ç ” å”è–¦ç¨½ ç«ºå¸–é¦¬èµ°æ¾— çœå£± ä¸­å®œ ç´«ç‰Œæˆš èµ¤æ¾—èµ° ç¹Šä¼Šé¦¬å£± å·¦å£±å»ƒé™¥.
 .IP "\fB\-U, \-\-upgrade\fP"
-ÇöÀç ¼³Ä¡µÇ¾î ÀÖ´Â ÆÐÅ°Áö¸¦ »õ·Î¿î ¹öÀüÀÇ RPMÀ¸·Î ¾÷±×·¹ÀÌµåÇÏ¶ó.
-ÀÎ½ºÅç°ú °°Áö¸¸ ¿¹Àü ¹öÀüÀÇ °ÍÀÌ ÀÚµ¿À¸·Î Áö¿öÁø´Ù´Â °ÍÀÌ ´Ù¸£´Ù.
+è–„ä»™ ç«ºå¸–éž å¬¢ èµ¤æ¾— é³¶å¾¹èµ°ç ” æ­¯ç¨½éŒ˜ ç„ç©¿ç¨Ž RPMç”Ÿç¨½ ç©£ç›Šå‚¾æˆšçƒé¦¬è™ž.
+æ˜”ä»€å³¶å¼• æ—­èµ°å¹» æ£®ç©¿ ç„ç©¿ç¨Ž ä¾æˆš åˆ‡ç–‘ç”Ÿç¨½ èµ°è¶¨é­é™¥æ¾— ä¾æˆš é™¥ç‰½é™¥.
 
 
 
-.SH Áú¹® ¿É¼Ç
-rpm Áú¹® ¿É¼ÇÀÇ ÀÏ¹ÝÀûÀÎ Çü½ÄÀº ´ÙÀ½°ú °°´Ù.
+.SH éœœåºš è¾›èŠ
+rpm éœœåºš è¾›èŠç¨Ž æžé‹¼æ—‹æ˜” èŽ«ç¸¦ç²¾ é™¥è£½å¼• æ—­é™¥.
 .PP
-	\fBrpm \-q [Áú¹®¿É¼Ç]\fP
+	\fBrpm \-q [éœœåºšè¾›èŠ]\fP
 .PP
-¿©·¯ºÐÀº ÆÐÅ°Áö Á¤º¸°¡ Ç¥½ÃµÉ Çü½ÄÀ» °áÁ¤ÇØÁÖ¾î¾ß ÇÑ´Ù.
-\fB\-\-queryformat\fP ¿É¼Ç µÚ¿¡ Çü½Ä ¹®ÀÚ¿­À» Àû¾îÁÖ¸é µÈ´Ù.
+é£Ÿå›æ­³ç²¾ é³¶å¾¹èµ° èˆ›å·¦äºœ å¦Šç£åƒ èŽ«ç¸¦è– è¡£èˆ›èƒŒçˆ½å¬¢é†¤ å»ƒé™¥.
+\fB\-\-queryformat\fP è¾›èŠ åŠæ‹­ èŽ«ç¸¦ åºšåˆ‡ä¼¸è– æ—‹å¬¢çˆ½æªŽ å‰é™¥.
 
-Áú¹® Çü½ÄÀº Ç¥ÁØ \fBprintf(3)\fP Çü½ÄÀ» ¾à°£ º¯ÇüÇÑ °ÍÀÌ´Ù.
-Çü½ÄÀº Á¤Àû ¹®ÀÚ¿­°ú( °³Çà¹®ÀÚ, ÅÇ, ±×¸®°í ´Ù¸¥ Æ¯¼ö¹®ÀÚ¿¡
-´ëÇÑ Ç¥ÁØ C ¹®ÀÚ ÀÌ½ºÄÉÀÌÇÁ Ç¥±â) \fBprintf(3)\fP Çü½ÄÁöÁ¤ÀÚ·Î ±¸¼ºµÇ¾î
-ÀÖ´Ù.
-\fBrpm\fPÀº ÀÌ¹Ì Ãâ·Â ÇüÅÂ¸¦ ¾Ë°í ÀÖÀ¸¹Ç·Î Å¸ÀÔ ÁöÁ¤ÀÚ´Â »ý·«ÇÏ°í
-\fB{}\fP ¹®ÀÚ·Î ¹­¾î¼­ Çì´õ ÅÂ±×ÀÇ ÀÌ¸§À¸·Î ¹Ù²Ù¾î ÁÖ¾î¾ß ÇÑ´Ù.
-ÅÂ±×¸í Áß \fBRPMTAG_\fP ºÎºÐÀº »ý·«ÇØ¾ß ÇÏ¸ç ÅÂ±×¸í ¾Õ¿¡´Â \fB\-\fP ¹®ÀÚ¸¦
-Àû¾îÁÖ¾î¾ß ÇÑ´Ù.
+éœœåºš èŽ«ç¸¦ç²¾ å¦Šå±¤ \fBprintf(3)\fP èŽ«ç¸¦è– é‰¦å¨ƒ ç—•èŽ«å»ƒ ä¾æˆšé™¥.
+èŽ«ç¸¦ç²¾ èˆ›æ—‹ åºšåˆ‡ä¼¸å¼•( é¯µæ¥³åºšåˆ‡, å, ç›Šè»’å£± é™¥çŒ® åƒå‘ªåºšåˆ‡æ‹­
+ä¼å»ƒ å¦Šå±¤ C åºšåˆ‡ æˆšä»€è¿½æˆšè¦— å¦Šå¥„) \fBprintf(3)\fP èŽ«ç¸¦èµ°èˆ›åˆ‡ç¨½ å§¥å¤±éž å¬¢
+èµ¤é™¥.
+\fBrpm\fPç²¾ æˆšè€• çª’å¾„ èŽ«æ®¿ç ” ç¡å£± èµ¤ç”Ÿç³ ç¨½ å±•è„Š èµ°èˆ›åˆ‡æ¾— æŒç¹°é¦¬å£±
+\fB{}\fP åºšåˆ‡ç¨½ åºƒå¬¢è¾ž ä¼¯å¸Œ æ®¿ç›Šç¨Ž æˆšç¡¯ç”Ÿç¨½ éƒŠè·å¬¢ çˆ½å¬¢é†¤ å»ƒé™¥.
+æ®¿ç›Šèª¤ æŽ» \fBRPMTAG_\fP æŽ¡æ­³ç²¾ æŒç¹°èƒŒé†¤ é¦¬æ‚Ÿ æ®¿ç›Šèª¤ è’‹æ‹­æ¾— \fB\-\fP åºšåˆ‡ç ”
+æ—‹å¬¢çˆ½å¬¢é†¤ å»ƒé™¥.
 
-¿¹¸¦ µé¾î Áú¹® ´ë»ó ÆÐÅ°ÁöÀÇ ÀÌ¸§¸¸ Ãâ·ÂÇÏ°íÀÚ ÇÏ´Â °æ¿ì ¿©·¯ºÐÀº 
-\fB%{NAME}\fP À» Çü½Ä ¹®ÀÚ¿­·Î »ç¿ëÇØ¾ß ÇÑ´Ù. ÆÐÅ°Áö¸í°ú ¹èÆ÷ÆÇ Á¤º¸¸¦
-µÎ °³ÀÇ Ä®·³À¸·Î Ç¥½ÃÇÏ°íÀÚ ÇÒ ¶§´Â \fB%\-30{NAME}%{DISTRIBUTION}\fP ¶ó°í
-Àû´Â´Ù.
+æ£®ç ” ç´šå¬¢ éœœåºš ä¼é›Œ é³¶å¾¹èµ°ç¨Ž æˆšç¡¯å¹» çª’å¾„é¦¬å£±åˆ‡ é¦¬æ¾— äº•é…” é£Ÿå›æ­³ç²¾ 
+\fB%{NAME}\fP è– èŽ«ç¸¦ åºšåˆ‡ä¼¸ç¨½ ç´«é‚èƒŒé†¤ å»ƒé™¥. é³¶å¾¹èµ°èª¤å¼• å£•åŒ‚æ¯’ èˆ›å·¦ç ”
+ç § é¯µç¨Ž ç”ºè»ç”Ÿç¨½ å¦Šç£é¦¬å£±åˆ‡ æ‹ å‡¶æ¾— \fB%\-30{NAME}%{DISTRIBUTION}\fP è™žå£±
+æ—‹æ¾—é™¥.
 
-\fBrpm\fP Àº \fB\-\-querytags\fP ¿É¼ÇÀ» ÁÖ¸é ÀÎ½ÄÇÏ°í ÀÖ´Â ¸ðµç ÅÂ±×ÀÇ
-¸ñ·ÏÀ» º¸¿©ÁØ´Ù.
+\fBrpm\fP ç²¾ \fB\-\-querytags\fP è¾›èŠè– çˆ½æªŽ æ˜”ç¸¦é¦¬å£± èµ¤æ¾— ä¹žçª® æ®¿ç›Šç¨Ž
+é¯‰ç³»è– å·¦é£Ÿå±¤é™¥.
 
-Áú¹® ¿É¼Ç¿¡´Â 2 °¡Áö ¼¼Æ®°¡ ÀÖ´Ù: ÆÐÅ°Áö ¼±ÅÃ°ú Á¤º¸ ¼±ÅÃ
+éœœåºš è¾›èŠæ‹­æ¾— 2 äºœèµ° å®¤é—˜äºœ èµ¤é™¥: é³¶å¾¹èµ° è­˜æ¾±å¼• èˆ›å·¦ è­˜æ¾±
 
-ÆÐÅ°Áö ¼±ÅÃ ¿É¼Ç:
+é³¶å¾¹èµ° è­˜æ¾± è¾›èŠ:
 .br
-.IP "\fB\fI<ÆÐÅ°Áö¸í>\fP"
-\fB\fI<package_name>\fP¶ó´Â ÀÌ¸§ÀÇ ÆÐÅ°Áö¿¡ ´ëÇÑ Áú¹®¸¦ ¼öÇàÇÑ´Ù.
+.IP "\fB\fI<é³¶å¾¹èµ°èª¤>\fP"
+\fB\fI<package_name>\fPè™žæ¾— æˆšç¡¯ç¨Ž é³¶å¾¹èµ°æ‹­ ä¼å»ƒ éœœåºšç ” å‘ªæ¥³å»ƒé™¥.
 .IP "\fB\-a\fP"
-¸ðµç ÆÐÅ°Áö¿¡ ´ëÇÏ¿© Áú¹®¸¦ ¼öÇàÇÑ´Ù.
-.IP "\fB\-whatrequires \fI<±â´É>\fP"
-Á¦´ë·Î ÀÛµ¿ÇÏ±â À§ÇØ¼­´Â \fI<±â´É>\fP À» ÇÊ¿ä·Î ÇÏ´Â ¸ðµç ÆÐÅ°Áö¿¡ ´ëÇÏ¿©
-Áú¹®À» ¼öÇàÇÑ´Ù.
-.IP "\fB\-whatprovides \fI<°¡»ó>\fP"
-\fI<virtual>\fP ±â´ÉÀ» Á¦°øÇÏ´Â ¸ðµç ÆÐÅ°Áö¿¡ ´ëÇÏ¿© Áú¹®À» ¼öÇàÇÑ´Ù.
-.IP "\fB\-f \fI<È­ÀÏ>\fP"
-\fI<È­ÀÏ>\fP¸¦ Æ÷ÇÔÇÏ´Â ÆÐÅ°Áö¿¡ ´ëÇÏ¿© Áú¹®À» ¼öÇàÇÑ´Ù.
+ä¹žçª® é³¶å¾¹èµ°æ‹­ ä¼é¦¬é£Ÿ éœœåºšç ” å‘ªæ¥³å»ƒé™¥.
+.IP "\fB\-whatrequires \fI<å¥„ç®¡>\fP"
+è–¦ä¼ç¨½ æ‹™ç–‘é¦¬å¥„ æ˜¯èƒŒè¾žæ¾— \fI<å¥„ç®¡>\fP è– ç¶æŽ¨ç¨½ é¦¬æ¾— ä¹žçª® é³¶å¾¹èµ°æ‹­ ä¼é¦¬é£Ÿ
+éœœåºšè– å‘ªæ¥³å»ƒé™¥.
+.IP "\fB\-whatprovides \fI<äºœé›Œ>\fP"
+\fI<virtual>\fP å¥„ç®¡è– è–¦å› é¦¬æ¾— ä¹žçª® é³¶å¾¹èµ°æ‹­ ä¼é¦¬é£Ÿ éœœåºšè– å‘ªæ¥³å»ƒé™¥.
+.IP "\fB\-f \fI<é‰¢æž>\fP"
+\fI<é‰¢æž>\fPç ” åŒ‚æ•—é¦¬æ¾— é³¶å¾¹èµ°æ‹­ ä¼é¦¬é£Ÿ éœœåºšè– å‘ªæ¥³å»ƒé™¥.
 .IP "\fB\-F\fP"
-\fB\-f\fP ¿Í °°Áö¸¸ È­ÀÏ¸íÀ» Ç¥ÁØ ÀÔ·Â¿¡¼­ ÀÐ´Â´Ù.
-.IP "\fB\-p \fI<ÆÐÅ°ÁöÈ­ÀÏ>\fP"
-¼³Ä¡µÈ ¶Ç´Â ¼³Ä¡µÇÁö ¾ÊÀº \fI<ÆÐÅ°ÁöÈ­ÀÏ>\fP ¿¡ ´ëÇÏ¿© Áú¹®À» ¼öÇàÇÑ´Ù.
+\fB\-f\fP äºº æ—­èµ°å¹» é‰¢æžèª¤è– å¦Šå±¤ è„Šå¾„æ‹­è¾ž çŸ³æ¾—é™¥.
+.IP "\fB\-p \fI<é³¶å¾¹èµ°é‰¢æž>\fP"
+ç«ºå¸–å‰ æšæ¾— ç«ºå¸–éž èµ° çœç²¾ \fI<é³¶å¾¹èµ°é‰¢æž>\fP æ‹­ ä¼é¦¬é£Ÿ éœœåºšè– å‘ªæ¥³å»ƒé™¥.
 .IP "\fB\-P\fP"
-\fB\-p\fP ¿Í °°Áö¸¸ ÆÐÅ°Áö È­ÀÏ¸íÀ» Ç¥ÁØ ÀÔ·Â¿¡¼­ ÀÐ´Â´Ù.
+\fB\-p\fP äºº æ—­èµ°å¹» é³¶å¾¹èµ° é‰¢æžèª¤è– å¦Šå±¤ è„Šå¾„æ‹­è¾ž çŸ³æ¾—é™¥.
 
 .P
-Á¤º¸ ¼±ÅÃ ¿É¼Ç:
+èˆ›å·¦ è­˜æ¾± è¾›èŠ:
 .br
 .IP "\fB\-i\fP"
-ÆÐÅ°Áö ÀÌ¸§, ¹öÀü, ¼³¸í µîÀÇ Á¤º¸¸¦ Ãâ·ÂÇÑ´Ù.
-¸¸¾à \fB\-\-queryformat\fP ÀÌ ÁÖ¾îÁ® ÀÖ´Ù¸é ±×°ÍÀ» ÀÌ¿ëÇÏ¿© Ãâ·ÂÇÑ´Ù.
+é³¶å¾¹èµ° æˆšç¡¯, ç„ç©¿, ç«ºèª¤ åŽ»ç¨Ž èˆ›å·¦ç ” çª’å¾„å»ƒé™¥.
+å¹»é‰¦ \fB\-\-queryformat\fP æˆš çˆ½å¬¢é–ƒ èµ¤é™¥æªŽ ç›Šä¾è– æˆšé‚é¦¬é£Ÿ çª’å¾„å»ƒé™¥.
 .IP "\fB\-R\fP"
-ÇöÀç ÆÐÅ°ÁöÁö°¡ ÀÇÁ¸ÇÏ°í ÀÖ´Â ÆÐÅ°Áö ¸ñ·ÏÀ» º¸¿©ÁØ´Ù.
-(\fB\-\-requires\fP °ú °°À½)
+è–„ä»™ é³¶å¾¹èµ°èµ°äºœ ç¨Žç³Žé¦¬å£± èµ¤æ¾— é³¶å¾¹èµ° é¯‰ç³»è– å·¦é£Ÿå±¤é™¥.
+(\fB\-\-requires\fP å¼• æ—­è£½)
 .IP "\fB\-\-provides\fP"
-ÆÐÅ°Áö°¡ Á¦°øÇÏ´Â ±â´ÉÀ» º¸¿©ÁØ´Ù.
+é³¶å¾¹èµ°äºœ è–¦å› é¦¬æ¾— å¥„ç®¡è– å·¦é£Ÿå±¤é™¥.
 .IP "\fB\-l\fP"
-ÆÐÅ°Áö ¾ÈÀÇ È­ÀÏÀ» º¸¿©ÁØ´Ù.
+é³¶å¾¹èµ° ç…§ç¨Ž é‰¢æžè– å·¦é£Ÿå±¤é™¥.
 .IP "\fB\-s\fP"
-ÆÐÅ°Áö ¾È¿¡ µç È­ÀÏÀÇ \fI»óÅÂ\fP¸¦ º¸¿©ÁØ´Ù.(\fB\-l\fPÀº Æ÷ÇÔ)
-°¢ È­ÀÏÀÇ »óÅÂ´Â \fInormal\fP(Á¤»ó), \fInot installed\fP(¼³Ä¡µÇÁö ¾ÊÀ½),
-\fIreplaced\f(´Ù¸¥ °ÍÀ¸·Î ±³Ã¼µÊ)ÀÇ °ªÀ» °®´Â´Ù.
+é³¶å¾¹èµ° ç…§æ‹­ çª® é‰¢æžç¨Ž \fIé›Œæ®¿\fPç ” å·¦é£Ÿå±¤é™¥.(\fB\-l\fPç²¾ åŒ‚æ•—)
+å”– é‰¢æžç¨Ž é›Œæ®¿æ¾— \fInormal\fP(èˆ›é›Œ), \fInot installed\fP(ç«ºå¸–éž èµ° çœè£½),
+\fIreplaced\f(é™¥çŒ® ä¾ç”Ÿç¨½ å˜˜ç«¯å–«)ç¨Ž è‘µè– æ¡æ¾—é™¥.
 .IP "\fB\-d\fP"
-¹®¼­ È­ÀÏ¸¸ º¸¿©ÁØ´Ù.(\fB\-l\fPÀº Æ÷ÇÔ)
+åºšè¾ž é‰¢æžå¹» å·¦é£Ÿå±¤é™¥.(\fB\-l\fPç²¾ åŒ‚æ•—)
 .IP "\fB\-c\fP"
-¼³Á¤ È­ÀÏ¸¸ º¸¿©ÁØ´Ù.(\fB\-l\fPÀº Æ÷ÇÔ)
+ç«ºèˆ› é‰¢æžå¹» å·¦é£Ÿå±¤é™¥.(\fB\-l\fPç²¾ åŒ‚æ•—)
 .IP "\fB\-\-scripts\fP"
-¼³Ä¡, Á¦°Å °úÁ¤¿¡ »ç¿ëµÇ´Â ½© ½ºÅ©¸³Æ®°¡ ÀÖ´Ù¸é ±× ³»¿ëÀ» Ãâ·ÂÇÑ´Ù.
+ç«ºå¸–, è–¦æš— å¼•èˆ›æ‹­ ç´«é‚éž æ¾— ç§‹ ä»€æ»´é¨“é—˜äºœ èµ¤é™¥æªŽ ç›Š éŽ§é‚è– çª’å¾„å»ƒé™¥.
 .IP "\fB\-\-dump\fP"
-´ÙÀ½°ú °°Àº È­ÀÏ Á¤º¸¸¦ ´ýÇÁÇÑ´Ù: °æ·Î Å©±â ¼öÁ¤ÀÏ, MD5 Ã¼Å©¼¶, ¸ðµå,
-¼ÒÀ¯ÀÚ, ±×·ì, ¼³Á¤ È­ÀÏ ¿©ºÎ, ¹®¼­ È­ÀÏ ¿©ºÎ, rdev, ½Éº¼¸¯ ¸µÅ© ¿©ºÎ.
-ÃÖ¼ÒÇÑ \fB\-l\fP, \fB\-c\fP, \fB\-d\fP ÀÌµé ¿É¼Ç Áß ÇÏ³ª°¡ »ç¿ëµÇ¾î¾ß
-ÇÑ´Ù.
+é™¥è£½å¼• æ—­ç²¾ é‰¢æž èˆ›å·¦ç ” æ£‹è¦—å»ƒé™¥: äº•ç¨½ æ»´å¥„ å‘ªèˆ›æž, MD5 ç«¯æ»´é›«, ä¹žçƒ,
+ç¤¾æ”¿åˆ‡, ç›Šè¡€, ç«ºèˆ› é‰¢æž é£ŸæŽ¡, åºšè¾ž é‰¢æž é£ŸæŽ¡, rdev, å®¿ç‘³é£ å…ƒæ»´ é£ŸæŽ¡.
+ç½®ç¤¾å»ƒ \fB\-l\fP, \fB\-c\fP, \fB\-d\fP æˆšç´š è¾›èŠ æŽ» é¦¬èŸ¹äºœ ç´«é‚éž å¬¢é†¤
+å»ƒé™¥.
 
-.SH °ËÁõ ¿É¼Ç
-rpm °ËÁõ ¿É¼ÇÀÇ ÀÏ¹ÝÀûÀÎ ÇüÅÂ´Â ´ÙÀ½°ú °°´Ù.
+.SH ä¼Šè£… è¾›èŠ
+rpm ä¼Šè£… è¾›èŠç¨Ž æžé‹¼æ—‹æ˜” èŽ«æ®¿æ¾— é™¥è£½å¼• æ—­é™¥.
 .PP
-	\fBrpm \-V|\-y|\-\-verify [°ËÁõ¿É¼Ç]\fP
+	\fBrpm \-V|\-y|\-\-verify [ä¼Šè£…è¾›èŠ]\fP
 .PP
-¼³Ä¡µÇ¾î ÀÖ´Â È­ÀÏµé¿¡ ´ëÇÏ¿© rpm µ¥ÀÌÅÍº£ÀÌ½º¿¡ ÀúÀåµÈ ³»¿ë°ú ¿À¸®Áö³Î
-ÆÐÅ°ÁöÀÇ ³»¿ëÀ» ºñ±³ÇÑ´Ù. °ËÁõ ³»¿ëÀº Å©±â, MD5 Ã¼Å©¼¶, ÆÛ¹Ì¼Ç, Å¸ÀÔ, ¼ÒÀ¯ÀÚ,
-±×·ì µîÀÌ´Ù. Â÷ÀÌÁ¡ÀÌ ¹ß°ßµÇ¸é Ãâ·ÂÇÑ´Ù. ÆÐÅ°Áö Áö½Ã ¿É¼ÇÀº ÆÐÅ°Áö Áú¹®
-¿É¼Ç¿¡¼­¿Í °°´Ù.
+ç«ºå¸–éž å¬¢ èµ¤æ¾— é‰¢æžç´šæ‹­ ä¼é¦¬é£Ÿ rpm æ±½æˆšæ–—ä»Šæˆšä»€æ‹­ ç…½èˆŒå‰ éŽ§é‚å¼• ç¥žè»’èµ°ç¢º
+é³¶å¾¹èµ°ç¨Ž éŽ§é‚è– æ¾å˜˜å»ƒé™¥. ä¼Šè£… éŽ§é‚ç²¾ æ»´å¥„, MD5 ç«¯æ»´é›«, éè€•èŠ, å±•è„Š, ç¤¾æ”¿åˆ‡,
+ç›Šè¡€ åŽ»æˆšé™¥. è¨—æˆšç¹Šæˆš é™èƒƒéž æªŽ çª’å¾„å»ƒé™¥. é³¶å¾¹èµ° èµ°ç£ è¾›èŠç²¾ é³¶å¾¹èµ° éœœåºš
+è¾›èŠæ‹­è¾žäºº æ—­é™¥.
 
-Ãâ·Â Çü½ÄÀº 8 ÀÚÀÇ ¹®ÀÚ¿­ÀÌ´Ù. "\fBc\fP"Àº ¼³Á¤ È­ÀÏÀ» ÀÇ¹ÌÇÏ¸ç ±×¸®°í
-È­ÀÏ¸íÀÌ ³ªÅ¸³­´Ù. °¢°¢ÀÇ 8 °³ ¹®ÀÚ´Â RPM µ¥ÀÌÅÍº£ÀÌ½º¿¡ ÀúÀåµÈ ¼Ó¼º°ú ºñ±³ÇÑ
-°á°ú¸¦ ³ªÅ¸³½´Ù. "." (ÇÇ¸®¾îµå) ¹®ÀÚ´Â ÀÌ»ó¾øÀ½À» ³ªÅ¸³½´Ù. ºñ±³ °á°ú ¹®Á¦Á¡ÀÌ
-¹ß°ßµÇ¸é ´ÙÀ½°ú °°Àº ¹®ÀÚ°¡ ³ªÅ¸³­´Ù.
+çª’å¾„ èŽ«ç¸¦ç²¾ 8 åˆ‡ç¨Ž åºšåˆ‡ä¼¸æˆšé™¥. "\fBc\fP"ç²¾ ç«ºèˆ› é‰¢æžè– ç¨Žè€•é¦¬æ‚Ÿ ç›Šè»’å£±
+é‰¢æžèª¤æˆš èŸ¹å±•è²é™¥. å”–å”–ç¨Ž 8 é¯µ åºšåˆ‡æ¾— RPM æ±½æˆšæ–—ä»Šæˆšä»€æ‹­ ç…½èˆŒå‰ ç´—å¤±å¼• æ¾å˜˜å»ƒ
+è¡£å¼•ç ” èŸ¹å±•æµ¬é™¥. "." (æ·è»’å¬¢çƒ) åºšåˆ‡æ¾— æˆšé›Œè’¸è£½è– èŸ¹å±•æµ¬é™¥. æ¾å˜˜ è¡£å¼• åºšè–¦ç¹Šæˆš
+é™èƒƒéž æªŽ é™¥è£½å¼• æ—­ç²¾ åºšåˆ‡äºœ èŸ¹å±•è²é™¥.
 
 .IP "\fB5\fP"
-MD5 Ã¼Å©¼¶
+MD5 ç«¯æ»´é›«
 .IP "\fBS\fP"
-È­ÀÏ Å©±â
+é‰¢æž æ»´å¥„
 .IP "\fBL\fP"
-½Éº¼¸¯ ¸µÅ©
+å®¿ç‘³é£ å…ƒæ»´
 .IP "\fBT\fP"
-°»½ÅÀÏ
+é£´é‡æž
 .IP "\fBD\fP"
-ÀåÄ¡
+èˆŒå¸–
 .IP "\fBU\fP"
-»ç¿ëÀÚ
+ç´«é‚åˆ‡
 .IP "\fBG\fP"
-±×·ì
+ç›Šè¡€
 .IP "\fBM\fP"
-ÆÛ¹Ì¼Ç°ú È­ÀÏ Å¸ÀÔÀ» Æ÷ÇÔÇÑ ¸ðµå
+éè€•èŠå¼• é‰¢æž å±•è„Šè– åŒ‚æ•—å»ƒ ä¹žçƒ
 
-.SH ¼­¸í È®ÀÎ
-rpm ¼­¸í È®ÀÎ ¸í·ÉÀº ´ÙÀ½°ú °°´Ù.
+.SH è¾žèª¤ æºŒæ˜”
+rpm è¾žèª¤ æºŒæ˜” èª¤æ•¬ç²¾ é™¥è£½å¼• æ—­é™¥.
 .PP
-	\fBrpm \-\-checksig <ÆÐÅ°ÁöÈ­ÀÏ>+\fP
+	\fBrpm \-\-checksig <é³¶å¾¹èµ°é‰¢æž>+\fP
 .PP
-ÆÐÅ°ÁöÀÇ ¿À¸®Áö³Î ¿©ºÎ¸¦ °¡·Á³»±â À§ÇÏ¿© ÆÐÅ°Áö ¾È¿¡ µç PGP ¼­¸íÀ» Á¡°ËÇÑ´Ù.
-PGP ¼³Á¤ Á¤º¸´Â /etc/rpmrc ¿¡¼­ ÀÐ¾î¿Â´Ù.
-¼¼ºÎ»çÇ×Àº "PGP ¼­¸í" ¼½¼ÇÀ» º¸±â ¹Ù¶õ´Ù.
+é³¶å¾¹èµ°ç¨Ž ç¥žè»’èµ°ç¢º é£ŸæŽ¡ç ” äºœå½¢éŽ§å¥„ æ˜¯é¦¬é£Ÿ é³¶å¾¹èµ° ç…§æ‹­ çª® PGP è¾žèª¤è– ç¹Šä¼Šå»ƒé™¥.
+PGP ç«ºèˆ› èˆ›å·¦æ¾— /etc/rpmrc æ‹­è¾ž çŸ³å¬¢ç´³é™¥.
+å®¤æŽ¡ç´«ç‰Œç²¾ "PGP è¾žèª¤" æ‚‰èŠè– å·¦å¥„ éƒŠç©ºé™¥.
 
-.SH Á¦°Å ¿É¼Ç
-rpm Á¦°Å ¸í·ÉÀÇ ÀÏ¹ÝÀûÀÎ ÇüÅÂ´Â ´ÙÀ½°ú °°´Ù.
+.SH è–¦æš— è¾›èŠ
+rpm è–¦æš— èª¤æ•¬ç¨Ž æžé‹¼æ—‹æ˜” èŽ«æ®¿æ¾— é™¥è£½å¼• æ—­é™¥.
 .PP
-	\fB    rpm \-e <ÆÐÅ°ÁöÈ­ÀÏ>+\fP
+	\fB    rpm \-e <é³¶å¾¹èµ°é‰¢æž>+\fP
 .PP
 .IP "\fB\-\-noscripts\fP"
-preunistall, postuninstall ½ºÅ©¸³Æ®¸¦ ½ÇÇàÇÏÁö ¾Ê´Â´Ù.
+preunistall, postuninstall ä»€æ»´é¨“é—˜ç ” å”æ¥³é¦¬èµ° çœæ¾—é™¥.
 .IP "\fB\-\-nodeps\fP"
-ÆÐÅ°Áö Á¦°Å½Ã ÀÇÁ¸¼ºÀ» °Ë»çÇÏÁö ¾Ê´Â´Ù.
+é³¶å¾¹èµ° è–¦æš—ç£ ç¨Žç³Žå¤±è– ä¼Šç´«é¦¬èµ° çœæ¾—é™¥.
 .IP "\fB\-\-test\fP"
-½ÇÁ¦·Î ÆÐÅ°Áö¸¦ Á¦°ÅÇÏ´Â °ÍÀº ¾Æ´Ï°í Å×½ºÆ®ÇØº»´Ù.
-\fB\-vv\fP ¿É¼Ç.
+å”è–¦ç¨½ é³¶å¾¹èµ°ç ” è–¦æš—é¦¬æ¾— ä¾ç²¾ ç„¼è‰¦å£± ç ºä»€é—˜èƒŒæ²™é™¥.
+\fB\-vv\fP è¾›èŠ.
 
-.SH Á¦ÀÛ ¿É¼Ç
-rpm Á¦ÀÛ ¸í·ÉÀÇ ÀÏ¹ÝÀû Çü½ÄÀº ´ÙÀ½°ú °°´Ù.
+.SH è–¦æ‹™ è¾›èŠ
+rpm è–¦æ‹™ èª¤æ•¬ç¨Ž æžé‹¼æ—‹ èŽ«ç¸¦ç²¾ é™¥è£½å¼• æ—­é™¥.
 .PP
-    \fBrpm \-b\fIO\fP [Á¦ÀÛ¿É¼Ç] <ÆÐÅ°Áö ½ºÆå>+\fP
+    \fBrpm \-b\fIO\fP [è–¦æ‹™è¾›èŠ] <é³¶å¾¹èµ° ä»€è–™>+\fP
 .PP
-\fB\-b\fIO\fR Àº Á¦ÀÛ ´Ü°è¿Í Á¦ÀÛÇÒ ÆÐÅ°Áö¸¦ ³ªÅ¸³»´Â °ÍÀ¸·Î¼­ ´ÙÀ½ Áß
-ÇÏ³ªÀÇ °ªÀ» °®´Â´Ù:
+\fB\-b\fIO\fR ç²¾ è–¦æ‹™ èˆ˜åŸŸäºº è–¦æ‹™æ‹ é³¶å¾¹èµ°ç ” èŸ¹å±•éŽ§æ¾— ä¾ç”Ÿç¨½è¾ž é™¥è£½ æŽ»
+é¦¬èŸ¹ç¨Ž è‘µè– æ¡æ¾—é™¥:
 
 .IP "\fB\-bp\fP"
-½ºÆå È­ÀÏÀÇ "%prep" ´Ü°è¸¦ ½ÇÇàÇÑ´Ù. º¸Åë ¼Ò½º¸¦ Ç®°í ÆÐÄ¡¸¦ °¡ÇÏ´Â ÀÛ¾÷ÀÌ´Ù.
+ä»€è–™ é‰¢æžç¨Ž "%prep" èˆ˜åŸŸç ” å”æ¥³å»ƒé™¥. å·¦æ­ ç¤¾ä»€ç ” ç†±å£± é³¶å¸–ç ” äºœé¦¬æ¾— æ‹™ç©£æˆšé™¥.
 .IP "\fB\-bl\fP"
-"¸ñ·Ï Á¡°Ë"À» ÇÑ´Ù. "%files" ¼½¼ÇÀº È®Àå ¸ÅÅ©·ÎÀÌ´Ù. ÀÌ È­ÀÏµéÀÌ Á¸ÀçÇÏ´ÂÁö
-¿©ºÎ¸¦ ¾Ë¾Æº»´Ù.
+"é¯‰ç³» ç¹Šä¼Š"è– å»ƒé™¥. "%files" æ‚‰èŠç²¾ æºŒèˆŒ å¤æ»´ç¨½æˆšé™¥. æˆš é‰¢æžç´šæˆš ç³Žä»™é¦¬æ¾—èµ°
+é£ŸæŽ¡ç ” ç¡ç„¼æ²™é™¥.
 .IP "\fB\-bc\fP"
-"%build" ´Ü°è¸¦ ¼öÇàÇÑ´Ù.( prep ´Ü°è¸¦ ÇÑ ÈÄ ) 
-º¸Åë make ¿¡ ÇØ´çÇÏ´Â ÀÏÀ» ÇØ³½´Ù.
+"%build" èˆ˜åŸŸç ” å‘ªæ¥³å»ƒé™¥.( prep èˆ˜åŸŸç ” å»ƒ æ¿ ) 
+å·¦æ­ make æ‹­ èƒŒé›é¦¬æ¾— æžè– èƒŒæµ¬é™¥.
 .IP "\fB\-bi\fP"
-"%install" ´Ü°è¸¦ ¼öÇàÇÑ´Ù.( prep, build ´Ü°è¸¦ °ÅÄ£ ÈÄ )
-º¸Åë make install ¿¡ ÇØ´çÇÏ´Â ÀÏÀ» ÇÑ´Ù.
+"%install" èˆ˜åŸŸç ” å‘ªæ¥³å»ƒé™¥.( prep, build èˆ˜åŸŸç ” æš—åº æ¿ )
+å·¦æ­ make install æ‹­ èƒŒé›é¦¬æ¾— æžè– å»ƒé™¥.
 .IP "\fB\-bb\fP"
-¹ÙÀÌ³Ê¸® ÆÐÅ°Áö¸¦ ¸¸µç´Ù.( prep, build, install ´Ü°è¸¦ ¼öÇàÇÑ ÈÄ )
+éƒŠæˆšæ ¼è»’ é³¶å¾¹èµ°ç ” å¹»çª®é™¥.( prep, build, install èˆ˜åŸŸç ” å‘ªæ¥³å»ƒ æ¿ )
 .IP "\fB\-ba\fP"
-¹ÙÀÌ³Ê¸®¿Í ¼Ò½º ÆÐÅ°Áö¸¦ ¸¸µç´Ù.( prep, build, install ´Ü°è¸¦ ¼öÇàÇÑ ÈÄ )
+éƒŠæˆšæ ¼è»’äºº ç¤¾ä»€ é³¶å¾¹èµ°ç ” å¹»çª®é™¥.( prep, build, install èˆ˜åŸŸç ” å‘ªæ¥³å»ƒ æ¿ )
 .PP
-´ÙÀ½ ¿É¼Çµµ »ç¿ë°¡´ÉÇÏ´Ù:
+é™¥è£½ è¾›èŠäº€ ç´«é‚äºœç®¡é¦¬é™¥:
 .IP "\fB\-\-short\-circuit\fP"
-Áß°£ ´Ü°è¸¦ °ÅÄ¡Áö ¾Ê°í ÁöÁ¤ÇÑ ´Ü°è·Î Á÷Á¢ ÀÌµ¿ÇÑ´Ù.
-\fB\-bc\fP ¿Í \fB\-bi\fPÇÏ°í¸¸ ¾µ ¼ö ÀÖ´Ù.
+æŽ»å¨ƒ èˆ˜åŸŸç ” æš—å¸–èµ° çœå£± èµ°èˆ›å»ƒ èˆ˜åŸŸç¨½ é€ç¾¨ æˆšç–‘å»ƒé™¥.
+\fB\-bc\fP äºº \fB\-bi\fPé¦¬å£±å¹» æ‰¿ å‘ª èµ¤é™¥.
 .IP "\fB\-\-timecheck\fP"
-"½Ã°£Á¡°Ë"À» 0 ( ºÒ°¡´É )À¸·Î ¼³Á¤ÇÑ´Ù. ÀÌ °ªÀº rpmrc ¿¡¼­ "timecheck:" ·Î
-¼³Á¤ÇÒ ¼ö ÀÖ´Ù. ½Ã°£Á¡°Ë°ªÀº ÃÊ·Î Ç¥½ÃµÇ´Âµ¥ È­ÀÏÀÌ ÆÐÅ°Â¡µÇ´Â °É¸®´Â ÃÖ´ë
-½Ã°£À» Á¤ÇÑ´Ù. ½Ã°£À» ÃÊ°úÇÏ´Â È­ÀÏµé¿¡ ´ëÇÏ¿© °æ°í ¸Þ½ÃÁö°¡ Ãâ·ÂµÈ´Ù. 
+"ç£å¨ƒç¹Šä¼Š"è– 0 ( ç½äºœç®¡ )ç”Ÿç¨½ ç«ºèˆ›å»ƒé™¥. æˆš è‘µç²¾ rpmrc æ‹­è¾ž "timecheck:" ç¨½
+ç«ºèˆ›æ‹ å‘ª èµ¤é™¥. ç£å¨ƒç¹Šä¼Šè‘µç²¾ æ®µç¨½ å¦Šç£éž æ¾—æ±½ é‰¢æžæˆš é³¶å¾¹è‡“éž æ¾— æè»’æ¾— ç½®ä¼
+ç£å¨ƒè– èˆ›å»ƒé™¥. ç£å¨ƒè– æ®µå¼•é¦¬æ¾— é‰¢æžç´šæ‹­ ä¼é¦¬é£Ÿ äº•å£± äº”ç£èµ°äºœ çª’å¾„å‰é™¥. 
 .IP "\fB\-\-clean\fP"
-ÆÐÅ°Áö¸¦ ¸¸µç ÈÄ build µð·ºÅä¸®¸¦ Áö¿î´Ù.
+é³¶å¾¹èµ°ç ” å¹»çª® æ¿ build å·¨åˆ‘å¡˜è»’ç ” èµ°éŒ˜é™¥.
 .IP "\fB\-\-test\fP"
-¾î¶°ÇÑ build ´Ü°è¸¦ °ÅÄ¡Áö ¾Ê´Â´Ù.
-½ºÆå È­ÀÏÀ» Å×½ºÆ®ÇÒ ¶§ À¯¿ëÇÏ´Ù.
+å¬¢å½Šå»ƒ build èˆ˜åŸŸç ” æš—å¸–èµ° çœæ¾—é™¥.
+ä»€è–™ é‰¢æžè– ç ºä»€é—˜æ‹ å‡¶ æ”¿é‚é¦¬é™¥.
 .IP "\fB\-\-sign\fP"
-ÆÐÅ°Áö ¾È¿¡ PGP ¼­¸íÀ» ³Ö´Â´Ù. ÆÐÅ°Áö¸¦ ´©°¡ ¸¸µé¾ú´ÂÁö È®ÀÎÇÒ ¼ö ÀÖ´Ù.
-/etc/rpmrc ¿¡ ´ëÇÑ ¼³¸íÀº PGP ¼­¸í ¼½¼ÇÀ» ÀÐ¾îº¸¶ó.
+é³¶å¾¹èµ° ç…§æ‹­ PGP è¾žèª¤è– éš”æ¾—é™¥. é³¶å¾¹èµ°ç ” åˆŠäºœ å¹»ç´šé†¸æ¾—èµ° æºŒæ˜”æ‹ å‘ª èµ¤é™¥.
+/etc/rpmrc æ‹­ ä¼å»ƒ ç«ºèª¤ç²¾ PGP è¾žèª¤ æ‚‰èŠè– çŸ³å¬¢å·¦è™ž.
 
-.SH ÀçÁ¦ÀÛ, ÀçÄÄÆÄÀÏ ¿É¼Ç
+.SH ä»™è–¦æ‹™, ä»™é™³ç£æž è¾›èŠ
 
-´Ü µÎ °¡Áö¸¸ ÀÖÀ» »ÓÀÌ´Ù:
+èˆ˜ ç § äºœèµ°å¹» èµ¤è– å±æˆšé™¥:
 
-.I "\fBrpm \-\-recompile <¼Ò½ºÆÐÅ°ÁöÈ­ÀÏ>+\fP"
+.I "\fBrpm \-\-recompile <ç¤¾ä»€é³¶å¾¹èµ°é‰¢æž>+\fP"
 
-.I "\fBrpm \-\-rebuild <¼Ò½ºÆÐÅ°ÁöÈ­ÀÏ>+\fP"
+.I "\fBrpm \-\-rebuild <ç¤¾ä»€é³¶å¾¹èµ°é‰¢æž>+\fP"
 
-rpm Àº ÁÖ¾îÁø ¼Ò½º ÆÐÅ°Áö¸¦ ¼³Ä¡ÇÏ°í prep, ÄÄÆÄÀÏ, ¼³Ä¡¸¦ ÇØÁØ´Ù.
-\fB\-\-rebuild\fP´Â »õ·Î¿î ¹ÙÀÌ³Ê¸® ÆÐÅ°Áöµµ ¸¸µé¾îÁØ´Ù.
-Á¦ÀÛÀ» ¸¶Ä¡¸é build µð·ºÅä¸®´Â \fB\-\-clean\fP ¿É¼Ç¿¡¼­¿Í ¸¶Âù°¡Áö·Î
-Áö¿öÁø´Ù. ÆÐÅ°Áö·ÎºÎÅÍ ³ª¿Â ¼Ò½º¿Í ½ºÆåÈ­ÀÏÀº »èÁ¦µÈ´Ù.
+rpm ç²¾ çˆ½å¬¢é­ ç¤¾ä»€ é³¶å¾¹èµ°ç ” ç«ºå¸–é¦¬å£± prep, é™³ç£æž, ç«ºå¸–ç ” èƒŒå±¤é™¥.
+\fB\-\-rebuild\fPæ¾— æ­¯ç¨½éŒ˜ éƒŠæˆšæ ¼è»’ é³¶å¾¹èµ°äº€ å¹»ç´šå¬¢å±¤é™¥.
+è–¦æ‹™è– åŽŸå¸–æªŽ build å·¨åˆ‘å¡˜è»’æ¾— \fB\-\-clean\fP è¾›èŠæ‹­è¾žäºº åŽŸæ¿äºœèµ°ç¨½
+èµ°è¶¨é­é™¥. é³¶å¾¹èµ°ç¨½æŽ¡æ–— èŸ¹ç´³ ç¤¾ä»€äºº ä»€è–™é‰¢æžç²¾ è‚¢è–¦å‰é™¥.
 
-.SH ±âÁ¸ÀÇ RPM¿¡ ¼­¸íÇÏ±â
+.SH å¥„ç³Žç¨Ž RPMæ‹­ è¾žèª¤é¦¬å¥„
 
-.I "\fBrpm \-\-resign <¹ÙÀÌ³Ê¸®ÆÐÅ°ÁöÈ­ÀÏ>+\fP"
+.I "\fBrpm \-\-resign <éƒŠæˆšæ ¼è»’é³¶å¾¹èµ°é‰¢æž>+\fP"
 
-ÆÐÅ°Áö È­ÀÏ¿¡ »õ·Î¿î ¼­¸íÀ» ÇÑ´Ù. ±âÁ¸ÀÇ ¼­¸íÀº »èÁ¦µÈ´Ù.
+é³¶å¾¹èµ° é‰¢æžæ‹­ æ­¯ç¨½éŒ˜ è¾žèª¤è– å»ƒé™¥. å¥„ç³Žç¨Ž è¾žèª¤ç²¾ è‚¢è–¦å‰é™¥.
 
-.SH PGP ¼­¸í
+.SH PGP è¾žèª¤
 
-¼­¸í ±â´ÉÀ» »ç¿ëÇÏ±â À§ÇØ¼­´Â PGP ¸¦ »ç¿ëÇÒ ¼ö ÀÖ¾î¾ß ÇÑ´Ù.( ¿©·¯ºÐÀÇ ÆÐ½º
-°É¸° µð·ºÅä¸® ¼³Ä¡µÇ¾î ÀÖ¾î¾ß ÇÑ´Ù ) ±×¸®°í RPM °ø°³Å°¸¦ Æ÷ÇÔÇÏ´Â °ø°³Å° ¸µÀ»
-Ã£À» ¼ö ÀÖ¾î¾ß ÇÑ´Ù. ±âº»ÀûÀ¸·Î RPMÀº PGPPATH¿¡¼­ Áö½ÃÇÏ´Â PGP ±âº» ¼³Á¤À»
-»ç¿ëÇÑ´Ù. PGP°¡ ±âº»ÀûÀ¸·Î »ç¿ëÇÏ´Â Å°¸µÀ» °®°í ÀÖÁö ¾ÊÀ» ¶§´Â /etc/rpmrc
-È­ÀÏ¿¡ ´ÙÀ½°ú °°ÀÌ ¼³Á¤ÇØµÎ¾î¾ß ÇÑ´Ù.
+è¾žèª¤ å¥„ç®¡è– ç´«é‚é¦¬å¥„ æ˜¯èƒŒè¾žæ¾— PGP ç ” ç´«é‚æ‹ å‘ª èµ¤å¬¢é†¤ å»ƒé™¥.( é£Ÿå›æ­³ç¨Ž é³¶ä»€
+æéµ å·¨åˆ‘å¡˜è»’ ç«ºå¸–éž å¬¢ èµ¤å¬¢é†¤ å»ƒé™¥ ) ç›Šè»’å£± RPM å› é¯µå¾¹ç ” åŒ‚æ•—é¦¬æ¾— å› é¯µå¾¹ å…ƒè–
+é”è– å‘ª èµ¤å¬¢é†¤ å»ƒé™¥. å¥„æ²™æ—‹ç”Ÿç¨½ RPMç²¾ PGPPATHæ‹­è¾ž èµ°ç£é¦¬æ¾— PGP å¥„æ²™ ç«ºèˆ›è–
+ç´«é‚å»ƒé™¥. PGPäºœ å¥„æ²™æ—‹ç”Ÿç¨½ ç´«é‚é¦¬æ¾— å¾¹å…ƒè– æ¡å£± èµ¤èµ° çœè– å‡¶æ¾— /etc/rpmrc
+é‰¢æžæ‹­ é™¥è£½å¼• æ—­æˆš ç«ºèˆ›èƒŒç §å¬¢é†¤ å»ƒé™¥.
 
 .IP "\fBpgp_path\fP"
-/usr/lib/rpm ´ë½Å ¾²ÀÏ °æ·Î¸í. ¿©·¯ºÐÀÇ Å°¸µÀ» Æ÷ÇÔÇØ¾ß ÇÑ´Ù.
+/usr/lib/rpm ä¼é‡ åºŠæž äº•ç¨½èª¤. é£Ÿå›æ­³ç¨Ž å¾¹å…ƒè– åŒ‚æ•—èƒŒé†¤ å»ƒé™¥.
 .PP
 
-¿©·¯ºÐÀÌ ¸¸µç ÆÐÅ°Áö¿¡ ¼­¸íÀ» ÇÏ·Á¸é, ¿©·¯ºÐÀº ÀÚ½ÅÀÇ °ø°³Å°¿Í ºñ¹ÐÅ° ÇÑ ½ÖÀ»
-¸¸µé¾îµÎ¾î¾ß ÇÑ´Ù.( PGP ¸Å´º¾ó Âü°í )
-/etc/rpmrc ¿¡ Àû´Â °Í ¸»°íµµ ´ÙÀ½ »çÇ×À» Ãß°¡ÇØ¾ß ÇÑ´Ù:
+é£Ÿå›æ­³æˆš å¹»çª® é³¶å¾¹èµ°æ‹­ è¾žèª¤è– é¦¬å½¢æªŽ, é£Ÿå›æ­³ç²¾ åˆ‡é‡ç¨Ž å› é¯µå¾¹äºº æ¾è…”å¾¹ å»ƒ çž¬è–
+å¹»ç´šå¬¢ç §å¬¢é†¤ å»ƒé™¥.( PGP å¤æ•¢æ– å‡§å£± )
+/etc/rpmrc æ‹­ æ—‹æ¾— ä¾ æºå£±äº€ é™¥è£½ ç´«ç‰Œè– è“„äºœèƒŒé†¤ å»ƒé™¥:
 
 .IP "\fBsignature\fP"
-¼­¸í À¯Çü. ÇöÀç·Î¼­´Â pgp ¸¸ Áö¿øµÈ´Ù.
+è¾žèª¤ æ”¿èŽ«. è–„ä»™ç¨½è¾žæ¾— pgp å¹» èµ°æ®å‰é™¥.
 .IP "\fBpgp_name\fP"
-¿©·¯ºÐÀÇ ÆÐÅ°Áö¿¡ ¼­¸íÇÒ user ¸íÀ» Àû´Â´Ù.
+é£Ÿå›æ­³ç¨Ž é³¶å¾¹èµ°æ‹­ è¾žèª¤æ‹ user èª¤è– æ—‹æ¾—é™¥.
 .PP
 
-ÆÐÅ°Áö Á¦ÀÛ½Ã \-\-sign ¿É¼ÇÀ» Ãß°¡ÇÑ´Ù.
-¿©·¯ºÐÀÇ ÀÔ·ÂÀ» ¹Þ°í ³ª¸é ÆÐÅ°Áö°¡ ¸¸µé¾îÁö°í µ¿½Ã¿¡ ¼­¸íµÈ´Ù.
+é³¶å¾¹èµ° è–¦æ‹™ç£ \-\-sign è¾›èŠè– è“„äºœå»ƒé™¥.
+é£Ÿå›æ­³ç¨Ž è„Šå¾„è– é–¤å£± èŸ¹æªŽ é³¶å¾¹èµ°äºœ å¹»ç´šå¬¢èµ°å£± ç–‘ç£æ‹­ è¾žèª¤å‰é™¥.
 
-.SH µ¥ÀÌÅÍº£ÀÌ½º Àç»ý¼º ¿É¼Ç
+.SH æ±½æˆšæ–—ä»Šæˆšä»€ ä»™æŒå¤± è¾›èŠ
 
-rpm µ¥ÀÌÅÍº£ÀÌ½º¸¦ ´Ù½Ã ¸¸µå´Â ¸í·ÉÀº ´ÙÀ½°ú °°´Ù.
+rpm æ±½æˆšæ–—ä»Šæˆšä»€ç ” é™¥ç£ å¹»çƒæ¾— èª¤æ•¬ç²¾ é™¥è£½å¼• æ—­é™¥.
 .PP
 	\fBrpm \-\-rebuilddb\fP
 .PP
 
-ÀÌ ¸ðµå¿Í »ç¿ëµÇ´Â ¿É¼ÇÀ¸·Î´Â \fB-\-dbpath\fP ¿Í \fB-\-root\fP µÑ »ÓÀÌ´Ù.
+æˆš ä¹žçƒäºº ç´«é‚éž æ¾— è¾›èŠç”Ÿç¨½æ¾— \fB-\-dbpath\fP äºº \fB-\-root\fP å´ å±æˆšé™¥.
 
-.SH °ü·Ã È­ÀÏ
+.SH æ·«æµ é‰¢æž
 .nf
 /etc/rpmrc
 ~/.rpmrc
@@ -337,19 +337,19 @@ rpm µ¥ÀÌÅÍº£ÀÌ½º¸¦ ´Ù½Ã ¸¸µå´Â ¸í·ÉÀº ´ÙÀ½°ú °°´Ù.
 /tmp/rpm*
 .fi
 .El
-.SH Âü°í
+.SH å‡§å£±
 .IR glint (8) ,
 .IR rpm2cpio (8) ,
 .B http://www.redhat.com/rpm
 .nf
-.SH ÀúÀÚ
+.SH ç…½åˆ‡
 .nf
 Marc Ewing <marc@redhat.com>
 Erik Troan <ewt@redhat.com>
 .fi
-.SH ¹ø¿ªÀÚ
+.SH è…°è•åˆ‡
 .br
-ÀÌ ¸¸ ¿ë
+æˆš å¹» é‚
 .B <geoman@nownuri.nowcom.co.kr>
 .br
 .B "         <freeyong@soback.kornet.nm.kr>"
