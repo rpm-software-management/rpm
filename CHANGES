@@ -125,6 +125,7 @@
 	- support for rpmlib(...) internal feature dependencies.
 	- display rpmlib provides when invoked with --showrc.
 	- fix: compare versions if doing --freshen.
+	- disable rpmlib(VersionedDependencies) by defining _noVersionedDependencies.
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

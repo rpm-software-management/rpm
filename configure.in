@@ -365,8 +365,7 @@ done
 dnl zlib-1.0.4 has not gzseek
 AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK)])
 
-AC_CHECK_LIB(bz2, bzread, 
-  [LIBS="$LIBS -lbz2"; break], 
+AC_CHECK_LIB(bz2, bzread, [LIBS="$LIBS -lbz2"], 
    AC_CHECK_LIB(bz2, BZ2_bzread, [
      LIBS="$LIBS -lbz2"
      AC_DEFINE(HAVE_BZ2_1_0) ], 

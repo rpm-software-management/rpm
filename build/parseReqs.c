@@ -148,7 +148,8 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag,
 	    case RPMTAG_PROVIDEFLAGS:
 	    case RPMTAG_OBSOLETEFLAGS:
 		/* Add prereq on rpmlib that has versioned dependencies. */
-		rpmlibNeedsFeature(h, "VersionedDependencies", "3.0.3-1");
+		if (!rpmExpandNumeric("%{_noVersionedDependencies}"))
+		    rpmlibNeedsFeature(h, "VersionedDependencies", "3.0.3-1");
 		break;
 	    default:
 		break;
