@@ -1,5 +1,5 @@
 /** \ingroup py_c
- * \file python/mpw-py.c
+ * \file python/rpmmpw-py.c
  */
 
 #include "system.h"
@@ -848,7 +848,7 @@ fprintf(stderr, "*** mpw_str(%p): \"%s\"\n", a, PyString_AS_STRING(so));
 
 /** \ingroup py_c
  */
-static int mpw_init(mpwObject * z, PyObject *args, PyObject *kwds)
+static int mpw_init(mpwObject * s, PyObject *args, PyObject *kwds)
 	/*@modifies z @*/
 {
     PyObject * o = NULL;
@@ -858,8 +858,8 @@ static int mpw_init(mpwObject * z, PyObject *args, PyObject *kwds)
     if (!PyArg_ParseTuple(args, "|O:Cvt", &o)) return -1;
 
     if (o == NULL) {
-	if (z->n.data == NULL)
-	    mpnsetw(&z->n, 0);
+	if (s->n.data == NULL)
+	    mpnsetw(&s->n, 0);
     } else if (PyInt_Check(o)) {
 	l = PyInt_AsLong(o);
 	words = sizeof(l)/sizeof(words);
@@ -874,34 +874,34 @@ static int mpw_init(mpwObject * z, PyObject *args, PyObject *kwds)
     } else if (PyString_Check(o)) {
 	const unsigned char * hex = PyString_AsString(o);
 	/* XXX TODO: check for hex. */
-	mpnsethex(&z->n, hex);
+	mpnsethex(&s->n, hex);
     } else if (is_mpw(o)) {
 	mpwObject *a = (mpwObject *)o;
-	mpnsize(&z->n, a->n.size);
+	mpnsize(&s->n, a->n.size);
 	if (a->n.size > 0)
-	    mpsetx(z->n.size, z->n.data, a->n.size, a->n.data);
+	    mpsetx(s->n.size, s->n.data, a->n.size, a->n.data);
     } else {
 	PyErr_SetString(PyExc_TypeError, "non-numeric coercion failed (mpw_init)");
 	return -1;
     }
 
     if (words > 0) {
-	mpnsize(&z->n, words);
+	mpnsize(&s->n, words);
 	switch (words) {
 	case 2:
 /*@-shiftimplementation @*/
-	    z->n.data[0] = (l >> 32) & 0xffffffff;
+	    s->n.data[0] = (l >> 32) & 0xffffffff;
 /*@=shiftimplementation @*/
-	    z->n.data[1] = (l      ) & 0xffffffff;
+	    s->n.data[1] = (l      ) & 0xffffffff;
 	    break;
 	case 1:
-	    z->n.data[0] = (l      ) & 0xffffffff;
+	    s->n.data[0] = (l      ) & 0xffffffff;
 	    break;
 	}
     }
 
 if (_mpw_debug)
-fprintf(stderr, "*** mpw_init(%p[%s],%p[%s],%p[%s]):\t", z, lbl(z), args, lbl(args), kwds, lbl(kwds)), mpprintln(stderr, z->n.size, z->n.data);
+fprintf(stderr, "*** mpw_init(%p[%s],%p[%s],%p[%s]):\t", s, lbl(s), args, lbl(args), kwds, lbl(kwds)), mpprintln(stderr, s->n.size, s->n.data);
 
     return 0;
 }
@@ -943,8 +943,8 @@ fprintf(stderr, "*** mpw_new(%p[%s],%p[%s],%p[%s]) ret %p[%s]\n", subtype, lbl(s
     return ns;
 }
 
-static mpwObject *
-mpw_New(void)
+static mpwObject * mpw_New(void)
+	/*@*/
 {
     mpwObject * ns = PyObject_New(mpwObject, &mpw_Type);
 
@@ -953,10 +953,11 @@ mpw_New(void)
 }
 
 /** \ingroup py_c
- * Convert integer to mp.
+ * Convert integer to mpw.
  */
 static mpwObject *
 mpw_i2mpw(PyObject * o)
+	/*@*/
 {
     if (is_mpw(o)) {
 	Py_INCREF(o);

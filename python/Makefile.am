@@ -24,8 +24,9 @@ INCLUDES = -I. \
 	@INCPATH@
 
 noinst_HEADERS = header-py.h \
-	rpmal-py.h rpmbc-py.h rpmds-py.h rpmdb-py.h rpmfd-py.h rpmfts-py.h \
-	rpmfi-py.h rpmmi-py.h rpmmpw-py.h rpmrc-py.h rpmte-py.h rpmts-py.h
+	rpmbc-py.h rpmmpw-py.h rpmrng-py.h \
+	rpmal-py.h rpmds-py.h rpmdb-py.h rpmfd-py.h rpmfts-py.h \
+	rpmfi-py.h rpmmi-py.h rpmrc-py.h rpmte-py.h rpmts-py.h
 
 mylibs= \
 	$(top_builddir)/lib/.libs/librpm.so \
@@ -55,8 +56,9 @@ poptmodule_so_LDFLAGS = $(mylibs) $(LIBS) -shared -Wl,-soname,poptmodule.so
 
 noinst_LTLIBRARIES = librpmmodule.la
 librpmmodule_la_SOURCES = rpmmodule.c header-py.c \
-	rpmal-py.c rpmbc-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c \
-	rpmfi-py.c rpmmi-py.c rpmmpw-py.c rpmrc-py.c rpmte-py.c rpmts-py.c
+	rpmbc-py.c rpmmpw-py.c rpmrng-py.c \
+	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c \
+	rpmfi-py.c rpmmi-py.c rpmrc-py.c rpmte-py.c rpmts-py.c
 
 rpmmodule.so$(EXEEXT): $(librpmmodule_la_OBJECTS)
 	$(CC) -o $@ $(librpmmodule_la_OBJECTS) $(rpmmodule_so_LDFLAGS)
@@ -72,8 +74,9 @@ poptmodule.so$(EXEEXT): poptmodule.lo
 # 	rpmrc-py.c rpmte-py.c rpmts-py.c
 # rpmmodule.c header-py.c
 splint_srcs = \
- 	rpmal-py.c rpmbc-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c \
-	rpmfi-py.c rpmmi-py.c rpmmpw-py.c rpmrc-py.c rpmte-py.c rpmts-py.c
+	rpmbc-py.c rpmmpw-py.c rpmrng-py.c \
+ 	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c \
+	rpmfi-py.c rpmmi-py.c rpmrc-py.c rpmte-py.c rpmts-py.c
 
 .PHONY:	lint
 lint:

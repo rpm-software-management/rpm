@@ -1,23 +1,23 @@
-#ifndef H_RPMMPW_PY
-#define H_RPMMPW_PY
+#ifndef H_RPMRNG_PY
+#define H_RPMRNG_PY
 
 #include "rpmio_internal.h"
 
 /** \ingroup py_c  
- * \file python/rpmmpw-py.h
+ * \file python/rpmrng-py.h
  */
 
 /**
  */
-typedef struct mpwObject_s {
+typedef struct rngObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
-    mpnumber n;
-} mpwObject;
+    randomGeneratorContext rngc;
+} rngObject;
 
 /**
  */
 /*@unchecked@*/
-extern PyTypeObject mpw_Type;
+extern PyTypeObject rng_Type;
 
 #endif

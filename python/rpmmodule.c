@@ -19,14 +19,16 @@
 #include "header_internal.h"
 
 #include "header-py.h"
-#include "rpmal-py.h"
 #include "rpmbc-py.h"
+#include "rpmmpw-py.h"
+#include "rpmrng-py.h"
+
+#include "rpmal-py.h"
 #include "rpmds-py.h"
 #include "rpmfd-py.h"
 #include "rpmfts-py.h"
 #include "rpmfi-py.h"
 #include "rpmmi-py.h"
-#include "rpmmpw-py.h"
 #include "rpmrc-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
@@ -173,6 +175,8 @@ void initrpm(void)
 
 #if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     if (PyType_Ready(&hdr_Type) < 0) return;
+    if (PyType_Ready(&mpw_Type) < 0) return;
+    if (PyType_Ready(&rng_Type) < 0) return;
     if (PyType_Ready(&rpmal_Type) < 0) return;
     if (PyType_Ready(&rpmbc_Type) < 0) return;
     if (PyType_Ready(&rpmds_Type) < 0) return;
@@ -180,7 +184,6 @@ void initrpm(void)
     if (PyType_Ready(&rpmfts_Type) < 0) return;
     if (PyType_Ready(&rpmfi_Type) < 0) return;
     if (PyType_Ready(&rpmmi_Type) < 0) return;
-    if (PyType_Ready(&mpw_Type) < 0) return;
 
     rpmrc_Type.tp_base = &PyDict_Type;
     if (PyType_Ready(&rpmrc_Type) < 0) return;
@@ -214,6 +217,9 @@ void initrpm(void)
     Py_INCREF(&mpw_Type);
     PyModule_AddObject(m, "mpw", (PyObject *) &mpw_Type);
 
+    Py_INCREF(&rng_Type);
+    PyModule_AddObject(m, "rng", (PyObject *) &rng_Type);
+
     Py_INCREF(&rpmal_Type);
     PyModule_AddObject(m, "al", (PyObject *) &rpmal_Type);
 
@@ -245,6 +251,8 @@ void initrpm(void)
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
 #else
     hdr_Type.ob_type = &PyType_Type;
+    mpw_Type.ob_type = &PyType_Type;
+    rng_Type.ob_type = &PyType_Type;
     rpmal_Type.ob_type = &PyType_Type;
     rpmbc_Type.ob_type = &PyType_Type;
     rpmds_Type.ob_type = &PyType_Type;
