@@ -374,7 +374,7 @@ int main(int argc, char ** argv) {
     if (rpmReadConfigFiles(rcfile, arch, os, building))  
 	exit(1);
     if (showrc) {
-	showRc(stdout);
+	rpmShowRC(stdout);
 	exit(0);
     }
 
@@ -426,10 +426,10 @@ int main(int argc, char ** argv) {
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
 		argerror(_("only one major mode may be specified"));
 	    bigMode = MODE_UNINSTALL;
-	    message(MESS_WARNING, _("-u and --uninstall are depricated and will"
-		    " be removed soon.\n"));
-	    message(MESS_WARNING, _("Use -e or --erase instead.\n"));
-	    break;
+	    message(MESS_ERROR, _("-u and --uninstall are depricated and no"
+		    " longer work.\n"));
+	    message(MESS_ERROR, _("Use -e or --erase instead.\n"));
+	    exit(1);
 	
 	  case 'e':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
