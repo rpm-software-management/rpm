@@ -48,6 +48,7 @@
 	- updated perl scripts (Ken Estes).
 	- fix: on --rebuilddb, make sure new/old paths are not the same (#8752).
 	- fix: on --erase, segfault caused by "" prefix.
+	- explicitly expand file lists in writeRPM for rpmputtext.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

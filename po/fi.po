@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-01-24 08:20-0500\n"
+"POT-Creation-Date: 2000-01-24 15:37-0500\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -1370,710 +1370,710 @@ msgstr "virhe etsittäessä pakettia %s\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "en voinut avata tiedostoa %s: "
 
-#: build/build.c:105 build/pack.c:269
+#: build/build.c:110 build/pack.c:312
 #, fuzzy
 msgid "Unable to open temp file"
 msgstr "En voi avata %s luettavaksi: %s."
 
-#: build/build.c:184
+#: build/build.c:189
 #, fuzzy, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Haen: %s\n"
 
-#: build/build.c:190
+#: build/build.c:195
 #, fuzzy, c-format
 msgid "Exec of %s failed (%s): %s"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: build/build.c:198
+#: build/build.c:203
 #, c-format
 msgid "Bad exit status from %s (%s)"
 msgstr ""
 
-#: build/expression.c:207
+#: build/expression.c:211
 #, fuzzy
 msgid "syntax error while parsing =="
 msgstr "odotin '?'-merkkiä ilmauksessa"
 
-#: build/expression.c:237
+#: build/expression.c:241
 #, fuzzy
 msgid "syntax error while parsing &&"
 msgstr "odotin '?'-merkkiä ilmauksessa"
 
-#: build/expression.c:246
+#: build/expression.c:250
 #, fuzzy
 msgid "syntax error while parsing ||"
 msgstr "odotin '?'-merkkiä ilmauksessa"
 
-#: build/expression.c:288
+#: build/expression.c:292
 #, fuzzy
 msgid "parse error in expression"
 msgstr "odotin '?'-merkkiä ilmauksessa"
 
-#: build/expression.c:318
+#: build/expression.c:321
 msgid "unmatched ("
 msgstr ""
 
-#: build/expression.c:336
+#: build/expression.c:339
 msgid "undefined identifier"
 msgstr ""
 
-#: build/expression.c:355
+#: build/expression.c:358
 msgid "- only on numbers"
 msgstr ""
 
-#: build/expression.c:371
+#: build/expression.c:374
 msgid "! only on numbers"
 msgstr ""
 
-#: build/expression.c:410 build/expression.c:455 build/expression.c:512
-#: build/expression.c:599
+#: build/expression.c:413 build/expression.c:458 build/expression.c:515
+#: build/expression.c:602
 msgid "types must match"
 msgstr ""
 
-#: build/expression.c:423
+#: build/expression.c:426
 msgid "* / not suported for strings"
 msgstr ""
 
-#: build/expression.c:471
+#: build/expression.c:474
 msgid "- not suported for strings"
 msgstr ""
 
-#: build/expression.c:612
+#: build/expression.c:615
 msgid "&& and || not suported for strings"
 msgstr ""
 
-#: build/expression.c:645 build/expression.c:692
+#: build/expression.c:649 build/expression.c:697
 #, fuzzy
 msgid "syntax error in expression"
 msgstr "odotin '?'-merkkiä ilmauksessa"
 
-#: build/files.c:199
+#: build/files.c:204
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:243 build/files.c:325 build/files.c:488
+#: build/files.c:249 build/files.c:331 build/files.c:494
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s"
 msgstr "puuttuva '{' '%':n jälkeen"
 
-#: build/files.c:254 build/files.c:442 build/files.c:499
+#: build/files.c:260 build/files.c:448 build/files.c:505
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s"
 msgstr "puuttuva ':', %s:%d"
 
-#: build/files.c:292 build/files.c:467
+#: build/files.c:298 build/files.c:473
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr ""
 
-#: build/files.c:341
+#: build/files.c:347
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr ""
 
-#: build/files.c:379
+#: build/files.c:385
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:389
+#: build/files.c:395
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:401
+#: build/files.c:407
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr ""
 
-#: build/files.c:525
+#: build/files.c:531
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:535
+#: build/files.c:541
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:630
+#: build/files.c:637
 msgid "Hit limit for %%docdir"
 msgstr ""
 
-#: build/files.c:636
+#: build/files.c:643
 msgid "Only one arg for %%docdir"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:661
+#: build/files.c:668
 #, fuzzy, c-format
 msgid "Two files on one line: %s"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:674
+#: build/files.c:681
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s"
 msgstr "siirtojen pitää alkaa /-merkillä"
 
-#: build/files.c:686
+#: build/files.c:693
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: build/files.c:772
+#: build/files.c:779
 #, fuzzy, c-format
 msgid "File listed twice: %s"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:865
+#: build/files.c:872
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
-#: build/files.c:945
+#: build/files.c:952
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "En voi lukea %s: %s."
 
-#: build/files.c:955
+#: build/files.c:962
 #, fuzzy, c-format
 msgid "File not found: %s"
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
-#: build/files.c:998
+#: build/files.c:1005
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1012
+#: build/files.c:1019
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/files.c:1086
+#: build/files.c:1093
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: build/files.c:1115
+#: build/files.c:1122
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Tiedostoa ei löytynyt palvelimelta"
 
-#: build/files.c:1157
+#: build/files.c:1164
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/files.c:1164 build/pack.c:485
+#: build/files.c:1171 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: build/files.c:1498 build/parsePrep.c:30
+#: build/files.c:1507 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1553
+#: build/files.c:1562
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "En voinut ajaa pgp:tä"
 
-#: build/files.c:1558
+#: build/files.c:1567
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "En voinut ajaa pgp:tä"
 
-#: build/files.c:1640
+#: build/files.c:1649
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "pgp epäonnistui"
 
-#: build/files.c:1644
+#: build/files.c:1653
 #, fuzzy, c-format
 msgid "failed to write all data to %s"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:1733
+#: build/files.c:1743
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:1761 build/files.c:1770
+#: build/files.c:1771 build/files.c:1780
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: build/files.c:1876
+#: build/files.c:1887
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "en voinut avata %s: %s"
 
-#: build/names.c:41 build/names.c:73
+#: build/names.c:46 build/names.c:79
 msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
 msgstr ""
 
-#: build/names.c:106 build/names.c:138
+#: build/names.c:113 build/names.c:146
 msgid "RPMERR_INTERNAL: Hit limit in getGname()\n"
 msgstr ""
 
-#: build/names.c:176
+#: build/names.c:186
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: build/pack.c:132
-#, c-format
-msgid "Could not generate output filename for package %s: %s\n"
-msgstr ""
-
-#: build/pack.c:149
-#, fuzzy, c-format
-msgid "cannot create %s: %s\n"
-msgstr "en voinut avata tiedostoa %s: "
-
-#: build/pack.c:186
-#, fuzzy, c-format
-msgid "readRPM: open %s: %s\n"
-msgstr "en voinut avata %s: %s"
-
-#: build/pack.c:196
-#, fuzzy, c-format
-msgid "readRPM: read %s: %s\n"
-msgstr "En voi lukea %s: %s."
-
-#: build/pack.c:217
-#, fuzzy, c-format
-msgid "readRPM: %s is not an RPM package\n"
-msgstr "virhe: %s ei vaikuta RPM paketilta\n"
-
-#: build/pack.c:223
-#, fuzzy, c-format
-msgid "readRPM: reading header from %s\n"
-msgstr "virhe luettaessa tietuetta %s %s:stä"
-
-#: build/pack.c:281
-msgid "Bad CSA data"
-msgstr ""
-
-#: build/pack.c:316
-#, fuzzy, c-format
-msgid "Could not open %s: %s\n"
-msgstr "%s:n avaus epäonnistui\n"
-
-#: build/pack.c:348
-#, fuzzy, c-format
-msgid "Unable to write package: %s"
-msgstr "%s:n kirjoitus ei onnistu"
-
-#: build/pack.c:363
-#, fuzzy, c-format
-msgid "Generating signature: %d\n"
-msgstr "generoi PGP-allekirjoitus"
-
-#: build/pack.c:379
-#, fuzzy, c-format
-msgid "Unable to open sigtarget %s: %s"
-msgstr "%s:n kirjoitus ei onnistu"
-
-#: build/pack.c:389
-#, fuzzy, c-format
-msgid "Unable to read sigtarget %s: %s"
-msgstr "%s:n kirjoitus ei onnistu"
-
-#: build/pack.c:399
-#, fuzzy, c-format
-msgid "Unable to write package %s: %s"
-msgstr "%s:n kirjoitus ei onnistu"
-
-#: build/pack.c:414
-#, c-format
-msgid "Wrote: %s\n"
-msgstr ""
-
-#: build/pack.c:433
+#: build/pack.c:47
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s"
 msgstr "en voinut avata %s: %s"
 
-#: build/pack.c:453
+#: build/pack.c:67
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr ""
 
-#: build/pack.c:460
+#: build/pack.c:74
 #, fuzzy, c-format
 msgid "cpio_copy read failed: %s"
 msgstr "luku epäonnistui: %s (%d)"
 
-#: build/pack.c:540
+#: build/pack.c:154
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/pack.c:547
+#: build/pack.c:161
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/pack.c:554
+#: build/pack.c:168
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/pack.c:561
+#: build/pack.c:175
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "virhe: tiedostoa %s ei voi avata\n"
 
-#: build/pack.c:569
+#: build/pack.c:183
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr ""
 
-#: build/pack.c:584
+#: build/pack.c:198
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr ""
 
-#: build/parseBuildInstallClean.c:27
+#: build/pack.c:225
+#, fuzzy, c-format
+msgid "readRPM: open %s: %s\n"
+msgstr "en voinut avata %s: %s"
+
+#: build/pack.c:235
+#, fuzzy, c-format
+msgid "readRPM: read %s: %s\n"
+msgstr "En voi lukea %s: %s."
+
+#: build/pack.c:256
+#, fuzzy, c-format
+msgid "readRPM: %s is not an RPM package\n"
+msgstr "virhe: %s ei vaikuta RPM paketilta\n"
+
+#: build/pack.c:262
+#, fuzzy, c-format
+msgid "readRPM: reading header from %s\n"
+msgstr "virhe luettaessa tietuetta %s %s:stä"
+
+#: build/pack.c:324
+msgid "Bad CSA data"
+msgstr ""
+
+#: build/pack.c:359
+#, fuzzy, c-format
+msgid "Could not open %s: %s\n"
+msgstr "%s:n avaus epäonnistui\n"
+
+#: build/pack.c:391
+#, fuzzy, c-format
+msgid "Unable to write package: %s"
+msgstr "%s:n kirjoitus ei onnistu"
+
+#: build/pack.c:406
+#, fuzzy, c-format
+msgid "Generating signature: %d\n"
+msgstr "generoi PGP-allekirjoitus"
+
+#: build/pack.c:422
+#, fuzzy, c-format
+msgid "Unable to open sigtarget %s: %s"
+msgstr "%s:n kirjoitus ei onnistu"
+
+#: build/pack.c:432
+#, fuzzy, c-format
+msgid "Unable to read sigtarget %s: %s"
+msgstr "%s:n kirjoitus ei onnistu"
+
+#: build/pack.c:442
+#, fuzzy, c-format
+msgid "Unable to write package %s: %s"
+msgstr "%s:n kirjoitus ei onnistu"
+
+#: build/pack.c:457
+#, c-format
+msgid "Wrote: %s\n"
+msgstr ""
+
+#: build/pack.c:519
+#, c-format
+msgid "Could not generate output filename for package %s: %s\n"
+msgstr ""
+
+#: build/pack.c:536
+#, fuzzy, c-format
+msgid "cannot create %s: %s\n"
+msgstr "en voinut avata tiedostoa %s: "
+
+#: build/parseBuildInstallClean.c:31
 #, c-format
 msgid "line %d: second %s"
 msgstr ""
 
-#: build/parseChangelog.c:103
+#: build/parseChangelog.c:108
 msgid "%%changelog entries must start with *"
 msgstr ""
 
-#: build/parseChangelog.c:111
+#: build/parseChangelog.c:116
 msgid "incomplete %%changelog entry"
 msgstr ""
 
-#: build/parseChangelog.c:126
+#: build/parseChangelog.c:131
 msgid "bad date in %%changelog: %s"
 msgstr ""
 
-#: build/parseChangelog.c:131
+#: build/parseChangelog.c:136
 msgid "%%changelog not in decending chronological order"
 msgstr ""
 
-#: build/parseChangelog.c:139 build/parseChangelog.c:150
+#: build/parseChangelog.c:144 build/parseChangelog.c:155
 msgid "missing name in %%changelog"
 msgstr ""
 
-#: build/parseChangelog.c:157
+#: build/parseChangelog.c:162
 msgid "no description in %%changelog"
 msgstr ""
 
-#: build/parseDescription.c:33
+#: build/parseDescription.c:38
 msgid "line %d: Error parsing %%description: %s"
 msgstr ""
 
-#: build/parseDescription.c:46 build/parseFiles.c:40 build/parseScript.c:168
+#: build/parseDescription.c:51 build/parseFiles.c:45 build/parseScript.c:173
 #, fuzzy, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "en voinut avata %s: %s"
 
-#: build/parseDescription.c:59 build/parseFiles.c:53 build/parseScript.c:181
+#: build/parseDescription.c:64 build/parseFiles.c:58 build/parseScript.c:186
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr ""
 
-#: build/parseDescription.c:69 build/parseFiles.c:63 build/parseScript.c:191
+#: build/parseDescription.c:74 build/parseFiles.c:68 build/parseScript.c:196
 #, fuzzy, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "paketti %s ei ole %s:ssä"
 
-#: build/parseDescription.c:81
+#: build/parseDescription.c:86
 #, c-format
 msgid "line %d: Second description"
 msgstr ""
 
-#: build/parseFiles.c:27
+#: build/parseFiles.c:32
 msgid "line %d: Error parsing %%files: %s"
 msgstr ""
 
-#: build/parseFiles.c:71
+#: build/parseFiles.c:76
 msgid "line %d: Second %%files list"
 msgstr ""
 
-#: build/parsePreamble.c:145
+#: build/parsePreamble.c:149
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr ""
 
-#: build/parsePreamble.c:150
+#: build/parsePreamble.c:154
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr ""
 
-#: build/parsePreamble.c:155
+#: build/parsePreamble.c:159
 #, c-format
 msgid "OS is excluded: %s"
 msgstr ""
 
-#: build/parsePreamble.c:160
+#: build/parsePreamble.c:164
 #, c-format
 msgid "OS is not included: %s"
 msgstr ""
 
-#: build/parsePreamble.c:174
+#: build/parsePreamble.c:178
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr ""
 
-#: build/parsePreamble.c:199
+#: build/parsePreamble.c:203
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr ""
 
-#: build/parsePreamble.c:246
+#: build/parsePreamble.c:250
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/parsePreamble.c:264
+#: build/parsePreamble.c:268
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/parsePreamble.c:277
+#: build/parsePreamble.c:281
 #, fuzzy, c-format
 msgid "Unknown icon type: %s"
 msgstr "(tuntematon tyyppi)"
 
-#: build/parsePreamble.c:339
+#: build/parsePreamble.c:344
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr ""
 
 #. Empty field
-#: build/parsePreamble.c:347
+#: build/parsePreamble.c:352
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:370 build/parsePreamble.c:377
+#: build/parsePreamble.c:375 build/parsePreamble.c:382
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "en voinut avata %s: %s"
 
-#: build/parsePreamble.c:441 build/parseSpec.c:366
+#: build/parsePreamble.c:446 build/parseSpec.c:375
 #, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr ""
 
-#: build/parsePreamble.c:454
+#: build/parsePreamble.c:459
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr ""
 
-#: build/parsePreamble.c:466
+#: build/parsePreamble.c:471
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "siirtojen pitää alkaa /-merkillä"
 
-#: build/parsePreamble.c:478
+#: build/parsePreamble.c:483
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/parsePreamble.c:541
+#: build/parsePreamble.c:546
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "%s:n puuttuva arkkitehtuuri %s:%d"
 
-#: build/parsePreamble.c:551
+#: build/parsePreamble.c:556
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: build/parsePreamble.c:689
+#: build/parsePreamble.c:695
 #, fuzzy, c-format
 msgid "Bad package specification: %s"
 msgstr "      Paketin määrittelyparametrit:"
 
-#: build/parsePreamble.c:695
+#: build/parsePreamble.c:701
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: build/parsePreamble.c:722
+#: build/parsePreamble.c:728
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: build/parsePreamble.c:747
+#: build/parsePreamble.c:753
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
-#: build/parsePrep.c:26
+#: build/parsePrep.c:30
 #, fuzzy, c-format
 msgid "Bad source: %s: %s"
 msgstr "En voi lukea %s: %s."
 
-#: build/parsePrep.c:53
+#: build/parsePrep.c:57
 #, fuzzy, c-format
 msgid "No patch number %d"
 msgstr "(ei ole luku)"
 
-#: build/parsePrep.c:134
+#: build/parsePrep.c:138
 #, c-format
 msgid "No source number %d"
 msgstr ""
 
-#: build/parsePrep.c:153
+#: build/parsePrep.c:157
 #, fuzzy, c-format
 msgid "Couldn't download nosource %s: %s"
 msgstr "En voi lukea %s: %s."
 
-#: build/parsePrep.c:219
+#: build/parsePrep.c:223
 msgid "Error parsing %%setup: %s"
 msgstr ""
 
-#: build/parsePrep.c:234
+#: build/parsePrep.c:238
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr ""
 
-#: build/parsePrep.c:252
+#: build/parsePrep.c:256
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr ""
 
-#: build/parsePrep.c:379
+#: build/parsePrep.c:383
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr ""
 
-#: build/parsePrep.c:387
+#: build/parsePrep.c:391
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr ""
 
-#: build/parsePrep.c:399
+#: build/parsePrep.c:403
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:405
+#: build/parsePrep.c:409
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr ""
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:416
 msgid "Too many patches!"
 msgstr ""
 
-#: build/parsePrep.c:416
+#: build/parsePrep.c:420
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr ""
 
-#: build/parsePrep.c:452
+#: build/parsePrep.c:457
 msgid "line %d: second %%prep"
 msgstr ""
 
-#: build/parseReqs.c:91
+#: build/parseReqs.c:96
 #, fuzzy, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
 msgstr "siirtojen pitää alkaa /-merkillä"
 
-#: build/parseReqs.c:102
+#: build/parseReqs.c:107
 #, fuzzy, c-format
 msgid "line %d: File name not permitted: %s"
 msgstr "paketti %s ei ole %s:ssä"
 
-#: build/parseReqs.c:134
+#: build/parseReqs.c:139
 #, fuzzy, c-format
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr "paketti %s ei ole %s:ssä"
 
-#: build/parseReqs.c:146
+#: build/parseReqs.c:151
 #, fuzzy, c-format
 msgid "line %d: Version not permitted: %s"
 msgstr "paketti %s ei ole %s:ssä"
 
-#: build/parseReqs.c:172
+#: build/parseReqs.c:177
 #, fuzzy, c-format
 msgid "line %d: Version required: %s"
 msgstr "en voinut avata %s: %s"
 
-#: build/parseScript.c:136
+#: build/parseScript.c:141
 #, c-format
 msgid "line %d: triggers must have --: %s"
 msgstr ""
 
-#: build/parseScript.c:146 build/parseScript.c:209
+#: build/parseScript.c:151 build/parseScript.c:214
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr ""
 
-#: build/parseScript.c:156
+#: build/parseScript.c:161
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
 msgstr ""
 
-#: build/parseScript.c:200
+#: build/parseScript.c:205
 #, c-format
 msgid "line %d: Second %s"
 msgstr ""
 
-#: build/parseSpec.c:129
+#: build/parseSpec.c:135
 #, fuzzy, c-format
 msgid "line %d: %s"
 msgstr "en voinut avata %s: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:179
+#: build/parseSpec.c:186
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "%s:n avaus epäonnistui\n"
 
-#: build/parseSpec.c:191
+#: build/parseSpec.c:198
 msgid "Unclosed %%if"
 msgstr ""
 
-#: build/parseSpec.c:252
+#: build/parseSpec.c:259
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: build/parseSpec.c:260
+#: build/parseSpec.c:267
 msgid "%s:%d: Got a %%else with no if"
 msgstr ""
 
 #. Got an end with no %if !
-#: build/parseSpec.c:271
+#: build/parseSpec.c:278
 msgid "%s:%d: Got a %%endif with no if"
 msgstr ""
 
-#: build/parseSpec.c:285 build/parseSpec.c:294
+#: build/parseSpec.c:292 build/parseSpec.c:301
 msgid "malformed %%include statement"
 msgstr ""
 
-#: build/parseSpec.c:461
+#: build/parseSpec.c:470
 #, fuzzy
 msgid "No buildable architectures"
 msgstr "älä tarkista paketin arkkitehtuuria"
 
-#: build/parseSpec.c:509
+#: build/parseSpec.c:518
 #, fuzzy
 msgid "Package has no %%description: %s"
 msgstr "paketti %s ei ole %s:ssä"
 
-#: build/spec.c:31
+#: build/spec.c:35
 #, c-format
 msgid "archive = %s, fs = %s\n"
 msgstr ""
 
-#: build/spec.c:237
+#: build/spec.c:246
 #, fuzzy, c-format
 msgid "line %d: Bad number: %s"
 msgstr "virheellinen paketin numero: %s\n"
 
-#: build/spec.c:243
+#: build/spec.c:252
 #, c-format
 msgid "line %d: Bad no%s number: %d"
 msgstr ""
 
-#: build/spec.c:301
+#: build/spec.c:311
 #, fuzzy, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
@@ -2350,7 +2350,7 @@ msgstr "odotin '}'-merkkiä ilmauksen lopussa"
 msgid "(unknown type)"
 msgstr "(tuntematon tyyppi)"
 
-#: lib/install.c:142 lib/uninstall.c:195
+#: lib/install.c:142 lib/uninstall.c:191
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
 msgstr "en voinut avata %s: %s"
@@ -2420,7 +2420,7 @@ msgstr "kysy pakettia, jonka omistuksessa <tiedosto> on"
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:28
+#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:30
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "%s:n nimeäminen %s:ksi epäonnistui: %s"
@@ -3042,7 +3042,7 @@ msgstr "paketti %s ei ole %s:ssä"
 msgid "package %s not found in %s"
 msgstr "paketti %s ei ole %s:ssä"
 
-#: lib/rpmdb.c:508 lib/uninstall.c:87
+#: lib/rpmdb.c:508 lib/uninstall.c:90
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "en voi lukea headeria %d:stä poistamiseen"
@@ -3546,40 +3546,40 @@ msgstr "virhe luotaessa hakemistoa %s: %s"
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/uninstall.c:39
+#: lib/uninstall.c:41
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "en voi poistaa %s -hakemisto ei ole tyhjä"
 
-#: lib/uninstall.c:42
+#: lib/uninstall.c:44
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "%s:n rmdir epäonnistui: %s"
 
-#: lib/uninstall.c:50
+#: lib/uninstall.c:52
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr "%s:n poisto epäonnistui: %s"
 
-#: lib/uninstall.c:99
+#: lib/uninstall.c:104
 #, fuzzy, c-format
 msgid "cannot read packages named %s for uninstall"
 msgstr "en voi lukea headeria %d:stä poistamiseen"
 
-#: lib/uninstall.c:132
+#: lib/uninstall.c:137
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:209
+#: lib/uninstall.c:205
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:223
+#: lib/uninstall.c:219
 msgid "removing database entry\n"
 msgstr ""
 
-#: lib/uninstall.c:408
+#: lib/uninstall.c:404
 msgid "execution of script failed"
 msgstr "skriptin ajo epäonnistui"
 
@@ -3619,30 +3619,30 @@ msgstr "virhe: ftpport pitää olla luku\n"
 msgid "failed to create %s: %s\n"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: lib/verify.c:38
+#: lib/verify.c:39
 #, fuzzy
 msgid "don't verify files in package"
 msgstr "asenna paketti"
 
-#: lib/verify.c:213
+#: lib/verify.c:215
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr ""
 
-#: lib/verify.c:231
+#: lib/verify.c:233
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 
-#: lib/verify.c:266
+#: lib/verify.c:269
 #, fuzzy, c-format
 msgid "missing    %s\n"
 msgstr "puuttuva '{' '%':n jälkeen"
 
-#: lib/verify.c:328
+#: lib/verify.c:331
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s:n tyydyttämättömät riippuvuudet:"
 
-#: lib/verify.c:376
+#: lib/verify.c:381
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "%s: avaus ei onnistunut\n"

@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.4
 Version: %{version}
-Release: 0.34
+Release: 0.35
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -105,7 +105,7 @@ rm -rf $RPM_BUILD_ROOT
 %ifos linux
 if [ ! -e /etc/rpm/macros -a -e /etc/rpmrc -a -f /usr/lib/rpm/convertrpmrc.sh ] 
 then
-	sh /usr/lib/rpm/convertrpmrc.sh 2>&1 > /dev/null
+	sh /usr/lib/rpm/convertrpmrc.sh > /dev/null 2>&1
 fi
 %endif
 
@@ -168,3 +168,7 @@ fi
 /usr/lib/libpopt.la
 /usr/lib/libpopt.so
 /usr/include/popt.h
+
+%changelog
+* Mon Jan 24 2000 Jeff Johnson <jbj@redhat.com>
+- explicitly expand file lists in writeRPM for rpmputtext.

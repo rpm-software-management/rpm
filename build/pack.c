@@ -295,7 +295,10 @@ int writeRPM(Header h, const char *fileName, int type,
 		&csa->cpioArchiveSize, 1);
     }
 
-    if (!_noDirTokens) compressFilelist(h);
+    if (_noDirTokens)
+	expandFilelist(h);
+    else
+    	compressFilelist(h);
 
     /* Create and add the cookie */
     if (cookie) {

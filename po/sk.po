@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-01-24 08:20-0500\n"
+"POT-Creation-Date: 2000-01-24 15:37-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -1307,706 +1307,706 @@ msgstr "chyba pri èítaní hlavièky balíka\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "nie je mo¾né otvori» súbor %s\n"
 
-#: build/build.c:105 build/pack.c:269
+#: build/build.c:110 build/pack.c:312
 msgid "Unable to open temp file"
 msgstr "Nie je mo¾né otvori» doèasný súbor"
 
-#: build/build.c:184
+#: build/build.c:189
 #, fuzzy, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Vykonáva sa: %s\n"
 
-#: build/build.c:190
+#: build/build.c:195
 #, fuzzy, c-format
 msgid "Exec of %s failed (%s): %s"
 msgstr "Vykonanie %s zlyhalo (%s)"
 
-#: build/build.c:198
+#: build/build.c:203
 #, c-format
 msgid "Bad exit status from %s (%s)"
 msgstr "Chybný výstupný kód z %s (%s)"
 
-#: build/expression.c:207
+#: build/expression.c:211
 #, fuzzy
 msgid "syntax error while parsing =="
 msgstr "chyba syntaxe vo výraze"
 
-#: build/expression.c:237
+#: build/expression.c:241
 #, fuzzy
 msgid "syntax error while parsing &&"
 msgstr "chyba syntaxe vo výraze"
 
-#: build/expression.c:246
+#: build/expression.c:250
 #, fuzzy
 msgid "syntax error while parsing ||"
 msgstr "chyba syntaxe vo výraze"
 
-#: build/expression.c:288
+#: build/expression.c:292
 msgid "parse error in expression"
 msgstr "chyba pri analýze výrazu"
 
-#: build/expression.c:318
+#: build/expression.c:321
 msgid "unmatched ("
 msgstr "nepárová ("
 
-#: build/expression.c:336
+#: build/expression.c:339
 msgid "undefined identifier"
 msgstr "nedefinovaný identifikátor"
 
-#: build/expression.c:355
+#: build/expression.c:358
 msgid "- only on numbers"
 msgstr "- ibe pre èísla"
 
-#: build/expression.c:371
+#: build/expression.c:374
 msgid "! only on numbers"
 msgstr "! iba pre èísla"
 
-#: build/expression.c:410 build/expression.c:455 build/expression.c:512
-#: build/expression.c:599
+#: build/expression.c:413 build/expression.c:458 build/expression.c:515
+#: build/expression.c:602
 msgid "types must match"
 msgstr "typy sa musia zhodova»"
 
-#: build/expression.c:423
+#: build/expression.c:426
 msgid "* / not suported for strings"
 msgstr "* / nie sú podporované pre re»azce"
 
-#: build/expression.c:471
+#: build/expression.c:474
 msgid "- not suported for strings"
 msgstr "- nie je podporované pre re»azce"
 
-#: build/expression.c:612
+#: build/expression.c:615
 msgid "&& and || not suported for strings"
 msgstr "&& a || nie sú podporované pre re»azce"
 
-#: build/expression.c:645 build/expression.c:692
+#: build/expression.c:649 build/expression.c:697
 msgid "syntax error in expression"
 msgstr "chyba syntaxe vo výraze"
 
-#: build/files.c:199
+#: build/files.c:204
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "chyba PREKROÈENIA ÈASU: %s\n"
 
-#: build/files.c:243 build/files.c:325 build/files.c:488
+#: build/files.c:249 build/files.c:331 build/files.c:494
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s"
 msgstr "chýbajúce    %s\n"
 
-#: build/files.c:254 build/files.c:442 build/files.c:499
+#: build/files.c:260 build/files.c:448 build/files.c:505
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s"
 msgstr "chýbajúca ':' na %s:%d"
 
-#: build/files.c:292 build/files.c:467
+#: build/files.c:298 build/files.c:473
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr "Chybný %s prvok: %s"
 
-#: build/files.c:341
+#: build/files.c:347
 #, c-format
 msgid "Non-white space follows %s(): %s"
 msgstr ""
 
-#: build/files.c:379
+#: build/files.c:385
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)"
 msgstr "Chybná %s() syntax: %s"
 
-#: build/files.c:389
+#: build/files.c:395
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)"
 msgstr "Chybná ¹pecifikácia práv %s(): %s"
 
-#: build/files.c:401
+#: build/files.c:407
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)"
 msgstr "Chybná ¹pecifikácia práv adresára %s(): %s"
 
-#: build/files.c:525
+#: build/files.c:531
 #, fuzzy
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr "Iba jeden záznam v %%lang(): %s"
 
-#: build/files.c:535
+#: build/files.c:541
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr ""
 
-#: build/files.c:630
+#: build/files.c:637
 msgid "Hit limit for %%docdir"
 msgstr "Dosiahnutý limit pre %%docdir"
 
-#: build/files.c:636
+#: build/files.c:643
 msgid "Only one arg for %%docdir"
 msgstr "Iba jeden argument pre %%docdir"
 
 #. We already got a file -- error
-#: build/files.c:661
+#: build/files.c:668
 #, c-format
 msgid "Two files on one line: %s"
 msgstr "Dva súbory na riadku: %s"
 
-#: build/files.c:674
+#: build/files.c:681
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr "Súbory musia zaèína» znakom \"/\": %s"
 
-#: build/files.c:686
+#: build/files.c:693
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr "Nie je mo¾né mie¹a» ¹peciálne %%doc s inými formami: %s"
 
-#: build/files.c:772
+#: build/files.c:779
 #, c-format
 msgid "File listed twice: %s"
 msgstr "Súbor zadaný dvakrát: %s."
 
-#: build/files.c:865
+#: build/files.c:872
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s"
 msgstr ""
 
-#: build/files.c:945
+#: build/files.c:952
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr "Súbor nesúhlasí s prefixom (%s): %s."
 
-#: build/files.c:955
+#: build/files.c:962
 #, c-format
 msgid "File not found: %s"
 msgstr "Súbor nebol nájdený: %s"
 
-#: build/files.c:998
+#: build/files.c:1005
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Chybný vlastník/skupina: %s\n"
 
-#: build/files.c:1012
+#: build/files.c:1019
 #, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Súbor %4d: 0%o %s.%s\t %s\n"
 
-#: build/files.c:1086
+#: build/files.c:1093
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr "Súbor potrebuje na zaèiatku \"/\": %s"
 
-#: build/files.c:1115
+#: build/files.c:1122
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
 msgstr "Súbor nebol nájdený: %s"
 
-#: build/files.c:1157
+#: build/files.c:1164
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "chybe: nie je mo¾né otvori» %%files súbor: %s"
 
-#: build/files.c:1164 build/pack.c:485
+#: build/files.c:1171 build/pack.c:99
 #, c-format
 msgid "line: %s"
 msgstr "riadok: %s"
 
-#: build/files.c:1498 build/parsePrep.c:30
+#: build/files.c:1507 build/parsePrep.c:34
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "Chybný vlastník/skupina: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1553
+#: build/files.c:1562
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "Nie je mo¾né spusti» %s"
 
-#: build/files.c:1558
+#: build/files.c:1567
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "Nie je mo¾né vytvori» proces %s"
 
-#: build/files.c:1640
+#: build/files.c:1649
 #, c-format
 msgid "%s failed"
 msgstr "%s zlyhalo"
 
-#: build/files.c:1644
+#: build/files.c:1653
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "nepodarilo sa zapísa» v¹etky dáta do %s"
 
-#: build/files.c:1733
+#: build/files.c:1743
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
 
-#: build/files.c:1761 build/files.c:1770
+#: build/files.c:1771 build/files.c:1780
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
 
-#: build/files.c:1876
+#: build/files.c:1887
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Spracovávajú sa súbory: %s\n"
 
-#: build/names.c:41 build/names.c:73
+#: build/names.c:46 build/names.c:79
 msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
 msgstr "RPMERR_INTERNAL: Dosiahnutý limit v getUname()\n"
 
-#: build/names.c:106 build/names.c:138
+#: build/names.c:113 build/names.c:146
 msgid "RPMERR_INTERNAL: Hit limit in getGname()\n"
 msgstr "RPMERR_INTERNAL: Dosiahnutý limit v getGname()\n"
 
-#: build/names.c:176
+#: build/names.c:186
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "Nie je mo¾né kanonizova» názov poèítaèa: %s\n"
 
-#: build/pack.c:132
-#, c-format
-msgid "Could not generate output filename for package %s: %s\n"
-msgstr "Nie je mo¾né vytvori» meno výstupného súboru pre balík %s: %s\n"
-
-#: build/pack.c:149
-#, fuzzy, c-format
-msgid "cannot create %s: %s\n"
-msgstr "nie je mo¾né zapísa» do %s: "
-
-#: build/pack.c:186
-#, c-format
-msgid "readRPM: open %s: %s\n"
-msgstr "readRPM: otvorenie %s: %s\n"
-
-#: build/pack.c:196
-#, c-format
-msgid "readRPM: read %s: %s\n"
-msgstr "readRPM: èítanie %s: %s\n"
-
-#: build/pack.c:217
-#, c-format
-msgid "readRPM: %s is not an RPM package\n"
-msgstr "readRPM: %s nie je RPM balík\n"
-
-#: build/pack.c:223
-#, c-format
-msgid "readRPM: reading header from %s\n"
-msgstr "readRPM: èítanie hlavièky %s\n"
-
-#: build/pack.c:281
-msgid "Bad CSA data"
-msgstr "Chybné CSA dáta"
-
-#: build/pack.c:316
-#, fuzzy, c-format
-msgid "Could not open %s: %s\n"
-msgstr "Otvorenie %s zlyhalo\n"
-
-#: build/pack.c:348
-#, c-format
-msgid "Unable to write package: %s"
-msgstr "Nie je mo¾né zapísa» balík: %s"
-
-#: build/pack.c:363
-#, c-format
-msgid "Generating signature: %d\n"
-msgstr "Vytvára sa PGP podpis: %d\n"
-
-#: build/pack.c:379
-#, fuzzy, c-format
-msgid "Unable to open sigtarget %s: %s"
-msgstr "Nie je preèíta» sigtarget: %s"
-
-#: build/pack.c:389
-#, fuzzy, c-format
-msgid "Unable to read sigtarget %s: %s"
-msgstr "Nie je preèíta» sigtarget: %s"
-
-#: build/pack.c:399
-#, fuzzy, c-format
-msgid "Unable to write package %s: %s"
-msgstr "Nie je mo¾né zapísa» balík: %s"
-
-#: build/pack.c:414
-#, c-format
-msgid "Wrote: %s\n"
-msgstr "Zapísané: %s\n"
-
-#: build/pack.c:433
+#: build/pack.c:47
 #, c-format
 msgid "create archive failed on file %s: %s"
 msgstr "vytvorenie archívu zlyhalo pri súbore %s: %s"
 
-#: build/pack.c:453
+#: build/pack.c:67
 #, c-format
 msgid "cpio_copy write failed: %s"
 msgstr "cpio_copy zápis zlyhal: %s"
 
-#: build/pack.c:460
+#: build/pack.c:74
 #, c-format
 msgid "cpio_copy read failed: %s"
 msgstr "cpio_copy èítanie zlyhalo: %s"
 
-#: build/pack.c:540
+#: build/pack.c:154
 #, c-format
 msgid "Could not open PreIn file: %s"
 msgstr "Nie je mo¾né otvori» PreIn súbor: %s"
 
-#: build/pack.c:547
+#: build/pack.c:161
 #, c-format
 msgid "Could not open PreUn file: %s"
 msgstr "Nie je mo¾né otvori» PreUn súbor: %s"
 
-#: build/pack.c:554
+#: build/pack.c:168
 #, c-format
 msgid "Could not open PostIn file: %s"
 msgstr "Nie je mo¾né otvori» PostIn súbor: %s"
 
-#: build/pack.c:561
+#: build/pack.c:175
 #, c-format
 msgid "Could not open PostUn file: %s"
 msgstr "Nie je mo¾né otvori» PostUn súbor: %s"
 
-#: build/pack.c:569
+#: build/pack.c:183
 #, c-format
 msgid "Could not open VerifyScript file: %s"
 msgstr "Nie je mo¾né otvori» VerifyScript súbor: %s"
 
-#: build/pack.c:584
+#: build/pack.c:198
 #, c-format
 msgid "Could not open Trigger script file: %s"
 msgstr "Nie je mo¾né otvori» Trigger skriptový súbor: %s"
 
-#: build/parseBuildInstallClean.c:27
+#: build/pack.c:225
+#, c-format
+msgid "readRPM: open %s: %s\n"
+msgstr "readRPM: otvorenie %s: %s\n"
+
+#: build/pack.c:235
+#, c-format
+msgid "readRPM: read %s: %s\n"
+msgstr "readRPM: èítanie %s: %s\n"
+
+#: build/pack.c:256
+#, c-format
+msgid "readRPM: %s is not an RPM package\n"
+msgstr "readRPM: %s nie je RPM balík\n"
+
+#: build/pack.c:262
+#, c-format
+msgid "readRPM: reading header from %s\n"
+msgstr "readRPM: èítanie hlavièky %s\n"
+
+#: build/pack.c:324
+msgid "Bad CSA data"
+msgstr "Chybné CSA dáta"
+
+#: build/pack.c:359
+#, fuzzy, c-format
+msgid "Could not open %s: %s\n"
+msgstr "Otvorenie %s zlyhalo\n"
+
+#: build/pack.c:391
+#, c-format
+msgid "Unable to write package: %s"
+msgstr "Nie je mo¾né zapísa» balík: %s"
+
+#: build/pack.c:406
+#, c-format
+msgid "Generating signature: %d\n"
+msgstr "Vytvára sa PGP podpis: %d\n"
+
+#: build/pack.c:422
+#, fuzzy, c-format
+msgid "Unable to open sigtarget %s: %s"
+msgstr "Nie je preèíta» sigtarget: %s"
+
+#: build/pack.c:432
+#, fuzzy, c-format
+msgid "Unable to read sigtarget %s: %s"
+msgstr "Nie je preèíta» sigtarget: %s"
+
+#: build/pack.c:442
+#, fuzzy, c-format
+msgid "Unable to write package %s: %s"
+msgstr "Nie je mo¾né zapísa» balík: %s"
+
+#: build/pack.c:457
+#, c-format
+msgid "Wrote: %s\n"
+msgstr "Zapísané: %s\n"
+
+#: build/pack.c:519
+#, c-format
+msgid "Could not generate output filename for package %s: %s\n"
+msgstr "Nie je mo¾né vytvori» meno výstupného súboru pre balík %s: %s\n"
+
+#: build/pack.c:536
+#, fuzzy, c-format
+msgid "cannot create %s: %s\n"
+msgstr "nie je mo¾né zapísa» do %s: "
+
+#: build/parseBuildInstallClean.c:31
 #, c-format
 msgid "line %d: second %s"
 msgstr "riadok %d: druhý %s"
 
-#: build/parseChangelog.c:103
+#: build/parseChangelog.c:108
 msgid "%%changelog entries must start with *"
 msgstr "%%changelog záznamy musia zaèína» *"
 
-#: build/parseChangelog.c:111
+#: build/parseChangelog.c:116
 msgid "incomplete %%changelog entry"
 msgstr "nekompletný %%changelog záznam"
 
-#: build/parseChangelog.c:126
+#: build/parseChangelog.c:131
 msgid "bad date in %%changelog: %s"
 msgstr "chybný dátum v %%changelog: %s "
 
-#: build/parseChangelog.c:131
+#: build/parseChangelog.c:136
 msgid "%%changelog not in decending chronological order"
 msgstr "%%changelog nie sú v zostupnom chronologickom poradí"
 
-#: build/parseChangelog.c:139 build/parseChangelog.c:150
+#: build/parseChangelog.c:144 build/parseChangelog.c:155
 msgid "missing name in %%changelog"
 msgstr "chýbajúce meno v %%changelog"
 
-#: build/parseChangelog.c:157
+#: build/parseChangelog.c:162
 msgid "no description in %%changelog"
 msgstr "¾iadny popis v %%changelog"
 
-#: build/parseDescription.c:33
+#: build/parseDescription.c:38
 msgid "line %d: Error parsing %%description: %s"
 msgstr "riadok %d: Chyba pri analýze %%description: %s"
 
-#: build/parseDescription.c:46 build/parseFiles.c:40 build/parseScript.c:168
+#: build/parseDescription.c:51 build/parseFiles.c:45 build/parseScript.c:173
 #, c-format
 msgid "line %d: Bad option %s: %s"
 msgstr "riadok %d: Chybná voµba %s: %s"
 
-#: build/parseDescription.c:59 build/parseFiles.c:53 build/parseScript.c:181
+#: build/parseDescription.c:64 build/parseFiles.c:58 build/parseScript.c:186
 #, c-format
 msgid "line %d: Too many names: %s"
 msgstr "riadok %d: Priveµa názvov: %s"
 
-#: build/parseDescription.c:69 build/parseFiles.c:63 build/parseScript.c:191
+#: build/parseDescription.c:74 build/parseFiles.c:68 build/parseScript.c:196
 #, c-format
 msgid "line %d: Package does not exist: %s"
 msgstr "riadok %d: Balík neexistuje: %s"
 
-#: build/parseDescription.c:81
+#: build/parseDescription.c:86
 #, c-format
 msgid "line %d: Second description"
 msgstr "riadok %d: Druhý popis"
 
-#: build/parseFiles.c:27
+#: build/parseFiles.c:32
 msgid "line %d: Error parsing %%files: %s"
 msgstr "riadok %d: Chyba pri analýze %%files: %s"
 
-#: build/parseFiles.c:71
+#: build/parseFiles.c:76
 msgid "line %d: Second %%files list"
 msgstr "riadok %d: Druhý %%files zoznam"
 
-#: build/parsePreamble.c:145
+#: build/parsePreamble.c:149
 #, c-format
 msgid "Architecture is excluded: %s"
 msgstr "Architektúra je vynechaná: %s"
 
-#: build/parsePreamble.c:150
+#: build/parsePreamble.c:154
 #, c-format
 msgid "Architecture is not included: %s"
 msgstr "Architektúra nie je obsiahnutá: %s"
 
-#: build/parsePreamble.c:155
+#: build/parsePreamble.c:159
 #, c-format
 msgid "OS is excluded: %s"
 msgstr "OS je vynechaný: %s"
 
-#: build/parsePreamble.c:160
+#: build/parsePreamble.c:164
 #, c-format
 msgid "OS is not included: %s"
 msgstr "OS nie je obsiahnutý: %s"
 
-#: build/parsePreamble.c:174
+#: build/parsePreamble.c:178
 #, c-format
 msgid "%s field must be present in package: %s"
 msgstr "V balíku musí existova» pole %s: %s"
 
-#: build/parsePreamble.c:199
+#: build/parsePreamble.c:203
 #, c-format
 msgid "Duplicate %s entries in package: %s"
 msgstr "Duplicitné záznamy %s v balíku: %s"
 
-#: build/parsePreamble.c:246
+#: build/parsePreamble.c:250
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: build/parsePreamble.c:264
+#: build/parsePreamble.c:268
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: build/parsePreamble.c:277
+#: build/parsePreamble.c:281
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr "Neznámy typ ikony: %s"
 
-#: build/parsePreamble.c:339
+#: build/parsePreamble.c:344
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr "riadok %d: Znetvorený popis: %s"
 
 #. Empty field
-#: build/parsePreamble.c:347
+#: build/parsePreamble.c:352
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr "riadok %d: Prázdny popis: %s"
 
-#: build/parsePreamble.c:370 build/parsePreamble.c:377
+#: build/parsePreamble.c:375 build/parsePreamble.c:382
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
 msgstr "riadok %d: Neprípustný znak '-' v %s: %s"
 
-#: build/parsePreamble.c:441 build/parseSpec.c:366
+#: build/parsePreamble.c:446 build/parseSpec.c:375
 #, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s"
 msgstr "riadok %d: BuildRoot nemô¾e by» \"/\": %s"
 
-#: build/parsePreamble.c:454
+#: build/parsePreamble.c:459
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr "riadok %d: Prefixy nesmú konèi» \"/\": %s"
 
-#: build/parsePreamble.c:466
+#: build/parsePreamble.c:471
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr "riadok %d: Docdir musí zaèína» '/': %s"
 
-#: build/parsePreamble.c:478
+#: build/parsePreamble.c:483
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr "riadok %d: Epoch/Serial pole musí by» èíslo: %s"
 
-#: build/parsePreamble.c:541
+#: build/parsePreamble.c:546
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr "riadok %d: Chybný formát BuildArchitecture: %s"
 
-#: build/parsePreamble.c:551
+#: build/parsePreamble.c:556
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr "Interná chyba: Èudný popis %d "
 
-#: build/parsePreamble.c:689
+#: build/parsePreamble.c:695
 #, c-format
 msgid "Bad package specification: %s"
 msgstr "Chybná ¹pecifikácia balíka: %s"
 
-#: build/parsePreamble.c:695
+#: build/parsePreamble.c:701
 #, c-format
 msgid "Package already exists: %s"
 msgstr "Balík u¾ existuje: %s"
 
-#: build/parsePreamble.c:722
+#: build/parsePreamble.c:728
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr "riadok %d: Neznámy popis: %s"
 
-#: build/parsePreamble.c:747
+#: build/parsePreamble.c:753
 msgid "Spec file can't use BuildRoot"
 msgstr "Spec súbor nemô¾e pou¾i» BuildRoot"
 
-#: build/parsePrep.c:26
+#: build/parsePrep.c:30
 #, c-format
 msgid "Bad source: %s: %s"
 msgstr "Chybný zdroj %s: %s"
 
-#: build/parsePrep.c:53
+#: build/parsePrep.c:57
 #, c-format
 msgid "No patch number %d"
 msgstr "Neexistuje patch èíslo %d"
 
-#: build/parsePrep.c:134
+#: build/parsePrep.c:138
 #, c-format
 msgid "No source number %d"
 msgstr "Neexistuje zdroj èíslo %d"
 
-#: build/parsePrep.c:153
+#: build/parsePrep.c:157
 #, c-format
 msgid "Couldn't download nosource %s: %s"
 msgstr "Nebolo mo¾né prenies» nie-zdroj %s: %s"
 
-#: build/parsePrep.c:219
+#: build/parsePrep.c:223
 msgid "Error parsing %%setup: %s"
 msgstr "Chyba pri analýze %%setup: %s"
 
-#: build/parsePrep.c:234
+#: build/parsePrep.c:238
 msgid "line %d: Bad arg to %%setup %c: %s"
 msgstr "riadok %d: Chybný argument pre %%setup %c: %s"
 
-#: build/parsePrep.c:252
+#: build/parsePrep.c:256
 msgid "line %d: Bad %%setup option %s: %s"
 msgstr "riadok %d: Chybná voµba pre %%setup %s: %s"
 
-#: build/parsePrep.c:379
+#: build/parsePrep.c:383
 msgid "line %d: Need arg to %%patch -b: %s"
 msgstr "riadok %d: %%patch -b potrebuje argument: %s"
 
-#: build/parsePrep.c:387
+#: build/parsePrep.c:391
 msgid "line %d: Need arg to %%patch -z: %s"
 msgstr "riadok %d: %%patch -z potrebuje argument: %s"
 
-#: build/parsePrep.c:399
+#: build/parsePrep.c:403
 msgid "line %d: Need arg to %%patch -p: %s"
 msgstr "riadok %d: %%patch -p potrebuje argument: %s"
 
-#: build/parsePrep.c:405
+#: build/parsePrep.c:409
 msgid "line %d: Bad arg to %%patch -p: %s"
 msgstr "riadok %d: Chybný argument pre %%patch -p: %s"
 
-#: build/parsePrep.c:412
+#: build/parsePrep.c:416
 msgid "Too many patches!"
 msgstr "Priveµa záplat!"
 
-#: build/parsePrep.c:416
+#: build/parsePrep.c:420
 msgid "line %d: Bad arg to %%patch: %s"
 msgstr "riadok %d: Chybný argument pre %%patch: %s"
 
-#: build/parsePrep.c:452
+#: build/parsePrep.c:457
 msgid "line %d: second %%prep"
 msgstr "riadok %d: druhý %%prep"
 
-#: build/parseReqs.c:91
+#: build/parseReqs.c:96
 #, fuzzy, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
 msgstr "riadok %d: %s: prvky musia zaèína» alfanumerickým znakom: %s"
 
-#: build/parseReqs.c:102
+#: build/parseReqs.c:107
 #, fuzzy, c-format
 msgid "line %d: File name not permitted: %s"
 msgstr "riadok %d: Obsoletes: neobsahuje ¾iadne názvy súborov: %s"
 
-#: build/parseReqs.c:134
+#: build/parseReqs.c:139
 #, fuzzy, c-format
 msgid "line %d: Versioned file name not permitted: %s"
 msgstr "riadok %d: Názvy súborov v %s neobsahujú verzie: %s"
 
-#: build/parseReqs.c:146
+#: build/parseReqs.c:151
 #, fuzzy, c-format
 msgid "line %d: Version not permitted: %s"
 msgstr "riadok %d: V %s sú vy¾adované verzie: %s"
 
-#: build/parseReqs.c:172
+#: build/parseReqs.c:177
 #, fuzzy, c-format
 msgid "line %d: Version required: %s"
 msgstr "riadok %d: V %s sú vy¾adované verzie: %s"
 
-#: build/parseScript.c:136
+#: build/parseScript.c:141
 #, c-format
 msgid "line %d: triggers must have --: %s"
 msgstr "riadok %d: triggers musia obsahova» --: %s"
 
-#: build/parseScript.c:146 build/parseScript.c:209
+#: build/parseScript.c:151 build/parseScript.c:214
 #, c-format
 msgid "line %d: Error parsing %s: %s"
 msgstr "riadok %d: Chyba pri analýze %s: %s"
 
-#: build/parseScript.c:156
+#: build/parseScript.c:161
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
 msgstr "riadok %d: program skriptu musí zaèína» '/': %s"
 
-#: build/parseScript.c:200
+#: build/parseScript.c:205
 #, c-format
 msgid "line %d: Second %s"
 msgstr "riadok %d: Druhý %s"
 
-#: build/parseSpec.c:129
+#: build/parseSpec.c:135
 #, c-format
 msgid "line %d: %s"
 msgstr "riadok %d: %s"
 
 #. XXX Fstrerror
-#: build/parseSpec.c:179
+#: build/parseSpec.c:186
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "otvorenie zlyhalo: %s\n"
 
-#: build/parseSpec.c:191
+#: build/parseSpec.c:198
 msgid "Unclosed %%if"
 msgstr "Neuzavretý %%if"
 
-#: build/parseSpec.c:252
+#: build/parseSpec.c:259
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
 msgstr ""
 
 #. Got an else with no %if !
-#: build/parseSpec.c:260
+#: build/parseSpec.c:267
 msgid "%s:%d: Got a %%else with no if"
 msgstr "%s:%d: %%else bez if"
 
 #. Got an end with no %if !
-#: build/parseSpec.c:271
+#: build/parseSpec.c:278
 msgid "%s:%d: Got a %%endif with no if"
 msgstr "%s:%d: %%endif bez if"
 
-#: build/parseSpec.c:285 build/parseSpec.c:294
+#: build/parseSpec.c:292 build/parseSpec.c:301
 msgid "malformed %%include statement"
 msgstr "znetvorený príkaz %%include"
 
-#: build/parseSpec.c:461
+#: build/parseSpec.c:470
 msgid "No buildable architectures"
 msgstr "®iadne zostaviteµné architektúry"
 
-#: build/parseSpec.c:509
+#: build/parseSpec.c:518
 msgid "Package has no %%description: %s"
 msgstr "Balík neobsahuje %%description: %s"
 
-#: build/spec.c:31
+#: build/spec.c:35
 #, c-format
 msgid "archive = %s, fs = %s\n"
 msgstr "archív = %s, fs = %s\n"
 
-#: build/spec.c:237
+#: build/spec.c:246
 #, c-format
 msgid "line %d: Bad number: %s"
 msgstr "riadok %d: Chybné èíslo: %s"
 
-#: build/spec.c:243
+#: build/spec.c:252
 #, c-format
 msgid "line %d: Bad no%s number: %d"
 msgstr "riadok %d: Chybné no%s èíslo: %d"
 
-#: build/spec.c:301
+#: build/spec.c:311
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "riadok %d: Chybné %s èíslo: %s\n"
@@ -2278,7 +2278,7 @@ msgstr "| oèakávené na konci výrazu"
 msgid "(unknown type)"
 msgstr "(neznámy typ)"
 
-#: lib/install.c:142 lib/uninstall.c:195
+#: lib/install.c:142 lib/uninstall.c:191
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "   súbor: akcia %s: %s\n"
@@ -2346,7 +2346,7 @@ msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 msgid "renaming %s to %s\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:28
+#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:30
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "premenovanie %s na %s zlyhalo: %s"
@@ -2955,7 +2955,7 @@ msgstr "balík %s nie je uvedený v %s"
 msgid "package %s not found in %s"
 msgstr "balík %s nebol nájdený v %s"
 
-#: lib/rpmdb.c:508 lib/uninstall.c:87
+#: lib/rpmdb.c:508 lib/uninstall.c:90
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre odin¹talovanie"
@@ -3436,40 +3436,40 @@ msgstr "presúva sa %s do %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s vynechané kvôli príznaku missingok\n"
 
-#: lib/uninstall.c:39
+#: lib/uninstall.c:41
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "nie je mo¾né odstráni» %s - adresár nie je prázdny"
 
-#: lib/uninstall.c:42
+#: lib/uninstall.c:44
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "rmdir %s zlyhalo: %s"
 
-#: lib/uninstall.c:50
+#: lib/uninstall.c:52
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr "odstránenie %s zlyhalo: %s"
 
-#: lib/uninstall.c:99
+#: lib/uninstall.c:104
 #, c-format
 msgid "cannot read packages named %s for uninstall"
 msgstr "nie je mo¾né preèíta» balíky %s pre odin¹talovanie"
 
-#: lib/uninstall.c:132
+#: lib/uninstall.c:137
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "budú sa odstraòova» súbory test = %d\n"
 
-#: lib/uninstall.c:209
+#: lib/uninstall.c:205
 msgid "running postuninstall script (if any)\n"
 msgstr "vykonávajú sa postdein¹talaèné skripty (ak existujú)\n"
 
-#: lib/uninstall.c:223
+#: lib/uninstall.c:219
 msgid "removing database entry\n"
 msgstr "odstraòuje sa záznam z databázy\n"
 
-#: lib/uninstall.c:408
+#: lib/uninstall.c:404
 msgid "execution of script failed"
 msgstr "vykonanie skriptu zlyhalo"
 
@@ -3508,34 +3508,34 @@ msgstr "url port musí by» èíslo\n"
 msgid "failed to create %s: %s\n"
 msgstr "nepodarilo sa vytvori» %s\n"
 
-#: lib/verify.c:38
+#: lib/verify.c:39
 #, fuzzy
 msgid "don't verify files in package"
 msgstr "zobrazi» súbory v balíku"
 
-#: lib/verify.c:213
+#: lib/verify.c:215
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr ""
 "v balíku chýba tak meno pou¾ívateµa, ako aj zoznamy identifikácií (nemalo by "
 "sa nikdy sta»)"
 
-#: lib/verify.c:231
+#: lib/verify.c:233
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 "v balíku chýba tak meno skupiny, ako aj zoznamy identifikácií (nemalo by sa "
 "nikdy sta»)"
 
-#: lib/verify.c:266
+#: lib/verify.c:269
 #, c-format
 msgid "missing    %s\n"
 msgstr "chýbajúce    %s\n"
 
-#: lib/verify.c:328
+#: lib/verify.c:331
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 
-#: lib/verify.c:376
+#: lib/verify.c:381
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() zlyhalo\n"
