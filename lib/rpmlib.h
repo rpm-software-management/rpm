@@ -401,7 +401,8 @@ typedef enum rpmfileState_e {
     RPMFILE_STATE_NORMAL 	= 0,
     RPMFILE_STATE_REPLACED 	= 1,
     RPMFILE_STATE_NOTINSTALLED	= 2,
-    RPMFILE_STATE_NETSHARED	= 3
+    RPMFILE_STATE_NETSHARED	= 3,
+    RPMFILE_STATE_WRONGCOLOR	= 4
 } rpmfileState;
 #define	RPMFILE_STATE_MISSING	-1	/* XXX used for unavailable data */
 
@@ -787,11 +788,11 @@ typedef enum fileAction_e {
     FA_ERASE,		/*!< ... to be removed. */
     FA_SKIPNSTATE,	/*!< ... untouched, state "not installed". */
     FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
-    FA_SKIPMULTILIB	/*!< ... untouched. @todo state "multilib" ???. */
+    FA_SKIPCOLOR	/*!< ... untouched, state "wrong color". */
 } fileAction;
 
 #define XFA_SKIPPING(_a)	\
-    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
+    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPCOLOR)
 
 /**
  * File types.

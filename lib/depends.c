@@ -127,7 +127,8 @@ static int removePackage(rpmts ts, Header h, int dboffset,
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    uint_32 tscolor = rpmtsColor(ts);
+    uint_32 dscolor;
     int isSource;
     int duplicate = 0;
     rpmtsi pi; rpmte p;
@@ -138,7 +139,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int ec = 0;
     int rc;
     int oc;
-uint_32 *mlmp, multiLibMask, oldMultiLibMask;
 
     /*
      * Check for previously added versions with the same name.
@@ -201,7 +201,7 @@ uint_32 *mlmp, multiLibMask, oldMultiLibMask;
     
     pkgKey = rpmalAdd(&ts->addedPackages, pkgKey, rpmteKey(p),
 			rpmteDS(p, RPMTAG_PROVIDENAME),
-			rpmteFI(p, RPMTAG_BASENAMES));
+			rpmteFI(p, RPMTAG_BASENAMES), tscolor);
     if (pkgKey == RPMAL_NOMATCH) {
 /*@-boundswrite@*/
 	ts->order[oc] = rpmteFree(ts->order[oc]);
@@ -210,26 +210,6 @@ uint_32 *mlmp, multiLibMask, oldMultiLibMask;
 	goto exit;
     }
     (void) rpmteSetAddedKey(p, pkgKey);
-
-#ifdef	NOYET
-    /* XXX MULTLIBTODO: search over ts->order, not ts->addedPackages */
-
-    multiLibMask = 0;
-    if (hge(h, RPMTAG_MULTILIBMASK, NULL, (void **) &mlmp, NULL)
-    && mlmp != NULL)
-	multiLibMask = *mlmp;
-
-    if (multiLibMask) {
-	for (i = 0; i < ts->orderCount - 1; i++) {
-	    if (!strcmp (rpmteN(p), al->list[i].name)
-		&& hge(al->list[i].h, RPMTAG_MULTILIBMASK, NULL,
-				  (void **) &mlmp, NULL)
-		&& !rpmVersionCompare(p->h, al->list[i].h)
-		&& *mlmp && !(*mlmp & multiLibMask))
-		    (void) rpmteSetMultiLib(p, multiLibMask);
-	}
-    }
-#endif
 
     if (!duplicate) {
 	ts->numAddedPackages++;
@@ -248,35 +228,6 @@ uint_32 *mlmp, multiLibMask, oldMultiLibMask;
 	    goto exit;
     }
 
-/*@-boundsread@*/
-    {	rpmdbMatchIterator mi;
-	Header oh;
-
-	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
-	while((oh = rpmdbNextIterator(mi)) != NULL) {
-	    if (rpmVersionCompare(h, oh))
-		xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
-	    else {
-
-		mlmp = NULL;
-		oldMultiLibMask = 0;
-		if (hge(oh, RPMTAG_MULTILIBMASK, NULL, (void **) &mlmp, NULL))
-		    oldMultiLibMask = *mlmp;
-		mlmp = NULL;
-		multiLibMask = 0;
-		if (hge(h, RPMTAG_MULTILIBMASK, NULL, (void **) &mlmp, NULL))
-		    multiLibMask = *mlmp;
-		if (oldMultiLibMask && multiLibMask
-		 && !(oldMultiLibMask & multiLibMask))
-		{
-		    (void) rpmteSetMultiLib(p, multiLibMask);
-		}
-	    }
-	}
-	mi = rpmdbFreeIterator(mi);
-    }
-/*@=boundsread@*/
-
     obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), "Obsoletes");
     obsoletes = rpmdsInit(obsoletes);
     if (obsoletes != NULL)
@@ -285,6 +236,11 @@ uint_32 *mlmp, multiLibMask, oldMultiLibMask;
 
 	if ((Name = rpmdsN(obsoletes)) == NULL)
 	    continue;	/* XXX can't happen */
+
+	/* Ignore colored obsoletes not in our rainbow. */
+	dscolor = rpmdsColor(obsoletes);
+	if (tscolor && dscolor && !(tscolor & dscolor))
+	    continue;
 
 	/* XXX avoid self-obsoleting packages. */
 	if (!strcmp(rpmteN(p), Name))
@@ -569,20 +525,20 @@ exit:
  * @param requires	Requires: dependencies (or NULL)
  * @param conflicts	Conflicts: dependencies (or NULL)
  * @param depName	dependency name to filter (or NULL)
- * @param multiLib	skip multilib colored dependencies?
+ * @param tscolor	color bits for transaction set (0 disables)
  * @param adding	dependency is from added package set?
  * @return		0 no problems found
  */
 static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 		/*@null@*/ rpmds requires, /*@null@*/ rpmds conflicts,
-		/*@null@*/ const char * depName, uint_32 multiLib, int adding)
+		/*@null@*/ const char * depName, uint_32 tscolor, int adding)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies ts, requires, conflicts, rpmGlobalMacroContext,
 		fileSystem, internalState */
 {
+    uint_32 dscolor;
     const char * Name;
-    int_32 Flags;
     int rc;
     int ourrc = 0;
 
@@ -597,11 +553,9 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 	if (depName != NULL && strcmp(depName, Name))
 	    continue;
 
-	Flags = rpmdsFlags(requires);
-
-	/* If this requirement comes from the core package only, not libraries,
-	   then if we're installing the libraries only, don't count it in. */
-	if (multiLib && !isDependsMULTILIB(Flags))
+	/* Ignore colored requires not in our rainbow. */
+	dscolor = rpmdsColor(requires);
+	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
 
 	rc = unsatisfiedDepend(ts, requires, adding);
@@ -641,11 +595,9 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVR,
 	if (depName != NULL && strcmp(depName, Name))
 	    continue;
 
-	Flags = rpmdsFlags(conflicts);
-
-	/* If this requirement comes from the core package only, not libraries,
-	   then if we're installing the libraries only, don't count it in. */
-	if (multiLib && !isDependsMULTILIB(Flags))
+	/* Ignore colored conflicts not in our rainbow. */
+	dscolor = rpmdsColor(conflicts);
+	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
 
 	rc = unsatisfiedDepend(ts, conflicts, adding);
@@ -1172,11 +1124,7 @@ int rpmtsOrder(rpmts ts)
     int nrescans = 10;
     int _printed = 0;
     char deptypechar;
-#ifdef	DYING
-    int oType = TR_ADDED;
-#else
     int oType = 0;
-#endif
     int treex;
     int depth;
     int qlen;
@@ -1207,7 +1155,6 @@ int rpmtsOrder(rpmts ts)
     /* Record all relations. */
     rpmMessage(RPMMESS_DEBUG, _("========== recording tsort relations\n"));
     pi = rpmtsiInit(ts);
-    /* XXX Only added packages are ordered (for now). */
     while ((p = rpmtsiNext(pi, oType)) != NULL) {
 
 	if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) == NULL)
@@ -1600,6 +1547,7 @@ assert(newOrderCount == ts->orderCount);
 
 int rpmtsCheck(rpmts ts)
 {
+    uint_32 tscolor = rpmtsColor(ts);
     rpmdbMatchIterator mi = NULL;
     rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;
@@ -1626,12 +1574,13 @@ int rpmtsCheck(rpmts ts)
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	rpmds provides;
 
-        rpmMessage(RPMMESS_DEBUG,  "========== +++ %s\n" , rpmteNEVR(p));
+        rpmMessage(RPMMESS_DEBUG,  "========== +++ %s %s/%s 0x%x\n",
+		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 	rc = checkPackageDeps(ts, rpmteNEVR(p),
 			rpmteDS(p, RPMTAG_REQUIRENAME),
 			rpmteDS(p, RPMTAG_CONFLICTNAME),
 			NULL,
-			rpmteMultiLib(p), 1);
+			tscolor, 1);
 	if (rc)
 	    goto exit;
 
@@ -1673,7 +1622,8 @@ int rpmtsCheck(rpmts ts)
 	rpmds provides;
 	rpmfi fi;
 
-	rpmMessage(RPMMESS_DEBUG,  "========== --- %s\n" , rpmteNEVR(p));
+	rpmMessage(RPMMESS_DEBUG,  "========== --- %s %s/%s 0x%x\n",
+		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
 #if defined(DYING) || defined(__LCLINT__)
 	/* XXX all packages now have Provides: name = version-release */

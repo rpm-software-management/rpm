@@ -33,9 +33,7 @@ struct availablePackage_s {
 /*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File info set. */
 
-#ifdef	DYING
-    uint_32 multiLib;	/* MULTILIB */
-#endif
+    uint_32 tscolor;		/*!< Transaction color bits. */
 
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
     fnpyKey key;		/*!< Associated file name/python object */
@@ -84,7 +82,7 @@ struct fileIndexEntry_s {
     const char * baseName;	/*!< File basename. */
     int baseNameLen;
     alNum pkgNum;		/*!< Containing package index. */
-    int fileFlags;	/* MULTILIB */
+    uint_32 ficolor;
 };
 
 typedef /*@abstract@*/ struct dirInfo_s *		dirInfo;
@@ -112,6 +110,7 @@ struct rpmal_s {
     int delta;			/*!< Delta for pkg list reallocation. */
     int size;			/*!< No. of pkgs in list. */
     int alloced;		/*!< No. of pkgs allocated for list. */
+    uint_32 tscolor;		/*!< Transaction color. */
     int numDirs;		/*!< No. of directories. */
 /*@owned@*/ /*@null@*/
     dirInfo dirs;		/*!< Set of directories. */
@@ -378,7 +377,7 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 
 /*@-bounds@*/
 alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
-		rpmds provides, rpmfi fi)
+		rpmds provides, rpmfi fi, uint_32 tscolor)
 {
     alNum pkgNum;
     rpmal al;
@@ -406,10 +405,11 @@ alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
     alp = al->list + pkgNum;
 
     alp->key = key;
+    alp->tscolor = tscolor;
 
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
+fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
 /*@=modfilesys@*/
 
     alp->provides = rpmdsLink(provides, "Provides (rpmalAdd)");
@@ -495,7 +495,7 @@ fprintf(stderr, "+++ die[%3d] %p [%d] %s\n", al->numDirs, die, die->dirNameLen, 
 		/*@=assignexpose =dependenttrans =observertrans @*/
 		fie->baseNameLen = (fie->baseName ? strlen(fie->baseName) : 0);
 		fie->pkgNum = pkgNum;
-		fie->fileFlags = rpmfiFFlags(fi);
+		fie->ficolor = rpmfiFColor(fi);
 		die->numFiles++;
 		fie++;
 	    }
@@ -538,8 +538,10 @@ static int indexcmp(const void * one, const void * two)
     return strcmp(a->entry, b->entry);
 }
 
-void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides)
+void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides, uint_32 tscolor)
 {
+    uint_32 dscolor;
+    const char * Name;
     alNum pkgNum = alKey2Num(al, pkgKey);
     availableIndex ai = &al->index;
     availableIndexEntry aie;
@@ -552,20 +554,14 @@ void rpmalAddProvides(rpmal al, alKey pkgKey, rpmds provides)
 
     if (rpmdsInit(provides) != NULL)
     while (rpmdsNext(provides) >= 0) {
-	const char * Name;
-
-#ifdef	DYING	/* XXX FIXME: multilib colored dependency search */
-	const int_32 Flags = rpmdsFlags(provides);
-
-	/* If multilib install, skip non-multilib provides. */
-	if (al->list[i].multiLib && !isDependsMULTILIB(Flags)) {
-	    ai->size--;
-	    /*@innercontinue@*/ continue;
-	}
-#endif
 
 	if ((Name = rpmdsN(provides)) == NULL)
 	    continue;	/* XXX can't happen */
+
+	/* Ignore colored provides not in our rainbow. */
+	dscolor = rpmdsColor(provides);
+	if (tscolor && dscolor && !(tscolor & dscolor))
+	    continue;
 
 	aie = ai->index + ai->k;
 	ai->k++;
@@ -605,7 +601,7 @@ void rpmalMakeIndex(rpmal al)
 
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
-	rpmalAddProvides(al, (alKey)i, alp->provides);
+	rpmalAddProvides(al, (alKey)i, alp->provides, alp->tscolor);
     }
     qsort(ai->index, ai->size, sizeof(*ai->index), indexcmp);
 }
@@ -613,6 +609,8 @@ void rpmalMakeIndex(rpmal al)
 fnpyKey *
 rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 {
+    uint_32 tscolor;
+    uint_32 ficolor;
     int found = 0;
     const char * dirName;
     const char * baseName;
@@ -683,18 +681,16 @@ if (_rpmal_debug)
 fprintf(stderr, "==> fie %p %s\n", fie, (fie->baseName ? fie->baseName : "(nil)"));
 /*@=modfilesys@*/
 
-#ifdef	DYING	/* XXX FIXME: multilib colored dependency search */
-	/*
-	 * If a file dependency would be satisfied by a file
-	 * we are not going to install, skip it.
-	 */
-	if (al->list[fie->pkgNum].multiLib && !isFileMULTILIB(fie->fileFlags))
-	    continue;
-#endif
+	alp = al->list + fie->pkgNum;
+
+        /* Ignore colored files not in our rainbow. */
+	tscolor = alp->tscolor;
+	ficolor = fie->ficolor;
+        if (tscolor && ficolor && !(tscolor & ficolor))
+            continue;
 
 	rpmdsNotify(ds, _("(added files)"), 0);
 
-	alp = al->list + fie->pkgNum;
 	ret = xrealloc(ret, (found+2) * sizeof(*ret));
 	if (ret)	/* can't happen */
 	    ret[found] = alp->key;

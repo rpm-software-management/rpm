@@ -89,7 +89,7 @@ rpm	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
 rpm	alias --fileclass --qf '[%{FILENAMES}\t%{FILECLASS}\n]' \
 	--POPTdesc=$"list file names with classes"
 
-rpm	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLOR}\n]' \
+rpm	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLORS}\n]' \
 	--POPTdesc=$"list file names with colors"
 
 rpm	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \
@@ -357,7 +357,7 @@ rpmq	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
 rpmq	alias --fileclass --qf '[%{FILENAMES}\t%{FILECLASS}\n]' \
 	--POPTdesc=$"list file names with classes"
 
-rpmq	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLOR}\n]' \
+rpmq	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLORS}\n]' \
 	--POPTdesc=$"list file names with colors"
 
 rpmq	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \
@@ -442,7 +442,7 @@ rpmquery	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
 rpmquery	alias --fileclass --qf '[%{FILENAMES}\t%{FILECLASS}\n]' \
 	--POPTdesc=$"list file names with classes"
 
-rpmquery	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLOR}\n]' \
+rpmquery	alias --filecolor --qf '[%{FILENAMES}\t%{FILECOLORS}\n]' \
 	--POPTdesc=$"list file names with colors"
 
 rpmquery	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \

@@ -58,12 +58,14 @@ void rpmalDel(/*@null@*/ rpmal al, /*@null@*/ alKey pkgKey)
  * @param key		associated file name/python object
  * @param provides	provides dependency set
  * @param fi		file info set
+ * @param tscolor	transaction color bits
  * @return		available package index
  */
 alKey rpmalAdd(rpmal * alistp,
 		/*@dependent@*/ /*@null@*/ alKey pkgKey,
 		/*@dependent@*/ /*@null@*/ fnpyKey key,
-		/*@null@*/ rpmds provides, /*@null@*/ rpmfi fi)
+		/*@null@*/ rpmds provides, /*@null@*/ rpmfi fi,
+		uint_32 tscolor)
 	/*@globals fileSystem @*/
 	/*@modifies *alistp, provides, fi, fileSystem @*/;
 
@@ -72,11 +74,12 @@ alKey rpmalAdd(rpmal * alistp,
  * @param al		available list
  * @param pkgKey	package key
  * @param provides	added package provides
+ * @param tscolor	transaction color bits
  */
 /*@-exportlocal@*/
 void rpmalAddProvides(rpmal al,
 		/*@dependent@*/ /*@null@*/ alKey pkgKey,
-		/*@null@*/ rpmds provides)
+		/*@null@*/ rpmds provides, uint_32 tscolor)
 	/*@modifies al, provides @*/;
 /*@=exportlocal@*/
 

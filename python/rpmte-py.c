@@ -132,11 +132,11 @@ rpmte_NEVR(rpmteObject * s, PyObject * args)
 }
 
 static PyObject *
-rpmte_MultiLib(rpmteObject * s, PyObject * args)
+rpmte_Color(rpmteObject * s, PyObject * args)
 	/*@*/
 {
-    if (!PyArg_ParseTuple(args, ":MultiLib")) return NULL;
-    return Py_BuildValue("i", rpmteMultiLib(s->te));
+    if (!PyArg_ParseTuple(args, ":Color")) return NULL;
+    return Py_BuildValue("i", rpmteColor(s->te));
 }
 
 static PyObject *
@@ -311,7 +311,7 @@ static struct PyMethodDef rpmte_methods[] = {
     {"NEVR",	(PyCFunction)rpmte_NEVR,	METH_VARARGS,
 "te.NEVR() -> NEVR\n\
 - Return element name-version-release.\n" },
-    {"MultiLib",(PyCFunction)rpmte_MultiLib,	METH_VARARGS,
+    {"Color",(PyCFunction)rpmte_Color,		METH_VARARGS,
         NULL},
     {"Depth",	(PyCFunction)rpmte_Depth,	METH_VARARGS,
         NULL},

@@ -175,6 +175,8 @@ struct rpmts_s {
     int delta;			/*!< Delta for reallocation. */
     int_32 tid;			/*!< Transaction id. */
 
+    uint_32 color;		/*!< Transaction color bits. */
+
     rpmVSFlags vsflags;		/*!< Signature/digest verification flags. */
 
 /*@observer@*/ /*@dependent@*/ /*@null@*/
@@ -775,6 +777,23 @@ rpmte rpmtsRelocateElement(rpmts ts)
  */
 /*@null@*/
 rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
+	/*@modifies ts @*/;
+
+/**
+ * Retrieve color bits of transaction set.
+ * @param ts		transaction set
+ * @return		color bits
+ */
+uint_32 rpmtsColor(rpmts ts)
+	/*@*/;
+
+/**
+ * Set color bits of transaction set.
+ * @param ts		transaction set
+ * @param color		new color bits
+ * @return		previous color bits
+ */
+uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts

@@ -154,6 +154,7 @@ static int rpmInstallLoadMacros(rpmfi fi, Header h)
     return 0;
 }
 
+#ifdef	DYING
 /**
  * Copy file data from h to newH.
  * @param fi		transaction element file info
@@ -206,7 +207,7 @@ static rpmRC mergeFiles(rpmfi fi, Header h, Header newH)
     fileSize = *fileSizes;
     xx = hge(newH, RPMTAG_FILESIZES, NULL, (void **) &fileSizes, &count);
     for (i = 0, fc = 0; i < count; i++)
-	if (actions[i] != FA_SKIPMULTILIB) {
+	if (actions[i] != FA_SKIPCOLOR) {
 	    fc++;
 	    fileSize += fileSizes[i];
 	}
@@ -221,7 +222,7 @@ static rpmRC mergeFiles(rpmfi fi, Header h, Header newH)
 	case RPM_INT8_TYPE:
 	    newdata = xcalloc(fc, sizeof(int_8));
 	    for (j = 0, k = 0; j < count; j++)
-		if (actions[j] != FA_SKIPMULTILIB)
+		if (actions[j] != FA_SKIPCOLOR)
 			((int_8 *) newdata)[k++] = ((int_8 *) data)[j];
 	    xx = headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
 	    free (newdata);
@@ -229,7 +230,7 @@ static rpmRC mergeFiles(rpmfi fi, Header h, Header newH)
 	case RPM_INT16_TYPE:
 	    newdata = xcalloc(fc, sizeof(int_16));
 	    for (j = 0, k = 0; j < count; j++)
-		if (actions[j] != FA_SKIPMULTILIB)
+		if (actions[j] != FA_SKIPCOLOR)
 		    ((int_16 *) newdata)[k++] = ((int_16 *) data)[j];
 	    xx = headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
 	    free (newdata);
@@ -237,7 +238,7 @@ static rpmRC mergeFiles(rpmfi fi, Header h, Header newH)
 	case RPM_INT32_TYPE:
 	    newdata = xcalloc(fc, sizeof(int_32));
 	    for (j = 0, k = 0; j < count; j++)
-		if (actions[j] != FA_SKIPMULTILIB)
+		if (actions[j] != FA_SKIPCOLOR)
 		    ((int_32 *) newdata)[k++] = ((int_32 *) data)[j];
 	    xx = headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
 	    free (newdata);
@@ -245,7 +246,7 @@ static rpmRC mergeFiles(rpmfi fi, Header h, Header newH)
 	case RPM_STRING_ARRAY_TYPE:
 	    newdata = xcalloc(fc, sizeof(char *));
 	    for (j = 0, k = 0; j < count; j++)
-		if (actions[j] != FA_SKIPMULTILIB)
+		if (actions[j] != FA_SKIPCOLOR)
 		    ((char **) newdata)[k++] = ((char **) data)[j];
 	    xx = headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
 	    free (newdata);
@@ -270,7 +271,7 @@ static rpmRC mergeFiles(rpmfi fi, Header h, Header newH)
     dirCount = dirNamesCount;
     newdata = xcalloc(fc, sizeof(*newDirIndexes));
     for (i = 0, k = 0; i < count; i++) {
-	if (actions[i] == FA_SKIPMULTILIB)
+	if (actions[i] == FA_SKIPCOLOR)
 	    continue;
 	for (j = 0; j < dirCount; j++)
 	    if (!strcmp(dirNames[j], newDirNames[newDirIndexes[i]]))
@@ -316,7 +317,11 @@ static rpmRC mergeFiles(rpmfi fi, Header h, Header newH)
 		    }
 	}
 	for (j = 0, k = 0; j < newCount; j++) {
+#ifdef	DYING
 	    if (!newNames[j] || !isDependsMULTILIB(newFlags[j]))
+#else
+	    if (!newNames[j])
+#endif
 		/*@innercontinue@*/ continue;
 	    if (j != k) {
 		newNames[k] = newNames[j];
@@ -340,6 +345,7 @@ static rpmRC mergeFiles(rpmfi fi, Header h, Header newH)
     return RPMRC_OK;
 }
 /*@=boundswrite@*/
+#endif
 
 /**
  * Mark files in database shared with this package as "replaced".
@@ -1594,7 +1600,9 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
     HGE_t hge = fi->hge;
+#ifdef	DYING
     HME_t hme = fi->hme;
+#endif
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     rpmRC rc = psm->rc;
     int saveerrno;
@@ -1636,9 +1644,11 @@ assert(psm->mi == NULL);
 
 	    while ((psm->oh = rpmdbNextIterator(psm->mi))) {
 		fi->record = rpmdbGetIteratorOffset(psm->mi);
+#ifdef	DYING
 		if (rpmtsFlags(ts) & RPMTRANS_FLAG_MULTILIB)
 		    psm->oh = headerCopy(psm->oh);
 		else
+#endif
 		    psm->oh = NULL;
 		/*@loopbreak@*/ break;
 	    }
@@ -2046,6 +2056,7 @@ psm->te->h = headerLink(fi->h);
 	    xx = headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE,
 				&installTime, 1);
 
+#ifdef	DYING
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_MULTILIB) {
 		uint_32 multiLib, * newMultiLib, * p;
 
@@ -2062,7 +2073,7 @@ psm->te->h = headerLink(fi->h);
 		rc = mergeFiles(fi, psm->oh, fi->h);
 		if (rc) break;
 	    }
-
+#endif
 
 	    /*
 	     * If this package has already been installed, remove it from

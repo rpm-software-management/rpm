@@ -254,6 +254,9 @@ int showQueryPackage(QVA_t qva, /*@unused@*/ rpmts ts, Header h)
 	    case RPMFILE_STATE_NETSHARED:
 		te = stpcpy(te, _("net shared    "));
 		/*@switchbreak@*/ break;
+	    case RPMFILE_STATE_WRONGCOLOR:
+		te = stpcpy(te, _("wrong color   "));
+		/*@switchbreak@*/ break;
 	    case RPMFILE_STATE_MISSING:
 		te = stpcpy(te, _("(no state)    "));
 		/*@switchbreak@*/ break;

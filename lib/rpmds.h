@@ -40,7 +40,7 @@ struct rpmds_s {
 /*@only@*/ /*@null@*/
     int_32 * Flags;		/*!< Bit(s) identifying context/comparison. */
 /*@only@*/ /*@null@*/
-    int_32 * Color;		/*!< Bit(s) calculated from file color(s). */
+    uint_32 * Color;		/*!< Bit(s) calculated from file color(s). */
 /*@only@*/ /*@null@*/
     int_32 * Refs;		/*!< No. of file refs. */
     rpmTag tagN;		/*!< Header tag. */
@@ -246,7 +246,7 @@ int rpmdsSetNoPromote(/*@null@*/ rpmds ds, int nopromote)
  * @param ds		dependency set
  * @return		current dependency color
  */
-int_32 rpmdsColor(/*@null@*/ const rpmds ds)
+uint_32 rpmdsColor(/*@null@*/ const rpmds ds)
 	/*@*/;
 
 /**
@@ -255,7 +255,7 @@ int_32 rpmdsColor(/*@null@*/ const rpmds ds)
  * @param color		new dependency color
  * @return		previous dependency color
  */
-int_32 rpmdsSetColor(/*@null@*/ const rpmds ds, int_32 color)
+uint_32 rpmdsSetColor(/*@null@*/ const rpmds ds, uint_32 color)
 	/*@modifies ds @*/;
 
 /**

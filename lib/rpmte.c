@@ -154,8 +154,6 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     rpmteColorDS(p, RPMTAG_PROVIDENAME);
     rpmteColorDS(p, RPMTAG_REQUIRENAME);
-
-    p->multiLib = 0;
 }
 /*@=bounds@*/
 
@@ -228,19 +226,19 @@ const char * rpmteO(rpmte te)
     return (te != NULL ? te->os : NULL);
 }
 
-int rpmteMultiLib(rpmte te)
+uint_32 rpmteColor(rpmte te)
 {
-    return (te != NULL ? te->multiLib : 0);
+    return (te != NULL ? te->color : 0);
 }
 
-int rpmteSetMultiLib(rpmte te, int nmultiLib)
+uint_32 rpmteSetColor(rpmte te, uint_32 color)
 {
-    int omultiLib = 0;
+    int ocolor = 0;
     if (te != NULL) {
-	omultiLib = te->multiLib;
-	te->multiLib = nmultiLib;
+	ocolor = te->color;
+	te->color = color;
     }
-    return omultiLib;
+    return ocolor;
 }
 
 int rpmteDepth(rpmte te)
@@ -475,8 +473,7 @@ void rpmteColorDS(rpmte te, rpmTag tag)
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while (rpmfiNext(fi) >= 0) {
-	/* XXX ignore all but lsnibble for now. */
-	val = (rpmfiFColor(fi) & 0x0f);
+	val = rpmfiFColor(fi);
 	ddict = NULL;
 	ndx = rpmfiFDepends(fi, &ddict);
 	if (ddict != NULL)
@@ -496,6 +493,7 @@ assert (ix < Count);
     ds = rpmdsInit(ds);
     while ((i = rpmdsNext(ds)) >= 0) {
 	val = colors[i];
+	te->color |= val;
 	(void) rpmdsSetColor(ds, val);
 	val = refs[i];
 	if (val >= 0)

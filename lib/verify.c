@@ -67,6 +67,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     case RPMFILE_STATE_NETSHARED:
     case RPMFILE_STATE_REPLACED:
     case RPMFILE_STATE_NOTINSTALLED:
+    case RPMFILE_STATE_WRONGCOLOR:
 	return 0;
 	/*@notreached@*/ break;
     case RPMFILE_STATE_NORMAL:

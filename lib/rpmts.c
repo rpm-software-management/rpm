@@ -1133,6 +1133,21 @@ rpmte rpmtsSetRelocateElement(rpmts ts, rpmte relocateElement)
     return orelocateElement;
 }
 
+uint_32 rpmtsColor(rpmts ts)
+{
+    return (ts != NULL ? ts->color : 0);
+}
+
+uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
+{
+    uint_32 ocolor = 0;
+    if (ts != NULL) {
+	ocolor = ts->color;
+	ts->color = color;
+    }
+    return ocolor;
+}
+
 int rpmtsSetNotifyCallback(rpmts ts,
 		rpmCallbackFunction notify, rpmCallbackData notifyData)
 {
@@ -1196,6 +1211,8 @@ rpmts rpmtsCreate(void)
     ts->scriptFd = NULL;
     ts->tid = (int_32) time(NULL);
     ts->delta = 5;
+
+    ts->color = rpmExpandNumeric("%{?_transaction_color}");
 
     ts->numRemovedPackages = 0;
     ts->allocedRemovedPackages = ts->delta;

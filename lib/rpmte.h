@@ -97,7 +97,7 @@ struct rpmte_s {
 /*@refcounted@*/ /*@null@*/
     rpmfi fi;			/*!< File information. */
 
-    uint_32 multiLib;		/*!< (TR_ADDED) MULTILIB */
+    uint_32 color;		/*!< Bit(s) from package dependencies */
 
 /*@exposed@*/ /*@dependent@*/ /*@null@*/
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
@@ -230,20 +230,20 @@ extern const char * rpmteO(rpmte te)
 	/*@*/;
 
 /**
- * Retrieve multlib flags of transaction element.
+ * Retrieve color bits of transaction element.
  * @param te		transaction element
- * @return		multilib flags
+ * @return		color bits
  */
-int rpmteMultiLib(rpmte te)
+uint_32 rpmteColor(rpmte te)
 	/*@*/;
 
 /**
- * Set multlib flags of transaction element.
+ * Set color bits of transaction element.
  * @param te		transaction element
- * @param nmultiLib	new multilib flags
- * @return		previous multilib flags
+ * @param color		new color bits
+ * @return		previous color bits
  */
-int rpmteSetMultiLib(rpmte te, int nmultiLib)
+uint_32 rpmteSetColor(rpmte te, uint_32 color)
 	/*@modifies te @*/;
 
 /**

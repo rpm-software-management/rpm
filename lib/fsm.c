@@ -619,8 +619,6 @@ int fsmMapPath(FSM_t fsm)
 	switch (fsm->action) {
 	case FA_SKIP:
 	    break;
-	case FA_SKIPMULTILIB:	/* XXX RPMFILE_STATE_MULTILIB? */
-	    break;
 	case FA_UNKNOWN:
 	    break;
 
@@ -639,6 +637,11 @@ assert(rpmteType(fi->te) == TR_ADDED);
 	case FA_SKIPNETSHARED:
 	    if (fi->fstates && rpmteType(fi->te) == TR_ADDED)
 		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
+	    break;
+
+	case FA_SKIPCOLOR:
+	    if (fi->fstates && rpmteType(fi->te) == TR_ADDED)
+		fi->fstates[i] = RPMFILE_STATE_WRONGCOLOR;
 	    break;
 
 	case FA_BACKUP:
@@ -2309,7 +2312,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FA_ERASE:	return "erase";
     case FA_SKIPNSTATE: return "skipnstate";
     case FA_SKIPNETSHARED: return "skipnetshared";
-    case FA_SKIPMULTILIB: return "skipmultilib";
+    case FA_SKIPCOLOR: return "skipcolor";
     default:		return "???";
     }
     /*@notreached@*/

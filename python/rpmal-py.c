@@ -41,7 +41,8 @@ rpmal_Add(rpmalObject * s, PyObject * args)
 	return NULL;
 
     /* XXX errors */
-    pkgKey = rpmalAdd(&s->al, pkgKey, key, dso->ds, fio->fi);
+    /* XXX transaction colors */
+    pkgKey = rpmalAdd(&s->al, pkgKey, key, dso->ds, fio->fi, 0);
 
     return Py_BuildValue("i", pkgKey);
 }
@@ -73,7 +74,8 @@ rpmal_AddProvides(rpmalObject * s, PyObject * args)
     if (!PyArg_ParseTuple(args, "iOO!O!:AddProvides", &pkgKey, &rpmds_Type, &dso))
 	return NULL;
 
-    rpmalAddProvides(s->al, pkgKey, dso->ds);
+    /* XXX transaction colors */
+    rpmalAddProvides(s->al, pkgKey, dso->ds, 0);
 
     Py_INCREF(Py_None);
     return Py_None;

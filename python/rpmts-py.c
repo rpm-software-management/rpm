@@ -199,7 +199,7 @@ static void rpmtsAddAvailableElement(rpmts ts, Header h,
 
     /* XXX FIXME: return code RPMAL_NOMATCH is error */
     (void) rpmalAdd(&ts->availablePackages, RPMAL_NOMATCH, key,
-		provides, fi);
+		provides, fi, rpmtsColor(ts));
     fi = rpmfiFree(fi);
     provides = rpmdsFree(provides);
 
@@ -850,6 +850,24 @@ fprintf(stderr, "*** rpmts_SetVSFlags(%p) ts %p\n", s, s->ts);
 /** \ingroup python
  */
 static PyObject *
+rpmts_SetColor(rpmtsObject * s, PyObject * args)
+	/*@modifies s @*/
+{
+    uint_32 tscolor;
+
+if (_rpmts_debug)
+fprintf(stderr, "*** rpmts_SetColor(%p) ts %p\n", s, s->ts);
+
+    if (!PyArg_ParseTuple(args, "i:Color", &tscolor)) return NULL;
+
+    /* XXX FIXME: value check on tscolor. */
+
+    return Py_BuildValue("i", rpmtsSetColor(s->ts, tscolor));
+}
+
+/** \ingroup python
+ */
+static PyObject *
 rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
@@ -1305,6 +1323,8 @@ static struct PyMethodDef rpmts_methods[] = {
     rpm.RPMVSF_NORSA         if set, don't check header+payload RSA signature\n\
     rpm._RPMVSF_NODIGESTS    if set, don't check digest(s)\n\
     rpm._RPMVSF_NOSIGNATURES if set, don't check signature(s)\n" },
+ {"setColor",(PyCFunction) rpmts_SetColor,	METH_VARARGS,
+	NULL },
  {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS,
 	NULL },
  {"pgpImportPubkey",	(PyCFunction) rpmts_PgpImportPubkey,	METH_VARARGS,

@@ -472,9 +472,9 @@ int rpmdsSetNoPromote(rpmds ds, int nopromote)
     return onopromote;
 }
 
-int_32 rpmdsColor(const rpmds ds)
+uint_32 rpmdsColor(const rpmds ds)
 {
-    int_32 Color = 0;
+    uint_32 Color = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 /*@-boundsread@*/
@@ -485,9 +485,9 @@ int_32 rpmdsColor(const rpmds ds)
     return Color;
 }
 
-int_32 rpmdsSetColor(const rpmds ds, int_32 color)
+uint_32 rpmdsSetColor(const rpmds ds, uint_32 color)
 {
-    int_32 ocolor = 0;
+    uint_32 ocolor = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 /*@-bounds@*/

@@ -732,6 +732,8 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	/*@globals rpmGlobalMacroContext @*/
 	/*@modifies fi, rpmGlobalMacroContext @*/
 {
+    uint_32 tscolor = rpmtsColor(ts);
+    uint_32 ficolor;
     int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
     char ** netsharedPaths = NULL;
@@ -777,7 +779,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     if (fi != NULL)	/* XXX lclint */
     while ((i = rpmfiNext(fi)) >= 0)
     {
-	char **nsp;
+	char ** nsp;
 
 	bn = rpmfiBN(fi);
 	bnlen = strlen(bn);
@@ -791,8 +793,16 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 
 	/* Don't bother with skipped files */
 	if (XFA_SKIPPING(fi->actions[i])) {
-	    drc[ix]--;
+	    drc[ix]--;	dff[ix] = 1;
 	    continue;
+	}
+
+	/* Ignore colored files not in our rainbow. */
+	ficolor = rpmfiFColor(fi);
+        if (tscolor && ficolor && !(tscolor & ficolor)) {
+	    drc[ix]--;	dff[ix] = 1;
+	    fi->actions[i] = FA_SKIPCOLOR;
+            continue;
 	}
 
 	/*
@@ -967,6 +977,7 @@ rpmfi rpmtsiFi(const rpmtsi tsi)
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
+    uint_32 tscolor = rpmtsColor(ts);
     int i, j;
     int ourrc = 0;
     int totalFileCount = 0;
@@ -1043,7 +1054,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH))
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH) && !tscolor)
 	    if (!archOkay(rpmteA(p)))
 		rpmpsAppend(ps, RPMPROB_BADARCH,
 			rpmteNEVR(p), rpmteKey(p),
@@ -1065,8 +1076,13 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 	    mi = rpmdbFreeIterator(mi);
 	}
 
+#ifdef	DYING
 	/* XXX multilib should not display "already installed" problems */
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG) && !rpmteMultiLib(p)) {
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG) && !rpmteColor(p))
+#else
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG) && !tscolor)
+#endif
+	{
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_DEFAULT,
 				rpmteE(p));
@@ -1494,9 +1510,11 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		}
 		psm->fi = rpmfiLink(p->fi, NULL);
 
-		if (rpmteMultiLib(p))
+#ifdef	DYING
+		if (rpmteColor(p))
 		    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_MULTILIB));
 		else
+#endif
 		    (void) rpmtsSetFlags(ts, (rpmtsFlags(ts) & ~RPMTRANS_FLAG_MULTILIB));
 
 /*@-nullstate@*/ /* FIX: psm->fi may be NULL */
