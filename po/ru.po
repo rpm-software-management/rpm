@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-14 23:13-0400\n"
+"POT-Creation-Date: 2001-10-15 00:19-0400\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -3595,11 +3595,11 @@ msgstr "открывется файл %s базы данных в режиме 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "невозможно получить блокировку %s базы данных\n"
 
-#: rpmdb/db1.c:564 rpmdb/db3.c:1154
+#: rpmdb/db1.c:564 rpmdb/db3.c:1156
 msgid "exclusive"
 msgstr "исключительный"
 
-#: rpmdb/db1.c:564 rpmdb/db3.c:1154
+#: rpmdb/db1.c:564 rpmdb/db3.c:1156
 msgid "shared"
 msgstr "разделяемый"
 
@@ -3618,27 +3618,27 @@ msgstr "удалено окружение базы данных %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "открывается окружение базы данных %s/%s %s\n"
 
-#: rpmdb/db3.c:669
+#: rpmdb/db3.c:670
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "закрыт индекс базы данных %s/%s\n"
 
-#: rpmdb/db3.c:728
+#: rpmdb/db3.c:729
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "проверен индекс базы данных %s/%s\n"
 
-#: rpmdb/db3.c:932
+#: rpmdb/db3.c:933
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1152
+#: rpmdb/db3.c:1154
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "невозможно получить блокировку %s на %s/%s\n"
 
-#: rpmdb/db3.c:1158
+#: rpmdb/db3.c:1160
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "заблокирован индекс базы данных %s/%s\n"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-14 23:13-0400\n"
+"POT-Creation-Date: 2001-10-15 00:19-0400\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 
@@ -3667,11 +3667,11 @@ msgstr "rekreiraj bazu podataka iz postojeæe baze"
 msgid "cannot get %s lock on database\n"
 msgstr "ne mogu da dobijem %s zakljuèavanje baze podataka"
 
-#: rpmdb/db1.c:564 rpmdb/db3.c:1154
+#: rpmdb/db1.c:564 rpmdb/db3.c:1156
 msgid "exclusive"
 msgstr "ekskluzivno"
 
-#: rpmdb/db1.c:564 rpmdb/db3.c:1154
+#: rpmdb/db1.c:564 rpmdb/db3.c:1156
 msgid "shared"
 msgstr "deljeno"
 
@@ -3690,27 +3690,27 @@ msgstr ""
 msgid "opening  db environment %s/%s %s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: rpmdb/db3.c:669
+#: rpmdb/db3.c:670
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: rpmdb/db3.c:728
+#: rpmdb/db3.c:729
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: rpmdb/db3.c:932
+#: rpmdb/db3.c:933
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"
 
-#: rpmdb/db3.c:1152
+#: rpmdb/db3.c:1154
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ne mogu da dobijem %s zakljuèavanje baze podataka"
 
-#: rpmdb/db3.c:1158
+#: rpmdb/db3.c:1160
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "rekreiraj bazu podataka iz postojeæe baze"

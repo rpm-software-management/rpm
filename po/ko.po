@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-14 23:13-0400\n"
+"POT-Creation-Date: 2001-10-15 00:19-0400\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -3583,11 +3583,11 @@ msgstr "열린   db 파일    %s 모드 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "잠겨있는 데이터베이스의 %s (을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db1.c:564 rpmdb/db3.c:1154
+#: rpmdb/db1.c:564 rpmdb/db3.c:1156
 msgid "exclusive"
 msgstr "제외함(exclusive)"
 
-#: rpmdb/db1.c:564 rpmdb/db3.c:1154
+#: rpmdb/db1.c:564 rpmdb/db3.c:1156
 msgid "shared"
 msgstr "공유됨"
 
@@ -3606,27 +3606,27 @@ msgstr "삭제된 db 환경    %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "열린   db 환경    %s/%s\n"
 
-#: rpmdb/db3.c:669
+#: rpmdb/db3.c:670
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "닫힌   db 인덱스  %s/%s\n"
 
-#: rpmdb/db3.c:728
+#: rpmdb/db3.c:729
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "검증된 db 인덱스  %s/%s\n"
 
-#: rpmdb/db3.c:932
+#: rpmdb/db3.c:933
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "열린   db 인덱스  %s/%s %s 모드=0x%x\n"
 
-#: rpmdb/db3.c:1152
+#: rpmdb/db3.c:1154
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "잠겨있는 %2$s/%3$s 의 %1$s (을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db3.c:1158
+#: rpmdb/db3.c:1160
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "잠긴   db 인덱스  %s/%s\n"

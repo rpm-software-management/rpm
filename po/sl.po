@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.162 2001/10/15 03:22:50 jbj Exp $
+# $Id: sl.po,v 1.163 2001/10/15 04:22:16 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-14 23:13-0400\n"
+"POT-Creation-Date: 2001-10-15 00:19-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -3677,11 +3677,11 @@ msgstr "odpiranje datoteke %s v naèinu 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "datoteke ni mo¾no %s zakleniti"
 
-#: rpmdb/db1.c:564 rpmdb/db3.c:1154
+#: rpmdb/db1.c:564 rpmdb/db3.c:1156
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: rpmdb/db1.c:564 rpmdb/db3.c:1154
+#: rpmdb/db1.c:564 rpmdb/db3.c:1156
 msgid "shared"
 msgstr "skupno"
 
@@ -3700,27 +3700,27 @@ msgstr "odstranjeno db okolje %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "odpiranje db okolja %s/%s %s\n"
 
-#: rpmdb/db3.c:669
+#: rpmdb/db3.c:670
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "zaprto  db kazalo       %s/%s\n"
 
-#: rpmdb/db3.c:728
+#: rpmdb/db3.c:729
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "zaprto  db kazalo       %s/%s\n"
 
-#: rpmdb/db3.c:932
+#: rpmdb/db3.c:933
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "odpiranje db kazala       %s/%s %s naèin=0x%x\n"
 
-#: rpmdb/db3.c:1152
+#: rpmdb/db3.c:1154
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
 
-#: rpmdb/db3.c:1158
+#: rpmdb/db3.c:1160
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "zaklenjeno  db kazalo       %s/%s\n"

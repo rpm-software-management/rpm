@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-14 23:13-0400\n"
+"POT-Creation-Date: 2001-10-15 00:19-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -3687,11 +3687,11 @@ msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 msgid "cannot get %s lock on database\n"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: rpmdb/db1.c:564 rpmdb/db3.c:1154
+#: rpmdb/db1.c:564 rpmdb/db3.c:1156
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:564 rpmdb/db3.c:1154
+#: rpmdb/db1.c:564 rpmdb/db3.c:1156
 msgid "shared"
 msgstr ""
 
@@ -3710,27 +3710,27 @@ msgstr "usuwanie indeksu plików dla %s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:669
+#: rpmdb/db3.c:670
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:728
+#: rpmdb/db3.c:729
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
 
-#: rpmdb/db3.c:932
+#: rpmdb/db3.c:933
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 
-#: rpmdb/db3.c:1152
+#: rpmdb/db3.c:1154
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: rpmdb/db3.c:1158
+#: rpmdb/db3.c:1160
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"

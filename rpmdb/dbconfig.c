@@ -16,7 +16,7 @@
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
 
-#if DB_VERSION_MAJOR == 3
+#if (DB_VERSION_MAJOR == 3) || (DB_VERSION_MAJOR == 4)
 #define	__USE_DB3	1
 
 /*@-exportlocal -exportheadervar@*/

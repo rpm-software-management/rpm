@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-14 23:13-0400\n"
+"POT-Creation-Date: 2001-10-15 00:19-0400\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -3560,11 +3560,11 @@ msgstr "a aceder ao ficheiro db %s modo 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "não consegui adquirir exclusivamente o %s na base de dados\n"
 
-#: rpmdb/db1.c:564 rpmdb/db3.c:1154
+#: rpmdb/db1.c:564 rpmdb/db3.c:1156
 msgid "exclusive"
 msgstr "exclusivo"
 
-#: rpmdb/db1.c:564 rpmdb/db3.c:1154
+#: rpmdb/db1.c:564 rpmdb/db3.c:1156
 msgid "shared"
 msgstr "partilhado"
 
@@ -3583,27 +3583,27 @@ msgstr "removi o ambiente do db %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "a aceder ao ambiente do db %s/%s %s\n"
 
-#: rpmdb/db3.c:669
+#: rpmdb/db3.c:670
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "fechei o índice do db  %s/%s\n"
 
-#: rpmdb/db3.c:728
+#: rpmdb/db3.c:729
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "fechei o índice do db  %s/%s\n"
 
-#: rpmdb/db3.c:932
+#: rpmdb/db3.c:933
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "a abrir o índice do db   %s/%s %s modo=0x%x\n"
 
-#: rpmdb/db3.c:1152
+#: rpmdb/db3.c:1154
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "não consigo trancar o %s no %s/%s\n"
 
-#: rpmdb/db3.c:1158
+#: rpmdb/db3.c:1160
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "tranquei o índice do db     %s/%s\n"

@@ -522,3 +522,4 @@ fi
 - upgrade to beecrypt-2.2.0pre.
 - proof-of-concept PGP/RSA verification for legacy signatures.
 - ratchet up to lclint "strict" level.
+- upgrade to db-4.0.7.
