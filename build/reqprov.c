@@ -54,6 +54,7 @@ int addReqProv(Spec spec, Header h,
 	const char **versions = NULL;
 	int *flags = NULL;
 	int *indexes = NULL;
+	int duplicate = 0;
 
 	if (flagtag) {
 	    headerGetEntry(h, versiontag, NULL, (void **) &versions, NULL);
@@ -73,11 +74,12 @@ int addReqProv(Spec spec, Header h,
 		continue;
 
 	    /* This is a duplicate dependency. */
+	    duplicate = 1;
 	    break;
 	}
 	FREE(names);
 	FREE(versions);
-	if (len >= 0)
+	if (duplicate)
 	    return 0;
     }
 
