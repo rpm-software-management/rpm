@@ -29,6 +29,22 @@ void dbiSyncIndex(dbiIndex * dbi) {
     dbi->db->sync(dbi->db, 0);
 }
 
+int dbiGetFirstKey(dbiIndex * dbi, char ** keyp) {
+    DBT key, data;
+    int rc;
+
+    rc = dbi->db->seq(dbi->db, &key, &data, R_FIRST);
+    if (rc) {
+	return 1;
+    }
+
+    *keyp = malloc(key.size + 1);
+    memcpy(*keyp, key.data, key.size);
+    (*keyp)[key.size] = '\0';
+
+    return 0;
+}
+
 int dbiSearchIndex(dbiIndex * dbi, char * str, dbiIndexSet * set) {
     DBT key, data;
     int rc;

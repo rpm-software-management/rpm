@@ -41,6 +41,7 @@ int dbiRemoveIndexRecord(dbiIndexSet * set, dbiIndexRecord rec);
    /* 0 on success - fails if rec is not found */
 dbiIndexSet dbiCreateIndexRecord(void);
 void dbiFreeIndexRecord(dbiIndexSet set);
+int dbiGetFirstKey(dbiIndex * dbi, char ** key);
 
 extern inline int dbiIndexSetCount(dbiIndexSet set);
 extern inline int dbiIndexSetCount(dbiIndexSet set) {
