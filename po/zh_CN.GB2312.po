@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-09 15:24-0500\n"
+"POT-Creation-Date: 2001-11-09 17:39-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1459,11 +1459,11 @@ msgstr ""
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
-#: lib/depends.c:786 lib/rpmds.c:404 lib/rpmds.c:559
+#: lib/depends.c:786 lib/rpmds.c:457 lib/rpmds.c:614
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:786 lib/rpmds.c:404 lib/rpmds.c:559
+#: lib/depends.c:786 lib/rpmds.c:457 lib/rpmds.c:614
 msgid "YES"
 msgstr ""
 
@@ -1478,25 +1478,25 @@ msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1444
+#: lib/depends.c:1439
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1519
+#: lib/depends.c:1514
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1580
+#: lib/depends.c:1575
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1619
+#: lib/depends.c:1610
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1624
+#: lib/depends.c:1615
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -2411,11 +2411,11 @@ msgstr ""
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/rpmal.c:771
+#: lib/rpmal.c:693
 msgid "(added files)"
 msgstr ""
 
-#: lib/rpmal.c:870
+#: lib/rpmal.c:792
 msgid "(added provide)"
 msgstr ""
 
@@ -2483,20 +2483,20 @@ msgid "OK"
 msgstr ""
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:529
+#: lib/rpmds.c:584
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
 
-#: lib/rpmds.c:558
+#: lib/rpmds.c:613
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
 #. @=branchstate@
-#: lib/rpmds.c:583
+#: lib/rpmds.c:638
 #, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr ""

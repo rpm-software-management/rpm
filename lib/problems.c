@@ -70,9 +70,9 @@ rpmProblem rpmdepFreeConflicts(rpmProblem probs, int numProblems)
 rpmProblemSet rpmProblemSetFree(rpmProblemSet ps)
 {
     if (ps == NULL) return NULL;
-    if (ps->nrefs-- > 1) return NULL;
+    if (ps->nrefs > 1)
+	return rpmpsUnlink(ps, "dereference");
 	
-    ps->nrefs++;
     if (ps->probs) {
 	int i;
 	for (i = 0; i < ps->numProblems; i++) {

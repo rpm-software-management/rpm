@@ -568,3 +568,4 @@ fi
 - rip out rpmDependencyConflict, replace with rpmProblem instead.
 - no-brainer refcounts for rpmProblemSet object.
 - header tag sets are per-transactionElement, not per-availablePackage.
+- no-brainer refcounts for rpmDepSet and rpmFNSet objects.

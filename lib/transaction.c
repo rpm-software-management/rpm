@@ -1120,12 +1120,9 @@ int keep_header = 1;	/* XXX rpmProblemSetAppend prevents dumping headers. */
 	    mi = rpmdbFreeIterator(mi);
 	}
 
-#ifdef	DYING
-	totalFileCount += alGetFilesCount(ts->addedPackages, pkgKey);
-#else
+	/* Count no. of files (if any). */
 	if (p->fns != NULL)
 	    totalFileCount += p->fns->fc;
-#endif
 
 	h = headerFree(h, "alGetHeader (rpmtsRun sanity)");
 

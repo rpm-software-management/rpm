@@ -19,36 +19,37 @@ struct rpmFNSet_s {
 /*@refcounted@*/ /*@null@*/
     Header h;			/*!< Header for file name set (or NULL) */
 
-/*@only@*/
+/*@only@*/ /*@null@*/
     const char ** bnl;		/*!< Base name(s) (from header) */
-/*@only@*/
+/*@only@*/ /*@null@*/
     const char ** dnl;		/*!< Directory name(s) (from header) */
 
-/*@only@*/
+/*@only@*/ /*@null@*/
     const char ** fmd5s;	/*!< File MD5 sum(s) (from header) */
-/*@only@*/
+/*@only@*/ /*@null@*/
     const char ** flinks;	/*!< File link(s) (from header) */
-/*@only@*/
+/*@only@*/ /*@null@*/
     const char ** flangs;	/*!< File lang(s) */
 
-/*@only@*/
+/*@only@*/ /*@null@*/
     const uint_32 * dil;	/*!< Directory indice(s) (from header) */
-/*@only@*/
+/*@only@*/ /*@null@*/
     const uint_32 * fflags;	/*!< File flag(s) (from header) */
-/*@only@*/
+/*@only@*/ /*@null@*/
     const uint_32 * fsizes;	/*!< File size(s) (from header) */
-/*@only@*/
+/*@only@*/ /*@null@*/
     const uint_32 * fmtimes;	/*!< File modification time(s) (from header) */
-/*@only@*/
+/*@only@*/ /*@null@*/
     const uint_16 * fmodes;	/*!< File mode(s) (from header) */
-/*@only@*/
+/*@only@*/ /*@null@*/
     const uint_16 * frdevs;	/*!< File rdev(s) (from header) */
 
-/*@only@*/
+/*@only@*/ /*@null@*/
     char * fstates;		/*!< File state(s) (from header) */
 
     int_32 dc;			/*!< No. of directories. */
     int_32 fc;			/*!< No. of files. */
+/*@refs@*/ int nrefs;		/*!< Reference count. */
 };
 
 /**
@@ -74,6 +75,7 @@ struct rpmDepSet_s {
     const int_32 * Flags;	/*!< Flags identifying context/comparison. */
     rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
     int_32 Count;		/*!< No. of elements */
+/*@refs@*/ int nrefs;		/*!< Reference count. */
 };
 
 #ifdef __cplusplus
@@ -81,13 +83,48 @@ extern "C" {
 #endif
 
 /**
+ * Unreference a file info set instance.
+ * @param fns		file info set
+ * @return		NULL always
+ */
+/*@unused@*/ /*@null@*/
+rpmFNSet rpmfnsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmFNSet fns,
+		const char * msg)
+	/*@modifies fns @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@-exportlocal@*/
+/*@null@*/
+rpmFNSet XrpmfnsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmFNSet fns,
+		const char * msg, const char * fn, unsigned ln)
+	/*@modifies fns @*/;
+/*@=exportlocal@*/
+#define	rpmfnsUnlink(_fns, _msg) XrpmfnsUnlink(_fns, _msg, __FILE__, __LINE__)
+
+/**
+ * Reference a file info set instance.
+ * @param fns		file info set
+ * @return		new file info set reference
+ */
+/*@unused@*/
+rpmFNSet rpmfnsLink (/*@null@*/ rpmFNSet fns, const char * msg)
+	/*@modifies fns @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+rpmFNSet XrpmfnsLink (/*@null@*/ rpmFNSet fns, const char * msg,
+		const char * fn, unsigned ln)
+        /*@modifies fns @*/;
+#define	rpmfnsLink(_fns, _msg)	XrpmfnsLink(_fns, _msg, __FILE__, __LINE__)
+
+/**
  * Destroy a file name set.
  * @param ds		file name set
  * @return		NULL always
  */
-/*@only@*/ /*@null@*/
-rpmFNSet fnsFree(/*@only@*/ /*@null@*/ rpmFNSet fns)
+/*@null@*/
+rpmFNSet fnsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmFNSet fns)
 	/*@modifies fns@*/;
+
 /**
  * Create and load a file name set.
  * @param h		header
@@ -95,17 +132,51 @@ rpmFNSet fnsFree(/*@only@*/ /*@null@*/ rpmFNSet fns)
  * @param scareMem	Use pointers to refcounted header memory?
  * @return		new file name set
  */
-/*@only@*/ /*@null@*/
+/*@null@*/
 rpmFNSet fnsNew(Header h, rpmTag tagN, int scareMem)
 	/*@modifies h @*/;
+
+/**
+ * Unreference a dependency set instance.
+ * @param ds		dependency set
+ * @return		NULL always
+ */
+/*@unused@*/ /*@null@*/
+rpmDepSet rpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmDepSet ds,
+		const char * msg)
+	/*@modifies ds @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+/*@-exportlocal@*/
+/*@null@*/
+rpmDepSet XrpmdsUnlink (/*@killref@*/ /*@only@*/ /*@null@*/ rpmDepSet ds,
+		const char * msg, const char * fn, unsigned ln)
+	/*@modifies ds @*/;
+/*@=exportlocal@*/
+#define	rpmdsUnlink(_ds, _msg)	XrpmdsUnlink(_ds, _msg, __FILE__, __LINE__)
+
+/**
+ * Reference a dependency set instance.
+ * @param ds		dependency set
+ * @return		new dependency set reference
+ */
+/*@unused@*/
+rpmDepSet rpmdsLink (/*@null@*/ rpmDepSet ds, const char * msg)
+	/*@modifies ds @*/;
+
+/** @todo Remove debugging entry from the ABI. */
+rpmDepSet XrpmdsLink (/*@null@*/ rpmDepSet ds, const char * msg,
+		const char * fn, unsigned ln)
+        /*@modifies ds @*/;
+#define	rpmdsLink(_ds, _msg)	XrpmdsLink(_ds, _msg, __FILE__, __LINE__)
 
 /**
  * Destroy a dependency set.
  * @param ds		dependency set
  * @return		NULL always
  */
-/*@only@*/ /*@null@*/
-rpmDepSet dsFree(/*@only@*/ /*@null@*/ rpmDepSet ds)
+/*@null@*/
+rpmDepSet dsFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmDepSet ds)
 	/*@modifies ds@*/;
 /**
  * Create and load a dependency set.
@@ -114,7 +185,7 @@ rpmDepSet dsFree(/*@only@*/ /*@null@*/ rpmDepSet ds)
  * @param scareMem	Use pointers to refcounted header memory?
  * @return		new dependency set
  */
-/*@only@*/ /*@null@*/
+/*@null@*/
 rpmDepSet dsNew(Header h, rpmTag tagN, int scareMem)
 	/*@modifies h @*/;
 

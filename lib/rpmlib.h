@@ -84,12 +84,12 @@ typedef /*@abstract@*/ int alNum;
 /**
  * Dependency tag sets from a header, so that a header can be discarded early.
  */
-typedef /*@abstract@*/ struct rpmDepSet_s * rpmDepSet;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmDepSet_s * rpmDepSet;
 
 /**
  * File info tag sets from a header, so that a header can be discarded early.
  */
-typedef /*@abstract@*/ struct rpmFNSet_s * rpmFNSet;
+typedef /*@abstract@*/ /*@refcounted@*/ struct rpmFNSet_s * rpmFNSet;
 
 /** \ingroup header
  * Return name, version, release strings from header.

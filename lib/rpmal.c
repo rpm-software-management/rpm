@@ -50,14 +50,10 @@ struct availablePackage_s {
 /*@dependent@*//*@null@*/
     int_32 * epoch;		/*!< Header epoch (if any). */
 
-/*@dependent@*//*@null@*/
+/*@refcounted@*/ /*@null@*/
     rpmDepSet provides;		/*!< Provides: dependencies. */
-/*@dependent@*//*@null@*/
+/*@refcounted@*/ /*@null@*/
     rpmFNSet fns;		/*!< File info set. */
-#ifdef	DYING
-/*@owned@*/ /*@null@*/
-    rpmDepSet requires;		/*!< Requires: dependencies. */
-#endif
 
 #ifdef	DYING
     uint_32 multiLib;	/* MULTILIB */
@@ -186,40 +182,6 @@ fprintf(stderr, "*** alp[%d] %p\n", pkgNum, alp);
     return alp;
 }
 
-#ifdef	DYING
-int alGetMultiLib(const availableList al, alKey pkgKey)
-{
-    availablePackage alp = alGetPkg(al, alKey);
-    return (alp != NULL ? alp->multiLib : 0);
-}
-
-int alGetFilesCount(const availableList al, alKey pkgKey)
-{
-    availablePackage alp = alGetPkg(al, pkgKey);
-    int_32 filesCount = 0;
-    if (alp != NULL)
-	if (alp->fns != NULL)
-	    filesCount = alp->fns->fc;
-    return filesCount;
-}
-
-rpmDepSet alGetProvides(const availableList al, alKey pkgKey)
-{
-    availablePackage alp = alGetPkg(al, pkgKey);
-    /*@-retexpose@*/
-    return (alp != NULL ? alp->provides : NULL);
-    /*@=retexpose@*/
-}
-
-rpmDepSet alGetRequires(const availableList al, alKey pkgKey)
-{
-    availablePackage alp = alGetPkg(al, pkgKey);
-    /*@-retexpose@*/
-    return (alp != NULL ? alp->requires : NULL);
-    /*@=retexpose@*/
-}
-#endif
-
 Header alGetHeader(availableList al, alKey pkgKey, int unlink)
 {
     availablePackage alp = alGetPkg(al, pkgKey);
@@ -284,11 +246,8 @@ availableList alFree(availableList al)
 
     if ((alp = al->list) != NULL)
     for (i = 0; i < al->size; i++, alp++) {
-#ifdef	DYING
 	alp->provides = dsFree(alp->provides);
-	alp->requires = dsFree(alp->requires);
 	alp->fns = fnsFree(alp->fns);
-#endif
 	alp->h = headerFree(alp->h, "alFree");
 
     }
@@ -425,11 +384,8 @@ fprintf(stderr, "*** del %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 	}
     }
 
-#ifdef	DYING
     alp->provides = dsFree(alp->provides);
-    alp->requires = dsFree(alp->requires);
     alp->fns = fnsFree(alp->fns);
-#endif
     alp->h = headerFree(alp->h, "alDelPackage");
 
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
@@ -442,17 +398,10 @@ alKey alAddPackage(availableList al, alKey pkgKey, fnpyKey key, Header h,
 		rpmDepSet provides, rpmFNSet fns)
 	/*@modifies al, h @*/
 {
-#ifdef	DYING
-    int scareMem = 1;
-#endif
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     availablePackage alp;
     alNum pkgNum = alKey2Num(al, pkgKey);
     int xx;
-#ifdef	DYING
-    uint_32 multiLibMask = 0;
-    uint_32 * pp = NULL;
-#endif
 
     if (pkgNum >= 0 && pkgNum < al->size) {
 	alDelPackage(al, pkgKey);
@@ -483,39 +432,12 @@ if (_al_debug)
 fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->version, alp->release);
 /*@=modfilesys@*/
 
-#ifdef	DYING
-    alp->multiLib = 0;	/* MULTILIB */
-  { uint_32 *pp = NULL;
-    /* XXX This should be added always so that packages look alike.
-     * XXX However, there is logic in files.c/depends.c that checks for
-     * XXX existence (rather than value) that will need to change as well.
-     */
-    if (hge(alp->h, RPMTAG_MULTILIBS, NULL, (void **) &pp, NULL))
-	multiLibMask = *pp;
-
-    if (multiLibMask) {
-	for (i = 0; i < pkgNum - 1; i++) {
-	    if (!strcmp (alp->name, al->list[i].name)
-		&& hge(al->list[i].h, RPMTAG_MULTILIBS, NULL,
-				  (void **) &pp, NULL)
-		&& !rpmVersionCompare(alp->h, al->list[i].h)
-		&& *pp && !(*pp & multiLibMask))
-		    alp->multiLib = multiLibMask;
-	}
-    }
-  }
-
-    alp->provides = dsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    alp->requires = dsNew(h, RPMTAG_REQUIRENAME, scareMem);
-    alp->fns = fns = fnsNew(h, RPMTAG_BASENAMES, scareMem);
-#else
     /*@-assignexpose -temptrans@*/
-    alp->provides = provides;
-    alp->fns = fns;
+    alp->provides = rpmdsLink(provides, "alAddPackage");
+    alp->fns = rpmfnsLink(fns, "alAddPackage");
     /*@=assignexpose =temptrans@*/
-#endif
 
-    if (fns && fns->fc > 0) {
+    if (alp->fns && alp->fns->fc > 0) {
 	int * dirMapping;
 	dirInfo dieNeedle =
 		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
@@ -525,20 +447,20 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 
-	dirMapping = alloca(sizeof(*dirMapping) * fns->dc);
+	dirMapping = alloca(sizeof(*dirMapping) * alp->fns->dc);
 
 	/* allocated enough space for all the directories we could possible
 	   need to add */
 	al->dirs = xrealloc(al->dirs,
-			(al->numDirs + fns->dc) * sizeof(*al->dirs));
+			(al->numDirs + alp->fns->dc) * sizeof(*al->dirs));
 	origNumDirs = al->numDirs;
 
-	if (fns->dnl != NULL)
-	for (dirNum = 0; dirNum < fns->dc; dirNum++) {
+	if (alp->fns->dnl != NULL)
+	for (dirNum = 0; dirNum < alp->fns->dc; dirNum++) {
 	    /*@-assignexpose@*/
-	    dieNeedle->dirName = (char *) fns->dnl[dirNum];
+	    dieNeedle->dirName = (char *) alp->fns->dnl[dirNum];
 	    /*@=assignexpose@*/
-	    dieNeedle->dirNameLen = strlen(fns->dnl[dirNum]);
+	    dieNeedle->dirNameLen = strlen(alp->fns->dnl[dirNum]);
 	    die = bsearch(dieNeedle, al->dirs, origNumDirs,
 			       sizeof(*dieNeedle), dieCompare);
 	    if (die) {
@@ -546,7 +468,7 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 	    } else {
 		dirMapping[dirNum] = al->numDirs;
 		die = al->dirs + al->numDirs;
-		die->dirName = xstrdup(fns->dnl[dirNum]);
+		die->dirName = xstrdup(alp->fns->dnl[dirNum]);
 		die->dirNameLen = strlen(die->dirName);
 		die->files = NULL;
 		die->numFiles = 0;
@@ -555,34 +477,34 @@ fprintf(stderr, "*** add %p[%d] %s-%s-%s\n", al->list, pkgNum, alp->name, alp->v
 	}
 
 	last = 0;
-	for (first = 0; first < fns->fc; first = last + 1) {
+	for (first = 0; first < alp->fns->fc; first = last + 1) {
 	    fileIndexEntry fie;
 
-	    if (fns->dil == NULL)	/* XXX can't happen */
+	    if (alp->fns->dil == NULL)	/* XXX can't happen */
 		continue;
 
-	    for (last = first; (last + 1) < fns->fc; last++) {
-		if (fns->dil[first] != fns->dil[last + 1])
+	    for (last = first; (last + 1) < alp->fns->fc; last++) {
+		if (alp->fns->dil[first] != alp->fns->dil[last + 1])
 		    /*@innerbreak@*/ break;
 	    }
 
-	    die = al->dirs + dirMapping[fns->dil[first]];
+	    die = al->dirs + dirMapping[alp->fns->dil[first]];
 	    die->files = xrealloc(die->files,
 		    (die->numFiles + last - first + 1) *
 			sizeof(*die->files));
 
 	    fie = die->files + die->numFiles;
-	    for (fns->i = first; fns->i <= last; fns->i++) {
-		if (fns->bnl == NULL)	/* XXX can't happen */
+	    for (alp->fns->i = first; alp->fns->i <= last; alp->fns->i++) {
+		if (alp->fns->bnl == NULL)	/* XXX can't happen */
 		    /*@innercontinue@*/ continue;
-		if (fns->fflags == NULL)	/* XXX can't happen */
+		if (alp->fns->fflags == NULL)	/* XXX can't happen */
 		    /*@innercontinue@*/ continue;
 		/*@-assignexpose@*/
-		fie->baseName = fns->bnl[fns->i];
-		fie->baseNameLen = strlen(fns->bnl[fns->i]);
+		fie->baseName = alp->fns->bnl[alp->fns->i];
+		fie->baseNameLen = strlen(alp->fns->bnl[alp->fns->i]);
 		/*@=assignexpose@*/
 		fie->pkgNum = pkgNum;
-		fie->fileFlags = fns->fflags[fns->i];
+		fie->fileFlags = alp->fns->fflags[alp->fns->i];
 		die->numFiles++;
 		fie++;
 	    }

@@ -19,46 +19,6 @@ typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
 int alGetSize(const availableList al)
 	/*@*/;
 
-#ifdef	DYING
-/**
- * Return available package multiLib flag.
- * @param al		available list
- * @param pkgKey	available package key
- * @return		available package multiLib flag
- */
-int alGetMultiLib(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
-	/*@*/;
-
-/**
- * Return available package files count.
- * @param al		available list
- * @param pkgKey	available package key
- * @return		available package files count
- */
-int alGetFilesCount(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
-	/*@*/;
-
-/**
- * Return available package provides.
- * @param al		available list
- * @param pkgKey	available package key
- * @return		available package provides
- */
-/*@null@*/
-rpmDepSet alGetProvides(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
-	/*@*/;
-
-/**
- * Return available package requires.
- * @param al		available list
- * @param pkgKey	available package key
- * @return		available package requires
- */
-/*@null@*/
-rpmDepSet alGetRequires(/*@null@*/ const availableList al, /*@null@*/ alKey pkgKey)
-	/*@*/;
-#endif
-
 /**
  * Return available package header.
  * @param al		available list
@@ -132,7 +92,7 @@ void alDelPackage(availableList al, /*@null@*/ alKey pkgKey)
  */
 alKey alAddPackage(availableList al, /*@null@*/ alKey pkgKey,
 		fnpyKey key, Header h, rpmDepSet provides, rpmFNSet fns)
-	/*@modifies al, h, fns @*/;
+	/*@modifies al, h, provides, fns @*/;
 
 /**
  * Add package provides to available list index.

@@ -1370,12 +1370,7 @@ prtTSI(p->NEVR, p->tsi);
 	rpmDepSet requires;
 	int_32 Flags;
 
-#ifdef	DYING
-	requires = alGetRequires(ts->addedPackages, p->u.addedKey);
-#else
 	requires = p->requires;
-#endif
-
 	if (requires == NULL)
 	    continue;
 
@@ -1582,11 +1577,7 @@ prtTSI(" p", p->tsi);
 		}
 
 		/* Find (and destroy if co-requisite) "q <- p" relation. */
-#ifdef	DYING
-		requires = alGetRequires(ts->addedPackages, p->u.addedKey);
-#else
 		requires = p->requires;
-#endif
 		requires = dsiInit(requires);
 		dp = zapRelation(q, p, requires, 1, &nzaps);
 
@@ -1822,13 +1813,9 @@ int rpmdepCheck(rpmTransactionSet ts,
 	if (rc)
 	    goto exit;
 
-#ifdef	DYING
-	provides = alGetProvides(ts->addedPackages, p->u.addedKey);
-#else
-	provides = p->provides;
-#endif
 
 	rc = 0;
+	provides = p->provides;
 	provides = dsiInit(provides);
 	if (provides == NULL || dsiGetN(provides) == NULL)
 	    continue;
