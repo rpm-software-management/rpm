@@ -238,8 +238,7 @@ int doInstall(char * rootdir, char ** argv, char * location, int installFlags,
 	    if (!stopInstall && conflicts) {
 		fprintf(stderr, "failed dependencies:\n");
 		printDepProblems(stderr, conflicts, numConflicts);
-		
-		free(conflicts);
+		rpmdepFreeConflicts(conflicts, numConflicts);
 		numFailed = numPackages;
 		stopInstall = 1;
 	    }
@@ -341,8 +340,7 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
 	    fprintf(stderr, "removing these packages would break "
 			    "dependencies:\n");
 	    printDepProblems(stderr, conflicts, numConflicts);
-	    
-	    free(conflicts);
+	    rpmdepFreeConflicts(conflicts, numConflicts);
 	    numFailed += numPackages;
 	    stopUninstall = 1;
 	}
