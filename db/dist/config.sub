@@ -260,7 +260,7 @@ case $basic_machine in
 	| pyramid \
 	| sh | sh[1234] | sh[23]e | sh[34]eb | shbe | shle | sh[1234]le | sh3ele \
 	| sh64 | sh64le \
-	| sparc | sparc64 | sparc86x | sparclet | sparclite | sparcv9 | sparcv9b \
+	| sparc | sparc64 | sparc86x | sparclet | sparclite | sparcv8 | sparcv9 | sparcv9b \
 	| strongarm \
 	| tahoe | thumb | tic4x | tic80 | tron \
 	| v850 | v850e \
@@ -333,7 +333,7 @@ case $basic_machine in
 	| sh-* | sh[1234]-* | sh[23]e-* | sh[34]eb-* | shbe-* \
 	| shle-* | sh[1234]le-* | sh3ele-* | sh64-* | sh64le-* \
 	| sparc-* | sparc64-* | sparc86x-* | sparclet-* | sparclite-* \
-	| sparcv9-* | sparcv9b-* | strongarm-* | sv1-* | sx?-* \
+	| sparcv8-* | sparcv9-* | sparcv9b-* | strongarm-* | sv1-* | sx?-* \
 	| tahoe-* | thumb-* \
 	| tic30-* | tic4x-* | tic54x-* | tic55x-* | tic6x-* | tic80-* \
 	| tron-* \
@@ -1056,7 +1056,7 @@ case $basic_machine in
 	sh64)
 		basic_machine=sh64-unknown
 		;;
-	sparc | sparcv9 | sparcv9b)
+	sparc | sparcv8 | sparcv9 | sparcv9b)
 		basic_machine=sparc-sun
 		;;
 	cydra)

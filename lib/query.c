@@ -366,6 +366,8 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
 	int rc;
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
+	if (qva->qva_source == RPMQV_DBOFFSET)
+	    break;
     }
     qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
     return ec;

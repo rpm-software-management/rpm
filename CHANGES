@@ -25,7 +25,12 @@
 	- force FD_CLOEXEC on 1st 100 inherited fdno's.
 	- serialize rpmtsRun() using fcntl on /var/lock/rpm/transaction.
 	- permit globs in macrofiles: directive (#117217).
-
+	- fix: segfault generating transaction serialization lock path.
+	- use /etc/security/selinux/file_contexts instead.
+	- selinux: ignore ENOTSUP return from lsetfilecon.
+	- add sparcv8 and enable elf32/elf64 Zon sparc64 (#117302).
+	- fix: --querybynumber looped.
+  
 4.2.1 -> 4.2.2:
 	- unify signal handling in librpmio, use condvar to deliver signal.
 	- make peace with libtool-1.5, autoconf-2.59, automake-1.8.

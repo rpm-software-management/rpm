@@ -1090,8 +1090,11 @@ dnl Determine the canonical arch-vendor-os for the build machine
 autorelocate_path='%{nil}'
 case "${build_cpu}" in
 *86)		RPMCANONCOLOR=0; RPMCANONARCH=i386 ;;
+ia32e*)		RPMCANONCOLOR=3; RPMCANONARCH=ia32e ;;
+amd64*)		RPMCANONCOLOR=3; RPMCANONARCH=amd64 ;;
 x86_64*)	RPMCANONCOLOR=3; RPMCANONARCH=x86_64 ;;
 alpha*)		RPMCANONCOLOR=0; RPMCANONARCH=alpha ;;
+sparc64*)	RPMCANONCOLOR=0; RPMCANONARCH=sparc64 ;;
 sparc*)		RPMCANONCOLOR=0; RPMCANONARCH=sparc ;;
 ia64*)		RPMCANONCOLOR=2; RPMCANONARCH=ia64;
 		autorelocate_path='/emul/%%{ARCH}-%%{OS}' ;;

@@ -302,7 +302,7 @@ exit 0
 %ifarch alpha alphaev5 alphaev56 alphapca56 alphaev6 alphaev67
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/alpha*
 %endif
-%ifarch sparc sparcv9 sparc64
+%ifarch sparc sparcv8 sparcv9 sparc64
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/sparc*
 %endif
 %ifarch ia64
