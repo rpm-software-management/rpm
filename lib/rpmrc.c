@@ -20,6 +20,7 @@
 #include "messages.h"
 #include "misc.h"
 #include "rpmlib.h"
+#include "intl.h"
 
 #if HAVE_SYS_SYSTEMCFG_H
 #include <sys/systemcfg.h>

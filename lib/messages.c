@@ -3,6 +3,7 @@
 
 #include "messages.h"
 #include "rpmlib.h"
+#include "intl.h"
 
 static minLevel = RPMMESS_NORMAL;
 

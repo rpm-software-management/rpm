@@ -16,6 +16,7 @@
 #include "rpmlib.h"
 #include "rpmlead.h"
 #include "tread.h"
+#include "intl.h"
 
 /* The lead needs to be 8 byte aligned */
 
