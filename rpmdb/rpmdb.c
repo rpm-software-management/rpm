@@ -62,6 +62,11 @@ static int _db_filter_dups = 0;
 /*@unchecked@*/
 int dbiTagsMax = 0;
 
+/* We use this to comunicate back to the the rpm transaction
+ *  what their install instance was on a rpmdbAdd().
+ */ 
+unsigned int myinstall_instance = 0;
+
 /* Bit mask macros. */
 /*@-exporttype@*/
 typedef	unsigned int __pbm_bits;
@@ -2820,6 +2825,12 @@ DBT * data = alloca(sizeof(*data));
     int rc;
     int xx;
 
+    /* Reinitialize to zero, so in the event the add fails
+     * we won't have bogus information (i.e. the last succesful
+     * add).
+     */
+    myinstall_instance = 0;
+
     if (db == NULL)
 	return 0;
 
@@ -2920,7 +2931,13 @@ memset(data, 0, sizeof(*data));
     /* Now update the indexes */
 
     if (hdrNum)
-    {	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
+    {	
+	/* Need to save the header number for the current 
+	 * transaction.
+	 */
+	myinstall_instance = hdrNum;
+	
+	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 
 	if (dbiTags != NULL)
 	for (dbix = 0; dbix < dbiTagsMax; dbix++) {
