@@ -28,7 +28,7 @@ struct defaultEntry {
     char *defName;
 };
 
-struct dataEntry {
+struct canonEntry {
     char *name;
     char *short_name;
     short num;
@@ -74,12 +74,12 @@ static struct archEquiv * archCompatTable = NULL;
 static void addArchCompatibility(char * arch, char * equiv);
 
 static void setArchOs(char *arch, char *os, int building);
-static int addData(struct dataEntry **table, int *tableLen, char *line,
+static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 		   char *fn, int lineNum);
 static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
 		      char *fn, int lineNum);
-static struct dataEntry *lookupInDataTable(char *name,
-					   struct dataEntry *table,
+static struct canonEntry *lookupInCanonTable(char *name,
+					   struct canonEntry *table,
 					   int tableLen);
 static char *lookupInDefaultTable(char *name,
 				  struct defaultEntry *table,
@@ -87,12 +87,12 @@ static char *lookupInDefaultTable(char *name,
 
 static int archDefaultTableLen = 0;
 static int osDefaultTableLen = 0;
-static int archDataTableLen = 0;
-static int osDataTableLen = 0;
+static int archCanonTableLen = 0;
+static int osCanonTableLen = 0;
 static struct defaultEntry * archDefaultTable = NULL;
 static struct defaultEntry * osDefaultTable = NULL;
-static struct dataEntry * archDataTable = NULL;
-static struct dataEntry * osDataTable = NULL;
+static struct canonEntry * archCanonTable = NULL;
+static struct canonEntry * osCanonTable = NULL;
 
 static int optionCompare(const void * a, const void * b) {
     return strcasecmp(((struct option *) a)->name,
@@ -177,20 +177,20 @@ static void addArchCompatibility(char * arch, char * equiv) {
     archCompatTable[numArchCompats - 1].equiv = strdup(equiv);
 }
 
-static int addData(struct dataEntry **table, int *tableLen, char *line,
+static int addCanon(struct canonEntry **table, int *tableLen, char *line,
 		   char *fn, int lineNum)
 {
-    struct dataEntry *t;
+    struct canonEntry *t;
     char *s, *s1;
     
     if (! *tableLen) {
-	*tableLen = 1;
-	*table = malloc(sizeof(struct dataEntry));
+	*tableLen = 2;
+	*table = malloc(2 * sizeof(struct canonEntry));
     } else {
-	(*tableLen)++;
-	*table = realloc(*table, sizeof(struct dataEntry) * (*tableLen));
+	(*tableLen) += 2;
+	*table = realloc(*table, sizeof(struct canonEntry) * (*tableLen));
     }
-    t = & ((*table)[*tableLen - 1]);
+    t = & ((*table)[*tableLen - 2]);
 
     t->name = strtok(line, ": \t");
     t->short_name = strtok(NULL, " \t");
@@ -214,6 +214,12 @@ static int addData(struct dataEntry **table, int *tableLen, char *line,
 
     t->name = strdup(t->name);
     t->short_name = strdup(t->short_name);
+
+    /* From A B C entry */
+    /* Add  B B C entry */
+    t[1].name = strdup(t->name);
+    t[1].short_name = strdup(t->name);
+    t[1].num = t->num;
 
     return 0;
 }
@@ -250,8 +256,8 @@ static int addDefault(struct defaultEntry **table, int *tableLen, char *line,
     return 0;
 }
 
-static struct dataEntry *lookupInDataTable(char *name,
-					   struct dataEntry *table,
+static struct canonEntry *lookupInCanonTable(char *name,
+					   struct canonEntry *table,
 					   int tableLen)
 {
     while (tableLen) {
@@ -347,14 +353,14 @@ static int readRpmrc(FILE * f, char * fn, int readWhat) {
 	    if (readWhat != READ_TABLES) continue;
 	    if (addArchCompats(chptr, fn, linenum))
 		return 1;
-	} else if (!strcasecmp(start, "arch_data")) {
+	} else if (!strcasecmp(start, "arch_canon")) {
 	    if (readWhat != READ_TABLES) continue;
-	    if (addData(&archDataTable, &archDataTableLen,
+	    if (addCanon(&archCanonTable, &archCanonTableLen,
 			chptr, fn, linenum))
 		return 1;
-	} else if (!strcasecmp(start, "os_data")) {
+	} else if (!strcasecmp(start, "os_canon")) {
 	    if (readWhat != READ_TABLES) continue;
-	    if (addData(&osDataTable, &osDataTableLen,
+	    if (addCanon(&osCanonTable, &osCanonTableLen,
 			chptr, fn, linenum))
 		return 1;
 	} else if (!strcasecmp(start, "buildarchtranslate")) {
@@ -526,7 +532,7 @@ static int archOsIsInit = 0;
 static void setArchOs(char *arch, char *os, int build)
 {
     struct utsname un;
-    struct dataEntry *archData, *osData;
+    struct canonEntry *archCanon, *osCanon;
 
     if (archOsIsInit) {
 	error(RPMERR_INTERNAL, "Internal error: Arch/OS already initialized!");
@@ -549,20 +555,20 @@ static void setArchOs(char *arch, char *os, int build)
 	os = un.sysname;
     }
 
-    archData = lookupInDataTable(arch, archDataTable, archDataTableLen);
-    osData = lookupInDataTable(os, osDataTable, osDataTableLen);
-    if (archData) {
-	archnum = archData->num;
-	archname = strdup(archData->short_name);
+    archCanon = lookupInCanonTable(arch, archCanonTable, archCanonTableLen);
+    osCanon = lookupInCanonTable(os, osCanonTable, osCanonTableLen);
+    if (archCanon) {
+	archnum = archCanon->num;
+	archname = strdup(archCanon->short_name);
     } else {
 	archnum = 255;
 	archname = strdup(arch);
 	message(MESS_WARNING, "Unknown architecture: %s\n", arch);
 	message(MESS_WARNING, "Please contact rpm-list@redhat.com\n");
     }
-    if (osData) {
-	osnum = osData->num;
-	osname = strdup(osData->short_name);
+    if (osCanon) {
+	osnum = osCanon->num;
+	osname = strdup(osCanon->short_name);
     } else {
 	osnum = 255;
 	osname = strdup(os);
