@@ -410,7 +410,8 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 		break;
 	    /*@fallthrough@*/
 	default:
-	    rpmError(RPMERR_CREATE, _("cannot create %s"), realSourceDir);
+	    rpmError(RPMERR_CREATE, _("cannot create %s: %s"),
+		realSourceDir, strerror(errno));
 	    rc = 2;
 	    goto exit;
 	    /*@notreached@*/ break;

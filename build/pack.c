@@ -122,7 +122,7 @@ int packageBinaries(Spec spec)
 		       spec->sourceRpmName, 1);
 	
 	{   const char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
-	    const char *binRpm;
+	    char *binRpm, *binDir;
 	    binRpm = headerSprintf(pkg->header, binFormat, rpmTagTable,
 			       rpmHeaderFormats, &errorString);
 	    if (binRpm == NULL) {
@@ -133,6 +133,25 @@ int packageBinaries(Spec spec)
 		return RPMERR_BADFILENAME;
 	    }
 	    fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
+	    if ((binDir = strchr(binRpm, '/')) != NULL) {
+		struct stat st;
+		const char *dn;
+		*binDir = '\0';
+		dn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);
+		if (stat(dn, &st) < 0) {
+		    switch(errno) {
+		    case  ENOENT:
+			if (mkdir(dn, 0755) == 0)
+			    break;
+			/*@fallthrough@*/
+		    default:
+			rpmError(RPMERR_BADFILENAME,_("cannot create %s: %s\n"),
+			    dn, strerror(errno));
+			break;
+		    }
+		}
+		xfree(dn);
+	    }
 	    xfree(binRpm);
 	}
 
