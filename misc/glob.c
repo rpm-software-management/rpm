@@ -35,6 +35,7 @@ Cambridge, MA 02139, USA.  */
 #include <errno.h>
 #include <sys/types.h>
 
+#include "config.h"
 
 /* Comment out all this code if we are using the GNU C Library, and are not
    actually compiling the library itself.  This code is part of the GNU C
@@ -68,7 +69,7 @@ extern int errno;
 #define	NULL	0
 #endif
 
-#if	defined (POSIX) || defined (DIRENT) || defined (__GNU_LIBRARY__)
+#if	defined (POSIX) || defined (DIRENT) || defined (__GNU_LIBRARY__)  || defined(HAVE_DIRENT_H)
 #include <dirent.h>
 #ifndef	__GNU_LIBRARY__
 #define D_NAMLEN(d) strlen((d)->d_name)
