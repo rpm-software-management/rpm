@@ -74,6 +74,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     char * filename;
     struct rpmdb db;
     int i;
+    struct flock lockinfo;
 
     i = strlen(dbpath);
     if (dbpath[i - 1] != '/') {
@@ -107,14 +108,20 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
 
 	/* try and get a lock - this is released by the kernel when we close
 	   the file */
+	lockinfo.l_whence = 0;
+	lockinfo.l_start = 0;
+	lockinfo.l_len = 0;
+	
 	if (mode & O_RDWR) {
-	    if (flock(db.pkgs->fd, LOCK_EX | LOCK_NB)) {
+	    lockinfo.l_type = F_WRLCK;
+	    if (fcntl(db.pkgs->fd, F_SETLK, (void *) &lockinfo)) {
 		error(RPMERR_FLOCK, "cannot get %s lock on database", 
 			"exclusive");
 		return 1;
 	    } 
 	} else {
-	    if (flock(db.pkgs->fd, LOCK_SH | LOCK_NB)) {
+	    lockinfo.l_type = F_RDLCK;
+	    if (fcntl(db.pkgs->fd, F_SETLK, (void *) &lockinfo)) {
 		error(RPMERR_FLOCK, "cannot get %s lock on database", "shared");
 		return 1;
 	    } 
