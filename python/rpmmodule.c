@@ -17,7 +17,6 @@
 #include "legacy.h"
 #include "misc.h"
 #include "header_internal.h"
-#include "upgrade.h"
 
 #include "header-py.h"
 #include "rpmal-py.h"
@@ -58,6 +57,7 @@ static PyObject * archScore(PyObject * self, PyObject * args)
     return Py_BuildValue("i", score);
 }
 
+#ifdef	DYING
 /**
  */
 static int psGetArchScore(Header h)
@@ -180,6 +180,7 @@ static PyObject * findUpgradeSet(PyObject * self, PyObject * args)
 
     return result;
 }
+#endif
 
 /**
  */
@@ -296,8 +297,10 @@ static PyMethodDef rpmModuleMethods[] = {
 
     { "archscore", (PyCFunction) archScore, METH_VARARGS,
 	NULL },
+#ifdef	DYING
     { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS,
 	NULL },
+#endif
     { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS,
 	NULL },
     { "rhnLoad", (PyCFunction) rhnLoad, METH_VARARGS,

@@ -461,6 +461,7 @@ exit 0
 %changelog
 * Sun Dec 29 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.46
 - don't segfault with packages produced by rpm-2.93 (#80618).
+- python: eliminate hash.[ch] and upgrade.[ch], methods too.
 
 * Sat Dec 28 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.45
 - error if querying with iterator on different sized arrays.
