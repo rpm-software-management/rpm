@@ -2152,7 +2152,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    }
 	break;
     case FSM_LSETFCON:
-	if (fsm->fcontext == NULL)
+	if (fsm->fcontext == NULL || *fsm->fcontext == '\0')
 	    break;
 	rc = lsetfilecon(fsm->path, (security_context_t)fsm->fcontext);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
