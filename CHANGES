@@ -5,6 +5,8 @@
 	- more header file changes for AIX
 	- added :shescape query format type for strings, which prints strings
 	  which will survive a single level of shell expansion
+	- fixed --setperms and --setugids to handle empty packages and 
+	  packages with odd filenames
 
 2.3.11 -> 2.4:
 	- changed RPMNLSDIR directories to and @datadir@ to better
