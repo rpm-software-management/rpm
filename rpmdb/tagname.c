@@ -7,6 +7,8 @@
 #include <rpmlib.h>
 #include "debug.h"
 
+/*@access headerTagTableEntry @*/
+
 static int tagcmp(const void * a, const void * b)
         /*@*/
 {
@@ -22,7 +24,9 @@ int tagType(int tag)
     int tagtype = RPM_NULL_TYPE;
 
     t->val = tag;
+/*@-boundswrite@*/
     needle = bsearch(t, rpmTagTable, rpmTagTableSize, sizeof(*t), tagcmp);
+/*@=boundswrite@*/
     if (needle != NULL)
 	tagtype = needle->type;
     return tagtype;
