@@ -37,6 +37,7 @@
 	- fix: resurrect failed glob error message during build.
 	- add several BuildRoot FTW policies.
 	- add manpage for gendiff (pbrown@redhat.com).
+	- updated sv.po (goeran@uddeborg.pp.se) (#8349).
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

@@ -1,173 +1,171 @@
+# Swedish messages for RPM
+# Copyright © 1999 Free Software Foundation, Inc.
+# Göran Uddeborg <göran@uddeborg.pp.se>, 1999, 2000.
+#
 msgid ""
-msgstr "POT-Creation-Date: 2000-01-05 15:54-0500\n"
+msgstr ""
+"Project-Id-Version: rpm 3.0.3\n"
+"POT-Creation-Date: 2000-01-05 15:54-0500\n"
+"PO-Revision-Date: 2000-01-09 22:47+0100\n"
+"Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
+"Language-Team: Swedish <sv@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: build.c:25 lib/rpminstall.c:250 lib/rpminstall.c:424
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
-msgstr ""
+msgstr "kan inte öppna %s/packages.rpm\n"
 
 #: build.c:35
-#, fuzzy
 msgid "failed build dependencies:\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "misslyckades bygga beroenden:\n"
 
 #: build.c:64
 #, fuzzy, c-format
 msgid "Unable to open spec file %s: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kan inte öppna spec-fil: %s\n"
 
 #: build.c:125 build.c:138
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open tar pipe: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kunde inte öppna \"tar\"-rör: %s\n"
 
 #. Give up
 #: build.c:146
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read spec file from %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kunde inte läsa spec-fil från %s\n"
 
 #: build.c:174
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to rename %s to %s: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kunde inte byta namn på %s till %s: %s\n"
 
 #: build.c:212
 #, c-format
 msgid "File is not a regular file: %s\n"
-msgstr ""
+msgstr "Filen är inte en ordinär fil: %s\n"
 
 #: build.c:219
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
-msgstr ""
+msgstr "Filen %s tycks inte vara en spec-fil.\n"
 
 #. parse up the build operators
 #: build.c:279
 #, c-format
 msgid "Building target platforms: %s\n"
-msgstr ""
+msgstr "Bygger målplattformar: %s\n"
 
 #: build.c:294
-#, fuzzy, c-format
+#, c-format
 msgid "Building for target %s\n"
-msgstr "    --install <paketfil>"
+msgstr "Bygger för mål %s\n"
 
 #: build.c:344
 msgid "buildroot already specified"
-msgstr ""
+msgstr "buildroot redan specificerad"
 
 #: build.c:351
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
-msgstr ""
+msgstr "--buildarch är föråldrat.  Använd flaggan --target istället.\n"
 
 #: build.c:355
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
-msgstr ""
+msgstr "--buildos är föråldrat.  Använd flaggan --tgarget istället.\n"
 
 #: build.c:376
-#, fuzzy
 msgid "override build architecture"
-msgstr "%s går inte att tillverka på den här platformen\n"
+msgstr "åsidosätt tillverkningsarkitektur"
 
 #: build.c:378
 msgid "override build operating system"
-msgstr ""
+msgstr "åsidosätt tillverkningsoperativsystem"
 
 #: build.c:380
 msgid "override build root"
-msgstr ""
+msgstr "åsidosätt tillverkningsrot"
 
 #: build.c:382 rpm.c:495
-#, fuzzy
 msgid "remove build tree when done"
-msgstr ""
-"      --clean           - tag bort biblioteket där filerna kompilerades när "
-"det är klart"
+msgstr "tag bort tillverkningsträd efteråt"
 
 #: build.c:384
 msgid "do not execute any stages of the build"
-msgstr ""
+msgstr "utför inga steg i tillverkningen"
 
 #: build.c:386
 msgid "do not accept I18N msgstr's from specfile"
-msgstr ""
+msgstr "acceptera inte I18N \"msgstr\" från spec-filen"
 
 #: build.c:388
-#, fuzzy
 msgid "remove sources when done"
-msgstr ""
-"      --clean           - tag bort biblioteket där filerna kompilerades när "
-"det är klart"
+msgstr "tag bort källkod efteråt"
 
 #: build.c:390
-#, fuzzy
 msgid "remove specfile when done"
-msgstr ""
-"      --clean           - tag bort biblioteket där filerna kompilerades när "
-"det är klart"
+msgstr "tag bort spec-fil efteråt"
 
 #: build.c:392 rpm.c:493
-#, fuzzy
 msgid "skip straight to specified stage (only for c,i)"
-msgstr ""
-"      --short-circuit   - hoppa direkt till specifierat steg (enbart för c,i)"
+msgstr "gå direkt till angivet steg (endast för c,i)"
 
 #: build.c:394
 msgid "override target platform"
-msgstr ""
+msgstr "åsidosätt målplattform"
 
 #: build.c:396
 msgid "lookup I18N strings in specfile catalog"
-msgstr ""
+msgstr "slå upp I18N-strängar i spec-fil katalog"
 
 #: convertdb.c:39
 msgid "RPM database already exists"
-msgstr ""
+msgstr "RPM-databasen existerar redan"
 
 #: convertdb.c:44
 msgid "Old db is missing"
-msgstr ""
+msgstr "Gammal db saknas"
 
 #: convertdb.c:55
 msgid "failed to create RPM database /var/lib/rpm"
-msgstr ""
+msgstr "misslyckades att skapa RPM-databasen /var/lib/rpm"
 
 #: convertdb.c:61
 msgid "Old db is corrupt"
-msgstr ""
+msgstr "Gammal db är trasig"
 
 #: convertdb.c:70
 #, c-format
 msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-msgstr ""
+msgstr "oldrpmdbGetPackageInfo misslyckades &olddb = %p olddb.packages = %p\n"
 
 #: convertdb.c:204
 msgid "rpmconvert: no arguments expected"
-msgstr ""
+msgstr "rpmconvert: tar inga argument"
 
 #: convertdb.c:210
 msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
-msgstr ""
+msgstr "rpmconvert 1.0 - konverterar databasen i /var/lib/rpm\n"
 
 #: oldrpmdb.c:454
 #, c-format
 msgid "pulling %s from database\n"
-msgstr ""
+msgstr "tar %s från databasen\n"
 
 #: oldrpmdb.c:461
-#, fuzzy
 msgid "package not found in database"
-msgstr "inga paket angivna för avinstallation"
+msgstr "paketet inte funnet i databas"
 
 #: oldrpmdb.c:522
 msgid "no copyright!\n"
-msgstr ""
+msgstr "ingen copyright!\n"
 
 #: rpm.c:197
 #, c-format
 msgid "rpm: %s\n"
-msgstr ""
+msgstr "rpm: %s\n"
 
 #: rpm.c:208
 #, c-format
@@ -175,9 +173,8 @@ msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
 #: rpm.c:212
-#, fuzzy
 msgid "Copyright (C) 1998 - Red Hat Software"
-msgstr "Copyright (C) 1995 - Red Hat Software"
+msgstr "Copyright (C) 1998 - Red Hat Software"
 
 #: rpm.c:213
 msgid "This may be freely redistributed under the terms of the GNU GPL"
@@ -193,7 +190,7 @@ msgstr "       rpm {--version}"
 
 #: rpm.c:223
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
-msgstr ""
+msgstr "       rpm {--initdb}   [--dbpath <kat>]"
 
 #: rpm.c:224
 msgid ""
@@ -202,352 +199,319 @@ msgstr ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 
 #: rpm.c:225
-#, fuzzy
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
-msgstr "                          [--replacepkgs] [--replacefiles] [--search]"
+msgstr ""
+"                        [--replacepkgs] [--replacefiles] [--root <kat>]"
 
 #: rpm.c:226
-#, fuzzy
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
-msgstr "                          [--replacepkgs] [--replacefiles] [--search]"
+msgstr "                        [--excludedocs] [--includedocs] [--noscripts]"
 
 #: rpm.c:227
-#, fuzzy
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
-msgstr "                          [--search] [--oldpackage] [--root <dir>]"
+msgstr ""
+"                        [--rcfile <fil>] [--ignorearch] [--dbpath <kat>]"
 
 #: rpm.c:228
-#, fuzzy
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
-msgstr "                        [--sign] [--test] [--time-check <s>] specfil"
+msgstr ""
+"                        [--prefix <kat>] [--ignoreos] [--nodeps] [--allfiles]"
 
 #: rpm.c:229
-#, fuzzy
 msgid ""
 "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
-msgstr "                        [--root <dir>] [targets]"
+msgstr ""
+"                        [--ftpproxy <värd>] [--ftpport <port>] [--justdb]"
 
 #: rpm.c:230 rpm.c:239 rpm.c:248
-#, fuzzy
 msgid "                        [--httpproxy <host>] [--httpport <port>] "
-msgstr "                        [--root <dir>] [targets]"
+msgstr "                        [--httpproxy <värd>] [--httpport <port>] "
 
 #: rpm.c:231 rpm.c:241
-#, fuzzy
 msgid "                        [--noorder] [--relocate oldpath=newpath]"
-msgstr "                        [--root <dir>] [targets]"
+msgstr "                        [--noorder] [--relocate gammalväg=nyväg]"
 
 #: rpm.c:232
-#, fuzzy
 msgid ""
 "                        [--badreloc] [--notriggers] [--excludepath <path>]"
-msgstr "                          [--root <dir>] file1.rpm ... filen.rpm"
+msgstr ""
+"                        [--badreloc] [--notriggers] [--excludepath <sökväg>]"
 
 #: rpm.c:233
-#, fuzzy
 msgid "                        [--ignoresize] file1.rpm ... fileN.rpm"
-msgstr "                          file1.rpm ... fileN.rpm"
+msgstr "                        [--ignoresize] fil1.rpm ... filN.rpm"
 
 #: rpm.c:234
-#, fuzzy
 msgid ""
 "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
-"       rpm {--upgrage -U} [-v] [--hash -h] [--percent] [--force] [--test]"
+"       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 
 #: rpm.c:235
-#, fuzzy
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
-msgstr "                          [--search] [--oldpackage] [--root <dir>]"
+msgstr "                        [--oldpackage] [--root <kat>] [--noscripts]"
 
 #: rpm.c:236
-#, fuzzy
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
-msgstr "                          [--search] [--oldpackage] [--root <dir>]"
+msgstr ""
+"                        [--excludedocs] [--includedocs] [--rcfile <fil>]"
 
 #: rpm.c:237
-#, fuzzy
 msgid ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
-msgstr "                          [--search] [--oldpackage] [--root <dir>]"
+msgstr ""
+"                        [--ignorearch]  [--dbpath <kat>] [--prefix <kat>] "
 
 #: rpm.c:238
-#, fuzzy
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
-msgstr "                        [--root <dir>] [targets]"
+msgstr "                        [--ftpproxy <värd>] [--ftpport <port>]"
 
 #: rpm.c:240
-#, fuzzy
 msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
-msgstr "                          [--replacepkgs] [--replacefiles] [--search]"
+msgstr ""
+"                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 
 #: rpm.c:242
-#, fuzzy
 msgid ""
 "                        [--badreloc] [--excludepath <path>] [--ignoresize]"
-msgstr "                        [--root <dir>] [targets]"
+msgstr ""
+"                        [--badreloc] [--excludepath <sökväg>] [--ignoresize]"
 
 #: rpm.c:243
-#, fuzzy
 msgid "                        file1.rpm ... fileN.rpm"
-msgstr "                          file1.rpm ... fileN.rpm"
+msgstr "                        fil1.rpm ... filN.rpm"
 
 #: rpm.c:244
-#, fuzzy
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-msgstr "       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] "
+msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 
 #: rpm.c:245
-#, fuzzy
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
-msgstr "                          [--root <dir>] file1.rpm ... filen.rpm"
+msgstr "                        [--scripts] [--root <kat>] [--rcfile <fil>]"
 
 #: rpm.c:246
-#, fuzzy
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
-msgstr "                          [--replacepkgs] [--replacefiles] [--search]"
+msgstr "                        [--whatprovides] [--whatrequires] [--requires]"
 
 #: rpm.c:247
-#, fuzzy
 msgid ""
 "                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
-msgstr "                          [--search] [--oldpackage] [--root <dir>]"
+msgstr ""
+"                        [--triggeredby] [--ftpuseport] [--ftpproxy <värd>]"
 
 #: rpm.c:249
-#, fuzzy
 msgid ""
 "                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
-msgstr "                        [--root <dir>] [targets]"
+msgstr ""
+"                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
 
 #: rpm.c:250
-#, fuzzy
 msgid "                        [--changelog] [--dbpath <dir>] [targets]"
-msgstr "                        [--root <dir>] [targets]"
+msgstr "                        [--changelog] [--dbpath <kat>] [mål]"
 
 #: rpm.c:251
-#, fuzzy
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
-msgstr "       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]"
+msgstr "       rpm {--verify -V -y} [-afpg] [--root <kat>] [--rcfile <fil>]"
 
 #: rpm.c:252
-#, fuzzy
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
-msgstr "                          [--replacepkgs] [--replacefiles] [--search]"
+msgstr ""
+"                        [--dbpath <kat>] [--nodeps] [--nofiles] [--noscripts]"
 
 #: rpm.c:253
-#, fuzzy
 msgid "                        [--nomd5] [targets]"
-msgstr "                        [--root <dir>] [targets]"
+msgstr "                        [--nomd5] [mål]"
 
 #: rpm.c:254
-#, fuzzy
 msgid "       rpm {--setperms} [-afpg] [target]"
-msgstr "       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]"
+msgstr "       rpm {--setperms} [-afpg] [mål]"
 
 #: rpm.c:255
-#, fuzzy
 msgid "       rpm {--setugids} [-afpg] [target]"
-msgstr "       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]"
+msgstr "       rpm {--setugids} [-afpg] [mål]"
 
 #: rpm.c:256
-#, fuzzy
 msgid "       rpm {--freshen -F} file1.rpm ... fileN.rpm"
-msgstr "                          file1.rpm ... fileN.rpm"
+msgstr "       rpm {--freshen -F} fil1.rpm ... filN.rpm"
 
 #: rpm.c:257
-#, fuzzy
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
-msgstr "       rpm {--erase -e] [--root <dir>] paket1 paket2 ... paketN"
+msgstr "       rpm {--erase -e} [--root <kat>] [--noscripts] [--rcfile <fil>]"
 
 #: rpm.c:258
-#, fuzzy
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
-msgstr "                        [--root <dir>] [targets]"
+msgstr "                        [--dbpath <kat>] [--nodeps] [--allmatches]"
 
 #: rpm.c:259
-#, fuzzy
 msgid ""
 "                        [--justdb] [--notriggers] rpackage1 ... packageN"
-msgstr ""
-"                        - installera källkods paket, tillverka binär paket,"
+msgstr "                        [--justdb] [--notriggers] paket1 ... paketN"
 
 #: rpm.c:260
-#, fuzzy
 msgid ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"
 msgstr ""
-"       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--keep-temps]"
+"       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <fil>]"
 
 #: rpm.c:261
-#, fuzzy
 msgid "                        [--sign] [--nobuild] [--timecheck <s>] ]"
-msgstr "                        [--sign] [--test] [--time-check <s>] specfil"
+msgstr "                        [--sign] [--nobuild] [--timecheck <s>] ]"
 
 #: rpm.c:262
-#, fuzzy
 msgid "                        [--target=platform1[,platform2...]]"
-msgstr "        -i                - visa paket information"
+msgstr "                        [--target=platform1[,platform2...]]"
 
 #: rpm.c:263
 #, fuzzy
 msgid "                        [--rmsource] [--rmspec] specfile"
-msgstr "                        [--root <dir>] [targets]"
+msgstr "                        [--rmsource] spec-fil"
 
 #: rpm.c:264
 msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
-msgstr ""
+msgstr "       rpm {--rmsource} [--rcfile <fil>] [-v] spec-fil"
 
 #: rpm.c:265
-#, fuzzy
 msgid ""
 "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-msgstr "       rpm {--rebuild} [-v] source1.rpm source2.rpm ... sourceN.rpm"
+msgstr "       rpm {--rebuild} [--rcfile <fil>] [-v] källa1.rpm ... källaN.rpm"
 
 #: rpm.c:266
-#, fuzzy
 msgid ""
 "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-msgstr "       rpm {--rebuild} [-v] source1.rpm source2.rpm ... sourceN.rpm"
+msgstr ""
+"       rpm {--recompile} [--rcfile <fil>] [-v] källa1.rpm ... källaN.rpm"
 
 #: rpm.c:267
-#, fuzzy
 msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
-msgstr "       rpm {--erase -e] [--root <dir>] paket1 paket2 ... paketN"
+msgstr "       rpm {--resign} [--rcfile <fil>] paket1 paket2 ... paketN"
 
 #: rpm.c:268
-#, fuzzy
 msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
-msgstr "       rpm {--erase -e] [--root <dir>] paket1 paket2 ... paketN"
+msgstr "       rpm {--addsign} [--rcfile <fil>] paket1 paket2 ... paketN"
 
 #: rpm.c:269
 #, fuzzy
 msgid ""
 "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"
-msgstr "       rpm {--verify -V -y] [-afFpP] [--root <dir>] [targets]"
+msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <fil>]"
 
 #: rpm.c:270
-#, fuzzy
 msgid "                           package1 ... packageN"
-msgstr "                          som matchar <pkg>"
+msgstr "                           paket1 ... paketN"
 
 #: rpm.c:271
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
-msgstr ""
+msgstr "       rpm {--rebuilddb} [--rcfile <fil>] [--dbpath <kat>]"
 
 #: rpm.c:272
-#, fuzzy
 msgid "       rpm {--querytags}"
-msgstr "       rpm {--version}"
+msgstr "       rpm {--querytags}"
 
 #: rpm.c:306
 msgid "usage:"
 msgstr "använd:"
 
 #: rpm.c:308
-#, fuzzy
 msgid "print this message"
-msgstr "   --help\t\t- visa det här meddelandet"
+msgstr "visa detta meddelande"
 
 #: rpm.c:310
-#, fuzzy
 msgid "print the version of rpm being used"
-msgstr "   --version\t\t- visa vilken version av rpm som används"
+msgstr "visa vilken version av rpm som används"
 
 #: rpm.c:311
 msgid "   all modes support the following arguments:"
-msgstr ""
+msgstr "alla arbetssätt stödjer följande argument:"
 
 #: rpm.c:312
 msgid "      --rcfile <file>     "
-msgstr ""
+msgstr "      --rcfile <fil>     "
 
 #: rpm.c:313
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
-msgstr ""
+msgstr "använd <fil> istället för /etc/rpmrc och $HOME/.rpmrc"
 
 #: rpm.c:315
 msgid "be a little more verbose"
-msgstr ""
+msgstr "var lite mer mångordig"
 
 #: rpm.c:317
 msgid "be incredibly verbose (for debugging)"
-msgstr ""
+msgstr "var mycket mångordig (för felsökning)"
 
 #: rpm.c:319
 msgid "query mode"
-msgstr ""
+msgstr "frågeläge"
 
 #: rpm.c:320 rpm.c:382 rpm.c:446 rpm.c:474
 msgid "      --root <dir>        "
-msgstr ""
+msgstr "      --root <kat>        "
 
 #: rpm.c:321 rpm.c:383 rpm.c:447 rpm.c:475 rpm.c:537
-#, fuzzy
 msgid "use <dir> as the top level directory"
-msgstr "      --root <dir>\t- använd <dir> som start bibliotek"
+msgstr "använd <kat> som toppkatalog"
 
 #: rpm.c:322 rpm.c:380 rpm.c:410 rpm.c:462 rpm.c:534
 msgid "      --dbpath <dir>      "
-msgstr ""
+msgstr "      --dbpath <kat>      "
 
 #: rpm.c:323 rpm.c:381 rpm.c:411 rpm.c:463 rpm.c:535
 msgid "use <dir> as the directory for the database"
-msgstr ""
+msgstr "använd <kat> som katalog för databasen"
 
 #: rpm.c:324
 msgid "      --queryformat <qfmt>"
-msgstr ""
+msgstr "      --queryformat <ffmt>"
 
 #: rpm.c:325
 msgid "use <qfmt> as the header format (implies -i)"
-msgstr ""
+msgstr "använd <ffmt> som huvudformat (medför -i)"
 
 #: rpm.c:326
 msgid ""
 "   install, upgrade and query (with -p) allow ftp URL's to be used in place"
 msgstr ""
+"   insallera, uppgradera, och fråga (med -p) tillåter ftp URL:ar att användas"
 
 #: rpm.c:327
 msgid "   of file names as well as the following options:"
-msgstr ""
+msgstr "   istället för filnamn, liksom följande flaggor:"
 
 #: rpm.c:328
 msgid "      --ftpproxy <host>   "
-msgstr ""
+msgstr "      --ftpproxy <värd>   "
 
 #: rpm.c:329
 msgid "hostname or IP of ftp proxy"
-msgstr ""
+msgstr "ftp-ombudets värdnamn eller IP"
 
 #: rpm.c:330
 msgid "      --ftpport <port>    "
-msgstr ""
+msgstr "      --ftpport <port>    "
 
 #: rpm.c:331
 msgid "port number of ftp server (or proxy)"
-msgstr ""
+msgstr "ftpservers (eller ombuds) portnummer"
 
 #: rpm.c:332
-#, fuzzy
 msgid "      --httpproxy <host>   "
-msgstr "    --rebuild <källkods_paket>"
+msgstr "      --httpproxy <värd>   "
 
 #: rpm.c:333
 msgid "hostname or IP of http proxy"
-msgstr ""
+msgstr "http-ombudets värdnamn eller IP"
 
 #: rpm.c:334
-#, fuzzy
 msgid "      --httpport <port>    "
-msgstr "    --rebuild <källkods_paket>"
+msgstr "      --httpport <port>    "
 
 #: rpm.c:335
 msgid "port number of http server (or proxy)"
-msgstr ""
+msgstr "httpservers (eller ombuds) portnummer"
 
 #: rpm.c:336
 msgid "      Package specification options:"
@@ -555,489 +519,443 @@ msgstr "      Paket urvals parametrar:"
 
 #: rpm.c:338
 msgid "query all packages"
-msgstr ""
+msgstr "fråga om alla paket"
 
 #: rpm.c:339
 msgid "        -f <file>+        "
-msgstr ""
+msgstr "        -f <fil>+         "
 
 #: rpm.c:340
-#, fuzzy
 msgid "query package owning <file>"
-msgstr "        -f <fil>+         - undersök paket som äger <fil>"
+msgstr "fråga om paket som äger <fil>"
 
 #: rpm.c:341
-#, fuzzy
 msgid "        -p <packagefile>+ "
-msgstr "    --upgrade <paketfil>"
+msgstr "        -p <paketfil>+ "
 
 #: rpm.c:342
-#, fuzzy
 msgid "query (uninstalled) package <packagefile>"
-msgstr "        -p <paketfil>+    - undersök (uninstalled) paket <packagefile>"
+msgstr "fråga om (oinstallerat) paket <paketfil>"
 
 #: rpm.c:343
-#, fuzzy
 msgid "        --triggeredby <pkg>"
-msgstr "    --erase <paket>"
+msgstr "        --triggeredby <pkt>"
 
 #: rpm.c:344
-#, fuzzy
 msgid "query packages triggered by <pkg>"
-msgstr "        -f <fil>+         - undersök paket som äger <fil>"
+msgstr "fråga om paket utlösta av <pkt>"
 
 #: rpm.c:345
-#, fuzzy
 msgid "        --whatprovides <cap>"
-msgstr "       rpm {--version}"
+msgstr "        --whatprovides <egnskp>"
 
 #: rpm.c:346
 msgid "query packages which provide <cap> capability"
-msgstr ""
+msgstr "undersök paket som tillhandahåller <egnskp> egenskap"
 
 #: rpm.c:347
-#, fuzzy
 msgid "        --whatrequires <cap>"
-msgstr "       rpm {--version}"
+msgstr "        --whatrequires <egnskp>"
 
 #: rpm.c:348
 msgid "query packages which require <cap> capability"
-msgstr ""
+msgstr "undersök paket som behöver <egnskp> egenskap"
 
 #: rpm.c:349
 msgid "      Information selection options:"
 msgstr "      Information urvals parametrar:"
 
 #: rpm.c:351
-#, fuzzy
 msgid "display package information"
-msgstr "        -i                - visa paket information"
+msgstr "visa paketinformation"
 
 #: rpm.c:353
 msgid "display the package's change log"
-msgstr ""
+msgstr "visa paketets ändringslogg"
 
 #: rpm.c:355
-#, fuzzy
 msgid "display package file list"
-msgstr "        -l                - visa paketets fil lista"
+msgstr "visa paketets fillista"
 
 #: rpm.c:357
-#, fuzzy
 msgid "show file states (implies -l)"
-msgstr "        -s                - visa filers status (implicerar -l)"
+msgstr "visa filers status (implicerar -l)"
 
 #: rpm.c:359
-#, fuzzy
 msgid "list only documentation files (implies -l)"
-msgstr ""
-"        -d                - visa enbart dokumentation filer (implicerar -l)"
+msgstr "visa enbart dokumentationsfiler (implicerar -l)"
 
 #: rpm.c:361
-#, fuzzy
 msgid "list only configuration files (implies -l)"
-msgstr ""
-"        -c                - visa enbart konfiguration filer (implicerar -l)"
+msgstr "visa enbart konfigurationsfiler (implicerar -l)"
 
 #: rpm.c:363
 msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or "
 "-d)"
 msgstr ""
+"visa all verifierbar information för varje fil (måste användas med -l, -c, "
+"eller -d)"
 
 #: rpm.c:365
 msgid "list capabilities package provides"
-msgstr ""
+msgstr "lista egenskaper paketet tillhandahåller"
 
 #: rpm.c:366
-#, fuzzy
 msgid "        --requires"
-msgstr "       rpm {--version}"
+msgstr "        --requires"
 
 #: rpm.c:368
 msgid "list package dependencies"
-msgstr ""
+msgstr "lista paketberoenden"
 
 #: rpm.c:370
 msgid "print the various [un]install scripts"
-msgstr ""
+msgstr "visa de olika [av]installationsskripten"
 
 #: rpm.c:372
 msgid "show the trigger scripts contained in the package"
-msgstr ""
+msgstr "visa utlösningsskripten i paketet"
 
 #: rpm.c:376
-#, fuzzy
 msgid "    --pipe <cmd>          "
-msgstr "    --checksig <pkg>+  - verifiera PGP signatur"
+msgstr "    --pipe <kommando>     "
 
 #: rpm.c:377
 msgid "send stdout to <cmd>"
-msgstr ""
+msgstr "skicka stdut till <kommando>"
 
 #: rpm.c:379
-#, fuzzy
 msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
-msgstr "\t\t\t  samma paket urvals parametrar som -q"
+msgstr "verifiera ett pakets installation med samma urvalsflaggor som till -q"
 
 #: rpm.c:385 rpm.c:433 rpm.c:467
 msgid "do not verify package dependencies"
-msgstr ""
+msgstr "verifiera inte paketberoenden"
 
 #: rpm.c:387
 msgid "do not verify file md5 checksums"
-msgstr ""
+msgstr "verifiera inte md5-kontrollsummor"
 
 #: rpm.c:389
 msgid "do not verify file attributes"
-msgstr ""
+msgstr "verifiera inte filattribut"
 
 #: rpm.c:392
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
 msgstr ""
+"sätt filrättigheterna till dem i paketdatabasen med samma "
+"paketspecifikationsflaggor som -q"
 
 #: rpm.c:395
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
 msgstr ""
+"sätt filägare och -grupp till dem i paketdatabasen med samma "
+"paketspcifikationsflaggor som -q"
 
 #: rpm.c:399
-#, fuzzy
 msgid "    --install <packagefile>"
-msgstr "    --upgrade <paketfil>"
-
-#: rpm.c:400
-#, fuzzy
-msgid "    -i <packagefile>      "
-msgstr "    --upgrade <paketfil>"
-
-#: rpm.c:401
-#, fuzzy
-msgid "install package"
 msgstr "    --install <paketfil>"
 
+#: rpm.c:400
+msgid "    -i <packagefile>      "
+msgstr "    -i <paketfil>         "
+
+#: rpm.c:401
+msgid "install package"
+msgstr "installera paket"
+
 #: rpm.c:402
-#, fuzzy
 msgid "      --excludepath <path>"
-msgstr "                        [--root <dir>] [targets]"
+msgstr "      --excludepath <sökväg>"
 
 #: rpm.c:403
 msgid "skip files in path <path>"
-msgstr ""
+msgstr "hoppa över filer i <sökv>"
 
 #: rpm.c:404
-#, fuzzy
 msgid "      --relocate <oldpath>=<newpath>"
-msgstr "                        [--root <dir>] [targets]"
+msgstr "      --relocate <frånskv>=<tillskv>"
 
 #: rpm.c:405
 msgid "relocate files from <oldpath> to <newpath>"
-msgstr ""
+msgstr "flytta filer från <frånskv> till <tillskv>"
 
 #: rpm.c:407
 msgid "relocate files even though the package doesn't allow it"
-msgstr ""
+msgstr "flytta filer trots att paketet inte tillåter det"
 
 #: rpm.c:408
 msgid "      --prefix <dir>      "
-msgstr ""
+msgstr "      --prefix <katalog>  "
 
 #: rpm.c:409
 msgid "relocate the package to <dir>, if relocatable"
-msgstr ""
+msgstr "flytta paketet till <katalog>, om flyttbart"
 
 #: rpm.c:413
 msgid "do not install documentation"
-msgstr ""
+msgstr "installera inte dokumentation"
 
 #: rpm.c:415
-#, fuzzy
 msgid "short hand for --replacepkgs --replacefiles"
-msgstr "      --force           - förkortning för --replacepkgs --replacefiles"
+msgstr "kortform för --replacepkgs --replacefiles"
 
 #: rpm.c:418
-#, fuzzy
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
-"      --hash            - skriv ut brädgårdar eftersom paketet installeras "
-"(bra tillsammans med -v)"
+"skriv ut brädgårdar allt eftersom paketet installeras (bra tillsammans med "
+"-v)"
 
 #: rpm.c:420
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
+"installera alla filer, även konfigurationer som annars kunde hoppats över"
 
 #: rpm.c:423
 msgid "don't verify package architecture"
-msgstr ""
+msgstr "verifiera inte paketarkitektur"
 
 #: rpm.c:425
 msgid "don't check disk space before installing"
-msgstr ""
+msgstr "kontrollera inte skivutrymme före installation"
 
 #: rpm.c:427
 msgid "don't verify package operating system"
-msgstr ""
+msgstr "verifiera inte paketets operativsystem"
 
 #: rpm.c:429
 msgid "install documentation"
-msgstr ""
+msgstr "installera dokumentation"
 
 #: rpm.c:431 rpm.c:465
 msgid "update the database, but do not modify the filesystem"
-msgstr ""
+msgstr "uppdatera databasen, men ändra inte filsystemet"
 
 #: rpm.c:435 rpm.c:469
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr ""
+msgstr "flytta inte om paketinstallationen för att tillfredsställa beroenden"
 
 #: rpm.c:437
 msgid "don't execute any installation scripts"
-msgstr ""
+msgstr "kör inte installationsskript"
 
 #: rpm.c:439 rpm.c:473
 msgid "don't execute any scripts triggered by this package"
-msgstr ""
+msgstr "kör inte utlösningsskript utlösta av detta paket"
 
 #: rpm.c:441
-#, fuzzy
 msgid "print percentages as package installs"
-msgstr "      --percent         - skriv procent eftersom paketet installeras"
+msgstr "skriv procent allt eftersom paketet installeras"
 
 #: rpm.c:443
-#, fuzzy
 msgid "install even if the package replaces installed files"
-msgstr ""
-"      --replacefiles    - installera även om paketet som det byter ut "
-"installerade filer"
+msgstr "installera även om paketet byter ut installerade filer"
 
 #: rpm.c:445
-#, fuzzy
 msgid "reinstall if the package is already present"
-msgstr ""
-"      --replacepkgs      - installera om ifall paketet redan är installerat"
+msgstr "installera om ifall paketet redan är installerat"
 
 #: rpm.c:449
-#, fuzzy
 msgid "don't install, but tell if it would work or not"
-msgstr ""
-"      --test            - installera inte, men tala om ifall det skulle "
-"fungera eller inte"
+msgstr "installera inte, men tala om ifall det skulle fungera eller inte"
 
 #: rpm.c:451
 msgid "    --upgrade <packagefile>"
 msgstr "    --upgrade <paketfil>"
 
 #: rpm.c:452
-#, fuzzy
 msgid "    -U <packagefile>      "
-msgstr "    --upgrade <paketfil>"
+msgstr "    -U <paketfil>         "
 
 #: rpm.c:453
-#, fuzzy
 msgid "upgrade package (same options as --install, plus)"
-msgstr ""
-"    -U <paketfil>\t- upgradera paket (samma argument som --install, samt)"
+msgstr "uppgradera paket (samma flaggor som --install, samt)"
 
 #: rpm.c:455
-#, fuzzy
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
-"      --oldpackage      - upgradera till en gammal version av paketet "
-"(--force"
+"uppgradera till en gammal version av paketet (--force vid uppgraderingar gör "
+"detta automatiskt)"
 
 #: rpm.c:457
 msgid "    --erase <package>"
 msgstr "    --erase <paket>"
 
 #: rpm.c:459
-#, fuzzy
 msgid "erase (uninstall) package"
-msgstr "    --install <paketfil>"
+msgstr "ta bort (avinstallera) paket"
 
 #: rpm.c:461
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
+"ta bort alla paket som matchar <paket> (normalt ger det ett fel om <paket> "
+"specificerar flera paket)"
 
 #: rpm.c:471
 msgid "do not execute any package specific scripts"
-msgstr ""
+msgstr "kör inte paketspecifika skript"
 
 #: rpm.c:477
 msgid "    -b<stage> <spec>      "
-msgstr ""
+msgstr "    -b<steg> <spec>       "
 
 #: rpm.c:478
 msgid "    -t<stage> <tarball>   "
-msgstr ""
+msgstr "    -t<steg> <tarboll>    "
 
 #: rpm.c:479
-#, fuzzy
 msgid "build package, where <stage> is one of:"
-msgstr "    -b<steg> <spec>    - tillverka paket, där <steg> är något av:"
+msgstr "tillverka paket, där <steg> är något av:"
 
 #: rpm.c:481
-#, fuzzy
 msgid "prep (unpack sources and apply patches)"
-msgstr "\t\t\t  p - förbered (packa upp källkod samt applicera patchar)"
+msgstr "förbered (packa upp källkod samt applicera patchar)"
 
 #: rpm.c:483
-#, fuzzy, c-format
+#, c-format
 msgid "list check (do some cursory checks on %files)"
-msgstr "\t\t\t  l - kontrollera (gör några enkla kontroller på %files)"
+msgstr "kontrollera (gör några enkla kontroller på %files)"
 
 #: rpm.c:485
-#, fuzzy
 msgid "compile (prep and compile)"
-msgstr "\t\t\t  c - kompilera (förbered och kompilera)"
+msgstr "kompilera (förbered och kompilera)"
 
 #: rpm.c:487
-#, fuzzy
 msgid "install (prep, compile, install)"
-msgstr "\t\t\t  i - installera (förbered, kompilera, installera)"
+msgstr "installera (förbered, kompilera, installera)"
 
 #: rpm.c:489
-#, fuzzy
 msgid "binary package (prep, compile, install, package)"
-msgstr "\t\t\t  b - binär paketera (förbered, kompilera, installera, paketera)"
+msgstr "binärpaketera (förbered, kompilera, installera, paketera)"
 
 #: rpm.c:491
-#, fuzzy
 msgid "bin/src package (prep, compile, install, package)"
-msgstr ""
-"\t\t\t  a - bin/src paketera (förbered, kompilera, installera, paketera)"
+msgstr "binär- och källpaketera (förbered, kompilera, installera, paketera)"
 
 #: rpm.c:497
 msgid "remove sources and spec file when done"
-msgstr ""
+msgstr "ta bort källkod och spec-fil efteråt"
 
 #: rpm.c:499
 #, fuzzy
 msgid "generate PGP/GPG signature"
-msgstr "      --sign            - tillverka en PGP signatur"
+msgstr "tillverka en PGP-signatur"
 
 #: rpm.c:500
-#, fuzzy
 msgid "      --buildroot <dir>   "
-msgstr "    --rebuild <källkods_paket>"
+msgstr "      --buildroot <kat>   "
 
 #: rpm.c:501
 msgid "use <dir> as the build root"
-msgstr ""
+msgstr "använd <kat> som tillverkningsrot"
 
 #: rpm.c:502
 msgid "      --target=<platform>+"
-msgstr ""
+msgstr "      --target=<plattfrm>+"
 
 #: rpm.c:503
 msgid "build the packages for the build targets platform1...platformN."
-msgstr ""
+msgstr "tillverka paketen för målen plattfrm1...plattfrmN."
 
 #: rpm.c:505
 msgid "do not execute any stages"
-msgstr ""
+msgstr "utför inga steg"
 
 #: rpm.c:506
-#, fuzzy
 msgid "      --timecheck <secs>  "
-msgstr "    --erase <paket>"
+msgstr "      --timecheck <sek>   "
 
 #: rpm.c:507
-#, fuzzy
 msgid "set the time check to <secs> seconds (0 disables)"
-msgstr ""
-"      --time-check <s>  - sätt tidskontrollen till S sekunder (0 slår av den)"
+msgstr "sätt tidskontrollen till <sek> sekunder (0 slår av)"
 
 #: rpm.c:509
-#, fuzzy
 msgid "    --rebuild <src_pkg>   "
-msgstr "    --rebuild <källkods_paket>"
+msgstr "    --rebuild <källpaket> "
 
 #: rpm.c:510
-#, fuzzy
 msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
 msgstr ""
-"                          och ta bort spec filen, källkoden, patchar, och "
-"ikoner."
+"installera källpaket, tillverka binärpaket och och ta bort spec-fil, "
+"källkod, patchar och ikoner."
 
 #: rpm.c:511
-#, fuzzy
 msgid "    --rmsource <spec>     "
-msgstr "    --erase <paket>"
+msgstr "    --rmsource <spec>     "
 
 #: rpm.c:512
 msgid "remove sources and spec file"
-msgstr ""
+msgstr "ta bort källkod och spec-fil"
 
 #: rpm.c:513
-#, fuzzy
 msgid "    --recompile <src_pkg> "
-msgstr "    --rebuild <källkods_paket>"
+msgstr "    --recompile <källpkt> "
 
 #: rpm.c:514
 msgid "like --rebuild, but don't build any package"
-msgstr ""
+msgstr "som --rebuild, men tillverka inga paket"
 
 #: rpm.c:515
-#, fuzzy
 msgid "    --resign <pkg>+       "
-msgstr "    --checksig <pkg>+  - verifiera PGP signatur"
+msgstr "    --resign <pkt>+       "
 
 #: rpm.c:516
 msgid "sign a package (discard current signature)"
-msgstr ""
+msgstr "signera ett paket (släng nuvarande signatur)"
 
 #: rpm.c:517
 msgid "    --addsign <pkg>+      "
-msgstr ""
+msgstr "    --addsign <pkt>+      "
 
 #: rpm.c:518
 msgid "add a signature to a package"
-msgstr ""
+msgstr "lägg till signatur till ett paket"
 
 #: rpm.c:520
-#, fuzzy
 msgid "    --checksig <pkg>+     "
-msgstr "    --checksig <pkg>+  - verifiera PGP signatur"
+msgstr "    --checksig <pkt>+     "
 
 #: rpm.c:521
 msgid "verify package signature"
-msgstr ""
+msgstr "verifiera paketsignatur"
 
 #: rpm.c:523
 msgid "skip any PGP signatures"
-msgstr ""
+msgstr "hoppa över PGP-signatur"
 
 #: rpm.c:525
 #, fuzzy
 msgid "skip any GPG signatures"
-msgstr "      --sign            - tillverka en PGP signatur"
+msgstr "hoppa över PGP-signatur"
 
 #: rpm.c:527
 msgid "skip any MD5 signatures"
-msgstr ""
+msgstr "hoppa över MD5-signatur"
 
 #: rpm.c:529
 msgid "list the tags that can be used in a query format"
-msgstr ""
+msgstr "lista taggar som kan användas i frågeformat"
 
 #: rpm.c:531
 msgid "make sure a valid database exists"
-msgstr ""
+msgstr "förvissa dig om att en giltig databas existerar"
 
 #: rpm.c:533
 msgid "rebuild database from existing database"
-msgstr ""
+msgstr "bygg om databasen från existerande databas"
 
 #: rpm.c:682 rpm.c:688 rpm.c:695 rpm.c:701 rpm.c:710 rpm.c:717 rpm.c:764
 #: rpm.c:770 rpm.c:804 rpm.c:810 rpm.c:816 rpm.c:824 rpm.c:868 rpm.c:923
@@ -1046,9 +964,8 @@ msgid "only one major mode may be specified"
 msgstr "enbart ett läge kan specifieras"
 
 #: rpm.c:703
-#, fuzzy
 msgid "-u and --uninstall are deprecated and no longer work.\n"
-msgstr "-u och --uninstall är föråldrade och vill snart bli borttagna.\n"
+msgstr "-u och --uninstall undanbedes och fungerar inte längre.\n"
 
 #: rpm.c:705
 msgid "Use -e or --erase instead.\n"
@@ -1059,58 +976,51 @@ msgid "--build (-b) requires one of a,b,i,c,p,l as its sole argument"
 msgstr "--build (-b) kräver en av a,b,i,c,p,l som dess enda argument"
 
 #: rpm.c:725
-#, fuzzy
 msgid "--tarbuild (-t) requires one of a,b,i,c,p,l as its sole argument"
-msgstr "--build (-b) kräver en av a,b,i,c,p,l som dess enda argument"
+msgstr "--tarbuild (-t) kräver en av a,b,i,c,p,l som sitt enda argument"
 
 #: rpm.c:777 rpm.c:783 rpm.c:790 rpm.c:797 rpm.c:937
 msgid "one type of query/verify may be performed at a time"
 msgstr "en typ av undersökning/verifiering kan utföras åt gången"
 
 #: rpm.c:834
-#, fuzzy
 msgid "arguments to --dbpath must begin with a /"
-msgstr "argument till --root (-r) måste börja med /"
+msgstr "argument till --dbpath måste börja med /"
 
 #: rpm.c:874
-#, fuzzy
 msgid "relocations must begin with a /"
-msgstr "argument till --root (-r) måste börja med /"
+msgstr "omflyttningar måste börja med /"
 
 #: rpm.c:876
 msgid "relocations must contain a ="
-msgstr ""
+msgstr "omflyttningar måste innehålla ett ="
 
 #: rpm.c:879
 msgid "relocations must have a / following the ="
-msgstr ""
+msgstr "omflyttningar måste ha ett / efter ="
 
 #: rpm.c:888
-#, fuzzy
 msgid "exclude paths must begin with a /"
-msgstr "argument till --root (-r) måste börja med /"
+msgstr "uteslutna sökvägar måste börja med /"
 
 #: rpm.c:897
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
-msgstr ""
+msgstr "Internt fel i argumenthantering (%d) :-(\n"
 
 #: rpm.c:948
 msgid "--dbpath given for operation that does not use a database"
-msgstr ""
+msgstr "--dbpath angivet för en operation som inte använder någon databas"
 
 #: rpm.c:952
-#, fuzzy
 msgid "--timecheck may only be used during package builds"
-msgstr "--clean kan enbart användas vid paket tillverkning"
+msgstr "--timecheck kan enbart användas vid pakettillverkning"
 
 #: rpm.c:955
-#, fuzzy
 msgid "unexpected query flags"
 msgstr "oväntad undersöknings källa"
 
 #: rpm.c:958
-#, fuzzy
 msgid "unexpected query format"
 msgstr "oväntad undersöknings källa"
 
@@ -1119,39 +1029,35 @@ msgid "unexpected query source"
 msgstr "oväntad undersöknings källa"
 
 #: rpm.c:967
-#, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
-msgstr "enbart installation och upgradering kan bli tvingade"
+msgstr ""
+"enbart installation, uppgradering, rmsource och rmspec kan bli tvingas fram"
 
 #: rpm.c:970
-#, fuzzy
 msgid "files may only be relocated during package installation"
-msgstr "--replacefiles kan enbart användas vid paket installation"
+msgstr "filer kan relokeras endast under paketinstallation"
 
 #: rpm.c:973
-#, fuzzy
 msgid "only one of --prefix or --relocate may be used"
-msgstr "enbart ett läge kan specifieras"
+msgstr "enbart en av --prefix eller --relocate kan användas"
 
 #: rpm.c:976
-#, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
-msgstr "--clean kan enbart användas vid paket tillverkning"
+msgstr ""
+"--relocate och --excludepath kan endast användas när nya paket installeras"
 
 #: rpm.c:979
-#, fuzzy
 msgid "--prefix may only be used when installing new packages"
-msgstr "--sign kan enbart användas vid paket tillverkning"
+msgstr "--prefix kan endast användas när nya paket installeras"
 
 #: rpm.c:982
-#, fuzzy
 msgid "arguments to --prefix must begin with a /"
-msgstr "argument till --root (-r) måste börja med /"
+msgstr "argument till --prefix måste börja med /"
 
 #: rpm.c:985
 msgid "--hash (-h) may only be specified during package installation"
-msgstr "--hash (-h) kan enbart användas vid paket installation"
+msgstr "--hash (-h) kan enbart användas vid paketinstallation"
 
 #: rpm.c:989
 msgid "--percent may only be specified during package installation"
@@ -1159,93 +1065,87 @@ msgstr "--percent kan enbart användas vid paket installation"
 
 #: rpm.c:993
 msgid "--replacefiles may only be specified during package installation"
-msgstr "--replacefiles kan enbart användas vid paket installation"
+msgstr "--replacefiles kan enbart användas vid paketinstallation"
 
 #: rpm.c:997
 msgid "--replacepkgs may only be specified during package installation"
-msgstr "--replacepkgs kan enbart användas vid paket installation"
+msgstr "--replacepkgs kan enbart användas vid paketinstallation"
 
 #: rpm.c:1001
-#, fuzzy
 msgid "--excludedocs may only be specified during package installation"
-msgstr "--percent kan enbart användas vid paket installation"
+msgstr "--excludedocs kan enbart användas vid paketinstallation"
 
 #: rpm.c:1005
-#, fuzzy
 msgid "--includedocs may only be specified during package installation"
-msgstr "--percent kan enbart användas vid paket installation"
+msgstr "--includedocs kan enbart användas vid paketinstallation"
 
 #: rpm.c:1009
-#, fuzzy
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr "enbart ett läge kan specifieras"
+msgstr "enbart en av --excludedocs och --includedocs läge kan specifieras"
 
 #: rpm.c:1013
-#, fuzzy
 msgid "--ignorearch may only be specified during package installation"
-msgstr "--percent kan enbart användas vid paket installation"
+msgstr "--ignorearch kan enbart användas vid paketinstallation"
 
 #: rpm.c:1017
-#, fuzzy
 msgid "--ignoreos may only be specified during package installation"
-msgstr "--percent kan enbart användas vid paket installation"
+msgstr "--ignoreos kan enbart användas vid paketinstallation"
 
 #: rpm.c:1021
-#, fuzzy
 msgid "--ignoresize may only be specified during package installation"
-msgstr "--percent kan enbart användas vid paket installation"
+msgstr "--ignoresize kan enbart användas vid paketinstallation"
 
 #: rpm.c:1025
-#, fuzzy
 msgid "--allmatches may only be specified during package erasure"
-msgstr "--replacepkgs kan enbart användas vid paket installation"
+msgstr "--allmatches kan enbart användas när paket tas bort"
 
 #: rpm.c:1029
-#, fuzzy
 msgid "--allfiles may only be specified during package installation"
-msgstr "--replacefiles kan enbart användas vid paket installation"
+msgstr "--allfiles kan enbart användas vid paketinstallation"
 
 #: rpm.c:1033
-#, fuzzy
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr "--test kan enbart användas vid paket installation och avinstallation"
+msgstr ""
+"--justdb kan enbart användas vid installation och avinstallation av paket"
 
 #: rpm.c:1038
-#, fuzzy
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
-msgstr "--test kan enbart användas vid paket installation och avinstallation"
+msgstr ""
+"--noscripts kan enbart användas vid paket installation, avinstallation, och "
+"verifiering"
 
 #: rpm.c:1042
-#, fuzzy
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
-msgstr "--test kan enbart användas vid paket installation och avinstallation"
+msgstr ""
+"--notriggers kan enbart användas vid installation, avinstallation och "
+"verifiering"
 
 #: rpm.c:1046
-#, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, installation, "
 "erasure, and verification"
-msgstr "--test kan enbart användas vid paket installation och avinstallation"
+msgstr ""
+"--nodeps kan enbart användas vid tillverkning, installation, avinstallation, "
+"och verifiering"
 
 #: rpm.c:1050
-#, fuzzy
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
-msgstr "--test kan enbart användas vid paket installation och avinstallation"
+msgstr ""
+"--test kan enbart användas vid installation, avinstallation, och tillverkning"
 
 #: rpm.c:1054
-#, fuzzy
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
-"--root (-r) kan enbart användas vid paket installation, avinstallation, och "
-"undersökning"
+"--root (-r) kan enbart användas vid installation, avinstallation, förfrågan, "
+"och databasombyggnad"
 
 #: rpm.c:1066
 msgid "arguments to --root (-r) must begin with a /"
@@ -1256,50 +1156,48 @@ msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage kan enbart användas vid paket uppgraderingar"
 
 #: rpm.c:1077
-#, fuzzy
 msgid ""
 "ftp options can only be used during package queries, installs, and upgrades"
-msgstr "--sign kan enbart användas vid paket tillverkning"
+msgstr ""
+"ftp-flaggor kan enbart användas vid förfrågan, installation, och uppgradering"
 
 #: rpm.c:1083
-#, fuzzy
 msgid ""
 "http options can only be used during package queries, installs, and upgrades"
-msgstr "--sign kan enbart användas vid paket tillverkning"
+msgstr ""
+"http-flaggor kan enbart användas vid förfrågan, installation, och "
+"uppgradering"
 
 #: rpm.c:1087
-#, fuzzy
 msgid "--nopgp may only be used during signature checking"
-msgstr "--sign kan enbart användas vid paket tillverkning"
+msgstr "--nopgp kan enbart användas vid signaturkontroll"
 
 #: rpm.c:1090
 #, fuzzy
 msgid "--nogpg may only be used during signature checking"
-msgstr "--sign kan enbart användas vid paket tillverkning"
+msgstr "--nopgp kan enbart användas vid signaturkontroll"
 
 #: rpm.c:1093
-#, fuzzy
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
-msgstr "--sign kan enbart användas vid paket tillverkning"
+msgstr "--nomd5 kan enbart användas vid signaturkontroll och paketverifiering"
 
 #: rpm.c:1121
 msgid "no files to sign\n"
-msgstr ""
+msgstr "inga filer att signera\n"
 
 #: rpm.c:1126
 #, c-format
 msgid "cannot access file %s\n"
-msgstr ""
+msgstr "kan inte komma åt filen %s\n"
 
 #: rpm.c:1141
-#, fuzzy
 msgid "pgp not found: "
-msgstr "inga paket angivna för avinstallation"
+msgstr "pgp hittades inte: "
 
 #: rpm.c:1145
 msgid "Enter pass phrase: "
-msgstr ""
+msgstr "Ange lösenfras: "
 
 #: rpm.c:1147
 msgid "Pass phrase check failed\n"
@@ -1311,29 +1209,27 @@ msgstr "Id strängen är ok.\n"
 
 #: rpm.c:1155
 msgid "Invalid %%_signature spec in macro file.\n"
-msgstr ""
+msgstr "Felaktig %%_signature spec i makrofil.\n"
 
 #: rpm.c:1161
 msgid "--sign may only be used during package building"
 msgstr "--sign kan enbart användas vid paket tillverkning"
 
 #: rpm.c:1176
-#, fuzzy
 msgid "exec failed\n"
-msgstr "Tillverkningen misslyckades.\n"
+msgstr "exec misslyckades\n"
 
 #: rpm.c:1195
 msgid "unexpected arguments to --querytags "
-msgstr ""
+msgstr "oväntade argument till --querytags "
 
 #: rpm.c:1206
 msgid "no packages given for signature check"
 msgstr "inga paket angivna för signatur kontroll"
 
 #: rpm.c:1217
-#, fuzzy
 msgid "no packages given for signing"
-msgstr "inga paket angivna för avinstallation"
+msgstr "inga paket angivna för signering"
 
 #: rpm.c:1229
 msgid "no packages files given for rebuild"
@@ -1344,9 +1240,8 @@ msgid "no spec files given for build"
 msgstr "ingen spec filer angivna för tillverkning"
 
 #: rpm.c:1294
-#, fuzzy
 msgid "no tar files given for build"
-msgstr "ingen spec filer angivna för tillverkning"
+msgstr "ingen tar filer angivna för tillverkning"
 
 #: rpm.c:1310
 msgid "no packages given for uninstall"
@@ -1357,18 +1252,16 @@ msgid "no packages given for install"
 msgstr "inga paket angivna för installation"
 
 #: rpm.c:1383
-#, fuzzy
 msgid "extra arguments given for query of all packages"
-msgstr "inga parametrar angivna för undersökning"
+msgstr "extra argument angivna för förfrågan om alla paket"
 
 #: rpm.c:1388
 msgid "no arguments given for query"
 msgstr "inga parametrar angivna för undersökning"
 
 #: rpm.c:1405
-#, fuzzy
 msgid "extra arguments given for verify of all packages"
-msgstr "inga parametrar angivna för undersökning"
+msgstr "extra argument angivna för verifiering av alla paket"
 
 #: rpm.c:1409
 msgid "no arguments given for verify"
@@ -1377,169 +1270,168 @@ msgstr "inga parametrar angivna för verifiering"
 #: rpm2cpio.c:22
 #, fuzzy, c-format
 msgid "cannot open package: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "kan inte öppna %s/packages.rpm\n"
 
 #: rpm2cpio.c:32
 msgid "argument is not an RPM package\n"
-msgstr ""
+msgstr "argumentet är inte ett RPM-paket\n"
 
 #: rpm2cpio.c:36
 msgid "error reading header from package\n"
-msgstr ""
+msgstr "fel vid läsning av pakethuvud\n"
 
 #: rpm2cpio.c:43
 #, fuzzy, c-format
 msgid "cannot re-open payload: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "kan inte öppna fil %s\n"
 
 #: build/build.c:105 build/pack.c:269
-#, fuzzy
 msgid "Unable to open temp file"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kan inte öppna temporärfil"
 
 #: build/build.c:184
 #, fuzzy, c-format
 msgid "Executing(%s): %s\n"
-msgstr "RPM version %s\n"
+msgstr "Kör: %s\n"
 
 #: build/build.c:190
 #, fuzzy, c-format
 msgid "Exec of %s failed (%s): %s"
-msgstr "Tillverkningen misslyckades.\n"
+msgstr "Körning (exec) av %s misslyckades (%s)"
 
 #: build/build.c:198
 #, c-format
 msgid "Bad exit status from %s (%s)"
-msgstr ""
+msgstr "Dålig slutstatus från %s (%s)"
 
 #: build/expression.c:207
 msgid "syntax error while parsing =="
-msgstr ""
+msgstr "syntaxfel vid parsning av =="
 
 #: build/expression.c:237
 msgid "syntax error while parsing &&"
-msgstr ""
+msgstr "syntaxfel vid parsning av &&"
 
 #: build/expression.c:246
 msgid "syntax error while parsing ||"
-msgstr ""
+msgstr "syntaxfel vid parsning av ||"
 
 #: build/expression.c:288
 msgid "parse error in expression"
-msgstr ""
+msgstr "parsfel i uttryck"
 
 #: build/expression.c:318
 msgid "unmatched ("
-msgstr ""
+msgstr "ensam ("
 
 #: build/expression.c:336
 msgid "undefined identifier"
-msgstr ""
+msgstr "odefinierad identifierare"
 
 #: build/expression.c:355
 msgid "- only on numbers"
-msgstr ""
+msgstr "- endast i tal"
 
 #: build/expression.c:371
 msgid "! only on numbers"
-msgstr ""
+msgstr "! endast på tal"
 
 #: build/expression.c:410 build/expression.c:455 build/expression.c:512
 #: build/expression.c:599
 msgid "types must match"
-msgstr ""
+msgstr "typer måste passa ihop"
 
 #: build/expression.c:423
 msgid "* / not suported for strings"
-msgstr ""
+msgstr "* / stöds inte för strängar"
 
 #: build/expression.c:471
 msgid "- not suported for strings"
-msgstr ""
+msgstr "- stöds inte för strängar"
 
 #: build/expression.c:612
 msgid "&& and || not suported for strings"
-msgstr ""
+msgstr "&& och || stöds inte för strängar"
 
 #: build/expression.c:645 build/expression.c:692
 msgid "syntax error in expression"
-msgstr ""
+msgstr "syntaxfel i uttryck"
 
 #: build/files.c:199
 #, c-format
 msgid "TIMECHECK failure: %s\n"
-msgstr ""
+msgstr "TIMECHECK-fel: %s\n"
 
 #: build/files.c:243 build/files.c:325 build/files.c:488
 #, c-format
 msgid "Missing '(' in %s %s"
-msgstr ""
+msgstr "Saknat '(' i %s %s"
 
 #: build/files.c:254 build/files.c:442 build/files.c:499
 #, c-format
 msgid "Missing ')' in %s(%s"
-msgstr ""
+msgstr "Saknat ')' i %s(%s"
 
 #: build/files.c:292 build/files.c:467
 #, c-format
 msgid "Invalid %s token: %s"
-msgstr ""
+msgstr "Ogiltig %s token: %s"
 
 #: build/files.c:341
 #, c-format
 msgid "Non-white space follows %s(): %s"
-msgstr ""
+msgstr "Annat än blanktecken följer på %s(): %s"
 
 #: build/files.c:379
-#, fuzzy, c-format
+#, c-format
 msgid "Bad syntax: %s(%s)"
-msgstr "kan inte öppna: %s\n"
+msgstr "Felaktig syntax: %s(%s)"
 
 #: build/files.c:389
-#, fuzzy, c-format
+#, c-format
 msgid "Bad mode spec: %s(%s)"
-msgstr "kan inte öppna: %s\n"
+msgstr "Felaktig rättighetsspecifikation: %s(%s)"
 
 #: build/files.c:401
 #, c-format
 msgid "Bad dirmode spec: %s(%s)"
-msgstr ""
+msgstr "Felaktig specifikation av katalogrättigheter: %s(%s)"
 
 #: build/files.c:525
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
-msgstr ""
+msgstr "Ovanlig lokallängd: \"%.*s\" i %%langg(%s)"
 
 #: build/files.c:535
 msgid "Duplicate locale %.*s in %%lang(%s)"
-msgstr ""
+msgstr "Duplicerad lokal %.*s i %%lang(%s)"
 
 #: build/files.c:630
 msgid "Hit limit for %%docdir"
-msgstr ""
+msgstr "Slog i gränsen för %%docdir"
 
 #: build/files.c:636
 msgid "Only one arg for %%docdir"
-msgstr ""
+msgstr "Endast ett argument till %%docdir"
 
 #. We already got a file -- error
 #: build/files.c:661
-#, fuzzy, c-format
+#, c-format
 msgid "Two files on one line: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "Två filer på en rad: %s"
 
 #: build/files.c:674
-#, fuzzy, c-format
+#, c-format
 msgid "File must begin with \"/\": %s"
-msgstr "argument till --root (-r) måste börja med /"
+msgstr "Filnamn måste börja med \"/\": %s"
 
 #: build/files.c:686
 msgid "Can't mix special %%doc with other forms: %s"
-msgstr ""
+msgstr "Kan inte blanda special %%doc med andra former: %s"
 
 #: build/files.c:772
 #, c-format
 msgid "File listed twice: %s"
-msgstr ""
+msgstr "Filen uppräknad två gånger: %s"
 
 #: build/files.c:865
 #, c-format
@@ -1549,620 +1441,617 @@ msgstr ""
 #: build/files.c:945
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
-msgstr ""
+msgstr "Filen matchar inte prefixet (%s): %s"
 
 #: build/files.c:955
-#, fuzzy, c-format
+#, c-format
 msgid "File not found: %s"
-msgstr "inga paket angivna för avinstallation"
+msgstr "Filen hittades inte: %s"
 
 #: build/files.c:998
 #, c-format
 msgid "Bad owner/group: %s\n"
-msgstr ""
+msgstr "Felaktig ägare/grupp: %s\n"
 
 #: build/files.c:1012
-#, c-format
+#, fuzzy, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
-msgstr ""
+msgstr "Fil %4d: 0%o %s.%s\t %s\n"
 
 #: build/files.c:1086
 #, c-format
 msgid "File needs leading \"/\": %s"
-msgstr ""
+msgstr "Filen behöver inledande \"/\": %s"
 
 #: build/files.c:1115
 #, fuzzy, c-format
 msgid "File not found by glob: %s"
-msgstr "inga paket angivna för avinstallation"
+msgstr "Filen hittades inte: %s"
 
 #: build/files.c:1157
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kunde inte öppna %%files-fil: %s"
 
 #: build/files.c:1164 build/pack.c:481
 #, c-format
 msgid "line: %s"
-msgstr ""
+msgstr "rad: %s"
 
 #: build/files.c:1498 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
-msgstr ""
+msgstr "Felaktig ägare/grupp: %s"
 
 #. XXX this error message is probably not seen.
 #: build/files.c:1553
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kunde inte köra %s"
 
 #: build/files.c:1558
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kunde inte grena %s"
 
 #: build/files.c:1640
-#, fuzzy, c-format
+#, c-format
 msgid "%s failed"
-msgstr "Tillverkningen misslyckades.\n"
+msgstr "%s misslyckades"
 
 #: build/files.c:1644
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write all data to %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "kunde inte skriva all data till %s"
 
 #: build/files.c:1733
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
-msgstr ""
+msgstr "Letar upp %s: (använder %s)...\n"
 
 #: build/files.c:1761 build/files.c:1770
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find %s:"
-msgstr "kan inte öppna: %s\n"
+msgstr "Misslyckades hitta %s:"
 
 #: build/files.c:1876
-#, c-format
+#, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
-msgstr ""
+msgstr "Bearbetar filer: %s\n"
 
 #: build/names.c:41 build/names.c:73
 msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
-msgstr ""
+msgstr "RPMERR_INTERNAL: Slog i begränsning i getUname()\n"
 
 #: build/names.c:106 build/names.c:138
 msgid "RPMERR_INTERNAL: Hit limit in getGname()\n"
-msgstr ""
+msgstr "RPMERR_INTERNAL: Slog i begränsning i getGname()\n"
 
 #: build/names.c:176
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
-msgstr ""
+msgstr "Kunde inte kanonisera värdnamn: %s\n"
 
 #: build/pack.c:132
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
-msgstr ""
+msgstr "Kunde inte generera utfilnamn för paketet %s: %s\n"
 
 #: build/pack.c:149
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "kan inte skapa %s"
 
 #: build/pack.c:186
-#, fuzzy, c-format
+#, c-format
 msgid "readRPM: open %s: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "readRPM: öppna %s: %s\n"
 
 #: build/pack.c:196
-#, fuzzy, c-format
+#, c-format
 msgid "readRPM: read %s: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "readRPM: läs %s: %s\n"
 
 #: build/pack.c:217
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
-msgstr ""
+msgstr "readRPM: %s är inte ett RPM-paket\n"
 
 #: build/pack.c:223
 #, c-format
 msgid "readRPM: reading header from %s\n"
-msgstr ""
+msgstr "readRPM: läser huvud från %s\n"
 
 #: build/pack.c:281
 msgid "Bad CSA data"
-msgstr ""
+msgstr "Felaktig CSA-data"
 
 #: build/pack.c:316
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kunde inte öppna %s\n"
 
 #: build/pack.c:348
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write package: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kunde inte skriva paket: %s"
 
 #: build/pack.c:363
-#, fuzzy, c-format
+#, c-format
 msgid "Generating signature: %d\n"
-msgstr "      --sign            - tillverka en PGP signatur"
+msgstr "Genererar signatur: %d\n"
 
 #: build/pack.c:379
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kan inte läsa signaruren: %s"
 
 #: build/pack.c:389
 #, fuzzy, c-format
 msgid "Unable to read sigtarget %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kan inte läsa signaruren: %s"
 
 #: build/pack.c:399
 #, fuzzy, c-format
 msgid "Unable to write package %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kunde inte skriva paket: %s"
 
 #: build/pack.c:414
 #, c-format
 msgid "Wrote: %s\n"
-msgstr ""
+msgstr "Skrev: %s\n"
 
 #: build/pack.c:430
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed on file %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "skapande av arkiv misslyckades vid fil %s: %s"
 
 #: build/pack.c:449
 #, c-format
 msgid "cpio_copy write failed: %s"
-msgstr ""
+msgstr "cpio_copy kunde inte skriva: %s"
 
 #: build/pack.c:456
 #, c-format
 msgid "cpio_copy read failed: %s"
-msgstr ""
+msgstr "cpio_copy kunde inte läsa: %s"
 
 #: build/pack.c:536
 #, c-format
 msgid "Could not open PreIn file: %s"
-msgstr ""
+msgstr "Kunde inte öppna PreIn-fil: %s"
 
 #: build/pack.c:543
 #, c-format
 msgid "Could not open PreUn file: %s"
-msgstr ""
+msgstr "Kunde inte öppna PreUn-fil: %s"
 
 #: build/pack.c:550
 #, c-format
 msgid "Could not open PostIn file: %s"
-msgstr ""
+msgstr "Kunde inte öppna PostIn-fil: %s"
 
 #: build/pack.c:557
 #, c-format
 msgid "Could not open PostUn file: %s"
-msgstr ""
+msgstr "Kunde inte öppna PostUn-fil: %s"
 
 #: build/pack.c:565
 #, c-format
 msgid "Could not open VerifyScript file: %s"
-msgstr ""
+msgstr "Kunde inte öppna VerifyScript-fil: %s"
 
 #: build/pack.c:580
 #, c-format
 msgid "Could not open Trigger script file: %s"
-msgstr ""
+msgstr "Kunde inte öppna Trigger-skriptfil: %s"
 
 #: build/parseBuildInstallClean.c:27
 #, c-format
 msgid "line %d: second %s"
-msgstr ""
+msgstr "rad %d: andra %s"
 
 #: build/parseChangelog.c:103
 msgid "%%changelog entries must start with *"
-msgstr ""
+msgstr "%%changlog-poster måste starta med *"
 
 #: build/parseChangelog.c:111
 msgid "incomplete %%changelog entry"
-msgstr ""
+msgstr "ofullständig %%changelog-post"
 
 #: build/parseChangelog.c:126
 msgid "bad date in %%changelog: %s"
-msgstr ""
+msgstr "felaktigt datum i %%changelog: %s"
 
 #: build/parseChangelog.c:131
 msgid "%%changelog not in decending chronological order"
-msgstr ""
+msgstr "%%changlog är inte i fallande kronologisk ordning"
 
 #: build/parseChangelog.c:139 build/parseChangelog.c:150
 msgid "missing name in %%changelog"
-msgstr ""
+msgstr "saknat namn i %%changelog"
 
 #: build/parseChangelog.c:157
 msgid "no description in %%changelog"
-msgstr ""
+msgstr "ingen beskrivning i %%changelog"
 
 #: build/parseDescription.c:33
 msgid "line %d: Error parsing %%description: %s"
-msgstr ""
+msgstr "rad %d: Fel i parsning av %%description: %s"
 
 #: build/parseDescription.c:46 build/parseFiles.c:40 build/parseScript.c:168
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Bad option %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "rad %d: otillåten flagga %s: %s"
 
 #: build/parseDescription.c:59 build/parseFiles.c:53 build/parseScript.c:181
 #, c-format
 msgid "line %d: Too many names: %s"
-msgstr ""
+msgstr "rad %d: För många namn: %s"
 
 #: build/parseDescription.c:69 build/parseFiles.c:63 build/parseScript.c:191
 #, c-format
 msgid "line %d: Package does not exist: %s"
-msgstr ""
+msgstr "rad %d: Paketet existerar inte: %s"
 
 #: build/parseDescription.c:81
 #, c-format
 msgid "line %d: Second description"
-msgstr ""
+msgstr "rad %d: Andra beskrivning"
 
 #: build/parseFiles.c:27
 msgid "line %d: Error parsing %%files: %s"
-msgstr ""
+msgstr "rad %d: Fel i parsning av %%files: %s"
 
 #: build/parseFiles.c:71
 msgid "line %d: Second %%files list"
-msgstr ""
+msgstr "rad %d: Andra %%files-lista"
 
 #: build/parsePreamble.c:145
 #, c-format
 msgid "Architecture is excluded: %s"
-msgstr ""
+msgstr "Arkitekturen är utesluten: %s"
 
 #: build/parsePreamble.c:150
 #, c-format
 msgid "Architecture is not included: %s"
-msgstr ""
+msgstr "Arkitekturen är inte medtagen: %s"
 
 #: build/parsePreamble.c:155
 #, c-format
 msgid "OS is excluded: %s"
-msgstr ""
+msgstr "OS är uteslutet: %s"
 
 #: build/parsePreamble.c:160
 #, c-format
 msgid "OS is not included: %s"
-msgstr ""
+msgstr "OS är inte medtaget: %s"
 
 #: build/parsePreamble.c:174
 #, c-format
 msgid "%s field must be present in package: %s"
-msgstr ""
+msgstr "%s-fält måste finnas med i paketet: %s"
 
 #: build/parsePreamble.c:199
 #, c-format
 msgid "Duplicate %s entries in package: %s"
-msgstr ""
+msgstr "Dubbla %s-poster i paketet: %s"
 
 #: build/parsePreamble.c:246
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kan inte läsa ikon: %s"
 
 #: build/parsePreamble.c:264
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kan inte läsa ikon: %s"
 
 #: build/parsePreamble.c:277
 #, c-format
 msgid "Unknown icon type: %s"
-msgstr ""
+msgstr "Okänd ikontyp: %s"
 
 #: build/parsePreamble.c:339
 #, c-format
 msgid "line %d: Malformed tag: %s"
-msgstr ""
+msgstr "rad %d: Felaktig tagg: %s"
 
 #. Empty field
 #: build/parsePreamble.c:347
 #, c-format
 msgid "line %d: Empty tag: %s"
-msgstr ""
+msgstr "rad %d: Tom tagg: %s"
 
 #: build/parsePreamble.c:370 build/parsePreamble.c:377
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal char '-' in %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "rad %d: Otillåtet tecken '-' i %s: %s"
 
 #: build/parsePreamble.c:441 build/parseSpec.c:366
-#, c-format
+#, fuzzy, c-format
 msgid "BuildRoot can not be \"/\": %s"
-msgstr ""
+msgstr "rad %d: BuildRoot kan inte vara \"/\": %s"
 
 #: build/parsePreamble.c:454
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
-msgstr ""
+msgstr "rad %d: Prefix får inte sluta med \"/\": %s"
 
 #: build/parsePreamble.c:466
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Docdir must begin with '/': %s"
-msgstr "argument till --root (-r) måste börja med /"
+msgstr "rad %d: Docdir måste börja med \"/\": %s"
 
 #: build/parsePreamble.c:478
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
-msgstr ""
+msgstr "rad %d: Epoch/Serial-fält måste vara numeriskt: %s"
 
 #: build/parsePreamble.c:541
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
-msgstr ""
+msgstr "rad %d: Felaktig BuildArchitecture-format: %s"
 
 #: build/parsePreamble.c:551
 #, c-format
 msgid "Internal error: Bogus tag %d"
-msgstr ""
+msgstr "Internt fel: felaktig tagg %d"
 
 #: build/parsePreamble.c:689
-#, fuzzy, c-format
+#, c-format
 msgid "Bad package specification: %s"
-msgstr "      Paket urvals parametrar:"
+msgstr "Felaktig paketspecifikation: %s"
 
 #: build/parsePreamble.c:695
 #, c-format
 msgid "Package already exists: %s"
-msgstr ""
+msgstr "Paketet existerar redan: %s"
 
 #: build/parsePreamble.c:722
 #, c-format
 msgid "line %d: Unknown tag: %s"
-msgstr ""
+msgstr "rad %d: Okänd tagg: %s"
 
 #: build/parsePreamble.c:747
 msgid "Spec file can't use BuildRoot"
-msgstr ""
+msgstr "Spec-fil kan inte använda BuildRoot"
 
 #: build/parsePrep.c:26
-#, fuzzy, c-format
+#, c-format
 msgid "Bad source: %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "Dålig källa: %s: %s"
 
 #: build/parsePrep.c:53
 #, c-format
 msgid "No patch number %d"
-msgstr ""
+msgstr "Inget patch-nummer %d"
 
 #: build/parsePrep.c:134
 #, c-format
 msgid "No source number %d"
-msgstr ""
+msgstr "Inget källkodsnummer %d"
 
 #: build/parsePrep.c:153
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't download nosource %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kunde inte hämta nosource %s: %s"
 
 #: build/parsePrep.c:219
 msgid "Error parsing %%setup: %s"
-msgstr ""
+msgstr "Fel i parsning av %%setup: %s"
 
 #: build/parsePrep.c:234
 msgid "line %d: Bad arg to %%setup %c: %s"
-msgstr ""
+msgstr "rad %d: Felaktigt argument till %%setup %c: %s"
 
 #: build/parsePrep.c:252
 msgid "line %d: Bad %%setup option %s: %s"
-msgstr ""
+msgstr "rad %d: Felaktig %%setup-flagga %s: %s"
 
 #: build/parsePrep.c:379
 msgid "line %d: Need arg to %%patch -b: %s"
-msgstr ""
+msgstr "rad %d: Behöver argument till %%patch -b: %s"
 
 #: build/parsePrep.c:387
 msgid "line %d: Need arg to %%patch -z: %s"
-msgstr ""
+msgstr "rad %d: Behöver argument till %%patch -z: %s"
 
 #: build/parsePrep.c:399
 msgid "line %d: Need arg to %%patch -p: %s"
-msgstr ""
+msgstr "rad %d: Behöver argument till %%patch -p: %s"
 
 #: build/parsePrep.c:405
 msgid "line %d: Bad arg to %%patch -p: %s"
-msgstr ""
+msgstr "rad %d: Felaktigt argument till %%patch -p: %s"
 
 #: build/parsePrep.c:412
 msgid "Too many patches!"
-msgstr ""
+msgstr "För många patchar!"
 
 #: build/parsePrep.c:416
 msgid "line %d: Bad arg to %%patch: %s"
-msgstr ""
+msgstr "rad %d: Felaktigt argument till %%patch: %s"
 
 #: build/parsePrep.c:452
 msgid "line %d: second %%prep"
-msgstr ""
+msgstr "rad %d: andra %%prep"
 
 #: build/parseReqs.c:91
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s"
-msgstr "argument till --root (-r) måste börja med /"
+msgstr "rad %d: Beroenden måste börja alfanumeriskt, med \"_\" eller \"/\": %s"
 
 #: build/parseReqs.c:102
 #, c-format
 msgid "line %d: File name not permitted: %s"
-msgstr ""
+msgstr "rad %d: Filnamn inte tillåtna: %s"
 
 #: build/parseReqs.c:134
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s"
-msgstr ""
+msgstr "rad %d: Versionsfilnamn inte tillåtet: %s"
 
 #: build/parseReqs.c:146
 #, c-format
 msgid "line %d: Version not permitted: %s"
-msgstr ""
+msgstr "rad %d: Version inte tillåten: %s"
 
 #: build/parseReqs.c:172
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Version required: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "rad %d: Version krävs: %s"
 
 #: build/parseScript.c:136
 #, c-format
 msgid "line %d: triggers must have --: %s"
-msgstr ""
+msgstr "rad %d: utlösare måste ha --: %s"
 
 #: build/parseScript.c:146 build/parseScript.c:209
 #, c-format
 msgid "line %d: Error parsing %s: %s"
-msgstr ""
+msgstr "rad %d: Fel vid parsning av %s: %s"
 
 #: build/parseScript.c:156
 #, c-format
 msgid "line %d: script program must begin with '/': %s"
-msgstr ""
+msgstr "rad %d: skriptprogram måste börja med \"/\": %s"
 
 #: build/parseScript.c:200
 #, c-format
 msgid "line %d: Second %s"
-msgstr ""
+msgstr "rad %d: Andra %s"
 
 #: build/parseSpec.c:129
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "rad %d: %s"
 
 #. XXX Fstrerror
 #: build/parseSpec.c:179
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "Kan inte öppna: %s\n"
 
 #: build/parseSpec.c:191
 msgid "Unclosed %%if"
-msgstr ""
+msgstr "Oavslutat %%if"
 
 #: build/parseSpec.c:252
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d"
-msgstr ""
+msgstr "%s:%d: parseExpressionBoolean returnerar %d"
 
 #. Got an else with no %if !
 #: build/parseSpec.c:260
 msgid "%s:%d: Got a %%else with no if"
-msgstr ""
+msgstr "%s:%d: Fick ett %%else utan något if"
 
 #. Got an end with no %if !
 #: build/parseSpec.c:271
 msgid "%s:%d: Got a %%endif with no if"
-msgstr ""
+msgstr "%s:%d: Fick ett %%endif utan något if"
 
 #: build/parseSpec.c:285 build/parseSpec.c:294
 msgid "malformed %%include statement"
-msgstr ""
+msgstr "felformatterad %%include-sats"
 
 #: build/parseSpec.c:461
-#, fuzzy
 msgid "No buildable architectures"
-msgstr "%s går inte att tillverka på den här platformen\n"
+msgstr "Inga byggbara arkitekturer"
 
 #: build/parseSpec.c:509
-#, fuzzy
 msgid "Package has no %%description: %s"
-msgstr "inga paket angivna för avinstallation"
+msgstr "Paketet har ingen %%description: %s"
 
 #: build/spec.c:31
 #, c-format
 msgid "archive = %s, fs = %s\n"
-msgstr ""
+msgstr "arkiv = %s, fs = %s\n"
 
 #: build/spec.c:237
 #, c-format
 msgid "line %d: Bad number: %s"
-msgstr ""
+msgstr "rad %d: Felaktigt tal: %s"
 
 #: build/spec.c:243
 #, c-format
 msgid "line %d: Bad no%s number: %d"
-msgstr ""
+msgstr "rad %d: Felaktigt no%s-tal: %d"
 
 #: build/spec.c:301
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
-msgstr ""
+msgstr "rad %d: Felaktigt %s-tal: %s\n"
 
 #: lib/cpio.c:330
-#, fuzzy, c-format
+#, c-format
 msgid "can't rename %s to %s: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "kan inte flytta %s till %s: %s\n"
 
 #: lib/cpio.c:336
 #, c-format
 msgid "can't unlink %s: %s\n"
-msgstr ""
+msgstr "kan inte ta bort %s: %s\n"
 
 #: lib/cpio.c:527
 #, c-format
 msgid "getNextHeader: %s\n"
-msgstr ""
+msgstr "getNextHeader: %s\n"
 
 #: lib/cpio.c:992
 #, c-format
 msgid "(error 0x%x)"
-msgstr ""
+msgstr "(fel 0x%x)"
 
 #: lib/cpio.c:995
 msgid "Bad magic"
-msgstr ""
+msgstr "Felaktigt magiskt tal"
 
 #: lib/cpio.c:996
 msgid "Bad/unreadable  header"
-msgstr ""
+msgstr "Felaktigt/oläsbart huvud"
 
 #: lib/cpio.c:1014
 msgid "Header size too big"
-msgstr ""
+msgstr "Huvudstorlek för stor"
 
 #: lib/cpio.c:1015
 msgid "Unknown file type"
-msgstr ""
+msgstr "Okänd filtyp"
 
 #: lib/cpio.c:1016
 msgid "Missing hard link"
-msgstr ""
+msgstr "Saknad hårdlänk"
 
 #: lib/cpio.c:1017
 msgid "Internal error"
-msgstr ""
+msgstr "Internt fel"
 
 #: lib/cpio.c:1026
-#, fuzzy
 msgid " failed - "
-msgstr "Tillverkningen misslyckades.\n"
+msgstr " misslyckades - "
 
 #: lib/dbindex.c:35
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open file %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "kan inte öppna fil %s: %s"
 
 #: lib/dbindex.c:87
 #, c-format
 msgid "error getting record %s from %s"
-msgstr ""
+msgstr "fel när post %s hämtades från %s"
 
 #: lib/dbindex.c:114
 #, c-format
 msgid "error storing record %s into %s"
-msgstr ""
+msgstr "fel när post %s sparades i %s"
 
 #: lib/dbindex.c:121
 #, c-format
 msgid "error removing record %s into %s"
-msgstr ""
+msgstr "fel när post %s togs bort ur %s"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
 #: lib/depends.c:417
@@ -2171,82 +2060,84 @@ msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
 "\tA %s\tB %s\n"
 msgstr ""
+"\"B\"-beroendet beghöver en epok (antar samma som \"A\")\n"
+"        A %s    B %s\n"
 
 #: lib/depends.c:446
 #, c-format
 msgid "  %s    A %s\tB %s\n"
-msgstr ""
+msgstr "  %s    A %s\tB %s\n"
 
 #: lib/depends.c:538
 msgid "dbrecMatchesDepFlags() failed to read header"
-msgstr ""
+msgstr "dbrecMatchesDepFlags() kunde inte läsa huvud"
 
 #: lib/depends.c:784
 #, c-format
 msgid "%s: %s satisfied by added file list.\n"
-msgstr ""
+msgstr "%s: %s uppfyllt av tillagd fillista.\n"
 
 #: lib/depends.c:823
 #, c-format
 msgid "%s: %s satisfied by added package.\n"
-msgstr ""
+msgstr "%s: %s uppfyllt av tillagt paket.\n"
 
 #: lib/depends.c:840
 #, c-format
 msgid "%s: %s satisfied by added provide.\n"
-msgstr ""
+msgstr "%s: %s uppfyllt av tillagt tillhandahållande (provide).\n"
 
 #: lib/depends.c:871
 #, c-format
 msgid "%s: %s satisfied by rpmrc provides.\n"
-msgstr ""
+msgstr "%s: %s uppfyllt av rpmrc tillhandahållande (provides).\n"
 
 #: lib/depends.c:899
 #, c-format
 msgid "%s: %s satisfied by db file lists.\n"
-msgstr ""
+msgstr "%s: %s uppfyllt av db fillistor.\n"
 
 #: lib/depends.c:921
 #, c-format
 msgid "%s: %s satisfied by db provides.\n"
-msgstr ""
+msgstr "%s: %s uppfyllt av db tillhandahållande (provides).\n"
 
 #: lib/depends.c:943
 #, c-format
 msgid "%s: %s satisfied by db packages.\n"
-msgstr ""
+msgstr "%s: %s uppfyllt av db-paket.\n"
 
 #: lib/depends.c:956
 #, c-format
 msgid "%s: %s satisfied by rpmlib version.\n"
-msgstr ""
+msgstr "%s: %s uppfyllt av rpmlib-version.\n"
 
 #: lib/depends.c:966
 #, c-format
 msgid "%s: %s unsatisfied.\n"
-msgstr ""
+msgstr "%s: %s ej uppfyllt.\n"
 
 #. requirements are not satisfied.
 #: lib/depends.c:1014
-#, fuzzy, c-format
+#, c-format
 msgid "package %s require not satisfied: %s\n"
-msgstr "inga paket angivna för installation"
+msgstr "paket %s behov inte uppfyllda: %s\n"
 
 #. conflicts exist.
 #: lib/depends.c:1076
-#, fuzzy, c-format
+#, c-format
 msgid "package %s conflicts: %s\n"
-msgstr "inga paket angivna för avinstallation"
+msgstr "paket %s står i konflikt: %s\n"
 
 #: lib/depends.c:1131 lib/depends.c:1430
 #, c-format
 msgid "cannot read header at %d for dependency check"
-msgstr ""
+msgstr "kan inte läsa huvud vid %d för beroendekontroll"
 
 #: lib/depends.c:1226
 #, c-format
 msgid "loop in prerequisite chain: %s"
-msgstr ""
+msgstr "cirkularitet i kedja av förutsättningar: %s"
 
 #: lib/falloc.c:124
 #, c-format
@@ -2257,1328 +2148,1311 @@ msgid ""
 "rpm-list@redhat.com mailing list\n"
 "if \"rpm --rebuilddb\" fails to correct the problem.\n"
 msgstr ""
+"frilistan trasig (%u)- var god kör\n"
+"        \"rpm --rebuilddb\"\n"
+"Mer information finns tillgänglig från http://www.rpm.org eller sändlistan\n"
+"rpm-list@redhat.com om \"rpm --rebuilddb\" inte lyckas rätta till "
+"problemet.\n"
 
 #: lib/formats.c:69 lib/formats.c:87 lib/formats.c:108 lib/formats.c:141
 #: lib/header.c:2189 lib/header.c:2206 lib/header.c:2226
 msgid "(not a number)"
-msgstr ""
+msgstr "(inte ett tal)"
 
 #: lib/fs.c:56
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
-msgstr ""
+msgstr "mntctl() kunde inte returnera fugger-storlek: %s"
 
 #: lib/fs.c:91 lib/fs.c:261
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "kunde inte ta status på %s: %s"
 
 #: lib/fs.c:127
 msgid "getting list of mounted filesystems\n"
-msgstr ""
+msgstr "hämtar lista över monterade filsystem\n"
 
 #: lib/fs.c:132
-#, fuzzy, c-format
+#, c-format
 msgid "failed to open %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "kunde inte öppna %s: %s"
 
 #: lib/fs.c:283
 #, c-format
 msgid "file %s is on an unknown device"
-msgstr ""
+msgstr "filen %s är på en okänd enhet"
 
 #. This should not be allowed
 #: lib/header.c:218
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
-msgstr ""
+msgstr "grabData() RPM_STRING_TYPE måste vara 1.\n"
 
 #: lib/header.c:249 lib/header.c:812
 #, c-format
 msgid "Data type %d not supported\n"
-msgstr ""
+msgstr "Datatyp %d stöds inte\n"
 
 #: lib/header.c:1171
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
-msgstr ""
+msgstr "Felaktigt antal till headerAddEntry(): %d\n"
 
 #: lib/header.c:1580
 #, c-format
 msgid "missing { after %"
-msgstr ""
+msgstr "{ fattas efter %"
 
 #: lib/header.c:1608
 msgid "missing } after %{"
-msgstr ""
+msgstr "} fattas efter %{"
 
 #: lib/header.c:1620
 msgid "empty tag format"
-msgstr ""
+msgstr "tomt taggformat"
 
 #: lib/header.c:1630
 msgid "empty tag name"
-msgstr ""
+msgstr "tomt taggnamn"
 
 #: lib/header.c:1645
 msgid "unknown tag"
-msgstr ""
+msgstr "okänd tagg"
 
 #: lib/header.c:1671
 msgid "] expected at end of array"
-msgstr ""
+msgstr "] förväntades vid slutet på vektor"
 
 #: lib/header.c:1687
-#, fuzzy
 msgid "unexpected ]"
-msgstr "oväntad undersöknings källa"
+msgstr "oväntad ]"
 
 #: lib/header.c:1689
-#, fuzzy
 msgid "unexpected }"
-msgstr "oväntad undersöknings källa"
+msgstr "oväntad }"
 
 #: lib/header.c:1743
 msgid "? expected in expression"
-msgstr ""
+msgstr "? förväntades i uttryck"
 
 #: lib/header.c:1750
 msgid "{ expected after ? in expression"
-msgstr ""
+msgstr "{ förväntades efter ? i uttryck"
 
 #: lib/header.c:1760 lib/header.c:1795
 msgid "} expected in expression"
-msgstr ""
+msgstr "} förväntades i uttryck"
 
 #: lib/header.c:1768
 msgid ": expected following ? subexpression"
-msgstr ""
+msgstr ": förväntades efter ? i deluttryck"
 
 #: lib/header.c:1782
 msgid "{ expected after : in expression"
-msgstr ""
+msgstr "{ förväntades efter : i uttryck"
 
 #: lib/header.c:1803
 msgid "| expected at end of expression"
-msgstr ""
+msgstr "| förväntades vid slutet på uttryck"
 
 #: lib/header.c:1972
 msgid "(unknown type)"
-msgstr ""
+msgstr "(okänd typ)"
 
 #: lib/install.c:142 lib/uninstall.c:194
 #, c-format
 msgid "   file: %s action: %s\n"
-msgstr ""
+msgstr "   fil: %s åtgärd: %s\n"
 
 #: lib/install.c:160
 #, c-format
 msgid "user %s does not exist - using root"
-msgstr ""
+msgstr "användare %s finns inte - använder root"
 
 #: lib/install.c:168
 #, c-format
 msgid "group %s does not exist - using root"
-msgstr ""
+msgstr "grupp %s finns inte - använder root"
 
 #: lib/install.c:196
 msgid "%%instchangelog value in macro file should be a number, but isn't"
-msgstr ""
+msgstr "%%instchangelog-värde i makrofil skall vara ett tal, men är inte det"
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
 #: lib/install.c:362
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
-msgstr ""
+msgstr "uppackning av arkiv misslyckades%s%s: %s"
 
 #: lib/install.c:363
 msgid " on file "
-msgstr ""
+msgstr " vid fil "
 
 #: lib/install.c:406
-#, fuzzy
 msgid "installing a source package\n"
-msgstr "    --install <paketfil>"
+msgstr "installerar källpaket\n"
 
 #: lib/install.c:426
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "kan inte skapa %s"
 
 #: lib/install.c:432 lib/install.c:462
-#, fuzzy, c-format
+#, c-format
 msgid "cannot write to %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "kan inte skriva till %s"
 
 #: lib/install.c:436
 #, c-format
 msgid "sources in: %s\n"
-msgstr ""
+msgstr "källkod i: %s\n"
 
 #: lib/install.c:456
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "kan inte skapa %s"
 
 #: lib/install.c:466
 #, c-format
 msgid "spec file in: %s\n"
-msgstr ""
+msgstr "spec-fil i: %s\n"
 
 #: lib/install.c:500 lib/install.c:528
-#, fuzzy
 msgid "source package contains no .spec file"
-msgstr "        -f <fil>+         - undersök paket som äger <fil>"
+msgstr "källpaket innehåller ingen spec-fil"
 
 #: lib/install.c:550
 #, c-format
 msgid "renaming %s to %s\n"
-msgstr ""
+msgstr "byter namn på %s till %s\n"
 
 #: lib/install.c:552 lib/install.c:831 lib/uninstall.c:27
 #, c-format
 msgid "rename of %s to %s failed: %s"
-msgstr ""
+msgstr "namnbyte från %s till %s misslyckades: %s"
 
 #: lib/install.c:643
 msgid "source package expected, binary found"
-msgstr ""
+msgstr "källpaket förväntades, fann binärpaket"
 
 #: lib/install.c:700
-#, fuzzy, c-format
+#, c-format
 msgid "package: %s-%s-%s files test = %d\n"
-msgstr "inga paket angivna för installation"
+msgstr "paket: %s-%s-%s filtest = %d\n"
 
 #: lib/install.c:761
 msgid "stopping install as we're running --test\n"
-msgstr ""
+msgstr "avbryter installation eftgersom vi kör --test\n"
 
 #: lib/install.c:766
 msgid "running preinstall script (if any)\n"
-msgstr ""
+msgstr "kör (eventuellt) preinstalltionsskript\n"
 
 #: lib/install.c:791
 #, c-format
 msgid "warning: %s created as %s"
-msgstr ""
+msgstr "varning: %s skapades som %s"
 
 #: lib/install.c:827
 #, c-format
 msgid "warning: %s saved as %s"
-msgstr ""
+msgstr "varning: %s sparades som %s"
 
 #: lib/install.c:901
 msgid "running postinstall scripts (if any)\n"
-msgstr ""
+msgstr "kör (eventuellt) postinstallationsskript\n"
 
 #: lib/lookup.c:35
 #, c-format
 msgid "cannot read header at %d for lookup"
-msgstr ""
+msgstr "kan inte läsa huvud vid %d för uppslagning"
 
 #: lib/macro.c:161
 #, c-format
 msgid "======================== active %d empty %d\n"
-msgstr ""
+msgstr "======================== aktiva %d tomma %d\n"
 
 #. XXX just in case
 #: lib/macro.c:256
 #, c-format
 msgid "%3d>%*s(empty)"
-msgstr ""
+msgstr "%3d>%*s(tom)"
 
 #: lib/macro.c:291
 #, c-format
 msgid "%3d<%*s(empty)\n"
-msgstr ""
+msgstr "%3d<%*s(tom)\n"
 
 #: lib/macro.c:470
 msgid "Macro %%%s has unterminated body"
-msgstr ""
+msgstr "Makro %%%s har oavslutad kropp"
 
 #: lib/macro.c:496
 msgid "Macro %%%s has illegal name (%%define)"
-msgstr ""
+msgstr "Makro %%%s har otillåtet namn (%%define)"
 
 #: lib/macro.c:502
 msgid "Macro %%%s has unterminated opts"
-msgstr ""
+msgstr "Makro %%%s har oavslutade flaggor"
 
 #: lib/macro.c:507
 msgid "Macro %%%s has empty body"
-msgstr ""
+msgstr "makro %%%s har tom kropp"
 
 #: lib/macro.c:512
 msgid "Macro %%%s failed to expand"
-msgstr ""
+msgstr "Makro %%%s misslyckades att expandera"
 
 #: lib/macro.c:537
 msgid "Macro %%%s has illegal name (%%undefine)"
-msgstr ""
+msgstr "Makro %%%s har otillåtet namn (%%undefine)"
 
 #: lib/macro.c:614
 msgid "Macro %%%s (%s) was not used below level %d"
-msgstr ""
+msgstr "Makro %%%s (%s) var inte använd under nivå %d"
 
 #: lib/macro.c:711
 #, c-format
 msgid "Unknown option %c in %s(%s)"
-msgstr ""
+msgstr "Okänd flagga %c i %s(%s)"
 
 #: lib/macro.c:891
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
-msgstr ""
+msgstr "Rekursionsdjup(%d) större än max(%d)"
 
 #: lib/macro.c:957 lib/macro.c:973
 #, c-format
 msgid "Unterminated %c: %s"
-msgstr ""
+msgstr "Oavslutad %c: %s"
 
 #: lib/macro.c:1013
 msgid "A %% is followed by an unparseable macro"
-msgstr ""
+msgstr "Ett %% följs av ett makro som inte kan parsas"
 
 #: lib/macro.c:1139
-#, fuzzy
 msgid "Macro %%%.*s not found, skipping"
-msgstr "inga paket angivna för avinstallation"
+msgstr "Inget makro %%%.*s hittat, hoppar över"
 
 #: lib/macro.c:1220
 msgid "Target buffer overflow"
-msgstr ""
+msgstr "Målbuffer översvämmad"
 
 #. XXX Fstrerror
 #: lib/macro.c:1400 lib/macro.c:1406
-#, fuzzy, c-format
+#, c-format
 msgid "File %s: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "Fil %s: %s"
 
 #: lib/macro.c:1409
 #, c-format
 msgid "File %s is smaller than %d bytes"
-msgstr ""
+msgstr "Fil %s är mindre än %d byte"
 
 #: lib/messages.c:55
 msgid "warning: "
-msgstr ""
+msgstr "varning: "
 
 #: lib/messages.c:64
 msgid "error: "
-msgstr ""
+msgstr "fel: "
 
 #: lib/messages.c:73
 msgid "fatal error: "
-msgstr ""
+msgstr "fatalt fel: "
 
 #: lib/messages.c:82
 msgid "internal error (rpm bug?): "
-msgstr ""
+msgstr "internt fel (fel i rpm?): "
 
 #: lib/misc.c:423 lib/misc.c:428 lib/misc.c:434
 #, c-format
 msgid "error creating temporary file %s"
-msgstr ""
+msgstr "fel när tämporärfil %s skapades"
 
 #: lib/oldheader.c:301
-#, fuzzy, c-format
+#, c-format
 msgid "bad file state: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "felaktig filstatus: %s"
 
 #: lib/package.c:237
 msgid "package is a version one package!\n"
-msgstr ""
+msgstr "paketet är ett version ett paket!\n"
 
 #: lib/package.c:242
 msgid "old style source package -- I'll do my best\n"
-msgstr ""
+msgstr "gammal stils källpaket -- jag gör så gott jag kan\n"
 
 #: lib/package.c:245
 #, c-format
 msgid "archive offset is %d\n"
-msgstr ""
+msgstr "arkivoffset är %d\n"
 
 #: lib/package.c:256
 msgid "old style binary package\n"
-msgstr ""
+msgstr "gammal stils binärpaket\n"
 
 #: lib/package.c:316
 msgid ""
 "only packages with major numbers <= 3 are supported by this version of RPM"
-msgstr ""
+msgstr "endast paket med huvudnummer <= 3 stöds av denna version av RPM"
 
 #: lib/problems.c:43
 #, c-format
 msgid " is needed by %s-%s-%s\n"
-msgstr ""
+msgstr " behövs av %s-%s-%s\n"
 
 #: lib/problems.c:46
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
-msgstr ""
+msgstr " står i konflikt med %s-%s-%s\n"
 
 #: lib/problems.c:66
-#, fuzzy, c-format
+#, c-format
 msgid "package %s-%s-%s is for a different architecture"
-msgstr "inga paket angivna för installation"
+msgstr "paket %s-%s-%s är för en annan arkitektur"
 
 #: lib/problems.c:71
-#, fuzzy, c-format
+#, c-format
 msgid "package %s-%s-%s is for a different operating system"
-msgstr "inga paket angivna för installation"
+msgstr "paket %s-%s-%s är för ett annat operativsystem"
 
 #: lib/problems.c:76
-#, fuzzy, c-format
+#, c-format
 msgid "package %s-%s-%s is already installed"
-msgstr "inga paket angivna för installation"
+msgstr "paket %s-%s-%s är redan installerat"
 
 #: lib/problems.c:81
-#, fuzzy, c-format
+#, c-format
 msgid "path %s is not relocateable for package %s-%s-%s"
-msgstr "inga paket angivna för installation"
+msgstr "sökväg %s är inte relokerbar för paket %s-%s-%s"
 
 #: lib/problems.c:86
 #, c-format
 msgid "file %s conflicts between attemped installs of %s-%s-%s and %s-%s-%s"
 msgstr ""
+"filen %s är en konflikt mellan installationsförsök av %s-%s-%s och %s-%s-%s"
 
 #: lib/problems.c:92
 #, c-format
 msgid ""
 "file %s from install of %s-%s-%s conflicts with file from package %s-%s-%s"
 msgstr ""
+"fil %s från installation av %s-%s-%s står i konflikt med fil från paket "
+"%s-%s-%s"
 
 #: lib/problems.c:98
 #, fuzzy, c-format
 msgid "package %s-%s-%s (which is newer than %s-%s-%s) is already installed"
-msgstr "inga paket angivna för installation"
+msgstr "paket %s-%s-%s (som är nyare än %s-%s-%s) är redan installerat"
 
 #: lib/problems.c:104
 #, c-format
 msgid "installing package %s-%s-%s needs %ld%cb on the %s filesystem"
-msgstr ""
+msgstr "installation av paket %s-%s-%s kräver %ld%cb på filsystem %s"
 
 #: lib/problems.c:116
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s-%s-%s"
-msgstr ""
+msgstr "okänt fel %d uppträdde under manipulation av paket %s-%s-%s"
 
 #: lib/query.c:138
 #, c-format
 msgid "error in format: %s\n"
-msgstr ""
+msgstr "fel i format: %s\n"
 
 #: lib/query.c:181
 msgid "(contains no files)"
-msgstr ""
+msgstr "(innehåller inga filer)"
 
 #: lib/query.c:238
-#, fuzzy
 msgid "normal        "
-msgstr "       -h"
+msgstr "normal        "
 
 #: lib/query.c:240
 msgid "replaced      "
-msgstr ""
+msgstr "ersatt        "
 
 #: lib/query.c:242
-#, fuzzy
 msgid "not installed "
-msgstr "inga paket angivna för installation"
+msgstr "oinstallerat  "
 
 #: lib/query.c:244
 msgid "net shared    "
-msgstr ""
+msgstr "nätdelad      "
 
 #: lib/query.c:246
 #, c-format
 msgid "(unknown %3d) "
-msgstr ""
+msgstr "(okänd %3d)   "
 
 #: lib/query.c:250
 msgid "(no state)    "
-msgstr ""
+msgstr "(ej tillstnd) "
 
 #: lib/query.c:267 lib/query.c:308
 msgid "package has neither file owner or id lists"
-msgstr ""
+msgstr "paketet har varken filägare eller id-listor"
 
 #: lib/query.c:421
 #, c-format
 msgid "record number %u\n"
-msgstr ""
+msgstr "post nummer %u\n"
 
 #: lib/query.c:425
 msgid "error: could not read database record\n"
-msgstr ""
+msgstr "fel: kunde inte lästa databaspost\n"
 
 #. XXX Fstrerror
 #: lib/query.c:471
-#, fuzzy, c-format
+#, c-format
 msgid "open of %s failed: %s\n"
-msgstr "Tillverkningen misslyckades.\n"
+msgstr "misslyckades öppna %s: %s\n"
 
 #: lib/query.c:489
 msgid "old format source packages cannot be queried\n"
-msgstr ""
+msgstr "källpaket i gammalt format går ej att fråga om\n"
 
 #: lib/query.c:498 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
-msgstr ""
+msgstr "%s tycks inte vara ett RPM-paket\n"
 
 #: lib/query.c:502
 #, c-format
 msgid "query of %s failed\n"
-msgstr ""
+msgstr "fråga om %s misslyckades\n"
 
 #: lib/query.c:535
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
-msgstr ""
+msgstr "fråga om spec-fil %s misslyckades, kan inte parsa\n"
 
 #: lib/query.c:560
 msgid "could not read database record!\n"
-msgstr ""
+msgstr "kunde inte lästa databaspost!\n"
 
 #: lib/query.c:571
 #, c-format
 msgid "group %s does not contain any packages\n"
-msgstr ""
+msgstr "grupp %s innehåller inga paket\n"
 
 #: lib/query.c:581
-#, fuzzy, c-format
+#, c-format
 msgid "no package triggers %s\n"
-msgstr "inga paket angivna för installation"
+msgstr "inga paketutlösare %s\n"
 
 #: lib/query.c:591
 #, c-format
 msgid "no package requires %s\n"
-msgstr ""
+msgstr "inget paket behöver %s\n"
 
 #: lib/query.c:602
 #, c-format
 msgid "no package provides %s\n"
-msgstr ""
+msgstr "inget paket tillhandahåller %s\n"
 
 #: lib/query.c:618
 #, c-format
 msgid "file %s: %s\n"
-msgstr ""
+msgstr "fil %s: %s\n"
 
 #: lib/query.c:621
 #, c-format
 msgid "file %s is not owned by any package\n"
-msgstr ""
+msgstr "fil %s ägs inte av något paket\n"
 
 #: lib/query.c:634
 #, c-format
 msgid "invalid package number: %s\n"
-msgstr ""
+msgstr "felaktigt paketnummer: %s\n"
 
 #: lib/query.c:637
 #, c-format
 msgid "package record number: %d\n"
-msgstr ""
+msgstr "paketpost nummer: %d\n"
 
 #: lib/query.c:640
 #, c-format
 msgid "record %d could not be read\n"
-msgstr ""
+msgstr "post %d kunde inte läsas\n"
 
 #: lib/query.c:652 lib/rpminstall.c:435
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not installed\n"
-msgstr "inga paket angivna för installation"
+msgstr "paket %s är inte installerat\n"
 
 #: lib/query.c:655
 #, c-format
 msgid "error looking for package %s\n"
-msgstr ""
+msgstr "fel vid sökning efter paket %s\n"
 
 #: lib/query.c:677
 msgid "rpmQuery: rpmdbOpen() failed\n"
-msgstr ""
+msgstr "rpmQuery: rpmdbOpen() misslyckades\n"
 
 #: lib/query.c:736
-#, fuzzy
 msgid "query package owning file"
-msgstr "        -f <fil>+         - undersök paket som äger <fil>"
+msgstr "undersök paket som äger fil"
 
 #: lib/query.c:738
-#, fuzzy
 msgid "query packages in group"
-msgstr "inga paket angivna för avinstallation"
+msgstr "undersök paket i grupp"
 
 #: lib/query.c:740
-#, fuzzy
 msgid "query a package file"
-msgstr "        -f <fil>+         - undersök paket som äger <fil>"
+msgstr "undersök en paketfil"
 
 #: lib/query.c:744
 msgid "query a spec file"
-msgstr ""
+msgstr "fråga om en spec-fil"
 
 #: lib/query.c:746
-#, fuzzy
 msgid "query the pacakges triggered by the package"
-msgstr "        -f <fil>+         - undersök paket som äger <fil>"
+msgstr "undersök paket utlösta av paketet"
 
 #: lib/query.c:748
 msgid "query the packages which require a capability"
-msgstr ""
+msgstr "fråga om paket som behöver en egenskap"
 
 #: lib/query.c:750
 msgid "query the packages which provide a capability"
-msgstr ""
+msgstr "fråga om paket som tillhandahåller en egenskap"
 
 #: lib/query.c:789
-#, fuzzy
 msgid "list all configuration files"
-msgstr ""
-"        -c                - visa enbart konfiguration filer (implicerar -l)"
+msgstr "lista alla konfigurationsfiler"
 
 #: lib/query.c:791
-#, fuzzy
 msgid "list all documentation files"
-msgstr ""
-"        -d                - visa enbart dokumentation filer (implicerar -l)"
+msgstr "lista alla dokumentationsfiler"
 
 #: lib/query.c:793
-#, fuzzy
 msgid "dump basic file information"
-msgstr "        -i                - visa paket information"
+msgstr "visa filinformation"
 
 #: lib/query.c:795
-#, fuzzy
 msgid "list files in package"
-msgstr "    --install <paketfil>"
+msgstr "lista filer i paketet"
 
 #: lib/query.c:799
 msgid "use the following query format"
-msgstr ""
+msgstr "använd följande frågeformat"
 
 #: lib/query.c:801
 msgid "substitute i18n sections from the following catalogue"
-msgstr ""
+msgstr "ersätt i18n-sektioner från följande katalog"
 
 #: lib/query.c:804
 msgid "display the states of the listed files"
-msgstr ""
+msgstr "visa tillstånd för de listade filerna"
 
 #: lib/query.c:806
-#, fuzzy
 msgid "display a verbose file listing"
-msgstr "        -l                - visa paketets fil lista"
+msgstr "visa en utförlig fillistning"
 
 #: lib/rebuilddb.c:20
 #, c-format
 msgid "rebuilding database in rootdir %s\n"
-msgstr ""
+msgstr "bygger om databas i rotkatalog %s\n"
 
 #: lib/rebuilddb.c:24 lib/rpmdb.c:249
 msgid "no dbpath has been set"
-msgstr ""
+msgstr "ingen dbpath har satts"
 
 #: lib/rebuilddb.c:34
 #, c-format
 msgid "temporary database %s already exists"
-msgstr ""
+msgstr "tillfällig databas %s existerar redan"
 
 #: lib/rebuilddb.c:38
 #, c-format
 msgid "creating directory: %s\n"
-msgstr ""
+msgstr "skapar katalog: %s\n"
 
 #: lib/rebuilddb.c:40
 #, c-format
 msgid "error creating directory %s: %s"
-msgstr ""
+msgstr "fel när katalog skapades %s: %s"
 
 #: lib/rebuilddb.c:44
 msgid "opening old database\n"
-msgstr ""
+msgstr "öppnar gammal databas\n"
 
 #: lib/rebuilddb.c:51
 msgid "opening new database\n"
-msgstr ""
+msgstr "öppnar ny databas\n"
 
 #: lib/rebuilddb.c:61 lib/rebuilddb.c:79
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
-msgstr ""
+msgstr "post nummer %d i databasen är felaktig -- hoppar över den"
 
 #: lib/rebuilddb.c:73
 #, c-format
 msgid "cannot add record originally at %d"
-msgstr ""
+msgstr "kan inte lägga till post ursprungligen vid %d"
 
 #: lib/rebuilddb.c:92
 msgid "failed to rebuild database; original database remains in place\n"
-msgstr ""
+msgstr "kunde inte bygga om databasen; orginaldatabasen finns kvar\n"
 
 #: lib/rebuilddb.c:100
 msgid "failed to replace old database with new database!\n"
-msgstr ""
+msgstr "kunde inte ersätta gammal databas med ny databas!\n"
 
 #: lib/rebuilddb.c:102
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
-msgstr ""
+msgstr "byt ut filer i %s med filer från %s för att återställa"
 
 #: lib/rebuilddb.c:108
-#, fuzzy, c-format
+#, c-format
 msgid "failed to remove directory %s: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "kunde inte ta bort katalogen %s: %s\n"
 
 #: lib/rpmchecksig.c:31
 #, fuzzy, c-format
 msgid "%s: open failed: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "%s: fdOpen misslyckades: %s\n"
 
 #: lib/rpmchecksig.c:42
 #, fuzzy
 msgid "makeTempFile failed\n"
-msgstr "Tillverkningen misslyckades.\n"
+msgstr "%s: makeTempFile misslyckades\n"
 
 #: lib/rpmchecksig.c:74
 #, fuzzy, c-format
 msgid "%s: Fwrite failed: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "%s: writeLead misslyckades: %s\n"
 
 #: lib/rpmchecksig.c:80
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "%s: fdRead misslyckades: %s\n"
 
 #: lib/rpmchecksig.c:113 lib/rpmchecksig.c:243
 #, c-format
 msgid "%s: readLead failed\n"
-msgstr ""
+msgstr "%s: readLead misslyckades\n"
 
 #: lib/rpmchecksig.c:118
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
-msgstr ""
+msgstr "%s: Kan inte signera v1.0 RPM\n"
 
 #: lib/rpmchecksig.c:122
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
-msgstr ""
+msgstr "%s: Kan inte signera om v2.0 RPM\n"
 
 #: lib/rpmchecksig.c:130 lib/rpmchecksig.c:257
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
-msgstr ""
+msgstr "%s: rpmReadSignature misslyckades\n"
 
 #: lib/rpmchecksig.c:134 lib/rpmchecksig.c:262
 #, c-format
 msgid "%s: No signature available\n"
-msgstr ""
+msgstr "%s: Ingen signatur tillgänglig\n"
 
 #: lib/rpmchecksig.c:167
 #, c-format
 msgid "%s: writeLead failed: %s\n"
-msgstr ""
+msgstr "%s: writeLead misslyckades: %s\n"
 
 #: lib/rpmchecksig.c:173
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "%s: rpmWriteSignature misslyckades\n"
 
 #: lib/rpmchecksig.c:249
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
-msgstr ""
+msgstr "%s: Ingen signatur tillgänglig (v1.0 RPM)\n"
 
 #: lib/rpmchecksig.c:412
 msgid "NOT OK"
-msgstr ""
+msgstr "EJ OK"
 
 #: lib/rpmchecksig.c:413 lib/rpmchecksig.c:427
 msgid " (MISSING KEYS:"
-msgstr ""
+msgstr " (SAKNADE NYCKLAR:"
 
 #: lib/rpmchecksig.c:415 lib/rpmchecksig.c:429
 msgid ") "
-msgstr ""
+msgstr ") "
 
 #: lib/rpmchecksig.c:416 lib/rpmchecksig.c:430
 msgid " (UNTRUSTED KEYS:"
-msgstr ""
+msgstr " (EJ BETRODDA NYCKLAR:"
 
 #: lib/rpmchecksig.c:418 lib/rpmchecksig.c:432
 msgid ")"
-msgstr ""
+msgstr ")"
 
 #: lib/rpmchecksig.c:426
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: lib/rpmdb.c:147
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
-msgstr ""
+msgstr "öppnar databas med rättighet 0x%x i %s\n"
 
 #: lib/rpmdb.c:157 lib/url.c:442
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "kunde inte öppna %s: %s"
 
 #: lib/rpmdb.c:171 lib/rpmdb.c:179
 #, c-format
 msgid "cannot get %s lock on database"
-msgstr ""
+msgstr "kan inte få %s lås på databas"
 
 #: lib/rpmdb.c:172
 msgid "exclusive"
-msgstr ""
+msgstr "uteslutande"
 
 #: lib/rpmdb.c:180
 msgid "shared"
-msgstr ""
+msgstr "delat"
 
 #: lib/rpmdb.c:211
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
+"databas i gammalt format finns; använd --rebuilddb för att skapa en databas "
+"i nytt format"
 
 #: lib/rpmdb.c:469
 #, c-format
 msgid "package %s not listed in %s"
-msgstr ""
+msgstr "paket %s inte listat i %s"
 
 #: lib/rpmdb.c:480
-#, fuzzy, c-format
+#, c-format
 msgid "package %s not found in %s"
-msgstr "inga paket angivna för avinstallation"
+msgstr "fann ej paket %s i %s"
 
 #: lib/rpmdb.c:504 lib/uninstall.c:86
-#, fuzzy, c-format
+#, c-format
 msgid "cannot read header at %d for uninstall"
-msgstr "inga paket angivna för avinstallation"
+msgstr "kan inte läsa huvud vid %d för avinstallation"
 
 #: lib/rpmdb.c:512
 msgid "package has no name"
-msgstr ""
+msgstr "paket saknar namn"
 
 #: lib/rpmdb.c:514
 msgid "removing name index\n"
-msgstr ""
+msgstr "tar bort namnindex\n"
 
 #: lib/rpmdb.c:519
-#, fuzzy
 msgid "package has no group\n"
-msgstr "inga paket angivna för avinstallation"
+msgstr "paketet har inga grupper\n"
 
 #: lib/rpmdb.c:521
 msgid "removing group index\n"
-msgstr ""
+msgstr "tar bort gruppindex\n"
 
 #: lib/rpmdb.c:528
 #, c-format
 msgid "removing provides index for %s\n"
-msgstr ""
+msgstr "tar bort tillhandahållandeindex för %s\n"
 
 #: lib/rpmdb.c:543
 #, c-format
 msgid "removing requiredby index for %s\n"
-msgstr ""
+msgstr "tar bort behovsindex för %s\n"
 
 #: lib/rpmdb.c:555
 #, c-format
 msgid "removing trigger index for %s\n"
-msgstr ""
+msgstr "tar bort utlösarindex för %s\n"
 
 #: lib/rpmdb.c:566
 #, c-format
 msgid "removing conflict index for %s\n"
-msgstr ""
+msgstr "tar bort konfliktindex för %s\n"
 
 #: lib/rpmdb.c:577
 #, c-format
 msgid "removing file index for %s\n"
-msgstr ""
+msgstr "tar bort filindex för %s\n"
 
 #: lib/rpmdb.c:586
-#, fuzzy
 msgid "package has no files\n"
-msgstr "inga paket angivna för installation"
+msgstr "paketet har inga filer\n"
 
 #: lib/rpmdb.c:692
 msgid "cannot allocate space for database"
-msgstr ""
+msgstr "kan inte allokera plats för databas"
 
 #: lib/rpmdb.c:751
 #, c-format
 msgid "cannot read header at %d for update"
-msgstr ""
+msgstr "kan inte läsa huvud vid %d för uppdatering"
 
 #: lib/rpmdb.c:764
 msgid "header changed size!"
-msgstr ""
+msgstr "huvud ändrade storlek!"
 
 #: lib/rpminstall.c:126
-#, fuzzy
 msgid "counting packages to install\n"
-msgstr "inga paket angivna för installation"
+msgstr "räknar paket att installera\n"
 
 #: lib/rpminstall.c:130
 #, c-format
 msgid "found %d packages\n"
-msgstr ""
+msgstr "hittade %d paket\n"
 
 #: lib/rpminstall.c:135
 msgid "looking for packages to download\n"
-msgstr ""
+msgstr "letar efter paket att hämta\n"
 
 #: lib/rpminstall.c:150
-#, c-format
+#, fuzzy, c-format
 msgid "skipping %s - rpmGlob failed(%d)\n"
-msgstr ""
+msgstr "hoppar över %s - överföring misslyckades - %s\n"
 
 #: lib/rpminstall.c:165
-#, fuzzy, c-format
+#, c-format
 msgid "Retrieving %s\n"
-msgstr "RPM version %s\n"
+msgstr "Hämtar %s\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
 #: lib/rpminstall.c:175
 #, c-format
 msgid " ... as %s\n"
-msgstr ""
+msgstr " ... som %s\n"
 
 #: lib/rpminstall.c:179
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
-msgstr ""
+msgstr "hoppar över %s - överföring misslyckades - %s\n"
 
 #: lib/rpminstall.c:206
 #, c-format
 msgid "retrieved %d packages\n"
-msgstr ""
+msgstr "hämtade %d paket\n"
 
 #: lib/rpminstall.c:217 lib/rpminstall.c:360
 #, fuzzy, c-format
 msgid "cannot open file %s: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "kan inte öppna fil %s: %s"
 
 #: lib/rpminstall.c:235 lib/rpminstall.c:512
-#, fuzzy, c-format
+#, c-format
 msgid "%s cannot be installed\n"
-msgstr "inga paket angivna för installation"
+msgstr "%s kan inte installeras\n"
 
 #: lib/rpminstall.c:270
-#, fuzzy, c-format
+#, c-format
 msgid "package %s is not relocateable\n"
-msgstr "inga paket angivna för installation"
+msgstr "paket %s är inte relokerbart\n"
 
 #: lib/rpminstall.c:289
 #, c-format
 msgid "error reading from file %s\n"
-msgstr ""
+msgstr "fel vid läsning från fil %s\n"
 
 #: lib/rpminstall.c:294
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
-msgstr ""
+msgstr "fil %s behöver en nyare version av RPM\n"
 
 #: lib/rpminstall.c:311
 #, c-format
 msgid "found %d source and %d binary packages\n"
-msgstr ""
+msgstr "hittade %d käll- och %d binärpaket\n"
 
 #: lib/rpminstall.c:322
 msgid "failed dependencies:\n"
-msgstr ""
+msgstr "ouppfyllda beroenden:\n"
 
 #: lib/rpminstall.c:340
-#, fuzzy
 msgid "installing binary packages\n"
-msgstr "    --install <paketfil>"
+msgstr "installerar binärpaket\n"
 
 #: lib/rpminstall.c:439
-#, fuzzy, c-format
+#, c-format
 msgid "searching for package %s\n"
-msgstr "    --install <paketfil>"
+msgstr "letar efter paket %s\n"
 
 #: lib/rpminstall.c:448
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
-msgstr ""
+msgstr "\"%s\" anger flera paket\n"
 
 #: lib/rpminstall.c:474
 msgid "removing these packages would break dependencies:\n"
-msgstr ""
+msgstr "att ta bort dessa paket skulle göra sönder beroenden:\n"
 
 #: lib/rpminstall.c:501
 #, fuzzy, c-format
 msgid "cannot open %s: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "kan inte öppna %s\n"
 
 #: lib/rpminstall.c:507
 #, c-format
 msgid "Installing %s\n"
-msgstr ""
+msgstr "Installerar %s\n"
 
 #: lib/rpmio.c:774
 msgid "Success"
-msgstr ""
+msgstr "Gick bra"
 
 #: lib/rpmio.c:777
 msgid "Bad server response"
-msgstr ""
+msgstr "Konstigt svar från server"
 
 #: lib/rpmio.c:780
 msgid "Server IO error"
-msgstr ""
+msgstr "IO-fel mot server"
 
 #: lib/rpmio.c:783
 msgid "Server timeout"
-msgstr ""
+msgstr "Förbindelsen med servern dog ut (timeout)"
 
 #: lib/rpmio.c:786
 msgid "Unable to lookup server host address"
-msgstr ""
+msgstr "Kunde inte slå upp serverns adress"
 
 #: lib/rpmio.c:789
 msgid "Unable to lookup server host name"
-msgstr ""
+msgstr "Kunde inte slå upp serverns namn"
 
 #: lib/rpmio.c:792
 msgid "Failed to connect to server"
-msgstr ""
+msgstr "Misslyckades att kontakta servern"
 
 #: lib/rpmio.c:795
 msgid "Failed to establish data connection to server"
-msgstr ""
+msgstr "Misslyckades att etablera en dataförbindelse till servern"
 
 #: lib/rpmio.c:798
 msgid "IO error to local file"
-msgstr ""
+msgstr "IO-fel mot lokal fil"
 
 #: lib/rpmio.c:801
 msgid "Error setting remote server to passive mode"
-msgstr ""
+msgstr "Fel när den fjärran servern sattes i passivt läge"
 
 #: lib/rpmio.c:804
 msgid "File not found on server"
-msgstr ""
+msgstr "Filen fanns inte på servern"
 
 #: lib/rpmio.c:807
 msgid "Abort in progress"
-msgstr ""
+msgstr "Avbruten under gång"
 
 #: lib/rpmio.c:811
 msgid "Unknown or unexpected error"
-msgstr ""
+msgstr "Okänt eller oväntat fel"
 
 #: lib/rpmio.c:1344
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
-msgstr ""
+msgstr "loggar in på %s som %s, lösenord %s\n"
 
 #: lib/rpmlead.c:48
 #, c-format
 msgid "read failed: %s (%d)"
-msgstr ""
+msgstr "läsning misslyckades: %s (%d)"
 
 #: lib/rpmrc.c:144
 #, c-format
 msgid "missing second ':' at %s:%d"
-msgstr ""
+msgstr "andra \":\" saknas vid %s:%d"
 
 #: lib/rpmrc.c:147
 #, c-format
 msgid "missing architecture name at %s:%d"
-msgstr ""
+msgstr "arkitekturnamn saknas vid %s:%d"
 
 #: lib/rpmrc.c:307
 #, c-format
 msgid "Incomplete data line at %s:%d"
-msgstr ""
+msgstr "Ofullständig datarad vid %s:%d"
 
 #: lib/rpmrc.c:311
 #, c-format
 msgid "Too many args in data line at %s:%d"
-msgstr ""
+msgstr "För många argument i datarad vid %s:%d"
 
 #: lib/rpmrc.c:318
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)"
-msgstr ""
+msgstr "Felaktigt arkitektur-/osnummer: %s (%s:%d)"
 
 #: lib/rpmrc.c:353
 #, c-format
 msgid "Incomplete default line at %s:%d"
-msgstr ""
+msgstr "Ofullständig skönsfallsrad vid %s:%d"
 
 #: lib/rpmrc.c:358
 #, c-format
 msgid "Too many args in default line at %s:%d"
-msgstr ""
+msgstr "För många argument i skönsfallsrad vid %s:%d"
 
 #: lib/rpmrc.c:547
 #, c-format
 msgid "Cannot expand %s"
-msgstr ""
+msgstr "Kan inte expandera %s"
 
 #: lib/rpmrc.c:562
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %s for reading: %s."
-msgstr "kan inte öppna: %s\n"
+msgstr "Kan inte öppna %s för läsning: %s."
 
 #. XXX Feof(fd)
 #: lib/rpmrc.c:607
 #, c-format
 msgid "Failed to read %s: %s."
-msgstr ""
+msgstr "Misslyckades läsa %s: %s."
 
 #: lib/rpmrc.c:644
-#, c-format
+#, fuzzy, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d"
-msgstr ""
+msgstr "\":\" saknas vid %s:%d"
 
 #: lib/rpmrc.c:661 lib/rpmrc.c:735
 #, c-format
 msgid "missing argument for %s at %s:%d"
-msgstr ""
+msgstr "argument till %s saknas vid %s:%d"
 
 #: lib/rpmrc.c:678 lib/rpmrc.c:700
-#, fuzzy, c-format
+#, c-format
 msgid "%s expansion failed at %s:%d \"%s\""
-msgstr "kan inte öppna: %s\n"
+msgstr "%s expansion misslyckade vid %s:%d \"%s\""
 
 #: lib/rpmrc.c:687
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %s"
-msgstr "kan inte öppna: %s\n"
+msgstr "kan inte öppna %s vid %s:%d"
 
 #: lib/rpmrc.c:727
 #, c-format
 msgid "missing architecture for %s at %s:%d"
-msgstr ""
+msgstr "arkitektur saknas för %s vid %s:%d"
 
 #: lib/rpmrc.c:794
 #, c-format
 msgid "bad option '%s' at %s:%d"
-msgstr ""
+msgstr "okänd flagga \"%s\" vid %s:%d"
 
 #: lib/rpmrc.c:1162
 #, c-format
 msgid "Unknown system: %s\n"
-msgstr ""
+msgstr "Okänt system: %s\n"
 
 #: lib/rpmrc.c:1163
 msgid "Please contact rpm-list@redhat.com\n"
-msgstr ""
+msgstr "Var god kontakta rpm-list@redhat.com\n"
 
 #: lib/signature.c:107
 #, c-format
 msgid "sigsize         : %d\n"
-msgstr ""
+msgstr "sigstorlek       : %d\n"
 
 #: lib/signature.c:108
 #, c-format
 msgid "Header + Archive: %d\n"
-msgstr ""
+msgstr "Huvud + Arkiv    : %d\n"
 
 #: lib/signature.c:109
 #, c-format
 msgid "expected size   : %d\n"
-msgstr ""
+msgstr "förväntad storlek: %d\n"
 
 #: lib/signature.c:113
 msgid "file is not regular -- skipping size check\n"
-msgstr ""
+msgstr "filen är inte en vanlig fil -- hoppar över storlekskontroll\n"
 
 #: lib/signature.c:135
 msgid "No signature\n"
-msgstr ""
+msgstr "Ingen signatur\n"
 
 #: lib/signature.c:138
-#, fuzzy
 msgid "Old PGP signature\n"
-msgstr "      --sign            - tillverka en PGP signatur"
+msgstr "Gammal PGP-signatur\n"
 
 #: lib/signature.c:150
 msgid "Old (internal-only) signature!  How did you get that!?"
-msgstr ""
+msgstr "Gammal (endast intern) signatur!  Hur fick du tag i den!?"
 
 #: lib/signature.c:154
-#, fuzzy
 msgid "New Header signature\n"
-msgstr "      --sign            - tillverka en PGP signatur"
+msgstr "Ny huvudsignatur\n"
 
 #. 8-byte pad
 #: lib/signature.c:161 lib/signature.c:203
 #, c-format
 msgid "Signature size: %d\n"
-msgstr ""
+msgstr "Signaturstorlek  : %d\n"
 
 #: lib/signature.c:162 lib/signature.c:204
 #, c-format
 msgid "Signature pad : %d\n"
-msgstr ""
+msgstr "Signaturutfyllnad: %d\n"
 
 #: lib/signature.c:267
 #, c-format
 msgid "Couldn't exec pgp (%s)"
-msgstr ""
+msgstr "Kunde inte köra pgp (%s)"
 
 #: lib/signature.c:278
 msgid "pgp failed"
-msgstr ""
+msgstr "pgp misslyckades"
 
 #. PGP failed to write signature
 #. Just in case
 #: lib/signature.c:285
 msgid "pgp failed to write signature"
-msgstr ""
+msgstr "pgp misslyckades att skriva en signatur"
 
 #: lib/signature.c:290
 #, c-format
 msgid "PGP sig size: %d\n"
-msgstr ""
+msgstr "PGP signaturstorlek: %d\n"
 
 #: lib/signature.c:301 lib/signature.c:378
 msgid "unable to read the signature"
-msgstr ""
+msgstr "kan inte läsa signaturen"
 
 #: lib/signature.c:306
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
-msgstr ""
+msgstr "Fick %d byte PGPsignatur\n"
 
 #: lib/signature.c:344 lib/signature.c:687
 msgid "Couldn't exec gpg"
-msgstr ""
+msgstr "Kunde inte köra gpg"
 
 #: lib/signature.c:355
-#, fuzzy
 msgid "gpg failed"
-msgstr "Tillverkningen misslyckades.\n"
+msgstr "gpg misslyckades"
 
 #. GPG failed to write signature
 #. Just in case
 #: lib/signature.c:362
-#, fuzzy
 msgid "gpg failed to write signature"
-msgstr "kan inte öppna: %s\n"
+msgstr "gpg kunde inte skriva signatur"
 
 #: lib/signature.c:367
 #, c-format
 msgid "GPG sig size: %d\n"
-msgstr ""
+msgstr "GPG signaturstorlek: %d\n"
 
 #: lib/signature.c:383
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
-msgstr ""
+msgstr "Fick %d byte GPGsignatur\n"
 
 #: lib/signature.c:410
-#, fuzzy
 msgid "Generating signature using PGP.\n"
-msgstr "      --sign            - tillverka en PGP signatur"
+msgstr "Genererar signatur med PGP.\n"
 
 #: lib/signature.c:416
-#, fuzzy
 msgid "Generating signature using GPG.\n"
-msgstr "      --sign            - tillverka en PGP signatur"
+msgstr "Genererar signatur med GPG.\n"
 
 #: lib/signature.c:493 lib/signature.c:555
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
-msgstr ""
+msgstr "Kunde intge köra pgp.  Använd --nopgp för att hoppa över PGPkontroll."
 
 #: lib/signature.c:553 lib/signature.c:626
 msgid "exec failed!\n"
-msgstr ""
+msgstr "exec misslyckades!\n"
 
 #: lib/signature.c:628
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
-msgstr ""
+msgstr "Kunde intge köra gpg.  Använd --nogpg för att hoppa över GPGkontroll."
 
 #: lib/signature.c:716
 msgid "Couldn't exec pgp"
-msgstr ""
+msgstr "Kunde inte köra pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
 #: lib/signature.c:720 lib/signature.c:773
 msgid "Invalid %%_signature spec in macro file"
-msgstr ""
+msgstr "Ogiltig %%_signature specifikation i makrofil"
 
 #: lib/signature.c:753
+#, fuzzy
 msgid "You must set \"%%_gpg_name\" in your macro file"
-msgstr ""
+msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil"
 
 #: lib/signature.c:765
 msgid "You must set \"%%_pgp_name\" in your macro file"
-msgstr ""
+msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil"
 
 #: lib/transaction.c:389
 #, fuzzy, c-format
 msgid "excluding file %s%s\n"
-msgstr "RPM version %s\n"
+msgstr "hoppar över %s\n"
 
 #: lib/transaction.c:415 lib/transaction.c:499
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
-msgstr "RPM version %s\n"
+msgstr "skapar katalog: %s\n"
 
 #: lib/transaction.c:420
 #, c-format
 msgid "relocating %s to %s\n"
-msgstr ""
+msgstr "flyttar %s till %s\n"
 
 #: lib/transaction.c:492
 #, fuzzy, c-format
 msgid "relocating directory %s to %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "flyttar %s till %s\n"
 
 #: lib/transaction.c:643
 #, c-format
 msgid "%s skipped due to missingok flag\n"
-msgstr ""
+msgstr "%s överhoppad på grund av missingok-flagga\n"
 
 #: lib/uninstall.c:38
 #, c-format
 msgid "cannot remove %s - directory not empty"
-msgstr ""
+msgstr "kan inte ta bort %s - katalogen är int tom"
 
 #: lib/uninstall.c:41
 #, c-format
 msgid "rmdir of %s failed: %s"
-msgstr ""
+msgstr "rmdir av %s misslyckades: %s"
 
 #: lib/uninstall.c:49
 #, c-format
 msgid "removal of %s failed: %s"
-msgstr ""
+msgstr "borttagning av %s misslyckades: %s"
 
 #: lib/uninstall.c:98
-#, fuzzy, c-format
+#, c-format
 msgid "cannot read packages named %s for uninstall"
-msgstr "inga paket angivna för avinstallation"
+msgstr "kan inte läsa paket med namn %s för avinstallation"
 
 #: lib/uninstall.c:131
 #, c-format
 msgid "will remove files test = %d\n"
-msgstr ""
+msgstr "tar bort filer test = %d\n"
 
 #: lib/uninstall.c:208
 msgid "running postuninstall script (if any)\n"
-msgstr ""
+msgstr "kör (eventuellt) postavinstallationsskript\n"
 
 #: lib/uninstall.c:222
 msgid "removing database entry\n"
-msgstr ""
+msgstr "tar bort databasposter\n"
 
 #: lib/uninstall.c:400
 msgid "execution of script failed"
-msgstr ""
+msgstr "skriptkörning misslyckades"
 
 #: lib/url.c:85
 #, c-format
@@ -3598,311 +3472,65 @@ msgstr ""
 #: lib/url.c:215
 #, c-format
 msgid "Password for %s@%s: "
-msgstr ""
+msgstr "Lösenord för %s@%s: "
 
 #: lib/url.c:240 lib/url.c:266
 #, c-format
 msgid "error: %sport must be a number\n"
-msgstr ""
+msgstr "fel: %s-port måste vara ett tal\n"
 
 #: lib/url.c:402
 msgid "url port must be a number\n"
-msgstr ""
+msgstr "url-port måste vara ett tal\n"
 
 #. XXX Fstrerror
 #: lib/url.c:459
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
-msgstr "kan inte öppna: %s\n"
+msgstr "kunde inte skapa %s\n"
 
 #: lib/verify.c:38
-#, fuzzy
 msgid "don't verify files in package"
-msgstr "    --install <paketfil>"
+msgstr "verifiera inte filerna i paketet"
 
 #: lib/verify.c:213
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr ""
+"paket saknar både användarnamn och id-listor (detta borde aldrig inträffa)"
 
 #: lib/verify.c:231
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
+"paket saknar både gruppnamn och id-listor (detta borde aldrig inträffa)"
 
 #: lib/verify.c:266
 #, c-format
 msgid "missing    %s\n"
-msgstr ""
+msgstr "saknas     %s\n"
 
 #: lib/verify.c:328
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
-msgstr ""
+msgstr "Ouppfyllda beroenden för %s-%s-%s: "
 
 #: lib/verify.c:376
 msgid "rpmVerify: rpmdbOpen() failed\n"
-msgstr ""
+msgstr "rpmVerify: rpmdbOpen() misslyckades\n"
 
-#, fuzzy
-#~ msgid "cannot create %s"
-#~ msgstr "kan inte öppna: %s\n"
-
-#, fuzzy
 #~ msgid "Unable to stat icon: %s"
-#~ msgstr "kan inte öppna: %s\n"
+#~ msgstr "Kan inte ta status på ikon: %s"
 
-#, fuzzy
+#~ msgid "Timecheck value must be an integer: %s"
+#~ msgstr "Timecheck-värde måste vara ett heltal: %s"
+
+#~ msgid "Data type %d not supprted\n"
+#~ msgstr "Datatyp %d stöds inte\n"
+
+#~ msgid "%s: fdWrite failed: %s\n"
+#~ msgstr "%s: fdWrite misslyckades: %s\n"
+
 #~ msgid "failed to open %s\n"
-#~ msgstr "kan inte öppna: %s\n"
+#~ msgstr "kunde inte öppna: %s\n"
 
-#, fuzzy
-#~ msgid "Unable to write %s"
-#~ msgstr "kan inte öppna: %s\n"
-
-#~ msgid "unexpected query specifiers"
-#~ msgstr "oväntade undersöknings parameterar"
-
-#, fuzzy
-#~ msgid "--nofiles may only be specified during package verification"
-#~ msgstr "--replacefiles kan enbart användas vid paket installation"
-
-#, fuzzy
-#~ msgid "--clean may only be used with -b and -t"
-#~ msgstr "--clean kan enbart användas vid paket tillverkning"
-
-#, fuzzy
-#~ msgid "--rmsource may only be used with -b and -t"
-#~ msgstr "--oldpackage kan enbart användas vid paket uppgraderingar"
-
-#, fuzzy
-#~ msgid "--short-circuit may only be used during package building"
-#~ msgstr "--sign kan enbart användas vid paket tillverkning"
-
-#, fuzzy
-#~ msgid "pgp version 5 not found: "
-#~ msgstr "inga paket angivna för avinstallation"
-
-#, fuzzy
-#~ msgid "--prefix is broke, use --relocate /oldpath=/newpath instead"
-#~ msgstr "                        [--root <dir>] [targets]"
-
-#, fuzzy
-#~ msgid "counting packages to uninstall\n"
-#~ msgstr "inga paket angivna för avinstallation"
-
-#, fuzzy
-#~ msgid "found %d packages to uninstall\n"
-#~ msgstr "inga paket angivna för avinstallation"
-
-#, fuzzy
-#~ msgid "cpio failed on file %s: %d"
-#~ msgstr "kan inte öppna: %s\n"
-
-#, fuzzy
-#~ msgid "package %s is now obsolete and will be removed\n"
-#~ msgstr "inga paket angivna för installation"
-
-#, fuzzy
-#~ msgid "package %s contains no files"
-#~ msgstr "inga paket angivna för installation"
-
-#, fuzzy
-#~ msgid "keeping %s\n"
-#~ msgstr "RPM version %s\n"
-
-#, fuzzy
-#~ msgid "one type of query may be performed at a time"
-#~ msgstr "enbart en slags undersökningar kan utföras åt gången"
-
-#, fuzzy
-#~ msgid "--dump may only be used during queries"
-#~ msgstr "--oldpackage kan enbart användas vid paket uppgraderingar"
-
-#, fuzzy
-#~ msgid "Copyright (C) 1995 - Red Hat Software"
-#~ msgstr "Copyright (C) 1995 - Red Hat Software"
-
-#, fuzzy
-#~ msgid "       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
-#~ msgstr "       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] "
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"
-#~ msgstr "                        [--root <dir>] [targets]"
-
-#, fuzzy
-#~ msgid ""
-#~ "                        [--provides] [--dump] [--dbpath <dir>] [targets]"
-#~ msgstr "                        [--root <dir>] [targets]"
-
-#, fuzzy
-#~ msgid "   --help\t\t- print this message"
-#~ msgstr "   --help\t\t- visa det här meddelandet"
-
-#, fuzzy
-#~ msgid "   --version\t- print the version of rpm being used"
-#~ msgstr "   --version\t\t- visa vilken version av rpm som används"
-
-#, fuzzy
-#~ msgid "       -v\t\t      - be a little more verbose"
-#~ msgstr "       -v\t        - visa lite mer information "
-
-#, fuzzy
-#~ msgid "       -vv\t              - be incredibly verbose (for debugging)"
-#~ msgstr "       -v\t        - visa lite mer information "
-
-#, fuzzy
-#~ msgid "   -q                   - query mode"
-#~ msgstr "    -q                  - undersök läge"
-
-#~ msgid "        -a                - query all packages"
-#~ msgstr "        -a                - undersök alla paket"
-
-#, fuzzy
-#~ msgid "        -f <file>+        - query package owning <file>"
-#~ msgstr "        -f <fil>+         - undersök paket som äger <fil>"
-
-#~ msgid "        -F                - like -f, but read file names from stdin"
-#~ msgstr "        -F                - liksom -f, men läser filnamn från stdin"
-
-#, fuzzy
-#~ msgid ""
-#~ "        -p <packagefile>+ - query (uninstalled) package <packagefile>"
-#~ msgstr ""
-#~ "        -p <paketfil>+    - undersök (uninstalled) paket <packagefile>"
-
-#, fuzzy
-#~ msgid ""
-#~ "        -P                - like -p, but read package names from stdin"
-#~ msgstr ""
-#~ "        -P                - liksom -f, men läser paket namn från stdin"
-
-#, fuzzy
-#~ msgid "        -i                - display package information"
-#~ msgstr ""
-#~ "        -P                - liksom -f, men läser paket namn från stdin"
-
-#, fuzzy
-#~ msgid "        -l                - display package file list"
-#~ msgstr "        -a                - undersök alla paket"
-
-#, fuzzy
-#~ msgid "        -s                - show file states (implies -l)"
-#~ msgstr "        -s                - visa filers status (implicerar -l)"
-
-#, fuzzy
-#~ msgid ""
-#~ "        -d                - list only documentation files (implies -l)"
-#~ msgstr ""
-#~ "        -d                - visa enbart dokumentation filer (implicerar -l)"
-
-#, fuzzy
-#~ msgid ""
-#~ "        -c                - list only configuration files (implies -l)"
-#~ msgstr ""
-#~ "        -c                - visa enbart konfiguration filer (implicerar -l)"
-
-#, fuzzy
-#~ msgid "                            (must be used with -l, -c, or -d)"
-#~ msgstr "        -F                - liksom -f, men läser filnamn från stdin"
-
-#, fuzzy
-#~ msgid "        -R                - list package dependencies"
-#~ msgstr "        -a                - undersök alla paket"
-
-#, fuzzy
-#~ msgid "only one type of query may be performed at a time"
-#~ msgstr "enbart en slags verifieringar kan utföras åt gången"
-
-#, fuzzy
-#~ msgid ""
-#~ "--noscripts may only be specified during package installation and "
-#~ "uninstallation"
-#~ msgstr ""
-#~ "--test kan enbart användas vid paket installation och avinstallation"
-
-#, fuzzy
-#~ msgid ""
-#~ "--nodeps may only be specified during package installation, uninstallation, "
-#~ "and verification"
-#~ msgstr ""
-#~ "--test kan enbart användas vid paket installation och avinstallation"
-
-#, fuzzy
-#~ msgid ""
-#~ "--test may only be specified during package installation, uninstallation, "
-#~ "and building"
-#~ msgstr ""
-#~ "--test kan enbart användas vid paket installation och avinstallation"
-
-#, fuzzy
-#~ msgid ""
-#~ "--root (-r) may only be specified during installation, uninstallation, "
-#~ "querying, and database rebuilds"
-#~ msgstr ""
-#~ "--root (-r) kan enbart användas vid paket installation, avinstallation, och "
-#~ "undersökning"
-
-#, fuzzy
-#~ msgid "--clean may only be used during package building"
-#~ msgstr "--sign kan enbart användas vid paket tillverkning"
-
-#, fuzzy
-#~ msgid "--short-circuit may only be used with -bc or -bi"
-#~ msgstr "--oldpackage kan enbart användas vid paket uppgraderingar"
-
-#, fuzzy
-#~ msgid "--dump may only be used during queryies"
-#~ msgstr "--oldpackage kan enbart användas vid paket uppgraderingar"
-
-#~ msgid "       rpm {--where} package1 package2 ... packageN"
-#~ msgstr "       rpm {--where} paket1 paket2 ... paketN"
-
-#~ msgid "       rpm {--checksig} package1 package2 ... packageN"
-#~ msgstr "       rpm {--checksig} paket1 paket2 ... paketN"
-
-#~ msgid "    -V"
-#~ msgstr "    -V"
-
-#~ msgid "    -y"
-#~ msgstr "    -y"
-
-#~ msgid "    --verify            - verify a package installation"
-#~ msgstr "    --verify            - verifiera en paket installation"
-
-#~ msgid "    -i <packagefile>\t- install package"
-#~ msgstr "    -i <paketfil>\t- installera paket"
-
-#~ msgid ""
-#~ "      --search          - search the paths listed in /etc/rpmrc for rpms"
-#~ msgstr ""
-#~ "      --search          - leta i de sökvägar som finns i /etc/rpmrc efter "
-#~ "rpms"
-
-#~ msgid "                          on upgrades does this automatically)"
-#~ msgstr ""
-#~ "                          vid uppgraderingar sker detta automatiskt)"
-
-#~ msgid "    -e <package>        - uninstall (erase) package"
-#~ msgstr "    -e <paket>        - avinstallera (radera) paket"
-
-#~ msgid ""
-#~ "      --keep-temps      - do not delete scripts (or any temp files) in /tmp"
-#~ msgstr ""
-#~ "      --keep-temps      - tag inte bort några skripts (eller några temporär "
-#~ "filer) i /tmp"
-
-#~ msgid ""
-#~ "      --test            - do not execute any stages, implies --keep-temps"
-#~ msgstr ""
-#~ "      --test            - utför inte några steg, implicerar --keep-temps"
-
-#~ msgid "\t\t\t  in /tmp - useful for testing"
-#~ msgstr "\t\t\t  i /tmp - bra för att testa"
-
-#~ msgid "    --where <pkg>+      - search paths listed in /etc/rpmrc for rpms"
-#~ msgstr ""
-#~ "    --where <pkg>+      - leta i sökvägarna som finns i /etc/rpmrc efter rpms"
-
-#~ msgid "    -K"
-#~ msgstr "    -K"
+#~ msgid "no pgp version found"
+#~ msgstr "ingen pgp-version funnen"
