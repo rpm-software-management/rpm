@@ -8,7 +8,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0
 Version: %{version}
-Release: 0.54
+Release: 0.55
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -257,6 +257,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Mon Jul 17 2000 Jeff Johnson <jbj@redhat.com>
+- first release candidate.
+
 * Sat Jul 15 2000 Jeff Johnson <jbj@redhat.com>
 - rip out pre-transaction syscalls, more design is needed.
 - display rpmlib provides when invoked with --showrc.
