@@ -296,11 +296,11 @@ typedef void * (*rpmCallbackFunction)(const Header h,
 				      const unsigned long total,
 				      const void * pkgKey, void * data);
 
-int rpmdbOpen (const char * root, rpmdb * dbp, int mode, int perms);
+int rpmdbOpen (const char * root, /*@out@*/rpmdb * dbp, int mode, int perms);
     /* 0 on error */
 int rpmdbInit(const char * root, int perms);
     /* nonzero on error */
-void rpmdbClose (rpmdb db);
+void rpmdbClose (/*@only@*/rpmdb db);
 /* Databases like this should only have rpmdb*RecNum and rpmdbGetRecord
    used on them. Anything else could fail! */
 int rpmdbOpenForTraversal(const char * prefix, rpmdb * rpmdbp);
@@ -335,14 +335,14 @@ int rpmInstallSourcePackage(const char * root, FD_t fd, const char ** specFile,
 int rpmVersionCompare(Header first, Header second);
 int rpmdbRebuild(const char * root);
 
-int rpmVerifyFile(const char * root, Header h, int filenum, int * result,
+int rpmVerifyFile(const char * root, Header h, int filenum, /*@out@*/int * result,
 		  int omitMask);
 int rpmVerifyScript(const char * root, Header h, FD_t err);
 
 /* Transaction sets are inherently unordered! RPM may reorder transaction
    sets to reduce errors. In general, installs/upgrades are done before
    strict removals, and prerequisite ordering is done on installs/upgrades. */
-typedef struct rpmTransactionSet_s * rpmTransactionSet;
+typedef /*@abstract@*/ struct rpmTransactionSet_s * rpmTransactionSet;
 
 struct rpmDependencyConflict {
     char * byName, * byVersion, * byRelease;
@@ -356,7 +356,7 @@ struct rpmDependencyConflict {
 } ;
 
 /* db may be NULL, but don't do things which require the database! */
-/*@only@*/ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootdir);
+/*@only@*/ rpmTransactionSet rpmtransCreateSet(/*@only@*/rpmdb db, const char * rootdir);
 
 /* if fd is NULL, the callback specified in rpmtransCreateSet() is used to
    open and close the file descriptor. If Header is NULL, the fd is always
@@ -374,13 +374,15 @@ void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd);
 
 /* this checks for dependency satisfaction, but *not* ordering */
 int rpmdepCheck(rpmTransactionSet rpmdep,
-		struct rpmDependencyConflict ** conflicts, int * numConflicts);
+	/*@out@*/struct rpmDependencyConflict ** conflicts,
+	/*@out@*/int * numConflicts);
+
 /* Orders items, returns error on circle, finals keys[] is NULL. No dependency
    check is done, use rpmdepCheck() for that. If dependencies are not
    satisfied a "best-try" ordering is returned. */
 int rpmdepOrder(rpmTransactionSet order);
-void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
-			 numConflicts);
+void rpmdepFreeConflicts(/*@only@*/struct rpmDependencyConflict * conflicts,
+	int numConflicts);
 
 #define RPMTRANS_FLAG_TEST		(1 << 0)
 #define RPMTRANS_FLAG_BUILD_PROBS	(1 << 1)
@@ -403,7 +405,7 @@ typedef enum rpmProblemType_e { RPMPROB_BADARCH,
 				RPMPROB_DISKSPACE
  			      } rpmProblemType;
 
-typedef struct rpmProblem_s {
+typedef /*@abstract@*/ struct rpmProblem_s {
     Header h, altH;
     const void * key;
     rpmProblemType type;
@@ -412,7 +414,7 @@ typedef struct rpmProblem_s {
     unsigned long ulong1;
 } rpmProblem;
 
-typedef struct rpmProblemSet_s {
+typedef /*@abstract@*/ struct rpmProblemSet_s {
     int numProblems;
     int numProblemsAlloced;
     rpmProblem * probs;
@@ -422,15 +424,15 @@ void printDepFlags(FILE *fp, const char *version, int flags);
 void printDepProblems(FILE *fp, struct rpmDependencyConflict *conflicts,
 	int numConflicts);
 
-char * rpmProblemString(rpmProblem prob);
+/*@only@*/ const char * rpmProblemString(rpmProblem prob);
 void rpmProblemPrint(FILE *fp, rpmProblem prob);
 void rpmProblemSetPrint(FILE *fp, rpmProblemSet probs);
 
-void rpmProblemSetFree(rpmProblemSet probs);
+void rpmProblemSetFree(/*@only@*/rpmProblemSet probs);
 
 int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 		       void * notifyData, rpmProblemSet okProbs,
-		       rpmProblemSet * newProbs, int flags, int ignoreSet);
+		       /*@out@*/rpmProblemSet * newProbs, int flags, int ignoreSet);
 
 #define RPMPROB_FILTER_IGNOREOS		(1 << 0)
 #define RPMPROB_FILTER_IGNOREARCH	(1 << 1)
@@ -629,8 +631,8 @@ int rpmVerifySignature(const char *file, int_32 sigTag, void *sig, int count,
 		       char *result);
 
 int rpmGetFilesystemList(/*@out@*/const char *** listptr, /*@out@*/int * num);
-int rpmGetFilesystemUsage(const char ** filelist, int_32 * fssizes, int numFiles,
-			  uint_32 ** usagesPtr, int flags);
+int rpmGetFilesystemUsage(const char ** filelist, int_32 * fssizes,
+	int numFiles, /*@out@*/uint_32 ** usagesPtr, int flags);
 
 /* ==================================================================== */
 /* --- query/verify */
@@ -679,7 +681,7 @@ int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg);
 
 extern struct poptOption rpmVerifyPoptTable[];
 
-int showVerifyPackage(QVA_t *qva, rpmdb db, Header h);
+int showVerifyPackage(QVA_t *qva, /*@only@*/rpmdb db, Header h);
 int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg);
 
 /* ==================================================================== */
@@ -702,8 +704,8 @@ int rpmInstallSource(const char * prefix, const char * arg, const char ** specFi
 int rpmErase(const char * rootdir, const char ** argv, int uninstallFlags, 
 		 int interfaceFlags);
 
-void printDepFlags(FILE * f, const char * version, int flags);
-void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
+void printDepFlags(FILE * fp, const char * version, int flags);
+void printDepProblems(FILE * fp, struct rpmDependencyConflict * conflicts,
 			     int numConflicts);
 
 /* ==================================================================== */
