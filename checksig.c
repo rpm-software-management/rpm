@@ -120,7 +120,7 @@ int doReSign(char *passPhrase, char **argv)
     return 0;
 }
 
-int doCheckSig(char **argv)
+int doCheckSig(int pgp, char **argv)
 {
     int fd;
     struct rpmlead lead;
@@ -152,22 +152,41 @@ int doCheckSig(char **argv)
 	    continue;
 	}
 	
-	xres = verifySignature(fd, lead.signature_type, sig, result);
-	if (!xres) {
+	xres = verifySignature(fd, lead.signature_type, sig, result, pgp);
+	if (xres == RPMSIG_SIGOK) {
 	    if (isVerbose()) {
 		printf("%s: %s", rpm, result);
 	    }
-	    printf("%s: Signature OK.\n", rpm);
+	    switch (lead.signature_type) {
+	    case RPMSIG_PGP262_1024:
+		printf("%s: (Old PGP) Signature OK.\n", rpm);
+		break;
+	    case RPMSIG_MD5:
+		printf("%s: (MD5) Signature OK.\n", rpm);
+		break;
+	    case RPMSIG_MD5_PGP:
+		if (pgp) {
+		    printf("%s: (MD5 PGP) Signature OK.\n", rpm);
+		} else {
+		    printf("%s: (MD5 [PGP skipped]) Signature OK.\n", rpm);
+		}
+		break;
+	    }
 	} else {
 	    if (isVerbose()) {
 		fprintf(stderr, "%s: %s", rpm, result);
 	    }
-	    if (xres == RPMSIG_NOSIG) {
+	    if (xres & RPMSIG_NOSIG) {
 		fprintf(stderr, "%s: No signature available.\n", rpm);
-	    } else if (xres == RPMSIG_UNKNOWNSIG) {
+	    } else if (xres & RPMSIG_UNKNOWNSIG) {
 		fprintf(stderr, "%s: Unknown signature type.\n", rpm);
+	    } else if (xres & RPMSIG_BADMD5) {
+		fprintf(stderr, "%s: (MD5) Signature NOT OK!\n", rpm);
+	    } else if (xres & RPMSIG_BADPGP) {
+		fprintf(stderr, "%s: (PGP) Signature NOT OK!\n", rpm);
 	    } else {
-		fprintf(stderr, "%s: Signature NOT OK!\n", rpm);
+		fprintf(stderr, "%s: (Internal error) Signature NOT OK!\n",
+			rpm);
 	    }
 	    res = -1;
 	}
