@@ -325,12 +325,14 @@ static int parseForVerify(char *buf, struct FileList *fl)
     return 0;
 }
 
+#define	isAttrDefault(_ars)	((_ars)[0] == '-' && (_ars)[1] == '\0')
+
 static int parseForAttr(char *buf, struct FileList *fl)
 {
     char *p, *s, *start, *end, *name;
     char ourbuf[1024];
     int x, defattr = 0;
-    AttrRec *ar;
+    AttrRec arbuf, *ar = &arbuf, *ret_ar;
 
     if (!(p = start = strstr(buf, "%attr"))) {
 	if (!(p = start = strstr(buf, "%defattr"))) {
@@ -338,15 +340,15 @@ static int parseForAttr(char *buf, struct FileList *fl)
 	}
 	defattr = 1;
 	name = "%defattr";
-	ar = &(fl->def_ar);
+	ret_ar = &(fl->def_ar);
 	p += 8;
     } else {
 	name = "%attr";
-	ar = &(fl->cur_ar);
+	ret_ar = &(fl->cur_ar);
 	p += 5;
     }
 
-    ar->ar_fmodestr = ar->ar_user = ar->ar_group = NULL;
+    *ar = empty_ar;	/* structure assignment */
 
     SKIPSPACE(p);
 
@@ -388,57 +390,44 @@ static int parseForAttr(char *buf, struct FileList *fl)
     ar->ar_group = strtok(NULL, ", \n\t");
     ar->ar_dmodestr = strtok(NULL, ", \n\t");
 
-    if (! (ar->ar_fmodestr &&
-	   ar->ar_user && ar->ar_group)) {
+    if (!(ar->ar_fmodestr && ar->ar_user && ar->ar_group)) {
 	rpmError(RPMERR_BADSPEC, _("Bad %s() syntax: %s"), name, buf);
-	ar->ar_fmodestr = ar->ar_user = ar->ar_group = NULL;
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
 
     /* Do a quick test on the mode argument and adjust for "-" */
-    if (!strcmp(ar->ar_fmodestr, "-")) {
-	ar->ar_fmodestr = NULL;
-    } else {
-	x = sscanf(ar->ar_fmodestr, "%o", (unsigned *)&(ar->ar_fmode));
-	if ((x == 0) || (ar->ar_fmode >> 12)) {
+    if (ar->ar_fmodestr && !isAttrDefault(ar->ar_fmodestr)) {
+	unsigned int ui;
+	x = sscanf(ar->ar_fmodestr, "%o", &ui);
+	if ((x == 0) || (ar->ar_fmode & ~ALLPERMS)) {
 	    rpmError(RPMERR_BADSPEC, _("Bad %s() mode spec: %s"), name, buf);
-	    ar->ar_fmodestr = ar->ar_user =
-		ar->ar_group = NULL;
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
-	ar->ar_fmodestr = strdup(ar->ar_fmodestr);
-    }
-    if (ar->ar_dmodestr) {
-	/* The processing here is slightly different to maintain */
-	/* compatibility with old spec files.                    */
-	if (!strcmp(ar->ar_dmodestr, "-")) {
-	    ar->ar_dmodestr = strdup(ar->ar_dmodestr);
-	} else {
-	    x = sscanf(ar->ar_dmodestr, "%o",
-		       (unsigned *)&(ar->ar_dmode));
-	    if ((x == 0) || (ar->ar_dmode >> 12)) {
-		rpmError(RPMERR_BADSPEC,
-			 _("Bad %s() dirmode spec: %s"), name, buf);
-		ar->ar_fmodestr = ar->ar_user =
-		    ar->ar_group = ar->ar_dmodestr = NULL;
-		fl->processingFailed = 1;
-		return RPMERR_BADSPEC;
-	    }
-	    ar->ar_dmodestr = strdup(ar->ar_dmodestr);
+	ar->ar_fmode = ui;
+    } else
+	ar->ar_fmodestr = NULL;
+
+    if (ar->ar_dmodestr && !isAttrDefault(ar->ar_dmodestr)) {
+	unsigned int ui;
+	x = sscanf(ar->ar_dmodestr, "%o", &ui);
+	if ((x == 0) || (ar->ar_dmode & ~ALLPERMS)) {
+	    rpmError(RPMERR_BADSPEC, _("Bad %s() dirmode spec: %s"), name, buf);
+	    fl->processingFailed = 1;
+	    return RPMERR_BADSPEC;
 	}
-    }
-    if (!strcmp(ar->ar_user, "-")) {
+	ar->ar_dmode = ui;
+    } else
+	ar->ar_dmodestr = NULL;
+
+    if (!(ar->ar_user && !isAttrDefault(ar->ar_user)))
 	ar->ar_user = NULL;
-    } else {
-	ar->ar_user = strdup(ar->ar_user);
-    }
-    if (!strcmp(ar->ar_group, "-")) {
+
+    if (!(ar->ar_group && !isAttrDefault(ar->ar_group)))
 	ar->ar_group = NULL;
-    } else {
-	ar->ar_group = strdup(ar->ar_group);
-    }
+
+    dupAttrRec(ar, ret_ar);
     
     /* Set everything we just parsed to blank spaces */
     while (start <= end) {
