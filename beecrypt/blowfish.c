@@ -319,6 +319,7 @@ static uint32_t _bf_s[1024] = {
 #define DROUND(l,r) l ^= *(p--); r ^= ((s[((l>>24)&0xff)+0x000]+s[((l>>16)&0xff)+0x100])^s[((l>>8)&0xff)+0x200])+s[((l>>0)&0xff)+0x300]
 
 /*@-sizeoftype@*/
+/*@-castfcnptr@*/
 const blockCipher blowfish = {
 	"Blowfish",
 	sizeof(blowfishParam),
@@ -353,6 +354,7 @@ const blockCipher blowfish = {
 	},
 	(blockCipherFeedback) blowfishFeedback
 };
+/*@=castfcnptr@*/
 /*@=sizeoftype@*/
 
 int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, cipherOperation op)
@@ -432,7 +434,10 @@ int blowfishSetIV(blowfishParam* bp, const byte* iv)
 }
 #endif
 
+/*@-exportheader@*/
+/*@unused@*/
 int blowfishBlowit(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
+	/*@modifies *dst @*/
 {
 	register uint32_t xl = src[0], xr = src[1];
 	register uint32_t* p = bp->p;
@@ -445,6 +450,7 @@ int blowfishBlowit(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
 
 	return 0;
 }
+/*@=exportheader@*/
 
 #ifndef ASM_BLOWFISHENCRYPT
 int blowfishEncrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)

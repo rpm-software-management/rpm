@@ -1,3 +1,4 @@
+/*@-bitwisesigned@*/
 /*
  * Copyright (c) 2002, 2003 Bob Deblier
  *
@@ -59,6 +60,7 @@ extern int aesDecryptECB(aesParam*, uint32_t*, const uint32_t*, unsigned int);
 #endif
 
 /*@-sizeoftype@*/
+/*@-castfcnptr@*/
 const blockCipher aes = {
 	"AES",
 	sizeof(aesParam),
@@ -93,6 +95,7 @@ const blockCipher aes = {
 	},
 	(blockCipherFeedback) aesFeedback
 };
+/*@=castfcnptr@*/
 /*@=sizeoftype@*/
 
 int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
@@ -391,5 +394,6 @@ uint32_t* aesFeedback(aesParam* ap)
 {
 	return ap->fdback;
 }
+/*@=bitwisesigned@*/
 /*!\}
  */

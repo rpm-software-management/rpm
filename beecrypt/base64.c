@@ -412,13 +412,13 @@ fprintf(stderr, "--- b64decode %c(%02x) %02x\n", *t, (unsigned)(*t & 0xff), (uns
 
 	/* Get next 4 characters, ignoring whitespace. */
 	while ((a = b64dec[ (unsigned)*s++ ]) == 0x81)
-	    ;
+	    {};
 	while ((b = b64dec[ (unsigned)*s++ ]) == 0x81)
-	    ;
+	    {};
 	while ((c = b64dec[ (unsigned)*s++ ]) == 0x81)
-	    ;
+	    {};
 	while ((d = b64dec[ (unsigned)*s++ ]) == 0x81)
-	    ;
+	    {};
 
 if (_debug)
 fprintf(stderr, "%7u %02x %02x %02x %02x -> %02x %02x %02x\n",

@@ -65,6 +65,7 @@ void mpnsize(mpnumber* n, size_t size)
 }
 /*@=compdef @*/
 
+/*@-bounds@*/
 void mpninit(mpnumber* n, size_t size, const mpw* data)
 {
 	n->size = size;
@@ -78,6 +79,7 @@ void mpninit(mpnumber* n, size_t size, const mpw* data)
 	if (n->data != (mpw*) 0 && data != (mpw*) 0)
 		mpcopy(size, n->data, data);
 }
+/*@=bounds@*/
 
 void mpnfree(mpnumber* n)
 {

@@ -1,3 +1,4 @@
+/*@-bitwisesigned -shiftimplementation @*/
 /*
  * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
@@ -65,3 +66,4 @@ int64_t swap64(int64_t n)
 				((n & ((int64_t) 0xff) << 48) >> 40) |
 				((n & ((int64_t) 0xff) << 56) >> 56) );
 }
+/*@=bitwisesigned =shiftimplementation @*/

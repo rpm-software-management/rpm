@@ -211,7 +211,7 @@ int fips186Next(fips186Param* fp, byte* data, size_t size)
 				}
 				/* else shouldn't occur */
 				/* we now have 5 words of pseudo-random data */
-				fp->digestremain = 20;
+				fp->digestremain = (unsigned char) 20;
 			}
 			copy = (size > fp->digestremain) ? fp->digestremain : size;
 			memcpy(data, fp->digest+20-fp->digestremain, copy);

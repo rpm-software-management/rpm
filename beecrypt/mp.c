@@ -1220,7 +1220,8 @@ int mpextgcd_w(size_t size, const mpw* xdata, const mpw* ndata, mpw* result, mpw
 					if (*ddata & MP_MSBMASK)
 					{
 						/* keep adding the modulus until we get a carry */
-						while (!mpadd(size, result, ndata));
+						while (!mpadd(size, result, ndata))
+							{};
 					} 
 				}
 				return 1; 
@@ -1297,7 +1298,7 @@ void mpmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw*
 	{
 		mpdivtwo(ysize, ynorm);
 		if (mpge(ysize, rdata, ynorm))
-			mpsub(ysize, rdata, ynorm);
+			(void) mpsub(ysize, rdata, ynorm);
 	}
 }
 #endif
