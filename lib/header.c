@@ -3,6 +3,8 @@
  */
 
 #undef	REMALLOC_HEADER_REGION
+#define	_DEBUG_SWAB 1
+#define	_DEBUG_INDEX 1
 
 /* RPM - Copyright (C) 1995-2000 Red Hat Software */
 
@@ -534,16 +536,27 @@ assert(rdlen == dl);
 	h->indexUsed++;
     } else {
 	int nb = ntohl(pe->count);
-	int_32 * stei = memcpy(alloca(nb), dataStart + ntohl(pe->offset), nb);
-	int_32 rdl = -ntohl(stei[2]);	/* negative offset */
-	int_32 ril = rdl/sizeof(*pe);
+	int_32 rdl;
+	int_32 ril;
 
 	h->legacy = 0;
 	entry->info.type = htonl(pe->type);
 	if (entry->info.type < RPM_MIN_TYPE || entry->info.type > RPM_MAX_TYPE)
 	    return NULL;
-	entry->info.tag = htonl(pe->tag);
 	entry->info.count = htonl(pe->count);
+
+	{  int off = ntohl(pe->offset);
+	   if (off) {
+		int_32 * stei = memcpy(alloca(nb), dataStart + off, nb);
+		rdl = -ntohl(stei[2]);	/* negative offset */
+		ril = rdl/sizeof(*pe);
+		entry->info.tag = htonl(pe->tag);
+	    } else {
+		ril = il;
+		rdl = (ril * sizeof(struct entryInfo));
+		entry->info.tag = HEADER_IMAGE;
+	    }
+	}
 	entry->info.offset = -rdl;	/* negative offset */
 
 	entry->data = pe;
@@ -732,7 +745,10 @@ t = te;
 		memcpy(pe+1, src + sizeof(*pe), ((ril-1) * sizeof(*pe)));
 		memcpy(te, src + (ril * sizeof(*pe)), rdlen+entry->info.count+drlen);
 		te += rdlen;
-		pe->offset = htonl(te - dataStart);
+		{   struct entryInfo * se = (struct entryInfo *)src;
+		    int off = ntohl(se->offset);
+		    pe->offset = (off) ? htonl(te - dataStart) : htonl(off);
+		}
 		te += entry->info.count + drlen;
 
 		count = regionSwab(NULL, ril, 0, pe, t, 0);
@@ -844,8 +860,9 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp)
 {
     ssize_t nb;
     int length;
-    const void * uh = doHeaderUnload(h, &length);
+    const void * uh;
 
+    uh = doHeaderUnload(h, &length);
     switch (magicp) {
     case HEADER_MAGIC_YES:
 	nb = Fwrite(header_magic, sizeof(char), sizeof(header_magic), fd);

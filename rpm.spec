@@ -13,7 +13,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.4
+Release: 0.5
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -309,6 +309,9 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Dec 21 2000 Jeff Johnson <jbj@redhat.com>
+- immutable headers, once installed by rpm3, need to lose immutablity.
+
 * Wed Dec 20 2000 Jeff Johnson <jbj@redhat.com>
 - whiteout mozilla loop for 7.1.
 
