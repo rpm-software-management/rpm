@@ -56,6 +56,7 @@ extern int h_errno;
 # define IPPORT_FTP 21
 #endif
 
+#include "dns.h"
 #include "ftp.h"
 
 static int ftpCheckResponse(int sock, char ** str);
@@ -194,20 +195,15 @@ int ftpCommand(int sock, char * command, ...) {
 }
 
 static int getHostAddress(const char * host, struct in_addr * address) {
-    struct hostent * hostinfo;
-
     if (isdigit(host[0])) {
       if (!inet_aton(host, address)) {
 	  return FTPERR_BAD_HOST_ADDR;
       }
     } else {
-      hostinfo = gethostbyname(host);
-      if (!hostinfo) {
+      if (mygethostbyname(host, address)) {
 	  errno = h_errno;
 	  return FTPERR_BAD_HOSTNAME;
       }
-      
-      memcpy(address, hostinfo->h_addr_list[0], hostinfo->h_length);
     }
     
     return 0;
