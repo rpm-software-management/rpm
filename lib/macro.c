@@ -5,7 +5,7 @@
 
 #define	isblank(_c)	((_c) == ' ' || (_c) == '\t')
 #define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
-#define	FREE(_x)	{ if (_x) free(_x); ((void *)(_x)) = NULL; }
+#define	FREE(_x)	{ if (_x) free((void *)_x); (_x) = NULL; }
 
 #ifdef DEBUG_MACROS
 #define rpmError fprintf
@@ -530,9 +530,9 @@ popMacro(MacroEntry **mep)
 	if (me) {
 		/* XXX cast to workaround const */
 		if ((*mep = me->prev) == NULL)
-			FREE((char *)me->name);
-		FREE((char *)me->opts);
-		FREE((char *)me->body);
+			FREE(me->name);
+		FREE(me->opts);
+		FREE(me->body);
 		FREE(me);
 	}
 }
@@ -1224,9 +1224,9 @@ freeMacros(MacroContext *mc)
 		while ((me = mc->macroTable[i]) != NULL) {
 			/* XXX cast to workaround const */
 			if ((mc->macroTable[i] = me->prev) == NULL)
-				FREE((char *)me->name);
-			FREE((char *)me->opts);
-			FREE((char *)me->body);
+				FREE(me->name);
+			FREE(me->opts);
+			FREE(me->body);
 			FREE(me);
 		}
 	}

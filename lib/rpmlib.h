@@ -388,7 +388,7 @@ typedef enum rpmProblemType_e { RPMPROB_BADARCH,
 				RPMPROB_NEW_FILE_CONFLICT,
 				RPMPROB_FILE_CONFLICT,
 				RPMPROB_OLDPACKAGE,
-				RPMPROB_DISKSPACE,
+				RPMPROB_DISKSPACE
  			      } rpmProblemType;
 
 typedef struct rpmProblem_s {

@@ -6,7 +6,7 @@ typedef enum {
     URL_IS_DASH		= 1,
     URL_IS_PATH		= 2,
     URL_IS_FTP		= 3,
-    URL_IS_HTTP		= 4,
+    URL_IS_HTTP		= 4
 } urltype;
 
 typedef struct urlinfo {

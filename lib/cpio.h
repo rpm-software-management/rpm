@@ -74,7 +74,7 @@ typedef struct CFD {
 	cpioIoTypeDebug,
 	cpioIoTypeFd,
 	cpioIoTypeFp,
-	cpioIoTypeGzFd,
+	cpioIoTypeGzFd
     } cpioIoType;
 } CFD_t;
 

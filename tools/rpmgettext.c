@@ -372,7 +372,7 @@ gettextfile(FD_t fd, const char *file, FILE *fp, int *poTags)
 	    FREE(s)
     }
     
-    FREE((char *)sourcerpm);
+    FREE(sourcerpm);
     FREE(langs);
 
     return 0;
@@ -637,7 +637,7 @@ DPRINTF(100, ("\n"));
 		} while (c == '"');
 
 		if (!strcmp(kw->name, "msgid")) {
-			FREE(((char *)mp->msgid));
+			FREE(mp->msgid);
 			mp->msgid = xstrdup(tbuf);
 		} else if (!strcmp(kw->name, "msgstr")) {
 			static lex_pos_ty pos = { __FILE__, __LINE__ };

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-04-06 15:06-0400\n"
+"POT-Creation-Date: 1999-04-08 16:19-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -297,7 +297,7 @@ msgstr ""
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: ../install.c:192 ../install.c:319
+#: ../install.c:192 ../install.c:329
 #, c-format
 msgid "cannot open file %s\n"
 msgstr ""
@@ -307,12 +307,12 @@ msgstr ""
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../install.c:208 ../install.c:456
+#: ../install.c:208 ../install.c:466
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: ../install.c:223 ../install.c:369
+#: ../install.c:223 ../install.c:379
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
@@ -322,54 +322,64 @@ msgstr ""
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: ../install.c:264
+#: ../install.c:256
+#, c-format
+msgid "error reading from file %s\n"
+msgstr ""
+
+#: ../install.c:259
+#, c-format
+msgid "file %s requires a newer version of RPM\n"
+msgstr ""
+
+#: ../install.c:274
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: ../install.c:274
+#: ../install.c:284
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: ../install.c:292
+#: ../install.c:302
 msgid "installing binary packages\n"
 msgstr ""
 
-#: ../install.c:380 ../lib/query.c:685 ../verify.c:243
+#: ../install.c:390 ../lib/query.c:685 ../verify.c:243
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: ../install.c:384
+#: ../install.c:394
 #, c-format
 msgid "searching for package %s\n"
 msgstr ""
 
-#: ../install.c:393
+#: ../install.c:403
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: ../install.c:419
+#: ../install.c:429
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: ../install.c:446
+#: ../install.c:456
 #, c-format
 msgid "cannot open %s\n"
 msgstr ""
 
-#: ../install.c:451
+#: ../install.c:461
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: ../install.c:495
+#: ../install.c:505
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../install.c:498
+#: ../install.c:508
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
@@ -2291,31 +2301,31 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:412 ../lib/depends.c:571
+#: ../lib/depends.c:429 ../lib/depends.c:588
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:477
+#: ../lib/depends.c:494
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:665
+#: ../lib/depends.c:682
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:708
+#: ../lib/depends.c:725
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:808
+#: ../lib/depends.c:825
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:860
+#: ../lib/depends.c:877
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2331,22 +2341,22 @@ msgstr ""
 msgid "(not a number)"
 msgstr ""
 
-#: ../lib/fs.c:40
+#: ../lib/fs.c:41
 #, c-format
 msgid "mntctl() failed to return fugger size: %s"
 msgstr ""
 
-#: ../lib/fs.c:75 ../lib/fs.c:237
+#: ../lib/fs.c:76 ../lib/fs.c:246
 #, c-format
 msgid "failed to stat %s: %s"
 msgstr ""
 
-#: ../lib/fs.c:116
+#: ../lib/fs.c:117
 #, c-format
 msgid "failed to open %s: %s"
 msgstr ""
 
-#: ../lib/fs.c:258
+#: ../lib/fs.c:267
 #, c-format
 msgid "file %s is on an unknown device"
 msgstr ""
@@ -2478,7 +2488,7 @@ msgstr ""
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:440 ../lib/install.c:804 ../lib/uninstall.c:337
+#: ../lib/install.c:440 ../lib/install.c:808 ../lib/uninstall.c:337
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
@@ -2522,11 +2532,11 @@ msgstr ""
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:749 ../lib/install.c:781
+#: ../lib/install.c:749 ../lib/install.c:785
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:802
+#: ../lib/install.c:806
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
@@ -2596,7 +2606,7 @@ msgid "Unterminated %c: %s"
 msgstr ""
 
 #: ../lib/macro.c:905
-msgid "Empty token"
+msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
 #: ../lib/macro.c:1027
@@ -3193,17 +3203,17 @@ msgstr ""
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: ../lib/transaction.c:741
+#: ../lib/transaction.c:736
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:747
+#: ../lib/transaction.c:742
 #, c-format
 msgid "excluding %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:835
+#: ../lib/transaction.c:830
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
