@@ -1,0 +1,51 @@
+Sun Apr 29 14:57:59 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* uri-tests.c (slash): Check behaviour of passing zero-length URI.
+
+Sun Apr 29 13:43:59 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* Makefile.in (clean): New target.  (libtest.a): Depend on libneon
+	to force rebuilds when necessary.  (all): Build but don't test.
+
+Sun Apr 29 13:41:13 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* util-tests.c: Add status line with leading garbage.
+
+Sun Apr 29 13:39:53 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* util-tests.c (status_lines): Add some tests for invalid status
+	lines too.
+
+Sun Apr 29 13:38:31 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* tests.c (main): Use basename(argv[0]) as suite name.  Fail if no
+	tests are in the functions vector.
+
+Sun Apr 29 11:06:45 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* tests.c (segv): New function.  (main): Add SIGSEGV handler.
+
+Fri Apr 27 00:00:12 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* util-tests.c (base64): New test.
+
+Thu Apr 26 22:39:44 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* uri-tests.c (just_hostname, just_path, null_uri): New tests.
+
+Thu Apr 26 22:03:58 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* util-tests.c (md5): Test of MD5 functions.
+
+Mon Apr 23 23:08:02 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* http-tests.c (simple_head): Add HEAD test.
+
+Mon Apr 23 22:49:52 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* http-tests.c (simple_get): Check for EOF after reading response
+	body of HTTP/1.0 GET request.
+
+	(null_resource): New function, test for 404 on null resource.
+
+

@@ -1,0 +1,140 @@
+    <refentry id="refsslvfy">
+
+      <refmeta>
+	<refentrytitle>ne_ssl_set_verify</refentrytitle>
+	<manvolnum>3</manvolnum>
+      </refmeta>
+
+      <refnamediv>
+	<refname id="ne_ssl_set_verify">ne_ssl_set_verify</refname>
+	<refpurpose>register an SSL certificate verification callback</refpurpose>
+      </refnamediv>
+      
+      <refsynopsisdiv>
+	
+	<funcsynopsis>
+
+	  <funcsynopsisinfo>#include &lt;ne_session.h&gt;</funcsynopsisinfo>
+
+	  <!-- hard to put data type declarations here -->
+
+	  <funcprototype>
+	    <funcdef>typedef int (*<function>ne_ssl_verify_fn</function>)</funcdef>
+	    <paramdef>void *<parameter>userdata</parameter></paramdef>
+	    <paramdef>int <parameter>failures</parameter></paramdef>
+	    <paramdef>const ne_ssl_certificate *<parameter>cert</parameter></paramdef>
+	  </funcprototype>
+
+	  <funcprototype>
+	    <funcdef>void <function>ne_ssl_set_verify</function></funcdef>
+	    <paramdef>ne_session *<parameter>session</parameter></paramdef>
+	    <paramdef>ne_ssl_verify_fn <parameter>verify_fn</parameter></paramdef>
+	    <paramdef>void *<parameter>userdata</parameter></paramdef>
+	  </funcprototype>
+
+	</funcsynopsis>
+	
+      </refsynopsisdiv>
+
+      <refsect1>
+	<title>Description</title>
+
+	<para>To enable manual SSL certificate verification, a
+callback can be registered using
+<function>ne_ssl_set_verify</function>.  If such a callback is not
+registered, when a connection is established to an SSL server which
+does not present a certificate signed by a trusted CA (see <xref
+linkend="ne_ssl_load_ca"/>), or if the certificate presented is invalid in
+some way, the connection will fail.</para>
+
+	<para>When the callback is invoked, the
+<parameter>failures</parameter> parameter gives a bitmask indicating
+in what way the automatic certificate verification failed.  The value
+is equal to the bit-wise OR of one or more of the following
+constants (and is guaranteed to be non-zero):</para>
+
+	<variablelist>
+	  <varlistentry><term><filename>NE_SSL_NOTYETVALID</filename></term>
+	    <listitem>
+	      <para>The certificate is not yet valid.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry><term><filename>NE_SSL_EXPIRED</filename></term>
+	    <listitem>
+	      <para>The certificate has expired.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry><term><filename>NE_SSL_CNMISMATCH</filename></term>
+	    <listitem>
+	      <para>The hostname used for the session does not match
+the hostname to which the certificate was issued: this could mean that
+the connection has been intercepted.</para>
+	    </listitem>
+	  </varlistentry>
+	  <varlistentry><term><filename>NE_SSL_UNKNOWNCA</filename></term>
+	    <listitem>
+	      <para>The Certificate Authority which signed the certificate
+is not trusted.</para>
+	    </listitem>
+	  </varlistentry>
+	</variablelist>
+
+	<para>The <parameter>cert</parameter> parameter passed to the
+callback describes the certificate which was presented by the server,
+see <xref linkend="ne_ssl_certificate"/> for more details.  The certificate
+object given is only valid until the callback returns.</para>
+
+      </refsect1>
+
+      <refsect1>
+	<title>Return value</title>
+
+	<para>The verification callback must return zero to indicate
+that the certificate should be trusted; and non-zero otherwise (in
+which case, the connection will fail).</para>
+      </refsect1>
+
+      <refsect1>
+	<title>Examples</title>
+
+	<para>Manual certificate verification:</para>
+	<programlisting>
+static int
+my_verify(void *userdata, int failures, const ne_ssl_certificate *cert)
+{
+   /* this leaks return values of ne_ssl_readable_dname for simplicity! */
+   printf("Issuer: %s\n", ne_ssl_readable_dname(cert->issuer);
+   printf("Subject: %s\n", ne_ssl_readable_dname(cert->subject);
+   if (failures &amp; NE_SSL_CNMISMATCH) {
+      printf("Server certificate was issued to `%s'; "
+             "connection may have been intercepted!\n",
+             cert->subject->commonName);
+   }
+   if (failures &amp; NE_SSL_EXPIRED) {
+      printf("Server certificate expired on %s!", cert->until);
+   }
+   /* ... check for other failures ... */
+   if (prompt_user())
+      return 1; /* fail verification */
+   else
+      return 0; /* trust certificate */
+}
+
+int
+main(...)
+{
+    ne_session *sess = ne_session_create("https", "some.host.name", 443);
+    ne_ssl_set_verify(sess, my_verify, NULL);
+    ...
+}</programlisting>
+
+      </refsect1>
+
+      <refsect1>
+	<title>See also</title>
+
+	<para><xref linkend="ne_ssl_certificate"/>, <xref linkend="ne_ssl_load_ca"/>, 
+        <xref linkend="ne_ssl_dname"/>, <xref linkend="ne_ssl_readable_dname"/></para>
+      </refsect1>
+
+    </refentry>

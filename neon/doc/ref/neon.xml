@@ -1,0 +1,75 @@
+<refentry id="refneon">
+
+  <refmeta>
+    <refentrytitle>neon</refentrytitle>
+    <manvolnum>3</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname>neon</refname>
+    <refpurpose>neon API conventions</refpurpose>
+  </refnamediv>
+
+  <refsect1>
+    <title>Description</title>
+
+    <para>neon is an HTTP and WebDAV client library.  The major
+    abstractions exposed are of an HTTP <emphasis>session</emphasis>,
+    created by <xref linkend="ne_session_create"/>; and an HTTP
+    <emphasis>request</emphasis>, created by <xref
+    linkend="ne_request_create"/>.  HTTP authentication is handled
+    transparently for server and proxy servers, see <xref
+    linkend="ne_set_server_auth"/>; complete SSL/TLS support is also
+    included, see <xref linkend="ne_ssl_set_verify"/>.</para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Conventions</title>
+
+    <para>Some conventions are used throughout the neon API, to
+    provide a consistent and simple interface; these are documented
+    below.</para>
+
+  </refsect1>
+
+  <refsect2>
+    <title>URI paths, WebDAV metadata</title>
+
+    <para>The path strings passed to any function must be
+    <emphasis>URI-encoded</emphasis> by the application: neon never
+    performs any URI encoding or decoding automatically.  WebDAV
+    property names and values must be used un UTF-8.</para>
+
+  </refsect2>
+
+  <refsect2>
+    <title>Memory handling</title>
+
+    <para>neon does not attempt to cope gracefully with an
+    out-of-memory situation; instead, by default,
+    <function>abort</function> is called to terminate the application.
+    Optionally an application-provided function be called before
+    abort; see <xref linkend="ne_oom_callback"/>.</para>
+  
+  </refsect2>
+
+  <refsect2>
+    <title>Callbacks and userdata</title>
+
+    <para>Whenever a callback is registered, a
+    <literal>userdata</literal> variable is also used to allow the
+    application to associate a context with the callback.  The
+    userdata is of type <type>void *</type>, allowing any pointer to
+    be used.</para>
+
+  </refsect2>
+
+  <refsect1>
+    <title>See also</title>
+
+    <para><xref linkend="refsess"/>, <xref linkend="refalloc"/></para>
+  </refsect1>
+
+</refentry>
+

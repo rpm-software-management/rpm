@@ -1,0 +1,55 @@
+
+SHELL = @SHELL@
+CFLAGS = @CFLAGS@ -I. -I../src
+LDFLAGS = -L. @LDFLAGS@ -L../src -L../src/.libs
+DEFS = @DEFS@
+top_builddir = ..
+top_srcdir = @top_srcdir@
+
+VPATH = @srcdir@
+
+AR = ar
+
+RANLIB = @RANLIB@
+LIBS = @LIBS@ @NEON_LIBS@
+CC = @CC@
+
+TESTS = uri-tests util-tests string-tests sock-tests http-tests
+
+LIBTEST = libtest.a
+
+all: $(TESTS)
+
+clean:
+	rm -f $(TESTS) *.o
+
+test: $(TESTS)
+	$(SHELL) run.sh $(TESTS)
+
+Makefile: Makefile.in
+	(cd .. && CONFIG_FILES=test/Makefile ./config.status)
+
+libtest.a: tests.o tests.h ../src/@NEON_TARGET@
+	$(AR) cru $@ tests.o
+	$(RANLIB) $@
+
+uri-tests: uri-tests.o $(LIBTEST)
+	$(CC) $(LDFLAGS) -o $@ uri-tests.o -ltest $(LIBS)
+
+util-tests: util-tests.o $(LIBTEST)
+	$(CC) $(LDFLAGS) -o $@ util-tests.o -ltest $(LIBS)
+
+string-tests: string-tests.o $(LIBTEST)
+	$(CC) $(LDFLAGS) -o $@ string-tests.o -ltest $(LIBS)
+
+sock-tests: sock-tests.o $(LIBTEST)
+	$(CC) $(LDFLAGS) -o $@ sock-tests.o -ltest $(LIBS)
+
+http-tests: http-tests.o $(LIBTEST)
+	$(CC) $(LDFLAGS) -o $@ http-tests.o -ltest $(LIBS)
+
+uri-tests.o: uri-tests.c tests.h
+util-tests.o: util-tests.c tests.h
+string-tests: string-tests.c tests.h
+sock-tests.o: sock-tests.c tests.h
+http-tests.o: http-tests.c tests.h

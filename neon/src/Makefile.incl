@@ -1,0 +1,45 @@
+# Emacs, are you listening? This is a -*- makefile -*-. Thankyou.
+#
+# This is a Makefile fragment.
+# To use it, set:
+#   neon_dir   to the location of the neon source directory 
+#   config_h   to the location of the config.h file
+
+neonreq = $(neon_dir)/http_request.h $(neon_dir)/http_utils.h $(neon_dir)/string_utils.h
+
+$(neon_dir)/http_request.o: $(neon_dir)/http_request.c \
+	$(neonreq) $(config_h) $(neon_dir)/neon.h $(neon_dir)/socket.h \
+	$(neon_dir)/neon_i18n.h
+
+$(neon_dir)/socket.o: $(neon_dir)/socket.c $(neon_dir)/socket.h \
+	$(config_h) $(neon_dir)/string_utils.h
+
+$(neon_dir)/http_auth.o: $(neon_dir)/http_auth.c			\
+	$(neon_dir)/http_auth.h $(neon_dir)/string_utils.h		\
+	$(config_h) $(neon_dir)/dates.h $(neon_dir)/base64.h 		\
+	$(neon_dir)/md5.h
+
+$(neon_dir)/dav_basic.o: $(neon_dir)/dav_basic.c $(neon_dir)/dav_207.h  \
+	$(neonreq) $(neon_dir)/hip_xml.o
+
+$(neon_dir)/http_basic.o: $(neon_dir)/http_basic.c $(neon_dir)/http_basic.h \
+	$(neonreq)
+
+$(neon_dir)/http_utils.o: $(neon_dir)/http_utils.c $(neon_dir)/http_utils.h \
+	$(neon_dir)/dates.h $(config_h)
+
+$(neon_dir)/hip_xml.o: $(neon_dir)/hip_xml.c $(neon_dir)/hip_xml.h    \
+	$(neon_dir)/string_utils.h $(neon_dir)/http_utils.h $(config_h)
+
+$(neon_dir)/dav_207.o: $(neon_dir)/dav_207.c $(neon_dir)/dav_207.h \
+	$(neon_dir)/hip_xml.h $(config_h) $(neon_dir)/http_utils.h 	 \
+	$(neon_dir)/neon_i18n.h
+
+$(neon_dir)/dates.o: $(neon_dir)/dates.c $(neon_dir)/dates.h \
+	$(config_h)
+
+$(neon_dir)/md5.o: $(neon_dir)/md5.c $(neon_dir)/md5.h $(config_h)
+
+$(neon_dir)/dav_props.o: $(neon_dir)/dav_props.c $(neon_dir)/dav_props.h \
+	$(neon_dir)/dav_207.h $(neon_dir)/hip_xml.h
+

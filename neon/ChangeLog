@@ -1,0 +1,24 @@
+Wed May 10 19:17:24 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* configure.in: Print configuration message, check for ranlib.
+
+Wed May 10 19:16:43 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* example/nget.c (main): Allow output to stdout.
+
+Wed May 10 19:15:56 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* Makefile.in: Added shared, install* targets
+
+Wed May 10 17:47:30 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* example/nget.c (pretty_progress_bar): New function, from
+	cadaver.
+
+Wed May 10 14:42:45 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* example/nget.c: New file.
+
+Wed May 10 14:41:39 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* configure.in, Makefile.in, .cvsignore, install-sh: New files.

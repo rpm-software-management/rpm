@@ -1,0 +1,80 @@
+
+CFLAGS = -Ilib -I. -Isrc @CFLAGS@ @DEFS@
+LDFLAGS = -L. @LDFLAGS@
+LIBS = @LIBS@
+CC = @CC@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL = @INSTALL@
+AR = ar
+RANLIB = @RANLIB@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+libdir = @libdir@
+man1dir = @mandir@/man1
+# Hmmmmm... the i18n stuff seems to want this:
+datadir = $(prefix)/@DATADIRNAME@
+# Previously I had:
+# datadir = @datadir@/sitecopy
+docdir = $(prefix)/doc/sitecopy
+sc_datadir = $(datadir)/sitecopy
+includedir = @includedir@
+neonincludes = $(includedir)/libneon
+
+top_srcdir = @top_srcdir@
+# Where does top_builddir come from?
+top_builddir = @top_srcdir@
+srcdir = @srcdir@
+# intl stuff
+localedir = $(datadir)/locale
+gnulocaledir = $(prefix)/share/locale
+gettextsrcdir = $(prefix)/share/gettext
+aliaspath = $(localedir):.
+@SET_MAKE@
+
+OBJECTS = src/http_request.o src/http_basic.o src/dav_basic.o src/dav_207.o \
+	src/string_utils.o src/dates.o src/xalloc.o src/hip_xml.o \
+	src/base64.o src/md5.o src/http_utils.o	src/uri.o src/socket.o \
+	src/http_auth.o
+
+DIST_HEADERS = http_request.h http_utils.h uri.h socket.h http_basic.h \
+	 dav_basic.h dav_207.h dav_props.h hip_xml.h dates.h string_utils.h
+
+libneon.a: $(OBJECTS)
+	$(AR) cru $@ $(OBJECTS)
+	$(RANLIB) $@
+
+shared: libneon.so
+
+libneon.so: $(OBJECTS)
+	gcc -shared -o $@ $(OBJECTS)
+
+examples: nget
+
+nget: libneon.a example/nget.o lib/basename.o
+	$(CC) $(LDFLAGS) -o $@  example/nget.o lib/basename.o -lneon
+
+install: install-static install-headers
+
+install-static: libneon.a
+	$(INSTALL) -d $(libdir)
+	cp libneon.a $(libdir)/libneon.a
+
+install-shared: libneon.so
+	$(INSTALL) -d $(libdir)
+	cp libneon.so $(libdir)/libneon.so
+
+install-headers:
+	$(INSTALL) -d $(neonincludes)
+	@for h in $(DIST_HEADERS); do \
+		echo Installing $$h into $(neonincludes); \
+		$(INSTALL_DATA) src/$$h $(neonincludes)/$$h; \
+	done
+
+neon_dir = src
+config_h = config.h
+
+include src/Makefile.incl
+

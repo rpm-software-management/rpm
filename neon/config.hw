@@ -1,0 +1,38 @@
+/* 
+   Win32 config.h
+   Copyright (C) 1999-2000, Peter Boos <pedib@colorfullife.com>
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+   
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this library; if not, write to the Free
+   Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
+   MA 02111-1307, USA
+
+   Id: config.hw,v 1.1 2000/12/13 20:15:06 joe Exp 
+*/
+
+#ifdef WIN32
+#define HAVE_STRING_H
+#define HAVE_EXPAT
+#define HAVE_MEMCPY
+
+
+// Win32 uses a underscore, so we use a macro to eliminate that.
+#define snprintf			_snprintf
+#define vsnprintf			_vsnprintf
+#define strcasecmp			strcmpi
+#define strncasecmp			strnicmp
+#define ssize_t				int
+
+#include <io.h>
+#define read _read
+#endif

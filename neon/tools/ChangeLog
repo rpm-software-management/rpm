@@ -1,0 +1,26 @@
+Wed May 10 14:45:55 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* cvsdist: Run autoheader if necessary.
+
+Wed May 10 14:36:17 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* reconf: New file.
+
+Sun Apr 30 21:59:56 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* cvsdist: Handle version numbers with a '-' in like 0.10.0-beta.
+
+Sun Apr 30 19:53:06 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* cvsdist: Run aclocal if there is a configure.in but no
+	aclocal.m4.  Pass "-I macros" if there is a macros directory.
+
+Sun Mar 26 11:58:26 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* mk: Only display new cwd if it has changed.
+
+Tue Mar  7 20:30:13 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* cvsdist: Updated for optional arguments. Fixed specfile
+	creation.
+

@@ -1,0 +1,37 @@
+#!/bin/sh
+# Usage:
+#   cat lsmtemplate.in | mklsm target version [tarball] > mylsmfile
+# Copyright (C) 1999 Joe Orton
+#
+# Usage, redistribution, modification under the terms of the GNU GPL,
+# see COPYING for full details.
+#
+# Id: mklsm,v 1.1.1.1 2000/03/23 19:17:11 joe Exp 
+
+# You need a 'filesize' command, which does the obvious thing.
+
+#### need to configure this ####
+
+# Where the archive files are stored
+archroot=$HOME/store/archive
+
+#### that should be all ####
+
+archive=${3-$archroot/$1-$2.tar.gz}
+
+if [ ! -e $archive ]; then
+    echo Could not find archive file $archive
+    exit -1
+fi
+bytes=`filesize $archive`
+size=`expr $bytes \/ 1024`
+case `date -r $archive +%m` in
+01) month=JAN;;	02) month=FEB;;	03) month=MAR;;	04) month=APR;;
+05) month=MAY;;	06) month=JUN;;	07) month=JUL;;	08) month=AUG;;
+09) month=SEP;;	10) month=OCT;;	11) month=NOV;;	12) month=DEC;;
+esac
+date=`date -r $archive +%d`${month}`date -r $archive +%y`
+version=$2
+target=$1
+sedscr="s/@VERSION@/${version}/;s/@DATE@/${date}/;s/@SIZE@/${size}kb/"
+exec sed -e $sedscr -

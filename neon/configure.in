@@ -1,0 +1,42 @@
+
+AC_INIT(src/http_request.c)
+
+AC_CONFIG_HEADER(config.h)
+
+AC_DEFINE([_GNU_SOURCE])
+
+AC_PROG_CC
+AC_PROG_MAKE_SET
+AC_ISC_POSIX
+AC_PROG_INSTALL
+AC_PROG_RANLIB
+AC_LANG_C
+AC_C_INLINE
+AC_C_CONST
+
+AC_HEADER_STDC
+
+AC_EXEEXT
+
+NEON_XML_PARSER
+
+LIBNEON_SOURCE_CHECKS
+
+AC_OUTPUT(Makefile)
+
+cat <<EOF
+
+Using configuration:
+
+  Install prefix:  ${prefix}
+  Compiler:        ${CC}
+  XML Parser:      ${neon_xml_parser_message}
+
+Now run: 'make' to compile the neon library (libneon.a)
+         'make shared' to compile a shared library with GCC (libneon.so)
+         'make examples' to compile the example programs
+
+  (Note: You might need to use GNU make if this is not the default 'make'.
+   GNU make could be installed as 'gmake' on your system.)
+
+EOF

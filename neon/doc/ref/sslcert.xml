@@ -1,0 +1,66 @@
+    <refentry id="refsslcert">
+
+      <refmeta>
+	<refentrytitle>ne_ssl_certificate</refentrytitle>
+	<manvolnum>3</manvolnum>
+      </refmeta>
+
+      <refnamediv>
+	<refname id="ne_ssl_certificate">ne_ssl_certificate</refname>
+	<refname id="ne_ssl_dname">ne_ssl_dname</refname>
+	<refpurpose>structures representing SSL certificates</refpurpose>
+      </refnamediv>
+      
+      <refsynopsisdiv>
+
+	<programlisting>#include &lt;ne_session.h&gt;
+
+/* A simplified X.509 distinguished name. */
+typedef struct {
+    const char *country, *state, *locality, *organization;
+    const char *organizationalUnit;
+    const char *commonName;
+} <type>ne_ssl_dname</type>;
+
+/* A simplified SSL certificate. */
+typedef struct {
+    const <type>ne_ssl_dname</type> *subject, *issuer;
+    const char *from, *until;
+} <type>ne_ssl_certificate</type>;
+
+</programlisting>
+
+      </refsynopsisdiv>
+
+      <refsect1>
+	<title>Description</title>
+	
+	<para>The <type>ne_ssl_dname</type> structure is used to
+represent a simplified X.509 distinguished name, as used in SSL
+certificates; a distinguished name is used to uniquely identify an
+entity.  Along with the fields giving the geographical and
+organizational location of the entity, the
+<structfield>commonName</structfield> field will be assigned the DNS
+hostname of the entity.  The
+<function>ne_ssl_readable_dname</function> function can be used to
+create a single-line string out of an <type>ne_ssl_dname</type>
+structure.</para>
+
+	<para>The <type>ne_ssl_certificate</type> structure is used to
+represent a simplified SSL certificate; containing the distinguished
+names of the <firstterm>issuer</firstterm> and
+<firstterm>subject</firstterm> of the certificate.  The issuer is the
+entity which has digitally signed the certificate to guarantee its
+authenticity; the subject is the owner of the certificate.  A
+certificate is only valid for a certain period of time: the
+<structfield>from</structfield> and <structfield>until</structfield>
+contain strings giving the validity period.</para>
+
+      </refsect1>
+
+      <refsect1>
+	<title>See Also</title>
+	<para><xref linkend="ne_ssl_dname"/>, <xref linkend="ne_ssl_set_verify"/></para>
+      </refsect1>
+
+    </refentry>

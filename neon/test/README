@@ -1,0 +1,14 @@
+
+Stupidly Simple Test Suite for neon
+-----------------------------------
+
+http-tests requires that you have a running HTTP server on localhost
+port 80, and you have copied htdocs/* to server-htdocs-root/test/*
+
+The test code is licensed under the GPL.
+
+Credits
+-------
+
+This test suite is inspired by the Subversion project and discussion
+on the subversion mailing list.

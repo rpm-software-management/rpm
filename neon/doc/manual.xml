@@ -1,0 +1,519 @@
+<?xml version='1.0'?> <!-- -*- DocBook -*- -->
+
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+
+<!ENTITY fdl SYSTEM "fdl.sgml">
+
+]>
+
+<book>
+  <bookinfo>
+    <title>neon HTTP/WebDAV client library</title>
+    <author>
+      <firstname>Joe</firstname><surname>Orton</surname>
+      <affiliation>
+	<address><email>neon@webdav.org</email></address>
+      </affiliation>
+    </author>
+    <copyright><year>2001</year><holder>Joe Orton</holder></copyright>
+
+    <legalnotice>
+      <para>Permission is granted to copy, distribute and/or modify this document
+      under the terms of the GNU Free Documentation License, Version 1.1
+      or any later version published by the Free Software Foundation;
+      with no Invariant Sections, with no Front-Cover Texts, 
+      and with no Back-Cover Texts.
+      A copy of the license is included in the section entitled "GNU
+      Free Documentation License".</para>
+    </legalnotice>
+
+  </bookinfo>
+  
+  <chapter>
+    <title>Introduction to neon</title>
+    <para>This is neon, an HTTP and WebDAV client library</para>
+    
+    <sect1>
+      <title>How to use neon from your application</title>
+      
+      <para>The neon source package is designed to be easily
+      incorporated into applications:</para>
+      
+      <itemizedlist>
+	<listitem>
+	  
+	  <para>autoconf macros are distributed in the 'macros'
+	  subdirectory of the neon distribution.  Use NEON_LIBRARY
+	  from your configure.in to check for the presence of the
+	  neon library installed on the system.  The macro adds an
+	  '--with-neon=...'  argument to configure, which allows the
+	  user to specify a location for the library (the standard
+	  /usr and /usr/local directories are checked automatically
+	  without having to be specified).</para></listitem>
+	  
+	  <listitem><para>The 'src' directory of the neon package can be
+	  imported directly into your application, if you do not wish
+	  to add an external dependency.  If you wish to bundle, use
+	  the NEON_BUNDLED macro to configure neon in your application:
+	  here, the neon sources are bundled in a directory called
+	  'libneon':</para>
+	  
+	  <literal>
+	    NEON_BUNDLED(libneon, ...)
+	  </literal>
+	  
+	  
+	  <para>If your application supports builds where srcdir != builddir,
+	  you should use the NEON_VPATH_BUNDLED macro like this:</para>
+	  
+	  <literal>
+	    NEON_VPATH_BUNDLED(${srcdir}/libneon, libneon, ...)
+	  </literal>
+	  
+	  <para>If you use this macro, a '--with-included-neon' option
+	  will be added to the generated configure script.  This
+	  allows the user to force the bundled neon to be used in the
+	  application, rather than any neon library found on the
+	  system. If you allow neon to be configured this way, you
+	  must also configure an XML parser. Use the NEON_XML_PARSER
+	  macro to do this.</para></listitem>
+	  
+	  <listitem><para>The final argument to the _BUNDLED macros is a
+	  set of actions which are executed if the bundled build *is*
+	  chosen (rather than an external neon which might have been
+	  found on the user's system).  In here, use either the
+	  NEON_LIBTOOL_BUILD or NEON_NORMAL_BUILD macro to set up the
+	  neon Makefile appropriately: including adding the neon source
+	  directory to the recursive make.</para></listitem>
+	  
+	</itemizedlist>
+	
+	<para>A full fragment might be:</para>
+	
+	<literal>
+	  NEON_BUNDLED(libneon, [
+	  NEON_NORMAL_BUILD
+	  NEON_XML_PARSER
+	  SUBDIRS="libneon $SUBDIRS"
+	  ])
+	</literal>
+	
+	<para>This means the bundled neon source directory (called 'libneon')
+	is used if no neon is found on the system, and the standard XML
+	parser search is used.</para>
+	
+      </sect1>
+      
+      <sect1>
+	<title>neon API guidelines</title> 
+	
+	<para>neon reserves the namespace <literal>ne_*</literal>: an
+	application which uses neon may not use symbols within this
+	namespace.</para>
+	
+      </sect1>
+      
+      <sect1>
+	<title>Protocol compliance</title>
+	
+	<para>neon is intended to be compliant with all relevant IETF and W3C
+	standards.</para>
+	
+	<sect2><title>RFC2518</title>
+	
+	<para>neon is deliberately not compliant with section 23.4.2, and
+	treats property names as a (namespace-URI, name) pair. This is
+	<ulink
+	  url="http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html">generally
+	considered</ulink> to be the correct behaviour by the WebDAV
+	WG and is likely to change in a future revision of the spec.</para>
+	
+      </sect2>
+      
+      <sect2>
+	<title>RFC2616</title>
+	
+	<para>The redirect interface is deliberately not compliant with
+	section 10.3, and will automatically follow redirects for the
+	<literal>PROPFIND</literal> and <literal>OPTIONS</literal>
+	methods as well as <literal>GET</literal> and
+	<literal>HEAD</literal>.  It <ulink url="http://www.apachelabs.org/apache-mbox/200102.mbox/%3C20010224232203.G799@waka.ebuilt.net%3E">has been stated</ulink> that this was the intent of the specification by one of the authors.</para>
+
+      </sect2>
+      
+    </sect1>
+    
+  </chapter>
+  
+  <chapter>
+    <title>The neon API for the C language</title>
+    
+    <sect1>
+      <title>Sessions</title>
+      
+      <para>An HTTP session is created using the
+      <citerefentry><refentrytitle>ne_session_create</refentrytitle></citerefentry>
+      function</para>
+    </sect1>
+    
+    <sect1>
+      <title>Low-level request interface</title>
+    </sect1>
+    
+    <sect1>
+      <title>Basic HTTP and WebDAV methods</title>
+      <para>ne_basic.h</para>
+    </sect1>
+    
+    <sect1>
+      <title>HTTP authentication</title>
+
+      <para>Authentication is supported using callbacks: using the
+      <citerefentry><refentrytitle>ne_set_server_auth</refentrytitle></citerefentry> 
+      function, a callback can be registered which will supply
+      authentication credentials upon demand.  In an interactive 
+      application, this will typically be done using some form of
+      username/password prompt.</para>
+
+      <para>Two types of authentication are supported: server
+      authentication (via the <function>ne_set_server_auth</function>
+      function), and proxy authentication (via the
+      <function>ne_set_proxy_auth</function> function).</para>
+    </sect1>
+
+    <sect1>
+      <title>Parsing XML</title>
+      <para>ne_xml.h functions</para>
+    </sect1>
+    
+    <sect1>
+      <title>WebDAV properties</title>
+      <para>ne_props.h functions</para>
+    </sect1>
+    
+    <sect1>
+      <title>WebDAV locking</title>
+      <para>ne_locks.h functions</para>
+    </sect1>
+
+    <sect1>
+      <title>Utility functions</title>
+      <para>stuff</para>
+      <sect2>
+	<title>String handling</title>
+      </sect2>
+      <sect2>
+	<title>Date/time manipulation</title>
+      </sect2>
+    </sect1>
+
+  </chapter>
+  
+  <reference>
+    
+    <title>neon API reference</title>
+    
+    <refentry>
+
+      <refentryinfo>
+	<title>neon</title>
+      </refentryinfo>
+      
+      <refmeta>
+	<refentrytitle>ne_session_create</refentrytitle>
+	<manvolnum>3</manvolnum>
+      </refmeta>
+
+      <refnamediv>
+	<refname>ne_session_create</refname>
+	<refname>ne_session_close_connection</refname>
+	<refname>ne_session_server</refname>
+	<refname>ne_session_destroy</refname>
+	<refpurpose>Manipulate HTTP sessions</refpurpose>
+      </refnamediv>
+      
+      <refsynopsisdiv>
+	
+	<funcsynopsis>
+	  <funcsynopsisinfo>#include &lt;ne_session.h&gt;</funcsynopsisinfo>
+	  <funcprototype>
+	    <funcdef><type>ne_session *</type><function>ne_session_create</function></funcdef>
+	    <void/>
+	  </funcprototype>
+
+	  <funcprototype>
+	    <funcdef>int <function>ne_session_server</function></funcdef>
+	    <paramdef>ne_session *<parameter>session</parameter></paramdef>
+	    <paramdef>const char *<parameter>hostname</parameter></paramdef>
+	    <paramdef>int <parameter>port</parameter></paramdef>
+	  </funcprototype>
+
+	  <funcprototype>
+	    <funcdef>int <function>ne_close_connection</function></funcdef>
+	    <paramdef>ne_sesssion *<parameter>session</parameter></paramdef>
+	  </funcprototype>
+
+	  <funcprototype>
+	    <funcdef>void <function>ne_session_destroy</function></funcdef>
+	    <paramdef>ne_session *<parameter>session</parameter></paramdef>
+	  </funcprototype>
+
+	</funcsynopsis>
+      </refsynopsisdiv>
+
+      <refsect1>
+	<title>Description</title>
+
+	<para>An <type>ne_session *</type> object is used to group a
+	sequence of HTTP requests made to a server, enabling the 
+	use of a persistent connection to be used across all the 
+	requests, shared authentication credentials, and more.</para>
+
+	<para>The <function>ne_session_server</function> call sets the 
+	server to be used for the session.  This function must be
+	called before any requests are made using the session.</para>
+      </refsect1>
+
+      <refsect1>
+	<title>Return Values</title>
+	<para>On success, <function>ne_session_server</function>
+	returns <returnvalue>0</returnvalue> (<errorname>NE_OK</errorname>),
+	or a non-zero value if an error occurred.</para>
+      </refsect1>
+
+      <refsect1>
+	<title>Errors</title>
+	<para><errorname>NE_LOOKUP</errorname>: the hostname cannot be resolved.</para>
+      </refsect1>
+
+      <refsect1>
+	<title>Examples</title>
+	<para>Create and initialize a session:</para>
+	<programlisting>
+
+  ne_session *sess = ne_session_create();
+  if (ne_session_server(sess, "my.host.name", 80) == NE_LOOKUP) {
+     printf("Host not found!");
+  } else {
+     /* ... use sess ... */
+  }
+  ne_session_destroy(sess);
+	</programlisting>
+      </refsect1>
+    </refentry>
+
+    <refentry>
+
+      <refmeta>
+	<refentrytitle>ne_session_proxy</refentrytitle>
+	<manvolnum>3</manvolnum>
+      </refmeta>
+
+      <refnamediv>
+	<refname>ne_session_proxy</refname>
+	<refname>ne_session_decide_proxy</refname>
+	<refpurpose>Proxy server settings</refpurpose>
+      </refnamediv>
+      
+      <refsynopsisdiv>
+	
+	<funcsynopsis>
+
+	  <funcprototype>
+	    <funcdef>int <function>ne_session_proxy</function></funcdef>
+	    <paramdef>ne_session *<parameter>session</parameter></paramdef>
+	    <paramdef>const char *<parameter>hostname</parameter></paramdef>
+	    <paramdef>int <parameter>port</parameter></paramdef>
+	  </funcprototype>
+
+	  <funcprototype>
+	    <funcdef>void <function>ne_set_error</function></funcdef>
+	    <paramdef>ne_sesssion *<parameter>session</parameter></paramdef>
+	    <paramdef>const char *<parameter>error</parameter></paramdef>
+	  </funcprototype>
+
+	  <funcprototype>
+	    <funcdef>const char *<function>ne_get_error</function></funcdef>
+	    <paramdef>ne_sesssion *<parameter>session</parameter></paramdef>
+	  </funcprototype>
+
+	  <funcprototype>
+	    <funcdef>const char *<function>ne_get_scheme</function></funcdef>
+	    <paramdef>ne_sesssion *<parameter>session</parameter></paramdef>
+	  </funcprototype>
+
+	  <funcprototype>
+	    <funcdef>const char *<function>ne_get_server_hostport</function></funcdef>
+	    <paramdef>ne_sesssion *<parameter>session</parameter></paramdef>
+	  </funcprototype>
+
+	  <funcprototype>
+	    <funcdef>void <function>ne_set_useragent</function></funcdef>
+	    <paramdef>ne_session *<parameter>session</parameter></paramdef>
+	    <paramdef>const char *<parameter>product</parameter></paramdef>
+	  </funcprototype>
+
+	  <funcprototype>
+	    <funcdef>void <function>ne_set_expect100</function></funcdef>
+	    <paramdef>ne_session *<parameter>session</parameter></paramdef>
+	    <paramdef>int <parameter>use_expect100</parameter></paramdef>
+	  </funcprototype>
+
+	  <funcprototype>
+	    <funcdef>void <function>ne_set_persist</function></funcdef>
+	    <paramdef>ne_session *<parameter>session</parameter></paramdef>
+	    <paramdef>int <parameter>use_persist</parameter></paramdef>
+	  </funcprototype>
+
+	  <!-- not sure if this is really the best way to represent a 
+	       function typedef; all the examples in-line it, which is nasty.
+	       -->
+	  <funcprototype>
+	    <funcdef>typedef int (*ne_use_proxy)</funcdef>
+	    <paramdef>void *<parameter>userdata</parameter></paramdef>
+	    <paramdef>const char *<parameter>scheme</parameter></paramdef>
+	    <paramdef>const char *<parameter>hostname</parameter></paramdef>
+	  </funcprototype>
+
+	  <funcprototype>
+	    <funcdef>void <function>ne_session_decide_proxy</function></funcdef>
+	    <paramdef>ne_session *<parameter>session</parameter></paramdef>
+	    <paramdef>ne_use_proxy <parameter>use_proxy</parameter></paramdef>
+	    <paramdef>void *<parameter>userdata</parameter></paramdef>
+	  </funcprototype>
+
+	</funcsynopsis>
+	
+      </refsynopsisdiv>
+      
+      <refsect1>
+	<title>Description</title>
+	<para>An <type>ne_session *</type> object is a foo.</para>
+      </refsect1>
+      
+    </refentry>
+    
+    <refentry>
+
+      <refentryinfo><title>neon</title></refentryinfo>
+
+      <refmeta>
+	<refentrytitle>neon-config</refentrytitle>
+	<manvolnum>1</manvolnum>
+      </refmeta>
+
+      <refnamediv>
+	<refname>neon-config</refname>
+	<refpurpose>provide information about installed copy of neon 
+	library</refpurpose>
+      </refnamediv>
+
+      <refsynopsisdiv>
+
+	<cmdsynopsis>
+	  <command>neon-config</command>
+	  <arg choice="opt"><option>--prefix</option></arg><sbr/>
+	  <group>
+	    <arg><option>--cflags</option></arg>
+	    <arg><option>--libs</option></arg>
+	    <arg><option>--support</option> <replaceable>feature</replaceable></arg>
+	    <arg><option>--help</option></arg>
+	    <arg><option>--version</option></arg>
+	  </group>
+	</cmdsynopsis>
+
+      </refsynopsisdiv>
+
+      <refsect1>
+	<title>Description</title>
+
+	<para>The <command>neon-config</command> script provides
+information about an installed copy of the neon library.  The
+<option>--cflags</option> and <option>--libs</option> options instruct
+how to compile and link an application against the library; the
+<option>--version</option> and <option>--support</option> options can
+help determine whether the library meets the applications
+requirements.</para>
+
+      </refsect1>
+
+      <refsect1>
+	<title>Options</title>
+
+	<variablelist>
+
+	  <varlistentry>
+	    <term><option>--cflags</option></term>
+	    <listitem><para>Print the flags which should be passed to
+the C compiler when compiling object files, when the object files use
+neon header files.</para></listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--libs</option></term>
+	    <listitem><para>Print the flags which should be passed to
+the linker when linking an application which uses the neon
+library</para></listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--version</option></term>
+	    <listitem><para>Print the version of the library</para></listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--prefix</option> <replaceable>dir</replaceable></term>
+	    <listitem><para>If <replaceable>dir</replaceable> is given; relocate output of
+<option>--cflags</option> and <option>--libs</option> as if neon was
+installed in given prefix directory.  Otherwise, print the
+installation prefix of the library.</para></listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--support</option> <replaceable>feature</replaceable></term>
+	    <listitem><para>The script exits with success if
+<replaceable>feature</replaceable> is supported by the
+library.</para></listitem>
+          </varlistentry>
+
+	  <varlistentry>
+	    <term><option>--help</option></term>
+	    <listitem><para>Print help message; includes list of known
+	    features and whether they are supported or not.</para></listitem>
+	  </varlistentry>
+
+	</variablelist>
+
+      </refsect1>
+
+      <refsect1>
+	<title>Example</title>
+
+	<para>Below is a Makefile fragment which could be used to
+build an application against an installed neon library, when the
+<command>neon-config</command> script can be found in
+<envar>$PATH</envar>.</para>
+
+	<programlisting>
+CFLAGS = `neon-config --cflags`
+LIBS = `neon-config --libs`
+OBJECTS = myapp.o
+TARGET = myapp
+
+$(TARGET): $(OBJECTS)
+	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS)
+
+myapp.o: myapp.c
+	$(CC) $(CFLAGS) -c myapp.c -o myapp.o
+</programlisting>
+
+       </refsect1>
+
+    </refentry>
+
+  </reference>
+
+&fdl;
+  
+</book>

@@ -1,0 +1,7 @@
+
+Known problems/bugs in neon                                        -*- text -*-
+---------------------------      Id: BUGS,v 1.2 2000/07/27 20:59:19 joe Exp 
+
+1.  Each new SSL request is opening a new connection to the server.
+    VERY slow.
+

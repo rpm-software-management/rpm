@@ -1,0 +1,6 @@
+#!/bin/sh
+rm -f config.cache
+([ ! -d macros ] || aclocal -I macros) && \
+([ ! -r acconfig.h ] || autoheader) && \
+([ ! -r macros/acconfig.h ] || autoheader -l macros) && \
+autoconf && CONFIG_SITE= ./configure $*

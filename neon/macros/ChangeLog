@@ -1,0 +1,26 @@
+Wed May 10 19:18:14 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* neon-xml-parser.m4: Error if no XML parser is found.
+
+Wed May 10 14:33:21 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* neon-checks.m4: New file.
+
+Wed May 10 14:26:57 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* neon-xml-parser.m4 (NEON_XML_PARSER): Use "neon_" prefix for
+	variables.
+
+Wed May 10 13:47:04 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* acconfig.h: New file.
+
+Wed May 10 13:42:16 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* neon-xml-parser.m4: New file.
+
+Sun May  7 21:57:32 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* gnome-x-checks.m4 (GNOME_X_CHECKS): Check for Gtk 1.2.7 or
+	later, passing "gthread" module argument.
+

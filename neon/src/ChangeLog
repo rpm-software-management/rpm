@@ -1,0 +1,351 @@
+Wed May 10 19:22:01 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* neon.h: Bumped version to 0.1.0.
+
+Wed May 10 17:46:48 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* uri.c (uri_parse, uri_free): New functions.
+
+Wed May 10 17:43:37 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_basic.c (get_to_fd, http_get): Set error appropriately if
+	fwrite() fails.
+
+Wed May 10 14:25:38 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_utils.c (http_debug): New function.
+
+Wed May 10 14:25:08 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_basic.c (get_callback): Call sock_call_progress.
+
+Wed May 10 14:24:20 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* socket.c (sock_call_progress): New function.  (many places): Use
+	it.
+
+Wed May 10 14:22:48 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* uri.c (uri_has_trailing_slash): Moved from being inline.
+
+Tue May  9 23:34:25 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_props.c: Use handler as userdata for 207 callbacks, unified
+	handler and context structures.  (start_prop, end_prop,
+	start_propelm, end_propelm): Removed functions.
+	(dav_propfind_get_current_resource): New function.
+
+Tue May  9 23:29:44 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* xalloc.[ch]: New files.
+
+Tue May  9 23:05:47 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_207.[ch]: Removed property and property element callbacks.
+
+Tue May  9 23:01:00 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_207.c: Use separate name/namespace for element names.
+	(dav_207_init_with_handler): New function.  (end_element):
+	Unescape URI in href element.
+
+Tue May  9 19:54:07 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_props.c (dav_propfind_allprop, dav_propfind_named, propfind,
+	start_response, end_response, start_prop, end_prop, start_propelm,
+	end_propelm): New functions; PROPFIND support.
+
+Tue May  9 19:45:17 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_request.c (build_request): Renamed from make_request.
+
+Tue May  9 19:36:01 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* socket.[ch]: Added sock_block_reader.
+
+Tue May  9 15:52:56 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* uri.c (uri_childof): Return false when parent is the same length
+	as child.
+
+Sun May  7 15:07:49 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_207.c: Separated element namespace/names.
+
+Tue May  2 16:40:59 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* hip_xml.[ch]: Added HIP_XML_UTF8DECODE flag.
+
+Tue May  2 16:16:57 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* hip_xml.[ch]: Separate element name and namespace.
+
+Mon May  1 00:21:24 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_207.c (dav_accept_207): Moved function from dav_basic.c.
+
+	* dav_basic.c (dav_accept_207, dav_parse_xml_block): Removed
+	functions.
+
+Sun Apr 30 22:47:47 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_props.[ch]: Renamed dav_proppatch_item to
+	dav_proppatch_operation.
+
+Sun Apr 30 22:45:04 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* hip_xml.c (start_element): Clearer error message.
+
+Sun Apr 30 19:12:07 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_basic.c (http_content_type_handler, dav_hdr_handler): New
+	functions.  (http_options): Handle DAV header.
+
+Sun Apr 30 18:08:53 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_props.c (dav_proppatch): New function.
+
+Sun Apr 30 18:05:55 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_basic.c (handle_error): New function.  (end_response,
+	end_propstat): Use it.  (dav_simple_request): Don't return the 207
+	error string if we get all 2xx class status elements.
+
+Sun Apr 30 16:56:41 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_basic.c (dav_add_depth_header): New function.
+
+Sun Apr 30 14:49:06 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_207.c (start_element): Unknown element is only a property if
+	the parent is DAV:propstat.
+
+Sun Apr 30 14:43:28 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_basic.c (end_response, end_propstat): Only write error line
+	if we have status information and the status is not a 424.
+
+Sun Apr 30 14:28:23 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_basic.h: Added DAV_DEPTH_*.
+
+Sun Apr 30 12:47:50 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_207.c (check_context): Allow (and ignore) unknown elements
+	anywhere other than as the root.
+
+Sun Apr 30 12:35:39 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* string_utils.h (ASC2HEX, HEX2ASC): New macros.
+
+Sun Apr 30 12:34:37 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_auth.c [STANDALONE]: Removed. (everywhere): Switch to using
+	md5_to_ascii rather than md5_hexify.
+
+Sun Apr 30 12:32:35 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_request.c (read_response_block): Fixed to return errors
+	properly and block length to parameter.  (read_response_body):
+	Changed accordingly.
+
+Sun Apr 30 12:29:45 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* hip_xml.c (friendly_name): New function, was PRETTY_NAME macro.
+	(start_element, end_element): Fix COLLECT handling.
+	(hip_xml_parse): Only write parse error if the document has not
+	already been marked invalid.
+
+Sun Apr 30 12:28:36 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_basic.c (dav_simple_request): Rewritten for new 207
+	interface.  (start_response, end_response, end_propstat): New
+	functions.
+
+Sun Apr 30 12:27:52 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_207.c (dav_207_error): Return the parser error.
+
+Sat Apr 29 14:46:48 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* socket.c (sock_register_progress, sock_register_notify): New
+	functions.  (everywhere): Use progress + notify callbacks rather
+	than fe_*.
+
+Sat Apr 29 14:15:23 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* string_utils.c (md5_to_ascii, ascii_to_md5): New functions.
+
+Sat Apr 29 13:55:39 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* hip_xml.c (hip_xml_init): abort() on out-of-memory.
+
+Sat Apr 29 12:56:11 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* neon_i18n.h: New file.
+
+Sat Apr 29 12:55:24 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_207.[ch]: Re-implemented with sensible interface.
+
+Fri Apr 28 14:56:01 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_auth.c (http_auth_request_header): Renamed from
+	http_auth_request.
+
+	* http_request.c (make_request): As above.
+
+Thu Apr 13 11:52:14 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_basic.c (http_put): Switched URI and stream arguments.
+
+Thu Apr 13 09:51:21 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_request.c: Added user_agent field to session structure.
+	(http_set_useragent): New function.  (add_fixed_headers): Only set
+	user-agent if sess->user_agent is set.
+
+Thu Apr 13 09:49:32 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_request.c (lookup_host): New function, split from
+	set_hostinfo.  (set_hostinfo): Doesn't perform DNS lookup.
+	(http_session_server): Don't do a DNS lookup if we have a proxy.
+
+Wed Apr 12 22:32:21 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_request.c (http_request_dispatch, http_request_create):
+	Store auth header values in local variables rather than request
+	structure.  (http_request_create): Don't leak everything on error.
+	Handle http_auth_challenge return value.
+
+Wed Apr 12 22:30:06 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_basic.c (http_options): Pass server capabilites object,
+	parse Server header to detect Apache/1.3.6 and before, indicating
+	broken 100-continue support.  (server_hdr_handler): New function.
+
+Mon Apr 10 17:42:07 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* socket.c: Use 'int' for return values.
+
+Mon Apr 10 17:41:40 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_auth.c (is_in_domain): Dummy implementation.
+
+Mon Apr 10 17:40:21 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_request.c: Handle read() returning 0 when it shouldn't.
+	i18n'ized error messages.
+
+Mon Apr 10 14:45:09 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dates.[ch], md5.[ch], base64.[ch]: Imported date handling
+	utilities, MD5 checksum functions, and text->base64 converter.
+
+Mon Apr 10 14:44:08 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* Makefile.incl: Dependancies updated for socket.[ch].
+
+Mon Apr 10 14:43:36 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* dav_207.c: Replaced malloc() calls with xmalloc() calls.
+
+Mon Apr 10 14:42:35 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_auth.c, uri.c, string_utils.h: Replaced malloc() calls with
+	xmalloc() calls.
+
+Mon Apr 10 14:41:40 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* socket.[ch]: Imported socket handling utilities.
+
+Mon Apr 10 14:36:03 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* string_utils.h (CONCAT*): Use xmalloc.
+
+Mon Apr 10 13:52:17 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_request.c (set_sockerr): Added handling for socket errors.
+
+Sat Apr  8 13:49:07 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* string_utils.[ch]: Imported string utilites.
+
+Sat Apr  8 00:26:06 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_request.c (http_set_persist, http_set_expect100): New
+	functions.
+
+Sat Apr  8 00:25:37 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_basic.c (http_options): New function.
+
+Fri Apr  7 13:01:35 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* neon.h: New file.
+
+Fri Apr  7 12:59:40 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_request.c (normalize_response_length, read_response_body):
+	New functions.  (http_add_response_body_reader): Take a callback
+	to determine whether the body reader wants to read the response
+	body.
+
+Fri Apr  7 11:46:41 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_request.c (http_set_server_auth, http_set_proxy_auth): New
+	functions.  (give_creds): Use supplied callbacks for
+	authentication.  (get_request_bodysize): Send Content-Length: 0 if
+	no entity-body is being sent with a request.  (te_hdr_handler,
+	connection_hdr_handler): New functions.  (make_request): Don't use
+	Expect: 100-continue if server is not HTTP/1.1 compliant.
+	(read_message_header): Only read until HTTP_MAXIMUM_HEADER_LENGTH
+	bytes of header have been read.  (read_response_headers): No
+	hard-coded header handling.  (http_request_create): Set
+	req->method_is_head here.
+
+Thu Apr  6 14:39:28 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* hip_xml.c [HIP_XML_DECODE_UTF8] (decode_utf8_double): New
+	function.  (char_data) [HIP_XML_DECODE_UTF8]: Decode UTF-8.
+
+Tue Mar 28 13:54:51 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* Makefile.incl: Imported makefile fragment.
+
+Tue Mar 28 13:54:09 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_request.[ch] (http_get_error): New function.
+
+Thu Mar 23 18:48:42 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* hip_xml.[ch]: Imported generic XML parsing layer.
+
+	* dav_207.[ch]: Imported generic WebDAV 207 response handling.
+	
+	* dav_basic.[ch]: Imported/implemented DAV response handling and
+	basic Class 1 namespace methods.
+
+Thu Mar 23 18:46:14 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_request.c (add_hooks, run_hooks, http_add_destroy_hook):
+	Adding hooks support.  (add_fixed_headers): Send TE token in
+	Connection header. Only send Keep-Alive header & token to pre-1.1
+	origin servers (i.e., not proxies).
+
+Thu Mar 23 12:49:01 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_auth.[ch], uri.[ch]: Imported HTTP authentication and URI
+	handling modules.
+
+Thu Mar 23 12:47:05 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_utils.c: Imported HTTP utility functions.
+
+Thu Mar 23 12:44:38 2000  Joe Orton  <joe@orton.demon.co.uk>
+
+	* http_request.[ch]: Implemented modular HTTP request handling.
+
+	* http_basic.[ch]: Implemented basic HTTP methods GET, PUT, and
+	PUT with If-Unmodified.
+

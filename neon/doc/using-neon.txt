@@ -1,0 +1,132 @@
+
+Guide to neon
+=============       Id: using-neon.txt,v 1.4 2000/07/16 16:20:12 joe Exp 
+
+Using libneon from applications
+-------------------------------
+
+The neon source package is designed to be easily incorporated into
+applications:
+
+- autoconf macros are distributed in the 'macros' subdirectory of the
+  neon distribution.  Use NEON_LIBRARY from your configure.in to check
+  for the presence of the neon library installed on the system.  The
+  macro adds an '--with-neon=...' argument to configure, which allows
+  the user to specify a location for the library (the standard /usr
+  and /usr/local directories are checked automatically without having
+  to be specified).
+
+- The 'src' directory of the neon package can be imported directly
+  into your application, if you do not wish to add an external
+  dependency.  The NEON_LIBRARY autoconf macro can fall back to
+  compile and link this source code into your application if libneon
+  is not found on the system.  Place the source code in a subdirectory
+  of your package named 'libneon', and pass the 'bundled' argument to
+  the macro, as follows:
+
+     NEON_LIBRARY([bundled])
+
+  In your Makefile, $NEONOBJS will be added to $LIBOBJS if the bundled
+  neon is required, so you need to set this variable to the set of
+  neon object files which you require in your application, e.g.:
+
+     NEONOBJS = libneon/http_utils.o libneon/http_request.o \
+		libneon/http_auth.o libneon/string_utils.o \
+		libneon/socket.o libneon/md5.o libneon/dates.o
+     LIBOBJS = @LIBOBJS@  
+     LIBS = @LIBS@
+     CFLAGS = @CFLAGS@ etc...
+
+  CFLAGS and LIBS will be adjusted by the NEON_LIBRARY as appropriate
+  for compiling against the bundled sources or the existing library.
+
+The neon API
+============
+
+neon offers two levels of API for use in applications:
+
+- Low-level HTTP request/response handling
+- High-level method invocation
+
+The low-level interface allows for easily designing new method
+handlers, taking care of things like persistent connections,
+authentication, and proxy servers.  The high-level interface allows
+you to easily integrate existing HTTP (and WebDAV) methods into your
+application.  This document details both interfaces.
+
+N.B.: Documentation is always WRONG.  The definitive API reference is in
+src/*.c, with src/*.h is hopefully fairly similar.
+
+An Important Note
+-----------------
+
+Most neon functions which allocate memory with malloc() will call
+abort() if malloc() returns NULL.  This is a design decision, the
+rationale being:
+
+- it makes the interfaces cleaner.
+
+- if malloc() DOES return NULL there is not much you can do about it.
+
+- Apparently, malloc() won't return NULL on systems which over-commit
+  memory (e.g. Linux), so it doesn't make any real difference anyway.
+
+The author is open to persuasion on this: mail neon@webdav.org.
+
+The http_session type
+---------------------
+
+The http_session type is used whether you are writing to the low-level
+or the high-level interface.  An http_session object is created to
+store data which persists beyond a single HTTP request:
+
+ - Protocol options, e.g. (proxy) server details
+ - Authentication information
+ - Persistent connection
+
+A session is created with the 'http_session_create' call.  Before
+creating a request for the session, the server details must be set, as
+follows:
+
+   http_session *sess;
+   /* Initialize the socket library */
+   sock_init();
+   /* Create the session */
+   sess = http_session_create();
+   /* Optionally, set a proxy server */
+   http_session_proxy(sess, "proxy.myisp.com", 8080);
+   /* Set the server */
+   http_session_server(sess, "my.server.com", 80);
+
+The proxy server should be set BEFORE the origin server; otherwise a
+DNS lookup will be performed on the origin server by the
+http_session_server call, which may well fail if the client is
+firewalled.  http_session_{proxy,server} will return HTTP_LOOKUP if
+the DNS lookup fails; otherwise HTTP_OK.
+
+The 'http_set_expect100' call can be used to determine whether the
+"Expect: 100-continue" header is sent with requests.  This header,
+when supported correctly by the server, means that an error response
+(e.g. 401) can be returned before the request body is sent.  This is
+useful if you are doing a PUT with a 100mb request body.  Note that
+Apache/1.3.6 and before do not implement this feature correctly, so
+use with care.  http_options can tell you whether the Apache 
+
+The 'http_set_persist' call can be used to turn off persistent
+connection handling: it is on by default.
+
+The 'http_set_useragent' call can be used to set the User-Agent header
+to be sent with requests.  A product token of the form
+"myhttpclient/0.1.2" should be passed, and will have "neon/x.y.z"
+appended in the actual header sent.
+
+When a session has been finished with, it should be destroyed using
+http_session_destroy.  Any subsequent operations on the session object
+will have undefined results (i.e. will segfault).
+
+Low-level HTTP Request/Response Handling
+----------------------------------------
+
+...
+
+

@@ -1,0 +1,31 @@
+Mon Aug 27 00:31:09 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* tests.c (test_num): Expose test counter.  (segv): Handle
+	segfault nicely.
+
+Mon Aug 27 00:30:20 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* child.c (discard_request): New function, from request.c in
+	neon/test.
+
+Wed Aug  8 22:09:21 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* tests.c, test.h: Only define test_argc/argv once.
+
+Mon Jul 16 16:30:28 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* tests.c (warning): Take printf-style arguments list.
+
+Mon Jul 16 16:16:08 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* tests.c (main): Cope with skipped tests properly.
+
+Mon Jul 16 16:00:59 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* tests.c (warning): New function.  (main): Cope with warnings.
+
+Sun Jul  8 16:09:33 2001  Joe Orton  <joe@manyfish.co.uk>
+
+	* tests.c (main): Export argc/argv as test_argc, test_argv.
+
+

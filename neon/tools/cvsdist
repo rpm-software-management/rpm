@@ -1,0 +1,143 @@
+#!/bin/sh
+# Usage: cvsdist module [tag] [version]
+# Creates a tarball from the CVS archive, generating a 'configure'
+# script and .spec file as necessary.
+# HEAD is the default tag, and mmmyy is the default version string.
+#
+# Copyright (C) 1999 Joe Orton <joe@orton.demon.co.uk>
+#
+# Id: cvsdist,v 1.8 2000/05/10 13:51:27 joe Exp 
+
+# Usage, redistribution, modification under the terms of the GNU GPL,
+# see COPYING for full details.
+
+replace_version() {
+if [ -e $1.in ]; then
+    echo Creating $1 from $1.in for release $rel
+    if ! sed -e s/@VERSION@/$rel/ < $1.in > $1; then
+	echo sed failed
+	exit -5
+    fi
+fi
+}
+
+if [ $# -eq 0 -o $# -gt 3 -o "$1" = "--help" -o "$1" = "-h" ]; then
+    cat<<EOF
+Usage:
+ cvsdist foobar-x.y.z
+   => Distribute package 'foobar', at version 'x.y.z', at tag 'foobar_x-y-z'
+ cvsdist foobar
+   => Distribute package 'foobar', at version 'mmmyy', at tag 'HEAD'
+ cvsdist foobar random_tag
+   => Distribute package 'foobar', at version 'mmmyy', at tag 'random_tag'
+ cvsdist foobar random_tag x.y.z
+   => Distribute package 'foobar', at version 'x.y.z', at tag 'random_tag'
+EOF
+    exit -1
+fi
+
+# mod is the package name (e.g. cadaver)
+# rel is the version name (e.g. 0.10.0, mar12)
+# tag is the CVS tag
+
+if [ -z "$3" ]; then
+    # No version argument
+    if [ -z "$2" ]; then
+	# No tag argument either
+	# Look for a version in the package name, like cadaver-0.10.0
+	if echo $1 | grep '-' > /dev/null; then
+	    # Found one, convert it from 0.10.0 to 0-10-0 for the tag
+	    # and strip the package name from the beginning
+	    mod=`echo $1 | sed "s/-.*$//g"`
+	    rel=`echo $1 | sed "s/^[^-]*-//g"`
+	    tag=${mod}_`echo $rel | sed "s/\./-/g"`
+	else
+	    # No version given, use HEAD
+	    mod=$1
+	    rel=`date +%b%d | dd conv=lcase 2>/dev/null`
+	    tag=HEAD
+	fi
+    else
+	# Got a tag, but no release name
+	mod=$1
+	tag=$2
+	rel=`date +%b%d | dd conv=lcase 2>/dev/null`
+    fi
+else
+    # Got all the info we need
+    mod=$1
+    tag=$2
+    rel=$3
+fi
+
+echo "Distributing \`$mod' for release \`$rel' at tag \`$tag'"
+mname=$mod-$rel
+tname=/tmp/$mname
+ball=/tmp/${mname}.tar.gz
+if [ -d $tname ]; then
+	echo $tname exists, cannot proceed
+	exit -1
+fi
+if [ -r $ball ]; then
+	echo $ball exists, cannot proceed
+	exit -2
+fi
+echo Exporting $mod from CVS at $tag...
+if ! cvs -Q export -d $tname -r $tag $mod; then
+	echo cvs export failed
+	exit -3
+fi
+cd $tname
+
+# Do we need to generate a configure script?
+if [ -e configure.in ]; then
+    if [ ! -e aclocal.m4 ]; then
+	# We need to run aclocal
+	ACLARGS=""
+	if [ -d macros ]; then
+	    ACLARGS="-I macros"
+	fi
+	echo Running aclocal...
+	if ! aclocal $ACLARGS; then
+	    echo aclocal failed
+	    exit -4
+	fi
+    fi
+    echo Running `autoconf --version`...
+    if ! autoconf; then
+	echo autoconf failed
+	exit -4
+    fi
+    if [ ! -r config.h.in ]; then
+	AUHARGS=""
+	if [ -r macros/acconfig.h ]; then
+	    AUHARGS="-l macros"
+	fi
+	echo Running autoheader...
+	if ! autoheader $AUHARGS; then
+	    echo autoheader failed
+	    exit -4
+	fi
+    fi
+fi
+
+# Replace @VERSION@ in the following files:
+replace_version $mod.spec
+replace_version Makefile.emx
+replace_version config.h.emx
+
+### It would be nice to be able to generate the po files here too,
+### but it's a bit complex, since normally you have to run configure
+### to have po/Makefile exist
+
+cd /tmp
+echo Creating tarball...
+tar czf $ball $mname
+ls -l $ball
+
+if [ -e $mname/$mod.lsm.in ]; then
+    echo Creating .lsm file for release $rel...
+    mklsm $mod $rel $ball < $mname/$mod.lsm.in > $mod.lsm
+fi
+
+rm -r $mname

@@ -1,0 +1,29 @@
+
+p, pre.funcsynopsisinfo { margin-left: 0.4em; margin-right: 0.4em; }
+
+div.funcsynopsis { line-height: 0.5em; }
+
+div.legalnotice { font-size: 80%; margin-left: 2em; }
+
+a:visited { color: darkgreen; }
+
+div.navheader { border-top: thin solid #bbf2bb; }
+div.navfooter { border-bottom: thin solid #bbf2bb; }
+
+pre.programlisting { 
+	background-color: #dddddd;
+	margin-left: 0.6em; margin-right: 1em;
+	padding: 0.3em; width: 50em;
+}
+
+h1.title { border-bottom: thick solid #bbf2bb; padding-bottom: 0.1em; }
+
+div.toc { 
+	border-left: thick solid #bbf2bb; padding-left: 0.5em;
+	}
+
+h2, h3 { padding-left: 0.2em; padding-top: -0.1em; }
+
+h2 { background-color: #bbf2bb; font-size: 110%; 
+     padding-bottom: 0.1em; padding-top: 0.1em; }
+

@@ -1,0 +1,53 @@
+
+    <refentry id="refssldname">
+
+      <refmeta>
+	<refentrytitle>ne_ssl_readable_dname</refentrytitle>
+	<manvolnum>3</manvolnum>
+      </refmeta>
+
+      <refnamediv>
+	<refname id="ne_ssl_readable_dname">ne_ssl_readable_dname</refname> <refpurpose>create a
+	single-line readable string from a distinguised
+	name</refpurpose>
+      </refnamediv>
+      
+      <refsynopsisdiv>
+	
+	<funcsynopsis>
+
+	  <funcsynopsisinfo>#include &lt;ne_session.h&gt;</funcsynopsisinfo>
+
+	  <funcprototype>
+	    <funcdef>const char *<function>ne_ssl_readable_dname</function></funcdef>
+	    <paramdef>const ne_ssl_dname *<parameter>dname</parameter></paramdef>
+	  </funcprototype>
+
+	</funcsynopsis>
+	
+      </refsynopsisdiv>
+
+      <refsect1>
+	<title>Description</title>
+
+	<para>The <function>ne_ssl_readable_dname</function> function
+creates a single-line, human-readable string out of an
+<type>ne_ssl_dname</type> object.  The returned string is
+<function>malloc</function>()-allocated, and must be
+<function>free</function>()d by the caller.</para>
+
+      </refsect1>
+
+      <refsect1>
+	<title>Return value</title>
+
+	<para><function>malloc</function>-allocated string.</para>
+      </refsect1>
+
+      <refsect1>
+	<title>See also</title>
+
+	<para><xref linkend="ne_ssl_certificate"/></para>
+      </refsect1>
+
+    </refentry>

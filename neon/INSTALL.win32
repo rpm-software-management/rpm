@@ -1,0 +1,14 @@
+
+To install neon on Windows you need expat-lite already installed on your system.
+It can be taken from the Apache distribution or downloaded from the expat website.
+Now simply point make to the expat sources:
+
+  nmake /f neon.mak EXPAT_SRC=\path\to\expat-lite
+
+This should work with Microsoft VC++ 5 and 6. 
+
+After compiling the Release subdirectory contains neons.lib, against which you can
+link your program. When you run your program make sure the XMLPARSE.DLL from
+expat is accessable, i.e. is in your PATH.
+
+

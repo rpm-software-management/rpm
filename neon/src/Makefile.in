@@ -1,0 +1,109 @@
+#
+# TODO: document properly.
+#
+# You need to AC_SUBST:
+#  - NEONOBJS
+#  - NEON_TARGET (to libneon.la or libneon.a)
+#  - NEON_INTERFACE_VERSION (if necessary, which it's probably not for you)
+#  - OBJ_EXT (to .lo or .o)
+#
+
+SHELL = @SHELL@
+
+CFLAGS = @CFLAGS@
+LDFLAGS = @LDFLAGS@
+DEFS = @DEFS@
+INCLUDES = -I.. -I.
+top_builddir = @top_builddir@
+CC = @CC@
+CCLD = $(CC)
+AR = @AR@
+RANLIB = @RANLIB@
+
+LIBS = @LIBS@
+
+VPATH = @srcdir@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+libdir = @libdir@
+
+LIBTOOL = @LIBTOOL@
+LINK = $(LIBTOOL) --quiet --mode=link $(CCLD) $(LDFLAGS)
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CFLAGS)
+NEON_INTERFACE_VERSION = @NEON_INTERFACE_VERSION@
+
+OBJECTS = @NEONOBJS@
+
+obj_ext = @OBJ_EXT@
+
+.SUFFIXES:
+.SUFFIXES: .c .lo .o
+
+NEON_TARGET = @NEON_TARGET@
+
+all: $(NEON_TARGET)
+
+.c.lo:
+	$(LIBTOOL) --quiet --mode=compile $(COMPILE) -c $< -o $@
+.c.o:
+	$(COMPILE) -c $< -o $@
+
+libneon.la: $(OBJECTS)
+	$(LINK) -rpath $(libdir) -version-info $(NEON_INTERFACE_VERSION) -o $@ $(LDFLAGS) $(OBJECTS) $(LIBS)
+
+libneon.a: $(OBJECTS)
+	$(AR) cru $@ $(OBJECTS)
+	$(RANLIB) $@
+
+clean:
+	rm -f @NEONOBJS@ $(NEON_TARGET)
+
+neonreq = http_request.h http_utils.h string_utils.h nsocket.h \
+	ne_alloc.h $(top_builddir)/config.h
+
+http_request.$(obj_ext): http_request.c neon_config.h $(neonreq) \
+	neon_i18n.h http_private.h
+
+socket.$(obj_ext): socket.c nsocket.h $(top_builddir)/config.h string_utils.h
+
+http_auth.$(obj_ext): http_auth.c http_auth.h string_utils.h \
+	$(top_builddir)/config.h dates.h base64.h neon_md5.h
+
+dav_basic.$(obj_ext): dav_basic.c $(neonreq) dav_207.h hip_xml.$(obj_ext)
+
+http_basic.$(obj_ext): http_basic.c http_basic.h $(neonreq)
+
+http_utils.$(obj_ext): http_utils.c $(top_builddir)/config.h \
+	http_utils.h dates.h neon_config.h
+
+hip_xml.$(obj_ext): hip_xml.c hip_xml.h string_utils.h http_utils.h \
+	$(top_builddir)/config.h
+
+dav_207.$(obj_ext): dav_207.c dav_207.h hip_xml.h \
+	$(top_builddir)/config.h http_utils.h neon_i18n.h
+
+string_utils.$(obj_ext): string_utils.c string_utils.h ne_alloc.h \
+	$(top_builddir)/config.h
+
+ne_alloc.$(obj_ext): ne_alloc.c ne_alloc.h $(top_builddir)/config.h
+
+dates.$(obj_ext): dates.c dates.h $(top_builddir)/config.h
+
+base64.$(obj_ext): base64.c base64.h $(top_builddir)/config.h
+
+uri.$(obj_ext): uri.c uri.h http_utils.h string_utils.h ne_alloc.h \
+	$(top_builddir)/config.h
+
+md5.$(obj_ext): md5.c neon_md5.h $(top_builddir)/config.h
+
+dav_props.$(obj_ext): dav_props.c $(top_builddir)/config.h \
+	dav_props.h dav_207.h hip_xml.h
+
+dav_locks.$(obj_ext): dav_locks.c $(neonreq) dav_locks.h dav_207.h hip_xml.h
+
+http_redirect.$(obj_ext): http_redirect.c $(neonreq) http_redirect.h \
+	uri.h http_private.h
+
+http_cookies.$(obj_ext): http_cookies.c $(neonreq) http_cookies.h uri.h \
+	http_private.h

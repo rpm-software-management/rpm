@@ -1,0 +1,55 @@
+<refentry id="refsockinit">
+
+  <refmeta>
+    <refentrytitle>ne_sock_init</refentrytitle>
+    <manvolnum>3</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname id="ne_sock_init">ne_sock_init</refname>
+    <refpurpose>perform library initialization</refpurpose>
+  </refnamediv>
+  
+  <refsynopsisdiv>
+
+    <funcsynopsis>
+
+      <funcsynopsisinfo>#include &lt;ne_socket.h&gt;</funcsynopsisinfo>
+
+      <funcprototype>
+        <funcdef>int <function>ne_sock_init</function></funcdef>
+	<void/>
+      </funcprototype>
+
+    </funcsynopsis>
+
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+
+    <para>In some platforms and configurations, &neon; may be using
+    some socket or SSL libraries which require global initialization
+    before use.  To perform this initialization, the
+    <function>ne_sock_init</function> function must be called once
+    before any other library functions are used.</para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Return value</title>
+
+    <para><function>ne_sock_init</function> returns zero on success,
+    or non-zero on error.  If an error occurs, no further use of the
+    &neon; library should be attempted.</para>
+
+  </refsect1>
+
+  <refsect1>
+    <title>See also</title>
+
+    <para><xref linkend="refneon"/></para>
+  </refsect1>
+
+</refentry>
+
