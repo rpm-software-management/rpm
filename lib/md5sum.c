@@ -39,7 +39,7 @@ int mdfile(char *fn, unsigned char *digest) {
     }
 
     sprintf(digest, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
-                    "%02x%02x%02x%02x%2x",
+                    "%02x%02x%02x%02x%02x",
 	    bindigest[0],  bindigest[1],  bindigest[2],  bindigest[3],
 	    bindigest[4],  bindigest[5],  bindigest[6],  bindigest[7],
 	    bindigest[8],  bindigest[9],  bindigest[10], bindigest[11],
