@@ -800,7 +800,7 @@ int rpmHeaderGetEntry(Header h, int_32 tag, int_32 *type,
 	/* XXX FIXME: memory leak. */
         msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 	if (msgstr) {
-	    *p = msgstr;
+	    *p = (void *) msgstr;
 	    if (type)	*type = RPM_STRING_TYPE;
 	    if (c)	*c = 1;
 	    return 1;

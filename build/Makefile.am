@@ -2,10 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-INCLUDES = \
-	-I$(top_srcdir) \
-	-I$(top_srcdir)/lib \
-	-I$(top_srcdir)/popt \
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/lib -I$(top_srcdir)/popt \
 	@INCPATH@
 
 pkgincdir = $(pkgincludedir)
@@ -18,6 +15,7 @@ librpmbuild_la_SOURCES = \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c reqprov.c spec.c
+librpmbuild_la_LIBADD = -lrpm -lpopt
 
 .PHONY:	lclint
 lclint:

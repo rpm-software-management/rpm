@@ -94,6 +94,7 @@ make -C python
 
 %install
 rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_DIR/etc
 
 make DESTDIR="$RPM_BUILD_ROOT" install
 %ifos linux
@@ -133,6 +134,7 @@ fi
 %defattr(-,root,root)
 %doc RPM-PGP-KEY CHANGES GROUPS doc/manual/*
 /bin/rpm
+%dir /etc/rpm
 /usr/bin/rpm2cpio
 /usr/bin/gendiff
 /usr/lib/librpm.so.*
@@ -142,18 +144,15 @@ fi
 /usr/lib/rpm/config.guess
 /usr/lib/rpm/config.sub
 /usr/lib/rpm/convertrpmrc.sh
-/usr/lib/rpm/find-lang.sh
 /usr/lib/rpm/find-prov.pl
 /usr/lib/rpm/find-provides
 /usr/lib/rpm/find-req.pl
 /usr/lib/rpm/find-requires
 /usr/lib/rpm/freshen.sh
-/usr/lib/rpm/getpo.sh
 /usr/lib/rpm/macros
 /usr/lib/rpm/mkinstalldirs
 /usr/lib/rpm/rpmpopt
 /usr/lib/rpm/rpmrc
-/usr/lib/rpm/u_pkg.sh
 /usr/lib/rpm/vpkg-provides.sh
 /usr/lib/rpm/vpkg-provides2.sh
 
@@ -173,9 +172,11 @@ fi
 %defattr(-,root,root)
 /usr/lib/rpm/check-prereqs
 /usr/lib/rpm/cpanflute
+/usr/lib/rpm/find-lang.sh
 /usr/lib/rpm/find-provides.perl
 /usr/lib/rpm/find-requires.perl
 /usr/lib/rpm/get_magic.pl
+/usr/lib/rpm/getpo.sh
 /usr/lib/rpm/http.req
 /usr/lib/rpm/magic.prov
 /usr/lib/rpm/magic.req
@@ -185,6 +186,7 @@ fi
 /usr/lib/rpm/rpmdiff.cgi
 /usr/lib/rpm/rpmgettext
 /usr/lib/rpm/rpmputtext
+/usr/lib/rpm/u_pkg.sh
 
 %ifos linux
 %files python

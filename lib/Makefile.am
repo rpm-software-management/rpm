@@ -2,11 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-INCLUDES = \
-	-I$(top_srcdir) \
-	-I$(top_srcdir)/build \
-	-I$(top_srcdir)/popt \
-	@INCPATH@
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/popt @INCPATH@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
@@ -16,11 +12,8 @@ noinst_HEADERS = \
 	lookup.h md5.h oldheader.h oldrpmdb.h rpm_malloc.h \
 	rpmdb.h rpmlead.h signature.h
 
-mylibs= $(top_builddir)/lib/.libs/librpm.a \
-        $(top_builddir)/popt/.libs/libpopt.a \
-        @INTLLIBS@ \
-        @LIBMISC@
-
+mylibpaths= -L$(top_builddir)/lib -L$(top_builddir)/popt
+mylibs=	-lrpm -lpopt @INTLLIBS@ @LIBMISC@
 
 lib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
@@ -58,5 +51,4 @@ rpmeval: macro.c
 	$(CC) $(CFLAGS) $(DEFS) -DDEBUG_MACROS -DEVAL_MACROS $(INCLUDES) -o $@ $<
 
 tufdio: tufdio.c
-	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs) $(LIBS)
-
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibpaths) $(mylibs) $(LIBS)

@@ -22,6 +22,9 @@
 
 #define	__need___va_list
 #include <stdarg.h>
+#ifndef __ptr_t
+#define	__ptr_t		void *
+#endif
 #ifndef	__GNUC_VA_LIST
 # define __gnuc_va_list	__ptr_t
 #endif

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-02-23 17:41-0500\n"
+"POT-Creation-Date: 2000-02-24 13:14-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2940,7 +2940,7 @@ msgstr "V PORIADKU"
 msgid "opening database mode 0x%x in %s\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: lib/rpmdb.c:160 lib/url.c:442
+#: lib/rpmdb.c:160 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nepodarilo sa otvori» %s: %s"
@@ -3494,37 +3494,37 @@ msgstr "odstraòuje sa záznam z databázy\n"
 msgid "execution of script failed"
 msgstr "vykonanie skriptu zlyhalo"
 
-#: lib/url.c:85
+#: lib/url.c:88
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:102
+#: lib/url.c:105
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:129
+#: lib/url.c:132
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:215
+#: lib/url.c:218
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Heslo pre %s@%s: "
 
-#: lib/url.c:240 lib/url.c:266
+#: lib/url.c:243 lib/url.c:269
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "chyba: %sport musí by» èíslo\n"
 
-#: lib/url.c:402
+#: lib/url.c:405
 msgid "url port must be a number\n"
 msgstr "url port musí by» èíslo\n"
 
 #. XXX Fstrerror
-#: lib/url.c:459
+#: lib/url.c:462
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "nepodarilo sa vytvori» %s\n"

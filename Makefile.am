@@ -14,19 +14,16 @@ EXTRA_PROGRAMS = rpmconvert
 # XXX TODO: python perl
 SUBDIRS = intl po popt build lib misc tools scripts tests doc .
 
-INCLUDES = \
-	-I$(top_srcdir)/build \
-	-I$(top_srcdir)/lib \
-	-I$(top_srcdir)/popt \
+INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/popt \
 	@INCPATH@
 
-mylibs=	$(top_builddir)/build/librpmbuild.la \
-	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/popt/libpopt.la \
-	@INTLLIBS@ \
-	@LIBMISC@
+myldflags= -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/popt
+# XXX libtool generates dependent libs.
+myldadd= $(top_builddir)/build/librpmbuild.la \
+	@INTLLIBS@ @LIBMISC@
 
-LDFLAGS = @LDFLAGS_STATIC@
+LDFLAGS = @LDFLAGS_STATIC@ $(myldflags)
+LDADD = $(myldadd)
 
 rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
@@ -45,9 +42,8 @@ noinst_HEADERS = \
 	acconfig.h	build.h		system.h
 
 rpm_SOURCES =		build.c rpm.c
-rpm_LDADD =		$(mylibs)
 
-$(PROGRAMS): 		$(mylibs)
+$(PROGRAMS): 		$(myldadd)
 
 .PHONY:	lclint
 lclint:
@@ -56,11 +52,10 @@ lclint:
 CVSTAG = r$(subst .,-,$(VERSION))
 
 rpm2cpio_SOURCES =	rpm2cpio.c
-rpm2cpio_LDADD =	$(mylibs)
 
 rpmconvert_SOURCES =	convertdb.c oldrpmdb.c
 ## Libmisc.a is required for rpmconvert.
-rpmconvert_LDADD =	$(mylibs) -lgdbm
+rpmconvert_LDADD =	$(myldadd) -lgdbm
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm

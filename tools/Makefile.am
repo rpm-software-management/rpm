@@ -2,24 +2,21 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-INCLUDES = \
-	-I$(top_srcdir) \
-	-I$(top_srcdir)/build \
-	-I$(top_srcdir)/lib \
-	-I$(top_srcdir)/popt \
-	@INCPATH@ \
-	-I$(top_srcdir)/misc	# XXX for gettext includes
+INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build \
+	-I$(top_srcdir)/lib -I$(top_srcdir)/popt \
+	@INCPATH@ -I$(top_srcdir)/misc
 
 EXTRA_DIST =	fstrcmp.c message.c str-list.c rpmchecksig.c
-mylibs=	$(top_builddir)/build/.libs/librpmbuild.a \
-	$(top_builddir)/lib/.libs/librpm.a \
-	$(top_builddir)/popt/.libs/libpopt.a \
-	@INTLLIBS@ \
-	@LIBMISC@
 
-EXTRA_PROGRAMS = rpmgettext rpmputtext
+EXTRA_PROGRAMS = rpmgettext rpmputtext rpminject
 
-LDADD = $(top_builddir)/lib/.libs/librpm.a $(top_builddir)/popt/.libs/libpopt.a @INTLLIBS@ @LIBMISC@
+# XXX should libtool generate dependent libs?
+myldadd= $(top_builddir)/build/librpmbuild.la \
+	$(top_builddir)/lib/librpm.la \
+	$(top_builddir)/popt/libpopt.la \
+	@INTLLIBS@ @LIBMISC@
+
+LDADD = $(myldadd)
 
 noinst_PROGRAMS = \
 	dump dumpdb javadeps rpmarchive rpmheader rpmlead rpmsignature
@@ -28,17 +25,7 @@ pkgbindir = @RPMCONFIGDIR@
 pkgbin_PROGRAMS = @BUILD_RPMNLSTOOLS@
 
 rpmgettext_SOURCES =	rpmgettext.c
-rpmgettext_LDADD =	$(mylibs)
 
 rpmputtext_SOURCES =	rpmgettext.c
-rpmputtext_LDADD =	$(mylibs)
 
-## Dumpdb requires fprint.o (in libmisc) and this requires realpath
-## (from libmisc).
-dumpdb_LDADD = $(mylibs)
-
-$(PROGRAMS): $(mylibs)
-
-rpminject: rpminject.o $(mylibs)
-	@rm -f rpminject
-	$(LINK) rpminject.o $(mylibs) $(LIBS)
+$(PROGRAMS): $(myldadd)

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-02-23 17:41-0500\n"
+"POT-Creation-Date: 2000-02-24 13:14-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2932,7 +2932,7 @@ msgstr "OK"
 msgid "opening database mode 0x%x in %s\n"
 msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 
-#: lib/rpmdb.c:160 lib/url.c:442
+#: lib/rpmdb.c:160 lib/url.c:445
 #, fuzzy, c-format
 msgid "failed to open %s: %s\n"
 msgstr "nie mo¿na otworzyæ %s: %s"
@@ -3486,37 +3486,37 @@ msgstr "usuwanie wpisu w bazie\n"
 msgid "execution of script failed"
 msgstr "wykonanie skryptu nie powiod³o siê"
 
-#: lib/url.c:85
+#: lib/url.c:88
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:102
+#: lib/url.c:105
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:129
+#: lib/url.c:132
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr ""
 
-#: lib/url.c:215
+#: lib/url.c:218
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Has³o dla %s@%s: "
 
-#: lib/url.c:240 lib/url.c:266
+#: lib/url.c:243 lib/url.c:269
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "b³±d: %sport musi byæ liczb±\n"
 
-#: lib/url.c:402
+#: lib/url.c:405
 msgid "url port must be a number\n"
 msgstr "port musi byæ liczb±\n"
 
 #. XXX Fstrerror
-#: lib/url.c:459
+#: lib/url.c:462
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "utworzenie %s nie powiod³o siê\n"
