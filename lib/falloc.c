@@ -42,7 +42,7 @@ off_t faLseek(faFile fa, off_t off, int op) {
     return fdLseek(faFileno(fa), off, op);
 }
 
-static inline ssize_t faRead(faFile fa, void *buf, size_t count) {
+static inline ssize_t faRead(faFile fa, /*@out@*/void *buf, size_t count) {
     return fdRead(faFileno(fa), buf, count);
 }
 
@@ -55,7 +55,8 @@ int faFcntl(faFile fa, int op, void *lip) {
 }
 
 /* flags here is the same as for open(2) - NULL returned on error */
-faFile faOpen(char * path, int flags, int perms) {
+faFile faOpen(const char * path, int flags, int perms)
+{
     struct faFileHeader newHdr;
     struct faFile_s fas;
     faFile fa;
@@ -72,6 +73,8 @@ faFile faOpen(char * path, int flags, int perms) {
 
     fas.fd = fdOpen(path, flags, perms);
     if (fdFileno(fas.fd) < 0) return NULL;
+    fas.firstFree = 0;
+    fas.fileSize = 0;
 
     /* is this file brand new? */
     end = faLseek(&fas, 0, SEEK_END);
@@ -84,8 +87,7 @@ faFile faOpen(char * path, int flags, int perms) {
 	}
 	fas.firstFree = 0;
 	fas.fileSize = sizeof(newHdr);
-    }
-    else {
+    } else {
 	(void)faLseek(&fas, 0, SEEK_SET);
 	if (faRead(&fas, &newHdr, sizeof(newHdr)) != sizeof(newHdr)) {
 	    fdClose(fas.fd);
@@ -105,13 +107,19 @@ faFile faOpen(char * path, int flags, int perms) {
 	fas.fileSize = faLseek(&fas, 0, SEEK_CUR);
     }
 
-    fa = malloc(sizeof(*fa));
-    if (fa) *fa = fas;
+    if ((fa = malloc(sizeof(*fa))) != NULL) {
+	fa->fd = fas.fd;
+	fa->readOnly = fas.readOnly;
+	fa->firstFree = fas.firstFree;
+	fa->fileSize = fas.fileSize;
+    }
 
     return fa;
 }
 
-unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
+/* returns 0 on failure */
+unsigned int faAlloc(faFile fa, unsigned int size)
+{
     unsigned int nextFreeBlock;
     unsigned int newBlockOffset;
     unsigned int footerOffset;
@@ -126,6 +134,8 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
     struct faFooter footer, origFooter;
     struct faFooter * restoreFooter = NULL;
     int updateHeader = 0;
+
+    memset(&header, 0, sizeof(header));
 
     /* our internal idea of size includes overhead */
     size += sizeof(struct faHeader) + sizeof(struct faFooter);
@@ -144,7 +154,7 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	if (faLseek(fa, nextFreeBlock, SEEK_SET) < 0) return 0;
 	if (faRead(fa, &header, sizeof(header)) != sizeof(header)) return 0;
 
-/* XXX W2DO? exit(1) forces the user to discover rpm --rebuilddb */
+/* XXX W2DO? exit(EXIT_FAILURE) forces the user to discover rpm --rebuilddb */
 	if (!header.isFree) {
 	    fprintf(stderr, _("free list corrupt (%u)- please run\n"
 			"\t\"rpm --rebuilddb\"\n"
@@ -153,7 +163,8 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 			"if \"rpm --rebuilddb\" fails to correct the problem.\n"),
 			nextFreeBlock);
 
-	    exit(1);
+	    exit(EXIT_FAILURE);
+	    /*@notreached@*/
 	}
 
 	if (header.size >= size) {
@@ -318,7 +329,8 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
     return newBlockOffset + sizeof(header); 
 }
 
-void faFree(faFile fa, unsigned int offset) {
+void faFree(faFile fa, unsigned int offset)
+{
     struct faHeader header;
     struct faFooter footer;
     int footerOffset;
@@ -412,7 +424,8 @@ int faFirstOffset(faFile fa) {
     return faNextOffset(fa, 0);
 }
 
-int faNextOffset(faFile fa, unsigned int lastOffset) {
+int faNextOffset(faFile fa, unsigned int lastOffset)
+{
     struct faHeader header;
     int offset;
 
