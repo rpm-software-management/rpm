@@ -1,3 +1,10 @@
+2.2 -> 2.2.1:
+	- made rpmRemovePackage() print message in verbose mode
+	- added support for ftp://user:pass@machine.org/ URL's
+	  during installation - the password will be prompted for
+	  if only the user is given, and anonymous ftp will be used
+	  it both user and password are omitted (as before)
+
 2.1.2 -> 2.2:
 	- don't fail, and do report, if -K can't find a PGP key
 	- handle file names with quotes and spaces when passed to ldd
