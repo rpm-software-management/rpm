@@ -27,27 +27,34 @@ TODO:
 #include "rpmerr.h"
 #include "messages.h"
 #include "rpmlib.h"
+#include "stringbuf.h"
 
 #define LINE_BUF_SIZE 1024
 #define FREE(x) { if (x) free(x); }
 
 struct SpecRec {
     char *name;      /* package base name */
-    char *prep;
-    char *build;
-    char *install;
-    char *clean;
+    StringBuf prep;
+    StringBuf build;
+    StringBuf install;
+    StringBuf clean;
     struct PackageRec *packages;
+    /* The first package record is the "main" package and contains
+     * the bulk of the preamble information.  Subsequent package
+     * records "inherit" from the main record.  Note that the
+     * "main" package may be, in pre-rpm-2.0 terms, a "subpackage".
+     */
 };
 
 struct PackageRec {
     char *subname;   /* If both of these are NULL, then this is      */
     char *newname;   /* the main package.  subname concats with name */
     Header header;
-    char *filelist;
+    StringBuf filelist;
     struct PackageRec *next;
 };
 
+static struct PackageRec *new_packagerec(void);
 static int read_line(FILE *f, char *line);
 static int match_arch(char *s);
 static int match_os(char *s);
@@ -56,10 +63,23 @@ static void reset_spec(void);
 static int find_preamble_line(char *line, char **s);
 static int check_part(char *line, char **s);
 
+static struct PackageRec *new_packagerec(void)
+{
+    struct PackageRec *p = malloc(sizeof(struct PackageRec));
+
+    p->subname = NULL;
+    p->newname = NULL;
+    p->header = newHeader();
+    p->filelist = newStringBuf();
+    p->next = NULL;
+
+    return p;
+}
+
 void free_packagerec(struct PackageRec *p)
 {
     freeHeader(p->header);
-    FREE(p->filelist);
+    freeStringBuf(p->filelist);
     FREE(p->subname);
     FREE(p->newname);
     if (p->next) {
@@ -71,10 +91,10 @@ void free_packagerec(struct PackageRec *p)
 void freeSpec(Spec s)
 {
     FREE(s->name);
-    FREE(s->prep);
-    FREE(s->build);
-    FREE(s->install);
-    FREE(s->clean);
+    freeStringBuf(s->prep);
+    freeStringBuf(s->build);
+    freeStringBuf(s->install);
+    freeStringBuf(s->clean);
     free_packagerec(s->packages);
     free(s);
 }
@@ -232,24 +252,53 @@ static int check_part(char *line, char **s)
 Spec parseSpec(FILE *f)
 {
     char line[LINE_BUF_SIZE];
+    int x, tag, cur_part, t1;
+    StringBuf sb;
     char *s;
-    int cur_part = PREAMBLE_PART;
+
     struct PackageRec *cur_package = NULL;
-
-    int x, tag;
-
+    struct PackageRec *tail_package = NULL;
     Spec spec = (struct SpecRec *) malloc(sizeof(struct SpecRec));
-    spec->name = NULL;
 
-    reset_spec();
+    spec->name = NULL;
+    spec->prep = newStringBuf();
+    spec->build = newStringBuf();
+    spec->install = newStringBuf();
+    spec->clean = newStringBuf();
+    spec->packages = NULL;
+
+    sb = newStringBuf();
+    reset_spec();         /* Reset the parser */
     
+    cur_part = PREAMBLE_PART;
     while ((x = read_line(f, line)) > 0) {
         if ((tag = check_part(line, &s))) {
-	    cur_part = tag;
-	    printf("Switching to: %d\n", cur_part);
+	    printf("Switching to: %d\n", tag);
 	    if (s) {
+	        switch (tag) {
+		  case PREP_PART:
+		  case BUILD_PART:
+		  case INSTALL_PART:
+		  case CLEAN_PART:
+		    error(RPMERR_BADARG, "Tag takes no arguments: %s", s);
+	        }
 	        printf("Subname: %s\n", s);
 	    }
+	    switch (cur_part) {
+	      case PREIN_PART:
+		t1 = RPMTAG_PREIN;
+	      case POSTIN_PART:
+		t1 = RPMTAG_POSTIN;
+	      case PREUN_PART:
+		t1 = RPMTAG_PREUN;
+	      case POSTUN_PART:
+		t1 = RPMTAG_POSTUN;
+		addEntry(cur_package->header, t1,
+			 STRING_TYPE, getStringBuf(sb), 1);
+		break;
+	    }
+	    cur_part = tag;
+	    truncStringBuf(sb);
 	    continue;
         }
       
@@ -263,7 +312,6 @@ Spec parseSpec(FILE *f)
 		  case RPMTAG_SERIAL:
 		  case RPMTAG_SUMMARY:
 		  case RPMTAG_DESCRIPTION:
-		  case RPMTAG_INSTALLTIME:
 		  case RPMTAG_DISTRIBUTION:
 		  case RPMTAG_VENDOR:
 		  case RPMTAG_COPYRIGHT:
@@ -271,29 +319,39 @@ Spec parseSpec(FILE *f)
 		  case RPMTAG_GROUP:
 		  case RPMTAG_URL:
 		    printf("%d: %s\n", tag, s);
+		    addEntry(cur_package->header, tag, STRING_TYPE, s, 1);
 		    break;
 		  default:
 		    printf("Skipping: %s\n", line);
 		}		
 	    } else {
 	        /* Not a recognized preamble part */
-	        printf("Unknown: %s\n", line);
+	        printf("Unknown Field: %s\n", line);
 	    }
 	    break;
 	  case PREP_PART:
+	    appendLineStringBuf(spec->prep, line);
+	    break;
 	  case BUILD_PART:
+	    appendLineStringBuf(spec->build, line);
+	    break;
 	  case INSTALL_PART:
+	    appendLineStringBuf(spec->install, line);
+	    break;
 	  case CLEAN_PART:
+	    appendLineStringBuf(spec->clean, line);
 	    break;
 	  case PREIN_PART:
 	  case POSTIN_PART:
 	  case PREUN_PART:
 	  case POSTUN_PART:
+	    appendLineStringBuf(sb, line);
 	    break;
 	  case FILES_PART:
+	    appendLineStringBuf(cur_package->filelist, line);
 	    break;
 	  default:
-	    /* error(RPMERR_INTERNALBADPART, "Internal error"); */
+	    error(RPMERR_INTERNALBADPART, "Internal error");
 	    printf("%s\n", line);
 	}
     }
@@ -302,7 +360,7 @@ Spec parseSpec(FILE *f)
 	/* error */
 	return NULL;
     }
-    
+
     return spec;
 }
 
