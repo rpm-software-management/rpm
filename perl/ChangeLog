@@ -1,5 +1,8 @@
 1999-07-14  Cristian Gafton  <gafton@redhat.com>
 
+	* rpm.xs: Take the count return value into consideration
+	when processing int return types
+
 	* test.pl: Added test for the number fo tags and the number of 
 	files in the test package
 

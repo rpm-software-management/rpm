@@ -2,7 +2,7 @@
  * This file includes misc functions that were once implemented and retired
  * later in the process
  *
- * $Id: junk.xs,v 1.1 1999/07/14 16:52:52 jbj Exp $
+ * $Id: junk.xs,v 1.2 1999/07/14 17:23:30 gafton Exp $
  */
 
 SV *
