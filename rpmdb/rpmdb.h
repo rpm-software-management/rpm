@@ -160,7 +160,8 @@ struct _dbiIndex {
 /*@null@*/ const char *	dbi_file;
 /*@null@*/ const char *	dbi_subfile;
 
-    int			dbi_cflags;	/*!< db_create/db_env_create flags */
+    int			dbi_ecflags;	/*!< db_env_create flags */
+    int			dbi_cflags;	/*!< db_create flags */
     int			dbi_oeflags;	/*!< common (db,dbenv}->open flags */
     int			dbi_eflags;	/*!< dbenv->open flags */
     int			dbi_oflags;	/*!< db->open flags */
@@ -169,17 +170,22 @@ struct _dbiIndex {
     int			dbi_type;	/*!< db index type */
     unsigned		dbi_mode;	/*!< mode to use on open */
     int			dbi_perms;	/*!< file permission to use on open */
+    long		dbi_shmkey;	/*!< shared memory base key */
     int			dbi_api;	/*!< Berkeley API type */
 
-    int			dbi_tear_down;
-    int			dbi_use_cursors;
-    int			dbi_use_dbenv;
+    int			dbi_tear_down;	/*!< tear down dbenv on close */
+    int			dbi_use_cursors;/*!< access with cursors? (always) */
+    int			dbi_use_dbenv;	/*!< use db environment? */
     int			dbi_get_rmw_cursor;
     int			dbi_no_fsync;	/*!< no-op fsync for db */
     int			dbi_no_dbsync;	/*!< don't call dbiSync */
     int			dbi_lockdbfd;	/*!< do fcntl lock on db fd */
     int			dbi_temporary;	/*!< non-persistent */
     int			dbi_debug;
+
+/*@null@*/ char *	dbi_host;
+    long		dbi_cl_timeout;
+    long		dbi_sv_timeout;
 
 	/* dbenv parameters */
     int			dbi_lorder;
@@ -218,7 +224,7 @@ struct _dbiIndex {
 	/* btree access parameters */
     int			dbi_bt_flags;
     int			dbi_bt_minkey;
-/*@null@*/ int		(*dbi_bt_compare_fcn)(const DBT *, const DBT *);
+/*@null@*/ int		(*dbi_bt_compare_fcn) (const DBT *, const DBT *);
 /*@null@*/ int		(*dbi_bt_dup_compare_fcn) (const DBT *, const DBT *);
 /*@null@*/ size_t	(*dbi_bt_prefix_fcn) (const DBT *, const DBT *);
 	/* recno access parameters */
@@ -227,6 +233,8 @@ struct _dbiIndex {
     unsigned int	dbi_re_len;
     int			dbi_re_pad;
     const char *	dbi_re_source;
+	/* queue access parameters */
+    unsigned int	dbi_q_extentsize;
 
 /*@kept@*/ rpmdb	dbi_rpmdb;
     int		dbi_rpmtag;		/*!< rpm tag used for index */
@@ -348,8 +356,11 @@ int dbiDel(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen,
  * @param flags		(unused)
  * @return		0 on success
  */
-int dbiGet(dbiIndex dbi, DBC * dbcursor, void ** keypp, size_t * keylenp,
-        void ** datapp, size_t * datalenp, unsigned int flags);
+int dbiGet(dbiIndex dbi, DBC * dbcursor, void ** keypp,
+	/*@null@*/ size_t * keylenp,
+	/*@null@*/ void ** datapp, 
+	/*@null@*/ size_t * datalenp,
+	unsigned int flags);
 
 /** \ingroup dbi
  * Store (key,data) pair in index database.

@@ -68,7 +68,9 @@ static void dbiTagsInit(void)
     char * o, * oe;
     int rpmtag;
 
+    /*@-nullpass@*/
     dbiTagStr = rpmExpand("%{_dbi_tags}", NULL);
+    /*@=nullpass@*/
     if (!(dbiTagStr && *dbiTagStr && *dbiTagStr != '%')) {
 	dbiTagStr = _free(dbiTagStr);
 	dbiTagStr = xstrdup(_dbiTagStr_default);
@@ -189,10 +191,12 @@ INLINE int dbiGet(dbiIndex dbi, DBC * dbcursor, void ** keypp, size_t * keylenp,
     int rc;
 
     /* XXX make sure that keylen is correct for "" lookup */
+    /*@-nullderef -nullpass@*/
     NULkey = (keypp && *keypp && *((char *)(*keypp)) == '\0' && keylenp && *keylenp == 0);
-    if (NULkey) (*keylenp)++;
+    if (NULkey && keylenp) (*keylenp)++;
     rc = (*dbi->dbi_vec->cget) (dbi, dbcursor, keypp, keylenp, datapp, datalenp, flags);
-    if (NULkey) (*keylenp)--;
+    if (NULkey && keylenp) (*keylenp)--;
+    /*@=nullderef =nullpass@*/
 
 if (_debug < 0 || dbi->dbi_debug) {
 char keyval[32];
@@ -726,7 +730,8 @@ int rpmdbSync(rpmdb rpmdb)
     return 0;
 }
 
-static /*@only@*/ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
+static /*@only@*/ /*@null@*/
+rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
 		/*@kept@*/ /*@null@*/ const char * home,
 		int mode, int perms, int flags)
 {
@@ -747,14 +752,18 @@ static /*@only@*/ rpmdb newRpmdb(/*@kept@*/ /*@null@*/ const char * root,
     if (perms >= 0)	rpmdb->db_perms = perms;
     if (flags >= 0)	rpmdb->db_flags = flags;
 
+    /*@-nullpass@*/
     rpmdb->db_root = rpmGetPath( (root && *root ? root : _DB_ROOT), NULL);
     rpmdb->db_home = rpmGetPath( (home && *home ? home : _DB_HOME), NULL);
+    /*@=nullpass@*/
     if (!(rpmdb->db_home && rpmdb->db_home[0] != '%')) {
 	rpmError(RPMERR_DBOPEN, _("no dbpath has been set\n"));
 	(void) rpmdbClose(rpmdb);
 	/*@-globstate@*/ return NULL; /*@=globstate@*/
     }
+    /*@-nullpass@*/
     rpmdb->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
+    /*@=nullpass@*/
     rpmdb->db_remove_env = 0;
     rpmdb->db_filter_dups = _filterDbDups;
     rpmdb->db_ndbi = dbiTagsMax;
@@ -790,6 +799,8 @@ static int openDatabase(/*@null@*/ const char * prefix,
 	return 1;
 
     rpmdb = newRpmdb(prefix, dbpath, mode, perms, flags);
+    if (rpmdb == NULL)
+	return 1;
     rpmdb->db_api = _dbapi;
 
     {	int dbix;
@@ -850,7 +861,7 @@ static int openDatabase(/*@null@*/ const char * prefix,
 		xx = dbiGet(dbi, dbcursor, &keyp, NULL, NULL, NULL, 0);
 		if (xx == 0) {
 		    const char * akey = keyp;
-		    if (strchr(akey, '/')) {
+		    if (akey && strchr(akey, '/')) {
 			rpmError(RPMERR_OLDDB, _("old format database is present; "
 				"use --rebuilddb to generate a new format database\n"));
 			rc |= 1;
@@ -956,6 +967,7 @@ static int rpmdbFindByFile(rpmdb rpmdb, /*@null@*/ const char * filespec,
     *matches = xcalloc(1, sizeof(**matches));
     rec = dbiIndexNewItem(0, 0);
     i = 0;
+    if (allMatches != NULL)
     while (i < allMatches->count) {
 	const char ** baseNames, ** dirNames;
 	int_32 * dirIndexes;
@@ -2481,6 +2493,7 @@ int rpmdbRebuild(const char * rootdir)
 
     rpmMessage(RPMMESS_DEBUG, _("opening new database with dbapi %d\n"),
 		_dbapi_rebuild);
+    (void) rpmDefineMacro(NULL, "_rpmdb_rebuild %{nil}", -1);
     if (openDatabase(rootdir, newdbpath, _dbapi_rebuild, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
 	rc = 1;
 	goto exit;

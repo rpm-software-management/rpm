@@ -135,34 +135,51 @@ install-data-local:
 	    rm -f $(DESTDIR)$(bindir)/rpm$$bf ; \
 	    @LN_S@ ../lib/rpm/rpm$$bf $(DESTDIR)$(bindir)/rpm$$bf ; \
 	done
-	@$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/BUILD
+	@for dir in BUILD RPMS SOURCES SPECS SRPMS ; do\
+	    $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/$$dir;\
+	done
 	@case "@build_cpu@" in \
-	*86)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i386;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i486;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i586;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i686;\
+	*86)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i386 ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i486 ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i586 ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/i686 ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/athlon ;;\
-	alpha*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/alpha;\
+	alpha*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/alpha ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/alphaev6 ;;\
-	sparc*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc;\
-		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv9;\
+	sparc*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv9 ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc64 ;;\
 	ia64*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ia64 ;;\
 	s390*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/s390 ;;\
 	powerpc*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/ppc ;;\
+	*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/@build_cpu@ ;;\
 	esac
+	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
 	@case "@build_os@" in \
 	mint) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/m68kmint ;;\
 	solaris*|linux*) \
-	   chmod u+x ./installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" ./installplatform rpmrc macros platform ; \
-	   $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/@build_cpu@ ;;\
-	*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/@build_cpu@ ;;\
+	   chmod u+x ./installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" ./installplatform rpmrc macros platform ;; \
 	esac
-	@$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/noarch
-	@$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/SOURCES
-	@$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/SPECS
-	@$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/SRPMS
 	@$(mkinstalldirs) $(DESTDIR)/var/tmp
+
+.PHONY:	setperms
+setperms:
+	@for f in $(rpmbin_PROGRAMS) ; do\
+	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(rpmbindir)/$$f ;\
+	    $(__CHMOD) u+s $(DESTDIR)$(rpmbindir)/$$f ;\
+	done
+	@for f in $(bin_PROGRAMS) ; do\
+	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(bindir)/$$f ;\
+	done
+	@for f in $(pkglib_PROGRAMS) ; do\
+	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)/$$f ;\
+	    $(__CHMOD) u+s $(DESTDIR)$(pkglibdir)/$$f ;\
+	done
+	@for f in $(pkglib_SCRIPTS) ; do\
+	    $(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)/$$f ;\
+	done
+	@$(__CHOWN) ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(pkglibdir)
+	@$(__CHOWN) -R ${RPMUSER}.${RPMGROUP} $(DESTDIR)$(varprefix)/lib/rpm
 
 .PHONY: tar
 tar:

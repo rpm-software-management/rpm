@@ -29,7 +29,16 @@ export CFLAGS
 
 AC_PROG_CPP
 AC_PROG_GCC_TRADITIONAL
-AC_PROG_INSTALL
+
+RPMUSER=rpm
+RPMUID=37
+RPMGROUP=rpm
+RPMGID=37
+export RPMUSER RPMUID RPMGROUP RPMGID
+AC_SUBST(RPMUSER)
+AC_SUBST(RPMUID)
+AC_SUBST(RPMGROUP)
+AC_SUBST(RPMGID)
 
 AC_PATH_PROG(CTAGS, ctags, /bin/true)
 AC_PATH_PROG(CSCOPE, cscope, /bin/true)
@@ -489,7 +498,7 @@ AC_HEADER_TIME
 
 AC_CHECK_HEADERS(fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h)
 
-AC_CHECK_HEADERS(sys/socket.h sys/select.h)
+AC_CHECK_HEADERS(sys/ipc.h sys/socket.h sys/select.h)
 AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h)
 AC_CHECK_HEADERS(sys/mman.h sys/resource.h sys/utsname.h sys/wait.h)
 
@@ -722,6 +731,8 @@ AC_CHECK_FUNCS(stpcpy stpncpy strcspn)
 AC_CHECK_FUNCS(strdup strerror strtol strtoul strspn strstr)
 
 AC_CHECK_FUNCS(regcomp)
+
+AC_CHECK_FUNCS(ftok)
 
 dnl
 dnl XXX Regex replacement isn't known to be needed yet.

@@ -13,6 +13,10 @@ typedef	int int32_t;
 
 #include "system.h"
 
+#if defined(HAVE_FTOK) && defined(HAVE_SYS_IPC_H)
+#include <sys/ipc.h>
+#endif
+
 #include <db3/db.h>
 
 #include <rpmlib.h>
@@ -180,13 +184,25 @@ static int db_init(dbiIndex dbi, const char *dbhome,
 	rpmdb->db_errfile = stderr;
 
     eflags = (dbi->dbi_oeflags | dbi->dbi_eflags);
-    if ( dbi->dbi_mode & O_CREAT) eflags |= DB_CREATE;
 
     if (dbfile)
 	rpmMessage(RPMMESS_DEBUG, _("opening db environment %s/%s %s\n"),
 		dbhome, dbfile, prDbiOpenFlags(eflags, 1));
 
-    rc = db_env_create(&dbenv, dbi->dbi_cflags);
+    /* XXX Can't do RPC w/o host. */
+    if (dbi->dbi_host == NULL)
+	dbi->dbi_ecflags &= ~DB_CLIENT;
+
+    /* XXX Set a default shm_key. */
+    if ((dbi->dbi_eflags & DB_SYSTEM_MEM) && dbi->dbi_shmkey == 0) {
+#if defined(HAVE_FTOK)
+	dbi->dbi_shmkey = ftok(dbhome, 0);
+#else
+	dbi->dbi_shmkey = 0x44631380;
+#endif
+    }
+
+    rc = db_env_create(&dbenv, dbi->dbi_ecflags);
     rc = cvtdberr(dbi, "db_env_create", rc, _debug);
     if (rc)
 	goto errxit;
@@ -225,6 +241,16 @@ static int db_init(dbiIndex dbi, const char *dbhome,
 	xx = dbenv->set_func_fsync(dbenv, db3_fsync_disable);
 #endif
 	xx = cvtdberr(dbi, "db_env_set_func_fsync", xx, _debug);
+    }
+
+    if ((dbi->dbi_ecflags & DB_CLIENT) && dbi->dbi_host) {
+	xx = dbenv->set_server(dbenv, dbi->dbi_host,
+		dbi->dbi_cl_timeout, dbi->dbi_sv_timeout, 0);
+	xx = cvtdberr(dbi, "dbenv->set_server", xx, _debug);
+    }
+    if (dbi->dbi_shmkey) {
+	xx = dbenv->set_shm_key(dbenv, dbi->dbi_shmkey);
+	xx = cvtdberr(dbi, "dbenv->set_shm_key", xx, _debug);
     }
   }
 #else	/* __USE_DB3 */
@@ -364,9 +390,9 @@ static inline int db3c_open(dbiIndex dbi, /*@out@*/ DBC ** dbcp)
 
     if (db == NULL) return -2;
 #if defined(__USE_DB3)
-    if ((dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
+    if ((dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY)) {
 	flags = DB_WRITECURSOR;
-    else
+    } else
 	flags = 0;
     rc = db->cursor(db, txnid, dbcp, flags);
 #else	/* __USE_DB3 */
@@ -669,13 +695,82 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 #if 0	/* XXX rpmdb: illegal flag combination specified to DB->open */
     if ( dbi->dbi_mode & O_EXCL) oflags |= DB_EXCL;
 #endif
+
+    /*
+     * Map open mode flags onto configured database/environment flags.
+     */
     if (dbi->dbi_temporary) {
-	oflags &= ~DB_RDONLY;
 	oflags |= DB_CREATE;
+	dbi->dbi_oeflags |= DB_CREATE;
+	oflags &= ~DB_RDONLY;
+	dbi->dbi_oflags &= ~DB_RDONLY;
     } else {
-	if(!(dbi->dbi_mode & O_RDWR)) oflags |= DB_RDONLY;
-	if ( dbi->dbi_mode & O_CREAT) oflags |= DB_CREATE;
+	if (!(dbi->dbi_mode & (O_RDWR|O_WRONLY))) oflags |= DB_RDONLY;
+	if (dbi->dbi_mode & O_CREAT) {
+	    oflags |= DB_CREATE;
+	    dbi->dbi_oeflags |= DB_CREATE;
+	}
+#ifdef	DANGEROUS
 	if ( dbi->dbi_mode & O_TRUNC) oflags |= DB_TRUNCATE;
+#endif
+    }
+
+    /*
+     * Avoid incompatible DB_CREATE/DB_RDONLY flags on DBENV->open.
+     */
+    if (dbi->dbi_use_dbenv) {
+	if (access(dbhome, W_OK|F_OK) == -1) {
+
+	    /* dbhome is unwritable, don't attempt DB_CREATE on DB->open ... */
+	    oflags &= ~DB_CREATE;
+
+	    /* ... but DBENV->open might still need DB_CREATE ... */
+	    if (!(dbi->dbi_eflags & DB_PRIVATE)) {
+		dbi->dbi_oeflags &= ~DB_CREATE;
+		dbi->dbi_oeflags &= ~DB_THREAD;
+		dbi->dbi_eflags = 0;
+		dbi->dbi_eflags |= DB_JOINENV;
+	    }
+
+	    /* ... DB_RDONLY seems OK ...  */
+	    oflags |= DB_RDONLY;
+
+	    /* ... so DB_WRITECURSOR won't be needed ...  */
+	    dbi->dbi_oflags |= DB_RDONLY;
+	} else {
+	    dbi->dbi_eflags &= ~DB_JOINENV;
+	}
+    }
+
+    /*
+     * Avoid incompatible DB_CREATE/DB_RDONLY flags on DB->open.
+     */
+    if ((oflags & DB_CREATE) && (oflags & DB_RDONLY)) {
+	/* Otherwise dbhome is writable, and DB->open flags may conflict. */
+	const char * dbfullpath;
+	const char * sdn = (dbfile ? dbfile : tagName(dbi->dbi_rpmtag));
+	char * t;
+	int nb;
+
+	nb = strlen(dbhome) + 1 + strlen(sdn);
+	dbfullpath = t = alloca(nb + 1);
+	t = stpcpy( stpcpy( stpcpy( t, dbhome), "/"), sdn);
+
+	if (access(dbfullpath, F_OK) == -1) {
+	    /* If file does not exist, DB->open might create ... */
+	    oflags &= ~DB_RDONLY;
+	} else {
+	    /* If file exists, DB->open need not create ... */
+	    oflags &= ~DB_CREATE;
+	}
+
+	/* Only writers need DB_WRITECURSOR ... */
+	if (!(oflags & DB_RDONLY) && access(dbfullpath, W_OK) == 0) {
+	    dbi->dbi_oflags &= ~DB_RDONLY;
+	} else {
+	    dbi->dbi_oflags |= DB_RDONLY;
+	}
+
     }
 
     dbi->dbi_dbinfo = NULL;
@@ -692,61 +787,94 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	rc = db_create(&db, dbenv, dbi->dbi_cflags);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
-	    if (dbi->dbi_lorder) {
+	    if (rc == 0 && dbi->dbi_lorder) {
 		rc = db->set_lorder(db, dbi->dbi_lorder);
 		rc = cvtdberr(dbi, "db->set_lorder", rc, _debug);
 	    }
-	    if (dbi->dbi_cachesize) {
+	    if (rc == 0 && dbi->dbi_cachesize) {
 		rc = db->set_cachesize(db, 0, dbi->dbi_cachesize, 0);
 		rc = cvtdberr(dbi, "db->set_cachesize", rc, _debug);
 	    }
-	    if (dbi->dbi_pagesize) {
+	    if (rc == 0 && dbi->dbi_pagesize) {
 		rc = db->set_pagesize(db, dbi->dbi_pagesize);
 		rc = cvtdberr(dbi, "db->set_pagesize", rc, _debug);
 	    }
-	    if (rpmdb->db_malloc) {
+	    if (rc == 0 && rpmdb->db_malloc) {
 		rc = db->set_malloc(db, rpmdb->db_malloc);
 		rc = cvtdberr(dbi, "db->set_malloc", rc, _debug);
 	    }
-	    if (oflags & DB_CREATE) {
+	    if (rc == 0 && oflags & DB_CREATE) {
 		switch(dbi->dbi_type) {
 		default:
 		case DB_HASH:
 		    if (dbi->dbi_h_ffactor) {
 			rc = db->set_h_ffactor(db, dbi->dbi_h_ffactor);
 			rc = cvtdberr(dbi, "db->set_h_ffactor", rc, _debug);
+			if (rc) break;
 		    }
 #if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 1
 		    if (dbi->dbi_h_hash_fcn) {
 			rc = db->set_h_hash(db, dbi->dbi_h_hash_fcn);
 			rc = cvtdberr(dbi, "db->set_h_hash", rc, _debug);
+			if (rc) break;
 		    }
 #endif
 		    if (dbi->dbi_h_nelem) {
 			rc = db->set_h_nelem(db, dbi->dbi_h_nelem);
 			rc = cvtdberr(dbi, "db->set_h_nelem", rc, _debug);
+			if (rc) break;
 		    }
 		    if (dbi->dbi_h_flags) {
 			rc = db->set_flags(db, dbi->dbi_h_flags);
 			rc = cvtdberr(dbi, "db->set_h_flags", rc, _debug);
+			if (rc) break;
 		    }
 /* XXX db-3.2.9 has added a DB arg to the callback. */
 #if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 1
 		    if (dbi->dbi_h_dup_compare_fcn) {
 			rc = db->set_dup_compare(db, dbi->dbi_h_dup_compare_fcn);
 			rc = cvtdberr(dbi, "db->set_dup_compare", rc, _debug);
+			if (rc) break;
 		    }
 #endif
 		    break;
 		case DB_BTREE:
+		    break;
 		case DB_RECNO:
+		    if (dbi->dbi_re_delim) {
+			rc = db->set_re_delim(db, dbi->dbi_re_delim);
+			rc = cvtdberr(dbi, "db->set_re_selim", rc, _debug);
+			if (rc) break;
+		    }
+		    if (dbi->dbi_re_len) {
+			rc = db->set_re_len(db, dbi->dbi_re_len);
+			rc = cvtdberr(dbi, "db->set_re_len", rc, _debug);
+			if (rc) break;
+		    }
+		    if (dbi->dbi_re_pad) {
+			rc = db->set_re_pad(db, dbi->dbi_re_pad);
+			rc = cvtdberr(dbi, "db->set_re_pad", rc, _debug);
+			if (rc) break;
+		    }
+		    if (dbi->dbi_re_source) {
+			rc = db->set_re_source(db, dbi->dbi_re_source);
+			rc = cvtdberr(dbi, "db->set_re_source", rc, _debug);
+			if (rc) break;
+		    }
+		    break;
 		case DB_QUEUE:
+		    if (dbi->dbi_q_extentsize) {
+			rc = db->set_q_extentsize(db, dbi->dbi_q_extentsize);
+			rc = cvtdberr(dbi, "db->set_q_extentsize", rc, _debug);
+			if (rc) break;
+		    }
 		    break;
 		}
 	    }
 	    dbi->dbi_dbinfo = NULL;
 
-	    {	const char * dbfullpath;
+	    if (rc == 0) {
+		const char * dbfullpath;
 		const char * dbpath;
 		char * t;
 		int nb;
@@ -763,6 +891,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
 		rc = db->open(db, dbpath, dbsubfile,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
+
+		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN)
+		    dbi->dbi_type = db->get_type(db);
 	    }
 
 	    /* XXX return rc == errno without printing */
@@ -788,13 +919,14 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		    l.l_whence = 0;
 		    l.l_start = 0;
 		    l.l_len = 0;
-		    l.l_type = (dbi->dbi_mode & O_RDWR) ? F_WRLCK : F_RDLCK;
+		    l.l_type = (dbi->dbi_mode & (O_RDWR|O_WRONLY))
+				? F_WRLCK : F_RDLCK;
 		    l.l_pid = 0;
 
 		    if (fcntl(fdno, F_SETLK, (void *) &l)) {
 			rpmError(RPMERR_FLOCK,
 				_("cannot get %s lock on %s/%s\n"),
-				((dbi->dbi_mode & O_RDWR)
+				((dbi->dbi_mode & (O_RDWR|O_WRONLY))
 					? _("exclusive") : _("shared")),
 				dbhome, (dbfile ? dbfile : ""));
 			rc = 1;
