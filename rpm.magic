@@ -14,5 +14,8 @@
 >>8	beshort		5		PowerPC
 >>8	beshort		6		68000
 >>8	beshort		7		SGI
+>>8	beshort		8		RS6000
+>>8	beshort		10		usparc
 >>8	beshort		11		MIPS little endian
+>>8	beshort		12		ARM
 >>10	string		x		%s

@@ -34,6 +34,7 @@
 	- there must be a { between two % in a query format (unless %% is used)
 
 2.5.5 -> 2.5.6:
+	- added ARM patches.
 	- fix incorrect directory permissions using %attr/%defattr.
 	- permit "rpm -q --specfile ... file.spec" queries.
 	- strncasecmp on spec file separators (KDE has %Description).
