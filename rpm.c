@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <sys/stat.h>
 
@@ -28,11 +29,8 @@
 #define GETOPT_PROVIDES		1008
 #define GETOPT_QUERYBYNUMBER	1009
 #define GETOPT_DBPATH		1010
-#define GETOPT_PREFIX		1011
 #define GETOPT_TIMECHECK        1012
 #define GETOPT_REBUILDDB        1013
-#define GETOPT_FTPPORT          1014
-#define GETOPT_FTPPROXY         1015
 #define GETOPT_INFO             1016
 
 char * version = VERSION;
@@ -62,7 +60,7 @@ static void printVersion(void) {
 }
 
 static void printBanner(void) {
-    puts(_("Copyright (C) 1995 - Red Hat Software"));
+    puts(_("Copyright (C) 1997 - Red Hat Software"));
     puts(_("This may be freely redistributed under the terms of the GNU "
 	   "Public License"));
 }
@@ -204,6 +202,8 @@ static void printHelp(void) {
     puts(         "");
     puts(         "    -V");
     puts(         "    -y");
+    printHelpLine("    --pipe <cmd>        ",
+		  _("send stdout to <cmd>"));
     printHelpLine("    --verify              ",
 		  _("verify a package installation using the same same package specification options as -q"));
     printHelpLine("      --dbpath <dir>      ",
@@ -395,6 +395,7 @@ int main(int argc, char ** argv) {
     char * rcfile = NULL, * queryFormat = NULL, * prefix = NULL;
     char buildChar = ' ';
     char * rootdir = "/";
+    char * pipeOutput = NULL;
     char * specFile;
     char *passPhrase = "";
     char *buildRootOverride = NULL;
@@ -402,32 +403,35 @@ int main(int argc, char ** argv) {
     char * ftpProxy = NULL, * ftpPort = NULL;
     char *os = NULL;
     char * optArg;
+    pid_t pipeChild = 0;
     char * pkg;
     char * smallArgv[2] = { NULL, NULL };
     char ** currarg;
     poptContext optCon;
     int ec = 0;
+    int status;
+    int p[2];
     struct poptOption optionsTable[] = {
 	    { "addsign", '\0', 0, 0, GETOPT_ADDSIGN },
 	    { "all", 'a', 0, 0, 'a' },
-	    { "build", 'b', POPT_ARG_YES, 0, 'b' },
-	    { "buildarch", '\0', POPT_ARG_YES, 0, 0 },
-	    { "buildos", '\0', POPT_ARG_YES, 0, 0 },
-	    { "buildroot", '\0', POPT_ARG_YES, 0, GETOPT_BUILDROOT },
+	    { "build", 'b', POPT_ARG_STRING, 0, 'b' },
+	    { "buildarch", '\0', POPT_ARG_STRING, 0, 0 },
+	    { "buildos", '\0', POPT_ARG_STRING, 0, 0 },
+	    { "buildroot", '\0', POPT_ARG_STRING, 0, GETOPT_BUILDROOT },
 	    { "checksig", 'K', 0, 0, 'K' },
 	    { "clean", '\0', 0, &clean, 0 },
 	    { "configfiles", 'c', 0, 0, 'c' },
-	    { "dbpath", '\0', POPT_ARG_YES, 0, GETOPT_DBPATH },
+	    { "dbpath", '\0', POPT_ARG_STRING, 0, GETOPT_DBPATH },
 	    { "docfiles", 'd', 0, 0, 'd' },
 	    { "dump", '\0', 0, &dump, 0 },
 	    { "erase", 'e', 0, 0, 'e' },
             { "excludedocs", '\0', 0, &excldocs, 0},
 	    { "file", 'f', 0, 0, 'f' },
 	    { "force", '\0', 0, &force, 0 },
-	    { "ftpport", '\0', POPT_ARG_YES, 0, GETOPT_FTPPORT },
-	    { "ftpproxy", '\0', POPT_ARG_YES, 0, GETOPT_FTPPROXY },
+	    { "ftpport", '\0', POPT_ARG_STRING, &ftpPort, 0},
+	    { "ftpproxy", '\0', POPT_ARG_STRING, &ftpProxy, 0},
 	    { "group", 'g', 0, 0, 'g' },
-	    { "hash", 'h', 0, &showHash, 'h' },
+	    { "hash", 'h', 0, &showHash, 0 },
 	    { "help", '\0', 0, &help, 0 },
 	    { "ignorearch", '\0', 0, &ignoreArch, 0 },
 	    { "ignoreos", '\0', 0, &ignoreOs, 0 },
@@ -444,15 +448,16 @@ int main(int argc, char ** argv) {
 	    { "oldpackage", '\0', 0, &oldPackage, 0 },
 	    { "package", 'p', 0, 0, 'p' },
 	    { "percent", '\0', 0, &showPercents, 0 },
-	    { "prefix", '\0', POPT_ARG_YES, 0, GETOPT_PREFIX },
+	    { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0 },
+	    { "prefix", '\0', POPT_ARG_STRING, &prefix, 0 },
 	    { "provides", '\0', 0, 0, GETOPT_PROVIDES },
-	    { "qf", '\0', POPT_ARG_YES, 0, GETOPT_QUERYFORMAT },
+	    { "qf", '\0', POPT_ARG_STRING, 0, GETOPT_QUERYFORMAT },
 	    { "query", 'q', 0, 0, 'q' },
 	    { "querybynumber", '\0', 0, 0, GETOPT_QUERYBYNUMBER },
-	    { "queryformat", '\0', POPT_ARG_YES, 0, GETOPT_QUERYFORMAT },
+	    { "queryformat", '\0', POPT_ARG_STRING, 0, GETOPT_QUERYFORMAT },
 	    { "querytags", '\0', 0, &queryTags, 0 },
 	    { "quiet", '\0', 0, &quiet, 0 },
-	    { "rcfile", '\0', POPT_ARG_YES, 0, 0 },
+	    { "rcfile", '\0', POPT_ARG_STRING, 0, 0 },
 	    { "recompile", '\0', 0, 0, GETOPT_RECOMPILE },
 	    { "rebuild", '\0', 0, 0, GETOPT_REBUILD },
 	    { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB },
@@ -460,7 +465,7 @@ int main(int argc, char ** argv) {
 	    { "replacepkgs", '\0', 0, &replacePackages, 0 },
 	    { "resign", '\0', 0, 0, GETOPT_RESIGN },
 	    { "requires", 'R', 0, 0, 'R' },
-	    { "root", 'r', POPT_ARG_YES, 0, 'r' },
+	    { "root", 'r', POPT_ARG_STRING, 0, 'r' },
 	    { "scripts", '\0', 0, &queryScripts, 0 },
 	    { "short-circuit", '\0', 0, &shortCircuit, 0 },
 	    { "showrc", '\0', 0, 0, 0 },
@@ -472,7 +477,7 @@ int main(int argc, char ** argv) {
 	    { "stdin-query", 'Q', 0, 0, 'Q' },
 	    { "stdin-verify", 'Y', 0, 0, 'Y' },
 	    { "test", '\0', 0, &test, 0 },
-	    { "timecheck", '\0', POPT_ARG_YES, 0, GETOPT_TIMECHECK },
+	    { "timecheck", '\0', POPT_ARG_STRING, 0, GETOPT_TIMECHECK },
 	    { "upgrade", 'U', 0, 0, 'U' },
 	    { "uninstall", 'u', 0, 0, 'u' },
 	    { "verbose", 'v', 0, 0, 'v' },
@@ -521,7 +526,9 @@ int main(int argc, char ** argv) {
 	exit(0);
     }
 
-    optCon = poptGetContext("RPM", argc, argv, optionsTable, 0);
+    optCon = poptGetContext("rpm", argc, argv, optionsTable, 0);
+    poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
+    poptReadDefaultConfig(optCon, 1);
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	optArg = poptGetOptArg(optCon);
@@ -701,22 +708,6 @@ int main(int argc, char ** argv) {
 	    verifySource = VERIFY_EVERY;
 	    break;
 
-	  case 'h':
-	    showHash = 1;
-	    break;
-
-	  case 'r':
-	    if (optArg[0] != '/') 
-		argerror(_("arguments to --root (-r) must begin with a /"));
-	    rootdir = optArg;
-	    break;
-
-	  case GETOPT_PREFIX:
-	    if (optArg[0] != '/') 
-		argerror(_("arguments to --prefix must begin with a /"));
-	    prefix = optArg;
-	    break;
-
 	  case GETOPT_QUERYFORMAT:
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
 		argerror(_("only one major mode may be specified"));
@@ -810,16 +801,8 @@ int main(int argc, char ** argv) {
 	    bigMode = MODE_REBUILDDB;
 	    break;
 
-	  case GETOPT_FTPPORT:
-	    ftpPort = optArg;
-	    break;
-
-	  case GETOPT_FTPPROXY:
-	    ftpProxy = optArg;
-	    break;
-	    
 	  default:
-	    fprintf(stderr, "Internal error :-(\n");
+	    fprintf(stderr, "Internal error in argument processing :-(\n");
 	    exit(1);
 	}
     }
@@ -874,6 +857,9 @@ int main(int argc, char ** argv) {
 
     if (bigMode != MODE_INSTALL && prefix)
 	argerror(_("--prefix may only be used when installing new packages"));
+
+    if (prefix && prefix[0] != '/') 
+	argerror(_("arguments to --prefix must begin with a /"));
 
     if (bigMode != MODE_INSTALL && showHash)
 	argerror(_("--hash (-h) may only be specified during package "
@@ -936,6 +922,9 @@ int main(int argc, char ** argv) {
 		 "installation, erasure, querying, and "
 		 "database rebuilds"));
 
+    if (rootdir && rootdir[0] != '/')
+	argerror(_("arguments to --root (-r) must begin with a /"));
+
     if (bigMode != MODE_BUILD && clean) 
 	argerror(_("--clean may only be used during package building"));
 
@@ -994,6 +983,22 @@ int main(int argc, char ** argv) {
     } else {
         /* Override any rpmrc setting */
         rpmSetVar(RPMVAR_SIGTYPE, "none");
+    }
+
+    if (pipeOutput) {
+	pipe(p);
+
+	if (!(pipeChild = fork())) {
+	    close(p[1]);
+	    dup2(p[0], 0);
+	    close(p[0]);
+	    execl("/bin/sh", "/bin/sh", "-c", pipeOutput, NULL);
+	    fprintf(stderr, "exec failed\n");
+	}
+
+	close(p[0]);
+	dup2(p[1], 1);
+	close(p[1]);
     }
 	
     switch (bigMode) {
@@ -1192,6 +1197,11 @@ int main(int argc, char ** argv) {
     }
 
     poptFreeContext(optCon);
+
+    if (pipeChild) {
+	fclose(stdout);
+	waitpid(pipeChild, &status, 0);
+    }
 
     return ec;
 }
