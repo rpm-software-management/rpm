@@ -2424,11 +2424,6 @@ static headerSprintfArgs hsaInit(/*@returned@*/ headerSprintfArgs hsa)
 	NULL));
 
     if (hsa != NULL) {
-#if 0
-if (tag != NULL) {
-fprintf(stderr, "*** hsaInit(%d): fmt %p ext[%d] %p #%d 1? %d format \"%s\" type \"%s\" pad %d\n", hsa->format->type, tag->fmt, tag->extNum, tag->ext, tag->tag, tag->justOne, tag->format, tag->type, tag->pad);
-}
-#endif
 	hsa->i = 0;
 	if (tag != NULL && tag->tag == -2)
 	    hsa->hi = headerInitIterator(hsa->h);
@@ -2472,12 +2467,6 @@ static sprintfToken hsaNext(/*@returned@*/ headerSprintfArgs hsa)
 	}
     }
 
-#if 0
-if (tag != NULL) {
-fprintf(stderr, "*** hsaNext(%d): fmt %p ext[%d] %p #%d 1? %d format \"%s\" type \"%s\" pad %d ret %p\n", hsa->format->type, tag->fmt, tag->extNum, tag->ext, tag->tag, tag->justOne, tag->format, tag->type, tag->pad, fmt);
-}
-#endif
-
 /*@-dependenttrans -onlytrans@*/
     return fmt;
 /*@=dependenttrans =onlytrans@*/
@@ -2491,19 +2480,6 @@ fprintf(stderr, "*** hsaNext(%d): fmt %p ext[%d] %p #%d 1? %d format \"%s\" type
 static headerSprintfArgs hsaFini(/*@returned@*/ headerSprintfArgs hsa)
 	/*@modifies hsa */
 {
-#if 0
-    sprintfTag tag =
-	(hsa->format->type == PTOK_TAG
-	    ? &hsa->format->u.tag :
-	(hsa->format->type == PTOK_ARRAY
-	    ? &hsa->format->u.array.format->u.tag :
-	NULL));
-
-if (tag != NULL) {
-fprintf(stderr, "*** hsaFini(%d): fmt %p ext[%d] %p #%d 1? %d format \"%s\" type \"%s\" pad %d\n", hsa->format->type, tag->fmt, tag->extNum, tag->ext, tag->tag, tag->justOne, tag->format, tag->type, tag->pad);
-}
-#endif
-
     if (hsa != NULL) {
 	hsa->hi = headerFreeIterator(hsa->hi);
 	hsa->i = 0;
