@@ -4,6 +4,7 @@ autom4te*
 config.h
 config.log
 config.status
+configure
 libltdlc.la
 libtool
 ltdl.lo
