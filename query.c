@@ -49,13 +49,6 @@ static char * defaultQueryFormat =
 	    "Description :\n%{DESCRIPTION}\n";
 static char * requiresQueryFormat = 
 	    "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]";
-static char * providesQueryFormat = "[%{PROVIDES}\n]";
-static char * scriptQueryFormat = 
-	    "preinstall script:\n%{RPMTAG_PREIN}\n"
-	    "postinstall script:\n%{RPMTAG_POSTIN}\n"
-	    "preuninstall script:\n%{RPMTAG_PREUN}\n"
-	    "postuninstall script:\n%{RPMTAG_POSTUN}\n"
-	    "verify script:\n%{VERIFYSCRIPT}\n";
 
 static int queryHeader(Header h, char * chptr) {
     int count = 0;
@@ -368,11 +361,6 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 	    queryHeader(h, queryFormat);
 	}
 
-	if (queryFlags & QUERY_FOR_PROVIDES) {
-	    if (headerIsEntry(h, RPMTAG_PROVIDES))
-		queryHeader(h, providesQueryFormat);
-	}
-
 	if (queryFlags & QUERY_FOR_REQUIRES) {
 	    if (headerIsEntry(h, RPMTAG_REQUIREFLAGS))
 		queryHeader(h, requiresQueryFormat);
@@ -486,10 +474,6 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 		if (fileOwnerList) free(fileOwnerList);
 		if (fileGroupList) free(fileGroupList);
 	    }
-	}
-
-	if (queryFlags & QUERY_FOR_SCRIPTS) {
-	    queryHeader(h, scriptQueryFormat);
 	}
     }
 }
@@ -645,14 +629,13 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
     struct urlContext context;
     int isUrl = 0;
 
-    if (source != QUERY_SRPM && source != QUERY_RPM) {
+    if (source != QUERY_RPM) {
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
 	    exit(1);
 	}
     }
 
     switch (source) {
-      case QUERY_SRPM:
       case QUERY_RPM:
 	if (urlIsURL(arg)) {
 	    isUrl = 1;
@@ -714,7 +697,6 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	}
 	break;
 
-      case QUERY_SGROUP:
       case QUERY_GROUP:
 	if (rpmdbFindByGroup(db, arg, &matches)) {
 	    fprintf(stderr, "group %s does not contain any packages\n", arg);
@@ -745,7 +727,6 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	}
 	break;
 
-      case QUERY_SPATH:
       case QUERY_PATH:
 	if (*arg != '/') {
 	    char path[255];
@@ -779,7 +760,6 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	}
 	break;
 
-      case QUERY_SPACKAGE:
       case QUERY_PACKAGE:
 	rc = findPackageByLabel(db, arg, &matches);
 	if (rc == 1) {
@@ -795,7 +775,7 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	break;
     }
    
-    if (source != QUERY_SRPM && source != QUERY_RPM) {
+    if (source != QUERY_RPM) {
 	rpmdbClose(db);
     }
 

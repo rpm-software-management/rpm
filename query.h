@@ -3,9 +3,8 @@
 
 #include <rpmlib.h>
 
-enum querysources { QUERY_PATH, QUERY_PACKAGE, QUERY_ALL, QUERY_SPATH,
-		    QUERY_SPACKAGE, QUERY_RPM, QUERY_SRPM, QUERY_GROUP,
-		    QUERY_SGROUP, QUERY_WHATPROVIDES, QUERY_WHATREQUIRES,
+enum querysources { QUERY_PATH, QUERY_PACKAGE, QUERY_ALL, QUERY_RPM, 
+		    QUERY_GROUP, QUERY_WHATPROVIDES, QUERY_WHATREQUIRES,
 		    QUERY_DBOFFSET };
 
 #define QUERY_FOR_INFO 		(1 << 0)
@@ -13,9 +12,7 @@ enum querysources { QUERY_PATH, QUERY_PACKAGE, QUERY_ALL, QUERY_SPATH,
 #define QUERY_FOR_STATE		(1 << 2)
 #define QUERY_FOR_DOCS		(1 << 3)
 #define QUERY_FOR_CONFIG	(1 << 4)
-#define QUERY_FOR_SCRIPTS	(1 << 5)
 #define QUERY_FOR_REQUIRES      (1 << 6)
-#define QUERY_FOR_PROVIDES      (1 << 7)
 #define QUERY_FOR_DUMPFILES     (1 << 8)
 
 int doQuery(char * prefix, enum querysources source, int queryFlags, 
