@@ -37,7 +37,7 @@ misc.o: misc.c
 
 # ditto
 rpmrc.o: rpmrc.c
-	$(CC) $(CFLAGS) -DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DMACROFILE=\"$(MACROFILE)\" -o $@ -c $<
+	$(CC) $(CFLAGS) -DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DMACROFILES=\"$(MACROFILES)\" -o $@ -c $<
 
 $(PROGS): $(LIBRPM)
 

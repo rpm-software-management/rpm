@@ -478,6 +478,7 @@ addMacro(&globalMacroContext, "_buildos_lc", NULL, buf, RMIL_RPMRC);
 /*    rpmSetMachine(canonarch, canonos); */
 
 
+/* XXX getMacroBody() may be nuked -- (see below) */
 buildarch = (char *) getMacroBody(&globalMacroContext, "buildarch");
 buildos = (char *) getMacroBody(&globalMacroContext, "buildos");
 
@@ -516,6 +517,9 @@ static void setPathDefault(int var, char *macroname, char *subdir) {
 }
 
 static void setDefaults(void) {
+
+    /* Read in all macro files (and also set maximum recursion depth) */
+    initMacros(&globalMacroContext, MACROFILES);
 
     rpmSetVar(RPMVAR_OPTFLAGS, "-O2");
     rpmSetVar(RPMVAR_SIGTYPE, "none");
@@ -655,6 +659,18 @@ static int doReadRC(int fd, char * filename) {
 	    }
 
 	    switch (option->var) {
+/*
+ * XXX This can *easily* be achieved by just 
+ *	1) Create a file someplace.
+ *	2) Put whatever macros you want in it.
+ *	3) Add the file name to MACROFILE in Makefile.inc.in --
+ *	the compile parameter is actually a ':' separated list.
+ * I'll change the name to MACROFILES :-)
+ *
+ *	Alternatively, I'd rather just slurp the entire rpmrc file
+ *	and run it through expandMacros() before parsing here -- all %define
+ *	lines will work just fine without adding more syntax here.
+ */
 	    case RPMVAR_SETENV:
 	      {
  		char * macroname, *envname;
@@ -1095,6 +1111,19 @@ void rpmRebuildPlatformVars(char ** buildplatform, char **canonarch,
     int x;
 /*
 */
+
+/*
+ * XXX getMacroBody() may be nuked -- I originally added it for tdyas and it's
+ * kinda half-baked (remember, each macro is actually a stack so it's not
+ * clear which body is intended).
+ *
+ * You can, however, always do
+ *	char buf[BUFSIZ];
+ *	strcpy(buf, "%_buildplatform_preset")
+ *	expandMacros(NULL, &globalMacroContext, buf, sizeof(buf))) {
+ *	presetbuildplatform = strdup(buf);
+ *
+ */
     presetbuildplatform= (char *) getMacroBody(&globalMacroContext,
               "_buildplatform_preset");
 
@@ -1119,6 +1148,15 @@ void rpmRebuildPlatformVars(char ** buildplatform, char **canonarch,
       b = malloc(strlen(co)+strlen(ca)+2);
       sprintf(b,"%s-%s",ca,co);
 
+/*
+ * XXX All this macro pokery/jiggery could be achieved (I think)
+ * by doing a delayed
+ *	initMacros(&globalMacroContext, PER-PLATFORM-MACRO-FILE-NAMES);
+ * (I haven't looked at the code :-)
+ *
+ * In fact, if you want to get really sophisticatedf, you could encapsulate
+ * within per-platform MacroContexts (but I'm not quite ready for that yet).
+ */
       delMacro(&globalMacroContext, "buildplatform");
 
     if (!presetbuildplatform) {

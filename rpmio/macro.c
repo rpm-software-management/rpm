@@ -1128,7 +1128,7 @@ initMacros(MacroContext *mc, const char *macrofile)
 				continue;
 			n++;
 			mb->mc = mc;	/* XXX just enough to get by */
-			doDefine(mb, n, RMIL_MACROFILE, 0);
+			doDefine(mb, n, RMIL_MACROFILES, 0);
 		}
 		fclose(fp);
 	}

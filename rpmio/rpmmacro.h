@@ -19,7 +19,7 @@ typedef struct MacroContext {
 /*
  * Markers for types of macros added throughout rpm.
  */
-#define	RMIL_MACROFILE	-9
+#define	RMIL_MACROFILES	-9
 #define	RMIL_RPMRC	-7
 #define	RMIL_SPEC	-1
 #define	RMIL_OLDSPEC	-1
