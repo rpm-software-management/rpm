@@ -92,12 +92,52 @@ void handleComments(char *s)
 
 static void forceIncludeFile(Spec spec, const char * fileName)
 {
-    struct OpenFileInfo * ofi;
+    OFI_t * ofi;
 
     ofi = newOpenFileInfo();
     ofi->fileName = strdup(fileName);
     ofi->next = spec->fileStack;
     spec->fileStack = ofi;
+}
+
+static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
+{
+    char *last;
+    char ch;
+
+    /* Expand next line from file into line buffer */
+    if (!(spec->nextline && *spec->nextline)) {
+	char *from, *to;
+	to = last = spec->nextline = spec->lbuf;
+	from = ofi->readPtr;
+	while ((ch = *from) && ch != '\n')
+	    *to++ = *from++;
+	*to++ = '\0';
+	ofi->readPtr = from;
+
+	if (expandMacros(spec, spec->macros, spec->lbuf, sizeof(spec->lbuf))) {
+		rpmError(RPMERR_BADSPEC, _("line %d: %s"), spec->lineNum, spec->lbuf);
+		return RPMERR_BADSPEC;
+	}
+    }
+
+    /* Find next line in expanded line buffer */
+    spec->line = spec->nextline;
+    while ((ch = *spec->nextline) && ch != '\n') {
+	spec->nextline++;
+	if (!isspace(ch))
+	    last = spec->nextline;
+    }
+    if (ch == '\n')
+	*spec->nextline++ = '\0';
+    
+    if (strip & STRIP_COMMENTS)
+	handleComments(spec->line);
+    
+    if (strip & STRIP_TRAILINGSPACE)
+	*last = '\0';
+
+    return 0;
 }
 
 /* returns 0 - success */
@@ -106,15 +146,15 @@ static void forceIncludeFile(Spec spec, const char * fileName)
 
 int readLine(Spec spec, int strip)
 {
-    char *from, *to, *last, *s, *arch, *os;
+    char  *s, *arch, *os;
     int match;
-    char ch;
     struct ReadLevelEntry *rl;
-    struct OpenFileInfo *ofi = spec->fileStack;
+    OFI_t *ofi = spec->fileStack;
+    int rc;
 
-    /* Make sure the current file is open */
 retry:
-    if (!ofi->file) {
+    /* Make sure the current file is open */
+    if (ofi->file == NULL) {
 	if (!(ofi->file = fopen(ofi->fileName, "r"))) {
 	    rpmError(RPMERR_BADSPEC, _("Unable to open: %s\n"),
 		     ofi->fileName);
@@ -124,7 +164,7 @@ retry:
     }
 
     /* Make sure we have something in the read buffer */
-    if (!ofi->readPtr || ! *(ofi->readPtr)) {
+    if (!(ofi->readPtr && *(ofi->readPtr))) {
 	if (!fgets(ofi->readBuf, BUFSIZ, ofi->file)) {
 	    /* EOF */
 	    if (spec->readStack->next) {
@@ -158,42 +198,18 @@ retry:
 	    }
 	    sl->sl_lines[sl->sl_nlines++] = strdup(ofi->readBuf);
 	}
-	/*rpmMessage(RPMMESS_DEBUG, "LINE: %s", spec->readBuf);*/
     }
     
-    /* Copy a single line to the line buffer */
-    from = ofi->readPtr;
-    to = last = spec->line;
-    ch = ' ';
-    while (*from && ch != '\n') {
-	ch = *to++ = *from++;
-	if (!isspace(ch)) {
-	    last = to;
-	}
-    }
-    *to = '\0';
-    ofi->readPtr = from;
-    
-    if (strip & STRIP_COMMENTS) {
-	handleComments(spec->line);
-    }
-    
-    if (strip & STRIP_TRAILINGSPACE) {
-	*last = '\0';
-    }
-
-    if (spec->readStack->reading) {
-	if (expandMacros(spec, spec->macros, spec->line, sizeof(spec->line))) {
-	    rpmError(RPMERR_BADSPEC, _("line %d: %s"), spec->lineNum, spec->line);
-	    return RPMERR_BADSPEC;
-	}
-    }
-
     rpmGetArchInfo(&arch, NULL);
     rpmGetOsInfo(&os, NULL);
 
+    /* Copy next file line into the spec line buffer */
+    if ((rc = copyNextLine(spec, ofi, strip)) != 0)
+	return rc;
+
     s = spec->line;
     SKIPSPACE(s);
+
     match = -1;
     if (! strncmp("%ifarch", s, 7)) {
 	s += 7;
@@ -281,7 +297,7 @@ retry:
 
 void closeSpec(Spec spec)
 {
-    struct OpenFileInfo *ofi;
+    OFI_t *ofi;
 
     while (spec->fileStack) {
 	ofi = spec->fileStack;

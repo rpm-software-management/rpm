@@ -404,7 +404,9 @@ Spec newSpec(void)
     spec->st = newSt();
 
     spec->fileStack = NULL;
-    spec->line[0] = '\0';
+    spec->lbuf[0] = '\0';
+    spec->line = spec->lbuf;
+    spec->nextline = NULL;
     spec->lineNum = 0;
     spec->readStack = malloc(sizeof(struct ReadLevelEntry));
     spec->readStack->next = NULL;

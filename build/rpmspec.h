@@ -37,19 +37,19 @@ struct Source {
     /*@owned@*/ struct Source *next;
 };
 
-struct ReadLevelEntry {
+typedef struct ReadLevelEntry {
     int reading;
     /*@dependent@*/ struct ReadLevelEntry *next;
-};
+} RLE_t;
 
-struct OpenFileInfo {
+typedef struct OpenFileInfo {
     /*@only@*/ char *fileName;
     /*@dependent@*/ FILE *file;
     int lineNum;
     char readBuf[BUFSIZ];
     /*@dependent@*/ char *readPtr;
     /*@owned@*/ struct OpenFileInfo *next;
-};
+} OFI_t;
 
 struct spectag {
     int t_tag;
@@ -80,7 +80,9 @@ struct SpecStruct {
     struct spectags *st;
 
     /*@owned@*/ struct OpenFileInfo *fileStack;
-    char line[BUFSIZ];
+    char lbuf[BUFSIZ];
+    char *line;
+    char *nextline;
     int lineNum;
 
     /*@only@*/ struct ReadLevelEntry *readStack;
