@@ -190,7 +190,7 @@ mkdir -p ${RPM_BUILD_ROOT}/etc/cron.daily
 install -m 755 scripts/rpm.daily ${RPM_BUILD_ROOT}/etc/cron.daily/rpm
 
 mkdir -p ${RPM_BUILD_ROOT}/etc/logrotate.d
-install -m 755 scripts/rpm.log ${RPM_BUILD_ROOT}/etc/logrotate.d/rpm
+install -m 644 scripts/rpm.log ${RPM_BUILD_ROOT}/etc/logrotate.d/rpm
 
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
@@ -595,3 +595,6 @@ fi
 - use db-4.0.14 final internally.
 - 1st crack at making zlib rsync friendly.
 - lclint-3.0.0.19 fiddles.
+- solaris: translate i86pc to i386 (#57182).
+- fix: %GNUconfigure breaks with single quotes (#57264).
+- simple automake wrapper for zlib.

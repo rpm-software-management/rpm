@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-12-08 12:20-0500\n"
+"POT-Creation-Date: 2001-12-20 11:00-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -2601,26 +2601,26 @@ msgstr "%s için %s:%d'de eksik mimari\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "seçenek '%s' (%s:%d) de hatalý\n"
 
-#: lib/rpmrc.c:1362
+#: lib/rpmrc.c:1368
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Bilinmeyen sistem: %s\n"
 
-#: lib/rpmrc.c:1363
+#: lib/rpmrc.c:1369
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Lütfen rpm-list@redhat.com listesine üye olun\n"
 
-#: lib/rpmrc.c:1588
+#: lib/rpmrc.c:1594
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "%s geniþletilemiyor\n"
 
-#: lib/rpmrc.c:1593
+#: lib/rpmrc.c:1599
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "%s okunamýyor, EV çok büyük\n"
 
-#: lib/rpmrc.c:1610
+#: lib/rpmrc.c:1616
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s okuma eriþimi için açýlamadý: %s.\n"

@@ -597,3 +597,4 @@ fi
 - lclint-3.0.0.19 fiddles.
 - solaris: translate i86pc to i386 (#57182).
 - fix: %GNUconfigure breaks with single quotes (#57264).
+- simple automake wrapper for zlib.

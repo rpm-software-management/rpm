@@ -77,6 +77,7 @@
 	- use db-4.0.14 final internally.
 	- 1st crack at making zlib rsync friendly.
 	- lclint-3.0.0.19 fiddles.
+	- simple automake wrapper for zlib.
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

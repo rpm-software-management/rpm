@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-12-08 12:20-0500\n"
+"POT-Creation-Date: 2001-12-20 11:00-0500\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2594,26 +2594,26 @@ msgstr "отсутствует архитектура для %s в %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "неверный параметр '%s' в %s:%d\n"
 
-#: lib/rpmrc.c:1362
+#: lib/rpmrc.c:1368
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Неизвестная система: %s\n"
 
-#: lib/rpmrc.c:1363
+#: lib/rpmrc.c:1369
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Свяжитесь с rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1588
+#: lib/rpmrc.c:1594
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Невозможно раскрыть %s\n"
 
-#: lib/rpmrc.c:1593
+#: lib/rpmrc.c:1599
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Невозможно прочитать %s, значение HOME слишком велико.\n"
 
-#: lib/rpmrc.c:1610
+#: lib/rpmrc.c:1616
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Невозможно открыть %s для чтения: %s.\n"

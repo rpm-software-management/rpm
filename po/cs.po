@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-12-08 12:20-0500\n"
+"POT-Creation-Date: 2001-12-20 11:00-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2581,26 +2581,26 @@ msgstr "chybí architektura pro %s u %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "chybná volba '%s' u %s:%d\n"
 
-#: lib/rpmrc.c:1362
+#: lib/rpmrc.c:1368
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznámý systém: %s\n"
 
-#: lib/rpmrc.c:1363
+#: lib/rpmrc.c:1369
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr "Zkontaktujte prosím rpm-list@redhat.com\n"
 
-#: lib/rpmrc.c:1588
+#: lib/rpmrc.c:1594
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Nemohu expandovat %s\n"
 
-#: lib/rpmrc.c:1593
+#: lib/rpmrc.c:1599
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Nemohu èíst %s, HOME je pøíli¹ velký.\n"
 
-#: lib/rpmrc.c:1610
+#: lib/rpmrc.c:1616
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nemohu otevøít %s pro ètení: %s.\n"
