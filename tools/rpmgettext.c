@@ -351,6 +351,7 @@ gettextfile(FD_t fd, const char *file, FILE *fp, int *poTags)
 	    else
 		lctp = lctag;
 	
+	    *lctp = toupper(*lctp);
 	    fprintf(fp, "msgid \"%s(%s)\"\n", name, lctp);
 	    fprintf(fp, "msgstr");
 	    fprintf(fp, " %s\n", buf);
