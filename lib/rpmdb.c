@@ -91,6 +91,7 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     struct flock lockinfo;
     int justcheck = flags & RPMDB_FLAG_JUSTCHECK;
     int minimal = flags & RPMDB_FLAG_MINIMAL;
+    char * akey;
 
     /* we should accept NULL as a valid prefix */
     if (!prefix) prefix="";
@@ -159,6 +160,18 @@ int openDatabase(char * prefix, char * dbpath, rpmdb *rpmdbp, int mode,
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "fileindex.rpm", justcheck, mode,
 			&db.fileIndex, DB_HASH);
+
+    /* We used to store the fileindexes as complete paths, rather then
+       plain basenames. Let's see which version we are... */
+    if (!dbiGetFirstKey(db.fileIndex, &akey)) {
+	if (strchr(akey, '/')) {
+	    rpmError(RPMERR_OLDDB, _("old format database is present; "
+			"use --rebuilddb to generate a new format database"));
+	    rc |= 1;
+	}
+	free(akey);
+    }
+
     if (!rc)
 	rc = openDbFile(prefix, dbpath, "providesindex.rpm", justcheck, mode,
 			&db.providesIndex, DB_HASH);
@@ -225,27 +238,101 @@ Header rpmdbGetRecord(rpmdb db, unsigned int offset) {
 }
 
 int rpmdbFindByFile(rpmdb db, char * filespec, dbiIndexSet * matches) {
-    char * fs;
-    char * src, * dst;
+    char * basename;
+    dbiIndexSet allMatches;
+    int rc;
+    char * targPath, * possPath = NULL;
+    int possPathAlloced = 0;
+    int i, j;
+    char ** fileList;
+    int gotOne = 0;
+    char * chptr1, * chptr2;
+    Header h;
+    struct stat sb1, sb2;
+    char path[PATH_MAX];
 
-    /* we try and canonicalize the filespec a bit before doing the search */
-
-    fs = alloca(strlen(filespec) + 1);
-    for (src = filespec, dst = fs; *src; ) { 
-	switch (*src) {
-	  case '/':
-	    if ((dst == fs) || (*(dst - 1) != '/'))
-		*dst++ = *src;
-	    src++;
-	    break;
-	  default:
-	    *dst++ = *src++;
+    if (*filespec != '/') {
+	    /* Using realpath on the arg isn't correct if the arg is a symlink,
+	     * especially if the symlink is a dangling link.  What we should
+	     * instead do is use realpath() on `.' and then append arg to
+	     * it.
+	     */
+	if (realpath(".", path) != NULL) {
+	    /* if the current directory doesn't exist, we might fail. 
+	       oh well. likewise if it's too long.  */
+	    chptr1 = alloca(strlen(path) + strlen(filespec) + 2);
+	    sprintf(chptr1, "%s/%s", path, filespec);
+	    filespec = chptr1;
 	}
     }
-    *dst-- = '\0';
-    if (*dst == '/') *dst = '\0';
 
-    return dbiSearchIndex(db->fileIndex, fs, matches);
+    basename = strrchr(filespec, '/');
+    if (!basename) 
+	basename = filespec;
+    else
+	basename++;
+
+    rc = dbiSearchIndex(db->fileIndex, basename, &allMatches);
+    if (rc) return rc;
+
+    /* This is pretty easy if both files are in the filesystem, as we can
+       do a direct comparison of the dev/ino numbers of the "ideal" filespec.
+       If that isn't the case, we need to walk through the paths, backwards,
+       until we figure out whether or not these files would be the same
+       or not <sigh>. Symbolic links are such a pain in the ass. */
+    targPath = alloca(strlen(filespec) + 1);
+    i = 0;
+    *matches = dbiCreateIndexRecord();
+    while (i < allMatches.count) {
+	if (!(h = rpmdbGetRecord(db, allMatches.recs[i].recOffset))) {
+	    i++;
+	    continue;
+	}
+	headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void **) &fileList, NULL);
+
+	do {
+	    strcpy(targPath, filespec);
+	    j = strlen(fileList[allMatches.recs[i].fileNumber]) + 1;
+	    if (j > possPathAlloced) {
+		possPath = realloc(possPath, j);
+		possPathAlloced = j;
+	    }
+	    strcpy(possPath, fileList[allMatches.recs[i].fileNumber]);
+
+	    while (*targPath && *possPath) {
+		if (!(chptr1 = strrchr(targPath, '/')) || 
+		    !(chptr2 = strrchr(possPath, '/')))
+		    break;
+
+		*chptr1 = *chptr2 = '\0';
+
+		/* as we're stating paths here, we want to follow symlinks */
+		if (!stat(targPath, &sb1) && !stat(possPath, &sb2) &&
+		    sb1.st_ino == sb2.st_ino && sb1.st_dev == sb2.st_dev) {
+		    /* got a match */
+		    dbiAppendIndexRecord(matches, allMatches.recs[i]);
+		    gotOne = 1;
+		    break;
+		}
+	    }
+
+	    i++;
+	} while ((i == 0) || (allMatches.recs[i].recOffset == 
+				allMatches.recs[i - 1].recOffset));
+
+	free(fileList);
+	
+    }
+
+    if (possPath) free(possPath);
+    dbiFreeIndexRecord(allMatches);
+
+    if (!gotOne) {
+	dbiFreeIndexRecord(*matches);
+	return 1;
+    }
+
+    return 0;
 }
 
 int rpmdbFindByProvides(rpmdb db, char * filespec, dbiIndexSet * matches) {
@@ -446,6 +533,7 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     int triggerCount = 0;
     int type;
     int rc = 0;
+    char * basename;
 
     headerGetEntry(dbentry, RPMTAG_NAME, &type, (void **) &name, &count);
     headerGetEntry(dbentry, RPMTAG_GROUP, &type, (void **) &group, &count);
@@ -505,8 +593,15 @@ int rpmdbAdd(rpmdb db, Header dbentry) {
     for (i = 0; i < providesCount; i++)
 	rc += addIndexEntry(db->providesIndex, providesList[i], dboffset, 0);
 
-    for (i = 0; i < count; i++) 
-	rc += addIndexEntry(db->fileIndex, fileList[i], dboffset, i);
+    for (i = 0; i < count; i++) {
+	basename = strrchr(fileList[i], '/');
+	if (!basename) 
+	    basename = fileList[i];
+	else
+	    basename++;
+	if (*basename)
+	    rc += addIndexEntry(db->fileIndex, basename, dboffset, i);
+    }
 
     dbiSyncIndex(db->nameIndex);
     dbiSyncIndex(db->groupIndex);
