@@ -273,8 +273,13 @@ static int compareMacros(const void *ap, const void *bp)
 static void expandMacroTable(struct MacroContext *mc)
 {
     mc->macrosAllocated += MACRO_CHUNK_SIZE;
-    mc->macroTable = realloc(mc->macroTable, sizeof(*(mc->macroTable)) *
-			     mc->macrosAllocated);
+    if (mc->macroTable) {
+	mc->macroTable = realloc(mc->macroTable, sizeof(*(mc->macroTable)) *
+				 mc->macrosAllocated);
+    } else {
+	mc->macroTable = malloc(sizeof(*(mc->macroTable)) *
+				mc->macrosAllocated);
+    }
 }
 
 /***********************************************************************/
