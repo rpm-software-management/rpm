@@ -489,7 +489,7 @@ static char * permsString(int mode) {
 
     strcpy(perms, "-----------");
    
-    if (mode & S_ISVTX) perms[9] = 't';
+    if (mode & S_ISVTX) perms[10] = 't';
 
     if (mode & S_IRUSR) perms[1] = 'r';
     if (mode & S_IWUSR) perms[2] = 'w';
