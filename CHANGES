@@ -37,6 +37,7 @@
 	- popt: pad to display length, not strlen, for i18n popt args (#106240).
 	- python: include Python.h before glibc features.h.
 	- python: return [], not None, accessing header tags (#112794).
+	- python: avoid invoking python to acquire ill-specified parameters.
 
 4.2 -> 4.2.1:
 	- fix: nested %if handling, optind initialization posix vs. glibc.

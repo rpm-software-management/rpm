@@ -4,11 +4,8 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-PYVER= @WITH_PYTHON_VERSION@
-
-# XXX grrr, sys.path[1] wrong value in python-2.3.2
-pylibdir = $(shell python -c 'import sys; print sys.path[2]')
-pyincdir = $(prefix)/include/python${PYVER}
+pylibdir = ${prefix}/lib@MARK64@/python@WITH_PYTHON_VERSION@
+pyincdir = $(prefix)/include/python@WITH_PYTHON_VERSION@
 
 SUBDIRS = rpmdb
 
