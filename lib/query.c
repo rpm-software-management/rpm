@@ -418,7 +418,8 @@ void rpmDisplayQueryTags(FILE * f)
     }
 }
 
-int XshowMatches(QVA_t *qva, rpmdbMatchIterator mi, QVF_t showPackage)
+#ifndef	DYING
+int showMatches(QVA_t *qva, rpmdbMatchIterator mi, QVF_t showPackage)
 {
     Header h;
     int ec = 0;
@@ -431,7 +432,7 @@ int XshowMatches(QVA_t *qva, rpmdbMatchIterator mi, QVF_t showPackage)
     rpmdbFreeIterator(mi);
     return ec;
 }
-
+#else
 int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage)
 {
     Header h;
@@ -457,6 +458,7 @@ int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage)
     }
     return ec;
 }
+#endif
 
 /*
  * XXX Eliminate linkage loop into librpmbuild.a
@@ -469,7 +471,9 @@ void	(*freeSpecVec) (Spec spec) = NULL;
 int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	rpmdb db, QVF_t showPackage)
 {
+#ifdef	DYING
     dbiIndexSet matches = NULL;		/* XXX DYING */
+#endif
     rpmdbMatchIterator mi = NULL;
     Header h;
     int rc;
@@ -576,12 +580,12 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 
     case RPMQV_ALL:
 	/* RPMDBI_PACKAGES */
-	mi = rpmdbInitIterator(db, 0, NULL, 0);
+	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
 	if (mi == NULL) {
 	    fprintf(stderr, _("no packages\n"));
 	    retcode = 1;
 	} else {
-	    retcode = XshowMatches(qva, mi, showPackage);
+	    retcode = showMatches(qva, mi, showPackage);
 	}
 	break;
 
@@ -591,7 +595,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    fprintf(stderr, _("group %s does not contain any packages\n"), arg);
 	    retcode = 1;
 	} else {
-	    retcode = XshowMatches(qva, mi, showPackage);
+	    retcode = showMatches(qva, mi, showPackage);
 	}
 	break;
 
@@ -601,7 +605,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    fprintf(stderr, _("no package triggers %s\n"), arg);
 	    retcode = 1;
 	} else {
-	    retcode = XshowMatches(qva, mi, showPackage);
+	    retcode = showMatches(qva, mi, showPackage);
 	}
 	break;
 
@@ -611,7 +615,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    fprintf(stderr, _("no package requires %s\n"), arg);
 	    retcode = 1;
 	} else {
-	    retcode = XshowMatches(qva, mi, showPackage);
+	    retcode = showMatches(qva, mi, showPackage);
 	}
 	break;
 
@@ -622,7 +626,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 		fprintf(stderr, _("no package provides %s\n"), arg);
 		retcode = 1;
 	    } else {
-		retcode = XshowMatches(qva, mi, showPackage);
+		retcode = showMatches(qva, mi, showPackage);
 	    }
 	    break;
 	}
@@ -643,7 +647,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    }
 	    retcode = 1;
 	} else {
-	    retcode = XshowMatches(qva, mi, showPackage);
+	    retcode = showMatches(qva, mi, showPackage);
 	}
 	break;
 
@@ -668,16 +672,17 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	}
 	rpmMessage(RPMMESS_DEBUG, _("package record number: %u\n"), recOffset);
 	/* RPMDBI_PACKAGES */
-	mi = rpmdbInitIterator(db, 0, &recOffset, sizeof(recOffset));
+	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
 	if (mi == NULL) {
 	    fprintf(stderr, _("record %d could not be read\n"), recOffset);
 	    retcode = 1;
 	} else {
-	    retcode = XshowMatches(qva, mi, showPackage);
+	    retcode = showMatches(qva, mi, showPackage);
 	}
     }	break;
 
     case RPMQV_PACKAGE:
+#ifdef	DYING
 	rc = rpmdbFindByLabel(db, arg, &matches);
 	if (rc == 1) {
 	    retcode = 1;
@@ -688,13 +693,25 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	} else {
 	    retcode = showMatches(qva, db, matches, showPackage);
 	}
+#else
+	/* XXX HACK to get rpmdbFindByLabel out of the API */
+	mi = rpmdbInitIterator(db, RPMDBI_LABEL, arg, 0);
+	if (mi == NULL) {
+	    fprintf(stderr, _("package %s is not installed\n"), arg);
+	    retcode = 1;
+	} else {
+	    retcode = showMatches(qva, mi, showPackage);
+	}
+#endif
 	break;
     }
    
+#ifdef	DYING
     if (matches) {	/* XXX DYING */
 	dbiFreeIndexSet(matches);
 	matches = NULL;
     }
+#endif
     return retcode;
 }
 

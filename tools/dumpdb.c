@@ -27,8 +27,7 @@ int main(int argc, char ** argv)
 	rpmdbMatchIterator mi;
 #define	_RECNUM	rpmdbGetIteratorOffset(mi)
 
-	/* RPMDBI_PACKAGES */
-	mi = rpmdbInitIterator(db, 0, NULL, 0);
+	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
 
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 

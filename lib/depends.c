@@ -889,7 +889,7 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 
     if (suggestion) *suggestion = NULL;
 
-    {	mi =  rpmdbInitIterator(rpmdep->db, 1, keyDepend, 0);
+    {	mi =  rpmdbInitIterator(rpmdep->db, RPMDBI_DEPENDS, keyDepend, 0);
 	if (mi) {
 	    rc = rpmdbGetIteratorOffset(mi);
 	    rpmdbFreeIterator(mi);
@@ -1393,6 +1393,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     struct availablePackage * p;
     int i, j;
     int rc;
+    rpmdbMatchIterator mi = NULL;
     Header h = NULL;
     struct problemsSet ps;
 
@@ -1436,15 +1437,10 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     }
 
     /* now look at the removed packages and make sure they aren't critical */
-    for (i = 0; i < rpmdep->numRemovedPackages; i++) {
-
-	h = rpmdbGetRecord(rpmdep->db, rpmdep->removedPackages[i]);
-	if (h == NULL) {
-	    rpmError(RPMERR_DBCORRUPT,
-			_("cannot read header at %d for dependency check"),
-		        rpmdep->removedPackages[i]);
-	    goto exit;
-	}
+    mi = rpmdbInitIterator(rpmdep->db, RPMDBI_PACKAGES, NULL, 0);
+    rpmdbAppendIteratorMatches(mi, rpmdep->removedPackages,
+		rpmdep->numRemovedPackages);
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
 
 	{   const char * name;
 	    headerNVR(h, &name, NULL, NULL);
@@ -1511,7 +1507,8 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 	    }
 	}
 
-	headerFree(h);	h = NULL;
+	rpmdbFreeIterator(mi);
+	mi = NULL;
     }
 
     if (!ps.num) {
@@ -1525,8 +1522,8 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     return 0;
 
 exit:
-    if (h) 
-	headerFree(h);
+    if (mi)
+	rpmdbFreeIterator(mi);
     if (ps.problems)	free(ps.problems);
     return 1;
 }

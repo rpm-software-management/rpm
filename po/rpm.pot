@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-04-26 09:48-0400\n"
+"POT-Creation-Date: 2000-04-26 20:08-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2071,36 +2071,31 @@ msgstr ""
 msgid "loop in prerequisite chain: %s"
 msgstr ""
 
-#: lib/depends.c:1444
-#, c-format
-msgid "cannot read header at %d for dependency check"
-msgstr ""
-
-#: lib/db0.c:393
+#: lib/db0.c:394
 #, c-format
 msgid "bad db file %s"
 msgstr ""
 
-#: lib/db0.c:402
+#: lib/db0.c:403
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: lib/db0.c:407 lib/url.c:445
+#: lib/db0.c:408 lib/url.c:445
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr ""
 
-#: lib/db0.c:419
+#: lib/db0.c:420
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: lib/db0.c:420
+#: lib/db0.c:421
 msgid "exclusive"
 msgstr ""
 
-#: lib/db0.c:420
+#: lib/db0.c:421
 msgid "shared"
 msgstr ""
 
@@ -2264,7 +2259,7 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: lib/install.c:146 lib/uninstall.c:184
+#: lib/install.c:146 lib/uninstall.c:186
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr ""
@@ -2285,86 +2280,86 @@ msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: lib/install.c:371
+#: lib/install.c:376
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:372
+#: lib/install.c:377
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:416
+#: lib/install.c:421
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:436
+#: lib/install.c:441
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr ""
 
-#: lib/install.c:442 lib/install.c:472
+#: lib/install.c:447 lib/install.c:477
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: lib/install.c:446
+#: lib/install.c:451
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:466
+#: lib/install.c:471
 #, c-format
 msgid "cannot create specdir %s"
 msgstr ""
 
-#: lib/install.c:476
+#: lib/install.c:481
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: lib/install.c:510 lib/install.c:538
+#: lib/install.c:515 lib/install.c:543
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: lib/install.c:560
+#: lib/install.c:565
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:562 lib/install.c:838 lib/uninstall.c:29
+#: lib/install.c:567 lib/install.c:843 lib/uninstall.c:29
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: lib/install.c:653
+#: lib/install.c:658
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:710
+#: lib/install.c:715
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:768
+#: lib/install.c:773
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:773
+#: lib/install.c:778
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:798
+#: lib/install.c:803
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:834
+#: lib/install.c:839
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:908
+#: lib/install.c:913
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2597,155 +2592,155 @@ msgstr ""
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#: lib/query.c:446 lib/query.c:669
+#: lib/query.c:447 lib/query.c:673
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:450
+#: lib/query.c:451
 msgid "error: could not read database record\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: lib/query.c:494
+#: lib/query.c:498
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:512
+#: lib/query.c:516
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:521 lib/rpminstall.c:231
+#: lib/query.c:525 lib/rpminstall.c:231
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: lib/query.c:525
+#: lib/query.c:529
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:558
+#: lib/query.c:562
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:581
+#: lib/query.c:585
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:591
+#: lib/query.c:595
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:601
+#: lib/query.c:605
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:611
+#: lib/query.c:615
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:622
+#: lib/query.c:626
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:638
+#: lib/query.c:642
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:641
+#: lib/query.c:645
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:666
+#: lib/query.c:670
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:673
+#: lib/query.c:677
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:684 lib/rpminstall.c:436
+#: lib/query.c:689 lib/query.c:700 lib/rpminstall.c:439 lib/rpminstall.c:478
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/query.c:687
+#: lib/query.c:692
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: lib/query.c:712
+#: lib/query.c:729
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: lib/query.c:771
+#: lib/query.c:788
 msgid "query package owning file"
 msgstr ""
 
-#: lib/query.c:773
+#: lib/query.c:790
 msgid "query packages in group"
 msgstr ""
 
-#: lib/query.c:775
+#: lib/query.c:792
 msgid "query a package file"
 msgstr ""
 
-#: lib/query.c:779
+#: lib/query.c:796
 msgid "query a spec file"
 msgstr ""
 
-#: lib/query.c:781
+#: lib/query.c:798
 msgid "query the pacakges triggered by the package"
 msgstr ""
 
-#: lib/query.c:783
+#: lib/query.c:800
 msgid "query the packages which require a capability"
 msgstr ""
 
-#: lib/query.c:785
+#: lib/query.c:802
 msgid "query the packages which provide a capability"
 msgstr ""
 
-#: lib/query.c:824
+#: lib/query.c:841
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/query.c:826
+#: lib/query.c:843
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/query.c:828
+#: lib/query.c:845
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/query.c:830
+#: lib/query.c:847
 msgid "list files in package"
 msgstr ""
 
-#: lib/query.c:834
+#: lib/query.c:851
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:836
+#: lib/query.c:853
 msgid "substitute i18n sections into spec file"
 msgstr ""
 
-#: lib/query.c:838
+#: lib/query.c:855
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:840
+#: lib/query.c:857
 msgid "display a verbose file listing"
 msgstr ""
 
@@ -2865,140 +2860,135 @@ msgstr ""
 msgid "error removing record %s from %s"
 msgstr ""
 
-#: lib/rpmdb.c:590 lib/rpmdb.c:1897
+#: lib/rpmdb.c:586 lib/rpmdb.c:1938
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:668
+#: lib/rpmdb.c:664
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
 #. error
-#: lib/rpmdb.c:853
+#: lib/rpmdb.c:863
 #, c-format
 msgid "cannot retrieve package \"%s\" from db"
 msgstr ""
 
-#: lib/rpmdb.c:1178
+#: lib/rpmdb.c:929 lib/rpmdb.c:1380 lib/uninstall.c:91
+#, c-format
+msgid "%s: cannot read header at 0x%x"
+msgstr ""
+
+#: lib/rpmdb.c:1336
 #, c-format
 msgid "key \"%s\" not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:1186
+#: lib/rpmdb.c:1344
 #, c-format
 msgid "key \"%s\" not removed from %s"
 msgstr ""
 
-#: lib/rpmdb.c:1212
-#, c-format
-msgid "rpmdbRemove: cannot read header at 0x%x"
-msgstr ""
-
-#: lib/rpmdb.c:1246
+#: lib/rpmdb.c:1414
 #, c-format
 msgid "removing 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1253
+#: lib/rpmdb.c:1421
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1261
+#: lib/rpmdb.c:1429
 #, c-format
 msgid "removing %d entries in %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1265
+#: lib/rpmdb.c:1433
 #, c-format
 msgid "\t%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1412
+#: lib/rpmdb.c:1580
 msgid "cannot allocate new instance in database"
 msgstr ""
 
-#: lib/rpmdb.c:1461
+#: lib/rpmdb.c:1629
 #, c-format
 msgid "adding 0 %s entries.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1474
+#: lib/rpmdb.c:1642
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1481
+#: lib/rpmdb.c:1649
 #, c-format
 msgid "adding %d entries to %s index:\n"
 msgstr ""
 
-#: lib/rpmdb.c:1485
+#: lib/rpmdb.c:1653
 #, c-format
 msgid "%6d %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1803
-#, c-format
-msgid "cannot read header at %d for lookup"
-msgstr ""
-
-#: lib/rpmdb.c:1922
+#: lib/rpmdb.c:1963
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1926
+#: lib/rpmdb.c:1967
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: lib/rpmdb.c:1932
+#: lib/rpmdb.c:1973
 #, c-format
 msgid "creating directory: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1934
+#: lib/rpmdb.c:1975
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: lib/rpmdb.c:1941
+#: lib/rpmdb.c:1982
 #, c-format
 msgid "opening old database with dbi_major %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:1950
+#: lib/rpmdb.c:1991
 #, c-format
 msgid "opening new database with dbi_major %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:1972
+#: lib/rpmdb.c:2013
 #, c-format
 msgid "record number %d in database is bad -- skipping."
 msgstr ""
 
-#: lib/rpmdb.c:2004
+#: lib/rpmdb.c:2045
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: lib/rpmdb.c:2022
+#: lib/rpmdb.c:2063
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2030
+#: lib/rpmdb.c:2071
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2032
+#: lib/rpmdb.c:2073
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2038
+#: lib/rpmdb.c:2079
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
@@ -3048,7 +3038,7 @@ msgstr ""
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:235 lib/rpminstall.c:516
+#: lib/rpminstall.c:235 lib/rpminstall.c:543
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
@@ -3081,26 +3071,26 @@ msgstr ""
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:440
+#: lib/rpminstall.c:443
 #, c-format
 msgid "searching for package %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:449
+#: lib/rpminstall.c:452 lib/rpminstall.c:481
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:478
+#: lib/rpminstall.c:505
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:505
+#: lib/rpminstall.c:532
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:511
+#: lib/rpminstall.c:538
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -3434,25 +3424,20 @@ msgstr ""
 msgid "removal of %s failed: %s"
 msgstr ""
 
-#: lib/uninstall.c:89
-#, c-format
-msgid "cannot read header at %d for uninstall"
-msgstr ""
-
-#: lib/uninstall.c:130
+#: lib/uninstall.c:132
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:198
+#: lib/uninstall.c:200
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:212
+#: lib/uninstall.c:214
 msgid "removing database entry\n"
 msgstr ""
 
-#: lib/uninstall.c:396
+#: lib/uninstall.c:398
 msgid "execution of script failed"
 msgstr ""
 

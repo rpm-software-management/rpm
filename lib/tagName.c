@@ -9,11 +9,11 @@ const char *const tagName(int tag)
     char *s;
 
     switch (tag) {
-    case 0:
+    case RPMDBI_PACKAGES:
 	strcpy(nameBuf, "Packages");
 	return nameBuf;
 	/*@notreached@*/ break;
-    case 1:
+    case RPMDBI_DEPENDS:
 	strcpy(nameBuf, "Depends");
 	return nameBuf;
 	/*@notreached@*/ break;
@@ -36,9 +36,9 @@ int tagValue(const char * tagstr)
     const struct headerTagTableEntry *t;
 
     if (!strcmp(tagstr, "Packages"))
-	return 0;
+	return RPMDBI_PACKAGES;
     if (!strcmp(tagstr, "Depends"))
-	return 1;
+	return RPMDBI_DEPENDS;
 
     for (t = rpmTagTable; t->name != NULL; t++) {
 	if (!strcasecmp(t->name + 7, tagstr))

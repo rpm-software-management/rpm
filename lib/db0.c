@@ -178,6 +178,7 @@ static int db0copen(dbiIndex dbi, DBC ** dbcp, unsigned int flags) {
 }
 
 static int db0cclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags) {
+    dbi->dbi_lastoffset = 0;
     return 0;
 }
 

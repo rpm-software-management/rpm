@@ -20,7 +20,11 @@
 	- make db indices as lightweight as possible, with per-dbi config.
 	- db1.c will never be needed, eliminate.
 	- API: merge rebuilddb.c into rpmdb.c.
-
+	- API: replace rpmdbUpdateRecord with rpmdbRemove/rpmdbAdd.
+	- API: replace rpmdbFindByLabel with RPMDBI_LABEL iteration.
+	- API: replace rpmdbGetRecord with iterators.
+	- API: replace findMatches with iterators.
+	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.
 	- start unifying FD types, CFD_t now gone.

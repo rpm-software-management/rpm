@@ -373,11 +373,6 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant);
 int rpmdbAdd(rpmdb rpmdb, Header dbentry);
 
 /**
- * @param rpmdb		rpm database
- */
-int rpmdbUpdateRecord(rpmdb rpmdb, int secOffset, Header secHeader);
-
-/**
  */
 unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi);
 

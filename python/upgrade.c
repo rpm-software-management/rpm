@@ -122,8 +122,7 @@ static void addLostFiles(rpmdb db, struct pkgSet *psp, struct hash_table *ht)
 #else
     rpmdbMatchIterator mi;
 
-    /* RPMDBI_PACKAGES */
-    mi = rpmdbInitIterator(db, 0, NULL, 0);
+    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 #endif
 

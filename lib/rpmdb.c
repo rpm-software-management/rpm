@@ -260,7 +260,7 @@ union _dbswap {
  * @param setp		address of items retrieved from index database
  * @return		-1 error, 0 success, 1 not found
  */
-static int dbiSearchIndex(dbiIndex dbi, const char * keyp, size_t keylen,
+static int dbiSearch(dbiIndex dbi, const char * keyp, size_t keylen,
 		dbiIndexSet * setp)
 {
     int rc;
@@ -410,23 +410,19 @@ static int dbiUpdateIndex(dbiIndex dbi, const char * keyp, dbiIndexSet set)
 /*@=compmempass@*/
 
 /**
- * Append element to set of index database items.
- * @param set	set of index database items
- * @param rec	item to append to set
- * @return	0 success (always)
+ * Append element(s) to set of index database items.
+ * @param set		set of index database items
+ * @param recs		array of items to append to set
+ * @param nrecs		number of items
+ * @return		0 success (always)
  */
-static inline int dbiAppendIndexRecord(dbiIndexSet set, dbiIndexRecord rec)
+static inline int dbiAppendSet(dbiIndexSet set, dbiIndexRecord recs, int nrecs)
 {
-    set->count++;
-
-    if (set->count == 1) {
-	set->recs = xmalloc(set->count * sizeof(*(set->recs)));
-    } else {
-	set->recs = xrealloc(set->recs, set->count * sizeof(*(set->recs)));
-    }
-    set->recs[set->count - 1].recOffset = rec->recOffset;
-    set->recs[set->count - 1].fileNumber = rec->fileNumber;
-
+    set->recs = (set->count == 0)
+	? xmalloc(nrecs * sizeof(*(set->recs)))
+	: xrealloc(set->recs, (set->count + nrecs) * sizeof(*(set->recs)));
+    memcpy(set->recs + set->count, recs, nrecs * sizeof(*recs));
+    set->count += nrecs;
     return 0;
 }
 
@@ -712,8 +708,9 @@ int rpmdbInit (const char * prefix, int perms)
     return rc;
 }
 
-/* XXX depends.c, install.c, query.c, transaction.c, uninstall.c */
-Header rpmdbGetRecord(rpmdb rpmdb, unsigned int offset)
+#ifndef	DYING_NOTYET
+/* XXX install.c, query.c, transaction.c, uninstall.c */
+static Header rpmdbGetRecord(rpmdb rpmdb, unsigned int offset)
 {
     int rpmtag;
     dbiIndex dbi;
@@ -732,6 +729,7 @@ Header rpmdbGetRecord(rpmdb rpmdb, unsigned int offset)
 	return NULL;
     return headerLoad(uh);
 }
+#endif
 
 static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
 			/*@out@*/ dbiIndexSet * matches)
@@ -765,7 +763,7 @@ static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
     fp1 = fpLookup(fpc, dirName, baseName, 1);
 
     dbi = dbiOpen(rpmdb, RPMTAG_BASENAMES, 0);
-    rc = dbiSearchIndex(dbi, baseName, 0, &allMatches);
+    rc = dbiSearch(dbi, baseName, 0, &allMatches);
     if (rc) {
 	dbiFreeIndexSet(allMatches);
 	allMatches = NULL;
@@ -783,7 +781,19 @@ static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
 	unsigned int prevoff;
 	Header h;
 
-	if ((h = rpmdbGetRecord(rpmdb, offset)) == NULL) {
+#ifndef	DYING_NOTYET
+	h = rpmdbGetRecord(rpmdb, offset);
+#else
+	{   rpmdbMatchIterator mi;
+	    mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, &offset, sizeof(offset));
+	    h = rpmdbNextIterator(mi);
+	    if (h)
+		h = headerLink(h);
+	    rpmdbFreeIterator(mi);
+	}
+#endif
+
+	if (h == NULL) {
 	    i++;
 	    continue;
 	}
@@ -803,7 +813,7 @@ static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
 	    if (FP_EQUAL(fp1, fp2)) {
 		rec->recOffset = dbiIndexRecordOffset(allMatches, i);
 		rec->fileNumber = dbiIndexRecordFileNumber(allMatches, i);
-		dbiAppendIndexRecord(*matches, rec);
+		dbiAppendSet(*matches, rec, 1);
 	    }
 
 	    prevoff = offset;
@@ -845,7 +855,7 @@ int rpmdbCountPackages(rpmdb rpmdb, const char * name)
     int rc;
 
     dbix = dbiTagToDbix(RPMTAG_NAME);
-    rc = dbiSearchIndex(rpmdb->_dbi[dbix], name, 0, &matches);
+    rc = dbiSearch(rpmdb->_dbi[dbix], name, 0, &matches);
 
     switch (rc) {
     default:
@@ -868,8 +878,129 @@ int rpmdbCountPackages(rpmdb rpmdb, const char * name)
     return rc;
 }
 
+/* XXX transaction.c */
+/* 0 found matches */
+/* 1 no matches */
+/* 2 error */
+static int dbiFindMatches(dbiIndex dbi, const char * name, const char * version,
+			const char * release, dbiIndexSet * matches)
+{
+    int gotMatches;
+    int rc;
+    int i;
+
+    rc = dbiSearch(dbi, name, 0, matches);
+
+    if (rc != 0) {
+	rc = ((rc == -1) ? 2 : 1);
+	goto exit;
+    }
+
+    if (!version && !release) {
+	rc = 0;
+	goto exit;
+    }
+
+    gotMatches = 0;
+
+    /* make sure the version and releases match */
+    for (i = 0; i < dbiIndexSetCount(*matches); i++) {
+	unsigned int recoff = dbiIndexRecordOffset(*matches, i);
+	int goodRelease, goodVersion;
+	const char * pkgVersion;
+	const char * pkgRelease;
+	Header h;
+
+	if (recoff == 0)
+	    continue;
+
+#ifndef	DYING_NOTYET
+	h = rpmdbGetRecord(dbi->dbi_rpmdb, recoff);
+#else
+    {	rpmdbMatchIterator mi;
+	mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, &recoff, sizeof(recoff));
+	h = rpmdbNextIterator(mi);
+	if (h)
+	    h = headerLink(h);
+	rpmdbFreeIterator(mi);
+    }
+#endif
+	if (h == NULL) {
+	    rpmError(RPMERR_DBCORRUPT, _("%s: cannot read header at 0x%x"),
+		"findMatches", recoff);
+	    rc = 2;
+	    goto exit;
+	}
+
+	headerNVR(h, NULL, &pkgVersion, &pkgRelease);
+	    
+	goodRelease = goodVersion = 1;
+
+	if (release && strcmp(release, pkgRelease)) goodRelease = 0;
+	if (version && strcmp(version, pkgVersion)) goodVersion = 0;
+
+	if (goodRelease && goodVersion) 
+	    gotMatches = 1;
+	else 
+	    dbiIndexRecordOffsetSave(*matches, i, 0);
+
+	headerFree(h);
+    }
+
+    if (!gotMatches) {
+	rc = 1;
+	goto exit;
+    }
+    rc = 0;
+
+exit:
+    if (rc && matches && *matches) {
+	dbiFreeIndexSet(*matches);
+	*matches = NULL;
+    }
+    return rc;
+}
+
+/* XXX query.c, rpminstall.c */
+/* 0 found matches */
+/* 1 no matches */
+/* 2 error */
+static int dbiFindByLabel(dbiIndex dbi, const char * arg, dbiIndexSet * matches)
+{
+    char * localarg, * chptr;
+    char * release;
+    int rc;
+ 
+    if (!strlen(arg)) return 1;
+
+    /* did they give us just a name? */
+    rc = dbiFindMatches(dbi, arg, NULL, NULL, matches);
+    if (rc != 1) return rc;
+
+    /* maybe a name and a release */
+    localarg = alloca(strlen(arg) + 1);
+    strcpy(localarg, arg);
+
+    chptr = (localarg + strlen(localarg)) - 1;
+    while (chptr > localarg && *chptr != '-') chptr--;
+    if (chptr == localarg) return 1;
+
+    *chptr = '\0';
+    rc = dbiFindMatches(dbi, localarg, chptr + 1, NULL, matches);
+    if (rc != 1) return rc;
+    
+    /* how about name-version-release? */
+
+    release = chptr + 1;
+    while (chptr > localarg && *chptr != '-') chptr--;
+    if (chptr == localarg) return 1;
+
+    *chptr = '\0';
+    return dbiFindMatches(dbi, localarg, chptr + 1, release, matches);
+}
+
 struct _rpmdbMatchIterator {
-    const void *	mi_key;
+    const void *	mi_keyp;
     size_t		mi_keylen;
     rpmdb		mi_rpmdb;
     dbiIndex		mi_dbi;
@@ -905,14 +1036,13 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
 	dbiFreeIndexSet(mi->mi_set);
 	mi->mi_set = NULL;
     } else {
-	int dbix = 0;	/* RPMDBI_PACKAGES */
-	dbiIndex dbi = mi->mi_rpmdb->_dbi[dbix];
+	dbiIndex dbi = dbiOpen(mi->mi_rpmdb, RPMDBI_PACKAGES, 0);
 	if (dbi)
 	    (void) dbiCclose(dbi, NULL, 0);
     }
-    if (mi->mi_key) {
-	xfree(mi->mi_key);
-	mi->mi_key = NULL;
+    if (mi->mi_keyp) {
+	xfree(mi->mi_keyp);
+	mi->mi_keyp = NULL;
     }
     free(mi);
 }
@@ -958,7 +1088,6 @@ void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version) {
 Header rpmdbNextIterator(rpmdbMatchIterator mi)
 {
     dbiIndex dbi;
-    int rpmtag;
     void * uh = NULL;
     size_t uhlen = 0;
     void * keyp;
@@ -968,8 +1097,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     if (mi == NULL)
 	return NULL;
 
-    rpmtag = 0;	/* RPMDBI_PACKAGES */
-    dbi = dbiOpen(mi->mi_rpmdb, rpmtag, 0);
+    dbi = dbiOpen(mi->mi_rpmdb, RPMDBI_PACKAGES, 0);
     if (dbi == NULL)
 	return NULL;
 
@@ -977,17 +1105,15 @@ top:
     /* XXX skip over instances with 0 join key */
     do {
 	if (mi->mi_set) {
-	    keyp = &mi->mi_offset;
-	    keylen = sizeof(mi->mi_offset);
 	    if (!(mi->mi_setx < mi->mi_set->count))
 		return NULL;
-	    if (mi->mi_dbix != 0) {	/* RPMDBI_PACKAGES */
-		mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
-		mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
-	    }
+	    mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
+	    mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
+	    keyp = &mi->mi_offset;
+	    keylen = sizeof(mi->mi_offset);
 	} else {
-	    keyp = NULL;
-	    keylen = 0;
+	    keyp = (void *)mi->mi_keyp;		/* XXX FIXME const */
+	    keylen = mi->mi_keylen;
 
 	    rc = dbiGet(dbi, &keyp, &keylen, &uh, &uhlen, 0);
 
@@ -1063,7 +1189,7 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi,
     if (keylen == 0)
 	keylen = strlen(keyp);
 
-    rc = dbiSearchIndex(dbi, keyp, keylen, &set);
+    rc = dbiSearch(dbi, keyp, keylen, &set);
 
     switch (rc) {
     default:
@@ -1092,13 +1218,40 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi,
     return rc;
 }
 
+void rpmdbAppendIteratorMatches(rpmdbMatchIterator mi, int * offsets,
+	int numOffsets)
+{
+    dbiIndexRecord recs;
+    int i;
+
+    if (mi == NULL)
+	return;
+    recs = alloca(numOffsets * sizeof(*recs));
+    for (i = 0; i < numOffsets; i++) {
+	memset(recs + i, 0, sizeof(*recs));
+	recs[i].recOffset = offsets[i];
+    }
+    if (mi->mi_set == NULL)
+	mi->mi_set = xcalloc(1, sizeof(*mi->mi_set));
+    dbiAppendSet(mi->mi_set, recs, numOffsets);
+}
+
 rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
 	const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi = NULL;
     dbiIndexSet set = NULL;
     dbiIndex dbi;
+    int isLabel = 0;
     int dbix;
+
+    /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
+    switch (rpmtag) {
+    case RPMDBI_LABEL:
+	rpmtag = RPMTAG_NAME;
+	isLabel = 1;
+	break;
+    }
 
     dbix = dbiTagToDbix(rpmtag);
     if (dbix < 0)
@@ -1107,12 +1260,20 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
     if (dbi == NULL)
 	return NULL;
 
-    if (keyp) {
+    assert(dbi->dbi_rmw == NULL);	/* db3: avoid "lost" cursors */
+    assert(dbi->dbi_lastoffset == 0);	/* db0: avoid "lost" cursors */
+
+    dbi->dbi_lastoffset = 0;		/* db0: rewind to beginning */
+
+    if (rpmtag != RPMDBI_PACKAGES && keyp) {
 	int rc;
-	if (rpmtag == RPMTAG_BASENAMES) {
+	if (isLabel) {
+	    /* XXX HACK to get rpmdbFindByLabel out of the API */
+	    rc = dbiFindByLabel(dbi, keyp, &set);
+	} else if (rpmtag == RPMTAG_BASENAMES) {
 	    rc = rpmdbFindByFile(rpmdb, keyp, &set);
 	} else {
-	    rc = dbiSearchIndex(dbi, keyp, keylen, &set);
+	    rc = dbiSearch(dbi, keyp, keylen, &set);
 	}
 	switch (rc) {
 	default:
@@ -1127,24 +1288,21 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
 	}
     }
 
-    mi = xcalloc(sizeof(*mi), 1);
     if (keyp) {
-	if (keylen == 0)
+	char * k;
+
+	if (rpmtag != RPMDBI_PACKAGES && keylen == 0)
 	    keylen = strlen(keyp);
-
-	{   char * k = xmalloc(keylen + 1);
-	    memcpy(k, keyp, keylen);
-	    k[keylen] = '\0';	/* XXX for strings */
-	    mi->mi_key = k;
-	}
-
-	mi->mi_keylen = keylen;
-    } else {
-	mi->mi_key = NULL;
-	mi->mi_keylen = 0;
-	if (dbi)
-	    dbi->dbi_lastoffset = 0;	/* db0: rewind to beginning */
+	k = xmalloc(keylen + 1);
+	memcpy(k, keyp, keylen);
+	k[keylen] = '\0';	/* XXX for strings */
+	keyp = k;
     }
+
+    mi = xcalloc(sizeof(*mi), 1);
+    mi->mi_keyp = keyp;
+    mi->mi_keylen = keylen;
+
     mi->mi_rpmdb = rpmdb;
     mi->mi_dbi = dbi;
 
@@ -1166,7 +1324,7 @@ static inline int removeIndexEntry(dbiIndex dbi, const char * keyp, dbiIndexReco
     dbiIndexSet set = NULL;
     int rc;
     
-    rc = dbiSearchIndex(dbi, keyp, 0, &set);
+    rc = dbiSearch(dbi, keyp, 0, &set);
 
     switch (rc) {
     case -1:			/* error */
@@ -1202,15 +1360,25 @@ static inline int removeIndexEntry(dbiIndex dbi, const char * keyp, dbiIndexReco
     return rc;
 }
 
-/* XXX uninstall.c */
+/* XXX install.c uninstall.c */
 int rpmdbRemove(rpmdb rpmdb, unsigned int offset, int tolerant)
 {
     Header h;
 
+#ifndef	DYING_NOTYET
     h = rpmdbGetRecord(rpmdb, offset);
+#else
+  { rpmdbMatchIterator mi;
+    mi = rpmdbInitIterator(rpmdb, RPMDBI_PACKAGES, &offset, sizeof(offset));
+    h = rpmdbNextIterator(mi);
+    if (h)
+	h = headerLink(h);
+    rpmdbFreeIterator(mi);
+  }
+#endif
     if (h == NULL) {
-	rpmError(RPMERR_DBCORRUPT, _("rpmdbRemove: cannot read header at 0x%x"),
-	      offset);
+	rpmError(RPMERR_DBCORRUPT, _("%s: cannot read header at 0x%x"),
+	      "rpmdbRemove", offset);
 	return 1;
     }
 
@@ -1319,7 +1487,7 @@ static inline int addIndexEntry(dbiIndex dbi, const char *index, dbiIndexRecord 
     dbiIndexSet set = NULL;
     int rc;
 
-    rc = dbiSearchIndex(dbi, index, 0, &set);
+    rc = dbiSearch(dbi, index, 0, &set);
 
     switch (rc) {
     default:
@@ -1331,7 +1499,7 @@ static inline int addIndexEntry(dbiIndex dbi, const char *index, dbiIndexRecord 
 	set = xcalloc(1, sizeof(*set));
 	/*@fallthrough@*/
     case 0:			/* success */
-	dbiAppendIndexRecord(set, rec);
+	dbiAppendSet(set, rec, 1);
 	if (dbiUpdateIndex(dbi, index, set))
 	    rc = 1;
 	break;
@@ -1532,20 +1700,6 @@ exit:
     return rc;
 }
 
-/* XXX install.c */
-int rpmdbUpdateRecord(rpmdb rpmdb, int offset, Header newHeader)
-{
-    int rc = 0;
-
-    if (rpmdbRemove(rpmdb, offset, 1))
-	return 1;
-
-    if (rpmdbAdd(rpmdb, newHeader)) 
-	return 1;
-
-    return rc;
-}
-
 static void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath)
 { 
     int i;
@@ -1740,7 +1894,7 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 	/* Add db (recnum,filenum) to list for fingerprint matches. */
 	for (i = 0; i < num; i++, im++) {
 	    if (FP_EQUAL_DIFFERENT_CACHE(fps[i], fpList[im->fpNum]))
-		dbiAppendIndexRecord(matchList[im->fpNum], im);
+		dbiAppendSet(matchList[im->fpNum], im, 1);
 	}
 
 	free(fps);
@@ -1758,119 +1912,6 @@ int rpmdbFindFpList(rpmdb rpmdb, fingerPrint * fpList, dbiIndexSet * matchList,
 
     return 0;
 
-}
-
-/* XXX transaction.c */
-/* 0 found matches */
-/* 1 no matches */
-/* 2 error */
-int findMatches(rpmdb rpmdb, const char * name, const char * version,
-			const char * release, dbiIndexSet * matches)
-{
-    dbiIndex dbi;
-    int gotMatches;
-    int rc;
-    int i;
-
-    dbi = dbiOpen(rpmdb, RPMTAG_NAME, 0);
-    rc = dbiSearchIndex(dbi, name, 0, matches);
-
-    if (rc != 0) {
-	rc = ((rc == -1) ? 2 : 1);
-	goto exit;
-    }
-
-    if (!version && !release) {
-	rc = 0;
-	goto exit;
-    }
-
-    gotMatches = 0;
-
-    /* make sure the version and releases match */
-    for (i = 0; i < dbiIndexSetCount(*matches); i++) {
-	unsigned int recoff = dbiIndexRecordOffset(*matches, i);
-	int goodRelease, goodVersion;
-	const char * pkgVersion;
-	const char * pkgRelease;
-	Header h;
-
-	if (recoff == 0)
-	    continue;
-
-	h = rpmdbGetRecord(rpmdb, recoff);
-	if (h == NULL) {
-	    rpmError(RPMERR_DBCORRUPT,_("cannot read header at %d for lookup"), 
-		recoff);
-	    rc = 2;
-	    goto exit;
-	}
-
-	headerNVR(h, NULL, &pkgVersion, &pkgRelease);
-	    
-	goodRelease = goodVersion = 1;
-
-	if (release && strcmp(release, pkgRelease)) goodRelease = 0;
-	if (version && strcmp(version, pkgVersion)) goodVersion = 0;
-
-	if (goodRelease && goodVersion) 
-	    gotMatches = 1;
-	else 
-	    dbiIndexRecordOffsetSave(*matches, i, 0);
-
-	headerFree(h);
-    }
-
-    if (!gotMatches) {
-	rc = 1;
-	goto exit;
-    }
-    rc = 0;
-
-exit:
-    if (rc && matches && *matches) {
-	dbiFreeIndexSet(*matches);
-	*matches = NULL;
-    }
-    return rc;
-}
-
-/* XXX query.c, rpminstall.c */
-/* 0 found matches */
-/* 1 no matches */
-/* 2 error */
-int rpmdbFindByLabel(rpmdb rpmdb, const char * arg, dbiIndexSet * matches)
-{
-    char * localarg, * chptr;
-    char * release;
-    int rc;
- 
-    if (!strlen(arg)) return 1;
-
-    /* did they give us just a name? */
-    rc = findMatches(rpmdb, arg, NULL, NULL, matches);
-    if (rc != 1) return rc;
-
-    /* maybe a name and a release */
-    localarg = alloca(strlen(arg) + 1);
-    strcpy(localarg, arg);
-
-    chptr = (localarg + strlen(localarg)) - 1;
-    while (chptr > localarg && *chptr != '-') chptr--;
-    if (chptr == localarg) return 1;
-
-    *chptr = '\0';
-    rc = findMatches(rpmdb, localarg, chptr + 1, NULL, matches);
-    if (rc != 1) return rc;
-    
-    /* how about name-version-release? */
-
-    release = chptr + 1;
-    while (chptr > localarg && *chptr != '-') chptr--;
-    if (chptr == localarg) return 1;
-
-    *chptr = '\0';
-    return findMatches(rpmdb, localarg, chptr + 1, release, matches);
 }
 
 /** */
@@ -1959,7 +2000,7 @@ int rpmdbRebuild(const char * rootdir)
 #define	_RECNUM	rpmdbGetIteratorOffset(mi)
 
 	/* RPMDBI_PACKAGES */
-	mi = rpmdbInitIterator(olddb, 0, NULL, 0);
+	mi = rpmdbInitIterator(olddb, RPMDBI_PACKAGES, NULL, 0);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 
 	    /* let's sanity check this record a bit, otherwise just skip it */

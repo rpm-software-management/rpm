@@ -756,9 +756,20 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
     uint_16 * otherModes;
     int numReplaced = 0;
 
+#ifdef	DYING
     h = rpmdbGetRecord(db, shared->otherPkg);
     if (h == NULL)
 	return 1;
+#else
+    rpmdbMatchIterator mi;
+
+    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &shared->otherPkg, sizeof(shared->otherPkg));
+    h = rpmdbNextIterator(mi);
+    if (h == NULL) {
+	rpmdbFreeIterator(mi);
+	return 1;
+    }
+#endif
 
     headerGetEntryMinMemory(h, RPMTAG_FILEMD5S, NULL,
 			    (void **) &otherMd5s, NULL);
@@ -820,7 +831,11 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
 
     free(otherMd5s);
     free(otherLinks);
+#ifdef	DYING
     headerFree(h);
+#else
+    rpmdbFreeIterator(mi);
+#endif
 
     fi->replaced = xrealloc(fi->replaced,	/* XXX memory leak */
 			   sizeof(*fi->replaced) * (numReplaced + 1));
@@ -837,9 +852,20 @@ static int handleRmvdInstalledFiles(TFI_t * fi, rpmdb db,
     const char * otherStates;
     int i;
    
+#ifdef	DYING
     h = rpmdbGetRecord(db, shared->otherPkg);
     if (h == NULL)
 	return 1;
+#else
+    rpmdbMatchIterator mi;
+
+    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &shared->otherPkg, sizeof(shared->otherPkg));
+    h = rpmdbNextIterator(mi);
+    if (h == NULL) {
+	rpmdbFreeIterator(mi);
+	return 1;
+    }
+#endif
 
     headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
 			    (void **) &otherStates, NULL);
@@ -855,7 +881,11 @@ static int handleRmvdInstalledFiles(TFI_t * fi, rpmdb db,
 	fi->actions[fileNum] = FA_SKIP;
     }
 
+#ifdef	DYING
     headerFree(h);
+#else
+    rpmdbFreeIterator(mi);
+#endif
 
     return 0;
 }
@@ -1183,7 +1213,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
     int rc, ourrc = 0;
     struct availablePackage * alp;
     rpmProblemSet probs;
-#ifndef DYING
+#ifdef DYING
     dbiIndexSet dbi = NULL;
 #endif
     Header * hdrs;
@@ -1284,7 +1314,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    rpmdbFreeIterator(mi);
 	}
 
-#ifndef	DYING
+#ifdef	DYING
 	rc = findMatches(ts->db, alp->name, alp->version, alp->release, &dbi);
 	switch (rc) {
 	case 2:
@@ -1308,26 +1338,49 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	}
 #else
 	if (!(ignoreSet & RPMPROB_FILTER_REPLACEPKG)) {
+	    rpmdbMatchIterator mi;
+	    mi = rpmdbInitIterator(ts->db, RPMTAG_NAME, alp->name, 0);
+	    rpmdbSetIteratorVersion(mi, alp->version);
+	    rpmdbSetIteratorRelease(mi, alp->release);
+	    while (rpmdbNextIterator(mi) != NULL) {
+		psAppend(probs, RPMPROB_PKG_INSTALLED, alp->key, alp->h, NULL,
+			 NULL, 0);
+		break;
+	    }
+	    rpmdbFreeIterator(mi);
 	}
 #endif
 
-	if (headerGetEntry(alp->h, RPMTAG_BASENAMES, NULL, NULL, 
-			   &fileCount))
+	if (headerGetEntry(alp->h, RPMTAG_BASENAMES, NULL, NULL, &fileCount))
 	    totalFileCount += fileCount;
     }
 
     /* FIXME: it seems a bit silly to read in all of these headers twice */
     /* The ordering doesn't matter here */
+#ifdef	DYING
     for (i = 0; i < ts->numRemovedPackages; i++) {
 	Header h;
 
 	if ((h = rpmdbGetRecord(ts->db, ts->removedPackages[i]))) {
-	    if (headerGetEntry(h, RPMTAG_BASENAMES, NULL, NULL,
-			       &fileCount))
+	    if (headerGetEntry(h, RPMTAG_BASENAMES, NULL, NULL, &fileCount))
 		totalFileCount += fileCount;
 	    headerFree(h);
 	}
     }
+#else
+    {	rpmdbMatchIterator mi;
+	Header h;
+
+	mi = rpmdbInitIterator(ts->db, RPMDBI_PACKAGES, NULL, 0);
+	rpmdbAppendIteratorMatches(mi,
+		ts->removedPackages, ts->numRemovedPackages);
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    if (headerGetEntry(h, RPMTAG_BASENAMES, NULL, NULL, &fileCount))
+		totalFileCount += fileCount;
+	}
+	rpmdbFreeIterator(mi);
+    }
+#endif
 
     /* ===============================================
      * Initialize file list:
@@ -1363,7 +1416,17 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    break;
 	case TR_REMOVED:
 	    fi->record = ts->order[oc].u.removed.dboffset;
+#ifdef	DYING
 	    fi->h = rpmdbGetRecord(ts->db, fi->record);
+#else
+	    {	rpmdbMatchIterator mi;
+
+		mi = rpmdbInitIterator(ts->db, RPMDBI_PACKAGES, &fi->record, sizeof(fi->record));
+		if ((fi->h = rpmdbNextIterator(mi)) != NULL)
+		    fi->h = headerLink(fi->h);
+		rpmdbFreeIterator(mi);
+	    }
+#endif
 	    if (fi->h == NULL) {
 		/* ACK! */
 		continue;

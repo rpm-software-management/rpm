@@ -966,7 +966,7 @@ rpmdbLength(rpmdbObject * s) {
     {	rpmdbMatchIterator mi;
 
 	/* RPMDBI_PACKAGES */
-	mi = rpmdbInitIterator(s->db, 0, NULL, 0);
+	mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, NULL, 0);
 	/* XXX FIXME: unnecessary header mallocs are side effect here */
 	while (rpmdbNextIterator(mi) != NULL)
 	    count++;
@@ -991,7 +991,16 @@ rpmdbSubscript(rpmdbObject * s, PyObject * key) {
 
     h = PyObject_NEW(hdrObject, &hdrType);
     h->h = NULL;
+#ifdef	DYING
     h->h = rpmdbGetRecord(s->db, offset);
+#else
+    {	rpmdbMatchIterator mi;
+	mi = rpmdbInitIterator(s->db, RPMDBI_PACKAGES, &offset, sizeof(offset));
+	if ((h->h = rpmdbNextIterator(mi)) != NULL)
+	    h->h = headerLink(h->h);
+	rpmdbFreeIterator(mi);
+    }
+#endif
     h->fileList = h->linkList = h->md5list = NULL;
     h->uids = h->gids = h->mtimes = h->fileSizes = NULL;
     h->modes = h->rdevs = NULL;

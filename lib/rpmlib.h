@@ -85,7 +85,12 @@ extern const int rpmTagTableSize;
 /* this chains to headerDefaultFormats[] */
 extern const struct headerSprintfExtension rpmHeaderFormats[];
 
-/* these tags are for both the database and packages */
+/* these pseudo-tags are used in the dbi interface */
+#define	RPMDBI_PACKAGES		0
+#define	RPMDBI_DEPENDS		1
+#define	RPMDBI_LABEL		2	/* XXX remove rpmdbFindByLabel from API */
+
+/* these tags are found in package headers */
 /* none of these can be 0 !!                         */
 
 #define	RPMTAG_NAME  			1000
@@ -381,6 +386,7 @@ void rpmdbClose ( /*@only@*/ rpmdb db);
  */
 int rpmdbOpenForTraversal(const char * prefix, /*@out@*/ rpmdb * dbp);
 
+#ifdef	DYING
 /**
  * @param db		rpm database
  */
@@ -398,6 +404,7 @@ int rpmdbFindPackage(rpmdb db, const char * name,
  */
 int rpmdbFindByLabel(rpmdb db, const char * label,
 	/*@out@*/ dbiIndexSet * matches);
+#endif
 
 /**
  * Return number of instances of package in rpm database.
@@ -412,32 +419,65 @@ int rpmdbCountPackages(rpmdb db, const char *name);
 typedef /*@abstract@*/ struct _rpmdbMatchIterator * rpmdbMatchIterator;
 
 /**
+ * Destroy rpm database iterator.
+ * @param mi		rpm database iterator
  */
 void rpmdbFreeIterator( /*@only@*/ rpmdbMatchIterator mi);
 
 /**
+ * Return join key for current position of rpm database iterator.
+ * @param mi		rpm database iterator
+ * @return		current join key
  */
 unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi);
 
 /**
+ * Return number of elements in rpm database iterator.
+ * @param mi		rpm database iterator
+ * @return		number of elements
  */
 int rpmdbGetIteratorCount(rpmdbMatchIterator mi);
 
 /**
+ * Modify iterator to append given set of package instances.
+ *  TODO: replace with a more general mechanism.
+ * @param mi		rpm database iterator
+ * @param offsets	array of package instances to match.
+ * @param numOffsets	number of elements in array
+ */
+void rpmdbAppendIteratorMatches(rpmdbMatchIterator mi, int * offsets,
+	int numOffsets);
+
+/**
+ * Modify iterator to filter out headers that do not match version.
+ *  TODO: replace with a more general mechanism.
+ * @param mi		rpm database iterator
  */
 void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version);
 
 /**
+ * Modify iterator to filter out headers that do not match release.
+ *  TODO: replace with a more general mechanism.
+ * @param mi		rpm database iterator
  */
 void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release);
 
 /**
+ * Return next package header from iteration.
+ * @param mi		rpm database iterator
+ * @return		NULL on end of iteration.
  */
 Header rpmdbNextIterator(rpmdbMatchIterator mi);
 
 /**
+ * Return database iterator.
+ * @param rpmdb		rpm database
+ * @param rpmtag	rpm tag
+ * @param keyp		key data (NULL for sequential acess)
+ * @param keylen	key data length (0 will use strlen(keyp))
+ * @return		NULL on failure
  */
-/*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, int dbix,
+/*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
 			const void * key, size_t keylen);
 
 /* we pass these around as an array with a sentinel */
@@ -786,10 +826,12 @@ typedef	struct rpmQVArguments QVA_t;
 typedef	int (*QVF_t) (QVA_t *qva, rpmdb db, Header h);
 
 /**
- * @param db		rpm database
  */
-int XshowMatches(QVA_t *qva, /*@only@*/ rpmdbMatchIterator mi, QVF_t showPackage);
+#ifdef	DYING
 int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage);
+#else
+int showMatches(QVA_t *qva, /*@only@*/ rpmdbMatchIterator mi, QVF_t showPackage);
+#endif
 
 #define QUERY_FOR_LIST		(1 << 1)
 #define QUERY_FOR_STATE		(1 << 2)

@@ -72,7 +72,8 @@ static int removeFile(const char * file, unsigned int flags, short mode,
 int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset, 
 			int flags, enum fileActions * actions, FD_t scriptFd)
 {
-    Header h = NULL;
+    rpmdbMatchIterator mi = NULL;
+    Header h;
     int i;
     int fileCount;
     const char * name, * version, * release;
@@ -84,10 +85,11 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
     if (flags & RPMTRANS_FLAG_JUSTDB)
 	flags |= RPMTRANS_FLAG_NOSCRIPTS;
 
-    h = rpmdbGetRecord(db, offset);
+    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &offset, sizeof(offset));
+    h = rpmdbNextIterator(mi);
     if (h == NULL) {
-	rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for uninstall"),
-	      offset);
+	rpmError(RPMERR_DBCORRUPT, _("%s: cannot read header at 0x%x"),
+		"findMatches", offset);
 	rc = 1;
 	goto exit;
     }
@@ -221,8 +223,8 @@ int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset,
     rc = 0;
 
  exit:
-    if (h)
-	headerFree(h);
+    if (mi)
+	rpmdbFreeIterator(mi);
     return rc;
 }
 

@@ -244,21 +244,25 @@ static int markReplacedFiles(rpmdb db, struct sharedFileInfo * replList)
 
     for (fileInfo = replList; fileInfo->otherPkg; fileInfo++) {
 	if (secOffset != fileInfo->otherPkg) {
+	    rpmdbMatchIterator mi;
+
 	    if (secHeader != NULL) {
 		/* ignore errors here - just do the best we can */
 
-		rpmdbUpdateRecord(db, secOffset, secHeader);
+		rpmdbRemove(db, secOffset, 1);
+		rpmdbAdd(db, secHeader);
 		headerFree(secHeader);
 	    }
 
 	    secOffset = fileInfo->otherPkg;
-	    sh = rpmdbGetRecord(db, secOffset);
-	    if (sh == NULL) {
+
+	    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &secOffset, sizeof(secOffset));
+	    sh = rpmdbNextIterator(mi);
+	    if (sh == NULL)
 		secOffset = 0;
-	    } else {
+	    else
 		secHeader = headerCopy(sh);	/* so we can modify it */
-		headerFree(sh);
-	    }
+	    rpmdbFreeIterator(mi);
 
 	    headerGetEntry(secHeader, RPMTAG_FILESTATES, &type,
 			   (void **) &secStates, &count);
@@ -273,7 +277,8 @@ static int markReplacedFiles(rpmdb db, struct sharedFileInfo * replList)
     if (secHeader != NULL) {
 	/* ignore errors here - just do the best we can */
 
-	rpmdbUpdateRecord(db, secOffset, secHeader);
+	rpmdbRemove(db, secOffset, 1);
+	rpmdbAdd(db, secHeader);
 	headerFree(secHeader);
     }
 

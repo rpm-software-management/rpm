@@ -935,10 +935,10 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
     }
 
     oflags = (dbi->dbi_oeflags | dbi->dbi_oflags);
-#if NOTYET
-    if ( dbi->dbi_mode & O_EXCL) oflags |= DB_EXCL;
-#endif
-    if (!dbi->dbi_mode & O_RDWR) oflags |= DB_RDONLY;
+    if (dbi->dbi_mode & O_RDWR) {
+	if ( dbi->dbi_mode & O_EXCL) oflags |= DB_EXCL;
+    } else
+	oflags |= DB_RDONLY;
     if ( dbi->dbi_mode & O_CREAT) oflags |= DB_CREATE;
     if ( dbi->dbi_mode & O_TRUNC) oflags |= DB_TRUNCATE;
 
