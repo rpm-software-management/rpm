@@ -29,6 +29,10 @@ optflags: m68k -O2 -fomit-frame-pointer
 optflags: ppc -O2 -fsigned-char
 optflags: hppa1.0 -O2 -mpa-risc-1-0
 optflags: hppa1.1 -O2 -mpa-risc-1-0
+optflags: mipseb -O2
+optflags: mipsel -O2
+optflags: arm3 -O2
+optflags: arm4 -O2
 
 #############################################################
 # Canonical arch names and numbers
@@ -58,6 +62,15 @@ arch_canon:    9000/712:       hppa1.1 9
 arch_canon:    sun4u:   usparc  10
 arch_canon:	mipsel:	mipsel	11
 
+arch_canon:     arm: 	arm 	12
+arch_canon:     arm6:   arm3    12
+arch_canon:     arm610: arm3    12
+arch_canon:     arm7:   arm3    12
+arch_canon:     arm710: arm3    12
+arch_canon:     arm8:   arm4    12
+arch_canon:     arm810: arm4    12
+arch_canon:     sa110:  arm4    12
+
 #############################################################
 # Canonical OS names and numbers
 
@@ -76,6 +89,7 @@ os_canon:       SCO_SV: SCO_SV3.2v5.0.2  9
 os_canon:	IRIX64: Irix64  10
 os_canon:     NEXTSTEP: NextStep 11
 os_canon:       BSD/OS: BSD_OS 12
+os_canon:       machten: machten 13
 
 #############################################################
 # For a given uname().machine, the default build arch
@@ -97,6 +111,8 @@ buildarchtranslate: i486: i386
 buildarchtranslate: i386: i386
 
 buildarchtranslate: osfmach3_ppc: ppc
+buildarchtranslate: powerpc: ppc
+buildarchtranslate: powerppc: ppc
 
 #############################################################
 # Architecture compatibility
@@ -120,6 +136,8 @@ arch_compat: osfmach3_i486: i486 osfmach3_i386
 arch_compat: osfmach3_i386: i486
 
 arch_compat: osfmach3_ppc: ppc
+arch_compat: powerpc: ppc
+arch_compat: powerppc: ppc
 
 arch_compat: usparc: sparc
 arch_compat: sparc: noarch
@@ -130,8 +148,9 @@ arch_compat: mipsel: noarch
 
 arch_compat: hppa1.1: hppa1.0
 arch_compat: hppa1.0: noarch
-# we used to call mipseb just mips -- let those packages still work
-arch_compat: mipseb: mips
+
+arch_compat: arm4: arm3
+arch_compat: arm3: noarch
 
 os_compat:   IRIX64: IRIX
 
@@ -149,4 +168,5 @@ buildarch_compat: m68k: noarch
 buildarch_compat: ppc: noarch
 buildarch_compat: mipsel: noarch
 buildarch_compat: mipseb: noarch
-
+buildarch_compat: arm4: noarch
+buildarch_compat: arm3: noarch
