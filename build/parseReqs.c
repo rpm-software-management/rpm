@@ -129,7 +129,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index)
 	if (ve > v) {
 	  struct ReqComp *rc;
 	  for (rc = ReqComparisons; rc->token != NULL; rc++) {
-	    if (strncmp(v, rc->token, (ve-v)))
+	    if ((ve-v) != strlen(rc->token) || strncmp(v, rc->token, (ve-v)))
 		continue;
 
 	    if (r[0] == '/') {
@@ -138,6 +138,7 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index)
 			 spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
+
 	    switch(tag) {
 	    case RPMTAG_PROVIDES:
 	    case RPMTAG_OBSOLETES:

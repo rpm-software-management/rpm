@@ -3,8 +3,6 @@
 # belong in /etc/popt, not here. This file will be replaced
 # whenever a new version of RPM is installed.
 
-rpm alias --provides --qf '[%{PROVIDES}\n]'
-
 rpm alias --scripts --qf '\
 %|PREIN?{preinstall script\
 %|PREINPROG?{ (through %{PREINPROG})}|:\n%{PREIN}\n}:\
@@ -33,8 +31,15 @@ rpm alias --setugids -q --qf \
         --pipe "(echo 'ch() { chown -- \"$1\" \"$3\";chgrp -- \"$2\" \"$3\"; }';grep -v \(none\))|sh"
 
 
-rpm alias --requires --qf \
-	    "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]"
+rpm alias --conflicts	--qf \
+  "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]"
+
+rpm alias --obsoletes	--qf '[%{OBSOLETES}\n]'
+rpm alias --prereq	--qf '[%{PREREQ}\n]'
+rpm alias --provides	--qf '[%{PROVIDES}\n]'
+
+rpm alias --requires	--qf \
+  "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]"
 rpm alias -R --requires
 
 rpm alias --info --qf 'Name        : %-27{NAME}  Relocations: %|PREFIXES?{[%{PREFIXES} ]}:{(not relocateable)}|\n\
