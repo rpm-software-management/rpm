@@ -6908,7 +6908,7 @@ if test "$ac_enable_debug" = yes; then
   fi
 else
   if test "$ac_cv_prog_gcc" = yes; then
-    CFLAGS="$CFLAGS -O3"
+    CFLAGS="$CFLAGS -O3 -g"
     if test "$ac_enable_optimized" = yes; then
       case $target_cpu in
 # This switch makes the mp32 routines slower by about 10%, so it's disabled
@@ -6928,7 +6928,7 @@ else
         CFLAGS="$CFLAGS -mpentium -march=pentium -fomit-frame-pointer"
         ;;
       i686)
-        CFLAGS="$CFLAGS -mpentiumpro -march=pentiumpro -fomit-frame-pointer"
+	CFLAGS="$CFLAGS -mpentiumpro -march=pentiumpro -fomit-frame-pointer"
         ;;
       sparcv8)
         CFLAGS="$CFLAGS -mv8"

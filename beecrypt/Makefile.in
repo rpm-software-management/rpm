@@ -554,6 +554,11 @@ installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
+.PHONY: beetest
+beetest: all
+	make -C tests beetest
+	./tests/beetest
+
 .PHONY: sources
 sources:
 	@echo $(libbeecrypt_la_SOURCES:%=beecrypt/%)

@@ -301,6 +301,19 @@ static int testVectorDHAES(const dlkp_p* keypair)
 	return -1;
 }
 
+#if 0
+/*@unused@*/ static int testVectorDSA(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
+{
+	int rc = 0;
+
+	randomGeneratorContext rngc;
+
+	return rc;
+}
+#endif
+
 /*@unused@*/ static int testVectorDLDP(void)
 	/*@*/
 {
@@ -853,6 +866,8 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	/*@globals fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
+	dlkp_p keypair;
+
 	int i, j;
 
 	printf("the beecrypt library implements:\n");
@@ -917,6 +932,72 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 	testExpMods();
 	testDLParams();
 	/*@=modnomods@*/
+
+	if (testVectorMD5())
+		printf("MD5 works!\n");
+	else
+		exit(EXIT_FAILURE);
+
+	if (testVectorSHA1())
+		printf("SHA-1 works!\n");
+	else
+		exit(EXIT_FAILURE);
+
+	if (testVectorSHA256())
+		printf("SHA-256 works!\n");
+	else
+		exit(EXIT_FAILURE);
+
+	/*@-compdef@*/
+	(void) dlkp_pInit(&keypair);
+
+	mp32bsethex(&keypair.param.p, dsa_p);
+	mp32bsethex(&keypair.param.q, dsa_q);
+	mp32nsethex(&keypair.param.g, dsa_g);
+	mp32bsethex(&keypair.param.n, elg_n);
+	mp32nsethex(&keypair.y, dsa_y);
+	mp32nsethex(&keypair.x, dsa_x);
+
+	if (testVectorInvMod(&keypair))
+		printf("InvMod works!\n");
+	else
+		exit(EXIT_FAILURE);
+
+	if (testVectorExpMod(&keypair))
+		printf("ExpMod works!\n");
+	else
+		exit(EXIT_FAILURE);
+
+	if (testVectorElGamalV1(&keypair))
+		printf("ElGamal v1 works!\n");
+	else
+		exit(EXIT_FAILURE);
+
+	if (testVectorElGamalV3(&keypair))
+		printf("ElGamal v3 works!\n");
+	else
+		exit(EXIT_FAILURE);
+
+#if 0
+	if (testVectorDHAES(&keypair))
+		printf("DHAES works!\n");
+	else
+		exit(EXIT_FAILURE);
+#endif
+
+	(void) dlkp_pFree(&keypair);
+	/*@=compdef@*/
+
+	if (testVectorRSA())
+		printf("RSA works!\n");
+	else
+		exit(EXIT_FAILURE);
+#if 1
+	if (testVectorDLDP())
+		printf("dldp with generator of order q works!\n");
+	else
+		exit(EXIT_FAILURE);
+#endif
 
 	printf("done\n");
 

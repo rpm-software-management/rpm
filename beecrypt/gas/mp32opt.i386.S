@@ -60,6 +60,7 @@ C_FUNCTION_BEGIN(mp32fill)
 C_FUNCTION_END(mp32fill, .Lmp32fill_size)
 
 
+#if 0	/* BROKEN! */
 C_FUNCTION_BEGIN(mp32even)
 	mov 4(%esp),%ecx
 	mov 8(%esp),%eax
@@ -77,6 +78,7 @@ C_FUNCTION_BEGIN(mp32odd)
 	and %eax,1
 	ret
 C_FUNCTION_END(mp32odd, .Lmp32odd_size)
+#endif
 
 
 C_FUNCTION_BEGIN(mp32addw)

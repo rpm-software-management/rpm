@@ -72,8 +72,10 @@ extern "C" {
 # if defined(OPTIMIZE_I386) || defined(OPTIMIZE_I486) || defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
 #  define ASM_MP32ZERO
 #  define ASM_MP32FILL
+#if 0	/* XXX BROKEN! */
 #  define ASM_MP32EVEN
 #  define ASM_MP32ODD
+#endif
 #  define ASM_MP32ADDW
 #  define ASM_MP32ADD
 #  define ASM_MP32SUBW

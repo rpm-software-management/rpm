@@ -85,7 +85,8 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, ran
 		// get a random k, invertible modulo q
 		mp32brndinv_w(q, rgc, qtemp, qtemp+qsize, qwksp);
 
-/* FIPS 186 test vectors
+#if 0
+/* FIPS 186 test vectors for k, http://www.itl.nist.gov/fipspubs/186chg-1.htm */
 		qtemp[0] = 0x358dad57;
 		qtemp[1] = 0x1462710f;
 		qtemp[2] = 0x50e254cf;
@@ -93,7 +94,7 @@ int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, ran
 		qtemp[4] = 0xdeaadfbf;
 
 		mp32binv_w(q, qsize, qtemp, qtemp+qsize, qwksp);
-*/
+#endif
 
 		// g^k mod p
 		mp32bpowmod_w(p, g->size, g->data, qsize, qtemp, ptemp, pwksp);

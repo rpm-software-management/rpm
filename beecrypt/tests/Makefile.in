@@ -113,6 +113,7 @@ LDADD = $(top_builddir)/libbeecrypt.la
 EXTRA_PROGRAMS = beetest openpgp base64bug
 
 beetest_SOURCES = beetest.c
+beetest_LDFLAGS = -all-static
 
 openpgp_SOURCES = openpgp.c
 
@@ -128,7 +129,6 @@ LIBS = @LIBS@
 beetest_OBJECTS =  beetest.$(OBJEXT)
 beetest_LDADD = $(LDADD)
 beetest_DEPENDENCIES =  $(top_builddir)/libbeecrypt.la
-beetest_LDFLAGS = 
 openpgp_OBJECTS =  openpgp.$(OBJEXT)
 openpgp_LDADD = $(LDADD)
 openpgp_DEPENDENCIES =  $(top_builddir)/libbeecrypt.la
