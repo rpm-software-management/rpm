@@ -355,21 +355,29 @@ Header rpmdbGetRecord(rpmdb db, unsigned int offset)
 
 int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 {
+    const char * dirName;
     const char * baseName;
     fingerPrint fp1, fp2;
     dbiIndexSet allMatches;
-    int i, rc, num;
+    int i, rc;
     Header h;
     fingerPrintCache fpc;
 
-    fpc = fpCacheCreate(20);
-    fp1 = fpLookup(fpc, filespec, 0);
-
-    baseName = strrchr(filespec, '/');
-    if (baseName == NULL) 
-	baseName = filespec;
-    else
+    {	char * t = strcpy(alloca(strlen(filespec)+1), filespec);
+	char * te = strrchr(t, '/');
+	if (te) {
+	    te++;
+	    *te = '\0';
+	}
+	dirName = t;
+    }
+    if ((baseName = strrchr(filespec, '/')) != NULL)
 	baseName++;
+    else
+	baseName = filespec;
+
+    fpc = fpCacheCreate(20);
+    fp1 = fpLookup(fpc, dirName, baseName, 1);
 
     rc = dbiSearchIndex(db->fileIndex, baseName, &allMatches);
     if (rc) {
@@ -382,7 +390,6 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
     while (i < allMatches.count) {
 	const char ** baseNames, ** dirNames;
 	int_32 * dirIndexes;
-	char * otherFile;
 
 	if ((h = rpmdbGetRecord(db, allMatches.recs[i].recOffset)) == NULL) {
 	    i++;
@@ -397,17 +404,12 @@ int rpmdbFindByFile(rpmdb db, const char * filespec, dbiIndexSet * matches)
 				(void **) &dirNames, NULL);
 
 	do {
-	    num = allMatches.recs[i].fileNumber;
-	    otherFile = xmalloc(strlen(dirNames[dirIndexes[num]]) + 
-			      strlen(baseNames[num]) + 1);
-	    strcpy(otherFile, dirNames[dirIndexes[num]]);
-	    strcat(otherFile, baseNames[num]);
+	    int num = allMatches.recs[i].fileNumber;
 
-	    fp2 = fpLookup(fpc, otherFile, 1);
+	    fp2 = fpLookup(fpc, dirNames[dirIndexes[num]], baseNames[num], 1);
 	    if (FP_EQUAL(fp1, fp2))
 		dbiAppendIndexRecord(matches, allMatches.recs[i]);
 
-	    free(otherFile);
 	    i++;
 	} while ((i < allMatches.count) && 
 			((i == 0) || (allMatches.recs[i].recOffset == 

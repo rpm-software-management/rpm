@@ -39,8 +39,8 @@ extern "C" {
 /* Be carefull with the memory... assert(*fullName == '/' || !scareMemory) */
 fingerPrintCache fpCacheCreate(int sizeHint);
 void fpCacheFree(fingerPrintCache cache);
-fingerPrint fpLookup(fingerPrintCache cache, const char * fullName, 
-		     int scareMemory);
+fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
+			const char * baseName, int scareMemory);
 
 /* Hash based on dev and inode only! */
 unsigned int fpHashFunction(const void * key);

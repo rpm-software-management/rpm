@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-30 09:22-0500\n"
+"POT-Creation-Date: 1999-11-30 12:53-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,59 +65,59 @@ msgstr ""
 msgid "Building for target %s\n"
 msgstr ""
 
-#: build.c:346
+#: build.c:344
 msgid "buildroot already specified"
 msgstr ""
 
-#: build.c:353
+#: build.c:351
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:357
+#: build.c:355
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:378
+#: build.c:376
 msgid "override build architecture"
 msgstr ""
 
-#: build.c:380
+#: build.c:378
 msgid "override build operating system"
 msgstr ""
 
-#: build.c:382
+#: build.c:380
 msgid "override build root"
 msgstr ""
 
-#: build.c:384 rpm.c:493
+#: build.c:382 rpm.c:493
 msgid "remove build tree when done"
 msgstr ""
 
-#: build.c:386
+#: build.c:384
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: build.c:388
+#: build.c:386
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: build.c:390
+#: build.c:388
 msgid "remove sources when done"
 msgstr ""
 
-#: build.c:392
+#: build.c:390
 msgid "remove specfile when done"
 msgstr ""
 
-#: build.c:394 rpm.c:491
+#: build.c:392 rpm.c:491
 msgid "skip straight to specified stage (only for c,i)"
 msgstr ""
 
-#: build.c:396
+#: build.c:394
 msgid "override target platform"
 msgstr ""
 
-#: build.c:398
+#: build.c:396
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
@@ -2070,7 +2070,7 @@ msgstr ""
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1111 lib/depends.c:1419
+#: lib/depends.c:1111 lib/depends.c:1410
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
@@ -2229,73 +2229,73 @@ msgstr ""
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:416
+#: lib/install.c:426
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr ""
 
-#: lib/install.c:422 lib/install.c:442
+#: lib/install.c:432 lib/install.c:462
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: lib/install.c:426
+#: lib/install.c:436
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:436
+#: lib/install.c:456
 #, c-format
 msgid "cannot create specdir %s"
 msgstr ""
 
-#: lib/install.c:446
+#: lib/install.c:466
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: lib/install.c:480 lib/install.c:508
+#: lib/install.c:500 lib/install.c:528
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: lib/install.c:530
+#: lib/install.c:550
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:532 lib/install.c:811 lib/uninstall.c:27
+#: lib/install.c:552 lib/install.c:831 lib/uninstall.c:27
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: lib/install.c:623
+#: lib/install.c:643
 msgid "source package expected, binary found"
 msgstr ""
 
-#: lib/install.c:680
+#: lib/install.c:700
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: lib/install.c:741
+#: lib/install.c:761
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:746
+#: lib/install.c:766
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:771
+#: lib/install.c:791
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: lib/install.c:807
+#: lib/install.c:827
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: lib/install.c:881
+#: lib/install.c:901
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -2857,76 +2857,76 @@ msgid ""
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:467
+#: lib/rpmdb.c:469
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: lib/rpmdb.c:478
+#: lib/rpmdb.c:480
 #, c-format
 msgid "package %s not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:502 lib/uninstall.c:86
+#: lib/rpmdb.c:504 lib/uninstall.c:86
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: lib/rpmdb.c:510
+#: lib/rpmdb.c:512
 msgid "package has no name"
 msgstr ""
 
-#: lib/rpmdb.c:512
+#: lib/rpmdb.c:514
 msgid "removing name index\n"
 msgstr ""
 
-#: lib/rpmdb.c:517
+#: lib/rpmdb.c:519
 msgid "package has no group\n"
 msgstr ""
 
-#: lib/rpmdb.c:519
+#: lib/rpmdb.c:521
 msgid "removing group index\n"
 msgstr ""
 
-#: lib/rpmdb.c:526
+#: lib/rpmdb.c:528
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:541
+#: lib/rpmdb.c:543
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:553
+#: lib/rpmdb.c:555
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:564
+#: lib/rpmdb.c:566
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:575
+#: lib/rpmdb.c:577
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:584
+#: lib/rpmdb.c:586
 msgid "package has no files\n"
 msgstr ""
 
-#: lib/rpmdb.c:686
+#: lib/rpmdb.c:688
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: lib/rpmdb.c:745
+#: lib/rpmdb.c:747
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: lib/rpmdb.c:757
+#: lib/rpmdb.c:759
 msgid "header changed size!"
 msgstr ""
 

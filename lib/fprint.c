@@ -95,13 +95,15 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
 		fp.subDir++;
 	    else
 		fp.subDir = "";
-	    if (!scareMemory && fp.subDir != NULL)
-		fp.subDir = xstrdup(fp.subDir);	/* XXX memory leak, but how
-						   do we know we can free it? 
-						   Using the (new) cache would
-						   work if hash tables allowed
-						   traversal. */
 	    fp.baseName = baseName;
+	    if (!scareMemory && fp.subDir != NULL) {
+		/* XXX memory leak, but how do we know we can free it? 
+		 * XXX Using the (new) cache would work if hash tables
+		 * XXX allowed traversal.
+		 */
+		fp.subDir = xstrdup(fp.subDir);
+		fp.baseName = xstrdup(fp.baseName);
+	    }
 	    return fp;
 	}
 
@@ -117,18 +119,10 @@ static fingerPrint doLookup(fingerPrintCache cache, const char * dirName,
     return fp;
 }
 
-fingerPrint fpLookup(fingerPrintCache cache, const char * fullName, 
-		     int scareMemory)
+fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
+			const char * baseName, int scareMemory)
 {
-    char *dn = strcpy(alloca(strlen(fullName)+1), fullName);
-    char *bn = strrchr(dn, '/');
-
-    if (bn)
-	*bn++ = '\0';
-    else
-	bn = dn;
-
-    return doLookup(cache, dn, bn, scareMemory);
+    return doLookup(cache, dirName, baseName, scareMemory);
 }
 
 unsigned int fpHashFunction(const void * key)

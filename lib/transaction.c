@@ -94,7 +94,7 @@ static void freeFi(TFI_t *fi)
 	if (fi->bnl) {
 	    free(fi->bnl); fi->bnl = NULL;
 	    free(fi->dnl); fi->dnl = NULL;
-	    fi->dil = NULL;
+	    free(fi->dil); fi->dil = NULL;
 	}
 	if (fi->flinks) {
 	    free(fi->flinks); fi->flinks = NULL;
