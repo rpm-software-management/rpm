@@ -17,6 +17,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <netinet/in.h>
+#include <sys/time.h>
+#include <sys/types.h>
 
 #include "header.h"
 #include "rpmlib.h"		/* necessary only for dumpHeader() */
@@ -279,6 +281,36 @@ static void *dataHostToNetwork(Header h)
     return data;
 }
 
+int timedRead(int fd, void * bufptr, int length) {
+    int bytesRead;
+    int total = 0;
+    char * buf = bufptr;
+    struct fd_set readSet;
+    struct timeval tv;
+
+    while  (total < length) {
+	FD_ZERO(&readSet);
+	FD_SET(fd, &readSet);
+
+	tv.tv_sec = 5;			/* FIXME: this should be configurable */
+	tv.tv_usec = 0;
+
+	if (select(fd + 1, &readSet, NULL, NULL, &tv) != 1) 
+	    return total;
+
+	bytesRead = read(fd, buf + total, length - total);
+
+	if (bytesRead < 0)
+	    return bytesRead;
+	else if (bytesRead == 0) 
+	    return total;
+
+	total += bytesRead;
+    }
+
+    return length;
+}
+
 Header readHeader(int fd, int magicp)
 {
     int_32 il, dl;
@@ -292,7 +324,7 @@ Header readHeader(int fd, int magicp)
     malloc(sizeof(struct headerToken));
 
     if (magicp == HEADER_MAGIC) {
-	read(fd, magic, sizeof(magic));
+	c = timedRead(fd, magic, sizeof(magic));
 	message(MESS_DEBUG, "magic: %02x %02x %02x %02x\n",
 		header_magic[0],
 		header_magic[1],
@@ -307,19 +339,19 @@ Header readHeader(int fd, int magicp)
 	    free(h);
 	    return NULL;
 	}
-	read(fd, &reserved, sizeof(reserved));
+	timedRead(fd, &reserved, sizeof(reserved));
 	reserved = ntohl(reserved);
     }
     
     /* First read the index length (count of index entries) */
-    if (read(fd, &il, sizeof(il)) != sizeof(il)) {
+    if (timedRead(fd, &il, sizeof(il)) != sizeof(il)) {
 	free(h);
 	return NULL;
     }
     il = ntohl(il);
 
     /* Then read the data length (number of bytes) */
-    if (read(fd, &dl, sizeof(dl)) != sizeof(dl)) {
+    if (timedRead(fd, &dl, sizeof(dl)) != sizeof(dl)) {
 	free(h);
 	return NULL;
     }
@@ -329,7 +361,7 @@ Header readHeader(int fd, int magicp)
     h->index = malloc(il * sizeof(struct indexEntry));
     h->entries_malloced = il;
     h->entries_used = il;
-    if (read(fd, h->index, sizeof(struct indexEntry) * il) !=
+    if (timedRead(fd, h->index, sizeof(struct indexEntry) * il) !=
 	sizeof(struct indexEntry) * il) {
 	if (h->index)
 	    free(h->index);
@@ -352,7 +384,7 @@ Header readHeader(int fd, int magicp)
     h->data = malloc(dl);
     h->data_malloced = dl;
     h->data_used = dl;
-    if (read(fd, h->data, dl) != dl) {
+    if (timedRead(fd, h->data, dl) != dl) {
 	if (h->data)
 	    free(h->data);
 	if (h->index)
