@@ -894,9 +894,9 @@ AC_OUTPUT([Makefile rpmrc macros lib/Makefile
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
 	misc/Makefile po/Makefile.in intl/Makefile
 	doc/Makefile doc/manual/Makefile doc/pl/Makefile doc/ru/Makefile
-	python/Makefile])
-dnl	[echo timestamp > popt/stamp-h.in
-dnl	echo timestamp > stamp-h.in
+	python/Makefile],
+	[echo timestamp > popt/stamp-h.in
+	echo timestamp > stamp-h.in])
 dnl	touch Makefile.in
 dnl	sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])
 
