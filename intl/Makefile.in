@@ -67,15 +67,10 @@ finddomain.$lo loadmsgcat.$lo localealias.$lo textdomain.$lo l10nflist.$lo \
 explodename.$lo
 CATOBJS = cat-compat.$lo ../po/cat-id-tbl.$lo
 GETTOBJS = intl-compat.$lo
-#DISTFILES.common = ChangeLog Makefile.in linux-msg.sed po2tbl.sed.in \
-#xopen-msg.sed $(HEADERS) $(SOURCES)
-#DISTFILES.normal = VERSION
-#DISTFILES.gettext = libintl.glibc intlh.inst.in
-
-# XXX rpm hacks
-DISTFILES.common = Makefile.in po2tbl.sed.in
-DISTFILES.normal =
-DISTFILES.gettext =
+DISTFILES.common = ChangeLog Makefile.in linux-msg.sed po2tbl.sed.in \
+xopen-msg.sed $(HEADERS) $(SOURCES)
+DISTFILES.normal = VERSION
+DISTFILES.gettext = libintl.glibc intlh.inst.in
 
 .SUFFIXES:
 .SUFFIXES: .c .o .lo
