@@ -1,8 +1,19 @@
 2.4.100 -> 2.4.102:
 	- fixed spelling of "instchangelog" in lib-rpmrc.in
 	- fixed memory leak in headerSprintf() extension cache
-	- fixed mmeory allocation for extension cache
+	- fixed memory allocation for header formatting extension cache
 	- added support for INSTPREFIX virtual tag for backwards compatibility
+	- cpio error codes were poorly defined, causing bad error messages
+	- generates INSTPREFIXES tag properly, and sets RPM_INSTALL_PREFIX
+	  and RPM_INSTALL_PREFIXn environment variables
+	- fixed memory leak in install code which occured when net shared paths
+	  were used
+	- don't pass net shared path to rpmInstallPackage() -- it looks 
+	  directly in the rpmrc entries
+	- don't remove files in netsharedpath, even for files whose states
+	  are not net shared
+	- changed --setugids to use separate chown and chgrp programs, for
+	  better portability
 
 2.4.100 -> 2.4.101:
 	- handle files with spaces (put double quotes around them)
