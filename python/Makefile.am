@@ -9,7 +9,7 @@ pyincdir = $(prefix)/include/python@WITH_PYTHON_VERSION@
 
 SUBDIRS = rpmdb
 
-EXTRA_DIST = rpmdebug-py.c
+EXTRA_DIST = system.h rpmdebug-py.c
 
 INCLUDES = -I. \
 	-I$(top_srcdir)/lib \
