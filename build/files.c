@@ -12,6 +12,9 @@
 #include "md5.h"
 #include "rpmmacro.h"
 
+#define	SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
+#define	SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
+
 #define MAXDOCDIR 1024
 
 typedef struct {
@@ -242,56 +245,60 @@ VFA_t verifyAttrs[] = {
 
 static int parseForVerify(char *buf, struct FileList *fl)
 {
-    char *p, *q, *start, *end, *name;
-    char ourbuf[BUFSIZ];
-    int not, verifyFlags;
+    char *p, *pe, *q;
+    const char *name;
     int *resultVerify;
+    int not;
+    int verifyFlags;
 
-    if (!(p = start = strstr(buf, "%verify"))) {
-	if (!(p = start = strstr(buf, "%defverify"))) {
-	    return 0;
-	}
-	name = "%defverify";
-	resultVerify = &(fl->defVerifyFlags);
-	p += 10;
-    } else {
-	name = "%verify";
+    if ((p = strstr(buf, (name = "%verify"))) != NULL) {
 	resultVerify = &(fl->currentVerifyFlags);
-	p += 7;
-    }
+    } else if ((p = strstr(buf, (name = "%defverify"))) != NULL) {
+	resultVerify = &(fl->defVerifyFlags);
+    } else
+	return 0;
 
-    SKIPSPACE(p);
+    for (pe = p; (pe-p) < strlen(name); pe++)
+	*pe = ' ';
 
-    if (*p != '(') {
-	rpmError(RPMERR_BADSPEC, _("Bad %s() syntax: %s"), name, buf);
-	fl->processingFailed = 1;
-	return RPMERR_BADSPEC;
-    }
-    p++;
+    SKIPSPACE(pe);
 
-    end = p;
-    while (*end && *end != ')') {
-	end++;
-    }
-
-    if (! *end) {
-	rpmError(RPMERR_BADSPEC, _("Bad %s() syntax: %s"), name, buf);
+    if (*pe != '(') {
+	rpmError(RPMERR_BADSPEC, _("Missing '(' in %s %s"), name, pe);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
 
-    strncpy(ourbuf, p, end-p);
-    ourbuf[end-p] = '\0';
-    while (start <= end) {
-	*start++ = ' ';
+    /* Bracket %*verify args */
+    *pe++ = ' ';
+    for (p = pe; *pe && *pe != ')'; pe++)
+	;
+
+    if (*pe == '\0') {
+	rpmError(RPMERR_BADSPEC, _("Missing ')' in %s(%s"), name, p);
+	fl->processingFailed = 1;
+	return RPMERR_BADSPEC;
     }
+
+    /* Localize. Erase parsed string */
+    q = alloca((pe-p) + 1);
+    strncpy(q, p, pe-p);
+    q[pe-p] = '\0';
+    while (p <= pe)
+	*p++ = ' ';
 
     not = 0;
     verifyFlags = RPMVERIFY_NONE;
 
-    q = ourbuf;
-    while ((p = strtok(q, ", \n\t")) != NULL) {
-	q = NULL;
+    for (p = q; *p; p = pe) {
+	SKIPWHITE(p);
+	if (*p == '\0')
+	    break;
+	pe = p;
+	SKIPNONWHITE(pe);
+	if (*pe)
+	    *pe++ = '\0';
+
 	{   VFA_t *vfa;
 	    for (vfa = verifyAttrs; vfa->attribute != NULL; vfa++) {
 		if (strcmp(p, vfa->attribute))
@@ -302,6 +309,7 @@ static int parseForVerify(char *buf, struct FileList *fl)
 	    if (vfa->attribute)
 		continue;
 	}
+
 	if (!strcmp(p, "not")) {
 	    not ^= 1;
 	} else {
@@ -320,74 +328,79 @@ static int parseForVerify(char *buf, struct FileList *fl)
 
 static int parseForAttr(char *buf, struct FileList *fl)
 {
-    char *p, *s, *start, *end, *name;
-    char ourbuf[1024];
-    int x, defattr = 0;
+    char *p, *pe, *q;
+    const char *name;
+    int x;
     AttrRec arbuf, *ar = &arbuf, *ret_ar;
 
-    if (!(p = start = strstr(buf, "%attr"))) {
-	if (!(p = start = strstr(buf, "%defattr"))) {
-	    return 0;
-	}
-	defattr = 1;
-	name = "%defattr";
-	ret_ar = &(fl->def_ar);
-	p += 8;
-    } else {
-	name = "%attr";
+    if ((p = strstr(buf, (name = "%attr"))) != NULL) {
 	ret_ar = &(fl->cur_ar);
-	p += 5;
-    }
+    } else if ((p = strstr(buf, (name = "%defattr"))) != NULL) {
+	ret_ar = &(fl->def_ar);
+    } else
+	return 0;
 
-    *ar = empty_ar;	/* structure assignment */
+    for (pe = p; (pe-p) < strlen(name); pe++)
+	*pe = ' ';
 
-    SKIPSPACE(p);
+    SKIPSPACE(pe);
 
-    if (*p != '(') {
-	rpmError(RPMERR_BADSPEC, _("Bad %s() syntax: %s"), name, buf);
-	fl->processingFailed = 1;
-	return RPMERR_BADSPEC;
-    }
-    p++;
-
-    end = p;
-    while (*end && *end != ')') {
-	end++;
-    }
-
-    if (! *end) {
-	rpmError(RPMERR_BADSPEC, _("Bad %s() syntax: %s"), name, buf);
+    if (*pe != '(') {
+	rpmError(RPMERR_BADSPEC, _("Missing '(' in %s %s"), name, pe);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
 
-    if (defattr) {
-	s = end;
-	s++;
-	SKIPSPACE(s);
-	if (*s) {
+    /* Bracket %*attr args */
+    *pe++ = ' ';
+    for (p = pe; *pe && *pe != ')'; pe++)
+	;
+
+    if (ret_ar == &(fl->def_ar)) {	/* %defattr */
+	q = pe;
+	q++;
+	SKIPSPACE(q);
+	if (*q) {
 	    rpmError(RPMERR_BADSPEC,
-		     _("No files after %%defattr(): %s"), buf);
+		     _("Non-white space follows %s(): %s"), name, q);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
     }
 
-    strncpy(ourbuf, p, end-p);
-    ourbuf[end-p] = '\0';
+    /* Localize. Erase parsed string */
+    q = alloca((pe-p) + 1);
+    strncpy(q, p, pe-p);
+    q[pe-p] = '\0';
+    while (p <= pe)
+	*p++ = ' ';
 
-    ar->ar_fmodestr = strtok(ourbuf, ", \n\t");
-    ar->ar_user = strtok(NULL, ", \n\t");
-    ar->ar_group = strtok(NULL, ", \n\t");
+    *ar = empty_ar;	/* structure assignment */
 
-    if (defattr)
-        ar->ar_dmodestr = strtok(NULL, ", \n\t");
-    else
-	ar->ar_dmodestr = NULL;
+    p = q; SKIPWHITE(p);
+    if (*p) {
+	pe = p; SKIPNONWHITE(pe); if (*pe) *pe++ = '\0';
+	ar->ar_fmodestr = p;
+	p = pe; SKIPWHITE(p);
+    }
+    if (*p) {
+	pe = p; SKIPNONWHITE(pe); if (*pe) *pe++ = '\0';
+	ar->ar_user = p;
+	p = pe; SKIPWHITE(p);
+    }
+    if (*p) {
+	pe = p; SKIPNONWHITE(pe); if (*pe) *pe++ = '\0';
+	ar->ar_group = p;
+	p = pe; SKIPWHITE(p);
+    }
+    if (*p && ret_ar == &(fl->def_ar)) {	/* %defattr */
+	pe = p; SKIPNONWHITE(pe); if (*pe) *pe++ = '\0';
+        ar->ar_dmodestr = p;
+	p = pe; SKIPWHITE(p);
+    }
 
-    if (!(ar->ar_fmodestr && ar->ar_user && ar->ar_group) || 
-		strtok(NULL, ", \n\t")) {
-	rpmError(RPMERR_BADSPEC, _("Bad %s() syntax: %s"), name, buf);
+    if (!(ar->ar_fmodestr && ar->ar_user && ar->ar_group) || *p != '\0') {
+	rpmError(RPMERR_BADSPEC, _("Bad syntax: %s(%s)"), name, q);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -397,7 +410,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
 	unsigned int ui;
 	x = sscanf(ar->ar_fmodestr, "%o", &ui);
 	if ((x == 0) || (ar->ar_fmode & ~MYALLPERMS)) {
-	    rpmError(RPMERR_BADSPEC, _("Bad %s() mode spec: %s"), name, buf);
+	    rpmError(RPMERR_BADSPEC, _("Bad mode spec: %s(%s)"), name, q);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -409,7 +422,7 @@ static int parseForAttr(char *buf, struct FileList *fl)
 	unsigned int ui;
 	x = sscanf(ar->ar_dmodestr, "%o", &ui);
 	if ((x == 0) || (ar->ar_dmode & ~MYALLPERMS)) {
-	    rpmError(RPMERR_BADSPEC, _("Bad %s() dirmode spec: %s"), name, buf);
+	    rpmError(RPMERR_BADSPEC, _("Bad dirmode spec: %s(%s)"), name, q);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -425,64 +438,60 @@ static int parseForAttr(char *buf, struct FileList *fl)
 
     dupAttrRec(ar, ret_ar);
     
-    /* Set everything we just parsed to blank spaces */
-    while (start <= end) {
-	*start++ = ' ';
-    }
-
     return 0;
 }
 
 static int parseForConfig(char *buf, struct FileList *fl)
 {
-    char *p, *start, *end;
-    char ourbuf[1024];
+    char *p, *pe, *q;
+    const char *name;
 
-    if (!(p = start = strstr(buf, "%config"))) {
+    if ((p = strstr(buf, (name = "%config"))) == NULL)
 	return 0;
-    }
+
     fl->currentFlags = RPMFILE_CONFIG;
 
-    p += 7;
-    SKIPSPACE(p);
-
-    if (*p != '(') {
-	while (start < p) {
-	    *start++ = ' ';
-	}
+    for (pe = p; (pe-p) < strlen(name); pe++)
+	*pe = ' ';
+    SKIPSPACE(pe);
+    if (*pe != '(')
 	return 0;
-    }
-    p++;
 
-    end = p;
-    while (*end && *end != ')') {
-	end++;
-    }
+    /* Bracket %config args */
+    *pe++ = ' ';
+    for (p = pe; *pe && *pe != ')'; pe++)
+	;
 
-    if (! *end) {
-	rpmError(RPMERR_BADSPEC, _("Bad %%config() syntax: %s"), buf);
+    if (*pe == '\0') {
+	rpmError(RPMERR_BADSPEC, _("Missing ')' in %s(%s"), name, p);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
 
-    strncpy(ourbuf, p, end-p);
-    ourbuf[end-p] = '\0';
-    while (start <= end) {
-	*start++ = ' ';
-    }
+    /* Localize. Erase parsed string */
+    q = alloca((pe-p) + 1);
+    strncpy(q, p, pe-p);
+    q[pe-p] = '\0';
+    while (p <= pe)
+	*p++ = ' ';
 
-    p = strtok(ourbuf, ", \n\t");
-    while (p) {
+    for (p = q; *p; p = pe) {
+	SKIPWHITE(p);
+	if (*p == '\0')
+	    break;
+	pe = p;
+	SKIPNONWHITE(pe);
+	if (*pe)
+	    *pe++ = '\0';
 	if (!strcmp(p, "missingok")) {
 	    fl->currentFlags |= RPMFILE_MISSINGOK;
 	} else if (!strcmp(p, "noreplace")) {
 	    fl->currentFlags |= RPMFILE_NOREPLACE;
 	} else {
-	    rpmError(RPMERR_BADSPEC, _("Invalid %%config token: %s"), p);
+	    rpmError(RPMERR_BADSPEC, _("Invalid %s token: %s"), name, p);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
-	p = strtok(NULL, ", \n\t");
     }
 
     return 0;
@@ -490,52 +499,55 @@ static int parseForConfig(char *buf, struct FileList *fl)
 
 static int parseForLang(char *buf, struct FileList *fl)
 {
-    char *p, *pe, *start;
-    char ourbuf[1024];
+    char *p, *pe, *q;
+    const char *name;
 
-  while ((p = start = strstr(buf, "%lang")) != NULL) {
+  while ((p = strstr(buf, (name = "%lang"))) != NULL) {
 
-    p += 5;
-    SKIPSPACE(p);
+    for (pe = p; (pe-p) < strlen(name); pe++)
+	*pe = ' ';
+    SKIPSPACE(pe);
 
-    if (*p != '(') {
-	rpmError(RPMERR_BADSPEC, _("Missing '(' in %s"), start);
+    if (*pe != '(') {
+	rpmError(RPMERR_BADSPEC, _("Missing '(' in %s %s"), name, pe);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
 
-    p++;	/* skip ( */
+    /* Bracket %lang args */
+    *pe++ = ' ';
     for (pe = p; *pe && *pe != ')'; pe++)
 	;
+
     if (*pe == '\0') {
-	rpmError(RPMERR_BADSPEC, _("Missing ')' in %s"), start);
+	rpmError(RPMERR_BADSPEC, _("Missing ')' in %s(%s"), name, p);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
 
-    /* Excise the next %lang construct */
-    strncpy(ourbuf, p, pe-p);
-    ourbuf[pe-p] = '\0';
-    pe++;	/* skip ) */
-    while (start < pe)
-	*start++ = ' ';
+    /* Localize. Erase parsed string */
+    q = alloca((pe-p) + 1);
+    strncpy(q, p, pe-p);
+    q[pe-p] = '\0';
+    while (p <= pe)
+	*p++ = ' ';
 
     /* Parse multiple arguments from %lang */
-    for (p = ourbuf; *p; p = pe) {
+    for (p = q; *p; p = pe) {
 	char *newp;
 	size_t np;
 	int i;
 
-	SKIPSPACE(p);
-	for (pe = p; *pe && !(isspace(*pe) || *pe == ','); pe++)
-	    ;
+	SKIPWHITE(p);
+	pe = p;
+	SKIPNONWHITE(pe);
 
 	np = pe - p;
 	
 	/* Sanity check on locale lengths */
 	if (np < 1 || (np == 1 && *p != 'C') || np >= 16) {
 	    rpmError(RPMERR_BADSPEC, _("Unusual locale length: \"%.*s\" in %%lang(%s)"),
-		np, p, ourbuf);
+		np, p, q);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -545,7 +557,7 @@ static int parseForLang(char *buf, struct FileList *fl)
 	    if (strncmp(fl->currentLangs[i], p, np))
 		continue;
 	    rpmError(RPMERR_BADSPEC, _("Duplicate locale %.*s in %%lang(%s)"),
-		np, p, ourbuf);
+		np, p, q);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}

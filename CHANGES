@@ -21,6 +21,7 @@
 	- fix: --checksig segfault with odd pgp output (e.g. w/o ~/.pgp) (#3720)
 	- avoid numeric overflow in version comparison (Thayne Harbaugh<tharbaug@liberate.com>).
 	- move url.c and ftp.c to rpmlib right next to query.
+	- 12 more dead strtoks.
 
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected (Shing-Gene Yung).

@@ -25,7 +25,7 @@ static void addChangelogEntry(Header h, int time, char *name, char *text)
 static int dateToTimet(const char * datestr, time_t * secs)
 {
     struct tm time;
-    char * chptr, * end, ** idx;
+    char *p, *pe, *q, ** idx;
     char * date = strcpy(alloca(strlen(datestr) + 1), datestr);
     static char * days[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", 
 				NULL };
@@ -35,37 +35,43 @@ static int dateToTimet(const char * datestr, time_t * secs)
     
     memset(&time, 0, sizeof(time));
 
-    end = chptr = date;
+    pe = date;
 
     /* day of week */
-    if ((chptr = strtok(date, " \t\n")) == NULL) return -1;
-    idx = days;
-    while (*idx && strcmp(*idx, chptr)) idx++;
-    if (!*idx) return -1;
+    p = pe; SKIPSPACE(p);
+    if (*p == '\0') return -1;
+    pe = p; SKIPNONSPACE(pe); if (*pe) *pe++ = '\0';
+    for (idx = days; *idx && strcmp(*idx, p); idx++)
+	;
+    if (*idx == NULL) return -1;
 
     /* month */
-    if ((chptr = strtok(NULL, " \t\n")) == NULL) return -1;
-    idx = months;
-    while (*idx && strcmp(*idx, chptr)) idx++;
-    if (!*idx) return -1;
-
+    p = pe; SKIPSPACE(p);
+    if (*p == '\0') return -1;
+    pe = p; SKIPNONSPACE(pe); if (*pe) *pe++ = '\0';
+    for (idx = months; *idx && strcmp(*idx, p); idx++)
+	;
+    if (*idx == NULL) return -1;
     time.tm_mon = idx - months;
 
     /* day */
-    if ((chptr = strtok(NULL, " \t\n")) == NULL) return -1;
+    p = pe; SKIPSPACE(p);
+    if (*p == '\0') return -1;
+    pe = p; SKIPNONSPACE(pe); if (*pe) *pe++ = '\0';
 
     /* make this noon so the day is always right (as we make this UTC) */
     time.tm_hour = 12;
 
-    time.tm_mday = strtol(chptr, &end, 10);
-    if (!(end && *end == '\0')) return -1;
+    time.tm_mday = strtol(p, &q, 10);
+    if (!(q && *q == '\0')) return -1;
     if (time.tm_mday < 0 || time.tm_mday > lengths[time.tm_mon]) return -1;
 
     /* year */
-    if ((chptr = strtok(NULL, " \t\n")) == NULL) return -1;
-
-    time.tm_year = strtol(chptr, &end, 10);
-    if (!(end && *end == '\0')) return -1;
+    p = pe; SKIPSPACE(p);
+    if (*p == '\0') return -1;
+    pe = p; SKIPNONSPACE(pe); if (*pe) *pe++ = '\0';
+    time.tm_year = strtol(p, &q, 10);
+    if (!(q && *q == '\0')) return -1;
     if (time.tm_year < 1997 || time.tm_year >= 3000) return -1;
     time.tm_year -= 1900;
 
@@ -98,7 +104,7 @@ static int addChangelog(Header h, StringBuf sb)
 
 	/* find end of line */
 	date = s;
-	SKIPTONEWLINE(s);
+	while(*s && *s != '\n') s++;
 	if (! *s) {
 	    rpmError(RPMERR_BADSPEC, _("incomplete %%changelog entry"));
 	    return RPMERR_BADSPEC;
@@ -182,9 +188,8 @@ int parseChangelog(Spec spec)
 	freeStringBuf(sb);
 	return PART_NONE;
     }
-    if (rc) {
+    if (rc)
 	return rc;
-    }
     
     while (! (nextPart = isPart(spec->line))) {
 	appendStringBuf(sb, spec->line);
@@ -192,9 +197,8 @@ int parseChangelog(Spec spec)
 	    nextPart = PART_NONE;
 	    break;
 	}
-	if (rc) {
+	if (rc)
 	    return rc;
-	}
     }
 
     res = addChangelog(spec->packages->header, sb);

@@ -32,7 +32,6 @@
 #define FREE(x) { if (x) free((void *)x); x = NULL; }
 #define SKIPSPACE(s) { while (*(s) && isspace(*(s))) (s)++; }
 #define SKIPNONSPACE(s) { while (*(s) && !isspace(*(s))) (s)++; }
-#define SKIPTONEWLINE(s) { while (*s && *s != '\n') s++; }
 
 #define PART_SUBNAME  0
 #define PART_NAME     1

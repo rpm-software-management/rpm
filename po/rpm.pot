@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-06-30 17:14-0400\n"
+"POT-Creation-Date: 1999-07-03 18:48-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -311,7 +311,7 @@ msgstr ""
 msgid "installing binary packages\n"
 msgstr ""
 
-#: ../install.c:382 ../lib/query.c:732
+#: ../install.c:382 ../lib/query.c:730
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -1505,178 +1505,170 @@ msgstr ""
 msgid "syntax error in expression"
 msgstr ""
 
-#: ../build/files.c:221
+#: ../build/files.c:224
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: ../build/files.c:266 ../build/files.c:278 ../build/files.c:347
-#: ../build/files.c:359 ../build/files.c:390
+#: ../build/files.c:267 ../build/files.c:349 ../build/files.c:512
 #, c-format
-msgid "Bad %s() syntax: %s"
+msgid "Missing '(' in %s %s"
 msgstr ""
 
-#: ../build/files.c:308
+#: ../build/files.c:278 ../build/files.c:466 ../build/files.c:523
+#, c-format
+msgid "Missing ')' in %s(%s"
+msgstr ""
+
+#: ../build/files.c:316 ../build/files.c:491
 #, c-format
 msgid "Invalid %s token: %s"
 msgstr ""
 
-#: ../build/files.c:370
-msgid "No files after %%defattr(): %s"
-msgstr ""
-
-#: ../build/files.c:400
+#: ../build/files.c:365
 #, c-format
-msgid "Bad %s() mode spec: %s"
+msgid "Non-white space follows %s(): %s"
 msgstr ""
 
-#: ../build/files.c:412
+#: ../build/files.c:403
 #, c-format
-msgid "Bad %s() dirmode spec: %s"
+msgid "Bad syntax: %s(%s)"
 msgstr ""
 
-#: ../build/files.c:463
-msgid "Bad %%config() syntax: %s"
-msgstr ""
-
-#: ../build/files.c:481
-msgid "Invalid %%config token: %s"
-msgstr ""
-
-#: ../build/files.c:502
+#: ../build/files.c:413
 #, c-format
-msgid "Missing '(' in %s"
+msgid "Bad mode spec: %s(%s)"
 msgstr ""
 
-#: ../build/files.c:511
+#: ../build/files.c:425
 #, c-format
-msgid "Missing ')' in %s"
+msgid "Bad dirmode spec: %s(%s)"
 msgstr ""
 
-#: ../build/files.c:537
+#: ../build/files.c:549
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)"
 msgstr ""
 
-#: ../build/files.c:547
+#: ../build/files.c:559
 msgid "Duplicate locale %.*s in %%lang(%s)"
 msgstr ""
 
-#: ../build/files.c:639
+#: ../build/files.c:651
 msgid "Hit limit for %%docdir"
 msgstr ""
 
-#: ../build/files.c:645
+#: ../build/files.c:657
 msgid "Only one arg for %%docdir"
 msgstr ""
 
 #. We already got a file -- error
-#: ../build/files.c:670
+#: ../build/files.c:682
 #, c-format
 msgid "Two files on one line: %s"
 msgstr ""
 
-#: ../build/files.c:683
+#: ../build/files.c:695
 #, c-format
 msgid "File must begin with \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:695
+#: ../build/files.c:707
 msgid "Can't mix special %%doc with other forms: %s"
 msgstr ""
 
-#: ../build/files.c:783
+#: ../build/files.c:795
 #, c-format
 msgid "File listed twice: %s"
 msgstr ""
 
-#: ../build/files.c:943
+#: ../build/files.c:955
 #, c-format
 msgid "File doesn't match prefix (%s): %s"
 msgstr ""
 
-#: ../build/files.c:953 ../build/files.c:1090
+#: ../build/files.c:965 ../build/files.c:1102
 #, c-format
 msgid "File not found: %s"
 msgstr ""
 
-#: ../build/files.c:996
+#: ../build/files.c:1008
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: ../build/files.c:1010
+#: ../build/files.c:1022
 #, c-format
 msgid "File %4d: 0%o %s.%s\t %s\n"
 msgstr ""
 
-#: ../build/files.c:1074
+#: ../build/files.c:1086
 #, c-format
 msgid "File needs leading \"/\": %s"
 msgstr ""
 
-#: ../build/files.c:1131
+#: ../build/files.c:1143
 msgid "Could not open %%files file: %s"
 msgstr ""
 
-#: ../build/files.c:1138 ../build/pack.c:433
+#: ../build/files.c:1150 ../build/pack.c:433
 #, c-format
 msgid "line: %s"
 msgstr ""
 
-#: ../build/files.c:1458 ../build/parsePrep.c:31
+#: ../build/files.c:1470 ../build/parsePrep.c:31
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr ""
 
-#: ../build/files.c:1511
+#: ../build/files.c:1523
 #, c-format
 msgid "Couldn't exec %s"
 msgstr ""
 
-#: ../build/files.c:1515
+#: ../build/files.c:1527
 #, c-format
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1594
+#: ../build/files.c:1606
 #, c-format
 msgid "%s failed"
 msgstr ""
 
-#: ../build/files.c:1598
+#: ../build/files.c:1610
 #, c-format
 msgid "failed to write all data to %s"
 msgstr ""
 
-#: ../build/files.c:1632
+#: ../build/files.c:1644
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1639
+#: ../build/files.c:1651
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1658
+#: ../build/files.c:1670
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1665
+#: ../build/files.c:1677
 msgid "Failed to find requires"
 msgstr ""
 
-#: ../build/files.c:1699
+#: ../build/files.c:1711
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1714
+#: ../build/files.c:1726
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1726
+#: ../build/files.c:1738
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1750
+#: ../build/files.c:1762
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
@@ -1793,27 +1785,27 @@ msgstr ""
 msgid "line %d: second %s"
 msgstr ""
 
-#: ../build/parseChangelog.c:95
+#: ../build/parseChangelog.c:101
 msgid "%%changelog entries must start with *"
 msgstr ""
 
-#: ../build/parseChangelog.c:103
+#: ../build/parseChangelog.c:109
 msgid "incomplete %%changelog entry"
 msgstr ""
 
-#: ../build/parseChangelog.c:118
+#: ../build/parseChangelog.c:124
 msgid "bad date in %%changelog: %s"
 msgstr ""
 
-#: ../build/parseChangelog.c:123
+#: ../build/parseChangelog.c:129
 msgid "%%changelog not in decending chronological order"
 msgstr ""
 
-#: ../build/parseChangelog.c:131 ../build/parseChangelog.c:142
+#: ../build/parseChangelog.c:137 ../build/parseChangelog.c:148
 msgid "missing name in %%changelog"
 msgstr ""
 
-#: ../build/parseChangelog.c:149
+#: ../build/parseChangelog.c:155
 msgid "no description in %%changelog"
 msgstr ""
 
@@ -2187,12 +2179,12 @@ msgstr ""
 msgid "error getting record %s from %s"
 msgstr ""
 
-#: ../lib/dbindex.c:105
+#: ../lib/dbindex.c:104
 #, c-format
 msgid "error storing record %s into %s"
 msgstr ""
 
-#: ../lib/dbindex.c:112
+#: ../lib/dbindex.c:111
 #, c-format
 msgid "error removing record %s into %s"
 msgstr ""
@@ -2494,83 +2486,83 @@ msgstr ""
 msgid "cannot read header at %d for lookup"
 msgstr ""
 
-#: ../lib/macro.c:129
+#: ../lib/macro.c:136
 #, c-format
 msgid "======================== active %d empty %d\n"
 msgstr ""
 
 #. XXX just in case
-#: ../lib/macro.c:218
+#: ../lib/macro.c:225
 #, c-format
 msgid "%3d>%*s(empty)"
 msgstr ""
 
-#: ../lib/macro.c:253
+#: ../lib/macro.c:260
 #, c-format
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: ../lib/macro.c:426
+#: ../lib/macro.c:433
 msgid "Macro %%%s has unterminated body"
 msgstr ""
 
-#: ../lib/macro.c:452
+#: ../lib/macro.c:459
 msgid "Macro %%%s has illegal name (%%define)"
 msgstr ""
 
-#: ../lib/macro.c:458
+#: ../lib/macro.c:465
 msgid "Macro %%%s has unterminated opts"
 msgstr ""
 
-#: ../lib/macro.c:463
+#: ../lib/macro.c:470
 msgid "Macro %%%s has empty body"
 msgstr ""
 
-#: ../lib/macro.c:468
+#: ../lib/macro.c:475
 msgid "Macro %%%s failed to expand"
 msgstr ""
 
-#: ../lib/macro.c:493
+#: ../lib/macro.c:500
 msgid "Macro %%%s has illegal name (%%undefine)"
 msgstr ""
 
-#: ../lib/macro.c:566
+#: ../lib/macro.c:573
 msgid "Macro %%%s (%s) was not used below level %d"
 msgstr ""
 
-#: ../lib/macro.c:650
+#: ../lib/macro.c:657
 #, c-format
 msgid "Unknown option %c in %s(%s)"
 msgstr ""
 
-#: ../lib/macro.c:825
+#: ../lib/macro.c:832
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)"
 msgstr ""
 
-#: ../lib/macro.c:881 ../lib/macro.c:897
+#: ../lib/macro.c:888 ../lib/macro.c:904
 #, c-format
 msgid "Unterminated %c: %s"
 msgstr ""
 
-#: ../lib/macro.c:930
+#: ../lib/macro.c:937
 msgid "A %% is followed by an unparseable macro"
 msgstr ""
 
-#: ../lib/macro.c:1053
+#: ../lib/macro.c:1060
 msgid "Macro %%%.*s not found, skipping"
 msgstr ""
 
-#: ../lib/macro.c:1131
+#: ../lib/macro.c:1138
 msgid "Target buffer overflow"
 msgstr ""
 
-#: ../lib/macro.c:1278 ../lib/macro.c:1286
+#: ../lib/macro.c:1285 ../lib/macro.c:1293
 #, c-format
 msgid "File %s: %s"
 msgstr ""
 
-#: ../lib/macro.c:1289
+#: ../lib/macro.c:1296
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
@@ -2805,61 +2797,61 @@ msgstr ""
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: ../lib/query.c:642
+#: ../lib/query.c:640
 msgid "could not read database record!\n"
 msgstr ""
 
-#: ../lib/query.c:653
+#: ../lib/query.c:651
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: ../lib/query.c:663
+#: ../lib/query.c:661
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: ../lib/query.c:673
+#: ../lib/query.c:671
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: ../lib/query.c:683
+#: ../lib/query.c:681
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: ../lib/query.c:698
+#: ../lib/query.c:696
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: ../lib/query.c:701
+#: ../lib/query.c:699
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: ../lib/query.c:714
+#: ../lib/query.c:712
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: ../lib/query.c:717
+#: ../lib/query.c:715
 #, c-format
 msgid "package record number: %d\n"
 msgstr ""
 
-#: ../lib/query.c:720
+#: ../lib/query.c:718
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: ../lib/query.c:735
+#: ../lib/query.c:733
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: ../lib/query.c:757
+#: ../lib/query.c:755
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
