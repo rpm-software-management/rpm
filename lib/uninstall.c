@@ -251,14 +251,17 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
     scriptArg = matches.count - 1;
     dbiFreeIndexRecord(matches);
 
-    /* run triggers from this package which are keyed on installed packages */
-    if (runImmedTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1)) {
-	return 2;
-    }
+    if (!(flags & RPMUNINSTALL_NOTRIGGERS)) {
+	/* run triggers from this package which are keyed on installed 
+	   packages */
+	if (runImmedTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1)) {
+	    return 2;
+	}
 
-    /* run triggers which are set off by the removal of this package */
-    if (runTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1))
-	return 1;
+	/* run triggers which are set off by the removal of this package */
+	if (runTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1))
+	    return 1;
+    }
 
     if (!(flags & RPMUNINSTALL_TEST)) {
 	if (runInstScript(prefix, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg, 
@@ -359,9 +362,11 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int flags) {
 		      flags & RPMUNINSTALL_NOSCRIPTS, 0);
     }
 
-    /* Run postun triggers which are set off by this package's removal */
-    if (runTriggers(prefix, db, RPMSENSE_TRIGGERPOSTUN, h, 0)) {
-	return 2;
+    if (!(flags & RPMUNINSTALL_NOTRIGGERS)) {
+	/* Run postun triggers which are set off by this package's removal */
+	if (runTriggers(prefix, db, RPMSENSE_TRIGGERPOSTUN, h, 0)) {
+	    return 2;
+	}
     }
 
     headerFree(h);
@@ -652,6 +657,7 @@ static int handleOneTrigger(char * root, rpmdb db, int sense, Header sourceH,
     int i;
     int index;
     dbiIndexSet matches;
+    int skip;
 
     if (!headerGetEntry(triggeredH, RPMTAG_TRIGGERNAME, NULL, 
 			(void **) &triggerNames, &numTriggers)) {
@@ -669,7 +675,19 @@ static int handleOneTrigger(char * root, rpmdb db, int sense, Header sourceH,
     for (i = 0; i < numTriggers; i++) {
 	if (!(triggerFlags[i] & sense)) continue;
 	if (strcmp(triggerNames[i], sourceName)) continue;
-	if (!headerMatchesDepFlags(sourceH, triggerVersions[i], 
+
+	/* For some reason, the TRIGGERVERSION stuff includes the name
+	   of the package which the trigger is based on. We need to skip
+	   over that here. I suspect that we'll change our minds on this
+	   and remove that, so I'm going to just 'do the right thing'. */
+	skip = strlen(triggerNames[i]);
+	if (!strncmp(triggerVersions[i], triggerNames[i], skip) &&
+	    (triggerVersions[i][skip] == '-'))
+	    skip++;
+	else
+	    skip = 0;
+
+	if (!headerMatchesDepFlags(sourceH, triggerVersions[i] + skip, 
 				   triggerFlags[i])) continue;
 
 	headerGetEntry(triggeredH, RPMTAG_TRIGGERINDEX, NULL,
