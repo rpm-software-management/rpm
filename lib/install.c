@@ -280,9 +280,9 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	    }
 	    *intptr++ = 0;
 	}
-    }
 
-    dbiFreeIndexRecord(matches);
+	dbiFreeIndexRecord(matches);
+    }
 
     fileList = NULL;
     if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
