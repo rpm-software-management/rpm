@@ -10,20 +10,16 @@
 
 #include "debug.h"
 
-/*@access availableList@*/
-
-#ifdef	DYING
-/*@access tsortInfo@*/
-#endif
-
-/*@access alKey@*/
-/*@access alNum@*/
-/*@access fnpyKey@*/
-
-/*@access TFI_t @*/
-
 typedef /*@abstract@*/ struct availablePackage_s * availablePackage;
-/*@access availablePackage@*/
+
+/*@access alKey @*/
+/*@access alNum @*/
+/*@access availableList @*/
+/*@access availablePackage @*/
+
+/*@access fnpyKey @*/	/* XXX suggestedKeys array */
+
+/*@access TFI_t @*/	/* XXX abstraction wrappers needed */
 
 /** \ingroup rpmdep
  * Info about a single package to be installed.
@@ -38,6 +34,7 @@ struct availablePackage_s {
     uint_32 multiLib;	/* MULTILIB */
 #endif
 
+/*@exposed@*/ /*@dependent@*/ /*@null@*/
     fnpyKey key;		/*!< Associated file name/python object */
 
 };
@@ -49,7 +46,7 @@ typedef /*@abstract@*/ struct availableIndexEntry_s *	availableIndexEntry;
  * A single available item (e.g. a Provides: dependency).
  */
 struct availableIndexEntry_s {
-/*@dependent@*/ /*@null@*/
+/*@exposed@*/ /*@dependent@*/ /*@null@*/
     alKey pkgKey;		/*!< Containing package. */
 /*@dependent@*/
     const char * entry;		/*!< Dependency name. */
@@ -177,17 +174,13 @@ static availablePackage alGetPkg(/*@null@*/ const availableList al,
 		/*@null@*/ alKey pkgKey)
 	/*@*/
 {
-    availablePackage alp = NULL;
     alNum pkgNum = alKey2Num(al, pkgKey);
+    availablePackage alp = NULL;
 
     if (al != NULL && pkgNum >= 0 && pkgNum < alGetSize(al)) {
 	if (al->list != NULL)
 	    alp = al->list + pkgNum;
     }
-/*@-modfilesys@*/
-if (_al_debug)
-fprintf(stderr, "*** alp[%d] %p\n", pkgNum, alp);
-/*@=modfilesys@*/
     return alp;
 }
 #endif
@@ -285,13 +278,14 @@ static int fieCompare(const void * one, const void * two)
 
 void alDelPackage(availableList al, alKey pkgKey)
 {
+    alNum pkgNum = alKey2Num(al, pkgKey);
     availablePackage alp;
     TFI_t fi;
-    alNum pkgNum = alKey2Num(al, pkgKey);
 
-    /*@-nullptrarith@*/ /* FIX: al->list might be NULL */
+    if (al->list == NULL)
+	return;		/* XXX can't happen */
+
     alp = al->list + pkgNum;
-    /*@=nullptrarith@*/
 
 /*@-modfilesys@*/
 if (_al_debug)
@@ -361,16 +355,14 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
     alp->fi = fiFree(alp->fi, 1);
 
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
-    /*@-nullstate@*/ /* FIX: al->list->h may be NULL */
     return;
-    /*@=nullstate@*/
 }
 
 alKey alAddPackage(availableList al, alKey pkgKey, fnpyKey key,
 		rpmDepSet provides, TFI_t fi)
 {
-    availablePackage alp;
     alNum pkgNum = alKey2Num(al, pkgKey);
+    availablePackage alp;
 
     if (pkgNum >= 0 && pkgNum < al->size) {
 	alDelPackage(al, pkgKey);
@@ -382,23 +374,20 @@ alKey alAddPackage(availableList al, alKey pkgKey, fnpyKey key,
 	pkgNum = al->size++;
     }
 
-    /*@-nullptrarith@*/
-    alp = al->list + pkgNum;
-    /*@=nullptrarith@*/
+    if (al->list == NULL)
+	return RPMAL_NOMATCH;		/* XXX can't happen */
 
-    /*@-assignexpose -temptrans @*/
+    alp = al->list + pkgNum;
+
     alp->key = key;
-    /*@=assignexpose =temptrans @*/
 
 /*@-modfilesys@*/
 if (_al_debug)
 fprintf(stderr, "*** add %p[%d]\n", al->list, pkgNum);
 /*@=modfilesys@*/
 
-    /*@-assignexpose -temptrans@*/
     alp->provides = rpmdsLink(provides, "Provides (alAddPackage)");
     alp->fi = rpmfiLink(fi, "Files (alAddPackage)");
-    /*@=assignexpose =temptrans@*/
 
     if (alp->fi && alp->fi->fc > 0) {
 	int * dirMapping;
@@ -512,12 +501,12 @@ static int indexcmp(const void * one, const void * two)
 
 void alAddProvides(availableList al, alKey pkgKey, rpmDepSet provides)
 {
-    availableIndexEntry aie;
+    alNum pkgNum = alKey2Num(al, pkgKey);
     availableIndex ai = &al->index;
-    int i = alKey2Num(al, pkgKey);
+    availableIndexEntry aie;
     int ix;
 
-    if (provides == NULL || i < 0 || i >= al->size)
+    if (provides == NULL || pkgNum < 0 || pkgNum >= al->size)
 	return;
     if (ai->index == NULL || ai->k < 0 || ai->k >= ai->size)
 	return;
@@ -542,16 +531,14 @@ void alAddProvides(availableList al, alKey pkgKey, rpmDepSet provides)
 	aie = ai->index + ai->k;
 	ai->k++;
 
-	/*@-assignexpose@*/
-	/*@-temptrans@*/
 	aie->pkgKey = pkgKey;
-	/*@=temptrans@*/
 	aie->entry = Name;
-	/*@=assignexpose@*/
 	aie->entryLen = strlen(Name);
 	ix = dsiGetIx(provides);
+
 /* XXX make sure that element index fits in unsigned short */
 assert(ix < 0x10000);
+
 	aie->entryIx = ix;
 	aie->type = IET_PROVIDES;
     }
@@ -666,10 +653,8 @@ alAllFileSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * key
 
 exit:
     dirName = _free(dirName);
-    /*@-mods@*/		/* AOK: al->list not modified through ret alias. */
     if (ret)
 	ret[found] = NULL;
-    /*@=mods@*/
     return ret;
 }
 
@@ -734,13 +719,12 @@ alAllSatisfiesDepend(const availableList al, const rpmDepSet ds, alKey * keyp)
     while (match > ai->index && indexcmp(match-1, needle) == 0)
 	match--;
 
+    if (al->list != NULL)	/* XXX always true */
     for (ret = NULL, found = 0;
 	 match <= ai->index + ai->size && indexcmp(match, needle) == 0;
 	 match++)
     {
-	/*@-nullptrarith@*/
 	alp = al->list + alKey2Num(al, match->pkgKey);
-	/*@=nullptrarith@*/
 
 	rc = 0;
 	if (alp->provides != NULL)	/* XXX can't happen */

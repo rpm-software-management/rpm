@@ -45,7 +45,9 @@ void alDelPackage(availableList al, /*@null@*/ alKey pkgKey)
  * @param fi		file info set
  * @return		available package index
  */
-alKey alAddPackage(availableList al, /*@null@*/ alKey pkgKey, fnpyKey key,
+alKey alAddPackage(availableList al,
+		/*@dependent@*/ /*@null@*/ alKey pkgKey,
+		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmDepSet provides, /*@null@*/ TFI_t fi)
 	/*@modifies al, provides, fi @*/;
 
@@ -56,7 +58,8 @@ alKey alAddPackage(availableList al, /*@null@*/ alKey pkgKey, fnpyKey key,
  * @param provides	added package provides
  */
 /*@-exportlocal@*/
-void alAddProvides(availableList al, /*@null@*/ alKey pkgKey,
+void alAddProvides(availableList al,
+		/*@dependent@*/ /*@null@*/ alKey pkgKey,
 		/*@null@*/ rpmDepSet provides)
 	/*@modifies al, provides @*/;
 /*@=exportlocal@*/

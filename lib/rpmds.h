@@ -192,7 +192,7 @@ TFI_t XrpmfiLink (/*@null@*/ TFI_t fi, /*@null@*/ const char * msg,
  * @param fi		transaction element file info
  * @return		transaction element file info key
  */
-/*@null@*/
+/*@exposed@*/ /*@dependent@*/ /*@null@*/
 fnpyKey rpmfiGetKey(TFI_t fi)
 	/*@*/;
 

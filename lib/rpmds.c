@@ -44,9 +44,7 @@ fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
 
 fnpyKey rpmfiGetKey(TFI_t fi)
 {
-/*@-compdef -kepttrans -retexpose -usereleased @*/
     return fi->te->key;
-/*@=compdef =kepttrans =retexpose =usereleased @*/
 }
 
 TFI_t fiFree(TFI_t fi, int freefimem)
@@ -227,9 +225,7 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
     if (fi->te != NULL && fi->te->type == TR_ADDED) {
 	Header foo;
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-	/*@-type@*/
 	foo = relocateFileList(ts, fi, h, fi->actions);
-	/*@=type@*/
 	fi->h = headerFree(fi->h, "fiNew fi->h");
 	fi->h = headerLink(foo, "fiNew fi->h = foo");
 	foo = headerFree(foo, "fiNew foo");
@@ -576,9 +572,7 @@ rpmDepSet dsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
     {	char t[2];
 	t[0] = ds->Type[0];
 	t[1] = '\0';
-	/*@-nullstate@*/ /* LCL: ds->Type may be NULL ??? */
 	ds->DNEVR = dsDNEVR(t, ds);
-	/*@=nullstate@*/
     }
 
 exit:
@@ -866,7 +860,8 @@ int rangeMatchesDepFlags (Header h, const rpmDepSet req)
 
     /*
      * Rpm prior to 3.0.3 did not have versioned provides.
-     * If no provides version info is available, match any requires.
+     * If no provides version info is available, match any/all requires
+     * with same name.
      */
     if (provides->EVR == NULL) {
 	result = 1;

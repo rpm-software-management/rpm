@@ -86,34 +86,9 @@ struct diskspaceInfo {
    probably right :-( */
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
 
-#ifdef	DYING
-/**
- */
-static /*@null@*/ void * freeFl(rpmTransactionSet ts,
-		/*@only@*/ /*@null@*/ TFI_t flList)
-	/*@*/
-{
-    if (flList) {
-	TFI_t fi;
-	int oc;
-
-	/*@-usereleased -onlytrans @*/ /* FIX: fi needs to be only */
-	/*@-branchstate@*/
-	for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++)
-	    (void) fiFree(fi, 0);
-	/*@=branchstate@*/
-	flList = _free(flList);
-	/*@=usereleased =onlytrans @*/
-    }
-    return NULL;
-}
-#endif
-
 void rpmtransSetScriptFd(rpmTransactionSet ts, FD_t fd)
 {
-    /*@-type@*/ /* FIX: cast? */
     ts->scriptFd = (fd ? fdLink(fd, "rpmtransSetScriptFd") : NULL);
-    /*@=type@*/
 }
 
 int rpmtransGetKeys(const rpmTransactionSet ts, fnpyKey ** ep, int * nep)
@@ -130,9 +105,9 @@ int rpmtransGetKeys(const rpmTransactionSet ts, fnpyKey ** ep, int * nep)
 	while ((p = teNextIterator(pi)) != NULL) {
 	    switch (p->type) {
 	    case TR_ADDED:
-		/*@-onlytrans@*/
+		/*@-dependenttrans@*/
 		*e = p->key;
-		/*@=onlytrans@*/
+		/*@=dependenttrans@*/
 		/*@switchbreak@*/ break;
 	    case TR_REMOVED:
 	    default:
@@ -414,7 +389,7 @@ static int handleInstInstalledFiles(const rpmTransactionSet ts,
 static int handleRmvdInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
 		sharedFileInfo shared, int sharedCount)
 	/*@globals fileSystem @*/
-	/*@modifies fi, fileSystem @*/
+	/*@modifies ts, fi, fileSystem @*/
 {
     HGE_t hge = fi->hge;
     Header h;
@@ -915,10 +890,6 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     teIterator qi;	transactionElement q;
     int xx;
 
-#ifdef	DYING
-int keep_header = 0;
-#endif
-
     /* FIXME: what if the same package is included in ts twice? */
 
     ts->transFlags = transFlags;
@@ -951,8 +922,11 @@ int keep_header = 0;
 
     /* Get available space on mounted file systems. */
     if (!(ts->ignoreSet & RPMPROB_FILTER_DISKSPACE) &&
-		!rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount)) {
+		!rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount))
+    {
 	struct stat sb;
+
+	rpmMessage(RPMMESS_DEBUG, _("getting list of mounted filesystems\n"));
 
 	ts->di = _free(ts->di);
 	dip = ts->di = xcalloc((ts->filesystemCount + 1), sizeof(*ts->di));
@@ -1083,10 +1057,6 @@ int keep_header = 0;
     /* ===============================================
      * Initialize transaction element file info for package:
      */
-#ifdef	DYING
-    ts->flEntries = ts->numAddedPackages + ts->numRemovedPackages;
-    ts->flList = xcalloc(ts->flEntries, sizeof(*ts->flList));
-#endif
 
     /*
      * FIXME?: we'd be better off assembling one very large file list and
@@ -1100,7 +1070,7 @@ int keep_header = 0;
 	if ((fi = teGetFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 
-#ifdef	DYING
+#ifdef	DYING	/* XXX W2DO? this is now done teGetFi, okay ??? */
 	fi->magic = TFIMAGIC;
 	fi->te = p;
 #endif
@@ -1325,7 +1295,6 @@ int keep_header = 0;
     /* ===============================================
      * Free unused memory as soon as possible.
      */
-
     pi = teInitIterator(ts);
     while ((p = teNextIterator(pi)) != NULL) {
 	if ((fi = teGetFi(pi)) == NULL)
@@ -1348,10 +1317,6 @@ int keep_header = 0;
 		(okProbs != NULL || rpmProblemSetTrim(ts->probs, okProbs)))
        )
     {
-#ifdef	DYING
-	ts->flList = freeFl(ts, ts->flList);
-	ts->flEntries = 0;
-#endif
 	if (psm->ts != NULL)
 	    psm->ts = rpmtsUnlink(psm->ts, "tsRun (problems)");
 	/*@-nullstate@*/ /* FIX: ts->flList may be NULL */
@@ -1387,7 +1352,6 @@ int keep_header = 0;
     /* ===============================================
      * Install and remove packages.
      */
-
     lastKey = (alKey)-2;	/* erased packages have -1 */
     pi = teInitIterator(ts);
     /*@-branchstate@*/ /* FIX: fi reload needs work */
@@ -1408,13 +1372,7 @@ int keep_header = 0;
 	    pkgKey = p->u.addedKey;
 
 	    rpmMessage(RPMMESS_DEBUG, "========== +++ %s\n", p->NEVR);
-#ifdef	DYING
-	    h = (fi->h ? headerLink(fi->h, "TR_ADDED install") : NULL);
-	    /*@-branchstate@*/
-	    if (p->fd == NULL)
-#else
 	    h = NULL;
-#endif
 	    {
 		/*@-noeffectuncon @*/ /* FIX: ??? */
 		p->fd = ts->notify(fi->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
@@ -1437,14 +1395,6 @@ int keep_header = 0;
 			p->fd = NULL;
 			ourrc++;
 		    }
-#ifdef	DYING
-		    else {
-			Header foo = relocateFileList(ts, fi, h, NULL);
-			h = headerFree(h, "TR_ADDED read free");
-			h = headerLink(foo, "TR_ADDED relocate xfer");
-			foo = headerFree(foo, "TR_ADDED relocate");
-		    }
-#endif
 		    if (p->fd != NULL) gotfd = 1;
 		}
 	    }
@@ -1452,9 +1402,6 @@ int keep_header = 0;
 
 	    /*@-branchstate@*/
 	    if (p->fd != NULL) {
-#ifdef	DYING
-		fi->h = headerLink(h, "TR_ADDED fi->h link");
-#endif
 		{
 char * fstates = fi->fstates;
 fileAction * actions = fi->actions;
@@ -1516,11 +1463,6 @@ fi->actions = actions;
     }
     /*@=branchstate@*/
     pi = teFreeIterator(pi);
-
-#ifdef	DYING
-    ts->flList = freeFl(ts, ts->flList);
-    ts->flEntries = 0;
-#endif
 
     psm->ts = rpmtsUnlink(psm->ts, "tsRun");
 

@@ -574,3 +574,5 @@ fi
 - factor per-transactionElement data out of TFI_t through pointer ref.
 - unify rpmFNSet into TFI_t.
 - eliminate header reference in rpmtransAddPackage, use TFI_t data.
+- commit to using rpmDepSet and TFI_t, not header.
+- lclint rpmio fiddles.

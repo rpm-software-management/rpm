@@ -93,6 +93,8 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
 
 urlinfo XurlFree(urlinfo u, const char *msg, const char *file, unsigned line)
 {
+    int xx;
+
     URLSANE(u);
 URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file, line));
     if (--u->nrefs > 0)
@@ -105,7 +107,7 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	    fdPush(u->ctrl, fpio, fp, -1);   /* Push fpio onto stack */
 	    (void) Fclose(u->ctrl);
 	} else if (fdio->_fileno(u->ctrl) >= 0)
-	    fdio->close(u->ctrl);
+	    xx = fdio->close(u->ctrl);
 	/*@=branchstate@*/
 #else
 	(void) Fclose(u->ctrl);
@@ -126,7 +128,7 @@ URLDBGREFS(0, (stderr, "--> url %p -- %d %s at %s:%u\n", u, u->nrefs, msg, file,
 	    fdPush(u->data, fpio, fp, -1);   /* Push fpio onto stack */
 	    (void) Fclose(u->data);
 	} else if (fdio->_fileno(u->data) >= 0)
-	    fdio->close(u->data);
+	    xx = fdio->close(u->data);
 #else
 	(void) Fclose(u->ctrl);
 #endif

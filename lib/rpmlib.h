@@ -982,7 +982,7 @@ typedef enum rpmProblemType_e {
 struct rpmProblem_s {
 /*@only@*/ /*@null@*/ char * pkgNEVR;
 /*@only@*/ /*@null@*/ char * altNEVR;
-/*@dependent@*/ /*@null@*/ fnpyKey key;
+/*@exposed@*/ /*@null@*/ fnpyKey key;
     rpmProblemType type;
     int ignoreProblem;
 /*@only@*/ /*@null@*/ char * str1;
@@ -1366,7 +1366,7 @@ int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
 rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
 			/*@null@*/ const void * keyp, size_t keylen)
 	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
+	/*@modifies ts, fileSystem @*/;
 
 /** \ingroup rpmtrans
  * Create an empty transaction set.
@@ -1397,7 +1397,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
  * @return		0 on success, 1 on I/O error, 2 needs capabilities
  */
 int rpmtransAddPackage(rpmTransactionSet ts, Header h,
-		/*@null@*/ /*@owned@*/ const fnpyKey key, int upgrade,
+		/*@exposed@*/ /*@null@*/ const fnpyKey key, int upgrade,
 		/*@null@*/ rpmRelocation * relocs)
 	/*@globals fileSystem, internalState @*/
 	/*@modifies ts, h, fileSystem, internalState @*/;
@@ -1411,7 +1411,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
  */
 /*@unused@*/
 void rpmtransAvailablePackage(rpmTransactionSet ts, Header h,
-		/*@null@*/ /*@owned@*/ fnpyKey key)
+		/*@exposed@*/ /*@null@*/ fnpyKey key)
 	/*@modifies h, ts @*/;
 
 /** \ingroup rpmtrans

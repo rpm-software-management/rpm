@@ -143,18 +143,11 @@ static int getFilesystemList(void)
     int i;
     const char * mntdir;
     int rdonly = 0;
+
 #   if GETMNTENT_ONE || GETMNTENT_TWO
     our_mntent item;
     FILE * mtab;
-#   elif HAVE_GETMNTINFO_R
-    struct statfs * mounts = NULL;
-    int mntCount = 0, bufSize = 0, flags = MNT_NOWAIT;
-    int nextMount = 0;
-#   endif
 
-    rpmMessage(RPMMESS_DEBUG, _("getting list of mounted filesystems\n"));
-
-#   if GETMNTENT_ONE || GETMNTENT_TWO
 	mtab = fopen(MOUNTED, "r");
 	if (!mtab) {
 	    rpmError(RPMERR_MTAB, _("failed to open %s: %s\n"), MOUNTED, 
@@ -162,6 +155,10 @@ static int getFilesystemList(void)
 	    return 1;
 	}
 #   elif HAVE_GETMNTINFO_R
+    struct statfs * mounts = NULL;
+    int mntCount = 0, bufSize = 0, flags = MNT_NOWAIT;
+    int nextMount = 0;
+
 	getmntinfo_r(&mounts, flags, &mntCount, &bufSize);
 #   endif
 

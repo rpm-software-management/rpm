@@ -63,10 +63,8 @@ static int manageFile(FD_t *fdp, const char **fnp, int flags,
 	}
 	if (fnp)
 	    *fnp = fn;
-	/*@-type@*/ /* FIX: cast? */
 	*fdp = fdLink(fd, "manageFile return");
-	fdFree(fd, "manageFile return");
-	/*@=type@*/
+	fd = fdFree(fd, "manageFile return");
 	return 0;
     }
 

@@ -19,11 +19,6 @@
 #include "rpmdb.h"		/* XXX for db_chrootDone */
 #include "debug.h"
 
-#ifdef	DYING
-/*@unchecked@*/
-static int _fi_debug = 1;
-#endif
-
 /*@access Header@*/		/* compared with NULL */
 /*@access rpmdbMatchIterator@*/ /* compared with NULL */
 /*@access FD_t@*/		/* compared with NULL */
@@ -533,35 +528,6 @@ Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
     return h;
 }
 
-#ifdef	DYING
-fnpyKey rpmfiGetKey(TFI_t fi)
-{
-/*@-compdef -kepttrans -retexpose -usereleased @*/
-    return fi->te->key;
-/*@=compdef =kepttrans =retexpose =usereleased @*/
-}
-
-TFI_t XrpmfiUnlink(TFI_t fi, const char * msg, const char * fn, unsigned ln)
-{
-/*@-modfilesys@*/
-if (_fi_debug)
-fprintf(stderr, "--> fi %p -- %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    fi->nrefs--;
-    return NULL;
-}
-
-TFI_t XrpmfiLink(TFI_t fi, const char * msg, const char * fn, unsigned ln)
-{
-    fi->nrefs++;
-/*@-modfilesys@*/
-if (_fi_debug)
-fprintf(stderr, "--> fi %p ++ %d %s at %s:%u\n", fi, fi->nrefs, msg, fn, ln);
-/*@=modfilesys@*/
-    /*@-refcounttrans@*/ return fi; /*@=refcounttrans@*/
-}
-#endif
-
 /*@observer@*/ const char *const fiTypeString(TFI_t fi)
 {
     switch(fi->te->type) {
@@ -826,7 +792,7 @@ static int mergeFiles(TFI_t fi, Header h, Header newH)
  */
 static int markReplacedFiles(const PSM_t psm)
 	/*@globals fileSystem@*/
-	/*@modifies fileSystem @*/
+	/*@modifies psm, fileSystem @*/
 {
     const rpmTransactionSet ts = psm->ts;
     TFI_t fi = psm->fi;
@@ -981,15 +947,9 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 
     (void) rpmtransAddPackage(ts, h, NULL, 0, NULL);
 
-#ifdef DYING
-    fi = xcalloc(1, sizeof(*fi));
-    fi->h = headerLink(h, "InstallSourcePackage");
-    /* XXX header arg unused. */
-    loadFi(ts, fi, fi->h, 1);
-#else
     fi = fiNew(ts, fi, h, RPMTAG_BASENAMES, scareMem);
-#endif
     h = headerFree(h, "InstallSourcePackage");
+
     if (fi == NULL) {	/* XXX can't happen */
 	rc = RPMRC_FAIL;
 	goto exit;
@@ -1034,9 +994,8 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts,
 	fi->fgids[i] = fi->gid;
     }
 
-    for (i = 0; i < fi->fc; i++) {
+    for (i = 0; i < fi->fc; i++)
 	fi->actions[i] = FA_CREATE;
-    }
 
     i = fi->fc;
 
@@ -1122,14 +1081,8 @@ exit:
     if (h) h = headerFree(h, "InstallSourcePackage exit");
 
     /*@-branchstate@*/
-    if (fi) {
+    if (fi)
 	fi = fiFree(fi, 1);
-#ifdef	DYING
-	/*@-refcounttrans@*/ /* FIX: fi needs to be only */
-	fi = _free(fi);
-	/*@=refcounttrans@*/
-#endif
-    }
     /*@=branchstate@*/
 
     psm->fi = NULL;

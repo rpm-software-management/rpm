@@ -1857,12 +1857,16 @@ int ufdClose( /*@only@*/ void * cookie)
 	    } else {
 		int rc;
 		/* XXX STOR et al require close before ftpFileDone */
+		/*@-refcounttrans@*/
 		rc = fdClose(fd);
+		/*@=refcounttrans@*/
 #if 0	/* XXX error exit from ufdOpen does not have this set */
 		assert(fd->ftpFileDoneNeeded != 0);
 #endif
+		/*@-compdef@*/ /* FIX: u->data undefined */
 		if (fd->ftpFileDoneNeeded)
 		    (void) ftpFileDone(u, fd);
+		/*@=compdef@*/
 		return rc;
 	    }
 	}
@@ -1954,7 +1958,9 @@ fprintf(stderr, "-> \r\n");
 exit:
     if (uret)
 	*uret = u;
+    /*@-refcounttrans@*/
     return fd;
+    /*@=refcounttrans@*/
 }
 /*@=nullstate@*/
 
@@ -1997,7 +2003,9 @@ static /*@null@*/ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
 exit:
     if (uret)
 	*uret = u;
+    /*@-refcounttrans@*/
     return fd;
+    /*@=refcounttrans@*/
 }
 /*@=nullstate@*/
 
@@ -2014,6 +2022,7 @@ static /*@null@*/ FD_t ufdOpen(const char * url, int flags, mode_t mode)
 if (_rpmio_debug)
 fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mode);
 
+    /*@-branchstate@*/
     switch (urlType) {
     case URL_IS_FTP:
 	fd = ftpOpen(url, flags, mode, &u);
@@ -2076,6 +2085,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	}
 	break;
     }
+    /*@=branchstate@*/
 
     if (fd == NULL) return NULL;
     fd->urlType = urlType;
@@ -2324,8 +2334,10 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 /*@=modfilesys@*/
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "GZDIO", stderr);
+    /*@-branchstate@*/
     if (rc == 0)
 	fd = fdFree(fd, "open (gzdClose)");
+    /*@=branchstate@*/
     return rc;
 }
 
@@ -2522,8 +2534,10 @@ DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 /*@=modfilesys@*/
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "BZDIO", stderr);
+    /*@-branchstate@*/
     if (rc == 0)
 	fd = fdFree(fd, "open (bzdClose)");
+    /*@=branchstate@*/
     return rc;
 }
 
@@ -2575,7 +2589,7 @@ const char *Fstrerror(FD_t fd)
   ((fdGetIo(_fd) && fdGetIo(_fd)->_vec) ? fdGetIo(_fd)->_vec : NULL)
 
 size_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd) {
-    fdio_read_function_t *_read;
+    fdio_read_function_t _read;
     int rc;
 
     FDSANE(fd);
@@ -2603,7 +2617,7 @@ DBGIO(fd, (stderr, "==> Fread(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned
 
 size_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
 {
-    fdio_write_function_t *_write;
+    fdio_write_function_t _write;
     int rc;
 
     FDSANE(fd);
@@ -2627,7 +2641,7 @@ DBGIO(fd, (stderr, "==> Fwrite(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigne
 }
 
 int Fseek(FD_t fd, _libio_off_t offset, int whence) {
-    fdio_seek_function_t *_seek;
+    fdio_seek_function_t _seek;
 #ifdef USE_COOKIE_SEEK_POINTER
     _IO_off64_t o64 = offset;
     _libio_pos_t pos = &o64;
@@ -2714,7 +2728,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 	    }
 	} else {
 	    /*@-nullderef@*/
-	    fdio_close_function_t * _close = FDIOVEC(fd, close);
+	    fdio_close_function_t _close = FDIOVEC(fd, close);
 	    /*@=nullderef@*/
 	    rc = _close(fd);
 	}
@@ -2904,6 +2918,7 @@ DBGIO(fd, (stderr, "==> fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, 
 	}
 #endif
 
+	/*@-branchstate@*/
 	if (fp) {
 	    /* XXX gzdio/bzdio use fp for private data */
 	    /*@+voidabstract -nullpass@*/
@@ -2913,6 +2928,7 @@ DBGIO(fd, (stderr, "==> fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, 
 	    /*@=voidabstract =nullpass@*/
 	    fd = fdLink(fd, "fopencookie");
 	}
+	/*@=branchstate@*/
     }
 
 /*@-modfilesys@*/

@@ -285,9 +285,6 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 	/*@modifies ts, h, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-#ifdef	DYING
-    TFI_t fi;
-#endif
     PSM_t psm = memset(alloca(sizeof(*psm)), 0, sizeof(*psm));
     int rc;
 
@@ -298,18 +295,9 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
 	ts->scriptFd = fdLink(scriptFd, "rpmVerifyScript");
 	/*@=type@*/
     }
-#ifdef	DYING
-    fi->magic = TFIMAGIC;
-    fi = xcalloc(1, sizeof(*fi));
-    loadFi(ts, fi, h, 1);
-    /*@-assignexpose@*/
-    psm->fi = fi;
-    /*@=assignexpose@*/
-#else
     /*@-type@*/
     psm->fi = fiNew(ts, NULL, h, RPMTAG_BASENAMES, 1);
     /*@=type@*/
-#endif
     if (psm->fi != NULL) {	/* XXX can't happen */
 	psm->stepName = "verify";
 	psm->scriptTag = RPMTAG_VERIFYSCRIPT;
@@ -319,11 +307,6 @@ static int rpmVerifyScript(/*@unused@*/ QVA_t qva, rpmTransactionSet ts,
     /*@-type@*/
     psm->fi = fiFree(psm->fi, 1);
     /*@=type@*/
-#ifdef	DYING
-    /*@-refcounttrans@*/ /* FIX: fi needs to be only */
-    fi = _free(fi);
-    /*@=refcounttrans@*/
-#endif
 
     if (scriptFd != NULL) {
 	/*@-type@*/ /* FIX: ??? */

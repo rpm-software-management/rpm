@@ -1345,6 +1345,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 /*@i@*/ fi->te->type = TR_ADDED;
 
     fi = fiNew(NULL, fi, h, RPMTAG_BASENAMES, scareMem);
+    if (fi == NULL) return;		/* XXX can't happen */
+
     fi->dnl = _free(fi->dnl);
     fi->bnl = _free(fi->bnl);
 

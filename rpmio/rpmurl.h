@@ -21,19 +21,28 @@ typedef enum urltype_e {
 #define	URLMAGIC	0xd00b1ed0
 #define	URLSANE(u)	assert(u && u->magic == URLMAGIC)
 
+typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s * urlinfo;
 /**
  * URL control structure.
  */
-typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s {
+struct urlinfo_s {
 /*@refs@*/ int nrefs;		/*!< no. of references */
-/*@owned@*/ /*@null@*/ const char * url;	/*!< copy of original url */
-/*@owned@*/ /*@null@*/ const char * service;
-/*@owned@*/ /*@null@*/ const char * user;
-/*@owned@*/ /*@null@*/ const char * password;
-/*@owned@*/ /*@null@*/ const char * host;
-/*@owned@*/ /*@null@*/ const char * portstr;
-/*@owned@*/ /*@null@*/ const char * proxyu;	/*!< FTP: proxy user */
-/*@owned@*/ /*@null@*/ const char * proxyh;	/*!< FTP/HTTP: proxy host */
+/*@owned@*/ /*@null@*/
+    const char * url;		/*!< copy of original url */
+/*@owned@*/ /*@null@*/
+    const char * service;
+/*@owned@*/ /*@null@*/
+    const char * user;
+/*@owned@*/ /*@null@*/
+    const char * password;
+/*@owned@*/ /*@null@*/
+    const char * host;
+/*@owned@*/ /*@null@*/
+    const char * portstr;
+/*@owned@*/ /*@null@*/
+    const char * proxyu;	/*!< FTP: proxy user */
+/*@owned@*/ /*@null@*/
+    const char * proxyh;	/*!< FTP/HTTP: proxy host */
     int proxyp;			/*!< FTP/HTTP: proxy port */
     int	port;
     int urltype;
@@ -45,7 +54,7 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo_s {
     int httpVersion;
     int httpHasRange;
     int magic;
-} * urlinfo;
+};
 
 #ifdef __cplusplus
 extern "C" {

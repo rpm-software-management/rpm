@@ -57,39 +57,39 @@ extern "C" {
 
 /**
  */
-typedef ssize_t fdio_read_function_t (void *cookie, char *buf, size_t nbytes)
+typedef ssize_t (*fdio_read_function_t) (void *cookie, char *buf, size_t nbytes)
 	/*@globals fileSystem @*/
 	/*@modifies *cookie, fileSystem @*/;
 
 /**
  */
-typedef ssize_t fdio_write_function_t (void *cookie, const char *buf, size_t nbytes)
+typedef ssize_t (*fdio_write_function_t) (void *cookie, const char *buf, size_t nbytes)
 	/*@globals fileSystem @*/
 	/*@modifies *cookie, fileSystem @*/;
 
 /**
  */
-typedef int fdio_seek_function_t (void *cookie, _libio_pos_t pos, int whence)
+typedef int (*fdio_seek_function_t) (void *cookie, _libio_pos_t pos, int whence)
 	/*@globals fileSystem @*/
 	/*@modifies *cookie, fileSystem @*/;
 
 /**
  */
-typedef int fdio_close_function_t (void *cookie)
+typedef int (*fdio_close_function_t) (void *cookie)
 	/*@globals fileSystem @*/
 	/*@modifies *cookie, fileSystem @*/;
 
 
 /**
  */
-typedef /*@only@*/ /*@null@*/ FD_t fdio_ref_function_t ( /*@only@*/ void * cookie,
+typedef /*@only@*/ /*@null@*/ FD_t (*fdio_ref_function_t) ( /*@only@*/ void * cookie,
 		const char * msg, const char * file, unsigned line)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-typedef /*@only@*/ /*@null@*/ FD_t fdio_deref_function_t ( /*@only@*/ FD_t fd,
+typedef /*@only@*/ /*@null@*/ FD_t (*fdio_deref_function_t) ( /*@only@*/ FD_t fd,
 		const char * msg, const char * file, unsigned line)
 	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/;
@@ -97,7 +97,7 @@ typedef /*@only@*/ /*@null@*/ FD_t fdio_deref_function_t ( /*@only@*/ FD_t fd,
 
 /**
  */
-typedef /*@only@*/ /*@null@*/ FD_t fdio_new_function_t (const char * msg,
+typedef /*@only@*/ /*@null@*/ FD_t (*fdio_new_function_t) (const char * msg,
 		const char * file, unsigned line)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
@@ -105,32 +105,32 @@ typedef /*@only@*/ /*@null@*/ FD_t fdio_new_function_t (const char * msg,
 
 /**
  */
-typedef int fdio_fileno_function_t (void * cookie)
+typedef int (*fdio_fileno_function_t) (void * cookie)
 	/*@globals fileSystem @*/
 	/*@modifies *cookie, fileSystem @*/;
 
 
 /**
  */
-typedef FD_t fdio_open_function_t (const char * path, int flags, mode_t mode)
+typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-typedef FD_t fdio_fopen_function_t (const char * path, const char * fmode)
+typedef FD_t (*fdio_fopen_function_t) (const char * path, const char * fmode)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-typedef void * fdio_ffileno_function_t (FD_t fd)
+typedef void * (*fdio_ffileno_function_t) (FD_t fd)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-typedef int fdio_fflush_function_t (FD_t fd)
+typedef int (*fdio_fflush_function_t) (FD_t fd)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@}*/
@@ -143,50 +143,50 @@ typedef int fdio_fflush_function_t (FD_t fd)
 
 /**
  */
-typedef int fdio_mkdir_function_t (const char * path, mode_t mode)
+typedef int (*fdio_mkdir_function_t) (const char * path, mode_t mode)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-typedef int fdio_chdir_function_t (const char * path)
+typedef int (*fdio_chdir_function_t) (const char * path)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-typedef int fdio_rmdir_function_t (const char * path)
+typedef int (*fdio_rmdir_function_t) (const char * path)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-typedef int fdio_rename_function_t (const char * oldpath, const char * newpath)
+typedef int (*fdio_rename_function_t) (const char * oldpath, const char * newpath)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
-typedef int fdio_unlink_function_t (const char * path)
+typedef int (*fdio_unlink_function_t) (const char * path)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@-typeuse@*/
 
 /**
  */
-typedef int fdio_stat_function_t (const char * path, /*@out@*/ struct stat * st)
+typedef int (*fdio_stat_function_t) (const char * path, /*@out@*/ struct stat * st)
 	/*@globals fileSystem @*/
 	/*@modifies *st, fileSystem @*/;
 
 /**
  */
-typedef int fdio_lstat_function_t (const char * path, /*@out@*/ struct stat * st)
+typedef int (*fdio_lstat_function_t) (const char * path, /*@out@*/ struct stat * st)
 	/*@globals fileSystem @*/
 	/*@modifies *st, fileSystem @*/;
 
 /**
  */
-typedef int fdio_access_function_t (const char * path, int amode)
+typedef int (*fdio_access_function_t) (const char * path, int amode)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 /*@=typeuse@*/
@@ -196,26 +196,26 @@ typedef int fdio_access_function_t (const char * path, int amode)
 /** \ingroup rpmio
  */
 struct FDIO_s {
-  fdio_read_function_t *	read;
-  fdio_write_function_t *	write;
-  fdio_seek_function_t *	seek;
-  fdio_close_function_t *	close;
+  fdio_read_function_t		read;
+  fdio_write_function_t		write;
+  fdio_seek_function_t		seek;
+  fdio_close_function_t		close;
 
-  fdio_ref_function_t *		_fdref;
-  fdio_deref_function_t *	_fdderef;
-  fdio_new_function_t *		_fdnew;
-  fdio_fileno_function_t *	_fileno;
+  fdio_ref_function_t		_fdref;
+  fdio_deref_function_t		_fdderef;
+  fdio_new_function_t		_fdnew;
+  fdio_fileno_function_t	_fileno;
 
-  fdio_open_function_t *	_open;
-  fdio_fopen_function_t *	_fopen;
-  fdio_ffileno_function_t *	_ffileno;
-  fdio_fflush_function_t *	_fflush;
+  fdio_open_function_t		_open;
+  fdio_fopen_function_t		_fopen;
+  fdio_ffileno_function_t	_ffileno;
+  fdio_fflush_function_t	_fflush;
 
-  fdio_mkdir_function_t *	_mkdir;
-  fdio_chdir_function_t *	_chdir;
-  fdio_rmdir_function_t *	_rmdir;
-  fdio_rename_function_t *	_rename;
-  fdio_unlink_function_t *	_unlink;
+  fdio_mkdir_function_t		_mkdir;
+  fdio_chdir_function_t		_chdir;
+  fdio_rmdir_function_t		_rmdir;
+  fdio_rename_function_t	_rename;
+  fdio_unlink_function_t	_unlink;
 };
 
 
@@ -482,11 +482,30 @@ int fdClose( /*@only@*/ void * cookie)
 #define	fdCLose(_fd)		fdio->close(_fd)
 
 /**
- * FD_t reference count debugging wrappers.
- * @todo Remove debugging entries from the ABI.
  */
+/*@unused@*/
+/*@only@*/ /*@null@*/
+FD_t fdLink (/*@only@*/ void * cookie, const char * msg)
+	/*@globals fileSystem @*/
+	/*@modifies *cookie, fileSystem @*/;
 #define	fdLink(_fd, _msg)	fdio->_fdref(_fd, _msg, __FILE__, __LINE__)
+
+/**
+ */
+/*@unused@*/
+/*@only@*/ /*@null@*/
+FD_t fdFree(/*@only@*/ FD_t fd, const char * msg)
+	/*@globals fileSystem @*/
+	/*@modifies fd, fileSystem @*/;
 #define	fdFree(_fd, _msg)	fdio->_fdderef(_fd, _msg, __FILE__, __LINE__)
+
+/**
+ */
+/*@unused@*/
+/*@only@*/ /*@null@*/
+FD_t fdNew (const char * msg)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 #define	fdNew(_msg)		fdio->_fdnew(_msg, __FILE__, __LINE__)
 
 /**

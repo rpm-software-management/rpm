@@ -55,7 +55,7 @@ struct teIterator_s {
 struct tsortInfo_s {
     union {
 	int	count;
-	/*@kept@*/ /*@null@*/ transactionElement suc;
+	/*@exposed@*/ /*@null@*/ transactionElement suc;
     } tsi_u;
 #define	tsi_count	tsi_u.count
 #define	tsi_suc		tsi_u.suc
@@ -111,7 +111,7 @@ struct transactionElement_s {
 
     uint_32 multiLib;		/*!< (TR_ADDED) MULTILIB */
 
-/*@null@*/
+/*@exposed@*/ /*@dependent@*/ /*@null@*/
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
 /*@owned@*/ /*@null@*/
     rpmRelocation * relocs;	/*!< (TR_ADDED) Payload file relocations. */
@@ -175,10 +175,6 @@ struct rpmTransactionSet_s {
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */
 
-/*@only@*/
-    TFI_t flList;		/*!< Transaction element(s) file info. */
-
-    int flEntries;		/*!< No. of transaction elements. */
     int chrootDone;		/*!< Has chroot(2) been been done? */
 /*@only@*/ const char * rootDir;/*!< Path to top of install tree. */
 /*@only@*/ const char * currDir;/*!< Current working directory. */
@@ -226,7 +222,7 @@ int teGetOc(teIterator tei)
 
 /**
  * Return transaction element's file info.
- * @todo Add a refcount here.
+ * @todo Take a TFI_t refcount here.
  * @param tei		transaction element iterator
  * @return		transaction element file info
  */
@@ -237,14 +233,9 @@ TFI_t teGetFi(teIterator tei)
     TFI_t fi = NULL;
 
     if (tei != NULL && tei->ocsave != -1) {
-#ifdef	WOOHOO
-	fi = tei->ts->flList + tei->ocsave;
-#else
 	transactionElement te = tei->ts->order + tei->ocsave;
 	if ((fi = te->fi) != NULL)
 	    fi->te = te;
-#endif
-	
     }
     /*@-compdef -refcounttrans -usereleased @*/
     return fi;
@@ -326,24 +317,6 @@ transactionElement teNext(teIterator tei, rpmTransactionType type)
 	    break;
     }
     return p;
-}
-
-/**
- * Return next transaction element's file info.
- * @param tei		transaction element iterator
- * @return		next transaction element file info, NULL on termination
- */
-/*@unused@*/ static inline
-TFI_t teNextFi(teIterator tei)
-	/*@modifies tei @*/
-{
-    TFI_t fi = NULL;
-
-    if (teNextIterator(tei) != NULL && tei->ocsave != -1)
-	fi = tei->ts->flList + tei->ocsave;
-    /*@-compdef -onlytrans -usereleased@*/ /* FIX: ts->flList may be released */
-    return fi;
-    /*@=compdef =onlytrans =usereleased@*/
 }
 
 #endif	/* defined(_NEED_TEITERATOR) */

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-11 17:49-0500\n"
+"POT-Creation-Date: 2001-11-12 15:50-0500\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -614,88 +614,88 @@ msgstr "Файл указан дважды: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символическая ссылка указывает на BuildRoot: %s -> %s\n"
 
-#: build/files.c:1502
+#: build/files.c:1504
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Файл не соответстует префиксу (%s): %s\n"
 
-#: build/files.c:1526
+#: build/files.c:1528
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1569 build/files.c:2181 build/parsePrep.c:50
+#: build/files.c:1571 build/files.c:2183 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара владелец/группа: %s\n"
 
-#: build/files.c:1581
+#: build/files.c:1583
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr "Файл %4d: %07o %s.%s\t %s\n"
 
-#: build/files.c:1685
+#: build/files.c:1687
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s\n"
 
-#: build/files.c:1708
+#: build/files.c:1710
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob не разрешаются: %s\n"
 
-#: build/files.c:1723
+#: build/files.c:1725
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1785
+#: build/files.c:1787
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Невозможно открыть файл %%files %s: %s\n"
 
-#: build/files.c:1796 build/pack.c:146
+#: build/files.c:1798 build/pack.c:146
 #, c-format
 msgid "line: %s\n"
 msgstr "строка: %s\n"
 
-#: build/files.c:2169
+#: build/files.c:2171
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Неверный файл %s: %s\n"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2243
+#: build/files.c:2245
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Невозможно вылнить %s: %s\n"
 
-#: build/files.c:2248
+#: build/files.c:2250
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Сбой ветвления %s: %s\n"
 
-#: build/files.c:2332
+#: build/files.c:2334
 #, c-format
 msgid "%s failed\n"
 msgstr "%s не удалось\n"
 
-#: build/files.c:2336
+#: build/files.c:2338
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "запись всех данных в %s не удалась\n"
 
-#: build/files.c:2472
+#: build/files.c:2474
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "Поиск %s (используя %s): ...\n"
 
-#: build/files.c:2498 build/files.c:2512
+#: build/files.c:2500 build/files.c:2514
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Невозможно найти %s:\n"
 
-#: build/files.c:2633
+#: build/files.c:2635
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываются файлы: %s-%s-%s\n"
@@ -834,7 +834,7 @@ msgstr "Невозможно перезагрузить заголовок подписи.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/pack.c:603 lib/psm.c:1923
+#: build/pack.c:603 lib/psm.c:1876
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Невозможно записать пакет: %s\n"
@@ -864,7 +864,7 @@ msgstr "Невозможно прочитать содержимое из %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Невозможно записать содержимое в %s: %s\n"
 
-#: build/pack.c:683 lib/psm.c:2188
+#: build/pack.c:683 lib/psm.c:2141
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
@@ -1441,90 +1441,90 @@ msgstr "Файл архива не найден в заголовке пакета"
 msgid " failed - "
 msgstr "не удалось - "
 
-#: lib/depends.c:112
+#: lib/depends.c:106
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "не могу открыть базу данных Packages в %s\n"
 
-#: lib/depends.c:421
+#: lib/depends.c:400
 #, fuzzy, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "пакет %s уже установлен"
 
-#: lib/depends.c:692
+#: lib/depends.c:667
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:717
+#: lib/depends.c:692
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:733
+#: lib/depends.c:708
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:754
+#: lib/depends.c:729
 #, fuzzy
 msgid "(db files)"
 msgstr "неверный файл базы данных %s\n"
 
-#: lib/depends.c:766
+#: lib/depends.c:741
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:779
+#: lib/depends.c:754
 #, fuzzy
 msgid "(db package)"
 msgstr "нет пакетов\n"
 
-#: lib/depends.c:818
+#: lib/depends.c:793
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 
-#: lib/depends.c:820 lib/rpmds.c:662 lib/rpmds.c:820
+#: lib/depends.c:795 lib/rpmds.c:656 lib/rpmds.c:814
 msgid "NO "
 msgstr "НЕT"
 
-#: lib/depends.c:820 lib/rpmds.c:662 lib/rpmds.c:820
+#: lib/depends.c:795 lib/rpmds.c:656 lib/rpmds.c:814
 msgid "YES"
 msgstr "ДА"
 
-#: lib/depends.c:1162
+#: lib/depends.c:1134
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1395
+#: lib/depends.c:1365
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1466
+#: lib/depends.c:1436
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "глубина)\n"
 
-#: lib/depends.c:1541
+#: lib/depends.c:1511
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:1601
+#: lib/depends.c:1571
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1636
+#: lib/depends.c:1606
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1641
+#: lib/depends.c:1611
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1558,21 +1558,17 @@ msgstr "mntctl() не возвратил значение размера fugger: %s\n"
 msgid "mntctl() failed to return mount points: %s\n"
 msgstr "mntctl() не возвратил значение размера fugger: %s\n"
 
-#: lib/fs.c:110 lib/fs.c:196 lib/fs.c:299
+#: lib/fs.c:110 lib/fs.c:193 lib/fs.c:296
 #, c-format
 msgid "failed to stat %s: %s\n"
 msgstr "невозможно получить информацию о %s: %s\n"
 
-#: lib/fs.c:155
-msgid "getting list of mounted filesystems\n"
-msgstr "получение списка смонтированных файловых систем\n"
-
-#: lib/fs.c:160 rpmio/url.c:505
+#: lib/fs.c:153 rpmio/url.c:507
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: lib/fs.c:322
+#: lib/fs.c:319
 #, c-format
 msgid "file %s is on an unknown device\n"
 msgstr "файл %s - на неизвестном устройстве\n"
@@ -1629,7 +1625,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() допустим только один элемент типа RPM_STRING_TYPE\n"
 
 #. @-modfilesys@
-#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:733
+#: lib/header.c:384 lib/header_internal.c:161 lib/psm.c:699
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Тип данных %d не поддерживается\n"
@@ -1723,7 +1719,7 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "эта версия RPM поддерживает только пакеты версии <= 4\n"
 
-#: lib/package.c:224 lib/rpmchecksig.c:158 lib/rpmchecksig.c:511
+#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:509
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: ошибка readLead\n"
@@ -1733,12 +1729,12 @@ msgstr "%s: ошибка readLead\n"
 msgid "%s: bad magic\n"
 msgstr "Неверный magic"
 
-#: lib/package.c:254 lib/rpmchecksig.c:176 lib/rpmchecksig.c:527
+#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:525
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: ошибка rpmReadSignature\n"
 
-#: lib/package.c:258 lib/rpmchecksig.c:180 lib/rpmchecksig.c:532
+#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:530
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Подпись недоступна\n"
@@ -1748,7 +1744,7 @@ msgstr "%s: Подпись недоступна\n"
 msgid "%s: headerRead failed\n"
 msgstr "%s: ошибка readLead\n"
 
-#: lib/package.c:303 lib/rpmchecksig.c:109 lib/rpmchecksig.c:455
+#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:453
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: ошибка Fread: %s\n"
@@ -2233,108 +2229,108 @@ msgstr " конфликтует с %s-%s-%s\n"
 msgid "is needed by"
 msgstr " нужен для %s-%s-%s\n"
 
-#: lib/psm.c:254
+#: lib/psm.c:249
 msgid "========== relocations\n"
 msgstr "========== перемещений\n"
 
-#: lib/psm.c:258
+#: lib/psm.c:253
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d исключен %s\n"
 
-#: lib/psm.c:261
+#: lib/psm.c:256
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d перемещение %s -> %s\n"
 
-#: lib/psm.c:331
+#: lib/psm.c:326
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "исключается многобиблиотечный путь %s%s\n"
 
-#: lib/psm.c:397
+#: lib/psm.c:392
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "исключается %s %s\n"
 
-#: lib/psm.c:407
+#: lib/psm.c:402
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "перемещается %s в %s\n"
 
-#: lib/psm.c:486
+#: lib/psm.c:481
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "перемещается каталог %s в %s\n"
 
-#: lib/psm.c:930
+#: lib/psm.c:896
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "невозможно создать %%%s %s\n"
 
-#: lib/psm.c:936
+#: lib/psm.c:902
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "невозможно писать в %%%s %s\n"
 
-#: lib/psm.c:977
+#: lib/psm.c:943
 msgid "source package expected, binary found\n"
 msgstr "обнаружен двоичный пакет вместо ожидаемого исходного\n"
 
-#: lib/psm.c:1098
+#: lib/psm.c:1057
 msgid "source package contains no .spec file\n"
 msgstr "исходный пакет не содержит файла спецификации\n"
 
-#: lib/psm.c:1214
+#: lib/psm.c:1167
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "%s: выполняется сценарий %s (если есть)\n"
 
-#: lib/psm.c:1382
+#: lib/psm.c:1335
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, waitpid() возвратил %s\n"
 
-#: lib/psm.c:1389
+#: lib/psm.c:1342
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, код возврата %d\n"
 
-#: lib/psm.c:1731
+#: lib/psm.c:1684
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s содержит %d файлов, test = %d\n"
 
-#: lib/psm.c:1848
+#: lib/psm.c:1801
 #, fuzzy, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: ошибка сценария %s (%d), %s-%s-%s пропускается\n"
 
-#: lib/psm.c:1959
+#: lib/psm.c:1912
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "пользователь %s не существует - используется root\n"
 
-#: lib/psm.c:1968
+#: lib/psm.c:1921
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "группа %s не существует - используется root\n"
 
-#: lib/psm.c:2009
+#: lib/psm.c:1962
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "распаковка архива не удалась%s%s: %s\n"
 
-#: lib/psm.c:2010
+#: lib/psm.c:1963
 msgid " on file "
 msgstr " на файле "
 
-#: lib/psm.c:2196
+#: lib/psm.c:2149
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s ошибка на файле %s: %s\n"
 
-#: lib/psm.c:2199
+#: lib/psm.c:2152
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s не удалось: %s\n"
@@ -2461,12 +2457,12 @@ msgstr "невозможно прочитать запись %u\n"
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
 
-#: lib/rpmal.c:656
+#: lib/rpmal.c:643
 #, fuzzy
 msgid "(added files)"
 msgstr "неверный файл базы данных %s\n"
 
-#: lib/rpmal.c:755
+#: lib/rpmal.c:739
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s YES (db provides)\n"
@@ -2480,62 +2476,62 @@ msgstr "%s: ошибка открытия: %s\n"
 msgid "makeTempFile failed\n"
 msgstr "ошибка makeTempFile\n"
 
-#: lib/rpmchecksig.c:103
+#: lib/rpmchecksig.c:101
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: ошибка Fwrite: %s\n"
 
-#: lib/rpmchecksig.c:163
+#: lib/rpmchecksig.c:161
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr "%s: Не могу подписать RPM v1.0\n"
 
-#: lib/rpmchecksig.c:167
+#: lib/rpmchecksig.c:165
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Не могу переподписать RPM v2.0\n"
 
-#: lib/rpmchecksig.c:218
+#: lib/rpmchecksig.c:216
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: ошибка writeLead: %s\n"
 
-#: lib/rpmchecksig.c:224
+#: lib/rpmchecksig.c:222
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: ошибка rpmWriteSignature: %s\n"
 
-#: lib/rpmchecksig.c:517
+#: lib/rpmchecksig.c:515
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Подписи нет (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:712
+#: lib/rpmchecksig.c:710
 msgid "NOT OK"
 msgstr "НЕ OК"
 
-#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
+#: lib/rpmchecksig.c:711 lib/rpmchecksig.c:725
 msgid " (MISSING KEYS:"
 msgstr " (ОТСУТСТВУЮТ КЛЮЧИ:"
 
-#: lib/rpmchecksig.c:715 lib/rpmchecksig.c:729
+#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:716 lib/rpmchecksig.c:730
+#: lib/rpmchecksig.c:714 lib/rpmchecksig.c:728
 msgid " (UNTRUSTED KEYS:"
 msgstr " (НЕТ ДОВЕРИЯ К КЛЮЧАМ:"
 
-#: lib/rpmchecksig.c:718 lib/rpmchecksig.c:732
+#: lib/rpmchecksig.c:716 lib/rpmchecksig.c:730
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:726
+#: lib/rpmchecksig.c:724
 msgid "OK"
 msgstr "OК"
 
 #. XXX legacy epoch-less requires/conflicts compatibility
-#: lib/rpmds.c:790
+#: lib/rpmds.c:784
 #, c-format
 msgid ""
 "the \"B\" dependency needs an epoch (assuming same as \"A\")\n"
@@ -2544,13 +2540,13 @@ msgstr ""
 "для зависимости \"B\" нужно указать \"epoch\" (так же как для \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:819
+#: lib/rpmds.c:813
 #, c-format
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
 #. @=branchstate@
-#: lib/rpmds.c:843
+#: lib/rpmds.c:837
 #, fuzzy, c-format
 msgid "package %s has unsatisfied %s: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
@@ -2883,16 +2879,20 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Подпись: размер(%d)+заполнение(%d)\n"
 
-#: lib/transaction.c:212
+#: lib/transaction.c:187
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущен из-за флага missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:883
+#: lib/transaction.c:858
 #, c-format
 msgid "excluding directory %s\n"
 msgstr "исключается каталог %s\n"
+
+#: lib/transaction.c:929
+msgid "getting list of mounted filesystems\n"
+msgstr "получение списка смонтированных файловых систем\n"
 
 #: lib/verify.c:243
 msgid "package lacks both user name and id lists (this should never happen)\n"
@@ -2906,17 +2906,17 @@ msgstr ""
 "в пакете нет ни имен групп, ни списка их идентификаторов (такого не должно "
 "быть)\n"
 
-#: lib/verify.c:435
+#: lib/verify.c:418
 #, c-format
 msgid "missing    %s"
 msgstr "отсутствует %s"
 
-#: lib/verify.c:532
+#: lib/verify.c:515
 #, fuzzy, c-format
 msgid "Unsatisifed dependencies for %s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 
-#: lib/verify.c:570
+#: lib/verify.c:553
 #, c-format
 msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr "%s-%s-%s: неправильная подпись области заголовка пакета\n"
@@ -3400,37 +3400,37 @@ msgstr "предупреждение: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "memory alloc (%u bytes) returned NULL.\n"
 
-#: rpmio/url.c:117
+#: rpmio/url.c:119
 #, c-format
 msgid "warning: u %p ctrl %p nrefs != 0 (%s %s)\n"
 msgstr "внимание: u %p ctrl %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:137
+#: rpmio/url.c:139
 #, c-format
 msgid "warning: u %p data %p nrefs != 0 (%s %s)\n"
 msgstr "внимание: u %p data %p nrefs != 0 (%s %s)\n"
 
-#: rpmio/url.c:165
+#: rpmio/url.c:167
 #, fuzzy, c-format
 msgid "warning: _url_cache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 msgstr "внимание: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
-#: rpmio/url.c:262
+#: rpmio/url.c:264
 #, c-format
 msgid "Password for %s@%s: "
 msgstr "Пароль для %s@%s: "
 
-#: rpmio/url.c:287 rpmio/url.c:313
+#: rpmio/url.c:289 rpmio/url.c:315
 #, c-format
 msgid "error: %sport must be a number\n"
 msgstr "ошибка: %s порт должен быть числом\n"
 
-#: rpmio/url.c:459
+#: rpmio/url.c:461
 msgid "url port must be a number\n"
 msgstr "url порт должен быть числом\n"
 
 #. XXX Fstrerror
-#: rpmio/url.c:525
+#: rpmio/url.c:527
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"

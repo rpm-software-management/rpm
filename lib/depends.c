@@ -2,13 +2,13 @@
  * \file lib/depends.c
  */
 
-#define	_DS_SCAREMEM	0
+#define	_DS_SCAREMEM	0	/* XXX remove? */
 
 #include "system.h"
 
 #include <rpmlib.h>
-#include <rpmmacro.h>		/* XXX rpmGetPath */
-#include <rpmpgp.h>		/* XXX pgpFreeDig */
+#include <rpmmacro.h>		/* XXX rpmtsOpenDB() needs rpmGetPath */
+#include <rpmpgp.h>		/* XXX rpmtransFree() needs pgpFreeDig */
 
 #define _NEED_TEITERATOR	1
 #include "depends.h"
@@ -17,17 +17,11 @@
 
 #include "debug.h"
 
-/*@access Header @*/		/* XXX compared with NULL */
-/*@access FD_t @*/		/* XXX compared with NULL */
-/*@access rpmdb @*/		/* XXX compared with NULL */
-/*@access rpmdbMatchIterator @*/	/* XXX compared with NULL */
-
-/*@access TFI_t @*/
+/*@access TFI_t @*/		/* XXX abstraction wrappers needed */
 /*@access tsortInfo @*/
 /*@access rpmTransactionSet @*/
 
-/*@access alKey @*/
-/*@access rpmProblemSet @*/
+/*@access alKey @*/	/* XXX for reordering and RPMAL_NOMATCH assign */
 
 /**
  */
@@ -105,7 +99,7 @@ int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
     rc = rpmdbOpen(ts->rootDir, &ts->rpmdb, ts->dbmode, 0644);
     if (rc) {
 	const char * dn;
-	/*@-globs -mods@*/ /* FIX: rpmGlobalMacroContext */
+	/*@-globs -mods@*/ /* FIX: rpmGlobalMacroContext for an error? shrug */
 	dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
 	/*@=globs =mods@*/
 	rpmMessage(RPMMESS_ERROR,
@@ -118,9 +112,7 @@ int rpmtsOpenDB(rpmTransactionSet ts, int dbmode)
 rpmdbMatchIterator rpmtsInitIterator(const rpmTransactionSet ts, int rpmtag,
 			const void * keyp, size_t keylen)
 {
-    /*@-mods -onlytrans -type@*/ /* FIX: rpmdb excision */
     return rpmdbInitIterator(ts->rpmdb, rpmtag, keyp, keylen);
-    /*@=mods =onlytrans =type@*/
 }
 
 char * hGetNEVR(Header h, const char ** np)
@@ -160,10 +152,8 @@ static void delTE(transactionElement p)
     p->obsoletes = dsFree(p->obsoletes);
     p->fi = fiFree(p->fi, 1);
 
-    /*@-type@*/ /* FIX: cast? Fclose? */
     if (p->fd != NULL)
-        p->fd = fdFree(p->fd, "alAddPackage (delTE)");
-    /*@=type@*/
+        p->fd = fdFree(p->fd, "delTE");
 
     p->os = _free(p->os);
     p->arch = _free(p->arch);
@@ -180,10 +170,7 @@ static void delTE(transactionElement p)
 }
 
 static void addTE(rpmTransactionSet ts, transactionElement p, Header h,
-#ifdef	DYING
-		/*@null@*/ FD_t fd,
-#endif
-		/*@null@*/ fnpyKey key,
+		/*@dependent@*/ /*@null@*/ fnpyKey key,
 		/*@null@*/ rpmRelocation * relocs)
 	/*@modifies ts, p, h @*/
 {
@@ -224,17 +211,9 @@ static void addTE(rpmTransactionSet ts, transactionElement p, Header h,
     p->conflicts = dsNew(h, RPMTAG_CONFLICTNAME, scareMem);
     p->obsoletes = dsNew(h, RPMTAG_OBSOLETENAME, scareMem);
 
-    /*@-assignexpose -temptrans @*/
     p->key = key;
-    /*@=assignexpose =temptrans @*/
 
-#ifdef	DYING
-    /*@-type@*/ /* FIX: cast? */
-    p->fd = (fd != NULL ? fdLink(fd, "addTE") : NULL);
-    /*@=type@*/
-#else
     p->fd = NULL;
-#endif
 
     if (relocs != NULL) {
 	rpmRelocation * r;
@@ -269,10 +248,10 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, const char * rootDir)
     ts->filesystems = NULL;
     ts->di = NULL;
     if (db != NULL) {
-	/*@-assignexpose@*/
 	ts->rpmdb = rpmdbLink(db, "tsCreate");
-	/*@=assignexpose@*/
+	/*@-type@*/ /* FIX: silly wrapper */
 	ts->dbmode = db->db_mode;
+	/*@=type@*/
     } else {
 	ts->rpmdb = NULL;
 	ts->dbmode = O_RDONLY;
@@ -432,8 +411,10 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 
     isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 
-    if (p != NULL && duplicate && oc < ts->orderCount)
+    if (p != NULL && duplicate && oc < ts->orderCount) {
+    /* XXX FIXME removed transaction element side effects need to be weeded */
 	delTE(p);
+    }
 
     if (oc == ts->orderAlloced) {
 	ts->orderAlloced += ts->delta;
@@ -441,7 +422,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
     }
 
     p = ts->order + oc;
-    memset(p, 0, sizeof(*p));
+    memset(p, 0, sizeof(*p));		/* XXX trash and burn */
     
     addTE(ts, p, h, key, relocs);
 
@@ -476,10 +457,6 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h,
 	}
     }
   }
-#endif
-
-#ifdef	WOOHOO
-    p->h = headerLink(h, "rpmtransAddPackage");
 #endif
 
     if (!duplicate) {
@@ -621,13 +598,11 @@ rpmTransactionSet rpmtransFree(rpmTransactionSet ts)
 	ts->di = _free(ts->di);
 	ts->removedPackages = _free(ts->removedPackages);
 	ts->order = _free(ts->order);
-	/*@-type@*/
 	if (ts->scriptFd != NULL) {
 	    ts->scriptFd =
 		fdFree(ts->scriptFd, "rpmtransSetScriptFd (rpmtransFree");
 	    ts->scriptFd = NULL;
 	}
-	/*@=type@*/
 	ts->rootDir = _free(ts->rootDir);
 	ts->currDir = _free(ts->currDir);
 
@@ -840,7 +815,6 @@ static int checkPackageDeps(rpmTransactionSet ts, const char * pkgNEVR,
 	/*@globals fileSystem @*/
 	/*@modifies ts, requires, conflicts, fileSystem */
 {
-    rpmProblemSet ps = ts->probs;
     const char * Name;
     int_32 Flags;
     int rc;
@@ -879,7 +853,7 @@ static int checkPackageDeps(rpmTransactionSet ts, const char * pkgNEVR,
 	    }
 	    /*@=branchstate@*/
 
-	    dsProblem(ps, pkgNEVR, requires, suggestedKeys);
+	    dsProblem(ts->probs, pkgNEVR, requires, suggestedKeys);
 
 	}
 	    /*@switchbreak@*/ break;
@@ -914,7 +888,7 @@ static int checkPackageDeps(rpmTransactionSet ts, const char * pkgNEVR,
 	switch (rc) {
 	case 0:		/* conflicts exist. */
 	    /*@-mayaliasunique@*/ /* LCL: NULL may alias h ??? */
-	    dsProblem(ps, pkgNEVR, conflicts, NULL);
+	    dsProblem(ts->probs, pkgNEVR, conflicts, NULL);
 	    /*@=mayaliasunique@*/
 	    /*@switchbreak@*/ break;
 	case 1:		/* conflicts don't exist. */
@@ -999,7 +973,7 @@ static int checkDependentConflicts(rpmTransactionSet ts, const char * key)
 {
     int rc = 0;
 
-    if (ts->rpmdb) {	/* XXX is this necessary? */
+    if (ts->rpmdb != NULL) {	/* XXX is this necessary? */
 	rpmdbMatchIterator mi;
 	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, key, 0);
 	rc = checkPackageSet(ts, key, mi);
@@ -1125,7 +1099,7 @@ static /*@owned@*/ /*@null@*/ const char *
 zapRelation(transactionElement q, transactionElement p,
 		/*@null@*/ rpmDepSet requires,
 		int zap, /*@in@*/ /*@out@*/ int * nzaps)
-	/*@modifies q, p, *nzaps @*/
+	/*@modifies q, p, requires, *nzaps @*/
 {
     tsortInfo tsi_prev;
     tsortInfo tsi;
@@ -1145,9 +1119,7 @@ zapRelation(transactionElement q, transactionElement p,
 
 	if (requires == NULL) continue;		/* XXX can't happen */
 
-	/*@-type@*/ /* FIX: hack */
-	requires->i = tsi->tsi_reqx;
-	/*@=type@*/
+	(void) dsiSetIx(requires, tsi->tsi_reqx);
 
 	Flags = dsiGetFlags(requires);
 
@@ -1200,7 +1172,8 @@ if (_te_debug) {
  * @return		0 always
  */
 static inline int addRelation(rpmTransactionSet ts,
-		transactionElement p, unsigned char * selected,
+		/*@dependent@*/ transactionElement p,
+		unsigned char * selected,
 		rpmDepSet requires)
 	/*@globals fileSystem @*/
 	/*@modifies ts, p, *selected, fileSystem @*/
@@ -1274,13 +1247,9 @@ prtTSI(NULL, p->tsi);
 /*@=nullpass@*/
 
     tsi = xcalloc(1, sizeof(*tsi));
-    /*@-assignexpose@*/
     tsi->tsi_suc = p;
-    /*@=assignexpose@*/
 
-    /*@-type@*/
-    tsi->tsi_reqx = requires->i;
-    /*@=type@*/
+    tsi->tsi_reqx = dsiGetIx(requires);
 
     tsi->tsi_next = q->tsi->tsi_next;
 /*@-nullpass -compmempass@*/
@@ -1322,7 +1291,7 @@ static int orderListIndexCmp(const void * one, const void * two)	/*@*/
  * @retval qp		address of first element
  * @retval rp		address of last element
  */
-static void addQ(transactionElement p,
+static void addQ(/*@dependent@*/ transactionElement p,
 		/*@in@*/ /*@out@*/ transactionElement * qp,
 		/*@in@*/ /*@out@*/ transactionElement * rp)
 	/*@modifies p, *qp, *rp @*/
@@ -1330,14 +1299,15 @@ static void addQ(transactionElement p,
     transactionElement q, qprev;
 
     if ((*rp) == NULL) {	/* 1st element */
+	/*@-dependenttrans@*/ /* FIX: double indirection */
 	(*rp) = (*qp) = p;
+	/*@=dependenttrans@*/
 	return;
     }
     for (qprev = NULL, q = (*qp); q != NULL; qprev = q, q = q->tsi->tsi_suc) {
 	if (q->tsi->tsi_qcnt <= p->tsi->tsi_qcnt)
 	    break;
     }
-    /*@-assignexpose@*/
     if (qprev == NULL) {	/* insert at beginning of list */
 	p->tsi->tsi_suc = q;
 	(*qp) = p;		/* new head */
@@ -1348,7 +1318,6 @@ static void addQ(transactionElement p,
 	p->tsi->tsi_suc = q;
 	qprev->tsi->tsi_suc = p;
     }
-    /*@=assignexpose@*/
 }
 
 int rpmdepOrder(rpmTransactionSet ts)
@@ -1367,6 +1336,7 @@ int rpmdepOrder(rpmTransactionSet ts)
     int orderingCount = 0;
     unsigned char * selected = alloca(sizeof(*selected) * (ts->orderCount + 1));
     int loopcheck;
+/*@exposed@*/
     transactionElement newOrder;
     int newOrderCount = 0;
     orderListIndex orderList;
@@ -1687,17 +1657,13 @@ prtTSI(" p", p->tsi);
 	if (needle == NULL) continue;
 
 	j = needle->orIndex;
-	/*@-assignexpose@*/
 	q = ts->order + j;
-/*@i@*/	newOrder[newOrderCount++] = *q;		/* structure assignment */
-	/*@=assignexpose@*/
+	newOrder[newOrderCount++] = *q;		/* structure assignment */
 	for (j = needle->orIndex + 1; j < ts->orderCount; j++) {
 	    q = ts->order + j;
 	    if (q->type == TR_REMOVED &&
 		q->u.removed.dependsOnKey == needle->pkgKey) {
-		/*@-assignexpose@*/
-/*@i@*/		newOrder[newOrderCount++] = *q;	/* structure assignment */
-		/*@=assignexpose@*/
+		newOrder[newOrderCount++] = *q;	/* structure assignment */
 	    } else
 		/*@innerbreak@*/ break;
 	}
@@ -1708,12 +1674,8 @@ prtTSI(" p", p->tsi);
     pi = teInitIterator(ts);
     /*@=compmempass =usereleased@*/
     while ((p = teNext(pi, TR_REMOVED)) != NULL) {
-	if (p->u.removed.dependsOnKey == RPMAL_NOMATCH) {
-	    /*@-assignexpose@*/
-/*@i@*/	    newOrder[newOrderCount] = *p;	/* structure assignment */
-	    /*@=assignexpose@*/
-	    newOrderCount++;
-	}
+	if (p->u.removed.dependsOnKey == RPMAL_NOMATCH)
+	    newOrder[newOrderCount++] = *p;	/* structure assignment */
     }
     pi = teFreeIterator(pi);
     assert(newOrderCount == ts->orderCount);
@@ -1745,6 +1707,7 @@ prtTSI(" p", p->tsi);
  * @param rpmtag	rpm tag
  * @return              0 on success
  */
+/*@-mustmod -type@*/ /* FIX: this belongs in rpmdb.c */
 static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
 	/*@globals fileSystem @*/
 	/*@modifies db, fileSystem @*/
@@ -1770,6 +1733,7 @@ static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
     }
     return rc;
 }
+/*@=mustmod =type@*/
 
 int rpmdepCheck(rpmTransactionSet ts,
 		rpmProblem * conflicts, int * numConflicts)
@@ -1911,11 +1875,13 @@ int rpmdepCheck(rpmTransactionSet ts,
     /*@=branchstate@*/
     pi = teFreeIterator(pi);
 
+/*@-type@*/ /* FIX: return refcounted rpmProblemSet */
     if (ts->probs->numProblems) {
 	*conflicts = ts->probs->probs;
 	ts->probs->probs = NULL;
 	*numConflicts = ts->probs->numProblems;
     }
+/*@=type@*/
     rc = 0;
 
 exit:
