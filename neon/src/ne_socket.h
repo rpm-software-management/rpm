@@ -1,6 +1,6 @@
 /* 
    socket handling interface
-   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -36,7 +36,7 @@ BEGIN_NEON_DECLS
 #define NE_SOCK_CLOSED (-3)
 /* Connection was reset (e.g. server crashed) */
 #define NE_SOCK_RESET (-4)
-/* Secure connection was subject to possible truncation attack. */
+/* Secure connection was closed without proper SSL shutdown. */
 #define NE_SOCK_TRUNC (-5)
 
 /* ne_socket represents a TCP socket. */
@@ -57,7 +57,7 @@ int ne_sock_init(void);
 /* Shutdown any underlying libraries. */
 void ne_sock_exit(void);
 
-/* Resolve the given hostname.  'flags' are currently ignored.  Hex
+/* Resolve the given hostname.  'flags' must be zero.  Hex
  * string IPv6 addresses (e.g. `::1') may be enclosed in brackets
  * (e.g. `[::1]'). */
 ne_sock_addr *ne_addr_resolve(const char *hostname, int flags);
@@ -101,6 +101,9 @@ ne_inet_addr *ne_iaddr_make(ne_iaddr_type type, const unsigned char *raw);
 /* Compare two network addresses i1 and i2; return non-zero if they
  * are not equal. */
 int ne_iaddr_cmp(const ne_inet_addr *i1, const ne_inet_addr *i2);
+
+/* Returns the type of the given network address. */
+ne_iaddr_type ne_iaddr_typeof(const ne_inet_addr *ia);
 
 /* Prints the string representation of network address 'ia' into the
  * 'buffer', which is of size 'bufsiz'.  Returns 'buffer'. */
@@ -177,15 +180,13 @@ void ne_sock_read_timeout(ne_socket *sock, int timeout);
  * none is known. */
 int ne_service_lookup(const char *name);
 
-/* Enable SSL with an already-negotiated SSL socket. */
-void ne_sock_switch_ssl(ne_socket *sock, void *ssl);
+/* Negotiate an SSL connection on socket as an SSL server, using given
+ * SSL context. */
+int ne_sock_accept_ssl(ne_socket *sock, ne_ssl_context *ctx);
 
-/* Perform an SSL negotiation on 'sock', using given context. */
+/* Negotiate an SSL connection on socket as an SSL client, using given
+ * SSL context. */
 int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx);
-
-/* Return SSL socket object in use for 'sock'. */
-typedef struct ne_ssl_socket_s ne_ssl_socket;
-ne_ssl_socket *ne_sock_sslsock(ne_socket *sock);
 
 END_NEON_DECLS
 

@@ -41,6 +41,7 @@
 #include "ne_string.h"
 #include "ne_acl.h"
 #include "ne_uri.h"
+#include "ne_xml.h" /* for NE_XML_MEDIA_TYPE */
 
 static ne_buffer *acl_body(ne_acl_entry *right, int count)
 {
@@ -110,12 +111,12 @@ int ne_acl_set(ne_session *sess, const char *uri,
     ne_request *req = ne_request_create(sess, "ACL", uri);
     ne_buffer *body = acl_body(entries, numentries);
 
-#ifdef USE_DAV_LOCKS
+#ifdef NE_HAVE_DAV
     ne_lock_using_resource(req, uri, 0);
 #endif
 
     ne_set_request_body_buffer(req, body->data, ne_buffer_size(body));
-    ne_add_request_header(req, "Content-Type", "text/xml");
+    ne_add_request_header(req, "Content-Type", NE_XML_MEDIA_TYPE);
     ret = ne_request_dispatch(req);
 
     ne_buffer_destroy(body);

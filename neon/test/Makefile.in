@@ -19,10 +19,11 @@ CC = @CC@
 OPENSSL = @OPENSSL@
 
 HELPERS = @HELPERS@
-BASIC_TESTS = uri-tests util-tests string-tests session socket \
-	request auth basic stubs redirect
+BASIC_TESTS = uri-tests util-tests string-tests socket \
+	session request auth basic stubs redirect
 ZLIB_TESTS = compress
-ZLIB_HELPERS = file1.gz file2.gz trailing.gz badcsum.gz truncated.gz corrupt1.gz corrupt2.gz
+ZLIB_HELPERS = file1.gz file2.gz trailing.gz badcsum.gz truncated.gz \
+	corrupt1.gz corrupt2.gz empty.gz
 DAV_TESTS = xml acl props lock
 SSL_TESTS = socket-ssl ssl
 SSL_HELPERS = ca-stamp
@@ -52,13 +53,16 @@ clean:
 	rm -f $(TESTS) $(HELPERS) *.*o common/*.*o libtest.a *.log
 	rm -rf ca .libs
 	rm -f ca-stamp client.key *.csr ssigned.pem wrongcn.pem \
-	   server.cert client.cert client.p12 *.cert
+	   server.cert client.cert client.p12 *.cert sparse.bin
 
 check: $(TESTS) $(HELPERS)
 	@SRCDIR=$(srcdir) $(SHELL) $(srcdir)/run.sh $(TESTS)
 
 grind: $(TESTS) $(HELPERS)
 	@SRCDIR=$(srcdir) HARNESS="$(VALGRIND)" $(SHELL) $(srcdir)/run.sh $(TESTS)
+
+lfs-check: largefile $(LFS_HELPERS)
+	@SRCDIR=$(srcdir) $(SHELL) $(srcdir)/run.sh largefile
 
 NEWS = $(top_srcdir)/NEWS
 
@@ -87,6 +91,9 @@ corrupt1.gz: file1.gz
 corrupt2.gz: 
 	cat $(NEWS) > $@
 
+empty.gz:
+	touch $@
+
 # Dummy target to create the CA keys etc.  makekeys stderr is redirected
 # since it changes for every invocation; not helpful for regression
 # testing.
@@ -107,9 +114,6 @@ $(LIBTEST): $(LIBOBJS)
 .c.lo:
 	$(COMPILE) -c $< -o $@
 
-.lo:
-	$(LINK) -o $@ $< $(LIBS)
-
 # Recompile socket.c with SOCKET_SSL defined
 socket-ssl.lo: $(srcdir)/socket.c $(HDRS)
 	$(COMPILE) -DSOCKET_SSL -c $(srcdir)/socket.c -o $@
@@ -120,6 +124,9 @@ socket-ssl: socket-ssl.lo $(LIBTEST)
 resolve: resolve.lo $(LIBNEON)
 	$(LINK) -o $@ resolve.lo $(LIBNEON)
 
+common/tests.lo: $(srcdir)/common/tests.c $(OBJDEPS)
+common/child.lo: $(srcdir)/common/child.c $(OBJDEPS) 
+utils.lo: $(srcdir)/utils.c $(OBJDEPS)
 auth.lo: $(srcdir)/auth.c $(OBJDEPS)
 uri-tests.lo: $(srcdir)/uri-tests.c $(OBJDEPS)
 util-tests.lo: $(srcdir)/util-tests.c $(OBJDEPS)
@@ -137,26 +144,46 @@ session.lo: $(srcdir)/session.c $(OBJDEPS)
 redirect.lo: $(srcdir)/redirect.c $(OBJDEPS)
 basic.lo: $(srcdir)/basic.c $(OBJDEPS)
 ssl.lo: $(srcdir)/ssl.c $(OBJDEPS)
-cookies.lo: $(srcdir)/cookies.c $(OBJDEPS)
+lock.lo: $(srcdir)/lock.c $(OBJDEPS)
+largefile.lo: $(srcdir)/largefile.c $(OBJDEPS)
 
 auth: auth.lo $(DEPS)
+	$(LINK) -o $@ auth.lo $(DEPS)
 basic: basic.lo $(DEPS)
+	$(LINK) -o $@ basic.lo $(DEPS)
 uri-tests: uri-tests.lo $(DEPS)
+	$(LINK) -o $@ uri-tests.lo $(DEPS)
 util-tests: util-tests.lo $(DEPS)
+	$(LINK) -o $@ util-tests.lo $(DEPS)
 string-tests: string-tests.lo $(DEPS)
+	$(LINK) -o $@ string-tests.lo $(DEPS)
 socket: socket.lo $(DEPS)
+	$(LINK) -o $@ socket.lo $(DEPS)
 server: server.lo $(DEPS)
+	$(LINK) -o $@ server.lo $(DEPS)
 request: request.lo $(DEPS)
+	$(LINK) -o $@ request.lo $(DEPS)
 regress: regress.lo $(DEPS)
+	$(LINK) -o $@ regress.lo $(DEPS)
 compress: compress.lo $(DEPS)
+	$(LINK) -o $@ compress.lo $(DEPS)
 acl: acl.lo $(DEPS)
+	$(LINK) -o $@ acl.lo $(DEPS)
 utils: utils.lo $(DEPS)
+	$(LINK) -o $@ utils.lo $(DEPS)
 stubs: stubs.lo $(DEPS)
+	$(LINK) -o $@ stubs.lo $(DEPS)
 props: props.lo $(DEPS)
+	$(LINK) -o $@ props.lo $(DEPS)
 session: session.lo $(DEPS)
+	$(LINK) -o $@ session.lo $(DEPS)
 redirect: redirect.lo $(DEPS)
-basic: basic.lo $(DEPS)
+	$(LINK) -o $@ redirect.lo $(DEPS)
 ssl: ssl.lo $(DEPS)
+	$(LINK) -o $@ ssl.lo $(DEPS)
 xml: xml.lo $(DEPS)
+	$(LINK) -o $@ xml.lo $(DEPS)
 lock: lock.lo $(DEPS)
-cookies: cookies.lo $(DEPS)
+	$(LINK) -o $@ lock.lo $(DEPS)
+largefile: largefile.lo $(DEPS)
+	$(LINK) -o $@ largefile.lo $(DEPS)

@@ -1,6 +1,6 @@
 /* 
    HTTP request handling tests
-   Copyright (C) 2001-2003, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2001-2004, Joe Orton <joe@manyfish.co.uk>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -69,10 +69,11 @@ static int finish_request(void)
 #define TE_CHUNKED "Transfer-Encoding: chunked\r\n"
 
 /* takes response body chunks and appends them to a buffer. */
-static void collector(void *ud, const char *data, size_t len)
+static int collector(void *ud, const char *data, size_t len)
 {
     ne_buffer *buf = ud;
     ne_buffer_append(buf, data, len);
+    return 0;
 }
 
 typedef ne_request *(*construct_request)(ne_session *sess, void *userdata);
@@ -248,12 +249,6 @@ static int no_body_304(void)
 static int no_body_204(void)
 {
     return expect_no_body("GET", "HTTP/1.1 204 Not Modified\r\n"
-			  "Content-Length: 5\r\n\r\n");
-}
-
-static int no_body_205(void)
-{
-    return expect_no_body("GET", "HTTP/1.1 205 Reset Content\r\n"
 			  "Content-Length: 5\r\n\r\n");
 }
 
@@ -830,17 +825,12 @@ static int skip_1xx_hdrs(void)
 
 #undef sess
 
-/* server for expect_100_once: eats a dummy request, then serves a
- * 100-continue request, and fails if the request body is sent
- * twice. */
+/* server for expect_100_once: serves a 100-continue request, and
+ * fails if the request body is sent twice. */
 static int serve_100_once(ne_socket *sock, void *ud)
 {
     struct s1xx_args args = {2, 0};
     char ch;
-    /* dummy first request. */
-    CALL(discard_request(sock));
-    CALL(SEND_STRING(sock, RESP200 "Content-Length: 0\r\n\r\n"));
-    /* now the real 1xx request. */
     CALL(serve_1xx(sock, &args));
     CALL(discard_body(sock));
     ONN("body was served twice", ne_sock_read(sock, &ch, 1) == 1);
@@ -857,22 +847,33 @@ static int expect_100_once(void)
     char body[BUFSIZ];
 
     CALL(make_session(&sess, serve_100_once, NULL));
-    ne_set_expect100(sess, 1);
 
-    /* 100-continue is only used if the server is known to claim
-     * HTTP/1.1 compliance; make a dummy request on the socket first,
-     * to trigger that logic. */
-    CALL(any_request(sess, "/foo"));
-    
-    /* now the real request. */
     req = ne_request_create(sess, "GET", "/foo");
+    ne_set_request_expect100(req, 1);
     memset(body, 'A', sizeof(body));
     ne_set_request_body_buffer(req, body, sizeof(body));
-    ONN("request failed", ne_request_dispatch(req));
+    ONREQ(ne_request_dispatch(req));
     ne_request_destroy(req);
     ne_session_destroy(sess);
     CALL(await_server());
     return OK;
+}
+
+/* regression test for enabling 100-continue without sending a body. */
+static int expect_100_nobody(void)
+{
+    ne_session *sess;
+    ne_request *req;
+
+    CALL(make_session(&sess, serve_100_once, NULL));
+    
+    req = ne_request_create(sess, "GET", "/foo");
+    ne_set_request_expect100(req, 1);
+    ONREQ(ne_request_dispatch(req));
+    ne_request_destroy(req);
+    ne_session_destroy(sess);
+
+    return await_server();
 }
 
 struct body {
@@ -971,19 +972,6 @@ static int send_bodies(void)
     return OK;
 }
 
-static int serve_infinite_headers(ne_socket *sock, void *userdata)
-{
-    CALL(discard_request(sock));
-
-    SEND_STRING(sock, RESP200);
-    
-    for (;;) {
-	SEND_STRING(sock, "x-foo: bar\r\n");
-    }
-
-    return 0;	
-}
-
 /* Utility function: run a request using the given server fn, and the
  * request should fail. If 'error' is non-NULL, it must be a substring
  * of the error string. */
@@ -1052,7 +1040,8 @@ static int fail_request(int with_body, server_fn fn, void *ud, int forever)
 
 static int unbounded_headers(void)
 {
-    return fail_request(0, serve_infinite_headers, NULL, 0);
+    struct infinite i = { RESP200, "x-foo: bar\r\n" };
+    return fail_request(0, serve_infinite, &i, 0);
 }
 
 static int blank_response(void)
@@ -1074,18 +1063,11 @@ static int not_http(void)
     return fail_request(0, serve_non_http, NULL, 0);
 }
 
-static int serve_infinite_folds(ne_socket *sock, void *ud)
-{
-    SEND_STRING(sock, "HTTP/1.0 200 OK\r\nFoo: bar\r\n");
-    for (;;) {
-	SEND_STRING(sock, "  hello there.\r\n");
-    }
-    return OK;
-}
-
 static int unbounded_folding(void)
 {
-    return fail_request(0, serve_infinite_folds, NULL, 0);
+    struct infinite i = { "HTTP/1.0 200 OK\r\nFoo: bar\r\n", 
+                          "  hello there.\r\n" };
+    return fail_request(0, serve_infinite, &i, 0);
 }
 
 static int serve_close(ne_socket *sock, void *ud)
@@ -1166,11 +1148,13 @@ static enum {
 
 static off_t prog_last = -1, prog_total;
 
+#define FOFF "%" NE_FMT_OFF_T
+
 /* callback for send_progress. */
 static void s_progress(void *userdata, off_t prog, off_t total)
 {
     NE_DEBUG(NE_DBG_HTTP, 
-	     "progress callback: %" NE_FMT_OFF_T "/%" NE_FMT_OFF_T ".\n",
+	     "progress callback: " FOFF "/" FOFF ".\n",
 	     prog, total);
 
     switch (prog_state) {
@@ -1179,19 +1163,19 @@ static void s_progress(void *userdata, off_t prog, off_t total)
 	return;
     case prog_transfer:
 	if (total != prog_total) {
-	    t_context("total unexpected: %ld not %ld", total, prog_total);
+	    t_context("total unexpected: " FOFF " not " FOFF "", total, prog_total);
 	    prog_state = prog_error;
 	}
 	else if (prog > total) {
-	    t_context("first progress was invalid (%ld/%ld)", prog, total);
+	    t_context("first progress was invalid (" FOFF "/" FOFF ")", prog, total);
 	    prog_state = prog_error;
 	}
 	else if (prog_last != -1 && prog_last > prog) {
-	    t_context("progess went backwards: %ld to %ld", prog_last, prog);
+	    t_context("progess went backwards: " FOFF " to " FOFF, prog_last, prog);
 	    prog_state = prog_error;
 	}
 	else if (prog_last == prog) {
-	    t_context("no progress made! %ld to %ld", prog_last, prog);
+	    t_context("no progress made! " FOFF " to " FOFF, prog_last, prog);
 	    prog_state = prog_error;
 	}
 	else if (prog == total) {
@@ -1202,6 +1186,8 @@ static void s_progress(void *userdata, off_t prog, off_t total)
 	    
     prog_last = prog;
 }
+
+#undef FOFF
 
 static ssize_t provide_progress(void *userdata, char *buf, size_t bufsiz)
 {
@@ -1580,13 +1566,105 @@ static int dup_method(void)
     return OK;
 }
 
+#ifdef NE_HAVE_IDNA
+
+/* "ħêłłø.com" in UTF-8 and ACE form. */
+#define HELLO_DOT_COM "\xc4\xa7" "\xc3\xaa" "\xc5\x82" "\xc5\x82" "\xc3\xb8" ".com"
+#define HELLO_IDNA_ACE "xn--bda2a5j8da.com"
+
+static char *host_hdr = NULL;
+
+static void dup_header(char *hdr)
+{
+    host_hdr = strdup(hdr);
+}
+
+static int serve_check_host(ne_socket *sock, void *userdata)
+{
+    const char *host = userdata;
+
+    want_header = "Host";
+    got_header = dup_header;
+    
+    CALL(discard_request(sock));
+
+    if (host_hdr == NULL) {
+        CALL(SEND_STRING(sock, "HTTP/1.0 500 No Host header!?\r\n\r\n"));
+    } else if (strcmp(host_hdr, host) != 0) {
+        CALL(SEND_STRING(sock, "HTTP/1.0 500 Bad Host Header\r\n\r\n"));
+    } else {
+        CALL(SEND_STRING(sock, "HTTP/1.0 200 Good Host Header\r\n\r\n"));
+    }
+
+    return OK;
+}        
+
+static int idna_hostname(void)
+{
+    ne_session *sess = ne_session_create("http", HELLO_DOT_COM, 80);
+
+    ne_session_proxy(sess, "localhost", 7777);
+
+    CALL(spawn_server(7777, serve_check_host, HELLO_IDNA_ACE));
+    CALL(any_2xx_request(sess, "/idnafoo"));
+    CALL(await_server());
+
+    ne_session_destroy(sess);
+    return OK;
+}
+#else
+static int idna_hostname(void)
+{
+    t_context("IDNA support not enabled");
+    return SKIP;
+}
+#endif
+
+static int abortive_reader(void *userdata, const char *buf, size_t len)
+{
+    ne_session *sess = userdata;
+    if (len == 5 && strncmp(buf, "abcde", 5) == 0) {
+        ne_set_error(sess, "Reader callback failed");
+    } else {
+        ne_set_error(sess, "Reader callback called with length %" NE_FMT_SIZE_T,
+                     len);
+    }
+    return NE_ERROR;
+}
+
+static int abort_reader(void)
+{
+    ne_session *sess;
+    ne_request *req;
+    int ret;
+
+    CALL(make_session(&sess, single_serve_string, 
+                      RESP200 "Content-Length: 5\r\n\r\n"
+                      "abcde"
+                      "HTTP/1.1 200 OK\r\n"
+                      "Content-Length: 0\r\n\r\n"));
+
+    req = ne_request_create(sess, "GET", "/foo");
+    ne_add_response_body_reader(req, ne_accept_2xx, abortive_reader, sess);
+    ret = ne_request_dispatch(req);
+    ONV(ret != NE_ERROR, ("request did not fail with NE_ERROR: %d", ret));
+    ONV(strcmp(ne_get_error(sess), "Reader callback failed") != 0,
+        ("unexpected session error string: %s", ne_get_error(sess)));
+    ne_request_destroy(req);
+    /* test that the connection was closed. */
+    ONN("connection not closed after aborted response",
+        any_2xx_request(sess, "/failmeplease") == OK);
+    ne_session_destroy(sess);
+    CALL(await_server());
+    return OK;
+}
+
 ne_test tests[] = {
     T(lookup_localhost),
     T(single_get_clength),
     T(single_get_eof),
     T(single_get_chunked),
     T(no_body_204),
-    T(no_body_205),
     T(no_body_304),
     T(no_body_HEAD),
     T(no_body_empty_clength),
@@ -1630,6 +1708,7 @@ ne_test tests[] = {
     T(skip_1xx_hdrs),
     T(send_bodies),
     T(expect_100_once),
+    T(expect_100_nobody),
     T(unbounded_headers),
     T(unbounded_folding),
     T(blank_response),
@@ -1652,5 +1731,7 @@ ne_test tests[] = {
     T(dup_method),
     T(versions),
     T(hook_create_req),
+    T(idna_hostname),
+    T(abort_reader),
     T(NULL)
 };

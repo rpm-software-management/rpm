@@ -1,6 +1,7 @@
 /* 
    Win32 config.h
    Copyright (C) 1999-2000, Peter Boos <pedib@colorfullife.com>
+   Copyright (C) 2002, 2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -18,7 +19,7 @@
    MA 02111-1307, USA
 
 */
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(WIN32)
 #define WIN32
 #endif
 
@@ -28,15 +29,21 @@
 #define NEON_VERSION_MAJOR (@MAJOR@)
 #define NEON_VERSION_MINOR (@MINOR@)
 
-
-#define HAVE_STRING_H
-#define HAVE_EXPAT
-#define HAVE_OLD_EXPAT
-#define HAVE_MEMCPY
-
+#define HAVE_ERRNO_H
+#define HAVE_LIMITS_H
 #define HAVE_STDLIB_H
 #define HAVE_STRING_H
-#define HAVE_LIMITS_H
+
+#define HAVE_MEMCPY
+#define HAVE_SETSOCKOPT
+
+#ifndef NEON_NODAV
+#define USE_DAV_LOCKS
+#endif
+
+#define NE_FMT_SIZE_T "u"
+#define NE_FMT_SSIZE_T "d"
+#define NE_FMT_OFF_T "ld"
 
 /* Win32 uses a underscore, so we use a macro to eliminate that. */
 #define snprintf			_snprintf

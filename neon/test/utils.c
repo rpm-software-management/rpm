@@ -85,7 +85,7 @@ int any_2xx_request(ne_session *sess, const char *uri)
     ne_request *req = ne_request_create(sess, "GET", uri);
     int ret = ne_request_dispatch(req);
     ONV(ret != NE_OK || ne_get_status(req)->klass != 2,
-	("request failed: %s\n", ne_get_error(sess)));
+	("request failed: %s", ne_get_error(sess)));
     ne_request_destroy(req);
     return ret;
 }
@@ -100,7 +100,7 @@ int any_2xx_request_body(ne_session *sess, const char *uri)
     ret = ne_request_dispatch(req);
     ne_free(body);
     ONV(ret != NE_OK || ne_get_status(req)->klass != 2,
-	("request failed: %s\n", ne_get_error(sess)));
+	("request failed: %s", ne_get_error(sess)));
     ne_request_destroy(req);
     return ret;
 }
@@ -131,4 +131,18 @@ int serve_sstring_slowly(ne_socket *sock, void *ud)
     }
     
     return 0;
+}
+
+int serve_infinite(ne_socket *sock, void *ud)
+{
+    struct infinite *i = ud;
+
+    CALL(discard_request(sock));
+
+    SEND_STRING(sock, i->header);
+
+    while (server_send(sock, i->repeat, strlen(i->repeat)) == 0)
+        /* nullop */;
+    
+    return OK;
 }

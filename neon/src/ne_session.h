@@ -1,6 +1,6 @@
 /* 
    HTTP session handling
-   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -27,6 +27,7 @@
 #include "ne_ssl.h"
 #include "ne_uri.h" /* for ne_uri */
 #include "ne_defs.h"
+#include "ne_socket.h"
 
 BEGIN_NEON_DECLS
 
@@ -34,7 +35,9 @@ typedef struct ne_session_s ne_session;
 
 /* Create a session to the given server, using the given scheme.  If
  * "https" is passed as the scheme, SSL will be used to connect to the
- * server. */
+ * server.  If neon is built with support for IDNA, 'hostname' can be
+ * a UTF-8-encoded Unicode string; otherwise, it must be an ASCII
+ * string. */
 ne_session *ne_session_create(const char *scheme,
 			      const char *hostname, unsigned int port);
 
@@ -49,18 +52,13 @@ void ne_close_connection(ne_session *sess);
 void ne_session_proxy(ne_session *sess,
 		      const char *hostname, unsigned int port);
 
-/* Set protocol options for session:
- *   expect100: Defaults to OFF
- *   persist:   Defaults to ON
- *
- * expect100: When set, send the "Expect: 100-continue" request header
- * with requests with bodies.
- *
- * persist: When set, use a persistent connection. (Generally,
- * you don't want to turn this off.)
- * */
-void ne_set_expect100(ne_session *sess, int use_expect100);
-void ne_set_persist(ne_session *sess, int persist);
+/* Disable use of persistent connection if 'flag' is non-zero, else
+ * enable (the default). */
+void ne_set_persist(ne_session *sess, int flag);
+
+/* Bypass the normal name resolution; force the use of specific set of
+ * addresses for this session, addrs[0]...addrs[n-1]. */
+void ne_set_addrlist(ne_session *sess, const ne_inet_addr **addrs, size_t n);
 
 /* Progress callback. */
 typedef void (*ne_progress)(void *userdata, off_t progress, off_t total);

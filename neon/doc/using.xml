@@ -73,11 +73,11 @@
       </sect1>
       
       <sect1 id="compliance">
-	<title>Protocol compliance</title>
+	<title>Standards compliance</title>
 	
-	<para>&neon; is intended to be compliant with the IETF
-	protocol standards it implements, with a few exceptions where
-	real-world use has necessitated minor deviations.  These
+	<para>&neon; is intended to be compliant with the IETF and W3C
+	standards which it implements, with a few exceptions due to
+	practical necessity or interoperability issues.  These
 	exceptions are documented in this section.</para>
 
 	<sect2><title>RFC 2518, HTTP Extensions for Distributed Authoring&mdash;WebDAV</title>
@@ -115,5 +115,26 @@
         are not quoted.  &neon; sends these parameters with
         quotes&mdash;this is not known to cause any problems with
         other server implementations.</para></sect2>
+
+	<sect2>
+        <title>Namespaces in XML</title>
+
+        <para>The &neon; XML parser interface will accept and parse
+        without error some XML documents which are well-formed
+        according to the XML specification but do not conform to the
+        "Namespaces in XML" specification <xref
+        linkend="bib.xmlnames"/>.  Specifically: the restrictions on
+        the first character of the <literal>NCName</literal> rule are
+        not all implemented; &neon; will allow any
+        <literal>CombiningChar</literal>, <literal>Extender</literal>
+        and some characters from the <literal>Digit</literal> class in
+        this position.</para> </sect2>
+ 
+        <!-- a few RFC2818/3280 issues: rules about when to cache
+        sessions in the face of unclean shutdown are strict, neon is
+        probably not compliant: document or fix.  Likewise SSL
+        shutdown issues in general.  Cert hostname checks allow
+        wildcard "*." syntax which is less than 2818 but more than
+        3280 requires. -->
 
     </sect1>

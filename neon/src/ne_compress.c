@@ -33,9 +33,7 @@
 #include "ne_utils.h"
 #include "ne_i18n.h"
 
-#include "ne_private.h"
-
-#ifdef NEON_ZLIB
+#ifdef NE_HAVE_ZLIB
 
 #include <zlib.h>
 
@@ -89,8 +87,7 @@ struct ne_decompress_s {
 	NE_Z_POST_HEADER, /* waiting for the end of the NUL-terminated bits. */
 	NE_Z_INFLATING, /* inflating response bytes. */
 	NE_Z_AFTER_DATA, /* after data; reading CRC32 & ISIZE */
-	NE_Z_FINISHED, /* stream is finished. */
-	NE_Z_ERROR /* inflate bombed. */
+	NE_Z_FINISHED /* stream is finished. */
     } state;
 };
 
@@ -105,7 +102,7 @@ struct ne_decompress_s {
  *   HDR_DONE: all done, bytes following are raw DEFLATE data.
  *   HDR_EXTENDED: all done, expect a NUL-termianted string
  *                 before the DEFLATE data
- *   HDR_ERROR: invalid header, give up.
+ *   HDR_ERROR: invalid header, give up (session error is set).
  */
 static int parse_header(ne_decompress *ctx)
 {
@@ -115,7 +112,6 @@ static int parse_header(ne_decompress *ctx)
 	    h->id1, h->id2, h->cmeth, h->flags);
     
     if (h->id1 != ID1 || h->id2 != ID2 || h->cmeth != 8) {
-	ctx->state = NE_Z_ERROR;
 	ne_set_error(ctx->session, "Compressed stream invalid");
 	return HDR_ERROR;
     }
@@ -131,7 +127,6 @@ static int parse_header(ne_decompress *ctx)
 	ctx->state = NE_Z_POST_HEADER;
 	return HDR_EXTENDED;
     } else if (h->flags != 0) {
-	ctx->state = NE_Z_ERROR;
 	ne_set_error(ctx->session, "Compressed stream not supported");
 	return HDR_ERROR;
     }
@@ -147,14 +142,14 @@ static int parse_header(ne_decompress *ctx)
 
 /* Process extra 'len' bytes of 'buf' which were received after the
  * DEFLATE data. */
-static void process_footer(ne_decompress *ctx, 
+static int process_footer(ne_decompress *ctx, 
 			   const unsigned char *buf, size_t len)
 {
     if (len + ctx->footcount > 8) {
         ne_set_error(ctx->session, 
                      "Too many bytes (%" NE_FMT_SIZE_T ") in gzip footer",
                      len);
-	ctx->state = NE_Z_ERROR;
+        return -1;
     } else {
 	memcpy(ctx->footer + ctx->footcount, buf, len);
 	ctx->footcount += len;
@@ -170,10 +165,11 @@ static void process_footer(ne_decompress *ctx,
 			 "given %lu vs computed %lu\n", crc, ctx->checksum);
 		ne_set_error(ctx->session, 
 			     "Checksum invalid for compressed stream");
-		ctx->state = NE_Z_ERROR;
+                return -1;
 	    }
 	}
     }
+    return 0;
 }
 
 /* A zlib function failed with 'code'; set the session error string
@@ -197,7 +193,7 @@ static void set_zlib_error(ne_decompress *ctx, const char *msg, int code)
 }
 
 /* Inflate response buffer 'buf' of length 'len'. */
-static void do_inflate(ne_decompress *ctx, const char *buf, size_t len)
+static int do_inflate(ne_decompress *ctx, const char *buf, size_t len)
 {
     int ret;
 
@@ -236,39 +232,56 @@ static void do_inflate(ne_decompress *ctx, const char *buf, size_t len)
 		 ctx->zstr.avail_in);
 	/* process the footer. */
 	ctx->state = NE_Z_AFTER_DATA;
-	process_footer(ctx, ctx->zstr.next_in, ctx->zstr.avail_in);
+	return process_footer(ctx, ctx->zstr.next_in, ctx->zstr.avail_in);
     } else if (ret != Z_OK) {
-	ctx->state = NE_Z_ERROR;
         set_zlib_error(ctx, _("Could not inflate data"), ret);
+        return NE_ERROR;
     }
+    return 0;
 }
 
 /* Callback which is passed blocks of the response body. */
-static void gz_reader(void *ud, const char *buf, size_t len)
+static int gz_reader(void *ud, const char *buf, size_t len)
 {
     ne_decompress *ctx = ud;
     const char *zbuf;
     size_t count;
 
+    if (len == 0) {
+        /* End of response: */
+        switch (ctx->state) {
+        case NE_Z_BEFORE_DATA: 
+            if (ctx->enchdr && strcasecmp(ctx->enchdr, "gzip") == 0) {
+                /* response was truncated: break out. */
+                break;
+            }
+            /* else, fall through */
+        case NE_Z_FINISHED: /* complete gzip response */
+        case NE_Z_PASSTHROUGH: /* complete uncompressed response */
+            return ctx->reader(ctx->userdata, buf, 0);
+        default:
+            /* invalid state: truncated response. */
+            break;
+        }
+	/* else: truncated response, fail. */
+	ne_set_error(ctx->session, "Compressed response was truncated");
+	return NE_ERROR;
+    }        
+
     switch (ctx->state) {
     case NE_Z_PASSTHROUGH:
 	/* move along there. */
-	ctx->reader(ctx->userdata, buf, len);
-	return;
-
-    case NE_Z_ERROR:
-	/* beyond hope. */
-	break;
+	return ctx->reader(ctx->userdata, buf, len);
 
     case NE_Z_FINISHED:
 	/* Could argue for tolerance, and ignoring trailing content;
 	 * but it could mean something more serious. */
 	if (len > 0) {
-	    ctx->state = NE_Z_ERROR;
 	    ne_set_error(ctx->session,
 			 "Unexpected content received after compressed stream");
+            return NE_ERROR;
 	}
-	break;
+        break;
 
     case NE_Z_BEFORE_DATA:
 	/* work out whether this is a compressed response or not. */
@@ -280,7 +293,7 @@ static void gz_reader(void *ud, const char *buf, size_t len)
             ret = inflateInit2(&ctx->zstr, -MAX_WBITS);
             if (ret != Z_OK) {
                 set_zlib_error(ctx, _("Could not initialize zlib"), ret);
-                return;
+                return -1;
             }
 	    ctx->zstrinit = 1;
 
@@ -290,8 +303,7 @@ static void gz_reader(void *ud, const char *buf, size_t len)
 	     * would require add_resp_body_rdr to have defined
 	     * ordering semantics etc etc */
 	    ctx->state = NE_Z_PASSTHROUGH;
-	    ctx->reader(ctx->userdata, buf, len);
-	    return;
+	    return ctx->reader(ctx->userdata, buf, len);
 	}
 
 	ctx->state = NE_Z_IN_HEADER;
@@ -308,7 +320,7 @@ static void gz_reader(void *ud, const char *buf, size_t len)
 	ctx->incount += count;
 	/* have we got the full header yet? */
 	if (ctx->incount != 10) {
-	    return;
+	    return 0;
 	}
 
 	buf += count;
@@ -317,14 +329,15 @@ static void gz_reader(void *ud, const char *buf, size_t len)
 	switch (parse_header(ctx)) {
 	case HDR_EXTENDED:
 	    if (len == 0)
-		return;
+		return 0;
 	    break;
+        case HDR_ERROR:
+            return NE_ERROR;
 	case HDR_DONE:
 	    if (len > 0) {
-		do_inflate(ctx, buf, len);
+		return do_inflate(ctx, buf, len);
 	    }
-        default:
-	    return;
+            break;
 	}
 
 	/* FALLTHROUGH */
@@ -334,7 +347,7 @@ static void gz_reader(void *ud, const char *buf, size_t len)
 	zbuf = memchr(buf, '\0', len);
 	if (zbuf == NULL) {
 	    /* not found it yet. */
-	    return;
+	    return 0;
 	}
 
 	NE_DEBUG(NE_DBG_HTTP,
@@ -346,26 +359,23 @@ static void gz_reader(void *ud, const char *buf, size_t len)
 	ctx->state = NE_Z_INFLATING;
 	if (len == 0) {
 	    /* end of string was at end of buffer. */
-	    return;
+	    return 0;
 	}
 
 	/* FALLTHROUGH */
 
     case NE_Z_INFLATING:
-	do_inflate(ctx, buf, len);
-	break;
+	return do_inflate(ctx, buf, len);
 
     case NE_Z_AFTER_DATA:
-	process_footer(ctx, (unsigned char *)buf, len);
-	break;
+	return process_footer(ctx, (unsigned char *)buf, len);
     }
 
+    return 0;
 }
 
-int ne_decompress_destroy(ne_decompress *ctx)
+void ne_decompress_destroy(ne_decompress *ctx)
 {
-    int ret;
-
     if (ctx->zstrinit)
 	/* inflateEnd only fails if it's passed NULL etc; ignore
 	 * return value. */
@@ -374,50 +384,7 @@ int ne_decompress_destroy(ne_decompress *ctx)
     if (ctx->enchdr)
 	ne_free(ctx->enchdr);
 
-    switch (ctx->state) {
-    case NE_Z_BEFORE_DATA:
-    case NE_Z_PASSTHROUGH:
-    case NE_Z_FINISHED:
-	ret = NE_OK;
-	break;
-    case NE_Z_ERROR:
-	/* session error already set. */
-	ret = NE_ERROR;
-	break;
-    default:
-	/* truncated response. */
-	ne_set_error(ctx->session, "Compressed response was truncated");
-	ret = NE_ERROR;
-	break;
-    }
-
     ne_free(ctx);
-    return ret;
-}
-
-/* Prepare for a compressed response */
-static void gz_pre_send(ne_request *r, void *ud, ne_buffer *req)
-{
-    ne_decompress *ctx = ud;
-
-    NE_DEBUG(NE_DBG_HTTP, "compress: Initialization.\n");
-
-    /* (Re-)Initialize the context */
-    ctx->state = NE_Z_BEFORE_DATA;
-    if (ctx->zstrinit) inflateEnd(&ctx->zstr);
-    ctx->zstrinit = 0;
-    ctx->incount = ctx->footcount = 0;
-    ctx->checksum = crc32(0L, Z_NULL, 0);
-    if (ctx->enchdr) {
-        ne_free(ctx->enchdr);
-        ctx->enchdr = NULL;
-    }
-}
-
-/* Kill the pre-send hook */
-static void gz_destroy(ne_request *req, void *userdata)
-{
-    ne_kill_pre_send(ne_get_session(req), gz_pre_send, userdata);
 }
 
 /* Wrapper for user-passed acceptor function. */
@@ -439,18 +406,18 @@ ne_decompress *ne_decompress_reader(ne_request *req, ne_accept_response acpt,
 
     ne_add_response_body_reader(req, gz_acceptor, gz_reader, ctx);
 
+    ctx->state = NE_Z_BEFORE_DATA;
     ctx->reader = rdr;
     ctx->userdata = userdata;
     ctx->session = ne_get_session(req);
+    /* initialize the checksum. */
+    ctx->checksum = crc32(0L, Z_NULL, 0);
     ctx->acceptor = acpt;
-
-    ne_hook_pre_send(ctx->session, gz_pre_send, ctx);
-    ne_hook_destroy_request(ctx->session, gz_destroy, ctx);
 
     return ctx;    
 }
 
-#else /* !NEON_ZLIB */
+#else /* !NE_HAVE_ZLIB */
 
 /* Pass-through interface present to provide ABI compatibility. */
 
@@ -467,4 +434,4 @@ int ne_decompress_destroy(ne_decompress *dc)
     return 0;
 }
 
-#endif /* NEON_ZLIB */
+#endif /* NE_HAVE_ZLIB */

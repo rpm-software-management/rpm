@@ -1,6 +1,6 @@
 /* 
    String utility functions
-   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -30,6 +30,8 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+
+#include <stdio.h>
 
 #include <ctype.h> /* for isprint() etc in ne_strclean() */
 
@@ -99,172 +101,6 @@ char *ne_shave(char *str, const char *whitespace)
 
     *pnt = '\0';
     return ret;
-}
-
-/* TODO: deprecate all these and use ne_token() instead. */
-
-char **split_string(const char *str, const char separator,
-		     const char *quotes, const char *whitespace) 
-{
-    return split_string_c(str, separator, quotes, whitespace, NULL);
-}
-
-char **split_string_c(const char *str, const char separator,
-		      const char *quotes, const char *whitespace,
-		      int *give_count) 
-{
-    char **comps;
-    const char *pnt, *quot = NULL,
-	*start, *end; /* The start of the current component */
-    int count, /* The number of components */
-	iswhite, /* is it whitespace */
-	issep, /* is it the separator */
-	curr, /* current component index */
-	length, /* length of component */
-	leading_wspace; /* in leading whitespace still? */
-
-    /* Inefficient, but easier - first off, count the number of 
-     * components we have. */
-    count = 1;
-    for (pnt = str; *pnt!='\0'; pnt++) {
-	if (quotes != NULL) {
-	    quot = strchr(quotes, *pnt);
-	}
-	if (quot != NULL) {
-	    /* We found a quote, so skip till the next quote */
-	    for (pnt++; (*pnt!=*quot) && (*pnt!='\0'); pnt++)
-		/* nullop */;
-	} else if (*pnt == separator) {
-	    count++;
-	}
-    }
-
-    if (give_count) {
-	/* Write the count */
-	*give_count = count;
-    }
-
-    /* Now, have got the number of components.
-     * Allocate the comps array. +1 for the NULL */
-    comps = ne_malloc(sizeof(char *) * (count + 1));
-
-    comps[count] = NULL;
-    
-    quot = end = start = NULL;
-    curr = 0;
-    leading_wspace = 1;
-
-    /* Now fill in the array */
-    for (pnt = str; *pnt != '\0'; pnt++) {
-	/* What is the current character - quote, whitespace, separator? */
-	if (quotes != NULL) {
-	    quot = strchr(quotes, *pnt);
-	}
-	iswhite = (whitespace!=NULL) && 
-	    (strchr(whitespace, *pnt) != NULL);
-	issep = (*pnt == separator);
-	/* What to do? */
-	if (leading_wspace) {
-	    if (quot!=NULL) {
-		/* Quoted bit */
-		start = pnt;
-		length = 1;
-		leading_wspace = 0;
-	    } else if (issep) {
-		/* Zero-length component */
-		comps[curr++] = ne_strdup("");
-	    } else if (!iswhite) {
-		start = end = pnt;
-		length = 1;
-		leading_wspace = 0;
-	    }
-	} else {
-	    if (quot!=NULL) {
-		/* Quoted bit */
-		length++;
-	    } else if (issep) {
-		/* End of component - enter it into the array */
-		length = (end - start) + 1;
-		comps[curr] = ne_malloc(length+1);
-		memcpy(comps[curr], start, length);
-		comps[curr][length] = '\0';
-		curr++;
-		leading_wspace = 1;
-	    } else if (!iswhite) {
-		/* Not whitespace - update end marker */
-		end = pnt;
-	    }
-	}
-	if (quot != NULL) {
-	    /* Skip to closing quote */
-	    for (pnt++; *pnt!=*quot && *pnt != '\0'; ++pnt)
-		/* nullop */;
-	    /* Last non-wspace char is closing quote */
-	    end = pnt;
-	}
-    }
-    /* Handle final component */
-    if (leading_wspace) {
-	comps[curr] = ne_strdup("");
-    } else {
-	/* End of component - enter it into the array */
-	length = (end - start) + 1;
-	comps[curr] = ne_malloc(length+1);
-	memcpy(comps[curr], start, length);
-	comps[curr][length] = '\0';
-    }
-    return comps;
-}
-
-char **pair_string(const char *str, const char compsep, const char kvsep, 
-		 const char *quotes, const char *whitespace) 
-{
-    char **comps, **pairs, *split;
-    int count = 0, n, length;
-    comps = split_string_c(str, compsep, quotes, whitespace, &count);
-    /* Allocate space for 2* as many components as split_string returned,
-     * +2 for the NULLS. */
-    pairs = ne_malloc((2*count+2) * sizeof(char *));
-    if (pairs == NULL) {
-	return NULL;
-    }
-    for (n = 0; n < count; n++) {
-	/* Find the split */
-	split = strchr(comps[n], kvsep);
-	if (split == NULL) {
-	    /* No seperator found */
-	    length = strlen(comps[n]);
-	} else {
-	    length = split-comps[n];
-	}
-	/* Enter the key into the array */
-	pairs[2*n] = comps[n];
-	/* Null-terminate the key */
-	pairs[2*n][length] = '\0';
-	pairs[2*n+1] = split?(split + 1):NULL;
-    }
-    ne_free(comps);
-    pairs[2*count] = pairs[2*count+1] = NULL;    
-    return pairs;
-}
-
-void split_string_free(char **components) 
-{
-    char **pnt = components;
-    while (*pnt != NULL) {
-	ne_free(*pnt);
-	pnt++;
-    }
-    ne_free(components);
-}
-
-void pair_string_free(char **pairs) 
-{
-    int n;
-    for (n = 0; pairs[n] != NULL; n+=2) {
-	ne_free(pairs[n]);
-    }
-    ne_free(pairs);
 }
 
 void ne_buffer_clear(ne_buffer *buf) 
@@ -516,4 +352,32 @@ char *ne_strerror(int errnum, char *buf, size_t buflen)
     ne_strnzcpy(buf, strerror(errnum), buflen);
 #endif
     return buf;
+}
+
+
+/* Wrapper for ne_snprintf. */
+size_t ne_snprintf(char *str, size_t size, const char *fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+#ifdef HAVE_TRIO
+    trio_vsnprintf(str, size, fmt, ap);
+#else
+    vsnprintf(str, size, fmt, ap);
+#endif
+    va_end(ap);
+    str[size-1] = '\0';
+    return strlen(str);
+}
+
+/* Wrapper for ne_vsnprintf. */
+size_t ne_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
+{
+#ifdef HAVE_TRIO
+    trio_vsnprintf(str, size, fmt, ap);
+#else
+    vsnprintf(str, size, fmt, ap);
+#endif
+    str[size-1] = '\0';
+    return strlen(str);
 }

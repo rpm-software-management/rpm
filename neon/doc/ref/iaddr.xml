@@ -9,6 +9,7 @@
     <refname id="ne_iaddr_make">ne_iaddr_make</refname>
     <refname id="ne_iaddr_cmp">ne_iaddr_cmp</refname>
     <refname id="ne_iaddr_print">ne_iaddr_print</refname>
+    <refname id="ne_iaddr_typeof">ne_iaddr_typeof</refname>
     <refname id="ne_iaddr_free">ne_iaddr_free</refname>
     <refpurpose>functions to manipulate and compare network addresses</refpurpose>
   </refnamediv>
@@ -32,8 +33,8 @@ typedef enum {
 
       <funcprototype>
         <funcdef>int <function>ne_iaddr_cmp</function></funcdef>
-        <paramdef>const ne_inet_addr *<parameter>i1</parameter></paramdef>
-        <paramdef>const ne_inet_addr *<parameter>i2</parameter></paramdef>
+        <paramdef>const ne_inet_addr *<parameter>ia1</parameter></paramdef>
+        <paramdef>const ne_inet_addr *<parameter>ia2</parameter></paramdef>
       </funcprototype>
 
       <funcprototype>
@@ -44,8 +45,13 @@ typedef enum {
       </funcprototype>
 
       <funcprototype>
+        <funcdef>ne_iaddr_type <function>ne_iaddr_typeof</function></funcdef>
+        <paramdef>const ne_inet_addr *<parameter>ia</parameter></paramdef>
+      </funcprototype>
+
+      <funcprototype>
         <funcdef>void <function>ne_iaddr_free</function></funcdef>
-        <paramdef>const ne_inet_addr *<parameter>addr</parameter></paramdef>
+        <paramdef>const ne_inet_addr *<parameter>ia</parameter></paramdef>
       </funcprototype>
 
     </funcsynopsis>
@@ -75,6 +81,9 @@ typedef enum {
     human-readable string representation of a network address into a
     buffer, for instance the string
     <literal>"127.0.0.1"</literal>.</para>
+
+    <para><function>ne_iaddr_type</function> returns the type of the
+    given network address.</para>
 
     <para><function>ne_iaddr_free</function> releases the memory
     associated with a network address object.</para>

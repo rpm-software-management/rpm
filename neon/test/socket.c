@@ -43,14 +43,8 @@
 #include "utils.h"
 
 #ifdef SOCKET_SSL
-#include <openssl/err.h>
-#include <openssl/ssl.h>
-
 #include "ne_ssl.h"
-
-
-SSL_CTX *server_ctx;
-ne_ssl_context *client_ctx;
+ne_ssl_context *server_ctx, *client_ctx;
 #endif
 
 static ne_sock_addr *localhost;
@@ -82,25 +76,26 @@ static int multi_init(void)
     return OK;
 }
 
-static ne_socket *do_connect(ne_sock_addr *addr, unsigned int port)
+/* Create and connect *sock to address addr on given port. */
+static int do_connect(ne_socket **sock, ne_sock_addr *addr, unsigned int port)
 {
-    ne_socket *sock = ne_sock_create();
     const ne_inet_addr *ia;
 
-    if (!sock) return NULL;
+    *sock = ne_sock_create();
+    ONN("could not create socket", *sock == NULL);
 
     for (ia = ne_addr_first(addr); ia; ia = ne_addr_next(addr)) {
-	if (ne_sock_connect(sock, ia, port) == 0)
-            return sock;
+	if (ne_sock_connect(*sock, ia, port) == 0)
+            return OK;
     }
     
-    ne_sock_close(sock);
-    return NULL;
+    t_context("could not connect to server: %s", ne_sock_error(*sock));
+    ne_sock_close(*sock);
+    return FAIL;
 }
 
 #ifdef SOCKET_SSL
 
-/* FIXME: largely cut'n'pasted from ssl.c. */
 static int init_ssl(void)
 {
     char *server_key;
@@ -110,26 +105,23 @@ static int init_ssl(void)
     if (test_argc > 1) {
 	server_key = ne_concat(test_argv[1], "/server.key", NULL);
     } else {
-	server_key = "server.key";
+	server_key = ne_strdup("server.key");
     }
 
-    ONN("sock_init failed.\n", ne_sock_init());
-    server_ctx = SSL_CTX_new(SSLv23_server_method());
+    ONN("sock_init failed", ne_sock_init());
+    server_ctx = ne_ssl_context_create(1);
     ONN("SSL_CTX_new failed", server_ctx == NULL);
-    ONN("failed to load private key",
-	!SSL_CTX_use_PrivateKey_file(server_ctx, server_key, 
-				     SSL_FILETYPE_PEM));
-    ONN("failed to load certificate",
-	!SSL_CTX_use_certificate_file(server_ctx, "server.cert", 
-				      SSL_FILETYPE_PEM));
 
-    client_ctx = ne_ssl_context_create();
+    ne_ssl_context_keypair(server_ctx, "server.cert", server_key);
+
+    client_ctx = ne_ssl_context_create(0);
     ONN("SSL_CTX_new failed for client", client_ctx == NULL);
     
     cert = ne_ssl_cert_read("ca/cert.pem");
     ONN("could not load ca/cert.pem", cert == NULL);
 
-    ne_ssl_ctx_trustcert(client_ctx, cert);
+    ne_ssl_context_trustcert(client_ctx, cert);
+    ne_free(server_key);
 
     return OK;
 }
@@ -160,24 +152,13 @@ struct serve_pair {
 static int wrap_serve(ne_socket *sock, void *ud)
 {
     struct serve_pair *pair = ud;
-    int fd = ne_sock_fd(sock), ret;
-    SSL *ssl = SSL_new(server_ctx);
-    BIO *bio = BIO_new_socket(fd, BIO_NOCLOSE);
-
-    ONN("SSL_new failed", ssl == NULL);
-    SSL_set_bio(ssl, bio, bio);
-
-#define ERROR_SSL_STRING (ERR_reason_error_string(ERR_get_error()))
-
-    NE_DEBUG(NE_DBG_SOCKET, "Doing SSL accept:\n");
-    ret = SSL_accept(ssl);
-    if (ret != 1) {
-	NE_DEBUG(NE_DBG_SOCKET, "SSL_accept failed: %s\n", ERROR_SSL_STRING);
+    
+    if (ne_sock_accept_ssl(sock, server_ctx)) {
+	NE_DEBUG(NE_DBG_SOCKET, "SSL_accept failed: %s\n", ne_sock_error(sock));
 	return 1;
     }
     
     NE_DEBUG(NE_DBG_SOCKET, "SSL accept okay.\n");
-    ne_sock_switch_ssl(sock, ssl);
     return pair->fn(sock, pair->userdata);
 }
 
@@ -187,8 +168,7 @@ static int begin(ne_socket **sock, server_fn fn, void *ud)
     pair.fn = fn;
     pair.userdata = ud;
     CALL(spawn_server(7777, wrap_serve, &pair));
-    *sock = do_connect(localhost, 7777);
-    ONN("could not connect to localhost:7777", *sock == NULL);
+    CALL(do_connect(sock, localhost, 7777));
     ONV(ne_sock_connect_ssl(*sock, client_ctx),
 	("SSL negotation failed: %s", ne_sock_error(*sock)));
     return OK;
@@ -199,9 +179,7 @@ static int begin(ne_socket **sock, server_fn fn, void *ud)
 static int begin(ne_socket **sock, server_fn fn, void *ud)
 {
     CALL(spawn_server(7777, fn, ud));
-    *sock = do_connect(localhost, 7777);
-    ONN("could not connect to localhost:7777", *sock == NULL);
-    return OK;
+    return do_connect(sock, localhost, 7777);
 }
 #endif
 
@@ -568,7 +546,8 @@ static int line_closure(void)
     
     ret = ne_sock_readline(sock, buffer, BUFSIZ);
     ONV(ret != NE_SOCK_CLOSED, 
-	("readline got %" NE_FMT_SSIZE_T " not EOF", ret));
+	("readline got %" NE_FMT_SSIZE_T " not EOF: %s", ret,
+         ne_sock_error(sock)));
     
     return finish(sock, 0);
 }   
@@ -792,7 +771,8 @@ static int ssl_closure(void)
         ret = ne_sock_fullwrite(sock, "a", 1);
     } while (ret == 0);
     ONV(ret != NE_SOCK_RESET && ret != NE_SOCK_CLOSED, 
-	("write got %" NE_FMT_SSIZE_T " not reset or closure", ret));
+	("write got %" NE_FMT_SSIZE_T " not reset or closure: %s", ret,
+         ne_sock_error(sock)));
     return good_close(sock);
 }
 
@@ -816,13 +796,20 @@ static int ssl_truncate(void)
 }
 
 #else
-/* thanks to W Richard Stevens for the precise repro case for getting
- * an RST on demand. */
+
+/* use W Richard Stevens' SO_LINGER trick to elicit a TCP RST */
+static int serve_reset(ne_socket *sock, void *ud)
+{
+    reset_socket(sock);
+    exit(0);
+    return 0;
+}
+
 static int write_reset(void)
 {
     ne_socket *sock;
     int ret;
-    CALL(begin(&sock, serve_close, NULL));
+    CALL(begin(&sock, serve_reset, NULL));
     CALL(full_write(sock, "a", 1));
     CALL(await_server());
     ret = ne_sock_fullwrite(sock, "a", 1);
@@ -830,7 +817,8 @@ static int write_reset(void)
         ne_sock_close(sock);
         return SKIP;
     }
-    ONV(ret != NE_SOCK_RESET, ("write got %d not reset", ret));
+    ONV(ret != NE_SOCK_RESET, 
+        ("write got %d not reset: %s", ret, ne_sock_error(sock)));
     return good_close(sock);
 }
 
@@ -838,7 +826,7 @@ static int read_reset(void)
 {
     ne_socket *sock;
     ssize_t ret;
-    CALL(begin(&sock, serve_close, NULL));
+    CALL(begin(&sock, serve_reset, NULL));
     CALL(full_write(sock, "a", 1));
     CALL(await_server());
     ret = ne_sock_read(sock, buffer, 1);
@@ -846,7 +834,9 @@ static int read_reset(void)
         ne_sock_close(sock);
         return SKIP;
     }
-    ONV(ret != NE_SOCK_RESET, ("read got %" NE_FMT_SSIZE_T " not reset", ret));
+    ONV(ret != NE_SOCK_RESET, 
+        ("read got %" NE_FMT_SSIZE_T " not reset: %s", ret,
+         ne_sock_error(sock)));
     return good_close(sock);
 }    
 #endif

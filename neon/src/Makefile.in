@@ -14,7 +14,7 @@ libdir = @libdir@
 
 # Build paths
 VPATH = @srcdir@
-top_builddir = ..
+top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 
 # Toolchain settings.
@@ -25,7 +25,7 @@ LIBTOOL = @LIBTOOL@
 
 # Flags
 CPPFLAGS = @DEFS@ @CPPFLAGS@
-CFLAGS = @CFLAGS@ @NEON_CFLAGS@
+CFLAGS = @CFLAGS@
 LDFLAGS = @LDFLAGS@
 NEON_LINK_FLAGS = @NEON_LINK_FLAGS@
 # Note: don't substitute @LIBS@ in here; during a bundled
@@ -33,15 +33,14 @@ NEON_LINK_FLAGS = @NEON_LINK_FLAGS@
 LIBS = @NEON_LIBS@ @NEON_LTLIBS@
 
 COMPILE = $(CC) $(CPPFLAGS) $(CFLAGS)
-LINK = $(LIBTOOL) --quiet --mode=link $(CC) $(LDFLAGS)
+LINK = $(LIBTOOL) --quiet --mode=link $(CC) -no-undefined $(LDFLAGS)
 
 NEON_BASEOBJS = ne_request.@NEON_OBJEXT@ ne_session.@NEON_OBJEXT@ 	    \
 	ne_basic.@NEON_OBJEXT@  ne_string.@NEON_OBJEXT@ 		    \
 	ne_uri.@NEON_OBJEXT@ ne_dates.@NEON_OBJEXT@ ne_alloc.@NEON_OBJEXT@  \
 	ne_md5.@NEON_OBJEXT@ ne_utils.@NEON_OBJEXT@    \
 	ne_socket.@NEON_OBJEXT@ ne_auth.@NEON_OBJEXT@ 			    \
-	ne_cookies.@NEON_OBJEXT@ ne_redirect.@NEON_OBJEXT@		    \
-	ne_compress.@NEON_OBJEXT@
+	ne_redirect.@NEON_OBJEXT@ ne_compress.@NEON_OBJEXT@
 
 NEON_DAVOBJS = $(NEON_BASEOBJS) \
 	ne_207.@NEON_OBJEXT@ ne_xml.@NEON_OBJEXT@ \
@@ -70,6 +69,7 @@ libneon.la: $(OBJECTS)
 	$(LINK) -rpath $(libdir) $(NEON_LINK_FLAGS) -o $@ $(OBJECTS) $(LIBS)
 
 libneon.a: $(OBJECTS)
+	@rm -f $@
 	$(AR) cru $@ $(OBJECTS)
 	$(RANLIB) $@
 
@@ -100,6 +100,9 @@ ne_session.@NEON_OBJEXT@: ne_session.c ne_session.h ne_alloc.h \
 	ne_utils.h ne_private.h $(top_builddir)/config.h
 
 ne_openssl.@NEON_OBJEXT@: ne_openssl.c ne_session.h ne_ssl.h ne_privssl.h \
+	ne_private.h $(top_builddir)/config.h
+
+ne_gnutls.@NEON_OBJEXT@: ne_gnutls.c ne_session.h ne_ssl.h ne_privssl.h \
 	ne_private.h $(top_builddir)/config.h
 
 ne_socket.@NEON_OBJEXT@: ne_socket.c ne_socket.h $(top_builddir)/config.h \
@@ -139,9 +142,8 @@ ne_locks.@NEON_OBJEXT@: ne_locks.c $(neonreq) ne_locks.h ne_207.h ne_xml.h
 ne_redirect.@NEON_OBJEXT@: ne_redirect.c $(neonreq) ne_redirect.h \
 	ne_uri.h ne_private.h
 
-ne_cookies.@NEON_OBJEXT@: ne_cookies.c $(neonreq) ne_cookies.h ne_uri.h \
-	ne_private.h
-
 ne_compress.@NEON_OBJEXT@: ne_compress.c $(neonreq) ne_compress.h
 
 ne_acl.@NEON_OBJEXT@: ne_acl.c ne_acl.h $(neonreq)
+
+ne_stubssl.@NEON_OBJEXT@: ne_stubssl.c $(neonreq)

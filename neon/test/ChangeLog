@@ -1,6 +1,25 @@
+Wed Aug 25 21:05:28 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* cookies.c: Removed.
+
+	* Makefile.in: Updated.
+
+Wed Aug 25 19:47:28 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* socket.c (do_connect, begin): Simplify do_connect use.
+
+Wed Aug 25 18:28:19 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* xml.c (matches, fail_parse): Test for UTF-8 BOM handling.
+
+Mon Jul  5 18:41:07 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* basic.c (content_type): Test for correct default charset for
+	text/xml content-type by RFC3280.
+
 Mon Jul  5 10:59:17 2004  Joe Orton  <joe@manyfish.co.uk>
 
-	Add regression tests for trio of ne_compress.c bugs:
+	Add XFAIL regression tests for trio of ne_compress.c bugs:
 	
 	* compress.c (reader): Validate that a size=0 call comes only
 	after the expected response data, and use struct string.
@@ -16,12 +35,6 @@ Sun Jul  4 21:55:00 2004  Joe Orton  <joe@manyfish.co.uk>
 
 	* sockets.c: All callers updated.
 
-Tue May 18 21:00:07 2004  Joe Orton  <joe@manyfish.co.uk>
-
-	* ssl.c (fail_ssl_request):
-	* basic.c (do_range): Fix false negatives from gcc
-	-Wformat-security.
-
 Sun May  2 21:16:45 2004  Joe Orton  <joe@manyfish.co.uk>
 
 	* util-tests.c (regress_dates): Add regression tests.
@@ -31,6 +44,39 @@ Wed Apr 14 10:45:43 2004  Joe Orton  <joe@manyfish.co.uk>
 	* props.c (regress, patch_regress): Add regression tests for
 	CAN-2004-0179 issues.
 
+Thu Apr  8 13:57:04 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* largefile.c (read_large_response): Go faster: turn off debugging
+	during request dispatch.
+
+Wed Apr  7 13:39:37 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* auth.c (basic): Add some multi-scheme challenges.
+
+Wed Apr  7 13:14:16 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* request.c (s_progress): Use NE_FMT_OFF_T for printing off_t's
+	throughout.
+
+Sun Feb 22 23:38:05 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* request.c (expect_100_once, serve_100_once): Adjust for new
+	100-continue interface.
+	(expect_100_nobody): New test.
+
+Sun Feb 22 20:39:15 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* cookies.c (parsing): Use ne_cookie_empty_cache.
+
+Sun Feb 22 17:28:41 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* props.c (pfind_simple): Test for whitespace handling.
+
+Sun Feb 22 16:31:52 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* auth.c (basic): Test handling of Basic challenge in presence of
+	multiple challenges.
+
 Sun Feb 15 12:34:13 2004  Joe Orton  <joe@manyfish.co.uk>
 
 	* makekeys.sh, openssl.conf: Create new utf8subj.cert,
@@ -39,9 +85,66 @@ Sun Feb 15 12:34:13 2004  Joe Orton  <joe@manyfish.co.uk>
 	* ssl.c (dname_readable): Test that ne_ssl_readable_dname always
 	gives back UTF-8.
 
+Sat Feb 14 21:59:17 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* xml.c (fail_parse): Add tests for invalid NCNames in namespace
+	prefix declaration and as element names.
+
+Sun Jan 25 15:21:56 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* largefile.c (serve_large_response, read_large_response): New
+	test.
+
+Sat Jan 24 18:10:14 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* Makefile.in: Fix test suite for 'make' implementatinos which
+	don't handle single-suffix inference rules.
+
+Sat Jan  3 14:10:14 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* largefile.c (send_high_offset): Renamed from send_large_file.
+
+Sat Jan  3 13:57:16 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* Makefile.in (BASIC_TESTS): Add cookies.
+
+Thu Jan  1 17:42:30 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* util-tests.c (support): Check for NE_FEATURE_LFS.
+
+	* largefile.c: New file.
+
+	* Makefile.in: Add lfs-check, largefile, largefile.lo targets.
+
+Sat Nov 15 08:04:22 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* request.c (idna_hostname, dup_header, serve_check_host): New
+	test.
+
+Fri Nov 14 14:06:57 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* util-tests.c (support): Test for NE_FEATURE_IDNA.
+
+Fri Nov 14 11:26:29 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* acl.c: Remove NEON_NODAV condition.
+
+	* stubs.c: Use new NE_HAVE_* conditions.
+
+	* util-tests.c (supports): Test new ne_has_support interface.
+
 Thu Nov 13 20:33:44 2003  Joe Orton  <joe@manyfish.co.uk>
 
 	* request.c (no_body_205): New test.
+
+Tue Nov 11 20:36:43 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	Adjust for ne_xml_valid->ne_xml_failure API change.
+	
+	* xml.c (chardata, startelm_abort, endelm_abort, parse_match):
+	Check for propagation of negative failure codes.
+	(fail_parse): Check for positive failure code.
+	(attributes): Use ne_xml_failure.
 
 Sat Oct 25 00:11:29 2003  Joe Orton  <joe@manyfish.co.uk>
 

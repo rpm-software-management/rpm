@@ -10,12 +10,11 @@
   <pubdate>March 2001</pubdate>
 </biblioentry>
 
-<biblioentry id="bib.xsltrec">
+<biblioentry id="bib.xmlnames">
   <abbrev>REC-XML-names</abbrev>
-  <editor><firstname>James</firstname><surname>Clark</surname></editor>
-  <title><ulink url="http://www.w3.org/TR/xslt">XSL Transformations
-  (XSLT) Version 1.0</ulink></title> <publishername>W3C
-  Recommendation</publishername> <pubdate>16 November 1999</pubdate>
+  <corpauthor>World Wide Web Consortium</corpauthor>
+  <title><ulink url="http://www.w3.org/TR/REC-xml-names">Namespaces in XML</ulink></title>
+  <pubdate>January 1999</pubdate>
 </biblioentry>
 
 <biblioentry id="bib.rfc2616">

@@ -1,6 +1,6 @@
 /* 
    Replacement memory allocation handling etc.
-   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -41,11 +41,11 @@ void ne_oom_callback(void (*callback)(void));
  * neon will abort(); calling an OOM callback beforehand if one is
  * registered.  The C library will only ever return NULL if the
  * operating system does not use optimistic memory allocation. */
-void *ne_malloc(size_t size);
-void *ne_calloc(size_t size);
-void *ne_realloc(void *ptr, size_t s);
-char *ne_strdup(const char *s);
-char *ne_strndup(const char *s, size_t n);
+void *ne_malloc(size_t size) ne_attribute_malloc;
+void *ne_calloc(size_t size) ne_attribute_malloc;
+void *ne_realloc(void *ptr, size_t s) ne_attribute_malloc;
+char *ne_strdup(const char *s) ne_attribute_malloc;
+char *ne_strndup(const char *s, size_t n) ne_attribute_malloc;
 #define ne_free free
 #endif
 

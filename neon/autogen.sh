@@ -11,12 +11,12 @@ if test ! -f .version; then
    echo -n 0.0.0-dev > doc/version.xml
 fi
 set -e
+echo -n "libtoolize... "
+${LIBTOOLIZE:-libtoolize} --copy --force >/dev/null
 echo -n "aclocal... "
 ${ACLOCAL:-aclocal} -I macros
 echo -n "autoheader... "
 ${AUTOHEADER:-autoheader}
-echo -n "libtoolize... "
-${LIBTOOLIZE:-libtoolize} --copy --force >/dev/null
 echo -n "autoconf... "
 ${AUTOCONF:-autoconf} -Wall
 echo okay.

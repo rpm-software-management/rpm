@@ -1,6 +1,6 @@
 /* 
    String handling tests
-   Copyright (C) 2001-2003, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2001-2004, Joe Orton <joe@manyfish.co.uk>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -410,7 +410,7 @@ static int base64(void)
     unsigned char bits[256];
     size_t n;
 
-#define B64B(x, l, y) CALL(b64_check(x, l, y))
+#define B64B(x, l, y) CALL(b64_check((unsigned char *)x, l, y))
 #define B64(x, y) B64B(x, strlen(x), y)
 
     /* invent these with 
@@ -464,6 +464,39 @@ static int unbase64(void)
     return OK;
 }
 
+static int printing(void)
+{
+    struct {
+        const char *in, *out;
+        size_t pass, ret;
+    } ts[] = {
+        { "alpha", "alpha", 10, 5 },
+        { "alpha", "alph", 5, 4 },
+        { "foobar", "", 1, 0 },
+        { NULL, NULL, 0, 0}
+    };
+    size_t n;
+
+    for (n = 0; ts[n].in; n++) {
+        char buf[512];
+        size_t ret;
+
+        memset(buf, 'A', sizeof buf);
+
+        ret = ne_snprintf(buf, ts[n].pass, "%s", ts[n].in);
+        
+        ONCMP(buf, ts[n].out);
+        ONV(ret != ts[n].ret, 
+            ("got return value %" NE_FMT_SIZE_T " not %" NE_FMT_SIZE_T,
+             ret, ts[n].ret));
+
+        /* byte past the NUL must still be 'A' */
+        ONN("buffer over-ran!", buf[ret + 1] != 'A');
+    }
+    
+    return OK;
+}
+
 ne_test tests[] = {
     T(simple),
     T(buf_concat),
@@ -487,6 +520,7 @@ ne_test tests[] = {
     T(cleaner),
     T(base64),
     T(unbase64),
+    T(printing),
     T(NULL)
 };
 

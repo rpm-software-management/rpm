@@ -1,6 +1,7 @@
 /* 
    SSL interface definitions internal to neon.
-   Copyright (C) 2003, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2003, 2004, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2004, Aleix Conchillo Flaque <aleix@member.fsf.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -25,24 +26,38 @@
 #ifndef NE_PRIVSSL_H
 #define NE_PRIVSSL_H
 
-/* This is the private interface between ne_socket and ne_openssl. */
+/* This is the private interface between ne_socket, ne_gnutls and
+ * ne_openssl. */
 
-#ifdef NEON_SSL
+#include "ne_ssl.h"
+#include "ne_socket.h"
+
+#ifdef HAVE_OPENSSL
 
 #include <openssl/ssl.h>
 
-#include "ne_ssl.h"
-
-/* SSL context */
 struct ne_ssl_context_s {
     SSL_CTX *ctx;
     SSL_SESSION *sess;
 };
 
-struct ne_ssl_socket_s {
-    SSL *ssl;
+typedef SSL *ne_ssl_socket;
+
+#endif /* HAVE_OPENSSL */
+
+#ifdef HAVE_GNUTLS
+
+#include <gnutls/gnutls.h>
+
+struct ne_ssl_context_s {
+    gnutls_certificate_credentials cred;
+    /* TODO: store session here too */
 };
 
-#endif /* NEON_SSL */
+typedef gnutls_session ne_ssl_socket;
 
-#endif
+#endif /* HAVE_GNUTLS */
+
+ne_ssl_socket ne__sock_sslsock(ne_socket *sock);
+
+#endif /* NE_PRIVSSL_H */

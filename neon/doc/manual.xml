@@ -69,6 +69,7 @@
 <!ENTITY refresolve SYSTEM "ref/resolve.xml">
 <!ENTITY refiaddr SYSTEM "ref/iaddr.xml">
 <!ENTITY refclicert SYSTEM "ref/clicert.xml">
+<!ENTITY refxml SYSTEM "ref/xml.xml">
 
 ]>
 
@@ -170,6 +171,7 @@ ignoring the WebDAV support if desired.</para>
     &refstatus; <!-- ne_status -->
     &reftok; <!-- ne_token -->
     &refvers; <!-- ne_version_match -->
+    &refxml; <!-- ne_xml_parser -->
 
     <!-- REFEND -->
     <!-- ******************************************************************* -->

@@ -1,3 +1,94 @@
+Sun Sep 12 19:21:30 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_locks.c (ne_lock_refresh): Fix to pass correct userdata to
+	callbacks, and do call lk_cdata.
+
+Sun Sep 12 18:53:15 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* Makefile.in (libneon.a): Remove the archive first, avoiding
+	strange problems when build $(OBJECTS) change.
+
+Sun Sep 12 18:40:50 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_utils.h: Add NE_FEATURE_SOCKS.
+	
+	* ne_utils.c (ne_has_support): Add NE_FEATURE_SOCKS.
+	(version_string): Use NE_HAVE_SOCKS, add NE_HAVE_IDNA.
+
+	* ne_socket.c (ne_sock_init): Use NE_HAVE_SOCKS.
+
+Sun Sep 12 17:29:54 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_utils.c (version_string): Declare as array rather than
+	pointer; include "IPv6" component as necessary
+
+Sun Sep 12 15:51:38 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_socket.c (ne_iaddr_typeof): New function.
+
+Sun Sep 12 12:00:10 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_defs.h (ne_attribute_malloc): New macro.
+
+	* ne_alloc.h: Use it to avoid warnings with older GCCs.
+
+Wed Aug 25 21:03:40 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_string.h (split_string, split_string_c, pair_string,
+	split_string_free, pair_string_free): Remove obsolete interfaces.
+
+Wed Aug 25 21:01:03 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_cookies.c, ne_cookies.h: Drop cookies support: used old spec
+	revision and wasn't very complete anyway.
+
+Wed Aug 25 20:40:26 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_socket.c: Remove ne_read, ne_write macros and just use recv
+	and send; remove unused SOCK_ERR macro.
+
+Wed Aug 25 20:27:43 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_xml.c (declare_nspaces): Drop rejection of names including a
+	colon to prevent breaking SVN deployments.
+
+Wed Aug 25 19:45:20 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_socket.c (readable_raw): Use poll where available.
+	(ne_sock_connect): Fail if not using poll and fd returned by
+	socket() is greater than FD_SETSIZE.
+
+Wed Aug 25 18:40:28 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_xml.h (ne_xml_parse): Clarify that a len=0 call is required
+	to signify end-of-document.
+
+Wed Aug 25 18:37:13 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_request.c (resolve_first, resolve_next): New functions.
+	(lookup_host): Use them to allow user-forced addresses.
+
+	* ne_session.c (ne_set_addrlist): New function.
+
+	* ne_private.h (struct ne_session_s): Add addrlist, numaddrs,
+	curaddr fields.
+
+Wed Aug 25 18:25:31 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_xml.c (struct ne_xml_parser_s): Add bom_pos field.
+	(ne_xml_parse): Skip over the UTF-8 Byte Order Mark since
+	the XML parsers do not support it yet.
+
+Wed Jul  7 16:07:44 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_request.c (do_connect): Fix ne_conn_connected status call
+	(Shameek Basu).
+
+Mon Jul  5 18:40:35 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_basic.c (ne_content_type_handler): Use us-ascii as default
+	charset for text/xml, as per RFC3280.
+
 Mon Jul  5 10:56:19 2004  Joe Orton  <joe@manyfish.co.uk>
 
 	* ne_compress.c (struct ne_decompress_s): Add acceptor field.
@@ -12,19 +103,15 @@ Mon Jul  5 10:52:40 2004  Joe Orton  <joe@manyfish.co.uk>
 	(process_footer): Call the reader callback with size=0 to indicate
 	end-of-response for a good checksum match.
 
-Mon Jul  5 10:42:14 2004  Joe Orton  <joe@manyfish.co.uk>
-
-	* ne_compress.c (gz_destroy, gz_pre_send): New functions.
-	(ne_decompress_reader): Register pre-send and destroy hooks,
-	to initialize the compression context before each request attempt.
-	(Justin Erenkrantz).
-
-	* ne_private.h, ne_request.c (ne_kill_pre_send): New function.
-
 Sat Jul  3 14:33:56 2004  Joe Orton  <joe@manyfish.co.uk>
 
 	* ne_auth.c (auth_challenge): Fix to set got_qop in challenge
 	correctly (Hideaki Takahashi).
+
+Mon May 17 15:03:54 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_socket.h (ne_addr_resolve): Clarify that 'flags' must
+	be passed as zero for forwards-compat.
 
 Sun May  2 21:14:14 2004  Joe Orton  <joe@manyfish.co.uk>
 
@@ -35,16 +122,18 @@ Sun May  2 21:14:14 2004  Joe Orton  <joe@manyfish.co.uk>
 	(ne_rfc1123_parse, ne_rfc1036_parse, ne_asctime_parse): Make
 	thread-safe; remove static buffers.
 
-Thu Mar 11 23:38:01 2004  Joe Orton  <joe@manyfish.co.uk>
-
-	* ne_openssl.c (provide_client_cert): Avoid malloc(0) when server
-	sends no CA names in CertificateRequest.
-	(ne_ssl_cert_write): Be paranoid and clear the OpenSSL error stack
-	on write failures.
-
 Sun May  2 16:59:39 2004  Joe Orton  <joe@manyfish.co.uk>
 
 	* ne_dates.c [RFC1123_TEST] (main): Remove embedded test cases.
+
+Sun May  2 13:18:29 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* Makefile.in (LINK): Add -no-undefined.
+
+Fri Apr 16 22:53:59 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_xml.c (declare_nspaces, expand_qname): Don't try to include
+	document context in error strings.	
 
 Fri Apr 16 11:44:34 2004  Joe Orton  <joe@manyfish.co.uk>
 
@@ -77,10 +166,82 @@ Thu Apr  8 13:40:03 2004  Joe Orton  <joe@manyfish.co.uk>
 	* ne_props.h: Don't use an anonymous enum for the proppatch
 	operation type, as some C++ compilers don't like it.
 
+Wed Apr  7 13:50:10 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_request.c (add_fixed_headers): Don't both sending Keep-Alive
+	header if persistent connections are disabled.
+
+Wed Apr  7 13:47:46 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_auth.c (auth_challenge): Allow Negotiate challenges from
+	a proxy.
+
+Wed Apr  7 13:36:55 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_auth.c (clean_session): Remove redundant assignment of
+	GSS_C_NO_CONTEXT; gss_delete_sec_context already does this.
+
+Wed Apr  7 13:33:10 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_auth.c (get_gss_name): Handle failure case internally.
+	(auth_register): Updated accordingly.
+
+Wed Apr  7 13:15:57 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_request.c: Use strtoq to print off_t's where necessary.
+
+Wed Apr  7 11:14:24 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_auth.c (get_gss_name): Take a hostname string.
+	(auth_register): Pass proxy or server hostname to get_gss_name as
+	appropriate.
+
+Wed Apr  7 11:09:50 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_auth.c (continue_negotiate): If given no input token, and the
+	gssctx is not in the initial state, reset it.
+
+Mon Mar 29 17:06:49 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_auth.c: Adjust to cope with GSSAPI continuation:
+	(struct auth_session_s): Store GSSAPI context, name and mechanism.
+	(get_gss_name): Take an ne_session.
+	(continue_negotiate): Renamed from gssapi_challenge; take input
+	token, handle GSS_S_CONTINUE_NEEDED return value.
+	(verify_digest_response): Renamed from verify_response.
+	(verify_negotiate_response): New function.
+	(auth_challenge): Cope with Negotiate responses which gratuitously
+	break the auth-param grammar.
+	(ah_post_send): Handle Negotiate responses.
+	(free_auth, clean_session): Free persisted GSSAPI objects.
+	(auth_register): Initialize GSSAPI objects.
+
+Sun Mar 28 03:03:17 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_auth.c (get_gss_name): Don't leak token.value.
+
 Sun Mar 28 02:59:58 2004  Joe Orton  <joe@manyfish.co.uk>
 
 	* ne_auth.c (get_cnonce): Only use RAND_pseudo_bytes() if the PRNG
 	is seeded.
+
+Sun Mar 28 02:47:20 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_auth.c (gssapi_challenge, get_gss_name): Simplify.
+
+Sun Mar 28 02:35:48 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_auth.c (request_gssapi, get_gss_name, auth_challenge):
+	Implement the Negotiate protocol rather than the obsoleted
+	GSS-Negotiate.
+	(make_gss_error): New function.
+	(gssapi_challenge): Use it for better error handling (set session
+	error string); fix memory leaks.  Don't delegate credentials.
+
+Sat Mar 27 20:49:24 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_auth.c (ah_post_send): Clear auth header collector buffers
+	after each request.
 
 Fri Mar 26 12:16:15 2004  Joe Orton  <joe@manyfish.co.uk>
 
@@ -95,12 +256,72 @@ Fri Mar 26 12:01:38 2004  Joe Orton  <joe@manyfish.co.uk>
 	* ne_utils.c: Include zlib.h before ne_*.h to fix issues
 	on platforms where zconf.h does "#define const".
 
-Fri Mar 26 11:55:06 2004  Joe Orton  <joe@manyfish.co.uk>
+Thu Mar 11 23:38:01 2004  Joe Orton  <joe@manyfish.co.uk>
 
-	* ne_auth.c (get_gss_name, request_gssapi, gssapi_challenge,
-	auth_challenge): Implement the Negotiate auth scheme rather than
-	the obsolete GSS-Negotiate, and fix memory leaks.  Only accept
-	Negotiate challenges over SSL.
+	* ne_openssl.c (provide_client_cert): Avoid malloc(0) when server
+	sends no CA names in CertificateRequest.
+	(ne_ssl_cert_write): Be paranoid and clear the OpenSSL error stack
+	on write failures.
+
+Sun Mar  7 11:17:04 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* Makefile.in (CFLAGS): Don't use NEON_CFLAGS.
+
+Mon Feb 23 23:03:08 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_string.c (ne_vsnprintf, ne_snprintf): New functions.
+
+Sun Feb 22 23:34:47 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_private.h (struct ne_session_s): Remove expect100_works field.
+
+	* ne_request.c (ne_set_request_expect100): New function.
+	(ne_begin_request): Remove req->use_expect100 manipulation.
+	(send_request): Handle enabling 100continue without a request
+	body.
+
+	* ne_session.c (ne_set_expect100): Removed function.
+
+Sun Feb 22 20:17:04 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_socket.c (error_ossl): Check for ERR_reason_error_string
+	returning NULL.
+
+Sun Feb 22 17:54:43 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_socket.c: Don't disable getaddrinfo support here.
+
+Sun Feb 22 17:40:07 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_utils.h (min): Remove definition to...
+
+	* ne_uri.c (min): ...here.
+
+Sun Feb 22 17:31:35 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_props.h: Give the 'type' enum a tag name. 
+
+Sun Feb 22 17:27:28 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_207.c (end_element): Strip whitespace from cdata.
+
+Sun Feb 22 16:27:58 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_auth.c (struct auth_request): Make auth_hdr, auth_info_hdr
+	fields into ne_buffer *'s.
+	(ah_collect_header): New function.
+	(ah_create): Create ne_buffers for auth_{,info_}hdr; use
+	ah_collect_header rather than ne_duplicate_header to fix handling
+	of multiple auth challenge headers.
+	(ah_post_send): Adjust for char * -> ne_buffer *.
+	(tokenize): Recognize a challenge scheme which is terminated with
+	a comma (i.e. with no challange parameters).
+	(auth_challenge): Fix handling of unrecognized challenges.
+	(ah_destroy): Destroy ne_buffers.
+
+Sun Feb 22 15:04:46 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_request.c (ne_set_request_body_provider64): New function.
 
 Sun Feb 15 13:37:03 2004  Joe Orton  <joe@manyfish.co.uk>
 
@@ -110,10 +331,111 @@ Sun Feb 15 13:37:03 2004  Joe Orton  <joe@manyfish.co.uk>
 	* ne_openssl.c (ne_ssl_readable_dname): Convert dname strings to
 	UTF-8, or use "???".
 
+Sat Feb 14 21:57:25 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_xml.c (invalid_ncname_ch1): New macro.
+	(declare_nspaces): Use it, to reject some more invalid namespace
+	prefixes; also check for a colon anywhere in the NCName.
+	(expand_qname): Likewise for the element name.
+
+Mon Feb  9 21:38:03 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_dates.c [WIN32] (GMTOFF): Use gmt_to_local_win32;
+	(gmt_to_local_win32): New function, from Jiang Lei.
+
+Mon Jan 26 14:38:05 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_socket.c (ne_sock_connect_ssl): Check that OpenSSL version
+	matches between library at run-time and headers at compile-time.
+
+Sat Jan 24 17:49:27 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_dates.c (HAVE_STRUCT_TM___TM_GMTOFF): Alternative GMTOFF()
+	macro.
+
 Sat Jan 24 16:49:30 2004  Joe Orton  <joe@manyfish.co.uk>
 
 	* ne_auth.c (basic_challenge): Cast first parameter to ne_base64
 	to unsigned char * to fix warnings with some compilers.
+
+Sat Jan  3 13:17:36 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_request.h (ne_set_request_body_fd64): Define conditional on
+	NE_LFS.
+
+	* ne_request.c (ne_set_request_body_fd64): Likewise.
+
+Thu Jan  1 18:01:45 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_request.c: Use NE_HAVE_LFS not _LARGEFILE64_SOURCE in
+	conditional support for off64_t.
+
+Thu Jan  1 17:38:55 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_request.h [_LARGEFILE64_SOURCE] (ne_set_request_body_fd64):
+	New function.
+	
+	* ne_request.c: Define ne_lseek, ne_off_t, ne_strtoff,
+	NE_OFFT_MAX, FMT_NE_OFF_T appropriately for _LARGEFILE64_SOURCE or
+	otherwise.
+	(struct ne_request_s): Use ne_off_t in place of off_t throughout.
+	(body_fd_send): Use ne_lseek; reset 'remain' after seeking.
+	(clength_hdr_handler): Use ne_off_t, ne_strtoff and NE_OFFT_MAX.
+	(set_body_length): Take an ne_off_t length parameter; use
+	FMT_NE_OFF_T to print it.
+	(ne_set_request_body_fd64): New function.
+
+	* ne_utils.h (NE_FEATURE_LFS): New feature.
+
+	* ne_utils.c (ne_has_support): Support NE_FEATURE_LFS.
+
+Mon Nov 24 20:13:14 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_request.c (struct ne_response): Split handling for chunked vs
+	clength-delimited responses into a union.  Use off_t for storing
+	whole-length-of-response values.
+	(read_response_block, ne_read_response_block): Update accordingly.
+	(ne_begin_request): Remove unnecessary variable assignments.
+
+Sun Nov 23 16:03:22 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_request.h (ne_set_request_body_fd): Take offset and length
+	arguments, return void.
+	(ne_set_request_body_provider): Take off_t length argument.
+
+	* ne_request.c (struct ne_request_s): Store current position
+	within buffer/file used as request body source.  Store request
+	body lengths using off_t type.
+	(body_string_send): Adjust for renamed fields.
+	(body_fd_send): Seek to requested offset; don't read past
+	requested body length.
+	(set_body_length): Renamed from set_body_size.
+
+	* ne_basic.c (ne_put): Determine file size here; adjust for new
+	ne_set_request_body_fd API.
+
+Sun Nov 23 15:05:12 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_basic.c, ne_basic.h: Remove two-functions-in-one,
+	ne_put_if_unmodified.
+
+Fri Nov 14 14:05:32 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_utils.c (ne_has_support): Add NE_FEATURE_IDNA.
+
+Fri Nov 14 13:11:49 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_session.c (set_hostinfo): [NE_HAVE_LIBIDN]: Use string from
+	IDNA ToAscii operation on provided hostname if successful.
+
+Fri Nov 14 11:23:16 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	All files: replace use of NEON_NODAV with NE_HAVE_DAV, NEON_SSL
+	with NE_HAVE_SSL, NEON_ZLIB with NE_HAVE_ZLIB.  Use NE_HAVE_DAV
+	not USE_DAV_LOCKS.
+
+	* ne_utils.c (ne_has_support): New feature detection interface,
+	replaces ne_supports_ssl.
 
 Thu Nov 13 20:38:28 2003  Joe Orton  <joe@manyfish.co.uk>
 
@@ -125,6 +447,42 @@ Thu Nov 13 20:31:07 2003  Joe Orton  <joe@manyfish.co.uk>
 	* ne_auth.c (ah_post_send): Treat a 401 response to a CONNECT
 	request as a valid proxy auth challenge, to work around buggy
 	proxies.
+
+Tue Nov 11 21:13:18 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	Place library-internal symbols in the "ne__" namespace.
+	
+	* ne_request.c (ne__pull_request_body): Renamed from
+	ne_pull_request_body; all callers updated.
+
+	* ne_session.c (ne__negotiate_ssl): Renamed from
+	ne_negotiate_ssl; all callers updated.
+
+Tue Nov 11 21:08:54 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_alloc.h: Mark all allocation functions as having 'malloc'
+	attribute for GCC.
+
+Tue Nov 11 20:36:12 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* ne_xml.h (ne_xml_failure): Replaces ne_xml_valid,
+	inverted and more useful return value.
+
+	* ne_xml.c (struct ne_xml_parser_s): Replace 'valid' field with
+	'failure', with inverted logic.
+	(start_element, end_element, char_data): Check failure flag
+	appropriately.  Set failure flag to return value of callback.
+	Set failure flag to positive integer on a parse error.
+	(ne_xml_create): Don't initialize failure flag.
+	(ne_xml_parse): Check/set failure flag appropriately.
+	(sax_error): Only set an error string (and the error flag)
+	if failure is zero.
+
+	* ne_207.c (ne_simple_request): Adjust to use ne_xml_failure.
+
+	* ne_locks.c (ne_lock, ne_lock_refresh): Likewise.
+
+	* ne_props.c (propfind): Likewise.	
 
 Wed Oct 22 22:19:19 2003  Joe Orton  <joe@manyfish.co.uk>
 

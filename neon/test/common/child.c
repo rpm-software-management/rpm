@@ -1,6 +1,6 @@
 /* 
    Framework for testing with a server process
-   Copyright (C) 2001-2002, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2001-2004, Joe Orton <joe@manyfish.co.uk>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -128,6 +128,17 @@ void minisleep(void)
     usleep(500);
 #else
     sleep(1);
+#endif
+}
+
+int reset_socket(ne_socket *sock)
+{
+#ifdef SO_LINGER
+    /* Stevens' magic trick to send an RST on close(). */
+    struct linger l = {1, 0};
+    return setsockopt(ne_sock_fd(sock), SOL_SOCKET, SO_LINGER, &l, sizeof l);
+#else
+    return 1;
 #endif
 }
 

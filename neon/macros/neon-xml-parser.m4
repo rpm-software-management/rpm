@@ -86,14 +86,14 @@ AC_DEFUN([NEON_XML_PARSER], [
 
 dnl Switches to force choice of library
 AC_ARG_WITH([libxml2],
-AC_HELP_STRING([--with-libxml2], [force use of libxml 2.x]))
+AS_HELP_STRING([--with-libxml2], [force use of libxml 2.x]))
 AC_ARG_WITH([expat], 
-AC_HELP_STRING([--with-expat], [force use of expat]))
+AS_HELP_STRING([--with-expat], [force use of expat]))
 
 dnl Flag to force choice of included expat, if available.
 ifelse($#, 1, [
 AC_ARG_WITH([included-expat],
-AC_HELP_STRING([--with-included-expat], [use bundled expat sources]),,
+AS_HELP_STRING([--with-included-expat], [use bundled expat sources]),,
 with_included_expat=no)],
 with_included_expat=no)
 

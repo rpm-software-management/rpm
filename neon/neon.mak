@@ -63,6 +63,11 @@ ZLIB_LIBS = "$(ZLIB_SRC)\zlibdll.lib"
 !ENDIF
 !ENDIF
 
+########
+# Support for IPv6
+!IF "$(ENABLE_IPV6)" == "yes"
+IPV6_FLAGS = /D USE_GETADDRINFO
+!ENDIF
 
 !IF "$(DEBUG_BUILD)" == ""
 INTDIR = Release
@@ -78,7 +83,7 @@ TARGET = .\libneonD.lib
 WIN32_DEFS = /D WIN32_LEAN_AND_MEAN /D NOUSER /D NOGDI /D NONLS /D NOCRYPT
 
 CPP=cl.exe
-CPP_PROJ = /c /nologo $(CFLAGS) $(WIN32_DEFS) $(EXPAT_FLAGS) $(OPENSSL_FLAGS) $(ZLIB_FLAGS) /D "HAVE_CONFIG_H" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\"
+CPP_PROJ = /c /nologo $(CFLAGS) $(WIN32_DEFS) $(EXPAT_FLAGS) $(OPENSSL_FLAGS) $(ZLIB_FLAGS) $(IPV6_FLAGS) /D "HAVE_CONFIG_H" /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\"
 LIB32=link.exe -lib
 LIB32_FLAGS=/nologo /out:"$(TARGET)"
 

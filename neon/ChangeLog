@@ -1,15 +1,59 @@
 Mon May 17 21:25:44 2004  Joe Orton  <joe@manyfish.co.uk>
 
-	* neon.mak: Fix handling of paths with spaces, and simplify (Jon
-	Foster <jon@jon-foster.co.uk>).
+	* neon.mak: Fix for handling of paths with spaces, and
+	simplify (Jon Foster <jon@jon-foster.co.uk>).
 
 Thu May 13 11:42:07 2004  Joe Orton  <joe@manyfish.co.uk>
 
 	* configure.in: Don't rely on echo -n in ne_version.
 
-Fri Mar 26 12:07:04 2004  Joe Orton  <joe@manyfish.co.uk>
+Sun Feb 22 20:29:04 2004  Joe Orton  <joe@manyfish.co.uk>
 
-	* Makefile.in (distclean): Clean more.
+	* configure.in: Move memleak.h include to end of config.h.
+
+Sun Feb 22 18:44:55 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* configure.in: Fix to run DAV tests when an XML parser is
+	configured.
+
+Sat Jan 24 17:50:52 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* configure.in: AC_DEFINE _GNU_SOURCE again so that it's used
+	during compiler checks.
+
+Sat Jan 24 17:33:54 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* configure.in: Cleanup; move all AC_SUBSTs together; use a single
+	AH_TOP for config.h.in header; require autoconf 2.58.
+
+Thu Jan  1 17:40:34 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon-config.in: Handle 'lfs' feature.
+
+Sat Nov 15 09:42:40 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon-config.in: Print help output on stderr for unknown arguments.
+	(usage): Update help output for new NE_FLAG_ substitutions.
+
+Sat Nov 15 09:24:49 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* configure.in: Update for use latest autoconf best-practice:
+	s/AC_HELP_STRING/AS_HELP_STRING.
+
+Fri Nov 14 11:28:24 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* configure.in, neon-config.in: Use new NE_FLAG substitutions
+	for feature detection.
+
+Fri Nov 14 09:08:10 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* configure.in: Add -export-symbols-regex to NEON_LINK_FLAGS to
+	prevent export of ne__ symbols where possible.
+
+Sun Oct 26 12:42:15 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon-config.in: Fix to exit with failure for an unrecognized
+	option.
 
 Sat Oct 25 10:37:59 2003  Joe Orton  <joe@manyfish.co.uk>
 

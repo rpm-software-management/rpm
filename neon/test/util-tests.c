@@ -254,10 +254,30 @@ static int version_string(void)
 
 static int support(void)
 {
-#ifdef NEON_SSL
-    ONN("SSL support not advertised", !ne_supports_ssl());
+#ifdef NE_HAVE_SSL
+    ONN("SSL support not advertised", !ne_has_support(NE_FEATURE_SSL));
 #else
-    ONN("SSL support advertised", ne_supports_ssl());
+    ONN("SSL support advertised", ne_has_support(NE_FEATURE_SSL));
+#endif
+#ifdef NE_HAVE_ZLIB
+    ONN("zlib support not advertised", !ne_has_support(NE_FEATURE_ZLIB));
+#else
+    ONN("zlib support advertised", ne_has_support(NE_FEATURE_ZLIB));
+#endif
+#ifdef NE_HAVE_IPV6
+    ONN("IPv6 support not advertised", !ne_has_support(NE_FEATURE_IPV6));
+#else
+    ONN("IPv6 support advertised", ne_has_support(NE_FEATURE_IPV6));
+#endif
+#ifdef NE_HAVE_IDNA
+    ONN("IDNA support not advertised", !ne_has_support(NE_FEATURE_IDNA));
+#else
+    ONN("IDNA support advertised", ne_has_support(NE_FEATURE_IDNA));
+#endif
+#ifdef NE_HAVE_LFS
+    ONN("LFS support not advertised", !ne_has_support(NE_FEATURE_LFS));
+#else
+    ONN("LFS support advertised", ne_has_support(NE_FEATURE_LFS));
 #endif
     return OK;
 }

@@ -1,6 +1,6 @@
 /* 
    HTTP session handling
-   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
    Portions are:
    Copyright (C) 1999-2000 Tommi Komulainen <Tommi.Komulainen@iki.fi>
 
@@ -31,6 +31,10 @@
 #endif
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
+#endif
+
+#ifdef NE_HAVE_IDNA
+#include <idna.h>
 #endif
 
 #include "ne_session.h"
@@ -84,7 +88,7 @@ void ne_session_destroy(ne_session *sess)
 	ne_close_connection(sess);
     }
 
-#ifdef NEON_SSL
+#ifdef NE_HAVE_SSL
     if (sess->ssl_context)
         ne_ssl_context_destroy(sess->ssl_context);
 
@@ -118,6 +122,14 @@ static void set_hostport(struct host_info *host, unsigned int defaultport)
 static void
 set_hostinfo(struct host_info *info, const char *hostname, unsigned int port)
 {
+#ifdef NE_HAVE_IDNA
+    char *ihost;
+        
+#define FLAGS IDNA_USE_STD3_ASCII_RULES
+    if (idna_to_ascii_8z(hostname, &ihost, FLAGS) == IDNA_SUCCESS)
+        info->hostname = ihost;
+    else /* fall back to use provided hostname string */
+#endif
     info->hostname = ne_strdup(hostname);
     info->port = port;
 }
@@ -139,16 +151,14 @@ ne_session *ne_session_create(const char *scheme,
     set_hostinfo(&sess->server, hostname, port);
     set_hostport(&sess->server, sess->use_ssl?443:80);
 
-#ifdef NEON_SSL
+#ifdef NE_HAVE_SSL
     if (sess->use_ssl) {
-        sess->ssl_context = ne_ssl_context_create();
+        sess->ssl_context = ne_ssl_context_create(0);
     }
 #endif
 
     sess->scheme = ne_strdup(scheme);
 
-    /* Default expect-100 to OFF. */
-    sess->expect100_works = -1;
     return sess;
 }
 
@@ -158,6 +168,12 @@ void ne_session_proxy(ne_session *sess, const char *hostname,
     sess->use_proxy = 1;
     if (sess->proxy.hostname) ne_free(sess->proxy.hostname);
     set_hostinfo(&sess->proxy, hostname, port);
+}
+
+void ne_set_addrlist(ne_session *sess, const ne_inet_addr **addrs, size_t n)
+{
+    sess->addrlist = addrs;
+    sess->numaddrs = n;
 }
 
 void ne_set_error(ne_session *sess, const char *format, ...)
@@ -182,15 +198,6 @@ void ne_set_status(ne_session *sess,
 {
     sess->notify_cb = status;
     sess->notify_ud = userdata;
-}
-
-void ne_set_expect100(ne_session *sess, int use_expect100)
-{
-    if (use_expect100) {
-	sess->expect100_works = 1;
-    } else {
-	sess->expect100_works = -1;
-    }
 }
 
 void ne_set_persist(ne_session *sess, int persist)
@@ -268,10 +275,7 @@ void ne_ssl_provide_clicert(ne_session *sess,
 
 void ne_ssl_trust_cert(ne_session *sess, const ne_ssl_certificate *cert)
 {
-#ifdef NEON_SSL
-    ne_ssl_ctx_trustcert(sess->ssl_context, cert);
+#ifdef NE_HAVE_SSL
+    ne_ssl_context_trustcert(sess->ssl_context, cert);
 #endif
 }
-
-
-

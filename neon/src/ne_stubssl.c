@@ -1,6 +1,6 @@
 /* 
    Stubs for SSL support when no SSL library has been configured
-   Copyright (C) 2002-2003, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2002-2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -82,13 +82,21 @@ void ne_ssl_clicert_free(ne_ssl_client_cert *ccert) {}
 
 void ne_ssl_trust_default_ca(ne_session *sess) {}
 
-ne_ssl_context *ne_ssl_context_create(void)
+ne_ssl_context *ne_ssl_context_create(int mode)
 {
     return NULL;
 }
 
-void ne_ssl_ctx_trustcert(ne_ssl_context *ctx, const ne_ssl_certificate *cert)
+void ne_ssl_context_trustcert(ne_ssl_context *ctx, const ne_ssl_certificate *cert)
 {}
+
+int ne_ssl_context_set_verify(ne_ssl_context *ctx, 
+                              int required,
+                              const char *ca_names,
+                              const char *verify_cas)
+{
+    return -1;
+}
 
 void ne_ssl_context_destroy(ne_ssl_context *ctx) {}
 

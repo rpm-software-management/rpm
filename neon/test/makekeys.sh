@@ -8,7 +8,7 @@ CONF=${srcdir}/openssl.conf
 REQ="${OPENSSL} req -config ${CONF}"
 CA="${OPENSSL} ca -config ${CONF} -batch"
 # MKCERT makes a self-signed cert
-MKCERT="${REQ} -x509 -new -days 9000"
+MKCERT="${REQ} -x509 -new -days 900"
 
 REQDN=reqDN
 STRMASK=default
@@ -70,8 +70,11 @@ ${REQ} -new -key ${srcdir}/server.key -out altname3.csr
 csr_fields "Fourth AltName Dept" localhost | \
 ${REQ} -new -key ${srcdir}/server.key -out altname4.csr
 
-csr_fields "Fifth Altname Dept" localhost | \
+csr_fields "Good ipAddress altname Dept" nowhere.example.com | \
 ${REQ} -new -key ${srcdir}/server.key -out altname5.csr
+
+csr_fields "Bad ipAddress altname Dept" nowhere.example.com | \
+${REQ} -new -key ${srcdir}/server.key -out altname6.csr
 
 csr_fields "Self-Signed" | \
 ${MKCERT} -key ${srcdir}/server.key -out ssigned.pem
@@ -117,7 +120,7 @@ fqdn=`hostname -f 2>/dev/null` || true
 if [ "x${hostname}.${domain}" = "x${fqdn}" ]; then
   csr_fields "Wildcard Cert Dept" "*.${domain}" | \
   ${REQ} -new -key ${srcdir}/server.key -out wildcard.csr
-  ${CA} -days 9000 -in wildcard.csr -out wildcard.cert
+  ${CA} -days 900 -in wildcard.csr -out wildcard.cert
 fi
 
 csr_fields "Neon Client Cert" ignored.example.com | \
@@ -138,13 +141,18 @@ echo GB | ${REQ} -new -key ${srcdir}/server.key -out missingcn.csr
 REQDN=reqDN.justEmail
 echo blah@example.com | ${REQ} -new -key ${srcdir}/server.key -out justmail.csr
 
+# presume AVAs will come out in least->most specific order still...
+REQDN=reqDN.twoOU
+csr_fields "Second OU Dept
+First OU Dept" | ${REQ} -new -key ${srcdir}/server.key -out twoou.csr
+
 ### don't put ${REQ} invocations after here
 
-for f in server client twocn caseless cnfirst missingcn justmail; do
+for f in server client twocn caseless cnfirst missingcn justmail twoou; do
   ${CA} -days 900 -in ${f}.csr -out ${f}.cert
 done
 
-for n in 1 2 3 4 5; do
+for n in 1 2 3 4 5 6; do
  ${CA} -extensions altExt${n} -days 900 \
      -in altname${n}.csr -out altname${n}.cert
 done

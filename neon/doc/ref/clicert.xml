@@ -62,9 +62,9 @@
     <para>The <function>ne_ssl_clicert_read</function> function reads
     a <firstterm>client certificate</firstterm> from a
     PKCS#12-formatted file, and returns an
-    <type>ne_ssl_client_certificate</type> object.  If the client
+    <type>ne_ssl_client_cert</type> object.  If the client
     certificate is encrypted, it must be decrypted before it is used.
-    An <type>ne_ssl_client_certificate</type> object holds a client
+    An <type>ne_ssl_client_cert</type> object holds a client
     certificate and the associated private key, not just a
     certificate; the term "<glossterm>client certificate</glossterm>"
     will used to refer to this pair.</para>
@@ -124,7 +124,7 @@
     <para>The following code reads a client certificate and decrypts
     it if necessary, then loads it into an HTTP session.</para>
 
-    <programlisting>ne_ssl_client_certificate *ccert;
+    <programlisting>ne_ssl_client_cert *ccert;
 
 ccert = ne_ssl_clicert_read("/path/to/client.p12");
 

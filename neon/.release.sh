@@ -7,12 +7,6 @@ minor=`echo $1 | awk -F. '{print $2;}'`
 rel=`echo $1 | awk -F. '{print $3;}'`
 version=$1
 
-# check that release version matches build version!
-grep ^NEON_VERSION_MAJOR=$major\$ macros/neon.m4 || exit 1
-grep ^NEON_VERSION_MINOR=$minor\$ macros/neon.m4 || exit 1
-grep ^NEON_VERSION_RELEASE=$rel\$ macros/neon.m4 || exit 1
-grep '^NEON_VERSION_TAG=$' macros/neon.m4 || exit 1
-
 for f in config.hw; do
 in=$f.in
 out=$f

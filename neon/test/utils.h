@@ -65,4 +65,12 @@ int serve_sstring(ne_socket *sock, void *ud);
 /* Serve a struct string slowly. */
 int serve_sstring_slowly(ne_socket *sock, void *ud);
 
+struct infinite {
+    const char *header, *repeat;
+};
+
+/* Pass a "struct infinite *" as userdata, this function sends
+ * ->header and then loops sending ->repeat forever. */
+int serve_infinite(ne_socket *sock, void *ud);
+
 #endif /* UTILS_H */

@@ -99,7 +99,7 @@ clean:
 	cd test && $(MAKE) clean
 
 distclean: clean
-	rm -rf Makefile config.h config.status libtool config.log config.cache neon-config autom4te.cache neon.pc test/Makefile test/common/Makefile src/Makefile
+	rm -rf Makefile config.h neon.pc config.status src/Makefile libtool config.log config.cache neon-config autom4te*.cache test/Makefile
 
 again: clean
 

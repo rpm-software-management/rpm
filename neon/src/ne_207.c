@@ -142,8 +142,12 @@ static int start_element(void *userdata, int parent,
         state != ELM_href)
         return NE_XML_DECLINE;
 
-    if (state == ELM_propstat && p->start_propstat)
+    if (state == ELM_propstat && p->start_propstat) {
         p->propstat = p->start_propstat(p->userdata, p->response);
+        if (p->propstat == NULL) {
+            return NE_XML_ABORT;
+        }
+    }
 
     ne_buffer_clear(p->cdata);
 
@@ -158,7 +162,7 @@ static int
 end_element(void *userdata, int state, const char *nspace, const char *name)
 {
     ne_207_parser *p = userdata;
-    const char *cdata = p->cdata->data;
+    const char *cdata = ne_shave(p->cdata->data, "\r\n\t ");
 
     switch (state) {
     case ELM_responsedescription:
@@ -318,7 +322,7 @@ int ne_simple_request(ne_session *sess, ne_request *req)
 
     if (ret == NE_OK) {
 	if (ne_get_status(req)->code == 207) {
-	    if (!ne_xml_valid(p)) { 
+	    if (ne_xml_failed(p)) { 
 		/* The parse was invalid */
 		ne_set_error(sess, "%s", ne_xml_get_error(p));
 		ret = NE_ERROR;

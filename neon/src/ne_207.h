@@ -1,6 +1,6 @@
 /* 
    WebDAV 207 multi-status response handling
-   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -54,7 +54,9 @@ typedef void ne_207_end_response(void *userdata, void *response,
  * the response in which this propstat is contains is passed as the
  * 'response' parameter.  The return value of each 'start_propstat' is
  * passed as the 'propstat' parameter' to the corresponding
- * 'end_propstat' callback. */
+ * 'end_propstat' callback.  If the start_propstat callback returns
+ * NULL, parsing is aborted (the XML parser error must be set by the
+ * callback). */
 typedef void *ne_207_start_propstat(void *userdata, void *response);
 typedef void ne_207_end_propstat(void *userdata, void *propstat,
                                  const ne_status *status,

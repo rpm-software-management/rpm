@@ -263,8 +263,8 @@ static int run_207_response(char *resp, const char *expected)
 
     CALL(await_server());
 
-    ONV(!ne_xml_valid(p),
-        ("response body was invalid: %s", ne_xml_get_error(p)));
+    ONV(ne_xml_failed(p),
+        ("parse error in response body: %s", ne_xml_get_error(p)));
 
     ONV(strcmp(buf->data, expected),
         ("comparison failed.\n"
@@ -521,7 +521,14 @@ static int pfind_simple(void)
                                        STAT_207("256 Second is OK")))),
           "results(/alpha,prop:[{DAV:,fishbone}='strike one':{234 First is OK}];)//"
           "results(/beta,prop:[{DAV:,fishbone}='strike two':{256 Second is OK}];)//",
-          0, 0}          
+          0, 0},
+
+        /* whitespace handling. */
+        { MULTI_207(RESP_207("\r\nhttp://localhost:7777/alpha ",
+                             PSTAT_207(PROPS_207(APROP_207("alpha", "beta"))
+                                       "<D:status>\r\nHTTP/1.1 200 OK </D:status>"))),
+          "results(http://localhost:7777/alpha,prop:[{DAV:,alpha}='beta':{200 OK}];)//",
+          0, 0}
     };
     const ne_propname pset1[] = {
         { "DAV:", "fishbone", },
@@ -540,12 +547,51 @@ static int pfind_simple(void)
     return OK;
 }
 
+static int unbounded_response(const char *header, const char *repeats)
+{
+    ne_session *sess;
+    struct infinite i = { header, repeats};
+    int dbg;
+
+    CALL(make_session(&sess, serve_infinite, &i));
+
+    dbg = ne_debug_mask;
+
+    ONN("unbounded PROPFIND response did not fail",
+        ne_simple_propfind(sess, "/", 0, NULL, 
+                           dummy_results, NULL) != NE_ERROR);
+
+    CALL(reap_server());    
+    ne_session_destroy(sess);
+    return OK;
+}
+
+static int unbounded_propstats(void)
+{
+    return unbounded_response(
+	RESP207 "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+	"<multistatus xmlns=\"DAV:\">"
+	"<response><href>/</href>",
+        "<propstat></propstat>");
+}
+
+static int unbounded_props(void)
+{
+    return unbounded_response(
+	RESP207 "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+	"<multistatus xmlns=\"DAV:\">"
+	"<response><href>/</href><propstat>",
+        "<prop><jim>hello, world</jim></prop>");
+}
+
 ne_test tests[] = {
     T(two_oh_seven),
     T(patch_simple),
     T(pfind_simple),
     T(regress),
     T(patch_regress),
+    T(unbounded_props),
+    T(unbounded_propstats),
     T(NULL) 
 };
 

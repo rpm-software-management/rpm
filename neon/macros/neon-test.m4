@@ -1,4 +1,4 @@
-# Copyright (C) 2001-2002 Joe Orton <joe@manyfish.co.uk>    -*- autoconf -*-
+# Copyright (C) 2001-2004 Joe Orton <joe@manyfish.co.uk>    -*- autoconf -*-
 #
 # This file is free software; you may copy and/or distribute it with
 # or without modifications, as long as this notice is preserved.
@@ -29,7 +29,7 @@ dnl CPPFLAGS which make "gcc -Werror" fail in NEON_FORMAT; suggest
 dnl this macro is used first.
 AC_BEFORE([$0], [NEON_XML_PARSER])
 
-AC_CHECK_HEADERS(sys/time.h)
+AC_CHECK_HEADERS(sys/time.h stdint.h)
 
 AC_CHECK_FUNCS(pipe isatty usleep shutdown)
 

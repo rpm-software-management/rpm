@@ -1,6 +1,6 @@
 /* 
    Authentication tests
-   Copyright (C) 2001-2003, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2001-2004, Joe Orton <joe@manyfish.co.uk>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,11 +40,16 @@
 static const char username[] = "Aladdin", password[] = "open sesame";
 static int auth_failed;
 
-static const char www_wally[] = "WWW-Authenticate: Basic realm=WallyWorld";
+#define BASIC_WALLY "Basic realm=WallyWorld"
+#define CHAL_WALLY "WWW-Authenticate: " BASIC_WALLY
 
 static int auth_cb(void *userdata, const char *realm, int tries, 
 		   char *un, char *pw)
 {
+    if (strcmp(realm, "WallyWorld")) {
+        NE_DEBUG(NE_DBG_HTTP, "Got wrong realm '%s'!\n", realm);
+        return -1;
+    }    
     strcpy(un, username);
     strcpy(pw, password);
     return tries;
@@ -87,6 +92,8 @@ static int send_response(ne_socket *sock, const char *hdr, int code, int eoc)
  * second doesn't. */
 static int auth_serve(ne_socket *sock, void *userdata)
 {
+    char *hdr = userdata;
+
     auth_failed = 1;
 
     /* Register globals for discard_request. */
@@ -94,7 +101,7 @@ static int auth_serve(ne_socket *sock, void *userdata)
     want_header = "Authorization";
 
     discard_request(sock);
-    send_response(sock, www_wally, 401, 0);
+    send_response(sock, hdr, 401, 0);
 
     discard_request(sock);
     send_response(sock, NULL, auth_failed?500:200, 1);
@@ -102,33 +109,71 @@ static int auth_serve(ne_socket *sock, void *userdata)
     return 0;
 }
 
+/* Test that various Basic auth challenges are correctly handled. */
 static int basic(void)
 {
-    ne_session *sess;
+    const char *hdrs[] = {
+        /* simplest case */
+        CHAL_WALLY,
 
-    CALL(make_session(&sess, auth_serve, NULL));
-    ne_set_server_auth(sess, auth_cb, NULL);
+        /* several challenges, one header */
+        "WWW-Authenticate: BarFooScheme, " BASIC_WALLY,
 
-    CALL(any_2xx_request(sess, "/norman"));
+        /* several challenges, one header */
+        CHAL_WALLY ", BarFooScheme realm=\"PenguinWorld\"",
 
-    ne_session_destroy(sess);
-    CALL(await_server());
+        /* whitespace tests. */
+        "WWW-Authenticate:   Basic realm=WallyWorld   ",
+
+        /* nego test. */
+        "WWW-Authenticate: Negotiate fish, Basic realm=WallyWorld",
+
+        /* nego test. */
+        "WWW-Authenticate: Negotiate fish, bar=boo, Basic realm=WallyWorld",
+
+        /* multi-header case 1 */
+        "WWW-Authenticate: BarFooScheme\r\n"
+        CHAL_WALLY,
+        
+        /* multi-header cases 1 */
+        CHAL_WALLY "\r\n"
+        "WWW-Authenticate: BarFooScheme bar=\"foo\"",
+
+        /* multi-header case 3 */
+        "WWW-Authenticate: FooBarChall foo=\"bar\"\r\n"
+        CHAL_WALLY "\r\n"
+        "WWW-Authenticate: BarFooScheme bar=\"foo\""
+    };
+    size_t n;
+    
+    for (n = 0; n < sizeof(hdrs)/sizeof(hdrs[0]); n++) {
+        ne_session *sess;
+        
+        CALL(make_session(&sess, auth_serve, (void *)hdrs[n]));
+        ne_set_server_auth(sess, auth_cb, NULL);
+        
+        CALL(any_2xx_request(sess, "/norman"));
+        
+        ne_session_destroy(sess);
+        CALL(await_server());
+    }
+
     return OK;
 }
 
 static int retry_serve(ne_socket *sock, void *ud)
 {
     discard_request(sock);
-    send_response(sock, www_wally, 401, 0);
+    send_response(sock, CHAL_WALLY, 401, 0);
 
     discard_request(sock);
-    send_response(sock, www_wally, 401, 0);
+    send_response(sock, CHAL_WALLY, 401, 0);
 
     discard_request(sock);
     send_response(sock, NULL, 200, 0);
     
     discard_request(sock);
-    send_response(sock, www_wally, 401, 0);
+    send_response(sock, CHAL_WALLY, 401, 0);
 
     discard_request(sock);
     send_response(sock, NULL, 200, 0);
@@ -140,19 +185,19 @@ static int retry_serve(ne_socket *sock, void *ud)
     send_response(sock, NULL, 200, 0);
 
     discard_request(sock);
-    send_response(sock, www_wally, 401, 0);
+    send_response(sock, CHAL_WALLY, 401, 0);
 
     discard_request(sock);
     send_response(sock, NULL, 200, 0);
 
     discard_request(sock);
-    send_response(sock, www_wally, 401, 0);
+    send_response(sock, CHAL_WALLY, 401, 0);
 
     discard_request(sock);
-    send_response(sock, www_wally, 401, 0);
+    send_response(sock, CHAL_WALLY, 401, 0);
 
     discard_request(sock);
-    send_response(sock, www_wally, 401, 0);
+    send_response(sock, CHAL_WALLY, 401, 0);
 
     discard_request(sock);
     send_response(sock, NULL, 200, 0);
@@ -296,8 +341,8 @@ static int tunnel_regress(void)
 
 /* test digest auth 2617-style. */
 
-/* negotiation: within a single header, multiple headers.
- * check digest has precedence */
+/* test that digest has precedence over Basic for multi-scheme
+ * challenges */
 
 /* test auth-int, auth-int FAILURE. chunk trailers/non-trailer */
 

@@ -1,5 +1,5 @@
 /* 
-   Higher Level Interface to XML Parsers.
+   Wrapper interface to XML parser
    Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
@@ -96,8 +96,10 @@ struct ne_xml_parser_s {
     struct element *current; /* current element in the branch */
     struct handler *top_handlers; /* always points at the 
 					   * handler on top of the stack. */
-    int valid; /* non-zero whilst parse should continue */
+    int failure; /* zero whilst parse should continue */
     int prune; /* if non-zero, depth within a dead branch */
+
+    int bom_pos;
 
 #ifdef HAVE_EXPAT
     XML_Parser parser;
@@ -193,6 +195,21 @@ const char *ne_xml_doc_encoding(const ne_xml_parser *p)
 #endif
 }
 
+/* The first character of the REC-xml-names "NCName" rule excludes
+ * "Digit | '.' | '-' | '_' | CombiningChar | Extender"; the XML
+ * parser will not enforce this rule in a namespace declaration since
+ * it treats the entire attribute name as a REC-xml "Name" rule.  It's
+ * too hard to check for all of CombiningChar | Digit | Extender here,
+ * but the valid_ncname_ch1 macro catches some of the rest. */
+
+/* Return non-zero if 'ch' is an invalid start character for an NCName: */
+#define invalid_ncname_ch1(ch) ((ch) == '\0' || strchr("-.0123456789", (ch)) != NULL)
+
+/* Subversion repositories have been deployed which use property names
+ * marshalled as NCNames including a colon character; these should
+ * also be rejected but will be allowed for the time being. */
+#define invalid_ncname(xn) (invalid_ncname_ch1((xn)[0]))
+
 /* Extract the namespace prefix declarations from 'atts'. */
 static int declare_nspaces(ne_xml_parser *p, struct element *elm,
                            const ne_xml_char **atts)
@@ -200,13 +217,15 @@ static int declare_nspaces(ne_xml_parser *p, struct element *elm,
     int n;
     
     for (n = 0; atts && atts[n]; n += 2) {
-        if (strcasecmp(atts[n], "xmlns") == 0) {
+        if (strcmp(atts[n], "xmlns") == 0) {
             /* New default namespace */
             elm->default_ns = ne_strdup(atts[n+1]);
-        } else if (strncasecmp(atts[n], "xmlns:", 6) == 0) {
+        } else if (strncmp(atts[n], "xmlns:", 6) == 0) {
             struct namespace *ns;
             
-            if (atts[n][6] == '\0' || atts[n+1][0] == '\0') {
+            /* Reject some invalid NCNames as namespace prefix, and an
+             * empty URI as the namespace URI */
+            if (invalid_ncname(atts[n] + 6) || atts[n+1][0] == '\0') {
                 ne_snprintf(p->error, ERR_SIZE, 
                             ("XML parse error at line %d: invalid namespace "
                              "declaration"), ne_xml_currentline(p));
@@ -243,22 +262,20 @@ static int expand_qname(ne_xml_parser *p, struct element *elm,
         
         elm->name = ne_strdup(qname);
         elm->nspace = e->default_ns;
+    } else if (invalid_ncname(pfx + 1) || qname == pfx) {
+        ne_snprintf(p->error, ERR_SIZE, 
+                    _("XML parse error at line %d: invalid element name"), 
+                    ne_xml_currentline(p));
+        return -1;
     } else {
         const char *uri = resolve_nspace(elm, qname, pfx-qname);
 
 	if (uri) {
-	    /* The name is everything after the ':' */
-	    if (pfx[1] == '\0') {
-		ne_snprintf(p->error, ERR_SIZE, 
-			    ("XML parse error at line %d: element name missing"
-                             "after namespace prefix"), ne_xml_currentline(p));
-		return -1;
-	    }
 	    elm->name = ne_strdup(pfx+1);
             elm->nspace = uri;
 	} else {
 	    ne_snprintf(p->error, ERR_SIZE, 
-                        ("XML parse error at line %d: undeclared namespace"),
+                        ("XML parse error at line %d: undeclared namespace prefix"),
                         ne_xml_currentline(p));
 	    return -1;
 	}
@@ -275,7 +292,7 @@ static void start_element(void *userdata, const ne_xml_char *name,
     struct handler *hand;
     int state = NE_XML_DECLINE;
 
-    if (!p->valid) return;
+    if (p->failure) return;
     
     if (p->prune) {
         p->prune++;
@@ -288,7 +305,7 @@ static void start_element(void *userdata, const ne_xml_char *name,
     p->current = elm;
 
     if (declare_nspaces(p, elm, atts) || expand_qname(p, elm, name)) {
-        p->valid = 0;
+        p->failure = 1;
         return;
     }
 
@@ -308,8 +325,8 @@ static void start_element(void *userdata, const ne_xml_char *name,
     else if (state == NE_XML_DECLINE)
         /* prune this branch. */
         p->prune++;
-    else /* state == NE_XML_ABORT */
-        p->valid = 0;
+    else /* state < 0 => abort parse  */
+        p->failure = state;
 }
 
 /* Destroys an element structure. */
@@ -337,12 +354,11 @@ static void char_data(void *userdata, const ne_xml_char *data, int len)
     ne_xml_parser *p = userdata;
     struct element *elm = p->current;
 
-    if (!p->valid || p->prune) return;
+    if (p->failure || p->prune) return;
     
-    if (elm->handler->cdata_cb && 
-        elm->handler->cdata_cb(elm->handler->userdata, elm->state, data, len)) {
-        NE_DEBUG(NE_DBG_XML, "Cdata callback failed.\n");
-        p->valid = 0;
+    if (elm->handler->cdata_cb) {
+        p->failure = elm->handler->cdata_cb(elm->handler->userdata, elm->state, data, len);
+        NE_DEBUG(NE_DBG_XML, "Cdata callback returned %d.\n", p->failure);
     }        
 }
 
@@ -352,15 +368,17 @@ static void end_element(void *userdata, const ne_xml_char *name)
     ne_xml_parser *p = userdata;
     struct element *elm = p->current;
 
-    if (!p->valid) return;
+    if (p->failure) return;
 	
     if (p->prune) {
         if (p->prune-- > 1) return;
-    } else if (elm->handler->endelm_cb && 
-               elm->handler->endelm_cb(elm->handler->userdata, elm->state,
-                                       elm->nspace, elm->name)) {
-        NE_DEBUG(NE_DBG_XML, "XML: end-element for %d failed.\n", elm->state);
-        p->valid = 0;
+    } else if (elm->handler->endelm_cb) {
+        p->failure = elm->handler->endelm_cb(elm->handler->userdata, elm->state,
+                                             elm->nspace, elm->name);
+        if (p->failure) {
+            NE_DEBUG(NE_DBG_XML, "XML: end-element for %d failed with %d.\n", 
+                     elm->state, p->failure);
+        }
     }
     
     NE_DEBUG(NE_DBG_XMLPARSE, "XML: end-element (%d, {%s, %s})\n",
@@ -397,8 +415,6 @@ static const char *resolve_nspace(const struct element *elm,
 ne_xml_parser *ne_xml_create(void) 
 {
     ne_xml_parser *p = ne_calloc(sizeof *p);
-    /* Initialize other stuff */
-    p->valid = 1;
     /* Placeholder for the root element */
     p->current = p->root = ne_calloc(sizeof *p->root);
     p->root->default_ns = "";
@@ -448,24 +464,22 @@ void ne_xml_push_handler(ne_xml_parser *p,
     }
 }
 
-void ne_xml_parse_v(void *userdata, const char *block, size_t len) 
+int ne_xml_parse_v(void *userdata, const char *block, size_t len) 
 {
     ne_xml_parser *p = userdata;
-    /* FIXME: The two XML parsers break all our nice abstraction by
-     * choosing different char *'s. The swine. This cast will come
-     * back and bite us someday, no doubt. */
-    ne_xml_parse(p, block, len);
+    return ne_xml_parse(p, (const ne_xml_char *)block, len);
 }
 
-/* Parse the given block of input of length len */
-void ne_xml_parse(ne_xml_parser *p, const char *block, size_t len) 
+#define BOM_UTF8 "\xEF\xBB\xBF" /* UTF-8 BOM */
+
+int ne_xml_parse(ne_xml_parser *p, const char *block, size_t len) 
 {
     int ret, flag;
     /* duck out if it's broken */
-    if (!p->valid) {
+    if (p->failure) {
 	NE_DEBUG(NE_DBG_XML, "Not parsing %" NE_FMT_SIZE_T " bytes.\n", 
 		 len);
-	return;
+	return p->failure;
     }
     if (len == 0) {
 	flag = -1;
@@ -476,34 +490,54 @@ void ne_xml_parse(ne_xml_parser *p, const char *block, size_t len)
 		 len);
 	flag = 0;
     }
-    /* Note, don't write a parser error if !p->valid, since an error
+
+    if (p->bom_pos < 3) {
+        while (len > 0 && p->bom_pos < 3 && 
+               block[0] == BOM_UTF8[p->bom_pos]) {
+            block++;
+            len--;
+            p->bom_pos++;
+        }
+        if (len == 0)
+            return 0;
+        if (p->bom_pos == 0) {
+            p->bom_pos = 3; /* no BOM */
+        } else if (p->bom_pos > 0 && p->bom_pos < 3) {
+            strcpy(p->error, _("Invalid Byte Order Mark"));
+            return p->failure = 1;
+        }
+    }
+
+    /* Note, don't write a parser error if p->failure, since an error
      * will already have been written in that case. */
 #ifdef HAVE_EXPAT
     ret = XML_Parse(p->parser, block, len, flag);
     NE_DEBUG(NE_DBG_XMLPARSE, "XML_Parse returned %d\n", ret);
-    if (ret == 0 && p->valid) {
+    if (ret == 0 && p->failure == 0) {
 	ne_snprintf(p->error, ERR_SIZE,
 		    "XML parse error at line %d: %s", 
 		    XML_GetCurrentLineNumber(p->parser),
 		    XML_ErrorString(XML_GetErrorCode(p->parser)));
-	p->valid = 0;
+	p->failure = 1;
     }
 #else
     ret = xmlParseChunk(p->parser, block, len, flag);
     NE_DEBUG(NE_DBG_XMLPARSE, "xmlParseChunk returned %d\n", ret);
     /* Parse errors are normally caught by the sax_error() callback,
      * which clears p->valid. */
-    if (p->parser->errNo && p->valid) {
+    if (p->parser->errNo && p->failure == 0) {
 	ne_snprintf(p->error, ERR_SIZE, "XML parse error at line %d.", 
 		    ne_xml_currentline(p));
-	p->valid = 0;
+	p->failure = 1;
+        NE_DEBUG(NE_DBG_XMLPARSE, "XML parse error: %s\n", p->error);
     }
 #endif
+    return p->failure;
 }
 
-int ne_xml_valid(ne_xml_parser *p)
+int ne_xml_failed(ne_xml_parser *p)
 {
-    return p->valid;
+    return p->failure;
 }
 
 void ne_xml_destroy(ne_xml_parser *p) 
@@ -553,11 +587,12 @@ static void sax_error(void *ctx, const char *msg, ...)
     ne_vsnprintf(buf, 1024, msg, ap);
     va_end(ap);
 
-    ne_snprintf(p->error, ERR_SIZE, 
-		_("XML parse error at line %d: %s."),
-		p->parser->input->line, buf);
-
-    p->valid = 0;
+    if (p->failure == 0) {
+        ne_snprintf(p->error, ERR_SIZE, 
+                    _("XML parse error at line %d: %s."),
+                    p->parser->input->line, buf);
+        p->failure = 1;
+    }
 }
 #endif
 

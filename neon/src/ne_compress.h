@@ -1,6 +1,6 @@
 /* 
-   Compressed HTPT request/response Handling
-   Copyright (C) 2001, Joe Orton <joe@manyfish.co.uk>
+   Compressed HTTP response handling
+   Copyright (C) 2001-2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -33,12 +33,12 @@ typedef struct ne_decompress_s ne_decompress;
  *
  * Returns pointer to context object which must be passed to
  * ne_decompress_destroy after the request has been dispatched, to
- * free any internal state.  */
+ * free any internal state.  If an error occurs during decompression,
+ * the request will be aborted and session error string set. */
 ne_decompress *ne_decompress_reader(ne_request *req, ne_accept_response accpt,
 				    ne_block_reader rdr, void *userdata);
 
-/* Free's up internal state. Returns non-zero if errors occured during
- * decompression: the session error string will have the error. */
-int ne_decompress_destroy(ne_decompress *ctx);
+/* Destroys decompression state. */
+void ne_decompress_destroy(ne_decompress *ctx);
 
 #endif /* NE_COMPRESS_H */

@@ -1,6 +1,6 @@
 #! /bin/sh
 # Originally from libxml, Copyright (C) Daniel Veillard
-# Modifications for neon Copyright (C) 2000-2002 Joe Orton.
+# Modifications for neon Copyright (C) 2000-2004 Joe Orton.
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
@@ -21,7 +21,7 @@ Known values for OPTION are:
   --help		display this help and exit
   --version		output version information
   --support FEATURE     exit with success if feature is supported
- Known features: dav [@NEON_SUPPORTS_DAV@], ssl [@NEON_SUPPORTS_SSL@], zlib [@NEON_SUPPORTS_ZLIB@]
+ Known features: dav [@NE_FLAG_DAV@], ssl [@NE_FLAG_SSL@], zlib [@NE_FLAG_ZLIB@], idna [@NE_FLAG_IDNA@], ipv6 [@NE_FLAG_IPV6@], lfs [@NE_FLAG_LFS@]
 
 EOF
 
@@ -87,16 +87,18 @@ while test $# -gt 0; do
 	shift
 
 	case "$1" in
-	ssl|SSL) support @NEON_SUPPORTS_SSL@ ;;
-	zlib|ZLIB) support @NEON_SUPPORTS_ZLIB@ ;;
-	dav|DAV) support @NEON_SUPPORTS_DAV@ ;;
+	ssl|SSL) support @NE_FLAG_SSL@ ;;
+	zlib|ZLIB) support @NE_FLAG_ZLIB@ ;;
+	ipv6|IPV6) support @NE_FLAG_IPV6@ ;;
+	dav|DAV) support @NE_FLAG_DAV@ ;;
+	idna|IDNA) support @NE_FLAG_IDNA@ ;;
+	lfs|LFS) support @NE_FLAG_LFS@ ;;
 	*) support no ;;
 	esac
 	;;
 
     *)
-	usage
-	exit 1
+	usage 1 1>&2
 	;;
     esac
     shift

@@ -1,6 +1,7 @@
 /* 
    Date manipulation routines
    Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2004 Jiang Lei <tristone@deluxe.ocn.ne.jp>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -35,7 +36,7 @@
 
 #include "ne_alloc.h"
 #include "ne_dates.h"
-#include "ne_utils.h"
+#include "ne_string.h"
 
 /* Generic date manipulation routines. */
 
@@ -61,9 +62,33 @@ static const char *short_months[12] = {
 
 #if defined(HAVE_STRUCT_TM_TM_GMTOFF)
 #define GMTOFF(t) ((t).tm_gmtoff)
+#elif defined(HAVE_STRUCT_TM___TM_GMTOFF)
+#define GMTOFF(t) ((t).__tm_gmtoff)
+#elif defined(WIN32)
+#define GMTOFF(t) (gmt_to_local_win32())
 #else
 /* FIXME: work out the offset anyway. */
 #define GMTOFF(t) (0)
+#endif
+
+#ifdef WIN32
+time_t gmt_to_local_win32(void)
+{
+    TIME_ZONE_INFORMATION tzinfo;
+    DWORD dwStandardDaylight;
+    long bias;
+
+    dwStandardDaylight = GetTimeZoneInformation(&tzinfo);
+    bias = tzinfo.Bias;
+
+    if (dwStandardDaylight == TIME_ZONE_ID_STANDARD)
+        bias += tzinfo.StandardBias;
+    
+    if (dwStandardDaylight == TIME_ZONE_ID_DAYLIGHT)
+        bias += tzinfo.DaylightBias;
+    
+    return (- bias * 60);
+}
 #endif
 
 /* Returns the time/date GMT, in RFC1123-type format: eg

@@ -1,6 +1,6 @@
 /* 
    Basic HTTP and WebDAV methods
-   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -22,6 +22,7 @@
 #include "config.h"
 
 #include <sys/types.h>
+#include <sys/stat.h> /* for struct stat */
 
 #ifdef HAVE_STRING_H
 #include <string.h>
@@ -41,13 +42,11 @@
 #include "ne_basic.h"
 #include "ne_207.h"
 
-#ifndef NEON_NODAV
+#ifdef NE_HAVE_DAV
 #include "ne_uri.h"
-#endif
-
-#ifdef USE_DAV_LOCKS
 #include "ne_locks.h"
 #endif
+
 #include "ne_dates.h"
 #include "ne_i18n.h"
 
@@ -82,73 +81,32 @@ int ne_getmodtime(ne_session *sess, const char *uri, time_t *modtime)
 /* PUT's from fd to URI */
 int ne_put(ne_session *sess, const char *uri, int fd) 
 {
-    ne_request *req = ne_request_create(sess, "PUT", uri);
+    ne_request *req;
+    struct stat st;
     int ret;
+
+    if (fstat(fd, &st)) {
+        int errnum = errno;
+        char buf[200];
+
+        ne_set_error(sess, _("Could not determine file size: %s"),
+                     ne_strerror(errnum, buf, sizeof buf));
+        return NE_ERROR;
+    }
     
-#ifdef USE_DAV_LOCKS
+    req = ne_request_create(sess, "PUT", uri);
+
+#ifdef NE_HAVE_DAV
     ne_lock_using_resource(req, uri, 0);
     ne_lock_using_parent(req, uri);
 #endif
 
-    ne_set_request_body_fd(req, fd);
+    ne_set_request_body_fd(req, fd, 0, st.st_size);
 	
     ret = ne_request_dispatch(req);
     
     if (ret == NE_OK && ne_get_status(req)->klass != 2)
 	ret = NE_ERROR;
-
-    ne_request_destroy(req);
-
-    return ret;
-}
-
-/* Conditional HTTP put. 
- * PUTs from fd to uri, returning NE_FAILED if resource as URI has
- * been modified more recently than 'since'.
- */
-int 
-ne_put_if_unmodified(ne_session *sess, const char *uri, int fd, 
-		     time_t since)
-{
-    ne_request *req;
-    char *date;
-    int ret;
-    
-    if (ne_version_pre_http11(sess)) {
-	time_t modtime;
-	/* Server is not minimally HTTP/1.1 compliant.  Do a HEAD to
-	 * check the remote mod time. Of course, this makes the
-	 * operation very non-atomic, but better than nothing. */
-	ret = ne_getmodtime(sess, uri, &modtime);
-	if (ret != NE_OK) return ret;
-	if (modtime != since)
-	    return NE_FAILED;
-    }
-
-    req = ne_request_create(sess, "PUT", uri);
-
-    date = ne_rfc1123_date(since);
-    /* Add in the conditionals */
-    ne_add_request_header(req, "If-Unmodified-Since", date);
-    ne_free(date);
-    
-#ifdef USE_DAV_LOCKS
-    ne_lock_using_resource(req, uri, 0);
-    /* FIXME: this will give 412 if the resource doesn't exist, since
-     * PUT may modify the parent... does that matter?  */
-#endif
-
-    ne_set_request_body_fd(req, fd);
-
-    ret = ne_request_dispatch(req);
-    
-    if (ret == NE_OK) {
-	if (ne_get_status(req)->code == 412) {
-	    ret = NE_FAILED;
-	} else if (ne_get_status(req)->klass != 2) {
-	    ret = NE_ERROR;
-	}
-    }
 
     ne_request_destroy(req);
 
@@ -163,27 +121,32 @@ struct get_context {
     ne_content_range *range;
 };
 
-static void get_to_fd(void *userdata, const char *block, size_t length)
+static int get_to_fd(void *userdata, const char *block, size_t length)
 {
     struct get_context *ctx = userdata;
     ssize_t ret;
     
+    if (ctx->error) {
+        return -1;
+    }
+
     if (!ctx->error) {
 	while (length > 0) {
 	    ret = write(ctx->fd, block, length);
 	    if (ret < 0) {
 		char err[200];
-		ctx->error = 1;
 		ne_strerror(errno, err, sizeof err);
 		ne_set_error(ctx->session, _("Could not write to file: %s"),
 			     err);
-		break;
+                return -1;
 	    } else {
 		length -= ret;
 		block += ret;
 	    }
 	}
     }
+    
+    return 0;
 }
 
 static int accept_206(void *ud, ne_request *req, const ne_status *st)
@@ -396,9 +359,14 @@ void ne_content_type_handler(void *userdata, const char *value)
     /* set subtype, losing any trailing whitespace */
     ct->subtype = ne_shave(stype, " \t");
     
-    /* 2616#3.7.1: subtypes of text/ default to charset ISO-8859-1. */
-    if (ct->charset == NULL && strcasecmp(ct->type, "text") == 0)
-	ct->charset = "ISO-8859-1";
+    if (ct->charset == NULL && strcasecmp(ct->type, "text") == 0) {
+        /* 3280§3.1: text/xml without charset implies us-ascii. */
+        if (strcasecmp(ct->subtype, "xml") == 0)
+            ct->charset = "us-ascii";
+        /* 2616§3.7.1: subtypes of text/ default to charset ISO-8859-1. */
+        else
+            ct->charset = "ISO-8859-1";
+    }
 }
 
 static void dav_hdr_handler(void *userdata, const char *value)
@@ -445,7 +413,7 @@ int ne_options(ne_session *sess, const char *uri,
     return ret;
 }
 
-#ifndef NEON_NODAV
+#ifdef NE_HAVE_DAV
 
 void ne_add_depth_header(ne_request *req, int depth)
 {
@@ -474,7 +442,7 @@ static int copy_or_move(ne_session *sess, int is_move, int overwrite,
 	ne_add_depth_header(req, depth);
     }
 
-#ifdef USE_DAV_LOCKS
+#ifdef NE_HAVE_DAV
     if (is_move) {
 	ne_lock_using_resource(req, src, NE_DEPTH_INFINITE);
     }
@@ -509,7 +477,7 @@ int ne_delete(ne_session *sess, const char *uri)
 {
     ne_request *req = ne_request_create(sess, "DELETE", uri);
 
-#ifdef USE_DAV_LOCKS
+#ifdef NE_HAVE_DAV
     ne_lock_using_resource(req, uri, NE_DEPTH_INFINITE);
     ne_lock_using_parent(req, uri);
 #endif
@@ -539,7 +507,7 @@ int ne_mkcol(ne_session *sess, const char *uri)
 
     req = ne_request_create(sess, "MKCOL", real_uri);
 
-#ifdef USE_DAV_LOCKS
+#ifdef NE_HAVE_DAV
     ne_lock_using_resource(req, real_uri, 0);
     ne_lock_using_parent(req, real_uri);
 #endif
@@ -551,4 +519,4 @@ int ne_mkcol(ne_session *sess, const char *uri)
     return ret;
 }
 
-#endif /* NEON_NODAV */
+#endif /* NE_HAVE_DAV */

@@ -26,10 +26,6 @@
 #include "config.h"
 
 #include <sys/types.h>
-#include <sys/stat.h>
-#ifdef __EMX__
-#include <sys/select.h>
-#endif
 
 #ifdef HAVE_LIMITS_H
 #include <limits.h> /* for UINT_MAX etc */
@@ -90,6 +86,33 @@ struct body_reader {
     struct body_reader *next;
 };
 
+#ifdef NE_LFS
+#define ne_lseek lseek64
+typedef off64_t ne_off_t;
+#define FMT_NE_OFF_T NE_FMT_OFF64_T
+#if defined(LONG_LONG_MAX) && !defined(LLONG_MAX)
+#define LLONG_MAX LONG_LONG_MAX
+#endif
+#define NE_OFFT_MAX LLONG_MAX
+#ifdef HAVE_STRTOLL
+#define ne_strtoff strtoll
+#else
+#define ne_strtoff strtoq
+#endif
+#else /* !NE_LFS */
+typedef off_t ne_off_t;
+#define ne_lseek lseek
+#define FMT_NE_OFF_T NE_FMT_OFF_T
+#define NE_OFFT_MAX LONG_MAX
+#if SIZEOF_OFF_T > SIZEOF_LONG && defined(HAVE_STRTOLL)
+#define ne_strtoff strtoll
+#elif SIZEOF_OFF_T > SIZEOF_LONG && defined(HAVE_STRTOQ)
+#define ne_strtoff strtoq
+#else
+#define ne_strtoff strtol
+#endif
+#endif /* NE_LFS */
+
 struct ne_request_s {
     char *method, *uri; /* method and Request-URI */
 
@@ -99,16 +122,23 @@ struct ne_request_s {
     ne_provide_body body_cb;
     void *body_ud;
 
-    /* Comes from either an fd or a buffer. */
+    /* Request body source: file or buffer (if not callback). */
     union {
-	int fd;
+        struct {
+            int fd;
+            ne_off_t offset, length;
+            ne_off_t remain; /* remaining bytes to send. */
+        } file;
 	struct {
+            /* length bytes @ buffer = whole body.
+             * remain bytes @ pnt = remaining bytes to send */
 	    const char *buffer, *pnt;
-	    size_t left;
+	    size_t length, remain;
 	} buf;
     } body;
 	    
-    size_t body_size, body_progress;
+    ne_off_t body_length; /* length of request body */
+    ne_off_t body_progress; /* number of bytes of body sent so far */
 
     /* temporary store for response lines. */
     char respbuf[BUFSIZ];
@@ -117,17 +147,25 @@ struct ne_request_s {
 
     /* The transfer encoding types */
     struct ne_response {
-	int length;            /* Response entity-body content-length */
-	size_t left;              /* Bytes left to read */
-	size_t chunk_left;        /* Bytes of chunk left to read */
-	size_t total;             /* total bytes read so far. */
-	/* how the message length is detemined: */
 	enum {
 	    R_TILLEOF = 0, /* read till eof */
-	    R_NO_BODY, /* implicitly no body (HEAD, 204, 205, 304) */
+	    R_NO_BODY, /* implicitly no body (HEAD, 204, 304) */
 	    R_CHUNKED, /* using chunked transfer-encoding */
 	    R_CLENGTH  /* using given content-length */
 	} mode;
+        union {
+            /* clen: used if mode == R_CLENGTH; total and bytes
+             * remaining to be read of response body. */
+            struct {
+                ne_off_t total, remain;
+            } clen;
+            /* chunk: used if mode == R_CHUNKED; total and bytes
+             * remaining to be read of current chunk */
+            struct {
+                size_t total, remain;
+            } chunk;
+        } body;
+        ne_off_t progress; /* number of bytes read of response */
     } resp;
 
     /* List of callbacks which are passed response headers */
@@ -316,25 +354,6 @@ void ne_hook_destroy_session(ne_session *sess,
     ADD_HOOK(sess->destroy_sess_hooks, fn, userdata);
 }
 
-/* 0.24.x hack to fix ne_compress layer problems */
-void ne_kill_pre_send(ne_session *sess, ne_pre_send_fn fn, void *userdata)
-{
-    struct hook **last, *hk;
-
-    last = &sess->pre_send_hooks;
-    hk = *last;
-
-    while (hk) {
-        if (hk->fn == (void_fn)fn && hk->userdata == userdata) {
-            *last = hk->next;
-            ne_free(hk);
-            return;
-        }
-        last = &hk->next;
-        hk = *last;
-    }
-}
-
 void ne_set_session_private(ne_session *sess, const char *id, void *userdata)
 {
     add_hook(&sess->private, id, NULL, userdata);
@@ -350,16 +369,16 @@ static ssize_t body_string_send(void *userdata, char *buffer, size_t count)
     ne_request *req = userdata;
     
     if (count == 0) {
-	req->body.buf.left = req->body_size;
+	req->body.buf.remain = req->body.buf.length;
 	req->body.buf.pnt = req->body.buf.buffer;
     } else {
 	/* if body_left == 0 we fall through and return 0. */
-	if (req->body.buf.left < count)
-	    count = req->body.buf.left;
+	if (req->body.buf.remain < count)
+	    count = req->body.buf.remain;
 
 	memcpy(buffer, req->body.buf.pnt, count);
 	req->body.buf.pnt += count;
-	req->body.buf.left -= count;
+	req->body.buf.remain -= count;
     }
 
     return count;
@@ -370,16 +389,26 @@ static ssize_t body_fd_send(void *userdata, char *buffer, size_t count)
     ne_request *req = userdata;
 
     if (count) {
-	return read(req->body.fd, buffer, count);
+        if (req->body.file.remain == 0)
+            return 0;
+        if ((off_t)count > req->body.file.remain)
+            count = req->body.file.remain;
+	return read(req->body.file.fd, buffer, count);
     } else {
-	/* rewind since we may have to send it again */
-	return lseek(req->body.fd, SEEK_SET, 0);
+        /* rewind for next send. */
+        if (ne_lseek(req->body.file.fd, req->body.file.offset, SEEK_SET)
+            == req->body.file.offset) {
+            req->body.file.remain = req->body.file.length;
+            return 0;
+        } else {
+            return -1;
+        }
     }
 }
 
 /* Pulls the request body from the source and pushes it to the given
  * callback.  Returns 0 on success, or NE_* code */
-int ne_pull_request_body(ne_request *req, ne_push_fn fn, void *ud)
+int ne__pull_request_body(ne_request *req, ne_push_fn fn, void *ud)
 {
     int ret = 0;
     char buffer[BUFSIZ];
@@ -419,7 +448,7 @@ static int send_with_progress(void *userdata, const char *data, size_t n)
     if (ret == 0) {
 	req->body_progress += n;
 	req->session->progress_cb(req->session->progress_ud,
-				  req->body_progress, req->body_size);
+				  req->body_progress, req->body_length);
     }
     
     return ret;    
@@ -434,10 +463,10 @@ static int send_request_body(ne_request *req)
     if (req->session->progress_cb) {
 	/* with progress callbacks. */
 	req->body_progress = 0;
-	ret = ne_pull_request_body(req, send_with_progress, req);
+	ret = ne__pull_request_body(req, send_with_progress, req);
     } else {
 	/* without progress callbacks. */
-	ret = ne_pull_request_body(req, (ne_push_fn)ne_sock_fullwrite,
+	ret = ne__pull_request_body(req, (ne_push_fn)ne_sock_fullwrite,
 				   req->session->socket);
     }
 
@@ -457,7 +486,8 @@ static void add_fixed_headers(ne_request *req)
      * harder to get a persistent connection, except if using a proxy
      * as per 2068 sec 19.7.1.  Always add TE: trailers since those
      * are understood. */
-    if (!req->session->is_http11 && !req->session->use_proxy) {
+    if (!req->session->no_persist && !req->session->is_http11
+        && !req->session->use_proxy) {
 	ne_buffer_zappend(req->headers, 
                           "Keep-Alive: " EOL
                           "Connection: TE, Keep-Alive" EOL
@@ -487,7 +517,8 @@ static void te_hdr_handler(void *userdata, const char *value)
 {
     struct ne_response *resp = userdata;
 
-    resp->mode = R_CHUNKED;    
+    resp->mode = R_CHUNKED;
+    resp->body.chunk.remain = 0;
 }
 
 /* Handler for the "Connection" response header */
@@ -504,10 +535,10 @@ static void connection_hdr_handler(void *userdata, const char *value)
 static void clength_hdr_handler(void *userdata, const char *value)
 {
     struct ne_response *resp = userdata;
-    size_t len = strtoul(value, NULL, 10);
-    if (len != ULONG_MAX && resp->mode == R_TILLEOF) {
+    ne_off_t len = ne_strtoff(value, NULL, 10);
+    if (len != NE_OFFT_MAX && len >= 0 && resp->mode == R_TILLEOF) {
 	resp->mode = R_CLENGTH;
-	resp->length = len;
+	resp->body.clen.total = resp->body.clen.remain = len;
     }
 }
 
@@ -560,47 +591,66 @@ ne_request *ne_request_create(ne_session *sess,
     return req;
 }
 
-static void set_body_size(ne_request *req, size_t size)
+/* Set the request body length to 'length' */
+static void set_body_length(ne_request *req, ne_off_t length)
 {
-    req->body_size = size;
-    ne_print_request_header(req, "Content-Length", "%" NE_FMT_SIZE_T, size);
+    req->body_length = length;
+    ne_print_request_header(req, "Content-Length", "%" FMT_NE_OFF_T, length);
 }
 
 void ne_set_request_body_buffer(ne_request *req, const char *buffer,
 				size_t size)
 {
     req->body.buf.buffer = buffer;
+    req->body.buf.length = size;
     req->body_cb = body_string_send;
     req->body_ud = req;
-    set_body_size(req, size);
+    set_body_length(req, size);
 }
 
-void ne_set_request_body_provider(ne_request *req, size_t bodysize,
+void ne_set_request_body_provider(ne_request *req, off_t bodysize,
 				  ne_provide_body provider, void *ud)
 {
     req->body_cb = provider;
     req->body_ud = ud;
-    set_body_size(req, bodysize);
+    set_body_length(req, bodysize);
 }
 
-int ne_set_request_body_fd(ne_request *req, int fd)
+void ne_set_request_body_fd(ne_request *req, int fd,
+                            off_t offset, off_t length)
 {
-    struct stat bodyst;
-
-    /* Get file length */
-    if (fstat(fd, &bodyst) < 0) {
-	char err[200];
-	ne_strerror(errno, err, sizeof err);
-	ne_set_error(req->session, _("Could not determine file length: %s"),
-		     err);
-	NE_DEBUG(NE_DBG_HTTP, "Stat failed: %s\n", err);
-	return -1;
-    }
-    req->body.fd = fd;
+    req->body.file.fd = fd;
+    req->body.file.offset = offset;
+    req->body.file.length = length;
     req->body_cb = body_fd_send;
     req->body_ud = req;
-    set_body_size(req, bodyst.st_size);
-    return 0;
+    set_body_length(req, length);
+}
+
+#ifdef NE_LFS
+void ne_set_request_body_fd64(ne_request *req, int fd,
+                              off64_t offset, off64_t length)
+{
+    req->body.file.fd = fd;
+    req->body.file.offset = offset;
+    req->body.file.length = length;
+    req->body_cb = body_fd_send;
+    req->body_ud = req;
+    set_body_length(req, length);
+}
+
+void ne_set_request_body_provider64(ne_request *req, off64_t bodysize,
+                                    ne_provide_body provider, void *ud)
+{
+    req->body_cb = provider;
+    req->body_ud = ud;
+    set_body_length(req, bodysize);
+}
+#endif
+
+void ne_set_request_expect100(ne_request *req, int flag)
+{
+    req->use_expect100 = flag;
 }
 
 void ne_add_request_header(ne_request *req, const char *name, 
@@ -707,34 +757,33 @@ void ne_request_destroy(ne_request *req)
 }
 
 
-/* Reads a block of the response into buffer, which is of size buflen.
- * Returns number of bytes read, 0 on end-of-response, or NE_* on error.
- * TODO?: only make one actual read() call in here... 
- */
+/* Reads a block of the response into BUFFER, which is of size
+ * *BUFLEN.  Returns zero on success or non-zero on error.  On
+ * success, *BUFLEN is updated to be the number of bytes read into
+ * BUFFER (which will be 0 to indicate the end of the repsonse).  On
+ * error, the connection is closed and the session error string is
+ * set.  */
 static int read_response_block(ne_request *req, struct ne_response *resp, 
 			       char *buffer, size_t *buflen) 
 {
+    ne_socket *const sock = req->session->socket;
     size_t willread;
     ssize_t readlen;
-    ne_socket *sock = req->session->socket;
+    
     switch (resp->mode) {
     case R_CHUNKED:
-	/* We are doing a chunked transfer-encoding.
-	 * It goes:  `SIZE CRLF CHUNK CRLF SIZE CRLF CHUNK CRLF ...'
-	 * ended by a `CHUNK CRLF 0 CRLF', a 0-sized chunk.
-	 * The slight complication is that we have to cope with
-	 * partial reads of chunks.
-	 * For this reason, resp.chunk_left contains the number of
-	 * bytes left to read in the current chunk.
-	 */
-	if (resp->chunk_left == 0) {
-	    unsigned long int chunk_len;
+        /* Chunked transfer-encoding: chunk syntax is "SIZE CRLF CHUNK
+         * CRLF SIZE CRLF CHUNK CRLF ..." followed by zero-length
+         * chunk: "CHUNK CRLF 0 CRLF".  resp.chunk.remain contains the
+         * number of bytes left to read in the current chunk. */
+	if (resp->body.chunk.remain == 0) {
+	    unsigned long chunk_len;
 	    char *ptr;
-	    /* We are at the start of a new chunk. */
-	    NE_DEBUG(NE_DBG_HTTP, "New chunk.\n");
+
+            /* The start of a new chunk. */
 	    SOCK_ERR(req, ne_sock_readline(sock, buffer, *buflen),
 		     _("Could not read chunk size"));
-	    NE_DEBUG(NE_DBG_HTTP, "[Chunk Size] < %s", buffer);
+	    NE_DEBUG(NE_DBG_HTTP, "[chunk] < %s", buffer);
 	    chunk_len = strtoul(buffer, &ptr, 16);
 	    /* limit chunk size to <= UINT_MAX, so it will probably
 	     * fit in a size_t. */
@@ -743,18 +792,14 @@ static int read_response_block(ne_request *req, struct ne_response *resp,
 		return aborted(req, _("Could not parse chunk size"), 0);
 	    }
 	    NE_DEBUG(NE_DBG_HTTP, "Got chunk size: %lu\n", chunk_len);
-	    if (chunk_len == 0) {
-		/* Zero-size chunk == end of response. */
-		NE_DEBUG(NE_DBG_HTTP, "Zero-size chunk.\n");
-		*buflen = 0;
-		return NE_OK;
-	    }
-	    resp->chunk_left = chunk_len;
+	    resp->body.chunk.remain = chunk_len;
 	}
-	willread = resp->chunk_left;
+	willread = resp->body.chunk.remain > *buflen
+            ? *buflen : resp->body.chunk.remain;
 	break;
     case R_CLENGTH:
-	willread = resp->left;
+	willread = resp->body.clen.remain > (off_t)*buflen 
+            ? *buflen : (size_t)resp->body.clen.remain;
 	break;
     case R_TILLEOF:
 	willread = *buflen;
@@ -764,8 +809,7 @@ static int read_response_block(ne_request *req, struct ne_response *resp,
 	willread = 0;
 	break;
     }
-    if (willread > *buflen) willread = *buflen;
-    else if (willread == 0) {
+    if (willread == 0) {
 	*buflen = 0;
 	return 0;
     }
@@ -792,8 +836,8 @@ static int read_response_block(ne_request *req, struct ne_response *resp,
 	     "Read block (%" NE_FMT_SSIZE_T " bytes):\n[%.*s]\n",
 	     readlen, (int)readlen, buffer);
     if (resp->mode == R_CHUNKED) {
-	resp->chunk_left -= readlen;
-	if (resp->chunk_left == 0) {
+	resp->body.chunk.remain -= readlen;
+	if (resp->body.chunk.remain == 0) {
 	    char crlfbuf[2];
 	    /* If we've read a whole chunk, read a CRLF */
 	    readlen = ne_sock_fullread(sock, crlfbuf, 2);
@@ -804,8 +848,9 @@ static int read_response_block(ne_request *req, struct ne_response *resp,
                 return aborted(req, _("Chunk delimiter was invalid"), 0);
 	}
     } else if (resp->mode == R_CLENGTH) {
-	resp->left -= readlen;
+	resp->body.clen.remain -= readlen;
     }
+    resp->progress += readlen;
     return NE_OK;
 }
 
@@ -813,20 +858,21 @@ ssize_t ne_read_response_block(ne_request *req, char *buffer, size_t buflen)
 {
     struct body_reader *rdr;
     size_t readlen = buflen;
+    struct ne_response *const resp = &req->resp;
 
-    if (read_response_block(req, &req->resp, buffer, &readlen))
+    if (read_response_block(req, resp, buffer, &readlen))
 	return -1;
 
-    req->resp.total += readlen;
-
     if (req->session->progress_cb) {
-	req->session->progress_cb(req->session->progress_ud, req->resp.total, 
-				  (req->resp.mode==R_CLENGTH)?req->resp.length:-1);
+	req->session->progress_cb(req->session->progress_ud, resp->progress, 
+				  resp->mode==R_CLENGTH ? resp->body.clen.total:-1);
     }
 
-    /* TODO: call the readers when this fails too. */
     for (rdr = req->body_readers; rdr!=NULL; rdr=rdr->next) {
-	if (rdr->use) rdr->handler(rdr->userdata, buffer, readlen);
+	if (rdr->use && rdr->handler(rdr->userdata, buffer, readlen) != 0) {
+            ne_close_connection(req->session);
+            return -1;
+        }
     }
     
     return readlen;
@@ -864,10 +910,10 @@ static ne_buffer *build_request(ne_request *req)
 
 static void dump_request(const char *request)
 { 
-    if ((NE_DBG_HTTPPLAIN&ne_debug_mask) == NE_DBG_HTTPPLAIN) { 
+    if (ne_debug_mask & NE_DBG_HTTPPLAIN) { 
 	/* Display everything mode */
 	NE_DEBUG(NE_DBG_HTTP, "Sending request headers:\n%s", request);
-    } else {
+    } else if (ne_debug_mask & NE_DBG_HTTP) {
 	/* Blank out the Authorization paramaters */
 	char *reqdebug = ne_strdup(request), *pnt = reqdebug;
 	while ((pnt = strstr(pnt, "Authorization: ")) != NULL) {
@@ -979,7 +1025,7 @@ static int send_request(ne_request *req, const ne_buffer *request)
 	return RETRY_RET(retry, ret, aret);
     }
     
-    if (!req->use_expect100 && req->body_size > 0) {
+    if (!req->use_expect100 && req->body_length > 0) {
 	/* Send request body, if not using 100-continue. */
 	ret = send_request_body(req);
 	if (ret < 0) {
@@ -999,7 +1045,8 @@ static int send_request(ne_request *req, const ne_buffer *request)
 	/* Discard headers with the interim response. */
 	if ((ret = discard_headers(req)) != NE_OK) break;
 
-	if (req->use_expect100 && (status->code == 100) && !sentbody) {
+	if (req->use_expect100 && (status->code == 100)
+            && req->body_length > 0 && !sentbody) {
 	    /* Send the body after receiving the first 100 Continue */
 	    if ((ret = send_request_body(req)) != NE_OK) break;	    
 	    sentbody = 1;
@@ -1135,8 +1182,12 @@ static int read_response_headers(ne_request *req)
     return ret;
 }
 
+/* Perform any necessary DNS lookup for the host given by *info;
+ * return NE_ code. */
 static int lookup_host(ne_session *sess, struct host_info *info)
 {
+    if (sess->addrlist) return NE_OK;
+
     NE_DEBUG(NE_DBG_HTTP, "Doing DNS lookup on %s...\n", info->hostname);
     if (sess->notify_cb)
 	sess->notify_cb(sess->notify_ud, ne_conn_namelookup, info->hostname);
@@ -1169,10 +1220,6 @@ int ne_begin_request(ne_request *req)
 
     req->resp.mode = R_TILLEOF;
     
-    /* FIXME: Determine whether to use the Expect: 100-continue header. */
-    req->use_expect100 = (req->session->expect100_works > -1) &&
-	(req->body_size > HTTP_EXPECT_MINSIZE) && req->session->is_http11;
-
     /* Build the request string, and send it */
     data = build_request(req);
     DEBUG_DUMP_REQUEST(data->data);
@@ -1197,7 +1244,7 @@ int ne_begin_request(ne_request *req)
     /* Read the headers */
     HTTP_ERR(read_response_headers(req));
 
-#ifdef NEON_SSL
+#ifdef NE_HAVE_SSL
     /* Special case for CONNECT handling: the response has no body,
      * and the connection can persist. */
     if (req->session->in_connect && st->klass == 2) {
@@ -1206,9 +1253,9 @@ int ne_begin_request(ne_request *req)
     }
 #endif
 
-    /* HEAD requests and 204, 205, 304 responses have no response body,
+    /* HEAD requests and 204, 304 responses have no response body,
      * regardless of what headers are present. */
-    if (req->method_is_head || st->code==204 || st->code==205 || st->code==304)
+    if (req->method_is_head || st->code == 204 || st->code == 304)
     	req->resp.mode = R_NO_BODY;
 
     /* Prepare for reading the response entity-body.  Call each of the
@@ -1218,9 +1265,6 @@ int ne_begin_request(ne_request *req)
 	rdr->use = rdr->accept_response(rdr->userdata, req, st);
     }
     
-    req->resp.left = req->resp.length;
-    req->resp.chunk_left = 0;
-
     return NE_OK;
 }
 
@@ -1292,7 +1336,7 @@ ne_session *ne_get_session(const ne_request *req)
     return req->session;
 }
 
-#ifdef NEON_SSL
+#ifdef NE_HAVE_SSL
 /* Create a CONNECT tunnel through the proxy server.
  * Returns HTTP_* */
 static int proxy_tunnel(ne_session *sess)
@@ -1324,13 +1368,37 @@ static int proxy_tunnel(ne_session *sess)
 }
 #endif
 
+/* Return the first resolved address for the given host. */
+static const ne_inet_addr *resolve_first(ne_session *sess, 
+                                         struct host_info *host)
+{
+    if (sess->addrlist) {
+        sess->curaddr = 0;
+        return sess->addrlist[0];
+    } else {
+        return ne_addr_first(host->address);
+    }
+}
+
+/* Return the next resolved address for the given host or NULL if
+ * there are no more addresses. */
+static const ne_inet_addr *resolve_next(ne_session *sess,
+                                        struct host_info *host)
+{
+    if (sess->addrlist) {
+        if (sess->curaddr++ < sess->numaddrs)
+            return sess->addrlist[sess->curaddr];
+        else
+            return NULL;
+    } else {
+        return ne_addr_next(host->address);
+    }
+}
+
 /* Make new TCP connection to server at 'host' of type 'name'.  Note
  * that once a connection to a particular network address has
  * succeeded, that address will be used first for the next attempt to
  * connect. */
-/* TODO: an alternate implementation could always cycle through the
- * addresses: this could ease server load, but could hurt SSL session
- * caching for SSL sessions, which would increase server load. */
 static int do_connect(ne_request *req, struct host_info *host, const char *err)
 {
     ne_session *const sess = req->session;
@@ -1342,7 +1410,7 @@ static int do_connect(ne_request *req, struct host_info *host, const char *err)
     }
 
     if (host->current == NULL)
-	host->current = ne_addr_first(host->address);
+	host->current = resolve_first(sess, host);
 
     do {
 	notify_status(sess, ne_conn_connecting, host->hostport);
@@ -1355,7 +1423,7 @@ static int do_connect(ne_request *req, struct host_info *host, const char *err)
 #endif
 	ret = ne_sock_connect(sess->socket, host->current, host->port);
     } while (ret && /* try the next address... */
-	     (host->current = ne_addr_next(host->address)) != NULL);
+	     (host->current = resolve_next(sess, host)) != NULL);
 
     if (ret) {
         ne_set_error(sess, "%s: %s", err, ne_sock_error(sess->socket));
@@ -1363,7 +1431,7 @@ static int do_connect(ne_request *req, struct host_info *host, const char *err)
 	return NE_CONNECT;
     }
 
-    notify_status(sess, ne_conn_connected, sess->proxy.hostport);
+    notify_status(sess, ne_conn_connected, host->hostport);
     
     if (sess->rdtimeout)
 	ne_sock_read_timeout(sess->socket, sess->rdtimeout);
@@ -1389,7 +1457,7 @@ static int open_connection(ne_request *req)
 
     if (ret != NE_OK) return ret;
 
-#ifdef NEON_SSL
+#ifdef NE_HAVE_SSL
     /* Negotiate SSL layer if required. */
     if (sess->use_ssl && !sess->in_connect) {
         /* CONNECT tunnel */
@@ -1397,7 +1465,7 @@ static int open_connection(ne_request *req)
             ret = proxy_tunnel(sess);
         
         if (ret == NE_OK)
-            ret = ne_negotiate_ssl(req);
+            ret = ne__negotiate_ssl(req);
 
         /* This is probably only really needed for ne_negotiate_ssl
          * failures as proxy_tunnel will fail via aborted(). */

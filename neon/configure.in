@@ -1,6 +1,4 @@
-dnl Require autoconf 2.53 for an AC_C_BIGENDIAN which supports 
-dnl cross-compiling.
-AC_PREREQ(2.53)
+AC_PREREQ(2.58) dnl 2.58 required for AS_HELP_STRING
 
 dnl Extract the version (sans LF) from .version, created at release-time.
 m4_define(ne_version, [m4_translit(m4_include(.version), [
@@ -8,7 +6,7 @@ m4_define(ne_version, [m4_translit(m4_include(.version), [
 
 AC_INIT(neon, ne_version, [neon@webdav.org])
 
-AC_COPYRIGHT([Copyright (c) 2000, 2001, 2002 Joe Orton
+AC_COPYRIGHT([Copyright 2000-2004 Joe Orton
 This configure script may be copied, distributed and modified under the 
 terms of the GNU Library General Public license; see COPYING for more details])
 
@@ -21,16 +19,22 @@ NEON_WITH_LIBS
 # libraries which are detected (e.g. OpenSSL) can still be found when
 # building using the --libs output of neon-config.
 user_LDFLAGS=$LDFLAGS
-AC_SUBST(user_LDFLAGS)
 
 # By default, allow 'make install' to work.
 ALLOW_INSTALL=yes
-AC_SUBST(ALLOW_INSTALL)
 
-# Always defined
-AC_DEFINE([_GNU_SOURCE], 1, [Unconditionally define _GNU_SOURCE])
-# Defined when neon is built as library
-AC_DEFINE(NEON_IS_LIBRARY, 1, [Define when building neon as a library])
+AC_DEFINE([_GNU_SOURCE], 1, [Always defined to enable GNU extensions])
+
+dnl Place straight into config.h.in:
+AH_TOP([
+/* Only defined when neon source directory built as a standalone library */
+#define NEON_IS_LIBRARY 1])
+
+AH_BOTTOM([
+/* Enable leak-tracking versions of ne_*alloc when NEON_MEMLEAK is enabled */
+#ifdef NEON_MEMLEAK
+# include "memleak.h"
+#endif])
 
 AC_PROG_INSTALL
 
@@ -43,11 +47,8 @@ AC_PROG_LIBTOOL
 
 AC_EXEEXT
 
-top_builddir=`pwd`
-AC_SUBST(top_builddir)
-
-AC_ARG_ENABLE(webdav,
-AC_HELP_STRING([--disable-webdav], [disable WebDAV support]))
+AC_ARG_ENABLE(webdav, 
+  AS_HELP_STRING([--disable-webdav],[disable WebDAV support]))
 
 if test "$enable_webdav" = "no"; then
   NEON_WITHOUT_WEBDAV
@@ -60,13 +61,16 @@ fi
 # The bundled macros also set this, which makes sure we recurse
 # into the 'src' directory.
 NEON_BUILD_BUNDLED=yes
-AC_SUBST(NEON_BUILD_BUNDLED)
 
 # Define NEON_VERSION* and make the appropriate substitutions.
 NEON_VERSIONS
 
 # Pass the interface version on to libtool when linking libneon.la
 NEON_LINK_FLAGS="-version-info ${NEON_INTERFACE_VERSION}"
+
+# Library-internal symbols are in the ne__ namespace: tell libtool
+# to not export these from the built library if possible.
+NEON_LINK_FLAGS="$NEON_LINK_FLAGS -export-symbols-regex '^ne_[[^_]]'"
 
 # Checks to compile test suite
 NEON_TEST
@@ -82,20 +86,11 @@ NEON_DEBUG
 # Leave till last to prevent CFLAGS affecting checks.
 NEON_WARNINGS
 
-CFLAGS="$CFLAGS -I\${top_builddir}"
-
-dnl Substitute NEON_VERSION for neon-config too.
-AC_SUBST(NEON_VERSION)
+CPPFLAGS="$CPPFLAGS -I\${top_builddir}"
 
 AC_ARG_ENABLE(memleak, 
-AC_HELP_STRING([--enable-memleak], [for test builds only: enable memory leak checking]))
-
-dnl Have autoheader include the following template in config.h.in:
-AH_VERBATIM([NEON_MEMLEAK], 
-[/* Enable memory leak detection. */
-#ifdef NEON_MEMLEAK
-# include "memleak.h"
-#endif])
+  AS_HELP_STRING([--enable-memleak],
+                 [for test builds only: enable memory leak checking]))
 
 if test "$enable_memleak" = "yes"; then
   CPPFLAGS="$CPPFLAGS -DNEON_MEMLEAK -I\$(top_srcdir)/src"
@@ -106,7 +101,7 @@ fi
 # Enable tests for optional features
 TESTS="\$(BASIC_TESTS)"
 HELPERS=""
-if test "$NEON_SUPPORTS_SSL" = "yes"; then
+if test $NE_FLAG_SSL = yes; then
    # Only enable SSL tests if an openssl binary is found (needed to make
    # certs etc).
    AC_PATH_PROG(OPENSSL, openssl, notfound)
@@ -117,18 +112,24 @@ if test "$NEON_SUPPORTS_SSL" = "yes"; then
      AC_MSG_WARN([no openssl binary in \$PATH: SSL tests disabled])
    fi
 fi
-if test "$NEON_SUPPORTS_DAV" = "yes"; then
-   TESTS="$TESTS \$(DAV_TESTS)"
-fi
-if test "$NEON_SUPPORTS_ZLIB" = "yes"; then
+if test $NE_FLAG_ZLIB = yes; then
    TESTS="$TESTS \$(ZLIB_TESTS)"
    HELPERS="$HELPERS \$(ZLIB_HELPERS)"
 fi
-AC_SUBST(HELPERS)
-AC_SUBST(TESTS)
+if test x$enable_webdav != xno; then
+   TESTS="$TESTS \$(DAV_TESTS)"
+fi
 
 AC_CONFIG_FILES([neon-config], [chmod +x neon-config])
 AC_CONFIG_FILES([Makefile src/Makefile test/Makefile neon.pc])
+
+AC_SUBST(NEON_VERSION)
+AC_SUBST(NEON_BUILD_BUNDLED)
+AC_SUBST(top_builddir)
+AC_SUBST(user_LDFLAGS)
+AC_SUBST(HELPERS)
+AC_SUBST(TESTS)
+AC_SUBST(ALLOW_INSTALL)
 
 AC_OUTPUT
 
@@ -140,8 +141,8 @@ AC_MSG_NOTICE([Configured to build AC_PACKAGE_STRING:
   Install prefix:  ${prefix}
   Compiler:        ${CC}
   XML Parser:      ${neon_xml_parser_message}
-  SSL library:     ${neon_ssl_message}
-  zlib support:    ${neon_zlib_message}
+  SSL library:     ${ne_SSL_message}
+  zlib support:    ${ne_ZLIB_message}
   Build libraries: Shared=${enable_shared}, Static=${enable_static}
  
 Now run 'make' to compile the neon library.

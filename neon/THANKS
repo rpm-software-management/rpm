@@ -1,52 +1,14 @@
-In alphabetical order:
+Thanks go to the following people for contributing to neon development
+with code, patches, or good bug reports or suggestions.
 
-Arun Garg <arung@pspl.co.in>
-Blair Zajac <blair@orcaware.com>
-Branko Èibej <brane@xbc.nu>
-Daniel Berlin <dberlin@dberlin.org>
-David Sloat <d.sloat@f5.com>
-David Reid <dreid@jetnet.co.uk>
-Dirk Bergstrom <dirk@juniper.net>
-Gerald Richter <richter@ecos.de>
-Greg Stein <gstein@lyra.org>
-Gregor Bornemann <Gregor.Bornemann@germany.sun.com>
-Jeff Johnson <jbj@redhat.com>
-Jeremy Elson <jelson@circlemud.org>
-Jim Whitehead <ejw@cse.ucsc.edu>
-Johan Lindh <johan@linkdata.se>
-Justin Erenkrantz <jerenkrantz@apache.org>
-Kai Sommerfeld <kai.sommerfeld@germany.sun.com>
-Keith Wannamaker <keith@wannamaker.org>
-Lee Mallabone <lee0@callnetuk.com>
-Magnus Sirwiö <sirwio@hotmail.com>
-Markus Mueller <markus-m.mueller@ubs.com>
-Max Bowsher <maxb@ukf.net>
-Michael Sobolev <mss@despair.spb.ru>
-Mike Rosellini <m@icopyright.com>
-Mo DeJong <mdejong@cygnus.com>
-Noriaki Takamiya <takamiya@po.ntts.co.jp>
-Olof Oberg <mill@pedgr571.sn.umu.se>
-Pawel Golaszewski <blues@ds.pg.gda.pl>
-Peter Boos <PediB@colorfullife.com>
-Peter Moulder <pjm@bofh.asn.au>
-rado <dzusto@yahoo.com>
-Risko Gergely <risko@risko.hu>
-Rodney Dawes <dobey@ximian.com>
-Sam TH <sam@uchicago.edu>
-Sander Alberink <sander.alberink@cmg.nl>
-Sander Striker <striker@apache.org>
-Stefan Esser <s.esser@e-matters.de>
-Shane Mayer <shanemayer42@yahoo.com>
-Taisuke Yamada <tai@iij.ad.jp>
-Teng Xu <txu@soe.ucsc.edu>
-Tom Bednarz <tombednarz@hotmail.com>
-Tom Lee <i_am_gnomey@hotmail.com>
-Torsten Kalix <torsten.kalix@bredex.de>
-Wilfredo Sánchez <wsanchez@mit.edu>
+Arun Garg, Blair Zajac, Branko Èibej, Daniel Berlin, David Sloat,
+David Reid, Dirk Bergstrom, Ulrich Drepper, Gerald Richter, Greg
+Stein, Gregor Bornemann, Jeff Johnson, Jeremy Elson, Jim Whitehead,
+Johan Lindh, Justin Erenkrantz, Kai Sommerfeld, Keith Wannamaker, Lee
+Mallabone, Magnus Sirwiö, Markus Mueller, Max Bowsher, Michael
+Sobolev, Mike Rosellini, Mo DeJong, Noriaki Takamiya, Olof Oberg,
+Pawel Golaszewski, Peter Boos, Peter Moulder, rado, Risko Gergely,
+Rodney Dawes, Sam TH, Sander Alberink, Sander Striker, Stefan Esser,
+Shane Mayer, Taisuke Yamada, Teng Xu, Tom Bednarz, Tom Lee, Tommi
+Komulainen, Torsten Kalix, Wilfredo Sánchez, Daniel Veillard,
 
-Originators of stolen code:
-
-Tommi Komulainen <Tommi.Komulainen@iki.fi>
-Daniel Veillard <Daniel.Veillard@w3.org>
-Eric S Raymond <esr@snark.thyrsus.com>
-Ulrich Drepper <drepper@gnu.org>

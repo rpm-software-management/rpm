@@ -67,13 +67,15 @@ struct ne_session_s {
     char *scheme;
     struct host_info server, proxy;
 
+    /* application-provided address list */
+    const ne_inet_addr **addrlist;
+    size_t numaddrs, curaddr;
+
     /* Settings */
     unsigned int use_proxy:1; /* do we have a proxy server? */
     unsigned int no_persist:1; /* set to disable persistent connections */
     unsigned int use_ssl:1; /* whether a secure connection is required */
     unsigned int in_connect:1; /* doing a proxy CONNECT */
-
-    int expect100_works; /* known state of 100-continue support */
 
     ne_progress progress_cb;
     void *progress_ud;
@@ -88,7 +90,7 @@ struct ne_session_s {
 
     char *user_agent; /* full User-Agent: header field */
 
-#ifdef NEON_SSL
+#ifdef NE_HAVE_SSL
     ne_ssl_client_cert *client_cert;
     ne_ssl_certificate *server_cert;
     ne_ssl_context *ssl_context;
@@ -105,17 +107,15 @@ struct ne_session_s {
     char error[BUFSIZ];
 };
 
+/* Pushes block of 'count' bytes at 'buf'. Returns non-zero on
+ * error. */
 typedef int (*ne_push_fn)(void *userdata, const char *buf, size_t count);
 
 /* Pulls the request body for the given request, passing blocks to the
- * given callback.
- */
-int ne_pull_request_body(ne_request *req, ne_push_fn fn, void *ud);
+ * given callback. */
+int ne__pull_request_body(ne_request *req, ne_push_fn fn, void *ud);
 
 /* Do the SSL negotiation. */
-int ne_negotiate_ssl(ne_request *req);
-
-/* 0.24.x hack to fix ne_compress layer problems */
-void ne_kill_pre_send(ne_session *sess, ne_pre_send_fn fn, void *userdata);
+int ne__negotiate_ssl(ne_request *req);
 
 #endif /* HTTP_PRIVATE_H */

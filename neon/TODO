@@ -32,7 +32,7 @@ For one-point-oh
 62. Select which auth mechanisms are allowed, e.g. JUST SAY NO to
     basic might very well be useful to some apps.
 
-63. Unconditionally turn off Nagle algorithm.
+64. Add options to only enable SSLv2 support, etc.
 
 Longer term
 -----------
@@ -116,3 +116,5 @@ Longer term
 57. Add function to map of status-code values to i18n-ized reason
     phrase.
 
+65. Add ne_uri_copy function and use it in ne_lock_copy.  (patch
+    sent to neon@webdav.org)

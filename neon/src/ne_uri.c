@@ -34,9 +34,10 @@
 #include <stdlib.h>
 #endif
 
+#include <stdio.h>
+
 #include <ctype.h>
 
-#include "ne_utils.h" /* for 'min' */
 #include "ne_string.h" /* for ne_buffer */
 #include "ne_alloc.h"
 #include "ne_uri.h"
@@ -276,6 +277,11 @@ int ne_uri_cmp(const ne_uri *u1, const ne_uri *u2)
 
 #undef CMP
 #undef CASECMP
+
+#ifndef WIN32
+#undef min
+#define min(a,b) ((a)<(b)?(a):(b))
+#endif
 
 /* TODO: implement properly */
 int ne_path_compare(const char *a, const char *b) 

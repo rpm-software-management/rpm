@@ -1,6 +1,6 @@
 /* 
    HTTP Request Handling
-   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -53,17 +53,21 @@ typedef struct ne_request_s ne_request;
 ne_request *ne_request_create(ne_session *sess,
 			      const char *method, const char *path);
 
-/* 'buffer' will be sent as the request body with given request. */
+/* The request body will be taken from 'size' bytes of 'buffer'. */
 void ne_set_request_body_buffer(ne_request *req, const char *buffer,
 				size_t size);
 
-/* Send the contents of a file as the request body; 'fd' must be a
- * file descriptor of an open, seekable file.  Current file offset of
- * fd is not retained (and ignored: the file is read from the the
- * first byte). Returns:
- *  0 on okay.
- *  non-zero if could not determine length of file.  */
-int ne_set_request_body_fd(ne_request *req, int fd);
+/* The request body will be taken from 'length' bytes read from the
+ * file descriptor 'fd', starting from file offset 'offset'. */
+void ne_set_request_body_fd(ne_request *req, int fd,
+                            off_t offset, off_t length);
+
+#ifdef NE_LFS
+/* Alternate version of ne_set_request_body_fd taking off64_t 
+ * offset type for systems supporting _LARGEFILE64_SOURCE. */
+void ne_set_request_body_fd64(ne_request *req, int fd,
+                              off64_t offset, off64_t length);
+#endif
 
 /* "Pull"-based request body provider: a callback which is invoked to
  * provide blocks of request body on demand.
@@ -79,12 +83,19 @@ int ne_set_request_body_fd(ne_request *req, int fd);
 typedef ssize_t (*ne_provide_body)(void *userdata, 
 				   char *buffer, size_t buflen);
 
-/* Install a callback which is invoked as needed to provide request
- * body blocks.  Total request body is 'size' bytes: the callback MUST
- * ensure it returns in total exactly 'size' bytes each time the
- * request body is provided. */
-void ne_set_request_body_provider(ne_request *req, size_t size,
+/* Install a callback which is invoked as needed to provide the
+ * request body, a block at a time.  The total size of the request
+ * body is 'length'; the callback must ensure that it returns no more
+ * than 'length' bytes in total. */
+void ne_set_request_body_provider(ne_request *req, off_t length,
 				  ne_provide_body provider, void *userdata);
+
+#ifdef NE_LFS
+/* Duplicate version of ne_set_request_body_provider, taking an off64_t
+ * offset. */
+void ne_set_request_body_provider64(ne_request *req, off64_t length,
+                                    ne_provide_body provider, void *userdata);
+#endif
 
 /* Handling response bodies... you provide TWO callbacks:
  *
@@ -108,8 +119,12 @@ int ne_accept_2xx(void *userdata, ne_request *req, const ne_status *st);
  * userdata. */
 int ne_accept_always(void *userdata, ne_request *req, const ne_status *st);
 
-/* Callback for reading a block of data. */
-typedef void (*ne_block_reader)(void *userdata, const char *buf, size_t len);
+/* Callback for reading a block of data.  Returns zero on success, or
+ * -1 on error.  If returning an error, the response will be aborted
+ * and the callback will not be invoked again.  The request dispatch
+ * (or ne_read_response_block call) will fail with NE_ERROR; the
+ * session error string should have been set by the callback. */
+typedef int (*ne_block_reader)(void *userdata, const char *buf, size_t len);
 
 /* Add a response reader for the given request, with the given
  * acceptance function. userdata is passed as the first argument to
@@ -213,6 +228,12 @@ int ne_end_request(ne_request *req);
  */
 ssize_t ne_read_response_block(ne_request *req, char *buffer, size_t buflen);
 
+/* Include the HTTP/1.1 header "Expect: 100-continue" in request 'req'
+ * if 'flag' is non-zero.  Warning: 100-continue support is not
+ * implemented correctly in some HTTP/1.1 servers, enabling this
+ * feature may cause requests to hang or time out. */
+void ne_set_request_expect100(ne_request *req, int flag);
+
 /**** Request hooks handling *****/
 
 typedef void (*ne_free_hooks)(void *cookie);
@@ -261,4 +282,3 @@ void *ne_get_request_private(ne_request *req, const char *id);
 END_NEON_DECLS
 
 #endif /* NE_REQUEST_H */
-

@@ -39,7 +39,7 @@
 #include "child.h"
 #include "utils.h"
 
-#ifndef NEON_SSL
+#ifndef NE_HAVE_SSL
 /* this file shouldn't be built if SSL is not enabled. */
 #error SSL not supported
 #endif
@@ -725,10 +725,10 @@ static int get_failures(void *userdata, int fs, const ne_ssl_certificate *c)
 /* Helper function: run a request using the given self-signed server
  * certificate, and expect the request to fail with the given
  * verification failure flags. */
-static int fail_ssl_request(char *cert, char *cacert, 
+static int fail_ssl_request(char *cert, char *cacert, const char *host,
 			    const char *msg, int failures)
 {
-    ne_session *sess = DEFSESS;
+    ne_session *sess = ne_session_create("https", host, 7777);
     int gotf = 0, ret;
 
     ret = any_ssl_request(sess, fail_serve, cert, cacert,
@@ -753,14 +753,14 @@ static int fail_ssl_request(char *cert, char *cacert,
     return OK;
 }
 
-/* Note that the certs used for fail_* are all self-signed, so the
+/* Note that the certs used for fail_* are mostly self-signed, so the
  * cert is passed as CA cert and server cert to fail_ssl_request. */
 
 /* Check that a certificate with the incorrect commonName attribute is
  * flagged as such. */
 static int fail_wrongCN(void)
 {
-    return fail_ssl_request("wrongcn.pem", "wrongcn.pem",
+    return fail_ssl_request("wrongcn.pem", "wrongcn.pem", "localhost",
 			    "certificate with incorrect CN was accepted",
 			    NE_SSL_IDMISMATCH);
 }
@@ -769,8 +769,8 @@ static int fail_wrongCN(void)
 static int fail_expired(void)
 {
     char *c = ne_concat(srcdir, "/expired.pem", NULL);
-    CALL(fail_ssl_request(c, c, "expired certificate was accepted",
-                          NE_SSL_EXPIRED));
+    CALL(fail_ssl_request(c, c,  "localhost",
+                          "expired certificate was accepted", NE_SSL_EXPIRED));
     ne_free(c);
     return OK;
 }
@@ -778,7 +778,8 @@ static int fail_expired(void)
 static int fail_notvalid(void)
 {
     char *c = ne_concat(srcdir, "/notvalid.pem", NULL);
-    CALL(fail_ssl_request(c, c, "not yet valid certificate was accepted",
+    CALL(fail_ssl_request(c, c,  "localhost",
+                          "not yet valid certificate was accepted",
                           NE_SSL_NOTYETVALID));
     ne_free(c);
     return OK;    
@@ -788,14 +789,14 @@ static int fail_notvalid(void)
  * fail with UNTRUSTED. */
 static int fail_untrusted_ca(void)
 {
-    return fail_ssl_request("server.cert", NULL, "untrusted CA.",
-			    NE_SSL_UNTRUSTED);
+    return fail_ssl_request("server.cert", NULL, "localhost",
+                            "untrusted CA.", NE_SSL_UNTRUSTED);
 }
 
 static int fail_self_signed(void)
 {
-    return fail_ssl_request("ssigned.pem", NULL, "self-signed cert", 
-			    NE_SSL_UNTRUSTED);
+    return fail_ssl_request("ssigned.pem", NULL,  "localhost",
+                            "self-signed cert", NE_SSL_UNTRUSTED);
 }
 
 /* Test for failure when a server cert is presented which has no
@@ -814,6 +815,21 @@ static int fail_missing_CN(void)
     ne_session_destroy(sess);
     return OK;
 }                            
+
+/* test for a bad ipAddress altname */
+static int fail_bad_ipaltname(void)
+{
+    return fail_ssl_request("altname6.cert", CA_CERT, "127.0.0.1",
+                            "bad IP altname cert", NE_SSL_IDMISMATCH);
+}
+
+/* test for a ipAddress which matched against the hostname as per neon
+ * 0.24 behaviour. */
+static int fail_host_ipaltname(void)
+{
+    return fail_ssl_request("altname5.cert", CA_CERT, "localhost",
+                            "bad IP altname cert", NE_SSL_IDMISMATCH);
+}
 
 /* Test that the SSL session is cached across connections. */
 static int session_cache(void)
@@ -957,6 +973,7 @@ static int ccert_unencrypted(void)
     args.require_cc = 1;
 
     ccert = ne_ssl_clicert_read("unclient.p12");
+    ONN("could not load unclient.p12", ccert == NULL);
     ONN("unclient.p12 was encrypted", ne_ssl_clicert_encrypted(ccert));
 
     ne_ssl_set_clicert(sess, ccert);
@@ -1171,6 +1188,7 @@ static int cert_identities(void)
     static const struct {
         const char *fname, *identity;
     } certs[] = {
+        { "ssigned.pem", "localhost" },
         { "twocn.cert", "localhost" },
         { "altname1.cert", "localhost" },
         { "altname2.cert", "nohost.example.com" },
@@ -1270,7 +1288,9 @@ static int dname_readable(void)
         { "justmail.cert", "blah@example.com", NULL },
         { "t61subj.cert", I18N_DNAME, NULL },
         { "bmpsubj.cert", I18N_DNAME, NULL },
-        { "utf8subj.cert", I18N_DNAME, NULL }
+        { "utf8subj.cert", I18N_DNAME, NULL },
+        { "twoou.cert", "First OU Dept, Second OU Dept, Neon Hackers Ltd, "
+          "Cambridge, Cambridgeshire, GB" }
     };
     size_t n;
 
@@ -1538,6 +1558,8 @@ ne_test tests[] = {
     T(fail_untrusted_ca),
     T(fail_self_signed),
     T(fail_missing_CN),
+    T(fail_host_ipaltname),
+    T(fail_bad_ipaltname),
 
     T(session_cache),
 	

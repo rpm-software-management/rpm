@@ -1,6 +1,6 @@
 /* 
    String utility functions
-   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2002, 2004, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -56,17 +56,6 @@ char *ne_base64(const unsigned char *text, size_t len);
  * 'data', places malloc-allocated raw data in '*out', returns length,
  * or zero on decode error (in which case *out is undefined). */
 size_t ne_unbase64(const char *data, unsigned char **out);
-
-/*** OBSOLETE INTERFACES ***/
-char **split_string(const char *str, const char seperator,
-		    const char *quotes, const char *whitespace);
-char **split_string_c(const char *str, const char seperator,
-		      const char *quotes, const char *whitespace, int *count);
-char **pair_string(const char *str, const char compsep, const char kvsep, 
-		   const char *quotes, const char *whitespace);
-void split_string_free(char **components);
-void pair_string_free(char **pairs);
-/*** END OF OBSOLETE INTERFACES */
 
 /* String buffer handling. (Strings are zero-terminated still).  A
  * string buffer ne_buffer * which grows dynamically with the
@@ -131,6 +120,15 @@ char *ne_concat(const char *str, ...);
 
 #define NE_ASC2HEX(x) (((x) <= '9') ? ((x) - '0') : (tolower((x)) + 10 - 'a'))
 #define NE_HEX2ASC(x) ((char) ((x) > 9 ? ((x) - 10 + 'a') : ((x) + '0')))
+
+/* Wrapper for snprintf: always NUL-terminates returned buffer, and
+ * returns strlen(str). */
+size_t ne_snprintf(char *str, size_t size, const char *fmt, ...)
+    ne_attribute((format(printf, 3, 4)));
+
+/* Wrapper for vsnprintf. */
+size_t ne_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
+    ne_attribute((format(printf, 3, 0)));
 
 END_NEON_DECLS
 

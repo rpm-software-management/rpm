@@ -1,12 +1,23 @@
+Sun Sep 12 18:38:13 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (NEON_USE_EXTERNAL): Check for IDNA, LFS, SOCKS
+	support.
+	(NEON_SOCKS): Use common feature code for SOCKSv5 support.
+
+Fri Sep 10 20:52:54 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (LIBNEON_SOURCE_CHECKS): Safer autoheader template for
+	declaring stpcpy as necessary for bundled neon builds.
+	(NEON_WARNINGS): Drop -Winline.
+
+Wed Aug 25 19:44:26 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (LIBNEON_SOURCE_CHECKS): Check for poll.
+
 Sat Jul  3 11:39:01 2004  Joe Orton  <joe@manyfish.co.uk>
 
 	* neon.m4 (LIBNEON_SOURCE_CHECKS): Pick up gethostbyname in
 	-lsocket for QNX.
-
-Wed May 19 08:36:44 2004  Joe Orton  <joe@manyfish.co.uk>
-
-	* neon.m4 (LIBNEON_SOURCE_CHECKS): Declare stpcpy on modern
-	"Linux-like" AIXes.
 
 Fri Apr 16 11:43:10 2004  Joe Orton  <joe@manyfish.co.uk>
 
@@ -20,6 +31,87 @@ Tue Apr 13 20:51:59 2004  Joe Orton  <joe@manyfish.co.uk>
 
 	* neon.m4 (NEON_GSSAPI): Check for presence of
 	gssapi/gssapi_generic.h.
+
+Wed Apr  7 13:16:33 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (NE_LARGEFILE): Check for strtoq.
+
+Mon Mar 15 19:59:36 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (LIBNEON_SOURCE_CHECKS): Be safer around getaddrinfo
+	blacklist for HP-UX and reference why it's needed.
+
+Sun Mar  7 11:15:44 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (LIBNEON_SOURCE_CHECKS): Use NE_LARGEFILE in-place
+	rather than AC_REQUIRE'ing it.
+	(NE_LARGEFILE): Add NE_LFS to CPPFLAGS for use in bundled builds.
+
+Mon Feb 23 23:02:54 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (NE_SNPRINTF): Define HAVE_TRIO if trio is used.
+
+Mon Feb 23 00:22:39 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (LIBNEON_SOURCE_CHECKS): Give INCLUDES argument to
+	AC_CHECK_HEADERS; prevent warning from cpp test for netinet/in.h
+	on some platforms.
+
+Sun Feb 22 17:52:42 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (NE_SEARCH_LIBS): Fix to run actions-if-found if
+	function is found without needing additional libraries.
+	(LIBNEON_SOURCE_CHECKS): Only check for gethostbyname if
+	getaddrinfo is not found.  Disable getaddrinfo on HP-UX 11.[01]*
+	here rather than ne_socket.c.
+
+Sat Jan 24 17:49:50 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (LIBNEON_SOURCE_CHECKS): Also check for __tm_gmtoff in
+	struct tm.
+
+Sat Jan 24 17:16:48 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4: Remove -ansi-pedantic and -Wimplicit-prototypes for gcc
+	3.4 compatibility (thanks to Olaf Hering).
+ 
+Sat Jan  3 14:11:14 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon-test.m4: Check for stdint.h.
+
+Sat Jan  3 13:17:21 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (NE_LARGEFILE): Add NE_LFS to neon-config --cflags
+	output.
+
+Thu Jan  1 18:42:56 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (NEON_FORMAT): Use C99 'll' rather than non-standard 'q'
+	length modifier.
+
+Thu Jan  1 17:36:39 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (NE_LARGEFILE): New macro.
+	(LIBNEON_SOURCE_CHECKS): Call it.
+
+Sat Nov 15 09:25:43 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4, neon-xml-parser.m4: Update for latest autoconf
+	best-practice: s/AC_HELP_STRING/AS_HELP_STRING, replace AC_TRY_RUN
+	with AC_RUN_IFELSE, AC_TRY_LINK_FUNC with AC_LINK_IFELSE,
+	AC_TRY_COMPILE with AC_COMPILE_IFELSE, remove AC_LANG_C and
+	AC_PROG_CC_STDC,
+
+Fri Nov 14 13:12:10 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (NEON_LIBIDN): New macro.
+	(LIBNEON_SOURCE_CHECKS): Use NEON_LIBIDN.
+
+Fri Nov 14 11:28:58 2003  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (NE_ENABLE_SUPPORT, NE_DISABLE_SUPPORT): New macros.
+	Use throughout to flag support or lack of support for optional
+	features.
 
 Thu Nov 13 20:25:28 2003  Joe Orton  <joe@manyfish.co.uk>
 
@@ -292,6 +384,11 @@ Sun May 19 20:23:55 2002  Joe Orton  <joe@manyfish.co.uk>
 
 	* neon.m4 (NEON_WARNINGS): Remove with_warnings variable;
 	simplify.
+
+Wed May 19 08:36:44 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* neon.m4 (LIBNEON_SOURCE_CHECKS): Declare stpcpy on modern
+	"Linux-like" AIXes.
 
 Sun May 19 09:35:08 2002  Joe Orton  <joe@manyfish.co.uk>
 

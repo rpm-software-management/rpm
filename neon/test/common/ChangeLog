@@ -1,3 +1,11 @@
+Wed Aug 25 19:27:26 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* child.c (reset_socket): New function.
+
+Mon Jul  5 18:38:08 2004  Joe Orton  <joe@manyfish.co.uk>
+
+	* tests.c (main): Print 'xfail' for expected failures.
+
 Tue Oct  7 21:19:56 2003  Joe Orton  <joe@manyfish.co.uk>
 
 	* child.c (close_socket): New function.
