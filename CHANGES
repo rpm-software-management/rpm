@@ -258,6 +258,7 @@
 	- check for interrupt during iteration.
 	- python: add ts.setProbFilter() method, remove ts.run() argument.
 	- fix: region trailer offset sanity check wrong (#71996).
+	- fix: don't stop if db1 database is currently in /var/lib/rpm (#72224).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).

@@ -245,7 +245,7 @@ Please install rpm-4.0.4 first, and do
 	rpm --rebuilddb
 to convert your database from db1 to db3 format.
 "
-    exit 1
+#    exit 1
 fi
 /usr/sbin/groupadd -g 37 @RPMGROUP@				> /dev/null 2>&1
 /usr/sbin/useradd  -r -d /var/lib/rpm -u 37 -g 37 @RPMUSER@	> /dev/null 2>&1
@@ -519,7 +519,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Wed Aug 21 2002 Jeff Johnson <jbj@redhat.com>
+* Thu Aug 21 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.87
+- fix: don't stop if db1 database is currently in /var/lib/rpm (#72224).
+
+* Wed Aug 21 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.86
 - fix: region trailer offset sanity check wrong (#71996).
 
 * Tue Aug 20 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.85
