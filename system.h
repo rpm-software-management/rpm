@@ -93,6 +93,10 @@ char *memchr ();
 char * stpcpy(char * dest, const char * src);
 #endif
 
+#if !defined(HAVE_STPNCPY) || defined(__LCLINT__)
+char * stpncpy(char * dest, const char * src, size_t n);
+#endif
+
 #include <errno.h>
 #ifndef errno
 extern int errno;
@@ -298,6 +302,11 @@ char *realpath(const char *path, char resolved_path []);
 #if NEED_MYREALLOC
 #define realloc(ptr,size) myrealloc(ptr,size)
 extern void *myrealloc(void *, size_t);
+#endif
+
+#if ! HAVE_SETENV
+extern int setenv(const char *name, const char *value, int replace);
+extern void unsetenv(const char *name);
 #endif
 
 #if HAVE_SYS_SOCKET_H

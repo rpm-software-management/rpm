@@ -106,14 +106,15 @@ static int checkOwners(const char *urlfn)
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
 		"fi",
-		c, basename(fn),
+		c, (const char *) basename(fn),
 		zipper,
 		fn, strip, args);
 	xfree(zipper);
     } else {
 	sprintf(buf,
 		"echo \"Patch #%d (%s):\"\n"
-		"patch -p%d %s -s < %s", c, basename(fn), strip, args, fn);
+		"patch -p%d %s -s < %s", c, (const char *) basename(fn),
+		strip, args, fn);
     }
 
     xfree(urlfn);

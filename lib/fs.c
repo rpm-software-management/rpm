@@ -116,7 +116,7 @@ static int getFilesystemList(void)
     int i;
     char * mntdir;
 #   if GETMNTENT_ONE || GETMNTENT_TWO
-    our_mntent item, * itemptr;
+    our_mntent item;
     FILE * mtab;
 #   elif HAVE_GETMNTINFO_R
     struct statfs * mounts = NULL;
@@ -143,7 +143,7 @@ static int getFilesystemList(void)
     while (1) {
 #	if GETMNTENT_ONE
 	    /* this is Linux */
-	    itemptr = getmntent(mtab);
+	    our_mntent * itemptr = getmntent(mtab);
 	    if (!itemptr) break;
 	    item = *itemptr;
 	    mntdir = item.our_mntdir;
