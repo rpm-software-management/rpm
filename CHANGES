@@ -18,6 +18,7 @@
 	- permit confgure/compile with db3-3.2.9.
 	- permit manifest files as args to query/verify modes.
 	- fix: parameterized macro segfault (Jakub Bogusz <qboosh@pld.org.pl>).
+	- fix: i18n tags in rpm-2.5.x had wrong offset/length (#33478).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

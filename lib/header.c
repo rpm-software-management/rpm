@@ -214,6 +214,21 @@ static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
 
 /**
  * Swap int_32 and int_16 arrays within header region.
+ *
+ * This code is way more twisty than I would like.
+ *
+ * A bug with RPM_I18NSTRING_TYPE in rpm-2.5.x (fixed in August 1998)
+ * causes the offset and length of elements in a header region to disagree
+ * regarding the total length of the region data.
+ *
+ * The "fix" is to compute the size using both offset and length and
+ * return the larger of the two numbers as the size of the region.
+ * Kinda like computing left and right Riemann sums of the data elements
+ * to determine the size of a data structure, go figger :-).
+ *
+ * There's one other twist if a header region tag is in the set to be swabbed,
+ * as the data for a header region is located after all other tag data.
+ *
  * @param entry		header entry
  * @param il		no. of entries
  * @param dl		start no. bytes of data
@@ -225,10 +240,13 @@ static int dataLength(int_32 type, const void * p, int_32 count, int onDisk)
 static int regionSwab(struct indexEntry * entry, int il, int dl,
 		const struct entryInfo * pe, char * dataStart, int regionid)
 {
+    char * tprev = NULL;
+    char * t = NULL;
+    int tdel, tl = dl;
+
     for (; il > 0; il--, pe++) {
 	struct indexEntry ie;
 	int_32 type;
-	void * t;
 
 	ie.info.tag = ntohl(pe->tag);
 	ie.info.type = ntohl(pe->type);
@@ -255,7 +273,11 @@ assert(ie.info.type >= RPM_MIN_TYPE && ie.info.type <= RPM_MAX_TYPE);
 		dl += diff;
 	    }
 	}
+	tdel = (tprev ? (t - tprev) : 0);
 	dl += ie.length;
+	tl += tdel;
+	tprev = (ie.info.tag < HEADER_I18NTABLE)
+		? dataStart : t;
 
 	/* Perform endian conversions */
 	switch (ntohl(pe->type)) {
@@ -267,13 +289,21 @@ assert(ie.info.type >= RPM_MIN_TYPE && ie.info.type <= RPM_MAX_TYPE);
 	    for (; ie.info.count > 0; ie.info.count--, ((int_16 *)t) += 1)
 		*((int_16 *)t) = htons(*((int_16 *)t));
 	    break;
+	default:
+	    t += ie.length;
+	    break;
 	}
     }
+    tdel = (tprev ? (t - tprev) : 0);
+    tl += tdel;
+    if (tl > dl)
+	dl = tl;
     return dl;
 }
 
 /**
  * Retrieve data from header entry.
+ * @todo Permit retrieval of regions other than HEADER_IMUTABLE.
  * @param entry		header entry
  * @retval type		address of type (or NULL)
  * @retval p		address of data (or NULL)
@@ -570,7 +600,6 @@ assert(rdlen == dl);
 	    }
 	    h->indexUsed += ne;
 	  }
-
 	}
     }
 
@@ -612,8 +641,6 @@ int headerDrips(const Header h)
 	    for (; i < h->indexUsed && entry->info.offset <= rid+1; i++, entry++) {
 		if (entry->info.offset <= rid)
 		    continue;
-
-fprintf(stderr, "***\t%3d dribble %s\n", i, tagName(entry->info.tag));
 	    }
 	    i--;
 	    entry--;
@@ -623,9 +650,6 @@ fprintf(stderr, "***\t%3d dribble %s\n", i, tagName(entry->info.tag));
 	/* Ignore deleted drips. */
 	if (entry->data == NULL || entry->length <= 0)
 	    continue;
-
-fprintf(stderr, "***\t%3d drip %s\n", i, tagName(entry->info.tag));
-
     }
     return 0;
 }
