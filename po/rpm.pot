@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-03-12 00:43-0500\n"
+"POT-Creation-Date: 1999-03-12 09:17-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2961,57 +2961,57 @@ msgstr ""
 msgid "Too many args in default line at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:671
+#: ../lib/rpmrc.c:655
 #, c-format
 msgid "Cannot expand %s"
 msgstr ""
 
-#: ../lib/rpmrc.c:686
+#: ../lib/rpmrc.c:670
 #, c-format
 msgid "Unable to open %s for reading: %s."
 msgstr ""
 
-#: ../lib/rpmrc.c:720
+#: ../lib/rpmrc.c:704
 #, c-format
 msgid "Failed to read %s: %s."
 msgstr ""
 
-#: ../lib/rpmrc.c:751
+#: ../lib/rpmrc.c:735
 #, c-format
 msgid "missing ':' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:767 ../lib/rpmrc.c:815
+#: ../lib/rpmrc.c:751 ../lib/rpmrc.c:799
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:781
+#: ../lib/rpmrc.c:765
 #, c-format
 msgid "expansion failed at %s:d \"%s\""
 msgstr ""
 
-#: ../lib/rpmrc.c:787
+#: ../lib/rpmrc.c:771
 #, c-format
 msgid "cannot open %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:805
+#: ../lib/rpmrc.c:789
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:872
+#: ../lib/rpmrc.c:856
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:1230
+#: ../lib/rpmrc.c:1214
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: ../lib/rpmrc.c:1231
+#: ../lib/rpmrc.c:1215
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
