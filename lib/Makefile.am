@@ -31,6 +31,7 @@ librpm_la_SOURCES = \
 	rebuilddb.c rpmchecksig.c rpmdb.c rpmerr.c rpminstall.c \
 	rpmio.c rpmlead.c rpmmalloc.c rpmrc.c signature.c stringbuf.c stubs.c \
 	tagName.c tagtable.c transaction.c uninstall.c url.c verify.c
+librpm_la_LIBADD = -lpopt
 
 tagtable.c: rpmlib.h 
 	@echo '#include "system.h"' > tagtable.c

@@ -1,6 +1,10 @@
+#
+# Note: popt is now an rpm sub-package (including libpopt.so*) so you probably
+# shouldn't need to use this spec file to package popt anymore.
+#
 Summary: A C library for parsing command line parameters.
 Name: popt
-Version: 1.4
+Version: 1.5
 Release: 1
 Copyright: LGPL
 Group: System Environment/Libraries

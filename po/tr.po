@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-12-22 16:23-0500\n"
+"POT-Creation-Date: 1999-12-23 12:49-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3208,67 +3208,67 @@ msgstr "hata: %s eriþilemiyor\n"
 msgid "Installing %s\n"
 msgstr "%s yükleniyor\n"
 
-#: lib/rpmio.c:769
+#: lib/rpmio.c:771
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:772
+#: lib/rpmio.c:774
 #, fuzzy
 msgid "Bad server response"
 msgstr "FTP sunucusundan kötü yanýt"
 
-#: lib/rpmio.c:775
+#: lib/rpmio.c:777
 #, fuzzy
 msgid "Server IO error"
 msgstr "FTP I/O hatasý"
 
-#: lib/rpmio.c:778
+#: lib/rpmio.c:780
 #, fuzzy
 msgid "Server timeout"
 msgstr "FTP sunucusu zaman aþýmý"
 
-#: lib/rpmio.c:781
+#: lib/rpmio.c:783
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "FTP sunucusunun isim adres dönüþümü yapýlamadý"
 
-#: lib/rpmio.c:784
+#: lib/rpmio.c:786
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "FTP sunucusunun adres isim dönüþümü yapýlamadý"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:789
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "FTP sunucusuna baðlanýlamadý"
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:792
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "FTP sunucusu ile veri alýþveriþi yapýlamadý"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:795
 msgid "IO error to local file"
 msgstr "Yerel dosyaya eriþim sýrasýnda I/O hatasý"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:798
 msgid "Error setting remote server to passive mode"
 msgstr "Karþý sunucuyu pasif kipe sokam hatasý"
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:801
 msgid "File not found on server"
 msgstr "Dosya sunucuda bulunamadý"
 
-#: lib/rpmio.c:802
+#: lib/rpmio.c:804
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:806
+#: lib/rpmio.c:808
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "FTP bilinmeyen ya da beklenmeyen hata"
 
-#: lib/rpmio.c:1339
+#: lib/rpmio.c:1341
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

@@ -311,12 +311,11 @@ dnl AmigaOS and IXEmul have a fork() dummy
 esac
 
 
-ZLIB=
 for zlib in z gz ; do
    AC_CHECK_LIB(${zlib}, gzread, 
 	[LIBS="$LIBS -l${zlib}"; break], 
 	[if test ${zlib} = gz; then 
-	    AC_MSG_WARN([sorry this package needs libz.a or libgz.a (from the zlib package)]) 
+	    AC_MSG_WARN([sorry rpm needs libz.a or libgz.a (from the zlib package)]) 
 	 fi]
 	       )
 done
@@ -325,7 +324,7 @@ for bz2lib in bz2 ; do
    AC_CHECK_LIB(${bz2lib}, bzread, 
 	[LIBS="$LIBS -l${bz2lib}"; break], 
 	[if test ${bz2lib} = bz2; then 
-	    AC_MSG_WARN([missing libbz2.a (from the bzip2 package)]) 
+	    AC_MSG_WARN([sorry rpm needs libbz2.a (from the bzip2 package)]) 
 	 fi]
 	       )
 done

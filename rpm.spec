@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.4
 Version: %{version}
-Release: 0.21
+Release: 0.23
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -10,8 +10,8 @@ Conflicts: patch < 2.5
 %ifos linux
 Prereq: gawk fileutils textutils sh-utils mktemp
 BuildRequires: bzip2 >= 0.9.0c-2
-Requires: bzip2 >= 0.9.0c-2
-#BuildRequires: python-devel >= 1.5.1
+Requires: popt, bzip2 >= 0.9.0c-2
+BuildRequires: python-devel >= 1.5.2
 %endif
 BuildRoot: /var/tmp/%{name}-root
 
@@ -26,9 +26,6 @@ the package like its version, a description, etc.
 Summary: Development files for applications which will manipulate RPM packages.
 Group: Development/Libraries
 Requires: popt
-%ifos linux
-Requires: python >= 1.5.1
-%endif
 
 %description devel
 This package contains the RPM C library and header files.  These
@@ -40,6 +37,39 @@ to function.
 
 This package should be installed if you want to develop programs that
 will manipulate RPM packages and databases.
+
+%ifos linux
+%package python
+Summary: Python bindings for applications which will manipulate RPM packages.
+Group: Development/Libraries
+Requires: popt
+Requires: python >= 1.5.2
+
+%description python
+This package contains the module that permits Python applications to use
+the interface supplied by RPM libraries.
+
+This package should be installed if you want to develop Python programs that
+will manipulate RPM packages and databases.
+%endif
+
+%package -n popt
+Summary: A C library for parsing command line parameters.
+Group: System Environment/Libraries
+Version: 1.5
+
+%description -n popt
+Popt is a C library for parsing command line parameters.  Popt
+was heavily influenced by the getopt() and getopt_long() functions,
+but it improves on them by allowing more powerful argument expansion.
+Popt can parse arbitrary argv[] style arrays and automatically set
+variables based on command line arguments.  Popt allows command
+line arguments to be aliased via configuration files and includes
+utility functions for parsing arbitrary strings into argv[] arrays
+using shell-like rules.
+
+Install popt if you're a C programmer and you'd like to use its
+capabilities.
 
 %prep
 %setup -q
@@ -80,6 +110,12 @@ fi
 %ifos linux
 %post devel -p /sbin/ldconfig
 %postun devel -p /sbin/ldconfig
+
+%post python -p /sbin/ldconfig
+%postun python -p /sbin/ldconfig
+
+%post -n popt -p /sbin/ldconfig
+%postun -n popt -p /sbin/ldconfig
 %endif
 
 %files
@@ -91,9 +127,6 @@ fi
 /usr/lib/librpm.so.*
 /usr/lib/librpmbuild.so.*
 /usr/lib/rpm
-%ifos linux
-/usr/lib/python1.5/site-packages/rpmmodule.so
-%endif
 %dir /usr/src/redhat
 %dir /usr/src/redhat/BUILD
 %dir /usr/src/redhat/SPECS
@@ -106,6 +139,12 @@ fi
 %lang(pl) /usr/man/pl/man8/*
 %lang(ru) /usr/man/ru/man8/*
 
+%ifos linux
+%files python
+%defattr(-,root,root)
+/usr/lib/python1.5/site-packages/rpmmodule.so
+%endif
+
 %files devel
 %defattr(-,root,root)
 /usr/include/rpm
@@ -115,3 +154,16 @@ fi
 /usr/lib/librpmbuild.a
 /usr/lib/librpmbuild.la
 /usr/lib/librpmbuild.so
+
+%files -n popt
+%defattr(-,root,root)
+/usr/lib/libpopt.so.*
+/usr/share/locale/*/LC_MESSAGES/popt.mo
+/usr/man/man3/popt.3
+
+# XXX These may end up in popt-devel but it hardly seems worth the effort now.
+/usr/lib/libpopt.a
+/usr/lib/libpopt.la
+/usr/lib/libpopt.so
+/usr/include/popt.h
+

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-12-22 16:23-0500\n"
+"POT-Creation-Date: 1999-12-23 12:49-0500\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -3164,67 +3164,67 @@ msgstr "chyba: nelze otevøít %s\n"
 msgid "Installing %s\n"
 msgstr "Probíhá instalace %s\n"
 
-#: lib/rpmio.c:769
+#: lib/rpmio.c:771
 msgid "Success"
 msgstr ""
 
-#: lib/rpmio.c:772
+#: lib/rpmio.c:774
 #, fuzzy
 msgid "Bad server response"
 msgstr "Chybná odezva serveru FTP"
 
-#: lib/rpmio.c:775
+#: lib/rpmio.c:777
 #, fuzzy
 msgid "Server IO error"
 msgstr "V/V chyba FTP"
 
-#: lib/rpmio.c:778
+#: lib/rpmio.c:780
 #, fuzzy
 msgid "Server timeout"
 msgstr "Promlka serveru FTP"
 
-#: lib/rpmio.c:781
+#: lib/rpmio.c:783
 #, fuzzy
 msgid "Unable to lookup server host address"
 msgstr "Nelze vyhledat adresu hostitelského serveru FTP"
 
-#: lib/rpmio.c:784
+#: lib/rpmio.c:786
 #, fuzzy
 msgid "Unable to lookup server host name"
 msgstr "Nelze vyhledat název hostitelského serveru FTP"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:789
 #, fuzzy
 msgid "Failed to connect to server"
 msgstr "K serveru FTP se nelze pøipojit"
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:792
 #, fuzzy
 msgid "Failed to establish data connection to server"
 msgstr "Se serverem FTP nelze navázat datové spojení"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:795
 msgid "IO error to local file"
 msgstr "V/V chyba na místní soubor"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:798
 msgid "Error setting remote server to passive mode"
 msgstr "Chyba pøi nastavení vzdáleného serveru na pasivní re¾im"
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:801
 msgid "File not found on server"
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: lib/rpmio.c:802
+#: lib/rpmio.c:804
 msgid "Abort in progress"
 msgstr ""
 
-#: lib/rpmio.c:806
+#: lib/rpmio.c:808
 #, fuzzy
 msgid "Unknown or unexpected error"
 msgstr "Neznámá nebo neèekaná chyba FTP"
 
-#: lib/rpmio.c:1339
+#: lib/rpmio.c:1341
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "probíhá pøihla¹ování na %s jako %s, h. %s\n"

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-12-22 16:23-0500\n"
+"POT-Creation-Date: 1999-12-23 12:49-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -3110,59 +3110,59 @@ msgstr "не могу открыть %s\n"
 msgid "Installing %s\n"
 msgstr "Устанавливаю %s\n"
 
-#: lib/rpmio.c:769
+#: lib/rpmio.c:771
 msgid "Success"
 msgstr "Удалось"
 
-#: lib/rpmio.c:772
+#: lib/rpmio.c:774
 msgid "Bad server response"
 msgstr "Неверный ответ сервера"
 
-#: lib/rpmio.c:775
+#: lib/rpmio.c:777
 msgid "Server IO error"
 msgstr "Ошибка ввода/вывода сервера"
 
-#: lib/rpmio.c:778
+#: lib/rpmio.c:780
 msgid "Server timeout"
 msgstr "Таймаут сервера"
 
-#: lib/rpmio.c:781
+#: lib/rpmio.c:783
 msgid "Unable to lookup server host address"
 msgstr "Не могу найти IP-адрес сервера"
 
-#: lib/rpmio.c:784
+#: lib/rpmio.c:786
 msgid "Unable to lookup server host name"
 msgstr "Не могу найти имя сервера"
 
-#: lib/rpmio.c:787
+#: lib/rpmio.c:789
 msgid "Failed to connect to server"
 msgstr "Не могу соединиться с сервером"
 
-#: lib/rpmio.c:790
+#: lib/rpmio.c:792
 msgid "Failed to establish data connection to server"
 msgstr "Не могу установить соединение для данных с сервером"
 
-#: lib/rpmio.c:793
+#: lib/rpmio.c:795
 msgid "IO error to local file"
 msgstr "Ошибка ввода/вывода в локальный файл"
 
-#: lib/rpmio.c:796
+#: lib/rpmio.c:798
 msgid "Error setting remote server to passive mode"
 msgstr "Ошибка при переводе удаленного сервера в пассивный режим"
 
-#: lib/rpmio.c:799
+#: lib/rpmio.c:801
 msgid "File not found on server"
 msgstr "Файл не найден на сервере"
 
-#: lib/rpmio.c:802
+#: lib/rpmio.c:804
 msgid "Abort in progress"
 msgstr "Отмена в процессе"
 
-#: lib/rpmio.c:806
+#: lib/rpmio.c:808
 msgid "Unknown or unexpected error"
 msgstr "Неизвестная или неожиданная ошибка"
 
-#: lib/rpmio.c:1339
+#: lib/rpmio.c:1341
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "регистрируюсь в %s как %s, пароль %s\n"
