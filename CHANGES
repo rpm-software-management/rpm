@@ -93,6 +93,8 @@
 	- calculate dependency color and refernces.
 	- python: add ds.Color() and ds.Refs() methods.
 	- fix: typo in assertion.
+	- add rpmts/rpmte/rpmfi/rpmds element colors.
+	- ignore items not in our rainbow (i.e. colors are functional).
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.
