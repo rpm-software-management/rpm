@@ -2,7 +2,6 @@
 # Kanda Mitsru <kanda@nn.iij4u.or.jp>
 # rpm message catalog
 # Kanda Mitsru <kanda@nn.iij4u.or.jp>
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"

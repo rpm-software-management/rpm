@@ -7,7 +7,6 @@
 # N'hésitez pas à m'envoyez un courriel si vous avez des
 # suggestions/corrections.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
@@ -460,7 +459,7 @@ msgstr "Lexème %s invalide: %s\n"
 #: build/files.c:504
 #, c-format
 msgid "Missing %s in %s %s\n"
-msgstr "%s manquant(e) dans %s\n"
+msgstr "%s manquant(e) dans %s %s\n"
 
 #: build/files.c:561
 #, c-format
@@ -855,7 +854,7 @@ msgstr "ligne %d: deuxième description\n"
 #: build/parseFiles.c:42
 #, c-format
 msgid "line %d: Error parsing %%files: %s\n"
-msgstr "ligne %d: erreur dans l'analyse syntaxique de %%files\n"
+msgstr "ligne %d: erreur dans l'analyse syntaxique de %%files: %s\n"
 
 #: build/parseFiles.c:86
 #, c-format
@@ -2849,7 +2848,7 @@ msgstr ""
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
 msgstr ""
-"échec du(des) appel(s) système(s) de la pré-transaction du paquetage %s: %s"
+"échec du(des) appel(s) système(s) de la pré-transaction du paquetage %s: %s: %s"
 
 #: lib/rpmps.c:262
 #, c-format
@@ -3514,7 +3513,7 @@ msgstr "erreur(%d) en enlevant l'article \"%s\" de %s\n"
 #: rpmdb/rpmdb.c:2916
 #, c-format
 msgid "error(%d) allocating new package instance\n"
-msgstr "erreur en allouant une nouvelle instance de paquetage\n"
+msgstr "erreur(%d) en allouant une nouvelle instance de paquetage\n"
 
 #: rpmdb/rpmdb.c:2970
 msgid "rpmdbAdd: skipping"
@@ -3680,7 +3679,7 @@ msgstr "%c non terminé: %s\n"
 #: rpmio/macro.c:1314
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
-msgstr "Un % est suivi d'une macro in-analysable\n"
+msgstr "Un %% est suivi d'une macro in-analysable\n"
 
 #: rpmio/macro.c:1443
 #, c-format
