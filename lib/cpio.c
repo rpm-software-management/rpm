@@ -15,6 +15,8 @@
 #include "debug.h"
 
 /*@access FD_t@*/
+/*@access rpmTransactionSet@*/
+/*@access TFI_t@*/
 
 #define CPIO_NEWC_MAGIC	"070701"
 #define CPIO_CRC_MAGIC	"070702"
@@ -85,7 +87,7 @@ struct cpioCrcPhysicalHeader {
 struct cpioHeader {
 /*@owned@*/ const char * path;
     FD_t cfd;
-    void * mapi;
+/*@owned@*/ void * mapi;
     struct stat sb;
 };
 
@@ -143,7 +145,7 @@ static gid_t mapFinalGid(const void * this) {
 
 /**
  */
-static const char * mapMd5sum(const void * this) {
+static /*@observer@*/ const char * const mapMd5sum(const void * this) {
     const struct cpioFileMapping * map = this;
     return map->md5sum;
 }
@@ -151,8 +153,8 @@ static const char * mapMd5sum(const void * this) {
 /**
  */
 struct mapi {
-    rpmTransactionSet ts;
-    TFI_t fi;
+/*@dependent@*/ rpmTransactionSet ts;
+/*@dependent@*/ TFI_t fi;
     int i;
     struct cpioFileMapping map;
 };
@@ -168,7 +170,7 @@ static const void * mapLink(const void * this) {
 
 /**
  */
-static void mapFree(const void * this) {
+static void mapFree(/*@only@*/ const void * this) {
     free((void *)this);
 }
 
@@ -198,7 +200,8 @@ static void mapFreeIterator(/*@only@*/ const void * this)
 
 /**
  */
-static void * mapInitIterator(const void * this, const void * that)
+static void *
+mapInitIterator(/*@kept@*/ const void * this, /*@kept@*/ const void * that)
 {
     struct mapi * mapi;
     rpmTransactionSet ts = (void *)this;

@@ -10,6 +10,8 @@
 
 #include "debug.h"
 
+/*@access h@*/		/* compared with NULL */
+
 static char * ridsub = ".rid/";
 static char * ridsep = ";";
 static mode_t riddmode = 0700;
@@ -53,7 +55,7 @@ int dirstashPackage(const rpmTransactionSet ts, const TFI_t fi, rollbackDir dir)
 	    te = stpcpy(te, ridsub);
 	    if (te[-1] == '/')
 		*(--te) = '\0';
-fprintf(stderr, "*** mkdir(%s,%o)\n", t, riddmode);
+fprintf(stderr, "*** mkdir(%s,%o)\n", t, (int)riddmode);
 	}
     }
 
@@ -95,6 +97,7 @@ void loadFi(Header h, TFI_t fi)
 
     if (h && fi->h == NULL)	fi->h = headerLink(h);
 
+    /* Duplicate name-version-release so that headers can be free'd. */
     hge(fi->h, RPMTAG_NAME, NULL, (void **) &fi->name, NULL);
     fi->name = xstrdup(fi->name);
     hge(fi->h, RPMTAG_VERSION, NULL, (void **) &fi->version, NULL);

@@ -44,18 +44,10 @@ int	rpmfileexists(const char * filespec)	/*@*/;
 
 /**
  */
-int	rpmfileexists(const char * filespec);
-
-/**
- */
 int	rpmvercmp(const char * one, const char * two);
 
 /* these are like the normal functions, but they malloc() the space which
    is needed */
-
-/**
- */
-int	rpmfileexists(const char * filespec);
 
 /**
  */

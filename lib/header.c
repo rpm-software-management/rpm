@@ -78,7 +78,7 @@ struct entryInfo {
  */
 struct indexEntry {
     struct entryInfo info;	/*!< Description of tag data. */
-    void * data; 		/*!< Location of tag data. */
+/*@owned@*/ void * data; 	/*!< Location of tag data. */
     int length;			/*!< No. bytes of data. */
     int rdlen;			/*!< No. bytes of data in region. */
 };
@@ -87,7 +87,7 @@ struct indexEntry {
  * The Header data structure.
  */
 struct headerToken {
-    struct indexEntry *index;	/*!< Array of tags. */
+/*@owned@*/ struct indexEntry *index;	/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */
     int indexAlloced;		/*!< Allocated size of tag array. */
     int region_allocated;	/*!< Is 1st header region allocated? */
@@ -315,11 +315,13 @@ static void copyEntry(const struct indexEntry * entry, /*@out@*/ int_32 * type,
 	int i;
 
 	if (minMem) {
-	    ptrEntry = (const char **) *p = xmalloc(tableSize);
+	    *p = xmalloc(tableSize);
+	    ptrEntry = (const char **) *p;
 	    t = entry->data;
 	} else {
 	    t = xmalloc(tableSize + entry->length);
-	    ptrEntry = (const char **) *p = (void *)t;
+	    *p = (void *)t;
+	    ptrEntry = (const char **) *p;
 	    t += tableSize;
 	    memcpy(t, entry->data, entry->length);
 	}
@@ -2221,7 +2223,7 @@ static char * formatValue(struct sprintfTag * tag, Header h,
 
     if (tag->arrayCount) {
 	/*@-observertrans -modobserver@*/
-	headerFreeData(data, type);
+	data = headerFreeData(data, type);
 	/*@=observertrans =modobserver@*/
 
 	countBuf = count;
@@ -2392,7 +2394,7 @@ static const char * singleSprintf(Header h, struct sprintfToken * token,
 		if (!headerGetEntry(h, token->u.array.format[i].u.tag.tag, 
 				    &type, (void **) &val, &numElements))
 		    continue;
-		headerFreeData(val, type);
+		val = headerFreeData(val, type);
 	    } 
 	    break;
 	}
@@ -2655,6 +2657,6 @@ void headerCopyTags(Header headerFrom, Header headerTo, int *tagstocopy)
 				(const void **) &s, &count))
 	    continue;
 	headerAddEntry(headerTo, *p, type, s, count);
-	headerFreeData(s, type);
+	s = headerFreeData(s, type);
     }
 }

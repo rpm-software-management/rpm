@@ -30,7 +30,7 @@ static union _vendian { int i; char b[4]; } *_endian = (union _vendian *)&_ie;
 static void verifyArgCallback(/*@unused@*/poptContext con,
 	/*@unused@*/enum poptCallbackReason reason,
 	const struct poptOption * opt, /*@unused@*/const char * arg,
-	const void * data)
+	/*@unused@*/ const void * data)
 {
     QVA_t *qva = &rpmQVArgs;
     switch (opt->val) {

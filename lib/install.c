@@ -146,11 +146,14 @@ static int mergeFiles(Header h, Header newH, TFI_t fi)
 {
     enum fileActions * actions = fi->actions;
     int i, j, k, fc;
-    int_32 type, count, dirNamesCount, dirCount;
+    int_32 type = 0;
+    int_32 count = 0;
+    int_32 dirNamesCount, dirCount;
     void * data, * newdata;
     int_32 * dirIndexes, * newDirIndexes;
     uint_32 * fileSizes, fileSize;
-    char ** dirNames, ** newDirNames;
+    const char ** dirNames;
+    const char ** newDirNames;
     static int_32 mergeTags[] = {
 	RPMTAG_FILESIZES,
 	RPMTAG_FILESTATES,
@@ -221,7 +224,6 @@ static int mergeFiles(Header h, Header newH, TFI_t fi)
 		    ((char **) newdata)[k++] = ((char **) data)[j];
 	    headerAddOrAppendEntry(h, mergeTags[i], type, newdata, fc);
 	    free (newdata);
-	    free (data);
 	    break;
 	default:
 	    rpmError(RPMERR_DATATYPE, _("Data type %d not supported\n"),
@@ -229,6 +231,7 @@ static int mergeFiles(Header h, Header newH, TFI_t fi)
 	    return 1;
 	    /*@notreached@*/ break;
 	}
+	data = headerFreeData(data, type);
     }
     headerGetEntry(newH, RPMTAG_DIRINDEXES, NULL, (void **) &newDirIndexes,
 		   &count);
@@ -264,7 +267,7 @@ static int mergeFiles(Header h, Header newH, TFI_t fi)
     free (dirNames);
 
     for (i = 0; i < 9; i += 3) {
-	char **Names, **EVR, **newNames, **newEVR;
+	const char **Names, **EVR, **newNames, **newEVR;
 	uint_32 *Flags, *newFlags;
 	int Count = 0, newCount = 0;
 
@@ -723,7 +726,7 @@ exit:
  */
 static int installActions(const rpmTransactionSet ts, TFI_t fi)
 {
-    static char * stepName = "install";
+/*@observer@*/ static char * stepName = "install";
     int nb = (!ts->chrootDone ? strlen(ts->rootDir) : 0);
     char * opath = alloca(nb + fi->dnlmax + fi->bnlmax + 64);
     char * o = (!ts->chrootDone ? stpcpy(opath, ts->rootDir) : opath);
@@ -807,7 +810,7 @@ static int installActions(const rpmTransactionSet ts, TFI_t fi)
  */
 int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 {
-    static char * stepName = "install";
+/*@observer@*/ static char * stepName = "install";
     Header oldH = NULL;
     int otherOffset = 0;
     int ec = 2;		/* assume error return */

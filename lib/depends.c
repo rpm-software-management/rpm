@@ -686,6 +686,9 @@ rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb, const char * rootDir)
     if (!rootDir) rootDir = "";
 
     ts = xcalloc(1, sizeof(*ts));
+    ts->filesystemCount = 0;
+    ts->filesystems = NULL;
+    ts->di = NULL;
     ts->rpmdb = rpmdb;
     ts->scriptFd = NULL;
     ts->id = 0;
@@ -851,8 +854,7 @@ int rpmtransAddPackage(rpmTransactionSet ts, Header h, FD_t fd,
     return 0;
 }
 
-void rpmtransAvailablePackage(rpmTransactionSet ts, Header h,
-	const void * key)
+void rpmtransAvailablePackage(rpmTransactionSet ts, Header h, const void * key)
 {
     struct availablePackage * al;
     al = alAddPackage(&ts->availablePackages, h, key, NULL, NULL);
@@ -870,6 +872,8 @@ void rpmtransFree(rpmTransactionSet ts)
 
     alFree(addedPackages);
     alFree(availablePackages);
+    if (ts->di)
+	free((void *)ts->di);
     if (ts->removedPackages)
 	free(ts->removedPackages);
     if (ts->order)
@@ -1460,7 +1464,7 @@ static void markLoop(struct tsortInfo * tsi, struct availablePackage * q)
     }
 }
 
-static inline const char * identifyDepend(int_32 f) {
+static inline /*@observer@*/ const char * const identifyDepend(int_32 f) {
     if (isLegacyPreReq(f))
 	return "PreReq:";
     f = _notpre(f);
@@ -1608,7 +1612,7 @@ static int orderListIndexCmp(const void * one, const void * two)
  * @retval qp		address of first element
  * @retval rp		address of last element
  */
-static void addQ(struct availablePackage * p,
+static void addQ(/*@kept@*/ struct availablePackage * p,
 	/*@out@*/ struct availablePackage ** qp,
 	/*@out@*/ struct availablePackage ** rp)
 {

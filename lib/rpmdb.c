@@ -60,9 +60,9 @@ static int dbiTagToDbix(int rpmtag)
  */
 static void dbiTagsInit(void)
 {
-    static const char * _dbiTagStr_default =
+/*@observer@*/ static const char * const _dbiTagStr_default =
 	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername";
-    char * dbiTagStr;
+    char * dbiTagStr = NULL;
     char * o, * oe;
     int rpmtag;
 
@@ -108,7 +108,8 @@ static void dbiTagsInit(void)
 	dbiTags[dbiTagsMax++] = rpmtag;
     }
 
-    free(dbiTagStr);
+    if (dbiTagStr)
+	free(dbiTagStr);
 }
 
 #if USE_DB1
@@ -203,7 +204,7 @@ if (rc == 0 && datapp && *datapp && datalenp && *datalenp >= sizeof(dataval))
     memcpy(&dataval, *datapp, sizeof(dataval));
 fprintf(stderr, "    Get %s key (%p,%ld) data (%p,%ld) \"%s\" %x rc %d\n",
     tagName(dbi->dbi_rpmtag), *keypp, (long)*keylenp, *datapp, (long)*datalenp,
-    (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)*keypp : keyval), dataval, rc);
+    (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)*keypp : keyval), (unsigned)dataval, rc);
 }
     return rc;
 }
@@ -223,7 +224,7 @@ INLINE int dbiPut(dbiIndex dbi, DBC * dbcursor, const void * keyp, size_t keylen
 if (_debug < 0 || dbi->dbi_debug) {
 int dataval = 0xdeadbeef;
 if (datap) memcpy(&dataval, datap, sizeof(dataval));
-fprintf(stderr, "    Put %s key (%p,%ld) data (%p,%ld) \"%s\" %x rc %d\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, datap, (long)datalen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""), dataval, rc);
+fprintf(stderr, "    Put %s key (%p,%ld) data (%p,%ld) \"%s\" %x rc %d\n", tagName(dbi->dbi_rpmtag), keyp, (long)keylen, datap, (long)datalen, (dbi->dbi_rpmtag != RPMDBI_PACKAGES ? (char *)keyp : ""), (unsigned)dataval, rc);
 }
 
     return rc;
@@ -363,8 +364,8 @@ union _dbswap {
 static int dbiSearch(dbiIndex dbi, DBC * dbcursor,
 	const char * keyp, size_t keylen, dbiIndexSet * setp)
 {
-    void * datap;
-    size_t datalen;
+    void * datap = NULL;
+    size_t datalen = 0;
     int rc;
 
     if (setp) *setp = NULL;
@@ -567,7 +568,7 @@ static INLINE int dbiAppendSet(dbiIndexSet set, const void * recs,
  * @param sorted	array is already sorted?
  * @return		0 success, 1 failure (no items found)
  */
-static INLINE int dbiPruneSet(dbiIndexSet set, void * recs, int nrecs,
+static INLINE int dbiPruneSet(dbiIndexSet set, const void * recs, int nrecs,
 	size_t recsize, int sorted)
 {
     int from;
@@ -651,10 +652,12 @@ static void unblockSignals(rpmdb rpmdb, sigset_t * oldMask)
 #define	_DB_FILTER_DUPS	0
 #define	_DB_ERRPFX	"rpmdb"
 
-static struct rpmdb_s dbTemplate = {
+/*@-fullinitblock@*/
+/*@observer@*/ static struct rpmdb_s dbTemplate = {
     _DB_ROOT,	_DB_HOME, _DB_FLAGS, _DB_MODE, _DB_PERMS,
     _DB_MAJOR,	_DB_REMOVE_ENV, _DB_FILTER_DUPS, _DB_ERRPFX
 };
+/*@=fullinitblock@*/
 
 int rpmdbOpenAll (rpmdb rpmdb)
 {
@@ -712,10 +715,12 @@ int rpmdbSync(rpmdb rpmdb)
     return 0;
 }
 
-static /*@only@*/ rpmdb newRpmdb(const char * root, const char * home,
+static /*@only@*/ rpmdb newRpmdb(/*@kept@*/ const char * root,
+		/*@kept@*/ const char * home,
 		int mode, int perms, int flags)
 {
     rpmdb rpmdb = xcalloc(sizeof(*rpmdb), 1);
+    const char * epfx = _DB_ERRPFX;
     static int _initialized = 0;
 
     if (!_initialized) {
@@ -727,35 +732,23 @@ static /*@only@*/ rpmdb newRpmdb(const char * root, const char * home,
 
     if (!(perms & 0600)) perms = 0644;	/* XXX sanity */
 
-    if (root)
-	rpmdb->db_root = (*root ? root : _DB_ROOT);
-    if (home)
-	rpmdb->db_home = (*home ? home : _DB_HOME);
     if (mode >= 0)	rpmdb->db_mode = mode;
     if (perms >= 0)	rpmdb->db_perms = perms;
     if (flags >= 0)	rpmdb->db_flags = flags;
 
-    if (rpmdb->db_root)
-	rpmdb->db_root = rpmGetPath(rpmdb->db_root, NULL);
-    if (rpmdb->db_home) {
-	rpmdb->db_home = rpmGetPath(rpmdb->db_home, NULL);
-	if (!(rpmdb->db_home && rpmdb->db_home[0] != '%')) {
-	    rpmError(RPMERR_DBOPEN, _("no dbpath has been set\n"));
-	   goto errxit;
-	}
+    rpmdb->db_root = rpmGetPath( (root && *root ? root : _DB_ROOT), NULL);
+    rpmdb->db_home = rpmGetPath( (home && *home ? home : _DB_HOME), NULL);
+    if (!(rpmdb->db_home && rpmdb->db_home[0] != '%')) {
+	rpmError(RPMERR_DBOPEN, _("no dbpath has been set\n"));
+	rpmdbClose(rpmdb);
+	return NULL;
     }
-    if (rpmdb->db_errpfx)
-	rpmdb->db_errpfx = xstrdup(rpmdb->db_errpfx);
+    rpmdb->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     rpmdb->db_remove_env = 0;
     rpmdb->db_filter_dups = _filterDbDups;
     rpmdb->db_ndbi = dbiTagsMax;
     rpmdb->_dbi = xcalloc(rpmdb->db_ndbi, sizeof(*rpmdb->_dbi));
     return rpmdb;
-
-errxit:
-    if (rpmdb)
-	rpmdbClose(rpmdb);
-    return NULL;
 }
 
 static int openDatabase(const char * prefix, const char * dbpath, int _dbapi,
@@ -810,11 +803,12 @@ static int openDatabase(const char * prefix, const char * dbpath, int _dbapi,
 	    switch (rpmtag) {
 	    case RPMDBI_PACKAGES:
 		if (dbi == NULL) rc |= 1;
+		/* XXX open only Packages, indices created on the fly. */
 #if 0
 		if (rpmdb->db_api == 3)
 #endif
 		    goto exit;
-		break;
+		/*@notreached@*/ break;
 	    case RPMTAG_NAME:
 		if (dbi == NULL) rc |= 1;
 		if (minimal)
@@ -1196,9 +1190,9 @@ static int dbiUpdateRecord(dbiIndex dbi, DBC * dbcursor, int offset, Header h)
 }
 
 struct _rpmdbMatchIterator {
-    const void *	mi_keyp;
+/*@only@*/ const void *	mi_keyp;
     size_t		mi_keylen;
-    rpmdb		mi_rpmdb;
+/*@kept@*/ rpmdb	mi_rpmdb;
     int			mi_rpmtag;
     dbiIndexSet		mi_set;
     DBC *		mi_dbc;
@@ -1211,8 +1205,8 @@ struct _rpmdbMatchIterator {
     unsigned int	mi_filenum;
     unsigned int	mi_fpnum;
     unsigned int	mi_dbnum;
-    const char *	mi_version;
-    const char *	mi_release;
+/*@only@*/ const char *mi_version;
+/*@only@*/ const char *mi_release;
 };
 
 void rpmdbFreeIterator(rpmdbMatchIterator mi)
@@ -1249,7 +1243,7 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
 	mi->mi_version = NULL;
     }
     if (mi->mi_dbc) {
-	int xx = dbiCclose(dbi, mi->mi_dbc, 1);
+	xx = dbiCclose(dbi, mi->mi_dbc, 1);
 	mi->mi_dbc = NULL;
     }
     if (mi->mi_set) {
@@ -1474,7 +1468,7 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi,
     return rc;
 }
 
-int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
+int rpmdbPruneIterator(rpmdbMatchIterator mi, const int * hdrNums,
 	int nHdrNums, int sorted)
 {
     if (mi == NULL || hdrNums == NULL || nHdrNums <= 0)
@@ -1485,7 +1479,7 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
     return 0;
 }
 
-int rpmdbAppendIterator(rpmdbMatchIterator mi, int * hdrNums, int nHdrNums)
+int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums)
 {
     if (mi == NULL || hdrNums == NULL || nHdrNums <= 0)
 	return 1;
@@ -1502,6 +1496,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
     rpmdbMatchIterator mi = NULL;
     dbiIndexSet set = NULL;
     dbiIndex dbi;
+    const void * mi_keyp = NULL;
     int isLabel = 0;
 
     /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
@@ -1560,11 +1555,11 @@ fprintf(stderr, "*** RMW %s %p\n", tagName(rpmtag), dbi->dbi_rmw);
 	k = xmalloc(keylen + 1);
 	memcpy(k, keyp, keylen);
 	k[keylen] = '\0';	/* XXX for strings */
-	keyp = k;
+	mi_keyp = k;
     }
 
     mi = xcalloc(sizeof(*mi), 1);
-    mi->mi_keyp = keyp;
+    mi->mi_keyp = mi_keyp;
     mi->mi_keylen = keylen;
 
     mi->mi_rpmdb = rpmdb;
@@ -1736,8 +1731,7 @@ int rpmdbRemove(rpmdb rpmdb, int rid, unsigned int hdrNum)
 	    if (!dbi->dbi_no_dbsync)
 		xx = dbiSync(dbi, 0);
 
-	    headerFreeData(rpmvals, rpmtype);
-	    rpmvals = NULL;
+	    rpmvals = headerFreeData(rpmvals, rpmtype);
 	    rpmtype = 0;
 	    rpmcnt = 0;
 	}
@@ -1995,8 +1989,9 @@ int rpmdbAdd(rpmdb rpmdb, int iid, Header h)
 	    if (!dbi->dbi_no_dbsync)
 		xx = dbiSync(dbi, 0);
 
-	    headerFreeData(rpmvals, rpmtype);
-	    rpmvals = NULL;
+	/*@-observertrans@*/
+	    rpmvals = headerFreeData(rpmvals, rpmtype);
+	/*@=observertrans@*/
 	    rpmtype = 0;
 	    rpmcnt = 0;
 	}
@@ -2404,6 +2399,7 @@ int rpmdbRebuild(const char * rootdir)
 
 		headerNVR(h, &name, &version, &release);
 
+		/*@-shadow@*/
 		{   rpmdbMatchIterator mi;
 		    mi = rpmdbInitIterator(newdb, RPMTAG_NAME, name, 0);
 		    rpmdbSetIteratorVersion(mi, version);
@@ -2414,6 +2410,7 @@ int rpmdbRebuild(const char * rootdir)
 		    }
 		    rpmdbFreeIterator(mi);
 		}
+		/*@=shadow@*/
 
 		if (skip)
 		    continue;

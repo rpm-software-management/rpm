@@ -27,7 +27,7 @@
  */
 static int eraseActions(const rpmTransactionSet ts, TFI_t fi)
 {
-    static char * stepName = "erase";
+/*@observer@*/ static char * stepName = "erase";
     int nb = (!ts->chrootDone ? strlen(ts->rootDir) : 0);
     char * opath = alloca(nb + fi->dnlmax + fi->bnlmax + 64);
     char * o = (!ts->chrootDone ? stpcpy(opath, ts->rootDir) : opath);
@@ -117,7 +117,7 @@ static int eraseActions(const rpmTransactionSet ts, TFI_t fi)
 
 int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 {
-    static char * stepName = "erase";
+/*@observer@*/ static char * stepName = "erase";
     Header h;
     const void * pkgKey = NULL;
     int rc = 0;

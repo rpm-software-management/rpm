@@ -13,12 +13,12 @@
 struct tsortInfo {
     union {
 	int	count;
-	/*@dependent@*/ struct availablePackage * suc;
+	/*@kept@*/ struct availablePackage * suc;
     } tsi_u;
 #define	tsi_count	tsi_u.count
 #define	tsi_suc		tsi_u.suc
 /*@owned@*/ struct tsortInfo * tsi_next;
-/*@dependent@*/ struct availablePackage * tsi_pkg;
+/*@kept@*/ struct availablePackage * tsi_pkg;
     int		tsi_reqx;
     int		tsi_qcnt;
 } ;
@@ -44,7 +44,7 @@ struct availablePackage {
     int filesCount;			/*!< No. of files in header. */
     struct tsortInfo tsi;		/*!< Dependency tsort data. */
     uint_32 multiLib;	/* MULTILIB */
-/*@dependent@*/ const void * key;	/*!< Private data associated with a package (e.g. file name of package). */
+/*@kept@*/ const void * key;	/*!< Private data associated with a package (e.g. file name of package). */
     rpmRelocation * relocs;
 /*@null@*/ FD_t fd;
 } ;
@@ -127,11 +127,14 @@ struct rpmTransactionSet_s {
 /*@observer@*/ rpmCallbackData notifyData;/*!< Callback private data. */
 /*@dependent@*/ rpmProblemSet probs;	/*!< Current problems in transaction. */
     rpmprobFilterFlags ignoreSet;	/*!< Bits to filter current problems. */
-/*@owned@*/ /*@null@*/ rpmdb rpmdb;	/*!< Database handle. */
+    int filesystemCount;		/*!< No. of mounted filesystems. */
+/*@dependent@*/ const char ** filesystems; /*!< Mounted filesystem names. */
+/*@only@*/ struct diskspaceInfo * di;	/*!< Per filesystem disk/inode usage. */
+/*@kept@*/ /*@null@*/ rpmdb rpmdb;	/*!< Database handle. */
 /*@only@*/ int * removedPackages;	/*!< Set of packages being removed. */
     int numRemovedPackages;		/*!< No. removed rpmdb instances. */
     int allocedRemovedPackages;		/*!< Size of removed packages array. */
-    struct availableList addedPackages;/*!< Set of packages being installed. */
+    struct availableList addedPackages;	/*!< Set of packages being installed. */
     struct availableList availablePackages;
 				/*!< Universe of possible packages. */
 /*@only@*/ struct transactionElement * order;

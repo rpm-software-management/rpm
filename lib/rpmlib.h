@@ -603,21 +603,21 @@ void rpmdbFreeIterator( /*@only@*/ rpmdbMatchIterator mi);
  * @param mi		rpm database iterator
  * @return		rpm database handle
  */
-rpmdb rpmdbGetIteratorRpmDB(rpmdbMatchIterator mi);
+/*@kept@*/ rpmdb rpmdbGetIteratorRpmDB(rpmdbMatchIterator mi)	/*@*/;
 
 /** \ingroup rpmdb
  * Return join key for current position of rpm database iterator.
  * @param mi		rpm database iterator
  * @return		current join key
  */
-unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi);
+unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi)	/*@*/;
 
 /** \ingroup rpmdb
  * Return number of elements in rpm database iterator.
  * @param mi		rpm database iterator
  * @return		number of elements
  */
-int rpmdbGetIteratorCount(rpmdbMatchIterator mi);
+int rpmdbGetIteratorCount(rpmdbMatchIterator mi)	/*@*/;
 
 /** \ingroup rpmdb
  * Append items to set of package instances to iterate.
@@ -626,7 +626,9 @@ int rpmdbGetIteratorCount(rpmdbMatchIterator mi);
  * @param nHdrNums	number of elements in array
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbAppendIterator(rpmdbMatchIterator mi, int * hdrNums, int nHdrNums);
+int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums,
+	int nHdrNums)
+		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Remove items from set of package instances to iterate.
@@ -636,8 +638,9 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, int * hdrNums, int nHdrNums);
  * @param sorted	is the array sorted? (array will be sorted on return)
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
-	int nHdrNums, int sorted);
+int rpmdbPruneIterator(rpmdbMatchIterator mi, const int * hdrNums,
+	int nHdrNums, int sorted)
+		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Modify iterator to filter out headers that do not match version.
@@ -645,7 +648,8 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
  * @param mi		rpm database iterator
  * @param version	version to check for
  */
-void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, /*@kept@*/ const char * version);
+void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, const char * version)
+		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Modify iterator to filter out headers that do not match release.
@@ -653,7 +657,8 @@ void rpmdbSetIteratorVersion(rpmdbMatchIterator mi, /*@kept@*/ const char * vers
  * @param mi		rpm database iterator
  * @param release	release to check for
  */
-void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, /*@kept@*/ const char * release);
+void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, const char * release)
+		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Modify iterator to mark header for lazy write.
@@ -661,17 +666,20 @@ void rpmdbSetIteratorRelease(rpmdbMatchIterator mi, /*@kept@*/ const char * rele
  * @param modified	new value of modified
  * @return		previous value
  */
-int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified);
+int rpmdbSetIteratorModified(rpmdbMatchIterator mi, int modified)
+		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Return next package header from iteration.
  * @param mi		rpm database iterator
  * @return		NULL on end of iteration.
  */
-Header rpmdbNextIterator(rpmdbMatchIterator mi);
+Header rpmdbNextIterator(rpmdbMatchIterator mi)
+		/*@modifies mi @*/;
 #define	rpmdbNextIterator(_a) \
 	XrpmdbNextIterator(_a, __FILE__, __LINE__)
-Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l);
+Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l)
+		/*@modifies mi @*/;
 
 /** \ingroup rpmdb
  * Return database iterator.
@@ -682,7 +690,7 @@ Header XrpmdbNextIterator(rpmdbMatchIterator mi, const char * f, unsigned int l)
  * @return		NULL on failure
  */
 /*@only@*/ /*@null@*/ rpmdbMatchIterator rpmdbInitIterator(
-			rpmdb rpmdb, int rpmtag,
+			/*@kept@*/ rpmdb rpmdb, int rpmtag,
 			const void * key, size_t keylen);
 
 /** \ingroup rpmdb
@@ -738,7 +746,7 @@ typedef enum rpmProblemType_e {
 typedef /*@abstract@*/ struct rpmProblem_s {
 /*@only@*/ /*@null@*/ const char * pkgNEVR;
 /*@only@*/ /*@null@*/ const char * altNEVR;
-/*@dependent@*/ const void * key;
+/*@kept@*/ const void * key;
     Header h;
     rpmProblemType type;
     int ignoreProblem;

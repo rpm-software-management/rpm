@@ -228,7 +228,7 @@ struct _dbiIndex {
     int			dbi_re_pad;
     const char *	dbi_re_source;
 
-    rpmdb	dbi_rpmdb;
+/*@kept@*/ rpmdb	dbi_rpmdb;
     int		dbi_rpmtag;		/*!< rpm tag used for index */
     int		dbi_jlen;		/*!< size of join key */
 
@@ -247,24 +247,18 @@ struct _dbiIndex {
  * Describes the collection of index databases used by rpm.
  */
 struct rpmdb_s {
-    const char *	db_root;	/*!< path prefix */
-    const char *	db_home;	/*!< directory path */
+/*@owned@*/ const char *db_root;	/*!< path prefix */
+/*@owned@*/ const char *db_home;	/*!< directory path */
     int			db_flags;
-
     int			db_mode;	/*!< open mode */
     int			db_perms;	/*!< open permissions */
-
     int			db_api;		/*!< Berkeley API type */
-
     int			db_remove_env;
     int			db_filter_dups;
-
-    const char *	db_errpfx;
-
+/*@owned@*/ const char *db_errpfx;
     void		(*db_errcall) (const char *db_errpfx, char *buffer);
 /*@shared@*/ FILE *	db_errfile;
-    void *		(*db_malloc) (size_t nbytes);
-
+/*@observer@*/ void *	(*db_malloc) (size_t nbytes);
     int			db_ndbi;
     dbiIndex		*_dbi;
 };

@@ -39,6 +39,7 @@
 /*@access dbiIndexSet@*/
 /*@access rpmdb@*/
 /*@access rpmTransactionSet@*/
+/*@access TFI_t@*/
 /*@access rpmProblemSet@*/
 /*@access rpmProblem@*/
 
@@ -251,8 +252,9 @@ static /*@observer@*/ const char *const ftstring (enum fileTypes ft)
     case SOCK:	return "sock";
     case PIPE:	return "fifo/pipe";
     case REG:	return "file";
+    default:	return "unknown file type";
     }
-    return "unknown file type";
+    /*@notreached@*/
 }
 
 static enum fileTypes whatis(uint_16 mode)
@@ -328,7 +330,7 @@ static Header relocateFileList(const rpmTransactionSet ts,
 	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES))
 		headerAddEntry(origH, RPMTAG_INSTPREFIXES,
 			validType, validRelocations, numValid);
-	    headerFreeData(validRelocations, validType);
+	    validRelocations = headerFreeData(validRelocations, validType);
 	}
 	/* XXX FIXME multilib file actions need to be checked. */
 	return headerLink(origH);
@@ -427,7 +429,7 @@ static Header relocateFileList(const rpmTransactionSet ts,
 		       (void **) actualRelocations, numActual);
 
 	free((void *)actualRelocations);
-	headerFreeData(validRelocations, validType);
+	validRelocations = headerFreeData(validRelocations, validType);
     }
 
     headerGetEntryMinMemory(h, RPMTAG_BASENAMES, NULL,
@@ -560,7 +562,7 @@ static Header relocateFileList(const rpmTransactionSet ts,
 	    newDirList = xmalloc(sizeof(*newDirList) * (dirCount + 1));
 	    for (k = 0; k < dirCount; k++)
 		newDirList[k] = alloca_strdup(dirNames[k]);
-	    headerFreeData(dirNames, RPM_STRING_ARRAY_TYPE);
+	    dirNames = headerFreeData(dirNames, RPM_STRING_ARRAY_TYPE);
 	    dirNames = newDirList;
 	} else {
 	    dirNames = xrealloc(dirNames, 
@@ -618,17 +620,17 @@ static Header relocateFileList(const rpmTransactionSet ts,
 	p = NULL;
 	headerGetEntry(h, RPMTAG_BASENAMES, &t, &p, &c);
 	headerAddEntry(h, RPMTAG_ORIGBASENAMES, t, p, c);
-	headerFreeData(p, t);
+	p = headerFreeData(p, t);
 
 	p = NULL;
 	headerGetEntry(h, RPMTAG_DIRNAMES, &t, &p, &c);
 	headerAddEntry(h, RPMTAG_ORIGDIRNAMES, t, p, c);
-	headerFreeData(p, t);
+	p = headerFreeData(p, t);
 
 	p = NULL;
 	headerGetEntry(h, RPMTAG_DIRINDEXES, &t, &p, &c);
 	headerAddEntry(h, RPMTAG_ORIGDIRINDEXES, t, p, c);
-	headerFreeData(p, t);
+	p = headerFreeData(p, t);
 
 	headerModifyEntry(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
@@ -638,8 +640,8 @@ static Header relocateFileList(const rpmTransactionSet ts,
 			  dirIndexes, fileCount);
     }
 
-    headerFreeData(baseNames, RPM_STRING_ARRAY_TYPE);
-    headerFreeData(dirNames, RPM_STRING_ARRAY_TYPE);
+    baseNames = headerFreeData(baseNames, RPM_STRING_ARRAY_TYPE);
+    dirNames = headerFreeData(dirNames, RPM_STRING_ARRAY_TYPE);
     if (fn) free(fn);
 
     return h;
@@ -1274,14 +1276,12 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     int totalFileCount = 0;
     hashTable ht;
     TFI_t flList, fi;
+    struct diskspaceInfo * dip;
     struct sharedFileInfo * shared, * sharedList;
     int numShared;
     int flEntries;
     int nexti;
     int lastFailed;
-    const char ** filesystems;
-    int filesystemCount;
-    struct diskspaceInfo * di = NULL;
     int oc;
     fingerPrintCache fpc;
 
@@ -1295,28 +1295,28 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     ts->notify = notify;
     ts->notifyData = notifyData;
+    ts->probs = *newProbs = psCreate();
     ts->ignoreSet = ignoreSet;
     if (ts->currDir)
 	free((void *)ts->currDir);
     ts->currDir = currentDirectory();
     ts->chrootDone = 0;
-    {	time_t t;
-	time(&t);
-	ts->id = t;
-    }
+    ts->id = time(NULL);
 
     /* Get available space on mounted file systems. */
     if (!(ts->ignoreSet & RPMPROB_FILTER_DISKSPACE) &&
-		!rpmGetFilesystemList(&filesystems, &filesystemCount)) {
+		!rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount)) {
 	struct stat sb;
 
-	di = alloca(sizeof(*di) * (filesystemCount + 1));
+	if (ts->di)
+	    free((void *)ts->di);
+	dip = ts->di = xcalloc(sizeof(*ts->di), ts->filesystemCount + 1);
 
-	for (i = 0; (i < filesystemCount) && di; i++) {
+	for (i = 0; (i < ts->filesystemCount) && dip; i++) {
 #if STATFS_IN_SYS_STATVFS
 	    struct statvfs sfb;
 	    memset(&sfb, 0, sizeof(sfb));
-	    if (statvfs(filesystems[i], &sfb))
+	    if (statvfs(ts->filesystems[i], &sfb))
 #else
 	    struct statfs sfb;
 #  if STAT_STATFS4
@@ -1326,40 +1326,39 @@ int rpmRunTransactions(	rpmTransactionSet ts,
  * filesystem, as we're doing.
  */
 	    memset(&sfb, 0, sizeof(sfb));
-	    if (statfs(filesystems[i], &sfb, sizeof(sfb), 0))
+	    if (statfs(ts->filesystems[i], &sfb, sizeof(sfb), 0))
 #  else
 	    memset(&sfb, 0, sizeof(sfb));
-	    if (statfs(filesystems[i], &sfb))
+	    if (statfs(ts->filesystems[i], &sfb))
 #  endif
 #endif
 	    {
-		di = NULL;
+		dip = NULL;
 	    } else {
-		di[i].bsize = sfb.f_bsize;
-		di[i].bneeded = 0;
-		di[i].ineeded = 0;
+		ts->di[i].bsize = sfb.f_bsize;
+		ts->di[i].bneeded = 0;
+		ts->di[i].ineeded = 0;
 #ifdef STATFS_HAS_F_BAVAIL
-		di[i].bavail = sfb.f_bavail;
+		ts->di[i].bavail = sfb.f_bavail;
 #else
 /* FIXME: the statfs struct doesn't have a member to tell how many blocks are
  * available for non-superusers.  f_blocks - f_bfree is probably too big, but
  * it's about all we can do.
  */
-		di[i].bavail = sfb.f_blocks - sfb.f_bfree;
+		ts->di[i].bavail = sfb.f_blocks - sfb.f_bfree;
 #endif
 		/* XXX Avoid FAT and other file systems that have not inodes. */
-		di[i].iavail = (!(sfb.f_ffree == 0 && sfb.f_files == 0))
+		ts->di[i].iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 				? sfb.f_ffree : -1;
 
-		stat(filesystems[i], &sb);
-		di[i].dev = sb.st_dev;
+		stat(ts->filesystems[i], &sb);
+		ts->di[i].dev = sb.st_dev;
 	    }
 	}
 
-	if (di) di[i].bsize = 0;
+	if (dip) ts->di[i].bsize = 0;
     }
 
-    ts->probs = *newProbs = psCreate();
     hdrs = alloca(sizeof(*hdrs) * ts->addedPackages.size);
 
     /* ===============================================
@@ -1491,9 +1490,11 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     /* Open all database indices before installing. */
     rpmdbOpenAll(ts->rpmdb);
 
-    chdir("/");
-    /*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
-    ts->chrootDone = 1;
+    if (!ts->chrootDone) {
+	chdir("/");
+	/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
+	ts->chrootDone = 1;
+    }
 
     ht = htCreate(totalFileCount * 2, 0, 0, fpHashFunction, fpEqual);
     fpc = fpCacheCreate(totalFileCount);
@@ -1614,15 +1615,16 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	/* Update disk space needs on each partition for this package. */
 	handleOverlappedFiles(fi, ht,
 	       ((ts->ignoreSet & RPMPROB_FILTER_REPLACENEWFILES)
-		    ? NULL : ts->probs), di);
+		    ? NULL : ts->probs), ts->di);
 
 	/* Check added package has sufficient space on each partition used. */
 	switch (fi->type) {
 	case TR_ADDED:
-	    if (!(di && fi->fc))
+	    if (!(ts->di && fi->fc))
 		break;
-	    for (i = 0; i < filesystemCount; i++) {
-		struct diskspaceInfo * dip = di + i;
+	    for (i = 0; i < ts->filesystemCount; i++) {
+
+		dip = ts->di + i;
 
 		/* XXX Avoid FAT and other file systems that have not inodes. */
 		if (dip->iavail <= 0)
@@ -1630,12 +1632,12 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
 		if (adj_fs_blocks(dip->bneeded) > dip->bavail)
 		    psAppend(ts->probs, RPMPROB_DISKSPACE, fi->ap,
-				filesystems[i], NULL, NULL,
+				ts->filesystems[i], NULL, NULL,
 	 	   (adj_fs_blocks(dip->bneeded) - dip->bavail) * dip->bsize);
 
 		if (adj_fs_blocks(dip->ineeded) > dip->iavail)
 		    psAppend(ts->probs, RPMPROB_DISKNODES, fi->ap,
-				filesystems[i], NULL, NULL,
+				ts->filesystems[i], NULL, NULL,
 	 	    (adj_fs_blocks(dip->ineeded) - dip->iavail));
 	    }
 	    break;
@@ -1647,9 +1649,11 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, flEntries,
 	NULL, ts->notifyData));
 
-    chroot(".");
-    ts->chrootDone = 0;
-    chdir(ts->currDir);
+    if (ts->chrootDone) {
+	/*@-unrecog@*/ chroot("."); /*@-unrecog@*/ 
+	ts->chrootDone = 0;
+	chdir(ts->currDir);
+    }
 
     /* ===============================================
      * Free unused memory as soon as possible.
@@ -1658,13 +1662,8 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     for (oc = 0, fi = flList; oc < ts->orderCount; oc++, fi++) {
 	if (fi->fc == 0)
 	    continue;
-	switch (fi->type) {
-	case TR_ADDED:
+	if (fi->fps) {
 	    free(fi->fps); fi->fps = NULL;
-	    break;
-	case TR_REMOVED:
-	    free(fi->fps); fi->fps = NULL;
-	    break;
 	}
     }
 
