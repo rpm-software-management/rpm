@@ -1,12 +1,13 @@
+
 #
 # Makefile.mak for the beecrypt library
 #
 # To be used with Microsoft's nmake utility;
 # Will need the Visual C Processor Pack installed.
 #
-# Copyright (c) 2000, 2001, 2002, 2003 Virtual Unlimited B.V.
+# Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
 #
-# Author: Bob Deblier <bob@virtualunlimited.com>
+# Author: Bob Deblier <bob.deblier@pandora.be>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -39,17 +40,19 @@ LIBPATH="C:\Program Files\Microsoft Visual Studio\VC98\Lib"
 JAVAPATH="C:\j2sdk1.4.0\include"
 
 
-# To enable SSE2 optimization, add switch /DOPTIMIZE_SSE2 to ASFLAGS
-ASFLAGS=/nologo /c /coff /Gd
+# To enable SSE2 optimization, add switch /DUSE_SSE2 to ASFLAGS
+ASFLAGS=/nologo /c /coff /Gd # /DUSE_SSE2
 CFLAGS=/nologo /TC /MT /GM /Ox /G6 /I.
-LDFLAGS=/nologo /machine:IX86 /libpath:$(LIBPATH) $(LIBS) # /DEBUG
+# CFLAGS=/nologo /TC /MT /GM /ZI /G6 /I.
+LDFLAGS=/nologo /fixed:no /machine:IX86 /libpath:$(LIBPATH) $(LIBS) # /DEBUG
 RCFLAGS=/r /L 0x409 /FObeecrypt.res
 JAVAFLAGS=/DJAVAGLUE=1 /I$(JAVAPATH) /I$(JAVAPATH)\win32
 
+# To compile Java support, add file javaglue.obj to this list
 OBJECTS= \
-        aes.obj \
-        aesopt.obj \
-        base64.obj \
+	aes.obj \
+	aesopt.obj \
+	base64.obj \
 	beecrypt.obj \
 	blockmode.obj \
 	blockpad.obj \
@@ -69,14 +72,13 @@ OBJECTS= \
 	hmacmd5.obj \
 	hmacsha1.obj \
 	hmacsha256.obj \
-	javaglue.obj \
 	md5.obj \
 	memchunk.obj \
-	mp32.obj \
-	mp32opt.obj \
-	mp32barrett.obj \
-	mp32number.obj \
-	mp32prime.obj \
+	mp.obj \
+	mpopt.obj \
+	mpbarrett.obj \
+	mpnumber.obj \
+	mpprime.obj \
 	mtprng.obj \
 	rsa.obj \
 	rsakp.obj \
@@ -87,17 +89,10 @@ OBJECTS= \
 	timestamp.obj \
 	beecrypt.res
 
-	
-all: .\beecrypt.dll .\beetest.exe
+all: .\beecrypt.dll
 
 beecrypt.dll: $(OBJECTS)
-	$(LD) $(LDFLAGS) $(OBJECTS) /dll /def:beecrypt.def /out:beecrypt.dll /implib:beecrypt.lib
-
-beetest.obj: tests\beetest.c
-	$(CC) $(CFLAGS) /Fobeetest.obj /c tests\beetest.c
-
-beetest.exe: beecrypt.lib beetest.obj
-	$(LD) $(LDFLAGS) beetest.obj beecrypt.lib
+	$(LD) $(LDFLAGS) $(OBJECTS) /dll /out:beecrypt.dll /implib:beecrypt.lib
 
 beecrypt.res: beecrypt.rc
 	$(RC) $(RCFLAGS) beecrypt.rc
@@ -114,8 +109,8 @@ blowfishopt.obj: masm\blowfishopt.i586.asm
 sha1opt.obj: masm\sha1opt.i586.asm
 	$(AS) $(ASFLAGS) /Fosha1opt.obj /c masm\sha1opt.i586.asm
 
-mp32opt.obj: masm\mp32opt.i386.asm
-	$(AS) $(ASFLAGS) /Fomp32opt.obj /c masm\mp32opt.i386.asm
+mpopt.obj: masm\mpopt.x86.asm
+	$(AS) $(ASFLAGS) /Fompopt.obj /c masm\mpopt.x86.asm
 
 clean:
 	del *.obj

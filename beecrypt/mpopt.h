@@ -81,6 +81,7 @@
 #  define ASM_MPADDMUL
 #  define ASM_MPADDSQRTRC
 # elif defined(OPTIMIZE_IA64)
+#  define ASM_MPZERO
 #  define ASM_MPADD
 #  define ASM_MPSUB
 #  define ASM_MPSETMUL

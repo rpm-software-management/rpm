@@ -163,13 +163,21 @@ AC_ARG_WITH(mtmalloc,[  --with-mtmalloc         links against the mtmalloc libra
   fi
   ],[ac_with_mtmalloc=no])
 
-AC_ARG_WITH(javaglue,[  --with-javaglue         creates the java glue code [default=yes]],[
+AC_ARG_WITH(javaglue,[  --with-javaglue         creates the java glue code [default=no]],[
   if test "$withval" = no; then
     ac_with_javaglue=no
   else
     ac_with_javaglue=yes
   fi
-  ],[ac_with_javaglue=yes])
+  ],[ac_with_javaglue=no])
+
+AC_ARG_WITH(python,[  --with-python         creates the python bindings code [default=no]],[
+  if test "$withval" = no; then
+    ac_with_python=no
+  else
+    ac_with_python=yes
+  fi
+  ],[ac_with_python=no])
 
 # Check for Unix variants
 AC_AIX
@@ -439,7 +447,7 @@ EOF
       if test X"$java_home" = X; then
         java_home=/usr
       fi
-      if test -d "$java_home" -a -d "$java_home/include" -a -f "$java_home/include/jni.h"; then
+      if test -d "$java_home" -a -d "$java_home/include"; then
         ac_cv_java_headers=yes
         ac_cv_java_include="-I$java_home/include"
         gcjpath="$java_home/lib/gcc-lib/`gcj -dumpmachine`/`gcj -dumpversion`"
@@ -689,6 +697,18 @@ if test "$ac_with_javaglue" = yes ; then
   CFLAGS="$CFLAGS $ac_cv_java_include"
 fi
 
+MAYBE_OPT=
+
+if test "$ac_with_javaglue" = yes; then
+  MAYBE_OPT="$MAYBE_OPT java"
+fi
+
+if test "$ac_with_python" = yes; then
+  MAYBE_OPT="$MAYBE_OPT python"
+fi
+
+AC_SUBST([MAYBE_OPT])
+
 # Generate output files.
 AC_CONFIG_FILES([Makefile
                  Doxyfile
@@ -696,6 +716,7 @@ AC_CONFIG_FILES([Makefile
                  config.m4
                  docs/Makefile
                  gas/Makefile
+                 java/Makefile
                  masm/Makefile
                  mwerks/Makefile
                  python/Makefile

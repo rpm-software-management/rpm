@@ -297,9 +297,7 @@ AC_DEFUN(BEECRYPT_GNU_CC,[
       CFLAGS="$CFLAGS -mcpu=pentiumpro"
       ;;
     ia64)
-      # -mcpu=... doesn't work on ia64, and -O3 can lead to invalid code
-      BEECRYPT_CFLAGS_REM([-O3])
-      CFLAGS="$CFLAGS -O"
+      # no -mcpu=... option on ia64
       ;;
     pentium*)
       CFLAGS="$CFLAGS -mcpu=$bc_target_arch"

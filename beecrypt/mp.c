@@ -923,28 +923,6 @@ size_t mpmszcnt(size_t size, const mpw* data)
 }
 #endif
 
-#ifndef ASM_MPBITCNT
-size_t mpbitcnt(size_t size, const mpw* data)
-{
-	register mpw xmask = (mpw)((*data & MP_MSBMASK) ? -1 : 0);
-	register size_t nbits = MP_WBITS * size;
-	register size_t i = 0;
-
-	while (i < size) {
-		register mpw temp = (data[i++] ^ xmask);
-		if (temp) {
-			while (!(temp & MP_MSBMASK)) {
-				nbits--;
-				temp <<= 1;
-			}
-			break;
-		} else
-			nbits -= MP_WBITS;
-	}
-	return nbits;
-}
-#endif
-
 #ifndef ASM_MPLSZCNT
 size_t mplszcnt(size_t size, const mpw* data)
 {
@@ -1197,7 +1175,7 @@ int mpextgcd_w(size_t size, const mpw* xdata, const mpw* ndata, mpw* result, mpw
 		{
 			mpdivtwo(sizep, udata);
 
-			if ((full && mpodd(sizep, adata)) || mpodd(sizep, bdata))
+			if (mpodd(sizep, bdata) || (full && mpodd(sizep, adata)))
 			{
 				if (full) (void) mpaddx(sizep, adata, size, xdata);
 				(void) mpsubx(sizep, bdata, size, ndata);
@@ -1210,7 +1188,7 @@ int mpextgcd_w(size_t size, const mpw* xdata, const mpw* ndata, mpw* result, mpw
 		{
 			mpdivtwo(sizep, vdata);
 
-			if ((full && mpodd(sizep, cdata)) || mpodd(sizep, ddata))
+			if (mpodd(sizep, ddata) || (full && mpodd(sizep, cdata)))
 			{
 				if (full) (void) mpaddx(sizep, cdata, size, xdata);
 				(void) mpsubx(sizep, ddata, size, ndata);
@@ -1232,7 +1210,7 @@ int mpextgcd_w(size_t size, const mpw* xdata, const mpw* ndata, mpw* result, mpw
 			(void) mpsub(sizep, ddata, bdata);
 		}
 		if (mpz(sizep, udata))
-		{       
+		{
 			if (mpisone(sizep, vdata))
 			{
 				if (result)
@@ -1362,8 +1340,10 @@ void mpndivmod(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const 
 
 	*result = (mpge(ysize, xdata, ydata) ? 1 : 0);
 	mpcopy(xsize, result+1, xdata);
+
 	if (*result)
 		(void) mpsub(ysize, result+1, ydata);
+
 	result++;
 
 	while (qsize--)

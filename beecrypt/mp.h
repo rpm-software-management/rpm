@@ -536,12 +536,6 @@ size_t mpmszcnt(size_t size, const mpw* data)
 
 /**
  */
-BEECRYPTAPI /*@unused@*/
-size_t mpbitcnt(size_t size, const mpw* data)
-	/*@*/;
-
-/**
- */
 /*@-exportlocal@*/
 BEECRYPTAPI /*@unused@*/
 size_t mplszcnt(size_t size, const mpw* data)

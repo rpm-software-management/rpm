@@ -36,7 +36,7 @@ AUTOMAKE_OPTIONS = gnu check-news no-dependencies
 
 LINT = splint
 
-SUBDIRS = . docs gas masm python tests
+SUBDIRS = . docs gas masm python tests $(MAYBE_OPT)
 
 SUFFIXES = .s
 
@@ -45,14 +45,12 @@ SUFFIXES = .s
 
 BEECRYPT_OBJECTS = aes.lo aesopt.lo base64.lo beecrypt.lo blockmode.lo blockpad.lo blowfish.lo blowfishopt.lo dhaes.lo dldp.lo dlkp.lo dlpk.lo dlsvdp-dh.lo dsa.lo elgamal.lo endianness.lo entropy.lo fips186.lo hmac.lo hmacmd5.lo hmacsha1.lo hmacsha256.lo md5.lo memchunk.lo mp.lo mpbarrett.lo mpnumber.lo mpopt.lo mpprime.lo mtprng.lo rsa.lo rsakp.lo rsapk.lo sha1.lo sha1opt.lo sha256.lo timestamp.lo
 
-BEECRYPT_JAVA_OBJECTS = javaglue.lo
-
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = libbeecrypt.la
 
-libbeecrypt_la_SOURCES = aes.c base64.c beecrypt.c blockmode.c blockpad.c blowfish.c dhaes.c dldp.c dlkp.c dlpk.c dlsvdp-dh.c dsa.c elgamal.c endianness.c entropy.c fips186.c hmac.c hmacmd5.c hmacsha1.c hmacsha256.c javaglue.c md5.c memchunk.c mp.c mpbarrett.c mpnumber.c mpprime.c mtprng.c rsa.c rsakp.c rsapk.c sha1.c sha256.c timestamp.c
+libbeecrypt_la_SOURCES = aes.c base64.c beecrypt.c blockmode.c blockpad.c blowfish.c dhaes.c dldp.c dlkp.c dlpk.c dlsvdp-dh.c dsa.c elgamal.c endianness.c entropy.c fips186.c hmac.c hmacmd5.c hmacsha1.c hmacsha256.c md5.c memchunk.c mp.c mpbarrett.c mpnumber.c mpprime.c mtprng.c rsa.c rsakp.c rsapk.c sha1.c sha256.c timestamp.c
 
-libbeecrypt_la_DEPENDENCIES = $(BEECRYPT_OBJECTS) $(BEECRYPT_JAVA_OBJECTS)
+libbeecrypt_la_DEPENDENCIES = $(BEECRYPT_OBJECTS)
 
 libbeecrypt_la_LIBADD = aesopt.lo blowfishopt.lo mpopt.lo sha1opt.lo
 
@@ -63,7 +61,7 @@ pkginclude_HEADERS = aes.h base64.h beecrypt.h beecrypt.api.h beecrypt.gnu.h blo
 noinst_HEADERS = aesopt.h beecrypt.win.h \
 	blowfishopt.h debug.h mpopt.h sha1opt.h system.h
 
-EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README README.DLL README.WIN32 beecrypt.gnu.h.in beecrypt.rc beecrypt.spec javaglue.h autogen.sh Makefile.mak
+EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README README.DLL README.WIN32 beecrypt.gnu.h.in beecrypt.rc beecrypt.spec autogen.sh Makefile.mak
 
 DISTCLEANFILES = mpopt.s aesopt.s blowfishopt.s sha1opt.s
 
