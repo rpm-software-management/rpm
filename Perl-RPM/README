@@ -1,6 +1,6 @@
 Perl-RPM - Native bindings to the RPM Package Manager API for Perl
 
-Version 0.26 (fourth alpha)
+Version 0.27 (fifth alpha)
 
 
 WHAT IS IT
@@ -42,9 +42,19 @@ Please send any reports of problems or bugs to rjray@blackperl.com.
 
 CHANGES
 
-This is the fourth release. Full details are itemized in the ChangeLog file,
-but the primary changes in this release are more effort on thread-safing the
-extension, and a sample script in the utils/ directory.
+This is the fifth release. Full details are itemized in the ChangeLog file,
+but the primary changes in this release are:
+
+* More class-level functionality added in RPM::Header
+
+* A fundamental change to the way RPM::Header objects return data
+
+* Some default identifiers available for export from RPM::Database
+
+* Moved the XS code for RPM::Error from RPM.xs into a new file RPM/Error.xs
+
+* There is now a mailing list for Perl-RPM. For details, see:
+  https://listman.redhat.com/mailman/listinfo/perl-rpm-list
 
 
 LICENSE

@@ -83,7 +83,7 @@ Revision history for Perl extension RPM.
 	Added a sample script in utils, called rpmprune. It has a --help
 	summary and a man page, see those for details.
 
-0.27
+0.27	Tue Aug  8 00:02:22 PDT 2000
 	- fifth alpha
 
 	Added filenames() method to RPM::Header. This re-assembles the list of
@@ -97,3 +97,20 @@ Revision history for Perl extension RPM.
 
 	Added RPM/Error.xs and integrated into the build. All the XS code for
 	RPM::Error that was previously in RPM.xs has been moved here.
+
+	Added export of %RPM to RPM::Database. If requested, this is a hash
+	pre-tied to the RPM::Database package (and thus the rpm database). One
+	may also request $RPM and get an object referencing a tied hash.
+
+	The return values from fetches on header objects has been completely
+	revised. Tags are now explicitly defined as scalar or list in nature.
+	The scalar_tag() method above is a part of this. The return value from
+	a scalar tag is now a plain scalar. There is no more need for $_->[0]
+	on scalar returns. Lists are still returned as list references, and
+	undef is still used to signify problems. Tests have been added to
+	t/02_headers.t for this, and tests in t/01_database.t were updated to
+	use the new syntax. This does not obsolete the RPM::Header::NVR method,
+	as that is a much faster means of fetching those three items than a
+	stock fetch of the three individual tags would be.
+
+	More tags/values documented in RPM::Constants.
