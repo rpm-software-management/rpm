@@ -103,6 +103,9 @@ tthread: tthread.o librpm.la
 tsystem: tsystem.o $(top_builddir)/popt/libpopt.la
 	$(LINK) $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(top_builddir)/rpmio/librpmio.la $(top_builddir)/popt/libpopt.la
 
+tcpu: tcpu.o librpm.la
+	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
+
 tplatform: tplatform.o librpm.la
 	$(LINK) @LDFLAGS_STATIC@ $(CFLAGS) $(DEFS) $(INCLUDES) -o $@ $< $(mylibs)
 
