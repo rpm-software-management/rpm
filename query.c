@@ -531,6 +531,26 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 	}
 	break;
 
+      case QUERY_PROVIDES:
+	if (rpmdbFindByProvides(db, arg, &matches)) {
+	    fprintf(stderr, "no package provides %s\n", arg);
+	    retcode = 1;
+	} else {
+	    showMatches(db, matches, queryFlags, queryFormat);
+	    freeDBIndexRecord(matches);
+	}
+	break;
+
+      case QUERY_REQUIREDBY:
+	if (rpmdbFindByRequiredBy(db, arg, &matches)) {
+	    fprintf(stderr, "no package requires %s\n", arg);
+	    retcode = 1;
+	} else {
+	    showMatches(db, matches, queryFlags, queryFormat);
+	    freeDBIndexRecord(matches);
+	}
+	break;
+
       case QUERY_SPATH:
       case QUERY_PATH:
 	if (*arg != '/') {
