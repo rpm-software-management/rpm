@@ -9,7 +9,7 @@ for f in $filelist; do
     soname=$(objdump -p $f | awk '/SONAME/ {print $2}')
 
     if [ "$soname" != "" ]; then
-        if [ "$soname" != "_end" ]; then
+        if [ ! -L $f ]; then
             echo $soname
 	fi
     else
