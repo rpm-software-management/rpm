@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm 1.2\n"
+"Project-Id-Version: rpm 1.36\n"
 "POT-Creation-Date: 2000-07-31 08:48-0400\n"
-"PO-Revision-Date: 2000-06-16 02:20+0000\n"
+"PO-Revision-Date: 2000-08-02 12:52+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
 "MIME-Version: 1.0\n"
@@ -197,10 +197,9 @@ msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr "                        [--whatprovides] [--whatrequires] [--requires]"
 
 #: rpm.c:228 rpmqv.c:322
-#, fuzzy
 msgid "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
 msgstr ""
-"                        [--triggeredby] [--ftpuseport] [--ftpproxy <þjónn>]"
+"                        [--triggeredby] [--ftpport] [--ftpproxy <þjónn>]"
 
 #: rpm.c:230 rpmqv.c:324
 msgid ""
@@ -249,7 +248,6 @@ msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
 msgstr "                        [--dbpath <mappa>] [--nodeps] [--allmatches]"
 
 #: rpm.c:240 rpmqv.c:315
-#, fuzzy
 msgid "                        [--justdb] [--notriggers] package1 ... packageN"
 msgstr "                        [--justdb] [--notriggers] pakki1 ... pakkiN"
 
@@ -393,7 +391,7 @@ msgstr ""
 
 #: rpm.c:320
 msgid "      --queryformat <qfmt>"
-msgstr ""
+msgstr "      --queryformat <qfmt>"
 
 #: rpm.c:321 rpmqv.c:447
 msgid "use <qfmt> as the header format (implies --info)"
@@ -401,7 +399,7 @@ msgstr ""
 
 #: rpm.c:322 rpm.c:366 rpm.c:424 rpm.c:453
 msgid "      --root <dir>        "
-msgstr ""
+msgstr "      --root <mappa>      "
 
 #: rpm.c:323 rpm.c:367 rpm.c:425 rpm.c:454 rpm.c:518 rpmqv.c:407
 msgid "use <dir> as the top level directory"
@@ -413,11 +411,11 @@ msgstr ""
 
 #: rpm.c:326
 msgid "query all packages"
-msgstr ""
+msgstr "fyrirspurn á alla pakka"
 
 #: rpm.c:327
 msgid "        -f <file>+        "
-msgstr ""
+msgstr "        -f <skrá>+        "
 
 #: rpm.c:328
 msgid "query package owning <file>"
@@ -425,7 +423,7 @@ msgstr ""
 
 #: rpm.c:329
 msgid "        -p <packagefile>+ "
-msgstr ""
+msgstr "        -p <pakkaskrá>+ "
 
 #: rpm.c:330
 msgid "query (uninstalled) package <packagefile>"
@@ -529,19 +527,19 @@ msgstr ""
 
 #: rpm.c:378
 msgid "    --install <packagefile>"
-msgstr ""
+msgstr "    --install <pakkaskrá>"
 
 #: rpm.c:379
 msgid "    -i <packagefile>      "
-msgstr ""
+msgstr "    -i <pakkaskrá>        "
 
 #: rpm.c:380 rpmqv.c:497
 msgid "install package"
-msgstr ""
+msgstr "setja inn pakka"
 
 #: rpm.c:381
 msgid "      --excludepath <path>"
-msgstr ""
+msgstr "      --excludepath <slóð>"
 
 #: rpm.c:382
 msgid "skip files in path <path>"
@@ -549,7 +547,7 @@ msgstr ""
 
 #: rpm.c:383
 msgid "      --relocate <oldpath>=<newpath>"
-msgstr ""
+msgstr "      --relocate <gömulslóð>=<nýslóð>"
 
 #: rpm.c:384 rpmqv.c:534
 msgid "relocate files from <oldpath> to <newpath>"
@@ -561,7 +559,7 @@ msgstr ""
 
 #: rpm.c:387
 msgid "      --prefix <dir>      "
-msgstr ""
+msgstr "      --prefix <mappa>    "
 
 #: rpm.c:388 rpmqv.c:532
 msgid "relocate the package to <dir>, if relocatable"
@@ -788,12 +786,11 @@ msgstr ""
 
 #: rpm.c:500
 msgid "    --checksig <pkg>+"
-msgstr ""
+msgstr "    --checksig <pakki>+"
 
 #: rpm.c:501
-#, fuzzy
 msgid "    -K <pkg>+             "
-msgstr "    --pipe <skipun>       "
+msgstr "    -K <pakki>+           "
 
 #: rpm.c:502 rpmqv.c:616
 msgid "verify package signature"
@@ -1258,18 +1255,16 @@ msgid "query/verify all packages"
 msgstr ""
 
 #: rpmqv.c:433
-#, fuzzy
 msgid "     -f <file>+           "
-msgstr "    --rcfile <skrá>       "
+msgstr "     -f <skrá>+           "
 
 #: rpmqv.c:434
 msgid "query/verify package owning <file>"
 msgstr ""
 
 #: rpmqv.c:435
-#, fuzzy
 msgid "     -p <packagefile>+    "
-msgstr "    --rcfile <skrá>       "
+msgstr "    -p <pakkaskrá>+       "
 
 #: rpmqv.c:436
 msgid "query/verify (uninstalled) package <packagefile>"
@@ -1409,7 +1404,7 @@ msgstr ""
 
 #: rpmqv.c:615
 msgid "   -K <pkg>+             "
-msgstr ""
+msgstr "   -K <pakki>+           "
 
 #: rpmqv.c:628
 msgid "initalize database (unnecessary, legacy use)"
@@ -3073,9 +3068,9 @@ msgid "cannot open %s index using db%d - %s (%d)"
 msgstr ""
 
 #: lib/rpmdb.c:293
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s index"
-msgstr "get ekki opnað %s/packages.rpm\n"
+msgstr "get ekki opnað index í %s"
 
 #: lib/rpmdb.c:308
 #, c-format
@@ -3293,9 +3288,9 @@ msgid "%s cannot be installed\n"
 msgstr ""
 
 #: lib/rpminstall.c:253
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open Packages database in %s\n"
-msgstr "get ekki opnað %s/packages.rpm\n"
+msgstr "get ekki opnað pakka gagnagrunn í\n"
 
 #: lib/rpminstall.c:273
 #, c-format
@@ -3856,56 +3851,3 @@ msgstr ""
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr ""
-
-#~ msgid "RPM database already exists"
-#~ msgstr "RPM gagnagrunnur er þegar til"
-
-#~ msgid "Old db is missing"
-#~ msgstr "Gamla gagnagrunninn vantar"
-
-#~ msgid "failed to create RPM database /var/lib/rpm"
-#~ msgstr "gat ekki búið til RPM gagnagrunninn /var/lib/rpm"
-
-#~ msgid "Old db is corrupt"
-#~ msgstr "Gamli gagnagrunnurinn er skemmdur"
-
-#~ msgid "oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"
-#~ msgstr "oldrpmdbGetPackageInfo brást &olddb = %p olddb.packages = %p\n"
-
-#~ msgid "rpmconvert: no arguments expected"
-#~ msgstr "rpmconvert: engin viðföng nauðsynleg"
-
-#~ msgid "rpmconvert 1.0 - converting database in /var/lib/rpm\n"
-#~ msgstr "rpmconvert 1.0 - umbreyti gagnagrunni í /var/lib/rpm\n"
-
-#~ msgid "pulling %s from database\n"
-#~ msgstr "sæki %s úr gagnagrunninum\n"
-
-#~ msgid "package not found in database"
-#~ msgstr "pakkinn fannst ekki í gagnagrunninum"
-
-#~ msgid "no copyright!\n"
-#~ msgstr "enginn höfundarréttur!\n"
-
-#~ msgid ""
-#~ "       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
-#~ "<file>]"
-#~ msgstr ""
-#~ "       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
-#~ "<skrá>]"
-
-#~ msgid "                        [--sign] [--nobuild] [--timecheck <s>] ]"
-#~ msgstr "                        [--sign] [--nobuild] [--timecheck <s>] ]"
-
-#~ msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
-#~ msgstr "       rpm {--rmsource} [--rcfile <skrá>] [-v] specskrá"
-
-#~ msgid ""
-#~ "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-#~ msgstr ""
-#~ "       rpm {--rebuild} [--rcfile <skrá>] [-v] source1.rpm ... sourceN.rpm"
-
-#~ msgid ""
-#~ "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
-#~ msgstr ""
-#~ "       rpm {--recompile} [--rcfile <skrá>] [-v] source1.rpm ... sourceN.rpm"
