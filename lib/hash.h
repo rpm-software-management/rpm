@@ -18,7 +18,7 @@ int hashEqualityString(const void * key1, const void * key2);
 hashTable htCreate(int numBuckets, int keySize, hashFunctionType fn,
 		   hashEqualityType eq); 
 void htAddEntry(hashTable ht, const void * key, const void * data);
-void htFree(hashTable ht);
+void htFree(/*@only@*/hashTable ht);
 /* returns 0 on success, 1 if the item is not found. tableKey may be NULL */
 int htGetEntry(hashTable ht, const void * key, /*@out@*/const void *** data, /*@out@*/int * dataCount,
 	       /*@out@*/const void ** tableKey);
