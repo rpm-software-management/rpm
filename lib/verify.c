@@ -15,7 +15,7 @@
 
 /*@access rpmProblem @*/
 /*@access rpmTransactionSet @*/
-/*@access PSM_t @*/
+/*@access PSM_t @*/	/* XXX for %verifyscript through psmStage() */
 /*@access FD_t @*/	/* XXX compared with NULL */
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))

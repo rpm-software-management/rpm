@@ -296,20 +296,18 @@ struct poptOption rpmSignPoptTable[] = {
 /*@=type@*/
  { "addsign", '\0', 0, NULL, 'A',
 	N_("sign a packagei (identical to --resign)"), NULL },
- { "checksig", 'K', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'K',
+ { "checksig", 'K', 0, NULL, 'K',
 	N_("verify package signature(s)"), NULL },
- { "import", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'I',
+ { "import", '\0', 0, NULL, 'I',
 	N_("import an armored public key"), NULL },
  { "resign", '\0', 0, NULL, 'R',
 	N_("sign a packagei (identical to --addsign)"), NULL },
  { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmQVKArgs.sign, 0,
 	N_("generate signature"), NULL },
 
- { "nodigest", '\0', POPT_BIT_SET,
-	&rpmQVKArgs.qva_flags, VERIFY_DIGEST,
+ { "nodigest", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_DIGEST,
         N_("don't verify digest(s)"), NULL },
- { "nosignature", '\0', POPT_BIT_SET,
-	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
+ { "nosignature", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
         N_("don't verify signature(s)"), NULL },
 
    POPT_TABLEEND
