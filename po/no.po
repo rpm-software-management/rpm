@@ -124,15 +124,14 @@ msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
 msgstr "                        [--ftpproxy <vert>] [--ftpport <port>]"
 
 #: rpm.c:211 rpm.c:230 rpmqv.c:299 rpmqv.c:308 rpmqv.c:324
-#, fuzzy
 msgid "                        [--httpproxy <host>] [--httpport <port>]"
-msgstr "                        [--httpproxy <vert>] [--httpport <port>] "
+msgstr "                        [--httpproxy <vert>] [--httpport <port>]"
 
 #: rpm.c:212 rpmqv.c:300
-#, fuzzy
 msgid ""
 "                        [--justdb] [--noorder] [--relocate oldpath=newpath]"
-msgstr "                        [--noorder] [--relocate oldpath=nysti]"
+msgstr ""
+"                        [--justdb] [--noorder] [--relocate oldpath=nysti]"
 
 #: rpm.c:213 rpmqv.c:301
 msgid ""
@@ -205,15 +204,12 @@ msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr "                        [--whatprovides] [--whatrequires] [--requires]"
 
 #: rpm.c:228 rpmqv.c:322
-#, fuzzy
 msgid "                        [--triggeredby]"
-msgstr "                        [--nomd5] [mål]"
+msgstr "                        [--triggeredby]"
 
 #: rpm.c:231 rpmqv.c:325
-#, fuzzy
 msgid "                        [--provides] [--triggers] [--dump]"
-msgstr ""
-"                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
+msgstr "                        [--provides] [--triggers] [--dump]"
 
 #: rpm.c:232 rpmqv.c:326
 msgid "                        [--changelog] [--dbpath <dir>] [targets]"
@@ -3788,34 +3784,34 @@ msgstr ""
 
 #: rpmio/macro.c:1183
 msgid "Target buffer overflow"
-msgstr ""
+msgstr "Overflyt i målbuffer"
 
 #. XXX Fstrerror
 #: rpmio/macro.c:1363 rpmio/macro.c:1369
 #, c-format
 msgid "File %s: %s"
-msgstr ""
+msgstr "Fil %s: %s"
 
 #: rpmio/macro.c:1372
 #, c-format
 msgid "File %s is smaller than %d bytes"
-msgstr ""
+msgstr "Fil %s er mindre enn %d bytes"
 
 #: rpmio/messages.c:55
 msgid "warning: "
-msgstr ""
+msgstr "advarsel: "
 
 #: rpmio/messages.c:64
 msgid "error: "
-msgstr ""
+msgstr "feil: "
 
 #: rpmio/messages.c:73
 msgid "fatal error: "
-msgstr ""
+msgstr "fatal feil: "
 
 #: rpmio/messages.c:82
 msgid "internal error (rpm bug?): "
-msgstr ""
+msgstr "intern feil (rpm feil?): "
 
 #: rpmio/rpmmalloc.c:9
 #, c-format
@@ -3835,39 +3831,29 @@ msgstr ""
 #: rpmio/url.c:132
 #, c-format
 msgid "warning: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
-msgstr ""
+msgstr "advarseo: uCache[%d] %p nrefs(%d) != 1 (%s %s)\n"
 
 #: rpmio/url.c:218
 #, c-format
 msgid "Password for %s@%s: "
-msgstr ""
+msgstr "Passord for %s@%s: "
 
 #: rpmio/url.c:243 rpmio/url.c:269
 #, c-format
 msgid "error: %sport must be a number\n"
-msgstr ""
+msgstr "feil: %s-port må være et tall\n"
 
 #: rpmio/url.c:405
 msgid "url port must be a number\n"
-msgstr ""
+msgstr "url-port må være et tall\n"
 
 #: rpmio/url.c:445
 #, c-format
 msgid "failed to open %s: %s\n"
-msgstr ""
+msgstr "klarte ikke å åpne %s: %s\n"
 
 #. XXX Fstrerror
 #: rpmio/url.c:462
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "kunne ikke opprette %s: %s\n"
-
-#~ msgid ""
-#~ "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
-#~ msgstr ""
-#~ "                        [--ftpproxy <vert>] [--ftpport <port>] [--justdb]"
-
-#~ msgid ""
-#~ "                        [--triggeredby] [--ftpport] [--ftpproxy <host>]"
-#~ msgstr ""
-#~ "                        [--triggeredby] [--ftpuseport] [--ftpproxy <vert>]"
