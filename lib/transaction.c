@@ -1151,6 +1151,9 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
      * worth the trouble though.
      */
 rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount);
+
+(void) rpmswNow(&ts->begin);
+
     numAdded = numRemoved = 0;
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1362,6 +1365,8 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
     NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount,
 	NULL, ts->notifyData));
 
+ts->ms_fingerprint += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
+
     /* ===============================================
      * Free unused memory as soon as possible.
      */
@@ -1394,6 +1399,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
      */
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
 	int progress;
+
 	progress = 0;
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1416,6 +1422,8 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 			numRemoved, NULL, ts->notifyData));
 		progress++;
 
+(void) rpmswNow(&ts->begin);
+
 	/* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
 		fi->mapflags |= CPIO_MAP_ABSOLUTE;
 		fi->mapflags |= CPIO_MAP_ADDDOT;
@@ -1426,6 +1434,8 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		fi->mapflags &= ~CPIO_MAP_ABSOLUTE;
 		fi->mapflags &= ~CPIO_MAP_ADDDOT;
 		fi->mapflags &= ~CPIO_ALL_HARDLINKS;
+
+ts->ms_repackage += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
 
 		/*@switchbreak@*/ break;
 	    }
@@ -1459,6 +1469,7 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 
 	switch (rpmteType(p)) {
 	case TR_ADDED:
+(void) rpmswNow(&ts->begin);
 
 	    pkgKey = rpmteAddedKey(p);
 
@@ -1553,8 +1564,13 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 
 	    p->h = headerFree(p->h);
 
+ts->ms_install += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
+
 	    /*@switchbreak@*/ break;
+
 	case TR_REMOVED:
+(void) rpmswNow(&ts->begin);
+
 	    rpmMessage(RPMMESS_DEBUG, "========== --- %s\n", rpmteNEVR(p));
 	    /*
 	     * XXX This has always been a hack, now mostly broken.
@@ -1564,6 +1580,9 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		if (rpmpsmStage(psm, PSM_PKGERASE))
 		    ourrc++;
 	    }
+
+ts->ms_erase += rpmswDiff(rpmswNow(&ts->end), &ts->begin)/1000;
+
 	    /*@switchbreak@*/ break;
 	}
 	xx = rpmdbSync(rpmtsGetRdb(ts));
