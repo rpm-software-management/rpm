@@ -217,31 +217,26 @@ static void printHeader(Header h, int queryFlags, char * queryFormat) {
 	}
 
 	if (queryFlags & QUERY_FOR_PROVIDES) {
-	    printf("Provides    : ");
 	    if (!getEntry(h, RPMTAG_PROVIDES, &type, 
 		 (void **) &providesList, &count) || !count) {
-		puts("(nothing)");
+		puts("(provides nothing)");
 	    } else {
 		for (i = 0; i < count; i++) {
-		    printf("%s ", providesList[i]);
+		    puts(providesList[i]);
 		}
 		printf("\n");
 	    }
 	}
 
 	if (queryFlags & QUERY_FOR_REQUIRES) {
-	    printf("Requires    : ");
 	    if (!getEntry(h, RPMTAG_REQUIRENAME, &type, 
 		 (void **) &requiresList, &count) || !count) {
-		puts("(nothing)");
+		puts("(requires nothing)");
 	    } else {
-		char * indent = "";
-
 		strlist = requiresList;
 
 	        while (count--) {
-		    printf("%s%s\n", indent, *strlist++);
-		    indent = "              ";
+		    puts(*strlist++);
 		}
 		free(requiresList);
 	    }
