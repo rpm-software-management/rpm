@@ -249,7 +249,9 @@ struct dbOption rdbOptions[] = {
 };
 /*@=immediatetrans =exportlocal =exportheadervar@*/
 
-static int dbSaveLong(const struct dbOption * opt, int argInfo, long aLong) {
+static int dbSaveLong(const struct dbOption * opt, int argInfo, long aLong)
+	/*@modifies opt->arg @*/
+{
     if (argInfo & POPT_ARGFLAG_NOT)
 	aLong = ~aLong;
     if (opt->arg != NULL)
@@ -273,7 +275,9 @@ static int dbSaveLong(const struct dbOption * opt, int argInfo, long aLong) {
     return 0;
 }
 
-static int dbSaveInt(const struct dbOption * opt, int argInfo, long aLong) {
+static int dbSaveInt(const struct dbOption * opt, int argInfo, long aLong)
+	/*@modifies opt->arg @*/
+{
     if (argInfo & POPT_ARGFLAG_NOT)
 	aLong = ~aLong;
     if (opt->arg != NULL)
@@ -297,7 +301,8 @@ static int dbSaveInt(const struct dbOption * opt, int argInfo, long aLong) {
     return 0;
 }
 
-dbiIndex db3Free(dbiIndex dbi) {
+dbiIndex db3Free(dbiIndex dbi)
+{
     if (dbi) {
 	dbi->dbi_root = _free(dbi->dbi_root);
 	dbi->dbi_home = _free(dbi->dbi_home);
@@ -344,6 +349,8 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
     if (dbOpts && *dbOpts && *dbOpts != '%') {
 	char *o, *oe;
 	char *p, *pe;
+
+	memset(&db3dbi, 0, sizeof(db3dbi));
 	for (o = dbOpts; o && *o; o = oe) {
 	    struct dbOption *opt;
 	    const char * tok;
@@ -452,10 +459,10 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 
     dbOpts = _free(dbOpts);
 
-    memset(&db3dbi, 0, sizeof(db3dbi));
     /*@-assignexpose@*/
     *dbi = db3dbi;	/* structure assignment */
     /*@=assignexpose@*/
+    memset(&db3dbi, 0, sizeof(db3dbi));
 
     if (!(dbi->dbi_perms & 0600))
 	dbi->dbi_perms = 0644;

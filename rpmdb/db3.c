@@ -1084,7 +1084,9 @@ static int db3open(/*@keep@*/ rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 	    _printit = (rc > 0 ? 0 : _debug);
 	    xx = cvtdberr(dbi, "db->open", rc, _printit);
 
-	    if (rc == 0 && dbi->dbi_use_dbenv && (dbi->dbi_eflags & DB_INIT_CDB) && dbi->dbi_get_rmw_cursor) {
+	    if (rc == 0 && dbi->dbi_use_dbenv
+	    && (dbi->dbi_eflags & DB_INIT_CDB) && dbi->dbi_get_rmw_cursor)
+	    {
 		DBC * dbcursor = NULL;
 		xx = db->cursor(db, txnid, &dbcursor,
 			((oflags & DB_RDONLY) ? 0 : DB_WRITECURSOR));

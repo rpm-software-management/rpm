@@ -2117,8 +2117,8 @@ top:
 /**
  */
 typedef struct {
-/*@observer@*/ /*@null@*/ const char *msg;
-/*@observer@*/ /*@null@*/ const char *argv[4];
+/*@observer@*/ /*@null@*/ const char * msg;
+/*@observer@*/ const char * argv[4];
     int ntag;
     int vtag;
     int ftag;
@@ -2304,7 +2304,7 @@ static void printDepMsg(DepMsg_t * dm, int count, const char ** names,
 	if (hasFlags && !((*flags & dm->mask) ^ dm->xor))
 	    continue;
 	if (bingo == 0) {
-	    rpmMessage(RPMMESS_NORMAL, "%s:", dm->msg);
+	    rpmMessage(RPMMESS_NORMAL, "%s:", (dm->msg ? dm->msg : ""));
 	    bingo = 1;
 	}
 	rpmMessage(RPMMESS_NORMAL, " %s", *names);

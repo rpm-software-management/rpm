@@ -1,5 +1,6 @@
 .deps
 .depend
+.created
 Makefile
 Makefile.in
 .libs
