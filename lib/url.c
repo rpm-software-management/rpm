@@ -126,7 +126,7 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
     FREE(u->proxyh);
 
     /* Perform one-time FTP initialization */
-    if (!strcmp(u->service, "ftp")) {
+    if (u->service && !strcmp(u->service, "ftp")) {
 
 	if (mustAsk || (u->user != NULL && u->password == NULL)) {
 	    char * prompt;
@@ -167,7 +167,7 @@ static void findUrlinfo(urlinfo **uret, int mustAsk)
     }
 
     /* Perform one-time HTTP initialization */
-    if (!strcmp(u->service, "http")) {
+    if (u->service && !strcmp(u->service, "http")) {
 
 	if (u->proxyh == NULL) {
 	    const char *proxy = rpmExpand("%{_httpproxy}", NULL);
@@ -467,11 +467,19 @@ int urlGetFile(const char * url, const char * dest) {
     return rc;
 }
 
-/* XXX This only works for httpOpen/ftpOpen/ftpGetFileDesc failures */
 const char *urlStrerror(const char *url)
 {
     urlinfo *u;
-    if (urlSplit(url, &u))
-	return "Malformed URL";
-    return ftpStrerror(u->openError);
+    switch (urlIsURL(url)) {
+    case URL_IS_FTP:
+    case URL_IS_HTTP:
+	if (urlSplit(url, &u))
+	    return "Malformed URL";
+/* XXX This only works for httpOpen/ftpOpen/ftpGetFileDesc failures */
+	return ftpStrerror(u->openError);
+	break;
+    default:
+	break;
+    }
+    return strerror(errno);
 }
