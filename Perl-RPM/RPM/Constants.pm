@@ -5,7 +5,7 @@
 #
 ###############################################################################
 #
-#   $Id: Constants.pm,v 1.5 2000/08/07 09:33:08 rjray Exp $
+#   $Id: Constants.pm,v 1.6 2000/08/16 09:31:58 rjray Exp $
 #
 #   Description:    Constants for the RPM package
 #
@@ -27,7 +27,7 @@ use RPM;
 @ISA = qw(Exporter);
 
 $VERSION = '0.27';
-$revision = do { my @r=(q$Revision: 1.5 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
+$revision = do { my @r=(q$Revision: 1.6 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r };
 
 @EXPORT_OK = qw(
                 ADD_SIGNATURE
@@ -162,6 +162,7 @@ $revision = do { my @r=(q$Revision: 1.5 $=~/\d+/g); sprintf "%d."."%02d"x$#r,@r 
                 RPMTAG_CONFLICTFLAGS
                 RPMTAG_CONFLICTNAME
                 RPMTAG_CONFLICTVERSION
+                RPMTAG_COPYRIGHT
                 RPMTAG_COOKIE
                 RPMTAG_DESCRIPTION
                 RPMTAG_DIRINDEXES
@@ -308,7 +309,7 @@ sub AUTOLOAD {
     my $constname;
     ($constname = $AUTOLOAD) =~ s/.*:://;
     die "& not defined" if $constname eq 'constant';
-    my $val = constant($constname, @_ ? $_[0] : 0);
+    my $val = constant($constname);
     if ($! != 0) {
         if ($! =~ /Invalid/) {
             $AutoLoader::AUTOLOAD = $AUTOLOAD;
@@ -405,10 +406,6 @@ Specifies the root at which the package is built.
 The time/date when the package was created, expressed as a C<time()> value
 (seconds since the epoch).
 
-=item RPMTAG_CAPABILITY (@)
-
-Not certain. See the B<RPMTAG_PROVIDE*> and B<RPMTAG_REQUIRE*> groups.
-
 =item RPMTAG_CHANGELOGNAME (@)
 
 =item RPMTAG_CHANGELOGTEXT (@)
@@ -430,10 +427,15 @@ of the entry, in the respective order given above.
 These three items are used in conjunction to specify packages and/or
 individual files which the package itself would conflict with. Of the three,
 only B<RPMTAG_CONFLICTNAME> is required to have data in all elements of
-the array.  The other two wil have the same number of elements, though some
+the array.  The other two will have the same number of elements, though some
 (or most) may be null. This is the same approach as is used to specify the
 elements that the package obsoletes, those the package provides and those
-the package requires (see below).
+the package requires (see L<"Three-Part Linkage"> below).
+
+=item RPMTAG_COPYRIGHT
+
+Maintained by RPM for backwards-compatibility with some older packages. It
+is the same as C<RPMTAG_LICENSE>.
 
 =item RPMTAG_COOKIE ($)
 
@@ -464,21 +466,21 @@ way of B<RPMTAG_DIRINDEXES> above.
 A text label identifying the name given to the overall larger distribution
 the package itself is a part of.
 
-=item RPMTAG_EXCLUDEARCH ($)
+=item RPMTAG_EXCLUDEARCH (@)
 
-Not documented yet.
+A list of architectures for which the package should not be built.
 
-=item RPMTAG_EXCLUDEOS ($)
+=item RPMTAG_EXCLUDEOS (@)
 
-Not documented yet.
+A list of operating systems for which the package should not be built.
 
-=item RPMTAG_EXCLUSIVEARCH ($)
+=item RPMTAG_EXCLUSIVEARCH (@)
 
-Not documented yet.
+A list of architectures only for which the package should be built.
 
-=item RPMTAG_EXCLUSIVEOS ($)
+=item RPMTAG_EXCLUSIVEOS (@)
 
-Not documented yet.
+A list of operating systems only for which the package should be built.
 
 =item RPMTAG_FILEDEVICES (@)
 
@@ -601,10 +603,10 @@ and B<RPMTAG_RELEASE>, in that order.
 These three items are used in conjunction to specify packages and/or
 individual files which the package itself obsoletes. Of the three, only
 B<RPMTAG_OBSOLETENAME> is required to have data in all elements of the array.
-The other two wil have the same number of elements, though some (or most)
+The other two will have the same number of elements, though some (or most)
 may be null. This is the same approach as is used to specify the elements
 that the package conflicts with, those the package provides and those the
-package requires (see below).
+package requires (see L<"Three-Part Linkage"> below).
 
 =item RPMTAG_OS ($)
 
@@ -616,7 +618,9 @@ Name of the group/company/individual who built the package.
 
 =item RPMTAG_PATCH (@)
 
-Not documented yet.
+A list of patch files (see L<patch>) that will be applied to the source tree
+when building the package from a source-RPM (SRPM). These files are part of
+the bundle in the SRPM.
 
 =item RPMTAG_POSTIN (@)
 
@@ -663,9 +667,9 @@ pre-installation and pre-uninstallation. See the B<RPMTAG_POST*> set above.
 These three items are used in conjunction to specify the specific files that
 the package itself provides to other packages as possible dependancies. Of the
 three, only B<RPMTAG_PROVIDENAME> is required to have data in all elements
-of the array.  The other two wil have the same number of elements, though
+of the array.  The other two will have the same number of elements, though
 some (or most) may be null. This three-part specification is also used to
-itemize dependancies (see below) and obsoletions (see above).
+itemize dependancies and obsoletions (see L<"Three-Part Linkage">).
 
 =item RPMTAG_RELEASE ($)
 
@@ -682,9 +686,10 @@ identification for each package.
 These three items are used in conjunction to specify packages and/or
 individual files on which the package itself depends. Of the three, only
 B<RPMTAG_REQUIRENAME> is required to have data in all elements of the array.
-The other two wil have the same number of elements, though some (or most)
+The other two will have the same number of elements, though some (or most)
 may be null. This is the same approach as is used to specify the elements
-that the package provides and those the package obsoletes (see above).
+that the package provides and those the package obsoletes (see
+L<"Three-Part Linkage">).
 
 =item RPMTAG_RPMVERSION ($)
 
@@ -712,31 +717,21 @@ A one line summary description of the package.
 
 =item RPMTAG_TRIGGERCONDS (@)
 
-Not documented yet.
-
 =item RPMTAG_TRIGGERFLAGS (@)
-
-Not documented yet.
 
 =item RPMTAG_TRIGGERINDEX (@)
 
-Not documented yet.
-
 =item RPMTAG_TRIGGERNAME (@)
-
-Not documented yet.
 
 =item RPMTAG_TRIGGERSCRIPTPROG (@)
 
-Not documented yet.
-
 =item RPMTAG_TRIGGERSCRIPTS (@)
-
-Not documented yet.
 
 =item RPMTAG_TRIGGERVERSION (@)
 
-Not documented yet.
+These items are all taken together to manage the trigger functionality and
+mechanism of the RPM package. This is covered in greater depth in a later
+section (see L<"The Trigger Specifications">).
 
 =item RPMTAG_URL ($)
 
@@ -764,6 +759,106 @@ B<RPMTAG_RELEASE>) of the triple used to uniquely identify packages.
 
 Not directly used by the B<rpm> library. Likely intended to hold an XPM
 image that external software could make use of. See C<RPMTAG_GIF> above.
+
+=back
+
+=head2 Three-Part Linkage
+
+There are several groupings of tags that are used to specify a linkage of
+some sort, often external in nature. These triple-tags consist of a list of
+textual names, a list of corresponding versions and a list of flag fields.
+Of the three, only the list of names is required to have data in every
+element. The other two lists will have the same number of elements, however.
+The version values are only applied when the corresponding name refers to
+another RPM package.
+
+When a version is specified, the corresponding package may need to be
+logically equal to, less than (older than) or greater (newer) than the
+version as specified. This is signified in the corresponding flags field
+for the triple. The flags documented later (see L<"Dependancy Sense Flags">)
+can be used to determine the specific relationship.
+
+=head2 The Trigger Specifications
+
+The concept of trigger scripts was added into RPM from version 3.0 onwards.
+It provides a powerful and flexible (if delicate and tricky) mechanism by
+which packages may be sensitive to the installation, un-installation or
+upgrade of other packages. In C<RPM::Header> terms, triggers are managed
+through a combination of seven different header tags.
+
+Firstly, the tags C<RPMTAG_TRIGGERSCRIPTS> and C<RPMTAG_TRIGGERSCRIPTPROG>
+behave in the same fashion as similar tags for other script specifications.
+All the triggers are stored on the B<TRIGGERSCRIPTS> tag, with each script
+stored as one contiguous string. The B<TRIGGERSCRIPTPROG> array will specify
+the program (and optional additional arguments) if the program is anything
+other than C</bin/sh> (with no arguments).
+
+The C<RPMTAG_TRIGGERNAME> and C<RPMTAG_TRIGGERVERSION> lists are used to
+specify the packages that a given trigger is sensitive to. The name refers
+to the package name (as RPM knows it to be), while the version (if specified)
+further narrows the dependancy. The C<RPMTAG_TRIGGERCONDS> tag appears to be
+present for future use, but the C<RPMTAG_TRIGGERFLAGS> is used as similarly-
+named tags are for other script specifiers. In addition to the usual relative
+comparison flags, these will also have some trigger-specific flags that
+identify the trigger as being attached to an install, un-install or upgrade.
+See L<"Dependancy Sense Flags">.
+
+Lastly, the C<RPMTAG_TRIGGERINDEX> list is used to associate a given trigger
+entry (in the B<TRIGGERNAME> list) with a particular script from the
+B<TRIGGERSCRIPTS> list. This is to optimize storage, as the likelihood exists
+that a given script may be re-used for more than one trigger.
+
+The tags C<RPMTAG_TRIGGERNAME>, C<RPMTAG_TRIGGERVERSION>, C<RPMTAG_TRIGGERFLAGS>
+and C<RPMTAG_TRIGGERINDEX> must all have the same number of elements.
+
+=head2 Dependancy Sense Flags
+
+The following values may be imported via the tag B<:rpmsense>, and are
+used with the flags values from various triple-tag combinations, to establish
+the nature of the requirement relationship. In the paragraphs below, The C<*>
+refers to any of B<REQUIRE>, B<OBSOLETE>, B<PROVIDE> or B<CONFLICT>. The
+trigger-related flags have different uses than the rest of the B<:rpmsense>
+set, though they may also make use of the flags for version comparison.
+
+=over
+
+=item RPMSENSE_SENSEMASK
+
+This is a mask that, when applied to a value from B<RPMTAG_*FLAGS>,
+masks out all bits except for the following three values:
+
+=item RPMSENSE_EQUAL
+
+=item RPMSENSE_GREATER
+
+=item RPMSENSE_LESS
+
+These values are used to check the corresponding entries from
+B<RPMTAG_*NAME> and B<RPMTAG_*VERSION>, and specify whether
+the existing file should be of a version equal to, greater than or less than
+the version specified. More than one flag may be present.
+
+=item RPMSENSE_PREREQ
+
+The corresponding item from B<RPMTAG_*NAME> is a simple pre-requisite,
+generally without specific version checking.
+
+=item RPMSENSE_TRIGGER
+
+A mask value that will isolate the trigger flags below from any other data
+in the flag field.
+
+=item RPMSENSE_TRIGGERIN
+
+The corresponding trigger is an installation trigger.
+
+=item RPMSENSE_TRIGGERUN
+
+The corresponding trigger is an uninstallation trigger.
+
+=item RPMSENSE_TRIGGERPOSTUN
+
+The corresponding trigger is a post-uninstallation trigger.
 
 =back
 
@@ -1022,53 +1117,6 @@ Not documented yet.
 
 =back
 
-=head2 Pre-requisite Sense Flags
-
-The following values may be imported via the tag B<:rpmsense>, and are
-used with the values from B<RPMTAG_REQUIREFLAGS> to establish the nature
-of the requirement relationship:
-
-=over
-
-=item RPMSENSE_SENSEMASK
-
-This is a mask that, when applied to a value from B<RPMTAG_REQUIREFLAGS>,
-masks out all bits except for the following three values:
-
-=item RPMSENSE_EQUAL
-
-=item RPMSENSE_GREATER
-
-=item RPMSENSE_LESS
-
-These values are used to check the corresponding entries from
-B<RPMTAG_REQUIRENAME> and B<RPMTAG_REQUIREVERSION>, and specify whether
-the existing file should be of a version equal to, greater than or less than
-the version specified. More than one flag may be present.
-
-=item RPMSENSE_PREREQ
-
-The corresponding item from B<RPMTAG_REQUIRENAME> is a simple pre-requisite,
-generally without specific version checking.
-
-=item RPMSENSE_TRIGGER
-
-Not documented yet.
-
-=item RPMSENSE_TRIGGERIN
-
-Not documented yet.
-
-=item RPMSENSE_TRIGGERPOSTUN
-
-Not documented yet.
-
-=item RPMSENSE_TRIGGERUN
-
-Not documented yet.
-
-=back
-
 =head2 File-Verification Flags
 
 The values in the B<RPMTAG_FILEVERIFYFLAGS> list defined in the header-tags
@@ -1078,8 +1126,7 @@ section earlier represent various combinations of the following values.
 
 =item RPMVERIFY_ALL
 
-A full mask that will match any tested C<RPMVERIFY_*> value
-(except B<RPMVERIFY_NONE>).
+A full mask that will isolate the valid flag-bits from the flag field.
 
 =item RPMVERIFY_NONE
 
