@@ -19,7 +19,8 @@ static int readOldHeader(int fd, Header * hdr, int * isSource);
 /* 0 = success */
 /* 1 = bad magic */
 /* 2 = error */
-int pkgReadHeader(int fd, Header * hdr, int * isSource) {
+int pkgReadHeader(int fd, Header * hdr, int * isSource, int * major,
+		  int * minor) {
     struct rpmlead lead;
     struct oldrpmlead * oldLead = (struct oldrpmlead *) &lead;
     int_8 arch;
@@ -34,6 +35,8 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
     }
 
     *isSource = lead.type == RPMLEAD_SOURCE;
+    if (major) *major = lead.major;
+    if (minor) *minor = lead.minor;
 
     if (*isSource) {
 	message(MESS_DEBUG, "package is a source package major = %d\n", 
