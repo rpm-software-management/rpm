@@ -708,11 +708,13 @@ static int rpmfcSCRIPT(rpmfc fc)
 
     if (fc->fcolor->vals[fc->ix] & RPMFC_PERL) {
 	xx = rpmfcHelper(fc, 'P', "perl");
-	xx = rpmfcHelper(fc, 'R', "perl");
+	if (is_executable)
+	    xx = rpmfcHelper(fc, 'R', "perl");
     }
     if (fc->fcolor->vals[fc->ix] & RPMFC_PYTHON) {
 	xx = rpmfcHelper(fc, 'P', "python");
-	xx = rpmfcHelper(fc, 'R', "python");
+	if (is_executable)
+	    xx = rpmfcHelper(fc, 'R', "python");
     }
 
     return 0;
