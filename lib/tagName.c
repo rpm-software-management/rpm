@@ -64,7 +64,7 @@ int tagValue(const char * tagstr)
 	return RPMDBI_AVAILABLE;
 
     for (t = rpmTagTable; t->name != NULL; t++) {
-	if (!strcasecmp(t->name + 7, tagstr))
+	if (!xstrcasecmp(t->name + 7, tagstr))
 	    return t->val;
     }
     return -1;

@@ -1394,7 +1394,7 @@ static int intGetEntry(Header h, int_32 tag, /*@null@*/ /*@out@*/ int_32 * type,
 		/*@modifies *type, *p, *c @*/
 {
     struct indexEntry * entry;
-    int rc = 0;
+    int rc;
 
     /* First find the tag */
     entry = findEntry(h, tag, RPM_NULL_TYPE);
@@ -1407,6 +1407,7 @@ static int intGetEntry(Header h, int_32 tag, /*@null@*/ /*@out@*/ int_32 * type,
 
     switch (entry->info.type) {
     case RPM_I18NSTRING_TYPE:
+	rc = 1;
 	if (type) *type = RPM_STRING_TYPE;
 	if (c) *c = 1;
 	/*@-dependenttrans@*/
@@ -1958,7 +1959,7 @@ static void findTag(char * name, const struct headerTagTableEntry * tags,
     /* Search extensions first to permit overriding header tags. */
     ext = extensions;
     while (ext->type != HEADER_EXT_LAST) {
-	if (ext->type == HEADER_EXT_TAG && !strcasecmp(ext->name, tagname))
+	if (ext->type == HEADER_EXT_TAG && !xstrcasecmp(ext->name, tagname))
 	    break;
 
 	if (ext->type == HEADER_EXT_MORE)
@@ -1974,7 +1975,7 @@ static void findTag(char * name, const struct headerTagTableEntry * tags,
 
     /* Search header tags. */
     for (entry = tags; entry->name; entry++)
-	if (!strcasecmp(entry->name, tagname)) break;
+	if (!xstrcasecmp(entry->name, tagname)) break;
 
     if (entry->name) {
 	*tagMatch = entry;
