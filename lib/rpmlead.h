@@ -4,9 +4,6 @@
 #define RPMLEAD_BINARY 0
 #define RPMLEAD_SOURCE 1
 
-/* Signature types */
-#define RPMLEAD_SIGNONE 0
-
 #define RPMLEAD_MAGIC0 0xed
 #define RPMLEAD_MAGIC1 0xab
 #define RPMLEAD_MAGIC2 0xee
