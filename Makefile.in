@@ -69,15 +69,16 @@ rpm2cpio: lib/librpm.a rpm2cpio.o
 rpm.o: rpm.c query.h install.h lib/rpmlib.h Makefile
 	$(CC) $(CFLAGS) -DNLSPACKAGE=\"$(NLSPACKAGE)\" -DNLSDIR=\"$(NLSDIR)\" -DVERSION=\"$(VERSION)\" -c rpm.c
 
-Makefile: Makefile.in misc/Makefile.in lib/Makefile.in build/Makefile.in \
-          tools/Makefile.in po/Makefile.in config.status
-	sh ./config.status
+# these rules should be in here, but they drive me batty
+#Makefile: Makefile.in misc/Makefile.in lib/Makefile.in build/Makefile.in \
+          #tools/Makefile.in po/Makefile.in config.status
+	#sh ./config.status
 
-config.status: configure
-	sh ./config.status --recheck
+#config.status: configure
+	#sh ./config.status --recheck
 
-configure: configure.in
-	cd $(srcdir); autoconf
+#configure: configure.in
+	#cd $(srcdir); autoconf
 
 everything: make-subdirs $(PROGS)
 
