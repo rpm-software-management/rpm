@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     }
 
     /* Need this for any PGP settings */
-    if (readConfigFiles())
+    if (readConfigFiles(NULL))
 	exit(-1);
 
     readLead(fd, &lead);
