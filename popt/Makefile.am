@@ -13,7 +13,7 @@ noinst_INCLUDES = findme.h poptint.h
 
 noinst_PROGRAMS = test1
 test1_SOURCES = test1.c
-test1_LDADD = -lpopt
+test1_LDADD = $(lib_LTLIBRARIES)
 
 include_HEADERS = popt.h
 lib_LTLIBRARIES = libpopt.la

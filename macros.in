@@ -113,8 +113,6 @@
 # gotcha is that arguments, if present, should be on the same line as the
 # %configure.
 #
-%configure(C:)	\
-  %{-C:pushd %{-C*}} \
+%configure	\
   %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} \
-  CFLAGS="%{optflags}" ./configure %{_target} --prefix=%{_prefix} \
-  %{-C:popd}
+  CFLAGS="%{optflags}" ./configure %{_target} --prefix=%{_prefix}
