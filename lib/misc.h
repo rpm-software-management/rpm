@@ -1,7 +1,8 @@
 #ifndef H_MISC
 #define H_MISC
 
-/** \file lib/misc.h
+/**
+ * \file lib/misc.h
  *
  */
 

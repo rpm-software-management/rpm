@@ -3,7 +3,7 @@
 
 /** \ingroup lead
  * \file lib/rpmlead.h
- *
+ * Routines to read and write an rpm lead structure for a a package.
  */
 
 #include <rpmlib.h>

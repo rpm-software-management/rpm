@@ -1,7 +1,9 @@
 #ifndef H_FSM
 #define H_FSM
 
-/** \file lib/fsm.h
+/** \ingroup payload
+ * \file lib/fsm.h
+ * File state machine to handle a payload within an rpm package.
  */
 
 #include <rpmlib.h>

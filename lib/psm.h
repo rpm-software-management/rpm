@@ -1,7 +1,9 @@
 #ifndef H_PSM
 #define H_PSM
 
-/** \file lib/psm.h
+/** \ingroup rpmtrans payload
+ * \file lib/psm.h
+ * Package state machine to handle a package from a transaction set.
  */
 
 #include <rpmlib.h>

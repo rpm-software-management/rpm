@@ -1,3 +1,5 @@
+#/*! \page config_rpmpopt Default configuration: /usr/lib/rpm/rpmpopt-@VERSION@
+# \verbatim
 #
 # This file *should not be modified*. Local customizations
 # belong in /etc/popt, not here. This file will be replaced
@@ -279,3 +281,6 @@ rpmv	alias --ftpport		--define '_ftpport !#:+'
 rpmv	alias --ftpproxy	--define '_ftpproxy !#:+'
 rpmv	alias --httpport	--define '_httpport !#:+'
 rpmv	alias --httpproxy	--define '_httpproxy !#:+'
+
+# \endverbatim
+#*/

@@ -1,4 +1,7 @@
-# $Id: rpmrc.in,v 2.34 2001/02/27 21:30:27 jbj Exp $
+#/*! \page config_rpmrc Default configuration: /usr/lib/rpm/rpmrc
+# \verbatim
+#
+# $Id: rpmrc.in,v 2.35 2001/04/10 12:36:45 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -294,3 +297,5 @@ buildarch_compat: s390: noarch
 
 macrofiles:	@RPMCONFIGDIR@/macros:@RPMCONFIGDIR@/%{_target}/macros:@SYSCONFIGDIR@/macros.specspo:@SYSCONFIGDIR@/macros.db1:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/.rpmmacros
 
+# \endverbatim
+#*/

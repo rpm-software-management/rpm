@@ -3,7 +3,9 @@
 
 /** \ingroup rpmbuild
  * \file build/buildio.h
- *  XXX this information will move elsewhere eventually
+ * Routines to read and write packages.
+ * @deprecated this information will move elsewhere eventually.
+ * @todo Eliminate, merge into rpmlib.
  */
 
 #include "psm.h"

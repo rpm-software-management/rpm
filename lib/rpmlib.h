@@ -1,8 +1,8 @@
 #ifndef H_RPMLIB
 #define	H_RPMLIB
 
-/** \file lib/rpmlib.h
- * \ingroup rpmcli rpmrc rpmdep rpmtrans rpmdb lead signature header payload dbi
+/** \ingroup rpmcli rpmrc rpmdep rpmtrans rpmdb lead signature header payload dbi
+ * \file lib/rpmlib.h
  *
  */
 

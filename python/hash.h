@@ -1,6 +1,10 @@
 #ifndef H_HASH
 #define H_HASH
 
+/** \ingroup python
+ * \file python/hash.h 
+ */
+
 struct hash_table;
 typedef struct hash_table * hashTable;
 

@@ -1,6 +1,6 @@
 /** \ingroup payload
  * \file lib/fsm.c
- *  Handle payloads within rpm packages.
+ * File state machine to handle a payload from a package.
  */
 
 #include "system.h"

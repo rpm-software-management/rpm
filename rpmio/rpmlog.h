@@ -4,7 +4,7 @@
 /** \ingroup rpmio
  * \file rpmio/rpmlog.h
  * Yet Another syslog(3) API clone.
- * Used by rpm to unify rpmError() and rpmMessage().
+ * Used to unify rpmError() and rpmMessage() interfaces in rpm.
  */
 
 #include <stdarg.h>

@@ -1,7 +1,8 @@
 #ifndef _H_OLDRPMDB
 #define _H_OLDRPMDB
 
-/** \file lib/oldrpmdb.h
+/**
+ * \file lib/oldrpmdb.h
  *
  */
 

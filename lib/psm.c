@@ -1,5 +1,6 @@
 /** \ingroup rpmtrans payload
  * \file lib/psm.c
+ * Package state machine to handle a package from a transaction set.
  */
 
 #include "system.h"

@@ -3,7 +3,7 @@
 
 /** \ingroup rpmdb dbi db1 db3
  * \file lib/rpmdb.h
- * Access RPM indices using Berkeley db[123] interface.
+ * Access RPM indices using Berkeley DB interface(s).
  */
 
 #include <rpmlib.h>

@@ -8,6 +8,7 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
+#include "manifest.h"
 #include "misc.h"
 #include "debug.h"
 
@@ -87,8 +88,8 @@ static void printHash(const unsigned long amount, const unsigned long total)
 
 /**
  */
-static void * showProgress(const void * arg, const rpmCallbackType what, 
-			   const unsigned long amount, 
+static void * showProgress(const void * arg, const rpmCallbackType what,
+			   const unsigned long amount,
 			   const unsigned long total,
 			   const void * pkgKey, void * data)
 {
@@ -130,7 +131,7 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 #endif
 	    fflush(stdout);
 	} else {
-	    s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}", 
+	    s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}",
 				  rpmTagTable, rpmHeaderFormats, NULL);
 	    fprintf(stdout, "%s\n", s);
 	    fflush(stdout);
@@ -185,266 +186,297 @@ static void * showProgress(const void * arg, const rpmCallbackType what,
 
 /** @todo Generalize --freshen policies. */
 int rpmInstall(const char * rootdir, const char ** fileArgv,
-		rpmtransFlags transFlags, 
+		rpmtransFlags transFlags,
 		rpmInstallInterfaceFlags interfaceFlags,
-		rpmprobFilterFlags probFilter, 
+		rpmprobFilterFlags probFilter,
 		rpmRelocation * relocations)
 {
-    rpmdb db = NULL;
-    FD_t fd;
-    int i;
-    int mode, rc, major;
-    const char ** pkgURL = NULL;
-    const char ** tmppkgURL = NULL;
-    const char ** fileURL;
-    int numPkgs;
-    int numTmpPkgs = 0, numRPMS = 0, numSRPMS = 0;
-    int numFailed = 0;
-    Header h;
-    int isSource;
     rpmTransactionSet ts = NULL;
-    int numConflicts;
-    int stopInstall = 0;
     int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
+    rpmdb db = NULL;
+    const char ** pkgURL = NULL;
+    char * pkgState = NULL;
+    const char ** fnp;
+    const char * fileURL = NULL;
+    int numPkgs = 0;
+    int numRPMS = 0;
+    int numSRPMS = 0;
+    int numFailed = 0;
+    int stopInstall = 0;
     int dbIsOpen = 0;
-    const char ** sourceURL;
-    rpmRelocation * defaultReloc;
+    rpmRelocation * defaultReloc = relocations;
+    const char ** sourceURL = NULL;
+    int prevx;
+    int pkgx;
+    const char ** argv = NULL;
+    int argc = 0;
+    const char ** av = NULL;
+    int ac = 0;
+    Header h;
+    FD_t fd;
+    int rc;
+    int i;
 
-    if (transFlags & RPMTRANS_FLAG_TEST) 
-	mode = O_RDONLY;
-    else
-	mode = O_RDWR | O_CREAT;	/* XXX can't O_EXCL */
-
-    for (defaultReloc = relocations; defaultReloc && defaultReloc->oldPath;
-	 defaultReloc++);
+    while (defaultReloc && defaultReloc->oldPath)
+	defaultReloc++;
     if (defaultReloc && !defaultReloc->newPath) defaultReloc = NULL;
 
-    rpmMessage(RPMMESS_DEBUG, _("counting packages to install\n"));
-    for (fileURL = fileArgv, numPkgs = 0; *fileURL; fileURL++, numPkgs++)
-	;
+    /* Build fully globbed list of arguments in argv[argc]. */
+    for (fnp = fileArgv; *fnp; fnp++) {
+	av = _free(av);
+	ac = 0;
+	rc = rpmGlob(*fnp, &ac, &av);
+	if (rc || ac == 0) continue;
 
-    rpmMessage(RPMMESS_DEBUG, _("found %d packages\n"), numPkgs);
+	if (argc == 0)
+	    argv = xmalloc((argc+2) * sizeof(*argv));
+	else
+	    argv = xrealloc(argv, (argc+2) * sizeof(*argv));
+	memcpy(argv+argc, av, ac * sizeof(*av));
+	argc += ac;
+	argv[argc] = NULL;
+    }
+    av = _free(av);
 
-    pkgURL = xcalloc( (numPkgs + 1), sizeof(*pkgURL) );
-    tmppkgURL = xcalloc( (numPkgs + 1), sizeof(*tmppkgURL) );
+    numPkgs = 0;
+    prevx = 0;
+    pkgx = 0;
 
-    rpmMessage(RPMMESS_DEBUG, _("looking for packages to download\n"));
-    for (fileURL = fileArgv, i = 0; *fileURL; fileURL++) {
+restart:
+    /* Allocate sufficient storage for next set of args. */
+    if (pkgx >= numPkgs) {
+	numPkgs = pkgx + argc;
+	pkgURL = (pkgURL == NULL)
+	    ? xmalloc( (numPkgs + 1) * sizeof(*pkgURL))
+	    : xrealloc(pkgURL, (numPkgs + 1) * sizeof(*pkgURL));
+	memset(pkgURL + pkgx, 0, ((argc + 1) * sizeof(*pkgURL)));
+	pkgState = (pkgState == NULL)
+	    ? xmalloc( (numPkgs + 1) * sizeof(*pkgState))
+	    : xrealloc(pkgState, (numPkgs + 1) * sizeof(*pkgState));
+	memset(pkgState + pkgx, 0, ((argc + 1) * sizeof(*pkgState)));
+    }
 
-	switch (urlIsURL(*fileURL)) {
+    /* Retrieve next set of args, cache on local storage. */
+    for (i = 0; i < argc; i++) {
+	fileURL = _free(fileURL);
+	fileURL = argv[i];
+	argv[i] = NULL;
+
+	switch (urlIsURL(fileURL)) {
 	case URL_IS_FTP:
 	case URL_IS_HTTP:
-	{   int myrc;
-	    int j;
-	    const char *tfn;
-	    int argc = 0;
-	    const char ** argv = NULL;
+	{   const char *tfn;
 
-	    myrc = rpmGlob(*fileURL, &argc, &argv);
-	    if (myrc) {
-		rpmMessage(RPMMESS_ERROR, 
-			_("skipping %s - rpmGlob failed(%d)\n"),
-			*fileURL, myrc);
+	    if (rpmIsVerbose())
+		fprintf(stdout, _("Retrieving %s\n"), fileURL);
+
+	    {	char tfnbuf[64];
+		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
+		/*@-unrecog@*/ mktemp(tfnbuf) /*@=unrecog@*/;
+		tfn = rpmGenPath(rootdir, "%{_tmppath}/", tfnbuf);
+	    }
+
+	    /* XXX undefined %{name}/%{version}/%{release} here */
+	    /* XXX %{_tmpdir} does not exist */
+	    rpmMessage(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);
+	    rc = urlGetFile(fileURL, tfn);
+	    if (rc < 0) {
+		rpmMessage(RPMMESS_ERROR,
+			_("skipping %s - transfer failed - %s\n"),
+			fileURL, ftpStrerror(rc));
 		numFailed++;
-		pkgURL[i] = NULL;
+		pkgURL[pkgx] = NULL;
+		tfn = _free(tfn);
 		break;
 	    }
-	    if (argc > 1) {
-		numPkgs += argc - 1;
-		pkgURL = xrealloc(pkgURL, (numPkgs + 1) * sizeof(*pkgURL));
-		tmppkgURL = xrealloc(tmppkgURL, (numPkgs + 1) * sizeof(*tmppkgURL));
-	    }
-
-	    for (j = 0; j < argc; j++) {
-
-		if (rpmIsVerbose())
-		    fprintf(stdout, _("Retrieving %s\n"), argv[j]);
-
-		{   char tfnbuf[64];
-		    strcpy(tfnbuf, "rpm-xfer.XXXXXX");
-		    /*@-unrecog@*/ mktemp(tfnbuf) /*@=unrecog@*/;
-		    tfn = rpmGenPath(rootdir, "%{_tmppath}/", tfnbuf);
-		}
-
-		/* XXX undefined %{name}/%{version}/%{release} here */
-		/* XXX %{_tmpdir} does not exist */
-		rpmMessage(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);
-		myrc = urlGetFile(argv[j], tfn);
-		if (myrc < 0) {
-		    rpmMessage(RPMMESS_ERROR, 
-			_("skipping %s - transfer failed - %s\n"), 
-			argv[j], ftpStrerror(myrc));
-		    numFailed++;
-		    pkgURL[i] = NULL;
-		    tfn = _free(tfn);
-		} else {
-		    tmppkgURL[numTmpPkgs++] = pkgURL[i++] = tfn;
-		}
-	    }
-	    if (argv) {
-		for (j = 0; j < argc; j++)
-		    argv[j] = _free(argv[j]);
-		argv = _free(argv);
-	    }
+	    pkgState[pkgx] = 1;
+	    pkgURL[pkgx] = tfn;
+	    pkgx++;
 	}   break;
 	case URL_IS_PATH:
 	default:
-	    pkgURL[i++] = *fileURL;
+	    pkgURL[pkgx] = fileURL;
+	    fileURL = NULL;
+	    pkgx++;
 	    break;
 	}
     }
-    pkgURL[i] = NULL;
-    tmppkgURL[numTmpPkgs] = NULL;
+    fileURL = _free(fileURL);
 
-    sourceURL = alloca(sizeof(*sourceURL) * i);
+    if (numFailed) goto exit;
 
-    rpmMessage(RPMMESS_DEBUG, _("retrieved %d packages\n"), numTmpPkgs);
-
-    if (numFailed) goto errxit;
-
-    /**
-     * Build up the transaction set. As a special case, v1 source packages
-     * are installed right here, only because they don't have headers and
-     * would create all sorts of confusion later.
-     */
-    for (fileURL = pkgURL; *fileURL; fileURL++) {
+    /* Continue processing file arguments, building transaction set. */
+    for (fnp = pkgURL+prevx; *fnp; fnp++, prevx++) {
 	const char * fileName;
 	rpmRC rpmrc;
+	int isSource;
 
-	(void) urlPath(*fileURL, &fileName);
-	fd = Fopen(*fileURL, "r.ufdio");
+	rpmMessage(RPMMESS_DEBUG, "============== %s\n", *fnp);
+	(void) urlPath(*fnp, &fileName);
+
+	/* Try to read the header from a package file. */
+	fd = Fopen(*fnp, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
-	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
-				*fileURL, Fstrerror(fd));
+	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *fnp,
+			Fstrerror(fd));
 	    if (fd) Fclose(fd);
-	    numFailed++;
-	    pkgURL[i] = NULL;
+	    numFailed++; *fnp = NULL;
 	    continue;
 	}
 
-	rpmrc = rpmReadPackageHeader(fd, &h, &isSource, &major, NULL);
+	rpmrc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
+	Fclose(fd);
 
-	switch (rpmrc) {
-	case RPMRC_BADMAGIC:
-	    Fclose(fd);
-	    rpmMessage(RPMMESS_ERROR, 
-			_("%s does not appear to be a RPM package\n"), 
-			*fileURL);
-	    numFailed++;
-	    pkgURL[i] = NULL;
-	    break;
-	case RPMRC_FAIL:
-	case RPMRC_SHORTREAD:
-	default:
-	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *fileURL);
-	    numFailed++;
-	    pkgURL[i] = NULL;
-	    break;
-	case RPMRC_BADSIZE:
-	case RPMRC_OK:
-	    if (isSource) {
-		sourceURL[numSRPMS++] = fileName;
-		Fclose(fd);
-	    } else {
-		if (!dbIsOpen) {
-		    if (rpmdbOpen(rootdir, &db, mode, 0644)) {
-			const char *dn;
-			dn = rpmGetPath( (rootdir ? rootdir : ""), 
+	if (rpmrc == RPMRC_FAIL || rpmrc == RPMRC_SHORTREAD) {
+	    numFailed++; *fnp = NULL;
+	    continue;
+	}
+	if ((rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE) && isSource) {
+	    rpmMessage(RPMMESS_DEBUG, "\tadded source rpm[%d]\n", numSRPMS);
+		sourceURL = (sourceURL == NULL)
+		    ? xmalloc( (numSRPMS + 2) * sizeof(*sourceURL))
+		    : xrealloc(sourceURL, (numSRPMS + 2) * sizeof(*sourceURL));
+	    sourceURL[numSRPMS++] = *fnp;
+	    *fnp = NULL;
+	    continue;
+	}
+	if (rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE) {
+	    if (!dbIsOpen) {
+		int mode = (transFlags & RPMTRANS_FLAG_TEST)
+				? O_RDONLY : (O_RDWR | O_CREAT);
+
+		if (rpmdbOpen(rootdir, &db, mode, 0644)) {
+		    const char *dn;
+		    dn = rpmGetPath( (rootdir ? rootdir : ""),
 					"%{_dbpath}", NULL);
-			rpmMessage(RPMMESS_ERROR, 
+		    rpmMessage(RPMMESS_ERROR,
 				_("cannot open Packages database in %s\n"), dn);
-			dn = _free(dn);
-			numFailed++;
-			pkgURL[i] = NULL;
-			break;
-		    }
-		    ts = rpmtransCreateSet(db, rootdir);
-		    dbIsOpen = 1;
+		    dn = _free(dn);
+		    numFailed++; *fnp = NULL;
+		    break;
 		}
+		ts = rpmtransCreateSet(db, rootdir);
+		dbIsOpen = 1;
+	    }
 
-		if (defaultReloc) {
-		    const char ** paths;
-		    int c;
+	    if (defaultReloc) {
+		const char ** paths;
+		int pft;
+		int c;
 
-		    if (headerGetEntry(h, RPMTAG_PREFIXES, NULL,
+		if (headerGetEntry(h, RPMTAG_PREFIXES, &pft,
 				       (void **) &paths, &c) && (c == 1)) {
-			defaultReloc->oldPath = xstrdup(paths[0]);
-			paths = _free(paths);
-		    } else {
-			const char * name;
-			headerNVR(h, &name, NULL, NULL);
-			rpmMessage(RPMMESS_ERROR, 
-			       _("package %s is not relocateable\n"), name);
-
-			goto errxit;
-			/*@notreached@*/
-		    }
-		}
-
-		/* On --freshen, verify package is installed and newer */
-		if (interfaceFlags & INSTALL_FRESHEN) {
-		    rpmdbMatchIterator mi;
+		    defaultReloc->oldPath = xstrdup(paths[0]);
+		    paths = headerFreeData(paths, pft);
+		} else {
 		    const char * name;
-		    Header oldH;
-		    int count;
-
 		    headerNVR(h, &name, NULL, NULL);
-		    mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
-		    count = rpmdbGetIteratorCount(mi);
-		    while ((oldH = rpmdbNextIterator(mi)) != NULL) {
-			if (rpmVersionCompare(oldH, h) < 0)
-			    continue;
-			/* same or newer package already installed */
-			count = 0;
-			break;
-		    }
-		    rpmdbFreeIterator(mi);
-		    if (count == 0) {
-			headerFree(h);
-			Fclose(fd);
-			break;	/* XXX out of switch */
-		    }
-		    /* Package is newer than those currently installed. */
+		    rpmMessage(RPMMESS_ERROR,
+			       _("package %s is not relocateable\n"), name);
+		    numFailed++;
+		    goto exit;
+		    /*@notreached@*/
 		}
+	    }
 
-		rc = rpmtransAddPackage(ts, h, NULL, fileName,
+	    /* On --freshen, verify package is installed and newer */
+	    if (interfaceFlags & INSTALL_FRESHEN) {
+		rpmdbMatchIterator mi;
+		const char * name;
+		Header oldH;
+		int count;
+
+		headerNVR(h, &name, NULL, NULL);
+		mi = rpmdbInitIterator(db, RPMTAG_NAME, name, 0);
+		count = rpmdbGetIteratorCount(mi);
+		while ((oldH = rpmdbNextIterator(mi)) != NULL) {
+		    if (rpmVersionCompare(oldH, h) < 0)
+			continue;
+		    /* same or newer package already installed */
+		    count = 0;
+		    break;
+		}
+		rpmdbFreeIterator(mi);
+		if (count == 0) {
+		    headerFree(h);
+		    continue;
+		    break;	/* XXX out of switch */
+		}
+		/* Package is newer than those currently installed. */
+	    }
+
+	    rc = rpmtransAddPackage(ts, h, NULL, fileName,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
-
-		headerFree(h);	/* XXX reference held by transaction set */
-		Fclose(fd);
-
-		switch(rc) {
-		case 0:
-			break;
-		case 1:
-			rpmMessage(RPMMESS_ERROR, 
-			    _("error reading from file %s\n"), *fileURL);
-			goto errxit;
-			/*@notreached@*/ break;
-		case 2:
-			rpmMessage(RPMMESS_ERROR, 
-			    _("file %s requires a newer version of RPM\n"),
-			    *fileURL);
-			goto errxit;
-			/*@notreached@*/ break;
-		}
-
+	    headerFree(h);	/* XXX reference held by transaction set */
+	    if (defaultReloc)
 		defaultReloc->oldPath = _free(defaultReloc->oldPath);
 
-		numRPMS++;
+	    switch(rc) {
+	    case 0:
+		rpmMessage(RPMMESS_DEBUG, "\tadded binary rpm[%d]\n", numRPMS);
+		break;
+	    case 1:
+		rpmMessage(RPMMESS_ERROR,
+			    _("error reading from file %s\n"), *fnp);
+		numFailed++;
+		goto exit;
+		/*@notreached@*/ break;
+	    case 2:
+		rpmMessage(RPMMESS_ERROR,
+			    _("file %s requires a newer version of RPM\n"),
+			    *fnp);
+		numFailed++;
+		goto exit;
+		/*@notreached@*/ break;
 	    }
+
+	    numRPMS++;
+	    continue;
+	}
+
+	if (rpmrc != RPMRC_BADMAGIC) {
+	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *fnp);
+	    numFailed++; *fnp = NULL;
 	    break;
 	}
+
+	/* Try to read a package manifest. */
+	fd = Fopen(*fnp, "r.fpio");
+	if (fd == NULL || Ferror(fd)) {
+	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *fnp,
+			Fstrerror(fd));
+	    if (fd) Fclose(fd);
+	    numFailed++; *fnp = NULL;
+	    break;
+	}
+
+	/* Read list of packages from manifest. */
+	rc = rpmReadPackageManifest(fd, &argc, &argv);
+	if (rc)
+	    rpmError(RPMERR_MANIFEST, _("%s: read manifest failed: %s\n"),
+			fileURL, Fstrerror(fd));
+	Fclose(fd);
+
+	/* If successful, restart the query loop. */
+	if (rc == 0) {
+	    prevx++;
+	    goto restart;
+	}
+
+	numFailed++; *fnp = NULL;
+	break;
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("found %d source and %d binary packages\n"), 
+    rpmMessage(RPMMESS_DEBUG, _("found %d source and %d binary packages\n"),
 		numSRPMS, numRPMS);
 
-    if (numFailed) goto errxit;
+    if (numFailed) goto exit;
 
     if (numRPMS && !(interfaceFlags & INSTALL_NODEPS)) {
 	struct rpmDependencyConflict * conflicts;
+	int numConflicts;
+
 	if (rpmdepCheck(ts, &conflicts, &numConflicts)) {
 	    numFailed = numPkgs;
 	    stopInstall = 1;
@@ -473,7 +505,7 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	packagesTotal = numRPMS;
 #endif
 	rpmMessage(RPMMESS_DEBUG, _("installing binary packages\n"));
-	rc = rpmRunTransactions(ts, showProgress, (void *) ((long)notifyFlags), 
+	rc = rpmRunTransactions(ts, showProgress, (void *) ((long)notifyFlags),
 				    NULL, &probs, transFlags, probFilter);
 
 	if (rc < 0) {
@@ -486,13 +518,11 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	if (probs) rpmProblemSetFree(probs);
     }
 
-    if (numRPMS && ts) rpmtransFree(ts);
-
     if (numSRPMS && !stopInstall) {
 	for (i = 0; i < numSRPMS; i++) {
 	    fd = Fopen(sourceURL[i], "r.ufdio");
 	    if (fd == NULL || Ferror(fd)) {
-		rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"), 
+		rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"),
 			   sourceURL[i], Fstrerror(fd));
 		if (fd) Fclose(fd);
 		continue;
@@ -508,33 +538,21 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	}
     }
 
-    for (i = 0; i < numTmpPkgs; i++) {
-	Unlink(tmppkgURL[i]);
-	tmppkgURL[i] = _free(tmppkgURL[i]);
+exit:
+    if (ts) rpmtransFree(ts);
+    for (i = 0; i < numPkgs; i++) {
+	if (pkgState[i] == 1)
+	    Unlink(pkgURL[i]);
+	pkgURL[i] = _free(pkgURL[i]);
     }
-    tmppkgURL = _free(tmppkgURL);
+    pkgState = _free(pkgState);
     pkgURL = _free(pkgURL);
-
-    /* FIXME how do we close our various fd's? */
-
     if (dbIsOpen) rpmdbClose(db);
-
     return numFailed;
-
-errxit:
-    if (numRPMS && ts) rpmtransFree(ts);
-    if (tmppkgURL) {
-	for (i = 0; i < numTmpPkgs; i++)
-	    tmppkgURL[i] = _free(tmppkgURL[i]);
-	tmppkgURL = _free(tmppkgURL);
-    }
-    pkgURL = _free(pkgURL);
-    if (dbIsOpen) rpmdbClose(db);
-    return numPkgs;
 }
 
 int rpmErase(const char * rootdir, const char ** argv,
-		rpmtransFlags transFlags, 
+		rpmtransFlags transFlags,
 		rpmEraseInterfaceFlags interfaceFlags)
 {
     rpmdb db;
@@ -549,7 +567,7 @@ int rpmErase(const char * rootdir, const char ** argv,
     int numPackages = 0;
     rpmProblemSet probs;
 
-    if (transFlags & RPMTRANS_FLAG_TEST) 
+    if (transFlags & RPMTRANS_FLAG_TEST)
 	mode = O_RDONLY;
     else
 	mode = O_RDWR | O_EXCL;

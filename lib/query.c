@@ -542,7 +542,7 @@ restart:
 
 	    /* Try to read a package manifest. */
 	    fd = Fopen(fileURL, "r.fpio");
-	    if (Ferror(fd)) {
+	    if (fd == NULL || Ferror(fd)) {
 		rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), fileURL,
 			Fstrerror(fd));
 		if (fd) Fclose(fd);
@@ -553,8 +553,8 @@ restart:
 	    /* Read list of packages from manifest. */
 	    retcode = rpmReadPackageManifest(fd, &ac, &av);
 	    if (retcode) {
-		rpmError(RPMERR_QUERY, _("%s: Fread failed: %s\n"), fileURL,
-			Fstrerror(fd));
+		rpmError(RPMERR_MANIFEST, _("%s: read manifest failed: %s\n"),
+			fileURL, Fstrerror(fd));
 		retcode = 1;
 	    }
 	    Fclose(fd);

@@ -1,7 +1,8 @@
 #ifndef MD5_H
 #define MD5_H
 
-/** \file lib/md5.h
+/**
+ * \file lib/md5.h
  * @todo Eliminate, use rpmio version instead.
  */
 

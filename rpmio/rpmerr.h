@@ -78,16 +78,17 @@ typedef enum rpmerrCode_e {
     RPMERR_QFMT		= _em(125), /*!< */
     RPMERR_DBCONFIG	= _em(126), /*!< */
     RPMERR_DBERR	= _em(127), /*!< */
-    RPMERR_BADPACKAGE	= _em(128), /*!< */
-    RPMERR_FREELIST	= _em(129), /*!< */
-    RPMERR_DATATYPE	= _em(130), /*!< */
+    RPMERR_BADPACKAGE	= _em(128), /*!< getNextHeader: %s */
+    RPMERR_FREELIST	= _em(129), /*!< free list corrupt (%u)- please ... */
+    RPMERR_DATATYPE	= _em(130), /*!< Data type %d not supported */
     RPMERR_BUILDROOT	= _em(131), /*!< */
-    RPMERR_MAKETEMP	= _em(132), /*!< */
-    RPMERR_FWRITE	= _em(133), /*!< */
-    RPMERR_FREAD	= _em(134), /*!< */
-    RPMERR_READLEAD	= _em(135), /*!< */
-    RPMERR_WRITELEAD	= _em(136), /*!< */
+    RPMERR_MAKETEMP	= _em(132), /*!< makeTempFile failed */
+    RPMERR_FWRITE	= _em(133), /*!< %s: Fwrite failed: %s */
+    RPMERR_FREAD	= _em(134), /*!< %s: Fread failed: %s */
+    RPMERR_READLEAD	= _em(135), /*!< %s: readLead failed */
+    RPMERR_WRITELEAD	= _em(136), /*!< %s: writeLead failed: %s */
     RPMERR_QUERYINFO	= _en(137), /*!< */
+    RPMERR_MANIFEST	= _en(138), /*!< %s: read manifest failed: %s */
 
     RPMERR_BADSIGTYPE	= _em(200), /*!< Unknown signature type */
     RPMERR_SIGGEN	= _em(201), /*!< Error generating signature */

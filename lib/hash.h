@@ -1,7 +1,8 @@
 #ifndef H_HASH
 #define H_HASH
 
-/** \file lib/hash.h
+/**
+ * \file lib/hash.h
  * Hash table implemenation.
  */
 

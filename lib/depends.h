@@ -1,13 +1,14 @@
 #ifndef H_DEPENDS
 #define H_DEPENDS
 
-/** \file lib/depends.h
- *
+/** \ingroup rpmdep rpmtrans
+ * \file lib/depends.h
+ * Structures used for dependency checking.
  */
 
 #include <header.h>
 
-/**
+/** \ingroup rpmdep
  * Dependncy ordering information.
  */
 struct tsortInfo {
@@ -23,7 +24,7 @@ struct tsortInfo {
     int		tsi_qcnt;
 } ;
 
-/**
+/** \ingroup rpmdep
  * Info about a single package to be installed.
  */
 struct availablePackage {
@@ -49,7 +50,7 @@ struct availablePackage {
 /*@null@*/ FD_t fd;
 } ;
 
-/**
+/** \ingroup rpmdep
  * A single available item (e.g. a Provides: dependency).
  */
 struct availableIndexEntry {
@@ -61,7 +62,7 @@ struct availableIndexEntry {
     } type;				/*!< Type of available item. */
 } ;
 
-/**
+/** \ingroup rpmdep
  * Index of all available items.
  */
 struct availableIndex {
@@ -69,7 +70,7 @@ struct availableIndex {
     int size;				/*!< No. of available items. */
 } ;
 
-/**
+/** \ingroup rpmdep
  * A file to be installed/removed.
  */
 struct fileIndexEntry {
@@ -78,7 +79,7 @@ struct fileIndexEntry {
 /*@dependent@*/ const char * baseName;	/*!< File basename. */
 } ;
 
-/**
+/** \ingroup rpmdep
  * A directory to be installed/removed.
  */
 struct dirInfo {
@@ -88,7 +89,7 @@ struct dirInfo {
     int numFiles;			/*!< No. files in directory. */
 } ;
 
-/**
+/** \ingroup rpmdep
  * Set of available packages, items, and directories.
  */
 struct availableList {
@@ -101,7 +102,7 @@ struct availableList {
 /*@owned@*/ struct dirInfo * dirs;	/*!< Set of directories. */
 } ;
 
-/**
+/** \ingroup rpmdep
  * A single package instance to be installed/removed atomically.
  */
 struct transactionElement {
@@ -118,7 +119,7 @@ struct transactionElement {
     } u;
 } ;
 
-/**
+/** \ingroup rpmdep
  * The set of packages to be installed/removed atomically.
  */
 struct rpmTransactionSet_s {
@@ -151,7 +152,7 @@ struct rpmTransactionSet_s {
     int id;			/*!< Transaction id. */
 } ;
 
-/**
+/** \ingroup rpmdep
  * Problems encountered while checking dependencies.
  */
 struct problemsSet {
@@ -165,7 +166,7 @@ extern "C" {
 #endif
 
 /* XXX lib/scriptlet.c */
-/**
+/** \ingroup rpmdep
  * Compare package name-version-release from header with dependency, looking
  * for overlap.
  * @deprecated Remove from API when obsoletes is correctly eliminated.

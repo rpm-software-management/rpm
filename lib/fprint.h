@@ -1,7 +1,8 @@
 #ifndef H_FINGERPRINT
 #define H_FINGERPRINT
 
-/** \file lib/fprint.h
+/** \ingroup rpmtrans
+ * \file lib/fprint.h
  * Identify a file name path by a unique "finger print".
  */
 
