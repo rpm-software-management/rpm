@@ -739,7 +739,7 @@ void mpmul(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw*
 #endif
 
 #ifndef ASM_MPADDSQRTRC
-mpw mpaddsqrtrc(size_t size, mpw* result, const mpw* data)
+void mpaddsqrtrc(size_t size, mpw* result, const mpw* data)
 {
 	#if HAVE_MPDW
 	register mpdw temp;
@@ -797,7 +797,6 @@ mpw mpaddsqrtrc(size_t size, mpw* result, const mpw* data)
 		carry += (load > rhi);
 	}
 	#endif
-	return carry;
 }
 #endif
 

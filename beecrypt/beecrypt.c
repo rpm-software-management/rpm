@@ -53,10 +53,6 @@ typedef struct
 
 #include "debug.h"
 
-/*!\addtogroup ES_m
- * \{
- */
-
 /*@observer@*/ /*@unchecked@*/
 static entropySource entropySourceList[] =
 {
@@ -90,12 +86,12 @@ int entropySourceCount()
 	return ENTROPYSOURCES;
 }
 
-const entropySource* entropySourceGet(int index)
+const entropySource* entropySourceGet(int n)
 {
-	if ((index < 0) || (index >= ENTROPYSOURCES))
+	if ((n < 0) || (n >= ENTROPYSOURCES))
 		return (const entropySource*) 0;
 
-	return entropySourceList+index;
+	return entropySourceList+n;
 }
 
 const entropySource* entropySourceFind(const char* name)
@@ -145,11 +141,6 @@ int entropyGatherNext(byte* data, size_t size)
 	}
 	return -1;
 }
-
-/*!\}
- * \addtogroup PRNG_m
- * \{
- */
 
 /*@observer@*/ /*@unchecked@*/
 static const randomGenerator* randomGeneratorList[] =
@@ -250,11 +241,6 @@ int randomGeneratorContextNext(randomGeneratorContext* ctxt, byte* data, size_t 
 {
 	return ctxt->rng->next(ctxt->param, data, size);
 }
-
-/*!\}
- * \addtogroup HASH_m
- * \{
- */
 
 /*@observer@*/ /*@unchecked@*/
 static const hashFunction* hashFunctionList[] =
@@ -501,11 +487,6 @@ int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mpnumber* d)
 	return rc;
 	/*@=mustfree@*/
 }
-
-/*!\}
- * \addtogroup HMAC_m
- * \{
- */
 
 /*@observer@*/ /*@unchecked@*/
 static const keyedHashFunction* keyedHashFunctionList[] =
@@ -770,11 +751,6 @@ int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mp
 	/*@=mustfree@*/
 }
 
-/*!\}
- * \addtogroup BC_m
- * \{
- */
-
 /*@observer@*/ /*@unchecked@*/
 static const blockCipher* blockCipherList[] =
 {
@@ -900,9 +876,7 @@ int blockCipherContextFree(blockCipherContext* ctxt)
 	/*@=nullstate@*/
 }
 
-static /*@unused@*/
-int blockCipherContextECB(blockCipherContext* ctxt, void* dst, const void* src, int nblocks)
-	/*@modifies ctxt->param, dst @*/
+int blockCipherContextECB(blockCipherContext* ctxt, uint32_t* dst, const uint32_t* src, size_t nblocks)
 {
 	switch (ctxt->op)
 	{
@@ -923,9 +897,7 @@ int blockCipherContextECB(blockCipherContext* ctxt, void* dst, const void* src, 
 	return -1;
 }
 
-static /*@unused@*/
-int blockCipherContextCBC(blockCipherContext* ctxt, void* dst, const void* src, int nblocks)
-	/*@modifies ctxt->param, dst @*/
+int blockCipherContextCBC(blockCipherContext* ctxt, uint32_t* dst, const uint32_t* src, size_t nblocks)
 {
 	switch (ctxt->op)
 	{
@@ -945,9 +917,6 @@ int blockCipherContextCBC(blockCipherContext* ctxt, void* dst, const void* src, 
 	/*@notreached@*/
 	return -1;
 }
-
-/*!\}
- */
 
 #if WIN32
 __declspec(dllexport)

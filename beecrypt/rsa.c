@@ -28,10 +28,6 @@
 #include "mp.h"
 #include "debug.h"
 
-/*!\addtogroup IF_rsa_m
- * \{
- */
-
 int rsapub(const rsapk* pk, const mpnumber* m, mpnumber* c)
 {
 	register size_t size = pk->n.size;
@@ -162,6 +158,3 @@ int rsavrfy(const rsapk* pk, const mpnumber* m, const mpnumber* c)
 	}
 	return 0;
 }
-
-/*!\}
- */

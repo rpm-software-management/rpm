@@ -76,11 +76,11 @@ int entropySourceCount(void)
 
 /** \ingroup ES_m
  * Retrieve a entropy source by index.
- * @param index		entropy source index
+ * @param n		entropy source index
  * @return		entropy source pointer (or NULL)
  */
 BEECRYPTAPI /*@observer@*/ /*@null@*/ /*@unused@*/
-const entropySource* entropySourceGet(int index)
+const entropySource* entropySourceGet(int n)
 	/*@*/;
 
 /** \ingroup ES_m
@@ -851,6 +851,18 @@ BEECRYPTAPI
 int blockCipherContextFree(/*@special@*/ blockCipherContext* ctxt)
 	/*@releases ctxt->param @*/
 	/*@modifies ctxt->algo, ctxt->param @*/;
+
+/** \ingroup BC_m
+ */
+BEECRYPTAPI /*@unused@*/
+int blockCipherContextECB(blockCipherContext* ctxt, uint32_t* dst, const uint32_t* src, size_t nblocks)
+	/*@modifies ctxt->param, dst @*/;
+
+/** \ingroup BC_m
+ */
+BEECRYPTAPI /*@unused@*/
+int blockCipherContextCBC(blockCipherContext* ctxt, uint32_t* dst, const uint32_t* src, size_t nblocks)
+	/*@modifies ctxt->param, dst @*/;
 
 #ifdef __cplusplus
 }

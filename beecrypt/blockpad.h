@@ -18,8 +18,8 @@
  */
 
 /*!\file blockpad.h
- * \brief Blockcipher padding algorithms, headers.
- * \author Bob Deblier <bob@virtualunlimited.com>
+ * \brief Blockcipher padding algorithms.
+ * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup BC_m
  */
 

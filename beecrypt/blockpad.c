@@ -19,17 +19,13 @@
 
 /*!\file blockpad.c
  * \brief Blockcipher padding algorithms.
- * \author Bob Deblier <bob@virtualunlimited.com>
+ * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup BC_m
  */
 
 #include "system.h"
 #include "blockpad.h"
 #include "debug.h"
-
-/*!\addtogroup BC_m
- * \{
- */
 
 memchunk* pkcs5Pad(size_t blockbytes, memchunk* tmp)
 {
@@ -121,6 +117,3 @@ memchunk* pkcs5UnpadCopy(/*@unused@*/ size_t blockbytes, const memchunk* src)
 
 	return tmp;
 }
-
-/*!\}
- */
