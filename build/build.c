@@ -27,6 +27,7 @@
 #include "misc.h"
 #include "pack.h"
 #include "popt/popt.h"
+#include "config.h"
 
 #include "names.h"
 
@@ -460,7 +461,10 @@ static char *do_patch(Spec spec, int c, int strip, char *db,
 
     args[0] = '\0';
     if (db) {
+#if HAVE_OLDPATCH_21 == 0
 	strcat(args, "-b ");
+#endif
+	strcat(args, "--suffix ");
 	strcat(args, db);
     }
     if (reverse) {
