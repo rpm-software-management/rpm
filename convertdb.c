@@ -109,7 +109,7 @@ int convertDB(void) {
 
 	gif = oldrpmdbGetPackageGif(&olddb, *label, &gifSize);
 	if (gif) {
-	    /*addEntry(dbentry, RPMTAG_GIF, BIN_TYPE, gif, gifSize);*/
+	    addEntry(dbentry, RPMTAG_GIF, BIN_TYPE, gif, gifSize);
 	    free(gif);
 	}
 
