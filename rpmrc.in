@@ -1,4 +1,4 @@
-# $Id: rpmrc.in,v 2.24 2000/06/03 20:26:00 jbj Exp $
+# $Id: rpmrc.in,v 2.25 2000/06/20 16:29:23 jbj Exp $
 
 #############################################################
 
@@ -13,7 +13,10 @@ optflags: i586 -O2 -march=i586
 optflags: i686 -O2 -march=i686
 optflags: athlon -O2 -march=athlon
 optflags: ia64 -O2
-optflags: alpha -O2
+
+# XXX Please note that -mieee has been added in rpm-3.0.5.
+optflags: alpha -O2 -mieee
+
 optflags: sparc -O2 -m32 -mtune=ultrasparc
 optflags: sparcv9 -O2 -m32 -mcpu=ultrasparc
 optflags: sparc64 -O2 -m64 -mcpu=ultrasparc

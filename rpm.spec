@@ -259,6 +259,8 @@ fi
 - fix: typo in brp-compress caused i18n man pages not to compress.
 - API: uncouple fadio from rest of librpmio.
 - API: externalize legacy fdOpen interface for rpmfind et al in librpmio.
+- update brp-* scripts from rpm-4.0, enable in per-platform config.
+- alpha: add -mieee to default optflags.
 
 * Mon Jun 19 2000 Jeff Johnson <jbj@redhat.com>
 - fix: open all db indices before performing chroot.

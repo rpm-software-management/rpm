@@ -72,6 +72,9 @@
 	- builds against bzip2 1.0
 	- fix: resurrect symlink unique'ifying property of finger prints.
 	- fix: broken glob test with empty build directory (Geoff Keating).
+        - fix: create per-platform directories correctly.
+        - update brp-* scripts from rpm-4.0, enable in per-platform config.
+        - alpha: add -mieee to default optflags.
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.
