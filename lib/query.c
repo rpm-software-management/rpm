@@ -758,7 +758,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
     if (qva->qva_showPackage == NULL)
 	qva->qva_showPackage = showQueryPackage;
 
-fprintf(stderr, "*** BEFORE: flags %x & %x format %s\n", qva->qva_flags, _QUERY_FOR_BITS, qva->qva_queryFormat);
+    /* If --queryformat unspecified, then set default now. */
     if (!(qva->qva_flags & _QUERY_FOR_BITS) && qva->qva_queryFormat == NULL) {
 	qva->qva_queryFormat = rpmExpand("%{?_query_all_fmt}\n", NULL);
 	if (!(qva->qva_queryFormat != NULL && *qva->qva_queryFormat != '\0')) {
@@ -766,7 +766,6 @@ fprintf(stderr, "*** BEFORE: flags %x & %x format %s\n", qva->qva_flags, _QUERY_
 	    qva->qva_queryFormat = xstrdup("%{name}-%{version}-%{release}\n");
 	}
     }
-fprintf(stderr, "***  AFTER: flags %x & %x format %s\n", qva->qva_flags, _QUERY_FOR_BITS, qva->qva_queryFormat);
 
     vsflags = rpmExpandNumeric("%{?_vsflags_query}");
     if (qva->qva_flags & VERIFY_DIGEST)

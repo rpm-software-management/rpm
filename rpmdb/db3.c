@@ -241,9 +241,9 @@ static int db3_pthread_nptl(void)
 	ret = pthread_mutex_init(&mutex, mutexattrp);
     if (mutexattrp != NULL)
 	pthread_mutexattr_destroy(mutexattrp);
-    (void) pthread_mutex_destroy(&mutex);
     if (ret)
 	return ret;
+    (void) pthread_mutex_destroy(&mutex);
 
     ret = pthread_condattr_init(&condattr);
     if (ret == 0) {
@@ -256,7 +256,8 @@ static int db3_pthread_nptl(void)
 
     if (condattrp != NULL)
 	(void)pthread_condattr_destroy(condattrp);
-    (void) pthread_cond_destroy(&cond);
+    if (ret == 0)
+	(void) pthread_cond_destroy(&cond);
     return ret;
 }
 #endif

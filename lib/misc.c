@@ -224,15 +224,14 @@ errxit:
 
 char * currentDirectory(void)
 {
-    int currDirLen;
-    char * currDir;
+    int currDirLen = 0;
+    char * currDir = NULL;
 
-    currDirLen = 50;
-    currDir = xmalloc(currDirLen);
-    while (!getcwd(currDir, currDirLen) && errno == ERANGE) {
-	currDirLen += 50;
+    do {
+	currDirLen += 128;
 	currDir = xrealloc(currDir, currDirLen);
-    }
+	memset(currDir, 0, currDirLen);
+    } while (getcwd(currDir, currDirLen) == NULL && errno == ERANGE);
 
     return currDir;
 }
