@@ -64,7 +64,7 @@ int addTrigger(struct PackageRec *package,
 	te->index = i;
 
 	rpmMessage(RPMMESS_DEBUG, "TRIGGER(%s): %s %s %s %d\n",
-	       (sense == RPMSENSE_TRIGGER_ON) ? "on" : "off",
+	       (sense == RPMSENSE_TRIGGER_IN) ? "in" : "un",
 	       te->name,
 	       (rc && rc->token) ? rc->token : "NONE",
 	       te->version, te->index);
