@@ -130,7 +130,7 @@ extern const int rpmTagTableSize;
 
 #define RPMVAR_SOURCEDIR     		0
 #define RPMVAR_BUILDDIR      		1
-#define RPMVAR_DOCDIR        		2
+/* #define RPMVAR_DOCDIR        	2 -- No longer used */
 #define RPMVAR_OPTFLAGS      		3
 #define RPMVAR_TOPDIR        		4
 #define RPMVAR_SPECDIR       		5
@@ -149,20 +149,27 @@ extern const int rpmTagTableSize;
 #define RPMVAR_SIGTYPE                  18
 #define RPMVAR_PGP_PATH                 19
 #define RPMVAR_PGP_NAME                 20
-#define RPMVAR_PGP_SECRING              21
-#define RPMVAR_PGP_PUBRING              22
+/* #define RPMVAR_PGP_SECRING           21 -- No longer used */
+/* #define RPMVAR_PGP_PUBRING           22 -- No longer used */
 #define RPMVAR_EXCLUDEDOCS              23
-#define RPMVAR_BUILDARCH                24
-#define RPMVAR_OS                       25
+/* #define RPMVAR_BUILDARCH             24 -- No longer used */
+/* #define RPMVAR_BUILDOS               25 -- No longer used */
 #define RPMVAR_BUILDROOT                26
 #define RPMVAR_DBPATH                   27
-#define RPMVAR_LASTVAR	                28 /* IMPORTANT to keep right! */
+#define RPMVAR_PACKAGER                 28
+#define RPMVAR_LASTVAR	                29 /* IMPORTANT to keep right! */
 
 char *getVar(int var);
 int getBooleanVar(int var);
 void setVar(int var, char *val);
 
-int rpmReadConfigFiles(char * file, char * arch, char * os, int forbuild);
+/* rpmrc.c */
+int rpmReadConfigFiles(char * file, char * arch, char * os, int building);
+int getOsNum(void);
+int getArchNum(void);
+char *getOsName(void);
+char *getArchName(void);
+int showRc(FILE *f);
 
 typedef struct rpmdb * rpmdb;
 
