@@ -18,6 +18,7 @@
 	? fix: follow current is_selinux_enabled() return (#121004).
 	? fix: exit fail when erasing multiple identical packages (#120519).
         - add aurora/sparc patches (#124469).
+	- use poll(2) if available, avoid borked aurora/sparc select (#124574).
 
 4.2.2 -> 4.3:
 	- upgrade to zlib-1.2.beta7.

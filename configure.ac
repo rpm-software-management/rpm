@@ -445,6 +445,9 @@ AC_CHECK_FUNC(socket, [], [
 
 AC_CHECK_HEADERS(error.h)
 AC_CHECK_FUNCS(error)
+
+AC_CHECK_HEADERS(poll.h)
+
 AC_CHECK_HEADERS(thread.h pthread.h synch.h semaphore.h)
 
 AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [

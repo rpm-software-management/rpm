@@ -483,25 +483,35 @@ FDIO_t fdio = /*@-compmempass@*/ &fdio_s /*@=compmempass@*/ ;
 int fdWritable(FD_t fd, int secs)
 {
     int fdno;
-    fd_set wrfds;
-    struct timeval timeout, *tvp = (secs >= 0 ? &timeout : NULL);
     int rc;
+#if HAVE_POLL_H
+    int msecs = (secs >= 0 ? (1000 * secs) : -1);
+    struct pollfd wrfds;
+#else
+    struct timeval timeout, *tvp = (secs >= 0 ? &timeout : NULL);
+    fd_set wrfds;
+    FD_ZERO(&wrfds);
+#endif
 	
     if ((fdno = fdFileno(fd)) < 0)
 	return -1;	/* XXX W2DO? */
 	
-    FD_ZERO(&wrfds);
     do {
-	FD_SET(fdno, &wrfds);
-
+#if HAVE_POLL_H
+	wrfds.fd = fdno;
+	wrfds.events = POLLOUT;
+	wrfds.revents = 0;
+	rc = poll(&wrfds, 1, msecs);
+#else
 	if (tvp) {
 	    tvp->tv_sec = secs;
 	    tvp->tv_usec = 0;
 	}
-	errno = 0;
+	FD_SET(fdno, &wrfds);
 	/*@-compdef -nullpass@*/
 	rc = select(fdno + 1, NULL, &wrfds, NULL, tvp);
 	/*@=compdef =nullpass@*/
+#endif
 
 if (_rpmio_debug && !(rc == 1 && errno == 0))
 fprintf(stderr, "*** fdWritable fdno %d rc %d %s\n", fdno, rc, strerror(errno));
@@ -523,25 +533,35 @@ fprintf(stderr, "*** fdWritable fdno %d rc %d %s\n", fdno, rc, strerror(errno));
 int fdReadable(FD_t fd, int secs)
 {
     int fdno;
-    fd_set rdfds;
-    struct timeval timeout, *tvp = (secs >= 0 ? &timeout : NULL);
     int rc;
+#if HAVE_POLL_H
+    int msecs = (secs >= 0 ? (1000 * secs) : -1);
+    struct pollfd rdfds;
+#else
+    struct timeval timeout, *tvp = (secs >= 0 ? &timeout : NULL);
+    fd_set rdfds;
+    FD_ZERO(&rdfds);
+#endif
 
     if ((fdno = fdFileno(fd)) < 0)
 	return -1;	/* XXX W2DO? */
 	
-    FD_ZERO(&rdfds);
     do {
-	FD_SET(fdno, &rdfds);
-
+#if HAVE_POLL_H
+	rdfds.fd = fdno;
+	rdfds.events = POLLIN;
+	rdfds.revents = 0;
+	rc = poll(&rdfds, 1, msecs);
+#else
 	if (tvp) {
 	    tvp->tv_sec = secs;
 	    tvp->tv_usec = 0;
 	}
-	errno = 0;
+	FD_SET(fdno, &rdfds);
 	/*@-compdef -nullpass@*/
 	rc = select(fdno + 1, &rdfds, NULL, NULL, tvp);
 	/*@=compdef =nullpass@*/
+#endif
 
 	if (rc < 0) {
 	    switch (errno) {

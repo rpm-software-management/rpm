@@ -631,8 +631,12 @@ extern void unsetenv(const char *name);
 #include <sys/socket.h>
 #endif
 
+#if HAVE_POLL_H
+#include <poll.h>
+#else
 #if HAVE_SYS_SELECT_H && !defined(__LCLINT__)
 #include <sys/select.h>
+#endif
 #endif
 
 /* Solaris <= 2.6 limits getpass return to only 8 chars */
