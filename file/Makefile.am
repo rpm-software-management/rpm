@@ -1,6 +1,8 @@
 # don't enforce GNU packaging standards
 AUTOMAKE_OPTIONS = foreign no-dependencies
 
+noinst_HEADERS = debug.h system.h
+
 bin_PROGRAMS = file
 
 data_DATA = magic magic.mime magic.mgc magic.mime.mgc

@@ -25,16 +25,11 @@
  * 4. This notice may not be removed or altered.
  */
 
+#include "system.h"
 #include "file.h"
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <time.h>
-#include <regex.h>
+#include "debug.h"
 
-#ifndef	lint
 FILE_RCSID("@(#)Id: softmagic.c,v 1.51 2002/07/03 18:26:38 christos Exp ")
-#endif	/* lint */
 
 /*@-redecl@*/
 /*@unchecked@*/

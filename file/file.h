@@ -29,24 +29,6 @@
 #ifndef __file_h__
 #define __file_h__
 
-#ifndef __linux__
-#define _LARGEFILE_SOURCE
-#define _LARGEFILE64_SOURCE 
-#define _FILE_OFFSET_BITS 64
-#endif
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <errno.h>
-#include <stdio.h>
-#ifdef HAVE_STDINT_H
-#include <stdint.h>
-#endif
-/* Do this here and now, because struct stat gets re-defined on solaris */
-#include <sys/stat.h>
-
 #ifndef HOWMANY
 # define HOWMANY 65536		/* how much of the file to look at */
 #endif
@@ -160,23 +142,6 @@ extern int optind;		/* From getopt(3)			*/
 extern char *optarg;
 #endif
 
-#ifndef HAVE_STRERROR
-/*@unchecked@*/
-extern int sys_nerr;
-/*@unchecked@*/
-extern char *sys_errlist[];
-#define strerror(e) \
-	(((e) >= 0 && (e) < sys_nerr) ? sys_errlist[(e)] : "Unknown error")
-#endif
-
-#ifndef HAVE_STRTOUL
-#define strtoul(a, b, c)	strtol(a, b, c)
-#endif
-
-#if defined(HAVE_MMAP) && defined(HAVE_SYS_MMAN_H) && !defined(QUICK)
-#define QUICK
-#endif
-
 /*@mayexit@*/
 extern int   apprentice(const char *fn, int action)
 	/*@globals lineno, mlist, fileSystem, internalState @*/
@@ -198,10 +163,6 @@ extern int   fsmagic(const char *fn, /*@out@*/ struct stat *sb)
 /*@observer@*/
 extern char *fmttime(long v, int local)
 	/*@*/;
-#if 0
-extern int   is_compress(const unsigned char *, int *)
-	/*@*/;
-#endif
 extern int   is_tar(unsigned char *buf, int nbytes)
 	/*@*/;
 extern void  magwarn(const char *f, ...)
@@ -237,14 +198,5 @@ extern void tryelf(int fd, unsigned char *buf, int nbytes)
 extern int pipe2file(int fd, void *startbuf, size_t nbytes)
 	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies errno, fileSystem, internalState @*/;
-
-#if defined(__LCLINT__)
-#define FILE_RCSID(id)
-#else
-#define FILE_RCSID(id) \
-static inline const char *rcsid(const char *p) { \
-	return rcsid(p = id); \
-}
-#endif
 
 #endif /* __file_h__ */

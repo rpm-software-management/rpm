@@ -1,18 +1,11 @@
-#include "file.h"
+#include "system.h"
 
 #ifdef BUILTIN_ELF
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
+#include "file.h"
 #include "readelf.h"
+#include "debug.h"
 
-#ifndef lint
 FILE_RCSID("@(#)Id: readelf.c,v 1.22 2002/07/03 18:26:38 christos Exp ")
-#endif
 
 static uint16_t
 getu16(int swap, uint16_t value)
@@ -646,4 +639,4 @@ tryelf(int fd, unsigned char *buf, int nbytes)
 		return;
 	}
 }
-#endif
+#endif	/* BUILTIN_ELF */

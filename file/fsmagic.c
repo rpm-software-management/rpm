@@ -25,34 +25,11 @@
  * 4. This notice may not be removed or altered.
  */
 
+#include "system.h"
 #include "file.h"
-#include <string.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#include <stdlib.h>
-/* Since major is a function on SVR4, we can't use `ifndef major'.  */
-#ifdef MAJOR_IN_MKDEV
-# include <sys/mkdev.h>
-# define HAVE_MAJOR
-#endif
-#ifdef MAJOR_IN_SYSMACROS
-# include <sys/sysmacros.h>
-# define HAVE_MAJOR
-#endif
-#ifdef major			/* Might be defined in sys/types.h.  */
-# define HAVE_MAJOR
-#endif
-  
-#ifndef HAVE_MAJOR
-# define major(dev)  (((dev) >> 8) & 0xff)
-# define minor(dev)  ((dev) & 0xff)
-#endif
-#undef HAVE_MAJOR
+#include "debug.h"
 
-#ifndef	lint
 FILE_RCSID("@(#)Id: fsmagic.c,v 1.36 2002/07/03 19:00:41 christos Exp ")
-#endif	/* lint */
 
 int
 fsmagic(const char *fn, struct stat *sb)

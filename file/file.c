@@ -25,39 +25,12 @@
  * 4. This notice may not be removed or altered.
  */
 
+#include "system.h"
 #include "file.h"
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/param.h>	/* for MAXPATHLEN */
-#include <fcntl.h>	/* for open() */
-#ifdef RESTORE_TIME
-# if (__COHERENT__ >= 0x420)
-#  include <sys/utime.h>
-# else
-#  ifdef USE_UTIMES
-#   include <sys/time.h>
-#  else
-#   include <utime.h>
-#  endif
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>	/* for read() */
-#endif
-#ifdef HAVE_LOCALE_H
-#include <locale.h>
-#endif
-
-#ifdef HAVE_GETOPT_H
-#include <getopt.h>	/* for long options (is this portable?)*/
-#endif
-
 #include "patchlevel.h"
+#include "debug.h"
 
-#ifndef	lint
 FILE_RCSID("@(#)Id: file.c,v 1.66 2002/07/03 19:00:41 christos Exp ")
-#endif	/* lint */
 
 
 #ifdef S_IFLNK

@@ -34,19 +34,12 @@
  * 4. This notice may not be removed or altered.
  */
 
+#include "system.h"
 #include "file.h"
-#include <string.h>
-#include <memory.h>
-#include <ctype.h>
-#include <stdlib.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 #include "names.h"
+#include "debug.h"
 
-#ifndef	lint
 FILE_RCSID("@(#)Id: ascmagic.c,v 1.32 2002/07/03 18:26:37 christos Exp ")
-#endif	/* lint */
 
 typedef unsigned long unichar;
 

@@ -1,20 +1,9 @@
 
+#include "system.h"
 #include "file.h"
-#include <stdlib.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#include <string.h>
-#ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
-#ifdef HAVE_LIBZ
-#include <zlib.h>
-#endif
+#include "debug.h"
 
-#ifndef lint
 FILE_RCSID("@(#)Id: compress.c,v 1.25 2002/07/03 18:26:37 christos Exp ")
-#endif
 
 /*@-nullassign@*/
 /*@unchecked@*/

@@ -25,21 +25,11 @@
  * 4. This notice may not be removed or altered.
  */
 
+#include "system.h"
 #include "file.h"
-#include <stdlib.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#include <string.h>
-#include <ctype.h>
-#include <fcntl.h>
-#ifdef QUICK
-#include <sys/mman.h>
-#endif
+#include "debug.h"
 
-#ifndef	lint
 FILE_RCSID("@(#)Id: apprentice.c,v 1.49 2002/07/03 19:00:41 christos Exp ")
-#endif	/* lint */
 
 #define	EATAB {while (isascii((unsigned char) *l) && \
 		      isspace((unsigned char) *l))  ++l;}
@@ -942,7 +932,7 @@ apprentice_map(/*@out@*/ struct magic **magicp, /*@out@*/ uint32_t *nmagicp,
 		goto error;
 	}
 
-#ifdef QUICK
+#ifdef HAVE_MMAP
 	if ((mm = mmap(0, (size_t)st.st_size, PROT_READ|PROT_WRITE,
 	    MAP_PRIVATE|MAP_FILE, fd, (off_t)0)) == MAP_FAILED) {
 		(void)fprintf(stderr, "%s: Cannot map `%s' (%s)\n",
@@ -995,7 +985,7 @@ error:
 		(void)close(fd);
 /*@-branchstate@*/
 	if (mm != NULL) {
-#ifdef QUICK
+#ifdef HAVE_MMAP
 		(void)munmap(mm, (size_t)st.st_size);
 #else
 		free(mm);

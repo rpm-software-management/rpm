@@ -11,15 +11,12 @@
  * for file command by Ian Darwin.
  */
 
+#include "system.h"
 #include "file.h"
-#include <string.h>
-#include <ctype.h>
-#include <sys/types.h>
 #include "tar.h"
+#include "debug.h"
 
-#ifndef lint
 FILE_RCSID("@(#)Id: is_tar.c,v 1.17 2002/07/03 18:26:38 christos Exp ")
-#endif
 
 #define	isodigit(c)	( ((c) >= '0') && ((c) <= '7') )
 

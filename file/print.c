@@ -25,22 +25,11 @@
  * 4. This notice may not be removed or altered.
  */
 
+#include "system.h"
 #include "file.h"
-#include <string.h>
-#ifdef __STDC__
-# include <stdarg.h>
-#else
-# include <varargs.h>
-#endif
-#include <stdlib.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#include <time.h>
+#include "debug.h"
 
-#ifndef lint
 FILE_RCSID("@(#)Id: print.c,v 1.38 2002/07/03 18:37:44 christos Exp ")
-#endif  /* lint */
 
 #define SZOF(a)	(sizeof(a) / sizeof(a[0]))
 
