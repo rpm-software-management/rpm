@@ -1,15 +1,18 @@
 #include "system.h"
 
-#include "build/rpmbuild.h"
+#include <rpmlib.h>
+#include <rpmmacro.h>
+#include <rpmurl.h>
 
-#include "install.h"
-#include "rpmurl.h"
+#ifdef DYING
+#include "build/rpmbuild.h"
 
 static void printHash(const unsigned long amount, const unsigned long total);
 static void * showProgress(const Header h, const rpmCallbackType what, 
 			   const unsigned long amount, 
 			   const unsigned long total,
 			   const void * pkgKey, void * data);
+#endif
 
 static int hashesPrinted = 0;
 
@@ -90,7 +93,7 @@ static void * showProgress(const Header h, const rpmCallbackType what,
     return rc;
 }	
 
-int doInstall(const char * rootdir, const char ** argv, int transFlags, 
+int rpmInstall(const char * rootdir, const char ** argv, int transFlags, 
 	      int interfaceFlags, int probFilter, 
 	      rpmRelocation * relocations) {
     rpmdb db = NULL;
@@ -343,7 +346,7 @@ int doInstall(const char * rootdir, const char ** argv, int transFlags,
     return numFailed;
 }
 
-int doUninstall(const char * rootdir, const char ** argv, int transFlags,
+int rpmErase(const char * rootdir, const char ** argv, int transFlags,
 		 int interfaceFlags) {
     rpmdb db;
     dbiIndexSet matches;
@@ -438,7 +441,7 @@ int doUninstall(const char * rootdir, const char ** argv, int transFlags,
     return numFailed;
 }
 
-int doSourceInstall(const char * rootdir, const char * arg, const char ** specFile,
+int rpmInstallSource(const char * rootdir, const char * arg, const char ** specFile,
 		    char ** cookie) {
     FD_t fd;
     int rc;
@@ -456,8 +459,8 @@ int doSourceInstall(const char * rootdir, const char * arg, const char ** specFi
 				 cookie);
     if (rc == 1) {
 	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
-	if (specFile) FREE(*specFile);
-	if (cookie) FREE(*cookie);
+	if (specFile && *specFile) xfree(*specFile);
+	if (cookie && *cookie) free(*cookie);
     }
 
     fdClose(fd);

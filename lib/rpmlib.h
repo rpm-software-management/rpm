@@ -602,6 +602,9 @@ int rpmGetFilesystemList(const char *** listptr, int * num);
 int rpmGetFilesystemUsage(const char ** filelist, int_32 * fssizes, int numFiles,
 			  uint_32 ** usagesPtr, int flags);
 
+/* ==================================================================== */
+/* --- query/verify */
+
 /* XXX SPECFILE is not verify sources */
 enum rpmQVSources { RPMQV_PACKAGE = 0, RPMQV_PATH, RPMQV_ALL, RPMQV_RPM, 
 		       RPMQV_GROUP, RPMQV_WHATPROVIDES, RPMQV_WHATREQUIRES,
@@ -648,6 +651,30 @@ extern struct poptOption rpmVerifyPoptTable[];
 
 int showVerifyPackage(QVA_t *qva, rpmdb db, Header h);
 int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg);
+
+/* ==================================================================== */
+/* --- install/upgrade/erase */
+
+#define INSTALL_PERCENT		(1 << 0)
+#define INSTALL_HASH		(1 << 1)
+#define INSTALL_NODEPS		(1 << 2)
+#define INSTALL_NOORDER		(1 << 3)
+#define INSTALL_LABEL		(1 << 4)  /* set if we're being verbose */
+#define INSTALL_UPGRADE		(1 << 5)
+
+#define UNINSTALL_NODEPS	(1 << 0)
+#define UNINSTALL_ALLMATCHES	(1 << 1)
+
+int rpmInstall(const char * rootdir, const char ** argv, int installFlags, 
+	      int interfaceFlags, int probFilter, rpmRelocation * relocations);
+int rpmInstallSource(const char * prefix, const char * arg, const char ** specFile,
+		    char ** cookie);
+int rpmErase(const char * rootdir, const char ** argv, int uninstallFlags, 
+		 int interfaceFlags);
+
+void printDepFlags(FILE * f, const char * version, int flags);
+void printDepProblems(FILE * f, struct rpmDependencyConflict * conflicts,
+			     int numConflicts);
 
 #ifdef __cplusplus
 }

@@ -1194,7 +1194,7 @@ int main(int argc, char ** argv)
 	}
 
 	while ((pkg = poptGetArg(optCon))) {
-	    if (doSourceInstall("/", pkg, &specFile, &cookie))
+	    if (rpmInstallSource("/", pkg, &specFile, &cookie))
 		exit(EXIT_FAILURE);
 
 	    if (build(specFile, &buildArgs, passPhrase, 0, cookie, rcfile, force, noDeps)) {
@@ -1262,7 +1262,7 @@ int main(int argc, char ** argv)
 	if (noDeps) interfaceFlags |= UNINSTALL_NODEPS;
 	if (allMatches) interfaceFlags |= UNINSTALL_ALLMATCHES;
 
-	ec = doUninstall(rootdir, (const char **)poptGetArgs(optCon), 
+	ec = rpmErase(rootdir, (const char **)poptGetArgs(optCon), 
 			 uninstallFlags, interfaceFlags);
 	break;
 
@@ -1317,7 +1317,7 @@ int main(int argc, char ** argv)
 	    relocations[numRelocations].newPath = NULL;
 	}
 
-	ec += doInstall(rootdir, (const char **)poptGetArgs(optCon), 
+	ec += rpmInstall(rootdir, (const char **)poptGetArgs(optCon), 
 			installFlags, interfaceFlags, probFilter, relocations);
 	break;
 

@@ -5,7 +5,6 @@
 build.c
 checksig.c
 convertdb.c
-install.c
 oldrpmdb.c
 rpm.c
 rpm2cpio.c
@@ -52,6 +51,7 @@ lib/rebuilddb.c
 lib/rpmbzio.c
 lib/rpmdb.c
 lib/rpmerr.c
+lib/rpminstall.c
 lib/rpmio.c
 lib/rpmlead.c
 lib/rpmrc.c
