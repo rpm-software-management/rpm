@@ -1,4 +1,5 @@
 2.5.3 -> 3.0
+	- better query semantics with symlinks (Tim Mooney)
 	- finish planting /usr/lib/rpm (remove compatibility symlinks)
 	- build.c: fix incorrect check for successful open
 	- add new fully recursive macro.c
