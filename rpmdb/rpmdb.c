@@ -182,7 +182,11 @@ fprintf(stderr, "    Sync %s\n", tagName(dbi->dbi_rpmtag));
 
 INLINE int dbiByteSwapped(dbiIndex dbi)
 {
-    return (*dbi->dbi_vec->byteswapped) (dbi);
+/*@-mods@*/ /* FIX: shrug */
+    if (dbi->dbi_byteswapped == -1)
+	dbi->dbi_byteswapped = (*dbi->dbi_vec->byteswapped) (dbi);
+/*@=mods@*/
+    return dbi->dbi_byteswapped;
 }
 
 INLINE int dbiCopen(dbiIndex dbi, /*@out@*/ DBC ** dbcp, unsigned int flags)

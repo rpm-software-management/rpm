@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-11-13 19:04-0500\n"
+"POT-Creation-Date: 2001-11-15 13:11-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2783,12 +2783,12 @@ msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:842
+#: lib/transaction.c:981
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:932
+#: lib/transaction.c:1071
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -2963,150 +2963,150 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:383
+#: rpmdb/rpmdb.c:387
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:405
+#: rpmdb/rpmdb.c:409
 #, c-format
 msgid "cannot open %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:497
+#: rpmdb/rpmdb.c:501
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:628
+#: rpmdb/rpmdb.c:632
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:638
+#: rpmdb/rpmdb.c:642
 #, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:902
+#: rpmdb/rpmdb.c:906
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1046
+#: rpmdb/rpmdb.c:1050
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
 msgstr ""
 
 #. error
-#: rpmdb/rpmdb.c:1311
+#: rpmdb/rpmdb.c:1315
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2088 rpmdb/rpmdb.c:3341
+#: rpmdb/rpmdb.c:2092 rpmdb/rpmdb.c:3345
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2141
+#: rpmdb/rpmdb.c:2145
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2411
+#: rpmdb/rpmdb.c:2415
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2483
+#: rpmdb/rpmdb.c:2487
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2492
+#: rpmdb/rpmdb.c:2496
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2693
+#: rpmdb/rpmdb.c:2697
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2774
+#: rpmdb/rpmdb.c:2778
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2785
+#: rpmdb/rpmdb.c:2789
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3227
+#: rpmdb/rpmdb.c:3231
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3260
+#: rpmdb/rpmdb.c:3264
 msgid "no dbpath has been set"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3287
-#, c-format
-msgid "rebuilding database %s into %s\n"
 msgstr ""
 
 #: rpmdb/rpmdb.c:3291
 #, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:3295
+#, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3297
+#: rpmdb/rpmdb.c:3301
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3299
+#: rpmdb/rpmdb.c:3303
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3306
+#: rpmdb/rpmdb.c:3310
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3317
+#: rpmdb/rpmdb.c:3321
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3381
+#: rpmdb/rpmdb.c:3385
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3399
+#: rpmdb/rpmdb.c:3403
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3407
+#: rpmdb/rpmdb.c:3411
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3409
+#: rpmdb/rpmdb.c:3413
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3419
+#: rpmdb/rpmdb.c:3423
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3421
+#: rpmdb/rpmdb.c:3425
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

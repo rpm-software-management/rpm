@@ -226,6 +226,7 @@ struct _dbiIndex {
     int			dbi_lockdbfd;	/*!< do fcntl lock on db fd */
     int			dbi_temporary;	/*!< non-persistent */
     int			dbi_debug;
+    int			dbi_byteswapped;
 
 /*@null@*/ char *	dbi_host;
     long		dbi_cl_timeout;

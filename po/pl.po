@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-13 13:56-0500\n"
+"POT-Creation-Date: 2001-11-15 13:11-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2483,12 +2483,12 @@ msgstr "nie mo¿na odczytaæ rekordu %d\n"
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
 
-#: lib/rpmal.c:647
+#: lib/rpmal.c:673
 #, fuzzy
 msgid "(added files)"
 msgstr "b³êdny status pliku: %s"
 
-#: lib/rpmal.c:744
+#: lib/rpmal.c:770
 #, fuzzy
 msgid "(added provide)"
 msgstr "Udostêpniane zasoby:"
@@ -2914,18 +2914,18 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Blok sygnatury: %d\n"
 
-#: lib/transaction.c:185
+#: lib/transaction.c:182
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s pominiêty z powodu flagi missingok\n"
 
 #. @innercontinue@
-#: lib/transaction.c:850
+#: lib/transaction.c:981
 #, fuzzy, c-format
 msgid "excluding directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: lib/transaction.c:918
+#: lib/transaction.c:1071
 msgid "getting list of mounted filesystems\n"
 msgstr ""
 
@@ -3108,37 +3108,37 @@ msgstr ""
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:383
+#: rpmdb/rpmdb.c:387
 #, fuzzy, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "nie mo¿na otworzyæ %s przy %s:%d"
 
-#: rpmdb/rpmdb.c:405
+#: rpmdb/rpmdb.c:409
 #, fuzzy, c-format
 msgid "cannot open %s index\n"
 msgstr "nie mo¿na otworzyæ %s\n"
 
-#: rpmdb/rpmdb.c:497
+#: rpmdb/rpmdb.c:501
 #, fuzzy, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "b³±d pobierania rekordu %s z %s"
 
-#: rpmdb/rpmdb.c:628
+#: rpmdb/rpmdb.c:632
 #, fuzzy, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "b³±d zapisywania rekordu %s do %s"
 
-#: rpmdb/rpmdb.c:638
+#: rpmdb/rpmdb.c:642
 #, fuzzy, c-format
 msgid "error(%d) removing record %s from %s\n"
 msgstr "b³±d usuwania rekordu %s z %s"
 
-#: rpmdb/rpmdb.c:902
+#: rpmdb/rpmdb.c:906
 #, fuzzy
 msgid "no dbpath has been set\n"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana"
 
-#: rpmdb/rpmdb.c:1046
+#: rpmdb/rpmdb.c:1050
 #, fuzzy
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
@@ -3148,115 +3148,115 @@ msgstr ""
 "nowym formacie"
 
 #. error
-#: rpmdb/rpmdb.c:1311
+#: rpmdb/rpmdb.c:1315
 #, fuzzy, c-format
 msgid "error(%d) counting packages\n"
 msgstr "b³±d szukania pakietu %s\n"
 
-#: rpmdb/rpmdb.c:2088 rpmdb/rpmdb.c:3341
+#: rpmdb/rpmdb.c:2092 rpmdb/rpmdb.c:3345
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "rekord numer %d w bazie danych jest b³êdny -- rekord pominiêto"
 
-#: rpmdb/rpmdb.c:2141
+#: rpmdb/rpmdb.c:2145
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2411
+#: rpmdb/rpmdb.c:2415
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "nie mo¿na odczytaæ nag³ówka przy %d dla poszukiwania"
 
-#: rpmdb/rpmdb.c:2483
+#: rpmdb/rpmdb.c:2487
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "usuwanie indeksu grupy\n"
 
-#: rpmdb/rpmdb.c:2492
+#: rpmdb/rpmdb.c:2496
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "usuwanie indeksu nazw\n"
 
-#: rpmdb/rpmdb.c:2693
+#: rpmdb/rpmdb.c:2697
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "b³±d szukania pakietu %s\n"
 
-#: rpmdb/rpmdb.c:2774
+#: rpmdb/rpmdb.c:2778
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "zmiana nazwy %s na %s\n"
 
-#: rpmdb/rpmdb.c:2785
+#: rpmdb/rpmdb.c:2789
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "zmiana nazwy %s na %s\n"
 
-#: rpmdb/rpmdb.c:3227
+#: rpmdb/rpmdb.c:3231
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3260
+#: rpmdb/rpmdb.c:3264
 msgid "no dbpath has been set"
 msgstr "¶cie¿ka bazy danych nie zosta³a podana"
 
-#: rpmdb/rpmdb.c:3287
+#: rpmdb/rpmdb.c:3291
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "odbudowywujê bazê danych w rootdir %s\n"
 
-#: rpmdb/rpmdb.c:3291
+#: rpmdb/rpmdb.c:3295
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "tymczasowa baza danych %s ju¿ istnieje"
 
-#: rpmdb/rpmdb.c:3297
+#: rpmdb/rpmdb.c:3301
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: rpmdb/rpmdb.c:3299
+#: rpmdb/rpmdb.c:3303
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: rpmdb/rpmdb.c:3306
+#: rpmdb/rpmdb.c:3310
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otwieranie starej bazy danych\n"
 
-#: rpmdb/rpmdb.c:3317
+#: rpmdb/rpmdb.c:3321
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otwieranie nowej bazy danych\n"
 
-#: rpmdb/rpmdb.c:3381
+#: rpmdb/rpmdb.c:3385
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nie mo¿na dodaæ rekordu oryginalnie przy %d"
 
-#: rpmdb/rpmdb.c:3399
+#: rpmdb/rpmdb.c:3403
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "przebudowanie bazy nie powiod³o siê; stara pozosta³a na miejscu\n"
 
-#: rpmdb/rpmdb.c:3407
+#: rpmdb/rpmdb.c:3411
 msgid "failed to replace old database with new database!\n"
 msgstr "zamiana starej bazy na now± nie powiod³a siê!\n"
 
-#: rpmdb/rpmdb.c:3409
+#: rpmdb/rpmdb.c:3413
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "naprawcze zastêpowanie plików w %s plikami z %s"
 
-#: rpmdb/rpmdb.c:3419
+#: rpmdb/rpmdb.c:3423
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "tworzenie katalogu: %s\n"
 
-#: rpmdb/rpmdb.c:3421
+#: rpmdb/rpmdb.c:3425
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "usuniêcie katalogu %s nie powiod³o siê: %s\n"

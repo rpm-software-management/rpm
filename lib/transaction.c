@@ -420,6 +420,148 @@ static int handleRmvdInstalledFiles(const rpmTransactionSet ts, TFI_t fi,
     return 0;
 }
 
+#define	ISROOT(_d)	(((_d)[0] == '/' && (_d)[1] == '\0') ? "" : (_d))
+
+/*@unchecked@*/
+static int _fps_debug = 0;
+
+static int fpsCompare (const void * one, const void * two)
+{
+    const struct fingerPrint_s * a = (const struct fingerPrint_s *)one;
+    const struct fingerPrint_s * b = (const struct fingerPrint_s *)two;
+    int adnlen = strlen(a->entry->dirName);
+    int asnlen = (a->subDir ? strlen(a->subDir) : 0);
+    int abnlen = strlen(a->baseName);
+    int bdnlen = strlen(b->entry->dirName);
+    int bsnlen = (b->subDir ? strlen(b->subDir) : 0);
+    int bbnlen = strlen(b->baseName);
+    char * afn, * bfn, * t;
+    int rc = 0;
+
+    if (adnlen == 1 && asnlen != 0) adnlen = 0;
+    if (bdnlen == 1 && bsnlen != 0) bdnlen = 0;
+
+    afn = t = alloca(adnlen+asnlen+abnlen+2);
+    if (adnlen) t = stpcpy(t, a->entry->dirName);
+    *t++ = '/';
+    if (a->subDir && asnlen) t = stpcpy(t, a->subDir);
+    if (abnlen) t = stpcpy(t, a->baseName);
+    if (afn[0] == '/' && afn[1] == '/') afn++;
+
+    bfn = t = alloca(bdnlen+bsnlen+bbnlen+2);
+    if (bdnlen) t = stpcpy(t, b->entry->dirName);
+    *t++ = '/';
+    if (b->subDir && bsnlen) t = stpcpy(t, b->subDir);
+    if (bbnlen) t = stpcpy(t, b->baseName);
+    if (bfn[0] == '/' && bfn[1] == '/') bfn++;
+
+    rc = strcmp(afn, bfn);
+/*@-modfilesys@*/
+if (_fps_debug)
+fprintf(stderr, "\trc(%d) = strcmp(\"%s\", \"%s\")\n", rc, afn, bfn);
+/*@=modfilesys@*/
+
+/*@-modfilesys@*/
+if (_fps_debug)
+fprintf(stderr, "\t%s/%s%s\trc %d\n",
+ISROOT(b->entry->dirName),
+(b->subDir ? b->subDir : ""),
+b->baseName,
+rc
+);
+/*@=modfilesys@*/
+
+    return rc;
+}
+
+/*@unchecked@*/
+static int _linear_fps_search = 0;
+
+static int findFps(const struct fingerPrint_s * fiFps,
+		const struct fingerPrint_s * otherFps,
+		int otherFc)
+	/*@*/
+{
+    int otherFileNum;
+
+/*@-modfilesys@*/
+if (_fps_debug)
+fprintf(stderr, "==> %s/%s%s\n",
+ISROOT(fiFps->entry->dirName),
+(fiFps->subDir ? fiFps->subDir : ""),
+fiFps->baseName);
+/*@=modfilesys@*/
+
+  if (_linear_fps_search) {
+
+linear:
+    for (otherFileNum = 0; otherFileNum < otherFc; otherFileNum++, otherFps++) {
+
+/*@-modfilesys@*/
+if (_fps_debug)
+fprintf(stderr, "\t%4d %s/%s%s\n", otherFileNum,
+ISROOT(otherFps->entry->dirName),
+(otherFps->subDir ? otherFps->subDir : ""),
+otherFps->baseName);
+/*@=modfilesys@*/
+
+	/* If the addresses are the same, so are the values. */
+	if (fiFps == otherFps)
+	    break;
+
+	/* Otherwise, compare fingerprints by value. */
+	/*@-nullpass@*/	/* LCL: looks good to me */
+	if (FP_EQUAL((*fiFps), (*otherFps)))
+	    break;
+	/*@=nullpass@*/
+    }
+
+if (otherFileNum == otherFc) {
+/*@-modfilesys@*/
+if (_fps_debug)
+fprintf(stderr, "*** NULL %s/%s%s\n",
+ISROOT(fiFps->entry->dirName),
+(fiFps->subDir ? fiFps->subDir : ""),
+fiFps->baseName);
+/*@=modfilesys@*/
+}
+
+    return otherFileNum;
+
+  } else {
+
+    const struct fingerPrint_s * bingoFps;
+
+    bingoFps = bsearch(fiFps, otherFps, otherFc, sizeof(*otherFps), fpsCompare);
+    if (bingoFps == NULL) {
+/*@-modfilesys@*/
+fprintf(stderr, "*** NULL %s/%s%s\n",
+ISROOT(fiFps->entry->dirName),
+(fiFps->subDir ? fiFps->subDir : ""),
+fiFps->baseName);
+/*@=modfilesys@*/
+	goto linear;
+    }
+
+    /* If the addresses are the same, so are the values. */
+    /*@-nullpass@*/	/* LCL: looks good to me */
+    if (!(fiFps == bingoFps || FP_EQUAL((*fiFps), (*bingoFps)))) {
+/*@-modfilesys@*/
+fprintf(stderr, "***  BAD %s/%s%s\n",
+ISROOT(bingoFps->entry->dirName),
+(bingoFps->subDir ? bingoFps->subDir : ""),
+bingoFps->baseName);
+/*@=modfilesys@*/
+	goto linear;
+    }
+
+    otherFileNum = (bingoFps != NULL ? (bingoFps - otherFps) : 0);
+
+  }
+
+    return otherFileNum;
+}
+
 /**
  * Update disk space needs on each partition for this package.
  */
@@ -437,6 +579,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
     fi = tfiInit(fi, 0);
     if (fi != NULL)
     while ((i = tfiNext(fi)) >= 0) {
+	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
 	const TFI_t * recs;
 	int numRecs;
@@ -445,6 +588,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 	    continue;
 
 	fn = tfiGetFN(fi);
+	fiFps = fi->fps + i;
 
 	if (ts->di) {
 	    ds = ts->di;
@@ -459,7 +603,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 	 * will be installed and removed so the records for an overlapped
 	 * files will be sorted in exactly the same order.
 	 */
-	(void) htGetEntry(ts->ht, &fi->fps[i],
+	(void) htGetEntry(ts->ht, fiFps,
 			(const void ***) &recs, &numRecs, NULL);
 
 	/*
@@ -489,29 +633,23 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 	/* Find what the previous disposition of this file was. */
 	otherFileNum = -1;			/* keep gcc quiet */
 	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
+	    struct fingerPrint_s * otherFps;
+	    TFI_t otherFi;
+	    int otherFc;
+
+	    otherFi = recs[otherPkgNum];
+
 	    /* Added packages need only look at other added packages. */
-	    if (p->type == TR_ADDED && recs[otherPkgNum]->te->type != TR_ADDED)
+	    if (p->type == TR_ADDED && otherFi->te->type != TR_ADDED)
 		/*@innercontinue@*/ continue;
 
-	    /* TESTME: there are more efficient searches in the world... */
-	    for (otherFileNum = 0;
-		 otherFileNum < recs[otherPkgNum]->fc;
-		 otherFileNum++)
-	    {
+	    otherFps = otherFi->fps;
+	    otherFc = otherFi->fc;
 
-		/* If the addresses are the same, so are the values. */
-		if ((fi->fps + i) == (recs[otherPkgNum]->fps + otherFileNum))
-		    /*@innerbreak@*/ break;
+	    otherFileNum = findFps(fiFps, otherFps, otherFc);
 
-		/* Otherwise, compare fingerprints by value. */
-		/*@-nullpass@*/	/* LCL: looks good to me */
-		if (FP_EQUAL(fi->fps[i], recs[otherPkgNum]->fps[otherFileNum]))
-		    /*@innerbreak@*/ break;
-		/*@=nullpass@*/
-
-	    }
 	    /* XXX is this test still necessary? */
-	    if (recs[otherPkgNum]->actions[otherFileNum] != FA_UNKNOWN)
+	    if (otherFi->actions[otherFileNum] != FA_UNKNOWN)
 		/*@innerbreak@*/ break;
 	}
 
@@ -561,6 +699,7 @@ static void handleOverlappedFiles(const rpmTransactionSet ts,
 		fi->actions[i] = FA_CREATE;
 	    }
 	  } /*@switchbreak@*/ break;
+
 	case TR_REMOVED:
 	    if (otherPkgNum >= 0) {
 		/* Here is an overlapped added file we don't want to nuke. */
