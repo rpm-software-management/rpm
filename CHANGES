@@ -40,6 +40,7 @@
 	- fix: define/eval options assumed sizeof(int) == sizeof(void *).
 	- fix: sparc64 per-platform directory shouldn't be sparc64linux.
 	- fix: (segfault) verify needs rpmdb while query does not.
+	- add calculated nlink field to -qlv output (like ls -al).
 	
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

@@ -53,7 +53,8 @@ static char * permsString(int mode)
 
 static void printFileInfo(FILE *fp, const char * name,
 			  unsigned int size, unsigned short mode,
-			  unsigned int mtime, unsigned short rdev,
+			  unsigned int mtime,
+			  unsigned short rdev, unsigned int nlink,
 			  const char * owner, const char * group,
 			  int uid, int gid, const char * linkto)
 {
@@ -125,8 +126,8 @@ static void printFileInfo(FILE *fp, const char * name,
 	(void)strftime(timefield, sizeof(timefield) - 1, fmt, tm);
     }
 
-    fprintf(fp, "%s %8s %8s %10s %s %s\n", perms, ownerfield, groupfield, 
-		sizefield, timefield, namefield);
+    fprintf(fp, "%s %4d %-8s%-8s %10s %s %s\n", perms, nlink,
+		ownerfield, groupfield, sizefield, timefield, namefield);
     if (perms) free(perms);
 }
 
@@ -144,6 +145,21 @@ static int queryHeader(FILE *fp, Header h, const char * chptr)
     fputs(str, fp);
 
     return 0;
+}
+
+static int countLinks(int_16 * fileRdevList, int_32 * fileInodeList, int nfiles,
+		int xfile)
+{
+    int nlink = 0;
+
+    while (nfiles-- > 0) {
+	if (fileRdevList[nfiles] != fileRdevList[xfile])
+	    continue;
+	if (fileInodeList[nfiles] != fileInodeList[xfile])
+	    continue;
+	nlink++;
+    }
+    return nlink;
 }
 
 int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
@@ -164,6 +180,7 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
     int_32 * fileFlagsList, * fileMTimeList, * fileSizeList;
     int_32 * fileUIDList = NULL;
     int_32 * fileGIDList = NULL;
+    int_32 * fileInodeList = NULL;
     uint_16 * fileModeList;
     uint_16 * fileRdevList;
     int_32 * dirIndexes;
@@ -201,6 +218,8 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 			 (void **) &fileMTimeList, &count);
 		headerGetEntry(h, RPMTAG_FILERDEVS, &type, 
 			 (void **) &fileRdevList, &count);
+		headerGetEntry(h, RPMTAG_FILEINODES, &type, 
+			 (void **) &fileInodeList, &count);
 		headerGetEntry(h, RPMTAG_FILELINKTOS, &type, 
 			 (void **) &fileLinktoList, &count);
 		headerGetEntry(h, RPMTAG_FILEMD5S, &type, 
@@ -286,24 +305,26 @@ int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb rpmdb, Header h)
 			    fputs("\n", fp);
 			} else {
 			    char * filespec;
+			    int nlink;
 
 			    filespec = xmalloc(strlen(dirNames[dirIndexes[i]])
 					      + strlen(baseNames[i]) + 1);
 			    strcpy(filespec, dirNames[dirIndexes[i]]);
 			    strcat(filespec, baseNames[i]);
 					
+			    nlink = countLinks(fileRdevList, fileInodeList, count, i);
 			    if (fileOwnerList && fileGroupList) {
 				printFileInfo(fp, filespec, fileSizeList[i],
 					      fileModeList[i], fileMTimeList[i],
-					      fileRdevList[i], 
+					      fileRdevList[i], nlink,
 					      fileOwnerList[i], 
 					      fileGroupList[i], -1, 
 					      -1, fileLinktoList[i]);
 			    } else if (fileUIDList && fileGIDList) {
 				printFileInfo(fp, filespec, fileSizeList[i],
 					      fileModeList[i], fileMTimeList[i],
-					      fileRdevList[i], NULL, 
-					      NULL, fileUIDList[i], 
+					      fileRdevList[i], nlink,
+					      NULL, NULL, fileUIDList[i], 
 					      fileGIDList[i], 
 					      fileLinktoList[i]);
 			    } else {
