@@ -1,5 +1,9 @@
 #include "system.h"
 
+#if !defined(EXIT_FAILURE)
+#define	EXIT_FAILURE	1
+#endif
+
 void *vmefail(void)
 {
     fprintf(stderr, _("memory alloc returned NULL.\n"));
