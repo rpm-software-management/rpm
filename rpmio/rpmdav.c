@@ -1,8 +1,4 @@
-/*@-bounds@*/
-/*@-globuse@*/
 /*@-modfilesys@*/
-/*@-mustmod@*/
-/*@-paramuse@*/
 /** \ingroup rpmio
  * \file rpmio/rpmdav.c
  */
@@ -71,6 +67,7 @@ static int davFree(urlinfo u)
 }
 
 static void davProgress(void * userdata, off_t current, off_t total)
+	/*@*/
 {
     urlinfo u = userdata;
     ne_session * sess;
@@ -89,6 +86,7 @@ fprintf(stderr, "*** davProgress(%p,0x%x:0x%x) sess %p u %p\n", userdata, (unsig
 
 static void davNotify(void * userdata,
 		ne_conn_status connstatus, const char * info)
+	/*@*/
 {
     urlinfo u = userdata;
     ne_session * sess;
@@ -117,13 +115,16 @@ typedef enum {
 
     u->connstatus = connstatus;
 
+/*@-boundsread@*/
 if (_dav_debug < 0)
 fprintf(stderr, "*** davNotify(%p,%d,%p) sess %p u %p %s\n", userdata, connstatus, info, sess, u, connstates[ (connstatus < 4 ? connstatus : 4)]);
+/*@=boundsread@*/
 
 }
 
 static void davCreateRequest(ne_request * req, void * userdata,
 		const char * method, const char * uri)
+	/*@*/
 {
     urlinfo u = userdata;
     ne_session * sess;
@@ -169,6 +170,7 @@ fprintf(stderr, "-> %s\n", buf->data);
 }
 
 static int davPostSend(ne_request * req, void * userdata, const ne_status * status)
+	/*@*/
 {
     urlinfo u = userdata;
     ne_session * sess;
@@ -192,6 +194,7 @@ fprintf(stderr, "*** davPostSend(%p,%p,%p) sess %p %s %p %s\n", req, userdata, s
 }
 
 static void davDestroyRequest(ne_request * req, void * userdata)
+	/*@*/
 {
     urlinfo u = userdata;
     ne_session * sess;
@@ -212,6 +215,7 @@ fprintf(stderr, "*** davDestroyRequest(%p,%p) sess %p %s %p\n", req, userdata, s
 }
 
 static void davDestroySession(void * userdata)
+	/*@*/
 {
     urlinfo u = userdata;
     ne_session * sess;
@@ -304,8 +308,10 @@ static int davInit(const char * url, urlinfo * uret)
 	ne_hook_destroy_request(u->sess, davDestroyRequest, u);
     }
 
+/*@-boundswrite@*/
     if (uret != NULL)
 	*uret = urlLink(u, __FUNCTION__);
+/*@=boundswrite@*/
     u = urlFree(u, "urlSplit (davInit)");
 
     return 0;
@@ -432,7 +438,9 @@ static void *fetch_destroy_context(/*@only@*/ /*@null@*/ struct fetch_context_s 
     ctx->mtimes = _free(ctx->mtimes);
     ctx->u = urlFree(ctx->u, __FUNCTION__);
     ctx->uri = _free(ctx->uri);
+/*@-boundswrite@*/
     memset(ctx, 0, sizeof(*ctx));
+/*@=boundswrite@*/
     ctx = _free(ctx);
     return NULL;
 }
@@ -553,11 +561,13 @@ fprintf(stderr, "==> %s skipping target resource.\n", path);
 
     newres->uri = ne_strdup(path);
 
+/*@-boundsread@*/
     clength = ne_propset_value(set, &fetch_props[0]);    
     modtime = ne_propset_value(set, &fetch_props[1]);
     isexec = ne_propset_value(set, &fetch_props[2]);
     checkin = ne_propset_value(set, &fetch_props[4]);
     checkout = ne_propset_value(set, &fetch_props[5]);
+/*@=boundsread@*/
     
     if (clength == NULL)
 	status = ne_propset_status(set, &fetch_props[0]);
@@ -618,7 +628,9 @@ fprintf(stderr, "==> %s skipping target resource.\n", path);
     if (previous) {
 	previous->next = newres;
     } else {
+/*@-boundswrite@*/
 	*ctx->resrock = newres;
+/*@=boundswrite@*/
     }
     newres->next = current;
 }
@@ -711,9 +723,11 @@ fprintf(stderr, "*** argvAdd(%p,\"%s\")\n", &ctx->av, val);
 	    st_mode = 0;
 	    /*@switchbreak@*/ break;
 	}
+/*@-boundswrite@*/
 	ctx->modes[ctx->ac] = st_mode;
 	ctx->sizes[ctx->ac] = current->size;
 	ctx->mtimes[ctx->ac] = current->modtime;
+/*@=boundswrite@*/
 	ctx->ac++;
 
 	current = fetch_destroy_item(current);
@@ -861,6 +875,7 @@ fprintf(stderr, "*** fd %p Connection: %s\n", ctrl, value);
 	ctrl->persist = 1;
 }
 
+/*@-mustmod@*/ /* HACK: stash error in *str. */
 int davResp(urlinfo u, FD_t ctrl, /*@unused@*/ char *const * str)
 {
     int rc = 0;
@@ -892,6 +907,7 @@ fprintf(stderr, "*** davResp(%p,%p,%p) sess %p req %p rc %d\n", u, ctrl, str, u-
 
     return rc;
 }
+/*@=mustmod@*/
 
 int davReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
 {
@@ -913,9 +929,9 @@ fprintf(stderr, "*** davReq(%p,%s,\"%s\") entry sess %p req %p\n", ctrl, httpCmd
     if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = 80;
     path = (u->proxyh || u->proxyp > 0) ? u->url : httpArg;
 
-    /*@-branchstate@*/
+/*@-branchstate@*/
     if (path == NULL) path = "";
-    /*@=branchstate@*/
+/*@=branchstate@*/
 #endif
 
     /* HACK: where should server capabilities be read? */
@@ -1051,13 +1067,14 @@ fprintf(stderr, "*** davWrite(%p,%p,0x%x)\n", cookie, buf, count);
 #endif
 }
 
-int davSeek(void * cookie, _libio_pos_t pos, int whence)
+int davSeek(void * cookie, /*@unused@*/ _libio_pos_t pos, int whence)
 {
 if (_dav_debug < 0)
 fprintf(stderr, "*** davSeek(%p,pos,%d)\n", cookie, whence);
     return -1;
 }
 
+/*@-mustmod@*/	/* HACK: fd->req is modified. */
 int davClose(void * cookie)
 {
 /*@-onlytrans@*/
@@ -1076,6 +1093,7 @@ if (_dav_debug < 0)
 fprintf(stderr, "*** davClose(%p) rc %d\n", fd, rc);
     return rc;
 }
+/*@=mustmod@*/
 
 /* =============================================================== */
 #ifdef	NOTYET
@@ -1504,10 +1522,10 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
 #endif
 
     nac = 0;
-    /*@-dependenttrans -unrecog@*/
+/*@-dependenttrans -unrecog@*/
     dt[nac] = DT_DIR;	nav[nac++] = t;	t = stpcpy(t, ".");	t++;
     dt[nac] = DT_DIR;	nav[nac++] = t;	t = stpcpy(t, "..");	t++;
-    /*@=dependenttrans =unrecog@*/
+/*@=dependenttrans =unrecog@*/
 
     /* Copy DAV items into DIR elments. */
     ac = 0;
@@ -1528,8 +1546,4 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
     return (DIR *) avdir;
 /*@=kepttrans@*/
 }
-/*@=paramuse@*/
-/*@=mustmod@*/
 /*@=modfilesys@*/
-/*@=globuse@*/
-/*@=bounds@*/
