@@ -164,7 +164,7 @@ information.
 Only the first file in the list must exist, and tildes will be
 expanded to the value of \fB$HOME\fR.
 The default \fIFILELIST\fR is
-\fI/usr/lib/rpm/rpmrc\fR:\fI/usr/lib/rpm/redhat/rpmrc\fR:\fI~/.rpmrc\fR.
+\fI/usr/lib/rpm/rpmrc\fR:\fI/usr/lib/rpm/redhat/rpmrc\fR:\fI/etc/rpmrc\fR:\fI~/.rpmrc\fR.
 .TP
 \fB--pipe \fICMD\fB\fR
 Pipes the output of \fBrpm\fR to the command \fICMD\fR.
@@ -868,7 +868,7 @@ for all ftp transfers, which allows users to ftp through firewall
 machines which use proxy systems. This option may also be specified
 by configuring the macro \fB%_ftpproxy\fR.
 .TP
-\fB--ftpport \fIHOST\fB\fR
+\fB--ftpport \fIPORT\fB\fR
 The TCP \fIPORT\fR number to use for
 the ftp connection on the proxy ftp server instead of the default
 port. This option may also be specified by configuring the macro
@@ -966,7 +966,7 @@ rpm     exec --short-circuit    rpmb --short-circuit
 \fI/var/lib/rpm/Sigmd5\fR
 \fI/var/lib/rpm/Triggername\fR
 .fi
-.SS "Temporaray"
+.SS "Temporary"
 .PP
 \fI/var/tmp/rpm*\fR
 .SH "SEE ALSO"
