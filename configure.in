@@ -8,23 +8,47 @@ AC_INIT(rpm.c)
 
 topdir=`pwd`
 
-echo -n "checking for /usr/local/lib..."
+echo $ac_n "checking for /usr/local/lib... $ac_c"
 if test -d /usr/local/lib ; then
 	LIBS="$LIBS -L/usr/local/lib"
 	LIBPATH="$LIBPATH -L/usr/local/lib"
 	
-	echo " yes"
+	echo "yes"
 else
-	echo " no"
+	echo "no"
 fi
 
-echo -n "checking for /usr/local/include..."
+echo $ac_n "checking for /usr/local/include... $ac_c"
 if test -d /usr/local/include ; then
 	INCPATH="$INCPATH -I/usr/local/include"
 	
-	echo " yes"
+	echo "yes"
 else
-	echo " no"
+	echo "no"
+fi
+
+echo $ac_n "checking for GNU cpio... $ac_c"
+if test -z "$CPIOBIN"; then
+	oldifs="$IFS"
+	IFS=:
+	for n in $PATH:/opt/gnu/bin; do
+		if test -f $n/cpio; then
+			$n/cpio --help >/dev/null 2>/dev/null
+			if test "$?" = "0"; then
+				CPIOBIN="$n/cpio";
+			fi
+		fi
+	done
+	IFS="$oldifs"
+fi
+
+if test -z "$CPIOBIN"; then
+	echo "no"
+	echo ""
+	echo "RPM will not work without GNU cpio."
+	exit 1
+else
+	echo "yes"
 fi
 
 dnl Checks for programs.
@@ -78,6 +102,9 @@ AC_CHECK_FUNC(dbopen, [],
   AC_CHECK_LIB(db, dbopen, [], AC_MSG_WARN([sorry this package needs libdb.a 
 (from the db package)]), $LIBS)
            )
+
+AC_CHECK_FUNC(fork, [], [echo "using vfork() instead of fork()";
+	MISCOBJS=fakefork.o], $LIBS)
 
 AC_CHECK_LIB(socket, socket, [LIBSOCKET="-lsocket -lnsl"])
 
@@ -153,5 +180,6 @@ AC_SUBST(LIBDL)
 AC_SUBST(PO)
 AC_SUBST(GETTEXTSTUB)
 AC_SUBST(RPMSTATIC)
+AC_SUBST(CPIOBIN)
 
 AC_OUTPUT(Makefile Makefile.inc lib-rpmrc lib/Makefile build/Makefile tools/Makefile po/Makefile misc/Makefile)
