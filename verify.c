@@ -6,13 +6,13 @@
 #include "url.h"
 #include "verify.h"
 
-static int verifyHeader(char * prefix, Header h, int verifyFlags);
-static int verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
+static int verifyHeader(const char * prefix, Header h, int verifyFlags);
+static int verifyMatches(const char * prefix, rpmdb db, dbiIndexSet matches,
 			  int verifyFlags);
 static int verifyDependencies(rpmdb db, Header h);
 
-static int verifyHeader(char * prefix, Header h, int verifyFlags) {
-    char ** fileList;
+static int verifyHeader(const char * prefix, Header h, int verifyFlags) {
+    const char ** fileList;
     int count, type;
     int verifyResult;
     int i, ec, rc;
@@ -77,7 +77,7 @@ static int verifyDependencies(rpmdb db, Header h) {
     rpmTransactionSet rpmdep;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
-    char * name, * version, * release;
+    const char * name, * version, * release;
     int type, count, i;
 
     rpmdep = rpmtransCreateSet(db, NULL);
@@ -107,7 +107,7 @@ static int verifyDependencies(rpmdb db, Header h) {
     return 0;
 }
 
-static int verifyPackage(char * root, rpmdb db, Header h, int verifyFlags) {
+static int verifyPackage(const char * root, rpmdb db, Header h, int verifyFlags) {
     int ec, rc;
     FD_t fdo;
     ec = 0;
@@ -125,7 +125,7 @@ static int verifyPackage(char * root, rpmdb db, Header h, int verifyFlags) {
     return ec;
 }
 
-static int verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
+static int verifyMatches(const char * prefix, rpmdb db, dbiIndexSet matches,
 			  int verifyFlags) {
     int ec, rc;
     int i;
@@ -152,7 +152,7 @@ static int verifyMatches(char * prefix, rpmdb db, dbiIndexSet matches,
     return ec;
 }
 
-int doVerify(char * prefix, enum verifysources source, char ** argv,
+int doVerify(const char * prefix, enum verifysources source, const char ** argv,
 	      int verifyFlags) {
     Header h;
     int offset;
@@ -160,7 +160,6 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
     int isSource;
     rpmdb db;
     dbiIndexSet matches;
-    char * arg;
 
     ec = 0;
     if (source == VERIFY_RPM && !(verifyFlags & VERIFY_DEPS)) {
@@ -180,13 +179,14 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 		    fprintf(stderr, _("could not read database record!\n"));
 		    return 1;	/* XXX was exit(EXIT_FAILURE) */
 		}
+		
 		if ((rc = verifyPackage(prefix, db, h, verifyFlags)) != 0)
 		    ec = rc;
 		headerFree(h);
 	}
     } else {
 	while (*argv) {
-	    arg = *argv++;
+	    const char *arg = *argv++;
 
 	    rc = 0;
 	    switch (source) {

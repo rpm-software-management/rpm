@@ -223,12 +223,11 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 
     if (errfd != NULL) {
 	if (rpmIsVerbose()) {
-	    out = errfd;
+	    out = fdDup(fdFileno(errfd));
 	} else {
 	    out = fdOpen("/dev/null", O_WRONLY, 0);
-	    if (fdFileno(out) < 0) {
-		out = errfd;
-	    }
+	    if (fdFileno(out) < 0)
+		out = fdDup(fdFileno(errfd));
 	}
     } else {
 	out = fdDup(STDOUT_FILENO);
@@ -281,9 +280,6 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
     if (freePrefixes) free(prefixes);
 
     fdClose(out);	/* XXX dup'd STDOUT_FILENO */
-    if (errfd != NULL) {
-	if (fdFileno(errfd) > STDERR_FILENO) fdClose(errfd);
-    }
     
     if (script) {
 	if (!rpmIsDebug()) unlink(fn);
