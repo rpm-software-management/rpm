@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "var.h"
 
 static char *topdir    = "/usr/src";
@@ -7,6 +8,7 @@ static char *builddir  = "/usr/src/BUILD";
 static char *specdir   = "/usr/src/SPECS";
 static char *docdir    = "/usr/doc";
 static char *optflags  = "-O2 -m486";
+static char *root      = NULL;
 
 char *getVar(int var)
 {
@@ -23,6 +25,21 @@ char *getVar(int var)
 	return specdir;
     case RPMVAR_OPTFLAGS:
 	return optflags;
+    case RPMVAR_ROOT:
+	return root;
     }
     return NULL;
+}
+
+void setVar(int var, char *val)
+{
+    switch (var) {
+      case RPMVAR_ROOT:
+	  if (root) {
+	      free(root);
+	  }
+	  root = strdup(val);
+	  break;
+       /* XXX should probably have default/error checking here */
+    }	
 }
