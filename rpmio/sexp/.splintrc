@@ -1,0 +1,80 @@
+-I. -DHAVE_CONFIG_H -D_GNU_SOURCE
+
+#+partial
++forcehints
+
+-warnposix
+
++unixlib
+
+-unrecogcomments	# XXX ignore doxygen markings
+
++strict			# lclint level
+
+# --- in progress
+-branchstate
+-bufferoverflowhigh
+-compdef
+-dependenttrans
+-evalorder
+-exitarg
+-exportheadervar
+-exportlocal
+-fcnuse
+-formatconst
+-globs
+-globstate
+-ifempty
+-infloopsuncon
+-internalglobs
+-mods
+-noeffect
+-noeffectuncon
+-nullpass
+-nullret
+-nullstate
+-paramuse
+-readonlytrans
+-retalias
+-retvalint
+-shiftimplementation
+-shiftnegative
+-sizeoftype
+-temptrans
+-unqualifiedtrans
+-usereleased
+
+# --- +partial artifacts
+
+# --- not-yet at strict level
+-bitwisesigned		#
+-elseifcomplete		#
+-exportconst		#
+-exportfcn		#
+-exporttype		#
+-exportvar		#
+-fielduse		#
+-forblock		# tedious
+-ifblock		# tedious
+-namechecks		# tedious ANSI compliance checks
+-ptrarith		#
+
+-compdestroy		#
+-mustdefine		#
+-sys-dir-errors
+
+-strictops		#
+-whileblock		# tedious
+
+# --- not-yet at checks level
++enumint		#
+-mustfree		#
+-predboolptr		#
+-usedef			#
+
+# --- not-yet at standard level
+-boolops		#
++boolint		#
++charint		#
++ignorequals		#
++matchanyintegral	#

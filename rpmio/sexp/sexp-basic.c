@@ -18,10 +18,7 @@
  * c1 and c2 are (optional) integer parameters for the message.
  * Terminates iff level==ERROR, otherwise returns.
  */
-void ErrorMessage(level,msg,c1,c2)
-int level; 
-char *msg;
-int c1, c2;
+void ErrorMessage(int level, const char *msg, int c1, int c2)
 {
   fflush(stdout);
   printf("\n*** ");
@@ -39,15 +36,14 @@ int c1, c2;
 /* initializeMemory()
  * take care of memory initialization 
  */
-void initializeMemory()
+void initializeMemory(void)
 { ; } /* nothing in this implementation -- use malloc */
 
 /* sexpAlloc(n)
  * Allocates n bytes of storage. 
  * Terminates execution if no memory available.
  */
-char *sexpAlloc(n)
-int n;
+char *sexpAlloc(int n)
 { char *c = (char *)malloc((unsigned int) n);
   if (c == NULL) ErrorMessage(ERROR,"Error in sexpAlloc: out of memory!",0,0);
   return(c);
@@ -61,7 +57,7 @@ int n;
  * Creates and initializes new sexpSimpleString object.
  * Allocates 16-character buffer to hold string.
  */
-sexpSimpleString *newSimpleString()
+sexpSimpleString *newSimpleString(void)
 {
   sexpSimpleString *ss;
   ss = (sexpSimpleString *) sexpAlloc(sizeof(sexpSimpleString));
@@ -74,23 +70,20 @@ sexpSimpleString *newSimpleString()
 /* simpleStringLength(ss)
  * returns length of simple string 
  */
-long int simpleStringLength(ss)
-sexpSimpleString *ss;
+long int simpleStringLength(sexpSimpleString *ss)
 { return(ss->length); }
 
 /* simpleStringString(ss)
  * returns pointer to character array of simple string 
  */
-octet *simpleStringString(ss)
-sexpSimpleString *ss;
+octet *simpleStringString(sexpSimpleString *ss)
 { return(ss->string); }
 
 /* reallocateSimpleString(ss)
  * Changes space allocated to ss.
  * Space allocated is set to roughly 3/2 the current string length, plus 16.
  */
-sexpSimpleString *reallocateSimpleString(ss)
-sexpSimpleString *ss;
+sexpSimpleString *reallocateSimpleString(sexpSimpleString *ss)
 {
   int newsize, i;
   octet *newstring;
@@ -115,9 +108,7 @@ sexpSimpleString *ss;
  * Appends the character c to the end of simple string ss.
  * Reallocates storage assigned to s if necessary to make room for c.
  */
-void appendCharToSimpleString(c,ss)
-int c;
-sexpSimpleString *ss;
+void appendCharToSimpleString(int c, sexpSimpleString *ss)
 {
   if (ss==NULL) ss = newSimpleString();
   if (ss->string == NULL || ss->length == ss->allocatedLength )
@@ -134,7 +125,7 @@ sexpSimpleString *ss;
  * Creates and initializes a new sexpString object.
  * Both the presentation hint and the string are initialized to NULL.
  */
-sexpString *newSexpString()
+sexpString *newSexpString(void)
 {
   sexpString *s;
   s = (sexpString *) sexpAlloc(sizeof(sexpString));
@@ -147,38 +138,31 @@ sexpString *newSexpString()
 /* sexpStringPresentationHint()
  * returns presentation hint field of the string 
  */
-sexpSimpleString *sexpStringPresentationHint(s)
-sexpString *s;
+sexpSimpleString *sexpStringPresentationHint(sexpString *s)
 { return(s->presentationHint); }
 
 /* setSexpStringPresentationHint()
  * assigns the presentation hint field of the string
  */
-void setSexpStringPresentationHint(s,ss)
-sexpString *s;
-sexpSimpleString *ss;
+void setSexpStringPresentationHint(sexpString *s, sexpSimpleString *ss)
 { s->presentationHint = ss; }
 
 /* setSexpStringString()
  * assigns the string field of the string
  */
-void setSexpStringString(s,ss)
-sexpString *s;
-sexpSimpleString *ss;
+void setSexpStringString(sexpString *s, sexpSimpleString *ss)
 { s->string = ss; }
 
 /* sexpStringString()
  * returns the string field of the string
  */
-sexpSimpleString *sexpStringString(s)
-sexpString *s;
+sexpSimpleString *sexpStringString(sexpString *s)
 { return(s->string); }
 
 /* closeSexpString()
  * finish up string computations after created 
  */
-void closeSexpString(s)
-sexpString *s;
+void closeSexpString(sexpString *s)
 { ; }  /* do nothing in this implementation */
 
 /**************************/
@@ -190,7 +174,7 @@ sexpString *s;
  * Both the first and rest fields are initialized to NULL, which is
  * SEXP's representation of an empty list.
  */
-sexpList *newSexpList()
+sexpList *newSexpList(void)
 {
   sexpList *list;
   list = (sexpList *) sexpAlloc(sizeof(sexpList));
@@ -203,9 +187,7 @@ sexpList *newSexpList()
 /* sexpAddSexpListObject()
  * add object to end of list
  */
-void sexpAddSexpListObject(list,object)
-sexpList *list;
-sexpObject *object;
+void sexpAddSexpListObject(sexpList *list, sexpObject *object)
 {
   if (list->first == NULL)
     list->first = object;
@@ -220,8 +202,7 @@ sexpObject *object;
 /* closeSexpList()
  * finish off a list that has just been input
  */
-void closeSexpList(list)
-sexpList *list;
+void closeSexpList(sexpList *list)
 { ; } /* nothing in this implementation */
 
 /* Iteration on lists.
@@ -232,15 +213,13 @@ sexpList *list;
 /* sexpListIter()
  * return the iterator for going over a list 
  */
-sexpIter *sexpListIter(list)
-sexpList *list;
+sexpIter *sexpListIter(sexpList *list)
 { return((sexpIter *)list); }
 
 /* sexpIterNext()
  * advance iterator to next element of list, or else return null
  */
-sexpIter *sexpIterNext(iter)
-sexpIter *iter;
+sexpIter *sexpIterNext(sexpIter *iter)
 { if (iter == NULL) return(NULL);
   return((sexpIter *)(((sexpList *)iter)->rest));
 }
@@ -248,8 +227,7 @@ sexpIter *iter;
 /* sexpIterObject ()
  * return object corresponding to current state of iterator
  */
-sexpObject *sexpIterObject(iter)
-sexpIter *iter;
+sexpObject *sexpIterObject(sexpIter *iter)
 { if (iter == NULL) return(NULL);
   return(((sexpList *)iter)->first);
 }
@@ -258,15 +236,12 @@ sexpIter *iter;
 /* SEXP OBJECT MANIPULATION */
 /****************************/
 
-int isObjectString(object)
-sexpObject *object;
+int isObjectString(sexpObject *object)
 { if (((sexpString *)object)->type == SEXP_STRING) return(TRUE);
   else                                             return(FALSE);
 }
 
-int isObjectList(object)
-sexpObject *object;
+int isObjectList(sexpObject *object)
 { if (((sexpList *)object)->type == SEXP_LIST) return(TRUE);
   else                                         return(FALSE);
 }
-

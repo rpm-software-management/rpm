@@ -20,9 +20,7 @@ static char *base64Digits =
  * Puts the character c out on the output stream os.
  * Keeps track of the "column" the next output char will go to.
  */
-void putChar(os,c)
-sexpOutputStream *os;
-int c;
+void putChar(sexpOutputStream *os, int c)
 {
   putc(c,os->outputFile);
   os->column++;
@@ -31,9 +29,7 @@ int c;
 /* varPutChar(os,c)
  * putChar with variable sized output bytes considered.
  */
-void varPutChar(os,c)
-sexpOutputStream *os;
-int c;      /* this is always an eight-bit byte being output */
+void varPutChar(sexpOutputStream *os, int c)
 {
   c &= 0xFF;
   os->bits = (os->bits << 8) | c;
@@ -62,10 +58,7 @@ int c;      /* this is always an eight-bit byte being output */
  * Change os->byteSize to newByteSize
  * record mode in output stream for automatic line breaks
  */
-void changeOutputByteSize(os,newByteSize,mode)
-sexpOutputStream *os;
-int newByteSize;
-int mode;
+void changeOutputByteSize(sexpOutputStream *os, int newByteSize, int mode)
 { 
   if (newByteSize != 4 && newByteSize !=6 && newByteSize !=8)
     ErrorMessage(ERROR,"Illegal output base %d.",newByteSize,0);
@@ -82,8 +75,7 @@ int mode;
 /* flushOutput(os)
  * flush out any remaining bits 
  */
-void flushOutput(os)
-sexpOutputStream *os;
+void flushOutput(sexpOutputStream * os)
 { if (os->nBits > 0)
     { 
       if (os->byteSize == 4)
@@ -110,9 +102,7 @@ sexpOutputStream *os;
  * indentation level (but never indents more than half of maxcolumn).
  * Resets column for next output character.
  */
-void newLine(os,mode)
-sexpOutputStream *os;
-int mode;
+void newLine(sexpOutputStream *os, int mode)
 { int i;
   if (mode == ADVANCED || mode == BASE64)
     { os->putChar(os,'\n');
@@ -126,7 +116,7 @@ int mode;
 /* newSexpOutputStream()
  * Creates and initializes new sexpOutputStream object.
  */
-sexpOutputStream *newSexpOutputStream()
+sexpOutputStream *newSexpOutputStream(void)
 {
   sexpOutputStream *os;
   os = (sexpOutputStream *) sexpAlloc(sizeof(sexpOutputStream));
@@ -150,9 +140,7 @@ sexpOutputStream *newSexpOutputStream()
 /* printDecimal(os,n)
  * print out n in decimal to output stream os
  */
-void printDecimal(os,n)
-sexpOutputStream *os;
-long int n;
+void printDecimal(sexpOutputStream *os, long int n)
 { char buffer[50];
   int i;
   sprintf(buffer,"%ld",n);
@@ -167,9 +155,7 @@ long int n;
 /* canonicalPrintVerbatimSimpleString(os,ss)
  * Print out simple string ss on output stream os as verbatim string.
  */
-void canonicalPrintVerbatimSimpleString(os,ss)
-sexpOutputStream *os;
-sexpSimpleString *ss;
+void canonicalPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 { 
   long int len;
   long int i;
@@ -188,9 +174,7 @@ sexpSimpleString *ss;
 /* canonicalPrintString(os,s)
  * Prints out sexp string s onto output stream os
  */
-void canonicalPrintString(os,s)
-sexpOutputStream *os;
-sexpString *s;
+void canonicalPrintString(sexpOutputStream *os, sexpString *s)
 { sexpSimpleString *ph, *ss;
   ph = sexpStringPresentationHint(s);
   if (ph != NULL) 
@@ -207,9 +191,7 @@ sexpString *s;
 /* canonicalPrintList(os,list)
  * Prints out the list "list" onto output stream os
  */
-void canonicalPrintList(os,list)
-sexpOutputStream *os;
-sexpList *list;
+void canonicalPrintList(sexpOutputStream *os, sexpList *list)
 { sexpIter *iter;
   sexpObject *object;
   varPutChar(os,'(');
@@ -227,9 +209,7 @@ sexpList *list;
  * Prints out object on output stream os
  * Note that this uses the common "type" field of lists and strings.
  */
-void canonicalPrintObject(os,object)
-sexpOutputStream *os;
-sexpObject *object;
+void canonicalPrintObject(sexpOutputStream *os, sexpObject *object)
 {
   if (isObjectString(object))
     canonicalPrintString(os,(sexpString *)object);
@@ -243,9 +223,7 @@ sexpObject *object;
 /* *************/
 /* Same as canonical, except all characters get put out as base 64 ones */
 
-void base64PrintWholeObject(os,object)
-sexpOutputStream *os;
-sexpObject *object;
+void base64PrintWholeObject(sexpOutputStream *os, sexpObject *object)
 {
   changeOutputByteSize(os,8,BASE64);
   varPutChar(os,'{');
@@ -266,9 +244,7 @@ sexpObject *object;
  * Returns TRUE if simple string ss can be printed as a token.
  * Doesn't begin with a digit, and all characters are tokenchars.
  */
-int canPrintAsToken(os,ss)
-sexpOutputStream *os;
-sexpSimpleString *ss;
+int canPrintAsToken(sexpOutputStream *os, sexpSimpleString *ss)
 {
   int i;
   octet *c;
@@ -288,9 +264,7 @@ sexpSimpleString *ss;
  * Prints out simple string ss as a token (assumes that this is OK).
  * May run over max-column, but there is no fragmentation allowed...
  */
-void advancedPrintTokenSimpleString(os,ss)
-sexpOutputStream *os;
-sexpSimpleString *ss;
+void advancedPrintTokenSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 { int i;
   long int len;
   octet *c;
@@ -305,8 +279,7 @@ sexpSimpleString *ss;
 /* advancedLengthSimpleStringToken(ss)
  * Returns length for printing simple string ss as a token 
  */
-int advancedLengthSimpleStringToken(ss)
-sexpSimpleString *ss;
+int advancedLengthSimpleStringToken(sexpSimpleString *ss)
 { return(simpleStringLength(ss)); }
 
 
@@ -316,9 +289,7 @@ sexpSimpleString *ss;
  * Print out simple string ss on output stream os as verbatim string.
  * Again, can't fragment string, so max-column is just a suggestion...
  */
-void advancedPrintVerbatimSimpleString(os,ss)
-sexpOutputStream *os;
-sexpSimpleString *ss;
+void advancedPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 { 
   long int len = simpleStringLength(ss);
   long int i;
@@ -336,8 +307,7 @@ sexpSimpleString *ss;
 /* advancedLengthSimpleStringVerbatim(ss)
  * Returns length for printing simple string ss in verbatim mode
  */
-int advancedLengthSimpleStringVerbatim(ss)
-sexpSimpleString *ss;
+int advancedLengthSimpleStringVerbatim(sexpSimpleString *ss)
 { long int len = simpleStringLength(ss);
   int i = 1;
   while (len > 9L) { i++; len = len / 10; }
@@ -349,9 +319,7 @@ sexpSimpleString *ss;
 /* advancedPrintBase64SimpleString(os,ss)
  * Prints out simple string ss as a base64 value.
  */
-void advancedPrintBase64SimpleString(os,ss)
-sexpOutputStream *os;
-sexpSimpleString *ss;
+void advancedPrintBase64SimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 {
   long int i,len;
   octet *c = simpleStringString(ss);
@@ -372,9 +340,7 @@ sexpSimpleString *ss;
 /* advancedPrintHexSimpleString(os,ss)
  * Prints out simple string ss as a hexadecimal value.
  */
-void advancedPrintHexSimpleString(os,ss)
-sexpOutputStream *os;
-sexpSimpleString *ss;
+void advancedPrintHexSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 {
   long int i,len;
   octet *c = simpleStringString(ss);
@@ -393,8 +359,7 @@ sexpSimpleString *ss;
 /* advancedLengthSimpleStringHexadecimal(ss)
  * Returns length for printing simple string ss in hexadecimal mode
  */
-int advancedLengthSimpleStringHexadecimal(ss)
-sexpSimpleString *ss;
+int advancedLengthSimpleStringHexadecimal(sexpSimpleString *ss)
 { long int len = simpleStringLength(ss);
   return(1+2*len+1);
 }
@@ -405,8 +370,7 @@ sexpSimpleString *ss;
  * Returns TRUE if simple string ss can be printed as a quoted string.
  * Must have only tokenchars and blanks.
  */
-int canPrintAsQuotedString(ss)
-sexpSimpleString *ss;
+int canPrintAsQuotedString(sexpSimpleString *ss)
 {
   long int i, len;
   octet *c = simpleStringString(ss);
@@ -424,9 +388,7 @@ sexpSimpleString *ss;
  *  so no escape sequences need to be generated.
  * May run over max-column, but there is no fragmentation allowed...
  */
-void advancedPrintQuotedStringSimpleString(os,ss)
-sexpOutputStream *os;
-sexpSimpleString *ss;
+void advancedPrintQuotedStringSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 { long int i;
   long int len = simpleStringLength(ss);
   octet *c = simpleStringString(ss);
@@ -446,8 +408,7 @@ sexpSimpleString *ss;
 /* advancedLengthSimpleStringQuotedString(ss)
  * Returns length for printing simple string ss in quoted-string mode
  */
-int advancedLengthSimpleStringQuotedString(ss)
-sexpSimpleString *ss;
+int advancedLengthSimpleStringQuotedString(sexpSimpleString *ss)
 { long int len = simpleStringLength(ss);
   return(1+len+1);
 }
@@ -457,9 +418,7 @@ sexpSimpleString *ss;
 /* advancedPrintSimpleString(os,ss)
  * Prints out simple string ss onto output stream ss
  */
-void advancedPrintSimpleString(os,ss)
-sexpOutputStream *os;
-sexpSimpleString *ss;
+void advancedPrintSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 { long int len = simpleStringLength(ss);
   if (canPrintAsToken(os,ss)) 
     advancedPrintTokenSimpleString(os,ss);
@@ -476,9 +435,7 @@ sexpSimpleString *ss;
 /* advancedPrintString(os,s)
  * Prints out sexp string s onto output stream os
  */
-void advancedPrintString(os,s)
-sexpOutputStream *os;
-sexpString *s;
+void advancedPrintString(sexpOutputStream *os, sexpString *s)
 {
   sexpSimpleString *ph = sexpStringPresentationHint(s);
   sexpSimpleString *ss = sexpStringString(s);
@@ -495,16 +452,13 @@ sexpString *s;
 /* advancedLengthSimpleStringBase64(ss)
  * Returns length for printing simple string ss as a base64 string
  */
-int advancedLengthSimpleStringBase64(ss)
-sexpSimpleString *ss;
+int advancedLengthSimpleStringBase64(sexpSimpleString *ss)
 { return(2+4*((simpleStringLength(ss)+2)/3)); }
 
 /* advancedLengthSimpleString(os,ss)
  * Returns length of printed image of s
  */
-int advancedLengthSimpleString(os,ss)
-sexpOutputStream *os;
-sexpSimpleString *ss;
+int advancedLengthSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
 { long int len = simpleStringLength(ss);
   if (canPrintAsToken(os,ss)) 
     return(advancedLengthSimpleStringToken(ss));
@@ -521,9 +475,7 @@ sexpSimpleString *ss;
 /* advancedLengthString(os,s)
  * Returns length of printed image of string s
  */
-int advancedLengthString(os,s)
-sexpOutputStream *os;
-sexpString *s;
+int advancedLengthString(sexpOutputStream *os, sexpString *s)
 { int len = 0;
   sexpSimpleString *ph = sexpStringPresentationHint(s);
   sexpSimpleString *ss = sexpStringString(s);
@@ -537,9 +489,7 @@ sexpString *s;
 /* advancedLengthList(os,list)
  * Returns length of printed image of list given as iterator
  */
-int advancedLengthList(os,list)
-sexpOutputStream *os;
-sexpList *list;
+int advancedLengthList(sexpOutputStream *os, sexpList *list)
 { int len = 1;                       /* for left paren */
   sexpIter *iter;
   sexpObject *object;
@@ -566,9 +516,7 @@ sexpList *list;
  * written out in "vertical" mode, with items of the list starting in
  * the same column on successive lines.
  */
-void advancedPrintList(os,list)
-sexpOutputStream *os;
-sexpList *list;
+void advancedPrintList(sexpOutputStream *os, sexpList *list)
 { int vertical = FALSE;
   int firstelement = TRUE;
   sexpIter *iter;
@@ -599,9 +547,7 @@ sexpList *list;
 /* advancedPrintObject(os,object)
  * Prints out object on output stream os 
  */
-void advancedPrintObject(os,object)
-sexpOutputStream *os;
-sexpObject *object;
+void advancedPrintObject(sexpOutputStream *os, sexpObject *object)
 {
   if (os->maxcolumn>0 && os->column>os->maxcolumn-4)
     os->newLine(os,ADVANCED);

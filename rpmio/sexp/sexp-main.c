@@ -38,9 +38,7 @@ char *help =
 /*************************************************************************/
 /* main(argc,argv)
  */
-int main(argc,argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 { char *c;
   int swa = TRUE;
   int swb = TRUE;

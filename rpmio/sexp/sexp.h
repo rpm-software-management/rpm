@@ -86,82 +86,159 @@ typedef struct sexp_outputstream {
 /* Function prototypes */
 
 /* sexp-basic */
-void ErrorMessage();
-void initializeMemory();
-char *sexpAlloc();
-sexpSimpleString *newSimpleString();
-long int simpleStringLength();
-octet *simpleStringString();
-sexpSimpleString *reallocateSimpleString();
-void appendCharToSimpleString();
-sexpString *newSexpString();
-sexpSimpleString *sexpStringPresentationHint();
-sexpSimpleString *sexpStringString();
-void setSexpStringPresentationHint();
-void setSexpStringString();
-void closeSexpString();
-sexpList *newSexpList();
-void sexpAddSexpListObject();
-void closeSexpList();
-sexpIter *sexpListIter();
-sexpIter *sexpIterNext();
-sexpObject *sexpIterObject();
-int isObjectString();
-int isObjectList();
+void ErrorMessage(int level, const char *msg, int c1, int c2)
+	/*@*/;
+void initializeMemory(void)
+	/*@*/;
+char *sexpAlloc(int n)
+	/*@*/;
+sexpSimpleString *newSimpleString(void)
+	/*@*/;
+long int simpleStringLength(sexpSimpleString *ss)
+	/*@*/;
+octet *simpleStringString(sexpSimpleString *ss)
+	/*@*/;
+sexpSimpleString *reallocateSimpleString(sexpSimpleString *ss)
+	/*@*/;
+void appendCharToSimpleString(int c, sexpSimpleString *ss)
+	/*@*/;
+sexpString *newSexpString(void)
+	/*@*/;
+sexpSimpleString *sexpStringPresentationHint(sexpString *s)
+	/*@*/;
+void setSexpStringPresentationHint(sexpString *s, sexpSimpleString *ss)
+	/*@*/;
+void setSexpStringString(sexpString *s, sexpSimpleString *ss)
+	/*@*/;
+sexpSimpleString *sexpStringString(sexpString *s)
+	/*@*/;
+void closeSexpString(sexpString *s)
+	/*@*/;
+sexpList *newSexpList(void)
+	/*@*/;
+void sexpAddSexpListObject(sexpList *list, sexpObject *object)
+	/*@*/;
+void closeSexpList(sexpList *list)
+	/*@*/;
+sexpIter *sexpListIter(sexpList *list)
+	/*@*/;
+sexpIter *sexpIterNext(sexpIter *iter)
+	/*@*/;
+sexpObject *sexpIterObject(sexpIter *iter)
+	/*@*/;
+int isObjectString(sexpObject *object)
+	/*@*/;
+int isObjectList(sexpObject *object)
+	/*@*/;
 
 /* sexp-input */
-void initializeCharacterTables();
-int isWhiteSpace();
-int isDecDigit();
-int isHexDigit();
-int isBase64Digit();
-int isTokenChar();
-int isAlpha();
-void changeInputByteSize();
-void getChar();
-sexpInputStream *newSexpInputStream();
-void skipWhiteSpace();
-void skipChar();
-void scanToken();
-sexpObject *scanToEOF();
-unsigned long int scanDecimal();
-void scanVerbatimString();
-void scanQuotedString();
-void scanHexString();
-void scanBase64String();
-sexpSimpleString *scanSimpleString();
-sexpString *scanString();
-sexpList *scanList();
-sexpObject *scanObject();
+void initializeCharacterTables(void)
+	/*@*/;
+int isWhiteSpace(int c)
+	/*@*/;
+int isDecDigit(int c)
+	/*@*/;
+int isHexDigit(int c)
+	/*@*/;
+int isBase64Digit(int c)
+	/*@*/;
+int isTokenChar(int c)
+	/*@*/;
+int isAlpha(int c)
+	/*@*/;
+void changeInputByteSize(sexpInputStream *is, int newByteSize)
+	/*@*/;
+void getChar(sexpInputStream *is)
+	/*@*/;
+sexpInputStream *newSexpInputStream(void)
+	/*@*/;
+void skipWhiteSpace(sexpInputStream *is)
+	/*@*/;
+void skipChar(sexpInputStream *is, int c)
+	/*@*/;
+void scanToken(sexpInputStream *is, sexpSimpleString *ss)
+	/*@*/;
+sexpObject *scanToEOF(sexpInputStream *is)
+	/*@*/;
+unsigned long int scanDecimal(sexpInputStream *is)
+	/*@*/;
+void scanVerbatimString(sexpInputStream *is, sexpSimpleString *ss, long int length)
+	/*@*/;
+void scanQuotedString(sexpInputStream *is, sexpSimpleString *ss, long int length)
+	/*@*/;
+void scanHexString(sexpInputStream *is, sexpSimpleString *ss, long int length)
+	/*@*/;
+void scanBase64String(sexpInputStream *is, sexpSimpleString *ss, long int length)
+	/*@*/;
+sexpSimpleString *scanSimpleString(sexpInputStream *is)
+	/*@*/;
+sexpString *scanString(sexpInputStream *is)
+	/*@*/;
+sexpList *scanList(sexpInputStream *is)
+	/*@*/;
+sexpObject *scanObject(sexpInputStream *is)
+	/*@*/;
 
 /* sexp-output */
-void putChar();
-void varPutChar();
-void changeOutputByteSize();
-void flushOutput();
-void newLine();
-sexpOutputStream *newSexpOutputStream();
-void printDecimal();
-void canonicalPrintVerbatimSimpleString();
-void canonicalPrintString();
-void canonicalPrintList();
-void canonicalPrintObject();
-void base64PrintWholeObject();
-int canPrintAsToken();
-int significantNibbles();
-void advancedPrintTokenSimpleString();
-int  advancedLengthSimpleStringToken();
-void advancedPrintVerbatimSimpleString();
-int advancedLengthSimpleStringVerbatim();
-void advancedPrintBase64SimpleString();
-void advancedPrintHexSimpleString();
-int canPrintAsQuotedString();
-void advancedPrintQuotedStringSimpleString();
-void advancedPrintSimpleString();
-void advancedPrintString();
-int  advancedLengthSimpleStringBase64();
-int  advancedLengthSimpleString();
-int  advancedLengthString();
-int  advancedLengthList();
-void advancedPrintList();
-void advancedPrintObject();
+void putChar(sexpOutputStream *os, int c)
+	/*@*/;
+void varPutChar(sexpOutputStream *os, int c)
+	/*@*/;
+void changeOutputByteSize(sexpOutputStream *os, int newByteSize, int mode)
+	/*@*/;
+void flushOutput(sexpOutputStream * os)
+	/*@*/;
+void newLine(sexpOutputStream *os, int mode)
+	/*@*/;
+sexpOutputStream *newSexpOutputStream(void)
+	/*@*/;
+void printDecimal(sexpOutputStream *os, long int n)
+	/*@*/;
+void canonicalPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
+	/*@*/;
+void canonicalPrintString(sexpOutputStream *os, sexpString *s)
+	/*@*/;
+void canonicalPrintList(sexpOutputStream *os, sexpList *list)
+	/*@*/;
+void canonicalPrintObject(sexpOutputStream *os, sexpObject *object)
+	/*@*/;
+void base64PrintWholeObject(sexpOutputStream *os, sexpObject *object)
+	/*@*/;
+int canPrintAsToken(sexpOutputStream *os, sexpSimpleString *ss)
+	/*@*/;
+void advancedPrintTokenSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
+	/*@*/;
+int advancedLengthSimpleStringToken(sexpSimpleString *ss)
+	/*@*/;
+void advancedPrintVerbatimSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
+	/*@*/;
+int advancedLengthSimpleStringVerbatim(sexpSimpleString *ss)
+	/*@*/;
+void advancedPrintBase64SimpleString(sexpOutputStream *os, sexpSimpleString *ss)
+	/*@*/;
+void advancedPrintHexSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
+	/*@*/;
+int advancedLengthSimpleStringHexadecimal(sexpSimpleString *ss)
+	/*@*/;
+int canPrintAsQuotedString(sexpSimpleString *ss)
+	/*@*/;
+void advancedPrintQuotedStringSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
+	/*@*/;
+int advancedLengthSimpleStringQuotedString(sexpSimpleString *ss)
+	/*@*/;
+void advancedPrintSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
+	/*@*/;
+void advancedPrintString(sexpOutputStream *os, sexpString *s)
+	/*@*/;
+int advancedLengthSimpleStringBase64(sexpSimpleString *ss)
+	/*@*/;
+int advancedLengthSimpleString(sexpOutputStream *os, sexpSimpleString *ss)
+	/*@*/;
+int advancedLengthString(sexpOutputStream *os, sexpString *s)
+	/*@*/;
+int advancedLengthList(sexpOutputStream *os, sexpList *list)
+	/*@*/;
+void advancedPrintList(sexpOutputStream *os, sexpList *list)
+	/*@*/;
+void advancedPrintObject(sexpOutputStream *os, sexpObject *object)
+	/*@*/;
