@@ -64,6 +64,7 @@
 	- fix: rpm-2.5.1 had file list w/o leading / fix.
 	- portatbility fiddles (solaris).
 	- create binary rpm directory (e.g. .../%{_target_cpu}) on the fly.
+	- updated pl/rpm.8 (PLD team).
 
 3.0.1 -> 3.0.2
 	- eliminate armv4 entries from rpmrc (Andrew E. Mileski).

@@ -1,401 +1,581 @@
-.\" {PTM/PB/0.1/02-01-1999/"Mened¿er pakietów Red Hat i PLD" }
-.\" Translation 1999 by Przemek Borys
-.\" Uwaga, t³umacz (ja) nie u¿ywa normalnie rpm, wiêc mo¿e to byæ pokraczne ;)
+.\" 1999 PTM Przemek Borys :-Q
 .\" rpm - Red Hat Package Manager
-.TH rpm 8 "15 Lipiec 1996" "Red Hat Software" "Red Hat Linux" "PLD Linux"
+.TH rpm 8 "22 Grudnia 1998" "Red Hat Software" "Red Hat Linux"
 .SH NAZWA
-rpm \- Mened¿er pakietów Red Hat i PLD
+rpm \- Mened¿er pakietów Red Hat
 .SH SK£ADNIA
 \fBrpm\fP [opcje] 
 .SH OPIS
-\fBrpm\fP jest potê¿nym \fImened¿erem pakietów\fP, który mo¿e byæ u¿ywany do
-budowania, instalowania, zapytywania, weryfikowania, od¶wierzania i
-odinstalowywania konkretnych pakietów oprogramowania. \fIPakiet\fP sk³ada
-siê z archiwum plików i informacji o pakiecie, w³±czaj±c w to nazwê, wersjê
-i opis.
+\fBrpm\fP jest potê¿nym \fImened¿erem pakietów\fR, który mo¿e byæ u¿ywany do
+budowania, instalowania, zapytywania, weryfikowania, od¶wie¿ania i
+odinstalowywania pakietów oprogramowania. Pakiet sk³ada siê z archiwum
+plików oraz informacji pakietowej, takiej jak nazwa, wersja i opis.
 
-Istnieje osiem podstawowych trybów dzia³ania, z których ka¿dy u¿ywa innego
-zestawu opcji. S± to \fIInstalowanie\fP, \fIZapytywanie\fP,
-\fIWeryfikowania\fP, \fISprawdzanie sygnatury\fP, \fIOdinstalowywanie\fP,
-\fIBudowanie\fP, \fIPrzebudowywanie bazy danych\fP i \fIPokazywanie RC\fP.
+Nale¿y wybraæ jeden z nastêpuj±cych podstawowych trybów:
+\fIInicjalizowania bazy danych\fP, \fIPrzebudowywania bazy danych\fP,
+\fIBudowania pakietu\fP, \fIRekompilowania pakietu\fP, \fIBudowania pakietu
+z tarballa\fP, \fIZapytywania\fP, \fIPokazywania tagów zapytywania\fP,
+\fIInstalowania\fP, \fIOd¶wie¿ania\fP, \fIOdinstalowywania\fP,
+\fIWeryfikowania\fP, \fISprawdzania sygnatury\fP, \fIPonownego podpisywania\fP, 
+\fIDodawania sygnatury\fP, \fIustawiania w³a¶cicieli i grup \fR oraz
+\fIPokazywania konfiguracji\fP.
 
-Tryb instalowania:
+
+
+Obs³uga bazy danych:
 .br
-.I "\fB    rpm \-i [opcje\-instalowania] <plik_pakietowy>+\fP"
+.I "\fB    rpm \-i [\-\-initdb]\fP"
 .br
-Tryb zapytywania:
+.I "\fB    rpm \-i [\-\-rebuilddb]\fP"
+
+Budowanie:
 .br
-.I "\fB    rpm \-q [opcje\-zapytywania]\fP"
+.I "\fB    rpm [\-b|t] [spec_pakietu]+\fP"
 .br
-Tryb weryfikowania:
+.I "\fB    rpm [\-\-rebuild] [¼ród³owyrpm]+\fP"
 .br
-.I "\fB    rpm \-V|\-y|\-\-verify [opcje\-weryfikowania]\fP"
+.I "\fB    rpm [\-\-tarbuild] [¼ród³owtar]+\fP"
 .br
-Tryb sprawdzania sygnatury:
+
+Querying:
 .br
-.I "\fB    rpm \-\-checksig <plik_pakietowy>+\fP"
+.I "\fB    rpm [\-\-query] [opcjezapytania]\fP"
 .br
-Tryb odinstalowywania:
+.I "\fB    rpm [\-\-querytags]\fP"
 .br
-.I "\fB    rpm \-e <nazwa_pakietu>+\fP"
+
+Obs³uga zainstalowanych pakietów:
 .br
-Tryb budowania:
+.I "\fB    rpm [\-\-install] [opcjeinstalowania] [plik_pakietu]+\fP"
 .br
-.I "\fB    rpm \-b\fIO\fB [opcje\-budowania] <specyfikacja_pakietu>+\fP"
+.I "\fB    rpm [\-\-freshen|\-F] [opcjeinstalowania] [plik_pakietu]+\fP"
 .br
+.I "\fB    rpm [\-\-uninstall|\-e] [opcjeodinstalowania] [pakiet]+\fP"
+.br
+.I "\fB    rpm [\-\-verify|\-V] [opcjeweryfikowania] [pakiet]+\fP"
+.br
+
+Sygnatury:
+.br
+.I "\fB    rpm [\-\-verify|\-V] [opcjeweryfikowania] [pakiet]+\fP"
+.br
+.I "\fB    rpm [\-\-resign] [plik_z_pakietem]+\fP"
+.br
+.I "\fB    rpm [\-\-addsign] [plik_z_pakietem]+\fP"
+.br
+
+Ró¿ne:
+.br
+.I "\fB    rpm [\-\-showrc]\fP"
+.br
+.I "\fB    rpm [\-\-setperms] [pakiet]+\fP"
+.br
+.I "\fB    rpm [\-\-setgids] [pakiet]+\fP"
+.br
+
 
 .SH OPCJE OGÓLNE
-
-Opcje te mog± byæ u¿yte we wszystkich trybach.
+Opcje te mog± byæ u¿ywane we wszystkich trybach.
 .IP "\fB\-vv\fP"
-Drukuje sporo brzydkich danych debuggowych.
-.IP "\fB\-\-keep\-temps\fP"
-Nie usuwaj plików tymczasowych (/tmp/rpm\-*). W zasadzie przydatne tylko do
-debuggowania rpm.
+Drukuje du¿o danych debuggowych.
 .IP "\fB\-\-quiet\fP"
-Drukuj jak najmniej informacji \- typowo tylko informacje o b³êdach.
+Drukuje jak najmniej \- zazwyczaj tylko komunikaty o b³êdach.
 .IP "\fB\-\-help\fP"
-Wydrukuj d³u¿sz± ni¿ normalnie informacje o u¿yciu.
+Drukuje informacjê o u¿yciu d³u¿sz± ni¿ normalnie.
 .IP "\fB\-\-version\fP"
-Wydrukuj pojedyncz± liniê zawieraj±c± numer wersji rpm.
-.IP "\fB\-\-rcfile <file>\fP"
-U¿yj pliku \fB<file>\fP zamiast \fB/etc/rpmrc\fP i \fB$HOME/.rpmrc\fP.
-.IP "\fB\-\-root <dir>\fP"
-U¿yj podanego katalogu jako katalogu nadrzêdnego wszystkich operacji.
+Drukuje pojedyncz± liniê, zawieraj±c± numer wersji \fBrpm\fP.
+.IP "\fB\-\-rcfile \fI<listaplików>\fP"
+Ka¿dy z plików w oddzielonej dwukropkami \fI<li¶cieplików>\fP jest
+odczytywany kolejno przez \fBrpm\fP w poszukiwnaiu informacji o
+konfiguracji. Domy¶ln± \fI<list±plików\fP jest 
+\fB/usr/lib/rpm/rpmrc:/etc/rpmrc:~/.rpmrc\fP.
+Istnieæ musi tylko pierwszy plik listy, a tyldy bêd± rozszerzane na warto¶æ
+\fB$HOME\fP.
+.IP "\fB\-\-root \fI<katalog>\fP"
+U¿yj do wszystkich operacji systemu zakorzenionego w \fI<katalogu>\fP.
+Zauwa¿, ¿e oznacza to ¿e baza danych bêdzie odczytywana w \fI<katalogu>\fP,
+a wszystkie skrypty \fIprzed\fP i \fIpo\fP bêd± uruchamiane po chroot(2) na
+\fI<dir>\fP.
+.IP "\fB\-\-dbpath \fI<¶cie¿ka>\fP"
+U¿yj bazy danych rpm ze \fI<¶cie¿ki>\fP.
+.IP "\fB\-\-justdb\fP"
+Od¶wie¿ tylko bazê danych, nie system plików.
+.IP "\fB\-\-ftpproxy \fI<host>\fP, \fB\-\-httpproxy \fI<host>\fP"
+U¿yj \fI<hosta>\fP jako proxy FTP lub HTTP.
+Zobacz \fBOPCJE FTP/HTTP\fP.
+.IP "\fB\-\-ftpport \fI<port>\fP, \fB\-\-httpport \fI<port>\fP"
+U¿yj \fI<portu>\fP jako portu FTP lub HTTP na ho¶cie proxy.
+Zobacz \fBOPCJE FTP/HTTP\fP.
+.IP "\fB\-\-pipe \fI<kmd>\fP"
+Przekazuje potokiem wyj¶cie \fBrpm\fP do komendy \fI<kmd>\fP.
 
-.SH OPCJE INSTALOWANIA
-Ogólna forma komendy instalowania to
+.SH OPCJE INSTALOWANIA I OD¦WIE¯ANIA
+Ogóln± postaci± komendy instalowania rpm jest
 .PP
-	\fBrpm \-i [opcje\-instalowania] <plik_pakietowy>+\fP
+	\fBrpm \-i [opcje-instalownaia] \fI<plik_pakietu>+\fP
 .PP
-<plik_pakietowy> mo¿e byæ podany jako URL typu FTP, w którym to wypadku
-pakiet przed instalacj± zostanie pobrany. Zobacz \fBOPCJE FTP\fP dla
-dalszych informacji o wsparciu dla FTP.
+Instaluje to nowy pakiet.
+Ogoln± postaci± komendy od¶wie¿ania rpm jest
+.PP
+	\fBrpm \-U [opcje-instalowania] \fI<plik_pakietu>+\fP
+.PP
+Od¶wie¿a to lub instaluje pakiet na wersjê, obecn± w nowym RPM. Jest to to
+samo co install, lecz wszystkie inne wersje pakietu bêda najpierw z systemu
+usuwane.
+.PP
+	\fBrpm [\-F|--freshen] [opcje-instalowania] \fI<plik_pakietu>+\fP
+.PP
+Od¶wie¿y to pakiety, lecz tylko je¶li wcze¶niejsza wersja ju¿ istnieje.
+
+
+\fI<plik_pakietu>\fP mo¿e byæ podany jako URL ftp lub http. W tym wypadku
+pakiet zostanie pobrany przed zainstalowaniem . Zobacz \fBOPCJE FTP/HTTP\fR.
 .PP
 .IP "\fB\-\-force\fP"
-To samo, co u¿ycie naraz \-\-replacepkgs, \-\-replacefiles i
-\-\-oldpackage.
-.IP "\fB\-h, \-\-hash\fP"
-Drukuj 50 znaków krzy¿yka podczas rozpakowywania pakietu. W po³±czeniu z
-\fB\-v\fP daje ³adne wyj¶cie.
+To samo co u¿ycie \fB\-\-replacepkgs\fP, \fB\-\-replacefiles\fP, i
+\fB\-\-oldpackage\fP.
+.IP "\fB\-h\fP, \fB\-\-hash\fP"
+Drukuje 50 znaków krzy¿yka, pokazuj±c proces rozpakowywania archiwum.
+U¿ywaj±c z \fB\-v\fP, uzyskasz ³adny obraz.
 .IP "\fB\-\-oldpackage\fP"
-Umo¿liw upgrade aby zast±piæ nowszy pakiet starszym.
+Zezwól od¶wie¿eniu na zast±pienie nowszego pakietu starszym.
 .IP "\fB\-\-percent\fP"
-Drukuj procenty podczas rozpakowywania plików z archiwum. Ma to na celu
-u³atwiæ wywo³ywanie RPM-a z innych narzêdzi.
+Drukuj procenty podczas rozpoakowywania plików  z archiwum. Jest to zrobione
+w celu u³atwienia wywo³ywnaia RPM z innych narzêdzi.
 .IP "\fB\-\-replacefiles\fP"
-Instaluj pakiety nawet w wypadku, gdy zamieniaj± one pliki z innych, ju¿
+Instaluj pakiety nawet je¶li zastêpuj± one pliki z innych, ju¿
 zainstalowanych pakietów.
 .IP "\fB\-\-replacepkgs\fP"
-Instaluj pakiety nawet w wypadku, gdy niektóre z nich s± ju¿ zainstalowane.
-.IP "\fB\-\-root \fI<dir>\fP"
-Dokonuj instalacji na systemie zakorzenionym w katalogu \fI<dir>\fP. Zauwa¿,
-¿e znaczy to i¿ baza danych bêdzie od¶wie¿ana w \fI<dir>\fP.
+Instaluj pakiety nawet je¶li niektóre z nich s± ju¿ zainstalowane na tym
+systemie.
+.IP "\fB\-\-allfiles\fP"
+Instaluje lub od¶wie¿a wszystkie brakuj±ceok (missingok) pliki z pakietu, 
+niezale¿nie czy istniej±.
 .IP "\fB\-\-nodeps\fP"
-Nie dokonuj sprawdzenia zale¿no¶ci przed zainstalowaniem nowego pakietu.
+Nie dokonuj sprawdzenia zale¿no¶ci przed instalowaniem, lub od¶wie¿aniem
+pakietu.
 .IP "\fB\-\-noscripts\fP"
-Nie wywo³uj skryptów preinstalacyjnych i postinstalacyjnych.
+Nie wywo³uj skryptów przed i poinstalacyjnych.
+.IP "\fB\-\-notriggers\fP"
+Nie wywo³uj skryptów, które s± poci±gane przez instalacjê tego pakietu.
+.IP "\fB\-\-ignoresize\fP"
+Nie sprawdzaj czy na zamontowanych systemach plików jest do¶æ miejsca na
+zainstalowanie tego pakietu.
+.IP "\fB\-\-excludepath \fI<path>\fP"
+Nie instaluj plików, których nazwy rozpoczynaj± siê od \fI<path>\fP.
 .IP "\fB\-\-excludedocs\fP"
-Nie instaluj plików zaznaczonych jako dokumentacja (w³±cza siê tu strony
-podrêcznika man i dokumenty texinfo).
+Nie instaluj ¿adnych plików, które s± zaznaczone jako dokumentacja (co tyczy
+siê tak¿e podrêczników man i texinfo).
 .IP "\fB\-\-includedocs\fP"
-Instaluj pliki z dokumentacj±. Jest to potrzebne tylko w wypadku gdy w pliku
-rpmrc podano \fIexcludedocs: 1\fP.
-.IP "\fB\-\-nodeps\fP"
-Nie sprawdzaj zale¿no¶ci przed instalowaniem pakietów.
+Instaluj pliki dokumentacji. Tak jest domy¶lnie.
 .IP "\fB\-\-test\fP"
-Nie instaluj pakietu, sprawd¼ tylko i zg³o¶ potencjalne konflikty.
-.IP "\fB\-U, \-\-upgrade\fP"
-Od¶wierz (upgrade) obecnie zainstalowany pakiet do wersji z nowego RPM.
-Jest to to samo co install, lecz wszystkie inne wersje pakietu s± usuwane z
-systemu.
-
+Nie instaluj pakietu, po prostu sprawd¼ czy istniej± konflikty.
+.IP "\fB\-\-ignorearch\fP"
+Umo¿liwia to instalacjê, lub od¶wie¿anie nawet w wypadku gdy
+architektury binarnego RPM i hosta nie odpowiadaj± sobie.
+.IP "\fB\-\-ignoreos\fP"
+Umo¿liwia to instalowanie, lub od¶wie¿anie nawet w wypadku gdy systemy
+operacyjne binarnego RPM i hosta nie odpowiadaj± sobie.
+.IP "\fB\-\-prefix \fI<¶cie¿ka>\fP"
+Ustawia to przedrostek instalacji na \fI<¶cie¿kê>\fP dla relokowalnych
+pakietów.
+.IP "\fB\-\-relocate \fI<stara¶cie¿ka>\fB=\fI<nowa¶cie¿ka>\fP"
+W wypadku pakietów relokowalnych, transluje pliki, które by³yby wstawione do
+\fI<starej¶cie¿ki>\fP na \fI<now±¶cie¿kê>\fP.
+.IP "\fB\-\-badreloc\fP"
+Do u¿ytku w po³±czeniu z \-\-relocate. Wymusza relokacjê nawet gdy pakiet
+nie jest relokowalny.
+.IP "\fB\-\-noorder\fP"
+Nie porz±dkuj pakietów dla instalacji. Lista pakietów w normalnych
+wypadkach jest porz±dkowana na nowo by spe³niæ zale¿no¶ci.
 
 
 .SH OPCJE ZAPYTAÑ
-Ogóln± postaci± zapytania rpm jest
+Ogóln± postaci± komendy zapytania rpm jest
 .PP
-	\fBrpm \-q [query\-options]\fP
+	\fBrpm \-q [opcje\-zapytañ]\fP
 .PP
-Mo¿esz podaæ format, w jakim informacje powinny byæ drukowane. Aby tego
-dokonaæ, u¿yj opcji \fB\-\-queryformat\fP, po której nast±pi string formatu.
+Mo¿esz podaæ format, w jakim powinna zostaæ zapisywana informacja pakietowa.
+Aby tego dokonaæ, u¿yj opcji \fB[\-\-queryformat|\-qf]\fP, z do³±czonym
+³añcuchem formatuj±cym.
 
 Formaty zapytañ s± zmodyfikowanymi wersjami standardowego formatowania
-\fBprintf(3)\fP. Format ten jest stworzony dla statycznych stringów (które
-mog± zawieraæ standardowe znaki escape'owe C, takie jak nowe linie,
-tabulacje, itp.) oraz formatki typów. Jako, ¿e \fBrpm\fP wie z góry jaki typ
-drukuje, specyfikator typu musi byæ pominiêty i zamieniony na tag
-drukowanego nag³ówka, ujêtego w znaki \fB{}\fP. Czê¶æ \fBRPMTAG_\fP tagu
-mo¿e byæ pominiêta, a nazwa mo¿e byæ poprzedzona przez \fB\-\fP, co powoduje
-formatowanie tagu tak jak datê.
+\fBprintf(3)\fP. Format jest z³o¿ony ze statycznych ³añcuchów (które mog±
+zawieraæ standardowe znaki specjalne C--dla nowych linii, tabulacji itp.)
+oraz formatek typu, podobnych do tych z \fBprintf(3)\fP.
+Poniwa¿ \fBrpm\fP ju¿ zna typ do drukowania, specyfikator typu jest
+pomijany. W jego miejsce wchodzi nazwa tagu drukowanego nag³ówka, ujêta w
+znaki \fB{}\fP. Czê¶æ \fBRPMTAG_\fP nazwy taga mo¿e byæ opuszczona.
 
-Na przyk³ad aby wydrukowaæ tylko nazwy zapytanych pakietów, mo¿esz u¿yæ jako
-stringu formatuj±cego \fB%{NAME}\fP. Aby wydrukowaæ nazwy pakietów i
-informacje o dystrybucji w dwóch kolumnach, mo¿esz u¿yæ
-\fB%\-30{NAME}%{DISTRIBUTION}\fP.
+Mo¿na za¿±daæ innych formatów wyj¶ciowych przez zakoñczenie taga
+\fB:\fItypetag\fR. Obecnie obs³ugiwane s± nastêpuj±ce typy: \fBoctal\fR,
+\fBdate\fR, \fBshescape\fR, \fBperms\fR, \fBfflags\fR i \fBdepflags\fR.
 
-Gdy wywo³a siê \fBrpm\fP  z argumentem \fB\-\-querytags\fP, to wydrukuje on
-wszystkie tagi, jakie zna.
+Na przyk³ad aby wydrukowaæ tylko nazwy zapytywanych pakietów, mo¿esz u¿yæ
+jako ³añcucha formatuj±cego samego \fB%{NAME}\fP. Aby wydrukowaæ nazwy
+pakietów i informacje dystrybucji (w dwóch kolumnach), mo¿esz u¿yæ
+\fB%\-30{NAME}%{DISTRIBUTION}\fP. (Name bêdzie w 30 znakowym okienku, z
+wyrównaniem do lewej--zobacz printf(3)--przyp. t³um.)
 
-Istniej± dwa podzestawy opcji dla zapytañ: wybór pakietu i wybór informacji.
+Je¶li uruchomiæ go z argumentem \fB\-\-querytags\fP, \fBrpm\fP bêdzie 
+drukowa³ listê wszystkich tagów, o których wie.
+
+Istniej± dwa podzbiory opcji dla zapytywania: wybór pakietu i wybór
+informacji.
 
 Opcje wyboru pakietu:
 .br
 .IP "\fB\fI<nazwa_pakietu>\fP"
-Zapytaj pakiet o nazwie \fB\fI<nazwa_pakietu>\fP.
-.IP "\fB\-a\fP"
-Zapytaj wszystkie pakiety.
-.IP "\fB\-whatrequires \fI<capability>\fP"
-Zapytaj wszystkie pakiety wymagaj±ce \fI<w³a¶ciwo¶ci>\fP dla prawdi³owego
+Zapytaj zainstalowany pakiet o nazwie \fI<nazwa_pakietu>\fP.
+.IP "\fB\-a\fP, \fB\-\-all\fP"
+Zapytaj wszystkie zainstalowane pakiety.
+.IP "\fB\-\-whatrequires \fI<w³a¶ciwo¶æ>\fP"
+Zapytaj wszystkie pakiety, wymagaj±ce \fI<w³a¶ciwo¶ci>\fP do prawid³owego
 dzia³ania.
-.IP "\fB\-whatprovides \fI<virtual>\fP"
-Zapytaj wszystkie pakiety, które udostêpniaj± w³a¶ciwo¶æ \fI<virtual>\fP.
-.IP "\fB\-f \fI<file>\fP"
-Zapytaj pakiet-w³a¶ciciel pliku \fI<file>\fP.
-.IP "\fB\-F\fP"
-Jak \fB\-f\fP, lecz odczytuj nazwy plików ze stdin.
-.IP "\fB\-p \fI<package_file>\fP"
-Zapytaj (niewylistowany) pakiet \fI<package_file>\fP.
-Plik ten mo¿e byæ podany jako URL do ftp. Zobacz sekcjê \fBOPCJE FTP\fP.
-.IP "\fB\-P\fP"
-Jak \fB\-p\fP, lecz odczytuj nazwy plików pakietów ze stdin.
+.IP "\fB\-\-whatprovides \fI<wirtualna>\fP"
+Zapytaj wszystkie pakiety, daj±ce \fI<wirtualn±>\fP w³a¶ciwo¶æ.
+.IP "\fB\-f \fI<plik>\fP, \fB\-\-file \fI<plik>\fP"
+Zapytaj pakiet, bêd±cy w³a¶cicielem \fI<pliku>\fP.
+.IP "\fB\-g \fI<grupa>\fP, \fB\-\-group \fI<grupa>\fP"
+Zapytaj pakiety o grupie \fI<grupa>\fP.
+.IP "\fB\-p \fI<plik_pakietu>\fP"
+Zapytaj (niezainstalowany) pakiet \fI<plik_pakietu>\fP.
+Plik ten mo¿e byæ podany w stylu ftp lub http. W takiej sytuacji, przed
+zapytaniem zostanie pobrany. Zobacz \fBOPCJE FTP/HTTP\fP.
+.IP "\fB\-\-specfile \fI<plikspec>\fP"
+Przetwórz i zapytaj \fI<plikspec\fP tak, jakby by³ pakietem. Chocia¿ nie
+jest dostêpna ca³a informacja (np. lista plików), to ten typ zapytañ
+umo¿liwia u¿ywanie rpm do wyci±gania informacji z plików spec bez potrzeby
+pisania specyficznego parsera.
+.IP "\fB\-\-querybynumber \fI<num>\fP"
+Zapisaj wprost \fI<num>\fP-ty wpis bazy danych; jest to przydatne do
+debuggowania.
+.IP "\fB\-\-triggeredby \fI<pkg>\fP"
+Zapytaj pakiety, które s± poci±gniête przez pakiety \fI<pkg>\fP.
 
 .P
 Opcje wyboru informacji:
 .br
 .IP "\fB\-i\fP"
-Wy¶wietl informacjê o pakiecie, w³±czej±c nazwê, wersjê i opis. Opcja u¿ywa
-(o ile podano) formatu \fB\-\-queryformat\fP.
-.IP "\fB\-R\fP"
-Listuj pakiety, od których ten zale¿y (to samo co \fB\-\-requires\fP).
+Wy¶wietl informacjê o pakiecie, ³±cznie z nazw±, wersj± i opisem. O ile
+podano \fB\-\-queryformat\fP, to jest on u¿ywany.
+.IP "\fB\-R\fP, \fB\-\-requires\fP"
+Listuj pakiety, od których zale¿y ten pakiet.
 .IP "\fB\-\-provides\fP"
-Listuj w³a¶ciwo¶ci, jakie ten pakiet udostêpnia.
-.IP "\fB\-l\fP"
+Listuj w³a¶ciwo¶ci, które udostêpnia ten pakiet.
+.IP "\fB\-\-changelog\fP"
+Wy¶wietl informacje zmian dla tego pakietu.
+.IP "\fB\-l\fP, \fB\-\-list\fP"
 Listuj pliki z pakietu.
-.IP "\fB\-s\fP"
-Wy¶wietl stany plików w pakiecie (implikuje \fB\-l\fP). Stan ka¿dego pliku
-mo¿e byæ jednym z nastêpuj±cych: \fInormal\fP (normalny), \fInot
-installed\fP (nie zainstalowany) lub \fIreplaced\fP (zamieniony).
-.IP "\fB\-d\fP"
-Listuj tylko pliki z dokumentacj± (implikuje \fB\-l\fP).  
-.IP "\fB\-c\fP"
-Listuj tylko pliki konfiguracyjne (implikuje \fB\-l\fP).  
+.IP "\fB\-s\fP, \fB\-\-state\fP"
+Wy¶wietl \fIstany\fP plików w pakiecie (wymusza \fB\-l\fP).
+Stan ka¿dego pliku mo¿e byæ jednym z
+\fInormal\fP (normalny), \fInot installed\fP (niezainstalowany), lub 
+\fIreplaced\fP (zamieniony).
+.IP "\fB\-d\fP, \fB\-\-docfiles\fP"
+Listuj tylko pliki dokumentacji (wymusza \fB\-l\fP).
+.IP "\fB\-c\fP, \fB\-\-configfiles\fP"
+Listuj tylko pliki konfiguracji (wymusza \fB\-l\fP).
 .IP "\fB\-\-scripts\fP"
-Listuj specyficzne dla pakietu skrypty shellowe, które s± u¿ywane do
-instalacji/deinstalacji.
+Listuj skrypty pow³oki, specyficzne dla pakietu, które s± u¿ywane jako czê¶æ
+procesu instalowania i odinstalowywania (o ile takie skrypty istniej±).
+.IP "\fB\-\-triggers\fP, \fB\-\-triggerscripts\fP"
+Wy¶wietl skrypty wywo³uj±ce (trigger scripts), zawarte w pakiecie.
 .IP "\fB\-\-dump\fP"
-Wyrzuæ informacje plikowe wed³ug: ¶cie¿ka rozmiar czas-modyfikacji suma-md5
-tryb w³a¶ciciel grupa czy-konfiguracyjny czy-dokumentacja rdev symlink.
-(wersja angielska dla tych co siê pogubili:
-path size mtime md5sum mode owner group isconfig isdoc rdev symlink.)
-Musi to byæ u¿ywane z przynajmniej jednym z \fB\-l\fP, \fB\-c\fP, \fB\-d\fP.
+Wy¶wietl w nastêpuj±cy sposób informacjê o pliku: ¶cie¿ka rozmiar
+czasmodyfukacji sumamd5 prawa w³a¶ciciel grupa jestkonfiguracyjny
+jestdokumentacj± rdev dowi±zaniesymboliczne. Musi to byæ u¿yte z
+przynajmniej jednym z \fB\-l\fP, \fB\-c\fP, \fB\-d\fP.
+.IP "\fB\-\-last\fP"
+Porz±dkuje listing pakietów podczas instalowania tak, ¿e ostatnie pakiety s±
+na górze.
+.IP "\fB\-\-filesbypkg\fP"
+Listuje wszystkie pliki z ka¿dego z pakietów.
+.IP "\fB\-\-triggerscripts\fP"
+Pokazuje wszystkie skrypty wywo³uj±ce (trigger) z wybranych pakietów.
 
 .SH OPCJE WERYFIKACJI
-Ogólna postaæ komendy weryfikacji rpm to
+Ogóln± postaci± komendy weryfikacji rpm jest
 .PP
-	\fBrpm \-V|\-y|\-\-verify [verify\-options]\fP
+	\fBrpm \-V|\-y|\-\-verify [opcje\-weryfikacji]\fP
 .PP
-Weryfikacja pakietu porównuje dane o zainstalowanych w pakiecie plikach z
-danymi o plikach wziêtych z oryginalnego pakietu, zapisanych w bazie danych
-rpm.  Obok wielu innych rzeczy, weryfikacja porównuje rozmiar, sumê md5,
-prawa, typ, w³a¶ciciela i grupê ka¿dego z plików. Wszelkie niezgodno¶ci s±
-wy¶wietlane. Opcje specyfikacji pakietu s± takie same jak przy zapytywaniu
-pakietu.
+Weryfikowanie pakietu porównuje informacje o zainstalowanych plikach w
+pakiecie z informacj± o plikach, pobran± z oryginalnego pakietu, zapisanego
+w bazie rpm. W¶ród innych rzeczy, porównywane s± rozmiary, sumy MD5, prawa,
+typ, w³a¶ciciel i grupa ka¿dego pliku. Wszystkie niezgodno¶ci s± natychmiast
+wy¶wietlane. Opcje specyfikacji pakietu s± takie same jak dla zapytywania
+pakietów.
 
-Pliki, które nie by³y instalowane z pakietu, np. dokumentacja któr±
-wy³±czono podczas instalacji, zostan± cicho pominiête.
+Pliki, które nie by³y zainstalowane z pakietu, jak na przyk³ad dokumentacja,
+wy³±czona opcj± "\fB\-\-excludedocs\fP", s± cicho ignorowane.
 
-Domy¶lnym formatem wyj¶cia jest o¶mioznakowy ci±g, prawdopodobne "\fBc\fP",
-wskazuj±ce na plik konfiguracyjny, a nastêpnie nazwa pliku. Ka¿dy z o¶miu
-znaków wskazuje na wynik porównania atrybutów pliku do warto¶ci zapisanej w
-bazie RPM. Pojedyncza kropka oznacza, ¿e test przeszed³ bezb³êdnie. Nastêpuj±ce
-znaki okre¶laj± b³êdy na konkretnych testach:
+Opcje, których mo¿na u¿yæ w trybie weryfikacji:
+
+.IP "\fB\-\-nofiles\fP"
+Ignoruje podczas weryfikacji brakuj±ce pliki.
+.IP "\fB\-\-nomd5\fP"
+Ignoruje podczas weryfikacji b³êdy sum MD5.
+.IP "\fB\-\-nopgp\fP"
+Ignoruje podczas weryfikacji b³êdy sprawdzania PGP.
+.IP "\fB\-\-nofiles\fP"
+Ignoruje podczas weryfikacji brakuj±ce pliki. (dejavu? przyp. t³um. ;)
+
+
+Format wyj¶cia to ³añcuch 8 znaków, prawdopodobny "\fBc\fP", oznaczaj±cy
+plik konfiguracyjny, a nastêpnie nazwa pliku. Ka¿dy z 8 znaków oznacza wynik
+porównania jednego atrybutu pliku z warto¶ci± atrybutu, zakodowan± w bazie
+RPM. Kropka "\fB.\fP" oznacza, ¿e test przeszed³ pomy¶lnie. Nastêpuj±ce
+znaki oznaczaj± b³êdy okre¶lonych testów:
 
 .IP "\fB5\fP"
 suma MD5
 .IP "\fBS\fP"
-Rozmiar pliku
+rozmiar pliku
 .IP "\fBL\fP"
-Symlink
+dowi±zanie symboliczne
 .IP "\fBT\fP"
-Czas modyfikacji (mtime)
+czas modyfikacji
 .IP "\fBD\fP"
-Urz±dzenie (device)
+urz±dzenie
 .IP "\fBU\fP"
-U¿ytkownik (user)
+u¿ytkownik
 .IP "\fBG\fP"
-Grupa
+grupa
 .IP "\fBM\fP"
-Tryb (w³±cza prawa i rodzaj pliku)
+prawa (w³±cza prawa i typ pliku)
 
 .SH SPRAWDZANIE SYGNATURY
-Ogóln± postaci± komendy sprawdzania sygnatury w rpm to
+Ogóln± postaci± komendy sprawdzania sygnatury jest
 .PP
-	\fBrpm \-\-checksig <package_file>+\fP
+	\fBrpm \-\-checksig \fI<plik_pakietu>+\fP
 .PP
-Sprawdza to sygnaturê PGP wbudowan± do pakietu, aby zapewniæ integralno¶æ
-oraz ¼ród³o pakietu. Dane konfiguracyjne PGP znajduj± siê w
-/etc/rmprc. Zobacz sekcjê o SYGNATURACH PGP dla dalszych szczegó³ów.
+Sprawdza to sygnaturê PGP pakietu \fIplik_pakietu\fP aby zapewniæ jego
+integralno¶æ i pochodzenie. Informacja konfiguracji PGP jest odczytywana z
+plików konfiguracji. Zobacz sekcjê o SYGNATURACH PGP.
 
-.SH OPCJE DEINSTALACJI
-Ogóln± postaci± komendy deinstlacji jest
+.SH OPCJE ODINSTALOWANIA
+Ogóln± postaci± komendy odinstalowania rpm jest
 .PP
-	\fB    rpm \-e <package_name>+\fP
+	\fB    rpm \-e \fI<nazwa_pakietu>+\fP
 .PP
+.IP "\fB\-\-allmatches\fP"
+Usuñ wszystkie wersjie pakietu, które odpowiadaj± \fI<nazwie_pakietu\fR.
+Normalnie wy¶wietlany jest b³±d gdy nazwa ta odpowiada wielu pakietom.
 .IP "\fB\-\-noscripts\fP"
-Nie wywo³uj skryptów predeinstalacyjnych i postdeinstalacyjnych.
+Nie wywo³uj skryptów pre i postinstalacyjnych.
+.IP "\fB\-\-notriggers\fP"
+Nie wywo³uj skryptów, które s± poci±gane przez usuwanie pakietu.
 .IP "\fB\-\-nodeps\fP"
-Nie sprawdzaj zale¿no¶ci przed deinstalacj±.
+Nie sprawdzaj zale¿no¶ci przed odinstalowaniem.
 .IP "\fB\-\-test\fP"
-Nie deinstaluj tak naprawdê niczego, tylko przejd¼ przez ruchy.
-\fB\-vv\fP option.
-.IP "\fB\-\-nodeps\fP"
-Nie szukaj zerwanch zale¿no¶ci przed usuniêciem pakietu
+Nie odinstalowuj niczego naprawdê, przejd¼ tylko przez kolejne etapy.
+Przydatne w po³±czeniu z opcj± \fB\-vv\fP.
 
 .SH OPCJE BUDOWANIA
-Ogóln± postaci± komendy budowania jest
+Ogóln± postaci± komendy budowania rpm jest
 .PP
-    \fBrpm \-b\fIO\fP [build\-options] <package_spec>+\fP
+    \fBrpm \-[b|t]\fIO\fP [opcje\-budowania] \fI<spec_pakietu>+\fP
 .PP
-gdzie \fB\-b\fIO\fR okre¶la stopnie budowy i pakietowania, które trzeba
-wykonaæ i jest jednym z:
+Je¶li do zbudowania pakietu u¿ywany jest plik spec, to argumentem powinno
+byæ \fB\-b\fR, a je¶li \fBRPM\fR powinien zajrzeæ wewn±trz skompresowanego
+pliku tar w poszukiwaniu speca, to powinna byæ u¿yta opcja \fB\-t\fR.
+Po pierwszym argumencie, drugi (\fIO\fR) okre¶la etapy budwania i
+pakietowania, które nale¿y wykonaæ. Mo¿e to byæ jedno z:
 
 .IP "\fB\-bp\fP"
-W³±cza poziom "%prep" z pliku spec. Normalnie prowadzi to do rozpakowywania
-¼róde³ i za³±czania wszelkich patchów.
+Wykonuje etap "%prep" z pliku spec. Normalnie wymaga to rozpakowania ¼róde³
+i za³±czenia wszelkich ³at.
 .IP "\fB\-bl\fP"
-Dokonaj "sprawdzenia listy". Sekcja "%files" pliku spec jest rozwijana i
-dokonywane s± sprawdzenia, aby upewniæ siê czy pliki istniej±.
+Dokonaj sprawdzenia listy. Sekcja "%files" pliku spec jest makro rozwijana i
+dokonywane s± sprawdzenia, by upewniæ siê ¿e ka¿dy plik istnieje.
 .IP "\fB\-bc\fP"
-Wykonaj poziom "%build" z pliku spec (po dokonaniu poziomu prep). Ogólnie
-za³±cza to ekwiwalenta "make".
+Wykonaj etap "%build" z pliku spec (po dokonaniu etapu prep).
+Ogólnie anga¿uje to ekwiwalenta "make".
 .IP "\fB\-bi\fP"
-Wykonaj poziom "%install" z pliku spec (po dokonaniu poziomów prep i
-build). Generalnie za³±cza to ekwiwalent "make install".
+Wykonaj etap "%install" z pliku spec (po dokonaniu etapów prep i build).
+Ogólnie anga¿uje to ekwiwalenta
+"make install".
 .IP "\fB\-bb\fP"
-Zbuduj pakiet binarny (po wykonaniu poziomów prep, build i install).
+Buduj pakiet binarny (po dokonaniu etapów prep, build i install).
+.IP "\fB\-bs\fP"
+Buduj pakiet ¼ród³owy (po dokonaniu etapów prep, build i install).
 .IP "\fB\-ba\fP"
-Zbuduj pakiet binarny i pakiety ¼ród³owe (po wykonaniu poziomów prep, build
-i install).
+Buduj pakiety binarny i ¼ród³owy (po dokonaniu etapów prep, build i
+install).
 .PP
-U¿yte mog± zostaæ dodatkowo nastêpuj±ce opcje:
+Mog± byæ te¿ u¿yte nastêpuj±ce opcje:
 .IP "\fB\-\-short\-circuit\fP"
-Przejd¼ wprost do podanego poziomu (np. pomiñ wszystkie poziomy prowadz±ce
-do podanego poziomu). Jest to prawid³oweg tylko z \fB\-bc\fP i \fB\-bi\fP.
+Przejd¼ wprost do podanego etapu (np. pomiñ wszystkie etapy prowadz±ce do
+podanego). Prawid³owe tylko z \fB\-bc\fP i \fB\-bi\fP.
 .IP "\fB\-\-timecheck\fP"
-Ustaw czas "sprawdzenia czasu" (timecheck) (0 wy³±cza). Warto¶æ ta mo¿e byæ
-ustawiona w rpmrc jako "timecheck:". Warto¶æ ta wyra¿a w sekundach
-najd³u¿szy wiek pakowanego pliku. Dla plików spoza tego zakresu bêd±
-drukowane ostrze¿enia.
+Ustaw wiek "sprawdzeniaczasu" (0 wy³±cza). Warto¶æ ta mo¿e byæ te¿
+skonfigurowana przez definiowanie makra "_timecheck". Warto¶æ ta wyra¿a w
+sekundach maksymalny wiek pakowanego pliku. Dla plików starszych drukowane
+bêd± ostrze¿enia.
 .IP "\fB\-\-clean\fP"
-Usuñ drzewo budowy (build tree) po utworzeniu pakietów
+Usuñ drzewo budowania po stworzeniu pakietów.
+.IP "\fB\-\-rmsource\fP"
+Usuñ ¼ród³a i plik spec po budowaniu (mo¿e byæ te¿ u¿ywane samodzielnie, np.
+"\fBrpm \-\-rmsource foo.spec\fP").
 .IP "\fB\-\-test\fP"
-Nie wywo³uj ¿adnych poziomów budowania (build).
+Nie wykonuj ¿adnych etapów budowania.
 Przydatne do testowania plików spec.
 .IP "\fB\-\-sign\fP"
-Osad¼ w pakiecie sygnaturê PGP. Sygnatura mo¿e byæ u¿ywana do sprawdzania
-integralno¶ci i ¼ród³a pakietu. Zobacz sekcjê o SYGNATURACH PGP dla
-szczegó³ów /etc/rpmrc.
+Osad¼ w pakiecie sygnaturê PGP. Sygnatura ta mo¿e byæ u¿ywana do
+weryfikowania integralno¶ci i pochodzenia pakietu. Zobacz sekcjê o
+SYGNATURACH PGP.
+.IP "\fB\-\-buildroot \fI<dir>\fP"
+Podczas budowania pakieu przeci±¿ tag BuildRoot na katalog
+\fI<dir>\fP.
+.IP "\fB\-\-target \fI<platforma>\fP"
+Podczas budowania pakietu zinterpretuj \fI<platformê>\fP jako 
+\fBarch-vendor-os\fP i ustaw odpowiednio makra \fB_target\fP, 
+\fB_target_arch\fP oraz \fB_target_os\fP.
+.IP "\fB\-\-buildarch \fI<arch>\fP"
+Podczas budowania pakietu, ustaw architekturê na \fI<arch>\fP. Opcja ta
+jest przedawniona przez \fB\-\-target\fI z RPM 3.0.
+.IP "\fB\-\-buildos \fI<os>\fP"
+Podczas budowania pakietu, ustaw architekturê na \fI<os>\fP. Opcja ta jest
+przedawniona przez \fB\-\-target\fI z RPM 3.0.
 
-.SH OPCJE BUDOWY OD NOWA I REKOMPILACJI
 
-S± dwa sposoby wywo³ania rpm:
+.SH OPCJE PRZEBUDOWANIA I REKOMPILACJI
 
-.I "\fBrpm \-\-recompile <source_package_file>+\fP"
+Istniej± dwa inne sposoby na wywo³anie budowania w rpm:
 
-.I "\fBrpm \-\-rebuild <source_package_file>+\fP"
+.I "\fBrpm \-\-recompile \fI<plik_¼ród³owy_pakietu>+\fP"
 
-Gdy uruchomi siê go w ten sposób, rpm instaluje podany pakiet ¼ród³owy i
-wykonuje poziomy prep, compile i install. Dodatkowo, opcja
-\fB\-\-rebuild\fP buduje nowy pakiet binarny. Gdy budowa zostaje zakoñczona,
-katalog budowy jest usuwany (jak w \fB\-\-clean\fP), a pliki ¼ród³owe i plik
-spec pakietu s± usuwane.
+.I "\fBrpm \-\-rebuild \fI<plik_¼ród³owy_pakietu>+\fP"
+
+Po takim wywo³aniu, \fBrpm\fP instaluje nazwany pakiet ¼ród³owy oraz
+dokonuje prep, kompilacji i instalacji. Dodatkowo, \fB\-\-rebuild\fP
+buduje nowy pakiet binarny. Po tym jak budowanie jest zakoñczone, katalog
+budowania jest usuwany (jak w \fB\-\-clean\fP), a potem ¼ród³a i plik spec 
+dla pakietu s± usuwane.
 
 .SH PODPISYWANIE ISTNIEJ¡CEGO RPM
 
-.I "\fBrpm \-\-resign <binary_package_file>+\fP"
+.I "\fBrpm \-\-resign \fI<binarny_plik_pakietu>+\fP"
 
 Opcja ta generuje i wstawia nowe sygnatury do wymienionych pakietów.
-Wszystkie istniej±ce sygnatury s± usuwane.
+Wszelkie istniej±ce sygnatury s± usuwane.
+
+.I "\fBrpm \-\-addsign \fI<binarny_plik_pakietu>+\fP"
+
+Opcja ta generuje i dopisuje nowe sygnatury dla wymienionych pakietów.
 
 .SH SYGNATURY PGP
 
-Aby uzywaæ w³a¶ciwo¶ci sygnatur, RPM musi mieæ mo¿liwo¶æ uruchomiania PGP
-(musi byæ zainstalowany w ¶cie¿ce) i musi byæ w stanie znale¼æ zbiór kluczy
-publicznych (public key ring), w którym znajduj± siê klucze RPM. Domy¶lnie,
-RPM u¿ywa domy¶lnych warto¶ci PGP dla odnajdywania kluczy (honoruj±c
-PHPPATH). Je¶li klucze nie s± zlokalizowane tam, gdzie PGP ich oczekuje,
-musisz wstawiæ nastêpuj±c± rzecz do swojego /etc/rpmrc
+Aby u¿ywaæ w³a¶ciwo¶ci sygnatur, RPM musi byæ skonfigurowany aby móg³
+uruchamiaæ PGP. Musi byæ w stanie znale¼æ pêk kluczy publicznych, w którym
+znajduj± siê klucze publiczne RPM. Domy¶lnie, RPM u¿ywa do ich znalezienia
+domy¶lnych warto¶ci PGP (honoruj±c PGPPATH). Je¶li twoje klucze nie s±
+zlokalizowane tam, gdzie PGP ich oczekuje, mo¿esz skonfigurowaæ makro
 
-.IP "\fBpgp_path\fP"
-¦cie¿ka zamienna dla /usr/lib/rpm. Musi zawieraæ twoje klucze.
+.IP "\fB_pgp_path\fP"
+na ¶cie¿kê pêków kluczy PGP.
 .PP
 
-Je¶li chcesz móc podpisywaæ pakiety, które tworzysz, to bêdziesz musia³
-utworzyæ swoje w³asne klucze -- publiczny i prywatny (zobacz w podrêczniku
-PGP). Obok powy¿szych wpisów /etc/rmprc, powiniene¶ dodaæ nastêpuj±ce:
+Je¶li chcesz podpisywaæ pakiety, które sam tworzysz, mo¿esz te¿ potrzebowaæ
+utworzyæ swój w³asny klucz publiczny i poufny (zobacz podrêcznik PGP, pgp(1))
+Bêdziesz te¿ potrzebowa³ skonfigurowaæ makra
 
-.IP "\fBsignature\fP"
-Typ sygnatury. Obecnie wspierane jest tylko pgp.
-.IP "\fBpgp_name\fP"
-Nazwa u¿ytkownika, którego kluczem chcesz podpisywaæ swoje pakiety.
+.IP "\fB_signature\fP"
+Typ sygnatury. Obecnie obs³ugiwany jest tylko pgp.
+.IP "\fB_pgp_name\fP"
+Nazwa "u¿ytkownika", którego klucz bêdzie u¿ywany do podpisu.
 .PP
 
-Podczas budowania pakietów dodajesz \-\-sign w linii komend. Zostaniesz
-zapytany o swoj± frazê przej¶cia (pass phrase -- czyli pewnie has³o, ale
-siê nie znam -- przyp. t³um. ;), a twój pakiet zostanie zbudowany i
+Podczas budowania pakietów tzeba wtedy dodaæ w linii komend \-\-sign.
+Bêdziesz zapytany o swoj± frazê koduj±c±, a twój pakiet zostanie zbudowany i
 podpisany.
 
-.SH OPCJE PRZEBUDOWY BAZY DANYCH
+Na przyk³ad, aby u¿yæ PGP do podpisania pakietów jako u¿ytkownik
+\fp"John Doe <jdoe@foo.com>"\fP z pêku kluczy, zlokalizowanego w
+\fB/etc/rpm/.pgp\fP, za³±czy³by¶
 
-Ogóln± postaci± komendy przebudowy bazy danych jest
+.IP "\fB%_signature\fP"
+\fBpgp\fP
+.IP "\fB%_pgp_name\fP"
+\fB/etc/rpm/.pgp\fP
+.IP "\fB%_pgp_name\fP"
+\fBJohn Doe <jdoe@foo.com>"
+.PP
+
+w pliku konfiguracji makr. Do ogólnosystemowej konfiguracji u¿yj
+\fB/etc/rpm/macros\fP, a dla lokalnej \fB~/.rpmmacros\fP.
+
+.SH OPCJE PRZEBUDOWYWANIA BAZY DANYCH
+
+Ogólna postaæ komendy przebudowywania bazy danych rpm to
 .PP
 	\fBrpm \-\-rebuilddb\fP
 .PP
 
-Jedyne opcje wspierane w tym trybie to \fB-\-dbpath\fP i \fB-\-root\fP.
+Aby przebudowaæ now± bazê danych, wykonaj:
+.PP
+	\fBrpm \-\-initdb\fP
+.PP
+
+Jedynymi opcjami dla tych trybów s± \fB-\-dbpath\fP i
+\fB-\-root\fP.
 
 .SH SHOWRC 
 
-Uruchamienie
+Uruchamianie
 
 .PP
 	\fBrpm \-\-showrc\fP
 
 .PP
-poka¿e warto¶ci, których RPM u¿yje dla wszystkich opcji, które mog± byæ
-ustawiane w plikach \fIrpmrc\fP.
+pokazuje warto¶ci, których RPM bêdzie u¿ywa³ dla wszystkich opcji, które
+mog± byæ ustawione w plikach \fIrpmrc\fP.
 
-.SH OPCJE FTP
+.SH OPCJE FTP/HTTP
 
-RPM zawiera prostego klienta FTP, upraszczaj±cego instalacjê i zapytywanie
-pakietów, które s± dostêpne w internecie. Pliki pakietowe dla instalacji,
-odnowy (upgrade) i zapytywania mog± byæ podawane w postaci URL-a ftp:
+RPM zawiera prostych klientów FTP i HTTP, które upraszczaj± instalowanie i
+zapytywanie pakietów, które s± dostêpne w sieci. Pliki pakietów mo¿na
+podawaæ w url'u w stylu ftp lub http:
 
 .PP
-	\fBftp://<u¿ytkownik>@<has³o>:nazwahosta/¶cie¿ka/do/pakietu.rpm\fP
+	\fBftp://<u¿ytkownik>:<has³o>@host:<port>/¶cie¿ka/pakietu.rpm\fP
 .PP
-Je¶li zostanie pominiêta czê¶æ \fB@has³o\fP, u¿ytkownik zostanie o nie
-zapytany (raz na parê u¿ytkownik/nazwa hosta). Je¶li nie podano ani pola
-u¿ytkownik, ani has³o, u¿yty zostanie anonimowy ftp. We wszystkich wypadkach
-u¿ywane s± pasywne (passive) (PASV) transfery ftp.
+Je¶li czê¶æ \fB:has³o\fP jest pominiêta, u¿ytkownik zostanie o nie zapytany
+(jednokrotnie na parê u¿ytkownik/host). Je¶li pominiêto nazwê u¿ytkownika i
+has³o, u¿ywany jest anonimowy ftp. We wszystkich przypadkach u¿ywane s±
+pasywne (PASV) transfery ftp.
 
-RPM umo¿liwia u¿ywanie nastêpuj±cych opcji z URL-ami ftp:
+RPM zezwala na u¿ywanie z URL-ami FTP nastêpuj±cych opcji:
 
-.IP "\fB\--ftpproxy <nazwahosta>\fP"
-Host <nazwahosta> bêdzie u¿ywany jako serwer proxy transferów, co umo¿liwia
-u¿ytkownikom uruchomianie ftp poprzez maszyny firewallowe, które u¿ywaj±
-systemów proxy. Opcja ta mo¿e byæ te¿ podana w pliku \fIrpmrc\fP.
+.IP "\fB\--ftpproxy \fI<host>\fP"
+Podany host bêdzie u¿ywany jako proxy dla wszystkich transferów ftp, co
+umo¿liwia u¿ytkownikom ftp przez maszyny ¶cian ognia, które u¿ywaj± systemów
+proxy.
+Opcja ta mo¿e byæ te¿ podana przez skonfigurowanie makra \fB_ftpproxy\fP.
 
-.IP "\fB\--ftpport <port>\fP"
-Okre¶la numer portu TCP, u¿ywanego do po³±czenia ftp (zamiast domy¶lnego).
-Opcja ta mo¿e byæ podana tak¿e w pliku \fIrpmrc\fP.
+.IP "\fB\--ftpport \fI<port>\fP"
+Numer portu TCP, którego u¿yæ do po³±czenia ftp na serwerze proxy, zamiast
+portu domy¶lnego. Opcja ta mo¿e byæ te¿ podana przez skonfigurowanie makra
+\fB_ftpport\fP.
+.PP
+
+RPM zezwala na u¿ywanie z URL-ami HTTP nastêpuj±cych opcji:
+
+.IP "\fB\--httpproxy \fI<host>\fP"
+Podany host bêdzie u¿ywany jako proxy dla wszystkich transferów http.
+Opcja ta mo¿e byæ te¿ podana przez skonfigurowanie makra \fB_httpproxy\fP.
+
+.IP "\fB\--httpport \fI<port>\fP"
+Numer portu TCP, którego u¿yæ do po³±czenia http na serwerze proxy zamiast
+portu domy¶lnego. Opcja ta mo¿e byæ te¿ podana przez skonfigurowanie makra
+\fB_httpport\fP.
+.PP
 
 .SH PLIKI
 .nf
+/usr/lib/rpm/rpmrc
 /etc/rpmrc
 ~/.rpmrc
-~/.rpmmacros
 /var/lib/rpm/packages
 /var/lib/rpm/pathidx
 /var/lib/rpm/nameidx
@@ -405,10 +585,11 @@ Opcja ta mo¿e byæ podana tak¿e w pliku \fIrpmrc\fP.
 .SH ZOBACZ TAK¯E
 .IR glint (8) ,
 .IR rpm2cpio (8) ,
-.B http://www.redhat.com/rpm
+.B http://www.rpm.org/
 .nf
 .SH AUTORZY
 .nf
 Marc Ewing <marc@redhat.com>
+Jeff Johnson <jbj@redhat.com>
 Erik Troan <ewt@redhat.com>
 .fi
