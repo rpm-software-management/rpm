@@ -1,4 +1,5 @@
 2.5.5 -> 2.90
+	- attempt to deal rationally with os as "Linux" or "linux".
 	- add generalized expression handler (Tom Dyas<tdyas@remus.rutgers.edu>)
 	- use /usr/lib/rpm/mkinstalldirs if mkdir -p fails.
 	- more portable dirent handling (Hermann Lauer).

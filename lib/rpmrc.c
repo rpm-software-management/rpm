@@ -269,8 +269,16 @@ static struct machEquivInfo * machEquivSearch(
 		struct machEquivTable * table, char * name) {
     int i;
 
+/*
+ * XXX The strcasecmp below is necessary so the old (rpm < 2.90) style
+ * XXX os-from-uname (e.g. "Linux") is compatible with the new
+ * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
+ * XXX A copy of this string is embedded in headers and is
+ * XXX used by rpmInstallPackage->{os,arch}Okay->rpmMachineScore->.
+ * XXX to verify correct arch/os from headers.
+ */
     for (i = 0; i < table->count; i++)
-	if (!strcmp(table->list[i].name, name))
+	if (!strcasecmp(table->list[i].name, name))
 	    return table->list + i;
 
     return NULL;
@@ -439,7 +447,6 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building,
 {
 
     char * canonarch, * canonos;
-    char * buildarch, * buildos;
     MacroEntry ** ME;
 
     rpmSetMachine(arch, os);
@@ -459,15 +466,34 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building,
     rpmRebuildPlatformVars(&buildplatform, &canonarch, &canonos);
 
     /* This is where we finally set the arch and os absolutely */
+
 /*    rpmSetMachine(canonarch, canonos); */
 
 
-/* XXX getMacroBody() may be nuked -- (see below) */
-buildarch = (char *) getMacroBody(&globalMacroContext, "buildarch");
-buildos = (char *) getMacroBody(&globalMacroContext, "buildos");
+   {	const char *buildarch;
+	const char *buildos;
 
-rpmSetMachine(buildarch,buildos);
+	/* XXX getMacroBody() may be nuked -- (see below) */
+	buildarch = (char *) getMacroBody(&globalMacroContext, "buildarch");
+	buildos = (char *) getMacroBody(&globalMacroContext, "buildos");
 
+	/*
+	 * XXX Capitalizing the 'L' is needed to insure that
+	 * XXX os-from-uname (e.g. "Linux") is compatible with the new
+	 * XXX os-from-platform (e.g "linux" from "sparc-*-linux").
+	 * XXX A copy of this string is embedded in headers and is
+	 * XXX used by rpmInstallPackage->{os,arch}Okay->rpmMachineScore->
+	 * XXX to verify correct arch/os from headers.
+	 */
+	if (!strcmp(buildos, "linux")) {
+	    char *mybuildos = strdup(buildos);
+	    buildos[0] = 'L';
+	    rpmSetMachine(buildarch, mybuildos);
+	    free(mybuildos);
+	} else {
+	    rpmSetMachine(buildarch, buildos);
+	}
+   }
     return 0;
 }
 
