@@ -22,6 +22,8 @@ noinst_HEADERS = rpmio_internal.h
 
 BEECRYPTLOBJS = $(shell cat $(top_builddir)/beecrypt/listobjs)
 
+LDFLAGS = -L$(DESTDIR)$(usrlibdir)
+
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmio.la
 librpmio_la_SOURCES = \

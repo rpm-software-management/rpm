@@ -535,7 +535,6 @@ verifyinfo_exit:
 		_("only V3 signatures can be verified, skipping V%u signature\n"),
 		dig->signature.version);
 	    rpmtsCleanDig(ts);
-	    sig = _free(sig);
 	    goto verifyinfo_exit;
 	}
 
@@ -576,7 +575,6 @@ verifyinfo_exit:
 		_("only V3 signatures can be verified, skipping V%u signature\n"),
 		dig->signature.version);
 	    rpmtsCleanDig(ts);
-	    sig = _free(sig);
 	    goto verifyinfo_exit;
 	}
 	/*@fallthrough@*/
@@ -611,6 +609,7 @@ verifyinfo_exit:
 
 	break;
     default:
+	sig = _free(sig);
 	break;
     }
 
@@ -625,6 +624,8 @@ verifyinfo_exit:
 /*@=boundswrite@*/
 
     rpmtsCleanDig(ts);
+    if (info->tag == RPMTAG_SHA1HEADER)
+	sig = _free(sig);
     return rc;
 }
 

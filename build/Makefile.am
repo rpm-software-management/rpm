@@ -19,6 +19,8 @@ pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = rpmbuild.h rpmfc.h rpmfile.h rpmspec.h
 noinst_HEADERS = buildio.h
 
+LDFLAGS = -L$(DESTDIR)$(usrlibdir)
+
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmbuild.la
 librpmbuild_la_SOURCES = \

@@ -1571,12 +1571,12 @@ psm->te->h = headerLink(fi->h);
 	    psm->countCorrection = -1;
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERUN)) {
-		/* Run triggers in other package(s) this package sets off. */
-		rc = rpmpsmStage(psm, PSM_TRIGGERS);
-		if (rc) break;
-
 		/* Run triggers in this package other package(s) set off. */
 		rc = rpmpsmStage(psm, PSM_IMMED_TRIGGERS);
+		if (rc) break;
+
+		/* Run triggers in other package(s) this package sets off. */
+		rc = rpmpsmStage(psm, PSM_TRIGGERS);
 		if (rc) break;
 	    }
 

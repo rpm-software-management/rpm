@@ -117,7 +117,7 @@ shell-like rules.
 %build
 
 # XXX rpm needs functioning nptl for configure tests
-unset LD_ASSUME_KERNEL
+unset LD_ASSUME_KERNEL || :
 
 %if %{with_python_subpackage}
 WITH_PYTHON="--with-python=%{with_python_version}"
@@ -144,7 +144,7 @@ make
 
 %install
 # XXX rpm needs functioning nptl for configure tests
-unset LD_ASSUME_KERNEL
+unset LD_ASSUME_KERNEL || :
 
 rm -rf $RPM_BUILD_ROOT
 

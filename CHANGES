@@ -125,6 +125,7 @@
 	- add file(1) as /usr/lib/rpm/rpmfile.
 	- enable transaction coloring for s390x/ppc64.
 	- file: check size read from elf header (#85297).
+	- fix: memory leak (85522).
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

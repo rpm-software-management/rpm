@@ -38,6 +38,8 @@ LIBS =
 
 DB3LOBJS = $(shell cat $(top_builddir)/$(WITH_DB_SUBDIR)/db3lobjs)
 
+LDFLAGS = -L$(DESTDIR)$(usrlibdir)
+
 usrlibdir = $(libdir)@MARK64@
 usrlib_LTLIBRARIES = librpmdb.la
 librpmdb_la_SOURCES = \

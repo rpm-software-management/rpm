@@ -832,10 +832,10 @@ int_32 rpmtsSigtag(const rpmts ts)
 
 int_32 rpmtsSigtype(const rpmts ts)
 {
-    int_32 sigtag = 0;
+    int_32 sigtype = 0;
     if (ts != NULL)
-	sigtag = ts->sigtag;
-    return sigtag;
+	sigtype = ts->sigtype;
+    return sigtype;
 }
 
 const void * rpmtsSig(const rpmts ts)
