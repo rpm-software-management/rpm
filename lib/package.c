@@ -31,7 +31,6 @@ int pkgReadHeader(int fd, Header * hdr, int * isSource) {
    
     if (lead.magic[0] != RPMLEAD_MAGIC0 || lead.magic[1] != RPMLEAD_MAGIC1 ||
 	lead.magic[2] != RPMLEAD_MAGIC2 || lead.magic[3] != RPMLEAD_MAGIC3) {
-	error(RPMERR_BADMAGIC, "file is not an RPM");
 	return 1;
     }
 
