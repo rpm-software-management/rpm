@@ -132,6 +132,35 @@ exit:
 }
 /*@=boundsread@*/
 
+/**
+ * Retrieve signer fingerprint from an OpenPGP signature tag.
+ * @param sig		signature header
+ * @param sigtag	signature tag
+ * @retval signid	signer fingerprint
+ * @return		0 on success
+ */
+static int getSignid(Header sig, int sigtag, byte * signid)
+	/*@modifies *signid @*/
+{
+    void * pkt = NULL;
+    int_32 pkttyp = 0;
+    int_32 pktlen = 0;
+    int rc = 1;
+
+    if (headerGetEntry(sig, sigtag, &pkttyp, &pkt, &pktlen) && pkt != NULL) {
+	struct pgpDig_s * dig = pgpNewDig();
+
+	if (!pgpPrtPkts(pkt, pktlen, dig, 0)) {
+	    memcpy(signid, dig->signature.signid, sizeof(dig->signature.signid));
+	    rc = 0;
+	}
+     
+	dig = pgpFreeDig(dig);
+    }
+    pkt = headerFreeData(pkt, pkttyp);
+    return rc;
+}
+
 /** \ingroup rpmcli
  * Create/modify elements in signature header.
  * @param ts		transaction set
@@ -256,6 +285,12 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 
 	/* If gpg/pgp is configured, replace the signature. */
 	if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
+	    byte oldsignid[8], newsignid[8];
+
+	    /* Grab the old signature fingerprint (if any) */
+	    memset(oldsignid, 0, sizeof(oldsignid));
+	    xx = getSignid(sig, sigtag, oldsignid);
+
 	    switch (sigtag) {
 	    case RPMSIGTAG_GPG:
 		xx = headerRemoveEntry(sig, RPMSIGTAG_DSA);
@@ -265,8 +300,31 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 		xx = headerRemoveEntry(sig, RPMSIGTAG_RSA);
 		/*@switchbreak@*/ break;
 	    }
+
 	    xx = headerRemoveEntry(sig, sigtag);
 	    xx = rpmAddSignature(sig, sigtarget, sigtag, qva->passPhrase);
+
+	    /* If package was previously signed, check for same signer. */
+	    memset(newsignid, 0, sizeof(newsignid));
+	    if (memcmp(oldsignid, newsignid, sizeof(oldsignid))) {
+
+		/* Grab the new signature fingerprint */
+		xx = getSignid(sig, sigtag, newsignid);
+
+		/* If same signer, skip resigning the package. */
+		if (!memcmp(oldsignid, newsignid, sizeof(oldsignid))) {
+
+		    rpmMessage(RPMMESS_WARNING,
+			_("%s: was already signed by key ID %s, skipping\n"),
+			rpm, pgpHexStr(newsignid, sizeof(newsignid)));
+
+		    /* Clean up intermediate target */
+		    xx = unlink(sigtarget);
+		    sigtarget = _free(sigtarget);
+		    continue;
+		}
+	    }
+
 	}
 
 	/* Reallocate the signature into one contiguous region. */
@@ -305,14 +363,14 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	/* Both fd and ofd are now closed. */
 	/* ASSERT: fd == NULL && ofd == NULL */
 
-	/* Clean up intermediate target */
-	xx = unlink(sigtarget);
-	sigtarget = _free(sigtarget);
-
 	/* Move final target into place. */
 	xx = unlink(rpm);
 	xx = rename(trpm, rpm);
 	tmprpm[0] = '\0';
+
+	/* Clean up intermediate target */
+	xx = unlink(sigtarget);
+	sigtarget = _free(sigtarget);
     }
     /*@=branchstate@*/
 

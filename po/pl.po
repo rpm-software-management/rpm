@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-12 14:51-0400\n"
+"POT-Creation-Date: 2002-07-12 18:01-0400\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -1648,7 +1648,7 @@ msgstr "nie mo¿na zapisaæ do %s"
 msgid "error creating temporary file %s\n"
 msgstr "b³±d w tworzeniu pliku tymczasowego %s"
 
-#: lib/package.c:216 lib/rpmchecksig.c:180 lib/rpmchecksig.c:608
+#: lib/package.c:216 lib/rpmchecksig.c:209 lib/rpmchecksig.c:666
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead nie powiod³o siê\n"
@@ -1666,27 +1666,27 @@ msgid ""
 msgstr ""
 "tylko pakiety z numerem g³ównym <= 3 s± obs³ugiwane przez t± wersjê RPM'a"
 
-#: lib/package.c:248 lib/rpmchecksig.c:198 lib/rpmchecksig.c:624
+#: lib/package.c:248 lib/rpmchecksig.c:227 lib/rpmchecksig.c:682
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature nie powiod³o siê\n"
 
-#: lib/package.c:252 lib/rpmchecksig.c:202 lib/rpmchecksig.c:629
+#: lib/package.c:252 lib/rpmchecksig.c:231 lib/rpmchecksig.c:687
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Sygnatura nie jest dostêpna\n"
 
-#: lib/package.c:298 lib/rpmchecksig.c:527
+#: lib/package.c:298 lib/rpmchecksig.c:585
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/package.c:333 lib/package.c:358 lib/package.c:388 lib/rpmchecksig.c:700
+#: lib/package.c:333 lib/package.c:358 lib/package.c:388 lib/rpmchecksig.c:758
 #, c-format
 msgid "only V3 signatures can be verified, skipping V%u signature"
 msgstr ""
 
-#: lib/package.c:400 lib/rpmchecksig.c:122 lib/rpmchecksig.c:556
+#: lib/package.c:400 lib/rpmchecksig.c:122 lib/rpmchecksig.c:614
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
@@ -2396,72 +2396,77 @@ msgstr "wykonanie nie powiod³o siê\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:185
+#: lib/rpmchecksig.c:214
 #, fuzzy, c-format
 msgid "%s: Can't sign v1 packaging\n"
 msgstr "%s: Nie mo¿na podpisaæ v1.0 RPM\n"
 
-#: lib/rpmchecksig.c:189
+#: lib/rpmchecksig.c:218
 #, fuzzy, c-format
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: Nie mo¿na ponownie podpisaæ v2.0 RPM\n"
 
-#: lib/rpmchecksig.c:290
+#: lib/rpmchecksig.c:318
+#, c-format
+msgid "%s: was already signed by key ID %s, skipping\n"
+msgstr ""
+
+#: lib/rpmchecksig.c:348
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:296
+#: lib/rpmchecksig.c:354
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmReadSignature nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:389
+#: lib/rpmchecksig.c:447
 #, fuzzy, c-format
 msgid "%s: import read failed.\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:394
+#: lib/rpmchecksig.c:452
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:399
+#: lib/rpmchecksig.c:457
 #, fuzzy, c-format
 msgid "%s: base64 encode failed.\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:541
+#: lib/rpmchecksig.c:599
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: readLead nie powiod³o siê\n"
 
-#: lib/rpmchecksig.c:614
+#: lib/rpmchecksig.c:672
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Sygnatura nie jest dostêpna (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:862
+#: lib/rpmchecksig.c:920
 msgid "NOT OK"
 msgstr "NIE DOBRZE"
 
-#: lib/rpmchecksig.c:863 lib/rpmchecksig.c:877
+#: lib/rpmchecksig.c:921 lib/rpmchecksig.c:935
 msgid " (MISSING KEYS:"
 msgstr " (BRAK KLUCZY:"
 
-#: lib/rpmchecksig.c:865 lib/rpmchecksig.c:879
+#: lib/rpmchecksig.c:923 lib/rpmchecksig.c:937
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:866 lib/rpmchecksig.c:880
+#: lib/rpmchecksig.c:924 lib/rpmchecksig.c:938
 msgid " (UNTRUSTED KEYS:"
 msgstr "(NIEWIARYGODNE KLUCZE:"
 
-#: lib/rpmchecksig.c:868 lib/rpmchecksig.c:882
+#: lib/rpmchecksig.c:926 lib/rpmchecksig.c:940
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:876
+#: lib/rpmchecksig.c:934
 msgid "OK"
 msgstr "OK"
 

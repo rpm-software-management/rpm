@@ -165,6 +165,7 @@
 	- fix: repair 2ndary match criteria with rpmdb iterators.
 	- update for sv.po.
 	- display signature details using rpm -qi.
+	- skip signing packages already signed with same key (#62118).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
