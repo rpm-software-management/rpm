@@ -1073,8 +1073,6 @@ int headerAppendEntry(Header h, int_32 tag, int_32 type, void * p, int_32 c) {
     length = dataLength(type, p, c, 0);
 
     entry->data = realloc(entry->data, entry->length + length);
-    memcpy(((char *) entry->data) + entry->length, p, length);
-
     copyData(type, ((char *) entry->data) + entry->length, p, c, length);
 
     entry->length += length;
