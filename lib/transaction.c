@@ -51,7 +51,8 @@ static int filecmp(short mode1, char * md51, char * link1,
 	           short mode2, char * md52, char * link2);
 static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
 			            struct sharedFileInfo * shared,
-			            int sharedCount, rpmProblemSet probs);
+			            int sharedCount, int reportConflicts,
+				    rpmProblemSet probs);
 static int handleRmvdInstalledFiles(struct fileInfo * fi, rpmdb db,
 			            struct sharedFileInfo * shared,
 			            int sharedCount);
@@ -83,6 +84,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     int pkgNum;
     int flEntries;
     int last;
+    int beingRemoved;
 
     /* FIXME: what if the same package is included in ts twice? */
 
@@ -225,22 +227,17 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 		last++;
 	    last--;
 
-	    /* if this package is about to be removed, we don't actually
-	       have any file conflicts */
 	    for (j = 0; j < ts->numRemovedPackages; j++)
 		if (ts->removedPackages[j] == sharedList[i].otherPkg)
 		    break;
-	    if (j < ts->numRemovedPackages) {
-		j = sharedList[i].otherPkg;
-		i = last + 1;
-		continue;
-	    }
+	    beingRemoved = (j < ts->numRemovedPackages);
 
 	    if (fi->type == ADDED)
-		handleInstInstalledFiles(fi, ts->db, sharedList + i, last - i,
-					 probs);
-	    else
-		handleRmvdInstalledFiles(fi, ts->db, sharedList + i, last - i);
+		handleInstInstalledFiles(fi, ts->db, sharedList + i, 
+					 last - i + 1, !beingRemoved, probs);
+	    else if (fi->type == REMOVED && !beingRemoved)
+		handleRmvdInstalledFiles(fi, ts->db, sharedList + i, 
+					 last - i + 1);
 
 	    i = last + 1;
 	}
@@ -702,7 +699,8 @@ static int filecmp(short mode1, char * md51, char * link1,
 
 static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
 			            struct sharedFileInfo * shared,
-			            int sharedCount, rpmProblemSet probs) {
+			            int sharedCount, int reportConflicts,
+				    rpmProblemSet probs) {
     Header h;
     int i;
     char ** otherMd5s, ** otherLinks;
@@ -730,7 +728,7 @@ static int handleInstInstalledFiles(struct fileInfo * fi, rpmdb db,
 	otherFileNum = shared->otherFileNum;
 	fileNum = shared->pkgFileNum;
 	if (otherStates[otherFileNum] == RPMFILE_STATE_NORMAL) {
-	    if (filecmp(otherModes[otherFileNum],
+	    if (reportConflicts && filecmp(otherModes[otherFileNum],
 			otherMd5s[otherFileNum],
 			otherLinks[otherFileNum],
 			fi->fmodes[fileNum],
@@ -853,16 +851,19 @@ void handleOverlappedFiles(struct fileInfo * fi, hashTable ht,
 	} else if (fi->type == REMOVED && otherPkgNum >= 0) {
 	    fi->actions[i] = SKIP;
 	} else if (fi->type == REMOVED) {
-	    if (S_ISREG(fi->fmodes[i]) && (fi->fflags[i] & RPMFILE_CONFIG)) {
-		rc = mdfile(fi->fl[i], mdsum);
-		if (!rc && strcmp(fi->fmd5s[i], mdsum)) {
-		    fi->actions[i] = BACKUP;
+	    if (fi->actions[i] != SKIP) {
+		if (S_ISREG(fi->fmodes[i]) && 
+			    (fi->fflags[i] & RPMFILE_CONFIG)) {
+		    rc = mdfile(fi->fl[i], mdsum);
+		    if (!rc && strcmp(fi->fmd5s[i], mdsum)) {
+			fi->actions[i] = BACKUP;
+		    } else {
+			/* FIXME: config files may need to be saved */
+			fi->actions[i] = REMOVE;
+		    }
 		} else {
-		    /* FIXME: config files may need to be saved */
 		    fi->actions[i] = REMOVE;
 		}
-	    } else {
-		fi->actions[i] = REMOVE;
 	    }
 	}
     }
