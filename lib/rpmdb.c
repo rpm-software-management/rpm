@@ -1,7 +1,5 @@
 #include "system.h"
 
-static int _debug = 0;
-
 #include <sys/file.h>
 #include <signal.h>
 #include <sys/signal.h>
@@ -101,120 +99,6 @@ static void dbiTagsInit(void)
     free(dbiTagStr);
 }
 
-#define	dbiSync(_dbi)	(*(_dbi)->dbi_vec->sync) ((_dbi), 0)
-
-/**
- * Create and initialize element of index database set.
- * @param recOffset	byte offset of header in db
- * @param fileNumber	file array index
- * @return	new element
- */
-static inline dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber) {
-    dbiIndexRecord rec = xcalloc(1, sizeof(*rec));
-    rec->recOffset = recOffset;
-    rec->fileNumber = fileNumber;
-    return rec;
-}
-
-/**
- * Return items that match criteria.
- * @param dbi	index database handle
- * @param str	search key
- * @param set	items retrieved from index database
- * @return	-1 error, 0 success, 1 not found
- */
-static int dbiSearchIndex(dbiIndex dbi, const char * str, size_t len,
-		dbiIndexSet * set)
-{
-    int rc;
-
-    rc = (*dbi->dbi_vec->SearchIndex) (dbi, str, len, set);
-
-    switch (rc) {
-    case -1:
-	rpmError(RPMERR_DBGETINDEX, _("error getting record %s from %s index"),
-		str, tagName(dbi->dbi_rpmtag));
-	break;
-    }
-    return rc;
-}
-
-/**
- * Change/delete items that match criteria.
- * @param dbi	index database handle
- * @param str	update key
- * @param set	items to update in index database
- * @return	0 success, 1 not found
- */
-static int dbiUpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
-    int rc;
-
-    rc = (*dbi->dbi_vec->UpdateIndex) (dbi, str, set);
-
-    if (set->count) {
-	if (rc) {
-	    rpmError(RPMERR_DBPUTINDEX, _("error storing record %s into %s"),
-		str, tagName(dbi->dbi_rpmtag));
-	}
-    } else {
-	if (rc) {
-	    rpmError(RPMERR_DBPUTINDEX, _("error removing record %s from %s"),
-		str, tagName(dbi->dbi_rpmtag));
-	}
-    }
-
-    return rc;
-}
-
-/**
- * Append element to set of index database items.
- * @param set	set of index database items
- * @param rec	item to append to set
- * @return	0 success (always)
- */
-static inline int dbiAppendIndexRecord(dbiIndexSet set, dbiIndexRecord rec)
-{
-    set->count++;
-
-    if (set->count == 1) {
-	set->recs = xmalloc(set->count * sizeof(*(set->recs)));
-    } else {
-	set->recs = xrealloc(set->recs, set->count * sizeof(*(set->recs)));
-    }
-    set->recs[set->count - 1].recOffset = rec->recOffset;
-    set->recs[set->count - 1].fileNumber = rec->fileNumber;
-
-    return 0;
-}
-
-/* returns 1 on failure */
-/**
- * Remove element from set of index database items.
- * @param set	set of index database items
- * @param rec	item to remove from set
- * @return	0 success, 1 failure
- */
-static inline int dbiRemoveIndexRecord(dbiIndexSet set, dbiIndexRecord rec) {
-    int from;
-    int to = 0;
-    int num = set->count;
-    int numCopied = 0;
-
-    for (from = 0; from < num; from++) {
-	if (rec->recOffset != set->recs[from].recOffset ||
-	    rec->fileNumber != set->recs[from].fileNumber) {
-	    /* structure assignment */
-	    if (from != to) set->recs[to] = set->recs[from];
-	    to++;
-	    numCopied++;
-	} else {
-	    set->count--;
-	}
-    }
-
-    return (numCopied == num);
-}
-
 #if USE_DB0
 extern struct _dbiVec db0vec;
 #define	DB0vec		&db0vec
@@ -238,67 +122,45 @@ extern struct _dbiVec db3vec;
 #define	DB3vec		NULL
 #endif
 
-/* XXX rpminstall.c, transaction.c */
-unsigned int dbiIndexSetCount(dbiIndexSet set) {
-    return set->count;
-}
-
-/* XXX rpminstall.c, transaction.c */
-unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno) {
-    return set->recs[recno].recOffset;
-}
-
-/* XXX transaction.c */
-unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
-    return set->recs[recno].fileNumber;
-}
-
-/**
- * Change record offset of header within element in index database set.
- * @param set	set of index database items
- * @param recno	index of item in set
- * @param recoff new record offset
- */
-static inline void dbiIndexRecordOffsetSave(dbiIndexSet set, int recno, unsigned int recoff) {
-    set->recs[recno].recOffset = recoff;
-}
-
-int dbiClose(dbiIndex dbi, int flag) {
-    int rc;
-
-    rc = (*dbi->dbi_vec->close) (dbi, flag);
-    return rc;
-}
-
-int dbiPut(dbiIndex dbi, const void * key, size_t keylen,
-	const void * data, size_t datalen)
-{
-    dbiIndexSet set = xcalloc(1, sizeof(*set));
-    size_t nb = (datalen < sizeof(*set->recs) ? datalen : sizeof(*set->recs));
-    int rc;
-
-    set->count = 1;
-    set->recs = dbiReturnIndexRecordInstance(0, 0);
-    memcpy(set->recs, data, nb);
-
-    rc = (*dbi->dbi_vec->UpdateIndex) (dbi, key, set);
-
-    dbiFreeIndexSet(set);
-
-    return rc;
-}
-
 static struct _dbiVec *mydbvecs[] = {
     DB0vec, DB1vec, DB2vec, DB3vec, NULL
 };
 
-/**
- * Return handle for an index database.
- * @param rpmdb		rpm database
- * @param dbix		dbi template to use
- * @return		index database handle
- */
-dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag)
+inline int dbiSync(dbiIndex dbi, unsigned int flags) {
+    return (*dbi->dbi_vec->sync) (dbi, flags);
+}
+
+inline int dbiByteSwapped(dbiIndex dbi) {
+    return (*dbi->dbi_vec->byteswapped) (dbi);
+}
+
+inline int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int flags) {
+    return (*dbi->dbi_vec->copen) (dbi, dbcp, flags);
+}
+
+inline int dbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags) {
+    return (*dbi->dbi_vec->cclose) (dbi, dbcursor, flags);
+}
+
+inline int dbiDel(dbiIndex dbi, const void * keyp, size_t keylen, unsigned int flags) {
+    return (*dbi->dbi_vec->cdel) (dbi, keyp, keylen, flags);
+}
+
+inline int dbiGet(dbiIndex dbi, void ** keypp, size_t * keylenp,
+	void ** datapp, size_t * datalenp, unsigned int flags) {
+    return (*dbi->dbi_vec->cget) (dbi, keypp, keylenp, datapp, datalenp, flags);
+}
+
+inline int dbiPut(dbiIndex dbi, const void * keyp, size_t keylen,
+	const void * datap, size_t datalen, unsigned int flags) {
+    return (*dbi->dbi_vec->cput) (dbi, keyp, keylen, datap, datalen, flags);
+}
+
+inline int dbiClose(dbiIndex dbi, unsigned int flags) {
+    return (*dbi->dbi_vec->close) (dbi, flags);
+}
+
+dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags)
 {
     int dbix;
     dbiIndex dbi = NULL;
@@ -364,6 +226,261 @@ dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag)
      }
 
     return dbi;
+}
+
+/**
+ * Create and initialize element of index database set.
+ * @param recOffset	byte offset of header in db
+ * @param fileNumber	file array index
+ * @return	new element
+ */
+static inline dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber) {
+    dbiIndexRecord rec = xcalloc(1, sizeof(*rec));
+    rec->recOffset = recOffset;
+    rec->fileNumber = fileNumber;
+    return rec;
+}
+
+union _dbswap {
+    unsigned int ui;
+    unsigned char uc[4];
+};
+
+#define	_DBSWAP(_a) \
+  { unsigned char _b, *_c = (_a).uc; \
+    _b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
+    _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
+  }
+
+/**
+ * Return items that match criteria.
+ * @param dbi		index database handle
+ * @param keyp		search key
+ * @param keylen	search key length (0 will use strlen(key))
+ * @param setp		address of items retrieved from index database
+ * @return		-1 error, 0 success, 1 not found
+ */
+static int dbiSearchIndex(dbiIndex dbi, const char * keyp, size_t keylen,
+		dbiIndexSet * setp)
+{
+    int rc;
+    void * datap;
+    size_t datalen;
+
+    if (setp) *setp = NULL;
+    if (keylen == 0) keylen = strlen(keyp);
+
+    rc = dbiGet(dbi, (void **)&keyp, &keylen, &datap, &datalen, 0);
+
+    if (rc < 0) {
+	rpmError(RPMERR_DBGETINDEX, _("error getting \"%s\" records from %s index"),
+		keyp, tagName(dbi->dbi_rpmtag));
+    } else if (rc == 0 && setp) {
+	int _dbbyteswapped = dbiByteSwapped(dbi);
+	const char * sdbir = datap;
+	dbiIndexSet set;
+	int i;
+
+	set = xmalloc(sizeof(*set));
+
+	/* Convert to database internal format */
+	switch (dbi->dbi_jlen) {
+	case 2*sizeof(int_32):
+	    set->count = datalen / (2*sizeof(int_32));
+	    set->recs = xmalloc(set->count * sizeof(*(set->recs)));
+	    for (i = 0; i < set->count; i++) {
+		union _dbswap recOffset, fileNumber;
+
+		memcpy(&recOffset.ui, sdbir, sizeof(recOffset.ui));
+		sdbir += sizeof(recOffset.ui);
+		memcpy(&fileNumber.ui, sdbir, sizeof(fileNumber.ui));
+		sdbir += sizeof(fileNumber.ui);
+		if (_dbbyteswapped) {
+		    _DBSWAP(recOffset);
+		    _DBSWAP(fileNumber);
+		}
+		set->recs[i].recOffset = recOffset.ui;
+		set->recs[i].fileNumber = fileNumber.ui;
+		set->recs[i].fpNum = 0;
+		set->recs[i].dbNum = 0;
+	    }
+	    break;
+	default:
+	case 1*sizeof(int_32):
+	    set->count = datalen / (1*sizeof(int_32));
+	    set->recs = xmalloc(set->count * sizeof(*(set->recs)));
+	    for (i = 0; i < set->count; i++) {
+		union _dbswap recOffset;
+
+		memcpy(&recOffset.ui, sdbir, sizeof(recOffset.ui));
+		sdbir += sizeof(recOffset.ui);
+		if (_dbbyteswapped) {
+		    _DBSWAP(recOffset);
+		}
+		set->recs[i].recOffset = recOffset.ui;
+		set->recs[i].fileNumber = 0;
+		set->recs[i].fpNum = 0;
+		set->recs[i].dbNum = 0;
+	    }
+	    break;
+	}
+	*setp = set;
+    }
+    return rc;
+}
+
+/**
+ * Change/delete items that match criteria.
+ * @param dbi	index database handle
+ * @param keyp	update key
+ * @param set	items to update in index database
+ * @return	0 success, 1 not found
+ */
+/*@-compmempass@*/
+static int dbiUpdateIndex(dbiIndex dbi, const char * keyp, dbiIndexSet set)
+{
+    size_t keylen = strlen(keyp);
+    void * datap;
+    size_t datalen;
+    int rc;
+
+    if (set->count) {
+	char * tdbir;
+	int i;
+	int _dbbyteswapped = dbiByteSwapped(dbi);
+
+	/* Convert to database internal format */
+
+	switch (dbi->dbi_jlen) {
+	case 2*sizeof(int_32):
+	    datalen = set->count * (2 * sizeof(int_32));
+	    datap = tdbir = alloca(datalen);
+	    for (i = 0; i < set->count; i++) {
+		union _dbswap recOffset, fileNumber;
+
+		recOffset.ui = set->recs[i].recOffset;
+		fileNumber.ui = set->recs[i].fileNumber;
+		if (_dbbyteswapped) {
+		    _DBSWAP(recOffset);
+		    _DBSWAP(fileNumber);
+		}
+		memcpy(tdbir, &recOffset.ui, sizeof(recOffset.ui));
+		tdbir += sizeof(recOffset.ui);
+		memcpy(tdbir, &fileNumber.ui, sizeof(fileNumber.ui));
+		tdbir += sizeof(fileNumber.ui);
+	    }
+	    break;
+	default:
+	case 1*sizeof(int_32):
+	    datalen = set->count * (1 * sizeof(int_32));
+	    datap = tdbir = alloca(datalen);
+	    for (i = 0; i < set->count; i++) {
+		union _dbswap recOffset;
+
+		recOffset.ui = set->recs[i].recOffset;
+		if (_dbbyteswapped) {
+		    _DBSWAP(recOffset);
+		}
+		memcpy(tdbir, &recOffset.ui, sizeof(recOffset.ui));
+		tdbir += sizeof(recOffset.ui);
+	    }
+	    break;
+	}
+
+	rc = dbiPut(dbi, keyp, keylen, datap, datalen, 0);
+
+	if (rc) {
+	    rpmError(RPMERR_DBPUTINDEX, _("error storing record %s into %s"),
+		keyp, tagName(dbi->dbi_rpmtag));
+	}
+
+    } else {
+
+	rc = dbiDel(dbi, keyp, keylen, 0);
+
+	if (rc) {
+	    rpmError(RPMERR_DBPUTINDEX, _("error removing record %s from %s"),
+		keyp, tagName(dbi->dbi_rpmtag));
+	}
+
+    }
+
+    return rc;
+}
+/*@=compmempass@*/
+
+/**
+ * Append element to set of index database items.
+ * @param set	set of index database items
+ * @param rec	item to append to set
+ * @return	0 success (always)
+ */
+static inline int dbiAppendIndexRecord(dbiIndexSet set, dbiIndexRecord rec)
+{
+    set->count++;
+
+    if (set->count == 1) {
+	set->recs = xmalloc(set->count * sizeof(*(set->recs)));
+    } else {
+	set->recs = xrealloc(set->recs, set->count * sizeof(*(set->recs)));
+    }
+    set->recs[set->count - 1].recOffset = rec->recOffset;
+    set->recs[set->count - 1].fileNumber = rec->fileNumber;
+
+    return 0;
+}
+
+/* returns 1 on failure */
+/**
+ * Remove element from set of index database items.
+ * @param set	set of index database items
+ * @param rec	item to remove from set
+ * @return	0 success, 1 failure
+ */
+static inline int dbiRemoveIndexRecord(dbiIndexSet set, dbiIndexRecord rec) {
+    int from;
+    int to = 0;
+    int num = set->count;
+    int numCopied = 0;
+
+    for (from = 0; from < num; from++) {
+	if (rec->recOffset != set->recs[from].recOffset ||
+	    rec->fileNumber != set->recs[from].fileNumber) {
+	    /* structure assignment */
+	    if (from != to) set->recs[to] = set->recs[from];
+	    to++;
+	    numCopied++;
+	} else {
+	    set->count--;
+	}
+    }
+
+    return (numCopied == num);
+}
+
+/* XXX rpminstall.c, transaction.c */
+unsigned int dbiIndexSetCount(dbiIndexSet set) {
+    return set->count;
+}
+
+/* XXX rpminstall.c, transaction.c */
+unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno) {
+    return set->recs[recno].recOffset;
+}
+
+/* XXX transaction.c */
+unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
+    return set->recs[recno].fileNumber;
+}
+
+/**
+ * Change record offset of header within element in index database set.
+ * @param set	set of index database items
+ * @param recno	index of item in set
+ * @param recoff new record offset
+ */
+static inline void dbiIndexRecordOffsetSave(dbiIndexSet set, int recno, unsigned int recoff) {
+    set->recs[recno].recOffset = recoff;
 }
 
 /* XXX depends.c, install.c, query.c, rpminstall.c, transaction.c */
@@ -518,7 +635,7 @@ static int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 	    int rpmtag;
 
 	    rpmtag = dbiTags[dbix];
-	    dbi = dbiOpen(rpmdb, rpmtag);
+	    dbi = dbiOpen(rpmdb, rpmtag, 0);
 	    if (dbi == NULL)
 		continue;
 
@@ -543,8 +660,8 @@ static int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
      */
 		if (justCheck)
 		    break;
-		xx = (*dbi->dbi_vec->copen) (dbi, NULL);
-		xx = (*dbi->dbi_vec->cget) (dbi, &keyp, NULL, NULL, NULL);
+		xx = dbiCopen(dbi, NULL, 0);
+		xx = dbiGet(dbi, &keyp, NULL, NULL, NULL, 0);
 		if (xx == 0) {
 		    const char * akey = keyp;
 		    if (strchr(akey, '/')) {
@@ -553,7 +670,7 @@ static int openDatabase(const char * prefix, const char * dbpath, rpmdb *dbp,
 			rc |= 1;
 		    }
 		}
-		xx = (*dbi->dbi_vec->cclose) (dbi, NULL);
+		xx = dbiCclose(dbi, NULL, 0);
 	    }	break;
 	    default:
 		break;
@@ -607,10 +724,10 @@ Header rpmdbGetRecord(rpmdb rpmdb, unsigned int offset)
     int rc;
 
     rpmtag = 0;	/* RPMDBI_PACKAGES */
-    dbi = dbiOpen(rpmdb, rpmtag);
+    dbi = dbiOpen(rpmdb, rpmtag, 0);
     if (dbi == NULL)
 	return NULL;
-    rc = (*dbi->dbi_vec->get) (dbi, keyp, keylen, &uh, &uhlen);
+    rc = dbiGet(dbi, &keyp, &keylen, &uh, &uhlen, 0);
     if (rc)
 	return NULL;
     return headerLoad(uh);
@@ -647,7 +764,7 @@ static int rpmdbFindByFile(rpmdb rpmdb, const char * filespec,
     fpc = fpCacheCreate(20);
     fp1 = fpLookup(fpc, dirName, baseName, 1);
 
-    dbi = dbiOpen(rpmdb, RPMTAG_BASENAMES);
+    dbi = dbiOpen(rpmdb, RPMTAG_BASENAMES, 0);
     rc = dbiSearchIndex(dbi, baseName, 0, &allMatches);
     if (rc) {
 	dbiFreeIndexSet(allMatches);
@@ -791,7 +908,7 @@ void rpmdbFreeIterator(rpmdbMatchIterator mi)
 	int dbix = 0;	/* RPMDBI_PACKAGES */
 	dbiIndex dbi = mi->mi_rpmdb->_dbi[dbix];
 	if (dbi)
-	    (void) (*dbi->dbi_vec->cclose) (dbi, NULL);
+	    (void) dbiCclose(dbi, NULL, 0);
     }
     if (mi->mi_key) {
 	xfree(mi->mi_key);
@@ -852,7 +969,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
 	return NULL;
 
     rpmtag = 0;	/* RPMDBI_PACKAGES */
-    dbi = dbiOpen(mi->mi_rpmdb, rpmtag);
+    dbi = dbiOpen(mi->mi_rpmdb, rpmtag, 0);
     if (dbi == NULL)
 	return NULL;
 
@@ -872,7 +989,7 @@ top:
 	    keyp = NULL;
 	    keylen = 0;
 
-	    rc = (*dbi->dbi_vec->cget) (dbi, &keyp, &keylen, &uh, &uhlen);
+	    rc = dbiGet(dbi, &keyp, &keylen, &uh, &uhlen, 0);
 
 	    if (rc == 0 && keyp && mi->mi_setx)
 		memcpy(&mi->mi_offset, keyp, sizeof(mi->mi_offset));
@@ -889,7 +1006,7 @@ top:
 
     /* Retrieve header */
     if (uh == NULL) {
-	rc = (*dbi->dbi_vec->cget) (dbi, &keyp, &keylen, &uh, &uhlen);
+	rc = dbiGet(dbi, &keyp, &keylen, &uh, &uhlen, 0);
 	if (rc)
 	    return NULL;
     }
@@ -919,49 +1036,34 @@ top:
     return mi->mi_h;
 }
 
-static int intMatchCmp(const void * one, const void * two)
-{
-    const struct _dbiIndexRecord * a = one;
-    const struct _dbiIndexRecord * b = two;
-
-#ifdef	DYING
-    if (a->recOffset < b->recOffset)
-	return -1;
-    else if (a->recOffset > b->recOffset)
-	return 1;
-
-    return 0;
-#else
+static int intMatchCmp(const void * one, const void * two) {
+    const struct _dbiIndexRecord * a = one,  * b = two;
     return (a->recOffset - b->recOffset);
-#endif
 }
 
-static void rpmdbSortIterator(rpmdbMatchIterator mi)
-{
-    if (!(mi && mi->mi_set && mi->mi_set->recs && mi->mi_set->count > 0))
-	return;
-
-    qsort(mi->mi_set->recs, mi->mi_set->count, sizeof(*mi->mi_set->recs),
+static void rpmdbSortIterator(rpmdbMatchIterator mi) {
+    if (mi && mi->mi_set && mi->mi_set->recs && mi->mi_set->count > 0)
+	qsort(mi->mi_set->recs, mi->mi_set->count, sizeof(*mi->mi_set->recs),
 		intMatchCmp);
 }
 
 static int rpmdbGrowIterator(rpmdbMatchIterator mi,
-	const void * key, size_t keylen, int fpNum)
+	const void * keyp, size_t keylen, int fpNum)
 {
     dbiIndex dbi = NULL;
     dbiIndexSet set = NULL;
     int i;
     int rc;
 
-    if (!(mi && key))
+    if (!(mi && keyp))
 	return 1;
 
     dbi = mi->mi_rpmdb->_dbi[mi->mi_dbix];
 
     if (keylen == 0)
-	keylen = strlen(key);
+	keylen = strlen(keyp);
 
-    rc = dbiSearchIndex(dbi, key, keylen, &set);
+    rc = dbiSearchIndex(dbi, keyp, keylen, &set);
 
     switch (rc) {
     default:
@@ -991,7 +1093,7 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi,
 }
 
 rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
-	const void * key, size_t keylen)
+	const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi = NULL;
     dbiIndexSet set = NULL;
@@ -1001,16 +1103,16 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
     dbix = dbiTagToDbix(rpmtag);
     if (dbix < 0)
 	return NULL;
-    dbi = dbiOpen(rpmdb, rpmtag);
+    dbi = dbiOpen(rpmdb, rpmtag, 0);
     if (dbi == NULL)
 	return NULL;
 
-    if (key) {
+    if (keyp) {
 	int rc;
 	if (rpmtag == RPMTAG_BASENAMES) {
-	    rc = rpmdbFindByFile(rpmdb, key, &set);
+	    rc = rpmdbFindByFile(rpmdb, keyp, &set);
 	} else {
-	    rc = dbiSearchIndex(dbi, key, keylen, &set);
+	    rc = dbiSearchIndex(dbi, keyp, keylen, &set);
 	}
 	switch (rc) {
 	default:
@@ -1026,12 +1128,12 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
     }
 
     mi = xcalloc(sizeof(*mi), 1);
-    if (key) {
+    if (keyp) {
 	if (keylen == 0)
-	    keylen = strlen(key);
+	    keylen = strlen(keyp);
 
 	{   char * k = xmalloc(keylen + 1);
-	    memcpy(k, key, keylen);
+	    memcpy(k, keyp, keylen);
 	    k[keylen] = '\0';	/* XXX for strings */
 	    mi->mi_key = k;
 	}
@@ -1058,13 +1160,13 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb rpmdb, int rpmtag,
     return mi;
 }
 
-static inline int removeIndexEntry(dbiIndex dbi, const char * key, dbiIndexRecord rec,
+static inline int removeIndexEntry(dbiIndex dbi, const char * keyp, dbiIndexRecord rec,
 		             int tolerant)
 {
     dbiIndexSet set = NULL;
     int rc;
     
-    rc = dbiSearchIndex(dbi, key, 0, &set);
+    rc = dbiSearchIndex(dbi, keyp, 0, &set);
 
     switch (rc) {
     case -1:			/* error */
@@ -1074,7 +1176,7 @@ static inline int removeIndexEntry(dbiIndex dbi, const char * key, dbiIndexRecor
 	rc = 0;
 	if (!tolerant) {
 	    rpmError(RPMERR_DBCORRUPT, _("key \"%s\" not found in %s"), 
-		key, tagName(dbi->dbi_rpmtag));
+		keyp, tagName(dbi->dbi_rpmtag));
 	    rc = 1;
 	}
 	break;
@@ -1082,12 +1184,12 @@ static inline int removeIndexEntry(dbiIndex dbi, const char * key, dbiIndexRecor
 	if (dbiRemoveIndexRecord(set, rec)) {
 	    if (!tolerant) {
 		rpmError(RPMERR_DBCORRUPT, _("key \"%s\" not removed from %s"),
-		    key, tagName(dbi->dbi_rpmtag));
+		    keyp, tagName(dbi->dbi_rpmtag));
 		rc = 1;
 	    }
 	    break;
 	}
-	if (dbiUpdateIndex(dbi, key, set))
+	if (dbiUpdateIndex(dbi, keyp, set))
 	    rc = 1;
 	break;
     }
@@ -1131,10 +1233,10 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int offset, int tolerant)
 
 	    /* XXX FIXME: this forces all indices open */
 	    rpmtag = dbiTags[dbix];
-	    dbi = dbiOpen(rpmdb, rpmtag);
+	    dbi = dbiOpen(rpmdb, rpmtag, 0);
 
 	    if (dbi->dbi_rpmtag == 0) {
-		(void) (*dbi->dbi_vec->del) (dbi, &offset, sizeof(offset));
+		(void) dbiDel(dbi, &offset, sizeof(offset), 0);
 		continue;
 	    }
 	
@@ -1186,7 +1288,7 @@ int rpmdbRemove(rpmdb rpmdb, unsigned int offset, int tolerant)
 		}
 	    }
 
-	    dbiSync(dbi);
+	    dbiSync(dbi, 0);
 
 	    switch (rpmtype) {
 	    case RPM_STRING_ARRAY_TYPE:
@@ -1277,17 +1379,17 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 	int rc;
 
 	rpmtag = 0;	/* RPMDBI_PACKAGES */
-	dbi = dbiOpen(rpmdb, rpmtag);
+	dbi = dbiOpen(rpmdb, rpmtag, 0);
 
 	/* XXX db0: hack to pass sizeof header to fadAlloc */
 	datap = h;
 	datalen = headerSizeof(h, HEADER_MAGIC_NO);
 
-	(void) (*dbi->dbi_vec->copen) (dbi, NULL);
+	(void) dbiCopen(dbi, NULL, 0);
 
 	/* Retrieve join key for next header instance. */
 
-	rc = (*dbi->dbi_vec->cget) (dbi, &keyp, &keylen, &datap, &datalen);
+	rc = dbiGet(dbi, &keyp, &keylen, &datap, &datalen, 0);
 
 	offset = 0;
 	if (rc == 0 && datap)
@@ -1300,9 +1402,9 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 	    datalen = sizeof(offset);
 	}
 
-	rc = (*dbi->dbi_vec->cput) (dbi, keyp, keylen, datap, datalen);
+	rc = dbiPut(dbi, keyp, keylen, datap, datalen, 0);
 
-	(void) (*dbi->dbi_vec->cclose) (dbi, NULL);
+	(void) dbiCclose(dbi, NULL, 0);
 
     }
 
@@ -1323,13 +1425,13 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 
 	    /* XXX FIXME: this forces all indices open */
 	    rpmtag = dbiTags[dbix];
-	    dbi = dbiOpen(rpmdb, rpmtag);
+	    dbi = dbiOpen(rpmdb, rpmtag, 0);
 
 	    if (dbi->dbi_rpmtag == 0) {
 		size_t uhlen = headerSizeof(h, HEADER_MAGIC_NO);
 		void * uh = headerUnload(h);
 
-		(void) (*dbi->dbi_vec->put) (dbi, &offset, sizeof(offset), uh, uhlen);
+		(void) dbiPut(dbi, &offset, sizeof(offset), uh, uhlen, 0);
 		free(uh);
 
 		{   const char *n, *v, *r;
@@ -1405,7 +1507,7 @@ int rpmdbAdd(rpmdb rpmdb, Header h)
 		}
 	    }
 
-	    dbiSync(dbi);
+	    dbiSync(dbi, 0);
 
 	    switch (rpmtype) {
 	    case RPM_STRING_ARRAY_TYPE:
@@ -1670,7 +1772,7 @@ int findMatches(rpmdb rpmdb, const char * name, const char * version,
     int rc;
     int i;
 
-    dbi = dbiOpen(rpmdb, RPMTAG_NAME);
+    dbi = dbiOpen(rpmdb, RPMTAG_NAME, 0);
     rc = dbiSearchIndex(dbi, name, 0, matches);
 
     if (rc != 0) {

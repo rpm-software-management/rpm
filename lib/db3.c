@@ -674,7 +674,7 @@ static inline int db3c_open(dbiIndex dbi, DBC ** dbcp)
     return rc;
 }
 
-static int db3cclose(dbiIndex dbi, DBC * dbcursor)
+static int db3cclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags)
 {
     int rc = 0;
 
@@ -688,7 +688,7 @@ static int db3cclose(dbiIndex dbi, DBC * dbcursor)
     return rc;
 }
 
-static int db3copen(dbiIndex dbi, DBC ** dbcp)
+static int db3copen(dbiIndex dbi, DBC ** dbcp, unsigned int flags)
 {
     DBC * dbcursor;
     int rc = 0;
@@ -706,8 +706,8 @@ static int db3copen(dbiIndex dbi, DBC ** dbcp)
     return rc;
 }
 
-static int db3cput(dbiIndex dbi, void * keyp, size_t keylen,
-		void * datap, size_t datalen)
+static int db3cput(dbiIndex dbi, const void * keyp, size_t keylen,
+		const void * datap, size_t datalen, unsigned int flags)
 {
     DB * db = dbi->dbi_db;
     DB_TXN * txnid = NULL;
@@ -716,9 +716,9 @@ static int db3cput(dbiIndex dbi, void * keyp, size_t keylen,
 
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
-    key.data = keyp;
+    key.data = (void *)keyp;
     key.size = keylen;
-    data.data = datap;
+    data.data = (void *)datap;
     data.size = datalen;
 
     if (!dbi->dbi_use_cursors) {
@@ -727,18 +727,18 @@ static int db3cput(dbiIndex dbi, void * keyp, size_t keylen,
     } else {
 	DBC * dbcursor;
 
-	if ((rc = db3copen(dbi, &dbcursor)) != 0)
+	if ((rc = db3copen(dbi, &dbcursor, 0)) != 0)
 	    return rc;
 
 	rc = db3c_put(dbi, dbcursor, &key, &data, DB_KEYLAST);
 
-	(void) db3cclose(dbi, dbcursor);
+	(void) db3cclose(dbi, dbcursor, 0);
     }
 
     return rc;
 }
 
-static int db3cdel(dbiIndex dbi, void * keyp, size_t keylen)
+static int db3cdel(dbiIndex dbi, const void * keyp, size_t keylen, unsigned int flags)
 {
     DB * db = dbi->dbi_db;
     DB_TXN * txnid = NULL;
@@ -748,7 +748,7 @@ static int db3cdel(dbiIndex dbi, void * keyp, size_t keylen)
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
 
-    key.data = keyp;
+    key.data = (void *)keyp;
     key.size = keylen;
 
     if (!dbi->dbi_use_cursors) {
@@ -757,7 +757,7 @@ static int db3cdel(dbiIndex dbi, void * keyp, size_t keylen)
     } else {
 	DBC * dbcursor;
 
-	if ((rc = db3copen(dbi, &dbcursor)) != 0)
+	if ((rc = db3copen(dbi, &dbcursor, 0)) != 0)
 	    return rc;
 
 	rc = db3c_get(dbi, dbcursor, &key, &data, DB_SET);
@@ -775,7 +775,7 @@ static int db3cdel(dbiIndex dbi, void * keyp, size_t keylen)
 }
 
 static int db3cget(dbiIndex dbi, void ** keyp, size_t * keylen,
-		void ** datap, size_t * datalen)
+		void ** datap, size_t * datalen, unsigned int flags)
 {
     DB * db = dbi->dbi_db;
     DB_TXN * txnid = NULL;
@@ -797,7 +797,7 @@ static int db3cget(dbiIndex dbi, void ** keyp, size_t * keylen,
     } else {
 	DBC * dbcursor;
 
-	if ((rc = db3copen(dbi, &dbcursor)) != 0)
+	if ((rc = db3copen(dbi, &dbcursor, 0)) != 0)
 	    return rc;
 
 	/* XXX db3 does DB_FIRST on uninitialized cursor */
@@ -805,7 +805,7 @@ static int db3cget(dbiIndex dbi, void ** keyp, size_t * keylen,
 		key.data == NULL ? DB_NEXT : DB_SET);
 
 	if (rc > 0)	/* DB_NOTFOUND */
-	    (void) db3cclose(dbi, dbcursor);
+	    (void) db3cclose(dbi, dbcursor, 0);
     }
 
     if (rc == 0) {
@@ -814,75 +814,6 @@ static int db3cget(dbiIndex dbi, void ** keyp, size_t * keylen,
 	if (datap)	*datap = data.data;
 	if (datalen)	*datalen = data.size;
     }
-
-    return rc;
-}
-
-static int db3get(dbiIndex dbi, void * keyp, size_t keylen,
-		void ** datap, size_t * datalen)
-{
-    DB * db = dbi->dbi_db;
-    DB_TXN * txnid = NULL;
-    DBT key, data;
-    int rc;
-
-    if (datap) *datap = NULL;
-    if (datalen) *datalen = 0;
-    memset(&key, 0, sizeof(key));
-    memset(&data, 0, sizeof(data));
-
-    {	int _printit;
-	key.data = keyp;
-	key.size = keylen;
-	rc = db->get(db, txnid, &key, &data, 0);
-	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
-	rc = cvtdberr(dbi, "db->get", rc, _printit);
-    }
-
-    if (rc == 0) {
-	if (datap)	*datap = data.data;
-	if (datalen)	*datalen = data.size;
-    }
-
-    return rc;
-}
-
-static int db3put(dbiIndex dbi, void * keyp, size_t keylen,
-		void * datap, size_t datalen)
-{
-    DB * db = dbi->dbi_db;
-    DB_TXN * txnid = NULL;
-    DBT key, data;
-    int rc;
-
-    memset(&key, 0, sizeof(key));
-    memset(&data, 0, sizeof(data));
-
-    key.data = keyp;
-    key.size = keylen;
-    data.data = datap;
-    data.size = datalen;
-
-    rc = db->put(db, txnid, &key, &data, 0);
-    rc = cvtdberr(dbi, "db->put", rc, _debug);
-
-    return rc;
-}
-
-static int db3del(dbiIndex dbi, void * keyp, size_t keylen)
-{
-    DB * db = dbi->dbi_db;
-    DB_TXN * txnid = NULL;
-    DBT key;
-    int rc;
-
-    memset(&key, 0, sizeof(key));
-
-    key.data = keyp;
-    key.size = keylen;
-
-    rc = db->del(db, txnid, &key, 0);
-    rc = cvtdberr(dbi, "db->del", rc, _debug);
 
     return rc;
 }
@@ -898,182 +829,6 @@ static int db3byteswapped(dbiIndex dbi)
 
     return rc;
 }
-
-union _dbswap {
-    unsigned int ui;
-    unsigned char uc[4];
-};
-
-#define	_DBSWAP(_a) \
-  { unsigned char _b, *_c = (_a).uc; \
-    _b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
-    _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
-  }
-
-static int db3SearchIndex(dbiIndex dbi, const void * keyp, size_t keylen,
-		dbiIndexSet * setp)
-{
-    int rc;
-    void * datap;
-    size_t datalen;
-
-#ifdef	DYING
-    DB * db = dbi->dbi_db;
-    DB_TXN * txnid = NULL;
-    DBT key, data;
-
-    if (set) *set = NULL;
-    if (keylen == 0) keylen = strlen(keyp);
-
-    memset(&key, 0, sizeof(key));
-    memset(&data, 0, sizeof(data));
-
-    key.data = keyp;
-    key.size = keylen;
-    data.data = NULL;
-    data.size = 0;
-
-    if (!dbi->dbi_use_cursors) {
-	int _printit;
-	rc = db->get(db, txnid, &key, &data, 0);
-	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
-	rc = cvtdberr(dbi, "db->get", rc, _printit);
-    } else {
-	DBC * dbcursor;
-
-	if ((rc = db3copen(dbi, &dbcursor)) != 0)
-	    return rc;
-
-	/* XXX TODO: loop over duplicates */
-	rc = db3c_get(dbi, dbcursor, &key, &data, DB_SET);
-
-	if (rc > 0)	/* DB_NOTFOUND */
-	    (void) db3cclose(dbi, dbcursor);
-    }
-#else
-
-    if (setp) *setp = NULL;
-    if (keylen == 0) keylen = strlen(keyp);
-
-    rc = db3cget(dbi, (void **)&keyp, &keylen, &datap, &datalen);
-
-#endif
-
-    if (rc == 0 && setp) {
-	int _dbbyteswapped = db3byteswapped(dbi);
-	const char * sdbir = datap;
-	dbiIndexSet set;
-	int i;
-
-	set = xmalloc(sizeof(*set));
-
-	/* Convert to database internal format */
-	switch (dbi->dbi_jlen) {
-	case 2*sizeof(int_32):
-	    set->count = datalen / (2*sizeof(int_32));
-	    set->recs = xmalloc(set->count * sizeof(*(set->recs)));
-	    for (i = 0; i < set->count; i++) {
-		union _dbswap recOffset, fileNumber;
-
-		memcpy(&recOffset.ui, sdbir, sizeof(recOffset.ui));
-		sdbir += sizeof(recOffset.ui);
-		memcpy(&fileNumber.ui, sdbir, sizeof(fileNumber.ui));
-		sdbir += sizeof(fileNumber.ui);
-		if (_dbbyteswapped) {
-		    _DBSWAP(recOffset);
-		    _DBSWAP(fileNumber);
-		}
-		set->recs[i].recOffset = recOffset.ui;
-		set->recs[i].fileNumber = fileNumber.ui;
-		set->recs[i].fpNum = 0;
-		set->recs[i].dbNum = 0;
-	    }
-	    break;
-	default:
-	case 1*sizeof(int_32):
-	    set->count = datalen / (1*sizeof(int_32));
-	    set->recs = xmalloc(set->count * sizeof(*(set->recs)));
-	    for (i = 0; i < set->count; i++) {
-		union _dbswap recOffset;
-
-		memcpy(&recOffset.ui, sdbir, sizeof(recOffset.ui));
-		sdbir += sizeof(recOffset.ui);
-		if (_dbbyteswapped) {
-		    _DBSWAP(recOffset);
-		}
-		set->recs[i].recOffset = recOffset.ui;
-		set->recs[i].fileNumber = 0;
-		set->recs[i].fpNum = 0;
-		set->recs[i].dbNum = 0;
-	    }
-	    break;
-	}
-	*setp = set;
-    }
-    return rc;
-}
-
-/*@-compmempass@*/
-static int db3UpdateIndex(dbiIndex dbi, const char * keyp, dbiIndexSet set)
-{
-    size_t keylen = strlen(keyp);
-    void * datap;
-    size_t datalen;
-    int rc;
-
-    if (set->count) {
-	char * tdbir;
-	int i;
-	int _dbbyteswapped = db3byteswapped(dbi);
-
-	/* Convert to database internal format */
-
-	switch (dbi->dbi_jlen) {
-	case 2*sizeof(int_32):
-	    datalen = set->count * (2 * sizeof(int_32));
-	    datap = tdbir = alloca(datalen);
-	    for (i = 0; i < set->count; i++) {
-		union _dbswap recOffset, fileNumber;
-
-		recOffset.ui = set->recs[i].recOffset;
-		fileNumber.ui = set->recs[i].fileNumber;
-		if (_dbbyteswapped) {
-		    _DBSWAP(recOffset);
-		    _DBSWAP(fileNumber);
-		}
-		memcpy(tdbir, &recOffset.ui, sizeof(recOffset.ui));
-		tdbir += sizeof(recOffset.ui);
-		memcpy(tdbir, &fileNumber.ui, sizeof(fileNumber.ui));
-		tdbir += sizeof(fileNumber.ui);
-	    }
-	    break;
-	default:
-	case 1*sizeof(int_32):
-	    datalen = set->count * (1 * sizeof(int_32));
-	    datap = tdbir = alloca(datalen);
-	    for (i = 0; i < set->count; i++) {
-		union _dbswap recOffset;
-
-		recOffset.ui = set->recs[i].recOffset;
-		if (_dbbyteswapped) {
-		    _DBSWAP(recOffset);
-		}
-		memcpy(tdbir, &recOffset.ui, sizeof(recOffset.ui));
-		tdbir += sizeof(recOffset.ui);
-	    }
-	    break;
-	}
-
-	rc = db3cput(dbi, (void *)keyp, keylen, datap, datalen);
-
-    } else {
-
-	rc = db3cdel(dbi, (void *)keyp, keylen);
-    }
-
-    return rc;
-}
-/*@=compmempass@*/
 
 static int db3close(dbiIndex dbi, unsigned int flags)
 {
@@ -1106,7 +861,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 #if defined(__USE_DB2) || defined(__USE_DB3)
 
     if (dbi->dbi_rmw)
-	db3cclose(dbi, NULL);
+	db3cclose(dbi, NULL, 0);
 
     if (db) {
 	rc = db->close(db, 0);
@@ -1317,8 +1072,7 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 
 struct _dbiVec db3vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
-    db3open, db3close, db3sync, db3SearchIndex, db3UpdateIndex,
-    db3del, db3get, db3put, db3copen, db3cclose, db3cdel, db3cget, db3cput,
+    db3open, db3close, db3sync, db3copen, db3cclose, db3cdel, db3cget, db3cput,
     db3byteswapped
 };
 

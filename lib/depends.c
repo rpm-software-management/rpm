@@ -998,8 +998,8 @@ static int unsatisfiedDepend(rpmTransactionSet rpmdep,
 
 exit:
     {	dbiIndex dbi;
-	if ((dbi = dbiOpen(rpmdep->db, 1)) != NULL)
-	    (void) dbiPut(dbi, keyDepend, 0, &rc, sizeof(rc));
+	if ((dbi = dbiOpen(rpmdep->db, 1, 0)) != NULL)
+	    (void) dbiPut(dbi, keyDepend, 0, &rc, sizeof(rc), 0);
     }
     return rc;
 }

@@ -60,111 +60,76 @@ struct _dbiVec {
 
 /**
  * Return handle for an index database.
- * @return	0 success 1 fail
+ * @param rpmdb		rpm database
+ * @param rpmtag	rpm tag
+ * @return		0 on success
  */
     int (*open) (rpmdb rpmdb, int rpmtag, dbiIndex * dbip);
 
 /**
  * Close index database.
- * @param dbi	index database handle
- * @param flags
+ * @param dbi		index database handle
+ * @param flags		(unused)
+ * @return		0 on success
  */
     int (*close) (dbiIndex dbi, unsigned int flags);
 
 /**
  * Flush pending operations to disk.
- * @param dbi	index database handle
- * @param flags
+ * @param dbi		index database handle
+ * @param flags		(unused)
+ * @return		0 on success
  */
     int (*sync) (dbiIndex dbi, unsigned int flags);
 
 /**
- * Return items that match criteria.
- * @param dbi	index database handle
- * @param str	search key
- * @param set	items retrieved from index database
- * @return	-1 error, 0 success, 1 not found
  */
-    int (*SearchIndex) (dbiIndex dbi, const void * str, size_t len, dbiIndexSet * set);
-
-/**
- * Change/delete items that match criteria.
- * @param dbi	index database handle
- * @param str	update key
- * @param set	items to update in index database
- * @return	0 success, 1 not found
- */
-    int (*UpdateIndex) (dbiIndex dbi, const char * str, dbiIndexSet set);
-
-/**
- * Delete item using db->del.
- * @param dbi	index database handle
- * @param keyp	key data
- * @param keylen key data length
- */
-    int (*del) (dbiIndex dbi, void * keyp, size_t keylen);
-
-/**
- * Retrieve item using db->get.
- * @param dbi	index database handle
- * @param keyp	key data
- * @param keylen key data length
- * @param datap	address of data pointer
- * @param datalen address of data length
- */
-    int (*get) (dbiIndex dbi, void * keyp, size_t keylen,
-			void ** datap, size_t * datalen);
-
-/**
- * Save item using db->put.
- * @param dbi	index database handle
- * @param keyp	key data
- * @param keylen key data length
- * @param datap	data pointer
- * @param datalen data length
- */
-    int (*put) (dbiIndex dbi, void * keyp, size_t keylen,
-			void * datap, size_t datalen);
+    int (*copen) (dbiIndex dbi, DBC ** dbcp, unsigned int flags);
 
 /**
  */
-    int (*copen) (dbiIndex dbi, DBC ** dbcp);
+    int (*cclose) (dbiIndex dbi, DBC * dbcursor, unsigned int flags);
 
 /**
+ * Delete (key,data) pair(s) using db->del or dbcursor->c_del.
+ * @param dbi		index database handle
+ * @param keyp		key data
+ * @param keylen	key data length
+ * @param flags		(unused)
+ * @return		0 on success
  */
-    int (*cclose) (dbiIndex dbi, DBC * dbcursor);
+    int (*cdel) (dbiIndex dbi, const void * keyp, size_t keylen, unsigned int flags);
 
 /**
- * Delete item using db->del or dbcursor->c_del.
- * @param dbi	index database handle
- * @param keyp	key data
- * @param keylen key data length
+ * Retrieve (key,data) pair using db->get or dbcursor->c_get.
+ * @param dbi		index database handle
+ * @param keypp		address of key data
+ * @param keylenp	address of key data length
+ * @param datapp	address of data pointer
+ * @param datalenp	address of data length
+ * @param flags		(unused)
+ * @return		0 on success
  */
-    int (*cdel) (dbiIndex dbi, void * keyp, size_t keylen);
+    int (*cget) (dbiIndex dbi, void ** keypp, size_t * keylenp,
+			void ** datapp, size_t * datalenp, unsigned int flags);
 
 /**
- * Retrieve item using db->get or dbcursor->c_get.
- * @param dbi	index database handle
- * @param keyp	address of key data
- * @param keylen address of key data length
- * @param datap	address of data pointer
- * @param datalen address of data length
+ * Store (key,data) pair using db->put or dbcursor->c_put.
+ * @param dbi		index database handle
+ * @param keyp		key data
+ * @param keylen	key data length
+ * @param datap		data pointer
+ * @param datalen	data length
+ * @param flags		(unused)
+ * @return		0 on success
  */
-    int (*cget) (dbiIndex dbi, void ** keyp, size_t * keylen,
-			void ** datap, size_t * datalen);
+    int (*cput) (dbiIndex dbi, const void * keyp, size_t keylen,
+			const void * datap, size_t datalen, unsigned int flags);
 
 /**
- * Save item using db->put or dbcursor->c_put.
- * @param dbi	index database handle
- * @param keyp	key data
- * @param keylen key data length
- * @param datap	data pointer
- * @param datalen data length
- */
-    int (*cput) (dbiIndex dbi, void * keyp, size_t keylen,
-			void * datap, size_t datalen);
-
-/**
+ * Is database byte swapped?
+ * @param dbi		index database handle
+ * @return		0 no
  */
     int (*byteswapped) (dbiIndex dbi);
 
@@ -310,25 +275,79 @@ void db3Free( /*@only@*/ /*@null@*/ dbiIndex dbi);
  * Return handle for an index database.
  * @param rpmdb		rpm database
  * @param rpmtag	rpm tag
+ * @param flags		(unused)
  * @return		index database handle
  */
-dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag);
+dbiIndex dbiOpen(rpmdb rpmdb, int rpmtag, unsigned int flags);
+
+/**
+ * @param flags		(unused)
+ */
+int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int flags);
+
+/**
+ * @param flags		(unused)
+ */
+int dbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags);
+
+/**
+ * Delete (key,data) pair(s) from index database.
+ * @param dbi		index database handle
+ * @param keyp		key data
+ * @param keylen	key data length
+ * @param flags		(unused)
+ * @return		0 on success
+ */
+int dbiDel(dbiIndex dbi, const void * keyp, size_t keylen, unsigned int flags);
+
+/**
+ * Retrieve (key,data) pair from index database.
+ * @param dbi		index database handle
+ * @param keypp		address of key data
+ * @param keylenp	address of key data length
+ * @param datapp	address of data pointer
+ * @param datalenp	address of data length
+ * @param flags		(unused)
+ * @return		0 on success
+ */
+int dbiGet(dbiIndex dbi, void ** keypp, size_t * keylenp,
+        void ** datapp, size_t * datalenp, unsigned int flags);
 
 /**
  * Store (key,data) pair in index database.
  * @param dbi		index database handle
- * @param rpmdb		rpm database
+ * @param keyp		key data
+ * @param keylen	key data length
+ * @param datap		data pointer
+ * @param datalen	data length
+ * @param flags		(unused)
  * @return		0 on success
  */
-int dbiPut(dbiIndex dbi, const void * key, size_t keylen, const void * data, size_t datalen);
+int dbiPut(dbiIndex dbi, const void * keyp, size_t keylen,
+	const void * datap, size_t datalen, unsigned int flags);
 
 /**
  * Close index database.
  * @param dbi		index database handle
- * @param flag		(unused)
+ * @param flags		(unused)
  * @return		0 on success
  */
-int dbiClose(dbiIndex dbi, int flag);
+int dbiClose(dbiIndex dbi, unsigned int flags);
+
+/**
+ * Flush pending operations to disk.
+ * @param dbi		index database handle
+ * @param flags		(unused)
+ * @return		0 on success
+ */
+int dbiSync (dbiIndex dbi, unsigned int flags);
+
+/**
+ * Is database byte swapped?
+ * @param dbi		index database handle
+ * @return		0 no
+ */
+int dbiByteSwapped(dbiIndex dbi);
 
 /**
  * Return base file name for index database (legacy).
