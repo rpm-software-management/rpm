@@ -76,6 +76,7 @@
 	- add matching "config(N) = EVR"  dependencies iff %%config is found.
 	- add %%pubkey attribute to read armored pubkey files into header.
 	- permit both relative/absolute paths, display 'P' when verifying.
+	- resurrect automagic perl(foo) dependency generation.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

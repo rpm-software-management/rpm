@@ -442,6 +442,9 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
 
   { "troff or preprocessor input",		RPMFC_MANPAGE },
 
+  { "perl script text",		RPMFC_PERL|RPMFC_INCLUDE },
+  { "Perl5 module source text", RPMFC_PERL|RPMFC_INCLUDE },
+
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
   { "Zip archive data",		RPMFC_COMPRESSED|RPMFC_ARCHIVE|RPMFC_INCLUDE },
@@ -641,13 +644,13 @@ static int rpmfcSCRIPT(rpmfc fc)
     char * s, * se;
     int i;
     struct stat sb, * st = &sb;
+    int is_executable;
     int xx;
 
     /* Only executable scripts are searched. */
     if (stat(fn, st) < 0)
 	return -1;
-    if (!(st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)))
-	return 0;
+    is_executable = (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
 
     fp = fopen(fn, "r");
     if (fp == NULL || ferror(fp)) {
@@ -680,32 +683,37 @@ static int rpmfcSCRIPT(rpmfc fc)
 	*se = '\0';
 	se++;
 
-	/* Add to package requires. */
-	ds = rpmdsSingle(RPMTAG_REQUIRENAME, s, "", RPMSENSE_FIND_REQUIRES);
-	xx = rpmdsMerge(&fc->requires, ds);
+	if (is_executable) {
+	    /* Add to package requires. */
+	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, s, "", RPMSENSE_FIND_REQUIRES);
+	    xx = rpmdsMerge(&fc->requires, ds);
 
-	/* Add to file requires. */
-	xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(se, fc->ix, ds));
+	    /* Add to file requires. */
+	    xx = rpmfcSaveArg(&fc->ddict, rpmfcFileDep(se, fc->ix, ds));
 
-	ds = rpmdsFree(ds);
+	    ds = rpmdsFree(ds);
+	}
 
 	/* Set color based on interpreter name. */
 	bn = basename(s);
-	if (!strcmp(bn, "perl")) {
+	if (!strcmp(bn, "perl"))
 	    fc->fcolor->vals[fc->ix] |= RPMFC_PERL;
-	    xx = rpmfcHelper(fc, 'P', "perl");
-	    xx = rpmfcHelper(fc, 'R', "perl");
-	}
-	if (!strcmp(bn, "python")) {
+	else if (!strcmp(bn, "python"))
 	    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
-	    xx = rpmfcHelper(fc, 'P', "python");
-	    xx = rpmfcHelper(fc, 'R', "python");
-	}
 
 	break;
     }
 
     (void) fclose(fp);
+
+    if (fc->fcolor->vals[fc->ix] & RPMFC_PERL) {
+	xx = rpmfcHelper(fc, 'P', "perl");
+	xx = rpmfcHelper(fc, 'R', "perl");
+    }
+    if (fc->fcolor->vals[fc->ix] & RPMFC_PYTHON) {
+	xx = rpmfcHelper(fc, 'P', "python");
+	xx = rpmfcHelper(fc, 'R', "python");
+    }
 
     return 0;
 }
@@ -973,12 +981,13 @@ typedef struct rpmfcApplyTbl_s {
 /*@unchecked@*/
 static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
-    { rpmfcSCRIPT,	RPMFC_SCRIPT },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL) },
     { NULL, 0 }
 };
 
 int rpmfcApply(rpmfc fc)
 {
+    rpmfcApplyTbl fcat;
     const char * s;
     char * se;
     rpmds ds;
@@ -996,7 +1005,6 @@ int rpmfcApply(rpmfc fc)
 
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
-	rpmfcApplyTbl fcat;
 
 	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
 	    if (!(fc->fcolor->vals[fc->ix] & fcat->colormask))
@@ -1062,6 +1070,7 @@ int rpmfcClassify(rpmfc fc, ARGV_t argv)
     ARGV_t fcav = NULL;
     ARGV_t dav;
     const char * s, * se;
+    size_t slen;
     int fcolor;
     int xx;
 fmagic fm = global_fmagic;
@@ -1090,10 +1099,17 @@ int wid = 0;	/* XXX don't prepend filename: */
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	s = argv[fc->ix];
 assert(s != NULL);
+	slen = strlen(s);
+
 	fm->obp = fm->obuf;
 	*fm->obp = '\0';
 	fm->nob = sizeof(fm->obuf);
 	xx = fmagicProcess(fm, s, wid);
+
+	/* XXX all files with extension ".pm" are perl modules for now. */
+	if (slen >= sizeof(".pm") && !strcmp(s+slen-(sizeof(".pm")-1), ".pm"))
+	    strcpy(fm->obuf, "Perl5 module source text");
+
 	se = fm->obuf;
         rpmMessage(RPMMESS_DEBUG, "%s: %s\n", s, se);
 
