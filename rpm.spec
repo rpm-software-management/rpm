@@ -2,7 +2,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.4
 Version: %{version}
-Release: 0.36
+Release: 0.37
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -170,5 +170,8 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Mon Feb  7 2000 Jeff Johnson <jbj@redhat.com>
+- brp-compress deals with symlinks correctly.
+
 * Mon Jan 24 2000 Jeff Johnson <jbj@redhat.com>
 - explicitly expand file lists in writeRPM for rpmputtext.

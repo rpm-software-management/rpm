@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-01-24 17:08-0500\n"
+"POT-Creation-Date: 2000-02-07 14:27-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2000,51 +2000,51 @@ msgstr "linia %d: b³êdny numer no%s: %d"
 msgid "line %d: Bad %s number: %s\n"
 msgstr "linia %d: B³êdny numer %s: %s\n"
 
-#: lib/cpio.c:330
+#: lib/cpio.c:345
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "nie mo¿na zmieniæ nazwy %s na %s: %s\n"
 
-#: lib/cpio.c:336
+#: lib/cpio.c:351
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr "nie mo¿na odwi±zaæ %s: %s\n"
 
-#: lib/cpio.c:527
+#: lib/cpio.c:549
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr "getNextHeader: %s\n"
 
-#: lib/cpio.c:992
+#: lib/cpio.c:1018
 #, c-format
 msgid "(error 0x%x)"
 msgstr "(b³±d 0x%x)"
 
-#: lib/cpio.c:995
+#: lib/cpio.c:1021
 msgid "Bad magic"
 msgstr "B³êdny magic"
 
-#: lib/cpio.c:996
+#: lib/cpio.c:1022
 msgid "Bad/unreadable  header"
 msgstr "B³êdny/nieczytelny nag³ówek"
 
-#: lib/cpio.c:1014
+#: lib/cpio.c:1040
 msgid "Header size too big"
 msgstr "Rozmiar nag³ówka jest zbyt du¿y"
 
-#: lib/cpio.c:1015
+#: lib/cpio.c:1041
 msgid "Unknown file type"
 msgstr "Nieznany typ pliku"
 
-#: lib/cpio.c:1016
+#: lib/cpio.c:1042
 msgid "Missing hard link"
 msgstr "Brak twardego dowi±zania"
 
-#: lib/cpio.c:1017
+#: lib/cpio.c:1043
 msgid "Internal error"
 msgstr "B³±d wewnêtrzny"
 
-#: lib/cpio.c:1026
+#: lib/cpio.c:1052
 msgid " failed - "
 msgstr " nie powiod³o siê -"
 

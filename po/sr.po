@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-01-24 17:08-0500\n"
+"POT-Creation-Date: 2000-02-07 14:27-0500\n"
 "Content-Type: text/plain; charset=\n"
 "Date: 1998-05-02 21:41:47-0400\n"
 "From: Erik Troan <ewt@lacrosse.redhat.com>\n"
@@ -2039,53 +2039,53 @@ msgstr ""
 msgid "line %d: Bad %s number: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: lib/cpio.c:330
+#: lib/cpio.c:345
 #, fuzzy, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: lib/cpio.c:336
+#: lib/cpio.c:351
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:527
+#: lib/cpio.c:549
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:992
+#: lib/cpio.c:1018
 #, fuzzy, c-format
 msgid "(error 0x%x)"
 msgstr "gre¹ka: "
 
-#: lib/cpio.c:995
+#: lib/cpio.c:1021
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:996
+#: lib/cpio.c:1022
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1014
+#: lib/cpio.c:1040
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1015
+#: lib/cpio.c:1041
 #, fuzzy
 msgid "Unknown file type"
 msgstr "(nepoznat tip)"
 
-#: lib/cpio.c:1016
+#: lib/cpio.c:1042
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1017
+#: lib/cpio.c:1043
 #, fuzzy
 msgid "Internal error"
 msgstr "fatalna gre¹ka: "
 
-#: lib/cpio.c:1026
+#: lib/cpio.c:1052
 #, fuzzy
 msgid " failed - "
 msgstr "PGP omanuo"
