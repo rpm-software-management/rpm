@@ -13,8 +13,10 @@
 #include "perl.h"
 #include "XSUB.h"
 
-const char *CLASS = "RPM2";
-MODULE = RPM2		PACKAGE = RPM2
+const char *CLASS = "RPM2_C";
+MODULE = RPM2		PACKAGE = RPM2_C
+
+PROTOTYPES: ENABLE
 
 int
 rpmvercmp(one, two)
@@ -46,13 +48,12 @@ _close_rpm_db(db)
 	rpmdbClose(db);
 
 rpmdb
-_open_rpm_db(path,for_write)
-        char  *path
+_open_rpm_db(for_write)
 	int   for_write
     PREINIT:
 	 rpmdb db;
     CODE:
-	if (rpmdbOpen(path, &db, for_write ? O_RDWR | O_CREAT : O_RDONLY, 0644)) {
+	if (rpmdbOpen(NULL, &db, for_write ? O_RDWR | O_CREAT : O_RDONLY, 0644)) {
 		croak("rpmdbOpen failed");
 		RETVAL = NULL;
 	}
