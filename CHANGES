@@ -28,6 +28,9 @@
 	  a package w/o one
 	- added BuildArchitectures: tag to spec file to enable builds
 	  for alternate/multiple architectures
+	- look for random() in -lucb
+	- changed the licensing terms for librpm to allow redistribution
+	  under the LGPL
 
 2.4.2 -> 2.4.3:
 	- implemented install time prerequisites

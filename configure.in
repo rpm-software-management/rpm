@@ -118,11 +118,15 @@ fi
 dnl Checks for libraries.
 
 AC_CHECK_FUNC(strcasecmp, [], [
-    AC_CHECK_LIB(ucb, strcasecmp, [LIBS="-lucb $LIBS"])
+    AC_CHECK_LIB(ucb, strcasecmp, [LIBS="-lucb $LIBS" USEUCB=y])
 ])
 
 AC_CHECK_FUNC(random, [], [
-    AC_CHECK_LIB(random, random, [LIBS="$LIBS -lm"])
+    AC_CHECK_LIB(random, random, [LIBS="$LIBS -lm"], [
+	if test -z "$USEUCB"; then
+	    AC_CHECK_LIB(ucb, random, [LIBS="-lucb $LIBS" USEUCB=y])
+	fi
+    ])
 ])
 
 dnl
