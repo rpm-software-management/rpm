@@ -1,3 +1,7 @@
+#ifdef HAVE_MACHINE_TYPES_H
+# include <machine/types.h>
+#endif
+
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <stdio.h>
