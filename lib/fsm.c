@@ -1274,6 +1274,8 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
     int dc = dnlCount(dnli);
     int rc = 0;
     int i;
+    rpmts ts = fsmGetTs(fsm);
+    rpmsx sx = rpmtsREContext(ts);
 
     fsm->path = NULL;
 
@@ -1334,15 +1336,30 @@ static int fsmMkdirs(/*@special@*/ /*@partial@*/ FSM_t fsm)
 		*te = '\0';
 		st->st_mode = S_IFDIR | (fi->dperms & 07777);
 		rc = fsmNext(fsm, FSM_MKDIR);
-		if (!rc)
+		if (!rc) {
+		    /* XXX FIXME? only new dir will have context set. */
+		    /* Get file security context from patterns. */
+		    if (sx != NULL) {
+			fsm->fcontext = rpmsxFContext(sx, fsm->path, st->st_mode);
+			rc = fsmNext(fsm, FSM_LSETFCON);
+		    }
+		    if (fsm->fcontext == NULL)
 		    rpmMessage(RPMMESS_DEBUG,
-			_("%s directory created with perms %04o.\n"),
+			    _("%s directory created with perms %04o, no context.\n"),
 			fsm->path, (unsigned)(st->st_mode & 07777));
+		    else
+			rpmMessage(RPMMESS_DEBUG,
+			    _("%s directory created with perms %04o, context %s.\n"),
+			    fsm->path, (unsigned)(st->st_mode & 07777),
+			    fsm->fcontext);
+		    fsm->fcontext = NULL;
+		}
 		*te = '/';
 	    }
 	    if (rc)
 		/*@innerbreak@*/ break;
 	}
+	sx = rpmsxFree(sx);
 	if (rc) break;
 
 	/* Save last validated path. */

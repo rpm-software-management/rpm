@@ -484,6 +484,7 @@ exit 0
 %changelog
 * Sun Feb 15 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.11
 - fix: set fcontext from pkg when file_contexts doesn't exist (#114040).
+- fix: set fcontext for "mkdir -p" directories not in packages.
 
 * Wed Feb 11 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.10
 - re-add --enable-posixmutexes to build.
