@@ -63,6 +63,7 @@
 	- dynamically link /bin/rpm, link against good old -lpthread.
 	- test pthread_{mutex,cond}attr_setpshared(), add DB_ENV_PRIVATE if not.
 	- error on exclusive Packages fcntl lock if DB_ENV_PRIVATE is set.
+	- copy compressFilelist to convertdb1.c, remove internal legacy.h.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

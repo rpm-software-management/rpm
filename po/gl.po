@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2002-12-20 11:00-0500\n"
+"POT-Creation-Date: 2002-12-20 13:33-0500\n"
 "PO-Revision-Date: 2001-01-13 22:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <trasno@ceu.fi.udc.es>\n"
@@ -3050,20 +3050,20 @@ msgstr ""
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db3.c:1299
+#: rpmdb/db3.c:1303
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1301
+#: rpmdb/db3.c:1305
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1301
+#: rpmdb/db3.c:1305
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1309
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr ""

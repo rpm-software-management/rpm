@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-20 11:00-0500\n"
+"POT-Creation-Date: 2002-12-20 13:33-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -3335,20 +3335,20 @@ msgstr "Datenbank aus der vorhandenen neu erstellen"
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:1299
+#: rpmdb/db3.c:1303
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: rpmdb/db3.c:1301
+#: rpmdb/db3.c:1305
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: rpmdb/db3.c:1301
+#: rpmdb/db3.c:1305
 msgid "shared"
 msgstr "geteilt"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1309
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"

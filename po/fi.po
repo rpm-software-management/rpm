@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-20 11:00-0500\n"
+"POT-Creation-Date: 2002-12-20 13:33-0500\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -3200,20 +3200,20 @@ msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db3.c:1299
+#: rpmdb/db3.c:1303
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "en voi saada %s lukitusta tietokantaan"
 
-#: rpmdb/db3.c:1301
+#: rpmdb/db3.c:1305
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: rpmdb/db3.c:1301
+#: rpmdb/db3.c:1305
 msgid "shared"
 msgstr "jaettua"
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1309
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"

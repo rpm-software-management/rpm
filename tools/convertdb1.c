@@ -3,7 +3,6 @@
 #include <rpmlib.h>
 #include <rpmdb.h>
 #include <rpmmacro.h>
-#include "legacy.h"
 #include "debug.h"
 
 #define FA_MAGIC      0x02050920
@@ -105,6 +104,109 @@ static int fadFirstOffset(FD_t fd)
 {
     return fadNextOffset(fd, 0);
 }
+
+/*@-boundsread@*/
+static int dncmp(const void * a, const void * b)
+	/*@*/
+{
+    const char *const * first = a;
+    const char *const * second = b;
+    return strcmp(*first, *second);
+}
+/*@=boundsread@*/
+
+/*@-bounds@*/
+void compressFilelist(Header h)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HAE_t hae = (HAE_t)headerAddEntry;
+    HRE_t hre = (HRE_t)headerRemoveEntry;
+    HFD_t hfd = headerFreeData;
+    char ** fileNames;
+    const char ** dirNames;
+    const char ** baseNames;
+    int_32 * dirIndexes;
+    rpmTagType fnt;
+    int count;
+    int i, xx;
+    int dirIndex = -1;
+
+    /*
+     * This assumes the file list is already sorted, and begins with a
+     * single '/'. That assumption isn't critical, but it makes things go
+     * a bit faster.
+     */
+
+    if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
+	xx = hre(h, RPMTAG_OLDFILENAMES);
+	return;		/* Already converted. */
+    }
+
+    if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, (void **) &fileNames, &count))
+	return;		/* no file list */
+    if (fileNames == NULL || count <= 0)
+	return;
+
+    dirNames = alloca(sizeof(*dirNames) * count);	/* worst case */
+    baseNames = alloca(sizeof(*dirNames) * count);
+    dirIndexes = alloca(sizeof(*dirIndexes) * count);
+
+    if (fileNames[0][0] != '/') {
+	/* HACK. Source RPM, so just do things differently */
+	dirIndex = 0;
+	dirNames[dirIndex] = "";
+	for (i = 0; i < count; i++) {
+	    dirIndexes[i] = dirIndex;
+	    baseNames[i] = fileNames[i];
+	}
+	goto exit;
+    }
+
+    /*@-branchstate@*/
+    for (i = 0; i < count; i++) {
+	const char ** needle;
+	char savechar;
+	char * baseName;
+	int len;
+
+	if (fileNames[i] == NULL)	/* XXX can't happen */
+	    continue;
+	baseName = strrchr(fileNames[i], '/') + 1;
+	len = baseName - fileNames[i];
+	needle = dirNames;
+	savechar = *baseName;
+	*baseName = '\0';
+/*@-compdef@*/
+	if (dirIndex < 0 ||
+	    (needle = bsearch(&fileNames[i], dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
+	    char *s = alloca(len + 1);
+	    memcpy(s, fileNames[i], len + 1);
+	    s[len] = '\0';
+	    dirIndexes[i] = ++dirIndex;
+	    dirNames[dirIndex] = s;
+	} else
+	    dirIndexes[i] = needle - dirNames;
+/*@=compdef@*/
+
+	*baseName = savechar;
+	baseNames[i] = baseName;
+    }
+    /*@=branchstate@*/
+
+exit:
+    if (count > 0) {
+	xx = hae(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, dirIndexes, count);
+	xx = hae(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
+			baseNames, count);
+	xx = hae(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
+			dirNames, dirIndex + 1);
+    }
+
+    fileNames = hfd(fileNames, fnt);
+
+    xx = hre(h, RPMTAG_OLDFILENAMES);
+}
+/*@=bounds@*/
 
 static rpmdb db;
 

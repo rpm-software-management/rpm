@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-20 11:00-0500\n"
+"POT-Creation-Date: 2002-12-20 13:33-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -3203,20 +3203,20 @@ msgstr "usuwanie indeksu plików dla %s\n"
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otwiernie bazê danych w trybie 0x%x w %s\n"
 
-#: rpmdb/db3.c:1299
+#: rpmdb/db3.c:1303
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "utworzenie blokady %s na bazie danych nie jest mo¿liwe"
 
-#: rpmdb/db3.c:1301
+#: rpmdb/db3.c:1305
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1301
+#: rpmdb/db3.c:1305
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db3.c:1305
+#: rpmdb/db3.c:1309
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "usuwanie indeksu plików dla %s\n"
