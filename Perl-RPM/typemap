@@ -3,9 +3,10 @@
 TYPEMAP
 
 const char *            T_PTROBJ
-RPM                     T_PTROBJ
 RPM::Database           O_RPM_Database
 RPM::Header             O_RPM_Header
+RPM::Package            O_RPM_Blessed
+RPM::Transaction        O_RPM_Blessed
 
 #
 # The following mappings for O_HvRV are taken directly from Dean Roehrich's
@@ -13,7 +14,6 @@ RPM::Header             O_RPM_Header
 #
 
 OUTPUT
-
 O_RPM_Database
         if ($var != Null(RPM__Database))
         {
@@ -38,8 +38,11 @@ O_RPM_Header
             $arg = newSVsv(&PL_sv_undef);
         }
 
-INPUT
+O_RPM_Blessed
+        sv_setref_pv($arg, \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\",
+                     (void*)$var);
 
+INPUT
 O_RPM_Database
         if (sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVHV))
             $var = (HV*)SvRV($arg);
@@ -57,5 +60,18 @@ O_RPM_Header
         {
             rpm_error(aTHX_ RPMERR_BADARG,
                       \"${Package}::$func_name: not a blessed HV reference\");
+            XSRETURN_UNDEF;
+        }
+
+O_RPM_Blessed
+        if (sv_derived_from($arg, \"${(my $ntt=$ntype)=~s/_/::/g;\$ntt}\"))
+        {
+            IV tmp = SvIV((SV*)SvRV($arg));
+            $var = ($type) tmp;
+        }
+        else
+        {
+            rpm_error(aTHX_ RPMERR_BADARG,
+                      \"$var is not of type ${ntype}\");
             XSRETURN_UNDEF;
         }
