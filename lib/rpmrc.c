@@ -1136,15 +1136,19 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 	char *c;
 	/* Set arch and os from specified build target */
 	ca = strdup(*buildtarget);
-	if ((c = strchr(ca, '-')) != NULL)
+	if ((c = strchr(ca, '-')) != NULL) {
 	    *c++ = '\0';
 	    
-	if ((co = strrchr(c, '-')) == NULL) {
-	    co = c;
-	} else {
-	    if (!strcmp(co, "-gnu"))
-		*co = '\0';
-	    co = strrchr(c, '-');
+	    if ((co = strrchr(c, '-')) == NULL) {
+		co = c;
+	    } else {
+		if (!strcmp(co, "-gnu"))
+		    *co = '\0';
+		if ((co = strrchr(c, '-')) == NULL)
+		    co = c;
+		else
+		    co++;
+	    }
 	}
 	ct = strdup(*buildtarget);
     } else {
@@ -1180,8 +1184,7 @@ void rpmRebuildTargetVars(const char **buildtarget, const char ** canontarget)
 	*canontarget = ct;
     else
 	free(ct);
-    free(ca);
-    free(co);
+    free(ca);	/* XXX this frees co too */
 }
 
 int rpmShowRC(FILE *f)

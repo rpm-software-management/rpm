@@ -1,3 +1,6 @@
+2.93 -> 2.94
+	- fix: segfault while parsing target string.
+
 2.92 -> 2.93
 	- eliminate old rpmrc configuration syntax.
 	- pgp5 support (Carlo Wood <carlo@runaway.xs4all.nl>)
