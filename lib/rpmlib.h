@@ -935,6 +935,11 @@ typedef /*@abstract@*/ struct fsmIterator_s * FSMI_t;
 typedef /*@abstract@*/ struct fsm_s * FSM_t;
 
 /** \ingroup rpmtrans
+ * Package state machine data.
+ */
+typedef /*@abstract@*/ struct psm_s * PSM_t;
+
+/** \ingroup rpmtrans
  */
 typedef /*@abstract@*/ struct transactionFileInfo_s * TFI_t;
 

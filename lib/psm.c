@@ -911,12 +911,103 @@ static int psmChroot(rpmTransactionSet ts, TFI_t fi, int enter)
     return rc;
 }
 
+int psmStage(PSM_t psm, fileStage stage)
+{
+    const char * const cur = fileStageString(stage);
+    int rc = psm->rc;
+    int i;
+
+    switch (stage) {
+    case FSM_UNKNOWN:
+	break;
+    case FSM_PKGINSTALL:
+	break;
+    case FSM_PKGERASE:
+	break;
+    case FSM_PKGCOMMIT:
+	break;
+    case FSM_PKGBUILD:
+	break;
+    case FSM_CREATE:
+	break;
+    case FSM_INIT:
+	break;
+    case FSM_PRE:
+	break;
+    case FSM_MAP:
+	break;
+    case FSM_MKDIRS:
+	break;
+    case FSM_RMDIRS:
+	break;
+    case FSM_PROCESS:
+	break;
+    case FSM_POST:
+	break;
+    case FSM_MKLINKS:
+	break;
+    case FSM_NOTIFY:
+	break;
+    case FSM_UNDO:
+	break;
+    case FSM_FINI:
+	break;
+    case FSM_COMMIT:
+	break;
+    case FSM_DESTROY:
+	break;
+    case FSM_VERIFY:
+	break;
+
+    case FSM_UNLINK:
+    case FSM_RENAME:
+    case FSM_MKDIR:
+    case FSM_RMDIR:
+    case FSM_CHOWN:
+    case FSM_LCHOWN:
+    case FSM_CHMOD:
+    case FSM_UTIME:
+    case FSM_SYMLINK:
+    case FSM_LINK:
+    case FSM_MKFIFO:
+    case FSM_MKNOD:
+    case FSM_LSTAT:
+    case FSM_STAT:
+    case FSM_READLINK:
+	break;
+    case FSM_CHROOT:
+	break;
+
+    case FSM_NEXT:
+    case FSM_EAT:
+    case FSM_POS:
+    case FSM_PAD:
+    case FSM_TRAILER:
+    case FSM_HREAD:
+    case FSM_HWRITE:
+    case FSM_DREAD:
+    case FSM_DWRITE:
+    case FSM_ROPEN:
+    case FSM_READ:
+    case FSM_RCLOSE:
+    case FSM_WOPEN:
+    case FSM_WRITE:
+    case FSM_WCLOSE:
+    default:
+	break;
+    }
+
+    return rc;
+}
+
 /**
  * @todo Packages w/o files never get a callback, hence don't get displayed
  * on install with -v.
  */
-int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
+int installBinaryPackage(PSM_t psm)
 {
+    const rpmTransactionSet ts = psm->ts;
+    TFI_t fi = psm->fi;
     HGE_t hge = (HGE_t)fi->hge;
 /*@observer@*/ static char * stepName = " install";
     Header oldH = NULL;
@@ -1090,8 +1181,10 @@ exit:
     return ec;
 }
 
-int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
+int removeBinaryPackage(PSM_t psm)
 {
+    const rpmTransactionSet ts = psm->ts;
+    TFI_t fi = psm->fi;
 /*@observer@*/ static char * stepName = "   erase";
     Header h;
     const char * failedFile = NULL;
@@ -1200,8 +1293,10 @@ exit:
     return rc;
 }
 
-int repackage(const rpmTransactionSet ts, TFI_t fi)
+int repackage(PSM_t psm)
 {
+    const rpmTransactionSet ts = psm->ts;
+    TFI_t fi = psm->fi;
     HGE_t hge = fi->hge;
     HFD_t hfd = fi->hfd;
     FD_t fd = NULL;

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-02-27 14:32-0500\n"
+"POT-Creation-Date: 2001-02-27 17:00-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1808,7 +1808,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:484 lib/psm.c:1304
+#: build/pack.c:484 lib/psm.c:1399
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -1838,7 +1838,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:566 lib/psm.c:1360
+#: build/pack.c:566 lib/psm.c:1455
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -2925,18 +2925,18 @@ msgstr ""
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:927 lib/psm.c:1101
+#: lib/psm.c:1018 lib/psm.c:1194
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
 #. XXX WTFO? erase failures are not cause for stopping.
-#: lib/psm.c:991 lib/psm.c:1059 lib/psm.c:1151 lib/psm.c:1176
+#: lib/psm.c:1082 lib/psm.c:1150 lib/psm.c:1244 lib/psm.c:1269
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
 
-#: lib/psm.c:998
+#: lib/psm.c:1089
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
@@ -3206,89 +3206,89 @@ msgstr ""
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:1923
+#: lib/rpmdb.c:1890
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: lib/rpmdb.c:1997
+#: lib/rpmdb.c:1964
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2006
+#: lib/rpmdb.c:1973
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2408
+#: lib/rpmdb.c:2342
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2434
+#: lib/rpmdb.c:2368
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:2459
+#: lib/rpmdb.c:2393
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2463
+#: lib/rpmdb.c:2397
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: lib/rpmdb.c:2469
+#: lib/rpmdb.c:2403
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2471
+#: lib/rpmdb.c:2405
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2478
+#: lib/rpmdb.c:2412
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2489
+#: lib/rpmdb.c:2423
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2512
+#: lib/rpmdb.c:2446
 #, c-format
 msgid "record number %d in database is bad -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2551
+#: lib/rpmdb.c:2485
 #, c-format
 msgid "cannot add record originally at %d\n"
 msgstr ""
 
-#: lib/rpmdb.c:2569
+#: lib/rpmdb.c:2503
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2577
+#: lib/rpmdb.c:2511
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2579
+#: lib/rpmdb.c:2513
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2589
+#: lib/rpmdb.c:2523
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2591
+#: lib/rpmdb.c:2525
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
@@ -3636,46 +3636,46 @@ msgstr ""
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/transaction.c:403
+#: lib/transaction.c:404
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:406
+#: lib/transaction.c:407
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/transaction.c:409
+#: lib/transaction.c:410
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr ""
 
-#: lib/transaction.c:483
+#: lib/transaction.c:484
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/transaction.c:532
+#: lib/transaction.c:533
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/transaction.c:539
+#: lib/transaction.c:540
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:611
+#: lib/transaction.c:612
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:616
+#: lib/transaction.c:617
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:740
+#: lib/transaction.c:741
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

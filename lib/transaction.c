@@ -40,6 +40,7 @@
 /*@access rpmdb@*/
 /*@access rpmTransactionSet@*/
 /*@access TFI_t@*/
+/*@access PSM_t@*/
 /*@access rpmProblemSet@*/
 /*@access rpmProblem@*/
 
@@ -1377,6 +1378,8 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     int lastFailed;
     int oc;
     fingerPrintCache fpc;
+    struct psm_s psmbuf;
+    PSM_t psm = &psmbuf;
     void * tsi;
 
     /* FIXME: what if the same package is included in ts twice? */
@@ -1396,6 +1399,9 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     ts->currDir = currentDirectory();
     ts->chrootDone = 0;
     ts->id = time(NULL);
+
+    memset(psm, 0, sizeof(*psm));
+    psm->ts = ts;
 
     /* Get available space on mounted file systems. */
     if (!(ts->ignoreSet & RPMPROB_FILTER_DISKSPACE) &&
@@ -1755,6 +1761,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     tsi = tsInitIterator(ts);
     while ((fi = tsNextIterator(tsi)) != NULL) {
+	psm->fi = fi;
 	if (fi->fc == 0)
 	    continue;
 	fi->fps = _free(fi->fps);
@@ -1787,12 +1794,13 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     if (ts->transFlags & (RPMTRANS_FLAG_DIRSTASH | RPMTRANS_FLAG_REPACKAGE)) {
 	tsi = tsInitIterator(ts);
 	while ((fi = tsNextIterator(tsi)) != NULL) {
+	    psm->fi = fi;
 	    switch (fi->type) {
 	    case TR_ADDED:
 		break;
 	    case TR_REMOVED:
 		if (ts->transFlags & RPMTRANS_FLAG_REPACKAGE)
-		    repackage(ts, fi);
+		    repackage(psm);
 		break;
 	    }
 	}
@@ -1809,6 +1817,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	int gotfd;
 
 	gotfd = 0;
+	psm->fi = fi;
 	switch (fi->type)
   	{
 	case TR_ADDED:
@@ -1851,7 +1860,7 @@ assert(alp == fi->ap);
 		    ts->transFlags |= RPMTRANS_FLAG_MULTILIB;
 
 if (fi->ap == NULL) fi->ap = alp;	/* XXX WTFO? */
-		if (installBinaryPackage(ts, fi)) {
+		if (installBinaryPackage(psm)) {
 		    ourrc++;
 		    lastFailed = i;
 		}
@@ -1880,7 +1889,7 @@ if (fi->ap == NULL) fi->ap = alp;	/* XXX WTFO? */
 	    if (ts->order[oc].u.removed.dependsOnIndex == lastFailed)
 		break;
 
-	    if (removeBinaryPackage(ts, fi))
+	    if (removeBinaryPackage(psm))
 		ourrc++;
 
 	    break;

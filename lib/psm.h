@@ -96,6 +96,15 @@ struct transactionFileInfo_s {
     unsigned int record;
 };
 
+/**
+ */
+struct psm_s {
+    const rpmTransactionSet ts;
+    TFI_t fi;
+    int rc;				/*!< External file stage return code. */
+    fileStage stage;			/*!< External package stage. */
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -131,26 +140,31 @@ void freeFi(TFI_t fi)
 
 /**
  * Install binary package (from transaction set).
- * @param ts		transaction set
- * @param fi		transaction element file info
+ * @param psm		package state machine data
  * @return		0 on success, 1 on bad magic, 2 on error
  */
-int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi);
+int installBinaryPackage(PSM_t psm)
+	/*@modifies psm @*/;
 
 /**
  * Erase binary package (from transaction set).
- * @param ts		transaction set
- * @param fi		transaction element file info
+ * @param psm		package state machine data
  * @return		0 on success
  */
-int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi);
+int removeBinaryPackage(PSM_t psm)
+	/*@modifies psm @*/;
 
 /**
- * @param ts		transaction set
- * @param fi		transaction element file info
+ * @param psm		package state machine data
  * @return		0 on success
  */
-int repackage(const rpmTransactionSet ts, TFI_t fi);
+int repackage(PSM_t psm)
+	/*@modifies psm @*/;
+
+/**
+ */
+int psmStage(PSM_t psm, fileStage stage)
+	/*@modifies psm @*/;
 
 #ifdef __cplusplus
 }
