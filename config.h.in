@@ -77,23 +77,26 @@
 /* Define as 1 if you have lchown() */
 #define HAVE_LCHOWN 0
 
-/* Define as one if you have <mntent.h> */
+/* Define as 1 if you have <mntent.h> */
 #define HAVE_MNTENT_H 0
 
-/* Define as one if you have <sys/mnttab.h> */
+/* Define as 1 if you have <sys/mnttab.h> */
 #define HAVE_SYS_MNTTAB_H 0
 
-/* Define as one if you have getmntent(), you'll also need one of the above
+/* Define as 1 if you have getmntent(), you'll also need one of the above
    two defined */
 #define HAVE_GETMNTENT 0
 
-/* Define as one if you have mntctl() (only aix?) */
+/* Define as 1 if you have mntctl() (only aix?) */
 #define HAVE_MNTCTL 0
 
-/* Define as one if you have "struct mnttab" (only sco?) */
+/* Define as 1 if you have "struct mnttab" (only sco?) */
 #define HAVE_STRUCT_MNTTAB 0
 
-/* Define as one if you have getmntinfo_r() (only osf?) */
+/* Define as 1 if you have getmntinfo_r() (only osf?) */
 #define HAVE_GETMNTINFO_R 0
+
+/* Define as 1 if you have <sys/sysconfig.h> (only aix?) */
+#define HAVE_SYS_SYSTEMCFG_H 0
 
 #endif

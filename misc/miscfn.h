@@ -65,6 +65,7 @@ extern void *myrealloc(void *, size_t);
 #if HAVE_GETMNTINFO_R || HAVE_MNTCTL
 # define GETMNTENT_ONE 0
 # define GETMNTENT_TWO 0
+# include <sys/mount.h>
 #elif HAVE_MNTENT_H || !(HAVE_GETMNTENT) || HAVE_STRUCT_MNTTAB
 # if HAVE_MNTENT_H || HAVE_STRUCT_MNTTAB
 #  include <mntent.h>

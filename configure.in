@@ -220,7 +220,7 @@ AC_HEADER_MAJOR
 AC_CHECK_HEADERS(netinet/in_systm.h limits.h)
 AC_CHECK_HEADERS(alloca.h dirent.h sys/socket.h sys/select.h)
 AC_CHECK_HEADERS(machine/types.h string.h)
-AC_CHECK_HEADERS(mntent.h sys/mnttab.h)
+AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(glob.h,,MISCOBJS="$MISCOBJS glob.o")
 AC_CHECK_HEADERS(fnmatch.h,,MISCOBJS="$MISCOBJS fnmatch.o")
 
@@ -278,9 +278,11 @@ dnl Checks for library functions.
 AC_CHECK_FUNC(inet_aton, AC_DEFINE(HAVE_INET_ATON), MISCOBJS="$MISCOBJS inet_aton.o")
 AC_CHECK_FUNC(realpath, AC_DEFINE(HAVE_REALPATH), MISCOBJS="$MISCOBJS realpath.o")
 AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT), [
-   AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL),[
-       AC_CHECK_FUNC(getmntinfo_r, AC_DEFINE(HAVE_GETMNTINFO_R),
-                 MISCOBJS="$MISCOBJS getmntent.o") ])])
+  AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL),[
+    AC_CHECK_FUNC(getmntinfo_r, AC_DEFINE(HAVE_GETMNTINFO_R), [
+      AC_CHECK_LIB(c_r, getmntinfo_r, [LIBS="-lc_r $LIBS"; 
+					AC_DEFINE(HAVE_GETMNTINFO_R)],
+                 MISCOBJS="$MISCOBJS getmntent.o")])])])
 AC_CHECK_FUNC(strerror, [], MISCOBJS="$MISCOBJS strerror.o")
 AC_CHECK_FUNC(strtol, [], MISCOBJS="$MISCOBJS strtol.o")
 AC_CHECK_FUNC(strtoul, [], MISCOBJS="$MISCOBJS strtoul.o")
