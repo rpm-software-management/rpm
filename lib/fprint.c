@@ -21,6 +21,12 @@ void fpCacheFree(fingerPrintCache cache)
     free(cache);
 }
 
+/**
+ * Find directory name entry in cache.
+ * @param cache		pointer to fingerprint cache
+ * @param dirName	string to locate in cache
+ * @return pointer to directory name entry (or NULL if not found).
+ */
 static const struct fprintCacheEntry_s * cacheContainsDirectory(
 			    fingerPrintCache cache,
 			    const char * dirName)
@@ -32,6 +38,14 @@ static const struct fprintCacheEntry_s * cacheContainsDirectory(
     return data[0];
 }
 
+/**
+ * Return finger print of a file path.
+ * @param cache		pointer to fingerprint cache
+ * @param dirName	leading directory name of path
+ * @param baseName	file name of path
+ * @param scareMemory
+ * @return pointer to the finger print associated with a file path.
+ */
 static fingerPrint doLookup(fingerPrintCache cache,
 	const char * dirName, const char * baseName, int scareMemory)
 {
