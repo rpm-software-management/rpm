@@ -487,7 +487,7 @@ int rpmReadRC(char * file) {
     }
 
     fd = open(LIBRPMRC_FILENAME, O_RDONLY);
-    if (fd < 0) {
+    if (fd >= 0) {
 	rc = doReadRC(fd, LIBRPMRC_FILENAME);
 	close(fd);
 	if (rc) return rc;
