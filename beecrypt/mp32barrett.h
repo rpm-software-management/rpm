@@ -82,6 +82,12 @@ void mp32bsethex(mp32barrett* b, const char* hex)
 
 /**
  */
+BEEDLLAPI /*@unused@*/
+void mp32bswabhex(mp32barrett* b, const char* hex)
+	/*@modifies b->size, b->modl, b->mu @*/;
+
+/**
+ */
 BEEDLLAPI
 void mp32bsubone(const mp32barrett* b, uint32* result)
 	/*@modifies result @*/;

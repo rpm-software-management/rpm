@@ -2,15 +2,14 @@
  * \file mp32barrett.c
  *
  * Barrett modular reduction, code.
- */
-
-/*
  *
  * For more information on this algorithm, see:
  * "Handbook of Applied Cryptography", Chapter 14.3.3
  *  Menezes, van Oorschot, Vanstone
  *  CRC Press
- *
+ */
+
+/*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -212,6 +211,67 @@ void mp32bsethex(mp32barrett* b, const char* hex)
 		}
 		if (rem != 0)
 			*dst = val;
+
+		/*@-nullpass@*/		/* temp may be NULL */
+		mp32bmu_w(b, temp);
+
+		free(temp);
+		/*@=nullpass@*/
+	}
+	else
+	{
+		b->size = 0;
+		b->mu = 0;
+	}
+}
+/*@=nullstate =compdef @*/
+
+/*@-nullstate -compdef @*/	/* b->modl may be null @*/
+void mp32bswabhex(mp32barrett* b, const char* hex)
+{
+	uint32 length = strlen(hex);
+	uint32 size = (length+7) >> 3;
+	uint8 rem = (uint8)(length & 0x7);
+
+	if (b->modl)
+	{
+		if (b->size != size)
+			b->modl = (uint32*) realloc(b->modl, (2*size+1) * sizeof(uint32));
+	}
+	else
+		b->modl = (uint32*) malloc((2*size+1) * sizeof(uint32));
+
+	if (b->modl != (uint32*) 0)
+	{
+		register uint32  val = 0;
+		register uint32* dst = b->modl;
+		register uint32* temp = (uint32*) malloc((6*size+4) * sizeof(uint32));
+		register char ch;
+
+		b->size = size;
+		b->mu = b->modl+size;
+
+		while (length-- > 0)
+		{
+			ch = *(hex++);
+			val <<= 4;
+			if (ch >= '0' && ch <= '9')
+				val += (ch - '0');
+			else if (ch >= 'A' && ch <= 'F')
+				val += (ch - 'A') + 10;
+			else if (ch >= 'a' && ch <= 'f')
+				val += (ch - 'a') + 10;
+			else
+				{};
+
+			if ((length & 0x7) == 0)
+			{
+				*(dst++) = swapu32(val);
+				val = 0;
+			}
+		}
+		if (rem != 0)
+			*dst = swapu32(val);
 
 		/*@-nullpass@*/		/* temp may be NULL */
 		mp32bmu_w(b, temp);
