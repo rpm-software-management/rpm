@@ -9,6 +9,9 @@
 
 typedef struct rpmftsObject_s {
     PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
+    PyObject *callbacks;
+
 /*@null@*/
     const char ** roots;
     int		options;

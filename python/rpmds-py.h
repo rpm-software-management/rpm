@@ -11,6 +11,7 @@
  */
 typedef struct rpmdsObject_s {
     PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
     int		active;
 /*@null@*/
     rpmds	ds;

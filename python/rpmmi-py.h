@@ -13,6 +13,7 @@ typedef struct rpmmiObject_s rpmmiObject;
  */
 struct rpmmiObject_s {
     PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
     rpmdbMatchIterator mi;
 } ;
 

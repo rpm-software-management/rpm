@@ -9,6 +9,7 @@
 
 typedef struct rpmalObject_s {
     PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
     rpmal	al;
 } rpmalObject;
 

@@ -7,6 +7,7 @@
 
 typedef struct rpmfdObject_s {
     PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
     FD_t	fd;
 } rpmfdObject;
 

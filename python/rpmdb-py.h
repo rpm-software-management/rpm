@@ -15,6 +15,7 @@ typedef struct rpmdbObject_s rpmdbObject;
  */
 struct rpmdbObject_s {
     PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
     rpmdb db;
     int offx;
     int noffs;

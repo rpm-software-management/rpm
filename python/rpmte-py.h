@@ -9,6 +9,7 @@
 
 typedef struct rpmteObject_s {
     PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
     rpmte	te;
 } rpmteObject;
 

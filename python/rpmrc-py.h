@@ -18,6 +18,7 @@ struct rpmrcObject_s {
 #else
     PyObject_HEAD
 #endif
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
 } ;
 
 /*@unchecked@*/
