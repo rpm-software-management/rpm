@@ -499,8 +499,22 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
             return NULL;
         }
         
-	if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count))
-	    return PyList_New(0);
+	if (!rpmHeaderGetEntry(s->h, tag, &type, &data, &count)) {
+	    switch (tag) {
+	    case RPMTAG_EPOCH:
+	    case RPMTAG_NAME:
+	    case RPMTAG_VERSION:
+	    case RPMTAG_RELEASE:
+	    case RPMTAG_ARCH:
+	    case RPMTAG_OS:
+		Py_INCREF(Py_None);
+		return Py_None;
+		break;
+	    default:
+		return PyList_New(0);
+		break;
+	    }
+	}
     }
 
     switch (tag) {
