@@ -16,6 +16,8 @@ const char * ftpStrerror(int ftpErrno);
 
 int ftpOpen(char * host, char * name, char * password, char * proxy);
 int ftpGetFile(int sock, char * remotename, int dest);
+int ftpGetFileDesc(int sock, char * remotename);
+int ftpGetFileDone(int sock);
 void ftpClose(int sock);
 
 #endif
