@@ -5,6 +5,7 @@
 #include <alloca.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <time.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -16,6 +17,7 @@
 #include "rpmlib.h"
 #include "misc.h"
 #include "rpmmacro.h"
+#include "rpmio_internal.h"
 #include "upgrade.h"
 
 extern int _rpmio_debug;
@@ -325,7 +327,7 @@ static PyObject * hdrVerifyFile(hdrObject * s, PyObject * args) {
     }
 
     /* RPMVERIFY_USER and RPM_VERIFY_GROUP are handled wrong here, but rpmlib.a
-       doesn't do these correctly either. At least this is consisten */
+       doesn't do these correctly either. At least this is consistent. */
     if (verifyResult & RPMVERIFY_USER) {
 	if (!s->uids) {
 	    headerGetEntry(s->h, RPMTAG_FILEUIDS, &type, (void **) &s->uids,
@@ -2232,7 +2234,6 @@ static int closeCallback(FILE * f) {
     return 0; 
 }
 
-#if 0
 /** \ingroup python
  */
 static PyObject * doFopen(PyObject * self, PyObject * args) {
@@ -2282,7 +2283,6 @@ static PyObject * doFopen(PyObject * self, PyObject * args) {
     
     return PyFile_FromFile (node->f, path, mode, closeCallback);
 }
-#endif
 
 /** \ingroup python
  */

@@ -48,7 +48,7 @@ falloc.lo: falloc.c $(top_srcdir)/system.h $(top_srcdir)/rpmio/rpmio.h falloc.h
 	touch $@
 
 clean-local:
-	rm -f $(DB3LOBJS)
+	rm -f $(DB3LOBJS) *.o .created
 
 .PHONY:	sources
 sources:

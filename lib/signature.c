@@ -413,7 +413,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
     return 0;
 }
 
-int rpmAddSignature(Header header, const char * file, int_32 sigTag,
+int rpmAddSignature(Header h, const char * file, int_32 sigTag,
 		const char *passPhrase)
 {
     struct stat st;
@@ -427,25 +427,25 @@ int rpmAddSignature(Header header, const char * file, int_32 sigTag,
 	(void) stat(file, &st);
 	size = st.st_size;
 	ret = 0;
-	(void) headerAddEntry(header, RPMSIGTAG_SIZE, RPM_INT32_TYPE, &size, 1);
+	(void) headerAddEntry(h, RPMSIGTAG_SIZE, RPM_INT32_TYPE, &size, 1);
 	break;
     case RPMSIGTAG_MD5:
 	ret = mdbinfile(file, buf);
 	if (ret == 0)
-	    (void) headerAddEntry(header, sigTag, RPM_BIN_TYPE, buf, 16);
+	    (void) headerAddEntry(h, sigTag, RPM_BIN_TYPE, buf, 16);
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	rpmMessage(RPMMESS_VERBOSE, _("Generating signature using PGP.\n"));
 	ret = makePGPSignature(file, &sig, &size, passPhrase);
 	if (ret == 0)
-	    (void) headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
+	    (void) headerAddEntry(h, sigTag, RPM_BIN_TYPE, sig, size);
 	break;
     case RPMSIGTAG_GPG:
 	rpmMessage(RPMMESS_VERBOSE, _("Generating signature using GPG.\n"));
         ret = makeGPGSignature(file, &sig, &size, passPhrase);
 	if (ret == 0)
-	    (void) headerAddEntry(header, sigTag, RPM_BIN_TYPE, sig, size);
+	    (void) headerAddEntry(h, sigTag, RPM_BIN_TYPE, sig, size);
 	break;
     }
 

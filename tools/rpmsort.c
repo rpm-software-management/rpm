@@ -207,7 +207,7 @@ restart:
 	if (conflicts) {
 	    rpmMessage(RPMMESS_ERROR, _("failed dependencies:\n"));
 	    printDepProblems(stderr, conflicts, numConflicts);
-	    rpmdepFreeConflicts(conflicts, numConflicts);
+	    conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
 	    rc = -1;
 	    goto exit;
 	}

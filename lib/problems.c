@@ -12,6 +12,7 @@
 
 /*@access rpmProblemSet@*/
 /*@access rpmProblem@*/
+/*@access rpmDependencyConflict@*/
 
 /* XXX FIXME: merge into problems */
 /* XXX used in verify.c rpmlibprov.c */
@@ -31,8 +32,9 @@ void printDepFlags(FILE * fp, const char * version, int flags)
 	fprintf(fp, " %s", version);
 }
 
-static int sameProblem(struct rpmDependencyConflict * ap,
-		       struct rpmDependencyConflict * bp)
+static int sameProblem(const rpmDependencyConflict ap,
+		const rpmDependencyConflict bp)
+	/*@*/
 {
 
     if (ap->sense != bp->sense)
@@ -56,8 +58,8 @@ static int sameProblem(struct rpmDependencyConflict * ap,
 }
 
 /* XXX FIXME: merge into problems */
-void printDepProblems(FILE * fp, struct rpmDependencyConflict * conflicts,
-			     int numConflicts)
+void printDepProblems(FILE * fp,
+		const rpmDependencyConflict conflicts, int numConflicts)
 {
     int i;
 
@@ -105,7 +107,7 @@ static inline int snprintf(char * buf, int nb, const char * fmt, ...)
 }
 #endif
 
-const char * rpmProblemString(rpmProblem prob)
+const char * rpmProblemString(const rpmProblem prob)
 {
 /*@observer@*/ const char * pkgNEVR = (prob->pkgNEVR ? prob->pkgNEVR : "");
 /*@observer@*/ const char * altNEVR = (prob->altNEVR ? prob->altNEVR : "");
@@ -184,7 +186,7 @@ const char * rpmProblemString(rpmProblem prob)
 
 void rpmProblemPrint(FILE *fp, rpmProblem prob)
 {
-    const char *msg = rpmProblemString(prob);
+    const char * msg = rpmProblemString(prob);
     fprintf(fp, "%s\n", msg);
     msg = _free(msg);
 }

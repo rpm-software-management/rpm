@@ -10,6 +10,16 @@
 # XXX ignore doxygen markings
 -unrecogcomments
 
+#+mustmod		# segfault in psm.c:597
++proto-param-match
+
+#-cpp-names
+#-declundef		# db3 is noisy
+#-deepbreak		# 485 cases
+#-export-local
+#-export-header
+#-export-header-var
+
 # don't-bother-me-yet parameters
 -branchstate		# ~140 painful
 -mustfree		# ~588 alloca is painful

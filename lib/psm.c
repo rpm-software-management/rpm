@@ -722,7 +722,7 @@ rpmRC rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     if (rc) rc = RPMRC_FAIL;
 
 exit:
-    if (rc == RPMRC_OK && specFile && specFilePtr)
+    if (specFilePtr && specFile && rc == RPMRC_OK)
 	*specFilePtr = specFile;
     else
 	specFile = _free(specFile);

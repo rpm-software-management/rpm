@@ -71,6 +71,9 @@
 	- fix: popt exec doesn't add '--', --target et al no longer need '='.
 	- fix: popt consume-next-arg "!#:+" w/o side effect (#41956).
 	- fix: for busted db1, attempt chain reconnection to following record.
+	- return multiple suggested packages
+		(Pawel Kolodziej <pawelk@pld.org.pl>).
+	- fix: return suggested packages when using Depends cache.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

@@ -42,18 +42,20 @@ void	freeSplitString( /*@only@*/ char ** list);
 
 /**
  */
-int	rpmfileexists(const char * filespec)	/*@*/;
+int	rpmfileexists(const char * urlfn)	/*@*/;
 
 /**
  */
-int	rpmvercmp(const char * one, const char * two);
+int	rpmvercmp(const char * a, const char * b);
 
-/* these are like the normal functions, but they malloc() the space which
-   is needed */
+/*
+ * These are like the libc functions, but they malloc() the space which
+ * is needed.
+ */
 
 /**
  */
-int	dosetenv(const char *name, const char *value, int overwrite);
+int	dosetenv(const char * name, const char * value, int overwrite);
 
 /**
  */

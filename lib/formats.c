@@ -175,10 +175,11 @@ static int fsnamesTag( /*@unused@*/ Header h, /*@out@*/ int_32 * type,
  * @retval freedata	address of data-was-malloc'ed indicator
  * @return		0 on success
  */
-static int instprefixTag(Header h, /*@out@*/ int_32 * type,
-	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
-	/*@out@*/ int * freeData)
-		/*@modifies h, *type, *data, *count, *freeData @*/
+static int instprefixTag(Header h, /*@null@*/ /*@out@*/ int_32 * type,
+	/*@null@*/ /*@out@*/ const void ** data,
+	/*@null@*/ /*@out@*/ int_32 * count,
+	/*@null@*/ /*@out@*/ int * freeData)
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -186,12 +187,12 @@ static int instprefixTag(Header h, /*@out@*/ int_32 * type,
     char ** array;
 
     if (hge(h, RPMTAG_INSTALLPREFIX, type, (void **)data, count)) {
-	*freeData = 0;
+	if (freeData) *freeData = 0;
 	return 0;
     } else if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (void **) &array, count)) {
-	*data = xstrdup(array[0]);
-	*freeData = 1;
-	*type = RPM_STRING_TYPE;
+	if (data) *data = xstrdup(array[0]);
+	if (freeData) *freeData = 1;
+	if (type) *type = RPM_STRING_TYPE;
 	array = hfd(array, ipt);
 	return 0;
     } 
@@ -417,7 +418,7 @@ static char * _macro_i18ndomains = "%{?_i18ndomains:%{_i18ndomains}}";
 static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies h, *type, *data, *count, *freeData @*/
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
@@ -501,7 +502,7 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ int_32 * type,
 static int summaryTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies h, *type, *data, *count, *freeData @*/
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
 }
@@ -517,7 +518,7 @@ static int summaryTag(Header h, /*@out@*/ int_32 * type,
 static int descriptionTag(Header h, /*@out@*/ int_32 * type,
 	/*@out@*/ const void ** data, /*@out@*/ int_32 * count,
 	/*@out@*/ int * freeData)
-		/*@modifies h, *type, *data, *count, *freeData @*/
+		/*@modifies *type, *data, *count, *freeData @*/
 {
     return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
 }

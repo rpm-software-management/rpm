@@ -22,7 +22,7 @@ static int checkSpec(Header h)
     rpmdb db = NULL;
     int mode = O_RDONLY;
     rpmTransactionSet ts;
-    struct rpmDependencyConflict * conflicts;
+    rpmDependencyConflict conflicts;
     int numConflicts;
     int rc;
 
@@ -30,7 +30,7 @@ static int checkSpec(Header h)
 	return 0;
 
     if (rpmdbOpen(rootdir, &db, mode, 0644)) {
-	const char *dn;
+	const char * dn;
 	dn = rpmGetPath( (rootdir ? rootdir : ""), "%{_dbpath}", NULL);
 	rpmError(RPMERR_OPEN, _("cannot open rpm database in %s\n"), dn);
 	dn = _free(dn);
@@ -44,7 +44,7 @@ static int checkSpec(Header h)
     if (rc == 0 && conflicts) {
 	rpmMessage(RPMMESS_ERROR, _("failed build dependencies:\n"));
 	printDepProblems(stderr, conflicts, numConflicts);
-	rpmdepFreeConflicts(conflicts, numConflicts);
+	conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
 	rc = 1;
     }
 

@@ -205,24 +205,24 @@ unsigned int headerSizeof(/*@null@*/ Header h, enum hMagic magicp)
 
 /** \ingroup header
  * Convert header to in-memory representation.
- * @param p		on-disk header (with offsets)
+ * @param uh		on-disk header blob (i.e. with offsets)
  * @return		header
  */
 /*@-exportlocal@*/
-/*@null@*/ Header headerLoad(/*@kept@*/ void * p)	/*@*/;
+/*@null@*/ Header headerLoad(/*@kept@*/ void * uh)	/*@*/;
 /*@=exportlocal@*/
 
 /** \ingroup header
  * Make a copy and convert header to in-memory representation.
- * @param p		on-disk header (with offsets)
+ * @param uh		on-disk header blob (i.e. with offsets)
  * @return		header
  */
-/*@null@*/ Header headerCopyLoad(void * p)	/*@*/;
+/*@null@*/ Header headerCopyLoad(void * uh)	/*@*/;
 
 /** \ingroup header
  * Convert header to on-disk representation.
  * @param h		header (with pointers)
- * @return		on-disk header (with offsets)
+ * @return		on-disk header blob (i.e. with offsets)
  */
 /*@only@*/ /*@null@*/ void * headerUnload(Header h)
 	/*@modifies h @*/;
@@ -286,13 +286,13 @@ typedef const char * errmsg_t;
  * @param h		header
  * @param fmt		format to use
  * @param tags		array of tag name/value pairs
- * @param extentions	chained table of formatting extensions.
+ * @param extensions	chained table of formatting extensions.
  * @retval errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
 /*@only@*/ char * headerSprintf(Header h, const char * fmt,
 		     const struct headerTagTableEntry * tags,
-		     const struct headerSprintfExtension * extentions,
+		     const struct headerSprintfExtension * extensions,
 		     /*@null@*/ /*@out@*/ errmsg_t * errmsg)
 	/*@modifies *errmsg @*/;
 
@@ -466,27 +466,28 @@ int headerRemoveEntry(Header h, int_32 tag)
  * @return		header tag iterator
  */
 HeaderIterator headerInitIterator(Header h)
-	/*@modifies h*/;
+	/*@modifies h */;
 
 /** \ingroup header
  * Return next tag from header.
- * @param iter		header tag iterator
+ * @param hi		header tag iterator
  * @retval tag		address of tag
  * @retval type		address of tag value data type
  * @retval p		address of pointer to tag value(s)
  * @retval c		address of number of values
  * @return		1 on success, 0 on failure
  */
-int headerNextIterator(HeaderIterator iter,
-	/*@out@*/ int_32 * tag, /*@out@*/ int_32 * type,
-	/*@out@*/ const void ** p, /*@out@*/ int_32 * c)
-		/*@modifies iter, *tag, *type, *p, *c @*/;
+int headerNextIterator(HeaderIterator hi,
+	/*@null@*/ /*@out@*/ int_32 * tag, /*@null@*/ /*@out@*/ int_32 * type,
+	/*@null@*/ /*@out@*/ const void ** p, /*@null@*/ /*@out@*/ int_32 * c)
+		/*@modifies hi, *tag, *type, *p, *c @*/;
 
 /** \ingroup header
  * Destroy header tag iterator.
- * @param iter		header tag iterator
+ * @param hi		header tag iterator
  */
-void headerFreeIterator( /*@only@*/ HeaderIterator iter);
+void headerFreeIterator(/*@only@*/ HeaderIterator hi)
+	/*@modifies hi @*/;
 
 /** \ingroup header
  * Duplicate a header.

@@ -72,7 +72,7 @@ struct poptOption rpmVerifyPoptTable[] = {
 };
 
 /* ======================================================================== */
-int rpmVerifyFile(const char * prefix, Header h, int filenum,
+int rpmVerifyFile(const char * root, Header h, int filenum,
 		int * result, int omitMask)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -126,8 +126,8 @@ int rpmVerifyFile(const char * prefix, Header h, int filenum,
 	(void) hge(h, RPMTAG_DIRNAMES, &dnt, (void **) &dirNames, NULL);
 
 	filespec = alloca(strlen(dirNames[dirIndexes[filenum]]) + 
-		      strlen(baseNames[filenum]) + strlen(prefix) + 5);
-	sprintf(filespec, "%s/%s%s", prefix, dirNames[dirIndexes[filenum]],
+		      strlen(baseNames[filenum]) + strlen(root) + 5);
+	sprintf(filespec, "%s/%s%s", root, dirNames[dirIndexes[filenum]],
 		baseNames[filenum]);
 	baseNames = hfd(baseNames, bnt);
 	dirNames = hfd(dirNames, dnt);
@@ -326,6 +326,11 @@ int rpmVerifyScript(const char * rootDir, Header h, /*@null@*/ FD_t scriptFd)
 }
 
 /* ======================================================================== */
+/**
+ * Check file info from header against what's actually installed.
+ * @param h		header
+ * @return		0 no problems, 1 problems found
+ */
 static int verifyHeader(QVA_t qva, Header h)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
@@ -338,7 +343,7 @@ static int verifyHeader(QVA_t qva, Header h)
     rpmVerifyAttrs verifyResult = 0;
     rpmVerifyAttrs omitMask = !(qva->qva_flags & VERIFY_MD5)
 			? RPMVERIFY_MD5 : RPMVERIFY_NONE;
-    int ec = 0;
+    int ec = 0;		/* assume no problems */
     int i;
 
     te = t = buf;
@@ -407,16 +412,22 @@ static int verifyHeader(QVA_t qva, Header h)
     }
 	
 exit:
-    if (fileNames) free(fileNames);
+    fileNames = _free(fileNames);
     return ec;
 }
 
+/**
+ * Check installed package dependencies for problems.
+ * @param rpmdb		rpm database
+ * @param h		header
+ * @return		0 no problems, 1 problems found
+ */
 static int verifyDependencies(rpmdb rpmdb, Header h)
 {
     rpmTransactionSet rpmdep;
-    struct rpmDependencyConflict * conflicts;
+    rpmDependencyConflict conflicts;
     int numConflicts;
-    int rc = 0;
+    int rc = 0;		/* assume no problems */
     int i;
 
     rpmdep = rpmtransCreateSet(rpmdb, NULL);
@@ -454,7 +465,7 @@ static int verifyDependencies(rpmdb rpmdb, Header h)
 		te = stpcpy(te, conflicts[i].needsVersion);
 	    }
 	}
-	rpmdepFreeConflicts(conflicts, numConflicts);
+	conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
 	if (te > t) {
 	    *te++ = '\n';
 	    *te = '\0';

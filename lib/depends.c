@@ -20,6 +20,8 @@ int _depends_debug = 0;
 /*@access rpmdb@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/		/* XXX compared with NULL */
 /*@access rpmTransactionSet@*/
+/*@access rpmDependencyConflict@*/
+/*@access availableList@*/
 
 int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 {
@@ -50,8 +52,9 @@ int headerNVR(Header h, const char **np, const char **vp, const char **rp)
  * @param keyFlags	dependency logical range qualifiers
  * @return		formatted dependency (malloc'ed)
  */
-static /*@only@*/ char *printDepend(const char * depend, const char * key,
-	const char * keyEVR, int keyFlags)	/*@*/
+static /*@only@*/ char * printDepend(const char * depend, const char * key,
+		const char * keyEVR, int keyFlags)
+	/*@*/
 {
     char *tbuf, *t;
     size_t nb;
@@ -118,8 +121,8 @@ struct orderListIndex {
  * Destroy available item index.
  * @param al		available list
  */
-static void alFreeIndex(struct availableList * al)
-	/*@modifies al->index @*/
+static void alFreeIndex(availableList al)
+	/*@modifies al @*/
 {
     if (al->index.size) {
 	al->index.index = _free(al->index.index);
@@ -131,8 +134,8 @@ static void alFreeIndex(struct availableList * al)
  * Initialize available packckages, items, and directories list.
  * @param al		available list
  */
-static void alCreate(struct availableList * al)
-	/*@modifies *al @*/
+static void alCreate(availableList al)
+	/*@modifies al @*/
 {
     al->alloced = al->delta;
     al->size = 0;
@@ -149,7 +152,8 @@ static void alCreate(struct availableList * al)
  * Free available packages, items, and directories members.
  * @param al		available list
  */
-static void alFree(struct availableList * al)
+static void alFree(availableList al)
+	/*@modifies al @*/
 {
     HFD_t hfd = headerFreeData;
     struct availablePackage * p;
@@ -226,9 +230,11 @@ static int dirInfoCompare(const void * one, const void * two)	/*@*/
  * @param relocs	package file relocations
  * @return		available package pointer
  */
-static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList * al,
+static /*@exposed@*/ struct availablePackage *
+alAddPackage(availableList al,
 		Header h, /*@null@*/ /*@dependent@*/ const void * key,
 		/*@null@*/ FD_t fd, /*@null@*/ rpmRelocation * relocs)
+	/*@modifies al, h @*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -410,7 +416,7 @@ static /*@exposed@*/ struct availablePackage * alAddPackage(struct availableList
  * @param two		2nd available index entry
  * @return		result of comparison
  */
-static int indexcmp(const void * one, const void * two)
+static int indexcmp(const void * one, const void * two)		/*@*/
 {
     const struct availableIndexEntry * a = one;
     const struct availableIndexEntry * b = two;
@@ -426,8 +432,8 @@ static int indexcmp(const void * one, const void * two)
  * Generate index for available list.
  * @param al		available list
  */
-static void alMakeIndex(struct availableList * al)
-	/*@modifies al->index @*/
+static void alMakeIndex(availableList al)
+	/*@modifies al @*/
 {
     struct availableIndex * ai = &al->index;
     int i, j, k;
@@ -470,10 +476,11 @@ static void alMakeIndex(struct availableList * al)
  * @retval *vp		pointer to version
  * @retval *rp		pointer to release
  */
-static void parseEVR(char *evr,
-	/*@exposed@*/ /*@out@*/ const char **ep,
-	/*@exposed@*/ /*@out@*/ const char **vp,
-	/*@exposed@*/ /*@out@*/const char **rp) /*@modifies evr,*ep,*vp,*rp @*/
+static void parseEVR(char * evr,
+		/*@exposed@*/ /*@out@*/ const char ** ep,
+		/*@exposed@*/ /*@out@*/ const char ** vp,
+		/*@exposed@*/ /*@out@*/ const char ** rp)
+	/*@modifies *ep, *vp, *rp @*/
 {
     const char *epoch;
     const char *version;		/* assume only version is present */
@@ -509,8 +516,8 @@ const char *rpmNAME = PACKAGE;
 const char *rpmEVR = VERSION;
 int rpmFLAGS = RPMSENSE_EQUAL;
 
-int rpmRangesOverlap(const char *AName, const char *AEVR, int AFlags,
-	const char *BName, const char *BEVR, int BFlags)
+int rpmRangesOverlap(const char * AName, const char * AEVR, int AFlags,
+	const char * BName, const char * BEVR, int BFlags)
 {
     const char *aDepend = printDepend(NULL, AName, AEVR, AFlags);
     const char *bDepend = printDepend(NULL, BName, BEVR, BFlags);
@@ -587,7 +594,9 @@ exit:
 
 typedef int (*dbrecMatch_t) (Header h, const char *reqName, const char * reqEVR, int reqFlags);
 
-static int rangeMatchesDepFlags (Header h, const char *reqName, const char * reqEVR, int reqFlags)
+static int rangeMatchesDepFlags (Header h,
+		const char * reqName, const char * reqEVR, int reqFlags)
+	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -641,7 +650,7 @@ static int rangeMatchesDepFlags (Header h, const char *reqName, const char * req
 }
 
 int headerMatchesDepFlags(Header h,
-	const char * reqName, const char * reqEVR, int reqFlags)
+		const char * reqName, const char * reqEVR, int reqFlags)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char *name, *version, *release;
@@ -722,7 +731,7 @@ rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb, const char * rootDir)
  * @param b		2nd instance address
  * @return		result of comparison
  */
-static int intcmp(const void * a, const void *b)
+static int intcmp(const void * a, const void * b)	/*@*/
 {
     const int * aptr = a;
     const int * bptr = b;
@@ -903,11 +912,12 @@ void rpmtransFree(rpmTransactionSet ts)
     ts = _free(ts);
 }
 
-void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts,
-			int numConflicts)
+rpmDependencyConflict rpmdepFreeConflicts(rpmDependencyConflict conflicts,
+		int numConflicts)
 {
     int i;
 
+    if (conflicts)
     for (i = 0; i < numConflicts; i++) {
 	conflicts[i].byHeader = headerFree(conflicts[i].byHeader);
 	conflicts[i].byName = _free(conflicts[i].byName);
@@ -915,37 +925,40 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts,
 	conflicts[i].byRelease = _free(conflicts[i].byRelease);
 	conflicts[i].needsName = _free(conflicts[i].needsName);
 	conflicts[i].needsVersion = _free(conflicts[i].needsVersion);
+	conflicts[i].suggestedPackages = _free(conflicts[i].suggestedPackages);
     }
 
-    conflicts = _free(conflicts);
+    return (conflicts = _free(conflicts));
 }
 
 /**
- * Check added package file lists for a file.
+ * Check added package file lists for package(s) that provide a file.
  * @param al		available list
  * @param keyType	type of dependency
  * @param fileName	file name to search for
  * @return		available package pointer
  */
-/*@dependent@*/ /*@null@*/ static struct availablePackage *
-alFileSatisfiesDepend(struct availableList * al,
-	const char * keyType, const char * fileName)
+static /*@only@*/ /*@null@*/ struct availablePackage **
+alAllFileSatisfiesDepend(const availableList al,
+		const char * keyType, const char * fileName)
+	/*@*/
 {
-    int i;
+    int i, found;
     const char * dirName;
     const char * baseName;
     struct dirInfo_s dirNeedle;
     dirInfo dirMatch;
+    struct availablePackage ** ret;
 
     /* Solaris 2.6 bsearch sucks down on this. */
     if (al->numDirs == 0 || al->dirs == NULL || al->list == NULL)
 	return NULL;
 
-    {	char * chptr = xstrdup(fileName);
-	dirName = chptr;
-	if ((chptr = strrchr(chptr, '/')) != NULL) {
-	    chptr++;		/* leave the trailing '/' */
-	    *chptr = '\0';
+    {	char * t;
+	dirName = t = xstrdup(fileName);
+	if ((t = strrchr(t, '/')) != NULL) {
+	    t++;		/* leave the trailing '/' */
+	    *t = '\0';
 	}
     }
 
@@ -953,36 +966,83 @@ alFileSatisfiesDepend(struct availableList * al,
     dirNeedle.dirNameLen = strlen(dirName);
     dirMatch = bsearch(&dirNeedle, al->dirs, al->numDirs,
 		       sizeof(dirNeedle), dirInfoCompare);
-    dirName = _free(dirName);
-    if (dirMatch == NULL) return NULL;
+    if (dirMatch == NULL) {
+	dirName = _free(dirName);
+	return NULL;
+    }
+
+    /* rewind to the first match */
+    while (dirMatch > al->dirs && dirInfoCompare(dirMatch-1, &dirNeedle) == 0)
+	dirMatch--;
 
     baseName = strrchr(fileName, '/') + 1;
 
-    /* XXX FIXME: these file lists should be sorted and bsearched */
-    for (i = 0; i < dirMatch->numFiles; i++) {
-	if (dirMatch->files[i].baseName == NULL ||
-		strcmp(dirMatch->files[i].baseName, baseName))
-	    continue;
+    for (found = 0, ret = NULL;
+	 dirMatch <= al->dirs + al->numDirs &&
+		dirInfoCompare(dirMatch, &dirNeedle) == 0;
+	 dirMatch++)
+    {
+	/* XXX FIXME: these file lists should be sorted and bsearched */
+	for (i = 0; i < dirMatch->numFiles; i++) {
+	    if (dirMatch->files[i].baseName == NULL ||
+			strcmp(dirMatch->files[i].baseName, baseName))
+		continue;
 
-	/*
-	 * If a file dependency would be satisfied by a file
-	 * we are not going to install, skip it.
-	 */
-	if (al->list[dirMatch->files[i].pkgNum].multiLib &&
-		!isFileMULTILIB(dirMatch->files[i].fileFlags))
-	    continue;
+	    /*
+	     * If a file dependency would be satisfied by a file
+	     * we are not going to install, skip it.
+	     */
+	    if (al->list[dirMatch->files[i].pkgNum].multiLib &&
+			!isFileMULTILIB(dirMatch->files[i].fileFlags))
+	        continue;
 
-	if (keyType)
-	    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added files)\n"),
-			    keyType, fileName);
-	return al->list + dirMatch->files[i].pkgNum;
+	    if (keyType)
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added files)\n"),
+			keyType, fileName);
+
+	    ret = xrealloc(ret, (found+2) * sizeof(*ret));
+	    if (ret)	/* can't happen */
+		ret[found++] = al->list + dirMatch->files[i].pkgNum;
+	    break;
+	}
     }
 
-    return NULL;
+    dirName = _free(dirName);
+    /*@-mods@*/		/* FIX: al->list might be modified. */
+    if (ret)
+	ret[found] = NULL;
+    /*@=mods@*/
+    return ret;
 }
 
+#ifdef	DYING
 /**
- * Check added package file lists for a provide.
+ * Check added package file lists for first package that provides a file.
+ * @param al		available list
+ * @param keyType	type of dependency
+ * @param fileName	file name to search for
+ * @return		available package pointer
+ */
+/*@unused@*/ static /*@dependent@*/ /*@null@*/ struct availablePackage *
+alFileSatisfiesDepend(const availableList al,
+		const char * keyType, const char * fileName)
+	/*@*/
+{
+    struct availablePackage * ret;
+    struct availablePackage ** tmp =
+		alAllFileSatisfiesDepend(al, keyType, fileName);
+
+    if (tmp) {
+	ret = tmp[0];
+	tmp = _free(tmp);
+	return ret;
+    }
+    return NULL;
+}
+#endif	/* DYING */
+
+/**
+ * Check added package file lists for package(s) that have a provide.
  * @param al		available list
  * @param keyType	type of dependency
  * @param keyDepend	dependency string representation
@@ -991,17 +1051,18 @@ alFileSatisfiesDepend(struct availableList * al,
  * @param keyFlags	dependency logical range qualifiers
  * @return		available package pointer
  */
-/*@dependent@*/ /*@null@*/ static struct availablePackage * alSatisfiesDepend(
-	struct availableList * al,
-	const char * keyType, const char * keyDepend,
-	const char * keyName, const char * keyEVR, int keyFlags)
+static /*@only@*/ /*@null@*/ struct availablePackage **
+alAllSatisfiesDepend(const availableList al,
+		const char * keyType, const char * keyDepend,
+		const char * keyName, const char * keyEVR, int keyFlags)
+	/*@*/
 {
     struct availableIndexEntry needle, * match;
-    struct availablePackage * p;
-    int i, rc;
+    struct availablePackage * p, ** ret = NULL;
+    int i, rc, found;
 
     if (*keyName == '/')
-	return alFileSatisfiesDepend(al, keyType, keyName);
+	return alAllFileSatisfiesDepend(al, keyType, keyName);
 
     if (!al->index.size || al->index.index == NULL) return NULL;
 
@@ -1012,51 +1073,99 @@ alFileSatisfiesDepend(struct availableList * al,
 
     if (match == NULL) return NULL;
 
-    p = match->package;
-    rc = 0;
-    switch (match->type) {
-    case IET_PROVIDES:
-	for (i = 0; i < p->providesCount; i++) {
-	    const char *proEVR;
-	    int proFlags;
+    /* rewind to the first match */
+    while (match > al->index.index && indexcmp(match-1,&needle) == 0)
+	match--;
 
-	    /* Filter out provides that came along for the ride. */
-	    if (strcmp(p->provides[i], keyName))
-		continue;
+    for (ret = NULL, found = 0;
+	 match <= al->index.index + al->index.size &&
+		indexcmp(match,&needle) == 0;
+	 match++)
+    {
 
-	    proEVR = (p->providesEVR ? p->providesEVR[i] : NULL);
-	    proFlags = (p->provideFlags ? p->provideFlags[i] : 0);
-	    rc = rpmRangesOverlap(p->provides[i], proEVR, proFlags,
-			keyName, keyEVR, keyFlags);
-	    if (rc) break;
+	p = match->package;
+	rc = 0;
+	switch (match->type) {
+	case IET_PROVIDES:
+	    for (i = 0; i < p->providesCount; i++) {
+		const char * proEVR;
+		int proFlags;
+
+		/* Filter out provides that came along for the ride. */
+		if (strcmp(p->provides[i], keyName))
+		    continue;
+
+		proEVR = (p->providesEVR ? p->providesEVR[i] : NULL);
+		proFlags = (p->provideFlags ? p->provideFlags[i] : 0);
+		rc = rpmRangesOverlap(p->provides[i], proEVR, proFlags,
+				keyName, keyEVR, keyFlags);
+		if (rc) break;
+	    }
+	    if (keyType && keyDepend && rc)
+		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added provide)\n"),
+				keyType, keyDepend+2);
+	    break;
 	}
-	if (keyType && keyDepend && rc)
-	    rpmMessage(RPMMESS_DEBUG, _("%s: %-45s YES (added provide)\n"),
-			keyType, keyDepend+2);
-    	break;
+
+	if (rc) {
+	    ret = xrealloc(ret, (found + 2) * sizeof(*ret));
+	    if (ret)	/* can't happen */
+		ret[found++] = p;
+	}
     }
 
-    if (rc)
-	return p;
+    if (ret)
+	ret[found] = NULL;
 
-    return NULL;
+    return ret;
 }
 
 /**
- * Check key for an unsatisfied dependency.
+ * Check added package file lists for first package that has a provide.
+ * @todo Eliminate.
  * @param al		available list
  * @param keyType	type of dependency
  * @param keyDepend	dependency string representation
  * @param keyName	dependency name string
  * @param keyEVR	dependency [epoch:]version[-release] string
  * @param keyFlags	dependency logical range qualifiers
- * @retval suggestion	possible package to resolve dependency
+ * @return		available package pointer
+ */
+static inline /*@only@*/ /*@null@*/ struct availablePackage *
+alSatisfiesDepend(const availableList al,
+		const char * keyType, const char * keyDepend,
+		const char * keyName, const char * keyEVR, int keyFlags)
+	/*@*/
+{
+    struct availablePackage * ret;
+    struct availablePackage ** tmp =
+	alAllSatisfiesDepend(al, keyType, keyDepend, keyName, keyEVR, keyFlags);
+
+    if (tmp) {
+	ret = tmp[0];
+	tmp = _free(tmp);
+	return ret;
+    }
+    return NULL;
+ }
+
+/**
+ * Check key for an unsatisfied dependency.
+ * @todo Eliminate rpmrc provides.
+ * @param al		available list
+ * @param keyType	type of dependency
+ * @param keyDepend	dependency string representation
+ * @param keyName	dependency name string
+ * @param keyEVR	dependency [epoch:]version[-release] string
+ * @param keyFlags	dependency logical range qualifiers
+ * @retval suggestion	possible package(s) to resolve dependency
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
 static int unsatisfiedDepend(rpmTransactionSet ts,
-	const char * keyType, const char * keyDepend,
-	const char * keyName, const char * keyEVR, int keyFlags,
-	/*@out@*/ struct availablePackage ** suggestion)
+		const char * keyType, const char * keyDepend,
+		const char * keyName, const char * keyEVR, int keyFlags,
+		/*@null@*/ /*@out@*/ struct availablePackage *** suggestion)
+	/*@modifies *suggestion @*/
 {
     static int _cacheDependsRC = 1;
     rpmdbMatchIterator mi;
@@ -1086,6 +1195,11 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 		rpmMessage(RPMMESS_DEBUG, _("%s: %-45s %-s (cached)\n"),
 			keyType, keyDepend, (rc ? _("NO ") : _("YES")));
 		xx = dbiCclose(dbi, NULL, 0);
+
+		if (suggestion && rc == 1)
+		    *suggestion = alAllSatisfiesDepend(&ts->availablePackages,
+				NULL, NULL, keyName, keyEVR, keyFlags);
+
 		return rc;
 	    }
 	    xx = dbiCclose(dbi, dbcursor, 0);
@@ -1131,7 +1245,9 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	goto unsatisfied;
     }
 
-    if (alSatisfiesDepend(&ts->addedPackages, keyType, keyDepend, keyName, keyEVR, keyFlags)) {
+    if (alSatisfiesDepend(&ts->addedPackages, keyType, keyDepend,
+		keyName, keyEVR, keyFlags))
+    {
 	goto exit;
     }
 
@@ -1167,7 +1283,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
 	}
 	mi = rpmdbFreeIterator(mi);
 
-#ifndef DYING
+#ifdef DYING
 	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, keyName, 0);
 	(void) rpmdbPruneIterator(mi,
 			ts->removedPackages, ts->numRemovedPackages, 1);
@@ -1185,10 +1301,8 @@ static int unsatisfiedDepend(rpmTransactionSet ts,
     }
 
     if (suggestion)
-	/*@-dependenttrans@*/
-	*suggestion = alSatisfiesDepend(&ts->availablePackages, NULL, NULL,
+	*suggestion = alAllSatisfiesDepend(&ts->availablePackages, NULL, NULL,
 				keyName, keyEVR, keyFlags);
-	/*@=dependenttrans@*/
 
 unsatisfied:
     rpmMessage(RPMMESS_DEBUG, _("%s: %-45s NO\n"), keyType, keyDepend+2);
@@ -1220,8 +1334,18 @@ exit:
     return rc;
 }
 
-static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
+/**
+ * Check header requires/conflicts against against installed+added packages.
+ * @param ts		transaction set
+ * @param psp		dependency problems
+ * @param h		header to check
+ * @param keyName	dependency name
+ * @param multiLib	skip multilib colored dependencies?
+ * @return		0 no problems found
+ */
+static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 		Header h, const char * keyName, uint_32 multiLib)
+	/*@modifies h, psp */
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -1239,7 +1363,7 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
     int type;
     int i, rc;
     int ourrc = 0;
-    struct availablePackage * suggestion;
+    struct availablePackage ** suggestion;
 
     (void) headerNVR(h, &name, &version, &release);
 
@@ -1290,10 +1414,25 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
 	    psp->problems[psp->num].needsFlags = requireFlags[i];
 	    psp->problems[psp->num].sense = RPMDEP_SENSE_REQUIRES;
 
-	    if (suggestion)
-		psp->problems[psp->num].suggestedPackage = suggestion->key;
-	    else
-		psp->problems[psp->num].suggestedPackage = NULL;
+	    if (suggestion) {
+		int j;
+		for (j = 0; suggestion[j]; j++)
+		    ;
+		psp->problems[psp->num].suggestedPackages =
+			xmalloc( (j + 1) * sizeof(void *) );
+		for (j = 0; suggestion[j]; j++)
+		    psp->problems[psp->num].suggestedPackages[j]
+			= suggestion[j]->key;
+		psp->problems[psp->num].suggestedPackages[j] = NULL;
+#ifdef	DYING
+		psp->problems[psp->num].suggestedPackage  = suggestion[0]->key;
+#endif
+	    } else {
+		psp->problems[psp->num].suggestedPackages = NULL;
+#ifdef	DYING
+		psp->problems[psp->num].suggestedPackage  = NULL;
+#endif
+	    }
 
 	    psp->num++;
 	    break;
@@ -1357,7 +1496,10 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
 	    psp->problems[psp->num].needsVersion = xstrdup(conflictsEVR[i]);
 	    psp->problems[psp->num].needsFlags = conflictFlags[i];
 	    psp->problems[psp->num].sense = RPMDEP_SENSE_CONFLICTS;
+	    psp->problems[psp->num].suggestedPackages = NULL;
+#ifdef	DYING
 	    psp->problems[psp->num].suggestedPackage = NULL;
+#endif
 
 	    psp->num++;
 	    break;
@@ -1380,11 +1522,18 @@ static int checkPackageDeps(rpmTransactionSet ts, struct problemsSet * psp,
 }
 
 /**
+ * Check dependency against installed packages.
  * Adding: check name/provides key against each conflict match,
  * Erasing: check name/provides/filename key against each requiredby match.
+ * @param ts		transaction set
+ * @param psp		dependency problems
+ * @param key		dependency name
+ * @param mi		rpm database iterator
+ * @return		0 no problems found
  */
-static int checkPackageSet(rpmTransactionSet ts, struct problemsSet * psp,
-	const char * key, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi)
+static int checkPackageSet(rpmTransactionSet ts, problemsSet psp,
+		const char * key, /*@only@*/ /*@null@*/ rpmdbMatchIterator mi)
+	/*@modifies mi, psp @*/
 {
     Header h;
     int rc = 0;
@@ -1404,9 +1553,14 @@ static int checkPackageSet(rpmTransactionSet ts, struct problemsSet * psp,
 
 /**
  * Erasing: check name/provides/filename key against requiredby matches.
+ * @param ts		transaction set
+ * @param psp		dependency problems
+ * @param key		requires name
+ * @return		0 no problems found
  */
 static int checkDependentPackages(rpmTransactionSet ts,
-			struct problemsSet * psp, const char * key)
+			problemsSet psp, const char * key)
+	/*@modifies psp @*/
 {
     rpmdbMatchIterator mi;
     mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_REQUIRENAME, key, 0);
@@ -1415,9 +1569,14 @@ static int checkDependentPackages(rpmTransactionSet ts,
 
 /**
  * Adding: check name/provides key against conflicts matches.
+ * @param ts		transaction set
+ * @param psp		dependency problems
+ * @param key		conflicts name
+ * @return		0 no problems found
  */
 static int checkDependentConflicts(rpmTransactionSet ts,
-		struct problemsSet * psp, const char * key)
+		problemsSet psp, const char * key)
+	/*@modifies psp @*/
 {
     int rc = 0;
 
@@ -1463,7 +1622,9 @@ static struct badDeps_s {
     { NULL, NULL }
 };
     
-static int ignoreDep(struct availablePackage * p, struct availablePackage * q)
+static int ignoreDep(const struct availablePackage * p,
+		const struct availablePackage * q)
+	/*@*/
 {
     struct badDeps_s *bdp;
 
@@ -1481,6 +1642,7 @@ static int ignoreDep(struct availablePackage * p, struct availablePackage * q)
  * @param q		predecessor
  */
 static void markLoop(struct tsortInfo * tsi, struct availablePackage * q)
+	/*@modifies *tsi @*/
 {
     struct availablePackage * p;
 
@@ -1494,7 +1656,8 @@ static void markLoop(struct tsortInfo * tsi, struct availablePackage * q)
     }
 }
 
-static inline /*@observer@*/ const char * const identifyDepend(int_32 f) {
+static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
+{
     if (isLegacyPreReq(f))
 	return "PreReq:";
     f = _notpre(f);
@@ -1526,7 +1689,8 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f) {
  */
 static /*@owned@*/ /*@null@*/ const char *
 zapRelation(struct availablePackage * q, struct availablePackage * p,
-	int zap, int * nzaps)
+		int zap, /*@in@*/ /*@out@*/ int * nzaps)
+	/*@modifies q, p, *nzaps @*/
 {
     struct tsortInfo * tsi_prev;
     struct tsortInfo * tsi;
@@ -1552,21 +1716,14 @@ zapRelation(struct availablePackage * q, struct availablePackage * p,
 		p->requires[j], p->requiresEVR[j], p->requireFlags[j]);
 
 	/*
-	 * XXX Attempt to unravel a dependency loop by eliminating PreReq's.
-	 * This hack "works" for the (relatively) more important autogenerated
-	 *	Requires: lib*.so.*
-	 * but may cause package %pre/%post scriptlets with, for example,
-	 *	PreReq: /bin/sh
-	 * to fail.
+	 * Attempt to unravel a dependency loop by eliminating Requires's.
 	 */
 	if (zap && !(p->requireFlags[j] & RPMSENSE_PREREQ)) {
 	    rpmMessage(RPMMESS_WARNING,
 			_("removing %s-%s-%s \"%s\" from tsort relations.\n"),
 			p->name, p->version, p->release, dp);
 	    p->tsi.tsi_count--;
-	    /*@-nullderef@*/
-	    tsi_prev->tsi_next = tsi->tsi_next;
-	    /*@=nullderef@*/
+	    if (tsi_prev) tsi_prev->tsi_next = tsi->tsi_next;
 	    tsi->tsi_next = NULL;
 	    tsi->tsi_suc = NULL;
 	    tsi = _free(tsi);
@@ -1591,12 +1748,15 @@ zapRelation(struct availablePackage * q, struct availablePackage * p,
  */
 static inline int addRelation( const rpmTransactionSet ts,
 		struct availablePackage * p, unsigned char * selected, int j)
+	/*@modifies p->tsi.tsi_u.count, p->depth, *selected @*/
 {
     struct availablePackage * q;
     struct tsortInfo * tsi;
     int matchNum;
 
-    /*@-nullderef@*/
+    if (!p->requires || !p->requiresEVR || !p->requireFlags)
+	return 0;
+
     q = alSatisfiesDepend(&ts->addedPackages, NULL, NULL,
 		p->requires[j], p->requiresEVR[j], p->requireFlags[j]);
 
@@ -1607,7 +1767,6 @@ static inline int addRelation( const rpmTransactionSet ts,
     /* Avoid rpmlib feature dependencies. */
     if (!strncmp(p->requires[j], "rpmlib(", sizeof("rpmlib(")-1))
 	return 0;
-    /*@=nullderef@*/
 
 #if defined(DEPENDENCY_WHITEOUT)
     /* Avoid certain dependency relations. */
@@ -1642,7 +1801,7 @@ static inline int addRelation( const rpmTransactionSet ts,
  * @param b		2nd ordered list entry
  * @return		result of comparison
  */
-static int orderListIndexCmp(const void * one, const void * two)
+static int orderListIndexCmp(const void * one, const void * two)	/*@*/
 {
     int a = ((const struct orderListIndex *)one)->alIndex;
     int b = ((const struct orderListIndex *)two)->alIndex;
@@ -1655,9 +1814,10 @@ static int orderListIndexCmp(const void * one, const void * two)
  * @retval qp		address of first element
  * @retval rp		address of last element
  */
-static void addQ(/*@kept@*/ struct availablePackage * p,
-	/*@in@*/ /*@out@*/ struct availablePackage ** qp,
-	/*@in@*/ /*@out@*/ struct availablePackage ** rp)
+static void addQ(struct availablePackage * p,
+		/*@in@*/ /*@out@*/ struct availablePackage ** qp,
+		/*@in@*/ /*@out@*/ struct availablePackage ** rp)
+	/*@modifies p->tsi, *qp, *rp @*/
 {
     struct availablePackage *q, *qprev;
 
@@ -1782,9 +1942,7 @@ rescan:
 	if (p->tsi.tsi_count != 0)
 	    continue;
 	p->tsi.tsi_suc = NULL;
-	/*@-ownedtrans@*/
 	addQ(p, &q, &r);
-	/*@=ownedtrans@*/
 	qlen++;
     }
 
@@ -1809,7 +1967,7 @@ rescan:
 	    if (p && (--p->tsi.tsi_count) <= 0) {
 		/* XXX FIXME: add control bit. */
 		p->tsi.tsi_suc = NULL;
-		/*@-nullstate@*/
+		/*@-nullstate@*/	/* FIX: q->tsi.tsi_u.suc may be NULL */
 		addQ(p, &q->tsi.tsi_suc, &r);
 		/*@=nullstate@*/
 		qlen++;
@@ -1961,7 +2119,7 @@ rescan:
 }
 
 int rpmdepCheck(rpmTransactionSet ts,
-		struct rpmDependencyConflict ** conflicts, int * numConflicts)
+		rpmDependencyConflict * conflicts, int * numConflicts)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -1971,11 +2129,11 @@ int rpmdepCheck(rpmTransactionSet ts,
     int rc;
     rpmdbMatchIterator mi = NULL;
     Header h = NULL;
-    struct problemsSet ps;
+    problemsSet ps = alloca(sizeof(*ps));
 
-    ps.alloced = 5;
-    ps.num = 0;
-    ps.problems = xcalloc(ps.alloced, sizeof(struct rpmDependencyConflict));
+    ps->alloced = 5;
+    ps->num = 0;
+    ps->problems = xcalloc(ps->alloced, sizeof(*ps->problems));
 
     *conflicts = NULL;
     *numConflicts = 0;
@@ -1993,12 +2151,12 @@ int rpmdepCheck(rpmTransactionSet ts,
 
         rpmMessage(RPMMESS_DEBUG, ("========== +++ %s-%s-%s\n"),
 		p->name, p->version, p->release);
-	rc = checkPackageDeps(ts, &ps, p->h, NULL, p->multiLib);
+	rc = checkPackageDeps(ts, ps, p->h, NULL, p->multiLib);
 	if (rc)
 	    goto exit;
 
 	/* Adding: check name against conflicts matches. */
-	rc = checkDependentConflicts(ts, &ps, p->name);
+	rc = checkDependentConflicts(ts, ps, p->name);
 	if (rc)
 	    goto exit;
 
@@ -2008,7 +2166,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 	rc = 0;
 	for (j = 0; j < p->providesCount; j++) {
 	    /* Adding: check provides key against conflicts matches. */
-	    if (!checkDependentConflicts(ts, &ps, p->provides[j]))
+	    if (!checkDependentConflicts(ts, ps, p->provides[j]))
 		continue;
 	    rc = 1;
 	    break;
@@ -2032,7 +2190,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 		name, version, release);
 
 	    /* Erasing: check name against requiredby matches. */
-	    rc = checkDependentPackages(ts, &ps, name);
+	    rc = checkDependentPackages(ts, ps, name);
 	    if (rc)
 		goto exit;
 	}
@@ -2047,7 +2205,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 		rc = 0;
 		for (j = 0; j < providesCount; j++) {
 		    /* Erasing: check provides against requiredby matches. */
-		    if (!checkDependentPackages(ts, &ps, provides[j]))
+		    if (!checkDependentPackages(ts, ps, provides[j]))
 			continue;
 		    rc = 1;
 		    break;
@@ -2081,7 +2239,7 @@ int rpmdepCheck(rpmTransactionSet ts,
 		    *fileName = '\0';
 		    (void) stpcpy( stpcpy(fileName, dirNames[dirIndexes[j]]) , baseNames[j]);
 		    /* Erasing: check filename against requiredby matches. */
-		    if (!checkDependentPackages(ts, &ps, fileName))
+		    if (!checkDependentPackages(ts, ps, fileName))
 			continue;
 		    rc = 1;
 		    break;
@@ -2099,15 +2257,15 @@ int rpmdepCheck(rpmTransactionSet ts,
       mi = rpmdbFreeIterator(mi);
     }
 
-    if (ps.num) {
-	*conflicts = ps.problems;
-	ps.problems = NULL;
-	*numConflicts = ps.num;
+    if (ps->num) {
+	*conflicts = ps->problems;
+	ps->problems = NULL;
+	*numConflicts = ps->num;
     }
     rc = 0;
 
 exit:
     mi = rpmdbFreeIterator(mi);
-    ps.problems = _free(ps.problems);
+    ps->problems = _free(ps->problems);
     return rc;
 }

@@ -656,7 +656,12 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 #endif
 	flags = 0;
     dbi->dbi_stats = _free(dbi->dbi_stats);
+/* XXX 3.3.4 change. */
+#if DB_VERSION_MAJOR == 3 && DB_VERSION_MINOR == 3
     rc = db->stat(db, &dbi->dbi_stats, flags);
+#else
+    rc = db->stat(db, &dbi->dbi_stats, NULL, flags);
+#endif
     rc = cvtdberr(dbi, "db->stat", rc, _debug);
     return rc;
 }

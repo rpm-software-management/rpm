@@ -428,10 +428,10 @@ HeaderIterator headerInitIterator(Header h)
     return hi;
 }
 
-void headerFreeIterator(HeaderIterator iter)
+void headerFreeIterator(HeaderIterator hi)
 {
-    iter->h = headerFree(iter->h);
-    iter = _free(iter);
+    hi->h = headerFree(hi->h);
+    hi = _free(hi);
 }
 
 int headerNextIterator(HeaderIterator hi,
@@ -2398,7 +2398,7 @@ static int getExtension(Header h, headerTagTagFunction fn,
 static char * formatValue(struct sprintfTag * tag, Header h, 
 			  const struct headerSprintfExtension * extensions,
 			  struct extensionCache * extCache, int element)
-		/*@modifies h, extCache->avail @*/
+		/*@modifies extCache->avail @*/
 {
     int len;
     char buf[20];
@@ -2680,7 +2680,7 @@ static void freeExtensionCache(const struct headerSprintfExtension * extensions,
     cache = _free(cache);
 }
 
-char * headerSprintf(Header h, const char * origFmt, 
+char * headerSprintf(Header h, const char * fmt, 
 		     const struct headerTagTableEntry * tags,
 		     const struct headerSprintfExtension * extensions,
 		     errmsg_t * errmsg)
@@ -2694,8 +2694,8 @@ char * headerSprintf(Header h, const char * origFmt,
     int i;
     struct extensionCache * extCache;
  
-    /*fmtString = escapeString(origFmt);*/
-    fmtString = xstrdup(origFmt);
+    /*fmtString = escapeString(fmt);*/
+    fmtString = xstrdup(fmt);
    
     if (parseFormat(fmtString, tags, extensions, &format, &numTokens, 
 		    NULL, PARSER_BEGIN, errmsg)) {

@@ -479,7 +479,7 @@ restart:
     if (numFailed) goto exit;
 
     if (numRPMS && !(interfaceFlags & INSTALL_NODEPS)) {
-	struct rpmDependencyConflict * conflicts;
+	rpmDependencyConflict conflicts;
 	int numConflicts;
 
 	if (rpmdepCheck(ts, &conflicts, &numConflicts)) {
@@ -490,7 +490,7 @@ restart:
 	if (!stopInstall && conflicts) {
 	    rpmMessage(RPMMESS_ERROR, _("failed dependencies:\n"));
 	    printDepProblems(stderr, conflicts, numConflicts);
-	    rpmdepFreeConflicts(conflicts, numConflicts);
+	    conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
 	    numFailed = numPkgs;
 	    stopInstall = 1;
 	}
@@ -567,7 +567,7 @@ int rpmErase(const char * rootdir, const char ** argv,
     const char ** arg;
     int numFailed = 0;
     rpmTransactionSet ts;
-    struct rpmDependencyConflict * conflicts;
+    rpmDependencyConflict conflicts;
     int numConflicts;
     int stopUninstall = 0;
     int numPackages = 0;
@@ -625,7 +625,7 @@ int rpmErase(const char * rootdir, const char ** argv,
 	    rpmMessage(RPMMESS_ERROR, _("removing these packages would break "
 			      "dependencies:\n"));
 	    printDepProblems(stderr, conflicts, numConflicts);
-	    rpmdepFreeConflicts(conflicts, numConflicts);
+	    conflicts = rpmdepFreeConflicts(conflicts, numConflicts);
 	    numFailed += numPackages;
 	    stopUninstall = 1;
 	}

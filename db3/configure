@@ -9,7 +9,7 @@ ln -sf ../dist $db_dist/../db/dist
 ln -sf ../dist $db_dist
 
 CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure \
-	`echo $* | sed -e "s% --cache-file=.*$% --enable-shared --enable-static --enable-debug --enable-rpc --with-uniquename=rpmdb --srcdir=$db_dist%"`
+	`echo $* | sed -e "s% --cache-file=.*$% --enable-shared --enable-static --enable-debug --enable-rpc --with-uniquename=_rpmdb --srcdir=$db_dist%"`
 
 # XXX hack to get db-3.3.4 to configure properly
 rm -f $db_dist/../db/dist $db_dist/dist
@@ -26,9 +26,9 @@ db3_install: all install_setip \\' > Makefile
 
 mv db.h db.h.orig
 cat db.h.orig | sed \
-	-e '/^struct __db;/i \
+	-e '/^struct __db;/i\
 /*@-incondefs@*/' \
-	-e '/^struct __key_range;/a \
+	-e '/^struct __key_range;/a\
 /*@=incondefs@*/' > db.h
 
 # Generate manifest for rpmdb.

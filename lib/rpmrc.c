@@ -1389,7 +1389,7 @@ void rpmGetOsInfo(const char ** name, int * num) {
     getMachineInfo(OS, name, num);
 }
 
-void rpmRebuildTargetVars(const char ** buildtarget, const char ** canontarget)
+void rpmRebuildTargetVars(const char ** target, const char ** canontarget)
 {
 
     char *ca = NULL, *co = NULL, *ct = NULL;
@@ -1401,10 +1401,10 @@ void rpmRebuildTargetVars(const char ** buildtarget, const char ** canontarget)
     rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 
-    if (buildtarget && *buildtarget) {
+    if (target && *target) {
 	char *c;
 	/* Set arch and os from specified build target */
-	ca = xstrdup(*buildtarget);
+	ca = xstrdup(*target);
 	if ((c = strchr(ca, '-')) != NULL) {
 	    *c++ = '\0';
 	    

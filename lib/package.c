@@ -89,8 +89,10 @@ Header headerRegenSigHeader(const Header h)
  * @param hdrPtr	address of header (or NULL)
  * @return		rpmRC return code
  */
-static rpmRC readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr, 
-			      /*@out@*/ Header * sigs, /*@out@*/ Header *hdrPtr)
+static rpmRC readPackageHeaders(FD_t fd,
+		/*@null@*/ /*@out@*/ struct rpmlead * leadPtr, 
+		/*@null@*/ /*@out@*/ Header * sigs,
+		/*@null@*/ /*@out@*/ Header * hdrPtr)
 	/*@modifies fd, *leadPtr, *sigs, *hdrPtr @*/
 {
     Header hdrBlock;
@@ -200,7 +202,9 @@ rpmRC rpmReadPackageInfo(FD_t fd, Header * sigp, Header * hdrp)
     rpmRC rc = readPackageHeaders(fd, NULL, sigp, hdrp);
     if (rc == RPMRC_FAIL)
 	return rc;
-    if (hdrp && *hdrp && sigp && *sigp)
+    if (hdrp == NULL || sigp == NULL)
+	return rc;
+    if (*hdrp && *sigp)
 	headerMergeLegacySigs(*hdrp, *sigp);
     return rc;
 }

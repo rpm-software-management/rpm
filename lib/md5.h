@@ -34,27 +34,27 @@ extern "C" {
 /**
  * Initialize MD5 hash.
  * Set bit count to 0 and buffer to mysterious initialization constants.
- * @param context	MD5 private data
+ * @param ctx	MD5 private data
  * @param brokenEndian	calculate broken MD5 sum?
  */
-void rpmMD5Init( /*@out@*/ struct MD5Context *context, int brokenEndian);
+void rpmMD5Init( /*@out@*/ struct MD5Context * ctx, int brokenEndian);
 
 /**
- * Update context to reflect the concatenation of another buffer full
+ * Update context to reflect the concatenation of another buffer full.
  * of bytes.
- * @param context	MD5 private data
+ * @param ctx		MD5 private data
  * @param data		next data buffer
  * @param len		no. bytes of data
  */
-void rpmMD5Update(struct MD5Context *context, unsigned char const *buf,
+void rpmMD5Update(struct MD5Context * ctx, unsigned char const *buf,
 	       unsigned len);
 /**
  * Return MD5 digest, and reset context.
  * @retval		MD5 digest
- * @param context	MD5 private data
+ * @param ctx		MD5 private data
  */
 /*@-fixedformalarray@*/
-void rpmMD5Final(unsigned char digest[16], struct MD5Context *context);
+void rpmMD5Final(unsigned char digest[16], struct MD5Context * ctx);
 /*@=fixedformalarray@*/
 
 /**

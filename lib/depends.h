@@ -14,12 +14,12 @@
 struct tsortInfo {
     union {
 	int	count;
-	/*@kept@*//*@null@*/ struct availablePackage * suc;
+	/*@kept@*/ /*@null@*/ struct availablePackage * suc;
     } tsi_u;
 #define	tsi_count	tsi_u.count
 #define	tsi_suc		tsi_u.suc
-/*@owned@*//*@null@*/ struct tsortInfo * tsi_next;
-/*@kept@*//*@null@*/ struct availablePackage * tsi_pkg;
+/*@owned@*/ /*@null@*/ struct tsortInfo * tsi_next;
+/*@kept@*/ /*@null@*/ struct availablePackage * tsi_pkg;
     int		tsi_reqx;
     int		tsi_qcnt;
 } ;
@@ -94,7 +94,7 @@ typedef struct dirInfo_s {
 /** \ingroup rpmdep
  * Set of available packages, items, and directories.
  */
-struct availableList {
+typedef /*@abstract@*/ struct availableList_s {
 /*@owned@*/ /*@null@*/ struct availablePackage * list;	/*!< Set of packages. */
     struct availableIndex index;	/*!< Set of available items. */
     int delta;				/*!< Delta for pkg list reallocation. */
@@ -102,7 +102,7 @@ struct availableList {
     int alloced;			/*!< No. of pkgs allocated for list. */
     int numDirs;			/*!< No. of directories. */
 /*@owned@*/ /*@null@*/ dirInfo dirs;	/*!< Set of directories. */
-} ;
+} * availableList;
 
 /** \ingroup rpmdep
  * A single package instance to be installed/removed atomically.
@@ -126,8 +126,9 @@ struct transactionElement {
  */
 struct rpmTransactionSet_s {
     rpmtransFlags transFlags;		/*!< Bit(s) to control operation. */
-    rpmCallbackFunction notify;		/*!< Callback function. */
-/*@observer@*/ rpmCallbackData notifyData;/*!< Callback private data. */
+/*@null@*/ rpmCallbackFunction notify;	/*!< Callback function. */
+/*@observer@*/ /*@null@*/ rpmCallbackData notifyData;
+					/*!< Callback private data. */
 /*@dependent@*/ rpmProblemSet probs;	/*!< Current problems in transaction. */
     rpmprobFilterFlags ignoreSet;	/*!< Bits to filter current problems. */
     int filesystemCount;		/*!< No. of mounted filesystems. */
@@ -137,8 +138,9 @@ struct rpmTransactionSet_s {
 /*@only@*/ int * removedPackages;	/*!< Set of packages being removed. */
     int numRemovedPackages;		/*!< No. removed rpmdb instances. */
     int allocedRemovedPackages;		/*!< Size of removed packages array. */
-    struct availableList addedPackages;	/*!< Set of packages being installed. */
-    struct availableList availablePackages;
+    struct availableList_s addedPackages;
+				/*!< Set of packages being installed. */
+    struct availableList_s availablePackages;
 				/*!< Universe of possible packages. */
 /*@only@*/ struct transactionElement * order;
 				/*!< Packages sorted by dependencies. */
@@ -157,11 +159,11 @@ struct rpmTransactionSet_s {
 /** \ingroup rpmdep
  * Problems encountered while checking dependencies.
  */
-struct problemsSet {
-    struct rpmDependencyConflict * problems;	/*!< Problems encountered. */
+typedef /*@abstract@*/ struct problemsSet_s {
+    rpmDependencyConflict problems;	/*!< Problems encountered. */
     int num;			/*!< No. of problems found. */
     int alloced;		/*!< No. of problems allocated. */
-} ;
+} * problemsSet;
 
 #ifdef __cplusplus
 extern "C" {
@@ -178,7 +180,8 @@ extern "C" {
  * @return		1 if dependency overlaps, 0 otherwise
  */
 int headerMatchesDepFlags(Header h,
-	const char *reqName, const char * reqEVR, int reqFlags);
+	const char * reqName, const char * reqEVR, int reqFlags)
+		/*@*/;
 
 #ifdef __cplusplus
 }

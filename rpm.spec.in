@@ -148,7 +148,7 @@ for dbi in \
 	Basenames Conflictname Dirnames Group Installtid Name Providename \
 	Provideversion Removetid Requirename Requireversion Triggername
 do
-    touch $RPM_BUILD_ROOT/var/lib/rpm/dbi
+    touch $RPM_BUILD_ROOT/var/lib/rpm/$dbi
 done
 
 %endif
