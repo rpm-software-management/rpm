@@ -543,8 +543,6 @@ int installBinaryPackage(const char * rootdir, rpmdb db, FD_t fd, Header h,
     if (sharedList) 
 	markReplacedFiles(db, sharedList);
 
-    headerFree(h);
-
     return 0;
 }
 
