@@ -1037,6 +1037,73 @@ static int is_athlon(void)
 	return 1;
 }
 
+static int is_pentium3()
+{
+    unsigned int eax, ebx, ecx, edx, family, model;
+    char vendor[16];
+    cpuid(0, &eax, &ebx, &ecx, &edx);
+    memset(vendor, 0, sizeof(vendor));
+    *((unsigned int *)&vendor[0]) = ebx;
+    *((unsigned int *)&vendor[4]) = edx;
+    *((unsigned int *)&vendor[8]) = ecx;
+    if (strncmp(vendor, "GenuineIntel", 12) != 0)
+	return 0;
+    cpuid(1, &eax, &ebx, &ecx, &edx);
+    family = (eax >> 8) & 0x0f;
+    model = (eax >> 4) & 0x0f;
+    if (family == 6)
+	switch (model)
+	{
+	    case 7:	// Pentium III, Pentium III Xeon (model 7)
+	    case 8:	// Pentium III, Pentium III Xeon, Celeron (model 8)
+	    case 9:	// Pentium M
+			/*
+			    Intel recently announced its new technology for mobile platforms,
+			    named Centrino, and presents it as a big advance in mobile PCs.
+			    One of the main part of Centrino consists in a brand new CPU,
+			    the Pentium M, codenamed Banias, that we'll study in this review.
+			    A particularity of this CPU is that it was designed for mobile platform
+			    exclusively, unlike previous mobile CPU (Pentium III-M, Pentium 4-M)
+			    that share the same micro-architecture as their desktop counterparts.
+			    The Pentium M introduces a new micro-architecture, adapted for mobility
+			    constraints, and that is halfway between the Pentium III and the Pentium 4.
+						    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+			*/
+	    case 10:	// Pentium III Xeon (model A)
+	    case 11:	// Pentium III (model B)
+		return 1;
+	}
+    return 0;
+}
+
+static int is_pentium4()
+{
+    unsigned int eax, ebx, ecx, edx, family, model;
+    char vendor[16];
+    cpuid(0, &eax, &ebx, &ecx, &edx);
+    memset(vendor, 0, sizeof(vendor));
+    *((unsigned int *)&vendor[0]) = ebx;
+    *((unsigned int *)&vendor[4]) = edx;
+    *((unsigned int *)&vendor[8]) = ecx;
+    if (strncmp(vendor, "GenuineIntel", 12) != 0)
+	return 0;
+    cpuid(1, &eax, &ebx, &ecx, &edx);
+    family = (eax >> 8) & 0x0f;
+    model = (eax >> 4) & 0x0f;
+    if (family == 15)
+	switch (model)
+	{
+	    case 0:	// Pentium 4, Pentium 4 Xeon                 (0.18um)
+	    case 1:	// Pentium 4, Pentium 4 Xeon MP, Celeron     (0.18um)
+	    case 2:	// Pentium 4, Mobile Pentium 4-M,
+			// Pentium 4 Xeon, Pentium 4 Xeon MP,
+			// Celeron, Mobile Celron                    (0.13um)
+	    case 3:	// Pentium 4, Celeron                        (0.09um)
+		return 1;
+	}
+    return 0;
+}
+
 #endif
 
 #if defined(__linux__) && defined(__powerpc__)
@@ -1273,6 +1340,10 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 
 	    if ((class == '6' && is_athlon()) || class == '7')
 	    	strcpy(un.machine, "athlon");
+	    else if (is_pentium4())
+		strcpy(un.machine, "pentium4");
+	    else if (is_pentium3())
+		strcpy(un.machine, "pentium3");
 	    else if (strchr("3456", un.machine[1]) && un.machine[1] != class)
 		un.machine[1] = class;
 	}

@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: @RPMCONFIGDIR@/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.147 2004/03/05 23:11:51 jbj Exp $
+# $Id: macros.in,v 1.148 2004/03/28 02:41:32 arekm Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -1124,7 +1124,7 @@ done \
 #   rpm can use regular expressions against target platforms in macro
 #   conditionals.
 #
-%ix86   i386 i486 i586 i686 athlon
+%ix86   i386 i486 i586 i686 pentium3 pentium4 athlon
 
 #------------------------------------------------------------------------
 # Use in %install to generate locale specific file lists. For example,

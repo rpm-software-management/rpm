@@ -203,7 +203,7 @@ static int isArch(const char * arch)
 /*@-nullassign@*/
     /*@observer@*/
     static const char *arches[] = {
-	"i386", "i486", "i586", "i686", "athlon", "x86_64", "amd64", "ia32e",
+	"i386", "i486", "i586", "i686", "athlon", "pentium3", "pentium4", "x86_64", "amd64", "ia32e",
 	"alpha", "alphaev5", "alphaev56", "alphapca56", "alphaev6", "alphaev67",
 	"sparc", "sun4", "sun4m", "sun4c", "sun4d", "sparcv8", "sparcv9",
 	"sparc64", "sun4u",

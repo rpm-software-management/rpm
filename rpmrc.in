@@ -1,7 +1,7 @@
 #/*! \page config_rpmrc Default configuration: /usr/lib/rpm/rpmrc
 # \verbatim
 #
-# $Id: rpmrc.in,v 2.60 2004/03/10 23:01:47 jbj Exp $
+# $Id: rpmrc.in,v 2.61 2004/03/28 02:41:32 arekm Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -15,6 +15,8 @@ optflags: i386 -O2 -g -march=i386 -mcpu=i686
 optflags: i486 -O2 -g -march=i486
 optflags: i586 -O2 -g -march=i586
 optflags: i686 -O2 -g -march=i686
+optflags: pentium3 -O2 -g -march=pentium3
+optflags: pentium4 -O2 -g -march=pentium4
 optflags: athlon -O2 -g -march=athlon
 optflags: ia64 -O2 -g
 optflags: x86_64 -O2 -g
@@ -68,6 +70,8 @@ optflags: s390x -O2 -g
 # Canonical arch names and numbers
 
 arch_canon:	athlon:	athlon	1
+arch_canon:	pentium4:	pentium4	1
+arch_canon:	pentium3:	pentium3	1
 arch_canon:	i686:	i686	1
 arch_canon:	i586:	i586	1
 arch_canon:	i486:	i486	1
@@ -169,6 +173,8 @@ buildarchtranslate: osfmach3_i486: i386
 buildarchtranslate: osfmach3_i386: i386
 
 buildarchtranslate: athlon: i386
+buildarchtranslate: pentium4: pentium4
+buildarchtranslate: pentium3: pentium3
 buildarchtranslate: i686: i386
 buildarchtranslate: i586: i386
 buildarchtranslate: i486: i386
@@ -221,6 +227,8 @@ arch_compat: alphaev5: alpha
 arch_compat: alpha: axp noarch
 
 arch_compat: athlon: i686
+arch_compat: pentium4: pentium3
+arch_compat: pentium3: i686
 arch_compat: i686: i586
 arch_compat: i586: i486
 arch_compat: i486: i386
@@ -311,6 +319,8 @@ os_compat: bsdi4.0: bsdi
 buildarch_compat: ia64: noarch
 
 buildarch_compat: athlon: i686
+buildarch_compat: pentium4: pentium3
+buildarch_compat: pentium3: i686
 buildarch_compat: i686: i586
 buildarch_compat: i586: i486
 buildarch_compat: i486: i386
