@@ -30,6 +30,7 @@ typedef enum {
 } urltype;
 
 typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
+/*@refs@*/ int nrefs;
     const char *url;		/* copy of original url */
     const char *service;
     const char *user;
@@ -42,26 +43,20 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct urlinfo {
     int proxyp;			/* FTP/HTTP: proxy port */
     int	port;
     int ftpControl;
-    int ftpGetFileDoneNeeded;
+    int ftpFileDoneNeeded;
     int openError;		/* Type of open failure */
-/*@refs@*/ int nrefs;
 } *urlinfo;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*@observer@*/ const char *const ftpStrerror(int ftpErrno);
-
-void	urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCount);
+int	ftpTimeoutSecs;
+int	ftpCheckResponse(urlinfo u, /*@out@*/ char **str);
 int	httpOpen(urlinfo u);
 int	ftpOpen(urlinfo u);
-
-int	httpGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
-int	ftpGetFile( /*@killref@*/ FD_t sfd, FD_t tfd);
-int	ftpGetFileDesc(FD_t);
-int	ftpAbort( /*@killref@*/ FD_t fd);
-int	ftpClose( /*@killref@*/ FD_t fd);
+int	ftpFileDone(urlinfo u);
+int	ftpFileDesc(urlinfo u, const char * cmd, FD_t fd);
 
 urlinfo	urlLink(urlinfo u, const char *msg);
 urlinfo	XurlLink(urlinfo u, const char *msg, const char *file, unsigned line);
@@ -80,7 +75,7 @@ void	urlFreeCache(void);
 urltype	urlIsURL(const char * url);
 int 	urlSplit(const char *url, /*@out@*/ urlinfo *u);
 
-int	urlGetFile(const char * url, const char * dest);
+int	urlFile(const char * url, const char * dest, int push);
 
 #ifdef __cplusplus
 }

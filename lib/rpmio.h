@@ -9,6 +9,10 @@
 typedef	/*@abstract@*/ /*@refcounted@*/ struct _FD_s * FD_t;
 typedef /*@observer@*/ struct FDIO_s * FDIO_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef /*@null@*/ FD_t fdio_ref_function_t ( /*@only@*/ void * cookie, const char *msg, const char *file, unsigned line);
 typedef /*@null@*/ FD_t fdio_deref_function_t ( /*@only@*/ FD_t fd, const char *msg, const char *file, unsigned line);
 
@@ -17,6 +21,9 @@ typedef /*@null@*/ FD_t fdio_new_function_t (FDIO_t iop, const char *msg, const 
 typedef int fdio_fileno_function_t (void * cookie);
 
 typedef FD_t fdio_open_function_t (const char *path, int flags, mode_t mode);
+typedef FD_t fdio_fopen_function_t (const char *path, const char *fmode);
+typedef void * fdio_ffileno_function_t (FD_t fd);
+typedef int fdio_fflush_function_t (FD_t fd);
 
 typedef int fdio_mkdir_function_t (const char *path, mode_t mode);
 typedef int fdio_chdir_function_t (const char *path);
@@ -36,6 +43,10 @@ struct FDIO_s {
   fdio_fileno_function_t *fileno;
 
   fdio_open_function_t *open;
+  fdio_fopen_function_t *fopen;
+  fdio_ffileno_function_t *ffileno;
+  fdio_fflush_function_t *fflush;
+
 #ifdef NOTYET
   fdio_mkdir_function_t *mkdir;
   fdio_chdir_function_t *chdir;
@@ -66,15 +77,6 @@ int	Rename	(const char * oldpath, const char * newpath);
 int	Chroot	(const char * path);
 int	Unlink	(const char * path);
 
-#endif /* H_RPMIO */
-
-#ifndef H_RPMIO_F
-#define H_RPMIO_F
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 int timedRead(FD_t fd, /*@out@*/void * bufptr, int length);
 
 /*@null@*/ const FDIO_t fdGetIoCookie(FD_t fd);
@@ -95,11 +97,15 @@ void fdDebugOff(FD_t fd);
 /*@observer@*/ extern FDIO_t fdio;
 
 /*
- * Support for FTP/HTTP I/O.
+ * Support for FTP and HTTP I/O.
  */
 /*@dependent@*/ /*@null@*/ void * ufdGetUrlinfo(FD_t fd);
 void ufdSetFd(FD_t fd, int fdno);
 /*@observer@*/ const char * urlStrerror(const char * url);
+
+int httpFile( /*@killref@*/ FD_t sfd, FD_t tfd, int dir);
+int ftpFile( /*@killref@*/ FD_t sfd, FD_t tfd, int dir);
+const char *const ftpStrerror(int errorNumber);
 
 /*@observer@*/ extern FDIO_t ufdio;
 
@@ -121,13 +127,7 @@ void fadSetFirstFree(FD_t fd, unsigned int firstFree);
 
 #include <zlib.h>
 
-extern /*@dependent@*/ /*@null@*/ gzFile * gzdFileno(FD_t fd);
-
-extern /*@null@*/ FD_t gzdOpen(const char * pathname, const char * mode);
-
 extern /*@null@*/ FD_t gzdFdopen( /*@only@*/ void * cookie, const char * mode);
-
-extern int gzdFlush(FD_t fd);
 
 /*@observer@*/ extern FDIO_t gzdio;
 
@@ -140,13 +140,7 @@ extern int gzdFlush(FD_t fd);
 
 #include <bzlib.h>
 
-extern /*@dependent@*/ /*@null@*/ BZFILE * bzdFileno(FD_t fd);
-
-extern /*@null@*/ FD_t bzdOpen(const char * pathname, const char * mode);
-
 extern /*@null@*/ FD_t bzdFdopen( /*@only@*/ void * cookie, const char * mode);
-
-extern int bzdFlush(FD_t fd);
 
 /*@observer@*/ extern FDIO_t bzdio;
 
@@ -156,4 +150,4 @@ extern int bzdFlush(FD_t fd);
 }
 #endif
 
-#endif	/* H_RPMIO_F */
+#endif	/* H_RPMIO */

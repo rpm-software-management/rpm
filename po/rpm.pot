@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-02 09:31-0500\n"
+"POT-Creation-Date: 1999-11-02 12:41-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2106,58 +2106,6 @@ msgstr ""
 msgid "file %s is on an unknown device"
 msgstr ""
 
-#: lib/ftp.c:692
-msgid "Success"
-msgstr ""
-
-#: lib/ftp.c:695
-msgid "Bad server response"
-msgstr ""
-
-#: lib/ftp.c:698
-msgid "Server IO error"
-msgstr ""
-
-#: lib/ftp.c:701
-msgid "Server timeout"
-msgstr ""
-
-#: lib/ftp.c:704
-msgid "Unable to lookup server host address"
-msgstr ""
-
-#: lib/ftp.c:707
-msgid "Unable to lookup server host name"
-msgstr ""
-
-#: lib/ftp.c:710
-msgid "Failed to connect to server"
-msgstr ""
-
-#: lib/ftp.c:713
-msgid "Failed to establish data connection to server"
-msgstr ""
-
-#: lib/ftp.c:716
-msgid "IO error to local file"
-msgstr ""
-
-#: lib/ftp.c:719
-msgid "Error setting remote server to passive mode"
-msgstr ""
-
-#: lib/ftp.c:722
-msgid "File not found on server"
-msgstr ""
-
-#: lib/ftp.c:725
-msgid "Abort in progress"
-msgstr ""
-
-#: lib/ftp.c:729
-msgid "Unknown or unexpected error"
-msgstr ""
-
 #. This should not be allowed
 #: lib/header.c:170
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
@@ -3073,8 +3021,60 @@ msgstr ""
 msgid "Installing %s\n"
 msgstr ""
 
+#: lib/rpmio.c:200
+msgid "Success"
+msgstr ""
+
+#: lib/rpmio.c:203
+msgid "Bad server response"
+msgstr ""
+
+#: lib/rpmio.c:206
+msgid "Server IO error"
+msgstr ""
+
+#: lib/rpmio.c:209
+msgid "Server timeout"
+msgstr ""
+
+#: lib/rpmio.c:212
+msgid "Unable to lookup server host address"
+msgstr ""
+
+#: lib/rpmio.c:215
+msgid "Unable to lookup server host name"
+msgstr ""
+
+#: lib/rpmio.c:218
+msgid "Failed to connect to server"
+msgstr ""
+
+#: lib/rpmio.c:221
+msgid "Failed to establish data connection to server"
+msgstr ""
+
+#: lib/rpmio.c:224
+msgid "IO error to local file"
+msgstr ""
+
+#: lib/rpmio.c:227
+msgid "Error setting remote server to passive mode"
+msgstr ""
+
+#: lib/rpmio.c:230
+msgid "File not found on server"
+msgstr ""
+
+#: lib/rpmio.c:233
+msgid "Abort in progress"
+msgstr ""
+
+#: lib/rpmio.c:237
+msgid "Unknown or unexpected error"
+msgstr ""
+
 #. XXX PARANOIA
-#: lib/rpmio.c:228
+#: lib/rpmio.c:272
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""

@@ -43,7 +43,7 @@ urlinfo XurlNew(const char *msg, const char *file, unsigned line)
     u->proxyp = -1;
     u->port = -1;
     u->ftpControl = -1;
-    u->ftpGetFileDoneNeeded = 0;
+    u->ftpFileDoneNeeded = 0;
     u->nrefs = 0;
     return XurlLink(u, msg, file, line);
 }
@@ -358,7 +358,7 @@ int urlSplit(const char * url, urlinfo *uret)
     return 0;
 }
 
-int urlGetFile(const char * url, const char * dest) {
+int urlFile(const char * url, const char * dest, int dir) {
     int rc;
     FD_t sfd = NULL;
     FD_t tfd = NULL;
@@ -393,7 +393,7 @@ int urlGetFile(const char * url, const char * dest) {
 
     switch (urlIsURL(url)) {
     case URL_IS_FTP:
-	if ((rc = ftpGetFile(sfd, tfd))) {
+	if ((rc = ftpFile(sfd, tfd, dir))) {
 	    unlink(dest);
 	    /*@-usereleased@*/ Fclose(sfd) /*@=usereleased@*/ ;
 	}
@@ -402,7 +402,7 @@ int urlGetFile(const char * url, const char * dest) {
     case URL_IS_HTTP:
     case URL_IS_PATH:
     case URL_IS_DASH:
-	if ((rc = httpGetFile(sfd, tfd))) {
+	if ((rc = httpFile(sfd, tfd, dir))) {
 	    unlink(dest);
 	    /*@-usereleased@*/ Fclose(sfd) /*@=usereleased@*/ ;
 	}

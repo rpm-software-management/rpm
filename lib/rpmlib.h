@@ -305,6 +305,8 @@ typedef void * (*rpmCallbackFunction)(const Header h,
 				      const unsigned long total,
 				      const void * pkgKey, void * data);
 
+void	urlSetCallback(rpmCallbackFunction notify, void *notifyData, int notifyCount);
+
 int rpmdbOpen (const char * root, /*@out@*/ rpmdb * dbp, int mode, int perms);
     /* 0 on error */
 int rpmdbInit(const char * root, int perms);
