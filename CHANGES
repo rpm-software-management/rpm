@@ -1,6 +1,6 @@
 2.3.9 -> 2.3.10:
 	- --allmatches handling in -e broke some cases
-	- new predefined macros: %SOURCEn %PATCHn
+	- new predefined macros: %SOURCEn %PATCHn %SOURCEURLn %PATCHURLn
 	- fix anomoly with %files -f <file> and %doc
 
 2.3.8 -> 2.3.9:
