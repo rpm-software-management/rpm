@@ -99,7 +99,10 @@ static void init_arch_os(void)
     }
 
     uname(&un);
-    if ((!strcmp(un.machine, "i686")) ||
+    if ((!strcmp(un.machine, "i986")) ||
+	(!strcmp(un.machine, "i886")) ||
+	(!strcmp(un.machine, "i786")) ||
+	(!strcmp(un.machine, "i686")) ||
 	(!strcmp(un.machine, "i586")) ||
 	(!strcmp(un.machine, "i486")) ||
 	(!strcmp(un.machine, "i386"))) {
