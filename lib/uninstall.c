@@ -10,7 +10,7 @@
 
 static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
-static int removeFile(char * file, unsigned int flags, short mode, 
+static int removeFile(const char * file, unsigned int flags, short mode, 
 		      enum fileActions action)
 {
     int rc = 0;
@@ -65,22 +65,17 @@ static int removeFile(char * file, unsigned int flags, short mode,
     return 0;
 }
 
-int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset, 
+int removeBinaryPackage(const char * prefix, rpmdb db, unsigned int offset, 
 			int flags, enum fileActions * actions, FD_t scriptFd)
 {
-    Header h;
+    Header h = NULL;
     int i;
     int fileCount;
     const char * name, * version, * release;
-    char * fnbuffer = NULL;
-    dbiIndexSet matches;
-    int fnbuffersize = 0;
-    int prefixLength = strlen(prefix);
-    char ** fileList, ** fileMd5List;
+    const char ** fileList;
     int type;
-    uint_32 * fileFlagsList;
-    int_16 * fileModesList;
     int scriptArg;
+    int rc = 0;
 
     if (flags & RPMTRANS_FLAG_JUSTDB)
 	flags |= RPMTRANS_FLAG_NOSCRIPTS;
@@ -89,50 +84,77 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
     if (h == NULL) {
 	rpmError(RPMERR_DBCORRUPT, _("cannot read header at %d for uninstall"),
 	      offset);
-	return 1;
+	rc = 1;
+	goto exit;
     }
 
     headerNVR(h, &name, &version, &release);
 
     /* when we run scripts, we pass an argument which is the number of 
        versions of this package that will be installed when we are finished */
-    if (rpmdbFindPackage(db, name, &matches)) {
-	rpmError(RPMERR_DBCORRUPT, _("cannot read packages named %s for uninstall"),
-	      name);
-	return 1;
+    {	dbiIndexSet matches;
+	if (rpmdbFindPackage(db, name, &matches)) {
+	    rpmError(RPMERR_DBCORRUPT, _("cannot read packages named %s for uninstall"),
+		name);
+	    dbiFreeIndexRecord(matches);
+	    rc = 1;
+	    goto exit;
+	}
+	scriptArg = dbiIndexSetCount(matches) - 1;
+	dbiFreeIndexRecord(matches);
     }
- 
-    scriptArg = dbiIndexSetCount(matches) - 1;
-    dbiFreeIndexRecord(matches);
 
     if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* run triggers from this package which are keyed on installed 
 	   packages */
 	if (runImmedTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1, scriptFd)) {
-	    return 2;
+	    rc = 2;
+	    goto exit;
 	}
 
 	/* run triggers which are set off by the removal of this package */
-	if (runTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1, scriptFd))
-	    return 1;
+	if (runTriggers(prefix, db, RPMSENSE_TRIGGERUN, h, -1, scriptFd)) {
+	    rc = 1;
+	    goto exit;
+	}
     }
 
     if (!(flags & RPMTRANS_FLAG_TEST)) {
 	if (runInstScript(prefix, h, RPMTAG_PREUN, RPMTAG_PREUNPROG, scriptArg, 
 		          flags & RPMTRANS_FLAG_NOSCRIPTS, scriptFd)) {
-	    headerFree(h);
-	    return 1;
+	    rc = 1;
+	    goto exit;
 	}
     }
     
     rpmMessage(RPMMESS_DEBUG, _("will remove files test = %d\n"), 
 		flags & RPMTRANS_FLAG_TEST);
+
     if (!(flags & RPMTRANS_FLAG_JUSTDB) &&
 	headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
 	               &fileCount)) {
-	if (prefix[0]) {
-	    fnbuffersize = 1024;
+	const char ** fileMd5List;
+	uint_32 * fileFlagsList;
+	int_16 * fileModesList;
+	char * fnbuffer = NULL;
+	int prefixlen = 0;
+
+	/* Get alloca buffer for largest possible prefix + filename. */
+	if (prefix && prefix[0] != '\0') {
+	    int fnbuffersize = 0;
+	    size_t fnlen;
+	    prefixlen = strlen(prefix);
+	    for (i = 0; i < fileCount; i++) {
+		if ((fnlen = strlen(fileList[i])) > fnbuffersize)
+		    fnbuffersize = fnlen;
+	    }
+	    fnbuffersize += strlen(prefix) + sizeof("/");
 	    fnbuffer = alloca(fnbuffersize);
+	    strcpy(fnbuffer, prefix);
+	    if (fnbuffer[prefixlen-1] != '/') {
+		fnbuffer[prefixlen] = '/';
+		fnbuffer[prefixlen+1] = '\0';
+	    }
 	}
 
 	headerGetEntry(h, RPMTAG_FILEMD5S, &type, (void **) &fileMd5List, 
@@ -142,27 +164,22 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
 	headerGetEntry(h, RPMTAG_FILEMODES, &type, (void **) &fileModesList, 
 		 &fileCount);
 
-	/* go through the filelist backwards to help insure that rmdir()
-	   will work */
+	/* Traverse filelist backwards to help insure that rmdir() will work. */
 	for (i = fileCount - 1; i >= 0; i--) {
-	    if (strcmp(prefix, "/")) {
-		if ((strlen(fileList[i]) + prefixLength + 1) > fnbuffersize) {
-		    fnbuffersize = (strlen(fileList[i]) + prefixLength) * 2;
-		    fnbuffer = alloca(fnbuffersize);
-		}
-		strcpy(fnbuffer, prefix);
-		strcat(fnbuffer, "/");
-		strcat(fnbuffer, fileList[i]);
-	    } else {
-		fnbuffer = fileList[i];
+	    const char * fn;
+
+	    fn = fileList[i];
+	    if (prefixlen) {
+		if (*fn == '/') fn++;
+		strcpy(fnbuffer + prefixlen + 1, fn);
+		fn = fnbuffer;
 	    }
 
 	    rpmMessage(RPMMESS_DEBUG, _("   file: %s action: %s\n"),
-			fnbuffer, fileActionString(actions[i]));
+			fn, fileActionString(actions[i]));
 
 	    if (!(flags & RPMTRANS_FLAG_TEST))
-		removeFile(fnbuffer, fileFlagsList[i], fileModesList[i], 
-			   actions[i]);
+		removeFile(fn, fileFlagsList[i], fileModesList[i], actions[i]);
 	}
 
 	free(fileList);
@@ -176,38 +193,40 @@ int removeBinaryPackage(char * prefix, rpmdb db, unsigned int offset,
     }
 
     if (!(flags & RPMTRANS_FLAG_NOTRIGGERS)) {
-	/* Run postun triggers which are set off by this package's removal */
+	/* Run postun triggers which are set off by this package's removal. */
 	if (runTriggers(prefix, db, RPMSENSE_TRIGGERPOSTUN, h, -1, scriptFd)) {
-	    return 2;
+	    rc = 2;
+	    goto exit;
 	}
     }
-
-    headerFree(h);
 
     rpmMessage(RPMMESS_DEBUG, _("removing database entry\n"));
     if (!(flags & RPMTRANS_FLAG_TEST))
 	rpmdbRemove(db, offset, 0);
 
-    return 0;
+    rc = 0;
+
+ exit:
+    if (h)	headerFree(h);
+    return rc;
 }
 
 static int runScript(Header h, const char * root, int progArgc, const char ** progArgv, 
 		     const char * script, int arg1, int arg2, FD_t errfd)
 {
-    const char ** argv;
-    int argc;
+    const char ** argv = NULL;
+    int argc = 0;
     const char ** prefixes = NULL;
     int numPrefixes;
     const char * oldPrefix;
     int maxPrefixLength;
     int len;
-    char * prefixBuf;
+    char * prefixBuf = NULL;
     pid_t child;
     int status;
-    const char * fn;
+    const char * fn = NULL;
     int i;
     int freePrefixes = 0;
-    int pipes[2];
     FD_t out;
 
     if (!progArgv && !script)
@@ -283,6 +302,9 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
     }
     
     if (!(child = fork())) {
+	int pipes[2];
+
+	pipes[0] = pipes[1] = 0;
 	/* make stdin inaccessible */
 	pipe(pipes);
 	close(pipes[1]);
@@ -315,13 +337,14 @@ static int runScript(Header h, const char * root, int progArgc, const char ** pr
 	}
 
 	if (strcmp(root, "/")) {
-	    chroot(root);
+	    /*@-unrecog@*/ chroot(root); /*@=unrecog@*/
 	}
 
 	chdir("/");
 
 	execv(argv[0], (char *const *)argv);
  	_exit(-1);
+	/*@notreached@*/
     }
 
     (void)waitpid(child, &status, 0);
@@ -378,7 +401,7 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 			    char * triggersAlreadyRun, FD_t scriptFd)
 {
     const char ** triggerNames;
-    const char ** triggerVersions;
+    const char ** triggerEVR;
     const char ** triggerScripts;
     const char ** triggerProgs;
     int_32 * triggerFlags, * triggerIndices;
@@ -401,7 +424,7 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
     headerGetEntry(triggeredH, RPMTAG_TRIGGERFLAGS, NULL, 
 		   (void **) &triggerFlags, NULL);
     headerGetEntry(triggeredH, RPMTAG_TRIGGERVERSION, NULL, 
-		   (void **) &triggerVersions, NULL);
+		   (void **) &triggerEVR, NULL);
 
     for (i = 0; i < numTriggers; i++) {
 	if (!(triggerFlags[i] & sense)) continue;
@@ -412,14 +435,14 @@ static int handleOneTrigger(const char * root, rpmdb db, int sense, Header sourc
 	   over that here. I suspect that we'll change our minds on this
 	   and remove that, so I'm going to just 'do the right thing'. */
 	skip = strlen(triggerNames[i]);
-	if (!strncmp(triggerVersions[i], triggerNames[i], skip) &&
-	    (triggerVersions[i][skip] == '-'))
+	if (!strncmp(triggerEVR[i], triggerNames[i], skip) &&
+	    (triggerEVR[i][skip] == '-'))
 	    skip++;
 	else
 	    skip = 0;
 
 	if (!headerMatchesDepFlags(sourceH, triggerNames[i],
-		triggerVersions[i] + skip, triggerFlags[i]))
+		triggerEVR[i] + skip, triggerFlags[i]))
 	    continue;
 
 	headerGetEntry(triggeredH, RPMTAG_TRIGGERINDEX, NULL,
