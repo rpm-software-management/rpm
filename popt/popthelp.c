@@ -73,10 +73,12 @@ static void singleOptionHelp(FILE * f, int maxLeftCol,
     int helpLength;
     const char * ch;
     char format[10];
-    char * left = alloca(maxLeftCol + 1);
+    char * left;
     const char * argDescrip = getArgDescrip(opt, translation_domain);
 
+    left = malloc(maxLeftCol + 1);
     *left = '\0';
+
     if (opt->longName && opt->shortName)
 	sprintf(left, "-%c, --%s", opt->shortName, opt->longName);
     else if (opt->shortName) 
@@ -93,7 +95,7 @@ static void singleOptionHelp(FILE * f, int maxLeftCol,
 	fprintf(f,"  %-*s   ", maxLeftCol, left);
     else {
 	fprintf(f,"  %s\n", left); 
-	return;
+	goto out;
     }
 
     helpLength = strlen(help);
@@ -112,6 +114,9 @@ static void singleOptionHelp(FILE * f, int maxLeftCol,
     }
 
     if (helpLength) fprintf(f, "%s\n", help);
+
+out:
+    free(left);
 }
 
 static int maxArgWidth(const struct poptOption * opt,

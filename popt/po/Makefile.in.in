@@ -76,7 +76,7 @@ Makefile: Makefile.in.in ../config.status POTFILES
 	  && CONFIG_FILES=po/$@.in CONFIG_HEADERS= \
 	       $(SHELL) ./config.status
 
-distdir:
-
 %.mo: %.po
 	msgfmt -o $@ $<
+
+distdir dvi installcheck:

@@ -26,7 +26,7 @@ dnl if CC is gcc, we can rebuild the dependencies (since the depend rule
 dnl requires gcc).  If it's not, don't rebuild dependencies -- use what was
 dnl shipped with RPM.
 dnl
-if test X"$GCC" = Xyes ; then
+if test X"$GCC" = "Xyes" ; then
     TARGET="depend allprogs"
 else
     TARGET="everything"

@@ -1,5 +1,6 @@
 .deps
 .depend
+aclocal.m4
 Makefile
 Makefile.in
 mappcinames
