@@ -4,6 +4,7 @@
 	- API: change dbi to pass by reference, not value.
 	- cram all of db1, db_185, and db2 interfaces into rpmlib.
 	- convert db1 -> db2 on-disk format using --rebuilddb.
+	- add db3 to the pile, isolate all with incremental link and vectors.
 
 3.0.3 -> 3.0.4
 	- use compressed filenames on install side.

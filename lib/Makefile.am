@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/build -I$(top_srcdir)/popt @INCPATH@
 
-EXTRA_DIST = db0.[ch] db1.[ch] db2.[ch] db2.[ch]
+EXTRA_DIST = db0.c db1.c db2.c db3.c
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
@@ -29,24 +29,46 @@ librpm_la_SOURCES = \
 librpm_la_LIBADD = $(subst .c,.lo,$(DBLIBOBJS))
 #librpm_la_LIBADD = -lpopt
 
-db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h dbindex.h db3.h
+db3.lo: db3.c $(top_srcdir)/system.h rpmlib.h dbindex.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 	for F in $*.o $*.lo ; do \
 	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb-3.0 ; \
 	    @__OBJCOPY@ `\
 		@__NM@ -g --defined-only $${F}.o | \
-		sed -e '/ [TWD] /!d' -e 's/.* [TWD] /-L /' | \
+		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
 		grep -v '^-L $*'` $${F}.o $${F} ; \
 	    rm -f $${F}.o ; \
 	done
 
-db0.lo: db0.c $(top_srcdir)/system.h rpmlib.h dbindex.h db0.h
+db2.lo: db2.c $(top_srcdir)/system.h rpmlib.h dbindex.h
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+	for F in $*.o $*.lo ; do \
+	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb ; \
+	    @__OBJCOPY@ `\
+		@__NM@ -g --defined-only $${F}.o | \
+		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
+		grep -v '^-L $*'` $${F}.o $${F} ; \
+	    rm -f $${F}.o ; \
+	done
+
+db1.lo: db1.c $(top_srcdir)/system.h rpmlib.h dbindex.h
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+	for F in $*.o $*.lo ; do \
+	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb ; \
+	    @__OBJCOPY@ `\
+		@__NM@ -g --defined-only $${F}.o | \
+		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
+		grep -v '^-L $*'` $${F}.o $${F} ; \
+	    rm -f $${F}.o ; \
+	done
+
+db0.lo: db0.c $(top_srcdir)/system.h rpmlib.h dbindex.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
 	for F in $*.o $*.lo ; do \
 	    @__LD@ -r -o $${F}.o $${F} -L/usr/lib -ldb1 ; \
 	    @__OBJCOPY@ `\
 		@__NM@ -g --defined-only $${F}.o | \
-		sed -e '/ [TWD] /!d' -e 's/.* [TWD] /-L /' | \
+		sed -e '/ [DRTW] /!d' -e 's/.* [DRTW] /-L /' | \
 		grep -v '^-L $*'` $${F}.o $${F} ; \
 	    rm -f $${F}.o ; \
 	done

@@ -19,16 +19,37 @@
 
 extern int _noDirTokens;
 
-const char *rpmdb_filenames[] = {
-    "packages.rpm",
-    "nameindex.rpm",
-    "fileindex.rpm",
-    "groupindex.rpm",
-    "requiredby.rpm",
-    "providesindex.rpm",
-    "conflictsindex.rpm",
-    "triggerindex.rpm",
-    NULL
+#define	_DBI_FLAGS	0
+#define	_DBI_PERMS	0644
+#define	_DBI_MAJOR	-1
+
+struct _dbiIndex rpmdbi[] = {
+    { "packages.rpm", DBI_RECNO, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR,
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+#define	RPMDBI_PACKAGES		0
+    { "nameindex.rpm", DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR,
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+#define	RPMDBI_NAME		1
+    { "fileindex.rpm", DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR,
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+#define	RPMDBI_FILE		2
+    { "groupindex.rpm", DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR,
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+#define	RPMDBI_GROUP		3
+    { "requiredby.rpm", DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR,
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+#define	RPMDBI_REQUIREDBY	4
+    { "providesindex.rpm", DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR,
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+#define	RPMDBI_PROVIDES		5
+    { "conflictsindex.rpm", DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR,
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+#define	RPMDBI_CONFLICTS	6
+    { "triggerindex.rpm", DBI_HASH, _DBI_FLAGS, _DBI_PERMS, _DBI_MAJOR,
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL },
+#define	RPMDBI_TRIGGER		7
+    { NULL }
+#define	RPMDBI_MAX		8
 };
 
 /* XXX the signal handling in here is not thread safe */
@@ -44,8 +65,13 @@ const char *rpmdb_filenames[] = {
 
 struct rpmdb_s {
     FD_t pkgs;
-    dbiIndex nameIndex, fileIndex, groupIndex, providesIndex;
-    dbiIndex requiredbyIndex, conflictsIndex, triggerIndex;
+    dbiIndex nameIndex;
+    dbiIndex fileIndex;
+    dbiIndex groupIndex;
+    dbiIndex providesIndex;
+    dbiIndex requiredbyIndex;
+    dbiIndex conflictsIndex;
+    dbiIndex triggerIndex;
 };
 
 static sigset_t signalMask;
@@ -63,25 +89,40 @@ static void unblockSignals(void)
     sigprocmask(SIG_SETMASK, &signalMask, NULL);
 }
 
-static int openDbFile(const char * prefix, const char * dbpath, const char * shortName, 
-	 int justCheck, int mode, int perms, dbiIndex * db, DBI_TYPE type)
+static int openDbFile(const char * prefix, const char * dbpath, int dbix,
+	 int justCheck, int mode, dbiIndex * dbip)
 {
-    int len = (prefix ? strlen(prefix) : 0) + strlen(dbpath) + strlen(shortName) + 1;
-    char * filename = alloca(len);
+    dbiIndex dbi;
+    char * filename, * fn;
+    int len;
 
-    *filename = '\0';
+    if (dbix < 0 || dbix >= RPMDBI_MAX)
+	return 1;
+    if (dbip == NULL)
+	return 1;
+    *dbip = NULL;
+
+    dbi = rpmdbi + dbix;
+    len = (prefix ? strlen(prefix) : 0) +
+		strlen(dbpath) + strlen(dbi->dbi_basename) + 1;
+    fn = filename = alloca(len);
+    *fn = '\0';
     switch (urlIsURL(dbpath)) {
     case URL_IS_UNKNOWN:
-	if (prefix && *prefix) strcat(filename, prefix); 
+	if (prefix && *prefix &&
+	    !(prefix[0] == '/' && prefix[1] == '\0' && dbpath[0] == '/'))
+		fn = stpcpy(fn, prefix);
 	break;
     default:
 	break;
     }
-    strcat(filename, dbpath);
-    strcat(filename, shortName);
+    fn = stpcpy(fn, dbpath);
+    if (fn > filename && !(fn[-1] == '/' || dbi->dbi_basename[0] == '/'))
+	fn = stpcpy(fn, "/");
+    fn = stpcpy(fn, dbi->dbi_basename);
 
     if (!justCheck || !rpmfileexists(filename)) {
-	if ((*db = dbiOpenIndex(filename, mode, perms, type)) == NULL)
+	if ((*dbip = dbiOpenIndex(filename, mode, dbi->dbi_perms, dbi->dbi_type)) == NULL)
 	    return 1;
     }
 
@@ -186,8 +227,8 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 	}
     }
 
-    rc = openDbFile(prefix, dbpath, "nameindex.rpm", justcheck, mode, perms,
-		    &db->nameIndex, DBI_HASH);
+    rc = openDbFile(prefix, dbpath, RPMDBI_NAME, justcheck, mode,
+		    &db->nameIndex);
 
     if (minimal) {
 	*rpmdbp = xmalloc(sizeof(struct rpmdb_s));
@@ -199,8 +240,8 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     }
 
     if (!rc)
-	rc = openDbFile(prefix, dbpath, "fileindex.rpm", justcheck, mode, perms,
-			&db->fileIndex, DBI_HASH);
+	rc = openDbFile(prefix, dbpath, RPMDBI_FILE, justcheck, mode,
+			&db->fileIndex);
 
     /* We used to store the fileindexes as complete paths, rather then
        plain basenames. Let's see which version we are... */
@@ -218,20 +259,20 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
     }
 
     if (!rc)
-	rc = openDbFile(prefix, dbpath, "providesindex.rpm", justcheck, mode, perms,
-			&db->providesIndex, DBI_HASH);
+	rc = openDbFile(prefix, dbpath, RPMDBI_GROUP, justcheck, mode,
+			&db->groupIndex);
     if (!rc)
-	rc = openDbFile(prefix, dbpath, "requiredby.rpm", justcheck, mode, perms,
-			&db->requiredbyIndex, DBI_HASH);
+	rc = openDbFile(prefix, dbpath, RPMDBI_REQUIREDBY, justcheck, mode,
+			&db->requiredbyIndex);
     if (!rc)
-	rc = openDbFile(prefix, dbpath, "conflictsindex.rpm", justcheck, mode, perms,
-			&db->conflictsIndex, DBI_HASH);
+	rc = openDbFile(prefix, dbpath, RPMDBI_PROVIDES, justcheck, mode,
+			&db->providesIndex);
     if (!rc)
-	rc = openDbFile(prefix, dbpath, "groupindex.rpm", justcheck, mode, perms,
-			&db->groupIndex, DBI_HASH);
+	rc = openDbFile(prefix, dbpath, RPMDBI_CONFLICTS, justcheck, mode,
+			&db->conflictsIndex);
     if (!rc)
-	rc = openDbFile(prefix, dbpath, "triggerindex.rpm", justcheck, mode, perms,
-			&db->triggerIndex, DBI_HASH);
+	rc = openDbFile(prefix, dbpath, RPMDBI_TRIGGER, justcheck, mode,
+			&db->triggerIndex);
 
     if (rc || justcheck || rpmdbp == NULL)
 	rpmdbClose(db);
@@ -615,13 +656,13 @@ int rpmdbRemove(rpmdb db, unsigned int offset, int tolerant)
     return 0;
 }
 
-static int addIndexEntry(dbiIndex idx, const char *index, unsigned int offset,
+static int addIndexEntry(dbiIndex dbi, const char *index, unsigned int offset,
 		         unsigned int fileNumber)
 {
     dbiIndexSet set = NULL;
     int rc;
 
-    rc = dbiSearchIndex(idx, index, &set);
+    rc = dbiSearchIndex(dbi, index, &set);
     switch (rc) {
     case -1:			/* error */
 	if (set) {
@@ -638,7 +679,7 @@ static int addIndexEntry(dbiIndex idx, const char *index, unsigned int offset,
     }
 
     dbiAppendIndexRecord(set, offset, fileNumber);
-    if (dbiUpdateIndex(idx, index, set))
+    if (dbiUpdateIndex(dbi, index, set))
 	exit(EXIT_FAILURE);	/* XXX W2DO? return 1; */
 
     if (set) {
@@ -709,7 +750,6 @@ int rpmdbAdd(rpmdb db, Header dbentry)
     if (!dboffset) {
 	rc = 1;
     } else {
-	/* XXX TODO: set max. no. of bytes to write */
 	(void)Fseek(db->pkgs, dboffset, SEEK_SET);
 	fdSetContentLength(db->pkgs, newSize);
 	rc = headerWrite(db->pkgs, dbentry, HEADER_MAGIC_NO);
@@ -798,9 +838,7 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
     } else {
 	blockSignals();
 
-	/* XXX TODO: set max. no. of bytes to write */
 	(void)Fseek(db->pkgs, offset, SEEK_SET);
-
 	fdSetContentLength(db->pkgs, newSize);
 	rc = headerWrite(db->pkgs, newHeader, HEADER_MAGIC_NO);
 	fdSetContentLength(db->pkgs, -1);
@@ -814,7 +852,6 @@ int rpmdbUpdateRecord(rpmdb db, int offset, Header newHeader)
 void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath)
 { 
     int i;
-    const char **rpmdbfnp;
     char * filename;
 
     i = strlen(dbpath);
@@ -828,9 +865,11 @@ void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath)
     
     filename = alloca(strlen(rootdir) + strlen(dbpath) + 40);
 
-    for (rpmdbfnp = rpmdb_filenames; *rpmdbfnp; rpmdbfnp++) {
-	sprintf(filename, "%s/%s/%s", rootdir, dbpath, *rpmdbfnp);
-	unlink(filename);
+    {	dbiIndex dbi;
+	for (dbi = rpmdbi; dbi->dbi_basename != NULL; dbi++) {
+	    sprintf(filename, "%s/%s/%s", rootdir, dbpath, dbi->dbi_basename);
+	    unlink(filename);
+	}
     }
 
     sprintf(filename, "%s/%s", rootdir, dbpath);
@@ -841,7 +880,6 @@ void rpmdbRemoveDatabase(const char * rootdir, const char * dbpath)
 int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char * newdbpath)
 {
     int i;
-    const char **rpmdbfnp;
     char * ofilename, * nfilename;
     int rc = 0;
  
@@ -866,10 +904,12 @@ int rpmdbMoveDatabase(const char * rootdir, const char * olddbpath, const char *
     ofilename = alloca(strlen(rootdir) + strlen(olddbpath) + 40);
     nfilename = alloca(strlen(rootdir) + strlen(newdbpath) + 40);
 
-    for (rpmdbfnp = rpmdb_filenames; *rpmdbfnp; rpmdbfnp++) {
-	sprintf(ofilename, "%s/%s/%s", rootdir, olddbpath, *rpmdbfnp);
-	sprintf(nfilename, "%s/%s/%s", rootdir, newdbpath, *rpmdbfnp);
-	if (Rename(ofilename, nfilename)) rc = 1;
+    {	dbiIndex dbi;
+	for (dbi = rpmdbi; dbi->dbi_basename != NULL; dbi++) {
+	    sprintf(ofilename, "%s/%s/%s", rootdir, olddbpath, dbi->dbi_basename);
+	    sprintf(nfilename, "%s/%s/%s", rootdir, newdbpath, dbi->dbi_basename);
+	    if (Rename(ofilename, nfilename)) rc = 1;
+	}
     }
 
     return rc;

@@ -1,7 +1,12 @@
 #include "system.h"
 
 #ifdef HAVE_DB_185_H
+
 #include <db_185.h>
+
+#define	DB_VERSION_MAJOR	1
+#define	DB_VERSION_MINOR	85
+#define	DB_VERSION_PATCH	0
 
 #define	_mymemset(_a, _b, _c)
 
@@ -10,8 +15,6 @@
 #include "dbindex.h"
 /*@access dbiIndex@*/
 /*@access dbiIndexSet@*/
-
-#include "db1.h"
 
 static inline DBTYPE dbi_to_dbtype(DBI_TYPE dbitype)
 {
@@ -67,46 +70,7 @@ errxit:
 }
 #endif
 
-int db1open(dbiIndex dbi)
-{
-    int rc;
-
-#if defined(__USE_DB2)
-    char * dbhome = NULL;
-    DB_ENV * dbenv = NULL;
-    DB_INFO * dbinfo = NULL;
-    u_int32_t dbflags;
-
-    dbflags = (	!(dbi->dbi_flags & O_RDWR) ? DB_RDONLY :
-		((dbi->dbi_flags & O_CREAT) ? DB_CREATE : 0));
-
-    rc = db_init(dbhome, dbflags, &dbenv, &dbinfo);
-    dbi->dbi_dbenv = dbenv;
-    dbi->dbi_dbinfo = dbinfo;
-
-    if (rc == 0)
-	rc = db_open(dbi->dbi_file, dbi_to_dbtype(dbi->dbi_type), dbflags,
-			dbi->dbi_perms, dbenv, dbinfo, &dbi->dbi_db);
-
-    if (rc)
-	dbi->dbi_db = NULL;
-#else
-    dbi->dbi_db = dbopen(dbi->dbi_file, dbi->dbi_flags, dbi->dbi_perms,
-		dbi_to_dbtype(dbi->dbi_type), dbi->dbi_openinfo);
-#endif
-
-    if (dbi->dbi_db) {
-	rc = 0;
-	dbi->dbi_major = DB_VERSION_MAJOR;
-	dbi->dbi_minor = DB_VERSION_MINOR;
-	dbi->dbi_patch = DB_VERSION_PATCH;
-    } else
-	rc = 1;
-
-    return rc;
-}
-
-int db1close(dbiIndex dbi, unsigned int flags) {
+static int db1close(dbiIndex dbi, unsigned int flags) {
     DB * db = GetDB(dbi);
     int rc;
 
@@ -152,7 +116,7 @@ int db1close(dbiIndex dbi, unsigned int flags) {
     return rc;
 }
 
-int db1sync(dbiIndex dbi, unsigned int flags) {
+static int db1sync(dbiIndex dbi, unsigned int flags) {
     DB * db = GetDB(dbi);
     int rc;
 
@@ -178,7 +142,7 @@ int db1sync(dbiIndex dbi, unsigned int flags) {
     return rc;
 }
 
-int db1GetFirstKey(dbiIndex dbi, const char ** keyp) {
+static int db1GetFirstKey(dbiIndex dbi, const char ** keyp) {
     DBT key, data;
     DB * db;
     int rc;
@@ -225,7 +189,7 @@ int db1GetFirstKey(dbiIndex dbi, const char ** keyp) {
     return rc;
 }
 
-int db1SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set) {
+static int db1SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set) {
     DBT key, data;
     DB * db = GetDB(dbi);
     int rc;
@@ -267,7 +231,7 @@ int db1SearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set) {
 }
 
 /*@-compmempass@*/
-int db1UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
+static int db1UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
     DBT key;
     DB * db = GetDB(dbi);
     int rc;
@@ -322,5 +286,46 @@ int db1UpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
     return rc;
 }
 /*@=compmempass@*/
+
+static int db1open(dbiIndex dbi)
+{
+    int rc;
+
+#if defined(__USE_DB2)
+    char * dbhome = NULL;
+    DB_ENV * dbenv = NULL;
+    DB_INFO * dbinfo = NULL;
+    u_int32_t dbflags;
+
+    dbflags = (	!(dbi->dbi_flags & O_RDWR) ? DB_RDONLY :
+		((dbi->dbi_flags & O_CREAT) ? DB_CREATE : 0));
+
+    rc = db_init(dbhome, dbflags, &dbenv, &dbinfo);
+    dbi->dbi_dbenv = dbenv;
+    dbi->dbi_dbinfo = dbinfo;
+
+    if (rc == 0)
+	rc = db_open(dbi->dbi_file, dbi_to_dbtype(dbi->dbi_type), dbflags,
+			dbi->dbi_perms, dbenv, dbinfo, &dbi->dbi_db);
+
+    if (rc)
+	dbi->dbi_db = NULL;
+#else
+    dbi->dbi_db = dbopen(dbi->dbi_file, dbi->dbi_flags, dbi->dbi_perms,
+		dbi_to_dbtype(dbi->dbi_type), dbi->dbi_openinfo);
+#endif
+
+    if (dbi->dbi_db)
+	rc = 0;
+    else
+	rc = 1;
+
+    return rc;
+}
+
+struct _dbiVec db1vec = {
+    DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
+    db1open, db1close, db1sync, db1GetFirstKey, db1SearchIndex, db1UpdateIndex
+};
 
 #endif	/* HABE_DB_185_H */

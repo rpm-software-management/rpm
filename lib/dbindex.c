@@ -10,10 +10,29 @@ static int _debug = 0;
 /*@access dbiIndexSet@*/
 /*@access dbiIndexRecord@*/
 
-#include "db0.h"
-#include "db1.h"
-#include "db2.h"
-#include "db3.h"
+#if HAVE_DB1_DB_H
+extern struct _dbiVec db0vec;
+#define	DB0vec		&db0vec
+#else
+#define	DB0vec		NULL
+#endif
+
+#if HAVE_DB_185_H
+extern struct _dbiVec db1vec;
+#define	DB1vec		&db1vec
+#else
+#define	DB1vec		NULL
+#endif
+
+extern struct _dbiVec db2vec;
+#define	DB2vec		&db2vec
+
+#if HAVE_DB3_DB_H
+extern struct _dbiVec db3vec;
+#define	DB3vec		&db3vec
+#else
+#define	DB3vec		NULL
+#endif
 
 unsigned int dbiIndexSetCount(dbiIndexSet set) {
     return set->count;
@@ -59,30 +78,8 @@ static void freeDBI( /*@only@*/ /*@null@*/ dbiIndex dbi) {
 int _preferDbiMajor = 0;	/* XXX shared with rebuilddb.c */
 int _useDbiMajor = -1;
 
-typedef int (*_dbopen) (dbiIndex dbi);
-
-static _dbopen mydbopens[] = {
-
-#if HAVE_DB1_DB_H
-    db0open,
-#else
-    NULL,
-#endif
-
-#if HAVE_DB_185_H
-    db1open,
-#else
-    NULL,
-#endif
-
-    db2open,
-
-#if HAVE_DB3_DB_H
-    db3open,
-#else
-    NULL,
-#endif
-    NULL
+static struct _dbiVec *mydbvecs[] = {
+    DB0vec, DB1vec, DB2vec, DB3vec, NULL
 };
 
 dbiIndex dbiOpenIndex(const char * urlfn, int flags, int perms, DBI_TYPE type) {
@@ -109,22 +106,30 @@ dbiIndex dbiOpenIndex(const char * urlfn, int flags, int perms, DBI_TYPE type) {
     case 2:
     case 1:
     case 0:
-	errno = 0;
-	rc = (*(mydbopens[dbi->dbi_major])) (dbi);
-	if (rc == 0)
-	    break;
+	if (mydbvecs[dbi->dbi_major] != NULL) {
+	    errno = 0;
+	    rc = (*mydbvecs[dbi->dbi_major]->open) (dbi);
+	    if (rc == 0) {
+		dbi->dbi_vec = mydbvecs[dbi->dbi_major];
+		break;
+	    }
+	}
 	/*@fallthrough@*/
     case -1:
 	dbi->dbi_major = 4;
 	while (dbi->dbi_major-- > 0) {
-	    if (mydbopens[dbi->dbi_major] == NULL)
+if (_debug)
+fprintf(stderr, "*** loop db%d mydbvecs %p\n", dbi->dbi_major, mydbvecs[dbi->dbi_major]);
+	    if (mydbvecs[dbi->dbi_major] == NULL)
 		continue;
 	    errno = 0;
-	    rc = (*(mydbopens[dbi->dbi_major])) (dbi);
+	    rc = (*mydbvecs[dbi->dbi_major]->open) (dbi);
 if (_debug)
 fprintf(stderr, "*** loop db%d rc %d errno %d %s\n", dbi->dbi_major, rc, errno, strerror(errno));
-	    if (rc == 0)
+	    if (rc == 0) {
+		dbi->dbi_vec = mydbvecs[dbi->dbi_major];
 		break;
+	    }
 	    if (rc == 1 && dbi->dbi_major == 2) {
 		fprintf(stderr, "*** FIXME: <message about how to convert db>\n");
 		fprintf(stderr, _("\n\
@@ -139,34 +144,19 @@ fprintf(stderr, "*** loop db%d rc %d errno %d %s\n", dbi->dbi_major, rc, errno, 
     	break;
     }
 
-    if (rc == 0)
-	return dbi;
+    if (rc) {
+        rpmError(RPMERR_DBOPEN, _("cannot open file %s: %s"), urlfn, strerror(errno));
+	freeDBI(dbi);
+	dbi = NULL;
+     }
 
-    rpmError(RPMERR_DBOPEN, _("cannot open file %s: %s"), urlfn,
-			      strerror(errno));
-
-    freeDBI(dbi);
-    return NULL;
+    return dbi;
 }
 
 int dbiCloseIndex(dbiIndex dbi) {
     int rc;
 
-    switch (dbi->dbi_major) {
-    case 3:
-	rc = db3close(dbi, 0);
-	break;
-    case 2:
-	rc = db2close(dbi, 0);
-	break;
-    case 1:
-	rc = db1close(dbi, 0);
-	break;
-    default:
-    case 0:
-	rc = db0close(dbi, 0);
-	break;
-    }
+    rc = (*dbi->dbi_vec->close) (dbi, 0);
     freeDBI(dbi);
     return rc;
 }
@@ -174,21 +164,7 @@ int dbiCloseIndex(dbiIndex dbi) {
 int dbiSyncIndex(dbiIndex dbi) {
     int rc;
 
-    switch (dbi->dbi_major) {
-    case 3:
-	rc = db3sync(dbi, 0);
-	break;
-    case 2:
-	rc = db2sync(dbi, 0);
-	break;
-    case 1:
-	rc = db1sync(dbi, 0);
-	break;
-    default:
-    case 0:
-	rc = db0sync(dbi, 0);
-	break;
-    }
+    rc = (*dbi->dbi_vec->sync) (dbi, 0);
     return rc;
 }
 
@@ -198,42 +174,14 @@ int dbiGetFirstKey(dbiIndex dbi, const char ** keyp) {
     if (dbi == NULL)
 	return 1;
 
-    switch (dbi->dbi_major) {
-    case 3:
-	rc = db3GetFirstKey(dbi, keyp);
-	break;
-    case 2:
-	rc = db2GetFirstKey(dbi, keyp);
-	break;
-    case 1:
-	rc = db1GetFirstKey(dbi, keyp);
-	break;
-    default:
-    case 0:
-	rc = db0GetFirstKey(dbi, keyp);
-	break;
-    }
+    rc = (*dbi->dbi_vec->GetFirstKey) (dbi, keyp);
     return rc;
 }
 
 int dbiSearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set) {
     int rc;
 
-    switch (dbi->dbi_major) {
-    case 3:
-	rc = db3SearchIndex(dbi, str, set);
-	break;
-    case 2:
-	rc = db2SearchIndex(dbi, str, set);
-	break;
-    case 1:
-	rc = db1SearchIndex(dbi, str, set);
-	break;
-    default:
-    case 0:
-	rc = db0SearchIndex(dbi, str, set);
-	break;
-    }
+    rc = (*dbi->dbi_vec->SearchIndex) (dbi, str, set);
 
     switch (rc) {
     case -1:
@@ -247,21 +195,7 @@ int dbiSearchIndex(dbiIndex dbi, const char * str, dbiIndexSet * set) {
 int dbiUpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
     int rc;
 
-    switch (dbi->dbi_major) {
-    case 3:
-	rc = db3UpdateIndex(dbi, str, set);
-	break;
-    case 2:
-	rc = db2UpdateIndex(dbi, str, set);
-	break;
-    case 1:
-	rc = db1UpdateIndex(dbi, str, set);
-	break;
-    default:
-    case 0:
-	rc = db0UpdateIndex(dbi, str, set);
-	break;
-    }
+    rc = (*dbi->dbi_vec->UpdateIndex) (dbi, str, set);
 
     if (set->count) {
 	if (rc) {

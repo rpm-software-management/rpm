@@ -30,21 +30,78 @@ struct _dbiIndexSet {
 };
 
 /**
+ * Private methods for accessing an index database.
+ */
+struct _dbiVec {
+    int dbv_major;			/*<! Berkeley db version major */
+    int dbv_minor;			/*<! Berkeley db version minor */
+    int dbv_patch;			/*<! Berkeley db version patch */
+
+/**
+ * Return handle for an index database.
+ * @param dbi	index database handle
+ * @return	0 success 1 fail
+ */
+    int (*open) (dbiIndex dbi);
+
+/**
+ * Close index database.
+ * @param dbi	index database handle
+ * @param flags
+ */
+    int (*close) (dbiIndex dbi, unsigned int flags);
+
+/**
+ * Flush pending operations to disk.
+ * @param dbi	index database handle
+ * @param flags
+ */
+    int (*sync) (dbiIndex dbi, unsigned int flags);
+
+/**
+ * Return first index database key.
+ * @param dbi	index database handle
+ * @param key	address of first key
+ * @return	0 success - fails if rec is not found
+ */
+    int (*GetFirstKey) (dbiIndex dbi, const char ** keyp);
+
+/**
+ * Return items that match criteria.
+ * @param dbi	index database handle
+ * @param str	search key
+ * @param set	items retrieved from index database
+ * @return	-1 error, 0 success, 1 not found
+ */
+    int (*SearchIndex) (dbiIndex dbi, const char * str, dbiIndexSet * set);
+
+/**
+ * Change/delete items that match criteria.
+ * @param dbi	index database handle
+ * @param str	update key
+ * @param set	items to update in index database
+ * @return	0 success, 1 not found
+ */
+    int (*UpdateIndex) (dbiIndex dbi, const char * str, dbiIndexSet set);
+};
+
+/**
  * Describes an index database (implemented on Berkeley db[123] API).
  */
 struct _dbiIndex {
+    const char * dbi_basename;		/*<! last component of name */
+    DBI_TYPE dbi_type;			/*<! type of access */
+    int dbi_flags;			/*<! flags to use on open */
+    int dbi_perms;			/*<! file permission to use on open */
+    int dbi_major;			/*<! Berkeley db version major */
+    const char * dbi_file;		/*<! name of index database */
     void * dbi_db;			/*<! Berkeley db[123] handle */
     void * dbi_dbenv;
     void * dbi_dbinfo;
     void * dbi_dbcursor;
-    const char * dbi_file;		/*<! name of index database */
-    int dbi_flags;			/*<! flags to use on open */
-    int dbi_perms;			/*<! file permission to use on open */
-    DBI_TYPE dbi_type;			/*<! type of access */
     const void * dbi_openinfo;		/*<! private data passed on open */
-    int dbi_major;			/*<! Berkeley db version major */
-    int dbi_minor;			/*<! Berkeley db version minor */
-    int dbi_patch;			/*<! Berkeley db version patch */
+    FD_t dbi_fd;			/*<! private data for fadio access */
+/*@observer@*/ const struct _dbiVec * dbi_vec;	/*<! private methods */
 };
 
 #ifdef __cplusplus
