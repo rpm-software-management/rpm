@@ -47,7 +47,7 @@ void appendStringBufAux(StringBuf sb, char *s, int nl)
 
     l = strlen(s);
     /* If free == l there is no room for NULL terminator! */
-    while ((l + nl) > sb->free) {
+    while ((l + nl + 1) > sb->free) {
         sb->allocated += BUF_CHUNK;
 	sb->free += BUF_CHUNK;
         sb->buf = realloc(sb->buf, sb->allocated);
