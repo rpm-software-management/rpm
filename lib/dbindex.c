@@ -44,19 +44,6 @@ unsigned int dbiIndexSetCount(dbiIndexSet set) {
     return set->count;
 }
 
-#ifdef	DYING
-dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset, unsigned int fileNumber) {
-    dbiIndexRecord rec = xmalloc(sizeof(*rec));
-    rec->recOffset = recOffset;
-    rec->fileNumber = fileNumber;
-    return rec;
-}
-
-void dbiFreeIndexRecordInstance(dbiIndexRecord rec) {
-    if (rec) free(rec);
-}
-#endif
-
 unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno) {
     return set->recs[recno].recOffset;
 }
@@ -171,122 +158,9 @@ int dbiCloseIndex(dbiIndex dbi) {
     return rc;
 }
 
-#ifdef	DYING
-int dbiSyncIndex(dbiIndex dbi) {
-    int rc;
-
-    rc = (*dbi->dbi_vec->sync) (dbi, 0);
-    return rc;
-}
-
-int dbiGetNextKey(dbiIndex dbi, void ** keyp, size_t * keylenp) {
-    int rc;
-
-    if (dbi == NULL)
-	return 1;
-
-    rc = (*dbi->dbi_vec->cget) (dbi, keyp, keylenp, NULL, NULL);
-
-    return rc;
-}
-
-int dbiFreeCursor(dbiIndex dbi) {
-    int rc;
-
-    if (dbi == NULL)
-	return 1;
-
-    rc = (*dbi->dbi_vec->cclose) (dbi);
-    return rc;
-}
-
-int dbiSearchIndex(dbiIndex dbi, const char * str, size_t len,
-		dbiIndexSet * set)
-{
-    int rc;
-
-    rc = (*dbi->dbi_vec->SearchIndex) (dbi, str, len, set);
-
-    switch (rc) {
-    case -1:
-	rpmError(RPMERR_DBGETINDEX, _("error getting record %s from %s"),
-		str, dbi->dbi_file);
-	break;
-    }
-    return rc;
-}
-
-int dbiUpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set) {
-    int rc;
-
-    rc = (*dbi->dbi_vec->UpdateIndex) (dbi, str, set);
-
-    if (set->count) {
-	if (rc) {
-	    rpmError(RPMERR_DBPUTINDEX, _("error storing record %s into %s"),
-		    str, dbi->dbi_file);
-	}
-    } else {
-	if (rc) {
-	    rpmError(RPMERR_DBPUTINDEX, _("error removing record %s into %s"),
-		    str, dbi->dbi_file);
-	}
-    }
-
-    return rc;
-}
-
-int dbiAppendIndexRecord(dbiIndexSet set, dbiIndexRecord rec)
-{
-    set->count++;
-
-    if (set->count == 1) {
-	set->recs = xmalloc(set->count * sizeof(*(set->recs)));
-    } else {
-	set->recs = xrealloc(set->recs, set->count * sizeof(*(set->recs)));
-    }
-    set->recs[set->count - 1].recOffset = rec->recOffset;
-    set->recs[set->count - 1].fileNumber = rec->fileNumber;
-
-    return 0;
-}
-#endif
-
-dbiIndexSet dbiCreateIndexSet(void) {
-    dbiIndexSet set = xmalloc(sizeof(*set));
-
-    set->recs = NULL;
-    set->count = 0;
-    return set;
-}
-
 void dbiFreeIndexSet(dbiIndexSet set) {
     if (set) {
 	if (set->recs) free(set->recs);
 	free(set);
     }
 }
-
-#ifdef	DYING
-/* returns 1 on failure */
-int dbiRemoveIndexRecord(dbiIndexSet set, dbiIndexRecord rec) {
-    int from;
-    int to = 0;
-    int num = set->count;
-    int numCopied = 0;
-
-    for (from = 0; from < num; from++) {
-	if (rec->recOffset != set->recs[from].recOffset ||
-	    rec->fileNumber != set->recs[from].fileNumber) {
-	    /* structure assignment */
-	    if (from != to) set->recs[to] = set->recs[from];
-	    to++;
-	    numCopied++;
-	} else {
-	    set->count--;
-	}
-    }
-
-    return (numCopied == num);
-}
-#endif

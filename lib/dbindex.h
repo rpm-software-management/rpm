@@ -147,22 +147,23 @@ struct _dbiVec {
  * Describes an index database (implemented on Berkeley db[123] API).
  */
 struct _dbiIndex {
-    const char * dbi_basename;		/*<! last component of name */
-    int dbi_rpmtag;			/*<! rpm tag used for index */
+    const char *dbi_basename;		/*<! last component of name */
+    int		dbi_rpmtag;		/*<! rpm tag used for index */
 
-    DBI_TYPE dbi_type;			/*<! type of access */
-    int dbi_flags;			/*<! flags to use on open */
-    int dbi_perms;			/*<! file permission to use on open */
-    int dbi_major;			/*<! Berkeley db version major */
+    DBI_TYPE	dbi_type;		/*<! type of access */
+    int		dbi_flags;		/*<! flags to use on open */
+    int		dbi_perms;		/*<! file permission to use on open */
+    int		dbi_major;		/*<! Berkeley db version major */
     unsigned int dbi_lastoffset;	/*<! db0 with falloc.c needs this */
+    rpmdb	dbi_rpmdb;
 
-    const char * dbi_file;		/*<! name of index database */
-    void * dbi_db;			/*<! Berkeley db[123] handle */
-    void * dbi_dbenv;
-    void * dbi_dbinfo;
-    void * dbi_dbjoin;
-    void * dbi_dbcursor;
-    void * dbi_pkgs;
+    const char *dbi_file;		/*<! name of index database */
+    void *	dbi_db;			/*<! Berkeley db[123] handle */
+    void *	dbi_dbenv;
+    void *	dbi_dbinfo;
+    void *	dbi_dbjoin;
+    void *	dbi_dbcursor;
+    void *	dbi_pkgs;
 /*@observer@*/ const struct _dbiVec * dbi_vec;	/*<! private methods */
 };
 
@@ -185,86 +186,6 @@ extern "C" {
  * @param dbi	index database handle
  */
 int dbiCloseIndex( /*@only@*/ dbiIndex dbi);
-
-#ifdef	DYING
-/**
- * Flush pending operations to disk.
- * @param dbi	index database handle
- */
-int dbiSyncIndex(dbiIndex dbi);
-
-/**
- * Return items that match criteria.
- * @param dbi	index database handle
- * @param str	search key
- * @param set	items retrieved from index database
- * @return	-1 error, 0 success, 1 not found
- */
-int dbiSearchIndex(dbiIndex dbi, const char * str, size_t len, /*@out@*/ dbiIndexSet * set);
-
-/**
- * Change/delete items that match criteria.
- * @param dbi	index database handle
- * @param str	update key
- * @param set	items to update in index database
- * @return	0 success, 1 not found
- */
-int dbiUpdateIndex(dbiIndex dbi, const char * str, dbiIndexSet set);
-
-/**
- * Append element to set of index database items.
- * @param set	set of index database items
- * @param rec	item to append to set
- * @return	0 success (always)
- */
-int dbiAppendIndexRecord( /*@out@*/ dbiIndexSet set, dbiIndexRecord rec);
-#endif
-
-/**
- * Create empty set of index database items.
- * @return	empty set of index database items
- */
-/*@only@*/ dbiIndexSet dbiCreateIndexSet(void);
-
-#ifdef	DYING
-/**
- * Remove element from set of index database items.
- * @param set	set of index database items
- * @param rec	item to remove from set
- * @return	0 success, 1 failure
- */
-int dbiRemoveIndexRecord(dbiIndexSet set, dbiIndexRecord rec);
-
-/**
- * Return next index database key.
- * @param dbi	index database handle
- * @param keyp	address of first key
- * @param keylenp address of first key size
- * @return	0 success - fails if rec is not found
- */
-int dbiGetNextKey(dbiIndex dbi, /*@out@*/ void ** keyp, size_t * keylenp);
-
-/**
- * Close cursor (if any);
- * @param dbi	index database handle
- * @return	0 success
- */
-int dbiFreeCursor(dbiIndex dbi);
-
-/**
- * Create and initialize element of index database set.
- * @param recOffset	byte offset of header in db
- * @param fileNumber	file array index
- * @return	new element
- */
-/*@only@*/ dbiIndexRecord dbiReturnIndexRecordInstance(unsigned int recOffset,
-		unsigned int fileNumber);
-/**
- * Destroy element of index database set.
- * @param rec	element of index database set.
- */
-void dbiFreeIndexRecordInstance( /*@only@*/ dbiIndexRecord rec);
-#endif
 
 #ifdef __cplusplus
 }

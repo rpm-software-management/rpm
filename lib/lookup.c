@@ -2,7 +2,7 @@
 
 #include <rpmlib.h>
 
-#include "dbindex.h"	/* XXX prototypes */
+#include "rpmdb.h"	/* XXX prototypes */
 #include "lookup.h"
 
 /* XXX used in transaction.c */
