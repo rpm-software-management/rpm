@@ -1631,14 +1631,14 @@ static void addQ(struct availablePackage * p,
     }
 }
 
-int rpmdepOrder(rpmTransactionSet rpmdep)
+int rpmdepOrder(rpmTransactionSet ts)
 {
+    int npkgs = ts->addedPackages.size;
     struct availablePackage * p;
     struct availablePackage * q;
     struct availablePackage * r;
     struct tsortInfo * tsi;
     struct tsortInfo * tsi_next;
-    int npkgs = rpmdep->addedPackages.size;
     int * ordering = alloca(sizeof(*ordering) * (npkgs + 1));
     int orderingCount = 0;
     unsigned char * selected = alloca(sizeof(*selected) * (npkgs + 1));
@@ -1650,18 +1650,15 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
     int qlen;
     int i, j;
 
-    alMakeIndex(&rpmdep->addedPackages);
-    alMakeIndex(&rpmdep->availablePackages);
+    alMakeIndex(&ts->addedPackages);
+    alMakeIndex(&ts->availablePackages);
 
     /* T1. Initialize. */
     loopcheck = npkgs;
 
     /* Record all relations. */
     rpmMessage(RPMMESS_DEBUG, _("========== recording tsort relations\n"));
-    for (i = 0, p = rpmdep->addedPackages.list;
-	 i < rpmdep->addedPackages.size;
-	 i++, p++)
-    {
+    for (i = 0, p = ts->addedPackages.list; i < npkgs; i++, p++) {
 	int matchNum;
 
 	if (p->requiresCount <= 0)
@@ -1670,7 +1667,7 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
 	memset(selected, 0, sizeof(*selected) * npkgs);
 
 	/* Avoid narcisstic relations. */
-	matchNum = p - rpmdep->addedPackages.list;
+	matchNum = p - ts->addedPackages.list;
 	selected[matchNum] = 1;
 
 	/* T2. Next "q <- p" relation. */
@@ -1686,7 +1683,7 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
 		continue;
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    (void) addRelation(rpmdep, p, selected, j);
+	    (void) addRelation(ts, p, selected, j);
 
 	}
 
@@ -1701,7 +1698,7 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
 		continue;
 
 	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    (void) addRelation(rpmdep, p, selected, j);
+	    (void) addRelation(ts, p, selected, j);
 
 	}
     }
@@ -1711,11 +1708,8 @@ int rpmdepOrder(rpmTransactionSet rpmdep)
 
 rescan:
     q = r = NULL;
-    npkgs = qlen = 0;
-    for (i = 0, p = rpmdep->addedPackages.list;
-	     i < rpmdep->addedPackages.size;
-	     i++, p++)
-    {
+    qlen = 0;
+    for (i = 0, p = ts->addedPackages.list; i < npkgs; i++, p++) {
 	if (p->tsi.tsi_count != 0)
 	    continue;
 	p->tsi.tsi_suc = NULL;
@@ -1728,7 +1722,7 @@ rescan:
 
 	rpmMessage(RPMMESS_DEBUG, "%5d (%d,%d) %s-%s-%s\n", orderingCount,
 			qlen, q->tsi.tsi_qcnt, q->name, q->version, q->release);
-	ordering[orderingCount++] = q - rpmdep->addedPackages.list;
+	ordering[orderingCount++] = q - ts->addedPackages.list;
 	qlen--;
 	loopcheck--;
 
@@ -1759,15 +1753,12 @@ rescan:
 	rpmMessage(RPMMESS_DEBUG,
 		_("========== successors only (presentation order\n"));
 
-	for (i = 0, q = rpmdep->addedPackages.list;
-	     i < rpmdep->addedPackages.size;
-	     i++, q++)
-	{
+	for (i = 0, q = ts->addedPackages.list; i < npkgs; i++, q++) {
 	    if (q->tsi.tsi_qcnt == -1234)
 		continue;
 	    rpmMessage(RPMMESS_DEBUG, "%5d (%d,%d) %s-%s-%s\n", orderingCount,
 			qlen, q->tsi.tsi_qcnt, q->name, q->version, q->release);
-	    ordering[orderingCount++] = q - rpmdep->addedPackages.list;
+	    ordering[orderingCount++] = q - ts->addedPackages.list;
 	    qlen--;
 	    loopcheck--;
 	}
@@ -1779,10 +1770,7 @@ rescan:
 
 	/* T9. Initialize predecessor chain. */
 	nzaps = 0;
-	for (i = 0, q = rpmdep->addedPackages.list;
-	     i < rpmdep->addedPackages.size;
-	     i++, q++)
-	{
+	for (i = 0, q = ts->addedPackages.list; i < npkgs; i++, q++) {
 	    q->tsi.tsi_pkg = NULL;
 	    q->tsi.tsi_reqx = 0;
 	    /* Mark packages already sorted. */
@@ -1791,10 +1779,7 @@ rescan:
 	}
 
 	/* T10. Mark all packages with their predecessors. */
-	for (i = 0, q = rpmdep->addedPackages.list;
-	     i < rpmdep->addedPackages.size;
-	     i++, q++)
-	{
+	for (i = 0, q = ts->addedPackages.list; i < npkgs; i++, q++) {
 	    if ((tsi = q->tsi.tsi_next) == NULL)
 		continue;
 	    q->tsi.tsi_next = NULL;
@@ -1803,10 +1788,7 @@ rescan:
 	}
 
 	/* T11. Print all dependency loops. */
-	for (i = 0, r = rpmdep->addedPackages.list;
-	     i < rpmdep->addedPackages.size;
-	     i++, r++)
-	{
+	for (i = 0, r = ts->addedPackages.list; i < npkgs; i++, r++) {
 	    int printed;
 
 	    printed = 0;
@@ -1870,50 +1852,48 @@ rescan:
      * the new package. This would be easier if we could sort the
      * addedPackages array, but we store indexes into it in various places.
      */
-    orderList = xmalloc(sizeof(*orderList) * rpmdep->addedPackages.size);
-    for (i = 0, j = 0; i < rpmdep->orderCount; i++) {
-	if (rpmdep->order[i].type == TR_ADDED) {
-	    orderList[j].alIndex = rpmdep->order[i].u.addedIndex;
+    orderList = xmalloc(sizeof(*orderList) * npkgs);
+    for (i = 0, j = 0; i < ts->orderCount; i++) {
+	if (ts->order[i].type == TR_ADDED) {
+	    orderList[j].alIndex = ts->order[i].u.addedIndex;
 	    orderList[j].orIndex = i;
 	    j++;
 	}
     }
-    if (j > rpmdep->addedPackages.size) abort();
+    assert(j <= npkgs);
 
-    qsort(orderList, rpmdep->addedPackages.size, sizeof(*orderList),
-	  orderListIndexCmp);
+    qsort(orderList, npkgs, sizeof(*orderList), orderListIndexCmp);
 
-    newOrder = xmalloc(sizeof(*newOrder) * rpmdep->orderCount);
+    newOrder = xmalloc(sizeof(*newOrder) * ts->orderCount);
     for (i = 0, newOrderCount = 0; i < orderingCount; i++) {
 	struct orderListIndex * needle, key;
 
 	key.alIndex = ordering[i];
-	needle = bsearch(&key, orderList, rpmdep->addedPackages.size,
-			 sizeof(key), orderListIndexCmp);
+	needle = bsearch(&key, orderList, npkgs, sizeof(key),orderListIndexCmp);
 	/* bsearch should never, ever fail */
 
-	newOrder[newOrderCount++] = rpmdep->order[needle->orIndex];
-	for (j = needle->orIndex + 1; j < rpmdep->orderCount; j++) {
-	    if (rpmdep->order[j].type == TR_REMOVED &&
-		rpmdep->order[j].u.removed.dependsOnIndex == needle->alIndex) {
-		newOrder[newOrderCount++] = rpmdep->order[j];
+	newOrder[newOrderCount++] = ts->order[needle->orIndex];
+	for (j = needle->orIndex + 1; j < ts->orderCount; j++) {
+	    if (ts->order[j].type == TR_REMOVED &&
+		ts->order[j].u.removed.dependsOnIndex == needle->alIndex) {
+		newOrder[newOrderCount++] = ts->order[j];
 	    } else {
 		break;
 	    }
 	}
     }
 
-    for (i = 0; i < rpmdep->orderCount; i++) {
-	if (rpmdep->order[i].type == TR_REMOVED &&
-	    rpmdep->order[i].u.removed.dependsOnIndex == -1)  {
-	    newOrder[newOrderCount++] = rpmdep->order[i];
+    for (i = 0; i < ts->orderCount; i++) {
+	if (ts->order[i].type == TR_REMOVED &&
+	    ts->order[i].u.removed.dependsOnIndex == -1)  {
+	    newOrder[newOrderCount++] = ts->order[i];
 	}
     }
-    if (newOrderCount != rpmdep->orderCount) abort();
+    assert(newOrderCount == ts->orderCount);
 
-    free(rpmdep->order);
-    rpmdep->order = newOrder;
-    rpmdep->orderAlloced = rpmdep->orderCount;
+    free(ts->order);
+    ts->order = newOrder;
+    ts->orderAlloced = ts->orderCount;
     free(orderList);
 
     return 0;
@@ -1922,6 +1902,7 @@ rescan:
 int rpmdepCheck(rpmTransactionSet rpmdep,
 		struct rpmDependencyConflict ** conflicts, int * numConflicts)
 {
+    int npkgs = rpmdep->addedPackages.size;
     struct availablePackage * p;
     int i, j;
     int rc;
@@ -1945,9 +1926,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
     /* Look at all of the added packages and make sure their dependencies
      * are satisfied.
      */
-    for (i = 0, p = rpmdep->addedPackages.list;
-	 i < rpmdep->addedPackages.size;
-	 i++, p++)
+    for (i = 0, p = rpmdep->addedPackages.list; i < npkgs; i++, p++)
     {
 
 	rc = checkPackageDeps(rpmdep, &ps, p->h, NULL, p->multiLib);
