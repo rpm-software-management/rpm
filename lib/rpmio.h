@@ -10,6 +10,11 @@ typedef	/*@abstract@*/ struct _FD {
     void *	fd_url;
 } *FD_t;
 
+#endif H_RPMIO
+
+#ifndef H_RPMIO_F
+#define H_RPMIO_F
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -277,4 +282,4 @@ extern inline int bzdClose(/*@only@*/ FD_t fd) {
 }
 #endif
 
-#endif	/* H_RPMIO */
+#endif	/* H_RPMIO_F */
