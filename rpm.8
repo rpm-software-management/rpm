@@ -1,5 +1,5 @@
 .\" rpm - Red Hat Package Manager
-.TH rpm 8 "25 February 1996" "Red Hat Software" "Red Hat Linux"
+.TH rpm 8 "29 March 1996" "Red Hat Software" "Red Hat Linux"
 .SH NAME
 rpm \- Red Hat Package Manager
 .SH SYNOPSIS
@@ -48,6 +48,12 @@ system.
 Do the installation on the system rooted at \fI<dir>\fP.  Note that
 this means the database will be updated under \fI<dir>\fP and any
 \fIpre\fP or \fIpost\fP scripts are run after a chroot() to \fI<dir>\fP.
+.IP "\fB\-\-excludedocs\fP"
+Don't install any files which are marked as documentation (which includes
+man pages and texinfo documents).
+.IP "\fB\-\-includedocs\fP"
+Install documentation files. This is only needed if \fIexcludedocs: 1\fP
+is specified in an rpmrc file.
 .IP "\fB\-S, \-\-search\fP"
 Search the locations listed in /etc/rpmrc for the rpm.
 .IP "\fB\-\-test\fP"
@@ -134,7 +140,7 @@ List files in package.
 .IP "\fB\-s\fP"
 Display \fIstates\fP of file in package (implies \fB\-l\fP).  
 The state of each package is
-either \fInormal\fP or \fIoverwritten\fP.
+either \fInormal\fP, \fInot installed\fP, or \fIreplaced\fP.
 .IP "\fB\-d\fP"
 List only documentation files (implies \fB\-l\fP).  
 .IP "\fB\-c\fP"
@@ -271,6 +277,7 @@ be built and signed.
 .SH FILES
 .nf
 /etc/rpmrc
+~/.rpmrc
 /var/lib/rpm/packages
 /var/lib/rpm/pathidx
 /var/lib/rpm/nameidx
