@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include "rpmbuild.h"
+#include "rpmmacro.h"	/* XXX for rpmGetPath */
 
 #include "popt/popt.h"
 

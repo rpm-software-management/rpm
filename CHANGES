@@ -15,6 +15,7 @@
 	- (re-)enable fixowner/fixgroup macros.
 	- fix: specfile BuildRoot was masking rpmrc macro.
 	- expand twiddles in macrofiles list.
+	- add explicit macrofiles path to rpmrc.
 
 2.91 -> 2.92
 	- update with libtool-2.4f.

@@ -93,8 +93,11 @@
 /* Full path to rpm locale directory (usually /usr/share/locale) */
 #undef LOCALEDIR
 
-/* Full path to rpm configuration directory (usually /usr/lib/rpm) */
+/* Full path to rpm global configuration directory (usually /usr/lib/rpm) */
 #undef RPMCONFIGDIR
+
+/* Full path to rpm system configuration directory (usually /etc/rpm) */
+#undef SYSCONFIGDIR
 
 /* Full path to find-provides script (usually /usr/lib/rpm/find-provides) */
 #undef FINDPROVIDES

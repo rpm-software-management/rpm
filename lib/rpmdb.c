@@ -9,6 +9,7 @@
 #include "falloc.h"
 #include "fprint.h"
 #include "misc.h"
+#include "rpmmacro.h"	/* XXX for rpmGetPath */
 #include "rpmdb.h"
 
 /* XXX the signal handling in here is not thread safe */

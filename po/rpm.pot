@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-03-31 11:39-0500\n"
+"POT-Creation-Date: 1999-03-31 15:09-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1483,7 +1483,7 @@ msgstr ""
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:168 ../url.c:422
+#: ../lib/rpmdb.c:169 ../url.c:422
 #, c-format
 msgid "failed to open %s\n"
 msgstr ""
@@ -2597,12 +2597,12 @@ msgstr ""
 msgid "Target buffer overflow"
 msgstr ""
 
-#: ../lib/macro.c:1239 ../lib/macro.c:1247
+#: ../lib/macro.c:1238 ../lib/macro.c:1246
 #, c-format
 msgid "File %s: %s"
 msgstr ""
 
-#: ../lib/macro.c:1250
+#: ../lib/macro.c:1249
 #, c-format
 msgid "File %s is smaller than %d bytes"
 msgstr ""
@@ -2807,160 +2807,160 @@ msgstr ""
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:17
+#: ../lib/rebuilddb.c:18
 #, c-format
 msgid "rebuilding database in rootdir %s\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:21 ../lib/rpmdb.c:63 ../lib/rpmdb.c:81 ../lib/rpmdb.c:97
+#: ../lib/rebuilddb.c:22 ../lib/rpmdb.c:64 ../lib/rpmdb.c:82 ../lib/rpmdb.c:98
 msgid "no dbpath has been set"
 msgstr ""
 
-#: ../lib/rebuilddb.c:29
+#: ../lib/rebuilddb.c:30
 #, c-format
 msgid "temporary database %s already exists"
 msgstr ""
 
-#: ../lib/rebuilddb.c:33
+#: ../lib/rebuilddb.c:34
 #, c-format
 msgid "creating directory: %s\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:35
+#: ../lib/rebuilddb.c:36
 #, c-format
 msgid "error creating directory %s: %s"
 msgstr ""
 
-#: ../lib/rebuilddb.c:43
+#: ../lib/rebuilddb.c:44
 msgid "opening old database\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:50
+#: ../lib/rebuilddb.c:51
 msgid "opening new database\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:60 ../lib/rebuilddb.c:78
+#: ../lib/rebuilddb.c:61 ../lib/rebuilddb.c:79
 #, c-format
 msgid "record number %d in database is bad -- skipping it"
 msgstr ""
 
-#: ../lib/rebuilddb.c:72
+#: ../lib/rebuilddb.c:73
 #, c-format
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: ../lib/rebuilddb.c:91
+#: ../lib/rebuilddb.c:92
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:99
+#: ../lib/rebuilddb.c:100
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:101
+#: ../lib/rebuilddb.c:102
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr ""
 
-#: ../lib/rebuilddb.c:107
+#: ../lib/rebuilddb.c:108
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:158
+#: ../lib/rpmdb.c:159
 #, c-format
 msgid "opening database mode 0x%x in %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:181 ../lib/rpmdb.c:188
+#: ../lib/rpmdb.c:182 ../lib/rpmdb.c:189
 #, c-format
 msgid "cannot get %s lock on database"
 msgstr ""
 
-#: ../lib/rpmdb.c:182
+#: ../lib/rpmdb.c:183
 msgid "exclusive"
 msgstr ""
 
-#: ../lib/rpmdb.c:189
+#: ../lib/rpmdb.c:190
 msgid "shared"
 msgstr ""
 
-#: ../lib/rpmdb.c:212
+#: ../lib/rpmdb.c:213
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database"
 msgstr ""
 
-#: ../lib/rpmdb.c:371
+#: ../lib/rpmdb.c:372
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:382
+#: ../lib/rpmdb.c:383
 #, c-format
 msgid "package %s not found in %s"
 msgstr ""
 
-#: ../lib/rpmdb.c:406 ../lib/uninstall.c:40
+#: ../lib/rpmdb.c:407 ../lib/uninstall.c:40
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: ../lib/rpmdb.c:414
+#: ../lib/rpmdb.c:415
 msgid "package has no name"
 msgstr ""
 
-#: ../lib/rpmdb.c:416
+#: ../lib/rpmdb.c:417
 msgid "removing name index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:421
+#: ../lib/rpmdb.c:422
 msgid "package has no group\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:423
+#: ../lib/rpmdb.c:424
 msgid "removing group index\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:430
+#: ../lib/rpmdb.c:431
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:445
+#: ../lib/rpmdb.c:446
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:457
+#: ../lib/rpmdb.c:458
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:468
+#: ../lib/rpmdb.c:469
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:485
+#: ../lib/rpmdb.c:486
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:494
+#: ../lib/rpmdb.c:495
 msgid "package has no files\n"
 msgstr ""
 
-#: ../lib/rpmdb.c:567
+#: ../lib/rpmdb.c:568
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: ../lib/rpmdb.c:638
+#: ../lib/rpmdb.c:639
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: ../lib/rpmdb.c:647
+#: ../lib/rpmdb.c:648
 msgid "header changed size!"
 msgstr ""
 
@@ -3058,142 +3058,142 @@ msgstr ""
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
-#: ../lib/signature.c:145
+#: ../lib/signature.c:146
 msgid "No signature\n"
 msgstr ""
 
-#: ../lib/signature.c:148
+#: ../lib/signature.c:149
 msgid "Old PGP signature\n"
 msgstr ""
 
-#: ../lib/signature.c:161
+#: ../lib/signature.c:162
 msgid "Old (internal-only) signature!  How did you get that!?"
 msgstr ""
 
-#: ../lib/signature.c:165
+#: ../lib/signature.c:166
 msgid "New Header signature\n"
 msgstr ""
 
 #. 8-byte pad
-#: ../lib/signature.c:173 ../lib/signature.c:211
+#: ../lib/signature.c:174 ../lib/signature.c:212
 #, c-format
 msgid "Signature size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:174 ../lib/signature.c:212
+#: ../lib/signature.c:175 ../lib/signature.c:213
 #, c-format
 msgid "Signature pad : %d\n"
 msgstr ""
 
-#: ../lib/signature.c:304 ../lib/signature.c:810
+#: ../lib/signature.c:305 ../lib/signature.c:811
 msgid "Couldn't exec pgp"
 msgstr ""
 
-#: ../lib/signature.c:315
+#: ../lib/signature.c:316
 msgid "pgp failed"
 msgstr ""
 
 #. PGP failed to write signature
 #. Just in case
-#: ../lib/signature.c:322
+#: ../lib/signature.c:323
 msgid "pgp failed to write signature"
 msgstr ""
 
-#: ../lib/signature.c:327
+#: ../lib/signature.c:328
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:338 ../lib/signature.c:414
+#: ../lib/signature.c:339 ../lib/signature.c:415
 msgid "unable to read the signature"
 msgstr ""
 
-#: ../lib/signature.c:343
+#: ../lib/signature.c:344
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: ../lib/signature.c:380 ../lib/signature.c:785
+#: ../lib/signature.c:381 ../lib/signature.c:786
 msgid "Couldn't exec gpg"
 msgstr ""
 
-#: ../lib/signature.c:391
+#: ../lib/signature.c:392
 msgid "gpg failed"
 msgstr ""
 
 #. GPG failed to write signature
 #. Just in case
-#: ../lib/signature.c:398
+#: ../lib/signature.c:399
 msgid "gpg failed to write signature"
 msgstr ""
 
-#: ../lib/signature.c:403
+#: ../lib/signature.c:404
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:419
+#: ../lib/signature.c:420
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: ../lib/signature.c:434
+#: ../lib/signature.c:435
 #, c-format
 msgid "sigsize         : %d\n"
 msgstr ""
 
-#: ../lib/signature.c:435
+#: ../lib/signature.c:436
 #, c-format
 msgid "Header + Archive: %d\n"
 msgstr ""
 
-#: ../lib/signature.c:436
+#: ../lib/signature.c:437
 #, c-format
 msgid "expected size   : %d\n"
 msgstr ""
 
-#: ../lib/signature.c:440
+#: ../lib/signature.c:441
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 
-#: ../lib/signature.c:558 ../lib/signature.c:605
+#: ../lib/signature.c:559 ../lib/signature.c:606
 msgid "Could not run pgp.  Use --nopgp to skip PGP checks."
 msgstr ""
 
-#: ../lib/signature.c:603 ../lib/signature.c:675
+#: ../lib/signature.c:604 ../lib/signature.c:676
 msgid "exec failed!\n"
 msgstr ""
 
-#: ../lib/signature.c:677
+#: ../lib/signature.c:678
 msgid "Could not run gpg.  Use --nogpg to skip GPG checks."
 msgstr ""
 
-#: ../lib/signature.c:714
+#: ../lib/signature.c:715
 msgid "You must set \"%%_gpg_name\" in your macro file"
 msgstr ""
 
-#: ../lib/signature.c:726
+#: ../lib/signature.c:727
 msgid "You must set \"%%_pgp_name\" in your macro file"
 msgstr ""
 
 #. Currently the calling function (rpm.c:main) is checking this and
 #. * doing a better job.  This section should never be accessed.
 #.
-#: ../lib/signature.c:734 ../lib/signature.c:814
+#: ../lib/signature.c:735 ../lib/signature.c:815
 msgid "Invalid %%_signature spec in macro file"
 msgstr ""
 
-#: ../lib/transaction.c:756
+#: ../lib/transaction.c:757
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:762
+#: ../lib/transaction.c:763
 #, c-format
 msgid "excluding %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:850
+#: ../lib/transaction.c:851
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

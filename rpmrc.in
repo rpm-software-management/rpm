@@ -1,4 +1,5 @@
-# $Id: rpmrc.in,v 2.4 1999/03/20 21:09:52 jbj Exp $
+# $Id: rpmrc.in,v 2.5 1999/03/31 20:38:00 jbj Exp $
+
 #############################################################
 
 # Please send new entries to rpm-list@redhat.com
@@ -182,3 +183,10 @@ buildarch_compat: armv4: armv4b armv4l noarch
 buildarch_compat: armv4b: noarch
 buildarch_compat: armv4l: noarch
 buildarch_compat: parisc: noarch
+
+#############################################################
+
+macrofiles:	@RPMCONFIGDIR@/macros:@SYSCONFIGDIR@/macros:~/.rpmmacros
+
+#macrofiles:	@RPMCONFIGDIR@/macros:@RPMCONFIGDIR@/%{_target}/macros:@SYSCONFIGDIR@/macros:@SYSCONFIGDIR@/%{_target}/macros:~/.rpmmacros
+#include: @RPMCONFIGDIR@/%{_target}/rpmrc
