@@ -9,6 +9,7 @@
 	- permit secondary tag match patterns with RPMQV_ALL.
 	- python: missed tuple refcount in IDTXload/IDTXglob.
 	- fix: IDTXglob should return REMOVETID sorted headers (#89857).
+	- fix: cut-n-paste error setting nopromote for Conflicts: (#81965).
 
 4.1 -> 4.2:
 	- set cachesize without a dbenv, the default is far too small.

@@ -694,7 +694,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
 	requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
 	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
 	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
-	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
+	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
 	rc = checkPackageDeps(ts, pkgNEVR, requires, conflicts, dep, 0, adding);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
