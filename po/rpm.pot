@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-02-28 13:34-0500\n"
+"POT-Creation-Date: 1999-03-08 22:28-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -256,107 +256,107 @@ msgstr ""
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: ../install.c:109
+#: ../install.c:124
 msgid "counting packages to install\n"
 msgstr ""
 
-#: ../install.c:113
+#: ../install.c:128
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: ../install.c:122
+#: ../install.c:137
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: ../install.c:133
+#: ../install.c:148
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
-#: ../install.c:142
+#: ../install.c:157
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: ../install.c:146
+#: ../install.c:161
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: ../install.c:163
+#: ../install.c:178
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: ../install.c:172 ../install.c:287
+#: ../install.c:187 ../install.c:291
 #, c-format
 msgid "cannot open file %s\n"
 msgstr ""
 
-#: ../install.c:184 ../lib/query.c:540
+#: ../install.c:199 ../lib/query.c:540
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../install.c:188 ../install.c:424
+#: ../install.c:203 ../install.c:428
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: ../install.c:203 ../install.c:337
+#: ../install.c:218 ../install.c:341
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
 
-#: ../install.c:221
+#: ../install.c:236
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: ../install.c:231
+#: ../install.c:246
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: ../install.c:249
+#: ../install.c:264
 msgid "installing binary packages\n"
 msgstr ""
 
-#: ../install.c:348 ../lib/query.c:684 ../verify.c:243
+#: ../install.c:352 ../lib/query.c:684 ../verify.c:243
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: ../install.c:352
+#: ../install.c:356
 #, c-format
 msgid "searching for package %s\n"
 msgstr ""
 
-#: ../install.c:361
+#: ../install.c:365
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: ../install.c:387
+#: ../install.c:391
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: ../install.c:414
+#: ../install.c:418
 #, c-format
 msgid "cannot open %s\n"
 msgstr ""
 
-#: ../install.c:419
+#: ../install.c:423
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: ../install.c:463
+#: ../install.c:467
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../install.c:466
+#: ../install.c:470
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
@@ -2244,31 +2244,31 @@ msgstr ""
 msgid "error removing record %s into %s"
 msgstr ""
 
-#: ../lib/depends.c:373 ../lib/depends.c:532
+#: ../lib/depends.c:374 ../lib/depends.c:533
 #, c-format
 msgid "cannot read header at %d for dependency check"
 msgstr ""
 
-#: ../lib/depends.c:438
+#: ../lib/depends.c:439
 #, c-format
 msgid "dependencies: looking for %s\n"
 msgstr ""
 
-#: ../lib/depends.c:626
+#: ../lib/depends.c:627
 #, c-format
 msgid "package %s require not satisfied: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:669
+#: ../lib/depends.c:670
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: ../lib/depends.c:769
+#: ../lib/depends.c:770
 msgid "dbrecMatchesDepFlags() failed to read header"
 msgstr ""
 
-#: ../lib/depends.c:821
+#: ../lib/depends.c:822
 #, c-format
 msgid "loop in prerequisite chain: %s"
 msgstr ""
@@ -2304,84 +2304,84 @@ msgstr ""
 msgid "file %s is on an unknown device"
 msgstr ""
 
-#: ../lib/header.c:670
+#: ../lib/header.c:669
 #, c-format
 msgid "Data type %d not supprted\n"
 msgstr ""
 
 #. This should not be allowed
-#: ../lib/header.c:906
+#: ../lib/header.c:905
 msgid "grabData() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: ../lib/header.c:936
+#: ../lib/header.c:935
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
-#: ../lib/header.c:995
+#: ../lib/header.c:994
 #, c-format
 msgid "Bad count for headerAddEntry(): %d\n"
 msgstr ""
 
-#: ../lib/header.c:1329
+#: ../lib/header.c:1328
 msgid "? expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1336
+#: ../lib/header.c:1335
 msgid "{ expected after ? in expression"
 msgstr ""
 
-#: ../lib/header.c:1346 ../lib/header.c:1378
+#: ../lib/header.c:1345 ../lib/header.c:1377
 msgid "} expected in expression"
 msgstr ""
 
-#: ../lib/header.c:1353
+#: ../lib/header.c:1352
 msgid ": expected following ? subexpression"
 msgstr ""
 
-#: ../lib/header.c:1366
+#: ../lib/header.c:1365
 msgid "{ expected after : in expression"
 msgstr ""
 
-#: ../lib/header.c:1385
+#: ../lib/header.c:1384
 msgid "| expected at end of expression"
 msgstr ""
 
-#: ../lib/header.c:1479
+#: ../lib/header.c:1478
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
-#: ../lib/header.c:1507
+#: ../lib/header.c:1506
 msgid "missing } after %{"
 msgstr ""
 
-#: ../lib/header.c:1519
+#: ../lib/header.c:1518
 msgid "empty tag format"
 msgstr ""
 
-#: ../lib/header.c:1529
+#: ../lib/header.c:1528
 msgid "empty tag name"
 msgstr ""
 
-#: ../lib/header.c:1544
+#: ../lib/header.c:1543
 msgid "unknown tag"
 msgstr ""
 
-#: ../lib/header.c:1570
+#: ../lib/header.c:1569
 msgid "] expected at end of array"
 msgstr ""
 
-#: ../lib/header.c:1586
+#: ../lib/header.c:1585
 msgid "unexpected ]"
 msgstr ""
 
-#: ../lib/header.c:1588
+#: ../lib/header.c:1587
 msgid "unexpected }"
 msgstr ""
 
-#: ../lib/header.c:1763
+#: ../lib/header.c:1762
 msgid "(unknown type)"
 msgstr ""
 
@@ -2413,68 +2413,68 @@ msgstr ""
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr ""
 
-#: ../lib/install.c:328
+#: ../lib/install.c:329
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: ../lib/install.c:333
+#: ../lib/install.c:334
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: ../lib/install.c:363
+#: ../lib/install.c:364
 #, c-format
 msgid "warning: %s created as %s"
 msgstr ""
 
-#: ../lib/install.c:399
+#: ../lib/install.c:400
 #, c-format
 msgid "warning: %s saved as %s"
 msgstr ""
 
-#: ../lib/install.c:403 ../lib/install.c:740 ../lib/uninstall.c:337
+#: ../lib/install.c:404 ../lib/install.c:741 ../lib/uninstall.c:337
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr ""
 
-#: ../lib/install.c:486
+#: ../lib/install.c:487
 msgid "running postinstall script (if any)\n"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
-#: ../lib/install.c:594
+#: ../lib/install.c:595
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: ../lib/install.c:595
+#: ../lib/install.c:596
 msgid " on file "
 msgstr ""
 
-#: ../lib/install.c:634
+#: ../lib/install.c:635
 msgid "installing a source package\n"
 msgstr ""
 
-#: ../lib/install.c:640 ../lib/install.c:646
+#: ../lib/install.c:641 ../lib/install.c:647
 #, c-format
 msgid "cannot write to %s"
 msgstr ""
 
-#: ../lib/install.c:651
+#: ../lib/install.c:652
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:652
+#: ../lib/install.c:653
 #, c-format
 msgid "spec file in: %s\n"
 msgstr ""
 
-#: ../lib/install.c:685 ../lib/install.c:717
+#: ../lib/install.c:686 ../lib/install.c:718
 msgid "source package contains no .spec file"
 msgstr ""
 
-#: ../lib/install.c:738
+#: ../lib/install.c:739
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
@@ -2806,20 +2806,20 @@ msgstr ""
 msgid "cannot add record originally at %d"
 msgstr ""
 
-#: ../lib/rebuilddb.c:89
+#: ../lib/rebuilddb.c:91
 msgid "failed to rebuild database; original database remains in place\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:97
+#: ../lib/rebuilddb.c:99
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: ../lib/rebuilddb.c:99
+#: ../lib/rebuilddb.c:101
 #, c-format
 msgid "replaces files in %s with files from %s to recover"
 msgstr ""
 
-#: ../lib/rebuilddb.c:105
+#: ../lib/rebuilddb.c:107
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
@@ -3137,17 +3137,17 @@ msgstr ""
 msgid "Invalid signature spec in rc file"
 msgstr ""
 
-#: ../lib/transaction.c:695
+#: ../lib/transaction.c:705
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:701
+#: ../lib/transaction.c:711
 #, c-format
 msgid "excluding %s\n"
 msgstr ""
 
-#: ../lib/transaction.c:789
+#: ../lib/transaction.c:799
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
