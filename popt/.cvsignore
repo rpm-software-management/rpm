@@ -6,3 +6,4 @@ configure
 config.log
 config.cache
 config.satus
+config.status
