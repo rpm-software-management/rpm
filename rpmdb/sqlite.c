@@ -360,10 +360,14 @@ static int sql_bind_key(dbiIndex dbi, SCP_t scp, int pos, DBT * key)
 {
     int rc = 0;
 
+assert(key->data != NULL);
     switch (dbi->dbi_rpmtag) {
 	case RPMDBI_PACKAGES:
-	    rc = sqlite3_bind_int(scp->pStmt, pos, *(int *)key->data);
-	    /*@innerbreak@*/ break;
+	{   unsigned int hnum;
+assert(key->size == sizeof(int_32));
+	    memcpy(&hnum, key->data, sizeof(hnum));
+	    rc = sqlite3_bind_int(scp->pStmt, pos, hnum);
+	}   /*@innerbreak@*/ break;
 	default:
 	    switch (tagType(dbi->dbi_rpmtag)) {
 	    case RPM_NULL_TYPE:   
@@ -372,12 +376,25 @@ static int sql_bind_key(dbiIndex dbi, SCP_t scp, int pos, DBT * key)
 		/*@innerbreak@*/ break;
 	    case RPM_CHAR_TYPE:
 	    case RPM_INT8_TYPE:
-	    case RPM_INT16_TYPE:   
+	    {	unsigned char i;
+assert(key->size == sizeof(unsigned char));
+		memcpy(&i, key->data, sizeof(i));
+	        rc = sqlite3_bind_int(scp->pStmt, pos, i);
+	    }   /*@innerbreak@*/ break;
+	    case RPM_INT16_TYPE:
+	    {	unsigned short i;
+assert(key->size == sizeof(int_16));
+		memcpy(&i, key->data, sizeof(i));
+	        rc = sqlite3_bind_int(scp->pStmt, pos, i);
+	    }   /*@innerbreak@*/ break;
             case RPM_INT32_TYPE:
 /*          case RPM_INT64_TYPE: */   
 	    default:
-	        rc = sqlite3_bind_int(scp->pStmt, pos, *(int *)key->data);
-	        /*@innerbreak@*/ break;
+	    {	unsigned int i;
+assert(key->size == sizeof(int_32));
+		memcpy(&i, key->data, sizeof(i));
+	        rc = sqlite3_bind_int(scp->pStmt, pos, i);
+	    }   /*@innerbreak@*/ break;
             case RPM_STRING_TYPE:
             case RPM_STRING_ARRAY_TYPE:
             case RPM_I18NSTRING_TYPE:
@@ -394,7 +411,8 @@ static int sql_bind_data(dbiIndex dbi, SCP_t scp, int pos, DBT * data)
 {
     int rc;
 
-    rc = sqlite3_bind_blob(scp->pStmt, 2, data->data, data->size, SQLITE_STATIC);
+assert(data->data != NULL);
+    rc = sqlite3_bind_blob(scp->pStmt, pos, data->data, data->size, SQLITE_STATIC);
 
     return rc;
 }
@@ -919,19 +937,15 @@ static int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 
 dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
-if (noisy)
-fprintf(stderr, "\tcget(%s) scp %p\n", dbi->dbi_subfile, scp);
-assert(scp != NULL);
-
     /*
      * First determine if we have a key, or if we're going to
      * scan the whole DB
      */
-    if (rc == 0 && key->size == 0)
+    if (key->size == 0)
 	scp->all++;
 
     /* New retrieval */
-    if (rc == 0 &&  ( ( flags == DB_SET ) || ( scp->av == NULL ))) {
+    if (flags == DB_SET  || scp->av == NULL) {
 if (_debug)
 fprintf(stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
 		dbi->dbi_subfile, scp, rc, flags, scp->av);
@@ -940,41 +954,35 @@ fprintf(stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
 
 	switch (key->size) {
 	case 0:
-if (_debug)
-fprintf(stderr, "\tcget(%s) size 0  key 0x%x[%d] flags %d\n",
-		dbi->dbi_subfile,
-		key->data == NULL ? 0 : *(unsigned int *)key->data, key->size,
-		flags);
-
-	    /* Key's MUST be in order for the PACKAGES db! */
-	    if (dbi->dbi_rpmtag == RPMDBI_PACKAGES)
-	       scp->cmd = sqlite3_mprintf("SELECT key,value FROM '%q' ORDER BY key;",
+assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
+	    switch (dbi->dbi_rpmtag) {
+	    case RPMDBI_PACKAGES:
+		scp->cmd = sqlite3_mprintf("SELECT key,value FROM '%q' ORDER BY key;",
 			dbi->dbi_subfile);
-	    else
-	       scp->cmd = sqlite3_mprintf("SELECT key,value FROM '%q';",
+		rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
+		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
+
+		rc = sql_step(scp);
+		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential sql_step rc %d\n", dbi->dbi_subfile, rc);
+		/*@innerbreak@*/ break;
+	    default:
+		scp->cmd = sqlite3_mprintf("SELECT key,value FROM '%q';",
 			dbi->dbi_subfile);
+		rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
+		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
-	    rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
-	    if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
-
-	    rc = sql_step(scp);
-	    if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential sql_step rc %d\n", dbi->dbi_subfile, rc);
+		rc = sql_step(scp);
+		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential sql_step rc %d\n", dbi->dbi_subfile, rc);
+		/*@innerbreak@*/ break;
+	    }
 	    break;
 	default:
-
-    /* XXX FIXME: ptr alignment is fubar here. */
-if (_debug)
-fprintf(stderr, "\tcget(%s) default key 0x%x[%d], flags %d\n", dbi->dbi_subfile,
-		key->data == NULL ? 0 : *(unsigned int *)key->data, key->size, flags);
-
 	    switch (dbi->dbi_rpmtag) {
 	    default:
 		scp->cmd = sqlite3_mprintf("SELECT key,value FROM '%q' WHERE key=?;",
 			dbi->dbi_subfile);
-assert(scp->cmd != NULL);
 		rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
 		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
-assert(key->data != NULL);
 		rc = sql_bind_key(dbi, scp, 1, key);
 		if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
@@ -985,9 +993,6 @@ assert(key->data != NULL);
 	    }
 	    break;
 	}
-if (noisy)
-fprintf(stderr, "\tcget(%s) got %d rows, %d columns\n",
-	dbi->dbi_subfile, scp->nr, scp->nc);
     }
 
     if (rc == 0 && scp->av == NULL)
