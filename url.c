@@ -17,7 +17,7 @@ static int urlFtpSplit(char * url, char ** user, char ** pw, char ** host,
 		char ** path);
 
 static char * getFtpPassword(char * machine, char * account, int mustAsk) {
-    static struct pwcacheEntry * pwCache = NULL;
+    static /*@only@*/ struct pwcacheEntry * pwCache = NULL;
     static int pwCount = 0;
     int i;
     char * prompt;

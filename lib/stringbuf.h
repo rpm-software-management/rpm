@@ -3,8 +3,8 @@
 
 typedef /*@abstract@*/ struct StringBufRec *StringBuf;
 
-StringBuf newStringBuf(void);
-void freeStringBuf(StringBuf sb);
+/*@only@*/ StringBuf newStringBuf(void);
+void freeStringBuf(/*@only@*/ StringBuf sb);
 void truncStringBuf(StringBuf sb);
 char *getStringBuf(StringBuf sb);
 void stripTrailingBlanksStringBuf(StringBuf sb);

@@ -74,8 +74,8 @@ char *getUnameS(char *uname);
 char *getGname(gid_t gid);
 char *getGnameS(char *gname);
 
-char *buildHost(void);
-time_t *getBuildTime(void);
+char *const buildHost(void);
+time_t *const getBuildTime(void);
 
 /* from build/read.h */
 
@@ -93,7 +93,7 @@ int isPart(char *line);
 
 /* from build/misc.h */
 
-int parseNum(char *line, int *res);
+int parseNum(char *line, /*@out@*/int *res);
 char *cleanFileName(char *name);
 
 /* from build/parse.h */
@@ -121,10 +121,10 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test);
 
 /* from build/package.h */
 
-int lookupPackage(Spec spec, char *name, int flag, Package *pkg);
-Package newPackage(Spec spec);
+int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg);
+/*@only@*/ Package newPackage(Spec spec);
 void freePackages(Spec spec);
-void freePackage(Package p);
+void freePackage(/*@only@*/ Package p);
 
 /* from build/reqprov.h */
 

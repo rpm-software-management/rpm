@@ -254,7 +254,7 @@ static int checkSize(FD_t fd, int size, int sigsize)
     int headerArchiveSize;
     struct stat statbuf;
 
-    fdFstat(fd, &statbuf);
+    fstat(fdFileno(fd), &statbuf);
 
     if (S_ISREG(statbuf.st_mode)) {
 	headerArchiveSize = statbuf.st_size - sizeof(struct rpmlead) - sigsize;

@@ -36,7 +36,7 @@ static void argerror(char * desc);
 
 static void argerror(char * desc) {
     fprintf(stderr, _("rpm: %s\n"), desc);
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 void printHelp(void);
@@ -176,10 +176,10 @@ int main(int argc, char ** argv) {
 
     /* reading this early makes it easy to override */
     if (rpmReadConfigFiles(rcfile, arch, os, building))  
-	exit(1);
+	exit(EXIT_FAILURE);
     if (showrc) {
 	rpmShowRC(stdout);
-	exit(0);
+	exit(EXIT_SUCCESS);
     }
 
     while (1) {
@@ -346,7 +346,7 @@ int main(int argc, char ** argv) {
     if (help) printHelp();
 
     if (badOption)
-	exit(1);
+	exit(EXIT_FAILURE);
 
     if (queryScripts) {
 	queryFor |= QUERY_FOR_SCRIPTS;

@@ -66,7 +66,7 @@ int convertDB(void) {
     for (label = packageLabels; label; label = label->next) {
 	if (oldrpmdbGetPackageInfo(&olddb, *label, &package)) {
 	    fprintf(stderr, _("oldrpmdbGetPackageInfo failed &olddb = %p olddb.packages = %p\n"), &olddb, olddb.packages);
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	}
 
 	group = oldrpmdbGetPackageGroup(&olddb, *label);
@@ -198,7 +198,7 @@ int convertDB(void) {
 int main(int argc, char ** argv) {
     if (argc != 1) {
 	fprintf(stderr, _("rpmconvert: no arguments expected"));
-	exit(1);
+	exit(EXIT_FAILURE);
     }
 
     rpmReadConfigFiles(NULL, NULL, NULL, 0, NULL);
@@ -206,5 +206,5 @@ int main(int argc, char ** argv) {
     printf(_("rpmconvert 1.0 - converting database in /var/lib/rpm\n"));
     convertDB();
 
-    exit(0);
+    exit(EXIT_SUCCESS);
 }

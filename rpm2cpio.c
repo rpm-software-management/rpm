@@ -30,17 +30,17 @@ int main(int argc, char **argv)
 
     if (fdFileno(fdi) < 0) {
 	perror("cannot open package");
-	exit(1);
+	exit(EXIT_FAILURE);
     }
     fdo = fdDup(STDOUT_FILENO);
 
     rc = rpmReadPackageHeader(fdi, &hd, &isSource, NULL, NULL);
     if (rc == 1) {
 	fprintf(stderr, _("argument is not an RPM package\n"));
-	exit(1);
+	exit(EXIT_FAILURE);
     } else if (rc) {
 	fprintf(stderr, _("error reading header from package\n"));
-	exit(1);
+	exit(EXIT_FAILURE);
     }
 
     stream = gzdopen(fdFileno(fdi), "r");

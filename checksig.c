@@ -24,23 +24,23 @@ int doReSign(int add, char *passPhrase, char **argv)
 	fprintf(stdout, "%s:\n", rpm);
 	if (fdFileno(fd = fdOpen(rpm, O_RDONLY, 0644)) < 0) {
 	    fprintf(stderr, _("%s: Open failed\n"), rpm);
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	}
 	if (readLead(fd, &lead)) {
 	    fprintf(stderr, _("%s: readLead failed\n"), rpm);
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	}
 	if (lead.major == 1) {
 	    fprintf(stderr, _("%s: Can't sign v1.0 RPM\n"), rpm);
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	}
 	if (lead.major == 2) {
 	    fprintf(stderr, _("%s: Can't re-sign v2.0 RPM\n"), rpm);
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	}
 	if (rpmReadSignature(fd, &sig, lead.signature_type)) {
 	    fprintf(stderr, _("%s: rpmReadSignature failed\n"), rpm);
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	}
 	if (add != ADD_SIGNATURE) {
 	    rpmFreeSignature(sig);
@@ -48,7 +48,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 
 	/* Write the rest to a temp file */
 	if (makeTempFile(NULL, &sigtarget, &ofd))
-	    exit(1);
+	    exit(EXIT_FAILURE);
 
 	while ((count = fdRead(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
@@ -56,14 +56,14 @@ int doReSign(int add, char *passPhrase, char **argv)
 		fdClose(ofd);
 		unlink(sigtarget);
 		free(sigtarget);
-		exit(1);
+		exit(EXIT_FAILURE);
 	    }
 	    if (fdWrite(ofd, buffer, count) < 0) {
 		perror(_("Couldn't write header/archive to temp file"));
 		fdClose(ofd);
 		unlink(sigtarget);
 		free(sigtarget);
-		exit(1);
+		exit(EXIT_FAILURE);
 	    }
 	}
 	fdClose(fd);
@@ -79,7 +79,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 	    unlink(sigtarget);
 	    unlink(tmprpm);
 	    free(sigtarget);
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	}
 
 	/* Generate the signature */
@@ -99,7 +99,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 	    unlink(tmprpm);
 	    free(sigtarget);
 	    rpmFreeSignature(sig);
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	}
 	rpmFreeSignature(sig);
 
@@ -113,7 +113,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 		unlink(sigtarget);
 		unlink(tmprpm);
 		free(sigtarget);
-		exit(1);
+		exit(EXIT_FAILURE);
 	    }
 	    if (fdWrite(ofd, buffer, count) < 0) {
 		perror(_("Couldn't write package"));
@@ -122,7 +122,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 		unlink(sigtarget);
 		unlink(tmprpm);
 		free(sigtarget);
-		exit(1);
+		exit(EXIT_FAILURE);
 	    }
 	}
 	fdClose(fd);
@@ -181,14 +181,14 @@ int doCheckSig(int flags, char **argv)
 	}
 	/* Write the rest to a temp file */
 	if (makeTempFile(NULL, &sigtarget, &ofd))
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	while ((count = fdRead(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
 		perror(_("Couldn't read the header/archive"));
 		fdClose(ofd);
 		unlink(sigtarget);
 		free(sigtarget);
-		exit(1);
+		exit(EXIT_FAILURE);
 	    }
 	    if (fdWrite(ofd, buffer, count) < 0) {
 		fprintf(stderr, _("Unable to write %s"), sigtarget);
@@ -196,7 +196,7 @@ int doCheckSig(int flags, char **argv)
 		fdClose(ofd);
 		unlink(sigtarget);
 		free(sigtarget);
-		exit(1);
+		exit(EXIT_FAILURE);
 	    }
 	}
 	fdClose(fd);

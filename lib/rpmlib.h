@@ -268,15 +268,15 @@ void rpmSetVar(int var, char *val);
 int rpmReadConfigFiles(char * file, char * arch, char * os, int building,
     char * buildplatform);
 int rpmReadRC(char * file);
-void rpmGetArchInfo(char ** name, int * num);
-void rpmGetOsInfo(char ** name, int * num);
+void rpmGetArchInfo(/*@out@*/char ** name, /*@out@*/int * num);
+void rpmGetOsInfo(/*@out@*/char ** name, /*@out@*/int * num);
 int rpmMachineScore(int type, char * name);
 int rpmShowRC(FILE *f);
 void rpmSetTables(int archTable, int osTable);  /* only used by build code */
 /* if either are NULL, they are set to the default value (munged uname())
    pushed through a translation table (if appropriate) */
 void rpmSetMachine(char * arch, char * os);
-void rpmGetMachine(char **arch, char **os);
+void rpmGetMachine(/*@out@*/char **arch, /*@out@*/char **os);
 
 /** **/
 
@@ -341,7 +341,7 @@ struct rpmDependencyConflict {
     enum { RPMDEP_SENSE_REQUIRES, RPMDEP_SENSE_CONFLICTS } sense;
 } ;
 
-rpmDependencies rpmdepDependencies(rpmdb db); 	       /* db may be NULL */
+/*@only@*/ rpmDependencies rpmdepDependencies(rpmdb db); /* db may be NULL */
 void rpmdepAddPackage(rpmDependencies rpmdep, Header h, void * key);
 void rpmdepAvailablePackage(rpmDependencies rpmdep, Header h, void * key);
 void rpmdepUpgradePackage(rpmDependencies rpmdep, Header h, void * key);
@@ -355,7 +355,7 @@ int rpmdepCheck(rpmDependencies rpmdep,
    satisfied a "best-try" ordering is returned. */
 int rpmdepOrder(rpmDependencies order, void *** keysListPtr);
 
-void rpmdepDone(rpmDependencies rpmdep);
+void rpmdepDone(/*@only@*/ rpmDependencies rpmdep);
 void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
 			 numConflicts);
 

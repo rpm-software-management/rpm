@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-11-19 19:30-0500\n"
+"POT-Creation-Date: 1998-11-20 14:56-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -163,12 +163,12 @@ msgstr ""
 msgid "FTP Unknown or unexpected error"
 msgstr ""
 
-#: ../install.c:67 ../install.c:185
+#: ../install.c:67 ../install.c:188
 #, c-format
 msgid "error: cannot open file %s\n"
 msgstr ""
 
-#: ../install.c:84 ../install.c:409
+#: ../install.c:84 ../install.c:412
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -177,120 +177,120 @@ msgstr ""
 msgid "stopping source install as we're just testing\n"
 msgstr ""
 
-#: ../install.c:102 ../install.c:198
+#: ../install.c:102 ../install.c:201
 #, c-format
 msgid "error: %s does not appear to be a RPM package\n"
 msgstr ""
 
-#: ../install.c:107 ../install.c:203 ../install.c:413
+#: ../install.c:107 ../install.c:206 ../install.c:416
 #, c-format
 msgid "error: %s cannot be installed\n"
 msgstr ""
 
-#: ../install.c:141
+#: ../install.c:144
 msgid "counting packages to install\n"
 msgstr ""
 
-#: ../install.c:145
+#: ../install.c:148
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: ../install.c:151
+#: ../install.c:154
 msgid "looking for packages to download\n"
 msgstr ""
 
-#: ../install.c:156
+#: ../install.c:159
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
-#: ../install.c:163
+#: ../install.c:166
 #, c-format
 msgid "getting %s as %s\n"
 msgstr ""
 
-#: ../install.c:167
+#: ../install.c:170
 #, c-format
 msgid "error: skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: ../install.c:179
+#: ../install.c:182
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: ../install.c:181
+#: ../install.c:184
 msgid "finding source and binary packages\n"
 msgstr ""
 
-#: ../install.c:217
+#: ../install.c:220
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: ../install.c:221
+#: ../install.c:224
 #, c-format
 msgid "opening database mode: 0%o\n"
 msgstr ""
 
-#: ../install.c:223 ../install.c:312
+#: ../install.c:226 ../install.c:315
 #, c-format
 msgid "error: cannot open %s%s/packages.rpm\n"
 msgstr ""
 
-#: ../install.c:244
+#: ../install.c:247
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: ../install.c:265
+#: ../install.c:268
 msgid "installing binary packages\n"
 msgstr ""
 
-#: ../install.c:299
+#: ../install.c:302
 msgid "counting packages to uninstall\n"
 msgstr ""
 
-#: ../install.c:322 ../lib/query.c:644 ../verify.c:254
+#: ../install.c:325 ../lib/query.c:644 ../verify.c:252
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: ../install.c:325
+#: ../install.c:328
 #, c-format
 msgid "error searching for package %s\n"
 msgstr ""
 
-#: ../install.c:333
+#: ../install.c:336
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: ../install.c:356
+#: ../install.c:359
 #, c-format
 msgid "found %d packages to uninstall\n"
 msgstr ""
 
-#: ../install.c:371
+#: ../install.c:374
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: ../install.c:382
+#: ../install.c:385
 #, c-format
 msgid "uninstalling record number %d\n"
 msgstr ""
 
-#: ../install.c:404
+#: ../install.c:407
 #, c-format
 msgid "error: cannot open %s\n"
 msgstr ""
 
-#: ../install.c:452
+#: ../install.c:455
 #, c-format
 msgid " is needed by %s-%s-%s\n"
 msgstr ""
 
-#: ../install.c:455
+#: ../install.c:458
 #, c-format
 msgid " conflicts with %s-%s-%s\n"
 msgstr ""
@@ -1305,50 +1305,50 @@ msgstr ""
 msgid "failed to create %s\n"
 msgstr ""
 
-#: ../verify.c:33
+#: ../verify.c:31
 #, c-format
 msgid "missing    %s\n"
 msgstr ""
 
-#: ../verify.c:89
+#: ../verify.c:87
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr ""
 
-#: ../verify.c:134
+#: ../verify.c:133
 #, c-format
 msgid "verifying record number %u\n"
 msgstr ""
 
-#: ../lib/query.c:409 ../verify.c:139
+#: ../lib/query.c:409 ../verify.c:138
 msgid "error: could not read database record\n"
 msgstr ""
 
-#: ../lib/query.c:533 ../verify.c:178
+#: ../lib/query.c:533 ../verify.c:177
 msgid "could not read database record!\n"
 msgstr ""
 
-#: ../lib/query.c:452 ../lib/query.c:461 ../verify.c:197 ../verify.c:206
+#: ../lib/query.c:452 ../lib/query.c:461 ../verify.c:196 ../verify.c:205
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: ../verify.c:220
+#: ../verify.c:218
 #, c-format
 msgid "%s is not an RPM\n"
 msgstr ""
 
-#: ../lib/query.c:544 ../verify.c:229
+#: ../lib/query.c:544 ../verify.c:227
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: ../lib/query.c:613 ../verify.c:243
+#: ../lib/query.c:613 ../verify.c:241
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: ../lib/query.c:647 ../verify.c:256
+#: ../lib/query.c:647 ../verify.c:254
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
@@ -1403,21 +1403,21 @@ msgstr ""
 msgid "no copyright!\n"
 msgstr ""
 
-#: ../build/build.c:91 ../build/pack.c:262
+#: ../build/build.c:89 ../build/pack.c:262
 msgid "Unable to open temp file"
 msgstr ""
 
-#: ../build/build.c:129
+#: ../build/build.c:128
 #, c-format
 msgid "Executing: %s\n"
 msgstr ""
 
-#: ../build/build.c:133
+#: ../build/build.c:132
 #, c-format
 msgid "Exec of %s failed (%s)"
 msgstr ""
 
-#: ../build/build.c:141
+#: ../build/build.c:140
 #, c-format
 msgid "Bad exit status from %s (%s)"
 msgstr ""
@@ -1636,15 +1636,15 @@ msgstr ""
 msgid "Processing files: %s\n"
 msgstr ""
 
-#: ../build/names.c:34 ../build/names.c:68
+#: ../build/names.c:32 ../build/names.c:64
 msgid "RPMERR_INTERNAL: Hit limit in getUname()\n"
 msgstr ""
 
-#: ../build/names.c:103 ../build/names.c:137
+#: ../build/names.c:97 ../build/names.c:129
 msgid "RPMERR_INTERNAL: Hit limit in getGname()\n"
 msgstr ""
 
-#: ../build/names.c:175
+#: ../build/names.c:167
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
@@ -1842,73 +1842,73 @@ msgstr ""
 msgid "Duplicate %s entries in package: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:271 ../build/parsePreamble.c:278
+#: ../build/parsePreamble.c:271 ../build/parsePreamble.c:279
 #, c-format
 msgid "Unable to read icon: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:288
+#: ../build/parsePreamble.c:289
 #, c-format
 msgid "Unknown icon type: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:319
+#: ../build/parsePreamble.c:320
 #, c-format
 msgid "line %d: Malformed tag: %s"
 msgstr ""
 
 #. Empty field
-#: ../build/parsePreamble.c:327
+#: ../build/parsePreamble.c:328
 #, c-format
 msgid "line %d: Empty tag: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:378
+#: ../build/parsePreamble.c:379
 #, c-format
 msgid "line %d: BuildRoot can not be \"/\": %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:391
+#: ../build/parsePreamble.c:392
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:403
+#: ../build/parsePreamble.c:404
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:414
+#: ../build/parsePreamble.c:415
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:478
+#: ../build/parsePreamble.c:479
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:488
+#: ../build/parsePreamble.c:489
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: ../build/parsePreamble.c:632
+#: ../build/parsePreamble.c:633
 #, c-format
 msgid "Bad package specification: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:638
+#: ../build/parsePreamble.c:639
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:665
+#: ../build/parsePreamble.c:666
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:690
+#: ../build/parsePreamble.c:691
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -2063,17 +2063,17 @@ msgstr ""
 msgid "archive = %s, fs = %s\n"
 msgstr ""
 
-#: ../build/spec.c:217
+#: ../build/spec.c:228
 #, c-format
 msgid "line %d: Bad number: %s"
 msgstr ""
 
-#: ../build/spec.c:223
+#: ../build/spec.c:234
 #, c-format
 msgid "line %d: Bad no%s number: %d"
 msgstr ""
 
-#: ../build/spec.c:281
+#: ../build/spec.c:291
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
@@ -2584,7 +2584,7 @@ msgstr ""
 msgid "internal error (rpm bug?): "
 msgstr ""
 
-#: ../lib/misc.c:337 ../lib/misc.c:342 ../lib/misc.c:348
+#: ../lib/misc.c:338 ../lib/misc.c:343 ../lib/misc.c:349
 #, c-format
 msgid "error creating temporary file %s"
 msgstr ""

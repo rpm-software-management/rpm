@@ -23,8 +23,8 @@ librpm_a_SOURCES = \
 
 include ../Makefile.inc
 
-rpmrc.o: rpmrc.c
-	$(COMPILE) -DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DMACROFILES=\"$(MACROFILES)\" -o $@ -c $<
+#rpmrc.o: rpmrc.c
+#	$(COMPILE) -DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DMACROFILES=\"$(MACROFILES)\" -o $@ -c $<
 
 tagtable.c: rpmlib.h 
 	@echo '#include "system.h"' > tagtable.c
@@ -38,3 +38,8 @@ tagtable.c: rpmlib.h
 	@echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(struct headerTagTableEntry) - 1;' >> tagtable.c
 
 BUILT_SOURCES = tagtable.c
+
+.PHONY:	lclint
+.PHONY:	lclint
+lclint:
+	lclint ${DEFS} ${INCLUDES} ${librpm_a_SOURCES}

@@ -215,7 +215,7 @@ char *alloca ();
 # define setlocale(Category, Locale) /* empty */
 #endif
 
-#if ENABLE_NLS
+#if ENABLE_NLS && !defined(__LCLINT__)
 # include <libintl.h>
 # define _(Text) gettext (Text)
 #else

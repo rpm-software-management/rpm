@@ -156,7 +156,7 @@ static void argerror(char * desc);
 
 static void argerror(char * desc) {
     fprintf(stderr, _("rpm: %s\n"), desc);
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 static void printHelp(void);
@@ -585,12 +585,12 @@ int main(int argc, char ** argv) {
 	case GETOPT_BUILDARCH:
 	    fprintf(stderr, "--buildarch has been obsoleted.  Use the --buildplatform option\n"); 
 	    fprintf(stderr, "with a platform specific rpmrc file with a Buildarch: tag set\n");
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	    break;
 	case GETOPT_BUILDOS:
 	    fprintf(stderr, "--buildos has been obsoleted.  Use the --buildplatform option\n"); 
 	    fprintf(stderr, "with a platform specific rpmrc file with a Buildos: tag set\n");
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	    break;
         case 'b':
         case 't':
@@ -607,10 +607,10 @@ int main(int argc, char ** argv) {
 
     /* reading this early makes it easy to override */
     if (rpmReadConfigFiles(rcfile, arch, os, building, NULL))  
-	exit(1);
+	exit(EXIT_FAILURE);
     if (showrc) {
 	rpmShowRC(stdout);
-	exit(0);
+	exit(EXIT_SUCCESS);
     }
 
     rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
@@ -649,7 +649,7 @@ int main(int argc, char ** argv) {
 	    rpmMessage(RPMMESS_ERROR, _("-u and --uninstall are deprecated and no"
 		    " longer work.\n"));
 	    rpmMessage(RPMMESS_ERROR, _("Use -e or --erase instead.\n"));
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	
 	  case 'e':
 	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
@@ -860,7 +860,7 @@ int main(int argc, char ** argv) {
 
 	  default:
 	    fprintf(stderr, _("Internal error in argument processing :-(\n"));
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	}
     }
 
@@ -874,7 +874,7 @@ int main(int argc, char ** argv) {
 	fprintf(stderr, "%s: %s\n", 
 		poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		poptStrerror(arg));
-	exit(1);
+	exit(EXIT_FAILURE);
     }
 
     if (rmsource && bigMode == MODE_UNKNOWN)
@@ -1071,7 +1071,7 @@ int main(int argc, char ** argv) {
 		  case RPMSIGTAG_PGP:
 		    if (!(passPhrase = rpmGetPassPhrase("Enter pass phrase: "))) {
 			fprintf(stderr, _("Pass phrase check failed\n"));
-			exit(1);
+			exit(EXIT_FAILURE);
 		    } else {
 			fprintf(stderr, _("Pass phrase is good.\n"));
 			passPhrase = strdup(passPhrase);
@@ -1081,7 +1081,7 @@ int main(int argc, char ** argv) {
 		    break;
 		  default:
 		    fprintf(stderr, "Invalid signature spec in rc file\n");
-		    exit(1);
+		    exit(EXIT_FAILURE);
 		}
 	    }
 	} else {
@@ -1158,11 +1158,11 @@ int main(int argc, char ** argv) {
 
 	while ((pkg = poptGetArg(optCon))) {
 	    if (doSourceInstall("/", pkg, &specFile, &cookie))
-		exit(1);
+		exit(EXIT_FAILURE);
 
 	    if (build(specFile, buildAmount, passPhrase, buildRootOverride,
 			0, test, cookie, rcfile, arch, os, buildplatforms, force)) {
-		exit(1);
+		exit(EXIT_FAILURE);
 	    }
 	    free(cookie);
 	    free(specFile);
@@ -1218,7 +1218,7 @@ int main(int argc, char ** argv) {
 	    if (build(pkg, buildAmount, passPhrase, buildRootOverride,
 			bigMode == MODE_TARBUILD, test, NULL,
                         rcfile, arch, os, buildplatforms, force)) {
-		exit(1);
+		exit(EXIT_FAILURE);
 	    }
 	break;
 

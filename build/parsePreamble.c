@@ -63,7 +63,7 @@ static void addOrAppendListEntry(Header h, int_32 tag, char *line)
 /* Parse a simple part line that only take -n <pkg> or <pkg> */
 /* <pkg> is return in name as a pointer into a static buffer */
 
-static int parseSimplePart(char *line, char **name, int *flag)
+static int parseSimplePart(char *line, /*@out@*/char **name, /*@out@*/int *flag)
 {
     char *tok;
     char linebuf[BUFSIZ];
@@ -272,6 +272,7 @@ static int readIcon(Header h, char *file)
 	return RPMERR_BADSPEC;
     }
     icon = malloc(statbuf.st_size);
+    *icon = '\0';
     fd = fdOpen(buf, O_RDONLY, 0);
     if (fdRead(fd, icon, statbuf.st_size) != statbuf.st_size) {
 	fdClose(fd);
@@ -558,7 +559,7 @@ static void initPreambleList(void)
     }
 }
 
-static int findPreambleTag(Spec spec, int *tag, char **macro, char *lang)
+static int findPreambleTag(Spec spec, /*@out@*/int *tag, /*@out@*/char **macro, char *lang)
 {
     char *s;
     struct PreambleRec *p = preambleList;

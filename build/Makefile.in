@@ -377,8 +377,12 @@ mostlyclean distclean maintainer-clean
 
 include ../Makefile.inc
 
-files.o: files.c
-	$(COMPILE) -DFINDPROVIDES=\"$(FINDPROVIDES)\" -DFINDREQUIRES=\"$(FINDREQUIRES)\" -o $@ -c $<
+#files.o: files.c
+#	$(COMPILE) -DFINDPROVIDES=\"$(FINDPROVIDES)\" -DFINDREQUIRES=\"$(FINDREQUIRES)\" -o $@ -c $<
+
+.PHONY:	lclint
+lclint:
+	lclint ${DEFS} ${INCLUDES} ${librpmbuild_a_SOURCES}
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

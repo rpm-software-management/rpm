@@ -606,7 +606,7 @@ static int doReadRC(FD_t fd, char * filename) {
     int rc;
 
   { struct stat sb;
-    fdFstat(fd, &sb);
+    fstat(fdFileno(fd), &sb);
     next = alloca(sb.st_size + 2);
     if (fdRead(fd, next, sb.st_size) != sb.st_size) {
 	rpmError(RPMERR_RPMRC, _("Failed to read %s: %s."), filename,

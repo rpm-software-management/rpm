@@ -128,6 +128,9 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
     Header * binaryHeaders;
     int isSource;
     int tmpnum = 0;
+    const char *tmppath = rpmGetVar(RPMVAR_TMPPATH);
+    int tmppathlen = strlen(tmppath);
+    int rootdirlen = strlen(rootdir);
     rpmDependencies rpmdep;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
@@ -155,10 +158,10 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 	    if (rpmIsVerbose()) {
 		fprintf(stdout, _("Retrieving %s\n"), *filename);
 	    }
-	    packages[i] = alloca(strlen(*filename) + 30 + strlen(rootdir) +
-			         strlen(rpmGetVar(RPMVAR_TMPPATH)));
+	    packages[i] =
+		alloca(strlen(*filename) + 30 + rootdirlen + tmppathlen);
 	    sprintf(packages[i], "%s%s/rpm-ftp-%d-%d.tmp", rootdir, 
-		    rpmGetVar(RPMVAR_TMPPATH), tmpnum++, (int) getpid());
+		    tmppath, tmpnum++, (int) getpid());
 	    rpmMessage(RPMMESS_DEBUG, 
 			_("getting %s as %s\n"), *filename, packages[i]);
 	    myrc = urlGetFile(*filename, packages[i]);
@@ -222,7 +225,7 @@ int doInstall(char * rootdir, char ** argv, int installFlags,
 	if (rpmdbOpen(rootdir, &db, mode, 0644)) {
 	    fprintf(stderr, _("error: cannot open %s%s/packages.rpm\n"), 
 			rootdir, rpmGetVar(RPMVAR_DBPATH));
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	}
 
 	rpmdep = rpmdepDependencies(db);
@@ -311,7 +314,7 @@ int doUninstall(char * rootdir, char ** argv, int uninstallFlags,
     if (rpmdbOpen(rootdir, &db, mode, 0644)) {
 	fprintf(stderr, _("error: cannot open %s%s/packages.rpm\n"), 
 		rootdir, rpmGetVar(RPMVAR_DBPATH));
-	exit(1);
+	exit(EXIT_FAILURE);
     }
 
     j = 0;
@@ -411,8 +414,8 @@ int doSourceInstall(char * rootdir, char * arg, char ** specFile,
     rc = rpmInstallSourcePackage(rootdir, fd, specFile, NULL, NULL, cookie);
     if (rc == 1) {
 	fprintf(stderr, _("error: %s cannot be installed\n"), arg);
-	if (specFile) free(*specFile);
-	if (cookie) free(*cookie);
+	if (specFile) FREE(*specFile);
+	if (cookie) FREE(*cookie);
     }
 
     fdClose(fd);

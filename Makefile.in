@@ -691,6 +691,10 @@ rpm.o:	rpm.c
 
 include ./Makefile.inc
 
+.PHONY:	lclint
+lclint:
+	lclint ${DEFS} ${INCLUDES} ${rpm_SOURCES}
+
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)/var/lib/rpm
 	@rm -f $(DESTDIR)/$(libdir)/rpmrc

@@ -26,6 +26,6 @@ int gnameToGid(char * thisGname, gid_t * gid);
 char * uidToUname(uid_t uid);
 char * gidToGname(gid_t gid);
 
-int makeTempFile(char * prefix, char ** fnptr, FD_t * fdptr);
+int makeTempFile(char * prefix, /*@out@*/char ** fnptr, /*@out@*/FD_t * fdptr);
 
 #endif	/* H_MISC */

@@ -16,10 +16,10 @@ struct ReqProvTrigger {
 
 struct TriggerFileEntry {
     int index;
-    char *fileName;
-    char *script;
-    char *prog;
-    struct TriggerFileEntry *next;
+    /*@only@*/ char *fileName;
+    /*@only@*/ char *script;
+    /*@only@*/ char *prog;
+    /*@owned@*/ struct TriggerFileEntry *next;
 };
 
 #define RPMBUILD_ISSOURCE     1
@@ -30,39 +30,39 @@ struct TriggerFileEntry {
 #define RPMBUILD_DEFAULT_LANG "C"
 
 struct Source {
-    char *fullSource;
-    char *source;     /* Pointer into fullSource */
+    /*@owned@*/ char *fullSource;
+    /*@dependent@*/ char *source;     /* Pointer into fullSource */
     int flags;
     int num;
-    struct Source *next;
+    /*@owned@*/ struct Source *next;
 };
 
 struct ReadLevelEntry {
     int reading;
-    struct ReadLevelEntry *next;
+    /*@dependent@*/ struct ReadLevelEntry *next;
 };
 
 struct OpenFileInfo {
-    char *fileName;
-    FILE *file;
+    /*@only@*/ char *fileName;
+    /*@dependent@*/ FILE *file;
     int lineNum;
     char readBuf[BUFSIZ];
-    char *readPtr;
-    struct OpenFileInfo *next;
+    /*@dependent@*/ char *readPtr;
+    /*@owned@*/ struct OpenFileInfo *next;
 };
 
 struct SpecStruct {
-    char *specFile;
-    char *sourceRpmName;
+    /*@only@*/ char *specFile;
+    /*@only@*/ char *sourceRpmName;
 
-    struct OpenFileInfo *fileStack;
+    /*@owned@*/ struct OpenFileInfo *fileStack;
     char line[BUFSIZ];
     int lineNum;
 
-    struct ReadLevelEntry *readStack;
+    /*@only@*/ struct ReadLevelEntry *readStack;
 
     Header buildRestrictions;
-    struct SpecStruct **buildArchitectureSpecs;
+    /*@owned@*/ struct SpecStruct **buildArchitectureSpecs;
     char ** buildArchitectures;
     int buildArchitectureCount;
     int inBuildArchitectures;
@@ -71,41 +71,41 @@ struct SpecStruct {
     int anyarch;
 
     int gotBuildRoot;
-    char *buildRoot;
-    char *buildSubdir;
+    /*@only@*/ char *buildRoot;
+    /*@only@*/ char *buildSubdir;
 
     char *passPhrase;
     int timeCheck;
     char *cookie;
 
-    struct Source *sources;
+    /*@owned@*/ struct Source *sources;
     int numSources;
     int noSource;
 
     Header sourceHeader;
     int sourceCpioCount;
-    struct cpioFileMapping *sourceCpioList;
+    /*@owned@*/ struct cpioFileMapping *sourceCpioList;
 
-    struct MacroContext *macros;
+    /*@dependent@*/ struct MacroContext *macros;
 
     int autoReq;
     int autoProv;
 
-    StringBuf prep;
-    StringBuf build;
-    StringBuf install;
-    StringBuf clean;
+    /*@only@*/ StringBuf prep;
+    /*@only@*/ StringBuf build;
+    /*@only@*/ StringBuf install;
+    /*@only@*/ StringBuf clean;
 
-    struct PackageStruct *packages;
+    /*@owned@*/ struct PackageStruct *packages;
 };
 
 struct PackageStruct {
-    Header header;
+    /*@only@*/ Header header;
 
     int cpioCount;
-    struct cpioFileMapping *cpioList;
+    /*@only@*/ struct cpioFileMapping *cpioList;
 
-    struct Source *icon;
+    /*@owned@*/ struct Source *icon;
 
     int autoReqProv;
 
@@ -115,19 +115,19 @@ struct PackageStruct {
     char *postUnFile;
     char *verifyFile;
 
-    StringBuf specialDoc;
+    /*@only@*/ StringBuf specialDoc;
 
 #if 0
     struct ReqProvTrigger *triggers;
     char *triggerScripts;
 #endif
 
-    struct TriggerFileEntry *triggerFiles;
+    /*@only@*/ struct TriggerFileEntry *triggerFiles;
 
-    char *fileFile;
-    StringBuf fileList; /* If NULL, package will not be written */
+    /*@only@*/ char *fileFile;
+    /*@only@*/ StringBuf fileList; /* If NULL, package will not be written */
 
-    struct PackageStruct *next;
+    /*@keep@*/ struct PackageStruct *next;
 };
 
 typedef struct PackageStruct *Package;
@@ -136,8 +136,8 @@ typedef struct PackageStruct *Package;
 extern "C" {
 #endif
 
-Spec newSpec(void);
-void freeSpec(Spec spec);
+/*@only@*/ Spec newSpec(void);
+void freeSpec(/*@only@*/ Spec spec);
 
 struct OpenFileInfo * newOpenFileInfo(void);
 

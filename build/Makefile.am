@@ -17,5 +17,9 @@ librpmbuild_a_SOURCES = \
 
 include ../Makefile.inc
 
-files.o: files.c
-	$(COMPILE) -DFINDPROVIDES=\"$(FINDPROVIDES)\" -DFINDREQUIRES=\"$(FINDREQUIRES)\" -o $@ -c $<
+#files.o: files.c
+#	$(COMPILE) -DFINDPROVIDES=\"$(FINDPROVIDES)\" -DFINDREQUIRES=\"$(FINDREQUIRES)\" -o $@ -c $<
+
+.PHONY:	lclint
+lclint:
+	lclint ${DEFS} ${INCLUDES} ${librpmbuild_a_SOURCES}

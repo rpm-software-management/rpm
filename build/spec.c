@@ -7,21 +7,21 @@
 static void freeTriggerFiles(struct TriggerFileEntry *p);
 #endif
     
-static void freeTriggerFiles(struct TriggerFileEntry *p)
+static inline void freeTriggerFiles(/*@only@*/ struct TriggerFileEntry *p)
 {
-    struct TriggerFileEntry *o;
+    struct TriggerFileEntry *o, *q = p;
     
-    while (p) {
-	FREE(p->fileName);
-	FREE(p->script);
-	FREE(p->prog);
-	o = p;
-	p = p->next;
+    while (q != NULL) {
+	o = q;
+	q = q->next;
+	FREE(o->fileName);
+	FREE(o->script);
+	FREE(o->prog);
 	free(o);
     }
 }
 
-static void freeCpioList(struct cpioFileMapping *cpioList, int cpioCount)
+static inline void freeCpioList(/*@only@*/ struct cpioFileMapping *cpioList, int cpioCount)
 {
     struct cpioFileMapping *p = cpioList;
 
@@ -35,10 +35,23 @@ static void freeCpioList(struct cpioFileMapping *cpioList, int cpioCount)
     FREE(cpioList);
 }
 
-int lookupPackage(Spec spec, char *name, int flag, Package *pkg)
+static inline void freeSources(/*@only@*/ struct Source *s)
+{
+    struct Source *r, *t = s;
+
+    while (t != NULL) {
+	r = t;
+	t = t->next;
+	FREE(r->fullSource);
+	free(r);
+    }
+}
+
+int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 {
     char buf[BUFSIZ];
-    char *n, *fullName;
+    char *n;
+    const char *fullName;
     Package p;
     
     /* "main" package */
@@ -93,7 +106,6 @@ Package newPackage(Spec spec)
     
     p->fileFile = NULL;
     p->fileList = NULL;
-    p->next = NULL;
 
     p->cpioList = NULL;
     p->cpioCount = 0;
@@ -106,25 +118,23 @@ Package newPackage(Spec spec)
 
     p->specialDoc = NULL;
 
-    if (! spec->packages) {
+    if (spec->packages == NULL) {
 	spec->packages = p;
     } else {
 	/* Always add package to end of list */
-	pp = spec->packages;
-	while (pp->next) {
-	    pp = pp->next;
-	}
+	for (pp = spec->packages; pp->next != NULL; pp = pp->next)
+	    ;
 	pp->next = p;
     }
+    p->next = NULL;
 
     return p;
 }
 
-void freePackage(Package p)
+void freePackage(/*@only@*/ Package p)
 {
-    if (! p) {
+    if (p == NULL)
 	return;
-    }
     
     FREE(p->preInFile);
     FREE(p->postInFile);
@@ -139,6 +149,8 @@ void freePackage(Package p)
 
     freeStringBuf(p->specialDoc);
 
+    freeSources(p->icon);
+
     freeTriggerFiles(p->triggerFiles);
 
     free(p);
@@ -150,7 +162,8 @@ void freePackages(Spec spec)
 
     while (spec->packages) {
 	p = spec->packages;
-	spec->packages = p->next;
+	spec->packages = spec->packages->next;
+	p->next = NULL;
 	freePackage(p);
     }
 }
@@ -160,15 +173,14 @@ static char *getSourceAux(Spec spec, int num, int flag, int full);
 static struct Source *findSource(Spec spec, int num, int flag);
 #endif
 
-static struct Source *findSource(Spec spec, int num, int flag)
+static inline /*@owned@*/ struct Source *findSource(Spec spec, int num, int flag)
 {
-    struct Source *p = spec->sources;
+    struct Source *p;
 
-    while (p) {
+    for (p = spec->sources; p != NULL; p = p->next) {
 	if ((num == p->num) && (p->flags & flag)) {
 	    return p;
 	}
-	p = p->next;
     }
 
     return NULL;
@@ -200,7 +212,6 @@ int parseNoSource(Spec spec, char *field, int tag)
     char buf[BUFSIZ];
     char *s, *name;
     int num, flag;
-    struct Source *p;
 
     if (tag == RPMTAG_NOSOURCE) {
 	flag = RPMBUILD_ISSOURCE;
@@ -211,8 +222,8 @@ int parseNoSource(Spec spec, char *field, int tag)
     }
     
     strcpy(buf, field);
-    field = buf;
-    while ((s = strtok(field, ", \t"))) {
+    for (field = buf; (s = strtok(field, ", \t")); field = NULL) {
+        struct Source *p;
 	if (parseNum(s, &num)) {
 	    rpmError(RPMERR_BADSPEC, _("line %d: Bad number: %s"),
 		     spec->lineNum, spec->line);
@@ -227,7 +238,6 @@ int parseNoSource(Spec spec, char *field, int tag)
 
 	p->flags |= RPMBUILD_ISNO;
 
-	field = NULL;
     }
 
     return 0;
@@ -334,6 +344,7 @@ Spec newSpec(void)
 
     spec->fileStack = NULL;
     spec->line[0] = '\0';
+    spec->lineNum = 0;
     spec->readStack = malloc(sizeof(struct ReadLevelEntry));
     spec->readStack->next = NULL;
     spec->readStack->reading = 1;
@@ -368,9 +379,10 @@ Spec newSpec(void)
     spec->inBuildArchitectures = 0;
     spec->buildArchitectureSpecs = NULL;
 
-  { extern struct MacroContext globalMacroContext;
+    spec->force = 0;
+    spec->anyarch = 0;
+
     spec->macros = &globalMacroContext;
-  }
     
     spec->autoReq = 1;
     spec->autoProv = 1;
@@ -378,28 +390,15 @@ Spec newSpec(void)
     return spec;
 }
 
-static void freeSources(Spec spec)
-{
-    struct Source *p1, *p2;
-
-    p1 = spec->sources;
-    while (p1) {
-	p2 = p1;
-	p1 = p1->next;
-	FREE(p2->fullSource);
-	free(p2);
-    }
-}
-
-void freeSpec(Spec spec)
+void freeSpec(/*@only@*/ Spec spec)
 {
     struct OpenFileInfo *ofi;
     struct ReadLevelEntry *rl;
 
-    freeStringBuf(spec->prep);
-    freeStringBuf(spec->build);
-    freeStringBuf(spec->install);
-    freeStringBuf(spec->clean);
+    freeStringBuf(spec->prep);	spec->prep = NULL;
+    freeStringBuf(spec->build);	spec->build = NULL;
+    freeStringBuf(spec->install); spec->install = NULL;
+    freeStringBuf(spec->clean);	spec->clean = NULL;
 
     FREE(spec->buildRoot);
     FREE(spec->buildSubdir);
@@ -409,6 +408,7 @@ void freeSpec(Spec spec)
     while (spec->fileStack) {
 	ofi = spec->fileStack;
 	spec->fileStack = spec->fileStack->next;
+	ofi->next = NULL;
 	FREE(ofi->fileName);
 	free(ofi);
     }
@@ -416,16 +416,20 @@ void freeSpec(Spec spec)
     while (spec->readStack) {
 	rl = spec->readStack;
 	spec->readStack = spec->readStack->next;
+	rl->next = NULL;
 	free(rl);
     }
     
     if (spec->sourceHeader != NULL) {
 	headerFree(spec->sourceHeader);
+	spec->sourceHeader = NULL;
     }
 
     freeCpioList(spec->sourceCpioList, spec->sourceCpioCount);
+    spec->sourceCpioList = NULL;
     
     headerFree(spec->buildRestrictions);
+    spec->buildRestrictions = NULL;
     FREE(spec->buildArchitectures);
 
     if (!spec->inBuildArchitectures) {
@@ -433,6 +437,7 @@ void freeSpec(Spec spec)
 	    freeSpec(
 		spec->buildArchitectureSpecs[spec->buildArchitectureCount]);
 	}
+	FREE(spec->buildArchitectureSpecs);
     }
     FREE(spec->buildArchitectures);
 
@@ -443,14 +448,14 @@ void freeSpec(Spec spec)
     freeMacros(spec->macros);
 #endif
     
-    freeSources(spec);
+    freeSources(spec->sources);	spec->sources = NULL;
     freePackages(spec);
     closeSpec(spec);
     
     free(spec);
 }
 
-struct OpenFileInfo * newOpenFileInfo(void)
+/*@only@*/ struct OpenFileInfo * newOpenFileInfo(void)
 {
     struct OpenFileInfo *ofi;
 

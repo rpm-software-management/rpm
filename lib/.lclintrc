@@ -1,4 +1,4 @@
--I. -I.. -DHAVE_CONFIG_H -D_GNU_SOURCE
+-I. -I.. -DHAVE_CONFIG_H
 
 +partial
 
@@ -13,6 +13,7 @@
 -null
 -predboolint		# w->n
 -predboolothers		# w->n
+-retvalint		# w->n
 -type
 
 # not-yet -weak paramaters

@@ -21,18 +21,16 @@ char *getUname(uid_t uid)
     struct passwd *pw;
     int x;
 
-    x = 0;
-    while (x < uid_used) {
+    for (x = 0; x < uid_used; x++) {
 	if (uids[x] == uid) {
 	    return unames[x];
 	}
-	x++;
     }
 
     /* XXX - This is the other hard coded limit */
     if (x == 1024) {
 	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getUname()\n"));
-	exit(RPMERR_INTERNAL);
+	exit(EXIT_FAILURE);
     }
     
     pw = getpwuid(uid);
@@ -55,18 +53,16 @@ char *getUnameS(char *uname)
     struct passwd *pw;
     int x;
 
-    x = 0;
-    while (x < uid_used) {
+    for (x = 0; x < uid_used; x++) {
 	if (!strcmp(unames[x],uname)) {
 	    return unames[x];
 	}
-	x++;
     }
 
     /* XXX - This is the other hard coded limit */
     if (x == 1024) {
 	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getUname()\n"));
-	exit(RPMERR_INTERNAL);
+	exit(EXIT_FAILURE);
     }
     
     pw = getpwnam(uname);
@@ -90,18 +86,16 @@ char *getGname(gid_t gid)
     struct group *gr;
     int x;
 
-    x = 0;
-    while (x < gid_used) {
+    for (x = 0; x < gid_used; x++) {
 	if (gids[x] == gid) {
 	    return gnames[x];
 	}
-	x++;
     }
 
     /* XXX - This is the other hard coded limit */
     if (x == 1024) {
 	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getGname()\n"));
-	exit(RPMERR_INTERNAL);
+	exit(EXIT_FAILURE);
     }
     
     gr = getgrgid(gid);
@@ -124,18 +118,16 @@ char *getGnameS(char *gname)
     struct group *gr;
     int x;
 
-    x = 0;
-    while (x < gid_used) {
+    for (x = 0; x < gid_used; x++) {
 	if (!strcmp(gnames[x], gname)) {
 	    return gnames[x];
 	}
-	x++;
     }
 
     /* XXX - This is the other hard coded limit */
     if (x == 1024) {
 	fprintf(stderr, _("RPMERR_INTERNAL: Hit limit in getGname()\n"));
-	exit(RPMERR_INTERNAL);
+	exit(EXIT_FAILURE);
     }
     
     gr = getgrnam(gname);
@@ -150,7 +142,7 @@ char *getGnameS(char *gname)
     return gnames[x];
 }
 
-time_t *getBuildTime(void)
+time_t *const getBuildTime(void)
 {
     static time_t buildTime = 0;
 
@@ -161,7 +153,7 @@ time_t *getBuildTime(void)
     return &buildTime;
 }
 
-char *buildHost(void)
+char *const buildHost(void)
 {
     static char hostname[1024];
     static int gotit = 0;

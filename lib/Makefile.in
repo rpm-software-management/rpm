@@ -388,8 +388,8 @@ mostlyclean distclean maintainer-clean
 
 include ../Makefile.inc
 
-rpmrc.o: rpmrc.c
-	$(COMPILE) -DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DMACROFILES=\"$(MACROFILES)\" -o $@ -c $<
+#rpmrc.o: rpmrc.c
+#	$(COMPILE) -DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DMACROFILES=\"$(MACROFILES)\" -o $@ -c $<
 
 tagtable.c: rpmlib.h 
 	@echo '#include "system.h"' > tagtable.c
@@ -401,6 +401,11 @@ tagtable.c: rpmlib.h
 	@echo '};' >> tagtable.c
 	@echo '' >> tagtable.c
 	@echo 'const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(struct headerTagTableEntry) - 1;' >> tagtable.c
+
+.PHONY:	lclint
+.PHONY:	lclint
+lclint:
+	lclint ${DEFS} ${INCLUDES} ${librpm_a_SOURCES}
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -90,7 +90,7 @@ int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 		       char ** failedFile);
 int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 		     int numMappings, cpioCallback cb, void * cbData,
-		     unsigned int * archiveSize, char ** failedFile);
+		     unsigned int * archiveSize, /*@out@*/char ** failedFile);
 
 /* This is designed to be qsort/bsearch compatible */
 int cpioFileMapCmp(const void * a, const void * b);

@@ -39,6 +39,10 @@ rpm.o:	rpm.c
 
 include ./Makefile.inc
 
+.PHONY:	lclint
+lclint:
+	lclint ${DEFS} ${INCLUDES} ${rpm_SOURCES}
+
 CVSTAG = r$(subst .,-,$(VERSION))
 
 rpm2cpio_SOURCES =	rpm2cpio.c

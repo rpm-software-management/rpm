@@ -83,15 +83,14 @@ int doScript(Spec spec, int what, char *name, StringBuf sb, int test)
 	return 0;
     }
     
-    if (makeTempFile(NULL, &scriptName, &fd) ||
-	fdFchmod(fd, 0600) < 0 ||
-	(f = fdopen(dup(fdFileno(fd)), "w")) == NULL) {
+    if (makeTempFile(NULL, &scriptName, &fd)) {
 	    fdClose(fd);
 	    FREE(scriptName);
 	    rpmError(RPMERR_SCRIPT, _("Unable to open temp file"));
 	    return RPMERR_SCRIPT;
     }
-    fdClose(fd);
+    (void)fchmod(fdFileno(fd), 0600);
+    f = fdFdopen(fd, "w");
     
     strcpy(buf, _preScriptEnvironment);
     expandMacros(spec, spec->macros, buf, sizeof(buf));

@@ -17,32 +17,40 @@ extern inline /*@null@*/ FD_t fdNew(void);
 extern inline /*@null@*/ FD_t fdNew(void) {
     FD_t fd = (FD_t)malloc(sizeof(FD_t));
     if (fd == NULL)
-	return fd;
+	return NULL;
     fd->fd_fd = -1;
     return fd;
 }
 
+extern inline int fdValid(FD_t fd);
+extern inline int fdValid(FD_t fd) {
+    return (fd != NULL && fd->fd_fd >= 0);
+}
+
 extern inline int fdFileno(FD_t fd);
 extern inline int fdFileno(FD_t fd) {
-    if (fd == NULL)
-	return -1;
-    return fd->fd_fd;
+    return (fd != NULL ? fd->fd_fd : -1);
 }
 
 extern inline /*@null@*/ FD_t fdOpen(const char *pathname, int flags, mode_t mode);
 extern inline /*@null@*/ FD_t fdOpen(const char *pathname, int flags, mode_t mode) {
     FD_t fd;
-
-    if ((fd = fdNew()) != NULL)
-	fd->fd_fd = open(pathname, flags, mode);
+    int fdno;
+    if ((fdno = open(pathname, flags, mode)) < 0)
+	return NULL;
+    fd = fdNew();
+    fd->fd_fd = fdno;
     return fd;
 }
 
 extern inline /*@null@*/ FD_t fdDup(int fdno);
 extern inline /*@null@*/ FD_t fdDup(int fdno) {
     FD_t fd;
-    if ((fd = fdNew()) != NULL)
-	fd->fd_fd = dup(fdno);
+    int nfdno;
+    if ((nfdno = dup(fdno)) < 0)
+	return NULL;
+    fd = fdNew();
+    fd->fd_fd = nfdno;
     return fd;
 }
 
@@ -61,8 +69,8 @@ extern inline ssize_t fdWrite(FD_t fd, const void * buf, size_t count) {
     return write(fdFileno(fd), buf, count);
 }
 
-extern inline int fdClose(FD_t fd);
-extern inline int fdClose(FD_t fd) {
+extern inline int fdClose(/*@only@*/ FD_t fd);
+extern inline int fdClose(/*@only@*/ FD_t fd) {
     int fdno;
 
     if (fd != NULL && (fdno = fdFileno(fd)) >= 0) {
@@ -73,15 +81,18 @@ extern inline int fdClose(FD_t fd) {
     return -2;
 }
 
-extern inline int fdFchmod(FD_t fd, mode_t mode);
-extern inline int fdFchmod(FD_t fd, mode_t mode) {
-    return fchmod(fdFileno(fd), mode);
+extern inline /*@shared@*/ FILE *fdFdopen(/*@owned@*/ FD_t fd, const char *mode);
+/*@-mustfree*/
+extern inline /*@shared@*/ FILE *fdFdopen(/*@owned@*/ FD_t fd, const char *mode) {
+    FILE *f = fdopen(fdFileno(fd), mode);
+    if (f != NULL) {
+	fd->fd_fd = -1;
+	free(fd);
+	return f;
+    }
+    return NULL;
 }
-
-extern inline int fdFstat(FD_t fd, struct stat *sb);
-extern inline int fdFstat(FD_t fd, struct stat *sb) {
-    return fstat(fdFileno(fd), sb);
-}
+/*@=mustfree*/
 
 #ifdef __cplusplus
 }

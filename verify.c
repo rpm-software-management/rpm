@@ -24,10 +24,8 @@ static int verifyHeader(char * prefix, Header h, int verifyFlags) {
     ec = 0;
     if (!(verifyFlags & VERIFY_MD5)) omitMask = RPMVERIFY_MD5;
 
-    headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlagsList, NULL);
-
-    if (headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, 
-			&count)) {
+    if (headerGetEntry(h, RPMTAG_FILEFLAGS, NULL, (void **) &fileFlagsList, NULL) &&
+       headerGetEntry(h, RPMTAG_FILENAMES, &type, (void **) &fileList, &count)) {
 	for (i = 0; i < count; i++) {
 	    if ((rc = rpmVerifyFile(prefix, h, i, &verifyResult, omitMask)) != 0) {
 		fprintf(stdout, _("missing    %s\n"), fileList[i]);
@@ -117,6 +115,7 @@ static int verifyPackage(char * root, rpmdb db, Header h, int verifyFlags) {
     if ((verifyFlags & VERIFY_SCRIPT) &&
 	(rc = rpmVerifyScript(root, h, fdo)) != 0)
 	    ec = rc;
+    fdClose(fdo);
     return ec;
 }
 
@@ -165,7 +164,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 	db = NULL;
     } else {
 	if (rpmdbOpen(prefix, &db, O_RDONLY, 0644)) {
-	    return 1;	/* XXX was exit(1) */
+	    return 1;	/* XXX was exit(EXIT_FAILURE) */
 	}
     }
 
@@ -176,7 +175,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 		h = rpmdbGetRecord(db, offset);
 		if (h == NULL) {
 		    fprintf(stderr, _("could not read database record!\n"));
-		    return 1;	/* XXX was exit(1) */
+		    return 1;	/* XXX was exit(EXIT_FAILURE) */
 		}
 		if ((rc = verifyPackage(prefix, db, h, verifyFlags)) != 0)
 		    ec = rc;
@@ -198,7 +197,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 				ftpStrerror(fdno));
 		    }
 		    fd = fdDup(fdno);
-		    close(fdno);
+		    (void)close(fdno);
 		} else if (!strcmp(arg, "-")) {
 		    fd = fdDup(STDIN_FILENO);
 		} else {
@@ -210,7 +209,6 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 
 		if (fdFileno(fd) >= 0) {
 		    rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
-		    fdClose(fd);
 		    switch (rc) {
 			case 0:
 			    rc = verifyPackage(prefix, db, h, verifyFlags);
@@ -220,7 +218,7 @@ int doVerify(char * prefix, enum verifysources source, char ** argv,
 			    fprintf(stderr, _("%s is not an RPM\n"), arg);
 		    }
 		}
-			
+		fdClose(fd);
 	      }	break;
 
 	      case VERIFY_GRP:

@@ -1487,7 +1487,7 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
 	        if (errno != EAGAIN) {
 		    perror("getOutputFrom()");
-	            exit(1);
+	            exit(EXIT_FAILURE);
 		}
 	        bytesWritten = 0;
 	    }
