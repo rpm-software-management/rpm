@@ -14,6 +14,6 @@ RPMNLSPACKAGE=rpm
 CFLAGS = @CFLAGS@ @INCPATH@ $(WARNINGS) $(OPTS) -I$(topdir) \
 	-I$(topdir)/lib -I$(topdir)/misc -Wall -Wstrict-prototypes 
 LDFLAGS = @LDFLAGS@ -L$(topdir)/lib -L$(topdir)/build -L$(topdir)/misc
-VERSION = 2.4.99
+VERSION = 2.4.100
 CC = @CC@
 
