@@ -1,9 +1,9 @@
-This is the readme for RPM version 2.2.5, written by 
+This is the readme for RPM version 2.2.9, written by 
 <Kristof.Depraetere@rug.ac.be>
 
 1 Requirements.
 
-First make sure you have at least IXEmul v44.0 installed.
+First make sure you have at least IXEmul v45.0 installed.
 These packages are needed to be able to compile rpm:
   * gettext
   * gdbm
@@ -17,18 +17,19 @@ These extra packages are needed to run rpm:
 These are the things you'll have to do to install this package.
   
   * cd <your-build-directory>
-  * tar -xzvf rpm-2.2.5-src.tar.gz
-  * cd rpm-2.2.5
+  * tar -xzvf rpm-2.2.9-src.tar.gz
+  * cd rpm-2.2.9
   * configure --prefix=/ade
   * make
   * make install
   
 Now it's time to edit the file "ade:lib/rpmrc" to correspond to your
 system setup. Change the following entry:
-  * topdir: /place/where/you/want/to/store/RPM/packages
-
-Also edit the file "etc:rpmrc". Replace the <topdir> entry with 
-a <builddir> entry (note UNIX style path names):
+  * topdir: /place/to/store/RPM/packages
+Make sure <tmppath> points to a _harddisk_ directory (the ram disk doesn't
+allow the use of softlinks):
+  * tmppath: /place/on/your/hard/disk
+Add the following entry:
   * builddir: /place/where/RPM/will/build/packages
 
 It is recommended to let <topdir> and <builddir> point to two different

@@ -15,6 +15,14 @@
 	- use half as much temp space during package assembly
 	- fail if spec file check fails
 	- changed canonical name for 68k to m68k (sorry)
+	- integrated FreeBSD changes from Jared Mauch
+	- integrated Irix changes from Hermann Lauer
+	- i18n support can be disabled w/ configure by --disable-nls
+	  (thanks to Remy Card)
+	- integrated more AmigaOS patches, played with configure some
+	  more to allow cross compiling (Kristof Depraetere)
+	- cleanups to rpm2cpio (closing the gz stream) (Elliot Lee)
+	- made find-provides return filename for libs w/ no soname
 
 2.2.8 -> 2.2.9:
 	- fixed typo in default rpmrc
