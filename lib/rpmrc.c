@@ -807,6 +807,120 @@ static int doReadRC( /*@killref@*/ FD_t fd, const char * urlfn)
     return 0;
 }
 
+#	if defined(__linux__) && defined(__i386__)
+#include <setjmp.h>
+#include <signal.h>
+
+/*
+ * Generic CPUID function
+ */
+static inline void cpuid(int op, int *eax, int *ebx, int *ecx, int *edx)
+{
+#ifdef PIC
+	__asm__("pushl %%ebx; cpuid; movl %%ebx,%1; popl %%ebx"
+		: "=a"(*eax), "=g"(*ebx), "=&c"(*ecx), "=&d"(*edx)
+		: "a" (op));
+#else
+	__asm__("cpuid"
+		: "=a" (*eax), "=b" (*ebx), "=c" (*ecx), "=d" (*edx)
+		: "a" (op));
+#endif
+
+}
+
+/*
+ * CPUID functions returning a single datum
+ */
+static inline unsigned int cpuid_eax(unsigned int op)
+{
+	unsigned int val;
+
+#ifdef PIC
+	__asm__("pushl %%ebx; cpuid; popl %%ebx"
+		: "=a" (val) : "a" (op) : "ecx", "edx");
+#else
+	__asm__("cpuid"
+		: "=a" (val) : "a" (op) : "ebx", "ecx", "edx");
+#endif
+	return val;
+}
+
+static inline unsigned int cpuid_ebx(unsigned int op)
+{
+	unsigned int tmp, val;
+
+#ifdef PIC
+	__asm__("pushl %%ebx; cpuid; movl %%ebx,%1; popl %%ebx"
+		: "=a" (tmp), "=g" (val) : "a" (op) : "ecx", "edx");
+#else
+	__asm__("cpuid"
+		: "=a" (tmp), "=b" (val) : "a" (op) : "ecx", "edx");
+#endif
+	return val;
+}
+
+static inline unsigned int cpuid_ecx(unsigned int op)
+{
+	unsigned int tmp, val;
+#ifdef PIC
+	__asm__("pushl %%ebx; cpuid; popl %%ebx"
+		: "=a" (tmp), "=c" (val) : "a" (op) : "edx");
+#else
+	__asm__("cpuid"
+		: "=a" (tmp), "=c" (val) : "a" (op) : "ebx", "edx");
+#endif
+	return val;
+
+}
+
+static inline unsigned int cpuid_edx(unsigned int op)
+{
+	unsigned int tmp, val;
+#ifdef PIC
+	__asm__("pushl %%ebx; cpuid; popl %%ebx"
+		: "=a" (tmp), "=d" (val) : "a" (op) : "ecx");
+#else
+	__asm__("cpuid"
+		: "=a" (tmp), "=d" (val) : "a" (op) : "ebx", "ecx");
+#endif
+	return val;
+
+}
+
+static sigjmp_buf jenv;
+
+static inline void model3(int _unused)
+{
+	siglongjmp(jenv, 1);
+}
+
+static inline int RPMClass(void)
+{
+	int cpu;
+	unsigned int tfms, junk, cap;
+	
+	signal(SIGILL, model3);
+	
+	if(sigsetjmp(jenv, 1))
+		return 3;
+		
+	if(cpuid_eax(0x000000000)==0)
+		return 4;
+	cpuid(0x000000001, &tfms, &junk, &junk, &cap);
+	
+	cpu = (tfms>>8)&15;
+	
+	if(cpu < 6)
+		return cpu;
+		
+	if(cap & (1<<15))
+		return 6;
+		
+	return 5;
+}
+
+#endif
+
 static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char ** os)
 {
     static struct utsname un;
@@ -989,6 +1103,15 @@ static void defaultMachine(/*@out@*/ const char ** arch, /*@out@*/ const char **
 	    	}
 	    	break;
 	    }
+	}
+#	endif
+
+#	if defined(__linux__) && defined(__i386__)
+	{
+	    char class = (char) (RPMClass() | '0');
+
+	    if (strchr("3456", un.machine[1]) && un.machine[1] != class)
+		un.machine[1] = class;
 	}
 #	endif
 

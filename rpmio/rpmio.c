@@ -24,7 +24,7 @@ typedef	unsigned int		uint32_t;
 # include <netinet/in_systm.h>
 #endif
 
-#if HAVE_LIBIO_H && defined(_IO_BAD_SEEN)
+#if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
 #endif
 

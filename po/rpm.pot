@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-03-04 12:14-0500\n"
+"POT-Creation-Date: 2001-03-14 11:56-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2441,30 +2441,30 @@ msgstr ""
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1539
+#: lib/depends.c:1538
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1678
+#: lib/depends.c:1677
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1725
+#: lib/depends.c:1724
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1770
+#: lib/depends.c:1769
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:1819
+#: lib/depends.c:1818
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1850
+#: lib/depends.c:1849
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -3545,12 +3545,12 @@ msgstr ""
 msgid "bad option '%s' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:1198
+#: lib/rpmrc.c:1321
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1199
+#: lib/rpmrc.c:1322
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 
