@@ -91,7 +91,8 @@ void printUsage(void) {
     puts(_("                        [--ftpuseport] [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        [--provides] [--dump] [--dbpath <dir>] [targets]"));
     puts(_("       rpm {--verify -V -y} [-afFpP] [--root <dir>] [--rcfile <file>]"));
-    puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [targets]"));
+    puts(_("                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"));
+    puts(_("                        [targets]"));
     puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
     puts(_("                        [--dbpath <dir>] [--nodeps] package1 ... packageN"));
     puts(_("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
@@ -180,10 +181,10 @@ void printHelp(void) {
     puts(_("                          on upgrades does this automatically)"));
     puts(_(""));
     puts(_("    --erase <package>"));
-    puts(_("    -e <package>        - uninstall (erase) package"));
+    puts(_("    -e <package>        - erase (uninstall) package"));
     puts(_("      --dbpath <dir>      - use <dir> as the directory for the database"));
     puts(_("      --nodeps          - do not verify package dependencies"));
-    puts(_("      --noscripts       - do not execute any installation scripts"));
+    puts(_("      --noscripts       - do not execute any package specific scripts"));
     puts(_("      --root <dir>	- use <dir> as the top level directory"));
     puts(_(""));
     puts(_("    -b<stage> <spec>    - build package, where <stage> is one of:"));
@@ -810,14 +811,15 @@ int main(int argc, char ** argv) {
 	argerror(_("--ignoreos may only be specified during package "
 		   "installation"));
 
-    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && noScripts)
+    if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
+	bigMode != MODE_VERIFY && noScripts)
 	argerror(_("--noscripts may only be specified during package "
-		   "installation and uninstallation"));
+		   "installation, erasure, and verification"));
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
 	bigMode != MODE_VERIFY && noDeps)
 	argerror(_("--nodeps may only be specified during package "
-		   "installation, uninstallation, and verification"));
+		   "installation, erasure, and verification"));
 
     if (bigMode != MODE_VERIFY && noFiles)
 	argerror(_("--nofiles may only be specified during package "
@@ -826,12 +828,12 @@ int main(int argc, char ** argv) {
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL &&
 	bigMode != MODE_BUILD && test)
 	argerror(_("--test may only be specified during package installation, "
-		 "uninstallation, and building"));
+		 "erasure, and building"));
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
 	bigMode != MODE_QUERY   && bigMode != MODE_VERIFY    && 			bigMode != MODE_REBUILDDB && bigMode != MODE_INITDB && rootdir[1])
 	argerror(_("--root (-r) may only be specified during "
-		 "installation, uninstallation, querying, and "
+		 "installation, erasure, querying, and "
 		 "database rebuilds"));
 
     if (bigMode != MODE_BUILD && clean) 
@@ -1065,6 +1067,7 @@ int main(int argc, char ** argv) {
 	verifyFlags = 0;
 	if (!noFiles) verifyFlags |= VERIFY_FILES;
 	if (!noDeps) verifyFlags |= VERIFY_DEPS;
+	if (!noScripts) verifyFlags |= VERIFY_SCRIPT;
 
 	if (verifySource == VERIFY_EVERY) {
 	    doVerify(rootdir, VERIFY_EVERY, NULL, verifyFlags);
