@@ -114,3 +114,20 @@ Revision history for Perl extension RPM.
 	stock fetch of the three individual tags would be.
 
 	More tags/values documented in RPM::Constants.
+
+0.28	Fri Aug 18 01:29:35 PDT 2000
+	- sixth alpha
+
+	Considerable additions made to the documentation in RPM::Constants, as
+	well as a few corrections. The prototype of the constant() function
+	was changed, as well.
+
+	Several bugs were addressed in RPM::Header, most notably: Error returns
+	now correctly return a value of "undef"; A blocking issue surrounding
+	multiple RPM::Header objects from ftp:// sources is fixed; the mode
+	with which files are opened was also changed to allow for reading off
+	of STDIN. The error-return issue was also applied to RPM::Database.
+
+	RPM::Header now has a source_name() accessor method that returns the
+	file name (or URI) that the header was read from. This is null if the
+	header came from the database.

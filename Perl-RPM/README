@@ -1,6 +1,6 @@
 Perl-RPM - Native bindings to the RPM Package Manager API for Perl
 
-Version 0.27 (fifth alpha)
+Version 0.28 (sixth alpha)
 
 
 WHAT IS IT
@@ -40,21 +40,28 @@ PROBLEMS/BUG REPORTS
 Please send any reports of problems or bugs to rjray@blackperl.com.
 
 
+MAILING LIST
+
+There is now a mailing list for Perl-RPM. For details, see:
+
+	https://listman.redhat.com/mailman/listinfo/perl-rpm-list
+
+
 CHANGES
 
-This is the fifth release. Full details are itemized in the ChangeLog file,
+This is the sixth release. Full details are itemized in the ChangeLog file,
 but the primary changes in this release are:
 
-* More class-level functionality added in RPM::Header
+* Much more documentation in RPM::Constants (including some corrections)
 
-* A fundamental change to the way RPM::Header objects return data
+* A fix to error-return values in RPM::Header and RPM::Database.
 
-* Some default identifiers available for export from RPM::Database
+* A new method in the RPM::Header class called source_name(). When a header
+  object is created from a file, ftp or http source, the name or URI is saved
+  for future reference.
 
-* Moved the XS code for RPM::Error from RPM.xs into a new file RPM/Error.xs
-
-* There is now a mailing list for Perl-RPM. For details, see:
-  https://listman.redhat.com/mailman/listinfo/perl-rpm-list
+* Fixed a blocking problem when trying to read more than one header from a
+  ftp source.
 
 
 LICENSE
