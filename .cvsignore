@@ -13,3 +13,4 @@ Makefile
 *.tar.gz
 config.log
 configure
+config.h.in
