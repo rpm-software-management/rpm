@@ -26,8 +26,7 @@
 
 
 int
-gelf_getclass (elf)
-     Elf *elf;
+gelf_getclass (Elf *elf)
 {
   return elf == NULL || elf->kind != ELF_K_ELF ? ELFCLASSNONE : elf->class;
 }

@@ -37,9 +37,11 @@
 #endif
 
 /* Create descriptor for archive in memory.  */
+/*@null@*/
 static inline Elf *
-file_read_ar (int fildes, void *map_address, off_t offset, size_t maxsize,
-	      Elf_Cmd cmd, Elf *parent)
+file_read_ar (int fildes, /*@null@*/ void *map_address, off_t offset,
+	      size_t maxsize, Elf_Cmd cmd, /*@null@*/ Elf *parent)
+	/*@*/
 {
   Elf *elf;
 
@@ -60,8 +62,9 @@ file_read_ar (int fildes, void *map_address, off_t offset, size_t maxsize,
 
 
 static size_t
-get_shnum (void *map_address, unsigned char *e_ident, int fildes, off_t offset,
-	   size_t maxsize)
+get_shnum (/*@null@*/ void *map_address, unsigned char *e_ident, int fildes,
+	   off_t offset, size_t maxsize)
+	/*@*/
 {
   size_t result;
   union
@@ -177,9 +180,11 @@ get_shnum (void *map_address, unsigned char *e_ident, int fildes, off_t offset,
 
 
 /* Create descriptor for ELF file in memory.  */
+/*@null@*/
 static Elf *
-file_read_elf (int fildes, void *map_address, off_t offset, size_t maxsize,
-	       Elf_Cmd cmd, Elf *parent)
+file_read_elf (int fildes, /*@null@*/ void *map_address, off_t offset, size_t maxsize,
+	       Elf_Cmd cmd, /*@null@*/ Elf *parent)
+	/*@*/
 {
   /* We only read the ELF header now.  */
   unsigned char *e_ident;
@@ -436,9 +441,11 @@ __libelf_read_mmaped_file (int fildes, void *map_address,  off_t offset,
 }
 
 
+/*@null@*/
 static Elf *
 read_unmmaped_file (int fildes, off_t offset, size_t maxsize, Elf_Cmd cmd,
-		    Elf *parent)
+		    /*@null@*/ Elf *parent)
+	/*@*/
 {
   /* We have to find out what kind of file this is.  We handle ELF
      files and archives.  To find out what we have we must read the
@@ -486,9 +493,11 @@ read_unmmaped_file (int fildes, off_t offset, size_t maxsize, Elf_Cmd cmd,
 
 
 /* Open a file for reading.  If possible we will try to mmap() the file.  */
+/*@null@*/
 static struct Elf *
 read_file (int fildes, off_t offset, size_t maxsize,
 	   Elf_Cmd cmd, Elf *parent)
+	/*@*/
 {
   void *map_address = NULL;
   int use_mmap = (cmd == ELF_C_READ_MMAP || cmd == ELF_C_RDWR_MMAP
@@ -559,8 +568,10 @@ read_file (int fildes, off_t offset, size_t maxsize,
 
 
 /* Find the entry with the long names for the content of this archive.  */
+/*@null@*/
 static const char *
 read_long_names (Elf *elf)
+	/*@modifies elf @*/
 {
   off_t offset = SARMAG;	/* This is the first entry.  */
   struct ar_hdr hdrm;
@@ -655,8 +666,7 @@ read_long_names (Elf *elf)
 /* Read the next archive header.  */
 int
 internal_function
-__libelf_next_arhdr (elf)
-     Elf *elf;
+__libelf_next_arhdr (Elf *elf)
 {
   struct ar_hdr *ar_hdr;
   Elf_Arhdr *elf_ar_hdr;
@@ -872,8 +882,10 @@ __libelf_next_arhdr (elf)
 /* We were asked to return a clone of an existing descriptor.  This
    function must be called with the lock on the parent descriptor
    being held. */
+/*@null@*/
 static Elf *
 dup_elf (int fildes, Elf_Cmd cmd, Elf *ref)
+	/*@modifies ref @*/
 {
   struct Elf *result;
 
@@ -935,8 +947,10 @@ dup_elf (int fildes, Elf_Cmd cmd, Elf *ref)
 
 
 /* Return desriptor for empty file ready for writing.  */
+/*@null@*/
 static struct Elf *
 write_file (int fd, Elf_Cmd cmd)
+	/*@*/
 {
   /* We simply create an empty `Elf' structure.  */
 #define NSCNSALLOC	10
@@ -964,10 +978,7 @@ write_file (int fd, Elf_Cmd cmd)
 
 /* Return a descriptor for the file belonging to FILDES.  */
 Elf *
-elf_begin (fildes, cmd, ref)
-     int fildes;
-     Elf_Cmd cmd;
-     Elf *ref;
+elf_begin (int fildes, Elf_Cmd cmd, Elf *ref)
 {
   Elf *retval;
 

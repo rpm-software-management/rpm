@@ -26,9 +26,7 @@
 
 
 size_t
-elf_rand (elf, offset)
-     Elf *elf;
-     size_t offset;
+elf_rand (Elf *elf, size_t offset)
 {
   /* Be gratious, the specs demand it.  */
   if (elf == NULL || elf->kind != ELF_K_AR)

@@ -25,9 +25,7 @@
 
 
 char *
-elf_getident (elf, ptr)
-     Elf *elf;
-     size_t *ptr;
+elf_getident (Elf *elf, size_t *ptr)
 {
   /* In case this is no ELF file, the handle is invalid and we return
      NULL.  */

@@ -27,10 +27,7 @@
 
 
 GElf_Move *
-gelf_getmove (data, ndx, dst)
-     Elf_Data *data;
-     int ndx;
-     GElf_Move *dst;
+gelf_getmove (Elf_Data *data, int ndx, GElf_Move *dst)
 {
   GElf_Move *result = NULL;
   Elf *elf;

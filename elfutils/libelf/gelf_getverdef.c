@@ -27,10 +27,7 @@
 
 
 GElf_Verdef *
-gelf_getverdef (data, offset, dst)
-     Elf_Data *data;
-     int offset;
-     GElf_Verdef *dst;
+gelf_getverdef (Elf_Data *data, int offset, GElf_Verdef *dst)
 {
   GElf_Verdef *result;
 

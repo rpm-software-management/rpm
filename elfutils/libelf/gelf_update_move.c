@@ -27,10 +27,7 @@
 
 
 int
-gelf_update_move (data, ndx, src)
-     Elf_Data *data;
-     int ndx;
-     GElf_Move *src;
+gelf_update_move (Elf_Data *data, int ndx, GElf_Move *src)
 {
   Elf_Data_Scn *data_scn = (Elf_Data_Scn *) data;
 

@@ -27,10 +27,7 @@
 
 
 GElf_Versym *
-gelf_getversym (data, ndx, dst)
-     Elf_Data *data;
-     int ndx;
-     GElf_Versym *dst;
+gelf_getversym (Elf_Data *data, int ndx, GElf_Versym *dst)
 {
   Elf_Data_Scn *data_scn = (Elf_Data_Scn *) data;
   Elf_Scn *scn;

@@ -27,9 +27,7 @@
 
 
 int
-elf_getshnum (elf, dst)
-     Elf *elf;
-     size_t *dst;
+elf_getshnum (Elf *elf, size_t *dst)
 {
   int result = 0;
   int idx;

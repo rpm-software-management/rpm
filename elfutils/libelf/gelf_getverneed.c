@@ -27,10 +27,7 @@
 
 
 GElf_Verneed *
-gelf_getverneed (data, offset, dst)
-     Elf_Data *data;
-     int offset;
-     GElf_Verneed *dst;
+gelf_getverneed (Elf_Data *data, int offset, GElf_Verneed *dst)
 {
   GElf_Verneed *result;
 

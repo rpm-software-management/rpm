@@ -32,9 +32,7 @@
 
 
 Elf_Arsym *
-elf_getarsym (elf, ptr)
-     Elf *elf;
-     size_t *ptr;
+elf_getarsym (Elf *elf, size_t *ptr)
 {
   Elf_Arsym *result;
 

@@ -27,10 +27,7 @@
 
 
 int
-gelf_update_verdef (data, offset, src)
-     Elf_Data *data;
-     int offset;
-     GElf_Verdef *src;
+gelf_update_verdef (Elf_Data *data, int offset, GElf_Verdef *src)
 {
   Elf_Data_Scn *data_scn = (Elf_Data_Scn *) data;
 

@@ -27,10 +27,7 @@
 
 
 int
-gelf_update_vernaux (data, offset, src)
-     Elf_Data *data;
-     int offset;
-     GElf_Vernaux *src;
+gelf_update_vernaux (Elf_Data *data, int offset, GElf_Vernaux *src)
 {
   Elf_Data_Scn *data_scn = (Elf_Data_Scn *) data;
 

@@ -27,9 +27,7 @@
 
 
 Elf_Scn *
-elf_getscn (elf, index)
-     Elf *elf;
-     size_t index;
+elf_getscn (Elf *elf, size_t index)
 {
   Elf_Scn *result = NULL;
   Elf_ScnList *runp;

@@ -27,9 +27,7 @@
 
 
 Elf_Scn *
-elf_nextscn (elf, scn)
-     Elf *elf;
-     Elf_Scn *scn;
+elf_nextscn (Elf *elf, Elf_Scn *scn)
 {
   Elf_Scn *result = NULL;
 
@@ -46,12 +44,12 @@ elf_nextscn (elf, scn)
 	       == offsetof (Elf, state.elf64.scns)))
 	{
 	  if (elf->state.elf32.scns.cnt > 1)
-	    result = &elf->state.elf32.scns.data[0];
+	    result = &elf->state.elf32.scns.data[1];
 	}
       else
 	{
 	  if (elf->state.elf64.scns.cnt > 1)
-	    result = &elf->state.elf64.scns.data[0];
+	    result = &elf->state.elf64.scns.data[1];
 	}
     }
   else

@@ -26,9 +26,7 @@
 
 
 Elf *
-elf_memory (image, size)
-     char *image;
-     size_t size;
+elf_memory (char *image, size_t size)
 {
   if (image == NULL)
     {

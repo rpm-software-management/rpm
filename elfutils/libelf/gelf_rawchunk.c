@@ -28,11 +28,9 @@
 
 
 char *
-gelf_rawchunk (elf, offset, size)
-     Elf *elf;
-     GElf_Off offset;
-     GElf_Word size;
+gelf_rawchunk (Elf *elf, GElf_Off offset, GElf_Word size)
 {
+  char * result;
   if (elf == NULL)
     {
       /* No valid descriptor.  */
@@ -54,7 +52,7 @@ gelf_rawchunk (elf, offset, size)
     return (char *) elf->map_address + elf->start_offset + offset;
 
   /* We allocate the memory and read the data from the file.  */
-  char *result = (char *) malloc (size);
+  result = (char *) malloc (size);
   if (result == NULL)
     __libelf_seterrno (ELF_E_NOMEM);
   else

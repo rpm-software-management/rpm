@@ -17,6 +17,7 @@
 
 
 /* Simple types.  */
+/*@-mods@*/
 FUNDAMENTAL (ADDR, Addr, LIBELFBITS);
 FUNDAMENTAL (OFF, Off, LIBELFBITS);
 FUNDAMENTAL (HALF, Half, LIBELFBITS);
@@ -24,8 +25,10 @@ FUNDAMENTAL (WORD, Word, LIBELFBITS);
 FUNDAMENTAL (SWORD, Sword, LIBELFBITS);
 FUNDAMENTAL (XWORD, Xword, LIBELFBITS);
 FUNDAMENTAL (SXWORD, Sxword, LIBELFBITS);
+/*@=mods@*/
 
 /* The strctured types.  */
+/*@-modunconnomods -noeffectuncon@*/
 TYPE (Ehdr, LIBELFBITS)
 TYPE (Phdr, LIBELFBITS)
 TYPE (Shdr, LIBELFBITS)
@@ -36,6 +39,7 @@ TYPE (Note, LIBELFBITS)
 TYPE (Dyn, LIBELFBITS)
 TYPE (Syminfo, LIBELFBITS)
 TYPE (Move, LIBELFBITS)
+/*@=modunconnomods =noeffectuncon@*/
 
 
 /* Prepare for the next round.  */

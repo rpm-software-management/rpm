@@ -26,8 +26,7 @@
 
 
 off_t
-elf_getbase (elf)
-     Elf *elf;
+elf_getbase (Elf *elf)
 {
   return elf == NULL ? (off_t) -1 : elf->start_offset;
 }

@@ -27,10 +27,7 @@
 
 
 GElf_Syminfo *
-gelf_getsyminfo (data, ndx, dst)
-     Elf_Data *data;
-     int ndx;
-     GElf_Syminfo *dst;
+gelf_getsyminfo (Elf_Data *data, int ndx, GElf_Syminfo *dst)
 {
   GElf_Syminfo *result = NULL;
 

@@ -26,8 +26,7 @@
 
 
 Elf_Kind
-elf_kind (elf)
-     Elf *elf;
+elf_kind (Elf *elf)
 {
   return elf == NULL ? ELF_K_NONE : elf->kind;
 }

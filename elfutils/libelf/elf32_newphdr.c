@@ -31,9 +31,7 @@
 
 
 ElfW2(LIBELFBITS,Phdr) *
-elfw2(LIBELFBITS,newphdr) (elf, count)
-     Elf *elf;
-     size_t count;
+elfw2(LIBELFBITS,newphdr) (Elf *elf, size_t count)
 {
   ElfW2(LIBELFBITS,Phdr) *result;
 

@@ -26,10 +26,7 @@
 
 
 GElf_Rela *
-gelf_getrela (data, ndx, dst)
-     Elf_Data *data;
-     int ndx;
-     GElf_Rela *dst;
+gelf_getrela (Elf_Data *data, int ndx, GElf_Rela *dst)
 {
   Elf_Data_Scn *data_scn = (Elf_Data_Scn *) data;
   Elf_Scn *scn;

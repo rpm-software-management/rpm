@@ -27,6 +27,7 @@
 
 static inline Elf_Kind
 determine_kind (void *buf, size_t len)
+	/*@*/
 {
   /* First test for an archive.  */
   if (len >= SARMAG && memcmp (buf, ARMAG, SARMAG) == 0)
@@ -52,9 +53,12 @@ determine_kind (void *buf, size_t len)
 
 
 /* Allocate an Elf descriptor and fill in the generic information.  */
+/*@null@*/
 static inline Elf *
-allocate_elf (int fildes, void *map_address, off_t offset, size_t maxsize,
-              Elf_Cmd cmd, Elf *parent, Elf_Kind kind, size_t extra)
+allocate_elf (int fildes, /*@null@*/ void *map_address, off_t offset,
+	      size_t maxsize, Elf_Cmd cmd, /*@null@*/ Elf *parent,
+	      Elf_Kind kind, size_t extra)
+	/*@*/
 {
   Elf *result = (Elf *) calloc (1, sizeof (Elf) + extra);
   if (result == NULL)
@@ -80,6 +84,7 @@ allocate_elf (int fildes, void *map_address, off_t offset, size_t maxsize,
 /* Acquire lock for the descriptor and all children.  */
 static void
 libelf_acquire_all (Elf *elf)
+	/*@modifies elf @*/
 {
   rwlock_wrlock (elf->lock);
 
@@ -99,6 +104,7 @@ libelf_acquire_all (Elf *elf)
 /* Release own lock and those of the children.  */
 static void
 libelf_release_all (Elf *elf)
+	/*@modifies elf @*/
 {
   if (elf->kind == ELF_K_AR)
     {

@@ -27,10 +27,7 @@
 
 
 int
-gelf_update_syminfo (data, ndx, src)
-     Elf_Data *data;
-     int ndx;
-     GElf_Syminfo *src;
+gelf_update_syminfo (Elf_Data *data, int ndx, GElf_Syminfo *src)
 {
   Elf_Data_Scn *data_scn = (Elf_Data_Scn *) data;
   Elf_Scn *scn;

@@ -26,9 +26,7 @@
 
 
 char *
-elf_rawfile (elf, ptr)
-     Elf *elf;
-     size_t *ptr;
+elf_rawfile (Elf *elf, size_t *ptr)
 {
   if (elf == NULL)
     {

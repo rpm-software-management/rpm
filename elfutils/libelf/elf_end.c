@@ -28,8 +28,7 @@
 
 
 int
-elf_end (elf)
-     Elf *elf;
+elf_end (Elf *elf)
 {
   Elf *parent;
 

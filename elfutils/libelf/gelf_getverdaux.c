@@ -27,10 +27,7 @@
 
 
 GElf_Verdaux *
-gelf_getverdaux (data, offset, dst)
-     Elf_Data *data;
-     int offset;
-     GElf_Verdaux *dst;
+gelf_getverdaux (Elf_Data *data, int offset, GElf_Verdaux *dst)
 {
   GElf_Verdaux *result;
 

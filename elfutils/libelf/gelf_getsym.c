@@ -27,10 +27,7 @@
 
 
 GElf_Sym *
-gelf_getsym (data, ndx, dst)
-     Elf_Data *data;
-     int ndx;
-     GElf_Sym *dst;
+gelf_getsym (Elf_Data *data, int ndx, GElf_Sym *dst)
 {
   Elf_Data_Scn *data_scn = (Elf_Data_Scn *) data;
   GElf_Sym *result = NULL;

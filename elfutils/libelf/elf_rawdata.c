@@ -25,9 +25,7 @@
 
 
 Elf_Data *
-elf_rawdata (scn, data)
-     Elf_Scn *scn;
-     Elf_Data *data;
+elf_rawdata (Elf_Scn *scn, Elf_Data *data)
 {
   if (scn == NULL || scn->elf->kind != ELF_K_ELF)
     {

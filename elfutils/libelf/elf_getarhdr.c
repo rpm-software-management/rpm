@@ -27,8 +27,7 @@
 
 
 Elf_Arhdr *
-elf_getarhdr (elf)
-     Elf *elf;
+elf_getarhdr (Elf *elf)
 {
   Elf *parent = elf->parent;
 

@@ -26,9 +26,7 @@
 
 
 unsigned long int
-gelf_newphdr (elf, phnum)
-     Elf *elf;
-     size_t phnum;
+gelf_newphdr (Elf *elf, size_t phnum)
 {
   return (elf->class == ELFCLASS32
 	  ? (unsigned long int) INTUSE(elf32_newphdr) (elf, phnum)

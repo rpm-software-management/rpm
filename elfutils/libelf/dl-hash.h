@@ -25,6 +25,7 @@
 static inline unsigned int
 __attribute__ ((__pure__))
 _dl_elf_hash (const char *name)
+	/*@*/
 {
   unsigned int hash = (unsigned int) *((const unsigned char *) name)++;
   if (*name != '\0')

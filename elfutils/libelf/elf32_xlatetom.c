@@ -31,10 +31,8 @@
 
 
 Elf_Data *
-elfw2(LIBELFBITS, xlatetom) (dest, src, encode)
-     Elf_Data *dest;
-     const Elf_Data *src;
-     unsigned int encode;
+elfw2(LIBELFBITS, xlatetom) (Elf_Data *dest, const Elf_Data *src,
+			     unsigned int encode)
 {
   /* First test whether the input data is really suitable for this
      type.  This means, whether there is an integer number of records.

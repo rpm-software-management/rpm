@@ -27,9 +27,10 @@
 int __libelf_fill_byte;
 
 
+/*@-mods@*/
 void
-elf_fill (fill)
-     int fill;
+elf_fill (int fill)
 {
   __libelf_fill_byte = fill;
 }
+/*@=mods@*/

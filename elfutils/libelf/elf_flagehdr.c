@@ -26,10 +26,7 @@
 
 
 unsigned int
-elf_flagehdr (elf, cmd, flags)
-     Elf *elf;
-     Elf_Cmd cmd;
-     unsigned int flags;
+elf_flagehdr (Elf *elf, Elf_Cmd cmd, unsigned int flags)
 {
   unsigned int result;
 

@@ -27,6 +27,7 @@
 
 static void
 set_address (Elf *elf, size_t offset)
+	/*@modifies elf @*/
 {
   if (elf->kind == ELF_K_AR)
     {
@@ -51,8 +52,8 @@ set_address (Elf *elf, size_t offset)
 
 
 char *
-__libelf_readall (elf)
-     Elf *elf;
+internal_function
+__libelf_readall (Elf *elf)
 {
   /* Get the file.  */
   rwlock_wrlock (elf->lock);

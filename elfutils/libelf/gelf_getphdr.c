@@ -26,10 +26,7 @@
 
 
 GElf_Phdr *
-gelf_getphdr (elf, ndx, dst)
-     Elf *elf;
-     int ndx;
-     GElf_Phdr *dst;
+gelf_getphdr (Elf *elf, int ndx, GElf_Phdr *dst)
 {
   GElf_Phdr *result = NULL;
 

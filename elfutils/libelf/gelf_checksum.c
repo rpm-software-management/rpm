@@ -26,8 +26,8 @@
 
 
 long int
-gelf_checksum (elf)
-     Elf *elf;
+gelf_checksum (Elf *elf)
+	/*@modifies elf @*/
 {
   if (elf == NULL)
     return -1l;

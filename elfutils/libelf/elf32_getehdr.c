@@ -30,8 +30,7 @@
 
 
 ElfW2(LIBELFBITS,Ehdr) *
-elfw2(LIBELFBITS,getehdr) (elf)
-     Elf *elf;
+elfw2(LIBELFBITS,getehdr) (Elf *elf)
 {
   ElfW2(LIBELFBITS,Ehdr) *result;
 

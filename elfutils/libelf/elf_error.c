@@ -29,19 +29,28 @@
 
 
 /* This is the key for the thread specific memory.  */
+/*@unchecked@*/ /*@null@*/
 static tls_key_t key;
 
 /* The error number.  Used in non-threaded programs.  */
+/*@unchecked@*/
 static int global_error;
+/*@unchecked@*/
 static bool threaded;
 /* We need to initialize the thread-specific data.  */
+/*@unchecked@*/
 once_define (static, once);
 
 /* The initialization and destruction functions.  */
-static void init (void);
-static void free_key_mem (void *mem);
+static void init (void)
+	/*@globals threaded @*/
+	/*@modifies threaded @*/;
+static void free_key_mem (void *mem)
+	/*@globals key @*/
+	/*@modifies key @*/;
 
 
+/*@-mods@*/
 int
 elf_errno (void)
 {
@@ -64,11 +73,13 @@ elf_errno (void)
   global_error = ELF_E_NOERROR;
   return result;
 }
+/*@=mods@*/
 
 
+/*@-mods@*/
 void
-__libelf_seterrno (value)
-     int value;
+internal_function
+__libelf_seterrno (int value)
 {
   /* If we have not yet initialized the buffer do it now.  */
   once_execute (once, init);
@@ -80,9 +91,11 @@ __libelf_seterrno (value)
 
   global_error = value;
 }
+/*@=mods@*/
 
 
 /* Return the appropriate message for the error.  */
+/*@unchecked@*/
 static const char msgstr[] =
 {
 #define ELF_E_NOERROR_IDX 0
@@ -246,6 +259,7 @@ static const char msgstr[] =
 };
 
 
+/*@unchecked@*/
 static const uint_fast16_t msgidx[ELF_E_NUM] =
 {
   [ELF_E_NOERROR] = ELF_E_NOERROR_IDX,
@@ -291,9 +305,9 @@ static const uint_fast16_t msgidx[ELF_E_NUM] =
 };
 
 
+/*@-mods@*/
 const char *
-elf_errmsg (error)
-     int error;
+elf_errmsg (int error)
 {
   int last_error;
 
@@ -318,6 +332,7 @@ elf_errmsg (error)
   assert (msgidx[error == -1 ? last_error : error] < sizeof (msgstr));
   return _(msgstr + msgidx[error == -1 ? last_error : error]);
 }
+/*@=mods@*/
 
 
 /* Free the thread specific data, this is done if a thread terminates.  */

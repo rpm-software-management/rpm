@@ -34,8 +34,7 @@
 #endif
 
 ElfW2(LIBELFBITS,Shdr) *
-elfw2(LIBELFBITS,getshdr) (scn)
-     Elf_Scn *scn;
+elfw2(LIBELFBITS,getshdr) (Elf_Scn *scn)
 {
   ElfW2(LIBELFBITS,Shdr) *result;
 

@@ -32,9 +32,7 @@
 #endif
 
 int
-elf_getshstrndx (elf, dst)
-     Elf *elf;
-     size_t *dst;
+elf_getshstrndx (Elf *elf, size_t *dst)
 {
   int result = 0;
 

@@ -64,11 +64,7 @@ const size_t __libelf_type_sizes[EV_NUM - 1][ELFCLASSNUM - 1][ELF_T_NUM] =
 
 
 size_t
-gelf_fsize (elf, type, count, version)
-     Elf *elf;
-     Elf_Type type;
-     size_t count;
-     unsigned int version;
+gelf_fsize (Elf *elf, Elf_Type type, size_t count, unsigned int version)
 {
   /* We do not have differences between file and memory sizes.  Better
      not since otherwise `mmap' would not work.  */

@@ -28,12 +28,8 @@
 
 
 GElf_Sym *
-gelf_getsymshndx (symdata, shndxdata, ndx, dst, dstshndx)
-     Elf_Data *symdata;
-     Elf_Data *shndxdata;
-     int ndx;
-     GElf_Sym *dst;
-     Elf32_Word *dstshndx;
+gelf_getsymshndx (Elf_Data *symdata, Elf_Data *shndxdata, int ndx,
+		  GElf_Sym *dst, Elf32_Word *dstshndx)
 {
   Elf_Data_Scn *symdata_scn = (Elf_Data_Scn *) symdata;
   Elf_Data_Scn *shndxdata_scn = (Elf_Data_Scn *) shndxdata;

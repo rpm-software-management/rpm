@@ -144,133 +144,180 @@ extern "C" {
 #endif
 
 /* Return descriptor for ELF file to work according to CMD.  */
-extern Elf *elf_begin (int __fildes, Elf_Cmd __cmd, Elf *__ref);
+/*@only@*/ /*@null@*/
+extern Elf *elf_begin (int __fildes, Elf_Cmd __cmd,
+		       /*@returned@*/ /*@null@*/ Elf *ref)
+	/*@modifies ref @*/;
 
 /* Create descriptor for memory region.  */
-extern Elf *elf_memory (char *__image, size_t __size);
+/*@null@*/
+extern Elf *elf_memory (char *__image, size_t __size)
+	/*@*/;
 
 /* Advance archive descriptor to next element.  */
-extern Elf_Cmd elf_next (Elf *__elf);
+extern Elf_Cmd elf_next (Elf *elf)
+	/*@modifies elf @*/;
 
 /* Free resources allocated for ELF.  */
-extern int elf_end (Elf *__elf);
+extern int elf_end (/*@only@*/ /*@null@*/ Elf *elf)
+	/*@modifies elf @*/;
 
 /* Update ELF descriptor and write file to disk.  */
-extern off_t elf_update (Elf *__elf, Elf_Cmd __cmd);
+extern off_t elf_update (Elf *elf, Elf_Cmd __cmd)
+	/*@modifies elf @*/;
 
 /* Determine what kind of file is associated with ELF.  */
-extern Elf_Kind elf_kind (Elf *__elf) __attribute__ ((__pure__));
+extern Elf_Kind elf_kind (Elf *__elf) __attribute__ ((__pure__))
+	/*@*/;
 
 /* Get the base offset for an object file.  */
-extern off_t elf_getbase (Elf *__elf);
+extern off_t elf_getbase (Elf *__elf)
+	/*@*/;
 
 
 /* Retrieve file identification data.  */
-extern char *elf_getident (Elf *__elf, size_t *__ptr);
+extern char *elf_getident (Elf *__elf, size_t *ptr)
+	/*@modifies *ptr @*/;
 
 /* Retrieve class-dependent object file header.  */
-extern Elf32_Ehdr *elf32_getehdr (Elf *__elf);
+extern Elf32_Ehdr *elf32_getehdr (Elf *elf)
+	/*@modifies elf @*/;
 /* Similar but this time the binary calls is ELFCLASS64.  */
-extern Elf64_Ehdr *elf64_getehdr (Elf *__elf);
+extern Elf64_Ehdr *elf64_getehdr (Elf *elf)
+	/*@modifies elf @*/;
 
 /* Create ELF header if none exists.  */
-extern Elf32_Ehdr *elf32_newehdr (Elf *__elf);
+extern Elf32_Ehdr *elf32_newehdr (Elf *elf)
+	/*@modifies elf @*/;
 /* Similar but this time the binary calls is ELFCLASS64.  */
-extern Elf64_Ehdr *elf64_newehdr (Elf *__elf);
+extern Elf64_Ehdr *elf64_newehdr (Elf *elf)
+	/*@modifies elf @*/;
 
 /* Retrieve class-dependent program header table.  */
-extern Elf32_Phdr *elf32_getphdr (Elf *__elf);
+extern Elf32_Phdr *elf32_getphdr (Elf *elf)
+	/*@modifies elf @*/;
 /* Similar but this time the binary calls is ELFCLASS64.  */
-extern Elf64_Phdr *elf64_getphdr (Elf *__elf);
+extern Elf64_Phdr *elf64_getphdr (Elf *elf)
+	/*@modifies elf @*/;
 
 /* Create ELF program header.  */
-extern Elf32_Phdr *elf32_newphdr (Elf *__elf, size_t __cnt);
+/*@null@*/
+extern Elf32_Phdr *elf32_newphdr (Elf *elf, size_t __cnt)
+	/*@modifies elf @*/;
 /* Similar but this time the binary calls is ELFCLASS64.  */
-extern Elf64_Phdr *elf64_newphdr (Elf *__elf, size_t __cnt);
+/*@null@*/
+extern Elf64_Phdr *elf64_newphdr (Elf *elf, size_t __cnt)
+	/*@modifies elf @*/;
 
 
 /* Get section at INDEX.  */
-extern Elf_Scn *elf_getscn (Elf *__elf, size_t __index);
+extern Elf_Scn *elf_getscn (Elf *__elf, size_t __index)
+	/*@*/;
 
 /* Get index of section.  */
-extern size_t elf_ndxscn (Elf_Scn *__scn);
+extern size_t elf_ndxscn (Elf_Scn *__scn)
+	/*@*/;
 
 /* Get section with next section index.  */
-extern Elf_Scn *elf_nextscn (Elf *__elf, Elf_Scn *__scn);
+extern Elf_Scn *elf_nextscn (Elf *__elf, Elf_Scn *__scn)
+	/*@*/;
 
 /* Create a new section and append it at the end of the table.  */
-extern Elf_Scn *elf_newscn (Elf *__elf);
+extern Elf_Scn *elf_newscn (Elf *elf)
+	/*@modifies elf @*/;
 
 /* Get the number of sections in the ELF file.  If the file uses more
    sections than can be represented in the e_shnum field of the ELF
    header the information from the sh_size field in the zeroth section
    header is used.  */
-extern int elf_getshnum (Elf *__elf, size_t *__dst);
+extern int elf_getshnum (Elf *__elf, /*@out@*/ size_t *dst)
+	/*@modifies *dst @*/;
 
 
 /* Get the section index of the section header string table in the ELF
    file.  If the index cannot be represented in the e_shnum field of
    the ELF header the information from the sh_link field in the zeroth
    section header is used.  */
-extern int elf_getshstrndx (Elf *__elf, size_t *__dst);
+extern int elf_getshstrndx (Elf *__elf, /*@out@*/ size_t *dst)
+	/*@modifies *dst @*/;
 
 
 /* Retrieve section header of ELFCLASS32 binary.  */
-extern Elf32_Shdr *elf32_getshdr (Elf_Scn *__scn);
+extern Elf32_Shdr *elf32_getshdr (Elf_Scn *scn)
+	/*@modifies scn @*/;
 /* Similar for ELFCLASS64.  */
-extern Elf64_Shdr *elf64_getshdr (Elf_Scn *__scn);
+extern Elf64_Shdr *elf64_getshdr (Elf_Scn *scn)
+	/*@modifies scn @*/;
 
 
 /* Set or clear flags for ELF file.  */
-extern unsigned int elf_flagelf (Elf *__elf, Elf_Cmd __cmd,
-				 unsigned int __flags);
+extern unsigned int elf_flagelf (Elf *elf, Elf_Cmd __cmd,
+				 unsigned int __flags)
+	/*@modifies elf @*/;
 /* Similarly for the ELF header.  */
-extern unsigned int elf_flagehdr (Elf *__elf, Elf_Cmd __cmd,
-				  unsigned int __flags);
+extern unsigned int elf_flagehdr (Elf *elf, Elf_Cmd __cmd,
+				  unsigned int __flags)
+	/*@modifies elf @*/;
 /* Similarly for the ELF program header.  */
-extern unsigned int elf_flagphdr (Elf *__elf, Elf_Cmd __cmd,
-				  unsigned int __flags);
+extern unsigned int elf_flagphdr (Elf *elf, Elf_Cmd __cmd,
+				  unsigned int __flags)
+	/*@modifies elf @*/;
 /* Similarly for the given ELF section.  */
-extern unsigned int elf_flagscn (Elf_Scn *__scn, Elf_Cmd __cmd,
-				 unsigned int __flags);
+extern unsigned int elf_flagscn (Elf_Scn *scn, Elf_Cmd __cmd,
+				 unsigned int __flags)
+	/*@modifies scn @*/;
 /* Similarly for the given ELF data.  */
 extern unsigned int elf_flagdata (Elf_Data *__data, Elf_Cmd __cmd,
-				  unsigned int __flags);
+				  unsigned int __flags)
+	/*@*/;
 /* Similarly for the given ELF section header.  */
-extern unsigned int elf_flagshdr (Elf_Scn *__scn, Elf_Cmd __cmd,
-				  unsigned int __flags);
+extern unsigned int elf_flagshdr (Elf_Scn *scn, Elf_Cmd __cmd,
+				  unsigned int __flags)
+	/*@modifies scn @*/;
 
 
 /* Get data from section while translating from file representation
    to memory representation.  */
-extern Elf_Data *elf_getdata (Elf_Scn *__scn, Elf_Data *__data);
+/*@null@*/
+extern Elf_Data *elf_getdata (Elf_Scn *scn, /*@null@*/ Elf_Data *__data)
+	/*@modifies scn @*/;
 
 /* Get uninterpreted section content.  */
-extern Elf_Data *elf_rawdata (Elf_Scn *__scn, Elf_Data *__data);
+extern Elf_Data *elf_rawdata (Elf_Scn *scn, Elf_Data *__data)
+	/*@modifies scn @*/;
 
 /* Create new data descriptor for section SCN.  */
-extern Elf_Data *elf_newdata (Elf_Scn *__scn);
+extern Elf_Data *elf_newdata (Elf_Scn *scn)
+	/*@modifies scn @*/;
 
 
 /* Return pointer to string at OFFSET in section INDEX.  */
-extern char *elf_strptr (Elf *__elf, size_t __index, size_t __offset);
+/*@dependent@*/ /*@null@*/
+extern char *elf_strptr (Elf *elf, size_t __index, size_t __offset)
+	/*@modifies elf @*/;
 
 
 /* Return header of archive.  */
-extern Elf_Arhdr *elf_getarhdr (Elf *__elf);
+extern Elf_Arhdr *elf_getarhdr (Elf *elf)
+	/*@modifies elf @*/;
 
 /* Select archive element at OFFSET.  */
-extern size_t elf_rand (Elf *__elf, size_t __offset);
+extern size_t elf_rand (Elf *elf, size_t __offset)
+	/*@modifies elf @*/;
 
 /* Get symbol table of archhive.  */
-extern Elf_Arsym *elf_getarsym (Elf *__elf, size_t *__ptr);
+/*@null@*/
+extern Elf_Arsym *elf_getarsym (Elf *elf, /*@out@*/ size_t *ptr)
+	/*@modifies elf, ptr @*/;
 
 
 /* Control ELF descriptor.  */
-extern int elf_cntl (Elf *__elf, Elf_Cmd __cmd);
+extern int elf_cntl (Elf *elf, Elf_Cmd __cmd)
+	/*@modifies elf @*/;
 
 /* Retrieve uninterpreted file contents.  */
-extern char *elf_rawfile (Elf *__elf, size_t *__ptr);
+extern char *elf_rawfile (Elf *elf, size_t *ptr)
+	/*@modifies elf, *ptr @*/;
 
 
 /* Return size of array of COUNT elements of the type denoted by TYPE
@@ -278,56 +325,70 @@ extern char *elf_rawfile (Elf *__elf, size_t *__ptr);
    The result is based on version VERSION of the ELF standard.  */
 extern size_t elf32_fsize (Elf_Type __type, size_t __count,
 			   unsigned int __version)
-       __attribute__ ((__const__));
+       __attribute__ ((__const__))
+	/*@*/;
 /* Similar but this time the binary calls is ELFCLASS64.  */
 extern size_t elf64_fsize (Elf_Type __type, size_t __count,
 			   unsigned int __version)
-       __attribute__ ((__const__));
+       __attribute__ ((__const__))
+	/*@*/;
 
 
 /* Convert data structure from the representation in the file represented
    by ELF to their memory representation.  */
-extern Elf_Data *elf32_xlatetom (Elf_Data *__dest, const Elf_Data *__src,
-				 unsigned int __encode);
+extern Elf_Data *elf32_xlatetom (/*@returned@*/ Elf_Data *dest,
+				 const Elf_Data *__src, unsigned int __encode)
+	/*@modifies dest @*/;
 /* Same for 64 bit class.  */
-extern Elf_Data *elf64_xlatetom (Elf_Data *__dest, const Elf_Data *__src,
-				 unsigned int __encode);
+extern Elf_Data *elf64_xlatetom (/*@returned@*/ Elf_Data *dest,
+				 const Elf_Data *__src, unsigned int __encode)
+	/*@modifies dest @*/;
 
 /* Convert data structure from to the representation in memory
    represented by ELF file representation.  */
-extern Elf_Data *elf32_xlatetof (Elf_Data *__dest, const Elf_Data *__src,
-				 unsigned int __encode);
+extern Elf_Data *elf32_xlatetof (/*@returned@*/ Elf_Data *dest,
+				 const Elf_Data *__src, unsigned int __encode)
+	/*@modifies dest @*/;
 /* Same for 64 bit class.  */
-extern Elf_Data *elf64_xlatetof (Elf_Data *__dest, const Elf_Data *__src,
-				 unsigned int __encode);
+extern Elf_Data *elf64_xlatetof (/*@returned@*/ Elf_Data *dest,
+				 const Elf_Data *__src, unsigned int __encode)
+	/*@modifies dest @*/;
 
 
 /* Return error code of last failing function call.  This value is kept
    separately for each thread.  */
-extern int elf_errno (void);
+extern int elf_errno (void)
+	/*@*/;
 
 /* Return error string for ERROR.  If ERROR is zero, return error string
    for most recent error or NULL is none occurred.  If ERROR is -1 the
    behaviour is similar to the last case except that not NULL but a legal
    string is returned.  */
-extern const char *elf_errmsg (int __error);
+extern const char *elf_errmsg (int __error)
+	/*@*/;
 
 
 /* Coordinate ELF library and application versions.  */
-extern unsigned int elf_version (unsigned int __version);
+extern unsigned int elf_version (unsigned int __version)
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /* Set fill bytes used to fill holes in data structures.  */
-extern void elf_fill (int __fill);
+extern void elf_fill (int __fill)
+	/*@*/;
 
 /* Compute hash value.  */
 extern unsigned long int elf_hash (const char *__string)
-       __attribute__ ((__pure__));
+       __attribute__ ((__pure__))
+	/*@*/;
 
 
 /* Compute simple checksum from permanent parts of the ELF file.  */
-extern long int elf32_checksum (Elf *__elf);
+extern long int elf32_checksum (Elf *elf)
+	/*@modifies elf @*/;
 /* Similar but this time the binary calls is ELFCLASS64.  */
-extern long int elf64_checksum (Elf *__elf);
+extern long int elf64_checksum (Elf *elf)
+	/*@modifies elf @*/;
 
 #ifdef __cplusplus
 }

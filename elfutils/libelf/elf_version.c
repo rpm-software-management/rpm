@@ -29,9 +29,9 @@ int __libelf_version_initialized;
 unsigned int __libelf_version = EV_CURRENT;
 
 
+/*@-mods@*/
 unsigned int
-elf_version (version)
-     unsigned int version;
+elf_version (unsigned int version)
 {
   if (version == EV_NONE)
     return __libelf_version;
@@ -55,4 +55,5 @@ elf_version (version)
   __libelf_seterrno (ELF_E_UNKNOWN_VERSION);
   return EV_NONE;
 }
+/*@=mods@*/
 INTDEF(elf_version)

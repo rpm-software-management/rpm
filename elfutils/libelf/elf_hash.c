@@ -25,8 +25,7 @@
 #include <dl-hash.h>
 
 unsigned long int
-elf_hash (string)
-     const char *string;
+elf_hash (const char *string)
 {
   return _dl_elf_hash (string);
 }

@@ -34,8 +34,7 @@
 #endif
 
 ElfW2(LIBELFBITS,Phdr) *
-elfw2(LIBELFBITS,getphdr) (elf)
-     Elf *elf;
+elfw2(LIBELFBITS,getphdr) (Elf *elf)
 {
   ElfW2(LIBELFBITS,Phdr) *result;
 

@@ -26,8 +26,7 @@
 
 
 size_t
-elf_ndxscn (scn)
-     Elf_Scn *scn;
+elf_ndxscn (Elf_Scn *scn)
 {
   if (scn == NULL)
     return SHN_UNDEF;

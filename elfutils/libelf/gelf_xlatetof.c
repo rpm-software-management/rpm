@@ -26,11 +26,8 @@
 
 
 Elf_Data *
-gelf_xlatetof (elf, dest, src, encode)
-     Elf *elf;
-     Elf_Data *dest;
-     const Elf_Data * src;
-     unsigned int encode;
+gelf_xlatetof (Elf *elf, Elf_Data *dest, const Elf_Data * src,
+	       unsigned int encode)
 {
   if (elf == NULL)
     return NULL;

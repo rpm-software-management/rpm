@@ -131,151 +131,218 @@ typedef Elf64_Move GElf_Move;
 
 
 /* Get class of the file associated with ELF.  */
-extern int gelf_getclass (Elf *__elf);
+extern int gelf_getclass (Elf *__elf)
+	/*@*/;
 
 
 /* Return size of array of COUNT elemeents of the type denoted by TYPE
    in the external representation.  The binary class is taken from ELF.
    The result is based on version VERSION of the ELF standard.  */
 extern size_t gelf_fsize (Elf *__elf, Elf_Type __type, size_t __count,
-			  unsigned int __version);
+			  unsigned int __version)
+	/*@*/;
 
 /* Retrieve object file header.  */
-extern GElf_Ehdr *gelf_getehdr (Elf *__elf, GElf_Ehdr *__dest);
+/*@null@*/
+extern GElf_Ehdr *gelf_getehdr (Elf *elf, /*@returned@*/ /*@out@*/ GElf_Ehdr *dest)
+	/*@modifies elf, dest @*/;
 
 /* Update the ELF header.  */
-extern int gelf_update_ehdr (Elf *__elf, GElf_Ehdr *__src);
+extern int gelf_update_ehdr (Elf *elf, GElf_Ehdr *__src)
+	/*@modifies elf @*/;
 
 /* Create new ELF header if none exists.  */
-extern unsigned long int gelf_newehdr (Elf *__elf, int __class);
+extern unsigned long int gelf_newehdr (Elf *elf, int __class)
+	/*@modifies elf @*/;
 
 /* Retrieve section header.  */
-extern GElf_Shdr *gelf_getshdr (Elf_Scn *__scn, GElf_Shdr *__dst);
+/*@null@*/
+extern GElf_Shdr *gelf_getshdr (Elf_Scn *scn,
+				/*@returned@*/ /*@out@*/ GElf_Shdr *dst)
+	/*@modifies scn, dst @*/;
 
 /* Update section header.  */
-extern int gelf_update_shdr (Elf_Scn *__scn, GElf_Shdr *__src);
+extern int gelf_update_shdr (Elf_Scn *scn, GElf_Shdr *__src)
+	/*@modifies scn @*/;
 
 /* Retrieve program header table entry.  */
-extern GElf_Phdr *gelf_getphdr (Elf *__elf, int __ndx, GElf_Phdr *__dst);
+extern GElf_Phdr *gelf_getphdr (Elf *elf, int __ndx,
+				/*@returned@*/ /*@out@*/ GElf_Phdr *dst)
+	/*@modifies elf, dst @*/;
 
 /* Update the program header.  */
-extern int gelf_update_phdr (Elf *__elf, int __ndx, GElf_Phdr *__src);
+extern int gelf_update_phdr (Elf *elf, int __ndx, GElf_Phdr *__src)
+	/*@modifies elf @*/;
 
 /* Create new program header with PHNUM entries.  */
-extern unsigned long int gelf_newphdr (Elf *__elf, size_t __phnum);
+extern unsigned long int gelf_newphdr (Elf *elf, size_t __phnum)
+	/*@modifies elf @*/;
 
 
 /* Convert data structure from the representation in the file represented
    by ELF to their memory representation.  */
-extern Elf_Data *gelf_xlatetom (Elf *__elf, Elf_Data *__dest,
-				const Elf_Data *__src, unsigned int __encode);
+extern Elf_Data *gelf_xlatetom (Elf *__elf, Elf_Data *dest,
+				const Elf_Data *__src, unsigned int __encode)
+	/*@modifies dest @*/;
 
 /* Convert data structure from to the representation in memory
    represented by ELF file representation.  */
-extern Elf_Data *gelf_xlatetof (Elf *__elf, Elf_Data *__dest,
-				const Elf_Data *__src, unsigned int __encode);
+extern Elf_Data *gelf_xlatetof (Elf *__elf, Elf_Data *dest,
+				const Elf_Data *__src, unsigned int __encode)
+	/*@modifies dest @*/;
 
 
 /* Retrieve REL relocation info at the given index.  */
-extern GElf_Rel *gelf_getrel (Elf_Data *__data, int __ndx, GElf_Rel *__dst);
+/*@null@*/
+extern GElf_Rel *gelf_getrel (Elf_Data *__data, int __ndx,
+			      /*@returned@*/ /*@out@*/ GElf_Rel *dst)
+	/*@modifies dst @*/;
 
 /* Retrieve RELA relocation info at the given index.  */
-extern GElf_Rela *gelf_getrela (Elf_Data *__data, int __ndx, GElf_Rela *__dst);
+/*@null@*/
+extern GElf_Rela *gelf_getrela (Elf_Data *__data, int __ndx,
+				/*@returned@*/ /*@out@*/ GElf_Rela *dst)
+	/*@modifies dst @*/;
 
 /* Update REL relocation information at given index.  */
-extern int gelf_update_rel (Elf_Data *__dst, int __ndx, GElf_Rel *__src);
+extern int gelf_update_rel (Elf_Data *__dst, int __ndx, GElf_Rel *__src)
+	/*@*/;
 
 /* Update RELA relocation information at given index.  */
-extern int gelf_update_rela (Elf_Data *__dst, int __ndx, GElf_Rela *__src);
+extern int gelf_update_rela (Elf_Data *__dst, int __ndx, GElf_Rela *__src)
+	/*@*/;
 
 
 /* Retrieve symbol information from the symbol table at the given index.  */
-extern GElf_Sym *gelf_getsym (Elf_Data *__data, int __ndx, GElf_Sym *__dst);
+/*@null@*/
+extern GElf_Sym *gelf_getsym (Elf_Data *__data, int __ndx,
+			      /*@returned@*/ /*@out@*/ GElf_Sym *dst)
+	/*@modifies dst @*/;
 
 /* Update symbol information in the symbol table at the given index.  */
-extern int gelf_update_sym (Elf_Data *__data, int __ndx, GElf_Sym *__src);
+extern int gelf_update_sym (Elf_Data *__data, int __ndx, GElf_Sym *__src)
+	/*@*/;
 
 
 /* Retrieve symbol information and separate section index from the
    symbol table at the given index.  */
+/*@null@*/
 extern GElf_Sym *gelf_getsymshndx (Elf_Data *__symdata, Elf_Data *__shndxdata,
-				   int __ndx, GElf_Sym *__sym,
-				   Elf32_Word *__xshndx);
+				   int __ndx, GElf_Sym *dst,
+				   Elf32_Word *dstshndx)
+	/*@modifies dst, dstshndx @*/;
 
 /* Update symbol information and separate section index in the symbol
    table at the given index.  */
 extern int gelf_update_symshndx (Elf_Data *__symdata, Elf_Data *__shndxdata,
 				 int __ndx, GElf_Sym *__sym,
-				 Elf32_Word __xshndx);
+				 Elf32_Word __xshndx)
+	/*@*/;
 
 
 /* Retrieve additional symbol information from the symbol table at the
    given index.  */
+/*@null@*/
 extern GElf_Syminfo *gelf_getsyminfo (Elf_Data *__data, int __ndx,
-				      GElf_Syminfo *__dst);
+				      /*@returned@*/ /*@out@*/ GElf_Syminfo *dst)
+	/*@modifies dst @*/;
 
 /* Update additional symbol information in the symbol table at the
    given index.  */
 extern int gelf_update_syminfo (Elf_Data *__data, int __ndx,
-				GElf_Syminfo *__src);
+				GElf_Syminfo *__src)
+	/*@*/;
 
 
 /* Get information from dynamic table at the given index.  */
-extern GElf_Dyn *gelf_getdyn (Elf_Data *__data, int __ndx, GElf_Dyn *__dst);
+/*@null@*/
+extern GElf_Dyn *gelf_getdyn (Elf_Data *__data, int __ndx,
+			      /*@returned@*/ /*@out@*/ GElf_Dyn *dst)
+	/*@modifies dst @*/;
 
 /* Update information in dynamic table at the given index.  */
-extern int gelf_update_dyn (Elf_Data *__dst, int __ndx, GElf_Dyn *__src);
+extern int gelf_update_dyn (Elf_Data *__dst, int __ndx, GElf_Dyn *__src)
+	/*@*/;
 
 
 /* Get move structure at the given index.  */
-extern GElf_Move *gelf_getmove (Elf_Data *__data, int __ndx, GElf_Move *__dst);
+/*@null@*/
+extern GElf_Move *gelf_getmove (Elf_Data *__data, int __ndx,
+				/*@returned@*/ /*@out@*/ GElf_Move *dst)
+	/*@modifies dst @*/;
 
 /* Update move structure at the given index.  */
 extern int gelf_update_move (Elf_Data *__data, int __ndx,
-			     GElf_Move *__src);
+			     GElf_Move *__src)
+	/*@*/;
 
 
 /* Retrieve symbol version information at given index.  */
+/*@null@*/
 extern GElf_Versym *gelf_getversym (Elf_Data *__data, int __ndx,
-				    GElf_Versym *__dst);
+				    /*@returned@*/ /*@out@*/ GElf_Versym *dst)
+	/*@modifies dst @*/;
 
 /* Update symbol version information.  */
-extern int gelf_update_versym (Elf_Data *__data, int __ndx, GElf_Versym __src);
+extern int gelf_update_versym (Elf_Data *__data, int __ndx, GElf_Versym __src)
+	/*@*/;
 
 
 /* Retrieve required symbol version information at given offset.  */
+/*@null@*/
 extern GElf_Verneed *gelf_getverneed (Elf_Data *__data, int __offset,
-				      GElf_Verneed *__dst);
+				      /*@returned@*/ /*@out@*/ GElf_Verneed *dst)
+	/*@modifies dst @*/;
 
 /* Update required symbol version information.  */
 extern int gelf_update_verneed (Elf_Data *__data, int __offset,
-				GElf_Verneed *__src);
+				GElf_Verneed *__src)
+	/*@*/;
 
 /* Retrieve additional required symbol version information at given offset.  */
+/*@null@*/
 extern GElf_Vernaux *gelf_getvernaux (Elf_Data *__data, int __offset,
-				      GElf_Vernaux *__dst);
+				      /*@returned@*/ /*@out@*/ GElf_Vernaux *dst)
+	/*@modifies dst @*/;
 
 /* Update additional required symbol version information.  */
 extern int gelf_update_vernaux (Elf_Data *__data, int __offset,
-				GElf_Vernaux *__src);
+				GElf_Vernaux *__src)
+	/*@*/;
 
 
 /* Retrieve symbol version definition information at given offset.  */
+/*@null@*/
 extern GElf_Verdef *gelf_getverdef (Elf_Data *__data, int __offset,
-				    GElf_Verdef *__dst);
+				    /*@returned@*/ /*@out@*/ GElf_Verdef *dst)
+	/*@modifies dst @*/;
 
 /* Update symbol version definition information.  */
 extern int gelf_update_verdef (Elf_Data *__data, int __offset,
-			       GElf_Verdef *__src);
+			       GElf_Verdef *__src)
+	/*@*/;
 
 /* Retrieve additional symbol version definition information at given
    offset.  */
+/*@null@*/
 extern GElf_Verdaux *gelf_getverdaux (Elf_Data *__data, int __offset,
-				      GElf_Verdaux *__dst);
+				      /*@returned@*/ /*@out@*/ GElf_Verdaux *dst)
+	/*@modifies dst @*/;
 
 /* Update additional symbol version definition information.  */
 extern int gelf_update_verdaux (Elf_Data *__data, int __offset,
-				GElf_Verdaux *__src);
+				GElf_Verdaux *__src)
+	/*@*/;
+
+
+/* Retrieve uninterpreted chunk of the file contents.  */
+/*@null@*/
+extern char *gelf_rawchunk (Elf *__elf, GElf_Off __offset, GElf_Word __size)
+	/*@*/;
+
+/* Release uninterpreted chunk of the file contents.  */
+extern void gelf_freechunk (Elf *__elf, /*@only@*/ char *ptr)
+	/*@modifies ptr @*/;
 
 #ifdef __cplusplus
 }

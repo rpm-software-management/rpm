@@ -37,6 +37,7 @@
 static int
 ELFW(default_ehdr,LIBELFBITS) (Elf *elf, ElfW2(LIBELFBITS,Ehdr) *ehdr,
 			       size_t shnum, int *change_bop)
+	/*@modifies elf, ehdr, *change_bop @*/
 {
   /* Always write the magic bytes.  */
   if (memcmp (&ehdr->e_ident[EI_MAG0], ELFMAG, SELFMAG) != 0)
@@ -177,7 +178,7 @@ __elfw2(LIBELFBITS,updatenull) (Elf *elf, int *change_bop, size_t shnum)
 
 	      assert (shdr != NULL);
 	      sh_entsize = shdr->sh_entsize;
-	      sh_align = shdr->sh_addralign ?: 1;
+	      sh_align = shdr->sh_addralign ? shdr->sh_addralign : 1;
 
 	      /* Set the sh_entsize value if we can reliably detect it.  */
 	      switch (shdr->sh_type)

@@ -26,9 +26,7 @@
 
 
 GElf_Ehdr *
-gelf_getehdr (elf, dest)
-     Elf *elf;
-     GElf_Ehdr *dest;
+gelf_getehdr (Elf *elf, GElf_Ehdr *dest)
 {
   GElf_Ehdr *result = NULL;
 

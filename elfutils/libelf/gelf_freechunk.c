@@ -27,9 +27,7 @@
 
 
 void
-gelf_freechunk (elf, ptr)
-     Elf *elf;
-     char *ptr;
+gelf_freechunk (Elf *elf, char *ptr)
 {
   if (elf == NULL)
     /* No valid descriptor.  */

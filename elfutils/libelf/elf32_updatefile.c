@@ -261,6 +261,7 @@ __elfw2(LIBELFBITS,updatemmap) (Elf *elf, int change_bo, size_t shnum)
 /* Helper function to write out fill bytes.  */
 static int
 fill (int fd, off_t pos, size_t len, char *fillbuf, size_t *filledp)
+	/*@modifies fillbuf, filledp @*/
 {
   size_t filled = *filledp;
 

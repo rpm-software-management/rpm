@@ -28,10 +28,7 @@
 
 
 size_t
-elfw2(LIBELFBITS, fsize) (type, count, version)
-     Elf_Type type;
-     size_t count;
-     unsigned int version;
+elfw2(LIBELFBITS, fsize) (Elf_Type type, size_t count, unsigned int version)
 {
   /* We do not have differences between file and memory sizes.  Better
      not since otherwise `mmap' would not work.  */
@@ -55,5 +52,8 @@ elfw2(LIBELFBITS, fsize) (type, count, version)
 	  * __libelf_type_sizes[0][ELFW(ELFCLASS,LIBELFBITS) - 1][type]);
 #endif
 }
+
+#if !defined(__LCLINT__)
 #define local_strong_alias(n1, n2) strong_alias (n1, n2)
 local_strong_alias (elfw2(LIBELFBITS, fsize), __elfw2(LIBELFBITS, msize))
+#endif

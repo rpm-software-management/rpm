@@ -38,7 +38,8 @@
 
 
 /* Defined separately.  */
-extern size_t next_prime (size_t seed);
+extern size_t next_prime (size_t seed)
+	/*@*/;
 
 
 /* Table entry type.  */

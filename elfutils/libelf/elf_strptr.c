@@ -26,10 +26,7 @@
 
 
 char *
-elf_strptr (elf, index, offset)
-     Elf *elf;
-     size_t index;
-     size_t offset;
+elf_strptr (Elf *elf, size_t index, size_t offset)
 {
   char *result = NULL;
   Elf_ScnList *runp;

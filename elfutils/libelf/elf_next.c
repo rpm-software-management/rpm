@@ -27,8 +27,7 @@
 
 
 Elf_Cmd
-elf_next (elf)
-     Elf *elf;
+elf_next (Elf *elf)
 {
   Elf *parent;
 

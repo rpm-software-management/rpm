@@ -39,6 +39,7 @@
       ? SHT_NUM + Sh_Type - SHT_LOSUNW					      \
       : 0))
 
+/*@unchecked@*/
 static const struct
 {
   Elf_Type type;
@@ -106,6 +107,7 @@ static const struct
 static void
 convert_data (Elf_Scn *scn, int version, int eclass, int data,
 	      size_t size, size_t type)
+	/*@modifies scn @*/
 {
 #if ALLOW_ALIGNED
   /* No need to compute the alignment requirement of the host.  */
@@ -182,7 +184,7 @@ __libelf_set_rawdata (Elf_Scn *scn)
 
   if (elf->class == ELFCLASS32)
     {
-      Elf32_Shdr *shdr = scn->shdr.e32 ?: INTUSE(elf32_getshdr) (scn);
+      Elf32_Shdr *shdr = scn->shdr.e32 ? scn->shdr.e32 : INTUSE(elf32_getshdr) (scn);
 
       if (shdr == NULL)
 	/* Something went terribly wrong.  */
@@ -195,7 +197,7 @@ __libelf_set_rawdata (Elf_Scn *scn)
     }
   else
     {
-      Elf64_Shdr *shdr = scn->shdr.e64 ?: INTUSE(elf64_getshdr) (scn);
+      Elf64_Shdr *shdr = scn->shdr.e64 ? scn->shdr.e64 : INTUSE(elf64_getshdr) (scn);
 
       if (shdr == NULL)
 	/* Something went terribly wrong.  */
@@ -305,9 +307,7 @@ __libelf_set_rawdata (Elf_Scn *scn)
 
 
 Elf_Data *
-elf_getdata (scn, data)
-     Elf_Scn *scn;
-     Elf_Data *data;
+elf_getdata (Elf_Scn *scn, Elf_Data *data)
 {
   Elf_Data *result = NULL;
   Elf *elf;

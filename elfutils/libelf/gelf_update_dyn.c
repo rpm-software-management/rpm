@@ -26,10 +26,7 @@
 
 
 int
-gelf_update_dyn (data, ndx, src)
-     Elf_Data *data;
-     int ndx;
-     GElf_Dyn *src;
+gelf_update_dyn (Elf_Data *data, int ndx, GElf_Dyn *src)
 {
   Elf_Data_Scn *data_scn = (Elf_Data_Scn *) data;
   Elf_Scn *scn;

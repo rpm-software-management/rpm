@@ -26,10 +26,7 @@
 
 
 unsigned int
-elf_flagscn (scn, cmd, flags)
-     Elf_Scn *scn;
-     Elf_Cmd cmd;
-     unsigned int flags;
+elf_flagscn (Elf_Scn *scn, Elf_Cmd cmd, unsigned int flags)
 {
   unsigned int result;
 

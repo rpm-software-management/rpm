@@ -27,10 +27,7 @@
 
 
 GElf_Vernaux *
-gelf_getvernaux (data, offset, dst)
-     Elf_Data *data;
-     int offset;
-     GElf_Vernaux *dst;
+gelf_getvernaux (Elf_Data *data, int offset, GElf_Vernaux *dst)
 {
   GElf_Vernaux *result;
 

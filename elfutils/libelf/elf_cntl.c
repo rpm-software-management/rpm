@@ -25,9 +25,7 @@
 
 
 int
-elf_cntl (elf, cmd)
-     Elf *elf;
-     Elf_Cmd cmd;
+elf_cntl (Elf *elf, Elf_Cmd cmd)
 {
   int result = 0;
 

@@ -42,7 +42,8 @@
 
 
 /* Defined separately.  */
-extern size_t next_prime (size_t seed);
+extern size_t next_prime (size_t seed)
+	/*@*/;
 
 
 /* Set default values.  */
@@ -78,6 +79,7 @@ struct CONCAT(PREFIX,fshash)
 
 
 /* Constructor for the hashing table.  */
+/*@null@*/
 CLASS struct CONCAT(PREFIX,fshash) *
 CONCAT(PREFIX,fshash_init) (size_t nelems)
 {
@@ -110,7 +112,8 @@ CONCAT(PREFIX,fshash_init) (size_t nelems)
 
 #ifndef NO_FINI_FCT
 CLASS void
-CONCAT(PREFIX,fshash_fini) (struct CONCAT(PREFIX,fshash) *htab)
+CONCAT(PREFIX,fshash_fini) (/*@only@*/ struct CONCAT(PREFIX,fshash) *htab)
+	/*@modifies htab @*/
 {
   free (htab);
 }
@@ -120,6 +123,7 @@ CONCAT(PREFIX,fshash_fini) (struct CONCAT(PREFIX,fshash) *htab)
 static struct CONCAT(PREFIX,fshashent) *
 CONCAT(PREFIX,fshash_lookup) (struct CONCAT(PREFIX,fshash) *htab,
 			      HASHTYPE hval, TYPE *data)
+	/*@*/
 {
   size_t idx = 1 + hval % htab->nslots;
 
@@ -157,6 +161,7 @@ CLASS int
 __attribute__ ((unused))
 CONCAT(PREFIX,fshash_insert) (struct CONCAT(PREFIX,fshash) *htab,
 			      const char *str, size_t len, TYPE *data)
+	/*@*/
 {
   HASHTYPE hval = HASHFCT (str, len ?: strlen (str));
   struct CONCAT(PREFIX,fshashent) *slot;
@@ -206,6 +211,7 @@ CLASS int
 __attribute__ ((unused))
 CONCAT(PREFIX,fshash_overwrite) (struct CONCAT(PREFIX,fshash) *htab,
 				 const char *str, size_t len, TYPE *data)
+	/*@*/
 {
   HASHTYPE hval = HASHFCT (str, len ?: strlen (str));
   struct CONCAT(PREFIX,fshashent) *slot;
@@ -222,6 +228,7 @@ CONCAT(PREFIX,fshash_overwrite) (struct CONCAT(PREFIX,fshash) *htab,
 }
 
 
+/*@null@*/
 const CLASS TYPE *
 CONCAT(PREFIX,fshash_find) (const struct CONCAT(PREFIX,fshash) *htab,
 			    const char *str, size_t len, TYPE *data)

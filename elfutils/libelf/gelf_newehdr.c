@@ -26,9 +26,7 @@
 
 
 unsigned long int
-gelf_newehdr (elf, class)
-     Elf *elf;
-     int class;
+gelf_newehdr (Elf *elf, int class)
 {
   return (class == ELFCLASS32
 	  ? (unsigned long int) INTUSE(elf32_newehdr) (elf)

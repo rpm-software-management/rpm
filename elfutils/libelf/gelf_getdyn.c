@@ -27,10 +27,7 @@
 
 
 GElf_Dyn *
-gelf_getdyn (data, ndx, dst)
-     Elf_Data *data;
-     int ndx;
-     GElf_Dyn *dst;
+gelf_getdyn (Elf_Data *data, int ndx, GElf_Dyn *dst)
 {
   Elf_Data_Scn *data_scn = (Elf_Data_Scn *) data;
   GElf_Dyn *result = NULL;

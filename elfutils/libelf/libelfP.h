@@ -22,6 +22,10 @@
 #include <gelf.h>
 #include <stdint.h>
 
+#if defined(__LCLINT__)
+typedef int bool;
+#endif
+
 /* gettext helper macros.  */
 #define _(Str) dgettext ("libelf", Str)
 
@@ -242,6 +246,7 @@ struct Elf
   size_t maximum_size;
 
   /* Address to which the file was mapped.  NULL if not mapped.  */
+/*@null@*/
   void *map_address;
 
   /* Describes the way the memory was allocated and if the dirty bit is
@@ -251,6 +256,7 @@ struct Elf
 
   /* When created for an archive member this points to the descriptor
      for the archive. */
+/*@null@*/
   Elf *parent;
 
   /* Lock to handle multithreaded programs.  */
@@ -353,15 +359,19 @@ struct Elf
 
 /* Type of the conversion functions.  These functions will convert the
    byte order.  */
-typedef void (*xfct_t) (void *, const void *, size_t, int);
+typedef void (*xfct_t) (void *, const void *, size_t, int)
+	/*@*/;
 
 /* The table with the function pointers.  */
+/*@unchecked@*/
 extern const xfct_t __elf_xfctstom[EV_NUM - 1][EV_NUM - 1][ELFCLASSNUM - 1][ELF_T_NUM] attribute_hidden;
+/*@unchecked@*/
 extern const xfct_t __elf_xfctstof[EV_NUM - 1][EV_NUM - 1][ELFCLASSNUM - 1][ELF_T_NUM] attribute_hidden;
 
 
 /* Array with sizes of the external types indexed by ELF version, binary
    class, and type. */
+/*@unchecked@*/
 extern const size_t __libelf_type_sizes[EV_NUM - 1][ELFCLASSNUM - 1][ELF_T_NUM] attribute_hidden;
 /* We often have to access the size for a type in the current version.  */
 #if EV_NUM != 2
@@ -373,12 +383,15 @@ extern const size_t __libelf_type_sizes[EV_NUM - 1][ELFCLASSNUM - 1][ELF_T_NUM] 
 #endif
 
 /* Currently selected version of the ELF specification.  */
+/*@unchecked@*/
 extern unsigned int __libelf_version attribute_hidden;
 
 /* The byte value used for filling gaps.  */
+/*@unchecked@*/
 extern int __libelf_fill_byte attribute_hidden;
 
 /* Nonzero if the version was set.  */
+/*@unchecked@*/
 extern int __libelf_version_initialized attribute_hidden;
 
 
@@ -388,109 +401,155 @@ extern int __libelf_version_initialized attribute_hidden;
    These functions cannot be marked internal since they are aliases
    of the export elfXX_fsize functions.*/
 extern size_t __elf32_msize (Elf_Type __type, size_t __count,
-			     unsigned int __version);
+			     unsigned int __version)
+	/*@*/;
 extern size_t __elf64_msize (Elf_Type __type, size_t __count,
-			     unsigned int __version);
+			     unsigned int __version)
+	/*@*/;
 
 
 /* Create Elf descriptor from memory image.  */
+/*@null@*/
 extern Elf *__libelf_read_mmaped_file (int fildes, void *map_address,
 				       off_t offset, size_t maxsize,
-				       Elf_Cmd cmd, Elf *parent)
-     internal_function;
+				       Elf_Cmd cmd, /*@null@*/ Elf *parent)
+     internal_function
+	/*@*/;
 
 /* Set error value.  */
-extern void __libelf_seterrno (int value) internal_function;
+extern void __libelf_seterrno (int value) internal_function
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /* Get the next archive header.  */
-extern int __libelf_next_arhdr (Elf *elf) internal_function;
+extern int __libelf_next_arhdr (Elf *elf) internal_function
+	/*@modifies elf @*/;
 
 /* Read all of the file associated with the descriptor.  */
-extern char *__libelf_readall (Elf *elf) internal_function;
+/*@null@*/
+extern char *__libelf_readall (Elf *elf) internal_function
+	/*@modifies elf @*/;
 
 /* Read the complete section table and convert the byte order if necessary.  */
-extern int __libelf_readsections (Elf *elf) internal_function;
+extern int __libelf_readsections (Elf *elf) internal_function
+	/*@*/;
 
 /* Store the information for the raw data in the `rawdata_list' element.  */
-extern int __libelf_set_rawdata (Elf_Scn *scn) internal_function;
+extern int __libelf_set_rawdata (Elf_Scn *scn) internal_function
+	/*@modifies scn @*/;
 
 
 /* Helper functions for elf_update.  */
 extern off_t __elf32_updatenull (Elf *elf, int *change_bop, size_t shnum)
-     internal_function;
+     internal_function
+	/*@modifies elf, *change_bop @*/;
 extern off_t __elf64_updatenull (Elf *elf, int *change_bop, size_t shnum)
-     internal_function;
+     internal_function
+	/*@modifies elf, *change_bop @*/;
 
 extern int __elf32_updatemmap (Elf *elf, int change_bo, size_t shnum)
-     internal_function;
+     internal_function
+	/*@modifies elf @*/;
 extern int __elf64_updatemmap (Elf *elf, int change_bo, size_t shnum)
-     internal_function;
+     internal_function
+	/*@modifies elf @*/;
 extern int __elf32_updatefile (Elf *elf, int change_bo, size_t shnum)
-     internal_function;
+     internal_function
+	/*@modifies elf @*/;
 extern int __elf64_updatefile (Elf *elf, int change_bo, size_t shnum)
-     internal_function;
+     internal_function
+	/*@modifies elf @*/;
 
 
 /* Alias for exported functions to avoid PLT entries.  */
 extern Elf *__elf_begin_internal (int __fildes, Elf_Cmd __cmd, Elf *__ref)
-     attribute_hidden;
-extern Elf32_Ehdr *__elf32_getehdr_internal (Elf *__elf) attribute_hidden;
-extern Elf64_Ehdr *__elf64_getehdr_internal (Elf *__elf) attribute_hidden;
-extern Elf32_Ehdr *__elf32_newehdr_internal (Elf *__elf) attribute_hidden;
-extern Elf64_Ehdr *__elf64_newehdr_internal (Elf *__elf) attribute_hidden;
-extern Elf32_Phdr *__elf32_getphdr_internal (Elf *__elf) attribute_hidden;
-extern Elf64_Phdr *__elf64_getphdr_internal (Elf *__elf) attribute_hidden;
+     attribute_hidden
+	/*@*/;
+extern Elf32_Ehdr *__elf32_getehdr_internal (Elf *__elf) attribute_hidden
+	/*@*/;
+extern Elf64_Ehdr *__elf64_getehdr_internal (Elf *__elf) attribute_hidden
+	/*@*/;
+extern Elf32_Ehdr *__elf32_newehdr_internal (Elf *__elf) attribute_hidden
+	/*@*/;
+extern Elf64_Ehdr *__elf64_newehdr_internal (Elf *__elf) attribute_hidden
+	/*@*/;
+extern Elf32_Phdr *__elf32_getphdr_internal (Elf *__elf) attribute_hidden
+	/*@*/;
+extern Elf64_Phdr *__elf64_getphdr_internal (Elf *__elf) attribute_hidden
+	/*@*/;
 extern Elf32_Phdr *__elf32_newphdr_internal (Elf *__elf, size_t __cnt)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern Elf64_Phdr *__elf64_newphdr_internal (Elf *__elf, size_t __cnt)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern int __elf_getshnum_internal (Elf *__elf, size_t *__dst)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern int __elf_getshstrndx_internal (Elf *__elf, size_t *__dst)
-     attribute_hidden;
-extern Elf32_Shdr *__elf32_getshdr_internal (Elf_Scn *__scn) attribute_hidden;
-extern Elf64_Shdr *__elf64_getshdr_internal (Elf_Scn *__scn) attribute_hidden;
+     attribute_hidden
+	/*@*/;
+extern Elf32_Shdr *__elf32_getshdr_internal (Elf_Scn *__scn) attribute_hidden
+	/*@*/;
+extern Elf64_Shdr *__elf64_getshdr_internal (Elf_Scn *__scn) attribute_hidden
+	/*@*/;
 extern Elf_Scn *__elf_getscn_internal (Elf *__elf, size_t __index)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern Elf_Scn *__elf_nextscn_internal (Elf *__elf, Elf_Scn *__scn)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern Elf_Data *__elf_getdata_internal (Elf_Scn *__scn, Elf_Data *__data)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern Elf_Data *__elf_rawdata_internal (Elf_Scn *__scn, Elf_Data *__data)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern char *__elf_strptr_internal (Elf *__elf, size_t __index,
-				    size_t __offset) attribute_hidden;
+				    size_t __offset) attribute_hidden
+	/*@*/;
 extern Elf_Data *__elf32_xlatetom_internal (Elf_Data *__dest,
 					    const Elf_Data *__src,
 					    unsigned int __encode)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern Elf_Data *__elf64_xlatetom_internal (Elf_Data *__dest,
 					    const Elf_Data *__src,
 					    unsigned int __encode)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern Elf_Data *__elf32_xlatetof_internal (Elf_Data *__dest,
 					    const Elf_Data *__src,
 					    unsigned int __encode)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern Elf_Data *__elf64_xlatetof_internal (Elf_Data *__dest,
 					    const Elf_Data *__src,
 					    unsigned int __encode)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern unsigned int __elf_version_internal (unsigned int __version)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern unsigned long int __elf_hash_internal (const char *__string)
-       __attribute__ ((__pure__, visibility ("hidden")));
-extern long int __elf32_checksum_internal (Elf *__elf) attribute_hidden;
-extern long int __elf64_checksum_internal (Elf *__elf) attribute_hidden;
+       __attribute__ ((__pure__, visibility ("hidden")))
+	/*@*/;
+extern long int __elf32_checksum_internal (Elf *__elf) attribute_hidden
+	/*@*/;
+extern long int __elf64_checksum_internal (Elf *__elf) attribute_hidden
+	/*@*/;
 
 
 extern size_t __gelf_fsize_internal (Elf *__elf, Elf_Type __type,
 				     size_t __count, unsigned int __version)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern GElf_Shdr *__gelf_getshdr_internal (Elf_Scn *__scn, GElf_Shdr *__dst)
-     attribute_hidden;
+     attribute_hidden
+	/*@*/;
 extern GElf_Sym *__gelf_getsym_internal (Elf_Data *__data, int __ndx,
-					 GElf_Sym *__dst) attribute_hidden;
+					 GElf_Sym *__dst) attribute_hidden
+	/*@*/;
 
 
 /* We often have to update a flag iff a value changed.  Make this

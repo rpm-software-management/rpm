@@ -29,8 +29,7 @@
 
 
 Elf_Scn *
-elf_newscn (elf)
-     Elf *elf;
+elf_newscn (Elf *elf)
 {
   Elf_Scn *result = NULL;
   bool first = false;

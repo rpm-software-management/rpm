@@ -26,10 +26,7 @@
 
 
 unsigned int
-elf_flagdata (data, cmd, flags)
-     Elf_Data *data;
-     Elf_Cmd cmd;
-     unsigned int flags;
+elf_flagdata (Elf_Data *data, Elf_Cmd cmd, unsigned int flags)
 {
   Elf_Data_Scn *data_scn;
   unsigned int result;
