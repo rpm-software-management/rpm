@@ -1000,7 +1000,8 @@ int main(int argc, char ** argv) {
 	if (test) uninstallFlags |= UNINSTALL_TEST;
 	if (noDeps) interfaceFlags |= RPMUNINSTALL_NODEPS;
 
-	doUninstall(rootdir, argv + optind, uninstallFlags, interfaceFlags);
+	ec = doUninstall(rootdir, argv + optind, uninstallFlags, 
+		interfaceFlags);
 	break;
 
       case MODE_INSTALL:
