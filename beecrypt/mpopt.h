@@ -82,8 +82,10 @@
 #  define ASM_MPADDSQRTRC
 # elif defined(OPTIMIZE_IA64)
 #  define ASM_MPZERO
+#  define ASM_MPCOPY
 #  define ASM_MPADD
 #  define ASM_MPSUB
+#  define ASM_MPMULTWO
 #  define ASM_MPSETMUL
 #  define ASM_MPADDMUL
 # elif defined(OPTIMIZE_M68K)

@@ -19,6 +19,9 @@
 
 /*!\file aes.c
  * \brief AES block cipher, as specified by NIST FIPS 197.
+ *
+ * Based on Brian Gladman's AES implementation.
+ *
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup BC_aes_m BC_m
  */
@@ -786,15 +789,15 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 			while (1)
 			{
 				t = rk[3];
-				rk[4] = rk[0] ^
-					(_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
+				t = (_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
 					(_ae4[(t >>  8) & 0xff] & 0x00ff0000U) ^
 					(_ae4[(t      ) & 0xff] & 0x0000ff00U) ^
 					(_ae4[(t >> 24)       ] & 0x000000ffU) ^
 					 _arc[i];
-				rk[5] = rk[1] ^ rk[4];
-				rk[6] = rk[2] ^ rk[5];
-				rk[7] = rk[3] ^ rk[6];
+				rk[4] = (t ^= rk[0]);
+				rk[5] = (t ^= rk[1]);
+				rk[6] = (t ^= rk[2]);
+				rk[7] = (t ^= rk[3]);
 				if (++i == 10)
 					break;
 				rk += 4;
@@ -805,19 +808,19 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 			while (1)
 			{
 				t = rk[5];
-				rk[ 6] = rk[0] ^
-					(_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
+				t = (_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
 					(_ae4[(t >>  8) & 0xff] & 0x00ff0000U) ^
 					(_ae4[(t      ) & 0xff] & 0x0000ff00U) ^
 					(_ae4[(t >> 24)       ] & 0x000000ffU) ^
 					 _arc[i];
-				rk[ 7] = rk[1] ^ rk[ 6];
-				rk[ 8] = rk[2] ^ rk[ 7];
-				rk[ 9] = rk[3] ^ rk[ 8];
+				rk[6] = (t ^= rk[0]);
+				rk[7] = (t ^= rk[1]);
+				rk[8] = (t ^= rk[2]);
+				rk[9] = (t ^= rk[3]);
 				if (++i == 8)
 					break;
-				rk[10] = rk[4] ^ rk[ 9];
-				rk[11] = rk[5] ^ rk[10];
+				rk[10] = (t ^= rk[4]);
+				rk[11] = (t ^= rk[5]);
 				rk += 6;
 			}
 		}
@@ -826,26 +829,25 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 			while (1)
 			{
 				t = rk[7];
-				rk[8] = rk[0] ^
-					(_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
+				t = (_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
 					(_ae4[(t >>  8) & 0xff] & 0x00ff0000U) ^
 					(_ae4[(t      ) & 0xff] & 0x0000ff00U) ^
 					(_ae4[(t >> 24)       ] & 0x000000ffU) ^
 					 _arc[i];
-				rk[ 9] = rk[1] ^ rk[ 8];
-				rk[10] = rk[2] ^ rk[ 9];
-				rk[11] = rk[3] ^ rk[10];
+				rk[8] = (t ^= rk[0]);
+				rk[9] = (t ^= rk[1]);
+				rk[10] = (t ^= rk[2]);
+				rk[11] = (t ^= rk[3]);
 				if (++i == 7)
 					break;
-				t = rk[7];
-				rk[12] = rk[4] ^
-					(_ae4[(t >> 16) & 0xff] & 0xff000000U) ^
-					(_ae4[(t >>  8) & 0xff] & 0x00ff0000U) ^
-					(_ae4[(t      ) & 0xff] & 0x0000ff00U) ^
-					(_ae4[(t >> 24)       ] & 0x000000ffU);
-				rk[13] = rk[5] ^ rk[12];
-				rk[14] = rk[6] ^ rk[13];
-				rk[15] = rk[7] ^ rk[14];
+				t = (_ae4[(t >> 24)       ] & 0xff000000U) ^
+					(_ae4[(t >> 16) & 0xff] & 0x00ff0000U) ^
+					(_ae4[(t >>  8) & 0xff] & 0x0000ff00U) ^
+					(_ae4[(t      ) & 0xff] & 0x000000ffU);
+				rk[12] = (t ^= rk[4]);
+				rk[13] = (t ^= rk[5]);
+				rk[14] = (t ^= rk[6]);
+				rk[15] = (t ^= rk[7]);
 				rk += 8;
 			}
 		}

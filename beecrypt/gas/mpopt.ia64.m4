@@ -172,6 +172,49 @@ dnl	return carry
 C_FUNCTION_END(mpsub)
 
 
+C_FUNCTION_BEGIN(mpmultwo)
+	.prologue
+	alloc saved_pfs = ar.pfs,2,6,0,8
+	mov saved_lc = ar.lc
+	mov saved_pr = pr
+	sub sze = in0,r0,1;;
+
+dnl	adjust addresses
+	shladd dst = sze,3,in1
+	shladd src = sze,3,in1
+
+dnl	prepare modulo-scheduled loop
+	mov ar.lc = sze
+	mov ar.ec = 2 
+	mov pr.rot = ((1 << 16) | (1 << 19));;
+
+	.body
+LOCAL(mpmultwo):
+	.pred.rel.mutex p20,p22
+	(p16) ld8 r32 = [src],-8
+	(p20) add r36 = r33,r33
+	(p22) add r36 = r33,r33,1
+	;;
+	(p20) cmp.leu p19,p21 = r33,r36
+	(p22) cmp.ltu p19,p21 = r33,r36
+	(p18) st8 [dst] = r37,-8
+	br.ctop.dptk LOCAL(mpmultwo);;
+
+dnl	loop epilogue: final store
+	(p18) st8 [dst] = r37,-8
+
+dnl	return carry
+	.pred.rel.mutex p20,p22
+	(p20) add ret0 = r0,r0
+	(p22) add ret0 = r0,r0,1
+	;;
+	mov pr = saved_pr, -1
+	mov ar.lc = saved_lc
+	mov ar.pfs = saved_pfs
+	br.ret.sptk b0
+C_FUNCTION_END(mpmultwo)
+
+
 C_FUNCTION_BEGIN(mpsetmul)
 	.prologue
 	alloc saved_pfs = ar.pfs,4,4,0,8
@@ -266,17 +309,20 @@ C_FUNCTION_END(mpaddmul)
 
 divert(-1)
 C_FUNCTION_BEGIN(mpaddsqrtrc)
-	alloc saved_pfs = ar.pfs,4,4,0,8
-	mov saved_pr = pr
+	.prologue
+	alloc saved_pfs = ar.pfs,4,12,0,16
 	mov saved_lc = ar.lc
+	mov saved_pr = pr
 
 	setf.sig f6 = in3
 	sub sze = in0,r0,1;;
 
 dnl	adjust addresses
-	shladd dst = sze,4,in1
-	shladd src = sze,3,in2
-	shladd alt = sze,4,in1;;
+dnl use two addresses for dst, and two for src
+	shladd ? = sze,4,in1
+	shladd ? = sze,4,in1
+	shladd ? = sze,3,in2
+	shladd ? = sze,3,in2;;
 
 dnl	prepare the rotate-in carry
 	mov r32 = r0
@@ -284,25 +330,29 @@ dnl	prepare the rotate-in carry
 dnl	prepare modulo-scheduled loop
 	mov ar.lc = sze
 	mov ar.ec = 5
-	mov pr.rot = ((1 << 16) | (1 << 21));;
+	mov pr.rot = ((1 << 16) | (1 << 22));;
 
+	.body
 LOCAL(mpaddsqrtrc_loop):
 	(p16) ldf8 f32 = [src],-8
-	(p16) ldf8 f36 = [alt],-8
 	(p17) xma.lu f34 = f33,f33,f37
 	(p17) xma.hu f38 = f33,f33,f37
-	(p18) getf.sig r37 = f35
-	(p18) getf.sig r33 = f39
-	(p?)   add lo to carry
-	(p?+?) add lo to carry+1
-	(p?)   cmpleu lo
-	(p?+?) cmpltu lo
-	(p?)   add hi to carry
-	(p?+?) add hi to carry+1
-	(p16) ld8  r?? = [alt],-8
+	(p18) getf.sig r32 = f35
+	(p18) getf.sig r35 = f39
+	(p18) ld8  rlo = [alt],-8
+	.pred.rel.mutex p25,p29
+	(p25) add r33 = r33,r??
+	(p29) add r37 = r37,r??,1
+	.pred.rel.mutex p27,p31
+	(p27) add hi to carry
+	(p31) add hi to carry+1
+	;;
+	(p16) ld8  r42 = [alt],-8
+	(p25) cmpleu p24,p28 = lo
+	(p29) cmpltu p24,p28 = lo
 	(p20) st8 lo
-	(p?)   cmpleu hi
-	(p?+?) cmpltu hi
+	(p27) cmpleu p26,p30 = hi
+	(p31) cmpltu p26,p30 = hi
 	(p21) st8 hi
 	;;
 	br.ctop.dptk LOCAL(mpaddsqrtrc_loop);;
@@ -310,9 +360,9 @@ LOCAL(mpaddsqrtrc_loop):
 dnl	loop epilogue: final store
 	(p21) st8 [dst] = r36,-8
 
-dnl	return carry
-	(p24) add ret0 = r35,r0
-	(p26) add ret0 = r35,r0,1
-
+	mov pr = saved_pr, -1
+	mov ar.lc = saved_lc
+	mov ar.pfs = saved_pfs
+	br.ret.sptk b0
 C_FUNCTION_END(mpaddsqrtrc)
 divert(0)

@@ -22,6 +22,7 @@ config.m4
 config.status
 config.sub
 configure
+depcomp
 doxygen
 libtool
 listobjs

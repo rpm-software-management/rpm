@@ -17,9 +17,13 @@ ltmain.sh
 *.lo
 stamp-h
 stamp-h.in
-beetest
 base64bug
+beetest
+benchbc
+benchhf
+benchme
 openpgp
+testaes
 testblowfish
 testdldp
 testdsa
@@ -27,6 +31,7 @@ testhmacmd5
 testhmacsha1
 testmd5
 testmp
+testmpinv
 testrsa
 testsha1
 testsha256
