@@ -275,6 +275,8 @@ typedef /*@abstract@*/ struct rpmdb_s * rpmdb;
 typedef enum rpmCallbackType_e 
 	{ RPMCALLBACK_INST_PROGRESS, RPMCALLBACK_INST_START,
 	  RPMCALLBACK_INST_OPEN_FILE, RPMCALLBACK_INST_CLOSE_FILE,
+	  RPMCALLBACK_TRANS_PROGRESS, RPMCALLBACK_TRANS_START,
+	  RPMCALLBACK_UNINST_PROGRESS, RPMCALLBACK_UNINST_START,
 	} rpmCallbackType;
 typedef void * (*rpmCallbackFunction)(const Header h, 
 				      const rpmCallbackType what, 
