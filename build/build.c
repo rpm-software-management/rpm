@@ -21,6 +21,7 @@
 #include "stringbuf.h"
 #include "misc.h"
 #include "pack.h"
+#include "popt.h"
 
 #include "names.h"
 
@@ -36,7 +37,7 @@ void freeScript(struct Script *script, int test);
 int execPart(Spec s, char *sb, char *name, int builddir, int test);
 static int doSetupMacro(Spec spec, StringBuf sb, char *line);
 static int doPatchMacro(Spec spec, StringBuf sb, char *line);
-static char *do_untar(Spec spec, int c);
+static char *do_untar(Spec spec, int c, int quietly);
 static char *do_patch(Spec spec, int c, int strip, char *dashb,
 		      int reverse, int removeEmpties);
 int isCompressed(char *file);
@@ -210,72 +211,78 @@ static int doRmSource(Spec s)
 
 static int doSetupMacro(Spec spec, StringBuf sb, char *line)
 {
-    char *s, *s1, *version;
-    int opt_a, opt_b, opt_c, opt_D, opt_T;
-    char *opt_n;
+    char *version;
+    int leaveDirs = 0, skipDefaultAction = 0;
+    int createDir = 0, quietly = 0;
+    char * dirName = NULL;
     char buf[1024];
+    StringBuf before;
+    StringBuf after;
+    poptContext optCon;
+    int argc;
+    char ** argv;
+    int arg;
+    char * optArg;
+    char * chptr;
+    int rc;
+    int num;
+    struct poptOption optionsTable[] = {
+	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a' },
+	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b' },
+	    { NULL, 'c', 0, &createDir, 0 },
+	    { NULL, 'D', 0, &leaveDirs, 0 },
+	    { NULL, 'n', POPT_ARG_STRING, &dirName, 0 },
+	    { NULL, 'T', 0, &skipDefaultAction, 0 },
+	    { NULL, 'q', 0, &quietly, 0 },
+    };
 
-    opt_a = opt_b = -1;
-    opt_c = opt_T = opt_D = 0;
-    opt_n = NULL;
-    
-    strtok(line, " \t\n");  /* remove %setup */
-    while ((s = strtok(NULL, " \t\n"))) {
-	if (!strcmp(s, "-c")) {
-	    opt_c = 1;
-	} else if (!strcmp(s, "-T")) {
-	    opt_T = 1;
-	} else if (!strcmp(s, "-D")) {
-	    opt_D = 1;
-	} else if (!strcmp(s, "-n")) {
-	    /* dir name */
-	    opt_n = strtok(NULL, " \t\n");
-	    if (! opt_n) {
-		rpmError(RPMERR_BADSPEC, "Need arg to %%setup -n");
-		return(RPMERR_BADSPEC);
-	    }
-	} else if (!strcmp(s, "-a")) {
-	    s = strtok(NULL, " \t\n");
-	    if (! s) {
-		rpmError(RPMERR_BADSPEC, "Need arg to %%setup -a");
-		return(RPMERR_BADSPEC);
-	    }
-	    s1 = NULL;
-	    opt_a = strtoul(s, &s1, 10);
-	    if ((*s1) || (s1 == s) || (opt_a == ULONG_MAX)) {
-		rpmError(RPMERR_BADSPEC, "Bad arg to %%setup -a: %s", s);
-		return(RPMERR_BADSPEC);
-	    }
-	} else if (!strcmp(s, "-b")) {
-	    s = strtok(NULL, " \t\n");
-	    if (! s) {
-		rpmError(RPMERR_BADSPEC, "Need arg to %%setup -b");
-		return(RPMERR_BADSPEC);
-	    }
-	    s1 = NULL;
-	    opt_b = strtoul(s, &s1, 10);
-	    if ((*s1) || (s1 == s) || (opt_b == ULONG_MAX)) {
-		rpmError(RPMERR_BADSPEC, "Bad arg to %%setup -b: %s", s);
-		return(RPMERR_BADSPEC);
-	    }
-	} else {
-	    rpmError(RPMERR_BADSPEC, "Bad arg to %%setup: %s", s);
-	    return(RPMERR_BADSPEC);
-	}
+    if ((rc = poptParseArgvString(line, &argc, &argv))) {
+	rpmError(RPMERR_BADSPEC, "Error parsing %%setup: %s",
+			poptStrerror(rc));
+	return RPMERR_BADSPEC;
     }
 
-    /* All args parsed */
-#if 0
-    printf("a = %d\n", opt_a);
-    printf("b = %d\n", opt_b);
-    printf("c = %d\n", opt_c);
-    printf("T = %d\n", opt_T);
-    printf("D = %d\n", opt_D);
-    printf("n = %s\n", opt_n);
-#endif
+    before = newStringBuf();
+    after = newStringBuf();
 
-    if (opt_n) {
-	strcpy(build_subdir, opt_n);
+    optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
+    while ((arg = poptGetNextOpt(optCon)) > 0) {
+	optArg = poptGetOptArg(optCon);
+
+	/* We only parse -a and -b here */
+
+	num = strtoul(optArg, &chptr, 10);
+	if ((*chptr) || (chptr == optArg) || (num == ULONG_MAX)) {
+	    rpmError(RPMERR_BADSPEC, "Bad arg to %%setup %c: %s", num, optArg);
+	    free(argv);
+	    freeStringBuf(before);
+	    freeStringBuf(after);
+	    poptFreeContext(optCon);
+	    return(RPMERR_BADSPEC);
+	}
+
+	chptr = do_untar(spec, num, quietly);
+	if (!chptr) return 1;
+
+	if (arg == 'a')
+	    appendLineStringBuf(after, chptr);
+	else
+	    appendLineStringBuf(before, chptr);
+    }
+
+    if (arg < -1) {
+	rpmError(RPMERR_BADSPEC, "Bad %%setup option %s: %s",
+		poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
+		poptStrerror(arg));
+	free(argv);
+	freeStringBuf(before);
+	freeStringBuf(after);
+	poptFreeContext(optCon);
+	return(RPMERR_BADSPEC);
+    }
+
+    if (dirName) {
+	strcpy(build_subdir, dirName);
     } else {
 	strcpy(build_subdir, spec->name);
 	strcat(build_subdir, "-");
@@ -285,67 +292,51 @@ static int doSetupMacro(Spec spec, StringBuf sb, char *line)
 	strcat(build_subdir, version);
     }
     
+    free(argv);
+    poptFreeContext(optCon);
+
     /* cd to the build dir */
     sprintf(buf, "cd %s", rpmGetVar(RPMVAR_BUILDDIR));
     appendLineStringBuf(sb, buf);
     
     /* delete any old sources */
-    if (! opt_D) {
+    if (!leaveDirs) {
 	sprintf(buf, "rm -rf %s", build_subdir);
 	appendLineStringBuf(sb, buf);
     }
 
     /* if necessary, create and cd into the proper dir */
-    if (opt_c) {
+    if (createDir) {
 	sprintf(buf, "mkdir -p %s\ncd %s", build_subdir, build_subdir);
 	appendLineStringBuf(sb, buf);
     }
 
     /* do the default action */
-    if ((! opt_c) && (! opt_T)) {
-	s = do_untar(spec, 0);
-	if (! s) {
-	    return 1;
-	}
-	appendLineStringBuf(sb, s);
+    if (!createDir && !skipDefaultAction) {
+	chptr = do_untar(spec, 0, quietly);
+	if (!chptr) return 1;
+	appendLineStringBuf(sb, chptr);
     }
 
-    /* do any before action */
-    if (opt_b > -1) {
-	s = do_untar(spec, opt_b);
-	if (! s) {
-	    return 1;
-	}
-	appendLineStringBuf(sb, s);
-    }
-    
-    /* cd into the build subdir */
-    if (!opt_c) {
+    appendStringBuf(sb, getStringBuf(before));
+    freeStringBuf(before);
+
+    if (!createDir) {
 	sprintf(buf, "cd %s", build_subdir);
 	appendLineStringBuf(sb, buf);
     }
 
-    if (opt_c && (! opt_T)) {
-	s = do_untar(spec, 0);
-	if (! s) {
-	    return 1;
-	}
-	appendLineStringBuf(sb, s);
+    if (createDir && !skipDefaultAction) {
+	chptr = do_untar(spec, 0, quietly);
+	if (!chptr) return 1;
+	appendLineStringBuf(sb, chptr);
     }
     
-    /* do any after action */
-    if (opt_a > -1) {
-	s = do_untar(spec, opt_a);
-	if (! s) {
-	    return 1;
-	}
-	appendLineStringBuf(sb, s);
-    }
+    appendStringBuf(sb, getStringBuf(after));
+    freeStringBuf(after);
 
     /* clean up permissions etc */
-    sprintf(buf, "cd %s/%s", rpmGetVar(RPMVAR_BUILDDIR), build_subdir);
-    appendLineStringBuf(sb, buf);
-    if (! geteuid()) {
+    if (!geteuid()) {
 	appendLineStringBuf(sb, "chown -R root .");
 	appendLineStringBuf(sb, "chgrp -R root .");
     }
@@ -382,7 +373,7 @@ int isCompressed(char *file)
     return 0;
 }
 
-static char *do_untar(Spec spec, int c)
+static char *do_untar(Spec spec, int c, int quietly)
 {
     static char buf[1024];
     char file[1024];
@@ -404,7 +395,7 @@ static char *do_untar(Spec spec, int c)
     }
 
     sprintf(file, "%s/%s", rpmGetVar(RPMVAR_SOURCEDIR), s);
-    taropts = (rpmIsVerbose() ? "-xvvf" : "-xf");
+    taropts = (rpmIsVerbose() && !quietly ? "-xvvf" : "-xf");
     
     if (isCompressed(file)) {
 	sprintf(buf,
