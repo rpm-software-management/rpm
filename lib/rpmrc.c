@@ -431,7 +431,7 @@ int rpmReadConfigFiles(char * file, char * arch, char * os, int building) {
     if (building)
 	rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 
-    rpmSetMachine(arch, os, 1);
+    rpmSetMachine(arch, os);
 
     return 0;
 }
@@ -515,7 +515,7 @@ int rpmReadRC(char * file) {
 	}
     }
 
-    rpmSetMachine(NULL, NULL, 1);
+    rpmSetMachine(NULL, NULL);
 
     setPathDefault(RPMVAR_BUILDDIR, "BUILD");    
     setPathDefault(RPMVAR_RPMDIR, "RPMS");    
@@ -796,7 +796,10 @@ int rpmMachineScore(int type, char * name) {
 	return 0;
 }
 
-void rpmSetMachine(char * arch, char * os, int translate) {
+void rpmSetMachine(char * arch, char * os) {
+    int transOs = os == NULL;
+    int transArch = arch == NULL;
+
     if (!arch && !os)
 	defaultMachine(&arch, &os);
     else if (!arch)
@@ -804,11 +807,11 @@ void rpmSetMachine(char * arch, char * os, int translate) {
     else if (!os)
 	defaultMachine(NULL, &os);
 
-    if (translate && tables[currTables[ARCH]].hasTranslate)
+    if (transArch && tables[currTables[ARCH]].hasTranslate)
 	arch = lookupInDefaultTable(arch,
 			    tables[currTables[ARCH]].defaults,
 			    tables[currTables[ARCH]].defaultsLength);
-    if (translate && tables[currTables[OS]].hasTranslate)
+    if (transOs && tables[currTables[OS]].hasTranslate)
 	os = lookupInDefaultTable(os,
 			    tables[currTables[OS]].defaults,
 			    tables[currTables[OS]].defaultsLength);
@@ -878,7 +881,7 @@ int rpmShowRC(FILE *f)
     fprintf(f, "build os             : %s\n", current[OS]);
 
     rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
-    rpmSetMachine(NULL, NULL, 0);
+    rpmSetMachine(NULL, NULL);
 
     fprintf(f, "install arch         : %s\n", current[ARCH]);
     fprintf(f, "install os           : %s\n", current[OS]);

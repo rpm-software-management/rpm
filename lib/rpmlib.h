@@ -219,12 +219,14 @@ void rpmSetVar(int var, char *val);
    work if building is true! */
 int rpmReadConfigFiles(char * file, char * arch, char * os, int building);
 int rpmReadRC(char * file);
-void rpmSetMachine(char * arch, char * os, int translate);
 void rpmGetArchInfo(char ** name, int * num);
 void rpmGetOsInfo(char ** name, int * num);
 int rpmMachineScore(int type, char * name);
 int rpmShowRC(FILE *f);
 void rpmSetTables(int archTable, int osTable);  /* only used by build code */
+/* if either are NULL, they are set to the default value (munged uname())
+   pushed through a translation table (if appropriate) */
+void rpmSetMachine(char * arch, char * os);
 
 /** **/
 
