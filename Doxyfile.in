@@ -417,6 +417,7 @@ INPUT                  = \
 	@top_srcdir@/rpmio/rpmmacro.h \
 	@top_srcdir@/rpmio/rpmmalloc.c \
 	@top_srcdir@/rpmio/rpmmessages.h \
+	@top_srcdir@/rpmio/rpmpgp.h \
 	@top_srcdir@/rpmio/rpmrpc.c \
 	@top_srcdir@/rpmio/rpmurl.h \
 	@top_srcdir@/rpmio/strcasecmp.c \

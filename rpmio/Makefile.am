@@ -4,18 +4,20 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 EXTRA_DIST = tdigest.c tficl.c tkey.c trpmio.c
 
+EXTRA_PROGRAMS = tdigest tkey trpmio
+
 INCLUDES = \
-	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/build \
 	-I$(top_srcdir)/lib \
+	-I$(top_srcdir)/beecrypt \
 	-I$(top_srcdir)/popt @INCPATH@
 
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	rpmio.h rpmurl.h rpmmacro.h rpmlog.h rpmmessages.h rpmerr.h \
 	ugid.h
-noinst_HEADERS = rpmio_internal.h
+noinst_HEADERS = rpmio_internal.h rpmpgp.h
 
 LIBS +=	-lrt -lpthread
 
@@ -47,6 +49,15 @@ $(top_builddir)/beecrypt/listobjs:
 clean-local:
 	rm -f $(BEECRYPTLOBJS) *.o .created
 
+tdigest_SOURCES = tdigest.c
+tdigest_LDADD += librpmio.la $(top_builddir)/popt/libpopt.la
+
+trpmio_SOURCES = trpmio.c
+trpmio_LDADD += librpmio.la $(top_builddir)/popt/libpopt.la
+
+tkey_SOURCES = tkey.c
+tkey_LDADD += librpmio.la $(top_builddir)/popt/libpopt.la
+
 .PHONY:	sources
 sources:
 	@echo $(librpmio_la_SOURCES:%=rpmio/%)
@@ -54,23 +65,6 @@ sources:
 .PHONY:	lclint
 lclint:
 	lclint $(DEFS) $(INCLUDES) $(librpmio_la_SOURCES)
-
-trpmio.o: trpmio.c
-
-trpmio: librpmio.la trpmio.o
-	$(LINK) -o $@ trpmio.o librpmio.la $(top_builddir)/popt/libpopt.la $(LIBS)
-
-tkey.o: tkey.c
-	 $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -o $@ -c tkey.c 
-
-tkey: librpmio.la tkey.o
-	$(LINK) -o $@ tkey.o librpmio.la $(top_builddir)/popt/libpopt.la $(LIBS)
-
-tdigest.o: tdigest.c
-	 $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -o $@ -c tdigest.c 
-
-tdigest: librpmio.la tdigest.o
-	$(LINK) @LDFLAGS_STATIC@ -o $@ tdigest.o librpmio.la $(top_builddir)/popt/libpopt.la $(LIBS)
 
 tficl.o: tficl.c
 	$(COMPILE) -I/usr/include/ficl -o $@ -c tficl.c 

@@ -5,7 +5,7 @@
 static int _debug = 0;
 
 #include "system.h"
-typedef unsigned char byte;
+#include "rpmpgp.h"
 #include "base64.h"
 #include "debug.h"
 
@@ -19,8 +19,6 @@ static inline int grab(const byte *s, int nbytes)
 	i = (i << 8) | *s++;
     return i;
 }
-
-#define	GRAB(_a)	grab((_a), sizeof(_a))
 
 typedef struct {
     byte nbits[2];
@@ -55,76 +53,164 @@ static const char * pr_mpi(const byte *p)
 {
     char *t = prbuf;
 
-    sprintf(t, "[%d]: ", grab(p,2));
+    sprintf(t, "[%d]: ", grab(p, 2));
     t += strlen(t);
     t = pr_pfmt(t, p+2, mpi_len(p)-2);
     return prbuf;
 }
 
-static const char * pr_sigtype(byte sigtype) {
+static const char * pr_sigtype(pgpSigType sigtype) {
     switch (sigtype) {
-    case 0x00:	return("Signature of a binary document"); break;
-    case 0x01:	return("Signature of a canonical text document"); break;
-    case 0x02:	return("Standalone signature"); break;
-    case 0x10:	return("Generic certification of a User ID and Public Key"); break;
-    case 0x11:	return("Persona certification of a User ID and Public Key"); break;
-    case 0x12:	return("Casual certification of a User ID and Public Key"); break;
-    case 0x13:	return("Positive certification of a User ID and Public Key"); break;
-    case 0x18:	return("Subkey Binding Signature"); break;
-    case 0x1F:	return("Signature directly on a key"); break;
-    case 0x20:	return("Key revocation signature"); break;
-    case 0x28:	return("Subkey revocation signature"); break;
-    case 0x30:	return("Certification revocation signature"); break;
-    case 0x40:	return("Timestamp signature"); break;
+    case PGPSIGTYPE_BINARY:
+	return("Signature of a binary document");
+	break;
+    case PGPSIGTYPE_TEXT:
+	return("Signature of a canonical text document");
+	break;
+    case PGPSIGTYPE_STANDALONE:
+	return("Standalone signature");
+	break;
+    case PGPSIGTYPE_GENERIC_CERT:
+	return("Generic certification of a User ID and Public Key");
+	break;
+    case PGPSIGTYPE_PERSONA_CERT:
+	return("Persona certification of a User ID and Public Key");
+	break;
+    case PGPSIGTYPE_CASUAL_CERT:
+	return("Casual certification of a User ID and Public Key");
+	break;
+    case PGPSIGTYPE_POSITIVE_CERT:
+	return("Positive certification of a User ID and Public Key");
+	break;
+    case PGPSIGTYPE_SUBKEY_BINDING:
+	return("Subkey Binding Signature");
+	break;
+    case PGPSIGTYPE_SIGNED_KEY:
+	return("Signature directly on a key");
+	break;
+    case PGPSIGTYPE_KEY_REVOKE:
+	return("Key revocation signature");
+	break;
+    case PGPSIGTYPE_SUBKEY_REVOKE:
+	return("Subkey revocation signature");
+	break;
+    case PGPSIGTYPE_CERT_REVOKE:
+	return("Certification revocation signature");
+	break;
+    case PGPSIGTYPE_TIMESTAMP:
+	return("Timestamp signature");
+	break;
     }
     return "Unknown signature type";
 }
 
 static const char * pr_pubkey_algo(byte pubkey_algo) {
     switch (pubkey_algo) {
-    case 1:	return("RSA");			break;
-    case 2:	return("RSA(Encrypt-Only)");	break;
-    case 3 :	return("RSA(Sign-Only)");	break;
-    case 16:	return("Elgamal(Encrypt-Only)"); break;
-    case 17:	return("DSA");			break;
-    case 18:	return("Elliptic Curve");	break;
-    case 19:	return("ECDSA");		break;
-    case 20:	return("Elgamal");		break;
-    case 21:	return("Diffie-Hellman (X9.42)"); break;
+    case PGPPUBKEYALGO_RSA:
+	return("RSA");
+	break;
+    case PGPPUBKEYALGO_RSA_ENCRYPT:
+	return("RSA(Encrypt-Only)");
+	break;
+    case PGPPUBKEYALGO_RSA_SIGN :
+	return("RSA(Sign-Only)");
+	break;
+    case PGPPUBKEYALGO_ELGAMAL_ENCRYPT:
+	return("Elgamal(Encrypt-Only)");
+	break;
+    case PGPPUBKEYALGO_DSA:
+	return("DSA");
+	break;
+    case PGPPUBKEYALGO_EC:
+	return("Elliptic Curve");
+	break;
+    case PGPPUBKEYALGO_ECDSA:
+	return("ECDSA");
+	break;
+    case PGPPUBKEYALGO_ELGAMAL:
+	return("Elgamal");
+	break;
+    case PGPPUBKEYALGO_DH:
+	return("Diffie-Hellman (X9.42)");
+	break;
     }
     return "Unknown public key algorithm";
 }
 
 static const char * pr_symkey_algo(byte symkey_algo) {
     switch (symkey_algo) {
-    case 0:	return("Plaintext"); break;
-    case 1:	return("IDEA"); break;
-    case 2:	return("DES-EDE"); break;
-    case 3:	return("CAST5"); break;
-    case 4:	return("BLOWFISH"); break;
-    case 5:	return("SAFER"); break;
-    case 10:	return("TWOFISH"); break;
+    case PGPSYMKEYALGO_PLAINTEXT:
+	return("Plaintext");
+	break;
+    case PGPSYMKEYALGO_IDEA:
+	return("IDEA");
+	break;
+    case PGPSYMKEYALGO_TRIPLE_DES:
+	return("Triple-DES");
+	break;
+    case PGPSYMKEYALGO_CAST5:
+	return("CAST5");
+	break;
+    case PGPSYMKEYALGO_BLOWFISH:
+	return("BLOWFISH");
+	break;
+    case PGPSYMKEYALGO_SAFER:
+	return("SAFER");
+	break;
+    case PGPSYMKEYALGO_DES_SK:
+	return("DES/SK");
+	break;
+    case PGPSYMKEYALGO_AES_128:
+	return("AES(128-bit key)");
+	break;
+    case PGPSYMKEYALGO_AES_192:
+	return("AES(192-bit key)");
+	break;
+    case PGPSYMKEYALGO_AES_256:
+	return("AES(256-bit key)");
+	break;
+    case PGPSYMKEYALGO_TWOFISH:
+	return("TWOFISH");
+	break;
     }
     return "Unknown symmetric key algorithm";
 };
 
 static const char * pr_compression_algo(byte compression_algo) {
     switch (compression_algo) {
-    case 0:	return("Uncompressed"); break;
-    case 1:	return("ZIP"); break;
-    case 2:	return("ZLIB"); break;
+    case PGPCOMPRESSALGO_NONE:
+	return("Uncompressed");
+	break;
+    case PGPCOMPRESSALGO_ZIP:
+	return("ZIP");
+	break;
+    case PGPCOMPRESSALGO_ZLIB:
+	return("ZLIB");
+	break;
     }
     return "Unknown compression algorithm";
 };
 
 static const char * pr_hash_algo(byte hash_algo) {
     switch (hash_algo) {
-    case 1:	return("MD5");		break;
-    case 2:	return("SHA1");		break;
-    case 3:	return("RIPEMD160");	break;
-    case 5:	return("MD2");		break;
-    case 6:	return("TIGER192");	break;
-    case 7:	return("HAVAL-5-160");	break;
+    case PGPHASHALGO_MD5:
+	return("MD5");
+	break;
+    case PGPHASHALGO_SHA1:
+	return("SHA1");
+	break;
+    case PGPHASHALGO_RIPEMD160:
+	return("RIPEMD160");
+	break;
+    case PGPHASHALGO_MD2:
+	return("MD2");
+	break;
+    case PGPHASHALGO_TIGER192:
+	return("TIGER192");
+	break;
+    case PGPHASHALGO_HAVAL_5_160:
+	return("HAVAL-5-160");
+	break;
     }
     return "Unknown hash algorithm";
 }
@@ -138,27 +224,102 @@ static const char * pr_keyserv_pref (byte keyserv_pref) {
 
 static const char * pr_sigsubkeytype (byte sigsubkeytype) {
     switch(sigsubkeytype) {
-    case 2:	return("signature creation time"); break;
-    case 3:	return("signature expiration time"); break;
-    case 4:	return("exportable certification"); break;
-    case 5:	return("trust signature"); break;
-    case 6:	return("regular expression"); break;
-    case 7:	return("revocable"); break;
-    case 9:	return("key expiration time"); break;
-    case 10:	return("placeholder for backward compatibility"); break;
-    case 11:	return("preferred symmetric algorithms"); break;
-    case 12:	return("revocation key"); break;
-    case 16:	return("issuer key ID"); break;
-    case 20:	return("notation data"); break;
-    case 21:	return("preferred hash algorithms"); break;
-    case 22:	return("preferred compression algorithms"); break;
-    case 23:	return("key server preferences"); break;
-    case 24:	return("preferred key server"); break;
-    case 25:	return("primary user id"); break;
-    case 26:	return("policy URL"); break;
-    case 27:	return("key flags"); break;
-    case 28:	return("signer's user id"); break;
-    case 29:	return("reason for revocation"); break;
+    case PGPSUBTYPE_SIG_CREATE_TIME:
+	return("signature creation time");
+	break;
+    case PGPSUBTYPE_SIG_EXPIRE_TIME:
+	return("signature expiration time");
+	break;
+    case PGPSUBTYPE_EXPORTABLE_CERT:
+	return("exportable certification");
+	break;
+    case PGPSUBTYPE_TRUST_SIG:
+	return("trust signature");
+	break;
+    case PGPSUBTYPE_REGEX:
+	return("regular expression");
+	break;
+    case PGPSUBTYPE_REVOCABLE:
+	return("revocable");
+	break;
+    case PGPSUBTYPE_KEY_EXPIRE_TIME:
+	return("key expiration time");
+	break;
+    case PGPSUBTYPE_BACKWARD_COMPAT:
+	return("placeholder for backward compatibility");
+	break;
+    case PGPSUBTYPE_PREFER_SYMKEY:
+	return("preferred symmetric algorithms");
+	break;
+    case PGPSUBTYPE_REVOKE_KEY:
+	return("revocation key");
+	break;
+    case PGPSUBTYPE_ISSUER_KEYID:
+	return("issuer key ID");
+	break;
+    case PGPSUBTYPE_NOTATION:
+	return("notation data");
+	break;
+    case PGPSUBTYPE_PREFER_HASH:
+	return("preferred hash algorithms");
+	break;
+    case PGPSUBTYPE_PREFER_COMPRESS:
+	return("preferred compression algorithms");
+	break;
+    case PGPSUBTYPE_KEYSERVER_PREFERS:
+	return("key server preferences");
+	break;
+    case PGPSUBTYPE_PREFER_KEYSERVER:
+	return("preferred key server");
+	break;
+    case PGPSUBTYPE_PRIMARY_USERID:
+	return("primary user id");
+	break;
+    case PGPSUBTYPE_POLICY_URL:
+	return("policy URL");
+	break;
+    case PGPSUBTYPE_KEY_FLAGS:
+	return("key flags");
+	break;
+    case PGPSUBTYPE_SIGNER_USERID:
+	return("signer's user id");
+	break;
+    case PGPSUBTYPE_REVOKE_REASON:
+	return("reason for revocation");
+	break;
+    case PGPSUBTYPE_INTERNAL_100:
+	return("internal subpkt type 100");
+	break;
+    case PGPSUBTYPE_INTERNAL_101:
+	return("internal subpkt type 101");
+	break;
+    case PGPSUBTYPE_INTERNAL_102:
+	return("internal subpkt type 102");
+	break;
+    case PGPSUBTYPE_INTERNAL_103:
+	return("internal subpkt type 103");
+	break;
+    case PGPSUBTYPE_INTERNAL_104:
+	return("internal subpkt type 104");
+	break;
+    case PGPSUBTYPE_INTERNAL_105:
+	return("internal subpkt type 105");
+	break;
+    case PGPSUBTYPE_INTERNAL_106:
+	return("internal subpkt type 106");
+	break;
+    case PGPSUBTYPE_INTERNAL_107:
+	return("internal subpkt type 107");
+	break;
+    case PGPSUBTYPE_INTERNAL_108:
+	return("internal subpkt type 108");
+	break;
+    case PGPSUBTYPE_INTERNAL_109:
+	return("internal subpkt type 109");
+	break;
+    case PGPSUBTYPE_INTERNAL_110:
+	return("internal subpkt type 110");
+	break;
     }
     return "Unknown signature subkey type";
 }
@@ -182,45 +343,9 @@ const char *ptags[] = {
 	"??? TAG15 ???",
 };
 
-typedef enum {
-    RPMKEYPKT_SIGNATURE		=  2,
-    RPMKEYPKT_SECRET_KEY	=  5,
-    RPMKEYPKT_PUBLIC_KEY	=  6,
-    RPMKEYPKT_SECRET_SUBKEY	=  7,
-    RPMKEYPKT_USER_ID		= 13,
-    RPMKEYPKT_PUBLIC_SUBKEY	= 14
-} rpmKeyPkt;
-
-/*
-5.2.2. Version 3 Signature Packet Format
-   The body of a version 3 Signature Packet contains:
-     - One-octet version number (3).
-     - One-octet length of following hashed material.  MUST be 5.
-         - One-octet signature type.
-         - Four-octet creation time.
-     - Eight-octet key ID of signer.
-     - One-octet public key algorithm.
-     - One-octet hash algorithm.
-     - Two-octet field holding left 16 bits of signed hash value.
-     - One or more multi-precision integers comprising the signature.
-       This portion is algorithm specific, as described below.
-*/
-
-struct signature_v3 {
-    byte version;	/*!< version number (3). */
-    byte hashlen;	/*!< length of following hashed material. MUST be 5. */
-    byte sigtype;	/*!< signature type. */
-    byte time[4];	/*!< 4 byte creation time. */
-    byte signer[8];	/*!< key ID of signer. */
-    byte pubkey_algo;	/*!< public key algorithm. */
-    byte hash_algo;	/*!< hash algorithm. */
-    byte signhash16[2];	/*!< left 16 bits of signed hash value. */
-    byte data[1];	/*!< One or more multi-precision integers. */
-};
-
-static int pr_signature_v3(rpmKeyPkt ptag, const byte *h, unsigned hlen)
+static int pr_signature_v3(pgpKeyPkt ptag, const byte *h, unsigned hlen)
 {
-    struct signature_v3 *v = (struct signature_v3 *)h;
+    pgpSigPktV3 v = (pgpSigPktV3)h;
     byte *p;
     unsigned plen;
     int i;
@@ -239,12 +364,12 @@ fprintf(stderr, " %s(%d)", pr_hash_algo(v->hash_algo), v->hash_algo);
 
 fprintf(stderr, " %s(%d)", pr_sigtype(v->sigtype), v->sigtype);
 
-    plen = GRAB(v->time);
+    plen = grab(v->time, sizeof(v->time));
 fprintf(stderr, " time %08x", plen);
 fprintf(stderr, " signer keyid %02x%02x%02x%02x%02x%02x%02x%02x",
 	v->signer[0], v->signer[1], v->signer[2], v->signer[3],
 	v->signer[4], v->signer[5], v->signer[6], v->signer[7]);
-    plen = GRAB(v->signhash16);
+    plen = grab(v->signhash16, sizeof(v->signhash16));
 fprintf(stderr, " signhash16 %04x", plen);
 fprintf(stderr, "\n");
 
@@ -254,40 +379,6 @@ fprintf(stderr, "\n");
 
     return 0;
 }
-
-/*
-5.2.3.1. Signature Subpacket Specification
-
-   The subpacket fields consist of zero or more signature subpackets.
-   Each set of subpackets is preceded by a two-octet scalar count of the
-   length of the set of subpackets.
-
-   Each subpacket consists of a subpacket header and a body.  The header
-   consists of:
-
-     - the subpacket length (1,  2, or 5 octets)
-
-     - the subpacket type (1 octet)
-
-   and is followed by the subpacket specific data.
-
-   The length includes the type octet but not this length. Its format is
-   similar to the "new" format packet header lengths, but cannot have
-   partial body lengths. That is:
-
-       if the 1st octet <  192, then
-           lengthOfLength = 1
-           subpacketLen = 1st_octet
-
-       if the 1st octet >= 192 and < 255, then
-           lengthOfLength = 2
-           subpacketLen = ((1st_octet - 192) << 8) + (2nd_octet) + 192
-
-       if the 1st octet = 255, then
-           lengthOfLength = 5
-           subpacket length = [four-octet scalar starting at 2nd_octet]
-
-*/
 
 static int pr_sigsubkeys(const byte *h, unsigned hlen)
 {
@@ -311,27 +402,54 @@ static int pr_sigsubkeys(const byte *h, unsigned hlen)
 	}
 fprintf(stderr, "    %s(%d)", pr_sigsubkeytype(*p), *p);
 	switch (*p) {
-	case 11:	/* preferred symmetric algorithms */
+	case PGPSUBTYPE_PREFER_SYMKEY:	/* preferred symmetric algorithms */
 	    for (i = 1; i < plen; i++)
 		fprintf(stderr, " %s(%d)", pr_symkey_algo(p[i]), p[i]);
 	    fprintf(stderr, "\n");
 	    break;
-	case 21:	/* preferred hash algorithms */
+	case PGPSUBTYPE_PREFER_HASH:	/* preferred hash algorithms */
 	    for (i = 1; i < plen; i++)
 		fprintf(stderr, " %s(%d)", pr_hash_algo(p[i]), p[i]);
 	    fprintf(stderr, "\n");
 	    break;
-	case 22:	/* preferred compression algorithms */
+	case PGPSUBTYPE_PREFER_COMPRESS:/* preferred compression algorithms */
 	    for (i = 1; i < plen; i++)
 		fprintf(stderr, " %s(%d)", pr_compression_algo(p[i]), p[i]);
 	    fprintf(stderr, "\n");
 	    break;
-	case 23:	/* key server preferences */
+	case PGPSUBTYPE_KEYSERVER_PREFERS:/* key server preferences */
 	    for (i = 1; i < plen; i++)
 		fprintf(stderr, " %s(%d)", pr_keyserv_pref(p[i]), p[i]);
 	    fprintf(stderr, "\n");
 	    break;
-	case 16:	/* issuer key ID */
+	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
+	case PGPSUBTYPE_SIG_CREATE_TIME:
+	case PGPSUBTYPE_SIG_EXPIRE_TIME:
+	case PGPSUBTYPE_EXPORTABLE_CERT:
+	case PGPSUBTYPE_TRUST_SIG:
+	case PGPSUBTYPE_REGEX:
+	case PGPSUBTYPE_REVOCABLE:
+	case PGPSUBTYPE_KEY_EXPIRE_TIME:
+	case PGPSUBTYPE_BACKWARD_COMPAT:
+	case PGPSUBTYPE_REVOKE_KEY:
+	case PGPSUBTYPE_NOTATION:
+	case PGPSUBTYPE_PREFER_KEYSERVER:
+	case PGPSUBTYPE_PRIMARY_USERID:
+	case PGPSUBTYPE_POLICY_URL:
+	case PGPSUBTYPE_KEY_FLAGS:
+	case PGPSUBTYPE_SIGNER_USERID:
+	case PGPSUBTYPE_REVOKE_REASON:
+	case PGPSUBTYPE_INTERNAL_100:
+	case PGPSUBTYPE_INTERNAL_101:
+	case PGPSUBTYPE_INTERNAL_102:
+	case PGPSUBTYPE_INTERNAL_103:
+	case PGPSUBTYPE_INTERNAL_104:
+	case PGPSUBTYPE_INTERNAL_105:
+	case PGPSUBTYPE_INTERNAL_106:
+	case PGPSUBTYPE_INTERNAL_107:
+	case PGPSUBTYPE_INTERNAL_108:
+	case PGPSUBTYPE_INTERNAL_109:
+	case PGPSUBTYPE_INTERNAL_110:
 	default:
 	    fprintf(stderr, " %s", pr_hex(p+1, plen-1));
 	    fprintf(stderr, "\n");
@@ -343,40 +461,9 @@ fprintf(stderr, "    %s(%d)", pr_sigsubkeytype(*p), *p);
     return 0;
 }
 
-/*
-5.2.3. Version 4 Signature Packet Format
-   The body of a version 4 Signature Packet contains:
-     - One-octet version number (4).
-     - One-octet signature type.
-     - One-octet public key algorithm.
-     - One-octet hash algorithm.
-     - Two-octet scalar octet count for following hashed subpacket
-       data. Note that this is the length in octets of all of the hashed
-       subpackets; a pointer incremented by this number will skip over
-       the hashed subpackets.
-     - Hashed subpacket data. (zero or more subpackets)
-     - Two-octet scalar octet count for following unhashed subpacket
-       data. Note that this is the length in octets of all of the
-       unhashed subpackets; a pointer incremented by this number will
-       skip over the unhashed subpackets.
-     - Unhashed subpacket data. (zero or more subpackets)
-     - Two-octet field holding left 16 bits of signed hash value.
-     - One or more multi-precision integers comprising the signature.
-       This portion is algorithm specific, as described above.
-*/
-
-struct signature_v4 {
-    byte version;	/*!< version number (4). */
-    byte sigtype;	/*!< signature type. */
-    byte pubkey_algo;	/*!< public key algorithm. */
-    byte hash_algo;	/*!< hash algorithm. */
-    byte hashlen[2];	/*!< length of following hashed material. */
-    byte data[1];	/*!< Hashed subpacket data. (zero or more subpackets) */
-};
-
-static int pr_signature_v4(rpmKeyPkt ptag, const byte *h, unsigned hlen)
+static int pr_signature_v4(pgpKeyPkt ptag, const byte *h, unsigned hlen)
 {
-    struct signature_v4 *v = (struct signature_v4 *)h;
+    pgpSigPktV4 v = (pgpSigPktV4)h;
     byte * p;
     unsigned plen;
     int i;
@@ -393,7 +480,7 @@ fprintf(stderr, " %s(%d)", pr_sigtype(v->sigtype), v->sigtype);
 fprintf(stderr, "\n");
 
     p = &v->hashlen[0];
-    plen = GRAB(v->hashlen);
+    plen = grab(v->hashlen, sizeof(v->hashlen));
     p += 2;
 fprintf(stderr, "   hash[%d] -- %s\n", plen, pr_hex(p, plen));
     pr_sigsubkeys(p, plen);
@@ -413,7 +500,7 @@ fprintf(stderr, " signhash16 %04x\n", plen);
     return 0;
 }
 
-static int pr_signature(rpmKeyPkt ptag, const byte *h, unsigned hlen)
+static int pr_signature(pgpKeyPkt ptag, const byte *h, unsigned hlen)
 {
     byte version = *h;
     switch (version) {
@@ -427,38 +514,9 @@ static int pr_signature(rpmKeyPkt ptag, const byte *h, unsigned hlen)
     return 0;
 }
 
-/*
-   A version 3 public key or public subkey packet contains:
-     - A one-octet version number (3).
-     - A four-octet number denoting the time that the key was created.
-     - A two-octet number denoting the time in days that this key is
-       valid. If this number is zero, then it does not expire.
-     - A one-octet number denoting the public key algorithm of this key
-     - A series of multi-precision integers comprising the key
-       material:
-         - MPI of RSA public modulus n;
-         - MPI of RSA public encryption exponent e.
-
-   Algorithm Specific Fields for RSA signatures:
-     - multiprecision integer (MPI) of RSA signature value m**d.
-
-   Algorithm Specific Fields for DSA signatures:
-     - MPI of DSA value r.
-     - MPI of DSA value s.
-
-*/
-
-struct key_v3 {
-    byte version;	/*!< version number (3). */
-    byte time[4];	/*!< time that the key was created. */
-    byte valid[2];	/*!< time in days that this key is valid. */
-    byte pubkey_algo;	/*!< public key algorithm. */
-    byte data[1];	/*!< One or more multi-precision integers. */
-};
-
-static int pr_key_v3(rpmKeyPkt ptag, const byte *h, unsigned hlen)
+static int pr_key_v3(pgpKeyPkt ptag, const byte *h, unsigned hlen)
 {
-    struct key_v3 *v = (struct key_v3 *)h;
+    pgpKeyV3 v = (pgpKeyV3)h;
     byte * p;
     unsigned plen;
     int i;
@@ -468,11 +526,11 @@ fprintf(stderr, "%s(%d)", ptags[ptag], ptag);
 	fprintf(stderr, " version(%d) != 3\n", v->version);
 	return 1;
     }
-    plen = GRAB(v->time);
+    plen = grab(v->time, sizeof(v->time));
 fprintf(stderr, " time %08x", plen);
 fprintf(stderr, " %s(%d)", pr_pubkey_algo(v->pubkey_algo), v->pubkey_algo);
 
-    plen = GRAB(v->valid);
+    plen = grab(v->valid, sizeof(v->valid));
     if (plen != 0)
 	fprintf(stderr, " valid %d days", plen);
 
@@ -485,41 +543,9 @@ fprintf(stderr, "\n");
     return 0;
 }
 
-/*
-   A version 4 packet contains:
-     - A one-octet version number (4).
-     - A four-octet number denoting the time that the key was created.
-     - A one-octet number denoting the public key algorithm of this key
-     - A series of multi-precision integers comprising the key
-       material.  This algorithm-specific portion is:
-
-       Algorithm Specific Fields for RSA public keys:
-         - MPI of RSA public modulus n;
-         - MPI of RSA public encryption exponent e.
-
-       Algorithm Specific Fields for DSA public keys:
-         - MPI of DSA prime p;
-         - MPI of DSA group order q (q is a prime divisor of p-1);
-         - MPI of DSA group generator g;
-         - MPI of DSA public key value y (= g**x where x is secret).
-
-       Algorithm Specific Fields for Elgamal public keys:
-         - MPI of Elgamal prime p;
-         - MPI of Elgamal group generator g;
-         - MPI of Elgamal public key value y (= g**x where x is
-           secret).
-*/
-
-struct key_v4 {
-    byte version;	/*!< version number (4). */
-    byte time[4];	/*!< time that the key was created. */
-    byte pubkey_algo;	/*!< public key algorithm. */
-    byte data[1];	/*!< One or more multi-precision integers. */
-};
-
-static int pr_key_v4(rpmKeyPkt ptag, const byte *h, unsigned hlen)
+static int pr_key_v4(pgpKeyPkt ptag, const byte *h, unsigned hlen)
 {
-    struct key_v4 *v = (struct key_v4 *)h;
+    pgpKeyV4 v = (pgpKeyV4)h;
     byte * p;
     unsigned plen;
     int i;
@@ -529,7 +555,7 @@ fprintf(stderr, "%s(%d)", ptags[ptag], ptag);
 	fprintf(stderr, " version(%d) != 4\n", v->version);
 	return 1;
     }
-    plen = GRAB(v->time);
+    plen = grab(v->time, sizeof(v->time));
 fprintf(stderr, " time %08x", plen);
 fprintf(stderr, " %s(%d)", pr_pubkey_algo(v->pubkey_algo), v->pubkey_algo);
 fprintf(stderr, "\n");
@@ -541,7 +567,7 @@ fprintf(stderr, "\n");
     return 0;
 }
 
-static int pr_key(rpmKeyPkt ptag, const byte *h, unsigned hlen)
+static int pr_key(pgpKeyPkt ptag, const byte *h, unsigned hlen)
 {
     byte version = *h;
     switch (version) {
@@ -555,17 +581,7 @@ static int pr_key(rpmKeyPkt ptag, const byte *h, unsigned hlen)
     return 0;
 }
 
-/*
-5.11. User ID Packet (Tag 13)
-
-   A User ID packet consists of data that is intended to represent the
-   name and email address of the key holder.  By convention, it includes
-   an RFC 822 mail name, but there are no restrictions on its content.
-   The packet length in the header specifies the length of the user id.
-   If it is text, it is encoded in UTF-8.
-*/
-
-static int pr_user_id(rpmKeyPkt ptag, const byte *h, unsigned hlen)
+static int pr_user_id(pgpKeyPkt ptag, const byte *h, unsigned hlen)
 {
 fprintf(stderr, "%s(%d)", ptags[ptag], ptag);
 fprintf(stderr, " \"%*s\"\n", hlen, h);
@@ -577,7 +593,7 @@ static int pr_keypkt(const byte *p)
     unsigned int val = *p;
     unsigned int mark = (val >> 7) & 0x1;
     unsigned int new = (val >> 6) & 0x1;
-    rpmKeyPkt ptag = (val >> 2) & 0xf;
+    pgpKeyPkt ptag = (val >> 2) & 0xf;
     unsigned int plen = (1 << (val & 0x3));
     const byte *h;
     unsigned int hlen = 0;
@@ -592,18 +608,30 @@ static int pr_keypkt(const byte *p)
 
     h = p + plen + 1;
     switch (ptag) {
-    case RPMKEYPKT_SIGNATURE:
+    case PGPKEYPKT_SIGNATURE:
 	pr_signature(ptag, h, hlen);
 	break;
-    case RPMKEYPKT_PUBLIC_KEY:
-    case RPMKEYPKT_PUBLIC_SUBKEY:
-    case RPMKEYPKT_SECRET_KEY:
-    case RPMKEYPKT_SECRET_SUBKEY:
+    case PGPKEYPKT_PUBLIC_KEY:
+    case PGPKEYPKT_PUBLIC_SUBKEY:
+    case PGPKEYPKT_SECRET_KEY:
+    case PGPKEYPKT_SECRET_SUBKEY:
 	pr_key(ptag, h, hlen);
 	break;
-    case RPMKEYPKT_USER_ID:
+    case PGPKEYPKT_USER_ID:
 	pr_user_id(ptag, h, hlen);
 	break;
+    case PGPKEYPKT_RESERVED:
+    case PGPKEYPKT_PUBLIC_SESSION_KEY:
+    case PGPKEYPKT_SYMMETRIC_SESSION_KEY:
+    case PGPKEYPKT_COMPRESSED_DATA:
+    case PGPKEYPKT_SYMMETRIC_DATA:
+    case PGPKEYPKT_MARKER:
+    case PGPKEYPKT_LITERAL_DATA:
+    case PGPKEYPKT_TRUST:
+    case PGPKEYPKT_PRIVATE_60:
+    case PGPKEYPKT_PRIVATE_61:
+    case PGPKEYPKT_PRIVATE_62:
+    case PGPKEYPKT_PRIVATE_63:
     default:
 	fprintf(stderr, "%s(%d) plen %02x hlen %x\n",
 		ptags[ptag], ptag, plen, hlen);
