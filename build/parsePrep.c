@@ -89,7 +89,7 @@ static char *doPatch(Spec spec, int c, int strip, char *db,
     if (compressed) {
 	sprintf(buf,
 		"echo \"Patch #%d:\"\n"
-		"%s -dc %s | patch -p%d %s -s\n"
+		"%s -d < %s | patch -p%d %s -s\n"
 		"STATUS=$?\n"
 		"if [ $STATUS -ne 0 ]; then\n"
 		"  exit $STATUS\n"
