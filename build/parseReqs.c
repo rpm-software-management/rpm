@@ -33,52 +33,52 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index)
     const char *r, *re, *v, *ve;
     char *req, *version;
     Header h;
-    int flags;
+    int tagflags, flags;
 
     switch (tag) {
     case RPMTAG_PROVIDES:
-	flags = RPMSENSE_PROVIDES;
+	tagflags = RPMSENSE_PROVIDES;
 	h = pkg->header;
 	break;
     case RPMTAG_OBSOLETES:
-	flags = RPMSENSE_OBSOLETES;
+	tagflags = RPMSENSE_OBSOLETES;
 	h = pkg->header;
 	break;
     case RPMTAG_CONFLICTFLAGS:
-	flags = RPMSENSE_CONFLICTS;
+	tagflags = RPMSENSE_CONFLICTS;
 	h = pkg->header;
 	break;
     case RPMTAG_BUILDCONFLICTS:
-	flags = RPMSENSE_CONFLICTS;
+	tagflags = RPMSENSE_CONFLICTS;
 	h = spec->buildRestrictions;
 	break;
     case RPMTAG_PREREQ:
-	flags = RPMSENSE_PREREQ;
+	tagflags = RPMSENSE_PREREQ;
 	h = pkg->header;
 	break;
     case RPMTAG_BUILDPREREQ:
-	flags = RPMSENSE_PREREQ;
+	tagflags = RPMSENSE_PREREQ;
 	h = spec->buildRestrictions;
 	break;
     case RPMTAG_TRIGGERIN:
-	flags = RPMSENSE_TRIGGERIN;
+	tagflags = RPMSENSE_TRIGGERIN;
 	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERPOSTUN:
-	flags = RPMSENSE_TRIGGERPOSTUN;
+	tagflags = RPMSENSE_TRIGGERPOSTUN;
 	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERUN:
-	flags = RPMSENSE_TRIGGERUN;
+	tagflags = RPMSENSE_TRIGGERUN;
 	h = pkg->header;
 	break;
     case RPMTAG_BUILDREQUIRES:
-	flags = RPMSENSE_ANY;
+	tagflags = RPMSENSE_ANY;
 	h = spec->buildRestrictions;
 	break;
     default:
     case RPMTAG_REQUIREFLAGS:
-	flags = RPMSENSE_ANY;
+	tagflags = RPMSENSE_ANY;
 	h = pkg->header;
 	break;
     }
@@ -87,6 +87,8 @@ int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index)
 	SKIPWHITE(r);
 	if (*r == '\0')
 	    break;
+
+	flags = tagflags;
 
 	/* Tokens must begin with alphanumeric, _, or / */
 	if (!(isalnum(r[0]) || r[0] == '_' || r[0] == '/')) {
