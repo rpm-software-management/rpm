@@ -1,8 +1,10 @@
+/** \ingroup RSA_m
+ * \file rsakp.c
+ *
+ * RSA Keypair, code.
+ */
+
 /*
- * rsakp.c
- *
- * RSA Keypair, code
- *
  * <conformance statement for IEEE P1363 needed here>
  *
  * Copyright (c) 2000 Virtual Unlimited B.V.

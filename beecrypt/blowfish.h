@@ -1,8 +1,10 @@
+/** \ingroup BC_blowfish_m BC_m
+ * \file blowfish.h
+ *
+ * Blowfish block cipher, header.
+ */
+
 /*
- * blowfish.h
- *
- * Blowfish block cipher, header
- *
  * Copyright (c) 1999, 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -32,6 +34,8 @@
 #define BLOWFISHROUNDS	16
 #define BLOWFISHPSIZE	(BLOWFISHROUNDS+2)
 
+/** \ingroup BC_blowfish_m
+ */
 typedef struct
 {
 	uint32 p[BLOWFISHPSIZE];
@@ -43,33 +47,56 @@ typedef struct
 extern "C" {
 #endif
 
+/** \ingroup BC_blowfish_m
+ */
 /*@unused@*/ extern const BEEDLLAPI blockCipher blowfish;
 
+/** \ingroup BC_blowfish_m
+ */
 BEEDLLAPI
-int blowfishSetup  (blowfishParam* bp, const uint32*, int, cipherOperation)
+int blowfishSetup  (blowfishParam* bp, const uint32* key, int keybits, cipherOperation op)
 	/*@modifies bp */;
+
+/** \ingroup BC_blowfish_m
+ */
 BEEDLLAPI
-int blowfishSetIV  (blowfishParam* bp, const uint32*)
+int blowfishSetIV  (blowfishParam* bp, const uint32* iv)
 	/*@modifies bp */;
+
+/** \ingroup BC_blowfish_m
+ */
 BEEDLLAPI
-int blowfishEncrypt(blowfishParam* bp, uint32* dst, const uint32*)
-	/*@modifies bp, dst */;
-BEEDLLAPI
-int blowfishDecrypt(blowfishParam* bp, uint32* dst, const uint32*)
+int blowfishEncrypt(blowfishParam* bp, uint32* dst, const uint32* src)
 	/*@modifies bp, dst */;
 
+/** \ingroup BC_blowfish_m
+ */
 BEEDLLAPI
-int blowfishECBEncrypt(blowfishParam* bp, int, uint32* dst, const uint32*)
-	/*@modifies bp, dst */;
-BEEDLLAPI
-int blowfishECBDecrypt(blowfishParam* bp, int, uint32* dst, const uint32*)
+int blowfishDecrypt(blowfishParam* bp, uint32* dst, const uint32* src)
 	/*@modifies bp, dst */;
 
+/** \ingroup BC_blowfish_m
+ */
 BEEDLLAPI
-int blowfishCBCEncrypt(blowfishParam* bp, int, uint32* dst, const uint32*)
+int blowfishECBEncrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src)
 	/*@modifies bp, dst */;
+
+/** \ingroup BC_blowfish_m
+ */
 BEEDLLAPI
-int blowfishCBCDecrypt(blowfishParam* bp, int, uint32* dst, const uint32*)
+int blowfishECBDecrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src)
+	/*@modifies bp, dst */;
+
+/** \ingroup BC_blowfish_m
+ */
+BEEDLLAPI
+int blowfishCBCEncrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src)
+	/*@modifies bp, dst */;
+
+/** \ingroup BC_blowfish_m
+ */
+BEEDLLAPI
+int blowfishCBCDecrypt(blowfishParam* bp, int count, uint32* dst, const uint32* src)
 	/*@modifies bp, dst */;
 
 #ifdef __cplusplus

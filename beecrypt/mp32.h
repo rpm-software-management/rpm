@@ -1,8 +1,10 @@
+/** \ingroup MP_m
+ * \file mp32.h
+ *
+ * Multiprecision 2's complement integer routines for 32 bit cpu, header/
+ */
+
 /*
- * mp32.h
- *
- * Multiprecision 2's complement integer routines for 32 bit cpu, header
- *
  * Copyright (c) 1997, 1998, 1999, 2000  Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -46,14 +48,16 @@ extern "C" {
 #endif
 #else
 BEEDLLAPI
-void mp32copy(uint32, uint32*, const uint32*);
+void mp32copy(uint32 size, uint32* dst, const uint32* src)
+	/*@modifies dst @*/;
 #endif
 
 #ifndef ASM_MP32MOVE
 #define mp32move(size, dst, src) memmove(dst, src, (size) << 2)
 #else
 BEEDLLAPI
-void mp32move(uint32, uint32*, const uint32*);
+void mp32move(uint32 size, uint32* dst, const uint32* src)
+	/*@modifies dst @*/;
 #endif
 
 BEEDLLAPI

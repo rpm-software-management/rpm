@@ -1,12 +1,40 @@
-/*
+/** \ingroup ELGAMAL_m
  * elgamal.c
  *
  * ElGamal signature scheme, code
  *
+ * This code implements two of the six variants described:
+ *
+ * - ElGamal Signature variant 1: (i.e. the standard version)
+ *  - Signing equation:
+ *   - r = g^k mod p and
+ *   - s = inv(k) * (h(m) - x*r) mod (p-1)
+ *  - Verifying equation:
+ *   - check 1 <= r <= (p-1)
+ *   - v1 = g^h(m) mod p
+ *   - v2 = y^r * r^s mod p
+ *   - check v1 == v2
+ *  - Simultaneous multiple exponentiation verification:
+ *   - y^r * r^s * g^(p-1-h(m)) mod p = 1 or (the former is probably faster)
+ *   - y^r * r^s * inv(g)^h(m) mod p = 1
+ *
+ * - ElGamal Signature variant 3: signing is simpler, because no inverse has to be calculated
+ *  - Signing equation:
+ *   - r = g^k mod p and
+ *   - s = x*r + k*h(m) mod (p-1)
+ *  - Verifying equation:
+ *   - check 1 <= r <= (p-1)
+ *   - v1 = g^s mod p
+ *   - v2 = y^r * r^h(m) mod p
+ *  - Simultaneous multiple exponentiation verification:
+ *   - y^r * r^h(m) * g^(p-1-s) mod p = 1 (one of the exponents is significantly smaller, i.e. h(m))
+ *
  * For more information on this algorithm, see:
  *  "Handbook of Applied Cryptography"
  *  11.5.2 "The ElGamal signature scheme", p. 454-459
- *
+ */
+
+/*
  * Copyright (c) 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -24,36 +52,8 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *
- * This code implements two of the six variants described:
- *
- * ElGamal Signature variant 1: (i.e. the standard version)
- *  Signing equation:
- *   r = g^k mod p and
- *   s = inv(k) * (h(m) - x*r) mod (p-1)
- *  Verifying equation:
- *   check 1 <= r <= (p-1)
- *   v1 = g^h(m) mod p
- *   v2 = y^r * r^s mod p
- *   check v1 == v2
- *  Simultaneous multiple exponentiation verification:
- *   y^r * r^s * g^(p-1-h(m)) mod p = 1 or (the former is probably faster)
- *   y^r * r^s * inv(g)^h(m) mod p = 1
- *
- * ElGamal Signature variant 3: signing is simpler, because no inverse has to be calculated
- *  Signing equation:
- *   r = g^k mod p and
- *   s = x*r + k*h(m) mod (p-1)
- *  Verifying equation:
- *   check 1 <= r <= (p-1)
- *   v1 = g^s mod p
- *   v2 = y^r * r^h(m) mod p
- *  Simultaneous multiple exponentiation verification:
- *   y^r * r^h(m) * g^(p-1-s) mod p = 1 (one of the exponents is significantly smaller, i.e. h(m))
- *
  */
- 
+
 #define BEECRYPT_DLL_EXPORT
 
 #include "elgamal.h"

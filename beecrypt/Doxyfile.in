@@ -305,6 +305,7 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = \
+	@top_srcdir@/Doxyheader \
 	@top_srcdir@/acconfig.h \
 	@top_srcdir@/base64.c \
 	@top_srcdir@/base64.h \
@@ -406,7 +407,7 @@ EXCLUDE_PATTERNS       =
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH           = @top_srcdir@/doc
+EXAMPLE_PATH           = @top_srcdir@/docs
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

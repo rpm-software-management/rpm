@@ -1,8 +1,10 @@
+/** \ingroup RSA_m
+ * \file rsapk.h
+ *
+ * RSA Public Key, header.
+ */
+
 /*
- * rsapk.h
- *
- * RSA Public Key, header
- *
  * Copyright (c) 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>

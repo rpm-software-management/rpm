@@ -1,8 +1,10 @@
+/** \ingroup HASH_md5_m HASH_m
+ * \file md5.h
+ *
+ * MD5 hash function, header.
+ */
+
 /*
- * md5.h
- *
- * MD5 hash function, header
- *
  * Copyright (c) 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -28,6 +30,8 @@
 
 #include "beecrypt.h"
 
+/** \ingroup HASH_md5_m
+ */
 typedef struct
 {
 	uint32 h[4];
@@ -40,17 +44,30 @@ typedef struct
 extern "C" {
 #endif
 
+/** \ingroup HASH_md5_m
+ */
 extern BEEDLLAPI const hashFunction md5;
 
+/** \ingroup HASH_md5_m
+ */
 BEEDLLAPI
 void md5Process(md5Param* p)
 	/*@modifies p @*/;
+
+/** \ingroup HASH_md5_m
+ */
 BEEDLLAPI
 int md5Reset   (md5Param* p)
 	/*@modifies p @*/;
+
+/** \ingroup HASH_md5_m
+ */
 BEEDLLAPI
 int md5Update  (md5Param* p, const byte* data, int size)
 	/*@modifies p @*/;
+
+/** \ingroup HASH_md5_m
+ */
 BEEDLLAPI
 int md5Digest  (md5Param* p, uint32* data)
 	/*@modifies p, data @*/;

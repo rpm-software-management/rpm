@@ -1,8 +1,10 @@
+/** \ingroup HASH_md5_m HASH_m
+ * \file md5.c
+ *
+ * MD5 hash function, code.
+ */
+
 /*
- * md5.c
- *
- * MD5 hash function, code
- *
  * Copyright (c) 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -29,6 +31,8 @@
 #include "mp32.h"
 #include "endianness.h"
 
+/** \ingroup HASH_md5_m
+ */
 /*@observer@*/ static uint32 md5hinit[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 };
 
 const hashFunction md5 = { "MD5", sizeof(md5Param), 64, 4 * sizeof(uint32), (hashFunctionReset) md5Reset, (hashFunctionUpdate) md5Update, (hashFunctionDigest) md5Digest };
@@ -181,6 +185,8 @@ int md5Update(md5Param* p, const byte* data, int size)
 	return 0;
 }
 
+/** \ingroup HASH_md5_m
+ */
 static void md5Finish(md5Param* p)
 	/*@modifies p @*/
 {

@@ -1,8 +1,10 @@
+/** \ingroup HASH_sha256_m HASH_m
+ * \file sha256.h
+ *
+ * SHA-256 hash function, header.
+ */
+
 /*
- * sha256.h
- *
- * SHA-256 hash function, header
- *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -28,6 +30,8 @@
 
 #include "beecrypt.h"
 
+/** \ingroup HASH_sha256_m
+ */
 typedef struct
 {
 	uint32 h[8];
@@ -40,17 +44,30 @@ typedef struct
 extern "C" {
 #endif
 
+/** \ingroup HASH_sha256_m
+ */
 extern BEEDLLAPI const hashFunction sha256;
 
+/** \ingroup HASH_sha256_m
+ */
 BEEDLLAPI
 void sha256Process(sha256Param* p)
 	/*@modifies p @*/;
+
+/** \ingroup HASH_sha256_m
+ */
 BEEDLLAPI
 int  sha256Reset  (sha256Param* p)
 	/*@modifies p @*/;
+
+/** \ingroup HASH_sha256_m
+ */
 BEEDLLAPI
 int  sha256Update (sha256Param* p, const byte* data, int size)
 	/*@modifies p @*/;
+
+/** \ingroup HASH_sha256_m
+ */
 BEEDLLAPI
 int  sha256Digest (sha256Param* p, uint32* data)
 	/*@modifies p, data @*/;

@@ -1,11 +1,13 @@
-/*
- * fips180.c
+/** \ingroup HASH_sha1_m HASH_m
+ * \file fips180.c
  *
- * SHA-1 hash function, code
+ * SHA-1 hash function, code.
  *
  * For more information on this algorithm, see:
  * NIST FIPS PUB 180-1
- *
+ */
+
+/*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -32,8 +34,12 @@
 #include "mp32.h"
 #include "endianness.h"
 
+/** \ingroup HASH_sha1_m
+ */
 /*@observer@*/ static const uint32 k[4] = { 0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6 };
 
+/** \ingroup HASH_sha1_m
+ */
 /*@observer@*/ static const uint32 hinit[5] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0 };
 
 const hashFunction sha1 = { "SHA-1", sizeof(sha1Param), 64, 5 * sizeof(uint32), (hashFunctionReset) sha1Reset, (hashFunctionUpdate) sha1Update, (hashFunctionDigest) sha1Digest };
@@ -204,6 +210,8 @@ int sha1Update(register sha1Param *p, const byte *data, int size)
 	return 0;
 }
 
+/** \ingroup HASH_sha1_m
+ */
 static void sha1Finish(register sha1Param *p)
 	/*@modifies p @*/
 {

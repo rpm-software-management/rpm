@@ -1,8 +1,10 @@
+/** \ingroup ELGAMAL_m
+ * \file elgamal.h
+ *
+ * ElGamal signature scheme, header.
+ */
+
 /*
- * elgamal.h
- *
- * ElGamal signature scheme, header
- *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -32,16 +34,26 @@
 extern "C" {
 #endif
 
+/**
+ */
 BEEDLLAPI
 int elgv1sign(const mp32barrett* p, const mp32barrett* n, const mp32number* g, randomGeneratorContext*, const mp32number* hm, const mp32number* x, mp32number* r, mp32number* s)
 	/*@modifies r, s */;
+
+/**
+ */
 BEEDLLAPI
 int elgv3sign(const mp32barrett* p, const mp32barrett* n, const mp32number* g, randomGeneratorContext*, const mp32number* hm, const mp32number* x, mp32number* r, mp32number* s)
 	/*@modifies r, s */;
 
+/**
+ */
 BEEDLLAPI
 int elgv1vrfy(const mp32barrett* p, const mp32barrett* n, const mp32number* g, const mp32number* hm, const mp32number* y, const mp32number* r, const mp32number* s)
 	/*@*/;
+
+/**
+ */
 BEEDLLAPI
 int elgv3vrfy(const mp32barrett* p, const mp32barrett* n, const mp32number* g, const mp32number* hm, const mp32number* y, const mp32number* r, const mp32number* s)
 	/*@*/;

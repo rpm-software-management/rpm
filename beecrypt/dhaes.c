@@ -1,14 +1,16 @@
-/*
- * dhaes.c
+/** \ingroup DH_m
+ * \file dhaes.c
  *
- * DHAES, code
+ * DHAES, code.
  *
  * This code implements the encryption scheme from the paper:
  *
  * "DHAES: An Encryption Scheme Based on the Diffie-Hellman Problem"
  * Michel Abdalla, Mihir Bellare, Phillip Rogaway
  * September 1998
- *
+ */
+
+/*
  * Copyright (c) 2000, 2001 Virtual Unlimited, B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -46,20 +48,20 @@
 /**
  * Good combinations will be:
  *
- * For 64-bit encryption:
- *	DHAES(MD5, Blowfish, HMAC-MD5) <- best candidate
- *	DHAES(MD5, Blowfish, HMAC-SHA-1)
- *  DHAES(MD5, Blowfish, HMAC-SHA-256)
+ * - For 64-bit encryption:
+ *	- DHAES(MD5, Blowfish, HMAC-MD5) <- best candidate
+ *	- DHAES(MD5, Blowfish, HMAC-SHA-1)
+ *	- DHAES(MD5, Blowfish, HMAC-SHA-256)
  *
- * For 96-bit encryption with 64-bit mac:
- *  DHAES(SHA-1, Blowfish, HMAC-MD5, 96)
- *  DHAES(SHA-1, Blowfish, HMAC-SHA-1, 96) <- best candidate
- *  DHAES(SHA-1, Blowfish, HMAC-SHA-256, 96) <- best candidate
+ * - For 96-bit encryption with 64-bit mac:
+ *	- DHAES(SHA-1, Blowfish, HMAC-MD5, 96)
+ *	- DHAES(SHA-1, Blowfish, HMAC-SHA-1, 96) <- best candidate
+ *	- DHAES(SHA-1, Blowfish, HMAC-SHA-256, 96) <- best candidate
  *
- * For 128-bit encryption:
- *	DHAES(SHA-256, Blowfish, HMAC-MD5)
- *	DHAES(SHA-256, Blowfish, HMAC-SHA-1)
- *  DHAES(SHA-256, Blowfish, HMAC-SHA-256)
+ * - For 128-bit encryption:
+ *	- DHAES(SHA-256, Blowfish, HMAC-MD5)
+ *	- DHAES(SHA-256, Blowfish, HMAC-SHA-1)
+ *	- DHAES(SHA-256, Blowfish, HMAC-SHA-256)
  */
 
 int dhaes_pUsable(const dhaes_pParameters* params)
@@ -186,6 +188,8 @@ int dhaes_pContextFree(dhaes_pContext* ctxt)
 	return 0;
 }
 
+/**
+ */
 static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mp32number* private, const mp32number* public, const mp32number* message, cipherOperation op)
 	/*@modifies ctxt @*/
 {

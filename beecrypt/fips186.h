@@ -1,8 +1,10 @@
+/** \ingroup PRNG_fips186_m DSA_m
+ * \file fips186.h
+ *
+ * FIPS186 pseudo-random generator, with SHA-1 as H function, header.
+ */
+
 /*
- * fips186.h
- *
- * FIPS186 pseudo-random generator, with SHA-1 as H function, header
- *
  * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -48,6 +50,8 @@
 
 #define FIPS186_STATE_SIZE	16
 
+/**
+ */
 typedef struct
 {
 	#ifdef _REENTRANT
@@ -72,17 +76,30 @@ typedef struct
 extern "C" {
 #endif
 
+/**
+ */
 /*@unused@*/ extern BEEDLLAPI const randomGenerator fips186prng;
 
+/**
+ */
 BEEDLLAPI
 int fips186Setup  (fips186Param* fp)
 	/*@modifies fp */;
+
+/**
+ */
 BEEDLLAPI
 int fips186Seed   (fips186Param* fp, const uint32* data, int size)
 	/*@modifies fp */;
+
+/**
+ */
 BEEDLLAPI
 int fips186Next   (fips186Param* fp, uint32* data, int size)
 	/*@modifies fp, data */;
+
+/**
+ */
 BEEDLLAPI
 int fips186Cleanup(fips186Param* fp)
 	/*@modifies fp */;

@@ -1,8 +1,10 @@
+/** \ingroup BC_m
+ * \file blockpad.h
+ *
+ * Blockcipher padding, header.
+ */
+
 /*
- * blockpad.h
- *
- * Blockcipher padding, header
- *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -32,18 +34,44 @@
 extern "C" {
 #endif
 
+/**
+ * Enlarge buffer to boundary.
+ * @param blockbytes	desired block alignment/pad boundary
+ * @param tmp		buffer to pad
+ * @return		buffer with pad added
+ */
 BEEDLLAPI /*@only@*/ /*@null@*/
-memchunk* pkcs5Pad  (int, /*@only@*/ /*@null@*/ memchunk* tmp)
-	/*@modifies tmp */;
-BEEDLLAPI /*@only@*/ /*@null@*/
-memchunk* pkcs5Unpad(int, /*@null@*/ memchunk* tmp)
+memchunk* pkcs5Pad  (int blockbytes, /*@only@*/ /*@null@*/ memchunk* tmp)
 	/*@modifies tmp */;
 
+/**
+ * Shrink buffer to boundary.
+ * @param blockbytes	desired block alignment/pad boundary
+ * @param tmp		buffer to unpad
+ * @return		buffer with pad removed
+ */
 BEEDLLAPI /*@only@*/ /*@null@*/
-memchunk* pkcs5PadCopy  (int, const memchunk* tmp)
+memchunk* pkcs5Unpad(int blockbytes, /*@null@*/ memchunk* tmp)
+	/*@modifies tmp */;
+
+/**
+ * Copy/enlarge buffer to boundary.
+ * @param blockbytes	desired block alignment/pad boundary
+ * @param tmp		buffer to pad
+ * @return		copy of buffer with pad added
+ */
+BEEDLLAPI /*@only@*/ /*@null@*/
+memchunk* pkcs5PadCopy  (int blockbytes, const memchunk* src)
 	/*@*/;
+
+/**
+ * Copy/shrink buffer to boundary.
+ * @param blockbytes	desired block alignment/pad boundary
+ * @param tmp		buffer to unpad
+ * @return		copy of buffer with pad removed
+ */
 BEEDLLAPI /*@only@*/ /*@null@*/
-memchunk* pkcs5UnpadCopy(int, const memchunk* tmp)
+memchunk* pkcs5UnpadCopy(int blockbytes, const memchunk* src)
 	/*@*/;
 
 #ifdef __cplusplus

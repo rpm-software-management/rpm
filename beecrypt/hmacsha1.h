@@ -1,8 +1,10 @@
+/** \ingroup HMAC_sha1_m HMAC_m
+ * \file hmacsha1.h
+ *
+ * HMAC-SHA-1 message authentication code, header.
+ */
+
 /*
- * hmacsha1.h
- *
- * HMAC-SHA-1 message authentication code, header
- *
  * Copyright (c) 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -29,6 +31,8 @@
 #include "hmac.h"
 #include "fips180.h"
 
+/** \ingroup HMAC_sha1_m
+ */
 typedef struct
 {
 /*@unused@*/	byte kxi[64];
@@ -40,17 +44,30 @@ typedef struct
 extern "C" {
 #endif
 
+/** \ingroup HMAC_sha1_m
+ */
 /*@unused@*/ extern BEEDLLAPI const keyedHashFunction hmacsha1;
 
+/** \ingroup HMAC_sha1_m
+ */
 BEEDLLAPI
 int hmacsha1Setup (hmacsha1Param* sp, const uint32* key, int keybits)
 	/*@modifies sp @*/;
+
+/** \ingroup HMAC_sha1_m
+ */
 BEEDLLAPI
 int hmacsha1Reset (hmacsha1Param* sp)
 	/*@modifies sp @*/;
+
+/** \ingroup HMAC_sha1_m
+ */
 BEEDLLAPI
 int hmacsha1Update(hmacsha1Param* sp, const byte* data, int size)
 	/*@modifies sp @*/;
+
+/** \ingroup HMAC_sha1_m
+ */
 BEEDLLAPI
 int hmacsha1Digest(hmacsha1Param* sp, uint32* data)
 	/*@modifies sp, data @*/;

@@ -1,8 +1,10 @@
+/** \ingroup MP_m
+ * \file mp32prime.h
+ *
+ * Multi-precision primes, header.
+ */
+
 /*
- * mp32prime.h
- *
- * Multi-precision primes, header
- *
  * Copyright (c) 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>

@@ -1,8 +1,10 @@
+/** \ingroup RSA_m
+ * \file rsa.c
+ *
+ * RSA Encryption & signature scheme, code.
+ */
+
 /*
- * rsa.c
- *
- * RSA Encryption & signature scheme, code
- *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>

@@ -1,8 +1,10 @@
+/** \ingroup HMAC_md5_m HMAC_m
+ * \file hmacmd5.c
+ *
+ * HMAC-MD5 message authentication code, code.
+ */
+
 /*
- * hmacmd5.c
- *
- * HMAC-MD5 message authentication code, code
- *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>

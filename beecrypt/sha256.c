@@ -1,8 +1,10 @@
+/** \ingroup HASH_sha256_m HASH_m
+ * \file sha256.c
+ *
+ * SHA-256 hash function, code.
+ */
+
 /*
- * sha256.c
- *
- * SHA-256 hash function, code
- *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -29,6 +31,8 @@
 #include "mp32.h"
 #include "endianness.h"
 
+/**
+ */
 /*@observer@*/ static const uint32 k[64] = {
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
 	0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
@@ -40,6 +44,8 @@
 	0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
+/**
+ */
 /*@observer@*/ static const uint32 hinit[8] = {
 	0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
 };
@@ -199,6 +205,8 @@ int sha256Update(register sha256Param *p, const byte *data, int size)
 	return 0;
 }
 
+/**
+ */
 static void sha256Finish(register sha256Param *p)
 	/*@modifies p @*/
 {

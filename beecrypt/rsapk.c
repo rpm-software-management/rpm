@@ -1,8 +1,10 @@
+/** \ingroup RSA_m
+ * \file rsapk.c
+ *
+ * RSA Public Key, code.
+ */
+
 /*
- * rsapk.c
- *
- * RSA Public Key, code
- *
  * <conformance statement for IEEE P1363 needed here>
  *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
@@ -28,6 +30,10 @@
 #define BEECRYPT_DLL_EXPORT
 
 #include "rsapk.h"
+
+#if HAVE_STRING_H
+# include <string.h>
+#endif
 
 int rsapkInit(rsapk* pk)
 {

@@ -1,8 +1,10 @@
+/** \ingreoup ES_m
+ * \file entropy.h
+ *
+ * Entropy gathering routine(s) for pseudo-random generator initialization, header.
+ */
+
 /*
- * entropy.h
- *
- * Entropy gathering routine(s) for pseudo-random generator initialization, header
- *
  * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -43,29 +45,44 @@ BEEDLLAPI
 int entropy_provider_cleanup(void);
 
 BEEDLLAPI
-int entropy_wavein(uint32*, int);
+int entropy_wavein(uint32* data, int size);
 BEEDLLAPI
-int entropy_console(uint32*, int);
+int entropy_console(uint32* data, int size);
 BEEDLLAPI
-int entropy_wincrypt(uint32*, int);
+int entropy_wincrypt(uint32* data, int size);
 #else
+
 #if HAVE_DEV_AUDIO
+/** \ingroup ES_audio_m ES_m
+ */
 int entropy_dev_audio (uint32* data, int size)
 	/*@*/;
 #endif
+
 #if HAVE_DEV_DSP
+/** \ingroup ES_dsp_m ES_m
+ */
 int entropy_dev_dsp   (uint32* data, int size)
 	/*@modifies data */;
 #endif
+
 #if HAVE_DEV_RANDOM
+/** \ingroup ES_random_m ES_m
+ */
 int entropy_dev_random(uint32* data, int size)
 	/*@modifies data */;
 #endif
+
 #if HAVE_DEV_URANDOM
+/** \ingroup ES_urandom_m ES_m
+ */
 int entropy_dev_urandom(uint32* data, int size)
 	/*@modifies data */;
 #endif
+
 #if HAVE_DEV_TTY
+/** \ingroup ES_tty_m ES_m
+ */
 int entropy_dev_tty   (uint32* data, int size)
 	/*@modifies data */;
 #endif

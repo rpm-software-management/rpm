@@ -1,9 +1,11 @@
+/** \ingroup DL_m
+ * \file dlpk.c
+ *
+ * Discrete Logarithm Public Key, code.
+ */
+
 /*
- * dlpk.c
- *
- * Discrete Logarithm Public Key, code
- *
- * Copyright (c) 2000 Virtual Unlimited B.V.
+ * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -28,16 +30,34 @@
 #include "dlpk.h"
 #include "mp32.h"
 
-void dlpk_pFree(dlpk_p* dp)
+int dlpk_pInit(dlpk_p* pk)
 {
-	dldp_pFree(&dp->param);
-	mp32nfree(&dp->y);
+	if (dldp_pInit(&pk->param) < 0)
+		return -1;
+
+	mp32nzero(&pk->y);
+
+	return 0;
 }
 
-void dlpk_pCopy(dlpk_p* dst, const dlpk_p* src)
+int dlpk_pFree(dlpk_p* pk)
 {
-	dldp_pCopy(&dst->param, &src->param);
-	mp32nset(&dst->y, src->y.size, src->y.data);
+	if (dldp_pFree(&pk->param) < 0)
+		return -1;
+
+	mp32nfree(&pk->y);
+
+	return 0;
+}
+
+int dlpk_pCopy(dlpk_p* dst, const dlpk_p* src)
+{
+	if (dldp_pCopy(&dst->param, &src->param) < 0)
+		return -1;
+
+	mp32ncopy(&dst->y, &src->y);
+
+	return 0;
 }
 
 int dlpk_pEqual(const dlpk_p* a, const dlpk_p* b)
@@ -46,29 +66,33 @@ int dlpk_pEqual(const dlpk_p* a, const dlpk_p* b)
 		mp32eqx(a->y.size, a->y.data, b->y.size, b->y.data);
 }
 
-int dlpk_pgoqValidate(const dlpk_p* dp, randomGeneratorContext* rc, int cofactor)
+int dlpk_pgoqValidate(const dlpk_p* pk, randomGeneratorContext* rgc, int cofactor)
 {
-	if (dldp_pgoqValidate(&dp->param, rc, cofactor) == 0)
+	register int rc = dldp_pgoqValidate(&pk->param, rgc, cofactor);
+
+	if (rc <= 0)
+		return rc;
+
+	if (mp32leone(pk->y.size, pk->y.data))
 		return 0;
 
-	if (mp32leone(dp->y.size, dp->y.data))
-		return 0;
-
-	if (mp32gex(dp->y.size, dp->y.data, dp->param.p.size, dp->param.p.modl))
+	if (mp32gex(pk->y.size, pk->y.data, pk->param.p.size, pk->param.p.modl))
 		return 0;
 
 	return 1;
 }
 
-int dlpk_pgonValidate(const dlpk_p* dp, randomGeneratorContext* rc)
+int dlpk_pgonValidate(const dlpk_p* pk, randomGeneratorContext* rgc)
 {
-	if (dldp_pgonValidate(&dp->param, rc) == 0)
+	register int rc = dldp_pgonValidate(&pk->param, rgc);
+
+	if (rc <= 0)
+		return rc;
+
+	if (mp32leone(pk->y.size, pk->y.data))
 		return 0;
 
-	if (mp32leone(dp->y.size, dp->y.data))
-		return 0;
-
-	if (mp32gex(dp->y.size, dp->y.data, dp->param.p.size, dp->param.p.data))
+	if (mp32gex(pk->y.size, pk->y.data, pk->param.p.size, pk->param.p.modl))
 		return 0;
 
 	return 1;

@@ -1,8 +1,10 @@
+/** \ingroup BC_m
+ * \file blockpad.c
+ *
+ * Blockcipher padding, code.
+ */
+
 /*
- * blockpad.c
- *
- * Blockcipher padding, code
- *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>

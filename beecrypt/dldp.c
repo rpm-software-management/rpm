@@ -1,8 +1,10 @@
+/** \ingroup DL_m
+ * \file dldp.c
+ *
+ * Discrete Logarithm Domain Parameters, code.
+ */
+
 /*
- * dldp.c
- *
- * Discrete Logarithm Domain Parameters, code
- *
  * <conformance statement for IEEE P1363 needed here>
  *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
@@ -38,8 +40,13 @@
 # include <malloc.h>
 #endif
 
+/**
+ */
 static int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 	/*@modifies dp, rgc, wksp @*/;
+
+/**
+ */
 static int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, uint32* wksp)
 	/*@modifies dp, rgc, wksp @*/;
 

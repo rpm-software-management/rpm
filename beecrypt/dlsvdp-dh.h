@@ -1,8 +1,10 @@
+/** \ingrooup DL_m DH_m
+ * \file dlsvdp-dh.h
+ *
+ * Discrete Logarithm Secret Value Derivation Primitive - Diffie Hellman, header.
+ */
+
 /*
- * dlsvdp-dh.h
- *
- * Discrete Logarithm Secret Value Derivation Primitive - Diffie Hellman, header
- *
  * Copyright (c) 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -32,8 +34,10 @@
 extern "C" {
 #endif
 
+/**
+ */
 BEEDLLAPI
-int dlsvdp_pDHSecret(const dldp_p* dp, const mp32number*, const mp32number*, mp32number* s)
+int dlsvdp_pDHSecret(const dldp_p* dp, const mp32number* x, const mp32number* y, mp32number* s)
 	/*@modifies s */;
 
 #ifdef __cplusplus

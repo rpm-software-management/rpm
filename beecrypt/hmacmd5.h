@@ -1,8 +1,10 @@
+/** \ingroup HMAC_md5_m HMAC_m
+ * \file hmacmd5.h
+ *
+ * HMAC-MD5 message authentication code, header.
+ */
+
 /*
- * hmacmd5.h
- *
- * HMAC-MD5 message authentication code, header
- *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -29,6 +31,8 @@
 #include "hmac.h"
 #include "md5.h"
 
+/** \ingroup HMAC_md5_m
+ */
 typedef struct
 {
 /*@unused@*/	byte kxi[64];
@@ -40,17 +44,30 @@ typedef struct
 extern "C" {
 #endif
 
+/** \ingroup HMAC_md5_m
+ */
 /*@unused@*/ extern BEEDLLAPI const keyedHashFunction hmacmd5;
 
+/** \ingroup HMAC_md5_m
+ */
 BEEDLLAPI
 int hmacmd5Setup (hmacmd5Param* sp, const uint32* key, int keybits)
 	/*@modifies sp @*/;
+
+/** \ingroup HMAC_md5_m
+ */
 BEEDLLAPI
 int hmacmd5Reset (hmacmd5Param* sp)
 	/*@modifies sp @*/;
+
+/** \ingroup HMAC_md5_m
+ */
 BEEDLLAPI
 int hmacmd5Update(hmacmd5Param* sp, const byte* data, int size)
 	/*@modifies sp @*/;
+
+/** \ingroup HMAC_md5_m
+ */
 BEEDLLAPI
 int hmacmd5Digest(hmacmd5Param* sp, uint32* data)
 	/*@modifies sp, data @*/;

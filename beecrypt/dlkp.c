@@ -1,11 +1,13 @@
+/** \ingroup DL_m
+ * \file dlkp.c
+ *
+ * Discrete Logarithm Keypair, code.
+ */
+
 /*
- * dlkp.c
- *
- * Discrete Logarithm Keypair, code
- *
  * <conformance statement for IEEE P1363 needed here>
  *
- * Copyright (c) 2000 Virtual Unlimited B.V.
+ * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -29,26 +31,46 @@
 
 #include "dlkp.h"
 
-void dlkp_pPair(dlkp_p* dp, randomGeneratorContext* rc, const dldp_p* param)
+int dlkp_pPair(dlkp_p* kp, randomGeneratorContext* rgc, const dldp_p* param)
 {
 	/* copy the parameters */
-	dldp_pCopy(&dp->param, param);
+	if (dldp_pCopy(&kp->param, param) < 0)
+		return -1;
 
-	dldp_pPair((const dldp_p*) param, rc, &dp->x, &dp->y);
+	if (dldp_pPair(param, rgc, &kp->x, &kp->y) < 0)
+		return -1;
+
+	return 0;
 }
 
-void dlkp_pFree(dlkp_p* dp)
+int dlkp_pInit(dlkp_p* kp)
 {
-	dldp_pFree(&dp->param);
+	if (dldp_pInit(&kp->param) < 0)
+		return -1;
 
-	mp32nfree(&dp->y);
-	mp32nfree(&dp->x);
+	mp32nzero(&kp->y);
+	mp32nzero(&kp->x);
+
+	return 0;
 }
 
-void dlkp_pCopy(dlkp_p* dst, const dlkp_p* src)
+int dlkp_pFree(dlkp_p* kp)
 {
-	dldp_pCopy(&dst->param, &src->param);
+	if (dldp_pFree(&kp->param) < 0)
 
-	mp32nset(&dst->y, src->y.size, src->y.data);
-	mp32nset(&dst->x, src->x.size, src->x.data);
+	mp32nfree(&kp->y);
+	mp32nfree(&kp->x);
+
+	return 0;
+}
+
+int dlkp_pCopy(dlkp_p* dst, const dlkp_p* src)
+{
+	if (dldp_pCopy(&dst->param, &src->param) < 0)
+		return -1;
+
+	mp32ncopy(&dst->y, &src->y);
+	mp32ncopy(&dst->x, &src->x);
+
+	return 0;
 }

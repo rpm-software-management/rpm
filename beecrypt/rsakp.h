@@ -1,8 +1,10 @@
+/** \ingroup RSA_m
+ * \file rsakp.h
+ *
+ * RSA Keypair, header.
+ */
+
 /*
- * rsakp.h
- *
- * RSA Keypair, header
- *
  * <conformance statement for IEEE P1363 needed here>
  *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.

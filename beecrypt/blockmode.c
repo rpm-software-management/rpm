@@ -1,9 +1,11 @@
+/** \ingroup BC_m
+ * \file blockmode.c
+ *
+ * Block cipher operation modes, code.
+ */
+
 /*
- * blockmode.c
- *
- * Block cipher operation modes, code
- *
- * Copyright (c) 2000, Virtual Unlimited B.V.
+ * Copyright (c) 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
  *
@@ -28,93 +30,7 @@
 #include "blockmode.h"
 #include "mp32.h"
 
-/* generic functions for those blockCiphers that don't implement an optimized version */
-
-static int ecbencrypt(const blockCipher* bc, blockCipherParam* bp, int blocks, uint32* dst, const uint32* src)
-{
-	register int i;
-	register uint32 blockwords = (bc->blockbits >> 5);
-
-	mp32copy(blocks * blockwords, dst, src);
-	for (i = 0; i < blocks; i++)
-	{
-		bc->encrypt(bp, dst);
-		dst += blockwords;
-	}
-	return 0;
-}
-
-static int ecbdecrypt(const blockCipher* bc, blockCipherParam* bp, int blocks, uint32* dst, const uint32* src)
-{
-	register int i;
-	register uint32 blockwords = (bc->blockbits >> 5);
-
-	mp32copy(blocks * blockwords, dst, src);
-	for (i = 0; i < blocks; i++)
-	{
-		bc->decrypt(bp, dst);
-		dst += blockwords;
-	}
-	return 0;
-}
-
-
-static int cbcencrypt(const blockCipher* bc, blockCipherParam* bp, int blocks, uint32* dst, const uint32* src, const uint32* iv)
-{
-	register int i;
-	register uint32 blockwords = (bc->blockbits >> 5);
-
-	mp32copy(blockwords, dst, src);
-
-	if (iv)
-		mp32xor(blockwords, dst, iv);
-
-	bc->encrypt(bp, dst);
-
-	dst += blockwords;
-	src += blockwords;
-
-	for (i = 1; i < blocks; i++)
-	{
-		mp32xor(blockwords, dst, dst - blockwords);
-
-		mp32copy(blockwords, dst, src);
-		bc->encrypt(bp, dst);
-
-		dst += blockwords;
-		src += blockwords;
-	}
-	return 0;
-}
-
-static int cbcdecrypt(const blockCipher* bc, blockCipherParam* bp, int blocks, uint32* dst, const uint32* src, const uint32* iv)
-{
-	register int i;
-	register uint32 blockwords = (bc->blockbits >> 5);
-
-	mp32copy(blockwords, dst, src);
-	bc->decrypt(bp, dst);
-
-	if (iv)
-		mp32xor(blockwords, dst, iv);
-
-	dst += blockwords;
-	src += blockwords;
-
-	for (i = 1; i < blocks; i++)
-	{
-		mp32copy(blockwords, dst, src);
-		bc->decrypt(bp, dst);
-
-		mp32xor(blockwords, dst, src - blockwords);
-
-		dst += blockwords;
-		src += blockwords;
-	}
-	return 0;
-}
-
-int blockEncrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, uint32* dst, const uint32* src, const uint32* iv)
+int blockEncrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, uint32* dst, const uint32* src)
 {
 	if (bc->mode)
 	{
@@ -124,23 +40,15 @@ int blockEncrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, i
 		{
 			register const blockModeEncrypt be = bm->encrypt;
 
-			if (be) /* we have an optimized version for this cipher / mode combination */
-				return be(bp, blocks, dst, src, iv);
+			if (be)
+				return be(bp, blocks, dst, src);
 		}
 	}
 
-	switch (mode)
-	{
-	case ECB:
-		return ecbencrypt(bc, bp, blocks, dst, src);
-	case CBC:
-		return cbcencrypt(bc, bp, blocks, dst, src, iv);
-	default: /* other block modes aren't implemented yet */
-		return -1;
-	}
+	return -1;
 }
 
-int blockDecrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, uint32* dst, const uint32* src, const uint32* iv)
+int blockDecrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, uint32* dst, const uint32* src)
 {
 	if (bc->mode)
 	{
@@ -150,18 +58,10 @@ int blockDecrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, i
 		{
 			register const blockModeEncrypt bd = bm->decrypt;
 
-			if (bd) /* we have an optimized version for this cipher / mode combination */
-				return bd(bp, blocks, dst, src, iv);
+			if (bd)
+				return bd(bp, blocks, dst, src);
 		}
 	}
 
-	switch (mode)
-	{
-	case ECB:
-		return ecbdecrypt(bc, bp, blocks, dst, src);
-	case CBC:
-		return cbcdecrypt(bc, bp, blocks, dst, src, iv);
-	default: /* other block modes aren't implemented yet */
-		return -1;
-	}
+	return -1;
 }

@@ -52,7 +52,7 @@ libbeecrypt_la_LDFLAGS = -version-info $(LIBBEECRYPT_LT_CURRENT):$(LIBBEECRYPT_L
 
 pkginclude_HEADERS = base64.h beecrypt.h blockmode.h blockpad.h blowfish.h blowfishopt.h dhaes.h dldp.h dlkp.h dlpk.h dlsvdp-dh.h elgamal.h endianness.h entropy.h fips180.h fips180opt.h fips186.h hmac.h hmacmd5.h hmacsha1.h hmacsha256.h md5.h memchunk.h mp32.h mp32barrett.h mp32number.h mp32opt.h mp32prime.h mtprng.h rsa.h rsakp.h rsapk.h sha256.h timestamp.h
 
-EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS README.DLL README.WIN32 beecrypt.def beecrypt.mcp beecrypt.rc config.h config.gas.h config.win.h javaglue.h
+EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README.DLL README.WIN32 beecrypt.def beecrypt.mcp beecrypt.rc beecrypt.spec config.h config.gas.h config.win.h javaglue.h
 
 # beecrypt.c entropy.c javaglue.c mtprng.c
 lclintfiles = base64.c blockmode.c blockpad.c blowfish.c dhaes.c dldp.c dlkp.c dlpk.c dlsvdp-dh.c elgamal.c endianness.c fips180.c fips186.c hmac.c hmacmd5.c hmacsha1.c hmacsha256.c md5.c memchunk.c mp32.c mp32barrett.c mp32number.c mp32prime.c rsa.c rsakp.c rsapk.c sha256.c timestamp.c
@@ -63,7 +63,7 @@ lclint:
 
 DOXYGEN = /usr/bin/doxygen
 .PHONY: doxygen
-doxygen apidocs: Doxyfile
+doxygen apidocs: Doxyfile Doxyheader
 	rm -rf $@
 	mkdir -p $@
 	- [ -x ${DOXYGEN} ] && ${DOXYGEN}

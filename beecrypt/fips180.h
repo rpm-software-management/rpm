@@ -1,8 +1,10 @@
+/** \ingroup HASH_sha1_m HASH_m
+ * \file fips180.h
+ *
+ * SHA-1 hash function, header.
+ */
+
 /*
- * fips180.h
- *
- * SHA-1 hash function, header
- *
  * Copyright (c) 1997, 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -29,6 +31,8 @@
 #include "beecrypt.h"
 #include "fips180opt.h"
 
+/** \ingroup HASH_sha1_m
+ */
 typedef struct
 {
 	uint32 h[5];
@@ -41,17 +45,30 @@ typedef struct
 extern "C" {
 #endif
 
+/** \ingroup HASH_sha1_m
+ */
 extern BEEDLLAPI const hashFunction sha1;
 
+/** \ingroup HASH_sha1_m
+ */
 BEEDLLAPI
 void sha1Process(sha1Param* p)
 	/*@modifies p */;
+
+/** \ingroup HASH_sha1_m
+ */
 BEEDLLAPI
 int  sha1Reset  (sha1Param* p)
 	/*@modifies p */;
+
+/** \ingroup HASH_sha1_m
+ */
 BEEDLLAPI
 int  sha1Update (sha1Param* p, const byte* data, int size)
 	/*@modifies p */;
+
+/** \ingroup HASH_sha1_m
+ */
 BEEDLLAPI
 int  sha1Digest (sha1Param* p, /*@out@*/ uint32* data)
 	/*@modifies p, data */;

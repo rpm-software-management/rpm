@@ -1,8 +1,10 @@
+/** \ingroup DL_m
+ * \file dlkp.h
+ *
+ * Discrete Logarithm Keypair, header.
+ */
+
 /*
- * dlkp.h
- *
- * Discrete Logarithm Keypair, header
- *
  * <conformance statement for IEEE P1363 needed here>
  *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
@@ -30,6 +32,8 @@
 
 #include "dlpk.h"
 
+/**
+ */
 typedef struct
 {
 	dldp_p param;
@@ -41,18 +45,29 @@ typedef struct
 extern "C" {
 #endif
 
+/**
+ */
 BEEDLLAPI
-int dlkp_pPair(dlkp_p* kp, randomGeneratorContext* rgc, const dldp_p*)
-	/*@modifies kp */;
+int dlkp_pPair(dlkp_p* kp, randomGeneratorContext* rgc, const dldp_p* param)
+	/*@modifies kp, rgc */;
+
+/**
+ */
 BEEDLLAPI
 int dlkp_pInit(dlkp_p* kp)
 	/*@modifies kp */;
+
+/**
+ */
 BEEDLLAPI
 int dlkp_pFree(dlkp_p* kp)
 	/*@modifies kp */;
+
+/**
+ */
 BEEDLLAPI
-int dlkp_pCopy(dlkp_p* kp, const dlkp_p*)
-	/*@modifies kp */;
+int dlkp_pCopy(dlkp_p* dst, const dlkp_p* src)
+	/*@modifies dst */;
 
 #ifdef __cplusplus
 }

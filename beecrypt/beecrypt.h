@@ -33,7 +33,10 @@
 #include "memchunk.h"
 #include "mp32number.h"
 
-/**
+/** \name Entropy sources */
+/*@{*/
+
+/** \ingroup ES_m
  * Return an array of 32-bit unsigned integers of given size with
  * entropy data.
  *
@@ -43,24 +46,21 @@
  */
 typedef int (*entropyNext) (uint32* data, int size);
 
-/**
- * The struct 'entropySource' holds information and pointers to code specific
- * to each entropy source. Each specific entropy source MUST be written to be
- * multithread-safe.
- *
+/** \ingroup ES_m
+ * Methods and parameters for entropy sources.
+ * Each specific entropy source MUST be written to be multithread-safe.
  */
-
 typedef struct
 {
-/*@unused@*/	const char*		name;
-/*@unused@*/	const entropyNext	next;
+/*@unused@*/ const char* name;		/*!< entropy source name */
+/*@unused@*/ const entropyNext next;	/*!< return entropy function */
 } entropySource;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
+/** \ingroup ES_m
  * Return the number of entropy sources available.
  * @return		number of entropy sources available
  */
@@ -68,7 +68,7 @@ BEEDLLAPI
 int entropySourceCount(void)
 	/*@*/;
 
-/**
+/** \ingroup ES_m
  * Retrieve a entropy source by index.
  * @param index		entropy source index
  * @return		entropy source pointer (or NULL)
@@ -77,7 +77,7 @@ BEEDLLAPI /*@null@*/
 const entropySource* entropySourceGet(int index)
 	/*@*/;
 
-/**
+/** \ingroup ES_m
  * Retrieve a entropy source by name.
  * @param name		entropy source name
  * @return		entropy source pointer (or NULL)
@@ -86,17 +86,17 @@ BEEDLLAPI /*@null@*/
 const entropySource* entropySourceFind(const char* name)
 	/*@*/;
 
-/**
+/** \ingroup ES_m
  * Retrieve the default entropy source.
  * If the BEECRYPT_ENTROPY environment variable is set, use that
- * entropy source. Otherwise, use the 1st entry
+ * entropy source. Otherwise, use the 1st entry in the internal table.
  * @return		entropy source pointer (or NULL)
  */
 BEEDLLAPI /*@null@*/
 const entropySource* entropySourceDefault(void)
 	/*@*/;
 
-/**
+/** \ingroup ES_m
  * Gather entropy from multiple sources (if BEECRYPT_ENTROPY is not set).
  *
  * @retval data		entropy data
@@ -111,13 +111,15 @@ int entropyGatherNext(uint32* data, int size)
 }
 #endif
 
-/*
- * Pseudo-random Number Generators
- */
+/*@}*/
+/** \name Pseudo-random Number Generators */
+/*@{*/
 
+/** \ingroup PRNG_m
+ */
 typedef void randomGeneratorParam;
 
-/**
+/** \ingroup PRNG_m
  * Initialize the parameters for use, and seed the generator
  * with entropy from the default entropy source.
  *
@@ -127,7 +129,7 @@ typedef void randomGeneratorParam;
 typedef int (*randomGeneratorSetup) (randomGeneratorParam* param)
 	/*@modifies param @*/;
 
-/**
+/** \ingroup PRNG_m
  * Re-seed the random generator with user-provided entropy.
  *
  * @param param		generator parameters
@@ -138,7 +140,7 @@ typedef int (*randomGeneratorSetup) (randomGeneratorParam* param)
 typedef int (*randomGeneratorSeed) (randomGeneratorParam* param, const uint32* data, int size)
 	/*@modifies param @*/;
 
-/**
+/** \ingroup PRNG_m
  * Return an array of 32-bit unsigned integers of given size with
  * pseudo-random data.
  *
@@ -150,7 +152,7 @@ typedef int (*randomGeneratorSeed) (randomGeneratorParam* param, const uint32* d
 typedef int (*randomGeneratorNext) (randomGeneratorParam* param, uint32* data, int size)
 	/*@modifies param, data @*/;
 
-/**
+/** \ingroup PRNG_m
  * Cleanup after using a generator.
  *
  * @param param		generator parameters
@@ -159,12 +161,11 @@ typedef int (*randomGeneratorNext) (randomGeneratorParam* param, uint32* data, i
 typedef int (*randomGeneratorCleanup) (randomGeneratorParam* param)
 	/*@modifies param @*/;
 
-/**
- * The struct 'randomGenerator' holds information and pointers to code specific
- * to each random generator. Each specific random generator MUST be written to
- * be multithread safe.
+/** \ingroup PRNG_m
+ * Methods and parameters for random generators.
+ * Each specific random generator MUST be written to be multithread safe.
  *
- * WARNING: each randomGenerator, when used in cryptographic applications, MUST
+ * @warning Each randomGenerator, when used in cryptographic applications, MUST
  * be guaranteed to be of suitable quality and strength (i.e. don't use the
  * random() function found in most UN*X-es).
  *
@@ -174,22 +175,21 @@ typedef int (*randomGeneratorCleanup) (randomGeneratorParam* param)
  * field.
  *
  */
-
 typedef struct
 {
-	const char* name;
-	const unsigned int paramsize;
-	const randomGeneratorSetup	setup;
-	const randomGeneratorSeed	seed;
-	const randomGeneratorNext	next;
-	const randomGeneratorCleanup	cleanup;
+    const char* name;		/*!< random generator name */
+    const unsigned int paramsize;
+    const randomGeneratorSetup setup;
+    const randomGeneratorSeed seed;
+    const randomGeneratorNext next;
+    const randomGeneratorCleanup cleanup;
 } randomGenerator;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
+/** \ingroup PRNG_m
  * Return the number of generators available.
  * @return		number of generators available
  */
@@ -197,7 +197,7 @@ BEEDLLAPI
 int randomGeneratorCount(void)
 	/*@*/;
 
-/**
+/** \ingroup PRNG_m
  * Retrieve a generator by index.
  * @param index		generator index
  * @return		generator pointer (or NULL)
@@ -206,7 +206,7 @@ BEEDLLAPI /*@null@*/
 const randomGenerator* randomGeneratorGet(int index)
 	/*@*/;
 
-/**
+/** \ingroup PRNG_m
  * Retrieve a generator by name.
  * @param name		generator name
  * @return		generator pointer (or NULL)
@@ -215,7 +215,7 @@ BEEDLLAPI
 const randomGenerator* randomGeneratorFind(const char* name)
 	/*@*/;
 
-/**
+/** \ingroup PRNG_m
  * Retrieve the default generator.
  * If the BEECRYPT_RANDOM environment variable is set, use that
  * generator. Otherwise, use "fips186prng".
@@ -229,45 +229,47 @@ const randomGenerator* randomGeneratorDefault(void)
 }
 #endif
 
-/**
- * The struct 'randomGeneratorContext' is used to contain both the functional
- * part (the randomGenerator), and its parameters.
+/** \ingroup PRNG_m
+ * A randomGenerator instance, global functions and specific parameters.
  */
-
 typedef struct
 {
-	const randomGenerator* rng;
-	randomGeneratorParam* param;
+    const randomGenerator* rng;		/*!< global functions and parameters */
+    randomGeneratorParam* param;	/*!< specific parameters */
 } randomGeneratorContext;
-
-/**
- * The following functions can be used to initialize and free a
- * randomGeneratorContext. Initializing will allocate a buffer of the size
- * required by the randomGenerator, freeing will deallocate that buffer.
- */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/** \ingroup PRNG_m
+ * Initialize a rendomGenerator instance.
+ */
 BEEDLLAPI
-int randomGeneratorContextInit(randomGeneratorContext*, const randomGenerator*)
-	/*@*/;
+int randomGeneratorContextInit(randomGeneratorContext* ctxt, const randomGenerator* rng)
+	/*@modifies ctxt @*/;
+
+/** \ingroup PRNG_m
+ * Destroy a rendomGenerator instance.
+ */
 BEEDLLAPI
-int randomGeneratorContextFree(randomGeneratorContext*)
-	/*@*/;
+int randomGeneratorContextFree(randomGeneratorContext* ctxt)
+	/*@modifies ctxt @*/;
 
 #ifdef __cplusplus
 }
 #endif
 
-/*
- * Hash Functions
- */
+/*@}*/
+/** \name Hash Functions */
+/*@{*/
 
+/** \ingroup HASH_m
+ */
+BEEDLLAPI
 typedef void hashFunctionParam;
 
-/**
+/** \ingroup HASH_m
  * Re-initialize the parameters of the hash function.
  *
  * @param param		hash parameters
@@ -276,7 +278,7 @@ typedef void hashFunctionParam;
 typedef int (*hashFunctionReset) (hashFunctionParam* param)
 	/*@modifies param @*/;
 
-/**
+/** \ingroup HASH_m
  * Update the hash function with an array of bytes.
  *
  * @param param		hash parameters
@@ -287,7 +289,7 @@ typedef int (*hashFunctionReset) (hashFunctionParam* param)
 typedef int (*hashFunctionUpdate) (hashFunctionParam* param, const byte* data, int size)
 	/*@modifies param @*/;
 
-/**
+/** \ingroup HASH_m
  * Compute the digest of all the data passed to the hash function, and return
  * the result in data.
  *
@@ -304,29 +306,26 @@ typedef int (*hashFunctionUpdate) (hashFunctionParam* param, const byte* data, i
 typedef int (*hashFunctionDigest) (hashFunctionParam* param, uint32* data)
 	/*@modifies param, data @*/;
 
-/**
- * The struct 'hashFunction' holds information and pointers to code specific
- * to each hash function. Specific hash functions MAY be written to be
- * multithread-safe.
- *
+/** \ingroup HASH_m
+ * Methods and parameters for hash functions.
+ * Specific hash functions MAY be written to be multithread-safe.
  */
-
 typedef struct
 {
-	const char* name;
-	const unsigned int paramsize;	/*!< in bytes */
-	const unsigned int blocksize;	/*!< in bytes */
-	const unsigned int digestsize;	/*!< in bytes */
-	const hashFunctionReset		reset;
-	const hashFunctionUpdate	update;
-	const hashFunctionDigest	digest;
+    const char* name;			/*!< hash function name */
+    const unsigned int paramsize;	/*!< in bytes */
+    const unsigned int blocksize;	/*!< in bytes */
+    const unsigned int digestsize;	/*!< in bytes */
+    const hashFunctionReset reset;
+    const hashFunctionUpdate update;
+    const hashFunctionDigest digest;
 } hashFunction;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
+/** \ingroup HASH_m
  * Return the number of hash functions available.
  * @return		number of hash functions available
  */
@@ -334,7 +333,7 @@ BEEDLLAPI
 int hashFunctionCount(void)
 	/*@*/;
 
-/**
+/** \ingroup HASH_m
  * Retrieve a hash function by index.
  * @param index		hash function index
  * @return		hash function pointer (or NULL)
@@ -343,7 +342,7 @@ BEEDLLAPI /*@null@*/
 const hashFunction* hashFunctionGet(int index)
 	/*@*/;
 
-/**
+/** \ingroup HASH_m
  * Retrieve a hash function by name.
  * @param name		hash function name
  * @return		hash function pointer (or NULL)
@@ -352,7 +351,7 @@ BEEDLLAPI /*@null@*/
 const hashFunction* hashFunctionFind(const char* name)
 	/*@*/;
 
-/**
+/** \ingroup HASH_m
  * Retrieve the default hash function.
  * If the BEECRYPT_HASH environment variable is set, use that
  * hash function. Otherwise, use "sha1".
@@ -366,63 +365,82 @@ const hashFunction* hashFunctionDefault(void)
 }
 #endif
 
-/**
- * The struct 'hashFunctionContext' is used to contain both the functional
- * part (the hashFunction), and its parameters.
+/** \ingroup HASH_m
+ * A hashFunction instance, global functions and specific parameters.
  */
-
 typedef struct
 {
-/*@unused@*/	const hashFunction* algo;
-/*@unused@*/	hashFunctionParam* param;
+/*@unused@*/ const hashFunction* algo;	/*!< global functions and parameters */
+/*@unused@*/ hashFunctionParam* param;	/*!< specific parameters */
 } hashFunctionContext;
-
-/**
- * The following functions can be used to initialize and free a
- * hashFunctionContext. Initializing will allocate a buffer of the size
- * required by the hashFunction, freeing will deallocate that buffer.
- */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/** \ingroup HASH_m
+ * Initialize a hashFunction instance.
+ */
 BEEDLLAPI
-int hashFunctionContextInit(hashFunctionContext* ctxt, const hashFunction*)
+int hashFunctionContextInit(hashFunctionContext* ctxt, const hashFunction* hash)
 	/*@modifies ctxt */;
+
+/** \ingroup HASH_m
+ * Destroy a hashFunction instance.
+ */
 BEEDLLAPI
 int hashFunctionContextFree(hashFunctionContext* ctxt)
 	/*@modifies ctxt */;
+
+/** \ingroup HASH_m
+ */
 BEEDLLAPI
 int hashFunctionContextReset(hashFunctionContext* ctxt)
 	/*@modifies ctxt */;
+
+/** \ingroup HASH_m
+ */
 BEEDLLAPI
-int hashFunctionContextUpdate(hashFunctionContext* ctxt, const byte*, int)
+int hashFunctionContextUpdate(hashFunctionContext* ctxt, const byte* data, int size)
 	/*@modifies ctxt */;
+
+/** \ingroup HASH_m
+ */
 BEEDLLAPI
-int hashFunctionContextUpdateMC(hashFunctionContext* ctxt, const memchunk*)
+int hashFunctionContextUpdateMC(hashFunctionContext* ctxt, const memchunk* m)
 	/*@modifies ctxt */;
+
+/** \ingroup HASH_m
+ */
 BEEDLLAPI
-int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mp32number*)
+int hashFunctionContextUpdateMP32(hashFunctionContext* ctxt, const mp32number* n)
 	/*@modifies ctxt */;
+
+/** \ingroup HASH_m
+ */
 BEEDLLAPI
-int hashFunctionContextDigest(hashFunctionContext* ctxt, mp32number*)
+int hashFunctionContextDigest(hashFunctionContext* ctxt, mp32number* dig)
 	/*@modifies ctxt */;
+
+/** \ingroup HASH_m
+ */
 BEEDLLAPI
-int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mp32number*)
+int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mp32number* match)
 	/*@modifies ctxt */;
 
 #ifdef __cplusplus
 }
 #endif
 
-/**
- * Keyed Hash Functions, a.k.a. Message Authentication Codes
- */
+/*@}*/
+/** \name Keyed Hash Functions, a.k.a. Message Authentication Codes */
+/*@{*/
 
+/** \ingroup HMAC_m
+ */
 typedef void keyedHashFunctionParam;
 
-/**
+/** \ingroup HMAC_m
  * Setup the keyed hash function parameters with the given secret key.
  * This can also be used to reset the parameters.
  *
@@ -437,7 +455,7 @@ typedef void keyedHashFunctionParam;
 typedef int (*keyedHashFunctionSetup) (keyedHashFunctionParam* param, const uint32* key, int keybits)
 	/*@modifies param @*/;
 
-/**
+/** \ingroup HMAC_m
  * Re-initialize the parameters of a keyed hash function.
  *
  * @param param		keyed hash parameters
@@ -446,19 +464,18 @@ typedef int (*keyedHashFunctionSetup) (keyedHashFunctionParam* param, const uint
 typedef int (*keyedHashFunctionReset) (keyedHashFunctionParam* param)
 	/*@modifies param @*/;
 
-/**
+/** \ingroup HMAC_m
  * Update the keyed hash function with an array of bytes.
  *
  * @param param		keyed hash parameters
  * @param data		array of bytes
  * @param size		no. of bytes
  * @return		0 on success, -1 on failure
- *
  */
 typedef int (*keyedHashFunctionUpdate) (keyedHashFunctionParam* param, const byte* data, int size)
 	/*@modifies param @*/;
 
-/**
+/** \ingroup HMAC_m
  * Compute the digest (or authentication code) of all the data passed to
  * the keyed hash function, and return the result in data.
  *
@@ -475,33 +492,30 @@ typedef int (*keyedHashFunctionUpdate) (keyedHashFunctionParam* param, const byt
 typedef int (*keyedHashFunctionDigest) (keyedHashFunctionParam* param, /*@out@*/ uint32* data)
 	/*@modifies param, data @*/;
 
-/**
- * The struct 'keyedHashFunction' holds information and pointers to code
- * specific to each keyed hash function. Specific keyed hash functions MAY be
- * written to be multithread-safe.
- *
+/** \ingroup HMAC_m
+ * Methods and parameters for keyed hash functions.
+ * Specific keyed hash functions MAY be written to be multithread-safe.
  */
-
 typedef struct
 {
-	const char* name;
-	const unsigned int paramsize;	/*!< in bytes */
-	const unsigned int blocksize;	/*!< in bytes */
-	const unsigned int digestsize;	/*!< in bytes */
-	const unsigned int keybitsmin;	/*!< min keysize in bits */
-	const unsigned int keybitsmax;	/*!< max keysize in bits */
-	const unsigned int keybitsinc;	/*!< keysize increment in bits */
-	const keyedHashFunctionSetup	setup;
-	const keyedHashFunctionReset	reset;
-	const keyedHashFunctionUpdate	update;
-	const keyedHashFunctionDigest	digest;
+    const char* name;			/*!< keyed hash function name */
+    const unsigned int paramsize;	/*!< in bytes */
+    const unsigned int blocksize;	/*!< in bytes */
+    const unsigned int digestsize;	/*!< in bytes */
+    const unsigned int keybitsmin;	/*!< min keysize in bits */
+    const unsigned int keybitsmax;	/*!< max keysize in bits */
+    const unsigned int keybitsinc;	/*!< keysize increment in bits */
+    const keyedHashFunctionSetup setup;
+    const keyedHashFunctionReset reset;
+    const keyedHashFunctionUpdate update;
+    const keyedHashFunctionDigest digest;
 } keyedHashFunction;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
+/** \ingroup HMAC_m
  * Return the number of keyed hash functions available.
  * @return		number of keyed hash functions available
  */
@@ -509,7 +523,7 @@ BEEDLLAPI
 int keyedHashFunctionCount(void)
 	/*@*/;
 
-/**
+/** \ingroup HMAC_m
  * Retrieve a keyed hash function by index.
  * @param index		keyed hash function index
  * @return		keyed hash function pointer (or NULL)
@@ -518,7 +532,7 @@ BEEDLLAPI /*@null@*/
 const keyedHashFunction* keyedHashFunctionGet(int index)
 	/*@*/;
 
-/**
+/** \ingroup HMAC_m
  * Retrieve a keyed hash function by name.
  * @param name		keyed hash function name
  * @return		keyed hash function pointer (or NULL)
@@ -527,7 +541,7 @@ BEEDLLAPI /*@null@*/
 const keyedHashFunction* keyedHashFunctionFind(const char* name)
 	/*@*/;
 
-/**
+/** \ingroup HMAC_m
  * Retrieve the default keyed hash function.
  * If the BEECRYPT_KEYEDHASH environment variable is set, use that keyed
  * hash function. Otherwise, use "hmacsha1".
@@ -541,60 +555,88 @@ const keyedHashFunction* keyedHashFunctionDefault(void)
 }
 #endif
 
-/**
- * The struct 'keyedHashFunctionContext' is used to contain both the functional
- * part (the keyedHashFunction), and its parameters.
+/** \ingroup HMAC_m
+ * A keyedHashFunction instance, global functions and specific parameters.
  */
-
 typedef struct
 {
-/*@unused@*/	const keyedHashFunction*	algo;
-/*@unused@*/	keyedHashFunctionParam*		param;
+/*@unused@*/ const keyedHashFunction* algo;	/*!< global functions and parameters */
+/*@unused@*/ keyedHashFunctionParam* param;	/*!< specific parameters */
 } keyedHashFunctionContext;
-
-/**
- * The following functions can be used to initialize and free a
- * keyedHashFunctionContext. Initializing will allocate a buffer of the size
- * required by the keyedHashFunction, freeing will deallocate that buffer.
- */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/** \ingroup HMAC_m
+ * Initialize a keyedHashFunction instance.
+ */
 BEEDLLAPI
-int keyedHashFunctionContextInit(keyedHashFunctionContext*, const keyedHashFunction*)
-	/*@*/;
+int keyedHashFunctionContextInit(keyedHashFunctionContext* ctxt, const keyedHashFunction* mac)
+	/*@modifies ctxt @*/;
+
+/** \ingroup HMAC_m
+ * Destroy a keyedHashFunction instance.
+ */
 BEEDLLAPI
-int keyedHashFunctionContextFree(keyedHashFunctionContext*)
-	/*@*/;
+int keyedHashFunctionContextFree(keyedHashFunctionContext* ctxt)
+	/*@modifies ctxt @*/;
+
+/** \ingroup HMAC_m
+ */
 BEEDLLAPI
-int keyedHashFunctionContextSetup(keyedHashFunctionContext*, const uint32*, int)
-	/*@*/;
+int keyedHashFunctionContextSetup(keyedHashFunctionContext* ctxt, const uint32* key, int keybits)
+	/*@modifies ctxt @*/;
+
+/** \ingroup HMAC_m
+ */
 BEEDLLAPI
-int keyedHashFunctionContextReset(keyedHashFunctionContext*)
-	/*@*/;
+int keyedHashFunctionContextReset(keyedHashFunctionContext* ctxt)
+	/*@modifies ctxt @*/;
+
+/** \ingroup HMAC_m
+ */
 BEEDLLAPI
-int keyedHashFunctionContextUpdate(keyedHashFunctionContext*, const byte*, int)
-	/*@*/;
+int keyedHashFunctionContextUpdate(keyedHashFunctionContext* ctxt, const byte* data, int size)
+	/*@modifies ctxt @*/;
+
+/** \ingroup HMAC_m
+ */
 BEEDLLAPI
-int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext*, const memchunk*)
-	/*@*/;
+int keyedHashFunctionContextUpdateMC(keyedHashFunctionContext* ctxt, const memchunk* m)
+	/*@modifies ctxt @*/;
+
+/** \ingroup HMAC_m
+ */
 BEEDLLAPI
-int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext*, const mp32number*)
-	/*@*/;
+int keyedHashFunctionContextUpdateMP32(keyedHashFunctionContext* ctxt, const mp32number* n)
+	/*@modifies ctxt @*/;
+
+/** \ingroup HMAC_m
+ */
 BEEDLLAPI
-int keyedHashFunctionContextDigest(keyedHashFunctionContext*, mp32number*)
-	/*@*/;
+int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, mp32number* dig)
+	/*@modifies ctxt @*/;
+
+/** \ingroup HMAC_m
+ */
 BEEDLLAPI
-int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext*, const mp32number*)
-	/*@*/;
+int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mp32number* match)
+	/*@modifies ctxt @*/;
 
 #ifdef __cplusplus
 }
 #endif
 
-/**
+/*@}*/
+/** \name Block ciphers */
+/*@{*/
+
+/** \ingroup BC_m
+ */
+typedef void blockCipherParam;
+
+/** \ingroup BC_m
  * Block cipher operations.
  */
 typedef enum
@@ -603,7 +645,7 @@ typedef enum
 	DECRYPT
 } cipherOperation;
 
-/**
+/** \ingroup BC_m
  * Block cipher modes.
  */
 typedef enum
@@ -614,20 +656,35 @@ typedef enum
 	CBC
 } cipherMode;
 
-typedef void blockCipherParam;
+/** \ingroup BC_m
+ * @param param		blockcipher parameters
+ * @param size		no. of ints
+ * @retval dst		ciphertext block
+ * @param src		plaintext block
+ * @return		0 on success, -1 on failure
+ */
+typedef int (*blockModeEncrypt) (blockCipherParam* param, int count, uint32* dst, const uint32* src)
+	/*@modifies param, dst @*/;
 
-typedef int (*blockModeEncrypt)(blockCipherParam*, int, uint32*, const uint32*)
-	/*@*/;
-typedef int (*blockModeDecrypt)(blockCipherParam*, int, uint32*, const uint32*)
-	/*@*/;
+/** \ingroup BC_m
+ * @param param		blockcipher parameters
+ * @param size		no. of ints
+ * @retval dst		plainttext block
+ * @param src		ciphertext block
+ * @return		0 on success, -1 on failure
+ */
+typedef int (*blockModeDecrypt) (blockCipherParam* param, int count, uint32* dst, const uint32* src)
+	/*@modifies param, dst @*/;
 
+/** \ingroup BC_m
+ */
 typedef struct
 {
 	const blockModeEncrypt	encrypt;
 	const blockModeDecrypt	decrypt;
 } blockMode;
 
-/**
+/** \ingroup BC_m
  * Setup the blockcipher parameters with the given secret key for either
  * encryption or decryption.
  *
@@ -640,17 +697,19 @@ typedef struct
  * @param cipherOperation
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockCipherSetup  )(blockCipherParam* param, const uint32* key, int keybits, cipherOperation cipherOperation)
+typedef int (*blockCipherSetup) (blockCipherParam* param, const uint32* key, int keybits, cipherOperation cipherOperation)
 	/*@*/;
 
-/**
+/** \ingroup BC_m
+ * Initialize IV for blockcipher.
  * @param param		blockcipher parameters
+ * @param data		iv data
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockCipherSetIV  )(blockCipherParam* param, const uint32* data)
+typedef int (*blockCipherSetIV) (blockCipherParam* param, const uint32* data)
 	/*@*/;
 
-/**
+/** \ingroup BC_m
  * Encrypt one block of data (with bit size chosen by the blockcipher).
  * @note This is raw encryption, without padding, etc.
  *
@@ -659,10 +718,10 @@ typedef int (*blockCipherSetIV  )(blockCipherParam* param, const uint32* data)
  * @param src		plaintext block
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockCipherEncrypt)(blockCipherParam* param, uint32* dst, const uint32* src)
-	/*@*/;
+typedef int (*blockCipherEncrypt) (blockCipherParam* param, uint32* dst, const uint32* src)
+	/*@modifies dst @*/;
 
-/**
+/** \ingroup BC_m
  * Decrypt one block of data (with bit size chosen by the blockcipher).
  * @note This is raw decryption, without padding, etc.
  *
@@ -671,27 +730,25 @@ typedef int (*blockCipherEncrypt)(blockCipherParam* param, uint32* dst, const ui
  * @param src		ciphertext block
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockCipherDecrypt)(blockCipherParam* param, uint32* dst, const uint32* src)
-	/*@*/;
+typedef int (*blockCipherDecrypt) (blockCipherParam* param, uint32* dst, const uint32* src)
+	/*@modifies dst @*/;
 
-/**
- * The struct 'blockCipher' holds information and pointers to code specific
- * to each blockcipher. Specific block ciphers MAY be written to be
- * multithread-safe.
+/** \ingroup BC_m
+ * Methods and parameters for block ciphers.
+ * Specific block ciphers MAY be written to be multithread-safe.
  */
- 
 typedef struct
 {
-	const char* name;
-	const unsigned int paramsize;	/*!< in bytes */
-	const unsigned int blocksize;	/*!< in bytes */
-	const unsigned int keybitsmin;	/*!< min keysize in bits */
-	const unsigned int keybitsmax;	/*!< max keysize in bits */
-	const unsigned int keybitsinc;	/*!< keysize increment in bits */
-	const blockCipherSetup setup;
-	const blockCipherSetIV setiv;
-	const blockCipherEncrypt encrypt;
-	const blockCipherDecrypt decrypt;
+    const char* name;			/*!< block cipher name */
+    const unsigned int paramsize;	/*!< in bytes */
+    const unsigned int blocksize;	/*!< in bytes */
+    const unsigned int keybitsmin;	/*!< min keysize in bits */
+    const unsigned int keybitsmax;	/*!< max keysize in bits */
+    const unsigned int keybitsinc;	/*!< keysize increment in bits */
+    const blockCipherSetup setup;
+    const blockCipherSetIV setiv;
+    const blockCipherEncrypt encrypt;
+    const blockCipherDecrypt decrypt;
 /*@dependent@*/ const blockMode* mode;
 } blockCipher;
 
@@ -699,7 +756,7 @@ typedef struct
 extern "C" {
 #endif
 
-/**
+/** \ingroup BC_m
  * Return the number of blockciphers available.
  * @return		number of blockciphers available
  */
@@ -707,7 +764,7 @@ BEEDLLAPI
 int blockCipherCount(void)
 	/*@*/;
 
-/**
+/** \ingroup BC_m
  * Retrieve a blockcipher by index.
  * @param index		blockcipher index
  * @return		blockcipher pointer (or NULL)
@@ -716,7 +773,7 @@ BEEDLLAPI /*@null@*/
 const blockCipher* blockCipherGet(int index)
 	/*@*/;
 
-/**
+/** \ingroup BC_m
  * Retrieve a blockcipher by name.
  * @param name		blockcipher name
  * @return		blockcipher pointer (or NULL)
@@ -725,7 +782,7 @@ BEEDLLAPI /*@null@*/
 const blockCipher* blockCipherFind(const char* name)
 	/*@*/;
 
-/**
+/** \ingroup BC_m
  * Retrieve the default blockcipher.
  * If the BEECRYPT_CIPHER environment variable is set, use that blockcipher.
  * Otherwise, use "blowfish".
@@ -739,42 +796,48 @@ const blockCipher* blockCipherDefault(void)
 }
 #endif
 
-/**
- * The struct 'blockCipherContext' is used to contain both the functional
- * part (the blockCipher), and its parameters.
+/** \ingroup BC_m
+ * A blockCipher instance, global functions and specific parameters.
  */
-
 typedef struct
 {
-	const blockCipher* algo;
-	blockCipherParam* param;
+    const blockCipher* algo;	/*!< global functions and parameters */
+    blockCipherParam* param;	/*!< specific parameters */
 } blockCipherContext;
-
-/**
- * The following functions can be used to initialize and free a
- * blockCipherContext. Initializing will allocate a buffer of the size
- * required by the blockCipher, freeing will deallocate that buffer.
- */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/** \ingroup BC_m
+ * Initialize a blockCipher instance.
+ */
 BEEDLLAPI
-int blockCipherContextInit(blockCipherContext*, const blockCipher*)
-	/*@*/;
+int blockCipherContextInit(blockCipherContext* ctxt, const blockCipher* ciph)
+	/*@modifies ctxt @*/;
+
+/** \ingroup BC_m
+ */
 BEEDLLAPI
-int blockCipherContextSetup(blockCipherContext*, const uint32*, int, cipherOperation)
-	/*@*/;
+int blockCipherContextSetup(blockCipherContext* ctxt, const uint32* key, int keybits, cipherOperation op)
+	/*@modifies ctxt @*/;
+
+/** \ingroup BC_m
+ */
 BEEDLLAPI
-int blockCipherContextSetIV(blockCipherContext*, const uint32*)
-	/*@*/;
+int blockCipherContextSetIV(blockCipherContext* ctxt, const uint32* iv)
+	/*@modifies ctxt @*/;
+
+/** \ingroup BC_m
+ * Destroy a blockCipher instance.
+ */
 BEEDLLAPI
-int blockCipherContextFree(blockCipherContext*)
-	/*@*/;
+int blockCipherContextFree(blockCipherContext* ctxt)
+	/*@modifies ctxt @*/;
 
 #ifdef __cplusplus
 }
 #endif
+/*@}*/
 
 #endif

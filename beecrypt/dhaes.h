@@ -1,8 +1,10 @@
+/** \ingroup DH_m
+ * \file dhaes.h
+ *
+ * DHAES, header.
+ */
+
 /*
- * dhaes.h
- *
- * DHAES, header
- *
  * Copyright (c) 2000, 2001 Virtual Unlimited, B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -29,6 +31,8 @@
 #include "beecrypt.h"
 #include "dldp.h"
 
+/**
+ */
 typedef struct
 {
 	const dldp_p*				param;
@@ -39,6 +43,8 @@ typedef struct
 	int							mackeybits;
 } dhaes_pParameters;
 
+/**
+ */
 typedef struct
 {
 	dldp_p						param;
@@ -51,28 +57,55 @@ typedef struct
 	int							mackeybits;
 } dhaes_pContext;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ */
 BEEDLLAPI
 int dhaes_pUsable(const dhaes_pParameters* params)
 	/*@*/;
 
+/**
+ */
 BEEDLLAPI
 int dhaes_pContextInit       (dhaes_pContext* ctxt, const dhaes_pParameters* params)
 	/*@modifies ctxt */;
+
+/**
+ */
 BEEDLLAPI
 int dhaes_pContextInitDecrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mp32number* pri)
 	/*@modifies ctxt */;
+
+/**
+ */
 BEEDLLAPI
 int dhaes_pContextInitEncrypt(dhaes_pContext* ctxt, const dhaes_pParameters* params, const mp32number* pri)
 	/*@modifies ctxt */;
+
+/**
+ */
 BEEDLLAPI
 int dhaes_pContextFree       (/*@only@*/ dhaes_pContext* ctxt)
 	/*@modifies ctxt */;
 
+
+/**
+ */
 BEEDLLAPI /*@only@*/ /*@null@*/
 memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt,       mp32number* ephemeralPublicKey,       mp32number* mac, const memchunk* cleartext, randomGeneratorContext* rng)
 	/*@modifies ctxt, ephemeralPublicKey, mac, rng */;
+
+/**
+ */
 BEEDLLAPI /*@only@*/ /*@null@*/
 memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mp32number* ephemeralPublicKey, const mp32number* mac, const memchunk* ciphertext)
 	/*@modifies ctxt */;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -1,7 +1,10 @@
-/*
- * mp32barrett.c
+/** \ingroup MP_m
+ * \file mp32barrett.c
  *
- * Barrett modular reduction, code
+ * Barrett modular reduction, code.
+ */
+
+/*
  *
  * For more information on this algorithm, see:
  * "Handbook of Applied Cryptography", Chapter 14.3.3

@@ -1,8 +1,10 @@
+/** \ingroup RSA_m
+ * \file rsa.h
+ *
+ * RSA Encryption & signature scheme, header.
+ */
+
 /*
- * rsa.h
- *
- * RSA encryption & signature scheme, header
- *
  * Copyright (c) 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>

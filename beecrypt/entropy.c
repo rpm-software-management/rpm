@@ -1,8 +1,10 @@
+/** \ingroup ES_m
+ * \file entropy.c
+ *
+ * Entropy gathering routine(s) for pseudo-random generator initialization.
+ */
+
 /*
- * entropy.c
- *
- * entropy gathering routine for pseudo-random generator initialization
- *
  * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -117,7 +119,7 @@ int entropy_provider_cleanup()
 #endif
 
 #if WIN32 || HAVE_DEV_AUDIO || HAVE_DEV_DSP
-/*
+/** \ingroup ES_audio_m ES_dsp_m
  * Mask the low-order bit of a bunch of sound samples, analyze them and
  * return an error in case they are all zeroes or ones.
  */
@@ -292,13 +294,14 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 	return 0;
 }
 
-/* bit deskewing technique: the classical Von Neumann method
-	- only use the lsb bit of every sample
-	- there is a chance of bias in 0 or 1 bits, so to deskew this:
-		- look at two successive sampled bits
-		- if they are the same, discard them
-		- if they are different, they're either 0-1 or 1-0; use the first bit of the pair as output
-*/
+/**
+ * Bit deskewing technique: the classical Von Neumann method.
+ *	- only use the lsb bit of every sample
+ *	- there is a chance of bias in 0 or 1 bits, so to deskew this:
+ *		- look at two successive sampled bits
+ *		- if they are the same, discard them
+ *		- if they are different, they're either 0-1 or 1-0; use the first bit of the pair as output
+ */
 
 #if WIN32
 static int entropy_noise_gather(HWAVEIN wavein, int samplesize, int channels, int swap, int timeout, uint32 *data, int size)
@@ -721,8 +724,16 @@ int entropy_wincrypt(uint32* data, int size)
 #else
 
 #if HAVE_DEV_AUDIO
+/** \ingroup ES_audio_m
+ */
 /*@observer@*/ static const char* name_dev_audio = "/dev/audio";
+
+/** \ingroup ES_audio_m
+ */
 static int dev_audio_fd = -1;
+
+/** \ingroup ES_audio_m
+ */
 # ifdef _REENTRANT
 #  if HAVE_SYNCH_H
 static mutex_t dev_audio_lock = DEFAULTMUTEX;
@@ -735,8 +746,16 @@ static pthread_mutex_t dev_audio_lock = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 #if HAVE_DEV_DSP
+/** \ingroup ES_dsp_m
+ */
 /*@observer@*/ static const char* name_dev_dsp = "/dev/dsp";
+
+/** \ingroup ES_dsp_m
+ */
 static int dev_dsp_fd = -1;
+
+/** \ingroup ES_dsp_m
+ */
 # ifdef _REENTRANT
 #  if HAVE_SYNCH_H
 static mutex_t dev_dsp_lock = DEFAULTMUTEX;
@@ -749,8 +768,16 @@ static pthread_mutex_t dev_dsp_lock = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 #if HAVE_DEV_RANDOM
+/** \ingroup ES_random_m
+ */
 /*@observer@*/ static const char* name_dev_random = "/dev/random";
+
+/** \ingroup ES_random_m
+ */
 static int dev_random_fd = -1;
+
+/** \ingroup ES_random_m
+ */
 # ifdef _REENTRANT
 #  if HAVE_SYNCH_H
 static mutex_t dev_random_lock = DEFAULTMUTEX;
@@ -763,8 +790,16 @@ static pthread_mutex_t dev_random_lock = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 #if HAVE_DEV_URANDOM
+/** \ingroup ES_urandom_m
+ */
 /*@observer@*/ static const char* name_dev_urandom = "/dev/urandom";
+
+/** \ingroup ES_urandom_m
+ */
 static int dev_urandom_fd = -1;
+
+/** \ingroup ES_urandom_m
+ */
 # ifdef _REENTRANT
 #  if HAVE_SYNCH_H
 static mutex_t dev_urandom_lock = DEFAULTMUTEX;
@@ -777,8 +812,16 @@ static pthread_mutex_t dev_urandom_lock = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 #if HAVE_DEV_TTY
+/** \ingroup ES_tty_m
+ */
 /*@observer@*/ static const char *dev_tty_name = "/dev/tty";
+
+/** \ingroup ES_tty_m
+ */
 static int dev_tty_fd = -1;
+
+/** \ingroup ES_tty_m
+ */
 # ifdef _REENTRANT
 #  if HAVE_SYNCH_H
 static mutex_t dev_tty_lock = DEFAULTMUTEX;
@@ -791,6 +834,10 @@ static pthread_mutex_t dev_tty_lock = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 #if HAVE_SYS_STAT_H
+/**
+ * @param device
+ * @return
+ */
 static int statdevice(const char *device)
 	/*@modifies fileSystem @*/
 {
@@ -812,6 +859,10 @@ static int statdevice(const char *device)
 }
 #endif
 
+/**
+ * @param device
+ * @return
+ */
 static int opendevice(const char *device)
 	/*@modifies fileSystem @*/
 {
@@ -829,7 +880,13 @@ static int opendevice(const char *device)
 }
 
 #if HAVE_DEV_RANDOM || HAVE_DEV_URANDOM
-/* timeout is in milliseconds */
+/** \ingroup ES_random_m ES_urandom_m
+ * @param fd
+ * @param timeout		in milliseconds
+ * @retval data
+ * @param size
+ * @return
+ */
 static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 	/*@modifies data @*/
 {
@@ -930,6 +987,12 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 #endif
 
 #if HAVE_DEV_TTY
+/** \ingroup ES_tty_m
+ * @param fd
+ * @retval data
+ * @param size
+ * @return
+ */
 static int entropy_ttybits(int fd, uint32* data, int size)
 	/*@modifies data @*/
 {

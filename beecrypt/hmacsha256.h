@@ -1,8 +1,10 @@
+/** \ingroup HMAC_sha256_m HMAC_m
+ * \file hmacsha256.h
+ *
+ * HMAC-SHA-256 message authentication code, header.
+ */
+
 /*
- * hmacsha256.h
- *
- * HMAC-SHA-256 message authentication code, header
- *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -29,6 +31,8 @@
 #include "hmac.h"
 #include "sha256.h"
 
+/** \ingroup HMAC_sha256_m
+ */
 typedef struct
 {
 /*@unused@*/	byte kxi[64];
@@ -40,17 +44,30 @@ typedef struct
 extern "C" {
 #endif
 
+/** \ingroup HMAC_sha256_m
+ */
 /*@unused@*/ extern BEEDLLAPI const keyedHashFunction hmacsha256;
 
+/** \ingroup HMAC_sha256_m
+ */
 BEEDLLAPI
 int hmacsha256Setup (hmacsha256Param* sp, const uint32* key, int keybits)
 	/*@modifies sp @*/;
+
+/** \ingroup HMAC_sha256_m
+ */
 BEEDLLAPI
 int hmacsha256Reset (hmacsha256Param* sp)
 	/*@modifies sp @*/;
+
+/** \ingroup HMAC_sha256_m
+ */
 BEEDLLAPI
 int hmacsha256Update(hmacsha256Param* sp, const byte* data, int size)
 	/*@modifies sp @*/;
+
+/** \ingroup HMAC_sha256_m
+ */
 BEEDLLAPI
 int hmacsha256Digest(hmacsha256Param* sp, uint32* data)
 	/*@modifies sp, data @*/;

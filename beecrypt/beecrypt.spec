@@ -25,6 +25,7 @@ The BeeCrypt Cryptography Library headers.
 %build
 %configure
 make
+make apidocs
 
 %install
 rm -rf ${RPM_BUILD_ROOT}
@@ -39,10 +40,12 @@ rm -rf ${RPM_BUILD_ROOT}
 
 %files
 %defattr(-,root,root)
+%doc BENCHMARKS NEWS README*
 %{_libdir}/libbeecrypt.so.2.1.0
 
 %files devel
 %defattr(-,root,root)
+%doc BUGS ChangeLog apidocs/*
 %{_libdir}/libbeecrypt.so.2
 %{_libdir}/libbeecrypt.so
 %{_libdir}/libbeecrypt.la

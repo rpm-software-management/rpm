@@ -1,8 +1,10 @@
+/** \ingroup DL_m
+ * \file dlpk.h
+ *
+ * Discrete Logarithm Public Key, header.
+ */
+
 /*
- * dlpk.h
- *
- * Discrete Logarithm Public Key, header
- *
  * Copyright (c) 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -28,6 +30,8 @@
 
 #include "dldp.h"
 
+/**
+ */
 typedef struct
 {
 	dldp_p param;
@@ -38,23 +42,38 @@ typedef struct
 extern "C" {
 #endif
 
+/**
+ */
 BEEDLLAPI
 int dlpk_pInit(dlpk_p* pk)
 	/*@modifies pk */;
+
+/**
+ */
 BEEDLLAPI
 int dlpk_pFree(dlpk_p* pk)
 	/*@modifies pk */;
+
+/**
+ */
 BEEDLLAPI
 int dlpk_pCopy(dlpk_p* dst, const dlpk_p* src)
 	/*@modifies dst */;
 
+/**
+ */
 BEEDLLAPI
 int  dlpk_pEqual(const dlpk_p* a, const dlpk_p* b)
 	/*@*/;
 
+/**
+ */
 BEEDLLAPI
 int  dlpk_pgoqValidate(const dlpk_p* pk, randomGeneratorContext* rgc, int cofactor)
 	/*@modifies rgc @*/;
+
+/**
+ */
 BEEDLLAPI
 int  dlpk_pgonValidate(const dlpk_p* pk, randomGeneratorContext* rgc)
 	/*@modifies rgc @*/;

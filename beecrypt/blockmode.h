@@ -1,8 +1,10 @@
+/** \ingroup BC_m
+ * \file blockmode.h
+ *
+ * Blockcipher operation modes, header.
+ */
+
 /*
- * blockmode.h
- *
- * Blockcipher operation modes, header
- *
  * Copyright (c) 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -32,12 +34,31 @@
 extern "C" {
 #endif
 
+/**
+ * @param bc		blockcipher context
+ * @param bp		blockcipher parameters
+ * @param mode		ECB or CBC
+ * @param blocks	no. blocks to encrypt
+ * @retval dst		ciphertext block
+ * @param src		plaintext block
+ * @return		0 on success, -1 on failure
+ */
 BEEDLLAPI
-int blockEncrypt(const blockCipher*, blockCipherParam*, cipherMode, int, uint32*, const uint32*)
-	/*@*/;
+int blockEncrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, uint32* dst, const uint32* src)
+	/*@modifies bp, dst @*/;
+
+/**
+ * @param bc		blockcipher context
+ * @param bp		blockcipher parameters
+ * @param mode		ECB or CBC
+ * @param blocks	no. blocks to decrypt
+ * @retval dst		plaintext block
+ * @param src		ciphertext block
+ * @return		0 on success, -1 on failure
+ */
 BEEDLLAPI
-int blockDecrypt(const blockCipher*, blockCipherParam*, cipherMode, int, uint32*, const uint32*)
-	/*@*/;
+int blockDecrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, uint32* dst, const uint32* src)
+	/*@modifies bp, dst @*/;
 
 #ifdef __cplusplus
 }

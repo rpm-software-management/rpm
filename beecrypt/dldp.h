@@ -1,8 +1,10 @@
+/** \ingroup DL_m
+ * \file dldp.h
+ *
+ * Discrete Logarithm Domain Parameters, header.
+ */
+
 /*
- * dldp.h
- *
- * Discrete Logarithm Domain Parameters, header
- *
  * <conformance statement for IEEE P1363 needed here>
  *
  * Copyright (c) 2000, 2001 Virtual Unlimited B.V.
@@ -31,7 +33,7 @@
 #include "beecrypt.h"
 #include "mp32barrett.h"
 
-/*
+/**
  * Discrete Logarithm Domain Parameters - Prime
  *
  * Standard definition where p = qr+1; in case where p=2q+1, r=2
@@ -47,6 +49,8 @@
  *  n = (p-1)
  */
 
+/**
+ */
 typedef struct
 {
 	mp32barrett p;
@@ -60,16 +64,20 @@ typedef struct
 extern "C" {
 #endif
 
-/*
- * Functions for setting up and copying
+/**
  */
-
 BEEDLLAPI
 int dldp_pInit(dldp_p* dp)
 	/*@modifies dp */;
+
+/**
+ */
 BEEDLLAPI
 int dldp_pFree(dldp_p* dp)
 	/*@modifies dp */;
+
+/**
+ */
 BEEDLLAPI
 int dldp_pCopy(dldp_p* dst, const dldp_p* src)
 	/*@modifies dst */;
@@ -78,20 +86,31 @@ int dldp_pCopy(dldp_p* dst, const dldp_p* src)
  * Functions for generating keys
  */
 
+/**
+ */
 BEEDLLAPI
 int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mp32number* x)
-	/*@modifies dp, x */;
+	/*@modifies rgc, x */;
+
+/**
+ */
 BEEDLLAPI
 int dldp_pPublic (const dldp_p* dp, const mp32number* x, mp32number* y)
 	/*@modifies y */;
+
+/**
+ */
 BEEDLLAPI
 int dldp_pPair   (const dldp_p* dp, randomGeneratorContext* rgc, mp32number* x, mp32number* y)
-	/*@modifies x, y */;
+	/*@modifies rgc, x, y */;
 
 /*
  * Function for comparing domain parameters
  */
 
+
+/**
+ */
 BEEDLLAPI
 int  dldp_pEqual  (const dldp_p* a, const dldp_p* b)
 	/*@*/;
@@ -100,15 +119,27 @@ int  dldp_pEqual  (const dldp_p* a, const dldp_p* b)
  * Functions for generating and validating dldp_pgoq variant domain parameters
  */
 
+
+/**
+ */
 BEEDLLAPI
 int dldp_pgoqMake     (dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 qsize, int cofactor)
 	/*@modifies dp, rgc */;
+
+/**
+ */
 BEEDLLAPI
 int dldp_pgoqMakeSafe (dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 	/*@modifies dp, rgc */;
+
+/**
+ */
 BEEDLLAPI
 int dldp_pgoqGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 	/*@modifies dp, rgc */;
+
+/**
+ */
 BEEDLLAPI
 int  dldp_pgoqValidate (const dldp_p*, randomGeneratorContext* rgc, int cofactor)
 	/*@modifies rgc @*/;
@@ -117,15 +148,27 @@ int  dldp_pgoqValidate (const dldp_p*, randomGeneratorContext* rgc, int cofactor
  * Functions for generating and validating dldp_pgon variant domain parameters
  */
 
+
+/**
+ */
 BEEDLLAPI
 int dldp_pgonMake     (dldp_p* dp, randomGeneratorContext* rgc, uint32 psize, uint32 qsize)
 	/*@modifies dp, rgc */;
+
+/**
+ */
 BEEDLLAPI
 int dldp_pgonMakeSafe (dldp_p* dp, randomGeneratorContext* rgc, uint32 psize)
 	/*@modifies dp, rgc */;
+
+/**
+ */
 BEEDLLAPI
 int dldp_pgonGenerator(dldp_p* dp, randomGeneratorContext* rgc)
 	/*@modifies dp, rgc */;
+
+/**
+ */
 BEEDLLAPI
 int  dldp_pgonValidate (const dldp_p* dp, randomGeneratorContext* rgc)
 	/*@modifies rgc @*/;

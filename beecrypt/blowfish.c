@@ -1,7 +1,7 @@
-/*
- * blowfish.c
+/** \ingroup BC_blowfish_m BC_m
+ * \file blowfish.c
  *
- * Blowfish block cipher, code
+ * Blowfish block cipher, code.
  *
  * For more information on this blockcipher, see:
  * "Applied Cryptography", second edition
@@ -9,7 +9,9 @@
  *  Wiley & Sons
  *
  * Also see: http://www.counterpane.com/blowfish.html
- *
+ */
+
+/*
  * Copyright (c) 1999, 2000 Virtual Unlimited B.V.
  *
  * Author: Bob Deblier <bob@virtualunlimited.com>
@@ -37,6 +39,8 @@
 
 #include <string.h>
 
+/**
+ */
 /*@observer@*/ static uint32 _bf_p[BLOWFISHPSIZE] = {
 	0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
 	0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,
@@ -45,6 +49,8 @@
 	0x9216d5d9, 0x8979fb1b
 };
 
+/**
+ */
 /*@observer@*/ static uint32 _bf_s[1024] = {
 	0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7,
 	0xb8e1afed, 0x6a267e96, 0xba7c9045, 0xf12c7f99,
@@ -307,6 +313,8 @@
 #define EROUND(l,r) l ^= *(p++); r ^= ((s[((l>>24)&0xff)+0x000]+s[((l>>16)&0xff)+0x100])^s[((l>>8)&0xff)+0x200])+s[((l>>0)&0xff)+0x300]
 #define DROUND(l,r) l ^= *(p--); r ^= ((s[((l>>24)&0xff)+0x000]+s[((l>>16)&0xff)+0x100])^s[((l>>8)&0xff)+0x200])+s[((l>>0)&0xff)+0x300]
 
+/**
+ */
 /*@observer@*/ static const blockMode blowfishModes[2] =
 {
 	{ /* ECB */ (blockModeEncrypt) blowfishECBEncrypt, (blockModeDecrypt) blowfishECBDecrypt },
