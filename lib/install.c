@@ -1205,7 +1205,8 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset, char ** fileList,
 	if (fileFlagsList[sharedList[i].mainFileNumber] & RPMFILE_CONFIG ||
 	    secFileFlagsList[sharedList[i].secFileNumber] & RPMFILE_CONFIG) {
 	    instActions[sharedList[i].mainFileNumber] = 
-		decideFileFate(fileList[mainNum], secFileModesList[secNum],
+		decideFileFate(prefixedFileList[mainNum], 
+			       secFileModesList[secNum],
 			       secFileMd5List[secNum], secFileLinksList[secNum],
 			       fileModesList[mainNum], fileMd5List[mainNum],
 			       fileLinkList[mainNum]);
