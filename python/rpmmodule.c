@@ -890,19 +890,16 @@ static PyObject * rpmdbNext(rpmdbObject * s, PyObject * args) {
 static PyObject * handleDbResult(rpmdbMatchIterator mi) {
     PyObject * list, *o;
 
-    if (mi == NULL) {
-	PyErr_SetString(pyrpmError, "error reading from database");
-	return NULL;
-    }
-
     list = PyList_New(0);
 
     /* XXX FIXME: unnecessary header mallocs are side effect here */
-    while (rpmdbNextIterator(mi)) {
-	PyList_Append(list, o=PyInt_FromLong(rpmdbGetIteratorOffset(mi)));
-	Py_DECREF(o);
+    if (mi != NULL) {
+	while (rpmdbNextIterator(mi)) {
+	    PyList_Append(list, o=PyInt_FromLong(rpmdbGetIteratorOffset(mi)));
+	    Py_DECREF(o);
+	}
+	rpmdbFreeIterator(mi);
     }
-    rpmdbFreeIterator(mi);
 
     return list;
 }

@@ -1,0 +1,5 @@
+2000-12-29  Cristian Gafton  <gafton@redhat.com>
+
+	* rpmmodule.c(handleDbResult): don't freak out when nothing matches;
+	return empty list
+
