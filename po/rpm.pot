@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-02-23 12:27-0500\n"
+"POT-Creation-Date: 2000-02-23 14:17-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2576,131 +2576,131 @@ msgstr ""
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:546
+#: lib/query.c:545
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:572
+#: lib/query.c:570
 msgid "could not read database record!\n"
 msgstr ""
 
-#: lib/query.c:583
+#: lib/query.c:581
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:593
+#: lib/query.c:591
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:603
+#: lib/query.c:601
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:614
+#: lib/query.c:612
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:630
+#: lib/query.c:628
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:633
+#: lib/query.c:631
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:646
+#: lib/query.c:644
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:649
+#: lib/query.c:647
 #, c-format
 msgid "package record number: %d\n"
 msgstr ""
 
-#: lib/query.c:652
+#: lib/query.c:650
 #, c-format
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:664 lib/rpminstall.c:435
+#: lib/query.c:662 lib/rpminstall.c:435
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
 
-#: lib/query.c:667
+#: lib/query.c:665
 #, c-format
 msgid "error looking for package %s\n"
 msgstr ""
 
-#: lib/query.c:689
+#: lib/query.c:687
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr ""
 
-#: lib/query.c:748
+#: lib/query.c:746
 msgid "query package owning file"
 msgstr ""
 
-#: lib/query.c:750
+#: lib/query.c:748
 msgid "query packages in group"
 msgstr ""
 
-#: lib/query.c:752
+#: lib/query.c:750
 msgid "query a package file"
 msgstr ""
 
-#: lib/query.c:756
+#: lib/query.c:754
 msgid "query a spec file"
 msgstr ""
 
-#: lib/query.c:758
+#: lib/query.c:756
 msgid "query the pacakges triggered by the package"
 msgstr ""
 
-#: lib/query.c:760
+#: lib/query.c:758
 msgid "query the packages which require a capability"
 msgstr ""
 
-#: lib/query.c:762
+#: lib/query.c:760
 msgid "query the packages which provide a capability"
 msgstr ""
 
-#: lib/query.c:801
+#: lib/query.c:799
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/query.c:803
+#: lib/query.c:801
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/query.c:805
+#: lib/query.c:803
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/query.c:807
+#: lib/query.c:805
 msgid "list files in package"
 msgstr ""
 
-#: lib/query.c:811
+#: lib/query.c:809
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:813
+#: lib/query.c:811
 msgid "substitute i18n sections into spec file"
 msgstr ""
 
-#: lib/query.c:815
+#: lib/query.c:813
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:817
+#: lib/query.c:815
 msgid "display a verbose file listing"
 msgstr ""
 

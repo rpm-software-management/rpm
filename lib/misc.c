@@ -764,3 +764,55 @@ exit:
     }
     return rc;
 }
+
+/*
+ * XXX This is a "dressed" entry to headerGetEntry to do:
+ *      1) DIRNAME/BASENAME/DIRINDICES -> FILENAMES tag conversions.
+ *      2) i18n lookaside (if enabled).
+ */
+int rpmHeaderGetEntry(Header h, int_32 tag, int_32 *type,
+	void **p, int_32 *c)
+{
+    switch (tag) {
+    case RPMTAG_OLDFILENAMES:
+    {	const char ** fl = NULL;
+	int count;
+	rpmBuildFileList(h, &fl, &count);
+	if (count > 0) {
+	    *p = fl;
+	    if (c)	*c = count;
+	    return 1;
+	}
+	if (c)	*c = 0;
+	return 0;
+    }	/*@notreached@*/ break;
+
+    case RPMTAG_GROUP:
+    case RPMTAG_DESCRIPTION:
+    case RPMTAG_SUMMARY:
+    {	char fmt[128];
+	const char * msgstr;
+	const char * errstr;
+
+	fmt[0] = '\0';
+	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), tagName(tag)), "}\n");
+
+	/* XXX FIXME: memory leak. */
+        msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+	if (msgstr) {
+	    *p = msgstr;
+	    if (type)	*type = RPM_STRING_TYPE;
+	    if (c)	*c = 1;
+	    return 1;
+	} else {
+	    if (c)	*c = 0;
+	    return 0;
+	}
+    }	/*@notreached@*/ break;
+
+    default:
+	return headerGetEntry(h, tag, type, p, c);
+	/*@notreached@*/ break;
+    }
+    /*@notreached@*/
+}

@@ -25,6 +25,14 @@ int headerNVR(Header h, /*@out@*/ const char **np, /*@out@*/ const char **vp,
 void	rpmBuildFileList(Header h, /*@out@*/ const char *** fileListPtr, 
 			/*@out@*/ int * fileCountPtr);
 
+/*
+ * XXX This is a "dressed" entry to headerGetEntry to do:
+ *	1) DIRNAME/BASENAME/DIRINDICES -> FILENAMES tag conversions.
+ *	2) i18n lookaside (if enabled).
+ */
+int rpmHeaderGetEntry(Header h, int_32 tag, /*@out@*/ int_32 *type,
+        /*@out@*/ void **p, /*@out@*/int_32 *c);
+
    /* 0 = success */
    /* 1 = bad magic */
    /* 2 = error */
