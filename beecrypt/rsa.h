@@ -18,7 +18,7 @@
  */
 
 /*!\file rsa.h
- * \brief RSA algorithm, headers.
+ * \brief RSA algorithm.
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup IF_m IF_rsa_m
  */
@@ -87,9 +87,6 @@ int rsapricrt(const rsakp* kp, const mpnumber* c, mpnumber* m)
 /**
  * Verify if ciphertext \e c was encrypted from cleartext \e m
  * with the private key matching the given public key \e pk.
- *
- * @warning The return type of this function should be a boolean, but since
- *          that type isn't as portable, an int is used.
  *
  * @param pk		RSA public key
  * @param m		cleartext message

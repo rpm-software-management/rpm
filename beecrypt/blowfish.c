@@ -19,14 +19,6 @@
 
 /*!\file blowfish.c
  * \brief Blowfish block cipher.
- *
- * For more information on this blockcipher, see:
- * "Applied Cryptography", second edition
- *  Bruce Schneier
- *  Wiley & Sons
- *
- * Also see http://www.counterpane.com/blowfish.html
- *
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup BC_m BC_blowfish_m
  */
@@ -322,8 +314,11 @@ static uint32_t _bf_s[1024] = {
 const blockCipher blowfish = { "Blowfish", sizeof(blowfishParam), 8U, 64U, 448U, 32U, (blockCipherSetup) blowfishSetup, (blockCipherSetIV) blowfishSetIV, (blockCipherEncrypt) blowfishEncrypt, (blockCipherDecrypt) blowfishDecrypt, (blockCipherFeedback) blowfishFeedback };
 /*@=sizeoftype@*/
 
-int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, /*@unused@*/ cipherOperation op)
+int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, cipherOperation op)
 {
+	if ((op != ENCRYPT) && (op != DECRYPT))
+		return -1;
+
 	if (((keybits & 7) == 0) && (keybits >= 32) && (keybits <= 448))
 	{
 		register uint32_t* p = bp->p;

@@ -57,29 +57,29 @@ extern BEECRYPTAPI const hashFunction sha256;
 /** \ingroup HASH_sha256_m
  */
 BEECRYPTAPI
-void sha256Process(sha256Param* p)
+void sha256Process(sha256Param* sp)
 	/*@globals internalState @*/
-	/*@modifies p, internalState @*/;
+	/*@modifies sp, internalState @*/;
 
 /** \ingroup HASH_sha256_m
  */
 BEECRYPTAPI
-int  sha256Reset  (sha256Param* p)
-	/*@modifies p @*/;
+int  sha256Reset  (sha256Param* sp)
+	/*@modifies sp @*/;
 
 /** \ingroup HASH_sha256_m
  */
 BEECRYPTAPI
-int  sha256Update (sha256Param* p, const byte* data, size_t size)
+int  sha256Update (sha256Param* sp, const byte* data, size_t size)
 	/*@globals internalState @*/
-	/*@modifies p, internalState @*/;
+	/*@modifies sp, internalState @*/;
 
 /** \ingroup HASH_sha256_m
  */
 BEECRYPTAPI
-int  sha256Digest (sha256Param* p, /*@out@*/ byte* data)
+int  sha256Digest (sha256Param* sp, /*@out@*/ byte* data)
 	/*@globals internalState @*/
-	/*@modifies p, data, internalState @*/;
+	/*@modifies sp, data, internalState @*/;
 /*@=exportlocal@*/
 
 #ifdef __cplusplus

@@ -18,7 +18,7 @@
  */
 
 /*!\file aes.h
- * \brief AES block cipher, headers.
+ * \brief AES block cipher, as specified by NIST FIPS 197.
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup BC_m BC_aes_m
  */

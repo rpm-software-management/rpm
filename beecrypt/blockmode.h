@@ -18,7 +18,8 @@
  */
 
 /*!\file blockmode.h
- * \brief Blockcipher operation modes, headers.
+ * \brief Blockcipher operation modes.
+ * \todo Additional modes, such as CFB and OFB.
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup BC_m
  */
@@ -42,7 +43,7 @@ extern "C" {
  * @retval		0 on success.
  */
 BEECRYPTAPI
-int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint32_t* dst, const uint32_t* src, int nblocks)
+int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint32_t* dst, const uint32_t* src, size_t nblocks)
 	/*@modifies bp, dst @*/;
 
 /**
@@ -55,7 +56,7 @@ int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint3
  * @retval		0 on success.
  */
 BEECRYPTAPI
-int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint32_t* dst, const uint32_t* src, int nblocks)
+int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint32_t* dst, const uint32_t* src, size_t nblocks)
 	/*@modifies bp, dst @*/;
 
 /**
@@ -68,7 +69,7 @@ int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint3
  * @retval		0 on success.
  */
 BEECRYPTAPI
-int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint32_t* dst, const uint32_t* src, int nblocks)
+int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint32_t* dst, const uint32_t* src, size_t nblocks)
 	/*@modifies bp, dst @*/;
 
 /**
@@ -81,7 +82,7 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint3
  * @retval		0 on success.
  */
 BEECRYPTAPI
-int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint32_t* dst, const uint32_t* src, int nblocks)
+int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint32_t* dst, const uint32_t* src, size_t nblocks)
 	/*@modifies bp, dst @*/;
 
 #ifdef __cplusplus

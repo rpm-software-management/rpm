@@ -752,6 +752,9 @@ const blockCipher aes = { "AES", sizeof(aesParam), 16U, 128U, 256U, 64U, (blockC
 
 int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 {
+	if ((op != ENCRYPT) && (op != DECRYPT))
+		return -1;
+
 	if (((keybits & 63) == 0) && (keybits >= 128) && (keybits <= 256))
 	{
 		register uint32_t* rk, t, i, j;

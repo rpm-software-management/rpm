@@ -18,7 +18,7 @@
  */
 
 /*!\file md5.h
- * \brief MD5 hash function, headers.
+ * \brief MD5 hash function.
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup HASH_m HASH_md5_m
  */
@@ -57,32 +57,32 @@ extern BEECRYPTAPI const hashFunction md5;
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-void md5Process(md5Param* p)
-	/*@modifies p @*/;
+void md5Process(md5Param* mp)
+	/*@modifies mp @*/;
 /*@=exportlocal@*/
 
 /** \ingroup HASH_md5_m
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int md5Reset   (md5Param* p)
-	/*@modifies p @*/;
+int md5Reset   (md5Param* mp)
+	/*@modifies mp @*/;
 /*@=exportlocal@*/
 
 /** \ingroup HASH_md5_m
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int md5Update  (md5Param* p, const byte* data, size_t size)
-	/*@modifies p @*/;
+int md5Update  (md5Param* mp, const byte* data, size_t size)
+	/*@modifies mp @*/;
 /*@=exportlocal@*/
 
 /** \ingroup HASH_md5_m
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int md5Digest  (md5Param* p, /*@out@*/ byte* data)
-	/*@modifies p, data @*/;
+int md5Digest  (md5Param* mp, /*@out@*/ byte* data)
+	/*@modifies mp, data @*/;
 /*@=exportlocal@*/
 
 #ifdef __cplusplus

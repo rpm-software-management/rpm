@@ -19,7 +19,6 @@
 
 /*!\file blockmode.c
  * \brief Blockcipher operation modes.
- * \todo Additional modes, such as CFB and OFB.
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup BC_m
  */
@@ -33,7 +32,7 @@
  * \{
  */
 
-int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, int nblocks)
+int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, size_t nblocks)
 {
 	register const unsigned int blockwords = bc->blocksize >> 2;
 
@@ -51,7 +50,7 @@ int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 	return 0;
 }
 
-int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, int nblocks)
+int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, size_t nblocks)
 {
 	register const unsigned int blockwords = bc->blocksize >> 2;
 
@@ -69,7 +68,7 @@ int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 	return 0;
 }
 
-int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, int nblocks)
+int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, size_t nblocks)
 {
 	register unsigned int blockwords = bc->blocksize >> 2;
 	register uint32_t* fdback = bc->getfb(bp);
@@ -113,7 +112,7 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 	return 0;
 }
 
-int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, int nblocks)
+int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, size_t nblocks)
 {
 	/* assumes that every blockcipher's blocksize is a multiple of 32 bits */
 	register unsigned int blockwords = bc->blocksize >> 2;
@@ -150,44 +149,6 @@ int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, 
 	}
 	return -1;
 }
-
-#ifdef	DYING
-int blockEncrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, uint32_t* dst, const uint32_t* src)
-{
-	if (bc->mode)
-	{
-		register const blockMode* bm = bc->mode+mode;
-
-		if (bm)
-		{
-			register const blockModeEncrypt be = bm->encrypt;
-
-			if (be)
-				return be(bp, blocks, dst, src);
-		}
-	}
-
-	return -1;
-}
-
-int blockDecrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, int blocks, uint32_t* dst, const uint32_t* src)
-{
-	if (bc->mode)
-	{
-		register const blockMode* bm = bc->mode+mode;
-
-		if (bm)
-		{
-			register const blockModeEncrypt bd = bm->decrypt;
-
-			if (bd)
-				return bd(bp, blocks, dst, src);
-		}
-	}
-
-	return -1;
-}
-#endif
 
 /*!\}
  */

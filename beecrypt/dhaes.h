@@ -18,7 +18,14 @@
  */
 
 /*!\file dhaes.h
- * \brief DHAES encryption scheme, headers.
+ * \brief DHAES encryption scheme.
+ *
+ * This code implements the encryption scheme from the paper:
+ *
+ * "DHAES: An Encryption Scheme Based on the Diffie-Hellman Problem"
+ * Michel Abdalla, Mihir Bellare, Phillip Rogaway
+ * September 1998
+ *
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup DL_m DL_dh_m
  */

@@ -39,21 +39,18 @@ extern "C" {
 #endif
 
 #if defined(__GNUC__)
-# if defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
+# if defined(OPTIMIZE_I386) || defined(OPTIMIZE_I486) || defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
 #  define ASM_SHA1PROCESS
 # endif
 #endif
 
 #if defined(__INTEL_COMPILER)
-# if defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
+# if defined(OPTIMIZE_I386) || defined(OPTIMIZE_I486) || defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
 #  define ASM_SHA1PROCESS
 # endif
 #endif
 
 #if defined(__SUNPRO_C) || defined(__SUNPRO_CC)
-# if defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
-#  define ASM_SHA1PROCESS
-# endif
 #endif
 
 #ifdef __cplusplus

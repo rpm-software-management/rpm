@@ -18,7 +18,15 @@
  */
 
 /*!\file blowfish.h
- * \brief Blowfish block cipher, headers.
+ * \brief Blowfish block cipher.
+ *
+ * For more information on this blockcipher, see:
+ * "Applied Cryptography", second edition
+ *  Bruce Schneier
+ *  Wiley & Sons
+ *
+ * Also see http://www.counterpane.com/blowfish.html
+ *
  * \author Bob Deblier <bob.deblier@pandora.be>
  * \ingroup BC_m BC_blowfish_m
  */

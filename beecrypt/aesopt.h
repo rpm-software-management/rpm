@@ -35,8 +35,6 @@ extern "C" {
 #  define ASM_AESENCRYPT
 #  define ASM_AESDECRYPT
 # elif __INTEL__ && __MWERKS__
-#  undef ASM_AESENCRYPT
-#  undef ASM_AESDECRYPT
 # endif
 #endif
 
@@ -48,10 +46,7 @@ extern "C" {
 #endif
 
 #if defined(__SUNPRO_C) || defined(__SUNPRO_CC)
-#if defined(OPTIMIZE_I586) || defined(OPTIMIZE_I686)
-#define ASM_AESENCRYPT
-#define ASM_AESDECRYPT
-#endif               
+/* this space intentionally left blank */
 #endif               
 
 #ifdef __cplusplus

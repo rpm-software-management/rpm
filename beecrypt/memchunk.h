@@ -27,7 +27,7 @@
 
 typedef struct
 {
-	int	size;
+	size_t	size;
 /*@only@*/
 	byte*	data;
 } memchunk;

@@ -89,7 +89,7 @@ AC_DEFUN(BEECRYPT_INT_TYPES,[
 
 dnl  BEECRYPT_CPU_BITS
 AC_DEFUN(BEECRYPT_CPU_BITS,[
-  AH_TEMPLATE([MP_WBITS],[Define to the word size of your CPU])
+  AH_TEMPLATE([MP_WBITS],[Define to the word size of your CPU, i.e. 32 or 64])
   AC_CHECK_SIZEOF([unsigned long])
   if test $ac_cv_sizeof_unsigned_long -eq 8; then
     mp_wbits="64U"
@@ -557,6 +557,9 @@ AC_DEFUN(BEECRYPT_ASM_SOURCES,[
     AC_CONFIG_COMMANDS([mpopt.x86],[
       m4 $srcdir/gas/mpopt.x86.m4 > mpopt.s
       ])
+    AC_CONFIG_COMMANDS([sha1opt.x86],[
+      m4 $srcdir/gas/sha1opt.x86.m4 > sha1opt.s
+      ])
     ;;
   ia64)
     AC_CONFIG_COMMANDS([mpopt.ia64],[
@@ -601,9 +604,6 @@ AC_DEFUN(BEECRYPT_ASM_SOURCES,[
         ])
       AC_CONFIG_COMMANDS([blowfishopt.i586],[
         m4 $srcdir/gas/blowfishopt.i586.m4 > blowfishopt.s
-        ])
-      AC_CONFIG_COMMANDS([sha1opt.i586],[
-        m4 $srcdir/gas/sha1opt.i586.m4 > sha1opt.s
         ])
       ;;
     esac

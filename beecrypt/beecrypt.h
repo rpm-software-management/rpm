@@ -27,7 +27,6 @@
  * \ingroup ES_m PRNG_m HASH_m HMAC_m BC_m
  */
 
-
 #ifndef _BEECRYPT_H
 #define _BEECRYPT_H
 

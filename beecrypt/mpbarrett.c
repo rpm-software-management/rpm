@@ -911,18 +911,18 @@ int mpbinv_w(const mpbarrett* b, size_t xsize, const mpw* xdata, mpw* result, mp
 
 if (_debug < 0) {
 /*@-modfilesys@*/
-fprintf(stderr, "       u: "), mpprintln(stderr, ysize, u);
-fprintf(stderr, "       v: "), mpprintln(stderr, ysize, v);
-fprintf(stderr, "      u1: "), mpprintln(stderr, ysize, u1);
+fprintf(stderr, "       u: "), mpfprintln(stderr, ysize, u);
+fprintf(stderr, "       v: "), mpfprintln(stderr, ysize, v);
+fprintf(stderr, "      u1: "), mpfprintln(stderr, ysize, u1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
-fprintf(stderr, "      u2: "), mpprintln(stderr, ysize, u2);
+fprintf(stderr, "      u2: "), mpfprintln(stderr, ysize, u2);
 #endif
-fprintf(stderr, "      u3: "), mpprintln(stderr, ysize, u3);
-fprintf(stderr, "      v1: "), mpprintln(stderr, ysize, v1);
+fprintf(stderr, "      u3: "), mpfprintln(stderr, ysize, u3);
+fprintf(stderr, "      v1: "), mpfprintln(stderr, ysize, v1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
-fprintf(stderr, "      v2: "), mpprintln(stderr, ysize, v2);
+fprintf(stderr, "      v2: "), mpfprintln(stderr, ysize, v2);
 #endif
-fprintf(stderr, "      v3: "), mpprintln(stderr, ysize, v3);
+fprintf(stderr, "      v3: "), mpfprintln(stderr, ysize, v3);
 /*@=modfilesys@*/
 }
 
@@ -964,11 +964,11 @@ fprintf(stderr, "      v3: "), mpprintln(stderr, ysize, v3);
 Y4:
 if (_debug < 0) {
 /*@-modfilesys@*/
-fprintf(stderr, "-->Y4 t3: "), mpprintln(stderr, ysize, t3);
+fprintf(stderr, "-->Y4 t3: "), mpfprintln(stderr, ysize, t3);
 #ifdef	FULL_BINARY_EXTENDED_GCD
-fprintf(stderr, "      t2: "), mpprintln(stderr, ysize, t2);
+fprintf(stderr, "      t2: "), mpfprintln(stderr, ysize, t2);
 #endif
-fprintf(stderr, "      t1: "), mpprintln(stderr, ysize, t1);
+fprintf(stderr, "      t1: "), mpfprintln(stderr, ysize, t1);
 /*@=modfilesys@*/
 }
 	    } while (mpeven(ysize, t3));
@@ -982,11 +982,11 @@ fprintf(stderr, "      t1: "), mpprintln(stderr, ysize, t1);
 		mpsetx(ysize, u3, ysize, t3);
 if (_debug < 0) {
 /*@-modfilesys@*/
-fprintf(stderr, "-->Y5 u1: "), mpprintln(stderr, ysize, u1);
+fprintf(stderr, "-->Y5 u1: "), mpfprintln(stderr, ysize, u1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
-fprintf(stderr, "      u2: "), mpprintln(stderr, ysize, u2);
+fprintf(stderr, "      u2: "), mpfprintln(stderr, ysize, u2);
 #endif
-fprintf(stderr, "      u3: "), mpprintln(stderr, ysize, u3);
+fprintf(stderr, "      u3: "), mpfprintln(stderr, ysize, u3);
 /*@=modfilesys@*/
 }
 	    } else {
@@ -1001,11 +1001,11 @@ fprintf(stderr, "      u3: "), mpprintln(stderr, ysize, u3);
 		(void) mpsub(ysize, v3, t3);
 if (_debug < 0) {
 /*@-modfilesys@*/
-fprintf(stderr, "-->Y5 v1: "), mpprintln(stderr, ysize, v1);
+fprintf(stderr, "-->Y5 v1: "), mpfprintln(stderr, ysize, v1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
-fprintf(stderr, "      v2: "), mpprintln(stderr, ysize, v2);
+fprintf(stderr, "      v2: "), mpfprintln(stderr, ysize, v2);
 #endif
-fprintf(stderr, "      v3: "), mpprintln(stderr, ysize, v3);
+fprintf(stderr, "      v3: "), mpfprintln(stderr, ysize, v3);
 /*@=modfilesys@*/
 }
 	    }
@@ -1029,11 +1029,11 @@ fprintf(stderr, "      v3: "), mpprintln(stderr, ysize, v3);
 
 if (_debug < 0) {
 /*@-modfilesys@*/
-fprintf(stderr, "-->Y6 t1: "), mpprintln(stderr, ysize, t1);
+fprintf(stderr, "-->Y6 t1: "), mpfprintln(stderr, ysize, t1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
-fprintf(stderr, "      t2: "), mpprintln(stderr, ysize, t2);
+fprintf(stderr, "      t2: "), mpfprintln(stderr, ysize, t2);
 #endif
-fprintf(stderr, "      t3: "), mpprintln(stderr, ysize, t3);
+fprintf(stderr, "      t3: "), mpfprintln(stderr, ysize, t3);
 /*@=modfilesys@*/
 }
 
@@ -1051,22 +1051,22 @@ fprintf(stderr, "      t3: "), mpprintln(stderr, ysize, t3);
 if (_debug) {
 /*@-modfilesys@*/
 if (result)
-fprintf(stderr, "=== EXIT: "), mpprintln(stderr, b->size, result);
-fprintf(stderr, "      u1: "), mpprintln(stderr, ysize, u1);
+fprintf(stderr, "=== EXIT: "), mpfprintln(stderr, b->size, result);
+fprintf(stderr, "      u1: "), mpfprintln(stderr, ysize, u1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
-fprintf(stderr, "      u2: "), mpprintln(stderr, ysize, u2);
+fprintf(stderr, "      u2: "), mpfprintln(stderr, ysize, u2);
 #endif
-fprintf(stderr, "      u3: "), mpprintln(stderr, ysize, u3);
-fprintf(stderr, "      v1: "), mpprintln(stderr, ysize, v1);
+fprintf(stderr, "      u3: "), mpfprintln(stderr, ysize, u3);
+fprintf(stderr, "      v1: "), mpfprintln(stderr, ysize, v1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
-fprintf(stderr, "      v2: "), mpprintln(stderr, ysize, v2);
+fprintf(stderr, "      v2: "), mpfprintln(stderr, ysize, v2);
 #endif
-fprintf(stderr, "      v3: "), mpprintln(stderr, ysize, v3);
-fprintf(stderr, "      t1: "), mpprintln(stderr, ysize, t1);
+fprintf(stderr, "      v3: "), mpfprintln(stderr, ysize, v3);
+fprintf(stderr, "      t1: "), mpfprintln(stderr, ysize, t1);
 #ifdef	FULL_BINARY_EXTENDED_GCD
-fprintf(stderr, "      t2: "), mpprintln(stderr, ysize, t2);
+fprintf(stderr, "      t2: "), mpfprintln(stderr, ysize, t2);
 #endif
-fprintf(stderr, "      t3: "), mpprintln(stderr, ysize, t3);
+fprintf(stderr, "      t3: "), mpfprintln(stderr, ysize, t3);
 /*@=modfilesys@*/
 }
 

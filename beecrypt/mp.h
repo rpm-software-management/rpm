@@ -285,7 +285,7 @@ void mpnot(size_t size, mpw* data)
 /**
  */
 BEECRYPTAPI
-void mpsetw(size_t xsize, /*@out@*/ mpw* xdata, mpw y)
+void mpsetw(size_t size, /*@out@*/ mpw* xdata, mpw y)
 	/*@modifies xdata @*/;
 
 /**
@@ -477,16 +477,30 @@ void mpndivmod(/*@out@*/ mpw* result, size_t xsize, const mpw* xdata, size_t ysi
 /**
  */
 BEECRYPTAPI /*@unused@*/
-void mpprint(/*@null@*/ FILE * fp, size_t size, /*@null@*/ const mpw* data)
+void mpprint(size_t size, /*@null@*/ const mpw* data)
+	/*@globals stdout, fileSystem @*/
+	/*@modifies stdout, fileSystem @*/;
+
+/**
+ */
+BEECRYPTAPI /*@unused@*/
+void mpprintln(size_t size, /*@null@*/ const mpw* data)
+	/*@globals stdout, fileSystem @*/
+	/*@modifies stdout, fileSystem @*/;
+
+/**
+ */
+BEECRYPTAPI /*@unused@*/
+void mpfprint(/*@null@*/ FILE * f, size_t size, /*@null@*/ const mpw* data)
 	/*@globals fileSystem @*/
-	/*@modifies *fp, fileSystem @*/;
+	/*@modifies *f, fileSystem @*/;
 
 /**
  */
 BEECRYPTAPI
-void mpprintln(/*@null@*/ FILE * fp, size_t size, /*@null@*/ const mpw* data)
+void mpfprintln(/*@null@*/ FILE * f, size_t size, /*@null@*/ const mpw* data)
 	/*@globals fileSystem @*/
-	/*@modifies *fp, fileSystem @*/;
+	/*@modifies *f, fileSystem @*/;
 
 /**
  */
