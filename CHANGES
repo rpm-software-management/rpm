@@ -1,6 +1,7 @@
 2.2.1 -> 2.2.2:
 	- added functionality to rpmlib to suggest resolutions for
 	  dependency problems
+	- fix stupid allocation problem in exclude/exclusive stuff
 
 2.2 -> 2.2.1:
 	- made rpmRemovePackage() print message in verbose mode
