@@ -3,6 +3,7 @@
 	- wasn't catching readLine() errors
 	- fixed (hopefully) temp file creation problems
 	- make %doc obey --test
+	- unlink before writing .rpms
 
 2.4.109 -> 2.5:
 	- fixed return code bug in build code
