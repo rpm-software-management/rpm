@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: @RPMCONFIGDIR@/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.144 2003/12/28 18:27:40 jbj Exp $
+# $Id: macros.in,v 1.145 2004/01/22 23:03:40 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -1108,7 +1108,11 @@ done \
 #
 %requires_eq()	%(LC_ALL="C" echo '%*' | xargs -r rpm -q --qf 'Requires: %%{name} = %%{epoch}:%%{version}\\n' | sed -e 's/ (none):/ /' -e 's/ 0:/ /' | grep -v "is not")
 %perl_sitearch	%(eval "`perl -V:installsitearch`"; echo $installsitearch)
+%perl_sitelib	%(eval "`perl -V:installsitelib`"; echo $installsitelib)
+%perl_vendorarch %(eval "`perl -V:installvendorarch`"; echo $installvendorarch)
+%perl_vendorlib  %(eval "`perl -V:installvendorlib`"; echo $installvendorlib)
 %perl_archlib	%(eval "`perl -V:installarchlib`"; echo $installarchlib)
+%perl_privlib	%(eval "`perl -V:installprivlib`"; echo $installprivlib)
 
 #------------------------------------------------------------------------------
 # arch macro for all Intel i?86 compatibile processors
