@@ -179,6 +179,7 @@ static int writeMagic(int fd, char *name,
     lead.osnum = os;
     lead.signature_type = RPMSIG_HEADERSIG;  /* New-style signature */
     strncpy(lead.name, name, sizeof(lead.name));
+    memset(lead.reserved, 0, sizeof(lead.reserved));
 
     writeLead(fd, &lead);
 
