@@ -82,21 +82,6 @@ extern int noLibio;
 /*@unchecked@*/
 extern int _rpmio_debug;
 
-/*@-varuse@*/
-/*@unchecked@*/
-/*@observer@*/ extern const char * rpmNAME;
-/*@=varuse@*/
-/*@unchecked@*/
-/*@observer@*/ extern const char * rpmEVR;
-/*@-varuse@*/
-/*@unchecked@*/
-extern int rpmFLAGS;
-/*@=varuse@*/
-
-#ifdef	DYING
-/*@unchecked@*/
-extern struct MacroContext_s rpmCLIMacroContext;
-#endif
 /*@=exportheadervar@*/
 
 /* options for all executables */
@@ -238,7 +223,7 @@ long _stksize = 64 * 1024L;
 }
 
 static void printVersion(void)
-	/*@globals fileSystem @*/
+	/*@globals rpmEVR, fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     fprintf(stdout, _("RPM version %s\n"), rpmEVR);
@@ -253,7 +238,7 @@ static void printBanner(void)
 }
 
 static void printUsage(void)
-	/*@globals __assert_program_name, fileSystem @*/
+	/*@globals __assert_program_name, rpmEVR, fileSystem @*/
 	/*@modifies fileSystem @*/
 {
     FILE * fp = stdout;
@@ -295,7 +280,7 @@ static void printUsage(void)
 
 /*@-mods@*/ /* FIX: shrug */
 int main(int argc, const char ** argv)
-	/*@globals __assert_program_name,
+	/*@globals __assert_program_name, rpmEVR, RPMVERSION,
 		rpmGlobalMacroContext, rpmCLIMacroContext,
 		fileSystem, internalState@*/
 	/*@modifies __assert_program_name,

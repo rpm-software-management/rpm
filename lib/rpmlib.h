@@ -29,8 +29,17 @@ extern struct MacroContext_s * rpmGlobalMacroContext;
 /*@checked@*/
 extern struct MacroContext_s * rpmCLIMacroContext;
 
-/*@observer@*/ /*@unchecked@*/
+/*@observer@*/ /*@checked@*/
 extern const char * RPMVERSION;
+
+/*@observer@*/ /*@checked@*/
+extern const char * rpmNAME;
+
+/*@observer@*/ /*@checked@*/
+extern const char * rpmEVR;
+
+/*@checked@*/
+extern int rpmFLAGS;
 /*@=redecl@*/
 
 #ifdef __cplusplus
@@ -1492,8 +1501,8 @@ int rpmdepCheck(rpmTransactionSet ts,
  * @return		no. of (added) packages that could not be ordered
  */
 int rpmdepOrder(rpmTransactionSet ts)
-	/*@globals internalState@*/
-	/*@modifies ts, internalState @*/;
+	/*@globals fileSystem, internalState@*/
+	/*@modifies ts, fileSystem, internalState @*/;
 
 /** \ingroup rpmtrans
  * Destroy dependency conflicts storage.

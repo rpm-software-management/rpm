@@ -10,6 +10,7 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
+#include "rpmds.h"
 #include "depends.h"
 
 #include "rpmlead.h"		/* writeLead proto */

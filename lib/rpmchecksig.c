@@ -269,7 +269,7 @@ exit:
 static int rpmImportPubkey(rpmTransactionSet ts,
 		/*@unused@*/ QVA_t qva,
 		/*@null@*/ const char ** argv)
-	/*@globals fileSystem, internalState @*/
+	/*@globals RPMVERSION, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
 {
     const char * fn;

@@ -376,7 +376,11 @@ INPUT                  = \
 	@top_srcdir@/lib/psm.c \
 	@top_srcdir@/lib/psm.h \
 	@top_srcdir@/lib/query.c \
+	@top_srcdir@/lib/rpmal.c \
+	@top_srcdir@/lib/rpmal.h \
 	@top_srcdir@/lib/rpmchecksig.c \
+	@top_srcdir@/lib/rpmds.c \
+	@top_srcdir@/lib/rpmds.h \
 	@top_srcdir@/lib/rpmcli.h \
 	@top_srcdir@/lib/rpminstall.c \
 	@top_srcdir@/lib/rpmlead.c \

@@ -20,7 +20,7 @@ pkginc_HEADERS = \
 noinst_HEADERS = \
 	cpio.h depends.h fsm.h header_internal.h \
 	manifest.h psm.h \
-	rpmal.h rpmlead.h signature.h
+	rpmal.h rpmds.h rpmlead.h signature.h
 
 mylibpaths = \
 	-L$(top_builddir)/lib/.libs \
@@ -37,7 +37,7 @@ librpm_la_SOURCES = \
 	header.c header_internal.c \
 	manifest.c misc.c package.c \
 	problems.c poptI.c poptQV.c psm.c query.c \
-	rpmal.c rpmchecksig.c rpminstall.c rpmlead.c rpmlibprov.c \
+	rpmal.c rpmchecksig.c rpmds.c rpminstall.c rpmlead.c rpmlibprov.c \
 	rpmrc.c rpmvercmp.c \
 	signature.c stringbuf.c transaction.c \
 	verify.c

@@ -8,37 +8,44 @@
 #include <rpmmacro.h>		/* XXX rpmGetPath */
 #include <rpmpgp.h>		/* XXX pgpFreeDig */
 
+#include "rpmds.h"
 #include "depends.h"
 #include "rpmal.h"
 #include "rpmdb.h"		/* XXX response cache needs dbiOpen et al. */
 
 #include "debug.h"
 
-/*@access dbiIndex@*/		/* XXX compared with NULL */
-/*@access dbiIndexSet@*/	/* XXX compared with NULL */
 /*@access Header@*/		/* XXX compared with NULL */
 /*@access FD_t@*/		/* XXX compared with NULL */
 /*@access rpmdb@*/		/* XXX compared with NULL */
 /*@access rpmdbMatchIterator@*/	/* XXX compared with NULL */
+
+/*@access tsortInfo@*/
 /*@access rpmTransactionSet@*/
 
-/*@access rpmDepSet@*/
 /*@access rpmDependencyConflict@*/
-/*@access problemsSet@*/
 
+/**
+ */
+typedef /*@abstract@*/ struct orderListIndex_s *	orderListIndex;
 /*@access orderListIndex@*/
-/*@access tsortInfo@*/
+
+/**
+ */
+struct orderListIndex_s {
+    int alIndex;
+    int orIndex;
+};
 
 /*@unchecked@*/
-static int _cacheDependsRC = 1;
+int _cacheDependsRC = 1;
+
+/*@unchecked@*/
+int _te_debug = 0;
 
 /*@unchecked@*/
 int _ts_debug = 0;
 
-/*@unchecked@*/
-static int _te_debug = 0;
-
-/*@-exportheadervar@*/
 /*@observer@*/ /*@unchecked@*/
 const char *rpmNAME = PACKAGE;
 
@@ -47,7 +54,6 @@ const char *rpmEVR = VERSION;
 
 /*@unchecked@*/
 int rpmFLAGS = RPMSENSE_EQUAL;
-/*@=exportheadervar@*/
 
 rpmTransactionSet XrpmtsUnlink(rpmTransactionSet ts, const char * msg, const char * fn, unsigned ln)
 {
@@ -440,7 +446,8 @@ assert(apx == ts->numAddedPackages);
     while (dsiNext(obsoletes) >= 0) {
 	const char * Name;
 
-	Name = dsiGetN(obsoletes);
+	if ((Name = dsiGetN(obsoletes)) == NULL)
+	    continue;	/* XXX can't happen */
 
 	/* XXX avoid self-obsoleting packages. */
 	if (!strcmp(name, Name))
@@ -460,7 +467,7 @@ assert(apx == ts->numAddedPackages);
 		 * If no obsoletes version info is available, match all names.
 		 */
 		/*@-branchstate@*/
-		if (obsoletes->EVR == NULL
+		if (dsiGetEVR(obsoletes) == NULL
 		 || headerMatchesDepFlags(h2, obsoletes))
 		    xx = removePackage(ts, rpmdbGetIteratorOffset(mi), alNum);
 		/*@=branchstate@*/
@@ -468,7 +475,7 @@ assert(apx == ts->numAddedPackages);
 	    mi = rpmdbFreeIterator(mi);
 	}
     }
-    /*@-nullstate@*/ /* FIX: obsoletes->EVR may be NULL */
+    /*@=nullstate@*/ /* FIX: obsoletes->EVR may be NULL */
     obsoletes = dsFree(obsoletes);
     /*@=nullstate@*/
 
@@ -552,13 +559,15 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key,
 	/*@globals _cacheDependsRC, fileSystem @*/
 	/*@modifies ts, *suggestion, _cacheDependsRC, fileSystem @*/
 {
-    const char * Name = dsiGetN(key);
-
     rpmdbMatchIterator mi;
+    const char * Name;
     Header h;
     int rc;
 
     if (suggestion) *suggestion = NULL;
+
+    if ((Name = dsiGetN(key)) == NULL)
+	return 0;	/* XXX can't happen */
 
     /*
      * Check if dbiOpen/dbiPut failed (e.g. permissions), we can't cache.
@@ -569,28 +578,28 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key,
 	if (dbi == NULL)
 	    _cacheDependsRC = 0;
 	else {
-	    DBC * dbcursor = NULL;
-	    size_t keylen = (key->DNEVR != NULL ? strlen(key->DNEVR) : 0);
-	    void * datap = NULL;
-	    size_t datalen = 0;
-	    int xx;
+	    const char * DNEVR;
 
-	    xx = dbiCopen(dbi, &dbcursor, 0);
-	    /*@-mods@*/		/* FIX: keyDepends mod undocumented. */
-	    /*@-nullstate@*/	/* FIX: key->NEVR may be NULL */
-	    xx = dbiGet(dbi, dbcursor, (void **)&key->DNEVR, &keylen,
-			&datap, &datalen, 0);
-	    /*@=nullstate@*/
-	    /*@=mods@*/
 	    rc = -1;
-	    if (xx == 0 && datap && datalen == 4)
-		memcpy(&rc, datap, datalen);
-	    xx = dbiCclose(dbi, dbcursor, 0);
+	    if ((DNEVR = dsiGetDNEVR(key)) != NULL) {
+		DBC * dbcursor = NULL;
+		void * datap = NULL;
+		size_t datalen = 0;
+		size_t DNEVRlen = strlen(DNEVR);
+		int xx;
+
+		xx = dbiCopen(dbi, &dbcursor, 0);
+		xx = dbiGet(dbi, dbcursor, (void **)&DNEVR, &DNEVRlen,
+				&datap, &datalen, 0);
+		if (xx == 0 && datap && datalen == 4)
+		    memcpy(&rc, datap, datalen);
+		xx = dbiCclose(dbi, dbcursor, 0);
+	    }
 
 	    if (rc >= 0) {
 		dsiNotify(key, _("(cached)"), rc);
 
-		/*@-mods@*/	/* FIX: sick hack */
+		/*@-mods -type@*/ /* FIX: hack to disable noisy debugging */
 		if (suggestion && rc == 1) {
 		    const char * Type = key->Type;
 		    key->Type = NULL;
@@ -598,7 +607,7 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key,
 				key);
 		    key->Type = Type;
 		}
-		/*@=mods@*/
+		/*@=mods =type@*/
 
 		return rc;
 	    }
@@ -697,14 +706,14 @@ static int unsatisfiedDepend(rpmTransactionSet ts, rpmDepSet key,
 
     }
 
-    /*@-mods@*/	/* FIX: sick hack */
+    /*@-mods -type@*/	/* FIX: hack to disable noisy debugging */
     if (suggestion) {
 	const char * Type = key->Type;
 	key->Type = NULL;
 	*suggestion = alAllSatisfiesDepend(ts->availablePackages, key);
 	key->Type = Type;
     }
-    /*@=mods@*/
+    /*@=mods =type@*/
 
 unsatisfied:
     rc = 1;	/* dependency is unsatisfied */
@@ -720,11 +729,13 @@ exit:
 	if (dbi == NULL) {
 	    _cacheDependsRC = 0;
 	} else {
+	    const char * DNEVR;
 	    int xx = 0;
-	    if (key->DNEVR != NULL) {
+	    if ((DNEVR = dsiGetDNEVR(key)) != NULL) {
 		DBC * dbcursor = NULL;
+		size_t DNEVRlen = strlen(DNEVR);
 		xx = dbiCopen(dbi, &dbcursor, DBI_WRITECURSOR);
-		xx = dbiPut(dbi, dbcursor, key->DNEVR, strlen(key->DNEVR),
+		xx = dbiPut(dbi, dbcursor, DNEVR, DNEVRlen,
 			&rc, sizeof(rc), 0);
 		xx = dbiCclose(dbi, dbcursor, DBI_WRITECURSOR);
 	    }
@@ -762,6 +773,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
     rpmDepSet conflicts;
     const char * Name;
     const char * EVR;
+    const char * DNEVR;
     int_32 Flags;
     int rc, xx;
     int ourrc = 0;
@@ -773,8 +785,12 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
     if (requires != NULL)
     while (!ourrc && dsiNext(requires) >= 0) {
 
-	Name = dsiGetN(requires);
-	EVR = dsiGetEVR(requires);
+	if ((Name = dsiGetN(requires)) == NULL)
+	    continue;	/* XXX can't happen */
+	if ((EVR = dsiGetEVR(requires)) == NULL)
+	    continue;	/* XXX can't happen */
+	if ((DNEVR = dsiGetDNEVR(requires)) == NULL)
+	    continue;	/* XXX can't happen */
 	Flags = dsiGetFlags(requires);
 
 	/* Filter out requires that came along for the ride. */
@@ -792,9 +808,10 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	case 0:		/* requirements are satisfied. */
 	    /*@switchbreak@*/ break;
 	case 1:		/* requirements are not satisfied. */
-	    rpmMessage(RPMMESS_DEBUG, _("package %s-%s-%s require not satisfied: %s\n"),
-		    name, version, release,
-		    (requires->DNEVR ? requires->DNEVR+2 : "???"));
+	    rpmMessage(RPMMESS_DEBUG,
+			_("package %s-%s-%s require not satisfied: %s\n"),
+			name, version, release,
+			DNEVR+2);
 
 	    if (psp->num == psp->alloced) {
 		psp->alloced += 5;
@@ -842,12 +859,16 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
     if (conflicts != NULL)
     while (!ourrc && dsiNext(conflicts) >= 0) {
 
-	Name = dsiGetN(conflicts);
-	EVR = dsiGetEVR(conflicts);
+	if ((Name = dsiGetN(conflicts)) == NULL)
+	    continue;	/* XXX can't happen */
+	if ((EVR = dsiGetEVR(conflicts)) == NULL)
+	    continue;	/* XXX can't happen */
+	if ((DNEVR = dsiGetDNEVR(conflicts)) == NULL)
+	    continue;	/* XXX can't happen */
 	Flags = dsiGetFlags(conflicts);
 
 	/* Filter out conflicts that came along for the ride. */
-	if (keyName && strcmp(keyName, Name))
+	if (keyName != NULL && strcmp(keyName, Name))
 	    continue;
 
 	/* If this requirement comes from the core package only, not libraries,
@@ -861,7 +882,7 @@ static int checkPackageDeps(rpmTransactionSet ts, problemsSet psp,
 	switch (rc) {
 	case 0:		/* conflicts exist. */
 	    rpmMessage(RPMMESS_DEBUG, _("package %s conflicts: %s\n"),
-		    name, (conflicts->DNEVR ? conflicts->DNEVR+2 : "???"));
+		    name, DNEVR+2);
 
 	    if (psp->num == psp->alloced) {
 		psp->alloced += 5;
@@ -1079,11 +1100,12 @@ static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
  * @retval nzaps	address of no. of relations removed
  * @return		(possibly NULL) formatted "q <- p" releation (malloc'ed)
  */
+/*@-mustmod@*/ /* FIX: hack modifies, but -type disables */
 static /*@owned@*/ /*@null@*/ const char *
 zapRelation(transactionElement q, transactionElement p,
 		/*@null@*/ rpmDepSet requires,
 		int zap, /*@in@*/ /*@out@*/ int * nzaps)
-	/*@modifies q, p, *nzaps, requires @*/
+	/*@modifies q, p, *nzaps @*/
 {
     tsortInfo tsi_prev;
     tsortInfo tsi;
@@ -1102,11 +1124,15 @@ zapRelation(transactionElement q, transactionElement p,
 	    continue;
 
 	if (requires == NULL) continue;		/* XXX can't happen */
+#ifdef	DYING
 	if (requires->N == NULL) continue;	/* XXX can't happen */
 	if (requires->EVR == NULL) continue;	/* XXX can't happen */
 	if (requires->Flags == NULL) continue;	/* XXX can't happen */
+#endif
 
-	requires->i = tsi->tsi_reqx;	/* XXX hack */
+	/*@-type@*/ /* FIX: hack */
+	requires->i = tsi->tsi_reqx;
+	/*@=type@*/
 
 	Flags = dsiGetFlags(requires);
 
@@ -1136,6 +1162,7 @@ zapRelation(transactionElement q, transactionElement p,
     }
     return dp;
 }
+/*@=mustmod@*/
 
 static void prtTSI(const char * msg, tsortInfo tsi)
 	/*@globals fileSystem@*/
@@ -1160,7 +1187,8 @@ if (_te_debug) {
 static inline int addRelation(rpmTransactionSet ts,
 		transactionElement p, unsigned char * selected,
 		rpmDepSet requires)
-	/*@modifies ts, p, *selected @*/
+	/*@globals fileSystem @*/
+	/*@modifies ts, p, *selected, fileSystem @*/
 {
     teIterator qi; transactionElement q;
     tsortInfo tsi;
@@ -1168,20 +1196,22 @@ static inline int addRelation(rpmTransactionSet ts,
     long matchNum;
     int i = 0;
 
+#ifdef	DYING
     if (!requires->N || !requires->EVR || !requires->Flags)
 	return 0;
+#endif
 
-    /*@-mods@*/	/* FIX: sick hack */
+    /*@-mods -type@*/	/* FIX: hack to disable noisy debugging */
     {	const char * Type = requires->Type;
 	requires->Type = NULL;
 	matchNum = alSatisfiesDepend(ts->addedPackages, requires);
 	requires->Type = Type;
     }
-    /*@=mods@*/
-/*@-modfilesystem -nullpass@*/
+    /*@=mods =type@*/
+/*@-nullpass@*/
 if (_te_debug)
 fprintf(stderr, "addRelation: matchNum %d\n", (int)matchNum);
-/*@=modfilesystem =nullpass@*/
+/*@=nullpass@*/
 
     /* Ordering depends only on added package relations. */
     if (matchNum == -1L)
@@ -1195,13 +1225,14 @@ fprintf(stderr, "addRelation: matchNum %d\n", (int)matchNum);
 	    break;
     }
     qi = teFreeIterator(qi);
-/*@-modfilesystem -nullpass -nullderef@*/
+/*@-nullpass -nullderef@*/
 if (_te_debug)
 fprintf(stderr, "addRelation: q %p(%s) from %p[%d:%d]\n", q, q->name, ts->order, i, ts->orderCount);
-/*@=modfilesystem =nullpass =nullderef@*/
+/*@=nullpass =nullderef@*/
     assert(i < ts->orderCount);
 
-    Name = dsiGetN(requires);
+    if ((Name = dsiGetN(requires)) == NULL)
+	return 0;	/* XXX can't happen */
 
     /* Avoid rpmlib feature dependencies. */
     if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1))
@@ -1220,42 +1251,46 @@ fprintf(stderr, "addRelation: q %p(%s) from %p[%d:%d]\n", q, q->name, ts->order,
     if (selected[i] != 0)
 	return 0;
     selected[i] = 1;
-/*@-modfilesystem -nullpass@*/
+/*@-nullpass@*/
 if (_te_debug)
 fprintf(stderr, "addRelation: selected[%d] = 1\n", i);
-/*@=modfilesystem =nullpass@*/
+/*@=nullpass@*/
 
     /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
     p->tsi.tsi_count++;			/* bump p predecessor count */
     if (p->depth <= q->depth)		/* Save max. depth in dependency tree */
 	p->depth = q->depth + 1;
-/*@-modfilesystem -nullpass@*/
+/*@-nullpass@*/
 if (_te_debug)
 fprintf(stderr, "addRelation: p %p(%s) depth %d", p, p->name, p->depth);
 prtTSI(NULL, &p->tsi);
-/*@=modfilesystem =nullpass@*/
+/*@=nullpass@*/
 
     tsi = xcalloc(1, sizeof(*tsi));
     /*@-assignexpose@*/
     tsi->tsi_suc = p;
     /*@=assignexpose@*/
+
+    /*@-type@*/
     tsi->tsi_reqx = requires->i;
+    /*@=type@*/
+
     tsi->tsi_next = q->tsi.tsi_next;
-/*@-modfilesystem -nullpass -compmempass@*/
+/*@-nullpass -compmempass@*/
 prtTSI("addRelation: new", tsi);
 if (_te_debug)
 fprintf(stderr, "addRelation: BEFORE q %p(%s)\n", q, q->name);
 prtTSI(NULL, &q->tsi);
-/*@=modfilesystem =nullpass =compmempass@*/
+/*@=nullpass =compmempass@*/
 /*@-mods@*/
     q->tsi.tsi_next = tsi;
     q->tsi.tsi_qcnt++;			/* bump q successor count */
 /*@=mods@*/
-/*@-modfilesystem -nullpass -compmempass@*/
+/*@-nullpass -compmempass@*/
 if (_te_debug)
 fprintf(stderr, "addRelation:  AFTER q %p(%s)\n", q, q->name);
 prtTSI(NULL, &q->tsi);
-/*@=modfilesystem =nullpass =compmempass@*/
+/*@=nullpass =compmempass@*/
     return 0;
 }
 
@@ -1371,10 +1406,6 @@ prtTSI(p->NEVR, &p->tsi);
 	requires = alGetRequires(ts->addedPackages, p->u.addedIndex);
 
 	if (requires == NULL)
-	    continue;
-	if (requires->Count <= 0)
-	    continue;
-	if (requires->Flags == NULL) /* XXX can't happen */
 	    continue;
 
 	memset(selected, 0, sizeof(*selected) * ts->orderCount);
@@ -1818,16 +1849,16 @@ int rpmdepCheck(rpmTransactionSet ts,
 	    goto exit;
 
 	provides = alGetProvides(ts->addedPackages, p->u.addedIndex);
-	if (provides == NULL || provides->Count == 0 || provides->N == NULL)
-	    continue;
 
 	rc = 0;
 	provides = dsiInit(provides);
-	if (provides != NULL)
+	if (provides == NULL || dsiGetN(provides) == NULL)
+	    continue;
 	while (dsiNext(provides) >= 0) {
 	    const char * Name;
 
-	    Name = dsiGetN(provides);
+	    if ((Name = dsiGetN(provides)) == NULL)
+		/*@innercontinue@*/ continue;	/* XXX can't happen */
 
 	    /* Adding: check provides key against conflicts matches. */
 	    if (!checkDependentConflicts(ts, ps, Name))
@@ -1870,7 +1901,8 @@ int rpmdepCheck(rpmTransactionSet ts,
 	    while (dsiNext(provides) >= 0) {
 		const char * Name;
 
-		Name = dsiGetN(provides);
+		if ((Name = dsiGetN(provides)) == NULL)
+		    /*@innercontinue@*/ continue;	/* XXX can't happen */
 
 		/* Erasing: check provides against requiredby matches. */
 		if (!checkDependentPackages(ts, ps, Name))

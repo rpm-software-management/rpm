@@ -552,3 +552,4 @@ fi
 - create rpmDepSet constructors/destructors.
 - create toy rpmDepSet iterators.
 - rpmRangesOverlap renamed to dsCompare, add dsNotify method as well.
+- depends.c: rpmDepSet is (almost) opaque, move to rpmds.[ch].

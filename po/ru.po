@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-02 18:15-0500\n"
+"POT-Creation-Date: 2001-11-02 21:16-0500\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -75,257 +75,257 @@ msgstr "ошибка чтения заголовка из пакета\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "невозможно повторно открыть payload: %s\n"
 
-#: rpmqv.c:124
+#: rpmqv.c:109
 msgid "print the version of rpm being used"
 msgstr "вывести номер версии этой прграммы"
 
-#: rpmqv.c:127
+#: rpmqv.c:112
 msgid "provide less detailed output"
 msgstr "выводить минимум сообщений"
 
-#: rpmqv.c:129
+#: rpmqv.c:114
 msgid "provide more detailed output"
 msgstr "выводить более детальные сообщения"
 
-#: rpmqv.c:131
+#: rpmqv.c:116
 msgid "define macro <name> with value <body>"
 msgstr "определить макрос <имя> со значением <подстановка>"
 
-#: rpmqv.c:132
+#: rpmqv.c:117
 msgid "'<name> <body>'"
 msgstr "'<имя> <подстановка>'"
 
-#: rpmqv.c:134
+#: rpmqv.c:119
 msgid "print macro expansion of <expr>+"
 msgstr "вывести значение макроса <имя>+"
 
-#: rpmqv.c:135
+#: rpmqv.c:120
 msgid "<expr>+"
 msgstr "<имя>+"
 
-#: rpmqv.c:137
+#: rpmqv.c:122
 msgid "send stdout to <cmd>"
 msgstr "послать стандартный вывод в <cmd>"
 
-#: rpmqv.c:138
+#: rpmqv.c:123
 msgid "<cmd>"
 msgstr "<команда>"
 
-#: rpmqv.c:140
+#: rpmqv.c:125
 msgid "use <dir> as the top level directory"
 msgstr "использовать <каталог> как корневой каталог"
 
-#: lib/poptI.c:200 rpmqv.c:141
+#: lib/poptI.c:200 rpmqv.c:126
 msgid "<dir>"
 msgstr "<каталог>"
 
-#: rpmqv.c:143
+#: rpmqv.c:128
 msgid "read <file:...> instead of default macro file(s)"
 msgstr "использовать <файл:...> вместо макрофайла(ов) по умолчанию"
 
-#: rpmqv.c:144 rpmqv.c:148 rpmqv.c:152
+#: rpmqv.c:129 rpmqv.c:133 rpmqv.c:137
 msgid "<file:...>"
 msgstr "<файл:...>"
 
-#: rpmqv.c:147 rpmqv.c:151
+#: rpmqv.c:132 rpmqv.c:136
 msgid "read <file:...> instead of default rpmrc file(s)"
 msgstr "использовать <файл:...> вместо файла спецификации по умолчанию"
 
-#: rpmqv.c:155
+#: rpmqv.c:140
 msgid "display final rpmrc and macro configuration"
 msgstr "показать текущее значение rpmrc и макросов"
 
-#: rpmqv.c:160
+#: rpmqv.c:145
 msgid "disable use of libio(3) API"
 msgstr "запретить использование libio(3) API"
 
-#: rpmqv.c:163
+#: rpmqv.c:148
 msgid "debug protocol data stream"
 msgstr "отладка протокола потока данных"
 
-#: rpmqv.c:165
+#: rpmqv.c:150
 msgid "debug rpmio I/O"
 msgstr "отладка процесса ввода/вывода rpmio"
 
-#: rpmqv.c:167
+#: rpmqv.c:152
 msgid "debug URL cache handling"
 msgstr "отладка обработки URL кэш"
 
-#: rpmqv.c:187
+#: rpmqv.c:172
 msgid "Query options (with -q or --query):"
 msgstr "Параметры запроса (с -q или --query):"
 
-#: rpmqv.c:190
+#: rpmqv.c:175
 msgid "Verify options (with -V or --verify):"
 msgstr "Параметры проверки (с -V или --verify):"
 
-#: rpmqv.c:196
+#: rpmqv.c:181
 msgid "Signature options:"
 msgstr "Параметры подписи:"
 
-#: rpmqv.c:202
+#: rpmqv.c:187
 msgid "Database options:"
 msgstr "Параметры базы данных"
 
-#: rpmqv.c:208
+#: rpmqv.c:193
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 "Параметры сборки с [ <файл спецификации> | <тар архив> | <исходный пакет> ]:"
 
-#: rpmqv.c:214
+#: rpmqv.c:199
 msgid "Install/Upgrade/Erase options:"
 msgstr "Параметры Установки/Обновления/Удаления:"
 
-#: rpmqv.c:219
+#: rpmqv.c:204
 msgid "Common options for all rpm modes:"
 msgstr "Общие параметры для всех режимов:"
 
 #. @-modfilesys -globs @
-#: lib/poptI.c:27 rpmqv.c:236
+#: lib/poptI.c:27 rpmqv.c:221
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:244
+#: rpmqv.c:229
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM версия %s\n"
 
-#: rpmqv.c:251
+#: rpmqv.c:236
 msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
 msgstr "Copyright (C) 1998-2000 - Red Hat, Inc."
 
-#: rpmqv.c:252
+#: rpmqv.c:237
 msgid "This program may be freely redistributed under the terms of the GNU GPL"
 msgstr "Эту программу можно свободно распространять на условиях GNU GPL"
 
-#: rpmqv.c:264
+#: rpmqv.c:249
 #, c-format
 msgid "Usage: %s {--help}\n"
 msgstr "Использование: %s {--help}\n"
 
-#: rpmqv.c:604
+#: rpmqv.c:589
 msgid "The --rcfile option has been eliminated.\n"
 msgstr "вариант --rcfile больше не используется.\n"
 
-#: rpmqv.c:605
+#: rpmqv.c:590
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr "Вместо этого используйте \"--macros <файл:...>\".\n"
 
-#: rpmqv.c:611
+#: rpmqv.c:596
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Внутренняя ошибка при обработке аргументов (%d) :-(\n"
 
-#: rpmqv.c:652 rpmqv.c:658 rpmqv.c:664 rpmqv.c:702
+#: rpmqv.c:637 rpmqv.c:643 rpmqv.c:649 rpmqv.c:687
 msgid "only one major mode may be specified"
 msgstr "может быть указан только один из основных режимов"
 
-#: rpmqv.c:681
+#: rpmqv.c:666
 msgid "one type of query/verify may be performed at a time"
 msgstr "за один раз может быть исполнен только один тип проверки или запроса"
 
-#: rpmqv.c:685
+#: rpmqv.c:670
 msgid "unexpected query flags"
 msgstr "неожиданные флаги запроса"
 
-#: rpmqv.c:688
+#: rpmqv.c:673
 msgid "unexpected query format"
 msgstr "неожиданный формат запроса"
 
-#: rpmqv.c:691
+#: rpmqv.c:676
 msgid "unexpected query source"
 msgstr "неожиданный источник запроса"
 
-#: rpmqv.c:732
+#: rpmqv.c:717
 msgid "--dbpath given for operation that does not use a database"
 msgstr "параметр --dbpath задан для операции, не использующей базу данных"
 
-#: rpmqv.c:738
+#: rpmqv.c:723
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "принудительными могут быть только установка, обновление, удаление исходников "
 "и файла спецификации"
 
-#: rpmqv.c:740
+#: rpmqv.c:725
 msgid "files may only be relocated during package installation"
 msgstr "файлы могут быть перемещены только при установке пакета"
 
-#: rpmqv.c:743
+#: rpmqv.c:728
 msgid "only one of --prefix or --relocate may be used"
 msgstr ""
 "может быть использован только один из вариантов --prefix или --relocate"
 
-#: rpmqv.c:746
+#: rpmqv.c:731
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "варианты --relocate и --excludepath можно использовать только при установке "
 "новых пакетов"
 
-#: rpmqv.c:749
+#: rpmqv.c:734
 msgid "--prefix may only be used when installing new packages"
 msgstr "вариант --prefix можно использовать только при установке новых пакетов"
 
-#: rpmqv.c:752
+#: rpmqv.c:737
 msgid "arguments to --prefix must begin with a /"
 msgstr "аргументы для --prefix должны начинаться с /"
 
-#: rpmqv.c:755
+#: rpmqv.c:740
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) может быть указан только при установке пакета"
 
-#: rpmqv.c:759
+#: rpmqv.c:744
 msgid "--percent may only be specified during package installation"
 msgstr "--percent может быть указан только при установке пакета"
 
-#: rpmqv.c:764
+#: rpmqv.c:749
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles может быть указан только при установке пакета"
 
-#: rpmqv.c:768
+#: rpmqv.c:753
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs может быть указан только при установке пакета"
 
-#: rpmqv.c:772
+#: rpmqv.c:757
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs может быть указан только при установке пакета"
 
-#: rpmqv.c:776
+#: rpmqv.c:761
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs может быть указан только при установке пакета"
 
-#: rpmqv.c:780
+#: rpmqv.c:765
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 "может быть использован только один из параметров --excludedocs или --"
 "includedocs"
 
-#: rpmqv.c:784
+#: rpmqv.c:769
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch может быть указан только при установке пакета"
 
-#: rpmqv.c:788
+#: rpmqv.c:773
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos может быть указан только при установке пакета"
 
-#: rpmqv.c:793
+#: rpmqv.c:778
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize может быть указан только при установке пакета"
 
-#: rpmqv.c:797
+#: rpmqv.c:782
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches может быть указан только при удалении пакета"
 
-#: rpmqv.c:801
+#: rpmqv.c:786
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles может быть указан только при установке пакета"
 
-#: rpmqv.c:806
+#: rpmqv.c:791
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb может быть указан только при установке или удалении пакета"
 
-#: rpmqv.c:811
+#: rpmqv.c:796
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -333,7 +333,7 @@ msgstr ""
 "параметры запрета сценариев могут быть указаны только при установке или "
 "удалении пакета"
 
-#: rpmqv.c:816
+#: rpmqv.c:801
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -341,7 +341,7 @@ msgstr ""
 "параметры запрета триггеров могут быть указан только при установке или "
 "удалении пакета(ов)"
 
-#: rpmqv.c:820
+#: rpmqv.c:805
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -349,14 +349,14 @@ msgstr ""
 "--nodeps может быть указан только при сборке, установке, удалении и проверки "
 "пакетов"
 
-#: rpmqv.c:825
+#: rpmqv.c:810
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 "--test может быть указан только при установке, удалении и сборке пакета"
 
-#: rpmqv.c:830
+#: rpmqv.c:815
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -364,81 +364,81 @@ msgstr ""
 "--root (-r) может быть указана только при установке, удалении, запросах "
 "пакета и перестроении базы данных"
 
-#: rpmqv.c:842
+#: rpmqv.c:827
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "аргументы для --root (-r) должны начинаться с /"
 
-#: rpmqv.c:866
+#: rpmqv.c:851
 msgid "no files to sign\n"
 msgstr "нет файлов для подписи\n"
 
-#: rpmqv.c:871
+#: rpmqv.c:856
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "нет доступа к файлу %s\n"
 
-#: rpmqv.c:890
+#: rpmqv.c:875
 msgid "pgp not found: "
 msgstr "pgp не найден: "
 
-#: rpmqv.c:895
+#: rpmqv.c:880
 msgid "Enter pass phrase: "
 msgstr "Введите ключевую фразу: "
 
-#: rpmqv.c:897
+#: rpmqv.c:882
 msgid "Pass phrase check failed\n"
 msgstr "Неверная ключевая фраза\n"
 
-#: rpmqv.c:901
+#: rpmqv.c:886
 msgid "Pass phrase is good.\n"
 msgstr "Ключевая фраза принята.\n"
 
-#: rpmqv.c:906
+#: rpmqv.c:891
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Неверная спецификация %%_signature в макрофайле.\n"
 
-#: rpmqv.c:913
+#: rpmqv.c:898
 msgid "--sign may only be used during package building"
 msgstr "--sign может быть использован только при сборке пакетов"
 
-#: rpmqv.c:930
+#: rpmqv.c:915
 msgid "exec failed\n"
 msgstr "запуск не удался\n"
 
-#: rpmqv.c:962
+#: rpmqv.c:947
 msgid "no packages files given for rebuild"
 msgstr "не заданы пакеты для пересборки"
 
-#: rpmqv.c:1030
+#: rpmqv.c:1015
 msgid "no spec files given for build"
 msgstr "не задан файл спецификации для сборки пакета"
 
-#: rpmqv.c:1032
+#: rpmqv.c:1017
 msgid "no tar files given for build"
 msgstr "не заданы tar-файлы для сборки пакета"
 
-#: rpmqv.c:1051
+#: rpmqv.c:1036
 msgid "no packages given for uninstall"
 msgstr "не заданы пакеты для удаления"
 
-#: rpmqv.c:1062
+#: rpmqv.c:1047
 msgid "no packages given for install"
 msgstr "не заданы пакеты для установки"
 
-#: rpmqv.c:1108
+#: rpmqv.c:1093
 msgid "no arguments given for query"
 msgstr "не заданы аргументы запроса"
 
-#: rpmqv.c:1121
+#: rpmqv.c:1106
 msgid "no arguments given for verify"
 msgstr "не заданы аргументы для верификации"
 
-#: rpmqv.c:1129
+#: rpmqv.c:1114
 msgid "unexpected arguments to --querytags "
 msgstr "неожиданные аргументы для --querytags "
 
-#: rpmqv.c:1145
+#: rpmqv.c:1130
 #, fuzzy
 msgid "no arguments given"
 msgstr "не заданы аргументы запроса"
@@ -834,7 +834,7 @@ msgstr "Невозможно перезагрузить заголовок подписи.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/pack.c:603 lib/psm.c:2152
+#: build/pack.c:603 lib/psm.c:2153
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Невозможно записать пакет: %s\n"
@@ -864,7 +864,7 @@ msgstr "Невозможно прочитать содержимое из %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Невозможно записать содержимое в %s: %s\n"
 
-#: build/pack.c:683 lib/psm.c:2417
+#: build/pack.c:683 lib/psm.c:2418
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
@@ -1441,114 +1441,111 @@ msgstr "Файл архива не найден в заголовке пакета"
 msgid " failed - "
 msgstr "не удалось - "
 
-#: lib/depends.c:102
+#: lib/depends.c:108
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "не могу открыть базу данных Packages в %s\n"
 
-#: lib/depends.c:335
+#: lib/depends.c:341
 #, c-format
 msgid "newer package %s already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:340
+#: lib/depends.c:346
 #, fuzzy, c-format
 msgid "package %s already added, ignoring\n"
 msgstr "пакет %s уже установлен"
 
-#: lib/depends.c:345
+#: lib/depends.c:351
 #, c-format
 msgid "older package %s already added, replacing with %s\n"
 msgstr ""
 
-#: lib/depends.c:591
+#: lib/depends.c:600
 msgid "(cached)"
 msgstr ""
 
-#: lib/depends.c:627
+#: lib/depends.c:636
 #, fuzzy
 msgid "(rpmrc provides)"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:643
+#: lib/depends.c:652
 #, fuzzy
 msgid "(rpmlib provides)"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:665
+#: lib/depends.c:674
 #, fuzzy
 msgid "(db files)"
 msgstr "неверный файл базы данных %s\n"
 
-#: lib/depends.c:677
+#: lib/depends.c:686
 #, fuzzy
 msgid "(db provides)"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:690
+#: lib/depends.c:699
 #, fuzzy
 msgid "(db package)"
 msgstr "нет пакетов\n"
 
-#: lib/depends.c:736
+#: lib/depends.c:747
 #, fuzzy, c-format
 msgid "%9s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 
-#: lib/depends.c:738
+#: lib/depends.c:749
 msgid "NO "
 msgstr "НЕT"
 
-#: lib/depends.c:738
+#: lib/depends.c:749
 msgid "YES"
 msgstr "ДА"
 
-#. requirements are satisfied.
-#. @switchbreak@
-#. requirements are not satisfied.
-#: lib/depends.c:795
+#: lib/depends.c:812
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:863
+#: lib/depends.c:884
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: lib/depends.c:1121
+#: lib/depends.c:1147
 #, fuzzy, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "удаляется %s-%s-%s \"%s\" из упорядоченных зависимостей.\n"
 
 #. Record all relations.
-#: lib/depends.c:1364
+#: lib/depends.c:1399
 msgid "========== recording tsort relations\n"
 msgstr "========== запись упорядоченных зависимостей\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1442
+#: lib/depends.c:1473
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 "========== сортировка пакетов (очередность, #predecessors, #succesors, "
 "глубина)\n"
 
-#: lib/depends.c:1517
+#: lib/depends.c:1548
 msgid "========== successors only (presentation order)\n"
 msgstr "========== только последователи (в порядке представления)\n"
 
-#: lib/depends.c:1578
+#: lib/depends.c:1609
 msgid "LOOP:\n"
 msgstr "ЦИКЛ:\n"
 
-#: lib/depends.c:1613
+#: lib/depends.c:1644
 msgid "========== continuing tsort ...\n"
 msgstr "========== продолжение упорядочения ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1618
+#: lib/depends.c:1649
 #, c-format
 msgid "rpmdepOrder failed, %d elements remain\n"
 msgstr ""
@@ -1653,7 +1650,7 @@ msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "dataLength() допустим только один элемент типа RPM_STRING_TYPE\n"
 
 #. @-modfilesys@
-#: lib/header.c:383 lib/header_internal.c:161 lib/psm.c:951
+#: lib/header.c:383 lib/header_internal.c:161 lib/psm.c:952
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Тип данных %d не поддерживается\n"
@@ -2242,108 +2239,108 @@ msgstr "пакет %s pre-transaction syscall(s): %s: ошибка: %s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "неизвестная ошибка %d при работе с пакетом %s"
 
-#: lib/psm.c:267
+#: lib/psm.c:268
 msgid "========== relocations\n"
 msgstr "========== перемещений\n"
 
-#: lib/psm.c:271
+#: lib/psm.c:272
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr "%5d исключен %s\n"
 
-#: lib/psm.c:274
+#: lib/psm.c:275
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr "%5d перемещение %s -> %s\n"
 
-#: lib/psm.c:344
+#: lib/psm.c:345
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr "исключается многобиблиотечный путь %s%s\n"
 
-#: lib/psm.c:410
+#: lib/psm.c:411
 #, c-format
 msgid "excluding %s %s\n"
 msgstr "исключается %s %s\n"
 
-#: lib/psm.c:420
+#: lib/psm.c:421
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr "перемещается %s в %s\n"
 
-#: lib/psm.c:499
+#: lib/psm.c:500
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr "перемещается каталог %s в %s\n"
 
-#: lib/psm.c:1148
+#: lib/psm.c:1149
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr "невозможно создать %%%s %s\n"
 
-#: lib/psm.c:1154
+#: lib/psm.c:1155
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr "невозможно писать в %%%s %s\n"
 
-#: lib/psm.c:1194
+#: lib/psm.c:1195
 msgid "source package expected, binary found\n"
 msgstr "обнаружен двоичный пакет вместо ожидаемого исходного\n"
 
-#: lib/psm.c:1317
+#: lib/psm.c:1318
 msgid "source package contains no .spec file\n"
 msgstr "исходный пакет не содержит файла спецификации\n"
 
-#: lib/psm.c:1427
+#: lib/psm.c:1428
 #, fuzzy, c-format
 msgid "%s: running %s scriptlet\n"
 msgstr "%s: выполняется сценарий %s (если есть)\n"
 
-#: lib/psm.c:1595
+#: lib/psm.c:1596
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, waitpid() возвратил %s\n"
 
-#: lib/psm.c:1602
+#: lib/psm.c:1603
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr "ошибка выполнения сценария %s из %s-%s-%s, код возврата %d\n"
 
-#: lib/psm.c:1957
+#: lib/psm.c:1958
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr "%s: %s-%s-%s содержит %d файлов, test = %d\n"
 
-#: lib/psm.c:2074
+#: lib/psm.c:2075
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr "%s: ошибка сценария %s (%d), %s-%s-%s пропускается\n"
 
-#: lib/psm.c:2188
+#: lib/psm.c:2189
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "пользователь %s не существует - используется root\n"
 
-#: lib/psm.c:2197
+#: lib/psm.c:2198
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "группа %s не существует - используется root\n"
 
-#: lib/psm.c:2238
+#: lib/psm.c:2239
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "распаковка архива не удалась%s%s: %s\n"
 
-#: lib/psm.c:2239
+#: lib/psm.c:2240
 msgid " on file "
 msgstr " на файле "
 
-#: lib/psm.c:2425
+#: lib/psm.c:2426
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s ошибка на файле %s: %s\n"
 
-#: lib/psm.c:2428
+#: lib/psm.c:2429
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s не удалось: %s\n"

@@ -5,7 +5,10 @@
 #include "system.h"
 
 #include <rpmlib.h>
+
+#include "rpmds.h"
 #include "depends.h"
+
 #include "debug.h"
 
 /*@access rpmDepSet@*/

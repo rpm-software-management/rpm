@@ -247,7 +247,8 @@ availablePackage * alAllFileSatisfiesDepend(const availableList al,
 /*@only@*/ /*@null@*/
 availablePackage * alAllSatisfiesDepend(const availableList al,
 		const rpmDepSet key)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 /**
  * Check added package file lists for first package that has a provide.
@@ -257,7 +258,8 @@ availablePackage * alAllSatisfiesDepend(const availableList al,
  * @return		available package index, -1 on not found
  */
 long alSatisfiesDepend(const availableList al, const rpmDepSet key)
-	/*@*/;
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
 
 #ifdef __cplusplus
 }

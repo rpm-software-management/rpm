@@ -39,7 +39,9 @@ lib/poptQV.c
 lib/problems.c
 lib/psm.c
 lib/query.c
+lib/rpmal.c
 lib/rpmchecksig.c
+lib/rpmds.c
 lib/rpminstall.c
 lib/rpmlead.c
 lib/rpmrc.c

@@ -639,7 +639,7 @@ extern struct poptOption rpmSignPoptTable[];
  * @return		0 on success
  */
 int rpmcliSign(QVA_t qva, /*@null@*/ const char ** argv)
-	/*@globals rpmGlobalMacroContext,
+	/*@globals RPMVERSION, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 	/*@modifies qva, rpmGlobalMacroContext,
 		fileSystem, internalState @*/;
