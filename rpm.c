@@ -139,10 +139,6 @@ static struct poptOption optionsTable[] = {
  { "percent", '\0', 0, &showPercents, 0,	NULL, NULL},
  { "pipe", '\0', POPT_ARG_STRING, &pipeOutput, 0,	NULL, NULL},
  { "prefix", '\0', POPT_ARG_STRING, &prefix, 0,	NULL, NULL},
-#ifdef	DYING
- { "query", 'q', 0, NULL, 'q',			NULL, NULL},
- { "querytags", '\0', 0, &queryTags, 0,		NULL, NULL},
-#endif
  { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
  { "rcfile", '\0', POPT_ARG_STRING, &rcfile, 0,	NULL, NULL},
  { "rebuilddb", '\0', 0, 0, GETOPT_REBUILDDB,	NULL, NULL},
@@ -159,15 +155,7 @@ static struct poptOption optionsTable[] = {
  { "urldebug", '\0', POPT_ARG_VAL, &_url_debug, -1,		NULL, NULL},
  { "uninstall", 'u', 0, 0, 'u',			NULL, NULL},
  { "verbose", 'v', 0, 0, 'v',			NULL, NULL},
-#ifdef	DYING
- { "verify", 'V', 0, 0, 'V',			NULL, NULL},
- {  NULL, 'y', 0, 0, 'V',			NULL, NULL},
-#endif
  { "version", '\0', 0, &showVersion, 0,		NULL, NULL},
-
- /* XXX hack to pass build args correctly */
- { "buildroot", '\0', POPT_ARG_STRING, 0,  0,	NULL, NULL},
- { "target", '\0', POPT_ARG_STRING, 0,  0,	NULL, NULL},
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, 
 		rpmQVSourcePoptTable, 0,	(void *) &rpmQVArgs, NULL },
@@ -859,15 +847,6 @@ int main(int argc, const char ** argv)
 	else
 	    bigMode = MODE_INITDB;
     }
-
-#ifdef	DYING
-    if (queryTags) {
-	if (bigMode != MODE_UNKNOWN) 
-	    argerror(_("only one major mode may be specified"));
-	else
-	    bigMode = MODE_QUERYTAGS;
-    }
-#endif
 
     if (qva->qva_sourceCount) {
 	if (QVSource != RPMQV_PACKAGE || qva->qva_sourceCount > 1)

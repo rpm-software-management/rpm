@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-06-05 09:49-0400\n"
+"POT-Creation-Date: 2000-06-06 04:54-0400\n"
 "PO-Revision-Date: 1998-10-10 10:10+0200\n"
 "Last-Translator: Pavel Makovec <pavelm@terminal.cz>\n"
 "Language-Team: Czech <pavelm@terminal.cz>\n"
@@ -110,80 +110,80 @@ msgstr "balíèek %s nenalezen v %s"
 msgid "no copyright!\n"
 msgstr ""
 
-#: rpm.c:191 rpmqv.c:257
+#: rpm.c:179 rpmqv.c:257
 #, c-format
 msgid "rpm: %s\n"
 msgstr "rpm: %s\n"
 
-#: rpm.c:202 rpmqv.c:268
+#: rpm.c:190 rpmqv.c:268
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM verze %s\n"
 
-#: rpm.c:206 rpmqv.c:272
+#: rpm.c:194 rpmqv.c:272
 msgid "Copyright (C) 1998 - Red Hat Software"
 msgstr "Copyright (c) 1998 - Red Hat Software"
 
-#: rpm.c:207 rpmqv.c:273
+#: rpm.c:195 rpmqv.c:273
 msgid "This may be freely redistributed under the terms of the GNU GPL"
 msgstr "Tento program lze volnì roz¹iøovat podle podmínek GNU GPL."
 
-#: rpm.c:215
+#: rpm.c:203
 #, fuzzy
 msgid "Usage: rpm {--help}"
 msgstr "pou¾ití: rpm {--help}"
 
-#: rpm.c:216
+#: rpm.c:204
 msgid "       rpm {--version}"
 msgstr "       rpm {--version}"
 
-#: rpm.c:217
+#: rpm.c:205
 msgid "       rpm {--initdb}   [--dbpath <dir>]"
 msgstr "       rpm {--initdb}   [--dbpath <adr>]"
 
-#: rpm.c:218
+#: rpm.c:206
 msgid ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 "       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"
 
-#: rpm.c:219 rpmqv.c:294
+#: rpm.c:207 rpmqv.c:294
 msgid "                        [--replacepkgs] [--replacefiles] [--root <dir>]"
 msgstr ""
 "                        [--replacepkgs] [--replacefiles] [--root <adr>]"
 
-#: rpm.c:220 rpmqv.c:295
+#: rpm.c:208 rpmqv.c:295
 msgid "                        [--excludedocs] [--includedocs] [--noscripts]"
 msgstr "                        [--excludedocs] [--includedocs] [--noscripts]"
 
-#: rpm.c:221 rpmqv.c:296
+#: rpm.c:209 rpmqv.c:296
 msgid ""
 "                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"
 msgstr ""
 "                        [--rcfile <soubor>] [--ignorearch] [--dbpath <adr>]"
 
-#: rpm.c:222 rpmqv.c:297
+#: rpm.c:210 rpmqv.c:297
 msgid ""
 "                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"
 msgstr ""
 "                        [--prefix <adr>] [--ignoreos] [--nodeps] [--allfiles]"
 
-#: rpm.c:223 rpmqv.c:298
+#: rpm.c:211 rpmqv.c:298
 msgid ""
 "                        [--ftpproxy <host>] [--ftpport <port>] [--justdb]"
 msgstr ""
 "                        [--ftpproxy <hostitel>] [--ftpport <port>] [--justdb]"
 
-#: rpm.c:224 rpm.c:233 rpm.c:242 rpmqv.c:299 rpmqv.c:308 rpmqv.c:323
+#: rpm.c:212 rpm.c:221 rpm.c:230 rpmqv.c:299 rpmqv.c:308 rpmqv.c:323
 #, fuzzy
 msgid "                        [--httpproxy <host>] [--httpport <port>] "
 msgstr "                        [--ftpproxy <hostitel>] [--ftpport <port>]"
 
-#: rpm.c:225 rpm.c:235 rpmqv.c:300 rpmqv.c:310
+#: rpm.c:213 rpm.c:223 rpmqv.c:300 rpmqv.c:310
 msgid "                        [--noorder] [--relocate oldpath=newpath]"
 msgstr "                        [--noorder] [--relocate starácesta=novácesta]"
 
-#: rpm.c:226 rpmqv.c:301
+#: rpm.c:214 rpmqv.c:301
 #, fuzzy
 msgid ""
 "                        [--badreloc] [--notriggers] [--excludepath <path>]"
@@ -191,125 +191,125 @@ msgstr ""
 "                        [--badreloc] [--notriggers] soubor1.rpm ... "
 "souborN.rpm"
 
-#: rpm.c:227 rpmqv.c:302
+#: rpm.c:215 rpmqv.c:302
 #, fuzzy
 msgid "                        [--ignoresize] file1.rpm ... fileN.rpm"
 msgstr "                        [--badreloc] soubor1.rpm ... souborN.rpm"
 
-#: rpm.c:228
+#: rpm.c:216
 msgid ""
 "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 msgstr ""
 "       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"
 
-#: rpm.c:229 rpmqv.c:304
+#: rpm.c:217 rpmqv.c:304
 msgid "                        [--oldpackage] [--root <dir>] [--noscripts]"
 msgstr "                        [--oldpackage] [--root <adr>] [--noscripts]"
 
-#: rpm.c:230 rpmqv.c:305
+#: rpm.c:218 rpmqv.c:305
 msgid ""
 "                        [--excludedocs] [--includedocs] [--rcfile <file>]"
 msgstr ""
 "                        [--excludedocs] [--includedocs] [--rcfile <soubor>]"
 
-#: rpm.c:231 rpmqv.c:306
+#: rpm.c:219 rpmqv.c:306
 msgid ""
 "                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "
 msgstr ""
 "                        [--ignorearch]  [--dbpath <adr>] [--prefix <adr>] "
 
-#: rpm.c:232 rpmqv.c:307
+#: rpm.c:220 rpmqv.c:307
 msgid "                        [--ftpproxy <host>] [--ftpport <port>]"
 msgstr "                        [--ftpproxy <hostitel>] [--ftpport <port>]"
 
-#: rpm.c:234 rpmqv.c:309
+#: rpm.c:222 rpmqv.c:309
 msgid "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 msgstr ""
 "                        [--ignoreos] [--nodeps] [--allfiles] [--justdb]"
 
-#: rpm.c:236 rpmqv.c:311
+#: rpm.c:224 rpmqv.c:311
 #, fuzzy
 msgid ""
 "                        [--badreloc] [--excludepath <path>] [--ignoresize]"
 msgstr "                        [--changelog] [--dbpath <adr>] [cíle]"
 
-#: rpm.c:237 rpmqv.c:312
+#: rpm.c:225 rpmqv.c:312
 #, fuzzy
 msgid "                        file1.rpm ... fileN.rpm"
 msgstr "                        [--badreloc] soubor1.rpm ... souborN.rpm"
 
-#: rpm.c:238
+#: rpm.c:226
 msgid "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 msgstr "       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"
 
-#: rpm.c:239 rpmqv.c:320
+#: rpm.c:227 rpmqv.c:320
 msgid "                        [--scripts] [--root <dir>] [--rcfile <file>]"
 msgstr "                        [--scripts] [--root <adr>] [--rcfile <soubor>]"
 
-#: rpm.c:240 rpmqv.c:321
+#: rpm.c:228 rpmqv.c:321
 msgid "                        [--whatprovides] [--whatrequires] [--requires]"
 msgstr "                        [--whatprovides] [--whatrequires] [--requires]"
 
-#: rpm.c:241 rpmqv.c:322
+#: rpm.c:229 rpmqv.c:322
 msgid ""
 "                        [--triggeredby] [--ftpuseport] [--ftpproxy <host>]"
 msgstr ""
 "                        [--triggeredby] [--ftpuseport] [--ftpproxy "
 "<hostitel>]"
 
-#: rpm.c:243 rpmqv.c:324
+#: rpm.c:231 rpmqv.c:324
 msgid ""
 "                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
 msgstr ""
 "                        [--ftpport <port>] [--provides] [--triggers] [--dump]"
 
-#: rpm.c:244 rpmqv.c:325
+#: rpm.c:232 rpmqv.c:325
 msgid "                        [--changelog] [--dbpath <dir>] [targets]"
 msgstr "                        [--changelog] [--dbpath <adr>] [cíle]"
 
-#: rpm.c:245
+#: rpm.c:233
 msgid "       rpm {--verify -V -y} [-afpg] [--root <dir>] [--rcfile <file>]"
 msgstr "       rpm {--verify -V -y} [-afpg] [--root <adr>] [--rcfile <soubor>]"
 
-#: rpm.c:246 rpmqv.c:327
+#: rpm.c:234 rpmqv.c:327
 msgid ""
 "                        [--dbpath <dir>] [--nodeps] [--nofiles] [--noscripts]"
 msgstr ""
 "                        [--dbpath <adr>] [--nodeps] [--nofiles] [--noscripts]"
 
-#: rpm.c:247 rpmqv.c:328
+#: rpm.c:235 rpmqv.c:328
 msgid "                        [--nomd5] [targets]"
 msgstr "                        [--nomd5] [cíle]"
 
-#: rpm.c:248
+#: rpm.c:236
 msgid "       rpm {--setperms} [-afpg] [target]"
 msgstr "       rpm {--setperms} [-afpg] [cíl]"
 
-#: rpm.c:249
+#: rpm.c:237
 msgid "       rpm {--setugids} [-afpg] [target]"
 msgstr "       rpm {--setugids} [-afpg] [cíl]"
 
-#: rpm.c:250
+#: rpm.c:238
 #, fuzzy
 msgid "       rpm {--freshen -F} file1.rpm ... fileN.rpm"
 msgstr "                        [--badreloc] soubor1.rpm ... souborN.rpm"
 
-#: rpm.c:251
+#: rpm.c:239
 msgid "       rpm {--erase -e} [--root <dir>] [--noscripts] [--rcfile <file>]"
 msgstr ""
 "       rpm {--erase -e} [--root <adr>] [--noscripts] [--rcfile <soubor>]"
 
-#: rpm.c:252 rpmqv.c:314
+#: rpm.c:240 rpmqv.c:314
 msgid "                        [--dbpath <dir>] [--nodeps] [--allmatches]"
 msgstr "                        [--dbpath <adr>] [--nodeps] [--allmatches]"
 
-#: rpm.c:253 rpmqv.c:315
+#: rpm.c:241 rpmqv.c:315
 msgid ""
 "                        [--justdb] [--notriggers] rpackage1 ... packageN"
 msgstr ""
 "                        [--justdb] [--notriggers] rbalíèek1 ... balíèekN"
 
-#: rpm.c:254
+#: rpm.c:242
 #, fuzzy
 msgid ""
 "       rpm {-b|t}[plcibas] [-v] [--short-circuit] [--clean] [--rcfile  "
@@ -318,283 +318,283 @@ msgstr ""
 "       rpm {-b|t}[plciba] [-v] [--short-circuit] [--clean] [--rcfile "
 "<soubor>]"
 
-#: rpm.c:255
+#: rpm.c:243
 #, fuzzy
 msgid "                        [--sign] [--nobuild] [--timecheck <s>] ]"
 msgstr ""
 "                        [--sign] [--test] [--timecheck <s>] [--buildos <os>]"
 
-#: rpm.c:256 rpmqv.c:337
+#: rpm.c:244 rpmqv.c:337
 #, fuzzy
 msgid "                        [--target=platform1[,platform2...]]"
 msgstr "                        [--buildarch <arch>] [--rmsource] soubor.spec"
 
-#: rpm.c:257 rpmqv.c:338
+#: rpm.c:245 rpmqv.c:338
 #, fuzzy
 msgid "                        [--rmsource] [--rmspec] specfile"
 msgstr "                        [--buildarch <arch>] [--rmsource] soubor.spec"
 
-#: rpm.c:258
+#: rpm.c:246
 msgid "       rpm {--rmsource} [--rcfile <file>] [-v] specfile"
 msgstr "       rpm {--rmsource} [--rcfile <soubor>] [-v] soubor.spec"
 
-#: rpm.c:259
+#: rpm.c:247
 msgid ""
 "       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
 "       rpm {--rebuild} [--rcfile <soubor>] [-v] zdroj1.rpm ... zdrojN.rpm"
 
-#: rpm.c:260
+#: rpm.c:248
 msgid ""
 "       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"
 msgstr ""
 "       rpm {--recompile} [--rcfile <soubor>] [-v] zdroj1.rpm ... zdrojN.rpm"
 
-#: rpm.c:261
+#: rpm.c:249
 msgid "       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr ""
 "       rpm {--resign} [--rcfile <soubor>] balíèek1 balíèek2 ... balíèekN"
 
-#: rpm.c:262
+#: rpm.c:250
 msgid "       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"
 msgstr ""
 "       rpm {--addsign} [--rcfile <soubor>] balíèek1 balíèek2 ... balíèekN"
 
-#: rpm.c:263
+#: rpm.c:251
 #, fuzzy
 msgid ""
 "       rpm {--checksig -K} [--nopgp] [--nogpg] [--nomd5] [--rcfile <file>]"
 msgstr "       rpm {--checksig -K} [--nopgp] [--nomd5] [--rcfile <soubor>]"
 
-#: rpm.c:264 rpmqv.c:349
+#: rpm.c:252 rpmqv.c:349
 msgid "                           package1 ... packageN"
 msgstr "                           balíèek1 ... balíèekN"
 
-#: rpm.c:265
+#: rpm.c:253
 msgid "       rpm {--rebuilddb} [--rcfile <file>] [--dbpath <dir>]"
 msgstr "       rpm {--rebuilddb} [--rcfile <soubor>] [--dbpath <adr>]"
 
-#: rpm.c:266
+#: rpm.c:254
 msgid "       rpm {--querytags}"
 msgstr "       rpm {--querytags}"
 
-#: rpm.c:300 rpmqv.c:385
+#: rpm.c:288 rpmqv.c:385
 #, fuzzy
 msgid "Usage:"
 msgstr "pou¾ití:"
 
-#: rpm.c:302 rpmqv.c:387
+#: rpm.c:290 rpmqv.c:387
 msgid "print this message"
 msgstr "vytisknout tuto zprávu"
 
-#: rpm.c:304 rpmqv.c:389
+#: rpm.c:292 rpmqv.c:389
 msgid "print the version of rpm being used"
 msgstr "vytisknout pou¾ívanou verzi rpm"
 
-#: rpm.c:307
+#: rpm.c:295
 #, fuzzy
 msgid "   All modes support the following arguments:"
 msgstr "   v¹echny re¾imy podporují tyto argumenty:"
 
-#: rpm.c:308
+#: rpm.c:296
 msgid "    --define '<name> <body>'"
 msgstr ""
 
-#: rpm.c:309 rpmqv.c:394
+#: rpm.c:297 rpmqv.c:394
 msgid "define macro <name> with value <body>"
 msgstr ""
 
-#: rpm.c:310
+#: rpm.c:298
 #, fuzzy
 msgid "    --eval '<name>+'      "
 msgstr "    --pipe <pøíkaz>       "
 
-#: rpm.c:311 rpmqv.c:396
+#: rpm.c:299 rpmqv.c:396
 #, fuzzy
 msgid "print the expansion of macro <name> to stdout"
 msgstr "vytisknout pou¾ívanou verzi rpm"
 
-#: rpm.c:312
+#: rpm.c:300
 msgid "    --pipe <cmd>          "
 msgstr "    --pipe <pøíkaz>       "
 
-#: rpm.c:313 rpmqv.c:398
+#: rpm.c:301 rpmqv.c:398
 msgid "send stdout to <cmd>"
 msgstr "odeslat stdout do <pøíkazu>"
 
-#: rpm.c:314
+#: rpm.c:302
 #, fuzzy
 msgid "    --rcfile <file>       "
 msgstr "      --rcfile <soubor>     "
 
-#: rpm.c:315 rpmqv.c:400
+#: rpm.c:303 rpmqv.c:400
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr "pou¾ijte <soubor> místo /etc/rpmrc a $HOME/.rpmrc"
 
-#: rpm.c:317 rpmqv.c:402
+#: rpm.c:305 rpmqv.c:402
 msgid "display final rpmrc and macro configuration"
 msgstr ""
 
-#: rpm.c:319 rpmqv.c:410
+#: rpm.c:307 rpmqv.c:410
 msgid "be a little more verbose"
 msgstr "o nìco popisnìj¹í re¾im"
 
-#: rpm.c:321 rpmqv.c:412
+#: rpm.c:309 rpmqv.c:412
 msgid "be incredibly verbose (for debugging)"
 msgstr "velmi popisný re¾im (pro odlaïování)"
 
-#: rpm.c:324
+#: rpm.c:312
 #, fuzzy
 msgid "   Install, upgrade and query (with -p) allow URL's to be used in place"
 msgstr ""
 "   instalace, aktualizace a dotazování (s -p) umo¾òují pou¾ití URL-adres ftp"
 
-#: rpm.c:325
+#: rpm.c:313
 msgid "   of file names as well as the following options:"
 msgstr "   místo názvù souborù vèetnì následujících voleb:"
 
-#: rpm.c:326
+#: rpm.c:314
 msgid "      --ftpproxy <host>   "
 msgstr "      --ftpproxy <hostitel> "
 
-#: rpm.c:327 rpmqv.c:419
+#: rpm.c:315 rpmqv.c:419
 msgid "hostname or IP of ftp proxy"
 msgstr "název hostitele èi IP pro ftp-proxy"
 
-#: rpm.c:328
+#: rpm.c:316
 msgid "      --ftpport <port>    "
 msgstr "      --ftpport <port>    "
 
-#: rpm.c:329 rpmqv.c:421
+#: rpm.c:317 rpmqv.c:421
 msgid "port number of ftp server (or proxy)"
 msgstr "èíslo portu serveru ftp (nebo proxy)"
 
-#: rpm.c:330
+#: rpm.c:318
 #, fuzzy
 msgid "      --httpproxy <host>  "
 msgstr "      --ftpproxy <hostitel> "
 
-#: rpm.c:331 rpmqv.c:423
+#: rpm.c:319 rpmqv.c:423
 #, fuzzy
 msgid "hostname or IP of http proxy"
 msgstr "název hostitele èi IP pro ftp-proxy"
 
-#: rpm.c:332
+#: rpm.c:320
 #, fuzzy
 msgid "      --httpport <port>   "
 msgstr "      --ftpport <port>    "
 
-#: rpm.c:333 rpmqv.c:425
+#: rpm.c:321 rpmqv.c:425
 #, fuzzy
 msgid "port number of http server (or proxy)"
 msgstr "èíslo portu serveru ftp (nebo proxy)"
 
-#: rpm.c:337 rpmqv.c:445
+#: rpm.c:325 rpmqv.c:445
 msgid "query mode"
 msgstr "dotazovací re¾im"
 
-#: rpm.c:338 rpm.c:384 rpm.c:409 rpm.c:461 rpm.c:535
+#: rpm.c:326 rpm.c:372 rpm.c:397 rpm.c:449 rpm.c:523
 msgid "      --dbpath <dir>      "
 msgstr "      --dbpath <adr>      "
 
-#: rpm.c:339 rpm.c:385 rpm.c:410 rpm.c:462 rpm.c:536 rpmqv.c:405
+#: rpm.c:327 rpm.c:373 rpm.c:398 rpm.c:450 rpm.c:524 rpmqv.c:405
 msgid "use <dir> as the directory for the database"
 msgstr "pou¾ít <adr> jako adresáø pro databázi"
 
-#: rpm.c:340
+#: rpm.c:328
 msgid "      --queryformat <qfmt>"
 msgstr "      --queryformat <qfmt>"
 
-#: rpm.c:341 rpmqv.c:447
+#: rpm.c:329 rpmqv.c:447
 #, fuzzy
 msgid "use <qfmt> as the header format (implies --info)"
 msgstr "pou¾ít <qfmt> jako hlavièkový formát (implikuje -i)"
 
-#: rpm.c:342 rpm.c:386 rpm.c:444 rpm.c:473
+#: rpm.c:330 rpm.c:374 rpm.c:432 rpm.c:461
 msgid "      --root <dir>        "
 msgstr "      --root <adr>        "
 
-#: rpm.c:343 rpm.c:387 rpm.c:445 rpm.c:474 rpm.c:538 rpmqv.c:407
+#: rpm.c:331 rpm.c:375 rpm.c:433 rpm.c:462 rpm.c:526 rpmqv.c:407
 msgid "use <dir> as the top level directory"
 msgstr "pou¾ít <adr> jako adresáø vrcholové úrovnì"
 
-#: rpm.c:344
+#: rpm.c:332
 msgid "      Package specification options:"
 msgstr "      Volby pro specifikaci balíèku:"
 
-#: rpm.c:346
+#: rpm.c:334
 msgid "query all packages"
 msgstr "dotazovat v¹echny balíèky"
 
-#: rpm.c:347
+#: rpm.c:335
 msgid "        -f <file>+        "
 msgstr "        -f <soubor>+      "
 
-#: rpm.c:348
+#: rpm.c:336
 msgid "query package owning <file>"
 msgstr "dotazy na balíèek vlastnící <soubor>"
 
-#: rpm.c:349
+#: rpm.c:337
 msgid "        -p <packagefile>+ "
 msgstr "        -p <souborbalíku>+  "
 
-#: rpm.c:350
+#: rpm.c:338
 msgid "query (uninstalled) package <packagefile>"
 msgstr "dotazovat (nenainstalovaný) balíèek <souborbalíku>"
 
-#: rpm.c:351
+#: rpm.c:339
 msgid "        --triggeredby <pkg>"
 msgstr "        --triggeredby <balík>"
 
-#: rpm.c:352
+#: rpm.c:340
 msgid "query packages triggered by <pkg>"
 msgstr "dotazy na balíèky aktivované <balíkem>"
 
-#: rpm.c:353
+#: rpm.c:341
 msgid "        --whatprovides <cap>"
 msgstr "        --whatprovides <sch>"
 
-#: rpm.c:354
+#: rpm.c:342
 msgid "query packages which provide <cap> capability"
 msgstr "dotazovat balíèky poskytující schopnost <sch>"
 
-#: rpm.c:355
+#: rpm.c:343
 msgid "        --whatrequires <cap>"
 msgstr "        --whatrequires <sch>"
 
-#: rpm.c:356
+#: rpm.c:344
 msgid "query packages which require <cap> capability"
 msgstr "dotazovat balíèky vy¾adující schopnost <sch>"
 
-#: rpm.c:357
+#: rpm.c:345
 msgid "      Information selection options:"
 msgstr "      Volby pro vybìr informací:"
 
-#: rpm.c:359 rpmqv.c:451
+#: rpm.c:347 rpmqv.c:451
 msgid "display package information"
 msgstr "zobrazit informace o balíèku"
 
-#: rpm.c:361 rpmqv.c:453
+#: rpm.c:349 rpmqv.c:453
 msgid "display the package's change log"
 msgstr "zobrazit protokol o zmìnách balíèku"
 
-#: rpm.c:363 rpmqv.c:455
+#: rpm.c:351 rpmqv.c:455
 msgid "display package file list"
 msgstr "zobrazit seznam souborù balíèkù"
 
-#: rpm.c:365 rpmqv.c:457
+#: rpm.c:353 rpmqv.c:457
 msgid "show file states (implies -l)"
 msgstr "zobrazit stavy souborù (implikuje -l)"
 
-#: rpm.c:367 rpmqv.c:459
+#: rpm.c:355 rpmqv.c:459
 msgid "list only documentation files (implies -l)"
 msgstr "uvést pouze dokumentaèní soubory (implikuje -l)"
 
-#: rpm.c:369 rpmqv.c:461
+#: rpm.c:357 rpmqv.c:461
 msgid "list only configuration files (implies -l)"
 msgstr "uvést pouze konfiguraèní soubory (implikuje -l)"
 
-#: rpm.c:371 rpmqv.c:463
+#: rpm.c:359 rpmqv.c:463
 msgid ""
 "show all verifiable information for each file (must be used with -l, -c, or "
 "-d)"
@@ -602,23 +602,23 @@ msgstr ""
 "zobrazit v¹echny ovìøitelné údaje pro ka¾dý soubor (musí se pou¾ít s -l, -c "
 "nebo -d)"
 
-#: rpm.c:373
+#: rpm.c:361
 msgid "list capabilities package provides"
 msgstr "uvést schopnosti poskytované balíèkem"
 
-#: rpm.c:375
+#: rpm.c:363
 msgid "list package dependencies"
 msgstr "uvést závislosti balíèkù"
 
-#: rpm.c:377
+#: rpm.c:365
 msgid "print the various [un]install scripts"
 msgstr "vytisknout rùzné [de]instalaèní skripty"
 
-#: rpm.c:379
+#: rpm.c:367
 msgid "show the trigger scripts contained in the package"
 msgstr "zobrazit aktivaèní skripty obsa¾ené v balíèku"
 
-#: rpm.c:383 rpmqv.c:474
+#: rpm.c:371 rpmqv.c:474
 msgid ""
 "verify a package installation using the same same package specification "
 "options as -q"
@@ -626,143 +626,143 @@ msgstr ""
 "ovìøit instalaci balíèku pou¾itím stejných voleb pro specifikaci balíèku, "
 "jako pro -q"
 
-#: rpm.c:389 rpm.c:431 rpm.c:466 rpmqv.c:476 rpmqv.c:522 rpmqv.c:556
+#: rpm.c:377 rpm.c:419 rpm.c:454 rpmqv.c:476 rpmqv.c:522 rpmqv.c:556
 msgid "do not verify package dependencies"
 msgstr "neovìøovat závislosti balíèkù"
 
-#: rpm.c:391 rpmqv.c:478
+#: rpm.c:379 rpmqv.c:478
 msgid "do not verify file md5 checksums"
 msgstr "neovìøovat kontrolní souèty souborù md5"
 
-#: rpm.c:393 rpmqv.c:480
+#: rpm.c:381 rpmqv.c:480
 msgid "do not verify file attributes"
 msgstr "neovìøovat atributy souborù"
 
-#: rpm.c:395 rpmqv.c:483
+#: rpm.c:383 rpmqv.c:483
 msgid "list the tags that can be used in a query format"
 msgstr "uvést pøíznaky, které lze pou¾ít v dotazovacím formátu"
 
-#: rpm.c:398
+#: rpm.c:386
 msgid "    --install <packagefile>"
 msgstr "    --install <souborbalíku>"
 
-#: rpm.c:399
+#: rpm.c:387
 msgid "    -i <packagefile>      "
 msgstr "    -i <souborbalíku>     "
 
-#: rpm.c:400 rpmqv.c:497
+#: rpm.c:388 rpmqv.c:497
 msgid "install package"
 msgstr "nainstalovat balíèek"
 
-#: rpm.c:401
+#: rpm.c:389
 #, fuzzy
 msgid "      --excludepath <path>"
 msgstr "      --relocate <starácesta>=<novácesta>"
 
-#: rpm.c:402
+#: rpm.c:390
 #, fuzzy
 msgid "skip files in path <path>"
 msgstr "soubor %s je sdílen\n"
 
-#: rpm.c:403
+#: rpm.c:391
 msgid "      --relocate <oldpath>=<newpath>"
 msgstr "      --relocate <starácesta>=<novácesta>"
 
-#: rpm.c:404 rpmqv.c:534
+#: rpm.c:392 rpmqv.c:534
 msgid "relocate files from <oldpath> to <newpath>"
 msgstr "pøemístit soubory ze <starécesty> na <novoucestu>"
 
-#: rpm.c:406 rpmqv.c:502
+#: rpm.c:394 rpmqv.c:502
 #, fuzzy
 msgid "relocate files in non-relocateable package"
 msgstr "balíèek %s není nainstalován\n"
 
-#: rpm.c:407
+#: rpm.c:395
 msgid "      --prefix <dir>      "
 msgstr "      --prefix <adr>      "
 
-#: rpm.c:408 rpmqv.c:532
+#: rpm.c:396 rpmqv.c:532
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "pøemístit soubory do <adr>, jsou-li pøemístitelné"
 
-#: rpm.c:412 rpmqv.c:504
+#: rpm.c:400 rpmqv.c:504
 msgid "do not install documentation"
 msgstr "neinstalovat dokumentaci"
 
-#: rpm.c:414 rpmqv.c:508
+#: rpm.c:402 rpmqv.c:508
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "zkratka pro --replacepkgs --replacefiles"
 
-#: rpm.c:416 rpmqv.c:510
+#: rpm.c:404 rpmqv.c:510
 msgid "print hash marks as package installs (good with -v)"
 msgstr "bìhem instalace balíèku zobrazit dvojité køí¾ky (dobré s -v)"
 
-#: rpm.c:418 rpmqv.c:499
+#: rpm.c:406 rpmqv.c:499
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "nainstalovat v¹echny soubory; i konfigurace, které by se jinak mohly vynechat"
 
-#: rpm.c:421 rpmqv.c:512
+#: rpm.c:409 rpmqv.c:512
 msgid "don't verify package architecture"
 msgstr "neovìøovat architekturu balíèku"
 
-#: rpm.c:423 rpmqv.c:514
+#: rpm.c:411 rpmqv.c:514
 msgid "don't check disk space before installing"
 msgstr ""
 
-#: rpm.c:425 rpmqv.c:516
+#: rpm.c:413 rpmqv.c:516
 msgid "don't verify package operating system"
 msgstr "neovìøovat operaèní systém balíèku"
 
-#: rpm.c:427 rpmqv.c:518
+#: rpm.c:415 rpmqv.c:518
 msgid "install documentation"
 msgstr "nainstalovat dokumentaci"
 
-#: rpm.c:429 rpm.c:464 rpmqv.c:520 rpmqv.c:554
+#: rpm.c:417 rpm.c:452 rpmqv.c:520 rpmqv.c:554
 msgid "update the database, but do not modify the filesystem"
 msgstr "inovovat databázi, ale neupravovat souborový systém"
 
-#: rpm.c:433 rpm.c:468 rpmqv.c:524 rpmqv.c:558
+#: rpm.c:421 rpm.c:456 rpmqv.c:524 rpmqv.c:558
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "pro vyøe¹ení závislostí nemìnit poøadí instalace balíèkù"
 
-#: rpm.c:435
+#: rpm.c:423
 msgid "don't execute any installation scripts"
 msgstr "nespou¹tìt ¾ádné instalaèní skripty"
 
-#: rpm.c:437 rpm.c:472 rpmqv.c:562
+#: rpm.c:425 rpm.c:460 rpmqv.c:562
 msgid "don't execute any scripts triggered by this package"
 msgstr "nespou¹tìt ¾ádné skripty aktivované tímto balíèkem"
 
-#: rpm.c:439 rpmqv.c:530
+#: rpm.c:427 rpmqv.c:530
 msgid "print percentages as package installs"
 msgstr "bìhem instalace balíèku zobrazit procenta"
 
-#: rpm.c:441 rpmqv.c:536
+#: rpm.c:429 rpmqv.c:536
 msgid "install even if the package replaces installed files"
 msgstr "instalovat, i kdy¾ balíèek nahradí nainstalované soubory"
 
-#: rpm.c:443 rpmqv.c:538
+#: rpm.c:431 rpmqv.c:538
 msgid "reinstall if the package is already present"
 msgstr "pøeinstalovat, i kdy¾ je ji¾ balíèek pøítomen"
 
-#: rpm.c:447 rpmqv.c:540
+#: rpm.c:435 rpmqv.c:540
 msgid "don't install, but tell if it would work or not"
 msgstr "neinstalovat ale sdìlit, zda-li by to fungovalo èi nikoli"
 
-#: rpm.c:450
+#: rpm.c:438
 msgid "    --upgrade <packagefile>"
 msgstr "    --upgrade <souborbalíku>"
 
-#: rpm.c:451
+#: rpm.c:439
 msgid "    -U <packagefile>      "
 msgstr "    -U <souborbalíku>      "
 
-#: rpm.c:452 rpmqv.c:544
+#: rpm.c:440 rpmqv.c:544
 msgid "upgrade package (same options as --install, plus)"
 msgstr "aktualizovat balíèek (stejné mo¾nosti jako --install, plus)"
 
-#: rpm.c:454 rpmqv.c:546
+#: rpm.c:442 rpmqv.c:546
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -770,15 +770,15 @@ msgstr ""
 "aktualizovat na starou verzi balíèku (--force to dìlá pøi aktualizacích "
 "automaticky)"
 
-#: rpm.c:456
+#: rpm.c:444
 msgid "    --erase <package>"
 msgstr "    --erase <balíèek>"
 
-#: rpm.c:458 rpmqv.c:550
+#: rpm.c:446 rpmqv.c:550
 msgid "erase (uninstall) package"
 msgstr "smazat (deinstalovat) balíèek"
 
-#: rpm.c:460 rpmqv.c:552
+#: rpm.c:448 rpmqv.c:552
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -786,104 +786,104 @@ msgstr ""
 "odstranit v¹echny balíèky odpovídající <balíèku> (obvykle se generuje chyba, "
 "specifikuje-li <balíèek> více balíèkù)"
 
-#: rpm.c:470 rpmqv.c:560
+#: rpm.c:458 rpmqv.c:560
 msgid "do not execute any package specific scripts"
 msgstr "nespou¹tìt ¾ádné skripty urèené pro balíèky"
 
-#: rpm.c:476
+#: rpm.c:464
 msgid "    -b<stage> <spec>      "
 msgstr "    -b<etapa> <.spec>     "
 
-#: rpm.c:477
+#: rpm.c:465
 msgid "    -t<stage> <tarball>   "
 msgstr "    -t<etapa> <klubkotar> "
 
-#: rpm.c:478 rpmqv.c:569
+#: rpm.c:466 rpmqv.c:569
 msgid "build package, where <stage> is one of:"
 msgstr "sestavit balíèek, kde <etapa> je jedna z:"
 
-#: rpm.c:480 rpmqv.c:571
+#: rpm.c:468 rpmqv.c:571
 msgid "prep (unpack sources and apply patches)"
 msgstr "pøíprava (rozbalí zdroje a aplikuje záplaty)"
 
-#: rpm.c:482 rpmqv.c:573
+#: rpm.c:470 rpmqv.c:573
 #, c-format
 msgid "list check (do some cursory checks on %files)"
 msgstr "kontrola seznamù (provede zbì¾né kontroly %files)"
 
-#: rpm.c:484 rpmqv.c:575
+#: rpm.c:472 rpmqv.c:575
 msgid "compile (prep and compile)"
 msgstr "kompilace (pøíprava a kompilace)"
 
-#: rpm.c:486 rpmqv.c:577
+#: rpm.c:474 rpmqv.c:577
 msgid "install (prep, compile, install)"
 msgstr "instalace (pøíprava, kompilace a instalace)"
 
-#: rpm.c:488 rpmqv.c:579
+#: rpm.c:476 rpmqv.c:579
 msgid "binary package (prep, compile, install, package)"
 msgstr "binární balíèek (pøíprava, kompilace, instalace, zabalení)"
 
-#: rpm.c:490 rpmqv.c:581
+#: rpm.c:478 rpmqv.c:581
 msgid "bin/src package (prep, compile, install, package)"
 msgstr "balíèek bin/src (pøíprava, kompilace, instalace, zabalení)"
 
-#: lib/poptBT.c:155 rpm.c:492 rpmqv.c:585
+#: lib/poptBT.c:155 rpm.c:480 rpmqv.c:585
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "pøeskoèit pøímo na urèenou etapu (pouze pro c,i)"
 
-#: lib/poptBT.c:145 rpm.c:494 rpmqv.c:587
+#: lib/poptBT.c:145 rpm.c:482 rpmqv.c:587
 msgid "remove build tree when done"
 msgstr "po dokonèení odstranit sestavovací strom"
 
-#: lib/poptBT.c:151 rpm.c:496 rpmqv.c:589
+#: lib/poptBT.c:151 rpm.c:484 rpmqv.c:589
 #, fuzzy
 msgid "remove sources when done"
 msgstr "po dokonèení odstranit zdroje a soubor .spec"
 
-#: rpm.c:498 rpmqv.c:591
+#: rpm.c:486 rpmqv.c:591
 #, fuzzy
 msgid "remove spec file when done"
 msgstr "po dokonèení odstranit zdroje a soubor .spec"
 
-#: rpm.c:500 rpmqv.c:593
+#: rpm.c:488 rpmqv.c:593
 #, fuzzy
 msgid "generate PGP/GPG signature"
 msgstr "generovat podpis PGP"
 
-#: rpm.c:501
+#: rpm.c:489
 msgid "      --buildroot <dir>   "
 msgstr "      --buildroot <adr>   "
 
-#: rpm.c:502 rpmqv.c:595
+#: rpm.c:490 rpmqv.c:595
 msgid "use <dir> as the build root"
 msgstr "pou¾ít <adr> jako sestavovací koøen"
 
-#: rpm.c:503
+#: rpm.c:491
 #, fuzzy
 msgid "      --target=<platform>+"
 msgstr "      --queryformat <qfmt>"
 
-#: rpm.c:504 rpmqv.c:597
+#: rpm.c:492 rpmqv.c:597
 msgid "build the packages for the build targets platform1...platformN."
 msgstr ""
 
-#: rpm.c:506 rpmqv.c:599
+#: rpm.c:494 rpmqv.c:599
 msgid "do not execute any stages"
 msgstr "nespou¹tìt ¾ádné etapy"
 
-#: rpm.c:507
+#: rpm.c:495
 msgid "      --timecheck <secs>  "
 msgstr "      --timecheck <s>     "
 
-#: rpm.c:508
+#: rpm.c:496
 msgid "set the time check to <secs> seconds (0 disables)"
 msgstr "nastavit èasovou kontrolu na <s> sekund (0 ji deaktivuje)"
 
-#: rpm.c:510
+#: rpm.c:498
 msgid "    --rebuild <src_pkg>   "
 msgstr "    --rebuild <zdrojbalík>"
 
-#: rpm.c:511 rpmqv.c:602
+#: rpm.c:499 rpmqv.c:602
 msgid ""
 "install source package, build binary package and remove spec file, sources, "
 "patches, and icons."
@@ -891,66 +891,66 @@ msgstr ""
 "instalovat zdrojový balíèek, sestavit binární balíèek a odstranit soubor "
 ".spec, zdroje, záplaty i ikony."
 
-#: rpm.c:512
+#: rpm.c:500
 msgid "    --recompile <src_pkg> "
 msgstr "    --recompile <zdrojbal>"
 
-#: rpm.c:513 rpmqv.c:604
+#: rpm.c:501 rpmqv.c:604
 msgid "like --rebuild, but don't build any package"
 msgstr "jako --rebuild, ale nesestavovat ¾ádné balíèky"
 
-#: rpm.c:516
+#: rpm.c:504
 msgid "    --resign <pkg>+       "
 msgstr "    --resign <balík>+     "
 
-#: rpm.c:517 rpmqv.c:610
+#: rpm.c:505 rpmqv.c:610
 msgid "sign a package (discard current signature)"
 msgstr "podepsat balíèek (zahodit aktuální podpis)"
 
-#: rpm.c:518
+#: rpm.c:506
 msgid "    --addsign <pkg>+      "
 msgstr "    --addsign <balík>+    "
 
-#: rpm.c:519 rpmqv.c:612
+#: rpm.c:507 rpmqv.c:612
 msgid "add a signature to a package"
 msgstr "pøidat k balíèku podpis"
 
-#: rpm.c:520
+#: rpm.c:508
 #, fuzzy
 msgid "    --checksig <pkg>+"
 msgstr "    --checksig <balík>+   "
 
-#: rpm.c:521
+#: rpm.c:509
 #, fuzzy
 msgid "    -K <pkg>+           "
 msgstr "    --resign <balík>+     "
 
-#: rpm.c:522 rpmqv.c:616
+#: rpm.c:510 rpmqv.c:616
 msgid "verify package signature"
 msgstr "ovìøit podpis balíèku"
 
-#: rpm.c:524 rpmqv.c:618
+#: rpm.c:512 rpmqv.c:618
 msgid "skip any PGP signatures"
 msgstr "vynechat pøípadné podpisy PGP"
 
-#: rpm.c:526 rpmqv.c:620
+#: rpm.c:514 rpmqv.c:620
 #, fuzzy
 msgid "skip any GPG signatures"
 msgstr "vynechat pøípadné podpisy PGP"
 
-#: rpm.c:528 rpmqv.c:622
+#: rpm.c:516 rpmqv.c:622
 msgid "skip any MD5 signatures"
 msgstr "vynechat pøípadné podpisy MD5"
 
-#: rpm.c:532
+#: rpm.c:520
 msgid "make sure a valid database exists"
 msgstr "zajistit, aby existovala platná databáze"
 
-#: rpm.c:534
+#: rpm.c:522
 msgid "rebuild database from existing database"
 msgstr "pøestavit databázi z existující databáze"
 
-#: rpm.c:542 rpmqv.c:485
+#: rpm.c:530 rpmqv.c:485
 msgid ""
 "set the file permissions to those in the package database using the same "
 "package specification options as -q"
@@ -958,7 +958,7 @@ msgstr ""
 "nastavit oprávnìní souborù dle údajù v databázi balíèkù pomocí stejných "
 "voleb pro specifikaci balíèku, jako pro -q"
 
-#: rpm.c:545 rpmqv.c:488
+#: rpm.c:533 rpmqv.c:488
 msgid ""
 "set the file owner and group to those in the package database using the same "
 "package specification options as -q"
@@ -966,143 +966,143 @@ msgstr ""
 "nastavit vlastníka a skupinu souborù dle údajù v databázi balíèkù pomocí "
 "stejných voleb pro specifikaci balíèku, jako pro -q"
 
-#: rpm.c:682 rpm.c:688 rpm.c:695 rpm.c:701 rpm.c:710 rpm.c:732 rpm.c:738
-#: rpm.c:772 rpm.c:780 rpm.c:801 rpm.c:858 rpm.c:866 rpmqv.c:806 rpmqv.c:815
-#: rpmqv.c:821 rpmqv.c:827 rpmqv.c:861 rpmqv.c:868 rpmqv.c:903 rpmqv.c:911
-#: rpmqv.c:917 rpmqv.c:925 rpmqv.c:987
+#: rpm.c:670 rpm.c:676 rpm.c:683 rpm.c:689 rpm.c:698 rpm.c:720 rpm.c:726
+#: rpm.c:760 rpm.c:768 rpm.c:789 rpm.c:846 rpmqv.c:806 rpmqv.c:815 rpmqv.c:821
+#: rpmqv.c:827 rpmqv.c:861 rpmqv.c:868 rpmqv.c:903 rpmqv.c:911 rpmqv.c:917
+#: rpmqv.c:925 rpmqv.c:987
 msgid "only one major mode may be specified"
 msgstr "specifikovat lze jen jeden hlavní re¾im"
 
-#: rpm.c:703 rpmqv.c:808
+#: rpm.c:691 rpmqv.c:808
 msgid "-u and --uninstall are deprecated and no longer work.\n"
 msgstr "-u a --uninstall se neschvalují a ji¾ je nelze pou¾ít.\n"
 
-#: rpm.c:705 rpmqv.c:810
+#: rpm.c:693 rpmqv.c:810
 msgid "Use -e or --erase instead.\n"
 msgstr "Místo nich pou¾ijte -e nebo --erase.\n"
 
-#: rpm.c:745 rpm.c:751 rpm.c:758 rpm.c:765 rpm.c:874 rpmqv.c:874 rpmqv.c:880
+#: rpm.c:733 rpm.c:739 rpm.c:746 rpm.c:753 rpm.c:853 rpmqv.c:874 rpmqv.c:880
 #: rpmqv.c:887 rpmqv.c:894 rpmqv.c:1002
 msgid "one type of query/verify may be performed at a time"
 msgstr "v daném okam¾iku lze provést jeden typ dotazu èi ovìøení"
 
-#: rpm.c:807 rpmqv.c:845
+#: rpm.c:795 rpmqv.c:845
 msgid "relocations must begin with a /"
 msgstr "pøemístìní musejí zaèínat znakem /"
 
-#: rpm.c:809 rpmqv.c:847
+#: rpm.c:797 rpmqv.c:847
 msgid "relocations must contain a ="
 msgstr "pøemístìní musejí obsahovat ="
 
-#: rpm.c:812 rpmqv.c:850
+#: rpm.c:800 rpmqv.c:850
 msgid "relocations must have a / following the ="
 msgstr "pøemístìní musejí mít za znakem = znak /"
 
-#: rpm.c:821 rpmqv.c:834
+#: rpm.c:809 rpmqv.c:834
 #, fuzzy
 msgid "exclude paths must begin with a /"
 msgstr "pøemístìní musejí zaèínat znakem /"
 
-#: rpm.c:830 rpmqv.c:946
+#: rpm.c:818 rpmqv.c:946
 #, fuzzy, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Interní chyba pøi zpracování argumentù :-(\n"
 
-#: rpm.c:880 rpmqv.c:1007
+#: rpm.c:859 rpmqv.c:1007
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "neèekaný zdroj dotazu"
 
-#: rpm.c:883 rpmqv.c:1010
+#: rpm.c:862 rpmqv.c:1010
 #, fuzzy
 msgid "unexpected query format"
 msgstr "neèekaný zdroj dotazu"
 
-#: rpm.c:886 rpmqv.c:1013
+#: rpm.c:865 rpmqv.c:1013
 msgid "unexpected query source"
 msgstr "neèekaný zdroj dotazu"
 
-#: rpm.c:889 rpmqv.c:1033
+#: rpm.c:868 rpmqv.c:1033
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "vynucena mù¾e být jen instalace a aktualizace"
 
-#: rpm.c:892 rpmqv.c:1038
+#: rpm.c:871 rpmqv.c:1038
 msgid "files may only be relocated during package installation"
 msgstr "soubory mohou být pøemístìny jen pøi instalaci balíèkù"
 
-#: rpm.c:895 rpmqv.c:1041
+#: rpm.c:874 rpmqv.c:1041
 msgid "only one of --prefix or --relocate may be used"
 msgstr "pou¾ít lze jen jeden z --prefix nebo --relocate"
 
-#: rpm.c:898 rpmqv.c:1044
+#: rpm.c:877 rpmqv.c:1044
 #, fuzzy
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate se mù¾e pou¾ít jen pøi instalaci balíèkù"
 
-#: rpm.c:901 rpmqv.c:1047
+#: rpm.c:880 rpmqv.c:1047
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix se mù¾e pou¾ít jen pøi instalaci nových balíèkù"
 
-#: rpm.c:904 rpmqv.c:1050
+#: rpm.c:883 rpmqv.c:1050
 msgid "arguments to --prefix must begin with a /"
 msgstr "argumenty pro --prefix musejí zaèínat znakem /"
 
-#: rpm.c:907 rpmqv.c:1053
+#: rpm.c:886 rpmqv.c:1053
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: rpm.c:911 rpmqv.c:1057
+#: rpm.c:890 rpmqv.c:1057
 msgid "--percent may only be specified during package installation"
 msgstr "--percent se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: rpm.c:915 rpmqv.c:1061
+#: rpm.c:894 rpmqv.c:1061
 msgid "--replacefiles may only be specified during package installation"
 msgstr "--replacefiles se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: rpm.c:919 rpmqv.c:1065
+#: rpm.c:898 rpmqv.c:1065
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: rpm.c:923 rpmqv.c:1069
+#: rpm.c:902 rpmqv.c:1069
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: rpm.c:927 rpmqv.c:1073
+#: rpm.c:906 rpmqv.c:1073
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: rpm.c:931 rpmqv.c:1077
+#: rpm.c:910 rpmqv.c:1077
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "specifikovat lze jen jeden z --excludedocs a --includedocs"
 
-#: rpm.c:935 rpmqv.c:1081
+#: rpm.c:914 rpmqv.c:1081
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: rpm.c:939 rpmqv.c:1085
+#: rpm.c:918 rpmqv.c:1085
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: rpm.c:943 rpmqv.c:1089
+#: rpm.c:922 rpmqv.c:1089
 #, fuzzy
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoreos se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: rpm.c:947 rpmqv.c:1093
+#: rpm.c:926 rpmqv.c:1093
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches se mù¾e specifikovat jen pøi mazání balíèkù"
 
-#: rpm.c:951 rpmqv.c:1097
+#: rpm.c:930 rpmqv.c:1097
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles se mù¾e specifikovat jen pøi instalaci balíèkù"
 
-#: rpm.c:955 rpmqv.c:1101
+#: rpm.c:934 rpmqv.c:1101
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb se mù¾e specifikovat jen pøi instalaci nebo mazání balíèkù"
 
-#: rpm.c:960 rpmqv.c:1108
+#: rpm.c:939 rpmqv.c:1108
 msgid ""
 "--noscripts may only be specified during package installation, erasure, and "
 "verification"
@@ -1110,7 +1110,7 @@ msgstr ""
 "--noscripts se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci "
 "balíèkù"
 
-#: rpm.c:964
+#: rpm.c:943
 msgid ""
 "--notriggers may only be specified during package installation, erasure, and "
 "verification"
@@ -1118,7 +1118,7 @@ msgstr ""
 "--notriggers se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci "
 "balíèkù"
 
-#: rpm.c:968 rpmqv.c:1120
+#: rpm.c:947 rpmqv.c:1120
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -1127,7 +1127,7 @@ msgstr ""
 "--nodeps se mù¾e specifikovat jen pøi instalaci, mazání nebo verifikaci "
 "balíèkù"
 
-#: rpm.c:973 rpmqv.c:1125
+#: rpm.c:952 rpmqv.c:1125
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -1135,7 +1135,7 @@ msgstr ""
 "--test se mù¾e specifikovat jen pøi instalaci, mazání nebo sestavování "
 "balíèkù"
 
-#: rpm.c:977 rpmqv.c:1130
+#: rpm.c:956 rpmqv.c:1130
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -1143,102 +1143,102 @@ msgstr ""
 "--root (-r) se mù¾e urèit jen pøi instalaci, mazání, dotazování a opìtných "
 "sestavování databází"
 
-#: rpm.c:989 rpmqv.c:1142
+#: rpm.c:968 rpmqv.c:1142
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenty pro --root (-r) musejí zaèínat znakem /"
 
-#: rpm.c:995 rpmqv.c:1149
+#: rpm.c:974 rpmqv.c:1149
 msgid "--oldpackage may only be used during upgrades"
 msgstr "--oldpackage lze pou¾ít jen pøi aktualizacích"
 
-#: rpm.c:998 rpmqv.c:1154
+#: rpm.c:977 rpmqv.c:1154
 msgid "--nopgp may only be used during signature checking"
 msgstr "--nopgp lze pou¾ít jen pøi kontrolování podpisù"
 
-#: rpm.c:1001 rpmqv.c:1157
+#: rpm.c:980 rpmqv.c:1157
 #, fuzzy
 msgid "--nogpg may only be used during signature checking"
 msgstr "--nopgp lze pou¾ít jen pøi kontrolování podpisù"
 
-#: rpm.c:1004 rpmqv.c:1162
+#: rpm.c:983 rpmqv.c:1162
 #, fuzzy
 msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 "--nopgp se mù¾e pou¾ít jen pøi kontrolování podpisù a verifikaci balíèkù"
 
-#: rpm.c:1015 rpmqv.c:1175
+#: rpm.c:994 rpmqv.c:1175
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpm.c:1020 rpmqv.c:1180
+#: rpm.c:999 rpmqv.c:1180
 #, fuzzy, c-format
 msgid "cannot access file %s\n"
 msgstr "nelze otevøít soubor %s: "
 
-#: rpm.c:1035 rpmqv.c:1196
+#: rpm.c:1014 rpmqv.c:1196
 #, fuzzy
 msgid "pgp not found: "
 msgstr "Soubor nebyl na serveru nalezen"
 
-#: rpm.c:1039 rpmqv.c:1200
+#: rpm.c:1018 rpmqv.c:1200
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpm.c:1041 rpmqv.c:1202
+#: rpm.c:1020 rpmqv.c:1202
 msgid "Pass phrase check failed\n"
 msgstr "Chybná heslová fráze\n"
 
-#: rpm.c:1044 rpmqv.c:1205
+#: rpm.c:1023 rpmqv.c:1205
 msgid "Pass phrase is good.\n"
 msgstr "Heslová fráze je dobrá.\n"
 
-#: rpm.c:1049 rpmqv.c:1210
+#: rpm.c:1028 rpmqv.c:1210
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpm.c:1055 rpmqv.c:1216
+#: rpm.c:1034 rpmqv.c:1216
 msgid "--sign may only be used during package building"
 msgstr "--sign lze pou¾ít jen pøi sestavování balíèkù"
 
-#: rpm.c:1070 rpmqv.c:1232
+#: rpm.c:1049 rpmqv.c:1232
 msgid "exec failed\n"
 msgstr "nelze spustit\n"
 
-#: rpm.c:1089 rpmqv.c:1501
+#: rpm.c:1068 rpmqv.c:1501
 msgid "unexpected arguments to --querytags "
 msgstr "neèekané argumenty pro --querytags "
 
-#: rpm.c:1100 rpmqv.c:1523
+#: rpm.c:1079 rpmqv.c:1523
 msgid "no packages given for signature check"
 msgstr "ke kontrole podpisu nezadány ¾ádné balíèky"
 
-#: rpm.c:1111 rpmqv.c:1534
+#: rpm.c:1090 rpmqv.c:1534
 msgid "no packages given for signing"
 msgstr "k podpisu nezadány ¾ádné balíèky"
 
-#: rpm.c:1127 rpmqv.c:1374
+#: rpm.c:1106 rpmqv.c:1374
 msgid "no packages given for uninstall"
 msgstr "pro deinstalaci nezadány ¾ádné balíèky"
 
-#: rpm.c:1177 rpmqv.c:1424
+#: rpm.c:1156 rpmqv.c:1424
 msgid "no packages given for install"
 msgstr "pro instalaci nezadány ¾ádné balíèky"
 
-#: rpm.c:1200 rpmqv.c:1464
+#: rpm.c:1179 rpmqv.c:1464
 msgid "extra arguments given for query of all packages"
 msgstr "k dotazu na v¹echny balíèky zadány argumenty navíc"
 
-#: rpm.c:1205 rpmqv.c:1469
+#: rpm.c:1184 rpmqv.c:1469
 msgid "no arguments given for query"
 msgstr "k dotazu nezadány ¾ádné argumenty"
 
-#: rpm.c:1222 rpmqv.c:1489
+#: rpm.c:1201 rpmqv.c:1489
 #, fuzzy
 msgid "extra arguments given for verify of all packages"
 msgstr "k dotazu na v¹echny balíèky zadány argumenty navíc"
 
-#: rpm.c:1226 rpmqv.c:1493
+#: rpm.c:1205 rpmqv.c:1493
 msgid "no arguments given for verify"
 msgstr "pro verifikaci nezadány ¾ádné argumenty"
 
