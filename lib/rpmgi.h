@@ -117,7 +117,7 @@ rpmgi rpmgiFree(/*@killref@*/ /*@only@*/ /*@null@*/ rpmgi gi)
  * @return		new general iterator
  */
 /*@only@*/
-rpmgi rpmgiNew(rpmts ts, int tag, /*@only@*/ void *const keyp, size_t keylen)
+rpmgi rpmgiNew(rpmts ts, int tag, void *const keyp, size_t keylen)
 	/*@*/;
 
 const char * rpmgiNext(/*@null@*/ rpmgi gi)

@@ -109,14 +109,23 @@ fprintf(stderr, "*** gi %p\t%p\n", gi, gi->mi);
 	break;
     case RPMGI_ARGLIST:
     case RPMGI_FTSWALK:
-    {   ARGV_t argv = keyp;
+    {   ARGV_t pav = keyp;
+	const char * arg;
 	unsigned flags = keylen;
+	int xx;
 
-	gi->argv = argv;
+	gi->argv = xcalloc(1, sizeof(*gi->argv));
 	gi->argc = 0;
-	if (argv != NULL)
-        while (*argv++ != NULL)
-	   gi->argc++;
+	if (pav != NULL)
+	while ((arg = *pav++) != NULL) {
+	    ARGV_t av = NULL;
+	    int ac;
+
+	    xx = rpmGlob(arg, &ac, &av);
+	    xx = argvAppend(&gi->argv, av);
+	    gi->argc += ac;
+	    av = argvFree(av);
+	}
 	gi->ftsOpts = flags;
 
 if (_rpmgi_debug < 0)
