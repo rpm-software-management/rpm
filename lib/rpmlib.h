@@ -87,6 +87,10 @@ extern const int rpmTagTableSize;
 #define INSTALL_UPGRADE		(1 << 3)
 #define INSTALL_UPGRADETOOLD	(1 << 4)
 #define INSTALL_NODOCS		(1 << 5)
+#define INSTALL_NOSCRIPTS	(1 << 6)
+
+#define UNINSTALL_TEST          (1 << 0)
+#define UNINSTALL_NOSCRIPTS	(1 << 1)
 
 #define VERIFY_NONE             0
 #define VERIFY_MD5              (1 << 0)
