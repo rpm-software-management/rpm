@@ -418,7 +418,7 @@ void *unloadHeader(Header h)
     res = copyHeader(p);
     free(p);
    
-    return p;
+    return res;
 }
 
 /********************************************************************/
