@@ -38,6 +38,8 @@ static void printFileInfo(char * name, unsigned int size, unsigned short mode,
 			  unsigned int mtime, unsigned short rdev,
 			  char * owner, char * group, int uid, int gid,
 			  char * linkto);
+static void formatString(const char * format, const char * str, 
+			 const char * how);
 
 static int queryHeader(Header h, char * chptr) {
     int count = 0;
@@ -125,6 +127,33 @@ static int queryPartial(Header h, char ** chptrptr, int * cntptr,
     *chptrptr = chptr;
 
     return 0;
+}
+
+static void formatString(const char * format, const char * str, 
+			 const char * how) {
+    char * dst;
+    const char * src, * buf;
+
+    if (!strcmp(how, "shescape")) {
+	buf = dst = alloca(strlen(str) * 4 + 3);
+	*dst++ = '\'';
+	for (src = str; *src; src++) {
+	    if (*src == '\'') {
+		*dst++ = '\'';
+		*dst++ = '\\';
+		*dst++ = '\'';
+		*dst++ = '\'';
+	    } else {
+		*dst++ = *src;
+	    }
+	}
+	*dst++ = '\'';
+	*dst = '\0';
+    } else {
+	buf = str;
+    }
+
+    printf(format, buf);
 }
 
 static char * handleFormat(Header h, char * chptr, int * cntptr,
@@ -235,13 +264,13 @@ static char * handleFormat(Header h, char * chptr, int * cntptr,
     switch (type) {
       case RPM_STRING_ARRAY_TYPE:
 	strcat(format, "s");
-	printf(format, ((char **) p)[arrayNum]);
+	formatString(format, ((char **) p)[arrayNum], how);
 	free(p);
 	break;
 
       case RPM_STRING_TYPE:
 	strcat(format, "s");
-	printf(format, p);
+	formatString(format, p, how);
 	break;
 
       case RPM_CHAR_TYPE:

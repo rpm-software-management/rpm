@@ -3,6 +3,8 @@
 	- fixed configure script to assume chown() doesn't follow symlinks
 	  if lchown() isn't available and configure is not being run as root
 	- more header file changes for AIX
+	- added :shescape query format type for strings, which prints strings
+	  which will survive a single level of shell expansion
 
 2.3.11 -> 2.4:
 	- changed RPMNLSDIR directories to and @datadir@ to better

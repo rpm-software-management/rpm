@@ -118,3 +118,6 @@ name after the tag name. Here are some examples:
     rpm -q --queryformat \
 	"[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" \
 	vlock
+
+The :shescape may be used on plain strings to get a string which can pass
+through a single level of shell and give the original string.
