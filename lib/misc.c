@@ -346,14 +346,8 @@ int makeTempFile(char * prefix, char ** fnptr, int * fdptr) {
     ran = rand() % 100000;
     do {
 	sprintf(fn, "%s%s/rpm-tmp.%d", prefix, tmpdir, ran++);
-    } while (!access(fn, X_OK));
-    
-    fd = open(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
-
-    if (fd < 0) {
-	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);
-	return 1;
-    }
+	fd = open(fn, O_CREAT | O_RDWR | O_EXCL, 0700);
+    } while (fd < 0);
 
     if (!stat(fn, &sb) && S_ISLNK(sb.st_mode)) {
 	rpmError(RPMERR_SCRIPT, _("error creating temporary file %s"), fn);

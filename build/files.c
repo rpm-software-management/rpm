@@ -84,7 +84,8 @@ struct FileList {
     int fileListRecsUsed;
 };
 
-static int processPackageFiles(Spec spec, Package pkg, int installSpecialDoc);
+static int processPackageFiles(Spec spec, Package pkg,
+			       int installSpecialDoc, int test);
 static void freeFileList(struct FileListRec *fileList, int count);
 static int compareFileListRecs(const void *ap, const void *bp);
 static int isDoc(struct FileList *fl, char *fileName);
@@ -270,7 +271,7 @@ int processSourceFiles(Spec spec)
     return fl.processingFailed;
 }
 
-int processBinaryFiles(Spec spec, int installSpecialDoc)
+int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 {
     Package pkg;
     int res, rc;
@@ -287,7 +288,7 @@ int processBinaryFiles(Spec spec, int installSpecialDoc)
 	headerGetEntry(pkg->header, RPMTAG_NAME, NULL, (void **)&name, NULL);
 	rpmMessage(RPMMESS_NORMAL, "Processing files: %s\n", name);
 		   
-	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc))) {
+	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test))) {
 	    res = rc;
 	}
 
@@ -300,7 +301,8 @@ int processBinaryFiles(Spec spec, int installSpecialDoc)
     return res;
 }
 
-static int processPackageFiles(Spec spec, Package pkg, int installSpecialDoc)
+static int processPackageFiles(Spec spec, Package pkg,
+			       int installSpecialDoc, int test)
 {
     struct FileList fl;
     char *s, **files, **fp, *fileName;
@@ -459,7 +461,7 @@ static int processPackageFiles(Spec spec, Package pkg, int installSpecialDoc)
     /* Now process special doc, if there is one */
     if (specialDoc) {
 	if (installSpecialDoc) {
-	    doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, 0);
+	    doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, test);
 	}
 
 	/* fl.current now takes on "ownership" of the specialDocAttrRec */

@@ -63,7 +63,8 @@ int buildSpec(Spec spec, int what, int test)
 
 	if ((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY) ||
 	    (what & RPMBUILD_FILECHECK)) {
-	    if ((rc = processBinaryFiles(spec, what & RPMBUILD_INSTALL))) {
+	    if ((rc = processBinaryFiles(spec, what & RPMBUILD_INSTALL,
+					 test))) {
 		return rc;
 	    }
 	}
