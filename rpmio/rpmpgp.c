@@ -4,7 +4,7 @@
  */
 
 #include "system.h"
-#include "rpmpgp.h"
+#include "rpmio_internal.h"
 #include "debug.h"
 
 /*@unchecked@*/
@@ -14,6 +14,7 @@ static int _print = 0;
 /*@unchecked@*/
 /*@null@*/ static struct pgpSig_s * _dig = NULL;
 
+#ifdef	DYING
 /* This is the unarmored RPM-GPG-KEY public key. */
 const char * redhatPubKeyDSA = "\
 mQGiBDfqVDgRBADBKr3Bl6PO8BQ0H8sJoD6p9U7Yyl7pjtZqioviPwXP+DCWd4u8\n\
@@ -82,6 +83,7 @@ Zzd87kFwdf5W1Vd82HIkRzcr6cp33E3IDkRzaQCMVw2me7HePP7+4Ry2q3EeZMbm\n\
 NE++VzkxjikzpRb2+F5nGB2UdsElkgbXinswebiuOwOrocLbz6JFdDsJPcT5gVfi\n\
 z15FuA==\n\
 ";
+#endif	/* DYING */
 
 struct pgpValTbl_s pgpSigTypeTbl[] = {
     { PGPSIGTYPE_BINARY,	"Binary document signature" },
@@ -235,6 +237,19 @@ struct pgpValTbl_s pgpArmorKeyTbl[] = {
     { -1,			"Unknown armor key" }
 };
 
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param p		memory to free
+ * @return		NULL always
+ */
+/*@unused@*/ static inline /*@null@*/ void *
+_free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
+	/*@modifies p @*/
+{
+    if (p != NULL)	free((void *)p);
+    return NULL;
+}
+
 static void pgpPrtNL(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -301,7 +316,7 @@ fprintf(stderr, "*** mbits %u nbits %u nbytes %u t %p[%d] ix %u\n", mbits, nbits
 if (_debug)
 fprintf(stderr, "*** %s %s\n", pre, t);
     mp32nsethex(mpn, t);
-    free(t);
+    t = _free(t);
 if (_debug && _print)
 printf("\t %s ", pre), mp32println(mpn->size, mpn->data);
 }
@@ -1032,6 +1047,45 @@ int pgpPrtPkt(const byte *p)
     return plen+hlen+1;
 }
 
+struct pgpSig_s * pgpNewDig(void)
+{
+    struct pgpSig_s * dig = xcalloc(1, sizeof(*dig));
+    return dig;
+}
+
+struct pgpSig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpSig_s * dig)
+	/*@modifies dig @*/
+{
+    if (dig != NULL) {
+	dig->signature.v3 = _free(dig->signature.v3);
+	dig->pubkey.v3 = _free(dig->pubkey.v3);
+	/*@-branchstate@*/
+	if (dig->md5ctx != NULL)
+	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
+	/*@=branchstate@*/
+	dig->md5ctx = NULL;
+	dig->md5 = _free(dig->md5);
+	/*@-branchstate@*/
+	if (dig->sha1ctx != NULL)
+	    (void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
+	/*@=branchstate@*/
+	dig->sha1ctx = NULL;
+	dig->sha1 = _free(dig->sha1);
+	dig->hash_data = _free(dig->hash_data);
+
+	mp32nfree(&dig->hm);
+	mp32nfree(&dig->r);
+	mp32nfree(&dig->s);
+
+	(void) rsapkFree(&dig->rsa_pk);
+	mp32nfree(&dig->m);
+	mp32nfree(&dig->c);
+	mp32nfree(&dig->rsahm);
+	dig = _free(dig);
+    }
+    return dig;
+}
+
 int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpSig_s * dig, int printing)
 {
     const byte *p;
@@ -1049,3 +1103,125 @@ _dig = dig;
     }
     return 0;
 }
+
+int pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
+{
+    const byte * b = NULL;
+    ssize_t blen;
+    const char * enc = NULL;
+    const char * crcenc = NULL;
+    byte * dec;
+    byte * crcdec;
+    size_t declen;
+    size_t crclen;
+    uint32 crcpkt, crc;
+    const char * armortype = NULL;
+    char * t, * te;
+    int pstate = 0;
+    int ec = 1;	/* XXX assume failure */
+    int rc;
+
+    rc = rpmioSlurp(fn, &b, &blen);
+    if (rc || b == NULL || blen <= 0)
+	goto exit;
+
+    if (pgpIsPkt(b)) {
+#ifdef NOTYET	/* XXX ASCII Pubkeys only, please. */
+	ec = 0;
+#endif
+	goto exit;
+    }
+
+#define	TOKEQ(_s, _tok)	(!strncmp((_s), (_tok), sizeof(_tok)-1))
+
+    for (t = (char *)b; t && *t; t = te) {
+	if ((te = strchr(t, '\n')) == NULL)
+		te = t + strlen(t);
+	else
+		te++;
+
+	switch (pstate) {
+	case 0:
+	    armortype = NULL;
+	    if (!TOKEQ(t, "-----BEGIN PGP "))
+		continue;
+	    t += sizeof("-----BEGIN PGP ")-1;
+
+	    rc = pgpValTok(pgpArmorTbl, t, te);
+	    if (rc < 0)
+		goto exit;
+	    if (rc != PGPARMOR_PUBKEY)	/* XXX ASCII Pubkeys only, please. */
+		continue;
+	    armortype = t;
+
+	    t = te - (sizeof("-----\n")-1);
+	    if (!TOKEQ(t, "-----\n"))
+		continue;
+	    *t = '\0';
+	    pstate++;
+	    /*@switchbreak@*/ break;
+	case 1:
+	    enc = NULL;
+	    rc = pgpValTok(pgpArmorKeyTbl, t, te);
+	    if (rc >= 0)
+		continue;
+	    if (*t != '\n') {
+		pstate = 0;
+		continue;
+	    }
+	    enc = te;		/* Start of encoded packets */
+	    pstate++;
+	    /*@switchbreak@*/ break;
+	case 2:
+	    crcenc = NULL;
+	    if (*t != '=')
+		continue;
+	    *t++ = '\0';	/* Terminate encoded packets */
+	    crcenc = t;		/* Start of encoded crc */
+	    pstate++;
+	    /*@switchbreak@*/ break;
+	case 3:
+	    pstate = 0;
+	    if (!TOKEQ(t, "-----END PGP "))
+		goto exit;
+	    *t = '\0';		/* Terminate encoded crc */
+	    t += sizeof("-----END PGP ")-1;
+
+	    if (armortype == NULL) /* XXX can't happen */
+		continue;
+	    rc = strncmp(t, armortype, strlen(armortype));
+	    if (rc)
+		continue;
+
+	    t = te - (sizeof("-----\n")-1);
+	    if (!TOKEQ(t, "-----\n"))
+		goto exit;
+
+	    if (b64decode(crcenc, (void **)&crcdec, &crclen) != 0)
+		continue;
+	    crcpkt = pgpGrab(crcdec, crclen);
+	    crcdec = _free(crcdec);
+	    if (b64decode(enc, (void **)&dec, &declen) != 0)
+		goto exit;
+	    crc = pgpCRC(dec, declen);
+	    if (crcpkt != crc)
+		goto exit;
+	    b = _free(b);
+	    b = dec;
+	    blen = declen;
+	    ec = 0;
+	    goto exit;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
+	}
+    }
+
+exit:
+    if (ec == 0 && pkt)
+	*pkt = b;
+    else if (b != NULL)
+	b = _free(b);
+    if (pktlen)
+	*pktlen = blen;
+    return rc;
+}
+

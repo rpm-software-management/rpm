@@ -528,6 +528,22 @@ int fdFileno(/*@null@*/ void * cookie)
 }
 /*@=shadow@*/
 
+/**
+ */
+int rpmioSlurp(const char * fn,
+                /*@out@*/ const byte ** bp, /*@out@*/ ssize_t * blenp)
+        /*@globals fileSystem @*/
+        /*@modifies *bp, *blenp, fileSystem @*/;
+
+/**
+ * Check if file esists using stat(2).
+ * @param urlfn		file name (may be URL)
+ * @return		1 if file exists, 0 if not
+ */
+int rpmioFileExists(const char * urlfn)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/;
+
 #ifdef __cplusplus
 }
 #endif

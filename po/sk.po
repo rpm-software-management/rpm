@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-20 16:18-0400\n"
+"POT-Creation-Date: 2001-10-20 18:27-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -2457,7 +2457,7 @@ msgstr "| oèakávené na konci výrazu"
 msgid "(unknown type)"
 msgstr "(neznámy typ)"
 
-#: lib/misc.c:272 lib/misc.c:277 lib/misc.c:283
+#: lib/misc.c:241 lib/misc.c:246 lib/misc.c:252
 #, fuzzy, c-format
 msgid "error creating temporary file %s\n"
 msgstr "chyba pri vytváraní doèasného súboru %s"
@@ -3211,12 +3211,12 @@ msgstr "vykonanie zlyhalo\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/rpmchecksig.c:107 lib/rpmchecksig.c:326
+#: lib/rpmchecksig.c:107 lib/rpmchecksig.c:276
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/rpmchecksig.c:144 lib/rpmchecksig.c:401
+#: lib/rpmchecksig.c:144 lib/rpmchecksig.c:345
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead zlyhalo\n"
@@ -3231,12 +3231,12 @@ msgstr "%s: Nie je mo¾né podpísa» v1.0 RPM\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Nie je mo¾né znovu podpísa» v2.0 RPM\n"
 
-#: lib/rpmchecksig.c:162 lib/rpmchecksig.c:417
+#: lib/rpmchecksig.c:162 lib/rpmchecksig.c:361
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature zlyhalo\n"
 
-#: lib/rpmchecksig.c:166 lib/rpmchecksig.c:422
+#: lib/rpmchecksig.c:166 lib/rpmchecksig.c:366
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Podpis nie je k dispozícii\n"
@@ -3251,32 +3251,32 @@ msgstr "%s: readLead zlyhalo\n"
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmReadSignature zlyhalo\n"
 
-#: lib/rpmchecksig.c:407
+#: lib/rpmchecksig.c:351
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Podpis nie je k dispozícii (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:649
+#: lib/rpmchecksig.c:573
 msgid "NOT OK"
 msgstr "NIE JE V PORIADKU"
 
-#: lib/rpmchecksig.c:650 lib/rpmchecksig.c:664
+#: lib/rpmchecksig.c:574 lib/rpmchecksig.c:588
 msgid " (MISSING KEYS:"
 msgstr " (CHÝBAJÚCE K¥ÚÈE):"
 
-#: lib/rpmchecksig.c:652 lib/rpmchecksig.c:666
+#: lib/rpmchecksig.c:576 lib/rpmchecksig.c:590
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:653 lib/rpmchecksig.c:667
+#: lib/rpmchecksig.c:577 lib/rpmchecksig.c:591
 msgid " (UNTRUSTED KEYS:"
 msgstr " (NEDÔVERUJE SA K¥ÚÈOM: "
 
-#: lib/rpmchecksig.c:655 lib/rpmchecksig.c:669
+#: lib/rpmchecksig.c:579 lib/rpmchecksig.c:593
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:663
+#: lib/rpmchecksig.c:587
 msgid "OK"
 msgstr "V PORIADKU"
 
@@ -3473,125 +3473,125 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie je mo¾né otvori» %s pre èítanie: %s."
 
-#: lib/signature.c:112
+#: lib/signature.c:114
 msgid "file is not regular -- skipping size check\n"
 msgstr "nejde o be¾ný súbor - kontrola veµkosti vynechaná\n"
 
-#: lib/signature.c:121
+#: lib/signature.c:123
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:126
+#: lib/signature.c:128
 #, fuzzy, c-format
 msgid "  Actual size: %12d\n"
 msgstr "Veµkos» podpisu:   %d\n"
 
-#: lib/signature.c:146
+#: lib/signature.c:148
 msgid "No signature\n"
 msgstr "Podpis nie je k dispozícii\n"
 
-#: lib/signature.c:150
+#: lib/signature.c:152
 msgid "Old PGP signature\n"
 msgstr "Starý PGP podpis\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:165
 #, fuzzy
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Starý (iba interný) podpis! Ako ste sa k tomu dostali?!"
 
-#: lib/signature.c:219
+#: lib/signature.c:221
 #, fuzzy, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Veµkos» podpisu:   %d\n"
 
-#: lib/signature.c:282
+#: lib/signature.c:284
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Nie je mo¾né spusti» pgp"
 
-#: lib/signature.c:295
+#: lib/signature.c:297
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp zlyhalo"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:302
+#: lib/signature.c:304
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp sa nepodarilo zapísa» podpis"
 
-#: lib/signature.c:307
+#: lib/signature.c:309
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Veµkos» PGP podpisu: %d\n"
 
-#: lib/signature.c:322 lib/signature.c:409
+#: lib/signature.c:324 lib/signature.c:411
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "nie je mo¾né preèíta» podpis"
 
-#: lib/signature.c:327
+#: lib/signature.c:329
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Preèítaný PGP podpis obsahuje %d bajtov\n"
 
-#: lib/signature.c:369 lib/signature.c:499
+#: lib/signature.c:371 lib/signature.c:501
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "Nie je mo¾né spusti» gpg"
 
-#: lib/signature.c:382
+#: lib/signature.c:384
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg zlyhalo"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:389
+#: lib/signature.c:391
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg sa nepodarilo zapísa» podpis"
 
-#: lib/signature.c:394
+#: lib/signature.c:396
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Veµkos» GPG podpisu: %d\n"
 
-#: lib/signature.c:414
+#: lib/signature.c:416
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Preèítaný GPG podpis obsahuje %d bajtov\n"
 
-#: lib/signature.c:442
+#: lib/signature.c:444
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "Vytvára sa PGP podpis: %d\n"
 
-#: lib/signature.c:448
+#: lib/signature.c:450
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "Vytvára sa PGP podpis: %d\n"
 
-#: lib/signature.c:528
+#: lib/signature.c:530
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "Nie je mo¾né spusti» pgp"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:532 lib/signature.c:585
+#: lib/signature.c:534 lib/signature.c:587
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Chybná ¹pecifikácia %%_signature v makro-súbore.\n"
 
-#: lib/signature.c:565
+#: lib/signature.c:567
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Musíte nastavi» \"%%gpg_name\" vo va¹om makro-súbore"
 
-#: lib/signature.c:577
+#: lib/signature.c:579
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Musíte nastavi» \"%%pgp_name\" vo va¹om makro-súbore"
@@ -3684,11 +3684,11 @@ msgstr "otvára sa databáza s právami 0x%x v %s\n"
 msgid "cannot get %s lock on database\n"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1211
+#: rpmdb/db1.c:576 rpmdb/db3.c:1213
 msgid "exclusive"
 msgstr "výhradný"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1211
+#: rpmdb/db1.c:576 rpmdb/db3.c:1213
 msgid "shared"
 msgstr "zdieµaný"
 
@@ -3707,27 +3707,27 @@ msgstr "odstraòuje sa index súborov pre %s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: rpmdb/db3.c:710
+#: rpmdb/db3.c:712
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: rpmdb/db3.c:775
+#: rpmdb/db3.c:777
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
 
-#: rpmdb/db3.c:988
+#: rpmdb/db3.c:990
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "otvára sa databáza s právami 0x%x v %s\n"
 
-#: rpmdb/db3.c:1209
+#: rpmdb/db3.c:1211
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
 
-#: rpmdb/db3.c:1215
+#: rpmdb/db3.c:1217
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "odstraòuje sa index súborov pre %s\n"
@@ -3752,7 +3752,7 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/falloc.c:153
+#: rpmdb/falloc.c:183
 #, c-format
 msgid ""
 "free list corrupt (%u)- please run\n"
@@ -3821,115 +3821,115 @@ msgstr ""
 "databázy v novom formáte"
 
 #. error
-#: rpmdb/rpmdb.c:1276
+#: rpmdb/rpmdb.c:1277
 #, fuzzy, c-format
 msgid "error(%d) counting packages\n"
 msgstr "chyba pri hµadaní balíka %s\n"
 
-#: rpmdb/rpmdb.c:2055 rpmdb/rpmdb.c:3264
+#: rpmdb/rpmdb.c:2061 rpmdb/rpmdb.c:3276
 #, fuzzy, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "záznam èíslo %d v databáze je chybný -- bol vynechaný"
 
-#: rpmdb/rpmdb.c:2108
+#: rpmdb/rpmdb.c:2114
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2376
+#: rpmdb/rpmdb.c:2384
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "nie je mo¾né preèíta» hlavièku na %d pre vyhµadanie"
 
-#: rpmdb/rpmdb.c:2447
+#: rpmdb/rpmdb.c:2456
 #, fuzzy, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "odstraòuje sa index skupín\n"
 
-#: rpmdb/rpmdb.c:2456
+#: rpmdb/rpmdb.c:2465
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "odstraòuje sa index názvov\n"
 
-#: rpmdb/rpmdb.c:2656
+#: rpmdb/rpmdb.c:2666
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "chyba pri hµadaní balíka %s\n"
 
-#: rpmdb/rpmdb.c:2736
+#: rpmdb/rpmdb.c:2747
 #, fuzzy, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: rpmdb/rpmdb.c:2747
+#: rpmdb/rpmdb.c:2758
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "premenováva sa %s na %s\n"
 
-#: rpmdb/rpmdb.c:3150
+#: rpmdb/rpmdb.c:3162
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3183
+#: rpmdb/rpmdb.c:3195
 msgid "no dbpath has been set"
 msgstr "nebola nastavená ¾iadna dbpath"
 
-#: rpmdb/rpmdb.c:3210
+#: rpmdb/rpmdb.c:3222
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "znovu sa vytvára databáza v adresári %s\n"
 
-#: rpmdb/rpmdb.c:3214
+#: rpmdb/rpmdb.c:3226
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "doèasná databáza %s u¾ existuje"
 
-#: rpmdb/rpmdb.c:3220
+#: rpmdb/rpmdb.c:3232
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: rpmdb/rpmdb.c:3222
+#: rpmdb/rpmdb.c:3234
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: rpmdb/rpmdb.c:3229
+#: rpmdb/rpmdb.c:3241
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "otvára sa stará databáza\n"
 
-#: rpmdb/rpmdb.c:3240
+#: rpmdb/rpmdb.c:3252
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "otvára sa nová databáza\n"
 
-#: rpmdb/rpmdb.c:3304
+#: rpmdb/rpmdb.c:3316
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nie je mo¾né prida» záznam pôvodne na %d"
 
-#: rpmdb/rpmdb.c:3322
+#: rpmdb/rpmdb.c:3334
 #, fuzzy
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "nepodarilo sa znovu vytvori» databázu; zostáva pôvodná\n"
 
-#: rpmdb/rpmdb.c:3330
+#: rpmdb/rpmdb.c:3342
 msgid "failed to replace old database with new database!\n"
 msgstr "nepodarilo sa nahradi» starú databázu novou!\n"
 
-#: rpmdb/rpmdb.c:3332
+#: rpmdb/rpmdb.c:3344
 #, fuzzy, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahradí súbory v %s súbormi z %s kvôli obnove"
 
-#: rpmdb/rpmdb.c:3342
+#: rpmdb/rpmdb.c:3354
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "vytvára sa adresár %s\n"
 
-#: rpmdb/rpmdb.c:3344
+#: rpmdb/rpmdb.c:3356
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "nepodarilo sa odstráni» adresár %s: %s\n"

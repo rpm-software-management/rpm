@@ -876,6 +876,7 @@ typedef enum pgpArmorKey_e {
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern struct pgpValTbl_s pgpArmorKeyTbl[];
 
+#ifdef	DYING
 /**
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
@@ -885,6 +886,7 @@ extern const char * redhatPubKeyDSA;
  */
 /*@observer@*/ /*@unchecked@*/ /*@unused@*/
 extern const char * redhatPubKeyRSA;
+#endif	/* DYING */
 
 /**
  */
@@ -1139,6 +1141,25 @@ int pgpPrtPkt(const byte *p)
 int pgpPrtPkts(const byte *pkts, unsigned int plen, struct pgpSig_s *dig, int printing)
 	/*@globals fileSystem@*/
 	/*@modifies fileSystem @*/;
+
+/**
+ */
+int pgpReadPkts(const char * fn,
+		/*@out@*/ const byte ** pkt, /*@out@*/ size_t * pktlen)
+	/*@globals fileSystem @*/
+	/*@modifies *pkt, *pktlen, fileSystem @*/;
+
+/**
+ */
+/*@only@*/
+struct pgpSig_s * pgpNewDig(void)
+	/*@*/;
+
+/**
+ */
+/*@only@*/ /*@null@*/
+struct pgpSig_s * pgpFreeDig(/*@only@*/ /*@null@*/ struct pgpSig_s * dig)
+	/*@modifies dig @*/;
 
 /**
  */

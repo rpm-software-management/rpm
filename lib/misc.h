@@ -94,15 +94,6 @@ void freeSplitString( /*@only@*/ char ** list)
 }
 
 /**
- * Check if file esists using stat(2).
- * @param urlfn		file name (may be URL)
- * @return		1 if file exists, 0 if not
- */
-int rpmfileexists(const char * urlfn)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem @*/;
-
-/**
  * Like the libc function, but malloc()'s the space needed.
  * @param name		variable name
  * @param value		variable value

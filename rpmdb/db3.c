@@ -85,7 +85,7 @@ struct dbiBStats_s {
 };
 /*@=fielduse@*/
 
-/*@-globuse@*/	/* FIX: rpmError not annotated yet. */
+/*@-globuse -mustmod @*/	/* FIX: rpmError not annotated yet. */
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -107,7 +107,7 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 
     return rc;
 }
-/*@=globuse@*/
+/*@=globuse =mustmod @*/
 
 static int db_fini(dbiIndex dbi, const char * dbhome,
 		/*@null@*/ const char * dbfile,
@@ -339,7 +339,9 @@ static int db3c_del(dbiIndex dbi, DBC * dbcursor, u_int32_t flags)
     if (dbcp) *dbcp = NULL;
     rc = dbcursor->c_dup(dbcursor, dbcp, flags);
     rc = cvtdberr(dbi, "dbcursor->c_dup", rc, _debug);
+    /*@-nullstate @*/ /* FIX: *dbcp can be NULL */
     return rc;
+    /*@=nullstate @*/
 }
 
 static int db3c_get(dbiIndex dbi, DBC * dbcursor,

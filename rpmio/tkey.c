@@ -144,12 +144,13 @@ fprintf(stderr, "=============================== GPG Signature of \"abc\"\n");
 	fprintf(stderr, "==> FAILED: rc %d\n", rc);
 
     {	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	pgpPktSigV3 dsig = dig->signature.v3;
 	const char * digest = NULL;
 	size_t digestlen = 0;
 	const char * txt = "abc";
 	
 	rpmDigestUpdate(ctx, txt, strlen(txt));
-	rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
+	rpmDigestUpdate(ctx, &dsig->sigtype, dsig->hashlen);
 	rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
 
 	mp32nzero(&dig->hm);mp32nsethex(&dig->hm, digest);

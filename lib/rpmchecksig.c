@@ -247,51 +247,6 @@ exit:
 
 /**
  */
-static /*@only@*/ /*@null@*/
-rpmDigest freeDig(/*@only@*/ /*@null@*/ rpmDigest dig)
-	/*@modifies dig @*/
-{
-    if (dig != NULL) {
-	dig->signature.v3 = _free(dig->signature.v3);
-	dig->pubkey.v3 = _free(dig->pubkey.v3);
-	/*@-branchstate@*/
-	if (dig->md5ctx != NULL)
-	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
-	/*@=branchstate@*/
-	dig->md5ctx = NULL;
-	dig->md5 = _free(dig->md5);
-	/*@-branchstate@*/
-	if (dig->sha1ctx != NULL)
-	    (void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
-	/*@=branchstate@*/
-	dig->sha1ctx = NULL;
-	dig->sha1 = _free(dig->sha1);
-	dig->hash_data = _free(dig->hash_data);
-
-	mp32nfree(&dig->hm);
-	mp32nfree(&dig->r);
-	mp32nfree(&dig->s);
-
-	(void) rsapkFree(&dig->rsa_pk);
-	mp32nfree(&dig->m);
-	mp32nfree(&dig->c);
-	mp32nfree(&dig->rsahm);
-	dig = _free(dig);
-    }
-    return dig;
-}
-
-/**
- */
-static /*@only@*/ rpmDigest newDig(void)
-	/*@*/
-{
-    rpmDigest dig = xcalloc(1, sizeof(*dig));
-    return dig;
-}
-
-/**
- */
 static int readFile(FD_t *sfdp, const char **sfnp, rpmDigest dig)
 	/*@globals rpmGlobalMacroContext,
 		fileSystem, internalState @*/
@@ -314,11 +269,6 @@ static int readFile(FD_t *sfdp, const char **sfnp, rpmDigest dig)
 
     while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0)
     {
-#ifdef	DYING
-	/*@-type@*/ /* FIX: cast? */
-	xx = rpmDigestUpdate(dig->sha1ctx, buffer, count);
-	/*@=type@*/
-#endif
 	dig->nbytes += count;
     }
 
@@ -377,12 +327,6 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
     const void * ptr;
     int res = 0;
     int xx;
-#ifdef DYING
-    const char * gpgpk = NULL;
-    unsigned int gpgpklen = 0;
-    const char * pgppk = NULL;
-    unsigned int pgppklen = 0;
-#endif
     rpmDigest dig = NULL;
     rpmRC rc;
 
@@ -424,7 +368,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv)
 	    goto bottom;
 	}
 
-	dig = newDig();
+	dig = pgpNewDig();
 
 	/* Read the file, generating digests. */
 	if (readFile(&fd, &pkgfn, dig)) {
@@ -465,18 +409,8 @@ fprintf(stderr, "========================= Package RSA Signature\n");
 	    }
 	    /*@=nullpass@*/
     /*@=type@*/
-		/* XXX sanity check on tag and signature agreement. */
-#ifdef	DYING
-		/* XXX retrieve by keyid from signature. */
-		if (pgppk == NULL) {
-		    xx = b64decode(redhatPubKeyRSA, (void **)&pgppk, &pgppklen);
-if (rpmIsDebug())
-fprintf(stderr, "========================= Red Hat RSA Public Key\n");
-		    xx = pgpPrtPkts(pgppk, pgppklen, NULL, rpmIsDebug());
-		}
 
-		xx = pgpPrtPkts(pgppk, pgppklen, dig, 0);
-#endif
+		/* XXX sanity check on tag and signature agreement. */
 
 	    {	const char * prefix = "3020300c06082a864886f70d020505000410";
 		unsigned int nbits = 1024;
@@ -515,16 +449,6 @@ fprintf(stderr, "========================= Package DSA Signature\n");
 	    /*@=nullpass@*/
     /*@=type@*/
 		/* XXX sanity check on tag and signature agreement. */
-#ifdef	DYING
-		/* XXX retrieve by keyid from signature. */
-		if (gpgpk == NULL) {
-		    xx = b64decode(redhatPubKeyDSA, (void **)&gpgpk, &gpgpklen);
-if (rpmIsDebug())
-fprintf(stderr, "========================= Red Hat DSA Public Key\n");
-		    xx = pgpPrtPkts(gpgpk, gpgpklen, NULL, rpmIsDebug());
-		}
-		xx = pgpPrtPkts(gpgpk, gpgpklen, dig, 0);
-#endif
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_LEMD5_2:
 	    case RPMSIGTAG_LEMD5_1:
@@ -672,11 +596,11 @@ fprintf(stderr, "========================= Red Hat DSA Public Key\n");
 
     bottom:
 	if (fd)		xx = manageFile(&fd, NULL, 0, 0);
-	dig = freeDig(dig);
+	dig = pgpFreeDig(dig);
     }
     /*@=branchstate@*/
 
-    dig = freeDig(dig);
+    dig = pgpFreeDig(dig);
 
     return res;
 }

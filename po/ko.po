@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-20 16:18-0400\n"
+"POT-Creation-Date: 2001-10-20 18:27-0400\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2394,7 +2394,7 @@ msgstr "표현식의 끝부분에 '|' 가 필요합니다"
 msgid "(unknown type)"
 msgstr "(알 수 없는 유형)"
 
-#: lib/misc.c:272 lib/misc.c:277 lib/misc.c:283
+#: lib/misc.c:241 lib/misc.c:246 lib/misc.c:252
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "임시 파일 %s (을)를 생성하는 도중 오류가 발생했습니다\n"
@@ -3112,12 +3112,12 @@ msgstr "makeTempFile에 실패했습니다\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:107 lib/rpmchecksig.c:326
+#: lib/rpmchecksig.c:107 lib/rpmchecksig.c:276
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:144 lib/rpmchecksig.c:401
+#: lib/rpmchecksig.c:144 lib/rpmchecksig.c:345
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead에 실패했습니다\n"
@@ -3132,12 +3132,12 @@ msgstr "%s: v1.0 RPM은 서명할 수 없습니다\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: v2.0 RPM은 재-서명할 수 없습니다\n"
 
-#: lib/rpmchecksig.c:162 lib/rpmchecksig.c:417
+#: lib/rpmchecksig.c:162 lib/rpmchecksig.c:361
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature에 실패했습니다\n"
 
-#: lib/rpmchecksig.c:166 lib/rpmchecksig.c:422
+#: lib/rpmchecksig.c:166 lib/rpmchecksig.c:366
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 유효한 서명이 없습니다\n"
@@ -3152,32 +3152,32 @@ msgstr "%s: writeLead에 실패했습니다: %s\n"
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:407
+#: lib/rpmchecksig.c:351
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 유효한 서명이 없습니다 (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:649
+#: lib/rpmchecksig.c:573
 msgid "NOT OK"
 msgstr "올바르지 않음"
 
-#: lib/rpmchecksig.c:650 lib/rpmchecksig.c:664
+#: lib/rpmchecksig.c:574 lib/rpmchecksig.c:588
 msgid " (MISSING KEYS:"
 msgstr " (키를 찾을 수 없음:"
 
-#: lib/rpmchecksig.c:652 lib/rpmchecksig.c:666
+#: lib/rpmchecksig.c:576 lib/rpmchecksig.c:590
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:653 lib/rpmchecksig.c:667
+#: lib/rpmchecksig.c:577 lib/rpmchecksig.c:591
 msgid " (UNTRUSTED KEYS:"
 msgstr " (키를 신뢰할 수 없음:"
 
-#: lib/rpmchecksig.c:655 lib/rpmchecksig.c:669
+#: lib/rpmchecksig.c:579 lib/rpmchecksig.c:593
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:663
+#: lib/rpmchecksig.c:587
 msgid "OK"
 msgstr "확인"
 
@@ -3373,115 +3373,115 @@ msgstr "%s (을)를 읽을 수 없습니다, HOME이 너무 큽니다.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "%s (을)를 열 수 없음: %s.\n"
 
-#: lib/signature.c:112
+#: lib/signature.c:114
 msgid "file is not regular -- skipping size check\n"
 msgstr "파일이 올바르지(regular) 않습니다 -- 용량 검사를 생략합니다\n"
 
-#: lib/signature.c:121
+#: lib/signature.c:123
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr "예상(Expected) 용량: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 
-#: lib/signature.c:126
+#: lib/signature.c:128
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr " 실제 용량: %12d\n"
 
-#: lib/signature.c:146
+#: lib/signature.c:148
 msgid "No signature\n"
 msgstr "서명이 없습니다\n"
 
-#: lib/signature.c:150
+#: lib/signature.c:152
 msgid "Old PGP signature\n"
 msgstr "이전 PGP 서명\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:165
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "이전 (내부-용) 서명!  어떻게 얻으셨습니까!?\n"
 
-#: lib/signature.c:219
+#: lib/signature.c:221
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
 
-#: lib/signature.c:282
+#: lib/signature.c:284
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "pgp (%s) (을)를 실행할 수 없습니다\n"
 
-#: lib/signature.c:295
+#: lib/signature.c:297
 msgid "pgp failed\n"
 msgstr "pgp에 실패함\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:302
+#: lib/signature.c:304
 msgid "pgp failed to write signature\n"
 msgstr "pgp 서명을 작성하는데 실패했습니다\n"
 
-#: lib/signature.c:307
+#: lib/signature.c:309
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 서명 용량: %d\n"
 
-#: lib/signature.c:322 lib/signature.c:409
+#: lib/signature.c:324 lib/signature.c:411
 msgid "unable to read the signature\n"
 msgstr "서명을 읽을 수 없습니다\n"
 
-#: lib/signature.c:327
+#: lib/signature.c:329
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "%d 바이트의 PGP 서명을 얻었습니다\n"
 
-#: lib/signature.c:369 lib/signature.c:499
+#: lib/signature.c:371 lib/signature.c:501
 msgid "Couldn't exec gpg\n"
 msgstr "gpg를 실행할 수 없습니다\n"
 
-#: lib/signature.c:382
+#: lib/signature.c:384
 msgid "gpg failed\n"
 msgstr "gpg에 실패함\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:389
+#: lib/signature.c:391
 msgid "gpg failed to write signature\n"
 msgstr "gpg 서명을 작성하는데 실패했습니다\n"
 
-#: lib/signature.c:394
+#: lib/signature.c:396
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 서명 용량: %d\n"
 
-#: lib/signature.c:414
+#: lib/signature.c:416
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "%d 바이트의 GPG 서명을 얻었습니다\n"
 
-#: lib/signature.c:442
+#: lib/signature.c:444
 msgid "Generating signature using PGP.\n"
 msgstr "PGP를 사용하여 서명을 생성합니다.\n"
 
-#: lib/signature.c:448
+#: lib/signature.c:450
 msgid "Generating signature using GPG.\n"
 msgstr "GPG를 사용하여 서명을 생성합니다.\n"
 
-#: lib/signature.c:528
+#: lib/signature.c:530
 msgid "Couldn't exec pgp\n"
 msgstr "pgp를 실행할 수 없습니다\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:532 lib/signature.c:585
+#: lib/signature.c:534 lib/signature.c:587
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "매크로 파일에 부적합한 %%_signature의 내용이 있습니다\n"
 
-#: lib/signature.c:565
+#: lib/signature.c:567
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "매크로 파일에 \"%%_gpg_name\" 을 설정해 주셔야 합니다\n"
 
-#: lib/signature.c:577
+#: lib/signature.c:579
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "매크로 파일에 \"%%_pgp_name\" 을 설정해 주셔야 합니다\n"
@@ -3573,11 +3573,11 @@ msgstr "열린   db 파일    %s 모드 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "잠겨있는 데이터베이스의 %s (을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1211
+#: rpmdb/db1.c:576 rpmdb/db3.c:1213
 msgid "exclusive"
 msgstr "제외함(exclusive)"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1211
+#: rpmdb/db1.c:576 rpmdb/db3.c:1213
 msgid "shared"
 msgstr "공유됨"
 
@@ -3596,27 +3596,27 @@ msgstr "삭제된 db 환경    %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "열린   db 환경    %s/%s\n"
 
-#: rpmdb/db3.c:710
+#: rpmdb/db3.c:712
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "닫힌   db 인덱스  %s/%s\n"
 
-#: rpmdb/db3.c:775
+#: rpmdb/db3.c:777
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "검증된 db 인덱스  %s/%s\n"
 
-#: rpmdb/db3.c:988
+#: rpmdb/db3.c:990
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "열린   db 인덱스  %s/%s %s 모드=0x%x\n"
 
-#: rpmdb/db3.c:1209
+#: rpmdb/db3.c:1211
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "잠겨있는 %2$s/%3$s 의 %1$s (을)를 얻을 수 없습니다\n"
 
-#: rpmdb/db3.c:1215
+#: rpmdb/db3.c:1217
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "잠긴   db 인덱스  %s/%s\n"
@@ -3641,7 +3641,7 @@ msgstr "%s (은)는 너무 크거나 너무 작은 정수(long) 값입니다, 생략합니다\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s (은)는 너무 크거나 너무 작은 정수(int) 값입니다, 생략합니다\n"
 
-#: rpmdb/falloc.c:153
+#: rpmdb/falloc.c:183
 #, c-format
 msgid ""
 "free list corrupt (%u)- please run\n"
@@ -3716,115 +3716,115 @@ msgstr ""
 "려면 --rebuilddb 옵션을 이용하십시요\n"
 
 #. error
-#: rpmdb/rpmdb.c:1276
+#: rpmdb/rpmdb.c:1277
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "패키지의 수를 세는 도중 오류(%d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2055 rpmdb/rpmdb.c:3264
+#: rpmdb/rpmdb.c:2061 rpmdb/rpmdb.c:3276
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "데이터베이스의 레코드 번호 %u (이)가 잘못되었습니다 -- 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2108
+#: rpmdb/rpmdb.c:2114
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr "rpmdb: 손상된 헤더 #%u (이)가 복구(retrieved)되었습니다, 생략합니다.\n"
 
-#: rpmdb/rpmdb.c:2376
+#: rpmdb/rpmdb.c:2384
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 0x%x 의 헤더를 읽을 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:2447
+#: rpmdb/rpmdb.c:2456
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "%2$s 인덱스에서 \"%1$s\" (을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2456
+#: rpmdb/rpmdb.c:2465
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "%2$s 인덱스에서 %1$d 항목들(entries)을 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:2656
+#: rpmdb/rpmdb.c:2666
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "새로운 패키지를 배치하는 도중 오류(%d)가 발생했습니다\n"
 
-#: rpmdb/rpmdb.c:2736
+#: rpmdb/rpmdb.c:2747
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "%2$s 인덱스에 \"%1$s\" (을)를 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:2747
+#: rpmdb/rpmdb.c:2758
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "%2$s 인덱스에 %1$d 항목들(entries)을 추가합니다.\n"
 
-#: rpmdb/rpmdb.c:3150
+#: rpmdb/rpmdb.c:3162
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "db3를 재구축 한 후에 %s (을)를 삭제합니다.\n"
 
-#: rpmdb/rpmdb.c:3183
+#: rpmdb/rpmdb.c:3195
 msgid "no dbpath has been set"
 msgstr "db경로가 설정되어 있지 않습니다"
 
-#: rpmdb/rpmdb.c:3210
+#: rpmdb/rpmdb.c:3222
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "%2$s 에 데이터베이스 %1$s (을)를 재구축 합니다\n"
 
-#: rpmdb/rpmdb.c:3214
+#: rpmdb/rpmdb.c:3226
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "임시 데이터베이스 %s (이)가 이미 존재합니다\n"
 
-#: rpmdb/rpmdb.c:3220
+#: rpmdb/rpmdb.c:3232
 #, c-format
 msgid "creating directory %s\n"
 msgstr "%s 디렉토리를 생성합니다\n"
 
-#: rpmdb/rpmdb.c:3222
+#: rpmdb/rpmdb.c:3234
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "%s 디렉토리를 생성함: %s\n"
 
-#: rpmdb/rpmdb.c:3229
+#: rpmdb/rpmdb.c:3241
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "dbapi %d (을)를 통해 이전 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3240
+#: rpmdb/rpmdb.c:3252
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "dbapi %d (을)를 통해 새로운 데이터베이스를 엽니다\n"
 
-#: rpmdb/rpmdb.c:3304
+#: rpmdb/rpmdb.c:3316
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "%u 에 레코드를 추가할 수 없습니다\n"
 
-#: rpmdb/rpmdb.c:3322
+#: rpmdb/rpmdb.c:3334
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "데이터베이스를 재구축하는데 실패함: 원본 데이터베이스는 그대로 유지됩니다\n"
 
-#: rpmdb/rpmdb.c:3330
+#: rpmdb/rpmdb.c:3342
 msgid "failed to replace old database with new database!\n"
 msgstr "이전 데이터베이스를 새로운 데이터베이스로 교체하는데 실패했습니다!\n"
 
-#: rpmdb/rpmdb.c:3332
+#: rpmdb/rpmdb.c:3344
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "복구하기 위해 $2$s 의 파일을 $1$s 의 파일로 교체합니다"
 
-#: rpmdb/rpmdb.c:3342
+#: rpmdb/rpmdb.c:3354
 #, c-format
 msgid "removing directory %s\n"
 msgstr "%s 디렉토리를 삭제합니다\n"
 
-#: rpmdb/rpmdb.c:3344
+#: rpmdb/rpmdb.c:3356
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"

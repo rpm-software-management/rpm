@@ -51,6 +51,36 @@ static struct FDIO_s fadio_s = {
 FDIO_t fadio = /*@-compmempass@*/ &fadio_s /*@=compmempass@*/ ;
 /* =============================================================== */
 
+/**
+ * pread(2) clone.
+ */
+static
+ssize_t Pread(FD_t fd, void * buf, size_t count, _libio_off_t offset)
+	/*@globals fileSystem @*/
+	/*@modifies fd, *buf, fileSystem @*/
+{
+    if (Fseek(fd, offset, SEEK_SET) < 0)
+	return -1;
+    /*@-sizeoftype@*/
+    return Fread(buf, sizeof(char), count, fd);
+    /*@=sizeoftype@*/
+}
+
+/**
+ * pwrite(2) clone.
+ */
+static
+ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _libio_off_t offset)
+	/*@globals fileSystem @*/
+	/*@modifies fd, fileSystem @*/
+{
+    if (Fseek(fd, offset, SEEK_SET) < 0)
+	return -1;
+    /*@-sizeoftype@*/
+    return Fwrite(buf, sizeof(char), count, fd);
+    /*@=sizeoftype@*/
+}
+
 /* flags are the same as for open(2) - NULL returned on error */
 FD_t fadOpen(const char * path, int flags, mode_t perms)
 {

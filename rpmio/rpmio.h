@@ -302,20 +302,6 @@ int Fcntl(FD_t fd, int op, void *lip)
 	/*@globals fileSystem @*/
 	/*@modifies fd, *lip, fileSystem @*/;
 
-/**
- * pread(2) clone.
- */
-ssize_t Pread(FD_t fd, void * buf, size_t count, _libio_off_t offset)
-	/*@globals fileSystem @*/
-	/*@modifies fd, *buf, fileSystem @*/;
-
-/**
- * pwrite(2) clone.
- */
-ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _libio_off_t offset)
-	/*@globals fileSystem @*/
-	/*@modifies fd, fileSystem @*/;
-
 /*@}*/
 
 /** \ingroup rpmrpc
@@ -575,7 +561,6 @@ int ufdGetFile( /*@killref@*/ FD_t sfd, FD_t tfd)
 	/*@globals fileSystem @*/
 	/*@modifies fd, *bufptr, fileSystem @*/;
 #define	timedRead	ufdio->read
-
 
 /*@-exportlocal@*/
 /**

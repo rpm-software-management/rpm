@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-20 16:18-0400\n"
+"POT-Creation-Date: 2001-10-20 18:27-0400\n"
 
 # , c-format
 #: build.c:37
@@ -2611,7 +2611,7 @@ msgid "(unknown type)"
 msgstr ""
 
 # , c-format
-#: lib/misc.c:272 lib/misc.c:277 lib/misc.c:283
+#: lib/misc.c:241 lib/misc.c:246 lib/misc.c:252
 #, fuzzy, c-format
 msgid "error creating temporary file %s\n"
 msgstr "No consegui abrir: %s\n"
@@ -3404,12 +3404,12 @@ msgid "%s: Fwrite failed: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/rpmchecksig.c:107 lib/rpmchecksig.c:326
+#: lib/rpmchecksig.c:107 lib/rpmchecksig.c:276
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmchecksig.c:144 lib/rpmchecksig.c:401
+#: lib/rpmchecksig.c:144 lib/rpmchecksig.c:345
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
@@ -3424,12 +3424,12 @@ msgstr ""
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:162 lib/rpmchecksig.c:417
+#: lib/rpmchecksig.c:162 lib/rpmchecksig.c:361
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:166 lib/rpmchecksig.c:422
+#: lib/rpmchecksig.c:166 lib/rpmchecksig.c:366
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
@@ -3445,32 +3445,32 @@ msgstr ""
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/rpmchecksig.c:407
+#: lib/rpmchecksig.c:351
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:649
+#: lib/rpmchecksig.c:573
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:650 lib/rpmchecksig.c:664
+#: lib/rpmchecksig.c:574 lib/rpmchecksig.c:588
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:652 lib/rpmchecksig.c:666
+#: lib/rpmchecksig.c:576 lib/rpmchecksig.c:590
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:653 lib/rpmchecksig.c:667
+#: lib/rpmchecksig.c:577 lib/rpmchecksig.c:591
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:655 lib/rpmchecksig.c:669
+#: lib/rpmchecksig.c:579 lib/rpmchecksig.c:593
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:663
+#: lib/rpmchecksig.c:587
 msgid "OK"
 msgstr ""
 
@@ -3688,128 +3688,128 @@ msgstr ""
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "No consegui abrir: %s\n"
 
-#: lib/signature.c:112
+#: lib/signature.c:114
 msgid "file is not regular -- skipping size check\n"
 msgstr ""
 
-#: lib/signature.c:121
+#: lib/signature.c:123
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 
-#: lib/signature.c:126
+#: lib/signature.c:128
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr ""
 
-#: lib/signature.c:146
+#: lib/signature.c:148
 msgid "No signature\n"
 msgstr ""
 
-#: lib/signature.c:150
+#: lib/signature.c:152
 #, fuzzy
 msgid "Old PGP signature\n"
 msgstr "gere assinatura PGP"
 
-#: lib/signature.c:163
+#: lib/signature.c:165
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr ""
 
-#: lib/signature.c:219
+#: lib/signature.c:221
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
 # , c-format
-#: lib/signature.c:282
+#: lib/signature.c:284
 #, fuzzy, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: lib/signature.c:295
+#: lib/signature.c:297
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "Construo falhou.\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:302
+#: lib/signature.c:304
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "gere assinatura PGP"
 
-#: lib/signature.c:307
+#: lib/signature.c:309
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:322 lib/signature.c:409
+#: lib/signature.c:324 lib/signature.c:411
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "gere assinatura PGP"
 
-#: lib/signature.c:327
+#: lib/signature.c:329
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
 # , c-format
-#: lib/signature.c:369 lib/signature.c:499
+#: lib/signature.c:371 lib/signature.c:501
 #, fuzzy
 msgid "Couldn't exec gpg\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: lib/signature.c:382
+#: lib/signature.c:384
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "Construo falhou.\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:389
+#: lib/signature.c:391
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gere assinatura PGP"
 
-#: lib/signature.c:394
+#: lib/signature.c:396
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:414
+#: lib/signature.c:416
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
 
-#: lib/signature.c:442
+#: lib/signature.c:444
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "gere assinatura PGP"
 
-#: lib/signature.c:448
+#: lib/signature.c:450
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "gere assinatura PGP"
 
 # , c-format
-#: lib/signature.c:528
+#: lib/signature.c:530
 #, fuzzy
 msgid "Couldn't exec pgp\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:532 lib/signature.c:585
+#: lib/signature.c:534 lib/signature.c:587
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:565
+#: lib/signature.c:567
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr ""
 
-#: lib/signature.c:577
+#: lib/signature.c:579
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
@@ -3905,11 +3905,11 @@ msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 msgid "cannot get %s lock on database\n"
 msgstr "no foi passado pacote para desinstalao"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1211
+#: rpmdb/db1.c:576 rpmdb/db3.c:1213
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1211
+#: rpmdb/db1.c:576 rpmdb/db3.c:1213
 msgid "shared"
 msgstr ""
 
@@ -3928,27 +3928,27 @@ msgstr ""
 msgid "opening  db environment %s/%s %s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:710
+#: rpmdb/db3.c:712
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:775
+#: rpmdb/db3.c:777
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:988
+#: rpmdb/db3.c:990
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:1209
+#: rpmdb/db3.c:1211
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "no foi passado pacote para desinstalao"
 
-#: rpmdb/db3.c:1215
+#: rpmdb/db3.c:1217
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
@@ -3973,7 +3973,7 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: rpmdb/falloc.c:153
+#: rpmdb/falloc.c:183
 #, c-format
 msgid ""
 "free list corrupt (%u)- please run\n"
@@ -4043,108 +4043,108 @@ msgid ""
 msgstr ""
 
 #. error
-#: rpmdb/rpmdb.c:1276
+#: rpmdb/rpmdb.c:1277
 #, fuzzy, c-format
 msgid "error(%d) counting packages\n"
 msgstr "no foi passado pacote para instalao"
 
-#: rpmdb/rpmdb.c:2055 rpmdb/rpmdb.c:3264
+#: rpmdb/rpmdb.c:2061 rpmdb/rpmdb.c:3276
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2108
+#: rpmdb/rpmdb.c:2114
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2376
+#: rpmdb/rpmdb.c:2384
 #, fuzzy, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "no foi passado pacote para desinstalao"
 
-#: rpmdb/rpmdb.c:2447
+#: rpmdb/rpmdb.c:2456
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:2456
+#: rpmdb/rpmdb.c:2465
 #, fuzzy, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:2656
+#: rpmdb/rpmdb.c:2666
 #, fuzzy, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "no foi passado pacote para instalao"
 
-#: rpmdb/rpmdb.c:2736
+#: rpmdb/rpmdb.c:2747
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:2747
+#: rpmdb/rpmdb.c:2758
 #, fuzzy, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:3150
+#: rpmdb/rpmdb.c:3162
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3183
+#: rpmdb/rpmdb.c:3195
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3210
+#: rpmdb/rpmdb.c:3222
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/rpmdb.c:3214
+#: rpmdb/rpmdb.c:3226
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:3220
+#: rpmdb/rpmdb.c:3232
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:3222
+#: rpmdb/rpmdb.c:3234
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:3229
+#: rpmdb/rpmdb.c:3241
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/rpmdb.c:3240
+#: rpmdb/rpmdb.c:3252
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/rpmdb.c:3304
+#: rpmdb/rpmdb.c:3316
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3322
+#: rpmdb/rpmdb.c:3334
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3330
+#: rpmdb/rpmdb.c:3342
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3332
+#: rpmdb/rpmdb.c:3344
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
@@ -4157,13 +4157,13 @@ msgstr ""
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: rpmdb/rpmdb.c:3342
+#: rpmdb/rpmdb.c:3354
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "RPM verso %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:3344
+#: rpmdb/rpmdb.c:3356
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "No consegui abrir: %s\n"

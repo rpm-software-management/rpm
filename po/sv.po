@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-10-20 16:18-0400\n"
+"POT-Creation-Date: 2001-10-20 18:27-0400\n"
 "PO-Revision-Date: 2001-09-12 14:18+0200\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2384,7 +2384,7 @@ msgstr "| förväntades vid slutet på uttryck"
 msgid "(unknown type)"
 msgstr "(okänd typ)"
 
-#: lib/misc.c:272 lib/misc.c:277 lib/misc.c:283
+#: lib/misc.c:241 lib/misc.c:246 lib/misc.c:252
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr "fel när tämporärfil %s skapades\n"
@@ -3092,12 +3092,12 @@ msgstr "makeTempFile misslyckades\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:107 lib/rpmchecksig.c:326
+#: lib/rpmchecksig.c:107 lib/rpmchecksig.c:276
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:144 lib/rpmchecksig.c:401
+#: lib/rpmchecksig.c:144 lib/rpmchecksig.c:345
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead misslyckades\n"
@@ -3112,12 +3112,12 @@ msgstr "%s: Kan inte signera v1.0 RPM\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Kan inte signera om v2.0 RPM\n"
 
-#: lib/rpmchecksig.c:162 lib/rpmchecksig.c:417
+#: lib/rpmchecksig.c:162 lib/rpmchecksig.c:361
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature misslyckades\n"
 
-#: lib/rpmchecksig.c:166 lib/rpmchecksig.c:422
+#: lib/rpmchecksig.c:166 lib/rpmchecksig.c:366
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen signatur tillgänglig\n"
@@ -3132,32 +3132,32 @@ msgstr "%s: writeLead misslyckades: %s\n"
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:407
+#: lib/rpmchecksig.c:351
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ingen signatur tillgänglig (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:649
+#: lib/rpmchecksig.c:573
 msgid "NOT OK"
 msgstr "EJ OK"
 
-#: lib/rpmchecksig.c:650 lib/rpmchecksig.c:664
+#: lib/rpmchecksig.c:574 lib/rpmchecksig.c:588
 msgid " (MISSING KEYS:"
 msgstr " (SAKNADE NYCKLAR:"
 
-#: lib/rpmchecksig.c:652 lib/rpmchecksig.c:666
+#: lib/rpmchecksig.c:576 lib/rpmchecksig.c:590
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:653 lib/rpmchecksig.c:667
+#: lib/rpmchecksig.c:577 lib/rpmchecksig.c:591
 msgid " (UNTRUSTED KEYS:"
 msgstr " (EJ BETRODDA NYCKLAR:"
 
-#: lib/rpmchecksig.c:655 lib/rpmchecksig.c:669
+#: lib/rpmchecksig.c:579 lib/rpmchecksig.c:593
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:663
+#: lib/rpmchecksig.c:587
 msgid "OK"
 msgstr "OK"
 
@@ -3353,117 +3353,117 @@ msgstr "Kan inte läsa %s, HOME är för stor.\n"
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Kan inte öppna %s för läsning: %s.\n"
 
-#: lib/signature.c:112
+#: lib/signature.c:114
 msgid "file is not regular -- skipping size check\n"
 msgstr "filen är inte en vanlig fil -- hoppar över storlekskontroll\n"
 
-#: lib/signature.c:121
+#: lib/signature.c:123
 #, c-format
 msgid "Expected size: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 msgstr ""
 "Förväntad storlek: %12d = inledning(%d)+signaturer(%d)+utfyllnad(%d)+data(%"
 "d)\n"
 
-#: lib/signature.c:126
+#: lib/signature.c:128
 #, c-format
 msgid "  Actual size: %12d\n"
 msgstr "  Faktisk storlek: %12d\n"
 
-#: lib/signature.c:146
+#: lib/signature.c:148
 msgid "No signature\n"
 msgstr "Ingen signatur\n"
 
-#: lib/signature.c:150
+#: lib/signature.c:152
 msgid "Old PGP signature\n"
 msgstr "Gammal PGP-signatur\n"
 
-#: lib/signature.c:163
+#: lib/signature.c:165
 msgid "Old (internal-only) signature!  How did you get that!?\n"
 msgstr "Gammal (endast intern) signatur!  Hur fick du tag i den!?\n"
 
-#: lib/signature.c:219
+#: lib/signature.c:221
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Signatur: storlek(%d)+utfyllnad(%d)\n"
 
-#: lib/signature.c:282
+#: lib/signature.c:284
 #, c-format
 msgid "Couldn't exec pgp (%s)\n"
 msgstr "Kunde inte köra pgp (%s)\n"
 
-#: lib/signature.c:295
+#: lib/signature.c:297
 msgid "pgp failed\n"
 msgstr "pgp misslyckades\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:302
+#: lib/signature.c:304
 msgid "pgp failed to write signature\n"
 msgstr "pgp misslyckades att skriva en signatur\n"
 
-#: lib/signature.c:307
+#: lib/signature.c:309
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP signaturstorlek: %d\n"
 
-#: lib/signature.c:322 lib/signature.c:409
+#: lib/signature.c:324 lib/signature.c:411
 msgid "unable to read the signature\n"
 msgstr "kan inte läsa signaturen\n"
 
-#: lib/signature.c:327
+#: lib/signature.c:329
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Fick %d byte PGP-signatur\n"
 
-#: lib/signature.c:369 lib/signature.c:499
+#: lib/signature.c:371 lib/signature.c:501
 msgid "Couldn't exec gpg\n"
 msgstr "Kunde inte köra gpg\n"
 
-#: lib/signature.c:382
+#: lib/signature.c:384
 msgid "gpg failed\n"
 msgstr "gpg misslyckades\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:389
+#: lib/signature.c:391
 msgid "gpg failed to write signature\n"
 msgstr "gpg kunde inte skriva signatur\n"
 
-#: lib/signature.c:394
+#: lib/signature.c:396
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG-signaturstorlek: %d\n"
 
-#: lib/signature.c:414
+#: lib/signature.c:416
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Fick %d byte GPG-signatur\n"
 
-#: lib/signature.c:442
+#: lib/signature.c:444
 msgid "Generating signature using PGP.\n"
 msgstr "Genererar signatur med PGP.\n"
 
-#: lib/signature.c:448
+#: lib/signature.c:450
 msgid "Generating signature using GPG.\n"
 msgstr "Genererar signatur med GPG.\n"
 
-#: lib/signature.c:528
+#: lib/signature.c:530
 msgid "Couldn't exec pgp\n"
 msgstr "Kunde inte köra pgp\n"
 
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:532 lib/signature.c:585
+#: lib/signature.c:534 lib/signature.c:587
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Felaktig %%_signature-spec i makrofil\n"
 
-#: lib/signature.c:565
+#: lib/signature.c:567
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Du måste sätta \"%%_gpg_name\" i din makrofil\n"
 
-#: lib/signature.c:577
+#: lib/signature.c:579
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil\n"
@@ -3553,11 +3553,11 @@ msgstr "öppnar db-fil          %s rättighet 0x%x\n"
 msgid "cannot get %s lock on database\n"
 msgstr "kan inte få %s lås på databas\n"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1211
+#: rpmdb/db1.c:576 rpmdb/db3.c:1213
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: rpmdb/db1.c:576 rpmdb/db3.c:1211
+#: rpmdb/db1.c:576 rpmdb/db3.c:1213
 msgid "shared"
 msgstr "delat"
 
@@ -3576,27 +3576,27 @@ msgstr "tog bort    db-miljö %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "öppnar      db-miljö %s/%s %s\n"
 
-#: rpmdb/db3.c:710
+#: rpmdb/db3.c:712
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "stängde     db-index %s/%s\n"
 
-#: rpmdb/db3.c:775
+#: rpmdb/db3.c:777
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "verifierade db-index %s/%s\n"
 
-#: rpmdb/db3.c:988
+#: rpmdb/db3.c:990
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "öppnar      db-index %s/%s %s rättighet=0x%x\n"
 
-#: rpmdb/db3.c:1209
+#: rpmdb/db3.c:1211
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:1215
+#: rpmdb/db3.c:1217
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste       db-index %s/%s\n"
@@ -3621,7 +3621,7 @@ msgstr "%s har för stort eller för litet \"long\"-värde, hoppar över\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har för stort eller för litet heltalsvärde, hoppar över\n"
 
-#: rpmdb/falloc.c:153
+#: rpmdb/falloc.c:183
 #, c-format
 msgid ""
 "free list corrupt (%u)- please run\n"
@@ -3692,114 +3692,114 @@ msgstr ""
 "i nytt format\n"
 
 #. error
-#: rpmdb/rpmdb.c:1276
+#: rpmdb/rpmdb.c:1277
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr "fel(%d) när paket räknades\n"
 
-#: rpmdb/rpmdb.c:2055 rpmdb/rpmdb.c:3264
+#: rpmdb/rpmdb.c:2061 rpmdb/rpmdb.c:3276
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr "post nummer %u i databasen är felaktig -- hoppar över.\n"
 
-#: rpmdb/rpmdb.c:2108
+#: rpmdb/rpmdb.c:2114
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr "rpmdb: skadad huvudinstans #%u hämtad, hoppar över.\n"
 
-#: rpmdb/rpmdb.c:2376
+#: rpmdb/rpmdb.c:2384
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan inte läsa huvud vid 0x%x\n"
 
-#: rpmdb/rpmdb.c:2447
+#: rpmdb/rpmdb.c:2456
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr "tar bort \"%s\" från %s-indexet.\n"
 
-#: rpmdb/rpmdb.c:2456
+#: rpmdb/rpmdb.c:2465
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr "tar bort %d poster från %s-indexet.\n"
 
-#: rpmdb/rpmdb.c:2656
+#: rpmdb/rpmdb.c:2666
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fel(%d) vid allokering av ny paketinstans\n"
 
-#: rpmdb/rpmdb.c:2736
+#: rpmdb/rpmdb.c:2747
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr "lägger till \"%s\" till %s-indexet.\n"
 
-#: rpmdb/rpmdb.c:2747
+#: rpmdb/rpmdb.c:2758
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr "lägger till %d poster till %s-indexet.\n"
 
-#: rpmdb/rpmdb.c:3150
+#: rpmdb/rpmdb.c:3162
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr "tar bort %s efter lyckad db3-ombyggnad.\n"
 
-#: rpmdb/rpmdb.c:3183
+#: rpmdb/rpmdb.c:3195
 msgid "no dbpath has been set"
 msgstr "ingen dbpath har satts"
 
-#: rpmdb/rpmdb.c:3210
+#: rpmdb/rpmdb.c:3222
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "bygger om databas %s till %s\n"
 
-#: rpmdb/rpmdb.c:3214
+#: rpmdb/rpmdb.c:3226
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "tillfällig databas %s existerar redan\n"
 
-#: rpmdb/rpmdb.c:3220
+#: rpmdb/rpmdb.c:3232
 #, c-format
 msgid "creating directory %s\n"
 msgstr "skapar katalog %s\n"
 
-#: rpmdb/rpmdb.c:3222
+#: rpmdb/rpmdb.c:3234
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr "skapar katalog %s: %s\n"
 
-#: rpmdb/rpmdb.c:3229
+#: rpmdb/rpmdb.c:3241
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "öppnar gammal databas med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3240
+#: rpmdb/rpmdb.c:3252
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "öppnar ny databas med dbapi %d\n"
 
-#: rpmdb/rpmdb.c:3304
+#: rpmdb/rpmdb.c:3316
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kan inte lägga till post ursprungligen vid %u\n"
 
-#: rpmdb/rpmdb.c:3322
+#: rpmdb/rpmdb.c:3334
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunde inte bygga om databasen: orginaldatabasen finns kvar\n"
 
-#: rpmdb/rpmdb.c:3330
+#: rpmdb/rpmdb.c:3342
 msgid "failed to replace old database with new database!\n"
 msgstr "kunde inte ersätta gammal databas med ny databas!\n"
 
-#: rpmdb/rpmdb.c:3332
+#: rpmdb/rpmdb.c:3344
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "byt ut filer i %s med filer från %s för att återställa"
 
-#: rpmdb/rpmdb.c:3342
+#: rpmdb/rpmdb.c:3354
 #, c-format
 msgid "removing directory %s\n"
 msgstr "tar bort katalog %s\n"
 
-#: rpmdb/rpmdb.c:3344
+#: rpmdb/rpmdb.c:3356
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunde inte ta bort katalogen %s: %s\n"

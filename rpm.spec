@@ -527,3 +527,4 @@ fi
 - beecrypt is at least as good as pgp/gpg on verify, pulling the plug.
 - add :base64 and :armor format extensions, dump binary tags in hex.
 - proof-of-concept pubkey retrieval from RPM-{PGP,GPG}-KEY.
+- stupid macros to configure public key file paths.

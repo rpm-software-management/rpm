@@ -3076,23 +3076,87 @@ int Fcntl(FD_t fd, int op, void *lip)
 /* Helper routines that may be generally useful.
  */
 
-/* XXX falloc.c: analogues to pread(3)/pwrite(3). */
-ssize_t Pread(FD_t fd, void * buf, size_t count, _libio_off_t offset)
+int rpmioSlurp(const char * fn, const byte ** bp, ssize_t * blenp)
 {
-    if (Fseek(fd, offset, SEEK_SET) < 0)
-	return -1;
-    /*@-sizeoftype@*/
-    return Fread(buf, sizeof(char), count, fd);
-    /*@=sizeoftype@*/
+    static ssize_t blenmax = (8 * BUFSIZ);
+    ssize_t blen = 0;
+    byte * b = NULL;
+    ssize_t size;
+    FD_t fd;
+    int rc = 0;
+
+    fd = Fopen(fn, "r.ufdio");
+    if (fd == NULL || Ferror(fd)) {
+	rc = 2;
+	goto exit;
+    }
+
+    size = fdSize(fd);
+    blen = (size >= 0 ? size : blenmax);
+    /*@-branchstate@*/
+    if (blen) {
+	int nb;
+	b = xmalloc(blen+1);
+	b[0] = '\0';
+	nb = Fread(b, sizeof(*b), blen, fd);
+	if (Ferror(fd) || (size > 0 && nb != blen)) {
+	    rc = 1;
+	    goto exit;
+	}
+	if (blen == blenmax && nb < blen) {
+	    blen = nb;
+	    b = xrealloc(b, blen+1);
+	}
+	b[blen] = '\0';
+    }
+    /*@=branchstate@*/
+
+exit:
+    if (fd) (void) Fclose(fd);
+	
+    if (rc) {
+	if (b) free(b);
+	b = NULL;
+	blen = 0;
+    }
+
+    if (bp) *bp = b;
+    else if (b) free(b);
+
+    if (blenp) *blenp = blen;
+
+    return rc;
 }
 
-ssize_t Pwrite(FD_t fd, const void * buf, size_t count, _libio_off_t offset)
+int rpmioFileExists(const char * urlfn)
 {
-    if (Fseek(fd, offset, SEEK_SET) < 0)
-	return -1;
-    /*@-sizeoftype@*/
-    return Fwrite(buf, sizeof(char), count, fd);
-    /*@=sizeoftype@*/
+    const char *fn;
+    int urltype = urlPath(urlfn, &fn);
+    struct stat buf;
+
+    /*@-branchstate@*/
+    if (*fn == '\0') fn = "/";
+    /*@=branchstate@*/
+    switch (urltype) {
+    case URL_IS_FTP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_HTTP:	/* XXX WRONG WRONG WRONG */
+    case URL_IS_PATH:
+    case URL_IS_UNKNOWN:
+	if (Stat(fn, &buf)) {
+	    switch(errno) {
+	    case ENOENT:
+	    case EINVAL:
+		return 0;
+	    }
+	}
+	break;
+    case URL_IS_DASH:
+    default:
+	return 0;
+	/*@notreached@*/ break;
+    }
+
+    return 1;
 }
 
 static struct FDIO_s fpio_s = {
