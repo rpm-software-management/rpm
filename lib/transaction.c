@@ -242,7 +242,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	skipFiles(fi, flags & RPMTRANS_FLAG_NODOCS);
 
 	fi->type = ADDED;
-        fi->fps = alloca(fi->fc * sizeof(*fi->fps));
+        fi->fps = malloc(fi->fc * sizeof(*fi->fps));
 	fi->ap = alp;
 	fi->replaced = NULL;
     }
@@ -286,7 +286,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	/* Note that as FA_UNKNOWN = 0, this does the right thing */
 	fi->actions = calloc(sizeof(*fi->actions), fi->fc);
-        fi->fps = alloca(fi->fc * sizeof(*fi->fps));
+        fi->fps = malloc(fi->fc * sizeof(*fi->fps));
     }
 
     NOTIFY((NULL, RPMCALLBACK_TRANS_STOP, 4, ts->numRemovedPackages,
@@ -390,6 +390,7 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 	    if (fi->type == ADDED) {
 		free(fi->fmd5s); fi->fmd5s = NULL;
 		free(fi->flinks); fi->flinks = NULL;
+		free(fi->fps); fi->fps = NULL;
 	    }
 	}
     }
