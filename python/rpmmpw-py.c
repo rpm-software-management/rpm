@@ -24,11 +24,6 @@
 #define	BITS_TO_DIGITS(_b)	(((_b) + SHIFT - 1)/SHIFT)
 #define	DIGITS_TO_BITS(_d)	((_d) * SHIFT)
 
-#define	MP_ROUND_B2W(_b)	MP_BITS_TO_WORDS((_b) + MP_WBITS - 1)
-
-#define	MPW_SIZE(_a)	(_a)->n.size
-#define	MPW_DATA(_a)	(_a)->n.data
-
 /*@unchecked@*/
 static int _ie = 0x44332211;
 /*@unchecked@*/
@@ -450,7 +445,7 @@ mpw_format(mpwObject * z, size_t base, int addL)
     char * tcp = prefix;
     int sign;
 
-    if (z == NULL || !is_mpw(z)) {
+    if (z == NULL || !mpw_Check(z)) {
 	PyErr_BadInternalCall();
 	return NULL;
     }
@@ -824,14 +819,153 @@ fprintf(stderr, "*** pbits %d xbits %d nsize %d size %d\n", pbits, xbits, nsize,
 
 /* ---------- */
 
+mpwObject *
+mpw_New(int ob_size)
+	/*@*/
+{
+    size_t size = ABS(ob_size);
+    mpwObject * z = PyObject_NEW_VAR(mpwObject, &mpw_Type, size);
+
+    if (z == NULL)
+	return NULL;
+
+    z->ob_size = ob_size;
+
+    if (size > 0)
+	memset(&z->data, 0, size * sizeof(*z->data));
+
+    return z;
+}
+
+static mpwObject *
+mpw_FromLong(long ival)
+	/*@*/
+{
+    mpwObject * z = mpw_New(1);
+
+    if (z == NULL)
+	return NULL;
+
+    if (ival >= 0) {
+	z->data[0] = (mpw) ival;
+    } else {
+	z->ob_size = -z->ob_size;
+	z->data[0] = (mpw) -ival;
+    }
+
+    return z;
+}
+
+static mpwObject *
+mpw_FromUnsignedLong(unsigned long ival)
+	/*@*/
+{
+    mpwObject * z = mpw_New(1);
+
+    if (z == NULL)
+	return NULL;
+
+    z->data[0] = (mpw) ival;
+
+    return z;
+}
+
+static mpwObject *
+mpw_FromDouble(double dval)
+{
+    mpwObject * z = mpw_New(1);
+
+    if (z == NULL)
+	return NULL;
+
+    z->data[0] = (mpw) dval;
+
+    return z;
+}
+
+static mpwObject *
+mpw_FromHEX(const char * hex)
+	/*@*/
+{
+    size_t len = strlen(hex);
+    size_t size = MP_NIBBLES_TO_WORDS(len + MP_WNIBBLES - 1);
+    mpwObject * z = mpw_New(size);
+
+    if (z != NULL && size > 0)
+	hs2ip(MPW_DATA(z), size, hex, len);
+
+    return z;
+}
+
+mpwObject *
+mpw_FromMPW(size_t size, mpw* data)
+{
+    mpwObject * z = mpw_New(size);
+
+    if (z == NULL)
+	return NULL;
+
+    if (size > 0)
+	memcpy(&z->data, data, size * sizeof(*z->data));
+
+    return z;
+}
+
+static mpwObject *
+mpw_FromLongObject(PyLongObject *lo)
+	/*@*/
+{
+    mpwObject * z;
+    int lsize = ABS(lo->ob_size);
+    int lbits = DIGITS_TO_BITS(lsize);
+    size_t zsize = MP_BITS_TO_WORDS(lbits) + 1;
+    mpw* zdata;
+    unsigned char * zb;
+    size_t nzb;
+    int is_littleendian = 0;
+    int is_signed = 1;
+
+    z = mpw_New(zsize);
+    if (z == NULL)
+	return NULL;
+
+    zdata = MPW_DATA(z);
+    zb = (unsigned char *) zdata;
+    nzb = MP_WORDS_TO_BYTES(zsize);
+
+    /* Grab long as big-endian signed octets. */
+    if (_PyLong_AsByteArray(lo, zb, nzb, is_littleendian, is_signed)) {
+	Py_DECREF(z);
+	return NULL;
+    }
+
+    /* Endian swap zdata's mpw elements. */
+    if (IS_LITTLE_ENDIAN()) {
+	mpw w = 0;
+	int zx = 0;
+	while (nzb) {
+	    w <<= 8;
+	    w |= *zb++;
+	    nzb--;
+	    if ((nzb % MP_WBYTES) == 0) {
+		zdata[zx++] = w;
+		w = 0;
+	    }
+	}
+    }
+
+    return z;
+}
+
+/* ---------- */
+
 static void
 mpw_dealloc(mpwObject * s)
 	/*@modifies s @*/
 {
 if (_mpw_debug < -1)
-fprintf(stderr, "*** mpw_dealloc(%p)\n", s);
+fprintf(stderr, "*** mpw_dealloc(%p[%s])\n", s, lbl(s));
 
-    mpnfree(&s->n);
     PyObject_Del(s);
 }
 
@@ -879,6 +1013,7 @@ fprintf(stderr, "*** mpw_str(%p): \"%s\"\n", a, PyString_AS_STRING(so));
     return so;
 }
 
+#ifdef	DYING
 /** \ingroup py_c
  */
 static int mpw_init(mpwObject * z, PyObject *args, PyObject *kwds)
@@ -933,7 +1068,7 @@ static int mpw_init(mpwObject * z, PyObject *args, PyObject *kwds)
 	const unsigned char * hex = PyString_AsString(o);
 	/* XXX TODO: check for hex. */
 	mpnsethex(&z->n, hex);
-    } else if (is_mpw(o)) {
+    } else if (mpw_Check(o)) {
 	mpwObject *a = (mpwObject *)o;
 	mpncopy(&z->n, &a->n);
     } else {
@@ -946,6 +1081,7 @@ fprintf(stderr, "*** mpw_init(%p[%s],%p[%s],%p[%s]):\t", z, lbl(z), args, lbl(ar
 
     return 0;
 }
+#endif
 
 /** \ingroup py_c
  */
@@ -954,44 +1090,7 @@ static void mpw_free(/*@only@*/ mpwObject * s)
 {
 if (_mpw_debug)
 fprintf(stderr, "*** mpw_free(%p[%s])\n", s, lbl(s));
-    mpnfree(&s->n);
     PyObject_Del(s);
-}
-
-/** \ingroup py_c
- */
-static PyObject * mpw_alloc(PyTypeObject * subtype, int nitems)
-	/*@*/
-{
-    PyObject * ns = PyType_GenericAlloc(subtype, nitems);
-
-if (_mpw_debug)
-fprintf(stderr, "*** mpw_alloc(%p[%s},%d) ret %p[%s]\n", subtype, lbl(subtype), nitems, ns, lbl(ns));
-    return (PyObject *) ns;
-}
-
-static PyObject *
-mpw_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
-	/*@*/
-{
-    PyObject * ns = (PyObject *) PyObject_New(mpwObject, &mpw_Type);
-
-    if (ns != NULL)
-	mpnzero(&((mpwObject *)ns)->n);
-
-if (_mpw_debug < -1)
-fprintf(stderr, "*** mpw_new(%p[%s],%p[%s],%p[%s]) ret %p[%s]\n", subtype, lbl(subtype), args, lbl(args), kwds, lbl(kwds), ns, lbl(ns));
-
-    return ns;
-}
-
-mpwObject * mpw_New(void)
-	/*@*/
-{
-    mpwObject * ns = PyObject_New(mpwObject, &mpw_Type);
-
-    mpnzero(&ns->n);
-    return ns;
 }
 
 /** \ingroup py_c
@@ -1001,23 +1100,69 @@ static mpwObject *
 mpw_i2mpw(PyObject * o)
 	/*@modifies o @*/
 {
-    if (is_mpw(o)) {
+    if (mpw_Check(o)) {
 	Py_INCREF(o);
 	return (mpwObject *)o;
     }
-    if (PyInt_Check(o) || PyLong_Check(o)) {
-	mpwObject * ns = PyObject_New(mpwObject, &mpw_Type);
-	PyObject * args = PyTuple_New(1);
-
-	mpnzero(&((mpwObject *)ns)->n);
-	(void) PyTuple_SetItem(args, 0, o);
-	mpw_init(ns, args, NULL);
-	Py_DECREF(args);
-	return ns;
-    }
+    if (PyInt_Check(o))
+	return mpw_FromLong(PyInt_AsLong(o));
+    else if (PyLong_Check(o))
+	return mpw_FromLongObject((PyLongObject *)o);
+    else if (PyFloat_Check(o))
+	return mpw_FromDouble(PyFloat_AsDouble(o));
+    else if (PyString_Check(o))
+	return mpw_FromHEX(PyString_AS_STRING(o));
 
     PyErr_SetString(PyExc_TypeError, "number coercion (to mpwObject) failed");
     return NULL;
+}
+
+static PyObject *
+mpw_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+	/*@*/
+{
+    mpwObject *z;
+
+    if (type != &mpw_Type) {
+	mpwObject *tz;
+	size_t size;
+
+	assert(PyType_IsSubtype(type, &mpw_Type));
+	tz = (mpwObject *)mpw_new(&mpw_Type, args, kwds);
+	if (tz == NULL)
+	    return NULL;
+
+	size = ABS(tz->ob_size);
+	z = (mpwObject *) type->tp_alloc(type, size);
+	if (z == NULL)
+	    return NULL;
+
+	z->ob_size = tz->ob_size;
+	if (size > 0)
+	    memcpy(&z->data, &tz->data, size * sizeof(*z->data));
+	Py_DECREF(tz);
+    } else {
+	PyObject * x = NULL;
+	int base = -909;
+	static char *kwlist[] = {"x", "base", 0};
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "|Oi:mpw", kwlist, &x, &base))
+	    return NULL;
+
+	if (x != NULL) {
+	    if (mpw_Check(x)) {
+		z = (mpwObject *)x;
+		z = mpw_FromMPW(MPW_SIZE(z), MPW_DATA(z));
+	    } else
+		z = mpw_i2mpw(x);
+	} else
+	    z = mpw_FromLong(0);
+    }
+
+if (_mpw_debug < -1)
+fprintf(stderr, "*** mpw_new(%p[%s],%p[%s],%p[%s])\t", type, lbl(type), args, lbl(args), kwds, lbl(kwds)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
+
+    return (PyObject *)z;
 }
 
 /** \ingroup py_c
@@ -1027,30 +1172,29 @@ static PyObject *
 mpw_ops1(const char *fname, char op, mpwObject *x)
         /*@*/
 {
-    size_t xsize = MPW_SIZE(x);
-    mpw* xdata = MPW_DATA(x);
-    mpwObject * z = mpw_New();
-    mpbarrett b;
+    mpwObject * z = NULL;
+    size_t xsize;
+    mpw* xdata;
 
-    mpbzero(&b);
-    if (x == NULL || z == NULL)
+    if (x == NULL)
 	goto exit;
+
+    xsize = MPW_SIZE(x);
+    xdata = MPW_DATA(x);
 
 if (_mpw_debug < 0)
 prtmpw("a", x);
 
     switch (op) {
     default:
-	Py_DECREF(z);
-	z = NULL;
 	goto exit;
 	/*@notreached@*/ break;
     case '~':
-	mpninit(&z->n, xsize, xdata);
+	z = mpw_FromMPW(xsize, xdata);
 	mpnot(MPW_SIZE(z), MPW_DATA(z));
 	break;
     case '-':
-	mpninit(&z->n, xsize, xdata);
+	z = mpw_FromMPW(xsize, xdata);
 	mpneg(MPW_SIZE(z), MPW_DATA(z));
 	break;
     }
@@ -1059,7 +1203,6 @@ if (_mpw_debug < 0)
 fprintf(stderr, "*** mpw_%s %p[%d]\t", fname, MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
 
 exit:
-    mpbfree(&b);
     Py_XDECREF(x);
     return (PyObject *)z;
 }
@@ -1071,18 +1214,23 @@ static PyObject *
 mpw_ops2(const char *fname, char op, mpwObject *x, mpwObject *m)
         /*@*/
 {
-    size_t xsize = MPW_SIZE(x);
-    mpw* xdata = MPW_DATA(x);
-    size_t msize = MPW_SIZE(m);
-    mpw* mdata = MPW_DATA(m);
-    mpwObject * z = mpw_New();
+    mpwObject * z = NULL;
+    size_t xsize;
+    mpw* xdata;
+    size_t msize;
+    mpw* mdata;
     mpbarrett b;
     mpw* wksp;
     int carry;
 
     mpbzero(&b);
-    if (x == NULL || m == NULL || z == NULL)
+    if (x == NULL || m == NULL)
 	goto exit;
+
+    xsize = MPW_SIZE(x);
+    xdata = MPW_DATA(x);
+    msize = MPW_SIZE(m);
+    mdata = MPW_DATA(m);
 
 if (_mpw_debug < 0) {
 prtmpw("a", x);
@@ -1091,16 +1239,14 @@ prtmpw("b", m);
 
     switch (op) {
     default:
-	Py_DECREF(z);
-	z = NULL;
 	goto exit;
 	/*@notreached@*/ break;
     case '+':
-	mpninit(&z->n, xsize, xdata);
+	z = mpw_FromMPW(xsize, xdata);
 	carry = mpaddx(MPW_SIZE(z), MPW_DATA(z), msize, mdata);
 	break;
     case '-':
-	mpninit(&z->n, xsize, xdata);
+	z = mpw_FromMPW(xsize, xdata);
 	carry = mpsubx(MPW_SIZE(z), MPW_DATA(z), msize, mdata);
 	break;
     case '*':
@@ -1112,7 +1258,7 @@ prtmpw("b", m);
 	znorm = zsize - MP_ROUND_B2W(mpbitcnt(zsize, zdata));
 	zsize -= znorm;
 	zdata += znorm;
-	mpnset(&z->n, zsize, zdata);
+	z = mpw_FromMPW(zsize, zdata);
     }	break;
     case '/':
     {	size_t asize = xsize;
@@ -1147,7 +1293,7 @@ prtmpw("b", m);
 	    zdata += znorm;
 	}
 
-	mpnset(&z->n, zsize, zdata);
+	z = mpw_FromMPW(zsize, zdata);
     }	break;
     case '%':
     {	size_t bsize = msize;
@@ -1163,7 +1309,7 @@ prtmpw("b", m);
 	wksp = alloca((bsize+1) * sizeof(*wksp));
 
 	mpnmod(zdata, xsize, xdata, bsize, bdata, wksp);
-	mpnset(&z->n, zsize, zdata);
+	z = mpw_FromMPW(zsize, zdata);
     }	break;
     case '<':
     {	size_t bnorm = msize - MP_ROUND_B2W(mpbitcnt(msize, mdata));
@@ -1173,7 +1319,7 @@ prtmpw("b", m);
 
 	if (bsize == 1)
 	    count = bdata[0];
-	mpninit(&z->n, xsize, xdata);
+	z = mpw_FromMPW(xsize, xdata);
 	mplshift(MPW_SIZE(z), MPW_DATA(z), count);
     }	break;
     case '>':
@@ -1184,33 +1330,33 @@ prtmpw("b", m);
 
 	if (bsize == 1)
 	    count = bdata[0];
-	mpninit(&z->n, xsize, xdata);
+	z = mpw_FromMPW(xsize, xdata);
 	mprshift(MPW_SIZE(z), MPW_DATA(z), count);
     }	break;
     case '&':
 	if (xsize <= msize) {
-	    mpninit(&z->n, xsize, xdata);
+	    z = mpw_FromMPW(xsize, xdata);
 	    mpand(MPW_SIZE(z), MPW_DATA(z), mdata + (msize - xsize));
 	} else {
-	    mpninit(&z->n, msize, mdata);
+	    z = mpw_FromMPW(msize, mdata);
 	    mpand(MPW_SIZE(z), MPW_DATA(z), xdata + (xsize - msize));
 	}
 	break;
     case '|':
 	if (xsize <= msize) {
-	    mpninit(&z->n, xsize, xdata);
+	    z = mpw_FromMPW(xsize, xdata);
 	    mpor(MPW_SIZE(z), MPW_DATA(z), mdata + (msize - xsize));
 	} else {
-	    mpninit(&z->n, msize, mdata);
+	    z = mpw_FromMPW(msize, mdata);
 	    mpor(MPW_SIZE(z), MPW_DATA(z), xdata + (xsize - msize));
 	}
 	break;
     case '^':
 	if (xsize <= msize) {
-	    mpninit(&z->n, xsize, xdata);
+	    z = mpw_FromMPW(xsize, xdata);
 	    mpxor(MPW_SIZE(z), MPW_DATA(z), mdata + (msize - xsize));
 	} else {
-	    mpninit(&z->n, msize, mdata);
+	    z = mpw_FromMPW(msize, mdata);
 	    mpxor(MPW_SIZE(z), MPW_DATA(z), xdata + (xsize - msize));
 	}
 	break;
@@ -1218,30 +1364,35 @@ prtmpw("b", m);
     {	size_t bnorm = msize - MP_ROUND_B2W(mpbitcnt(msize, mdata));
 	size_t bsize = msize - bnorm;
 	mpw* bdata = mdata + bnorm;
-	mpnpow_w(&z->n, xsize, xdata, bsize, bdata);
+	mpnumber zn;
+
+	mpnzero(&zn);
+	mpnpow_w(&zn, xsize, xdata, bsize, bdata);
+	z = mpw_FromMPW(zn.size, zn.data);
+	mpnfree(&zn);
     }	break;
     case 'G':
 	wksp = alloca((xsize) * sizeof(*wksp));
-	mpnsize(&z->n, msize);
+	z = mpw_New(msize);
 	mpgcd_w(xsize, xdata, mdata, MPW_DATA(z), wksp);
 	break;
     case 'I':
 	wksp = alloca(6*(msize+1)*sizeof(*wksp));
 	mpbset(&b, msize, mdata);
-	mpnsize(&z->n, msize);
+	z = mpw_New(msize);
 	mpbinv_w(&b, xsize, xdata, MPW_DATA(z), wksp);
 	break;
     case 'R':
     {	rngObject * r = ((rngObject *)x);
 	wksp = alloca(msize*sizeof(*wksp));
 	mpbset(&b, msize, mdata);
-	mpnsize(&z->n, msize);
+	z = mpw_New(msize);
 	mpbrnd_w(&b, &r->rngc, MPW_DATA(z), wksp);
     }	break;
     case 'S':
 	wksp = alloca((4*msize+2)*sizeof(*wksp));
 	mpbset(&b, msize, mdata);
-	mpnsize(&z->n, msize);
+	z = mpw_New(msize);
 	mpbsqrmod_w(&b, xsize, xdata, MPW_DATA(z), wksp);
 	break;
     }
@@ -1264,20 +1415,20 @@ mpw_ops3(const char *fname, char op,
 		mpwObject *x, mpwObject *y, mpwObject *m)
         /*@*/
 {
-    size_t xsize = MPW_SIZE(x);
-    mpw* xdata = MPW_DATA(x);
-    size_t ysize = MPW_SIZE(y);
-    mpw* ydata = MPW_DATA(y);
-    size_t msize = MPW_SIZE(m);
-    mpw* mdata = MPW_DATA(m);
-    mpwObject * z = mpw_New();
-    mpbarrett b;
+    mpwObject * z = NULL;
+    size_t xsize;
+    mpw* xdata;
+    size_t ysize;
+    mpw* ydata;
+    size_t msize;
+    mpw* mdata;
     size_t zsize;
     mpw* zdata;
+    mpbarrett b;
     mpw* wksp;
 
     mpbzero(&b);
-    if (x == NULL || y == NULL || m == NULL || z == NULL)
+    if (x == NULL || y == NULL || m == NULL)
 	goto exit;
 
 if (_mpw_debug < 0) {
@@ -1285,6 +1436,13 @@ prtmpw("a", x);
 prtmpw("b", y);
 prtmpw("c", m);
 }
+
+    xsize = MPW_SIZE(x);
+    xdata = MPW_DATA(x);
+    ysize = MPW_SIZE(y);
+    ydata = MPW_DATA(y);
+    msize = MPW_SIZE(m);
+    mdata = MPW_DATA(m);
 
     mpbset(&b, msize, mdata);
 
@@ -1296,8 +1454,6 @@ prtmpw("c", m);
     case '/':
     case '%':
     default:
-	Py_DECREF(z);
-	z = NULL;
 	goto exit;
 	/*@notreached@*/ break;
     case '+':
@@ -1318,7 +1474,7 @@ prtmpw("c", m);
 	break;
     }
 
-    mpnset(&z->n, zsize, zdata);
+    z = mpw_FromMPW(zsize, zdata);
 
 if (_mpw_debug < 0)
 fprintf(stderr, "*** mpw_%s %p[%d]\t", fname, MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
@@ -1567,15 +1723,6 @@ mpw_divmod(mpwObject * a, mpwObject * b)
 	return NULL;
     }
 
-    if ((z = PyTuple_New(2)) == NULL
-     || (q = mpw_New()) == NULL
-     || (r = mpw_New()) == NULL) {
-	Py_XDECREF(z);
-	Py_XDECREF(q);
-	Py_XDECREF(r);
-	return NULL;
-    }
-
     if (anorm < asize) {
 	asize -= anorm;
 	adata += anorm;
@@ -1597,7 +1744,9 @@ fprintf(stderr, "    z %p[%d]:\t", zdata, zsize), mpfprintln(stderr, zsize, zdat
 }
 
     zsize -= bsize;
-    mpnset(&r->n, bsize, zdata+zsize);
+    r = mpw_FromMPW(bsize, zdata+zsize);
+    if (r == NULL)
+	return NULL;
 
     znorm = mpsize(zsize, zdata);
     znorm--;	/* XXX hack to preserve positive integer. */
@@ -1605,16 +1754,26 @@ fprintf(stderr, "    z %p[%d]:\t", zdata, zsize), mpfprintln(stderr, zsize, zdat
 	zsize -= znorm;
 	zdata += znorm;
     }
-    mpnset(&q->n, zsize, zdata);
+    q = mpw_FromMPW(zsize, zdata);
+    if (q == NULL) {
+	Py_DECREF(r);
+	return NULL;
+    }
 
 if (_mpw_debug) {
 prtmpw("q", q);
 prtmpw("r", r);
 fprintf(stderr, "*** mpw_divmod(%p,%p)\n", a, b);
 }
+    if ((z = PyTuple_New(2)) == NULL) {
+	Py_DECREF(q);
+	Py_DECREF(r);
+	return NULL;
+    }
 
     (void) PyTuple_SetItem(z, 0, (PyObject *)q);
     (void) PyTuple_SetItem(z, 1, (PyObject *)r);
+
     return (PyObject *)z;
 }
 
@@ -1665,10 +1824,11 @@ mpw_absolute(mpwObject * a)
 	return (PyObject *)a;
     }
 
-    if ((z = mpw_New()) != NULL) {
-	mpninit(&z->n, asize, adata);
-	mpneg(MPW_SIZE(z), MPW_DATA(z));
-    }
+    z = mpw_FromMPW(asize, adata);
+    if (z == NULL)
+	return NULL;
+
+    mpneg(MPW_SIZE(z), MPW_DATA(z));
 
 if (_mpw_debug)
 fprintf(stderr, "*** mpw_absolute(%p):\t", a), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
@@ -1737,45 +1897,23 @@ static int
 mpw_coerce(PyObject ** pv, PyObject ** pw)
 	/*@modifies *pv, *pw @*/
 {
-    size_t words = 0;
-    long l = 0;
 
 if (_mpw_debug)
 fprintf(stderr, "*** mpw_coerce(%p[%s],%p[%s])\n", pv, lbl(*pv), pw, lbl(*pw));
 
-    if (is_mpw(*pw)) {
+    if (mpw_Check(*pw))
 	Py_INCREF(*pw);
-    } else if (PyInt_Check(*pw)) {
-	l = PyInt_AsLong(*pw);
-	words = sizeof(l)/sizeof(words);
-    } else if (PyLong_Check(*pw)) {
-	l = PyLong_AsLong(*pw);
-	words = sizeof(l)/sizeof(words);
-    } else if (PyFloat_Check(*pw)) {
-	double d = PyFloat_AsDouble(*pw);
-	/* XXX TODO: check for overflow/underflow. */
-	l = (long) (d + 0.5);
-	words = sizeof(l)/sizeof(words);
-    } else {
+    else if (PyInt_Check(*pw))
+	*pw = (PyObject *) mpw_FromLong(PyInt_AsLong(*pw));
+    else if (PyLong_Check(*pw))
+	*pw = (PyObject *) mpw_FromLongObject((PyLongObject *)(*pw));
+    else if (PyFloat_Check(*pw))
+	*pw = (PyObject *) mpw_FromDouble(PyFloat_AsDouble(*pw));
+    else if (PyString_Check(*pw))
+	*pw = (PyObject *) mpw_FromHEX(PyString_AS_STRING(*pw));
+    else {
 	PyErr_SetString(PyExc_TypeError, "non-numeric coercion failed (mpw_coerce)");
 	return 1;
-    }
-
-    if (words > 0) {
-	mpwObject * z = mpw_New();
-	mpnsize(&z->n, words);
-	switch (words) {
-	case 2:
-/*@-shiftimplementation @*/
-	    z->n.data[0] = (l >> 32) & 0xffffffff;
-/*@=shiftimplementation @*/
-	    z->n.data[1] = (l      ) & 0xffffffff;
-	    break;
-	case 1:
-	    z->n.data[0] = (l      ) & 0xffffffff;
-	    break;
-	}
-	(*pw) = (PyObject *) z;
     }
 
     Py_INCREF(*pv);
@@ -1938,7 +2076,7 @@ PyTypeObject mpw_Type = {
 	0,				/* ob_size */
 	"rpm.mpw",			/* tp_name */
 	sizeof(mpwObject) - sizeof(mpw),/* tp_basicsize */
-	0,				/* tp_itemsize */
+	sizeof(mpw),			/* tp_itemsize */
 	/* methods */
 	(destructor) mpw_dealloc,	/* tp_dealloc */
 	0,				/* tp_print */
@@ -1955,29 +2093,28 @@ PyTypeObject mpw_Type = {
 	(getattrofunc) mpw_getattro,	/* tp_getattro */
 	(setattrofunc) mpw_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,		/* tp_flags */
+	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_CHECKTYPES |
+		Py_TPFLAGS_BASETYPE,	/* tp_flags */
 	mpw_doc,			/* tp_doc */
-#if Py_TPFLAGS_HAVE_ITER
-	(traverseproc)0,		/* tp_traverse */
-	(inquiry)0,			/* tp_clear */
-	(richcmpfunc)0,			/* tp_richcompare */
+	0,				/* tp_traverse */
+	0,				/* tp_clear */
+	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc)0,			/* tp_iter */
-	(iternextfunc)0,		/* tp_iternext */
+	0,				/* tp_iter */
+	0,				/* tp_iternext */
 	mpw_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
 	0,				/* tp_base */
-	(PyObject *)0,			/* tp_dict */
-	(descrgetfunc)0,		/* tp_descr_get */
-	(descrsetfunc)0,		/* tp_descr_set */
+	0,				/* tp_dict */
+	0,				/* tp_descr_get */
+	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
-	(initproc) mpw_init,		/* tp_init */
-	(allocfunc) mpw_alloc,		/* tp_alloc */
+	0,				/* tp_init */
+	0,				/* tp_alloc */
 	(newfunc) mpw_new,		/* tp_new */
 	(destructor) mpw_free,		/* tp_free */
-	(inquiry) 0,			/* tp_is_gc */
-#endif
+	0,				/* tp_is_gc */
 };
 /*@=fullinitblock@*/
 

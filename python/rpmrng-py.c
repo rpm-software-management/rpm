@@ -156,10 +156,10 @@ rng_Seed(rngObject * s, PyObject * args)
 
     if (!PyArg_ParseTuple(args, "O:Seed", &o)) return NULL;
 
-    if (!is_mpw(o) || (z = (mpwObject*)o)->n.size > 0)
+    if (!mpw_Check(o) || MPW_SIZE(z = (mpwObject*)o) > 0)
 	return NULL;
 
-    rc->rng->seed(rc->param, (byte*) z->n.data, z->n.size);
+    rc->rng->seed(rc->param, (byte*) MPW_DATA(z), MPW_SIZE(z));
 
 if (_rng_debug < 0)
 fprintf(stderr, "*** rng_Seed(%p)\n", s);
@@ -182,28 +182,26 @@ rng_Next(rngObject * s, PyObject * args)
     if (!PyArg_ParseTuple(args, "|O:Next", &o)) return NULL;
 
     if (o) {
-	if (is_mpw(o) && (z = (mpwObject*)o)->n.size > 0) {
+	if (mpw_Check(o) && MPW_SIZE(z = (mpwObject*)o) > 0) {
 	    b = alloca(sizeof(*b));
 	    mpbzero(b);
 	    /* XXX z probably needs normalization here. */
-	    mpbset(b, z->n.size, z->n.data);
+	    mpbset(b, MPW_SIZE(z), MPW_DATA(z));
 	} else
 	    ;	/* XXX error? */
     }
 
-    z = mpw_New();
     if (b == NULL || b->size == 0 || b->modl == NULL) {
-	mpw val;
-	rc->rng->next(rc->param, (byte*) &val, sizeof(val));
-	mpnsetw(&z->n, val);
+	z = mpw_New(1);
+	rc->rng->next(rc->param, (byte*) MPW_DATA(z), sizeof(*MPW_DATA(z)));
     } else {
-	mpw* wksp = alloca(b->size*sizeof(*wksp));
-	mpnsize(&z->n, b->size);
-	mpbrnd_w(b, rc, z->n.data, wksp);
+	mpw* wksp = alloca(b->size * sizeof(*wksp));
+	z = mpw_New(b->size);
+	mpbrnd_w(b, rc, MPW_DATA(z), wksp);
     }
 
 if (_rng_debug)
-fprintf(stderr, "*** rng_Next(%p) %p[%d]\t", s, z->n.data, z->n.size), mpfprintln(stderr, z->n.size, z->n.data);
+fprintf(stderr, "*** rng_Next(%p) %p[%d]\t", s, MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
 
     return (PyObject *)z;
 }
@@ -218,28 +216,29 @@ rng_Prime(rngObject * s, PyObject * args)
     unsigned pbits = 160;
     int trials = -1;
     size_t psize;
+    mpbarrett* b;
+    mpw *temp;
     mpwObject *z;
 
     if (!PyArg_ParseTuple(args, "|ii:Prime", &pbits, &trials)) return NULL;
 
-    psize = MP_BITS_TO_WORDS(pbits + MP_WBITS - 1);
-    if((z = mpw_New()) != NULL) {
-	mpbarrett* b = alloca(sizeof(*b));
-	mpw *temp = alloca((8*psize+2) * sizeof(*temp));
+    psize = MP_ROUND_B2W(pbits);
+    temp = alloca((8*psize+2) * sizeof(*temp));
 
-	mpbzero(b);
-	if (trials <= 2)
-	    trials = mpptrials(pbits);
+    b = alloca(sizeof(*b));
+    mpbzero(b);
+
+    if (trials <= 2)
+	trials = mpptrials(pbits);
 #if 1
-	mpprnd_w(b, rc, pbits, trials, (const mpnumber*) 0, temp);
+    mpprnd_w(b, rc, pbits, trials, (const mpnumber*) 0, temp);
 #else
-	mpprndsafe_w(b, rc, pbits, trials, temp);
+    mpprndsafe_w(b, rc, pbits, trials, temp);
 #endif
-	mpnset(&z->n, b->size, b->modl);
 
-if (_rng_debug)
-fprintf(stderr, "*** rng_Prime(%p) %p[%d]\t", s, z->n.data, z->n.size), mpfprintln(stderr, z->n.size, z->n.data);
-    }
+    z = mpw_FromMPW(b->size, b->modl);
+if (z != NULL && _rng_debug)
+fprintf(stderr, "*** rng_Prime(%p) %p[%d]\t", s, MPW_DATA(z), MPW_SIZE(z)), mpfprintln(stderr, MPW_SIZE(z), MPW_DATA(z));
 
     return (PyObject *)z;
 }

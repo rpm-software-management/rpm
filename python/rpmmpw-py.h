@@ -11,8 +11,7 @@
  */
 typedef struct mpwObject_s {
     PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
-    mpnumber n;
+    int ob_size;
     mpw data[1];
 } mpwObject;
 
@@ -21,11 +20,22 @@ typedef struct mpwObject_s {
 /*@unchecked@*/
 extern PyTypeObject mpw_Type;
 
-#define is_mpw(o)	((o)->ob_type == &mpw_Type)
+#define	mpw_Check(_o)		PyObject_TypeCheck((_o), &mpw_Type)
+#define mpw_CheckExact(_o)	((_o)->ob_type == &mpw_Type)
+
+#define	MP_ROUND_B2W(_b)	MP_BITS_TO_WORDS((_b) + MP_WBITS - 1)
+
+#define	MPW_SIZE(_a)	(size_t)((_a)->ob_size < 0 ? -(_a)->ob_size : (_a)->ob_size)
+#define	MPW_DATA(_a)	((_a)->data)
 
 /**
  */
-mpwObject * mpw_New(void)
+mpwObject * mpw_New(int ob_size)
+	/*@*/;
+
+/**
+ */
+mpwObject * mpw_FromMPW(size_t size, mpw* data)
 	/*@*/;
 
 #endif
