@@ -9,8 +9,6 @@
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 
-#include "rpmps.h"
-
 #define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
@@ -461,10 +459,10 @@ exit:
 
 	/* Bump reference count for return. */
 /*@-boundswrite@*/
-	*hdrp = headerLink(h, "ReadPackageFile *hdrp");
+	*hdrp = headerLink(h);
 /*@=boundswrite@*/
     }
-    h = headerFree(h, "ReadPackageFile");
+    h = headerFree(h);
     if (ts->sig != NULL)
 	ts->sig = headerFreeData(ts->sig, ts->sigtype);
     if (ts->dig != NULL)

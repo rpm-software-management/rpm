@@ -837,6 +837,16 @@ int rpmdbVerify(/*@null@*/ const char * prefix)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
+/**
+ * Close a single database index.
+ * @param db		rpm database
+ * @param rpmtag	rpm tag
+ * @return              0 on success
+ */
+int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
+	/*@globals fileSystem @*/
+	/*@modifies db, fileSystem @*/;
+
 /** \ingroup rpmdb
  * Close all database indices and free rpmdb.
  * @param db		rpm database

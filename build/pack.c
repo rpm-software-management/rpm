@@ -321,7 +321,7 @@ int readRPM(const char *fileName, Spec *specp, struct rpmlead *lead,
     spec->packages = newPackage(spec);
 
     /* XXX the header just allocated will be allocated again */
-    spec->packages->header = headerFree(spec->packages->header, "spec->packages");
+    spec->packages->header = headerFree(spec->packages->header);
 
     /* Read the rpm lead, signatures, and header */
     {	rpmts ts = rpmtsCreate();
@@ -420,8 +420,8 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     int rc = 0;
 
     /* Transfer header reference form *hdrp to h. */
-    h = headerLink(*hdrp, "writeRPM xfer");
-    *hdrp = headerFree(*hdrp, "writeRPM xfer");
+    h = headerLink(*hdrp);
+    *hdrp = headerFree(*hdrp);
 
 #ifdef	DYING
     if (Fileno(csa->cpioFdIn) < 0) {
@@ -483,7 +483,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	goto exit;
     }
     /* Re-reference reallocated header. */
-    *hdrp = headerLink(h, "writeRPM");
+    *hdrp = headerLink(h);
 
     /*
      * Write the header+archive into a temp file so that the size of
@@ -662,7 +662,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 #endif
 
 	rc = headerWrite(fd, nh, HEADER_MAGIC_YES);
-	nh = headerFree(nh, "writeRPM nh");
+	nh = headerFree(nh);
 
 	if (rc) {
 	    rc = RPMERR_NOSPACE;
@@ -691,7 +691,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 
 exit:
     sha1 = _free(sha1);
-    h = headerFree(h, "writeRPM exit");
+    h = headerFree(h);
     sig = rpmFreeSignature(sig);
     if (ifd) {
 	(void) Fclose(ifd);

@@ -4,7 +4,6 @@
 #include "system.h"
 
 #include <rpmlib.h>
-#include "rpmps.h"
 
 #define	_RPMDS_INTERNAL
 #include "rpmds.h"
@@ -89,7 +88,7 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 	/*@-evalorder@*/
 	ds->Flags = (ds->h != NULL ? hfd(ds->Flags, ds->Ft) : _free(ds->Flags));
 	/*@=evalorder@*/
-	ds->h = headerFree(ds->h, ds->Type);
+	ds->h = headerFree(ds->h);
     }
     /*@=branchstate@*/
 
@@ -151,7 +150,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
 
 	ds = xcalloc(1, sizeof(*ds));
 	ds->Type = Type;
-	ds->h = (scareMem ? headerLink(h, ds->Type) : NULL);
+	ds->h = (scareMem ? headerLink(h) : NULL);
 	ds->i = -1;
 	ds->DNEVR = NULL;
 	ds->tagN = tagN;

@@ -10,7 +10,6 @@
 #include "rpmpgp.h"
 
 #include "rpmdb.h"
-#include "rpmps.h"
 
 #define	_RPMTS_INTERNAL
 #include "rpmts.h"
@@ -140,7 +139,8 @@ exit:
  * @return		0 on success
  */
 static int getSignid(Header sig, int sigtag, byte * signid)
-	/*@modifies *signid @*/
+	/*@globals fileSystem @*/
+	/*@modifies *signid, fileSystem @*/
 {
     void * pkt = NULL;
     int_32 pkttyp = 0;
@@ -151,7 +151,9 @@ static int getSignid(Header sig, int sigtag, byte * signid)
 	struct pgpDig_s * dig = pgpNewDig();
 
 	if (!pgpPrtPkts(pkt, pktlen, dig, 0)) {
+/*@-bounds@*/
 	    memcpy(signid, dig->signature.signid, sizeof(dig->signature.signid));
+/*@=bounds@*/
 	    rc = 0;
 	}
      
@@ -262,11 +264,11 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 		    xx = headerAddEntry(nh, tag, type, ptr, count);
 	    }
 	    hi = headerFreeIterator(hi);
-	    oh = headerFree(oh, NULL);
+	    oh = headerFree(oh);
 
-	    sig = headerFree(sig, NULL);
-	    sig = headerLink(nh, NULL);
-	    nh = headerFree(nh, NULL);
+	    sig = headerFree(sig);
+	    sig = headerLink(nh);
+	    nh = headerFree(nh);
 	}
 
 	/* Eliminate broken digest values. */
@@ -543,7 +545,7 @@ static int rpmImportPubkey(const rpmts ts,
 
 bottom:
 	/* Clean up. */
-	h = headerFree(h, "ImportPubkey");
+	h = headerFree(h);
 	dig = pgpFreeDig(dig);
 	pkt = _free(pkt);
 	n = _free(n);
@@ -595,7 +597,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)
 	    ||   uh == NULL)
 	    {
-		h = headerFree(h, NULL);
+		h = headerFree(h);
 		rpmError(RPMERR_FREAD, _("%s: headerGetEntry failed\n"), fn);
 		goto exit;
 	    }
@@ -604,7 +606,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
 	    uh = headerFreeData(uh, uht);
 	}
-	h = headerFree(h, NULL);
+	h = headerFree(h);
     }
 
     /* Read the payload from the package. */

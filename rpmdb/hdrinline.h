@@ -40,59 +40,44 @@ Header headerNew(void)
 
 /** \ingroup header
  * Dereference a header instance.
- * @todo Remove debugging entry from the ABI.
  * @param h		header
- * @param msg
- * @param fn
- * @param ln
  * @return		NULL always
  */
 /*@unused@*/ static inline
-/*@null@*/ Header XheaderFree( /*@killref@*/ /*@null@*/ Header h,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
+/*@null@*/ Header headerFree( /*@killref@*/ /*@null@*/ Header h)
 	/*@modifies h @*/
 {
     /*@-abstract@*/
     if (h == NULL) return NULL;
     /*@=abstract@*/
-    return (h2hv(h)->Xhdrfree) (h, msg, fn, ln);
+    return (h2hv(h)->hdrfree) (h);
 }
 
 /** \ingroup header
  * Reference a header instance.
- * @todo Remove debugging entry from the ABI.
  * @param h		header
- * @param msg
- * @param fn
- * @param ln
  * @return		new header reference
  */
 /*@unused@*/ static inline
-Header XheaderLink(Header h, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
+Header headerLink(Header h)
 	/*@modifies h @*/
 {
-    return (h2hv(h)->Xhdrlink) (h, msg, fn, ln);
+    return (h2hv(h)->hdrlink) (h);
 }
 
 /** \ingroup header
  * Dereference a header instance.
- * @todo Remove debugging entry from the ABI.
  * @param h		header
- * @param msg
- * @param fn
- * @param ln
  * @return		new header reference
  */
 /*@unused@*/ static inline
-Header XheaderUnlink(/*@killref@*/ /*@null@*/ Header h,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
+Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
 	/*@modifies h @*/
 {
     /*@-abstract@*/
     if (h == NULL) return NULL;
     /*@=abstract@*/
-    return (h2hv(h)->Xhdrunlink) (h, msg, fn, ln);
+    return (h2hv(h)->hdrunlink) (h);
 }
 
 /*@-exportlocal@*/

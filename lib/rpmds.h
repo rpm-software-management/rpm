@@ -6,6 +6,8 @@
  * Structure(s) used for dependency tag sets.
  */
 
+#include "rpmps.h"
+
 /**
  */
 /*@-exportlocal@*/

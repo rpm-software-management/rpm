@@ -15,7 +15,6 @@
 #include <rpmbuild.h>
 
 #include "rpmdb.h"
-#include "rpmps.h"
 #include "rpmfi.h"
 #include "rpmts.h"
 
@@ -589,7 +588,7 @@ restart:
 	    /* Query a package file. */
 	    if (rpmrc == RPMRC_OK) {
 		res = qva->qva_showPackage(qva, ts, h);
-		h = headerFree(h, "QueryVerify");
+		h = headerFree(h);
 		rpmtsClean(ts);
 		continue;
 	    }

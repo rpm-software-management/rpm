@@ -7,8 +7,6 @@
 
 #include "psm.h"
 
-#include "rpmps.h"
-
 #include "rpmds.h"
 #include "rpmfi.h"
 
@@ -64,7 +62,7 @@ static void delTE(rpmte p)
     p->name = _free(p->name);
     p->NEVR = _free(p->NEVR);
 
-    p->h = headerFree(p->h, "delTE");
+    p->h = headerFree(p->h);
 
 /*@-boundswrite@*/
     memset(p, 0, sizeof(*p));	/* XXX trash and burn */

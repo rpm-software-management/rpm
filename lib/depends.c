@@ -9,9 +9,7 @@
 #include <rpmmacro.h>		/* XXX rpmExpand("%{_dependency_whiteout}" */
 
 #include "rpmdb.h"		/* XXX response cache needs dbiOpen et al. */
-#include "rpmps.h"
 
-#include "rpmal.h"
 #include "rpmds.h"
 #include "rpmfi.h"
 
@@ -45,9 +43,6 @@ struct orderListIndex_s {
 
 /*@unchecked@*/
 int _cacheDependsRC = 1;
-
-/*@unchecked@*/
-static int _tso_debug = 0;
 
 /*@observer@*/ /*@unchecked@*/
 const char *rpmNAME = PACKAGE;
@@ -968,18 +963,6 @@ zapRelation(rpmte q, rpmte p,
 /*@=mustmod@*/
 /*@=boundswrite@*/
 
-static void prtTSI(const char * msg, tsortInfo tsi)
-	/*@globals fileSystem@*/
-	/*@modifies fileSystem@*/
-{
-/*@-nullpass@*/
-if (_tso_debug) {
-    if (msg) fprintf(stderr, "%s", msg);
-/*@i@*/ fprintf(stderr, " tsi %p suc %p next %p chain %p reqx %d qcnt %d\n", tsi, tsi->tsi_suc, tsi->tsi_next, tsi->tsi_chain, tsi->tsi_reqx, tsi->tsi_qcnt);
-}
-/*@=nullpass@*/
-}
-
 /**
  * Record next "q <- p" relation (i.e. "p" requires "q").
  * @param ts		transaction set
@@ -1013,9 +996,6 @@ static inline int addRelation(rpmts ts,
     pkgKey = RPMAL_NOMATCH;
     key = rpmalSatisfiesDepend(ts->addedPackages, requires, &pkgKey);
 
-if (_tso_debug)
-fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
-
     /* Ordering depends only on added package relations. */
     if (pkgKey == RPMAL_NOMATCH)
 	return 0;
@@ -1039,11 +1019,6 @@ fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
     if (ignoreDep(p, q))
 	return 0;
 
-/*@-nullpass -nullderef -formattype@*/
-if (_tso_debug)
-fprintf(stderr, "addRelation: q %p(%s) from %p[%d:%d]\n", q, rpmteN(q), ts->order, i, ts->orderCount);
-/*@=nullpass =nullderef =formattype@*/
-
     /* Avoid redundant relations. */
     /* XXX TODO: add control bit. */
 /*@-boundsread@*/
@@ -1053,10 +1028,6 @@ fprintf(stderr, "addRelation: q %p(%s) from %p[%d:%d]\n", q, rpmteN(q), ts->orde
 /*@-boundswrite@*/
     selected[i] = 1;
 /*@=boundswrite@*/
-/*@-nullpass@*/
-if (_tso_debug)
-fprintf(stderr, "addRelation: selected[%d] = 1\n", i);
-/*@=nullpass@*/
 
     /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
     rpmteTSI(p)->tsi_count++;			/* bump p predecessor count */
@@ -1064,33 +1035,16 @@ fprintf(stderr, "addRelation: selected[%d] = 1\n", i);
     if (rpmteDepth(p) <= rpmteDepth(q))	/* Save max. depth in dependency tree */
 	(void) rpmteSetDepth(p, (rpmteDepth(q) + 1));
 
-/*@-nullpass@*/
-if (_tso_debug)
-/*@i@*/ fprintf(stderr, "addRelation: p %p(%s) depth %d", p, rpmteN(p), rpmteDepth(p));
-prtTSI(NULL, rpmteTSI(p));
-/*@=nullpass@*/
-
     tsi = xcalloc(1, sizeof(*tsi));
     tsi->tsi_suc = p;
 
     tsi->tsi_reqx = rpmdsIx(requires);
 
     tsi->tsi_next = rpmteTSI(q)->tsi_next;
-/*@-nullpass -compmempass@*/
-prtTSI("addRelation: new", tsi);
-if (_tso_debug)
-/*@i@*/ fprintf(stderr, "addRelation: BEFORE q %p(%s)", q, rpmteN(q));
-prtTSI(NULL, rpmteTSI(q));
-/*@=nullpass =compmempass@*/
 /*@-mods@*/
     rpmteTSI(q)->tsi_next = tsi;
     rpmteTSI(q)->tsi_qcnt++;			/* bump q successor count */
 /*@=mods@*/
-/*@-nullpass -compmempass@*/
-if (_tso_debug)
-/*@i@*/ fprintf(stderr, "addRelation:  AFTER q %p(%s)", q, rpmteN(q));
-prtTSI(NULL, rpmteTSI(q));
-/*@=nullpass =compmempass@*/
     return 0;
 }
 /*@=mustmod@*/
@@ -1200,11 +1154,6 @@ int rpmtsOrder(rpmts ts)
     int i, j;
 
     rpmalMakeIndex(ts->addedPackages);
-
-/*@-modfilesystem -nullpass -formattype@*/
-if (_tso_debug)
-fprintf(stderr, "*** rpmtsOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCount);
-/*@=modfilesystem =nullpass =formattype@*/
 
     /* T1. Initialize. */
     if (oType == 0)
@@ -1322,11 +1271,6 @@ fprintf(stderr, "*** rpmtsOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCou
 	(void) rpmteSetParent(p, NULL);
 #endif
 
-/*@-modfilesystem -nullpass @*/
-if (_tso_debug)
-/*@i@*/ fprintf(stderr, "\t+++ %p[%d] %s npreds %d\n", p, rpmtsiOc(pi), rpmteNEVR(p), rpmteNpreds(p));
-/*@=modfilesystem =nullpass @*/
-
     }
     pi = rpmtsiFree(pi);
 
@@ -1349,11 +1293,6 @@ rescan:
 	rpmteTSI(p)->tsi_suc = NULL;
 	addQ(p, &q, &r);
 	qlen++;
-/*@-modfilesystem -nullpass @*/
-if (_tso_debug)
-/*@i@*/ fprintf(stderr, "\t+++ addQ ++ qlen %d p %p(%s)", qlen, p, rpmteNEVR(p));
-prtTSI(" p", rpmteTSI(p));
-/*@=modfilesystem =nullpass @*/
     }
     pi = rpmtsiFree(pi);
 
@@ -1413,11 +1352,6 @@ prtTSI(" p", rpmteTSI(p));
 		rpmteTSI(p)->tsi_suc = NULL;
 		addQ(p, &rpmteTSI(q)->tsi_suc, &r);
 		qlen++;
-/*@-modfilesystem -nullpass @*/
-if (_tso_debug)
-/*@i@*/ fprintf(stderr, "\t+++ addQ ++ qlen %d p %p(%s)", qlen, p, rpmteNEVR(p));
-prtTSI(" p", rpmteTSI(p));
-/*@=modfilesystem =nullpass @*/
 	    }
 	    tsi = _free(tsi);
 	}
@@ -1641,42 +1575,6 @@ assert(newOrderCount == ts->orderCount);
     return 0;
 }
 /*@=bounds@*/
-
-/**
- * Close a single database index.
- * @param db		rpm database
- * @param rpmtag	rpm tag
- * @return              0 on success
- */
-/*@-mustmod -type@*/ /* FIX: this belongs in rpmdb.c */
-static int rpmdbCloseDBI(/*@null@*/ rpmdb db, int rpmtag)
-	/*@globals fileSystem @*/
-	/*@modifies db, fileSystem @*/
-{
-    int dbix;
-    int rc = 0;
-
-    if (db == NULL || db->_dbi == NULL || dbiTags == NULL)
-	return 0;
-
-    for (dbix = 0; dbix < dbiTagsMax; dbix++) {
-	if (dbiTags[dbix] != rpmtag)
-	    continue;
-/*@-boundswrite@*/
-	if (db->_dbi[dbix] != NULL) {
-	    int xx;
-	    /*@-unqualifiedtrans@*/		/* FIX: double indirection. */
-	    xx = dbiClose(db->_dbi[dbix], 0);
-	    if (xx && rc == 0) rc = xx;
-	    db->_dbi[dbix] = NULL;
-	    /*@=unqualifiedtrans@*/
-	}
-/*@=boundswrite@*/
-	break;
-    }
-    return rc;
-}
-/*@=mustmod =type@*/
 
 int rpmtsCheck(rpmts ts)
 {

@@ -173,7 +173,7 @@ rpmdb_subscript(rpmdbObject * s, PyObject * key)
     }
 
     ho = hdr_Wrap(h);
-    h = headerFree(h, NULL);
+    h = headerFree(h);
 
     return ho;
 }

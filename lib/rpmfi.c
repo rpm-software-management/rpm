@@ -8,8 +8,6 @@
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 
-#include "rpmps.h"
-
 #include "cpio.h"	/* XXX CPIO_FOO */
 #include "fsm.h"	/* XXX newFSM() */
 
@@ -521,10 +519,10 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 	    validRelocations = hfd(validRelocations, validType);
 	}
 	/* XXX FIXME multilib file actions need to be checked. */
-	return headerLink(origH, "relocate(return)");
+	return headerLink(origH);
     }
 
-    h = headerLink(origH, "relocate(orig)");
+    h = headerLink(origH);
 
     relocations = alloca(sizeof(*relocations) * numRelocations);
 
@@ -948,7 +946,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->replacedSizes = _free(fi->replacedSizes);
     fi->replaced = _free(fi->replaced);
 
-    fi->h = headerFree(fi->h, fi->Type);
+    fi->h = headerFree(fi->h);
 
     /*@-nullstate -refcounttrans -usereleased@*/
     (void) rpmfiUnlink(fi, fi->Type);
@@ -1025,7 +1023,7 @@ rpmfi rpmfiNew(rpmts ts, rpmfi fi,
     fi->hre = (HRE_t) headerRemoveEntry;
     fi->hfd = headerFreeData;
 
-    fi->h = (scareMem ? headerLink(h, fi->Type) : NULL);
+    fi->h = (scareMem ? headerLink(h) : NULL);
 
     if (fi->fsm == NULL)
 	fi->fsm = newFSM();
@@ -1038,7 +1036,7 @@ rpmfi rpmfiNew(rpmts ts, rpmfi fi,
 	/*@-branchstate@*/
 	if (malloced) {
 	    if (scareMem && fi->h)
-		fi->h = headerFree(fi->h, fi->Type);
+		fi->h = headerFree(fi->h);
 	    fi->fsm = freeFSM(fi->fsm);
 	    /*@-refcounttrans@*/
 	    fi = _free(fi);
@@ -1118,9 +1116,9 @@ if (fi->actions == NULL)
 	/*@-compdef@*/ /* FIX: fi-md5s undefined */
 	foo = relocateFileList(ts, fi, h, fi->actions);
 	/*@=compdef@*/
-	fi->h = headerFree(fi->h, "rpmfiNew fi->h");
-	fi->h = headerLink(foo, "rpmfiNew fi->h = foo");
-	foo = headerFree(foo, "rpmfiNew foo");
+	fi->h = headerFree(fi->h);
+	fi->h = headerLink(foo);
+	foo = headerFree(foo);
     }
 
     if (!scareMem) {
@@ -1132,7 +1130,7 @@ if (fi->actions == NULL)
 	_fdupe(fi, vflags);
 	_fdupe(fi, fmodes);
 	_fdupe(fi, dil);
-	fi->h = headerFree(fi->h, fi->Type);
+	fi->h = headerFree(fi->h);
     }
 
     dnlmax = -1;

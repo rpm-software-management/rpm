@@ -16,7 +16,7 @@ extern int _rpmal_debug;
 typedef /*@abstract@*/ struct rpmal_s *		rpmal;
 
 #ifdef __cplusplus
-{
+extern "C" {
 #endif
 
 /**

@@ -15,9 +15,9 @@ EXTRA_DIST = getdate.y
 pkgincdir = $(pkgincludedir)
 pkginc_HEADERS = \
 	misc.h rpmcli.h rpmlib.h \
-	rpmds.h rpmfi.h rpmps.h rpmte.h rpmts.h stringbuf.h
+	rpmal.h rpmds.h rpmfi.h rpmps.h rpmte.h rpmts.h stringbuf.h
 noinst_HEADERS = \
-	cpio.h fsm.h manifest.h psm.h rpmal.h rpmlead.h signature.h
+	cpio.h fsm.h manifest.h psm.h rpmlead.h signature.h
 
 mylibpaths = \
 	-L$(top_builddir)/lib \

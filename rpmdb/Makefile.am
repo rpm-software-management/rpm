@@ -20,8 +20,8 @@ tjfn_LDFLAGS = -all-static
 tjfn_LDADD = librpmdb.la
 
 pkgincdir = $(pkgincludedir)
-pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h
-noinst_HEADERS = fprint.h header_internal.h legacy.h rpmhash.h
+pkginc_HEADERS = db.h header.h hdrinline.h rpmdb.h rpmhash.h
+noinst_HEADERS = fprint.h header_internal.h legacy.h
 
 mylibpaths = \
 	-L$(top_builddir)/lib \

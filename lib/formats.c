@@ -271,8 +271,10 @@ static /*@only@*/ char * base64Format(int_32 type, const void * data,
  * @return		formatted string
  */
 static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data, 
-	char * formatPrefix, int padding, int element)
-		/*@modifies formatPrefix @*/
+		/*@unused@*/ char * formatPrefix, /*@unused@*/ int padding,
+		/*@unused@*/ int element)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
     char * val, * t;
 
@@ -281,7 +283,9 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
     } else {
 	unsigned char * pkt = (byte *) data;
 	unsigned int pktlen = 0;
+/*@-boundsread@*/
 	unsigned int v = *pkt;
+/*@=boundsread@*/
 	pgpTag tag = 0;
 	unsigned int plen;
 	unsigned int hlen = 0;
@@ -310,6 +314,7 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 
 	    val = t = xmalloc(nb + 1);
 
+/*@-boundswrite@*/
 	    switch (sigp->pubkey_algo) {
 	    case PGPPUBKEYALGO_DSA:
 		t = stpcpy(t, "DSA");
@@ -347,6 +352,7 @@ static /*@only@*/ char * pgpsigFormat(int_32 type, const void * data,
 	    t += strlen(t);
 	    t = stpcpy(t, ", Key ID ");
 	    t = stpcpy(t, pgpHexStr(sigp->signid, sizeof(sigp->signid)));
+/*@=boundswrite@*/
 
 	    dig = pgpFreeDig(dig);
 	}

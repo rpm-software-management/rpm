@@ -9,7 +9,7 @@
 
 #include "psm.h"
 
-#include "rpmps.h"
+#include "rpmdb.h"
 
 #include "rpmds.h"
 
@@ -22,7 +22,6 @@
 #define	_RPMTS_INTERNAL
 #include "rpmts.h"
 
-#include "rpmdb.h"
 #include "fprint.h"
 #include "legacy.h"	/* XXX domd5 */
 #include "misc.h" /* XXX stripTrailingChar, splitString, currentDirectory */
@@ -1439,13 +1438,13 @@ fi->actions = actions;
 		    ourrc++;
 		    lastKey = pkgKey;
 		}
-		fi->h = headerFree(fi->h, "TR_ADDED fi->h free");
+		fi->h = headerFree(fi->h);
 	    } else {
 		ourrc++;
 		lastKey = pkgKey;
 	    }
 
-	    p->h = headerFree(p->h, "TR_ADDED h free");
+	    p->h = headerFree(p->h);
 
 	    if (gotfd) {
 		/*@-noeffectuncon @*/ /* FIX: check rc */

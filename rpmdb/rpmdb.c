@@ -624,6 +624,32 @@ int rpmdbOpenAll(rpmdb db)
     return rc;
 }
 
+int rpmdbCloseDBI(rpmdb db, int rpmtag)
+{
+    int dbix;
+    int rc = 0;
+
+    if (db == NULL || db->_dbi == NULL || dbiTags == NULL)
+	return 0;
+
+    for (dbix = 0; dbix < dbiTagsMax; dbix++) {
+	if (dbiTags[dbix] != rpmtag)
+	    continue;
+/*@-boundswrite@*/
+	if (db->_dbi[dbix] != NULL) {
+	    int xx;
+	    /*@-unqualifiedtrans@*/		/* FIX: double indirection. */
+	    xx = dbiClose(db->_dbi[dbix], 0);
+	    if (xx && rc == 0) rc = xx;
+	    db->_dbi[dbix] = NULL;
+	    /*@=unqualifiedtrans@*/
+	}
+/*@=boundswrite@*/
+	break;
+    }
+    return rc;
+}
+
 /* XXX query.c, rpminstall.c, verify.c */
 int rpmdbClose(rpmdb db)
 {
@@ -1033,7 +1059,7 @@ if (rc == 0)
 	    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &offset, sizeof(offset));
 	    h = rpmdbNextIterator(mi);
 	    if (h)
-		h = headerLink(h, "rpmdbFindByFile");
+		h = headerLink(h);
 	    mi = rpmdbFreeIterator(mi);
 	}
 
@@ -1067,7 +1093,7 @@ if (rc == 0)
 
 	baseNames = hfd(baseNames, bnt);
 	dirNames = hfd(dirNames, dnt);
-	h = headerFree(h, "rpmdbFindByFile");
+	h = headerFree(h);
     }
 
     rec = _free(rec);
@@ -1404,7 +1430,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	data->size = 0;
     }
 
-    mi->mi_h = headerFree(mi->mi_h, "mi->mi_h");
+    mi->mi_h = headerFree(mi->mi_h);
 
 /*@-nullstate@*/
     return rc;
@@ -2245,7 +2271,7 @@ memset(data, 0, sizeof(*data));
 	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
 	h = rpmdbNextIterator(mi);
 	if (h)
-	    h = headerLink(h, "rpmdbRemove");
+	    h = headerLink(h);
 	mi = rpmdbFreeIterator(mi);
     }
 
@@ -2520,7 +2546,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
     (void) unblockSignals(db, &signalMask);
 
-    h = headerFree(h, "rpmdbRemove");
+    h = headerFree(h);
 
     /* XXX return ret; */
     return 0;
@@ -3403,7 +3429,7 @@ int rpmdbRebuild(const char * prefix)
 	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
 				? headerCopy(h) : NULL);
 		rc = rpmdbAdd(newdb, -1, (nh ? nh : h));
-		nh = headerFree(nh, "rpmdbRebuild");
+		nh = headerFree(nh);
 	    }
 
 	    if (rc) {

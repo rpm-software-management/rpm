@@ -8,8 +8,6 @@
 #include <rpmio_internal.h>
 #include <rpmlib.h>
 
-#include "rpmps.h"
-
 #include "cpio.h"
 #include "fsm.h"
 #include "rpmerr.h"

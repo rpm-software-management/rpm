@@ -7,7 +7,6 @@
 #include <rpmcli.h>
 
 #include "rpmdb.h"
-#include "rpmps.h"
 
 #define	_RPMTS_INTERNAL		/* ts->goal, ts->dbmode, ts->suggests */
 #include "rpmts.h"
@@ -440,7 +439,7 @@ restart:
 		}
 		mi = rpmdbFreeIterator(mi);
 		if (count == 0) {
-		    eiu->h = headerFree(eiu->h, "Install freshen");
+		    eiu->h = headerFree(eiu->h);
 		    continue;
 		}
 		/* Package is newer than those currently installed. */
@@ -453,7 +452,7 @@ restart:
 	    /*@=abstract@*/
 
 	    /* XXX reference held by transaction set */
-	    eiu->h = headerFree(eiu->h, "Install added");
+	    eiu->h = headerFree(eiu->h);
 	    if (eiu->relocations)
 		eiu->relocations->oldPath = _free(eiu->relocations->oldPath);
 
@@ -762,7 +761,7 @@ IDTX IDTXfree(IDTX idtx)
 	if (idtx->idt)
 	for (i = 0; i < idtx->nidt; i++) {
 	    IDT idt = idtx->idt + i;
-	    idt->h = headerFree(idt->h, "IDTXfree");
+	    idt->h = headerFree(idt->h);
 	    idt->key = _free(idt->key);
 	}
 	idtx->idt = _free(idtx->idt);
@@ -834,7 +833,7 @@ IDTX IDTXload(rpmts ts, rpmTag tag)
 	    /*@-nullderef@*/
 	    idt = idtx->idt + idtx->nidt;
 	    /*@=nullderef@*/
-	    idt->h = headerLink(h, "IDTXload idt->h");
+	    idt->h = headerLink(h);
 	    idt->key = NULL;
 	    idt->instance = rpmdbGetIteratorOffset(mi);
 	    idt->val.u32 = *tidp;
@@ -893,13 +892,13 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 
 	    idtx = IDTXgrow(idtx, 1);
 	    if (idtx == NULL || idtx->idt == NULL) {
-		h = headerFree(h, "IDTXglob skip");
+		h = headerFree(h);
 		(void) Fclose(fd);
 		continue;
 	    }
 	    {	IDT idt;
 		idt = idtx->idt + idtx->nidt;
-		idt->h = headerLink(h, "IDTXglob idt->h");
+		idt->h = headerLink(h);
 		idt->key = av[i];
 		av[i] = NULL;
 		idt->instance = 0;
@@ -909,7 +908,7 @@ IDTX IDTXglob(rpmts ts, const char * globstr, rpmTag tag)
 	}
 	/*@=branchstate@*/
 
-	h = headerFree(h, "IDTXglob next");
+	h = headerFree(h);
 	(void) Fclose(fd);
     }
 

@@ -161,7 +161,7 @@ Package freePackage(Package pkg)
     pkg->postUnFile = _free(pkg->postUnFile);
     pkg->verifyFile = _free(pkg->verifyFile);
 
-    pkg->header = headerFree(pkg->header, "pkg->header");
+    pkg->header = headerFree(pkg->header);
     pkg->fileList = freeStringBuf(pkg->fileList);
     pkg->fileFile = _free(pkg->fileFile);
     if (pkg->cpioList) {
@@ -520,7 +520,7 @@ Spec freeSpec(Spec spec)
 	rl = _free(rl);
     }
     
-    spec->sourceHeader = headerFree(spec->sourceHeader, "spec->sourceHeader");
+    spec->sourceHeader = headerFree(spec->sourceHeader);
 
     if (spec->sourceCpioList) {
 	rpmfi fi = spec->sourceCpioList;
@@ -533,7 +533,7 @@ Spec freeSpec(Spec spec)
 #endif
     }
     
-    spec->buildRestrictions = headerFree(spec->buildRestrictions, "spec->>buildRestrictions");
+    spec->buildRestrictions = headerFree(spec->buildRestrictions);
 
     if (!spec->recursing) {
 /*@-boundswrite@*/

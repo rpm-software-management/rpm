@@ -8,7 +8,6 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmGetPath() */
 #include "rpmdb.h"
-#include "rpmps.h"
 
 #define	_RPMTS_INTERNAL
 #include "rpmts.h"
@@ -221,10 +220,10 @@ rpmRC rpmReadSignature(FD_t fd, Header * headerp, sigType sig_type)
 
 /*@-boundswrite@*/
     if (headerp && rc == RPMRC_OK)
-	*headerp = headerLink(h, NULL);
+	*headerp = headerLink(h);
 /*@=boundswrite@*/
 
-    h = headerFree(h, NULL);
+    h = headerFree(h);
 
     return rc;
 }
@@ -259,7 +258,7 @@ Header rpmNewSignature(void)
 
 Header rpmFreeSignature(Header h)
 {
-    return headerFree(h, "FreeSignature");
+    return headerFree(h);
 }
 
 /**
@@ -561,7 +560,7 @@ static int makeHDRSignature(Header sig, const char * file, int_32 sigTag,
 	    if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)
 	     ||  uh == NULL)
 	    {
-		h = headerFree(h, NULL);
+		h = headerFree(h);
 		goto exit;
 	    }
 	    ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
@@ -570,7 +569,7 @@ static int makeHDRSignature(Header sig, const char * file, int_32 sigTag,
 	    (void) rpmDigestFinal(ctx, (void **)&sha1, NULL, 1);
 	    uh = headerFreeData(uh, uht);
 	}
-	h = headerFree(h, NULL);
+	h = headerFree(h);
 
 	if (sha1 == NULL)
 	    goto exit;
@@ -622,7 +621,7 @@ exit:
 	fn = _free(fn);
     }
     sha1 = _free(sha1);
-    h = headerFree(h, NULL);
+    h = headerFree(h);
     if (fd) (void) Fclose(fd);
     return ret;
 }

@@ -9,7 +9,6 @@
 extern PyTypeObject PyDictIter_Type;
 
 #include <rpmcli.h>
-#include "rpmps.h"
 
 #include "header-py.h"
 #include "rpmal-py.h"

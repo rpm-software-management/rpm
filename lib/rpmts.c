@@ -9,11 +9,10 @@
 #include <rpmpgp.h>		/* XXX rpmtsFree() needs pgpFreeDig */
 
 #include "rpmdb.h"		/* XXX stealing db->db_mode. */
-#include "rpmps.h"
 
+#include "rpmal.h"
 #include "rpmds.h"
 #include "rpmfi.h"
-#include "rpmal.h"
 
 #define	_RPMTE_INTERNAL		/* XXX te->h */
 #include "rpmte.h"
@@ -265,8 +264,8 @@ int rpmtsSolve(rpmts ts, rpmds ds)
 	/* XXX Prefer the newest build if given alternatives. */
 	if (htime <= bhtime)
 	    continue;
-	bh = headerFree(bh, NULL);
-	bh = headerLink(h, NULL);
+	bh = headerFree(bh);
+	bh = headerLink(h);
 	bhtime = htime;
     }
     mi = rpmdbFreeIterator(mi);
@@ -280,7 +279,7 @@ int rpmtsSolve(rpmts ts, rpmds ds)
     if (qfmt == NULL || *qfmt == '\0')
 	goto exit;
     str = headerSprintf(bh, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
-    bh = headerFree(bh, NULL);
+    bh = headerFree(bh);
     qfmt = _free(qfmt);
     if (str == NULL) {
 	rpmError(RPMERR_QFMT, _("incorrect format: %s\n"), errstr);

@@ -57,7 +57,7 @@ static inline Item freeItem(Item item) {
     if (item != NULL) {
 	item->path = _free(item->path);
 	item->this = rpmdsFree(item->this);
-	item->h = headerFree(item->h, NULL);
+	item->h = headerFree(item->h);
 	item = _free(item);
     }
     return NULL;
@@ -274,7 +274,7 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
     }
     st = NULL;
     items[i]->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
-    items[i]->h = headerLink(h, NULL);
+    items[i]->h = headerLink(h);
 
     if (nitems > 1)
 	qsort(items, nitems, sizeof(*items), cmpItem);
@@ -286,7 +286,7 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
 #endif
 
 exit:
-    h = headerFree(h, NULL);
+    h = headerFree(h);
     add = rpmdsFree(add);
     return ec;
 }

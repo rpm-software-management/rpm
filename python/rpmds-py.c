@@ -7,7 +7,6 @@
 #include "Python.h"
 
 #include <rpmlib.h>
-#include "rpmps.h"
 
 #include "header-py.h"
 #include "rpmds-py.h"

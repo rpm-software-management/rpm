@@ -8,13 +8,11 @@
 #include "rpmio_internal.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 
-#include "rpmps.h"
-#include "rpmfi.h"
-#include "rpmts.h"	/* XXX for ts->rpmdb */
-
 #include "legacy.h"
 #include "misc.h"
 #include "header_internal.h"
+
+#include "rpmts.h"	/* XXX rpmtsCreate/rpmtsFree */
 
 #include "header-py.h"
 #include "rpmds-py.h"
@@ -144,15 +142,15 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords) 
     if (!PyArg_ParseTupleAndKeywords(args, keywords, "|i", kwlist, &legacy))
 	return NULL; 
 
-    h = headerLink(s->h, "hdrUnload h");
+    h = headerLink(s->h);
     /* XXX this legacy switch is a hack, needs to be removed. */
     if (legacy) {
 	h = headerCopy(s->h);	/* XXX strip region tags, etc */
-	headerFree(s->h, "hdrUnload s->h");
+	headerFree(s->h);
     }
     len = headerSizeof(h, 0);
     buf = headerUnload(h);
-    h = headerFree(h, "hdrUnload h");
+    h = headerFree(h);
 
     if (buf == NULL || len == 0) {
 	PyErr_SetString(pyrpmError, "can't unload bad header\n");
@@ -449,7 +447,7 @@ static PyObject * rhnUnload(hdrObject * s, PyObject * args)
     if (!PyArg_ParseTuple(args, ""))
         return NULL;
 
-    h = headerLink(s->h, "rhnUnload h");
+    h = headerLink(s->h);
 
     /* Retrofit a RHNPlatform: tag. */
     if (!headerIsEntry(h, RPMTAG_RHNPLATFORM)) {
@@ -464,7 +462,7 @@ static PyObject * rhnUnload(hdrObject * s, PyObject * args)
 	Header nh = headerReload(h, RPMTAG_HEADERIMMUTABLE);
 	/* XXX Another unload/load cycle to "seal" the immutable region. */
 	uh = headerUnload(nh);
-	headerFree(nh, "rhnUnload nh");
+	headerFree(nh);
 	h = headerLoad(uh);
 	headerAllocated(h);
     }
@@ -490,7 +488,7 @@ static PyObject * rhnUnload(hdrObject * s, PyObject * args)
 
     len = headerSizeof(h, 0);
     uh = headerUnload(h);
-    headerFree(h, "rhnUnload h");
+    headerFree(h);
 
     rc = PyString_FromStringAndSize(uh, len);
     uh = _free(uh);
@@ -583,7 +581,7 @@ static PyObject * hdr_getattr(hdrObject * s, char * name)
  */
 static void hdr_dealloc(hdrObject * s)
 {
-    if (s->h) headerFree(s->h, "hdr_dealloc s->h");
+    if (s->h) headerFree(s->h);
     s->md5list = _free(s->md5list);
     s->fileList = _free(s->fileList);
     s->linkList = _free(s->linkList);
@@ -830,7 +828,7 @@ PyTypeObject hdr_Type = {
 hdrObject * hdr_Wrap(Header h)
 {
     hdrObject * hdr = PyObject_NEW(hdrObject, &hdr_Type);
-    hdr->h = headerLink(h, NULL);
+    hdr->h = headerLink(h);
     hdr->fileList = hdr->linkList = hdr->md5list = NULL;
     hdr->uids = hdr->gids = hdr->mtimes = hdr->fileSizes = NULL;
     hdr->modes = hdr->rdevs = NULL;
@@ -868,7 +866,7 @@ PyObject * rpmHeaderFromPackage(PyObject * self, PyObject * args)
     case RPMRC_OK:
 	isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
 	hdr = hdr_Wrap(h);
-	h = headerFree(h, NULL);	/* XXX ref held by hdr */
+	h = headerFree(h);	/* XXX ref held by hdr */
 	break;
 
     case RPMRC_NOTFOUND:
@@ -916,7 +914,7 @@ PyObject * hdrLoad(PyObject * self, PyObject * args)
     providePackageNVR (h);
 
     hdr = hdr_Wrap(h);
-    h = headerFree(h, NULL);	/* XXX ref held by hdr */
+    h = headerFree(h);	/* XXX ref held by hdr */
 
     return (PyObject *) hdr;
 }
@@ -949,7 +947,7 @@ PyObject * rhnLoad(PyObject * self, PyObject * args)
     /* XXX avoid the false OK's from rpmverifyDigest() with missing tags. */
     if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
 	PyErr_SetString(pyrpmError, "bad header, not immutable");
-	headerFree(h, "rhnLoad #1");
+	headerFree(h);
 	return NULL;
     }
 
@@ -957,7 +955,7 @@ PyObject * rhnLoad(PyObject * self, PyObject * args)
     if (!headerIsEntry(h, RPMTAG_SHA1HEADER)
     &&  !headerIsEntry(h, RPMTAG_SHA1RHN)) {
 	PyErr_SetString(pyrpmError, "bad header, no digest");
-	headerFree(h, "rhnLoad #2");
+	headerFree(h);
 	return NULL;
     }
 
@@ -1001,7 +999,7 @@ PyObject * rpmReadHeaders (FD_t fd)
 	}
 	Py_DECREF(hdr);
 
-	h = headerFree(h, NULL);	/* XXX ref held by hdr */
+	h = headerFree(h);	/* XXX ref held by hdr */
 
 	Py_BEGIN_ALLOW_THREADS
 	h = headerRead(fd, HEADER_MAGIC_YES);

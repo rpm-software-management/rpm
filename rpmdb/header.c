@@ -98,19 +98,11 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p) /*@modifies *p @*/
  * @return		referenced header instance
  */
 static
-Header XheaderLink(Header h, /*@null@*/ const char * msg,
-		const char * fn, unsigned ln)
+Header headerLink(Header h)
 	/*@modifies h @*/
 {
-/*@-nullret@*/
-    if (h == NULL) return NULL;
-/*@=nullret@*/
-
-    h->nrefs++;
-/*@-modfilesystem@*/
-if ((_h_debug > 0 || (h->flags & HEADERFLAG_DEBUG)) && msg != NULL)
-fprintf(stderr, "--> h  %p ++ %d blob %p flags %x %s at %s:%u\n", h, h->nrefs, h->blob, h->flags, msg, fn, ln);
-/*@=modfilesystem@*/
+    if (h != NULL)
+	h->nrefs++;
     /*@-refcounttrans @*/
     return h;
     /*@=refcounttrans @*/
@@ -122,16 +114,11 @@ fprintf(stderr, "--> h  %p ++ %d blob %p flags %x %s at %s:%u\n", h, h->nrefs, h
  * @return		NULL always
  */
 static /*@null@*/
-Header XheaderUnlink(/*@killref@*/ /*@null@*/ Header h,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
+Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
 	/*@modifies h @*/
 {
-    if (h == NULL) return NULL;
-/*@-modfilesystem@*/
-if ((_h_debug > 0 || (h->flags & HEADERFLAG_DEBUG)) && msg != NULL)
-fprintf(stderr, "--> h  %p -- %d blob %p flags %x %s at %s:%u\n", h, h->nrefs, h->blob, h->flags, msg, fn, ln);
-/*@=modfilesystem@*/
-    h->nrefs--;
+    if (h)
+	h->nrefs--;
     return NULL;
 }
 
@@ -141,11 +128,10 @@ fprintf(stderr, "--> h  %p -- %d blob %p flags %x %s at %s:%u\n", h, h->nrefs, h
  * @return		NULL always
  */
 static /*@null@*/
-Header XheaderFree(/*@killref@*/ /*@null@*/ Header h,
-		/*@null@*/ const char * msg, const char * fn, unsigned ln)
+Header headerFree(/*@killref@*/ /*@null@*/ Header h)
 	/*@modifies h @*/
 {
-    (void) XheaderUnlink(h, msg, fn, ln);
+    (void) headerUnlink(h);
 
     /*@-usereleased@*/
     if (h == NULL || h->nrefs > 0)
@@ -200,7 +186,7 @@ Header headerNew(void)
 
     h->nrefs = 0;
     /*@-globstate -observertrans @*/
-    return headerLink(h, "headerNew");
+    return headerLink(h);
     /*@=globstate =observertrans @*/
 }
 
@@ -960,7 +946,7 @@ Header headerLoad(/*@kept@*/ void * uh)
     h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
     h->flags |= HEADERFLAG_SORTED;
     h->nrefs = 0;
-    h = headerLink(h, "headerLoad");
+    h = headerLink(h);
 
     /*
      * XXX XFree86-libs, ash, and pdksh from Red Hat 5.2 have bogus
@@ -1116,7 +1102,7 @@ Header headerReload(/*@only@*/ Header h, int tag)
     void * uh = doHeaderUnload(h, &length);
 /*@=boundswrite@*/
 
-    h = headerFree(h, "headerReload");
+    h = headerFree(h);
     /*@=onlytrans@*/
     if (uh == NULL)
 	return NULL;
@@ -3330,7 +3316,7 @@ static /*@null@*/
 HeaderIterator headerFreeIterator(/*@only@*/ HeaderIterator hi)
 	/*@modifies hi @*/
 {
-    hi->h = headerFree(hi->h, "Iterator");
+    hi->h = headerFree(hi->h);
     hi = _free(hi);
     return hi;
 }
@@ -3348,7 +3334,7 @@ HeaderIterator headerInitIterator(Header h)
 
     headerSort(h);
 
-    hi->h = headerLink(h, "Iterator");
+    hi->h = headerLink(h);
     hi->next_index = 0;
     return hi;
 }
@@ -3427,9 +3413,9 @@ Header headerCopy(Header h)
 
 /*@observer@*/ /*@unchecked@*/
 static struct HV_s hdrVec1 = {
-    XheaderLink,
-    XheaderUnlink,
-    XheaderFree,
+    headerLink,
+    headerUnlink,
+    headerFree,
     headerNew,
     headerSort,
     headerUnsort,

@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.47
+Release: 0.48
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -514,6 +514,10 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Sat Jul 13 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.48
+- install rpmal.h and rpmhash.h, implicit rpmps.hinclude, for now.
+- revert headerFree/headerLink/headerUnlink debugging.
+
 * Fri Jul 12 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.47
 - display signature details using rpm -qi.
 - skip signing packages already signed with same key (#62118).

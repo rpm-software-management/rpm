@@ -148,7 +148,7 @@ restart:
 
 	if (rpmrc == RPMRC_OK || rpmrc == RPMRC_BADSIZE) {
 	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName, 0, NULL);
-	    headerFree(h, "do_tsort"); 
+	    h = headerFree(h); 
 	    continue;
 	}
 

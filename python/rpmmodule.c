@@ -7,8 +7,6 @@
 #include "Python.h"
 #include "rpmcli.h"	/* XXX for rpmCheckSig */
 
-#include "rpmps.h"
-
 #include "legacy.h"
 #include "misc.h"
 #include "header_internal.h"

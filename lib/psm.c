@@ -7,14 +7,12 @@
 
 #include <rpmio_internal.h>
 #include <rpmlib.h>
-
-#include "rpmps.h"
+#include <rpmmacro.h>
+#include <rpmurl.h>
 
 #include "cpio.h"
 #include "fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #include "psm.h"
-#include <rpmmacro.h>
-#include <rpmurl.h>
 
 #include "rpmds.h"
 
@@ -447,7 +445,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
      (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
     fi = rpmfiNew(ts, fi, h, RPMTAG_BASENAMES, scareMem);
-    h = headerFree(h, "InstallSourcePackage");
+    h = headerFree(h);
 
     if (fi == NULL) {	/* XXX can't happen */
 	rc = RPMRC_FAIL;
@@ -458,7 +456,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     fi->te = rpmtsElement(ts, 0);
 /*@=onlytrans@*/
 /*@-nullpass@*/		/* FIX fi->h may be null */
-    fi->te->h = headerLink(fi->h, "fi->te->h");
+    fi->te->h = headerLink(fi->h);
 /*@=nullpass@*/
     fi->te->fd = fdLink(fd, "installSourcePackage");
     hge = fi->hge;
@@ -582,11 +580,11 @@ exit:
     _specdir = _free(_specdir);
     _sourcedir = _free(_sourcedir);
 
-    if (h) h = headerFree(h, "InstallSourcePackage exit");
+    if (h) h = headerFree(h);
 
     /*@-branchstate@*/
     if (fi) {
-	fi->te->h = headerFree(fi->te->h, "fi->te->h");
+	fi->te->h = headerFree(fi->te->h);
 	if (fi->te->fd)
 	    (void) Fclose(fi->te->fd);
 	fi->te->fd = NULL;
@@ -1260,7 +1258,7 @@ assert(psm->mi == NULL);
 	    /* Retrieve installed header. */
 	    rc = psmStage(psm, PSM_RPMDB_LOAD);
 if (rc == 0)
-psm->te->h = headerLink(fi->h, "psm->te->h");
+psm->te->h = headerLink(fi->h);
 	}
 	if (psm->goal == PSM_PKGSAVE) {
 	    /* Open output package for writing. */
@@ -1359,7 +1357,7 @@ psm->te->h = headerLink(fi->h, "psm->te->h");
 		    hi = headerFreeIterator(hi);
 		    /*@=branchstate@*/
 
-		    oh = headerFree(oh, NULL);
+		    oh = headerFree(oh);
 		    uh = hfd(uh, uht);
 		} else
 		    break;	/* XXX shouldn't ever happen */
@@ -1708,11 +1706,11 @@ psm->te->h = headerLink(fi->h, "psm->te->h");
 
 	if (psm->goal == PSM_PKGERASE || psm->goal == PSM_PKGSAVE) {
 if (psm->te->h)
-psm->te->h = headerFree(psm->te->h, "psm->te->h");
+psm->te->h = headerFree(psm->te->h);
 	    if (fi->h)
-		fi->h = headerFree(fi->h, "PSM_PKGSAVE_POST fi->h");
+		fi->h = headerFree(fi->h);
  	}
-	psm->oh = headerFree(psm->oh, "PSM_PKGSAVE_POST psm->oh");
+	psm->oh = headerFree(psm->oh);
 	psm->pkgURL = _free(psm->pkgURL);
 	psm->rpmio_flags = _free(psm->rpmio_flags);
 	psm->failedFile = _free(psm->failedFile);
@@ -1833,7 +1831,7 @@ assert(psm->mi == NULL);
 
 	fi->h = rpmdbNextIterator(psm->mi);
 	if (fi->h)
-	    fi->h = headerLink(fi->h, "PSM_RPMDB_LOAD)");
+	    fi->h = headerLink(fi->h);
 else {
 fprintf(stderr, "*** PSM_RDB_LOAD: header #%u not found\n", fi->record);
 }

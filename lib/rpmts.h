@@ -6,8 +6,7 @@
  * Structures and prototypes used for an "rpmts" transaction set.
  */
 
-#include <rpmhash.h>	/* XXX hashTable */
-#include "rpmal.h"	/* XXX availablePackage/relocateFileList ,*/
+#include "rpmps.h"
 
 /*@unchecked@*/
 /*@-exportlocal@*/
@@ -19,6 +18,9 @@ extern int _ts_debug;
 #define	_RPMTS_VSF_VERIFY_LEGACY	(1 << 2)
 
 #if defined(_RPMTS_INTERNAL)
+
+#include "rpmhash.h"	/* XXX hashTable */
+#include "rpmal.h"	/* XXX availablePackage/relocateFileList ,*/
 
 /*@unchecked@*/
 /*@-exportlocal@*/

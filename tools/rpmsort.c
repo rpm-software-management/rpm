@@ -173,7 +173,7 @@ restart:
 
 	if (rc == 0) {
 	    rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName, 0, NULL);
-	    headerFree(h, "do_tsort"); 
+	    h = headerFree(h); 
 	    continue;
 	}
 

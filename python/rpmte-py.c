@@ -7,9 +7,6 @@
 #include "Python.h"
 
 #include <rpmlib.h>
-#include "rpmps.h"
-
-#include "rpmte.h"
 
 #include "header-py.h"	/* XXX tagNumFromPyObject */
 #include "rpmds-py.h"

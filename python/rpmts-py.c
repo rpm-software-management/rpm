@@ -7,10 +7,8 @@
 #include "Python.h"
 
 #include <rpmlib.h>
-#include "rpmps.h"
 
 #include "header-py.h"
-#include "rpmal.h"
 #include "rpmdb-py.h"
 #include "rpmds-py.h"	/* XXX for rpmdsNew */
 #include "rpmfi-py.h"	/* XXX for rpmfiNew */
