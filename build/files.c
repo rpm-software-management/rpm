@@ -1115,6 +1115,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     int apathlen = 0;
     int dpathlen = 0;
     int skipLen = 0;
+    size_t fnlen;
     FileListRec flp;
     char buf[BUFSIZ];
     int i;
@@ -1379,17 +1380,15 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	    continue;
 	}
 
+	if ((fnlen = strlen(flp->diskURL) + 1) > fi->fnlen)
+	    fi->fnlen = fnlen;
+
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
 	/*@-dependenttrans@*/ /* FIX: artifact of spoofing headerGetEntry */
 	fi->dnl[fi->dil[i]] = d;
 	/*@=dependenttrans@*/
-#ifdef IA64_SUCKS_ROCKS
-	(void) stpcpy(d, flp->diskURL);
-	d += strlen(d);
-#else
 	d = stpcpy(d, flp->diskURL);
-#endif
 
 	/* Make room for the dirName NUL, find start of baseName. */
 	for (b = d; b > fi->dnl[fi->dil[i]] && *b != '/'; b--)
@@ -1403,20 +1402,9 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	/*@-dependenttrans@*/	/* FIX: xstrdup? nah ... */
 	fi->apath[i] = a;
  	/*@=dependenttrans@*/
-	if (_addDotSlash) {
-#ifdef IA64_SUCKS_ROCKS
-	    (void) stpcpy(a, "./");
-	    a += strlen(a);
-#else
+	if (_addDotSlash)
 	    a = stpcpy(a, "./");
-#endif
-	}
-#ifdef IA64_SUCKS_ROCKS
-	(void) stpcpy(a, (flp->fileURL + skipLen));
-	a += strlen(a);
-#else
 	a = stpcpy(a, (flp->fileURL + skipLen));
-#endif
 	a++;		/* skip apath NUL */
 
 	if (flp->flags & RPMFILE_GHOST) {
@@ -2289,248 +2277,6 @@ int processSourceFiles(Spec spec)
 }
 
 /**
- */
-typedef struct {
-/*@observer@*/ /*@null@*/ const char * msg;
-/*@observer@*/ const char * argv[4];
-    rpmTag ntag;
-    rpmTag vtag;
-    rpmTag ftag;
-    int mask;
-    int xor;
-} DepMsg_t;
-
-/**
- */
-/*@-exportlocal -exportheadervar@*/
-/*@unchecked@*/
-DepMsg_t depMsgs[] = {
-  { "Provides",		{ "%{?__find_provides}", NULL, NULL, NULL },
-	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
-	0, -1 },
-  { "PreReq",		{ NULL, NULL, NULL, NULL },
-	RPMTAG_REQUIRENAME, RPMTAG_REQUIREVERSION, RPMTAG_REQUIREFLAGS,
-	RPMSENSE_PREREQ, 0 },
-  { "Requires(interp)",	{ NULL, "interp", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
-	_notpre(RPMSENSE_INTERP), 0 },
-  { "Requires(rpmlib)",	{ NULL, "rpmlib", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
-	_notpre(RPMSENSE_RPMLIB), 0 },
-  { "Requires(verify)",	{ NULL, "verify", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
-	RPMSENSE_SCRIPT_VERIFY, 0 },
-  { "Requires(pre)",	{ NULL, "pre", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
-	_notpre(RPMSENSE_SCRIPT_PRE), 0 },
-  { "Requires(post)",	{ NULL, "post", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
-	_notpre(RPMSENSE_SCRIPT_POST), 0 },
-  { "Requires(preun)",	{ NULL, "preun", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
-	_notpre(RPMSENSE_SCRIPT_PREUN), 0 },
-  { "Requires(postun)",	{ NULL, "postun", NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,
-	_notpre(RPMSENSE_SCRIPT_POSTUN), 0 },
-  { "Requires",		{ "%{?__find_requires}", NULL, NULL, NULL },
-	-1, -1, RPMTAG_REQUIREFLAGS,	/* XXX inherit name/version arrays */
-	RPMSENSE_PREREQ, RPMSENSE_PREREQ },
-  { "Conflicts",	{ "%{?__find_conflicts}", NULL, NULL, NULL },
-	RPMTAG_CONFLICTNAME, RPMTAG_CONFLICTVERSION, RPMTAG_CONFLICTFLAGS,
-	0, -1 },
-  { "Obsoletes",	{ "%{?__find_obsoletes}", NULL, NULL, NULL },
-	RPMTAG_OBSOLETENAME, RPMTAG_OBSOLETEVERSION, RPMTAG_OBSOLETEFLAGS,
-	0, -1 },
-  { NULL,		{ NULL, NULL, NULL, NULL },	0, 0, 0, 0, 0 }
-};
-/*@=exportlocal =exportheadervar@*/
-
-/**
- */
-/*@-bounds@*/
-static int generateDepends(Spec spec, Package pkg, rpmfi cpioList)
-	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
-	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
-{
-    rpmfi fi = cpioList;
-    StringBuf sb_stdin;
-    StringBuf sb_stdout;
-    DepMsg_t * dm;
-    int failnonzero = 0;
-    int rc = 0;
-    int i;
-
-    if (!(fi && fi->fc > 0))
-	return 0;
-
-    if (! (pkg->autoReq || pkg->autoProv))
-	return 0;
-
-    /*
-     * Create file manifest buffer to deliver to dependency finder.
-     */
-    sb_stdin = newStringBuf();
-    for (i = 0; i < fi->fc; i++) {
-	appendStringBuf(sb_stdin, fi->dnl[fi->dil[i]]);
-	appendLineStringBuf(sb_stdin, fi->bnl[i]);
-    }
-
-    for (dm = depMsgs; dm->msg != NULL; dm++) {
-	int tag, tagflags;
-	char * s;
-	int xx;
-
-	tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
-	tagflags = 0;
-	s = NULL;
-
-	switch(tag) {
-	case RPMTAG_PROVIDEFLAGS:
-	    if (!pkg->autoProv)
-		continue;
-	    failnonzero = 1;
-	    tagflags = RPMSENSE_FIND_PROVIDES;
-	    /*@switchbreak@*/ break;
-	case RPMTAG_REQUIREFLAGS:
-	    if (!pkg->autoReq)
-		continue;
-	    failnonzero = 0;
-	    tagflags = RPMSENSE_FIND_REQUIRES;
-	    /*@switchbreak@*/ break;
-	default:
-	    continue;
-	    /*@notreached@*/ /*@switchbreak@*/ break;
-	}
-
-	xx = rpmfcExec(dm->argv, sb_stdin, &sb_stdout, failnonzero);
-	if (xx == -1)
-	    continue;
-
-	s = rpmExpand(dm->argv[0], NULL);
-	rpmMessage(RPMMESS_NORMAL, _("Finding  %s: %s\n"), dm->msg,
-		(s ? s : ""));
-	s = _free(s);
-
-	if (sb_stdout == NULL) {
-	    rc = RPMERR_EXEC;
-	    rpmError(rc, _("Failed to find %s:\n"), dm->msg);
-	    break;
-	}
-
-	/* Parse dependencies into header */
-	tagflags &= ~RPMSENSE_MULTILIB;
-
-	rc = parseRCPOT(spec, pkg, getStringBuf(sb_stdout), tag, 0, tagflags);
-	sb_stdout = freeStringBuf(sb_stdout);
-
-	if (rc) {
-	    rpmError(rc, _("Failed to find %s:\n"), dm->msg);
-	    break;
-	}
-    }
-
-    sb_stdin = freeStringBuf(sb_stdin);
-    return rc;
-}
-/*@=bounds@*/
-
-/**
- */
-static void printDepMsg(DepMsg_t * dm, int count, const char ** names,
-		const char ** versions, int *flags)
-	/*@*/
-{
-    int hasVersions = (versions != NULL);
-    int hasFlags = (flags != NULL);
-    int bingo = 0;
-    int i;
-
-    for (i = 0; i < count; i++, names++, versions++, flags++) {
-	if (hasFlags && !((*flags & dm->mask) ^ dm->xor))
-	    continue;
-	if (bingo == 0) {
-	    rpmMessage(RPMMESS_NORMAL, "%s:", (dm->msg ? dm->msg : ""));
-	    bingo = 1;
-	}
-	rpmMessage(RPMMESS_NORMAL, " %s", *names);
-
-	if (hasVersions && !(*versions != NULL && **versions != '\0'))
-	    continue;
-	if (!(hasFlags && (*flags && RPMSENSE_SENSEMASK)))
-	    continue;
-
-	rpmMessage(RPMMESS_NORMAL, " ");
-	if (*flags & RPMSENSE_LESS)
-	    rpmMessage(RPMMESS_NORMAL, "<");
-	if (*flags & RPMSENSE_GREATER)
-	    rpmMessage(RPMMESS_NORMAL, ">");
-	if (*flags & RPMSENSE_EQUAL)
-	    rpmMessage(RPMMESS_NORMAL, "=");
-
-	rpmMessage(RPMMESS_NORMAL, " %s", *versions);
-    }
-    if (bingo)
-	rpmMessage(RPMMESS_NORMAL, "\n");
-}
-
-/**
- */
-static void printDeps(Header h)
-	/*@*/
-{
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    const char ** names = NULL;
-    rpmTagType dnt = -1;
-    const char ** versions = NULL;
-    rpmTagType dvt = -1;
-    int * flags = NULL;
-    DepMsg_t * dm;
-    int count, xx;
-
-    for (dm = depMsgs; dm->msg != NULL; dm++) {
-	switch (dm->ntag) {
-	case 0:
-	    names = hfd(names, dnt);
-	    /*@switchbreak@*/ break;
-	case -1:
-	    /*@switchbreak@*/ break;
-	default:
-	    names = hfd(names, dnt);
-	    if (!hge(h, dm->ntag, &dnt, (void **) &names, &count))
-		continue;
-	    /*@switchbreak@*/ break;
-	}
-	switch (dm->vtag) {
-	case 0:
-	    versions = hfd(versions, dvt);
-	    /*@switchbreak@*/ break;
-	case -1:
-	    /*@switchbreak@*/ break;
-	default:
-	    versions = hfd(versions, dvt);
-	    xx = hge(h, dm->vtag, &dvt, (void **) &versions, NULL);
-	    /*@switchbreak@*/ break;
-	}
-	switch (dm->ftag) {
-	case 0:
-	    flags = NULL;
-	    /*@switchbreak@*/ break;
-	case -1:
-	    /*@switchbreak@*/ break;
-	default:
-	    xx = hge(h, dm->ftag, NULL, (void **) &flags, NULL);
-	    /*@switchbreak@*/ break;
-	}
-	/*@-noeffect@*/
-	printDepMsg(dm, count, names, versions, flags);
-	/*@=noeffect@*/
-    }
-    names = hfd(names, dnt);
-    versions = hfd(versions, dvt);
-}
-
-/**
  * Check packaged file list against what's in the build root.
  * @param fileList	packaged file list
  * @return		-1 if skipped, 0 on OK, 1 on error
@@ -2607,11 +2353,8 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
 	    res = rc;
 
-	(void) generateDepends(spec, pkg, pkg->cpioList);
+	(void) rpmfcGenerateDepends(spec, pkg);
 
-	/*@-noeffect@*/
-	printDeps(pkg->header);
-	/*@=noeffect@*/
     }
 
     /* Now we have in fileList list of files from all packages.

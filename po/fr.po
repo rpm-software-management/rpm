@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-02 09:54-0500\n"
+"POT-Creation-Date: 2002-12-02 21:54-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -536,84 +536,74 @@ msgstr "les arguments de --root (-r) doivent commencer par un /"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1147
+#: build/files.c:1148
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1286
+#: build/files.c:1287
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1535
+#: build/files.c:1523
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1559
+#: build/files.c:1547
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: build/files.c:1759
+#: build/files.c:1747
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "les arguments de --root (-r) doivent commencer par un /"
 
-#: build/files.c:1783
+#: build/files.c:1771
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1800 lib/rpminstall.c:343
+#: build/files.c:1788 lib/rpminstall.c:343
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "aucun package n'a t spcifi pour la dsinstallation"
 
-#: build/files.c:1860
+#: build/files.c:1848
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:1871 build/pack.c:156
+#: build/files.c:1859 build/pack.c:156
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2258
+#: build/files.c:2246
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: build/files.c:2270 build/parsePrep.c:50
+#: build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2410
-#, fuzzy, c-format
-msgid "Finding  %s: %s\n"
-msgstr "impossible d'ouvrir: %s\n"
-
-#: build/files.c:2416 build/files.c:2427
-#, fuzzy, c-format
-msgid "Failed to find %s:\n"
-msgstr "impossible d'ouvrir: %s\n"
-
-#: build/files.c:2556
+#: build/files.c:2302
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "La construction a chou.\n"
 
-#: build/files.c:2577
+#: build/files.c:2323
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2605
+#: build/files.c:2351
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -2474,12 +2464,12 @@ msgstr ""
 msgid "package %s is not installed\n"
 msgstr "aucun package n'a t spcifi pour l'installation"
 
-#: lib/rpmal.c:693
+#: lib/rpmal.c:694
 #, fuzzy
 msgid "(added files)"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: lib/rpmal.c:770
+#: lib/rpmal.c:771
 msgid "(added provide)"
 msgstr ""
 
@@ -3903,6 +3893,14 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Finding  %s: %s\n"
+#~ msgstr "impossible d'ouvrir: %s\n"
+
+#, fuzzy
+#~ msgid "Failed to find %s:\n"
+#~ msgstr "impossible d'ouvrir: %s\n"
 
 #, fuzzy
 #~ msgid "only one of --prefix or --relocate may be used"

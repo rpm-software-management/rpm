@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-02 09:54-0500\n"
+"POT-Creation-Date: 2002-12-02 21:54-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -500,84 +500,74 @@ msgstr "Fil skal begynde med \"/\": %s\n"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Kan ikke blande special-%%doc med andre former: %s\n"
 
-#: build/files.c:1147
+#: build/files.c:1148
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Fil angivet to gange: %s\n"
 
-#: build/files.c:1286
+#: build/files.c:1287
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolsk lænke peger på BuildRoot: %s -> %s\n"
 
-#: build/files.c:1535
+#: build/files.c:1523
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Fil passer ikke til præfiks (%s): %s\n"
 
-#: build/files.c:1559
+#: build/files.c:1547
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:1759
+#: build/files.c:1747
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Fil kræver foranstillet \"/\": %s\n"
 
-#: build/files.c:1783
+#: build/files.c:1771
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linie %d: Filnavn ikke tilladt: %s\n"
 
-#: build/files.c:1800 lib/rpminstall.c:343
+#: build/files.c:1788 lib/rpminstall.c:343
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:1860
+#: build/files.c:1848
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:1871 build/pack.c:156
+#: build/files.c:1859 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:2258
+#: build/files.c:2246
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2270 build/parsePrep.c:50
+#: build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:2410
-#, fuzzy, c-format
-msgid "Finding  %s: %s\n"
-msgstr "Finder %s: (benytter %s)...\n"
-
-#: build/files.c:2416 build/files.c:2427
-#, c-format
-msgid "Failed to find %s:\n"
-msgstr "Kunne ikke finde %s:\n"
-
-#: build/files.c:2556
+#: build/files.c:2302
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: build/files.c:2577
+#: build/files.c:2323
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2605
+#: build/files.c:2351
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
@@ -2390,12 +2380,12 @@ msgstr "post %d kunne ikke læses\n"
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
 
-#: lib/rpmal.c:693
+#: lib/rpmal.c:694
 #, fuzzy
 msgid "(added files)"
 msgstr "ugyldig db-fil %s\n"
 
-#: lib/rpmal.c:770
+#: lib/rpmal.c:771
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s JA (tilføjede 'provide')\n"
@@ -3829,6 +3819,13 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Finding  %s: %s\n"
+#~ msgstr "Finder %s: (benytter %s)...\n"
+
+#~ msgid "Failed to find %s:\n"
+#~ msgstr "Kunne ikke finde %s:\n"
 
 #~ msgid "only one of --prefix or --relocate may be used"
 #~ msgstr "kun én af --prefix eller --relocate kan bruges"

@@ -64,6 +64,14 @@ int argiCount(ARGI_t argi)
     return nvals;
 }
 
+const ARGint_t argiData(const ARGI_t argi)
+{
+    ARGint_t vals = NULL;
+    if (argi && argi->nvals > 0)
+	vals = argi->vals;
+    return vals;
+}
+
 int argvCount(const ARGV_t argv)
 {
     int argc = 0;
@@ -71,6 +79,13 @@ int argvCount(const ARGV_t argv)
     while (argv[argc] != NULL)
 	argc++;
     return argc;
+}
+
+const ARGV_t argvData(const ARGV_t argv)
+{
+/*@-retalias -temptrans @*/
+    return argv;
+/*@=retalias =temptrans @*/
 }
 
 int argvCmp(const void * a, const void * b)

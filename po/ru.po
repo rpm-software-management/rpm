@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-02 09:54-0500\n"
+"POT-Creation-Date: 2002-12-02 21:54-0500\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -506,77 +506,67 @@ msgstr "Файл должен начинаться с \"/\": %s\n"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Нельзя смешивать спец. %%doc с другими формами: %s\n"
 
-#: build/files.c:1147
+#: build/files.c:1148
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Файл указан дважды: %s\n"
 
-#: build/files.c:1286
+#: build/files.c:1287
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символическая ссылка указывает на BuildRoot: %s -> %s\n"
 
-#: build/files.c:1535
+#: build/files.c:1523
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Файл не соответстует префиксу (%s): %s\n"
 
-#: build/files.c:1559
+#: build/files.c:1547
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1759
+#: build/files.c:1747
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s\n"
 
-#: build/files.c:1783
+#: build/files.c:1771
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob не разрешаются: %s\n"
 
-#: build/files.c:1800 lib/rpminstall.c:343
+#: build/files.c:1788 lib/rpminstall.c:343
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1860
+#: build/files.c:1848
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Невозможно открыть файл %%files %s: %s\n"
 
-#: build/files.c:1871 build/pack.c:156
+#: build/files.c:1859 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "строка: %s\n"
 
-#: build/files.c:2258
+#: build/files.c:2246
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Неверный файл %s: %s\n"
 
-#: build/files.c:2270 build/parsePrep.c:50
+#: build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара владелец/группа: %s\n"
 
-#: build/files.c:2410
-#, c-format
-msgid "Finding  %s: %s\n"
-msgstr "Идет поиск  %s: %s\n"
-
-#: build/files.c:2416 build/files.c:2427
-#, c-format
-msgid "Failed to find %s:\n"
-msgstr "Невозможно найти %s:\n"
-
-#: build/files.c:2556
+#: build/files.c:2302
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Проверка на неупакованный(е) файл(ы): %s\n"
 
-#: build/files.c:2577
+#: build/files.c:2323
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -585,7 +575,7 @@ msgstr ""
 "Обнаружен(ы) установленный(е) (но не упакованный(е)) файл(ы):\n"
 "%s"
 
-#: build/files.c:2605
+#: build/files.c:2351
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Обрабатываются файлы: %s-%s-%s\n"
@@ -2348,11 +2338,11 @@ msgstr "невозможно прочитать запись %u\n"
 msgid "package %s is not installed\n"
 msgstr "пакет %s не установлен\n"
 
-#: lib/rpmal.c:693
+#: lib/rpmal.c:694
 msgid "(added files)"
 msgstr "(файлы добавлены)"
 
-#: lib/rpmal.c:770
+#: lib/rpmal.c:771
 msgid "(added provide)"
 msgstr "(added provide)"
 
@@ -3775,6 +3765,12 @@ msgstr "использовать базу данных в КАТАЛОГЕ"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "КАТАЛОГ"
+
+#~ msgid "Finding  %s: %s\n"
+#~ msgstr "Идет поиск  %s: %s\n"
+
+#~ msgid "Failed to find %s:\n"
+#~ msgstr "Невозможно найти %s:\n"
 
 #~ msgid "only one of --prefix or --relocate may be used"
 #~ msgstr ""

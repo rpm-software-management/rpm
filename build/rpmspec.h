@@ -220,7 +220,7 @@ spectag stashSt(Spec spec, Header h, int tag, const char * lang)
 
 /** \ingroup rpmbuild
  * @param spec		spec file control structure
- * @param pkg
+ * @param pkg		package control
  * @param field
  * @param tag
  */

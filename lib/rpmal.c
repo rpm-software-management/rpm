@@ -598,6 +598,7 @@ void rpmalMakeIndex(rpmal al)
 	if (alp->provides != NULL)
 	    ai->size += rpmdsCount(alp->provides);
     }
+    if (ai->size == 0) return;
 
     ai->index = xrealloc(ai->index, ai->size * sizeof(*ai->index));
     ai->k = 0;

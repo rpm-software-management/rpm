@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-02 09:54-0500\n"
+"POT-Creation-Date: 2002-12-02 21:54-0500\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -505,84 +505,74 @@ msgstr "Soubor musí zaèínat na \"/\": %s\n"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Nelze míchat speciální %%doc s ostatnímí formami: %s\n"
 
-#: build/files.c:1147
+#: build/files.c:1148
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Soubor uveden dvakrát: %s\n"
 
-#: build/files.c:1286
+#: build/files.c:1287
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolická linka ukazuje na BuildRoot: %s -> %s\n"
 
-#: build/files.c:1535
+#: build/files.c:1523
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Soubor nesouhlasí s prefixem (%s): %s\n"
 
-#: build/files.c:1559
+#: build/files.c:1547
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Soubor nenalezen: %s\n"
 
-#: build/files.c:1759
+#: build/files.c:1747
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Soubor potøebuje úvodní \"/\": %s\n"
 
-#: build/files.c:1783
+#: build/files.c:1771
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob není dovolen: %s\n"
 
-#: build/files.c:1800 lib/rpminstall.c:343
+#: build/files.c:1788 lib/rpminstall.c:343
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Soubor nenalezen globem: %s\n"
 
-#: build/files.c:1860
+#: build/files.c:1848
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Nemohu otevøít %%files soubor %s: %s\n"
 
-#: build/files.c:1871 build/pack.c:156
+#: build/files.c:1859 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "øádek: %s\n"
 
-#: build/files.c:2258
+#: build/files.c:2246
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "©patný soubor: %s: %s\n"
 
-#: build/files.c:2270 build/parsePrep.c:50
+#: build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "©patný vlastník/skupina: %s\n"
 
-#: build/files.c:2410
-#, fuzzy, c-format
-msgid "Finding  %s: %s\n"
-msgstr "Hledám   %s: (pou¾it %s)...\n"
-
-#: build/files.c:2416 build/files.c:2427
-#, c-format
-msgid "Failed to find %s:\n"
-msgstr "Selhalo vyhledání %s:\n"
-
-#: build/files.c:2556
+#: build/files.c:2302
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "rozbalování archívu selhalo %s%s: %s\n"
 
-#: build/files.c:2577
+#: build/files.c:2323
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2605
+#: build/files.c:2351
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Zpracovávám soubory: %s-%s-%s\n"
@@ -2377,12 +2367,12 @@ msgstr "záznam %u nelze pøeèíst\n"
 msgid "package %s is not installed\n"
 msgstr "balíèek %s není nainstalován\n"
 
-#: lib/rpmal.c:693
+#: lib/rpmal.c:694
 #, fuzzy
 msgid "(added files)"
 msgstr "©patný soubor: %s: %s\n"
 
-#: lib/rpmal.c:770
+#: lib/rpmal.c:771
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s ANO (pøidáno poskytuje)\n"
@@ -3818,6 +3808,13 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Finding  %s: %s\n"
+#~ msgstr "Hledám   %s: (pou¾it %s)...\n"
+
+#~ msgid "Failed to find %s:\n"
+#~ msgstr "Selhalo vyhledání %s:\n"
 
 #~ msgid "only one of --prefix or --relocate may be used"
 #~ msgstr "pou¾ít lze jen jeden z parametrù --prefix nebo --relocate"

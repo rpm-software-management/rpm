@@ -50,15 +50,35 @@ ARGV_t argvFree(/*@only@*/ /*@null@*/ ARGV_t argv)
 /**
  * Return no. of elements in argi array.
  * @param argi		argi array
+ * @return		no. of elements
  */
 int argiCount(/*@null@*/ const ARGI_t argi)
 	/*@*/;
 
 /**
+ * Return data from argi array.
+ * @param argi		argi array
+ * @return		argi array data address
+ */
+/*@null@*/
+const ARGint_t argiData(/*@null@*/ const ARGI_t argi)
+	/*@*/;
+
+/**
  * Return no. of elements in argv array.
  * @param argv		argv array
+ * @return		no. of elements
  */
 int argvCount(/*@null@*/ const ARGV_t argv)
+	/*@*/;
+
+/**
+ * Return data from argv array.
+ * @param argv		argv array
+ * @return		argv array data address
+ */
+/*@null@*/
+const ARGV_t argvData(/*@null@*/ const ARGV_t argv)
 	/*@*/;
 
 /**

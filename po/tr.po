@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-02 09:54-0500\n"
+"POT-Creation-Date: 2002-12-02 21:54-0500\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -510,84 +510,74 @@ msgstr "Dosya \"/\" ile baþlamalý: %s\n"
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Özel %%doc ile diðer formlar karýþtýrýlamaz: %s\n"
 
-#: build/files.c:1147
+#: build/files.c:1148
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Dosya iki kere gösterildi: %s\n"
 
-#: build/files.c:1286
+#: build/files.c:1287
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Sembolik bað BuildRoot gösteriyor: %s -> %s\n"
 
-#: build/files.c:1535
+#: build/files.c:1523
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Dosya önek (%s) ile uyumsuz: %s\n"
 
-#: build/files.c:1559
+#: build/files.c:1547
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Dosya bulunamadý: %s\n"
 
-#: build/files.c:1759
+#: build/files.c:1747
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Dosya \"/\" ile içermeli: %s\n"
 
-#: build/files.c:1783
+#: build/files.c:1771
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "satýr %d: Dosya adý uygun deðil: %s\n"
 
-#: build/files.c:1800 lib/rpminstall.c:343
+#: build/files.c:1788 lib/rpminstall.c:343
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Dosya glob tarafýndan bulunamadý: %s\n"
 
-#: build/files.c:1860
+#: build/files.c:1848
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "%%files dosya %s dosyasýnda açýlamadý: %s\n"
 
-#: build/files.c:1871 build/pack.c:156
+#: build/files.c:1859 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "satýr: %s\n"
 
-#: build/files.c:2258
+#: build/files.c:2246
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Dosya hatalý: %s: %s\n"
 
-#: build/files.c:2270 build/parsePrep.c:50
+#: build/files.c:2258 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Kullanýcý/grup hatalý: %s\n"
 
-#: build/files.c:2410
-#, fuzzy, c-format
-msgid "Finding  %s: %s\n"
-msgstr "%s aranýyor: (%s kullanarak)...\n"
-
-#: build/files.c:2416 build/files.c:2427
-#, c-format
-msgid "Failed to find %s:\n"
-msgstr "%s bulunamadý:\n"
-
-#: build/files.c:2556
+#: build/files.c:2302
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "arþiv paketi açýlýrken baþarýsýz%s%s: %s\n"
 
-#: build/files.c:2577
+#: build/files.c:2323
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2605
+#: build/files.c:2351
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Ýþlenen dosyalar: %s-%s-%s\n"
@@ -2395,12 +2385,12 @@ msgstr "%u. kayýt okunamadý\n"
 msgid "package %s is not installed\n"
 msgstr "%s paketi kurulu deðil\n"
 
-#: lib/rpmal.c:693
+#: lib/rpmal.c:694
 #, fuzzy
 msgid "(added files)"
 msgstr "db dosyasý %s hatalý\n"
 
-#: lib/rpmal.c:770
+#: lib/rpmal.c:771
 #, fuzzy
 msgid "(added provide)"
 msgstr "%s: %-45s EVET (önlem eklendi)\n"
@@ -3823,6 +3813,13 @@ msgstr ""
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Finding  %s: %s\n"
+#~ msgstr "%s aranýyor: (%s kullanarak)...\n"
+
+#~ msgid "Failed to find %s:\n"
+#~ msgstr "%s bulunamadý:\n"
 
 #~ msgid "only one of --prefix or --relocate may be used"
 #~ msgstr "--prefix ve --relocate seçeneklerinden sadece biri kullanýlabilir"

@@ -154,7 +154,7 @@ struct fmagic_s {
 
 typedef /*@abstract@*/ struct fmagic_s * fmagic;
 
-/*unchecked@*/
+/*@unchecked@*/
 extern fmagic global_fmagic;
 
 /*@unchecked@*//*@observer@*/

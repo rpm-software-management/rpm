@@ -8,8 +8,12 @@
 extern int _rpmfc_debug;
 /*@=exportlocal@*/
 
+/**
+ */
 typedef struct rpmfc_s * rpmfc;
 
+/**
+ */
 struct rpmfc_s {
     int nfiles;		/*!< no. of files */
     int fknown;		/*!< no. of classified files */
@@ -34,6 +38,8 @@ struct rpmfc_s {
 
 };
 
+/**
+ */
 enum FCOLOR_e {
     RPMFC_BLACK			= 0,
     RPMFC_ELF32			= (1 <<  0),
@@ -70,6 +76,8 @@ enum FCOLOR_e {
 };
 typedef	enum FCOLOR_e FCOLOR_t;
 
+/**
+ */
 struct rpmfcTokens_s {
 /*@observer@*/
     const char * token;
@@ -98,33 +106,54 @@ int rpmfcColoring(const char * fmstr)
 /*@=exportlocal@*/
 
 /**
+ * @param fc		file classifier
  */
 void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/;
 /**
+ * Destroy a file classifier.
+ * @param fc		file classifier
+ * @return		NULL always
  */
 /*@null@*/
 rpmfc rpmfcFree(/*@only@*/ /*@null@*/ rpmfc fc)
 	/*@modifies fc @*/;
 
 /**
+ * Create a file classifier.
+ * @return		new file classifier
  */
 rpmfc rpmfcNew(void)
 	/*@*/;
 
 /**
  * Build file class dictionary and mappings.
+ * @param fc		file classifier
+ * @return		0 on success
  */
 int rpmfcClassify(rpmfc fc, ARGV_t argv)
 	/*@globals global_fmagic, fileSystem, internalState @*/
 	/*@modifies fc, global_fmagic, fileSystem, internalState @*/;
 
 /**
- * BUild file/package dependency dictionary and mappings.
+ * Build file/package dependency dictionary and mappings.
+ * @param fc		file classifier
+ * @return		0 on success
  */
 int rpmfcApply(rpmfc fc)
 	/*@modifies fc @*/;
+
+/**
+ * Generate package dependencies.
+ * @param spec		spec file control
+ * @param pkg		package control
+ * @return		0 on success
+ */
+int rpmfcGenerateDepends(const Spec spec, Package pkg)
+	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
+	/*@modifies pkg->cpioList, pkg->header,
+		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 #ifdef __cplusplus
 }

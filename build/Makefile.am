@@ -31,7 +31,7 @@ librpmbuild_la_LDFLAGS = -release @VERSION@ $(top_builddir)/lib/librpm.la
 rpmfile.h:
 	@ln -sf $(top_builddir)/file/file.h $@
 
-rpmfc.c: rpmfile.h
+files.c rpmfc.c: rpmfile.h
 
 clean-local:
 	 rm -f *.o rpmfile.h # .created $(FILELOBJS)
