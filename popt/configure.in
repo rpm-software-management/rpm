@@ -2,7 +2,7 @@ AC_INIT(popt.h)
 AM_CONFIG_HEADER(config.h)
 AC_PREREQ(2.12)
 AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE(popt, 1.4)
+AM_INIT_AUTOMAKE(popt, 1.5)
 ALL_LINGUAS="ro sk"
 
 AC_ISC_POSIX
@@ -74,5 +74,9 @@ AC_CHECK_FUNC(setreuid, [], [
 
 AM_GNU_GETTEXT
 
-AC_OUTPUT([Makefile intl/Makefile po/Makefile.in],
+POPT_SOURCE_PATH="`pwd`"
+AC_DEFINE_UNQUOTED(POPT_SOURCE_PATH, "$POPT_SOURCE_PATH")
+AC_SUBST(POPT_SOURCE_PATH)
+
+AC_OUTPUT([Doxyfile Makefile intl/Makefile po/Makefile.in],
 	[sed -e "/POTFILES =/r po/POTFILES" po/Makefile.in > po/Makefile])

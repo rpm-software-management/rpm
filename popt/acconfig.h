@@ -42,6 +42,9 @@
 /* Define to 1 if you have the stpcpy function.  */
 #undef HAVE_STPCPY
 
+/* Absolute path to popt top_sourcedir. */
+#undef POPT_SOURCE_PATH
+
 ^L
 /* Leave that blank line there!!  Autoheader needs it.
    If you're adding to this file, keep in mind:

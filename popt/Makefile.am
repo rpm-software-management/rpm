@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.4 foreign
 
-EXTRA_DIST = CHANGES autogen.sh $(man_MANS) popt.spec \
+EXTRA_DIST = autogen.sh CHANGES $(man_MANS) popt.spec \
 	testit.sh po/Makefile.in.in po/POTFILES.in po/*.po po/popt.pot popt.ps
 
 SUBDIRS = intl po
@@ -54,3 +54,9 @@ archive:
 	@rm -f /tmp/$(PACKAGE)-$(VERSION).tar.gz 
 	@echo " "
 	@echo "The final archive is ./$(PACKAGE)-$(VERSION).tar.gz."
+
+.PHONY: doxygen
+doxygen: Doxyfile
+	rm -rf doxygen
+	mkdir -p doxygen
+	doxygen
