@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-11-24 11:06-0500\n"
+"POT-Creation-Date: 1999-11-24 13:35-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: build.c:25 lib/rpminstall.c:236 lib/rpminstall.c:396
+#: build.c:25 lib/rpminstall.c:246 lib/rpminstall.c:406
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
@@ -1938,41 +1938,41 @@ msgstr ""
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:529
+#: lib/cpio.c:527
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:996
+#: lib/cpio.c:992
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:999
+#: lib/cpio.c:995
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1000
+#: lib/cpio.c:996
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1018
+#: lib/cpio.c:1014
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1019
+#: lib/cpio.c:1015
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1020
+#: lib/cpio.c:1016
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1021
+#: lib/cpio.c:1017
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1030
+#: lib/cpio.c:1026
 msgid " failed - "
 msgstr ""
 
@@ -2547,7 +2547,7 @@ msgstr ""
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:495 lib/rpminstall.c:217
+#: lib/query.c:495 lib/rpminstall.c:227
 #, c-format
 msgid "%s does not appear to be a RPM package\n"
 msgstr ""
@@ -2611,7 +2611,7 @@ msgstr ""
 msgid "record %d could not be read\n"
 msgstr ""
 
-#: lib/query.c:641 lib/rpminstall.c:407
+#: lib/query.c:641 lib/rpminstall.c:417
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2857,89 +2857,89 @@ msgid ""
 "database"
 msgstr ""
 
-#: lib/rpmdb.c:471
+#: lib/rpmdb.c:462
 #, c-format
 msgid "package %s not listed in %s"
 msgstr ""
 
-#: lib/rpmdb.c:482
+#: lib/rpmdb.c:473
 #, c-format
 msgid "package %s not found in %s"
 msgstr ""
 
-#: lib/rpmdb.c:506 lib/uninstall.c:86
+#: lib/rpmdb.c:497 lib/uninstall.c:86
 #, c-format
 msgid "cannot read header at %d for uninstall"
 msgstr ""
 
-#: lib/rpmdb.c:514
+#: lib/rpmdb.c:505
 msgid "package has no name"
 msgstr ""
 
-#: lib/rpmdb.c:516
+#: lib/rpmdb.c:507
 msgid "removing name index\n"
 msgstr ""
 
-#: lib/rpmdb.c:521
+#: lib/rpmdb.c:512
 msgid "package has no group\n"
 msgstr ""
 
-#: lib/rpmdb.c:523
+#: lib/rpmdb.c:514
 msgid "removing group index\n"
 msgstr ""
 
-#: lib/rpmdb.c:530
+#: lib/rpmdb.c:521
 #, c-format
 msgid "removing provides index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:545
+#: lib/rpmdb.c:536
 #, c-format
 msgid "removing requiredby index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:557
+#: lib/rpmdb.c:548
 #, c-format
 msgid "removing trigger index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:568
+#: lib/rpmdb.c:559
 #, c-format
 msgid "removing conflict index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:579
+#: lib/rpmdb.c:570
 #, c-format
 msgid "removing file index for %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:588
+#: lib/rpmdb.c:579
 msgid "package has no files\n"
 msgstr ""
 
-#: lib/rpmdb.c:671
+#: lib/rpmdb.c:662
 msgid "cannot allocate space for database"
 msgstr ""
 
-#: lib/rpmdb.c:730
+#: lib/rpmdb.c:721
 #, c-format
 msgid "cannot read header at %d for update"
 msgstr ""
 
-#: lib/rpmdb.c:739
+#: lib/rpmdb.c:730
 msgid "header changed size!"
 msgstr ""
 
-#: lib/rpminstall.c:123
+#: lib/rpminstall.c:124
 msgid "counting packages to install\n"
 msgstr ""
 
-#: lib/rpminstall.c:127
+#: lib/rpminstall.c:128
 #, c-format
 msgid "found %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:136
+#: lib/rpminstall.c:137
 msgid "looking for packages to download\n"
 msgstr ""
 
@@ -2950,79 +2950,79 @@ msgstr ""
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:174
+#: lib/rpminstall.c:181
 #, c-format
 msgid " ... as %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:178
+#: lib/rpminstall.c:185
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:195
+#: lib/rpminstall.c:203
 #, c-format
 msgid "retrieved %d packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:204 lib/rpminstall.c:346
+#: lib/rpminstall.c:214 lib/rpminstall.c:356
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:221 lib/rpminstall.c:484
+#: lib/rpminstall.c:231 lib/rpminstall.c:494
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:257
+#: lib/rpminstall.c:267
 #, c-format
 msgid "package %s is not relocateable\n"
 msgstr ""
 
-#: lib/rpminstall.c:275
+#: lib/rpminstall.c:285
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:280
+#: lib/rpminstall.c:290
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:297
+#: lib/rpminstall.c:307
 #, c-format
 msgid "found %d source and %d binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:308
+#: lib/rpminstall.c:318
 msgid "failed dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:326
+#: lib/rpminstall.c:336
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:411
+#: lib/rpminstall.c:421
 #, c-format
 msgid "searching for package %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:420
+#: lib/rpminstall.c:430
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:446
+#: lib/rpminstall.c:456
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:473
+#: lib/rpminstall.c:483
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:479
+#: lib/rpminstall.c:489
 #, c-format
 msgid "Installing %s\n"
 msgstr ""

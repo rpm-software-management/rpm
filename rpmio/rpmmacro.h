@@ -33,28 +33,32 @@ typedef /*@abstract@*/ struct MacroContext {
 extern "C" {
 #endif
 
-void	dumpMacroTable	(MacroContext *mc, FILE *f);
+void	dumpMacroTable	(MacroContext * mc, FILE * fp);
 
 /* XXX this is used only in build/expression.c and will go away. */
 const char *getMacroBody (MacroContext *mc, const char *name);
 
-int	expandMacros	(void *spec, MacroContext *mc, char *sbuf, size_t sbuflen);
-void	addMacro	(MacroContext *mc, const char *n, const char *o, const char *b, int depth);
-void	delMacro	(MacroContext *mc, const char *n);
+int	expandMacros	(void * spec, MacroContext * mc, char * sbuf,
+				size_t sbuflen);
+void	addMacro	(MacroContext * mc, const char * n, const char * o,
+				const char * b, int depth);
+void	delMacro	(MacroContext * mc, const char * n);
 
-int	rpmDefineMacro	(MacroContext *mc, const char *macro, int level);
-void	initMacros	(MacroContext *mc, const char *macrofile);
-void	freeMacros	(MacroContext *mc);
+int	rpmDefineMacro	(MacroContext * mc, const char * macro, int level);
+void	initMacros	(MacroContext * mc, const char * macrofile);
+void	freeMacros	(MacroContext * mc);
 
 #define COMPRESSED_NOT   0
 #define COMPRESSED_OTHER 1
 #define COMPRESSED_BZIP2 2
-int	isCompressed	(const char *file, int *compressed);
+int	isCompressed	(const char * file, int * compressed);
 
-char *	rpmExpand	(const char *arg, ...);
-const char *rpmGetPath	(const char *path, ...);
-const char *rpmGenPath	(const char *root, const char *mdir, const char *file);
-int	rpmExpandNumeric (const char *arg);
+char *	rpmExpand	(const char * arg, ...);
+const char *rpmCleanPath(char * path);
+const char *rpmGetPath	(const char * path, ...);
+const char *rpmGenPath	(const char * root, const char * mdir,
+				const char * file);
+int	rpmExpandNumeric (const char * arg);
 
 #ifdef __cplusplus
 }

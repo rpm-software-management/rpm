@@ -132,7 +132,7 @@ sortMacroTable(MacroContext *mc)
 }
 
 void
-dumpMacroTable(MacroContext *mc, FILE *f)
+dumpMacroTable(MacroContext * mc, FILE * fp)
 {
 	int i;
 	int nempty = 0;
@@ -140,10 +140,10 @@ dumpMacroTable(MacroContext *mc, FILE *f)
 
 	if (mc == NULL)
 		mc = &globalMacroContext;
-	if (f == NULL)
-		f = stderr;
+	if (fp == NULL)
+		fp = stderr;
     
-	fprintf(f, "========================\n");
+	fprintf(fp, "========================\n");
 	for (i = 0; i < mc->firstFree; i++) {
 		MacroEntry *me;
 		if ((me = mc->macroTable[i]) == NULL) {
@@ -151,16 +151,16 @@ dumpMacroTable(MacroContext *mc, FILE *f)
 			nempty++;
 			continue;
 		}
-		fprintf(f, "%3d%c %s", me->level,
+		fprintf(fp, "%3d%c %s", me->level,
 			(me->used > 0 ? '=' : ':'), me->name);
 		if (me->opts && *me->opts)
-			fprintf(f, "(%s)", me->opts);
+			fprintf(fp, "(%s)", me->opts);
 		if (me->body && *me->body)
-			fprintf(f, "\t%s", me->body);
-		fprintf(f, "\n");
+			fprintf(fp, "\t%s", me->body);
+		fprintf(fp, "\n");
 		nactive++;
 	}
-	fprintf(f, _("======================== active %d empty %d\n"),
+	fprintf(fp, _("======================== active %d empty %d\n"),
 		nactive, nempty);
 }
 
@@ -1462,12 +1462,84 @@ rpmExpandNumeric(const char *arg)
     return rc;
 }
 
-/* Return concatenated and expanded path with multiple /'s removed */
+const char *rpmCleanPath(char * path)
+{
+    const char *s;
+    char *se, *t, *te;
+
+    s = t = te = path;
+    while (*s) {
+/*fprintf(stderr, "*** got \"%.*s\"\trest \"%s\"\n", (t-path), path, s); */
+	switch(*s) {
+	case ':':			/* handle url's */
+	    if (s[1] == '/' && s[2] == '/') {
+		*t++ = *s++;
+		*t++ = *s++;
+	    }
+	    break;
+	case '/':
+	    /* Move parent dir forward */
+	    for (se = te + 1; se < t && *se != '/'; se++)
+		;
+	    if (se < t && *se == '/') {
+		te = se;
+/*fprintf(stderr, "*** next pdir \"%.*s\"\n", (te-path), path); */
+	    }
+	    while (s[1] == '/')
+		s++;
+	    while (t > path && t[-1] == '/')
+		t--;
+	    break;
+	case '.':
+	    /* Leading .. is special */
+	    if (t == path && s[1] == '.') {
+		*t++ = *s++;
+		break;
+	    }
+	    /* Single . is special */
+	    if (t == path && s[1] == '\0') {
+		break;
+	    }
+	    /* Trim leading ./ , embedded ./ , trailing /. */
+	    if ((t == path || t[-1] == '/') && (s[1] == '/' || s[1] == '\0')) {
+/*fprintf(stderr, "*** Trim leading ./ , embedded ./ , trailing /.\n"); */
+		s++;
+		continue;
+	    }
+	    /* Trim embedded /../ and trailing /.. */
+	    if (t > path && t[-1] == '/' && s[1] == '.' && (s[2] == '/' || s[2] == '\0')) {
+		t = te;
+		/* Move parent dir forward */
+		if (te > path)
+		    for (--te; te > path && *te != '/'; te--)
+			;
+/*fprintf(stderr, "*** prev pdir \"%.*s\"\n", (te-path), path); */
+		s++;
+		s++;
+		continue;
+	    }
+	    break;
+	default:
+	    break;
+	}
+	*t++ = *s++;
+    }
+
+    /* Trim trailing / (but leave single / alone) */
+    if (t > &path[1] && t[-1] == '/')
+	t--;
+    *t = '\0';
+
+    return path;
+}
+
+/* Return concatenated and expanded canonical path. */
 const char *
 rpmGetPath(const char *path, ...)
 {
-    char buf[BUFSIZ], *t, *te, *se;
-    const char *s;
+    char buf[BUFSIZ];
+    const char * s;
+    char * t, * te;
     va_list ap;
 
     if (path == NULL)
@@ -1485,69 +1557,7 @@ rpmGetPath(const char *path, ...)
     va_end(ap);
     expandMacros(NULL, NULL, buf, sizeof(buf));
 
-    s = t = te = buf;
-    while (*s) {
-/*fprintf(stderr, "*** got \"%.*s\"\trest \"%s\"\n", (t-buf), buf, s); */
-	switch(*s) {
-	case ':':			/* handle url's */
-	    if (s[1] == '/' && s[2] == '/') {
-		*t++ = *s++;
-		*t++ = *s++;
-	    }
-	    break;
-	case '/':
-	    /* Move parent dir forward */
-	    for (se = te + 1; se < t && *se != '/'; se++)
-		;
-	    if (se < t && *se == '/') {
-		te = se;
-/*fprintf(stderr, "*** next pdir \"%.*s\"\n", (te-buf), buf); */
-	    }
-	    while (s[1] == '/')
-		s++;
-	    while (t > buf && t[-1] == '/')
-		t--;
-	    break;
-	case '.':
-	    /* Leading .. is special */
-	    if (t == buf && s[1] == '.') {
-		*t++ = *s++;
-		break;
-	    }
-	    /* Single . is special */
-	    if (t == buf && s[1] == '\0') {
-		break;
-	    }
-	    /* Trim leading ./ , embedded ./ , trailing /. */
-	    if ((t == buf || t[-1] == '/') && (s[1] == '/' || s[1] == '\0')) {
-/*fprintf(stderr, "*** Trim leading ./ , embedded ./ , trailing /.\n"); */
-		s++;
-		continue;
-	    }
-	    /* Trim embedded /../ and trailing /.. */
-	    if (t > buf && t[-1] == '/' && s[1] == '.' && (s[2] == '/' || s[2] == '\0')) {
-		t = te;
-		/* Move parent dir forward */
-		if (te > buf)
-		    for (--te; te > buf && *te != '/'; te--)
-			;
-/*fprintf(stderr, "*** prev pdir \"%.*s\"\n", (te-buf), buf); */
-		s++;
-		s++;
-		continue;
-	    }
-	    break;
-	default:
-	    break;
-	}
-	*t++ = *s++;
-    }
-    /* Trim trailing / (but leave single / alone) */
-    if (t > &buf[1] && t[-1] == '/')
-	t--;
-    *t = '\0';
-
-    return xstrdup(buf);
+    return xstrdup( rpmCleanPath(buf) );
 }
 
 /* Merge 3 args into path, any or all of which may be a url. */

@@ -90,13 +90,14 @@ static void * showProgress(const Header h, const rpmCallbackType what,
 
 int rpmInstall(const char * rootdir, const char ** argv, int transFlags, 
 	      int interfaceFlags, int probFilter, 
-	      rpmRelocation * relocations) {
+	      rpmRelocation * relocations)
+{
     rpmdb db = NULL;
     FD_t fd;
     int i;
     int mode, rc, major;
-    const char ** packages, ** tmpPackages;
-    const char ** filename;
+    const char ** pkgURL, ** tmppkgURL;
+    const char ** fileURL;
     int numPackages;
     int numTmpPackages = 0, numBinaryPackages = 0, numSourcePackages = 0;
     int numFailed = 0;
@@ -108,7 +109,7 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
     size_t nb;
     int notifyFlags = interfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
     int dbIsOpen = 0;
-    const char ** sourcePackages;
+    const char ** sourceURL;
     rpmRelocation * defaultReloc;
 
     if (transFlags & RPMTRANS_FLAG_TEST) 
@@ -121,31 +122,31 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
     if (defaultReloc && !defaultReloc->newPath) defaultReloc = NULL;
 
     rpmMessage(RPMMESS_DEBUG, _("counting packages to install\n"));
-    for (filename = argv, numPackages = 0; *filename; filename++, numPackages++)
+    for (fileURL = argv, numPackages = 0; *fileURL; fileURL++, numPackages++)
 	;
 
     rpmMessage(RPMMESS_DEBUG, _("found %d packages\n"), numPackages);
 
     nb = (numPackages + 1) * sizeof(char *);
-    packages = alloca(nb);
-    memset(packages, 0, nb);
-    tmpPackages = alloca(nb);
-    memset(tmpPackages, 0, nb);
+    pkgURL = alloca(nb);
+    memset(pkgURL, 0, nb);
+    tmppkgURL = alloca(nb);
+    memset(tmppkgURL, 0, nb);
     nb = (numPackages + 1) * sizeof(Header);
 
     rpmMessage(RPMMESS_DEBUG, _("looking for packages to download\n"));
-    for (filename = argv, i = 0; *filename; filename++) {
+    for (fileURL = argv, i = 0; *fileURL; fileURL++) {
 
-	switch (urlIsURL(*filename)) {
+	switch (urlIsURL(*fileURL)) {
 	case URL_IS_FTP:
 	case URL_IS_HTTP:
-	case URL_IS_PATH:
 	{   int myrc;
 	    const char *tfn;
 
 	    if (rpmIsVerbose())
-		fprintf(stdout, _("Retrieving %s\n"), *filename);
+		fprintf(stdout, _("Retrieving %s\n"), *fileURL);
 
+#ifdef	DYING
 	    {	char tfnbuf[64];
 		const char * tempfn;
 		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
@@ -168,29 +169,36 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 		    break;
 		}
 	    }
+#else
+	    {	char tfnbuf[64];
+		strcpy(tfnbuf, "rpm-xfer.XXXXXX");
+		tfn = rpmGenPath(rootdir, "%{_tmppath}/", mktemp(tfnbuf));
+	    }
+#endif
 
 	    /* XXX undefined %{name}/%{version}/%{release} here */
 	    /* XXX %{_tmpdir} does not exist */
 	    rpmMessage(RPMMESS_DEBUG, _(" ... as %s\n"), tfn);
-	    myrc = urlGetFile(*filename, tfn);
+	    myrc = urlGetFile(*fileURL, tfn);
 	    if (myrc < 0) {
 		rpmMessage(RPMMESS_ERROR, 
 			_("skipping %s - transfer failed - %s\n"), 
-			*filename, ftpStrerror(myrc));
+			*fileURL, ftpStrerror(myrc));
 		numFailed++;
-		packages[i] = NULL;
+		pkgURL[i] = NULL;
 		xfree(tfn);
 	    } else {
-		tmpPackages[numTmpPackages++] = packages[i++] = tfn;
+		tmppkgURL[numTmpPackages++] = pkgURL[i++] = tfn;
 	    }
 	}   break;
+	case URL_IS_PATH:
 	default:
-	    packages[i++] = *filename;
+	    pkgURL[i++] = *fileURL;
 	    break;
 	}
     }
 
-    sourcePackages = alloca(sizeof(*sourcePackages) * i);
+    sourceURL = alloca(sizeof(*sourceURL) * i);
 
     rpmMessage(RPMMESS_DEBUG, _("retrieved %d packages\n"), numTmpPackages);
 
@@ -198,13 +206,15 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
        are installed right here, only because they don't have headers and
        would create all sorts of confusion later. */
 
-    for (filename = packages; *filename; filename++) {
-	fd = Fopen(*filename, "r.ufdio");
+    for (fileURL = pkgURL; *fileURL; fileURL++) {
+	const char * fileName;
+	(void) urlPath(*fileURL, &fileName);
+	fd = Fopen(*fileURL, "r.ufdio");
 	if (Ferror(fd)) {
-	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"), *filename,
+	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"), *fileURL,
 		Fstrerror(fd));
 	    numFailed++;
-	    packages[i] = NULL;
+	    pkgURL[i] = NULL;
 	    continue;
 	}
 
@@ -215,16 +225,16 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 	    Fclose(fd);
 	    rpmMessage(RPMMESS_ERROR, 
 			_("%s does not appear to be a RPM package\n"), 
-			*filename);
+			*fileURL);
 	    break;
 	default:
-	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *filename);
+	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *fileURL);
 	    numFailed++;
-	    packages[i] = NULL;
+	    pkgURL[i] = NULL;
 	    break;
 	case 0:
 	    if (isSource) {
-		sourcePackages[numSourcePackages++] = *filename;
+		sourceURL[numSourcePackages++] = fileName;
 		Fclose(fd);
 	    } else {
 		if (!dbIsOpen) {
@@ -260,7 +270,7 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 		    }
 		}
 
-		rc = rpmtransAddPackage(rpmdep, h, NULL, *filename,
+		rc = rpmtransAddPackage(rpmdep, h, NULL, fileName,
 			       (interfaceFlags & INSTALL_UPGRADE) != 0,
 			       relocations);
 
@@ -272,13 +282,13 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 			break;
 		case 1:
 			rpmMessage(RPMMESS_ERROR, 
-			    _("error reading from file %s\n"), *filename);
+			    _("error reading from file %s\n"), *fileURL);
 			return numPackages;
 			/*@notreached@*/ break;
 		case 2:
 			rpmMessage(RPMMESS_ERROR, 
 			    _("file %s requires a newer version of RPM\n"),
-			    *filename);
+			    *fileURL);
 			return numPackages;
 			/*@notreached@*/ break;
 		}
@@ -341,10 +351,10 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
 
     if (numSourcePackages && !stopInstall) {
 	for (i = 0; i < numSourcePackages; i++) {
-	    fd = Fopen(sourcePackages[i], "r.ufdio");
+	    fd = Fopen(sourceURL[i], "r.ufdio");
 	    if (Ferror(fd)) {
 		rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"), 
-			   sourcePackages[i], Fstrerror(fd));
+			   sourceURL[i], Fstrerror(fd));
 		continue;
 	    }
 
@@ -357,8 +367,8 @@ int rpmInstall(const char * rootdir, const char ** argv, int transFlags,
     }
 
     for (i = 0; i < numTmpPackages; i++) {
-	unlink(tmpPackages[i]);
-	xfree(tmpPackages[i]);
+	Unlink(tmppkgURL[i]);
+	xfree(tmppkgURL[i]);
     }
 
     /* FIXME how do we close our various fd's? */
