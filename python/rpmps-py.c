@@ -6,7 +6,8 @@
 
 #include <rpmlib.h>
 
-#include "header-py.h"
+#include "rpmdebug-py.c"
+
 #include "rpmps-py.h"
 
 #include "debug.h"
@@ -29,14 +30,22 @@ static PyObject *
 rpmps_NumProblems(rpmpsObject * s, PyObject * args)
 	/*@*/
 {
+    int rc;
+
     if (!PyArg_ParseTuple(args, ":NumProblems")) return NULL;
-    return Py_BuildValue("i", rpmpsNumProblems(s->ps));
+    rc = rpmpsNumProblems(s->ps);
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_NumProblems(%p,%p) rc %d\n", s, args, rc);
+    return Py_BuildValue("i", rc);
 }
 
 static PyObject *
 rpmps_iter(rpmpsObject * s)
 	/*@*/
 {
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_iter(%p)\n", s);
+    s->ix = -1;
     Py_INCREF(s);
     return (PyObject *)s;
 }
@@ -48,18 +57,20 @@ rpmps_iternext(rpmpsObject * s)
 	/*@modifies s, _Py_NoneStruct @*/
 {
     PyObject * result = NULL;
+    rpmps ps = s->ps;
 
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_iternext(%p) ps %p ix %d active %d\n", s, s->ps, s->ix, s->active);
     /* Reset loop indices on 1st entry. */
     if (!s->active) {
 	s->ix = -1;
 	s->active = 1;
     }
 
-    /* If more to do, return a problem set tuple. */
+    /* If more to do, return a problem set string. */
     s->ix++;
-    if (s->ix < s->ps->numProblems) {
-	/* TODO */
-	result = Py_BuildValue("i", s->ix);
+    if (s->ix < ps->numProblems) {
+	result = Py_BuildValue("s", rpmProblemString(ps->probs+s->ix));
     } else {
 	s->active = 0;
     }
@@ -67,6 +78,7 @@ rpmps_iternext(rpmpsObject * s)
     return result;
 }
 
+#ifdef	NOTUSED
 /*@null@*/
 static PyObject *
 rpmps_Next(rpmpsObject * s, PyObject *args)
@@ -75,6 +87,8 @@ rpmps_Next(rpmpsObject * s, PyObject *args)
 {
     PyObject * result;
 
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_Next(%p,%p)\n", s, args);
     if (!PyArg_ParseTuple(args, ":Next"))
 	return NULL;
 
@@ -86,6 +100,7 @@ rpmps_Next(rpmpsObject * s, PyObject *args)
     }
     return result;
 }
+#endif
 
 /*@-fullinitblock@*/
 /*@unchecked@*/ /*@observer@*/
@@ -104,6 +119,8 @@ static void
 rpmps_dealloc(rpmpsObject * s)
 	/*@modifies s @*/
 {
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_dealloc(%p)\n", s);
     if (s) {
 	s->ps = rpmpsFree(s->ps);
 	PyObject_Del(s);
@@ -115,24 +132,26 @@ rpmps_print(rpmpsObject * s, FILE * fp, /*@unused@*/ int flags)
 	/*@globals fileSystem @*/
 	/*@modifies s, fp, fileSystem @*/
 {
-    if (!(s && s->ps))
-	return -1;
-
-    for (s->ix = 0; s->ix < rpmpsNumProblems(s->ps); s->ix++) {
-	fprintf(fp, "%d\n", s->ix);	/* TODO */
-    }
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_print(%p,%p,%x)\n", s, fp, flags);
+    if (s && s->ps)
+	rpmpsPrint(fp, s->ps);
     return 0;
 }
 
 static PyObject * rpmps_getattro(PyObject * o, PyObject * n)
 	/*@*/
 {
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_getattro(%p,%p)\n", o, n);
     return PyObject_GenericGetAttr(o, n);
 }
 
 static int rpmps_setattro(PyObject * o, PyObject * n, PyObject * v)
 	/*@*/
 {
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_setattro(%p,%p,%p)\n", o, n, v);
     return PyObject_GenericSetAttr(o, n, v);
 }
 
@@ -140,7 +159,11 @@ static int
 rpmps_length(rpmpsObject * s)
 	/*@*/
 {
-    return rpmpsNumProblems(s->ps);
+    int rc;
+    rc = rpmpsNumProblems(s->ps);
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_length(%p) rc %d\n", s, rc);
+    return rc;
 }
 
 /*@null@*/
@@ -148,21 +171,161 @@ static PyObject *
 rpmps_subscript(rpmpsObject * s, PyObject * key)
 	/*@modifies s @*/
 {
+    PyObject * result = NULL;
+    rpmps ps;
+    int ix;
+
     if (!PyInt_Check(key)) {
 	PyErr_SetString(PyExc_TypeError, "integer expected");
 	return NULL;
     }
 
-    s->ix = (int) PyInt_AsLong(key);
-    /* TODO */
-    return Py_BuildValue("i", s->ix);
+    ix = (int) PyInt_AsLong(key);
+    ps = s->ps;
+    if (ix < ps->numProblems)
+	result = Py_BuildValue("s", rpmProblemString(ps->probs + ix));
+
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_subscript(%p,%p) %s\n", s, key, PyString_AsString(result));
+    return result;
+}
+
+static int
+rpmps_ass_sub(rpmpsObject * s, PyObject * key, PyObject * value)
+{
+    rpmps ps;
+    int ix;
+
+    if (!PyArg_Parse(key, "i:ass_sub", &ix)) {
+	PyErr_SetString(PyExc_TypeError, "rpmps key type must be integer");
+	return -1;
+    }
+
+    /* XXX get rid of negative indices */
+    if (ix < 0) ix = -ix;
+
+    ps = s->ps;
+
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_ass_sub(%p[%s],%p[%s],%p[%s]) ps %p[%d:%d:%d]\n", s, lbl(s), key, lbl(key), value, lbl(value), ps, ix, ps->numProblems, ps->numProblemsAlloced);
+
+    if (value == NULL) {
+	if (ix < ps->numProblems) {
+	    rpmProblem op = ps->probs + ix;
+	    
+	    op->pkgNEVR = _free(op->pkgNEVR);
+	    op->altNEVR = _free(op->altNEVR);
+	    op->str1 = _free(op->str1);
+
+	    if ((ix+1) == ps->numProblems)
+		memset(op, 0, sizeof(*op));
+	    else
+		memmove(op, op+1, (ps->numProblems - ix) * sizeof(*op));
+	    if (ps->numProblems > 0)
+		ps->numProblems--;
+	}
+    } else {
+	rpmProblem p = memset(alloca(sizeof(*p)), 0, sizeof(*p));
+
+	if (!PyArg_ParseTuple(value, "ssOiisi:rpmps value tuple",
+				&p->pkgNEVR, &p->altNEVR, &p->key,
+				&p->type, &p->ignoreProblem, &p->str1,
+				&p->ulong1))
+	{
+	    return -1;
+	}
+
+	if (ix >= ps->numProblems) {
+	    /* XXX force append for indices out of range. */
+	    rpmpsAppend(s->ps, p->type, p->pkgNEVR, p->key,
+		p->str1, NULL, p->altNEVR, p->ulong1);
+	} else {
+	    rpmProblem op = ps->probs + ix;
+
+	    op->pkgNEVR = _free(op->pkgNEVR);
+	    op->altNEVR = _free(op->altNEVR);
+	    op->str1 = _free(op->str1);
+
+	    p->pkgNEVR = (p->pkgNEVR && *p->pkgNEVR ? xstrdup(p->pkgNEVR) : NULL);
+	    p->altNEVR = (p->altNEVR && *p->altNEVR ? xstrdup(p->altNEVR) : NULL);
+	    p->str1 = (p->str1 && *p->str1 ? xstrdup(p->str1) : NULL);
+
+	    *op = *p;	/* structure assignment */
+	}
+    }
+
+    return 0;
 }
 
 static PyMappingMethods rpmps_as_mapping = {
         (inquiry) rpmps_length,		/* mp_length */
         (binaryfunc) rpmps_subscript,	/* mp_subscript */
-        (objobjargproc)0,		/* mp_ass_subscript */
+        (objobjargproc) rpmps_ass_sub,	/* mp_ass_subscript */
 };
+
+/** \ingroup py_c
+ */
+static int rpmps_init(rpmpsObject * s, PyObject *args, PyObject *kwds)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
+{
+
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_init(%p,%p,%p)\n", s, args, kwds);
+
+    if (!PyArg_ParseTuple(args, ":rpmps_init"))
+	return -1;
+
+    s->ps = rpmpsCreate();
+    s->active = 0;
+    s->ix = -1;
+
+    return 0;
+}
+
+/** \ingroup py_c
+ */
+static void rpmps_free(/*@only@*/ rpmpsObject * s)
+	/*@modifies s @*/
+{
+if (_rpmps_debug)
+fprintf(stderr, "%p -- ps %p\n", s, s->ps);
+    s->ps = rpmpsFree(s->ps);
+
+    PyObject_Del((PyObject *)s);
+}
+
+/** \ingroup py_c
+ */
+static PyObject * rpmps_alloc(PyTypeObject * subtype, int nitems)
+	/*@*/
+{
+    PyObject * s = PyType_GenericAlloc(subtype, nitems);
+
+if (_rpmps_debug < 0)
+fprintf(stderr, "*** rpmps_alloc(%p,%d) ret %p\n", subtype, nitems, s);
+    return s;
+}
+
+/** \ingroup py_c
+ */
+static PyObject * rpmps_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/
+{
+    rpmpsObject * s = (void *) PyObject_New(rpmpsObject, subtype);
+
+    /* Perform additional initialization. */
+    if (rpmps_init(s, args, kwds) < 0) {
+	rpmps_free(s);
+	return NULL;
+    }
+
+if (_rpmps_debug)
+fprintf(stderr, "%p ++ ps %p\n", s, s->ps);
+
+    return (PyObject *)s;
+}
 
 /**
  */
@@ -210,10 +373,10 @@ PyTypeObject rpmps_Type = {
 	0,				/* tp_descr_get */
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
-	0,				/* tp_init */
-	0,				/* tp_alloc */
-	0,				/* tp_new */
-	0,				/* tp_free */
+	(initproc) rpmps_init,		/* tp_init */
+	(allocfunc) rpmps_alloc,	/* tp_alloc */
+	(newfunc) rpmps_new,		/* tp_new */
+	rpmps_free,			/* tp_free */
 	0,				/* tp_is_gc */
 #endif
 };
