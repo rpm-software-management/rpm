@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef _CONFIG_WIN_H
-#define _CONFIG_WIN_H
+#ifndef _BEECRYPT_WIN_H
+#define _BEECRYPT_WIN_H
 
 #define _REENTRANT
 

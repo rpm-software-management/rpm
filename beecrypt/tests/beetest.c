@@ -43,20 +43,21 @@
 
 #include "debug.h"
 
-/*@unused@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/
 static const char* dsa_p = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80291";
-/*@unused@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/
 static const char* dsa_q = "c773218c737ec8ee993b4f2ded30f48edace915f";
-/*@unused@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/
 static const char* dsa_g = "626d027839ea0a13413163a55b4cb500299d5522956cefcb3bff10f399ce2c2e71cb9de5fa24babf58e5b79521925c9cc42e9f6f464b088cc572af53e6d78802";
-/*@unused@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/
 static const char* dsa_x = "2070b3223dba372fde1c0ffc7b2e3b498b260614";
-/*@unused@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/
 static const char* dsa_y = "19131871d75b1612a819f29d78d1b0d7346f7aa77bb62a859bfd6c5675da9d212d3a36ef1672ef660b8c7c255cc0ec74858fba33f44c06699630a76b030ee333";
-/*@unused@*/ /*@observer@*/
+/*@unchecked@*/ /*@observer@*/
 static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80290";
 
-/*@unused@*/ static int testVectorInvMod(const dlkp_p* keypair)
+/*@unused@*/
+static int testVectorInvMod(const dlkp_p* keypair)
 	/*@*/
 {
 	randomGeneratorContext rngc;
@@ -91,7 +92,8 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 	return -1;
 }
 
-/*@unused@*/ static int testVectorExpMod(const dlkp_p* keypair)
+/*@unused@*/
+static int testVectorExpMod(const dlkp_p* keypair)
 	/*@*/
 {
 	int rc;
@@ -108,7 +110,8 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 	return rc;
 }
 
-/*@unused@*/ static int testVectorDSA(const dlkp_p* keypair)
+/*@unused@*/
+static int testVectorDSA(const dlkp_p* keypair)
 	/*@*/
 {
 	int rc = 0;
@@ -148,7 +151,8 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 	return rc;
 }
 
-/*@unused@*/ static int testVectorElGamalV1(const dlkp_p* keypair)
+/*@unused@*/
+static int testVectorElGamalV1(const dlkp_p* keypair)
 	/*@*/
 {
 	int rc = 0;
@@ -188,7 +192,8 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 	return rc;
 }
 
-/*@unused@*/ static int testVectorElGamalV3(const dlkp_p* keypair)
+/*@unused@*/
+static int testVectorElGamalV3(const dlkp_p* keypair)
 	/*@*/
 {
 	int rc = 0;
@@ -286,7 +291,8 @@ static int testVectorDHAES(const dlkp_p* keypair)
 }
 #endif
 
-/*@unused@*/ static int testVectorRSA(void)
+/*@unused@*/
+static int testVectorRSA(void)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
@@ -333,7 +339,8 @@ static int testVectorDHAES(const dlkp_p* keypair)
 	return -1;
 }
 
-/*@unused@*/ static int testVectorDLDP(void)
+/*@unused@*/
+static int testVectorDLDP(void)
 	/*@*/
 {
 	/* try generating dldp_p parameters, then see if the order of the generator is okay */
@@ -370,7 +377,8 @@ static int testVectorDHAES(const dlkp_p* keypair)
 	return 0;
 }
 
-/*@unused@*/ static int testVectorMD5(void)
+/*@unused@*/
+static int testVectorMD5(void)
 	/*@*/
 {
 	uint32 expect[4] = { 0x90015098, 0x3cd24fb0, 0xd6963f7d, 0x28e17f72 };
@@ -386,7 +394,8 @@ static int testVectorDHAES(const dlkp_p* keypair)
 	return mp32eq(4, expect, digest);
 }
 
-/*@unused@*/ static int testVectorSHA1(void)
+/*@unused@*/
+static int testVectorSHA1(void)
 	/*@*/
 {
 	uint32 expect[5] = { 0xA9993E36, 0x4706816A, 0xBA3E2571, 0x7850C26C, 0x9CD0D89D };
@@ -420,6 +429,7 @@ static int testVectorDHAES(const dlkp_p* keypair)
 	return mp32eq(8, expect, digest);
 }
 
+/*@unchecked@*/
 static uint32 keyValue[] = 
 {
 	0x00010203,

@@ -29,7 +29,6 @@
 #define _SHA1_H
 
 #include "beecrypt.h"
-#include "sha1opt.h"
 
 /** \ingroup HASH_sha1_m
  */

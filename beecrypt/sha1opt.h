@@ -28,9 +28,6 @@
 #ifndef _SHA1OPT_H
 #define _SHA1OPT_H
 
-#include "beecrypt.h"
-#include "sha1.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

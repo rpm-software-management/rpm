@@ -28,7 +28,6 @@
 
 #include "system.h"
 #include "beecrypt.h"
-#include "debug.h"
 
 #if defined(__LCLINT__)
 /* XXX from /usr/include/bits/sigest.h in glibc-2.2.4 */
@@ -54,6 +53,8 @@ typedef struct
 #include "aes.h"
 #include "blowfish.h"
 #include "blockmode.h"
+
+#include "debug.h"
 
 /*@-type@*/ /* FIX: cast? */
 /*@observer@*/ /*@unchecked@*/

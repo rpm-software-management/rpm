@@ -27,9 +27,6 @@
 #ifndef _AES_H
 #define _AES_H
 
-#include "beecrypt.h"
-#include "aesopt.h"
-
 /** \ingroup BC_aes_m
  */
 typedef struct

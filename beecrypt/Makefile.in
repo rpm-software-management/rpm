@@ -88,12 +88,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_alias = @build_alias@
-build_triplet = @build@
 host_alias = @host_alias@
 host_triplet = @host@
-target_alias = @target_alias@
-target_triplet = @target@
 
 EXEEXT = @EXEEXT@
 OBJEXT = @OBJEXT@
@@ -103,13 +99,12 @@ AS = @AS@
 AWK = @AWK@
 CC = @CC@
 CPP = @CPP@
+CXX = @CXX@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
 ECHO = @ECHO@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-LD = @LD@
 LIBTOOL = @LIBTOOL@
-LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
@@ -157,11 +152,11 @@ libbeecrypt_la_LIBADD = aesopt.lo blowfishopt.lo mp32opt.lo sha1opt.lo
 
 libbeecrypt_la_LDFLAGS = -version-info $(LIBBEECRYPT_LT_CURRENT):$(LIBBEECRYPT_LT_REVISION):$(LIBBEECRYPT_LT_AGE)
 
-pkginclude_HEADERS = aes.h aesopt.h base64.h beecrypt.h beecrypt.api.h beecrypt.win.h blockmode.h blockpad.h blowfish.h blowfishopt.h dhaes.h dldp.h dlkp.h dlpk.h dlsvdp-dh.h dsa.h elgamal.h endianness.h entropy.h fips186.h hmac.h hmacmd5.h hmacsha1.h hmacsha256.h md5.h memchunk.h mp32.h mp32barrett.h mp32number.h mp32opt.h mp32prime.h mtprng.h rsa.h rsakp.h rsapk.h sha1.h sha1opt.h sha256.h timestamp.h
+pkginclude_HEADERS = aes.h base64.h beecrypt.h blockmode.h blockpad.h blowfish.h dhaes.h dldp.h dlkp.h dlpk.h dlsvdp-dh.h dsa.h elgamal.h endianness.h entropy.h fips186.h hmac.h hmacmd5.h hmacsha1.h hmacsha256.h md5.h memchunk.h mp32.h mp32barrett.h mp32number.h mp32prime.h mtprng.h rsa.h rsakp.h rsapk.h sha1.h sha256.h timestamp.h
+
+noinst_HEADERS = aesopt.h beecrypt.api.h beecrypt.win.h blowfishopt.h debug.h mp32opt.h sha1opt.h system.h
 
 EXTRA_DIST = BENCHMARKS BUGS CONTRIBUTORS Doxyfile.in Doxyheader README README.DARWIN README.DLL README.WIN32 beecrypt.def beecrypt.rc beecrypt.spec types.h javaglue.h installgen.sh
-
-noinst_HEADERS = debug.h system.h
 
 DOXYGEN = /usr/bin/doxygen
 subdir = .
@@ -205,10 +200,9 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	uninstall-recursive check-recursive installcheck-recursive
 DIST_COMMON = README $(noinst_HEADERS) $(pkginclude_HEADERS) AUTHORS \
 	COPYING COPYING.LIB ChangeLog Doxyfile.in INSTALL Makefile.am \
-	Makefile.in NEWS acconfig.h aclocal.m4 beecrypt.spec.in \
-	config.guess config.h.in config.sub configure configure.ac \
-	depcomp install-sh ltconfig ltmain.sh missing mkinstalldirs \
-	types.h.in
+	Makefile.in NEWS aclocal.m4 beecrypt.spec.in config.guess \
+	config.h.in config.sub configure configure.ac depcomp \
+	install-sh ltconfig ltmain.sh missing mkinstalldirs types.h.in
 DIST_SUBDIRS = $(SUBDIRS)
 SOURCES = $(libbeecrypt_la_SOURCES)
 
@@ -241,7 +235,7 @@ stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
 	cd $(top_builddir) && $(SHELL) ./config.status config.h
 
-$(srcdir)/config.h.in:  $(top_srcdir)/configure.ac $(ACLOCAL_M4) $(top_srcdir)/acconfig.h
+$(srcdir)/config.h.in:  $(top_srcdir)/configure.ac $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOHEADER)
 	touch $(srcdir)/config.h.in
 

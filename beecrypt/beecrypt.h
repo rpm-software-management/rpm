@@ -51,8 +51,10 @@ typedef int (*entropyNext) (/*@out@*/ uint32* data, int size)
  */
 typedef struct
 {
-/*@observer@*/ const char* name;	/*!< entropy source name */
-/*@unused@*/ const entropyNext next;	/*!< return entropy function */
+/*@observer@*/
+    const char* name;		/*!< entropy source name */
+/*@unused@*/
+    const entropyNext next;	/*!< return entropy function */
 } entropySource;
 
 #ifdef __cplusplus
@@ -178,7 +180,8 @@ typedef int (*randomGeneratorCleanup) (randomGeneratorParam* param)
  */
 typedef struct
 {
-/*@observer@*/ const char* name;	/*!< random generator name */
+/*@observer@*/
+    const char* name;			/*!< random generator name */
     const unsigned int paramsize;
     const randomGeneratorSetup setup;
     const randomGeneratorSeed seed;
@@ -237,8 +240,10 @@ const randomGenerator* randomGeneratorDefault(void)
  */
 typedef struct
 {
-/*@observer@*/ /*@dependent@*/ const randomGenerator* rng; /*!< global functions and parameters */
-/*@only@*/ randomGeneratorParam* param;	/*!< specific parameters */
+/*@observer@*/ /*@dependent@*/
+    const randomGenerator* rng;		/*!< global functions and parameters */
+/*@only@*/
+    randomGeneratorParam* param;	/*!< specific parameters */
 } randomGeneratorContext;
 
 #ifdef __cplusplus
@@ -321,7 +326,8 @@ typedef int (*hashFunctionDigest) (hashFunctionParam* param, /*@out@*/ uint32* d
  */
 typedef struct
 {
-/*@observer@*/ const char* name;	/*!< hash function name */
+/*@observer@*/
+    const char* name;			/*!< hash function name */
     const unsigned int paramsize;	/*!< in bytes */
     const unsigned int blocksize;	/*!< in bytes */
     const unsigned int digestsize;	/*!< in bytes */
@@ -381,8 +387,10 @@ const hashFunction* hashFunctionDefault(void)
  */
 typedef struct
 {
-/*@observer@*/ /*@dependent@*/ const hashFunction* algo;/*!< global functions and parameters */
-/*@only@*/ hashFunctionParam* param;	/*!< specific parameters */
+/*@observer@*/ /*@dependent@*/
+    const hashFunction* algo;	/*!< global functions and parameters */
+/*@only@*/
+    hashFunctionParam* param;	/*!< specific parameters */
 } hashFunctionContext;
 
 #ifdef __cplusplus
@@ -510,7 +518,8 @@ typedef int (*keyedHashFunctionDigest) (keyedHashFunctionParam* param, /*@out@*/
  */
 typedef struct
 {
-/*@observer@*/ const char* name;	/*!< keyed hash function name */
+/*@observer@*/
+    const char* name;			/*!< keyed hash function name */
     const unsigned int paramsize;	/*!< in bytes */
     const unsigned int blocksize;	/*!< in bytes */
     const unsigned int digestsize;	/*!< in bytes */
@@ -574,8 +583,10 @@ const keyedHashFunction* keyedHashFunctionDefault(void)
  */
 typedef struct
 {
-/*@observer@*/ /*@dependent@*/ const keyedHashFunction* algo;	/*!< global functions and parameters */
-/*@only@*/ keyedHashFunctionParam* param;	/*!< specific parameters */
+/*@observer@*/ /*@dependent@*/
+    const keyedHashFunction* algo;	/*!< global functions and parameters */
+/*@only@*/
+    keyedHashFunctionParam* param;	/*!< specific parameters */
 } keyedHashFunctionContext;
 
 #ifdef __cplusplus
@@ -755,7 +766,8 @@ typedef int (*blockCipherDecrypt) (blockCipherParam* param, uint32* dst, const u
  */
 typedef struct
 {
-/*@observer@*/ const char* name;	/*!< block cipher name */
+/*@observer@*/
+    const char* name;			/*!< block cipher name */
     const unsigned int paramsize;	/*!< in bytes */
     const unsigned int blocksize;	/*!< in bytes */
     const unsigned int keybitsmin;	/*!< min keysize in bits */
@@ -765,7 +777,8 @@ typedef struct
     const blockCipherSetIV setiv;
     const blockCipherEncrypt encrypt;
     const blockCipherDecrypt decrypt;
-/*@dependent@*/ const blockMode* mode;
+/*@dependent@*/
+    const blockMode* mode;
 } blockCipher;
 
 #ifdef __cplusplus
@@ -819,8 +832,10 @@ const blockCipher* blockCipherDefault(void)
  */
 typedef struct
 {
-/*@observer@*/ /*@dependent@*/ const blockCipher* algo;	/*!< global functions and parameters */
-/*@only@*/ blockCipherParam* param;	/*!< specific parameters */
+/*@observer@*/ /*@dependent@*/
+    const blockCipher* algo;	/*!< global functions and parameters */
+/*@only@*/
+    blockCipherParam* param;	/*!< specific parameters */
 } blockCipherContext;
 
 #ifdef __cplusplus

@@ -26,9 +26,10 @@
  */
 
 #include "system.h"
+#include "beecrypt.h"
 #include "fips186.h"
-#include "mp32.h"
 #include "mp32opt.h"
+#include "mp32.h"
 #include "debug.h"
 
 /**

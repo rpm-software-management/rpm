@@ -1,125 +1,49 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
-/*
- * acconfig.h
- *
- * acconfig.h pre-announces symbols defines by configure.in
- *
- * Copyright (c) 2001 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- */
+
 
 #ifndef _REENTRANT
 #define _REENTRANT
 #endif
 
-#define AIX			0
-#define BEOS		0
-#define CYGWIN		0
-#define DARWIN		0
-#define FREEBSD		0
-#define HPUX		0
-#define LINUX		0
-#define MACOSX		0
-#define NETBSD		0
-#define OPENBSD		0
-#define OSF			0
-#define QNX			0
-#define SCO_UNIX	0
-#define SOLARIS		0
-#ifndef WIN32
-# define WIN32		0
-#endif
 
-#define LEADING_UNDERSCORE	0
-#define NO_UNDERSCORES		0
+/* Define to 1 if you are using AIX */
+#undef AIX
 
-#define JAVAGLUE	0
+/* Define to 1 if you are using Cygwin */
+#undef CYGWIN
 
-#undef HAVE_ERRNO_H
-#undef HAVE_STRING_H
-#undef HAVE_CTYPE_H
-#undef HAVE_STDLIB_H
-#undef HAVE_MTMALLOC_H
+/* Define to 1 if you are using Darwin/MacOS X */
+#undef DARWIN
 
-#undef HAVE_UNISTD_H
-#undef HAVE_FCNTL_H
-
-#undef HAVE_TIME_H
-
-#undef HAVE_SYS_TYPES_H
-#undef HAVE_SYS_STAT_H
-#undef HAVE_SYS_TIME_H
-
-#undef ENABLE_THREADS
-#undef HAVE_THREAD_H
-#undef HAVE_PTHREAD_H
-#undef HAVE_SYNCH_H
-#undef HAVE_SEMAPHORE_H
-
+/* Define to 1 if you want to enable asynchronous I/O support */
 #undef ENABLE_AIO
-#undef HAVE_AIO_H
 
-#undef HAVE_TERMIO_H
-#undef HAVE_TERMIOS_H
+/* Define to 1 if you want to enable multithread support */
+#undef ENABLE_THREADS
 
-#undef HAVE_SYS_AUDIOIO_H
-#undef HAVE_SYS_IOCTL_H
-#undef HAVE_SYS_SOUNDCARD_H
-
-#undef HAVE_GETTIMEOFDAY
-#undef HAVE_GETHRTIME
-
-#undef HAVE_DEV_DSP
-#undef HAVE_DEV_AUDIO
-#undef HAVE_DEV_RANDOM
-#undef HAVE_DEV_URANDOM
-#undef HAVE_DEV_TTY
-
-#undef HAVE_LONG_LONG
-#undef HAVE_UNSIGNED_LONG_LONG
-
-#undef INT8_TYPE
-#undef INT16_TYPE
-#undef INT32_TYPE
-#undef INT64_TYPE
-
-#undef UINT8_TYPE
-#undef UINT16_TYPE
-#undef UINT32_TYPE
-#undef UINT64_TYPE
-
-#undef FLOAT4_TYPE
-#undef DOUBLE8_TYPE
-
-#if LINUX
-#define _LIBC_REENTRANT
-#endif
-
-#ifndef __cplusplus
-#undef inline
-#endif
+/* Define to 1 if you are using FreeBSD */
+#undef FREEBSD
 
 /* Define to 1 if you have the <aio.h> header file. */
 #undef HAVE_AIO_H
 
 /* Define to 1 if you have the <ctype.h> header file. */
 #undef HAVE_CTYPE_H
+
+/* Define to 1 if your system has device /dev/audio */
+#undef HAVE_DEV_AUDIO
+
+/* Define to 1 if your system has device /dev/dsp */
+#undef HAVE_DEV_DSP
+
+/* Define to 1 if your system has device /dev/random */
+#undef HAVE_DEV_RANDOM
+
+/* Define to 1 if your system has device /dev/tty */
+#undef HAVE_DEV_TTY
+
+/* Define to 1 if your system has device /dev/urandom */
+#undef HAVE_DEV_URANDOM
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
@@ -129,6 +53,12 @@
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
+
+/* Define to 1 if you have the `gethrtime' function. */
+#undef HAVE_GETHRTIME
+
+/* Define to 1 if you have the `gettimeofday' function. */
+#undef HAVE_GETTIMEOFDAY
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
@@ -142,8 +72,26 @@
 /* Define to 1 if you have the `thread' library (-lthread). */
 #undef HAVE_LIBTHREAD
 
+/* Define to 1 if your compiler knows the 'long long' type */
+#undef HAVE_LONG_LONG
+
+/* Define to 1 if your system has a working `malloc' function. */
+#undef HAVE_MALLOC
+
+/* Define to 1 if you have the <malloc.h> header file. */
+#undef HAVE_MALLOC_H
+
+/* Define to 1 if you have the `memcmp' function. */
+#undef HAVE_MEMCMP
+
+/* Define to 1 if you have the `memmove' function. */
+#undef HAVE_MEMMOVE
+
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the `memset' function. */
+#undef HAVE_MEMSET
 
 /* Define to 1 if you have the <mtmalloc.h> header file. */
 #undef HAVE_MTMALLOC_H
@@ -154,17 +102,30 @@
 /* Define to 1 if you have the <semaphore.h> header file. */
 #undef HAVE_SEMAPHORE_H
 
+/* Define to 1 if `stat' has the bug that it succeeds when given the
+   zero-length file name argument. */
+#undef HAVE_STAT_EMPTY_STRING_BUG
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
 
+/* Define to 1 if you have the `strcspn' function. */
+#undef HAVE_STRCSPN
+
+/* Define to 1 if you have the `strerror' function. */
+#undef HAVE_STRERROR
+
 /* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H
 
-/* Define to 1 if you have the <string.h> header file. */
+/* . */
 #undef HAVE_STRING_H
+
+/* Define to 1 if you have the `strspn' function. */
+#undef HAVE_STRSPN
 
 /* Define to 1 if you have the <synch.h> header file. */
 #undef HAVE_SYNCH_H
@@ -178,13 +139,13 @@
 /* Define to 1 if you have the <sys/soundcard.h> header file. */
 #undef HAVE_SYS_SOUNDCARD_H
 
-/* Define to 1 if you have the <sys/stat.h> header file. */
+/* . */
 #undef HAVE_SYS_STAT_H
 
 /* Define to 1 if you have the <sys/time.h> header file. */
 #undef HAVE_SYS_TIME_H
 
-/* Define to 1 if you have the <sys/types.h> header file. */
+/* . */
 #undef HAVE_SYS_TYPES_H
 
 /* Define to 1 if you have the <termios.h> header file. */
@@ -199,8 +160,37 @@
 /* Define to 1 if you have the <time.h> header file. */
 #undef HAVE_TIME_H
 
-/* Define to 1 if you have the <unistd.h> header file. */
+/* . */
 #undef HAVE_UNISTD_H
+
+/* Define to 1 if your compiler knows the 'unsigned long long' type */
+#undef HAVE_UNSIGNED_LONG_LONG
+
+/* Define to 1 if you are using HPUX */
+#undef HPUX
+
+/* Define to 1 if you want to include the Java code */
+#undef JAVAGLUE
+
+/* Define to 1 if your system compiles object names with leading underscores
+   */
+#undef LEADING_UNDERSCORE
+
+/* Define to 1 if you are using GNU/Linux */
+#undef LINUX
+
+/* Define to 1 if `lstat' dereferences a symlink specified with a trailing
+   slash. */
+#undef LSTAT_FOLLOWS_SLASHED_SYMLINK
+
+/* Define to 1 if you are using NetBSD */
+#undef NETBSD
+
+/* Define to 1 if you are using OpenBSD */
+#undef OPENBSD
+
+/* Define to 1 if you are using OSF */
+#undef OSF
 
 /* Name of package */
 #undef PACKAGE
@@ -219,6 +209,12 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* Define to 1 if you are using QNX */
+#undef QNX
+
+/* Define to 1 if you are using SCO Unix */
+#undef SCO_UNIX
 
 /* The size of a `char', as computed by sizeof. */
 #undef SIZEOF_CHAR
@@ -256,11 +252,22 @@
 /* The size of a `unsigned short', as computed by sizeof. */
 #undef SIZEOF_UNSIGNED_SHORT
 
+/* Define to 1 if you are using Solaris */
+#undef SOLARIS
+
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#undef TIME_WITH_SYS_TIME
+
 /* Version number of package */
 #undef VERSION
+
+
+#ifndef WIN32
+#undef WIN32
+#endif
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
@@ -273,5 +280,8 @@
    if it is not supported. */
 #undef inline
 
-/* Define to `unsigned' if <sys/types.h> does not define. */
-#undef size_t
+
+#if LINUX
+#define _LIBC_REENTRANT
+#endif
+

@@ -45,7 +45,6 @@
 # endif
 #endif
 
-#include "beecrypt.h"
 #include "sha1.h"
 
 #define FIPS186_STATE_SIZE	16

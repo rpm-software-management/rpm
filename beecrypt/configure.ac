@@ -1,71 +1,93 @@
-dnl Process this file with autoconf to produce a configure script
+# Process this file with autoconf to produce a configure script.
 
-dnl Initialization
-AC_INIT(beecrypt.c)
-AC_CANONICAL_SYSTEM
-AC_CONFIG_HEADERS
-AM_INIT_AUTOMAKE(beecrypt, 2.2.0)
-AM_CONFIG_HEADER(config.h)
-
-dnl Automake
-AM_DISABLE_STATIC
+AC_INIT(beecrypt, 2.2.0, bob.deblier@pandora.be)
+AC_CANONICAL_TARGET
+AM_INIT_AUTOMAKE
+AC_CONFIG_SRCDIR([beecrypt.h])
+AM_CONFIG_HEADER([config.h])
 AC_LIBTOOL_WIN32_DLL
 
-dnl Check system type
-case $target_os in
-  cygwin*)
-    AC_DEFINE(CYGWIN)
-    AC_DEFINE(WIN32)
-    ;;
-  darwin*)
-    AC_DEFINE(DARWIN)
-    ;;
-  freebsd*)
-    AC_DEFINE(FREEBSD)
-    ;;
-  linux*)
-    AC_DEFINE(LINUX)
-    ;;
-  netbsd*)
-    AC_DEFINE(NETBSD)
-    ;;
-  openbsd*)
-    AC_DEFINE(OPENBSD)
-    ;;
-  osf*)
-    AC_DEFINE(OSF)
-    ;;
-  *qnx)
-    AC_DEFINE(QNX)
-    ;;
-  solaris*)
-    AC_DEFINE(SOLARIS)
-    ;;
-  sysv*uv*)
-    AC_DEFINE(SCO_UNIX)
-    ;;
-  *)
-    AC_MSG_WARN([Operating system type $target_os currently not supported and/or tested])
-    ;;
-esac
-case $target_os in
-  cygwin* | darwin*)
-    AC_DEFINE(LEADING_UNDERSCORE)
-    ;;
-  *)
-    AC_DEFINE(NO_UNDERSCORES)
-    ;;
-esac
+# Checks for package options
+AC_ARG_ENABLE(debug, [  --enable-debug          creates debugging code [default=no]],
+  [ if test "$enableval" = no; then
+      ac_enable_debug=no
+    else
+      ac_enable_debug=yes
+    fi
+  ], [ ac_enable_debug=no])
 
-dnl Checks for programs.
+AC_ARG_ENABLE(optimized, [  --enable-optimized      enables the assembler optimizations [default depends on --enable-debug value]],
+  [ if test "$enableval" = no; then
+      ac_enable_optimized=no
+    else
+      ac_enable_optimized=yes
+   fi
+  ],
+  [ if test "$ac_enable_debug" = no; then
+      ac_enable_optimized=yes
+    else
+      ac_enable_optimized=no
+    fi
+  ])
+
+AC_ARG_ENABLE(threads, [  --enable-threads        enables multithread support [de fault=yes]],
+  [ if test "$enableval" = no; then
+      ac_enable_threads=no
+    else
+      ac_enable_threads=yes
+    fi
+  ], [ ac_enable_threads=yes ])
+
+AH_TEMPLATE([ENABLE_THREADS],[Define to 1 if you want to enable multithread support])
+
+if test "$ac_enable_threads" = yes; then
+  AC_DEFINE([ENABLE_THREADS],1)
+fi
+
+AC_ARG_ENABLE(aio, [  --enable-aio            enables asynchronous i/o for entropy gathering [default=yes]],
+  [ if test "$enableval" = no; then
+      ac_enable_aio=no
+    else
+      ac_enable_aio=yes
+    fi
+  ], [ ac_enable_aio=yes ])
+
+AH_TEMPLATE([ENABLE_AIO],[Define to 1 if you want to enable asynchronous I/O support])
+
+if test "$ac_enable_aio" = yes; then
+  AC_DEFINE([ENABLE_AIO],1)
+fi
+
+AC_ARG_WITH(mtmalloc, [  --with-mtmalloc         links against the mtmalloc library [default=no]],
+
+  [ if test "$withval" = no; then
+      ac_with_mtmalloc=no
+    else
+      ac_with_mtmalloc=yes
+    fi
+  ], [ ac_with_mtmalloc=no ])
+
+AC_ARG_WITH(javaglue, [  --with-javaglue         creates the java glue code [default=yes]],
+  [ if test "$withval" = no; then
+      ac_with_javaglue=no
+    else
+      ac_with_javaglue=yes
+    fi
+  ], [ ac_with_javaglue=yes ])
+
+# Checks for programs.
 AC_PROG_CC
+AC_PROG_INSTALL
 AC_PROG_CPP
-AC_PROG_LN_S
-AM_PROG_LIBTOOL
-AC_SUBST(LIBTOOL_DEPS)
+AC_PROG_CXX
+AC_PROG_LIBTOOL
 
-AC_C_INLINE
+# Initialize tool flags
+CFLAGS=""
+CPPFLAGS=""
+LDFLAGS=""
 
+# Checks for compiler characteristics and flags
 if test "$ac_cv_prog_gcc" != yes; then
   AC_CACHE_CHECK([whether we are using Sun Workshop C], ac_cv_prog_SUNPRO_CC, [
     AC_EGREP_CPP(yes, [
@@ -85,37 +107,369 @@ if test "$ac_cv_prog_gcc" != yes; then
   fi
 fi
 
-AC_ARG_ENABLE(debug, [  --enable-debug          creates debugging code [default=no]],
-  [ if test "$enableval" = no; then
-      ac_enable_debug=no
-    else
-      ac_enable_debug=yes
-    fi
-  ], [ ac_enable_debug=no])
+# Predefines for autoheader
+AH_TOP([
+#ifndef _REENTRANT
+#define _REENTRANT
+#endif
+])
 
-dnl Check if we need to disable optimizations
-AC_ARG_ENABLE(optimized, [  --enable-optimized      enables the assembler optimizations [default depends on --enable-debug value]],
-  [ if test "$enableval" = no; then
-      ac_enable_optimized=no
-    else
-      ac_enable_optimized=yes
-   fi
-  ],
-  [ if test "$ac_enable_debug" = no; then
-      ac_enable_optimized=yes
-    else
-      ac_enable_optimized=no
-    fi
-  ])
+AH_TEMPLATE([AIX],[Define to 1 if you are using AIX])
+AH_TEMPLATE([CYGWIN],[Define to 1 if you are using Cygwin])
+AH_TEMPLATE([DARWIN],[Define to 1 if you are using Darwin/MacOS X])
+AH_TEMPLATE([FREEBSD],[Define to 1 if you are using FreeBSD])
+AH_TEMPLATE([HPUX],[Define to 1 if you are using HPUX])
+AH_TEMPLATE([LINUX],[Define to 1 if you are using GNU/Linux])
+AH_TEMPLATE([NETBSD],[Define to 1 if you are using NetBSD])
+AH_TEMPLATE([OPENBSD],[Define to 1 if you are using OpenBSD])
+AH_TEMPLATE([OSF],[Define to 1 if you are using OSF])
+AH_TEMPLATE([QNX],[Define to 1 if you are using QNX])
+AH_TEMPLATE([SCO_UNIX],[Define to 1 if you are using SCO Unix])
+AH_TEMPLATE([SOLARIS],[Define to 1 if you are using Solaris])
+AH_VERBATIM([WIN32],[
+#ifndef WIN32
+#undef WIN32
+#endif])
 
-dnl Check if we have the necessary java components installed
-AC_ARG_WITH(javaglue, [  --with-javaglue         creates the java glue code [default=yes]],
-  [ if test "$withval" = no; then
-      ac_with_javaglue=no
+case $target_os in
+  cygwin*)
+    AC_DEFINE([CYGWIN])
+    AC_DEFINE([WIN32])
+    ;;
+  darwin*)
+    AC_DEFINE([DARWIN])
+    ;;
+  freebsd*)
+    AC_DEFINE([FREEBSD])
+    ;;
+  linux*)
+    AC_DEFINE([LINUX])
+    ;;
+  netbsd*)
+    AC_DEFINE([NETBSD])
+    ;;
+  openbsd*)
+    AC_DEFINE([OPENBSD])
+    ;;
+  osf*)
+    AC_DEFINE([OSF])
+    ;;
+  *qnx)
+    AC_DEFINE([QNX])
+    ;;
+  solaris*)
+    AC_DEFINE([SOLARIS])
+    ;;
+  sysv*uv*)
+    AC_DEFINE([SCO_UNIX])
+    ;;
+  *)
+    AC_MSG_WARN([Operating system type $target_os currently not supported and/or tested])
+    ;;
+esac
+
+AH_TEMPLATE([HAVE_CTYPE_H],[.])
+AH_TEMPLATE([HAVE_ERRNO_H],[.])
+AH_TEMPLATE([HAVE_FCNTL_H],[.])
+AH_TEMPLATE([HAVE_MALLOC_H],[.])
+AH_TEMPLATE([HAVE_STDLIB_H],[.])
+AH_TEMPLATE([HAVE_STRING_H],[.])
+AH_TEMPLATE([HAVE_TERMIO_H],[.])
+AH_TEMPLATE([HAVE_TERMIOS_H],[.])
+AH_TEMPLATE([HAVE_TIME_H],[.])
+AH_TEMPLATE([HAVE_UNISTD_H],[.])
+
+AH_TEMPLATE([HAVE_SYS_AUDIOIO_H],[.])
+AH_TEMPLATE([HAVE_SYS_IOCTL_H],[.])
+AH_TEMPLATE([HAVE_SYS_SOUNDCARD_H],[.])
+AH_TEMPLATE([HAVE_SYS_STAT_H],[.])
+AH_TEMPLATE([HAVE_SYS_TIME_H],[.])
+AH_TEMPLATE([HAVE_SYS_TYPES_H],[.])
+
+AH_TEMPLATE([HAVE_THREAD_H],[.])
+AH_TEMPLATE([HAVE_PTHREAD_H],[.])
+AH_TEMPLATE([HAVE_SYNCH_H],[.])
+AH_TEMPLATE([HAVE_SEMAPHORE_H],[.])
+
+AH_TEMPLATE([HAVE_AIO_H],[.])
+AH_TEMPLATE([HAVE_MTMALLOC_H],[.])
+
+AH_TEMPLATE([HAVE_DEV_AUDIO],[Define to 1 if your system has device /dev/audio])
+AH_TEMPLATE([HAVE_DEV_DSP],[Define to 1 if your system has device /dev/dsp])
+AH_TEMPLATE([HAVE_DEV_RANDOM],[Define to 1 if your system has device /dev/random])
+AH_TEMPLATE([HAVE_DEV_URANDOM],[Define to 1 if your system has device /dev/urandom])
+AH_TEMPLATE([HAVE_DEV_TTY],[Define to 1 if your system has device /dev/tty])
+
+AH_TEMPLATE([HAVE_LONG_LONG],[Define to 1 if your compiler knows the 'long long' type])
+AH_TEMPLATE([HAVE_UNSIGNED_LONG_LONG],[Define to 1 if your compiler knows the 'unsigned long long' type])
+
+dnl AH_TEMPLATE([INT8_TYPE],[Define to 8-bit signed integer type])
+dnl AH_TEMPLATE([INT16_TYPE],[Define to 16-bit signed integer type])
+dnl AH_TEMPLATE([INT32_TYPE],[Define to 32-bit signed integer type])
+dnl AH_TEMPLATE([INT64_TYPE],[Define to 64-bit signed integer type])
+
+dnl AH_TEMPLATE([UINT8_TYPE],[Define to 8-bit unsigned integer type])
+dnl AH_TEMPLATE([UINT16_TYPE],[Define to 16-bit unsigned integer type])
+dnl AH_TEMPLATE([UINT32_TYPE],[Define to 32-bit unsigned integer type])
+dnl AH_TEMPLATE([UINT64_TYPE],[Define to 64-bit unsigned integer type])
+
+dnl AH_TEMPLATE([FLOAT4_TYPE],[Define to 32-bit floating point type])
+dnl AH_TEMPLATE([DOUBLE8_TYPE],[Define to 64-bit floating point type])
+
+AH_BOTTOM([
+#if LINUX
+#define _LIBC_REENTRANT
+#endif
+])
+
+# Checks for header files.
+AC_CHECK_HEADERS([time.h sys/time.h])
+AC_HEADER_TIME
+AC_CHECK_HEADERS([ctype.h errno.h fcntl.h malloc.h termio.h termios.h])
+AC_CHECK_HEADERS([sys/ioctl.h sys/audioio.h sys/soundcard.h])
+
+if test "$ac_enable_threads" = yes; then
+  case $target_os in
+    freebsd*)
+      CFLAGS="$CFLAGS -pthread"
+      CPPFLAGS="$CPPFLAGS -pthread"
+      LDFLAGS="$LDFLAGS -pthread"
+      ;;
+    osf*)
+      if test "$ac_cv_prog_DECC" = yes; then
+        CFLAGS="$CFLAGS -pthread"
+        CPPFLAGS="$CPPFLAGS -pthread"
+      fi
+      ;;
+    solaris*)
+      if test "$ac_cv_prog_SUNPRO_CC" = yes; then
+        CFLAGS="$CFLAGS -mt"
+      fi
+      ;;
+  esac
+  AC_CHECK_HEADERS([thread.h pthread.h synch.h semaphore.h])
+fi
+
+if test "$ac_enable_aio" = yes; then
+  AC_CHECK_HEADERS(aio.h)
+fi
+
+if test "$ac_with_mtmalloc" = yes; then
+  AC_CHECK_HEADERS(mtmalloc.h)
+fi
+
+# Checks for libraries.
+if test "$ac_enable_threads" = yes; then
+  if test "$ac_cv_header_thread_h" = yes; then
+    AC_HAVE_LIBRARY([thread])
+  elif test "$ac_cv_header_pthread_h" = yes; then
+    AC_HAVE_LIBRARY([pthread])
+  fi
+fi
+
+if test "$ac_enable_aio" = yes; then
+  if test "$ac_cv_header_aio_h" = yes; then
+    AC_SEARCH_LIBS(aio_read, [c rt aio posix4], [ ], [
+      AC_MSG_ERROR([no library containing aio routines found])
+    ])
+    AC_CACHE_CHECK([whether aio works], ac_cv_have_working_aio, [
+      cat > conftest.aio << EOF
+The quick brown fox jumps over the lazy dog.
+EOF
+      AC_TRY_RUN([
+#if HAVE_ERRNO_H
+# include <errno.h>
+#endif
+#if HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
+#if HAVE_STRING_H
+# include <string.h>
+#endif
+#if HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+#include <aio.h>
+#include <stdio.h>
+
+main()
+{
+        struct aiocb    a;
+  const struct aiocb*   a_list = &a;
+        struct timespec a_timeout;
+
+  char buffer[32];
+
+  int i, rc, fd = open("conftest.aio", O_RDONLY);
+
+  if (fd < 0)
+    exit(1);
+
+  memset(&a, 0, sizeof(struct aiocb));
+
+  a.aio_fildes = fd;
+  a.aio_offset = 0;
+  a.aio_reqprio = 0;
+  a.aio_buf = buffer;
+  a.aio_nbytes = sizeof(buffer);
+  a.aio_sigevent.sigev_notify = SIGEV_NONE;
+
+  a_timeout.tv_sec = 1;
+  a_timeout.tv_nsec = 0;
+
+  if (aio_read(&a) < 0)
+    exit(1);
+
+  if (aio_suspend(&a_list, 1, &a_timeout) < 0)
+  {
+    #if HAVE_ERRNO_H
+    /* some linux systems don't await timeout and return instantly */
+    if (errno == EAGAIN)
+    {
+      nanosleep(&a_timeout, (struct timespec*) 0);
+      if (aio_suspend(&a_list, 1, &a_timeout) < 0)
+        exit(1);
+    }
     else
-      ac_with_javaglue=yes
+      exit(1);
+    #else
+    exit(1);
+    #endif
+  }
+
+  if (aio_error(&a) < 0)
+    exit(1);
+
+  if (aio_return(&a) < 0)
+    exit(1);
+
+  exit(0);
+}
+        ], ac_cv_have_working_aio=yes, ac_cv_have_working_aio=no)
+      ])
+    if test "$ac_cv_have_working_aio" = yes; then
+      AC_DEFINE([ENABLE_AIO], 1)
     fi
-  ], [ ac_with_javaglue=yes ])
+    rm -fr conftest*
+  fi
+fi
+
+if test "$ac_with_mtmalloc" = yes; then
+  if test "$ac_cv_have_mtmalloc_h" = yes; then
+    AC_HAVE_LIBRARY([mtmalloc])
+  fi
+fi
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_BIGENDIAN
+AC_C_CONST
+AC_C_INLINE
+
+AC_CHECK_SIZEOF(char)
+AC_CHECK_SIZEOF(unsigned char)
+if test "$ac_cv_sizeof_char" -eq 1; then
+  AC_SUBST(int8_type, "char")
+else
+  AC_MSG_ERROR([compiler has no 1 byte char])
+fi
+if test "$ac_cv_sizeof_unsigned_char" -eq 1; then
+  AC_SUBST(uint8_type, "unsigned char")
+else
+  AC_MSG_ERROR([compiler has no 1 byte unsigned char])
+fi
+
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(unsigned short)
+if test "$ac_cv_sizeof_short" -eq 2; then
+  AC_SUBST(int16_type, "short")
+else
+  AC_MSG_ERROR([compiler has no 2 byte short])
+fi
+if test "$ac_cv_sizeof_unsigned_short" -eq 2; then
+  AC_SUBST(uint16_type, "unsigned short")
+else
+  AC_MSG_ERROR([compiler has no 2 byte unsigned short])
+fi
+
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(unsigned int)
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(unsigned long)
+if test "$ac_cv_sizeof_int" -eq 4; then
+  AC_SUBST(int32_type, "int")
+elif test "$ac_cv_sizeof_long" -eq 4; then
+  AC_SUBST(int32_type, "long")
+else
+  AC_MSG_ERROR([compiler has no 4 byte integer])
+fi
+if test "$ac_cv_sizeof_unsigned_int" -eq 4; then
+  AC_SUBST(uint32_type, "unsigned int")
+elif test "$ac_cv_sizeof_unsigned_long" -eq 4; then
+  AC_SUBST(uint32_type, "unsigned long")
+else
+  AC_MSG_ERROR([compiler has no 4 byte unsigned integer])
+fi
+
+if test "$ac_cv_sizeof_long" -eq 8; then
+  AC_SUBST(int64_type, "long")
+else
+  AC_CHECK_SIZEOF(long long)
+  if test "$ac_cv_sizeof_long_long" -eq 8; then
+    AC_DEFINE(HAVE_LONG_LONG)
+    AC_SUBST(int64_type, "long long")
+  else
+    AC_MSG_ERROR([compiler has no 8 byte integer])
+  fi
+fi
+if test "$ac_cv_sizeof_unsigned_long" -eq 8; then
+  AC_SUBST(uint64_type, "unsigned long")
+else
+  AC_CHECK_SIZEOF(unsigned long long)
+  if test "$ac_cv_sizeof_unsigned_long_long" -eq 8; then
+    AC_DEFINE(HAVE_UNSIGNED_LONG_LONG)
+    AC_SUBST(uint64_type, "unsigned long long")
+  else
+    AC_MSG_ERROR([compiler has no 8 byte unsigned integer])
+  fi
+fi
+
+AC_CHECK_SIZEOF(float)
+if test "$ac_cv_sizeof_float" -eq 4; then
+  AC_SUBST(float4_type, "float")
+else
+  AC_MSG_ERROR([compiler has no 4 byte float])
+fi
+
+AC_CHECK_SIZEOF(double)
+if test "$ac_cv_sizeof_double" -eq 8; then
+  AC_SUBST(double8_type, "double")
+else
+  AC_MSG_ERROR([compiler has no 8 byte double])
+fi
+
+# Checks for library functions.
+AC_FUNC_MALLOC
+AC_FUNC_MEMCMP
+AC_FUNC_STAT
+AC_CHECK_FUNCS([memset memcmp memmove strcspn strerror strspn])
+
+AH_TEMPLATE([HAVE_GETHRTIME],[.])
+AH_TEMPLATE([HAVE_GETTIMEOFDAY],[.])
+if test "$ac_cv_header_sys_time_h" = yes; then
+  AC_CHECK_FUNCS([gethrtime gettimeofday])
+fi
+
+# Checks for symbol names (used in the assembler symbol names)
+AH_TEMPLATE([LEADING_UNDERSCORE],[Define to 1 if your system compiles object names with leading underscores])
+
+case $target_os in
+  cygwin* | darwin*)
+    AC_DEFINE([LEADING_UNDERSCORE])
+    ;;
+esac
+
+# Predefines and checks for Java API support
+AH_TEMPLATE([JAVAGLUE],[Define to 1 if you want to include the Java code])
 
 if test "$ac_with_javaglue" = yes ; then
   AC_CHECK_PROG(ac_cv_have_gcj, gcj, yes, no)
@@ -206,183 +560,86 @@ EOF
 fi
 
 if test "$ac_with_javaglue" = yes ; then
-  AC_DEFINE(JAVAGLUE,1)
-else
-  AC_DEFINE(JAVAGLUE,0)
+  AC_DEFINE([JAVAGLUE], 1)
 fi
 
-dnl Check if we want to enable threads
-AC_ARG_ENABLE(threads, [  --enable-threads        enables multithread safety [default=yes]],
-  [ if test "$enableval" = no; then
-      ac_enable_threads=no
-    else
-      ac_enable_threads=yes
+# Checks for entropy sources.
+AC_CHECKING(for specific entropy devices)
+case $target_os in
+  cygwin*)
+    AC_MSG_CHECKING([for wavein])
+    AC_MSG_RESULT(yes)
+    AC_MSG_CHECKING([for wincrypt])
+    AC_MSG_RESULT(yes)
+    AC_MSG_CHECKING([for console])
+    AC_MSG_RESULT(yes)
+    ;;
+  linux*)
+    AC_CACHE_CHECK([for /dev/dsp], ac_cv_have_dev_dsp, [
+      if test -r /dev/dsp; then
+        ac_cv_have_dev_dsp=yes
+      else
+        ac_cv_have_dev_dsp=no
+      fi
+      ])
+    if test "$ac_cv_have_dev_dsp" = yes; then
+      AC_DEFINE([HAVE_DEV_DSP], 1)
     fi
-  ], [ ac_enable_threads=yes ])
-
-dnl Check if we want to enable aio
-AC_ARG_ENABLE(aio, [  --enable-aio            enables asynchronous i/o for entropy gathering [default=yes]],
-  [ if test "$enableval" = no; then
-      ac_enable_aio=no
-    else
-      ac_enable_aio=yes
+    ;;
+  solaris*)
+    AC_CACHE_CHECK([for /dev/audio], ac_cv_have_dev_audio, [
+      if test -r /dev/audio; then
+        ac_cv_have_dev_audio=yes
+      else
+        ac_cv_have_dev_audio=no
+      fi
+      ])
+    if test "$ac_cv_have_dev_audio" = yes; then
+      AC_DEFINE([HAVE_DEV_AUDIO], 1)
     fi
-  ], [ ac_enable_aio=yes ])
-
-dnl Check if we want to use mtmalloc
-AC_ARG_WITH(mtmalloc, [  --with-mtmalloc         links against the mtmalloc library [default=no]],
-  [ if test "$withval" = no; then
-      ac_with_mtmalloc=no
-    else
-      ac_with_mtmalloc=yes
-    fi
-  ], [ ac_with_mtmalloc=no ])
-
-dnl Product and version
-AC_SUBST(CC)
-AC_SUBST(CPP)
-AC_SUBST(LD)
-
-dnl Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-AC_TYPE_SIZE_T
-
-dnl Checks for library functions.
-AC_FUNC_MEMCMP
-
-dnl Checks for header files.
-AC_CHECK_HEADERS(errno.h string.h ctype.h stdlib.h)
-AC_CHECK_HEADERS(unistd.h fcntl.h)
-AC_CHECK_HEADERS(sys/types.h sys/stat.h)
-AC_CHECK_HEADERS(termio.h termios.h)
-AC_CHECK_HEADERS(sys/audioio.h sys/ioctl.h sys/soundcard.h)
-
-AC_CHECK_HEADERS(time.h sys/time.h)
-if test "$ac_cv_header_sys_time_h" = yes; then
-  AC_CHECK_FUNC(gettimeofday, [
-    AC_DEFINE(HAVE_GETTIMEOFDAY, 1)
-    ])
-  AC_CHECK_FUNC(gethrtime, [
-    AC_DEFINE(HAVE_GETHRTIME, 1)
-    ])
-fi
+    ;;
+  *)
+    AC_MSG_WARN(no specific entropy devices present)
+    ;;
+esac
 
 case $target_os in
   cygwin*)
     ;;
   *)
-    if test "$ac_enable_threads" = yes; then
-      AC_DEFINE(ENABLE_THREADS, 1)
-      AC_CHECK_HEADERS(thread.h pthread.h synch.h semaphore.h)
-      if test "$ac_cv_header_thread_h" = yes; then
-        AC_HAVE_LIBRARY(thread)
-      elif test  "$ac_cv_header_pthread_h" = yes; then
-        AC_HAVE_LIBRARY(pthread)
+    AC_CHECKING(for generic entropy devices)
+    AC_CACHE_CHECK([for /dev/random], ac_cv_have_dev_random, [
+      if test -r /dev/random; then
+        ac_cv_have_dev_random=yes
       else
-        AC_MSG_WARN([Can't find any thread libraries])
-        AC_DEFINE(ENABLE_THREADS, 0)
+        ac_cv_have_dev_random=no
       fi
+      ])
+    if test "$ac_cv_have_dev_random" = yes; then
+      AC_DEFINE([HAVE_DEV_RANDOM], 1)
     fi
-
-    if test "$ac_enable_aio" = yes; then
-      AC_CHECK_HEADERS(aio.h)
-      if test "$ac_cv_header_aio_h" = yes; then
-        AC_SEARCH_LIBS(aio_read, [c rt aio posix4], [ ], [
-          AC_MSG_ERROR([no library containing aio routines found])
-      	])
-        AC_CACHE_CHECK([whether aio works], ac_cv_have_working_aio, [
-          cat > conftest.aio << EOF
-The quick brown fox jumps over the lazy dog.
-EOF
-          AC_TRY_RUN([
-#if HAVE_ERRNO_H
-# include <errno.h>
-#endif
-#if HAVE_FCNTL_H
-# include <fcntl.h>
-#endif
-#if HAVE_STRING_H
-# include <string.h>
-#endif
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#include <aio.h>
-#include <stdio.h>
-
-main()
-{
-        struct aiocb    a;
-  const struct aiocb*   a_list = &a;
-        struct timespec a_timeout;
-
-  char buffer[32];
-
-  int i, rc, fd = open("conftest.aio", O_RDONLY);
-
-  if (fd < 0)
-    exit(1);
-
-  memset(&a, 0, sizeof(struct aiocb));
-
-  a.aio_fildes = fd;
-  a.aio_offset = 0;
-  a.aio_reqprio = 0;
-  a.aio_buf = buffer;
-  a.aio_nbytes = sizeof(buffer);
-  a.aio_sigevent.sigev_notify = SIGEV_NONE;
-
-  a_timeout.tv_sec = 1;
-  a_timeout.tv_nsec = 0;
-
-  if (aio_read(&a) < 0)
-    exit(1);
-
-  if (aio_suspend(&a_list, 1, &a_timeout) < 0)
-  {
-    #if HAVE_ERRNO_H
-    /* some linux systems don't await timeout and return instantly */
-    if (errno == EAGAIN)
-    {
-      nanosleep(&a_timeout, (struct timespec*) 0);
-      if (aio_suspend(&a_list, 1, &a_timeout) < 0)
-        exit(1);
-    }
-    else
-      exit(1);
-    #else
-    exit(1);
-    #endif
-  }
-
-  if (aio_error(&a) < 0)
-    exit(1);
-
-  if (aio_return(&a) < 0)
-    exit(1);
-
-  exit(0);
-}
-            ], ac_cv_have_working_aio=yes, ac_cv_have_working_aio=no)
-          ])
-        if test "$ac_cv_have_working_aio" = yes; then
-          AC_DEFINE(ENABLE_AIO, 1)
-        fi
-        rm -fr conftest*
+    AC_CACHE_CHECK([for /dev/urandom], ac_cv_have_dev_urandom, [
+      if test -r /dev/urandom; then
+        ac_cv_have_dev_urandom=yes
+      else
+        ac_cv_have_dev_urandom=no
       fi
+      ])
+    if test "$ac_cv_have_dev_urandom" = yes; then
+      AC_DEFINE([HAVE_DEV_URANDOM], 1)
     fi
-
-    if test "$ac_with_mtmalloc" = yes; then
-      AC_CHECK_HEADERS(mtmalloc.h)
-      AC_HAVE_LIBRARY(mtmalloc)
+    AC_CACHE_CHECK([for /dev/tty], ac_cv_have_dev_tty, [
+      if test -r /dev/tty; then
+        ac_cv_have_dev_tty=yes
+      else
+        ac_cv_have_dev_tty=no
+      fi
+      ])
+    if test "$ac_cv_have_dev_tty" = yes; then
+      AC_DEFINE([HAVE_DEV_TTY], 1)
     fi
     ;;
 esac
-
-dnl Checks for compiler flags
-CFLAGS=""
-CPPFLAGS=""
-LDFLAGS=""
 
 if test "$ac_enable_optimized" = yes; then
   case $target_cpu in
@@ -460,16 +717,16 @@ else
         CFLAGS="$CFLAGS -fomit-frame-pointer"
         ;;
       i386)
-        CFLAGS="$CFLAGS -mcpu=i386 -march=i386 -fomit-frame-pointer"
+        CFLAGS="$CFLAGS -march=i386 -mcpu=i686 -fomit-frame-pointer"
         ;;
       i486)
-        CFLAGS="$CFLAGS -mcpu=i386 -march=i486 -fomit-frame-pointer"
+        CFLAGS="$CFLAGS -march=i386 -mcpu=i686 -fomit-frame-pointer"
         ;;
       i586)
-        CFLAGS="$CFLAGS -mcpu=i386 -march=i586 -fomit-frame-pointer"
+        CFLAGS="$CFLAGS -march=i386 -mcpu=i686 -fomit-frame-pointer"
         ;;
       i686)
-	CFLAGS="$CFLAGS -mcpu=i386  -march=i686 -fomit-frame-pointer"
+	CFLAGS="$CFLAGS -march=i386  -mcpu=i686 -fomit-frame-pointer"
         ;;
       sparc)
         CFLAGS="$CFLAGS -m32 -mtune=ultrasparc"
@@ -535,15 +792,6 @@ else
   fi
 fi
 
-case $target_os in
-  freebsd*)
-    if test "$ac_enable_threads" = yes; then
-      CFLAGS="$CFLAGS -pthread"
-      LDFLAGS="$LDFLAGS -pthread"
-    fi
-    ;;
-esac
-
 if test "$ac_with_javaglue" = yes ; then
   if test "$ac_cv_have_gcj" = no; then
     CFLAGS="$CFLAGS -I$ac_cv_java_include"
@@ -571,171 +819,7 @@ if test "$ac_with_javaglue" = yes ; then
   esac
 fi
 
-dnl Checks for endianness
-AC_C_BIGENDIAN
-
-dnl Checks for word sizes
-AC_CHECK_SIZEOF(char)
-AC_CHECK_SIZEOF(unsigned char)
-if test "$ac_cv_sizeof_char" -eq 1; then
-  AC_SUBST(int8_type, "char")
-else
-  AC_MSG_ERROR([compiler has no 1 byte char])
-fi
-if test "$ac_cv_sizeof_unsigned_char" -eq 1; then
-  AC_SUBST(uint8_type, "unsigned char")
-else
-  AC_MSG_ERROR([compiler has no 1 byte unsigned char])
-fi
-
-AC_CHECK_SIZEOF(short)
-AC_CHECK_SIZEOF(unsigned short)
-if test "$ac_cv_sizeof_short" -eq 2; then
-  AC_SUBST(int16_type, "short")
-else
-  AC_MSG_ERROR([compiler has no 2 byte short])
-fi
-if test "$ac_cv_sizeof_unsigned_short" -eq 2; then
-  AC_SUBST(uint16_type, "unsigned short")
-else
-  AC_MSG_ERROR([compiler has no 2 byte unsigned short])
-fi
-
-AC_CHECK_SIZEOF(int)
-AC_CHECK_SIZEOF(unsigned int)
-AC_CHECK_SIZEOF(long)
-AC_CHECK_SIZEOF(unsigned long)
-if test "$ac_cv_sizeof_int" -eq 4; then
-  AC_SUBST(int32_type, "int")
-elif test "$ac_cv_sizeof_long" -eq 4; then
-  AC_SUBST(int32_type, "long")
-else
-  AC_MSG_ERROR([compiler has no 4 byte integer])
-fi
-if test "$ac_cv_sizeof_unsigned_int" -eq 4; then
-  AC_SUBST(uint32_type, "unsigned int")
-elif test "$ac_cv_sizeof_unsigned_long" -eq 4; then
-  AC_SUBST(uint32_type, "unsigned long")
-else
-  AC_MSG_ERROR([compiler has no 4 byte unsigned integer])
-fi
-
-if test "$ac_cv_sizeof_long" -eq 8; then
-  AC_SUBST(int64_type, "long")
-else
-  AC_CHECK_SIZEOF(long long)
-  if test "$ac_cv_sizeof_long_long" -eq 8; then
-    AC_DEFINE(HAVE_LONG_LONG)
-    AC_SUBST(int64_type, "long long")
-  else
-    AC_MSG_ERROR([compiler has no 8 byte integer])
-  fi
-fi
-if test "$ac_cv_sizeof_unsigned_long" -eq 8; then
-  AC_SUBST(uint64_type, "unsigned long")
-else
-  AC_CHECK_SIZEOF(unsigned long long)
-  if test "$ac_cv_sizeof_unsigned_long_long" -eq 8; then
-    AC_DEFINE(HAVE_UNSIGNED_LONG_LONG)
-    AC_SUBST(uint64_type, "unsigned long long")
-  else
-    AC_MSG_ERROR([compiler has no 8 byte unsigned integer])
-  fi
-fi
-
-AC_CHECK_SIZEOF(float)
-if test "$ac_cv_sizeof_float" -eq 4; then
-  AC_SUBST(float4_type, "float")
-else
-  AC_MSG_ERROR([compiler has no 4 byte float])
-fi
-
-AC_CHECK_SIZEOF(double)
-if test "$ac_cv_sizeof_double" -eq 8; then
-  AC_SUBST(double8_type, "double")
-else
-  AC_MSG_ERROR([compiler has no 8 byte double])
-fi
-
-dnl Checks for devices
-AC_CHECKING(for specific entropy devices)
-case $target_os in
-  cygwin*)
-    AC_MSG_CHECKING([for wavein])
-    AC_MSG_RESULT(yes)
-    AC_MSG_CHECKING([for wincrypt])
-    AC_MSG_RESULT(yes)
-    AC_MSG_CHECKING([for console])
-    AC_MSG_RESULT(yes)
-    ;;
-  linux*)
-    AC_CACHE_CHECK([for /dev/dsp], ac_cv_have_dev_dsp, [
-      if test -r /dev/dsp; then
-        ac_cv_have_dev_dsp=yes
-      else
-        ac_cv_have_dev_dsp=no
-      fi
-      ])
-    if test "$ac_cv_have_dev_dsp" = yes; then
-      AC_DEFINE(HAVE_DEV_DSP, 1)
-    fi
-    ;;
-  solaris*)
-    AC_CACHE_CHECK([for /dev/audio], ac_cv_have_dev_audio, [
-      if test -r /dev/audio; then
-        ac_cv_have_dev_audio=yes
-      else
-        ac_cv_have_dev_audio=no
-      fi
-      ])
-    if test "$ac_cv_have_dev_audio" = yes; then
-      AC_DEFINE(HAVE_DEV_AUDIO, 1)
-    fi
-    ;;
-  *)
-    AC_MSG_WARN(no specific entropy devices present)
-    ;;
-esac
-
-case $target_os in
-  cygwin*)
-    ;;
-  *)
-    AC_CHECKING(for generic entropy devices)
-    AC_CACHE_CHECK([for /dev/random], ac_cv_have_dev_random, [
-      if test -r /dev/random; then
-        ac_cv_have_dev_random=yes
-      else
-        ac_cv_have_dev_random=no
-      fi
-      ])
-    if test "$ac_cv_have_dev_random" = yes; then
-      AC_DEFINE(HAVE_DEV_RANDOM, 1)
-    fi
-    AC_CACHE_CHECK([for /dev/urandom], ac_cv_have_dev_urandom, [
-      if test -r /dev/urandom; then
-        ac_cv_have_dev_urandom=yes
-      else
-        ac_cv_have_dev_urandom=no
-      fi
-      ])
-    if test "$ac_cv_have_dev_urandom" = yes; then
-      AC_DEFINE(HAVE_DEV_URANDOM, 1)
-    fi
-    AC_CACHE_CHECK([for /dev/tty], ac_cv_have_dev_tty, [
-      if test -r /dev/tty; then
-        ac_cv_have_dev_tty=yes
-      else
-        ac_cv_have_dev_tty=no
-      fi
-      ])
-    if test "$ac_cv_have_dev_tty" = yes; then
-      AC_DEFINE(HAVE_DEV_TTY, 1)
-    fi
-    ;;
-esac
-
-dnl Generate the assembler optimizations
+# Generate the assembler optimizations, or empty stub files.
 rm -f $srcdir/aesopt.c $srcdir/aesopt.S
 rm -f $srcdir/blowfishopt.c $srcdir/blowfishopt.S
 rm -f $srcdir/mp32opt.c $srcdir/mp32opt.S
@@ -811,12 +895,14 @@ if test ! -r $srcdir/sha1opt.S; then
 EOF
 fi
 
-dnl Output
-AC_OUTPUT([ Doxyfile Makefile beecrypt.spec types.h
-	docs/Makefile gas/Makefile masm/Makefile mwerks/Makefile
-	tests/Makefile ],
-  [     
-        echo timestamp > stamp-h.in
-  ]
-
-)
+# Generate output files.
+AC_CONFIG_FILES([Makefile
+                 Doxyfile
+                 beecrypt.spec
+                 types.h
+                 docs/Makefile
+                 gas/Makefile
+                 masm/Makefile
+                 mwerks/Makefile
+                 tests/Makefile])
+AC_OUTPUT

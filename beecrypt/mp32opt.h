@@ -28,8 +28,6 @@
 #ifndef _MP32OPT_H
 #define _MP32OPT_H
 
-#include "beecrypt.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

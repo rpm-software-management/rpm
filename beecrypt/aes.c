@@ -25,6 +25,8 @@
  */
 
 #include "system.h"
+#include "beecrypt.h"
+#include "aesopt.h"
 #include "aes.h"
 #include "endianness.h"
 #include "mp32.h"

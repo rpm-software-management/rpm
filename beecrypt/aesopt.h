@@ -24,9 +24,6 @@
 #ifndef _AESOPT_H
 #define _AESOPT_H
 
-#include "beecrypt.h"
-#include "aes.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

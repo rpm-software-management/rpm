@@ -67,13 +67,13 @@ int hmacSetup(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param,
 		if (rc)
 			return -1;
 
+		memset(keydigest, 0, sizeof(keydigest));
 		if (hash->digest(param, keydigest))
 			return -1;
 
 		keywords = hash->digestsize >> 2;
 		keybytes = hash->digestsize;
 
-		memset(keydigest, 0, sizeof(keydigest));
 		(void) encodeInts(keydigest, hp->kxi, keybytes);
 		(void) encodeInts(keydigest, hp->kxo, keybytes);
 	}
