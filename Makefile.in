@@ -25,7 +25,7 @@ INCDIR=$(prefix)/include/rpm
 
 SUBDIRS = lib build
 OBJS = query.o install.o 
-PROGS = rpm rpmlead rpmheader rpmarchive rpmconvert
+PROGS = rpm rpmlead rpmheader rpmarchive rpmconvert rpmsignature rpmchecksig
 LOADLIBES = -lbuild -lrpm -ldb /usr/lib/libgz.a $(LIBEFENCE)
 
 ifeq (.depend,$(wildcard .depend))
