@@ -787,8 +787,8 @@ int packageBinaries(Spec s)
 		addEntry(outHeader, RPMTAG_XPM, BIN_TYPE,
 			 icon, statbuf.st_size);
 	    } else {
-		addEntry(outHeader, RPMTAG_ICON, BIN_TYPE,
-			 icon, statbuf.st_size);
+	       error(RPMERR_BADSPEC, "Unknown icon type");
+	       return 1;
 	    }
 	    free(icon);
 	}
@@ -896,8 +896,10 @@ int packageSource(Spec s)
     addEntry(outHeader, RPMTAG_ARCH, INT8_TYPE, &arch, 1);
     addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
     addEntry(outHeader, RPMTAG_BUILDHOST, STRING_TYPE, buildHost(), 1);
-    addEntry(outHeader, RPMTAG_SOURCE, STRING_ARRAY_TYPE, sources, scount);
-    addEntry(outHeader, RPMTAG_PATCH, STRING_ARRAY_TYPE, patches, pcount);
+    if (scount) 
+        addEntry(outHeader, RPMTAG_SOURCE, STRING_ARRAY_TYPE, sources, scount);
+    if (pcount)
+        addEntry(outHeader, RPMTAG_PATCH, STRING_ARRAY_TYPE, patches, pcount);
     /* XXX - need: distribution, vendor, release */
 
     if (process_filelist(outHeader, filelist, &size,
