@@ -21,7 +21,7 @@ msgstr "eroare necunoscuta"
 #: ../popt.c:407
 #, c-format
 msgid "option type (%d) not implemented in popt\n"
-msgstr "optiunea de tipul (%d)< nu este implementata in popt"
+msgstr "optiunea de tipul (%d)< nu este implementata in popt\n"
 
 #: ../popt.c:531
 msgid "missing argument"
