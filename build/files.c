@@ -1742,7 +1742,7 @@ static int processPubkeyFile(Package pkg, FileList fl, const char * fileURL)
     const char * apkt = NULL;
     const unsigned char * pkt = NULL;
     ssize_t pktlen = 0;
-    int absolute = 1;
+    int absolute = 0;
     int rc = 1;
     int xx;
 
@@ -1753,7 +1753,6 @@ static int processPubkeyFile(Package pkg, FileList fl, const char * fileURL)
      } else
 	fn = rpmGenPath(buildURL, NULL, fn);
 
-fprintf(stderr, "*** fn %s\n", fn);
     if ((rc = pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
 	rpmError(RPMERR_BADSPEC, _("%s: public key read failed.\n"), fn);
 	goto exit;

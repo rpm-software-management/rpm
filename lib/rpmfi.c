@@ -463,7 +463,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 		Header origH, fileAction * actions)
 	/*@modifies ts, fi, origH, actions @*/
 {
-    rpmte p = fi->te;
+    rpmte p = rpmtsRelocateElement(ts);
     HGE_t hge = fi->hge;
     HAE_t hae = fi->hae;
     HME_t hme = fi->hme;
@@ -982,6 +982,7 @@ rpmfi rpmfiNew(rpmts ts, Header h, rpmTag tagN, int scareMem)
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
     HFD_t hfd = headerFreeData;
+    rpmte p;
     rpmfi fi = NULL;
     const char * Type;
     uint_32 * uip;
@@ -1092,7 +1093,7 @@ if (fi->actions == NULL)
 
     if (ts != NULL)
     if (fi != NULL)
-    if (fi->te != NULL && rpmteType(fi->te) == TR_ADDED) {
+    if ((p = rpmtsRelocateElement(ts)) != NULL && rpmteType(p) == TR_ADDED) {
 	Header foo;
 /* XXX DYING */
 if (fi->actions == NULL)

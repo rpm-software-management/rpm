@@ -15,7 +15,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.41
+Release: 0.42
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -232,6 +232,9 @@ exit 0
 %files
 %defattr(-,root,root)
 %doc RPM-PGP-KEY RPM-GPG-KEY BETA-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
+%pubkey RPM-PGP-KEY
+%pubkey RPM-GPG-KEY
+%pubkey BETA-GPG-KEY
 %attr(0755, @RPMUSER@, @RPMGROUP@)	/bin/rpm
 
 %ifos linux
@@ -455,10 +458,12 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
-* Fri Dec 27 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.41
+* Fri Dec 27 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.42
 - add BETA-GPG-KEY (but not in headers using %%pubkey yet).
 - disable perl module magic rule.
 - ignore ENOENT return from db->close (#80514,#79314).
+- fix builddir relative inclusion, add %%pubkeys to rpm header.
+- fix: package relocations were broken (#75057).
 
 * Thu Dec 26 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.39
 - add Red Hat pubkeys to rpm header.

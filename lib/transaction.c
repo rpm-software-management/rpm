@@ -1473,11 +1473,16 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 		{
 		    char * fstates = fi->fstates;
 		    fileAction * actions = fi->actions;
+		    rpmte savep;
 
 		    fi->fstates = NULL;
 		    fi->actions = NULL;
 		    fi = rpmfiFree(fi);
+
+		    savep = rpmtsSetRelocateElement(ts, p);
 		    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
+		    (void) rpmtsSetRelocateElement(ts, savep);
+
 		    if (fi != NULL) {	/* XXX can't happen */
 			fi->te = p;
 			fi->fstates = _free(fi->fstates);

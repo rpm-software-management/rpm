@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-27 14:23-0500\n"
+"POT-Creation-Date: 2002-12-27 19:22-0500\n"
 "PO-Revision-Date: 2001-07-12 13:25+0000\n"
 "Last-Translator: Richard Allen <ra@hp.is>\n"
 "Language-Team: is <kde-isl@mmedia.is>\n"
@@ -508,64 +508,64 @@ msgstr ""
 msgid "File not found: %s\n"
 msgstr "Skráin fannst ekki: %s\n"
 
-#: build/files.c:1758
+#: build/files.c:1757
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: Fseek brást: %s\n"
 
-#: build/files.c:1762 lib/rpmchecksig.c:573
+#: build/files.c:1761 lib/rpmchecksig.c:573
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1810
+#: build/files.c:1809
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1834
+#: build/files.c:1833
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Gat ekki opnað PreUn skrá: %s\n"
 
-#: build/files.c:1851 lib/rpminstall.c:343
+#: build/files.c:1850 lib/rpminstall.c:343
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Skráin fannst ekki með 'glob': %s\n"
 
-#: build/files.c:1911
+#: build/files.c:1910
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Gat ekki opnað %%files skrána %s: %s\n"
 
-#: build/files.c:1922 build/pack.c:156
+#: build/files.c:1921 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "lína: %s\n"
 
-#: build/files.c:2311
+#: build/files.c:2310
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ógild skrá %s: %s\n"
 
-#: build/files.c:2323 build/parsePrep.c:50
+#: build/files.c:2322 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2367
+#: build/files.c:2366
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr ""
 
-#: build/files.c:2388
+#: build/files.c:2387
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2416
+#: build/files.c:2415
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
-"POT-Creation-Date: 2002-12-27 14:23-0500\n"
+"POT-Creation-Date: 2002-12-27 19:22-0500\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -527,64 +527,64 @@ msgstr "O ficheiro não corresponde ao prefixo (%s): %s\n"
 msgid "File not found: %s\n"
 msgstr "Ficheiro não encontrado: %s\n"
 
-#: build/files.c:1758
+#: build/files.c:1757
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr ":%s: o readLead falhou\n"
 
-#: build/files.c:1762 lib/rpmchecksig.c:573
+#: build/files.c:1761 lib/rpmchecksig.c:573
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1810
+#: build/files.c:1809
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "O ficheiro precisa de começar por \"/\": %s\n"
 
-#: build/files.c:1834
+#: build/files.c:1833
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob não permitido: %s\n"
 
-#: build/files.c:1851 lib/rpminstall.c:343
+#: build/files.c:1850 lib/rpminstall.c:343
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Ficheiro não encontrado pelo glob: %s\n"
 
-#: build/files.c:1911
+#: build/files.c:1910
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Não consegui abrir o ficheiro do %%files %s: %s\n"
 
-#: build/files.c:1922 build/pack.c:156
+#: build/files.c:1921 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linha: %s\n"
 
-#: build/files.c:2311
+#: build/files.c:2310
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ficheiro inválido: %s: %s\n"
 
-#: build/files.c:2323 build/parsePrep.c:50
+#: build/files.c:2322 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Dono/grupo inválido: %s\n"
 
-#: build/files.c:2367
+#: build/files.c:2366
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "a abertura do pacote falhou%s%s: %s\n"
 
-#: build/files.c:2388
+#: build/files.c:2387
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2416
+#: build/files.c:2415
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "A processar os ficheiros: %s-%s-%s\n"

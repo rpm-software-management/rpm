@@ -1117,6 +1117,22 @@ Spec rpmtsSetSpec(rpmts ts, Spec spec)
     return ospec;
 }
 
+rpmte rpmtsRelocateElement(rpmts ts)
+{
+/*@-compdef -retexpose -usereleased@*/
+    return ts->relocateElement;
+/*@=compdef =retexpose =usereleased@*/
+}
+
+rpmte rpmtsSetRelocateElement(rpmts ts, rpmte relocateElement)
+{
+    rpmte orelocateElement = ts->relocateElement;
+/*@-assignexpose -temptrans@*/
+    ts->relocateElement = relocateElement;
+/*@=assignexpose =temptrans@*/
+    return orelocateElement;
+}
+
 int rpmtsSetNotifyCallback(rpmts ts,
 		rpmCallbackFunction notify, rpmCallbackData notifyData)
 {

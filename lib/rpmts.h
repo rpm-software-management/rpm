@@ -156,6 +156,9 @@ struct rpmts_s {
     int numAvailablePackages;	/*!< No. available package instances. */
 #endif
 
+/*@null@*/
+    rpmte relocateElement;	/*!< Element to use when relocating packages. */
+
 /*@owned@*/ /*@relnull@*/
     rpmte * order;		/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
@@ -753,6 +756,25 @@ Spec rpmtsSpec(rpmts ts)
  */
 /*@null@*/
 Spec rpmtsSetSpec(rpmts ts, /*@null@*/ Spec spec)
+	/*@modifies ts @*/;
+
+/** \ingroup rpmts
+ * Get current relocate transaction element.
+ * @param ts		transaction set
+ * @return		current relocate transaction element
+ */
+/*@null@*/
+rpmte rpmtsRelocateElement(rpmts ts)
+	/*@*/;
+
+/** \ingroup rpmts
+ * Set current relocate transaction element.
+ * @param ts		transaction set
+ * @param relocateElement new relocate transaction element
+ * @return		previous relocate transaction element
+ */
+/*@null@*/
+rpmte rpmtsSetRelocateElement(rpmts ts, /*@null@*/ rpmte relocateElement)
 	/*@modifies ts @*/;
 
 /** \ingroup rpmts

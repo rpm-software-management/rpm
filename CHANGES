@@ -80,6 +80,8 @@
 	- add BETA-GPG-KEY (but not in headers using %%pubkey yet).
 	- disable perl module magic rule.
 	- ignore ENOENT return from db->close (#80514,#79314).
+	- fix builddir relative inclusion, add %%pubkeys to rpm header.
+	- fix: package relocations were broken (#75057).
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

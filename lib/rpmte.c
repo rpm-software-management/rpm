@@ -92,6 +92,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 {
     int scareMem = 0;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    rpmte savep;
     int_32 * ep;
     const char * arch, * os;
     int xx;
@@ -120,19 +121,6 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->epoch = NULL;
 /*@=branchstate@*/
 
-    p->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
-    p->provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
-    p->requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
-    p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
-    p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, scareMem);
-
-    p->key = key;
-
-    p->fd = NULL;
-
-    p->multiLib = 0;
-
     if (relocs != NULL) {
 	rpmRelocation * r;
 	int i;
@@ -150,6 +138,20 @@ static void addTE(rpmts ts, rpmte p, Header h,
     } else {
 	p->relocs = NULL;
     }
+
+    p->key = key;
+    p->fd = NULL;
+    p->multiLib = 0;
+
+    p->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+    p->provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
+    p->requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
+    p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
+    p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, scareMem);
+
+    savep = rpmtsSetRelocateElement(ts, p);
+    p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
+    (void) rpmtsSetRelocateElement(ts, savep);
 }
 /*@=bounds@*/
 
