@@ -48,7 +48,7 @@ int doReSign(int add, char *passPhrase, char **argv)
 	}
 
 	/* Write the rest to a temp file */
-	strcpy(sigtarget, tmpnam(NULL));
+	strcpy(sigtarget, tempnam(getVar(RPMVAR_TMPPATH), "rpmsigtarget"));
 	ofd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
@@ -172,7 +172,7 @@ int doCheckSig(int pgp, char **argv)
 	    continue;
 	}
 	/* Write the rest to a temp file */
-	strcpy(sigtarget, tmpnam(NULL));
+	strcpy(sigtarget, tempnam(getVar(RPMVAR_TMPPATH), "rpmsigtarget"));
 	ofd = open(sigtarget, O_WRONLY|O_CREAT|O_TRUNC, 0644);
 	while ((count = read(fd, buffer, sizeof(buffer))) > 0) {
 	    if (count == -1) {
@@ -182,7 +182,8 @@ int doCheckSig(int pgp, char **argv)
 		exit(1);
 	    }
 	    if (write(ofd, buffer, count) < 0) {
-		perror("Couldn't write header/archive to temp file");
+		fprintf(stderr, "Unable to write %s", sigtarget);
+		perror("");
 		close(ofd);
 		unlink(sigtarget);
 		exit(1);
