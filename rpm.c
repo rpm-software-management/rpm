@@ -4,11 +4,13 @@
 #include <string.h>
 #include <getopt.h>
 
+#include "install.h"
+#include "lib/messages.h"
 #include "query.h"
 
 char * version = "2.0a";
 
-enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIY,
+enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
 	     MODE_UNKNOWN };
 
 static void argerror(char * desc);
@@ -138,15 +140,18 @@ int main(int argc, char ** argv) {
 	    { "query", 0, 0, 'q' },
 	    { "stdin-query", 0, 0, 'Q' },
 	    { "file", 0, 0, 'f' },
+	    { "group", 0, 0, 'g' },
+	    { "stdin-group", 0, 0, 'G' },
 	    { "stdin-files", 0, 0, 'F' },
 	    { "package", 0, 0, 'p' },
 	    { "stdin-packages", 0, 0, 'P' },
-	    { "root", 1, 0, 'R' },
+	    { "root", 1, 0, 'r' },
 	    { "all", 0, 0, 'a' },
 	    { "info", 0, 0, 'i' },
 	    { "list", 0, 0, 'l' },
 	    { "state", 0, 0, 's' },
 	    { "install", 0, 0, 'i' },
+	    { "uninstall", 0, 0, 'u' },
 	    { "verbose", 0, 0, 'v' },
 	    { "force", 0, &force, 0 },
 	    { "quiet", 0, 0, 0 },
@@ -160,7 +165,8 @@ int main(int argc, char ** argv) {
 
 
     while (1) {
-	arg = getopt_long(argc, argv, "QqpvPfFilsadcr:", options, &long_index);
+	arg = getopt_long(argc, argv, "QqpvPfFilsagGducr:", options, 
+			  &long_index);
 	if (arg == -1) break;
 
 	switch (arg) {
@@ -174,9 +180,15 @@ int main(int argc, char ** argv) {
 		argerror("only one major mode may be specified");
 	    bigMode = MODE_QUERY;
 	    break;
+
+	  case 'u':
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_UNINSTALL)
+		argerror("only one major mode may be specified");
+	    bigMode = MODE_UNINSTALL;
+	    break;
 	
 	  case 'v':
-	    /*increaseVerbosity();*/
+	    increaseVerbosity();
 	    break;
 
 	  case 'i':
@@ -223,6 +235,18 @@ int main(int argc, char ** argv) {
 	    querySource = QUERY_RPM;
 	    break;
 
+	  case 'G':
+	    if (querySource != QUERY_PACKAGE && querySource != QUERY_SGROUP)
+		argerror("only one type of query may be performed at a time");
+	    querySource = QUERY_SGROUP;
+	    break;
+
+	  case 'g':
+	    if (querySource != QUERY_PACKAGE && querySource != QUERY_GROUP)
+		argerror("only one type of query may be performed at a time");
+	    querySource = QUERY_GROUP;
+	    break;
+
 	  case 'F':
 	    if (querySource != QUERY_PACKAGE && querySource != QUERY_SPATH)
 		argerror("only one type of query may be performed at a time");
@@ -245,16 +269,14 @@ int main(int argc, char ** argv) {
 	    break;
 
 	  case 'r':
-	    argerror("root argument not yet handled!");
+	    prefix = optarg;
 	    break;
 
 	  default:
 	    if (options[long_index].flag) 
 		*options[long_index].flag = 1;
-/*
 	    else if (!strcmp(options[long_index].name, "quiet"))
 		setVerbosity(MESS_QUIET);
-*/
 	}
     }
 
@@ -275,10 +297,14 @@ int main(int argc, char ** argv) {
 	if (!version && !help) printUsage();
 	exit(0);
 
+      case MODE_UNINSTALL:
+	while (optind < argc) 
+	    doUninstall(prefix, argv[optind++], test, 0);
+	break;
+
       case MODE_INSTALL:
 	while (optind < argc) 
-	    printf("can't install %s\n", argv[optind++]);
-	    /*doInstall(argv[optind++], force, test);*/
+	    doInstall(argv[optind++], test, 0);
 	break;
 
       case MODE_QUERY:
