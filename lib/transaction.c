@@ -6,6 +6,7 @@
 #include "fprint.h"
 #include "hash.h"
 #include "install.h"
+#include "md5.h"
 #include "misc.h"
 #include "rpmdb.h"
 
@@ -14,6 +15,8 @@ struct fileInfo {
     enum fileInfo_e { ADDED, REMOVED } type;
     enum instActions * actions;
     char ** fl, ** fmd5s, ** flinks;
+    uint_32 * fflags;
+    uint_16 * fmodes;
     fingerPrint * fps;
     int fc;
 };
@@ -33,6 +36,13 @@ static Header relocateFileList(struct availablePackage * alp,
 			       rpmProblemSet probs);
 static int psTrim(rpmProblemSet filter, rpmProblemSet target);
 static int sharedCmp(const void * one, const void * two);
+static enum instActions decideFileFate(char * filespec, short dbMode, 
+				char * dbMd5, char * dbLink, short newMode, 
+				char * newMd5, char * newLink, int newFlags,
+				int brokenMd5);
+enum fileTypes whatis(short mode);
+static int filecmp(short mode1, char * md51, char * link1, 
+	           short mode2, char * md52, char * link2);
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
@@ -56,15 +66,19 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
     struct fileInfo * flList, * fi;
     struct fileInfo ** recs;
     int numRecs;
-    char ** othermd5s;
+    char ** otherMd5s, ** otherLinks;
     Header h;
-    char * otherstates;
+    char * otherStates;
     struct sharedFileInfo * shared, * sharedList;
+    uint_32 * otherFlags;
+    uint_16 * otherModes;
     int numShared;
     int pkgNum, otherPkgNum;
-    int otherFileNum;
+    int otherFileNum, fileNum;
 
     /* FIXME: what if the same package is included in ts twice? */
+
+    /* FIXME: we completely ignore net shared paths here! */
 
     if (flags & RPMTRANS_FLAG_TEST) {
 	instFlags |= RPMINSTALL_TEST; 
@@ -114,6 +128,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 				(void *) &fi->fmd5s, NULL);
 	headerGetEntryMinMemory(alp->h, RPMTAG_FILELINKTOS, NULL, 
 				(void *) &fi->flinks, NULL);
+	headerGetEntryMinMemory(alp->h, RPMTAG_FILEMODES, NULL, 
+				(void *) &fi->fmodes, NULL);
+	headerGetEntryMinMemory(alp->h, RPMTAG_FILEFLAGS, NULL, 
+				(void *) &fi->fflags, NULL);
 
 	fi->h = alp->h;
 	fi->type = ADDED;
@@ -184,32 +202,52 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	    }
 
 	    headerGetEntryMinMemory(h, RPMTAG_FILENAMES, NULL,
-				    (void **) &othermd5s, NULL);
+				    (void **) &otherMd5s, NULL);
+	    headerGetEntryMinMemory(h, RPMTAG_FILELINKTOS, NULL,
+				    (void **) &otherLinks, NULL);
 	    headerGetEntryMinMemory(h, RPMTAG_FILESTATES, NULL,
-				    (void **) &otherstates, &j);
+				    (void **) &otherStates, &j);
+	    headerGetEntryMinMemory(h, RPMTAG_FILEMODES, NULL,
+				    (void **) &otherModes, &j);
+	    headerGetEntryMinMemory(h, RPMTAG_FILEFLAGS, NULL,
+				    (void **) &otherFlags, &j);
 
 	    j = i;
 	    shared = sharedList + i;
 	    while (sharedList[i].otherPkg == shared->otherPkg) {
-		if (otherstates[shared->otherFileNum] == 
-			    RPMFILE_STATE_NORMAL) {
-		    /* FIXME: This is not a proper file comparison. */
-		    if (strcmp(othermd5s[shared->otherFileNum],
-			       fi->fmd5s[shared->pkgFileNum])) {
+		otherFileNum = shared->otherFileNum;
+		fileNum = shared->pkgFileNum;
+		if (otherStates[otherFileNum] == RPMFILE_STATE_NORMAL) {
+		    if (filecmp(otherModes[otherFileNum],
+				otherMd5s[otherFileNum],
+				otherLinks[otherFileNum],
+				fi->fmodes[fileNum],
+				fi->fmd5s[fileNum],
+				fi->flinks[fileNum])) {
 			/* FIXME: we need to pass the conflicting header */
 			psAppend(probs, RPMPROB_FILE_CONFLICT, alp->key, 
-				 alp->h, fi->fl[shared->pkgFileNum]);
+				 alp->h, fi->fl[fileNum]);
 		    }
 
-		    /* FIXME: we should set a default action here, based on
-		       config files, etc */
-		    /*fi->actions[shared->pkgFileNum] = CREATE;*/
+		    if ((otherFlags[otherFileNum] | fi->fflags[fileNum])
+			 	& RPMFILE_CONFIG) {
+			fi->actions[fileNum] = decideFileFate(fi->fl[fileNum],
+				otherModes[otherFileNum], 
+				otherMd5s[otherFileNum],
+				otherLinks[otherFileNum],
+				fi->fmodes[fileNum],
+				fi->fmd5s[fileNum],
+				fi->flinks[fileNum],
+				fi->fflags[fileNum], 
+			        !headerIsEntry(h, RPMTAG_RPMVERSION));
+		    }
 		}
 
 		shared++;
 	    }
 
-	    free(othermd5s);
+	    free(otherMd5s);
+	    free(otherLinks);
 	    headerFree(h);
 
 	    i = shared - sharedList;
@@ -223,9 +261,9 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	    /* We need to figure out the current fate of this file. So,
 	       work backwards from this file and look for a final action
 	       we can work against. */
-	    for (pkgNum = 0; recs[pkgNum] != fi; pkgNum++);
+	    for (j = 0; recs[j] != fi; j++);
 
-	    otherPkgNum = 0;
+	    otherPkgNum = j - 1;
 	    otherFileNum = -1;			/* keep gcc quiet */
 	    while (otherPkgNum >= 0) {
 		if (recs[otherPkgNum]->type != ADDED) continue;
@@ -245,17 +283,23 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	    if (otherPkgNum < 0) {
 		/* If it isn't in the database, install it. 
 		   FIXME: check for config files here for .rpmorig purporses! */
-		if (recs[pkgNum]->actions[i] == UNKNOWN)
-		    recs[pkgNum]->actions[i] = CREATE;
+		if (fi->actions[i] == UNKNOWN)
+		    fi->actions[i] = CREATE;
 	    } else {
-		/* FIXME: do a proper file comparison here */
-		if (strcmp(recs[pkgNum]->fmd5s[i],
-			   recs[otherPkgNum]->fmd5s[otherFileNum])) {
+		if (filecmp(recs[otherPkgNum]->fmodes[otherFileNum],
+			    recs[otherPkgNum]->fmd5s[otherFileNum],
+			    recs[otherPkgNum]->flinks[otherFileNum],
+			    fi->fmodes[i],
+			    fi->fmd5s[i],
+			    fi->flinks[i])) {
 		    psAppend(probs, RPMPROB_NEW_FILE_CONFLICT, alp->key, 
 			     alp->h, fi->fl[i]);
 		}
-		recs[pkgNum]->actions[i] = 
-			recs[otherPkgNum]->actions[otherFileNum];
+
+		/* FIXME: is this right??? it locks us into the config
+		   file handling choice we already made, which may very
+		   well be exactly right. */
+		fi->actions[i] = recs[otherPkgNum]->actions[otherFileNum];
 		recs[otherPkgNum]->actions[otherFileNum] = SKIP;
 	    }
 	}
@@ -272,7 +316,6 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	free(fi->fl);
 	free(fi->fmd5s);
 	free(fi->flinks);
-	free(fi->actions);
 
 	numPackages++;
     }
@@ -281,15 +324,31 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	*newProbs = probs;
 	for (i = 0; i < al->size; i++)
 	    headerFree(hdrs[i]);
+
+	numPackages = 0;
+	for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
+	    if (alp->h != flList[numPackages].h) continue;
+	    fi = flList + numPackages;
+	    free(fi->actions);
+	}
+
 	return al->size + ts->numRemovedPackages;
     }
 
+    numPackages = 0;
     for (pkgNum = 0, alp = al->list; pkgNum < al->size; pkgNum++, alp++) {
+	fi = flList + numPackages;
 	if (installBinaryPackage(ts->root, ts->db, al->list[pkgNum].fd, 
 			  	 hdrs[pkgNum], al->list[pkgNum].relocs, 
-				 instFlags, notify, notifyData))
+				 instFlags, notify, notifyData, 
+				 fi->actions))
 	    ourrc++;
 	headerFree(hdrs[pkgNum]);
+
+	if (alp->h != flList[numPackages].h) {
+	    free(fi->actions);
+	    numPackages++;
+	}
     }
 
     for (i = 0; i < ts->numRemovedPackages; i++) {
@@ -298,7 +357,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmNotifyFunction notify,
 	    ourrc++;
     }
 
-    return ourrc;
+    if (ourrc) 
+    	return -1;
+    else
+	return 0;
 }
 
 static rpmProblemSet psCreate(void) {
@@ -566,6 +628,129 @@ static int sharedCmp(const void * one, const void * two) {
 	return -1;
     else if (a->otherPkg > b->otherPkg)
 	return 1;
+
+    return 0;
+}
+
+static enum instActions decideFileFate(char * filespec, short dbMode, 
+				char * dbMd5, char * dbLink, short newMode, 
+				char * newMd5, char * newLink, int newFlags,
+				int brokenMd5) {
+    char buffer[1024];
+    char * dbAttr, * newAttr;
+    enum fileTypes dbWhat, newWhat, diskWhat;
+    struct stat sb;
+    int i, rc;
+
+    if (lstat(filespec, &sb)) {
+	/* the file doesn't exist on the disk create it unless the new
+	   package has marked it as missingok */
+	if (newFlags & RPMFILE_MISSINGOK) {
+	    rpmMessage(RPMMESS_DEBUG, _("%s skipped due to missingok flag\n"),
+			filespec);
+	    return SKIP;
+	} else
+	    return CREATE;
+    }
+
+    diskWhat = whatis(sb.st_mode);
+    dbWhat = whatis(dbMode);
+    newWhat = whatis(newMode);
+
+    /* RPM >= 2.3.10 shouldn't create config directories -- we'll ignore
+       them in older packages as well */
+    if (newWhat == XDIR)
+	return CREATE;
+
+    if (diskWhat != newWhat) {
+	return SAVE;
+    } else if (newWhat != dbWhat && diskWhat != dbWhat) {
+	return SAVE;
+    } else if (dbWhat != newWhat) {
+	return CREATE;
+    } else if (dbWhat != LINK && dbWhat != REG) {
+	return CREATE;
+    }
+
+    if (dbWhat == REG) {
+	if (brokenMd5)
+	    rc = mdfileBroken(filespec, buffer);
+	else
+	    rc = mdfile(filespec, buffer);
+
+	if (rc) {
+	    /* assume the file has been removed, don't freak */
+	    return CREATE;
+	}
+	dbAttr = dbMd5;
+	newAttr = newMd5;
+    } else /* dbWhat == LINK */ {
+	memset(buffer, 0, sizeof(buffer));
+	i = readlink(filespec, buffer, sizeof(buffer) - 1);
+	if (i == -1) {
+	    /* assume the file has been removed, don't freak */
+	    return CREATE;
+	}
+	dbAttr = dbLink;
+	newAttr = newLink;
+     }
+
+    /* this order matters - we'd prefer to CREATE the file if at all 
+       possible in case something else (like the timestamp) has changed */
+
+    if (!strcmp(dbAttr, buffer)) {
+	/* this config file has never been modified, so 
+	   just replace it */
+	return CREATE;
+    }
+
+    if (!strcmp(dbAttr, newAttr)) {
+	/* this file is the same in all versions of this package */
+	return KEEP;
+    }
+
+    /* the config file on the disk has been modified, but
+       the ones in the two packages are different. It would
+       be nice if RPM was smart enough to at least try and
+       merge the difference ala CVS, but... */
+	    
+    return SAVE;
+}
+
+enum fileTypes whatis(short mode) {
+    enum fileTypes result;
+
+    if (S_ISDIR(mode))
+	result = XDIR;
+    else if (S_ISCHR(mode))
+	result = CDEV;
+    else if (S_ISBLK(mode))
+	result = BDEV;
+    else if (S_ISLNK(mode))
+	result = LINK;
+    else if (S_ISSOCK(mode))
+	result = SOCK;
+    else if (S_ISFIFO(mode))
+	result = PIPE;
+    else
+	result = REG;
+ 
+    return result;
+}
+
+static int filecmp(short mode1, char * md51, char * link1, 
+	           short mode2, char * md52, char * link2) {
+    enum fileTypes what1, what2;
+
+    what1 = whatis(mode1);
+    what2 = whatis(mode2);
+
+    if (what1 != what2) return 1;
+
+    if (what1 == LINK)
+	return strcmp(link1, link2);
+    else if (what1 == REG)
+	return strcmp(md51, md52);
 
     return 0;
 }
