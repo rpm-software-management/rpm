@@ -174,7 +174,7 @@ struct poptOption rpmInstallPoptTable[] = {
 
  { "badreloc", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_FORCERELOCATE,
-	N_("relocate files in non-relocateable package"), NULL},
+	N_("relocate files in non-relocatable package"), NULL},
  { "dirstash", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_DIRSTASH,
 	N_("save erased package files by renaming into sub-directory"), NULL},

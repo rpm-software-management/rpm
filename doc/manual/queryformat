@@ -150,7 +150,7 @@ braces.
 
 \subsection queryformat_example Example: Viewing the Verify Flags
 
-The follwing example query is run against dev becuase I know %verify
+The following example query is run against dev because I know %verify
 is used there.
 \verbatim
 	rpm -q --qf '[%{filenames} %{fileverifyflags}\n]' dev

@@ -51,7 +51,7 @@ specifies
 	release=3
 \endverbatim
 
-The epoch (if present) is a monotonically inceasing integer, neither the
+The epoch (if present) is a monotonically increasing integer, neither the
 version or the release can contain the '-' hyphen character, and the dependency
 parser does not permit white space within a definition.  Unspecified epoch
 and releases are assumed to be zero, and are interpreted as "providing all"
@@ -78,10 +78,10 @@ strcmp(3).  First, the boundaries of the segments are found using
 isdigit(3)/isalpha(3).  Each segment is then compared in order with the
 right most segment being the least significant.  The alphabetical
 portions are compared using a lexical graphical ascii ordering, the
-digit segments strip leading zeroes's and compare the strlen before
+digit segments strip leading zeroes and compare the strlen before
 doing a strcmp. If both numerical strings are equal, the longer string
 is larger.  Notice that the algorithm has no knowledge of decimal fractions,
-and perl-5.6 is "older" than perl-5.00503 because the number 6 si less than
+and perl-5.6 is "older" than perl-5.00503 because the number 6 is less than
 the number 503.
 
 The concept of "newer" used by rpm to determine when a package should be
@@ -172,9 +172,9 @@ to eliminate the need for most packages to use explicit Requires: lines.
 \subsection dependencies_custom Custom Automatic Dependency
 
 The automatic dependency programs are found via macro expansion.  Thus
-sites can very the amount of dependnecy processing that are performed
+sites can very the amount of dependency processing that are performed
 locally, by changing the executable/script which is run.  Dependency
-processing can even be changed on a per-package basis if the macros's are
+processing can even be changed on a per-package basis if the macros are
 defined in the spec file. To allow for maximum configurability the
 dependency programs are shell scripts which can be duplicated and edited
 for site specific needs.
@@ -183,7 +183,7 @@ The macros: %__find_provides, %__find_prereq, %__find_requires,
 %__find_conflicts, %__find_obsoletes, if they exist, are expanded to
 the name of a program to exec. For each package, the program receives
 the glob'ed %files manifest on stdin and returns dependencies on stdout. The
-deiscovered dependencies are parsed exactly as if they were found after
+discovered dependencies are parsed exactly as if they were found after
 
 \verbatim
 	Provides:
@@ -210,11 +210,11 @@ which can be overridden (or even undefined) within a spec file.
 
 Modules for interpreted languages like perl and tcl impose additional
 dependency requirements on packages. A script written for an interpreter
-often requires language specfic modules to be installed in order to execute
-correctly. In order to automatically detect langiage specific modules, each
+often requires language specific modules to be installed in order to execute
+correctly. In order to automatically detect language specific modules, each
 interpreter may have its own find-provides and find-requires. To prevent
 module name collisions between interpreters, module names are enclosed within
-parentheses and a conventional interpreter specific identifier is pre-pended:
+parentheses and a conventional interpreter specific identifier is prepended:
 
 
 \verbatim
@@ -225,7 +225,7 @@ parentheses and a conventional interpreter specific identifier is pre-pended:
 
 
 The output of a per-interpreter find-requires (notice in this example the
-first requirement is a package and the rest are langague specific modules)
+first requirement is a package and the rest are language specific modules)
 
 \verbatim
 	Mail-Header >= 1.01
@@ -247,7 +247,7 @@ with appropriate per-interpreter hooks into
 	/usr/lib/rpm/find-{provides,requires}
 \endverbatim
 
-@todo per-interpreter dependency generators are not located in subdiretories.
+@todo per-interpreter dependency generators are not located in subdirectories.
 
 Notice that shell dependencies will require that all %post et al scriptlets
 be processed by the find-requires. Since a shell script depends on all the
@@ -318,7 +318,7 @@ all, nor generate an error message.
 \subsection dependencies_branching Branching Version
 
 It is quite common to need to branch a set of sources in version
-control. It is not so obvious how those branches should be repesented
+control. It is not so obvious how those branches should be represented
 in the package version numbers. Here is one solution.
 
 You have a bag of features that are injected into a package in a
@@ -356,7 +356,7 @@ Another alternative scheme might be:
 
 \subsection dependencies_build Build dependencies
 
-The following dependencies are availible at build time.  These are
+The following dependencies are available at build time.  These are
 similar to the install time version but these apply only during
 package creation and are specified in the specfile not in the binary
 package.

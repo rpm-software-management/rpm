@@ -1,4 +1,4 @@
-/*! \page relocateable Relocateable packages
+/*! \page relocatable Relocatable packages
 
 Relocatable packages are a way to give the user a little control
 over the installation location of a package.  For example, a vendor
@@ -6,7 +6,7 @@ may distribute their software to install in "/opt" but you'd like
 it to install in "/usr/opt".  If the vendor were distributing a
 relocatable RPM package, it would be easy.
 
-\subsection relcateable_building Building a Relocatable Package
+\subsection relocatable_building Building a Relocatable Package
 
 Not all software can be "relocatable".  Before continuing you should
 think about how the program works, what files it accesses, what other
@@ -35,7 +35,7 @@ into the spec file so that the /usr and /etc directories may be
 relocated separately when this package is installed.
 
 
-\subsection relcateable_installing Installing Relocatable Packages
+\subsection relocatable_installing Installing Relocatable Packages
 
 By default, RPM will install a relocatable package in the prefix
 directory listed in the spec file.  You can override this on the
@@ -51,7 +51,7 @@ separately by using syntax like:
   rpm ... --relocate /opt=/usr/opt --relocate /etc=/usr/etc ...
 \endverbatim
 
-If any of the Prefixs are not being relocated they can be skipped on
+If any of the Prefixes is not being relocated they can be skipped on
 the command line
 
 */

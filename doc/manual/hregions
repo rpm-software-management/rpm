@@ -3,11 +3,11 @@
 The header data structure has changed in rpm-4.0.[12] to preserve the
 original header from a package. The goal is to keep the original
 header intact so that metadata can be verified separately from the
-payload by the RHN up2date client and by the rpm commmand line verify
+payload by the RHN up2date client and by the rpm command line verify
 mode using signatures saved in the rpm database. I believe the change
 is entirely forward and backward compatible, and will not require
 any artifacts like changing the version number of packaging or 
-adding an "rpmlib(...)" tracking dependendency. We'll see ...
+adding an "rpmlib(...)" tracking dependency. We'll see ...
 
 Here's a short description of the change. An rpm header has three sections:
 \verbatim

@@ -13,7 +13,7 @@ Say the package "mymailer" needs an /etc/mymailer/mailer symlink which points
 to the mail transport agent to use. If sendmail is installed, the link should
 point to /usr/bin/sendmail, but it vmail is installed, the link should 
 instead point to /usr/bin/vmail. If both packages are present, we don't care
-where the link points (realisticaly, sendmail and vmail should conflict
+where the link points (realistically, sendmail and vmail should conflict
 with one another), while if neither package is installed the link should
 not exist at all.
 

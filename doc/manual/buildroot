@@ -13,7 +13,7 @@ Simply use
   Buildroot: <dir>
 \endverbatim
 
-in your spec file.  The acutal buildroot used by RPM during the
+in your spec file.  The actual buildroot used by RPM during the
 build will be available to you (and your %prep, %build, and %install
 sections) as the environment variable RPM_BUILD_ROOT.  You must
 make sure that the files for the package are installed into the
@@ -86,7 +86,7 @@ and specified
 
 we would end up with the directory /usr/lib/perl5/site_perl being
 owned by the library package. This directory is in fact used by ALL
-perl libriares and should be owned by the package for perl not any of
+perl libraries and should be owned by the package for perl not any of
 its libraries. It is important that the %files command specifies all
 the known directories explicitly. So this would be preferable:
 
@@ -104,7 +104,7 @@ package is removed, RPM will try to remove each of the perl-MD5 files and
 then try to remove the dir itself. If there's still files in the
 site_perl directory (e.g. from other packages) then the Unix rmdir(2)
 will fail and you will get a non-zero return code from RPM. If the
-rmdir succeds then you will no longer have a site_perl directory on
+rmdir succeeds then you will no longer have a site_perl directory on
 your machine even though this directory was created when Perl was
 installed.
 
@@ -116,7 +116,7 @@ Explicit use of %files can help make the packager aware of potential
 problems before they happen. When you try to install a package which
 contains file names already used by other packages on the system then
 RPM will warn you of the problem and give a fatal error. This error can
-be overriden with --force and the installed file will be replaced by the
+be overridden with --force and the installed file will be replaced by the
 new file and when the new package is removed the file will be removed as well.
 
 */

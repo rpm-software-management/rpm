@@ -220,7 +220,7 @@ const char * rpmProblemString(const rpmProblem prob)
 	break;
     case RPMPROB_BADRELOCATE:
 	rc = snprintf(buf, nb,
-		_("path %s in package %s is not relocateable"),
+		_("path %s in package %s is not relocatable"),
 		str1, pkgNEVR);
 	break;
     case RPMPROB_NEW_FILE_CONFLICT:

@@ -64,7 +64,7 @@ Package signature verification is the same as previous releases:
 	rpm -K <package>
 \endverbatim
 
-RPM will verify evey signature in the package, which may include
+RPM will verify every signature in the package, which may include
 more than one PGP signature.  The output indicates what types of
 signatures are being checked.  If any checks fail you'll see a
 "NOT OK" message, and you should be worried.

@@ -531,7 +531,7 @@ void legacyRetrofit(Header h, const struct rpmlead * lead)
 	(void) headerRemoveEntry(h, RPMTAG_FILEGIDS);
 
     /*
-     * We switched the way we do relocateable packages. We fix some of
+     * We switched the way we do relocatable packages. We fix some of
      * it up here, though the install code still has to be a bit 
      * careful. This fixup makes queries give the new values though,
      * which is quite handy.

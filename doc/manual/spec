@@ -5,9 +5,9 @@ A few additions have been made to the spec file format.
 Name
 
 The Name tag contains the proper name of the package. Names must not
-include whitespace and may include a hyphan '-' (unlike version and release
+include whitespace and may include a hyphen '-' (unlike version and release
 tags). Names should not include any numeric operators ('<', '>','=') as
-future versions of rpm may need to reserve charcters other than '-'.
+future versions of rpm may need to reserve characters other than '-'.
 
 By default subpackages are named by prepending `<main package>-' to
 the subpackages name(s). If you wish to change the name of a
@@ -61,7 +61,7 @@ might be changed to:
 \endverbatim
 
 The description is free form text, but there are two things to note.
-The first regards reformating.  Lines that begin with white space
+The first regards reformatting.  Lines that begin with white space
 are considered "pre-formatted" and will be left alone.  Adjacent
 lines without leading whitespace are considered a single paragraph
 and may be subject to formatting by glint or another RPM tool.
@@ -78,7 +78,7 @@ package contains).
 
 \subsection specfile_buildarchitectures BuildArchitectures: Tag
 
-This tag specifies the arctecture which the resulting binary package
+This tag specifies the architecture which the resulting binary package
 will run on.  Typically this is a CPU architecture like sparc,
 i386. The string 'noarch' is reserved for specifying that the
 resulting binary package is platform independent.  Typical platform
@@ -108,11 +108,11 @@ script so that false problems are not displayed during package verification.
 	%verify(not size md5 mtime) %{prefix}/bin/javaswarm
 \endverbatim
 
-\subsection specfile_globbing Shell Gobbing of %files Section
+\subsection specfile_globbing Shell Globbing of %files Section
 
 The usual rules for shell globbing apply.  Most special characters can
 be escaped by prefixing them with a '\'.  Spaces are used to separate
-file names and so must be escaped by enclsing the file name with quotes.
+file names and so must be escaped by enclosing the file name with quotes.
 For example:
 
 \verbatim
@@ -202,7 +202,7 @@ you would add
 \endverbatim
 to your spec file.
 
-If your package was like dump and could not be built w/o a specific vesion of
+If your package was like dump and could not be built w/o a specific version of
 the libraries to access an ext2 file system, you could express this as
 \verbatim
 	BuildRequires: e2fsprofs-devel = 1.17-1

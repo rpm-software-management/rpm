@@ -434,7 +434,7 @@ static void printHelp(void) {
     printHelpLine(_("      --relocate <oldpath>=<newpath>"),
 		  _("relocate files from <oldpath> to <newpath>"));
     printHelpLine(  "      --badreloc          ",
-		  _("relocate files in non-relocateable package"));
+		  _("relocate files in non-relocatable package"));
     printHelpLine(_("      --prefix <dir>      "),
 		  _("relocate the package to <dir>, if relocatable"));
     printHelpLine(_("      --dbpath <dir>      "),

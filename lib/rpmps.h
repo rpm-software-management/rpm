@@ -28,7 +28,7 @@ typedef enum rpmProblemType_e {
     RPMPROB_BADARCH,	/*!< package ... is for a different architecture */
     RPMPROB_BADOS,	/*!< package ... is for a different operating system */
     RPMPROB_PKG_INSTALLED, /*!< package ... is already installed */
-    RPMPROB_BADRELOCATE,/*!< path ... is not relocateable for package ... */
+    RPMPROB_BADRELOCATE,/*!< path ... is not relocatable for package ... */
     RPMPROB_REQUIRES,	/*!< package ... has unsatisfied Requires: ... */
     RPMPROB_CONFLICT,	/*!< package ... has unsatisfied Conflicts: ... */
     RPMPROB_NEW_FILE_CONFLICT, /*!< file ... conflicts between attemped installs of ... */

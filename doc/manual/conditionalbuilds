@@ -1,4 +1,4 @@
-/*! \page conditionalbulds Passing conditional parameters into a rpm build
+/*! \page conditionalbuilds Passing conditional parameters into a rpm build
 
 Source code is often built with optional features enabled or disabled.
 When source code is packaged using rpm, the various features can be
@@ -48,7 +48,7 @@ So the spec file should be written
 	%{?_with_ldap}   \
     ...
 \endverbatim
-so that, if "--with ldap" was used as a build option, then confgure
+so that, if "--with ldap" was used as a build option, then configure
 will be invoked (after macro expansion) as
 \verbatim
 	./configure --with-ldap ...
