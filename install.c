@@ -47,7 +47,10 @@ static void showProgress(const Header h, const rpmNotifyType what,
 	if (flags & INSTALL_LABEL) {
 	    s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}", 
 			      rpmTagTable, rpmHeaderFormats, NULL);
-	    printf("%-28s", s);
+	    if (flags & INSTALL_HASH) 
+		printf("%-28s", s);
+	    else
+		printf("%s\n", s);
 	    fflush(stdout);
 	    free(s);
 	}
