@@ -94,11 +94,11 @@ make -C python
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_DIR/etc/rpm
 
 make DESTDIR="$RPM_BUILD_ROOT" install
 %ifos linux
 make DESTDIR="$RPM_BUILD_ROOT" install -C python
+mkdir -p $RPM_BUILD_ROOT/etc/rpm
 %endif
 
 { cd $RPM_BUILD_ROOT
@@ -219,6 +219,9 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Sun Feb 27 2000 Jeff Johnson <jbj@redhat.com>
+- rpm-3.0.4 release candidate.
+
 * Fri Feb 25 2000 Jeff Johnson <jbj@redhat.com>
 - fix: filter excluded paths before adding install prefixes (#8709).
 - add i18n lookaside to PO catalogue(s) for i18n strings.
