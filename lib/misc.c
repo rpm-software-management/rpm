@@ -186,5 +186,5 @@ int vercmp(char * one, char * two) {
 
     if ((!*one) && (!*two)) return 0;
 
-    if (!*one) return 1; else return -1;
+    if (!*one) return -1; else return 1;
 }
