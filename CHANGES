@@ -14,6 +14,7 @@
 	- -V verifies dependencies, can be controlled with --nodeps
 	  and --nofiles
 	- added information on --nodeps to usage messages
+	- implement --timecheck and rpmrc timecheck:
 
 2.2 -> 2.2.1:
 	- made rpmRemovePackage() print message in verbose mode
