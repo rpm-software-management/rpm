@@ -160,6 +160,7 @@ extern "C" {
 
 /*@only@*/ Spec newSpec(void);
 void freeSpec(/*@only@*/ Spec spec);
+extern void (*freeSpecVec) (Spec spec);	/* XXX FIXME */
 
 struct OpenFileInfo * newOpenFileInfo(void);
 struct spectag *stashSt(Spec spec, Header h, int tag, const char *lang);

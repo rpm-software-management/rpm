@@ -68,7 +68,6 @@ static int replacePackages;
 static char * rootdir;
 static int showrc;
 static int signIt;
-	char *specedit = NULL;
 static int test;
 
 static int rpm_version;
@@ -576,6 +575,11 @@ int main(int argc, char ** argv)
     signIt = 0;
     test = 0;
     rpm_version = 0;
+
+    /* XXX Eliminate query linkage loop */
+    parseSpecVec = parseSpec;
+    freeSpecVec = freeSpec;
+    specedit = NULL;
 
     /* set up the correct locale */
     (void)setlocale(LC_ALL, "" );

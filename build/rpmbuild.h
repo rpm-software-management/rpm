@@ -141,6 +141,11 @@ int processSourceFiles(Spec spec);
 int parseSpec(Spec *specp, const char *specFile, const char *buildRoot,
 		int inBuildArch, const char *passPhrase, char *cookie, int anyarch,
 		int force);
+
+extern int (*parseSpecVec) (Spec *specp, const char *specFile, const char *buildRoot,
+		int inBuildArch, const char *passPhrase, char *cookie, int anyarch,
+		int force);	/* XXX FIXME */
+
 int buildSpec(Spec spec, int what, int test);
 
 int packageBinaries(Spec spec);

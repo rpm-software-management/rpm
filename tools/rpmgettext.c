@@ -46,8 +46,6 @@ char *mastercatalogue = NULL;
 
 int gentran = 0;
 
-char *specedit = NULL;
-
 static const char *
 getTagString(int tval)
 {

@@ -524,6 +524,15 @@ int showMatches(QVA_t *qva, rpmdb db, dbiIndexSet matches, QVF_t showPackage)
     return ec;
 }
 
+/*
+ * XXX Eliminate linkage loop into librpmbuild.a
+ */
+int	(*parseSpecVec) (Spec *specp, const char *specFile, const char *buildRoot,
+                int inBuildArch, const char *passPhrase, char *cookie, int anyarch,
+                int force) = NULL;
+void	(*freeSpecVec) (Spec spec) = NULL;
+char	*specedit = NULL;
+
 int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	rpmdb db, QVF_t showPackage)
 {
@@ -576,6 +585,11 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
       case RPMQV_SPECFILE:
 	if (showPackage != showQueryPackage)
 	    return 1;
+
+	/* XXX Eliminate linkage dependency loop */
+	if (parseSpecVec == NULL || freeSpecVec == NULL)
+	    return 1;
+
       { Spec spec = NULL;
 	Package pkg;
 	char * buildRoot = NULL;
@@ -584,19 +598,21 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	char *cookie = NULL;
 	int anyarch = 1;
 	int force = 1;
-	rc = parseSpec(&spec, arg, buildRoot, inBuildArch, passPhrase, cookie,
-	    anyarch, force);
+
+	rc = parseSpecVec(&spec, arg, buildRoot, inBuildArch, passPhrase,
+		cookie, anyarch, force);
 	if (rc || spec == NULL) {
 	    
 	    fprintf(stderr, _("query of specfile %s failed, can't parse\n"), arg);
-	    if (spec != NULL) freeSpec(spec);
+	    if (spec != NULL && freeSpecVec != NULL) freeSpecVec(spec);
 	    retcode = 1;
 	    break;
 	}
 
 	if (specedit != NULL) {
 	    printNewSpecfile(spec);
-	    freeSpec(spec);
+	    if (freeSpecVec)
+		freeSpecVec(spec);
 	    retcode = 0;
 	    break;
 	}
@@ -613,7 +629,8 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 #endif
 	    showPackage(qva, NULL, pkg->header);
 	}
-	freeSpec(spec);
+	if (freeSpecVec)
+		freeSpecVec(spec);
       }	break;
 
       case RPMQV_ALL:
