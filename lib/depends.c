@@ -32,7 +32,7 @@ static int checkPackageSet(rpmTransactionSet rpmdep, struct problemsSet * psp,
 			    char * package, dbiIndexSet * matches);
 static int addOrderedPack(rpmTransactionSet rpmdep, 
 			struct availablePackage * package,
-			const void ** ordering, int * orderNumPtr, 
+			struct availablePackage * ordering, int * orderNumPtr, 
 			int * selected, int selectionClass,
 			int satisfyDepends, char ** errorStack);
 
@@ -789,7 +789,7 @@ static int dbrecMatchesDepFlags(rpmTransactionSet rpmdep, int recOffset,
 
 static int addOrderedPack(rpmTransactionSet rpmdep, 
 			struct availablePackage * package,
-			const void ** ordering, int * orderNumPtr, 
+			struct availablePackage * ordering, int * orderNumPtr, 
 			int * selected, int selectionClass,
 			int satisfyDepends, char ** errorStack) {
     char ** requires, ** requiresVersion;
@@ -870,16 +870,16 @@ static int addOrderedPack(rpmTransactionSet rpmdep,
     }
 
     /* whew -- add this package */
-    ordering[(*orderNumPtr)++] = package->key;
+    ordering[(*orderNumPtr)++] = *package;
     selected[packageNum] = -1;
 
     return 0;
 }
 
-int rpmdepOrder(rpmTransactionSet rpmdep, void *** keysListPtr) {
+int rpmdepOrder(rpmTransactionSet rpmdep) {
     int i;
     int * selected;
-    void ** order;
+    struct availablePackage * order;
     int orderNum;
     char ** errorStack;
 
@@ -905,11 +905,8 @@ int rpmdepOrder(rpmTransactionSet rpmdep, void *** keysListPtr) {
 	}
     }
 
-    order[orderNum] = NULL;
-    if (keysListPtr != NULL)
-	*keysListPtr = order;
-    else
-	free(order);
+    free(rpmdep->addedPackages.list);
+    rpmdep->addedPackages.list = order;
 
     return 0;
 }

@@ -363,7 +363,7 @@ int rpmdepCheck(rpmTransactionSet rpmdep,
 /* Orders items, returns error on circle, finals keys[] is NULL. No dependency
    check is done, use rpmdepCheck() for that. If dependencies are not
    satisfied a "best-try" ordering is returned. */
-int rpmdepOrder(rpmTransactionSet order, void *** keysListPtr);
+int rpmdepOrder(rpmTransactionSet order);
 void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
 			 numConflicts);
 
