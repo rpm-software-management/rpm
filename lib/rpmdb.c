@@ -7,7 +7,6 @@
 #include "rpmlib.h"
 
 #include "falloc.h"
-#include "intl.h"
 #include "misc.h"
 #include "rpmdb.h"
 

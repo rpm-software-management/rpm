@@ -11,8 +11,6 @@
 #include "signature.h"
 #include "header.h"
 
-#include "intl.h"
-
 #define	MYDEBUG	2
 
 #ifdef	MYDEBUG

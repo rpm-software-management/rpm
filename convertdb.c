@@ -4,8 +4,6 @@
 
 #include "build/rpmbuild.h"
 
-#include "intl.h"
-
 #include "falloc.h"
 #include "oldrpmdb.h"
 #include "oldheader.h"

@@ -6,7 +6,6 @@
 
 #include "build/rpmbuild.h"
 
-#include "intl.h"
 #include "query.h"
 #include "url.h"
 

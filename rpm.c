@@ -1,13 +1,10 @@
 #include "system.h"
 
-#include <locale.h>
-
 #include "build/rpmbuild.h"
 
 #include "build.h"
 #include "checksig.h"
 #include "install.h"
-#include "intl.h"
 #include "lib/signature.h"
 #include "popt/popt.h"
 #include "query.h"
@@ -580,8 +577,8 @@ int main(int argc, char ** argv) {
     /* set up the correct locale */
     setlocale(LC_ALL, "" );
 
-    bindtextdomain(RPMNLSPACKAGE, RPMNLSDIR);
-    textdomain(RPMNLSPACKAGE);
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    textdomain(PACKAGE);
 
     /* Make a first pass through the arguments, looking for --rcfile */
     /* as well as --arch and --os.  We need to handle that before    */

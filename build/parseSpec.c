@@ -1,6 +1,5 @@
 #include "system.h"
 
-#include "intl.h"
 #include "rpmbuild.h"
 
 static struct PartRec {

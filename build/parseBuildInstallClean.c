@@ -1,6 +1,5 @@
 #include "system.h"
 
-#include "intl.h"
 #include "rpmbuild.h"
 
 int parseBuildInstallClean(Spec spec, int parsePart)

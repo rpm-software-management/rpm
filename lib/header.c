@@ -13,7 +13,6 @@
 
 #include "header.h"
 
-#include "intl.h"
 #include "tread.h"
 
 #define INDEX_MALLOC_SIZE 8

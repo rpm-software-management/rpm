@@ -2,7 +2,6 @@
 
 #include "system.h"
 
-#include "intl.h"
 #include "rpmbuild.h"
 
 static uid_t uids[1024];

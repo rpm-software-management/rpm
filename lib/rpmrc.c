@@ -10,7 +10,6 @@
 #include "rpmmacro.h"
 
 #include "misc.h"
-#include "intl.h"
 
 struct MacroContext globalMacroContext;
 

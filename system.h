@@ -178,6 +178,10 @@ char *alloca ();
 #include <sys/wait.h>
 #endif
 
+#if HAVE_GETOPT_H
+#include <getopt.h>
+#endif
+
 #if HAVE_GRP_H
 #include <grp.h>
 #endif
@@ -196,6 +200,26 @@ char *alloca ();
 
 #if HAVE_PWD_H
 #include <pwd.h>
+#endif
+
+/* Take care of NLS matters.  */
+
+#if HAVE_LOCALE_H
+# include <locale.h>
+#endif
+#if !HAVE_SETLOCALE
+# define setlocale(Category, Locale) /* empty */
+#endif
+
+#if ENABLE_NLS
+# include <libintl.h>
+# define _(Text) gettext (Text)
+#else
+# undef bindtextdomain
+# define bindtextdomain(Domain, Directory) /* empty */
+# undef textdomain
+# define textdomain(Domain) /* empty */
+# define _(Text) Text
 #endif
 
 /* ============== from misc/miscfn.h */

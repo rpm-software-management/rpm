@@ -5,7 +5,6 @@
 #include "build/rpmbuild.h"
 
 #include "checksig.h"
-#include "intl.h"
 #include "rpmlead.h"
 #include "signature.h"
 

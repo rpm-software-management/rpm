@@ -4,7 +4,6 @@
 
 #include "rpmlib.h"
 
-#include "intl.h"
 #include "misc.h"
 #include "oldheader.h"
 #include "rpmlead.h"

@@ -16,12 +16,6 @@ dnl XXX AM_MAINTAINER_MODE
 dnl Set of available languages.
 ALL_LINGUAS="cz de fi fr pt_BR ru sk sr sv tr"
 
-dnl default to not using NLS
-XGETTEXT=""
-LIBINTL=""
-PO=""
-GETTEXTSTUB="gettextstub.o"
-
 LIBOBJS=
 
 dnl YYY AC_CANONICAL_SYSTEM
@@ -295,41 +289,6 @@ AC_CHECK_FUNC(rand, [], [
     AC_CHECK_LIB(rand, rand, [LIBS="$LIBS -lm"])
 ])
 
-dnl
-dnl handle --disable-nls
-dnl
-AC_ARG_ENABLE([nls],
-[  --disable-nls           do not use National Language Support], 
-	USE_NLS=$enableval, USE_NLS=yes)
-
-if test "$USE_NLS" != "no"; then
-    AC_CHECK_FUNC(gettext, [HAVEGETTEXT="yes"], 
-      AC_CHECK_LIB(intl, gettext, [LIBINTL="-lintl" HAVEGETTEXT="y"], 
-		   AC_MSG_WARN([sorry this package needs libintl.a (from the 
-    gettext package)])
-		 )
-		)
-
-    AC_CHECK_PROG(XGETTEXT, xgettext, xgettext)
-
-    if test "$XGETTEXT" != ""; then 
-	if xgettext --help 2>&1 | grep illegal >/dev/null ; then
-	    echo "xgettext isn't GNU version"
-	    XGETTEXT=""
-	fi
-    fi
-
-    if test "$XGETTEXT" != "" -a "$HAVEGETTEXT" != ""; then
-	echo "xgettext and gettext() exist; will build i18n support"
-	PO=po
-	GETTEXTSTUB=""
-    else
-	echo "xgettext and libintl.a don't both exist; will not build i18n support"
-    fi
-else
-    echo "user specificed no gettext; will not build i18n support"
-fi
-
 AC_CHECK_FUNC(getdomainname, [], [
     AC_CHECK_LIB(nsl, getdomainname, [LIBS="$LIBS -lnsl"])
 ])
@@ -364,26 +323,28 @@ for zlib in z gz ; do
 	       )
 done
 
+dnl ==> AM_GNU_GETTEXT does this (and more)
+dnl AC_CHECK_HEADERS(unistd.h limits.h locale.h malloc.h string.h sys/param.h)
+
+AM_GNU_GETTEXT
+
 dnl Checks for header files we can live without.
 AC_HEADER_STDC
 AC_HEADER_MAJOR
-AC_CHECK_HEADERS(netinet/in_systm.h limits.h)
-AC_CHECK_HEADERS(alloca.h sys/socket.h sys/select.h)
 AC_HEADER_DIRENT
-AC_CHECK_HEADERS(machine/types.h string.h)
-AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h unistd.h)
+AC_HEADER_TIME
+
+AC_CHECK_HEADERS(db_185.h fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h)
+
+AC_CHECK_HEADERS(sys/socket.h sys/select.h)
+AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h)
+AC_CHECK_HEADERS(sys/mman.h sys/resource.h sys/utsname.h sys/wait.h)
+
+AC_CHECK_HEADERS(netinet/in_systm.h)
+AC_CHECK_HEADERS(machine/types.h)
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/vmount.h)
-AC_CHECK_HEADERS(fcntl.h grp.h malloc.h memory.h netdb.h pwd.h utime.h)
-AC_CHECK_HEADERS(sys/mman.h sys/param.h sys/resource.h sys/utsname.h sys/wait.h)
 
-AC_CHECK_HEADERS(db_185.h)
-
-if test "$PO" = po; then
-    AC_CHECK_HEADERS(libintl.h)
-fi
-
-AC_HEADER_TIME
 AC_C_BIGENDIAN
 AC_C_INLINE
 
@@ -452,6 +413,8 @@ dnl XXX AC_FUNC_VPRINTF
 dnl XXX AC_CHECK_FUNCS(gethostname lchown mkdir mkfifo rmdir select uname)
 
 AC_REPLACE_FUNCS(getcwd getwd glob inet_aton putenv realpath strdup strerror strtol strtoul strspn strstr)
+
+AC_CHECK_FUNCS(setlocale)
 
 AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT), [
   AC_CHECK_FUNC(mntctl, AC_DEFINE(HAVE_MNTCTL),[
@@ -533,8 +496,6 @@ int main()
 AC_DEFINE_UNQUOTED(ROOT_GROUP, "$ROOT_GROUP")
 AC_MSG_RESULT($ROOT_GROUP)
 AC_SUBST(ROOT_GROUP)
-
-AM_GNU_GETTEXT
 
 if test "x$varprefix" = "x"; then
     varprefix=`echo $prefix | sed 's/usr/var/'`
@@ -620,18 +581,15 @@ fi
 
 AC_SUBST(LIBOBJS)
 AC_SUBST(INCPATH)
-AC_SUBST(LIBINTL)
+
 AC_SUBST(varprefix)
 AC_SUBST(tmpdir)
 AC_SUBST(topdir)
 AC_SUBST(topsrcdir)
-AC_SUBST(INTLDEF)
-AC_SUBST(XGETTEXT)
-AC_SUBST(LIBINTL)
+
 AC_SUBST(LIBS)
 AC_SUBST(LIBDL)
-AC_SUBST(PO)
-AC_SUBST(GETTEXTSTUB)
+
 AC_SUBST(RPM)
 AC_SUBST(GZIPBIN)
 AC_SUBST(BZIP2BIN)

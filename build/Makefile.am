@@ -16,8 +16,5 @@ librpmbuild_a_SOURCES = \
 
 include ../Makefile.inc
 
-pack.o: pack.c
-	$(COMPILE) -DVERSION=\"$(VERSION)\" -o $@ -c $<
-
 files.o: files.c
 	$(COMPILE) -DFINDPROVIDES=\"$(FINDPROVIDES)\" -DFINDREQUIRES=\"$(FINDREQUIRES)\" -o $@ -c $<

@@ -1,7 +1,6 @@
 #include "system.h"
 
 #include "falloc.h"
-#include "intl.h"
 
 #define FA_MAGIC      0x02050920
 

@@ -6,7 +6,6 @@
 
 #include "cpio.h"
 #include "install.h"
-#include "intl.h"
 #include "md5.h"
 #include "misc.h"
 #include "rpmdb.h"

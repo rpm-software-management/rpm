@@ -1,12 +1,8 @@
 #include "system.h"
 
-#include <getopt.h>
-#include <locale.h>
-
 #include "build/rpmbuild.h"
 
 #include "install.h"
-#include <intl.h>
 #include "lib/signature.h"
 #include "query.h"
 #include "verify.h"

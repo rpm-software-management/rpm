@@ -4,8 +4,6 @@
 
 #include "rpmlib.h"
 
-#include "intl.h"
-
 static int minLevel = RPMMESS_NORMAL;
 
 void rpmIncreaseVerbosity(void) {

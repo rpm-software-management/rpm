@@ -23,9 +23,6 @@ librpm_a_SOURCES = \
 
 include ../Makefile.inc
 
-misc.o: misc.c
-	$(COMPILE) -DVERSION=\"$(VERSION)\" -o $@ -c $<
-
 rpmrc.o: rpmrc.c
 	$(COMPILE) -DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DMACROFILES=\"$(MACROFILES)\" -o $@ -c $<
 

@@ -2,7 +2,6 @@
 
 #include "system.h"
 
-#include "intl.h"
 #include "rpmbuild.h"
 
 int addReqProv(Spec spec, Package pkg,

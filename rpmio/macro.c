@@ -11,7 +11,6 @@
 #define RPMERR_BADSPEC stderr
 #define	_(x)	x
 #else
-#include "intl.h"
 #include "rpmlib.h"
 #endif
 

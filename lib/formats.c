@@ -2,8 +2,6 @@
 
 #include "rpmlib.h"
 
-#include "intl.h"
-
 static char * permsFormat(int_32 type, const void * data, 
 		          char * formatPrefix, int padding, int element);
 static char * depflagsFormat(int_32 type, const void * data, 

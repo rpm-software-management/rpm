@@ -2,7 +2,6 @@
 
 #include "rpmlib.h"
 
-#include "intl.h"
 #include "md5.h"
 #include "misc.h"
 #include "install.h"

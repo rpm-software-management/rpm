@@ -2,7 +2,6 @@
 
 #include "rpmlib.h"
 
-#include "intl.h"
 #include "misc.h"
 
 char * RPMVERSION = VERSION;	/* just to put a marker in librpm.a */

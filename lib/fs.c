@@ -2,8 +2,6 @@
 
 #include "rpmlib.h"
 
-#include "intl.h"
-
 struct fsinfo {
     char * mntPoint;
     dev_t dev;

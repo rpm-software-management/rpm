@@ -6,7 +6,6 @@
 #include "rpmbuild.h"
 #include "buildio.h"
 
-#include "intl.h"
 #include "myftw.h"
 #include "md5.h"
 #include "rpmmacro.h"

@@ -2,7 +2,6 @@
 
 #include "rpmlib.h"
 
-#include "intl.h"
 #include "rpmdb.h"
 
 int rpmdbRebuild(char * rootdir) {

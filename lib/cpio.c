@@ -1,6 +1,5 @@
 #include "system.h"
 
-#include "intl.h"
 #include "cpio.h"
 
 #define CPIO_NEWC_MAGIC	"070701"

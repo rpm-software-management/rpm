@@ -3,7 +3,6 @@
 #include "rpmlib.h"
 
 #include "depends.h"
-#include "intl.h"
 #include "misc.h"
 
 struct availablePackage {

@@ -1,6 +1,5 @@
 #include "system.h"
 
-#include "intl.h"
 #include "rpmlib.h"
 
 int main(int argc, char ** argv)

@@ -2,7 +2,6 @@
 
 #include <signal.h>
 
-#include "intl.h"
 #include "rpmbuild.h"
 #include "buildio.h"
 

@@ -3,7 +3,6 @@
 #include "system.h"
 
 #include "rpmlead.h"
-#include "intl.h"
 
 int main(int argc, char **argv)
 {

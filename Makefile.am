@@ -32,9 +32,7 @@ rpm_LDADD =		-lrpmbuild -lpopt -lrpm @LIBMISC@
 
 rpm.o:
 	$(COMPILE) \
-		-DRPMNLSDIR=\"$(RPMNLSDIR)\" \
-		-DRPMNLSPACKAGE=\"$(PACKAGE)\" \
-		-DVERSION=\"$(VERSION)\"  \
+		-DLOCALEDIR=\"$(LOCALEDIR)\" \
 		-DLIBRPMALIAS_FILENAME=\"$(LIBRPMALIAS_FILENAME)\" \
 		-DRPMCONFIGDIR="\"$(RPMCONFIGDIR)"\" \
 		-c rpm.c

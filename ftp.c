@@ -28,7 +28,6 @@ extern int h_errno;
 #include <arpa/inet.h>
 
 #include "inet_aton.h"		/* for systems too stupid to provide this */
-#include "intl.h"
 
 #define TIMEOUT_SECS 60
 #define BUFFER_SIZE 4096

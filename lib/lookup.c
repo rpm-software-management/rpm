@@ -2,8 +2,6 @@
 
 #include "rpmlib.h"
 
-#include "intl.h"
-
 static int findMatches(rpmdb db, char * name, char * version, char * release,
 		       dbiIndexSet * matches);
 

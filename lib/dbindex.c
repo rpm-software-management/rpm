@@ -2,8 +2,6 @@
 
 #include "rpmlib.h"
 
-#include "intl.h"
-
 dbiIndex * dbiOpenIndex(char * filename, int flags, int perms) {
     dbiIndex * db;
         

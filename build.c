@@ -1,7 +1,6 @@
 #include "system.h"
 #include "build/rpmbuild.h"
 #include "build.h"
-#include "intl.h"
 
 int buildplatform(char *arg, int buildAmount, char *passPhrase,
 	         char *buildRoot, int fromTarball, int test, char *cookie);

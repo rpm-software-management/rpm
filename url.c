@@ -3,7 +3,6 @@
 #include "build/rpmbuild.h"
 
 #include "ftp.h"
-#include "intl.h"
 #include "url.h"
 
 struct pwcacheEntry {
