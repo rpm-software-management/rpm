@@ -1,0 +1,13 @@
+topdir=@topdir@
+
+AR = ar
+RANLIB = @RANLIB@
+OPTS = @DEFS@
+CFLAGS = @CFLAGS@ $(WARNINGS) $(OPTS) -I$(topdir) -I$(topdir)/lib \
+	-I$(topdir)/build -I$(topdir)/misc -I$(topdir)/.. -I$(topdir)/../lib \
+	-I$(topdir)/../build -I$(topdir)/../misc \
+	-DLIBRPMRC_FILENAME="\"$(LIBRPMRC_FILENAME)"\" -DVERSION=\"$(VERSION)\" 
+LDFLAGS = @LDFLAGS@ -Llib -Lbuild -Lmisc -L../lib -L../build -L../misc
+VERSION = 2.2.7
+CC = @CC@
+
