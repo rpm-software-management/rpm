@@ -23,9 +23,33 @@ FILE_RCSID("@(#)Id: is_tar.c,v 1.17 2002/07/03 18:26:38 christos Exp ")
 
 #define	isodigit(c)	( ((c) >= '0') && ((c) <= '7') )
 
-/* Decode octal number */
-static int from_oct(int digs, char *where)
-	/*@*/;
+/*
+ * Quick and dirty octal conversion.
+ *
+ * Result is -1 if the field is invalid (all blank, or nonoctal).
+ */
+static int
+from_oct(int digs, char *where)
+	/*@*/
+{
+	int	value;
+
+	while (isspace((unsigned char)*where)) {	/* Skip spaces */
+		where++;
+		if (--digs <= 0)
+			return -1;		/* All blank field */
+	}
+	value = 0;
+	while (digs > 0 && isodigit(*where)) {	/* Scan til nonoctal */
+		value = (value << 3) | (*where++ - '0');
+		--digs;
+	}
+
+	if (digs > 0 && *where && !isspace((unsigned char)*where))
+		return -1;			/* Ended on non-space/nul */
+
+	return value;
+}
 
 /*
  * Return 
@@ -68,32 +92,4 @@ is_tar(unsigned char *buf, int nbytes)
 		return 2;		/* Unix Standard tar archive */
 
 	return 1;			/* Old fashioned tar archive */
-}
-
-
-/*
- * Quick and dirty octal conversion.
- *
- * Result is -1 if the field is invalid (all blank, or nonoctal).
- */
-static int
-from_oct(int digs, char *where)
-{
-	int	value;
-
-	while (isspace((unsigned char)*where)) {	/* Skip spaces */
-		where++;
-		if (--digs <= 0)
-			return -1;		/* All blank field */
-	}
-	value = 0;
-	while (digs > 0 && isodigit(*where)) {	/* Scan til nonoctal */
-		value = (value << 3) | (*where++ - '0');
-		--digs;
-	}
-
-	if (digs > 0 && *where && !isspace((unsigned char)*where))
-		return -1;			/* Ended on non-space/nul */
-
-	return value;
 }

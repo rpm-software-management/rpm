@@ -21,7 +21,7 @@
 -modunconnomods		# 12 ctype.h
 -mustmod		# 1 mman.h
 -noparams		# 3 getopt_long
-#-nullderef		# 4
+-nullderef		# 4
 -nullpass		# 27
 -nullptrarith		# 1
 -redef			# 4

@@ -1,10 +1,4 @@
-/*
- * compress routines:
- *	zmagic() - returns 0 if not recognized, uncompresses and prints
- *		   information if recognized
- *	uncompress(method, old, n, newch) - uncompress old into new, 
- *					    using method, return sizeof new
- */
+
 #include "file.h"
 #include <stdlib.h>
 #ifdef HAVE_UNISTD_H
@@ -21,7 +15,6 @@
 #ifndef lint
 FILE_RCSID("@(#)Id: compress.c,v 1.25 2002/07/03 18:26:37 christos Exp ")
 #endif
-
 
 /*@-nullassign@*/
 /*@unchecked@*/
@@ -49,59 +42,17 @@ static struct {
 /*@unchecked@*/
 static int ncompr = sizeof(compr) / sizeof(compr[0]);
 
-
-static int swrite(int fd, const void *buf, size_t n)
-	/*@*/;
-static int sread(int fd, /*@out@*/ void *buf, size_t n)
-	/*@modifies *buf @*/;
-static int uncompressbuf(int method, const unsigned char *old,
-		/*@out@*/ unsigned char **newch, int n)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies *newch, fileSystem, internalState @*/;
-#ifdef HAVE_LIBZ
-static int uncompressgzipped(const unsigned char *old,
-		/*@out@*/ unsigned char **newch, int n)
-	/*@globals fileSystem @*/
-	/*@modifies *newch, fileSystem @*/;
-#endif
-
-int
-zmagic(const char *fname, unsigned char *buf, int nbytes)
-{
-	unsigned char *newbuf;
-	int newsize;
-	int i;
-
-	for (i = 0; i < ncompr; i++) {
-		if (nbytes < compr[i].maglen)
-			continue;
-		if (memcmp(buf, compr[i].magic, compr[i].maglen) == 0 &&
-		    (newsize = uncompressbuf(i, buf, &newbuf, nbytes)) != 0) {
-			(void) tryit(fname, newbuf, newsize, 1);
-			free(newbuf);
-			printf(" (");
-			(void) tryit(fname, buf, nbytes, 0);
-			printf(")");
-			return 1;
-		}
-	}
-
-	if (i == ncompr)
-		return 0;
-
-	return 1;
-}
-
 /*
  * `safe' write for sockets and pipes.
  */
 static int
 swrite(int fd, const void *buf, size_t n)
+	/*@*/
 {
 	int rv;
 	size_t rn = n;
 
-	do
+	do {
 		switch (rv = write(fd, buf, n)) {
 		case -1:
 			if (errno == EINTR)
@@ -112,7 +63,7 @@ swrite(int fd, const void *buf, size_t n)
 			buf = ((const char *)buf) + rv;
 			/*@switchbreak@*/ break;
 		}
-	while (n > 0);
+	} while (n > 0);
 	return rn;
 }
 
@@ -121,12 +72,13 @@ swrite(int fd, const void *buf, size_t n)
  * `safe' read for sockets and pipes.
  */
 static int
-sread(int fd, void *buf, size_t n)
+sread(int fd, /*@out@*/ void *buf, size_t n)
+	/*@modifies *buf @*/
 {
 	int rv;
 	size_t rn = n;
 
-	do
+	do {
 		switch (rv = read(fd, buf, n)) {
 		case -1:
 			if (errno == EINTR)
@@ -139,7 +91,7 @@ sread(int fd, void *buf, size_t n)
 			buf = ((char *)buf) + rv;
 			/*@switchbreak@*/ break;
 		}
-	while (n > 0);
+	} while (n > 0);
 	return rn;
 }
 
@@ -217,7 +169,10 @@ pipe2file(int fd, void *startbuf, size_t nbytes)
 #define FCOMMENT	(1 << 4)
 
 static int
-uncompressgzipped(const unsigned char *old, unsigned char **newch, int n)
+uncompressgzipped(const unsigned char *old,
+		/*@out@*/ unsigned char **newch, int n)
+	/*@globals fileSystem @*/
+	/*@modifies *newch, fileSystem @*/
 {
 	unsigned char flg = old[3];
 	int data_start = 10;
@@ -280,8 +235,10 @@ uncompressgzipped(const unsigned char *old, unsigned char **newch, int n)
 #endif
 
 static int
-uncompressbuf(int method, const unsigned char *old, unsigned char **newch,
-	      int n)
+uncompressbuf(int method, const unsigned char *old,
+		/*@out@*/ unsigned char **newch, int n)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies *newch, fileSystem, internalState @*/
 {
 	int fdin[2], fdout[2];
 
@@ -347,4 +304,36 @@ err:
 		return n;
 	}
 	/*@notreached@*/
+}
+
+/*
+ * compress routines:
+ *	zmagic() - returns 0 if not recognized, uncompresses and prints
+ *		   information if recognized
+ */
+int
+zmagic(const char *fname, unsigned char *buf, int nbytes)
+{
+	unsigned char *newbuf;
+	int newsize;
+	int i;
+
+	for (i = 0; i < ncompr; i++) {
+		if (nbytes < compr[i].maglen)
+			continue;
+		if (memcmp(buf, compr[i].magic, compr[i].maglen) == 0 &&
+		    (newsize = uncompressbuf(i, buf, &newbuf, nbytes)) != 0) {
+			(void) tryit(fname, newbuf, newsize, 1);
+			free(newbuf);
+			printf(" (");
+			(void) tryit(fname, buf, nbytes, 0);
+			printf(")");
+			return 1;
+		}
+	}
+
+	if (i == ncompr)
+		return 0;
+
+	return 1;
 }

@@ -53,8 +53,6 @@
 #include <getopt.h>	/* for long options (is this portable?)*/
 #endif
 
-#include <netinet/in.h>		/* for byte swapping */
-
 #include "patchlevel.h"
 
 #ifndef	lint
@@ -92,13 +90,6 @@ int 			/* Global command-line options 		*/
 	nobuffer = 0,   /* Do not buffer stdout */
 	kflag = 0;	/* Keep going after the first match	*/
 
-/*@unchecked@*/ /*@unused@*/
-int			/* Misc globals				*/
-	nmagic = 0;	/* number of valid magic[]s 		*/
-
-/*@unchecked@*/ /*@unused@*/
-struct  magic *magic;	/* array of magic entries		*/
-
 /*@unchecked@*/ /*@null@*/
 const char *magicfile = 0;	/* where the magic is		*/
 /*@unchecked@*/ /*@observer@*/
@@ -109,300 +100,39 @@ char *progname;		/* used throughout 			*/
 /*@unchecked@*/
 int lineno;		/* line number in the magic file	*/
 
-
-static void	unwrap(char *fn)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/;
-/*@exits@*/
-static void	usage(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-#ifdef HAVE_GETOPT_H
-/*@exits@*/
-static void	help(void)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-#endif
-
-int main(int argc, char *argv[])
-	/*@globals debug, bflag, zflag, sflag, iflag, nobuffer, kflag,
-		default_magicfile, lineno, magicfile, mlist, optind, progname,
-		fileSystem, internalState @*/
-	/*@modifies argv, debug, bflag, zflag, sflag, iflag, nobuffer, kflag,
-		default_magicfile, lineno, magicfile, mlist, optind, progname,
-		fileSystem, internalState @*/;
-
-/*
- * main - parse arguments and handle options
- */
 int
-main(int argc, char **argv)
+tryit(const char *fn, unsigned char *buf, int nb, int zfl)
 {
-	int c;
-	int action = 0, didsomefiles = 0, errflg = 0, ret = 0, app = 0;
-	char *mime, *home, *usermagic;
-	struct stat sb;
-#define OPTSTRING	"bcdf:ikm:nsvzCL"
-#ifdef HAVE_GETOPT_H
-	int longindex;
-/*@-nullassign -readonlytrans@*/
-	static struct option long_options[] =
-	{
-		{"version", 0, 0, 'v'},
-		{"help", 0, 0, 0},
-		{"brief", 0, 0, 'b'},
-		{"checking-printout", 0, 0, 'c'},
-		{"debug", 0, 0, 'd'},
-		{"files-from", 1, 0, 'f'},
-		{"mime", 0, 0, 'i'},
-		{"keep-going", 0, 0, 'k'},
-#ifdef S_IFLNK
-		{"dereference", 0, 0, 'L'},
-#endif
-		{"magic-file", 1, 0, 'm'},
-		{"uncompress", 0, 0, 'z'},
-		{"no-buffer", 0, 0, 'n'},
-		{"special-files", 0, 0, 's'},
-		{"compile", 0, 0, 'C'},
-		{0, 0, 0, 0},
-	};
-/*@=nullassign =readonlytrans@*/
-#endif
 
-#ifdef LC_CTYPE
-	setlocale(LC_CTYPE, ""); /* makes islower etc work for other langs */
-#endif
+	/*
+	 * The main work is done here!
+	 * We have the file name and/or the data buffer to be identified. 
+	 */
 
 #ifdef __EMX__
-	/* sh-like wildcard expansion! Shouldn't hurt at least ... */
-	_wildcard(&argc, &argv);
+	/*
+	 * Ok, here's the right place to add a call to some os-specific
+	 * routine, e.g.
+	 */
+	if (os2_apptype(fn, buf, nb) == 1)
+	       return 'o';
 #endif
+	/* try compression stuff */
+	if (zfl && zmagic(fn, buf, nb))
+		return 'z';
 
-/*@-modobserver@*/
-	if ((progname = strrchr(argv[0], '/')) != NULL)
-		progname++;
-	else
-		progname = argv[0];
-/*@=modobserver@*/
+	/* try tests in /etc/magic (or surrogate magic file) */
+	if (softmagic(buf, nb))
+		return 's';
 
-	magicfile = default_magicfile;
-	if ((usermagic = getenv("MAGIC")) != NULL)
-		magicfile = usermagic;
-	else
-		if ((home = getenv("HOME")) != NULL) {
-			if ((usermagic = malloc(strlen(home) + 8)) != NULL) {
-				(void)strcpy(usermagic, home);
-				(void)strcat(usermagic, "/.magic");
-				if (stat(usermagic, &sb)<0) 
-					free(usermagic);
-				else
-					magicfile = usermagic;
-			}
-		}
+	/* try known keywords, check whether it is ASCII */
+	if (ascmagic(buf, nb))
+		return 'a';
 
-#ifndef HAVE_GETOPT_H
-	while ((c = getopt(argc, argv, OPTSTRING)) != -1)
-#else
-	while ((c = getopt_long(argc, argv, OPTSTRING, long_options,
-	    &longindex)) != -1)
-#endif
-		switch (c) {
-#ifdef HAVE_GETOPT_H
-		case 0 :
-			if (longindex == 1)
-				help();
-			/*@switchbreak@*/ break;
-#endif
-		case 'b':
-			++bflag;
-			/*@switchbreak@*/ break;
-		case 'c':
-			action = CHECK;
-			/*@switchbreak@*/ break;
-		case 'C':
-			action = COMPILE;
-			/*@switchbreak@*/ break;
-		case 'd':
-			++debug;
-			/*@switchbreak@*/ break;
-		case 'f':
-			if (!app) {
-				ret = apprentice(magicfile, action);
-				if (action)
-					exit(ret);
-				app = 1;
-			}
-			unwrap(optarg);
-			++didsomefiles;
-			/*@switchbreak@*/ break;
-		case 'i':
-			iflag++;
-			if ((mime = malloc(strlen(magicfile) + 6)) != NULL) {
-				(void)strcpy(mime, magicfile);
-				(void)strcat(mime, ".mime");
-				magicfile = mime;
-			}
-			/*@switchbreak@*/ break;
-		case 'k':
-			kflag = 1;
-			/*@switchbreak@*/ break;
-		case 'm':
-			magicfile = optarg;
-			/*@switchbreak@*/ break;
-		case 'n':
-			++nobuffer;
-			/*@switchbreak@*/ break;
-		case 's':
-			sflag++;
-			/*@switchbreak@*/ break;
-		case 'v':
-			(void) fprintf(stdout, "%s-%d.%d\n", progname,
-				       FILE_VERSION_MAJOR, patchlevel);
-			(void) fprintf(stdout, "magic file from %s\n",
-				       magicfile);
-			return 1;
-		case 'z':
-			zflag++;
-			/*@switchbreak@*/ break;
-#ifdef S_IFLNK
-		case 'L':
-			++lflag;
-			/*@switchbreak@*/ break;
-#endif
-		case '?':
-		default:
-			errflg++;
-			/*@switchbreak@*/ break;
-		}
-
-	if (errflg) {
-		usage();
-	}
-
-	if (!app) {
-		ret = apprentice(magicfile, action);
-		if (action)
-			exit(ret);
-		app = 1;
-	}
-
-	if (optind == argc) {
-		if (!didsomefiles) {
-			usage();
-		}
-	}
-	else {
-		int i, wid, nw;
-		for (wid = 0, i = optind; i < argc; i++) {
-			nw = strlen(argv[i]);
-			if (nw > wid)
-				wid = nw;
-		}
-		for (; optind < argc; optind++)
-			process(argv[optind], wid);
-	}
-
-	return 0;
+	/* abandon hope, all ye who remain here */
+	ckfputs(iflag ? "application/octet-stream" : "data", stdout);
+		return '\0';
 }
-
-
-/*
- * unwrap -- read a file of filenames, do each one.
- */
-static void
-unwrap(char *fn)
-{
-	char buf[MAXPATHLEN];
-	FILE *f;
-	int wid = 0, cwid;
-
-	if (strcmp("-", fn) == 0) {
-		f = stdin;
-		wid = 1;
-	} else {
-		if ((f = fopen(fn, "r")) == NULL) {
-			error("Cannot open `%s' (%s).\n", fn, strerror(errno));
-			/*@notreached@*/
-		}
-
-		while (fgets(buf, MAXPATHLEN, f) != NULL) {
-			cwid = strlen(buf) - 1;
-			if (cwid > wid)
-				wid = cwid;
-		}
-
-		rewind(f);
-	}
-
-	while (fgets(buf, MAXPATHLEN, f) != NULL) {
-		buf[strlen(buf)-1] = '\0';
-		process(buf, wid);
-		if(nobuffer)
-			(void) fflush(stdout);
-	}
-
-	(void) fclose(f);
-}
-
-
-#if 0
-/*
- * byteconv4
- * Input:
- *	from		4 byte quantity to convert
- *	same		whether to perform byte swapping
- *	big_endian	whether we are a big endian host
- */
-static int
-byteconv4(int from, int same, int big_endian)
-	/*@*/
-{
-	if (same)
-		return from;
-	else if (big_endian) {		/* lsb -> msb conversion on msb */
-		union {
-			int i;
-			char c[4];
-		} retval, tmpval;
-
-		tmpval.i = from;
-		retval.c[0] = tmpval.c[3];
-		retval.c[1] = tmpval.c[2];
-		retval.c[2] = tmpval.c[1];
-		retval.c[3] = tmpval.c[0];
-
-		return retval.i;
-	}
-	else
-		return ntohl(from);	/* msb -> lsb conversion on lsb */
-}
-
-/*
- * byteconv2
- * Same as byteconv4, but for shorts
- */
-static short
-byteconv2(int from, int same, int big_endian)
-	/*@*/
-{
-	if (same)
-		return from;
-	else if (big_endian) {		/* lsb -> msb conversion on msb */
-		union {
-			short s;
-			char c[2];
-		} retval, tmpval;
-
-		tmpval.s = (short) from;
-		retval.c[0] = tmpval.c[1];
-		retval.c[1] = tmpval.c[0];
-
-		return retval.s;
-	}
-	else
-		return ntohs(from);	/* msb -> lsb conversion on lsb */
-}
-#endif
 
 /*
  * process - process input file
@@ -506,43 +236,51 @@ process(const char *inname, int wid)
 	(void) putchar('\n');
 }
 
-
-int
-tryit(const char *fn, unsigned char *buf, int nb, int zfl)
+/*
+ * unwrap -- read a file of filenames, do each one.
+ */
+static void
+unwrap(char *fn)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
+	char buf[MAXPATHLEN];
+	FILE *f;
+	int wid = 0, cwid;
 
-	/*
-	 * The main work is done here!
-	 * We have the file name and/or the data buffer to be identified. 
-	 */
+	if (strcmp("-", fn) == 0) {
+		f = stdin;
+		wid = 1;
+	} else {
+		if ((f = fopen(fn, "r")) == NULL) {
+			error("Cannot open `%s' (%s).\n", fn, strerror(errno));
+			/*@notreached@*/
+		}
 
-#ifdef __EMX__
-	/*
-	 * Ok, here's the right place to add a call to some os-specific
-	 * routine, e.g.
-	 */
-	if (os2_apptype(fn, buf, nb) == 1)
-	       return 'o';
-#endif
-	/* try compression stuff */
-	if (zfl && zmagic(fn, buf, nb))
-		return 'z';
+		while (fgets(buf, MAXPATHLEN, f) != NULL) {
+			cwid = strlen(buf) - 1;
+			if (cwid > wid)
+				wid = cwid;
+		}
 
-	/* try tests in /etc/magic (or surrogate magic file) */
-	if (softmagic(buf, nb))
-		return 's';
+		rewind(f);
+	}
 
-	/* try known keywords, check whether it is ASCII */
-	if (ascmagic(buf, nb))
-		return 'a';
+	while (fgets(buf, MAXPATHLEN, f) != NULL) {
+		buf[strlen(buf)-1] = '\0';
+		process(buf, wid);
+		if(nobuffer)
+			(void) fflush(stdout);
+	}
 
-	/* abandon hope, all ye who remain here */
-	ckfputs(iflag ? "application/octet-stream" : "data", stdout);
-		return '\0';
+	(void) fclose(f);
 }
 
+/*@exits@*/
 static void
 usage(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	(void)fprintf(stderr, USAGE, progname);
 	(void)fprintf(stderr, "Usage: %s -C [-m magic]\n", progname);
@@ -553,8 +291,11 @@ usage(void)
 }
 
 #ifdef HAVE_GETOPT_H
+/*@exits@*/
 static void
 help(void)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	(void) puts(
 "Usage: file [OPTION]... [FILE]...\n"
@@ -580,3 +321,185 @@ help(void)
 	exit(0);
 }
 #endif
+
+/*
+ * main - parse arguments and handle options
+ */
+int
+main(int argc, char **argv)
+	/*@globals debug, bflag, zflag, sflag, iflag, nobuffer, kflag,
+		default_magicfile, lineno, magicfile, mlist, optind, progname,
+		fileSystem, internalState @*/
+	/*@modifies argv, debug, bflag, zflag, sflag, iflag, nobuffer, kflag,
+		default_magicfile, lineno, magicfile, mlist, optind, progname,
+		fileSystem, internalState @*/
+{
+	int c;
+	int action = 0, didsomefiles = 0, errflg = 0, ret = 0, app = 0;
+	char *mime, *home, *usermagic;
+	struct stat sb;
+#define OPTSTRING	"bcdf:ikm:nsvzCL"
+#ifdef HAVE_GETOPT_H
+	int longindex;
+/*@-nullassign -readonlytrans@*/
+	static struct option long_options[] =
+	{
+		{"version", 0, 0, 'v'},
+		{"help", 0, 0, 0},
+		{"brief", 0, 0, 'b'},
+		{"checking-printout", 0, 0, 'c'},
+		{"debug", 0, 0, 'd'},
+		{"files-from", 1, 0, 'f'},
+		{"mime", 0, 0, 'i'},
+		{"keep-going", 0, 0, 'k'},
+#ifdef S_IFLNK
+		{"dereference", 0, 0, 'L'},
+#endif
+		{"magic-file", 1, 0, 'm'},
+		{"uncompress", 0, 0, 'z'},
+		{"no-buffer", 0, 0, 'n'},
+		{"special-files", 0, 0, 's'},
+		{"compile", 0, 0, 'C'},
+		{0, 0, 0, 0},
+	};
+/*@=nullassign =readonlytrans@*/
+#endif
+
+#ifdef LC_CTYPE
+	setlocale(LC_CTYPE, ""); /* makes islower etc work for other langs */
+#endif
+
+#ifdef __EMX__
+	/* sh-like wildcard expansion! Shouldn't hurt at least ... */
+	_wildcard(&argc, &argv);
+#endif
+
+/*@-modobserver@*/
+	if ((progname = strrchr(argv[0], '/')) != NULL)
+		progname++;
+	else
+		progname = argv[0];
+/*@=modobserver@*/
+
+	magicfile = default_magicfile;
+	if ((usermagic = getenv("MAGIC")) != NULL)
+		magicfile = usermagic;
+	else {
+		if ((home = getenv("HOME")) != NULL) {
+			if ((usermagic = malloc(strlen(home) + 8)) != NULL) {
+				(void)strcpy(usermagic, home);
+				(void)strcat(usermagic, "/.magic");
+				if (stat(usermagic, &sb)<0) 
+					free(usermagic);
+				else
+					magicfile = usermagic;
+			}
+		}
+	}
+
+#ifndef HAVE_GETOPT_H
+	while ((c = getopt(argc, argv, OPTSTRING)) != -1)
+#else
+	while ((c = getopt_long(argc, argv, OPTSTRING, long_options,
+	    &longindex)) != -1)
+#endif
+	{
+		switch (c) {
+#ifdef HAVE_GETOPT_H
+		case 0 :
+			if (longindex == 1)
+				help();
+			/*@switchbreak@*/ break;
+#endif
+		case 'b':
+			++bflag;
+			/*@switchbreak@*/ break;
+		case 'c':
+			action = CHECK;
+			/*@switchbreak@*/ break;
+		case 'C':
+			action = COMPILE;
+			/*@switchbreak@*/ break;
+		case 'd':
+			++debug;
+			/*@switchbreak@*/ break;
+		case 'f':
+			if (!app) {
+				ret = apprentice(magicfile, action);
+				if (action)
+					exit(ret);
+				app = 1;
+			}
+			unwrap(optarg);
+			++didsomefiles;
+			/*@switchbreak@*/ break;
+		case 'i':
+			iflag++;
+			if ((mime = malloc(strlen(magicfile) + 6)) != NULL) {
+				(void)strcpy(mime, magicfile);
+				(void)strcat(mime, ".mime");
+				magicfile = mime;
+			}
+			/*@switchbreak@*/ break;
+		case 'k':
+			kflag = 1;
+			/*@switchbreak@*/ break;
+		case 'm':
+			magicfile = optarg;
+			/*@switchbreak@*/ break;
+		case 'n':
+			++nobuffer;
+			/*@switchbreak@*/ break;
+		case 's':
+			sflag++;
+			/*@switchbreak@*/ break;
+		case 'v':
+			(void) fprintf(stdout, "%s-%d.%d\n", progname,
+				       FILE_VERSION_MAJOR, patchlevel);
+			(void) fprintf(stdout, "magic file from %s\n",
+				       magicfile);
+			return 1;
+		case 'z':
+			zflag++;
+			/*@switchbreak@*/ break;
+#ifdef S_IFLNK
+		case 'L':
+			++lflag;
+			/*@switchbreak@*/ break;
+#endif
+		case '?':
+		default:
+			errflg++;
+			/*@switchbreak@*/ break;
+		}
+	}
+
+	if (errflg) {
+		usage();
+	}
+
+	if (!app) {
+		ret = apprentice(magicfile, action);
+		if (action)
+			exit(ret);
+		app = 1;
+	}
+
+	if (optind == argc) {
+		if (!didsomefiles) {
+			usage();
+		}
+	}
+	else {
+		int i, wid, nw;
+		for (wid = 0, i = optind; i < argc; i++) {
+			nw = strlen(argv[i]);
+			if (nw > wid)
+				wid = nw;
+		}
+		for (; optind < argc; optind++)
+			process(argv[optind], wid);
+	}
+
+	return 0;
+}

@@ -32,7 +32,6 @@
 #include <time.h>
 #include <regex.h>
 
-
 #ifndef	lint
 FILE_RCSID("@(#)Id: softmagic.c,v 1.51 2002/07/03 18:26:38 christos Exp ")
 #endif	/* lint */
@@ -42,185 +41,10 @@ FILE_RCSID("@(#)Id: softmagic.c,v 1.51 2002/07/03 18:26:38 christos Exp ")
 extern int kflag;
 /*@=redecl@*/
 
-static int match(struct magic *m, uint32_t nmagic,
-		unsigned char *s, int nbytes)
-	/*@globals fileSystem @*/
-	/*@modifies m, s, fileSystem @*/;
-static int mget(union VALUETYPE *p, unsigned char *s,
-		struct magic *m, int nbytes)
-	/*@globals fileSystem @*/
-	/*@modifies p, s, fileSystem @*/;
-static int mcheck(union VALUETYPE *p, struct magic *m)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-static int32_t mprint(union VALUETYPE *p, struct magic *m)
-	/*@globals fileSystem @*/
-	/*@modifies p, fileSystem @*/;
-static void mdebug(int32_t offset, char *str, int len)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-static int mconvert(union VALUETYPE *p, struct magic *m)
-	/*@globals fileSystem @*/
-	/*@modifies p, fileSystem @*/;
-
-/*
- * softmagic - lookup one file in database 
- * (already read from MAGIC by apprentice.c).
- * Passed the name and FILE * of one file to be typed.
- */
-/*ARGSUSED1*/		/* nbytes passed for regularity, maybe need later */
-int
-softmagic(unsigned char *buf, int nbytes)
-{
-	struct mlist *ml;
-
-	for (ml = mlist.next; ml != &mlist; ml = ml->next)
-		if (match(ml->magic, ml->nmagic, buf, nbytes))
-			return 1;
-
-	return 0;
-}
-
-/*
- * Go through the whole list, stopping if you find a match.  Process all
- * the continuations of that match before returning.
- *
- * We support multi-level continuations:
- *
- *	At any time when processing a successful top-level match, there is a
- *	current continuation level; it represents the level of the last
- *	successfully matched continuation.
- *
- *	Continuations above that level are skipped as, if we see one, it
- *	means that the continuation that controls them - i.e, the
- *	lower-level continuation preceding them - failed to match.
- *
- *	Continuations below that level are processed as, if we see one,
- *	it means we've finished processing or skipping higher-level
- *	continuations under the control of a successful or unsuccessful
- *	lower-level continuation, and are now seeing the next lower-level
- *	continuation and should process it.  The current continuation
- *	level reverts to the level of the one we're seeing.
- *
- *	Continuations at the current level are processed as, if we see
- *	one, there's no lower-level continuation that may have failed.
- *
- *	If a continuation matches, we bump the current continuation level
- *	so that higher-level continuations are processed.
- */
-static int
-match(struct magic *m, uint32_t nmagic, unsigned char *s, int nbytes)
-{
-	int magindex = 0;
-	int cont_level = 0;
-	int need_separator = 0;
-	union VALUETYPE p;
-	/*@only@*/
-	static int32_t *tmpoff = NULL;
-	static size_t tmplen = 0;
-	int32_t oldoff = 0;
-	int returnval = 0; /* if a match is found it is set to 1*/
-	int firstline = 1; /* a flag to print X\n  X\n- X */
-
-	if (tmpoff == NULL)
-		if ((tmpoff = (int32_t *) malloc(tmplen = 20)) == NULL)
-			error("out of memory\n");
-
-	for (magindex = 0; magindex < nmagic; magindex++) {
-		/* if main entry matches, print it... */
-		if (!mget(&p, s, &m[magindex], nbytes) ||
-		    !mcheck(&p, &m[magindex])) {
-			    /* 
-			     * main entry didn't match,
-			     * flush its continuations
-			     */
-			    while (magindex < nmagic &&
-			    	   m[magindex + 1].cont_level != 0)
-			    	   magindex++;
-			    continue;
-		}
-
-		if (! firstline) { /* we found another match */
-			/* put a newline and '-' to do some simple formatting*/
-			printf("\n- ");
-		}
-
-		tmpoff[cont_level] = mprint(&p, &m[magindex]);
-		/*
-		 * If we printed something, we'll need to print
-		 * a blank before we print something else.
-		 */
-		if (m[magindex].desc[0])
-			need_separator = 1;
-		/* and any continuations that match */
-		if (++cont_level >= tmplen)
-			if ((tmpoff = (int32_t *) realloc(tmpoff,
-						       tmplen += 20)) == NULL)
-				error("out of memory\n");
-		while (m[magindex+1].cont_level != 0 && 
-		       ++magindex < nmagic) {
-			if (cont_level >= m[magindex].cont_level) {
-				if (cont_level > m[magindex].cont_level) {
-					/*
-					 * We're at the end of the level
-					 * "cont_level" continuations.
-					 */
-					cont_level = m[magindex].cont_level;
-				}
-				if (m[magindex].flag & OFFADD) {
-					oldoff=m[magindex].offset;
-					m[magindex].offset +=
-					    tmpoff[cont_level-1];
-				}
-				if (mget(&p, s, &m[magindex], nbytes) &&
-				    mcheck(&p, &m[magindex])) {
-					/*
-					 * This continuation matched.
-					 * Print its message, with
-					 * a blank before it if
-					 * the previous item printed
-					 * and this item isn't empty.
-					 */
-					/* space if previous printed */
-					if (need_separator
-					   && (m[magindex].nospflag == 0)
-					   && (m[magindex].desc[0] != '\0')
-					   ) {
-						(void) putchar(' ');
-						need_separator = 0;
-					}
-					tmpoff[cont_level] =
-					    mprint(&p, &m[magindex]);
-					if (m[magindex].desc[0])
-						need_separator = 1;
-
-					/*
-					 * If we see any continuations
-					 * at a higher level,
-					 * process them.
-					 */
-					if (++cont_level >= tmplen)
-						if ((tmpoff = 
-						    (int32_t *) realloc(tmpoff,
-						    tmplen += 20)) == NULL)
-							error("out of memory\n");
-				}
-				if (m[magindex].flag & OFFADD) {
-					 m[magindex].offset = oldoff;
-				}
-			}
-		}
-		firstline = 0;
-		returnval = 1;
-		if (!kflag) {
-			return 1; /* don't keep searching */
-		}			
-	}
-	return returnval;  /* This is hit if -k is set or there is no match */
-}
-
 static int32_t
 mprint(union VALUETYPE *p, struct magic *m)
+	/*@globals fileSystem @*/
+	/*@modifies p, fileSystem @*/
 {
 	uint32_t v;
 	int32_t t=0 ;
@@ -298,6 +122,8 @@ mprint(union VALUETYPE *p, struct magic *m)
  */
 static int
 mconvert(union VALUETYPE *p, struct magic *m)
+	/*@globals fileSystem @*/
+	/*@modifies p, fileSystem @*/
 {
 	switch (m->type) {
 	case BYTE:
@@ -566,6 +392,8 @@ mconvert(union VALUETYPE *p, struct magic *m)
 
 static void
 mdebug(int32_t offset, char *str, int len)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	(void) fprintf(stderr, "mget @%d: ", offset);
 	showstr(stderr, (char *) str, len);
@@ -575,6 +403,8 @@ mdebug(int32_t offset, char *str, int len)
 
 static int
 mget(union VALUETYPE *p, unsigned char *s, struct magic *m, int nbytes)
+	/*@globals fileSystem @*/
+	/*@modifies p, s, fileSystem @*/
 {
 	int32_t offset = m->offset;
 
@@ -952,6 +782,8 @@ mget(union VALUETYPE *p, unsigned char *s, struct magic *m, int nbytes)
 
 static int
 mcheck(union VALUETYPE *p, struct magic *m)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	uint32_t l = m->value.l;
 	uint32_t v;
@@ -1130,4 +962,161 @@ mcheck(union VALUETYPE *p, struct magic *m)
 	}
 
 	return matched;
+}
+
+/*
+ * Go through the whole list, stopping if you find a match.  Process all
+ * the continuations of that match before returning.
+ *
+ * We support multi-level continuations:
+ *
+ *	At any time when processing a successful top-level match, there is a
+ *	current continuation level; it represents the level of the last
+ *	successfully matched continuation.
+ *
+ *	Continuations above that level are skipped as, if we see one, it
+ *	means that the continuation that controls them - i.e, the
+ *	lower-level continuation preceding them - failed to match.
+ *
+ *	Continuations below that level are processed as, if we see one,
+ *	it means we've finished processing or skipping higher-level
+ *	continuations under the control of a successful or unsuccessful
+ *	lower-level continuation, and are now seeing the next lower-level
+ *	continuation and should process it.  The current continuation
+ *	level reverts to the level of the one we're seeing.
+ *
+ *	Continuations at the current level are processed as, if we see
+ *	one, there's no lower-level continuation that may have failed.
+ *
+ *	If a continuation matches, we bump the current continuation level
+ *	so that higher-level continuations are processed.
+ */
+static int
+match(struct magic *m, uint32_t nmagic, unsigned char *s, int nbytes)
+	/*@globals fileSystem @*/
+	/*@modifies m, s, fileSystem @*/
+{
+	int magindex = 0;
+	int cont_level = 0;
+	int need_separator = 0;
+	union VALUETYPE p;
+	/*@only@*/
+	static int32_t *tmpoff = NULL;
+	static size_t tmplen = 0;
+	int32_t oldoff = 0;
+	int returnval = 0; /* if a match is found it is set to 1*/
+	int firstline = 1; /* a flag to print X\n  X\n- X */
+
+	if (tmpoff == NULL)
+		if ((tmpoff = (int32_t *) malloc(tmplen = 20)) == NULL)
+			error("out of memory\n");
+
+	for (magindex = 0; magindex < nmagic; magindex++) {
+		/* if main entry matches, print it... */
+		if (!mget(&p, s, &m[magindex], nbytes) ||
+		    !mcheck(&p, &m[magindex])) {
+			    /* 
+			     * main entry didn't match,
+			     * flush its continuations
+			     */
+			    while (magindex < nmagic &&
+			    	   m[magindex + 1].cont_level != 0)
+			    	   magindex++;
+			    continue;
+		}
+
+		if (! firstline) { /* we found another match */
+			/* put a newline and '-' to do some simple formatting*/
+			printf("\n- ");
+		}
+
+		tmpoff[cont_level] = mprint(&p, &m[magindex]);
+		/*
+		 * If we printed something, we'll need to print
+		 * a blank before we print something else.
+		 */
+		if (m[magindex].desc[0])
+			need_separator = 1;
+		/* and any continuations that match */
+		if (++cont_level >= tmplen)
+			if ((tmpoff = (int32_t *) realloc(tmpoff,
+						       tmplen += 20)) == NULL)
+				error("out of memory\n");
+		while (m[magindex+1].cont_level != 0 && 
+		       ++magindex < nmagic) {
+			if (cont_level >= m[magindex].cont_level) {
+				if (cont_level > m[magindex].cont_level) {
+					/*
+					 * We're at the end of the level
+					 * "cont_level" continuations.
+					 */
+					cont_level = m[magindex].cont_level;
+				}
+				if (m[magindex].flag & OFFADD) {
+					oldoff=m[magindex].offset;
+					m[magindex].offset +=
+					    tmpoff[cont_level-1];
+				}
+				if (mget(&p, s, &m[magindex], nbytes) &&
+				    mcheck(&p, &m[magindex])) {
+					/*
+					 * This continuation matched.
+					 * Print its message, with
+					 * a blank before it if
+					 * the previous item printed
+					 * and this item isn't empty.
+					 */
+					/* space if previous printed */
+					if (need_separator
+					   && (m[magindex].nospflag == 0)
+					   && (m[magindex].desc[0] != '\0')
+					   ) {
+						(void) putchar(' ');
+						need_separator = 0;
+					}
+					tmpoff[cont_level] =
+					    mprint(&p, &m[magindex]);
+					if (m[magindex].desc[0])
+						need_separator = 1;
+
+					/*
+					 * If we see any continuations
+					 * at a higher level,
+					 * process them.
+					 */
+					if (++cont_level >= tmplen)
+						if ((tmpoff = 
+						    (int32_t *) realloc(tmpoff,
+						    tmplen += 20)) == NULL)
+							error("out of memory\n");
+				}
+				if (m[magindex].flag & OFFADD) {
+					 m[magindex].offset = oldoff;
+				}
+			}
+		}
+		firstline = 0;
+		returnval = 1;
+		if (!kflag) {
+			return 1; /* don't keep searching */
+		}			
+	}
+	return returnval;  /* This is hit if -k is set or there is no match */
+}
+
+/*
+ * softmagic - lookup one file in database 
+ * (already read from MAGIC by apprentice.c).
+ * Passed the name and FILE * of one file to be typed.
+ */
+int
+softmagic(unsigned char *buf, int nbytes)
+{
+	struct mlist *ml;
+
+	for (ml = mlist.next; ml != &mlist; ml = ml->next)
+		if (match(ml->magic, ml->nmagic, buf, nbytes))
+			return 1;
+
+	return 0;
 }

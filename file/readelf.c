@@ -14,29 +14,9 @@
 FILE_RCSID("@(#)Id: readelf.c,v 1.22 2002/07/03 18:26:38 christos Exp ")
 #endif
 
-#ifdef	ELFCORE
-static void dophn_core(int class, int swap, int fd, off_t off, int num,
-		size_t size)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-#endif
-static void dophn_exec(int class, int swap, int fd, off_t off, int num,
-		size_t size)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-static void doshn(int class, int swap, int fd, off_t off, int num, size_t size)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/;
-
-static uint16_t getu16(int swap, uint16_t value)
-	/*@*/;
-static uint32_t getu32(int swap, uint32_t value)
-	/*@*/;
-static uint64_t getu64(int swap, uint64_t value)
-	/*@*/;
-
 static uint16_t
 getu16(int swap, uint16_t value)
+	/*@*/
 {
 	union {
 		uint16_t ui;
@@ -56,6 +36,7 @@ getu16(int swap, uint16_t value)
 
 static uint32_t
 getu32(int swap, uint32_t value)
+	/*@*/
 {
 	union {
 		uint32_t ui;
@@ -77,6 +58,7 @@ getu32(int swap, uint32_t value)
 
 static uint64_t
 getu64(int swap, uint64_t value)
+	/*@*/
 {
 	union {
 		uint64_t ui;
@@ -100,39 +82,41 @@ getu64(int swap, uint64_t value)
 		return value;
 }
 
-#define sh_addr		(class == ELFCLASS32		\
+#define sh_addr		(cls == ELFCLASS32		\
 			 ? (void *) &sh32		\
 			 : (void *) &sh64)
-#define shs_type	(class == ELFCLASS32		\
+#define shs_type	(cls == ELFCLASS32		\
 			 ? getu32(swap, sh32.sh_type)	\
 			 : getu32(swap, sh64.sh_type))
-#define ph_addr		(class == ELFCLASS32		\
+#define ph_addr		(cls == ELFCLASS32		\
 			 ? (void *) &ph32		\
 			 : (void *) &ph64)
-#define ph_type		(class == ELFCLASS32		\
+#define ph_type		(cls == ELFCLASS32		\
 			 ? getu32(swap, ph32.p_type)	\
 			 : getu32(swap, ph64.p_type))
-#define ph_offset	(class == ELFCLASS32		\
+#define ph_offset	(cls == ELFCLASS32		\
 			 ? getu32(swap, ph32.p_offset)	\
 			 : getu64(swap, ph64.p_offset))
-#define nh_size		(class == ELFCLASS32		\
+#define nh_size		(cls == ELFCLASS32		\
 			 ? sizeof *nh32			\
 			 : sizeof *nh64)
-#define nh_type		(class == ELFCLASS32		\
+#define nh_type		(cls == ELFCLASS32		\
 			 ? getu32(swap, nh32->n_type)	\
 			 : getu32(swap, nh64->n_type))
-#define nh_namesz	(class == ELFCLASS32		\
+#define nh_namesz	(cls == ELFCLASS32		\
 			 ? getu32(swap, nh32->n_namesz)	\
 			 : getu32(swap, nh64->n_namesz))
-#define nh_descsz	(class == ELFCLASS32		\
+#define nh_descsz	(cls == ELFCLASS32		\
 			 ? getu32(swap, nh32->n_descsz)	\
 			 : getu32(swap, nh64->n_descsz))
-#define prpsoffsets(i)	(class == ELFCLASS32		\
+#define prpsoffsets(i)	(cls == ELFCLASS32		\
 			 ? prpsoffsets32[i]		\
 			 : prpsoffsets64[i])
 
 static void
-doshn(int class, int swap, int fd, off_t off, int num, size_t size)
+doshn(int cls, int swap, int fd, off_t off, int num, size_t size)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	Elf32_Shdr sh32;
 	Elf64_Shdr sh64;
@@ -157,7 +141,9 @@ doshn(int class, int swap, int fd, off_t off, int num, size_t size)
  * otherwise it's statically linked.
  */
 static void
-dophn_exec(int class, int swap, int fd, off_t off, int num, size_t size)
+dophn_exec(int cls, int swap, int fd, off_t off, int num, size_t size)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	Elf32_Phdr ph32;
 	Elf32_Nhdr *nh32 = NULL;
@@ -198,7 +184,7 @@ dophn_exec(int class, int swap, int fd, off_t off, int num, size_t size)
 			for (;;) {
 				if (offset >= bufsize)
 					/*@innerbreak@*/ break;
-				if (class == ELFCLASS32)
+				if (cls == ELFCLASS32)
 					nh32 = (Elf32_Nhdr *)&nbuf[offset];
 				else
 					nh64 = (Elf64_Nhdr *)&nbuf[offset];
@@ -296,23 +282,23 @@ dophn_exec(int class, int swap, int fd, off_t off, int num, size_t size)
 }
 
 #ifdef ELFCORE
-/*@unchecked@*/
-size_t	prpsoffsets32[] = {
+/*@unchecked@*/ /*@observer@*/
+static size_t	prpsoffsets32[] = {
 	8,		/* FreeBSD */
 	28,		/* Linux 2.0.36 */
 	32,		/* Linux (I forget which kernel version) */
-	84,		/* SunOS 5.x */
+	84		/* SunOS 5.x */
 };
 
-/*@unchecked@*/
-size_t	prpsoffsets64[] = {
-       120,		/* SunOS 5.x, 64-bit */
+/*@unchecked@*/ /*@observer@*/
+static size_t	prpsoffsets64[] = {
+       120		/* SunOS 5.x, 64-bit */
 };
 
 #define	NOFFSETS32	(sizeof prpsoffsets32 / sizeof prpsoffsets32[0])
 #define NOFFSETS64	(sizeof prpsoffsets64 / sizeof prpsoffsets64[0])
 
-#define NOFFSETS	(class == ELFCLASS32 ? NOFFSETS32 : NOFFSETS64)
+#define NOFFSETS	(cls == ELFCLASS32 ? NOFFSETS32 : NOFFSETS64)
 
 /*
  * Look through the program headers of an executable image, searching
@@ -347,7 +333,9 @@ static const char *os_style_names[] = {
 };
 
 static void
-dophn_core(int class, int swap, int fd, off_t off, int num, size_t size)
+dophn_core(int cls, int swap, int fd, off_t off, int num, size_t size)
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	Elf32_Phdr ph32;
 	Elf32_Nhdr *nh32 = NULL;
@@ -385,7 +373,7 @@ dophn_core(int class, int swap, int fd, off_t off, int num, size_t size)
 		for (;;) {
 			if (offset >= bufsize)
 				/*@innerbreak@*/ break;
-			if (class == ELFCLASS32)
+			if (cls == ELFCLASS32)
 				nh32 = (Elf32_Nhdr *)&nbuf[offset];
 			else
 				nh64 = (Elf64_Nhdr *)&nbuf[offset];
@@ -548,7 +536,7 @@ tryelf(int fd, unsigned char *buf, int nbytes)
 		int32_t l;
 		char c[sizeof (int32_t)];
 	} u;
-	int class;
+	int cls;
 	int swap;
 
 	/*
@@ -569,9 +557,9 @@ tryelf(int fd, unsigned char *buf, int nbytes)
 	    return;
 
 
-	class = buf[4];
+	cls = buf[4];
 
-	if (class == ELFCLASS32) {
+	if (cls == ELFCLASS32) {
 		Elf32_Ehdr elfhdr;
 		if (nbytes <= sizeof (Elf32_Ehdr))
 			return;
@@ -583,7 +571,7 @@ tryelf(int fd, unsigned char *buf, int nbytes)
 
 		if (getu16(swap, elfhdr.e_type) == ET_CORE) 
 #ifdef ELFCORE
-			dophn_core(class, swap,
+			dophn_core(cls, swap,
 				   fd,
 				   getu32(swap, elfhdr.e_phoff),
 				   getu16(swap, elfhdr.e_phnum), 
@@ -593,13 +581,13 @@ tryelf(int fd, unsigned char *buf, int nbytes)
 #endif
 		else {
 			if (getu16(swap, elfhdr.e_type) == ET_EXEC) {
-				dophn_exec(class, swap,
+				dophn_exec(cls, swap,
 					   fd,
 					   getu32(swap, elfhdr.e_phoff),
 					   getu16(swap, elfhdr.e_phnum), 
 					   getu16(swap, elfhdr.e_phentsize));
 			}
-			doshn(class, swap,
+			doshn(cls, swap,
 			      fd,
 			      getu32(swap, elfhdr.e_shoff),
 			      getu16(swap, elfhdr.e_shnum),
@@ -608,7 +596,7 @@ tryelf(int fd, unsigned char *buf, int nbytes)
 		return;
 	}
 
-        if (class == ELFCLASS64) {
+        if (cls == ELFCLASS64) {
 		Elf64_Ehdr elfhdr;
 		if (nbytes <= sizeof (Elf64_Ehdr))
 			return;
@@ -620,7 +608,7 @@ tryelf(int fd, unsigned char *buf, int nbytes)
 
 		if (getu16(swap, elfhdr.e_type) == ET_CORE) 
 #ifdef ELFCORE
-			dophn_core(class, swap,
+			dophn_core(cls, swap,
 				   fd,
 #ifdef USE_ARRAY_FOR_64BIT_TYPES
 				   getu32(swap, elfhdr.e_phoff[1]),
@@ -635,7 +623,7 @@ tryelf(int fd, unsigned char *buf, int nbytes)
 		else
 		{
 			if (getu16(swap, elfhdr.e_type) == ET_EXEC) {
-				dophn_exec(class, swap,
+				dophn_exec(cls, swap,
 					   fd,
 #ifdef USE_ARRAY_FOR_64BIT_TYPES
 					   getu32(swap, elfhdr.e_phoff[1]),
@@ -645,7 +633,7 @@ tryelf(int fd, unsigned char *buf, int nbytes)
 					   getu16(swap, elfhdr.e_phnum), 
 					   getu16(swap, elfhdr.e_phentsize));
 			}
-			doshn(class, swap,
+			doshn(cls, swap,
 			      fd,
 #ifdef USE_ARRAY_FOR_64BIT_TYPES
 			      getu32(swap, elfhdr.e_shoff[1]),
