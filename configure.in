@@ -316,10 +316,6 @@ if test "$LCHOWN" = no; then
     fi
 fi
 
-if test -n "$MISCOBJS"; then
-	LIBMISC=-lmisc
-fi
-
 if test "x$varprefix" = "x"; then
     varprefix=`echo $prefix | sed 's/usr/var/'`
     test "x$prefix" = xNONE && varprefix=`echo $ac_default_prefix | sed 's/usr/var/'`
@@ -386,13 +382,12 @@ fi
 
 if test -n "$MISCOBJS" ; then
 	MISCDIR=misc
-	MISCLIB=-lmisc
+	LIBMISC=-lmisc
 	MISCPATH=misc/libmisc.a
 fi
 
 AC_SUBST(MISCOBJS)
 AC_SUBST(INCPATH)
-AC_SUBST(LIBMISC)
 AC_SUBST(LIBINTL)
 AC_SUBST(varprefix)
 AC_SUBST(tmpdir)
@@ -408,7 +403,7 @@ AC_SUBST(RPM)
 AC_SUBST(GZIPBIN)
 AC_SUBST(FIXPERMS)
 AC_SUBST(MISCDIR)
-AC_SUBST(MISCLIB)
+AC_SUBST(LIBMISC)
 AC_SUBST(MISCPATH)
 
 if test -d newbuild ; then
