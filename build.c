@@ -57,7 +57,7 @@ static int isSpecFile(const char *specfile)
     int count;
     int checking;
 
-    if ((fd = fdOpen(specfile, O_RDONLY, 0)) < 0) {
+    if (fdFileno((fd = fdOpen(specfile, O_RDONLY, 0))) < 0) {
 	fprintf(stderr, _("Unable to open spec file: %s\n"), specfile);
 	return 0;
     }
