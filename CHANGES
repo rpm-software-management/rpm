@@ -27,6 +27,7 @@
 	- macosx: change to --prefix=/usr rather than /opt/local.
 	- use waitpid rather than SIGCHLD reaper.
 	- rip out DB_PRIVATE revert if not NPTL, it's not the right thing to do.
+	- don't classify files in /dev (#146623).
 
 4.3.3 -> 4.4:
 	- pentium3/pentium4 arch support (pluto@PLD).

@@ -1216,6 +1216,9 @@ assert(s != NULL);
 /*@-branchstate@*/
 	if (slen >= sizeof(".pm") && !strcmp(s+slen-(sizeof(".pm")-1), ".pm"))
 	    ftype = "Perl5 module source text";
+	/* XXX skip all files in /dev/, as they are usually %dev dummies. */
+	else if (slen >= sizeof("/dev/") && strncmp(s, "/dev/", sizeof("/dev/")-1))
+	    ftype = "";
 	else {
 	    ftype = magic_file(ms, s);
 	    if (ftype == NULL) {
