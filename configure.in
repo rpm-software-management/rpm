@@ -134,8 +134,7 @@ fi
 
 if test X"$MKDIR_P" = X0 ; then
 	AC_MSG_RESULT(no)
-	AC_PATH_PROGS(MKDIRHIER, mkdirhier, mkdirhier)
-	MKDIR_P="$MKDIRHIER"
+	MKDIR_P="`echo ${prefix}/lib/rpm/mkinstalldirs`"
 else
 	AC_MSG_RESULT(yes)
 fi
