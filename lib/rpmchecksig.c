@@ -246,7 +246,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char **argv)
     unsigned char missingKeys[7164];
     unsigned char untrustedKeys[7164];
     Header sig;
-    HeaderIterator sigIter;
+    HeaderIterator hi;
     int_32 tag, type, count;
     const void * ptr;
     int res = 0;
@@ -299,10 +299,9 @@ l = malloc(sizeof(*l));
 	untrustedKeys[0] = '\0';
 	sprintf(buffer, "%s:%c", rpm, (rpmIsVerbose() ? '\n' : ' ') );
 
-	for (sigIter = headerInitIterator(sig);
-	    headerNextIterator(sigIter, &tag, &type, &ptr, &count);
-	    ptr = ((type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
-		? free((void *)ptr), NULL : NULL))
+	for (hi = headerInitIterator(sig);
+	    headerNextIterator(hi, &tag, &type, &ptr, &count);
+	    ptr = headerFreeData(ptr, type))
 	{
 	    switch (tag) {
 	    case RPMSIGTAG_PGP5:	/* XXX legacy */
@@ -421,7 +420,7 @@ l = malloc(sizeof(*l));
 		}
 	    }
 	}
-	headerFreeIterator(sigIter);
+	headerFreeIterator(hi);
 	res += res2;
 	unlink(sigtarget);
 	free((void *)sigtarget);	sigtarget = NULL;

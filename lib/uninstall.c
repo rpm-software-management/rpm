@@ -20,6 +20,23 @@ static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 #define	SUFFIX_RPMSAVE	".rpmsave"
 
 /**
+ * Return scriptlet name from tag.
+ * @param tag		scriptlet tag
+ * @return		name of scriptlet
+ */
+static const char * tag2sln(int tag)
+{
+    switch (tag) {
+    case RPMTAG_PREIN:		return "%pre";
+    case RPMTAG_POSTIN:		return "%post";
+    case RPMTAG_PREUN:		return "%preun";
+    case RPMTAG_POSTUN:		return "%postun";
+    case RPMTAG_VERIFYSCRIPT:	return "%verify";
+    }
+    return "%unknownscript";
+}
+
+/**
  * Remove (or rename) file according to file disposition.
  * @param file		file
  * @param fileAttrs	file attributes (from package header)
@@ -237,6 +254,7 @@ int removeBinaryPackage(const rpmTransactionSet ts, unsigned int offset,
 /**
  * @param ts		transaction set
  * @param h		header
+ * @param sln		name of scriptlet section
  * @param progArgc
  * @param progArgv
  * @param script
@@ -245,6 +263,7 @@ int removeBinaryPackage(const rpmTransactionSet ts, unsigned int offset,
  * @return
  */
 static int runScript(const rpmTransactionSet ts, Header h,
+		const char * sln,
 		int progArgc, const char ** progArgv, 
 		const char * script, int arg1, int arg2)
 {
@@ -296,7 +315,7 @@ static int runScript(const rpmTransactionSet ts, Header h,
 
     if (script) {
 	FD_t fd;
-	if (makeTempFile(ts->rootDir, &fn, &fd)) {
+	if (makeTempFile((!ts->chrootDone ? ts->rootDir : "/"), &fn, &fd)) {
 	    if (freePrefixes) free(prefixes);
 	    return 1;
 	}
@@ -308,7 +327,15 @@ static int runScript(const rpmTransactionSet ts, Header h,
 	(void)Fwrite(script, sizeof(script[0]), strlen(script), fd);
 	Fclose(fd);
 
-	argv[argc++] = fn + strlen(ts->rootDir);
+	{   const char * sn = fn;
+	    if (!ts->chrootDone &&
+		!(ts->rootDir[0] == '/' && ts->rootDir[1] == '\0'))
+	    {
+		sn += strlen(ts->rootDir)-1;
+	    }
+	    argv[argc++] = sn;
+	}
+
 	if (arg1 >= 0) {
 	    char *av = alloca(20);
 	    sprintf(av, "%d", arg1);
@@ -338,6 +365,7 @@ static int runScript(const rpmTransactionSet ts, Header h,
     }
     
     if (!(child = fork())) {
+	const char * rootDir;
 	int pipes[2];
 
 	pipes[0] = pipes[1] = 0;
@@ -381,14 +409,16 @@ static int runScript(const rpmTransactionSet ts, Header h,
 	    }
 	}
 
-	switch(urlIsURL(ts->rootDir)) {
+	rootDir = ts->rootDir;
+	switch(urlIsURL(rootDir)) {
 	case URL_IS_PATH:
-	    ts->rootDir += sizeof("file://") - 1;
-	    ts->rootDir = strchr(ts->rootDir, '/');
+	    rootDir += sizeof("file://") - 1;
+	    rootDir = strchr(rootDir, '/');
 	    /*@fallthrough@*/
 	case URL_IS_UNKNOWN:
-	    if (strcmp(ts->rootDir, "/"))
-		/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
+	    if (!ts->chrootDone && !(rootDir[0] == '/' && rootDir[1] == '\0')) {
+		/*@-unrecog@*/ chroot(rootDir); /*@=unrecog@*/
+	    }
 	    chdir("/");
 	    execv(argv[0], (char *const *)argv);
 	    break;
@@ -413,11 +443,10 @@ static int runScript(const rpmTransactionSet ts, Header h,
 
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	const char *n, *v, *r;
-	/* XXX FIXME: need to identify what script failed as well. */
 	headerNVR(h, &n, &v, &r);
 	rpmError(RPMERR_SCRIPT,
-		_("execution of %s-%s-%s script failed, exit status %d"),
-		n, v, r, WEXITSTATUS(status));
+	    _("execution of %s scriptlet from %s-%s-%s failed, exit status %d"),
+		sln, n, v, r, WEXITSTATUS(status));
 	return 1;
     }
 
@@ -449,8 +478,9 @@ int runInstScript(const rpmTransactionSet ts, Header h,
 	argv = (const char **) programArgv;
     }
 
-    rc = runScript(ts, h, programArgc, argv, script, arg, -1);
-    if (programArgv && programType == RPM_STRING_ARRAY_TYPE) free(programArgv);
+    rc = runScript(ts, h, tag2sln(scriptTag), programArgc, argv, script,
+		arg, -1);
+    headerFreeData(programArgv, programType);
     return rc;
 }
 
@@ -531,8 +561,8 @@ static int handleOneTrigger(const rpmTransactionSet ts, int sense,
 		arg1 += arg1correction;
 		index = triggerIndices[i];
 		if (!triggersAlreadyRun || !triggersAlreadyRun[index]) {
-		    rc = runScript(ts, triggeredH, 1, triggerProgs + index,
-			    triggerScripts[index], 
+		    rc = runScript(ts, triggeredH, "%trigger", 1,
+			    triggerProgs + index, triggerScripts[index], 
 			    arg1, arg2);
 		    if (triggersAlreadyRun) triggersAlreadyRun[index] = 1;
 		}

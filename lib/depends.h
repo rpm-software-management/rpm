@@ -134,6 +134,7 @@ struct rpmTransactionSet_s {
 /*@only@*/ struct transactionElement * order; /*!< Packages sorted by dependencies. */
     int orderCount;
     int orderAlloced;
+    int chrootDone;
 /*@only@*/ const char * rootDir;	/*!< Path to top of install tree. */
 /*@only@*/ const char * currDir;	/*!< Current working directory. */
 /*@null@*/ FD_t scriptFd;

@@ -28,6 +28,8 @@ static struct rpmlibProvides {
     { "rpmlib(ExplicitPackageProvide)",	"4.0-1",
 	(RPMSENSE_RPMLIB|RPMSENSE_EQUAL),
 	"package name-version-release not implicitly provided." },
+    { "rpmlib(HeaderLoadSortsTags)",    "4.0.1-1",      RPMSENSE_EQUAL,
+        "header tags are always sorted after being loaded." },
     { NULL,				NULL,	0 }
 };
 

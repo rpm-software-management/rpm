@@ -708,6 +708,7 @@ rpmTransactionSet rpmtransCreateSet(rpmdb rpmdb, const char * rootDir)
 
     rpmdep->rootDir = xstrdup(rootDir);
     rpmdep->currDir = NULL;
+    rpmdep->chrootDone = 0;
 
     alCreate(&rpmdep->addedPackages);
     alCreate(&rpmdep->availablePackages);

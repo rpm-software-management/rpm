@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-17 14:41-0500\n"
+"POT-Creation-Date: 2000-12-19 09:06-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -2557,89 +2557,89 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:947
+#: lib/depends.c:948
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1006
+#: lib/depends.c:1007
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1058
+#: lib/depends.c:1059
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1077
+#: lib/depends.c:1078
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1094
+#: lib/depends.c:1095
 #, fuzzy, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:1116
+#: lib/depends.c:1117
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1129
+#: lib/depends.c:1130
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1143
+#: lib/depends.c:1144
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
-#: lib/depends.c:1159
+#: lib/depends.c:1160
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1180
+#: lib/depends.c:1181
 #, fuzzy, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "die Datei »%s« gehört zu keinem Paket\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1238
+#: lib/depends.c:1239
 #, fuzzy, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
 #. conflicts exist.
-#: lib/depends.c:1305
+#: lib/depends.c:1306
 #, fuzzy, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "Paket %s wird nicht in %s aufgeführt"
 
 # FIXME
-#: lib/depends.c:1531
+#: lib/depends.c:1532
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 
 #. Record all relations.
-#: lib/depends.c:1635
+#: lib/depends.c:1636
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1685
+#: lib/depends.c:1686
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1788
+#: lib/depends.c:1789
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1819
+#: lib/depends.c:1820
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2814,7 +2814,7 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:253 lib/header.c:1035 lib/install.c:380
+#: lib/header.c:253 lib/header.c:1035 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2903,116 +2903,117 @@ msgid "(unknown type)"
 msgstr "(unbekannter Typ)"
 
 # , c-format
-#: lib/install.c:190 lib/uninstall.c:194
+#: lib/install.c:190 lib/uninstall.c:211
 #, fuzzy, c-format
 msgid "   file: %s action: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/install.c:214
+#: lib/install.c:215
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr ""
 
-#: lib/install.c:222
+#: lib/install.c:223
 #, c-format
 msgid "group %s does not exist - using root"
-msgstr ""
-
-#: lib/install.c:256
-msgid "%%instchangelog value in macro file should be a number, but isn't"
 msgstr ""
 
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:665
+#: lib/install.c:650
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr ""
 
-#: lib/install.c:666
+#: lib/install.c:651
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:715
+#: lib/install.c:700
 #, fuzzy
 msgid "installing a source package\n"
 msgstr "Paket installieren"
 
-#: lib/install.c:735
+#: lib/install.c:720
 #, fuzzy, c-format
 msgid "cannot create sourcedir %s"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/install.c:741 lib/install.c:771
+#: lib/install.c:726 lib/install.c:756
 #, fuzzy, c-format
 msgid "cannot write to %s"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/install.c:745
+#: lib/install.c:730
 #, c-format
 msgid "sources in: %s\n"
 msgstr ""
 
-#: lib/install.c:765
+#: lib/install.c:750
 #, fuzzy, c-format
 msgid "cannot create specdir %s"
 msgstr "kann Datei %s nicht öffnen: "
 
 # , c-format
-#: lib/install.c:775
+#: lib/install.c:760
 #, fuzzy, c-format
 msgid "spec file in: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"
 
-#: lib/install.c:807 lib/install.c:835
+#: lib/install.c:792 lib/install.c:820
 #, fuzzy
 msgid "source package contains no .spec file"
 msgstr "Anfrage nach Paket, das die Datei <DATEI> besitzt"
 
-#: lib/install.c:853
+#: lib/install.c:838
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:855 lib/install.c:1127 lib/uninstall.c:43
+#: lib/install.c:840 lib/install.c:1102 lib/uninstall.c:60
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "umbennen von %s nach %s fehlgeschlagen: %s"
 
-#: lib/install.c:945
+#: lib/install.c:930
 msgid "source package expected, binary found"
 msgstr ""
 
 # FIXME shared, besser: "mit anderen geteilte ..."
-#: lib/install.c:990
+#: lib/install.c:974
 #, fuzzy, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "Paket %s-%s-%s beinhaltet geteilte Dateien\n"
 
-#: lib/install.c:1050
+#: lib/install.c:1018
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:1055
+#: lib/install.c:1023
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:1087
+#: lib/install.c:1030
+#, fuzzy
+msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
+msgstr "Fehler: überspringe %s - Übertragung fehlgeschlagen - %s\n"
+
+#: lib/install.c:1062
+#, fuzzy, c-format
+msgid "%s created as %s"
+msgstr "kann Datei %s nicht öffnen: "
+
+#: lib/install.c:1098
 #, c-format
-msgid "warning: %s created as %s"
+msgid "%s saved as %s"
 msgstr ""
 
-#: lib/install.c:1123
-#, c-format
-msgid "warning: %s saved as %s"
-msgstr ""
-
-#: lib/install.c:1214
+#: lib/install.c:1189
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
-#: lib/misc.c:281 lib/misc.c:286 lib/misc.c:292
+#: lib/misc.c:336 lib/misc.c:341 lib/misc.c:347
 #, fuzzy, c-format
 msgid "error creating temporary file %s"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
@@ -3482,28 +3483,28 @@ msgstr "%s: »rpmReadSignature« fehlgeschlagen\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Keine Signatur verfügbar (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:434
+#: lib/rpmchecksig.c:433
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:435 lib/rpmchecksig.c:449
+#: lib/rpmchecksig.c:434 lib/rpmchecksig.c:448
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (FEHLENDE SCHLüSSEL)"
 
-#: lib/rpmchecksig.c:437 lib/rpmchecksig.c:451
+#: lib/rpmchecksig.c:436 lib/rpmchecksig.c:450
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:438 lib/rpmchecksig.c:452
+#: lib/rpmchecksig.c:437 lib/rpmchecksig.c:451
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:440 lib/rpmchecksig.c:454
+#: lib/rpmchecksig.c:439 lib/rpmchecksig.c:453
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:448
+#: lib/rpmchecksig.c:447
 msgid "OK"
 msgstr ""
 
@@ -4090,33 +4091,33 @@ msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/uninstall.c:57
+#: lib/uninstall.c:74
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "kann %s nicht entfernen - Verzeichnis ist nicht leer"
 
-#: lib/uninstall.c:61
+#: lib/uninstall.c:78
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "Entfernen von %s fehlgeschlagen: %s"
 
-#: lib/uninstall.c:71
+#: lib/uninstall.c:88
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr "öffnen von %s fehlgeschlagen: %s"
 
-#: lib/uninstall.c:134
+#: lib/uninstall.c:151
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr ""
 
-#: lib/uninstall.c:218
+#: lib/uninstall.c:235
 msgid "running postuninstall script (if any)\n"
 msgstr ""
 
-#: lib/uninstall.c:419
+#: lib/uninstall.c:448
 #, fuzzy, c-format
-msgid "execution of %s-%s-%s script failed, exit status %d"
+msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d"
 msgstr "Ausführung des Skripts fehlgeschlagen"
 
 #: lib/verify.c:44

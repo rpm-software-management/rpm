@@ -226,17 +226,72 @@ int dosetenv(const char *name, const char *value, int overwrite)
     return putenv(a);
 }
 
+static int rpmMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
+{
+    char * d, * de;
+    int created = 0;
+    int rc;
+
+    if (path == NULL)
+	return -1;
+    for (de = d = strcpy(alloca(strlen(path)+2), path); de && *de; de++) {
+	struct stat st;
+	char savec;
+
+	while (*de != '/') de++;
+	savec = de[1];
+	de[1] = '\0';
+
+	rc = stat(d, &st);
+	if (rc) {
+	    switch(errno) {
+	    default:
+		return errno;
+		/*@notreached@*/ break;
+	    case ENOENT:
+		break;
+	    }
+	    rc = mkdir(d, mode);
+	    if (rc)
+		return errno;
+	    created = 1;
+	    if (!(uid == (uid_t) -1 && gid == (gid_t) -1)) {
+		rc = chown(d, uid, gid);
+		if (rc)
+		    return errno;
+	    }
+	} else if (!S_ISDIR(st.st_mode)) {
+	    return ENOTDIR;
+	}
+	de[1] = savec;
+    }
+    rc = 0;
+    if (created)
+	rpmMessage(RPMMESS_WARNING, "created %%_tmppath directory %s\n", path);
+    return rc;
+}
+
 int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 {
+    const char * tpmacro = "%{?_tmppath:%{_tmppath}}%{!?_tmppath:/var/tmp}";
     const char * tempfn = NULL;
     const char * tfn = NULL;
+    static int _initialized = 0;
     int temput;
     FD_t fd = NULL;
     int ran;
 
     if (!prefix) prefix = "";
 
-    /* XXX should probably use mktemp here */
+    /* Create the temp directory if it doesn't already exist. */
+    if (!_initialized) {
+	_initialized = 1;
+	tempfn = rpmGenPath(prefix, tpmacro, NULL);
+	if (rpmMkpath(tempfn, 0755, (uid_t) -1, (gid_t) -1))
+	    goto errxit;
+    }
+
+    /* XXX should probably use mkstemp here */
     srand(time(NULL));
     ran = rand() % 100000;
 
@@ -247,11 +302,11 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 #ifndef	NOTYET
 	sprintf(tfnbuf, "rpm-tmp.%d", ran++);
 	if (tempfn)	free((void *)tempfn);
-	tempfn = rpmGenPath(prefix, "%{_tmppath}/", tfnbuf);
+	tempfn = rpmGenPath(prefix, tpmacro, tfnbuf);
 #else
 	strcpy(tfnbuf, "rpm-tmp.XXXXXX");
 	if (tempfn)	free((void *)tempfn);
-	tempfn = rpmGenPath(prefix, "%{_tmppath}/", mktemp(tfnbuf));
+	tempfn = rpmGenPath(prefix, tpmacro, mktemp(tfnbuf));
 #endif
 
 	temput = urlPath(tempfn, &tfn);

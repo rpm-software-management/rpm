@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.1\n"
-"POT-Creation-Date: 2000-12-17 14:41-0500\n"
+"POT-Creation-Date: 2000-12-19 09:06-0500\n"
 "PO-Revision-Date: 2000-08-08 01:20+0300\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -2367,88 +2367,88 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr "  %s    A %s\tB %s\n"
 
-#: lib/depends.c:947
+#: lib/depends.c:948
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr "%s: %-45s YES (added files)\n"
 
-#: lib/depends.c:1006
+#: lib/depends.c:1007
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr "%s: %-45s YES (added provide)\n"
 
-#: lib/depends.c:1058
+#: lib/depends.c:1059
 #, c-format
 msgid "%s: %-45s %-3s (cached)\n"
 msgstr "%s: %-45s %-3s (cached)\n"
 
-#: lib/depends.c:1077
+#: lib/depends.c:1078
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr "%s: %-45s YES (rpmrc provides)\n"
 
-#: lib/depends.c:1094
+#: lib/depends.c:1095
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr "%s: %-45s YES (rpmlib provides)\n"
 
-#: lib/depends.c:1116
+#: lib/depends.c:1117
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr "%s: %-45s YES (db files)\n"
 
-#: lib/depends.c:1129
+#: lib/depends.c:1130
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr "%s: %-45s YES (db provides)\n"
 
-#: lib/depends.c:1143
+#: lib/depends.c:1144
 #, fuzzy, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr "%s: %-45s YES (db files)\n"
 
-#: lib/depends.c:1159
+#: lib/depends.c:1160
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr "%s: %-45s NO\n"
 
-#: lib/depends.c:1180
+#: lib/depends.c:1181
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr "%s: (%s, %s) добавлено в кеш зависимостей\n"
 
 #. requirements are not satisfied.
-#: lib/depends.c:1238
+#: lib/depends.c:1239
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr "требования пакета %s-%s-%s не удовлетворены: %s\n"
 
 #. conflicts exist.
-#: lib/depends.c:1305
+#: lib/depends.c:1306
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr "пакет %s конфликтует с: %s\n"
 
-#: lib/depends.c:1531
+#: lib/depends.c:1532
 #, fuzzy, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr "удаляется \"%s\" из индекса %s.\n"
 
 #. Record all relations.
-#: lib/depends.c:1635
+#: lib/depends.c:1636
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1685
+#: lib/depends.c:1686
 msgid "========== tsorting packages\n"
 msgstr ""
 
-#: lib/depends.c:1788
+#: lib/depends.c:1789
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1819
+#: lib/depends.c:1820
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
@@ -2626,7 +2626,7 @@ msgstr "файл %s - на неизвестном устройстве"
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr "grabData() RPM_STRING_TYPE count must be 1.\n"
 
-#: lib/header.c:253 lib/header.c:1035 lib/install.c:380
+#: lib/header.c:253 lib/header.c:1035 lib/install.c:365
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Тип данных %d не поддерживается\n"
@@ -2711,112 +2711,113 @@ msgstr "в конце выражения ожидался \"|\""
 msgid "(unknown type)"
 msgstr "(неизвестный тип)"
 
-#: lib/install.c:190 lib/uninstall.c:194
+#: lib/install.c:190 lib/uninstall.c:211
 #, c-format
 msgid "   file: %s action: %s\n"
 msgstr "файл : %s действие: %s\n"
 
-#: lib/install.c:214
+#: lib/install.c:215
 #, c-format
 msgid "user %s does not exist - using root"
 msgstr "пользователь %s не существует, используется root"
 
-#: lib/install.c:222
+#: lib/install.c:223
 #, c-format
 msgid "group %s does not exist - using root"
 msgstr "группа %s не существует, используется root"
 
-#: lib/install.c:256
-msgid "%%instchangelog value in macro file should be a number, but isn't"
-msgstr "значение %%instchangelog в макрофайле должно быть числом"
-
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:665
+#: lib/install.c:650
 #, c-format
 msgid "unpacking of archive failed%s%s: %s"
 msgstr "распаковка архива не удалась%s%s: %s"
 
-#: lib/install.c:666
+#: lib/install.c:651
 msgid " on file "
 msgstr " на файле "
 
-#: lib/install.c:715
+#: lib/install.c:700
 msgid "installing a source package\n"
 msgstr "устанавливается исходный пакет\n"
 
-#: lib/install.c:735
+#: lib/install.c:720
 #, c-format
 msgid "cannot create sourcedir %s"
 msgstr "невозможно создать sourcedir %s"
 
-#: lib/install.c:741 lib/install.c:771
+#: lib/install.c:726 lib/install.c:756
 #, c-format
 msgid "cannot write to %s"
 msgstr "невозможно писать в %s"
 
-#: lib/install.c:745
+#: lib/install.c:730
 #, c-format
 msgid "sources in: %s\n"
 msgstr "исходники в: %s\n"
 
-#: lib/install.c:765
+#: lib/install.c:750
 #, c-format
 msgid "cannot create specdir %s"
 msgstr "невозможно создать specdir %s"
 
-#: lib/install.c:775
+#: lib/install.c:760
 #, c-format
 msgid "spec file in: %s\n"
 msgstr "файл spec в: %s\n"
 
-#: lib/install.c:807 lib/install.c:835
+#: lib/install.c:792 lib/install.c:820
 msgid "source package contains no .spec file"
 msgstr "исходный пакет не содержит файла .spec"
 
-#: lib/install.c:853
+#: lib/install.c:838
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr "переименовываю %s в %s\n"
 
-#: lib/install.c:855 lib/install.c:1127 lib/uninstall.c:43
+#: lib/install.c:840 lib/install.c:1102 lib/uninstall.c:60
 #, c-format
 msgid "rename of %s to %s failed: %s"
 msgstr "ошибка переименования %s в %s: %s"
 
-#: lib/install.c:945
+#: lib/install.c:930
 msgid "source package expected, binary found"
 msgstr "обнаружен двоичный пакет вместо ожидаемого исходного"
 
-#: lib/install.c:990
+#: lib/install.c:974
 #, c-format
 msgid "package: %s-%s-%s files test = %d\n"
 msgstr "пакет: %s-%s-%s файлов; test = %d\n"
 
-#: lib/install.c:1050
+#: lib/install.c:1018
 msgid "stopping install as we're running --test\n"
 msgstr "установка прекращается, т.к. мы исполняем --test\n"
 
-#: lib/install.c:1055
+#: lib/install.c:1023
 msgid "running preinstall script (if any)\n"
 msgstr "исполняется скрипт preinstall (если есть)\n"
 
-#: lib/install.c:1087
-#, c-format
-msgid "warning: %s created as %s"
+#: lib/install.c:1030
+#, fuzzy
+msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
+msgstr "%s пропускается - ошибка передачи - %s\n"
+
+#: lib/install.c:1062
+#, fuzzy, c-format
+msgid "%s created as %s"
 msgstr "внимание: %s создан как %s"
 
-#: lib/install.c:1123
-#, c-format
-msgid "warning: %s saved as %s"
+#: lib/install.c:1098
+#, fuzzy, c-format
+msgid "%s saved as %s"
 msgstr "внимание: %s сохранен как %s"
 
-#: lib/install.c:1214
+#: lib/install.c:1189
 msgid "running postinstall scripts (if any)\n"
 msgstr "выполняется скрипт postinstall (если есть)\n"
 
-#: lib/misc.c:281 lib/misc.c:286 lib/misc.c:292
+#: lib/misc.c:336 lib/misc.c:341 lib/misc.c:347
 #, c-format
 msgid "error creating temporary file %s"
 msgstr "ошибка создания временного файла %s"
@@ -3244,27 +3245,27 @@ msgstr "%s: ошибка rpmWriteSignature: %s\n"
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Подписи нет (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:434
+#: lib/rpmchecksig.c:433
 msgid "NOT OK"
 msgstr "НЕ OК"
 
-#: lib/rpmchecksig.c:435 lib/rpmchecksig.c:449
+#: lib/rpmchecksig.c:434 lib/rpmchecksig.c:448
 msgid " (MISSING KEYS:"
 msgstr " (ОТСУТСТВУЮТ КЛЮЧИ:"
 
-#: lib/rpmchecksig.c:437 lib/rpmchecksig.c:451
+#: lib/rpmchecksig.c:436 lib/rpmchecksig.c:450
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:438 lib/rpmchecksig.c:452
+#: lib/rpmchecksig.c:437 lib/rpmchecksig.c:451
 msgid " (UNTRUSTED KEYS:"
 msgstr " (НЕТ ДОВЕРИЯ К КЛЮЧАМ:"
 
-#: lib/rpmchecksig.c:440 lib/rpmchecksig.c:454
+#: lib/rpmchecksig.c:439 lib/rpmchecksig.c:453
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:448
+#: lib/rpmchecksig.c:447
 msgid "OK"
 msgstr "OК"
 
@@ -3858,33 +3859,33 @@ msgstr "перемещается каталог %s в %s\n"
 msgid "%s skipped due to missingok flag\n"
 msgstr "%s пропущен из-за флага missingok\n"
 
-#: lib/uninstall.c:57
+#: lib/uninstall.c:74
 #, c-format
 msgid "cannot remove %s - directory not empty"
 msgstr "невозможно удалить %s - каталог не пуст"
 
-#: lib/uninstall.c:61
+#: lib/uninstall.c:78
 #, c-format
 msgid "rmdir of %s failed: %s"
 msgstr "ошибка удаления каталога %s: %s"
 
-#: lib/uninstall.c:71
+#: lib/uninstall.c:88
 #, c-format
 msgid "removal of %s failed: %s"
 msgstr "ошибка удаления %s: %s"
 
-#: lib/uninstall.c:134
+#: lib/uninstall.c:151
 #, c-format
 msgid "will remove files test = %d\n"
 msgstr "файлы будут удалены; test = %d\n"
 
-#: lib/uninstall.c:218
+#: lib/uninstall.c:235
 msgid "running postuninstall script (if any)\n"
 msgstr "выполняется скрипт postuninstall (если есть)\n"
 
-#: lib/uninstall.c:419
-#, c-format
-msgid "execution of %s-%s-%s script failed, exit status %d"
+#: lib/uninstall.c:448
+#, fuzzy, c-format
+msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d"
 msgstr "ошибка выполнения скрипта %s-%s-%s, код возврата %d"
 
 #: lib/verify.c:44
@@ -4112,6 +4113,9 @@ msgstr "невозможно открыть %s: %s\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
+
+#~ msgid "%%instchangelog value in macro file should be a number, but isn't"
+#~ msgstr "значение %%instchangelog в макрофайле должно быть числом"
 
 #~ msgid "   --rcfile <file>        "
 #~ msgstr "      --rcfile <файл>     "

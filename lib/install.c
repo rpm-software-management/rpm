@@ -211,16 +211,16 @@ static void setFileOwners(Header h, struct fileInfo * files, int fileCount)
 
     for (i = 0; i < fileCount; i++) {
 	if (unameToUid(fileOwners[i], &files[i].uid)) {
-	    rpmError(RPMERR_NOUSER, _("user %s does not exist - using root"),
-			fileOwners[i]);
+	    rpmMessage(RPMMESS_WARNING,
+		_("user %s does not exist - using root"), fileOwners[i]);
 	    files[i].uid = 0;
 	    /* turn off the suid bit */
 	    files[i].mode &= ~S_ISUID;
 	}
 
 	if (gnameToGid(fileGroups[i], &files[i].gid)) {
-	    rpmError(RPMERR_NOGROUP, _("group %s does not exist - using root"),
-			fileGroups[i]);
+	    rpmMessage(RPMMESS_WARNING,
+		_("group %s does not exist - using root"), fileGroups[i]);
 	    files[i].gid = 0;
 	    /* turn off the sgid bit */
 	    files[i].mode &= ~S_ISGID;
@@ -241,25 +241,10 @@ static void trimChangelog(Header h)
 {
     int * times;
     char ** names, ** texts;
-    long numToKeep;
+    long numToKeep = rpmExpandNumeric(
+		"%{?_instchangelog:%{_instchagelog}}%{!?_instchangelog:5}");
     char * end;
     int count;
-
-    {	char *buf = rpmExpand("%{_instchangelog}", NULL);
-	if (!(buf && *buf != '%')) {
-	    free((void *)buf);
-	    return;
-	}
-	numToKeep = strtol(buf, &end, 10);
-
-	if (!(end && *end == '\0')) {
-	    rpmError(RPMERR_RPMRC, _("%%instchangelog value in macro file "
-		 "should be a number, but isn't"));
-	    free((void *)buf);
-	    return;
-	}
-	free((void *)buf);
-    }
 
     if (numToKeep < 0) return;
 
@@ -979,7 +964,6 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
     int scriptArg;
     int stripSize = 1;		/* strip at least first / for cpio */
     struct fileMemory *fileMem = NULL;
-    char * currDir = NULL;
 
     /* XXX this looks broke, as libraries may need /sbin/ldconfig for example */
     if (transFlags & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
@@ -1007,22 +991,6 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	    break;
 	}
 	rpmdbFreeIterator(mi);
-    }
-
-    if (ts->rootDir) {
-	/* this loads all of the name services libraries, in case we
-	   don't have access to them in the chroot() */
-	(void)getpwnam("root");
-	endpwent();
-
-	{   const char *s = currentDirectory();
-	    currDir = alloca(strlen(s) + 1);
-	    strcpy(currDir, s);
-	    free((void *)s);
-	}
-
-	chdir("/");
-	/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
     }
 
     if (!(transFlags & RPMTRANS_FLAG_JUSTDB) && headerIsEntry(h, RPMTAG_BASENAMES)) {
@@ -1054,17 +1022,24 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 
     rpmMessage(RPMMESS_DEBUG, _("running preinstall script (if any)\n"));
 
-    /* XXX Save chroot around runInstScript() call. */
-    {	const char * rootDir = ts->rootDir;
-	ts->rootDir = "/";
-	rc = runInstScript(ts, h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg,
+    rc = runInstScript(ts, h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg,
 		      transFlags & RPMTRANS_FLAG_NOSCRIPTS);
-	ts->rootDir = rootDir;
-    }
 
     if (rc) {
 	rc = 2;
+	rpmError(RPMERR_SCRIPT, _("skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"), name, version, release, rc);
 	goto exit;
+    }
+
+    if (ts->rootDir) {
+	/* this loads all of the name services libraries, in case we
+	   don't have access to them in the chroot() */
+	(void)getpwnam("root");
+	endpwent();
+
+	chdir("/");
+	/*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
+	ts->chrootDone = 1;
     }
 
     if (files) {
@@ -1084,7 +1059,7 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	      case FA_ALTNAME:
 		newpath = alloca(strlen(files[i].relativePath) + 20);
 		(void)stpcpy(stpcpy(newpath, files[i].relativePath), ".rpmnew");
-		rpmError(RPMMESS_ALTNAME, _("warning: %s created as %s"),
+		rpmMessage(RPMMESS_WARNING, _("%s created as %s"),
 			files[i].relativePath, newpath);
 		files[i].relativePath = newpath;
 		break;
@@ -1120,7 +1095,7 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 	    if (ext && access(files[i].relativePath, F_OK) == 0) {
 		newpath = alloca(strlen(files[i].relativePath) + 20);
 		(void)stpcpy(stpcpy(newpath, files[i].relativePath), ext);
-		rpmError(RPMMESS_BACKUP, _("warning: %s saved as %s"),
+		rpmMessage(RPMMESS_WARNING, _("%s saved as %s"),
 			files[i].relativePath, newpath);
 
 		if (rename(files[i].relativePath, newpath)) {
@@ -1178,8 +1153,8 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
 
     if (ts->rootDir) {
 	/*@-unrecog@*/ chroot("."); /*@=unrecog@*/
-	chdir(currDir);
-	currDir = NULL;
+	ts->chrootDone = 0;
+	chdir(ts->currDir);
     }
 
 #ifdef	DYING
@@ -1242,9 +1217,10 @@ int installBinaryPackage(const rpmTransactionSet ts, FD_t fd, Header h,
     rc = 0;
 
 exit:
-    if (ts->rootDir && currDir) {
+    if (ts->chrootDone) {
 	/*@-unrecog@*/ chroot("."); /*@=unrecog@*/
-	chdir(currDir);
+	chdir(ts->currDir);
+	ts->chrootDone = 0;
     }
     if (fileMem)
 	freeFileMemory(fileMem);

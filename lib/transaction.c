@@ -1318,6 +1318,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     if (ts->currDir)
 	free((void *)ts->currDir);
     ts->currDir = currentDirectory();
+    ts->chrootDone = 0;
 
     /* Get available space on mounted file systems. */
     if (!(ts->ignoreSet & RPMPROB_FILTER_DISKSPACE) &&
@@ -1564,6 +1565,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 
     chdir("/");
     /*@-unrecog@*/ chroot(ts->rootDir); /*@=unrecog@*/
+    ts->chrootDone = 1;
 
     ht = htCreate(totalFileCount * 2, 0, 0, fpHashFunction, fpEqual);
     fpc = fpCacheCreate(totalFileCount);
@@ -1711,6 +1713,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	NULL, ts->notifyData));
 
     chroot(".");
+    ts->chrootDone = 0;
     chdir(ts->currDir);
 
     /* ===============================================

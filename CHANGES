@@ -67,6 +67,11 @@
 		stdout.
 	- fix: segfault on build path, ignore deleted drips.
 	- gendiff: generate ChangeLog patches more intelligently (#22356).
+	- identify install scriptlet failures with the name of the scriptlet.
+	- handle install chroot's identically throughout the install process.
+	- add rpmlib(HeaderLoadSortsTags) for tracking header regions
+		"just in case".
+	- create _tmppath on the fly if not present.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.
