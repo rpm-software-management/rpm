@@ -10,9 +10,10 @@ build, install, query, verify, update, and uninstall individual
 software packages.  A \fIpackage\fP consists of an archive of files,
 and package information, including name, version, and description.
 
-There are six basic modes of operation, and each takes a different
+There are seven basic modes of operation, and each takes a different
 set of options.  They are \fIInstall\fP, \fIQuery\fP,
-\fIVerify\fP, \fISignature check\fP, \fIUninstall\fP, \fIBuild\fP.
+\fIVerify\fP, \fISignature check\fP, \fIUninstall\fP, \fIBuild\fP,
+and \fIRebuild Database\fP.
 
 Install mode:
 .br
@@ -336,6 +337,14 @@ When building packages you then add \-\-sign to the command line.
 You will be prompted for your pass phrase, and your package will
 be built and signed.
 
+.SH REBUILD DATABASE OPTIONS
+
+The general form of an rpm rebuild database command is
+.PP
+	\fBrpm \-\-rebuilddb\fP
+.PP
+
+The only option this mode supports is \fB-\-root\fP.
 
 .SH FILES
 .nf
