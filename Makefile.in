@@ -26,7 +26,7 @@ INCDIR=$(prefix)/include/rpm
 SUBDIRS = lib build
 OBJS = query.o install.o 
 PROGS = rpm rpmlead rpmheader rpmarchive rpmconvert
-LOADLIBES = -lbuild -lrpm -ldb -lgz $(LIBEFENCE)
+LOADLIBES = -lbuild -lrpm -ldb /usr/lib/libgz.a $(LIBEFENCE)
 
 ifeq (.depend,$(wildcard .depend))
 TARGET=everything
@@ -54,7 +54,10 @@ make-subdirs:
 $(PROGS): $(OBJS)
 
 install:
+	install -m 755 -o 0 -g 0 -d $(BINDIR)
+	install -m 755 -o 0 -g 0 -d $(MANDIR)
 	install -s -m 755 -o 0 -g 0 rpm $(BINDIR)
+	install -s -m 755 -o 0 -g 0 rpmconvert $(BINDIR)
 	install -m 644 -o 0 -g 0 rpm.8 $(MANDIR)
 	(cd lib; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install
 
