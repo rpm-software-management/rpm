@@ -51,8 +51,10 @@ faFile faOpen(char * path, int flags, int perms) {
 	    return NULL;
 	}
 	fas.firstFree = 0;
+	fas.fileSize = sizeof(newHdr);
     }
     else {
+	lseek(fas.fd, 0, SEEK_SET);
 	if (read(fas.fd, &newHdr, sizeof(newHdr)) != sizeof(newHdr)) {
 	    close(fas.fd);
 	    return NULL;
@@ -62,6 +64,13 @@ faFile faOpen(char * path, int flags, int perms) {
 	    return NULL;
 	}
 	fas.firstFree = newHdr.firstFree;
+
+	if (lseek(fas.fd, 0, SEEK_END) < 0) {
+	    close(fas.fd);
+	    return NULL;
+	}
+	
+	fas.fileSize = lseek(fas.fd, 0, SEEK_CUR);
     }
 
     fa = malloc(sizeof(*fa));
@@ -170,8 +179,7 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	char * space;
 
 	/* make a new block */
-	if (lseek(fa->fd, 0, SEEK_END) < 0) return 0;
-	newBlock = lseek(fa->fd, 0, SEEK_CUR);
+	newBlock = fa->fileSize;
 
 	space = calloc(1, size);
 	if (!space) return 0;
@@ -189,6 +197,8 @@ unsigned int faAlloc(faFile fa, unsigned int size) { /* returns 0 on failure */
 	    return 0;
 	}
 	free(space);
+
+	fa->fileSize += sizeof(block) + size;
     }
     
     return newBlock + sizeof(block); 
@@ -199,4 +209,40 @@ void faFree(faFile fa, unsigned int offset);
 void faClose(faFile fa) {
     close(fa->fd);
     free(fa);
+}
+
+unsigned int faFirstOffset(faFile fa) {
+    return faNextOffset(fa, 0);
+}
+
+unsigned int faNextOffset(faFile fa, unsigned int lastOffset) {
+    struct faBlock block;
+    int offset;
+    int useBlock;
+
+    if (lastOffset) {
+	offset = lastOffset - sizeof(block);
+	useBlock = 0;
+    } else {
+	offset = sizeof(struct faFileHeader);
+	useBlock = 1;
+    }
+
+    block.isFree = 1;
+    while (offset < fa->fileSize && block.isFree) {
+	lseek(fa->fd, offset, SEEK_SET);
+	if (read(fa->fd, &block, sizeof(block)) != sizeof(block)) {
+	    return 0;
+	}
+
+	if (useBlock && !block.isFree) break;
+	useBlock = 1;
+
+	offset += sizeof(block) + block.size;
+    }
+
+    if (offset < fa->fileSize)
+	return (offset + sizeof(block));
+    else
+	return 0;
 }

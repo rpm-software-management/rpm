@@ -9,12 +9,19 @@ typedef struct faFile_s {
     int fd;
     int readOnly;
     unsigned int firstFree;
+    unsigned long fileSize;
 } * faFile;
+
+struct FaPlace_s;
+typedef struct FaPlace * faPlace;
 
 /* flags here is the same as for open(2) - NULL returned on error */
 faFile faOpen(char * path, int flags, int perms);
 unsigned int faAlloc(faFile fa, unsigned int size); /* returns 0 on failure */
 void faFree(faFile fa, unsigned int offset);
 void faClose(faFile fa);
+
+unsigned int faFirstOffset(faFile fa);
+unsigned int faNextOffset(faFile fa, unsigned int lastOffset);  /* 0 at end */
 
 #endif H_FALLOC
