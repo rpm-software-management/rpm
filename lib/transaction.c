@@ -7,10 +7,9 @@
 #include <rpmlib.h>
 #include <rpmmacro.h>	/* XXX for rpmExpand */
 
-#include "depends.h"
+#include "rollback.h"
 #include "fprint.h"
 #include "hash.h"
-#include "install.h"
 #include "md5.h"
 #include "misc.h"
 #include "rpmdb.h"
@@ -60,170 +59,6 @@ struct diskspaceInfo {
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
-
-void loadFi(Header h, TFI_t fi)
-{
-    HGE_t hge;
-    int len, i;
-    
-    /* XXX avoid gcc noise on pointer (4th arg) cast(s) */
-    hge = (fi->type == TR_ADDED)
-	? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry;
-    fi->hge = hge;
-
-    if (h && fi->h == NULL)	fi->h = headerLink(h);
-
-    if (!hge(fi->h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc)) {
-fprintf(stderr, "*** BASENAMES not found\n");
-	fi->dc = 0;
-	fi->fc = 0;
-	fi->dnl = NULL;
-	fi->bnl = NULL;
-	fi->dil = NULL;
-	fi->fmodes = NULL;
-	fi->fflags = NULL;
-	fi->fsizes = NULL;
-	fi->fstates = NULL;
-	fi->fmd5s = NULL;
-	fi->flinks = NULL;
-	fi->flangs = NULL;
-	return;
-    }
-
-    hge(fi->h, RPMTAG_DIRINDEXES, NULL, (void **) &fi->dil, NULL);
-    hge(fi->h, RPMTAG_DIRNAMES, NULL, (void **) &fi->dnl, &fi->dc);
-    hge(fi->h, RPMTAG_FILEMODES, NULL, (void **) &fi->fmodes, NULL);
-    hge(fi->h, RPMTAG_FILEFLAGS, NULL, (void **) &fi->fflags, NULL);
-    hge(fi->h, RPMTAG_FILESIZES, NULL, (void **) &fi->fsizes, NULL);
-    hge(fi->h, RPMTAG_FILESTATES, NULL, (void **) &fi->fstates, NULL);
-
-    /* actions is initialized earlier for added packages */
-    if (fi->actions == NULL)
-	    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-
-    switch (fi->type) {
-    case TR_ADDED:
-	hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
-	hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
-	hge(fi->h, RPMTAG_FILELANGS, NULL, (void **) &fi->flangs, NULL);
-
-	/* 0 makes for noops */
-	fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
-
-	break;
-    case TR_REMOVED:
-	hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
-	hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
-	fi->fsizes = memcpy(xmalloc(fi->fc * sizeof(*fi->fsizes)),
-				fi->fsizes, fi->fc * sizeof(*fi->fsizes));
-	fi->fflags = memcpy(xmalloc(fi->fc * sizeof(*fi->fflags)),
-				fi->fflags, fi->fc * sizeof(*fi->fflags));
-	fi->fmodes = memcpy(xmalloc(fi->fc * sizeof(*fi->fmodes)),
-				fi->fmodes, fi->fc * sizeof(*fi->fmodes));
-	/* XXX there's a tedious segfault here for some version(s) of rpm */
-	if (fi->fstates)
-	    fi->fstates = memcpy(xmalloc(fi->fc * sizeof(*fi->fstates)),
-				fi->fstates, fi->fc * sizeof(*fi->fstates));
-	else
-	    fi->fstates = xcalloc(1, fi->fc * sizeof(*fi->fstates));
-	fi->dil = memcpy(xmalloc(fi->fc * sizeof(*fi->dil)),
-				fi->dil, fi->fc * sizeof(*fi->dil));
-	headerFree(fi->h);
-	fi->h = NULL;
-	break;
-    }
-
-    fi->dnlmax = -1;
-    for (i = 0; i < fi->dc; i++) {
-	if ((len = strlen(fi->dnl[i])) > fi->dnlmax)
-	    fi->dnlmax = len;
-    }
-
-    fi->bnlmax = -1;
-    for (i = 0; i < fi->fc; i++) {
-	if ((len = strlen(fi->bnl[i])) > fi->bnlmax)
-	    fi->bnlmax = len;
-    }
-
-    return;
-}
-
-void freeFi(TFI_t fi)
-{
-    if (fi->h) {
-	headerFree(fi->h); fi->h = NULL;
-    }
-    if (fi->actions) {
-	free(fi->actions); fi->actions = NULL;
-    }
-    if (fi->replacedSizes) {
-	free(fi->replacedSizes); fi->replacedSizes = NULL;
-    }
-    if (fi->replaced) {
-	free(fi->replaced); fi->replaced = NULL;
-    }
-    if (fi->bnl) {
-	free(fi->bnl); fi->bnl = NULL;
-    }
-    if (fi->dnl) {
-	free(fi->dnl); fi->dnl = NULL;
-    }
-    if (fi->obnl) {
-	free(fi->obnl); fi->obnl = NULL;
-    }
-    if (fi->odnl) {
-	free(fi->odnl); fi->odnl = NULL;
-    }
-    if (fi->flinks) {
-	free(fi->flinks); fi->flinks = NULL;
-    }
-    if (fi->fmd5s) {
-	free(fi->fmd5s); fi->fmd5s = NULL;
-    }
-    if (fi->fuser) {
-	free(fi->fuser); fi->fuser = NULL;
-    }
-    if (fi->fgroup) {
-	free(fi->fgroup); fi->fgroup = NULL;
-    }
-    if (fi->flangs) {
-	free(fi->flangs); fi->flangs = NULL;
-    }
-    if (fi->apath) {
-	free(fi->apath); fi->apath = NULL;
-    }
-    if (fi->fuids) {
-	free(fi->fuids); fi->fuids = NULL;
-    }
-    if (fi->fgids) {
-	free(fi->fgids); fi->fgids = NULL;
-    }
-    if (fi->fmapflags) {
-	free(fi->fmapflags); fi->fmapflags = NULL;
-    }
-
-    switch (fi->type) {
-    case TR_ADDED:
-	    break;
-    case TR_REMOVED:
-	if (fi->fsizes) {
-	    free((void *)fi->fsizes); fi->fsizes = NULL;
-	}
-	if (fi->fflags) {
-	    free((void *)fi->fflags); fi->fflags = NULL;
-	}
-	if (fi->fmodes) {
-	    free((void *)fi->fmodes); fi->fmodes = NULL;
-	}
-	if (fi->fstates) {
-	    free((void *)fi->fstates); fi->fstates = NULL;
-	}
-	if (fi->dil) {
-	    free((void *)fi->dil); fi->dil = NULL;
-	}
-	break;
-    }
-}
 
 static void freeFl(rpmTransactionSet ts, TFI_t flList)
 {
@@ -1453,6 +1288,11 @@ int rpmRunTransactions(	rpmTransactionSet ts,
     /* FIXME: what if the same package is included in ts twice? */
 
     ts->transFlags = transFlags;
+
+    /* XXX MULTILIB is broken, as packages can and do execute /sbin/ldconfig. */
+    if (ts->transFlags & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
+	ts->transFlags |= (RPMTRANS_FLAG_NOSCRIPTS|RPMTRANS_FLAG_NOTRIGGERS);
+
     ts->notify = notify;
     ts->notifyData = notifyData;
     ts->ignoreSet = ignoreSet;
@@ -1611,17 +1451,15 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    alp = ts->addedPackages.list + i;
 	    fi->ap = alp;
 	    fi->record = 0;
-	    if (!headerGetEntryMinMemory(alp->h, RPMTAG_BASENAMES, NULL,
-					 NULL, &fi->fc)) {
-		fi->h = headerLink(alp->h);
+	    loadFi(alp->h, fi);
+	    if (fi->fc == 0) {
 		hdrs[i] = headerLink(fi->h);
 		continue;
 	    }
 
 	    /* Allocate file actions (and initialize to FA_UNKNOWN) */
 	    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-	    hdrs[i] = relocateFileList(ts, alp, alp->h, fi->actions);
-	    loadFi(hdrs[i], fi);
+	    hdrs[i] = relocateFileList(ts, alp, fi->h, fi->actions);
 
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
 	    skipFiles(ts, fi);
@@ -1632,7 +1470,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    {	rpmdbMatchIterator mi;
 
 		mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
-			&fi->record, sizeof(fi->record));
+				&fi->record, sizeof(fi->record));
 		if ((fi->h = rpmdbNextIterator(mi)) != NULL)
 		    fi->h = headerLink(fi->h);
 		rpmdbFreeIterator(mi);
@@ -1891,6 +1729,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 		    Header h;
 
 		    headerFree(hdrs[i]);
+		    hdrs[i] = NULL;
 		    rc = rpmReadPackageHeader(alp->fd, &h, NULL, NULL, NULL);
 		    if (rc) {
 			(void)ts->notify(fi->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
@@ -1906,14 +1745,26 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	    }
 
 	    if (alp->fd) {
+		Header hsave = NULL;
 
+		if (fi->h) {
+		    hsave = headerLink(fi->h);
+		    headerFree(fi->h);
+		}
+		fi->h = headerLink(hdrs[i]);
 		if (alp->multiLib)
 		    ts->transFlags |= RPMTRANS_FLAG_MULTILIB;
 
-if (fi->ap == NULL) fi->ap = alp;
-		if (installBinaryPackage(ts, hdrs[i], fi)) {
+if (fi->ap == NULL) fi->ap = alp;	/* XXX WTFO? */
+		if (installBinaryPackage(ts, fi)) {
 		    ourrc++;
 		    lastFailed = i;
+		}
+		headerFree(fi->h);
+		fi->h = NULL;
+		if (hsave) {
+		    fi->h = headerLink(hsave);
+		    headerFree(hsave);
 		}
 	    } else {
 		ourrc++;
@@ -1929,33 +1780,14 @@ if (fi->ap == NULL) fi->ap = alp;
 	    }
 	    break;
 	case TR_REMOVED:
-	  { unsigned int offset = fi->record;
-	    Header dbh;
-
 	    /* If install failed, then we shouldn't erase. */
 	    if (ts->order[oc].u.removed.dependsOnIndex == lastFailed)
 		break;
 
-	    {	rpmdbMatchIterator mi = NULL;
-
-		mi = rpmdbInitIterator(ts->rpmdb, RPMDBI_PACKAGES,
-				&offset, sizeof(offset));
-
-		dbh = rpmdbNextIterator(mi);
-		if (dbh == NULL) {
-		    rpmdbFreeIterator(mi);
-		    ourrc++;
-		    break;
-		}
-		dbh = headerCopy(dbh);
-		rpmdbFreeIterator(mi);
-	    }
-
-	    if (removeBinaryPackage(ts, offset, dbh, NULL, fi->actions))
+	    if (removeBinaryPackage(ts, fi))
 		ourrc++;
 
-	    headerFree(dbh);
-	  } break;
+	    break;
 	}
 	(void) rpmdbSync(ts->rpmdb);
     }

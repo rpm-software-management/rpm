@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-01-24 10:48-0500\n"
+"POT-Creation-Date: 2001-01-24 16:31-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2512,7 +2512,7 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:207 lib/header.c:1015 lib/install.c:279
+#: lib/header.c:207 lib/header.c:1015 lib/install.c:271
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2602,12 +2602,12 @@ msgstr ""
 msgid "   file: %s%s action: %s\n"
 msgstr ""
 
-#: lib/install.c:130
+#: lib/install.c:122
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/install.c:138
+#: lib/install.c:130
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
@@ -2617,76 +2617,75 @@ msgstr ""
 #. * was used up - if so, we should return a different error.
 #.
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:540
+#: lib/install.c:532
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/install.c:541
+#: lib/install.c:533
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:581
+#: lib/install.c:573
 #, c-format
 msgid "cannot create %s %s\n"
 msgstr ""
 
-#: lib/install.c:587
+#: lib/install.c:579
 #, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/install.c:614
+#: lib/install.c:606
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:671 lib/install.c:704
+#: lib/install.c:663 lib/install.c:696
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/install.c:724
+#: lib/install.c:716
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:726 lib/install.c:994 lib/uninstall.c:43
+#: lib/install.c:718 lib/uninstall.c:37
 #, c-format
 msgid "rename of %s to %s failed: %s\n"
 msgstr ""
 
-#: lib/install.c:823
+#: lib/install.c:815
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/install.c:860
+#: lib/install.c:851 lib/uninstall.c:94
 #, c-format
-msgid "package: %s-%s-%s has %d files test = %d\n"
+msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/install.c:900
-msgid "stopping install as we're running --test\n"
+#: lib/install.c:900 lib/install.c:1065 lib/uninstall.c:132
+#: lib/uninstall.c:181
+#, c-format
+msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
 
-#: lib/install.c:905
-msgid "running preinstall script (if any)\n"
-msgstr ""
-
-#: lib/install.c:911
+#: lib/install.c:907
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
-#: lib/install.c:953
+#: lib/install.c:955
 #, c-format
 msgid "%s%s created as %s\n"
 msgstr ""
 
-#: lib/install.c:989
+#: lib/install.c:991
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/install.c:1063
-msgid "running postinstall scripts (if any)\n"
+#: lib/install.c:996
+#, c-format
+msgid "%s rename of %s to %s failed: %s\n"
 msgstr ""
 
 #: lib/misc.c:328 lib/misc.c:333 lib/misc.c:339
@@ -3669,77 +3668,68 @@ msgstr ""
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/transaction.c:555
+#: lib/transaction.c:390
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:558
+#: lib/transaction.c:393
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/transaction.c:561
+#: lib/transaction.c:396
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr ""
 
-#: lib/transaction.c:635
+#: lib/transaction.c:470
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/transaction.c:684
+#: lib/transaction.c:519
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/transaction.c:691
+#: lib/transaction.c:526
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:763
+#: lib/transaction.c:598
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:768
+#: lib/transaction.c:603
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:892
+#: lib/transaction.c:727
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/uninstall.c:57
+#: lib/uninstall.c:51
 #, c-format
 msgid "cannot remove %s - directory not empty\n"
 msgstr ""
 
-#: lib/uninstall.c:61
+#: lib/uninstall.c:55
 #, c-format
 msgid "rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/uninstall.c:71
+#: lib/uninstall.c:65
 #, c-format
 msgid "removal of %s failed: %s\n"
 msgstr ""
 
-#: lib/uninstall.c:134
-#, c-format
-msgid "will remove files test = %d\n"
-msgstr ""
-
-#: lib/uninstall.c:192
+#: lib/uninstall.c:164
 #, c-format
 msgid "   file: %s action: %s\n"
-msgstr ""
-
-#: lib/uninstall.c:216
-msgid "running postuninstall script (if any)\n"
 msgstr ""
 
 #: lib/verify.c:59

@@ -6,7 +6,7 @@
  *  XXX this information will move elsewhere eventually
  */
 
-#include "cpio.h"
+#include "rollback.h"
 
 /**
  */

@@ -119,59 +119,6 @@ struct transactionElement {
 } ;
 
 /**
- */
-typedef int (*HGE_t) (Header h, int_32 tag, /*@out@*/ int_32 * type,
-			/*@out@*/ void ** p, /*@out@*/int_32 * c)
-				/*@modifies *type, *p, *c @*/;
-
-/**
- */
-struct transactionFileInfo_s {
-  /* for all packages */
-    enum rpmTransactionType type;
-    enum fileActions * actions;	/*!< file disposition */
-/*@dependent@*/ struct fingerPrint_s * fps; /*!< file fingerprints */
-    HGE_t hge;
-    Header h;			/*!< Package header */
-    const uint_32 * fflags;	/*!< File flags (from header) */
-    const uint_32 * fsizes;	/*!< File sizes (from header) */
-    const char ** bnl;		/*!< Base names (from header) */
-    const char ** dnl;		/*!< Directory names (from header) */
-    int * dil;			/*!< Directory indices (from header) */
-    const char ** obnl;		/*!< Original Base names (from header) */
-    const char ** odnl;		/*!< Original Directory names (from header) */
-    int * odil;			/*!< Original Directory indices (from header) */
-    const char ** fmd5s;	/*!< file MD5 sums (from header) */
-    const char ** flinks;	/*!< file links (from header) */
-/* XXX setuid/setgid bits are turned off if fuser/fgroup doesn't map. */
-    uint_16 * fmodes;		/*!< file modes (from header) */
-    char * fstates;		/*!< file states (from header) */
-    const char ** fuser;	/*!< file owner(s) */
-    const char ** fgroup;	/*!< file group(s) */
-    const char ** flangs;	/*!< file lang(s) */
-    int fc;			/*!< No. of files. */
-    int dc;			/*!< No. of directories. */
-    int bnlmax;			/*!< Length (in bytes) of longest base name. */
-    int dnlmax;			/*!< Length (in bytes) of longest dir name. */
-    int mapflags;
-    int striplen;
-    const char ** apath;
-    uid_t uid;
-    gid_t gid;
-    uid_t * fuids;
-    gid_t * fgids;
-    int * fmapflags;
-    int magic;
-#define	TFIMAGIC	0x09697923
-  /* these are for TR_ADDED packages */
-    struct availablePackage * ap;
-    struct sharedFileInfo * replaced;
-    uint_32 * replacedSizes;
-  /* for TR_REMOVED packages */
-    unsigned int record;
-} ;
-
-/**
  * The set of packages to be installed/removed atomically.
  */
 struct rpmTransactionSet_s {
@@ -211,17 +158,6 @@ struct problemsSet {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define XFA_SKIPPING(_a)	\
-    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
-
-/**
- */
-void loadFi(Header h, struct transactionFileInfo_s * fi);
-
-/**
- */
-void freeFi(struct transactionFileInfo_s * fi);
 
 /* XXX lib/scriptlet.c */
 /**

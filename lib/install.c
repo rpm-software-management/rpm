@@ -8,7 +8,7 @@
 #include <rpmmacro.h>
 #include <rpmurl.h>
 
-#include "cpio.h"
+#include "rollback.h"
 #include "misc.h"
 #include "debug.h"
 
@@ -108,21 +108,13 @@ static int assembleFileList(TFI_t fi, Header h)
 
 /**
  * Localize user/group id's.
- * @param h		header
  * @param fi		transaction element file info
  */
-static void setFileOwners(Header h, TFI_t fi)
+static void setFileOwners(TFI_t fi)
 {
     uid_t uid;
     gid_t gid;
     int i;
-
-    if (fi->fuser == NULL)
-	headerGetEntryMinMemory(h, RPMTAG_FILEUSERNAME, NULL,
-				(const void **) &fi->fuser, NULL);
-    if (fi->fgroup == NULL)
-	headerGetEntryMinMemory(h, RPMTAG_FILEGROUPNAME, NULL,
-				(const void **) &fi->fgroup, NULL);
 
     for (i = 0; i < fi->fc; i++) {
 	if (unameToUid(fi->fuser[i], &uid)) {
@@ -841,37 +833,40 @@ int rpmInstallSourcePackage(const char * rootDir, FD_t fd,
     return rc;
 }
 
-int installBinaryPackage(const rpmTransactionSet ts, Header h, TFI_t fi)
+/**
+ * @todo Packages w/o files never get a callback, hence don't get displayed
+ * on install with -v.
+ */
+int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi)
 {
-    rpmtransFlags transFlags = ts->transFlags;
+    static char * stepName = "install";
     struct availablePackage * alp = fi->ap;
     char * fstates = alloca(sizeof(*fstates) * fi->fc);
     Header oldH = NULL;
     int otherOffset = 0;
-    int scriptArg;
     int ec = 2;		/* assume error return */
     int rc;
     int i;
 
-    /* XXX MULTILIB is broken, as packages can and do execute /sbin/ldconfig. */
-    if (transFlags & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_MULTILIB))
-	transFlags |= RPMTRANS_FLAG_NOSCRIPTS;
+    rpmMessage(RPMMESS_DEBUG, _("%s: %s-%s-%s has %d files, test = %d\n"),
+		stepName, fi->name, fi->version, fi->release,
+		fi->fc, (ts->transFlags & RPMTRANS_FLAG_TEST));
 
-    rpmMessage(RPMMESS_DEBUG, _("package: %s-%s-%s has %d files test = %d\n"),
-		alp->name, alp->version, alp->release,
-		fi->fc, (transFlags & RPMTRANS_FLAG_TEST));
-
-    if ((scriptArg = rpmdbCountPackages(ts->rpmdb, alp->name)) < 0)
+    /*
+     * When we run scripts, we pass an argument which is the number of 
+     * versions of this package that will be installed when we are finished.
+     */
+    fi->scriptArg = rpmdbCountPackages(ts->rpmdb, fi->name) + 1;
+    if (fi->scriptArg < 1)
 	goto exit;
-    scriptArg += 1;
 
     {	rpmdbMatchIterator mi;
-	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, alp->name, 0);
-	rpmdbSetIteratorVersion(mi, alp->version);
-	rpmdbSetIteratorRelease(mi, alp->release);
+	mi = rpmdbInitIterator(ts->rpmdb, RPMTAG_NAME, fi->name, 0);
+	rpmdbSetIteratorVersion(mi, fi->version);
+	rpmdbSetIteratorRelease(mi, fi->release);
 	while ((oldH = rpmdbNextIterator(mi))) {
 	    otherOffset = rpmdbGetIteratorOffset(mi);
-	    oldH = (transFlags & RPMTRANS_FLAG_MULTILIB)
+	    oldH = (ts->transFlags & RPMTRANS_FLAG_MULTILIB)
 		? headerCopy(oldH) : NULL;
 	    break;
 	}
@@ -880,7 +875,7 @@ int installBinaryPackage(const rpmTransactionSet ts, Header h, TFI_t fi)
 
     memset(fstates, RPMFILE_STATE_NORMAL, fi->fc);
 
-    if (!(transFlags & RPMTRANS_FLAG_JUSTDB) && fi->fc > 0) {
+    if (!(ts->transFlags & RPMTRANS_FLAG_JUSTDB) && fi->fc > 0) {
 	const char * p;
 
 	/*
@@ -888,28 +883,29 @@ int installBinaryPackage(const rpmTransactionSet ts, Header h, TFI_t fi)
 	 * prefix stripped to form the cpio list, while all other packages
 	 * need the leading / stripped.
 	 */
-	rc = headerGetEntry(h, RPMTAG_DEFAULTPREFIX, NULL, (void **) &p, NULL);
+	rc = headerGetEntry(fi->h, RPMTAG_DEFAULTPREFIX, NULL,
+				(void **) &p, NULL);
 	fi->striplen = (rc ? strlen(p) + 1 : 1); 
 	fi->mapflags =
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
-	if (assembleFileList(fi, h))
+	if (assembleFileList(fi, fi->h))
 	    goto exit;
     }
 
-    if (transFlags & RPMTRANS_FLAG_TEST) {
-	rpmMessage(RPMMESS_DEBUG, _("stopping install as we're running --test\n"));
+    if (ts->transFlags & RPMTRANS_FLAG_TEST) {
 	ec = 0;
 	goto exit;
     }
 
-    rpmMessage(RPMMESS_DEBUG, _("running preinstall script (if any)\n"));
+    rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
+	stepName, "pre-install");
 
-    rc = runInstScript(ts, h, RPMTAG_PREIN, RPMTAG_PREINPROG, scriptArg,
-		      transFlags & RPMTRANS_FLAG_NOSCRIPTS);
+    rc = runInstScript(ts, fi->h, RPMTAG_PREIN, RPMTAG_PREINPROG, fi->scriptArg,
+		      ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS);
     if (rc) {
 	rpmError(RPMERR_SCRIPT,
 		_("skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"),
-		alp->name, alp->version, alp->release, rc);
+		fi->name, fi->version, fi->release, rc);
 	goto exit;
     }
 
@@ -924,15 +920,21 @@ int installBinaryPackage(const rpmTransactionSet ts, Header h, TFI_t fi)
 	ts->chrootDone = 1;
     }
 
-    if (!(transFlags & RPMTRANS_FLAG_JUSTDB) && fi->fc > 0) {
+    if (!(ts->transFlags & RPMTRANS_FLAG_JUSTDB) && fi->fc > 0) {
+	if (fi->fuser == NULL)
+	    headerGetEntryMinMemory(fi->h, RPMTAG_FILEUSERNAME, NULL,
+				(const void **) &fi->fuser, NULL);
+	if (fi->fgroup == NULL)
+	    headerGetEntryMinMemory(fi->h, RPMTAG_FILEGROUPNAME, NULL,
+				(const void **) &fi->fgroup, NULL);
 	if (fi->fuids == NULL)
 	    fi->fuids = xcalloc(sizeof(*fi->fuids), fi->fc);
 	if (fi->fgids == NULL)
 	    fi->fgids = xcalloc(sizeof(*fi->fgids), fi->fc);
 
-	setFileOwners(h, fi);
+	setFileOwners(fi);
 
-    if (fi->actions) {
+      if (fi->actions) {
 	char * opath = alloca(fi->dnlmax + fi->bnlmax + 64);
 	char * npath = alloca(fi->dnlmax + fi->bnlmax + 64);
 
@@ -991,39 +993,39 @@ int installBinaryPackage(const rpmTransactionSet ts, Header h, TFI_t fi)
 	    if (!rename(opath, npath))
 		continue;
 
-	    rpmError(RPMERR_RENAME, _("rename of %s to %s failed: %s\n"),
-			opath, npath, strerror(errno));
+	    rpmError(RPMERR_RENAME, _("%s rename of %s to %s failed: %s\n"),
+			stepName, opath, npath, strerror(errno));
 	    goto exit;
 	}
-    }
+      }
 
 	{   uint_32 archiveSize, * asp;
 
-	    rc = headerGetEntry(h, RPMTAG_ARCHIVESIZE, NULL,
+	    rc = headerGetEntry(fi->h, RPMTAG_ARCHIVESIZE, NULL,
 		(void **) &asp, NULL);
 	    archiveSize = (rc ? *asp : 0);
 
 	    if (ts->notify) {
-		(void)ts->notify(h, RPMCALLBACK_INST_START, 0, 0,
+		(void)ts->notify(fi->h, RPMCALLBACK_INST_START, 0, 0,
 		    alp->key, ts->notifyData);
 	    }
 
 	    /* the file pointer for fd is pointing at the cpio archive */
 	    rc = installArchive(ts, fi, alp->fd,
 			ts->notify, ts->notifyData, alp->key,
-			h, NULL, archiveSize);
+			fi->h, NULL, archiveSize);
 	    if (rc)
 		goto exit;
 	}
 
-	headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fstates, fi->fc);
+	headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fstates, fi->fc);
 
-    } else if (fi->fc > 0 && transFlags & RPMTRANS_FLAG_JUSTDB) {
-	headerAddEntry(h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fstates, fi->fc);
+    } else if (fi->fc > 0 && ts->transFlags & RPMTRANS_FLAG_JUSTDB) {
+	headerAddEntry(fi->h, RPMTAG_FILESTATES, RPM_CHAR_TYPE, fstates, fi->fc);
     }
 
     {	int_32 installTime = time(NULL);
-	headerAddEntry(h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &installTime, 1);
+	headerAddEntry(fi->h, RPMTAG_INSTALLTIME, RPM_INT32_TYPE, &installTime, 1);
     }
 
     if (ts->rootDir) {
@@ -1041,11 +1043,11 @@ int installBinaryPackage(const rpmTransactionSet ts, Header h, TFI_t fi)
     if (otherOffset)
         rpmdbRemove(ts->rpmdb, ts->id, otherOffset);
 
-    if (transFlags & RPMTRANS_FLAG_MULTILIB) {
+    if (ts->transFlags & RPMTRANS_FLAG_MULTILIB) {
 	uint_32 multiLib, * newMultiLib, * p;
 
-	if (headerGetEntry(h, RPMTAG_MULTILIBS, NULL, (void **) &newMultiLib,
-			   NULL)
+	if (headerGetEntry(fi->h, RPMTAG_MULTILIBS, NULL,
+				(void **) &newMultiLib, NULL)
 	    && headerGetEntry(oldH, RPMTAG_MULTILIBS, NULL,
 			      (void **) &p, NULL)) {
 	    multiLib = *p;
@@ -1053,30 +1055,31 @@ int installBinaryPackage(const rpmTransactionSet ts, Header h, TFI_t fi)
 	    headerModifyEntry(oldH, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
 			      &multiLib, 1);
 	}
-	if (mergeFiles(oldH, h, fi))
+	if (mergeFiles(oldH, fi->h, fi))
 	    goto exit;
     }
 
-    if (rpmdbAdd(ts->rpmdb, ts->id, h))
+    if (rpmdbAdd(ts->rpmdb, ts->id, fi->h))
 	goto exit;
 
-    rpmMessage(RPMMESS_DEBUG, _("running postinstall scripts (if any)\n"));
+    rpmMessage(RPMMESS_DEBUG, _("%s: running %s script(s) (if any)\n"),
+	stepName, "post-install");
 
-    rc = runInstScript(ts, h, RPMTAG_POSTIN, RPMTAG_POSTINPROG, scriptArg,
-			(transFlags & RPMTRANS_FLAG_NOSCRIPTS));
+    rc = runInstScript(ts, fi->h, RPMTAG_POSTIN, RPMTAG_POSTINPROG,
+		fi->scriptArg, (ts->transFlags & RPMTRANS_FLAG_NOSCRIPTS));
     if (rc)
 	goto exit;
 
-    if (!(transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
+    if (!(ts->transFlags & RPMTRANS_FLAG_NOTRIGGERS)) {
 	/* Run triggers this package sets off */
-	if (runTriggers(ts, RPMSENSE_TRIGGERIN, h, 0))
+	if (runTriggers(ts, RPMSENSE_TRIGGERIN, fi->h, 0))
 	    goto exit;
 
 	/*
 	 * Run triggers in this package which are set off by other packages in
 	 * the database.
 	 */
-	if (runImmedTriggers(ts, RPMSENSE_TRIGGERIN, h, 0))
+	if (runImmedTriggers(ts, RPMSENSE_TRIGGERIN, fi->h, 0))
 	    goto exit;
     }
 

@@ -10,7 +10,7 @@
 #include "system.h"
 #include <rpmlib.h>
 
-#include "cpio.h"
+#include "rollback.h"
 #include "rpmerr.h"
 #include "debug.h"
 

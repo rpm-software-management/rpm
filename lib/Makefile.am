@@ -12,7 +12,7 @@ pkginc_HEADERS = \
 	header.h misc.h rpmlib.h stringbuf.h
 noinst_HEADERS = \
 	cpio.h depends.h falloc.h fprint.h hash.h install.h \
-	md5.h \
+	md5.h rollback.h \
 	rpmdb.h rpmlead.h signature.h
 
 mylibpaths =	-L$(top_builddir)/lib/.libs -L$(top_builddir)/rpmio/.libs \

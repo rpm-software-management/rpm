@@ -17,9 +17,6 @@
 
 #include <rpmio_internal.h>
 
-#include "depends.h"	/* XXX DYING @todo Ratioanlize TFI_t. */
-#include "install.h"	/* XXX DYING */
-
 /** \ingroup payload
  * @note CPIO_CHECK_ERRNO bit is set only if errno is valid.
  */

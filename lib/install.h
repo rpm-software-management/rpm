@@ -2,7 +2,6 @@
 #define H_INSTALL
 
 /** \file lib/install.h
- *
  */
 
 #include <rpmlib.h>
@@ -39,6 +38,9 @@ enum fileActions {
     FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
     FA_SKIPMULTILIB,	/*!< ... untouched. @todo state "multilib" ???. */
 };
+
+#define XFA_SKIPPING(_a)	\
+    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
 
 /**
  */
@@ -115,33 +117,19 @@ int runImmedTriggers(const rpmTransactionSet ts, int sense, Header h,
 /**
  * Install binary package (from transaction set).
  * @param ts		transaction set
- * @param h		package header
  * @param fi		transaction element file info
  * @return		0 on success, 1 on bad magic, 2 on error
  */
-int installBinaryPackage(const rpmTransactionSet ts, Header h, TFI_t fi);
+int installBinaryPackage(const rpmTransactionSet ts, TFI_t fi);
 
 /**
  * Erase binary package (from transaction set).
  * @param ts		transaction set
- * @param offset	header instance in rpm database
- * @param h		package header
- * @param pkgKey	package private data
- * @param actions	array of file dispositions
- * @return		0 on success
- */
-int removeBinaryPackage(const rpmTransactionSet ts, unsigned int offset,
-		Header h, const void * pkgKey, enum fileActions * actions);
-
-/**
- * Save/restore files from transaction element by renaming on file system.
- * @param ts		transaction set
  * @param fi		transaction element file info
- * @param dir		save or restore?
+ * @param pkgKey	package private data
  * @return		0 on success
  */
-int dirstashPackage(const rpmTransactionSet ts, const TFI_t fi,
-		rollbackDir dir);
+int removeBinaryPackage(const rpmTransactionSet ts, TFI_t fi);
 
 #ifdef __cplusplus
 }
