@@ -142,9 +142,9 @@ int rpmvercmp(const char * a, const char * b)
 	*str2 = '\0';
 
 	/* take care of the case where the two version segments are */
-	/* different types: one numeric and one alpha */
+	/* different types: one numeric, the other alpha (i.e. empty) */
 	if (one == str1) return -1;	/* arbitrary */
-	if (two == str2) return -1;
+	if (two == str2) return 1;
 
 	if (isnum) {
 	    /* this used to be done by converting the digit segments */
