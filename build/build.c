@@ -480,7 +480,7 @@ static int doPatchMacro(Spec spec, StringBuf sb, char *line)
     opt_b = NULL;
     patch_index = 0;
 
-    if (! index(" \t\n", line[6])) {
+    if (! strchr(" \t\n", line[6])) {
 	/* %patchN */
 	sprintf(buf, "%%patch -P %s", line + 6);
     } else {
@@ -502,7 +502,7 @@ static int doPatchMacro(Spec spec, StringBuf sb, char *line)
 	    }
 	} else if (!strncmp(s, "-p", 2)) {
 	    /* unfortunately, we must support -pX */
-	    if (! index(" \t\n", s[2])) {
+	    if (! strchr(" \t\n", s[2])) {
 		s = s + 2;
 	    } else {
 		s = strtok(NULL, " \t\n");
