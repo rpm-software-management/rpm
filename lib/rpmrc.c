@@ -835,7 +835,7 @@ static void defaultMachine(char ** arch, char ** os) {
            if (fdFileno(fd) > 0) {
               chptr = (char *) calloc(256,1);
               if (chptr != NULL) {
-                 int irelid = read(fd, (void *)chptr, 256);
+                 int irelid = fdRead(fd, (void *)chptr, 256);
                  fdClose(fd);
                  /* example: "112393 RELEASE 020200 Version 01 OS" */
                  if (irelid > 0) {
