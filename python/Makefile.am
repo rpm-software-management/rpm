@@ -7,7 +7,7 @@ LINT = splint
 pylibdir = ${prefix}/lib@MARK64@/python@WITH_PYTHON_VERSION@
 pyincdir = $(prefix)/include/python@WITH_PYTHON_VERSION@
 
-SUBDIRS = rpmdb # rpm
+SUBDIRS = rpmdb rpm
 
 EXTRA_DIST = system.h rpmdebug-py.c
 

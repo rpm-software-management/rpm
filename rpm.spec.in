@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.22
+Release: 0.1
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -190,8 +190,6 @@ gzip -9n apidocs/man/man*/* || :
 
 # Get rid of unpackaged files
 { cd $RPM_BUILD_ROOT
-  rm -rf .%{__includedir}/beecrypt
-  rm -f .%{__libdir}/libbeecrypt.{a,la,so.2.2.0}
   rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req}
   rm -rf .%{__mandir}/{fr,ko}
 }
@@ -223,12 +221,12 @@ exit 0
 # Establish correct rpmdb ownership.
 /bin/chown @RPMUSER@.@RPMGROUP@ /var/lib/rpm/[A-Z]*
 
-# XXX Detect (and remove) incompatible dbenv files during db-4.2.52 upgrade.
+# XXX Detect (and remove) incompatible dbenv files during db-4.3.14 upgrade.
 # XXX Removing dbenv files in %%post opens a lock race window, a tolerable
 # XXX risk compared to the support issues involved with upgrading Berkeley DB.
 [ -w /var/lib/rpm/__db.001 ] &&
 /usr/lib/rpm/rpmdb_stat -CA -h /var/lib/rpm 2>&1 |
-grep "db_stat: Program version 4.2 doesn't match environment version" 2>&1 > /dev/null &&
+grep "db_stat: Program version 4.3 doesn't match environment version" 2>&1 > /dev/null &&
 	rm -f /var/lib/rpm/__db*
                                                                                 
 %endif
@@ -300,9 +298,10 @@ exit 0
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmpopt*
 %attr(0644, @RPMUSER@, @RPMGROUP@)	%{__prefix}/lib/rpm/rpmrc
 
-%ifarch i386 i486 i586 i686 athlon
+%ifarch i386 i486 i586 i686 athlon pentium3 pentium4
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/i[3456]86*
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/athlon*
+%attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/pentium*
 %endif
 %ifarch alpha alphaev5 alphaev56 alphapca56 alphaev6 alphaev67
 %attr(-, @RPMUSER@, @RPMGROUP@)		%{__prefix}/lib/rpm/alpha*
@@ -420,7 +419,8 @@ exit 0
 %if %{with_python_subpackage}
 %files python
 %defattr(-,root,root)
-%{__libdir}/python%{with_python_version}/site-packages/rpmmodule.so
+%{__libdir}/python%{with_python_version}/site-packages/poptmodule*
+%{__libdir}/python%{with_python_version}/site-packages/rpm
 %{__libdir}/python%{with_python_version}/site-packages/rpmdb
 %endif
 
@@ -488,82 +488,30 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Tue Mar 16 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.22
-- fix: grrr, skip notes on non-i386 entirely.
-
-* Fri Mar 12 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.21
-- fix: increase file context regex parse buffer to BUFSIZ.
-- fix: handle elf64 note sections correctly.
-
-* Wed Mar 10 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.20
-- add sparcv8 and enable elf32/elf64 Zon sparc64 (#117302).
-- fix: --querybynumber looped.
-- fix: ENOTSUP filter from lsetfilecon borkage.
-
-* Tue Mar  9 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.19
-- fix: sq->reaped needs sighold(SIGCHLD)/sigrelease(SIGCHLD) (#117620).
-
-* Fri Mar  5 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.18
-- selinux: ignore ENOTSUP return from lsetfilecon.
-
-* Mon Mar  1 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.17
-- permit globs in macrofiles: directive (#117217).
-- fix: segfault generating transaction serialization lock path.
-- use /etc/security/selinux/file_contexts instead.
-
-* Wed Feb 25 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.15
-- serialize rpmtsRun() using fcntl on /var/lock/rpm/transaction.
-
-* Sun Feb 22 2004 Jeff Johnson <jbj@jbj,org> 4.3-0.14
-- add ia32e arch.
-- stable sort for policy specifications, patterns before paths.
-- set "rpm_script_t" exec type for scriptlets iff /bin/sh, else default.
-- force FD_CLOEXEC on 1st 100 inherited fdno's.
-
-* Fri Feb 20 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.13
-- fix: only first "mkdir -p" directory had context set.
-
-* Wed Feb 18 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.12
-- python: add patch to rpm-4_3 to initialize RE contexts.
-
-* Sun Feb 15 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.11
-- fix: set fcontext from pkg when file_contexts doesn't exist (#114040).
-- fix: set fcontext for "mkdir -p" directories not in packages.
-- fix: setfiles (aka rpmsx.c) dinna handle patterns correctly.
-- establish rpm_script_t before scriptlet exec.
-
-* Wed Feb 11 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.10
-- re-add --enable-posixmutexes to build.
-
-* Mon Jan 19 2004 Jeff Johnson <jbj@jbj.org> 4.3-0.9
-- python: return None for NEVRAO, [] for everything else.
-
-* Mon Jan 12 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.7
-- fix: handle files w/o contexts correctly.
-
-* Mon Jan  5 2004 Jeff Johnson <jbj@redhat.com> 4.3-0.6
-- selinux phases 1 and 2 delivered.
-
-* Tue Dec 23 2003 Jeff Johnson <jbj@redhat.com> 4.3-0.5
-- plug some rpmbuild memory leaks.
-- file security contexts added to package header.
-
-* Mon Dec 22 2003 Jeff Johnson <jbj@redhat.com> 4.3-0.4
-- test build with methods needed for selinux.
-
-* Wed Dec 17 2003 Jeff Johnson <jbj@jbj.org> 4.3-0.3
-- detect (and remove) dbenv files while upgrading to db-4.2.52.
-- fix: dangling pointer brain fart (#107835).
-- fix: ds.Single() method needs malloc'd elements (#109919).
-
-* Sun Dec  7 2003 Jeff Johnson <jbj@jbj.org> 4.3-0.2
-- only internal Berkeley db from now on.
-- revive "make dist".
-
-* Wed Mar 19 2003 Jeff Johnson <jbj@redhat.com> 4.3-0.1
-- upgrade to zlib-1.2.beta7.
-- pass structure pointer, not args, through headerSprintf call chain.
-- add ":xml" tag format modifier.
-- --queryformat '[%%{*:xml}\n]' to dump header content in XML.
-- fix: short option help missing string terminator.
-- unify signal handling in librpmio, use condvar to deliver signal.
+* Wed Oct 27 2004 Jeff Johnson <jbj@jbj.org> rpm-4.4-0.1
+- pentium3/pentium4 arch support (pluto@PLD).
+- cpuid() cleanups for PIC/non-PIC and gcc 3.4 (pluto@PLD).
+- rpmGlob() is now locale independent (wiget@PLD).
+- conditional build support/unification (jajcus,malekith,qboosh,wiget@PLD).
+- fix: readelf.c breakage on some non x86 arches (qboosh@PLD).
+- find-lang.sh: implemented --with-kde (finds KDE help files);
+- add --all-name option (finds every lang file); drop defattr()
+  from *.lang files (arekm,mkochano,pascalek,wiget@PLD).
+- add type to tag array.
+- add Disttag: syntax to spec file parser and header content.
+- define Suggests:/Enhances: and Priority: tag values.
+- prevent RPMSENSE_PREREQ from being set or tested.
+- python: add rpm.ps() object to carry problem set info.
+- python: permit rpm.ds() analogue to hdr.dsFromHeader() creator.
+- python: permit rpm.fi() analogue to hdr.fiFromHeader() creator.
+- silently add default %defattr(-,root,root) for all packages.
+- fix: don't set handler if SIG_IGN is already set (#134474).
+- disable expensive header+payload verifies in default config.
+- adjust digest/signature stats to count #pkgs and bytes.
+- obsolete Serial:, Copyright:, and RHNPlatform: syntax in spec files.
+- permit Obsoletes: /path/to/file.
+- permit Conflicts: /path/to/file.
+- free rpmrc when looping on --target arches (#127730).
+- port to internal file-4.10 libmagic rather than libfmagic.
+- fix: handle non-unique dirnames in rpmalAdd().
+- integrate rpmgi "generic iterator" with query/verify.

@@ -24,6 +24,7 @@
 	- free rpmrc when looping on --target arches (#127730).
 	- port to internal file-4.10 libmagic rather than libfmagic.
 	- fix: handle non-unique dirnames in rpmalAdd().
+	- integrate rpmgi "generic iterator" with query/verify.
 
 4.3.1 -> 4.3.2:
 	- use /etc/selinux/targeted/contexts/files/file_contexts for now.
