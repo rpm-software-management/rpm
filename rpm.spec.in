@@ -119,6 +119,11 @@ shell-like rules.
 %build
 
 %ifos linux
+%ifarch x86_64 s390 s390x 
+CFLAGS="$RPM_OPT_FLAGS -fPIC"; export CFLAGS
+%else
+CFLAGS="$RPM_OPT_FLAGS"; export CFLAGS
+%endif
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man' --with-python=%{with_python_version} --without-javaglue
 %else
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix}
@@ -160,6 +165,14 @@ done
 gzip -9n apidocs/man/man*/* || :
 %endif
 
+# XXX FIXME: hack to get libraries in the right place
+if [ ! -d $RPM_BUILD_ROOT/%{__prefix}/%{_lib} ]; then
+  mkdir -p $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
+  mv $RPM_BUILD_ROOT/usr/lib/*so*  $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
+  mv $RPM_BUILD_ROOT/usr/lib/*.a  $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
+  mv $RPM_BUILD_ROOT/usr/lib/*.la  $RPM_BUILD_ROOT/%{__prefix}/%{_lib}
+fi
+
 # Get rid of unpackaged files
 { cd $RPM_BUILD_ROOT
   rm -rf .%{__prefix}/include/beecrypt
@@ -169,17 +182,17 @@ gzip -9n apidocs/man/man*/* || :
   rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req}
   rm -rf .%{__prefix}%{__share}/man/{fr,ko}
 
- for f in elflint file ld nm readelf size strip; do
-  rm -rf .%{__prefix}/bin/$f
- done
- for f in dwarf.h elf-knowledge.h fmagic gelf.h libasm.h libdwarf.h libebl.h libelf.h nlist.h; do
-  rm -rf .%{__prefix}/include/$f
- done
- for f in libasm libdwarf libebl libelf libfmagic libld; do
-  rm -rf .%{__prefix}/lib/${f}*
- done
- rm -f .%{__prefix}/share/magic*
- rm -f .%{__prefix}/share/man/man1/file.1*
+# for f in elflint file ld nm readelf size strip; do
+#  rm -rf .%{__prefix}/bin/$f
+# done
+# for f in dwarf.h elf-knowledge.h fmagic gelf.h libasm.h libdwarf.h libebl.h libelf.h nlist.h; do
+#  rm -rf .%{__prefix}/include/$f
+# done
+# for f in libasm libdwarf libebl libelf libfmagic libld; do
+#  rm -rf .%{__prefix}/lib/${f}*
+# done
+# rm -f .%{__prefix}/share/man/man1/file.1*
+  rm -f .%{__prefix}/share/magic*
 }
 
 %clean

@@ -5,17 +5,23 @@ EXTRA_DIST = LEGAL.NOTICE MAINT Makefile.std magic2mime magic.mime \
 
 BUILT_SOURCES = $(man_MANS) magic magic.mgc magic.mime.mgc
 
+noinst_HEADERS = debug.h names.h patchlevel.h readelf.h system.h tar.h \
+		file.h
+
 pkgincdir =	@includedir@/fmagic
-pkginc_HEADERS = file.h
+#pkginc_HEADERS = file.h
 
-noinst_HEADERS = debug.h names.h patchlevel.h readelf.h system.h tar.h
 
-lib_LTLIBRARIES = libfmagic.la
+#lib_LTLIBRARIES = libfmagic.la
+noinst_LTLIBRARIES = libfmagic.la
+
 libfmagic_la_SOURCES = \
 	apprentice.c ascmagic.c fsmagic.c compress.c \
 	print.c readelf.c softmagic.c
 
-bin_PROGRAMS =	file
+#bin_PROGRAMS =	file
+noinst_PROGRAMS =	file
+
 file_SOURCES =	file.c
 file_LDFLAGS =	-all-static
 file_LDADD =	libfmagic.la
@@ -23,7 +29,8 @@ file_LDADD =	libfmagic.la
 data_DATA = magic magic.mime magic.mgc magic.mime.mgc
 
 man_MAGIC = magic.@fsect@
-man_MANS = file.1 $(man_MAGIC)
+#man_MANS = file.1 $(man_MAGIC)
+noinst_MANS = file.1 $(man_MAGIC)
 
 MAGIC	 = @datadir@/magic
 CPPFLAGS = -DMAGIC='"$(MAGIC)"'
