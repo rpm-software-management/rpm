@@ -163,7 +163,7 @@ static int writeMagic(int fd, char *name,
     struct rpmlead lead;
 
     /* There are the Major and Minor numbers */
-    lead.major = 2;
+    lead.major = 3;
     lead.minor = 0;
     lead.type = type;
     lead.archnum = getArchNum();
