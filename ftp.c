@@ -19,6 +19,10 @@
 # include <netinet/in_systm.h>
 #endif
 
+#if ! HAVE_HERRNO
+extern int h_errno;
+#endif
+
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
