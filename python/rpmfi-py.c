@@ -122,15 +122,15 @@ static PyObject *
 rpmfi_MD5(rpmfiObject * s, PyObject * args)
 	/*@*/
 {
-    const unsigned char * md5;
+    const unsigned char * MD5;
     char fmd5[33];
     char * t;
     int i;
     
     if (!PyArg_ParseTuple(args, ":MD5")) return NULL;
-    md5 = rpmfiMD5(s->fi);
+    MD5 = rpmfiMD5(s->fi);
     for (i = 0, t = fmd5; i < 16; i++, t += 2)
-	sprintf(t, "%02x", md5[i]);
+	sprintf(t, "%02x", MD5[i]);
     *t = '\0';
     return Py_BuildValue("s", xstrdup(fmd5));
 }
@@ -186,7 +186,7 @@ rpmfi_FGroup(rpmfiObject * s, PyObject * args)
 #if Py_TPFLAGS_HAVE_ITER
 static PyObject *
 rpmfi_iter(rpmfiObject * s, /*@unused@*/ PyObject * args)
-	/*@modifies s @*/
+	/*@*/
 {
     Py_INCREF(s);
     return (PyObject *)s;
@@ -195,7 +195,8 @@ rpmfi_iter(rpmfiObject * s, /*@unused@*/ PyObject * args)
 
 static PyObject *
 rpmfi_iternext(rpmfiObject * s)
-	/*@modifies s @*/
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     PyObject * result = NULL;
 
@@ -219,15 +220,17 @@ rpmfi_iternext(rpmfiObject * s)
 	int VFlags = rpmfiVFlags(s->fi);
 	const char * FUser = rpmfiFUser(s->fi);
 	const char * FGroup = rpmfiFGroup(s->fi);
-	const unsigned char * md5 = rpmfiMD5(s->fi), *s = md5;
+/*@-shadow@*/
+	const unsigned char * MD5 = rpmfiMD5(s->fi), *s = MD5;
+/*@=shadow@*/
 	char FMD5[2*16+1], *t = FMD5;
 	static const char hex[] = "0123456789abcdef";
-	int gotmd5, i;
+	int gotMD5, i;
 
-	gotmd5 = 0;
+	gotMD5 = 0;
 	if (s)
 	for (i = 0; i < 16; i++) {
-	    gotmd5 |= *s;
+	    gotMD5 |= *s;
 	    *t++ = hex[ (*s >> 4) & 0xf ];
 	    *t++ = hex[ (*s++   ) & 0xf ];
 	}
@@ -258,7 +261,7 @@ rpmfi_iternext(rpmfiObject * s)
 	    PyTuple_SET_ITEM(result, 11, Py_None);
 	} else
 	    PyTuple_SET_ITEM(result, 11, Py_BuildValue("s", FGroup));
-	if (!gotmd5) {
+	if (!gotMD5) {
 	    Py_INCREF(Py_None);
 	    PyTuple_SET_ITEM(result, 12, Py_None);
 	} else
@@ -272,7 +275,8 @@ rpmfi_iternext(rpmfiObject * s)
 
 static PyObject *
 rpmfi_Next(rpmfiObject * s, /*@unused@*/ PyObject * args)
-	/*@modifies s @*/
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies s, _Py_NoneStruct @*/
 {
     PyObject * result = NULL;
 
@@ -439,9 +443,9 @@ PyTypeObject rpmfi_Type = {
 	sizeof(rpmfiObject),		/* tp_basicsize */
 	0,				/* tp_itemsize */
 	/* methods */
-	(destructor)rpmfi_dealloc,	/* tp_dealloc */
-	(printfunc)rpmfi_print,		/* tp_print */
-	(getattrfunc)rpmfi_getattr,	/* tp_getattr */
+	(destructor) rpmfi_dealloc,	/* tp_dealloc */
+	(printfunc) rpmfi_print,	/* tp_print */
+	(getattrfunc) rpmfi_getattr,	/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
 	(cmpfunc)0,			/* tp_compare */
 	(reprfunc)0,			/* tp_repr */
@@ -461,8 +465,8 @@ PyTypeObject rpmfi_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	(getiterfunc)rpmfi_iter,	/* tp_iter */
-	(iternextfunc)rpmfi_iternext,	/* tp_iternext */
+	(getiterfunc) rpmfi_iter,	/* tp_iter */
+	(iternextfunc) rpmfi_iternext,	/* tp_iternext */
 	rpmfi_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */

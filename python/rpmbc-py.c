@@ -37,7 +37,7 @@ fprintf(stderr, "*** rpmbc_dealloc(%p)\n", s);
 static int
 rpmbc_print(rpmbcObject * s, FILE * fp, /*@unused@*/ int flags)
 	/*@globals fileSystem @*/
-	/*@modifies s, fp, fileSystem @*/
+	/*@modifies fp, fileSystem @*/
 {
 if (_bc_debug < 0)
 fprintf(stderr, "*** rpmbc_print(%p)\n", s);
@@ -66,7 +66,7 @@ fprintf(stderr, "*** rpmbc_repr(%p)\n", a);
 /** \ingroup python
  */
 static int rpmbc_init(rpmbcObject * s, PyObject *args, PyObject *kwds)
-	/*@*/
+	/*@modifies s @*/
 {
     PyObject * o = NULL;
     uint32 words = 0;
@@ -104,7 +104,9 @@ fprintf(stderr, "*** rpmbc_init(%p[%s],%p[%s],%p[%s])\n", s, lbl(s), args, lbl(a
 	mp32nsize(&s->n, words);
 	switch (words) {
 	case 2:
+/*@-shiftimplementation @*/
 	    s->n.data[0] = (l >> 32) & 0xffffffff;
+/*@=shiftimplementation @*/
 	    s->n.data[1] = (l      ) & 0xffffffff;
 	    break;
 	case 1:
@@ -118,8 +120,8 @@ fprintf(stderr, "*** rpmbc_init(%p[%s],%p[%s],%p[%s])\n", s, lbl(s), args, lbl(a
 
 /** \ingroup python
  */
-static void rpmbc_free(rpmbcObject * s)
-	/*@*/
+static void rpmbc_free(/*@only@*/ rpmbcObject * s)
+	/*@modifies s @*/
 {
 if (_bc_debug)
 fprintf(stderr, "*** rpmbc_free(%p[%s])\n", s, lbl(s));
@@ -206,8 +208,7 @@ fprintf(stderr, "*** rpmbc_Debug(%p)\n", s);
  */    
 static PyObject * 
 rpmbc_Gcd(/*@unused@*/ rpmbcObject * s, PyObject * args)
-        /*@globals _Py_NoneStruct @*/
-        /*@modifies _Py_NoneStruct @*/ 
+        /*@*/ 
 {
     PyObject * op1;
     PyObject * op2;
@@ -240,8 +241,7 @@ fprintf(stderr, "*** rpmbc_Gcd(%p)\n", s);
  */    
 static PyObject * 
 rpmbc_Sqrt(/*@unused@*/ rpmbcObject * s, PyObject * args)
-        /*@globals _Py_NoneStruct @*/
-        /*@modifies _Py_NoneStruct @*/ 
+        /*@*/ 
 {
     PyObject * op1;
     rpmbcObject * a = NULL;
@@ -495,28 +495,34 @@ static PyObject *
 rpmbc_lshift(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+    rpmbcObject * z;
     uint32 count = 0;
 
 if (_bc_debug)
-fprintf(stderr, "*** rpmbc_lshift(%p,%p)\n", a, b);
+fprintf(stderr, "*** rpmbc_lshift(%p[%s],%p[%s])\n", a, lbl(a), b, lbl(b));
 
-    mp32lshift(a->n.size, a->n.data, count);
-
-    return NULL;
+    if ((z = rpmbc_New()) != NULL) {
+	mp32ninit(&z->n, a->n.size, a->n.data);
+	mp32lshift(z->n.size, z->n.data, count);
+    }
+    return (PyObject *)z;
 }
 
 static PyObject *
 rpmbc_rshift(rpmbcObject * a, rpmbcObject * b)
 	/*@*/
 {
+    rpmbcObject * z;
     uint32 count = 0;
 
 if (_bc_debug)
-fprintf(stderr, "*** rpmbc_rshift(%p,%p)\n", a, b);
+fprintf(stderr, "*** rpmbc_rshift(%p[%s],%p[%s])\n", a, lbl(a), b, lbl(b));
 
-    mp32rshift(a->n.size, a->n.data, count);
-
-    return NULL;
+    if ((z = rpmbc_New()) != NULL) {
+	mp32ninit(&z->n, a->n.size, a->n.data);
+	mp32rshift(z->n.size, z->n.data, count);
+    }
+    return (PyObject *)z;
 }
 
 static PyObject *
@@ -548,7 +554,7 @@ fprintf(stderr, "*** rpmbc_or(%p,%p)\n", a, b);
 
 static int
 rpmbc_coerce(PyObject ** pv, PyObject ** pw)
-	/*@*/
+	/*@modifies *pv, *pw @*/
 {
     uint32 words = 0;
     long l = 0;
@@ -579,7 +585,9 @@ fprintf(stderr, "*** rpmbc_coerce(%p[%s],%p[%s])\n", pv, lbl(*pv), pw, lbl(*pw))
 	mp32nsize(&z->n, words);
 	switch (words) {
 	case 2:
+/*@-shiftimplementation @*/
 	    z->n.data[0] = (l >> 32) & 0xffffffff;
+/*@=shiftimplementation @*/
 	    z->n.data[1] = (l      ) & 0xffffffff;
 	    break;
 	case 1:
@@ -649,7 +657,7 @@ fprintf(stderr, "*** rpmbc_hex(%p)\n", a);
 
 static PyObject *
 rpmbc_inplace_add(rpmbcObject * a, rpmbcObject * b)
-	/*@*/
+	/*@modifies a @*/
 {
     uint32 carry;
 
@@ -663,7 +671,7 @@ fprintf(stderr, "*** rpmbc_inplace_add(%p,%p)\n", a, b);
 
 static PyObject *
 rpmbc_inplace_subtract(rpmbcObject * a, rpmbcObject * b)
-	/*@*/
+	/*@modifies a @*/
 {
     uint32 carry;
 
@@ -718,7 +726,7 @@ fprintf(stderr, "*** rpmbc_inplace_power(%p,%p,%p)\n", a, b, c);
 
 static PyObject *
 rpmbc_inplace_lshift(rpmbcObject * a, rpmbcObject * b)
-	/*@*/
+	/*@modifies a @*/
 {
     uint32 count = 0;
 
@@ -732,7 +740,7 @@ fprintf(stderr, "*** rpmbc_inplace_lshift(%p,%p)\n", a, b);
 
 static PyObject *
 rpmbc_inplace_rshift(rpmbcObject * a, rpmbcObject * b)
-	/*@*/
+	/*@modifies a @*/
 {
     uint32 count = 0;
 

@@ -23,7 +23,8 @@
 
 /*@access FD_t @*/
 
-extern int _rpmio_debug;
+/*@unchecked@*/
+static int _rpmfd_debug = 1;
 
 /** \ingroup python
  * \name Class: Rpmfd
@@ -36,7 +37,7 @@ rpmfd_Debug(/*@unused@*/ rpmfdObject * s, PyObject * args)
 	/*@globals _Py_NoneStruct @*/
 	/*@modifies _Py_NoneStruct @*/
 {
-    if (!PyArg_ParseTuple(args, "i", &_rpmio_debug)) return NULL;
+    if (!PyArg_ParseTuple(args, "i", &_rpmfd_debug)) return NULL;
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -73,22 +74,22 @@ static int closeCallback(FILE * f)
     node = fdhead;
     last = NULL;
     while (node) {
-        if (node->f == f)
-            break;
-        last = node;
-        node = node->next;
+	if (node->f == f)
+	    break;
+	last = node;
+	node = node->next;
     }
     if (node) {
-        if (last)
-            last->next = node->next;
-        else
-            fdhead = node->next;
+	if (last)
+	    last->next = node->next;
+	else
+	    fdhead = node->next;
 	node->note = _free (node->note);
-        node->fd = fdLink(node->fd, "closeCallback");
-        Fclose (node->fd);
-        while (node->fd)
-            node->fd = fdFree(node->fd, "closeCallback");
-        node = _free (node);
+	node->fd = fdLink(node->fd, "closeCallback");
+	(void) Fclose (node->fd);
+	while (node->fd)
+	    node->fd = fdFree(node->fd, "closeCallback");
+	node = _free (node);
     }
     return 0; 
 }
@@ -96,14 +97,15 @@ static int closeCallback(FILE * f)
 /**
  */
 static PyObject *
-rpmfd_Fopen(/*@unused@*/ PyObject * self, PyObject * args)
+rpmfd_Fopen(/*@unused@*/ PyObject * s, PyObject * args)
 	/*@globals fdhead, fdtail @*/
 	/*@modifies fdhead, fdtail @*/
 {
-    char * path, * mode;
+    char * path;
+    char * mode = "r.ufdio";
     FDlist *node;
     
-    if (!PyArg_ParseTuple(args, "ss", &path, &mode))
+    if (!PyArg_ParseTuple(args, "s|s", &path, &mode))
 	return NULL;
     
     node = xmalloc (sizeof(FDlist));
@@ -114,22 +116,22 @@ rpmfd_Fopen(/*@unused@*/ PyObject * self, PyObject * args)
 
     if (!node->fd) {
 	PyErr_SetFromErrno(pyrpmError);
-        node = _free (node);
+	node = _free (node);
 	return NULL;
     }
     
     if (Ferror(node->fd)) {
 	const char *err = Fstrerror(node->fd);
-        node = _free(node);
-	if (err) {
+	node = _free(node);
+	if (err)
 	    PyErr_SetString(pyrpmError, err);
-	    return NULL;
-	}
+	return NULL;
     }
+
     node->f = fdGetFp(node->fd);
     if (!node->f) {
 	PyErr_SetString(pyrpmError, "FD_t has no FILE*");
-        free(node);
+	free(node);
 	return NULL;
     }
 
@@ -137,9 +139,9 @@ rpmfd_Fopen(/*@unused@*/ PyObject * self, PyObject * args)
     if (!fdhead) {
 	fdhead = fdtail = node;
     } else if (fdtail) {
-        fdtail->next = node;
+	fdtail->next = node;
     } else {
-        fdhead = node;
+	fdhead = node;
     }
     fdtail = node;
     
@@ -152,9 +154,9 @@ rpmfd_Fopen(/*@unused@*/ PyObject * self, PyObject * args)
 /*@unchecked@*/ /*@observer@*/
 static struct PyMethodDef rpmfd_methods[] = {
     {"Debug",	(PyCFunction)rpmfd_Debug,	METH_VARARGS,
-        NULL},
+	NULL},
     {"Fopen",	(PyCFunction)rpmfd_Fopen,	METH_VARARGS,
-        NULL},
+	NULL},
     {NULL,		NULL}		/* sentinel */
 };
 /*@=fullinitblock@*/
@@ -163,10 +165,99 @@ static struct PyMethodDef rpmfd_methods[] = {
 
 /** \ingroup python
  */
+static void
+rpmfd_dealloc(/*@only@*/ /*@null@*/ rpmfdObject * s)
+	/*@modifies s @*/
+{
+    if (s) {
+	Fclose(s->fd);
+	s->fd = NULL;
+	PyObject_Del(s);
+    }
+}
+
+/** \ingroup python
+ */
 static PyObject * rpmfd_getattr(rpmfdObject * o, char * name)
 	/*@*/
 {
     return Py_FindMethod(rpmfd_methods, (PyObject *) o, name);
+}
+
+/** \ingroup python
+ */
+static int rpmfd_init(rpmfdObject * s, PyObject *args, PyObject *kwds)
+	/*@*/
+{
+    char * path;
+    char * mode = "r.ufdio";
+
+if (_rpmfd_debug)
+fprintf(stderr, "*** rpmfd_init(%p,%p,%p)\n", s, args, kwds);
+
+    if (!PyArg_ParseTuple(args, "s|s:rpmfd_init", &path, &mode))
+	return -1;
+
+    s->fd = Fopen(path, mode);
+
+    if (s->fd == NULL) {
+	PyErr_SetFromErrno(pyrpmError);
+	return -1;
+    }
+
+    if (Ferror(s->fd)) {
+	const char *err = Fstrerror(s->fd);
+	if (s->fd)
+	    Fclose(s->fd);
+	if (err)
+	    PyErr_SetString(pyrpmError, err);
+	return -1;
+    }
+    return 0;
+}
+
+/** \ingroup python
+ */
+static void rpmfd_free(/*@only@*/ rpmfdObject * s)
+	/*@modifies s @*/
+{
+if (_rpmfd_debug)
+fprintf(stderr, "%p -- fd %p\n", s, s->fd);
+    if (s->fd)
+	Fclose(s->fd);
+
+    PyObject_Del((PyObject *)s);
+}
+
+/** \ingroup python
+ */
+static PyObject * rpmfd_alloc(PyTypeObject * subtype, int nitems)
+	/*@*/
+{
+    PyObject * s = PyType_GenericAlloc(subtype, nitems);
+
+if (_rpmfd_debug)
+fprintf(stderr, "*** rpmfd_alloc(%p,%d) ret %p\n", subtype, nitems, s);
+    return s;
+}
+
+/** \ingroup python
+ */
+static rpmfdObject * rpmfd_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
+	/*@*/
+{
+    rpmfdObject * s = PyObject_New(rpmfdObject, subtype);
+
+    /* Perform additional initialization. */
+    if (rpmfd_init(s, args, kwds) < 0) {
+	rpmfd_free(s);
+	return NULL;
+    }
+
+if (_rpmfd_debug)
+fprintf(stderr, "%p ++ fd %p\n", s, s->fd);
+
+    return s;
 }
 
 /**
@@ -184,18 +275,19 @@ PyTypeObject rpmfd_Type = {
 	"rpm.fd",			/* tp_name */
 	sizeof(rpmfdObject),		/* tp_size */
 	0,				/* tp_itemsize */
-	(destructor)0,		 	/* tp_dealloc */
+	/* methods */
+	(destructor) rpmfd_dealloc, 	/* tp_dealloc */
 	0,				/* tp_print */
 	(getattrfunc) rpmfd_getattr, 	/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
-	0,				/* tp_compare */
-	0,				/* tp_repr */
+	(cmpfunc)0,			/* tp_compare */
+	(reprfunc)0,			/* tp_repr */
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
 	0,				/* tp_as_mapping */
-	0,				/* tp_hash */
-	0,				/* tp_call */
-	0,				/* tp_str */
+	(hashfunc)0,			/* tp_hash */
+	(ternaryfunc)0,			/* tp_call */
+	(reprfunc)0,			/* tp_str */
 	0,				/* tp_getattro */
 	0,				/* tp_setattro */
 	0,				/* tp_as_buffer */
@@ -216,10 +308,10 @@ PyTypeObject rpmfd_Type = {
 	0,				/* tp_descr_get */
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
-	0,				/* tp_init */
-	0,				/* tp_alloc */
-	0,				/* tp_new */
-	0,				/* tp_free */
+	(initproc) rpmfd_init,		/* tp_init */
+	(allocfunc) rpmfd_alloc,	/* tp_alloc */
+	(newfunc) rpmfd_new,		/* tp_new */
+	(destructor) rpmfd_free,	/* tp_free */
 	0,				/* tp_is_gc */
 #endif
 };

@@ -113,8 +113,8 @@
  */
 static rpmmiObject *
 rpmdb_Match (rpmdbObject * s, PyObject * args)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
 {
     PyObject *TagN = NULL;
     char *key = NULL;
@@ -148,7 +148,8 @@ static struct PyMethodDef rpmdb_methods[] = {
  */
 static int
 rpmdb_length(rpmdbObject * s)
-	/*@modifies s @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
 {
     rpmdbMatchIterator mi;
     int count = 0;
@@ -165,7 +166,8 @@ rpmdb_length(rpmdbObject * s)
  */
 static hdrObject *
 rpmdb_subscript(rpmdbObject * s, PyObject * key)
-	/*@modifies s @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
 {
     int offset;
     hdrObject * ho;

@@ -27,6 +27,7 @@ enum {
 };
 
 rpmtsObject * rpmts_Create(PyObject * s, PyObject * args)
-	/*@*/;
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies rpmGlobalMacroContext @*/;
 
 #endif

@@ -94,7 +94,7 @@ rpmds_compare(rpmdsObject * a, rpmdsObject * b)
 
 static PyObject *
 rpmds_iter(rpmdsObject * s)
-	/*@modifies s @*/
+	/*@*/
 {
     Py_INCREF(s);
     return (PyObject *)s;
@@ -158,7 +158,7 @@ rpmds_Next(rpmdsObject * s, PyObject *args)
 
 static PyObject *
 rpmds_SetNoPromote(rpmdsObject * s, PyObject * args)
-	/*@*/
+	/*@modifies s @*/
 {
     int nopromote;
 
@@ -169,7 +169,8 @@ rpmds_SetNoPromote(rpmdsObject * s, PyObject * args)
 
 static PyObject *
 rpmds_Notify(rpmdsObject * s, PyObject * args)
-	/*@*/
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
 {
     const char * where;
     int rc;

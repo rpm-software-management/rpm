@@ -86,8 +86,8 @@ rpmmi_iter(rpmmiObject * s)
  */
 static PyObject *
 rpmmi_iternext(rpmmiObject * s)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
 {
     Header h;
     
@@ -102,8 +102,8 @@ rpmmi_iternext(rpmmiObject * s)
  */
 static PyObject *
 rpmmi_Next(rpmmiObject * s, PyObject *args)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
+	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
+	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
     PyObject * result;
     
@@ -123,8 +123,7 @@ rpmmi_Next(rpmmiObject * s, PyObject *args)
  */
 static PyObject *
 rpmmi_Instance(rpmmiObject * s, PyObject * args)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
+	/*@*/
 {
     int rc = 0;
 
@@ -141,8 +140,7 @@ rpmmi_Instance(rpmmiObject * s, PyObject * args)
  */
 static PyObject *
 rpmmi_Count(rpmmiObject * s, PyObject * args)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
+	/*@*/
 {
     int rc = 0;
 
@@ -159,8 +157,8 @@ rpmmi_Count(rpmmiObject * s, PyObject * args)
  */
 static PyObject *
 rpmmi_Pattern(rpmmiObject * s, PyObject * args)
-	/*@globals _Py_NoneStruct @*/
-	/*@modifies s, _Py_NoneStruct @*/
+	/*@globals rpmGlobalMacroContext, _Py_NoneStruct @*/
+	/*@modifies s, rpmGlobalMacroContext, _Py_NoneStruct @*/
 {
     PyObject *TagN = NULL;
     int type;
@@ -204,10 +202,11 @@ static struct PyMethodDef rpmmi_methods[] = {
 /** \ingroup python
  */
 static void rpmmi_dealloc(/*@only@*/ /*@null@*/ rpmmiObject * s)
-	/*@modifies s @*/
+	/*@globals rpmGlobalMacroContext @*/
+	/*@modifies s, rpmGlobalMacroContext @*/
 {
     if (s) {
-	if (s->mi) s->mi = rpmdbFreeIterator(s->mi);
+	s->mi = rpmdbFreeIterator(s->mi);
 	PyObject_Del(s);
     }
 }

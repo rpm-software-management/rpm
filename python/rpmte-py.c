@@ -19,6 +19,9 @@
 
 #include "debug.h"
 
+/*@access rpmte @*/
+/*@access fnpyKey @*/
+
 /** \ingroup python
  * \name Class: Rpmte
  * \class Rpmte
@@ -202,7 +205,8 @@ rpmte_DBOffset(rpmteObject * s, PyObject * args)
 
 static PyObject *
 rpmte_Key(rpmteObject * s, PyObject * args)
-	/*@*/
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
 {
     PyObject * Key;
 
@@ -218,7 +222,8 @@ rpmte_Key(rpmteObject * s, PyObject * args)
 
 static PyObject *
 rpmte_DS(rpmteObject * s, PyObject * args)
-	/*@*/
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
 {
     PyObject * TagN = NULL;
     rpmds ds;
@@ -247,7 +252,8 @@ rpmte_DS(rpmteObject * s, PyObject * args)
 
 static PyObject *
 rpmte_FI(rpmteObject * s, PyObject * args)
-	/*@*/
+	/*@globals _Py_NoneStruct @*/
+	/*@modifies _Py_NoneStruct @*/
 {
     PyObject * TagN = NULL;
     rpmfi fi;
@@ -341,7 +347,7 @@ static struct PyMethodDef rpmte_methods[] = {
 static int
 rpmte_print(rpmteObject * s, FILE * fp, /*@unused@*/ int flags)
         /*@globals fileSystem @*/
-        /*@modifies s, fp, fileSystem @*/
+        /*@modifies fp, fileSystem @*/
 {
     const char * tstr;
     if (!(s && s->te))
