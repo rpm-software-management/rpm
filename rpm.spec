@@ -2,15 +2,16 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 3.0.3
 Version: %{version}
-Release: 0.1
+Release: 0.2
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-3.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
 Prereq: gawk fileutils textutils sh-utils mktemp
+#BuildRequires: python-devel = 1.5.1
 %endif
-BuildRoot: /var/tmp/rpm-%{version}-root
+BuildRoot: /var/tmp/%{name}-root
 
 %description
 The Red Hat Package Manager (RPM) is a powerful command line driven
@@ -23,6 +24,9 @@ the package like its version, a description, etc.
 Summary: Development files for applications which will manipulate RPM packages.
 Group: Development/Libraries
 Requires: popt
+%ifos linux
+Requires: python >= 1.5.1
+%endif
 
 %description devel
 This package contains the RPM C library and header files.  These
@@ -40,11 +44,17 @@ will manipulate RPM packages and databases.
 %build
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
 make
+%ifos linux
+make -C python
+%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 make DESTDIR="$RPM_BUILD_ROOT" install
+%ifos linux
+make DESTDIR="$RPM_BUILD_ROOT" install -C python
+%endif
 
 { cd $RPM_BUILD_ROOT
   strip ./bin/rpm
@@ -87,3 +97,6 @@ fi
 /usr/include/rpm
 /usr/lib/librpm.*
 /usr/lib/librpmbuild.*
+%ifos linux
+/usr/lib/python1.5/site-packages/rpmmodules.so
+%endif
