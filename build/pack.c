@@ -425,10 +425,10 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
     /*@-branchstate@*/
     switch(type) {
     case RPMLEAD_SOURCE:
-	rpmio_flags = rpmExpand("%{?_source_payload:%{_source_payload}}", NULL);
+	rpmio_flags = rpmExpand("%{?_source_payload}", NULL);
 	break;
     case RPMLEAD_BINARY:
-	rpmio_flags = rpmExpand("%{?_binary_payload:%{_binary_payload}}", NULL);
+	rpmio_flags = rpmExpand("%{?_binary_payload}", NULL);
 	break;
     }
     /*@=branchstate@*/
@@ -455,7 +455,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 
     /* Create and add the cookie */
     if (cookie) {
-	sprintf(buf, "%s %d", buildHost(), (int) time(NULL));
+	sprintf(buf, "%s %d", buildHost(), (int) (*getBuildTime()));
 	*cookie = xstrdup(buf);
 	(void) headerAddEntry(h, RPMTAG_COOKIE, RPM_STRING_TYPE, *cookie, 1);
     }

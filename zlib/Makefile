@@ -14,7 +14,7 @@
 
 CC=gcc
 
-CFLAGS=-O3 -DHAVE_UNISTD_H -DUSE_MMAP
+CFLAGS=-O3 -fomit-frame-pointer -DHAVE_UNISTD_H -DUSE_MMAP
 #CFLAGS=-O -DMAX_WBITS=14 -DMAX_MEM_LEVEL=7
 #CFLAGS=-g -DDEBUG
 #CFLAGS=-O3 -Wall -Wwrite-strings -Wpointer-arith -Wconversion \
@@ -33,10 +33,10 @@ RANLIB=ranlib
 TAR=tar
 SHELL=/bin/sh
 
-prefix = /usr/local
-exec_prefix = ${prefix}
-libdir = ${exec_prefix}/lib
-includedir = ${prefix}/include
+prefix =/usr/local
+exec_prefix =${prefix}
+libdir =${exec_prefix}/lib
+includedir =${prefix}/include
 
 OBJS = adler32.o compress.o crc32.o gzio.o uncompr.o deflate.o trees.o \
        zutil.o inflate.o infblock.o inftrees.o infutil.o inffast.o

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2001-11-22 16:29-0500\n"
+"POT-Creation-Date: 2001-12-06 10:20-0500\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1564,37 +1564,37 @@ msgstr "========= 패키지에 디렉토리가 포함되어 있지 않음:\n"
 msgid "%10d %s\n"
 msgstr "%9d %s\n"
 
-#: lib/fsm.c:1177
+#: lib/fsm.c:1180
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr "%04o 허가권(perms)의 %s 디렉토리가 생성되었습니다.\n"
 
-#: lib/fsm.c:1458
+#: lib/fsm.c:1461
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "헤더 파일 목록에서 아카이브 파일 %s (을)를 찾을 수 없습니다\n"
 
-#: lib/fsm.c:1579 lib/fsm.c:1707
+#: lib/fsm.c:1582 lib/fsm.c:1710
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s (이)가 %s (으)로 저장되었습니다\n"
 
-#: lib/fsm.c:1733
+#: lib/fsm.c:1736
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s 디렉토리를 삭제하는데 실패함: 빈 디렉토리가 아닙니다\n"
 
-#: lib/fsm.c:1739
+#: lib/fsm.c:1742
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s 디렉토리를 삭제하는데 실패함: %s\n"
 
-#: lib/fsm.c:1749
+#: lib/fsm.c:1752
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s %s 링크를 해제하는데 실패함: %s\n"
 
-#: lib/fsm.c:1768
+#: lib/fsm.c:1771
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s (이)가 %s (으)로 생성되었습니다\n"

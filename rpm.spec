@@ -1,4 +1,4 @@
-%define	with_python_subpackage	1 %{nil}
+%define	with_python_subpackage	0 %{nil}
 %define with_perl_subpackage	1
 %define	with_bzip2		1 %{nil}
 %define	with_apidocs		1 %{nil}
@@ -590,3 +590,6 @@ fi
 - header handling moved to librpmdb to avoid linkage loops.
 - fix a couple dinky memory leaks.
 - build with an internal zlib for now.
+- protect brp-compress against /bin/ls output ambiguity (#56656,#56336).
+- 3 madvise calls and a 16Mb mmapped buffer == ~5% install speedup. Wow.
+- use db-4.0.14 final internally.

@@ -5,7 +5,7 @@
  * Compile this file with -DNO_DEFLATE to avoid the compression code.
  */
 
-/* @(#) $Id: gzio.c,v 1.3 2001/11/21 22:01:55 jbj Exp $ */
+/* @(#) $Id: gzio.c,v 1.4 2001/11/22 21:12:46 jbj Exp $ */
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -23,12 +23,15 @@ struct internal_state {int dummy;}; /* for buggy compilers */
 #  ifdef MAXSEG_64K
 #    define Z_BUFSIZE 4096 /* minimize memory usage for 16-bit DOS */
 #  else
-#    define Z_BUFSIZE (256 * 1024) /*262144 16384*/
+#    define Z_BUFSIZE (16 * 1024 * 1024) /*262144 16384*/
 #  endif
 #endif
 #ifndef Z_PRINTF_BUFSIZE
 #  define Z_PRINTF_BUFSIZE 4096
 #endif
+
+/*@unchecked@*/
+static int z_bufsize = Z_BUFSIZE;
 
 #define ALLOC(size) malloc(size)
 #define TRYFREE(p) {if (p) free(p);}
@@ -155,13 +158,13 @@ local gzFile gz_open (const char *path, const char *mode, int fd)
                            Z_DEFLATED, -MAX_WBITS, DEF_MEM_LEVEL, strategy);
         /* windowBits is passed < 0 to suppress zlib header */
 
-        s->stream.next_out = s->outbuf = (Byte*)ALLOC(Z_BUFSIZE);
+        s->stream.next_out = s->outbuf = (Byte*)ALLOC(z_bufsize);
 #endif
         if (err != Z_OK || s->outbuf == Z_NULL) {
             return destroy(s), (gzFile)Z_NULL;
         }
     } else {
-        s->stream.next_in  = s->inbuf = (Byte*)ALLOC(Z_BUFSIZE);
+        s->stream.next_in  = s->inbuf = (Byte*)ALLOC(z_bufsize);
 
         err = inflateInit2(&(s->stream), -MAX_WBITS);
         /* windowBits is passed < 0 to tell that there is no zlib header.
@@ -174,28 +177,29 @@ local gzFile gz_open (const char *path, const char *mode, int fd)
             return destroy(s), (gzFile)Z_NULL;
         }
     }
-    s->stream.avail_out = Z_BUFSIZE;
+    s->stream.avail_out = z_bufsize;
 
     errno = 0;
 	if ((fd >= 0) && (s->mode == 'r')) {
 		struct stat stat;
 		if (!fstat(fd, &stat) && S_ISREG(stat.st_mode) && (lseek(fd, 0, SEEK_CUR) != -1)) {
-			char *test = mmap(0, Z_BUFSIZE, PROT_READ, MAP_SHARED, fd, 0);
+			char *test = mmap(0, z_bufsize, PROT_READ, MAP_SHARED, fd, 0);
 			if (test != (char *)-1) {
 				long n;
 				off_t pos;
 				s->mmap_mode = 1;
 				s->fd = fd;
 				TRYFREE(s->inbuf);
-				munmap(test, Z_BUFSIZE);
+				munmap(test, z_bufsize);
 				pos = lseek(fd, 0, SEEK_CUR);
 				s->mmap_end = lseek(fd, 0, SEEK_END);
 				(void) lseek(fd, 0, SEEK_SET);
 
-				s->mmap_pos = pos & ~(off_t)(Z_BUFSIZE - 1);
-				s->inbuf = mmap(0, Z_BUFSIZE, PROT_READ, MAP_SHARED, fd, s->mmap_pos);
-				s->mmap_pos += Z_BUFSIZE;
-				s->stream.next_in = s->inbuf + (pos & (Z_BUFSIZE - 1));
+				s->mmap_pos = pos & ~(off_t)(z_bufsize - 1);
+				s->inbuf = mmap(0, z_bufsize, PROT_READ, MAP_SHARED, fd, s->mmap_pos);
+				(void) madvise(s->inbuf, z_bufsize, MADV_SEQUENTIAL);
+				s->mmap_pos += z_bufsize;
+				s->stream.next_in = s->inbuf + (pos & (z_bufsize - 1));
 				s->stream.avail_in = s->mmap_end - pos;
 				if (s->stream.avail_in > (s->mmap_pos - pos))
 					s->stream.avail_in = s->mmap_pos - pos;
@@ -271,10 +275,10 @@ int ZEXPORT gzsetparams (gzFile file, int level, int strategy)
     if (s->stream.avail_out == 0) {
 
 	s->stream.next_out = s->outbuf;
-	if (fwrite(s->outbuf, 1, Z_BUFSIZE, s->file) != Z_BUFSIZE) {
+	if (fwrite(s->outbuf, 1, z_bufsize, s->file) != z_bufsize) {
 	    s->z_err = Z_ERRNO;
 	}
-	s->stream.avail_out = Z_BUFSIZE;
+	s->stream.avail_out = z_bufsize;
     }
 
     return deflateParams (&(s->stream), level, strategy);
@@ -292,24 +296,25 @@ static inline int gz_refill_inbuf(gz_stream *s)
 			return 0;
 		}
 		if (s->inbuf)
-			munmap(s->inbuf, Z_BUFSIZE);
-		s->inbuf = mmap(s->inbuf, Z_BUFSIZE, PROT_READ, MAP_SHARED|MAP_FIXED, s->fd, s->mmap_pos);
+			munmap(s->inbuf, z_bufsize);
+		s->inbuf = mmap(s->inbuf, z_bufsize, PROT_READ, MAP_SHARED|MAP_FIXED, s->fd, s->mmap_pos);
 		if (s->inbuf == (Byte *)-1) {
 			s->inbuf = NULL;
 			s->z_err = errno;
 			return 1;
 		}
+		(void) madvise(s->inbuf, z_bufsize, MADV_SEQUENTIAL);
 		s->stream.next_in = s->inbuf;
-		s->stream.avail_in = Z_BUFSIZE;
-		s->mmap_pos += Z_BUFSIZE;
+		s->stream.avail_in = z_bufsize;
+		s->mmap_pos += z_bufsize;
 		if (s->mmap_pos > s->mmap_end)
-			s->stream.avail_in = s->mmap_end - s->mmap_pos + Z_BUFSIZE;
+			s->stream.avail_in = s->mmap_end - s->mmap_pos + z_bufsize;
 		for (n=0; n<s->stream.avail_in; n+=4096)
 			((volatile char *)s->inbuf)[n];
 		return 0;
 	}
 
-	s->stream.avail_in = fread(s->inbuf, 1, Z_BUFSIZE, s->file);
+	s->stream.avail_in = fread(s->inbuf, 1, z_bufsize, s->file);
 	if (s->stream.avail_in == 0) {
 		s->z_eof = 1;
 		if (ferror(s->file)) {
@@ -409,7 +414,7 @@ local int destroy (gz_stream *s)
 
 	if (s->mmap_mode) {
 		if (s->inbuf)
-			munmap(s->inbuf, Z_BUFSIZE);
+			munmap(s->inbuf, z_bufsize);
 		s->inbuf = NULL;
 		close(s->fd);
 		s->mmap_mode = 0;
@@ -579,11 +584,11 @@ int ZEXPORT gzwrite (gzFile file, const voidp buf, unsigned len)
         if (s->stream.avail_out == 0) {
 
             s->stream.next_out = s->outbuf;
-            if (fwrite(s->outbuf, 1, Z_BUFSIZE, s->file) != Z_BUFSIZE) {
+            if (fwrite(s->outbuf, 1, z_bufsize, s->file) != z_bufsize) {
                 s->z_err = Z_ERRNO;
                 break;
             }
-            s->stream.avail_out = Z_BUFSIZE;
+            s->stream.avail_out = z_bufsize;
         }
         s->z_err = deflate(&(s->stream), Z_NO_FLUSH);
         if (s->z_err != Z_OK) break;
@@ -681,7 +686,7 @@ local int do_flush (gzFile file, int flush)
     s->stream.avail_in = 0; /* should be zero already anyway */
 
     for (;;) {
-        len = Z_BUFSIZE - s->stream.avail_out;
+        len = z_bufsize - s->stream.avail_out;
 
         if (len != 0) {
             if ((uInt)fwrite(s->outbuf, 1, len, s->file) != len) {
@@ -689,7 +694,7 @@ local int do_flush (gzFile file, int flush)
                 return Z_ERRNO;
             }
             s->stream.next_out = s->outbuf;
-            s->stream.avail_out = Z_BUFSIZE;
+            s->stream.avail_out = z_bufsize;
         }
         if (done) break;
         s->z_err = deflate(&(s->stream), flush);
@@ -746,12 +751,12 @@ z_off_t ZEXPORT gzseek (gzFile file, z_off_t offset, int whence)
 
 	/* At this point, offset is the number of zero bytes to write. */
 	if (s->inbuf == Z_NULL) {
-	    s->inbuf = (Byte*)ALLOC(Z_BUFSIZE); /* for seeking */
-	    zmemzero(s->inbuf, Z_BUFSIZE);
+	    s->inbuf = (Byte*)ALLOC(z_bufsize); /* for seeking */
+	    zmemzero(s->inbuf, z_bufsize);
 	}
 	while (offset > 0)  {
-	    uInt size = Z_BUFSIZE;
-	    if (offset < Z_BUFSIZE) size = (uInt)offset;
+	    uInt size = z_bufsize;
+	    if (offset < z_bufsize) size = (uInt)offset;
 
 	    size = gzwrite(file, s->inbuf, size);
 	    if (size == 0) return -1L;
@@ -788,11 +793,11 @@ z_off_t ZEXPORT gzseek (gzFile file, z_off_t offset, int whence)
     /* offset is now the number of bytes to skip. */
 
     if (offset != 0 && s->outbuf == Z_NULL) {
-	s->outbuf = (Byte*)ALLOC(Z_BUFSIZE);
+	s->outbuf = (Byte*)ALLOC(z_bufsize);
     }
     while (offset > 0)  {
-	int size = Z_BUFSIZE;
-	if (offset < Z_BUFSIZE) size = (int)offset;
+	int size = z_bufsize;
+	if (offset < z_bufsize) size = (int)offset;
 
 	size = gzread(file, s->outbuf, (uInt)size);
 	if (size <= 0) return -1L;

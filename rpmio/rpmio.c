@@ -2744,16 +2744,16 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 /*@=usereleased@*/
 }
 
-/*
+/**
  * Convert stdio fmode to open(2) mode, filtering out zlib/bzlib flags.
  *	returns stdio[0] = '\0' on error.
  *
- * gzopen:	[0-9] is compession level
- * gzopen:	'f' is filtered (Z_FILTERED)
- * gzopen:	'h' is Huffman encoding (Z_HUFFMAN_ONLY)
- * bzopen:	[1-9] is block size (modulo 100K)
- * bzopen:	's' is smallmode
- * HACK:	'.' terminates, rest is type of I/O
+ * - gzopen:	[0-9] is compession level
+ * - gzopen:	'f' is filtered (Z_FILTERED)
+ * - gzopen:	'h' is Huffman encoding (Z_HUFFMAN_ONLY)
+ * - bzopen:	[1-9] is block size (modulo 100K)
+ * - bzopen:	's' is smallmode
+ * - HACK:	'.' terminates, rest is type of I/O
  */
 static inline void cvtfmode (const char *m,
 				/*@out@*/ char *stdio, size_t nstdio,

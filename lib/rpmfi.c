@@ -870,6 +870,11 @@ TFI_t fiNew(rpmTransactionSet ts, TFI_t fi,
 	int j;
 
 	fmd5 = fi->fmd5s[i];
+	if (!(fmd5 && *fmd5 != '\0')) {
+	    memset(t, 0, 16);
+	    t += 16;
+	    continue;
+	}
 	for (j = 0; j < 16; j++, t++, fmd5 += 2)
 	    *t = (nibble(fmd5[0]) << 4) | nibble(fmd5[1]);
     }

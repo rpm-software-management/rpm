@@ -73,6 +73,8 @@
 	- fix a couple dinky memory leaks.
 	- build with an internal zlib for now.
 	- protect brp-compress against /bin/ls output ambiguity (#56656,#56336).
+	- 3 madvise calls and a 16Mb mmapped buffer == ~5% install speedup. Wow.
+	- use db-4.0.14 final internally.
 
 4.0.3 -> 4.0.4:
 

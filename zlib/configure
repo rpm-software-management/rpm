@@ -61,7 +61,7 @@ EOF
 
 test -z "$CC" && echo Checking for gcc...
 cc=${CC-gcc}
-cflags=${CFLAGS-"-O3"}
+cflags=${CFLAGS-"-O3 -fomit-frame-pointer"}
 # to force the asm version use: CFLAGS="-O3 -DASMV" ./configure
 case "$cc" in
   *gcc*) gcc=1;;
