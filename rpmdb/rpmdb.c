@@ -333,7 +333,8 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, /*@unused@*/ unsigned int flags)
     }
 
 /* We don't ever _REQUIRE_ conversion... */
-#ifdef	SQLITE_HACK
+#define	SQLITE_HACK
+#ifdef	SQLITE_HACK_XXX
     /* Require conversion. */
     if (rc && _dbapi_wanted >= 0 && _dbapi != _dbapi_wanted && _dbapi_wanted == _dbapi_rebuild) {
 	rc = (_rebuildinprogress ? 0 : 1);
@@ -3712,7 +3713,7 @@ static int rpmdbMoveDatabase(const char * prefix,
     case 0:
 	break;
     }
-#ifdef	SQLITE_HACK
+#ifdef	SQLITE_HACK_XXX
     if (rc || _olddbapi == _newdbapi)
 	return rc;
 
