@@ -1,3 +1,9 @@
+Not yet implemented in 2.0:
+
+. dependencies
+. list check (-bl)
+. --where and --search
+
 New in RPM 2.0 (or previously undocumented):
 
 *** Install
@@ -14,6 +20,8 @@ New in RPM 2.0 (or previously undocumented):
 *** Query
 
 *** Verify
+
+Verification output is much more readable.  Notes config files, etc.
 
 *** PGP Signatures
 
@@ -65,3 +73,5 @@ is only used by file(1), and by RPM to determine the package type
   Executed after all packaging is finished
 
 . %changelog
+
+. %verify can be used to control which aspects of the file are verified
