@@ -9,7 +9,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
-	-I$(top_srcdir)/popt \
+	@WITH_POPT_INCLUDE@ \
 	@WITH_LIBELF_INCLUDE@ \
 	@WITH_LIBDWARF_INCLUDE@ \
 	-I$(top_srcdir)/file/src \
@@ -36,8 +36,9 @@ bin_PROGRAMS =	rpmgraph
 convertdb1_SOURCES =	convertdb1.c
 
 debugedit_SOURCES =	debugedit.c hashtab.c
-debugedit_LDADD =	@LDFLAGS_STATIC@ @WITH_LIBELF_LIB@ \
-	$(top_builddir)/popt/libpopt.la
+debugedit_LDADD =	@LDFLAGS_STATIC@ \
+	@WITH_LIBELF_LIB@ \
+	@WITH_POPT_LIB@
 
 javadeps_SOURCES =	javadeps.c
 

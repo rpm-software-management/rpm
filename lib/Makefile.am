@@ -10,7 +10,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
-	-I$(top_srcdir)/popt \
+	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	@INCPATH@
 
@@ -44,7 +44,7 @@ librpm_la_SOURCES = \
 librpm_la_LDFLAGS = -release 4.4 $(LDFLAGS) \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/popt/libpopt.la \
+	@WITH_POPT_LIB@ \
 	@WITH_SELINUX_LIB@ \
 	@INTLLIBS@
 

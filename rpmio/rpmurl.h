@@ -53,20 +53,20 @@ struct urlinfo_s {
     FD_t data;			/*!< per-xfer data channel */
 
 /*@relnull@*/
-    void * capabilities;	/*!< neon ne_server_capabilities ptr */
+    void * capabilities;	/*!< neon: ne_server_capabilities ptr */
 /*@relnull@*/
-    void * lockstore;		/*!< neon ne_lock_store ptr */
+    void * lockstore;		/*!< neon: ne_lock_store ptr */
 /*@relnull@*/
-    void * sess;		/*!< neon ne_session ptr */
-    off_t current;		/*!< neon current body offset. */
-    off_t total;		/*!< neon total body length. */
-    int connstatus;		/*!< neon connection status. */
+    void * sess;		/*!< neon: ne_session ptr */
+    off_t current;		/*!< neon: current body offset. */
+    off_t total;		/*!< neon: total body length. */
+    int connstatus;		/*!< neon: connection status. */
 #ifdef  REFERENCE
 typedef enum {
-    ne_conn_namelookup, /* lookup up hostname (info = hostname) */
-    ne_conn_connecting, /* connecting to host (info = hostname) */
-    ne_conn_connected, /* connected to host (info = hostname) */
-    ne_conn_secure /* connection now secure (info = crypto level) */
+    ne_conn_namelookup,	/* lookup up hostname (info = hostname) */
+    ne_conn_connecting,	/* connecting to host (info = hostname) */
+    ne_conn_connected,	/* connected to host (info = hostname) */
+    ne_conn_secure	/* connection now secure (info = crypto level) */
 } ne_conn_status;
 #endif
 

@@ -9,16 +9,23 @@
 #include <pthread.h>
 #endif
 
-#include <neon/ne_alloc.h>
-#include <neon/ne_auth.h>
-#include <neon/ne_basic.h>
-#include <neon/ne_dates.h>
-#include <neon/ne_locks.h>
-#include <neon/ne_props.h>
-#include <neon/ne_request.h>
-#include <neon/ne_socket.h>
-#include <neon/ne_string.h>
-#include <neon/ne_utils.h>
+#include "ne_alloc.h"
+#include "ne_auth.h"
+#include "ne_basic.h"
+#include "ne_dates.h"
+#include "ne_locks.h"
+
+#define	NEONBLOWSCHUNKS
+#ifndef	NEONBLOWSCHUNKS
+/* HACK: include ne_private.h to access sess->socket for now. */
+#include "../neon/src/ne_private.h"
+#endif
+
+#include "ne_props.h"
+#include "ne_request.h"
+#include "ne_socket.h"
+#include "ne_string.h"
+#include "ne_utils.h"
 
 #include <rpmio_internal.h>
 
@@ -936,7 +943,7 @@ assert(ctrl->req != NULL);
 #endif
 
     if (!strcmp(httpCmd, "PUT")) {
-#ifdef	NOTYET		/* XXX HACK no wr_chunked until libneon supports */
+#if defined(HAVE_NEON_NE_SEND_REQUEST_CHUNK)
 	ctrl->wr_chunked = 1;
 	ne_add_request_header(ctrl->req, "Transfer-Encoding", "chunked");
 	ne_set_request_chunked(ctrl->req, 1);
@@ -1065,13 +1072,28 @@ hexdump(buf, rc);
 
 ssize_t davWrite(void * cookie, const char * buf, size_t count)
 {
-#ifdef	NOTYET		/* XXX HACK no wr_chunked until libneon supports */
     FD_t fd = cookie;
     ssize_t rc;
     int xx;
 
+#ifndef	NEONBLOWSCHUNKS
+    ne_session * sess;
+
+assert(fd->req != NULL);
+    sess = ne_get_session(fd->req);
+assert(sess != NULL);
+
+    /* HACK: include ne_private.h to access sess->socket for now. */
+    xx = ne_sock_fullwrite(sess->socket, buf, count);
+#else
+#if defined(HAVE_NEON_NE_SEND_REQUEST_CHUNK)
 assert(fd->req != NULL);
     xx = ne_send_request_chunk(fd->req, buf, count);
+#else
+    errno = EIO;       /* HACK */
+    return -1;
+#endif
+#endif
 
     /* HACK: stupid error impedence matching. */
     rc = (xx == 0 ? count : -1);
@@ -1084,10 +1106,6 @@ hexdump(buf, count);
 #endif
 
     return rc;
-#else
-    errno = EIO;	/* HACK */
-    return -1;
-#endif
 }
 
 int davSeek(void * cookie, /*@unused@*/ _libio_pos_t pos, int whence)

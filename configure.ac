@@ -209,7 +209,7 @@ dnl substitute this into config.h, so the C source picks it up.
 dnl
 AC_DEFINE_UNQUOTED(MKDIR_P, "${MKDIR_P}",
 [A full path to a program, possibly with arguments, that will create a
-   directory and all necessary parent directories, ala `mkdir -p'])
+   directory and all necessary parent directories, ala 'mkdir -p'])
 AC_SUBST(MKDIR_P)
 
 AC_ISC_POSIX
@@ -302,6 +302,9 @@ addlib() {
   esac
 }
 
+#=================
+# Check for zlib library. Prefer internal, otherwise external.
+
 WITH_ZLIB_SUBDIR=
 WITH_ZLIB_INCLUDE=
 WITH_ZLIB_LIB=
@@ -316,6 +319,33 @@ fi
 AC_SUBST(WITH_ZLIB_SUBDIR)
 AC_SUBST(WITH_ZLIB_INCLUDE)
 AC_SUBST(WITH_ZLIB_LIB)
+
+if test -z "${WITH_ZLIB_LIB}" ; then
+  for zlib in z gz ; do
+   AC_CHECK_LIB(${zlib}, gzread, 
+	[LIBS="$LIBS -l${zlib}"; break], 
+	[if test ${zlib} = gz; then 
+	    AC_MSG_ERROR([sorry rpm requires libz.a or libgz.a (from the zlib package)]) 
+	 fi]
+	       )
+  done
+
+dnl zlib-1.0.4 has not gzseek
+  AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK, 1, [Define as 1 if your zlib has gzseek()])])
+fi
+
+#=================
+# Check for bzip2 library. Prefer external, otherwise none.
+
+AC_CHECK_LIB(bz2, bzread, [LIBS="$LIBS -lbz2"], 
+   AC_CHECK_LIB(bz2, BZ2_bzread, [
+     WITH_BZIP2=1
+     LIBS="$LIBS -lbz2"
+     AC_DEFINE(HAVE_BZ2_1_0, 1, [Define as 1 if you bzip2 1.0]) ], 
+     WITH_BZIP2=0))
+AC_SUBST(WITH_BZIP2)
+
+#=================
 
 localdone=
 
@@ -371,101 +401,6 @@ dnl
 
 dnl Checks for libraries.
 
-#=================
-# Check for libelf library. Prefer external, otherwise internal.
-WITH_ELFUTILS_SUBDIR=
-WITH_LIBELF_INCLUDE=
-WITH_LIBELF_LIB=
-AC_CHECK_HEADER([libelf.h])
-AC_CHECK_HEADER([gelf.h], [
-	AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
-	AC_CHECK_LIB(elf, gelf_getvernaux, [
-	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the `elf' library (-lelf).])
-	    WITH_LIBELF_LIB="-lelf"
-	])
-    ], [
-	if test -d elfutils/libelf ; then
-	    AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
-	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the `elf' library (-lelf).])
-	    WITH_ELFUTILS_SUBDIR=elfutils
-	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libelf"
-	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_ELFUTILS_SUBDIR}/libelf/libelf.a"
-	fi
-])
-AC_SUBST(WITH_ELFUTILS_SUBDIR)
-AC_SUBST(WITH_LIBELF_INCLUDE)
-AC_SUBST(WITH_LIBELF_LIB)
-
-WITH_LIBDWARF_INCLUDE=
-WITH_LIBDWARF_DEBUGEDIT=
-AC_CHECK_HEADER([dwarf.h], [
-	AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
-	WITH_LIBDWARF_DEBUGEDIT="debugedit"
-    ], [
-	if test -d elfutils/libdwarf ; then
-	    AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
-	    WITH_LIBDWARF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libdwarf"
-	    WITH_LIBDWARF_DEBUGEDIT="debugedit"
-	fi
-])
-AC_SUBST(WITH_LIBDWARF_INCLUDE)
-AC_SUBST(WITH_LIBDWARF_DEBUGEDIT)
-
-#=================
-# Check for beecrypt library. Prefer external, otherwise internal.
-WITH_BEECRYPT_SUBDIR=
-WITH_BEECRYPT_INCLUDE=
-WITH_BEECRYPT_LIB=
-AC_CHECK_HEADER([beecrypt/beecrypt.h], [
-	AC_CHECK_LIB(beecrypt, mpfprintln, [
-	    AC_DEFINE(HAVE_LIBBEECRYPT, 1, [Define to 1 if you have the `beecrypt' library (-lbeecrypt).])
-	    AC_CHECK_HEADER([beecrypt/api.h], [
-		AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
-		])
-	    WITH_BEECRYPT_INCLUDE="-I${includedir}/beecrypt"
-	    WITH_BEECRYPT_LIB="-lbeecrypt"
-	])
-    ], [
-	if test -d beecrypt ; then
-	    AC_DEFINE(HAVE_LIBBEECRYPT, 1, [Define to 1 if you have the `beecrypt' library (-lbeecrypt).])
-	    WITH_BEECRYPT_SUBDIR=beecrypt
-	    WITH_BEECRYPT_INCLUDE="-I\${top_srcdir}/${WITH_BEECRYPT_SUBDIR}"
-	    WITH_BEECRYPT_LIB="\${top_builddir}/${WITH_BEECRYPT_SUBDIR}/libbeecrypt.la"
-	fi
-])
-AC_SUBST(WITH_BEECRYPT_SUBDIR)
-AC_SUBST(WITH_BEECRYPT_INCLUDE)
-AC_SUBST(WITH_BEECRYPT_LIB)
-
-#=================
-# Check for neon library. Prefer external, otherwise internal.
-WITH_NEON_SUBDIR=
-WITH_NEON_INCLUDE=
-WITH_NEON_LIB=
-AC_CHECK_HEADER([neon/ne_session.h], [
-	AC_CHECK_LIB(neon, ne_session_create, [
-	    AC_DEFINE(HAVE_LIBNEON, 1, [Define to 1 if you have the `neon' library (-lneon).])
-	    AC_CHECK_LIB(neon, ne_get_response_header, [
-		AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1, [Define to 1 if you have ne_get_response_header() in libneon.])
-		])
-	    AC_CHECK_LIB(neon, ne_send_request_chunk, [
-		AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1, [Define to 1 if you have ne_send_request_chunk() in libneon.])
-		])
-	    WITH_NEON_INCLUDE="-I${includedir}/neon"
-	    WITH_NEON_LIB="-lneon"
-	])
-    ], [
-	if test -d neon ; then
-	    AC_DEFINE(HAVE_LIBNEON, 1, [Define to 1 if you have the `neon' library (-lneon).])
-	    WITH_NEON_SUBDIR=neon
-	    WITH_NEON_INCLUDE="-I\${top_srcdir}/${WITH_NEON_SUBDIR}/src"
-	    WITH_NEON_LIB="\${top_builddir}/${WITH_NEON_SUBDIR}/src/libneon.la"
-	fi
-])
-AC_SUBST(WITH_NEON_SUBDIR)
-AC_SUBST(WITH_NEON_INCLUDE)
-AC_SUBST(WITH_NEON_LIB)
-
 AC_CHECK_FUNC(setreuid, [], [
     AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])
 ])
@@ -510,29 +445,191 @@ dnl for this macro (not LIBS=...), otherwise the check for dbopen
 dnl will fail.
 AC_CHECK_LIB(port, writev)
 
+#=================
+# Check for libelf library. Prefer external, then internal, otherwise none.
+WITH_ELFUTILS_SUBDIR=
+WITH_LIBELF_INCLUDE=
+WITH_LIBELF_LIB=
+AC_CHECK_HEADER([libelf.h])
+AC_CHECK_HEADER([gelf.h], [
+	AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
+	AC_CHECK_LIB(elf, gelf_getvernaux, [
+	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the 'elf' library (-lelf).])
+	    WITH_LIBELF_LIB="-lelf"
+	])
+    ], [
+	if test -d elfutils/libelf ; then
+	    AC_DEFINE(HAVE_GELF_H, 1, [Define to 1 if you have the <gelf.h> header file.])
+	    AC_DEFINE(HAVE_LIBELF, 1, [Define to 1 if you have the 'elf' library (-lelf).])
+	    WITH_ELFUTILS_SUBDIR=elfutils
+	    WITH_LIBELF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libelf"
+	    WITH_LIBELF_LIB="\${top_builddir}/${WITH_ELFUTILS_SUBDIR}/libelf/libelf.a"
+	fi
+])
+AC_SUBST(WITH_ELFUTILS_SUBDIR)
+AC_SUBST(WITH_LIBELF_INCLUDE)
+AC_SUBST(WITH_LIBELF_LIB)
+
+WITH_LIBDWARF_INCLUDE=
+WITH_LIBDWARF_DEBUGEDIT=
+AC_CHECK_HEADER([dwarf.h], [
+  AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
+  WITH_LIBDWARF_DEBUGEDIT="debugedit"
+],[
+  if test -d elfutils/libdwarf ; then
+    AC_DEFINE(HAVE_DWARF_H, 1, [Define to 1 if you have the <dwarf.h> header file.])
+    WITH_LIBDWARF_INCLUDE="-I\${top_srcdir}/${WITH_ELFUTILS_SUBDIR}/libdwarf"
+    WITH_LIBDWARF_DEBUGEDIT="debugedit"
+  fi
+])
+AC_SUBST(WITH_LIBDWARF_INCLUDE)
+AC_SUBST(WITH_LIBDWARF_DEBUGEDIT)
+
+#=================
+# Check for beecrypt library. Prefer external, otherwise internal.
+WITH_BEECRYPT_SUBDIR=
+WITH_BEECRYPT_INCLUDE=
+WITH_BEECRYPT_LIB=
+AC_CHECK_HEADER([beecrypt/beecrypt.h], [
+  AC_CHECK_LIB(beecrypt, mpfprintln, [
+    AC_DEFINE(HAVE_LIBBEECRYPT, 1, [Define to 1 if you have the 'beecrypt' library (-lbeecrypt).])
+    AC_CHECK_HEADER([beecrypt/api.h], [
+      AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
+    ])
+    WITH_BEECRYPT_INCLUDE="-I${includedir}/beecrypt"
+    WITH_BEECRYPT_LIB="-lbeecrypt"
+  ])
+],[
+  if test -d beecrypt ; then
+    AC_DEFINE(HAVE_LIBBEECRYPT, 1, [Define to 1 if you have the 'beecrypt' library (-lbeecrypt).])
+    WITH_BEECRYPT_SUBDIR=beecrypt
+    WITH_BEECRYPT_INCLUDE="-I\${top_srcdir}/${WITH_BEECRYPT_SUBDIR}"
+    WITH_BEECRYPT_LIB="\${top_builddir}/${WITH_BEECRYPT_SUBDIR}/libbeecrypt.la"
+  fi
+])
+AC_SUBST(WITH_BEECRYPT_SUBDIR)
+AC_SUBST(WITH_BEECRYPT_INCLUDE)
+AC_SUBST(WITH_BEECRYPT_LIB)
+
+#=================
+# Check for neon library. Prefer external, otherwise internal.
+WITH_NEON_SUBDIR=
+WITH_NEON_INCLUDE=
+WITH_NEON_LIB=
+AC_CHECK_HEADER([neon/ne_session.h], [
+  AC_CHECK_LIB(neon, ne_session_create, [
+    AC_DEFINE(HAVE_LIBNEON, 1, [Define to 1 if you have the 'neon' library (-lneon).])
+    AC_CHECK_LIB(neon, ne_get_response_header, [
+      AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1, [Define to 1 if you have ne_get_response_header() in libneon.])
+    ])
+    AC_CHECK_LIB(neon, ne_send_request_chunk, [
+	AC_DEFINE(HAVE_NEON_NE_SEND_REQUEST_CHUNK, 1, [Define to 1 if you have ne_send_request_chunk() in libneon.])
+    ])
+    WITH_NEON_INCLUDE="-I${includedir}/neon"
+    WITH_NEON_LIB="-lneon"
+  ])
+],[
+  if test -d neon ; then
+    AC_DEFINE(HAVE_LIBNEON, 1, [Define to 1 if you have the 'neon' library (-lneon).])
+# XXX HAVE_NEON_NE_GET_RESPONSE_HEADER assumes libneon-0.25 devel internal
+    AC_DEFINE(HAVE_NEON_NE_GET_RESPONSE_HEADER, 1, [Define to 1 if you have ne_get_response_header() in libneon.])
+    WITH_NEON_SUBDIR=neon
+    WITH_NEON_INCLUDE="-I\${top_srcdir}/${WITH_NEON_SUBDIR}/src"
+    WITH_NEON_LIB="\${top_builddir}/${WITH_NEON_SUBDIR}/src/libneon.la"
+  fi
+])
+AC_SUBST(WITH_NEON_SUBDIR)
+AC_SUBST(WITH_NEON_INCLUDE)
+AC_SUBST(WITH_NEON_LIB)
+
+#=================
+# Check for magic library. Prefer internal, otherwise external.
+WITH_MAGIC_SUBDIR=
+WITH_MAGIC_INCLUDE=
+WITH_MAGIC_LIB=
+
+if test -d file ; then
+  WITH_MAGIC_SUBDIR=file
+  WITH_MAGIC_INCLUDE="-I\${top_srcdir}/${WITH_MAGIC_SUBDIR}/src"
+  WITH_MAGIC_LIB="\${top_builddir}/${WITH_MAGIC_SUBDIR}/src/libmagic.la"
+else
+  AC_CHECK_HEADER([magic.h], [
+    AC_CHECK_LIB(magic, magic_open, [
+      WITH_MAGIC_SUBDIR=
+      WITH_MAGIC_INCLUDE=
+      WITH_MAGIC_LIB="-lmagic"
+    ])
+  ])
+fi
+
+AC_SUBST(WITH_MAGIC_SUBDIR)
+AC_SUBST(WITH_MAGIC_INCLUDE)
+AC_SUBST(WITH_MAGIC_LIB)
+
+#=================
+# Check for popt library. Prefer internal, otherwise external.
+WITH_POPT_SUBDIR=
+WITH_POPT_INCLUDE=
+WITH_POPT_LIB=
+
+if test -d popt ; then
+  WITH_POPT_SUBDIR=popt
+  WITH_POPT_INCLUDE="-I\${top_srcdir}/${WITH_POPT_SUBDIR}"
+  WITH_POPT_LIB="\${top_builddir}/${WITH_POPT_SUBDIR}/libpopt.la"
+else
+  AC_CHECK_HEADER([popt.h], [
+    AC_CHECK_LIB(popt, poptGetContext, [
+      WITH_POPT_SUBDIR=
+      WITH_POPT_INCLUDE=
+      WITH_POPT_LIB="-lpopt"
+    ])
+  ])
+fi
+
+AC_SUBST(WITH_POPT_SUBDIR)
+AC_SUBST(WITH_POPT_INCLUDE)
+AC_SUBST(WITH_POPT_LIB)
+
+#=================
+
 dnl ------------------ with    internal db
 AC_DEFINE(HAVE_DB3_DB_H, 1, [Define if you have the <db3/db.h> header file])
 WITH_DB_SUBDIR=db3
 WITH_INTERNAL_DB=1
 DBLIBSRCS="db3.c"
 
-AC_CHECK_HEADER([sqlite3.h], [
-  AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
-  WITH_SQLITE3=1
-  WITH_SQLITE3_INCLUDE=
-  WITH_SQLITE3_LIB=-lsqlite3
-  DBLIBSRCS="$DBLIBSRCS sqlite.c"
-],[
-  WITH_SQLITE3=0
-  WITH_SQLITE3_INCLUDE=
-  WITH_SQLITE3_LIB=
-])
-
 AC_SUBST(WITH_DB_SUBDIR)
 AC_SUBST(WITH_INTERNAL_DB)
-AC_SUBST(WITH_SQLITE3)
+
+#=================
+# Check for sqlite3 library. Prefer external, then internal, otherwise none.
+WITH_SQLITE3_SUBDIR=
+WITH_SQLITE3_INCLUDE=
+WITH_SQLITE3_LIB=
+
+AC_CHECK_HEADER([sqlite3.h], [
+  AC_CHECK_LIB(sqlite3, sqlite3_open, [
+    AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
+    WITH_SQLITE3_SUBDIR=
+    WITH_SQLITE3_INCLUDE=
+    WITH_SQLITE3_LIB="-lsqlite3"
+    DBLIBSRCS="$DBLIBSRCS sqlite.c"
+  ])
+],[
+  if test -d sqlite ; then
+    AC_DEFINE(HAVE_SQLITE3_H, 1, [Define if you have the <sqlite3.h> header file])
+    WITH_SQLITE3_SUBDIR=sqlite
+    WITH_SQLITE3_INCLUDE="-I\${top_srcdir}/${WITH_SQLITE3_SUBDIR}/src"
+    WITH_SQLITE3_LIB="\${top_builddir}/${WITH_SQLITE3_SUBDIR}/libsqlite3.la"
+    DBLIBSRCS="$DBLIBSRCS sqlite.c"
+  fi
+])
+
+AC_SUBST(WITH_SQLITE3_SUBDIR)
 AC_SUBST(WITH_SQLITE3_INCLUDE)
 AC_SUBST(WITH_SQLITE3_LIB)
+
+#=================
 
 DBLIBOBJS=`echo $DBLIBSRCS | sed -e "s/\.c/\.lo/g"`
 
@@ -546,28 +643,6 @@ dnl AmigaOS and IXEmul have a fork() dummy
 	CFLAGS="$CFLAGS -Dfork=vfork" 
 	;;
   esac
-
-if test -z "${WITH_ZLIB_LIB}" ; then
-for zlib in z gz ; do
-   AC_CHECK_LIB(${zlib}, gzread, 
-	[LIBS="$LIBS -l${zlib}"; break], 
-	[if test ${zlib} = gz; then 
-	    AC_MSG_ERROR([sorry rpm requires libz.a or libgz.a (from the zlib package)]) 
-	 fi]
-	       )
-done
-
-dnl zlib-1.0.4 has not gzseek
-AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK, 1, [Define as 1 if your zlib has gzseek()])])
-fi
-
-AC_CHECK_LIB(bz2, bzread, [LIBS="$LIBS -lbz2"], 
-   AC_CHECK_LIB(bz2, BZ2_bzread, [
-     WITH_BZIP2=1
-     LIBS="$LIBS -lbz2"
-     AC_DEFINE(HAVE_BZ2_1_0, 1, [Define as 1 if you bzip2 1.0]) ], 
-     WITH_BZIP2=0))
-AC_SUBST(WITH_BZIP2)
 
 AM_GNU_GETTEXT
 dnl TVM:
@@ -609,6 +684,7 @@ dnl We should really emulate/steal sections of the statfs and struct statfs
 dnl checks from GNU fileutils.
 dnl
 AC_MSG_CHECKING(for struct statfs)
+
 dnl
 dnl this is easier than nesting AC_TRY_COMPILEs...
 dnl

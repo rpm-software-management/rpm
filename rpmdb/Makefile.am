@@ -10,7 +10,7 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
-	-I$(top_srcdir)/popt \
+	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	@WITH_SQLITE3_INCLUDE@ \
 	@WITH_LIBELF_INCLUDE@ \
@@ -53,7 +53,7 @@ librpmdb_la_SOURCES = \
 	tagname.c tagtbl.c
 librpmdb_la_LDFLAGS = -release 4.4 \
 	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/popt/libpopt.la \
+	@WITH_POPT_LIB@ \
 	@WITH_SQLITE3_LIB@ \
 	@WITH_LIBELF_LIB@
 librpmdb_la_LIBADD = $(DBLIBOBJS) $(libdb_la)

@@ -16,11 +16,11 @@ INCLUDES = -I. \
 	-I$(top_srcdir)/lib \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
+	@WITH_LIBELF_INCLUDE@ \
 	@WITH_BEECRYPT_INCLUDE@ \
-	-I$(top_srcdir)/popt \
+	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	-I$(pyincdir) \
-	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
 
 noinst_HEADERS = header-py.h \
@@ -29,11 +29,11 @@ noinst_HEADERS = header-py.h \
 	spec-py.h
 
 mylibs= \
+	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/popt/libpopt.la \
-	$(top_builddir)/build/librpmbuild.la \
+	@WITH_POPT_LIB@ \
 	@WITH_LIBELF_LIB@
 
 LDADD =

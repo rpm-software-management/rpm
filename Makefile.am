@@ -15,7 +15,7 @@ EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	po/*.in po/*.po po/rpm.pot \
 	rpm.magic rpmpopt-$(VERSION) rpmqv.c rpm.c
 
-SUBDIRS = intl po @WITH_ZLIB_SUBDIR@ @WITH_ELFUTILS_SUBDIR@ file @WITH_DB_SUBDIR@ popt @WITH_BEECRYPT_SUBDIR@ lua rpmio rpmdb lib build misc @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
+SUBDIRS = intl po misc @WITH_ZLIB_SUBDIR@ @WITH_ELFUTILS_SUBDIR@ @WITH_MAGIC_SUBDIR@ @WITH_DB_SUBDIR@ @WITH_SQLITE3_SUBDIR@ @WITH_POPT_SUBDIR@ @WITH_BEECRYPT_SUBDIR@ @WITH_NEON_SUBDIR@ lua rpmio rpmdb lib build @WITH_PYTHON_SUBDIR@ tools scripts tests doc .
 
 INCLUDES = \
 	-I$(top_srcdir)/build \
@@ -23,7 +23,7 @@ INCLUDES = \
 	-I$(top_srcdir)/rpmdb \
 	-I$(top_srcdir)/rpmio \
 	@WITH_BEECRYPT_INCLUDE@ \
-	-I$(top_srcdir)/popt \
+	@WITH_POPT_INCLUDE@ \
 	-I$(top_srcdir)/misc \
 	@WITH_LIBELF_INCLUDE@ \
 	@INCPATH@
@@ -36,7 +36,7 @@ myLDADD = \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
-	$(top_builddir)/popt/libpopt.la \
+	@WITH_POPT_LIB@ \
 	@WITH_ZLIB_LIB@ \
 	@LIBMISC@
 
