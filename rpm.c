@@ -73,12 +73,13 @@ void printUsage(void) {
     puts(_("                          [--replacepkgs] [--replacefiles] [--root <dir>]"));
     puts(_("                          [--excludedocs] [--includedocs] [--noscripts]"));
     puts(_("                          [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
-    puts(_("                          [--prefix <dir>] file1.rpm ... fileN.rpm"));
+    puts(_("                          [--prefix <dir>] [--ignoreos] file1.rpm ..."));
+    puts(_("                          fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                          [--oldpackage] [--root <dir>] [--noscripts]"));
     puts(_("                          [--excludedocs] [--includedocs] [--rcfile <file>]"));
     puts(_("                          [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
-    puts(_("                          file1.rpm ... fileN.rpm"));
+    puts(_("                          [--ignoreos] file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
@@ -156,6 +157,7 @@ void printHelp(void) {
     puts(_("      --excludedocs     - do not install documentation"));
     puts(_("      --includedocs     - install documentation"));
     puts(_("      --ignorearch      - don't verify package architecure"));
+    puts(_("      --ignoreos        - don't verify package operating system"));
     puts(_("      --root <dir>	- use <dir> as the top level directory"));
     puts(_(""));
     puts(_("    --upgrade <packagefile>"));
@@ -260,7 +262,7 @@ int main(int argc, char ** argv) {
     int shortCircuit = 0, badOption = 0, queryTags = 0, excldocs = 0;
     int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
     int noPgp = 0, dump = 0, initdb = 0, ignoreArch = 0, showrc = 0;
-    int gotDbpath = 0, building = 0;
+    int gotDbpath = 0, building = 0, ignoreOs = 0;
     int addSign = NEW_SIGNATURE;
     char * rcfile = NULL, * queryFormat = NULL, * prefix = NULL;
     char buildChar = ' ';
@@ -294,6 +296,7 @@ int main(int argc, char ** argv) {
 	    { "hash", 0, &showHash, 'h' },
 	    { "help", 0, &help, 0 },
 	    { "ignorearch", 0, &ignoreArch, 0 },
+	    { "ignoreos", 0, &ignoreOs, 0 },
 	    { "info", 0, 0, 'i' },
             { "includedocs", 0, &incldocs, 0},
 	    { "initdb", 0, &initdb, 0 },
@@ -747,6 +750,10 @@ int main(int argc, char ** argv) {
 	argerror(_("--ignorearch may only be specified during package "
 		   "installation"));
 
+    if (bigMode != MODE_INSTALL && ignoreOs)
+	argerror(_("--ignoreos may only be specified during package "
+		   "installation"));
+
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && noScripts)
 	argerror(_("--noscripts may only be specified during package "
 		   "installation and uninstallation"));
@@ -923,6 +930,7 @@ int main(int argc, char ** argv) {
 	if (test) installFlags |= INSTALL_TEST;
 	if (noScripts) installFlags |= INSTALL_NOSCRIPTS;
 	if (ignoreArch) installFlags |= INSTALL_NOARCH;
+	if (ignoreOs) installFlags |= INSTALL_NOOS;
 
 	if (showPercents) interfaceFlags |= RPMINSTALL_PERCENT;
 	if (showHash) interfaceFlags |= RPMINSTALL_HASH;
