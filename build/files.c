@@ -499,7 +499,7 @@ static int parseForLang(char *buf, struct FileList *fl)
     SKIPSPACE(p);
 
     if (*p != '(') {
-	rpmError(RPMERR_BADSPEC, _("Bad %%lang() syntax: %s"), buf);
+	rpmError(RPMERR_BADSPEC, _("Missing '(' in %s"), start);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -508,7 +508,7 @@ static int parseForLang(char *buf, struct FileList *fl)
     for (pe = p; *pe && *pe != ')'; pe++)
 	;
     if (*pe == '\0') {
-	rpmError(RPMERR_BADSPEC, _("Bad %%lang() syntax: %s"), buf);
+	rpmError(RPMERR_BADSPEC, _("Missing ')' in %s"), start);
 	fl->processingFailed = 1;
 	return RPMERR_BADSPEC;
     }
@@ -516,7 +516,8 @@ static int parseForLang(char *buf, struct FileList *fl)
     /* Excise the next %lang construct */
     strncpy(ourbuf, p, pe-p);
     ourbuf[pe-p] = '\0';
-    while (start <= pe)
+    pe++;	/* skip ) */
+    while (start < pe)
 	*start++ = ' ';
 
     /* Parse multiple arguments from %lang */
@@ -532,8 +533,9 @@ static int parseForLang(char *buf, struct FileList *fl)
 	np = pe - p;
 	
 	/* Sanity check on locale lengths */
-	if (np < 2 || np >= 16) {
-	    rpmError(RPMERR_BADSPEC, _("Bad %%lang() syntax: %s"), buf);
+	if (np < 1 || (np == 1 && *p != 'C') || np >= 16) {
+	    rpmError(RPMERR_BADSPEC, _("Unusual locale length: \"%.*s\" in %%lang(%s)"),
+		np, p, ourbuf);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -542,7 +544,8 @@ static int parseForLang(char *buf, struct FileList *fl)
 	for (i = 0; i < fl->nLangs; i++) {
 	    if (strncmp(fl->currentLangs[i], p, np))
 		continue;
-	    rpmError(RPMERR_BADSPEC, _("Duplicate locale in %%lang(): %s"),buf);
+	    rpmError(RPMERR_BADSPEC, _("Duplicate locale %.*s in %%lang(%s)"),
+		np, p, ourbuf);
 	    fl->processingFailed = 1;
 	    return RPMERR_BADSPEC;
 	}
@@ -552,8 +555,10 @@ static int parseForLang(char *buf, struct FileList *fl)
 	  ? malloc(sizeof(*fl->currentLangs))
 	  : realloc(fl->currentLangs,(fl->nLangs+1)*sizeof(*fl->currentLangs)));
 	newp = malloc( np+1 );
-	strncpy(newp, p, np+1);
+	strncpy(newp, p, np);
+	newp[np] = '\0';
 	fl->currentLangs[fl->nLangs++] = newp;
+	if (*pe == ',') pe++;	/* skip , if present */
     }
   }
     

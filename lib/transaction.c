@@ -1303,7 +1303,7 @@ static void skipFiles(struct fileInfo * fi, int noDocs) {
 		for (l = fileLangs[i]; *l; l = le) {
 		    for (le = l; *le && *le != '|'; le++)
 			;
-		    if ((le-l) > 1 && !strncmp(*lang, l, (le-l)))
+		    if ((le-l) > 0 && !strncmp(*lang, l, (le-l)))
 			goto lingo;
 		    if (*le == '|') le++;	/* skip over | */
 		}
