@@ -194,15 +194,16 @@ int openDatabase(const char * prefix, const char * dbpath, rpmdb *rpmdbp, int mo
 
     rc = openDbFile(prefix, dbpath, "nameindex.rpm", justcheck, mode,
 		    &db.nameIndex, DB_HASH);
-    if (!rc)
-	rc = openDbFile(prefix, dbpath, "fileindex.rpm", justcheck, mode,
-			&db.fileIndex, DB_HASH);
 
     if (minimal) {
 	*rpmdbp = malloc(sizeof(struct rpmdb_s));
 	**rpmdbp = db;
 	return 0;
     }
+
+    if (!rc)
+	rc = openDbFile(prefix, dbpath, "fileindex.rpm", justcheck, mode,
+			&db.fileIndex, DB_HASH);
 
     /* We used to store the fileindexes as complete paths, rather then
        plain basenames. Let's see which version we are... */
