@@ -414,7 +414,7 @@ int main(int argc, char ** argv) {
 
       case MODE_BUILD:
 	if (clean)
-	    buildAmount |= RPMBUILD_CLEAN;
+	    buildAmount |= RPMBUILD_SWEEP;
 
 	if (optind == argc) 
 	    argerror("no spec files given for build");
