@@ -529,6 +529,10 @@ main(int argc, char *argv[])
     int ec = 0;
     injmode_t lastmode = INJ_UNKNOWN;
 
+#if HAVE_MCHECK_H && HAVE_MTRACE
+    mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
+#endif
+
     setprogname(argv[0]);	/* Retrofit glibc __progname */
     (void)setlocale(LC_ALL, "" );
 
