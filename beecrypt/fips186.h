@@ -46,6 +46,7 @@ typedef struct
 	HANDLE		lock;
 	# else
 	bc_lock_t	lock;
+	# endif
 	#endif
 	sha1Param	param;
 	mpw		state[FIPS186_STATE_SIZE];

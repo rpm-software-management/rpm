@@ -41,6 +41,7 @@ typedef struct
 	HANDLE	lock;
 	# else
 	bc_lock_t lock;
+	# endif
 	#endif
 	uint32_t  state[N+1];
 	uint32_t  left;
