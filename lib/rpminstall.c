@@ -339,7 +339,10 @@ int rpmInstall(rpmts ts,
     /*@=temptrans@*/
 	av = _free(av);	ac = 0;
 	rc = rpmGlob(*eiu->fnp, &ac, &av);
-	if (rc || ac == 0) continue;
+	if (rc || ac == 0) {
+	    rpmError(RPMERR_OPEN, _("File not found by glob: %s\n"), *eiu->fnp);
+	    continue;
+	}
 
 	eiu->argv = xrealloc(eiu->argv, (eiu->argc+ac+1) * sizeof(*eiu->argv));
 	memcpy(eiu->argv+eiu->argc, av, ac * sizeof(*av));

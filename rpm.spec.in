@@ -486,6 +486,9 @@ exit 0
 * Fri Oct 25 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.6
 - fix: /dev/initctl has not MD5 segfault (#76718).
 - rpm.8: gpg uses GNUPGHOME, not GPGPATH (#76691).
+- use %%{_lib} for libraries.
+- fix: permit build with --disable-nls (#76258).
+- add error message on glob failure (#76012).
 
 * Thu Oct 24 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.5
 - add /usr/lib/rpm/rpmdeps.

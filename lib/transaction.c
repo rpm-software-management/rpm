@@ -1018,7 +1018,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      * - count files.
      */
 
-rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elments\n"), rpmtsNElements(ts));
+rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts));
     ps = rpmtsProblems(ts);
     /* The ordering doesn't matter here */
     pi = rpmtsiInit(ts);

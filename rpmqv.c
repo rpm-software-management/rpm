@@ -271,6 +271,7 @@ int main(int argc, const char ** argv)
     freeSpecVec = freeSpec;
     /*@=type@*/
 
+#if defined(ENABLE_NLS)
     /* set up the correct locale */
     (void) setlocale(LC_ALL, "" );
 
@@ -279,6 +280,7 @@ int main(int argc, const char ** argv)
 #endif
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
+#endif
 
     rpmSetVerbosity(RPMMESS_NORMAL);	/* XXX silly use by showrc */
 
