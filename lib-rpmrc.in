@@ -107,5 +107,3 @@ arch_compat: osfmach3_i386: i486
 arch_compat: osfmach3_ppc: ppc
 
 arch_compat: usparc: sparc
-
-topdir: /usr/src/redhat
