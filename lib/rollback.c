@@ -178,8 +178,8 @@ void freeFi(TFI_t fi)
     case FSM_MKLINKS:	return "mklinks";
     case FSM_NOTIFY:	return "notify";
     case FSM_UNDO:	return "undo";
+    case FSM_FINI:	return "fini";
     case FSM_COMMIT:	return "commit";
-    case FSM_FINALIZE:	return "finalize";
     case FSM_DESTROY:	return "destroy";
     case FSM_VERIFY:	return "verify";
 
@@ -204,6 +204,7 @@ void freeFi(TFI_t fi)
     case FSM_EAT:	return "eat";
     case FSM_POS:	return "pos";
     case FSM_PAD:	return "pad";
+    case FSM_TRAILER:	return "trailer";
     case FSM_HREAD:	return "hread";
     case FSM_HWRITE:	return "hwrite";
     case FSM_DREAD:	return "Fread";
