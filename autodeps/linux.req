@@ -2,6 +2,8 @@
 
 # note this works for both a.out and ELF executables
 
+ulimit -c 0
+
 filelist=$(xargs file 2>/dev/null | grep "executable" | cut -d: -f1)
 
 for f in $filelist; do
