@@ -61,11 +61,12 @@ int rpmRemovePackage(char * prefix, rpmdb db, unsigned int offset, int test) {
 	    switch (fileStatesList[i]) { 
 	      case RPMFILE_STATE_REPLACED:
 		message(MESS_DEBUG, "%s has already been replaced\n", 
-			fileList[i]);
+			fnbuffer);
 		break;
 
 	      case RPMFILE_STATE_NORMAL:
-		message(MESS_DEBUG, "%s - %s\n", fileList[i], rmmess);
+		message(MESS_DEBUG, "%s - %s\n", fnbuffer, rmmess);
+		/* unlink(fnbuffer); */
 		break;
 	    }
 	}
