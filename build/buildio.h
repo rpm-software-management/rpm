@@ -1,7 +1,9 @@
 #ifndef	_H_BUILDIO_
 #define	_H_BUILDIO_
 
-/* XXX this information will move elsewhere eventually */
+/** \file build/buildio.h
+ *  XXX this information will move elsewhere eventually
+ */
 
 #include "cpio.h"
 

@@ -163,6 +163,7 @@ myftw_dir (DIR **dirs, int level, int descriptors,
 /* Call a function on every element in a directory tree.  */
 
 
+/** */
 int myftw (const char *dir,
 	   int descriptors,
 	   myftwFunc func,

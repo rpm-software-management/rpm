@@ -1,3 +1,7 @@
+/** \file build/parseReqs.c
+ *  Parse dependency tag from spec file or from auto-dependency generator.
+ */
+
 #include "system.h"
 
 #include "rpmbuild.h"
@@ -23,6 +27,7 @@ static struct ReqComp {
 #define	SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
 
+/** */
 int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index)
 {
     const char *r, *re, *v, *ve;

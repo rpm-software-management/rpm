@@ -1,3 +1,7 @@
+/** \file build/expression.c
+ *  Simple logical expression parser.
+ */
+
 /*
  * Simple Expression Parser
  * Copyright (C) 1998 Tom Dyas <tdyas@eden.rutgers.edu>
@@ -299,7 +303,6 @@ static int rdToken(ParseState state)
 
   return 0;
 }
-
 
 static Value doLogical(ParseState state);
 
@@ -618,6 +621,7 @@ static Value doLogical(ParseState state)
   return v1;
 }
 
+/** */
 int parseExpressionBoolean(Spec spec, char *expr)
 {
   struct _parseState state;
@@ -665,6 +669,7 @@ int parseExpressionBoolean(Spec spec, char *expr)
   return result;
 }
 
+/** */
 char * parseExpressionString(Spec spec, char *expr)
 {
   struct _parseState state;

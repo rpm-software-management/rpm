@@ -1,7 +1,12 @@
+/** \file build/parseChangelog.c
+ *  Parse %changelog section from spec file.
+ */
+
 #include "system.h"
 
 #include "rpmbuild.h"
 
+/** */
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
     int_32 mytime = time;	/* XXX convert to header representation */
@@ -178,6 +183,7 @@ static int addChangelog(Header h, StringBuf sb)
     return 0;
 }
 
+/** */
 int parseChangelog(Spec spec)
 {
     int nextPart, res, rc;

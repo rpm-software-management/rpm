@@ -1,7 +1,10 @@
 #ifndef	_H_RPMBUILD_
 #define	_H_RPMBUILD_
 
-/* This is the *only* module users of librpmbuild should need to include */
+/** \file build/rpmbuild.h
+ *  This is the *only* module users of librpmbuild should need to include.
+ */
+
 #include "rpmlib.h"
 
 /* and it shouldn't need these :-( */

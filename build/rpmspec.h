@@ -1,6 +1,10 @@
 #ifndef _H_SPEC_
 #define _H_SPEC_
 
+/** \file build/rpmspec.h
+ *  The Spec and Package data structures used during build.
+ */
+
 typedef struct SpecStruct *Spec;
 #include "rpmmacro.h"
 
@@ -14,12 +18,15 @@ struct ReqProvTrigger {
 };
 #endif
 
+/** */
 struct TriggerFileEntry {
+/*@{*/
     int index;
     /*@only@*/ char *fileName;
     /*@only@*/ char *script;
     /*@only@*/ char *prog;
     /*@owned@*/ struct TriggerFileEntry *next;
+/*@}*/
 };
 
 #define RPMBUILD_ISSOURCE     1
@@ -29,51 +36,69 @@ struct TriggerFileEntry {
 
 #define RPMBUILD_DEFAULT_LANG "C"
 
+/** */
 struct Source {
+/*@{*/
     /*@owned@*/ char *fullSource;
     /*@dependent@*/ char *source;     /* Pointer into fullSource */
     int flags;
     int num;
     /*@owned@*/ struct Source *next;
+/*@}*/
 };
 
+/** */
 typedef struct ReadLevelEntry {
+/*@{*/
     int reading;
     /*@dependent@*/ struct ReadLevelEntry *next;
+/*@}*/
 } RLE_t;
 
+/** */
 typedef struct OpenFileInfo {
+/*@{*/
     /*@only@*/ char *fileName;
     FD_t fd;
     int lineNum;
     char readBuf[BUFSIZ];
     /*@dependent@*/ char *readPtr;
     /*@owned@*/ struct OpenFileInfo *next;
+/*@}*/
 } OFI_t;
 
+/** */
 struct spectag {
+/*@{*/
     int t_tag;
     int t_startx;
     int t_nlines;
     /*@only@*/ const char *t_lang;
     /*@only@*/ const char *t_msgid;
+/*@}*/
 };
 
-
+/** */
 struct spectags {
+/*@{*/
     /*@owned@*/ struct spectag *st_t;
     int st_nalloc;
     int st_ntags;
+/*@}*/
 };
 
+/** */
 struct speclines {
+/*@{*/
     /*@only@*/ char **sl_lines;
     int sl_nalloc;
     int sl_nlines;
+/*@}*/
 };
 
-/*! The structure used to store values parsed from a spec file. */
+/** The structure used to store values parsed from a spec file. */
 struct SpecStruct {
+/*@{*/
     /*@only@*/ const char *specFile;	/*!< Name of the spec file. */
     /*@only@*/ const char *sourceRpmName;
 
@@ -123,10 +148,12 @@ struct SpecStruct {
     /*@only@*/ StringBuf clean;		/*!< %clean scriptlet. */
 
     /*@owned@*/ struct PackageStruct *packages;	/*!< Package list. */
+/*@}*/
 };
 
-/*! The structure used to store values for a package. */
+/** The structure used to store values for a package. */
 struct PackageStruct {
+/*@{*/
     /*@refcounted@*/ Header header;
 
     int cpioCount;
@@ -156,8 +183,10 @@ struct PackageStruct {
     /*@only@*/ StringBuf fileList; /* If NULL, package will not be written */
 
     /*@dependent@*/ struct PackageStruct *next;
+/*@}*/
 };
 
+/** */
 typedef struct PackageStruct *Package;
 
 #ifdef __cplusplus

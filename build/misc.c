@@ -2,6 +2,7 @@
 
 #include "rpmbuild.h"
 
+/** */
 int parseNum(const char *line, int *res)
 {
     char *s1;

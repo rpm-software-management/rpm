@@ -1,3 +1,7 @@
+/** \file build/spec.c
+ * Handle spec data structure.
+ */
+
 #include "system.h"
 
 #include "rpmbuild.h"
@@ -49,6 +53,7 @@ static inline void freeSources(/*@only@*/ struct Source *s)
     }
 }
 
+/** */
 int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
 {
     const char *pname;
@@ -89,6 +94,7 @@ int lookupPackage(Spec spec, const char *name, int flag, /*@out@*/Package *pkg)
     return ((p == NULL) ? 1 : 0);
 }
 
+/** */
 Package newPackage(Spec spec)
 {
     Package p;
@@ -137,6 +143,7 @@ Package newPackage(Spec spec)
     return p;
 }
 
+/** */
 void freePackage(/*@only@*/ Package p)
 {
     if (p == NULL)
@@ -162,6 +169,7 @@ void freePackage(/*@only@*/ Package p)
     free(p);
 }
 
+/** */
 void freePackages(Spec spec)
 {
     Package p;
@@ -208,6 +216,7 @@ static char *getFullSource(Spec spec, int num, int flag)
 }
 #endif	/* UNUSED */
 
+/** */
 int parseNoSource(Spec spec, const char *field, int tag)
 {
     const char *f, *fe;
@@ -252,6 +261,7 @@ int parseNoSource(Spec spec, const char *field, int tag)
     return 0;
 }
 
+/** */
 int addSource(Spec spec, Package pkg, const char *field, int tag)
 {
     struct Source *p;
@@ -391,6 +401,7 @@ static inline void freeSt(/*@only@*/struct spectags *st)
     free(st);
 }
 
+/** */
 Spec newSpec(void)
 {
     Spec spec;
@@ -451,6 +462,7 @@ Spec newSpec(void)
     return spec;
 }
 
+/** */
 void freeSpec(/*@only@*/ Spec spec)
 {
     struct OpenFileInfo *ofi;
@@ -514,6 +526,7 @@ void freeSpec(/*@only@*/ Spec spec)
     free(spec);
 }
 
+/** */
 /*@only@*/ struct OpenFileInfo * newOpenFileInfo(void)
 {
     struct OpenFileInfo *ofi;

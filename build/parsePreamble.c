@@ -1,3 +1,7 @@
+/** \file build/parsePreamble.c
+ *  Parse tags in global section from spec file.
+ */
+
 #include "system.h"
 
 static int _debug = 0;
@@ -285,6 +289,7 @@ exit:
     return rc;
 }
 
+/** */
 struct spectag *
 stashSt(Spec spec, Header h, int tag, const char *lang)
 {
@@ -669,6 +674,7 @@ static int findPreambleTag(Spec spec, /*@out@*/int *tag, /*@out@*/char **macro, 
     return 0;
 }
 
+/** */
 int parsePreamble(Spec spec, int initialPackage)
 {
     int nextPart;

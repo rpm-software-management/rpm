@@ -1,7 +1,9 @@
-/* myftw.h -- ftw() using lstat() instead of stat() */
-
 #ifndef _H_MYFTW_
 #define _H_MYFTW_
+
+/** \file build/myftw.h
+ * Portable ftw(3) using lstat() instead of stat().
+ */
 
 #include <sys/stat.h>
 
@@ -17,10 +19,7 @@ extern "C" {
 
 typedef int (*myftwFunc) (void *fl, const char *name, struct stat *statp);
 
-int myftw (const char *dir,
-	   int descriptors,
-	   myftwFunc func,
-	   void *fl);
+int myftw (const char *dir, int descriptors, myftwFunc func, void *fl);
 
 #ifdef __cplusplus
 }

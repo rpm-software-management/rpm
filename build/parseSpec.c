@@ -1,3 +1,7 @@
+/** \file build/parseSpec.c
+ *  Top level dispatcher for spec file parsing.
+ */
+
 #include "system.h"
 
 static int _debug = 0;
@@ -36,6 +40,7 @@ static inline void initParts(struct PartRec *p)
 	p->len = strlen(p->token);
 }
 
+/** */
 int isPart(char *line)
 {
     char c;
@@ -86,6 +91,7 @@ static int matchTok(const char *token, const char *line)
     return rc;
 }
 
+/** */
 void handleComments(char *s)
 {
     SKIPSPACE(s);
@@ -160,6 +166,7 @@ static int copyNextLine(Spec spec, OFI_t *ofi, int strip)
 /*         1 - EOF     */
 /*        <0 - error   */
 
+/** */
 int readLine(Spec spec, int strip)
 {
     const char *arch;
@@ -317,6 +324,7 @@ retry:
     return 0;
 }
 
+/** */
 void closeSpec(Spec spec)
 {
     OFI_t *ofi;
@@ -332,6 +340,7 @@ void closeSpec(Spec spec)
 
 int noLang = 0;		/* XXX FIXME: pass as arg */
 
+/** */
 int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
 		const char *buildRootURL, int inBuildArch, const char *passPhrase,
 		char *cookie, int anyarch, int force)

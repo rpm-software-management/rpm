@@ -1,3 +1,7 @@
+/** \file build/parsePrep.c
+ *  Parse %prep section from spec file.
+ */
+
 #include "system.h"
 
 #include <rpmbuild.h>
@@ -442,6 +446,7 @@ static int doPatchMacro(Spec spec, char *line)
     return 0;
 }
 
+/** */
 int parsePrep(Spec spec)
 {
     int nextPart, res, rc;

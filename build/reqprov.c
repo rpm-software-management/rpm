@@ -1,9 +1,12 @@
-/* reqprov.c -- require/provide handling */
+/** \file build/reqprov.c
+ *  Add dependency tags to package header(s).
+ */
 
 #include "system.h"
 
 #include "rpmbuild.h"
 
+/** */
 int addReqProv(/*@unused@*/ Spec spec, Header h,
 	       int flag, const char *name, const char *version, int index)
 {

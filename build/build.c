@@ -1,3 +1,7 @@
+/** \file build/build.c
+ *  Top-level build dispatcher.
+ */
+
 #include "system.h"
 
 #include <rpmbuild.h>
@@ -36,6 +40,7 @@ static void doRmSource(Spec spec)
 /*
  * The _preScript string is expanded to export values to a script environment.
  */
+/** */
 int doScript(Spec spec, int what, const char *name, StringBuf sb, int test)
 {
     const char * rootURL = spec->rootURL;
@@ -230,6 +235,7 @@ fprintf(stderr, "*** delMacros\n");
     return rc;
 }
 
+/** */
 int buildSpec(Spec spec, int what, int test)
 {
     int x, rc;

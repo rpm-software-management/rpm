@@ -1,7 +1,11 @@
+/** \file build/parseBuildInstallClean.c
+ *  Parse %build/%install/%clean section from spec file.
+ */
 #include "system.h"
 
 #include "rpmbuild.h"
 
+/** */
 int parseBuildInstallClean(Spec spec, int parsePart)
 {
     int nextPart, rc;

@@ -1,3 +1,8 @@
+/** \file build/files.c
+ *  The post-build, pre-packaging file tree walk to assemble the package
+ *  manifest.
+ */
+
 #include "system.h"
 
 static int _debug = 0;
@@ -207,6 +212,7 @@ typedef struct VFA {
 	int	flag;
 } VFA_t;
 
+/** */
 VFA_t verifyAttrs[] = {
 	{ "md5",	RPMVERIFY_MD5 },
 	{ "size",	RPMVERIFY_FILESIZE },
@@ -592,6 +598,7 @@ static int parseForRegexLang(const char *fileName, /*@out@*/char **lang)
     return 0;
 }
 
+/** */
 VFA_t virtualFileAttributes[] = {
 	{ "%dir",	0 },	/* XXX why not RPMFILE_DIR? */
 	{ "%doc",	RPMFILE_DOC },
@@ -1326,6 +1333,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     return fl.processingFailed;
 }
 
+/** */
 void initSourceHeader(Spec spec)
 {
     HeaderIterator hi;
@@ -1384,6 +1392,7 @@ void initSourceHeader(Spec spec)
     }
 }
 
+/** */
 int processSourceFiles(Spec spec)
 {
     struct Source *srcPtr;
@@ -1657,6 +1666,7 @@ typedef struct {
     int xor;
 } DepMsg_t;
 
+/** */
 DepMsg_t depMsgs[] = {
   { "Provides",		{ "%{__find_provides}", NULL, NULL, NULL },
 	RPMTAG_PROVIDENAME, RPMTAG_PROVIDEVERSION, RPMTAG_PROVIDEFLAGS,
@@ -1860,6 +1870,7 @@ static void printDeps(Header h)
     FREE(versions);
 }
 
+/** */
 int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 {
     Package pkg;
