@@ -2,15 +2,12 @@
 
 /* NOTES
  *
- * A PGP 2.6.2 1024 bit key generates a 152 byte signature
- * A ViaCryptPGP 2.7.1 1024 bit key generates a 152 byte signature
- * A PGP 2.6.2  768 bit key generates a 120 byte signature
+ * Things have been cleaned up wrt PGP.  We can now handle
+ * signatures of any length (which means you can use any
+ * size key you like).  We also honor PGPPATH finally.
  *
- * This code only only works with 1024 bit keys!
- *
- * Sometimes we get 151 byte signatures.  Not sure why, but if we
- * do, we toss it and try once more to get a 152 bytes signature.
- * If we still get a 151 byte sig, fail.  :-(
+ * We are aligning the sig section on disk to 8 bytes.
+ * The lead is already 8 byte aligned.
  */
 
 #include <stdlib.h>
@@ -22,16 +19,67 @@
 #include <strings.h>
 
 #include "signature.h"
+#include "md5.h"
 #include "rpmlib.h"
 #include "rpmerr.h"
 
+static int makeMD5Signature(char *file, int ofd);
 static int makePGPSignature(char *file, int ofd, char *passPhrase);
 static int verifyPGPSignature(int fd, void *sig, char *result);
 static int checkPassPhrase(char *passPhrase);
 
+unsigned short sigLookupType(void)
+{
+    char *name;
+
+    /* Now we always generate at least a RPMSIG_MD5 */
+    
+    if (! (name = getVar(RPMVAR_SIGTYPE))) {
+	return RPMSIG_MD5;
+    }
+
+    if (!strcasecmp(name, "none")) {
+	return RPMSIG_MD5;
+    } else if (!strcasecmp(name, "pgp")) {
+	return RPMSIG_MD5_PGP;
+    } else {
+	return RPMSIG_BAD;
+    }
+}
+
+int verifySignature(int fd, short sig_type, void *sig, char *result)
+{
+    switch (sig_type) {
+    case RPMSIG_NONE:
+	strcpy(result, "No signature information available\n");
+	return RPMSIG_NOSIG;
+	break;
+    case RPMSIG_PGP262_1024:
+	if (verifyPGPSignature(fd, sig, result)) {
+	    return RPMSIG_BADSIG;
+	}
+	break;
+    case RPMSIG_MD5:
+    case RPMSIG_MD5_PGP:
+	/* XXX */
+	fprintf(stderr, "Almost there...\n");
+	break;
+    default:
+	sprintf(result, "Unimplemented signature type\n");
+	return RPMSIG_UNKNOWNSIG;
+	break;
+    }
+
+    return RPMSIG_SIGOK;
+}
+
+/* We need to be careful here to do 8 byte alignment */
+/* when reading any of the "new" style signatures.   */
+
 int readSignature(int fd, short sig_type, void **sig)
 {
-    unsigned char pgpbuf[256];
+    unsigned char buf[2048];
+    int length;
     
     switch (sig_type) {
     case RPMSIG_NONE:
@@ -40,14 +88,48 @@ int readSignature(int fd, short sig_type, void **sig)
 	}
 	break;
     case RPMSIG_PGP262_1024:
-	if (read(fd, pgpbuf, 256) != 256) {
+	/* These are always 256 bytes */
+	if (read(fd, buf, 256) != 256) {
 	   return 0;
 	}
 	if (sig) {
 	    *sig = malloc(152);
-	    memcpy(*sig, pgpbuf, 152);
+	    memcpy(*sig, buf, 152);
 	}
 	break;
+    case RPMSIG_MD5:
+	/* 8 byte aligned */
+	if (read(fd, buf, 16) != 16) {
+	    return 0;
+	}
+	if (sig) {
+	    *sig = malloc(16);
+	    memcpy(*sig, buf, 16);
+	}
+	break;
+    case RPMSIG_MD5_PGP:
+	/* 8 byte aligned */
+	if (read(fd, buf, 18) != 18) {
+	    return 0;
+	}
+	length = buf[16] * 256 + buf[17];
+	if (read(fd, buf + 18, length) != length) {
+	    return 0;
+	}
+	if (sig) {
+	    *sig = malloc(18 + length);
+	    memcpy(*sig, buf, 18 + length);
+	}
+	/* The is the align magic */
+	length = (8 - ((length + 18) % 8)) % 8;
+	if (length) {
+	    if (read(fd, buf, length) != length) {
+		return 0;
+	    }
+	}
+	break;
+    default:
+	return 0;
     }
 
     return 1;
@@ -55,10 +137,10 @@ int readSignature(int fd, short sig_type, void **sig)
 
 int makeSignature(char *file, short sig_type, int ofd, char *passPhrase)
 {
-    int res;
-    
     switch (sig_type) {
     case RPMSIG_PGP262_1024:
+	/* We no longer generate these */
+#if 0	
 	if (! getVar(RPMVAR_PGP_NAME)) {
 	    error(RPMERR_SIGGEN, "You must set \"pgp_name:\" in /etc/rpmrc\n");
 	    return RPMERR_SIGGEN;
@@ -68,6 +150,30 @@ int makeSignature(char *file, short sig_type, int ofd, char *passPhrase)
 	    return makePGPSignature(file, ofd, passPhrase);
 	}
         return res;
+#endif
+	error(RPMERR_SIGGEN, "Internal error! RPMSIG_PGP262_1024\n");
+	return RPMERR_SIGGEN;
+	break;
+    case RPMSIG_MD5:
+	if (makeMD5Signature(file, ofd)) {
+	    error(RPMERR_SIGGEN, "Unable to generate MD5 signature\n");
+	    return RPMERR_SIGGEN;
+	}
+	break;
+    case RPMSIG_MD5_PGP:
+	if (! getVar(RPMVAR_PGP_NAME)) {
+	    error(RPMERR_SIGGEN, "You must set \"pgp_name:\" in /etc/rpmrc\n");
+	    return RPMERR_SIGGEN;
+	}
+	if (makeMD5Signature(file, ofd)) {
+	    error(RPMERR_SIGGEN, "Unable to generate MD5 signature\n");
+	    return RPMERR_SIGGEN;
+	}
+	/* makePGPSignature() takes care of 8 byte alignment */
+	if (makePGPSignature(file, ofd, passPhrase)) {
+	    error(RPMERR_SIGGEN, "Unable to generate PGP signature\n");
+	    return RPMERR_SIGGEN;
+	}
 	break;
     case RPMSIG_NONE:
     }
@@ -75,19 +181,172 @@ int makeSignature(char *file, short sig_type, int ofd, char *passPhrase)
     return 0;
 }
 
-#if 0
-void ttycbreak(void)
+static int makeMD5Signature(char *file, int ofd)
 {
-    int tty;
+    unsigned char sig[16];
 
-    if ((tty = open("/dev/tty", O_RDWR)) < 0) {
-	fprintf(stderr, "Unable to open tty.  Using standard input.\n");
-	tty = 0;
+    mdbinfile(file, sig);
+    if (write(ofd, sig, 16) != 16) {
+	return 1;
+    }
+    
+    return 0;
+}
+
+/* Be sure to handle 8 byte alignment! */
+
+static int makePGPSignature(char *file, int ofd, char *passPhrase)
+{
+    unsigned char length[2];
+    char name[1024];
+    char sigfile[1024];
+    int pid, status, len;
+    int fd, inpipe[2];
+    unsigned char sigbuf[2048];   /* 1024bit sig is ~152 bytes */
+    FILE *fpipe;
+    struct stat statbuf;
+
+    sprintf(name, "+myname=\"%s\"", getVar(RPMVAR_PGP_NAME));
+
+    sprintf(sigfile, "%s.sig", file);
+
+    pipe(inpipe);
+    
+    if (!(pid = fork())) {
+	close(0);
+	dup2(inpipe[0], 3);
+	close(inpipe[1]);
+	setenv("PGPPASSFD", "3", 1);
+	if (getVar(RPMVAR_PGP_PATH)) {
+	    setenv("PGPPATH", getVar(RPMVAR_PGP_PATH), 1);
+	}
+	/* setenv("PGPPASS", passPhrase, 1); */
+	execlp("pgp", "pgp",
+	       "+batchmode=on", "+verbose=0", "+armor=off",
+	       name, "-sb", file, sigfile,
+	       NULL);
+	error(RPMERR_EXEC, "Couldn't exec pgp");
+	exit(RPMERR_EXEC);
     }
 
+    fpipe = fdopen(inpipe[1], "w");
+    close(inpipe[0]);
+    fprintf(fpipe, "%s\n", passPhrase);
+    fclose(fpipe);
+
+    waitpid(pid, &status, 0);
+    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+	error(RPMERR_SIGGEN, "pgp failed");
+	return 1;
+    }
+
+    if (stat(sigfile, &statbuf)) {
+	/* PGP failed to write signature */
+	unlink(sigfile);  /* Just in case */
+	error(RPMERR_SIGGEN, "pgp failed to write signature");
+	return 1;
+    }
+
+    /* Fill in the length, data, and then 8 byte alignment magic */
+    len = statbuf.st_size;
+    length[0] = len / 256;
+    length[1] = len % 256;
+    write(ofd, length, 2);
     
+    fd = open(sigfile, O_RDONLY);
+    if (read(fd, sigbuf, len) != len) {
+	unlink(sigfile);
+	close(fd);
+	error(RPMERR_SIGGEN, "unable to read the signature");
+	return 1;
+    }
+    if (write(ofd, sigbuf, len) != len) {
+	unlink(sigfile);
+	close(fd);
+	error(RPMERR_SIGGEN, "unable to write the signature");
+	return 1;
+    }
+    close(fd);
+    unlink(sigfile);
+
+    message(MESS_DEBUG, "Wrote %d bytes of PGP sig\n", len);
+    
+    /* Now the alignment */
+    len = (8 - ((len + 18) % 8)) % 8;
+    if (len) {
+	memset(sigbuf, 0xff, len);
+	if (write(ofd, sigbuf, len) != len) {
+	    close(fd);
+	    error(RPMERR_SIGGEN, "unable to write the alignment cruft");
+	    return 1;
+	}
+	message(MESS_DEBUG, "Wrote %d bytes of alignment cruft\n", len);
+    }
+    
+    return 0;
 }
-#endif
+
+static int verifyPGPSignature(int fd, void *sig, char *result)
+{
+    char *sigfile;
+    char *datafile;
+    int count, sfd, pid, status, outpipe[2];
+    unsigned char buf[8192];
+    FILE *file;
+
+    /* Write out the signature */
+    sigfile = tempnam("/var/tmp", "rpmsig");
+    sfd = open(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    /* XXX */
+    write(sfd, sig, 152);
+    close(sfd);
+
+    /* Write out the data */
+    datafile = tempnam("/var/tmp", "rpmsig");
+    sfd = open(datafile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
+    while((count = read(fd, buf, 8192)) > 0) {
+	write(sfd, buf, count);
+    }
+    close(sfd);
+
+    /* Now run PGP */
+    pipe(outpipe);
+
+    if (!(pid = fork())) {
+	close(1);
+	close(outpipe[0]);
+	dup2(outpipe[1], 1);
+	if (getVar(RPMVAR_PGP_PATH)) {
+	    setenv("PGPPATH", getVar(RPMVAR_PGP_PATH), 1);
+	}
+	execlp("pgp", "pgp",
+	       "+batchmode=on", "+verbose=0",
+	       sigfile, datafile,
+	       NULL);
+	printf("exec failed!\n");
+	error(RPMERR_EXEC, "Couldn't exec pgp");
+	exit(RPMERR_EXEC);
+    }
+
+    close(outpipe[1]);
+    file = fdopen(outpipe[0], "r");
+    result[0] = '\0';
+    while (fgets(buf, 1024, file)) {
+	if (strncmp("File '", buf, 6) && strncmp("Text is assu", buf, 12)) {
+	    strcat(result, buf);
+	}
+    }
+    fclose(file);
+
+    waitpid(pid, &status, 0);
+    unlink(datafile);
+    unlink(sigfile);
+    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+	return(1);
+    }
+    
+    return(0);
+}
 
 char *getPassPhrase(char *prompt)
 {
@@ -160,175 +419,4 @@ static int checkPassPhrase(char *passPhrase)
 
     /* passPhrase is good */
     return 0;
-}
-
-static int makePGPSignature(char *file, int ofd, char *passPhrase)
-{
-    char name[1024];
-    char sigfile[1024];
-    int pid, status;
-    int fd, inpipe[2];
-    unsigned char sigbuf[256];   /* 1024bit sig is 152 bytes */
-    FILE *fpipe;
-    struct stat statbuf;
-
-    sprintf(name, "+myname=\"%s\"", getVar(RPMVAR_PGP_NAME));
-
-    sprintf(sigfile, "%s.sig", file);
-
-    pipe(inpipe);
-    
-    if (!(pid = fork())) {
-	close(0);
-	dup2(inpipe[0], 3);
-	close(inpipe[1]);
-	setenv("PGPPASSFD", "3", 1);
-	if (getVar(RPMVAR_PGP_PATH)) {
-	    setenv("PGPPATH", getVar(RPMVAR_PGP_PATH), 1);
-	}
-	/* setenv("PGPPASS", passPhrase, 1); */
-	execlp("pgp", "pgp",
-	       "+batchmode=on", "+verbose=0", "+armor=off",
-	       name, "-sb", file, sigfile,
-	       NULL);
-	error(RPMERR_EXEC, "Couldn't exec pgp");
-	exit(RPMERR_EXEC);
-    }
-
-    fpipe = fdopen(inpipe[1], "w");
-    close(inpipe[0]);
-    fprintf(fpipe, "%s\n", passPhrase);
-    fclose(fpipe);
-
-    waitpid(pid, &status, 0);
-    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	error(RPMERR_SIGGEN, "pgp failed");
-	return 1;
-    }
-
-    if (stat(sigfile, &statbuf)) {
-	/* PGP failed to write signature */
-	unlink(sigfile);  /* Just in case */
-	error(RPMERR_SIGGEN, "pgp failed to write signature");
-	return 1;
-    }
-    if (statbuf.st_size != 152) {
-	/* 151 byte sig hack */
-	unlink(sigfile);
-	error(RPMERR_SIGGEN, "pgp failed to write 152 byte signature");
-	return -1;
-    }
-    
-    fd = open(sigfile, O_RDONLY);
-    if (read(fd, sigbuf, 152) != 152) {       /* signature is 152 bytes */
-	unlink(sigfile);
-	close(fd);
-	error(RPMERR_SIGGEN, "unable to read 152 bytes of signature");
-	return 1;
-    }
-    close(fd);
-    unlink(sigfile);
-
-    write(ofd, sigbuf, 256);   /* We write an even 256 bytes */
-    
-    return 0;
-}
-
-static int verifyPGPSignature(int fd, void *sig, char *result)
-{
-    char *sigfile;
-    char *datafile;
-    int count, sfd, pid, status, outpipe[2];
-    unsigned char buf[8192];
-    FILE *file;
-
-    /* Write out the signature */
-    sigfile = tempnam("/var/tmp", "rpmsig");
-    sfd = open(sigfile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    write(sfd, sig, 152);
-    close(sfd);
-
-    /* Write out the data */
-    datafile = tempnam("/var/tmp", "rpmsig");
-    sfd = open(datafile, O_WRONLY|O_CREAT|O_TRUNC, 0644);
-    while((count = read(fd, buf, 8192)) > 0) {
-	write(sfd, buf, count);
-    }
-    close(sfd);
-
-    /* Now run PGP */
-    pipe(outpipe);
-
-    if (!(pid = fork())) {
-	close(1);
-	close(outpipe[0]);
-	dup2(outpipe[1], 1);
-	if (getVar(RPMVAR_PGP_PATH)) {
-	    setenv("PGPPATH", getVar(RPMVAR_PGP_PATH), 1);
-	}
-	execlp("pgp", "pgp",
-	       "+batchmode=on", "+verbose=0",
-	       sigfile, datafile,
-	       NULL);
-	printf("exec failed!\n");
-	error(RPMERR_EXEC, "Couldn't exec pgp");
-	exit(RPMERR_EXEC);
-    }
-
-    close(outpipe[1]);
-    file = fdopen(outpipe[0], "r");
-    result[0] = '\0';
-    while (fgets(buf, 1024, file)) {
-	if (strncmp("File '", buf, 6) && strncmp("Text is assu", buf, 12)) {
-	    strcat(result, buf);
-	}
-    }
-    fclose(file);
-
-    waitpid(pid, &status, 0);
-    unlink(datafile);
-    unlink(sigfile);
-    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	return(1);
-    }
-    
-    return(0);
-}
-
-int verifySignature(int fd, short sig_type, void *sig, char *result)
-{
-    switch (sig_type) {
-    case RPMSIG_NONE:
-	strcpy(result, "No signature information available\n");
-	return RPMSIG_NOSIG;
-	break;
-    case RPMSIG_PGP262_1024:
-	if (verifyPGPSignature(fd, sig, result)) {
-	    return RPMSIG_BADSIG;
-	}
-	break;
-    default:
-	sprintf(result, "Unimplemented signature type\n");
-	return RPMSIG_UNKNOWNSIG;
-	break;
-    }
-
-    return RPMSIG_SIGOK;
-}
-
-unsigned short sigLookupType(void)
-{
-    char *name;
-
-    if (! (name = getVar(RPMVAR_SIGTYPE))) {
-	return RPMSIG_NONE;
-    }
-
-    if (!strcasecmp(name, "none")) {
-	return RPMSIG_NONE;
-    } else if (!strcasecmp(name, "pgp")) {
-	return RPMSIG_PGP262_1024;
-    } else {
-	return RPMSIG_BAD;
-    }
 }
