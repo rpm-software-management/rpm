@@ -1168,7 +1168,6 @@ static void handleOverlappedFiles(TFI_t fi, hashTable ht,
 	     * decremented twice? Quite probably!
 	     */
 	      case FA_CREATE:
-		ds->ineeded++;
 		ds->bneeded += s;
 		ds->bneeded -= BLOCK_ROUND(fi->replacedSizes[i], ds->bsize);
 		break;

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-04-23 16:53-0400\n"
+"POT-Creation-Date: 2001-04-26 16:39-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2530,32 +2530,32 @@ msgstr ""
 msgid "%9d %s\n"
 msgstr ""
 
-#: lib/fsm.c:1040
+#: lib/fsm.c:1044
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1342 lib/fsm.c:1459
+#: lib/fsm.c:1346 lib/fsm.c:1463
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1484
+#: lib/fsm.c:1488
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1489
+#: lib/fsm.c:1493
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1498
+#: lib/fsm.c:1502
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1515
+#: lib/fsm.c:1519
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -3696,7 +3696,7 @@ msgstr ""
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/transaction.c:1359
+#: lib/transaction.c:1358
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""

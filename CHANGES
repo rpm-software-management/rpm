@@ -32,6 +32,7 @@
 	- regenerate rpm.8 man page from docbook glop (in max-rpm).
 	- lib/depends.c: diddle debugging messages.
 	- fix: readlink return value clobbered by header write.
+	- fix: ineeded count wrong for overlapped, created files.
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.
