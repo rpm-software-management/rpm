@@ -56,6 +56,7 @@
 	- rebuild against glibc with fcntl fixed in libpthread.
 	- re-enable CDB locking, removing "private" from %%__dbi_cdb macro.
 	- popt aliases for -U et al to achieve dynamic link with nptl.
+	- add --file{class,provide,require} popt aliases and header extensions.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

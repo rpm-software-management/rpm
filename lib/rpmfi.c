@@ -1266,7 +1266,7 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
 		(void) rpmdsSetIx(ds, ix-1);
 		if (rpmdsNext(ds) < 0)
 		    continue;
-		DNEVR = rpmdsDNEVR(ds) + 2;
+		DNEVR = rpmdsDNEVR(ds);
 		if (DNEVR != NULL)
 		    nb += strlen(DNEVR+2) + 1;
 	    }
@@ -1292,7 +1292,7 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
 		(void) rpmdsSetIx(ds, ix-1);
 		if (rpmdsNext(ds) < 0)
 		    continue;
-		DNEVR = rpmdsDNEVR(ds) + 2;
+		DNEVR = rpmdsDNEVR(ds);
 		if (DNEVR != NULL) {
 		    t = stpcpy(t, DNEVR+2);
 		    *t++ = ' ';
