@@ -59,7 +59,8 @@ static int generateRPM(char *name,       /* name-version-release         */
     } else {
 	archName = getArchName();
 	sprintf(filename, "%s/%s/%s.%s.rpm", getVar(RPMVAR_RPMDIR),
-		getVar(RPMVAR_ARCHSENSITIVE) ? archName : "", name, archName);
+		getBooleanVar(RPMVAR_ARCHSENSITIVE) ? archName : "",
+		name, archName);
     }
 
     /* Write the archive to a temp file so we can get the size */
