@@ -10,6 +10,8 @@
 	- added rpmVersionCompare() to compare version/release/serial numbers
 	  for packages -- returns like strcmp()
 	- stdout/stderr were getting closed after running a verify script
+	- relocting packages didn't work w/ the packages contained the
+	  directory which was it's prefix
 
 2.2.11 -> 2.3:
 	- replaced putenv/setenv which calls which malloc() buffer -- these
