@@ -133,11 +133,13 @@ extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 #define	fdClose		fdio->close
 #define	fdOpen		fdio->_open
 
-#if 0
+/* XXX legacy interface used in gnorpm */
 #define	fdRead		fdio->read
 #define	fdWrite		fdio->write
-#define	fdSeek		fdio->seek
 #define	fdFileno	fdio->_fileno
+
+#if 0
+#define	fdSeek		fdio->seek
 #endif
 
 #define	fdLink(_fd, _msg)	fdio->ref(_fd, _msg, __FILE__, __LINE__)
