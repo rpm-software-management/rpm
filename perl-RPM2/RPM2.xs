@@ -1,5 +1,10 @@
+#include "rpmlib.h"
 #include "rpmcli.h"
+
+#ifdef RPM2_RPM41
 #include "rpmts.h"
+#endif
+
 #include "header.h"
 #include "rpmdb.h"
 #include "misc.h"
@@ -89,13 +94,17 @@ void
 _read_package_info(fp)
 	FILE *fp
     PREINIT:
+#ifdef RPM2_RPM41
 	rpmts ts;
+#endif
 	Header ret;
 	Header sigs;
 	rpmRC rc;
 	FD_t fd;
     PPCODE:
+#ifdef RPM2_RPM41
 	ts = rpmtsCreate();
+#endif
 
         /* XXX Determine type of signature verification when reading
 	vsflags |= _RPMTS_VSF_NOLEGACY;
@@ -105,7 +114,11 @@ _read_package_info(fp)
         */ 
 
 	fd = fdDup(fileno(fp));
+#ifdef RPM2_RPM41
 	rc = rpmReadPackageFile(ts, fd, "filename or other identifier", &ret);
+#else
+	rc = rpmReadPackageInfo(fd, NULL, &ret);
+#endif
 
 	Fclose(fd);
 
@@ -122,7 +135,9 @@ _read_package_info(fp)
 	else {
 	    croak("error reading package");
 	}
+#ifdef RPM2_RPM41
 	ts = rpmtsFree(ts);
+#endif
 
 void
 _free_header(h)
