@@ -39,6 +39,7 @@ static int doPatchMacro(Spec spec, StringBuf sb, char *line);
 static char *do_untar(Spec spec, int c);
 static char *do_patch(Spec spec, int c, int strip, char *dashb);
 int isCompressed(char *file);
+void doSweep(Spec s);
 
 static char build_subdir[1024];
 
@@ -137,6 +138,18 @@ int execPart(Spec s, char *sb, char *name, int builddir)
     execScript(script);
     freeScript(script);
     return 0;
+}
+
+static void doSweep(Spec s)
+{
+    char buf[1024];
+    
+    struct Script *script;
+    script = openScript(s, 0);
+    sprintf(buf, "rm -rf %s\n", build_subdir);
+    writeScript(script, buf);
+    execScript(script);
+    freeScript(script);
 }
 
 static int doSetupMacro(Spec spec, StringBuf sb, char *line)
@@ -607,6 +620,9 @@ int doBuild(Spec s, int flags)
 	if (packageBinaries(s)) {
 	    return 1;
 	}
+	if (execClean(s)) {
+	    return 1;
+	}
     }
 
     if (flags & RPMBUILD_SOURCE) {
@@ -615,10 +631,8 @@ int doBuild(Spec s, int flags)
 	}
     }
 
-    if (flags & RPMBUILD_CLEAN) {
-	if (execClean(s)) {
-	    return 1;
-	}
+    if (flags & RPMBUILD_SWEEP) {
+	doSweep(s);
     }
 
     return 0;
