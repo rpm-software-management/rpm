@@ -4,6 +4,7 @@
 #define HAVE_MACHINE_TYPES_H 1
 #define HAVE_ALLOCA_H 1
 #define HAVE_NETINET_IN_SYSTM_H 1
+#define HAVE_SYS_SOCKET_H 1
 #endif
 
 #if HAVE_MACHINE_TYPES_H
@@ -12,6 +13,10 @@
 
 #if HAVE_ALLOCA_H
 # include <alloca.h>
+#endif
+
+#if HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
 #endif
 
 #if HAVE_NETINET_IN_SYSTM_H

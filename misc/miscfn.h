@@ -50,4 +50,8 @@ extern time_t timezone;
 extern void *myrealloc(void *, size_t);
 #endif
 
+#if HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
+
 #endif
