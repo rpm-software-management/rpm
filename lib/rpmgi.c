@@ -146,17 +146,19 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
     rpmRC rpmrc = RPMRC_NOTFOUND;
     Header h = NULL;
 
+    if (gi->argv != NULL && gi->argv[gi->i] != NULL)
     do {
 	const char * fn;	/* XXX gi->hdrPath? */
 
 	fn = gi->argv[gi->i];
-	h = rpmgiReadHeader(gi, fn);
-	if (h != NULL || (gi->flags & RPMGI_NOHEADER)) {
+	if (!(gi->flags & RPMGI_NOHEADER)) {
+	    h = rpmgiReadHeader(gi, fn);
+	    if (h != NULL)
+		rpmrc = RPMRC_OK;
+	} else
 	    rpmrc = RPMRC_OK;
-	    break;
-	}
 
-	if (gi->flags & RPMGI_NOMANIFEST)
+	if (rpmrc == RPMRC_OK || gi->flags & RPMGI_NOMANIFEST)
 	    break;
 
 	/* Not a header, so try for a manifest. */
@@ -169,7 +171,7 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 	fn = _free(fn);
     } while (1);
 
-    if (rpmrc == RPMRC_OK && h != NULL && !(gi->flags & RPMGI_NOHEADER))
+    if (rpmrc == RPMRC_OK && h != NULL)
 	gi->h = headerLink(h);
     h = headerFree(h);
 
@@ -229,10 +231,10 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->ftsp, gi->i, fts->fts_path);
 /**
  * Append globbed arg list to iterator.
  * @param gi		generalized iterator
- * @param argv		arg list to be globbed
+ * @param argv		arg list to be globbed (or NULL)
  * @returns		RPMRC_OK on success
  */
-static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_t argv)
+static rpmRC rpmgiGlobArgv(rpmgi gi, /*@null@*/ ARGV_t argv)
 	/*@globals internalState @*/
 	/*@modifies gi, internalState @*/
 {
@@ -242,9 +244,11 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_t argv)
     int xx;
 
     if (gi->flags & RPMGI_NOGLOB) {
-	while (argv[ac] != NULL)
-	    ac++;
-	xx = argvAppend(&gi->argv, argv);
+	if (argv != NULL) {
+	    while (argv[ac] != NULL)
+		ac++;
+	    xx = argvAppend(&gi->argv, argv);
+	}
 	gi->argc = ac;
 	return rpmrc;
     }
@@ -420,9 +424,7 @@ fprintf(stderr, "*** gi %p\t%p\n", gi, gi->mi);
 	gi->hdrPath = rpmExpand("hdlist h# ", hnum, NULL);
 	break;
     case RPMDBI_ARGLIST:
-	if (gi->argv == NULL || gi->argv[gi->i] == NULL)
-	    goto enditer;
-
+	/* XXX gi->active initialize? */
 if (_rpmgi_debug  < 0)
 fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i]);
 	/* Read next header, lazily expanding manifests as found. */

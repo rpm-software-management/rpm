@@ -172,7 +172,8 @@ rpmts rpmgiTs(/*@null@*/ rpmgi gi)
  * @param flags		iterator flags
  * @returns		RPMRC_OK on success
  */
-rpmRC rpmgiSetArgs(rpmgi gi, ARGV_t argv, int ftsOpts, rpmgiFlags flags)
+rpmRC rpmgiSetArgs(rpmgi gi, /*@null@*/ ARGV_t argv,
+		int ftsOpts, rpmgiFlags flags)
 	/*@modifies gi @*/;
 
 #ifdef __cplusplus

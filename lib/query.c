@@ -784,12 +784,14 @@ restart:
 
 int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 {
-    const char * arg;
+    int gitag = RPMDBI_ARGLIST;
+    int gikey = NULL;
+    int gikeylen = 0;
     int ftsOpts = 0;
-    rpmgiFlags giflags = RPMGI_NOGLOB;
+    rpmgiFlags giflags = RPMGI_NOGLOB|RPMGI_NOHEADER;
     int ec = 0;
 
-    qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
+    qva->qva_gi = rpmgiNew(ts, gitag, gikey, gikeylen);
     qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giflags);
 
     switch (qva->qva_source) {
@@ -797,15 +799,13 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_t argv)
 	/*@-nullpass@*/ /* FIX: argv can be NULL, cast to pass argv array */
 	ec = rpmQueryVerify(qva, ts, (const char *) argv);
 	/*@=nullpass@*/
+	rpmtsEmpty(ts);
 	break;
     default:
-/*@-boundsread@*/
-	if (argv != NULL)
-	while ((arg = *argv++) != NULL) {
-	    ec += rpmQueryVerify(qva, ts, arg);
+	while (rpmgiNext(qva->qva_gi) == RPMRC_OK) {
+	    ec += rpmQueryVerify(qva, ts, rpmgiHdrPath(qva->qva_gi));
 	    rpmtsEmpty(ts);
 	}
-/*@=boundsread@*/
 	break;
     }
 
