@@ -29,6 +29,7 @@
 #include "signature.h"
 #include "misc.h"
 #include "pack.h"
+#include "build.h"
 #include "messages.h"
 #include "md5.h"
 
@@ -52,9 +53,9 @@ static int writeMagic(int fd, char *name, unsigned short type,
 static int add_file(struct file_entry **festack, const char *name,
 		    int isdoc, int isconf, int isdir, int verify_flags);
 static int compare_fe(const void *ap, const void *bp);
-static int process_filelist(Header header, StringBuf sb, int *size,
-			    char *name, char *version, char *release,
-			    int type);
+static int process_filelist(Header header, struct PackageRec *pr, StringBuf sb,
+			    int *size, char *name, char *version,
+			    char *release, int type);
 static char *buildHost(void);
 static int add_file_aux(const char *file, struct stat *sb, int flag);
 static char *getUname(uid_t uid);
@@ -695,8 +696,9 @@ static int parseForVerify(char *buf, int *verify_flags)
     return 1;
 }
 
-static int process_filelist(Header header, StringBuf sb, int *size,
-			    char *name, char *version, char *release, int type)
+static int process_filelist(Header header, struct PackageRec *pr,
+			    StringBuf sb, int *size, char *name,
+			    char *version, char *release, int type)
 {
     char buf[1024];
     char **files, **fp;
@@ -710,11 +712,26 @@ static int process_filelist(Header header, StringBuf sb, int *size,
     glob_t glob_result;
     int special_doc;
     int passed_special_doc = 0;
+    FILE *file;
 
     fes = NULL;
     *size = 0;
 
     resetDocdir();
+
+    if (type == RPMLEAD_BINARY && pr->fileFile) {
+	sprintf(buf, "%s/%s/%s", getVar(RPMVAR_BUILDDIR),
+		build_subdir, pr->fileFile);
+	message(MESS_DEBUG, "Reading file names from: %sXX\n", buf);
+	if ((file = fopen(buf, "r")) == NULL) {
+	    perror("open fileFile");
+	    exit(1);
+	}
+	while (fgets(buf, sizeof(buf), file)) {
+	    appendStringBuf(sb, buf);
+	}
+	fclose(file);
+    }
     
     str = getStringBuf(sb);
     files = splitString(str, strlen(str), '\n');
@@ -1140,10 +1157,14 @@ int packageBinaries(Spec s, char *passPhrase)
 	
 	/**** Process the file list ****/
 	
-	if (process_filelist(outHeader, pr->filelist, &size, nametmp,
+	if (process_filelist(outHeader, pr, pr->filelist, &size, nametmp,
 			     packageVersion, packageRelease, RPMLEAD_BINARY)) {
 	    return 1;
 	}
+
+	/* Add any require/provide entries */
+	addReqProvHeaderEntry(outHeader, pr);
+	
 	/* And add the final Header entry */
 	addEntry(outHeader, RPMTAG_SIZE, INT32_TYPE, &size, 1);
 
@@ -1258,7 +1279,7 @@ int packageSource(Spec s, char *passPhrase)
     }
 
     /* Process the file list */
-    if (process_filelist(outHeader, filelist, &size,
+    if (process_filelist(outHeader, NULL, filelist, &size,
 			 s->name, version, release, RPMLEAD_SOURCE)) {
 	return 1;
     }

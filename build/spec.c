@@ -16,6 +16,7 @@ TODO:
 #include <string.h>
 #include <regex.h>
 #include <limits.h>
+#include <ctype.h>
 
 #include "header.h"
 #include "spec.h"
@@ -41,8 +42,11 @@ static int check_part(char *line, char **s);
 static int lookup_package(Spec s, struct PackageRec **pr,
 			  char *name, int flags);
 static void dumpPackage(struct PackageRec *p, FILE *f);
-static char *chop_line(char *s);
 static void parseForDocFiles(struct PackageRec *package, char *line);
+
+static int parseProvides(struct PackageRec *p, char *line);
+static int parseRequires(struct PackageRec *p, char *line);
+void free_reqprov(struct ReqProv *p);
 
 /**********************************************************************/
 /*                                                                    */
@@ -183,6 +187,127 @@ char *getFullSource(Spec s, int ispatch, int num)
 
 /**********************************************************************/
 /*                                                                    */
+/* Provide/Require handling                                           */
+/*                                                                    */
+/**********************************************************************/
+
+int addReqProv(struct PackageRec *p, int flags,
+	      char *name, char *version)
+{
+    struct ReqProv *rd;
+
+    rd = (struct ReqProv *)malloc(sizeof(*rd));
+    rd->flags = flags;
+    rd->name = strdup(name);
+    rd->version = version ? strdup(version) : NULL;
+    rd->next = p->reqprov;
+    p->reqprov = rd;
+
+    if (flags & REQUIRE_PROVIDES) {
+	message(MESS_DEBUG, "Adding provide: %s\n", name);
+	p->numProv++;
+    } else {
+	message(MESS_DEBUG, "Adding require: %s\n", name);
+	p->numReq++;
+    }
+
+    return 0;
+}
+
+static int parseProvides(struct PackageRec *p, char *line)
+{
+    char *prov;
+    int flags = REQUIRE_PROVIDES;
+    
+    while ((prov = strtok(line, " ,\t\n"))) {
+	addReqProv(p, flags, prov, NULL);
+	line = NULL;
+    }
+    return 0;
+}
+
+struct ReqComp {
+    char *token;
+    int flags;
+} ReqComparisons[] = {
+    { "<=", REQUIRE_LESS | REQUIRE_EQUAL},
+    { "<=S", REQUIRE_LESS | REQUIRE_EQUAL | REQUIRE_SERIAL},
+    { "=<", REQUIRE_LESS | REQUIRE_EQUAL},
+    { "=<S", REQUIRE_LESS | REQUIRE_EQUAL | REQUIRE_SERIAL},
+    { "<", REQUIRE_LESS},
+    { "<S", REQUIRE_LESS | REQUIRE_SERIAL},
+
+    { "=", REQUIRE_EQUAL},
+    { "=S", REQUIRE_EQUAL | REQUIRE_SERIAL},
+    
+    { ">=", REQUIRE_GREATER | REQUIRE_EQUAL},
+    { ">=S", REQUIRE_GREATER | REQUIRE_EQUAL | REQUIRE_SERIAL},
+    { "=>", REQUIRE_GREATER | REQUIRE_EQUAL},
+    { "=>S", REQUIRE_GREATER | REQUIRE_EQUAL | REQUIRE_SERIAL},
+    { ">", REQUIRE_GREATER},
+    { ">S", REQUIRE_GREATER | REQUIRE_SERIAL},
+    { NULL, 0 },
+};
+
+static int parseRequires(struct PackageRec *p, char *line)
+{
+    char *req = NULL;
+    char *version = NULL;
+    int flags;
+    struct ReqComp *rc;
+
+    while (req || (req = strtok(line, " ,\t\n"))) {
+	flags = 0;
+	if ((version = strtok(NULL, " ,\t\n"))) {
+	    rc = ReqComparisons;
+	    while (rc->token && strcmp(version, rc->token)) {
+		rc++;
+	    }
+	    if (rc->token) {
+		/* read a version */
+		flags = rc->flags;
+		version = strtok(NULL, " ,\t\n");
+	    }
+	}
+	if (flags && !version) {
+	    error(RPMERR_BADSPEC, "Version required in dependency");
+	    return RPMERR_BADSPEC;
+	}
+
+	addReqProv(p, flags, req, version);
+
+	req = NULL;
+	if (! flags) {
+	    /* No version -- we just read a name */
+	    req = version;
+	}
+	line = NULL;
+    }
+    
+    return 0;
+}
+
+void free_reqprov(struct ReqProv *p)
+{
+    struct ReqProv *s;
+    
+    while (p) {
+	s = p;
+	p = p->next;
+	FREE(s->name);
+	FREE(s->version);
+	free(s);
+    }
+}
+
+int addReqProvHeaderEntry(Header h, struct PackageRec *p)
+{
+    message(MESS_DEBUG, "provides: %d\nrequires: %d\n", p->numProv, p->numReq);
+    return 0;
+}
+
+/**********************************************************************/
+/*                                                                    */
 /* Spec and package structure creation/deletion/lookup                */
 /*                                                                    */
 /**********************************************************************/
@@ -197,7 +322,11 @@ static struct PackageRec *new_packagerec(void)
     p->header = newHeader();
     p->filelist = newStringBuf();
     p->files = -1;  /* -1 means no %files, thus no package */
+    p->fileFile = NULL;
     p->doc = newStringBuf();
+    p->reqprov = NULL;
+    p->numReq = 0;
+    p->numProv = 0;
     p->next = NULL;
 
     return p;
@@ -211,6 +340,8 @@ void free_packagerec(struct PackageRec *p)
     FREE(p->subname);
     FREE(p->newname);
     FREE(p->icon);
+    FREE(p->fileFile);
+    free_reqprov(p->reqprov);
     if (p->next) {
         free_packagerec(p->next);
     }
@@ -488,8 +619,8 @@ struct preamble_line {
     {RPMTAG_EXCLUDE,      0, "exclude"},
     {RPMTAG_EXCLUSIVE,    0, "exclusive"},
     {RPMTAG_ICON,         0, "icon"},
-    {RPMTAG_ICON,         0, "provides"},
-    {RPMTAG_ICON,         0, "requires"},
+    {RPMTAG_PROVIDES,     0, "provides"},
+    {RPMTAG_REQUIREFLAGS, 0, "requires"},
     {0, 0, 0}
 };
 
@@ -563,6 +694,7 @@ static int check_part(char *line, char **s)
     return p->part;
 }
 
+#if 0
 static char *chop_line(char *s)
 {
     char *p, *e;
@@ -578,6 +710,7 @@ static char *chop_line(char *s)
     }
     return p;
 }
+#endif
 
 static void parseForDocFiles(struct PackageRec *package, char *line)
 {
@@ -610,13 +743,14 @@ Spec parseSpec(FILE *f, char *specfile)
 {
     char buf[LINE_BUF_SIZE]; /* read buffer          */
     char buf2[LINE_BUF_SIZE];
+    char fileFile[LINE_BUF_SIZE];
     char *line;              /* "parsed" read buffer */
     
     int x, serial, tag, cur_part, t1;
     int lookupopts;
     StringBuf sb;
     char *s = NULL;
-    char *s1;
+    char *s1, *s2;
 
     struct PackageRec *cur_package = NULL;
     Spec spec = (struct SpecRec *) malloc(sizeof(struct SpecRec));
@@ -680,6 +814,42 @@ Spec parseSpec(FILE *f, char *specfile)
 	        }
 	    }
 
+	    /* Rip through s for -f in %files */
+	    fileFile[0] = '\0';
+	    s1 = NULL;
+	    if (s &&
+		((s1 = strstr(s, " -f ")) ||
+		 (!strncmp(s, "-f ", 3)))) {
+		if (s1) {
+		    s1[0] = ' ';
+		    s1++;
+		} else {
+		    s1 = s;
+		}
+		s1[0] = ' '; s1[1] = ' '; s1[2] = ' ';
+		s1 += 3;
+
+		while (isspace(*s1)) {
+		    s1++;
+		}
+		s2 = fileFile;
+		while (*s1 && !isspace(*s1)) {
+		    *s2 = *s1;
+		    *s1 = ' ';
+		    s1++;
+		    s2++;
+		}
+		*s2 = '\0';
+		while (isspace(*s)) {
+		    s++;
+		}
+		if (! *s) {
+		    s = NULL;
+		}
+	    }
+
+	    message(MESS_DEBUG, "fileFile = %s\n", fileFile);
+	    
 	    /* Handle -n in part tags */
 	    lookupopts = 0;
 	    if (s) {
@@ -702,7 +872,7 @@ Spec parseSpec(FILE *f, char *specfile)
 	        s1++;
 	        *s1 = '\0';
 	    }
-
+	    
 	    switch (tag) {
 	      case PREP_PART:
 	      case BUILD_PART:
@@ -726,6 +896,9 @@ Spec parseSpec(FILE *f, char *specfile)
 	    if (cur_part == FILES_PART) {
 		/* set files to 0 (current -1 means no %files, no package */
 		cur_package->files = 0;
+		if (fileFile[0]) {
+		    cur_package->fileFile = strdup(fileFile);
+		}
 	    }
 	    
 	    continue;
@@ -819,7 +992,13 @@ Spec parseSpec(FILE *f, char *specfile)
 		      }
 		      break;
 		  case RPMTAG_PROVIDES:
-		      if (parseProvides(line)) {
+		      if (parseProvides(cur_package, s)) {
+			  return NULL;
+		      }
+		      break;
+		  case RPMTAG_REQUIREFLAGS:
+		      if (parseRequires(cur_package, s)) {
+			  return NULL;
 		      }
 		      break;
 		  default:
