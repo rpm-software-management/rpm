@@ -4,10 +4,9 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Constants.xs,v 1.5 2000/08/07 09:31:23 rjray Exp $";
+static char * const rcsid = "$Id: Constants.xs,v 1.6 2000/08/16 09:31:46 rjray Exp $";
 
-static int
-not_here(pTHX_ char *s)
+static int not_here(pTHX_ char *s)
 {
     char* errmsg;
 
@@ -19,8 +18,7 @@ not_here(pTHX_ char *s)
     return 0;
 }
 
-static int
-constant(pTHX_ char *name, int arg)
+static int constant(pTHX_ char *name)
 {
     errno = 0;
 
@@ -804,12 +802,6 @@ constant(pTHX_ char *name, int arg)
 #else
             goto not_there;
 #endif
-        if (strEQ(name, "RPMTAG_CAPABILITY"))
-#ifdef RPMTAG_CAPABILITY
-            return RPMTAG_CAPABILITY;
-#else
-            goto not_there;
-#endif
         if (strEQ(name, "RPMTAG_CHANGELOGNAME"))
 #ifdef RPMTAG_CHANGELOGNAME
             return RPMTAG_CHANGELOGNAME;
@@ -843,6 +835,12 @@ constant(pTHX_ char *name, int arg)
         if (strEQ(name, "RPMTAG_CONFLICTVERSION"))
 #ifdef RPMTAG_CONFLICTVERSION
             return RPMTAG_CONFLICTVERSION;
+#else
+            goto not_there;
+#endif
+        if (strEQ(name, "RPMTAG_COPYRIGHT"))
+#ifdef RPMTAG_COPYRIGHT
+            return RPMTAG_COPYRIGHT;
 #else
             goto not_there;
 #endif
@@ -1519,11 +1517,10 @@ MODULE = RPM::Constants PACKAGE = RPM::Constants
 
 
 int
-constant(name, arg=0)
+constant(name)
     char* name;
-    int arg;
-    PROTOTYPE: $;$
+    PROTOTYPE: $
     CODE:
-    RETVAL = constant(aTHX_ name, arg);
+    RETVAL = constant(aTHX_ name);
     OUTPUT:
     RETVAL
