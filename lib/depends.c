@@ -316,6 +316,7 @@ void rpmdepFreeConflicts(struct rpmDependencyConflict * conflicts, int
     int i;
 
     for (i = 0; i < numConflicts; i++) {
+	headerFree(conflicts[i].byHeader);
 	free(conflicts[i].byName);
 	free(conflicts[i].byVersion);
 	free(conflicts[i].byRelease);
@@ -635,6 +636,7 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 		psp->problems = realloc(psp->problems, sizeof(*psp->problems) * 
 			    psp->alloced);
 	    }
+	    psp->problems[psp->num].byHeader = headerCopy(h);
 	    psp->problems[psp->num].byName = strdup(name);
 	    psp->problems[psp->num].byVersion = strdup(version);
 	    psp->problems[psp->num].byRelease = strdup(release);
@@ -677,6 +679,7 @@ static int checkPackageDeps(rpmDependencies rpmdep, struct problemsSet * psp,
 		psp->problems = realloc(psp->problems, sizeof(*psp->problems) * 
 			    psp->alloced);
 	    }
+	    psp->problems[psp->num].byHeader = headerCopy(h);
 	    psp->problems[psp->num].byName = strdup(name);
 	    psp->problems[psp->num].byVersion = strdup(version);
 	    psp->problems[psp->num].byRelease = strdup(release);

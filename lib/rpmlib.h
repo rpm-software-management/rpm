@@ -302,6 +302,7 @@ typedef struct rpmDependencyCheck * rpmDependencies;
 
 struct rpmDependencyConflict {
     char * byName, * byVersion, * byRelease;
+    Header byHeader;
     /* these needs fields are misnamed -- they are used for the package
        which isn't needed as well */
     char * needsName, * needsVersion;
