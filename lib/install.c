@@ -189,6 +189,14 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	return 2;
     } else if (!location && defaultPrefix)
 	location = defaultPrefix;
+
+    /* We don't use these entries (and never have) and they are pretty
+       misleading. Let's just get rid of them so they don't confuse
+       anyone. */
+    if (headerIsEntry(h, RPMTAG_FILEUSERNAME))
+	headerRemoveEntry(h, RPMTAG_FILEUIDS);
+    if (headerIsEntry(h, RPMTAG_FILEGROUPNAME))
+	headerRemoveEntry(h, RPMTAG_FILEGIDS);
     
     if (location) {
 	relocateFilelist(&h, defaultPrefix, location, &relocationSize);
@@ -200,13 +208,6 @@ int rpmInstallPackage(char * rootdir, rpmdb db, int fd, char * location,
 	archivePrefix = rootdir;
 	relocationSize = 1;
     }
-
-    /* You're probably upset because name already points to the name of
-       this package, right? Almost... it points to the name in the original
-       header, which could have been trashed by relocateFileList() */
-    headerGetEntry(h, RPMTAG_NAME, &type, (void **) &name, &fileCount);
-    headerGetEntry(h, RPMTAG_VERSION, &type, (void **) &version, &fileCount);
-    headerGetEntry(h, RPMTAG_RELEASE, &type, (void **) &release, &fileCount);
 
     if (!(flags & RPMINSTALL_NOARCH) && !archOkay(h)) {
 	rpmError(RPMERR_BADARCH, "package %s-%s-%s is for a different "
@@ -1548,17 +1549,11 @@ enum fileTypes whatis(short mode) {
     return result;
 }
 
-/* This is *much* more difficult then it should be. Rather then just
-   modifying an entry with a single call to modifyEntry(), we have to
-   clone most of the header. Once the internal data structures of
-   header.c get cleaned up, this will be *much* easier */
 static int relocateFilelist(Header * hp, char * defaultPrefix, 
 			    char * newPrefix, int * relocationLength) {
-    Header newh, h = *hp;
-    HeaderIterator it;
+    Header h = *hp;
     char ** newFileList, ** fileList;
-    int type, count, tag, fileCount, i;
-    void * data;
+    int fileCount, i;
     int defaultPrefixLength;
     int newPrefixLength;
 
@@ -1573,7 +1568,8 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
 			 newPrefix);
 
     if (!strcmp(newPrefix, defaultPrefix)) {
-	headerAddEntry(h, RPMTAG_INSTALLPREFIX, RPM_STRING_TYPE, defaultPrefix, 1);
+	headerAddEntry(h, RPMTAG_INSTALLPREFIX, RPM_STRING_TYPE, 
+			defaultPrefix, 1);
 	*relocationLength = strlen(defaultPrefix) + 1;
 	return 0;
     }
@@ -1581,21 +1577,12 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
     defaultPrefixLength = strlen(defaultPrefix);
     newPrefixLength = strlen(newPrefix);
 
-    /* packages can have empty filelists */
-    if (!headerGetEntry(h, RPMTAG_FILENAMES, &type, (void *) &fileList, &fileCount))
+    /* packages may have empty filelists */
+    if (!headerGetEntry(h, RPMTAG_FILENAMES, NULL, (void *) &fileList, 
+			&fileCount))
 	return 0;
-    if (!count)
+    else if (!fileCount)
 	return 0;
-
-    newh = headerNew();
-    it = headerInitIterator(h);
-    while (headerNextIterator(it, &tag, &type, &data, &count))
-	if (tag != RPMTAG_FILENAMES) {
-	    headerAddEntry(newh, tag, type, data, count);
-	if (type == RPM_STRING_ARRAY_TYPE) free(data);
-    }
-
-    headerFreeIterator(it);
 
     newFileList = alloca(sizeof(char *) * fileCount);
     for (i = 0; i < fileCount; i++) {
@@ -1617,12 +1604,11 @@ static int relocateFilelist(Header * hp, char * defaultPrefix,
 	}
     }
 
-    headerAddEntry(newh, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, newFileList, 
-		   fileCount);
-    headerAddEntry(newh, RPMTAG_INSTALLPREFIX, RPM_STRING_TYPE, newPrefix, 1);
+    headerModifyEntry(h, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, 
+			newFileList, fileCount);
+    headerAddEntry(h, RPMTAG_INSTALLPREFIX, RPM_STRING_TYPE, newPrefix, 1);
 
     *relocationLength = newPrefixLength + 1;
-    *hp = newh;
 
     return 0;
 }
