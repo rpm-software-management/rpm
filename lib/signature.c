@@ -36,8 +36,8 @@ int rpmLookupSignatureType(int action)
     case RPMLOOKUPSIG_QUERY:
 	if (disabled)
 	    break;	/* Disabled */
-      { const char *name = rpmExpand("%{_signature}", NULL);
-	if (!(name && *name != '%'))
+      { const char *name = rpmExpand("%{?_signature}", NULL);
+	if (!(name && *name != '\0'))
 	    rc = 0;
 	else if (!xstrcasecmp(name, "none"))
 	    rc = 0;
@@ -66,13 +66,13 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
     /* have one %_pgpbin and one %_pgp_path.                          */
 
     static pgpVersion saved_pgp_version = PGP_UNKNOWN;
-    const char *pgpbin = rpmGetPath("%{_pgpbin}", NULL);
+    const char *pgpbin = rpmGetPath("%{?_pgpbin}", NULL);
 
     if (saved_pgp_version == PGP_UNKNOWN) {
 	char *pgpvbin;
 	struct stat st;
 
-	if (!(pgpbin && pgpbin[0] != '%')) {
+	if (!(pgpbin && pgpbin[0] != '\0')) {
 	  pgpbin = _free(pgpbin);
 	  saved_pgp_version = -1;
 	  return NULL;
@@ -247,15 +247,20 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
     int pid, status;
     int inpipe[2];
     struct stat st;
+    const char * cmd;
+    char *const *av;
+    int rc;
 
     (void) stpcpy( stpcpy(sigfile, file), ".sig");
+
+    addMacro(NULL, "__plaintext_filename", NULL, file, -1);
+    addMacro(NULL, "__signature_filename", NULL, sigfile, -1);
 
     inpipe[0] = inpipe[1] = 0;
     (void) pipe(inpipe);
 
     if (!(pid = fork())) {
-	const char *pgp_path = rpmExpand("%{_pgp_path}", NULL);
-	const char *name = rpmExpand("+myname=\"%{_pgp_name}\"", NULL);
+	const char *pgp_path = rpmExpand("%{?_pgp_path}", NULL);
 	const char *path;
 	pgpVersion pgpVer;
 
@@ -264,7 +269,7 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 	(void) close(inpipe[1]);
 
 	(void) dosetenv("PGPPASSFD", "3", 1);
-	if (pgp_path && *pgp_path != '%')
+	if (pgp_path && *pgp_path != '\0')
 	    (void) dosetenv("PGPPATH", pgp_path, 1);
 
 	/* dosetenv("PGPPASS", passPhrase, 1); */
@@ -272,22 +277,32 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
 	if ((path = rpmDetectPGPVersion(&pgpVer)) != NULL) {
 	    switch(pgpVer) {
 	    case PGP_2:
-		(void) execlp(path, "pgp", "+batchmode=on", "+verbose=0", "+armor=off",
-		    name, "-sb", file, sigfile, NULL);
+		cmd = rpmExpand("%{?__pgp_sign_cmd}", NULL);
+		rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
+		if (!rc)
+		    rc = execve(av[0], av+1, environ);
 		break;
 	    case PGP_5:
-		(void) execlp(path,"pgps", "+batchmode=on", "+verbose=0", "+armor=off",
-		    name, "-b", file, "-o", sigfile, NULL);
+		cmd = rpmExpand("%{?__pgp5_sign_cmd}", NULL);
+		rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
+		if (!rc)
+		    rc = execve(av[0], av+1, environ);
 		break;
 	    case PGP_UNKNOWN:
 	    case PGP_NOTDETECTED:
+		/*@-mods@*/ /* FIX: shrug */
+		errno = ENOENT;
+		/*@=mods@*/
 		break;
 	    }
 	}
-	rpmError(RPMERR_EXEC, _("Couldn't exec pgp (%s)\n"),
-			(path ? path : NULL));
+	rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "pgp",
+			strerror(errno));
 	_exit(RPMERR_EXEC);
     }
+
+    delMacro(NULL, "__plaintext_filename");
+    delMacro(NULL, "__signature_filename");
 
     (void) close(inpipe[0]);
     if (passPhrase)
@@ -313,7 +328,8 @@ static int makePGPSignature(const char * file, /*@out@*/ void ** sig,
     *sig = xmalloc(*size);
 
     {	FD_t fd;
-	int rc = 0;
+
+	rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
 	    /*@-type@*/ /* FIX: eliminate timedRead @*/
@@ -351,29 +367,40 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
     int inpipe[2];
     FILE * fpipe;
     struct stat st;
+    const char * cmd;
+    char *const *av;
+    int rc;
 
     (void) stpcpy( stpcpy(sigfile, file), ".sig");
+
+    addMacro(NULL, "__plaintext_filename", NULL, file, -1);
+    addMacro(NULL, "__signature_filename", NULL, sigfile, -1);
 
     inpipe[0] = inpipe[1] = 0;
     (void) pipe(inpipe);
 
     if (!(pid = fork())) {
-	const char *gpg_path = rpmExpand("%{_gpg_path}", NULL);
-	const char *name = rpmExpand("%{_gpg_name}", NULL);
+	const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
 
 	(void) close(STDIN_FILENO);
 	(void) dup2(inpipe[0], 3);
 	(void) close(inpipe[1]);
 
-	if (gpg_path && *gpg_path != '%')
+	if (gpg_path && *gpg_path != '\0')
 	    (void) dosetenv("GNUPGHOME", gpg_path, 1);
-	(void) execlp("gpg", "gpg",
-	       "--batch", "--no-verbose", "--no-armor", "--passphrase-fd", "3",
-	       "-u", name, "-sbo", sigfile, file,
-	       NULL);
-	rpmError(RPMERR_EXEC, _("Couldn't exec gpg\n"));
+
+	cmd = rpmExpand("%{?__gpg_sign_cmd}", NULL);
+	rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
+	if (!rc)
+	    rc = execve(av[0], av+1, environ);
+
+	rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
+			strerror(errno));
 	_exit(RPMERR_EXEC);
     }
+
+    delMacro(NULL, "__plaintext_filename");
+    delMacro(NULL, "__signature_filename");
 
     fpipe = fdopen(inpipe[1], "w");
     (void) close(inpipe[0]);
@@ -382,7 +409,7 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
 	(void) fclose(fpipe);
     }
 
-    (void)waitpid(pid, &status, 0);
+    (void) waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmError(RPMERR_SIGGEN, _("gpg failed\n"));
 	return 1;
@@ -400,7 +427,8 @@ static int makeGPGSignature(const char * file, /*@out@*/ void ** sig,
     *sig = xmalloc(*size);
 
     {	FD_t fd;
-	int rc = 0;
+
+	rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
 	    /*@-type@*/ /* FIX: eliminate timedRead @*/
@@ -469,6 +497,9 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
     int passPhrasePipe[2];
     int pid, status;
     int fd;
+    const char * cmd;
+    char *const *av;
+    int rc;
 
     passPhrasePipe[0] = passPhrasePipe[1] = 0;
     (void) pipe(passPhrasePipe);
@@ -493,44 +524,51 @@ static int checkPassPhrase(const char * passPhrase, const int sigTag)
 
 	switch (sigTag) {
 	case RPMSIGTAG_GPG:
-	{   const char *gpg_path = rpmExpand("%{_gpg_path}", NULL);
-	    const char *name = rpmExpand("%{_gpg_name}", NULL);
-	    if (gpg_path && *gpg_path != '%')
-		(void) dosetenv("GNUPGHOME", gpg_path, 1);
-	    (void) execlp("gpg", "gpg",
-	           "--batch", "--no-verbose", "--passphrase-fd", "3",
-	           "-u", name, "-so", "-",
-	           NULL);
-	    rpmError(RPMERR_EXEC, _("Couldn't exec gpg\n"));
-	    _exit(RPMERR_EXEC);
+	{   const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
+
+	    if (gpg_path && *gpg_path != '\0')
+  		(void) dosetenv("GNUPGHOME", gpg_path, 1);
+
+	    cmd = rpmExpand("%{?__gpg_check_password_cmd}", NULL);
+	    rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
+	    if (!rc)
+		rc = execve(av[0], av+1, environ);
+
+	    rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "gpg",
+			strerror(errno));
 	}   /*@notreached@*/ break;
 	case RPMSIGTAG_PGP5:	/* XXX legacy */
 	case RPMSIGTAG_PGP:
-	{   const char *pgp_path = rpmExpand("%{_pgp_path}", NULL);
+	{   const char *pgp_path = rpmExpand("%{?_pgp_path}", NULL);
 	    const char *name = rpmExpand("+myname=\"%{_pgp_name}\"", NULL);
 	    const char *path;
 	    pgpVersion pgpVer;
 
 	    (void) dosetenv("PGPPASSFD", "3", 1);
-	    if (pgp_path && *pgp_path != '%')
+	    if (pgp_path && *pgp_path != '\0')
 		(void) dosetenv("PGPPATH", pgp_path, 1);
 
 	    if ((path = rpmDetectPGPVersion(&pgpVer)) != NULL) {
 		switch(pgpVer) {
 		case PGP_2:
-		    (void) execlp(path, "pgp", "+batchmode=on", "+verbose=0",
-			name, "-sf", NULL);
+		    cmd = rpmExpand("%{?__pgp_check_password_cmd}", NULL);
+		    rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
+		    if (!rc)
+			rc = execve(av[0], av+1, environ);
 		    /*@innerbreak@*/ break;
 		case PGP_5:	/* XXX legacy */
-		    (void) execlp(path,"pgps", "+batchmode=on", "+verbose=0",
-			name, "-f", NULL);
+		    cmd = rpmExpand("%{?__pgp5_check_password_cmd}", NULL);
+		    rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
+		    if (!rc)
+			rc = execve(av[0], av+1, environ);
 		    /*@innerbreak@*/ break;
 		case PGP_UNKNOWN:
 		case PGP_NOTDETECTED:
 		    /*@innerbreak@*/ break;
 		}
 	    }
-	    rpmError(RPMERR_EXEC, _("Couldn't exec pgp\n"));
+	    rpmError(RPMERR_EXEC, _("Could not exec %s: %s\n"), "pgp",
+			strerror(errno));
 	    _exit(RPMERR_EXEC);
 	}   /*@notreached@*/ break;
 	default: /* This case should have been screened out long ago. */
@@ -561,8 +599,8 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 
     switch (sigTag) {
     case RPMSIGTAG_GPG:
-      { const char *name = rpmExpand("%{_gpg_name}", NULL);
-	aok = (name && *name != '%');
+      { const char *name = rpmExpand("%{?_gpg_name}", NULL);
+	aok = (name && *name != '\0');
 	name = _free(name);
       }
 	if (!aok) {
@@ -573,8 +611,8 @@ char * rpmGetPassPhrase(const char * prompt, const int sigTag)
 	break;
     case RPMSIGTAG_PGP5: 	/* XXX legacy */
     case RPMSIGTAG_PGP:
-      { const char *name = rpmExpand("%{_pgp_name}", NULL);
-	aok = (name && *name != '%');
+      { const char *name = rpmExpand("%{?_pgp_name}", NULL);
+	aok = (name && *name != '\0');
 	name = _free(name);
       }
 	if (!aok) {

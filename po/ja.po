@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-07 11:31-0500\n"
+"POT-Creation-Date: 2002-01-10 14:14-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -1676,7 +1676,7 @@ msgid ""
 msgstr ""
 "メジャー番号 <=3 のパッケージのみこのバージョンの RPM はサポートされています"
 
-#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:509
+#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:520
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead に失敗しました\n"
@@ -1686,12 +1686,12 @@ msgstr "%s: readLead に失敗しました\n"
 msgid "%s: bad magic\n"
 msgstr "不正なマジック"
 
-#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:525
+#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:536
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature に失敗しました\n"
 
-#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:530
+#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:541
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 有効な署名はありません\n"
@@ -1701,7 +1701,7 @@ msgstr "%s: 有効な署名はありません\n"
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead に失敗しました\n"
 
-#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:453
+#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:464
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
@@ -2480,43 +2480,43 @@ msgstr "%s: v1.0 の RPM には署名できません\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: v2.0 の RPM には再署名できません\n"
 
-#: lib/rpmchecksig.c:216
+#: lib/rpmchecksig.c:227
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writedLead に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:222
+#: lib/rpmchecksig.c:233
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature に失敗しました\n"
 
-#: lib/rpmchecksig.c:515
+#: lib/rpmchecksig.c:526
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 有効な署名はありません(v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:710
+#: lib/rpmchecksig.c:721
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:711 lib/rpmchecksig.c:725
+#: lib/rpmchecksig.c:722 lib/rpmchecksig.c:736
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr " (キーの紛失) "
 
-#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
+#: lib/rpmchecksig.c:724 lib/rpmchecksig.c:738
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:714 lib/rpmchecksig.c:728
+#: lib/rpmchecksig.c:725 lib/rpmchecksig.c:739
 msgid " (UNTRUSTED KEYS:"
 msgstr " (信頼できない鍵:"
 
-#: lib/rpmchecksig.c:716 lib/rpmchecksig.c:730
+#: lib/rpmchecksig.c:727 lib/rpmchecksig.c:741
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:724
+#: lib/rpmchecksig.c:735
 msgid "OK"
 msgstr ""
 
@@ -2757,125 +2757,116 @@ msgstr "古い(内部だけの)署名!  どうやってそれを手にいれましたか!?"
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "署名サイズ: %d\n"
 
-#: lib/signature.c:287
+#: lib/signature.c:299 lib/signature.c:397 lib/signature.c:537
+#: lib/signature.c:570
 #, fuzzy, c-format
-msgid "Couldn't exec pgp (%s)\n"
-msgstr "pgp を実行できません(%s)"
+msgid "Could not exec %s: %s\n"
+msgstr "%s を実行できませんでした: %s"
 
-#: lib/signature.c:300
+#: lib/signature.c:315
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp 失敗"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:307
+#: lib/signature.c:322
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:312
+#: lib/signature.c:327
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %s\n"
 
-#: lib/signature.c:327 lib/signature.c:414
+#: lib/signature.c:343 lib/signature.c:442
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "署名を読むことができません"
 
-#: lib/signature.c:332
+#: lib/signature.c:348
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 署名の %d バイトを取得\n"
 
-#: lib/signature.c:374 lib/signature.c:504
-#, fuzzy
-msgid "Couldn't exec gpg\n"
-msgstr "gpg を実行できません"
-
-#: lib/signature.c:387
+#: lib/signature.c:414
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg 失敗"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:394
+#: lib/signature.c:421
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg が署名を書き込むのに失敗しました"
 
-#: lib/signature.c:399
+#: lib/signature.c:426
 #, fuzzy, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 署名サイズ: %s\n"
 
-#: lib/signature.c:419
+#: lib/signature.c:447
 #, fuzzy, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG 署名の %d バイトを取得\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:475
 #, fuzzy
 msgid "Generating signature using PGP.\n"
 msgstr "PGP を使用して署名の生成中\n"
 
-#: lib/signature.c:453
+#: lib/signature.c:481
 #, fuzzy
 msgid "Generating signature using GPG.\n"
 msgstr "GPG を使用して署名の生成中\n"
 
-#: lib/signature.c:533
-#, fuzzy
-msgid "Couldn't exec pgp\n"
-msgstr "pgp を実行できません"
-
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:537 lib/signature.c:590
+#: lib/signature.c:575 lib/signature.c:628
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "マクロファイル中の無効な %%_signature 。\n"
 
-#: lib/signature.c:570
+#: lib/signature.c:608
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:582
+#: lib/signature.c:620
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "マクロファイルに \"%%_pgp_name\" を設定しなければなりません"
 
-#: lib/signature.c:626
+#: lib/signature.c:664
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "ヘッダサイズが大きすぎます"
 
-#: lib/signature.c:655
+#: lib/signature.c:693
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:695
+#: lib/signature.c:733
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "MD5 署名をスキップします"
 
-#: lib/signature.c:785
+#: lib/signature.c:823
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "署名はありません\n"
 
-#: lib/signature.c:849
+#: lib/signature.c:887
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:869
+#: lib/signature.c:907
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:873
+#: lib/signature.c:911
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名パッド: %d\n"
@@ -3530,6 +3521,18 @@ msgstr "url ポートは数字でなければなりません\n"
 #, fuzzy, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s の作成に失敗しました\n"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "pgp を実行できません(%s)"
+
+#, fuzzy
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "gpg を実行できません"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "pgp を実行できません"
 
 #, fuzzy
 #~ msgid "%5d exclude  %s\n"

@@ -4,7 +4,7 @@
  * Copyright (c) 1996-2001
  *	Sleepycat Software.  All rights reserved.
  *
- * $Id: log.h,v 11.38 2001/11/16 10:57:49 krinsky Exp $
+ * Id: log.h,v 11.38 2001/11/16 10:57:49 krinsky Exp 
  */
 
 #ifndef _LOG_H_

@@ -108,7 +108,7 @@ __os_r_sysattach(dbenv, infop, rp)
 				}
 			}
 			if ((id =
-			    shmget(segid, rp->size, IPC_CREAT | 0660)) == -1) {
+			    shmget(segid, rp->size, IPC_CREAT | 0600)) == -1) {
 				ret = __os_get_errno();
 				__db_err(dbenv,
 	"shmget: key: %ld: unable to create shared system memory region: %s",

@@ -1,6 +1,6 @@
 #!/bin/perl
 
-# $Id: Makefile.PL,v 1.25 2001/09/15 13:49:11 jbj Exp $
+# $Id: Makefile.PL,v 1.26 2002/01/10 19:16:54 jbj Exp $
 
 use Config;
 use ExtUtils::MakeMaker;
@@ -61,7 +61,7 @@ die "RPM version must be at least 3.0.4, due to I/O features not available
 prior to that version. Stopped"
     # The stringification is because Perl is still treating $rpm_version as a
     # string
-    unless ($rpm_version >= "0x030004");
+    unless ($rpm_version ge "0x030004");
 # Starting with RPM 4.0, there are a number of subtle-but-significant changes
 $rpm_defines = "-DRPM_MAJOR=$rpm_version[0] -DRPM_MINOR=$rpm_version[1]" .
     " -DRPM_PATCH=$rpm_version[2] -DRPM_VERSION=$rpm_version";

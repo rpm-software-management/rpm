@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-07 11:31-0500\n"
+"POT-Creation-Date: 2002-01-10 14:14-0500\n"
 "PO-Revision-Date: 2001-09-07 22:03+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1616,7 +1616,7 @@ msgid ""
 msgstr ""
 "이 RPM 버전에서는 주요 번호(major number) <= 4 의 패키징 만을 지원합니다\n"
 
-#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:509
+#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:520
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead에 실패했습니다\n"
@@ -1626,12 +1626,12 @@ msgstr "%s: readLead에 실패했습니다\n"
 msgid "%s: bad magic\n"
 msgstr "잘못된 magic 입니다"
 
-#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:525
+#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:536
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature에 실패했습니다\n"
 
-#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:530
+#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:541
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 유효한 서명이 없습니다\n"
@@ -1641,7 +1641,7 @@ msgstr "%s: 유효한 서명이 없습니다\n"
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead에 실패했습니다\n"
 
-#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:453
+#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:464
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread에 실패했습니다: %s\n"
@@ -2371,42 +2371,42 @@ msgstr "%s: v1.0 RPM은 서명할 수 없습니다\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: v2.0 RPM은 재-서명할 수 없습니다\n"
 
-#: lib/rpmchecksig.c:216
+#: lib/rpmchecksig.c:227
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:222
+#: lib/rpmchecksig.c:233
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature에 실패했습니다: %s\n"
 
-#: lib/rpmchecksig.c:515
+#: lib/rpmchecksig.c:526
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 유효한 서명이 없습니다 (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:710
+#: lib/rpmchecksig.c:721
 msgid "NOT OK"
 msgstr "올바르지 않음"
 
-#: lib/rpmchecksig.c:711 lib/rpmchecksig.c:725
+#: lib/rpmchecksig.c:722 lib/rpmchecksig.c:736
 msgid " (MISSING KEYS:"
 msgstr " (키를 찾을 수 없음:"
 
-#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
+#: lib/rpmchecksig.c:724 lib/rpmchecksig.c:738
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:714 lib/rpmchecksig.c:728
+#: lib/rpmchecksig.c:725 lib/rpmchecksig.c:739
 msgid " (UNTRUSTED KEYS:"
 msgstr " (키를 신뢰할 수 없음:"
 
-#: lib/rpmchecksig.c:716 lib/rpmchecksig.c:730
+#: lib/rpmchecksig.c:727 lib/rpmchecksig.c:741
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:724
+#: lib/rpmchecksig.c:735
 msgid "OK"
 msgstr "확인"
 
@@ -2644,116 +2644,109 @@ msgstr "이전 (내부-용) 서명!  어떻게 얻으셨습니까!?\n"
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
 
-#: lib/signature.c:287
-#, c-format
-msgid "Couldn't exec pgp (%s)\n"
-msgstr "pgp (%s) (을)를 실행할 수 없습니다\n"
+#: lib/signature.c:299 lib/signature.c:397 lib/signature.c:537
+#: lib/signature.c:570
+#, fuzzy, c-format
+msgid "Could not exec %s: %s\n"
+msgstr "%s (을)를 실행할 수 없음: %s\n"
 
-#: lib/signature.c:300
+#: lib/signature.c:315
 msgid "pgp failed\n"
 msgstr "pgp에 실패함\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:307
+#: lib/signature.c:322
 msgid "pgp failed to write signature\n"
 msgstr "pgp 서명을 작성하는데 실패했습니다\n"
 
-#: lib/signature.c:312
+#: lib/signature.c:327
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 서명 용량: %d\n"
 
-#: lib/signature.c:327 lib/signature.c:414
+#: lib/signature.c:343 lib/signature.c:442
 msgid "unable to read the signature\n"
 msgstr "서명을 읽을 수 없습니다\n"
 
-#: lib/signature.c:332
+#: lib/signature.c:348
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "%d 바이트의 PGP 서명을 얻었습니다\n"
 
-#: lib/signature.c:374 lib/signature.c:504
-msgid "Couldn't exec gpg\n"
-msgstr "gpg를 실행할 수 없습니다\n"
-
-#: lib/signature.c:387
+#: lib/signature.c:414
 msgid "gpg failed\n"
 msgstr "gpg에 실패함\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:394
+#: lib/signature.c:421
 msgid "gpg failed to write signature\n"
 msgstr "gpg 서명을 작성하는데 실패했습니다\n"
 
-#: lib/signature.c:399
+#: lib/signature.c:426
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 서명 용량: %d\n"
 
-#: lib/signature.c:419
+#: lib/signature.c:447
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "%d 바이트의 GPG 서명을 얻었습니다\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:475
 msgid "Generating signature using PGP.\n"
 msgstr "PGP를 사용하여 서명을 생성합니다.\n"
 
-#: lib/signature.c:453
+#: lib/signature.c:481
 msgid "Generating signature using GPG.\n"
 msgstr "GPG를 사용하여 서명을 생성합니다.\n"
 
-#: lib/signature.c:533
-msgid "Couldn't exec pgp\n"
-msgstr "pgp를 실행할 수 없습니다\n"
-
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:537 lib/signature.c:590
+#: lib/signature.c:575 lib/signature.c:628
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "매크로 파일에 부적합한 %%_signature의 내용이 있습니다\n"
 
-#: lib/signature.c:570
+#: lib/signature.c:608
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "매크로 파일에 \"%%_gpg_name\" 을 설정해 주셔야 합니다\n"
 
-#: lib/signature.c:582
+#: lib/signature.c:620
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "매크로 파일에 \"%%_pgp_name\" 을 설정해 주셔야 합니다\n"
 
-#: lib/signature.c:626
+#: lib/signature.c:664
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "헤더의 크기가 너무 큽니다"
 
-#: lib/signature.c:655
+#: lib/signature.c:693
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:695
+#: lib/signature.c:733
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "MD5 서명은 검사하지 않습니다"
 
-#: lib/signature.c:785
+#: lib/signature.c:823
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "서명이 없습니다\n"
 
-#: lib/signature.c:849
+#: lib/signature.c:887
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:869
+#: lib/signature.c:907
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:873
+#: lib/signature.c:911
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"
@@ -3397,6 +3390,15 @@ msgstr "URL 포트는 반드시 숫자이어야 합니다\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "%s (을)를 생성하는데 실패함: %s\n"
+
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "pgp (%s) (을)를 실행할 수 없습니다\n"
+
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "gpg를 실행할 수 없습니다\n"
+
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "pgp를 실행할 수 없습니다\n"
 
 #~ msgid "========== relocations\n"
 #~ msgstr "========== 재배치\n"

@@ -89,6 +89,10 @@
 	- handle lazy db open's in chroot with absolute path, not prefix strip.
 	- Depends should use CDB if configured.
 	- autodetect python 1.5/2.2.
+	- make rpm-perl package self-hosting (#57748).
+	- permit gpg/pgp/pgp5 execs to be reconfigured.
+	- fix: signing multiple times dinna work, discard immutable region.
+	- remove poptmodule.so for separate packaging.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

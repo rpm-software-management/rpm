@@ -1144,8 +1144,8 @@ static int db3open(rpmdb rpmdb, int rpmtag, dbiIndex * dbip)
 		if (dbfile)
 		    t = stpcpy( stpcpy( t, "/"), dbfile);
 #ifdef	HACK	/* XXX necessary to support dbsubfile */
- 		dbpath = (!dbi->dbi_use_dbenv && !dbi->dbi_temporary)
- 			? dbfullpath : dbfile;
+		dbpath = (!dbi->dbi_use_dbenv && !dbi->dbi_temporary)
+			? dbfullpath : dbfile;
 #else
 		dbpath = (!dbi->dbi_temporary)
 			? dbfullpath : dbfile;

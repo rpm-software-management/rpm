@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.218 2002/01/07 18:36:58 jbj Exp $
+# $Id: sl.po,v 1.219 2002/01/10 19:17:26 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-07 11:31-0500\n"
+"POT-Creation-Date: 2002-01-10 14:14-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1657,7 +1657,7 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "ta razlièica RPM podpira samo pakete z glavnim ¹tevilom razlièice <=4"
 
-#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:509
+#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:520
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: readLead je bil neuspe¹en\n"
@@ -1667,12 +1667,12 @@ msgstr "%s: readLead je bil neuspe¹en\n"
 msgid "%s: bad magic\n"
 msgstr "Napaèno magièno ¹tevilo"
 
-#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:525
+#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:536
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: rpmReadSignature je bil neuspe¹en\n"
 
-#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:530
+#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:541
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Podpis ni na voljo\n"
@@ -1682,7 +1682,7 @@ msgstr "%s: Podpis ni na voljo\n"
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:453
+#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:464
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: branje Fread je bilo neuspe¹no: %s\n"
@@ -2432,42 +2432,42 @@ msgstr "%s: Podpis RPM v1.0 ni mo¾en\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Sprememba podpisa RPM v2.0 ni mo¾na\n"
 
-#: lib/rpmchecksig.c:216
+#: lib/rpmchecksig.c:227
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead je bil neuspe¹en: %s\n"
 
-#: lib/rpmchecksig.c:222
+#: lib/rpmchecksig.c:233
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature je bilo neuspe¹no: %s\n"
 
-#: lib/rpmchecksig.c:515
+#: lib/rpmchecksig.c:526
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Podpis ni na voljo (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:710
+#: lib/rpmchecksig.c:721
 msgid "NOT OK"
 msgstr "NI DOBRO"
 
-#: lib/rpmchecksig.c:711 lib/rpmchecksig.c:725
+#: lib/rpmchecksig.c:722 lib/rpmchecksig.c:736
 msgid " (MISSING KEYS:"
 msgstr " (MANJKAJOÈI KLJUÈI:"
 
-#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
+#: lib/rpmchecksig.c:724 lib/rpmchecksig.c:738
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:714 lib/rpmchecksig.c:728
+#: lib/rpmchecksig.c:725 lib/rpmchecksig.c:739
 msgid " (UNTRUSTED KEYS:"
 msgstr " (NEPREVERJENI KLJUÈI:"
 
-#: lib/rpmchecksig.c:716 lib/rpmchecksig.c:730
+#: lib/rpmchecksig.c:727 lib/rpmchecksig.c:741
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:724
+#: lib/rpmchecksig.c:735
 msgid "OK"
 msgstr "V REDU"
 
@@ -2707,123 +2707,114 @@ msgstr "Podpis v (interni) stari obliki! Kje ste ga dobili?"
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Dol¾. podpisa : %d\n"
 
-#: lib/signature.c:287
+#: lib/signature.c:299 lib/signature.c:397 lib/signature.c:537
+#: lib/signature.c:570
 #, fuzzy, c-format
-msgid "Couldn't exec pgp (%s)\n"
-msgstr "Ni mo¾no pognati pgp (%s)"
+msgid "Could not exec %s: %s\n"
+msgstr "Ni mo¾no izvesti %s: %s"
 
-#: lib/signature.c:300
+#: lib/signature.c:315
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp je bil neuspe¹en"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:307
+#: lib/signature.c:322
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp je bil neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:312
+#: lib/signature.c:327
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Dol¾. podpisa PGP: %d\n"
 
-#: lib/signature.c:327 lib/signature.c:414
+#: lib/signature.c:343 lib/signature.c:442
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "branje podpisa je bilo neuspe¹no"
 
-#: lib/signature.c:332
+#: lib/signature.c:348
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Prebrano %d bajtov podpisa PGP\n"
 
-#: lib/signature.c:374 lib/signature.c:504
-#, fuzzy
-msgid "Couldn't exec gpg\n"
-msgstr "Ni mo¾no pognati gpg"
-
-#: lib/signature.c:387
+#: lib/signature.c:414
 #, fuzzy
 msgid "gpg failed\n"
 msgstr "gpg je bil neuspe¹en"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:394
+#: lib/signature.c:421
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "gpg je boil neuspe¹en pri zapisu podpisa"
 
-#: lib/signature.c:399
+#: lib/signature.c:426
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Dol¾. podpisa GnuPG: %d\n"
 
-#: lib/signature.c:419
+#: lib/signature.c:447
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Prebrano %d bajtov podpisa GnuPG\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:475
 msgid "Generating signature using PGP.\n"
 msgstr "Ustvarjanje podpisa s PGP.\n"
 
-#: lib/signature.c:453
+#: lib/signature.c:481
 msgid "Generating signature using GPG.\n"
 msgstr "Ustvarjanje podpisa z GnuPG.\n"
 
-#: lib/signature.c:533
-#, fuzzy
-msgid "Couldn't exec pgp\n"
-msgstr "Ni mo¾no pognati pgp"
-
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:537 lib/signature.c:590
+#: lib/signature.c:575 lib/signature.c:628
 #, fuzzy, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Neveljaven %%_signature v makro-datoteki.\n"
 
-#: lib/signature.c:570
+#: lib/signature.c:608
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/signature.c:582
+#: lib/signature.c:620
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "V makrodatoteki morate nastaviti \"%%_pgp_name\""
 
-#: lib/signature.c:626
+#: lib/signature.c:664
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "Glava je predolga"
 
-#: lib/signature.c:655
+#: lib/signature.c:693
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:695
+#: lib/signature.c:733
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "preskoèi vse podpise MD5"
 
-#: lib/signature.c:785
+#: lib/signature.c:823
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Podpis manjka\n"
 
-#: lib/signature.c:849
+#: lib/signature.c:887
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:869
+#: lib/signature.c:907
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:873
+#: lib/signature.c:911
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Dol¾. polnila : %d\n"
@@ -3472,6 +3463,18 @@ msgstr "vrata URL morajo biti ¹tevilka\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "neuspe¹no ustvarjanje %s: %s\n"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "Ni mo¾no pognati pgp (%s)"
+
+#, fuzzy
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "Ni mo¾no pognati gpg"
+
+#, fuzzy
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "Ni mo¾no pognati pgp"
 
 #, fuzzy
 #~ msgid "%5d exclude  %s\n"

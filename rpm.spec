@@ -1,9 +1,9 @@
-%define	with_python_subpackage	1 %{nil}
-%define	with_python_version	2.2 %{nil}
+%define	with_python_subpackage	1%{nil}
+%define	with_python_version	2.2%{nil}
 %define with_perl_subpackage	1
-%define	with_bzip2		1 %{nil}
-%define	with_apidocs		1 %{nil}
-%define with_internal_db	1 %{nil}
+%define	with_bzip2		1%{nil}
+%define	with_apidocs		1%{nil}
+%define with_internal_db	1%{nil}
 %define strip_binaries		1
 
 # XXX enable at your own risk, CDB access to rpmdb isn't cooked yet.
@@ -175,7 +175,8 @@ make
 { cd Perl-RPM
   CFLAGS="$RPM_OPT_FLAGS" perl Makefile.PL
   export SUBDIR="%{_builddir}/%{buildsubdir}"
-  make INC="-I. -I$SUBDIR/lib -I$SUBDIR/rpmio -I$SUBDIR/popt" %{?_smp_mflags}
+  make INC="-I. -I$SUBDIR/lib -I$SUBDIR/rpmdb -I$SUBDIR/rpmio -I$SUBDIR/popt" \
+    LDDLFLAGS="-shared -L$SUBDIR/lib/.libs -L$SUBDIR/rpmdb/.libs -L$SUBDIR/rpmio/.libs -L$SUBDIR/popt/.libs" %{?_smp_mflags}
 }
 %endif
 
@@ -222,7 +223,10 @@ gzip -9n apidocs/man/man*/* || :
   eval `perl '-V:installsitearch'`
   eval `perl '-V:installarchlib'`
   mkdir -p $RPM_BUILD_ROOT/$installarchlib
-  make PREFIX=$RPM_BUILD_ROOT/usr install
+  make PREFIX=${RPM_BUILD_ROOT}%{__prefix} \
+    INSTALLMAN1DIR=${RPM_BUILD_ROOT}%{__prefix}%{__share}/man/man1 \
+    INSTALLMAN3DIR=${RPM_BUILD_ROOT}%{__prefix}%{__share}/man/man3 \
+	install
   rm -f $RPM_BUILD_ROOT/$installarchlib/perllocal.pod
   rm -f $RPM_BUILD_ROOT/$installsitearch/auto/RPM/.packlist
   cd ..
@@ -450,7 +454,7 @@ fi
 %files python
 %defattr(-,root,root)
 %{__prefix}/lib/python%{with_python_version}/site-packages/rpmmodule.so
-%{__prefix}/lib/python%{with_python_version}/site-packages/poptmodule.so
+#%{__prefix}/lib/python%{with_python_version}/site-packages/poptmodule.so
 %endif
 
 %if %{with_perl_subpackage}
@@ -604,3 +608,7 @@ fi
 - handle lazy db open's in chroot with absolute path, not prefix strip.
 - Depends should use CDB if configured.
 - autodetect python 1.5/2.2.
+- make rpm-perl package self-hosting (#57748).
+- permit gpg/pgp/pgp5 execs to be reconfigured.
+- fix: signing multiple times dinna work, discard immutable region.
+- remove poptmodule.so for separate packaging.

@@ -1,4 +1,4 @@
-# $Id: configure.ac,v 11.125 2001/11/12 14:29:59 bostic Exp $
+# Id: configure.ac,v 11.125 2001/11/12 14:29:59 bostic Exp 
 # Process this file with autoconf to produce a configure script.
 
 PACKAGE=db

@@ -205,14 +205,6 @@ __memp_set_pgcookie(dbmfp, pgcookie)
 }
 
 /*
- * HACK ALERT:
- * rpm needs to carry an open dbenv for a hash database into a chroot.
- * db-3.3.11 tries to do an off page hash access through a mempool, which
- * tries to reopen the original database path.
- */
-const char * chroot_prefix = NULL;
-
-/*
  * __memp_fopen --
  *	Open a backing file for the memory pool.
  */
@@ -295,12 +287,12 @@ __memp_fopen_int(dbmfp, mfp, path, flags, mode, pagesize, needlock)
 	u_int32_t mbytes, bytes, oflags;
 	int ret;
 	u_int8_t idbuf[DB_FILE_ID_LEN];
-	char *rpath, *rpath_orig;
+	char *rpath;
 
 	dbmp = dbmfp->dbmp;
 	dbenv = dbmp->dbenv;
 	ret = 0;
-	rpath = rpath_orig = NULL;
+	rpath = NULL;
 
 	if (path == NULL)
 		last_pgno = 0;
@@ -309,13 +301,6 @@ __memp_fopen_int(dbmfp, mfp, path, flags, mode, pagesize, needlock)
 		if ((ret = __db_appname(dbenv,
 		    DB_APP_DATA, NULL, path, 0, NULL, &rpath)) != 0)
 			goto err;
-
-		rpath_orig = rpath;
-if (chroot_prefix) {
-    int chrlen = strlen(chroot_prefix);
-    if (!strncmp(rpath, chroot_prefix, chrlen))
-	rpath += (chrlen - 1);
-}
 		oflags = 0;
 		if (LF_ISSET(DB_CREATE))
 			oflags |= DB_OSO_CREATE;
@@ -459,12 +444,12 @@ if (chroot_prefix) {
 		}
 	}
 	if (rpath != NULL)
-		__os_freestr(dbenv, rpath_orig);
+		__os_freestr(dbenv, rpath);
 
 	return (0);
 
 err:	if (rpath != NULL)
-		__os_freestr(dbenv, rpath_orig);
+		__os_freestr(dbenv, rpath);
 	if (F_ISSET(dbmfp->fhp, DB_FH_VALID))
 		(void)__os_closehandle(dbmfp->fhp);
 	return (ret);

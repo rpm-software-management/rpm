@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-07 11:31-0500\n"
+"POT-Creation-Date: 2002-01-10 14:14-0500\n"
 "PO-Revision-Date: 2001-08-29 13:55-0400\n"
 "Last-Translator: Eugene Kanter <eugene@blackcatlinux.com>\n"
 "Language-Team:  Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1634,7 +1634,7 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "эта версия RPM поддерживает только пакеты версии <= 4\n"
 
-#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:509
+#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:520
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr "%s: ошибка readLead\n"
@@ -1644,12 +1644,12 @@ msgstr "%s: ошибка readLead\n"
 msgid "%s: bad magic\n"
 msgstr "Неверный magic"
 
-#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:525
+#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:536
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: ошибка rpmReadSignature\n"
 
-#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:530
+#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:541
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Подпись недоступна\n"
@@ -1659,7 +1659,7 @@ msgstr "%s: Подпись недоступна\n"
 msgid "%s: headerRead failed\n"
 msgstr "%s: ошибка readLead\n"
 
-#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:453
+#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:464
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: ошибка Fread: %s\n"
@@ -2378,42 +2378,42 @@ msgstr "%s: Не могу подписать RPM v1.0\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: Не могу переподписать RPM v2.0\n"
 
-#: lib/rpmchecksig.c:216
+#: lib/rpmchecksig.c:227
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: ошибка writeLead: %s\n"
 
-#: lib/rpmchecksig.c:222
+#: lib/rpmchecksig.c:233
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: ошибка rpmWriteSignature: %s\n"
 
-#: lib/rpmchecksig.c:515
+#: lib/rpmchecksig.c:526
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Подписи нет (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:710
+#: lib/rpmchecksig.c:721
 msgid "NOT OK"
 msgstr "НЕ OК"
 
-#: lib/rpmchecksig.c:711 lib/rpmchecksig.c:725
+#: lib/rpmchecksig.c:722 lib/rpmchecksig.c:736
 msgid " (MISSING KEYS:"
 msgstr " (ОТСУТСТВУЮТ КЛЮЧИ:"
 
-#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
+#: lib/rpmchecksig.c:724 lib/rpmchecksig.c:738
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:714 lib/rpmchecksig.c:728
+#: lib/rpmchecksig.c:725 lib/rpmchecksig.c:739
 msgid " (UNTRUSTED KEYS:"
 msgstr " (НЕТ ДОВЕРИЯ К КЛЮЧАМ:"
 
-#: lib/rpmchecksig.c:716 lib/rpmchecksig.c:730
+#: lib/rpmchecksig.c:727 lib/rpmchecksig.c:741
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:724
+#: lib/rpmchecksig.c:735
 msgid "OK"
 msgstr "OК"
 
@@ -2652,116 +2652,109 @@ msgstr ""
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Подпись: размер(%d)+заполнение(%d)\n"
 
-#: lib/signature.c:287
-#, c-format
-msgid "Couldn't exec pgp (%s)\n"
-msgstr "Нвозможно запустить pgp (%s)\n"
+#: lib/signature.c:299 lib/signature.c:397 lib/signature.c:537
+#: lib/signature.c:570
+#, fuzzy, c-format
+msgid "Could not exec %s: %s\n"
+msgstr "Невозможно вылнить %s: %s\n"
 
-#: lib/signature.c:300
+#: lib/signature.c:315
 msgid "pgp failed\n"
 msgstr "ошибка pgp\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:307
+#: lib/signature.c:322
 msgid "pgp failed to write signature\n"
 msgstr "ошибка pgp при записи подписи\n"
 
-#: lib/signature.c:312
+#: lib/signature.c:327
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Размер подписи PGP: %d\n"
 
-#: lib/signature.c:327 lib/signature.c:414
+#: lib/signature.c:343 lib/signature.c:442
 msgid "unable to read the signature\n"
 msgstr "невозможно прочесть подпись\n"
 
-#: lib/signature.c:332
+#: lib/signature.c:348
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Получено %d байт подписи PGP\n"
 
-#: lib/signature.c:374 lib/signature.c:504
-msgid "Couldn't exec gpg\n"
-msgstr "Невозможно запустить gpg\n"
-
-#: lib/signature.c:387
+#: lib/signature.c:414
 msgid "gpg failed\n"
 msgstr "ошибка gpg\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:394
+#: lib/signature.c:421
 msgid "gpg failed to write signature\n"
 msgstr "ошибка gpg при записи подписи\n"
 
-#: lib/signature.c:399
+#: lib/signature.c:426
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Размер подписи GPG: %d\n"
 
-#: lib/signature.c:419
+#: lib/signature.c:447
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Получено %d байт подписи GPG\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:475
 msgid "Generating signature using PGP.\n"
 msgstr "Генерируется подпись PGP.\n"
 
-#: lib/signature.c:453
+#: lib/signature.c:481
 msgid "Generating signature using GPG.\n"
 msgstr "Генерируется подпись GPG.\n"
 
-#: lib/signature.c:533
-msgid "Couldn't exec pgp\n"
-msgstr "Невозможно запустить pgp\n"
-
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:537 lib/signature.c:590
+#: lib/signature.c:575 lib/signature.c:628
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Неверная спецификация %%_signature в макрофайле\n"
 
-#: lib/signature.c:570
+#: lib/signature.c:608
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_gpg_name\" в вашем макрофайле\n"
 
-#: lib/signature.c:582
+#: lib/signature.c:620
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_pgp_name\" в вашем макрофайле\n"
 
-#: lib/signature.c:626
+#: lib/signature.c:664
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "Заголовок слишком велик"
 
-#: lib/signature.c:655
+#: lib/signature.c:693
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:695
+#: lib/signature.c:733
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "пропустить все MD5-подписи"
 
-#: lib/signature.c:785
+#: lib/signature.c:823
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Подписи нет\n"
 
-#: lib/signature.c:849
+#: lib/signature.c:887
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:869
+#: lib/signature.c:907
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:873
+#: lib/signature.c:911
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Подпись: размер(%d)+заполнение(%d)\n"
@@ -3402,6 +3395,15 @@ msgstr "url порт должен быть числом\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "невозможно создать %s: %s\n"
+
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "Нвозможно запустить pgp (%s)\n"
+
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "Невозможно запустить gpg\n"
+
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "Невозможно запустить pgp\n"
 
 #~ msgid "========== relocations\n"
 #~ msgstr "========== перемещений\n"

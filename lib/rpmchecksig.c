@@ -188,6 +188,17 @@ static int rpmReSign(/*@unused@*/ rpmTransactionSet ts,
 
 	/* Toss the current signatures and recompute if not --addsign. */
 	if (qva->qva_mode != RPMSIGN_ADD_SIGNATURE) {
+	    void * uh = NULL;
+	    int_32 uht, uhc;
+
+	    /* Dump the immutable region (if present). */
+	    if (headerGetEntry(sig, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
+		Header nh = headerCopyLoad(uh);
+		headerFree(sig, NULL);
+		sig = headerLink(nh, NULL);
+		headerFree(nh, NULL);
+	    }
+
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_SIZE);
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_MD5);
 	    (void) headerRemoveEntry(sig, RPMSIGTAG_LEMD5_1);

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-01-07 11:31-0500\n"
+"POT-Creation-Date: 2002-01-10 14:14-0500\n"
 "PO-Revision-Date: 2000-06-22 01:13+01:00\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires\n"
 "Language-Team: pt <kde@poli.org>\n"
@@ -1610,7 +1610,7 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "só os pacotes com versão <= 4 são suportados por esta versão do RPM\n"
 
-#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:509
+#: lib/package.c:224 lib/rpmchecksig.c:156 lib/rpmchecksig.c:520
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ":%s: o readLead falhou\n"
@@ -1620,12 +1620,12 @@ msgstr ":%s: o readLead falhou\n"
 msgid "%s: bad magic\n"
 msgstr "Código de integridade inválido"
 
-#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:525
+#: lib/package.c:254 lib/rpmchecksig.c:174 lib/rpmchecksig.c:536
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr "%s: o rpmReadSignature falhou\n"
 
-#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:530
+#: lib/package.c:258 lib/rpmchecksig.c:178 lib/rpmchecksig.c:541
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Nenhuma assinatura disponível\n"
@@ -1635,7 +1635,7 @@ msgstr "%s: Nenhuma assinatura disponível\n"
 msgid "%s: headerRead failed\n"
 msgstr ":%s: o readLead falhou\n"
 
-#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:453
+#: lib/package.c:303 lib/rpmchecksig.c:107 lib/rpmchecksig.c:464
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: O fread falhou: %s\n"
@@ -2361,42 +2361,42 @@ msgstr "%s: Não consigo assinar o RPM v1.0\n"
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr "%s: não consigo assinar de novo o RPM v2.0\n"
 
-#: lib/rpmchecksig.c:216
+#: lib/rpmchecksig.c:227
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: o writeLead falhou: %s\n"
 
-#: lib/rpmchecksig.c:222
+#: lib/rpmchecksig.c:233
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: o rpmWriteSignature falhou: %s\n"
 
-#: lib/rpmchecksig.c:515
+#: lib/rpmchecksig.c:526
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Nenhuma assinatura disponível (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:710
+#: lib/rpmchecksig.c:721
 msgid "NOT OK"
 msgstr "NÃO-OK"
 
-#: lib/rpmchecksig.c:711 lib/rpmchecksig.c:725
+#: lib/rpmchecksig.c:722 lib/rpmchecksig.c:736
 msgid " (MISSING KEYS:"
 msgstr " (FALTAM AS CHAVES:"
 
-#: lib/rpmchecksig.c:713 lib/rpmchecksig.c:727
+#: lib/rpmchecksig.c:724 lib/rpmchecksig.c:738
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:714 lib/rpmchecksig.c:728
+#: lib/rpmchecksig.c:725 lib/rpmchecksig.c:739
 msgid " (UNTRUSTED KEYS:"
 msgstr " (CHAVES SUSPEITAS:"
 
-#: lib/rpmchecksig.c:716 lib/rpmchecksig.c:730
+#: lib/rpmchecksig.c:727 lib/rpmchecksig.c:741
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:724
+#: lib/rpmchecksig.c:735
 msgid "OK"
 msgstr "OK"
 
@@ -2634,116 +2634,109 @@ msgstr "Assinatura (só interna) antiga! Como é que obteve isto!?\n"
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Tamanho da assinatura: %d\n"
 
-#: lib/signature.c:287
-#, c-format
-msgid "Couldn't exec pgp (%s)\n"
-msgstr "Não consigo executar o pgp (%s)\n"
+#: lib/signature.c:299 lib/signature.c:397 lib/signature.c:537
+#: lib/signature.c:570
+#, fuzzy, c-format
+msgid "Could not exec %s: %s\n"
+msgstr "Não consegui executar o %s: %S\n"
 
-#: lib/signature.c:300
+#: lib/signature.c:315
 msgid "pgp failed\n"
 msgstr "o pgp falhou\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:307
+#: lib/signature.c:322
 msgid "pgp failed to write signature\n"
 msgstr "o pgp não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:312
+#: lib/signature.c:327
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "tamanho da assinatura do PGP: %d\n"
 
-#: lib/signature.c:327 lib/signature.c:414
+#: lib/signature.c:343 lib/signature.c:442
 msgid "unable to read the signature\n"
 msgstr "incapaz de ler a assinatura\n"
 
-#: lib/signature.c:332
+#: lib/signature.c:348
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Obtive %d bytes da assinatura PGP\n"
 
-#: lib/signature.c:374 lib/signature.c:504
-msgid "Couldn't exec gpg\n"
-msgstr "Não consegui executar o gpg\n"
-
-#: lib/signature.c:387
+#: lib/signature.c:414
 msgid "gpg failed\n"
 msgstr "o gpg falhou\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:394
+#: lib/signature.c:421
 msgid "gpg failed to write signature\n"
 msgstr "o gpg não conseguiu gravar a assinatura\n"
 
-#: lib/signature.c:399
+#: lib/signature.c:426
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Tamanho da assinatura do GPG: %d\n"
 
-#: lib/signature.c:419
+#: lib/signature.c:447
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Obtive %d bytes da assinatura do GPG\n"
 
-#: lib/signature.c:447
+#: lib/signature.c:475
 msgid "Generating signature using PGP.\n"
 msgstr "A gerar a assinatura usando o PGP.\n"
 
-#: lib/signature.c:453
+#: lib/signature.c:481
 msgid "Generating signature using GPG.\n"
 msgstr "A gerar a assinatura usando o PGP.\n"
 
-#: lib/signature.c:533
-msgid "Couldn't exec pgp\n"
-msgstr "Não consegui executar o pgp\n"
-
 #. @notreached@
 #. This case should have been screened out long ago.
-#: lib/signature.c:537 lib/signature.c:590
+#: lib/signature.c:575 lib/signature.c:628
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "'Spec' %%_signature inválido no ficheiro de macros\n"
 
-#: lib/signature.c:570
+#: lib/signature.c:608
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_gpg_name\" no seu ficheiro de macros\n"
 
-#: lib/signature.c:582
+#: lib/signature.c:620
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Precisa definir o \"%%_pgp_name\" no seu ficheiro de macros\n"
 
-#: lib/signature.c:626
+#: lib/signature.c:664
 #, fuzzy
 msgid "Header+Payload size: "
 msgstr "Tamanho do cabeçalho demasiado grande"
 
-#: lib/signature.c:655
+#: lib/signature.c:693
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:695
+#: lib/signature.c:733
 #, fuzzy
 msgid "V3 RSA/MD5 signature: "
 msgstr "ignorar as assinaturas de MD5"
 
-#: lib/signature.c:785
+#: lib/signature.c:823
 #, fuzzy
 msgid "V3 DSA signature: "
 msgstr "Sem assinatura\n"
 
-#: lib/signature.c:849
+#: lib/signature.c:887
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:869
+#: lib/signature.c:907
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:873
+#: lib/signature.c:911
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "'Pad' ou preenchimento da assinatura: %d\n"
@@ -3375,6 +3368,15 @@ msgstr "o porto do URL tem de ser um número\n"
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr "não consegui criar o %s: %s\n"
+
+#~ msgid "Couldn't exec pgp (%s)\n"
+#~ msgstr "Não consigo executar o pgp (%s)\n"
+
+#~ msgid "Couldn't exec gpg\n"
+#~ msgstr "Não consegui executar o gpg\n"
+
+#~ msgid "Couldn't exec pgp\n"
+#~ msgstr "Não consegui executar o pgp\n"
 
 #~ msgid "========== relocations\n"
 #~ msgstr "========== mudanças de local\n"
