@@ -51,7 +51,10 @@ int os2_apptype (const char *fn, char *buf, int nb);
 
 			/* Global command-line options 		*/
 /*@unchecked@*/
-static	int	nobuffer = 0;   /* Do not buffer stdout */
+static	int	nobuffer = 0;	/* Don't buffer stdout */
+
+/*@unchecked@*/
+static const char * default_separator = ":";
 
 /*
  * unwrap -- read a file of filenames, do each one.
@@ -136,10 +139,12 @@ help(void)
 "                               conjunction with -m to debug a new magic file\n"
 "                               before installing it\n"
 "  -f, --files-from FILE      read the filenames to be examined from FILE\n"
+"  -F, --separator string     use string as separator instead of `:'\n"
 "  -i, --mime                 output mime type strings\n"
 "  -k, --keep-going           don't stop at the first match\n"
 "  -L, --dereference          causes symlinks to be followed\n"
 "  -n, --no-buffer            do not buffer output\n"
+"  -N, --no-pad               do not pad output\n"
 "  -s, --special-files        treat special (block/char devices) files as\n"
 "                             ordinary ones\n"
 "      --help                 display this help and exit\n"
@@ -180,6 +185,7 @@ main(int argc, char **argv)
 		{"checking-printout", 0, 0, 'c'},
 		{"debug", 0, 0, 'd'},
 		{"files-from", 1, 0, 'f'},
+		{"separator", 1, 0, 'F'},
 		{"mime", 0, 0, 'i'},
 		{"keep-going", 0, 0, 'k'},
 #ifdef S_IFLNK
@@ -188,6 +194,7 @@ main(int argc, char **argv)
 		{"magic-file", 1, 0, 'm'},
 		{"uncompress", 0, 0, 'z'},
 		{"no-buffer", 0, 0, 'n'},
+		{"no-pad", 0, 0, 'N'},
 		{"special-files", 0, 0, 's'},
 		{"compile", 0, 0, 'C'},
 		{0, 0, 0, 0},
@@ -212,6 +219,7 @@ main(int argc, char **argv)
 
 /*@-assignexpose@*/
 	fm->magicfile = default_magicfile;
+	fm->separator = default_separator;
 /*@=assignexpose@*/
 	if ((usermagic = getenv("MAGIC")) != NULL)
 		fm->magicfile = usermagic;
@@ -264,6 +272,9 @@ main(int argc, char **argv)
 			unwrap(fm, optarg);
 			++didsomefiles;
 			/*@switchbreak@*/ break;
+		case 'F':
+			fm->separator = optarg;
+			break;
 		case 'i':
 			fm->flags |= FMAGIC_FLAGS_MIME;
 			mime = malloc(strlen(fm->magicfile) + sizeof(".mime"));
@@ -283,6 +294,9 @@ main(int argc, char **argv)
 			/*@switchbreak@*/ break;
 		case 'n':
 			++nobuffer;
+			/*@switchbreak@*/ break;
+		case 'N':
+			fm->flags |= FMAGIC_FLAGS_NOPAD;
 			/*@switchbreak@*/ break;
 		case 's':
 			fm->flags |= FMAGIC_FLAGS_SPECIAL;

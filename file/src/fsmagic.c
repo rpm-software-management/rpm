@@ -297,8 +297,8 @@ fmagicProcess(fmagic fm, const char *fn, int wid)
 /*@=branchstate@*/
 
 	if (wid > 0 && !(fm->flags & FMAGIC_FLAGS_BRIEF))
-	     file_printf(fm, "%s:%*s ", fm->fn, 
-			   (int) (wid - strlen(fm->fn)), "");
+	     file_printf(fm, "%s%s%*s ", fm->fn, fm->separator,
+		(int) ((fm->flags & FMAGIC_FLAGS_NOPAD) ? 0 : (wid - strlen(fm->fn))), "");
 
 	if (fm->fn != stdname) {
 		/*

@@ -769,10 +769,8 @@ fmagicSCheck(const fmagic fm, struct magic *m)
     uint32_t v = 0;
     int matched;
 
-    if ( (m->value.s[0] == 'x') && (m->value.s[1] == '\0') ) {
-	fprintf(stderr, "BOINK");
+    if ( (m->value.s[0] == 'x') && (m->value.s[1] == '\0') )
 	return 1;
-    }
 
     switch (m->type) {
     case FILE_BYTE:

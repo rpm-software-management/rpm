@@ -144,6 +144,22 @@ struct mlist {
 	struct mlist *prev;
 };
 
+struct magic_set {
+    struct mlist *mlist;
+    struct cont {
+	size_t len;
+	int32_t *off;
+    } c;
+    struct out {
+	char *buf;
+	char *ptr;
+	size_t len;
+	size_t size;
+    } o;
+    int flags;
+    int haderr;
+};
+
 enum fmagicFlags_e {
 /*@-enummemuse@*/
     FMAGIC_FLAGS_NONE		= 0,
@@ -154,13 +170,15 @@ enum fmagicFlags_e {
     FMAGIC_FLAGS_CONTINUE	= (1 << 3),	/*!< continue after 1st match */
     FMAGIC_FLAGS_FOLLOW		= (1 << 4),	/*!< follow symlinks? */
     FMAGIC_FLAGS_SPECIAL	= (1 << 5),	/*!< analyze block devices? */
-    FMAGIC_FLAGS_UNCOMPRESS	= (1 << 6)	/*!< uncompress files? */
+    FMAGIC_FLAGS_UNCOMPRESS	= (1 << 6),	/*!< uncompress files? */
+    FMAGIC_FLAGS_NOPAD		= (1 << 7)	/*!< don't pad output */
 };
 
 struct fmagic_s {
     int flags;			/*!< bit(s) to control fmagic behavior. */
 /*@dependent@*/ /*@observer@*/ /*@relnull@*/
     const char *magicfile;	/*!< name of the magic file		*/
+    const char *separator;	/*!< file name/type separator (default ":" */
     int lineno;			/*!< current line number in magic file	*/
 /*@relnull@*/
     struct mlist * mlist;	/*!< list of arrays of magic entries	*/
