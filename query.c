@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <sys/param.h>
 #include <unistd.h>
 
 #include "lib/messages.h"
@@ -478,6 +479,11 @@ int doQuery(char * prefix, enum querysources source, int queryFlags,
 
       case QUERY_SPATH:
       case QUERY_PATH:
+	if (*arg != '/') {
+	    char path[255];
+	    if (realpath(arg, path) != NULL)
+		arg = path;
+	}
 	if (rpmdbFindByFile(db, arg, &matches)) {
 	    fprintf(stderr, "file %s is not owned by any package\n", arg);
 	    retcode = 1;
