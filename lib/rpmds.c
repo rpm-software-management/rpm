@@ -167,7 +167,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int scareMem)
 	ds->N = N;
 	ds->Nt = Nt;
 	ds->Count = Count;
-	ds->nopromote = 0;
+	ds->nopromote = _rpmds_nopromote;
 
 	xx = hge(h, tagEVR, &ds->EVRt, (void **) &ds->EVR, NULL);
 	xx = hge(h, tagF, &ds->Ft, (void **) &ds->Flags, NULL);
