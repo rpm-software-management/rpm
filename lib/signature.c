@@ -56,8 +56,8 @@ int sigLookupType(void)
 int readSignature(int fd, Header *header, short sig_type)
 {
     unsigned char buf[2048];
-    int sigSize, length, pad;
-    int_32 size[2], type, count;
+    int sigSize, pad;
+    int_32 type, count;
     int_32 *archSize;
     Header h;
 
@@ -81,61 +81,10 @@ int readSignature(int fd, Header *header, short sig_type)
 	}
 	break;
       case RPMSIG_MD5:
-	message(MESS_DEBUG, "Old-new MD5 signature\n");
-	/* 8 byte aligned */
-	if (read(fd, size, 8) != 8) {
-	    return 1;
-	}
-	size[0] = ntohl(size[0]);
-	if (checkSize(fd, size[0], 8 + 16)) {
-	    return 1;
-	}
-	if (read(fd, buf, 16) != 16) {
-	    return 1;
-	}
-	if (header) {
-	    *header = newHeader();
-	    addEntry(*header, SIGTAG_SIZE, INT32_TYPE, size, 1);
-	    addEntry(*header, SIGTAG_MD5, BIN_TYPE, buf, 16);
-	}
-	break;
       case RPMSIG_MD5_PGP:
-	message(MESS_DEBUG, "Old-new MD5 and PGP signature\n");
-	/* 8 byte aligned */
-	/* Size of header+archive */
-	if (read(fd, size, 8) != 8) {
-	    return 1;
-	}
-	size[0] = ntohl(size[0]);
-	/* Read MD5 sum and size of PGP signature */
-	if (read(fd, buf, 18) != 18) {
-	    return 1;
-	}
-	length = buf[16] * 256 + buf[17];  /* length of PGP sig */
-	pad = (8 - ((length + 18) % 8)) % 8;
-	if (checkSize(fd, size[0], 8 + 16 + 2 + length + pad)) {
-	    return 1;
-	}
-	/* Read PGP signature */
-	if (read(fd, buf + 18, length) != length) {
-	    return 1;
-	}
-	if (header) {
-	    *header = newHeader();
-	    addEntry(*header, SIGTAG_SIZE, INT32_TYPE, size, 1);
-	    addEntry(*header, SIGTAG_MD5, BIN_TYPE, buf, 16);
-	    addEntry(*header, SIGTAG_PGP, BIN_TYPE, buf+18, length);
-	}
-	/* The is the align magic */
-	if (pad) {
-	    if (read(fd, buf, pad) != pad) {
-		if (header) {
-		    freeHeader(*header);
-		    *header = NULL;
-		}
-		return 1;
-	    }
-	}
+	error(RPMERR_BADSIGTYPE,
+	      "Old (internal-only) signature!  How did you get that!?");
+	return 1;
 	break;
       case RPMSIG_HEADERSIG:
 	message(MESS_DEBUG, "New Header signature\n");
