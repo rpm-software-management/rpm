@@ -1,6 +1,6 @@
 SUBDIRS = lib
 OBJS = spec.o stringbuf.o build.o pack.o
-PROGS = rpm
+PROGS = rpm rpmlead rpmheader rpmarchive
 
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
 DEBUG = -g
