@@ -113,6 +113,7 @@
 	- file conflict checks with colors.
 	- fix: debugedit.c problem.
 	- permit anaconda to choose "presentation order".
+	- fix: more debugedit.c problems.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

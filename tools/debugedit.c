@@ -38,6 +38,8 @@
 
 #include "hashtab.h"
 
+#define DW_TAG_partial_unit 0x3c
+
 char *base_dir = NULL;
 char *dest_dir = NULL;
 char *list_file = NULL;
@@ -424,6 +426,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
   unsigned char opcode_base;
   uint_32 value, dirt_cnt;
   size_t comp_dir_len = strlen (comp_dir);
+  size_t abs_file_cnt = 0, abs_dir_cnt = 0;
 
   if (phase != 0)
     return 0;
@@ -509,7 +512,11 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	  return 1;
 	}
       if (*file == '/')
-	memcpy (s, file, file_len + 1);
+	{
+	  memcpy (s, file, file_len + 1);
+	  if (dest_dir && has_prefix (file, base_dir))
+	    ++abs_file_cnt;
+	}
       else if (*dirt[value] == '/')
 	{
 	  memcpy (s, dirt[value], dir_len);
@@ -556,28 +563,90 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
       read_uleb128 (ptr);
       read_uleb128 (ptr);
     }
+  ++ptr;
   
   if (dest_dir)
     {
-      ptr = dir;
-      while (*ptr != 0)
-	{
-	  if (*ptr == '/' && has_prefix (ptr, base_dir))
-	    {
-	      size_t base_len = strlen (base_dir);
-	      size_t dest_len = strlen (dest_dir);
+      unsigned char *srcptr, *buf = NULL;
+      size_t base_len = strlen (base_dir);
+      size_t dest_len = strlen (dest_dir);
 
+      if (dest_len == base_len)
+	abs_file_cnt = 0;
+      if (abs_file_cnt)
+	{
+	  srcptr = buf = malloc (ptr - dir);
+	  memcpy (srcptr, dir, ptr - dir);
+	  ptr = dir;
+	}
+      else
+	ptr = srcptr = dir;
+      while (*srcptr != 0)
+	{
+	  size_t len = strlen (srcptr) + 1;
+
+	  if (*srcptr == '/' && has_prefix (srcptr, base_dir))
+	    {
 	      memcpy (ptr, dest_dir, dest_len);
 	      if (dest_len < base_len)
 		{
-		  memmove (ptr + dest_len, ptr + base_len,
-			   strlen (dir + base_len) + 1);
+		  memmove (ptr + dest_len, srcptr + base_len,
+			   len - base_len);
+		  ptr += dest_len - base_len;
+		  ++abs_dir_cnt;
 		}
 	      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
 			    ELF_C_SET, ELF_F_DIRTY);
 	    }
-	  ptr = strchr (ptr, 0) + 1;
+	  else if (ptr != srcptr)
+	    memmove (ptr, srcptr, len);
+	  srcptr += len;
+	  ptr += len;
 	}
+
+      if (abs_dir_cnt + abs_file_cnt != 0)
+	{
+	  size_t len = (abs_dir_cnt + abs_file_cnt) * (base_len - dest_len);
+
+	  if (len == 1)
+	    error (EXIT_FAILURE, 0, "-b arg has to be either the same length as -d arg, or more than 1 char shorter");
+	  memset (ptr, 'X', len - 1);
+	  ptr += len - 1;
+	  *ptr++ = '\0';
+	}
+      *ptr++ = '\0';
+      ++srcptr;
+
+      while (*srcptr != 0)
+	{
+	  size_t len = strlen (srcptr) + 1;
+
+	  if (*srcptr == '/' && has_prefix (srcptr, base_dir))
+	    {
+	      memcpy (ptr, dest_dir, dest_len);
+	      if (dest_len < base_len)
+		{
+		  memmove (ptr + dest_len, srcptr + base_len,
+			   len - base_len);
+		  ptr += dest_len - base_len;
+		}
+	      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
+			    ELF_C_SET, ELF_F_DIRTY);
+	    }
+	  else if (ptr != srcptr)
+	    memmove (ptr, srcptr, len);
+	  srcptr += len;
+	  ptr += len;
+	  dir = srcptr;
+	  read_uleb128 (srcptr);
+	  read_uleb128 (srcptr);
+	  read_uleb128 (srcptr);
+	  if (ptr != dir)
+	    memmove (ptr, dir, srcptr - dir);
+	  ptr += srcptr - dir;
+	}
+      *ptr = '\0';
+      free (buf);
     }
   return 0;
 }
@@ -613,13 +682,14 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		}
 	    }
 
-	  if (debug_sections[DEBUG_STR].data &&
-	      t->attr[i].attr == DW_AT_comp_dir &&
-	      form == DW_FORM_strp)
+	  if (t->attr[i].attr == DW_AT_comp_dir &&
+	      form == DW_FORM_strp &&
+	      debug_sections[DEBUG_STR].data)
 	    {
 	      char *dir;
 	      
 	      dir = debug_sections[DEBUG_STR].data + do_read_32 (ptr);
+	      free (comp_dir);
 	      comp_dir = strdup (dir);
 
 	      if (phase == 1 && dest_dir && has_prefix (dir, base_dir))
@@ -637,7 +707,45 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 				ELF_C_SET, ELF_F_DIRTY);
 		}
 	    }
-	  
+	  else if ((t->tag == DW_TAG_compile_unit
+		    || t->tag == DW_TAG_partial_unit)
+		   && t->attr[i].attr == DW_AT_name
+		   && form == DW_FORM_strp
+		   && debug_sections[DEBUG_STR].data)
+	    {
+	      char *name;
+	      
+	      name = debug_sections[DEBUG_STR].data + do_read_32 (ptr);
+	      if (*name == '/' && comp_dir == NULL)
+		{
+		  char *enddir = strrchr (name, '/');
+
+		  if (enddir != name)
+		    {
+		      comp_dir = malloc (enddir - name + 1);
+		      memcpy (comp_dir, name, enddir - name);
+		      comp_dir [enddir - name] = '\0';
+		    }
+		  else
+		    comp_dir = strdup ("/");
+		}
+
+	      if (phase == 1 && dest_dir && has_prefix (name, base_dir))
+		{
+		  base_len = strlen (base_dir);
+		  dest_len = strlen (dest_dir);
+		  
+		  memcpy (name, dest_dir, dest_len);
+		  if (dest_len < base_len)
+		    {
+		      memmove (name + dest_len, name + base_len,
+			       strlen (name + base_len) + 1);
+		    }
+		  elf_flagdata (debug_sections[DEBUG_STR].elf_data,
+				ELF_C_SET, ELF_F_DIRTY);
+		}
+	    }
+
 	  switch (form)
 	    {
 	    case DW_FORM_addr:
@@ -1115,5 +1223,3 @@ main (int argc, char *argv[])
 
   return 0;
 }
-
-
