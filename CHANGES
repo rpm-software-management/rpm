@@ -72,6 +72,7 @@
 	- 12 more dead strtoks.
 	- changelog stamp broken w/ big endian 64 bit time_t (Stephane Erania).
 	- tru64: use /bin/sh not /usr/bin/ksh in find-requires.
+	- 32Mb (~16x largest known) sanity check on header size.
 
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected (Shing-Gene Yung).
