@@ -27,6 +27,7 @@ if [ $# = 0 ]; then
     exec $RPM $args
 fi
 
+origargs=$args
 args="$args -- "
 shift
 
@@ -43,4 +44,8 @@ for n in $*; do
     fi
 done
 
-exec $RPM $args
+if [ "$args" = "$origargs -- " ]; then
+    echo no packages require freshening
+else
+    exec $RPM $args
+fi

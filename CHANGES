@@ -3,6 +3,7 @@
 	- start unifying FD types, CFD_t now gone.
 	- check for memory leaks (almost all leaks are plugged).
 	- fix: resurrect multiple target platform builds.
+	- freshen.sh: detect when all packages are up to date (Ian Macdonald).
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
