@@ -335,6 +335,8 @@ INPUT                  = \
 	@top_srcdir@/dlpk.h \
 	@top_srcdir@/dlsvdp-dh.c \
 	@top_srcdir@/dlsvdp-dh.h \
+	@top_srcdir@/dsa.c \
+	@top_srcdir@/dsa.h \
 	@top_srcdir@/elgamal.c \
 	@top_srcdir@/elgamal.h \
 	@top_srcdir@/endianness.c \

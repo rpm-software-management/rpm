@@ -17,6 +17,11 @@
  *
  */
 
+/*!\file beecrypt.api.h
+ * \brief BeeCrypt API, portability headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ */
+
 #ifndef _BEECRYPT_API_H
 #define _BEECRYPT_API_H
 
@@ -31,11 +36,61 @@
 # else
 #  define BEECRYPTAPI __declspec(dllimport)
 # endif
-/*typedef UINT8_TYPE    byte;*/
 #else
 # include "beecrypt.gnu.h"
 # define BEECRYPTAPI
-typedef UINT8_TYPE  byte;
+#endif
+
+#if HAVE_INTTYPES_H
+# include <inttypes.h>
+#else
+# if HAVE_STDINT_H
+# include <stdint.h>
+# endif
+#endif
+
+#if defined(__GNUC__)
+# if defined(__i386__)
+static inline uint32_t ROTL32(uint32_t x, const unsigned char n)
+{
+	__asm__("roll %1,%0"
+		:	"=r" (x)
+		:	"0" (x), "I" (n));
+
+	return x;
+}
+
+static inline uint32_t ROTR32(uint32_t x, const unsigned char n)
+{
+	__asm__("rorl %1,%0"
+		:	"=r" (x)
+		:	"0" (x), "I" (n));
+
+	return x;
+}
+# elif defined(__powerpc__)
+static inline uint32_t ROTL32(uint32_t x, const unsigned char n)
+{
+	register uint32_t r;
+
+	__asm__("rotlwi %0,%1,%2"
+		:	"=r" (r)
+		:	"r" (x), "I" (n));
+
+	return r;
+}
+
+static inline uint32_t ROTR32(uint32_t x, const unsigned char n)
+{
+	register uint32_t r;
+
+	__asm__("rotrwi %0,%1,%2"
+		:	"=r" (r)
+		:	"r" (x), "I" (n));
+
+	return r;
+}
+# endif
 #endif
 
 #ifndef ROTL32
@@ -45,24 +100,13 @@ typedef UINT8_TYPE  byte;
 # define ROTR32(x, s) (((x) >> (s)) | ((x) << (32 - (s))))
 #endif
 
-typedef INT8_TYPE   int8;
-typedef INT16_TYPE  int16;
-typedef INT32_TYPE  int32;
-typedef INT64_TYPE  int64;
+typedef uint8_t		byte;
 
-typedef UINT8_TYPE  uint8;
-typedef UINT16_TYPE uint16;
-typedef UINT32_TYPE uint32;
-typedef UINT64_TYPE uint64;
+typedef int8_t		javabyte;
+typedef int16_t		javashort;
+typedef int32_t		javaint;
+typedef int64_t		javalong;
 
-typedef INT8_TYPE   javabyte;
-typedef INT16_TYPE  javashort;
-typedef INT32_TYPE  javaint;
-typedef INT64_TYPE  javalong;
-
-typedef UINT16_TYPE javachar;
-
-typedef FLOAT4_TYPE     javafloat;
-typedef DOUBLE8_TYPE    javadouble;
+typedef uint16_t	javachar;
 
 #endif

@@ -47,7 +47,6 @@
 #include "mp.h"
 #include "debug.h"
 
-/*@-boundswrite@*/
 int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGeneratorContext* rgc, const mpnumber* hm, const mpnumber* x, mpnumber* r, mpnumber* s)
 {
 	register size_t psize = p->size;
@@ -108,7 +107,6 @@ int dsasign(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, randomGen
 
 	return rc;
 }
-/*@=boundswrite@*/
 
 int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpnumber* hm, const mpnumber* y, const mpnumber* r, const mpnumber* s)
 {
@@ -119,7 +117,7 @@ int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpn
 	register mpw* qtemp;
 
 	register mpw* pwksp;
-	register uint32* qwksp;
+	register mpw* qwksp;
 
 	register int rc = 0;
 
@@ -140,7 +138,8 @@ int dsavrfy(const mpbarrett* p, const mpbarrett* q, const mpnumber* g, const mpn
 		return rc;
 
 	qtemp = (mpw*) malloc((13*qsize+11) * sizeof(*qtemp));
-	if (qtemp == (mpw*) 0) {
+	if (qtemp == (mpw*) 0)
+	{
 		free(ptemp);
 		return rc;
 	}

@@ -1,13 +1,5 @@
-/** \ingroup BC_blowfish_m BC_m
- * \file blowfish.h
- *
- * Blowfish block cipher, header.
- */
-
 /*
  * Copyright (c) 1999, 2000, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +15,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file blowfish.h
+ * \brief Blowfish block cipher, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup BC_m BC_blowfish_m
  */
 
 #ifndef _BLOWFISH_H
@@ -72,7 +70,7 @@ int blowfishSetIV  (blowfishParam* bp, const byte* iv)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int blowfishEncrypt(blowfishParam* bp, uint32* dst, const uint32* src)
+int blowfishEncrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
 	/*@modifies bp, dst @*/;
 /*@=exportlocal@*/
 
@@ -80,7 +78,7 @@ int blowfishEncrypt(blowfishParam* bp, uint32* dst, const uint32* src)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int blowfishDecrypt(blowfishParam* bp, uint32* dst, const uint32* src)
+int blowfishDecrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
 	/*@modifies bp, dst @*/;
 /*@=exportlocal@*/
 

@@ -1,14 +1,6 @@
 /*@-sizeoftype -type@*/
-/** \ingroup ES_m
- * \file entropy.c
- *
- * Entropy gathering routine(s) for pseudo-random generator initialization.
- */
-
 /*
  * Copyright (c) 1998, 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +16,11 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file entropy.c
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup ES_m ES_audio_m ES_dsp_m ES_random_m ES_urandom_m ES_tty_m
  */
 
 #define BEECRYPT_DLL_EXPORT
@@ -155,7 +152,6 @@ int entropy_provider_cleanup()
  * Mask the low-order bit of a bunch of sound samples, analyze them and
  * return an error in case they are all zeroes or ones.
  */
-/*@-boundswrite@*/
 static int entropy_noise_filter(void* sampledata, int samplecount, int samplesize, int channels, int swap)
 	/*@globals errno @*/
 	/*@modifies sampledata, errno @*/
@@ -329,7 +325,6 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 
 	return 0;
 }
-/*@=boundswrite@*/
 
 /**
  * Bit deskewing technique: the classical Von Neumann method.
@@ -343,7 +338,6 @@ static int entropy_noise_filter(void* sampledata, int samplecount, int samplesiz
 #if WIN32
 static int entropy_noise_gather(HWAVEIN wavein, int samplesize, int channels, int swap, int timeout, byte* data, size_t size)
 #else
-/*@-boundswrite@*/
 /*@-mustmod@*/ /* data is modified, annotations incorrect */
 static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, int timeout, /*@out@*/ byte* data, size_t size)
 	/*@globals errno, fileSystem @*/
@@ -548,7 +542,7 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 						temp <<= 1;
 						temp |= samples[i];
 						randombits--;
-						if (!(randombits & 0x1f))
+						if (!(randombits & 0x7))
 							*(data++) = temp;
 					}
 				}
@@ -576,7 +570,6 @@ static int entropy_noise_gather(int fd, int samplesize, int channels, int swap, 
 	return 0;
 }
 /*@=mustmod@*/
-/*@=boundswrite@*/
 #endif
 
 #if WIN32
@@ -970,7 +963,6 @@ static int opendevice(const char *device)
  * @param size
  * @return
  */
-/*@-boundswrite@*/
 static int entropy_randombits(int fd, int timeout, byte* data, size_t size)
 	/*@*/
 {
@@ -1071,7 +1063,6 @@ static int entropy_randombits(int fd, int timeout, byte* data, size_t size)
 	/*@=branchstate@*/
 	return 0;
 }
-/*@=boundswrite@*/
 #endif
 
 #if HAVE_DEV_TTY
@@ -1081,7 +1072,6 @@ static int entropy_randombits(int fd, int timeout, byte* data, size_t size)
  * @param size
  * @return
  */
-/*@-boundswrite@*/
 static int entropy_ttybits(int fd, byte* data, size_t size)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
@@ -1213,7 +1203,6 @@ static int entropy_ttybits(int fd, byte* data, size_t size)
 
 	return 0;
 }
-/*@=boundswrite@*/
 #endif
 
 #if HAVE_DEV_AUDIO

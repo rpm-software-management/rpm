@@ -1,13 +1,5 @@
-/** \ingroup HMAC_m
- * \file hmac.h
- *
- * HMAC message authentication code, header.
- */
-
 /*
  * Copyright (c) 1999, 2000, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,10 +17,19 @@
  *
  */
 
+/*!\file hmac.h
+ * \brief HMAC algorithm, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup HMAC_m
+ */
+
 #ifndef _HMAC_H
 #define _HMAC_H
 
 #include "beecrypt.h"
+
+/*!\ingroup HMAC_m
+ */
 
 #ifdef __cplusplus
 extern "C" {

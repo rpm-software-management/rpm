@@ -1,9 +1,4 @@
 /*
- * testdldp.c
- *
- * Unit test program for discrete logarithm domain parameters (over a prime field),
- * as specified by IEEE P.1363.
- *
  * Copyright (c) 2002, 2003 Bob Deblier
  *
  * This library is free software; you can redistribute it and/or
@@ -22,6 +17,12 @@
  *
  */
 
+/*!\file testdldp.c
+ * \brief Unit test program for discrete logarithm domain parameters.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup UNIT_m
+ */
+
 #include <stdio.h>
 
 #include "beecrypt.h"
@@ -34,33 +35,38 @@ int main()
 	dldp_p params;
 	randomGeneratorContext rngc;
 
-        memset(&params, 0, sizeof(dldp_p));
-        memset(&rngc, 0, sizeof(rngc));
+	dldp_pInit(&params);
 
-        if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
-        {                        
-                mpnumber gq;
+	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
+	{                        
+		mpnumber gq;
 
-                mpnzero(&gq);
+		mpnzero(&gq);
 
-		/* make parameters with p = 512 bits, q = 160 bits, g of order (q) */
-                dldp_pgoqMake(&params, &rngc, 512 >> 5, 160 >> 5, 1);
+		/* make parameters with p = 1024 bits, q = 160 bits, g of order (q) */
+		dldp_pgoqMake(&params, &rngc, 1024, 160, 1);
 
-                /* we have the parameters, now see if g^q == 1 */
-                mpbnpowmod(&params.p, &params.g, (mpnumber*) &params.q, &gq);
-                if (mpisone(gq.size, gq.data))
-			printf("ok\n");
-		else
+		/* we have the parameters, now see if g^q == 1 */
+		mpbnpowmod(&params.p, &params.g, (mpnumber*) &params.q, &gq);
+		if (!mpisone(gq.size, gq.data))
+		{
+			printf("failed test vector 1\n");
 			failures++;
+		}
+		else
+			printf("ok\n");
 
-                mpnfree(&gq);
+		mpnfree(&gq);
 
-                dldp_pFree(&params);
+		dldp_pFree(&params);
 
-                randomGeneratorContextFree(&rngc);  
-        }
+		randomGeneratorContextFree(&rngc);  
+	}
 	else
+	{
+		printf("random generator failure\n");
 		return -1;
+	}
 
 	return failures;
 }

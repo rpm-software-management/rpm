@@ -1,13 +1,5 @@
-/** \ingroup BC_m
- * \file blockmode.h
- *
- * Blockcipher operation modes, header.
- */
-
 /*
  * Copyright (c) 2000, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +17,12 @@
  *
  */
 
+/*!\file blockmode.h
+ * \brief Blockcipher operation modes, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup BC_m
+ */
+
 #ifndef _BLOCKMODE_H
 #define _BLOCKMODE_H
 
@@ -38,52 +36,52 @@ extern "C" {
  * Encrypts multiple blocks in Electronic Code Book (ECB) mode.
  * @param bc		blockcipher context
  * @param bp		blockcipher parameters
- * @param nblocks	number of blocks to be encrypted.
  * @retval dst		ciphertext data (aligned on a 32-bit boundary).
  * @param src		cleartext data (aligned on a 32-bit boundary).
+ * @param nblocks	number of blocks to be encrypted.
  * @retval		0 on success.
  */
 BEECRYPTAPI
-int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, int nblocks, /*@out@*/ uint32_t* dst, const uint32_t* src)
+int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint32_t* dst, const uint32_t* src, int nblocks)
 	/*@modifies bp, dst @*/;
 
 /**
  * Decrypts multiple blocks in Electronic Code Book (ECB) mode.
  * @param bc		blockcipher context
  * @param bp		blockcipher parameters
- * @param nblocks	number of blocks to be encrypted.
  * @retval dst		ciphertext data (aligned on a 32-bit boundary).
  * @param src		cleartext data (aligned on a 32-bit boundary).
+ * @param nblocks	number of blocks to be encrypted.
  * @retval		0 on success.
  */
 BEECRYPTAPI
-int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, int nblocks, /*@out@*/ uint32_t* dst, const uint32_t* src)
+int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint32_t* dst, const uint32_t* src, int nblocks)
 	/*@modifies bp, dst @*/;
 
 /**
  * Encrypts multiple blocks in Cipher Block Chaining (CBC) mode.
  * @param bc		blockcipher context
  * @param bp		blockcipher parameters
- * @param nblocks	number of blocks to be encrypted.
  * @retval dst		ciphertext data (aligned on a 32-bit boundary).
  * @param src		cleartext data (aligned on a 32-bit boundary).
+ * @param nblocks	number of blocks to be encrypted.
  * @retval		0 on success.
  */
 BEECRYPTAPI
-int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, int nblocks, /*@out@*/ uint32_t* dst, const uint32_t* src)
+int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint32_t* dst, const uint32_t* src, int nblocks)
 	/*@modifies bp, dst @*/;
 
 /**
  * Decrypts multiple blocks in Cipher Block Chaining (CBC) mode.
  * @param bc		blockcipher context
  * @param bp		blockcipher parameters
- * @param nblocks	number of blocks to be encrypted.
  * @retval dst		ciphertext data (aligned on a 32-bit boundary).
  * @param src		cleartext data (aligned on a 32-bit boundary).
+ * @param nblocks	number of blocks to be encrypted.
  * @retval		0 on success.
  */
 BEECRYPTAPI
-int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, int nblocks, /*@out@*/ uint32_t* dst, const uint32_t* src)
+int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, /*@out@*/ uint32_t* dst, const uint32_t* src, int nblocks)
 	/*@modifies bp, dst @*/;
 
 #ifdef __cplusplus

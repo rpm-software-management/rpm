@@ -1,13 +1,5 @@
-/** \ingroup DL_m
- * \file dlpk.c
- *
- * Discrete Logarithm Public Key, code.
- */
-
 /*
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,10 +17,20 @@
  *
  */
 
+/*!\file dlpk.c
+ * \brief Discrete Logarithm public key.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup DL_m
+ */
+
 #include "system.h"
 #include "dlpk.h"
 #include "mp.h"
 #include "debug.h"
+
+/*!\addtogroup DL_m
+ * \{
+ */
 
 int dlpk_pInit(dlpk_p* pk)
 {
@@ -99,3 +101,6 @@ int dlpk_pgonValidate(const dlpk_p* pk, randomGeneratorContext* rgc)
 
 	return 1;
 }
+
+/*!\}
+ */

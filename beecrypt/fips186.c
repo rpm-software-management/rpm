@@ -1,13 +1,5 @@
-/** \ingroup PRNG_fips186_m DSA_m
- * \file fips186.c
- *
- * NIST FIPS-186 pseudo-random generator, code.
- */
-
 /*
  * Copyright (c) 1998, 1999, 2000, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,12 +17,22 @@
  *
  */
 
+/*!\file fips186.c
+ * \brief FIPS 186 pseudo-random number generator.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup PRNG_m PRNG_fips186_m
+ */
+
 #include "system.h"
 #include "beecrypt.h"
 #include "fips186.h"
 #include "mpopt.h"
 #include "mp.h"
 #include "debug.h"
+
+/*!\addtogroup PRNG_fips186_m
+ * \{
+ */
 
 /**
  */
@@ -43,14 +45,12 @@ const randomGenerator fips186prng = { "FIPS 186", sizeof(fips186Param), (const r
 
 /**
  */
-/*@-boundswrite@*/
 static int fips186init(register sha1Param* p)
 	/*@modifies p @*/
 {
 	memcpy(p->h, fips186hinit, sizeof(p->h));
 	return 0;
 }
-/*@=boundswrite@*/
 
 int fips186Setup(fips186Param* fp)
 {
@@ -135,7 +135,6 @@ int fips186Seed(fips186Param* fp, const byte* data, size_t size)
 	return -1;
 }
 
-/*@-boundswrite@*/
 int fips186Next(fips186Param* fp, byte* data, size_t size)
 {
 	if (fp)
@@ -207,7 +206,6 @@ int fips186Next(fips186Param* fp, byte* data, size_t size)
 	}
 	return -1;
 }
-/*@=boundswrite@*/
 
 int fips186Cleanup(fips186Param* fp)
 {
@@ -233,3 +231,6 @@ int fips186Cleanup(fips186Param* fp)
 	}
 	return -1;
 }
+
+/*!\}
+ */

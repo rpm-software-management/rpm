@@ -92,7 +92,6 @@ memchunk* memchunkResize(memchunk* m, int size)
 	/*@=nullret =compdef@*/
 }
 
-/*@-boundswrite@*/
 memchunk* memchunkClone(const memchunk* m)
 {
 	if (m)
@@ -107,4 +106,3 @@ memchunk* memchunkClone(const memchunk* m)
 
 	return (memchunk*) 0;
 }
-/*@=boundswrite@*/

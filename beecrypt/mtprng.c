@@ -1,20 +1,3 @@
-/**
- * \file mtprng.c
- *
- * Mersenne Twister pseudo-random number generator, code.
- *
- * Developed by Makoto Matsumoto and Takuji Nishimura
- *
- * For more information, see:
- *  http://www.math.keio.ac.jp/~matumoto/emt.html
- *
- * Adapted from optimized code by Shawn J. Cokus <cokus@math.washington.edu>
- *
- * Note: this generator has a very long period, passes statistical test, but
- * needs more study to determine whether it is cryptographically strong enough.
- *
- */
-
 /*
  * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
  *
@@ -36,6 +19,21 @@
  *
  */
 
+/*!\mtprng.c
+ * \brief Mersenne Twister pseudo-random number generator.
+ *
+ * Developed by Makoto Matsumoto and Takuji Nishimura. For more information,
+ * see: http://www.math.keio.ac.jp/~matumoto/emt.html
+ *
+ * Adapted from optimized code by Shawn J. Cokus <cokus@math.washington.edu>
+ *
+ * \warning This generator has a very long period, passes statistical test and
+ &          is very fast, but is not recommended for use in cryptography.
+ *
+ * \author Bob Deblier <bob@virtualunlimited.com>
+ * \ingroup PRNG_m
+ */
+
 #include "system.h"
 #include "beecrypt.h"
 #include "mtprng.h"
@@ -54,12 +52,11 @@ const randomGenerator mtprng = { "Mersenne Twister", sizeof(mtprngParam), (rando
 
 /**
  */
-/*@-boundsread@*/
 static void mtprngReload(mtprngParam* mp)
 	/*@modifies mp @*/
 {
-    register uint32* p0 = mp->state;
-    register uint32* p2=p0+2, *pM = p0+M, s0, s1;
+    register uint32_t* p0 = mp->state;
+    register uint32_t* p2=p0+2, *pM = p0+M, s0, s1;
     register int j;
 
     for (s0=mp->state[0], s1=mp->state[1], j=N-M+1; --j; s0=s1, s1=*(p2++))
@@ -73,7 +70,6 @@ static void mtprngReload(mtprngParam* mp)
     mp->left = N;
     mp->nextw = mp->state;
 }
-/*@=boundsread@*/
 
 int mtprngSetup(mtprngParam* mp)
 {
@@ -105,13 +101,12 @@ int mtprngSetup(mtprngParam* mp)
 	return -1;
 }
 
-/*@-boundswrite@*/
-int mtprngSeed(mtprngParam* mp, const uint32* data, int size)
+int mtprngSeed(mtprngParam* mp, const uint32_t* data, int size)
 {
 	if (mp)
 	{
 		int	needed = N+1;
-		uint32*	dest = mp->state;
+		uint32_t*	dest = mp->state;
 
 		#ifdef _REENTRANT
 		# if WIN32
@@ -156,14 +151,12 @@ int mtprngSeed(mtprngParam* mp, const uint32* data, int size)
 	}
 	return -1;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
-int mtprngNext(mtprngParam* mp, uint32* data, int size)
+int mtprngNext(mtprngParam* mp, uint32_t* data, int size)
 {
 	if (mp)
 	{
-		register uint32 tmp;
+		register uint32_t tmp;
 
 		#ifdef _REENTRANT
 		# if WIN32
@@ -216,7 +209,6 @@ int mtprngNext(mtprngParam* mp, uint32* data, int size)
 	}
 	return -1;
 }
-/*@=boundswrite@*/
 
 int mtprngCleanup(mtprngParam* mp)
 {

@@ -30,8 +30,6 @@
 /*
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited, B.V.
  *
- * Author: Bob Deblier <bob@virtualunlimited.com>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -72,7 +70,7 @@ int dhaes_pUsable(const dhaes_pParameters* params)
 	if (mackeybits == 0)
 	{
 		if (cipherkeybits == 0)
-			cipherkeybits = mackeybits = (((uint32)keybits) >> 1);
+			cipherkeybits = mackeybits = (((uint32_t)keybits) >> 1);
 		else
 			mackeybits = keybits - cipherkeybits;
 	}
@@ -231,7 +229,7 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mpnumber* privkey, co
 	if (ctxt->hash.algo->digestsize > 0)
 	{
 		byte* mackey = digest;
-		byte* cipherkey = digest + (((uint32)(ctxt->mackeybits + 7)) >> 3);
+		byte* cipherkey = digest + (((uint32_t)(ctxt->mackeybits + 7)) >> 3);
 
 		if ((rc = keyedHashFunctionContextSetup(&ctxt->mac, mackey, ctxt->mackeybits)))
 			goto setup_end;
@@ -276,7 +274,7 @@ memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt, mpnumber* ephemeralPublicK
 		goto encrypt_end;
 
 	/* encrypt the memchunk in CBC mode */
-	if (blockEncryptCBC(ctxt->cipher.algo, ctxt->cipher.param, paddedtext->size / ctxt->cipher.algo->blocksize, (uint32_t*) paddedtext->data, (const uint32_t*) paddedtext->data))
+	if (blockEncryptCBC(ctxt->cipher.algo, ctxt->cipher.param, (uint32_t*) paddedtext->data, (const uint32_t*) paddedtext->data, paddedtext->size / ctxt->cipher.algo->blocksize))
 	{
 		free(paddedtext->data);
 		free(paddedtext);
@@ -342,7 +340,7 @@ memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mpnumber* ephemeralP
 		goto decrypt_end;
 	}
 
-	if (blockDecryptCBC(ctxt->cipher.algo, ctxt->cipher.param, paddedtext->size / ctxt->cipher.algo->blocksize, (uint32_t*) paddedtext->data, (const uint32_t*) ciphertext->data))
+	if (blockDecryptCBC(ctxt->cipher.algo, ctxt->cipher.param, (uint32_t*) paddedtext->data, (const uint32_t*) ciphertext->data, paddedtext->size / ctxt->cipher.algo->blocksize))
 	{
 		free(paddedtext->data);
 		free(paddedtext);

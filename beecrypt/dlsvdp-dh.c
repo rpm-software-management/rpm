@@ -7,8 +7,6 @@
 /*
  * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
  *
- * Author: Bob Deblier <bob@virtualunlimited.com>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -29,9 +27,16 @@
 #include "dlsvdp-dh.h"
 #include "debug.h"
 
+/*!\addtogroup DL_dh_m
+ * \{
+ */
+
 int dlsvdp_pDHSecret(const dldp_p* dp, const mpnumber* x, const mpnumber* y, mpnumber* s)
 {
 	mpbnpowmod(&dp->p, y, x, s);
 
 	return 0;
 }
+
+/*!\}
+ */

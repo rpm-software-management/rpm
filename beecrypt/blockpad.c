@@ -1,13 +1,5 @@
-/** \ingroup BC_m
- * \file blockpad.c
- *
- * Blockcipher padding, code.
- */
-
 /*
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,11 +17,20 @@
  *
  */
 
+/*!\file blockpad.c
+ * \brief Blockcipher padding algorithms.
+ * \author Bob Deblier <bob@virtualunlimited.com>
+ * \ingroup BC_m
+ */
+
 #include "system.h"
 #include "blockpad.h"
 #include "debug.h"
 
-/*@-boundswrite@*/
+/*!\addtogroup BC_m
+ * \{
+ */
+
 memchunk* pkcs5Pad(int blockbytes, memchunk* tmp)
 {
 	if (tmp)
@@ -44,9 +45,7 @@ memchunk* pkcs5Pad(int blockbytes, memchunk* tmp)
 
 	return tmp;
 }
-/*@=boundswrite@*/
 
-/*@-boundsread@*/
 memchunk* pkcs5Unpad(int blockbytes, memchunk* tmp)
 {
 	if (tmp)
@@ -74,9 +73,7 @@ memchunk* pkcs5Unpad(int blockbytes, memchunk* tmp)
 	return tmp;
 	/*@=temptrans =compdef @*/
 }
-/*@=boundsread@*/
 
-/*@-boundswrite@*/
 memchunk* pkcs5PadCopy(int blockbytes, const memchunk* src)
 {
 	memchunk* tmp;
@@ -95,9 +92,7 @@ memchunk* pkcs5PadCopy(int blockbytes, const memchunk* src)
 
 	return tmp;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 memchunk* pkcs5UnpadCopy(/*@unused@*/ int blockbytes, const memchunk* src)
 {
 	memchunk* tmp;
@@ -124,4 +119,6 @@ memchunk* pkcs5UnpadCopy(/*@unused@*/ int blockbytes, const memchunk* src)
 
 	return tmp;
 }
-/*@=boundswrite@*/
+
+/*!\}
+ */

@@ -77,7 +77,6 @@ void mpbfree(mpbarrett* b)
 	b->size = 0;
 }
 
-/*@-boundswrite@*/
 /*@-nullstate -compdef @*/	/* b->modl may be null @*/
 void mpbcopy(mpbarrett* b, const mpbarrett* copy)
 {
@@ -116,9 +115,7 @@ void mpbcopy(mpbarrett* b, const mpbarrett* copy)
 		{};
 }
 /*@=nullstate =compdef @*/
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 /*@-nullstate -compdef @*/	/* b->modl may be null @*/
 /**
  * mpbset
@@ -156,14 +153,12 @@ void mpbset(mpbarrett* b, size_t size, const mpw* data)
 	}
 }
 /*@=nullstate =compdef @*/
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 /*@-nullstate -compdef @*/	/* b->modl may be null @*/
 void mpbsethex(mpbarrett* b, const char* hex)
 {
-	size_t length = strlen(hex);
-	size_t size = (length+7) >> 3;
+	size_t len = strlen(hex);
+	size_t size = MP_NIBBLES_TO_WORDS(len + MP_WNIBBLES - 1);
 
 	if (b->modl)
 	{
@@ -180,7 +175,7 @@ void mpbsethex(mpbarrett* b, const char* hex)
 		b->size = size;
 		b->mu = b->modl+size;
 
-		hs2ip(b->modl, size, hex, length);
+		hs2ip(b->modl, size, hex, len);
 
 		/*@-nullpass@*/		/* temp may be NULL */
 		mpbmu_w(b, temp);
@@ -195,13 +190,11 @@ void mpbsethex(mpbarrett* b, const char* hex)
 	}
 }
 /*@=nullstate =compdef @*/
-/*@=boundswrite@*/
 
 /**
  *  Computes the Barrett 'mu' coefficient.
  *  needs workspace of (6*size+4) words
  */
-/*@-boundswrite@*/
 void mpbmu_w(mpbarrett* b, mpw* wksp)
 {
 	register size_t size = b->size;
@@ -222,13 +215,11 @@ void mpbmu_w(mpbarrett* b, mpw* wksp)
 	/* de-normalize */
 	mprshift(size, b->modl, shift);
 }
-/*@=boundswrite@*/
 
 /**
  *  Generates a random number in the range 1 < r < b-1.
  *  need workspace of (size) words
  */
-/*@-boundswrite@*/
 void mpbrnd_w(const mpbarrett* b, randomGeneratorContext* rc, mpw* result, mpw* wksp)
 {
 	size_t msz = mpmszcnt(b->size, b->modl);
@@ -250,13 +241,11 @@ void mpbrnd_w(const mpbarrett* b, randomGeneratorContext* rc, mpw* result, mpw* 
 			(void) mpsub(b->size, result, wksp);
 	} while (mpleone(b->size, result));
 }
-/*@=boundswrite@*/
 
 /**
  *  Generates a random odd number in the range 1 < r < b-1.
  *  needs workspace of (size) words
  */
-/*@-boundswrite@*/
 void mpbrndodd_w(const mpbarrett* b, randomGeneratorContext* rc, mpw* result, mpw* wksp)
 {
 	size_t msz = mpmszcnt(b->size, b->modl);
@@ -282,7 +271,6 @@ void mpbrndodd_w(const mpbarrett* b, randomGeneratorContext* rc, mpw* result, mp
 		}
 	} while (mpleone(b->size, result));
 }
-/*@=boundswrite@*/
 
 /**
  *  Generates a random invertible (modulo b) in the range 1 < r < b-1.
@@ -306,7 +294,6 @@ void mpbrndinv_w(const mpbarrett* b, randomGeneratorContext* rc, mpw* result, mp
  *  Computes the barrett modular reduction of a number x, which has twice the size of b.
  *  needs workspace of (2*size+2) words
  */
-/*@-boundswrite@*/
 void mpbmod_w(const mpbarrett* b, const mpw* data, mpw* result, mpw* wksp)
 {
 	register mpw rc;
@@ -358,12 +345,10 @@ void mpbmod_w(const mpbarrett* b, const mpw* data, mpw* result, mpw* wksp)
 		(void) mpsubx(b->size+1, wksp, b->size, b->modl);
 	mpcopy(b->size, result, wksp+1);
 }
-/*@=boundswrite@*/
 
 /**
  *  Copies (b-1) into result.
  */
-/*@-boundswrite@*/
 void mpbsubone(const mpbarrett* b, mpw* result)
 {
 	register size_t size = b->size;
@@ -371,12 +356,10 @@ void mpbsubone(const mpbarrett* b, mpw* result)
 	mpcopy(size, result, b->modl);
 	(void) mpsubw(size, result, 1);
 }
-/*@=boundswrite@*/
 
 /**
  *  Computes the negative (modulo b) of x, where x must contain a value between 0 and b-1.
  */
-/*@-boundswrite@*/
 void mpbneg(const mpbarrett* b, const mpw* data, mpw* result)
 {
 	register size_t size = b->size;
@@ -385,7 +368,6 @@ void mpbneg(const mpbarrett* b, const mpw* data, mpw* result)
 	mpneg(size, result);
 	(void) mpadd(size, result, b->modl);
 }
-/*@=boundswrite@*/
 
 /**
  *  Computes the sum (modulo b) of x and y.
@@ -394,7 +376,7 @@ void mpbneg(const mpbarrett* b, const mpw* data, mpw* result)
 void mpbaddmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, mpw* result, mpw* wksp)
 {
 	/* xsize and ysize must be less than or equal to b->size */
-	register size_t size = b->size;
+	register size_t  size = b->size;
 	register mpw* temp = wksp + size*2+2;
 
 	mpsetx(2*size, temp, xsize, xdata);
@@ -410,7 +392,7 @@ void mpbaddmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t ysiz
 void mpbsubmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, mpw* result, mpw* wksp)
 {
 	/* xsize and ysize must be less than or equal to b->size */
-	register size_t size = b->size;
+	register size_t  size = b->size;
 	register mpw* temp = wksp + size*2+2;
 	
 	mpsetx(2*size, temp, xsize, xdata);
@@ -427,7 +409,7 @@ void mpbsubmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t ysiz
 void mpbmulmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata, mpw* result, mpw* wksp)
 {
 	/* xsize and ysize must be <= b->size */
-	register size_t size = b->size;
+	register size_t  size = b->size;
 	register mpw* temp = wksp + size*2+2;
 	register mpw  fill = size*2-xsize-ysize;
 
@@ -447,7 +429,7 @@ void mpbmulmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t ysiz
 void mpbsqrmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, mpw* result, mpw* wksp)
 {
 	/* xsize must be <= b->size */
-	register size_t size = b->size;
+	register size_t  size = b->size;
 	register mpw* temp = wksp + size*2+2;
 	register mpw  fill = 2*(size-xsize);
 
@@ -528,7 +510,6 @@ static byte mpbslide_postsq[16] =
  * mpbpowmod_w
  * needs workspace of 4*size+2 words
  */
-/*@-boundsread@*/
 void mpbpowmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t psize, const mpw* pdata, mpw* result, mpw* wksp)
 {
 	/*
@@ -566,9 +547,7 @@ void mpbpowmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t psiz
 		/*@=nullpass@*/
 	}
 }
-/*@=boundsread@*/
 
-/*@-boundsread@*/
 void mpbpowmodsld_w(const mpbarrett* b, const mpw* slide, size_t psize, const mpw* pdata, mpw* result, mpw* wksp)
 {
 	/*
@@ -665,13 +644,11 @@ void mpbpowmodsld_w(const mpbarrett* b, const mpw* slide, size_t psize, const mp
 		}
 	}	
 }
-/*@=boundsread@*/
 
 /**
  * mpbtwopowmod_w
  *  needs workspace of (4*size+2) words
  */
-/*@-boundsread@*/
 void mpbtwopowmod_w(const mpbarrett* b, size_t psize, const mpw* pdata, mpw* result, mpw* wksp)
 {
 	/*
@@ -734,7 +711,6 @@ void mpbtwopowmod_w(const mpbarrett* b, size_t psize, const mpw* pdata, mpw* res
 		}
 	}
 }
-/*@=boundsread@*/
 
 #ifdef	DYING
 /**
@@ -765,7 +741,7 @@ int mpbinv_w(const mpbarrett* b, size_t xsize, const mpw* xdata, mpw* result, mp
 	mpzero(size+1, bdata);
 	mpsetw(size+1, ddata, 1);
 
-	if (mpodd(size, b->modl))
+	if (mpodd(b->size, b->modl))
 	{
 		/* use simplified binary extended gcd algorithm */
 
@@ -900,7 +876,6 @@ static int _debug = 0;
 /**
  *  Computes the inverse (modulo b) of x, and returns 1 if x was invertible.
  */
-/*@-boundsread@*/
 int mpbinv_w(const mpbarrett* b, size_t xsize, const mpw* xdata, mpw* result, mpw* wksp)
 {
 	size_t  ysize = b->size+1;
@@ -1104,14 +1079,12 @@ fprintf(stderr, "      t3: "), mpprintln(stderr, ysize, t3);
 
 	return 1;
 }
-/*@=boundsread@*/
 
 #endif
 
 /**
  * needs workspace of (7*size+2) words
  */
-/*@-boundsread@*/
 int mpbpprime_w(const mpbarrett* b, randomGeneratorContext* r, int t, mpw* wksp)
 {
 	/*
@@ -1161,11 +1134,10 @@ int mpbpprime_w(const mpbarrett* b, randomGeneratorContext* r, int t, mpw* wksp)
 
 	return 0;
 }
-/*@=boundsread@*/
 
 void mpbnrnd(const mpbarrett* b, randomGeneratorContext* rc, mpnumber* result)
 {
-	register size_t size = b->size;
+	register size_t  size = b->size;
 	register mpw* temp = (mpw*) malloc(size * sizeof(*temp));
 
 	mpnfree(result);
@@ -1181,7 +1153,7 @@ void mpbnrnd(const mpbarrett* b, randomGeneratorContext* rc, mpnumber* result)
 
 void mpbnmulmod(const mpbarrett* b, const mpnumber* x, const mpnumber* y, mpnumber* result)
 {
-	register size_t size = b->size;
+	register size_t  size = b->size;
 	register mpw* temp = (mpw*) malloc((4*size+2) * sizeof(*temp));
 
 	/* xsize and ysize must be <= b->size */
@@ -1208,7 +1180,7 @@ void mpbnmulmod(const mpbarrett* b, const mpnumber* x, const mpnumber* y, mpnumb
 
 void mpbnsqrmod(const mpbarrett* b, const mpnumber* x, mpnumber* result)
 {
-	register size_t size = b->size;
+	register size_t  size = b->size;
 	register mpw* temp = (mpw*) malloc(size * sizeof(*temp));
 
 	/* xsize must be <= b->size */
@@ -1233,7 +1205,7 @@ void mpbnsqrmod(const mpbarrett* b, const mpnumber* x, mpnumber* result)
 
 void mpbnpowmod(const mpbarrett* b, const mpnumber* x, const mpnumber* pow, mpnumber* y)
 {
-	register size_t size = b->size;
+	register size_t  size = b->size;
 	register mpw* temp = (mpw*) malloc((4*size+2) * sizeof(*temp));
 
 	mpnfree(y);
@@ -1248,7 +1220,7 @@ void mpbnpowmod(const mpbarrett* b, const mpnumber* x, const mpnumber* pow, mpnu
 
 void mpbnpowmodsld(const mpbarrett* b, const mpw* slide, const mpnumber* pow, mpnumber* y)
 {
-	register size_t size = b->size;
+	register size_t  size = b->size;
 	register mpw* temp = (mpw*) malloc((4*size+2) * sizeof(*temp));
 
 	mpnfree(y);

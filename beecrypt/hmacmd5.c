@@ -18,7 +18,7 @@
  */
 
 /*!\file hmacmd5.c
- * HMAC-MD5 message authentication code.
+ * \brief HMAC-MD5 message authentication code.
  * 
  * \see RFC2202 - Test Cases for HMAC-MD5 and HMAC-SHA-1.
  *                P. Cheng, R. Glenn.
@@ -31,14 +31,18 @@
 #include "hmacmd5.h"
 #include "debug.h"
 
+/*!\addtogroup HMAC_md5_m
+ * \{
+ */
+
 /*@-sizeoftype@*/
-const keyedHashFunction hmacmd5 = { "HMAC-MD5", sizeof(hmacmd5Param), 64, 4 * sizeof(uint32), 64, 512, 32, (const keyedHashFunctionSetup) hmacmd5Setup, (const keyedHashFunctionReset) hmacmd5Reset, (const keyedHashFunctionUpdate) hmacmd5Update, (const keyedHashFunctionDigest) hmacmd5Digest };
+const keyedHashFunction hmacmd5 = { "HMAC-MD5", sizeof(hmacmd5Param), 64, 4 * sizeof(uint32_t), 64, 512, 32, (const keyedHashFunctionSetup) hmacmd5Setup, (const keyedHashFunctionReset) hmacmd5Reset, (const keyedHashFunctionUpdate) hmacmd5Update, (const keyedHashFunctionDigest) hmacmd5Digest };
 /*@=sizeoftype@*/
 
 /*@-type@*/
 int hmacmd5Setup (hmacmd5Param* sp, const byte* key, size_t keybits)
 {
-	return hmacSetup(sp->kxi, &sp->kxo, &md5, &sp->mparam, key, keybits);
+	return hmacSetup(sp->kxi, sp->kxo, &md5, &sp->mparam, key, keybits);
 }
 
 int hmacmd5Reset (hmacmd5Param* sp)
@@ -55,4 +59,7 @@ int hmacmd5Digest(hmacmd5Param* sp, byte* data)
 {
 	return hmacDigest(sp->kxo, &md5, &sp->mparam, data);
 }
+
+/*!\}
+ */
 /*@=type@*/

@@ -18,7 +18,7 @@
  */
 
 /*!\file hmac.c
- * HMAC algorithm.
+ * \brief HMAC algorithm.
  *
  * \see RFC2104 HMAC: Keyed-Hashing for Message Authentication.
  *                    H. Krawczyk, M. Bellare, R. Canetti.
@@ -33,15 +33,18 @@
 #include "endianness.h"
 #include "debug.h"
 
+/*!\addtogroup HMAC_m
+ * \{
+ */
+
 #define HMAC_IPAD	0x36
 #define HMAC_OPAD	0x5c
 
-/*@-boundswrite@*/
 int hmacSetup(byte* kxi, byte* kxo, const hashFunction* hash, hashFunctionParam* param, const byte* key, size_t keybits)
 {
 	register int i, rc;
 
-	size_t keybytes = (((uint32)keybits     ) >> 3);
+	size_t keybytes = (((uint32_t)keybits     ) >> 3);
 
 	/* if the key is too large, hash it first */
 	if (keybytes > hash->blocksize)
@@ -83,7 +86,6 @@ int hmacSetup(byte* kxi, byte* kxo, const hashFunction* hash, hashFunctionParam*
 
 	return hmacReset(kxi, hash, param);
 }
-/*@=boundswrite@*/
 
 int hmacReset(const byte* kxi, const hashFunction* hash, hashFunctionParam* param)
 {
@@ -113,3 +115,6 @@ int hmacDigest(const byte* kxo, const hashFunction* hash, hashFunctionParam* par
 
 	return 0;
 }
+
+/*!\}
+ */

@@ -1,13 +1,5 @@
-/** \ingroup BC_blowfish_m BC_m
- * \file blowfishopt.h
- *
- * Blowfish block cipher assembler-optimized routines, header.
- */
-
 /*
  * Copyright (c) 2000, 2002, 2003 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +15,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file blowfishopt.h
+ * \brief Blowfish block cipher, assembler-optimized routines, headers.
+ * \author Bob Deblier <bob@virtualunlimited.com>
+ * \ingroup BC_blowfish_m
  */
 
 #ifndef _BLOWFISHOPT_H

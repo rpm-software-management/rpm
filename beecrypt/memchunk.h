@@ -5,8 +5,6 @@
  *
  * Copyright (c) 2001 Virtual Unlimited B.V.
  *
- * Author: Bob Deblier <bob@virtualunlimited.com>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -29,8 +27,9 @@
 
 typedef struct
 {
-	int		size;
-/*@only@*/ byte*	data;
+	int	size;
+/*@only@*/
+	byte*	data;
 } memchunk;
 
 #ifdef __cplusplus

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
- 
+
 /*!\file sha256.c
  * \brief SHA-256 hash function, as specified by NIST DFIPS 180-2.
  * \author Bob Deblier <bob.deblier@pandora.be>
@@ -51,10 +51,9 @@ static const uint32_t hinit[8] = {
 };
 
 /*@-sizeoftype@*/
-const hashFunction sha256 = { "SHA-256", sizeof(sha256Param), 64, 8 * sizeof(uint32), (hashFunctionReset) sha256Reset, (hashFunctionUpdate) sha256Update, (hashFunctionDigest) sha256Digest };
+const hashFunction sha256 = { "SHA-256", sizeof(sha256Param), 64, 8 * sizeof(uint32_t), (hashFunctionReset) sha256Reset, (hashFunctionUpdate) sha256Update, (hashFunctionDigest) sha256Digest };
 /*@=sizeoftype@*/
 
-/*@-boundswrite@*/
 int sha256Reset(register sha256Param* p)
 {
 	memcpy(p->h, hinit, sizeof(p->h));
@@ -63,7 +62,6 @@ int sha256Reset(register sha256Param* p)
 	p->offset = 0;
 	return 0;
 }
-/*@=boundswrite@*/
 
 #define R(x,s)  ((x) >> (s))
 #define S(x,s) ROTR32(x, s)
@@ -81,7 +79,6 @@ int sha256Reset(register sha256Param* p)
 	d += temp
 
 #ifndef ASM_SHA256PROCESS
-/*@-boundsread@*/
 void sha256Process(register sha256Param* p)
 {
 	register uint32_t a, b, c, d, e, f, g, h, temp;
@@ -180,10 +177,8 @@ void sha256Process(register sha256Param* p)
 	p->h[6] += g;
 	p->h[7] += h;
 }
-/*@=boundsread@*/
 #endif
 
-/*@-boundswrite@*/
 int sha256Update(register sha256Param* p, const byte* data, size_t size)
 {
 	register int proclength;
@@ -218,11 +213,9 @@ int sha256Update(register sha256Param* p, const byte* data, size_t size)
 	}
 	return 0;
 }
-/*@=boundswrite@*/
 
 /**
  */
-/*@-boundswrite@*/
 static void sha256Finish(register sha256Param* p)
 	/*@globals internalState @*/
 	/*@modifies p, internalState @*/
@@ -269,9 +262,7 @@ static void sha256Finish(register sha256Param* p)
 	sha256Process(p);
 	p->offset = 0;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int sha256Digest(register sha256Param* p, byte* data)
 {
 	sha256Finish(p);
@@ -313,4 +304,3 @@ int sha256Digest(register sha256Param* p, byte* data)
 	(void) sha256Reset(p);
 	return 0;
 }
-/*@=boundswrite@*/

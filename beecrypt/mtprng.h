@@ -1,13 +1,5 @@
-/**
- * \file mtprng.h
- *
- * Mersenne twister pseudo-random number generator, header.
- */
-
 /*
  * Copyright (c) 1998, 1999, 2000, 2003 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +15,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file mtprng.h
+ * \brief Mersenne Twister pseudo-random number generator, headers.
+ * \author Bob Deblier <bob@virtualunlimited.com>
+ * \ingroup PRNG_m
  */
 
 #ifndef _MTPRNG_H
@@ -55,7 +53,7 @@ typedef struct
 	# if WIN32
 	HANDLE			lock;
 	# else
-	# if HAVE_THREAD_H && HAVE_SYNCH_H
+	#  if HAVE_THREAD_H && HAVE_SYNCH_H
 	mutex_t			lock;
 	#  elif HAVE_PTHREAD_H
 	pthread_mutex_t	lock;
@@ -64,10 +62,10 @@ typedef struct
 	#  endif
 	# endif
 	#endif
-	uint32	state[N+1];
-	uint32	left;
+	uint32_t	state[N+1];
+	uint32_t	left;
 /*@kept@*/
-	uint32*	nextw;
+	uint32_t*	nextw;
 } mtprngParam;
 
 #ifdef __cplusplus
@@ -91,7 +89,7 @@ int mtprngSetup  (mtprngParam* mp)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int mtprngSeed   (mtprngParam* mp, const uint32* data, int size)
+int mtprngSeed   (mtprngParam* mp, const uint32_t* data, int size)
 	/*@modifies mp @*/;
 /*@=exportlocal@*/
 
@@ -99,7 +97,7 @@ int mtprngSeed   (mtprngParam* mp, const uint32* data, int size)
  */
 /*@-exportlocal@*/
 BEECRYPTAPI
-int mtprngNext   (mtprngParam* mp, uint32* data, int size)
+int mtprngNext   (mtprngParam* mp, uint32_t* data, int size)
 	/*@modifies mp, data @*/;
 /*@=exportlocal@*/
 

@@ -1,13 +1,5 @@
-/** \ingroup PRNG_fips186_m DSA_m
- * \file fips186.h
- *
- * NIST FIPS-186 pseudo-random generator, with SHA-1 as H function, header.
- */
-
 /*
  * Copyright (c) 1998, 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +15,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file fips186.h
+ * \brief FIPS-186 pseudo-random number generator, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup PRNG_m PRNG_fips186_m
  */
 
 #ifndef _FIPS186_H
@@ -55,7 +53,7 @@
 # error
 #endif
 
-/**
+/*!\ingroup PRNG_fips186_m
  */
 typedef struct
 {

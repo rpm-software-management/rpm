@@ -25,38 +25,39 @@
 
 #include "sha256.h"
 
-struct input_expect
+struct vector
 {
-	unsigned char* input;
-	uint32 expect[8];
+	int		input_size;
+	byte*	input;
+	byte*	expect;
 };
 
 
-struct input_expect table[2] = {
-	{ "abc",
-		{ 0xba7816bf, 0x8f01cfea, 0x414140de, 0x5dae2223, 0xb00361a3, 0x96177a9c, 0xb410ff61, 0xf20015ad } },
-	{ "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq",
-		{ 0x248d6a61, 0xd20638b8, 0xe5c02693, 0x0c3e6039, 0xa33ce459, 0x64ff2167, 0xf6ecedd4, 0x19db06c1} }
+struct vector table[2] = {
+	{  3, (byte*) "abc",
+	      (byte*) "\xba\x78\x16\xbf\x8f\x01\xcf\xea\x41\x41\x40\xde\x5d\xae\x22\x23\xb0\x03\x61\xa3\x96\x17\x7a\x9c\xb4\x10\xff\x61\xf2\x00\x15\xad" },
+	{ 56, (byte*) "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq",
+	      (byte*) "\x24\x8d\x6a\x61\xd2\x06\x38\xb8\xe5\xc0\x26\x93\x0c\x3e\x60\x39\xa3\x3c\xe4\x59\x64\xff\x21\x67\xf6\xec\xed\xd4\x19\xdb\x06\xc1" }
 };
 
 int main()
 {
 	int i, failures = 0;
-        sha256Param param;
-	uint32 digest[8];
+	sha256Param param;
+	byte digest[32];
 
 	for (i = 0; i < 2; i++)
 	{
 		if (sha256Reset(&param))
 			return -1;
-		if (sha256Update(&param, table[i].input, strlen(table[i].input)))
+		if (sha256Update(&param, table[i].input, table[i].input_size))
 			return -1;
 		if (sha256Digest(&param, digest))
 			return -1;
 
-		if (mpne(8, digest, table[i].expect))
+		if (memcmp(digest, table[i].expect, 32))
 		{
-			printf("failed\n");
+			printf("failed test vector %d\n", i+1);
 			failures++;
 		}
 		else

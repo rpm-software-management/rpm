@@ -29,7 +29,7 @@
 #include "hmac.h"
 #include "sha256.h"
 
-/** \ingroup HMAC_sha256_m
+/*!\ingroup HMAC_sha256_m
  */
 typedef struct
 {

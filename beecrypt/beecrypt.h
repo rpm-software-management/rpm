@@ -5,8 +5,6 @@
  *
  * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
  *
- * Author: Bob Deblier <bob@virtualunlimited.com>
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -660,8 +658,6 @@ int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mp
 /** \name Block ciphers */
 /*@{*/
 
-/** \ingroup BC_m
- */
 typedef void blockCipherParam;
 
 /** \ingroup BC_m
@@ -669,6 +665,7 @@ typedef void blockCipherParam;
  */
 typedef enum
 {
+	NOCRYPT,
 	ENCRYPT,
 	DECRYPT
 } cipherOperation;
@@ -735,7 +732,7 @@ typedef int (*blockCipherSetIV) (blockCipherParam* param, const byte* data)
  * @param src		plaintext block
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockCipherEncrypt) (blockCipherParam* param, byte* dst, const byte* src)
+typedef int (*blockCipherEncrypt) (blockCipherParam* param, uint32_t* dst, const uint32_t* src)
 	/*@modifies param, dst @*/;
 
 /** \ingroup BC_m
@@ -747,7 +744,7 @@ typedef int (*blockCipherEncrypt) (blockCipherParam* param, byte* dst, const byt
  * @param src		ciphertext block
  * @return		0 on success, -1 on failure
  */
-typedef int (*blockCipherDecrypt) (blockCipherParam* param, byte* dst, const byte* src)
+typedef int (*blockCipherDecrypt) (blockCipherParam* param, uint32_t* dst, const uint32_t* src)
 	/*@modifies param, dst @*/;
 
 typedef uint32_t* (*blockCipherFeedback)(blockCipherParam*);
@@ -827,6 +824,7 @@ typedef struct
     const blockCipher* algo;	/*!< global functions and parameters */
 /*@only@*/
     blockCipherParam* param;	/*!< specific parameters */
+    cipherOperation op;
 } blockCipherContext;
 
 #ifdef __cplusplus

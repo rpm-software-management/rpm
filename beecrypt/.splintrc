@@ -13,7 +13,7 @@
 +strict			# lclint level
 
 # --- in progress
-+bounds
+#+bounds
 -bufferoverflowhigh
 
 # --- not-yet at strict level

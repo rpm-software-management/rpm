@@ -1,51 +1,29 @@
-/** \ingroup JAVA_m
- * \file javaglue.c
- */
-
 #define BEECRYPT_DLL_EXPORT
-
-#define	JNIEXPORT /*@unused@*/
-#define	JNICALL
 
 #include "system.h"
 #include "beecrypt.h"
 #include "blockmode.h"
-
-#undef	JAVAGLUE
-#define	JAVAGLUE	0	/* XXX disable for now */
-
-#if JAVAGLUE
-
 #include "javaglue.h"
 #include "debug.h"
 
-/* For now, I'm lazy ... */
-/*@-nullpass -nullret -shiftsigned -usedef -temptrans -freshtrans @*/
-/*@-noeffectuncon -globs -globnoglobs -modunconnomods -modnomods @*/
-/*@-mustfree@*/
+#if JAVAGLUE
+
 
 #ifndef WORDS_BIGENDIAN
 # define WORDS_BIGENDIAN	0
 #endif
 
-/*@observer@*/
 static const char* JAVA_OUT_OF_MEMORY_ERROR = "java/lang/OutOfMemoryError";
-/*@observer@*/
 static const char* JAVA_PROVIDER_EXCEPTION = "java/security/ProviderException";
-/*@observer@*/
 static const char* JAVA_INVALID_KEY_EXCEPTION = "java/security/InvalidKeyException";
-/*@observer@*/
 static const char* MSG_OUT_OF_MEMORY = "out of memory";
-/*@observer@*/
 static const char* MSG_NO_SUCH_ALGORITHM = "algorithm not available";
-/*@observer@*/
 static const char* MSG_NO_ENTROPY_SOURCE = "no entropy source";
-/*@observer@*/
 static const char* MSG_INVALID_KEY = "invalid key";
 
 /* NativeMessageDigest */
 
-jlong JNICALL Java_beecrypt_security_NativeMessageDigest_find(JNIEnv* env, /*@unused@*/ jclass dummy, jstring algorithm)
+jlong JNICALL Java_beecrypt_security_NativeMessageDigest_find(JNIEnv* env, jclass dummy, jstring algorithm)
 {
 	const char* name = (*env)->GetStringUTFChars(env, algorithm, (jboolean*) 0);
 	const hashFunction* hash = hashFunctionFind(name);
@@ -54,24 +32,24 @@ jlong JNICALL Java_beecrypt_security_NativeMessageDigest_find(JNIEnv* env, /*@un
 	{
 		jclass ex = (*env)->FindClass(env, JAVA_PROVIDER_EXCEPTION);
 		if (ex != (jclass) 0)
-			(void) (*env)->ThrowNew(env, ex, MSG_NO_SUCH_ALGORITHM);
+			(*env)->ThrowNew(env, ex, MSG_NO_SUCH_ALGORITHM);
 	}
 	return (jlong) hash;
 }
 
-jlong JNICALL Java_beecrypt_security_NativeMessageDigest_allocParam(JNIEnv* env, /*@unused@*/ jclass dummy, jlong hash)
+jlong JNICALL Java_beecrypt_security_NativeMessageDigest_allocParam(JNIEnv* env, jclass dummy, jlong hash)
 {
 	void *param = malloc(((const hashFunction*) hash)->paramsize);
 	if (param == (void*) 0)
 	{
 		jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 		if (ex != (jclass) 0)
-			(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+			(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 	}
 	return (jlong) param;
 }
 
-jlong JNICALL Java_beecrypt_security_NativeMessageDigest_cloneParam(/*@unused@*/ JNIEnv* env, /*@unused@*/ jclass dummy, jlong hash, jlong param)
+jlong JNICALL Java_beecrypt_security_NativeMessageDigest_cloneParam(JNIEnv* env, jclass dummy, jlong hash, jlong param)
 {
 	unsigned int paramsize = ((const hashFunction*) hash)->paramsize;
 	void *clone = malloc(paramsize);
@@ -79,23 +57,23 @@ jlong JNICALL Java_beecrypt_security_NativeMessageDigest_cloneParam(/*@unused@*/
 	return (jlong) clone;
 }
 
-void JNICALL Java_beecrypt_security_NativeMessageDigest_freeParam(/*@unused@*/ JNIEnv* env, /*@unused@*/ jclass dummy, jlong param)
+void JNICALL Java_beecrypt_security_NativeMessageDigest_freeParam(JNIEnv* env, jclass dummy, jlong param)
 {
 	if (param)
 		free((void*) param);
 }
 
-void JNICALL Java_beecrypt_security_NativeMessageDigest_reset(/*@unused@*/ JNIEnv* env, /*@unused@*/ jclass dummy, jlong hash, jlong param)
+void JNICALL Java_beecrypt_security_NativeMessageDigest_reset(JNIEnv* env, jclass dummy, jlong hash, jlong param)
 {
-	(void) ((const hashFunction*) hash)->reset((hashFunctionParam*) param);
+	((const hashFunction*) hash)->reset((hashFunctionParam*) param);
 }
 
-void JNICALL Java_beecrypt_security_NativeMessageDigest_update(/*@unused@*/ JNIEnv* env, /*@unused@*/ jclass dummy, jlong hash, jlong param, jbyte input)
+void JNICALL Java_beecrypt_security_NativeMessageDigest_update(JNIEnv* env, jclass dummy, jlong hash, jlong param, jbyte input)
 {
-	(void) ((const hashFunction*) hash)->update((hashFunctionParam*) param, (const byte*) &input, 1);
+	((const hashFunction*) hash)->update((hashFunctionParam*) param, (const byte*) &input, 1);
 }
 
-void JNICALL Java_beecrypt_security_NativeMessageDigest_updateBlock(JNIEnv* env, /*@unused@*/ jclass dummy, jlong hash, jlong param, jbyteArray input, jint offset, jint len)
+void JNICALL Java_beecrypt_security_NativeMessageDigest_updateBlock(JNIEnv* env, jclass dummy, jlong hash, jlong param, jbyteArray input, jint offset, jint len)
 {
 	jbyte* data = (*env)->GetByteArrayElements(env, input, (jboolean*) 0);
 	if (data == (jbyte*) 0)
@@ -103,14 +81,14 @@ void JNICALL Java_beecrypt_security_NativeMessageDigest_updateBlock(JNIEnv* env,
 		jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 		(*env)->ReleaseByteArrayElements(env, input, data, JNI_ABORT);
 		if (ex)
-			(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+			(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 		return;
 	}
-	(void) ((const hashFunction*) hash)->update((hashFunctionParam*) param, (const byte*) data+offset, len);
+	((const hashFunction*) hash)->update((hashFunctionParam*) param, (const byte*) data+offset, len);
 	(*env)->ReleaseByteArrayElements(env, input, data, JNI_ABORT);
 }
 
-jbyteArray JNICALL Java_beecrypt_security_NativeMessageDigest_digest(JNIEnv* env, /*@unused@*/ jclass dummy, jlong hash, jlong param)
+jbyteArray JNICALL Java_beecrypt_security_NativeMessageDigest_digest(JNIEnv* env, jclass dummy, jlong hash, jlong param)
 {
 	jbyteArray digestArray;
 	jbyte* digest;
@@ -125,45 +103,25 @@ jbyteArray JNICALL Java_beecrypt_security_NativeMessageDigest_digest(JNIEnv* env
 	{
 		jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 		if (ex)
-			(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+			(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 		return (jbyteArray) 0;
 	}
 
-	if (!WORDS_BIGENDIAN || (int) digest & 0x3)
-	{	/* unaligned, or swap necessary */
-		uint32* data = (uint32*) malloc(digestwords * sizeof(uint32));
-
-		if (data == (uint32*) 0)
-		{
-			jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
-			(*env)->ReleaseByteArrayElements(env, digestArray, digest, JNI_ABORT);
-			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
-			return (jbyteArray) 0;
-		}
-
-		(void) ((const hashFunction*) hash)->digest((hashFunctionParam*) param, data);
-		(void) encodeInts((const javaint*) data, digest, digestwords);
-		free(data);
-	}
-	else
-	{	/* aligned */
-		(void) ((const hashFunction*) hash)->digest((hashFunctionParam*) param, (uint32*) digest);
-	}
+	((const hashFunction*) hash)->digest((hashFunctionParam*) param, (byte*) digest);
 
 	(*env)->ReleaseByteArrayElements(env, digestArray, digest, 0);
 
 	return digestArray;
 }
 
-jint JNICALL Java_beecrypt_security_NativeMessageDigest_digestLength(/*@unused@*/ JNIEnv* env, /*@unused@*/ jclass dummy, jlong hash)
+jint JNICALL Java_beecrypt_security_NativeMessageDigest_digestLength(JNIEnv* env, jclass dummy, jlong hash)
 {
 	return (jint) ((const hashFunction*) hash)->digestsize;
 }
 
 /* NativeSecureRandom */
 
-jlong JNICALL Java_beecrypt_security_NativeSecureRandom_find(JNIEnv* env, /*@unused@*/ jclass dummy, jstring algorithm)
+jlong JNICALL Java_beecrypt_security_NativeSecureRandom_find(JNIEnv* env, jclass dummy, jstring algorithm)
 {
 	const char* name = (*env)->GetStringUTFChars(env, algorithm, (jboolean*) 0);
 	const randomGenerator* prng = randomGeneratorFind(name);
@@ -172,24 +130,24 @@ jlong JNICALL Java_beecrypt_security_NativeSecureRandom_find(JNIEnv* env, /*@unu
 	{
 		jclass ex = (*env)->FindClass(env, JAVA_PROVIDER_EXCEPTION);
 		if (ex)
-			(void) (*env)->ThrowNew(env, ex, MSG_NO_SUCH_ALGORITHM);
+			(*env)->ThrowNew(env, ex, MSG_NO_SUCH_ALGORITHM);
 	}
 	return (jlong) prng;
 }
 
-jlong JNICALL Java_beecrypt_security_NativeSecureRandom_allocParam(JNIEnv* env, /*@unused@*/ jclass dummy, jlong prng)
+jlong JNICALL Java_beecrypt_security_NativeSecureRandom_allocParam(JNIEnv* env, jclass dummy, jlong prng)
 {
 	void *param = malloc(((const randomGenerator*) prng)->paramsize);
 	if (param == (void*) 0)
 	{
 		jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 		if (ex)
-			(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+			(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 	}
 	return (jlong) param;
 }
 
-jlong JNICALL Java_beecrypt_security_NativeSecureRandom_cloneParam(/*@unused@*/ JNIEnv* env, /*@unused@*/ jclass dummy, jlong prng, jlong param)
+jlong JNICALL Java_beecrypt_security_NativeSecureRandom_cloneParam(JNIEnv* env, jclass dummy, jlong prng, jlong param)
 {
 	unsigned int paramsize = ((const randomGenerator*) prng)->paramsize;
 	void *clone = malloc(paramsize);
@@ -197,18 +155,18 @@ jlong JNICALL Java_beecrypt_security_NativeSecureRandom_cloneParam(/*@unused@*/ 
 	return (jlong) clone;
 }
 
-void JNICALL Java_beecrypt_security_NativeSecureRandom_freeParam(/*@unused@*/ JNIEnv* env, /*@unused@*/ jclass dummy, jlong param)
+void JNICALL Java_beecrypt_security_NativeSecureRandom_freeParam(JNIEnv* env, jclass dummy, jlong param)
 {
 	if (param)
 		free((void*) param);
 }
 
-void JNICALL Java_beecrypt_security_NativeSecureRandom_setup(/*@unused@*/ JNIEnv* env, /*@unused@*/ jclass dummy, jlong prng, jlong param)
+void JNICALL Java_beecrypt_security_NativeSecureRandom_setup(JNIEnv* env, jclass dummy, jlong prng, jlong param)
 {
-	(void) ((const randomGenerator*) prng)->setup((randomGeneratorParam*) param);
+	((const randomGenerator*) prng)->setup((randomGeneratorParam*) param);
 }
 
-void JNICALL Java_beecrypt_security_NativeSecureRandom_setSeed(JNIEnv* env, /*@unused@*/ jclass dummy, jlong prng, jlong param, jbyteArray seedArray)
+void JNICALL Java_beecrypt_security_NativeSecureRandom_setSeed(JNIEnv* env, jclass dummy, jlong prng, jlong param, jbyteArray seedArray)
 {
 	/* BeeCrypt takes size in words */
 	jsize seedSize = (*env)->GetArrayLength(env, seedArray);
@@ -219,39 +177,18 @@ void JNICALL Java_beecrypt_security_NativeSecureRandom_setSeed(JNIEnv* env, /*@u
 		{
 			jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+				(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 			return;
 		}
-		/* check memory alignment of seed and seedSize */
-		if (((int) seed & 0x3) || (seedSize & 0x3))
-		{	/* unaligned */
-			int size = (seedSize+3) >> 2;
-			uint32* data = (uint32*) malloc(size * sizeof(uint32));
 
-			if (data == (uint32*) 0)
-			{
-				jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
-				(*env)->ReleaseByteArrayElements(env, seedArray, seed, JNI_ABORT);
-				if (ex)
-					(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
-				return;
-			}
-			(void) decodeIntsPartial(data, seed, seedSize);
-			(void) ((const randomGenerator*) prng)->seed((randomGeneratorParam*) param, data, size);
-			free(data);
-		}
-		else
-		{	/* aligned and properly sized */
-			(void) ((const randomGenerator*) prng)->seed((randomGeneratorParam*) param, (uint32*) seed, seedSize >> 2);
-		}
+		((const randomGenerator*) prng)->seed((randomGeneratorParam*) param, (byte*) seed, seedSize);
 
 		(*env)->ReleaseByteArrayElements(env, seedArray, seed, JNI_ABORT);
 	}
 }
 
-void JNICALL Java_beecrypt_security_NativeSecureRandom_nextBytes(JNIEnv* env, /*@unused@*/ jclass dummy, jlong prng, jlong param, jbyteArray bytesArray)
+void JNICALL Java_beecrypt_security_NativeSecureRandom_nextBytes(JNIEnv* env, jclass dummy, jlong prng, jlong param, jbyteArray bytesArray)
 {
-	/* BeeCrypt takes size in words */
 	jsize bytesSize = (*env)->GetArrayLength(env, bytesArray);
 	if (bytesSize)
 	{
@@ -260,39 +197,17 @@ void JNICALL Java_beecrypt_security_NativeSecureRandom_nextBytes(JNIEnv* env, /*
 		{
 			jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+				(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 			return;
 		}
 
-		/* check memory alignment of bytes and bytesSize */
-		if (((int) bytes & 0x3) || (bytesSize & 0x3))
-		{	/* unaligned */
-			int size = (bytesSize+3) >> 2;
-			uint32* data = (uint32*) malloc(size * sizeof(uint32));
-
-			if (data == (uint32*) 0)
-			{
-				jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
-				(*env)->ReleaseByteArrayElements(env, bytesArray, bytes, JNI_ABORT);
-				if (ex)
-					(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
-				return;
-			}
-
-			(void) ((const randomGenerator*) prng)->next((randomGeneratorParam*) param, data, size);
-			memcpy(bytes, data, bytesSize);
-			free(data);
-		}
-		else
-		{	/* aligned and properly sized */
-			(void) ((const randomGenerator*) prng)->next((randomGeneratorParam*) param, (uint32*) bytes, bytesSize >> 2);
-		}
+		((const randomGenerator*) prng)->next((randomGeneratorParam*) param, (byte*) bytes, bytesSize);
 
 		(*env)->ReleaseByteArrayElements(env, bytesArray, bytes, 0);
 	}
 }
 
-void JNICALL Java_beecrypt_security_NativeSecureRandom_generateSeed(JNIEnv* env, /*@unused@*/ jclass dummy, jbyteArray seedArray)
+void JNICALL Java_beecrypt_security_NativeSecureRandom_generateSeed(JNIEnv* env, jclass dummy, jbyteArray seedArray)
 {
 	/* BeeCrypt takes size in words */
 	jsize seedSize = (*env)->GetArrayLength(env, seedArray);
@@ -307,7 +222,7 @@ void JNICALL Java_beecrypt_security_NativeSecureRandom_generateSeed(JNIEnv* env,
 		{
 			jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+				(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 			return;
 		}
 
@@ -316,23 +231,11 @@ void JNICALL Java_beecrypt_security_NativeSecureRandom_generateSeed(JNIEnv* env,
 			jclass ex = (*env)->FindClass(env, JAVA_PROVIDER_EXCEPTION);
 			(*env)->ReleaseByteArrayElements(env, seedArray, seed, JNI_ABORT);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_NO_ENTROPY_SOURCE);
+				(*env)->ThrowNew(env, ex, MSG_NO_ENTROPY_SOURCE);
 			return;
 		}
 
-		/* check memory alignment of seed and seedSize */
-		if (((int) seed & 0x3) || (seedSize & 0x3))
-		{	/* unaligned */
-			int size = (seedSize+3) >> 2;
-			uint32* data = (uint32*) malloc(size * sizeof(uint32));
-			(void) ents->next(data, size);
-			memcpy(seed, data, seedSize);
-			free(data);
-		}
-		else
-		{	/* aligned */
-			(void) ents->next((uint32*) seed, seedSize >> 2);
-		}
+		ents->next((byte*) seed, seedSize);
 
 		(*env)->ReleaseByteArrayElements(env, seedArray, seed, 0);
 	}
@@ -340,7 +243,7 @@ void JNICALL Java_beecrypt_security_NativeSecureRandom_generateSeed(JNIEnv* env,
 
 /* NativeBlockCipher */
 
-jlong JNICALL Java_beecrypt_crypto_NativeBlockCipher_find(JNIEnv* env, /*@unused@*/ jclass dummy, jstring algorithm)
+jlong JNICALL Java_beecrypt_crypto_NativeBlockCipher_find(JNIEnv* env, jclass dummy, jstring algorithm)
 {
 	const char* name = (*env)->GetStringUTFChars(env, algorithm, (jboolean*) 0);
 	const blockCipher* ciph = blockCipherFind(name);
@@ -349,37 +252,37 @@ jlong JNICALL Java_beecrypt_crypto_NativeBlockCipher_find(JNIEnv* env, /*@unused
 	{
 		jclass ex = (*env)->FindClass(env, JAVA_PROVIDER_EXCEPTION);
 		if (ex)
-			(void) (*env)->ThrowNew(env, ex, MSG_NO_SUCH_ALGORITHM);
+			(*env)->ThrowNew(env, ex, MSG_NO_SUCH_ALGORITHM);
 	}
 	return (jlong) ciph;
 }
 
-jlong JNICALL Java_beecrypt_crypto_NativeBlockCipher_allocParam(JNIEnv* env, /*@unused@*/ jclass dummy, jlong ciph)
+jlong JNICALL Java_beecrypt_crypto_NativeBlockCipher_allocParam(JNIEnv* env, jclass dummy, jlong ciph)
 {
 	void *param = malloc(((const blockCipher*) ciph)->paramsize);
 	if (param == (void*) 0)
 	{
 		jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 		if (ex)
-			(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+			(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 	}
 	return (jlong) param;
 }
 
-void JNICALL Java_beecrypt_crypto_NativeBlockCipher_freeParam(/*@unused@*/ JNIEnv* env, /*@unused@*/ jclass dummy, jlong param)
+void JNICALL Java_beecrypt_crypto_NativeBlockCipher_freeParam(JNIEnv* env, jclass dummy, jlong param)
 {
 	if (param)
 		free((void*) param);
 }
 
-jint JNICALL Java_beecrypt_crypto_NativeBlockCipher_getBlockSize(/*@unused@*/ JNIEnv* env, /*@unused@*/ jclass dummy, jlong ciph)
+jint JNICALL Java_beecrypt_crypto_NativeBlockCipher_getBlockSize(JNIEnv* env, jclass dummy, jlong ciph)
 {
 	return ((const blockCipher*) ciph)->blocksize;
 }
 
-void JNICALL Java_beecrypt_crypto_NativeBlockCipher_setup(JNIEnv* env, /*@unused@*/ jclass dummy, jlong ciph, jlong param, jint mode, jbyteArray keyArray)
+void JNICALL Java_beecrypt_crypto_NativeBlockCipher_setup(JNIEnv* env, jclass dummy, jlong ciph, jlong param, jint mode, jbyteArray keyArray)
 {
-	/* BeeCrypt takes key in 32 bit words with size in bits */
+	/* BeeCrypt takes key in byte array with size in bits */
 	jsize keysize = (*env)->GetArrayLength(env, keyArray);
 
 	if (keysize)
@@ -403,49 +306,28 @@ void JNICALL Java_beecrypt_crypto_NativeBlockCipher_setup(JNIEnv* env, /*@unused
 		{
 			jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+				(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 			return;
 		}
 
-		if (!WORDS_BIGENDIAN || ((int) key & 0x3) || (keysize & 0x3))
-		{	/* unaligned */
-			int size = (keysize + 3) >> 2;
-			uint32* data = (uint32*) malloc(size * sizeof(uint32));
-
-			if (data == (uint32*) 0)
-			{
-				jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
-				(*env)->ReleaseByteArrayElements(env, keyArray, key, JNI_ABORT);
-				if (ex)
-					(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
-				return;
-			}
-
-			(void) decodeIntsPartial(data, key, keysize);
-			rc = ((const blockCipher*) ciph)->setup((blockCipherParam*) param, data, keysize << 3, nativeop);
-			free(data);
-		}
-		else
-		{	/* aligned and properly sized */
-			rc = ((const blockCipher*) ciph)->setup((blockCipherParam*) param, (const uint32*) key, keysize << 3, nativeop);
-		}
+		rc = ((const blockCipher*) ciph)->setup((blockCipherParam*) param, (const byte*) key, keysize << 3, nativeop);
 
 		if (rc != 0)
 		{
 			jclass ex = (*env)->FindClass(env, JAVA_INVALID_KEY_EXCEPTION);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_INVALID_KEY);
+				(*env)->ThrowNew(env, ex, MSG_INVALID_KEY);
 		}
 
 		(*env)->ReleaseByteArrayElements(env, keyArray, key, JNI_ABORT);
 	}
 }
 
-void JNICALL Java_beecrypt_crypto_NativeBlockCipher_setIV(JNIEnv* env, /*@unused@*/ jclass dummy, jlong ciph, jlong param, jbyteArray ivArray)
+void JNICALL Java_beecrypt_crypto_NativeBlockCipher_setIV(JNIEnv* env, jclass dummy, jlong ciph, jlong param, jbyteArray ivArray)
 {
 	if (ivArray == (jbyteArray) 0)
 	{
-		(void) ((const blockCipher*) ciph)->setiv((blockCipherParam*) param, 0);
+		((const blockCipher*) ciph)->setiv((blockCipherParam*) param, 0);
 	}
 	else
 	{
@@ -459,38 +341,18 @@ void JNICALL Java_beecrypt_crypto_NativeBlockCipher_setIV(JNIEnv* env, /*@unused
 			{
 				jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 				if (ex)
-					(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+					(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 				return;
 			}
 		
-			if (!WORDS_BIGENDIAN || ((int) iv & 0x3) || (ivsize & 0x3))
-			{	/* unaligned */
-				int size = (ivsize + 3) >> 2;
-				uint32* data = (uint32*) malloc(size * sizeof(uint32));
+			((const blockCipher*) ciph)->setiv((blockCipherParam*) param, (byte*) iv);
 
-				if (data == (uint32*) 0)
-				{
-					jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
-					(*env)->ReleaseByteArrayElements(env, ivArray, iv, JNI_ABORT);
-					if (ex)
-						(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
-					return;
-				}
-
-				(void) decodeIntsPartial(data, iv, ivsize);
-				(void) ((const blockCipher*) ciph)->setiv((blockCipherParam*) param, data);
-				free(data);
-			}
-			else
-			{	/* aligned */
-				(void) ((const blockCipher*) ciph)->setiv((blockCipherParam*) param, (uint32*) iv);
-			}
 			(*env)->ReleaseByteArrayElements(env, ivArray, iv, JNI_ABORT);
 		}
 	}
 }
 
-void JNICALL Java_beecrypt_crypto_NativeBlockCipher_encryptECB(JNIEnv* env, /*@unused@*/ jclass dummy, jlong ciph, jlong param, jbyteArray inputArray, jint inputOffset, jbyteArray outputArray, jint outputOffset, jint blocks)
+void JNICALL Java_beecrypt_crypto_NativeBlockCipher_encryptECB(JNIEnv* env, jclass dummy, jlong ciph, jlong param, jbyteArray inputArray, jint inputOffset, jbyteArray outputArray, jint outputOffset, jint blocks)
 {
 	jbyte* input;
 	jbyte* output;
@@ -500,7 +362,7 @@ void JNICALL Java_beecrypt_crypto_NativeBlockCipher_encryptECB(JNIEnv* env, /*@u
 	{
 		jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 		if (ex)
-			(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+			(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 		return;
 	}
 	output = (*env)->GetByteArrayElements(env, outputArray, (jboolean*) 0);
@@ -509,50 +371,50 @@ void JNICALL Java_beecrypt_crypto_NativeBlockCipher_encryptECB(JNIEnv* env, /*@u
 		jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 		(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 		if (ex)
-			(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+			(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 		return;
 	}
 
 	if (((long) (input+inputOffset) & 0x3) || ((long) (output+outputOffset) & 0x3))
 	{	/* unaligned */
-		uint32* datain;
-		uint32* dataout;
+		uint32_t* datain;
+		uint32_t* dataout;
 
-		datain = (uint32*) malloc(blocks * sizeof(uint32));
-		if (datain == (uint32*) 0)
+		datain = (uint32_t*) malloc(blocks * sizeof(uint32_t));
+		if (datain == (uint32_t*) 0)
 		{
 			jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 			(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 			(*env)->ReleaseByteArrayElements(env, outputArray, output, JNI_ABORT);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+				(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 			return;
 		}
-		dataout = (uint32*) malloc(blocks * sizeof(uint32));
-		if (dataout == (uint32*) 0)
+		dataout = (uint32_t*) malloc(blocks * sizeof(uint32_t));
+		if (dataout == (uint32_t*) 0)
 		{
 			jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 			free(datain);
 			(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 			(*env)->ReleaseByteArrayElements(env, outputArray, output, JNI_ABORT);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+				(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 			return;
 		}
-		memcpy(datain, input+inputOffset, blocks * sizeof(uint32));
-		(void) blockEncrypt((const blockCipher*) ciph, (blockCipherParam*) param, ECB, blocks, dataout, datain);
-		memcpy(output+outputOffset, dataout, blocks * sizeof(uint32));
+		memcpy(datain, input+inputOffset, blocks * sizeof(uint32_t));
+		blockEncryptECB((const blockCipher*) ciph, (blockCipherParam*) param, blocks, dataout, datain);
+		memcpy(output+outputOffset, dataout, blocks * sizeof(uint32_t));
 	}
 	else
 	{	/* aligned */
-		(void) blockEncrypt((const blockCipher*) ciph, (blockCipherParam*) param, ECB, blocks, (uint32*)(output+outputOffset), (uint32*) (input+inputOffset));
+		blockEncryptECB((const blockCipher*) ciph, (blockCipherParam*) param, blocks, (uint32_t*)(output+outputOffset), (uint32_t*) (input+inputOffset));
 	}
 
 	(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 	(*env)->ReleaseByteArrayElements(env, outputArray, output, 0);
 }
 
-void JNICALL Java_beecrypt_crypto_NativeBlockCipher_decryptECB(JNIEnv* env, /*@unused@*/ jclass dummy, jlong ciph, jlong param, jbyteArray inputArray, jint inputOffset, jbyteArray outputArray, jint outputOffset, jint blocks)
+void JNICALL Java_beecrypt_crypto_NativeBlockCipher_decryptECB(JNIEnv* env, jclass dummy, jlong ciph, jlong param, jbyteArray inputArray, jint inputOffset, jbyteArray outputArray, jint outputOffset, jint blocks)
 {
 	jbyte* input;
 	jbyte* output;
@@ -562,7 +424,7 @@ void JNICALL Java_beecrypt_crypto_NativeBlockCipher_decryptECB(JNIEnv* env, /*@u
 	{
 		jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 		if (ex)
-			(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+			(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 		return;
 	}
 	output = (*env)->GetByteArrayElements(env, outputArray, (jboolean*) 0);
@@ -571,50 +433,50 @@ void JNICALL Java_beecrypt_crypto_NativeBlockCipher_decryptECB(JNIEnv* env, /*@u
 		jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 		(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 		if (ex)
-			(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+			(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 		return;
 	}
 
 	if (((long) (input+inputOffset) & 0x3) || ((long) (output+outputOffset) & 0x3))
 	{	/* unaligned */
-		uint32* datain;
-		uint32* dataout;
+		uint32_t* datain;
+		uint32_t* dataout;
 
-		datain = (uint32*) malloc(blocks * sizeof(uint32));
-		if (datain == (uint32*) 0)
+		datain = (uint32_t*) malloc(blocks * sizeof(uint32_t));
+		if (datain == (uint32_t*) 0)
 		{
 			jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 			(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 			(*env)->ReleaseByteArrayElements(env, outputArray, output, JNI_ABORT);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+				(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 			return;
 		}
-		dataout = (uint32*) malloc(blocks * sizeof(uint32));
-		if (dataout == (uint32*) 0)
+		dataout = (uint32_t*) malloc(blocks * sizeof(uint32_t));
+		if (dataout == (uint32_t*) 0)
 		{
 			jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 			free(datain);
 			(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 			(*env)->ReleaseByteArrayElements(env, outputArray, output, JNI_ABORT);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+				(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 			return;
 		}
-		memcpy(datain, input+inputOffset, blocks * sizeof(uint32));
-		(void) blockDecrypt((const blockCipher*) ciph, (blockCipherParam*) param, ECB, blocks, dataout, datain);
-		memcpy(output+outputOffset, dataout, blocks * sizeof(uint32));
+		memcpy(datain, input+inputOffset, blocks * sizeof(uint32_t));
+		blockDecryptECB((const blockCipher*) ciph, (blockCipherParam*) param, blocks, dataout, datain);
+		memcpy(output+outputOffset, dataout, blocks * sizeof(uint32_t));
 	}
 	else
 	{	/* aligned */
-		(void) blockDecrypt((const blockCipher*) ciph, (blockCipherParam*) param, ECB, blocks, (uint32*)(output+outputOffset), (uint32*) (input+inputOffset));
+		blockDecryptECB((const blockCipher*) ciph, (blockCipherParam*) param, blocks, (uint32_t*)(output+outputOffset), (uint32_t*) (input+inputOffset));
 	}
 
 	(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 	(*env)->ReleaseByteArrayElements(env, outputArray, output, 0);
 }
 
-void JNICALL Java_beecrypt_crypto_NativeBlockCipher_encryptCBC(JNIEnv* env, /*@unused@*/ jclass dummy, jlong ciph, jlong param, jbyteArray inputArray, jint inputOffset, jbyteArray outputArray, jint outputOffset, jint blocks)
+void JNICALL Java_beecrypt_crypto_NativeBlockCipher_encryptCBC(JNIEnv* env, jclass dummy, jlong ciph, jlong param, jbyteArray inputArray, jint inputOffset, jbyteArray outputArray, jint outputOffset, jint blocks)
 {
 	jbyte* input;
 	jbyte* output;
@@ -624,7 +486,7 @@ void JNICALL Java_beecrypt_crypto_NativeBlockCipher_encryptCBC(JNIEnv* env, /*@u
 	{
 		jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 		if (ex)
-			(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+			(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 		return;
 	}
 	output = (*env)->GetByteArrayElements(env, outputArray, (jboolean*) 0);
@@ -633,50 +495,50 @@ void JNICALL Java_beecrypt_crypto_NativeBlockCipher_encryptCBC(JNIEnv* env, /*@u
 		jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 		(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 		if (ex)
-			(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+			(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 		return;
 	}
 
 	if (((long) (input+inputOffset) & 0x3) || ((long) (output+outputOffset) & 0x3))
 	{	/* unaligned */
-		uint32* datain;
-		uint32* dataout;
+		uint32_t* datain;
+		uint32_t* dataout;
 
-		datain = (uint32*) malloc(blocks * sizeof(uint32));
-		if (datain == (uint32*) 0)
+		datain = (uint32_t*) malloc(blocks * sizeof(uint32_t));
+		if (datain == (uint32_t*) 0)
 		{
 			jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 			(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 			(*env)->ReleaseByteArrayElements(env, outputArray, output, JNI_ABORT);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+				(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 			return;
 		}
-		dataout = (uint32*) malloc(blocks * sizeof(uint32));
-		if (dataout == (uint32*) 0)
+		dataout = (uint32_t*) malloc(blocks * sizeof(uint32_t));
+		if (dataout == (uint32_t*) 0)
 		{
 			jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 			free(datain);
 			(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 			(*env)->ReleaseByteArrayElements(env, outputArray, output, JNI_ABORT);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+				(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 			return;
 		}
-		memcpy(datain, input+inputOffset, blocks * sizeof(uint32));
-		(void) blockEncrypt((const blockCipher*) ciph, (blockCipherParam*) param, CBC, blocks, dataout, datain);
-		memcpy(output+outputOffset, dataout, blocks * sizeof(uint32));
+		memcpy(datain, input+inputOffset, blocks * sizeof(uint32_t));
+		blockEncryptCBC((const blockCipher*) ciph, (blockCipherParam*) param, blocks, dataout, datain);
+		memcpy(output+outputOffset, dataout, blocks * sizeof(uint32_t));
 	}
 	else
 	{	/* aligned */
-		(void) blockEncrypt((const blockCipher*) ciph, (blockCipherParam*) param, CBC, blocks, (uint32*)(output+outputOffset), (uint32*) (input+inputOffset));
+		blockEncryptCBC((const blockCipher*) ciph, (blockCipherParam*) param, blocks, (uint32_t*)(output+outputOffset), (uint32_t*) (input+inputOffset));
 	}
 
 	(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 	(*env)->ReleaseByteArrayElements(env, outputArray, output, 0);
 }
 
-void JNICALL Java_beecrypt_crypto_NativeBlockCipher_decryptCBC(JNIEnv* env, /*@unused@*/ jclass dummy, jlong ciph, jlong param, jbyteArray inputArray, jint inputOffset, jbyteArray outputArray, jint outputOffset, jint blocks)
+void JNICALL Java_beecrypt_crypto_NativeBlockCipher_decryptCBC(JNIEnv* env, jclass dummy, jlong ciph, jlong param, jbyteArray inputArray, jint inputOffset, jbyteArray outputArray, jint outputOffset, jint blocks)
 {
 	jbyte* input;
 	jbyte* output;
@@ -686,7 +548,7 @@ void JNICALL Java_beecrypt_crypto_NativeBlockCipher_decryptCBC(JNIEnv* env, /*@u
 	{
 		jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 		if (ex)
-			(void) (void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+			(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 		return;
 	}
 	output = (*env)->GetByteArrayElements(env, outputArray, (jboolean*) 0);
@@ -695,51 +557,47 @@ void JNICALL Java_beecrypt_crypto_NativeBlockCipher_decryptCBC(JNIEnv* env, /*@u
 		jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 		(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 		if (ex)
-			(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+			(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 		return;
 	}
 
 	if (((long) (input+inputOffset) & 0x3) || ((long) (output+outputOffset) & 0x3))
 	{	/* unaligned */
-		uint32* datain;
-		uint32* dataout;
+		uint32_t* datain;
+		uint32_t* dataout;
 
-		datain = (uint32*) malloc(blocks * sizeof(uint32));
-		if (datain == (uint32*) 0)
+		datain = (uint32_t*) malloc(blocks * sizeof(uint32_t));
+		if (datain == (uint32_t*) 0)
 		{
 			jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 			(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 			(*env)->ReleaseByteArrayElements(env, outputArray, output, JNI_ABORT);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+				(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 			return;
 		}
-		dataout = (uint32*) malloc(blocks * sizeof(uint32));
-		if (dataout == (uint32*) 0)
+		dataout = (uint32_t*) malloc(blocks * sizeof(uint32_t));
+		if (dataout == (uint32_t*) 0)
 		{
 			jclass ex = (*env)->FindClass(env, JAVA_OUT_OF_MEMORY_ERROR);
 			free(datain);
 			(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 			(*env)->ReleaseByteArrayElements(env, outputArray, output, JNI_ABORT);
 			if (ex)
-				(void) (*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
+				(*env)->ThrowNew(env, ex, MSG_OUT_OF_MEMORY);
 			return;
 		}
-		memcpy(datain, input+inputOffset, blocks * sizeof(uint32));
-		(void) blockDecrypt((const blockCipher*) ciph, (blockCipherParam*) param, CBC, blocks, dataout, datain);
-		memcpy(output+outputOffset, dataout, blocks * sizeof(uint32));
+		memcpy(datain, input+inputOffset, blocks * sizeof(uint32_t));
+		blockDecryptCBC((const blockCipher*) ciph, (blockCipherParam*) param, blocks, dataout, datain);
+		memcpy(output+outputOffset, dataout, blocks * sizeof(uint32_t));
 	}
 	else
 	{	/* aligned */
-		(void) blockDecrypt((const blockCipher*) ciph, (blockCipherParam*) param, CBC, blocks, (uint32*)(output+outputOffset), (uint32*) (input+inputOffset));
+		blockDecryptCBC((const blockCipher*) ciph, (blockCipherParam*) param, blocks, (uint32_t*)(output+outputOffset), (uint32_t*) (input+inputOffset));
 	}
 
 	(*env)->ReleaseByteArrayElements(env, inputArray, input, JNI_ABORT);
 	(*env)->ReleaseByteArrayElements(env, outputArray, output, 0);
 }
-
-/*@=mustfree@*/
-/*@=noeffectuncon =globs =globnoglobs =modunconnomods =modnomods @*/
-/*@=nullpass =nullret =shiftsigned =usedef =temptrans =freshtrans @*/
 
 #endif

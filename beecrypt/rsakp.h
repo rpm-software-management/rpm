@@ -1,15 +1,5 @@
-/** \ingroup RSA_m
- * \file rsakp.h
- *
- * RSA Keypair, header.
- */
-
 /*
- * <conformance statement for IEEE P1363 needed here>
- *
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,11 +17,20 @@
  *
  */
 
+/*!\file rsakp.h
+ * \brief RSA keypair, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup IF_m IF_rsa_m
+ */
+
 #ifndef _RSAKP_H
 #define _RSAKP_H
 
 #include "rsapk.h"
 
+/*!\brief RSA keypair.
+ * \ingroup IF_rsa_m
+ */
 typedef struct
 {
 	mpbarrett n;

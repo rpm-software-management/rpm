@@ -1,11 +1,5 @@
 /*
- * config.win.h
- *
- * Win32 config file
- *
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +15,11 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file beecrypt.win.h
+ * \brief BeeCrypt API, windows headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
  */
 
 #ifndef _BEECRYPT_WIN_H
@@ -94,17 +93,20 @@
 #define HAVE_SYS_STAT_H			0
 
 #define HAVE_LONG_LONG			1
+#define HAVE_UNSIGNED_LONG_LONG	1
 
-#define INT8_TYPE		char
-#define INT16_TYPE		short
-#define INT32_TYPE		int
-#define INT64_TYPE		long long
-#define UINT8_TYPE		unsigned char
-#define UINT16_TYPE		unsigned short
-#define UINT32_TYPE		unsigned int
-#define UINT64_TYPE		unsigned long long
-#define FLOAT4_TYPE		float
-#define DOUBLE8_TYPE	double
+#define HAVE_64_BIT_INT			1
+#define HAVE_64_BIT_UINT		1
+
+typedef char		int8_t;
+typedef short		int16_t;
+typedef long		int32_t;
+typedef long long	int64_t;
+
+typedef unsigned char		uint8_t;
+typedef unsigned short		uint16_t;
+typedef unsigned long		uint32_t;
+typedef unsigned long long	uint64_t;
 
 #elif defined(_MSC_VER)
 #define HAVE_UNISTD_H			0
@@ -113,17 +115,26 @@
 #define HAVE_SYS_STAT_H			1
 
 #define HAVE_LONG_LONG			0
+#define HAVE_UNSIGNED_LONG_LONG	0
 
-#define INT8_TYPE		__int8
-#define INT16_TYPE		__int16
-#define INT32_TYPE		__int32
-#define INT64_TYPE		__int64
-#define UINT8_TYPE		unsigned __int8
-#define UINT16_TYPE		unsigned __int16
-#define UINT32_TYPE		unsigned __int32
-#define UINT64_TYPE		unsigned __int64
-#define FLOAT4_TYPE		float
-#define DOUBLE8_TYPE	double
+#define HAVE_64_BIT_INT			1
+#define HAVE_64_BIT_UINT		1
+
+typedef __int8	int8_t;
+typedef __int16	int16_t;
+typedef __int32	int32_t;
+typedef __int64	int64_t;
+
+typedef unsigned __int8		uint8_t;
+typedef unsigned __int16	uint16_t;
+typedef unsigned __int32 	uint32_t;
+typedef unsigned __int64	uint64_t;
+
 #endif
+
+#define MP_WBITS	32
+
+typedef float	float4;
+typedef double	double8;
 
 #endif

@@ -1,13 +1,5 @@
-/** \ingreoup ES_m
- * \file entropy.h
- *
- * Entropy gathering routine(s) for pseudo-random generator initialization, header.
- */
-
 /*
  * Copyright (c) 1998, 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+
+/*!\file entropy.h
+ * \brief Entropy sources, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup ES_m ES_audio_m ES_dsp_m ES_random_m ES_urandom_m ES_tty_m
+ */    
 
 #ifndef _ENTROPY_H
 #define _ENTROPY_H

@@ -1,11 +1,5 @@
 /*
- * endianness.c
- *
- * Endianness-dependant encoding/decoding - implementation
- *
  * Copyright (c) 1998, 1999, 2000, 2001 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +15,11 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file endianness.c
+ * \brief Endian-dependant encoding/decoding.
+ * \author Bob Deblier <bob.deblier@pandora.be>
  */
  
 #include "system.h"
@@ -80,15 +79,12 @@ int64_t swap64(int64_t n)
 }
 /*@=shiftimplementation@*/
 
-/*@-boundswrite@*/
 int encodeByte(javabyte b, byte *data)
 {
 	*data = b;
 	return 1;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int encodeShort(javashort s, byte *data)
 {
 	#if (!WORDS_BIGENDIAN)
@@ -97,9 +93,7 @@ int encodeShort(javashort s, byte *data)
 	memcpy(data, &s, 2);
 	return 2;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int encodeInt(javaint i, byte* data)
 {
 	#if (!WORDS_BIGENDIAN)
@@ -108,9 +102,7 @@ int encodeInt(javaint i, byte* data)
 	memcpy(data, &i, 4);
 	return 4;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int encodeLong(javalong l, byte* data)
 {
 	#if (!WORDS_BIGENDIAN)
@@ -119,9 +111,7 @@ int encodeLong(javalong l, byte* data)
 	memcpy(data, &l, 8);
 	return 8;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int encodeChar(javachar c, byte* data)
 {
 	#if (!WORDS_BIGENDIAN)
@@ -130,12 +120,10 @@ int encodeChar(javachar c, byte* data)
 	memcpy(data, &c, 2);
 	return 2;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int encodeInts(const javaint* i, byte* data, int count)
 {
-	register int rc = ((uint32)count) << 2;
+	register int rc = ((uint32_t)count) << 2;
 	#if (WORDS_BIGENDIAN)
 	memcpy(data, i, rc);
 	#else
@@ -149,9 +137,7 @@ int encodeInts(const javaint* i, byte* data, int count)
 	#endif
 	return rc;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int encodeIntsPartial(const javaint* i, byte* data, int bytecount)
 {
 	register int rc = bytecount;
@@ -170,9 +156,7 @@ int encodeIntsPartial(const javaint* i, byte* data, int bytecount)
 	#endif
 	return rc;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int encodeIntsPartialPad(const javaint* i, byte* data, int bytecount, byte padvalue)
 {
 	register int rc = bytecount;
@@ -196,12 +180,10 @@ int encodeIntsPartialPad(const javaint* i, byte* data, int bytecount, byte padva
 	#endif
 	return rc;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int encodeChars(const javachar* c, byte* data, int count)
 {
-	register int rc = ((uint32)count) << 1;
+	register int rc = ((uint32_t)count) << 1;
 	#if (WORDS_BIGENDIAN)
 	memcpy(data, c, rc);
 	#else
@@ -215,17 +197,13 @@ int encodeChars(const javachar* c, byte* data, int count)
 	#endif
 	return rc;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int decodeByte(javabyte* b, const byte* data)
 {
 	*b = *data;
 	return 1;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int decodeShort(javashort* s, const byte* data)
 {
 	#if (WORDS_BIGENDIAN)
@@ -237,9 +215,7 @@ int decodeShort(javashort* s, const byte* data)
 	#endif
 	return 2;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int decodeInt(javaint* i, const byte* data)
 {
 	#if (WORDS_BIGENDIAN)
@@ -251,9 +227,7 @@ int decodeInt(javaint* i, const byte* data)
 	#endif
 	return 4;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int decodeLong(javalong* l, const byte* data)
 {
 	#if (WORDS_BIGENDIAN)
@@ -265,9 +239,7 @@ int decodeLong(javalong* l, const byte* data)
 	#endif
 	return 8;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int decodeChar(javachar* c, const byte* data)
 {
 	#if (WORDS_BIGENDIAN)
@@ -279,12 +251,10 @@ int decodeChar(javachar* c, const byte* data)
 	#endif
 	return 2;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int decodeInts(javaint* i, const byte* data, int count)
 {
-	register int rc = ((uint32)count) << 2;
+	register int rc = ((uint32_t)count) << 2;
 	#if (WORDS_BIGENDIAN)
 	memcpy(i, data, rc);
 	#else
@@ -298,9 +268,7 @@ int decodeInts(javaint* i, const byte* data, int count)
 	#endif
 	return rc;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int decodeIntsPartial(javaint* i, const byte* data, int bytecount)
 {
 	register int rc = bytecount;
@@ -326,12 +294,10 @@ int decodeIntsPartial(javaint* i, const byte* data, int bytecount)
 	#endif
 	return rc;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int decodeChars(javachar* c, const byte* data, int count)
 {
-	register int rc = ((uint32)count) << 1;
+	register int rc = ((uint32_t)count) << 1;
 	#if (WORDS_BIGENDIAN)
 	memcpy(c, data, rc);
 	#else
@@ -345,14 +311,12 @@ int decodeChars(javachar* c, const byte* data, int count)
 	#endif
 	return rc;
 }
-/*@=boundswrite@*/
 
 int readByte(javabyte* b, FILE* ifp)
 {
 	return fread(b, 1, 1, ifp);
 }
 
-/*@-boundswrite@*/
 int readShort(javashort* s, FILE* ifp)
 {
 	register int rc = fread(s, 2, 1, ifp);
@@ -365,9 +329,7 @@ int readShort(javashort* s, FILE* ifp)
 	#endif
 	return rc;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int readInt(javaint* i, FILE* ifp)
 {
 	register int rc = fread(i, 4, 1, ifp);
@@ -380,9 +342,7 @@ int readInt(javaint* i, FILE* ifp)
 	#endif
 	return rc;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int readLong(javalong* l, FILE* ifp)
 {
 	register int rc = fread(l, 8, 1, ifp);
@@ -395,9 +355,7 @@ int readLong(javalong* l, FILE* ifp)
 	#endif
 	return rc;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int readChar(javachar* c, FILE* ifp)
 {
 	register int rc = fread(c, 2, 1, ifp);
@@ -410,9 +368,7 @@ int readChar(javachar* c, FILE* ifp)
 	#endif
 	return rc;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int readInts(javaint* i, FILE* ifp, int count)
 {
 	register int rc = fread(i, 4, count, ifp);
@@ -429,9 +385,7 @@ int readInts(javaint* i, FILE* ifp, int count)
 	#endif
 	return rc;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int readChars(javachar* c, FILE* ifp, int count)
 {
 	register int rc = fread(c, 2, count, ifp);
@@ -448,13 +402,10 @@ int readChars(javachar* c, FILE* ifp, int count)
 	#endif
 	return rc;
 }
-/*@=boundswrite@*/
 
 int writeByte(javabyte b, FILE* ofp)
 {
-/*@-boundsread@*/
 	return fwrite(&b, 1, 1, ofp);
-/*@=boundsread@*/
 }
 
 int writeShort(javashort s, FILE* ofp)
@@ -462,9 +413,7 @@ int writeShort(javashort s, FILE* ofp)
 	#if !(WORDS_BIGENDIAN)
 	s = swap16(s);
 	#endif
-/*@-boundsread@*/
 	return fwrite(&s, 2, 1, ofp);
-/*@=boundsread@*/
 }
 
 int writeInt(javaint i, FILE* ofp)
@@ -472,9 +421,7 @@ int writeInt(javaint i, FILE* ofp)
 	#if !(WORDS_BIGENDIAN)
 	i = swap32(i);
 	#endif
-/*@-boundsread@*/
 	return fwrite(&i, 4, 1, ofp);
-/*@=boundsread@*/
 }
 
 int writeLong(javalong l, FILE* ofp)
@@ -482,9 +429,7 @@ int writeLong(javalong l, FILE* ofp)
 	#if !(WORDS_BIGENDIAN)
 	l = swap64(l);
 	#endif
-/*@-boundsread@*/
 	return fwrite(&l, 8, 1, ofp);
-/*@=boundsread@*/
 }
 
 int writeChar(javachar c, FILE* ofp)
@@ -492,9 +437,7 @@ int writeChar(javachar c, FILE* ofp)
 	#if !(WORDS_BIGENDIAN)
 	c = swap16(c);
 	#endif
-/*@-boundsread@*/
 	return fwrite(&c, 2, 1, ofp);
-/*@=boundsread@*/
 }
 
 int writeInts(const javaint* i, FILE* ofp, int count)
@@ -505,9 +448,7 @@ int writeInts(const javaint* i, FILE* ofp, int count)
 	register int total = 0;
 	while (count-- > 0)
 	{
-/*@-boundsread@*/
 		register int rc = writeInt(*(i++), ofp);
-/*@=boundsread@*/
 		if (rc < 0)
 			break;
 		total += rc;
@@ -524,9 +465,7 @@ int writeChars(const javachar* c, FILE* ofp, int count)
 	register int total = 0;
 	while (count-- > 0)
 	{
-/*@-boundsread@*/
 		register int rc = writeChar(*(c++), ofp);
-/*@=boundsread@*/
 		if (rc < 0)
 			break;
 		total += rc;

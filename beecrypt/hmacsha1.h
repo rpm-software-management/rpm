@@ -1,13 +1,5 @@
-/** \ingroup HMAC_sha1_m HMAC_m
- * \file hmacsha1.h
- *
- * HMAC-SHA-1 message authentication code, header.
- */
-
 /*
  * Copyright (c) 1999, 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,13 +17,19 @@
  *
  */
 
+/*!\file hmacsha1.h
+ * \brief HMAC-SHA-1 message authentication code, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup HMAC_m HMAC_sha1_m
+ */
+
 #ifndef _HMACSHA1_H
 #define _HMACSHA1_H
 
 #include "hmac.h"
 #include "sha1.h"
 
-/** \ingroup HMAC_sha1_m
+/*!\ingroup HMAC_sha1_m
  */
 typedef struct
 {

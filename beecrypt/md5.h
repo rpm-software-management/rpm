@@ -1,13 +1,5 @@
-/** \ingroup HASH_md5_m HASH_m
- * \file md5.h
- *
- * MD5 hash function, header.
- */
-
 /*
  * Copyright (c) 2000, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,12 +17,18 @@
  *
  */
 
+/*!\file md5.h
+ * \brief MD5 hash function, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup HASH_m HASH_md5_m
+ */
+
 #ifndef _MD5_H
 #define _MD5_H
 
 #include "beecrypt.h"
 
-/** \ingroup HASH_md5_m
+/*!\ingroup HASH_md5_m
  */
 typedef struct
 {

@@ -1,10 +1,3 @@
-/** \ingroup BC_aes_m BC_m
- * \file aes.h
- *
- * AES block cipher, header.
- *
- */
-
 /*
  * Copyright (c) 2002, 2003 Bob Deblier
  *
@@ -22,6 +15,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file aes.h
+ * \brief AES block cipher, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup BC_m BC_aes_m
  */
 
 #ifndef _AES_H

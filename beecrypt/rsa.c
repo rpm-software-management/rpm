@@ -28,6 +28,10 @@
 #include "mp.h"
 #include "debug.h"
 
+/*!\addtogroup IF_rsa_m
+ * \{
+ */
+
 int rsapub(const rsapk* pk, const mpnumber* m, mpnumber* c)
 {
 	register size_t size = pk->n.size;
@@ -72,7 +76,7 @@ int rsapri(const rsakp* kp, const mpnumber* c, mpnumber* m)
 	return -1;
 }
 
-int rsapricrt(const rsakp* kp, const mpnumber* m, mpnumber* c)
+int rsapricrt(const rsakp* kp, const mpnumber* c, mpnumber* m)
 {
 	register size_t nsize = kp->n.size;
 	register size_t psize = kp->p.size;
@@ -96,7 +100,7 @@ int rsapricrt(const rsakp* kp, const mpnumber* m, mpnumber* c)
 	}
 
 	/* resize c for powmod p */
-	mpsetx(psize, ptemp+psize, c->size, c->data);
+	mpsetx(psize*2, ptemp, c->size, c->data);
 
 	/* reduce modulo p before we powmod */
 	mpbmod_w(&kp->p, ptemp, ptemp+psize, ptemp+2*psize);
@@ -106,7 +110,7 @@ int rsapricrt(const rsakp* kp, const mpnumber* m, mpnumber* c)
 	mpbpowmod_w(&kp->p, psize, ptemp+psize, kp->d1.size, kp->d1.data, ptemp, ptemp+2*psize);
 
 	/* resize c for powmod p */
-	mpsetx(qsize, qtemp+psize, c->size, c->data);
+	mpsetx(qsize*2, qtemp, c->size, c->data);
 
 	/* reduce modulo q before we powmod */
 	mpbmod_w(&kp->q, qtemp, qtemp+qsize, qtemp+2*qsize);
@@ -146,7 +150,7 @@ int rsavrfy(const rsapk* pk, const mpnumber* m, const mpnumber* c)
 	if (mpgex(c->size, c->data, pk->n.size, pk->n.modl))
 		return 0;
 
-	temp = (uint32*) malloc((5*size+2) * sizeof(*temp));
+	temp = (mpw*) malloc((5*size+2) * sizeof(*temp));
 
 	if (temp)
 	{
@@ -160,3 +164,6 @@ int rsavrfy(const rsapk* pk, const mpnumber* m, const mpnumber* c)
 	}
 	return 0;
 }
+
+/*!\}
+ */

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
- 
+
 /*!\file sha1.c
  * \brief SHA-1 hash function, as specified by NIST FIPS 180-1.
  * \author Bob Deblier <bob.deblier@pandora.be>
@@ -31,6 +31,9 @@
 #include "endianness.h"
 #include "debug.h"
 
+/*!\addtogroup HASH_sha1_m
+ * \{
+
 /** \ingroup HASH_sha1_m
  */
 /*@observer@*/ /*@unchecked@*/
@@ -42,10 +45,9 @@ static const uint32_t k[4] = { 0x5a827999U, 0x6ed9eba1U, 0x8f1bbcdcU, 0xca62c1d6
 static const uint32_t hinit[5] = { 0x67452301U, 0xefcdab89U, 0x98badcfeU, 0x10325476U, 0xc3d2e1f0U };
 
 /*@-sizeoftype@*/
-const hashFunction sha1 = { "SHA-1", sizeof(sha1Param), 64, 5 * sizeof(uint32), (hashFunctionReset) sha1Reset, (hashFunctionUpdate) sha1Update, (hashFunctionDigest) sha1Digest };
+const hashFunction sha1 = { "SHA-1", sizeof(sha1Param), 64, 5 * sizeof(uint32_t), (hashFunctionReset) sha1Reset, (hashFunctionUpdate) sha1Update, (hashFunctionDigest) sha1Digest };
 /*@=sizeoftype@*/
 
-/*@-boundswrite@*/
 int sha1Reset(register sha1Param* p)
 {
 	memcpy(p->h, hinit, sizeof(p->h));
@@ -60,7 +62,6 @@ int sha1Reset(register sha1Param* p)
 	p->offset = 0;
 	return 0;
 }
-/*@=boundswrite@*/
 
 #define SUBROUND1(a, b, c, d, e, w, k) \
 	e = ROTL32(a, 5) + ((b&(c^d))^d) + e + w + k;	\
@@ -76,7 +77,6 @@ int sha1Reset(register sha1Param* p)
 	b = ROTR32(b, 2)
 
 #ifndef ASM_SHA1PROCESS
-/*@-boundsread@*/
 void sha1Process(register sha1Param* p)
 {
 	register uint32_t a, b, c, d, e;
@@ -196,11 +196,9 @@ void sha1Process(register sha1Param* p)
 	p->h[3] += d;
 	p->h[4] += e;
 }
-/*@=boundsread@*/
 #endif
 
-/*@-boundswrite@*/
-int sha1Update(register sha1Param *p, const byte* data, size_t size)
+int sha1Update(register sha1Param* p, const byte* data, size_t size)
 {
 	register int proclength;
 
@@ -234,11 +232,9 @@ int sha1Update(register sha1Param *p, const byte* data, size_t size)
 	}
 	return 0;
 }
-/*@=boundswrite@*/
 
 /** \ingroup HASH_sha1_m
  */
-/*@-boundswrite@*/
 static void sha1Finish(register sha1Param* p)
 	/*@modifies p @*/
 {
@@ -289,9 +285,7 @@ static void sha1Finish(register sha1Param* p)
 
 	p->offset = 0;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int sha1Digest(register sha1Param* p, byte* data)
 {
 	sha1Finish(p);
@@ -326,4 +320,6 @@ int sha1Digest(register sha1Param* p, byte* data)
 
 	return 0;
 }
-/*@=boundswrite@*/
+
+/*!\}
+ */

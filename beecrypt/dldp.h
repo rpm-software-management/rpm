@@ -1,15 +1,5 @@
-/** \ingroup DL_m
- * \file dldp.h
- *
- * Discrete Logarithm Domain Parameters, header.
- */
-
 /*
- * <conformance statement for IEEE P1363 needed here>
- *
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +15,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file dldp.h
+ * \brief Discrete Logarithm domain parameters, headers.
+ * \author Bob Deblier <bob@virtualunlimited.com>
+ * \ingroup DL_m
  */
 
 #ifndef _DLDP_H

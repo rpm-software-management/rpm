@@ -29,8 +29,10 @@
 #include "endianness.h"
 #include "debug.h"
 
-/** \ingroup HASH_md5_m
+/*!\addtogroup HASH_md5_m
+ * \{
  */
+
 /*@observer@*/ /*@unchecked@*/
 static uint32_t md5hinit[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 };
 
@@ -38,7 +40,6 @@ static uint32_t md5hinit[4] = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476 }
 const hashFunction md5 = { "MD5", sizeof(md5Param), 64, 16, (hashFunctionReset) md5Reset, (hashFunctionUpdate) md5Update, (hashFunctionDigest) md5Digest };
 /*@=sizeoftype@*/
 
-/*@-boundswrite@*/
 int md5Reset(register md5Param* p)
 {
 	memcpy(p->h, md5hinit, 4 * sizeof(uint32_t));
@@ -53,7 +54,6 @@ int md5Reset(register md5Param* p)
 	p->offset = 0;
 	return 0;
 }
-/*@=boundswrite@*/
 
 #define FF(a, b, c, d, w, s, t)	\
 	a += ((b&(c^d))^d) + w + t;	\
@@ -76,7 +76,6 @@ int md5Reset(register md5Param* p)
 	a += b;
 
 #ifndef ASM_MD5PROCESS
-/*@-boundsread@*/
 void md5Process(md5Param* p)
 {
 	register uint32_t a,b,c,d;
@@ -171,10 +170,8 @@ void md5Process(md5Param* p)
 	p->h[2] += c;
 	p->h[3] += d;
 }
-/*@=boundsread@*/
 #endif
 
-/*@-boundswrite@*/
 int md5Update(md5Param* p, const byte* data, size_t size)
 {
 	register int proclength;
@@ -209,11 +206,9 @@ int md5Update(md5Param* p, const byte* data, size_t size)
 	}
 	return 0;
 }
-/*@=boundswrite@*/
 
-/** \ingroup HASH_md5_m
+/**
  */
-/*@-boundswrite@*/
 static void md5Finish(md5Param* p)
 	/*@modifies p @*/
 {
@@ -260,9 +255,7 @@ static void md5Finish(md5Param* p)
 
 	p->offset = 0;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int md5Digest(md5Param* p, byte* data)
 {
 	md5Finish(p);
@@ -288,4 +281,6 @@ int md5Digest(md5Param* p, byte* data)
 	(void) md5Reset(p);
 	return 0;
 }
-/*@=boundswrite@*/
+
+/*!\}
+ */

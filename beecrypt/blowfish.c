@@ -1,16 +1,3 @@
-/** \ingroup BC_blowfish_m BC_m
- * \file blowfish.c
- *
- * Blowfish block cipher, code.
- *
- * For more information on this blockcipher, see:
- * "Applied Cryptography", second edition
- *  Bruce Schneier
- *  Wiley & Sons
- *
- * Also see: http://www.counterpane.com/blowfish.html
- */
-
 /*
  * Copyright (c) 1999, 2000, 2002 Virtual Unlimited B.V.
  *
@@ -32,12 +19,30 @@
  *
  */
 
+/*!\file blowfish.c
+ * \brief Blowfish block cipher.
+ * 
+ * For more information on this blockcipher, see:
+ * "Applied Cryptography", second edition
+ *  Bruce Schneier
+ *  Wiley & Sons
+ *
+ * Also see http://www.counterpane.com/blowfish.html
+ *
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup BC_m BC_blowfish_m
+ */
+
 #include "system.h"
 #include "beecrypt.h"
 #include "blowfishopt.h"
 #include "blowfish.h"
 #include "endianness.h"
 #include "debug.h"
+
+/*!\addtogroup BC_blowfish_m
+ * \{          
+ */            
 
 /**
  */
@@ -319,7 +324,6 @@ static uint32_t _bf_s[1024] = {
 const blockCipher blowfish = { "Blowfish", sizeof(blowfishParam), 8, 64, 448, 32, (blockCipherSetup) blowfishSetup, (blockCipherSetIV) blowfishSetIV, (blockCipherEncrypt) blowfishEncrypt, (blockCipherDecrypt) blowfishDecrypt, (blockCipherFeedback) blowfishFeedback };
 /*@=sizeoftype@*/
 
-/*@-boundsread@*/
 int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, /*@unused@*/ cipherOperation op)
 {
 	if (((keybits & 7) == 0) && (keybits >= 32) && (keybits <= 448))
@@ -379,10 +383,8 @@ int blowfishSetup(blowfishParam* bp, const byte* key, size_t keybits, /*@unused@
 	}
 	return -1;
 }
-/*@=boundsread@*/
 
 #ifndef ASM_BLOWFISHSETIV
-/*@-boundsread@*/
 int blowfishSetIV(blowfishParam* bp, const byte* iv)
 {
 	if (iv)
@@ -392,11 +394,9 @@ int blowfishSetIV(blowfishParam* bp, const byte* iv)
 
 	return 0;
 }
-/*@=boundsread@*/
 #endif
 
 #ifndef ASM_BLOWFISHENCRYPT
-/*@-boundswrite@*/
 int blowfishEncrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
 {
 	#if WORDS_BIGENDIAN
@@ -426,11 +426,9 @@ int blowfishEncrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
 
 	return 0;
 }
-/*@=boundswrite@*/
 #endif
 
 #ifndef ASM_BLOWFISHDECRYPT
-/*@-boundswrite@*/
 int blowfishDecrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
 {
 	#if WORDS_BIGENDIAN
@@ -460,10 +458,12 @@ int blowfishDecrypt(blowfishParam* bp, uint32_t* dst, const uint32_t* src)
 
 	return 0;
 }
-/*@=boundswrite@*/
 #endif
 
 uint32_t* blowfishFeedback(blowfishParam* bp)
 {
 	return bp->fdback;
 }
+
+/*!\}
+ */

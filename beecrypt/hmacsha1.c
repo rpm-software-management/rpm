@@ -18,7 +18,7 @@
  */
 
 /*!\file hmacsha1.c
- * HMAC-SHA-1 message authentication code.
+ * \brief HMAC-SHA-1 message authentication code.
  *
  * \see RFC2202 - Test Cases for HMAC-MD5 and HMAC-SHA-1.
  *                P. Cheng, R. Glenn.
@@ -31,8 +31,12 @@
 #include "hmacsha1.h"
 #include "debug.h"
 
+/*!\addtogroup HMAC_sha1_m
+ * \{
+ */
+
 /*@-sizeoftype@*/
-const keyedHashFunction hmacsha1 = { "HMAC-SHA-1", sizeof(hmacsha1Param), 64, 5 * sizeof(uint32), 64, 512, 32, (keyedHashFunctionSetup) hmacsha1Setup, (keyedHashFunctionReset) hmacsha1Reset, (keyedHashFunctionUpdate) hmacsha1Update, (keyedHashFunctionDigest) hmacsha1Digest };
+const keyedHashFunction hmacsha1 = { "HMAC-SHA-1", sizeof(hmacsha1Param), 64, 5 * sizeof(uint32_t), 64, 512, 32, (keyedHashFunctionSetup) hmacsha1Setup, (keyedHashFunctionReset) hmacsha1Reset, (keyedHashFunctionUpdate) hmacsha1Update, (keyedHashFunctionDigest) hmacsha1Digest };
 /*@=sizeoftype@*/
 
 /*@-type@*/
@@ -55,4 +59,7 @@ int hmacsha1Digest(hmacsha1Param* sp, byte* data)
 {
 	return hmacDigest(sp->kxo, &sha1, &sp->sparam, data);
 }
+
+/*!\}
+ */
 /*@=type@*/

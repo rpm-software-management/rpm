@@ -1,10 +1,3 @@
-/** \ingroup BC_aes_m BC_m
- * \file aes.c
- *
- * AES cipher, code
- *
- */
-
 /*
  * Copyright (c) 2002, 2003 Bob Deblier
  *
@@ -24,6 +17,12 @@
  *
  */
 
+/*!\file aes.c
+ * \brief AES block cipher, as specified by NIST FIPS 197.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup BC_aes_m BC_m
+ */
+
 #include "system.h"
 #include "beecrypt.h"
 #include "aesopt.h"
@@ -31,6 +30,10 @@
 #include "endianness.h"
 #include "mp.h"
 #include "debug.h"
+
+/*!\addtogroup BC_aes_m
+ * \{
+ */
 
 /*@-exportheadervar -exportlocal@*/ /* FIX: tables needed by aes asm */
 /**
@@ -747,7 +750,6 @@ static const uint32_t _arc[] = {
 const blockCipher aes = { "AES", sizeof(aesParam), 16, 128, 256, 64, (blockCipherSetup) aesSetup, (blockCipherSetIV) aesSetIV, (blockCipherEncrypt) aesEncrypt, (blockCipherDecrypt) aesDecrypt, (blockCipherFeedback) aesFeedback };
 /*@=sizeoftype@*/
 
-/*@-boundswrite@*/
 int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 {
 	if (((keybits & 63) == 0) && (keybits >= 128) && (keybits <= 256))
@@ -887,10 +889,8 @@ int aesSetup(aesParam* ap, const byte* key, size_t keybits, cipherOperation op)
 	}
 	return -1;
 }
-/*@=boundswrite@*/
 
 #ifndef ASM_AESSETIV
-/*@-boundsread@*/
 int aesSetIV(aesParam* ap, const byte* iv)
 {
 	if (iv)
@@ -900,7 +900,6 @@ int aesSetIV(aesParam* ap, const byte* iv)
 
 	return 0;
 }
-/*@=boundsread@*/
 #endif
 
 #define etfs(i) \
@@ -982,7 +981,6 @@ int aesSetIV(aesParam* ap, const byte* iv)
 		rk[3];
 
 #ifndef ASM_AESENCRYPT
-/*@-boundswrite@*/
 int aesEncrypt(aesParam* ap, uint32_t* dst, const uint32_t* src)
 {
 	register uint32_t s0, s1, s2, s3;
@@ -1040,7 +1038,6 @@ int aesEncrypt(aesParam* ap, uint32_t* dst, const uint32_t* src)
 
 	return 0;
 }
-/*@=boundswrite@*/
 #endif
 
 #define dtfs(i) \
@@ -1122,8 +1119,7 @@ int aesEncrypt(aesParam* ap, uint32_t* dst, const uint32_t* src)
    		rk[3];
 
 #ifndef ASM_AESDECRYPT
-/*@-boundswrite@*/
-int aesDecrypt(aesParam* ap, uint32* dst, const uint32* src)
+int aesDecrypt(aesParam* ap, uint32_t* dst, const uint32_t* src)
 {
 	register uint32_t s0, s1, s2, s3;
 	register uint32_t t0, t1, t2, t3;
@@ -1180,10 +1176,12 @@ int aesDecrypt(aesParam* ap, uint32* dst, const uint32* src)
 
 	return 0;
 }
-/*@=boundswrite@*/
 #endif
 
 uint32_t* aesFeedback(aesParam* ap)
 {
 	return ap->fdback;
 }
+
+/*!\}
+ */

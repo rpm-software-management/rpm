@@ -1,13 +1,5 @@
-/** \ingroup MP_m
- * \file mp.h
- *
- * Multiprecision 2's complement integer routines for 32 bit cpu, header/
- */
-
 /*
  * Copyright (c) 2002, 2003 Bob Deblier
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +15,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file mp.h
+ * \brief Multi-precision integer routines, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup MP_m
  */
 
 #ifndef _MP_H
@@ -290,7 +288,7 @@ void mpnot(size_t size, mpw* data)
 /**
  */
 BEECRYPTAPI
-void mpsetw(size_t xsize, /*@out@*/ mpw* xdata, uint32 y)
+void mpsetw(size_t xsize, /*@out@*/ mpw* xdata, mpw y)
 	/*@modifies xdata @*/;
 
 /**
@@ -302,7 +300,7 @@ void mpsetx(size_t xsize, /*@out@*/ mpw* xdata, size_t ysize, const mpw* ydata)
 /**
  */
 BEECRYPTAPI
-int mpaddw(size_t xsize, mpw* xdata, uint32 y)
+int mpaddw(size_t xsize, mpw* xdata, mpw y)
 	/*@modifies xdata @*/;
 
 /**
@@ -320,7 +318,7 @@ int mpaddx(size_t xsize, mpw* xdata, size_t ysize, const mpw* ydata)
 /**
  */
 BEECRYPTAPI
-int mpsubw(size_t xsize, mpw* xdata, uint32 y)
+int mpsubw(size_t xsize, mpw* xdata, mpw y)
 	/*@modifies xdata @*/;
 
 /**

@@ -1,13 +1,5 @@
-/** \ingroup BC_m
- * \file blockmode.c
- *
- * Block cipher operation modes, code.
- */
-
 /*
  * Copyright (c) 2000, 2002 Virtual Unlimited B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +17,13 @@
  *
  */
 
+/*!\file blockmode.c
+ * \brief Blockcipher operation modes.
+ * \todo Additional modes, such as CFB and OFB.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup BC_m
+ */
+
 #include "system.h"
 #include "blockmode.h"
 #include "mp.h"
@@ -34,10 +33,9 @@
  * \{
  */
 
-int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, int nblocks, uint32_t* dst, const uint32_t* src)
+int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, int nblocks)
 {
-	/* assumes that every blockcipher's blocksize is a multiple of 32 bits */
-	register int blockwords = bc->blocksize >> 2;
+	register const int blockwords = bc->blocksize >> 2;
 
 	while (nblocks > 0)
 	{
@@ -51,10 +49,9 @@ int blockEncryptECB(const blockCipher* bc, blockCipherParam* bp, int nblocks, ui
 	return 0;
 }
 
-int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, int nblocks, uint32_t* dst, const uint32_t* src)
+int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, int nblocks)
 {
-	/* assumes that every blockcipher's blocksize is a multiple of 32 bits */
-	register int blockwords = bc->blocksize >> 2;
+	register const int blockwords = bc->blocksize >> 2;
 
 	while (nblocks > 0)
 	{
@@ -68,7 +65,7 @@ int blockDecryptECB(const blockCipher* bc, blockCipherParam* bp, int nblocks, ui
 	return 0;
 }
 
-int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, int nblocks, uint32_t* dst, const uint32_t* src)
+int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, int nblocks)
 {
 	/* assumes that every blockcipher's blocksize is a multiple of 32 bits */
 	register int blockwords = bc->blocksize >> 2;
@@ -107,7 +104,7 @@ int blockEncryptCBC(const blockCipher* bc, blockCipherParam* bp, int nblocks, ui
 	return 0;
 }
 
-int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, int nblocks, uint32_t* dst, const uint32_t* src)
+int blockDecryptCBC(const blockCipher* bc, blockCipherParam* bp, uint32_t* dst, const uint32_t* src, int nblocks)
 {
 	/* assumes that every blockcipher's blocksize is a multiple of 32 bits */
 	register int blockwords = bc->blocksize >> 2;
@@ -178,3 +175,6 @@ int blockDecrypt(const blockCipher* bc, blockCipherParam* bp, cipherMode mode, i
 	return -1;
 }
 #endif
+
+/*!\}
+ */

@@ -29,14 +29,17 @@
 #include "mp.h"
 #include "debug.h"
 
-/*@-boundswrite@*/
+/*!\addtogroup IF_rsa_m
+ * \{
+ */
+
 int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 {
 	/* 
 	 * Generates an RSA Keypair for use with the Chinese Remainder Theorem
 	 */
 
-	register size_t pqsize = ((uint32)(nsize+1)) >> 1;
+	register size_t pqsize = ((uint32_t)(nsize+1)) >> 1;
 	register mpw* temp = (mpw*) malloc((16*pqsize+6) * sizeof(*temp));
 	register int newn = 1;
 
@@ -149,9 +152,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, int nsize)
 	}
 	return -1;
 }
-/*@=boundswrite@*/
 
-/*@-boundswrite@*/
 int rsakpInit(rsakp* kp)
 {
 	memset(kp, 0, sizeof(*kp));
@@ -168,7 +169,6 @@ int rsakpInit(rsakp* kp)
 
 	return 0;
 }
-/*@=boundswrite@*/
 
 int rsakpFree(rsakp* kp)
 {
@@ -199,3 +199,6 @@ int rsakpCopy(rsakp* dst, const rsakp* src)
 
 	return 0;
 }
+
+/*!\}
+ */

@@ -27,7 +27,10 @@
 #include "rsapk.h"
 #include "debug.h"
 
-/*@-boundswrite@*/
+/*!\addtogroup IF_rsa_m
+ * \{
+ */
+
 int rsapkInit(rsapk* pk)
 {
 	memset(pk, 0, sizeof(*pk));
@@ -38,7 +41,6 @@ int rsapkInit(rsapk* pk)
 
 	return 0;
 }
-/*@=boundswrite@*/
 
 int rsapkFree(rsapk* pk)
 {
@@ -57,3 +59,6 @@ int rsapkCopy(rsapk* dst, const rsapk* src)
 
 	return 0;
 }
+
+/*!\}
+ */

@@ -1,13 +1,5 @@
-/** \ingroup DH_m
- * \file dhaes.h
- *
- * DHAES, header.
- */
-
 /*
  * Copyright (c) 2000, 2001, 2002 Virtual Unlimited, B.V.
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
- 
+
+/*!\file dhaes.h
+ * \brief DHAES encryption scheme, headers.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup DL_m DL_dh_m
+ */
+
 #ifndef _DHAES_H
 #define _DHAES_H
  

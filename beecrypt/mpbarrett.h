@@ -1,13 +1,5 @@
-/** \ingroup MP_m
- * \file mpbarrett.h
- *
- * Barrett modular reduction, header.
- */
-
 /*
  * Copyright (c) 2003 Bob Deblier
- *
- * Author: Bob Deblier <bob@virtualunlimited.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +15,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ */
+
+/*!\file mpbarrett.h
+ * \brief Multi-precision integer routines using Barrett modular reduction, headers.   
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup MP_m
  */
 
 #ifndef _MPBARRETT_H

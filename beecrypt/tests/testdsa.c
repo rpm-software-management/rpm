@@ -1,8 +1,4 @@
 /*
- * testdsa.c
- *
- * Unit test program for DSA.
- *
  * Copyright (c) 2002, 2003 Bob Deblier
  *
  * This library is free software; you can redistribute it and/or
@@ -21,6 +17,12 @@
  *
  */
 
+/*!\file testdsa.c
+ * \brief Unit test program for the DSA algorithm.
+ * \author Bob Deblier <bob.deblier@pandora.be>
+ * \ingroup UNIT_m
+ */
+
 #include <stdio.h>
 
 #include "beecrypt.h"
@@ -37,8 +39,8 @@ static const char* dsa_k = "358dad571462710f50e254cf1a376b2bdeaadfbf";
 
 static const char* dsa_hm = "a9993e364706816aba3e25717850c26c9cd0d89d";
 
-static const uint32 expect_r[5] = { 0x8bac1ab6, 0x6410435c, 0xb7181f95, 0xb16ab97c, 0x92b341c0 };
-static const uint32 expect_s[5] = { 0x41e2345f, 0x1f56df24, 0x58f426d1, 0x55b4ba2d, 0xb6dcd8c8 };
+static const char* expect_r = "8bac1ab66410435cb7181f95b16ab97c92b341c0";
+static const char* expect_s = "41e2345f1f56df2458f426d155b4ba2db6dcd8c8";
 
 /* we need to fake a random generator to pass k into the signing algorithm */
 
@@ -47,19 +49,19 @@ int fake_setup(randomGeneratorParam* p)
 	return 0;
 }
 
-int fake_seed(randomGeneratorParam* p, const uint32* data, int size)
+int fake_seed(randomGeneratorParam* p, const byte* data, size_t size)
 {
 	return 0;
 }
 
-int fake_next(randomGeneratorParam* p, uint32* data, int size)
+int fake_next(randomGeneratorParam* p, byte* data, size_t size)
 {
 	mpnumber tmp;
 
 	mpnzero(&tmp);
 	mpnsethex(&tmp, dsa_k);
 
-	mpsetx(size, data, tmp.size, tmp.data);
+	memcpy(data, tmp.data, size);
 
 	mpnfree(&tmp);
 
@@ -78,18 +80,21 @@ int main()
 	int failures = 0;
 
 	dlkp_p keypair;
-	mpnumber hm, r, s;
+	mpnumber hm, r, s, e_r, e_s;
 	randomGeneratorContext rngc;
-
-	memset(&rngc, 0, sizeof(rngc));
 
 	dlkp_pInit(&keypair);
 
-        mpbsethex(&keypair.param.p, dsa_p);                 
-        mpbsethex(&keypair.param.q, dsa_q);
-        mpnsethex(&keypair.param.g, dsa_g);
-        mpnsethex(&keypair.y, dsa_y);
-        mpnsethex(&keypair.x, dsa_x);
+	mpbsethex(&keypair.param.p, dsa_p);                 
+	mpbsethex(&keypair.param.q, dsa_q);
+	mpnsethex(&keypair.param.g, dsa_g);
+	mpnsethex(&keypair.y, dsa_y);
+	mpnsethex(&keypair.x, dsa_x);
+
+	mpnzero(&e_r);
+	mpnzero(&e_s);
+	mpnsethex(&e_r, expect_r);
+	mpnsethex(&e_s, expect_s);
 
 	mpnzero(&hm);
 	mpnsethex(&hm, dsa_hm);
@@ -104,10 +109,13 @@ int main()
 	if (dsasign(&keypair.param.p, &keypair.param.q, &keypair.param.g, &rngc, &hm, &keypair.x, &r, &s))
 		return -1;
 
-	if (mpeqx(5, expect_r, r.size, r.data) && mpeqx(5, expect_s, s.size, s.data))
-		printf("ok\n");
-	else
+	if (mpnex(e_r.size, e_r.data, r.size, r.data) || mpnex(e_s.size, e_s.data, s.size, s.data))
+	{
+		printf("failed test vector 1\n");
 		failures++;
+	}
+	else
+		printf("ok\n");
 
 	if (randomGeneratorContextFree(&rngc))
 		return -1;
@@ -125,10 +133,13 @@ int main()
 	if (dsasign(&keypair.param.p, &keypair.param.q, &keypair.param.g, &rngc, &hm, &keypair.x, &r, &s))
 		return -1;
 
-	if (dsavrfy(&keypair.param.p, &keypair.param.q, &keypair.param.g, &hm, &keypair.y, &r, &s))
-		printf("ok\n");
-	else
+	if (!dsavrfy(&keypair.param.p, &keypair.param.q, &keypair.param.g, &hm, &keypair.y, &r, &s))
+	{
+		printf("failed test vector 2\n");
 		failures++;
+	}
+	else
+		printf("ok\n");
 
 	if (randomGeneratorContextFree(&rngc))
 		return -1;
@@ -137,6 +148,9 @@ int main()
 	mpnfree(&r);
 
 	mpnfree(&hm);
+
+	mpnfree(&e_s);
+	mpnfree(&e_r);
 
 	dlkp_pFree(&keypair);
 
