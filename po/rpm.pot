@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-05-25 16:14-0400\n"
+"POT-Creation-Date: 1999-05-25 23:43-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2021,32 +2021,32 @@ msgstr ""
 msgid "line %d: Epoch/Serial field must be a number: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:524
+#: ../build/parsePreamble.c:526
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:534
+#: ../build/parsePreamble.c:536
 #, c-format
 msgid "Internal error: Bogus tag %d"
 msgstr ""
 
-#: ../build/parsePreamble.c:679
+#: ../build/parsePreamble.c:683
 #, c-format
 msgid "Bad package specification: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:685
+#: ../build/parsePreamble.c:689
 #, c-format
 msgid "Package already exists: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:712
+#: ../build/parsePreamble.c:716
 #, c-format
 msgid "line %d: Unknown tag: %s"
 msgstr ""
 
-#: ../build/parsePreamble.c:737
+#: ../build/parsePreamble.c:741
 msgid "Spec file can't use BuildRoot"
 msgstr ""
 
@@ -2110,34 +2110,34 @@ msgstr ""
 msgid "line %d: second %%prep"
 msgstr ""
 
-#: ../build/parseReqs.c:45
+#: ../build/parseReqs.c:47 ../build/parseReqs.c:56
 #, c-format
-msgid "line %d: No file names in Conflicts: %s"
+msgid "line %d: File name not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:79
+#: ../build/parseReqs.c:115
 #, c-format
-msgid "line %d: No versions on file names in %s: %s"
+msgid "line %d: Versioned file name not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:85
+#: ../build/parseReqs.c:123
 #, c-format
-msgid "line %d: No versions in PreReq: %s"
+msgid "line %d: Version not permitted: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:97
+#: ../build/parseReqs.c:143
 #, c-format
-msgid "line %d: Version required in %s: %s"
+msgid "line %d: Version required: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:126
+#: ../build/parseReqs.c:179
 #, c-format
 msgid "line %d: No file names in Obsoletes: %s"
 msgstr ""
 
-#: ../build/parseReqs.c:133
+#: ../build/parseReqs.c:186
 #, c-format
-msgid "line %d: %s: tokens must begin with alpha-numeric: %s"
+msgid "line %d: tokens must begin with alpha-numeric: %s"
 msgstr ""
 
 #: ../build/parseScript.c:138
@@ -3110,7 +3110,7 @@ msgstr ""
 msgid "missing ':' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:656 ../lib/rpmrc.c:729
+#: ../lib/rpmrc.c:656 ../lib/rpmrc.c:730
 #, c-format
 msgid "missing argument for %s at %s:%d"
 msgstr ""
@@ -3125,22 +3125,22 @@ msgstr ""
 msgid "cannot open %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:721
+#: ../lib/rpmrc.c:722
 #, c-format
 msgid "missing architecture for %s at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:788
+#: ../lib/rpmrc.c:789
 #, c-format
 msgid "bad option '%s' at %s:%d"
 msgstr ""
 
-#: ../lib/rpmrc.c:1124
+#: ../lib/rpmrc.c:1125
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: ../lib/rpmrc.c:1125
+#: ../lib/rpmrc.c:1126
 msgid "Please contact rpm-list@redhat.com\n"
 msgstr ""
 

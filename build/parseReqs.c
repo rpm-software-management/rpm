@@ -25,119 +25,176 @@ static struct ReqComp {
     { NULL, 0 },
 };
 
-int parseRequiresConflicts(Spec spec, Package pkg, char *field,
+#define	SKIPWHITE(_x)	{while(*(_x) && (isspace(*_x) || *(_x) == ',')) (_x)++;}
+#define	SKIPNONWHITE(_x){while(*(_x) &&!(isspace(*_x) || *(_x) == ',')) (_x)++;}
+
+int parseRequiresConflicts(Spec spec, Package pkg, const char *field,
 			   int tag, int index)
 {
-    char buf[BUFSIZ], *bufp, *version, *name;
+    const char *r, *re, *v, *ve;
+    char *req, *version;
+    Header h;
     int flags;
-    char *req = NULL;
-    struct ReqComp *rc;
 
-    strcpy(buf, field);
-    bufp = buf;
-
-    while (req || (req = strtok(bufp, " ,\t\n"))) {
-	bufp = NULL;
+    for (r = field; *r; r = re) {
+	SKIPWHITE(r);
+	if (*r == '\0')
+	    break;
 	
-	if (tag == RPMTAG_CONFLICTFLAGS) {
-	    if (req[0] == '/') {
-		rpmError(RPMERR_BADSPEC,
-			 _("line %d: No file names in Conflicts: %s"),
+	switch (tag) {
+	case RPMTAG_CONFLICTFLAGS:
+	    if (r[0] == '/') {
+		rpmError(RPMERR_BADSPEC,_("line %d: File name not permitted: %s"),
 			 spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
 	    flags = RPMSENSE_CONFLICTS;
-	    name = "Conflicts";
-	} else if (tag == RPMTAG_PREREQ) {
+	    h = pkg->header;
+	    break;
+	case RPMTAG_BUILDCONFLICTS:
+	    if (r[0] == '/') {
+		rpmError(RPMERR_BADSPEC,_("line %d: File name not permitted: %s"),
+			 spec->lineNum, spec->line);
+		return RPMERR_BADSPEC;
+	    }
+	    flags = RPMSENSE_CONFLICTS;
+	    h = spec->buildRestrictions;
+	    break;
+	case RPMTAG_PREREQ:
 	    flags = RPMSENSE_PREREQ;
-	    name = "PreReq";
-	} else if (tag == RPMTAG_BUILDPREREQ) {
+	    h = pkg->header;
+	    break;
+	case RPMTAG_BUILDPREREQ:
 	    flags = RPMSENSE_PREREQ;
-	    name = "BuildPreReq";
-	} else if (tag == RPMTAG_TRIGGERIN) {
+	    h = spec->buildRestrictions;
+	    break;
+	case RPMTAG_TRIGGERIN:
 	    flags = RPMSENSE_TRIGGERIN;
-	    name = "%triggerin";
-	} else if (tag == RPMTAG_TRIGGERPOSTUN) {
+	    h = pkg->header;
+	    break;
+	case RPMTAG_TRIGGERPOSTUN:
 	    flags = RPMSENSE_TRIGGERPOSTUN;
-	    name = "%triggerpostun";
-	} else if (tag == RPMTAG_TRIGGERUN) {
+	    h = pkg->header;
+	    break;
+	case RPMTAG_TRIGGERUN:
 	    flags = RPMSENSE_TRIGGERUN;
-	    name = "%triggerun";
-	} else {
+	    h = pkg->header;
+	    break;
+	case RPMTAG_BUILDREQUIRES:
 	    flags = RPMSENSE_ANY;
-	    name = "Requires";
+	    h = spec->buildRestrictions;
+	    break;
+	default:
+	case RPMTAG_REQUIREFLAGS:
+	    flags = RPMSENSE_ANY;
+	    h = pkg->header;
+	    break;
 	}
 
-	if ((version = strtok(NULL, " ,\t\n"))) {
-	    rc = ReqComparisons;
-	    while (rc->token && strcmp(version, rc->token)) {
-		rc++;
+	re = r;
+	SKIPNONWHITE(re);
+	req = malloc((re-r) + 1);
+	strncpy(req, r, (re-r));
+	req[re-r] = '\0';
+
+	/* Parse version */
+	v = re;
+	SKIPWHITE(v);
+	ve = v;
+	SKIPNONWHITE(ve);
+
+	/* Check for possible logical operator */
+	if (ve > v) {
+	  struct ReqComp *rc;
+	  for (rc = ReqComparisons; rc->token != NULL; rc++) {
+	    if (strncmp(v, rc->token, (ve-v)))
+		continue;
+
+	    if (r[0] == '/') {
+		rpmError(RPMERR_BADSPEC,
+			 _("line %d: Versioned file name not permitted: %s"),
+			 spec->lineNum, spec->line);
+		return RPMERR_BADSPEC;
 	    }
-	    if (rc->token) {
-		if (req[0] == '/') {
-		    rpmError(RPMERR_BADSPEC,
-			     _("line %d: No versions on file names in %s: %s"),
-			     spec->lineNum, name, spec->line);
-		    return RPMERR_BADSPEC;
-		}
-		if (tag == RPMTAG_PREREQ) {
-		    rpmError(RPMERR_BADSPEC,
-			     _("line %d: No versions in PreReq: %s"),
-			     spec->lineNum, spec->line);
-		    return RPMERR_BADSPEC;
-		}
-		/* read a version */
-		flags |= rc->sense;
-		version = strtok(NULL, " ,\t\n");
+	    switch(tag) {
+	    case RPMTAG_BUILDPREREQ:
+	    case RPMTAG_PREREQ:
+		rpmError(RPMERR_BADSPEC,
+			 _("line %d: Version not permitted: %s"),
+			 spec->lineNum, spec->line);
+		return RPMERR_BADSPEC;
+		break;
+	    default:
+		break;
 	    }
+	    flags |= rc->sense;
+
+	    /* now parse version */
+	    v = ve;
+	    SKIPWHITE(v);
+	    ve = v;
+	    SKIPNONWHITE(ve);
+	    break;
+	  }
 	}
 
-	if ((flags & RPMSENSE_SENSEMASK) && !version) {
-	    rpmError(RPMERR_BADSPEC,
-		     _("line %d: Version required in %s: %s"),
-		     spec->lineNum, name, spec->line);
-	    return RPMERR_BADSPEC;
-	}
+	if (flags & RPMSENSE_SENSEMASK) {
+	    if (*v == '\0' || ve == v) {
+		rpmError(RPMERR_BADSPEC, _("line %d: Version required: %s"),
+			spec->lineNum, spec->line);
+		return RPMERR_BADSPEC;
+	    }
+	    version = malloc((ve-v) + 1);
+	    strncpy(version, v, (ve-v));
+	    version[ve-v] = '\0';
+	} else
+	    version = NULL;
 
-	addReqProv(spec,
-	    (tag == RPMTAG_BUILDPREREQ ? spec->buildRestrictions : pkg->header),
-	    flags, req, (flags & RPMSENSE_SENSEMASK) ? version : NULL, index);
+	addReqProv(spec, h, flags, req, version, index);
 
-	/* If there is no sense, we just read the next token */
-	req = (flags & RPMSENSE_SENSEMASK) ? NULL : version;
+	if (req) free(req);
+	if (version) free(version);
+
+	re = ve;
     }
 
     return 0;
 }
 
-int parseProvidesObsoletes(Spec spec, Package pkg, char *field, int tag)
+int parseProvidesObsoletes(Spec spec, Package pkg, const char *field, int tag)
 {
-    char *prov, buf[BUFSIZ], *line;
+    const char *p, *pe;
+    char *prov;
     int flags;
 
     flags = (tag == RPMTAG_PROVIDES) ? RPMSENSE_PROVIDES : RPMSENSE_OBSOLETES;
 
-    strcpy(buf, field);
-    line = buf;
-    
-    while ((prov = strtok(line, " ,\t\n"))) {
-	if (prov[0] == '/' && tag != RPMTAG_PROVIDES) {
+    for (p = field; *p; p = pe) {
+	SKIPWHITE(p);
+	if (*p == '\0')
+	    break;
+
+	if (p[0] == '/' && tag != RPMTAG_PROVIDES) {
 	    rpmError(RPMERR_BADSPEC,
 		     _("line %d: No file names in Obsoletes: %s"),
 		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
-	if (!(isalnum(prov[0]) || prov[0] == '_') && 
-	     (tag == RPMTAG_OBSOLETES || prov[0] != '/')) {
+	if (!(isalnum(p[0]) || p[0] == '_') && 
+	     (tag == RPMTAG_OBSOLETES || p[0] != '/')) {
 	    rpmError(RPMERR_BADSPEC,
-		     _("line %d: %s: tokens must begin with alpha-numeric: %s"),
-		     spec->lineNum,
-		     (tag == RPMTAG_PROVIDES) ? "Provides" : "Obsoletes",
-		     spec->line);
+		     _("line %d: tokens must begin with alpha-numeric: %s"),
+		     spec->lineNum, spec->line);
 	    return RPMERR_BADSPEC;
 	}
+
+	pe = p;
+	SKIPNONWHITE(pe);
+	prov = malloc((pe-p) + 1);
+	strncpy(prov, p, (pe-p));
+	prov[pe-p] = '\0';
 	addReqProv(spec, pkg->header, flags, prov, NULL, 0);
-	line = NULL;
+	free(prov);
     }
 
     return 0;

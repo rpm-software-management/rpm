@@ -502,6 +502,8 @@ static int handlePreambleTag(Spec spec, Package pkg, int tag, char *macro,
 	    return rc;
 	}
 	break;
+      case RPMTAG_BUILDREQUIRES:
+      case RPMTAG_BUILDCONFLICTS:
       case RPMTAG_BUILDPREREQ:
       case RPMTAG_REQUIREFLAGS:
       case RPMTAG_CONFLICTFLAGS:
@@ -587,7 +589,9 @@ static struct PreambleRec {
     {RPMTAG_BUILDROOT,		0, 0, "buildroot"},
     {RPMTAG_BUILDARCHS,		0, 0, "buildarchitectures"},
     {RPMTAG_BUILDARCHS,		0, 0, "buildarch"},
+    {RPMTAG_BUILDCONFLICTS,	0, 0, "buildconflicts"},
     {RPMTAG_BUILDPREREQ,	0, 0, "buildprereq"},
+    {RPMTAG_BUILDREQUIRES,	0, 0, "buildrequires"},
     {RPMTAG_AUTOREQPROV,	0, 0, "autoreqprov"},
     {RPMTAG_AUTOREQ,		0, 0, "autoreq"},
     {RPMTAG_AUTOPROV,		0, 0, "autoprov"},

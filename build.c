@@ -31,7 +31,7 @@ static int checkSpec(Header h)
 
     rc = rpmdepCheck(ts, &conflicts, &numConflicts);
     if (rc == 0 && conflicts) {
-	rpmMessage(RPMMESS_ERROR, _("failed build prerequisites:\n"));
+	rpmMessage(RPMMESS_ERROR, _("failed build dependencies:\n"));
 	printDepProblems(stderr, conflicts, numConflicts);
 	rpmdepFreeConflicts(conflicts, numConflicts);
 	rc = 1;
