@@ -126,7 +126,7 @@ struct SpecStruct {
 
 /*@refcounted@*/ Header sourceHeader;
     int sourceCpioCount;
-/*@owned@*/ struct cpioFileMapping *sourceCpioList;
+/*@owned@*/ void * sourceCpioList;
 
 /*@dependent@*/ struct MacroContext *macros;
 
@@ -145,7 +145,7 @@ struct PackageStruct {
 /*@refcounted@*/ Header header;
 
     int cpioCount;
-/*@owned@*/ struct cpioFileMapping *cpioList;
+/*@owned@*/ void * cpioList;
 
 /*@owned@*/ struct Source *icon;
 

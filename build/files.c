@@ -26,6 +26,8 @@
 
 #define MAXDOCDIR 1024
 
+extern int _noDirTokens;
+
 /**
  */
 typedef struct {
@@ -915,16 +917,15 @@ static void checkHardLinks(struct FileList *fl)
 
 /**
  * @todo Should directories have %doc/%config attributes? (#14531)
+ * @todo Remove RPMTAG_OLDFILENAMES, add dirname/basename instead.
  * @param fl		package file tree walk data
  */
-static void genCpioListAndHeader(struct FileList *fl,
-				 struct cpioFileMapping **cpioList,
+static void genCpioListAndHeader(struct FileList *fl, void **cpioList,
 				 int *cpioCount, Header h, int isSrc)
 {
     int skipLen;
-    int count;
     FileListRec *flp;
-    struct cpioFileMapping *clp;
+    int fc;
     char *s;
     char buf[BUFSIZ];
     uint_32 multiLibMask = 0;
@@ -933,7 +934,7 @@ static void genCpioListAndHeader(struct FileList *fl,
     qsort(fl->fileList, fl->fileListRecsUsed,
 	  sizeof(*(fl->fileList)), compareFileListRecs);
     
-    /* Generate the cpio list and the header */
+    /* Generate the header. */
     skipLen = 0;
     if (! isSrc) {
 	skipLen = 1;
@@ -941,11 +942,10 @@ static void genCpioListAndHeader(struct FileList *fl,
 	    skipLen += strlen(fl->prefix);
     }
 
-    *cpioCount = 0;
-    clp = *cpioList = xmalloc(sizeof(**cpioList) * fl->fileListRecsUsed);
-
-    for (flp = fl->fileList, count = fl->fileListRecsUsed; count > 0; flp++, count--) {
-	if ((count > 1) && !strcmp(flp->fileURL, flp[1].fileURL)) {
+    for (fc = 0, flp = fl->fileList; fc < fl->fileListRecsUsed; fc++, flp++) {
+	if (fc < (fl->fileListRecsUsed - 1) &&
+	    !strcmp(flp->fileURL, flp[1].fileURL))
+	{
 	    rpmError(RPMERR_BADSPEC, _("File listed twice: %s\n"),
 		flp->fileURL);
 	    fl->processingFailed = 1;
@@ -956,43 +956,6 @@ static void genCpioListAndHeader(struct FileList *fl,
 		(1 << ((flp->flags & RPMFILE_MULTILIB_MASK))
 		      >> RPMFILE_MULTILIB_SHIFT);
 
-	/* Make the cpio list */
-	if (! (flp->flags & RPMFILE_GHOST)) {
-	    char * t;
-
-	    clp->dirName = t = xmalloc(strlen(flp->diskURL) + 2);
-	    t = stpcpy(t, flp->diskURL);
-	    
-	    /* Make room for the dirName NUL, find start of baseName. */
-	    for (; t > clp->dirName && *t != '/'; t--)
-		t[1] = t[0];
-	    t++;
-	    *t++ = '\0';
-	    clp->baseName = t;
-
-  /* XXX legacy requires './' payload prefix to be omitted from rpm packages. */
-	    clp->archivePath = t = xmalloc(strlen(flp->fileURL) - skipLen + 3);
-	    if (!isSrc && !rpmExpandNumeric("%{_noPayloadPrefix}")) {
-		t = stpcpy(t, "./");
-		rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
-	    }
-	    t = stpcpy(t, (flp->fileURL + skipLen));
-
-	    clp->finalMode = flp->fl_mode;
-	    clp->finalUid = flp->fl_uid;
-	    clp->finalGid = flp->fl_gid;
-	    clp->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE |
-		CPIO_MAP_UID | CPIO_MAP_GID;
-
-	    if (isSrc)
-		clp->mapFlags |= CPIO_FOLLOW_SYMLINKS;
-	    if (flp->flags & RPMFILE_MULTILIB_MASK)
-		clp->mapFlags |= CPIO_MULTILIB;
-
-	    clp++;
-	    (*cpioCount)++;
-	}
-	
 	/* Make the header, the OLDFILENAMES will get converted to a 
 	   compressed file list write before we write the actual package to
 	   disk. */
@@ -1092,9 +1055,11 @@ static void genCpioListAndHeader(struct FileList *fl,
 
 	headerAddOrAppendEntry(h, RPMTAG_FILEFLAGS, RPM_INT32_TYPE,
 			       &(flp->flags), 1);
+
     }
     headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
 		   &(fl->totalFileSize), 1);
+
     /* XXX This should be added always so that packages look alike.
      * XXX However, there is logic in files.c/depends.c that checks for
      * XXX existence (rather than value) that will need to change as well.
@@ -1102,6 +1067,106 @@ static void genCpioListAndHeader(struct FileList *fl,
     if (multiLibMask)
 	headerAddEntry(h, RPMTAG_MULTILIBS, RPM_INT32_TYPE,
 		       &multiLibMask, 1);
+
+    /* Choose how filenames are represented. */
+    if (_noDirTokens)
+	expandFilelist(h);
+    else {
+	compressFilelist(h);
+	/* Binary packages with dirNames cannot be installed by legacy rpm. */
+	rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
+    }
+
+#ifdef	DYING
+  { struct cpioFileMapping * clp = xmalloc(sizeof(*clp) * fl->fileListRecsUsed);
+    int clpcnt = 0;
+
+    /* Make the cpio list */
+    for (fc = 0, flp = fl->fileList; fc < fl->fileListRecsUsed; fc++, flp++) {
+	char * t;
+
+	if (flp->flags & RPMFILE_GHOST)
+	    continue;
+
+	clp->dirName = t = xmalloc(strlen(flp->diskURL) + 2);
+	t = stpcpy(t, flp->diskURL);
+	    
+	/* Make room for the dirName NUL, find start of baseName. */
+	for (; t > clp->dirName && *t != '/'; t--)
+	    t[1] = t[0];
+	t++;
+	*t++ = '\0';
+	clp->baseName = t;
+
+  /* XXX legacy requires './' payload prefix to be omitted from rpm packages. */
+	clp->archivePath = t = xmalloc(strlen(flp->fileURL) - skipLen + 3);
+	if (!isSrc && !rpmExpandNumeric("%{_noPayloadPrefix}")) {
+	    t = stpcpy(t, "./");
+	    rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
+	}
+	t = stpcpy(t, (flp->fileURL + skipLen));
+
+	clp->finalMode = flp->fl_mode;
+	clp->finalUid = flp->fl_uid;
+	clp->finalGid = flp->fl_gid;
+	clp->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE |
+		CPIO_MAP_UID | CPIO_MAP_GID;
+
+	if (isSrc)
+	    clp->mapFlags |= CPIO_FOLLOW_SYMLINKS;
+	if (flp->flags & RPMFILE_MULTILIB_MASK)
+	    clp->mapFlags |= CPIO_MULTILIB;
+
+	clp++;
+	clpcnt++;
+    }
+    if (cpioList)
+	*cpioList = clp;
+    else
+	free(clp);
+    if (cpioCount)
+	*cpioCount = clpcnt;
+  }
+#else
+  { TFI_t fi = xmalloc(sizeof(*fi) * fl->fileListRecsUsed);
+    int i;
+
+    fi->type = TR_ADDED;
+    loadFi(h, fi);
+    fi->striplen = 1;
+    fi->actions = xcalloc(sizeof(*fi->actions), fi->fc);
+    fi->fmapflags = xcalloc(sizeof(*fi->fmapflags), fi->fc);
+    rpmBuildFileList(h, &fi->apath, NULL);
+    fi->fuser = NULL;
+    fi->fuids = xcalloc(sizeof(*fi->fuids), fi->fc);
+    fi->fgroup = NULL;
+    fi->fgids = xcalloc(sizeof(*fi->fgids), fi->fc);
+
+    /* Make the cpio list */
+    for (i = 0, flp = fl->fileList; i < fi->fc; i++, flp++) {
+	if (flp->flags & RPMFILE_GHOST) {
+	    fi->actions[i] = FA_SKIP;
+	    continue;
+	}
+	fi->actions[i] = FA_CREATE;
+	fi->fuids[i] = flp->fl_uid;
+	fi->fgids[i] = flp->fl_gid;
+	fi->fmapflags[i] =
+		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+	if (isSrc)
+	    fi->fmapflags[i] |= CPIO_FOLLOW_SYMLINKS;
+	if (flp->flags & RPMFILE_MULTILIB_MASK)
+	    fi->fmapflags[i] |= CPIO_MULTILIB;
+
+    }
+    if (cpioList)
+	*cpioList = fi;
+    else
+	free(fi);
+    if (cpioCount)
+	*cpioCount = fc;
+  }
+#endif
 }
 
 /**
@@ -1949,10 +2014,10 @@ DepMsg_t depMsgs[] = {
 
 /**
  */
-static int generateDepends(Spec spec, Package pkg,
-			   struct cpioFileMapping *cpioList, int cpioCount,
-			   int multiLib)
+static int generateDepends(Spec spec, Package pkg, void *cpioList,
+			/*@unused@*/ int cpioCount, int multiLib)
 {
+    TFI_t fi = cpioList;
     StringBuf writeBuf;
     int writeBytes;
     StringBuf readBuf;
@@ -1960,30 +2025,31 @@ static int generateDepends(Spec spec, Package pkg,
     char *myargv[4];
     int failnonzero = 0;
     int rc = 0;
+    int i;
 
-    if (cpioCount <= 0)
+    if (fi->fc <= 0)
 	return 0;
 
     if (! (pkg->autoReq || pkg->autoProv))
 	return 0;
     
     writeBuf = newStringBuf();
-    for (writeBytes = 0; cpioCount--; cpioList++) {
+    for (i = 0, writeBytes = 0; i < fi->fc; i++) {
 
-	if (multiLib == 2) {
-	    if (!(cpioList->mapFlags & CPIO_MULTILIB))
+	if (fi->fmapflags && multiLib == 2) {
+	    if (!(fi->fmapflags[i] & CPIO_MULTILIB))
 		continue;
-	    cpioList->mapFlags &= ~CPIO_MULTILIB;
+	    fi->fmapflags[i] &= ~CPIO_MULTILIB;
 	}
 
-	appendStringBuf(writeBuf, cpioList->dirName);
-	writeBytes += strlen(cpioList->dirName);
-	appendLineStringBuf(writeBuf, cpioList->baseName);
-	writeBytes += strlen(cpioList->baseName) + 1;
+	appendStringBuf(writeBuf, fi->dnl[fi->dil[i]]);
+	writeBytes += strlen(fi->dnl[fi->dil[i]]);
+	appendLineStringBuf(writeBuf, fi->bnl[i]);
+	writeBytes += strlen(fi->bnl[i]) + 1;
     }
 
     for (dm = depMsgs; dm->msg != NULL; dm++) {
-	int i, tag, tagflags;
+	int tag, tagflags;
 
 	tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
 	tagflags = 0;

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-01-23 11:02-0500\n"
+"POT-Creation-Date: 2001-01-23 17:58-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1472,7 +1472,7 @@ msgstr ""
 msgid "no tar files given for build"
 msgstr ""
 
-#: build/build.c:114 build/pack.c:370
+#: build/build.c:114 build/pack.c:372
 msgid "Unable to open temp file.\n"
 msgstr ""
 
@@ -1547,74 +1547,74 @@ msgstr ""
 msgid "syntax error in expression\n"
 msgstr ""
 
-#: build/files.c:227
+#: build/files.c:229
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:278 build/files.c:363 build/files.c:538
+#: build/files.c:280 build/files.c:365 build/files.c:540
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr ""
 
-#: build/files.c:289 build/files.c:483 build/files.c:549
+#: build/files.c:291 build/files.c:485 build/files.c:551
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr ""
 
-#: build/files.c:327 build/files.c:508
+#: build/files.c:329 build/files.c:510
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr ""
 
-#: build/files.c:379
+#: build/files.c:381
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:417
+#: build/files.c:419
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:427
+#: build/files.c:429
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:439
+#: build/files.c:441
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:576
+#: build/files.c:578
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:586
+#: build/files.c:588
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:723
+#: build/files.c:725
 msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:729
+#: build/files.c:731
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:757
+#: build/files.c:759
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr ""
 
-#: build/files.c:771
+#: build/files.c:773
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:783
+#: build/files.c:785
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
@@ -1623,87 +1623,87 @@ msgstr ""
 msgid "File listed twice: %s\n"
 msgstr ""
 
-#: build/files.c:1070
+#: build/files.c:1033
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1165
+#: build/files.c:1230
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1175
+#: build/files.c:1240
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:1218 build/files.c:1742 build/parsePrep.c:42
+#: build/files.c:1283 build/files.c:1807 build/parsePrep.c:42
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1230
+#: build/files.c:1295
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1307
+#: build/files.c:1372
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1337
+#: build/files.c:1402
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1392
+#: build/files.c:1457
 msgid "Could not open %%files file %s: %s\n"
 msgstr ""
 
-#: build/files.c:1401 build/pack.c:108
+#: build/files.c:1466 build/pack.c:108
 #, c-format
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:1730
+#: build/files.c:1795
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1799
+#: build/files.c:1864
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr ""
 
-#: build/files.c:1804
+#: build/files.c:1869
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: build/files.c:1886
+#: build/files.c:1951
 #, c-format
 msgid "%s failed\n"
 msgstr ""
 
-#: build/files.c:1890
+#: build/files.c:1955
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: build/files.c:2017
+#: build/files.c:2083
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2045 build/files.c:2059
+#: build/files.c:2111 build/files.c:2125
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/files.c:2172
+#: build/files.c:2238
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1794,61 +1794,61 @@ msgstr ""
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:382
+#: build/pack.c:384
 msgid "Bad CSA data\n"
 msgstr ""
 
-#: build/pack.c:423
+#: build/pack.c:425
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:433
+#: build/pack.c:435
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:470
+#: build/pack.c:472
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
 
-#: build/pack.c:485
+#: build/pack.c:487
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr ""
 
-#: build/pack.c:495
+#: build/pack.c:497
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:509
+#: build/pack.c:511
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:519
+#: build/pack.c:521
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:525
+#: build/pack.c:527
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:552
+#: build/pack.c:554
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:617
+#: build/pack.c:619
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:634
+#: build/pack.c:636
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -2170,75 +2170,75 @@ msgstr ""
 msgid "Package has no %%description: %s\n"
 msgstr ""
 
-#: build/spec.c:41
+#: build/spec.c:42
 #, c-format
 msgid "archive = %s, fs = %s%s\n"
 msgstr ""
 
-#: build/spec.c:228
+#: build/spec.c:238
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr ""
 
-#: build/spec.c:234
+#: build/spec.c:244
 #, c-format
 msgid "line %d: Bad no%s number: %d\n"
 msgstr ""
 
-#: build/spec.c:292
+#: build/spec.c:302
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: lib/cpio.c:540
+#: lib/cpio.c:581
 #, c-format
 msgid "can't rename %s to %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:546
+#: lib/cpio.c:587
 #, c-format
 msgid "can't unlink %s: %s\n"
 msgstr ""
 
-#: lib/cpio.c:853
+#: lib/cpio.c:894
 #, c-format
 msgid "getNextHeader: %s\n"
 msgstr ""
 
-#: lib/cpio.c:1363
+#: lib/cpio.c:1404
 #, c-format
 msgid "(error 0x%x)"
 msgstr ""
 
-#: lib/cpio.c:1366
+#: lib/cpio.c:1407
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:1367
+#: lib/cpio.c:1408
 msgid "Bad/unreadable  header"
 msgstr ""
 
-#: lib/cpio.c:1385
+#: lib/cpio.c:1426
 msgid "Header size too big"
 msgstr ""
 
-#: lib/cpio.c:1386
+#: lib/cpio.c:1427
 msgid "Unknown file type"
 msgstr ""
 
-#: lib/cpio.c:1387
+#: lib/cpio.c:1428
 msgid "Missing hard link"
 msgstr ""
 
-#: lib/cpio.c:1388
+#: lib/cpio.c:1429
 msgid "MD5 sum mismatch"
 msgstr ""
 
-#: lib/cpio.c:1389
+#: lib/cpio.c:1430
 msgid "Internal error"
 msgstr ""
 
-#: lib/cpio.c:1398
+#: lib/cpio.c:1439
 msgid " failed - "
 msgstr ""
 
@@ -2517,7 +2517,7 @@ msgstr ""
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:207 lib/header.c:1015 lib/install.c:360
+#: lib/header.c:207 lib/header.c:1015 lib/install.c:361
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
@@ -2602,17 +2602,17 @@ msgstr ""
 msgid "(unknown type)"
 msgstr ""
 
-#: lib/install.c:185
+#: lib/install.c:182
 #, c-format
 msgid "   file: %s%s action: %s\n"
 msgstr ""
 
-#: lib/install.c:211
+#: lib/install.c:210
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/install.c:218
+#: lib/install.c:219
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
@@ -2620,75 +2620,75 @@ msgstr ""
 #. this would probably be a good place to check if disk space
 #. was used up - if so, we should return a different error
 #. XXX FIXME: Fclose with libio destroys errno
-#: lib/install.c:648
+#: lib/install.c:658
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/install.c:649
+#: lib/install.c:659
 msgid " on file "
 msgstr ""
 
-#: lib/install.c:691
+#: lib/install.c:701
 #, c-format
 msgid "cannot create %s %s\n"
 msgstr ""
 
-#: lib/install.c:697
+#: lib/install.c:707
 #, c-format
 msgid "cannot write to %s\n"
 msgstr ""
 
-#: lib/install.c:729
+#: lib/install.c:736
 msgid "installing a source package\n"
 msgstr ""
 
-#: lib/install.c:772 lib/install.c:805
+#: lib/install.c:787 lib/install.c:820
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/install.c:825
+#: lib/install.c:840
 #, c-format
 msgid "renaming %s to %s\n"
 msgstr ""
 
-#: lib/install.c:827 lib/install.c:1100 lib/uninstall.c:43
+#: lib/install.c:842 lib/install.c:1113 lib/uninstall.c:43
 #, c-format
 msgid "rename of %s to %s failed: %s\n"
 msgstr ""
 
-#: lib/install.c:925
+#: lib/install.c:940
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/install.c:964
+#: lib/install.c:978
 #, c-format
-msgid "package: %s-%s-%s files test = %d\n"
+msgid "package: %s-%s-%s has %d files test = %d\n"
 msgstr ""
 
-#: lib/install.c:1005
+#: lib/install.c:1018
 msgid "stopping install as we're running --test\n"
 msgstr ""
 
-#: lib/install.c:1010
+#: lib/install.c:1023
 msgid "running preinstall script (if any)\n"
 msgstr ""
 
-#: lib/install.c:1017
+#: lib/install.c:1030
 msgid "skipping %s-%s-%s install, %%pre scriptlet failed rc %d\n"
 msgstr ""
 
-#: lib/install.c:1054
+#: lib/install.c:1067
 #, c-format
 msgid "%s%s created as %s\n"
 msgstr ""
 
-#: lib/install.c:1095
+#: lib/install.c:1108
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/install.c:1180
+#: lib/install.c:1190
 msgid "running postinstall scripts (if any)\n"
 msgstr ""
 
@@ -3672,46 +3672,46 @@ msgstr ""
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr ""
 
-#: lib/transaction.c:558
+#: lib/transaction.c:555
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/transaction.c:561
+#: lib/transaction.c:558
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/transaction.c:564
+#: lib/transaction.c:561
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr ""
 
-#: lib/transaction.c:638
+#: lib/transaction.c:635
 #, c-format
 msgid "excluding multilib path %s%s\n"
 msgstr ""
 
-#: lib/transaction.c:687
+#: lib/transaction.c:684
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/transaction.c:694
+#: lib/transaction.c:691
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:766
+#: lib/transaction.c:763
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
-#: lib/transaction.c:771
+#: lib/transaction.c:768
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:895
+#: lib/transaction.c:892
 #, c-format
 msgid "%s skipped due to missingok flag\n"
 msgstr ""

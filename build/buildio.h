@@ -6,14 +6,18 @@
  *  XXX this information will move elsewhere eventually
  */
 
+#include "depends.h"	/* XXX DYING */
+#include "install.h"	/* XXX DYING */
 #include "cpio.h"
 
+/**
+ */
 typedef struct cpioSourceArchive {
     unsigned int cpioArchiveSize;
     FD_t	cpioFdIn;
-/*@dependent@*/ struct cpioFileMapping *cpioList;
+/*@dependent@*/ const void * cpioList;
     int		cpioCount;
-    struct rpmlead *lead;	/* XXX FIXME: exorcize lead/arch/os */
+    struct rpmlead * lead;	/* XXX FIXME: exorcize lead/arch/os */
 } CSA_t;
 
 #ifdef __cplusplus

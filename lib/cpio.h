@@ -62,20 +62,6 @@ typedef enum cpioMapFlags_e {
 } cpioMapFlags;
 
 /** \ingroup payload
- * Defines a single file to be included in a cpio payload.
- */
-struct cpioFileMapping {
-/*@dependent@*/ const char * archivePath; /*!< Path to store in cpio archive. */
-/*@dependent@*/ const char * dirName;	/*!< Payload file directory. */
-/*@dependent@*/ const char * baseName;	/*!< Payload file base name. */
-/*@dependent@*/ const char * md5sum;	/*!< File MD5 sum (NULL disables). */
-    mode_t finalMode;		/*!< Mode of payload file (from header). */
-    uid_t finalUid;		/*!< Uid of payload file (from header). */
-    gid_t finalGid;		/*!< Gid of payload file (from header). */
-    cpioMapFlags mapFlags;
-};
-
-/** \ingroup payload
  * The first argument passed in a cpio progress callback.
  *
  * @note When building the cpio payload, only "file" is filled in.

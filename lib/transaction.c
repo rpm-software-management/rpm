@@ -61,9 +61,6 @@ struct diskspaceInfo {
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
 
-#define	XFA_SKIPPING(_a)	\
-    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
-
 void loadFi(Header h, TFI_t fi)
 {
     HGE_t hge;
@@ -76,11 +73,8 @@ void loadFi(Header h, TFI_t fi)
 
     if (h && fi->h == NULL)	fi->h = headerLink(h);
 
-    hge(fi->h, RPMTAG_NAME, NULL, (void **) &fi->n, NULL);
-    hge(fi->h, RPMTAG_VERSION, NULL, (void **) &fi->v, NULL);
-    hge(fi->h, RPMTAG_RELEASE, NULL, (void **) &fi->r, NULL);
-
     if (!hge(fi->h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc)) {
+fprintf(stderr, "*** BASENAMES not found\n");
 	fi->dc = 0;
 	fi->fc = 0;
 	fi->dnl = NULL;
@@ -90,6 +84,9 @@ void loadFi(Header h, TFI_t fi)
 	fi->fflags = NULL;
 	fi->fsizes = NULL;
 	fi->fstates = NULL;
+	fi->fmd5s = NULL;
+	fi->flinks = NULL;
+	fi->flangs = NULL;
 	return;
     }
 
@@ -115,9 +112,6 @@ void loadFi(Header h, TFI_t fi)
 
 	break;
     case TR_REMOVED:
-	fi->n = xstrdup(fi->n);
-	fi->v = xstrdup(fi->v);
-	fi->r = xstrdup(fi->r);
 	hge(fi->h, RPMTAG_FILEMD5S, NULL, (void **) &fi->fmd5s, NULL);
 	hge(fi->h, RPMTAG_FILELINKTOS, NULL, (void **) &fi->flinks, NULL);
 	fi->fsizes = memcpy(xmalloc(fi->fc * sizeof(*fi->fsizes)),
@@ -156,76 +150,79 @@ void loadFi(Header h, TFI_t fi)
 
 void freeFi(TFI_t fi)
 {
-	if (fi->h) {
-	    headerFree(fi->h); fi->h = NULL;
-	}
-	if (fi->actions) {
-	    free(fi->actions); fi->actions = NULL;
-	}
-	if (fi->replacedSizes) {
-	    free(fi->replacedSizes); fi->replacedSizes = NULL;
-	}
-	if (fi->replaced) {
-	    free(fi->replaced); fi->replaced = NULL;
-	}
-	if (fi->bnl) {
-	    free(fi->bnl); fi->bnl = NULL;
-	}
-	if (fi->dnl) {
-	    free(fi->dnl); fi->dnl = NULL;
-	}
-	if (fi->obnl) {
-	    free(fi->obnl); fi->obnl = NULL;
-	}
-	if (fi->odnl) {
-	    free(fi->odnl); fi->odnl = NULL;
-	}
-	if (fi->flinks) {
-	    free(fi->flinks); fi->flinks = NULL;
-	}
-	if (fi->fmd5s) {
-	    free(fi->fmd5s); fi->fmd5s = NULL;
-	}
-	if (fi->fuser) {
-	    free(fi->fuser); fi->fuser = NULL;
-	}
-	if (fi->fgroup) {
-	    free(fi->fgroup); fi->fgroup = NULL;
-	}
-	if (fi->flangs) {
-	    free(fi->flangs); fi->flangs = NULL;
-	}
+    if (fi->h) {
+	headerFree(fi->h); fi->h = NULL;
+    }
+    if (fi->actions) {
+	free(fi->actions); fi->actions = NULL;
+    }
+    if (fi->replacedSizes) {
+	free(fi->replacedSizes); fi->replacedSizes = NULL;
+    }
+    if (fi->replaced) {
+	free(fi->replaced); fi->replaced = NULL;
+    }
+    if (fi->bnl) {
+	free(fi->bnl); fi->bnl = NULL;
+    }
+    if (fi->dnl) {
+	free(fi->dnl); fi->dnl = NULL;
+    }
+    if (fi->obnl) {
+	free(fi->obnl); fi->obnl = NULL;
+    }
+    if (fi->odnl) {
+	free(fi->odnl); fi->odnl = NULL;
+    }
+    if (fi->flinks) {
+	free(fi->flinks); fi->flinks = NULL;
+    }
+    if (fi->fmd5s) {
+	free(fi->fmd5s); fi->fmd5s = NULL;
+    }
+    if (fi->fuser) {
+	free(fi->fuser); fi->fuser = NULL;
+    }
+    if (fi->fgroup) {
+	free(fi->fgroup); fi->fgroup = NULL;
+    }
+    if (fi->flangs) {
+	free(fi->flangs); fi->flangs = NULL;
+    }
+    if (fi->apath) {
+	free(fi->apath); fi->apath = NULL;
+    }
+    if (fi->fuids) {
+	free(fi->fuids); fi->fuids = NULL;
+    }
+    if (fi->fgids) {
+	free(fi->fgids); fi->fgids = NULL;
+    }
+    if (fi->fmapflags) {
+	free(fi->fmapflags); fi->fmapflags = NULL;
+    }
 
-	switch (fi->type) {
-	case TR_ADDED:
+    switch (fi->type) {
+    case TR_ADDED:
 	    break;
-	case TR_REMOVED:
-	    if (fi->n) {
-		free((void *)fi->n); fi->n = NULL;
-	    }
-	    if (fi->v) {
-		free((void *)fi->v); fi->v = NULL;
-	    }
-	    if (fi->r) {
-		free((void *)fi->r); fi->r = NULL;
-	    }
-	    if (fi->fsizes) {
-		free((void *)fi->fsizes); fi->fsizes = NULL;
-	    }
-	    if (fi->fflags) {
-		free((void *)fi->fflags); fi->fflags = NULL;
-	    }
-	    if (fi->fmodes) {
-		free((void *)fi->fmodes); fi->fmodes = NULL;
-	    }
-	    if (fi->fstates) {
-		free((void *)fi->fstates); fi->fstates = NULL;
-	    }
-	    if (fi->dil) {
-		free((void *)fi->dil); fi->dil = NULL;
-	    }
-	    break;
+    case TR_REMOVED:
+	if (fi->fsizes) {
+	    free((void *)fi->fsizes); fi->fsizes = NULL;
 	}
+	if (fi->fflags) {
+	    free((void *)fi->fflags); fi->fflags = NULL;
+	}
+	if (fi->fmodes) {
+	    free((void *)fi->fmodes); fi->fmodes = NULL;
+	}
+	if (fi->fstates) {
+	    free((void *)fi->fstates); fi->fstates = NULL;
+	}
+	if (fi->dil) {
+	    free((void *)fi->dil); fi->dil = NULL;
+	}
+	break;
+    }
 }
 
 static void freeFl(rpmTransactionSet ts, TFI_t flList)

@@ -478,8 +478,8 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
     int i;
 
     if (!headerGetEntry(h, baseNameTag, NULL, (void **) &baseNames, &count)) {
-	*fileListPtr = NULL;
-	*fileCountPtr = 0;
+	if (fileListPtr) *fileListPtr = NULL;
+	if (fileCountPtr) *fileCountPtr = 0;
 	return;		/* no file list */
     }
 
@@ -500,8 +500,11 @@ static void doBuildFileList(Header h, /*@out@*/ const char *** fileListPtr,
     free((void *)baseNames);
     free((void *)dirNames);
 
-    *fileListPtr = fileNames;
-    *fileCountPtr = count;
+    if (fileListPtr)
+	*fileListPtr = fileNames;
+    else
+	free((void *)fileNames);
+    if (fileCountPtr) *fileCountPtr = count;
 }
 
 void expandFilelist(Header h)

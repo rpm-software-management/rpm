@@ -31,6 +31,7 @@ static inline void freeTriggerFiles(/*@only@*/ struct TriggerFileEntry *p)
     }
 }
 
+#ifdef	DYING
 /**
  */
 static inline void freeCpioList(/*@only@*/ struct cpioFileMapping *cpioList, int cpioCount)
@@ -46,6 +47,7 @@ static inline void freeCpioList(/*@only@*/ struct cpioFileMapping *cpioList, int
     }
     FREE(cpioList);
 }
+#endif
 
 /**
  */
@@ -162,7 +164,15 @@ void freePackage(/*@only@*/ Package p)
     headerFree(p->header);
     freeStringBuf(p->fileList);
     FREE(p->fileFile);
+#ifdef	DYING
     freeCpioList(p->cpioList, p->cpioCount);
+#else
+    {	TFI_t fi = p->cpioList;
+	freeFi(fi);
+	free((void *)fi);
+    }
+#endif
+    p->cpioList = NULL;
 
     freeStringBuf(p->specialDoc);
 
@@ -489,7 +499,14 @@ void freeSpec(/*@only@*/ Spec spec)
 	spec->sourceHeader = NULL;
     }
 
+#ifdef	DYING
     freeCpioList(spec->sourceCpioList, spec->sourceCpioCount);
+#else
+    {	TFI_t fi = spec->sourceCpioList;
+	freeFi(fi);
+	free((void *)fi);
+    }
+#endif
     spec->sourceCpioList = NULL;
     
     headerFree(spec->buildRestrictions);

@@ -23,6 +23,20 @@
 #define TRAILER		"TRAILER!!!"
 
 /** \ingroup payload
+ * Defines a single file to be included in a cpio payload.
+ */
+struct cpioFileMapping {
+/*@dependent@*/ const char * archivePath; /*!< Path to store in cpio archive. */
+/*@dependent@*/ const char * dirName;	/*!< Payload file directory. */
+/*@dependent@*/ const char * baseName;	/*!< Payload file base name. */
+/*@dependent@*/ const char * md5sum;	/*!< File MD5 sum (NULL disables). */
+    mode_t finalMode;		/*!< Mode of payload file (from header). */
+    uid_t finalUid;		/*!< Uid of payload file (from header). */
+    gid_t finalGid;		/*!< Gid of payload file (from header). */
+    cpioMapFlags mapFlags;
+};
+
+/** \ingroup payload
  * Keeps track of set of all hard linked files in archive.
  */
 struct hardLink {
@@ -121,43 +135,20 @@ static const char * mapMd5sum(const void * this) {
 }
 
 struct mapi {
-    union {
-	const struct cpioFileMapping * mappings;
-	TFI_t fi;
-    } u;
-    int numMappings;
+    TFI_t fi;
     int i;
+    struct cpioFileMapping map;
 };
 
-static int cpioFileMapCmp(const void * a, const void * b) {
-    const char * afn = ((const struct cpioFileMapping *)a)->archivePath;
-    const char * bfn = ((const struct cpioFileMapping *)b)->archivePath;
-
-    /* Match payloads with ./ prefixes as well. */
-    if (afn[0] == '.' && afn[1] == '/')	afn += 2;
-    if (bfn[0] == '.' && bfn[1] == '/')	bfn += 2;
-
-    return strcmp(afn, bfn);
-}
-
-static const void * mapFind(const void * this, const char * hdrPath) {
-    const struct mapi * mapi = this;
-    const struct cpioFileMapping * map;
-    struct cpioFileMapping needle;
-
-    needle.archivePath = hdrPath;
-    map = bsearch(&needle, mapi->u.mappings, mapi->numMappings,
-		sizeof(needle), cpioFileMapCmp);
-    return map;
-}
-
 static const void * mapLink(const void * this) {
-    const struct cpioFileMapping * map = this;
-    return map;
+    const struct cpioFileMapping * omap = this;
+    struct cpioFileMapping * nmap = xcalloc(sizeof(*nmap), 1);
+    *nmap = *omap;	/* structure assignment */
+    return nmap;
 }
 
 static void mapFree(const void * this) {
-    return;
+    free((void *)this);
 }
 
 static void mapFreeIterator(/*@only@*/ const void * this) {
@@ -171,25 +162,75 @@ static void * mapInitIterator(const void * this, int numMappings) {
     if (this == NULL)
 	return NULL;
     mapi = xcalloc(sizeof(*mapi), 1);
-    mapi->u.mappings = this;
-    mapi->numMappings = numMappings;
+    mapi->fi = (void *)this;
     mapi->i = 0;
-
-    qsort((void *)mapi->u.mappings, numMappings, sizeof(*mapi->u.mappings),
-		cpioFileMapCmp);
-
     return mapi;
 }
 
 static const void * mapNextIterator(void * this) {
     struct mapi * mapi = this;
-    const struct cpioFileMapping * map;
+    TFI_t fi = mapi->fi;
+    struct cpioFileMapping * map = &mapi->map;
+    int i = mapi->i;
 
-    if (!(mapi->i < mapi->numMappings))
-	return NULL;
-    map = mapi->u.mappings + mapi->i;
+    do {
+	if (!((i = mapi->i++) < fi->fc))
+	    return NULL;
+    } while (fi->actions && XFA_SKIPPING(fi->actions[i]));
+
+    /* src rpms have simple base name in payload. */
+    map->archivePath = (fi->apath ? fi->apath[i] + fi->striplen : fi->bnl[i]);
+    map->dirName = fi->dnl[fi->dil[i]];
+    map->baseName = fi->bnl[i];
+    map->md5sum = (fi->fmd5s ? fi->fmd5s[i] : NULL);
+    map->finalMode = fi->fmodes[i];
+    map->finalUid = (fi->fuids ? fi->fuids[i] : fi->uid); /* XXX chmod u-s */
+    map->finalGid = (fi->fgids ? fi->fgids[i] : fi->gid); /* XXX chmod g-s */
+    map->mapFlags = (fi->fmapflags ? fi->fmapflags[i] : fi->mapflags);
     mapi->i++;
     return map;
+}
+
+#ifdef	DYING
+static int cpioFileMapCmp(const void * a, const void * b) {
+    const char * afn = ((const struct cpioFileMapping *)a)->archivePath;
+    const char * bfn = ((const struct cpioFileMapping *)b)->archivePath;
+
+    /* Match payloads with ./ prefixes as well. */
+    if (afn[0] == '.' && afn[1] == '/')	afn += 2;
+    if (bfn[0] == '.' && bfn[1] == '/')	bfn += 2;
+
+    return strcmp(afn, bfn);
+}
+#endif
+
+static int cpioStrCmp(const void * a, const void * b) {
+    const char * afn = *(const char **)a;
+    const char * bfn = *(const char **)b;
+
+    /* Match rpm-4.0 payloads with ./ prefixes. */
+    if (afn[0] == '.' && afn[1] == '/')	afn += 2;
+    if (bfn[0] == '.' && bfn[1] == '/')	bfn += 2;
+
+    /* If either path is absolute, make it relative. */
+    if (afn[0] == '/')	afn += 1;
+    if (bfn[0] == '/')	bfn += 1;
+
+    return strcmp(afn, bfn);
+}
+
+static const void * mapFind(void * this, const char * hdrPath) {
+    struct mapi * mapi = this;
+    const TFI_t fi = mapi->fi;
+    const char ** p;
+
+    p = bsearch(&hdrPath, fi->apath, fi->fc, sizeof(hdrPath), cpioStrCmp);
+    if (p == NULL) {
+	fprintf(stderr, "*** not mapped %s\n", hdrPath);
+	return NULL;
+    }
+    mapi->i = p - fi->apath;
+    return mapNextIterator(this);
 }
 
 /**
@@ -822,7 +863,7 @@ int cpioInstallArchive(FD_t cfd, const void * mappings,
 		       const char ** failedFile)
 {
     struct cpioHeader ch, *hdr = &ch;
-    const void * mapi = mapInitIterator(mappings, numMappings);
+    void * mapi = mapInitIterator(mappings, numMappings);
     const void * map = NULL;
     struct cpioCallbackInfo cbInfo = { NULL, 0, 0, 0 };
     struct hardLink * links = NULL;
@@ -1230,7 +1271,7 @@ int cpioBuildArchive(FD_t cfd, const void * mappings,
 		     int numMappings, cpioCallback cb, void * cbData,
 		     unsigned int * archiveSize, const char ** failedFile)
 {
-    const void * mapi = mapInitIterator(mappings, numMappings);
+    void * mapi = mapInitIterator(mappings, numMappings);
     const void * map;
     struct cpioCallbackInfo cbInfo = { NULL, 0, 0, 0 };
     struct cpioCrcPhysicalHeader hdr;

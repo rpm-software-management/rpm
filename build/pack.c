@@ -35,12 +35,12 @@ static inline int genSourceRpmName(Spec spec)
 
 /**
  */
-static int cpio_doio(FD_t fdo, CSA_t * csa, const char * fmodeMacro)
+static int cpio_doio(FD_t fdo, Header h, CSA_t * csa, const char * fmodeMacro)
 {
+    const char *fmode = rpmExpand(fmodeMacro, NULL);
+    const char *failedFile = NULL;
     FD_t cfd;
     int rc;
-    const char *failedFile = NULL;
-    const char *fmode = rpmExpand(fmodeMacro, NULL);
 
     if (!(fmode && fmode[0] == 'w'))
 	fmode = xstrdup("w9.gzdio");
@@ -308,6 +308,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 		&csa->cpioArchiveSize, 1);
     }
 
+#ifdef	DYING
     /* Choose how filenames are represented. */
     if (_noDirTokens)
 	expandFilelist(h);
@@ -317,6 +318,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	if (type == RPMLEAD_BINARY)
 	    rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
     }
+#endif
 
     /* Binary packages now have explicit Provides: name = version-release. */
     if (type == RPMLEAD_BINARY)
@@ -375,7 +377,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	rc = RPMERR_NOSPACE;
     } else { /* Write the archive and get the size */
 	if (csa->cpioList != NULL) {
-	    rc = cpio_doio(fd, csa, rpmio_flags);
+	    rc = cpio_doio(fd, h, csa, rpmio_flags);
 	} else if (Fileno(csa->cpioFdIn) >= 0) {
 	    rc = cpio_copy(fd, csa);
 	} else {

@@ -121,7 +121,7 @@ struct transactionElement {
 /**
  */
 typedef int (*HGE_t) (Header h, int_32 tag, /*@out@*/ int_32 * type,
-			/*@out@*/ const void ** p, /*@out@*/int_32 * c)
+			/*@out@*/ void ** p, /*@out@*/int_32 * c)
 				/*@modifies *type, *p, *c @*/;
 
 /**
@@ -133,9 +133,6 @@ struct transactionFileInfo_s {
 /*@dependent@*/ struct fingerPrint_s * fps; /*!< file fingerprints */
     HGE_t hge;
     Header h;			/*!< Package header */
-    const char * n;		/*!< Package name */
-    const char * v;		/*!< Package version */
-    const char * r;		/*!< Package release */
     const uint_32 * fflags;	/*!< File flags (from header) */
     const uint_32 * fsizes;	/*!< File sizes (from header) */
     const char ** bnl;		/*!< Base names (from header) */
@@ -146,7 +143,8 @@ struct transactionFileInfo_s {
     const int * odil;		/*!< Original Directory indices (from header) */
     const char ** fmd5s;	/*!< file MD5 sums (from header) */
     const char ** flinks;	/*!< file links (from header) */
-    const uint_16 * fmodes;	/*!< file modes (from header) */
+/* XXX setuid/setgid bits are turned off if fsuer/fgroup doesn't map. */
+    uint_16 * fmodes;		/*!< file modes (from header) */
     char * fstates;		/*!< file states (from header) */
     const char ** fuser;	/*!< file owner(s) */
     const char ** fgroup;	/*!< file group(s) */
@@ -155,6 +153,14 @@ struct transactionFileInfo_s {
     int dc;			/*!< No. of directories. */
     int bnlmax;			/*!< Length (in bytes) of longest base name. */
     int dnlmax;			/*!< Length (in bytes) of longest dir name. */
+    int mapflags;
+    int striplen;
+    const char ** apath;
+    uid_t uid;
+    gid_t gid;
+    uid_t * fuids;
+    gid_t * fgids;
+    int * fmapflags;
     int magic;
 #define	TFIMAGIC	0x09697923
   /* these are for TR_ADDED packages */
@@ -205,6 +211,9 @@ struct problemsSet {
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define XFA_SKIPPING(_a)	\
+    ((_a) == FA_SKIP || (_a) == FA_SKIPNSTATE || (_a) == FA_SKIPNETSHARED || (_a) == FA_SKIPMULTILIB)
 
 /**
  */
