@@ -17,7 +17,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.78
+Release: 0.79
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -192,6 +192,7 @@ install -m 644 scripts/rpm.log ${RPM_BUILD_ROOT}/etc/logrotate.d/rpm
 
 mkdir -p $RPM_BUILD_ROOT/etc/rpm
 
+mkdir -p $RPM_BUILD_ROOT/var/spool/repackage
 mkdir -p $RPM_BUILD_ROOT/var/lib/rpm
 for dbi in \
 	Basenames Conflictname Dirnames Group Installtid Name Providename \
@@ -292,6 +293,7 @@ fi
 %dir				/etc/rpm
 #%config(noreplace,missingok)	/etc/rpm/macros.*
 %attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/lib/rpm
+%attr(0755, @RPMUSER@, @RPMGROUP@)	%dir /var/spool/repackage
 
 %define	rpmdbattr %attr(0644, @RPMUSER@, @RPMGROUP@) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
 %rpmdbattr	/var/lib/rpm/Basenames
@@ -517,8 +519,11 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
-* Tue Aug 13 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.78
+* Tue Aug 13 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.79
 - supply transitive closure for CLI packages from rpmdb-redhat database.
+- fix: rebuilddb stat'ed target, not source, for rename sanity.
+- create /var/lib/rpm if non-existent in, say, a chroot.
+- erased packages are now repackaged into /var/spool/repackage.
 
 * Fri Aug  9 2002 Jeff Johnson <jbj@redhat.com> 4.1-0.77
 - python: add return codes for rollbacks and fooDB methods.

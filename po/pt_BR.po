@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-13 12:17-0400\n"
+"POT-Creation-Date: 2002-08-13 16:17-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
@@ -1699,7 +1699,7 @@ msgid "cannot write to %%%s %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: lib/misc.c:240 lib/misc.c:245 lib/misc.c:251
+#: lib/misc.c:190 lib/misc.c:195 lib/misc.c:201
 #, fuzzy, c-format
 msgid "error creating temporary file %s\n"
 msgstr "No consegui abrir: %s\n"
@@ -3339,25 +3339,25 @@ msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 msgid "verified db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:967
+#: rpmdb/db3.c:972
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/db3.c:1183
+#: rpmdb/db3.c:1188
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "no foi passado pacote para desinstalao"
 
-#: rpmdb/db3.c:1185
+#: rpmdb/db3.c:1190
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1185
+#: rpmdb/db3.c:1190
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db3.c:1189
+#: rpmdb/db3.c:1194
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
@@ -3583,66 +3583,66 @@ msgstr "No consegui abrir: %s\n"
 msgid "error(%d) storing record %s into %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:3625
+#: rpmdb/rpmdb.c:3620
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3663
+#: rpmdb/rpmdb.c:3658
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3695
+#: rpmdb/rpmdb.c:3690
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/rpmdb.c:3699
+#: rpmdb/rpmdb.c:3694
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
 # , c-format
-#: rpmdb/rpmdb.c:3705
+#: rpmdb/rpmdb.c:3700
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:3707
+#: rpmdb/rpmdb.c:3702
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: rpmdb/rpmdb.c:3714
+#: rpmdb/rpmdb.c:3709
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/rpmdb.c:3727
+#: rpmdb/rpmdb.c:3722
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "reconstrua o banco de dados a partir de um banco de dados existente"
 
-#: rpmdb/rpmdb.c:3756
+#: rpmdb/rpmdb.c:3751
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3796
+#: rpmdb/rpmdb.c:3791
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3814
+#: rpmdb/rpmdb.c:3809
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3822
+#: rpmdb/rpmdb.c:3817
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3824
+#: rpmdb/rpmdb.c:3819
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
@@ -3655,13 +3655,13 @@ msgstr ""
 # "Content-Type: text/plain; charset=ISO-8859-1\n"
 # "Content-Transfer-Encoding: 8-bit\n"
 # , c-format
-#: rpmdb/rpmdb.c:3834
+#: rpmdb/rpmdb.c:3829
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "RPM verso %s\n"
 
 # , c-format
-#: rpmdb/rpmdb.c:3836
+#: rpmdb/rpmdb.c:3831
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "No consegui abrir: %s\n"

@@ -3575,9 +3575,9 @@ static int rpmdbMoveDatabase(const char * prefix,
 		continue;
 	    sprintf(nfilename, "%s/%s/%s", prefix, newdbpath, base);
 	    (void)rpmCleanPath(nfilename);
-	    if (Stat(nfilename, nst))
+	    if (stat(ofilename, nst))
 		continue;
-	    if ((xx = Rename(ofilename, nfilename)) != 0) {
+	    if ((xx = rename(ofilename, nfilename)) != 0) {
 		rc = 1;
 		continue;
 	    }
@@ -3597,12 +3597,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    xx = unlink(ofilename);
 	    sprintf(nfilename, "%s/%s/__db.%03d", prefix, newdbpath, i);
 	    (void)rpmCleanPath(nfilename);
-#ifdef	DYING
-	    if ((xx = Rename(ofilename, nfilename)) != 0)
-		rc = 1;
-#else
 	    xx = unlink(nfilename);
-#endif
 	}
 	break;
     case 2:

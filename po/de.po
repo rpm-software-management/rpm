@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-08-13 12:17-0400\n"
+"POT-Creation-Date: 2002-08-13 16:17-0400\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1683,7 +1683,7 @@ msgstr "kann Datei %s nicht öffnen: "
 msgid "cannot write to %%%s %s\n"
 msgstr "kann Datei %s nicht öffnen: "
 
-#: lib/misc.c:240 lib/misc.c:245 lib/misc.c:251
+#: lib/misc.c:190 lib/misc.c:195 lib/misc.c:201
 #, fuzzy, c-format
 msgid "error creating temporary file %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
@@ -3274,25 +3274,25 @@ msgstr "Datenbank aus der vorhandenen neu erstellen"
 msgid "verified db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:967
+#: rpmdb/db3.c:972
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/db3.c:1183
+#: rpmdb/db3.c:1188
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kann %s lock für die Datenbank nicht bekommen"
 
-#: rpmdb/db3.c:1185
+#: rpmdb/db3.c:1190
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: rpmdb/db3.c:1185
+#: rpmdb/db3.c:1190
 msgid "shared"
 msgstr "geteilt"
 
-#: rpmdb/db3.c:1189
+#: rpmdb/db3.c:1194
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
@@ -3513,76 +3513,76 @@ msgstr "Fehler beim Löschen des Eintrags %s nach %s"
 msgid "error(%d) storing record %s into %s\n"
 msgstr "Fehler bei Schreiben des Eintrags %s nach %s"
 
-#: rpmdb/rpmdb.c:3625
+#: rpmdb/rpmdb.c:3620
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3663
+#: rpmdb/rpmdb.c:3658
 msgid "no dbpath has been set"
 msgstr "»dbpath« ist nicht gesetzt"
 
-#: rpmdb/rpmdb.c:3695
+#: rpmdb/rpmdb.c:3690
 #, fuzzy, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3699
+#: rpmdb/rpmdb.c:3694
 #, fuzzy, c-format
 msgid "temporary database %s already exists\n"
 msgstr "die temporäre Datenbank %s existiert schon"
 
-#: rpmdb/rpmdb.c:3705
+#: rpmdb/rpmdb.c:3700
 #, fuzzy, c-format
 msgid "creating directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: rpmdb/rpmdb.c:3707
+#: rpmdb/rpmdb.c:3702
 #, fuzzy, c-format
 msgid "creating directory %s: %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
-#: rpmdb/rpmdb.c:3714
+#: rpmdb/rpmdb.c:3709
 #, fuzzy, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3727
+#: rpmdb/rpmdb.c:3722
 #, fuzzy, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr "Datenbank aus der vorhandenen neu erstellen"
 
-#: rpmdb/rpmdb.c:3756
+#: rpmdb/rpmdb.c:3751
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 "Eintrag Nummer %d in der Datenback ist nicht in Ordnung -- wird übersprungen"
 
-#: rpmdb/rpmdb.c:3796
+#: rpmdb/rpmdb.c:3791
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kann einen Eintrag hinzufügen, ursprünglich bei %d"
 
-#: rpmdb/rpmdb.c:3814
+#: rpmdb/rpmdb.c:3809
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3822
+#: rpmdb/rpmdb.c:3817
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3824
+#: rpmdb/rpmdb.c:3819
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3834
+#: rpmdb/rpmdb.c:3829
 #, fuzzy, c-format
 msgid "removing directory %s\n"
 msgstr "Fehler beim Anlegen des Verzeichnisses %s: %s"
 
 # , c-format
-#: rpmdb/rpmdb.c:3836
+#: rpmdb/rpmdb.c:3831
 #, fuzzy, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s"

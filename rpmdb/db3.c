@@ -862,6 +862,11 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     }
 
     /*
+     * Create the /var/lib/rpm directory if it doesn't exist (root only).
+     */
+    (void) rpmioMkpath(dbhome, 0755, getuid(), getgid());
+
+    /*
      * Avoid incompatible DB_CREATE/DB_RDONLY flags on DBENV->open.
      */
     if (dbi->dbi_use_dbenv) {

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-08-13 12:17-0400\n"
+"POT-Creation-Date: 2002-08-13 16:17-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1511,7 +1511,7 @@ msgstr ""
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/misc.c:240 lib/misc.c:245 lib/misc.c:251
+#: lib/misc.c:190 lib/misc.c:195 lib/misc.c:201
 #, c-format
 msgid "error creating temporary file %s\n"
 msgstr ""
@@ -2990,25 +2990,25 @@ msgstr ""
 msgid "verified db index       %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:967
+#: rpmdb/db3.c:972
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db3.c:1183
+#: rpmdb/db3.c:1188
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1185
+#: rpmdb/db3.c:1190
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db3.c:1185
+#: rpmdb/db3.c:1190
 msgid "shared"
 msgstr ""
 
-#: rpmdb/db3.c:1189
+#: rpmdb/db3.c:1194
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr ""
@@ -3219,74 +3219,74 @@ msgstr ""
 msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3625
+#: rpmdb/rpmdb.c:3620
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3663
+#: rpmdb/rpmdb.c:3658
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3695
+#: rpmdb/rpmdb.c:3690
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3699
+#: rpmdb/rpmdb.c:3694
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3705
+#: rpmdb/rpmdb.c:3700
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3707
+#: rpmdb/rpmdb.c:3702
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3714
+#: rpmdb/rpmdb.c:3709
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3727
+#: rpmdb/rpmdb.c:3722
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3756
+#: rpmdb/rpmdb.c:3751
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3796
+#: rpmdb/rpmdb.c:3791
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3814
+#: rpmdb/rpmdb.c:3809
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3822
+#: rpmdb/rpmdb.c:3817
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3824
+#: rpmdb/rpmdb.c:3819
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3834
+#: rpmdb/rpmdb.c:3829
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3836
+#: rpmdb/rpmdb.c:3831
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

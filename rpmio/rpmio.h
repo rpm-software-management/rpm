@@ -544,6 +544,18 @@ int fdReadable(FD_t fd, int secs)
 /*@=exportlocal@*/
 
 /**
+ * Insure that directories in path exist, creating as needed.
+ * @param path		diretory path
+ * @param mode		directory mode (if created)
+ * @param uid		directory uid (if created), or -1 to skip
+ * @param gid		directory uid (if created), or -1 to skip
+ * @return		0 on success, errno (or -1) on error
+ */
+int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/;
+
+/**
  * FTP and HTTP error codes.
  */
 /*@-typeuse@*/

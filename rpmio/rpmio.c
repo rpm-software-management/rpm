@@ -3152,6 +3152,54 @@ int Fcntl(FD_t fd, int op, void *lip)
 /* =============================================================== */
 /* Helper routines that may be generally useful.
  */
+int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
+{
+    char * d, * de;
+    int created = 0;
+    int rc;
+
+    if (path == NULL)
+	return -1;
+    d = alloca(strlen(path)+2);
+    de = stpcpy(d, path);
+    de[1] = '\0';
+    for (de = d; *de != '\0'; de++) {
+	struct stat st;
+	char savec;
+
+	while (*de && *de != '/') de++;
+	savec = de[1];
+	de[1] = '\0';
+
+	rc = Stat(d, &st);
+	if (rc) {
+	    switch(errno) {
+	    default:
+		return errno;
+		/*@notreached@*/ /*@switchbreak@*/ break;
+	    case ENOENT:
+		/*@switchbreak@*/ break;
+	    }
+	    rc = Mkdir(d, mode);
+	    if (rc)
+		return errno;
+	    created = 1;
+	    if (!(uid == (uid_t) -1 && gid == (gid_t) -1)) {
+		rc = chown(d, uid, gid);
+		if (rc)
+		    return errno;
+	    }
+	} else if (!S_ISDIR(st.st_mode)) {
+	    return ENOTDIR;
+	}
+	de[1] = savec;
+    }
+    rc = 0;
+    if (created)
+	rpmMessage(RPMMESS_DEBUG, "created directory(s) %s mode 0%o\n",
+			path, mode);
+    return rc;
+}
 
 /*@-boundswrite@*/
 int rpmioSlurp(const char * fn, const byte ** bp, ssize_t * blenp)

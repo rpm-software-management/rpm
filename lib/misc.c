@@ -121,56 +121,6 @@ int dosetenv(const char * name, const char * value, int overwrite)
     return putenv(a);
 }
 
-static int rpmMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
-{
-    char * d, * de;
-    int created = 0;
-    int rc;
-
-    if (path == NULL)
-	return -1;
-    d = alloca(strlen(path)+2);
-    de = stpcpy(d, path);
-    de[1] = '\0';
-    for (de = d; *de != '\0'; de++) {
-	struct stat st;
-	char savec;
-
-	while (*de && *de != '/') de++;
-	savec = de[1];
-	de[1] = '\0';
-
-	rc = stat(d, &st);
-	if (rc) {
-	    switch(errno) {
-	    default:
-		return errno;
-		/*@notreached@*/ /*@switchbreak@*/ break;
-	    case ENOENT:
-		/*@switchbreak@*/ break;
-	    }
-	    rc = mkdir(d, mode);
-	    if (rc)
-		return errno;
-	    created = 1;
-	    if (!(uid == (uid_t) -1 && gid == (gid_t) -1)) {
-		rc = chown(d, uid, gid);
-		if (rc)
-		    return errno;
-	    }
-	} else if (!S_ISDIR(st.st_mode)) {
-	    return ENOTDIR;
-	}
-	de[1] = savec;
-    }
-    rc = 0;
-    if (created)
-	rpmMessage(RPMMESS_WARNING, "created %%_tmppath directory %s\n", path);
-    return rc;
-}
-
 int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
 {
     const char * tpmacro = "%{?_tmppath:%{_tmppath}}%{!?_tmppath:/var/tmp}";
@@ -190,7 +140,7 @@ int makeTempFile(const char * prefix, const char ** fnptr, FD_t * fdptr)
     if (!_initialized) {
 	_initialized = 1;
 	tempfn = rpmGenPath(prefix, tpmacro, NULL);
-	if (rpmMkpath(tempfn, 0755, (uid_t) -1, (gid_t) -1))
+	if (rpmioMkpath(tempfn, 0755, (uid_t) -1, (gid_t) -1))
 	    goto errxit;
     }
     /*@=branchstate@*/
