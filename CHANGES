@@ -2,6 +2,7 @@
 	- added os_canon entries for BSD/OS and NextStep
 	- replaced include of <malloc.h> with includes of <stdlib.h>
 	- fixed md5sum of source packages w/ a buildroot is used
+	- fixed bugs installing version 1 packages
 
 2.4.4 -> 2.4.5:
 	- call getpwnam()/endpwent() once before a chroot(), forcing name 

@@ -1,6 +1,7 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "errno.h"
@@ -130,6 +131,7 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
     int_16 * fileRDevsList;
     char * fileStatesList;
     int i, j;
+    char ** unames, ** gnames;
 
     lseek(fd, 0, SEEK_SET);
     if (oldhdrReadFromStream(fd, &oldheader)) {
@@ -185,6 +187,14 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
 	fileModesList = malloc(sizeof(int_16) * spec.fileCount);
 	fileRDevsList = malloc(sizeof(int_16) * spec.fileCount);
 	fileStatesList = malloc(sizeof(char) * spec.fileCount);
+	unames = malloc(sizeof(char *) * spec.fileCount);
+	gnames = malloc(sizeof(char *) * spec.fileCount);
+
+
+	/* We also need to contstruct a file owner/group list. We'll just
+	   hope the numbers all map to something, those that don't will
+	   get set as 'id%d'. Not perfect, but this should be
+	   good enough. */
 
 	/* old packages were reverse sorted, new ones are forward sorted */
 	j = spec.fileCount - 1;
@@ -209,30 +219,50 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
 		fileFlagsList[j] |= RPMFILE_DOC;
 	    if (spec.files[i].isconf)
 		fileFlagsList[j] |= RPMFILE_CONFIG;
+
+	    unames[j] = uidToUname(fileUIDList[j]);
+	    if (unames[j])
+		unames[j] = strdup(unames[j]);
+	    else {
+		unames[j] = malloc(20);
+		sprintf(unames[j], "uid%d", fileUIDList[j]);
+	    }
+
+	    gnames[j] = gidToGname(fileGIDList[j]);
+	    if (gnames[j])
+		gnames[j] = strdup(gnames[j]);
+	    else {
+		gnames[j] = malloc(20);
+		sprintf(gnames[j], "gid%d", fileGIDList[j]);
+	    }
 	}
 
-	headerAddEntry(dbentry, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, fileList, 
-		 spec.fileCount);
+	headerAddEntry(dbentry, RPMTAG_FILENAMES, RPM_STRING_ARRAY_TYPE, 
+			fileList, spec.fileCount);
 	headerAddEntry(dbentry, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE, 
 		 fileLinktoList, spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE, fileMD5List, 
-		 spec.fileCount);
+	headerAddEntry(dbentry, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE, 
+			fileMD5List, spec.fileCount);
 	headerAddEntry(dbentry, RPMTAG_FILESIZES, RPM_INT32_TYPE, fileSizeList, 
-		 spec.fileCount);
+		 	spec.fileCount);
 	headerAddEntry(dbentry, RPMTAG_FILEUIDS, RPM_INT32_TYPE, fileUIDList, 
-		 spec.fileCount);
+		 	spec.fileCount);
 	headerAddEntry(dbentry, RPMTAG_FILEGIDS, RPM_INT32_TYPE, fileGIDList, 
-		 spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILEMTIMES, RPM_INT32_TYPE, fileMtimesList, 
-		 spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILEFLAGS, RPM_INT32_TYPE, fileFlagsList, 
-		 spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILEMODES, RPM_INT16_TYPE, fileModesList, 
-		 spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILERDEVS, RPM_INT16_TYPE, fileRDevsList, 
-		 spec.fileCount);
-	headerAddEntry(dbentry, RPMTAG_FILESTATES, RPM_INT8_TYPE, fileStatesList, 
-		 spec.fileCount);
+		 	spec.fileCount);
+	headerAddEntry(dbentry, RPMTAG_FILEMTIMES, RPM_INT32_TYPE, 
+			fileMtimesList, spec.fileCount);
+	headerAddEntry(dbentry, RPMTAG_FILEFLAGS, RPM_INT32_TYPE, 
+			fileFlagsList, spec.fileCount);
+	headerAddEntry(dbentry, RPMTAG_FILEMODES, RPM_INT16_TYPE, 
+			fileModesList, spec.fileCount);
+	headerAddEntry(dbentry, RPMTAG_FILERDEVS, RPM_INT16_TYPE, 
+			fileRDevsList, spec.fileCount);
+	headerAddEntry(dbentry, RPMTAG_FILESTATES, RPM_INT8_TYPE, 
+			fileStatesList, spec.fileCount);
+	headerAddEntry(dbentry, RPMTAG_FILEUSERNAME, RPM_STRING_ARRAY_TYPE, 
+			unames, spec.fileCount);
+	headerAddEntry(dbentry, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE, 
+			gnames, spec.fileCount);
 
 	free(fileList);
 	free(fileLinktoList);
@@ -245,6 +275,14 @@ static int readOldHeader(int fd, Header * hdr, int * isSource) {
 	free(fileModesList);
 	free(fileRDevsList);
 	free(fileStatesList);
+
+	for (i = 0; i < spec.fileCount; i++) {
+	    free(unames[i]);
+	    free(gnames[i]);
+	}
+
+	free(unames);
+	free(gnames);
     }
 
     oldhdrFree(&oldheader);
