@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.4\n"
-"POT-Creation-Date: 2000-01-04 08:10-0500\n"
+"POT-Creation-Date: 2000-01-05 15:54-0500\n"
 "PO-Revision-Date: 1999-12-01 22:49 +JST\n"
 "Last-Translator: Kanda Mitsuru <kanda@nn.iij4u.or.jp>\n"
 "Language-Team: JRPM <jrpm@linux.or.jp>\n"
@@ -193,7 +193,7 @@ msgstr "copyright がありません!\n"
 # build root [BuildRoot]
 # net share [ネット共有]
 # reloate [再配置/移動する]
-# $Id: ja.po,v 1.4 2000/01/04 13:12:08 jbj Exp $
+# $Id: ja.po,v 1.5 2000/01/05 19:48:31 jbj Exp $
 #: rpm.c:197
 #, c-format
 msgid "rpm: %s\n"
@@ -1517,53 +1517,58 @@ msgstr "ファイル %4d: %07o %s.%s\t %s\n"
 msgid "File needs leading \"/\": %s"
 msgstr "ファイルは先頭に \"/\" が必要です: %s"
 
-#: build/files.c:1154
+#: build/files.c:1115
+#, fuzzy, c-format
+msgid "File not found by glob: %s"
+msgstr "ファイルが見つかりません(by glob): %s"
+
+#: build/files.c:1157
 #, fuzzy
 msgid "Could not open %%files file %s: %s"
 msgstr "%%files をオープンできません: %s"
 
-#: build/files.c:1161 build/pack.c:481
+#: build/files.c:1164 build/pack.c:481
 #, c-format
 msgid "line: %s"
 msgstr "行目: %s"
 
-#: build/files.c:1495 build/parsePrep.c:30
+#: build/files.c:1498 build/parsePrep.c:30
 #, c-format
 msgid "Bad owner/group: %s"
 msgstr "不正な所有者/グループ: %s"
 
 #. XXX this error message is probably not seen.
-#: build/files.c:1550
+#: build/files.c:1553
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s"
 msgstr "%s を実行できませんでした: %s"
 
-#: build/files.c:1555
+#: build/files.c:1558
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s"
 msgstr "%s を fork できませんでした: %s"
 
-#: build/files.c:1637
+#: build/files.c:1640
 #, c-format
 msgid "%s failed"
 msgstr "%s 失敗"
 
-#: build/files.c:1641
+#: build/files.c:1644
 #, c-format
 msgid "failed to write all data to %s"
 msgstr "全てのデータを %s に書くことに失敗しました"
 
-#: build/files.c:1730
+#: build/files.c:1733
 #, fuzzy, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr "%s を探しています: (%s を使用しています)...\n"
 
-#: build/files.c:1758 build/files.c:1767
+#: build/files.c:1761 build/files.c:1770
 #, fuzzy, c-format
 msgid "Failed to find %s:"
 msgstr "%s を見つけるのに失敗しました:"
 
-#: build/files.c:1873
+#: build/files.c:1876
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "ファイルの処理中: %s-%s-%s\n"
@@ -3623,10 +3628,6 @@ msgstr "%s-%s-%s のための依存性を満たしていません:"
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "rpmVerify: rpmdbOen() に失敗しました\n"
-
-#, fuzzy
-#~ msgid "File not found by glob: %s"
-#~ msgstr "ファイルが見つかりません(by glob): %s"
 
 #, fuzzy
 #~ msgid "Unable to stat icon: %s"
