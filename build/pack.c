@@ -632,7 +632,6 @@ static int process_filelist(Header header, StringBuf sb, int *size,
 	
 	s = strtok(buf, " \t\n");
 	while (s) {
-	    /* Order of comparison here is important */
 	    if (!strcmp(s, "%docdir")) {
 	        s = strtok(NULL, " \t\n");
 		addDocdir(s);
