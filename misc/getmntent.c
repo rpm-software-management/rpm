@@ -40,7 +40,7 @@ our_mntent *getmntent(FILE *filep) {
 
 	if (*chptr == COMMENTCHAR) continue;
 
-	#if __aix__
+#	if __aix__
 	    /* aix uses a screwed up file format */
 	    if (*chptr == '/') {
 		start = chptr;
@@ -49,7 +49,7 @@ our_mntent *getmntent(FILE *filep) {
 		item.mnt_dir = strdup(start);
 		return &item;
 	    }
-	#else 
+#	else 
 	    while (!isspace(*chptr) && (*chptr)) chptr++;
 	    if (!*chptr) return NULL;
 
@@ -62,7 +62,7 @@ our_mntent *getmntent(FILE *filep) {
 
 	    item.our_mntdir = strdup(start);
 	    return &item;
-	#endif
+#	endif
     }
 
     return NULL;

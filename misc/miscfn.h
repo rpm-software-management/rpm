@@ -35,13 +35,19 @@
 char *realpath(const char *path, char resolved_path []);
 #endif
 
+#if HAVE_SYS_STDTYPES_H
+#  include <sys/stdtypes.h>
+#endif
+
+#if HAVE_SYS_TYPES_H
+#  include <sys/types.h>
+#endif
+
 #if NEED_TIMEZONE
-#include <sys/stdtypes.h>
 extern time_t timezone;
 #endif
 
 #if NEED_MYREALLOC
-#include <sys/stdtypes.h>
 #define realloc(ptr,size) myrealloc(ptr,size)
 extern void *myrealloc(void *, size_t);
 #endif
@@ -66,7 +72,15 @@ extern void *myrealloc(void *, size_t);
 #if HAVE_GETMNTINFO_R || HAVE_MNTCTL
 # define GETMNTENT_ONE 0
 # define GETMNTENT_TWO 0
-# include <sys/mount.h>
+# if HAVE_SYS_MNTCTL_H
+#  include <sys/mntctl.h>
+# endif
+# if HAVE_SYS_VMOUNT_H
+#  include <sys/vmount.h>
+# endif
+# if HAVE_SYS_MOUNT_H
+#  include <sys/mount.h>
+# endif
 #elif HAVE_MNTENT_H || !(HAVE_GETMNTENT) || HAVE_STRUCT_MNTTAB
 # if HAVE_MNTENT_H
 #  include <stdio.h>
@@ -74,15 +88,15 @@ extern void *myrealloc(void *, size_t);
 #  define our_mntent struct mntent
 #  define our_mntdir mnt_dir
 # elif HAVE_STRUCT_MNTTAB
-   #include <stdio.h>
-   #include <mnttab.h>
+#  include <stdio.h>
+#  include <mnttab.h>
    struct our_mntent {
        char * our_mntdir;
    };
    struct our_mntent *getmntent(FILE *filep);
 #  define our_mntent struct our_mntent
 # else
-   #include <stdio.h>
+#  include <stdio.h>
    struct our_mntent {
        char * our_mntdir;
    };
@@ -98,7 +112,7 @@ extern void *myrealloc(void *, size_t);
 # define GETMNTENT_TWO 1
 # define our_mntent struct mnttab
 # define our_mntdir mnt_mountp
-#else if !HAVE_MNTCTL
+#else /* if !HAVE_MNTCTL */
 # error Neither mntent.h, mnttab.h, or mntctl() exists. I cannot build on this system.
 #endif
 
