@@ -116,7 +116,8 @@ static int dncmp(const void * a, const void * b)
 /*@=boundsread@*/
 
 /*@-bounds@*/
-void compressFilelist(Header h)
+static void compressFilelist(Header h)
+	/*@*/
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HAE_t hae = (HAE_t)headerAddEntry;

@@ -126,14 +126,12 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 {
     uint_32 tscolor = rpmtsColor(ts);
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     int scareMem = 1;
     rpmfi fi = NULL;
     char * t, * te;
     char * prefix = NULL;
     int rc = 0;		/* XXX FIXME: need real return code */
     int nonewline = 0;
-    int xx;
     int i;
 
     te = t = xmalloc(BUFSIZ);

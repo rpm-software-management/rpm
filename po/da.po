@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2003-01-17 12:33-0500\n"
+"POT-Creation-Date: 2003-01-20 11:06-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2267,129 +2267,129 @@ msgid "incorrect format: %s\n"
 msgstr "ugyldigt format: %s\n"
 
 #. @-boundswrite@
-#: lib/query.c:186
+#: lib/query.c:184
 msgid "(contains no files)"
 msgstr "(indeholder ingen filer)"
 
-#: lib/query.c:251
+#: lib/query.c:249
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:254
+#: lib/query.c:252
 msgid "replaced      "
 msgstr "erstattet     "
 
-#: lib/query.c:257
+#: lib/query.c:255
 msgid "not installed "
 msgstr "ej installeret"
 
-#: lib/query.c:260
+#: lib/query.c:258
 msgid "net shared    "
 msgstr "ej delt       "
 
-#: lib/query.c:263
+#: lib/query.c:261
 msgid "wrong color   "
 msgstr ""
 
-#: lib/query.c:266
+#: lib/query.c:264
 msgid "(no state)    "
 msgstr "(ingen status)"
 
-#: lib/query.c:269
+#: lib/query.c:267
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(ukendt %3d)  "
 
-#: lib/query.c:287
+#: lib/query.c:285
 #, fuzzy
 msgid "package has not file owner/group lists\n"
 msgstr "pakke har hverken filejerskabs- eller id-lister\n"
 
-#: lib/query.c:320
+#: lib/query.c:318
 msgid "package has neither file owner or id lists\n"
 msgstr "pakke har hverken filejerskabs- eller id-lister\n"
 
-#: lib/query.c:449 lib/query.c:496 lib/rpminstall.c:127 lib/rpminstall.c:464
+#: lib/query.c:447 lib/query.c:494 lib/rpminstall.c:127 lib/rpminstall.c:464
 #: lib/rpminstall.c:595 lib/rpminstall.c:1011 lib/rpmts.c:462
 #: tools/rpmgraph.c:127 tools/rpmgraph.c:164
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: lib/query.c:464
+#: lib/query.c:462
 #, c-format
 msgid "query of %s failed\n"
 msgstr "forespørgsel af %s mislykkedes\n"
 
-#: lib/query.c:474
+#: lib/query.c:472
 msgid "old format source packages cannot be queried\n"
 msgstr "pakke med gammelt kildeformat kan ikke forespørges\n"
 
-#: lib/query.c:507 lib/rpminstall.c:608
+#: lib/query.c:505 lib/rpminstall.c:608
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:536
+#: lib/query.c:534
 msgid "no packages\n"
 msgstr "ingen pakker\n"
 
-#: lib/query.c:556
+#: lib/query.c:554
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "gruppe %s indeholder ingen pakker\n"
 
-#: lib/query.c:565
+#: lib/query.c:563
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:578 lib/query.c:599 lib/query.c:619 lib/query.c:653
+#: lib/query.c:576 lib/query.c:597 lib/query.c:617 lib/query.c:651
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Kunne ikke læse %s: %s.\n"
 
-#: lib/query.c:588 lib/query.c:605 lib/query.c:629 lib/query.c:658
+#: lib/query.c:586 lib/query.c:603 lib/query.c:627 lib/query.c:656
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:668
+#: lib/query.c:666
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ingen pakker kræver %s\n"
 
-#: lib/query.c:679
+#: lib/query.c:677
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ingen pakker tilfører %s\n"
 
-#: lib/query.c:714
+#: lib/query.c:712
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:718
+#: lib/query.c:716
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tilhører ingen pakke\n"
 
-#: lib/query.c:743
+#: lib/query.c:741
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ugyldigt pakkenummer: %s\n"
 
-#: lib/query.c:746
+#: lib/query.c:744
 #, c-format
 msgid "package record number: %u\n"
 msgstr "pakkens post-nummer: %u\n"
 
-#: lib/query.c:751
+#: lib/query.c:749
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "post %d kunne ikke læses\n"
 
-#: lib/query.c:761 lib/rpminstall.c:779
+#: lib/query.c:759 lib/rpminstall.c:779
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
