@@ -54,6 +54,7 @@
 	- always remove duplicate identical package entries on --rebuilddb.
 	- add scripts for autogenerating CPAN dependencies.
 	- add sl.po from Primoz Peterlin <peterlin@biofiz.mf.uni-lj.si>.
+	- updated sv.po from <goeran@uddeborg.pp.se>.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.
