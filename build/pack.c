@@ -518,7 +518,10 @@ int packageBinaries(Spec s, char *passPhrase, int doPackage)
 			  prefix, file);
 		    return 1;
 		}
-		file += prefixLen + 1; /* 1 for "/" */
+		file += prefixLen;
+		if (*file) {
+		    file++;  /* 1 for "/" */
+		}
 	    }
 
 	    if (! (*fflagarray & RPMFILE_GHOST)) {
