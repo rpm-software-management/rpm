@@ -45,7 +45,7 @@ static int cpio_gzip(Header header, int fd, char *tempdir);
 static int writeMagic(Spec s, int fd, char *name, unsigned short type);
 static int add_file(struct file_entry **festack,
 		    char *name, int isdoc, int isconf, int isdir);
-static int process_filelist(Header header, StringBuf sb, int type);
+static int process_filelist(Header header, StringBuf sb, int *size, int type);
 static int add_file_aux(char *file, struct stat *sb, int flag);
 static char *getUname(uid_t uid);
 static char *getGname(gid_t gid);
@@ -302,7 +302,7 @@ static int add_file_aux(char *file, struct stat *sb, int flag)
     return 0; /* for ftw() */
 }
 
-static int process_filelist(Header header, StringBuf sb, int type)
+static int process_filelist(Header header, StringBuf sb, int *size, int type)
 {
     char buf[1024];
     char **files, **fp;
@@ -314,7 +314,8 @@ static int process_filelist(Header header, StringBuf sb, int type)
     int c;
 
     fes = NULL;
-
+    *size = 0;
+    
     str = getStringBuf(sb);
     files = splitString(str, strlen(str), '\n');
     fp = files;
@@ -413,6 +414,7 @@ static int process_filelist(Header header, StringBuf sb, int type)
 	    }
 	    fileUnameList[c] = fes->uname;
 	    fileGnameList[c] = fes->gname;
+	    *size += fes->statbuf.st_size;
 	    if (S_ISREG(fes->statbuf.st_mode)) {
 		mdfile(fes->file, buf);
 		fileMD5List[c] = strdup(buf);
@@ -508,6 +510,7 @@ int packageBinaries(Spec s)
     int fd;
     char *version;
     char *release;
+    int size;
 
     if (!getEntry(s->packages->header, RPMTAG_VERSION, NULL,
 		  (void *) &version, NULL)) {
@@ -565,7 +568,7 @@ int packageBinaries(Spec s)
 	}
 	freeIterator(headerIter);
 	
-	if (process_filelist(outHeader, pr->filelist, RPMLEAD_BINARY)) {
+	if (process_filelist(outHeader, pr->filelist, &size, RPMLEAD_BINARY)) {
 	    return 1;
 	}
 	
@@ -577,6 +580,7 @@ int packageBinaries(Spec s)
 
 	/* Add some final entries to the header */
 	addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
+	addEntry(outHeader, RPMTAG_SIZE, INT32_TYPE, &size, 1);
 	if (pr->icon) {
 	    sprintf(filename, "%s/%s", getVar(RPMVAR_SOURCEDIR), pr->icon);
 	    stat(filename, &statbuf);
@@ -584,7 +588,16 @@ int packageBinaries(Spec s)
 	    iconFD = open(filename, O_RDONLY, 0644);
 	    read(iconFD, icon, statbuf.st_size);
 	    close(iconFD);
-	    addEntry(outHeader, RPMTAG_ICON, BIN_TYPE, icon, statbuf.st_size);
+	    if (! strncmp(icon, "GIF", 3)) {
+		addEntry(outHeader, RPMTAG_GIF, BIN_TYPE,
+			 icon, statbuf.st_size);
+	    } else if (! strncmp(icon, "/* XPM", 6)) {
+		addEntry(outHeader, RPMTAG_XPM, BIN_TYPE,
+			 icon, statbuf.st_size);
+	    } else {
+		addEntry(outHeader, RPMTAG_ICON, BIN_TYPE,
+			 icon, statbuf.st_size);
+	    }
 	    free(icon);
 	}
 	/* XXX - need: distribution, vendor, release, builder, buildhost */
@@ -618,6 +631,7 @@ int packageSource(Spec s)
     Header outHeader;
     StringBuf filelist;
     int fd;
+    int size;
 
     tempdir = tempnam("/usr/tmp", "rpmbuild");
     mkdir(tempdir, 0700);
@@ -672,10 +686,12 @@ int packageSource(Spec s)
     addEntry(outHeader, RPMTAG_BUILDTIME, INT32_TYPE, &buildtime, 1);
     /* XXX - need: distribution, vendor, release, builder, buildhost */
 
-    if (process_filelist(outHeader, filelist, RPMLEAD_SOURCE)) {
+    if (process_filelist(outHeader, filelist, &size, RPMLEAD_SOURCE)) {
 	return 1;
     }
     
+    addEntry(outHeader, RPMTAG_SIZE, INT32_TYPE, &size, 1);
+
     writeHeader(fd, outHeader);
 
     /* Now do the cpio | gzip thing */
