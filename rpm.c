@@ -21,7 +21,8 @@
 char * version = VERSION;
 
 enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
-	     MODE_BUILD, MODE_REBUILD, MODE_CHECKSIG, MODE_UNKNOWN };
+	     MODE_BUILD, MODE_REBUILD, MODE_CHECKSIG, MODE_RESIGN,
+	     MODE_UNKNOWN };
 
 static void argerror(char * desc);
 
@@ -67,6 +68,7 @@ void printUsage(void) {
     puts(_("                        [--sign] [--test] [--time-check <s>] specfile"));
     puts(_("       rpm {--rebuild} [-v] source1.rpm source2.rpm ... sourceN.rpm"));
     puts(_("       rpm {--where} package1 package2 ... packageN"));
+    puts(_("       rpm {--resign} package1 package2 ... packageN"));
     puts(_("       rpm {--checksig} package1 package2 ... packageN"));
 }
 
@@ -143,6 +145,7 @@ void printHelp(void) {
     puts(_("                        - install source package, build binary package,"));
     puts(_("                          and remove spec file, sources, patches, and icons."));
     puts(_("    -K"));
+    puts(_("    --resign <pkg>+    - sign a package"));
     puts(_("    --checksig <pkg>+  - verify PGP signature"));
 }
 
@@ -238,6 +241,7 @@ int main(int argc, char ** argv) {
 	    { "rebuild", 0, 0, 0 },
 	    { "replacefiles", 0, &replaceFiles, 0 },
 	    { "replacepkgs", 0, &replacePackages, 0 },
+	    { "resign", 0, 0, 0 },
 	    { "root", 1, 0, 'r' },
 	    { "sign", 0, &signIt, 0 },
 	    { "state", 0, 0, 's' },
@@ -468,6 +472,11 @@ int main(int argc, char ** argv) {
 		if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
 		    argerror(_("only one major mode may be specified"));
 		bigMode = MODE_REBUILD;
+	    } else if (!strcmp(options[long_index].name, "resign")) {
+		if (bigMode != MODE_UNKNOWN)
+		    argerror(_("only one major mode may be specified"));
+		bigMode = MODE_RESIGN;
+		signIt = 1;
 	    }
 	}
     }
@@ -526,7 +535,8 @@ int main(int argc, char ** argv) {
 	installFlags |= INSTALL_UPGRADETOOLD;
 
     if (signIt) {
-        if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD) {
+        if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
+	    bigMode == MODE_RESIGN) {
             if ((optind != argc) && (sigLookupType() == RPMSIG_PGP262_1024)) {
 	        if (!(passPhrase = getPassPhrase("Enter pass phrase: "))) {
 		    fprintf(stderr, _("Pass phrase check failed\n"));
@@ -553,6 +563,11 @@ int main(int argc, char ** argv) {
 	if (optind == argc) 
 	    argerror(_("no packages given for signature check"));
 	exit(doCheckSig(argv + optind));
+
+      case MODE_RESIGN:
+	if (optind == argc) 
+	    argerror(_("no packages given for signing"));
+	exit(doReSign(passPhrase, argv + optind));
 	
       case MODE_REBUILD:
         if (getVerbosity() == MESS_NORMAL)
