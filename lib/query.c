@@ -542,7 +542,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 
 	fd = ufdOpen(arg, O_RDONLY, 0);
 	if (fdFileno(fd) < 0) {
-	    fprintf(stderr, _("open of %s failed\n"), arg);
+	    fprintf(stderr, _("open of %s failed: %s\n"), arg,urlStrerror(arg));
 	    ufdClose(fd);
 	    retcode = 1;
 	    break;
