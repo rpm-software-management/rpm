@@ -449,6 +449,22 @@ int processSourceFiles(Spec spec)
 		rpmGlobalMacroContext, fileSystem, internalState @*/;
 
 /** \ingroup rpmbuild
+ * Return output from helper script.
+ * @param dir		directory to run in (or NULL)
+ * @param argv		program and arguments to run
+ * @param writePtr	bytes to feed to script on stdin (or NULL)
+ * @param writeBytesLeft no. of bytes to feed to script on stdin
+ * @param failNonZero	is script failure an error?
+ * @return		buffered stdout from script, NULL on error
+ */     
+/*@null@*/
+StringBuf getOutputFrom(/*@null@*/ const char * dir, char * argv[],
+                        const char * writePtr, int writeBytesLeft,
+                        int failNonZero)
+        /*@globals fileSystem, internalState@*/
+        /*@modifies fileSystem, internalState@*/;
+
+/** \ingroup rpmbuild
  * Parse spec file into spec control structure.
  * @retval specp	spec file control structure
  * @param specFile

@@ -29,7 +29,7 @@ cat db.h.orig | sed \
 /*@=incondefs@*/' \
 	-e '/^#define	db_create/i\
 /*@-declundef -noparams -fcnuse@*/' \
-	-e '/^#define db_xa_switch/a\
+	-e '/^int txn_commit __P((/a\
 /*@=declundef =noparams =fcnuse =fielduse =enummemuse =typeuse @*/' > db.h
 
 # Generate manifest for rpmdb.

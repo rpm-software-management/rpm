@@ -695,15 +695,19 @@ static void handler(int signum)
 	(void) sigaddset(&caught, signum);
 	switch (signum) {
 	case SIGCHLD:
-	{   int status = 0;
-	    pid_t reaped = waitpid(0, &status, WNOHANG);
-	    int i;
+	    while (1) {
+		int status = 0;
+		pid_t reaped = waitpid(0, &status, WNOHANG);
+		int i;
 
-	    if (psmtbl.psms)
-	    for (i = 0; i < psmtbl.npsms; i++) {
-		rpmpsm psm = psmtbl.psms[i];
-		if (psm->child != reaped)
-		    /*@innercontinue@*/ continue;
+		if (reaped <= 0)
+		    /*@innerbreak@*/ break;
+
+		if (psmtbl.psms)
+		for (i = 0; i < psmtbl.npsms; i++) {
+		    rpmpsm psm = psmtbl.psms[i];
+		    if (psm->child != reaped)
+			/*@innercontinue@*/ continue;
 
 #if _PSM_DEBUG
 /*@-modfilesys@*/
@@ -712,11 +716,12 @@ fprintf(stderr, "      Reap: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, i, psmt
 /*@=modfilesys@*/
 #endif
 
-		psm->reaped = reaped;
-		psm->status = status;
-		/*@innerbreak@*/ break;
+		    psm->reaped = reaped;
+		    psm->status = status;
+		    /*@innerbreak@*/ break;
+		}
 	    }
-	}   /*@switchbreak@*/ break;
+	    /*@switchbreak@*/ break;
 	default:
 	    /*@switchbreak@*/ break;
 	}
@@ -782,26 +787,6 @@ fprintf(stderr, "   Disable: %p[0:%d:%d] active %d\n", psmtbl.psms, psmtbl.npsms
 }
 
 /**
- * Fork a new process.
- * @param psm		package state machine data
- * @return		fork(2) pid
- */
-static pid_t psmFork(rpmpsm psm)
-	/*@globals fileSystem, internalState @*/
-	/*@modifies fileSystem, internalState @*/
-{
-    pid_t pid;
-
-    if ((pid = fork()) != 0) {
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "      Fork: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, pid);
-/*@=modfilesys@*/
-    }
-    return pid;
-}
-
-/**
  * Register a child reaper, then fork a child.
  * @param psm		package state machine data
  * @return		fork(2) pid
@@ -835,7 +820,6 @@ static pid_t psmRegisterFork(rpmpsm psm)
 	}
 	empty = psmtbl.npsms++;
     }
-    psm->reaped = 0;
     if (psmtbl.psms)	/* XXX can't happen */
 	psmtbl.psms[empty] = rpmpsmLink(psm, "psmRegister");
 /*@-modfilesys@*/
@@ -844,15 +828,24 @@ fprintf(stderr, "  Register: %p[%d:%d:%d] = %p\n", psmtbl.psms, empty, psmtbl.np
 /*@=modfilesys@*/
 
     (void) enableSignal(SIGCHLD);
+
+    psm->reaped = 0;
+    if ((psm->child = fork()) != 0) {
+/*@-modfilesys@*/
+if (_psm_debug)
+fprintf(stderr, "      Fork: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, pid);
+/*@=modfilesys@*/
+    }
+
     (void) sigprocmask(SIG_SETMASK, &oldMask, NULL);
 
-    return psmFork(psm);
+    return psm->child;
 }
 
 /**
  * Unregister a child reaper.
  */
-static int psmUnregister(rpmpsm psm, pid_t child)
+static int psmWaitUnregister(rpmpsm psm, pid_t child)
 	/*@globals psmtbl, fileSystem, internalState @*/
 	/*@modifies psmtbl, fileSystem, internalState @*/
 {
@@ -862,6 +855,16 @@ static int psmUnregister(rpmpsm psm, pid_t child)
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
     
+    /*@-infloops@*/
+    while (psm->reaped != psm->child)
+	(void) pause();
+    /*@=infloops@*/
+
+/*@-modfilesys@*/
+if (_psm_debug)
+fprintf(stderr, "      Wait: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, psm->child);
+/*@=modfilesys@*/
+
     if (psmtbl.psms)
     for (i = 0; i < psmtbl.npsms; i++) {
 	if (psmtbl.psms[i] == NULL)
@@ -893,25 +896,6 @@ fprintf(stderr, "Unregister: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, i, psmt
 }
 
 /**
- * Return reaped pid safely (i.e. with signals blocked).
- * @param psm		package state machine data
- * @return		
- */
-static inline pid_t psmGetReaped(rpmpsm psm)
-	/*@globals fileSystem @*/
-	/*@modifies fileSystem @*/
-{
-    sigset_t newMask, oldMask;
-    pid_t reaped;
-
-    (void) sigfillset(&newMask);		/* block all signals */
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-    reaped = psm->reaped;
-    (void) sigprocmask(SIG_SETMASK, &oldMask, NULL);
-    return reaped;
-}
-
-/**
  * Wait for child process to be reaped.
  * @param psm		package state machine data
  * @return		
@@ -921,15 +905,7 @@ static pid_t psmWait(rpmpsm psm)
 	/*@modifies psm, fileSystem, internalState @*/
 {
     if (psm->reaper) {
-	/*@-infloops@*/
-	while (psmGetReaped(psm) == 0)
-	    (void) pause();
-	/*@=infloops@*/
-/*@-modfilesys@*/
-if (_psm_debug)
-fprintf(stderr, "      Wait: %p[%d:%d:%d] = %p child %d\n", psmtbl.psms, 0, psmtbl.npsms, psmtbl.nalloced, psm, psm->child);
-/*@=modfilesys@*/
-	(void) psmUnregister(psm, psm->child);
+	(void) psmWaitUnregister(psm, psm->child);
     } else {
 	do {
 	    psm->reaped = waitpid(psm->child, &psm->status, 0);
@@ -997,7 +973,6 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     FD_t out;
     rpmRC rc = RPMRC_OK;
     const char *n, *v, *r;
-    pid_t pid;
 
     if (progArgv == NULL && script == NULL)
 	return rc;
@@ -1119,8 +1094,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (out == NULL) return RPMRC_FAIL;	/* XXX can't happen */
     
     /*@-branchstate@*/
-    pid = psmRegisterFork(psm);
-    psm->child = pid;
+    (void) psmRegisterFork(psm);
     if (psm->child == 0) {
 	const char * rootDir;
 	int pipes[2];

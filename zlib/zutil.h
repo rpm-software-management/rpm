@@ -8,7 +8,7 @@
    subject to change. Applications should only use zlib.h.
  */
 
-/* @(#) $Id$ */
+/* @(#) $Id: zutil.h,v 1.7 2002/03/17 15:46:23 jbj Exp $ */
 
 #ifndef _Z_UTIL_H
 #define _Z_UTIL_H
@@ -181,9 +181,12 @@ extern const char *z_errmsg[10]; /* indexed by 2-zlib_error */
 #    define zmemzero(dest, len) memset(dest, 0, len)
 #  endif
 #else
-   extern void zmemcpy  OF((Bytef* dest, const Bytef* source, uInt len));
-   extern int  zmemcmp  OF((const Bytef* s1, const Bytef* s2, uInt len));
-   extern void zmemzero OF((Bytef* dest, uInt len));
+   extern void zmemcpy  OF((Bytef* dest, const Bytef* source, uInt len))
+	/*@modifies dest @*/;
+   extern int  zmemcmp  OF((const Bytef* s1, const Bytef* s2, uInt len))
+	/*@*/;
+   extern void zmemzero OF((Bytef* dest, uInt len))
+	/*@modifies dest @*/;
 #endif
 
 /* Diagnostic functions */
@@ -208,9 +211,12 @@ extern const char *z_errmsg[10]; /* indexed by 2-zlib_error */
 
 
 typedef uLong (ZEXPORT *check_func) OF((uLong check, const Bytef *buf,
-				       uInt len));
-voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size));
-void   zcfree  OF((voidpf opaque, voidpf ptr));
+				       uInt len))
+	/*@*/;
+voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size))
+	/*@*/;
+void   zcfree  OF((voidpf opaque, /*@only@*/ voidpf ptr))
+	/*@modifies ptr @*/;
 
 #define ZALLOC(strm, items, size) \
            (*((strm)->zalloc))((strm)->opaque, (items), (size))

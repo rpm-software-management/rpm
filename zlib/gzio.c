@@ -5,7 +5,7 @@
  * Compile this file with -DNO_DEFLATE to avoid the compression code.
  */
 
-/* @(#) $Id$ */
+/* @(#) $Id: gzio.c,v 1.9 2002/03/17 15:46:23 jbj Exp $ */
 
 #include <stdio.h>
 
@@ -498,6 +498,7 @@ int ZEXPORT gzwrite (gzFile file, const voidp buf, unsigned len)
     s->stream.next_in = (Bytef*)buf;
     s->stream.avail_in = len;
 
+/*@-infloops@*/
     while (s->stream.avail_in != 0) {
 
         if (s->stream.avail_out == 0) {
@@ -512,6 +513,7 @@ int ZEXPORT gzwrite (gzFile file, const voidp buf, unsigned len)
         s->z_err = deflate(&(s->stream), Z_NO_FLUSH);
         if (s->z_err != Z_OK) break;
     }
+/*@=infloops@*/
     s->crc = crc32(s->crc, (const Bytef *)buf, len);
 
     return (int)(len - s->stream.avail_in);

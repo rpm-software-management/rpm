@@ -179,7 +179,9 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 	else			/* glibc 2.0 */
 	    msgnb *= 2;
 	msgbuf = xrealloc(msgbuf, msgnb);
+/*@-mods@*/
 	va_end(apc);
+/*@=mods@*/
     }
     msgbuf[msgnb - 1] = '\0';
     msg = msgbuf;

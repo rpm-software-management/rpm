@@ -1515,7 +1515,13 @@ static /*@null@*/ FileListRec freeFileList(/*@only@*/ FileListRec fileList,
 
 /* forward ref */
 static int recurseDir(FileList fl, const char * diskURL)
-	/*@*/;
+	/*@globals check_fileList, check_fileListLen, rpmGlobalMacroContext,
+		fileSystem, internalState @*/
+	/*@modifies *fl, fl->processingFailed,
+		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
+		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
+		check_fileList, check_fileListLen, rpmGlobalMacroContext,
+		fileSystem, internalState @*/;
 
 /**
  * Add a file to the package manifest.
@@ -1531,9 +1537,9 @@ static int addFile(FileList fl, const char * diskURL,
 		fileSystem, internalState @*/
 	/*@modifies *statp, *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
-		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
+		fl->totalFileSize, fl->fileCount,
 		check_fileList, check_fileListLen, rpmGlobalMacroContext,
-		fileSystem, internalState  @*/
+		fileSystem, internalState @*/
 {
     const char *fileURL = diskURL;
     struct stat statbuf;
@@ -1609,7 +1615,9 @@ static int addFile(FileList fl, const char * diskURL,
     }
 
     if ((! fl->isDir) && S_ISDIR(statp->st_mode)) {
+/*@-nullstate@*/ /* FIX: fl->buildRootURL may be NULL */
 	return recurseDir(fl, diskURL);
+/*@=nullstate@*/
     }
 
     fileMode = statp->st_mode;
@@ -1735,7 +1743,6 @@ static int addFile(FileList fl, const char * diskURL,
  * @return		0 on success
  */
 static int recurseDir(FileList fl, const char * diskURL)
-	/*@*/
 {
     char * ftsSet[2];
     FTS * ftsp;
@@ -1757,11 +1764,11 @@ static int recurseDir(FileList fl, const char * diskURL)
 	case FTS_SLNONE:	/* symbolic link without target */
 	case FTS_DEFAULT:	/* none of the above */
 	    rc = addFile(fl, fts->fts_accpath, fts->fts_statp);
-	    break;
+	    /*@switchbreak@*/ break;
 	case FTS_DOT:		/* dot or dot-dot */
 	case FTS_DP:		/* postorder directory */
 	    rc = 0;
-	    break;
+	    /*@switchbreak@*/ break;
 	case FTS_NS:		/* stat(2) failed */
 	case FTS_DNR:		/* unreadable directory */
 	case FTS_ERR:		/* error; errno is set */
@@ -1771,7 +1778,7 @@ static int recurseDir(FileList fl, const char * diskURL)
 	case FTS_W:		/* whiteout object */
 	default:
 	    rc = RPMERR_BADSPEC;
-	    break;
+	    /*@switchbreak@*/ break;
 	}
 	if (rc)
 	    break;
@@ -1791,13 +1798,12 @@ static int recurseDir(FileList fl, const char * diskURL)
  * @param fileURL
  * @return		0 on success
  */
-/*@-boundswrite@*/
 static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 		const char * fileURL)
 	/*@globals rpmGlobalMacroContext, fileSystem, internalState @*/
 	/*@modifies *fl, fl->processingFailed,
 		fl->fileList, fl->fileListRecsAlloced, fl->fileListRecsUsed,
-		fl->totalFileSize, fl->fileCount, fl->inFtw, fl->isDir,
+		fl->totalFileSize, fl->fileCount,
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     int doGlob;
@@ -1832,6 +1838,7 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 	int argc = 0;
 	int i;
 
+	/* XXX for %dev marker in file manifest only */
 	if (fl->noGlob) {
 	    rpmError(RPMERR_BADSPEC, _("Glob not permitted: %s\n"),
 			diskURL);
@@ -1844,13 +1851,16 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 	if (rc == 0 && argc >= 1 && !myGlobPatternP(argv[0])) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
+/*@-boundswrite@*/
 		argv[i] = _free(argv[i]);
+/*@=boundswrite@*/
 	    }
 	    argv = _free(argv);
 	} else {
 	    rpmError(RPMERR_BADSPEC, _("File not found by glob: %s\n"),
 			diskURL);
 	    rc = 1;
+	    goto exit;
 	}
 	/*@=branchstate@*/
     } else {
@@ -1859,11 +1869,12 @@ static int processBinaryFile(/*@unused@*/ Package pkg, FileList fl,
 
 exit:
     diskURL = _free(diskURL);
-    if (rc)
+    if (rc) {
 	fl->processingFailed = 1;
+	rc = RPMERR_BADSPEC;
+    }
     return rc;
 }
-/*@=boundswrite@*/
 
 /**
  */
@@ -2343,10 +2354,8 @@ int processSourceFiles(Spec spec)
     return fl.processingFailed;
 }
 
-/**
- */
 /*@-boundswrite@*/
-static StringBuf getOutputFrom(char * dir, char * argv[],
+StringBuf getOutputFrom(const char * dir, char * argv[],
 			const char * writePtr, int writeBytesLeft,
 			int failNonZero)
 	/*@globals fileSystem, internalState@*/
@@ -2433,7 +2442,7 @@ top:
 
 	/* Write any data to program */
 	if (toProg[1] >= 0 && FD_ISSET(toProg[1], &obits)) {
-          if (writeBytesLeft) {
+          if (writePtr && writeBytesLeft > 0) {
 	    if ((nbw = write(toProg[1], writePtr,
 		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
 	        if (errno != EAGAIN) {
