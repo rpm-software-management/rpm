@@ -34,7 +34,7 @@ install-data-local:
 	mv .librpmio.la librpmio.la
 
 $(top_builddir)/beecrypt/listobjs:
-	make -C $(top_builddir)/beecrypt listobjs
+	${MAKE} -C $(top_builddir)/beecrypt listobjs
 
 .created: $(top_builddir)/beecrypt/listobjs
 	for lo in $(BEECRYPTLOBJS); do \

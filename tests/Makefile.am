@@ -8,7 +8,7 @@ SUBDIRS = hello-test
 check-recursive: ./usr/ ./bin ./var
 
 ./usr ./bin ./var: ../rpm
-	make -C .. DESTDIR=`pwd` install
+	${MAKE} -C .. DESTDIR=`pwd` install
 	cp rpmrc macros ./$(pkglibdir)
 	rm -f ./@GZIPBIN@
 	if [ ! -d ./`dirname @GZIPBIN@` ] ; then mkdir -p ./`dirname @GZIPBIN@` ; fi
