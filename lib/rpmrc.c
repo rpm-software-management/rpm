@@ -174,7 +174,7 @@ static void setDefaults(void) {
     setVar(RPMVAR_PGP_SECRING, "/usr/lib/rpm/secring.pgp");
 }
 
-int readConfigFiles(void) {
+int readConfigFiles(char * file) {
     FILE * f;
     char * fn;
     char * home;
@@ -182,23 +182,30 @@ int readConfigFiles(void) {
 
     setDefaults();
 
-    f = fopen("/etc/rpmrc", "r");
+    if (file) 
+	fn = file;
+    else
+	fn = "/etc/rpmrc";
+
+    f = fopen(fn, "r");
     if (f) {
 	rc = readRpmrc(f, "/etc/rpmrc");
 	fclose(f);
 	if (rc) return rc;
     }
 
-    home = getenv("HOME");
-    if (home) {
-	fn = alloca(strlen(home) + 8);
-	strcpy(fn, home);
-	strcat(fn, "/.rpmrc");
-	f = fopen("/etc/rpmrc", "r");
-	if (f) {
-	    rc |= readRpmrc(f, fn);
-	    fclose(f);
-	    if (rc) return rc;
+    if (!file) {
+	home = getenv("HOME");
+	if (home) {
+	    fn = alloca(strlen(home) + 8);
+	    strcpy(fn, home);
+	    strcat(fn, "/.rpmrc");
+	    f = fopen(fn, "r");
+	    if (f) {
+		rc |= readRpmrc(f, fn);
+		fclose(f);
+		if (rc) return rc;
+	    }
 	}
     }
 	
