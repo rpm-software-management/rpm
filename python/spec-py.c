@@ -35,9 +35,10 @@
 
 static void 
 spec_dealloc(specObject * s) 
+    /*@modifies s @*/
 {
         if (s->spec) {
-            freeSpec(s->spec);
+            s->spec=freeSpec(s->spec);
         }
         PyObject_Del(s);
 }
@@ -50,6 +51,7 @@ spec_print(specObject * s)
 
 static PyObject * 
 spec_get_buildroot(specObject * s) 
+    /*@*/
 {
     Spec spec = specFromSpec(s);
     if (spec->buildRootURL) {
@@ -62,6 +64,7 @@ spec_get_buildroot(specObject * s)
 
 static PyObject * 
 spec_get_prep(specObject * s) 
+    /*@*/
 {
     Spec spec = specFromSpec(s);
     if (spec->prep) {
@@ -76,6 +79,7 @@ spec_get_prep(specObject * s)
 
 static PyObject * 
 spec_get_build(specObject * s) 
+    /*@*/
 {
     Spec spec = specFromSpec(s);
     if (spec->build) {
@@ -90,6 +94,7 @@ spec_get_build(specObject * s)
 
 static PyObject * 
 spec_get_install(specObject * s) 
+    /*@*/
 {
     Spec spec = specFromSpec(s);
     if (spec->install) {
@@ -104,6 +109,7 @@ spec_get_install(specObject * s)
 
 static PyObject * 
 spec_get_clean(specObject * s) 
+    /*@*/
 {
     Spec spec = specFromSpec(s);
     if (spec->clean) {
@@ -118,12 +124,14 @@ spec_get_clean(specObject * s)
 
 static PyObject *
 spec_get_sources(specObject *s)
+    /*@*/
 {
     struct Source * source;
     PyObject *sourceList, *srcUrl;
+    Spec spec;
 
     sourceList = PyList_New(0);
-    Spec spec = specFromSpec(s);
+    spec = specFromSpec(s);
     source = spec->sources;
 
      while (source != NULL) {
@@ -136,8 +144,13 @@ spec_get_sources(specObject *s)
 
 }
 
+/**
+ */
+ /*@unchecked@*/ /*@observer@*/
 static char spec_doc[] = "RPM Spec file object";
 
+/*@-fullinitblock@*/
+/*@unchecked@*/ /*@observer@*/
 static PyMethodDef spec_Spec_methods[] = {
     {"sources",   (PyCFunction) spec_get_sources, METH_VARARGS,  NULL },
     {"prep",   (PyCFunction) spec_get_prep, METH_VARARGS,  NULL },
@@ -147,7 +160,9 @@ static PyMethodDef spec_Spec_methods[] = {
     {"buildRoot",   (PyCFunction) spec_get_buildroot, METH_VARARGS,  NULL },
     {NULL}  /* Sentinel */
 };
+/*@=fullinitblock@*/
 
+/*@-fullinitblock@*/
 PyTypeObject spec_Type = {
     PyObject_HEAD_INIT(&PyType_Type)
     0,                         /*ob_size*/
@@ -191,6 +206,7 @@ PyTypeObject spec_Type = {
     0,                         /* tp_free */
     0,                         /* tp_is_gc */
 };
+/*@=fullinitblock@*/
 
 Spec specFromSpec(specObject *s) 
 {

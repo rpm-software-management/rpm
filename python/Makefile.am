@@ -75,7 +75,7 @@ poptmodule.so$(EXEEXT): poptmodule.o
 # rpmmodule.c header-py.c
 splint_srcs = \
  	rpmal-py.c rpmds-py.c rpmdb-py.c rpmfd-py.c rpmfts-py.c \
-	rpmfi-py.c rpmmi-py.c rpmrc-py.c rpmte-py.c rpmts-py.c
+	rpmfi-py.c rpmmi-py.c rpmrc-py.c rpmte-py.c rpmts-py.c spec-py.c
 
 .PHONY:	lint
 lint:
