@@ -2495,7 +2495,7 @@ static int generateDepends(Spec spec, Package pkg, TFI_t cpioList, int multiLib)
 	/* Expand rest of script arguments (if any) */
 	for (i = 1; i < 4; i++) {
 	    if (dm->argv[i] == NULL)
-		break;
+		/*@innerbreak@*/ break;
 	    /*@-nullderef@*/	/* FIX: double indirection. @*/
 	    myargv[ac++] = rpmExpand(dm->argv[i], NULL);
 	    /*@=nullderef@*/

@@ -124,6 +124,7 @@
 	- generate index for fileid (aka Filemd5s) tag, query/verify by fileid.
 	- query/verify by install transaction id.
 	- rpm-4.0.4 release candidate.
+	- add cpanflute2, another perl.req fiddle.
 
 4.0.2 -> 4.0.3:
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).

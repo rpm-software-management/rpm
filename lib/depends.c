@@ -882,8 +882,8 @@ static int checkDependentConflicts(rpmTransactionSet ts, const char * key)
 }
 
 struct badDeps_s {
-/*@observer@*/ /*@null@*/ const char * pname;
-/*@observer@*/ /*@null@*/ const char * qname;
+/*@observer@*/ /*@owned@*/ /*@null@*/ const char * pname;
+/*@observer@*/ /*@dependent@*/ /*@null@*/ const char * qname;
 };
 
 #ifdef	DYING
@@ -916,6 +916,7 @@ static struct badDeps_s {
     { NULL, NULL }
 };
 #else
+/*@unchecked@*/ /*@only@*/ /*@null@*/
 static struct badDeps_s * badDeps = NULL;
 #endif
 
@@ -932,11 +933,12 @@ static int ignoreDep(const transactionElement p,
 {
     struct badDeps_s * bdp;
     static int _initialized = 0;
-    const char ** av = NULL;
-    int ac = 0;
 
+/*@-globs -mods@*/
     if (!_initialized) {
 	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
+	const char ** av = NULL;
+	int ac = 0;
 	int i;
 
 	if (s != NULL && *s != '\0'
@@ -945,32 +947,38 @@ static int ignoreDep(const transactionElement p,
 	{
 	    bdp = badDeps = xcalloc(ac+1, sizeof(*badDeps));
 	    for (i = 0; i < ac; i++, bdp++) {
-		char * p, * q;
+		char * pname, * qname;
 
 		if (av[i] == NULL)
 		    break;
-		p = xstrdup(av[i]);
-		if ((q = strchr(p, '>')) != NULL)
-		    *q++ = '\0';
-		bdp->pname = p;
-		bdp->qname = q;
+		pname = xstrdup(av[i]);
+		if ((qname = strchr(pname, '>')) != NULL)
+		    *qname++ = '\0';
+		bdp->pname = pname;
+		/*@-usereleased@*/
+		bdp->qname = qname;
+		/*@=usereleased@*/
 		rpmMessage(RPMMESS_DEBUG,
 			_("ignore package name relation(s) [%d]\t%s -> %s\n"),
-			i, bdp->pname, bdp->qname);
+			i, bdp->pname, (bdp->qname ? bdp->qname : "???"));
 	    }
-	    bdp->pname = bdp->qname = NULL;
+	    bdp->pname = NULL;
+	    bdp->qname = NULL;
 	}
 	av = _free(av);
 	s = _free(s);
 	_initialized++;
     }
+/*@=globs =mods@*/
 
+    /*@-compdef@*/
     if (badDeps != NULL)
     for (bdp = badDeps; bdp->pname != NULL && bdp->qname != NULL; bdp++) {
 	if (!strcmp(teGetN(p), bdp->pname) && !strcmp(teGetN(q), bdp->qname))
 	    return 1;
     }
     return 0;
+    /*@=compdef@*/
 }
 
 /**

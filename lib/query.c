@@ -775,6 +775,7 @@ restart:
 	    return 1;
 	}
 
+	md5[0] = '\0';
         for (i = 0, t = md5, s = arg; i < 16; i++, t++, s += 2)
             *t = (nibble(s[0]) << 4) | nibble(s[1]);
 	

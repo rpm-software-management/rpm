@@ -1407,7 +1407,7 @@ assert(psm->mi == NULL);
 		    hi = headerFreeIterator(hi);
 		    /*@=branchstate@*/
 
-		    headerFree(oh, NULL);
+		    oh = headerFree(oh, NULL);
 		    uh = hfd(uh, uht);
 		} else
 		    break;	/* XXX shouldn't ever happen */
@@ -1851,9 +1851,11 @@ assert(psm->mi == NULL);
     {	const char * payload_compressor = NULL;
 	char * t;
 
+	/*@-branchstate@*/
 	if (!hge(fi->h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
 			    (void **) &payload_compressor, NULL))
 	    payload_compressor = "gzip";
+	/*@=branchstate@*/
 	psm->rpmio_flags = t = xmalloc(sizeof("w9.gzdio"));
 	*t = '\0';
 	t = stpcpy(t, ((psm->goal == PSM_PKGSAVE) ? "w9" : "r"));
@@ -1890,7 +1892,7 @@ fprintf(stderr, "*** PSM_RDB_LOAD: header #%u not found\n", fi->record);
 
     default:
 	break;
-    }
+/*@i@*/    }
     /*@=branchstate@*/
 
     /*@-nullstate@*/	/* FIX: psm->oh and psm->fi->h may be NULL. */

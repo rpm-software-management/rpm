@@ -2,7 +2,6 @@
 
 SUBDIRS		= manual ja pl ru sk
 
-man_MANS	= gendiff.1 rpm.8 rpmbuild.8 rpm2cpio.8
+man_MANS	= gendiff.1 RPM*Specfile.3pm rpm.8 rpmbuild.8 rpm2cpio.8
 
 EXTRA_DIST	= $(man_MANS)
-

@@ -185,8 +185,15 @@ sub process_file {
       # if module is a number then both require and use interpret that
       # to mean that a particular version of perl is specified
 
-	print "perl > $module\n";
-	next;
+      if ($module =~ /5.00/) {
+        print "perl >= 0:$module\n";
+        next;
+      }
+      else {
+        print "perl >= 1:$module\n";
+        next;
+      }
+
       };
 
       # ph files do not use the package name inside the file.

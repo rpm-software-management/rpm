@@ -894,8 +894,8 @@ IDTX IDTXglob(rpmTransactionSet ts, const char * globstr, rpmTag tag)
 
 /** @todo Transaction handling, more, needs work. */
 int rpmRollback(rpmTransactionSet ts,
-		struct rpmInstallArguments_s * ia,
-		 const char ** argv)
+		/*@unused@*/ struct rpmInstallArguments_s * ia,
+		const char ** argv)
 {
 #ifdef	NOTYET
     rpmdb db = NULL;
@@ -915,7 +915,6 @@ int rpmRollback(rpmTransactionSet ts,
     IDT ip;
     int niids = 0;
     int rc = 0;
-    int i;
 
     if (argv != NULL && *argv != NULL) {
 	rc = -1;
@@ -1051,12 +1050,14 @@ int rpmRollback(rpmTransactionSet ts,
 	    goto exit;
 
 	/* Clean up after successful rollback. */
-	if (!rpmIsDebug())
-	for (i = 0; i < rtids->nidt; i++) {
-	    IDT rrp = rtids->idt + i;
-	    if (rrp->val.u32 != thistid)
-		continue;
-	    (void) unlink(rrp->key);
+	if (!rpmIsDebug()) {
+	    int i;
+	    for (i = 0; i < rtids->nidt; i++) {
+		IDT rrp = rtids->idt + i;
+		if (rrp->val.u32 != thistid)
+		    continue;
+		(void) unlink(rrp->key);
+	    }
 	}
 
     } while (1);

@@ -1085,7 +1085,7 @@ ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
 		argerror(_("no packages given for install"));
 ia->transFlags |= RPMTRANS_FLAG_NOMD5;
 ia->probFilter |= RPMPROB_FILTER_OLDPACKAGE;
-	    ec += rpmRollback(ts, ia, NULL);
+/*@i@*/	    ec += rpmRollback(ts, ia, NULL);
 	} else {
 	    /*@-compdef@*/ /* FIX: ia->relocations[0].newPath undefined */
 	    ec += rpmInstall(ts, (const char **)poptGetArgs(optCon), 
