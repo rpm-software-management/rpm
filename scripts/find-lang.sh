@@ -80,7 +80,7 @@ find $TOP_DIR -type f|sed '
 1i\
 %defattr (644, root, root, 755)
 s:'"$TOP_DIR"'::
-'"$MO"'s:\(.*/share/locale/\)\([^/_]\+\)\(.*'"$NAME"'\.mo$\):%lang(\2) \1\2\3:
+'"$MO"'s:\(.*/share/locale/\)\([^/_]\+\)\(.*/'"$NAME"'\.mo$\):%lang(\2) \1\2\3:
 '"$GNOME"'s:\(.*/gnome/help/'"$NAME"'/\)\([^/_]\+\):%lang(\2) \1\2:
 s:^\([^%].*\)::
 s:%lang(C) ::

@@ -147,6 +147,7 @@
 	- disambiguate failures to import (with error messages, duh).
 	- fix: multiple relocations (#67596).
 	- add --build/--program-prefix, delete libtoolize, from %configure.
+	- find-lang.sh: make sure that mo pattern matches leading '/' (#67368).
 
 4.0.3 -> 4.0.4:
 	- solaris: translate i86pc to i386 (#57182).
