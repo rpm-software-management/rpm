@@ -4,6 +4,9 @@
 %define with_internal_db	1 %{nil}
 %define strip_binaries		1
 
+# XXX enable at your own risk, CDB access to rpmdb isn't cooked yet.
+%define	enable_cdb		create cdb
+
 # XXX legacy requires './' payload prefix to be omitted from rpm packages.
 %define	_noPayloadPrefix	1
 
@@ -21,7 +24,7 @@ Copyright: GPL
 Conflicts: patch < 2.5
 %ifos linux
 Prereq: gawk fileutils textutils mktemp
-Requires: popt
+Requires: popt = 1.6.3
 %endif
 
 %if !%{with_internal_db}
@@ -54,7 +57,7 @@ the package like its version, a description, etc.
 %package devel
 Summary: Development files for applications which will manipulate RPM packages.
 Group: Development/Libraries
-Requires: rpm = %{version}, popt
+Requires: rpm = %{version}, popt = 1.6.3
 
 %description devel
 This package contains the RPM C library and header files.  These
@@ -80,9 +83,7 @@ build packages using RPM.
 %package python
 Summary: Python bindings for apps which will manipulate RPM packages.
 Group: Development/Libraries
-BuildRequires: popt >= 1.5
 Requires: rpm = %{version}
-Requires: popt >= 1.5
 Requires: python >= 1.5.2
 
 %description python
@@ -116,6 +117,13 @@ capabilities.
 %setup -q
 
 %build
+
+#
+# XXX work around a (possible) compiler problem on ia64
+%ifarch ia64
+RPM_OPT_FLAGS="-O0"
+%endif
+
 %ifos linux
 CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=%{__prefix} --sysconfdir=/etc --localstatedir=/var --infodir='${prefix}%{__share}/info' --mandir='${prefix}%{__share}/man'
 %else
@@ -142,11 +150,16 @@ mkdir -p $RPM_BUILD_ROOT/etc/rpm
 cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.db1
 %%_dbapi		1
 E_O_F
+cat << E_O_F > $RPM_BUILD_ROOT/etc/rpm/macros.cdb
+%{?enable_cdb:#%%__dbi_cdb	%{enable_cdb}}
+E_O_F
 
 mkdir -p $RPM_BUILD_ROOT/var/lib/rpm
 for dbi in \
 	Basenames Conflictname Dirnames Group Installtid Name Providename \
-	Provideversion Removetid Requirename Requireversion Triggername
+	Provideversion Removetid Requirename Requireversion Triggername \
+	Packages __db.001 __db.002 __db.003 __db.004 __db.005 __db.006 __db.007 \
+	__db.008 __db.009
 do
     touch $RPM_BUILD_ROOT/var/lib/rpm/$dbi
 done
@@ -179,7 +192,7 @@ Please remove (or at least rename) one of those files, and re-install.
     exit 1
 fi
 /usr/sbin/groupadd -g 37 rpm				> /dev/null 2>&1
-/usr/sbin/useradd  -d /var/lib/rpm -u 37 -g 37 rpm	> /dev/null 2>&1
+/usr/sbin/useradd  -r -d /var/lib/rpm -u 37 -g 37 rpm	> /dev/null 2>&1
 %endif
 exit 0
 
@@ -222,7 +235,6 @@ fi
 %endif
 
 %define	rpmattr		%attr(0755, rpm, rpm)
-%define	rpmdbattr	%rpmattr %verify(not md5 size mtime) %ghost
 
 %files
 %defattr(-,root,root)
@@ -233,36 +245,39 @@ fi
 %config(noreplace,missingok)	/etc/cron.daily/rpm
 %config(noreplace,missingok)	/etc/logrotate.d/rpm
 %dir				/etc/rpm
-%config(noreplace,missingok)	/etc/rpm/macros.db1
+%config(noreplace,missingok)	/etc/rpm/macros.*
 %attr(0755, rpm, rpm)	%dir /var/lib/rpm
+
+%define	rpmdbattr %attr(0644, rpm, rpm) %verify(not md5 size mtime) %ghost %config(missingok,noreplace)
 %rpmdbattr	/var/lib/rpm/Basenames
 %rpmdbattr	/var/lib/rpm/Conflictname
-#%rpmdbattr	/var/lib/rpm/__db.001
+%rpmdbattr	/var/lib/rpm/__db.0*
 %rpmdbattr	/var/lib/rpm/Dirnames
 %rpmdbattr	/var/lib/rpm/Group
 %rpmdbattr	/var/lib/rpm/Installtid
 %rpmdbattr	/var/lib/rpm/Name
-#%rpmdbattr	/var/lib/rpm/Packages
+%rpmdbattr	/var/lib/rpm/Packages
 %rpmdbattr	/var/lib/rpm/Providename
 %rpmdbattr	/var/lib/rpm/Provideversion
 %rpmdbattr	/var/lib/rpm/Removetid
 %rpmdbattr	/var/lib/rpm/Requirename
 %rpmdbattr	/var/lib/rpm/Requireversion
 %rpmdbattr	/var/lib/rpm/Triggername
+
 %endif
 
 %rpmattr	%{__prefix}/bin/rpm2cpio
 %rpmattr	%{__prefix}/bin/gendiff
 %rpmattr	%{__prefix}/bin/rpmdb
-%rpmattr	%{__prefix}/bin/rpm[eiukqv]
+#%rpmattr	%{__prefix}/bin/rpm[eiu]
 %rpmattr	%{__prefix}/bin/rpmsign
 %rpmattr	%{__prefix}/bin/rpmquery
 %rpmattr	%{__prefix}/bin/rpmverify
 
-%{__prefix}/lib/librpm.so.*
-%{__prefix}/lib/librpmdb.so.*
-%{__prefix}/lib/librpmio.so.*
-%{__prefix}/lib/librpmbuild.so.*
+%{__prefix}/lib/librpm-4.1.so
+%{__prefix}/lib/librpmdb-4.1.so
+%{__prefix}/lib/librpmio-4.1.so
+%{__prefix}/lib/librpmbuild-4.1.so
 
 %rpmattr	%{__prefix}/lib/rpm/config.guess
 %rpmattr	%{__prefix}/lib/rpm/config.sub
@@ -295,6 +310,7 @@ fi
 %ifarch armv3l armv4l
 %attr(-, rpm, rpm)	%{__prefix}/lib/rpm/armv[34][lb]*
 %endif
+%attr(-, rpm, rpm)		%{__prefix}/lib/rpm/noarch*
 
 %lang(cs)	%{__prefix}/*/locale/cs/LC_MESSAGES/rpm.mo
 %lang(da)	%{__prefix}/*/locale/da/LC_MESSAGES/rpm.mo

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-06-20 19:56-0400\n"
+"POT-Creation-Date: 2001-07-16 22:55-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,49 +23,49 @@ msgstr ""
 msgid "failed build dependencies:\n"
 msgstr ""
 
-#: build.c:78
+#: build.c:77
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr ""
 
-#: build.c:151 build.c:163
+#: build.c:150 build.c:162
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr ""
 
 #. Give up
-#: build.c:170
+#: build.c:169
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr ""
 
-#: build.c:198
+#: build.c:197
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr ""
 
-#: build.c:237
+#: build.c:236
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr ""
 
-#: build.c:242
+#: build.c:241
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr ""
 
-#: build.c:251
+#: build.c:250
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr ""
 
 #. parse up the build operators
-#: build.c:307
+#: build.c:306
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:322
+#: build.c:321
 #, c-format
 msgid "Building for target %s\n"
 msgstr ""
@@ -75,16 +75,16 @@ msgstr ""
 msgid "rpm: %s\n"
 msgstr ""
 
-#: rpm.c:238 rpmqv.c:215
+#: rpm.c:238 rpmqv.c:222
 #, c-format
 msgid "RPM version %s\n"
 msgstr ""
 
-#: rpm.c:242 rpmqv.c:221
+#: rpm.c:242 rpmqv.c:228
 msgid "Copyright (C) 1998-2000 - Red Hat, Inc."
 msgstr ""
 
-#: rpm.c:243 rpmqv.c:222
+#: rpm.c:243 rpmqv.c:229
 msgid "This program may be freely redistributed under the terms of the GNU GPL"
 msgstr ""
 
@@ -283,7 +283,7 @@ msgstr ""
 msgid "print this message"
 msgstr ""
 
-#: rpm.c:335 rpmqv.c:100
+#: rpm.c:335 rpmqv.c:106
 msgid "print the version of rpm being used"
 msgstr ""
 
@@ -295,7 +295,7 @@ msgstr ""
 msgid "    --define '<name> <body>'"
 msgstr ""
 
-#: rpm.c:340 rpmqv.c:107
+#: rpm.c:340 rpmqv.c:113
 msgid "define macro <name> with value <body>"
 msgstr ""
 
@@ -311,7 +311,7 @@ msgstr ""
 msgid "    --pipe <cmd>          "
 msgstr ""
 
-#: rpm.c:344 rpmqv.c:113
+#: rpm.c:344 rpmqv.c:119
 msgid "send stdout to <cmd>"
 msgstr ""
 
@@ -323,7 +323,7 @@ msgstr ""
 msgid "use <file> instead of /etc/rpmrc and $HOME/.rpmrc"
 msgstr ""
 
-#: rpm.c:348 rpmqv.c:131
+#: rpm.c:348 rpmqv.c:137
 msgid "display final rpmrc and macro configuration"
 msgstr ""
 
@@ -399,7 +399,7 @@ msgstr ""
 msgid "      --root <dir>        "
 msgstr ""
 
-#: rpm.c:374 rpm.c:418 rpm.c:476 rpm.c:505 rpm.c:569 rpmqv.c:116
+#: rpm.c:374 rpm.c:418 rpm.c:476 rpm.c:505 rpm.c:569 rpmqv.c:122
 msgid "use <dir> as the top level directory"
 msgstr ""
 
@@ -507,7 +507,7 @@ msgid ""
 "options as -q"
 msgstr ""
 
-#: lib/poptBT.c:189 lib/poptI.c:128 rpm.c:420 rpm.c:462 rpm.c:497
+#: lib/poptI.c:142 rpm.c:420 rpm.c:462 rpm.c:497
 msgid "do not verify package dependencies"
 msgstr ""
 
@@ -531,7 +531,7 @@ msgstr ""
 msgid "    -i <packagefile>      "
 msgstr ""
 
-#: lib/poptI.c:124 rpm.c:431
+#: lib/poptI.c:138 rpm.c:431
 msgid "install package"
 msgstr ""
 
@@ -551,7 +551,7 @@ msgstr ""
 msgid "relocate files from <oldpath> to <newpath>"
 msgstr ""
 
-#: lib/poptI.c:90 rpm.c:437
+#: lib/poptI.c:103 rpm.c:437
 msgid "relocate files in non-relocateable package"
 msgstr ""
 
@@ -559,47 +559,47 @@ msgstr ""
 msgid "      --prefix <dir>      "
 msgstr ""
 
-#: lib/poptI.c:174 rpm.c:439
+#: lib/poptI.c:188 rpm.c:439
 msgid "relocate the package to <dir>, if relocatable"
 msgstr ""
 
-#: lib/poptI.c:98 rpm.c:443
+#: lib/poptI.c:112 rpm.c:443
 msgid "do not install documentation"
 msgstr ""
 
-#: lib/poptI.c:104 rpm.c:445
+#: lib/poptI.c:118 rpm.c:445
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr ""
 
-#: lib/poptI.c:110 rpm.c:447
+#: lib/poptI.c:124 rpm.c:447
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 
-#: lib/poptI.c:76 rpm.c:449
+#: lib/poptI.c:89 rpm.c:449
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 
-#: lib/poptI.c:113 rpm.c:452
+#: lib/poptI.c:127 rpm.c:452
 msgid "don't verify package architecture"
 msgstr ""
 
-#: lib/poptI.c:119 rpm.c:454
+#: lib/poptI.c:133 rpm.c:454
 msgid "don't check disk space before installing"
 msgstr ""
 
-#: lib/poptI.c:116 rpm.c:456
+#: lib/poptI.c:130 rpm.c:456
 msgid "don't verify package operating system"
 msgstr ""
 
-#: lib/poptI.c:121 rpm.c:458
+#: lib/poptI.c:135 rpm.c:458
 msgid "install documentation"
 msgstr ""
 
-#: lib/poptI.c:126 rpm.c:460 rpm.c:495
+#: lib/poptI.c:140 rpm.c:460 rpm.c:495
 msgid "update the database, but do not modify the filesystem"
 msgstr ""
 
-#: lib/poptI.c:131 rpm.c:464 rpm.c:499
+#: lib/poptI.c:145 rpm.c:464 rpm.c:499
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr ""
 
@@ -611,19 +611,19 @@ msgstr ""
 msgid "don't execute any scripts triggered by this package"
 msgstr ""
 
-#: lib/poptI.c:172 rpm.c:470
+#: lib/poptI.c:186 rpm.c:470
 msgid "print percentages as package installs"
 msgstr ""
 
-#: lib/poptI.c:184 rpm.c:472
+#: lib/poptI.c:198 rpm.c:472
 msgid "install even if the package replaces installed files"
 msgstr ""
 
-#: lib/poptI.c:187 rpm.c:474
+#: lib/poptI.c:201 rpm.c:474
 msgid "reinstall if the package is already present"
 msgstr ""
 
-#: lib/poptI.c:189 rpm.c:478
+#: lib/poptI.c:206 rpm.c:478
 msgid "don't install, but tell if it would work or not"
 msgstr ""
 
@@ -639,7 +639,7 @@ msgstr ""
 msgid "upgrade package (same options as --install, plus)"
 msgstr ""
 
-#: lib/poptI.c:168 rpm.c:485
+#: lib/poptI.c:182 rpm.c:485
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -653,11 +653,11 @@ msgstr ""
 msgid "    -e <package>          "
 msgstr ""
 
-#: lib/poptI.c:95 rpm.c:489
+#: lib/poptI.c:109 rpm.c:489
 msgid "erase (uninstall) package"
 msgstr ""
 
-#: lib/poptI.c:80 rpm.c:491
+#: lib/poptI.c:93 rpm.c:491
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -827,8 +827,8 @@ msgid ""
 msgstr ""
 
 #: rpm.c:728 rpm.c:734 rpm.c:743 rpm.c:765 rpm.c:771 rpm.c:778 rpm.c:786
-#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:529 rpmqv.c:535 rpmqv.c:541
-#: rpmqv.c:575
+#: rpm.c:794 rpm.c:815 rpm.c:821 rpm.c:884 rpmqv.c:598 rpmqv.c:604 rpmqv.c:610
+#: rpmqv.c:648
 msgid "only one major mode may be specified"
 msgstr ""
 
@@ -840,23 +840,23 @@ msgstr ""
 msgid "Use -e or --erase instead.\n"
 msgstr ""
 
-#: lib/poptI.c:49 rpm.c:827
+#: lib/poptI.c:55 rpm.c:827
 msgid "relocations must begin with a /"
 msgstr ""
 
-#: lib/poptI.c:51 rpm.c:829
+#: lib/poptI.c:57 rpm.c:829
 msgid "relocations must contain a ="
 msgstr ""
 
-#: lib/poptI.c:54 rpm.c:832
+#: lib/poptI.c:60 rpm.c:832
 msgid "relocations must have a / following the ="
 msgstr ""
 
-#: lib/poptI.c:37 rpm.c:841
+#: lib/poptI.c:43 rpm.c:841
 msgid "exclude paths must begin with a /"
 msgstr ""
 
-#: rpm.c:850 rpmqv.c:482
+#: rpm.c:850 rpmqv.c:550
 msgid "The --rcfile option has been eliminated.\n"
 msgstr ""
 
@@ -864,101 +864,101 @@ msgstr ""
 msgid "Use --macros with a colon separated list of macro files to read.\n"
 msgstr ""
 
-#: rpm.c:856 rpmqv.c:489
+#: rpm.c:856 rpmqv.c:557
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr ""
 
-#: rpm.c:891 rpmqv.c:556
+#: rpm.c:891 rpmqv.c:627
 msgid "one type of query/verify may be performed at a time"
 msgstr ""
 
-#: rpm.c:896 rpmqv.c:560
+#: rpm.c:896 rpmqv.c:631
 msgid "unexpected query flags"
 msgstr ""
 
-#: rpm.c:899 rpmqv.c:563
+#: rpm.c:899 rpmqv.c:634
 msgid "unexpected query format"
 msgstr ""
 
-#: rpm.c:902 rpmqv.c:566
+#: rpm.c:902 rpmqv.c:637
 msgid "unexpected query source"
 msgstr ""
 
-#: rpm.c:905 rpmqv.c:591
+#: rpm.c:905 rpmqv.c:681
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 
-#: rpm.c:908 rpmqv.c:593
+#: rpm.c:908 rpmqv.c:683
 msgid "files may only be relocated during package installation"
 msgstr ""
 
-#: rpm.c:911 rpmqv.c:596
+#: rpm.c:911 rpmqv.c:686
 msgid "only one of --prefix or --relocate may be used"
 msgstr ""
 
-#: rpm.c:914 rpmqv.c:599
+#: rpm.c:914 rpmqv.c:689
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 
-#: rpm.c:917 rpmqv.c:602
+#: rpm.c:917 rpmqv.c:692
 msgid "--prefix may only be used when installing new packages"
 msgstr ""
 
-#: rpm.c:920 rpmqv.c:605
+#: rpm.c:920 rpmqv.c:695
 msgid "arguments to --prefix must begin with a /"
 msgstr ""
 
-#: rpm.c:923 rpmqv.c:608
+#: rpm.c:923 rpmqv.c:698
 msgid "--hash (-h) may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:927 rpmqv.c:612
+#: rpm.c:927 rpmqv.c:702
 msgid "--percent may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:931 rpmqv.c:617
+#: rpm.c:931 rpmqv.c:707
 msgid "--replacefiles may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:935 rpmqv.c:621
+#: rpm.c:935 rpmqv.c:711
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:939 rpmqv.c:625
+#: rpm.c:939 rpmqv.c:715
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:943 rpmqv.c:629
+#: rpm.c:943 rpmqv.c:719
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:947 rpmqv.c:633
+#: rpm.c:947 rpmqv.c:723
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 
-#: rpm.c:951 rpmqv.c:637
+#: rpm.c:951 rpmqv.c:727
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:955 rpmqv.c:641
+#: rpm.c:955 rpmqv.c:731
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:959 rpmqv.c:646
+#: rpm.c:959 rpmqv.c:736
 msgid "--ignoresize may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:963 rpmqv.c:650
+#: rpm.c:963 rpmqv.c:740
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 
-#: rpm.c:967 rpmqv.c:654
+#: rpm.c:967 rpmqv.c:744
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:971 rpmqv.c:659
+#: rpm.c:971 rpmqv.c:749
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 
@@ -972,31 +972,31 @@ msgstr ""
 msgid "--apply may only be specified during package installation"
 msgstr ""
 
-#: rpm.c:987 rpmqv.c:669
+#: rpm.c:987 rpmqv.c:759
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
 
-#: rpm.c:991 rpmqv.c:673
+#: rpm.c:991 rpmqv.c:763
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
 msgstr ""
 
-#: rpm.c:996 rpmqv.c:678
+#: rpm.c:996 rpmqv.c:768
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 
-#: rpm.c:1000 rpmqv.c:683
+#: rpm.c:1000 rpmqv.c:773
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
 
-#: rpm.c:1012 rpmqv.c:695
+#: rpm.c:1012 rpmqv.c:785
 msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
@@ -1017,77 +1017,77 @@ msgid ""
 "--nomd5 may only be used during signature checking and package verification"
 msgstr ""
 
-#: rpm.c:1038 rpmqv.c:716
+#: rpm.c:1038 rpmqv.c:806
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpm.c:1043 rpmqv.c:721
+#: rpm.c:1043 rpmqv.c:811
 #, c-format
 msgid "cannot access file %s\n"
 msgstr ""
 
-#: rpm.c:1058 rpmqv.c:740
+#: rpm.c:1058 rpmqv.c:830
 msgid "pgp not found: "
 msgstr ""
 
-#: rpm.c:1062 rpmqv.c:745
+#: rpm.c:1062 rpmqv.c:835
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpm.c:1064 rpmqv.c:747
+#: rpm.c:1064 rpmqv.c:837
 msgid "Pass phrase check failed\n"
 msgstr ""
 
-#: rpm.c:1067 rpmqv.c:751
+#: rpm.c:1067 rpmqv.c:841
 msgid "Pass phrase is good.\n"
 msgstr ""
 
-#: rpm.c:1072 rpmqv.c:756
+#: rpm.c:1072 rpmqv.c:846
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr ""
 
-#: rpm.c:1078 rpmqv.c:763
+#: rpm.c:1078 rpmqv.c:853
 msgid "--sign may only be used during package building"
 msgstr ""
 
-#: rpm.c:1093 rpmqv.c:779
+#: rpm.c:1093 rpmqv.c:869
 msgid "exec failed\n"
 msgstr ""
 
-#: rpm.c:1116 rpmqv.c:986
+#: rpm.c:1116 rpmqv.c:1082
 msgid "unexpected arguments to --querytags "
 msgstr ""
 
-#: rpm.c:1127 rpmqv.c:995
+#: rpm.c:1127 rpmqv.c:1091
 msgid "no packages given for signature check"
 msgstr ""
 
-#: rpm.c:1138 rpmqv.c:1004
+#: rpm.c:1138 rpmqv.c:1100
 msgid "no packages given for signing"
 msgstr ""
 
-#: rpm.c:1154 rpmqv.c:897
+#: rpm.c:1154 rpmqv.c:987
 msgid "no packages given for uninstall"
 msgstr ""
 
-#: rpm.c:1243 rpmqv.c:920
+#: rpm.c:1243 rpmqv.c:998
 msgid "no packages given for install"
 msgstr ""
 
-#: rpm.c:1267 rpmqv.c:949
+#: rpm.c:1267 rpmqv.c:1045
 msgid "extra arguments given for query of all packages"
 msgstr ""
 
-#: rpm.c:1272 rpmqv.c:958
+#: rpm.c:1272 rpmqv.c:1054
 msgid "no arguments given for query"
 msgstr ""
 
-#: rpm.c:1289 rpmqv.c:974
+#: rpm.c:1289 rpmqv.c:1070
 msgid "extra arguments given for verify of all packages"
 msgstr ""
 
-#: rpm.c:1293 rpmqv.c:978
+#: rpm.c:1293 rpmqv.c:1074
 msgid "no arguments given for verify"
 msgstr ""
 
@@ -1104,127 +1104,127 @@ msgstr ""
 msgid "cannot re-open payload: %s\n"
 msgstr ""
 
-#: rpmqv.c:103
+#: rpmqv.c:109
 msgid "provide less detailed output"
 msgstr ""
 
-#: rpmqv.c:105
+#: rpmqv.c:111
 msgid "provide more detailed output"
 msgstr ""
 
-#: rpmqv.c:108
+#: rpmqv.c:114
 msgid "'<name> <body>'"
 msgstr ""
 
-#: rpmqv.c:110
+#: rpmqv.c:116
 msgid "print macro expansion of <expr>+"
 msgstr ""
 
-#: rpmqv.c:111
+#: rpmqv.c:117
 msgid "<expr>+"
 msgstr ""
 
-#: rpmqv.c:114
+#: rpmqv.c:120
 msgid "<cmd>"
 msgstr ""
 
-#: lib/poptI.c:175 rpmqv.c:117
+#: lib/poptI.c:189 rpmqv.c:123
 msgid "<dir>"
 msgstr ""
 
-#: rpmqv.c:119
+#: rpmqv.c:125
 msgid "read <file:...> instead of default macro file(s)"
 msgstr ""
 
-#: rpmqv.c:120 rpmqv.c:124 rpmqv.c:128
+#: rpmqv.c:126 rpmqv.c:130 rpmqv.c:134
 msgid "<file:...>"
 msgstr ""
 
-#: rpmqv.c:123 rpmqv.c:127
+#: rpmqv.c:129 rpmqv.c:133
 msgid "read <file:...> instead of default rpmrc file(s)"
 msgstr ""
 
-#: rpmqv.c:136
+#: rpmqv.c:142
 msgid "disable use of libio(3) API"
 msgstr ""
 
-#: rpmqv.c:139
+#: rpmqv.c:145
 msgid "debug protocol data stream"
 msgstr ""
 
-#: rpmqv.c:141
+#: rpmqv.c:147
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: rpmqv.c:143
+#: rpmqv.c:149
 msgid "debug URL cache handling"
 msgstr ""
 
-#: rpmqv.c:161
+#: rpmqv.c:167
 msgid "Query options (with -q or --query):"
 msgstr ""
 
-#: rpmqv.c:164
+#: rpmqv.c:170
 msgid "Verify options (with -V or --verify):"
 msgstr ""
 
-#: rpmqv.c:170
+#: rpmqv.c:176
 msgid "Signature options:"
 msgstr ""
 
-#: rpmqv.c:176
+#: rpmqv.c:182
 msgid "Database options:"
 msgstr ""
 
-#: rpmqv.c:182
+#: rpmqv.c:188
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 
-#: rpmqv.c:188
+#: rpmqv.c:194
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:193
+#: rpmqv.c:199
 msgid "Common options for all rpm modes:"
 msgstr ""
 
-#: lib/poptI.c:20 rpmqv.c:208
+#: lib/poptI.c:25 rpmqv.c:215
 #, c-format
 msgid "%s: %s\n"
 msgstr ""
 
-#: rpmqv.c:233
+#: rpmqv.c:240
 #, c-format
 msgid "Usage: %s {--help}\n"
 msgstr ""
 
-#: rpmqv.c:483
+#: rpmqv.c:551
 msgid "Use \"--macros <file:...>\" instead.\n"
 msgstr ""
 
-#: rpmqv.c:585
+#: rpmqv.c:675
 msgid "--dbpath given for operation that does not use a database"
 msgstr ""
 
-#: rpmqv.c:664
+#: rpmqv.c:754
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
 
-#: rpmqv.c:809
+#: rpmqv.c:899
 msgid "no packages files given for rebuild"
 msgstr ""
 
-#: rpmqv.c:878
+#: rpmqv.c:968
 msgid "no spec files given for build"
 msgstr ""
 
-#: rpmqv.c:880
+#: rpmqv.c:970
 msgid "no tar files given for build"
 msgstr ""
 
-#: build/build.c:119 build/pack.c:421
+#: build/build.c:119 build/pack.c:444
 msgid "Unable to open temp file.\n"
 msgstr ""
 
@@ -1299,169 +1299,180 @@ msgstr ""
 msgid "syntax error in expression\n"
 msgstr ""
 
-#: build/files.c:263
+#: build/files.c:268
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr ""
 
-#: build/files.c:321 build/files.c:414 build/files.c:597
+#: build/files.c:326 build/files.c:516 build/files.c:699
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr ""
 
-#: build/files.c:332 build/files.c:539 build/files.c:608
+#: build/files.c:337 build/files.c:641 build/files.c:710
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr ""
 
-#: build/files.c:370 build/files.c:564
+#: build/files.c:375 build/files.c:666
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr ""
 
-#: build/files.c:430
+#: build/files.c:479
+#, c-format
+msgid "Missing %s in %s %s\n"
+msgstr ""
+
+#: build/files.c:532
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:468
+#: build/files.c:570
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:478
+#: build/files.c:580
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:490
+#: build/files.c:592
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:635
+#: build/files.c:737
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:646
+#: build/files.c:748
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:792
+#: build/files.c:894
 #, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr ""
 
-#: build/files.c:798
+#: build/files.c:900
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
 #. We already got a file -- error
-#: build/files.c:826
+#: build/files.c:928
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr ""
 
-#: build/files.c:840
+#: build/files.c:942
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:852
+#: build/files.c:954
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1023
+#. Two entries for the same file found, merge the entries.
+#: build/files.c:1127
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr ""
 
-#: build/files.c:1165
+#: build/files.c:1260
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1356
+#: build/files.c:1458
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr ""
 
-#: build/files.c:1366
+#: build/files.c:1482
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:1409 build/files.c:1961 build/parsePrep.c:45
+#: build/files.c:1525 build/files.c:2123 build/parsePrep.c:45
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:1421
+#: build/files.c:1537
 #, c-format
 msgid "File %4d: %07o %s.%s\t %s\n"
 msgstr ""
 
-#: build/files.c:1502
+#: build/files.c:1638
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1532
+#: build/files.c:1661
+#, c-format
+msgid "Glob not permitted: %s\n"
+msgstr ""
+
+#: build/files.c:1675
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1590
+#: build/files.c:1733
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr ""
 
-#: build/files.c:1601 build/pack.c:141
+#: build/files.c:1744 build/pack.c:141
 #, c-format
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:1949
+#: build/files.c:2111
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
 #. XXX this error message is probably not seen.
-#: build/files.c:2020
+#: build/files.c:2182
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr ""
 
-#: build/files.c:2025
+#: build/files.c:2187
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: build/files.c:2107
+#: build/files.c:2269
 #, c-format
 msgid "%s failed\n"
 msgstr ""
 
-#: build/files.c:2111
+#: build/files.c:2273
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr ""
 
-#: build/files.c:2243
+#: build/files.c:2405
 #, c-format
 msgid "Finding  %s: (using %s)...\n"
 msgstr ""
 
-#: build/files.c:2269 build/files.c:2283
+#: build/files.c:2431 build/files.c:2445
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/files.c:2402
+#: build/files.c:2564
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -1475,24 +1486,32 @@ msgid "getUnameS: too many uid's\n"
 msgstr ""
 
 #: build/names.c:84
-msgid "getGname: too many gid's\n"
+msgid "getUidS: too many uid's\n"
 msgstr ""
 
 #: build/names.c:105
+msgid "getGname: too many gid's\n"
+msgstr ""
+
+#: build/names.c:126
 msgid "getGnameS: too many gid's\n"
 msgstr ""
 
-#: build/names.c:136
+#: build/names.c:147
+msgid "getGidS: too many gid's\n"
+msgstr ""
+
+#: build/names.c:178
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr ""
 
-#: build/pack.c:78
+#: build/pack.c:78 lib/psm.c:1776
 #, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:81
+#: build/pack.c:81 lib/psm.c:1779
 #, c-format
 msgid "create archive failed: %s\n"
 msgstr ""
@@ -1547,7 +1566,7 @@ msgstr ""
 msgid "readRPM: read %s: %s\n"
 msgstr ""
 
-#: build/pack.c:292 build/pack.c:462
+#: build/pack.c:292 build/pack.c:485
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr ""
@@ -1562,61 +1581,61 @@ msgstr ""
 msgid "readRPM: reading header from %s\n"
 msgstr ""
 
-#: build/pack.c:433
+#: build/pack.c:456
 msgid "Bad CSA data\n"
 msgstr ""
 
-#: build/pack.c:485
+#: build/pack.c:508
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr ""
 
-#: build/pack.c:504
+#: build/pack.c:527
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:541 lib/psm.c:1503
+#: build/pack.c:563 lib/psm.c:1512
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
 
-#: build/pack.c:556
+#: build/pack.c:578
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr ""
 
-#: build/pack.c:566
+#: build/pack.c:588
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:580
+#: build/pack.c:602
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:590
+#: build/pack.c:612
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:596
+#: build/pack.c:618
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:622 lib/psm.c:1762
+#: build/pack.c:644 lib/psm.c:1771
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:688
+#: build/pack.c:710
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:705
+#: build/pack.c:727
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr ""
@@ -2031,106 +2050,106 @@ msgstr ""
 msgid "  %s    A %s\tB %s\n"
 msgstr ""
 
-#: lib/depends.c:594 lib/depends.c:1210 lib/depends.c:1343
+#: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
 msgid "YES"
 msgstr ""
 
-#: lib/depends.c:594 lib/depends.c:1210 lib/depends.c:1343
+#: lib/depends.c:594 lib/depends.c:1217 lib/depends.c:1350
 msgid "NO "
 msgstr ""
 
-#: lib/depends.c:1011
+#: lib/depends.c:1018
 #, c-format
 msgid "%s: %-45s YES (added files)\n"
 msgstr ""
 
-#: lib/depends.c:1117
+#: lib/depends.c:1124
 #, c-format
 msgid "%s: %-45s YES (added provide)\n"
 msgstr ""
 
-#: lib/depends.c:1209
+#: lib/depends.c:1216
 #, c-format
 msgid "%s: %-45s %-s (cached)\n"
 msgstr ""
 
-#: lib/depends.c:1238
+#: lib/depends.c:1245
 #, c-format
 msgid "%s: %-45s YES (rpmrc provides)\n"
 msgstr ""
 
-#: lib/depends.c:1255
+#: lib/depends.c:1262
 #, c-format
 msgid "%s: %-45s YES (rpmlib provides)\n"
 msgstr ""
 
-#: lib/depends.c:1279
+#: lib/depends.c:1286
 #, c-format
 msgid "%s: %-45s YES (db files)\n"
 msgstr ""
 
-#: lib/depends.c:1292
+#: lib/depends.c:1299
 #, c-format
 msgid "%s: %-45s YES (db provides)\n"
 msgstr ""
 
-#: lib/depends.c:1306
+#: lib/depends.c:1313
 #, c-format
 msgid "%s: %-45s YES (db package)\n"
 msgstr ""
 
-#: lib/depends.c:1322
+#: lib/depends.c:1329
 #, c-format
 msgid "%s: %-45s NO\n"
 msgstr ""
 
-#: lib/depends.c:1343
+#: lib/depends.c:1350
 #, c-format
 msgid "%s: (%s, %s) added to Depends cache.\n"
 msgstr ""
 
 #. requirements are not satisfied.
-#: lib/depends.c:1415
+#: lib/depends.c:1422
 #, c-format
 msgid "package %s-%s-%s require not satisfied: %s\n"
 msgstr ""
 
 #. conflicts exist.
-#: lib/depends.c:1494
+#: lib/depends.c:1501
 #, c-format
 msgid "package %s conflicts: %s\n"
 msgstr ""
 
-#: lib/depends.c:1737
+#: lib/depends.c:1744
 #, c-format
 msgid "removing %s-%s-%s \"%s\" from tsort relations.\n"
 msgstr ""
 
 #. Record all relations.
-#: lib/depends.c:1886
+#: lib/depends.c:1893
 msgid "========== recording tsort relations\n"
 msgstr ""
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1944
+#: lib/depends.c:1951
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, depth)\n"
 msgstr ""
 
-#: lib/depends.c:1994
+#: lib/depends.c:2001
 msgid "========== successors only (presentation order)\n"
 msgstr ""
 
-#: lib/depends.c:2046
+#: lib/depends.c:2053
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:2075
+#: lib/depends.c:2082
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #: lib/formats.c:28 lib/formats.c:54 lib/formats.c:83 lib/formats.c:124
-#: lib/header.c:2538 lib/header.c:2557 lib/header.c:2577
+#: lib/header.c:2548 lib/header.c:2567 lib/header.c:2587
 msgid "(not a number)"
 msgstr ""
 
@@ -2163,127 +2182,127 @@ msgstr ""
 msgid "file %s is on an unknown device\n"
 msgstr ""
 
-#: lib/fsm.c:294
+#: lib/fsm.c:292
 msgid "========= Directories not explictly included in package:\n"
 msgstr ""
 
-#: lib/fsm.c:296
+#: lib/fsm.c:294
 #, c-format
 msgid "%9d %s\n"
 msgstr ""
 
-#: lib/fsm.c:1117
+#: lib/fsm.c:1122
 #, c-format
 msgid "%s directory created with perms %04o.\n"
 msgstr ""
 
-#: lib/fsm.c:1447 lib/fsm.c:1572
+#: lib/fsm.c:1505 lib/fsm.c:1630
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1598
+#: lib/fsm.c:1656
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1604
+#: lib/fsm.c:1662
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1614
+#: lib/fsm.c:1672
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1633
+#: lib/fsm.c:1691
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
 
 #. This should not be allowed
-#: lib/header.c:238
+#: lib/header.c:243
 msgid "dataLength() RPM_STRING_TYPE count must be 1.\n"
 msgstr ""
 
-#: lib/header.c:273 lib/header_internal.c:139 lib/psm.c:390
+#: lib/header.c:278 lib/header_internal.c:139 lib/psm.c:393
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1854
+#: lib/header.c:1864
 #, c-format
 msgid "missing { after %"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1884
+#: lib/header.c:1894
 msgid "missing } after %{"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1898
+#: lib/header.c:1908
 msgid "empty tag format"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1912
+#: lib/header.c:1922
 msgid "empty tag name"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1929
+#: lib/header.c:1939
 msgid "unknown tag"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1956
+#: lib/header.c:1966
 msgid "] expected at end of array"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1974
+#: lib/header.c:1984
 msgid "unexpected ]"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:1978
+#: lib/header.c:1988
 msgid "unexpected }"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2044
+#: lib/header.c:2054
 msgid "? expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2053
+#: lib/header.c:2063
 msgid "{ expected after ? in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2066 lib/header.c:2108
+#: lib/header.c:2076 lib/header.c:2118
 msgid "} expected in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2076
+#: lib/header.c:2086
 msgid ": expected following ? subexpression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2093
+#: lib/header.c:2103
 msgid "{ expected after : in expression"
 msgstr ""
 
 #. @-observertrans -readonlytrans@
-#: lib/header.c:2118
+#: lib/header.c:2128
 msgid "| expected at end of expression"
 msgstr ""
 
-#: lib/header.c:2298
+#: lib/header.c:2308
 msgid "(unknown type)"
 msgstr ""
 
@@ -2409,6 +2428,10 @@ msgstr ""
 msgid "do not execute any stages of the build"
 msgstr ""
 
+#: lib/poptBT.c:189
+msgid "do not verify build dependencies"
+msgstr ""
+
 #: lib/poptBT.c:191
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
@@ -2429,96 +2452,108 @@ msgstr ""
 msgid "lookup i18N strings in specfile catalog"
 msgstr ""
 
-#: lib/poptI.c:86 lib/poptI.c:136
+#: lib/poptI.c:75
+msgid "malformed rollback time"
+msgstr ""
+
+#: lib/poptI.c:99 lib/poptI.c:150
 msgid "do not execute package scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:93
+#: lib/poptI.c:106
 msgid "save erased package files by renaming into sub-directory"
 msgstr ""
 
-#: lib/poptI.c:95
+#: lib/poptI.c:109
 msgid "<package>+"
 msgstr ""
 
-#: lib/poptI.c:100
+#: lib/poptI.c:114
 msgid "skip files with leading component <path> "
 msgstr ""
 
-#: lib/poptI.c:101
+#: lib/poptI.c:115
 msgid "<path>"
 msgstr ""
 
-#: lib/poptI.c:107
+#: lib/poptI.c:121
 msgid "upgrade package(s) if already installed"
 msgstr ""
 
-#: lib/poptI.c:108 lib/poptI.c:124 lib/poptI.c:193
+#: lib/poptI.c:122 lib/poptI.c:138 lib/poptI.c:210
 msgid "<packagefile>+"
 msgstr ""
 
-#: lib/poptI.c:139
+#: lib/poptI.c:153
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:142
+#: lib/poptI.c:156
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:145
+#: lib/poptI.c:159
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:148
+#: lib/poptI.c:162
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr ""
 
-#: lib/poptI.c:152
+#: lib/poptI.c:166
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr ""
 
-#: lib/poptI.c:155
+#: lib/poptI.c:169
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:158
+#: lib/poptI.c:172
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:161
+#: lib/poptI.c:175
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:164
+#: lib/poptI.c:178
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr ""
 
-#: lib/poptI.c:177
+#: lib/poptI.c:191
 msgid "relocate files from path <old> to <new>"
 msgstr ""
 
-#: lib/poptI.c:178
+#: lib/poptI.c:192
 msgid "<old>=<new>"
 msgstr ""
 
-#: lib/poptI.c:181
+#: lib/poptI.c:195
 msgid "save erased package files by repackaging"
 msgstr ""
 
-#: lib/poptI.c:192
+#: lib/poptI.c:203
+msgid "deinstall new package(s), reinstall old package(s), back to date"
+msgstr ""
+
+#: lib/poptI.c:204
+msgid "<date>"
+msgstr ""
+
+#: lib/poptI.c:209
 msgid "upgrade package(s)"
 msgstr ""
 
 #: lib/poptK.c:56
-msgid "generate GPG/PGP signature"
+msgid "generate signature"
 msgstr ""
 
 #: lib/poptQV.c:72
@@ -2729,64 +2764,64 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/psm.c:584
+#: lib/psm.c:587
 #, c-format
 msgid "cannot create %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:590
+#: lib/psm.c:593
 #, c-format
 msgid "cannot write to %%%s %s\n"
 msgstr ""
 
-#: lib/psm.c:628
+#: lib/psm.c:631
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:735
+#: lib/psm.c:738
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:990
+#: lib/psm.c:992
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, waitpid returned %s\n"
 msgstr ""
 
-#: lib/psm.c:997
+#: lib/psm.c:999
 #, c-format
 msgid "execution of %s scriptlet from %s-%s-%s failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1315
+#: lib/psm.c:1317
 #, c-format
 msgid "%s: %s-%s-%s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1432
+#: lib/psm.c:1434
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s-%s-%s\n"
 msgstr ""
 
-#: lib/psm.c:1540
+#: lib/psm.c:1549
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1549
+#: lib/psm.c:1558
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/psm.c:1588
+#: lib/psm.c:1597
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1589
+#: lib/psm.c:1598
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1849
+#: lib/psm.c:1867
 #, c-format
 msgid "%s: running %s script(s) (if any)\n"
 msgstr ""
@@ -2796,118 +2831,119 @@ msgstr ""
 msgid "incorrect format: %s\n"
 msgstr ""
 
-#: lib/query.c:203
+#: lib/query.c:209
 msgid "(contains no files)"
 msgstr ""
 
-#: lib/query.c:262
+#: lib/query.c:268
 msgid "normal        "
 msgstr ""
 
-#: lib/query.c:264
+#: lib/query.c:270
 msgid "replaced      "
 msgstr ""
 
-#: lib/query.c:266
+#: lib/query.c:272
 msgid "not installed "
 msgstr ""
 
-#: lib/query.c:268
+#: lib/query.c:274
 msgid "net shared    "
 msgstr ""
 
-#: lib/query.c:270
+#: lib/query.c:276
 #, c-format
 msgid "(unknown %3d) "
 msgstr ""
 
-#: lib/query.c:275
+#: lib/query.c:281
 msgid "(no state)    "
 msgstr ""
 
-#: lib/query.c:294 lib/query.c:346
+#: lib/query.c:300 lib/query.c:352
 msgid "package has neither file owner or id lists\n"
 msgstr ""
 
-#: lib/query.c:405
+#: lib/query.c:411
 #, c-format
 msgid "can't query %s: %s\n"
 msgstr ""
 
-#: lib/query.c:536 lib/query.c:570 lib/rpminstall.c:323 lib/rpminstall.c:456
+#: lib/query.c:542 lib/query.c:576 lib/rpminstall.c:323 lib/rpminstall.c:456
+#: lib/rpminstall.c:816
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
 
-#: lib/query.c:549
+#: lib/query.c:555
 #, c-format
 msgid "query of %s failed\n"
 msgstr ""
 
-#: lib/query.c:555
+#: lib/query.c:561
 msgid "old format source packages cannot be queried\n"
 msgstr ""
 
-#: lib/query.c:580 lib/rpminstall.c:466
+#: lib/query.c:586 lib/rpminstall.c:466
 #, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr ""
 
-#: lib/query.c:622
+#: lib/query.c:628
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
 
-#: lib/query.c:644
+#: lib/query.c:650
 msgid "no packages\n"
 msgstr ""
 
-#: lib/query.c:663
+#: lib/query.c:669
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr ""
 
-#: lib/query.c:673
+#: lib/query.c:679
 #, c-format
 msgid "no package triggers %s\n"
 msgstr ""
 
-#: lib/query.c:683
+#: lib/query.c:689
 #, c-format
 msgid "no package requires %s\n"
 msgstr ""
 
-#: lib/query.c:694
+#: lib/query.c:700
 #, c-format
 msgid "no package provides %s\n"
 msgstr ""
 
-#: lib/query.c:729
+#: lib/query.c:735
 #, c-format
 msgid "file %s: %s\n"
 msgstr ""
 
-#: lib/query.c:733
+#: lib/query.c:739
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr ""
 
-#: lib/query.c:759
+#: lib/query.c:765
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr ""
 
-#: lib/query.c:762
+#: lib/query.c:768
 #, c-format
 msgid "package record number: %u\n"
 msgstr ""
 
-#: lib/query.c:767
+#: lib/query.c:773
 #, c-format
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:778 lib/rpminstall.c:603
+#: lib/query.c:784 lib/rpminstall.c:604
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2931,67 +2967,67 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:129 lib/rpmchecksig.c:262
+#: lib/rpmchecksig.c:128 lib/rpmchecksig.c:260
 #, c-format
 msgid "%s: readLead failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:134
+#: lib/rpmchecksig.c:133
 #, c-format
 msgid "%s: Can't sign v1.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:138
+#: lib/rpmchecksig.c:137
 #, c-format
 msgid "%s: Can't re-sign v2.0 RPM\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:147 lib/rpmchecksig.c:278
+#: lib/rpmchecksig.c:146 lib/rpmchecksig.c:276
 #, c-format
 msgid "%s: rpmReadSignature failed\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:151 lib/rpmchecksig.c:283
+#: lib/rpmchecksig.c:150 lib/rpmchecksig.c:281
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:184
+#: lib/rpmchecksig.c:183
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:190
+#: lib/rpmchecksig.c:189
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:268
+#: lib/rpmchecksig.c:266
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:439
+#: lib/rpmchecksig.c:437
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:440 lib/rpmchecksig.c:454
+#: lib/rpmchecksig.c:438 lib/rpmchecksig.c:452
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:442 lib/rpmchecksig.c:456
+#: lib/rpmchecksig.c:440 lib/rpmchecksig.c:454
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:443 lib/rpmchecksig.c:457
+#: lib/rpmchecksig.c:441 lib/rpmchecksig.c:455
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:445 lib/rpmchecksig.c:459
+#: lib/rpmchecksig.c:443 lib/rpmchecksig.c:457
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:453
+#: lib/rpmchecksig.c:451
 msgid "OK"
 msgstr ""
 
@@ -3040,7 +3076,7 @@ msgstr ""
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:448 lib/rpminstall.c:674
+#: lib/rpminstall.c:448 lib/rpminstall.c:675
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
@@ -3058,31 +3094,31 @@ msgstr ""
 msgid "installing binary packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:534
+#: lib/rpminstall.c:535
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:590
+#: lib/rpminstall.c:591
 #, c-format
 msgid "cannot open %s/packages.rpm\n"
 msgstr ""
 
-#: lib/rpminstall.c:606
+#: lib/rpminstall.c:607
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:629
+#: lib/rpminstall.c:630
 msgid "removing these packages would break dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:658
+#: lib/rpminstall.c:659
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:664
+#: lib/rpminstall.c:665
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -3360,19 +3396,19 @@ msgstr ""
 msgid "package lacks both group name and id lists (this should never happen)\n"
 msgstr ""
 
-#: lib/verify.c:362
-#, c-format
-msgid "%s-%s-%s: immutable header region digest check failed\n"
-msgstr ""
-
-#: lib/verify.c:421
+#: lib/verify.c:409
 #, c-format
 msgid "missing    %s"
 msgstr ""
 
-#: lib/verify.c:514
+#: lib/verify.c:502
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
+msgstr ""
+
+#: lib/verify.c:541
+#, c-format
+msgid "%s-%s-%s: immutable header region digest check failed\n"
 msgstr ""
 
 #: rpmdb/db1.c:100 rpmdb/db3.c:84
@@ -3422,11 +3458,11 @@ msgstr ""
 msgid "cannot get %s lock on database\n"
 msgstr ""
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1057
+#: rpmdb/db1.c:562 rpmdb/db3.c:1060
 msgid "exclusive"
 msgstr ""
 
-#: rpmdb/db1.c:562 rpmdb/db3.c:1057
+#: rpmdb/db1.c:562 rpmdb/db3.c:1060
 msgid "shared"
 msgstr ""
 
@@ -3460,12 +3496,12 @@ msgstr ""
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr ""
 
-#: rpmdb/db3.c:1055
+#: rpmdb/db3.c:1058
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: rpmdb/db3.c:1062
+#: rpmdb/db3.c:1064
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr ""
@@ -3546,122 +3582,121 @@ msgstr ""
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:951
+#: rpmdb/rpmdb.c:975
 msgid ""
 "old format database is present; use --rebuilddb to generate a new format "
 "database\n"
 msgstr ""
 
-#. @=nullpass@
 #. error
-#: rpmdb/rpmdb.c:1183
+#: rpmdb/rpmdb.c:1205
 #, c-format
 msgid "error(%d) counting packages\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1913 rpmdb/rpmdb.c:3077
+#: rpmdb/rpmdb.c:1935 rpmdb/rpmdb.c:3099
 #, c-format
 msgid "record number %u in database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:1964
+#: rpmdb/rpmdb.c:1986
 #, c-format
 msgid "rpmdb: damaged header instance #%u retrieved, skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2228
+#: rpmdb/rpmdb.c:2248
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2295
+#: rpmdb/rpmdb.c:2317
 #, c-format
 msgid "removing \"%s\" from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2304
+#: rpmdb/rpmdb.c:2326
 #, c-format
 msgid "removing %d entries from %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2495
+#: rpmdb/rpmdb.c:2517
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2573
+#: rpmdb/rpmdb.c:2595
 #, c-format
 msgid "adding \"%s\" to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2584
+#: rpmdb/rpmdb.c:2606
 #, c-format
 msgid "adding %d entries to %s index.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2966
+#: rpmdb/rpmdb.c:2988
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:2996
+#: rpmdb/rpmdb.c:3018
 msgid "no dbpath has been set"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3023
+#: rpmdb/rpmdb.c:3045
 #, c-format
 msgid "rebuilding database %s into %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3027
+#: rpmdb/rpmdb.c:3049
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3033
+#: rpmdb/rpmdb.c:3055
 #, c-format
 msgid "creating directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3035
+#: rpmdb/rpmdb.c:3057
 #, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3042
+#: rpmdb/rpmdb.c:3064
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3053
+#: rpmdb/rpmdb.c:3075
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3117
+#: rpmdb/rpmdb.c:3139
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3135
+#: rpmdb/rpmdb.c:3157
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3143
+#: rpmdb/rpmdb.c:3165
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3145
+#: rpmdb/rpmdb.c:3167
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3155
+#: rpmdb/rpmdb.c:3177
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3157
+#: rpmdb/rpmdb.c:3179
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""

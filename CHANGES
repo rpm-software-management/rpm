@@ -171,6 +171,10 @@
 	  "everything ENOSPC" failure check.
 	- fix: don't total hard linked file size multiple times (#46286).
 	- add %dev(type,major,minor) directive to permit non-root dev build.
+	- fix: _smp_flags macro broken.
+	- python: bind rhnUnload differently.
+	- fix: rescusitate --querytags.
+	- fix: short aliases broken (#49213).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

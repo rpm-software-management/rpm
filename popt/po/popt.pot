@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2001-06-19 07:33-0400\n"
+"POT-Creation-Date: 2001-07-16 22:58-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,99 +18,99 @@ msgstr ""
 msgid "unknown errno"
 msgstr ""
 
-#: popt.c:888
+#: popt.c:892
 #, c-format
 msgid "option type (%d) not implemented in popt\n"
 msgstr ""
 
-#: popt.c:1053
+#: popt.c:1100
 msgid "missing argument"
 msgstr ""
 
-#: popt.c:1055
+#: popt.c:1102
 msgid "unknown option"
 msgstr ""
 
-#: popt.c:1057
+#: popt.c:1104
 msgid "mutually exclusive logical operations requested"
 msgstr ""
 
-#: popt.c:1059
+#: popt.c:1106
 msgid "opt->arg should not be NULL"
 msgstr ""
 
-#: popt.c:1061
+#: popt.c:1108
 msgid "aliases nested too deeply"
 msgstr ""
 
-#: popt.c:1063
+#: popt.c:1110
 msgid "error in parameter quoting"
 msgstr ""
 
-#: popt.c:1065
+#: popt.c:1112
 msgid "invalid numeric value"
 msgstr ""
 
-#: popt.c:1067
+#: popt.c:1114
 msgid "number too large or too small"
 msgstr ""
 
-#: popt.c:1069
+#: popt.c:1116
 msgid "memory allocation failed"
 msgstr ""
 
-#: popt.c:1073
+#: popt.c:1120
 msgid "unknown error"
 msgstr ""
 
-#: popthelp.c:32
+#: popthelp.c:47
 msgid "Show this help message"
 msgstr ""
 
-#: popthelp.c:33
+#: popthelp.c:48
 msgid "Display brief usage message"
 msgstr ""
 
-#: popthelp.c:36
+#: popthelp.c:51
 msgid "Display option defaults in message"
 msgstr ""
 
-#: popthelp.c:71
+#: popthelp.c:93
 msgid "NONE"
 msgstr ""
 
-#: popthelp.c:72
+#: popthelp.c:94
 msgid "VAL"
 msgstr ""
 
-#: popthelp.c:73
+#: popthelp.c:95
 msgid "INT"
 msgstr ""
 
-#: popthelp.c:74
+#: popthelp.c:96
 msgid "LONG"
 msgstr ""
 
-#: popthelp.c:75
+#: popthelp.c:97
 msgid "STRING"
 msgstr ""
 
-#: popthelp.c:76
+#: popthelp.c:98
 msgid "FLOAT"
 msgstr ""
 
-#: popthelp.c:77
+#: popthelp.c:99
 msgid "DOUBLE"
 msgstr ""
 
-#: popthelp.c:78
+#: popthelp.c:100
 msgid "ARG"
 msgstr ""
 
-#: popthelp.c:354
+#: popthelp.c:434
 msgid "Usage:"
 msgstr ""
 
-#: popthelp.c:376
+#: popthelp.c:456
 msgid "[OPTION...]"
 msgstr ""

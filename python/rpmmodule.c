@@ -181,47 +181,6 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords) 
     return rc;
 }
 
-/** \ingroup python
- */
-static PyObject * rhnUnload(hdrObject * s) {
-    int len;
-    char * uh;
-    PyObject * rc;
-    Header h = headerLink(s->h);
-
-    /* Legacy headers are forced into immutable region. */
-    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE))
-	h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
-
-    /* All headers have SHA1 digest, compute and add if necessary. */
-    if (!headerIsEntry(h, RPMTAG_SHA1HEADER)) {
-	int_32 uht, uhc;
-	const char * digest;
-        size_t digestlen;
-        DIGEST_CTX ctx;
-
-	headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, (void **)&uh, &uhc);
-
-	ctx = rpmDigestInit(RPMDIGEST_SHA1);
-        rpmDigestUpdate(ctx, uh, uhc);
-        rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
-
-	headerAddEntry(h, RPMTAG_SHA1HEADER, RPM_STRING_TYPE, digest, 1);
-
-	uh = headerFreeData(uh, uht);
-	digest = _free(digest);
-    }
-
-    len = headerSizeof(h, 0);
-    uh = headerUnload(h);
-    headerFree(h);
-
-    rc = PyString_FromStringAndSize(uh, len);
-    free(uh);
-
-    return rc;
-}
-
 /* Returns a list of these tuple for each part which failed:
 
 	(attr_name, correctValue, currentValue)
@@ -482,7 +441,6 @@ static struct PyMethodDef hdrMethods[] = {
 	{"expandFilelist",	(PyCFunction) hdrExpandFilelist,	1 },
 	{"compressFilelist",	(PyCFunction) hdrCompressFilelist,	1 },
 	{"fullFilelist",	(PyCFunction) hdrFullFilelist,	1 },
-	{"rhnUnload",	(PyCFunction) rhnUnload,	1 },
 	{NULL,		NULL}		/* sentinel */
 };
 
@@ -1891,6 +1849,52 @@ static PyObject * rhnLoad(PyObject * self, PyObject * args) {
     return (PyObject *) h;
 }
 
+/** 
+ */
+static PyObject * rhnUnload(PyObject * self, PyObject * args) {
+    int len;
+    char * uh;
+    PyObject * rc;
+    hdrObject *s;
+    Header h;
+    if (!PyArg_ParseTuple(args, "O!", &hdrType, &s))
+        return NULL;
+
+    h = headerLink(s->h);
+
+    /* Legacy headers are forced into immutable region. */
+    if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE))
+	h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
+
+    /* All headers have SHA1 digest, compute and add if necessary. */
+    if (!headerIsEntry(h, RPMTAG_SHA1HEADER)) {
+	int_32 uht, uhc;
+	const char * digest;
+        size_t digestlen;
+        DIGEST_CTX ctx;
+
+	headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, (void **)&uh, &uhc);
+
+	ctx = rpmDigestInit(RPMDIGEST_SHA1);
+        rpmDigestUpdate(ctx, uh, uhc);
+        rpmDigestFinal(ctx, (void **)&digest, &digestlen, 1);
+
+	headerAddEntry(h, RPMTAG_SHA1HEADER, RPM_STRING_TYPE, digest, 1);
+
+	uh = headerFreeData(uh, uht);
+	digest = _free(digest);
+    }
+
+    len = headerSizeof(h, 0);
+    uh = headerUnload(h);
+    headerFree(h);
+
+    rc = PyString_FromStringAndSize(uh, len);
+    free(uh);
+
+    return rc;
+}
+
 /**
  */
 static PyObject * rpmInitDB(PyObject * self, PyObject * args) {
@@ -2127,6 +2131,7 @@ static PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args) {
     Py_INCREF(Py_None);
     return Py_None;
 }
+
 
 /**
  */
@@ -2387,6 +2392,7 @@ static PyMethodDef rpmModuleMethods[] = {
     { "findUpgradeSet", (PyCFunction) findUpgradeSet, METH_VARARGS, NULL },
     { "headerFromPackage", (PyCFunction) rpmHeaderFromPackage, METH_VARARGS, NULL },
     { "headerLoad", (PyCFunction) hdrLoad, METH_VARARGS, NULL },
+    { "rhnUnload", (PyCFunction) rhnUnload, METH_VARARGS, NULL },
     { "rhnLoad", (PyCFunction) rhnLoad, METH_VARARGS, NULL },
     { "initdb", (PyCFunction) rpmInitDB, METH_VARARGS, NULL },
     { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS, NULL },

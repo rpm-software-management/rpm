@@ -592,7 +592,7 @@ int main(int argc, const char ** argv)
 #endif	/* IAM_RPMBT */
     
 #ifdef	IAM_RPMDB
-  if (bigMode == MODE_UNKNOWN) {
+  if (bigMode == MODE_UNKNOWN || (bigMode & MODES_DB)) {
     if (da->init) {
 	if (bigMode != MODE_UNKNOWN) 
 	    argerror(_("only one major mode may be specified"));
@@ -615,7 +615,7 @@ int main(int argc, const char ** argv)
 #endif	/* IAM_RPMDB */
 
 #ifdef	IAM_RPMQV
-  if (bigMode == MODE_UNKNOWN) {
+  if (bigMode == MODE_UNKNOWN || (bigMode & MODES_QV)) {
     switch (qva->qva_mode) {
     case 'q':	bigMode = MODE_QUERY;		break;
     case 'V':	bigMode = MODE_VERIFY;		break;
@@ -639,7 +639,7 @@ int main(int argc, const char ** argv)
 #endif	/* IAM_RPMQV */
 
 #ifdef	IAM_RPMEIU
-  if (bigMode == MODE_UNKNOWN)
+  if (bigMode == MODE_UNKNOWN || (bigMode & MODES_IE))
     {	int iflags = (ia->installInterfaceFlags &
 		(INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL));
 	int eflags = (ia->installInterfaceFlags & INSTALL_ERASE);
@@ -654,7 +654,7 @@ int main(int argc, const char ** argv)
 #endif	/* IAM_RPMQV */
 
 #ifdef	IAM_RPMK
-  if (bigMode == MODE_UNKNOWN) {
+  if (bigMode == MODE_UNKNOWN || (bigMode & MODES_K)) {
 	switch (ka->addSign) {
 	case RESIGN_NONE:
 	    break;
