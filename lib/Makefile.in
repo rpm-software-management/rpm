@@ -1,7 +1,11 @@
-LIBS = $(EFENCE)
+LIBS = -lefence
 
-LIBOBJECTS = header.o oldrpmdb.o misc.o messages.o falloc.o
+LIBOBJECTS = header.o oldrpmdb.o misc.o messages.o rpmerr.o
 LIBRPM = librpm.a
+
+WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
+DEBUG = -g
+OPTS = -O2
 
 all: test dump
 
