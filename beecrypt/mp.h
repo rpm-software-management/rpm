@@ -27,12 +27,6 @@
 #define _MP_H
 
 #include "beecrypt.h"
-
-#if HAVE_STRING_H
-# include <string.h>
-#endif
-#include <stdio.h>
-
 #include "mpopt.h"
 
 #define MP_HWBITS	(MP_WBITS >> 1)

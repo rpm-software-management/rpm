@@ -169,16 +169,15 @@ void mpbsethex(mpbarrett* b, const char* hex)
 	{
 		register mpw* temp = (mpw*) malloc((6*size+4) * sizeof(*temp));
 
+		assert(temp != NULL);
 		b->size = size;
 		b->mu = b->modl+size;
 
 		(void) hs2ip(b->modl, size, hex, len);
 
-		/*@-nullpass@*/		/* temp may be NULL */
 		mpbmu_w(b, temp);
 
 		free(temp);
-		/*@=nullpass@*/
 	}
 	else
 	{
@@ -533,7 +532,7 @@ void mpbpowmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t psiz
 	{
 		mpw* slide = (mpw*) malloc((8*size)*sizeof(*slide));
 
-		/*@-nullpass@*/		/* slide may be NULL */
+		assert(slide != NULL);
 		mpbslide_w(b, xsize, xdata, slide, wksp);
 
 		/*@-internalglobs -mods@*/ /* noisy */
@@ -541,7 +540,6 @@ void mpbpowmod_w(const mpbarrett* b, size_t xsize, const mpw* xdata, size_t psiz
 		/*@=internalglobs =mods@*/
 
 		free(slide);
-		/*@=nullpass@*/
 	}
 }
 
@@ -1135,15 +1133,14 @@ void mpbnrnd(const mpbarrett* b, randomGeneratorContext* rc, mpnumber* result)
 	register size_t  size = b->size;
 	register mpw* temp = (mpw*) malloc(size * sizeof(*temp));
 
+	assert(temp != NULL);
 	mpnfree(result);
 	mpnsize(result, size);
-	/*@-nullpass@*/		/* temp may be NULL */
 	/*@-usedef@*/		/* result->data unallocated? */
 	mpbrnd_w(b, rc, result->data, temp);
 	/*@=usedef@*/
 
 	free(temp);
-	/*@=nullpass@*/
 }
 
 void mpbnmulmod(const mpbarrett* b, const mpnumber* x, const mpnumber* y, mpnumber* result)
@@ -1153,9 +1150,10 @@ void mpbnmulmod(const mpbarrett* b, const mpnumber* x, const mpnumber* y, mpnumb
 
 	/* xsize and ysize must be <= b->size */
 	register size_t  fill = 2*size-x->size-y->size;
-	/*@-nullptrarith@*/	/* temp may be NULL */
-	register mpw* opnd = temp+size*2+2;
-	/*@=nullptrarith@*/
+	register mpw* opnd;
+
+	assert(temp != NULL);
+	opnd = temp + size*2+2;
 
 	mpnfree(result);
 	mpnsize(result, size);
@@ -1164,13 +1162,11 @@ void mpbnmulmod(const mpbarrett* b, const mpnumber* x, const mpnumber* y, mpnumb
 		mpzero(fill, opnd);
 
 	mpmul(opnd+fill, x->size, x->data, y->size, y->data);
-	/*@-nullpass@*/		/* temp may be NULL */
 	/*@-usedef -compdef @*/	/* result->data unallocated? */
 	mpbmod_w(b, opnd, result->data, temp);
 	/*@=usedef =compdef @*/
 
 	free(temp);
-	/*@=nullpass@*/
 }
 
 void mpbnsqrmod(const mpbarrett* b, const mpnumber* x, mpnumber* result)
@@ -1180,22 +1176,21 @@ void mpbnsqrmod(const mpbarrett* b, const mpnumber* x, mpnumber* result)
 
 	/* xsize must be <= b->size */
 	register size_t  fill = 2*(size-x->size);
-	/*@-nullptrarith@*/	/* temp may be NULL */
-	register mpw* opnd = temp + size*2+2;
-	/*@=nullptrarith@*/
+	register mpw* opnd;
+
+	assert(temp != NULL);
+	opnd = temp + size*2+2;
 
 	if (fill)
 		mpzero(fill, opnd);
 
 	mpsqr(opnd+fill, x->size, x->data);
 	mpnsize(result, size);
-	/*@-nullpass@*/		/* temp may be NULL */
 	/*@-usedef -compdef @*/	/* result->data unallocated? */
 	mpbmod_w(b, opnd, result->data, temp);
 	/*@=usedef =compdef @*/
 
 	free(temp);
-	/*@=nullpass@*/
 }
 
 void mpbnpowmod(const mpbarrett* b, const mpnumber* x, const mpnumber* pow, mpnumber* y)
@@ -1203,14 +1198,13 @@ void mpbnpowmod(const mpbarrett* b, const mpnumber* x, const mpnumber* pow, mpnu
 	register size_t  size = b->size;
 	register mpw* temp = (mpw*) malloc((4*size+2) * sizeof(*temp));
 
+	assert(temp != NULL);
 	mpnfree(y);
 	mpnsize(y, size);
 
-	/*@-nullpass@*/		/* temp may be NULL */
 	mpbpowmod_w(b, x->size, x->data, pow->size, pow->data, y->data, temp);
 
 	free(temp);
-	/*@=nullpass@*/
 }
 
 void mpbnpowmodsld(const mpbarrett* b, const mpw* slide, const mpnumber* pow, mpnumber* y)
@@ -1218,14 +1212,13 @@ void mpbnpowmodsld(const mpbarrett* b, const mpw* slide, const mpnumber* pow, mp
 	register size_t  size = b->size;
 	register mpw* temp = (mpw*) malloc((4*size+2) * sizeof(*temp));
 
+	assert(temp != NULL);
 	mpnfree(y);
 	mpnsize(y, size);
 
-	/*@-nullpass@*/		/* temp may be NULL */
 	/*@-internalglobs -mods@*/ /* noisy */
 	mpbpowmodsld_w(b, slide, pow->size, pow->data, y->data, temp);
 	/*@=internalglobs =mods@*/
 
 	free(temp);
-	/*@=nullpass@*/
 }

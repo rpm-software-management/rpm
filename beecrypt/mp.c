@@ -702,7 +702,6 @@ mpw mpaddmul(register size_t size, register mpw* result, register const mpw* dat
 #ifndef ASM_MPMUL
 void mpmul(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw* ydata)
 {
-	/*@-mods@*/
 	/* preferred passing of parameters is x the larger of the two numbers */
 	if (xsize >= ysize)
 	{
@@ -736,7 +735,6 @@ void mpmul(mpw* result, size_t xsize, const mpw* xdata, size_t ysize, const mpw*
 			*(--result) = rc;
 		}
 	}
-	/*@=mods@*/
 }
 #endif
 
@@ -809,7 +807,6 @@ void mpsqr(register mpw* result, register size_t size, register const mpw* data)
 	register mpw rc;
 	register size_t n = size-1;
 
-	/*@-mods@*/
 	result += size;
 	result[n] = 0;
 
@@ -829,7 +826,6 @@ void mpsqr(register mpw* result, register size_t size, register const mpw* data)
 	(void) mpmultwo(size*2, result);
 
 	(void) mpaddsqrtrc(size, result, data);
-	/*@=mods@*/
 }
 #endif
 

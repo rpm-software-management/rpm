@@ -106,7 +106,6 @@ int rsapricrt(const rsakp* kp, const mpnumber* c, mpnumber* m)
 	mpbmod_w(&kp->p, ptemp, ptemp+psize, ptemp+2*psize);
 
 	/* compute j1 = c^d1 mod p, store @ ptemp */
-/*@-compdef@*/
 	mpbpowmod_w(&kp->p, psize, ptemp+psize, kp->d1.size, kp->d1.data, ptemp, ptemp+2*psize);
 
 	/* resize c for powmod p */
@@ -117,7 +116,6 @@ int rsapricrt(const rsakp* kp, const mpnumber* c, mpnumber* m)
 
 	/* compute j2 = c^d2 mod q, store @ qtemp */
 	mpbpowmod_w(&kp->q, qsize, qtemp+qsize, kp->d2.size, kp->d2.data, qtemp, qtemp+2*qsize);
-/*@=compdef@*/
 
 	/* compute j1-j2 mod p, store @ ptemp */
 	mpbsubmod_w(&kp->p, psize, ptemp, qsize, qtemp, ptemp, ptemp+2*psize);

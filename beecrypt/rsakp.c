@@ -56,7 +56,7 @@ int rsakpMake(rsakp* kp, randomGeneratorContext* rgc, size_t nsize)
 		/*@-globs@*/
 		mpprnd_w(&kp->p, rgc, pqsize, mpptrials(MP_WORDS_TO_BITS(pqsize)), &kp->e, temp);
 		mpprnd_w(&kp->q, rgc, pqsize, mpptrials(MP_WORDS_TO_BITS(pqsize)), &kp->e, temp);
-		/*@-globs@*/
+		/*@=globs@*/
 
 		/* if p <= q, perform a swap to make p larger than q */
 		if (mple(pqsize, kp->p.modl, kp->q.modl))
