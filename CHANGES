@@ -63,6 +63,12 @@
 	- per-platform configuration factored into /usr/lib/rpm subdir.
 	- sparc-sun-solaris2.6 portability check.
 	- simpler hpux.prov script (Tim Mooney).
+	- portability: skip bzip2 if not available.
+	- portability: skip gzseek if not available (zlib-1.0.4).
+	- portability: skip personality if not available (linux).
+	- portability: always include arpa/inet.h (HP-UX).
+	- portability: don't use id -u (Brandon Allbery).
+	- portability: don't chown/chgrp -h w/o lchown.
 
 3.0.2 -> 3.0.3
 	- add --eval to find result of macro expansion.

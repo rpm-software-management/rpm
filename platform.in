@@ -41,6 +41,9 @@
 #------------------------------------------------------------------------
 #	Expanded at end of %prep (Red Hat uses these for 6.2)
 #
-%_fixowner              [ `%{__id} -u` = '0' ] && %{__chown} -Rhf root
-%_fixgroup              [ `%{__id} -u` = '0' ] && %{__chgrp} -Rhf root
-%_fixperms              %{__chmod} -Rf a+rX,g-w,o-w
+%__id_u			@__ID_U@
+%__chown_Rhf		@__CHOWN_RHF@
+%__chgrp_Rhf		@__CHGRP_RHF@
+%_fixowner		[ `%{__id_u}` = '0' ] && %{__chown_Rhf} root
+%_fixgroup		[ `%{__id_u}` = '0' ] && %{__chgrp_Rhf} @ROOT_GROUP@
+%_fixperms		%{__chmod} -Rf @FIXPERMS@

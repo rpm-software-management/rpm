@@ -9,7 +9,7 @@ INCLUDES = \
 EXTRA_DIST = \
 	alloca.c	basename.c	err.c		error.c		\
 	fakefork.c	fnmatch.c	getcwd.c	getmntent.c	\
-	getwd.c						memcmp.c	\
+	getwd.c		glob.c				memcmp.c	\
 	mktime.c	myrealloc.c	putenv.c	realpath.c	\
 	setenv.c	stpcpy.c	stpncpy.c	strcasecmp.c	\
 	strncasecmp.c	strcspn.c	strdup.c	strerror.c	\
@@ -18,7 +18,7 @@ EXTRA_DIST = \
 
 noinst_HEADERS = \
 	err.h		error.h		fnmatch.h	fstrcmp.h	\
-			libgettext.h	message.h	po-lex.h	\
+	glob.h		libgettext.h	message.h	po-lex.h	\
 			str-list.h	fstrcmp.h
 
 noinst_LIBRARIES = libmisc.a

@@ -165,7 +165,7 @@ fi
 %dir /usr/src/redhat/SRPMS
 %dir /usr/src/redhat/RPMS
 /usr/src/redhat/RPMS/*
-/usr/share/locale/*/LC_MESSAGES/rpm.mo
+/usr/*/locale/*/LC_MESSAGES/rpm.mo
 /usr/man/man[18]/*.[18]*
 %lang(pl) /usr/man/pl/man[18]/*.[18]*
 %lang(ru) /usr/man/ru/man[18]/*.[18]*
@@ -209,7 +209,7 @@ fi
 %files -n popt
 %defattr(-,root,root)
 /usr/lib/libpopt.so.*
-/usr/share/locale/*/LC_MESSAGES/popt.mo
+/usr/*/locale/*/LC_MESSAGES/popt.mo
 /usr/man/man3/popt.3*
 
 # XXX These may end up in popt-devel but it hardly seems worth the effort now.
@@ -219,6 +219,15 @@ fi
 /usr/include/popt.h
 
 %changelog
+* Thu Mar  9 2000 Jeff Johnson <jbj@redhat.com>
+- portability: skip bzip2 if not available.
+- portability: skip gzseek if not available (zlib-1.0.4).
+- portability: skip personality if not available (linux).
+- portability: always include arpa/inet.h (HP-UX).
+- portability: don't use id -u (Brandon Allbery).
+- portability: don't chown/chgrp -h w/o lchown.
+- portability: splats in rpm.spec to find /usr/{share,local}/locale/*
+
 * Thu Mar  2 2000 Jeff Johnson <jbj@redhat.com>
 - simpler hpux.prov script (Tim Mooney).
 

@@ -162,8 +162,19 @@ dnl
     AC_PATH_PROG(__CP, cp, /bin/cp, $MYPATH)
     AC_PATH_PROG(__CPIO, cpio, /bin/cpio, $MYPATH)
     AC_PATH_PROG(GZIPBIN, gzip, /bin/gzip, $MYPATH)
-dnl Solaris prefers /usr/xpg4/bin/id
+    AC_PATH_PROG(__GREP, grep, /bin/grep, $MYPATH)
+
     AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
+    AC_MSG_CHECKING(checking whether id supports -u)
+    if `${__ID} -u 2>&1 > /dev/null` ; then
+	__ID_U="%{__id} -u"
+	AC_MSG_RESULT(yes)
+    else
+	__ID_U="%{__id} | %{__sed} 's/[^=]*=\([0-9][0-9]*\).*$/\1/'"
+	AC_MSG_RESULT(no)
+    fi
+    AC_SUBST(__ID_U)
+
     AC_PATH_PROG(__INSTALL, install, /usr/bin/install, $MYPATH)
     AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
     AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
@@ -179,9 +190,11 @@ dnl Solaris prefers /usr/xpg4/bin/id
 	AC_MSG_RESULT(patch later then 2.2 found)
     fi
 
+    AC_PATH_PROG(__PERL, perl, /usr/bin/perl, $MYPATH)
     AC_PATH_PROG(PGPBIN, pgp, /usr/bin/pgp, $MYPATH)
     AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
     AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
+    AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
     AC_PATH_PROG(__SSH, ssh, /usr/bin/ssh, $MYPATH)
     AC_PATH_PROG(__TAR, tar, /bin/tar, $MYPATH)
 
@@ -297,7 +310,7 @@ AC_CHECK_LIB(port, writev)
 AC_CHECK_FUNC(dbopen, [],
   AC_CHECK_LIB(db1, dbopen, [LIBS="$LIBS -ldb1"],
     AC_CHECK_LIB(db, dbopen, [LIBS="$LIBS -ldb"],
-       AC_MSG_WARN([sorry this package needs libdb.a (from the db package)])))
+       AC_MSG_ERROR([sorry rpm requires a db-1.85 API])))
            )
 
 AC_CHECK_FUNC(fork, [], [echo "using vfork() instead of fork()";
@@ -316,7 +329,7 @@ for zlib in z gz ; do
    AC_CHECK_LIB(${zlib}, gzread, 
 	[LIBS="$LIBS -l${zlib}"; break], 
 	[if test ${zlib} = gz; then 
-	    AC_MSG_WARN([sorry rpm needs libz.a or libgz.a (from the zlib package)]) 
+	    AC_MSG_ERROR([sorry rpm requires libz.a or libgz.a (from the zlib package)]) 
 	 fi]
 	       )
 done
@@ -328,13 +341,13 @@ for bz2lib in bz2 ; do
    AC_CHECK_LIB(${bz2lib}, bzread, 
 	[LIBS="$LIBS -l${bz2lib}"; break], 
 	[if test ${bz2lib} = bz2; then 
-	    AC_MSG_WARN([sorry rpm needs libbz2.a (from the bzip2 package)]) 
+	    AC_MSG_WARN([rpm needs libbz2.a (from the bzip2 package)]) 
 	 fi]
 	       )
 done
 
 dnl Red Hat 4.x has not personality
-AC_CHECK_FUNC(personality, [AC_DEFINE(HAVE_PERSONALITY)])
+AC_CHECK_FUNCS(personality)
 
 dnl XXX these are needed only by rpmgettext right now
 AM_FUNC_ERROR_AT_LINE
@@ -634,28 +647,28 @@ dnl XXX Glob may be broken on solaris and aix when %files gets something like
 dnl	/usr/share/locale/*/LC_MESSAGES/*.mo
 dnl (Note: two asterisks in glob pattern.)
 dnl
-dnl AC_ARG_WITH(glob, [  --with-glob             use the internal GNU glob ],
-dnl     [rpm_cv_glob=yes],
-dnl     [AC_CHECK_FUNCS(glob, rpm_cv_glob=no, rpm_cv_glob=yes)])
-dnl 
-dnl if test $rpm_cv_glob = no ; then
-dnl     AC_MSG_CHECKING(whether the glob library is broken)
-dnl     AC_TRY_RUN([
-dnl #include <unistd.h>
-dnl #include <glob.h>
-dnl main() { glob_t blah ; exit(glob("doc/*/*.8", 0, NULL, &blah) || blah.gl_pathc < 1); } ],
-dnl     rpm_cv_glob_broken=no, rpm_cv_glob_broken=yes, rpm_cv_glob_broken=yes)
-dnl     AC_MSG_RESULT([$rpm_cv_glob_broken])
-dnl     if test $rpm_cv_glob_broken = yes ; then
-dnl 	    echo "    --> using the included GNU glob instead." >&AC_FD_MSG
-dnl 	    rpm_cv_glob=yes
-dnl     fi
-dnl fi
-dnl
-dnl if test $rpm_cv_glob = yes; then
-dnl     AC_DEFINE(USE_GNU_GLOB)
-dnl     LIBOBJS="$LIBOBJS glob.o"
-dnl fi
+AC_ARG_WITH(glob, [  --with-glob             use the internal GNU glob ],
+    [rpm_cv_glob=yes],
+    [AC_CHECK_FUNCS(glob, rpm_cv_glob=no, rpm_cv_glob=yes)])
+
+if test $rpm_cv_glob = no ; then
+    AC_MSG_CHECKING(whether the glob library is broken)
+    AC_TRY_RUN([
+#include <unistd.h>
+#include <glob.h>
+main() { glob_t blah ; exit(glob("doc/*/*.8", 0, NULL, &blah) || blah.gl_pathc < 1); } ],
+    rpm_cv_glob_broken=no, rpm_cv_glob_broken=yes, rpm_cv_glob_broken=yes)
+    AC_MSG_RESULT([$rpm_cv_glob_broken])
+    if test $rpm_cv_glob_broken = yes ; then
+	    echo "    --> using the included GNU glob instead." >&AC_FD_MSG
+	    rpm_cv_glob=yes
+    fi
+fi
+
+if test $rpm_cv_glob = yes; then
+    AC_DEFINE(USE_GNU_GLOB)
+    LIBOBJS="$LIBOBJS glob.o"
+fi
 
 AC_CHECK_FUNCS(setlocale)
 
@@ -669,9 +682,12 @@ AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT), [
 					AC_DEFINE(HAVE_GETMNTINFO_R)],
                  LIBOBJS="$LIBOBJS getmntent.o")])])])
 
-LCHOWN=no
-AC_CHECK_FUNC(lchown, [LCHOWN=yes; AC_DEFINE(HAVE_LCHOWN)])
-if test "$LCHOWN" = no; then 
+AC_CHECK_FUNC(lchown,
+   [__CHOWN_RHF="%{__chown} -Rhf"
+    __CHGRP_RHF="%{__chgrp} -Rhf"
+    AC_DEFINE(HAVE_LCHOWN)],
+   [__CHOWN_RHF="%{__chown} -Rf"
+    __CHGRP_RHF="%{__chgrp} -Rf"
     dnl Does chown() follow symlinks? This should be a good enough test.
     AC_MSG_CHECKING(whether chown() follows symlinks)
     AC_ARG_ENABLE([broken-chown],
@@ -683,17 +699,17 @@ if test "$LCHOWN" = no; then
 	result=no
     fi
     if test $result = unknown; then
-	if test `id | cut -f2 -d\= | cut -f1 -d\(` = 0; then
+	if test `${__ID} | cut -f2 -d\= | cut -f1 -d\(` = 0; then
 	    rm -f foo bar
 	    touch foo
 	    ln -s foo bar
-	    chown 10 bar
+	    ${__CHOWN} 10 bar
 	    if test `ls -l foo | awk '{print $3}'` != "root"; then
 		result=yes
 	    else
 		result=no
 	    fi
-	    rm -f foo bar
+	    ${__RM} -f foo bar
 	else
 	    AC_MSG_CHECKING((cannot check by non-root user))
 	    result=no
@@ -703,9 +719,9 @@ if test "$LCHOWN" = no; then
     AC_MSG_RESULT($result)
     if test $result = yes; then
 	    AC_DEFINE(CHOWN_FOLLOWS_SYMLINK)
-    fi
-fi
-
+    fi])
+AC_SUBST(__CHOWN_RHF)
+AC_SUBST(__CHGRP_RHF)
 
 dnl
 dnl figure out what root's primary group is

@@ -1,4 +1,4 @@
-# $Id: macros.in,v 1.46 2000/02/13 19:24:19 jbj Exp $
+# $Id: macros.in,v 1.47 2000/03/09 18:13:03 jbj Exp $
 #==============================================================================
 # Macro naming conventions (preliminary):
 #
@@ -32,6 +32,7 @@
 %__chown		@__CHOWN@
 %__cp			@__CP@
 %__cpio			@__CPIO@
+%__grep			@__GREP@
 %__gzip			%{_gzipbin}
 %__id			@__ID@
 %__install		@__INSTALL@
@@ -41,9 +42,11 @@
 %__mkdir_p		@MKDIR_P@
 %__mv			@__MV@
 %__patch		@__PATCH@
+%__perl			@__PERL@
 %__pgp			%{_pgpbin}
 %__rm			@__RM@
 %__rsh			@__RSH@
+%__sed			@__SED@
 %__ssh			@__SSH@
 %__tar			@__TAR@
 
@@ -88,8 +91,11 @@
 #%__find_obsoletes	???
 #
 # XXX fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
-%_fixowner		[ `%{__id} -u` = '0' ] && %{__chown} -Rhf root
-%_fixgroup		[ `%{__id} -u` = '0' ] && %{__chgrp} -Rhf @ROOT_GROUP@
+%__id_u			@__ID_U@
+%__chown_Rhf		@__CHOWN_RHF@
+%__chgrp_Rhf		@__CHGRP_RHF@
+%_fixowner		[ `%{__id_u}` = '0' ] && %{__chown_Rhf} root
+%_fixgroup		[ `%{__id_u}` = '0' ] && %{__chgrp_Rhf} @ROOT_GROUP@
 %_fixperms		%{__chmod} -Rf @FIXPERMS@
 #
 %_gzipbin		@GZIPBIN@

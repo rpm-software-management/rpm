@@ -77,7 +77,10 @@
 /* Define if the patch call you'll be using is 2.1 or older */
 #undef HAVE_OLDPATCH_21
 
-/* Define to the fulkl path name of the static libbz2.a */
+/* Define as 1 if your zlib has gzseek() */
+#undef HAVE_GZSEEK
+
+/* Define to the full path name of the bzip2 library (libbz2.a) */
 #undef BZIP2LIB
 
 /* A full path to a program, possibly with arguments, that will create a
@@ -126,14 +129,17 @@
 /* define if the statfs() call takes 4 arguments */
 #undef STAT_STATFS4
 
+/* Absolute path to rpm top_sourcedir. */
+#undef TOP_SOURCEDIR
+
 /* define if support rpm-1.0 packages is desired */
 #undef ENABLE_V1_PACKAGES
 
 /* define if experimental support rpm-4.0 packages is desired */
 #undef ENABLE_V4_PACKAGES
 
-/* Absolute path to rpm top_sourcedir. */
-#undef TOP_SOURCEDIR
+/* Use the included glob.c? */
+#undef USE_GNU_GLOB
 
 ^L
 /* Leave that blank line there!!  Autoheader needs it.
