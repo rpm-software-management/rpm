@@ -28,8 +28,6 @@ static int checkSpec(rpmTransactionSet ts, Header h)
      && !headerIsEntry(h, RPMTAG_CONFLICTNAME))
 	return 0;
 
-    rc = rpmtransAddPackage(ts, h, NULL, 0, NULL);
-
     rc = rpmdepCheck(ts, &conflicts, &numConflicts);
     /*@-branchstate@*/
     if (rc == 0 && conflicts) {

@@ -485,7 +485,7 @@ rpmRC rpmInstallSourcePackage(rpmTransactionSet ts, FD_t fd,
 	goto exit;
     }
 
-    (void) rpmtransAddPackage(ts, h, NULL, 0, NULL);
+     (void) rpmtransAddPackage(ts, h, NULL, 0, NULL);
 
     fi = fiNew(ts, fi, h, RPMTAG_BASENAMES, scareMem);
     h = headerFree(h, "InstallSourcePackage");

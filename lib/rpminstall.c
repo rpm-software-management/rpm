@@ -19,6 +19,8 @@
 /*@access IDTX @*/
 /*@access IDT @*/
 
+extern int _rpmio_debug;
+
 /*@unchecked@*/
 static int hashesPrinted = 0;
 
@@ -173,6 +175,8 @@ void * rpmShowProgress(/*@null@*/ const void * arg,
     case RPMCALLBACK_UNINST_PROGRESS:
     case RPMCALLBACK_UNINST_START:
     case RPMCALLBACK_UNINST_STOP:
+    case RPMCALLBACK_UNPACK_ERROR:
+    case RPMCALLBACK_CPIO_ERROR:
 	/* ignore */
 	break;
     }
@@ -700,11 +704,13 @@ int rpmErase(rpmTransactionSet ts,
 }
 
 int rpmInstallSource(rpmTransactionSet ts, const char * arg,
-		const char ** specFile, const char ** cookie)
+		const char ** specFilePtr, const char ** cookie)
 {
     FD_t fd;
     int rc;
 
+fprintf(stderr, "*** rpmInstallSource(%p,%s,%p,%p)\n", ts, arg, specFilePtr, cookie);
+_rpmio_debug = -1;
     fd = Fopen(arg, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
 	rpmMessage(RPMMESS_ERROR, _("cannot open %s: %s\n"), arg, Fstrerror(fd));
@@ -716,14 +722,14 @@ int rpmInstallSource(rpmTransactionSet ts, const char * arg,
 	fprintf(stdout, _("Installing %s\n"), arg);
 
     {
-	rpmRC rpmrc = rpmInstallSourcePackage(ts, fd, specFile, cookie);
+	rpmRC rpmrc = rpmInstallSourcePackage(ts, fd, specFilePtr, cookie);
 	rc = (rpmrc == RPMRC_OK ? 0 : 1);
     }
     if (rc != 0) {
 	rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), arg);
 	/*@-unqualifiedtrans@*/
-	if (specFile && *specFile)
-	    *specFile = _free(*specFile);
+	if (specFilePtr && *specFilePtr)
+	    *specFilePtr = _free(*specFilePtr);
 	if (cookie && *cookie)
 	    *cookie = _free(*cookie);
 	/*@=unqualifiedtrans@*/
