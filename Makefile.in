@@ -155,7 +155,7 @@ noconfig:
 	rm -f *gz *rpm config.*
 
 cvstag:
-	cvs -f tag $(CVSTAG) .
+	cvs tag -F $(CVSTAG) .
 
 archive: cvstag
 	@echo " "
