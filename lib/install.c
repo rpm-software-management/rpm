@@ -52,7 +52,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 			  char ** specFile, int archiveSize);
 static int installSources(Header h, const char * rootdir, FD_t fd, 
 			  const char ** specFilePtr, rpmNotifyFunction notify,
-			  void * notifyData, const char * labelFormat);
+			  void * notifyData);
 static int markReplacedFiles(rpmdb db, struct replacedFile * replList);
 static int assembleFileList(Header h, struct fileMemory * mem, 
 			     int * fileCountPtr, struct fileInfo ** filesPtr, 
@@ -64,9 +64,9 @@ static void trimChangelog(Header h);
 /* 0 success */
 /* 1 bad magic */
 /* 2 error */
-int rpmInstallSourcePackage(const char * rootdir, FD_t fd, const char ** specFile,
-			    rpmNotifyFunction notify, void * notifyData,
-			    const char * labelFormat, char ** cookie) {
+int rpmInstallSourcePackage(const char * rootdir, FD_t fd, 
+			    const char ** specFile, rpmNotifyFunction notify, 
+			    void * notifyData, char ** cookie) {
     int rc, isSource;
     Header h;
     int major, minor;
@@ -81,7 +81,6 @@ int rpmInstallSourcePackage(const char * rootdir, FD_t fd, const char ** specFil
 
     if (major == 1) {
 	notify = NULL;
-	labelFormat = NULL;
 	h = NULL;
     }
 
@@ -93,8 +92,7 @@ int rpmInstallSourcePackage(const char * rootdir, FD_t fd, const char ** specFil
 	}
     }
     
-    rc = installSources(h, rootdir, fd, specFile, notify, notifyData,
-			labelFormat);
+    rc = installSources(h, rootdir, fd, specFile, notify, notifyData);
     if (h != NULL) headerFree(h);
  
     return rc;
@@ -645,9 +643,7 @@ static int installArchive(FD_t fd, struct fileInfo * files,
 /* 2 error */
 static int installSources(Header h, const char * rootdir, FD_t fd, 
 			  const char ** specFilePtr, rpmNotifyFunction notify,
-			  void * notifyData,
-			  const char * labelFormat)
-{
+			  void * notifyData) {
     char * specFile;
     int specFileIndex = -1;
     const char * realSourceDir = NULL;
@@ -725,15 +721,8 @@ static int installSources(Header h, const char * rootdir, FD_t fd,
 	}
     }
 
-    if (labelFormat && h != NULL) {
-	headerGetEntry(h, RPMTAG_NAME, &type, (void *) &name, &count);
-	headerGetEntry(h, RPMTAG_VERSION, &type, (void *) &version, &count);
-	headerGetEntry(h, RPMTAG_RELEASE, &type, (void *) &release, &count);
-	if (!headerGetEntry(h, RPMTAG_ARCHIVESIZE, &type, 
-				(void *) &archiveSizePtr, &count))
-	    archiveSizePtr = NULL;
-	fprintf(stdout, labelFormat, name, version, release);
-	fflush(stdout);
+    if (notify) {
+	notify(h, RPMNOTIFY_INST_START, 0, 0, notifyData);
     }
 
     currDirLen = 50;
