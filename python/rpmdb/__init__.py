@@ -152,7 +152,7 @@ def hashopen(file, flag='c', mode=0666, pgsize=None, ffactor=None, nelem=None,
     flags = _checkflag(flag)
     d = _db.DB()
     d.set_flags(hflags)
-    if cachesize is not None: d.set_cachesize(cachesize)
+    if cachesize is not None: d.set_cachesize(0, cachesize)
     if pgsize is not None:    d.set_pagesize(pgsize)
     if lorder is not None:    d.set_lorder(lorder)
     if ffactor is not None:   d.set_h_ffactor(ffactor)
@@ -168,7 +168,7 @@ def btopen(file, flag='c', mode=0666,
 
     flags = _checkflag(flag)
     d = _db.DB()
-    if cachesize is not None: d.set_cachesize(cachesize)
+    if cachesize is not None: d.set_cachesize(0, cachesize)
     if pgsize is not None: d.set_pagesize(pgsize)
     if lorder is not None: d.set_lorder(lorder)
     d.set_flags(btflags)
@@ -186,7 +186,7 @@ def rnopen(file, flag='c', mode=0666,
 
     flags = _checkflag(flag)
     d = _db.DB()
-    if cachesize is not None: d.set_cachesize(cachesize)
+    if cachesize is not None: d.set_cachesize(0, cachesize)
     if pgsize is not None: d.set_pagesize(pgsize)
     if lorder is not None: d.set_lorder(lorder)
     d.set_flags(rnflags)

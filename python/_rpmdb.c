@@ -90,9 +90,9 @@
 /* 40 = 4.0, 33 = 3.3; this will break if the second number is > 9 */
 #define DBVER (DB_VERSION_MAJOR * 10 + DB_VERSION_MINOR)
 
-#define PY_BSDDB_VERSION "3.3.1"
+#define PY_BSDDB_VERSION "3.4.2"
 
-static char *rcs_id = "$Id: _rpmdb.c,v 1.5 2002/08/14 21:35:35 jbj Exp $";
+static char *rcs_id = "$Id: _rpmdb.c,v 1.6 2002/11/06 16:46:54 jbj Exp $";
 
 
 #ifdef WITH_THREAD
@@ -1025,7 +1025,17 @@ DB_associate(DBObject* self, PyObject* args, PyObject* kwargs)
     secondaryDB->associateCallback = callback;
     secondaryDB->primaryDBType = _DB_get_type(self);
 
-
+    /* PyEval_InitThreads is called here due to a quirk in python 1.5
+     * - 2.2.1 (at least) according to Russell Williamson <merel@wt.net>:
+     * The global interepreter lock is not initialized until the first
+     * thread is created using thread.start_new_thread() or fork() is
+     * called.  that would cause the ALLOW_THREADS here to segfault due
+     * to a null pointer reference if no threads or child processes
+     * have been created.  This works around that and is a no-op if
+     * threads have already been initialized.
+     *  (see pybsddb-users mailing list post on 2002-08-07)
+     */
+    PyEval_InitThreads();
     MYDB_BEGIN_ALLOW_THREADS;
 #if (DBVER >= 41)
     err = self->db->associate(self->db, NULL,
@@ -1878,6 +1888,7 @@ DB_stat(DBObject* self, PyObject* args)
         MAKE_HASH_ENTRY(dup);
         MAKE_HASH_ENTRY(dup_free);
         break;
+#endif
 
     case DB_BTREE:
     case DB_RECNO:
@@ -1911,7 +1922,7 @@ DB_stat(DBObject* self, PyObject* args)
         MAKE_QUEUE_ENTRY(re_len);
         MAKE_QUEUE_ENTRY(re_pad);
         MAKE_QUEUE_ENTRY(pgfree);
-#if (DBVER >= 31) && (DBVER < 40)
+#if (DBVER == 31)
         MAKE_QUEUE_ENTRY(start);
 #endif
         MAKE_QUEUE_ENTRY(first_recno);
@@ -2349,8 +2360,6 @@ DBC_close(DBCursorObject* self, PyObject* args)
     if (!PyArg_ParseTuple(args, ":close"))
         return NULL;
 
-    CHECK_CURSOR_NOT_CLOSED(self);
-
     if (self->dbc != NULL) {
         MYDB_BEGIN_ALLOW_THREADS;
         err = self->dbc->c_close(self->dbc);
@@ -2439,7 +2448,7 @@ DBC_first(DBCursorObject* self, PyObject* args, PyObject* kwargs)
 static PyObject*
 DBC_get(DBCursorObject* self, PyObject* args, PyObject *kwargs)
 {
-    int err, flags;
+    int err, flags=0;
     PyObject* keyobj = NULL;
     PyObject* dataobj = NULL;
     PyObject* retval = NULL;
@@ -3324,7 +3333,7 @@ DBEnv_lock_stat(DBEnvObject* self, PyObject* args)
     int err;
     DB_LOCK_STAT* sp;
     PyObject* d = NULL;
-    u_int32_t flags;
+    u_int32_t flags = 0;
 
     if (!PyArg_ParseTuple(args, "|i:lock_stat", &flags))
         return NULL;
@@ -3438,7 +3447,7 @@ DBEnv_txn_stat(DBEnvObject* self, PyObject* args)
     int err;
     DB_TXN_STAT* sp;
     PyObject* d = NULL;
-    u_int32_t flags;
+    u_int32_t flags=0;
 
     if (!PyArg_ParseTuple(args, "|i:txn_stat", &flags))
         return NULL;

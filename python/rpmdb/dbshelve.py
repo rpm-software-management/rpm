@@ -53,7 +53,7 @@ def open(filename, flags=db.DB_CREATE, mode=0660, filetype=db.DB_HASH,
     if type(flags) == type(''):
         sflag = flags
         if sflag == 'r':
-            flags = db.DB_READONLY
+            flags = db.DB_RDONLY
         elif sflag == 'rw':
             flags = 0
         elif sflag == 'w':
