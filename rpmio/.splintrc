@@ -20,6 +20,7 @@
 -declundef
 -exportheadervar
 -exportlocal
+-globs
 
 -enummemuse
 -fcnuse

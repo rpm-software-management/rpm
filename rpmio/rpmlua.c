@@ -5,11 +5,11 @@
 #include <rpmerr.h>
 #include <rpmurl.h>
 
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-#include <lposix.h>
-#include <lrexlib.h>
+#include "../lua/include/lua.h"
+#include "../lua/include/lualib.h"
+#include "../lua/include/lauxlib.h"
+#include "../lua/local/lposix.h"
+#include "../lua/local/lrexlib.h"
 
 #include <unistd.h>
 #include <assert.h>
@@ -28,9 +28,12 @@ static inline int vsnprintf(char * buf, /*@unused@*/ int nb,
 #endif
 
 #define INITSTATE(_lua, lua) \
-	rpmlua lua = _lua ? _lua : \
+    rpmlua lua = _lua ? _lua : \
 	    (globalLuaState ? globalLuaState : \
-			      (globalLuaState = rpmluaNew()))
+			/*@-mods@*/ \
+			(globalLuaState = rpmluaNew()) \
+			/*@=mods@*/ \
+	    )
 
 /*@only@*/ /*@unchecked@*/ /*@null@*/
 static rpmlua globalLuaState = NULL;
@@ -579,11 +582,13 @@ static void _rpmluaInteractive(lua_State *L)
    (void) fputs("\n", stdout);
 }
 
+/*@-mods@*/
 void rpmluaInteractive(rpmlua _lua)
 {
     INITSTATE(_lua, lua);
     _rpmluaInteractive(lua->L);
 }
+/*@=mods@*/
 
 /* ------------------------------------------------------------------ */
 /* Lua API */

@@ -51,41 +51,56 @@ void *rpmluaFree(/*@only@*/ rpmlua lua)
 
 int rpmluaCheckScript(/*@null@*/ rpmlua lua, const char *script,
 		      /*@null@*/ const char *name)
-	/*@modifies lua @*/;
+	/*@globals fileSystem @*/
+	/*@modifies lua, fileSystem @*/;
 int rpmluaRunScript(/*@null@*/ rpmlua lua, const char *script,
 		    /*@null@*/ const char *name)
 	/*@globals fileSystem @*/
 	/*@modifies lua, fileSystem @*/;
+/*@-exportlocal@*/
 int rpmluaRunScriptFile(/*@null@*/ rpmlua lua, const char *filename)
 	/*@globals fileSystem @*/
 	/*@modifies lua, fileSystem @*/;
+/*@=exportlocal@*/
 void rpmluaInteractive(/*@null@*/ rpmlua lua)
 	/*@globals fileSystem @*/
 	/*@modifies lua, fileSystem @*/;
 
-void rpmluaSetData(/*@null@*/ rpmlua lua, const char *key, const void *data)
-	/*@modifies lua @*/;
 void *rpmluaGetData(/*@null@*/ rpmlua lua, const char *key)
-	/*@modifies lua @*/;
+	/*@globals fileSystem @*/
+	/*@modifies lua, fileSystem @*/;
+/*@-exportlocal@*/
+void rpmluaSetData(/*@null@*/ rpmlua lua, const char *key, const void *data)
+	/*@globals fileSystem @*/
+	/*@modifies lua, fileSystem @*/;
+/*@=exportlocal@*/
 
-void rpmluaSetPrintBuffer(/*@null@*/ rpmlua lua, int flag)
-	/*@modifies lua @*/;
 /*@exposed@*/
 const char *rpmluaGetPrintBuffer(/*@null@*/ rpmlua lua)
-	/*@modifies lua @*/;
+	/*@globals fileSystem @*/
+	/*@modifies lua, fileSystem @*/;
+void rpmluaSetPrintBuffer(/*@null@*/ rpmlua lua, int flag)
+	/*@globals fileSystem @*/
+	/*@modifies lua, fileSystem @*/;
 
-void rpmluaSetVar(/*@null@*/ rpmlua lua, rpmluav var)
-	/*@modifies lua, var @*/;
 void rpmluaGetVar(/*@null@*/ rpmlua lua, rpmluav var)
-	/*@modifies lua, var @*/;
+	/*@globals fileSystem @*/
+	/*@modifies lua, var, fileSystem @*/;
+void rpmluaSetVar(/*@null@*/ rpmlua lua, rpmluav var)
+	/*@globals fileSystem @*/
+	/*@modifies lua, var, fileSystem @*/;
 void rpmluaDelVar(/*@null@*/ rpmlua lua, const char *key, ...)
-	/*@modifies lua @*/;
+	/*@globals fileSystem @*/
+	/*@modifies lua, fileSystem @*/;
 int rpmluaVarExists(/*@null@*/ rpmlua lua, const char *key, ...)
-	/*@modifies lua @*/;
+	/*@globals fileSystem @*/
+	/*@modifies lua, fileSystem @*/;
 void rpmluaPushTable(/*@null@*/ rpmlua lua, const char *key, ...)
-	/*@modifies lua @*/;
+	/*@globals fileSystem @*/
+	/*@modifies lua, fileSystem @*/;
 void rpmluaPop(/*@null@*/ rpmlua lua)
-	/*@modifies lua @*/;
+	/*@globals fileSystem @*/
+	/*@modifies lua, fileSystem @*/;
 
 /*@only@*/
 rpmluav rpmluavNew(void)
@@ -94,14 +109,22 @@ void *rpmluavFree(/*@only@*/ rpmluav var)
 	/*@modifes var @*/;
 void rpmluavSetListMode(rpmluav var, int flag)
 	/*@modifies var @*/;
+/*@-exportlocal@*/
 void rpmluavSetKey(rpmluav var, rpmluavType type, const void *value)
 	/*@modifies var @*/;
+/*@=exportlocal@*/
+/*@-exportlocal@*/
 void rpmluavSetValue(rpmluav var, rpmluavType type, const void *value)
 	/*@modifies var @*/;
+/*@=exportlocal@*/
+/*@-exportlocal@*/
 void rpmluavGetKey(rpmluav var, /*@out@*/ rpmluavType *type, /*@out@*/ void **value)
 	/*@modifies *type, *value @*/;
+/*@=exportlocal@*/
+/*@-exportlocal@*/
 void rpmluavGetValue(rpmluav var, /*@out@*/ rpmluavType *type, /*@out@*/ void **value)
 	/*@modifies *type, *value @*/;
+/*@=exportlocal@*/
 
 /* Optional helpers for numbers. */
 void rpmluavSetKeyNum(rpmluav var, double value)
