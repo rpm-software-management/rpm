@@ -1,9 +1,11 @@
 #! /usr/bin/ksh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
+# $Id: hpux.prov,v 1.2 1998/05/26 13:28:48 ewt Exp $
+#
 # This file is distributed under the terms of the GNU Public License
 #
-# find-provides is part of RPM, the RedHat Package Manager.  find-provides
+# find-provides is part of RPM, the Red Hat Package Manager.  find-provides
 # reads a list of full pathnames (in a package) on stdin, and outputs all
 # shared libraries provided by (contained in) the package.
 #
@@ -31,6 +33,9 @@
 #         data page size: 4K
 #         instruction page size: 4K
 #
+
+PATH=/usr/bin:/usr/sbin:/usr/ccs/bin
+export PATH
 
 for f in `cat -`
 do

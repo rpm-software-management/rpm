@@ -1,9 +1,11 @@
 #! /usr/bin/ksh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
+# $Id: hpux.req,v 1.2 1998/05/26 13:28:48 ewt Exp $
+#
 # This file is distributed under the terms of the GNU Public License
 #
-# find-requires is part of RPM, the RedHat Package Manager.  find-requires
+# find-requires is part of RPM, the Red Hat Package Manager.  find-requires
 # reads a list of full pathnames (in a package) on stdin, and outputs all
 # shared libraries the package requires to run correctly.
 #
@@ -31,16 +33,23 @@
 #         data page size: 4K
 #         instruction page size: 4K
 
+PATH=/usr/bin:/usr/sbin:/sbin:/usr/ccs/bin
+export PATH
+
 #
 # TVM: it might be better to re-write this so that `file' isn't used, since
 # it can all be done with `chatr' (note the second line of chatr output tells
 # whether it's a shared executable or not), but this works.
 #
-filelist=`sed "s/['\"]/\\\&/g" | xargs file | grep executable | cut -d: -f1`
+filelist=`sed "s/['\"]/\\\&/g" | xargs file | egrep '(executable|library)' \
+	| cut -d: -f1`
 
 for f in $filelist
 do
-	chatr $f | awk '
+	# uncomment the next line if debugging
+	# echo "### processing $f"
+
+	chatr $f 2>/dev/null | awk '
 
 		#
 		# For you non-awk-ers, no single quotes in comments -- the shell
@@ -52,6 +61,10 @@ do
 			FS = " ";
 			RS = "\n";
 		}
+
+		# uncomment the next line for debugging information
+		#{ print NR, ": ", $0 }
+
 
 		in_shlib_list == 1 && /dynamic[ 	]+\// {
 		
@@ -70,3 +83,5 @@ do
 		}
 	' # end of awk
 done | sort -u
+#comment out the previous line and uncomment the next one if debugging.
+#done

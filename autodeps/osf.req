@@ -1,9 +1,11 @@
 #! /usr/bin/ksh
 
 # Original Author: Tim Mooney (mooney@plains.nodak.edu)
+# $Id: osf.req,v 1.2 1998/05/26 13:28:48 ewt Exp $
+#
 # This file is distributed under the terms of the GNU Public License
 #
-# find-requires is part of RPM, the RedHat Package Manager.  find-requires
+# find-requires is part of RPM, the Red Hat Package Manager.  find-requires
 # reads a list of full pathnames (in a package) on stdin, and outputs all
 # shared libraries the package requires to execute.
 #
@@ -30,13 +32,26 @@
 #	libX11.so    Dec  9 00:06:05 1997 0xaa1bf091     0 
 #	libc.so      Dec  8 18:41:11 1997 0x5e955f9b     0 osf.1
 
+PATH=/usr/bin:/usr/sbin:/sbin:/usr/ccs/bin
+export PATH
 
-# TVM: it might be better to re-write this so that `file' isn't used, since
-# it can all be done with `odump',  but this works.
+filelist=`cat -`
+
 #
-filelist=`sed "s/['\"]/\\\&/g" | xargs file | grep executable | cut -d: -f1`
+# Handle shell scripts first
+#
+for f in `echo $filelist | xargs file | grep 'shell script' | cut -d: -f 2 \
+	| awk '{ print $1 }'`
+do
+    print $f
+done | sort -u
 
-for f in $filelist
+#
+# TVM: it might be better to re-write this so that `file' isn't used, since
+# it could all be done with `odump', but this works.
+#
+
+for f in `echo $filelist | xargs file | grep executable | cut -d: -f1`
 do
 	odump -Dl $f 2>/dev/null | awk '
 
@@ -46,16 +61,27 @@ do
 		#
 
 		BEGIN { 
-			seen_program_name = 0;
+			found_program_name = 0;
 			FS = " ";
 			RS = "\n";
-			OFS=""
+			OFS="";
+			#
+			# what character should be used to separate the soname from any
+			# version info?  Using a . is actually a bad idea, since some
+			# free/3rd party libraries may be built so that the library
+			# soname may have version info in it too.  If we use . as the
+			# separator, it may not be possible to tell where the soname
+			# ends and the internal version info begins.  It might be
+			# better to use a - or a : here.  If you do so, be sure to
+			# change this setting in find-provides, too.
+			#
+			soname_version_delimiter=".";
 		}
 
 		# uncomment the next line for debugging information
-		#{ print "Got input:", $0 }
+		#{ print "Saw input:", $0 }
 
-		seen_program_name == 1 && $0 !~ /^$/ {
+		found_program_name == 1 && $0 !~ /^$/ {
 
 			# uncomment for debugging information
 			#print "found shared library: $0"
@@ -74,19 +100,22 @@ do
 				# shared libraries should *not* be built with any version info
 				# in the soname.  That info should be in the version field
 				# only.
+				#
 				# If we used a separator character of a - or something else,
 				# instead of a ., we would not have this problem.
 				#
-				print fields[1], ".", fields[8]
+				print fields[1], soname_version_delimiter, fields[8]
 			}
 		}
 
 		/^.*: *$/ {
-			seen_program_name = 1
+			found_program_name = 1
 			#
 			# uncomment the next line for debugging information
-			#print "found the program name: $1"
+			#print "found the program name: ", $1
 		}
 
 	' # end of awk
 done | sort -u
+# comment out the previous line and uncomment the next when debugging
+# done
