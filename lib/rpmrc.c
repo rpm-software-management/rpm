@@ -1279,7 +1279,7 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	{
 	    char class = (char) (RPMClass() | '0');
 
-	    if (class == '6' && is_athlon())
+	    if ((class == '6' && is_athlon()) || class == '7')
 	    	strcpy(un.machine, "athlon");
 	    else if (strchr("3456", un.machine[1]) && un.machine[1] != class)
 		un.machine[1] = class;

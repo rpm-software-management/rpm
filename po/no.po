@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-07-31 14:24-0400\n"
+"POT-Creation-Date: 2002-08-02 08:48-0400\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -3250,74 +3250,74 @@ msgstr ""
 msgid "error(%d) storing record %s into %s\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: rpmdb/rpmdb.c:3598
+#: rpmdb/rpmdb.c:3610
 #, c-format
 msgid "removing %s after successful db3 rebuild.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3636
+#: rpmdb/rpmdb.c:3648
 msgid "no dbpath has been set"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3668
-#, c-format
-msgid "rebuilding database %s into %s\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3672
-#, c-format
-msgid "temporary database %s already exists\n"
-msgstr ""
-
-#: rpmdb/rpmdb.c:3678
-#, c-format
-msgid "creating directory %s\n"
 msgstr ""
 
 #: rpmdb/rpmdb.c:3680
 #, c-format
+msgid "rebuilding database %s into %s\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:3684
+#, c-format
+msgid "temporary database %s already exists\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:3690
+#, c-format
+msgid "creating directory %s\n"
+msgstr ""
+
+#: rpmdb/rpmdb.c:3692
+#, c-format
 msgid "creating directory %s: %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3687
+#: rpmdb/rpmdb.c:3699
 #, c-format
 msgid "opening old database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3700
+#: rpmdb/rpmdb.c:3712
 #, c-format
 msgid "opening new database with dbapi %d\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3729
+#: rpmdb/rpmdb.c:3741
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3769
+#: rpmdb/rpmdb.c:3781
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3787
+#: rpmdb/rpmdb.c:3799
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3795
+#: rpmdb/rpmdb.c:3807
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3797
+#: rpmdb/rpmdb.c:3809
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3807
+#: rpmdb/rpmdb.c:3819
 #, c-format
 msgid "removing directory %s\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:3809
+#: rpmdb/rpmdb.c:3821
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
