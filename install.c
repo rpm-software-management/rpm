@@ -1,3 +1,4 @@
+#include <alloca.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
@@ -13,7 +14,7 @@ static int hashesPrinted = 0;
 
 static void printHash(const unsigned long amount, const unsigned long total);
 static void printPercent(const unsigned long amount, const unsigned long total);
-static int getFtpURL(char * hostAndFile);
+static int getFtpURL(char * prefix, char * hostAndFile);
 
 static void printHash(const unsigned long amount, const unsigned long total) {
     int hashesNeeded;
@@ -72,7 +73,7 @@ void doInstall(char * prefix, char * arg, int installFlags, int interfaceFlags) 
 	if (isVerbose()) {
 	    printf("Retrieving %s\n", arg);
 	}
-	fd = getFtpURL(arg + 6);
+	fd = getFtpURL(prefix, arg + 6);
 	if (fd < 0) {
 	    fprintf(stderr, "error: cannot ftp %s\n", arg);
 	}
@@ -178,7 +179,7 @@ int doSourceInstall(char * prefix, char * arg, char ** specFile) {
     return rc;
 }
 
-static int getFtpURL(char * hostAndFile) {
+static int getFtpURL(char * prefix, char * hostAndFile) {
     char * buf;
     char * chptr;
     int ftpconn;
@@ -201,7 +202,8 @@ static int getFtpURL(char * hostAndFile) {
 
     *chptr = '/';
 
-    tmp = tmpnam(NULL);
+    tmp = alloca(strlen(prefix) + 60);
+    sprintf(tmp, "%s/usr/tmp/rpm.ftp.%d", prefix, getuid());
     fd = creat(tmp, 0600);
 
     if (fd < 0) {
