@@ -2,7 +2,7 @@
 
 use RPM::Database;
 
-print "1..19\n";
+print "1..18\n";
 $count = 1;
 
 #
@@ -158,6 +158,5 @@ print "not " if $hdr;
 print "ok $count\n"; $count++;
 
 undef $rpm;
-print "ok $count\n"; $count++;
 
 exit 0;
