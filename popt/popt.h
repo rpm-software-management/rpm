@@ -65,5 +65,6 @@ int poptReadDefaultConfig(poptContext con, int useEnv);
    the same as " and both may include \ quotes */
 int poptParseArgvString(char * s, int * argcPtr, char *** argvPtr);
 const char * poptStrerror(const int error);
+void poptSetExecPath(poptContext con, const char * path, int allowAbsolute);
 
 #endif

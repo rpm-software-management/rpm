@@ -47,6 +47,8 @@ struct poptContext_s {
     int finalArgvCount;
     int finalArgvAlloced;
     struct execEntry * doExec;
+    char * execPath;
+    int execAbsolute;
 };
 
 #ifndef HAVE_STRERROR
@@ -60,6 +62,12 @@ static char * strerror(int errno) {
 	return "unknown errno";
 }
 #endif
+
+void poptSetExecPath(poptContext con, const char * path, int allowAbsolute) {
+    if (con->execPath) free(con->execPath);
+    con->execPath = strdup(con->execPath);
+    con->execAbsolute = allowAbsolute;
+}
 
 poptContext poptGetContext(char * name, int argc, char ** argv, 
 			   const struct poptOption * options, int flags) {
@@ -184,10 +192,20 @@ static int handleAlias(poptContext con, char * longName, char shortName,
 static void execCommand(poptContext con) {
     char ** argv;
     int pos = 0;
+    char * script = con->doExec->script;
 
     argv = malloc(sizeof(*argv) * 
 			(6 + con->numLeftovers + con->finalArgvCount));
-    argv[pos++] = con->doExec->script;
+
+    if (!con->execAbsolute && strchr(script, '/')) return;
+
+    if (!strchr(script, '/') && con->execPath) {
+	argv[pos] = alloca(strlen(con->execPath) + strlen(script) + 2);
+	sprintf(argv[pos], "%s/%s", con->execPath, script);
+    } else {
+	argv[pos] = script;
+    }
+    pos++;
 
     argv[pos] = findProgramPath(con->os->argv[0]);
     if (argv[pos]) pos++;
