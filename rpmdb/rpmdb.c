@@ -631,14 +631,15 @@ static void handler(int signum);
 static struct sigtbl_s {
     int signum;
     int active;
-    struct sigaction act;
+    void (*handler) (int signum);
     struct sigaction oact;
 } satbl[] = {
-    { SIGHUP,	0, { {handler} } },
-    { SIGINT,	0, { {handler} } },
-    { SIGTERM,	0, { {handler} } },
-    { SIGQUIT,	0, { {handler} } },
-    { -1,	0, { {NULL}    } },
+    { SIGHUP,	0, handler },
+    { SIGINT,	0, handler },
+    { SIGTERM,	0, handler },
+    { SIGQUIT,	0, handler },
+    { SIGPIPE,	0, handler },
+    { -1,	0, NULL },
 };
 /*@=fullinitblock@*/
 
@@ -669,8 +670,9 @@ static int enableSignals(void)
 	/*@globals caught, satbl, fileSystem @*/
 	/*@modifies caught, satbl, fileSystem @*/
 {
-    struct sigtbl_s * tbl;
     sigset_t newMask, oldMask;
+    struct sigtbl_s * tbl;
+    struct sigaction act;
     int rc;
 
     (void) sigfillset(&newMask);		/* block all signals */
@@ -680,7 +682,9 @@ static int enableSignals(void)
 	if (tbl->active++ > 0)
 	    continue;
 	(void) sigdelset(&caught, tbl->signum);
-	rc = sigaction(tbl->signum, &tbl->act, &tbl->oact);
+	memset(&act, 0, sizeof(act));
+	act.sa_handler = tbl->handler;
+	rc = sigaction(tbl->signum, &act, &tbl->oact);
 	if (rc) break;
     }
     return sigprocmask(SIG_SETMASK, &oldMask, NULL);
@@ -708,7 +712,7 @@ int rpmdbCheckSignals(void)
 
     if (terminate) {
 	rpmdb db;
-	rpmMessage(RPMMESS_WARNING, "Exiting on signal ...\n");
+	rpmMessage(RPMMESS_DEBUG, "Exiting on signal ...\n");
 /*@-newreftrans@*/
 	while ((db = rpmdbRock) != NULL) {
 /*@i@*/	    rpmdbRock = db->db_next;

@@ -121,7 +121,6 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
 
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 {
-    uint_32 tscolor = rpmtsColor(ts);
     int scareMem = 0;
     rpmfi fi = NULL;
     char * t, * te;
@@ -134,20 +133,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 /*@-boundswrite@*/
     *te = '\0';
 /*@=boundswrite@*/
-
-    if (!(qva->qva_flags & _QUERY_FOR_BITS) && qva->qva_queryFormat == NULL)
-    {
-	const char * n, * v, * r, * a;
-	(void) headerNEVRA(h, &n, NULL, &v, &r, &a);
-/*@-boundswrite@*/
-	te = stpcpy(te, n);
-	te = stpcpy( stpcpy(te, "-"), v);
-	te = stpcpy( stpcpy(te, "-"), r);
-	if (tscolor && a != NULL)
-	    te = stpcpy( stpcpy(te, "."), a);
-/*@=boundswrite@*/
-	goto exit;
-    }
 
     if (qva->qva_queryFormat != NULL) {
 	const char * str = queryHeader(h, qva->qva_queryFormat);
@@ -772,6 +757,16 @@ int rpmcliQuery(rpmts ts, QVA_t qva, const char ** argv)
 
     if (qva->qva_showPackage == NULL)
 	qva->qva_showPackage = showQueryPackage;
+
+fprintf(stderr, "*** BEFORE: flags %x & %x format %s\n", qva->qva_flags, _QUERY_FOR_BITS, qva->qva_queryFormat);
+    if (!(qva->qva_flags & _QUERY_FOR_BITS) && qva->qva_queryFormat == NULL) {
+	qva->qva_queryFormat = rpmExpand("%{?_query_all_fmt}\n", NULL);
+	if (!(qva->qva_queryFormat != NULL && *qva->qva_queryFormat != '\0')) {
+	    qva->qva_queryFormat = _free(qva->qva_queryFormat);
+	    qva->qva_queryFormat = xstrdup("%{name}-%{version}-%{release}\n");
+	}
+    }
+fprintf(stderr, "***  AFTER: flags %x & %x format %s\n", qva->qva_flags, _QUERY_FOR_BITS, qva->qva_queryFormat);
 
     vsflags = rpmExpandNumeric("%{?_vsflags_query}");
     if (qva->qva_flags & VERIFY_DIGEST)

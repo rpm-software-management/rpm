@@ -117,6 +117,8 @@
 	- fix: clean relocation path for --prefix=/.
 	- python: permit stdout/stderr to be remapped to install.log.
 	- pay attention to package color when upgrading identical packages.
+	- fix: trap SIGPIPE, close database(s).
+	- configurable default query output format.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

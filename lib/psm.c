@@ -484,11 +484,11 @@ static void handler(int signum)
 static struct sigtbl_s {
     int signum;
     int active;
-    struct sigaction act;
+    void (*handler) (int signum);
     struct sigaction oact;
 } satbl[] = {
-    { SIGCHLD,	0, { {handler} } },
-    { -1,	0, { {NULL}    } },
+    { SIGCHLD,	0, handler },
+    { -1,	0, NULL },
 };
 /*@=fullinitblock@*/
 
@@ -551,6 +551,7 @@ static int enableSignal(int signum)
 {
     sigset_t newMask, oldMask;
     struct sigtbl_s * tbl;
+    struct sigaction act;
 
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
@@ -563,7 +564,9 @@ fprintf(stderr, "    Enable: %p[0:%d:%d] active %d\n", psmtbl.psms, psmtbl.npsms
 /*@=modfilesys@*/
 	if (tbl->active++ <= 0) {
 	    (void) sigdelset(&caught, tbl->signum);
-	    (void) sigaction(tbl->signum, &tbl->act, &tbl->oact);
+	    memset(&act, 0, sizeof(act));
+	    act.sa_handler = tbl->handler;
+	    (void) sigaction(tbl->signum, &act, &tbl->oact);
 	}
 	break;
     }
