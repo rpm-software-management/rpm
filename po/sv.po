@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 3.0.3\n"
-"POT-Creation-Date: 2000-01-24 15:37-0500\n"
+"POT-Creation-Date: 2000-01-24 17:08-0500\n"
 "PO-Revision-Date: 2000-01-09 22:47+0100\n"
 "Last-Translator: Göran Uddeborg <göran@uddeborg.pp.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -54,69 +54,69 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "Filen %s tycks inte vara en spec-fil.\n"
 
 #. parse up the build operators
-#: build.c:282
+#: build.c:283
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Bygger målplattformar: %s\n"
 
-#: build.c:297
+#: build.c:298
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Bygger för mål %s\n"
 
-#: build.c:347
+#: build.c:348
 msgid "buildroot already specified"
 msgstr "buildroot redan specificerad"
 
-#: build.c:354
+#: build.c:355
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr "--buildarch är föråldrat.  Använd flaggan --target istället.\n"
 
-#: build.c:358
+#: build.c:359
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr "--buildos är föråldrat.  Använd flaggan --tgarget istället.\n"
 
-#: build.c:379
+#: build.c:381
 msgid "override build architecture"
 msgstr "åsidosätt tillverkningsarkitektur"
 
-#: build.c:381
+#: build.c:383
 msgid "override build operating system"
 msgstr "åsidosätt tillverkningsoperativsystem"
 
-#: build.c:383
+#: build.c:385
 msgid "override build root"
 msgstr "åsidosätt tillverkningsrot"
 
-#: build.c:385 rpm.c:495
+#: build.c:387 rpm.c:495
 msgid "remove build tree when done"
 msgstr "tag bort tillverkningsträd efteråt"
 
-#: build.c:387
+#: build.c:389
 msgid "do not execute any stages of the build"
 msgstr "utför inga steg i tillverkningen"
 
-#: build.c:389
+#: build.c:391
 msgid "do not accept I18N msgstr's from specfile"
 msgstr "acceptera inte I18N \"msgstr\" från spec-filen"
 
-#: build.c:391
+#: build.c:393
 msgid "remove sources when done"
 msgstr "tag bort källkod efteråt"
 
-#: build.c:393
+#: build.c:395
 msgid "remove specfile when done"
 msgstr "tag bort spec-fil efteråt"
 
-#: build.c:395 rpm.c:493
+#: build.c:397 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "gå direkt till angivet steg (endast för c,i)"
 
-#: build.c:397
+#: build.c:399
 msgid "override target platform"
 msgstr "åsidosätt målplattform"
 
-#: build.c:399
+#: build.c:401
 msgid "lookup I18N strings in specfile catalog"
 msgstr "slå upp I18N-strängar i spec-fil katalog"
 

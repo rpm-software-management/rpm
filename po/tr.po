@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-01-24 15:37-0500\n"
+"POT-Creation-Date: 2000-01-24 17:08-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,75 +57,75 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s bir RPM paketi deðil (gibi)\n"
 
 #. parse up the build operators
-#: build.c:282
+#: build.c:283
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:297
+#: build.c:298
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "%s paketi bulunamadý\n"
 
-#: build.c:347
+#: build.c:348
 msgid "buildroot already specified"
 msgstr ""
 
-#: build.c:354
+#: build.c:355
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:358
+#: build.c:359
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:379
+#: build.c:381
 #, fuzzy
 msgid "override build architecture"
 msgstr "paket mimarisini doðrulamaz"
 
-#: build.c:381
+#: build.c:383
 #, fuzzy
 msgid "override build operating system"
 msgstr "paketin ait olduðu iþletim sistemini doðrulamaz"
 
-#: build.c:383
+#: build.c:385
 #, fuzzy
 msgid "override build root"
 msgstr "paket yaratýlýrken <dizin> baþlangýç dizini olarak kullanýlýr"
 
-#: build.c:385 rpm.c:495
+#: build.c:387 rpm.c:495
 msgid "remove build tree when done"
 msgstr "iþlem sonunda paket yaratma yapýsýný siler"
 
-#: build.c:387
+#: build.c:389
 #, fuzzy
 msgid "do not execute any stages of the build"
 msgstr "adýmlarýn hiçbirini çalýþtýrmaz"
 
-#: build.c:389
+#: build.c:391
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: build.c:391
+#: build.c:393
 #, fuzzy
 msgid "remove sources when done"
 msgstr "iþlem sonunda kaynaklarý ve spec dosyasýný siler"
 
-#: build.c:393
+#: build.c:395
 #, fuzzy
 msgid "remove specfile when done"
 msgstr "iþlem sonunda kaynaklarý ve spec dosyasýný siler"
 
-#: build.c:395 rpm.c:493
+#: build.c:397 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "doðrudan belirtilen adýma atlar (sadece c ve i için)"
 
-#: build.c:397
+#: build.c:399
 msgid "override target platform"
 msgstr ""
 
-#: build.c:399
+#: build.c:401
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 

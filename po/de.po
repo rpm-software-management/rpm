@@ -37,7 +37,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.5.2\n"
-"POT-Creation-Date: 2000-01-24 15:37-0500\n"
+"POT-Creation-Date: 2000-01-24 17:08-0500\n"
 "PO-Revision-Date: 1998-08-03 18:02+02:00\n"
 "Last-Translator: Karl Eichwalder <ke@SuSE.DE>\n"
 "Language-Team: German <de@li.org>\n"
@@ -91,75 +91,75 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s scheint kein RPM-Paket zu sein\n"
 
 #. parse up the build operators
-#: build.c:282
+#: build.c:283
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr ""
 
-#: build.c:297
+#: build.c:298
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "Fehler beim Suchen nach Paket %s\n"
 
-#: build.c:347
+#: build.c:348
 msgid "buildroot already specified"
 msgstr ""
 
-#: build.c:354
+#: build.c:355
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:358
+#: build.c:359
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:379
+#: build.c:381
 #, fuzzy
 msgid "override build architecture"
 msgstr "Paket-Architektur nicht überprüfen"
 
-#: build.c:381
+#: build.c:383
 #, fuzzy
 msgid "override build operating system"
 msgstr "Paket-Betriebssystem nicht überprüfen"
 
-#: build.c:383
+#: build.c:385
 #, fuzzy
 msgid "override build root"
 msgstr "Benutze <VERZ> als Stammverzeichnis beim Erstellen"
 
-#: build.c:385 rpm.c:495
+#: build.c:387 rpm.c:495
 msgid "remove build tree when done"
 msgstr "Erstellungsdateibaum nach Beendigung löschen"
 
-#: build.c:387
+#: build.c:389
 #, fuzzy
 msgid "do not execute any stages of the build"
 msgstr "Keine Stufen ausführen"
 
-#: build.c:389
+#: build.c:391
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: build.c:391
+#: build.c:393
 #, fuzzy
 msgid "remove sources when done"
 msgstr "Quellen und spec-Dateien nach Beendigung löschen"
 
-#: build.c:393
+#: build.c:395
 #, fuzzy
 msgid "remove specfile when done"
 msgstr "Quellen und spec-Dateien nach Beendigung löschen"
 
-#: build.c:395 rpm.c:493
+#: build.c:397 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "Direkt zur angegeben Stufe springen (nur für c und i)"
 
-#: build.c:397
+#: build.c:399
 msgid "override target platform"
 msgstr ""
 
-#: build.c:399
+#: build.c:401
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 

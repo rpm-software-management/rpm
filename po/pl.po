@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-3.0.2\n"
-"POT-Creation-Date: 2000-01-24 15:37-0500\n"
+"POT-Creation-Date: 2000-01-24 17:08-0500\n"
 "PO-Revision-Date: 1999-05-25 17:00+0100\n"
 "Last-Translator: Pawe³ Dziekoñski <pdziekonski@mml.ch.pwr.wroc.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -57,69 +57,69 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s nie wygl±da na pakiet RPM\n"
 
 #. parse up the build operators
-#: build.c:282
+#: build.c:283
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Budowanie dla platform: %s\n"
 
-#: build.c:297
+#: build.c:298
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Budowanie dla %s\n"
 
-#: build.c:347
+#: build.c:348
 msgid "buildroot already specified"
 msgstr "buildroot by³ ju¿ wcze¶niej podany"
 
-#: build.c:354
+#: build.c:355
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr "--buildarch wysz³o z u¿ycia. U¿yj opcji --target.\n"
 
-#: build.c:358
+#: build.c:359
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr "--builddos wysz³o z u¿ycia. U¿yj opcji --target.\n"
 
-#: build.c:379
+#: build.c:381
 msgid "override build architecture"
 msgstr "wymu¶ architekturê"
 
-#: build.c:381
+#: build.c:383
 msgid "override build operating system"
 msgstr "wymu¶ rodzaj systemu operacyjnego"
 
-#: build.c:383
+#: build.c:385
 msgid "override build root"
 msgstr "wymu¶ build root"
 
-#: build.c:385 rpm.c:495
+#: build.c:387 rpm.c:495
 msgid "remove build tree when done"
 msgstr "usuñ budowane drzewo po skoñczeniu"
 
-#: build.c:387
+#: build.c:389
 msgid "do not execute any stages of the build"
 msgstr "nie wykonuj ¿adnych etapów budowania"
 
-#: build.c:389
+#: build.c:391
 msgid "do not accept I18N msgstr's from specfile"
 msgstr "nie akceptuj wpisów I18N ze speca"
 
-#: build.c:391
+#: build.c:393
 msgid "remove sources when done"
 msgstr "usuñ ¼ród³a po zakoñczeniu"
 
-#: build.c:393
+#: build.c:395
 msgid "remove specfile when done"
 msgstr "usuñ speca po zakoñczeniu"
 
-#: build.c:395 rpm.c:493
+#: build.c:397 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "przejd¼ od razu do podanego etapu (tylko dla c,i)"
 
-#: build.c:397
+#: build.c:399
 msgid "override target platform"
 msgstr "wymu¶ platformê docelow±"
 
-#: build.c:399
+#: build.c:401
 msgid "lookup I18N strings in specfile catalog"
 msgstr "wyszukaj wpisy I18N w katalogu speca"
 

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 2000-01-24 15:37-0500\n"
+"POT-Creation-Date: 2000-01-24 17:08-0500\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -51,71 +51,71 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s zrejme nie je RPM balík\n"
 
 #. parse up the build operators
-#: build.c:282
+#: build.c:283
 #, fuzzy, c-format
 msgid "Building target platforms: %s\n"
 msgstr "predefinova» cieµovú platformu"
 
-#: build.c:297
+#: build.c:298
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "vyhµadáva sa balík %s\n"
 
-#: build.c:347
+#: build.c:348
 msgid "buildroot already specified"
 msgstr "buildroot u¾ bol zadaný"
 
-#: build.c:354
+#: build.c:355
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr "Voµba --buildarch je zastaralá. Pou¾ite namiesto nej --target.\n"
 
-#: build.c:358
+#: build.c:359
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr "Voµba --buildos je zastaralá. Pou¾ite namiesto nej --target.\n"
 
-#: build.c:379
+#: build.c:381
 msgid "override build architecture"
 msgstr "predefinova» architektúru balíka"
 
-#: build.c:381
+#: build.c:383
 msgid "override build operating system"
 msgstr "predefinova» operaèný systém balíka"
 
-#: build.c:383
+#: build.c:385
 msgid "override build root"
 msgstr "predefinova» adresár pre zostavenie balíka"
 
-#: build.c:385 rpm.c:495
+#: build.c:387 rpm.c:495
 msgid "remove build tree when done"
 msgstr "po ukonèení odstráni» adresár, v ktorom sa balík zostavoval"
 
-#: build.c:387
+#: build.c:389
 msgid "do not execute any stages of the build"
 msgstr "nevykona» ¾iadne etapy zostavenia"
 
-#: build.c:389
+#: build.c:391
 msgid "do not accept I18N msgstr's from specfile"
 msgstr "neakceptova» lokalizované re»azce zo spec-súboru"
 
-#: build.c:391
+#: build.c:393
 #, fuzzy
 msgid "remove sources when done"
 msgstr "po ukonèení odstráni» zdrojové súbory a spec-súbor"
 
-#: build.c:393
+#: build.c:395
 #, fuzzy
 msgid "remove specfile when done"
 msgstr "po ukonèení odstráni» zdrojové súbory a spec-súbor"
 
-#: build.c:395 rpm.c:493
+#: build.c:397 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "preskoèi» priamo k urèenej etape (iba pre c, i)"
 
-#: build.c:397
+#: build.c:399
 msgid "override target platform"
 msgstr "predefinova» cieµovú platformu"
 
-#: build.c:399
+#: build.c:401
 msgid "lookup I18N strings in specfile catalog"
 msgstr "pre preklad re»azcov pou¾i» katalóg správ spec-súborov"
 

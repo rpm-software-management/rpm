@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 2000-01-24 15:37-0500\n"
+"POT-Creation-Date: 2000-01-24 17:08-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -49,69 +49,69 @@ msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s не похож на пакет RPM...\n"
 
 #. parse up the build operators
-#: build.c:282
+#: build.c:283
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Целевые платформы: %s\n"
 
-#: build.c:297
+#: build.c:298
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Сборка для целевой платформы %s\n"
 
-#: build.c:347
+#: build.c:348
 msgid "buildroot already specified"
 msgstr "buildroot уже задан"
 
-#: build.c:354
+#: build.c:355
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr "--buildarch уже не в моде :) Используйте опцию --target.\n"
 
-#: build.c:358
+#: build.c:359
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr "--buildos уже не в моде :) Используйте опцию --target.\n"
 
-#: build.c:379
+#: build.c:381
 msgid "override build architecture"
 msgstr "переопределить архитектуру собираемого пакета"
 
-#: build.c:381
+#: build.c:383
 msgid "override build operating system"
 msgstr "переопределить ОС собираемого пакета"
 
-#: build.c:383
+#: build.c:385
 msgid "override build root"
 msgstr "переопределить build root"
 
-#: build.c:385 rpm.c:495
+#: build.c:387 rpm.c:495
 msgid "remove build tree when done"
 msgstr "после завершения удалить дерево исходников"
 
-#: build.c:387
+#: build.c:389
 msgid "do not execute any stages of the build"
 msgstr "не исполнять никаких этапов сборки"
 
-#: build.c:389
+#: build.c:391
 msgid "do not accept I18N msgstr's from specfile"
 msgstr "не принимать строк I18N из spec-файла"
 
-#: build.c:391
+#: build.c:393
 msgid "remove sources when done"
 msgstr "после завершения удалить исходникb"
 
-#: build.c:393
+#: build.c:395
 msgid "remove specfile when done"
 msgstr "после завершения удалить spec-файл"
 
-#: build.c:395 rpm.c:493
+#: build.c:397 rpm.c:493
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "перейти непосредственно к указанному этапу (только для c,i)"
 
-#: build.c:397
+#: build.c:399
 msgid "override target platform"
 msgstr "переопределить целевую платформу"
 
-#: build.c:399
+#: build.c:401
 msgid "lookup I18N strings in specfile catalog"
 msgstr "искать строки I18N в каталоге со spec-файлом"
 
