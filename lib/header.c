@@ -269,8 +269,6 @@ static int regionSwab(/*@null@*/ struct indexEntry * entry, int il, int dl,
 	ie.length = dataLength(ie.info.type, ie.data, ie.info.count, 1);
 	ie.rdlen = 0;
 
-assert(ie.info.type >= RPM_MIN_TYPE && ie.info.type <= RPM_MAX_TYPE);
-
 	if (entry) {
 	    ie.info.offset = regionid;
 	    *entry = ie;	/* structure assignment */
@@ -571,10 +569,8 @@ Header headerLoad(void *uh)
 	entry->data = pe;
 	entry->length = pvlen - sizeof(il) - sizeof(dl);
 	rdlen = regionSwab(entry+1, il, 0, pe, dataStart, entry->info.offset);
-	if (rdlen < 0) goto errxit;
+	if (rdlen != dl) goto errxit;
 	entry->rdlen = rdlen;
-assert(rdlen == dl);
-
 	entry++;
 	h->indexUsed++;
     } else {
@@ -846,8 +842,7 @@ t = te;
 		rdlen += entry->info.count;
 
 		count = regionSwab(NULL, ril, 0, pe, t, 0);
-		if (count < 0) goto errxit;
-		assert(count == rdlen);
+		if (count != rdlen) goto errxit;
 
 	    } else {
 
@@ -861,8 +856,7 @@ t = te;
 		te += entry->info.count + drlen;
 
 		count = regionSwab(NULL, ril, 0, pe, t, 0);
-		if (count < 0) goto errxit;
-		assert(count == rdlen+entry->info.count+drlen);
+		if (count != (rdlen + entry->info.count + drlen)) goto errxit;
 	    }
 
 	    /* Skip rest of entries in region. */
@@ -925,13 +919,8 @@ t = te;
     }
    
     /* Insure that there are no memcpy underruns/overruns. */
-#if 0
-    assert(((char *)pe) == dataStart);
-    assert((((char *)ei)+len) == te);
-#else
     if (((char *)pe) != dataStart) goto errxit;
     if ((((char *)ei)+len) != te) goto errxit;
-#endif
 
     if (lengthPtr)
 	*lengthPtr = len;
@@ -1180,8 +1169,7 @@ void headerDump(Header h, FILE *f, int flags,
 	    default:
 		fprintf(stderr, _("Data type %d not supported\n"), 
 			(int) p->info.type);
-		exit(EXIT_FAILURE);
-		/*@notreached@*/ break;
+		break;
 	    }
 	}
 	p++;
