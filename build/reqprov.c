@@ -192,7 +192,7 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
 
 int generateAutoReqProv(Header header, struct PackageRec *p)
 {
-    char **f, **fsave, *s, *tok;
+    char **f, **fsave, *s;
     int count;
     int_16 *modes;
 
