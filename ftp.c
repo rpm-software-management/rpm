@@ -160,7 +160,7 @@ int ftpCommand(int sock, char * command, ...) {
     }
     va_end(ap);
 
-    buf = alloca(len + 1);
+    buf = alloca(len + 2);
 
     va_start(ap, command);
     strcpy(buf, command);
@@ -173,7 +173,8 @@ int ftpCommand(int sock, char * command, ...) {
     }
     va_end(ap);
 
-    buf[len - 1] = '\n';
+    buf[len - 2] = '\n';
+    buf[len - 1] = '\r';
     buf[len] = '\0';
      
     if (write(sock, buf, len) != len) {
@@ -328,7 +329,7 @@ int ftpGetFileDesc(int sock, char * remotename) {
     char * retrCommand;
     int rc;
 
-    if (write(sock, "PASV\n", 5) != 5) {
+    if (write(sock, "PASV\n\r", 6) != 5) {
         return FTPERR_SERVER_IO_ERROR;
     }
     if ((rc = ftpCheckResponse(sock, &passReply)))
@@ -373,7 +374,7 @@ int ftpGetFileDesc(int sock, char * remotename) {
     }
 
     retrCommand = alloca(strlen(remotename) + 20);
-    sprintf(retrCommand, "RETR %s\n", remotename);
+    sprintf(retrCommand, "RETR %s\n\r", remotename);
     i = strlen(retrCommand);
    
     if (write(sock, retrCommand, i) != i) {
