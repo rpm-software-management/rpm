@@ -18,6 +18,19 @@
 
 #define _(String) gettext(String)
 
+#define GETOPT_QUERYFORMAT	1000
+#define GETOPT_WHATREQUIRES	1001
+#define GETOPT_WHATPROVIDES	1002
+#define GETOPT_REBUILD		1003
+#define GETOPT_RECOMPILE	1004
+#define GETOPT_ADDSIGN		1005
+#define GETOPT_RESIGN		1006
+#define GETOPT_BUILDPREFIX	1007
+#define GETOPT_PROVIDES		1008
+#define GETOPT_QUERYBYNUMBER	1009
+#define GETOPT_DBPATH		1010
+#define GETOPT_PREFIX		1011
+
 char * version = VERSION;
 
 enum modes { MODE_QUERY, MODE_INSTALL, MODE_UNINSTALL, MODE_VERIFY,
@@ -54,31 +67,32 @@ void printUsage(void) {
 
     puts(_("usage: rpm {--help}"));
     puts(_("       rpm {--version}"));
-    puts(_("       rpm {--initdb}"));
+    puts(_("       rpm {--initdb}     [--dbpath <dir>]"));
     puts(_("       rpm {--install -i} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                          [--replacepkgs] [--replacefiles] [--root <dir>]"));
     puts(_("                          [--excludedocs] [--includedocs] [--noscripts]"));
-    puts(_("                          [--rcfile <file>] [--ignorearch]"));
-    puts(_("                          file1.rpm ... fileN.rpm"));
+    puts(_("                          [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
+    puts(_("                          [--prefix <dir>] file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
     puts(_("                          [--oldpackage] [--root <dir>] [--noscripts]"));
     puts(_("                          [--excludedocs] [--includedocs] [--rcfile <file>]"));
-    puts(_("                          [--ignorearch] file1.rpm ... fileN.rpm"));
+    puts(_("                          [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
+    puts(_("                          file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--query -q} [-afFpP] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
-    puts(_("                        [--provides] [--dump] [targets]"));
+    puts(_("                        [--provides] [--dump] [--dbpath <dir>] [targets]"));
     puts(_("       rpm {--verify -V -y} [-afFpP] [--root <dir>] [--rcfile <file>]"));
-    puts(_("                        [targets]"));
+    puts(_("                        [--dbpath <dir>] [targets]"));
     puts(_("       rpm {--erase -e] [--root <dir>] [--noscripts] [--rcfile <file>]"));
-    puts(_("                        package1 package2 ... packageN"));
+    puts(_("                        [--dbpath <dir>] package1 ... packageN"));
     puts(_("       rpm {-b}[plciba] [-v] [--short-circuit] [--clean] [--rcfile  <file>]"));
     puts(_("                        [--sign] [--test] [--time-check <s>] specfile"));
     puts(_("       rpm {--rebuild} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--recompile} [--rcfile <file>] [-v] source1.rpm ... sourceN.rpm"));
     puts(_("       rpm {--resign} [--rcfile <file>] package1 package2 ... packageN"));
     puts(_("       rpm {--addsign} [--rcfile <file>] package1 package2 ... packageN"));
-    puts(_("       rpm {--checksig -K} [--nopgp] [--rcfile <file>] package1 package2 ... packageN"));
+    puts(_("       rpm {--checksig -K} [--nopgp] [--rcfile <file>] package1 ... packageN"));
     puts(_("       rpm {--querytags}"));
 }
 
@@ -96,6 +110,7 @@ void printHelp(void) {
     puts(_("       -vv		      - be incredible verbose (for debugging)"));
     puts(_("   -q                   - query mode"));
     puts(_("      --root <dir>        - use <dir> as the top level directory"));
+    puts(_("      --dbpath <dir>      - use <dir> as the directory for the database"));
     puts(_("      --queryformat <s>   - use s as the header format (implies -i)"));
     puts(_("      Package specification options:"));
     puts(_("        -a                - query all packages"));
@@ -122,11 +137,14 @@ void printHelp(void) {
     puts(_("    -y"));
     puts(_("    --verify            - verify a package installation"));
     puts(_("			  same package specification options as -q"));
+    puts(_("      --dbpath <dir>      - use <dir> as the directory for the database"));
     puts(_("      --root <dir>	- use <dir> as the top level directory"));
     puts(_(""));
     puts(_("    --install <packagefile>"));
     puts(_("    -i <packagefile>	- install package"));
     puts(_("       -h"));
+    puts(_("	  --prefix <dir>    - relocate the package to <dir>, if relocateable"));
+    puts(_("      --dbpath <dir>    - use <dir> as the directory for the database"));
     puts(_("      --hash            - print hash marks as package installs (good with -v)"));
     puts(_("      --percent         - print percentages as package installs"));
     puts(_("      --replacepkgs     - reinstall if the package is already present"));
@@ -146,6 +164,7 @@ void printHelp(void) {
     puts(_(""));
     puts(_("    --erase <package>"));
     puts(_("    -e <package>        - uninstall (erase) package"));
+    puts(_("      --dbpath <dir>      - use <dir> as the directory for the database"));
     puts(_("      --noscripts       - don't execute any installation scripts"));
     puts(_("      --root <dir>	- use <dir> as the top level directory"));
     puts(_(""));
@@ -237,11 +256,11 @@ int main(int argc, char ** argv) {
     int shortCircuit = 0, badOption = 0, queryTags = 0, excldocs = 0;
     int incldocs = 0, queryScripts = 0, noScripts = 0, noDeps = 0;
     int noPgp = 0, dump = 0, initdb = 0, buildMode = 0, ignoreArch = 0;
+    int gotDbpath = 0;
     int addSign = NEW_SIGNATURE;
-    char * rcfile = NULL;
-    char * queryFormat = NULL;
+    char * rcfile = NULL, * queryFormat = NULL, * prefix = NULL;
     char buildChar = ' ';
-    char * prefix = "/";
+    char * rootdir = "/";
     char * specFile;
     char *passPhrase = "";
     char *prefixOverride = NULL;
@@ -251,14 +270,15 @@ int main(int argc, char ** argv) {
     char ** currarg;
     int ec = 0;
     struct option optionsTable[] = {
-	    { "addsign", 0, 0, 0 },
+	    { "addsign", 0, 0, GETOPT_ADDSIGN },
 	    { "all", 0, 0, 'a' },
 	    { "arch", 1, 0, 0 },
 	    { "build", 1, 0, 'b' },
-	    { "buildprefix", 1, 0, 0 },
+	    { "buildprefix", 1, 0, GETOPT_BUILDPREFIX },
 	    { "checksig", 0, 0, 'K' },
 	    { "clean", 0, &clean, 0 },
 	    { "configfiles", 0, 0, 'c' },
+	    { "dbpath", 1, 0, GETOPT_DBPATH },
 	    { "docfiles", 0, 0, 'd' },
 	    { "dump", 0, &dump, 0 },
 	    { "erase", 0, 0, 'e' },
@@ -281,18 +301,19 @@ int main(int argc, char ** argv) {
 	    { "os", 1, 0, 0 },
 	    { "package", 0, 0, 'p' },
 	    { "percent", 0, &showPercents, 0 },
-	    { "provides", 0, 0, 0 },
+	    { "prefix", 1, 0, GETOPT_PREFIX },
+	    { "provides", 0, 0, GETOPT_PROVIDES },
 	    { "query", 0, 0, 'q' },
-	    { "querybynumber", 0, 0, 0 },
-	    { "queryformat", 1, 0, 0 },
+	    { "querybynumber", 0, 0, GETOPT_QUERYBYNUMBER },
+	    { "queryformat", 1, 0, GETOPT_QUERYFORMAT },
 	    { "querytags", 0, &queryTags, 0 },
 	    { "quiet", 0, &quiet, 0 },
 	    { "rcfile", 1, 0, 0 },
-	    { "recompile", 0, 0, 0 },
-	    { "rebuild", 0, 0, 0 },
+	    { "recompile", 0, 0, GETOPT_RECOMPILE },
+	    { "rebuild", 0, 0, GETOPT_REBUILD },
 	    { "replacefiles", 0, &replaceFiles, 0 },
 	    { "replacepkgs", 0, &replacePackages, 0 },
-	    { "resign", 0, 0, 0 },
+	    { "resign", 0, 0, GETOPT_RESIGN },
 	    { "requires", 0, 0, 'R' },
 	    { "root", 1, 0, 'r' },
 	    { "scripts", 0, &queryScripts, 0 },
@@ -309,8 +330,8 @@ int main(int argc, char ** argv) {
 	    { "verbose", 0, 0, 'v' },
 	    { "verify", 0, 0, 'V' },
 	    { "version", 0, &version, 0 },
-	    { "whatrequires", 0, 0, 0 },
-	    { "whatprovides", 0, 0, 0 },
+	    { "whatrequires", 0, 0, GETOPT_WHATREQUIRES },
+	    { "whatprovides", 0, 0, GETOPT_WHATPROVIDES },
 	    { 0, 0, 0, 0 } 
 	} ;
     struct option * options = optionsTable;
@@ -537,62 +558,96 @@ int main(int argc, char ** argv) {
 	  case 'r':
 	    if (optarg[0] != '/') 
 		argerror(_("arguments to --root (-r) must begin with a /"));
+	    rootdir = optarg;
+	    break;
+
+	  case GETOPT_PREFIX:
+	    if (optarg[0] != '/') 
+		argerror(_("arguments to --prefix must begin with a /"));
 	    prefix = optarg;
 	    break;
 
+	  case GETOPT_QUERYFORMAT:
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
+		argerror(_("only one major mode may be specified"));
+	    bigMode = MODE_QUERY;
+	    queryFormat = optarg;
+	    queryFor |= QUERY_FOR_INFO;
+	    break;
+
+	  case GETOPT_WHATREQUIRES:
+	    if (querySource != QUERY_PACKAGE && 
+		querySource != QUERY_WHATREQUIRES)
+		argerror(_("one type of query/verify may be performed at a "
+				"time"));
+	    querySource = QUERY_WHATREQUIRES;
+	    break;
+
+	  case GETOPT_WHATPROVIDES:
+	    if (querySource != QUERY_PACKAGE && 
+		querySource != QUERY_WHATPROVIDES)
+		argerror(_("one type of query/verify may be performed at a "
+				"time"));
+	    querySource = QUERY_WHATPROVIDES;
+	    break;
+
+	  case GETOPT_REBUILD:
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
+		argerror(_("only one major mode may be specified"));
+	    bigMode = MODE_REBUILD;
+	    break;
+
+	  case GETOPT_RECOMPILE:
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RECOMPILE)
+		argerror(_("only one major mode may be specified"));
+	    bigMode = MODE_RECOMPILE;
+	    break;
+
+	  case GETOPT_BUILDPREFIX:
+	    if (bigMode != MODE_UNKNOWN &&
+		bigMode != MODE_BUILD && bigMode != MODE_REBUILD)
+		argerror(_("only one major mode may be specified"));
+	    prefixOverride = optarg;
+	    break;
+
+	  case GETOPT_RESIGN:
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
+		argerror(_("only one major mode may be specified"));
+	    bigMode = MODE_RESIGN;
+	    addSign = NEW_SIGNATURE;
+	    signIt = 1;
+	    break;
+
+	  case GETOPT_ADDSIGN:
+	    if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
+		argerror(_("only one major mode may be specified"));
+	    bigMode = MODE_RESIGN;
+	    addSign = ADD_SIGNATURE;
+	    signIt = 1;
+	    break;
+
+	  case GETOPT_PROVIDES:
+	    queryFor |= QUERY_FOR_PROVIDES;
+	    break;
+
+	  case GETOPT_DBPATH:
+            if (optarg[0] != '/')
+                argerror(_("arguments to --dbpath must begin with a /"));
+	    setVar(RPMVAR_DBPATH, optarg);
+	    gotDbpath = 1;
+	    break;
+
+	  case GETOPT_QUERYBYNUMBER:
+	    if (querySource != QUERY_PACKAGE && querySource != QUERY_RPM)
+		argerror(_("one type of query may be performed at a " 
+			    "time"));
+	    querySource = QUERY_DBOFFSET;
+	    verifySource = VERIFY_RPM;
+	    break;
+
 	  default:
-	    if (options[long_index].flag)
+	    if (options[long_index].flag) {
 		*options[long_index].flag = 1;
-	    else if (!strcmp(options[long_index].name, "whatrequires")) {
-		if (querySource != QUERY_PACKAGE && 
-		    querySource != QUERY_WHATREQUIRES)
-		    argerror(_("one type of query/verify may be performed at a "
-				    "time"));
-		querySource = QUERY_WHATREQUIRES;
-	    } else if (!strcmp(options[long_index].name, "whatprovides")) {
-		if (querySource != QUERY_PACKAGE && 
-		    querySource != QUERY_WHATPROVIDES)
-		    argerror(_("one type of query/verify may be performed at a "
-				    "time"));
-		querySource = QUERY_WHATPROVIDES;
-	    } else if (!strcmp(options[long_index].name, "provides")) {
-		queryFor |= QUERY_FOR_PROVIDES;
-	    } else if (!strcmp(options[long_index].name, "rebuild")) {
-		if (bigMode != MODE_UNKNOWN && bigMode != MODE_REBUILD)
-		    argerror(_("only one major mode may be specified"));
-		bigMode = MODE_REBUILD;
-	    } else if (!strcmp(options[long_index].name, "recompile")) {
-		if (bigMode != MODE_UNKNOWN && bigMode != MODE_RECOMPILE)
-		    argerror(_("only one major mode may be specified"));
-		bigMode = MODE_RECOMPILE;
-	    } else if (!strcmp(options[long_index].name, "buildprefix")) {
-		if (bigMode != MODE_UNKNOWN &&
-		    bigMode != MODE_BUILD && bigMode != MODE_REBUILD)
-		    argerror(_("only one major mode may be specified"));
-		prefixOverride = optarg;
-	    } else if (!strcmp(options[long_index].name, "resign")) {
-		if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
-		    argerror(_("only one major mode may be specified"));
-		bigMode = MODE_RESIGN;
-		addSign = NEW_SIGNATURE;
-		signIt = 1;
-	    } else if (!strcmp(options[long_index].name, "addsign")) {
-		if (bigMode != MODE_UNKNOWN && bigMode != MODE_RESIGN)
-		    argerror(_("only one major mode may be specified"));
-		bigMode = MODE_RESIGN;
-		addSign = ADD_SIGNATURE;
-		signIt = 1;
-	    } else if (!strcmp(options[long_index].name, "querybynumber")) {
-		if (querySource != QUERY_PACKAGE && querySource != QUERY_RPM)
-		    argerror(_("one type of query may be performed at a " "time"));
-		querySource = QUERY_DBOFFSET;
-		verifySource = VERIFY_RPM;
-	    } else if (!strcmp(options[long_index].name, "queryformat")) {
-		if (bigMode != MODE_UNKNOWN && bigMode != MODE_QUERY)
-		    argerror(_("only one major mode may be specified"));
-		bigMode = MODE_QUERY;
-		queryFormat = optarg;
-		queryFor |= QUERY_FOR_INFO;
 	    }
 	}
     }
@@ -625,6 +680,12 @@ int main(int argc, char ** argv) {
     if (prefixOverride && bigMode != MODE_BUILD && bigMode != MODE_REBUILD) {
 	argerror("--buildprefix may only be used during package builds");
     }
+
+    if (bigMode != MODE_QUERY && bigMode != MODE_INSTALL && 
+	bigMode != MODE_UNINSTALL && bigMode != MODE_VERIFY &&
+	bigMode != MODE_INITDB && gotDbpath)
+	argerror(_("--dbpath given for operation that does not use a "
+			"database"));
     
     if (bigMode != MODE_QUERY && queryFor) 
 	argerror(_("unexpected query specifiers"));
@@ -635,6 +696,9 @@ int main(int argc, char ** argv) {
 
     if (bigMode != MODE_INSTALL && force)
 	argerror(_("only installation and upgrading may be forced"));
+
+    if (bigMode != MODE_INSTALL && prefix)
+	argerror(_("--prefix may only be used when installing new packages"));
 
     if (bigMode != MODE_INSTALL && showHash)
 	argerror(_("--hash (-h) may only be specified during package "
@@ -681,7 +745,7 @@ int main(int argc, char ** argv) {
 		 "and uninstallation"));
 
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
-	bigMode != MODE_QUERY   && bigMode != MODE_VERIFY    && prefix[1])
+	bigMode != MODE_QUERY   && bigMode != MODE_VERIFY    && rootdir[1])
 	argerror(_("--root (-r) may only be specified during "
 		 "installation, uninstallation, and querying"));
 
@@ -749,10 +813,7 @@ int main(int argc, char ** argv) {
 	break;
 
       case MODE_INITDB:
-	if (argc != 2)
-	    argerror(_("unexpected arguments to --initdb "));
-
-	rpmdbInit(prefix, 0644);
+	rpmdbInit(rootdir, 0644);
 	break;
 
       case MODE_CHECKSIG:
@@ -837,7 +898,7 @@ int main(int argc, char ** argv) {
 	if (test) uninstallFlags |= UNINSTALL_TEST;
 	if (noDeps) interfaceFlags |= RPMUNINSTALL_NODEPS;
 
-	doUninstall(prefix, argv + optind, uninstallFlags, interfaceFlags);
+	doUninstall(rootdir, argv + optind, uninstallFlags, interfaceFlags);
 	break;
 
       case MODE_INSTALL:
@@ -862,7 +923,8 @@ int main(int argc, char ** argv) {
 	if (optind == argc) 
 	    argerror(_("no packages given for install"));
 
-	ec += doInstall(prefix, argv + optind, installFlags, interfaceFlags);
+	ec += doInstall(rootdir, argv + optind, prefix, installFlags, 
+			interfaceFlags);
 	break;
 
       case MODE_QUERY:
@@ -872,7 +934,7 @@ int main(int argc, char ** argv) {
 	    if (optind != argc) 
 		argerror(_("extra arguments given for query of all packages"));
 
-	    ec = doQuery(prefix, QUERY_ALL, queryFor, NULL, queryFormat);
+	    ec = doQuery(rootdir, QUERY_ALL, queryFor, NULL, queryFormat);
 	} else if (querySource == QUERY_SPATH || 
                    querySource == QUERY_SPACKAGE ||
 		   querySource == QUERY_SRPM) {
@@ -883,21 +945,21 @@ int main(int argc, char ** argv) {
 		i = strlen(buffer) - 1;
 		if (buffer[i] == '\n') buffer[i] = 0;
 		if (strlen(buffer)) 
-		    ec += doQuery(prefix, querySource, queryFor, buffer, 
+		    ec += doQuery(rootdir, querySource, queryFor, buffer, 
 				  queryFormat);
 	    }
 	} else {
 	    if (optind == argc) 
 		argerror(_("no arguments given for query"));
 	    while (optind < argc) 
-		ec = doQuery(prefix, querySource, queryFor, argv[optind++], 
+		ec = doQuery(rootdir, querySource, queryFor, argv[optind++], 
 			     queryFormat);
 	}
 	break;
 
       case MODE_VERIFY:
 	if (verifySource == VERIFY_EVERY) {
-	    doVerify(prefix, VERIFY_EVERY, NULL);
+	    doVerify(rootdir, VERIFY_EVERY, NULL);
 	} else if (verifySource == VERIFY_SPATH || 
                    verifySource == VERIFY_SPACKAGE ||
 		   verifySource == VERIFY_SRPM) {
@@ -909,12 +971,12 @@ int main(int argc, char ** argv) {
 		i = strlen(buffer) - 1;
 		if (buffer[i] == '\n') buffer[i] = 0;
 		if (strlen(buffer))
-		    doVerify(prefix, verifySource, smallArgv);
+		    doVerify(rootdir, verifySource, smallArgv);
 	    }
 	} else {
 	    if (optind == argc) 
 		argerror(_("no arguments given for verify"));
-	    doVerify(prefix, verifySource, argv + optind);
+	    doVerify(rootdir, verifySource, argv + optind);
 	}
 	break;
     }
