@@ -8,6 +8,11 @@ int timedRead(FD_t fd, void * bufptr, int length) {
     char * buf = bufptr;
     fd_set readSet;
     struct timeval tv;
+    struct stat sb;
+
+    fstat(fdFileno(fd), &sb);
+    if (S_ISREG(sb.st_mode))
+	return fdRead(fd, buf, length);
 
     while  (total < length) {
 	FD_ZERO(&readSet);
