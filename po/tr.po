@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1999-09-29 19:30-0400\n"
+"POT-Creation-Date: 1999-09-30 12:56-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,65 +67,65 @@ msgstr ""
 msgid "Building for target %s\n"
 msgstr "%s paketi bulunamadý\n"
 
-#: build.c:311
+#: build.c:313
 msgid "buildroot already specified"
 msgstr ""
 
-#: build.c:317
+#: build.c:320
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:321
+#: build.c:324
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr ""
 
-#: build.c:342
+#: build.c:345
 #, fuzzy
 msgid "override build architecture"
 msgstr "paket mimarisini doðrulamaz"
 
-#: build.c:344
+#: build.c:347
 #, fuzzy
 msgid "override build operating system"
 msgstr "paketin ait olduðu iþletim sistemini doðrulamaz"
 
-#: build.c:346
+#: build.c:349
 #, fuzzy
 msgid "override build root"
 msgstr "paket yaratýlýrken <dizin> baþlangýç dizini olarak kullanýlýr"
 
-#: build.c:348 rpm.c:457
+#: build.c:351 rpm.c:457
 msgid "remove build tree when done"
 msgstr "iþlem sonunda paket yaratma yapýsýný siler"
 
-#: build.c:350
+#: build.c:353
 #, fuzzy
 msgid "do not execute any stages of the build"
 msgstr "adýmlarýn hiçbirini çalýþtýrmaz"
 
-#: build.c:352
+#: build.c:355
 msgid "do not accept I18N msgstr's from specfile"
 msgstr ""
 
-#: build.c:354
+#: build.c:357
 #, fuzzy
 msgid "remove sources when done"
 msgstr "iþlem sonunda kaynaklarý ve spec dosyasýný siler"
 
-#: build.c:356
+#: build.c:359
 #, fuzzy
 msgid "remove specfile when done"
 msgstr "iþlem sonunda kaynaklarý ve spec dosyasýný siler"
 
-#: build.c:358 rpm.c:455
+#: build.c:361 rpm.c:455
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "doðrudan belirtilen adýma atlar (sadece c ve i için)"
 
-#: build.c:360
+#: build.c:363
 msgid "override target platform"
 msgstr ""
 
-#: build.c:362
+#: build.c:365
 msgid "lookup I18N strings in specfile catalog"
 msgstr ""
 
@@ -2821,75 +2821,75 @@ msgstr "%s pakedi aranýrken hata oluþtu\n"
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "%s: Eriþilemedi\n"
 
-#: lib/query.c:691
+#: lib/query.c:692
 #, fuzzy
 msgid "query package owning file"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: lib/query.c:693
+#: lib/query.c:694
 #, fuzzy
 msgid "query packages in group"
 msgstr "pakedin adý yok :-)"
 
-#: lib/query.c:695
+#: lib/query.c:696
 #, fuzzy
 msgid "query a package file"
 msgstr "Tüm paketleri sorgulama"
 
-#: lib/query.c:699
+#: lib/query.c:700
 #, fuzzy
 msgid "query a spec file"
 msgstr "%s 'nin sorgulamasý baþarýsýzlýkla sonuçlandý\n"
 
-#: lib/query.c:701
+#: lib/query.c:702
 #, fuzzy
 msgid "query the pacakges triggered by the package"
 msgstr "<dosya> isimli dosyayý içeren paketi sorgulamak"
 
-#: lib/query.c:703
+#: lib/query.c:704
 #, fuzzy
 msgid "query the packages which require a capability"
 msgstr "<i> yeteneðine ihtiyaç duyan paketleri sorgulama"
 
-#: lib/query.c:705
+#: lib/query.c:706
 #, fuzzy
 msgid "query the packages which provide a capability"
 msgstr "<i> yeteneði olan paketleri sorgulama"
 
-#: lib/query.c:742
+#: lib/query.c:745
 #, fuzzy
 msgid "list all configuration files"
 msgstr ""
 "sadece yapýlandýrma (configuration) dosyalarýný gösterir (impliziert -l)"
 
-#: lib/query.c:744
+#: lib/query.c:747
 #, fuzzy
 msgid "list all documentation files"
 msgstr "paket ile gelen belgeleri de yükler"
 
-#: lib/query.c:746
+#: lib/query.c:749
 #, fuzzy
 msgid "dump basic file information"
 msgstr "Paket bilgisini gösterme"
 
-#: lib/query.c:748
+#: lib/query.c:751
 #, fuzzy
 msgid "list files in package"
 msgstr "paket yüklemek"
 
-#: lib/query.c:752
+#: lib/query.c:755
 msgid "use the following query format"
 msgstr ""
 
-#: lib/query.c:754
+#: lib/query.c:757
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:757
+#: lib/query.c:760
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/query.c:759
+#: lib/query.c:762
 #, fuzzy
 msgid "display a verbose file listing"
 msgstr "Paketin içerdiði dosyalarý gösterme"
@@ -3564,30 +3564,30 @@ msgstr ""
 msgid "failed to create %s\n"
 msgstr "%s yaratýlamýyor\n"
 
-#: lib/verify.c:36
+#: lib/verify.c:38
 #, fuzzy
 msgid "don't verify files in package"
 msgstr "paket yüklemek"
 
-#: lib/verify.c:206
+#: lib/verify.c:208
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr ""
 
-#: lib/verify.c:224
+#: lib/verify.c:226
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 
-#: lib/verify.c:257
+#: lib/verify.c:259
 #, fuzzy, c-format
 msgid "missing    %s\n"
 msgstr "% den sonra eksik {"
 
-#: lib/verify.c:319
+#: lib/verify.c:321
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "%s-%s-%s 'nin baðýmlýlýk sorunlarý: "
 
-#: lib/verify.c:367
+#: lib/verify.c:369
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "%s: Eriþilemedi\n"

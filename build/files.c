@@ -770,7 +770,8 @@ static void genCpioListAndHeader(struct FileList *fl,
     int count;
     FileListRec *flp;
     struct cpioFileMapping *clp;
-    char *s, buf[BUFSIZ];
+    char *s;
+    char buf[BUFSIZ];
     
     /* Sort the big list */
     qsort(fl->fileList, fl->fileListRecsUsed,
@@ -1496,7 +1497,6 @@ static StringBuf getOutputFrom(char *dir, char *argv[],
     int status;
     void *oldhandler;
     StringBuf readBuff;
-    unsigned char buf[BUFSIZ+1];
     int done;
 
     oldhandler = signal(SIGPIPE, SIG_IGN);
@@ -1582,9 +1582,11 @@ top:
 	}
 	
 	/* Read any data from prog */
-	while ((nbr = read(fromProg[0], buf, sizeof(buf)-1)) > 0) {
-	    buf[nbr] = '\0';
-	    appendStringBuf(readBuff, buf);
+	{   char buf[BUFSIZ+1];
+	    while ((nbr = read(fromProg[0], buf, sizeof(buf)-1)) > 0) {
+		buf[nbr] = '\0';
+		appendStringBuf(readBuff, buf);
+	    }
 	}
 
 	/* terminate on (non-blocking) EOF or error */

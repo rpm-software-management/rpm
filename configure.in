@@ -388,6 +388,9 @@ AC_SUBST(BUILD_RPMCONVERT)
 dnl whether or not we should try to build rpmgettext/rpmputtext.
 if test X"USE_NLS" = Xyes; then
     BUILD_RPMNLSTOOLS="rpmgettext rpmputtext"
+    if test X"USE_INCLUDED_LIBINTL" = Xyes; then
+	INCPATH="$INCPATH $(top_builddir)/intl"
+    fi
 else
     BUILD_RPMNLSTOOLS=
 fi

@@ -15,6 +15,7 @@ EXTRA_DIST =	fstrcmp.c message.c str-list.c rpmchecksig.c
 mylibs=	$(top_builddir)/build/.libs/librpmbuild.a \
 	$(top_builddir)/lib/.libs/librpm.a \
 	$(top_builddir)/popt/.libs/libpopt.a \
+	@INTLLIBS@ \
 	@LIBMISC@
 
 EXTRA_PROGRAMS = rpmgettext rpmputtext

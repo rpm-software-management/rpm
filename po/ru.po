@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1999-09-29 19:30-0400\n"
+"POT-Creation-Date: 1999-09-30 12:56-0400\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -59,59 +59,59 @@ msgstr "Целевые платформы: %s\n"
 msgid "Building for target %s\n"
 msgstr "Сборка для целевой платформы %s\n"
 
-#: build.c:311
+#: build.c:313
 msgid "buildroot already specified"
 msgstr "buildroot уже задан"
 
-#: build.c:317
+#: build.c:320
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr "--buildarch уже не в моде :) Используйте опцию --target.\n"
 
-#: build.c:321
+#: build.c:324
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr "--buildos уже не в моде :) Используйте опцию --target.\n"
 
-#: build.c:342
+#: build.c:345
 msgid "override build architecture"
 msgstr "переопределить архитектуру собираемого пакета"
 
-#: build.c:344
+#: build.c:347
 msgid "override build operating system"
 msgstr "переопределить ОС собираемого пакета"
 
-#: build.c:346
+#: build.c:349
 msgid "override build root"
 msgstr "переопределить build root"
 
-#: build.c:348 rpm.c:457
+#: build.c:351 rpm.c:457
 msgid "remove build tree when done"
 msgstr "после завершения удалить дерево исходников"
 
-#: build.c:350
+#: build.c:353
 msgid "do not execute any stages of the build"
 msgstr "не исполнять никаких этапов сборки"
 
-#: build.c:352
+#: build.c:355
 msgid "do not accept I18N msgstr's from specfile"
 msgstr "не принимать строк I18N из spec-файла"
 
-#: build.c:354
+#: build.c:357
 msgid "remove sources when done"
 msgstr "после завершения удалить исходникb"
 
-#: build.c:356
+#: build.c:359
 msgid "remove specfile when done"
 msgstr "после завершения удалить spec-файл"
 
-#: build.c:358 rpm.c:455
+#: build.c:361 rpm.c:455
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "перейти непосредственно к указанному этапу (только для c,i)"
 
-#: build.c:360
+#: build.c:363
 msgid "override target platform"
 msgstr "переопределить целевую платформу"
 
-#: build.c:362
+#: build.c:365
 msgid "lookup I18N strings in specfile catalog"
 msgstr "искать строки I18N в каталоге со spec-файлом"
 
@@ -2731,63 +2731,63 @@ msgstr "ошибка при поиске пакета %s\n"
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: неудача rpmdbOpen()\n"
 
-#: lib/query.c:691
+#: lib/query.c:692
 msgid "query package owning file"
 msgstr "найти пакет, которому принадлежит файл"
 
-#: lib/query.c:693
+#: lib/query.c:694
 msgid "query packages in group"
 msgstr "запрос пакетов в группе"
 
-#: lib/query.c:695
+#: lib/query.c:696
 msgid "query a package file"
 msgstr "запросить файл пакета"
 
-#: lib/query.c:699
+#: lib/query.c:700
 msgid "query a spec file"
 msgstr "запросить spec-файл"
 
-#: lib/query.c:701
+#: lib/query.c:702
 msgid "query the pacakges triggered by the package"
 msgstr "запросить пакеты с триггер-скриптами на пакет"
 
-#: lib/query.c:703
+#: lib/query.c:704
 msgid "query the packages which require a capability"
 msgstr "найти пакеты, требующие сервиса"
 
-#: lib/query.c:705
+#: lib/query.c:706
 msgid "query the packages which provide a capability"
 msgstr "найти пакеты, предоставляющие сервис"
 
-#: lib/query.c:742
+#: lib/query.c:745
 msgid "list all configuration files"
 msgstr "показать все конфигурационные файлы"
 
-#: lib/query.c:744
+#: lib/query.c:747
 msgid "list all documentation files"
 msgstr "показать все файлы документации"
 
-#: lib/query.c:746
+#: lib/query.c:749
 msgid "dump basic file information"
 msgstr "вывести базовую информацию о файле"
 
-#: lib/query.c:748
+#: lib/query.c:751
 msgid "list files in package"
 msgstr "показать файлы пакета"
 
-#: lib/query.c:752
+#: lib/query.c:755
 msgid "use the following query format"
 msgstr "исп. следующий формат запроса"
 
-#: lib/query.c:754
+#: lib/query.c:757
 msgid "substitute i18n sections from the following catalogue"
 msgstr "подставить секции i18n из следующего каталога"
 
-#: lib/query.c:757
+#: lib/query.c:760
 msgid "display the states of the listed files"
 msgstr "показать состояние показанных файлов"
 
-#: lib/query.c:759
+#: lib/query.c:762
 msgid "display a verbose file listing"
 msgstr "вывести детальный список файлов пакета"
 
@@ -3447,29 +3447,29 @@ msgstr "регистрируюсь в %s как %s, пароль %s\n"
 msgid "failed to create %s\n"
 msgstr "не могу создать %s\n"
 
-#: lib/verify.c:36
+#: lib/verify.c:38
 msgid "don't verify files in package"
 msgstr "не проверять файлы пакета"
 
-#: lib/verify.c:206
+#: lib/verify.c:208
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr "в пакете нет ни имен пользователей, ни их ID (так не бывает)"
 
-#: lib/verify.c:224
+#: lib/verify.c:226
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr "в пакете нет ни имен групп, ни их ID (так не бывает)"
 
-#: lib/verify.c:257
+#: lib/verify.c:259
 #, c-format
 msgid "missing    %s\n"
 msgstr "отсутствует %s\n"
 
-#: lib/verify.c:319
+#: lib/verify.c:321
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Неудовлетворенные зависимости для %s-%s-%s: "
 
-#: lib/verify.c:367
+#: lib/verify.c:369
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "rpmVerify: неудача rpmdbOpen()\n"
 

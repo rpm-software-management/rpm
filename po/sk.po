@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 2.93\n"
-"POT-Creation-Date: 1999-09-29 19:30-0400\n"
+"POT-Creation-Date: 1999-09-30 12:56-0400\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -61,61 +61,61 @@ msgstr "predefinova» cieµovú platformu"
 msgid "Building for target %s\n"
 msgstr "vyhµadáva sa balík %s\n"
 
-#: build.c:311
+#: build.c:313
 msgid "buildroot already specified"
 msgstr "buildroot u¾ bol zadaný"
 
-#: build.c:317
+#: build.c:320
 msgid "--buildarch has been obsoleted.  Use the --target option instead.\n"
 msgstr "Voµba --buildarch je zastaralá. Pou¾ite namiesto nej --target.\n"
 
-#: build.c:321
+#: build.c:324
 msgid "--buildos has been obsoleted.  Use the --target option instead.\n"
 msgstr "Voµba --buildos je zastaralá. Pou¾ite namiesto nej --target.\n"
 
-#: build.c:342
+#: build.c:345
 msgid "override build architecture"
 msgstr "predefinova» architektúru balíka"
 
-#: build.c:344
+#: build.c:347
 msgid "override build operating system"
 msgstr "predefinova» operaèný systém balíka"
 
-#: build.c:346
+#: build.c:349
 msgid "override build root"
 msgstr "predefinova» adresár pre zostavenie balíka"
 
-#: build.c:348 rpm.c:457
+#: build.c:351 rpm.c:457
 msgid "remove build tree when done"
 msgstr "po ukonèení odstráni» adresár, v ktorom sa balík zostavoval"
 
-#: build.c:350
+#: build.c:353
 msgid "do not execute any stages of the build"
 msgstr "nevykona» ¾iadne etapy zostavenia"
 
-#: build.c:352
+#: build.c:355
 msgid "do not accept I18N msgstr's from specfile"
 msgstr "neakceptova» lokalizované re»azce zo spec-súboru"
 
-#: build.c:354
+#: build.c:357
 #, fuzzy
 msgid "remove sources when done"
 msgstr "po ukonèení odstráni» zdrojové súbory a spec-súbor"
 
-#: build.c:356
+#: build.c:359
 #, fuzzy
 msgid "remove specfile when done"
 msgstr "po ukonèení odstráni» zdrojové súbory a spec-súbor"
 
-#: build.c:358 rpm.c:455
+#: build.c:361 rpm.c:455
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "preskoèi» priamo k urèenej etape (iba pre c, i)"
 
-#: build.c:360
+#: build.c:363
 msgid "override target platform"
 msgstr "predefinova» cieµovú platformu"
 
-#: build.c:362
+#: build.c:365
 msgid "lookup I18N strings in specfile catalog"
 msgstr "pre preklad re»azcov pou¾i» katalóg správ spec-súborov"
 
@@ -2735,64 +2735,64 @@ msgstr "chyba pri hµadaní balíka %s\n"
 msgid "rpmQuery: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() zlyhalo\n"
 
-#: lib/query.c:691
+#: lib/query.c:692
 msgid "query package owning file"
 msgstr "opýta» sa balíku vlastniaceho súbor"
 
-#: lib/query.c:693
+#: lib/query.c:694
 msgid "query packages in group"
 msgstr "opýta» sa v¹etkých balíkov v skupine"
 
-#: lib/query.c:695
+#: lib/query.c:696
 msgid "query a package file"
 msgstr "opýta» sa súboru balíka"
 
-#: lib/query.c:699
+#: lib/query.c:700
 msgid "query a spec file"
 msgstr "opýta» sa spec súboru"
 
-#: lib/query.c:701
+#: lib/query.c:702
 msgid "query the pacakges triggered by the package"
 msgstr "opýta» sa balíkov spustených balíkom"
 
-#: lib/query.c:703
+#: lib/query.c:704
 msgid "query the packages which require a capability"
 msgstr "opýta» sa balíkov vy¾adujúcich schopnos»"
 
-#: lib/query.c:705
+#: lib/query.c:706
 msgid "query the packages which provide a capability"
 msgstr "opýta» sa balíkov poskytujúcich schopnos»"
 
-#: lib/query.c:742
+#: lib/query.c:745
 msgid "list all configuration files"
 msgstr "zobrazi» v¹etky konfiguraèné súbory"
 
-#: lib/query.c:744
+#: lib/query.c:747
 #, fuzzy
 msgid "list all documentation files"
 msgstr "zobrazi» v¹etky dokumentaèné súbory"
 
-#: lib/query.c:746
+#: lib/query.c:749
 msgid "dump basic file information"
 msgstr "zobrazi» základné informácie o balíku"
 
-#: lib/query.c:748
+#: lib/query.c:751
 msgid "list files in package"
 msgstr "zobrazi» súbory v balíku"
 
-#: lib/query.c:752
+#: lib/query.c:755
 msgid "use the following query format"
 msgstr "pou¾i» nasledovný formát otázky"
 
-#: lib/query.c:754
+#: lib/query.c:757
 msgid "substitute i18n sections from the following catalogue"
 msgstr ""
 
-#: lib/query.c:757
+#: lib/query.c:760
 msgid "display the states of the listed files"
 msgstr "zobrazii» stav daných súborov"
 
-#: lib/query.c:759
+#: lib/query.c:762
 msgid "display a verbose file listing"
 msgstr "zobrazi» podrobný zoznam súborov balíka"
 
@@ -3449,34 +3449,34 @@ msgstr "prihlasuje sa na %s ako %s, heslo %s\n"
 msgid "failed to create %s\n"
 msgstr "nepodarilo sa vytvori» %s\n"
 
-#: lib/verify.c:36
+#: lib/verify.c:38
 #, fuzzy
 msgid "don't verify files in package"
 msgstr "zobrazi» súbory v balíku"
 
-#: lib/verify.c:206
+#: lib/verify.c:208
 msgid "package lacks both user name and id lists (this should never happen)"
 msgstr ""
 "v balíku chýba tak meno pou¾ívateµa, ako aj zoznamy identifikácií (nemalo by "
 "sa nikdy sta»)"
 
-#: lib/verify.c:224
+#: lib/verify.c:226
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
 "v balíku chýba tak meno skupiny, ako aj zoznamy identifikácií (nemalo by sa "
 "nikdy sta»)"
 
-#: lib/verify.c:257
+#: lib/verify.c:259
 #, c-format
 msgid "missing    %s\n"
 msgstr "chýbajúce    %s\n"
 
-#: lib/verify.c:319
+#: lib/verify.c:321
 #, c-format
 msgid "Unsatisfied dependencies for %s-%s-%s: "
 msgstr "Nevyrie¹ené závislosti pre %s-%s-%s: "
 
-#: lib/verify.c:367
+#: lib/verify.c:369
 #, fuzzy
 msgid "rpmVerify: rpmdbOpen() failed\n"
 msgstr "rpmQuery: rpmdbOpen() zlyhalo\n"

@@ -24,6 +24,7 @@ INCLUDES = \
 mylibs=	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/popt/libpopt.la \
+	@INTLLIBS@ \
 	@LIBMISC@
 
 LDFLAGS = @LDFLAGS_STATIC@
