@@ -1401,7 +1401,14 @@ top:
 
 	    rc = dbiGet(dbi, mi->mi_dbc, &keyp, &keylen, &uh, &uhlen, 0);
 
-	    if (rc == 0 && keyp && mi->mi_setx)
+	    /*
+	     * If we got the next key, save the header instance number.
+	     * For db1 Packages (db1->dbi_lastoffset != 0), always copy.
+	     * For db3 Packages, instance 0 (i.e. mi->mi_setx == 0) is the
+	     * largest header instance in the database, and should be
+	     * skipped.
+	     */
+	    if (rc == 0 && keyp && (dbi->dbi_lastoffset || mi->mi_setx))
 		memcpy(&mi->mi_offset, keyp, sizeof(mi->mi_offset));
 
 	    /* Terminate on error or end of keys */
