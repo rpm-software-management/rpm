@@ -332,7 +332,7 @@ uint32 mp32mszcnt(uint32 xsize, const uint32* xdata)
 /**
  */
 /*@-exportlocal@*/
-BEECRYPTAPI
+BEECRYPTAPI /*@unused@*/
 uint32 mp32lszcnt(uint32 xsize, const uint32* xdata)
 	/*@*/;
 /*@=exportlocal@*/
@@ -365,7 +365,7 @@ uint32 mp32norm(uint32 xsize, uint32* xdata)
 
 /**
  */
-BEECRYPTAPI
+BEECRYPTAPI /*@unused@*/
 uint32 mp32divpowtwo(uint32 xsize, uint32* xdata)
 	/*@modifies xdata @*/;
 

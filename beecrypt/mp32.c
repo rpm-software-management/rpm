@@ -984,8 +984,8 @@ void mp32gcd_w(uint32 size, const uint32* xdata, const uint32* ydata, uint32* re
 
 	while (mp32nz(size, wksp))
 	{
-		mp32rshiftlsz(size, wksp);
-		mp32rshiftlsz(size, result);
+		(void) mp32rshiftlsz(size, wksp);
+		(void) mp32rshiftlsz(size, result);
 
 		if (mp32ge(size, wksp, result))
 			(void) mp32sub(size, wksp, result);

@@ -57,6 +57,10 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 	register uint32* ptemp;
 	register uint32* qtemp;
 
+	/* m must be small enough to be exponentiated modulo p and q */
+	if (m->size > psize || m->size > qsize)
+		return -1;
+
 	ptemp = (uint32*) malloc((6*psize+2)*sizeof(uint32));
 	if (ptemp == (uint32*) 0)
 		return -1;
@@ -68,14 +72,11 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 		return -1;
 	}
 
-	/* m must be small enough to be exponentiated modulo p and q */
-	if (m->size > psize || m->size > qsize)
-		return -1;
-
 	/* resize m for powmod p */
 	mp32setx(psize, ptemp+psize, m->size, m->data);
 
 	/* compute j1 = m^d1 mod p, store @ ptemp */
+/*@-compdef@*/
 	mp32bpowmod_w(&kp->p, psize, ptemp+psize, kp->d1.size, kp->d1.data, ptemp, ptemp+2*psize);
 
 	/* resize m for powmod p */
@@ -83,6 +84,7 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 
 	/* compute j2 = m^d2 mod q, store @ qtemp */
 	mp32bpowmod_w(&kp->q, qsize, qtemp+psize, kp->d2.size, kp->d2.data, qtemp, qtemp+2*qsize);
+/*@=compdef@*/
 
 	/* compute j1-j2 mod p, store @ ptemp */
 	mp32bsubmod_w(&kp->p, psize, ptemp, qsize, qtemp, ptemp, ptemp+2*psize);
@@ -95,7 +97,7 @@ int rsapricrt(const rsakp* kp, const mp32number* m, mp32number* c)
 
 	/* compute s = h*q + j2 */
 	mp32mul(c->data, psize, ptemp, qsize, kp->q.modl);
-	mp32addx(nsize, c->data, qsize, qtemp);
+	(void) mp32addx(nsize, c->data, qsize, qtemp);
 
 	free(ptemp);
 	free(qtemp);

@@ -47,9 +47,6 @@
 #include "mp32.h"
 #include "debug.h"
 
-/*@unchecked@*/
-static int _debug = 0;
-
 int dsasign(const mp32barrett* p, const mp32barrett* q, const mp32number* g, randomGeneratorContext* rgc, const mp32number* hm, const mp32number* x, mp32number* r, mp32number* s)
 {
 	register uint32  psize = p->size;

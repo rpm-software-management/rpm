@@ -307,10 +307,15 @@ WARN_LOGFILE           =
 INPUT                  = \
 	@top_srcdir@/Doxyheader \
 	@top_srcdir@/acconfig.h \
+	@top_srcdir@/aes.c \
+	@top_srcdir@/aes.h \
+	@top_srcdir@/aesopt.h \
 	@top_srcdir@/base64.c \
 	@top_srcdir@/base64.h \
 	@top_srcdir@/beecrypt.c \
 	@top_srcdir@/beecrypt.h \
+	@top_srcdir@/beecrypt.gas.h \
+	@top_srcdir@/beecrypt.win.h \
 	@top_srcdir@/blockmode.c \
 	@top_srcdir@/blockmode.h \
 	@top_srcdir@/blockpad.c \
@@ -318,9 +323,7 @@ INPUT                  = \
 	@top_srcdir@/blowfish.c \
 	@top_srcdir@/blowfish.h \
 	@top_srcdir@/blowfishopt.h \
-	@top_srcdir@/config.gas.h \
 	@top_srcdir@/config.h \
-	@top_srcdir@/config.win.h \
 	@top_srcdir@/dhaes.c \
 	@top_srcdir@/dhaes.h \
 	@top_srcdir@/dldp.c \
@@ -337,9 +340,6 @@ INPUT                  = \
 	@top_srcdir@/endianness.h \
 	@top_srcdir@/entropy.c \
 	@top_srcdir@/entropy.h \
-	@top_srcdir@/fips180.c \
-	@top_srcdir@/fips180.h \
-	@top_srcdir@/fips180opt.h \
 	@top_srcdir@/fips186.c \
 	@top_srcdir@/fips186.h \
 	@top_srcdir@/hmac.c \
@@ -373,10 +373,14 @@ INPUT                  = \
 	@top_srcdir@/rsakp.h \
 	@top_srcdir@/rsapk.c \
 	@top_srcdir@/rsapk.h \
+	@top_srcdir@/sha1.c \
+	@top_srcdir@/sha1.h \
+	@top_srcdir@/sha1opt.h \
 	@top_srcdir@/sha256.c \
 	@top_srcdir@/sha256.h \
 	@top_srcdir@/timestamp.c \
-	@top_srcdir@/timestamp.h
+	@top_srcdir@/timestamp.h \
+	@top_srcdir@/types.h
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

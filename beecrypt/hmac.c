@@ -59,7 +59,7 @@ int hmacSetup(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param,
 			return -1;
 
 		/* before we can hash the key, we need to encode it! */
-		encodeIntsPartial(key, tmp, keybytes);
+		(void) encodeIntsPartial(key, tmp, keybytes);
 
 		rc = hash->update(param, tmp, keybytes);
 		free(tmp);
@@ -73,13 +73,14 @@ int hmacSetup(hmacParam* hp, const hashFunction* hash, hashFunctionParam* param,
 		keywords = hash->digestsize >> 2;
 		keybytes = hash->digestsize;
 
-		encodeInts(keydigest, hp->kxi, keybytes);
-		encodeInts(keydigest, hp->kxo, keybytes);
+		memset(keydigest, 0, sizeof(keydigest));
+		(void) encodeInts(keydigest, hp->kxi, keybytes);
+		(void) encodeInts(keydigest, hp->kxo, keybytes);
 	}
 	else if (keybytes > 0)
 	{
-		encodeIntsPartial(key, hp->kxi, keybytes);
-		encodeIntsPartial(key, hp->kxo, keybytes);
+		(void) encodeIntsPartial(key, hp->kxi, keybytes);
+		(void) encodeIntsPartial(key, hp->kxo, keybytes);
 	}
 	else
 		return -1;

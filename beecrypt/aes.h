@@ -1,8 +1,11 @@
+/** \ingroup BC_aes_m BC_m
+ * \file aes.h
+ *
+ * AES block cipher, header.
+ *
+ */
+
 /*
- * aes.h
- *
- * AES block cipher, header
- *
  * Copyright (c) 2002 Bob Deblier
  *
  * This library is free software; you can redistribute it and/or
@@ -27,6 +30,8 @@
 #include "beecrypt.h"
 #include "aesopt.h"
 
+/** \ingroup BC_aes_m
+ */
 typedef struct
 {
 	uint32 k[64];
@@ -38,26 +43,74 @@ typedef struct
 extern "C" {
 #endif
 
+/** \ingroup BC_aes_m
+ */
+/*@observer@*/ /*@checked@*/
 extern const BEECRYPTAPI blockCipher aes;
 
+/** \ingroup BC_aes_m
+ */
+/*@-exportlocal@*/
 BEECRYPTAPI
-int aesSetup  (aesParam*, const uint32*, int, cipherOperation);
-BEECRYPTAPI
-int aesSetIV  (aesParam*, const uint32*);
-BEECRYPTAPI
-int aesEncrypt(aesParam*, uint32*, const uint32*);
-BEECRYPTAPI
-int aesDecrypt(aesParam*, uint32*, const uint32*);
+int aesSetup  (aesParam* ap, const uint32* key, int keybits, cipherOperation op)
+	/*@modifies ap @*/;
+/*@=exportlocal@*/
 
+/** \ingroup BC_aes_m
+ */
+/*@-exportlocal@*/
 BEECRYPTAPI
-int aesECBEncrypt(aesParam*, int, uint32*, const uint32*);
-BEECRYPTAPI
-int aesECBDecrypt(aesParam*, int, uint32*, const uint32*);
+int aesSetIV  (aesParam* ap, const uint32* iv)
+	/*@modifies ap @*/;
+/*@=exportlocal@*/
 
+/** \ingroup BC_aes_m
+ */
+/*@-exportlocal@*/
 BEECRYPTAPI
-int aesCBCEncrypt(aesParam*, int, uint32*, const uint32*);
+int aesEncrypt(aesParam* ap, uint32* dst, const uint32* src)
+	/*@modifies dst @*/;
+/*@=exportlocal@*/
+
+/** \ingroup BC_aes_m
+ */
+/*@-exportlocal@*/
 BEECRYPTAPI
-int aesCBCDecrypt(aesParam*, int, uint32*, const uint32*);
+int aesDecrypt(aesParam* ap, uint32* dst, const uint32* src)
+	/*@modifies dst @*/;
+/*@=exportlocal@*/
+
+/** \ingroup BC_aes_m
+ */
+/*@-exportlocal@*/
+BEECRYPTAPI
+int aesECBEncrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
+	/*@modifies dst @*/;
+/*@=exportlocal@*/
+
+/** \ingroup BC_aes_m
+ */
+/*@-exportlocal@*/
+BEECRYPTAPI
+int aesECBDecrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
+	/*@modifies dst @*/;
+/*@=exportlocal@*/
+
+/** \ingroup BC_aes_m
+ */
+/*@-exportlocal@*/
+BEECRYPTAPI
+int aesCBCEncrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
+	/*@modifies ap, dst @*/;
+/*@=exportlocal@*/
+
+/** \ingroup BC_aes_m
+ */
+/*@-exportlocal@*/
+BEECRYPTAPI
+int aesCBCDecrypt(aesParam* ap, int count, uint32* dst, const uint32* src)
+	/*@modifies ap, dst @*/;
+/*@=exportlocal@*/
 
 #ifdef __cplusplus
 }
