@@ -9,6 +9,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#if defined(__GLIBC__) && __GLIBC__ == 2 && __GLIBC_MINOR__ == 2
+#define USE_COOKIE_SEEK_POINTER 1
+#endif
+
 typedef	/*@abstract@*/ /*@refcounted@*/ struct _FD_s * FD_t;
 typedef /*@observer@*/ struct FDIO_s * FDIO_t;
 
@@ -18,7 +22,11 @@ extern "C" {
 
 typedef ssize_t fdio_read_function_t (void *cookie, char *buf, size_t nbytes);
 typedef ssize_t fdio_write_function_t (void *cookie, const char *buf, size_t nbytes);
+#ifdef USE_COOKIE_SEEK_POINTER
+typedef int fdio_seek_function_t (void *cookie, off64_t * offset, int whence);
+#else
 typedef int fdio_seek_function_t (void *cookie, off_t offset, int whence);
+#endif
 typedef int fdio_close_function_t (void *cookie);
 
 typedef /*@null@*/ FD_t fdio_ref_function_t ( /*@only@*/ void * cookie,
@@ -73,7 +81,12 @@ struct FDIO_s {
 
 size_t	Fread	(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd);
 size_t	Fwrite	(const void *buf, size_t size, size_t nmemb, FD_t fd);
-int	Fseek	(FD_t fd, long int offset, int whence);
+
+#ifdef USE_COOKIE_SEEK_POINTER
+int	Fseek	(FD_t fd, off64_t offset, int whence);
+#else
+int	Fseek	(FD_t fd, off_t offset, int whence);
+#endif
 int	Fclose	( /*@killref@*/ FD_t fd);
 FD_t	Fdopen	(FD_t fd, const char * fmode);
 FD_t	Fopen	(const char * path, const char * fmode);
