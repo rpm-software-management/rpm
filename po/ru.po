@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm-2.5.3\n"
-"POT-Creation-Date: 1998-09-28 18:02-0400\n"
+"POT-Creation-Date: 1998-10-06 13:43-0400\n"
 "PO-Revision-Date: Tue Sep 15 14:17:00 EEST 1998\n"
 "Last-Translator: Serguei Koubouchine <ksi@ksi-linux.com>\n"
 "MIME-Version: 1.0\n"
@@ -1593,6 +1593,53 @@ msgstr "ошибка открытия %s: %s\n"
 msgid "Bad exit status from %s (%s)"
 msgstr ""
 
+#: ../build/expression.c:188 ../build/expression.c:197
+msgid "parse error in tokenizer"
+msgstr ""
+
+#: ../build/expression.c:239
+#, fuzzy
+msgid "parse error in expression"
+msgstr "в выражении ожидался \"?\""
+
+#: ../build/expression.c:269
+msgid "unmatched ("
+msgstr ""
+
+#: ../build/expression.c:287
+msgid "undefined identifier"
+msgstr ""
+
+#: ../build/expression.c:306
+msgid "- only on numbers"
+msgstr ""
+
+#: ../build/expression.c:322
+msgid "! only on numbers"
+msgstr ""
+
+#: ../build/expression.c:358 ../build/expression.c:403
+#: ../build/expression.c:460 ../build/expression.c:543
+msgid "types must match"
+msgstr ""
+
+#: ../build/expression.c:371
+msgid "* / not suported for strings"
+msgstr ""
+
+#: ../build/expression.c:419
+msgid "- not suported for strings"
+msgstr ""
+
+#: ../build/expression.c:556
+msgid "&& and || not suported for strings"
+msgstr ""
+
+#: ../build/expression.c:587 ../build/expression.c:630
+#, fuzzy
+msgid "syntax error in expression"
+msgstr "в выражении ожидался \"?\""
+
 #: ../build/files.c:204
 #, c-format
 msgid "TIMECHECK failure: %s\n"
@@ -1720,46 +1767,46 @@ msgstr "Не могу исполнить pgp"
 msgid "Couldn't fork %s"
 msgstr "Не могу прочесть цель подписи"
 
-#: ../build/files.c:1518
-#, fuzzy, c-format
-msgid "failed to write all data to %s"
-msgstr "не могу создать %s\n"
-
-#: ../build/files.c:1523
+#: ../build/files.c:1521
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "ошибка pgp"
 
-#: ../build/files.c:1558
+#: ../build/files.c:1525
+#, fuzzy, c-format
+msgid "failed to write all data to %s"
+msgstr "не могу создать %s\n"
+
+#: ../build/files.c:1559
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1565
+#: ../build/files.c:1566
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1585
+#: ../build/files.c:1586
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1592
+#: ../build/files.c:1593
 #, fuzzy
 msgid "Failed to find requires"
 msgstr "не могу создать %s\n"
 
-#: ../build/files.c:1627
+#: ../build/files.c:1628
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1645
+#: ../build/files.c:1646
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1659
+#: ../build/files.c:1660
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1684
+#: ../build/files.c:1685
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "файл %s: %s\n"
@@ -2125,30 +2172,48 @@ msgstr ""
 msgid "line %d: Second %s"
 msgstr ""
 
-#: ../build/parseSpec.c:248
+#: ../build/parseSpec.c:110
+#, fuzzy, c-format
+msgid "Unable to open: %s\n"
+msgstr "не могу открыть %s\n"
+
+#: ../build/parseSpec.c:122
+msgid "Unclosed %%if"
+msgstr ""
+
+#: ../build/parseSpec.c:169
+#, fuzzy, c-format
+msgid "line %d: %s"
+msgstr "файл %s: %s\n"
+
+#. Got an else with no %if !
+#: ../build/parseSpec.c:193
+msgid "%s:%d: Got a %%else with no if"
+msgstr ""
+
+#. Got an end with no %if !
+#: ../build/parseSpec.c:203
+msgid "%s:%d: Got a %%endif with no if"
+msgstr ""
+
+#: ../build/parseSpec.c:215 ../build/parseSpec.c:224
+msgid "malformed %%include statement"
+msgstr ""
+
+#: ../build/parseSpec.c:305
 #, c-format
 msgid "Timecheck value must be an integer: %s"
 msgstr ""
 
-#: ../build/parseSpec.c:338
+#: ../build/parseSpec.c:395
 #, fuzzy
 msgid "No buildable architectures"
 msgstr "не проверять архитектуру пакета"
 
-#: ../build/parseSpec.c:352
+#: ../build/parseSpec.c:409
 #, fuzzy
 msgid "Package has no %%description: %s"
 msgstr "пакет %s не внесен в %s"
-
-#: ../build/rpminject.c:41
-#, fuzzy, c-format
-msgid "error: %s is not an RPM package\n"
-msgstr "ошибка: не похоже, чтобы %s был пакетом RPM\n"
-
-#: ../build/rpminject.c:46
-#, fuzzy, c-format
-msgid "error: reading header from %s\n"
-msgstr "ошибка получения записи %s из %s"
 
 #: ../build/spec.c:30
 #, c-format
@@ -3164,6 +3229,14 @@ msgstr ""
 #: ../lib/verify.c:189
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
+
+#, fuzzy
+#~ msgid "error: %s is not an RPM package\n"
+#~ msgstr "ошибка: не похоже, чтобы %s был пакетом RPM\n"
+
+#, fuzzy
+#~ msgid "error: reading header from %s\n"
+#~ msgstr "ошибка получения записи %s из %s"
 
 #, fuzzy
 #~ msgid ""

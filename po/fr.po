@@ -1,6 +1,6 @@
 #: ../rpm.c:200 ../rpm.c:279
 msgid ""
-msgstr "POT-Creation-Date: 1998-09-28 18:02-0400\n"
+msgstr "POT-Creation-Date: 1998-10-06 13:43-0400\n"
 
 #: ../build.c:40 ../build.c:51
 #, fuzzy, c-format
@@ -1665,6 +1665,51 @@ msgstr ""
 msgid "Bad exit status from %s (%s)"
 msgstr ""
 
+#: ../build/expression.c:188 ../build/expression.c:197
+msgid "parse error in tokenizer"
+msgstr ""
+
+#: ../build/expression.c:239
+msgid "parse error in expression"
+msgstr ""
+
+#: ../build/expression.c:269
+msgid "unmatched ("
+msgstr ""
+
+#: ../build/expression.c:287
+msgid "undefined identifier"
+msgstr ""
+
+#: ../build/expression.c:306
+msgid "- only on numbers"
+msgstr ""
+
+#: ../build/expression.c:322
+msgid "! only on numbers"
+msgstr ""
+
+#: ../build/expression.c:358 ../build/expression.c:403
+#: ../build/expression.c:460 ../build/expression.c:543
+msgid "types must match"
+msgstr ""
+
+#: ../build/expression.c:371
+msgid "* / not suported for strings"
+msgstr ""
+
+#: ../build/expression.c:419
+msgid "- not suported for strings"
+msgstr ""
+
+#: ../build/expression.c:556
+msgid "&& and || not suported for strings"
+msgstr ""
+
+#: ../build/expression.c:587 ../build/expression.c:630
+msgid "syntax error in expression"
+msgstr ""
+
 #: ../build/files.c:204
 #, c-format
 msgid "TIMECHECK failure: %s\n"
@@ -1792,46 +1837,46 @@ msgstr ""
 msgid "Couldn't fork %s"
 msgstr ""
 
-#: ../build/files.c:1518
-#, fuzzy, c-format
-msgid "failed to write all data to %s"
-msgstr "impossible d'ouvrir: %s\n"
-
-#: ../build/files.c:1523
+#: ../build/files.c:1521
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "La construction a échoué.\n"
 
-#: ../build/files.c:1558
+#: ../build/files.c:1525
+#, fuzzy, c-format
+msgid "failed to write all data to %s"
+msgstr "impossible d'ouvrir: %s\n"
+
+#: ../build/files.c:1559
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1565
+#: ../build/files.c:1566
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1585
+#: ../build/files.c:1586
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1592
+#: ../build/files.c:1593
 #, fuzzy
 msgid "Failed to find requires"
 msgstr "impossible d'ouvrir: %s\n"
 
-#: ../build/files.c:1627
+#: ../build/files.c:1628
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1645
+#: ../build/files.c:1646
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1659
+#: ../build/files.c:1660
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1684
+#: ../build/files.c:1685
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
@@ -2197,30 +2242,48 @@ msgstr ""
 msgid "line %d: Second %s"
 msgstr ""
 
-#: ../build/parseSpec.c:248
+#: ../build/parseSpec.c:110
+#, fuzzy, c-format
+msgid "Unable to open: %s\n"
+msgstr "impossible d'ouvrir: %s\n"
+
+#: ../build/parseSpec.c:122
+msgid "Unclosed %%if"
+msgstr ""
+
+#: ../build/parseSpec.c:169
+#, fuzzy, c-format
+msgid "line %d: %s"
+msgstr "impossible d'ouvrir: %s\n"
+
+#. Got an else with no %if !
+#: ../build/parseSpec.c:193
+msgid "%s:%d: Got a %%else with no if"
+msgstr ""
+
+#. Got an end with no %if !
+#: ../build/parseSpec.c:203
+msgid "%s:%d: Got a %%endif with no if"
+msgstr ""
+
+#: ../build/parseSpec.c:215 ../build/parseSpec.c:224
+msgid "malformed %%include statement"
+msgstr ""
+
+#: ../build/parseSpec.c:305
 #, c-format
 msgid "Timecheck value must be an integer: %s"
 msgstr ""
 
-#: ../build/parseSpec.c:338
+#: ../build/parseSpec.c:395
 #, fuzzy
 msgid "No buildable architectures"
 msgstr "%s ne peut être construit sur cette architecture\n"
 
-#: ../build/parseSpec.c:352
+#: ../build/parseSpec.c:409
 #, fuzzy
 msgid "Package has no %%description: %s"
 msgstr "aucun package n'a été spécifié pour la désinstallation"
-
-#: ../build/rpminject.c:41
-#, c-format
-msgid "error: %s is not an RPM package\n"
-msgstr ""
-
-#: ../build/rpminject.c:46
-#, c-format
-msgid "error: reading header from %s\n"
-msgstr ""
 
 #: ../build/spec.c:30
 #, c-format

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 1998-09-28 18:02-0400\n"
+"POT-Creation-Date: 1998-10-06 13:43-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1639,6 +1639,53 @@ msgstr "%s 'ye erisimde belirtilen hata oluþtu: %s\n"
 msgid "Bad exit status from %s (%s)"
 msgstr ""
 
+#: ../build/expression.c:188 ../build/expression.c:197
+msgid "parse error in tokenizer"
+msgstr ""
+
+#: ../build/expression.c:239
+#, fuzzy
+msgid "parse error in expression"
+msgstr "dizi içerisinde ? bekleniyordu"
+
+#: ../build/expression.c:269
+msgid "unmatched ("
+msgstr ""
+
+#: ../build/expression.c:287
+msgid "undefined identifier"
+msgstr ""
+
+#: ../build/expression.c:306
+msgid "- only on numbers"
+msgstr ""
+
+#: ../build/expression.c:322
+msgid "! only on numbers"
+msgstr ""
+
+#: ../build/expression.c:358 ../build/expression.c:403
+#: ../build/expression.c:460 ../build/expression.c:543
+msgid "types must match"
+msgstr ""
+
+#: ../build/expression.c:371
+msgid "* / not suported for strings"
+msgstr ""
+
+#: ../build/expression.c:419
+msgid "- not suported for strings"
+msgstr ""
+
+#: ../build/expression.c:556
+msgid "&& and || not suported for strings"
+msgstr ""
+
+#: ../build/expression.c:587 ../build/expression.c:630
+#, fuzzy
+msgid "syntax error in expression"
+msgstr "dizi içerisinde ? bekleniyordu"
+
 #: ../build/files.c:204
 #, c-format
 msgid "TIMECHECK failure: %s\n"
@@ -1766,46 +1813,46 @@ msgstr "PGP çalýþtýrýlamadý"
 msgid "Couldn't fork %s"
 msgstr "Ýmza hedefi 'sigtarget' okunamadý"
 
-#: ../build/files.c:1518
-#, fuzzy, c-format
-msgid "failed to write all data to %s"
-msgstr "%s yaratýlamýyor\n"
-
-#: ../build/files.c:1523
+#: ../build/files.c:1521
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "PGP hata verdi"
 
-#: ../build/files.c:1558
+#: ../build/files.c:1525
+#, fuzzy, c-format
+msgid "failed to write all data to %s"
+msgstr "%s yaratýlamýyor\n"
+
+#: ../build/files.c:1559
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1565
+#: ../build/files.c:1566
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1585
+#: ../build/files.c:1586
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1592
+#: ../build/files.c:1593
 #, fuzzy
 msgid "Failed to find requires"
 msgstr "%s yaratýlamýyor\n"
 
-#: ../build/files.c:1627
+#: ../build/files.c:1628
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1645
+#: ../build/files.c:1646
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1659
+#: ../build/files.c:1660
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1684
+#: ../build/files.c:1685
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "%s açýlamadý: %s"
@@ -2172,30 +2219,49 @@ msgstr ""
 msgid "line %d: Second %s"
 msgstr ""
 
-#: ../build/parseSpec.c:248
+# , c-format
+#: ../build/parseSpec.c:110
+#, fuzzy, c-format
+msgid "Unable to open: %s\n"
+msgstr "%s 'ye eriþimde hata oluþtu\n"
+
+#: ../build/parseSpec.c:122
+msgid "Unclosed %%if"
+msgstr ""
+
+#: ../build/parseSpec.c:169
+#, fuzzy, c-format
+msgid "line %d: %s"
+msgstr "%s açýlamadý: %s"
+
+#. Got an else with no %if !
+#: ../build/parseSpec.c:193
+msgid "%s:%d: Got a %%else with no if"
+msgstr ""
+
+#. Got an end with no %if !
+#: ../build/parseSpec.c:203
+msgid "%s:%d: Got a %%endif with no if"
+msgstr ""
+
+#: ../build/parseSpec.c:215 ../build/parseSpec.c:224
+msgid "malformed %%include statement"
+msgstr ""
+
+#: ../build/parseSpec.c:305
 #, c-format
 msgid "Timecheck value must be an integer: %s"
 msgstr ""
 
-#: ../build/parseSpec.c:338
+#: ../build/parseSpec.c:395
 #, fuzzy
 msgid "No buildable architectures"
 msgstr "paket mimarisini doðrulamaz"
 
-#: ../build/parseSpec.c:352
+#: ../build/parseSpec.c:409
 #, fuzzy
 msgid "Package has no %%description: %s"
 msgstr "%s paketi %s altýnda gözükmüyor"
-
-#: ../build/rpminject.c:41
-#, fuzzy, c-format
-msgid "error: %s is not an RPM package\n"
-msgstr "hata: %s herhangi bir RPM pakedine ait görünmüyor\n"
-
-#: ../build/rpminject.c:46
-#, fuzzy, c-format
-msgid "error: reading header from %s\n"
-msgstr "%s kaydýna %s dosyasýnda eriþilemiyor:"
 
 #: ../build/spec.c:30
 #, c-format
@@ -3214,6 +3280,14 @@ msgstr ""
 #: ../lib/verify.c:189
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
+
+#, fuzzy
+#~ msgid "error: %s is not an RPM package\n"
+#~ msgstr "hata: %s herhangi bir RPM pakedine ait görünmüyor\n"
+
+#, fuzzy
+#~ msgid "error: reading header from %s\n"
+#~ msgstr "%s kaydýna %s dosyasýnda eriþilemiyor:"
 
 #, fuzzy
 #~ msgid "Copyright (C) 1995 - Red Hat Software"

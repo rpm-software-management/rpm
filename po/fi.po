@@ -1,7 +1,7 @@
 #: ../rpm.c:200 ../rpm.c:279
 msgid ""
 msgstr ""
-"POT-Creation-Date: 1998-09-28 18:02-0400\n"
+"POT-Creation-Date: 1998-10-06 13:43-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
 "Content-Type: text/plain; charset=\n"
@@ -1639,6 +1639,53 @@ msgstr "%s:n avaus ei onnistunut: %s\n"
 msgid "Bad exit status from %s (%s)"
 msgstr ""
 
+#: ../build/expression.c:188 ../build/expression.c:197
+msgid "parse error in tokenizer"
+msgstr ""
+
+#: ../build/expression.c:239
+#, fuzzy
+msgid "parse error in expression"
+msgstr "odotin '?'-merkkiä ilmauksessa"
+
+#: ../build/expression.c:269
+msgid "unmatched ("
+msgstr ""
+
+#: ../build/expression.c:287
+msgid "undefined identifier"
+msgstr ""
+
+#: ../build/expression.c:306
+msgid "- only on numbers"
+msgstr ""
+
+#: ../build/expression.c:322
+msgid "! only on numbers"
+msgstr ""
+
+#: ../build/expression.c:358 ../build/expression.c:403
+#: ../build/expression.c:460 ../build/expression.c:543
+msgid "types must match"
+msgstr ""
+
+#: ../build/expression.c:371
+msgid "* / not suported for strings"
+msgstr ""
+
+#: ../build/expression.c:419
+msgid "- not suported for strings"
+msgstr ""
+
+#: ../build/expression.c:556
+msgid "&& and || not suported for strings"
+msgstr ""
+
+#: ../build/expression.c:587 ../build/expression.c:630
+#, fuzzy
+msgid "syntax error in expression"
+msgstr "odotin '?'-merkkiä ilmauksessa"
+
 #: ../build/files.c:204
 #, c-format
 msgid "TIMECHECK failure: %s\n"
@@ -1766,46 +1813,46 @@ msgstr "En voinut ajaa pgp:tä"
 msgid "Couldn't fork %s"
 msgstr "En voinut ajaa pgp:tä"
 
-#: ../build/files.c:1518
-#, fuzzy, c-format
-msgid "failed to write all data to %s"
-msgstr "%s:n luonti epäonnistui\n"
-
-#: ../build/files.c:1523
+#: ../build/files.c:1521
 #, fuzzy, c-format
 msgid "%s failed"
 msgstr "pgp epäonnistui"
 
-#: ../build/files.c:1558
+#: ../build/files.c:1525
+#, fuzzy, c-format
+msgid "failed to write all data to %s"
+msgstr "%s:n luonti epäonnistui\n"
+
+#: ../build/files.c:1559
 msgid "Finding provides...\n"
 msgstr ""
 
-#: ../build/files.c:1565
+#: ../build/files.c:1566
 msgid "Failed to find provides"
 msgstr ""
 
-#: ../build/files.c:1585
+#: ../build/files.c:1586
 msgid "Finding requires...\n"
 msgstr ""
 
-#: ../build/files.c:1592
+#: ../build/files.c:1593
 #, fuzzy
 msgid "Failed to find requires"
 msgstr "%s:n luonti epäonnistui\n"
 
-#: ../build/files.c:1627
+#: ../build/files.c:1628
 msgid "Provides:"
 msgstr ""
 
-#: ../build/files.c:1645
+#: ../build/files.c:1646
 msgid "Prereqs:"
 msgstr ""
 
-#: ../build/files.c:1659
+#: ../build/files.c:1660
 msgid "Requires:"
 msgstr ""
 
-#: ../build/files.c:1684
+#: ../build/files.c:1685
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "en voinut avata %s: %s"
@@ -2171,30 +2218,48 @@ msgstr ""
 msgid "line %d: Second %s"
 msgstr ""
 
-#: ../build/parseSpec.c:248
+#: ../build/parseSpec.c:110
+#, fuzzy, c-format
+msgid "Unable to open: %s\n"
+msgstr "%s:n avaus epäonnistui\n"
+
+#: ../build/parseSpec.c:122
+msgid "Unclosed %%if"
+msgstr ""
+
+#: ../build/parseSpec.c:169
+#, fuzzy, c-format
+msgid "line %d: %s"
+msgstr "en voinut avata %s: %s"
+
+#. Got an else with no %if !
+#: ../build/parseSpec.c:193
+msgid "%s:%d: Got a %%else with no if"
+msgstr ""
+
+#. Got an end with no %if !
+#: ../build/parseSpec.c:203
+msgid "%s:%d: Got a %%endif with no if"
+msgstr ""
+
+#: ../build/parseSpec.c:215 ../build/parseSpec.c:224
+msgid "malformed %%include statement"
+msgstr ""
+
+#: ../build/parseSpec.c:305
 #, c-format
 msgid "Timecheck value must be an integer: %s"
 msgstr ""
 
-#: ../build/parseSpec.c:338
+#: ../build/parseSpec.c:395
 #, fuzzy
 msgid "No buildable architectures"
 msgstr "älä tarkista paketin arkkitehtuuria"
 
-#: ../build/parseSpec.c:352
+#: ../build/parseSpec.c:409
 #, fuzzy
 msgid "Package has no %%description: %s"
 msgstr "paketti %s ei ole %s:ssä"
-
-#: ../build/rpminject.c:41
-#, fuzzy, c-format
-msgid "error: %s is not an RPM package\n"
-msgstr "virhe: %s ei vaikuta RPM paketilta\n"
-
-#: ../build/rpminject.c:46
-#, fuzzy, c-format
-msgid "error: reading header from %s\n"
-msgstr "virhe luettaessa tietuetta %s %s:stä"
 
 #: ../build/spec.c:30
 #, c-format
@@ -3211,6 +3276,14 @@ msgstr ""
 #: ../lib/verify.c:189
 msgid "package lacks both group name and id lists (this should never happen)"
 msgstr ""
+
+#, fuzzy
+#~ msgid "error: %s is not an RPM package\n"
+#~ msgstr "virhe: %s ei vaikuta RPM paketilta\n"
+
+#, fuzzy
+#~ msgid "error: reading header from %s\n"
+#~ msgstr "virhe luettaessa tietuetta %s %s:stä"
 
 #, fuzzy
 #~ msgid ""
