@@ -5,6 +5,7 @@
 	- query format of the form '[A%{}]' would drop the static string
 	- fixed fix in 2.4.9 for empty packages which broke -qip on ftp URL's
 	- fixed arch/os numbers in lead
+	- added Turkish message catalog
 
 2.4.10 -> 2.4.11:
 	- HAVE_SYS_SOCKET_H was mistakingly MACHINE_SYS_SOCKET_H in
