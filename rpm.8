@@ -10,10 +10,11 @@ build, install, query, verify, update, and uninstall individual
 software packages.  A \fIpackage\fP consists of an archive of files,
 and package information, including name, version, and description.
 
-There are eight basic modes of operation, and each takes a different
+There are ten basic modes of operation, and each takes a different
 set of options.  They are \fIInstall\fP, \fIQuery\fP,
 \fIVerify\fP, \fISignature check\fP, \fIUninstall\fP, \fIBuild\fP,
-\fIRebuild Database\fP, and \fIShow RC\fP.
+\fIRebuild Database\fP, \fIfix permissions\fP, \fIset owners and groups\fR, 
+and \fIShow RC\fP.
 
 Install mode:
 .br
@@ -38,6 +39,22 @@ Uninstall mode:
 Build mode:
 .br
 .I "\fB    rpm \-b\fIO\fB [build\-options] <package_spec>+\fP"
+.br
+Rebuild database:
+.br
+.I "\fB    rpm \-\-rebuilddb"
+.br
+Fix permissions:
+.br
+.I "\fB    rpm \-\-fixperms [query\-package\-specifiers]\fP"
+.br
+Set owners and groups:
+.br
+.I "\fB    rpm \-\-setugids [query\-package\-specifiers]\fP"
+.br
+Show RC:
+.br
+.I "\fB    rpm \-\-showrc"
 .br
 
 .SH GENERAL OPTIONS
@@ -154,15 +171,11 @@ Query all packages that requires \fI<capability>\fP for proper functioning.
 Query all packages that provide the \fI<virtual>\fP capability.
 .IP "\fB\-f \fI<file>\fP"
 Query package owning \fI<file>\fP.
-.IP "\fB\-F\fP"
-Like \fB\-f\fP but read file names from stdin.
 .IP "\fB\-p \fI<package_file>\fP"
 Query an (uninstalled) package \fI<package_file>\fP. 
 The <package_file> may be specified as an ftp style URL, in which case
 the package header will be downloaded and queried. See \fBFTP
 OPTIONS\fP for information on RPM's built in ftp support.
-.IP "\fB\-P\fP"
-Like \fB\-p\fP but read package file names from stdin.
 
 .P
 Information selection options:
