@@ -18,8 +18,13 @@ INCLUDES = -I$(top_srcdir)/build -I$(top_srcdir)/lib -I$(top_srcdir)/popt \
 	@INCPATH@
 
 myldflags= -L$(top_builddir)/build -L$(top_builddir)/lib -L$(top_builddir)/popt
-# XXX libtool generates dependent libs.
-myldadd= $(top_builddir)/build/librpmbuild.la \
+
+# XXX libtool can/should generate dependent libs.
+# XXX solaris2.6 cannot use *.la with --all-static (downrev binutils/egcs?)
+myldadd= \
+	$(top_builddir)/build/.libs/librpmbuild.a \
+	$(top_builddir)/lib/.libs/librpm.a \
+	$(top_builddir)/popt/.libs/libpopt.a \
 	@INTLLIBS@ @LIBMISC@
 
 LDFLAGS = @LDFLAGS_STATIC@ $(myldflags)

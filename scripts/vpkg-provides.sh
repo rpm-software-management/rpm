@@ -182,6 +182,8 @@ do
 		echo "$0: Unrecognized option: \"$orig_option\"; use --help for usage." >&2
 		exit 1
 		;;
+	esac
+done
 
 
 # consistancy checks on the arguments
@@ -247,23 +249,25 @@ cat $spec_header
 #
 # Output the shared libraries
 #
-for f in `cat $provides_tmp | sort -u`
-do
+{
+    for f in `cat $provides_tmp | sort -u`
+    do
 	echo "Provides: $f"
-done
+    done
 
 #
 # Output the available shell interpreters
 #
-for d in `echo $interp_dirs | sed -e 's/:/ /g'`
-do
+    for d in `echo $interp_dirs | sed -e 's/:/ /g'`
+    do
 	for f in `echo $interps | sed -e 's/:/ /g'`
 	do
 		if test -f $d/$f ; then
 			echo "Provides: $d/$f"
 		fi
 	done
-done
+    done
+} | sed -e 's/%/%%/g'
 
 #
 # Output the discription of the spec file
@@ -330,7 +334,7 @@ _EIEIO_
 # the contents of the temporary file are hardcoded into the verify
 # script so that the file can be reproduced at verification time.
 
-cat $sum_tmp
+cat $sum_tmp | sed -e 's/%/%%/g'
 
 cat <<_EIEIO_
 _EOF_
@@ -339,7 +343,7 @@ _EOF_
 cmp \$sum_package_tmp \$sum_current_tmp 
 
 if [ $? -ne 0 ]; then
-	echo"Differences found by: cmp \$sum_package_tmp \$sum_current_tmp"
+	echo "Differences found by: cmp \$sum_package_tmp \$sum_current_tmp"
 	exit \$?
 fi
 
@@ -350,3 +354,4 @@ _EIEIO_
 #
 
 echo '%files'
+echo '# no files in a virtual package'
