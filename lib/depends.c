@@ -1785,7 +1785,7 @@ rescan:
 		p->tsi.tsi_pkg = NULL;
 
 		if (!printed) {
-		    rpmMessage(RPMMESS_NORMAL, _("LOOP:\n"));
+		    rpmMessage(RPMMESS_WARNING, _("LOOP:\n"));
 		    printed = 1;
 		}
 
@@ -1794,7 +1794,7 @@ rescan:
 
 		/* Print next member of loop. */
 		sprintf(buf, "%s-%s-%s", p->name, p->version, p->release);
-		rpmMessage(RPMMESS_NORMAL, "    %-40s %s\n", buf, dp);
+		rpmMessage(RPMMESS_WARNING, "    %-40s %s\n", buf, dp);
 
 		if (dp) {
 		    free((void *)dp);

@@ -63,6 +63,8 @@
 	- fix: headerUnload handles headers w/o regions correctly on rebuilddb.
 	- resurrect rpmrc Provides: as well as implicit dependency on packge
 		info.
+	- change dependency loop message to RPMMESS_WARNING to use stderr, not
+		stdout.
 
 3.0.6 -> 4.0
 	- use DIRNAMES/BASENAMES/DIRINDICES not FILENAMES in packages and db.

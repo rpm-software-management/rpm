@@ -880,7 +880,8 @@ static int handleInstInstalledFiles(TFI_t * fi, rpmdb db,
 	otherFileNum = shared->otherFileNum;
 	fileNum = shared->pkgFileNum;
 
-	if (otherStates[otherFileNum] != RPMFILE_STATE_NORMAL)
+	/* XXX another tedious segfault, assume file state normal. */
+	if (otherStates && otherStates[otherFileNum] != RPMFILE_STATE_NORMAL)
 	    continue;
 
 	if (fi->actions[fileNum] == FA_SKIPMULTILIB)

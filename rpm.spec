@@ -14,7 +14,7 @@ Summary: The Red Hat package management system.
 Name: rpm
 %define version 4.0.2
 Version: %{version}
-Release: 0.1
+Release: 0.3
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{version}.tar.gz
 Copyright: GPL
@@ -96,7 +96,7 @@ programs that will manipulate RPM packages and databases.
 %package -n popt
 Summary: A C library for parsing command line parameters.
 Group: Development/Libraries
-Version: 1.6.1
+Version: 1.6.2
 
 %description -n popt
 Popt is a C library for parsing command line parameters.  Popt was
@@ -310,8 +310,12 @@ fi
 %{__prefix}/include/popt.h
 
 %changelog
+* Wed Dec 13 2000 Jeff Johnson <jbj@redhat.com>
+- bump popt version.
+
 * Tue Dec 12 2000 Jeff Johnson <jbj@redhat.com>
 - bail on header regions.
+- change dependency loop message to RPMMESS_WARNING to use stderr, not stdout.
 
 * Sun Dec 10 2000 Jeff Johnson <jbj@redhat.com>
 - handle added dirtoken tags (mostly) correctly with header regions.

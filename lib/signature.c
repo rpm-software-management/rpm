@@ -188,7 +188,7 @@ int rpmReadSignature(FD_t fd, Header *headerp, short sigType)
 
     if (rc == 0 && headerp)
 	*headerp = h;
-    else
+    else if (h)
 	headerFree(h);
 
     return rc;

@@ -102,7 +102,7 @@ exit:
  * Otherwise, the (mis-compilation?!) symptom is the inability to pass sig_type- * correctly to rpmReadSignature(FD_t *fd, Header *header, short sig_type)
  * (Note: the short in both struct rpmlead and in the prototype).
  */
-#define	ALPHA_LOSSAGE
+#undef	ALPHA_LOSSAGE
 
 int rpmReSign(rpmResignFlags add, char *passPhrase, const char **argv)
 {
