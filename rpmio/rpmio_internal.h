@@ -51,18 +51,14 @@ typedef	/*@abstract@*/ struct {
  */
 typedef enum rpmDigestFlags_e {
     RPMDIGEST_NONE	= 0,
-#ifdef	DYING
-    RPMDIGEST_MD5	= (1 <<  0),	/*!< MD5 digest. */
-    RPMDIGEST_SHA1	= (1 <<  1)	/*!< SHA1 digest. */
-    RPMDIGEST_REVERSE	= (1 << 16),	/*!< Should bytes be reversed? */
-    RPMDIGEST_BCSWAP	= (1 << 17),	/*!< Should bit count be reversed? */
-#define	RPMDIGEST_MASK	0xffff
-#endif
 } rpmDigestFlags;
 
-/**
+/** \ingroup rpmio
  */
-typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
+typedef struct _FDDIGEST_s {
+    pgpHashAlgo		hashalgo;
+    DIGEST_CTX		hashctx;
+} * FDDIGEST_t;
 
 /** \ingroup rpmio
  * Duplicate a digest context.
@@ -134,7 +130,10 @@ struct _FD_s {
 /*@observer@*/ const void *errcookie;	/* gzdio/bzdio/ufdio: */
 
     FDSTAT_t	stats;		/* I/O statistics */
-/*@owned@*/ /*@null@*/ DIGEST_CTX digest;	/* Digest private data */
+
+    int		ndigests;
+#define	FDDIGEST_MAX	4
+    struct _FDDIGEST_s	digests[FDDIGEST_MAX];
 
     int		ftpFileDoneNeeded; /* ufdio: (FTP) */
     unsigned int firstFree;	/* fadio: */
@@ -450,101 +449,70 @@ FD_t c2f(/*@null@*/ void * cookie)
 }
 
 /** \ingroup rpmio
+ * Attach digest to fd.
  */
 /*@unused@*/ static inline
 void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
 	/*@modifies fd @*/
 {
-    fd->digest = rpmDigestInit(hashalgo, flags);
-}
-
-/** \ingroup rpmio
- */
-/*@unused@*/ static inline
-void fdFiniDigest(FD_t fd,
-		/*@null@*/ /*@out@*/ void ** datap,
-		/*@null@*/ /*@out@*/ size_t * lenp,
-		int asAscii)
-	/*@modifies fd, *datap, *lenp @*/
-{
-    if (fd->digest == NULL) {
-	if (datap) *datap = NULL;
-	if (lenp) *lenp = 0;
-	return;
+    FDDIGEST_t fddig = fd->digests + fd->ndigests;
+    if (fddig != (fd->digests + FDDIGEST_MAX)) {
+	fd->ndigests++;
+	fddig->hashalgo = hashalgo;
+	fddig->hashctx = rpmDigestInit(hashalgo, flags);
     }
-    /*@-mayaliasunique@*/
-    (void) rpmDigestFinal(fd->digest, datap, lenp, asAscii);
-    /*@=mayaliasunique@*/
-    fd->digest = NULL;
 }
 
-#ifdef	DYING
 /** \ingroup rpmio
+ * Update digest(s) attached to fd.
  */
 /*@unused@*/ static inline
-void fdInitMD5(FD_t fd, int flags)
+void fdUpdateDigests(FD_t fd, const byte * buf, ssize_t buflen)
 	/*@modifies fd @*/
 {
-#ifdef	DYING
-    if (flags) flags = RPMDIGEST_REVERSE;
-    flags |= RPMDIGEST_MD5;
-#endif
-    fd->digest = rpmDigestInit(PGPHASHALGO_MD5, flags);
+    int i;
+
+    if (buf != NULL && buflen > 0)
+    for (i = fd->ndigests - 1; i >= 0; i--) {
+	FDDIGEST_t fddig = fd->digests + i;
+	if (fddig->hashctx == NULL)
+	    continue;
+	(void) rpmDigestUpdate(fddig->hashctx, buf, buflen);
+    }
 }
 
 /** \ingroup rpmio
  */
 /*@unused@*/ static inline
-void fdInitSHA1(FD_t fd, int flags)
-	/*@modifies fd @*/
-{
-#ifdef	DYING
-    if (flags) flags = RPMDIGEST_REVERSE;
-    flags |= RPMDIGEST_SHA1;
-#endif
-    fd->digest = rpmDigestInit(PGPHASHALGO_SHA1, flags);
-}
-
-/** \ingroup rpmio
- */
-/*@unused@*/ static inline
-void fdFiniMD5(FD_t fd,
+void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 		/*@null@*/ /*@out@*/ void ** datap,
 		/*@null@*/ /*@out@*/ size_t * lenp,
 		int asAscii)
 	/*@modifies fd, *datap, *lenp @*/
 {
-    if (fd->digest == NULL) {
-	if (datap) *datap = NULL;
-	if (lenp) *lenp = 0;
-	return;
-    }
-    /*@-mayaliasunique@*/
-    (void) rpmDigestFinal(fd->digest, datap, lenp, asAscii);
-    /*@=mayaliasunique@*/
-    fd->digest = NULL;
-}
+    int imax = -1;
+    int i;
 
-/** \ingroup rpmio
- */
-/*@unused@*/ static inline
-void fdFiniSHA1(FD_t fd,
-		/*@null@*/ /*@out@*/ void ** datap,
-		/*@null@*/ /*@out@*/ size_t * lenp,
-		int asAscii)
-	/*@modifies fd, *datap, *lenp @*/
-{
-    if (fd->digest == NULL) {
+    for (i = fd->ndigests - 1; i >= 0; i--) {
+	FDDIGEST_t fddig = fd->digests + i;
+	if (fddig->hashctx == NULL)
+	    continue;
+	if (i > imax) imax = i;
+	if (fddig->hashalgo != hashalgo)
+	    continue;
+	(void) rpmDigestFinal(fddig->hashctx, datap, lenp, asAscii);
+	fddig->hashctx = NULL;
+	break;
+    }
+    if (i < 0) {
 	if (datap) *datap = NULL;
 	if (lenp) *lenp = 0;
 	return;
-    }
-    /*@-mayaliasunique@*/
-    (void) rpmDigestFinal(fd->digest, datap, lenp, asAscii);
-    /*@=mayaliasunique@*/
-    fd->digest = NULL;
+    } else if (i == imax)
+	fd->ndigests = imax - 1;
+    else
+	fd->ndigests = imax;
 }
-#endif
 
 /*@-shadow@*/
 /** \ingroup rpmio

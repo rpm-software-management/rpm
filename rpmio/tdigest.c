@@ -155,11 +155,11 @@ main(int argc, const char *argv[])
 	    (void) Fwrite(buf, 1, nb, ofd);
 	}
 
-	fdFiniDigest(ifd, (void **)&idigest, NULL, asAscii);
+	fdFiniDigest(ifd, hashalgo, (void **)&idigest, NULL, asAscii);
 	Fclose(ifd);
 
 	Fflush(ofd);
-	fdFiniDigest(ofd, (void **)&odigest, NULL, asAscii);
+	fdFiniDigest(ofd, hashalgo, (void **)&odigest, NULL, asAscii);
 	Fclose(ofd);
 
 	rpmDigestFinal(ctx, (void **)&digest, &digestlen, asAscii);

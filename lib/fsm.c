@@ -720,7 +720,7 @@ static int expandRegular(/*@special@*/ FSM_t fsm)
 	const char * md5sum = NULL;
 
 	(void) Fflush(fsm->wfd);
-	fdFiniDigest(fsm->wfd, (void **)&md5sum, NULL, 1);
+	fdFiniDigest(fsm->wfd, PGPHASHALGO_MD5, (void **)&md5sum, NULL, 1);
 
 	if (md5sum == NULL) {
 	    rc = CPIOERR_MD5SUM_MISMATCH;

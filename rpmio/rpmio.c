@@ -302,6 +302,8 @@ static inline /*@null@*/ FD_t XfdFree( /*@killref@*/ FD_t fd, const char *msg,
 		const char *file, unsigned line)
 	/*@modifies fd @*/
 {
+	int i;
+
 if (fd == NULL)
 DBGREFS(0, (stderr, "--> fd  %p -- %d %s at %s:%u\n", fd, FDNREFS(fd), msg, file, line));
     FDSANE(fd);
@@ -310,7 +312,14 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s at %s:%u %s\n", fd, fd->nrefs, msg, fi
 	if (--fd->nrefs > 0)
 	    /*@-refcounttrans -retalias@*/ return fd; /*@=refcounttrans =retalias@*/
 	fd->stats = _free(fd->stats);
-	fd->digest = _free(fd->digest);
+	for (i = fd->ndigests - 1; i >= 0; i--) {
+	    FDDIGEST_t fddig = fd->digests + i;
+	    if (fddig->hashctx == NULL)
+		continue;
+	    (void) rpmDigestFinal(fddig->hashctx, NULL, NULL, 0);
+	    fddig->hashctx = NULL;
+	}
+	fd->ndigests = 0;
 	/*@-refcounttrans@*/ free(fd); /*@=refcounttrans@*/
     }
     return NULL;
@@ -321,7 +330,7 @@ static inline /*@null@*/ FD_t XfdNew(const char * msg,
 		const char * file, unsigned line)
 	/*@*/
 {
-    FD_t fd = xmalloc(sizeof(*fd));
+    FD_t fd = xcalloc(1, sizeof(*fd));
     if (fd == NULL) /* XXX xmalloc never returns NULL */
 	return NULL;
     fd->nrefs = 0;
@@ -345,7 +354,10 @@ static inline /*@null@*/ FD_t XfdNew(const char * msg,
     fd->syserrno = 0;
     fd->errcookie = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
-    fd->digest = NULL;
+
+    fd->ndigests = 0;
+    memset(fd->digests, 0, sizeof(fd->digests));
+
     (void) gettimeofday(&fd->stats->create, NULL);
     fd->stats->begin = fd->stats->create;	/* structure assignment */
 
@@ -370,7 +382,7 @@ ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_READ, rc);
 
-    if (fd->digest && rc > 0) (void) rpmDigestUpdate(fd->digest, buf, rc);
+    if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
 
 /*@-modfilesys@*/
 DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
@@ -389,7 +401,7 @@ ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->digest && count > 0) (void) rpmDigestUpdate(fd->digest, buf, count);
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
 
     if (fd->wr_chunked) {
 	char chunksize[20];
@@ -2194,7 +2206,7 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
 	/*@-compdef@*/
-	if (fd->digest && rc > 0) (void) rpmDigestUpdate(fd->digest, buf, rc);
+	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
 	/*@=compdef@*/
     }
     return rc;
@@ -2211,7 +2223,7 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->digest && count > 0) (void) rpmDigestUpdate(fd->digest, buf, count);
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
 
     gzfile = gzdFileno(fd);
     if (gzfile == NULL) return -2;	/* XXX can't happen */
@@ -2433,7 +2445,7 @@ static ssize_t bzdRead(void * cookie, /*@out@*/ char * buf, size_t count)
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
 	/*@-compdef@*/
-	if (fd->digest && rc > 0) (void) rpmDigestUpdate(fd->digest, buf, rc);
+	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
 	/*@=compdef@*/
     }
     return rc;
@@ -2452,7 +2464,7 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->digest && count > 0) (void) rpmDigestUpdate(fd->digest, buf, count);
+    if (fd->ndigests && count > 0) fdUpdateDigests(fd, buf, count);
 
     bzfile = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);

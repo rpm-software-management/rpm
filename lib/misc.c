@@ -37,7 +37,7 @@ int domd5(const char * fn, unsigned char * digest, int asAscii)
 
     while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	{};
-    fdFiniDigest(fd, (void **)&md5sum, &md5len, asAscii);
+    fdFiniDigest(fd, PGPHASHALGO_MD5, (void **)&md5sum, &md5len, asAscii);
 
     if (Ferror(fd))
 	rc = 1;

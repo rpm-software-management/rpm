@@ -14,9 +14,10 @@
 #include "misc.h"	/* XXX for makeTempFile() */
 #include "debug.h"
 
-/*@access Header@*/		/* XXX compared with NULL */
-/*@access FD_t@*/		/* XXX compared with NULL */
-/*@access rpmDigest@*/
+/*@access Header @*/		/* XXX compared with NULL */
+/*@access FD_t @*/		/* XXX compared with NULL */
+/*@access DIGEST_CTX @*/	/* XXX compared with NULL */
+/*@access rpmDigest @*/
 
 static int manageFile(FD_t *fdp, const char **fnp, int flags,
 		/*@unused@*/ int rc)
@@ -251,9 +252,17 @@ rpmDigest freeDig(/*@only@*/ /*@null@*/ rpmDigest dig)
 	/*@modifies dig @*/
 {
     if (dig != NULL) {
-	dig->md5ctx = _free(dig->md5ctx);
+	/*@-branchstate@*/
+	if (dig->md5ctx != NULL)
+	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
+	/*@=branchstate@*/
+	dig->md5ctx = NULL;
 	dig->md5 = _free(dig->md5);
-	dig->sha1ctx = _free(dig->sha1ctx);
+	/*@-branchstate@*/
+	if (dig->sha1ctx != NULL)
+	    (void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
+	/*@=branchstate@*/
+	dig->sha1ctx = NULL;
 	dig->sha1 = _free(dig->sha1);
 	dig->hash_data = _free(dig->hash_data);
 
@@ -287,25 +296,27 @@ static int readFile(FD_t *sfdp, const char **sfnp, rpmDigest dig)
 	/*@modifies *sfdp, *sfnp, *dig, rpmGlobalMacroContext,
 		fileSystem, internalState @*/
 {
-    unsigned char buffer[BUFSIZ];
+    byte buffer[4*BUFSIZ];
     ssize_t count;
     int rc = 1;
-    int xx;
+    int i, xx;
 
     if (manageFile(sfdp, sfnp, O_RDONLY, 0))
 	goto exit;
 
     /*@-type@*/ /* FIX: cast? */
     fdInitDigest(*sfdp, PGPHASHALGO_MD5, 0);
-    dig->sha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+    fdInitDigest(*sfdp, PGPHASHALGO_SHA1, 0);
     /*@=type@*/
     dig->nbytes = 0;
 
     while ((count = Fread(buffer, sizeof(buffer[0]), sizeof(buffer), *sfdp)) > 0)
     {
+#ifdef	DYING
 	/*@-type@*/ /* FIX: cast? */
 	xx = rpmDigestUpdate(dig->sha1ctx, buffer, count);
 	/*@=type@*/
+#endif
 	dig->nbytes += count;
     }
 
@@ -316,10 +327,30 @@ static int readFile(FD_t *sfdp, const char **sfnp, rpmDigest dig)
 	dig->nbytes += count;
 
     /*@-type@*/ /* FIX: cast? */
-    dig->md5ctx = _free(dig->md5ctx);
-    dig->md5ctx = (*sfdp)->digest;
+    for (i = (*sfdp)->ndigests - 1; i >= 0; i--) {
+	FDDIGEST_t fddig = (*sfdp)->digests + i;
+	if (fddig->hashctx == NULL)
+	    continue;
+	if (fddig->hashalgo == PGPHASHALGO_MD5) {
+	    /*@-branchstate@*/
+	    if (dig->md5ctx != NULL)
+		(void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
+	    /*@=branchstate@*/
+	    dig->md5ctx = fddig->hashctx;
+	    fddig->hashctx = NULL;
+	    continue;
+	}
+	if (fddig->hashalgo == PGPHASHALGO_SHA1) {
+	    /*@-branchstate@*/
+	    if (dig->sha1ctx != NULL)
+		(void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
+	    /*@=branchstate@*/
+	    dig->sha1ctx = fddig->hashctx;
+	    fddig->hashctx = NULL;
+	    continue;
+	}
+    }
     /*@=type@*/
-    (*sfdp)->digest = NULL;
 
     rc = 0;
 
@@ -421,6 +452,7 @@ if (rpmIsDebug())
 fprintf(stderr, "========================= Package RSA Signature\n");
 		xx = pgpPrtPkts(ptr, count, dig, rpmIsDebug());
     /*@-type@*/ /* FIX: cast? */
+	    /*@-nullpass@*/ /* FIX: dig->md5ctx may be null */
 	    {	DIGEST_CTX ctx = rpmDigestDup(dig->md5ctx);
 
 		xx = rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
@@ -428,6 +460,7 @@ fprintf(stderr, "========================= Package RSA Signature\n");
 
 		/* XXX compare leading 16 bits of digest for quick check. */
 	    }
+	    /*@=nullpass@*/
     /*@=type@*/
 		/* XXX retrieve by keyid from signature. */
 		if (pgppk == NULL) {
@@ -466,11 +499,13 @@ if (rpmIsDebug())
 fprintf(stderr, "========================= Package DSA Signature\n");
 		xx = pgpPrtPkts(ptr, count, dig, rpmIsDebug());
     /*@-type@*/ /* FIX: cast? */
+	    /*@-nullpass@*/ /* FIX: dig->sha1ctx may be null */
 	    {	DIGEST_CTX ctx = rpmDigestDup(dig->sha1ctx);
 		xx = rpmDigestUpdate(ctx, &dig->sig.v3.sigtype, dig->sig.v3.hashlen);
 		xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 1);
 		mp32nzero(&dig->hm);	mp32nsethex(&dig->hm, dig->sha1);
 	    }
+	    /*@=nullpass@*/
     /*@=type@*/
 		/* XXX retrieve by keyid from signature. */
 		if (gpgpk == NULL) {

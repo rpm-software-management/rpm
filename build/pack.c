@@ -520,7 +520,7 @@ int writeRPM(Header *hdrp, const char *fileName, int type,
 	rpmError(RPMERR_NOSPACE, _("Unable to write final header\n"));
     }
     (void) Fflush(fd);
-    fdFiniDigest(fd, (void **)&sha1, NULL, 1);
+    fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&sha1, NULL, 1);
 
     (void) Fclose(fd);
     fd = NULL;
