@@ -144,6 +144,8 @@
 	- fix: sanity checks on #tags (<65K) and offset (<16Mb) in header.
 	- fix: add -r to useradd to prevent /etc/skel glop (#46215).
 	- fix: disambiguate typedef and struct name(s) for kpackage.
+	- update intl dirs to gettext-0.10.38.
+	- fix: sanity check for header size added in headerCopyLoad() (#46469).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

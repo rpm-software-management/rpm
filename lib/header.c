@@ -39,6 +39,11 @@ static unsigned char header_magic[8] = {
 };
 
 /** \ingroup header
+ * Maximum no. of bytes permitted in a header.
+ */
+static size_t headerMaxbytes = (32*1024*1024);
+
+/** \ingroup header
  * Alignment needs (and sizeof scalars types) for internal rpm data types.
  */
 static int typeSizes[] =  { 
@@ -692,7 +697,7 @@ Header headerLoad(void * uh)
     int_32 * ei = (int_32 *) uh;
     int_32 il = ntohl(ei[0]);		/* index length */
     int_32 dl = ntohl(ei[1]);		/* data length */
-    int pvlen = sizeof(il) + sizeof(dl) +
+    size_t pvlen = sizeof(il) + sizeof(dl) +
                (il * sizeof(struct entryInfo)) + dl;
     void * pv = uh;
     Header h = xcalloc(1, sizeof(*h));
@@ -847,17 +852,18 @@ Header headerCopyLoad(const void * uh)
     int_32 * ei = (int_32 *) uh;
     int_32 il = ntohl(ei[0]);		/* index length */
     int_32 dl = ntohl(ei[1]);		/* data length */
-    int pvlen = sizeof(il) + sizeof(dl) +
-               (il * sizeof(struct entryInfo)) + dl;
-    void * nuh = memcpy(xmalloc(pvlen), uh, pvlen);
-    Header h;
+    size_t pvlen = sizeof(il) + sizeof(dl) +
+			(il * sizeof(struct entryInfo)) + dl;
+    void * nuh = NULL;
+    Header h = NULL;
 
-    h = headerLoad(nuh);
-    if (h == NULL) {
-	nuh = _free(nuh);
-	return h;
+    if (pvlen < headerMaxbytes) {
+	nuh = memcpy(xmalloc(pvlen), uh, pvlen);
+	if ((h = headerLoad(nuh)) != NULL)
+	    h->flags |= HEADERFLAG_ALLOCATED;
     }
-    h->flags |= HEADERFLAG_ALLOCATED;
+    if (h == NULL)
+	nuh = _free(nuh);
     return h;
 }
 
@@ -870,7 +876,7 @@ Header headerRead(FD_t fd, enum hMagic magicp)
     int_32 dl;
     int_32 magic;
     Header h = NULL;
-    int len;
+    size_t len;
     int i;
 
     memset(block, 0, sizeof(block));
@@ -894,11 +900,7 @@ Header headerRead(FD_t fd, enum hMagic magicp)
     dl = ntohl(block[i++]);
 
     len = sizeof(il) + sizeof(dl) + (il * sizeof(struct entryInfo)) + dl;
-
-    /*
-     * XXX Limit total size of header to 32Mb (~16 times largest known size).
-     */
-    if (len > (32*1024*1024))
+    if (len > headerMaxbytes)
 	goto exit;
 
     ei = xmalloc(len);
