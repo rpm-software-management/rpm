@@ -11,6 +11,9 @@
 	  (esp because we don't kill symlinks!)
 	- plugged memory leaks in upgrade (again thanks to mpr) -- install,
 	  erase, upgrade, query, and verify all seem to be leakproof
+	- use select() rather than busy waiting in cpio_gzip()
+	- use half as much temp space during package assembly
+	- fail if spec file check fails
 
 2.2.8 -> 2.2.9:
 	- fixed typo in default rpmrc
