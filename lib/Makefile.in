@@ -24,6 +24,15 @@ $(LIBRPM): $(LIBOBJECTS)
 	$(AR) $@ $(LIBOBJECTS)
 	$(RANLIB) $@
 
+install:
+	install -m 755 -o 0 -g 0 -d $(INCDIR)
+	install -m 755 -o 0 -g 0 -d $(LIBDIR)
+	install -m 644 -o 0 -g 0 rpmlib.h $(INCDIR)
+	install -m 644 -o 0 -g 0 dbindex.h $(INCDIR)
+	install -m 644 -o 0 -g 0 header.h $(INCDIR)
+	install -m 644 -o 0 -g 0 messages.h $(INCDIR)
+	install -m 644 -o 0 -g 0 librpm.a $(LIBDIR)
+
 clean:
 	rm -f *.a *.o *~ $(PROGS) test.out
 

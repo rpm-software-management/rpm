@@ -1,7 +1,7 @@
 ### These are variables meant to be exported
 
 WARNINGS = -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes 
-DEBUG = -g
+#DEBUG = -g
 OPTS = -O2
 CFLAGS = $(WARNINGS) $(DEBUG) $(OPTS) -Ilib -Ibuild -I../lib -I../build
 LDFLAGS = $(DEBUG) -Llib -Lbuild -L../lib -L../build
@@ -9,7 +9,14 @@ LDFLAGS = $(DEBUG) -Llib -Lbuild -L../lib -L../build
 AR = ar r
 RANLIB = ranlib
 
-VERSION=2.0b
+VERSION=2.0c
+
+prefix=/usr
+
+BINDIR=$(prefix)/bin
+MANDIR=$(prefix)/man/man8
+LIBDIR=$(prefix)/lib
+INCDIR=$(prefix)/include/rpm
 
 .EXPORT_ALL_VARIABLES:
 
@@ -45,6 +52,11 @@ make-subdirs:
 	done
 
 $(PROGS): $(OBJS)
+
+install:
+	install -s -m 755 -o 0 -g 0 rpm $(BINDIR)
+	install -m 644 -o 0 -g 0 rpm.8 $(MANDIR)
+	(cd lib; make LIBDIR=$(LIBDIR) INCDIR=$(INCDIR) install
 
 clean:
 	for d in $(SUBDIRS); do \
