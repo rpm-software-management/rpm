@@ -86,7 +86,7 @@ install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)/$(prefix)/src/redhat/SRPMS
 	@$(mkinstalldirs) $(DESTDIR)/var/tmp
 
-.PHONY:                tar
+.PHONY: tar
 tar:
 	rm -rf /tmp/rpm-$(VERSION)
 	$(MAKE) DESTDIR=/tmp/rpm-$(VERSION) install
@@ -116,3 +116,9 @@ archive:
 .PHONY:	nextsrpm
 nextsrpm: all archive
 	@sudo ./rpm -ta rpm-$(VERSION).tar.gz
+
+.PHONY: doxygen
+doxygen: Doxyfile
+	rm -rf doxygen
+	mkdir -p doxygen
+	doxygen

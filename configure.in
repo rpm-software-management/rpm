@@ -897,7 +897,7 @@ dnl # XXX Propagate -lucb to popt ...
 dnl export LIBS INCPATH CONFIG_SITE
 
 AC_CONFIG_SUBDIRS(popt)
-AC_OUTPUT([Makefile rpmrc macros lib/Makefile
+AC_OUTPUT([Doxyfile Makefile rpmrc macros lib/Makefile
 	build/Makefile tools/Makefile scripts/Makefile
 	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
 	misc/Makefile po/Makefile.in intl/Makefile
