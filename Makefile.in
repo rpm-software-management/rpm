@@ -191,9 +191,9 @@ archive:
 	@echo
 	@echo "This is version $(VERSION)."
 	@sleep 5
-	cvs tag -F $(CVSTAG) .
+	@cvs -Q tag -F $(CVSTAG) .
 	@rm -rf /tmp/rpm-$(VERSION) /tmp/rpm
-	@cd /tmp; cvs export -r$(CVSTAG) rpm
+	@cd /tmp; cvs -Q -d $(CVSROOT) export -r$(CVSTAG) rpm || echo GRRRrrrrr -- ignore [export aborted]
 	@mv /tmp/rpm /tmp/rpm-$(VERSION)
 	@rm /tmp/rpm-$(VERSION)/popt/popt.spec
 	@cd /tmp/rpm-$(VERSION); ./autogen.sh ; make depend; make distclean
