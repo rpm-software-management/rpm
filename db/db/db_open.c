@@ -8,7 +8,7 @@
 #include "db_config.h"
 
 #ifndef lint
-static const char revid[] = "Id: db_open.c,v 11.214 2002/08/07 16:16:47 bostic Exp ";
+static const char revid[] = "Id: db_open.c,v 11.215 2002/08/15 15:27:52 bostic Exp ";
 #endif /* not lint */
 
 #ifndef NO_SYSTEM_INCLUDES
@@ -460,8 +460,7 @@ __db_chk_meta(dbenv, dbp, meta, do_metachk)
 	}
 
 #ifdef HAVE_CRYPTO
-	ret = __crypto_decrypt_meta(dbenv, dbp, (u_int8_t *)meta,
-	    DBMETASIZE, do_metachk);
+	ret = __crypto_decrypt_meta(dbenv, dbp, (u_int8_t *)meta, do_metachk);
 #endif
 	return (ret);
 }
@@ -537,11 +536,9 @@ swap_retry:
 	 * and even a checksum error isn't a reason to panic the environment.
 	 */
 	if ((ret = __db_chk_meta(dbenv, dbp, meta, do_metachk)) != 0) {
-		if (ret == -1) {
+		if (ret == -1)
 			__db_err(dbenv,
 			    "%s: metadata page checksum error", name);
-			ret = EINVAL;
-		}
 		goto bad_format;
 	}
 
@@ -578,7 +575,7 @@ swap_retry:
 
 bad_format:
 	__db_err(dbenv, "%s: unexpected file type or format", name);
-	return (ret);
+	return (ret == 0 ? EINVAL : ret);
 }
 
 /*
