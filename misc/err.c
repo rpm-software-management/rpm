@@ -19,7 +19,7 @@
 
 #include "system.h"
 
-#ifdef HAVE_LIBIO
+#ifdef HAVE_LIBIO_H
 #define flockfile(s)            _IO_flockfile (s)
 #define funlockfile(s)          _IO_funlockfile (s)
 #else

@@ -2,9 +2,12 @@
 #define	H_RPMIO
 
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <glob.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdio.h>
 
 typedef	/*@abstract@*/ /*@refcounted@*/ struct _FD_s * FD_t;
 typedef /*@observer@*/ struct FDIO_s * FDIO_t;
@@ -13,23 +16,10 @@ typedef /*@observer@*/ struct FDIO_s * FDIO_t;
 extern "C" {
 #endif
 
-#if HAVE_LIBIO_H
-#include <libio.h>
-#else
-typedef ssize_t cookie_read_function_t (void *cookie, char *buf, size_t nbytes);
-typedef ssize_t cookie_write_function_t (void *cookie, const char *buf, size_t nbytes);
-typedef int cookie_seek_function_t (void *cookie, off_t offset, int whence);
-typedef int cookie_close_function_t (void *cookie);
-typedef struct {
-  cookie_read_function_t *read;
-  cookie_write_function_t *write;
-  cookie_seek_function_t *seek; 
-  cookie_close_function_t *close;
-} cookie_io_functions_t;
-FILE *	fopencookie	(void *magic_cookie, const char * modes,
-			cookie_io_functions_t io_funcs);
-#define	fopencookie(_a, _b, _c)	(NULL)
-#endif
+typedef ssize_t fdio_read_function_t (void *cookie, char *buf, size_t nbytes);
+typedef ssize_t fdio_write_function_t (void *cookie, const char *buf, size_t nbytes);
+typedef int fdio_seek_function_t (void *cookie, off_t offset, int whence);
+typedef int fdio_close_function_t (void *cookie);
 
 typedef /*@null@*/ FD_t fdio_ref_function_t ( /*@only@*/ void * cookie,
 		const char * msg, const char * file, unsigned line);
@@ -57,10 +47,10 @@ typedef int fdio_lstat_function_t (const char * path, struct stat * st);
 typedef int fdio_access_function_t (const char * path, int amode);
 
 struct FDIO_s {
-  cookie_read_function_t *	read;
-  cookie_write_function_t *	write;
-  cookie_seek_function_t *	seek;
-  cookie_close_function_t *	close;
+  fdio_read_function_t *	read;
+  fdio_write_function_t *	write;
+  fdio_seek_function_t *	seek;
+  fdio_close_function_t *	close;
 
   fdio_ref_function_t *		ref;
   fdio_deref_function_t *	deref;
@@ -138,21 +128,20 @@ extern /*@null@*/ FD_t fdDup(int fdno);
 extern /*@null@*/ FILE *fdFdopen( /*@only@*/ void * cookie, const char * mode);
 #endif
 
+/* XXX legacy interface used in rpm2html */
+#define	fdClose		fdio->close
+#define	fdOpen		fdio->_open
+
 #if 0
 #define	fdRead		fdio->read
 #define	fdWrite		fdio->write
 #define	fdSeek		fdio->seek
-#define	fdClose		fdio->close
+#define	fdFileno	fdio->_fileno
 #endif
 
 #define	fdLink(_fd, _msg)	fdio->ref(_fd, _msg, __FILE__, __LINE__)
 #define	fdFree(_fd, _msg)	fdio->deref(_fd, _msg, __FILE__, __LINE__)
 #define	fdNew(_msg)		fdio->new(_msg, __FILE__, __LINE__)
-
-#if 0
-#define	fdFileno	fdio->_fileno
-#define	fdOpen		fdio->_open
-#endif
 
 int	fdWritable(FD_t fd, int secs);
 int	fdReadable(FD_t fd, int secs);
@@ -163,13 +152,6 @@ int	fdReadable(FD_t fd, int secs);
 /*
  * Support for FTP and HTTP I/O.
  */
-#ifndef IPPORT_FTP
-#define IPPORT_FTP	21
-#endif
-#ifndef	IPPORT_HTTP
-#define	IPPORT_HTTP	80
-#endif
-
 #define FTPERR_BAD_SERVER_RESPONSE   -1
 #define FTPERR_SERVER_IO_ERROR       -2
 #define FTPERR_SERVER_TIMEOUT        -3

@@ -13,6 +13,10 @@
 #include <rpmio.h>
 #include <rpmurl.h>
 
+#ifndef	IPPORT_HTTP
+#define	IPPORT_HTTP	80
+#endif
+
 /*@access urlinfo@*/
 
 #define	URL_IOBUF_SIZE	4096
