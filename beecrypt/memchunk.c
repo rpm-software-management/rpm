@@ -34,7 +34,7 @@
 # include <malloc.h>
 #endif
 
-/*@-compdef@*/	/* tmp-?data is undefined */
+/*@-compdef@*/	/* tmp->data is undefined */
 memchunk* memchunkAlloc(int size)
 {
 	memchunk* tmp = (memchunk*) calloc(1, sizeof(memchunk));
@@ -42,7 +42,9 @@ memchunk* memchunkAlloc(int size)
 	if (tmp)
 	{
 		tmp->size = size;
+		/*@-mustfree@*/ /* tmp->data is OK */
 		tmp->data = (byte*) malloc(size);
+		/*@=mustfree@*/
 
 		if (tmp->data == (byte*) 0)
 		{

@@ -209,9 +209,9 @@ int randomGeneratorContextInit(randomGeneratorContext* ctxt, const randomGenerat
 	if (rng == (randomGenerator*) 0)
 		return -1;
 
-	/*@-temptrans@*/
 	ctxt->rng = rng;
-	/*@=temptrans@*/
+	if (ctxt->param)	/* XXX error? */
+		free(ctxt->param);
 	ctxt->param = (randomGeneratorParam*) calloc(rng->paramsize, 1);
 
 	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
@@ -226,6 +226,7 @@ int randomGeneratorContextFree(randomGeneratorContext* ctxt)
 {
 	register int rc;
 
+	/*@-mustfree@*/
 	if (ctxt == (randomGeneratorContext*) 0)
 		return -1;
 
@@ -234,6 +235,7 @@ int randomGeneratorContextFree(randomGeneratorContext* ctxt)
 
 	if (ctxt->param == (randomGeneratorParam*) 0)
 		return -1;
+	/*@=mustfree@*/
 
 	rc = ctxt->rng->cleanup(ctxt->param);
 
@@ -302,9 +304,9 @@ int hashFunctionContextInit(hashFunctionContext* ctxt, const hashFunction* hash)
 	if (hash == (hashFunction*) 0)
 		return -1;
 
-	/*@-temptrans@*/
 	ctxt->algo = hash;
-	/*@=temptrans@*/
+	if (ctxt->param)	/* XXX error? */
+		free(ctxt->param);
 	ctxt->param = (hashFunctionParam*) calloc(hash->paramsize, 1);
 
 	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
@@ -317,11 +319,13 @@ int hashFunctionContextInit(hashFunctionContext* ctxt, const hashFunction* hash)
 
 int hashFunctionContextFree(hashFunctionContext* ctxt)
 {
+	/*@-mustfree@*/
 	if (ctxt == (hashFunctionContext*) 0)
 		return -1;
 
 	if (ctxt->param == (hashFunctionParam*) 0)
 		return -1;
+	/*@=mustfree@*/
 
 	free(ctxt->param);
 
@@ -450,7 +454,9 @@ int hashFunctionContextDigestMatch(hashFunctionContext* ctxt, const mp32number* 
 
 	mp32nfree(&dig);
 
+	/*@-mustfree@*/ /* dig.data is OK */
 	return rc;
+	/*@=mustfree@*/
 }
 
 /*@observer@*/ static const keyedHashFunction* keyedHashFunctionList[] =
@@ -509,9 +515,9 @@ int keyedHashFunctionContextInit(keyedHashFunctionContext* ctxt, const keyedHash
 	if (mac == (keyedHashFunction*) 0)
 		return -1;
 
-	/*@-temptrans@*/
 	ctxt->algo = mac;
-	/*@=temptrans@*/
+	if (ctxt->param)	/* XXX error? */
+		free(ctxt->param);
 	ctxt->param = (keyedHashFunctionParam*) calloc(mac->paramsize, 1);
 
 	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
@@ -524,6 +530,7 @@ int keyedHashFunctionContextInit(keyedHashFunctionContext* ctxt, const keyedHash
 
 int keyedHashFunctionContextFree(keyedHashFunctionContext* ctxt)
 {
+	/*@-mustfree@*/
 	if (ctxt == (keyedHashFunctionContext*) 0)
 		return -1;
 
@@ -532,6 +539,7 @@ int keyedHashFunctionContextFree(keyedHashFunctionContext* ctxt)
 
 	if (ctxt->param == (keyedHashFunctionParam*) 0)
 		return -1;
+	/*@=mustfree@*/
 
 	free(ctxt->param);
 
@@ -678,7 +686,9 @@ int keyedHashFunctionContextDigestMatch(keyedHashFunctionContext* ctxt, const mp
 
 	mp32nfree(&dig);
 
+	/*@-mustfree@*/ /* dig.data is OK */
 	return rc;
+	/*@=mustfree@*/
 }
 
 
@@ -737,9 +747,9 @@ int blockCipherContextInit(blockCipherContext* ctxt, const blockCipher* ciph)
 	if (ciph == (blockCipher*) 0)
 		return -1;
 
-	/*@-temptrans@*/
 	ctxt->algo = ciph;
-	/*@=temptrans@*/
+	if (ctxt->param)	/* XXX error? */
+		free(ctxt->param);
 	ctxt->param = (blockCipherParam*) calloc(ciph->paramsize, 1);
 
 	/*@-nullstate@*/ /* FIX: ctxt->param may be NULL */
@@ -785,11 +795,13 @@ int blockCipherContextSetIV(blockCipherContext* ctxt, const uint32* iv)
 
 int blockCipherContextFree(blockCipherContext* ctxt)
 {
+	/*@-mustfree@*/
 	if (ctxt == (blockCipherContext*) 0)
 		return -1;
 
 	if (ctxt->param == (blockCipherParam*) 0)
 		return -1;
+	/*@=mustfree@*/
 
 	free(ctxt->param);
 

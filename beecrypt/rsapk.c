@@ -48,10 +48,12 @@ int rsapkInit(rsapk* pk)
 
 int rsapkFree(rsapk* pk)
 {
+	/*@-usereleased -compdef @*/ /* pk->n.modl is OK */
 	mp32bfree(&pk->n);
 	mp32nfree(&pk->e);
 
 	return 0;
+	/*@=usereleased =compdef @*/
 }
 
 int rsapkCopy(rsapk* dst, const rsapk* src)

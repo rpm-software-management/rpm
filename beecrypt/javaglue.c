@@ -26,6 +26,7 @@
 /* For now, I'm lazy ... */
 /*@-nullpass -nullret -shiftsigned -usedef -temptrans -freshtrans @*/
 /*@-noeffectuncon -globs -globnoglobs -modunconnomods -modnomods @*/
+/*@-mustfree@*/
 
 #ifndef WORDS_BIGENDIAN
 # define WORDS_BIGENDIAN	0
@@ -741,6 +742,7 @@ void JNICALL Java_beecrypt_crypto_NativeBlockCipher_decryptCBC(JNIEnv* env, /*@u
 	(*env)->ReleaseByteArrayElements(env, outputArray, output, 0);
 }
 
+/*@=mustfree@*/
 /*@=noeffectuncon =globs =globnoglobs =modunconnomods =modnomods @*/
 /*@=nullpass =nullret =shiftsigned =usedef =temptrans =freshtrans @*/
 

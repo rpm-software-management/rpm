@@ -37,7 +37,7 @@
 typedef struct
 {
 	uint32  size;
-/*@only@*/ uint32* data;
+/*@owned@*/ uint32* data;
 } mp32number;
 
 #ifdef __cplusplus

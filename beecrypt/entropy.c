@@ -843,6 +843,7 @@ static pthread_mutex_t dev_tty_lock = PTHREAD_MUTEX_INITIALIZER;
  * @return
  */
 static int statdevice(const char *device)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
 	struct stat s;
@@ -868,6 +869,7 @@ static int statdevice(const char *device)
  * @return
  */
 static int opendevice(const char *device)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
 	register int fd;
@@ -891,8 +893,11 @@ static int opendevice(const char *device)
  * @param size
  * @return
  */
+/*@-globuse@*/	/* aio_foo annotations aren't correct */
 static int entropy_randombits(int fd, int timeout, uint32* data, int size)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
+/*@=globuse@*/
 {
 	register byte* bytedata = (byte*) data;
 	register int   bytesize = (((unsigned)size) << 2);
@@ -919,7 +924,9 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
 	while (bytesize)
 	{
 		#if ENABLE_AIO
+		/*@-mustfree@*/ /* my_aiocb.aio_buf is OK */
 		my_aiocb.aio_buf = bytedata;
+		/*@=mustfree@*/
 		my_aiocb.aio_nbytes = bytesize;
 
 		/*@-moduncon@*/
@@ -1017,6 +1024,7 @@ static int entropy_randombits(int fd, int timeout, uint32* data, int size)
  * @return
  */
 static int entropy_ttybits(int fd, uint32* data, int size)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
 	uint32 randombits = ((uint32)size) << 5;
@@ -1367,6 +1375,7 @@ dev_dsp_end:
 
 #if HAVE_DEV_RANDOM
 int entropy_dev_random(uint32* data, int size)
+	/*@globals dev_random_fd @*/
 	/*@modifies dev_random_fd @*/
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_RANDOM_TIMEOUT");
@@ -1410,6 +1419,7 @@ dev_random_end:
 
 #if HAVE_DEV_URANDOM
 int entropy_dev_urandom(uint32* data, int size)
+	/*@globals dev_urandom_fd @*/
 	/*@modifies dev_urandom_fd @*/
 {
 	const char* timeout_env = getenv("BEECRYPT_ENTROPY_URANDOM_TIMEOUT");
@@ -1453,6 +1463,7 @@ dev_urandom_end:
 
 #if HAVE_DEV_TTY
 int entropy_dev_tty(uint32* data, int size)
+	/*@globals dev_tty_fd @*/
 	/*@modifies dev_tty_fd @*/
 {
 	register int rc;

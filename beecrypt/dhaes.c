@@ -132,6 +132,7 @@ int dhaes_pContextInit(dhaes_pContext* ctxt, const dhaes_pParameters* params)
 	mp32nzero(&ctxt->pub);
 	mp32nzero(&ctxt->pri);
 
+	/*@-modobserver@*/
 	if (hashFunctionContextInit(&ctxt->hash, params->hash))
 		return -1;
 
@@ -140,6 +141,7 @@ int dhaes_pContextInit(dhaes_pContext* ctxt, const dhaes_pParameters* params)
 
 	if (keyedHashFunctionContextInit(&ctxt->mac, params->mac))
 		return -1;
+	/*@=modobserver@*/
 
 	ctxt->cipherkeybits = params->cipherkeybits;
 	ctxt->mackeybits = params->mackeybits;
@@ -174,6 +176,7 @@ int dhaes_pContextFree(dhaes_pContext* ctxt)
 	mp32nfree(&ctxt->pub);
 	mp32nfree(&ctxt->pri);
 
+	/*@-mustfree -modobserver @*/ /* ctxt is OK */
 	if (hashFunctionContextFree(&ctxt->hash))
 		return -1;
 
@@ -184,6 +187,7 @@ int dhaes_pContextFree(dhaes_pContext* ctxt)
 		return -1;
 
 	return 0;
+	/*@=mustfree =modobserver @*/
 }
 
 /**
@@ -199,7 +203,9 @@ static int dhaes_pContextSetup(dhaes_pContext* ctxt, const mp32number* privkey, 
 	/* compute the shared secret, Diffie-Hellman style */
 	mp32nzero(&secret);
 	if (dlsvdp_pDHSecret(&ctxt->param, privkey, pubkey, &secret))
+		/*@-mustfree@*/ /* FIX: secret.data leak? */
 		return -1;
+		/*@=mustfree@*/
 
 	/* compute the hash of the message (ephemeral public) key and the shared secret */
 	mp32nzero(&digest);
@@ -245,7 +251,9 @@ setup_end:
 	mp32nwipe(&digest);
 	mp32nfree(&digest);
 
+	/*@-mustfree@*/ /* {secret,digest}.data are OK */
 	return rc;
+	/*@=mustfree@*/
 }
 
 memchunk* dhaes_pContextEncrypt(dhaes_pContext* ctxt, mp32number* ephemeralPublicKey, mp32number* mac, const memchunk* cleartext, randomGeneratorContext* rng)
@@ -297,7 +305,9 @@ encrypt_end:
 	mp32nwipe(&ephemeralPrivateKey);
 	mp32nfree(&ephemeralPrivateKey);
 
+	/*@-mustfree@*/	/* ephemeralPrivateKey.data is OK */
 	return ciphertext;
+	/*@=mustfree@*/
 }
 
 memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mp32number* ephemeralPublicKey, const mp32number* mac, const memchunk* ciphertext)
@@ -323,7 +333,9 @@ memchunk* dhaes_pContextDecrypt(dhaes_pContext* ctxt, const mp32number* ephemera
 		goto decrypt_end;
 
 	paddedtext->size = ciphertext->size;
+	/*@-mustfree@*/ /* paddedtext->data is OK */
 	paddedtext->data = (byte*) malloc(ciphertext->size);
+	/*@=mustfree@*/
 
 	if (paddedtext->data == (byte*) 0)
 	{

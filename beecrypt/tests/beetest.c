@@ -71,9 +71,9 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 
 	memset(&rngc, 0, sizeof(randomGeneratorContext));
 
-	/*@-nullpass@*/
+	/*@-nullpass -modobserver @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
-	/*@=nullpass@*/
+	/*@=nullpass =modobserver @*/
 	{
 		register int rc;
 
@@ -90,7 +90,9 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 		free(temp);
 		/*@=nullpass =nullptrarith @*/
 
+		/*@-modobserver@*/
 		(void) randomGeneratorContextFree(&rngc);
+		/*@=modobserver@*/
 
 		return rc;
 	}
@@ -123,9 +125,9 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 
 	memset(&rngc, 0, sizeof(randomGeneratorContext));
 
-	/*@-nullpass@*/
+	/*@-nullpass -modobserver @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
-	/*@=nullpass@*/
+	/*@=nullpass =modobserver @*/
 	{
 		mp32number digest, r, s;
 
@@ -147,7 +149,9 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 		mp32nfree(&r);
 		mp32nfree(&s);
 
+		/*@-modobserver@*/
 		(void) randomGeneratorContextFree(&rngc);
+		/*@=modobserver@*/
 	}
 	return rc;
 }
@@ -161,9 +165,9 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 
 	memset(&rngc, 0, sizeof(randomGeneratorContext));
 
-	/*@-nullpass@*/
+	/*@-nullpass -modobserver @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
-	/*@=nullpass@*/
+	/*@=nullpass =modobserver @*/
 	{
 		mp32number digest, r, s;
 
@@ -185,7 +189,9 @@ static const char* elg_n = "8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8
 		mp32nfree(&r);
 		mp32nfree(&s);
 
+		/*@-modobserver@*/
 		(void) randomGeneratorContextFree(&rngc);
+		/*@=modobserver@*/
 	}
 	return rc;
 }
@@ -249,7 +255,8 @@ static int testVectorDHAES(const dlkp_p* keypair)
 #endif
 
 /*@unused@*/ static int testVectorRSA(void)
-	/*@*/
+	/*@globals fileSystem @*/
+	/*@modifies fileSystem @*/
 {
 	int rc = 0;
 
@@ -257,9 +264,9 @@ static int testVectorDHAES(const dlkp_p* keypair)
 
 	memset(&rngc, 0, sizeof(randomGeneratorContext));
 
-	/*@-nullpass@*/
+	/*@-nullpass -modobserver @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
-	/*@=nullpass@*/
+	/*@=nullpass =modobserver @*/
 	{
 		rsakp kp;
 		mp32number digest, s;
@@ -285,7 +292,9 @@ static int testVectorDHAES(const dlkp_p* keypair)
 
 		(void) rsakpFree(&kp);
 
+		/*@-modobserver@*/
 		(void) randomGeneratorContextFree(&rngc);
+		/*@=modobserver@*/
 
 		return rc;
 	}
@@ -302,9 +311,9 @@ static int testVectorDHAES(const dlkp_p* keypair)
 	memset(&rc, 0, sizeof(randomGeneratorContext));
 	memset(&dp, 0, sizeof(dldp_p));
 
-	/*@-nullpass@*/
+	/*@-nullpass -modobserver @*/
 	if (randomGeneratorContextInit(&rc, randomGeneratorDefault()) == 0)
-	/*@=nullpass@*/
+	/*@=nullpass =modobserver @*/
 	{
 		register int result;
 		mp32number gq;
@@ -320,7 +329,9 @@ static int testVectorDHAES(const dlkp_p* keypair)
 		mp32nfree(&gq);
 		(void) dldp_pFree(&dp);
 
+		/*@-modobserver@*/
 		(void) randomGeneratorContextFree(&rc);
+		/*@=modobserver@*/
 
 		return result;
 	}
@@ -369,8 +380,10 @@ static int testVectorDHAES(const dlkp_p* keypair)
 	memset(&param, 0, sizeof(param));
 
 	(void) sha256Reset(&param);
+	/*@-internalglobs -mods @*/ /* noisy */
 	(void) sha256Update(&param, (const unsigned char*) "abc", 3);
 	(void) sha256Digest(&param, digest);
+	/*@=internalglobs =mods @*/
 
 	return mp32eq(8, expect, digest);
 }
@@ -406,8 +419,8 @@ static void testBlockInit(/*@out@*/ uint8* block, int length)
 }
 
 static void testBlockCiphers(void)
-	/*@globals keyValue @*/
-	/*@modifies internalState @*/
+	/*@globals fileSystem, internalState, keyValue @*/
+	/*@modifies fileSystem, internalState @*/
 {
 	int i, k;
 
@@ -524,7 +537,8 @@ static void testBlockCiphers(void)
 }
 
 static void testHashFunctions(void)
-	/*@modifies internalState */
+	/*@globals fileSystem, internalState */
+	/*@modifies fileSystem, internalState */
 {
 	int i, j;
 
@@ -553,7 +567,9 @@ static void testHashFunctions(void)
 
 				printf("  %s:\n", tmp->name);
 
+				/*@-nullpass -modobserver @*/
 				if (hashFunctionContextInit(&hfc, tmp) == 0)
+				/*@=nullpass =modobserver @*/
 				{
 					for (j = 0; j < 4; j++)
 					{
@@ -573,17 +589,21 @@ static void testHashFunctions(void)
 						#endif
 					}
 
+					/*@-modobserver@*/
 					(void) hashFunctionContextFree(&hfc);
+					/*@=modobserver@*/
 				}
 
 				mp32nfree(&digest);
 			}
 		}
+		free(data);
 	}
 }
 
 static void testExpMods(void)
-	/*@modifies internalState */
+	/*@globals fileSystem, internalState */
+	/*@modifies fileSystem, internalState */
 {
 	/*@observer@*/ static const char* p_512 = "ffcf0a0767f18f9b659d92b9550351430737c3633dc6ae7d52445d937d8336e07a7ccdb119e9ab3e011a8f938151230e91187f84ac05c3220f335193fc5e351b";
 
@@ -607,9 +627,9 @@ static void testExpMods(void)
 	mp32nzero(&y);
 	mp32nzero(&tmp);
 
-	/*@-nullpass@*/
+	/*@-nullpass -modobserver @*/
 	if (randomGeneratorContextInit(&rngc, randomGeneratorDefault()) == 0)
-	/*@=nullpass@*/
+	/*@=nullpass =modobserver @*/
 	{
 		int i;
 		#if HAVE_TIME_H
@@ -691,14 +711,17 @@ static void testExpMods(void)
 		mp32nfree(&y);
 		mp32nfree(&tmp);
 
+		/*@-modobserver@*/
 		(void) randomGeneratorContextFree(&rngc);
+		/*@=modobserver@*/
 	}
 	else
 		printf("random generator setup problem\n");
 }
 
 static void testDLParams(void)
-	/*@modifies internalState */
+	/*@globals fileSystem, internalState */
+	/*@modifies fileSystem, internalState */
 {
 	randomGeneratorContext rc;
 	dldp_p dp;
@@ -706,9 +729,9 @@ static void testDLParams(void)
 	memset(&rc, 0, sizeof(randomGeneratorContext));
 	memset(&dp, 0, sizeof(dldp_p));
 
-	/*@-nullpass@*/
+	/*@-nullpass -modobserver @*/
 	if (randomGeneratorContextInit(&rc, randomGeneratorDefault()) == 0)
-	/*@=nullpass@*/
+	/*@=nullpass =modobserver @*/
 	{
 		#if HAVE_TIME_H
 		double ttime;
@@ -733,6 +756,8 @@ static void testDLParams(void)
 		#if HAVE_TIME_H
 		tstart = clock();
 		#endif
+
+		/*@-usereleased -compdef @*/ /* annotate dldp_pgonMake correctly */
 		(void) dldp_pgonMake(&dp, &rc, 768 >> 5, 512 >> 5);
 		#if HAVE_TIME_H
 		tstop = clock();
@@ -744,8 +769,11 @@ static void testDLParams(void)
 		printf("G = "); (void) fflush(stdout); mp32println(dp.g.size, dp.g.data);
 		printf("N = "); (void) fflush(stdout); mp32println(dp.n.size, dp.n.modl);
 		(void) dldp_pFree(&dp);
+		/*@=usereleased =compdef @*/
 
+		/*@-modobserver@*/
 		(void) randomGeneratorContextFree(&rc);
+		/*@=modobserver@*/
 	}
 }
 
@@ -822,6 +850,8 @@ int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
 }
 #else
 int main(/*@unused@*/int argc, /*@unused@*/char *argv[])
+	/*@globals fileSystem, internalState @*/
+	/*@modifies fileSystem, internalState @*/
 {
 	int i, j;
 

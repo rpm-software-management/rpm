@@ -35,7 +35,7 @@ typedef struct
 {
 	uint32	size;
 /*@owned@*/ uint32* modl;	/* (size) words */
-/*@dependent@*/ uint32* mu;	/* (size+1) words */
+/*@dependent@*/ /*@null@*/ uint32* mu;	/* (size+1) words */
 } mp32barrett;
 
 #ifdef __cplusplus
@@ -46,37 +46,39 @@ extern "C" {
  */
 BEEDLLAPI
 void mp32bzero(/*@out@*/ mp32barrett* b)
-	/*@modifies b @*/;
+	/*@modifies b->size, b->modl, b->mu @*/;
 
 /**
  */
 BEEDLLAPI
 void mp32binit(mp32barrett* b, uint32 size)
-	/*@modifies b @*/;
+	/*@modifies b->size, b->modl, b->mu @*/;
 
 /**
  */
 BEEDLLAPI
-void mp32bfree(mp32barrett* b)
-	/*@modifies b @*/;
+void mp32bfree(/*@special@*/ mp32barrett* b)
+	/*@uses b->size, b->modl @*/
+	/*@releases b->modl @*/
+	/*@modifies b->size, b->modl, b->mu @*/;
 
 /**
  */
 BEEDLLAPI
 void mp32bcopy(mp32barrett* b, const mp32barrett* copy)
-	/*@modifies b @*/;
+	/*@modifies b->size, b->modl, b->mu @*/;
 
 /**
  */
 BEEDLLAPI
 void mp32bset(mp32barrett* b, uint32 size, const uint32* data)
-	/*@modifies b @*/;
+	/*@modifies b->size, b->modl, b->mu @*/;
 
 /**
  */
 BEEDLLAPI /*@unused@*/
 void mp32bsethex(mp32barrett* b, const char* hex)
-	/*@modifies b @*/;
+	/*@modifies b->size, b->modl, b->mu @*/;
 
 /**
  */
@@ -94,7 +96,7 @@ void mp32bneg(const mp32barrett* b, const uint32* xdata, uint32* result)
  */
 BEEDLLAPI
 void mp32bmu_w(mp32barrett* b, /*@out@*/ uint32* wksp)
-	/*@modifies b, wksp @*/;
+	/*@modifies b->size, b->modl, b->mu, wksp @*/;
 
 /**
  */
@@ -157,6 +159,7 @@ void mp32bpowmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint
 /*@-exportlocal@*/
 BEEDLLAPI
 void mp32bpowmodsld_w(const mp32barrett* b, const uint32* slide, uint32 psize, const uint32* pdata, /*@out@*/ uint32* result, /*@out@*/ uint32* wksp)
+	/*@globals internalState @*/
 	/*@modifies result, wksp, internalState @*/;
 /*@=exportlocal@*/
 

@@ -56,12 +56,15 @@ int dlkp_pInit(dlkp_p* kp)
 
 int dlkp_pFree(dlkp_p* kp)
 {
+	/*@-usereleased -compdef @*/ /* kp->param.{p,q,n}.modl is OK */
 	if (dldp_pFree(&kp->param) < 0)
+		return -1;
 
 	mp32nfree(&kp->y);
 	mp32nfree(&kp->x);
 
 	return 0;
+	/*@=usereleased =compdef @*/
 }
 
 int dlkp_pCopy(dlkp_p* dst, const dlkp_p* src)

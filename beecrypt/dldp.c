@@ -43,12 +43,12 @@
 /**
  */
 static int dldp_pgoqGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, /*@out@*/ uint32* wksp)
-	/*@modifies dp, wksp @*/;
+	/*@modifies dp->g, wksp @*/;
 
 /**
  */
 static int dldp_pgonGenerator_w(dldp_p* dp, randomGeneratorContext* rgc, /*@out@*/ uint32* wksp)
-	/*@modifies dp, wksp @*/;
+	/*@modifies dp->g, wksp @*/;
 
 int dldp_pPrivate(const dldp_p* dp, randomGeneratorContext* rgc, mp32number* x)
 {
@@ -157,11 +157,13 @@ int dldp_pInit(dldp_p* dp)
 
 int dldp_pFree(dldp_p* dp)
 {
+	/*@-usedef -compdef@*/
 	mp32bfree(&dp->p);
 	mp32bfree(&dp->q);
 	mp32nfree(&dp->g);
 	mp32nfree(&dp->r);
 	mp32bfree(&dp->n);
+	/*@=usedef =compdef@*/
 
 	return 0;
 }

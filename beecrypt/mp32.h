@@ -434,12 +434,14 @@ void mp32ndivmod(/*@out@*/ uint32* result, uint32 xsize, const uint32* xdata, ui
  */
 BEEDLLAPI /*@unused@*/
 void mp32print(uint32 xsize, const uint32* xdata)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 /**
  */
 BEEDLLAPI
 void mp32println(uint32 xsize, const uint32* xdata)
+	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 
 #ifdef __cplusplus

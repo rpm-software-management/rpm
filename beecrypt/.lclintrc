@@ -13,61 +13,40 @@
 +strict			# lclint level
 
 # --- not-yet at strict level
--exportconst
--exportfcn
--exporttype
--exportvar
--warnmissingglobs
--internalglobs
+-exportconst		# 4 occurences
+-exportfcn		# 317 occurences
+-exporttype		# 52 occurences
+-exportvar		# 10 occurences
 -protoparamname
 
 -ansi-reserved-internal	# goofy
 
--ptrarith
--bitwisesigned
--strictops
--sizeoftype
-
--mod-file-sys
+-ptrarith		# 217 occurences
+-bitwisesigned		# 69 occurences
+-strictops		# 37 occurences
+-sizeoftype		# 124 occurences
 
 -impcheckedstrictglobs
 -impcheckedstrictstatics
 -strictbranchstate
--strictdestroy
+-strictdestroy		# 18 occurences
 
--forblock
--ifblock
--whileblock
+-forblock		# 10 occurences
+-ifblock		# 406 occurences
+-whileblock		# 23 occurences
 -sys-dir-errors		# 30 occurences
 
 # --- not-yet at checks level
--predboolptr	
-+enumint
--allglobs		# painful
+-predboolptr		# 121 occurences
+-allglobs		# 219 occurences, painful
 -ansi-reserved		# goofy
--infloopsuncon		# goofy
 
 # don't-bother-me-yet parameters
 -branchstate		# 6 occurences
--mustfree		# alloca is painful
 
 # --- not-yet at standard level
--boolops
--predboolint
--type
+-boolops		# 58 occurences
+-predboolint		# 203 occurences
+-type			# 844 occurences
 
 # --- not-yet at weak level
-#+boolint
-#-boolops
-#+ignorequals
-#+ignoresigns
-#-mustfree
-#+longintegral
-#+matchanyintegral
-#-nullpass
-#-observertrans
-#-predboolint
-#-predboolothers
-#-retvalint
-#-retvalother
-#-shiftsigned

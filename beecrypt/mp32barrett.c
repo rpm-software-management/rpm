@@ -46,7 +46,6 @@
 
 #include <stdio.h>
 
-/*@-nullstate@*/	/* b->mu may be null @*/
 /**
  * mp32bzero
  */
@@ -56,17 +55,17 @@ void mp32bzero(mp32barrett* b)
 	b->modl = (uint32*) 0;
 	b->mu = (uint32*) 0;
 }
-/*@=nullstate@*/
 
-/*@-nullstate@*/	/* b->mu may be null @*/
+/*@-nullstate@*/	/* b->modl may be null @*/
 /**
- * mp32binit
- *  allocates the data words for an mp32barrett structure
+ *  Allocates the data words for an mp32barrett structure.
  *  will allocate 2*size+1 words
  */
 void mp32binit(mp32barrett* b, uint32 size)
 {
 	b->size	= size;
+	if (b->modl)
+		free(b->modl);
 	b->modl	= (uint32*) calloc(2*size+1, sizeof(uint32));
 
 	if (b->modl != (uint32*) 0)
@@ -76,7 +75,6 @@ void mp32binit(mp32barrett* b, uint32 size)
 }
 /*@=nullstate@*/
 
-/*@-nullstate@*/	/* b->mu may be null @*/
 /**
  * mp32bfree
  */
@@ -90,9 +88,8 @@ void mp32bfree(mp32barrett* b)
 	}
 	b->size = 0;
 }
-/*@=nullstate@*/
 
-/*@-nullstate -compdef @*/	/* b->mu may be null @*/
+/*@-nullstate -compdef @*/	/* b->modl may be null @*/
 void mp32bcopy(mp32barrett* b, const mp32barrett* copy)
 {
 	register uint32 size = copy->size;
@@ -131,7 +128,7 @@ void mp32bcopy(mp32barrett* b, const mp32barrett* copy)
 }
 /*@=nullstate =compdef @*/
 
-/*@-nullstate -compdef @*/	/* b->mu may be null @*/
+/*@-nullstate -compdef @*/	/* b->modl may be null @*/
 /**
  * mp32bset
  */
@@ -169,7 +166,7 @@ void mp32bset(mp32barrett* b, uint32 size, const uint32 *data)
 }
 /*@=nullstate =compdef @*/
 
-/*@-nullstate -compdef @*/	/* b->mu may be null @*/
+/*@-nullstate -compdef @*/	/* b->modl may be null @*/
 void mp32bsethex(mp32barrett* b, const char* hex)
 {
 	uint32 length = strlen(hex);
@@ -248,7 +245,9 @@ void mp32bmu_w(mp32barrett* b, uint32* wksp)
 	*dividend = (uint32) (1 << shift);
 	mp32zero(size*2, dividend+1);
 	mp32ndivmod(divmod, size*2+1, dividend, size, b->modl, workspace);
+	/*@-nullpass@*/ /* b->mu may be NULL */
 	mp32copy(size+1, b->mu, divmod+1);
+	/*@=nullpass@*/
 	/* de-normalize */
 	mp32rshift(size, b->modl, shift);
 }
@@ -338,6 +337,7 @@ void mp32bmod_w(const mp32barrett* b, const uint32* xdata, uint32* result, uint3
 	register const uint32* src = xdata+b->size+1;
 	register       uint32* dst = wksp +b->size+1;
 
+	/*@-nullpass@*/ /* b->mu may be NULL */
 	rc = mp32setmul(sp, dst, b->mu, *(--src));
 	*(--dst) = rc;
 
@@ -359,6 +359,7 @@ void mp32bmod_w(const mp32barrett* b, const uint32* xdata, uint32* result, uint3
 	}
 	else
 		*(--dst) = 0;
+	/*@=nullpass@*/
 
 	/* q3 is one word larger than b->modl */
 	/* r2 is (2*size+1) words, of which we only needs the (size+1) lsw's */
@@ -574,7 +575,9 @@ void mp32bpowmod_w(const mp32barrett* b, uint32 xsize, const uint32* xdata, uint
 		/*@-nullpass@*/		/* slide may be NULL */
 		mp32bslide_w(b, xsize, xdata, slide, wksp);
 
+		/*@-internalglobs -mods@*/ /* noisy */
 		mp32bpowmodsld_w(b, slide, psize, pdata-1, result, wksp);
+		/*@=internalglobs =mods@*/
 
 		free(slide);
 		/*@=nullpass@*/
@@ -1037,7 +1040,9 @@ void mp32bnpowmodsld(const mp32barrett* b, const uint32* slide, const mp32number
 	mp32nsize(y, size);
 
 	/*@-nullpass@*/		/* temp may be NULL */
+	/*@-internalglobs -mods@*/ /* noisy */
 	mp32bpowmodsld_w(b, slide, pow->size, pow->data, y->data, temp);
+	/*@=internalglobs =mods@*/
 
 	free(temp);
 	/*@=nullpass@*/

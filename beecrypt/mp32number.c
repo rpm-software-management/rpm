@@ -83,6 +83,11 @@ void mp32nsize(mp32number* n, uint32 size)
 void mp32ninit(mp32number* n, uint32 size, const uint32* data)
 {
 	n->size = size;
+	if (n->data)
+	{
+		free(n->data);
+		n->data = (uint32*) 0;
+	}
 	n->data = (uint32*) malloc(size * sizeof(uint32));
 
 	if (n->data && data)

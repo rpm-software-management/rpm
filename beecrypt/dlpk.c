@@ -42,12 +42,14 @@ int dlpk_pInit(dlpk_p* pk)
 
 int dlpk_pFree(dlpk_p* pk)
 {
+	/*@-usereleased -compdef @*/ /* pk->param.{p,q,n}.modl is OK */
 	if (dldp_pFree(&pk->param) < 0)
 		return -1;
 
 	mp32nfree(&pk->y);
 
 	return 0;
+	/*@=usereleased =compdef @*/
 }
 
 int dlpk_pCopy(dlpk_p* dst, const dlpk_p* src)

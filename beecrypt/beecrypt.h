@@ -239,7 +239,7 @@ const randomGenerator* randomGeneratorDefault(void)
  */
 typedef struct
 {
-    const randomGenerator* rng;		/*!< global functions and parameters */
+/*@observer@*/ /*@dependent@*/ const randomGenerator* rng; /*!< global functions and parameters */
 /*@only@*/ randomGeneratorParam* param;	/*!< specific parameters */
 } randomGeneratorContext;
 
@@ -251,14 +251,16 @@ extern "C" {
  * Initialize a randomGenerator instance.
  */
 BEEDLLAPI
-int randomGeneratorContextInit(randomGeneratorContext* ctxt, const randomGenerator* rng)
+int randomGeneratorContextInit(randomGeneratorContext* ctxt, /*@observer@*/ /*@dependent@*/ const randomGenerator* rng)
 	/*@modifies ctxt->rng, ctxt->param @*/;
 
 /** \ingroup PRNG_m
  * Destroy a randomGenerator instance.
  */
 BEEDLLAPI
-int randomGeneratorContextFree(randomGeneratorContext* ctxt)
+int randomGeneratorContextFree(/*@special@*/ randomGeneratorContext* ctxt)
+	/*@uses ctxt->rng @*/
+	/*@releases ctxt->param @*/
 	/*@modifies ctxt->rng, ctxt->param @*/;
 
 #ifdef __cplusplus
@@ -377,8 +379,8 @@ const hashFunction* hashFunctionDefault(void)
  */
 typedef struct
 {
-/*@unused@*/ const hashFunction* algo;	/*!< global functions and parameters */
-/*@unused@*/ hashFunctionParam* param;	/*!< specific parameters */
+/*@observer@*/ /*@dependent@*/ const hashFunction* algo;/*!< global functions and parameters */
+/*@only@*/ hashFunctionParam* param;	/*!< specific parameters */
 } hashFunctionContext;
 
 #ifdef __cplusplus
@@ -389,15 +391,16 @@ extern "C" {
  * Initialize a hashFunction instance.
  */
 BEEDLLAPI
-int hashFunctionContextInit(hashFunctionContext* ctxt, const hashFunction* hash)
-	/*@modifies ctxt */;
+int hashFunctionContextInit(hashFunctionContext* ctxt, /*@observer@*/ /*@dependent@*/ const hashFunction* hash)
+	/*@modifies ctxt->algo, ctxt->param */;
 
 /** \ingroup HASH_m
  * Destroy a hashFunction instance.
  */
 BEEDLLAPI
-int hashFunctionContextFree(hashFunctionContext* ctxt)
-	/*@modifies ctxt */;
+int hashFunctionContextFree(/*@special@*/ hashFunctionContext* ctxt)
+	/*@releases ctxt->param @*/
+	/*@modifies ctxt->algo, ctxt->param */;
 
 /** \ingroup HASH_m
  */
@@ -569,8 +572,8 @@ const keyedHashFunction* keyedHashFunctionDefault(void)
  */
 typedef struct
 {
-/*@unused@*/ const keyedHashFunction* algo;	/*!< global functions and parameters */
-/*@unused@*/ keyedHashFunctionParam* param;	/*!< specific parameters */
+/*@observer@*/ /*@dependent@*/ const keyedHashFunction* algo;	/*!< global functions and parameters */
+/*@only@*/ keyedHashFunctionParam* param;	/*!< specific parameters */
 } keyedHashFunctionContext;
 
 #ifdef __cplusplus
@@ -581,15 +584,17 @@ extern "C" {
  * Initialize a keyedHashFunction instance.
  */
 BEEDLLAPI
-int keyedHashFunctionContextInit(keyedHashFunctionContext* ctxt, const keyedHashFunction* mac)
-	/*@modifies ctxt @*/;
+int keyedHashFunctionContextInit(keyedHashFunctionContext* ctxt, /*@observer@*/ /*@dependent@*/ const keyedHashFunction* mac)
+	/*@modifies ctxt->algo, ctxt->param @*/;
 
 /** \ingroup HMAC_m
  * Destroy a keyedHashFunction instance.
  */
 BEEDLLAPI
-int keyedHashFunctionContextFree(keyedHashFunctionContext* ctxt)
-	/*@modifies ctxt @*/;
+int keyedHashFunctionContextFree(/*@special@*/ keyedHashFunctionContext* ctxt)
+	/*@uses ctxt->algo @*/
+	/*@releases ctxt->param @*/
+	/*@modifies ctxt->algo, ctxt->param @*/;
 
 /** \ingroup HMAC_m
  */
@@ -659,9 +664,7 @@ typedef enum
  */
 typedef enum
 {
-	/*@-enummemuse@*/
 	ECB,
-	/*@=enummemuse@*/
 	CBC
 } cipherMode;
 
@@ -812,8 +815,8 @@ const blockCipher* blockCipherDefault(void)
  */
 typedef struct
 {
-    const blockCipher* algo;	/*!< global functions and parameters */
-    blockCipherParam* param;	/*!< specific parameters */
+/*@observer@*/ /*@dependent@*/ const blockCipher* algo;	/*!< global functions and parameters */
+/*@only@*/ blockCipherParam* param;	/*!< specific parameters */
 } blockCipherContext;
 
 #ifdef __cplusplus
@@ -824,8 +827,8 @@ extern "C" {
  * Initialize a blockCipher instance.
  */
 BEEDLLAPI
-int blockCipherContextInit(blockCipherContext* ctxt, const blockCipher* ciph)
-	/*@modifies ctxt @*/;
+int blockCipherContextInit(blockCipherContext* ctxt, /*@observer@*/ /*@dependent@*/ const blockCipher* ciph)
+	/*@modifies ctxt->algo, ctxt->param @*/;
 
 /** \ingroup BC_m
  */
@@ -843,8 +846,9 @@ int blockCipherContextSetIV(blockCipherContext* ctxt, const uint32* iv)
  * Destroy a blockCipher instance.
  */
 BEEDLLAPI
-int blockCipherContextFree(blockCipherContext* ctxt)
-	/*@modifies ctxt @*/;
+int blockCipherContextFree(/*@special@*/ blockCipherContext* ctxt)
+	/*@releases ctxt->param @*/
+	/*@modifies ctxt->algo, ctxt->param @*/;
 
 #ifdef __cplusplus
 }

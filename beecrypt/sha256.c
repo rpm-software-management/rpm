@@ -208,7 +208,8 @@ int sha256Update(register sha256Param *p, const byte *data, int size)
 /**
  */
 static void sha256Finish(register sha256Param *p)
-	/*@modifies p @*/
+	/*@globals internalState @*/
+	/*@modifies p, internalState @*/
 {
 	register byte *ptr = ((byte *) p->data) + p->offset++;
 

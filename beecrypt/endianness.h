@@ -254,12 +254,14 @@ int decodeChars(/*@out@*/ javachar* c, const byte* data, int count)
  */
 BEEDLLAPI /*@unused@*/
 int writeByte(javabyte b, FILE* ofp)
+	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
 
 /**
  */
 BEEDLLAPI /*@unused@*/
 int writeShort(javashort s, FILE* ofp)
+	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
 
 /**
@@ -267,6 +269,7 @@ int writeShort(javashort s, FILE* ofp)
 /*@-exportlocal@*/
 BEEDLLAPI
 int writeInt(javaint i, FILE* ofp)
+	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
 /*@=exportlocal@*/
 
@@ -274,6 +277,7 @@ int writeInt(javaint i, FILE* ofp)
  */
 BEEDLLAPI /*@unused@*/
 int writeLong(javalong l, FILE* ofp)
+	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
 
 /**
@@ -281,6 +285,7 @@ int writeLong(javalong l, FILE* ofp)
 /*@-exportlocal@*/
 BEEDLLAPI
 int writeChar(javachar c, FILE* ofp)
+	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
 /*@=exportlocal@*/
 
@@ -288,54 +293,63 @@ int writeChar(javachar c, FILE* ofp)
  */
 BEEDLLAPI /*@unused@*/
 int writeInts(const javaint* i, FILE* ofp, int count)
+	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
 
 /**
  */
 BEEDLLAPI /*@unused@*/
 int writeChars(const javachar* c, FILE* ofp, int count)
+	/*@globals fileSystem @*/
 	/*@modifies ofp, fileSystem */;
 
 /**
  */
 BEEDLLAPI /*@unused@*/
 int readByte(/*@out@*/ javabyte* b, FILE* ifp)
+	/*@globals fileSystem @*/
 	/*@modifies b, ifp, fileSystem */;
 
 /**
  */
 BEEDLLAPI /*@unused@*/
 int readShort(/*@out@*/ javashort* s, FILE* ifp)
+	/*@globals fileSystem @*/
 	/*@modifies s, ifp, fileSystem */;
 
 /**
  */
 BEEDLLAPI /*@unused@*/
 int readInt(/*@out@*/ javaint* i, FILE* ifp)
+	/*@globals fileSystem @*/
 	/*@modifies i, ifp, fileSystem */;
 
 /**
  */
 BEEDLLAPI /*@unused@*/
 int readLong(/*@out@*/ javalong* l, FILE* ifp)
+	/*@globals fileSystem @*/
 	/*@modifies l, ifp, fileSystem */;
 
 /**
  */
 BEEDLLAPI /*@unused@*/
 int readChar(/*@out@*/ javachar* c, FILE* ifp)
+	/*@globals fileSystem @*/
 	/*@modifies c, ifp, fileSystem */;
 
 /**
  */
 BEEDLLAPI /*@unused@*/
 int readInts(/*@out@*/ javaint* i, FILE* ifp, int count)
+	/*@globals fileSystem @*/
 	/*@modifies i, ifp, fileSystem */;
 
 /**
  */
 BEEDLLAPI /*@unused@*/
 int readChars(/*@out@*/ javachar* c, FILE* ifp, int count)
+	/*@globals fileSystem @*/
 	/*@modifies c, ifp, fileSystem */;
 
 #ifdef __cplusplus

@@ -172,6 +172,7 @@ int rsakpInit(rsakp* kp)
 
 int rsakpFree(rsakp* kp)
 {
+	/*@-usereleased -compdef @*/ /* kp->param.{n,p,q}.modl is OK */
 	mp32bfree(&kp->n);
 	mp32nfree(&kp->e);
 	mp32nfree(&kp->d);
@@ -182,6 +183,7 @@ int rsakpFree(rsakp* kp)
 	mp32nfree(&kp->c);
 
 	return 0;
+	/*@=usereleased =compdef @*/
 }
 
 int rsakpCopy(rsakp* dst, const rsakp* src)
