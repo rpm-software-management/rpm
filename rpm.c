@@ -236,11 +236,14 @@ int main(int argc, char ** argv) {
     char * prefix = "/";
     char * specFile;
     char *passPhrase = "";
+    char *arch = NULL;
+    char *os = NULL;
     char * smallArgv[2] = { NULL, NULL };
     char ** currarg;
     int ec = 0;
     struct option optionsTable[] = {
 	    { "all", 0, 0, 'a' },
+	    { "arch", 1, 0, 0 },
 	    { "build", 1, 0, 'b' },
 	    { "checksig", 0, 0, 'K' },
 	    { "clean", 0, &clean, 0 },
@@ -263,6 +266,7 @@ int main(int argc, char ** argv) {
 	    { "nopgp", 0, &noPgp, 0 },
 	    { "noscripts", 0, &noScripts, 0 },
 	    { "oldpackage", 0, &oldPackage, 0 },
+	    { "os", 1, 0, 0 },
 	    { "package", 0, 0, 'p' },
 	    { "percent", 0, &showPercents, 0 },
 	    { "provides", 0, 0, 0 },
@@ -305,19 +309,23 @@ int main(int argc, char ** argv) {
     bindtextdomain(NLSPACKAGE, "/usr/lib/locale");
     textdomain(NLSPACKAGE);
 
-    /* make a first pass through the arguments, looking for --rcfile. We
-       need to handle that before dealing with the rest of the arguments */
+    /* Make a first pass through the arguments, looking for --rcfile */
+    /* as well as --arch and --os.  We need to handle that before    */
+    /* dealing with the rest of the arguments.                       */
     currarg = argv;
     while (*currarg) {
 	if (!strcmp(*currarg, "--rcfile")) {
 	    rcfile = *(currarg + 1);
-	    break;
+	} else if (!strcmp(*currarg, "--arch")) {
+	    arch = *(currarg + 1);
+	} else if (!strcmp(*currarg, "--os")) {
+	    os = *(currarg + 1);
 	}
 	currarg++;
     } 
 
     /* reading this early makes it easy to override */
-    if (readConfigFiles(rcfile))  
+    if (readConfigFiles(rcfile, arch, os))  
 	exit(1);
 
     while (1) {
