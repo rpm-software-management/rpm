@@ -3,6 +3,7 @@
  * header.c - routines for managing rpm headers
  */
 
+#include <stdlib.h>
 #include <asm/byteorder.h>
 #include <ctype.h>
 #include <malloc.h>
@@ -42,6 +43,9 @@ struct headerIteratorS {
     Header h;
     int next_index;
 };
+
+static int indexSort(const void *ap, const void *bp);
+static struct indexEntry *findEntry(Header h, int_32 tag);
 
 HeaderIterator initIterator(Header h)
 {
@@ -140,9 +144,26 @@ unsigned int sizeofHeader(Header h)
     return size;
 }
 
+static int indexSort(const void *ap, const void *bp)
+{
+    int_32 a, b;
+
+    a = ((struct indexEntry *)ap)->tag;
+    b = ((struct indexEntry *)bp)->tag;
+    
+    if (a > b) {
+	return 1;
+    } else if (a < b) {
+	return -1;
+    } else {
+	return 0;
+    }
+}
+
 void writeHeader(int fd, Header h)
 {
     int_32 l;
+    struct indexEntry *sortedIndex;
 
     /* First write out the length of the index (count of index entries) */
     l = htonl(h->entries_used);
@@ -153,7 +174,11 @@ void writeHeader(int fd, Header h)
     write(fd, &l, sizeof(l));
 
     /* Now write the index */
-    write(fd, h->index, sizeof(struct indexEntry) * h->entries_used);
+    sortedIndex = malloc(sizeof(struct indexEntry) * h->entries_used);
+    memcpy(sortedIndex, h->index, sizeof(struct indexEntry) * h->entries_used);
+    qsort(sortedIndex, h->entries_used, sizeof(struct indexEntry), indexSort);
+    write(fd, sortedIndex, sizeof(struct indexEntry) * h->entries_used);
+    free(sortedIndex);
 
     /* Finally write the data */
     write(fd, h->data, h->data_used);
@@ -418,50 +443,63 @@ void freeHeader(Header h)
     free(h);
 }
 
-int isEntry(Header h, int_32 tag)
+static int tagCompare(const void *key, const void *member)
+{
+    if (*((int_32 *)key) > ((struct indexEntry *)member)->tag) {
+	return 1;
+    } else if (*((int_32 *)key) < ((struct indexEntry *)member)->tag) {
+	return -1;
+    } else {
+	return 0;
+    }
+}
+
+static struct indexEntry *findEntry(Header h, int_32 tag)
 {
     struct indexEntry *index = h->index;
     int x = h->entries_used;
 
+    /* the index is network order */
     tag = htonl(tag);
-    while (x && (tag != index->tag)) {
-	index++;
-	x--;
-    }
-    if (x == 0) {
-	return 0;
+
+    if (! h->mutable) {
+	return bsearch(&tag, index, x, sizeof(struct indexEntry), tagCompare);
     } else {
-	return 1;
+	while (x && (tag != index->tag)) {
+	    index++;
+	    x--;
+	}
+	return (x ? index : NULL);
     }
+}
+
+int isEntry(Header h, int_32 tag)
+{
+    return (findEntry(h, tag) ? 1 : 0);
 }
 
 int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 {
-    struct indexEntry *index = h->index;
-    int x = h->entries_used;
+    struct indexEntry *index;
     char **spp;
     char *sp;
-    int t;
+    int x;
 
     /* First find the tag */
-    tag = htonl(tag);
-    while (x && (tag != index->tag)) {
-	index++;
-	x--;
-    }
-    if (x == 0) {
+    index = findEntry(h, tag);
+    if (! index) {
 	return 0;
     }
-    t = (int) ntohl(index->type);
+
     if (type) {
-	*type = t;
+	*type = (int) ntohl(index->type);
     }
     if (c) {
 	*c = ntohl(index->count);
     }
 
     /* Now look it up */
-    switch (t) {
+    switch ((int) ntohl(index->type)) {
     case INT64_TYPE:
     case INT32_TYPE:
     case INT16_TYPE:
@@ -490,7 +528,8 @@ int getEntry(Header h, int_32 tag, int_32 * type, void **p, int_32 * c)
 	}
 	break;
     default:
-	fprintf(stderr, "Data type %d not supprted\n", t);
+	fprintf(stderr, "Data type %d not supprted\n",
+		(int) ntohl(index->type));
 	exit(1);
     }
 
