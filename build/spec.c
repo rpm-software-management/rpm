@@ -439,7 +439,9 @@ void freeSpec(Spec spec)
     FREE(spec->passPhrase);
     FREE(spec->cookie);
 
+#ifdef	DEAD
     freeMacros(spec->macros);
+#endif
     
     freeSources(spec);
     freePackages(spec);

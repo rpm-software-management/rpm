@@ -680,7 +680,6 @@ static int doReadRC(int fd, char * filename) {
 		}
 		if (option->macroize && strcmp(start, current[ARCH])) {
 		    char *s = buf;
-		    *s++ = '_';
 		    if (option->localize)
 			*s++ = '_';
 		    strcpy(s, option->name);
@@ -691,7 +690,6 @@ static int doReadRC(int fd, char * filename) {
 		/* XXX for now only non-arch values can get macroized */
 		if (option->macroize) {
 		    char *s = buf;
-		    *s++ = '_';
 		    if (option->localize)
 			*s++ = '_';
 		    strcpy(s, option->name);

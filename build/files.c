@@ -845,6 +845,11 @@ static int addFile(struct FileList *fl, char *name, struct stat *statp)
 	strcpy(diskName, fileName);
 	if (fl->buildRoot) {
 	    strcpy(fileName, diskName + strlen(fl->buildRoot));
+	    /* Special case for "/" */
+	    if (*fileName == '\0') {
+		fileName[0] = '/';
+		fileName[1] = '\0';
+	    }
 	}
     } else {
 	if (fl->buildRoot) {
@@ -1270,8 +1275,7 @@ int processSourceFiles(Spec spec)
 
     /* Construct the file list and source entries */
     appendLineStringBuf(sourceFiles, spec->specFile);
-    srcPtr = spec->sources;
-    while (srcPtr) {
+    for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
 	if (srcPtr->flags & RPMBUILD_ISSOURCE) {
 	    headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_SOURCE,
 				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
@@ -1292,20 +1296,15 @@ int processSourceFiles(Spec spec)
 		srcPtr->flags & RPMBUILD_ISNO ? "!" : "",
 		rpmGetVar(RPMVAR_SOURCEDIR), srcPtr->source);
 	appendLineStringBuf(sourceFiles, buf);
-	srcPtr = srcPtr->next;
     }
 
-    pkg = spec->packages;
-    while (pkg) {
-	srcPtr = pkg->icon;
-	while (srcPtr) {
+    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	for (srcPtr = pkg->icon; srcPtr != NULL; srcPtr = srcPtr->next) {
 	    sprintf(buf, "%s%s/%s",
 		    srcPtr->flags & RPMBUILD_ISNO ? "!" : "",
 		    rpmGetVar(RPMVAR_SOURCEDIR), srcPtr->source);
 	    appendLineStringBuf(sourceFiles, buf);
-	    srcPtr = srcPtr->next;
 	}
-	pkg = pkg->next;
     }
 
     spec->sourceCpioList = NULL;
@@ -1632,11 +1631,9 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
     int res, rc;
     char *name;
     
-    pkg = spec->packages;
     res = 0;
-    while (pkg) {
+    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	if (!pkg->fileList) {
-	    pkg = pkg->next;
 	    continue;
 	}
 
@@ -1650,7 +1647,6 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
 	generateAutoReqProv(spec, pkg, pkg->cpioList, pkg->cpioCount);
 	printReqs(spec, pkg);
 	
-	pkg = pkg->next;
     }
 
     return res;
