@@ -164,7 +164,7 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
 	    chdir("/");
 	}
 
-	execlp("xargs", "xargs", "ldd", NULL);
+	execlp("xargs", "xargs", "-0", "ldd", NULL);
 	error(RPMERR_EXEC, "Couldn't exec ldd");
 	exit(RPMERR_EXEC);
     }
@@ -196,6 +196,13 @@ int generateAutoReqProv(Header header, struct PackageRec *p)
 	parseFileForProv(s, p);
     }
     writePtr = getStringBuf(writeBuff);
+    s = writePtr;
+    while (*s) {
+	if (*s == '\n') {
+	    *s = '\0';
+	}
+	s++;
+    }
    
     lddDead = 0;
     do {
