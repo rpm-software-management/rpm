@@ -133,6 +133,7 @@ rpm	exec --recompile	rpmb --recompile
 rpm	exec --clean		rpmb --clean
 rpm	exec --rmsource		rpmb --rmsource
 rpm	exec --rmspec		rpmb --rmspec
+rpm	exec --target		rpmb --target
 
 rpm	exec --initdb		rpmdb --initdb
 rpm	exec --rebuilddb	rpmdb --rebuilddb
