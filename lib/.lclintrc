@@ -1,4 +1,4 @@
--I. -I.. -DHAVE_CONFIG_H
+-I. -I.. -I../build -I../popt -DHAVE_CONFIG_H
 
 +partial
 
@@ -6,6 +6,13 @@
 -warnposix
 
 +unixlib
+
+# don't-bother-me-yet parameters
+-branchstate
+-immediatetrans
+-mustfree
+-observertrans
+-statictrans
 
 # not-yet normal parameters
 -boolops		# w->n
