@@ -71,17 +71,20 @@ void ttycbreak(void)
 
     
 }
+#endif
 
 char *getPassPhrase(char *prompt)
 {
+    char *pass;
+
     if (prompt) {
-	puts(prompt);
+        pass = getpass(prompt);
+    } else {
+        pass = getpass("");
     }
 
-    
-    
+    return pass;
 }
-#endif
 
 static int makePGPSignature(char *file, int ofd, char *passPhrase)
 {
