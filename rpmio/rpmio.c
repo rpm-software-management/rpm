@@ -153,7 +153,7 @@ static /*@observer@*/ const char * fdbg(/*@null@*/ FD_t fd)
     if (fd == NULL)
 	return buf;
 
-#if DYING
+#ifdef DYING
     sprintf(be, "fd %p", fd);	be += strlen(be);
     if (fd->rd_timeoutsecs >= 0) {
 	sprintf(be, " secs %d", fd->rd_timeoutsecs);
@@ -1741,13 +1741,7 @@ static ssize_t ufdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 	}
 
 /*@-boundswrite@*/
-#ifdef	DYING
-	/* HACK: flimsy wiring for davRead */
-	if (fd->req != NULL)
-	    rc = davRead(fd, buf + total, count - total);
-	else
-#endif
-	    rc = fdRead(fd, buf + total, count - total);
+	rc = fdRead(fd, buf + total, count - total);
 /*@=boundswrite@*/
 
 	if (rc < 0) {

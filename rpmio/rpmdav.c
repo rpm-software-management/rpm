@@ -422,87 +422,6 @@ fprintf(stderr, "==> %s skipping target resource.\n", path);
     newres->next = current;
 }
 
-#ifdef	DYING
-static char *format_time(time_t when)
-	/*@*/
-{
-    const char *fmt;
-    static char ret[256];
-    struct tm *local;
-    time_t current_time;
-    
-    if (when == (time_t)-1) {
-	/* Happens on lock-null resources */
-	return "  (unknown) ";
-    }
-
-    /* from GNU fileutils... this section is 
-     *  
-     */
-    current_time = time(NULL);
-    if (current_time > when + 6L * 30L * 24L * 60L * 60L	/* Old. */
-	|| current_time < when - 60L * 60L) {
-	/* The file is fairly old or in the future.  POSIX says the
-	   cutoff is 6 months old; approximate this by 6*30 days.
-	   Allow a 1 hour slop factor for what is considered "the
-	   future", to allow for NFS server/client clock disagreement.
-	   Show the year instead of the time of day.  */
-	fmt = "%b %e  %Y";
-    } else {
-	fmt = "%b %e %H:%M";
-    }
-
-    local = localtime(&when);
-    if (local != NULL) {
-	if (strftime(ret, 256, fmt, local)) {
-	    return ret;
-	}
-    }
-    return "???";
-}
-
-static void display_ls_line(struct fetch_resource_s *res)
-	/*@modifies res @*/
-{
-    const char *restype;
-    char exec_char, vcr_char, *name;
-
-    switch (res->type) {
-    case resr_normal: restype = ""; break;
-    case resr_reference: restype = _("Ref:"); break;
-    case resr_collection: restype = _("Coll:"); break;
-    default:
-	restype = "???"; break;
-    }
-    
-    if (ne_path_has_trailing_slash(res->uri)) {
-	res->uri[strlen(res->uri)-1] = '\0';
-    }
-    name = strrchr(res->uri, '/');
-    if (name != NULL && strlen(name+1) > 0) {
-	name++;
-    } else {
-	name = res->uri;
-    }
-
-    name = ne_path_unescape(name);
-
-    if (res->type == resr_error) {
-	printf(_("Error: %-30s %d %s\n"), name, res->error_status,
-	       res->error_reason?res->error_reason:_("unknown"));
-    } else {
-	exec_char = res->is_executable ? '*' : ' ';
-	/* 0: no vcr, 1: checkin, 2: checkout */
-	vcr_char = res->is_vcr==0 ? ' ' : (res->is_vcr==1? '>' : '<');
-	printf("%5s %c%c%-29s %10d  %s\n", 
-	       restype, vcr_char, exec_char, name,
-	       res->size, format_time(res->modtime));
-    }
-
-    free(name);
-}
-#endif
-
 static int davFetch(const urlinfo u, struct fetch_context_s * ctx)
 	/*@globals internalState @*/
 	/*@modifies ctx, internalState @*/
@@ -878,23 +797,7 @@ ssize_t davRead(void * cookie, /*@out@*/ char * buf, size_t count)
     FD_t fd = cookie;
     ssize_t rc;
 
-#ifdef	DYING
-#if 0
-    if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
-#endif
-
-    fdstat_enter(fd, FDSTAT_READ);
-/*@-boundswrite@*/
-#endif
-
     rc = ne_read_response_block(fd->req, buf, count);
-
-#ifdef	DYING
-/*@=boundswrite@*/
-    fdstat_exit(fd, FDSTAT_READ, rc);
-
-    if (fd->ndigests && rc > 0) fdUpdateDigests(fd, buf, rc);
-#endif
 
 if (_dav_debug) {
 fprintf(stderr, "*** davRead(%p,%p,0x%x) rc 0x%x\n", cookie, buf, count, (unsigned)rc);
