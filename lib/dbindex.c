@@ -104,6 +104,7 @@ void freeDBIndexRecord(dbIndexSet set) {
     free(set.recs);
 }
 
+/* returns 1 on failure */
 int removeDBIndexRecord(dbIndexSet * set, dbIndexRecord rec) {
     int from;
     int to = 0;
