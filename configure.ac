@@ -789,6 +789,8 @@ AC_CHECK_FUNCS(basename getcwd getwd inet_aton mtrace putenv realpath setenv)
 AC_CHECK_FUNCS(stpcpy stpncpy strcspn)
 AC_CHECK_FUNCS(strdup strerror strtol strtoul strspn strstr)
 
+AC_CHECK_FUNCS(__secure_getenv)
+
 AC_CHECK_FUNCS(regcomp)
 
 AC_CHECK_FUNCS(ftok)

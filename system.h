@@ -123,6 +123,10 @@ extern void error(int status, int errnum, const char *format, ...)
 #endif
 #endif
 
+if HAVE___SECURE_GETENV && !defined(__LCLINT__)
+#define	getenv(_s)	__secure_getenv(_s)
+#endif
+
 #ifdef STDC_HEADERS
 /*@-macrounrecog -incondefs -globuse -mustmod @*/ /* FIX: shrug */
 #define getopt system_getopt

@@ -59,40 +59,40 @@ noinst_HEADERS = build.h debug.h system.h
 rpm_SOURCES =
 rpm_LDFLAGS =		$(myLDFLAGS)
 rpm_LDADD =		rpm.o $(top_builddir)/build/.libs/librpmbuild.a $(myLDADD)
-rpm.o:	rpmqv.c
+rpm.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV -o $@ -c rpmqv.c
 
 rpmb_SOURCES =		build.c
 rpmb_LDFLAGS =		$(myLDFLAGS)
 rpmb_LDADD =		rpmb.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
-rpmb.o:	rpmqv.c
+rpmb.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMBT -o $@ -c rpmqv.c
 
 rpmd_SOURCES =
 rpmd_LDFLAGS =		$(myLDFLAGS)
 rpmd_LDADD =		rpmd.o $(myLDADD)
-rpmd.o:	rpmqv.c
+rpmd.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMDB -o $@ -c rpmqv.c
 
 rpmi_SOURCES =
 rpmi_LDFLAGS =		$(myLDFLAGS) $(staticLDFLAGS)
 rpmi_LDADD =		rpmi.o $(myLDADD) @WITH_LIBELF_LIB@
-rpmi.o:	rpmqv.c
+rpmi.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMEIU -o $@ -c rpmqv.c
 
 rpmk_SOURCES =
 rpmk_LDFLAGS =		$(myLDFLAGS)
 rpmk_LDADD =		rpmk.o $(myLDADD)
-rpmk.o:	rpmqv.c
+rpmk.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMK -o $@ -c rpmqv.c
 
 rpmq_SOURCES =
 rpmq_LDFLAGS =		$(myLDFLAGS)
 rpmq_LDADD =		rpmq.o $(top_builddir)/build/librpmbuild.la $(myLDADD)
-rpmq.o:	rpmqv.c
+rpmq.o:	$(top_srcdir)/rpmqv.c
 	$(COMPILE) -DIAM_RPMQV -o $@ -c rpmqv.c
 
-rpm2cpio_SOURCES =	rpm2cpio.c
+rpm2cpio_SOURCES =	$(top_srcdir)/rpm2cpio.c
 rpm2cpio_LDFLAGS =	$(myLDFLAGS)
 rpm2cpio_LDADD =	$(myLDADD) @LIBMISC@
 
@@ -177,7 +177,7 @@ install-data-local:
 	@case "@host_os@" in \
 	mint) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/m68kmint ;;\
 	solaris*|linux*) \
-	   chmod u+x ./installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" ./installplatform rpmrc macros platform ;; \
+	   chmod u+x $(top_srcdir)/installplatform; DESTDIR="$(DESTDIR)" pkglibdir="$(pkglibdir)" $(top_srcdir)/installplatform rpmrc macros platform ;; \
 	esac
 	@$(mkinstalldirs) $(DESTDIR)/var/tmp
 

@@ -36,11 +36,11 @@ extern __const __int32_t *__ctype_toupper;
 #endif
 
 #if defined(__LCLINT__)
-/*@-declundef -incondefs -redecl@*/ /* LCL: missing annotation */
-/*@only@*/ void * alloca (size_t __size)
+/*@-declundef -incondefs @*/ /* LCL: missing annotation */
+/*@only@*/ /*@out@*/ void * alloca (size_t __size)
 	/*@ensures MaxSet(result) == (__size - 1) @*/
 	/*@*/;
-/*@=declundef =incondefs =redecl@*/
+/*@=declundef =incondefs @*/
 #endif
 
 /* AIX requires this to be the first thing in the file.  */ 
@@ -72,5 +72,8 @@ char *alloca ();
 #define	xstrdup(_str)	strdup(_str)
 #endif  /* HAVE_MCHECK_H && defined(__GNUC__) */
 
+#if HAVE___SECURE_GETENV && !defined(__LCLINT__)
+#define	getenv(_s)	__secure_getenv(_s)
+#endif
 
 #include "popt.h"

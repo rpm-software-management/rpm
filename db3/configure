@@ -1,6 +1,9 @@
 #!/bin/sh
 #set -x 
-db_dist="../db/dist"
+base_name=`basename $0`
+base_path=`echo $0 | sed s,$base_name,,`
+
+db_dist="${base_path}../db/dist"
 
 rm -f config.cache
 

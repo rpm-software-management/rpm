@@ -87,7 +87,7 @@ struct poptContext_s {
 /*@only@*/
     const char * execPath;
     int execAbsolute;
-/*@only@*/
+/*@only@*/ /*@relnull@*/
     const char * otherHelp;
 /*@null@*/
     pbm_set * arg_strip;

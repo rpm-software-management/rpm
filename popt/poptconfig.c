@@ -8,25 +8,26 @@
 
 #include "system.h"
 #include "poptint.h"
+/*@access poptContext @*/
 
 /*@-compmempass@*/	/* FIX: item->option.longName kept, not dependent. */
 static void configLine(poptContext con, char * line)
 	/*@modifies con @*/
 {
-    /*@-type@*/
-    int nameLength = strlen(con->appName);
-    /*@=type@*/
+    size_t nameLength;
     const char * entryType;
     const char * opt;
     poptItem item = alloca(sizeof(*item));
     int i, j;
+
+    if (con->appName == NULL)
+	return;
+    nameLength = strlen(con->appName);
     
 /*@-boundswrite@*/
     memset(item, 0, sizeof(*item));
 
-    /*@-type@*/
     if (strncmp(line, con->appName, nameLength)) return;
-    /*@=type@*/
 
     line += nameLength;
     if (*line == '\0' || !isspace(*line)) return;
@@ -108,9 +109,7 @@ int poptReadConfigFile(poptContext con, const char * fn)
     if (fileLength == -1 || lseek(fd, 0, 0) == -1) {
 	rc = errno;
 	(void) close(fd);
-	/*@-mods@*/
 	errno = rc;
-	/*@=mods@*/
 	return POPT_ERROR_ERRNO;
     }
 
@@ -118,9 +117,7 @@ int poptReadConfigFile(poptContext con, const char * fn)
     if (read(fd, (char *)file, fileLength) != fileLength) {
 	rc = errno;
 	(void) close(fd);
-	/*@-mods@*/
 	errno = rc;
-	/*@=mods@*/
 	return POPT_ERROR_ERRNO;
     }
     if (close(fd) == -1)
@@ -168,15 +165,10 @@ int poptReadDefaultConfig(poptContext con, /*@unused@*/ int useEnv)
     char * fn, * home;
     int rc;
 
-    /*@-type@*/
-    if (!con->appName) return 0;
-    /*@=type@*/
+    if (con->appName == NULL) return 0;
 
     rc = poptReadConfigFile(con, "/etc/popt");
     if (rc) return rc;
-#if defined(HAVE_GETUID) && defined(HAVE_GETEUID)
-    if (getuid() != geteuid()) return 0;
-#endif
 
     if ((home = getenv("HOME"))) {
 	fn = alloca(strlen(home) + 20);

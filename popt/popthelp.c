@@ -1,6 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 
-/*@-type@*/
 /** \ingroup popt
  * \file popt/popthelp.c
  */
@@ -11,6 +10,8 @@
 
 #include "system.h"
 #include "poptint.h"
+
+/*@access poptContext@*/
 
 /**
  * Display arguments.
@@ -204,7 +205,7 @@ static void singleOptionHelp(FILE * fp, int maxLeftCol,
     int lineLength = 79 - indentLength;
     const char * help = D_(translation_domain, opt->descrip);
     const char * argDescrip = getArgDescrip(opt, translation_domain);
-    int helpLength;
+    size_t helpLength;
     char * defs = NULL;
     char * left;
     int nb = maxLeftCol + 1;
@@ -489,9 +490,9 @@ static int showHelpIntro(poptContext con, FILE * fp)
     fprintf(fp, POPT_("Usage:"));
     if (!(con->flags & POPT_CONTEXT_KEEP_FIRST)) {
 /*@-boundsread@*/
-	/*@-nullderef@*/	/* LCL: wazzup? */
+	/*@-nullderef -type@*/	/* LCL: wazzup? */
 	fn = con->optionStack->argv[0];
-	/*@=nullderef@*/
+	/*@=nullderef =type@*/
 /*@=boundsread@*/
 	if (fn == NULL) return len;
 	if (strchr(fn, '/')) fn = strrchr(fn, '/') + 1;
@@ -522,13 +523,13 @@ void poptPrintHelp(poptContext con, FILE * fp, /*@unused@*/ int flags)
  * @param opt		option(s)
  * @param translation_domain	translation domain
  */
-static int singleOptionUsage(FILE * fp, int cursor, 
+static size_t singleOptionUsage(FILE * fp, size_t cursor, 
 		const struct poptOption * opt,
 		/*@null@*/ const char *translation_domain)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
 {
-    int len = 4;
+    size_t len = 4;
     char shortStr[2] = { '\0', '\0' };
     const char * item = shortStr;
     const char * argDescrip = getArgDescrip(opt, translation_domain);
@@ -582,7 +583,8 @@ static int singleOptionUsage(FILE * fp, int cursor,
  * @param nitems	no. of ara/exec entries
  * @param translation_domain	translation domain
  */
-static int itemUsage(FILE * fp, int cursor, poptItem item, int nitems,
+static size_t itemUsage(FILE * fp, size_t cursor,
+		/*@null@*/ poptItem item, int nitems,
 		/*@null@*/ const char * translation_domain)
 	/*@globals fileSystem @*/
 	/*@modifies *fp, fileSystem @*/
@@ -625,7 +627,7 @@ typedef struct poptDone_s {
  * @param done		tables already processed
  * @return
  */
-static int singleTableUsage(poptContext con, FILE * fp, int cursor,
+static size_t singleTableUsage(poptContext con, FILE * fp, size_t cursor,
 		/*@null@*/ const struct poptOption * opt,
 		/*@null@*/ const char * translation_domain,
 		/*@null@*/ poptDone done)
@@ -708,14 +710,16 @@ static int showShortOptions(const struct poptOption * opt, FILE * fp,
 void poptPrintUsage(poptContext con, FILE * fp, /*@unused@*/ int flags)
 {
     poptDone done = memset(alloca(sizeof(*done)), 0, sizeof(*done));
-    int cursor;
+    size_t cursor;
 
     done->nopts = 0;
     done->maxopts = 64;
     cursor = done->maxopts * sizeof(*done->opts);
 /*@-boundswrite@*/
     done->opts = memset(alloca(cursor), 0, cursor);
+    /*@-keeptrans@*/
     done->opts[done->nopts++] = (const void *) con->options;
+    /*@=keeptrans@*/
 /*@=boundswrite@*/
 
     cursor = showHelpIntro(con, fp);
@@ -738,4 +742,3 @@ void poptSetOtherOptionHelp(poptContext con, const char * text)
     con->otherHelp = _free(con->otherHelp);
     con->otherHelp = xstrdup(text);
 }
-/*@=type@*/

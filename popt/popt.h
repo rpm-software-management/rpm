@@ -217,7 +217,8 @@ typedef void (*poptCallbackType) (poptContext con,
 		/*@null@*/ const struct poptOption * opt,
 		/*@null@*/ const char * arg,
 		/*@null@*/ const void * data)
-	/*@*/;
+	/*@globals internalState @*/
+	/*@modifies internalState @*/;
 
 /** \ingroup popt
  * Initialize popt context.
@@ -257,7 +258,8 @@ int poptGetNextOpt(/*@null@*/poptContext con)
  * @param con		context
  * @return		option argument, NULL if no argument is available
  */
-/*@observer@*/ /*@null@*/ const char * poptGetOptArg(/*@null@*/poptContext con)
+/*@observer@*/ /*@null@*/
+const char * poptGetOptArg(/*@null@*/poptContext con)
 	/*@modifies con @*/;
 
 /** \ingroup popt
@@ -265,7 +267,8 @@ int poptGetNextOpt(/*@null@*/poptContext con)
  * @param con		context
  * @return		next argument, NULL if no argument is available
  */
-/*@observer@*/ /*@null@*/ const char * poptGetArg(/*@null@*/poptContext con)
+/*@observer@*/ /*@null@*/
+const char * poptGetArg(/*@null@*/poptContext con)
 	/*@modifies con @*/;
 
 /** \ingroup popt
@@ -273,7 +276,8 @@ int poptGetNextOpt(/*@null@*/poptContext con)
  * @param con		context
  * @return		current argument, NULL if no argument is available
  */
-/*@observer@*/ /*@null@*/ const char * poptPeekArg(/*@null@*/poptContext con)
+/*@observer@*/ /*@null@*/
+const char * poptPeekArg(/*@null@*/poptContext con)
 	/*@*/;
 
 /** \ingroup popt
@@ -281,7 +285,8 @@ int poptGetNextOpt(/*@null@*/poptContext con)
  * @param con		context
  * @return		argument array, NULL terminated
  */
-/*@observer@*/ /*@null@*/ const char ** poptGetArgs(/*@null@*/poptContext con)
+/*@observer@*/ /*@null@*/
+const char ** poptGetArgs(/*@null@*/poptContext con)
 	/*@modifies con @*/;
 
 /** \ingroup popt
@@ -290,7 +295,8 @@ int poptGetNextOpt(/*@null@*/poptContext con)
  * @param flags
  * @return		offending option
  */
-/*@observer@*/ const char * poptBadOption(/*@null@*/poptContext con, int flags)
+/*@observer@*/
+const char * poptBadOption(/*@null@*/poptContext con, int flags)
 	/*@*/;
 
 /** \ingroup popt
@@ -298,7 +304,8 @@ int poptGetNextOpt(/*@null@*/poptContext con)
  * @param con		context
  * @return		NULL always
  */
-/*@null@*/ poptContext poptFreeContext( /*@only@*/ /*@null@*/ poptContext con)
+/*@null@*/
+poptContext poptFreeContext( /*@only@*/ /*@null@*/ poptContext con)
 	/*@modifies con @*/;
 
 /** \ingroup popt
@@ -340,9 +347,9 @@ int poptAddItem(poptContext con, poptItem newItem, int flags)
  * @return		0 on success, POPT_ERROR_ERRNO on failure
  */
 int poptReadConfigFile(poptContext con, const char * fn)
-	/*@globals fileSystem, internalState @*/
+	/*@globals errno, fileSystem, internalState @*/
 	/*@modifies con->execs, con->numExecs,
-		fileSystem, internalState @*/;
+		errno, fileSystem, internalState @*/;
 
 /** \ingroup popt
  * Read default configuration from /etc/popt and $HOME/.popt.
@@ -443,7 +450,8 @@ int poptConfigFileToString(FILE *fp, /*@out@*/ char ** argstrp, int flags)
  * @param error		popt error
  * @return		error string
  */
-/*@observer@*/ const char *const poptStrerror(const int error)
+/*@observer@*/
+const char *const poptStrerror(const int error)
 	/*@*/;
 
 /** \ingroup popt
@@ -491,7 +499,8 @@ void poptSetOtherOptionHelp(poptContext con, const char * text)
  * @return		argv[0]
  */
 /*@-fcnuse@*/
-/*@observer@*/ const char * poptGetInvocationName(poptContext con)
+/*@observer@*/
+const char * poptGetInvocationName(poptContext con)
 	/*@*/;
 /*@=fcnuse@*/
 

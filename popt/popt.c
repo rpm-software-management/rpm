@@ -23,8 +23,9 @@
 int _popt_debug = 0;
 #endif
 
-#ifndef HAVE_STRERROR
-static char * strerror(int errno) {
+#if !defined(HAVE_STRERROR) && !defined(__LCLINT__)
+static char * strerror(int errno)
+{
     extern int sys_nerr;
     extern char * sys_errlist[];
 
@@ -36,7 +37,8 @@ static char * strerror(int errno) {
 #endif
 
 #ifdef MYDEBUG
-/*@unused@*/ static void prtcon(const char *msg, poptContext con)
+/*@unused@*/
+static void prtcon(const char *msg, poptContext con)
 {
     if (msg) fprintf(stderr, "%s", msg);
     fprintf(stderr, "\tcon %p os %p nextCharArg \"%s\" nextArg \"%s\" argv[%d] \"%s\"\n",
@@ -54,7 +56,7 @@ void poptSetExecPath(poptContext con, const char * path, int allowAbsolute)
     con->execPath = _free(con->execPath);
     con->execPath = xstrdup(path);
     con->execAbsolute = allowAbsolute;
-    /*@-nullstate@*/ /* LCL: con->execPath can be NULL? */
+    /*@-nullstate@*/ /* LCL: con->execPath not NULL */
     return;
     /*@=nullstate@*/
 }
@@ -75,9 +77,9 @@ static void invokeCallbacksPRE(poptContext con, const struct poptOption * opt)
 	    poptCallbackType cb = (poptCallbackType)opt->arg;
 	    /*@=castfcnptr@*/
 	    /* Perform callback. */
-	    /*@-moduncon -noeffectuncon @*/
+	    /*@-noeffectuncon @*/
 	    cb(con, POPT_CALLBACK_REASON_PRE, NULL, NULL, opt->descrip);
-	    /*@=moduncon =noeffectuncon @*/
+	    /*@=noeffectuncon @*/
 	}
     }
 }
@@ -98,9 +100,9 @@ static void invokeCallbacksPOST(poptContext con, const struct poptOption * opt)
 	    poptCallbackType cb = (poptCallbackType)opt->arg;
 	    /*@=castfcnptr@*/
 	    /* Perform callback. */
-	    /*@-moduncon -noeffectuncon @*/
+	    /*@-noeffectuncon @*/
 	    cb(con, POPT_CALLBACK_REASON_POST, NULL, NULL, opt->descrip);
-	    /*@=moduncon =noeffectuncon @*/
+	    /*@=noeffectuncon @*/
 	}
     }
 }
@@ -138,10 +140,10 @@ static void invokeCallbacksOPTION(poptContext con,
 	    const void * cbData = (cbopt->descrip ? cbopt->descrip : myData);
 	    /* Perform callback. */
 	    if (cb != NULL) {	/* XXX program error */
-		/*@-moduncon -noeffectuncon @*/
+		/*@-noeffectuncon @*/
 		cb(con, POPT_CALLBACK_REASON_OPTION, myOpt,
 			con->os->nextArg, cbData);
-		/*@=moduncon =noeffectuncon @*/
+		/*@=noeffectuncon @*/
 	    }
 	    /* Terminate (unless explcitly continuing). */
 	    if (!(cbopt->argInfo & POPT_CBFLAG_CONTINUE))
@@ -377,15 +379,14 @@ static int execCommand(poptContext con)
 
     argv = malloc(sizeof(*argv) *
 			(6 + item->argc + con->numLeftovers + con->finalArgvCount));
-    if (argv == NULL) return POPT_ERROR_MALLOC;	/* XXX can't happen */
+    if (argv == NULL) return POPT_ERROR_MALLOC;
 
-    if (!strchr(item->argv[0], '/') && con->execPath) {
+    if (!strchr(item->argv[0], '/') && con->execPath != NULL) {
 	char *s = alloca(strlen(con->execPath) + strlen(item->argv[0]) + sizeof("/"));
 	sprintf(s, "%s/%s", con->execPath, item->argv[0]);
 	argv[argc] = s;
-    } else {
+    } else
 	argv[argc] = findProgramPath(item->argv[0]);
-    }
     if (argv[argc++] == NULL) return POPT_ERROR_NOARG;
 
     if (item->argc > 1) {
@@ -400,9 +401,6 @@ static int execCommand(poptContext con)
     }
 
     if (con->leftovers != NULL && con->numLeftovers > 0) {
-#if 0
-	argv[argc++] = "--";
-#endif
 	memcpy(argv + argc, con->leftovers, sizeof(*argv) * con->numLeftovers);
 	argc += con->numLeftovers;
     }
@@ -410,6 +408,8 @@ static int execCommand(poptContext con)
     argv[argc] = NULL;
 
 #ifdef __hpux
+    rc = setresgid(getgid(), getgid(),-1);
+    if (rc) return POPT_ERROR_ERRNO;
     rc = setresuid(getuid(), getuid(),-1);
     if (rc) return POPT_ERROR_ERRNO;
 #else
@@ -419,10 +419,14 @@ static int execCommand(poptContext con)
  * XXX	from Norbert Warmuth <nwarmuth@privat.circular.de>
  */
 #if defined(HAVE_SETUID)
+    rc = setgid(getgid());
+    if (rc) return POPT_ERROR_ERRNO;
     rc = setuid(getuid());
     if (rc) return POPT_ERROR_ERRNO;
 #elif defined (HAVE_SETREUID)
-    rc = setreuid(getuid(), getuid()); /*hlauer: not portable to hpux9.01 */
+    rc = setregid(getgid(), getgid());
+    if (rc) return POPT_ERROR_ERRNO;
+    rc = setreuid(getuid(), getuid());
     if (rc) return POPT_ERROR_ERRNO;
 #else
     ; /* Can't drop privileges */
