@@ -58,6 +58,9 @@ struct diskspaceInfo {
     signed long avail;
 };
 
+/* Adjust for root only reserved space. On linux e2fs, this is 5%. */
+#define	adj_fs_blocks(_nb)	(((_nb) * 21) / 20)
+
 /* argon thought a shift optimization here was a waste of time...  he's 
    probably right :-( */
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
@@ -464,10 +467,10 @@ int rpmRunTransactions(rpmTransactionSet ts, rpmCallbackFunction notify,
 
 	if (di && fi->type == TR_ADDED && fi->fc) {
 	    for (i = 0; i < filesystemCount; i++) {
-		if (((di[i].needed * 20) / 19)> di[i].avail) {
+		if (adj_fs_blocks(di[i].needed) > di[i].avail) {
 		    psAppend(probs, RPMPROB_DISKSPACE, fi->ap->key, fi->ap->h,
 			     filesystems[i], NULL, 
-			     (((di[i].needed * 20) / 19) - di[i].avail) *
+			     (adj_fs_blocks(di[i].needed) - di[i].avail) *
 				di[i].block);
 		}
 	    }
