@@ -10,9 +10,9 @@
 #include "popt.h"
 #include "poptint.h"
 
-static void displayArgs(poptContext con, int key, const char * arg, 
-			void * data) {
-    if (key == '?')
+static void displayArgs(poptContext con, struct poptOption * key, 
+			const char * arg, void * data) {
+    if (key->shortName== '?')
 	poptPrintHelp(con, stderr, 0);
     else
 	poptPrintUsage(con, stderr, 0);
