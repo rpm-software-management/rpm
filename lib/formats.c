@@ -102,7 +102,7 @@ static char * permsFormat(int_32 type, const void * data,
 static char * fflagsFormat(int_32 type, const void * data, 
 		         char * formatPrefix, int padding, int element) {
     char * val;
-    char buf[10];
+    char buf[15];
     int anint = *((int_32 *) data);
 
     if (type != RPM_INT32_TYPE) {
@@ -114,6 +114,12 @@ static char * fflagsFormat(int_32 type, const void * data,
 	    strcat(buf, "d");
 	if (anint & RPMFILE_CONFIG)
 	    strcat(buf, "c");
+	if (anint & RPMFILE_SPECFILE)
+	    strcat(buf, "s");
+	if (anint & RPMFILE_MISSINGOK)
+	    strcat(buf, "m");
+	if (anint & RPMFILE_NOREPLACE)
+	    strcat(buf, "n");
 
 	val = malloc(5 + padding);
 	strcat(formatPrefix, "s");

@@ -70,7 +70,8 @@ static int filecmp(short mode1, char * md51, char * link1,
 	           short mode2, char * md52, char * link2);
 static enum instActions decideFileFate(char * filespec, short dbMode, 
 				char * dbMd5, char * dbLink, short newMode, 
-				char * newMd5, char * newLink, int brokenMd5);
+				char * newMd5, char * newLink, int newFlags,
+				int instFlags, int brokenMd5);
 static int installArchive(int fd, struct fileInfo * files,
 			  int fileCount, rpmNotifyFunction notify, 
 			  char ** specFile, int archiveSize);
@@ -725,7 +726,8 @@ static int filecmp(short mode1, char * md51, char * link1,
 
 static enum instActions decideFileFate(char * filespec, short dbMode, 
 				char * dbMd5, char * dbLink, short newMode, 
-				char * newMd5, char * newLink, int brokenMd5) {
+				char * newMd5, char * newLink, int newFlags,
+				int instFlags, int brokenMd5) {
     char buffer[1024];
     char * dbAttr, * newAttr;
     enum fileTypes dbWhat, newWhat, diskWhat;
@@ -733,8 +735,15 @@ static enum instActions decideFileFate(char * filespec, short dbMode,
     int i, rc;
 
     if (lstat(filespec, &sb)) {
-	/* the file doesn't exist on the disk - might as well make it */
-	return CREATE;
+	/* the file doesn't exist on the disk create it unless the new
+	   package has marked it as missingok */
+	if (!(instFlags & RPMINSTALL_ALLFILES) && 
+	      (newFlags & RPMFILE_MISSINGOK)) {
+	    rpmMessage(RPMMESS_DEBUG, "%s skipped due to missingok flag\n",
+			filespec);
+	    return SKIP;
+	} else
+	    return CREATE;
     }
 
     diskWhat = whatis(sb.st_mode);
@@ -967,6 +976,8 @@ static int instHandleSharedFiles(rpmdb db, int ignoreOffset,
 			       secFileMd5List[secNum], secFileLinksList[secNum],
 			       files[mainNum].mode, files[mainNum].md5,
 			       files[mainNum].link, 
+			       files[sharedList[i].mainFileNumber].flags,
+			       flags,
 			       !headerIsEntry(sech, RPMTAG_RPMVERSION));
 	}
     }

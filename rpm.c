@@ -87,7 +87,7 @@ static void printUsage(void) {
     puts(_("                        [--replacepkgs] [--replacefiles] [--root <dir>]"));
     puts(_("                        [--excludedocs] [--includedocs] [--noscripts]"));
     puts(_("                        [--rcfile <file>] [--ignorearch] [--dbpath <dir>]"));
-    puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps]"));
+    puts(_("                        [--prefix <dir>] [--ignoreos] [--nodeps] [--allfiles]"));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
     puts(_("                        file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--upgrade -U} [-v] [--hash -h] [--percent] [--force] [--test]"));
@@ -95,7 +95,8 @@ static void printUsage(void) {
     puts(_("                        [--excludedocs] [--includedocs] [--rcfile <file>]"));
     puts(_("                        [--ignorearch]  [--dbpath <dir>] [--prefix <dir>] "));
     puts(_("                        [--ftpproxy <host>] [--ftpport <port>]"));
-    puts(_("                        [--ignoreos] [--nodeps] file1.rpm ... fileN.rpm"));
+    puts(_("                        [--ignoreos] [--nodeps] [--allfiles]"));
+    puts(_("                        file1.rpm ... fileN.rpm"));
     puts(_("       rpm {--query -q} [-afpg] [-i] [-l] [-s] [-d] [-c] [-v] [-R]"));
     puts(_("                        [--scripts] [--root <dir>] [--rcfile <file>]"));
     puts(_("                        [--whatprovides] [--whatrequires] [--requires]"));
@@ -253,6 +254,9 @@ static void printHelp(void) {
     puts(         "      -h");
     printHelpLine("      --hash              ",
 		  _("print hash marks as package installs (good with -v)"));
+    printHelpLine("      --allfiles          ",
+		  _("install all files, even configurations which might "
+		    "otherwise be skipped"));
     printHelpLine("      --ignorearch        ",
 		  _("don't verify package architecture"));
     printHelpLine("      --ignoreos          ",
@@ -486,7 +490,7 @@ int main(int argc, char ** argv) {
     int incldocs = 0, noScripts = 0, noDeps = 0, allMatches = 0;
     int noPgp = 0, dump = 0, initdb = 0, ignoreArch = 0, showrc = 0;
     int gotDbpath = 0, building = 0, ignoreOs = 0, noFiles = 0, verifyFlags;
-    int noMd5 = 0;
+    int noMd5 = 0, allFiles = 0;
     int checksigFlags = 0;
     char *tce;
     int timeCheck = 0;
@@ -515,6 +519,7 @@ int main(int argc, char ** argv) {
     struct poptOption optionsTable[] = {
 	    { "addsign", '\0', 0, 0, GETOPT_ADDSIGN },
 	    { "all", 'a', 0, 0, 'a' },
+	    { "allfiles", '\0', 0, &allFiles, 0 },
 	    { "allmatches", 'a', 0, &allMatches, 0 },
 	    { "build", 'b', POPT_ARG_STRING, 0, 'b' },
 	    { "buildarch", '\0', POPT_ARG_STRING, 0, 0 },
@@ -970,6 +975,10 @@ int main(int argc, char ** argv) {
 	argerror(_("--allmatches may only be specified during package "
 		   "erasure"));
 
+    if (allFiles && bigMode != MODE_INSTALL)
+	argerror(_("--allfiles may only be specified during package "
+		   "installation"));
+
     if (bigMode != MODE_INSTALL && bigMode != MODE_UNINSTALL && 
 	bigMode != MODE_VERIFY && noScripts)
 	argerror(_("--noscripts may only be specified during package "
@@ -1208,6 +1217,7 @@ int main(int argc, char ** argv) {
 	if (noScripts) installFlags |= RPMINSTALL_NOSCRIPTS;
 	if (ignoreArch) installFlags |= RPMINSTALL_NOARCH;
 	if (ignoreOs) installFlags |= RPMINSTALL_NOOS;
+	if (allFiles) installFlags |= RPMINSTALL_ALLFILES;
 
 	if (showPercents) interfaceFlags |= INSTALL_PERCENT;
 	if (showHash) interfaceFlags |= INSTALL_HASH;
