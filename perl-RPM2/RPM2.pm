@@ -4,9 +4,10 @@ use 5.00503;
 use strict;
 use DynaLoader;
 use Data::Dumper;
+use Cwd qw/realpath/;
 
 use vars qw/$VERSION/;
-$VERSION = '0.45';
+$VERSION = '0.46';
 use vars qw/@ISA/;
 @ISA = qw/DynaLoader/;
 
@@ -63,7 +64,7 @@ sub open_package {
   my $hdr = RPM2_C::_read_package_info(*FH);
   close FH;
 
-  $hdr = RPM2::Header->_new_raw($hdr, 1);
+  $hdr = RPM2::Header->_new_raw($hdr, 1, realpath($file));
 
   return $hdr;
 }
@@ -169,10 +170,12 @@ sub _new_raw {
   my $class = shift;
   my $c_header = shift;
   my $need_free = shift;
+  my $filename = shift;
 
   my $self = bless { }, $class;
   $self->{header} = $c_header;
   $self->{need_free} = $need_free;
+  $self->{filename} = $filename if defined $filename;
 
   return $self;
 }
@@ -218,6 +221,14 @@ sub is_source_package {
   my $self = shift;
 
   return RPM2_C::_header_is_source($self->{header});
+}
+
+sub filename {
+  my $self = shift;
+  if (exists $self->{filename}) {
+    return $self->{filename};
+  }
+  return;
 }
 
 sub as_nvre {
