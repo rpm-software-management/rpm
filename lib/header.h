@@ -25,7 +25,9 @@ typedef unsigned short uint_16;
 
 #else
 
+#if 0	/* XXX hpux needs -Ae in CFLAGS to grok this */
 typedef long long int int_64;
+#endif
 typedef int int_32;
 typedef short int int_16;
 typedef char int_8;
