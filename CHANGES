@@ -8,7 +8,8 @@
 	- fixed --setperms and --setugids to handle empty packages and 
 	  packages with odd filenames
 	- include <sys/time.h> before <sys/resource.h>
-	- include "miscfn.h" first
+	- include "miscfn.h" first in every file which needs it
+	- created noarch architecture which everything is compatible with
 
 2.3.11 -> 2.4:
 	- changed RPMNLSDIR directories to and @datadir@ to better
