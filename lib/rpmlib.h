@@ -349,7 +349,10 @@ struct rpmDependencyConflict {
 /* if fd is NULL, the callback specified in rpmtransCreateSet() is used to
    open and close the file descriptor. If Header is NULL, the fd is always
    used, otherwise fd is only needed (and only opened) for actual package 
-   installation */
+   installation
+
+   returns 0 on success, 1 on I/O error, 2 if the package needs capabilities
+   which are not implemented */
 int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 			const void * key, int update, rpmRelocation * relocs);
 void rpmtransAvailablePackage(rpmTransactionSet rpmdep, Header h, void * key);
