@@ -45,10 +45,10 @@ for SUBST in $SUBSTS; do
   esac
 
   cat $PLATFORM | \
-    sed -e s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS, \
-	-e s,@RPMRC_ARCH@,$ARCH, \
-	-e s,@LIB@,$LIB, \
-	-e s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST, \
+    sed -e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," \
+	-e "s,@RPMRC_ARCH@,$ARCH," \
+	-e "s,@LIB@,$LIB," \
+	-e "s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST," \
 	-e 's,\${,%{_,' \
   > ${PPD}/macros
 
