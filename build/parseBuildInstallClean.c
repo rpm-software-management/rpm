@@ -6,8 +6,7 @@
 
 #include "rpmbuild.h"
 
-/** */
-int parseBuildInstallClean(Spec spec, int parsePart)
+int parseBuildInstallClean(Spec spec, rpmParseState parsePart)
 {
     int nextPart, rc;
     StringBuf *sbp = NULL;

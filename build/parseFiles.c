@@ -16,7 +16,6 @@
 	{ 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
-/** */
 int parseFiles(Spec spec)
 {
     int nextPart;

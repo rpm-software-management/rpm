@@ -10,28 +10,30 @@ static int _debug = 0;
 #include <rpmio_internal.h>
 #include <rpmbuild.h>
 
+/**
+ */
 static struct PartRec {
     int part;
     int len;
     char *token;
 } partList[] = {
-    {PART_PREAMBLE,      0, "%package"},
-    {PART_PREP,          0, "%prep"},
-    {PART_BUILD,         0, "%build"},
-    {PART_INSTALL,       0, "%install"},
-    {PART_CLEAN,         0, "%clean"},
-    {PART_PREUN,         0, "%preun"},
-    {PART_POSTUN,        0, "%postun"},
-    {PART_PRE,           0, "%pre"},
-    {PART_POST,          0, "%post"},
-    {PART_FILES,         0, "%files"},
-    {PART_CHANGELOG,     0, "%changelog"},
-    {PART_DESCRIPTION,   0, "%description"},
-    {PART_TRIGGERPOSTUN, 0, "%triggerpostun"},
-    {PART_TRIGGERUN,     0, "%triggerun"},
-    {PART_TRIGGERIN,     0, "%triggerin"},
-    {PART_TRIGGERIN,     0, "%trigger"},
-    {PART_VERIFYSCRIPT,  0, "%verifyscript"},
+    { PART_PREAMBLE,      0, "%package"},
+    { PART_PREP,          0, "%prep"},
+    { PART_BUILD,         0, "%build"},
+    { PART_INSTALL,       0, "%install"},
+    { PART_CLEAN,         0, "%clean"},
+    { PART_PREUN,         0, "%preun"},
+    { PART_POSTUN,        0, "%postun"},
+    { PART_PRE,           0, "%pre"},
+    { PART_POST,          0, "%post"},
+    { PART_FILES,         0, "%files"},
+    { PART_CHANGELOG,     0, "%changelog"},
+    { PART_DESCRIPTION,   0, "%description"},
+    { PART_TRIGGERPOSTUN, 0, "%triggerpostun"},
+    { PART_TRIGGERUN,     0, "%triggerun"},
+    { PART_TRIGGERIN,     0, "%triggerin"},
+    { PART_TRIGGERIN,     0, "%trigger"},
+    { PART_VERIFYSCRIPT,  0, "%verifyscript"},
     {0, 0, 0}
 };
 
@@ -41,7 +43,7 @@ static inline void initParts(struct PartRec *p)
 	p->len = strlen(p->token);
 }
 
-int isPart(char *line)
+rpmParseState isPart(const char *line)
 {
     char c;
     struct PartRec *p;
@@ -355,7 +357,7 @@ int parseSpec(Spec *specp, const char *specFile, const char *rootURL,
 		const char *buildRootURL, int inBuildArch, const char *passPhrase,
 		char *cookie, int anyarch, int force)
 {
-    int parsePart = PART_PREAMBLE;
+    rpmParseState parsePart = PART_PREAMBLE;
     int initialPackage = 1;
 #ifdef	DYING
     const char *saveArch;

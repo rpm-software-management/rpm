@@ -5,13 +5,16 @@
  * \file rpmio/rpmmessages.h
  */
 
-#define	RPMMESS_DEBUG      1
-#define	RPMMESS_VERBOSE    2
-#define	RPMMESS_NORMAL     3
-#define	RPMMESS_WARNING    4
-#define	RPMMESS_ERROR      5
-#define	RPMMESS_FATALERROR 6
-
+/**
+ */
+typedef enum rpmmsgLevel_e {
+    RPMMESS_DEBUG	= 1,	/*!< */
+    RPMMESS_VERBOSE	= 2,	/*!< */
+    RPMMESS_NORMAL	= 3,	/*!< */
+    RPMMESS_WARNING	= 4,	/*!< */
+    RPMMESS_ERROR	= 5,	/*!< */
+    RPMMESS_FATALERROR	= 6 	/*!< */
+} rpmmsgLevel;
 #define	RPMMESS_QUIET (RPMMESS_NORMAL + 1)
 
 typedef enum rpmCallbackType_e {
@@ -31,7 +34,12 @@ typedef enum rpmCallbackType_e {
 extern "C" {
 #endif
 
+/**
+ */
 typedef void * rpmCallbackData;
+
+/**
+ */
 typedef void * (*rpmCallbackFunction)(const void * h, 
 				      const rpmCallbackType what, 
 				      const unsigned long amount, 
@@ -39,15 +47,39 @@ typedef void * (*rpmCallbackFunction)(const void * h,
 				      const void * pkgKey,
 				      rpmCallbackData data);
 
-void	urlSetCallback(rpmCallbackFunction notify, rpmCallbackData notifyData,
+/**
+ */
+void urlSetCallback(rpmCallbackFunction notify, rpmCallbackData notifyData,
 		int notifyCount);
 
+/**
+ */
 void rpmIncreaseVerbosity(void);
+
+/**
+ */
 void rpmSetVerbosity(int level);
+
+/**
+ */
 int rpmGetVerbosity(void);
+
+/**
+ */
 int rpmIsVerbose(void);
+
+/**
+ */
 int rpmIsDebug(void);
-void rpmMessage(int level, const char * format, ...);
+
+/**
+ */
+#if defined(__GNUC__)
+void rpmMessage(rpmmsgLevel level, const char * format, ...) __attribute__ ((__format__ (__printf__, 2, 3)));
+#else
+void rpmMessage(rpmmsgLevel level, const char * format, ...);
+#endif
+
 
 #ifdef __cplusplus
 }

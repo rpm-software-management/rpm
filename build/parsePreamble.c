@@ -661,7 +661,6 @@ static int findPreambleTag(Spec spec, /*@out@*/int *tag, /*@out@*/char **macro, 
     return 0;
 }
 
-/** */
 int parsePreamble(Spec spec, int initialPackage)
 {
     int nextPart;

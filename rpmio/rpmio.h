@@ -355,19 +355,20 @@ int	fdReadable(FD_t fd, int secs);
 /*
  * Support for FTP and HTTP I/O.
  */
-#define FTPERR_BAD_SERVER_RESPONSE   -1
-#define FTPERR_SERVER_IO_ERROR       -2
-#define FTPERR_SERVER_TIMEOUT        -3
-#define FTPERR_BAD_HOST_ADDR         -4
-#define FTPERR_BAD_HOSTNAME          -5
-#define FTPERR_FAILED_CONNECT        -6
-#define FTPERR_FILE_IO_ERROR         -7
-#define FTPERR_PASSIVE_ERROR         -8
-#define FTPERR_FAILED_DATA_CONNECT   -9
-#define FTPERR_FILE_NOT_FOUND        -10
-#define FTPERR_NIC_ABORT_IN_PROGRESS -11
-#define FTPERR_UNKNOWN               -100
-
+typedef enum ftperrCode_e {
+    FTPERR_BAD_SERVER_RESPONSE	= -1,	/*!< */
+    FTPERR_SERVER_IO_ERROR	= -2,	/*!< */
+    FTPERR_SERVER_TIMEOUT	= -3,	/*!< */
+    FTPERR_BAD_HOST_ADDR	= -4,	/*!< */
+    FTPERR_BAD_HOSTNAME		= -5,	/*!< */
+    FTPERR_FAILED_CONNECT	= -6,	/*!< */
+    FTPERR_FILE_IO_ERROR	= -7,	/*!< */
+    FTPERR_PASSIVE_ERROR	= -8,	/*!< */
+    FTPERR_FAILED_DATA_CONNECT	= -9,	/*!< */
+    FTPERR_FILE_NOT_FOUND	= -10,	/*!< */
+    FTPERR_NIC_ABORT_IN_PROGRESS= -11,	/*!< */
+    FTPERR_UNKNOWN		= -100	/*!< */
+} ftperrCode;
 
 /** \ingroup rpmio
  */

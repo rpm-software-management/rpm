@@ -448,7 +448,6 @@ static int doPatchMacro(Spec spec, char *line)
     return 0;
 }
 
-/** */
 int parsePrep(Spec spec)
 {
     int nextPart, res, rc;

@@ -7,27 +7,25 @@
 #include <stdarg.h>
 
 #include <rpmerr.h>
+/*@access rpmerrRec @*/
 
-static struct err {
-    int code;
-    char string[1024];
-} errorRec;
+static struct rpmerrRec_s _rpmerrRec;
 
 static rpmErrorCallBackType errorCallback = NULL;
 
 int rpmErrorCode(void)
 {
-    return errorRec.code;
+    return _rpmerrRec.code;
 }
 
-char *rpmErrorCodeString(void)
+const char *rpmErrorCodeString(rpmerrCode code)
 {
     return NULL;
 }
 
 char *rpmErrorString(void)
 {
-    return errorRec.string;
+    return _rpmerrRec.string;
 }
 
 rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType cb)
@@ -40,19 +38,19 @@ rpmErrorCallBackType rpmErrorSetCallback(rpmErrorCallBackType cb)
     return ocb;
 }
 
-void rpmError(int code, char *format, ...)
+void rpmError(rpmerrCode code, const char *format, ...)
 {
     va_list args;
 
     va_start(args, format);
 
-    errorRec.code = code;
-    vsprintf(errorRec.string, format, args);
+    _rpmerrRec.code = code;
+    vsprintf(_rpmerrRec.string, format, args);
 
     if (errorCallback) {
 	errorCallback();
     } else {
-	fputs(errorRec.string, stderr);
+	fputs(_rpmerrRec.string, stderr);
 	fputs("\n", stderr);
     }
 }

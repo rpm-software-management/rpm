@@ -15,19 +15,22 @@
 /* but this will be needed */
 #include "rpmspec.h"
 
-/* from build/build.h */
-
-#define	RPMBUILD_PREP		(1 << 0)
-#define	RPMBUILD_BUILD		(1 << 1)
-#define	RPMBUILD_INSTALL	(1 << 2)
-#define	RPMBUILD_CLEAN		(1 << 3)
-#define	RPMBUILD_FILECHECK	(1 << 4)
-#define	RPMBUILD_PACKAGESOURCE	(1 << 5)
-#define	RPMBUILD_PACKAGEBINARY	(1 << 6)
-#define	RPMBUILD_RMSOURCE	(1 << 7)
-#define	RPMBUILD_RMBUILD	(1 << 8)
-#define	RPMBUILD_STRINGBUF	(1 << 9) /* only for doScript() */
-#define	RPMBUILD_RMSPEC		(1 << 10)
+/**
+ * Bit(s) to control buildSpec() operation.
+ */
+typedef enum rpmBuildFlags_e {
+    RPMBUILD_PREP	= (1 << 0),	/*!< Execute %%prep. */
+    RPMBUILD_BUILD	= (1 << 1),	/*!< Execute %%build. */
+    RPMBUILD_INSTALL	= (1 << 2),	/*!< Execute %%install. */
+    RPMBUILD_CLEAN	= (1 << 3),	/*!< Execute %%clean. */
+    RPMBUILD_FILECHECK	= (1 << 4),	/*!< Check %%files manifest. */
+    RPMBUILD_PACKAGESOURCE = (1 << 5),	/*!< Create source package. */
+    RPMBUILD_PACKAGEBINARY = (1 << 6),	/*!< Create binary package(s). */
+    RPMBUILD_RMSOURCE	= (1 << 7),	/*!< Remove source(s) and patch(s). */
+    RPMBUILD_RMBUILD	= (1 << 8),	/*!< Remove build sub-tree. */
+    RPMBUILD_STRINGBUF	= (1 << 9),	/*!< only for doScript() */
+    RPMBUILD_RMSPEC	= (1 << 10)	/*!< Remove spec file. */
+} rpmBuildFlags;
 
 /* from build/misc.h */
 
@@ -40,26 +43,29 @@
 #define PART_SUBNAME  0
 #define PART_NAME     1
 
-/* from build/part.h */
-
-#define PART_NONE                0
-#define PART_PREAMBLE            1
-#define PART_PREP                2
-#define PART_BUILD               3
-#define PART_INSTALL             4
-#define PART_CLEAN               5
-#define PART_FILES               6
-#define PART_PRE                 7
-#define PART_POST                8
-#define PART_PREUN               9
-#define PART_POSTUN             10
-#define PART_DESCRIPTION        11
-#define PART_CHANGELOG          12
-#define PART_TRIGGERIN          13
-#define PART_TRIGGERUN          14
-#define PART_VERIFYSCRIPT       15
-#define PART_BUILDARCHITECTURES 16
-#define PART_TRIGGERPOSTUN      17
+/**
+ * Spec file parser states.
+ */
+typedef enum rpmParseState_e {
+    PART_NONE		= 0,	/*!< */
+    PART_PREAMBLE	= 1,	/*!< */
+    PART_PREP		= 2,	/*!< */
+    PART_BUILD		= 3,	/*!< */
+    PART_INSTALL	= 4,	/*!< */
+    PART_CLEAN		= 5,	/*!< */
+    PART_FILES		= 6,	/*!< */
+    PART_PRE		= 7,	/*!< */
+    PART_POST		= 8,	/*!< */
+    PART_PREUN		= 9,	/*!< */
+    PART_POSTUN		= 10,	/*!< */
+    PART_DESCRIPTION	= 11,	/*!< */
+    PART_CHANGELOG	= 12,	/*!< */
+    PART_TRIGGERIN	= 13,	/*!< */
+    PART_TRIGGERUN	= 14,	/*!< */
+    PART_VERIFYSCRIPT	= 15,	/*!< */
+    PART_BUILDARCHITECTURES= 16,/*!< */
+    PART_TRIGGERPOSTUN	= 17	/*!< */
+} rpmParseState;
 
 /* from build/read.h */
 
@@ -96,10 +102,9 @@ void freeNames(void);
 
 /* from build/read.h */
 
-/* returns 0 - success */
-/*         1 - EOF     */
-/*        <0 - error   */
-/** */
+/**
+ * @return		0 on success, 1 on EOF, <0 on error
+ */
 int readLine(Spec spec, int strip);
 
 /** */
@@ -110,8 +115,12 @@ void handleComments(char *s);
 
 /* from build/part.h */
 
-/** */
-int isPart(char *line);
+/**
+ * Check line for section separator, return next parser state.
+ * @param		line from spec file
+ * @return		next parser state
+ */
+rpmParseState isPart(const char *line);
 
 /* from build/misc.h */
 
@@ -123,33 +132,47 @@ int parseNum(const char *line, /*@out@*/int *res);
 /** */
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text);
 
-/** */
+/**
+ * @return		>= 0 next rpmParseState, < 0 on error
+ */
+int parseBuildInstallClean(Spec spec, rpmParseState parsePart);
+
+/**
+ * @return		>= 0 next rpmParseState, < 0 on error
+ */
 int parseChangelog(Spec spec);
 
-/** */
+/**
+ * @return		>= 0 next rpmParseState, < 0 on error
+ */
 int parseDescription(Spec spec);
 
-/** */
+/**
+ * @return		>= 0 next rpmParseState, < 0 on error
+ */
 int parseFiles(Spec spec);
 
-/** */
+/**
+ * @return		>= 0 next rpmParseState, < 0 on error
+ */
 int parsePreamble(Spec spec, int initialPackage);
 
-/** */
+/**
+ * @return		>= 0 next rpmParseState, < 0 on error
+ */
 int parsePrep(Spec spec);
 
 /** */
 int parseRCPOT(Spec spec, Package pkg, const char *field, int tag, int index,
 	       int flags);
 
-/** */
-int parseTrigger(Spec spec, Package pkg, char *field, int tag);
-
-/** */
+/**
+ * @return		>= 0 next rpmParseState, < 0 on error
+ */
 int parseScript(Spec spec, int parsePart);
 
 /** */
-int parseBuildInstallClean(Spec spec, int parsePart);
+int parseTrigger(Spec spec, Package pkg, char *field, int tag);
 
 /* from build/expression.h */
 

@@ -129,147 +129,151 @@ extern const struct headerSprintfExtension rpmHeaderFormats[];
 #define	RPMDBI_REMOVED		4
 #define	RPMDBI_AVAILABLE	5
 
+
+/**
+ * Tags identify data in package headers
+ * @note tags should not have value 0!
+ */
+typedef enum rpmTag_e {
+
 /* Retrofit (and uniqify) signature tags for use by tagName() and rpmQuery. */
-
-/* XXX underscore prevents tagTable generation */
-#define	RPMTAG_SIG_BASE			256
-#define	RPMTAG_SIGSIZE         	        RPMTAG_SIG_BASE+1
 /* the md5 sum was broken *twice* on big endian machines */
-#define	RPMTAG_SIGLEMD5_1		RPMTAG_SIG_BASE+2
-#define	RPMTAG_SIGPGP          	        RPMTAG_SIG_BASE+3
-#define	RPMTAG_SIGLEMD5_2		RPMTAG_SIG_BASE+4
-#define	RPMTAG_SIGMD5		        RPMTAG_SIG_BASE+5
-#define	RPMTAG_SIGGPG		        RPMTAG_SIG_BASE+6
-#define	RPMTAG_SIGPGP5		        RPMTAG_SIG_BASE+7	/* internal */
+/* XXX 2nd underscore prevents tagTable generation */
+    RPMTAG_SIG_BASE		= 256,
+    RPMTAG_SIGSIZE		= RPMTAG_SIG_BASE+1,
+    RPMTAG_SIGLEMD5_1		= RPMTAG_SIG_BASE+2,
+    RPMTAG_SIGPGP		= RPMTAG_SIG_BASE+3,
+    RPMTAG_SIGLEMD5_2		= RPMTAG_SIG_BASE+4,
+    RPMTAG_SIGMD5	        = RPMTAG_SIG_BASE+5,
+    RPMTAG_SIGGPG	        = RPMTAG_SIG_BASE+6,
+    RPMTAG_SIGPGP5	        = RPMTAG_SIG_BASE+7,	/* internal */
 
-/* these tags are found in package headers */
-/* none of these can be 0 !!                         */
-
-#define	RPMTAG_NAME  			1000
-#define	RPMTAG_VERSION			1001
-#define	RPMTAG_RELEASE			1002
-#define	RPMTAG_EPOCH	   		1003
+    RPMTAG_NAME  		= 1000,
+    RPMTAG_VERSION		= 1001,
+    RPMTAG_RELEASE		= 1002,
+    RPMTAG_EPOCH   		= 1003,
 #define	RPMTAG_SERIAL		RPMTAG_EPOCH	/* backward comaptibility */
-#define	RPMTAG_SUMMARY			1004
-#define	RPMTAG_DESCRIPTION		1005
-#define	RPMTAG_BUILDTIME		1006
-#define	RPMTAG_BUILDHOST		1007
-#define	RPMTAG_INSTALLTIME		1008
-#define	RPMTAG_SIZE			1009
-#define	RPMTAG_DISTRIBUTION		1010
-#define	RPMTAG_VENDOR			1011
-#define	RPMTAG_GIF			1012
-#define	RPMTAG_XPM			1013
-#define	RPMTAG_LICENSE			1014
-#define	RPMTAG_COPYRIGHT	RPMTAG_LICENSE	/* backward comaptibility */
-#define	RPMTAG_PACKAGER			1015
-#define	RPMTAG_GROUP			1016
-#define	RPMTAG_CHANGELOG		1017 /* internal */
-#define	RPMTAG_SOURCE			1018
-#define	RPMTAG_PATCH			1019
-#define	RPMTAG_URL			1020
-#define	RPMTAG_OS			1021
-#define	RPMTAG_ARCH			1022
-#define	RPMTAG_PREIN			1023
-#define	RPMTAG_POSTIN			1024
-#define	RPMTAG_PREUN			1025
-#define	RPMTAG_POSTUN			1026
-#define	RPMTAG_OLDFILENAMES		1027 /* obsolete */
-#define	RPMTAG_FILESIZES		1028
-#define	RPMTAG_FILESTATES		1029
-#define	RPMTAG_FILEMODES		1030
-#define	RPMTAG_FILEUIDS			1031 /* internal */
-#define	RPMTAG_FILEGIDS			1032 /* internal */
-#define	RPMTAG_FILERDEVS		1033
-#define	RPMTAG_FILEMTIMES		1034
-#define	RPMTAG_FILEMD5S			1035
-#define	RPMTAG_FILELINKTOS		1036
-#define	RPMTAG_FILEFLAGS		1037
-#define	RPMTAG_ROOT			1038 /* obsolete */
-#define	RPMTAG_FILEUSERNAME		1039
-#define	RPMTAG_FILEGROUPNAME		1040
-#define	RPMTAG_EXCLUDE			1041 /* internal - depricated */
-#define	RPMTAG_EXCLUSIVE		1042 /* internal - depricated */
-#define	RPMTAG_ICON			1043
-#define	RPMTAG_SOURCERPM		1044
-#define	RPMTAG_FILEVERIFYFLAGS		1045
-#define	RPMTAG_ARCHIVESIZE		1046
-#define	RPMTAG_PROVIDENAME		1047
+    RPMTAG_SUMMARY		= 1004,
+    RPMTAG_DESCRIPTION		= 1005,
+    RPMTAG_BUILDTIME		= 1006,
+    RPMTAG_BUILDHOST		= 1007,
+    RPMTAG_INSTALLTIME		= 1008,
+    RPMTAG_SIZE			= 1009,
+    RPMTAG_DISTRIBUTION		= 1010,
+    RPMTAG_VENDOR		= 1011,
+    RPMTAG_GIF			= 1012,
+    RPMTAG_XPM			= 1013,
+    RPMTAG_LICENSE		= 1014,
+#define	RPMTAG_COPYRIGHT RPMTAG_LICENSE	/* backward comaptibility */
+    RPMTAG_PACKAGER		= 1015,
+    RPMTAG_GROUP		= 1016,
+    RPMTAG_CHANGELOG		= 1017, /*!< internal */
+    RPMTAG_SOURCE		= 1018,
+    RPMTAG_PATCH		= 1019,
+    RPMTAG_URL			= 1020,
+    RPMTAG_OS			= 1021,
+    RPMTAG_ARCH			= 1022,
+    RPMTAG_PREIN		= 1023,
+    RPMTAG_POSTIN		= 1024,
+    RPMTAG_PREUN		= 1025,
+    RPMTAG_POSTUN		= 1026,
+    RPMTAG_OLDFILENAMES		= 1027, /* obsolete */
+    RPMTAG_FILESIZES		= 1028,
+    RPMTAG_FILESTATES		= 1029,
+    RPMTAG_FILEMODES		= 1030,
+    RPMTAG_FILEUIDS		= 1031, /*!< internal */
+    RPMTAG_FILEGIDS		= 1032, /*!< internal */
+    RPMTAG_FILERDEVS		= 1033,
+    RPMTAG_FILEMTIMES		= 1034,
+    RPMTAG_FILEMD5S		= 1035,
+    RPMTAG_FILELINKTOS		= 1036,
+    RPMTAG_FILEFLAGS		= 1037,
+    RPMTAG_ROOT			= 1038, /*!< obsolete */
+    RPMTAG_FILEUSERNAME		= 1039,
+    RPMTAG_FILEGROUPNAME	= 1040,
+    RPMTAG_EXCLUDE		= 1041, /*!< internal - deprecated */
+    RPMTAG_EXCLUSIVE		= 1042, /*!< internal - deprecated */
+    RPMTAG_ICON			= 1043,
+    RPMTAG_SOURCERPM		= 1044,
+    RPMTAG_FILEVERIFYFLAGS	= 1045,
+    RPMTAG_ARCHIVESIZE		= 1046,
+    RPMTAG_PROVIDENAME		= 1047,
 #define	RPMTAG_PROVIDES RPMTAG_PROVIDENAME	/* backward comaptibility */
-#define	RPMTAG_REQUIREFLAGS		1048
-#define	RPMTAG_REQUIRENAME		1049
-#define	RPMTAG_REQUIREVERSION		1050
-#define	RPMTAG_NOSOURCE			1051 /* internal */
-#define	RPMTAG_NOPATCH			1052 /* internal */
-#define	RPMTAG_CONFLICTFLAGS		1053
-#define	RPMTAG_CONFLICTNAME		1054
-#define	RPMTAG_CONFLICTVERSION		1055
-#define	RPMTAG_DEFAULTPREFIX		1056 /* internal - deprecated */
-#define	RPMTAG_BUILDROOT		1057
-#define	RPMTAG_INSTALLPREFIX		1058 /* internal - deprecated */
-#define	RPMTAG_EXCLUDEARCH		1059
-#define	RPMTAG_EXCLUDEOS		1060
-#define	RPMTAG_EXCLUSIVEARCH		1061
-#define	RPMTAG_EXCLUSIVEOS		1062
-#define	RPMTAG_AUTOREQPROV		1063 /* internal */
-#define	RPMTAG_RPMVERSION		1064
-#define	RPMTAG_TRIGGERSCRIPTS		1065
-#define	RPMTAG_TRIGGERNAME		1066
-#define	RPMTAG_TRIGGERVERSION		1067
-#define	RPMTAG_TRIGGERFLAGS		1068
-#define	RPMTAG_TRIGGERINDEX		1069
-#define	RPMTAG_VERIFYSCRIPT		1079
-#define	RPMTAG_CHANGELOGTIME		1080
-#define	RPMTAG_CHANGELOGNAME		1081
-#define	RPMTAG_CHANGELOGTEXT		1082
-#define	RPMTAG_BROKENMD5		1083 /* internal */
-#define	RPMTAG_PREREQ			1084 /* internal */
-#define	RPMTAG_PREINPROG		1085
-#define	RPMTAG_POSTINPROG		1086
-#define	RPMTAG_PREUNPROG		1087
-#define	RPMTAG_POSTUNPROG		1088
-#define	RPMTAG_BUILDARCHS		1089
-#define	RPMTAG_OBSOLETENAME		1090
+    RPMTAG_REQUIREFLAGS		= 1048,
+    RPMTAG_REQUIRENAME		= 1049,
+    RPMTAG_REQUIREVERSION	= 1050,
+    RPMTAG_NOSOURCE		= 1051, /*!< internal */
+    RPMTAG_NOPATCH		= 1052, /*!< internal */
+    RPMTAG_CONFLICTFLAGS	= 1053,
+    RPMTAG_CONFLICTNAME		= 1054,
+    RPMTAG_CONFLICTVERSION	= 1055,
+    RPMTAG_DEFAULTPREFIX	= 1056, /*!< internal - deprecated */
+    RPMTAG_BUILDROOT		= 1057,
+    RPMTAG_INSTALLPREFIX	= 1058, /*!< internal - deprecated */
+    RPMTAG_EXCLUDEARCH		= 1059,
+    RPMTAG_EXCLUDEOS		= 1060,
+    RPMTAG_EXCLUSIVEARCH	= 1061,
+    RPMTAG_EXCLUSIVEOS		= 1062,
+    RPMTAG_AUTOREQPROV		= 1063, /*!< internal */
+    RPMTAG_RPMVERSION		= 1064,
+    RPMTAG_TRIGGERSCRIPTS	= 1065,
+    RPMTAG_TRIGGERNAME		= 1066,
+    RPMTAG_TRIGGERVERSION	= 1067,
+    RPMTAG_TRIGGERFLAGS		= 1068,
+    RPMTAG_TRIGGERINDEX		= 1069,
+    RPMTAG_VERIFYSCRIPT		= 1079,
+    RPMTAG_CHANGELOGTIME	= 1080,
+    RPMTAG_CHANGELOGNAME	= 1081,
+    RPMTAG_CHANGELOGTEXT	= 1082,
+    RPMTAG_BROKENMD5		= 1083, /*!< internal */
+    RPMTAG_PREREQ		= 1084, /*!< internal */
+    RPMTAG_PREINPROG		= 1085,
+    RPMTAG_POSTINPROG		= 1086,
+    RPMTAG_PREUNPROG		= 1087,
+    RPMTAG_POSTUNPROG		= 1088,
+    RPMTAG_BUILDARCHS		= 1089,
+    RPMTAG_OBSOLETENAME		= 1090,
 #define	RPMTAG_OBSOLETES RPMTAG_OBSOLETENAME	/* backward comaptibility */
-#define	RPMTAG_VERIFYSCRIPTPROG		1091
-#define	RPMTAG_TRIGGERSCRIPTPROG	1092
-#define	RPMTAG_DOCDIR			1093 /* internal */
-#define	RPMTAG_COOKIE			1094
-#define	RPMTAG_FILEDEVICES		1095
-#define	RPMTAG_FILEINODES		1096
-#define	RPMTAG_FILELANGS		1097
-#define	RPMTAG_PREFIXES			1098
-#define	RPMTAG_INSTPREFIXES		1099
-#define	RPMTAG_TRIGGERIN		1100 /* internal */
-#define	RPMTAG_TRIGGERUN		1101 /* internal */
-#define	RPMTAG_TRIGGERPOSTUN		1102 /* internal */
-#define	RPMTAG_AUTOREQ			1103 /* internal */
-#define	RPMTAG_AUTOPROV			1104 /* internal */
-#define	RPMTAG_CAPABILITY		1105 /* unused internal */
-#define	RPMTAG_SOURCEPACKAGE		1106 /* internal */
-#define	RPMTAG_OLDORIGFILENAMES		1107 /* obsolete */
-#define	RPMTAG_BUILDPREREQ		1108 /* internal */
-#define	RPMTAG_BUILDREQUIRES		1109 /* internal */
-#define	RPMTAG_BUILDCONFLICTS		1110 /* internal */
-#define	RPMTAG_BUILDMACROS		1111
-#define	RPMTAG_PROVIDEFLAGS		1112
-#define	RPMTAG_PROVIDEVERSION		1113
-#define	RPMTAG_OBSOLETEFLAGS		1114
-#define	RPMTAG_OBSOLETEVERSION		1115
-#define	RPMTAG_DIRINDEXES		1116
-#define	RPMTAG_BASENAMES		1117
-#define	RPMTAG_DIRNAMES			1118
-#define	RPMTAG_ORIGDIRINDEXES		1119 /* internal */
-#define	RPMTAG_ORIGBASENAMES		1120 /* internal */
-#define	RPMTAG_ORIGDIRNAMES		1121 /* internal */
-#define	RPMTAG_OPTFLAGS			1122
-#define	RPMTAG_DISTURL			1123
-#define	RPMTAG_PAYLOADFORMAT		1124
-#define	RPMTAG_PAYLOADCOMPRESSOR	1125
-#define	RPMTAG_PAYLOADFLAGS		1126
-#define	RPMTAG_MULTILIBS		1127
+    RPMTAG_VERIFYSCRIPTPROG	= 1091,
+    RPMTAG_TRIGGERSCRIPTPROG	= 1092,
+    RPMTAG_DOCDIR		= 1093, /*!< internal */
+    RPMTAG_COOKIE		= 1094,
+    RPMTAG_FILEDEVICES		= 1095,
+    RPMTAG_FILEINODES		= 1096,
+    RPMTAG_FILELANGS		= 1097,
+    RPMTAG_PREFIXES		= 1098,
+    RPMTAG_INSTPREFIXES		= 1099,
+    RPMTAG_TRIGGERIN		= 1100, /*!< internal */
+    RPMTAG_TRIGGERUN		= 1101, /*!< internal */
+    RPMTAG_TRIGGERPOSTUN	= 1102, /*!< internal */
+    RPMTAG_AUTOREQ		= 1103, /*!< internal */
+    RPMTAG_AUTOPROV		= 1104, /*!< internal */
+    RPMTAG_CAPABILITY		= 1105, /*!< internal obsolete */
+    RPMTAG_SOURCEPACKAGE	= 1106, /*!< internal */
+    RPMTAG_OLDORIGFILENAMES	= 1107, /*!< obsolete */
+    RPMTAG_BUILDPREREQ		= 1108, /*!< internal */
+    RPMTAG_BUILDREQUIRES	= 1109, /*!< internal */
+    RPMTAG_BUILDCONFLICTS	= 1110, /*!< internal */
+    RPMTAG_BUILDMACROS		= 1111,
+    RPMTAG_PROVIDEFLAGS		= 1112,
+    RPMTAG_PROVIDEVERSION	= 1113,
+    RPMTAG_OBSOLETEFLAGS	= 1114,
+    RPMTAG_OBSOLETEVERSION	= 1115,
+    RPMTAG_DIRINDEXES		= 1116,
+    RPMTAG_BASENAMES		= 1117,
+    RPMTAG_DIRNAMES		= 1118,
+    RPMTAG_ORIGDIRINDEXES	= 1119, /*!< internal */
+    RPMTAG_ORIGBASENAMES	= 1120, /*!< internal */
+    RPMTAG_ORIGDIRNAMES		= 1121, /*!< internal */
+    RPMTAG_OPTFLAGS		= 1122,
+    RPMTAG_DISTURL		= 1123,
+    RPMTAG_PAYLOADFORMAT	= 1124,
+    RPMTAG_PAYLOADCOMPRESSOR	= 1125,
+    RPMTAG_PAYLOADFLAGS		= 1126,
+    RPMTAG_MULTILIBS		= 1127,
+    RPMTAG_FIRSTFREE_TAG	/*!< internal */
+} rpmTag;
 
-#define	RPMTAG_FIRSTFREE_TAG		1128 /* internal */
 #define	RPMTAG_EXTERNAL_TAG		1000000
 
 /**
@@ -643,7 +647,7 @@ int rpmdbRebuild(const char * root);
 /*@{*/
 
 /**
- * Enumerate transaction set problems.
+ * Enumerate transaction set problem types.
  */
 typedef enum rpmProblemType_e {
     RPMPROB_BADARCH,	/*!< package ... is for a different architecture */
@@ -671,10 +675,11 @@ typedef /*@abstract@*/ struct rpmProblem_s {
     unsigned long ulong1;
 } * rpmProblem;
 
-/** */
+/**
+ */
 typedef /*@abstract@*/ struct rpmProblemSet_s {
-    int numProblems;
-    int numProblemsAlloced;
+    int numProblems;		/*!< Current probs array size. */
+    int numProblemsAlloced;	/*!< Allocated probs array size. */
     rpmProblem probs;		/*!< Array of specific problems. */
 } * rpmProblemSet;
 
@@ -686,13 +691,16 @@ void printDepFlags(FILE *fp, const char *version, int flags)
 /**
  */
 struct rpmDependencyConflict {
-    char * byName, * byVersion, * byRelease;
+    char * byName;
+    char * byVersion;
+    char * byRelease;
     Header byHeader;
     /* these needs fields are misnamed -- they are used for the package
        which isn't needed as well */
-    char * needsName, * needsVersion;
+    char * needsName;
+    char * needsVersion;
     int needsFlags;
-    /*@observer@*/ /*@null@*/ const void * suggestedPackage; /* NULL if none */
+/*@observer@*/ /*@null@*/ const void * suggestedPackage; /* NULL if none */
     enum {
 	RPMDEP_SENSE_REQUIRES,
 	RPMDEP_SENSE_CONFLICTS
@@ -765,9 +773,12 @@ int rpmInstallSourcePackage(const char * root, FD_t fd, const char ** specFile,
  */
 int rpmVersionCompare(Header first, Header second);
 
-/* Transaction sets are inherently unordered! RPM may reorder transaction
-   sets to reduce errors. In general, installs/upgrades are done before
-   strict removals, and prerequisite ordering is done on installs/upgrades. */
+/** \ingroup rpmtrans
+ * The RPM Transaction Set.
+ * Transaction sets are inherently unordered! RPM may reorder transaction
+ * sets to reduce errors. In general, installs/upgrades are done before
+ * strict removals, and prerequisite ordering is done on installs/upgrades.
+ */
 typedef /*@abstract@*/ struct rpmTransactionSet_s * rpmTransactionSet;
 
 /** \ingroup rpmtrans
@@ -1008,20 +1019,20 @@ int rpmGetFilesystemUsage(const char ** filelist, int_32 * fssizes,
 /* ==================================================================== */
 /** \name RPMBT */
 /*@{*/
-/* --- build mode options */
 
 /** \ingroup rpmcli
+ * Describe build command line request.
  */
 struct rpmBuildArguments {
-    int buildAmount;
-    const char *buildRootOverride;
-    char *targets;
-    int useCatalog;
-    int noLang;
-    int noBuild;
-    int shortCircuit;
-    char buildMode;
-    char buildChar;
+    int buildAmount;		/*!< Bit(s) to control operation. */
+    const char *buildRootOverride; /*!< from --buildroot */
+    char *targets;		/*!< Target platform(s), comma separated. */
+    int useCatalog;		/*!< from --usecatalog */
+    int noLang;			/*!< from --nolang */
+    int noBuild;		/*!< from --nobuild */
+    int shortCircuit;		/*!< from --short-circuit */
+    char buildMode;		/*!< Build mode (one of "btBC") */
+    char buildChar;		/*!< Build stage (one of "abcilps ") */
 /*@dependent@*/ const char *rootdir;
 };
 /** \ingroup rpmcli
@@ -1123,13 +1134,13 @@ typedef enum rpmVerifyFlags_e {
  */
 typedef struct rpmQVArguments {
     rpmQVSources qva_source;	/*!< Identify CLI arg type. */
-    int 	qva_sourceCount;	/*!< Exclusive check (>1 is error). */
-    int		qva_flags;		/*!< Bit(s) to control operation. */
-    int		qva_verbose;		/*!< (unused) */
-    const char *qva_queryFormat;	/*!< Format for headerSprintf(). */
-    const char *qva_prefix;		/*!< Path to top of install tree. */
-    char	qva_mode;		/*!< 'q' is query, 'v' is verify mode */
-    char	qva_char;		/*!< (unused) always ' ' */
+    int 	qva_sourceCount;/*!< Exclusive check (>1 is error). */
+    int		qva_flags;	/*!< Bit(s) to control operation. */
+    int		qva_verbose;	/*!< (unused) */
+    const char *qva_queryFormat;/*!< Format for headerSprintf(). */
+    const char *qva_prefix;	/*!< Path to top of install tree. */
+    char	qva_mode;	/*!< 'q' is query, 'v' is verify mode. */
+    char	qva_char;	/*!< (unused) always ' ' */
 } QVA_t;
 
 /** \ingroup rpmcli

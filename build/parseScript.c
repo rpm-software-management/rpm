@@ -56,7 +56,6 @@ static int addTriggerIndex(Package pkg, const char *file, const char *script, co
 /* We then pass the remaining arguments to parseRCPOT, along with   */
 /* an index we just determined.                                     */
 
-/** */
 int parseScript(Spec spec, int parsePart)
 {
     /* There are a few options to scripts: */
