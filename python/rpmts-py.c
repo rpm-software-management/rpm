@@ -412,7 +412,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 				   conflicts[i].suggestedPkgs[0] : Py_None,
 			       conflicts[i].sense);
 #else
-	    char * byName, * byVersion, * byRelease;
+	    char * byName, * byVersion, * byRelease, *byArch;
 	    char * needsName, * needsOP, * needsVersion;
 	    int needsFlags, sense;
 	    fnpyKey key;
@@ -420,6 +420,8 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    p = ps->probs + i;
 
 	    byName = p->pkgNEVR;
+	    if ((byArch= strrchr(byName, '.')) != NULL)
+		*byArch++ = '\0';
 	    if ((byRelease = strrchr(byName, '-')) != NULL)
 		*byRelease++ = '\0';
 	    if ((byVersion = strrchr(byName, '-')) != NULL)
