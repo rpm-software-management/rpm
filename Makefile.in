@@ -16,7 +16,7 @@ RANLIB = ranlib
 # -----------------------------------------------------------------------
 
 SUBDIRS = lib build
-OBJS = query.o
+OBJS = query.o install.o 
 PROGS = rpm rpmlead rpmheader rpmarchive 
 
 ifeq (.depend,$(wildcard .depend))
