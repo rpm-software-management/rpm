@@ -364,7 +364,7 @@ RPM2 - Perl bindings for the RPM Package Manager API
     print $pkg->as_nvre, "\n";
   }
 
-  my $pkg = RPM2->open_package_file("/tmp/XFree86-4.1.0-15.src.rpm");
+  my $pkg = RPM2->open_package("/tmp/XFree86-4.1.0-15.src.rpm");
   print "Package opened: ", $pkg->as_nvre(), ", is source: ", $pkg->is_source_package, "\n";
 
 =head1 DESCRIPTION
