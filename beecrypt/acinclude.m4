@@ -92,9 +92,11 @@ AC_DEFUN(BEECRYPT_CPU_BITS,[
   AH_TEMPLATE([MP_WBITS],[Define to the word size of your CPU])
   AC_CHECK_SIZEOF([unsigned long])
   if test $ac_cv_sizeof_unsigned_long -eq 8; then
-    AC_DEFINE([MP_WBITS],64)
+    mp_wbits="64U"
+    AC_SUBST(MP_WBITS,$mp_wbits)
   elif test $ac_cv_sizeof_unsigned_long -eq 4; then
-    AC_DEFINE([MP_WBITS],32)
+    mp_wbits="32U"
+    AC_SUBST(MP_WBITS,$mp_wbits)
   else
     AC_MSG_ERROR([Illegal CPU word size])
   fi

@@ -731,7 +731,7 @@ int keyedHashFunctionContextDigest(keyedHashFunctionContext* ctxt, byte* digest)
 	return ctxt->algo->digest(ctxt->param, digest);
 }
 
-int keyedHashFunctionContextDigestMP(keyedHashFunctionContext* ctxt, mpnumber* d)
+int keyedHashFunctionContextDigestMP(keyedHashFunctionContext* ctxt, const mpnumber* d)
 {
 	if (ctxt == (keyedHashFunctionContext*) 0)
 		return -1;

@@ -100,7 +100,9 @@ typedef int64_t		javalong;
 
 typedef uint16_t	javachar;
 
-#define	MP_WBITS	32U
+#if !defined(MP_WBITS)
+#define	MP_WBITS	@MP_WBITS@
+#endif
 
 #if (MP_WBITS == 64)
 typedef uint64_t mpw;

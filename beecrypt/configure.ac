@@ -4,7 +4,7 @@ AC_INIT([beecrypt],[3.0.0pre],[bob.deblier@pandora.be])
 AM_INIT_AUTOMAKE
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR(beecrypt.h)
-AC_CONFIG_HEADERS([beecrypt.gnu.h])
+AC_CONFIG_HEADERS([config.h])
 AC_LIBTOOL_WIN32_DLL
 
 # Checks for package options
