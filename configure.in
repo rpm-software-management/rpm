@@ -68,7 +68,7 @@ else
 	# just link it dynamically
 	LDFLAGS_STATIC=""
 fi
-LDFLAGS_STATIC="${LDFLAGS_STATIC}-static"	# libtool format
+LDFLAGS_STATIC="${LDFLAGS} ${LDFLAGS_STATIC}-static"	# libtool format
 AC_MSG_RESULT($LDFLAGS_STATIC)
 AC_SUBST(LDFLAGS_STATIC)
 

@@ -6,6 +6,7 @@
 	- move printDep* routines into rpmlib for gnorpm et al.
 	- updated ru translation (Sergey Kubushin).
 	- add vpkg-provides.sh (Tim Mooney).
+	- don't clobber LDFLAGS in top-level Makefile (Tim Mooney).
 
 3.0 -> 3.0.1
 	- fix: %verifyscript resurrected (Shing-Gene Yung).
