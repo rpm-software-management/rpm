@@ -39,6 +39,9 @@ int _cacheDependsRC = 1;
 /*@unchecked@*/
 int _ts_debug = 0;
 
+/*@unchecked@*/
+static int _tso_debug = 1;
+
 /*@observer@*/ /*@unchecked@*/
 const char *rpmNAME = PACKAGE;
 
@@ -1053,7 +1056,7 @@ static void prtTSI(const char * msg, tsortInfo tsi)
 	/*@modifies fileSystem@*/
 {
 /*@-nullpass@*/
-if (_te_debug) {
+if (_tso_debug) {
     if (msg) fprintf(stderr, "%s", msg);
 /*@i@*/ fprintf(stderr, " tsi %p suc %p next %p chain %p reqx %d qcnt %d\n", tsi, tsi->tsi_suc, tsi->tsi_next, tsi->tsi_chain, tsi->tsi_reqx, tsi->tsi_qcnt);
 }
@@ -1093,7 +1096,7 @@ static inline int addRelation(rpmTransactionSet ts,
     pkgKey = RPMAL_NOMATCH;
     key = alSatisfiesDepend(ts->addedPackages, requires, &pkgKey);
 
-if (_te_debug)
+if (_tso_debug)
 fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
 
     /* Ordering depends only on added package relations. */
@@ -1120,7 +1123,7 @@ fprintf(stderr, "addRelation: pkgKey %ld\n", (long)pkgKey);
 #endif
 
 /*@-nullpass -nullderef -formattype@*/
-if (_te_debug)
+if (_tso_debug)
 fprintf(stderr, "addRelation: q %p(%s) from %p[%d:%d]\n", q, teGetN(q), ts->order, i, ts->orderCount);
 /*@=nullpass =nullderef =formattype@*/
 
@@ -1130,7 +1133,7 @@ fprintf(stderr, "addRelation: q %p(%s) from %p[%d:%d]\n", q, teGetN(q), ts->orde
 	return 0;
     selected[i] = 1;
 /*@-nullpass@*/
-if (_te_debug)
+if (_tso_debug)
 fprintf(stderr, "addRelation: selected[%d] = 1\n", i);
 /*@=nullpass@*/
 
@@ -1141,7 +1144,7 @@ fprintf(stderr, "addRelation: selected[%d] = 1\n", i);
 	(void) teSetDepth(p, (teGetDepth(q) + 1));
 
 /*@-nullpass@*/
-if (_te_debug)
+if (_tso_debug)
 /*@i@*/ fprintf(stderr, "addRelation: p %p(%s) depth %d", p, teGetN(p), teGetDepth(p));
 prtTSI(NULL, teGetTSI(p));
 /*@=nullpass@*/
@@ -1154,7 +1157,7 @@ prtTSI(NULL, teGetTSI(p));
     tsi->tsi_next = teGetTSI(q)->tsi_next;
 /*@-nullpass -compmempass@*/
 prtTSI("addRelation: new", tsi);
-if (_te_debug)
+if (_tso_debug)
 /*@i@*/ fprintf(stderr, "addRelation: BEFORE q %p(%s)", q, teGetN(q));
 prtTSI(NULL, teGetTSI(q));
 /*@=nullpass =compmempass@*/
@@ -1163,7 +1166,7 @@ prtTSI(NULL, teGetTSI(q));
     teGetTSI(q)->tsi_qcnt++;			/* bump q successor count */
 /*@=mods@*/
 /*@-nullpass -compmempass@*/
-if (_te_debug)
+if (_tso_debug)
 /*@i@*/ fprintf(stderr, "addRelation:  AFTER q %p(%s)", q, teGetN(q));
 prtTSI(NULL, teGetTSI(q));
 /*@=nullpass =compmempass@*/
@@ -1187,7 +1190,7 @@ static int orderListIndexCmp(const void * one, const void * two)	/*@*/
 }
 
 /**
- * Add element to list sorting by initial successor count.
+ * Add element to list sorting by tsi_qcnt.
  * @param p		new element
  * @retval qp		address of first element
  * @retval rp		address of last element
@@ -1200,19 +1203,24 @@ static void addQ(/*@dependent@*/ transactionElement p,
 {
     transactionElement q, qprev;
 
+    /* Mark the package as queued. */
+    teGetTSI(p)->tsi_reqx = 1;
+
     if ((*rp) == NULL) {	/* 1st element */
 	/*@-dependenttrans@*/ /* FIX: double indirection */
 	(*rp) = (*qp) = p;
 	/*@=dependenttrans@*/
 	return;
     }
-    for (qprev = NULL, q = (*qp); q != NULL; qprev = q, q = teGetTSI(q)->tsi_suc) {
+
+    /* Find location in queue using metric tsi_qcnt. */
+    for (qprev = NULL, q = (*qp);
+	 q != NULL;
+	 qprev = q, q = teGetTSI(q)->tsi_suc)
+    {
 	if (teGetTSI(q)->tsi_qcnt <= teGetTSI(p)->tsi_qcnt)
 	    break;
     }
-
-    /* Mark the package as queued. */
-    teGetTSI(p)->tsi_reqx = 1;
 
     if (qprev == NULL) {	/* insert at beginning of list */
 	teGetTSI(p)->tsi_suc = q;
@@ -1256,6 +1264,7 @@ int rpmdepOrder(rpmTransactionSet ts)
     int numOrderList;
     int nrescans = 10;
     int _printed = 0;
+    char deptypechar;
 #ifdef	DYING
     int oType = TR_ADDED;
 #else
@@ -1267,7 +1276,7 @@ int rpmdepOrder(rpmTransactionSet ts)
     alMakeIndex(ts->addedPackages);
 
 /*@-modfilesystem -nullpass -formattype@*/
-if (_te_debug)
+if (_tso_debug)
 fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCount);
 /*@=modfilesystem =nullpass =formattype@*/
 
@@ -1376,7 +1385,7 @@ fprintf(stderr, "*** rpmdepOrder(%p) order %p[%d]\n", ts, ts->order, ts->orderCo
 	(void) teSetNpreds(p, teGetTSI(p)->tsi_count);
 
 /*@-modfilesystem -nullpass @*/
-if (_te_debug)
+if (_tso_debug)
 /*@i@*/ fprintf(stderr, "\t+++ %p[%d] %s npreds %d\n", p, teiGetOc(pi), teGetNEVR(p), teGetNpreds(p));
 /*@=modfilesystem =nullpass @*/
 
@@ -1403,7 +1412,7 @@ rescan:
 	addQ(p, &q, &r);
 	qlen++;
 /*@-modfilesystem -nullpass @*/
-if (_te_debug)
+if (_tso_debug)
 /*@i@*/ fprintf(stderr, "\t+++ addQ ++ qlen %d p %p(%s)", qlen, p, teGetNEVR(p));
 prtTSI(" p", teGetTSI(p));
 /*@=modfilesystem =nullpass @*/
@@ -1412,7 +1421,6 @@ prtTSI(" p", teGetTSI(p));
 
     /* T5. Output front of queue (T7. Remove from queue.) */
     for (; q != NULL; q = teGetTSI(q)->tsi_suc) {
-	char deptypechar;
 
 	/* Mark the package as unqueued. */
 	teGetTSI(q)->tsi_reqx = 0;
@@ -1458,7 +1466,7 @@ prtTSI(" p", teGetTSI(p));
 		addQ(p, &teGetTSI(q)->tsi_suc, &r);
 		qlen++;
 /*@-modfilesystem -nullpass @*/
-if (_te_debug)
+if (_tso_debug)
 /*@i@*/ fprintf(stderr, "\t+++ addQ ++ qlen %d p %p(%s)", qlen, p, teGetNEVR(p));
 prtTSI(" p", teGetTSI(p));
 /*@=modfilesystem =nullpass @*/
