@@ -4,7 +4,7 @@
 
 #include "RPM.h"
 
-static char * const rcsid = "$Id: Package.xs,v 1.4 2000/10/12 05:09:45 rjray Exp $";
+static char * const rcsid = "$Id: Package.xs,v 1.5 2000/11/10 08:49:24 rjray Exp $";
 
 /* Any constants that are specific to the RPM::Header class will be exported
    from here, via this C-level constant() routine */
@@ -26,22 +26,35 @@ static int constant(pTHX_ char *name)
             if (strEQ(name, "MASK"))
 #ifdef RPM_HEADER_MASK
                 return RPM_PACKAGE_MASK;
+#else
+                goto not_found;
 #endif
+            break;
           case 'N':
             if (strEQ(name, "NOREAD"))
 #ifdef RPM_HEADER_NOREAD
                 return RPM_PACKAGE_NOREAD;
+#else
+                goto not_found;
 #endif
+            break;
           case 'R':
             if (strEQ(name, "READONLY"))
 #ifdef RPM_HEADER_READONLY
                 return RPM_PACKAGE_READONLY;
+#else
+                goto not_found;
 #endif
+            break;
           default:
             errno = EINVAL;
             return 0;
         }
     }
+
+  not_found:
+    errno = EINVAL;
+    return 0;
 }
 
 /* This is the class constructor for RPM::Package */
@@ -126,7 +139,7 @@ void rpmpkg_DESTROY(pTHX_ RPM__Package self)
     /* Free/release the dynamic parts of the package structure */
     if (self->path)
         safefree(self->path);
-    /* The Perl structure have their own clean-up methods that will kick in */
+    /* The Perl structures have their own clean-up methods that will kick in */
 
     return;
 }
@@ -234,6 +247,60 @@ int rpmpkg_cmpver_hdr(pTHX_ RPM__Package self, RPM__Header two)
     }
 
     return rpmhdr_cmpver(aTHX_ self->header, two);
+}
+
+/*
+ * This is where we catch all callback-ish events for packages, and translate
+ * them into a Perl-ized callback mechanism with (mostly) the same arguments
+ * and argument structure.
+ */
+static void* rpmpkg_callback_handler(const Header h,
+                                     const rpmCallbackType what,
+                                     const unsigned long amount,
+                                     const unsigned long total,
+                                     const void* pkg_key,
+                                     void* data)
+{
+    /* We couldn't declare the thread context in the prototype because we
+       don't control the calling context of this function. */
+    dTHX;
+    RPM__Package self;      /* This gets derived from "data" */
+    SV* callback;           /* So that we can more easily sanity-check it */
+
+    /* This is simple, but I'm planning ahead in case it gets more complex */
+    self = data;
+    if (! (callback = (SV *)self->callback))
+        return (void *)NULL;
+
+    /* Set up the stack and the context */
+    if (SvOK(callback) && (SvTYPE(callback) == SVt_PVCV))
+    {
+        dSP;
+        ENTER;
+        SAVETMPS;
+        PUSHMARK(sp);
+
+        /* Set up the args list */
+        XPUSHs(sv_2mortal(sv_setref_pv(newSVsv(&PL_sv_undef), "RPM::Package",
+                                       (void *)self)));
+        XPUSHs(sv_2mortal(newSViv((I32)what)));
+        XPUSHs(sv_2mortal(newSViv(amount)));
+        XPUSHs(sv_2mortal(newSViv(total)));
+        XPUSHs(sv_2mortal(newSVpv((char *)pkg_key, 0)));
+        if (self->cb_data != Nullsv)
+            XPUSHs(sv_2mortal(newSVsv(self->cb_data)));
+
+        /* Make the call */
+        perl_call_sv((SV *)self->callback, G_DISCARD);
+
+        /* More boilerplate */
+        SPAGAIN;
+        PUTBACK;
+        FREETMPS;
+        LEAVE;
+    }
+
+    return (void *)NULL;
 }
 
 
