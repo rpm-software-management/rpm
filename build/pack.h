@@ -3,6 +3,7 @@
 
 #include "spec.h"
 
+void markBuildTime(void);
 int packageBinaries(Spec s);
 int packageSource(Spec s);
 
