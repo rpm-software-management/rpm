@@ -30,7 +30,6 @@
 	- mark _javadocdir as documentation (#102898).
 	- flush pipe before exit 1 in check-files (#103867).
 	- perl.req: avoid regex misfire on '^use' in "= <<" assign (#109934).
-	- use perldeps {--provides|--requires}.
 	- find-debuginfo.sh: permit stripping unwritable by non-root (#112429).
 	- missing build dependency (#111104).
 
