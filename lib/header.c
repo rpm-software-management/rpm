@@ -699,6 +699,7 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
     char **spp;
     char *sp;
     int i, length;
+    int pad;
 
     if (c <= 0) {
 	fprintf(stderr, "Bad count for addEntry(): %d\n", (int) c);
@@ -708,30 +709,35 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 	fprintf(stderr, "Attempted addEntry() to immutable header.\n");
 	exit(1);
     }
+
     /* Allocate more index space if necessary */
     if (h->entries_used == h->entries_malloced) {
 	h->entries_malloced += INDEX_MALLOC_SIZE;
 	h->index = realloc(h->index,
 			h->entries_malloced * sizeof(struct indexEntry));
     }
+
     /* Fill in the index */
     i = h->entries_used++;
     entry = &((h->index)[i]);
     entry->tag = tag;
     entry->type = type;
     entry->count = c;
-    entry->offset = h->data_used;
 
     /* Compute length of data to add */
+    pad = 0;
     switch (type) {
     case INT64_TYPE:
 	length = sizeof(int_64) * c;
+	pad = 8;
 	break;
     case INT32_TYPE:
 	length = sizeof(int_32) * c;
+	pad = 4;
 	break;
     case INT16_TYPE:
 	length = sizeof(int_16) * c;
+	pad = 2;
 	break;
     case INT8_TYPE:
 	length = sizeof(int_8) * c;
@@ -763,13 +769,19 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 	exit(1);
     }
 
+    if (pad) {
+	pad = (pad - (h->data_used % pad)) % pad;
+    }
+    
     /* Allocate more data space if necessary */
-    while ((length + h->data_used) > h->data_malloced) {
+    while ((length + pad + h->data_used) > h->data_malloced) {
 	h->data_malloced += DATA_MALLOC_SIZE;
 	h->data = realloc(h->data, h->data_malloced);
     }
+
     /* Fill in the data */
-    ptr = h->data + h->data_used;
+    entry->offset = h->data_used + pad;
+    ptr = h->data + h->data_used + pad;
     switch (type) {
       case INT32_TYPE:
       case INT16_TYPE:
@@ -800,7 +812,7 @@ int addEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c)
 	exit(1);
     }
 
-    h->data_used += length;
+    h->data_used += length + pad;
 
     return 1;
 }
