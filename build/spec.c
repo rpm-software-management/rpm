@@ -60,9 +60,11 @@ static int addSource(Spec spec, char *line)
     spec->sources = p;
 
     if (! strncasecmp(line, "source", 6)) {
+	spec->numSources++;
 	p->ispatch = 0;
 	s = line + 6;
     } else if (! strncasecmp(line, "patch", 5)) {
+	spec->numPatches++;
 	p->ispatch = 1;
 	s = line + 5;
     } else {
@@ -532,6 +534,8 @@ Spec parseSpec(FILE *f, char *specfile)
 
     spec->name = NULL;
     spec->specfile = specfile;
+    spec->numSources = 0;
+    spec->numPatches = 0;
     spec->sources = NULL;
     spec->prep = newStringBuf();
     spec->build = newStringBuf();
