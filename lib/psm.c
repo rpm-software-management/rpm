@@ -755,6 +755,38 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 		? 1 : 0);
     }
 
+#if __ia64__
+    if (!strcmp(n, "glibc")
+     && !strcmp(argv[0], "/usr/sbin/glibc_post_upgrade"))
+    {
+	const char * fmt = rpmGetPath("%{?_autorelocate_path}", NULL);
+	const char * errstr;
+	char * newPath;
+	char * t;
+
+	newPath = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+	fmt = _free(fmt);
+
+	/* XXX On ia64, change leading /emul/ix86 -> /emul/ia32, ick. */
+ 	if (newPath != NULL && *newPath != '\0'
+	 && strlen(newPath) >= (sizeof("/emul/i386")-1)
+	 && newPath[0] == '/' && newPath[1] == 'e' && newPath[2] == 'm'
+	 && newPath[3] == 'u' && newPath[4] == 'l' && newPath[5] == '/'
+	 && newPath[6] == 'i' && newPath[8] == '8' && newPath[9] == '6')
+ 	{
+	    newPath[7] = 'a';
+	    newPath[8] = '3';
+	    newPath[9] = '2';
+	}
+
+	t = alloca(strlen(newPath) + strlen(argv[0]) + 1);
+	*t = '\0';
+	(void) stpcpy( stpcpy( stpcpy(t, newPath), "/"), argv[0]);
+	newPath = _free(newPath);
+	argv[0] = t;
+    }
+#endif
+
     if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (void **) &prefixes, &numPrefixes)) {
 	freePrefixes = 1;
     } else if (hge(h, RPMTAG_INSTALLPREFIX, NULL, (void **) &oldPrefix, NULL)) {
