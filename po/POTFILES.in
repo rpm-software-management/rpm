@@ -5,12 +5,10 @@
 build.c
 checksig.c
 convertdb.c
-ftp.c
 install.c
 oldrpmdb.c
 rpm.c
 rpm2cpio.c
-url.c
 build/build.c
 build/expression.c
 build/files.c
@@ -36,6 +34,7 @@ lib/falloc.c
 lib/formats.c
 lib/fprint.c
 lib/fs.c
+lib/ftp.c
 lib/hash.c
 lib/header.c
 lib/install.c
@@ -61,4 +60,5 @@ lib/stringbuf.c
 lib/transaction.c
 lib/tread.c
 lib/uninstall.c
+lib/url.c
 lib/verify.c
