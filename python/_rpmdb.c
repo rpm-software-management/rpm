@@ -92,7 +92,7 @@
 
 #define PY_BSDDB_VERSION "3.4.2"
 
-static char *rcs_id = "$Id: _rpmdb.c,v 1.6 2002/11/06 16:46:54 jbj Exp $";
+static char *rcs_id = "$Id: _rpmdb.c,v 1.7 2002/11/08 22:23:37 jbj Exp $";
 
 
 #ifdef WITH_THREAD
@@ -1888,7 +1888,6 @@ DB_stat(DBObject* self, PyObject* args)
         MAKE_HASH_ENTRY(dup);
         MAKE_HASH_ENTRY(dup_free);
         break;
-#endif
 
     case DB_BTREE:
     case DB_RECNO:
