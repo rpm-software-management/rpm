@@ -124,12 +124,12 @@ if (!_debug) return;
 
     /* XXX FIXME: ptr alignment is fubar here. */
     if (key != NULL && key->data != NULL) {
-	fprintf(stderr, "  key 0x%x[%d]", *(long *)key->data, key->size);
+	fprintf(stderr, "  key 0x%x[%d]", *(unsigned int *)key->data, key->size);
 	if (dbi->dbi_rpmtag == RPMTAG_NAME)
 	    fprintf(stderr, " \"%s\"", (const char *)key->data);
     }
     if (data != NULL && data->data != NULL)
-	fprintf(stderr, " data 0x%x[%d]", *(long *)data->data, data->size);
+	fprintf(stderr, " data 0x%x[%d]", *(unsigned int *)data->data, data->size);
 
     fprintf(stderr, "\n");
 }
@@ -211,8 +211,7 @@ fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
 static int sql_startTransaction(dbiIndex dbi)
 	/*@*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     int rc = 0;
 
     /* XXX:  Transaction Support */
@@ -235,8 +234,7 @@ static int sql_startTransaction(dbiIndex dbi)
 static int sql_endTransaction(dbiIndex dbi)
 	/*@*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     int rc=0;
 
     /* XXX:  Transaction Support */
@@ -259,8 +257,7 @@ static int sql_endTransaction(dbiIndex dbi)
 static int sql_commitTransaction(dbiIndex dbi, int flag)
 	/*@*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     int rc = 0;
 
     /* XXX:  Transactions */
@@ -299,8 +296,6 @@ static int sql_commitTransaction(dbiIndex dbi, int flag)
 static void * allocTempBuffer(DBC * dbcursor, size_t len)
 	/*@*/
 {
-    DB * db = dbcursor->dbp;
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
     SCP_t scp = (SCP_t)dbcursor;
     SQL_MEM * item;
 
@@ -340,8 +335,7 @@ static int sql_busy_handler(void * dbi_void, int time)
 static int sql_initDB(dbiIndex dbi)
 	/*@*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     SCP_t scp = scpNew();
     int rc = 0;
 
@@ -426,10 +420,8 @@ static int sql_cclose (dbiIndex dbi, /*@only@*/ DBC * dbcursor,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *dbcursor, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-/*@i@*/    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+/*@i@*/    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     SCP_t scp = (SCP_t)dbcursor;
-    SCP_t prev = NULL;
     int rc = 0;
 
 assert(sqldb->db != NULL);
@@ -480,12 +472,10 @@ static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb;
+    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     int rc = 0;
 
-    if (db) {
-	sqldb = (SQL_DB *)db->app_private;
+    if (sqldb) {
 
 	/* Commit, don't open a new one */
 	rc = sql_commitTransaction(dbi, 1);
@@ -516,7 +506,6 @@ static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
 	/* They're the same so only free one! */
 	dbi->dbi_subfile = _free(dbi->dbi_subfile);
 #endif
-	dbi->dbi_db->app_private = _free(dbi->dbi_db->app_private);  /* sqldb */
 	dbi->dbi_db = _free(dbi->dbi_db);
     }
 
@@ -552,7 +541,6 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
     size_t len;
     
     dbiIndex dbi = NULL;
-    DB * db = NULL;
 
     SQL_DB * sqldb;
 
@@ -633,7 +621,6 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 		dbfname, dbi->dbi_subfile, dbi->dbi_mode);
 
     /* Open the Database */
-    db = xcalloc(1, sizeof(*db));
     sqldb = xcalloc(1,sizeof(*sqldb));
        
     sql_errcode = NULL;
@@ -646,8 +633,7 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
 
     sqldb->transaction = 0;	/* Initialize no current transactions */
 
-    db->app_private = sqldb;
-    dbi->dbi_db = db;
+    dbi->dbi_db = (DB *)sqldb;
 
     if (sql_errcode != NULL) {
       rpmMessage(RPMMESS_DEBUG, "Unable to open database: %s\n", sql_errcode);
@@ -696,11 +682,7 @@ static int sql_sync (dbiIndex dbi, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-/*@i@*/    SQL_DB * sqldb = (SQL_DB *)db->app_private;
     int rc = 0;
-
-assert(sqldb->db != NULL);
 
 #ifndef SQL_FAST_DB
     rc = sql_commitTransaction(dbi, 0);
@@ -722,20 +704,15 @@ static int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, *txnid, *dbcp, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-/*@i@*/    SQL_DB * sqldb = (SQL_DB *)db->app_private;
     DBC * dbcursor;
-    SCP_t scp;
+    SCP_t scp = scpNew();
     int rc = 0;
 
-assert(sqldb->db != NULL);
-
-    scp = scpNew();
 if (_debug)
 fprintf(stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, tagType(dbi->dbi_rpmtag), scp);
 
     dbcursor = (DBC *)scp;
-    dbcursor->dbp = db;
+    dbcursor->dbp = dbi->dbi_db;
 
     /* If we're going to write, start a transaction (lock the DB) */
     if (flags == DB_WRITECURSOR) {
@@ -965,12 +942,9 @@ static int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-/*@i@*/    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+/*@i@*/    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     SCP_t scp = scpNew();
     int rc = 0;
-
-assert(sqldb->db != NULL);
 
 dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
@@ -1010,8 +984,7 @@ static int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 	/*@globals fileSystem @*/
 	/*@modifies dbi, dbcursor, *key, *data, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-/*@i@*/    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+/*@i@*/    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     SCP_t scp;
     int rc = 0;
 
@@ -1047,7 +1020,7 @@ fprintf(stderr, "\tcget(%s) scp %p rc %d flags %d av %p\n",
 if (_debug)
 fprintf(stderr, "\tcget(%s) size 0  key 0x%x[%d] flags %d\n",
 		dbi->dbi_subfile,
-		key->data == NULL ? 0 : *(long *)key->data, key->size,
+		key->data == NULL ? 0 : *(unsigned int *)key->data, key->size,
 		flags);
 
 	    /* Key's MUST be in order for the PACKAGES db! */
@@ -1069,7 +1042,7 @@ fprintf(stderr, "\tcget(%s) size 0  key 0x%x[%d] flags %d\n",
     /* XXX FIXME: ptr alignment is fubar here. */
 if (_debug)
 fprintf(stderr, "\tcget(%s) default key 0x%x[%d], flags %d\n", dbi->dbi_subfile,
-		key->data == NULL ? 0 : *(long *)key->data, key->size, flags);
+		key->data == NULL ? 0 : *(unsigned int *)key->data, key->size, flags);
 
 	    switch (dbi->dbi_rpmtag) {
 	    default:
@@ -1155,10 +1128,10 @@ fprintf(stderr, "\tcget(%s) data av[%d] = %p[%d]\n", dbi->dbi_subfile, ix, v, nb
     /* XXX FIXME: ptr alignment is fubar here. */
 if (_debug)
 fprintf(stderr, "\tcget(%s) found  key 0x%x (%d)\n", dbi->dbi_subfile,
-		key->data == NULL ? 0 : *(long *)key->data, key->size);
+		key->data == NULL ? 0 : *(unsigned int *)key->data, key->size);
 if (_debug)
 fprintf(stderr, "\tcget(%s) found data 0x%x (%d)\n", dbi->dbi_subfile,
-		key->data == NULL ? 0 : *(long *)data->data, data->size);
+		key->data == NULL ? 0 : *(unsigned int *)data->data, data->size);
 	}
     }
 
@@ -1185,8 +1158,7 @@ static int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 	/*@globals fileSystem @*/
 	/*@modifies *dbcursor, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-/*@i@*/    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+/*@i@*/    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     SCP_t scp = scpNew();
     int rc = 0;
 
@@ -1225,8 +1197,7 @@ static int sql_byteswapped (dbiIndex dbi)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     SCP_t scp = scpNew();
     int sql_rc, rc = 0;
     union _dbswap db_endian;
@@ -1372,8 +1343,7 @@ static int sql_stat (dbiIndex dbi, unsigned int flags)
 	/*@globals fileSystem @*/
 	/*@modifies dbi, fileSystem @*/
 {
-    DB * db = dbi->dbi_db;
-/*@i@*/    SQL_DB * sqldb = (SQL_DB *)db->app_private;
+/*@i@*/    SQL_DB * sqldb = (SQL_DB *) dbi->dbi_db;
     SCP_t scp = scpNew();
     int rc = 0;
     long nkeys = -1;
