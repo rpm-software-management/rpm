@@ -3,6 +3,8 @@
 #include <rpmlib.h>
 #include <rpmio.h>
 
+/*@access FD_t@*/
+
 /* =============================================================== */
 /* Support for BZIP2 library.
  */
@@ -14,7 +16,7 @@ BZFILE * bzdFileno(FD_t fd) {
     return (fd != NULL ? ((BZFILE *)fd->fd_bzd) : NULL);
 }
 
-/*@null@*/ FD_t bzdOpen(const char *pathname, const char *mode) {
+FD_t bzdOpen(const char *pathname, const char *mode) {
     FD_t fd;
     BZFILE *bzfile;;
     if ((bzfile = bzopen(pathname, mode)) == NULL)
@@ -24,7 +26,7 @@ BZFILE * bzdFileno(FD_t fd) {
     return fd;
 }
 
-/*@shared@*/ FD_t bzdFdopen(FD_t fd, const char *mode) {
+FD_t bzdFdopen(FD_t fd, const char *mode) {
     BZFILE *bzfile  = bzdopen(fdFileno(fd), mode);
     if (bzfile != NULL) {
 	fd->fd_fd = -1;
@@ -46,12 +48,12 @@ int bzdFlush(FD_t fd) {
     return bzflush(bzdFileno(fd));
 }
 
-char * bzdStrerror(FD_t fd) {
+const char * bzdStrerror(FD_t fd) {
     int bzerr;
-    return (char *)bzerror(bzdFileno(fd), &bzerr);
+    return bzerror(bzdFileno(fd), &bzerr);
 }
 
-int bzdClose(/*@only@*/ FD_t fd) {
+int bzdClose(FD_t fd) {
     BZFILE *bzfile;
 
     if (fd != NULL && (bzfile = bzdFileno(fd)) != NULL) {

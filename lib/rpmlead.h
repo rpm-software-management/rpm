@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 int writeLead(FD_t fd, struct rpmlead *lead);
-int readLead(FD_t fd, struct rpmlead *lead);
+int readLead(FD_t fd, /*@out@*/struct rpmlead *lead);
 
 #ifdef __cplusplus
 }

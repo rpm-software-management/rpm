@@ -63,15 +63,15 @@ void rpmMessage(int level, const char * format, ...) {
 	    fprintf(stderr, _("fatal error: "));
 	    vfprintf(stderr, format, args);
 	    fflush(stderr);
-	    exit(1);
-	    break;
+	    exit(EXIT_FAILURE);
+	    /*@unreached@*/ break;
 
 	  default:
 	    fprintf(stderr, _("internal error (rpm bug?): "));
 	    vfprintf(stderr, format, args);
 	    fflush(stderr);
-	    exit(1);
-	    break;
+	    exit(EXIT_FAILURE);
+	    /*@unreached@*/ break;
 
 	}
     }

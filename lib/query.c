@@ -132,7 +132,7 @@ static void printFileInfo(FILE *fp, const char * name,
 static int queryHeader(FILE *fp, Header h, const char * chptr)
 {
     char * str;
-    char * error;
+    const char * error;
 
     str = headerSprintf(h, chptr, rpmTagTable, rpmHeaderFormats, &error);
     if (!str) {
@@ -145,7 +145,7 @@ static int queryHeader(FILE *fp, Header h, const char * chptr)
     return 0;
 }
 
-int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
+int showQueryPackage(QVA_t *qva, /*@unused@*/rpmdb db, Header h)
 {
     FILE *fp = stdout;	/* XXX FIXME: pass as arg */
     int queryFlags = qva->qva_flags;
@@ -154,13 +154,15 @@ int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
     const char * name, * version, * release;
     int_32 count, type;
     char * prefix = NULL;
-    char ** fileList, ** fileMD5List;
-    char * fileStatesList;
-    char ** fileOwnerList = NULL;
-    char ** fileGroupList = NULL;
-    char ** fileLinktoList;
+    const char ** fileList;
+    const char ** fileMD5List;
+    const char * fileStatesList;
+    const char ** fileOwnerList = NULL;
+    const char ** fileGroupList = NULL;
+    const char ** fileLinktoList;
     int_32 * fileFlagsList, * fileMTimeList, * fileSizeList;
-    int_32 * fileUIDList, * fileGIDList;
+    int_32 * fileUIDList = NULL;
+    int_32 * fileGIDList = NULL;
     uint_16 * fileModeList;
     uint_16 * fileRdevList;
     int i;
@@ -201,17 +203,17 @@ int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
 		if (!headerGetEntry(h, RPMTAG_FILEUIDS, &type, 
 			 (void **) &fileUIDList, &count)) {
 		    fileUIDList = NULL;
-		} else {
-		    headerGetEntry(h, RPMTAG_FILEGIDS, &type, 
-			     (void **) &fileGIDList, &count);
+		} else if (!headerGetEntry(h, RPMTAG_FILEGIDS, &type, 
+			     (void **) &fileGIDList, &count)) {
+		    fileGIDList = NULL;
 		}
 
 		if (!headerGetEntry(h, RPMTAG_FILEUSERNAME, &type, 
 			 (void **) &fileOwnerList, &count)) {
 		    fileOwnerList = NULL;
-		} else {
-		    headerGetEntry(h, RPMTAG_FILEGROUPNAME, &type, 
-			     (void **) &fileGroupList, &count);
+		} else if (!headerGetEntry(h, RPMTAG_FILEGROUPNAME, &type, 
+			     (void **) &fileGroupList, &count)) {
+		    fileGroupList = NULL;
 		}
 
 		for (i = 0; i < count; i++) {
@@ -238,7 +240,7 @@ int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
 				    fputs(_("net shared    "), fp); break;
 				  default:
 				    fprintf(fp, _("(unknown %3d) "), 
-					  fileStatesList[i]);
+					  (int)fileStatesList[i]);
 				}
 			    } else {
 				fputs(    _("(no state)    "), fp);
@@ -250,10 +252,10 @@ int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
 				   fileSizeList[i], fileMTimeList[i],
 				   fileMD5List[i], fileModeList[i]);
 
-			    if (fileOwnerList)
+			    if (fileOwnerList && fileGroupList)
 				fprintf(fp, "%s %s", fileOwnerList[i], 
 						fileGroupList[i]);
-			    else if (fileUIDList)
+			    else if (fileUIDList && fileGIDList)
 				fprintf(fp, "%d %d", fileUIDList[i], 
 						fileGIDList[i]);
 			    else {
@@ -274,13 +276,13 @@ int showQueryPackage(QVA_t *qva, rpmdb db, Header h)
 			} else if (!rpmIsVerbose()) {
 			    fputs(fileList[i], fp);
 			    fputs("\n", fp);
-			} else if (fileOwnerList) 
+			} else if (fileOwnerList && fileGroupList) 
 			    printFileInfo(fp, fileList[i], fileSizeList[i],
 					  fileModeList[i], fileMTimeList[i],
 					  fileRdevList[i], fileOwnerList[i], 
 					  fileGroupList[i], -1, 
 					  -1, fileLinktoList[i]);
-			else if (fileUIDList) {
+			else if (fileUIDList && fileGIDList) {
 			    printFileInfo(fp, fileList[i], fileSizeList[i],
 					  fileModeList[i], fileMTimeList[i],
 					  fileRdevList[i], NULL, 
@@ -333,7 +335,8 @@ printNewSpecfile(Spec spec)
 	switch(t->t_tag) {
 	case RPMTAG_SUMMARY:
 	case RPMTAG_GROUP:
-	    FREE(sl->sl_lines[t->t_startx]);
+	    free(sl->sl_lines[t->t_startx]);
+	    sl->sl_lines[t->t_startx] = NULL;
 	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))
 		continue;
 	    sprintf(buf, "%s: %s\n",
@@ -342,10 +345,13 @@ printNewSpecfile(Spec spec)
 	    sl->sl_lines[t->t_startx] = strdup(buf);
 	    break;
 	case RPMTAG_DESCRIPTION:
-	    for (j = 1; j < t->t_nlines; j++)
-		FREE(sl->sl_lines[t->t_startx + j]);
+	    for (j = 1; j < t->t_nlines; j++) {
+		free(sl->sl_lines[t->t_startx + j]);
+		sl->sl_lines[t->t_startx + j] = NULL;
+	    }
 	    if (t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG)) {
-		FREE(sl->sl_lines[t->t_startx]);
+		free(sl->sl_lines[t->t_startx]);
+		sl->sl_lines[t->t_startx] = NULL;
 		continue;
 	    }
 	    sl->sl_lines[t->t_startx + 1] = strdup(msgstr);
@@ -457,7 +463,7 @@ int rpmQueryVerify(QVA_t *qva, enum rpmQVSources source, const char * arg,
 	    break;
 	case 1:
 	    fprintf(stderr, _("%s does not appear to be a RPM package\n"), arg);
-	    /* fallthrough */
+	    /*@fallthrough@*/
 	case 2:
 	    fprintf(stderr, _("query of %s failed\n"), arg);
 	    retcode = 1;
@@ -650,8 +656,8 @@ int rpmQuery(QVA_t *qva, enum rpmQVSources source, const char * arg)
 #define POPT_SPECFILE		1006
 
 /* ========== Query/Verify source popt args */
-static void rpmQVSourceArgCallback(poptContext con, enum poptCallbackReason reason,
-			     const struct poptOption * opt, const char * arg, 
+static void rpmQVSourceArgCallback(/*@unused@*/poptContext con, /*@unused@*/enum poptCallbackReason reason,
+			     const struct poptOption * opt, /*@unused@*/const char * arg, 
 			     QVA_t *qva)
 {
 
@@ -703,7 +709,7 @@ struct poptOption rpmQVSourcePoptTable[] = {
 
 /* ========== Query specific popt args */
 
-static void queryArgCallback(poptContext con, enum poptCallbackReason reason,
+static void queryArgCallback(/*@unused@*/poptContext con, /*@unused@*/enum poptCallbackReason reason,
 			     const struct poptOption * opt, const char * arg, 
 			     QVA_t *qva)
 {

@@ -12,9 +12,9 @@ struct availablePackage {
     const char * name, * version, * release;
     int_32 *epoch;
     int providesCount, filesCount;
-    const void * key;
+    /*@owned@*/ const void * key;
     rpmRelocation * relocs;
-    FD_t fd;
+    /*@owned@*/ FD_t fd;
 } ;
 
 enum indexEntryType { IET_NAME, IET_PROVIDES, IET_FILE };
@@ -48,13 +48,13 @@ struct transactionElement {
 };
 
 struct rpmTransactionSet_s {
-    rpmdb db;					/* may be NULL */
-    int * removedPackages;
+    /*@owned@*/rpmdb db;			/* may be NULL */
+    /*@only@*/int * removedPackages;
     int numRemovedPackages, allocedRemovedPackages;
     struct availableList addedPackages, availablePackages;
-    struct transactionElement * order;
+    /*@only@*/struct transactionElement * order;
     int orderCount, orderAlloced;
-    char * root;
+    /*@only@*/const char * root;
     FD_t scriptFd;
 };
 

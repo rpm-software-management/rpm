@@ -45,8 +45,8 @@
 #define CPIO_FOLLOW_SYMLINKS	(1 << 4)  /* only for building */
 
 struct cpioFileMapping {
-    char * archivePath;
-    char * fsPath;
+    /*@dependent@*/ const char * archivePath;
+    /*@dependent@*/ const char * fsPath;
     mode_t finalMode;
     uid_t finalUid;
     gid_t finalGid;
@@ -55,7 +55,7 @@ struct cpioFileMapping {
 
 /* on cpio building, only "file" is filled in */
 struct cpioCallbackInfo {
-    char * file;
+    /*@dependent@*/ const char * file;
     long fileSize;			/* total file size */
     long fileComplete;			/* amount of file unpacked */
     long bytesProcessed;		/* bytes in archive read */
@@ -63,11 +63,11 @@ struct cpioCallbackInfo {
 
 typedef struct CFD {
     union {
-	FD_t	_cfdu_fd;
+	/*@owned@*/FD_t	_cfdu_fd;
 #define	cpioFd	_cfdu._cfdu_fd
-	FILE *	_cfdu_fp;
+	/*@owned@*/FILE *_cfdu_fp;
 #define	cpioFp	_cfdu._cfdu_fp
-	FD_t	_cfdu_gzfd;
+	/*@owned@*/FD_t	_cfdu_gzfd;
 #define	cpioGzFd	_cfdu._cfdu_gzfd
     } _cfdu;
     int		cpioPos;
@@ -94,7 +94,7 @@ typedef void (*cpioCallback)(struct cpioCallbackInfo * filespec, void * data);
    user. If *failedFile is non-NULL on return, it should be free()d. */
 int cpioInstallArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 		       int numMappings, cpioCallback cb, void * cbData,
-		       char ** failedFile);
+		       /*@out@*/const char ** failedFile);
 int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 		     int numMappings, cpioCallback cb, void * cbData,
 		     unsigned int * archiveSize, /*@out@*/char ** failedFile);
@@ -102,7 +102,7 @@ int cpioBuildArchive(CFD_t *cfd, struct cpioFileMapping * mappings,
 /* This is designed to be qsort/bsearch compatible */
 int cpioFileMapCmp(const void * a, const void * b);
 
-const char *cpioStrerror(int rc);
+/*@observer@*/ const char *cpioStrerror(int rc);
 
 #ifdef __cplusplus
 }

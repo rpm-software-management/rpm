@@ -34,11 +34,11 @@ typedef unsigned int uint_32;
 typedef unsigned short uint_16;
 #endif
 
-typedef /*@abstract@*/ struct headerToken *Header;
+typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken *Header;
 typedef /*@abstract@*/ struct headerIteratorS *HeaderIterator;
 
 struct headerTagTableEntry {
-    char * name;
+    const char * name;
     int val;
 };
 
@@ -73,7 +73,7 @@ extern const struct headerSprintfExtension headerDefaultFormats[];
 Header headerRead(FD_t fd, int magicp);
 int headerWrite(FD_t fd, Header h, int magicp);
 Header headerGzRead(FD_t fd, int magicp);
-void headerGzWrite(FD_t fd, Header h, int magicp);
+int headerGzWrite(FD_t fd, Header h, int magicp);
 unsigned int headerSizeof(Header h, int magicp);
 
 #define HEADER_MAGIC_NO   0
@@ -84,7 +84,7 @@ Header headerLoad(void *p);
 void *headerUnload(Header h);
 
 Header headerNew(void);
-void headerFree(/*@only@*/ Header h);
+void headerFree(/*@killref@*/ Header h);
 
 /* dump a header to a file, in human readable format */
 void headerDump(Header h, FILE *f, int flags,
@@ -94,7 +94,7 @@ void headerDump(Header h, FILE *f, int flags,
 char * headerSprintf(Header h, const char * fmt,
 		     const struct headerTagTableEntry * tags,
 		     const struct headerSprintfExtension * extentions,
-		     /*@out@*/char ** error);
+		     /*@out@*/const char ** error);
 
 #define HEADER_DUMP_INLINE   1
 
@@ -102,7 +102,7 @@ char * headerSprintf(Header h, const char * fmt,
    exceptions noted below). While you are allowed to add i18n string
    arrays through this function, you probably don't mean to. See
    headerAddI18NString() instead */
-int headerAddEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
+int headerAddEntry(Header h, int_32 tag, int_32 type, /*@out@*/void *p, int_32 c);
 /* if there are multiple entries with this tag, the first one gets replaced */
 int headerModifyEntry(Header h, int_32 tag, int_32 type, void *p, int_32 c);
 
@@ -137,11 +137,11 @@ int headerAddOrAppendEntry(Header h, int_32 tag, int_32 type,
 int headerGetEntry(Header h, int_32 tag, /*@out@*/int_32 *type, /*@out@*/void **p, /*@out@*/int_32 *c);
 /* This gets an entry, and uses as little extra RAM as possible to represent
    it (this is only an issue for RPM_STRING_ARRAY_TYPE. */
-int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type, /*@out@*/void **p, int_32 *c);
+int headerGetEntryMinMemory(Header h, int_32 tag, int_32 *type, /*@out@*/void **p, /*@out@*/int_32 *c);
 
 /* If *type is RPM_NULL_TYPE any type will match, otherwise only *type will
    match. */
-int headerGetRawEntry(Header h, int_32 tag, int_32 *type, void **p, int_32 *c);
+int headerGetRawEntry(Header h, int_32 tag, /*@out@*/int_32 *type, /*@out@*/void **p, /*@out@*/int_32 *c);
 
 int headerIsEntry(Header h, int_32 tag);
 /* removes all entries of type tag from the header, returns 1 if none were
@@ -150,7 +150,8 @@ int headerRemoveEntry(Header h, int_32 tag);
 
 HeaderIterator headerInitIterator(Header h);
 int headerNextIterator(HeaderIterator iter,
-		       int_32 *tag, int_32 *type, void **p, int_32 *c);
+	/*@out@*/int_32 *tag, /*@out@*/int_32 *type, /*@out@*/void **p,
+	/*@out@*/int_32 *c);
 void headerFreeIterator(/*@only@*/ HeaderIterator iter);
 
 Header headerCopy(Header h);

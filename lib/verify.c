@@ -19,9 +19,9 @@ static union _endian { int i; char b[4]; } *_endian = (union _endian *)&_ie;
 #define	POPT_NOFILES	1000
 
 /* ========== Verify specific popt args */
-static void verifyArgCallback(poptContext con, enum poptCallbackReason reason,
-			     const struct poptOption * opt, const char * arg, 
-			     QVA_t *qva)
+static void verifyArgCallback(/*@unused@*/poptContext con,
+	/*@unused@*/enum poptCallbackReason reason,
+	const struct poptOption * opt, /*@unused@*/const char * arg, QVA_t *qva)
 {
     switch (opt->val) {
       case POPT_NOFILES: qva->qva_flags |= VERIFY_FILES; break;
@@ -301,7 +301,7 @@ static int verifyHeader(QVA_t *qva, Header h)
     return ec;
 }
 
-static int verifyDependencies(rpmdb db, Header h) {
+static int verifyDependencies(/*@only@*/rpmdb db, Header h) {
     rpmTransactionSet rpmdep;
     struct rpmDependencyConflict * conflicts;
     int numConflicts;
@@ -361,7 +361,7 @@ int rpmVerify(QVA_t *qva, enum rpmQVSources source, const char *arg)
     case RPMQV_RPM:
 	if (!(qva->qva_flags & VERIFY_DEPS))
 	    break;
-	/* fall thru */
+	/*@fallthrough@*/
     default:
 	if (rpmdbOpen(qva->qva_prefix, &db, O_RDONLY, 0644)) {
 	    fprintf(stderr, _("rpmVerify: rpmdbOpen() failed\n"));
