@@ -334,7 +334,7 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
 	fn = tmpnam(NULL);
 	rpmMessage(RPMMESS_DEBUG, "script found - running from file %s\n", fn);
 	fd = open(fn, O_CREAT | O_RDWR);
-	unlink(fn);
+	if (!isdebug) unlink(fn);
 	if (fd < 0) {
 	    rpmError(RPMERR_SCRIPT, "error creating file for (un)install script");
 	    return 1;
@@ -361,7 +361,7 @@ int runScript(char * prefix, Header h, int tag, int arg, int norunScripts) {
 	    }
 
 	    if (isdebug)
-		execl("/bin/sh", "/bin/sh", "-x", "-s", upgradeArg, NULL);
+		execl("/bin/sh", "/bin/sh", "-xs", upgradeArg, NULL);
 	    else
 		execl("/bin/sh", "/bin/sh", "-s", upgradeArg, NULL);
 	    _exit(-1);
