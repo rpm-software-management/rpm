@@ -767,7 +767,7 @@ static int setFileOwner(char * prefix, char * file, char * owner,
     }
 	
     message(MESS_DEBUG, "%s owned by %s (%d), group %s (%d) mode %o\n",
-		filespec, owner, uid, group, gid, mode);
+		filespec, owner, uid, group, gid, mode & 07777);
     if (chown(filespec, uid, gid)) {
 	error(RPMERR_CHOWN, "cannot set owner and group for %s - %s\n",
 		filespec, strerror(errno));
@@ -776,12 +776,14 @@ static int setFileOwner(char * prefix, char * file, char * owner,
 	return 1;
     }
     /* Also set the mode according to what is stored in the header */
-    if (chmod(filespec, mode)) {
-	error(RPMERR_CHOWN, "cannot change mode for %s - %s\n",
-		filespec, strerror(errno));
-	/* screw with the permissions so it's not SUID and 0.0 */
-	chmod(filespec, 0644);
-	return 1;
+    if (! S_ISLNK(mode)) {
+	if (chmod(filespec, mode & 07777)) {
+	    error(RPMERR_CHOWN, "cannot change mode for %s - %s\n",
+		  filespec, strerror(errno));
+	    /* screw with the permissions so it's not SUID and 0.0 */
+	    chmod(filespec, 0644);
+	    return 1;
+	}
     }
 
     return 0;
