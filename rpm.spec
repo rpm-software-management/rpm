@@ -124,7 +124,6 @@ mkdir -p $RPM_BUILD_ROOT/etc/rpm
 { cd $RPM_BUILD_ROOT
   strip ./bin/rpm
   strip .%{__prefix}/bin/rpm2cpio
-  strip .%{__prefix}/lib/rpm/rpmputtext .%{__prefix}/lib/rpm/rpmgettext
 }
 
 %clean
@@ -233,8 +232,6 @@ fi
 %{__prefix}/lib/rpm/rpm[bt]
 %{__prefix}/lib/rpm/rpmdiff
 %{__prefix}/lib/rpm/rpmdiff.cgi
-%{__prefix}/lib/rpm/rpmgettext
-%{__prefix}/lib/rpm/rpmputtext
 %{__prefix}/lib/rpm/u_pkg.sh
 %{__prefix}/lib/rpm/vpkg-provides.sh
 %{__prefix}/lib/rpm/vpkg-provides2.sh

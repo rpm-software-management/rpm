@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 7.0\n"
-"POT-Creation-Date: 2000-08-04 15:48-0400\n"
+"POT-Creation-Date: 2000-08-27 14:45-0400\n"
 "PO-Revision-Date: 2000-06-21 16:11+02:00\n"
 "Last-Translator: Kjartan Maraas <kmaraas@online.no>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -9,10 +9,10 @@ msgstr ""
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: popthelp.c:23
+#: popthelp.c:27
 msgid "Show this help message"
 msgstr "Vis denne hjelpmeldingen"
 
-#: popthelp.c:24
+#: popthelp.c:28
 msgid "Display brief usage message"
 msgstr "Vis kort bruksmelding"

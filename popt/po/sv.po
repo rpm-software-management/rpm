@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt\n"
-"POT-Creation-Date: 2000-08-04 15:48-0400\n"
+"POT-Creation-Date: 2000-08-27 14:45-0400\n"
 "PO-Revision-Date: 2000-06-20 00:07+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -9,10 +9,10 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: popthelp.c:23
+#: popthelp.c:27
 msgid "Show this help message"
 msgstr "Visa detta hjälpmeddelande"
 
-#: popthelp.c:24
+#: popthelp.c:28
 msgid "Display brief usage message"
 msgstr "Visa ett kortfattat användningsmeddelande"

@@ -15,9 +15,7 @@ EXTRA_DIST = \
 	strtoul.c
 
 noinst_HEADERS = \
-	err.h		error.h		fnmatch.h	fstrcmp.h	\
-	glob.h		libgettext.h	message.h	po-lex.h	\
-			str-list.h	fstrcmp.h
+	err.h		error.h		fnmatch.h	glob.h		
 
 noinst_LIBRARIES = libmisc.a
 

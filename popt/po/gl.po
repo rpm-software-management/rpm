@@ -10,7 +10,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: popt 1.4\n"
-"POT-Creation-Date: 2000-08-04 15:48-0400\n"
+"POT-Creation-Date: 2000-08-27 14:45-0400\n"
 "PO-Revision-Date: 2000-01-06 20:31+0100\n"
 "Last-Translator: Jesús Bravo Álvarez <jba@pobox.com>\n"
 "Language-Team: Galician <gpul-traduccion@ceu.fi.udc.es>\n"
@@ -18,10 +18,10 @@ msgstr ""
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: popthelp.c:23
+#: popthelp.c:27
 msgid "Show this help message"
 msgstr "Amosar esta mensaxe de axuda"
 
-#: popthelp.c:24
+#: popthelp.c:28
 msgid "Display brief usage message"
 msgstr "Amosar brevemente o xeito de utilización"

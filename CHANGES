@@ -1,5 +1,6 @@
 4.0 -> 4.1
 	- add doxygen and lclint annotations most everywhere.
+	- rip out rpm{get,put}text, use getpo.sh and specspo instead.
 	- rip out rpmrc configuration.
 	- consistent return for all signature verification.
 	- use enum for signature header tags.
