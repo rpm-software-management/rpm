@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-24 14:47-0500\n"
+"POT-Creation-Date: 2002-12-24 15:05-0500\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -520,64 +520,64 @@ msgstr "Fil passer ikke til præfiks (%s): %s\n"
 msgid "File not found: %s\n"
 msgstr "Fil ikke fundet: %s\n"
 
-#: build/files.c:1755
+#: build/files.c:1758
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead mislykkedes\n"
 
-#: build/files.c:1759 lib/rpmchecksig.c:573
+#: build/files.c:1762 lib/rpmchecksig.c:573
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1805
+#: build/files.c:1810
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Fil kræver foranstillet \"/\": %s\n"
 
-#: build/files.c:1829
+#: build/files.c:1834
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linie %d: Filnavn ikke tilladt: %s\n"
 
-#: build/files.c:1846 lib/rpminstall.c:343
+#: build/files.c:1851 lib/rpminstall.c:343
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:1906
+#: build/files.c:1911
 #, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:1917 build/pack.c:156
+#: build/files.c:1922 build/pack.c:156
 #, c-format
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:2306
+#: build/files.c:2311
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2318 build/parsePrep.c:50
+#: build/files.c:2323 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:2362
+#: build/files.c:2367
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: build/files.c:2383
+#: build/files.c:2388
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2411
+#: build/files.c:2416
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
@@ -3123,7 +3123,7 @@ msgstr ""
 msgid "missing  %c %s"
 msgstr "manglende  %s"
 
-#: lib/verify.c:393
+#: lib/verify.c:395
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s: "
 msgstr "Ikke-tilfredsstillede afhængighedskrav for %s-%s-%s: "

@@ -1742,15 +1742,18 @@ static int processPubkeyFile(Package pkg, FileList fl, const char * fileURL)
     const char * apkt = NULL;
     const unsigned char * pkt = NULL;
     ssize_t pktlen = 0;
+    int absolute = 1;
     int rc = 1;
     int xx;
 
     (void) urlPath(fileURL, &fn);
-     if (*fn == '/')
+     if (*fn == '/') {
 	fn = rpmGenPath(fl->buildRootURL, NULL, fn);
-     else
+	absolute = 1;
+     } else
 	fn = rpmGenPath(buildURL, NULL, fn);
 
+fprintf(stderr, "*** fn %s\n", fn);
     if ((rc = pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
 	rpmError(RPMERR_BADSPEC, _("%s: public key read failed.\n"), fn);
 	goto exit;
@@ -1765,6 +1768,8 @@ static int processPubkeyFile(Package pkg, FileList fl, const char * fileURL)
 		RPM_STRING_ARRAY_TYPE, &apkt, 1);
 
     rc = 0;
+    if (absolute)
+	rc = addFile(fl, fn, NULL);
 
 exit:
     apkt = _free(apkt);

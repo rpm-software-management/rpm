@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.348 2002/12/24 19:49:41 jbj Exp $
+# $Id: sl.po,v 1.349 2002/12/24 20:06:43 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-24 14:47-0500\n"
+"POT-Creation-Date: 2002-12-24 15:05-0500\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -537,64 +537,64 @@ msgstr "Datoteka se ne ujema s predpono (%s): %s"
 msgid "File not found: %s\n"
 msgstr "Datoteke ni mogoèe najti: %s"
 
-#: build/files.c:1755
+#: build/files.c:1758
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: build/files.c:1759 lib/rpmchecksig.c:573
+#: build/files.c:1762 lib/rpmchecksig.c:573
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1805
+#: build/files.c:1810
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Datoteki manjka uvodni \"/\": %s"
 
-#: build/files.c:1829
+#: build/files.c:1834
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "vrstica %d: Razlièica ni dovoljena: %s"
 
-#: build/files.c:1846 lib/rpminstall.c:343
+#: build/files.c:1851 lib/rpminstall.c:343
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
 
-#: build/files.c:1906
+#: build/files.c:1911
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Datoteke %s iz %%files ni mo¾no odpreti: %s"
 
-#: build/files.c:1917 build/pack.c:156
+#: build/files.c:1922 build/pack.c:156
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "vrstica: %s"
 
-#: build/files.c:2306
+#: build/files.c:2311
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Po¹kodovana datoteka: %s: %s"
 
-#: build/files.c:2318 build/parsePrep.c:50
+#: build/files.c:2323 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Neobstojeè lastnik/skupina: %s\n"
 
-#: build/files.c:2362
+#: build/files.c:2367
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "i¹èemo paket %s\n"
 
-#: build/files.c:2383
+#: build/files.c:2388
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2411
+#: build/files.c:2416
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Obdeloavnje datotek: %s-%s-%s\n"
@@ -3167,7 +3167,7 @@ msgstr ""
 msgid "missing  %c %s"
 msgstr "manjka     %s\n"
 
-#: lib/verify.c:393
+#: lib/verify.c:395
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s: "
 msgstr "Nezadovoljene soodvisnosti za %s-%s-%s: "

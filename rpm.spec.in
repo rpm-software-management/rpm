@@ -15,7 +15,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.37
+Release: 0.38
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -455,8 +455,9 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
-* Mon Dec 24 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.37
+* Mon Dec 24 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.38
 - add %%pubkey attribute to read armored pubkey files into header.
+- permit both relative/absolute paths, display 'P' when verifying.
 
 * Mon Dec 23 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.36
 - add matching "config(N) = EVR"  dependencies iff %%config is found.

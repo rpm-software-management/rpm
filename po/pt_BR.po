@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-12-24 14:47-0500\n"
+"POT-Creation-Date: 2002-12-24 15:05-0500\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
@@ -576,68 +576,68 @@ msgid "File not found: %s\n"
 msgstr "no foi passado pacote para desinstalao"
 
 # , c-format
-#: build/files.c:1755
+#: build/files.c:1758
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/files.c:1759 lib/rpmchecksig.c:573
+#: build/files.c:1762 lib/rpmchecksig.c:573
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1805
+#: build/files.c:1810
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "argumentos para o --dbpath devem comear com uma /"
 
 # , c-format
-#: build/files.c:1829
+#: build/files.c:1834
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "No consegui abrir: %s\n"
 
-#: build/files.c:1846 lib/rpminstall.c:343
+#: build/files.c:1851 lib/rpminstall.c:343
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "no foi passado pacote para desinstalao"
 
 # , c-format
-#: build/files.c:1906
+#: build/files.c:1911
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "No consegui abrir: %s\n"
 
 # , c-format
-#: build/files.c:1917 build/pack.c:156
+#: build/files.c:1922 build/pack.c:156
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
 # , c-format
-#: build/files.c:2306
+#: build/files.c:2311
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "No consegui ler o arquivo spec de %s\n"
 
-#: build/files.c:2318 build/parsePrep.c:50
+#: build/files.c:2323 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2362
+#: build/files.c:2367
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "instale pacote"
 
-#: build/files.c:2383
+#: build/files.c:2388
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2411
+#: build/files.c:2416
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -3367,7 +3367,7 @@ msgstr ""
 msgid "missing  %c %s"
 msgstr ""
 
-#: lib/verify.c:393
+#: lib/verify.c:395
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s: "
 msgstr "lista dependncias do pacote"

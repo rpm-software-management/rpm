@@ -288,6 +288,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 			 (fileAttrs & RPMFILE_DOC)	? 'd' :
 			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
 			 (fileAttrs & RPMFILE_LICENSE)	? 'l' :
+			 (fileAttrs & RPMFILE_PUBKEY)	? 'P' :
 			 (fileAttrs & RPMFILE_README)	? 'r' : ' '), 
 			rpmfiFN(fi));
 		te += strlen(te);
@@ -329,6 +330,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 			 (fileAttrs & RPMFILE_DOC)	? 'd' :
 			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
 			 (fileAttrs & RPMFILE_LICENSE)	? 'l' :
+			 (fileAttrs & RPMFILE_PUBKEY)	? 'P' :
 			 (fileAttrs & RPMFILE_README)	? 'r' : ' '), 
 			rpmfiFN(fi));
 	    te += strlen(te);
