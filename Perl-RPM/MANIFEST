@@ -5,12 +5,13 @@ Makefile.PL		MakeMaker file
 README			Overview
 RPM.h			C header, declarations, etc.
 RPM.pm			Perl code for top-level functionality
-RPM.xs			C/XS code for top-level stuff and RPM::Error
+RPM.xs			C/XS code for top-level stuff
 RPM/Constants.pm	Perl code for constants (export lists, etc.)
 RPM/Constants.xs	C/XS code for constants
 RPM/Database.pm		Perl code for database access
 RPM/Database.xs		C/XS code for database
 RPM/Error.pm		Perl code for the error package
+RPM/Error.xs		C/XS code for the error package
 RPM/Header.pm		Perl code for headers
 RPM/Header.xs		C/XS code for headers
 typemap			Type-mappings for xsubpp to manage headers and database
