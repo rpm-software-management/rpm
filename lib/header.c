@@ -1989,9 +1989,8 @@ static void findTag(char * name, const struct headerTagTableEntry * tags,
     /* Search extensions first to permit overriding header tags. */
     ext = extensions;
     while (ext->type != HEADER_EXT_LAST) {
-	if (ext->name == NULL)		/* XXX programmer error. */
-	    continue;
-	if (ext->type == HEADER_EXT_TAG && !xstrcasecmp(ext->name, tagname))
+	if (ext->name != NULL && ext->type == HEADER_EXT_TAG
+	&& !xstrcasecmp(ext->name, tagname))
 	    break;
 
 	if (ext->type == HEADER_EXT_MORE)
@@ -2464,9 +2463,8 @@ static char * formatValue(struct sprintfTag * tag, Header h,
     if (tag->type) {
 	ext = extensions;
 	while (ext->type != HEADER_EXT_LAST) {
-	    if (ext->name == NULL)		/* XXX programmer error. */
-		continue;
-	    if (ext->type == HEADER_EXT_FORMAT && !strcmp(ext->name, tag->type))
+	    if (ext->name != NULL && ext->type == HEADER_EXT_FORMAT
+	    && !strcmp(ext->name, tag->type))
 	    {
 		tagtype = ext->u.formatFunction;
 		break;

@@ -472,6 +472,9 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
     /*@=keeptrans@*/
     dbi->dbi_rpmtag = rpmtag;
     
+    /*
+     * Inverted lists have join length of 2, primary data has join length of 1.
+     */
     switch (rpmtag) {
     case RPMDBI_PACKAGES:
     case RPMDBI_DEPENDS:
@@ -481,9 +484,10 @@ dbiIndex db3New(rpmdb rpmdb, int rpmtag)
 	dbi->dbi_jlen = 2 * sizeof(int_32);
 	break;
     }
-    /*@-globstate@*/
+
+    dbi->dbi_use_cursors = 1;		/* Cursors are always used now. */
+
     return dbi;
-    /*@=globstate@*/
 }
 
 const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)

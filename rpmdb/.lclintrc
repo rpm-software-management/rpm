@@ -1,6 +1,7 @@
 -I. -I.. -I../build -I../lib -I../rpmio -I../popt -DHAVE_CONFIG_H -D_GNU_SOURCE
 
 +partial
+#+forcehints
 
 -warnunixlib
 -warnposix
@@ -9,9 +10,9 @@
 
 -unrecogcomments	# XXX ignore doxygen markings
 
-#+proto-param-match
+#-deepbreak		# shortcut 485 occurences
 
-#-deepbreak		# shortcut 485 cases
++checks			# lclint level
 
 # --- not-yet at strict level
 #+ptrarith
@@ -20,41 +21,41 @@
 #+sizeoftype
 
 #+mod-uncon		# shortcut alloca is painful
-#+mod-nomods
-#+modglobsnomods
-#+modstrictglobsnomods
+#+mod-nomods		# 927 occurences
++modglobsnomods
++modstrictglobsnomods
 
-#+mod-uncon-nomods
+#+mod-uncon-nomods	# ~118 occurences
 #+mod-internal-strict
-#+mod-file-sys
-#+globnoglobs
-#+internalglobs
-#+internalglobnoglobs
-#+modglobsunchecked
-#+warnmissingglobs
-#+warnmissingglobsnomods
-#+impcheckedstrictglobs
-#+impcheckedstrictstatics
+#+mod-file-sys		# 102 occurences
+#+globnoglobs		# 1 occurence
+#+internalglobs		# 38 occurences
+#+internalglobnoglobs		# ???
+#+modglobsunchecked	# 73 occurences
++warnmissingglobs
+#+warnmissingglobsnomods	# ???
+#+impcheckedstrictglobs	# 358 occurences
+#+impcheckedstrictstatics # 1057 occurences
 #+strictusereleas
 #+strictbranchstate
 #+strictdestroy
-#+modobserveruncon
+#+modobserveruncon	# 192 occurences
 #+macroempty
 #+ansi-reserved-internal
-#+evalorderuncon
+#+evalorderuncon	# 32 occurences
 #+elseifcomplete
-#+loopswitchbreak
-#+switchswitchbreak
-#+looploopcontinue
+#+loopswitchbreak	# 286 occurences
+#+switchswitchbreak	# 32 occurences
+#+looploopcontinue	# 86 occurences
 #+whileblock
-#+forempty
++forempty
 #+forblock
 #+ifblock
-#+noeffectuncon
+#+noeffectuncon		# 228 occurences
 +topuse
 #+unusedspecial
 #+export-local
-#+oldstyle
++oldstyle
 #+sys-dir-errors
 #controlnestdepth 15
 #stringliterallen 509
@@ -62,36 +63,14 @@
 #numenummembers 127
 
 # --- not-yet at checks level
-#+predboolptr
--ptrnegate
-#-enumint
--relaxquals
-#+mustmod		# segfault in psm.c:597
-#+allglobs
-#+impcheckmodinternals
-#+uncheckedglobalias
-#+deparrays
-#+onlyunqglobaltrans 
-#+staticinittrans
-#+unqualifiedinittrans
-#+retalias
-#+assignexpose
-#+castexpose
-#+retexpose
-#+readonlytrans
-#+sefuncon
-#+ansi-reserved
-+cpp-names		# check for c++ names
-#+infloopsuncon
-#+looploopbreak
-#+switchloopbreak
-#+whileempty
-+declundef
-+export-header
-+export-header-var
-+redecl
-+noparams
-#includenest 8
+-declundef
+-predboolptr		# 773 occurences
++enumint		# 93 occurences
+-allglobs		# 131 occurrences
+-ansi-reserved		# goofy
+-infloopsuncon		# goofy
+
+-proto-param-match	# 59 occurences
 
 # don't-bother-me-yet parameters
 -branchstate		# painful
