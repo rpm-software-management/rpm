@@ -227,13 +227,17 @@ rpmTransactionSet rpmtransCreateSet(rpmdb db, char * root) {
     return rpmdep;
 }
 
-void rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
+int rpmtransAddPackage(rpmTransactionSet rpmdep, Header h, FD_t fd,
 			void * key, int upgrade, rpmRelocation * relocs) {
     /* this is an install followed by uninstalls */
     dbiIndexSet matches;
     char * name;
     int count, i, j;
     char ** obsoletes;
+
+    if (headerIsEntry(h, RPMTAG_SOURCEPACKAGE)) {
+	return 1;
+    }
 
     /* FIXME: handling upgrades like this is *almost* okay. It doesn't
        check to make sure we're upgrading to a newer version, and it
