@@ -37,8 +37,7 @@ static fingerPrint doLookup(char * fullName, int scareMemory,
 
     /* assert(*fullName == '/' || !scareMemory); */
 
-    /* FIXME: a directory stat cache could *really* speed things up. we'd
-       have to be sure to flush it, but... */
+    /* FIXME: a better cache might speed things up? */
 
     if (cache && cache->pathsStripped && 
 	!strncmp(fullName, cache->match, cache->matchLength)) {
