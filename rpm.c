@@ -531,8 +531,6 @@ static void printHelp(void) {
 		  _("build the packages for the build targets platform1...platformN."));
     printHelpLine(  "      --nobuild           ",
 		  _("do not execute any stages"));
-    printHelpLine(_("      --timecheck <secs>  "),
-		  _("set the time check to <secs> seconds (0 disables)"));
     puts("");
     printHelpLine(_("    --rebuild <src_pkg>   "),
 		  _("install source package, build binary package and remove spec file, sources, patches, and icons."));

@@ -124,8 +124,10 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 
     /* Allocate a sufficently large buffer for output. */
     while (1) {
+	va_list apc;
+	__va_copy(apc, ap);
 	/*@-unrecog@*/
-	nb = vsnprintf(msgbuf, msgnb, fmt, ap);
+	nb = vsnprintf(msgbuf, msgnb, fmt, apc);
 	/*@=unrecog@*/
 	if (nb > -1 && nb < msgnb)
 	    break;

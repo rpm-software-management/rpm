@@ -143,10 +143,12 @@ static rpmRC readPackageHeaders(FD_t fd, /*@out@*/ struct rpmlead * leadPtr,
 	if (headerIsEntry(*hdr, RPMTAG_FILEGROUPNAME))
 	    headerRemoveEntry(*hdr, RPMTAG_FILEGIDS);
 
-	/* We switched the way we do relocateable packages. We fix some of
-	   it up here, though the install code still has to be a bit 
-	   careful. This fixup makes queries give the new values though,
-	   which is quite handy. */
+	/*
+	 * We switched the way we do relocateable packages. We fix some of
+	 * it up here, though the install code still has to be a bit 
+	 * careful. This fixup makes queries give the new values though,
+	 * which is quite handy.
+	 */
 	if (headerGetEntry(*hdr, RPMTAG_DEFAULTPREFIX, NULL,
 			   (void **) &defaultPrefix, NULL)) {
 	    defaultPrefix =

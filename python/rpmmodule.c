@@ -67,7 +67,7 @@ static PyObject * pyrpmError;
  * 	import os, rpm
  *  
  * 	fd = os.open("/tmp/foo-1.0-1.i386.rpm", os.O_RDONLY)
- * 	(isSource, header) = rpm.headerFromPackage(fd)
+ * 	(header, isSource) = rpm.headerFromPackage(fd)
  * 	fd.close()
  * \endcode
  * The Python interface to the header data is quite elegant.  It
@@ -2291,6 +2291,7 @@ static PyMethodDef rpmModuleMethods[] = {
     { "initdb", (PyCFunction) rpmInitDB, METH_VARARGS, NULL },
     { "opendb", (PyCFunction) rpmOpenDB, METH_VARARGS, NULL },
     { "rebuilddb", (PyCFunction) rebuildDB, METH_VARARGS, NULL },
+    { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS, NULL },
     { "readHeaderListFromFD", (PyCFunction) rpmHeaderFromFD, METH_VARARGS, NULL },
     { "readHeaderListFromFile", (PyCFunction) rpmHeaderFromFile, METH_VARARGS, NULL },
     { "errorSetCallback", (PyCFunction) errorSetCallback, METH_VARARGS, NULL },

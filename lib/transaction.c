@@ -173,7 +173,7 @@ static void psAppend(rpmProblemSet probs, rpmProblemType type,
     }
 
     if (altH) {
-	const char *n, *v, *r;
+	const char * n, * v, * r;
 	headerNVR(altH, &n, &v, &r);
 	p->altNEVR =
 	    t = xmalloc(strlen(n) + strlen(v) + strlen(r) + sizeof("--"));
@@ -578,7 +578,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 	    if (strcmp(baseNames[i], te)) /* basename changed too? */
 		baseNames[i] = alloca_strdup(te);
 	    *te = '\0';			/* terminate new directory name */
- 	}
+	}
 
 	/* Does this directory already exist in the directory list? */
 	for (j = 0; j < dirCount; j++) {
@@ -671,7 +671,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 			  baseNames, fileCount);
 	fi->bnl = hfd(fi->bnl, RPM_STRING_ARRAY_TYPE);
 	hge(h, RPMTAG_BASENAMES, NULL, (void **) &fi->bnl, &fi->fc);
-	
+
 	headerModifyEntry(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
 	fi->dnl = hfd(fi->dnl, RPM_STRING_ARRAY_TYPE);
@@ -684,7 +684,7 @@ static Header relocateFileList(const rpmTransactionSet ts, TFI_t fi,
 
     baseNames = hfd(baseNames, RPM_STRING_ARRAY_TYPE);
     dirNames = hfd(dirNames, RPM_STRING_ARRAY_TYPE);
-    if (fn) free(fn);
+    fn = _free(fn);
 
     return h;
 }
@@ -1227,7 +1227,6 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	tmpPath = _free(tmpPath);
     }
 
-
     s = rpmExpand("%{_install_langs}", NULL);
     if (!(s && *s != '%'))
 	s = _free(s);
@@ -1321,6 +1320,7 @@ static void skipFiles(const rpmTransactionSet ts, TFI_t fi)
 	if (noDocs && (fi->fflags[i] & RPMFILE_DOC)) {
 	    drc[ix]--;	dff[ix] = 1;
 	    fi->actions[i] = FA_SKIPNSTATE;
+	    continue;
 	}
     }
 
@@ -1640,7 +1640,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	preTransCount = 0;
 
 	fi->type = ts->order[oc].type;
-	switch (ts->order[oc].type) {
+	switch (fi->type) {
 	case TR_ADDED:
 	    i = ts->order[oc].u.addedIndex;
 	    alp = ts->addedPackages.list + i;
@@ -1846,7 +1846,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	NULL, ts->notifyData));
 
     if (ts->chrootDone) {
-	/*@-unrecog@*/ chroot("."); /*@-unrecog@*/ 
+	/*@-unrecog@*/ chroot("."); /*@-unrecog@*/
 	ts->chrootDone = 0;
 	chdir(ts->currDir);
     }
@@ -1915,7 +1915,7 @@ int rpmRunTransactions(	rpmTransactionSet ts,
 	gotfd = 0;
 	psm->fi = fi;
 	switch (fi->type)
-  	{
+	{
 	case TR_ADDED:
 	    alp = tsGetAlp(tsi);
 assert(alp == fi->ap);

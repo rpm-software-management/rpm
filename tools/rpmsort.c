@@ -1,65 +1,202 @@
 #include "system.h"
 
-#include "rpmbuild.h"
-#include "buildio.h"
+#include <rpmlib.h>
+#include <rpmmacro.h>
+#include <rpmurl.h>
 
 #include "depends.h"
-#include "header.h"
+
+#include "manifest.h"
+#include "misc.h"
 #include "debug.h"
 
 extern int _depends_debug;
 
+static int noAvailable = 0;
+static const char * avdbpath =
+	"/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat";
+static int noChainsaw = 0;
 static int noDeps = 0;
+
+/**
+ * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+ * @param this		memory to free
+ * @retval		NULL always
+ */
+static /*@null@*/ void * _free(/*@only@*/ /*@null@*/ const void * this) {
+    if (this)   free((void *)this);
+    return NULL;
+}
 
 static int
 do_tsort(const char *fileArgv[])
 {
     const char * rootdir = "/";
-    const char ** fileURL;
-    int numPkgs;
-    int numFailed = 0;
     rpmdb rpmdb = NULL;
     rpmTransactionSet ts = NULL;
+    const char ** pkgURL = NULL;
+    char * pkgState = NULL;
+    const char ** fnp;
+    const char * fileURL = NULL;
+    int numPkgs = 0;
+    int numFailed = 0;
+    int prevx;
+    int pkgx;
+    const char ** argv = NULL;
+    int argc = 0;
+    const char ** av = NULL;
+    int ac = 0;
     Header h;
-    int rc;
+    int rc = 0;
+    int i;
 
     if (fileArgv == NULL)
 	return 0;
 
-    if (rpmdbOpen(rootdir, &rpmdb, O_RDONLY, 0644)) {
+    rc = rpmdbOpen(rootdir, &rpmdb, O_RDONLY, 0644);
+    if (rc) {
 	rpmMessage(RPMMESS_ERROR, _("cannot open Packages database\n"));
 	rc = -1;
 	goto exit;
     }
 
     ts = rpmtransCreateSet(rpmdb, rootdir);
+    if (!noChainsaw)
+	ts->transFlags = RPMTRANS_FLAG_CHAINSAW;
 
-    for (fileURL = fileArgv, numPkgs = 0; *fileURL; fileURL++, numPkgs++)
-	;
+    /* Load all the available packages. */
+    if (!(noDeps || noAvailable)) {
+	rpmdbMatchIterator mi = NULL;
+	struct rpmdb_s * avdb = NULL;
 
-    for (fileURL = fileArgv; *fileURL; fileURL++) {
+	addMacro(NULL, "_dbpath", NULL, avdbpath, RMIL_CMDLINE);
+	rc = rpmdbOpen(rootdir, &avdb, O_RDONLY, 0644);
+	delMacro(NULL, "_dbpath");
+	if (rc) {
+	    rpmMessage(RPMMESS_ERROR, _("cannot open Available database\n"));
+	    goto endavail;
+	}
+        mi = rpmdbInitIterator(avdb, RPMDBI_PACKAGES, NULL, 0);
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    rpmtransAvailablePackage(ts, h, NULL);
+	}
+
+endavail:
+	if (mi) rpmdbFreeIterator(mi);
+	if (avdb) rpmdbClose(avdb);
+    }
+
+    /* Build fully globbed list of arguments in argv[argc]. */
+    for (fnp = fileArgv; *fnp; fnp++) {
+	av = _free(av);
+	ac = 0;
+	rc = rpmGlob(*fnp, &ac, &av);
+	if (rc || ac == 0) continue;
+
+	argv = (argc == 0)
+	    ? xmalloc((argc+2) * sizeof(*argv))
+	    : xrealloc(argv, (argc+2) * sizeof(*argv));
+	memcpy(argv+argc, av, ac * sizeof(*av));
+	argc += ac;
+	argv[argc] = NULL;
+    }
+    av = _free(av);
+
+    numPkgs = 0;
+    prevx = 0;
+    pkgx = 0;
+
+restart:
+    /* Allocate sufficient storage for next set of args. */
+    if (pkgx >= numPkgs) {
+	numPkgs = pkgx + argc;
+	pkgURL = (pkgURL == NULL)
+	    ? xmalloc( (numPkgs + 1) * sizeof(*pkgURL))
+	    : xrealloc(pkgURL, (numPkgs + 1) * sizeof(*pkgURL));
+	memset(pkgURL + pkgx, 0, ((argc + 1) * sizeof(*pkgURL)));
+	pkgState = (pkgState == NULL)
+	    ? xmalloc( (numPkgs + 1) * sizeof(*pkgState))
+	    : xrealloc(pkgState, (numPkgs + 1) * sizeof(*pkgState));
+	memset(pkgState + pkgx, 0, ((argc + 1) * sizeof(*pkgState)));
+    }
+
+    /* Copy next set of args. */
+    for (i = 0; i < argc; i++) {
+	fileURL = _free(fileURL);
+	fileURL = argv[i];
+	argv[i] = NULL;
+	pkgURL[pkgx] = fileURL;
+	fileURL = NULL;
+	pkgx++;
+    }
+    fileURL = _free(fileURL);
+
+    /* Continue processing file arguments, building transaction set. */
+    for (fnp = pkgURL+prevx; *fnp; fnp++, prevx++) {
 	const char * fileName;
-	rpmRC rpmrc;
+	int isSource;
 	FD_t fd;
 
-	(void) urlPath(*fileURL, &fileName);
-	fd = Fopen(*fileURL, "r.ufdio");
+	(void) urlPath(*fnp, &fileName);
+
+	/* Try to read the header from a package file. */
+	fd = Fopen(*fnp, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
-	    rpmMessage(RPMMESS_ERROR, _("cannot open file %s: %s\n"), *fileURL,
-		Fstrerror(fd));
+	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *fnp,
+			Fstrerror(fd));
 	    if (fd) Fclose(fd);
-	    numFailed++;
-            continue;
-        }
+	    numFailed++; *fnp = NULL;
+	    continue;
+	}
 
-	rpmrc = rpmReadPackageHeader(fd, &h, NULL, NULL, NULL);
-
-	rc = rpmtransAddPackage(ts, h, NULL, fileName, 0, NULL);
-
-	headerFree(h);  /* XXX reference held by transaction set */
+	rc = rpmReadPackageHeader(fd, &h, &isSource, NULL, NULL);
 	Fclose(fd);
 
+	if (rc == 2) {
+	    numFailed++; *fnp = NULL;
+	    continue;
+	}
+
+	if (rc == 0) {
+	    rc = rpmtransAddPackage(ts, h, NULL, fileName, 0, NULL);
+	    headerFree(h);  /* XXX reference held by transaction set */
+	    continue;
+	}
+
+	if (rc != 1) {
+	    rpmMessage(RPMMESS_ERROR, _("%s cannot be installed\n"), *fnp);
+	    numFailed++; *fnp = NULL;
+	    break;
+	}
+
+	/* Try to read a package manifest. */
+	fd = Fopen(*fnp, "r.fpio");
+	if (fd == NULL || Ferror(fd)) {
+	    rpmError(RPMERR_OPEN, _("open of %s failed: %s\n"), *fnp,
+			Fstrerror(fd));
+	    if (fd) Fclose(fd);
+	    numFailed++; *fnp = NULL;
+	    break;
+	}
+
+	/* Read list of packages from manifest. */
+	rc = rpmReadPackageManifest(fd, &argc, &argv);
+	if (rc)
+	    rpmError(RPMERR_MANIFEST, _("%s: read manifest failed: %s\n"),
+			fileURL, Fstrerror(fd));
+	Fclose(fd);
+
+	/* If successful, restart the query loop. */
+	if (rc == 0) {
+	    prevx++;
+	    goto restart;
+	}
+
+	numFailed++; *fnp = NULL;
+	break;
     }
+
+    if (numFailed) goto exit;
 
     if (!noDeps) {
 	struct rpmDependencyConflict * conflicts = NULL;
@@ -87,6 +224,7 @@ do_tsort(const char *fileArgv[])
 	    const char * str;
 	    int i;
 
+	    alp = NULL;
 	    str = "???";
 	    switch (ts->order[oc].type) {
 	    case TR_ADDED:
@@ -107,9 +245,14 @@ do_tsort(const char *fileArgv[])
 	    }
 
 	    if (h) {
-		const char *n, *v, *r;
-		headerNVR(h, &n, &v, &r);
-		fprintf(stdout, "%s %s-%s-%s\n", str, n, v, r);
+		if (alp && alp->key) {
+		    const char * fn = alp->key;
+		    fprintf(stdout, "%s %s\n", str, fn);
+		} else {
+		    const char *n, *v, *r;
+		    headerNVR(h, &n, &v, &r);
+		    fprintf(stdout, "%s %s-%s-%s\n", str, n, v, r);
+		}
 		headerFree(h);
 	    }
 
@@ -119,18 +262,20 @@ do_tsort(const char *fileArgv[])
     rc = 0;
 
 exit:
-    if (ts) {
-	rpmtransFree(ts);
-	ts = NULL;
+    if (ts) rpmtransFree(ts);
+    for (i = 0; i < numPkgs; i++) {
+        pkgURL[i] = _free(pkgURL[i]);
     }
-    if (rpmdb) {
-	rpmdbClose(rpmdb);
-	rpmdb = NULL;
-    }
+    pkgState = _free(pkgState);
+    pkgURL = _free(pkgURL);
+    argv = _free(argv);
+    if (rpmdb) rpmdbClose(rpmdb);
     return rc;
 }
 
 static struct poptOption optionsTable[] = {
+ { "noavailable", '\0', 0, &noAvailable, 0,	NULL, NULL},
+ { "nochainsaw", '\0', 0, &noChainsaw, 0,	NULL, NULL},
  { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
  { "verbose", 'v', 0, 0, 'v',			NULL, NULL},
  { NULL,	0, 0, 0, 0,			NULL, NULL}

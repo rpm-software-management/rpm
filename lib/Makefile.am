@@ -66,7 +66,7 @@ getdate.c: getdate.y
 	   fi ;\
 	fi
 
-BUILT_SOURCES = tagtable.c
+BUILT_SOURCES = tagtable.c getdate.c
 
 .PHONY:	lclint
 .PHONY:	lclint

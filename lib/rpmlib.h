@@ -78,7 +78,7 @@ void headerMergeLegacySigs(Header h, const Header sig)
 /** \ingroup header
  * Regenerate signature header.
  * @param h		header
- * @return 		regenerated signature header
+ * @return		regenerated signature header
  */
 Header headerRegenSigHeader(const Header h)	/*@*/;
 
@@ -1097,6 +1097,8 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOTRIGGERPOSTUN = (1 << 23),
     RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),
     RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
+
+    RPMTRANS_FLAG_CHAINSAW	= (1 << 26),
 } rpmtransFlags;
 
 #define	_noTransScripts		\
@@ -1499,7 +1501,7 @@ typedef enum rpmInstallInterfaceFlags_e {
     INSTALL_NOORDER	= (1 << 3),	/*!< from --noorder */
     INSTALL_LABEL	= (1 << 4),	/*!< from --verbose (notify) */
     INSTALL_UPGRADE	= (1 << 5),	/*!< from --upgrade */
-    INSTALL_FRESHEN	= (1 << 6),	/*!< from --freshen */
+    INSTALL_FRESHEN	= (1 << 6)	/*!< from --freshen */
 } rpmInstallInterfaceFlags;
 
 /** \ingroup rpmcli
@@ -1535,7 +1537,7 @@ int rpmInstallSource(const char * prefix, const char * arg,
 typedef enum rpmEraseInterfaceFlags_e {
     UNINSTALL_NONE	= 0,
     UNINSTALL_NODEPS	= (1 << 0),	/*!< from --nodeps */
-    UNINSTALL_ALLMATCHES= (1 << 1),	/*!< from --allmatches */
+    UNINSTALL_ALLMATCHES= (1 << 1)	/*!< from --allmatches */
 } rpmEraseInterfaceFlags;
 
 /** \ingroup rpmcli
@@ -1598,7 +1600,7 @@ typedef enum rpmVerifySignatureReturn_e {
     RPMSIG_UNKNOWN	= 1,	/*!< Signature is unknown. */
     RPMSIG_BAD		= 2,	/*!< Signature does not verify. */
     RPMSIG_NOKEY	= 3,	/*!< Key is unavailable. */
-    RPMSIG_NOTTRUSTED	= 4,	/*!< Signature is OK, but key is not trusted. */
+    RPMSIG_NOTTRUSTED	= 4	/*!< Signature is OK, but key is not trusted. */
 } rpmVerifySignatureReturn;
 
 /** \ingroup signature
@@ -1627,7 +1629,7 @@ typedef enum rpmCheckSigFlags_e {
     CHECKSIG_NONE	= 0,		/*!< Don't check any signatures. */
     CHECKSIG_PGP	= (1 << 0),	/*!< if not --nopgp */
     CHECKSIG_MD5	= (1 << 1),	/*!< if not --nomd5 */
-    CHECKSIG_GPG	= (1 << 2),	/*!< if not --nogpg */
+    CHECKSIG_GPG	= (1 << 2)	/*!< if not --nogpg */
 } rpmCheckSigFlags;
 
 /** \ingroup rpmcli
@@ -1643,7 +1645,7 @@ int rpmCheckSig(rpmCheckSigFlags flags, const char ** argv);
  */
 typedef enum rpmResignFlags_e {
     RESIGN_NEW_SIGNATURE = 0,	/*!< from --resign */
-    RESIGN_ADD_SIGNATURE,	/*!< from --addsign */
+    RESIGN_ADD_SIGNATURE	/*!< from --addsign */
 } rpmResignFlags;
 
 /** \ingroup rpmcli

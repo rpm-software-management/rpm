@@ -1,10 +1,4 @@
 4.0.3 -> 4.1
-	- cpio mappings carry dirname/basename, not absolute path.
-	- fix: check waitpid return code.
-	- remove support for v1 src rpm's.
-	- re-position callbacks with ts/fi in cpio payload layer.
-	- state machines for packages (psm.c) and payloads (fsm.c)
-	- add --repackage option to put erased bits back into a package.
 
 4.0.2 -> 4.0.3
 	- update per-interpreter dependency scripts, add sql/tcl (#20295).
@@ -27,6 +21,13 @@
 	- fix: s390 (and ppc?) could return CPIOERR_BAD_HEADER (#28645).
 	- fix: Fwrite's are optimized out by aggressive compiler(irix) (#34711).
 	- portability: vsnprintf/snprintf wrappers for those without (#34657).
+	- cpio mappings carry dirname/basename, not absolute path.
+	- fix: check waitpid return code.
+	- remove support for v1 src rpm's.
+	- re-position callbacks with ts/fi in cpio payload layer.
+	- state machines for packages (psm.c) and payloads (fsm.c)
+	- add --repackage option to put erased bits back into a package.
+	- fix: (ppc) copy va_list in loop (#36845).
 
 4.0 -> 4.0.[12]
 	- add doxygen and lclint annotations most everywhere.

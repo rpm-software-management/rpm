@@ -228,10 +228,9 @@ int rpmInstall(const char * rootdir, const char ** fileArgv,
 	rc = rpmGlob(*fnp, &ac, &av);
 	if (rc || ac == 0) continue;
 
-	if (argc == 0)
-	    argv = xmalloc((argc+2) * sizeof(*argv));
-	else
-	    argv = xrealloc(argv, (argc+2) * sizeof(*argv));
+	argv = (argc == 0)
+	    ? xmalloc((argc+2) * sizeof(*argv))
+	    : xrealloc(argv, (argc+2) * sizeof(*argv));
 	memcpy(argv+argc, av, ac * sizeof(*av));
 	argc += ac;
 	argv[argc] = NULL;
@@ -547,6 +546,7 @@ exit:
     }
     pkgState = _free(pkgState);
     pkgURL = _free(pkgURL);
+    argv = _free(argv);
     if (dbIsOpen) rpmdbClose(db);
     return numFailed;
 }

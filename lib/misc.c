@@ -796,6 +796,8 @@ void providePackageNVR(Header h)
 
     /* Generate provides for this package name-version-release. */
     headerNVR(h, &name, &version, &release);
+    if (!(name && version && release))
+	return;
     pEVR = p = alloca(21 + strlen(version) + 1 + strlen(release) + 1);
     *p = '\0';
     if (headerGetEntry(h, RPMTAG_EPOCH, NULL, (void **) &epoch, NULL)) {
