@@ -13,6 +13,8 @@
 	- re-add elfutils/libdwarf (for dwarf.h), eliminate tools/dwarf2.h.
 	- resurrect genhdlist "greased lightning" pathway for now.
 	- elfutils: avoid gcc-3.2 ICE on x86_64 for now.
+	- add /usr/lib/rpm/rpmdeps.
+	- add /usr/lib/rpm/magic.
 
 4.0.4 -> 4.1:
 	- loosely wire beecrypt library into rpm.

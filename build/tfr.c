@@ -49,6 +49,11 @@ char buf[BUFSIZ];
     av = poptGetArgs(optCon);
     ac = argvCount(av);
 
+    if (ac == 0) {
+	poptPrintUsage(optCon, stderr, 0);
+	return 1;
+    }
+
     xav = NULL;
     xx = argvAppend(&xav, av_file);
     xx = argvAppend(&xav, av);

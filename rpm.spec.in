@@ -16,7 +16,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.4
+Release: 0.5
 Group: System Environment/Base
 Source: ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/rpm-%{rpm_version}.tar.gz
 Copyright: GPL
@@ -393,12 +393,15 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/getpo.sh
 %rpmattr	%{__prefix}/lib/rpm/http.req
 %rpmattr	%{__prefix}/lib/rpm/javadeps
+%rpmattr	%{__prefix}/lib/rpm/magic
+%rpmattr	%{__prefix}/lib/rpm/magic.mgc
 %rpmattr	%{__prefix}/lib/rpm/magic.prov
 %rpmattr	%{__prefix}/lib/rpm/magic.req
 %rpmattr	%{__prefix}/lib/rpm/perl.prov
 %rpmattr	%{__prefix}/lib/rpm/perl.req
 
 %rpmattr	%{__prefix}/lib/rpm/rpm[bt]
+%rpmattr	%{__prefix}/lib/rpm/rpmdeps
 %rpmattr	%{__prefix}/lib/rpm/striptofile
 %rpmattr	%{__prefix}/lib/rpm/trpm
 %rpmattr	%{__prefix}/lib/rpm/u_pkg.sh
@@ -407,6 +410,7 @@ exit 0
 %rpmattr	%{__prefix}/lib/rpm/vpkg-provides2.sh
 
 %{__prefix}%{__share}/man/man8/rpmbuild.8*
+%{__prefix}%{__share}/man/man8/rpmdeps.8*
 
 %if %{with_python_subpackage}
 %files python
@@ -479,6 +483,10 @@ exit 0
 %{__prefix}/include/popt.h
 
 %changelog
+* Thu Oct 24 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.5
+- add /usr/lib/rpm/rpmdeps.
+- add /usr/lib/rpm/magic.
+
 * Wed Oct 23 2002 Jeff Johnson <jbj@redhat.com> 4.2-0.4
 - resurrect genhdlist "greased lightning" pathway for now.
 - elfutils: avoid gcc-3.2 ICE on x86_64 for now.

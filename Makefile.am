@@ -130,6 +130,8 @@ pkgsrcdir = $(prefix)/src/$(RPMCANONVENDOR)
 
 install-data-local:
 	@$(mkinstalldirs) $(DESTDIR)$(varprefix)/lib/rpm
+	@$(INSTALL_DATA) file/magic $(DESTDIR)$(pkglibdir)/magic
+	@$(INSTALL_DATA) file/magic.mgc $(DESTDIR)$(pkglibdir)/magic.mgc
 	@rm -f $(DESTDIR)$(libdir)/rpmrc
 	@@LN_S@ rpm/rpmrc $(DESTDIR)$(libdir)/rpmrc
 	@rm -f $(DESTDIR)$(libdir)/rpmpopt

@@ -32,7 +32,7 @@ noinst_PROGRAMS = \
 	convertdb1 dump dumpdb rpmarchive rpmheader rpmlead rpmsignature
 
 pkgbindir = @RPMCONFIGDIR@
-pkgbin_PROGRAMS = debugedit javadeps rpmcache striptofile unstripfile
+pkgbin_PROGRAMS = debugedit javadeps rpmcache rpmdeps striptofile unstripfile
 
 bin_PROGRAMS =	rpmgraph
 
@@ -43,6 +43,9 @@ javadeps_SOURCES =	javadeps.c
 
 rpmcache_SOURCES =	rpmcache.c
 #rpmcache_LDFLAGS =	@LDFLAGS_STATIC@
+
+rpmdeps_SOURCES =	rpmdeps.c
+rpmdeps_LDFLAGS =	@LDFLAGS_STATIC@
 
 rpmgraph_SOURCES =	rpmgraph.c
 #rpmgraph_LDFLAGS =	@LDFLAGS_STATIC@

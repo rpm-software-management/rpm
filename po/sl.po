@@ -1,12 +1,12 @@
 # -*- mode:po; coding:iso-latin-2; -*- Slovenian messages for Redhat pkg. mngr.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Primo¾ Peterlin <primoz.peterlin@biofiz.mf.uni-lj.si>, 2000.
-# $Id: sl.po,v 1.321 2002/10/23 20:41:59 jbj Exp $
+# $Id: sl.po,v 1.322 2002/10/24 21:37:01 jbj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
-"POT-Creation-Date: 2002-10-23 16:38-0400\n"
+"POT-Creation-Date: 2002-10-24 16:55-0400\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -435,89 +435,89 @@ msgstr "&& in || nista podprta za nize"
 msgid "syntax error in expression\n"
 msgstr "napaka v sklanji izraza"
 
-#: build/files.c:306
+#: build/files.c:296
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK neuspe¹en: %s\n"
 
-#: build/files.c:371 build/files.c:571 build/files.c:766
+#: build/files.c:361 build/files.c:561 build/files.c:756
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Manjkajoèi ,(` v %s %s"
 
-#: build/files.c:382 build/files.c:700 build/files.c:777
+#: build/files.c:372 build/files.c:690 build/files.c:767
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Manjkajoèi ,)` v %s(%s"
 
-#: build/files.c:420 build/files.c:725
+#: build/files.c:410 build/files.c:715
 #, fuzzy, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Neveljaven ¾eton %s: %s"
 
-#: build/files.c:530
+#: build/files.c:520
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Manjkajoèi ,(` v %s %s"
 
-#: build/files.c:587
+#: build/files.c:577
 #, fuzzy, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Neprazen znak sledi %s(): %s"
 
-#: build/files.c:625
+#: build/files.c:615
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Nepravilna skladnja: %s(%s)"
 
-#: build/files.c:635
+#: build/files.c:625
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Nepravilno doloèilo naèina: %s(%s)"
 
-#: build/files.c:647
+#: build/files.c:637
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Nepravilno doloèilo naèina imenika: %s(%s)"
 
-#: build/files.c:804
+#: build/files.c:794
 #, fuzzy, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Nenavadna dol¾ina za locale: \"%.s\" pri %%lang(%s)"
 
 #. @innercontinue@
-#: build/files.c:815
+#: build/files.c:805
 #, fuzzy, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Podvojeni locale %.*s za %%lang(%s)"
 
-#: build/files.c:981
+#: build/files.c:975
 #, fuzzy, c-format
 msgid "Hit limit for %%docdir\n"
 msgstr "Dosegli smo omejitev za %%docdir"
 
-#: build/files.c:987
+#: build/files.c:981
 #, fuzzy, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Za %%docdir je podan samo en argument"
 
 #. We already got a file -- error
-#: build/files.c:1020
+#: build/files.c:1016
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dve datoteki v eni vrstici: %s"
 
-#: build/files.c:1035
+#: build/files.c:1031
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Ime datoteke se mora zaèeti z \"/\": %s"
 
-#: build/files.c:1048
+#: build/files.c:1044
 #, fuzzy, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Posebnih %%doc ni mo¾no me¹ati z ostalimi oblikami: %s"
 
-#: build/files.c:1200
+#: build/files.c:1198
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "Datoteka je navedena dvakrat: %s"
@@ -527,74 +527,74 @@ msgstr "Datoteka je navedena dvakrat: %s"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Simbolna povezava ka¾e na BuildRoot: %s -> %s"
 
-#: build/files.c:1609
+#: build/files.c:1613
 #, fuzzy, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Datoteka se ne ujema s predpono (%s): %s"
 
-#: build/files.c:1633
+#: build/files.c:1637
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Datoteke ni mogoèe najti: %s"
 
-#: build/files.c:1841
+#: build/files.c:1847
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Datoteki manjka uvodni \"/\": %s"
 
-#: build/files.c:1865
+#: build/files.c:1871
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "vrstica %d: Razlièica ni dovoljena: %s"
 
-#: build/files.c:1882
+#: build/files.c:1888
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
 
-#: build/files.c:1942
+#: build/files.c:1948
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Datoteke %s iz %%files ni mo¾no odpreti: %s"
 
-#: build/files.c:1953 build/pack.c:156
+#: build/files.c:1959 build/pack.c:156
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "vrstica: %s"
 
-#: build/files.c:2340
+#: build/files.c:2346
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Po¹kodovana datoteka: %s: %s"
 
-#: build/files.c:2352 build/parsePrep.c:50
+#: build/files.c:2358 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Neobstojeè lastnik/skupina: %s\n"
 
-#: build/files.c:2505
+#: build/files.c:2513
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Iskanje  %s: (z uporabo %s)...\n"
 
-#: build/files.c:2511 build/files.c:2524
+#: build/files.c:2519 build/files.c:2534
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Neuspe¹no iskanje %s:"
 
-#: build/files.c:2653
+#: build/files.c:2665
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "i¹èemo paket %s\n"
 
-#: build/files.c:2674
+#: build/files.c:2686
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2713
+#: build/files.c:2727
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Obdeloavnje datotek: %s-%s-%s\n"
