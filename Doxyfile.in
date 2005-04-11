@@ -576,7 +576,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/popt/popthelp.c \
                          @top_srcdir@/popt/poptint.h \
                          @top_srcdir@/popt/poptparse.c \
-                         @top_srcdir@/python/_rpmdb.c \
                          @top_srcdir@/python/header-py.c \
                          @top_srcdir@/python/header-py.h \
                          @top_srcdir@/python/rpmal-py.c \
