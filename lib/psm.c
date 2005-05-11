@@ -921,9 +921,15 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	rc = RPMRC_FAIL;
     } else
     if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
+      if (WIFSIGNALED(psm->sq.status)) {
+        rpmError(RPMERR_SCRIPT,
+                 _("%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"),
+                 sln, n, v, r, a, WTERMSIG(psm->sq.status));
+      } else {
 	rpmError(RPMERR_SCRIPT,
 		_("%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"),
 		sln, n, v, r, a, WEXITSTATUS(psm->sq.status));
+      }
 	rc = RPMRC_FAIL;
     }
   }
