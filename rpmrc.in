@@ -2,7 +2,7 @@
 # \verbatim
 #
 # @RPMCONFIGDIR@/@configure_input@
-# $Id: rpmrc.in,v 2.65.2.3 2005/01/09 17:48:19 jbj Exp $
+# $Id: rpmrc.in,v 2.65.2.4 2005/05/19 17:26:53 pauln Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -215,6 +215,8 @@ buildarchtranslate: ppc8560: ppc
 buildarchtranslate: ppc32dy4: ppc
 buildarchtranslate: ppciseries: ppc
 buildarchtranslate: ppcpseries: ppc
+buildarchtranslate: ppc64iseries: ppc64
+buildarchtranslate: ppc64pseries: ppc64
 
 buildarchtranslate: atarist: m68kmint
 buildarchtranslate: atariste: m68kmint
