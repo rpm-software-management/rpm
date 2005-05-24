@@ -1,0 +1,90 @@
+# Traditional Chinese Messages for popt
+# Copyright (C) 2005 Free Software Foundation, Inc.
+# Wei-Lun Chao <chaoweilun@pcmail.com.tw>, 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: popt 1.10.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-03-31 13:55+0100\n"
+"PO-Revision-Date: 2005-04-08 17:52+0800\n"
+"Last-Translator: Wei-Lun Chao <chaoweilun@pcmail.com.tw>\n"
+"Language-Team: zh_TW <zh-l10n@linux.org.tw>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "ARG"
+msgstr "ARG"
+
+msgid "DOUBLE"
+msgstr "DOUBLE"
+
+msgid "Display brief usage message"
+msgstr "顯示簡短的使用說明"
+
+msgid "Display option defaults in message"
+msgstr "在訊息中顯示預設選項"
+
+msgid "FLOAT"
+msgstr "FLOAT"
+
+msgid "INT"
+msgstr "INT"
+
+msgid "LONG"
+msgstr "LONG"
+
+msgid "NONE"
+msgstr "NONE"
+
+msgid "STRING"
+msgstr "STRING"
+
+msgid "Show this help message"
+msgstr "顯示本說明訊息"
+
+msgid "Usage:"
+msgstr "用法:"
+
+msgid "VAL"
+msgstr "VAL"
+
+msgid "[OPTION...]"
+msgstr "[選項...]"
+
+msgid "aliases nested too deeply"
+msgstr "巢狀別名太深"
+
+msgid "error in parameter quoting"
+msgstr "參數引號錯誤"
+
+msgid "invalid numeric value"
+msgstr "不正確的數值"
+
+msgid "memory allocation failed"
+msgstr "記憶體配置錯誤"
+
+msgid "missing argument"
+msgstr "缺少引數"
+
+msgid "mutually exclusive logical operations requested"
+msgstr "需要相互獨立的邏輯運算"
+
+msgid "number too large or too small"
+msgstr "數字太大或太小"
+
+msgid "opt->arg should not be NULL"
+msgstr "opt->arg 不應為 NULL"
+
+msgid "option type (%d) not implemented in popt\n"
+msgstr "選項類型 (%d) 沒有在 popt 中實作\n"
+
+msgid "unknown errno"
+msgstr "未知的錯誤"
+
+msgid "unknown error"
+msgstr "未知的錯誤"
+
+msgid "unknown option"
+msgstr "未知的選項"

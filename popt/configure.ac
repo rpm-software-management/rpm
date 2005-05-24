@@ -5,7 +5,7 @@ AC_CONFIG_HEADERS
 AM_INIT_AUTOMAKE(popt, 1.10.2)
 AM_CONFIG_HEADER(config.h)
 
-ALL_LINGUAS="cs da de es eu_ES fi fr gl hu id is it ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk wa zh zh_CN.GB2312"
+ALL_LINGUAS="cs da de es eu_ES fi fr gl hu id is it ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk wa zh zh_CN zh_TW"
 
 AC_ISC_POSIX
 
