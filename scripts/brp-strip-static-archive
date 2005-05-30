@@ -14,5 +14,5 @@ for f in `find $RPM_BUILD_ROOT -type f -a -exec file {} \; | \
         grep -v "^${RPM_BUILD_ROOT}/\?usr/lib/debug"  | \
 	grep 'current ar archive' | \
 	sed -n -e 's/^\(.*\):[ 	]*current ar archive/\1/p'`; do
-	strip -g $f
+	strip -g "$f"
 done

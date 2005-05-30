@@ -19,5 +19,5 @@ for f in `find $RPM_BUILD_ROOT -type f \( -perm -0100 -or -perm -0010 -or -perm 
 		grep ALLOC >/dev/null; then
 		note=
 	fi
-	strip -R .comment $note $f || :
+	strip -R .comment $note "$f" || :
 done
