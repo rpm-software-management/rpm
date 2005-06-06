@@ -257,6 +257,12 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 /*@-sizeoftype@*/
 /*@-bounds@*/
 	(void) memcpy(info, dataEnd, REGION_TAG_COUNT);
+	/* XXX Really old packages have HEADER_IMAGE, not HEADER_SIGNATURES. */
+	if (info->tag == htonl(RPMTAG_HEADERIMAGE)) {
+	    int_32 stag = htonl(RPMTAG_HEADERSIGNATURES);
+	    info->tag = stag;
+	    memcpy(dataEnd, &stag, sizeof(stag));
+	}
 /*@=bounds@*/
 	dataEnd += REGION_TAG_COUNT;
 
