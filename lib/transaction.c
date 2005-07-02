@@ -2285,7 +2285,7 @@ assert(psm != NULL);
 	p->fi = rpmfiFree(p->fi);
 
 	/* If no post-transaction script, then don't bother. */
-	if (haspostscript)
+	if (!haspostscript)
 	    continue;
 
 	p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
