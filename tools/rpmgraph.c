@@ -217,8 +217,6 @@ maybe_manifest:
 	ps = rpmpsFree(ps);
     }
 
-    if (numFailed > 0) goto exit;
-
     rc = rpmtsOrder(ts);
     if (rc)
 	goto exit;
