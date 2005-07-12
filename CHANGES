@@ -11,6 +11,7 @@
 	- permit gpg to be used for RSA signatures.
 	- permit RSA key sizes larger than 1024 bits.
 	- permit RSA/{sha1,sha256,sha384,sha512} signature verification.
+	- updated de.po (#162756).
 
 4.4 -> 4.4.1:
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.
