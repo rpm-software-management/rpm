@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# If using normal root, avoid changing anything.
+[ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ] && exit 0
+
+# If we are a noarch package, avoid changing anything.
+[ "$RPM_ARCH" = "noarch" ] && exit 0
+
+# If we don't have the required executables, avoid changing anything.
+gcj=${1:-/usr/bin/gcj}
+[ ! -x "$gcj" -o ! -x "$gcj-dbtool" ] && exit 0
+
+# Now get to work...
+libdir="/usr/lib" # XXX need to sed this in or something
+dbdir=`gcj-dbtool -p "$libdir"`.d/"$RPM_PACKAGE_NAME-$RPM_PACKAGE_VERSION"
+cflags="$RPM_OPT_FLAGS -fPIC -findirect-dispatch"
+ldflags="-Wl,-Bsymbolic"
+
+# XXX make it so you can override the list, for mx4j et al.
+for jar in `find $RPM_BUILD_ROOT -type f -name "*.?ar"`; do
+    [ `head -c 2 "$jar"` != "PK" ] && continue
+
+    [ -d "$RPM_BUILD_ROOT/$libdir" ] || mkdir -p "$RPM_BUILD_ROOT/$libdir"
+
+    lib="$libdir/lib`basename $jar`.so"
+    [ -f "$RPM_BUILD_ROOT/$lib" ] && continue
+
+    # XXX need splits to handle #158308
+    # (til then we can just compile big ones ourselves)
+    echo "$PS4$gcj -shared $cflags $ldflags -o $lib $jar"
+    $gcj -shared $cflags $ldflags -o "$RPM_BUILD_ROOT/$lib" "$jar"
+
+    [ -d "$RPM_BUILD_ROOT/$dbdir" ] || mkdir -p "$RPM_BUILD_ROOT/$dbdir"
+
+    db="$dbdir/`basename $jar`.db"
+    [ -f "$RPM_BUILD_ROOT/$db" ] && exit 1
+    
+    $gcj-dbtool -n "$RPM_BUILD_ROOT/$db" 64
+    $gcj-dbtool -f "$RPM_BUILD_ROOT/$db" "$jar" "$lib"
+done
