@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-12 21:01-0500\n"
+"POT-Creation-Date: 2005-07-04 15:03-0400\n"
 "PO-Revision-Date: 2005-02-18 22:29+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -542,7 +542,7 @@ msgstr "%s: kan inte läsa okänd tagg (%d).\n"
 msgid "%s: public key read failed.\n"
 msgstr "%s: läsning av publik nyckel misslyckades.\n"
 
-#: build/files.c:1793 lib/rpmchecksig.c:601
+#: build/files.c:1793 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: inte en publik nyckel med skal.\n"
@@ -740,7 +740,7 @@ msgstr "Kan inte läsa om signaturhuvud.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Kunde inte öppna %s: %s\n"
 
-#: build/pack.c:646 lib/psm.c:1632
+#: build/pack.c:646 lib/psm.c:1638
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunde inte skriva paket: %s\n"
@@ -770,7 +770,7 @@ msgstr "Kan inte läsa last från %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kan inte skriva last till %s: %s\n"
 
-#: build/pack.c:739 lib/psm.c:1901
+#: build/pack.c:739 lib/psm.c:1907
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
@@ -1608,12 +1608,12 @@ msgstr "tagg[%d]: FEL, tagg %d typ %d position %d antal %d\n"
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr "regionposition: FEL, tagg %d typ %d position %d antal %d\n"
 
-#: lib/package.c:413 lib/signature.c:270
+#: lib/package.c:413 lib/signature.c:276
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr "regionavslutning: FEL, tagg %d typ %d position %d antal %d\n"
 
-#: lib/package.c:427 lib/signature.c:284
+#: lib/package.c:427 lib/signature.c:290
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "regionstorlek: FEL, ril(%d) > il(%d)\n"
@@ -1678,12 +1678,12 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "endast paket med huvudnummer <= 4 stöds av denna version av RPM\n"
 
-#: lib/package.c:811 lib/rpmchecksig.c:229 lib/rpmchecksig.c:759
+#: lib/package.c:811 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature misslyckades: %s"
 
-#: lib/package.c:818 lib/rpmchecksig.c:236 lib/rpmchecksig.c:767
+#: lib/package.c:818 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen signatur tillgänglig\n"
@@ -1693,7 +1693,7 @@ msgstr "%s: Ingen signatur tillgänglig\n"
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead misslyckades: %s"
 
-#: lib/package.c:993 lib/rpmchecksig.c:116 lib/rpmchecksig.c:676
+#: lib/package.c:993 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread misslyckades: %s\n"
@@ -2346,50 +2346,55 @@ msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s-%s-%s.%s) skript misslyckades, waitpid(%d) rk %d: %s\n"
 
-#: lib/psm.c:925
+#: lib/psm.c:926
+#, fuzzy, c-format
+msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
+msgstr "%s(%s-%s-%s.%s) skript misslyckades, slutstatus %d\n"
+
+#: lib/psm.c:930
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s.%s) skript misslyckades, slutstatus %d\n"
 
-#: lib/psm.c:1358
+#: lib/psm.c:1364
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s har %d filer, test = %d\n"
 
-#: lib/psm.c:1535
+#: lib/psm.c:1541
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s-skript misslyckades (%d), hoppar över %s\n"
 
-#: lib/psm.c:1644
+#: lib/psm.c:1650
 msgid "Unable to reload signature header\n"
 msgstr "Kan inte läsa om signaturhuvud\n"
 
-#: lib/psm.c:1722
+#: lib/psm.c:1728
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "uppackning av arkiv misslyckades%s%s: %s\n"
 
-#: lib/psm.c:1723
+#: lib/psm.c:1729
 msgid " on file "
 msgstr " vid fil "
 
-#: lib/psm.c:1909
+#: lib/psm.c:1915
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s misslyckades på fil %s: %s\n"
 
-#: lib/psm.c:1912
+#: lib/psm.c:1918
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s misslyckades: %s\n"
 
-#: lib/psm.c:2100
+#: lib/psm.c:2106
 #, c-format
 msgid "Attempting to mark %s as installed in score board(%u).\n"
 msgstr "Försöker markera %s som installerad på resultattavla(%u).\n"
 
-#: lib/psm.c:2133
+#: lib/psm.c:2139
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr "Försöker markera %s som raderat på resultattavla(0x%x).\n"
@@ -2523,7 +2528,7 @@ msgstr "makeTempFile misslyckades\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:741
+#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:747
 #, c-format
 msgid "%s: not an rpm package\n"
 msgstr "%s: inte ett rpm-paket\n"
@@ -2538,72 +2543,72 @@ msgstr "%s: Kan inte signera v1-paketering\n"
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: Kan inte signera om v2-paketering\n"
 
-#: lib/rpmchecksig.c:332
+#: lib/rpmchecksig.c:338
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "%s: var redan signerad av nyckel-ID %s, hoppar över\n"
 
-#: lib/rpmchecksig.c:362
+#: lib/rpmchecksig.c:368
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:368
+#: lib/rpmchecksig.c:374
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:596
+#: lib/rpmchecksig.c:602
 #, fuzzy, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: importläsning misslyckades.\n"
 
-#: lib/rpmchecksig.c:608
+#: lib/rpmchecksig.c:614
 #, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: import misslyckades.\n"
 
-#: lib/rpmchecksig.c:644
+#: lib/rpmchecksig.c:650
 #, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: headerRead misslyckades\n"
 
-#: lib/rpmchecksig.c:658
+#: lib/rpmchecksig.c:664
 #, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: headerGetEntry misslyckades\n"
 
-#: lib/rpmchecksig.c:747
+#: lib/rpmchecksig.c:753
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ingen signatur tillgänglig (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:855
+#: lib/rpmchecksig.c:861
 #, fuzzy, c-format
 msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
 msgstr "endast V3-signaturer kan verifieras, hoppar över V%u-signatur\n"
 
-#: lib/rpmchecksig.c:1021
+#: lib/rpmchecksig.c:1027
 msgid "NOT OK"
 msgstr "EJ OK"
 
-#: lib/rpmchecksig.c:1022 lib/rpmchecksig.c:1036
+#: lib/rpmchecksig.c:1028 lib/rpmchecksig.c:1042
 msgid " (MISSING KEYS:"
 msgstr " (SAKNADE NYCKLAR:"
 
-#: lib/rpmchecksig.c:1024 lib/rpmchecksig.c:1038
+#: lib/rpmchecksig.c:1030 lib/rpmchecksig.c:1044
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1025 lib/rpmchecksig.c:1039
+#: lib/rpmchecksig.c:1031 lib/rpmchecksig.c:1045
 msgid " (UNTRUSTED KEYS:"
 msgstr " (EJ BETRODDA NYCKLAR:"
 
-#: lib/rpmchecksig.c:1027 lib/rpmchecksig.c:1041
+#: lib/rpmchecksig.c:1033 lib/rpmchecksig.c:1047
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1035
+#: lib/rpmchecksig.c:1041
 msgid "OK"
 msgstr "OK"
 
@@ -3197,80 +3202,80 @@ msgstr "sighdata: FEL, antal byte(%d) itanför intevall\n"
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr "sighklick(%d): FEL, läsning returnerade %d\n"
 
-#: lib/signature.c:297
+#: lib/signature.c:303
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "sightagg[%d]: FEL, tagg %d typ %d position %d antal %d\n"
 
-#: lib/signature.c:307
+#: lib/signature.c:313
 #, c-format
 msgid "sigh load: BAD\n"
 msgstr "sighlast: FEL\n"
 
-#: lib/signature.c:319
+#: lib/signature.c:325
 #, c-format
 msgid "sigh pad(%d): BAD, read %d bytes\n"
 msgstr "sighutfyllnad(%d): FEL, läste %d byte\n"
 
-#: lib/signature.c:328
+#: lib/signature.c:334
 #, c-format
 msgid "sigh sigSize(%d): BAD, fstat(2) failed\n"
 msgstr "sighs sigSize(%d): FEL, fstat(2) misslyckades\n"
 
-#: lib/signature.c:365
+#: lib/signature.c:371
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Signatur: storlek(%d)+utfyllnad(%d)\n"
 
 #. @=boundsread@
-#: lib/signature.c:461 lib/signature.c:589 lib/signature.c:898
-#: lib/signature.c:937
+#: lib/signature.c:467 lib/signature.c:595 lib/signature.c:904
+#: lib/signature.c:943
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Kunde inte köra %s: %s\n"
 
-#: lib/signature.c:477
+#: lib/signature.c:483
 msgid "pgp failed\n"
 msgstr "pgp misslyckades\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:484
+#: lib/signature.c:490
 msgid "pgp failed to write signature\n"
 msgstr "pgp misslyckades att skriva en signatur\n"
 
-#: lib/signature.c:490
+#: lib/signature.c:496
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP signaturstorlek: %d\n"
 
 #. @=boundswrite@
-#: lib/signature.c:508 lib/signature.c:637
+#: lib/signature.c:514 lib/signature.c:643
 msgid "unable to read the signature\n"
 msgstr "kan inte läsa signaturen\n"
 
-#: lib/signature.c:513
+#: lib/signature.c:519
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Fick %d byte PGP-signatur\n"
 
-#: lib/signature.c:606
+#: lib/signature.c:612
 #, fuzzy, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "exec misslyckades\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:613
+#: lib/signature.c:619
 msgid "gpg failed to write signature\n"
 msgstr "gpg kunde inte skriva signatur\n"
 
-#: lib/signature.c:619
+#: lib/signature.c:625
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG-signaturstorlek: %d\n"
 
-#: lib/signature.c:642
+#: lib/signature.c:648
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Fick %d byte GPG-signatur\n"
@@ -3280,58 +3285,58 @@ msgstr "Fick %d byte GPG-signatur\n"
 #. Currently the calling function (rpm.c:main) is checking this and
 #. * doing a better job.  This section should never be accessed.
 #.
-#: lib/signature.c:942 lib/signature.c:995
+#: lib/signature.c:948 lib/signature.c:1001
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Felaktig %%_signature-spec i makrofil\n"
 
-#: lib/signature.c:975
+#: lib/signature.c:981
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Du måste sätta \"%%_gpg_name\" i din makrofil\n"
 
-#: lib/signature.c:989
+#: lib/signature.c:995
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil\n"
 
-#: lib/signature.c:1037
+#: lib/signature.c:1043
 msgid "Header+Payload size: "
 msgstr "Huvud+laststorlek: "
 
-#: lib/signature.c:1078
+#: lib/signature.c:1084
 msgid "MD5 digest: "
 msgstr "MD5-summa: "
 
-#: lib/signature.c:1138
+#: lib/signature.c:1144
 msgid "Header SHA1 digest: "
 msgstr "Huvudets SHA1-summa: "
 
-#: lib/signature.c:1217 lib/signature.c:1400
+#: lib/signature.c:1223 lib/signature.c:1406
 msgid "Header "
 msgstr "Huvud "
 
-#: lib/signature.c:1284
+#: lib/signature.c:1290
 #, fuzzy
 msgid " signature: "
 msgstr "V3 DSA-signatur: "
 
-#: lib/signature.c:1406
+#: lib/signature.c:1412
 #, fuzzy
 msgid " DSA signature: "
 msgstr "V3 DSA-signatur: "
 
-#: lib/signature.c:1488
+#: lib/signature.c:1494
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verifiera signatur: FELAKTIGA PARAMETRAR\n"
 
-#: lib/signature.c:1519
+#: lib/signature.c:1525
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Trasig MD5-summa: STÖDS EJ\n"
 
-#: lib/signature.c:1523
+#: lib/signature.c:1529
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: OKÄND (%d)\n"
@@ -3561,41 +3566,41 @@ msgstr "tog bort    db-miljö %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "öppnar      db-miljö %s/%s %s\n"
 
-#: rpmdb/db3.c:794
+#: rpmdb/db3.c:819
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "stängde     db-index %s/%s\n"
 
-#: rpmdb/db3.c:863
+#: rpmdb/db3.c:888
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "verifierade db-index %s/%s\n"
 
-#: rpmdb/db3.c:1002
+#: rpmdb/db3.c:1031
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 "odelad posix-mutex funna(%d), lägger till DB_PRIVATE, använder fcntl-lås\n"
 
-#: rpmdb/db3.c:1107
+#: rpmdb/db3.c:1136
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "öppnar      db-index %s/%s %s rättighet=0x%x\n"
 
-#: rpmdb/db3.c:1345
+#: rpmdb/db3.c:1378
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på %s/%s\n"
 
-#: rpmdb/db3.c:1347
+#: rpmdb/db3.c:1380
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: rpmdb/db3.c:1347
+#: rpmdb/db3.c:1380
 msgid "shared"
 msgstr "delat"
 
-#: rpmdb/db3.c:1351
+#: rpmdb/db3.c:1384
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "låste       db-index %s/%s\n"

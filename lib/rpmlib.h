@@ -445,6 +445,9 @@ typedef enum rpmTag_e {
     RPMTAG_ENHANCESVERSION	= 1160,	/* s[] extension placeholder */
     RPMTAG_ENHANCESFLAGS	= 1161,	/* i   extension placeholder */
     RPMTAG_PRIORITY		= 1162, /* i   extension placeholder */
+    RPMTAG_CVSID		= 1163, /* s */
+#define	RPMTAG_SVNID	RPMTAG_CVSID	/* s */
+
 /*@-enummemuse@*/
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 /*@=enummemuse@*/

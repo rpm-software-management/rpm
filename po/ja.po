@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-20 11:27+1100\n"
+"POT-Creation-Date: 2005-07-04 15:03-0400\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -125,12 +125,12 @@ msgid "Common options for all rpm modes and executables:"
 msgstr "全モード・コマンドで共通のオプション:"
 
 #. @-modfilesys -globs @
-#: rpmqv.c:130 lib/poptI.c:45
+#: rpmqv.c:130 lib/poptI.c:43
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:138 lib/poptALL.c:131
+#: rpmqv.c:138 lib/poptALL.c:128
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM バージョン %s\n"
@@ -142,7 +142,8 @@ msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 
 #: rpmqv.c:146
 #, c-format
-msgid "This program may be freely redistributed under the terms of the GNU GPL\n"
+msgid ""
+"This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "このプログラムは GNU GPL の下で自由に配布できます。\n"
 
 #: rpmqv.c:304
@@ -185,7 +186,8 @@ msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "--prefix は --relocate や --excludepath とは同時には使用できません。"
 
 #: rpmqv.c:431
-msgid "--relocate and --excludepath may only be used when installing new packages"
+msgid ""
+"--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate と --excludepath は新しいパッケージをインストールする時のみ使用で"
 "きます。"
@@ -258,7 +260,9 @@ msgstr ""
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
-msgstr "トリガーを無効にするようなオプションはパッケージインストール・削除時のみ指定できます。"
+msgstr ""
+"トリガーを無効にするようなオプションはパッケージインストール・削除時のみ指定"
+"できます。"
 
 #: rpmqv.c:500
 msgid ""
@@ -296,68 +300,68 @@ msgstr "署名するファイルがありません\n"
 msgid "cannot access file %s\n"
 msgstr "ファイル %s にアクセスできません。\n"
 
-#: rpmqv.c:570
+#: rpmqv.c:571
 #, c-format
 msgid "pgp not found: "
 msgstr "pgp が見付かりません: "
 
-#: rpmqv.c:575
+#: rpmqv.c:579
 msgid "Enter pass phrase: "
 msgstr "パスフレーズの入力: "
 
-#: rpmqv.c:577
+#: rpmqv.c:581
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "パスフレーズのチェックに失敗しました。\n"
 
-#: rpmqv.c:581
+#: rpmqv.c:585
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "パスフレーズは正常です。\n"
 
-#: rpmqv.c:586
+#: rpmqv.c:590
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "マクロファイル中の無効な %%_signature 指定。\n"
 
-#: rpmqv.c:593
+#: rpmqv.c:597
 msgid "--sign may only be used during package building"
 msgstr "--sign はパッケージ作成時のみ指定できます。"
 
-#: rpmqv.c:610
+#: rpmqv.c:614
 #, c-format
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
-#: rpmqv.c:646
+#: rpmqv.c:650
 msgid "no packages files given for rebuild"
 msgstr "リビルドするパッケージが指定されていません。"
 
-#: rpmqv.c:716
+#: rpmqv.c:720
 msgid "no spec files given for build"
 msgstr "ビルドのための spec ファイルが指定されていません。"
 
-#: rpmqv.c:718
+#: rpmqv.c:722
 msgid "no tar files given for build"
 msgstr "ビルドのための tar ファイルが指定されていません。"
 
-#: rpmqv.c:740
+#: rpmqv.c:744
 msgid "no packages given for erase"
 msgstr "アンインストールするパッケージが指定されていません。"
 
-#: rpmqv.c:780
+#: rpmqv.c:784
 msgid "no packages given for install"
 msgstr "インストールするパッケージが指定されていません。"
 
-#: rpmqv.c:797
+#: rpmqv.c:801
 msgid "no arguments given for query"
 msgstr "問い合わせのための引数が指定されていません。"
 
-#: rpmqv.c:812
+#: rpmqv.c:816
 msgid "no arguments given for verify"
 msgstr "検証のための引数が指定されていません。"
 
-#: rpmqv.c:827
+#: rpmqv.c:831
 msgid "no arguments given"
 msgstr "引数が指定されていません。"
 
@@ -552,7 +556,7 @@ msgstr "%s: 不明なタグ (%d) を読み込めませんでした。\n"
 msgid "%s: public key read failed.\n"
 msgstr "%s: 公開鍵の読み込みに失敗しました。\n"
 
-#: build/files.c:1793 lib/rpmchecksig.c:601
+#: build/files.c:1793 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: ASCII形式の公開鍵ではありません。\n"
@@ -572,7 +576,7 @@ msgstr "ファイルは先頭に \"/\" が必要です: %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Glob は許可されていません: %s\n"
 
-#: build/files.c:1894 lib/rpminstall.c:373
+#: build/files.c:1894 lib/rpminstall.c:362
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
@@ -750,7 +754,7 @@ msgstr "署名ヘッダの再読み込みができません。\n"
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:646 lib/psm.c:1756
+#: build/pack.c:646 lib/psm.c:1638
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
@@ -780,7 +784,7 @@ msgstr "%s から Payload 読み込みに失敗: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: build/pack.c:739 lib/psm.c:2026
+#: build/pack.c:739 lib/psm.c:1907
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
@@ -1061,10 +1065,10 @@ msgstr "%d 行目: 2番目の %%prep\n"
 
 #: build/parseReqs.c:102
 #, c-format
-msgid "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
+msgid ""
+"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
-"%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %"
-"s\n"
+"%d 行目: 依存性を表す語は英数字か、'_'、'/' で始まらなければなりません: %s\n"
 
 #: build/parseReqs.c:130
 #, c-format
@@ -1235,7 +1239,8 @@ msgid "<source package>"
 msgstr "<source package>"
 
 #: build/poptBT.c:207
-msgid "build through %install (%prep, %build, then install) from <source package>"
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
 msgstr "<source package> から %install (%prep, %build, インストール) まで実行"
 
 #: build/poptBT.c:211
@@ -1270,17 +1275,17 @@ msgstr "ビルド依存性を検証しない"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "(古い) rpm[23] パッケージング互換のヘッダを生成"
 
-#: build/poptBT.c:229 lib/poptALL.c:276 lib/poptI.c:329 lib/poptQV.c:363
+#: build/poptBT.c:229 lib/poptALL.c:273 lib/poptI.c:283 lib/poptQV.c:363
 #: lib/poptQV.c:372 lib/poptQV.c:413
 msgid "don't verify package digest(s)"
 msgstr "パッケージダイジェストの検証をしません。"
 
-#: build/poptBT.c:231 lib/poptALL.c:278 lib/poptI.c:331 lib/poptQV.c:366
+#: build/poptBT.c:231 lib/poptALL.c:275 lib/poptI.c:285 lib/poptQV.c:366
 #: lib/poptQV.c:374 lib/poptQV.c:416
 msgid "don't verify database header(s) when retrieved"
 msgstr "取得したデータベースヘッダを検証しません。"
 
-#: build/poptBT.c:233 lib/poptALL.c:286 lib/poptI.c:333 lib/poptQV.c:369
+#: build/poptBT.c:233 lib/poptALL.c:281 lib/poptI.c:287 lib/poptQV.c:369
 #: lib/poptQV.c:376 lib/poptQV.c:418
 msgid "don't verify package signature(s)"
 msgstr "パッケージ署名の検証をしません。"
@@ -1539,12 +1544,14 @@ msgstr "グループ %s は存在しません - root を使用します\n"
 #: lib/fsm.c:1350
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
-msgstr "ディレクトリ %s がパーミッション %04o でコンテキストなしで作成されました。\n"
+msgstr ""
+"ディレクトリ %s がパーミッション %04o でコンテキストなしで作成されました。\n"
 
 #: lib/fsm.c:1354
 #, c-format
 msgid "%s directory created with perms %04o, context %s.\n"
-msgstr "ディレクトリ %s がパーミッション %04o でコンテキスト %s で作成されました。\n"
+msgstr ""
+"ディレクトリ %s がパーミッション %04o でコンテキスト %s で作成されました。\n"
 
 #: lib/fsm.c:1657
 #, c-format
@@ -1601,7 +1608,7 @@ msgstr "一時ファイル %s の作成に失敗しました。\n"
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "blob サイズ (%d): 異常です。8 + 16 * il(%d) + dl(%d)\n"
 
-#: lib/package.c:372 lib/package.c:436 lib/package.c:504 lib/signature.c:233
+#: lib/package.c:372 lib/package.c:436 lib/package.c:513 lib/signature.c:233
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "タグ[%d]: 異常です。tag %d type %d offset %d count %d\n"
@@ -1611,12 +1618,12 @@ msgstr "タグ[%d]: 異常です。tag %d type %d offset %d count %d\n"
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr "region オフセット: 異常です。tag %d type %d offset %d count %d\n"
 
-#: lib/package.c:413 lib/signature.c:270
+#: lib/package.c:413 lib/signature.c:276
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr "region ヘッダ以降: 異常です。tag %d type %d offset %d count %d\n"
 
-#: lib/package.c:427 lib/signature.c:284
+#: lib/package.c:427 lib/signature.c:290
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "region サイズ: 異常です。ril(%d) > il(%d)\n"
@@ -1626,274 +1633,264 @@ msgstr "region サイズ: 異常です。ril(%d) > il(%d)\n"
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "SHA1 ヘッダ: 異常です。16 進数ではありません。\n"
 
-#: lib/package.c:473
+#: lib/package.c:470
+#, fuzzy, c-format
+msgid "hdr RSA: BAD, not binary\n"
+msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
+
+#: lib/package.c:482
 #, c-format
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
 
-#: lib/package.c:538 lib/package.c:579 lib/package.c:913 lib/package.c:939
-#: lib/package.c:971
+#: lib/package.c:546 lib/package.c:586 lib/package.c:920 lib/package.c:946
+#: lib/package.c:978
 #, c-format
 msgid "only V3 and V4 signatures can be verified, skipping V%u signature\n"
 msgstr "V3/V4 署名のみ検証可能です、V%u 署名をスキップします\n"
 
-#: lib/package.c:666
+#: lib/package.c:673
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "ヘッダサイズ(%d): 異常です。読み込み結果は %d です。\n"
 
-#: lib/package.c:670
+#: lib/package.c:677
 #, c-format
 msgid "hdr magic: BAD\n"
 msgstr "ヘッダマジック: 異常です。\n"
 
-#: lib/package.c:678
+#: lib/package.c:685
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "ヘッダタグ: 異常です。タグ(%d)の番号が範囲外です。\n"
 
-#: lib/package.c:687
+#: lib/package.c:694
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "ヘッダデータ: 異常です。バイト数(%d)が範囲外です。\n"
 
-#: lib/package.c:701
+#: lib/package.c:708
 #, c-format
 msgid "hdr blob(%d): BAD, read returned %d\n"
 msgstr "ヘッダ blob(%d): 異常です。読み込み結果は %d です。\n"
 
-#: lib/package.c:714
+#: lib/package.c:721
 #, c-format
 msgid "hdr load: BAD\n"
 msgstr "ヘッダロード: 異常です。\n"
 
-#: lib/package.c:783
+#: lib/package.c:790
 msgid "packaging version 1 is not supported by this version of RPM\n"
 msgstr ""
 "このバージョンの RPM ではバージョン 1 のパッケージングはサポートしていませ"
 "ん\n"
 
-#: lib/package.c:792
-msgid "only packaging with major numbers <= 4 is supported by this version of RPM\n"
+#: lib/package.c:799
+msgid ""
+"only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr ""
 "このバージョンの RPM ではメジャー番号 <=4 のパッケージ作成のみサポートしてい"
 "ます\n"
 
-#: lib/package.c:804 lib/rpmchecksig.c:229 lib/rpmchecksig.c:750
+#: lib/package.c:811 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature に失敗しました: %s"
 
-#: lib/package.c:811 lib/rpmchecksig.c:236 lib/rpmchecksig.c:758
+#: lib/package.c:818 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 署名がありません。\n"
 
-#: lib/package.c:878
+#: lib/package.c:885
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead に失敗しました: %s"
 
-#: lib/package.c:986 lib/rpmchecksig.c:116 lib/rpmchecksig.c:673
+#: lib/package.c:993 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: lib/poptALL.c:233
+#: lib/poptALL.c:230
 msgid "FTS_COMFOLLOW: follow command line symlinks"
 msgstr "FTS_COMFOLLOW: コマンドラインのシンボリックリンクを追いかけます"
 
-#: lib/poptALL.c:235
+#: lib/poptALL.c:232
 msgid "FTS_LOGICAL: logical walk"
 msgstr "FTS_LOGICAL: 論理探索"
 
-#: lib/poptALL.c:237
+#: lib/poptALL.c:234
 msgid "FTS_NOCHDIR: don't change directories"
 msgstr "FTS_NOCHDIR: ディレクトリを変更しません。"
 
-#: lib/poptALL.c:239
+#: lib/poptALL.c:236
 msgid "FTS_NOSTAT: don't get stat info"
 msgstr "FTS_NOSTAT: ステータス情報を取得しません。"
 
-#: lib/poptALL.c:241
+#: lib/poptALL.c:238
 msgid "FTS_PHYSICAL: physical walk"
 msgstr "FTS_PHYSICAL: 物理探索"
 
-#: lib/poptALL.c:243
+#: lib/poptALL.c:240
 msgid "FTS_SEEDOT: return dot and dot-dot"
 msgstr "FTS_SEEDOT: ドット(.)とドットドット(..)を返します。"
 
-#: lib/poptALL.c:245
+#: lib/poptALL.c:242
 msgid "FTS_XDEV: don't cross devices"
 msgstr "FTS_XDEV: 他のファイルシステムを探索しません。"
 
-#: lib/poptALL.c:247
+#: lib/poptALL.c:244
 msgid "FTS_WHITEOUT: return whiteout information"
 msgstr "FTS_WHITEOUT: 修正された情報を返します。"
 
-#: lib/poptALL.c:263
+#: lib/poptALL.c:260
 msgid "predefine MACRO with value EXPR"
 msgstr "値 EXPR を持つマクロを予め定義します。"
 
-#: lib/poptALL.c:264 lib/poptALL.c:267
+#: lib/poptALL.c:261 lib/poptALL.c:264
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:266
+#: lib/poptALL.c:263
 msgid "define MACRO with value EXPR"
 msgstr "値 EXPR を持つ MACRO を定義します。"
 
-#: lib/poptALL.c:269
+#: lib/poptALL.c:266
 msgid "print macro expansion of EXPR"
 msgstr "EXPR のマクロを展開した結果を表示します。"
 
-#: lib/poptALL.c:270
+#: lib/poptALL.c:267
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:272 lib/poptALL.c:293 lib/poptALL.c:297
+#: lib/poptALL.c:269 lib/poptALL.c:288 lib/poptALL.c:292
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "デフォルトファイルの代わりに <FILE:...> を読み込みます。"
 
-#: lib/poptALL.c:273 lib/poptALL.c:294 lib/poptALL.c:298
+#: lib/poptALL.c:270 lib/poptALL.c:289 lib/poptALL.c:293
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
-#: lib/poptALL.c:281 lib/poptALL.c:317
+#: lib/poptALL.c:278 lib/poptALL.c:312
 msgid "disable use of libio(3) API"
 msgstr "libio(3) API の使用を無効にします。"
 
 #: lib/poptALL.c:284
-msgid "disable use of libneon for HTTP"
-msgstr "HTTP に libneon を使用しないようにします。"
-
-#: lib/poptALL.c:289
 msgid "send stdout to CMD"
 msgstr "標準出力を CMD に送信します。"
 
-#: lib/poptALL.c:290
+#: lib/poptALL.c:285
 msgid "CMD"
 msgstr "CMD"
 
-#: lib/poptALL.c:301
+#: lib/poptALL.c:296
 msgid "use ROOT as top level directory"
 msgstr "ROOT をトップディレクトリとして使用します。"
 
-#: lib/poptALL.c:302
+#: lib/poptALL.c:297
 msgid "ROOT"
 msgstr "ROOT"
 
-#: lib/poptALL.c:305
+#: lib/poptALL.c:300
 msgid "display known query tags"
 msgstr "全問い合わせタグを表示します。"
 
-#: lib/poptALL.c:307
+#: lib/poptALL.c:302
 msgid "display final rpmrc and macro configuration"
 msgstr "最終的な rpmrc とマクロの設定を表示します。"
 
-#: lib/poptALL.c:309
+#: lib/poptALL.c:304
 msgid "provide less detailed output"
 msgstr "詳細でない出力を提供します。"
 
-#: lib/poptALL.c:311
+#: lib/poptALL.c:306
 msgid "provide more detailed output"
 msgstr "より詳細な出力を提供します。"
 
-#: lib/poptALL.c:313
+#: lib/poptALL.c:308
 msgid "print the version of rpm being used"
 msgstr "使用している rpm のバージョンを表示します。"
 
-#: lib/poptALL.c:326
+#: lib/poptALL.c:321
 msgid "debug payload file state machine"
 msgstr "ペイロードのファイル状態マシンのデバッグ"
 
-#: lib/poptALL.c:328
+#: lib/poptALL.c:323
 msgid "use threads for file state machine"
 msgstr "ファイル状態マシンにスレッドを利用する"
 
-#: lib/poptALL.c:330
+#: lib/poptALL.c:325
 msgid "debug FTP/HTTP data stream"
 msgstr "FTP/HTTP プロトコルデータストリームのデバッグ"
 
-#: lib/poptALL.c:332
+#: lib/poptALL.c:327
 msgid "debug argv collections"
 msgstr "argv 収集のデバッグ"
 
-#: lib/poptALL.c:334
+#: lib/poptALL.c:329
 msgid "debug WebDAV data stream"
 msgstr "WebDAV プロトコルデータストリームのデバッグ"
 
-#: lib/poptALL.c:339
+#: lib/poptALL.c:334
 msgid "debug option/argument processing"
 msgstr "オプション/引数処理中のデバッグ"
 
-#: lib/poptALL.c:344
+#: lib/poptALL.c:339
 msgid "debug package state machine"
 msgstr "パッケージ状態マシンのデバッグ"
 
-#: lib/poptALL.c:346
+#: lib/poptALL.c:341
 msgid "use threads for package state machine"
 msgstr "パッケージ状態マシンにスレッドを利用する"
 
-#: lib/poptALL.c:360
+#: lib/poptALL.c:355
 msgid "debug rpmio I/O"
 msgstr "rpmio 入出力のデバッグ"
 
-#: lib/poptALL.c:374
+#: lib/poptALL.c:369
 msgid "debug URL cache handling"
 msgstr "URL キャッシュハンドリングのデバッグ"
 
 #. @-nullpass@
-#: lib/poptALL.c:444
+#: lib/poptALL.c:439
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: オプションテーブルの設定が正しくありません (%d)\n"
 
-#: lib/poptI.c:73
+#: lib/poptI.c:71
 msgid "exclude paths must begin with a /"
 msgstr "除外するパスは / から始まらなければなりません。"
 
-#: lib/poptI.c:87
+#: lib/poptI.c:85
 msgid "relocations must begin with a /"
 msgstr "再配置は / から始まらなければなりません。"
 
-#: lib/poptI.c:90
+#: lib/poptI.c:88
 msgid "relocations must contain a ="
 msgstr "再配置は = を含んでいなければなりません。"
 
-#: lib/poptI.c:93
+#: lib/poptI.c:91
 msgid "relocations must have a / following the ="
 msgstr "再配置は = の次に / でなければなりません。"
 
-#: lib/poptI.c:112
-msgid "rbexclude takes a Transaction I.D. argument"
-msgstr "rbexclude にはトランザクション ID 引数が必要です"
-
-#: lib/poptI.c:138
+#: lib/poptI.c:106
 msgid "rollback takes a time/date stamp argument"
 msgstr "ロールバックには日付/時刻スタンプの指定が必要です"
 
-#: lib/poptI.c:145
+#: lib/poptI.c:113
 msgid "malformed rollback time/date stamp argument"
 msgstr "ロールバックの時刻/日付スタンプの形式が正しくありません"
 
-#: lib/poptI.c:152
-msgid "arbgoal takes a time/date stamp argument"
-msgstr "arbgoal には日付/時刻スタンプの指定が必要です"
-
-#: lib/poptI.c:159
-msgid "malformed arbgoal time/date stamp argument"
-msgstr "arbgoal の時刻/日付スタンプの形式が正しくありません"
-
-#: lib/poptI.c:215
+#: lib/poptI.c:169
 msgid "add suggested packages to transaction"
 msgstr "トランザクションに提案パッケージを追加します。"
 
-#: lib/poptI.c:219
+#: lib/poptI.c:173
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr "設定がスキップを指示していても、全ファイルをインストールします。"
 
-#: lib/poptI.c:223
+#: lib/poptI.c:177
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1901,159 +1898,160 @@ msgstr ""
 "<package> と一致するパッケージ全てを削除します(通常は <package> が複数のパッ"
 "ケージを指す場合はエラーになります)"
 
-#: lib/poptI.c:228 tools/rpmgraph.c:274
+#: lib/poptI.c:182 tools/rpmgraph.c:274
 msgid "use anaconda \"presentation order\""
 msgstr "anaconda の \"presentation order\" を使う"
 
-#: lib/poptI.c:233 lib/poptI.c:313
+#: lib/poptI.c:187 lib/poptI.c:267
 msgid "do not execute package scriptlet(s)"
 msgstr "パッケージ指定のスクリプトを実行しません。"
 
-#: lib/poptI.c:237
+#: lib/poptI.c:191
 msgid "relocate files in non-relocatable package"
 msgstr "再配置不可能なパッケージのファイルを再配置します。"
 
-#: lib/poptI.c:241
+#: lib/poptI.c:195
 msgid "print dependency loops as warning"
 msgstr "依存のループを警告として表示します。"
 
-#: lib/poptI.c:245
+#: lib/poptI.c:199
 msgid "save erased package files by renaming into sub-directory"
 msgstr "削除されたパッケージを、サブディレクトリに名前を変えて保存します。"
 
-#: lib/poptI.c:248
+#: lib/poptI.c:202
 msgid "erase (uninstall) package"
 msgstr "パッケージを削除 (アンインストール) します。"
 
-#: lib/poptI.c:248
+#: lib/poptI.c:202
 msgid "<package>+"
 msgstr "<package>+"
 
-#: lib/poptI.c:251 lib/poptI.c:291
+#: lib/poptI.c:205 lib/poptI.c:245
 msgid "do not install configuration files"
 msgstr "設定ファイルをインストールしません。"
 
-#: lib/poptI.c:254 lib/poptI.c:296
+#: lib/poptI.c:208 lib/poptI.c:250
 msgid "do not install documentation"
 msgstr "ドキュメントをインストールしません。"
 
-#: lib/poptI.c:256
+#: lib/poptI.c:210
 msgid "skip files with leading component <path> "
 msgstr "パス <path> 中のファイルをスキップします。"
 
-#: lib/poptI.c:257
+#: lib/poptI.c:211
 msgid "<path>"
 msgstr "<path>"
 
-#: lib/poptI.c:261
+#: lib/poptI.c:215
 msgid "detect file conflicts between packages"
 msgstr "パッケージ間でのファイルの競合を検知します。"
 
-#: lib/poptI.c:263
+#: lib/poptI.c:217
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "--replacepkgs と --replacefiles を短縮したもの"
 
-#: lib/poptI.c:267
+#: lib/poptI.c:221
 msgid "upgrade package(s) if already installed"
 msgstr "既にインストール済みの場合のみアップグレード"
 
-#: lib/poptI.c:268 lib/poptI.c:284 lib/poptI.c:386
+#: lib/poptI.c:222 lib/poptI.c:238 lib/poptI.c:334
 msgid "<packagefile>+"
 msgstr "<packagefile>+"
 
-#: lib/poptI.c:270
+#: lib/poptI.c:224
 msgid "print hash marks as package installs (good with -v)"
-msgstr "パッケージをインストールにつれて '#' を表示します (-v と使用すると良い)"
+msgstr ""
+"パッケージをインストールにつれて '#' を表示します (-v と使用すると良い)"
 
-#: lib/poptI.c:273
+#: lib/poptI.c:227
 msgid "don't verify package architecture"
 msgstr "パッケージの対象アーキテクチャを検証しません。"
 
-#: lib/poptI.c:276
+#: lib/poptI.c:230
 msgid "don't verify package operating system"
 msgstr "パッケージ対象 OS の検証を行いません。"
 
-#: lib/poptI.c:279
+#: lib/poptI.c:233
 msgid "don't check disk space before installing"
 msgstr "インストール前のディスク容量チェックを行いません。"
 
-#: lib/poptI.c:281
+#: lib/poptI.c:235
 msgid "install documentation"
 msgstr "ドキュメントをインストールします。"
 
-#: lib/poptI.c:284
+#: lib/poptI.c:238
 msgid "install package(s)"
 msgstr "パッケージをインストールします。"
 
-#: lib/poptI.c:287
+#: lib/poptI.c:241
 msgid "update the database, but do not modify the filesystem"
 msgstr "データベースを更新しますが、ファイルシステムの変更は行いません。"
 
-#: lib/poptI.c:293
+#: lib/poptI.c:247
 msgid "do not verify package dependencies"
 msgstr "パッケージの依存関係の検証を行いません。"
 
-#: lib/poptI.c:299 lib/poptQV.c:307 lib/poptQV.c:310
+#: lib/poptI.c:253 lib/poptQV.c:307 lib/poptQV.c:310
 msgid "don't verify MD5 digest of files"
 msgstr "ファイルの MD5 ダイジェストを検証しません。"
 
-#: lib/poptI.c:301
+#: lib/poptI.c:255
 msgid "don't install file security contexts"
 msgstr "ファイルのセキュリティコンテキストをインストールしません。"
 
-#: lib/poptI.c:305
+#: lib/poptI.c:259
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "依存性を満たす為のパッケージのインストール順序を変更しません。"
 
-#: lib/poptI.c:310
+#: lib/poptI.c:264
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "不足する依存関係の解決を提案しません。"
 
-#: lib/poptI.c:317
+#: lib/poptI.c:271
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "%%pre スクリプトを実行しません。"
 
-#: lib/poptI.c:320
+#: lib/poptI.c:274
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "%%post スクリプトを実行しません。"
 
-#: lib/poptI.c:323
+#: lib/poptI.c:277
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "%%preun スクリプトを実行しません。"
 
-#: lib/poptI.c:326
+#: lib/poptI.c:280
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "%%postun スクリプトを実行しません。"
 
-#: lib/poptI.c:336
+#: lib/poptI.c:290
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "このパッケージによってトリガーされるスクリプトを実行しません。"
 
-#: lib/poptI.c:339
+#: lib/poptI.c:293
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "%%triggerprein スクリプトを実行しません。"
 
-#: lib/poptI.c:342
+#: lib/poptI.c:296
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "%%triggerin スクリプトを実行しません。"
 
-#: lib/poptI.c:345
+#: lib/poptI.c:299
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "%%triggerun スクリプトを実行しません。"
 
-#: lib/poptI.c:348
+#: lib/poptI.c:302
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "%%triggerpostun スクリプトを実行しません。"
 
-#: lib/poptI.c:352
+#: lib/poptI.c:306
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2061,63 +2059,53 @@ msgstr ""
 "古いバージョンのパッケージにアップグレードします(アップグレード時の --force "
 "はこれを自動的に行います)"
 
-#: lib/poptI.c:356
+#: lib/poptI.c:310
 msgid "print percentages as package installs"
 msgstr "インストールする際にパーセント表示を行います。"
 
-#: lib/poptI.c:358
+#: lib/poptI.c:312
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "パッケージが再配置可能ならば、 <dir> に再配置します。"
 
-#: lib/poptI.c:359
+#: lib/poptI.c:313
 msgid "<dir>"
 msgstr "<dir>"
 
-#: lib/poptI.c:361
+#: lib/poptI.c:315
 msgid "relocate files from path <old> to <new>"
 msgstr "パス <old> からパス <new> にファイルを再配置させます。"
 
-#: lib/poptI.c:362
+#: lib/poptI.c:316
 msgid "<old>=<new>"
 msgstr "<old>=<new>"
 
-#: lib/poptI.c:365
+#: lib/poptI.c:319
 msgid "save erased package files by repackaging"
 msgstr "再パッケージすることで削除したパッケージを保存します。"
 
-#: lib/poptI.c:368
+#: lib/poptI.c:322
 msgid "ignore file conflicts between packages"
 msgstr "パッケージ間のファイルの競合を無視します。"
 
-#: lib/poptI.c:371
+#: lib/poptI.c:325
 msgid "reinstall if the package is already present"
 msgstr "既に存在するパッケージでも再インストールします。"
 
-#: lib/poptI.c:373
+#: lib/poptI.c:327
 msgid "deinstall new, reinstall old, package(s), back to <date>"
-msgstr "<date> の状態に戻すため、新しいパッケージを削除し、古いパッケージを再インストールします。"
+msgstr ""
+"<date> の状態に戻すため、新しいパッケージを削除し、古いパッケージを再インス"
+"トールします。"
 
-#: lib/poptI.c:374 lib/poptI.c:377
+#: lib/poptI.c:328
 msgid "<date>"
 msgstr "<date>"
 
-#: lib/poptI.c:376
-msgid "If transaction fails rollback to <date>"
-msgstr "トランザクションに失敗した場合に <date> にロールバックする"
-
-#: lib/poptI.c:379
-msgid "Exclude Transaction I.D. from rollback"
-msgstr "ロールバックでトランザクション ID を除外する"
-
-#: lib/poptI.c:380
-msgid "<tid>"
-msgstr "<tid>"
-
-#: lib/poptI.c:382
+#: lib/poptI.c:330
 msgid "don't install, but tell if it would work or not"
 msgstr "インストールせずに、テストのみを行います。"
 
-#: lib/poptI.c:385
+#: lib/poptI.c:333
 msgid "upgrade package(s)"
 msgstr "パッケージをアップグレードします。"
 
@@ -2179,7 +2167,8 @@ msgstr "<spec>"
 
 #: lib/poptQV.c:132
 msgid "query/verify package(s) from install transaction"
-msgstr "インストールトランザクションからのパッケージの問い合わせ/検証をします。"
+msgstr ""
+"インストールトランザクションからのパッケージの問い合わせ/検証をします。"
 
 #: lib/poptQV.c:134
 msgid "query the package(s) triggered by the package"
@@ -2332,103 +2321,101 @@ msgstr "パッケージに署名する (--addsign と同一です)"
 msgid "generate signature"
 msgstr "署名を生成します。"
 
-#: lib/psm.c:274
-#, c-format
-msgid "Could not aquire transaction score entry for %s\n"
-msgstr "%s のトランザクションスコアのエントリーを取得できませんでした。\n"
-
-#: lib/psm.c:286
-#, c-format
-msgid "Setting %s to TID of 0x%08x\n"
-msgstr "%s を TID 0x%08x に設定します。\n"
-
-#: lib/psm.c:306
-#, c-format
-msgid "Attempting to mark %s as installed in trasaction score\n"
-msgstr "トランザクションスコアにおいて、インストールされたものとしてマーク %s を付けようとしています。\n"
-
-#: lib/psm.c:353
-#, c-format
-msgid "Attempting to mark %s as erased in score board(%p).\n"
-msgstr ""
-"削除されたものとしてマーク %s を付けようとしています(スコアボード (%p) "
-"内)。\n"
-
-#: lib/psm.c:403
+#: lib/psm.c:281
 msgid "source package expected, binary found\n"
 msgstr "ソースパッケージが期待されますが、これはバイナリパッケージです\n"
 
-#: lib/psm.c:521
+#: lib/psm.c:399
 msgid "source package contains no .spec file\n"
 msgstr "ソースパッケージに .spec ファイルがありません\n"
 
-#: lib/psm.c:607
+#: lib/psm.c:485
 #, c-format
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr "%s: waitpid(%d) rc %d 状態 %x 秒 %u.%03u\n"
 
-#: lib/psm.c:759
+#: lib/psm.c:637
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr "%s: %s(%s-%s-%s.%s) <lua> スクリプトを実行しています。\n"
 
-#: lib/psm.c:781
+#: lib/psm.c:659
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr "%s: %s(%s-%s-%s.%s) 余計な \"%s\" をスキップしました。\n"
 
-#: lib/psm.c:789
+#: lib/psm.c:667
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr "%s: %s(%s-%s-%s.%s) %s 同期スクリプトを開始しました。\n"
 
-#: lib/psm.c:1001
+#: lib/psm.c:879
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 
-#: lib/psm.c:1041
+#: lib/psm.c:919
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
-msgstr "%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。waitpid (%d)。rc %d: %s\n"
+msgstr ""
+"%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。waitpid (%d)。rc %d: %s\n"
 
-#: lib/psm.c:1047
+#: lib/psm.c:926
+#, fuzzy, c-format
+msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
+msgstr "%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。終了ステータス %d\n"
+
+#: lib/psm.c:930
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。終了ステータス %d\n"
 
-#: lib/psm.c:1480
+#: lib/psm.c:1364
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s は  %d ファイルを含み、テスト = %d です。\n"
 
-#: lib/psm.c:1659
+#: lib/psm.c:1541
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: スクリプト %s の実行に失敗しました (%d)。%s をスキップします。\n"
 
-#: lib/psm.c:1768
+#: lib/psm.c:1650
 msgid "Unable to reload signature header\n"
 msgstr "署名ヘッダの再読み込みができません。\n"
 
-#: lib/psm.c:1847
+#: lib/psm.c:1728
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "アーカイブの伸長に失敗%s%s: %s\n"
 
-#: lib/psm.c:1848
+#: lib/psm.c:1729
 msgid " on file "
 msgstr ": ファイル "
 
-#: lib/psm.c:2034
+#: lib/psm.c:1915
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s: ファイル %s で失敗: %s\n"
 
-#: lib/psm.c:2037
+#: lib/psm.c:1918
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s: 失敗: %s\n"
+
+#: lib/psm.c:2106
+#, fuzzy, c-format
+msgid "Attempting to mark %s as installed in score board(%u).\n"
+msgstr ""
+"削除されたものとしてマーク %s を付けようとしています(スコアボード (%p) "
+"内)。\n"
+
+#: lib/psm.c:2139
+#, fuzzy, c-format
+msgid "Attempting to mark %s as erased in score board(0x%x).\n"
+msgstr ""
+"削除されたものとしてマーク %s を付けようとしています(スコアボード (%p) "
+"内)。\n"
 
 #: lib/query.c:123 lib/rpmts.c:632
 #, c-format
@@ -2532,7 +2519,7 @@ msgstr "パッケージレコード番号: %u\n"
 msgid "record %u could not be read\n"
 msgstr "レコード %u は読み込めませんでした\n"
 
-#: lib/query.c:669 lib/rpminstall.c:818
+#: lib/query.c:669 lib/rpminstall.c:796
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません。\n"
@@ -2559,7 +2546,7 @@ msgstr "makeTempFile に失敗しました。\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: Fwrite に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:732
+#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:747
 #, c-format
 msgid "%s: not an rpm package\n"
 msgstr "%s: rpm パッケージではありません。\n"
@@ -2574,72 +2561,72 @@ msgstr "%s: v1.0 の RPM パッケージには署名できません。\n"
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: v2.0 の RPM パッケージには再署名できません。\n"
 
-#: lib/rpmchecksig.c:332
+#: lib/rpmchecksig.c:338
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "%s: キー ID %s により既に署名されています。スキップします。\n"
 
-#: lib/rpmchecksig.c:362
+#: lib/rpmchecksig.c:368
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:368
+#: lib/rpmchecksig.c:374
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature に失敗しました: %s\n"
 
-#: lib/rpmchecksig.c:596
+#: lib/rpmchecksig.c:602
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: インポート読み込みに失敗しました(%d)。\n"
 
-#: lib/rpmchecksig.c:608
+#: lib/rpmchecksig.c:614
 #, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: インポートに失敗しました。\n"
 
-#: lib/rpmchecksig.c:644
+#: lib/rpmchecksig.c:650
 #, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: headerRead に失敗しました。\n"
 
-#: lib/rpmchecksig.c:658
+#: lib/rpmchecksig.c:664
 #, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: headerGetEntry に失敗しました。\n"
 
-#: lib/rpmchecksig.c:738
+#: lib/rpmchecksig.c:753
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: 署名がありません (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:834
+#: lib/rpmchecksig.c:861
 #, c-format
 msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
 msgstr "V3/V4 署名のみ検証可能です、V%u 署名を飛ばします\n"
 
-#: lib/rpmchecksig.c:1000
+#: lib/rpmchecksig.c:1027
 msgid "NOT OK"
 msgstr "OK ではありません。"
 
-#: lib/rpmchecksig.c:1001 lib/rpmchecksig.c:1015
+#: lib/rpmchecksig.c:1028 lib/rpmchecksig.c:1042
 msgid " (MISSING KEYS:"
 msgstr "(見つからない鍵:"
 
-#: lib/rpmchecksig.c:1003 lib/rpmchecksig.c:1017
+#: lib/rpmchecksig.c:1030 lib/rpmchecksig.c:1044
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1004 lib/rpmchecksig.c:1018
+#: lib/rpmchecksig.c:1031 lib/rpmchecksig.c:1045
 msgid " (UNTRUSTED KEYS:"
 msgstr "(信頼できない鍵:"
 
-#: lib/rpmchecksig.c:1006 lib/rpmchecksig.c:1020
+#: lib/rpmchecksig.c:1033 lib/rpmchecksig.c:1047
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1014
+#: lib/rpmchecksig.c:1041
 msgid "OK"
 msgstr "OK"
 
@@ -2705,8 +2692,8 @@ msgstr "%s を %s に再配置しています。\n"
 msgid "relocating directory %s to %s\n"
 msgstr "ディレクトリ %s を %s に再配置しています\n"
 
-#: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:491
-#: lib/rpminstall.c:622 lib/rpminstall.c:1061 lib/rpmts.c:643
+#: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
+#: lib/rpminstall.c:611 lib/rpminstall.c:1039 lib/rpmts.c:643
 #: tools/rpmgraph.c:121 tools/rpmgraph.c:158
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2718,12 +2705,12 @@ msgid "unknown tag: \"%s\"\n"
 msgstr "不明なタグ: \"%s\"\n"
 
 #. XXX rpminstall will need RPMMESS_ERROR
-#: lib/rpmgi.c:625 lib/rpminstall.c:666 lib/rpminstall.c:852
-#: lib/rpminstall.c:1318 lib/transaction.c:1182 tools/rpmgraph.c:196
+#: lib/rpmgi.c:625 lib/rpminstall.c:655 lib/rpminstall.c:830
+#: lib/rpminstall.c:1265 lib/transaction.c:1021 tools/rpmgraph.c:196
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: lib/rpmgi.c:631 lib/rpminstall.c:673 tools/rpmgraph.c:202
+#: lib/rpmgi.c:631 lib/rpminstall.c:662 tools/rpmgraph.c:202
 msgid "    Suggested resolutions:\n"
 msgstr "    解決の提案:\n"
 
@@ -2751,122 +2738,105 @@ msgstr "アップグレード中..."
 msgid "Upgrading packages..."
 msgstr "パッケージをアップグレード中..."
 
-#. All right lets start the autorollback goal games.
-#. * XXX: What I am about to do twists up the API a bit.  I am
-#. *      going to call a function in rpminstall.c to handle
-#. *      the rollback goal.  Long term what I need to do is
-#. *      take the kernel of the code in rpminstall.c along with all
-#. *      all the IDTX stuff and put in something like rollback.c and
-#. *      create the complimentary header.
-#.
-#: lib/rpminstall.c:331 lib/rpminstall.c:796 lib/transaction.c:1045
-#, c-format
-msgid "Autorollback Goal: %-24.24s\n"
-msgstr "自動ロールバック 目標: %-24.24s\n"
-
-#: lib/rpminstall.c:420
+#: lib/rpminstall.c:409
 #, c-format
 msgid "Adding goal: %s\n"
 msgstr "目標を追加: %s\n"
 
-#: lib/rpminstall.c:436
+#: lib/rpminstall.c:425
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s を取得中\n"
 
 #. XXX undefined %{name}/%{version}/%{release} here
 #. XXX %{_tmpdir} does not exist
-#: lib/rpminstall.c:449
+#: lib/rpminstall.c:438
 #, c-format
 msgid " ... as %s\n"
 msgstr " ... (%s として)\n"
 
-#: lib/rpminstall.c:453
+#: lib/rpminstall.c:442
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s をスキップします - 転送に失敗 - %s\n"
 
-#: lib/rpminstall.c:510 lib/rpminstall.c:915 tools/rpmgraph.c:141
+#: lib/rpminstall.c:499 lib/rpminstall.c:893 tools/rpmgraph.c:141
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません。\n"
 
-#: lib/rpminstall.c:527
+#: lib/rpminstall.c:516
 #, c-format
 msgid "\tadded source package [%d]\n"
 msgstr "\tソースパッケージを追加しました [%d]\n"
 
-#: lib/rpminstall.c:552
+#: lib/rpminstall.c:541
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "パッケージ %s は再配置できません。\n"
 
-#: lib/rpminstall.c:597
+#: lib/rpminstall.c:586
 #, c-format
 msgid "\tadded binary package [%d]\n"
 msgstr "\tバイナリパッケージを追加しました [%d]\n"
 
-#: lib/rpminstall.c:602
+#: lib/rpminstall.c:591
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "ファイル %s の読み込みエラー\n"
 
-#: lib/rpminstall.c:608
+#: lib/rpminstall.c:597
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "ファイル %s にはより新しいバージョンの RPM が必要です。\n"
 
-#: lib/rpminstall.c:637
+#: lib/rpminstall.c:626
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: RPM パッケージ(またはパッケージのリスト)ではありません: %s\n"
 
-#: lib/rpminstall.c:652
+#: lib/rpminstall.c:641
 #, c-format
 msgid "found %d source and %d binary packages\n"
-msgstr "%d 個のソースパッケージと %d 個のバイナリパッケージが見つかりました。\n"
+msgstr ""
+"%d 個のソースパッケージと %d 個のバイナリパッケージが見つかりました。\n"
 
-#: lib/rpminstall.c:703
+#: lib/rpminstall.c:692
 msgid "installing binary packages\n"
 msgstr "バイナリパッケージをインストール中\n"
 
-#: lib/rpminstall.c:727
+#: lib/rpminstall.c:716
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ファイル %s をオープンできません: %s\n"
 
-#: lib/rpminstall.c:827
+#: lib/rpminstall.c:805
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" は複数のパッケージを指定しています\n"
 
-#: lib/rpminstall.c:899
+#: lib/rpminstall.c:877
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s をオープンできません: %s\n"
 
-#: lib/rpminstall.c:905
+#: lib/rpminstall.c:883
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中です。\n"
 
-#: lib/rpminstall.c:1224
-#, c-format
-msgid "Excluding TID %d from rollback\n"
-msgstr "ロールバックから TID %d を除外しています\n"
-
-#: lib/rpminstall.c:1312 lib/transaction.c:1174
+#: lib/rpminstall.c:1259 lib/transaction.c:1014
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr "パッケージ (+%d/-%d) を %-24.24s へロールバック(0x%08x):\n"
 
-#: lib/rpminstall.c:1343 lib/transaction.c:1235
+#: lib/rpminstall.c:1290 lib/transaction.c:1065
 msgid "Cleaning up repackaged packages:\n"
 msgstr "再パッケージされたパッケージを削除中:\n"
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1350
+#: lib/rpminstall.c:1297 lib/transaction.c:1071
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr "\t%s を削除中:\n"
@@ -2878,11 +2848,13 @@ msgstr "読み込みの失敗: %s (%d)\n"
 
 #: lib/rpmlibprov.c:29
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr "「PreReq:」「Provides:」「Obsoletes:」の依存関係をサポートしたバージョン。"
+msgstr ""
+"「PreReq:」「Provides:」「Obsoletes:」の依存関係をサポートしたバージョン。"
 
 #: lib/rpmlibprov.c:32
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr "ファイル名が、パスではなく (dirName, baseName, dirIndex) の組で格納されます。"
+msgstr ""
+"ファイル名が、パスではなく (dirName, baseName, dirIndex) の組で格納されます。"
 
 #: lib/rpmlibprov.c:35
 msgid "package payload can be compressed using bzip2."
@@ -2910,7 +2882,8 @@ msgstr "ハードリンクファイル群が完全でなくてもインストールできます。"
 
 #: lib/rpmlibprov.c:53
 msgid "package scriptlets may access the rpm database while installing."
-msgstr "インストール中に、パッケージスクリプトが rpm データベースにアクセスできます。"
+msgstr ""
+"インストール中に、パッケージスクリプトが rpm データベースにアクセスできます。"
 
 #: lib/rpmlibprov.c:56
 msgid "internal support for lua scripts."
@@ -2975,7 +2948,8 @@ msgstr ""
 #: lib/rpmps.c:258
 #, c-format
 msgid "package %s pre-transaction syscall(s): %s failed: %s"
-msgstr "パッケージ %s のトランザクション前のシステムコール: %s に失敗しました: %s"
+msgstr ""
+"パッケージ %s のトランザクション前のシステムコール: %s に失敗しました: %s"
 
 #: lib/rpmps.c:262
 #, c-format
@@ -3151,42 +3125,42 @@ msgstr "追加中: %s\n"
 msgid "Suggesting: %s\n"
 msgstr "提案中: %s\n"
 
-#: lib/rpmts.c:1236
+#: lib/rpmts.c:1221
 msgid "mounted filesystems:\n"
 msgstr "マウント済みファイルシステム:\n"
 
-#: lib/rpmts.c:1238
+#: lib/rpmts.c:1223
 msgid "    i        dev    bsize       bavail       iavail mount point\n"
 msgstr "    i        dev    bsize       bavail       iavail mount point\n"
 
-#: lib/rpmts.c:1294
+#: lib/rpmts.c:1279
 #, c-format
 msgid "%5d 0x%08x %8u %12ld %12ld %s\n"
 msgstr "%5d 0x%08x %8u %12ld %12ld %s\n"
 
-#: lib/rpmts.c:1634
+#: lib/rpmts.c:1616
 #, c-format
 msgid "Creating transaction score board(%p, %p)\n"
 msgstr "トランザクションスコアボードを作成中(%p, %p)\n"
 
-#: lib/rpmts.c:1639
+#: lib/rpmts.c:1621
 #, c-format
 msgid "\tScore board address:  %p\n"
 msgstr "\tスコアボードのアドレス:  %p\n"
 
-#: lib/rpmts.c:1649
+#: lib/rpmts.c:1631
 #, c-format
 msgid "\tAllocating space for %d entries\n"
 msgstr "\t%d エントリ分の領域を割当て中\n"
 
 #. @-compdef -usereleased@
 #. XXX p->fi->te undefined.
-#: lib/rpmts.c:1676
+#: lib/rpmts.c:1658
 #, c-format
 msgid "\tAdding entry for %s to score board.\n"
 msgstr "\t%s のエントリをスコアボードに追加中です。\n"
 
-#: lib/rpmts.c:1680
+#: lib/rpmts.c:1662
 #, c-format
 msgid "\t\tEntry address:  %p\n"
 msgstr "\t\tエントリのアドレス:  %p\n"
@@ -3194,46 +3168,27 @@ msgstr "\t\tエントリのアドレス:  %p\n"
 #. We found this one, so just add the element type to the one
 #. * already there.
 #.
-#: lib/rpmts.c:1692
+#: lib/rpmts.c:1673
 #, c-format
 msgid "\tUpdating entry for %s in score board.\n"
 msgstr "\tスコアボードに %s のエントリを更新中です。\n"
 
-#: lib/rpmts.c:1717
-msgid "Could not get header for transaction score!\n"
-msgstr "トランザクションスコアのヘッダを取得できませんでした。\n"
-
-#: lib/rpmts.c:1718
-#, c-format
-msgid "NEVRA: %s"
-msgstr "NEVRA: %s"
-
-#: lib/rpmts.c:1727
-#, c-format
-msgid "\tCould not get INSTALLTID for %s.\n"
-msgstr "\t%s の INSTALLTID を取得できませんでした。\n"
-
-#: lib/rpmts.c:1732
-#, c-format
-msgid "\tINSTALLTID for %s is 0x%08x.\n"
-msgstr "\t%s の INSTALLTID は 0x%08x です。\n"
-
-#: lib/rpmts.c:1757
+#: lib/rpmts.c:1698
 #, c-format
 msgid "May free Score board(%p)\n"
 msgstr "スコアボード (%p) を解放ようとしています。\n"
 
-#: lib/rpmts.c:1772
+#: lib/rpmts.c:1713
 msgid "\tRefcount is zero...will free\n"
 msgstr "\t参照カウント 0 ... 解放します。\n"
 
 #. Assume we don't find it
-#: lib/rpmts.c:1822
+#: lib/rpmts.c:1763
 #, c-format
 msgid "Looking in score board(%p) for %s\n"
 msgstr "スコアボード (%p) の中で %s を参照しています。\n"
 
-#: lib/rpmts.c:1828
+#: lib/rpmts.c:1769
 #, c-format
 msgid "\tFound entry at address:  %p\n"
 msgstr "\tアドレス %p でエントリを見つけました。\n"
@@ -3273,79 +3228,80 @@ msgstr "署名データ: 不正、バイト数 (%d) が範囲外です。\n"
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr "署名 blob(%d): 不正、read が %d を返しました。\n"
 
-#: lib/signature.c:297
+#: lib/signature.c:303
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "署名タグ[%d]: 不正、タグ %d タイプ %d オフセット %d カウント %d\n"
 
-#: lib/signature.c:307
+#: lib/signature.c:313
 #, c-format
 msgid "sigh load: BAD\n"
 msgstr "署名の読み込み: 不正。\n"
 
-#: lib/signature.c:319
+#: lib/signature.c:325
 #, c-format
 msgid "sigh pad(%d): BAD, read %d bytes\n"
 msgstr "署名の pad サイズ(%d): 不正、%d バイト読み込みました。\n"
 
-#: lib/signature.c:328
+#: lib/signature.c:334
 #, c-format
 msgid "sigh sigSize(%d): BAD, fstat(2) failed\n"
 msgstr "署名のサイズ(%d): 不正、fstat(2) に失敗しました。\n"
 
-#: lib/signature.c:365
+#: lib/signature.c:371
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "署名: size(%d)+pad(%d)\n"
 
 #. @=boundsread@
-#: lib/signature.c:457 lib/signature.c:571 lib/signature.c:846
-#: lib/signature.c:885
+#: lib/signature.c:467 lib/signature.c:595 lib/signature.c:904
+#: lib/signature.c:943
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s\n"
 
-#: lib/signature.c:473
+#: lib/signature.c:483
 msgid "pgp failed\n"
 msgstr "pgp 失敗\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:480
+#: lib/signature.c:490
 msgid "pgp failed to write signature\n"
 msgstr "pgp が署名を書き込むのに失敗しました。\n"
 
-#: lib/signature.c:486
+#: lib/signature.c:496
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "PGP 署名サイズ: %d\n"
 
 #. @=boundswrite@
-#: lib/signature.c:504 lib/signature.c:619
+#: lib/signature.c:514 lib/signature.c:643
 msgid "unable to read the signature\n"
 msgstr "署名を読み込めませんでした。\n"
 
-#: lib/signature.c:509
+#: lib/signature.c:519
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "PGP 署名の %d バイトを取得\n"
 
-#: lib/signature.c:588
-msgid "gpg failed\n"
-msgstr "gpg 失敗\n"
+#: lib/signature.c:612
+#, fuzzy, c-format
+msgid "gpg exec failed (%d)\n"
+msgstr "実行失敗\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:595
+#: lib/signature.c:619
 msgid "gpg failed to write signature\n"
 msgstr "gpg が署名を書き込むのに失敗しました。\n"
 
-#: lib/signature.c:601
+#: lib/signature.c:625
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "GPG 署名サイズ: %d\n"
 
-#: lib/signature.c:624
+#: lib/signature.c:648
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "GPG 署名の %d バイトを取得\n"
@@ -3355,60 +3311,58 @@ msgstr "GPG 署名の %d バイトを取得\n"
 #. Currently the calling function (rpm.c:main) is checking this and
 #. * doing a better job.  This section should never be accessed.
 #.
-#: lib/signature.c:890 lib/signature.c:943
+#: lib/signature.c:948 lib/signature.c:1001
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "マクロファイル中の不正な %%_signature\n"
 
-#: lib/signature.c:923
+#: lib/signature.c:981
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "マクロファイル内で \"%%_gpg_name\" を設定しなければなりません。\n"
 
-#: lib/signature.c:937
+#: lib/signature.c:995
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "マクロファイル内で \"%%_pgp_name\" を設定しなければなりません。\n"
 
-#: lib/signature.c:985
+#: lib/signature.c:1043
 msgid "Header+Payload size: "
 msgstr "ヘッダとペイロードサイズ:"
 
-#: lib/signature.c:1026
+#: lib/signature.c:1084
 msgid "MD5 digest: "
 msgstr "MD5 ダイジェスト: "
 
-#: lib/signature.c:1086
+#: lib/signature.c:1144
 msgid "Header SHA1 digest: "
 msgstr "ヘッダ SHA1 ダイジェスト: "
 
-#: lib/signature.c:1164
-msgid "V3 RSA/MD5 signature: "
-msgstr "V3 RSA/MD5 署名: "
-
-#: lib/signature.c:1334
+#: lib/signature.c:1223 lib/signature.c:1406
 msgid "Header "
 msgstr "ヘッダ "
 
-#: lib/signature.c:1336
-msgid "V4 DSA signature: "
+#: lib/signature.c:1290
+#, fuzzy
+msgid " signature: "
 msgstr "V4 DSA 署名: "
 
-#: lib/signature.c:1338
-msgid "V3 DSA signature: "
+#: lib/signature.c:1412
+#, fuzzy
+msgid " DSA signature: "
 msgstr "V3 DSA 署名: "
 
-#: lib/signature.c:1420
+#: lib/signature.c:1494
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "署名確認: 異常なパラメータです。\n"
 
-#: lib/signature.c:1447
+#: lib/signature.c:1525
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "MD5 ダイジェストが破損: サポートされていません。\n"
 
-#: lib/signature.c:1451
+#: lib/signature.c:1529
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名: 未知(%d)\n"
@@ -3419,65 +3373,33 @@ msgstr "署名: 未知(%d)\n"
 msgid "excluding directory %s\n"
 msgstr "ディレクトリの除外: %s\n"
 
-#: lib/transaction.c:1020
-msgid "Rollback to Autorollback goal requested.\n"
-msgstr "自動ロールバック目標へのロールバックが要求されました。\n"
-
-#: lib/transaction.c:1033
-msgid "No Autorollback goal set.\n"
-msgstr "自動ロールバック目標が設定されていません。\n"
-
-#: lib/transaction.c:1048
-#, c-format
-msgid "Rolling back successful transactions to %s.\n"
-msgstr "%s へのトランザクションのロールバックに成功しました。\n"
-
-#: lib/transaction.c:1053
-msgid "Creating rollback transaction to achieve goal\n"
-msgstr "アーカイブ目標のためのロールバックトランザクションを作成しています。\n"
-
-#: lib/transaction.c:1172
+#: lib/transaction.c:1012
 msgid "Transaction failed...rolling back\n"
 msgstr "トランザクションに失敗しました...ロールバック中\n"
 
-#: lib/transaction.c:1176
-#, c-format
-msgid "Failed Tran:  0x%08x\n"
-msgstr "トランザクション失敗:  0x%08x\n"
-
-#: lib/transaction.c:1194
+#: lib/transaction.c:1032
 msgid "Could not order auto-rollback transaction!\n"
 msgstr "自動ロールバックトランザクションを順序付けできませんでした!\n"
 
-#: lib/transaction.c:1236
-#, c-format
-msgid "\t%s\n"
-msgstr "\t%s\n"
-
-#: lib/transaction.c:1300
+#: lib/transaction.c:1122
 msgid "Getting repackaged header from transaction element\n"
 msgstr "トランザクションの要素から再パッケージされたヘッダを取得しています。\n"
 
-#: lib/transaction.c:1316
-#, c-format
-msgid "\tRepackage Dir = %s...\n"
-msgstr "\t再パッケージディレクトリ = %s...\n"
-
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1328
+#: lib/transaction.c:1147
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr "\t%s を検索中...\n"
 
-#: lib/transaction.c:1332
+#: lib/transaction.c:1151
 msgid "\tMatches found.\n"
 msgstr "\t一致を見つけました。\n"
 
-#: lib/transaction.c:1336
+#: lib/transaction.c:1155
 msgid "\tNo matches found.\n"
 msgstr "\t一致が見つかりません。\n"
 
-#: lib/transaction.c:1349
+#: lib/transaction.c:1168
 msgid "\tRepackaged package not found!.\n"
 msgstr "\t再パッケージされたパッケージが見つかりません!\n"
 
@@ -3488,89 +3410,39 @@ msgstr "\t再パッケージされたパッケージが見つかりません!\n"
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1370
+#: lib/transaction.c:1189
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr "\tREMOVETID が INSTALLTID に一致しました。\n"
 
-#: lib/transaction.c:1372
+#: lib/transaction.c:1191
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr "\t\t名前:  %s.\n"
 
-#: lib/transaction.c:1395
+#: lib/transaction.c:1214
 #, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr "\t再パッケージされたパッケージは %s です...\n"
 
-#. XXX: Can't happen
-#: lib/transaction.c:1446
-msgid "Could not aquire transaction score!.\n"
-msgstr "トランザクションスコアを取得できませんでした。\n"
+#: lib/transaction.c:1258
+#, fuzzy
+msgid "Adding install element to auto-rollback transaction.\n"
+msgstr "自動ロールバックトランザクションに %s を追加しました。\n"
 
-#. XXX: Can't happen
-#: lib/transaction.c:1451
-#, c-format
-msgid "Could not acquire score entry %s!.\n"
-msgstr "%s のスコアエントリを取得できませんでした。\n"
-
-#: lib/transaction.c:1469
-#, c-format
-msgid "Processing failed install element %s for autorollback.\n"
-msgstr "自動ロールバックのために、インストールに失敗した要素 %s を処理しています。\n"
-
-#: lib/transaction.c:1473
-msgid "\tForce adding header to rpmdb.\n"
-msgstr "\trpmdb にヘッダーを強制的に追加しています。\n"
-
-#: lib/transaction.c:1477
-msgid "\tCould not add failed package header to db!\n"
-msgstr "\t失敗したパッケージのヘッダーを db に追加できませんでした。\n"
-
-#: lib/transaction.c:1490
-#, c-format
-msgid "Processing failed erase element %s for autorollback.\n"
-msgstr "自動ロールバックのために、削除に失敗した要素 %s を処理中です。\n"
-
-#: lib/transaction.c:1494
-msgid "\tForce removing header from rpmdb.\n"
-msgstr "\trpmdb から強制的にヘッダを削除しています。\n"
-
-#: lib/transaction.c:1499
-msgid "\tCould not remove failed package header from db!\n"
-msgstr "\tdb から失敗したパッケージのヘッダを削除できませんでした。\n"
-
-#: lib/transaction.c:1508 lib/transaction.c:1628
-msgid "_rpmtsAddRollbackElement: Unknown transaction element type!\n"
-msgstr "_rpmtsAddRollbackElement: 不明なトランザクションエレメント種別。\n"
-
-#: lib/transaction.c:1509 lib/transaction.c:1629
-#, c-format
-msgid "TYPE:  %d\n"
-msgstr "TYPE:  %d\n"
-
-#: lib/transaction.c:1522
-msgid "Processing install element for autorollback...\n"
-msgstr "自動ロールバックのために、インストール要素を処理中...\n"
-
-#: lib/transaction.c:1523 lib/transaction.c:1583
-#, c-format
-msgid "\tNEVRA: %s\n"
-msgstr "\tNEVRA: %s\n"
-
-#: lib/transaction.c:1532
+#: lib/transaction.c:1267
 msgid "Could not get install element database instance!\n"
 msgstr "インストール要素データベースのインスタンスを取得できませんでした!\n"
 
-#: lib/transaction.c:1545
+#: lib/transaction.c:1280
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr "自動ロールバックトランザクションのヘッダを取得できませんでした。\n"
 
-#: lib/transaction.c:1555
+#: lib/transaction.c:1290
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr "\t再パッケージされたパッケージヘッダを追加しました: %s.\n"
 
-#: lib/transaction.c:1557 lib/transaction.c:1568
+#: lib/transaction.c:1292 lib/transaction.c:1303
 #, c-format
 msgid "\tAdded from install element %s.\n"
 msgstr "\tインストール要素 %s から追加しました。\n"
@@ -3578,36 +3450,49 @@ msgstr "\tインストール要素 %s から追加しました。\n"
 #. Add the header as an erase element, we did not
 #. * have a repackaged package
 #.
-#: lib/transaction.c:1566
+#: lib/transaction.c:1301
 msgid "\tAdded erase element.\n"
 msgstr "\t削除要素を追加しました。\n"
 
-#: lib/transaction.c:1575
+#: lib/transaction.c:1310
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
-msgstr "自動ロールバックトランザクションの再パッケージヘッダを取得できませんでした!\n"
+msgstr ""
+"自動ロールバックトランザクションの再パッケージヘッダを取得できませんでした!\n"
 
-#: lib/transaction.c:1582
-msgid "Processing erase element for autorollback...\n"
-msgstr "自動ロールバックのために、削除要素を処理中...\n"
+#: lib/transaction.c:1317
+#, fuzzy
+msgid "Add erase element to auto-rollback transaction.\n"
+msgstr "自動ロールバックトランザクションに削除要素を追加できません。\n"
 
-#: lib/transaction.c:1590
-msgid "\tErase element already added for complimentary install.\n"
-msgstr "\t削除要素は、既にインストール対象に追加されています。\n"
+#: lib/transaction.c:1325
+#, fuzzy
+msgid "\tFound existing upgrade element.\n"
+msgstr "\t削除要素を追加しました。\n"
 
-#: lib/transaction.c:1603
+#: lib/transaction.c:1326
+#, fuzzy, c-format
+msgid "\tNot adding erase element for %s.\n"
+msgstr "\t削除要素を追加しました。\n"
+
+#: lib/transaction.c:1343
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr "\t再パッケージされたパッケージ %s を追加しました。\n"
 
-#: lib/transaction.c:1608
+#: lib/transaction.c:1345
+#, fuzzy, c-format
+msgid "\tAdded from erase element %s.\n"
+msgstr "\t削除要素を追加しました。\n"
+
+#: lib/transaction.c:1350
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr "自動ロールバックトランザクションに削除要素を追加できません。\n"
 
-#: lib/transaction.c:1614
+#: lib/transaction.c:1356
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr "\t再パッケージされたパッケージがありません...何もしません。\n"
 
-#: lib/transaction.c:1620
+#: lib/transaction.c:1362
 msgid "Failure reading repackaged package!\n"
 msgstr "再パッケージされたパッケージの読み込みに失敗しました!\n"
 
@@ -3619,12 +3504,12 @@ msgstr "再パッケージされたパッケージの読み込みに失敗しました!\n"
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1745
+#: lib/transaction.c:1485
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr "%d 個の要素の健全性チェック中\n"
 
-#: lib/transaction.c:1831
+#: lib/transaction.c:1571
 msgid "running pre-transaction scripts\n"
 msgstr "トランザクション前のスクリプトを実行中\n"
 
@@ -3636,7 +3521,7 @@ msgstr "トランザクション前のスクリプトを実行中\n"
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1906
+#: lib/transaction.c:1645
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr "%d ファイルの指紋を計算しています。\n"
@@ -3644,40 +3529,31 @@ msgstr "%d ファイルの指紋を計算しています。\n"
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1987
+#: lib/transaction.c:1726
 msgid "computing file dispositions\n"
 msgstr "ファイルの性質を計算しています。\n"
 
-#: lib/transaction.c:2167
+#: lib/transaction.c:1905
 msgid "Creating auto-rollback transaction\n"
 msgstr "自動ロールバックトランザクションを作成しています。\n"
 
-#: lib/transaction.c:2346
+#: lib/transaction.c:2059
 msgid "Add failed.  Could not read package header.\n"
 msgstr "追加に失敗しました。パッケージヘッダを読み込めませんでした。\n"
 
-#: lib/transaction.c:2395
+#: lib/transaction.c:2123
 msgid "Add failed in rpmpsmStage().\n"
 msgstr "rpmpsmStage() で追加に失敗しました。\n"
 
-#: lib/transaction.c:2402
+#: lib/transaction.c:2167
 msgid "Add failed.  Could not get file list.\n"
 msgstr "追加に失敗しました。ファイル一覧の取得ができません。\n"
 
-#: lib/transaction.c:2433
+#: lib/transaction.c:2216
 msgid "Erase failed failed in rpmpsmStage().\n"
 msgstr "rpmpsmStage() で削除に失敗しました。\n"
 
-#: lib/transaction.c:2451
-#, c-format
-msgid "Adding %s to autorollback transaction.\n"
-msgstr "自動ロールバックトランザクションに %s を追加しました。\n"
-
-#: lib/transaction.c:2458
-msgid "Could not add transaction element to autorollback!.\n"
-msgstr "自動ロールバックにトランザクション要素を追加できませんでした。\n"
-
-#: lib/transaction.c:2511
+#: lib/transaction.c:2276
 msgid "running post-transaction scripts\n"
 msgstr "トランザクション後のスクリプトを実行中\n"
 
@@ -3691,67 +3567,67 @@ msgstr "%c %s が見つかりません。"
 msgid "Unsatisfied dependencies for %s: "
 msgstr "%s のための依存性を満たしていません: "
 
-#: rpmdb/db3.c:162
+#: rpmdb/db3.c:160
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
 msgstr "db%d エラー (%d) (%s において): %s\n"
 
-#: rpmdb/db3.c:165
+#: rpmdb/db3.c:163
 #, c-format
 msgid "db%d error(%d): %s\n"
 msgstr "db%d エラー (%d): %s\n"
 
-#: rpmdb/db3.c:191
+#: rpmdb/db3.c:189
 #, c-format
 msgid "closed   db environment %s/%s\n"
 msgstr "データベース環境 %s/%s を閉じました\n"
 
-#: rpmdb/db3.c:209
+#: rpmdb/db3.c:207
 #, c-format
 msgid "removed  db environment %s/%s\n"
 msgstr "データベース環境 %s/%s を削除しました。\n"
 
-#: rpmdb/db3.c:302
+#: rpmdb/db3.c:298
 #, c-format
 msgid "opening  db environment %s/%s %s\n"
 msgstr "データベース環境 %s/%s をオープンします %s\n"
 
-#: rpmdb/db3.c:801
+#: rpmdb/db3.c:819
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "データベースインデックス %s/%s を閉じました\n"
 
-#: rpmdb/db3.c:870
+#: rpmdb/db3.c:888
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "データベースインデックス %s/%s を検証しました。\n"
 
-#: rpmdb/db3.c:1009
+#: rpmdb/db3.c:1031
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 "共有されてない posix mutex(%d) を見つけたので、fcntl ロックを使用する "
 "DB_PRIVATE を追加しています。\n"
 
-#: rpmdb/db3.c:1114
+#: rpmdb/db3.c:1136
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "データベースインデックス %s/%s をオープンします %s (mode=0x%x)\n"
 
-#: rpmdb/db3.c:1352
+#: rpmdb/db3.c:1378
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%sロックを獲得できません (%s/%s)\n"
 
-#: rpmdb/db3.c:1354
+#: rpmdb/db3.c:1380
 msgid "exclusive"
 msgstr "排他"
 
-#: rpmdb/db3.c:1354
+#: rpmdb/db3.c:1380
 msgid "shared"
 msgstr "共有"
 
-#: rpmdb/db3.c:1358
+#: rpmdb/db3.c:1384
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "データベースインデックス %s/%s をロックしました。\n"
@@ -3861,7 +3737,9 @@ msgstr "データベースを初期化します。"
 
 #: rpmdb/poptDB.c:20
 msgid "rebuild database inverted lists from installed package headers"
-msgstr "インストールされたパッケージヘッダーから、データベースのインデックスを再構築します。"
+msgstr ""
+"インストールされたパッケージヘッダーから、データベースのインデックスを再構築"
+"します。"
 
 #: rpmdb/poptDB.c:23
 msgid "verify database files"
@@ -3912,7 +3790,8 @@ msgstr "rpmdbNextIterator: スキップします。"
 #: rpmdb/rpmdb.c:2315
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
-msgstr "rpmdb: 破損したヘッダインスタンス #%u を取得しました。スキップします。\n"
+msgstr ""
+"rpmdb: 破損したヘッダインスタンス #%u を取得しました。スキップします。\n"
 
 #: rpmdb/rpmdb.c:2630
 #, c-format
@@ -4136,59 +4015,59 @@ msgstr "ファイル %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"
 
-#: rpmio/rpmio.c:714
+#: rpmio/rpmio.c:678
 msgid "Success"
 msgstr "成功"
 
-#: rpmio/rpmio.c:737
+#: rpmio/rpmio.c:701
 msgid "Bad server response"
 msgstr "サーバからの不正な応答。"
 
-#: rpmio/rpmio.c:739
+#: rpmio/rpmio.c:703
 msgid "Server I/O error"
 msgstr "サーバ I/O エラーです。"
 
-#: rpmio/rpmio.c:741
+#: rpmio/rpmio.c:705
 msgid "Server timeout"
 msgstr "サーバがタイムアウトしました。"
 
-#: rpmio/rpmio.c:743
+#: rpmio/rpmio.c:707
 msgid "Unable to lookup server host address"
 msgstr "サーバのホストアドレスを調べられません。"
 
-#: rpmio/rpmio.c:745
+#: rpmio/rpmio.c:709
 msgid "Unable to lookup server host name"
 msgstr "サーバのホスト名を調べられません。"
 
-#: rpmio/rpmio.c:747
+#: rpmio/rpmio.c:711
 msgid "Failed to connect to server"
 msgstr "サーバとの接続に失敗しました。"
 
-#: rpmio/rpmio.c:749
+#: rpmio/rpmio.c:713
 msgid "Failed to establish data connection to server"
 msgstr "サーバとのデータ接続確立に失敗しました。"
 
-#: rpmio/rpmio.c:751
+#: rpmio/rpmio.c:715
 msgid "I/O error to local file"
 msgstr "ローカルファイルの I/O エラーです。"
 
-#: rpmio/rpmio.c:753
+#: rpmio/rpmio.c:717
 msgid "Error setting remote server to passive mode"
 msgstr "リモートサーバを passive モードに設定できませんでした。"
 
-#: rpmio/rpmio.c:755
+#: rpmio/rpmio.c:719
 msgid "File not found on server"
 msgstr "サーバ上にファイルが見つかりません。"
 
-#: rpmio/rpmio.c:757
+#: rpmio/rpmio.c:721
 msgid "Abort in progress"
 msgstr "処理中の中断"
 
-#: rpmio/rpmio.c:761
+#: rpmio/rpmio.c:725
 msgid "Unknown or unexpected error"
 msgstr "不明または予期せぬエラー"
 
-#: rpmio/rpmio.c:1456
+#: rpmio/rpmio.c:1420
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr "%s に %s (パスワード %s) でログイン中\n"
@@ -4298,7 +4177,8 @@ msgstr "このパッケージと競合する機能を表示します。"
 
 #: ../rpmpopt:50 ../rpmpopt:297 ../rpmpopt:370
 msgid "list other packages removed by installing this package"
-msgstr "このパッケージをインストールすることにより削除されるパッケージを表示します。"
+msgstr ""
+"このパッケージをインストールすることにより削除されるパッケージを表示します。"
 
 #: ../rpmpopt:53 ../rpmpopt:300 ../rpmpopt:373
 msgid "list capabilities that this package provides"
@@ -4332,7 +4212,9 @@ msgstr "パッケージ中の全ファイルを列挙します。"
 msgid ""
 "find package name that contains a provided capability (needs rpmdb-redhat "
 "package installed)"
-msgstr "指定された機能を含むパッケージ名を検索します (rpmdb-redhat パッケージがインストールされている必要があります)"
+msgstr ""
+"指定された機能を含むパッケージ名を検索します (rpmdb-redhat パッケージがインス"
+"トールされている必要があります)"
 
 #: ../rpmpopt:103
 msgid "set buildroot <policy> (e.g. compress man pages)"
@@ -4367,3 +4249,127 @@ msgstr "DIRECTORY のデータベースを使用"
 msgid "DIRECTORY"
 msgstr "DIRECTORY"
 
+#~ msgid "disable use of libneon for HTTP"
+#~ msgstr "HTTP に libneon を使用しないようにします。"
+
+#~ msgid "rbexclude takes a Transaction I.D. argument"
+#~ msgstr "rbexclude にはトランザクション ID 引数が必要です"
+
+#~ msgid "arbgoal takes a time/date stamp argument"
+#~ msgstr "arbgoal には日付/時刻スタンプの指定が必要です"
+
+#~ msgid "malformed arbgoal time/date stamp argument"
+#~ msgstr "arbgoal の時刻/日付スタンプの形式が正しくありません"
+
+#~ msgid "If transaction fails rollback to <date>"
+#~ msgstr "トランザクションに失敗した場合に <date> にロールバックする"
+
+#~ msgid "Exclude Transaction I.D. from rollback"
+#~ msgstr "ロールバックでトランザクション ID を除外する"
+
+#~ msgid "<tid>"
+#~ msgstr "<tid>"
+
+#~ msgid "Could not aquire transaction score entry for %s\n"
+#~ msgstr "%s のトランザクションスコアのエントリーを取得できませんでした。\n"
+
+#~ msgid "Setting %s to TID of 0x%08x\n"
+#~ msgstr "%s を TID 0x%08x に設定します。\n"
+
+#~ msgid "Attempting to mark %s as installed in trasaction score\n"
+#~ msgstr ""
+#~ "トランザクションスコアにおいて、インストールされたものとしてマーク %s を付"
+#~ "けようとしています。\n"
+
+#~ msgid "Autorollback Goal: %-24.24s\n"
+#~ msgstr "自動ロールバック 目標: %-24.24s\n"
+
+#~ msgid "Excluding TID %d from rollback\n"
+#~ msgstr "ロールバックから TID %d を除外しています\n"
+
+#~ msgid "Could not get header for transaction score!\n"
+#~ msgstr "トランザクションスコアのヘッダを取得できませんでした。\n"
+
+#~ msgid "NEVRA: %s"
+#~ msgstr "NEVRA: %s"
+
+#~ msgid "\tCould not get INSTALLTID for %s.\n"
+#~ msgstr "\t%s の INSTALLTID を取得できませんでした。\n"
+
+#~ msgid "\tINSTALLTID for %s is 0x%08x.\n"
+#~ msgstr "\t%s の INSTALLTID は 0x%08x です。\n"
+
+#~ msgid "gpg failed\n"
+#~ msgstr "gpg 失敗\n"
+
+#~ msgid "V3 RSA/MD5 signature: "
+#~ msgstr "V3 RSA/MD5 署名: "
+
+#~ msgid "Rollback to Autorollback goal requested.\n"
+#~ msgstr "自動ロールバック目標へのロールバックが要求されました。\n"
+
+#~ msgid "No Autorollback goal set.\n"
+#~ msgstr "自動ロールバック目標が設定されていません。\n"
+
+#~ msgid "Rolling back successful transactions to %s.\n"
+#~ msgstr "%s へのトランザクションのロールバックに成功しました。\n"
+
+#~ msgid "Creating rollback transaction to achieve goal\n"
+#~ msgstr ""
+#~ "アーカイブ目標のためのロールバックトランザクションを作成しています。\n"
+
+#~ msgid "Failed Tran:  0x%08x\n"
+#~ msgstr "トランザクション失敗:  0x%08x\n"
+
+#~ msgid "\t%s\n"
+#~ msgstr "\t%s\n"
+
+#~ msgid "\tRepackage Dir = %s...\n"
+#~ msgstr "\t再パッケージディレクトリ = %s...\n"
+
+#~ msgid "Could not aquire transaction score!.\n"
+#~ msgstr "トランザクションスコアを取得できませんでした。\n"
+
+#~ msgid "Could not acquire score entry %s!.\n"
+#~ msgstr "%s のスコアエントリを取得できませんでした。\n"
+
+#~ msgid "Processing failed install element %s for autorollback.\n"
+#~ msgstr ""
+#~ "自動ロールバックのために、インストールに失敗した要素 %s を処理していま"
+#~ "す。\n"
+
+#~ msgid "\tForce adding header to rpmdb.\n"
+#~ msgstr "\trpmdb にヘッダーを強制的に追加しています。\n"
+
+#~ msgid "\tCould not add failed package header to db!\n"
+#~ msgstr "\t失敗したパッケージのヘッダーを db に追加できませんでした。\n"
+
+#~ msgid "Processing failed erase element %s for autorollback.\n"
+#~ msgstr "自動ロールバックのために、削除に失敗した要素 %s を処理中です。\n"
+
+#~ msgid "\tForce removing header from rpmdb.\n"
+#~ msgstr "\trpmdb から強制的にヘッダを削除しています。\n"
+
+#~ msgid "\tCould not remove failed package header from db!\n"
+#~ msgstr "\tdb から失敗したパッケージのヘッダを削除できませんでした。\n"
+
+#~ msgid "_rpmtsAddRollbackElement: Unknown transaction element type!\n"
+#~ msgstr "_rpmtsAddRollbackElement: 不明なトランザクションエレメント種別。\n"
+
+#~ msgid "TYPE:  %d\n"
+#~ msgstr "TYPE:  %d\n"
+
+#~ msgid "Processing install element for autorollback...\n"
+#~ msgstr "自動ロールバックのために、インストール要素を処理中...\n"
+
+#~ msgid "\tNEVRA: %s\n"
+#~ msgstr "\tNEVRA: %s\n"
+
+#~ msgid "Processing erase element for autorollback...\n"
+#~ msgstr "自動ロールバックのために、削除要素を処理中...\n"
+
+#~ msgid "\tErase element already added for complimentary install.\n"
+#~ msgstr "\t削除要素は、既にインストール対象に追加されています。\n"
+
+#~ msgid "Could not add transaction element to autorollback!.\n"
+#~ msgstr "自動ロールバックにトランザクション要素を追加できませんでした。\n"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: translation\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-31 13:55+0100\n"
+"POT-Creation-Date: 2004-02-29 07:48-0500\n"
 "PO-Revision-Date: 2005-05-20 15:53+1000\n"
 "Last-Translator: \n"
 "Language-Team:  <zh@li.org>\n"
@@ -16,78 +16,103 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-msgid "ARG"
-msgstr "ARG"
-
-msgid "DOUBLE"
-msgstr "DOUBLE"
-
-msgid "Display brief usage message"
-msgstr "显示简短的使用说明"
-
-msgid "Display option defaults in message"
-msgstr "在信息中显示默认的选项"
-
-msgid "FLOAT"
-msgstr "FLOAT"
-
-msgid "INT"
-msgstr "INT"
-
-msgid "LONG"
-msgstr "LONG"
-
-msgid "NONE"
-msgstr "NONE"
-
-msgid "STRING"
-msgstr "STRING"
-
-msgid "Show this help message"
-msgstr "显示这个帮助信息"
-
-msgid "Usage:"
-msgstr "用法:"
-
-msgid "VAL"
-msgstr "VAL"
-
-msgid "[OPTION...]"
-msgstr "[选项...]"
-
-msgid "aliases nested too deeply"
-msgstr "别名嵌套太深"
-
-msgid "error in parameter quoting"
-msgstr "参数引号错误"
-
-msgid "invalid numeric value"
-msgstr "无效的数值"
-
-msgid "memory allocation failed"
-msgstr "内存分配错误"
-
-msgid "missing argument"
-msgstr "缺少参数"
-
-msgid "mutually exclusive logical operations requested"
-msgstr "需要 XOR 逻辑运算"
-
-msgid "number too large or too small"
-msgstr "数值太大或太小"
-
-msgid "opt->arg should not be NULL"
-msgstr "opt->arg 不应该为 NULL"
-
-msgid "option type (%d) not implemented in popt\n"
-msgstr "选项类别 (%d) 沒有在 popt 中实现\n"
-
+#: popt.c:35
 msgid "unknown errno"
 msgstr "未知的错误"
 
-msgid "unknown error"
-msgstr "未知的错误"
+#: popt.c:964
+#, c-format
+msgid "option type (%d) not implemented in popt\n"
+msgstr "选项类别 (%d) 沒有在 popt 中实现\n"
 
+#: popt.c:1184
+msgid "missing argument"
+msgstr "缺少参数"
+
+#: popt.c:1186
 msgid "unknown option"
 msgstr "未知的选项"
 
+#: popt.c:1188
+msgid "mutually exclusive logical operations requested"
+msgstr "需要 XOR 逻辑运算"
+
+#: popt.c:1190
+msgid "opt->arg should not be NULL"
+msgstr "opt->arg 不应该为 NULL"
+
+#: popt.c:1192
+msgid "aliases nested too deeply"
+msgstr "别名嵌套太深"
+
+#: popt.c:1194
+msgid "error in parameter quoting"
+msgstr "参数引号错误"
+
+#: popt.c:1196
+msgid "invalid numeric value"
+msgstr "无效的数值"
+
+#: popt.c:1198
+msgid "number too large or too small"
+msgstr "数值太大或太小"
+
+#: popt.c:1200
+msgid "memory allocation failed"
+msgstr "内存分配错误"
+
+#: popt.c:1204
+msgid "unknown error"
+msgstr "未知的错误"
+
+#: popthelp.c:64 popthelp.c:75
+msgid "Show this help message"
+msgstr "显示这个帮助信息"
+
+#: popthelp.c:65 popthelp.c:76
+msgid "Display brief usage message"
+msgstr "显示简短的使用说明"
+
+#: popthelp.c:79
+msgid "Display option defaults in message"
+msgstr "在信息中显示默认的选项"
+
+#: popthelp.c:124
+msgid "NONE"
+msgstr "NONE"
+
+#: popthelp.c:126
+msgid "VAL"
+msgstr "VAL"
+
+#: popthelp.c:130
+msgid "INT"
+msgstr "INT"
+
+#: popthelp.c:131
+msgid "LONG"
+msgstr "LONG"
+
+#: popthelp.c:132
+msgid "STRING"
+msgstr "STRING"
+
+#: popthelp.c:133
+msgid "FLOAT"
+msgstr "FLOAT"
+
+#: popthelp.c:134
+msgid "DOUBLE"
+msgstr "DOUBLE"
+
+#: popthelp.c:135
+msgid "ARG"
+msgstr "ARG"
+
+#: popthelp.c:548
+msgid "Usage:"
+msgstr "用法:"
+
+#: popthelp.c:572
+msgid "[OPTION...]"
+msgstr "[选项...]"

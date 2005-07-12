@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-12 21:01-0500\n"
+"POT-Creation-Date: 2005-07-04 15:03-0400\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -551,7 +551,7 @@ msgstr ""
 msgid "%s: public key read failed.\n"
 msgstr "%s: ошибка чтения во время импортирования.\n"
 
-#: build/files.c:1793 lib/rpmchecksig.c:601
+#: build/files.c:1793 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: это не открытый ключ.\n"
@@ -749,7 +749,7 @@ msgstr "Невозможно перезагрузить заголовок подписи.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Невозможно открыть %s: %s\n"
 
-#: build/pack.c:646 lib/psm.c:1632
+#: build/pack.c:646 lib/psm.c:1638
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Невозможно записать пакет: %s\n"
@@ -779,7 +779,7 @@ msgstr "Невозможно прочитать содержимое из %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Невозможно записать содержимое в %s: %s\n"
 
-#: build/pack.c:739 lib/psm.c:1901
+#: build/pack.c:739 lib/psm.c:1907
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записан: %s\n"
@@ -1626,12 +1626,12 @@ msgstr ""
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:413 lib/signature.c:270
+#: lib/package.c:413 lib/signature.c:276
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:427 lib/signature.c:284
+#: lib/package.c:427 lib/signature.c:290
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
@@ -1697,12 +1697,12 @@ msgid ""
 "only packaging with major numbers <= 4 is supported by this version of RPM\n"
 msgstr "эта версия RPM поддерживает только пакеты версии <= 4\n"
 
-#: lib/package.c:811 lib/rpmchecksig.c:229 lib/rpmchecksig.c:759
+#: lib/package.c:811 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: ошибка rpmReadSignature\n"
 
-#: lib/package.c:818 lib/rpmchecksig.c:236 lib/rpmchecksig.c:767
+#: lib/package.c:818 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Подпись недоступна\n"
@@ -1712,7 +1712,7 @@ msgstr "%s: Подпись недоступна\n"
 msgid "%s: headerRead failed: %s"
 msgstr "%s: ошибка headerRead\n"
 
-#: lib/package.c:993 lib/rpmchecksig.c:116 lib/rpmchecksig.c:676
+#: lib/package.c:993 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: ошибка Fread: %s\n"
@@ -2382,50 +2382,55 @@ msgstr "%s: %s(%s-%s-%s)\texecv(%s) pid %d\n"
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s(%s-%s-%s) ошибка сценария, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:925
+#: lib/psm.c:926
+#, fuzzy, c-format
+msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
+msgstr "%s(%s-%s-%s) ошибка выполнения сценария, код возврата %d\n"
+
+#: lib/psm.c:930
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "%s(%s-%s-%s) ошибка выполнения сценария, код возврата %d\n"
 
-#: lib/psm.c:1358
+#: lib/psm.c:1364
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s содержит %d файлов, результат проверки: %d\n"
 
-#: lib/psm.c:1535
+#: lib/psm.c:1541
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s ошибка сценария (%d), пропускается %s\n"
 
-#: lib/psm.c:1644
+#: lib/psm.c:1650
 msgid "Unable to reload signature header\n"
 msgstr "Невозможно перезагрузить заголовок подписи\n"
 
-#: lib/psm.c:1722
+#: lib/psm.c:1728
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "распаковка архива не удалась%s%s: %s\n"
 
-#: lib/psm.c:1723
+#: lib/psm.c:1729
 msgid " on file "
 msgstr " на файле "
 
-#: lib/psm.c:1909
+#: lib/psm.c:1915
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s ошибка на файле %s: %s\n"
 
-#: lib/psm.c:1912
+#: lib/psm.c:1918
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s не удалось: %s\n"
 
-#: lib/psm.c:2100
+#: lib/psm.c:2106
 #, c-format
 msgid "Attempting to mark %s as installed in score board(%u).\n"
 msgstr ""
 
-#: lib/psm.c:2133
+#: lib/psm.c:2139
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""
@@ -2559,7 +2564,7 @@ msgstr "ошибка makeTempFile\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: ошибка Fwrite: %s\n"
 
-#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:741
+#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:747
 #, c-format
 msgid "%s: not an rpm package\n"
 msgstr "%s: это не пакет RPM\n"
@@ -2574,73 +2579,73 @@ msgstr "%s: Не могу подписать пакеты v1\n"
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: Не могу переподписать пакеты v2\n"
 
-#: lib/rpmchecksig.c:332
+#: lib/rpmchecksig.c:338
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "%s: уже был подписан ключём с идентификаторм %s, пропускается\n"
 
-#: lib/rpmchecksig.c:362
+#: lib/rpmchecksig.c:368
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: ошибка writeLead: %s\n"
 
-#: lib/rpmchecksig.c:368
+#: lib/rpmchecksig.c:374
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: ошибка rpmWriteSignature: %s\n"
 
-#: lib/rpmchecksig.c:596
+#: lib/rpmchecksig.c:602
 #, fuzzy, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: ошибка чтения во время импортирования.\n"
 
-#: lib/rpmchecksig.c:608
+#: lib/rpmchecksig.c:614
 #, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: ошибка импортирования.\n"
 
-#: lib/rpmchecksig.c:644
+#: lib/rpmchecksig.c:650
 #, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: ошибка headerRead\n"
 
-#: lib/rpmchecksig.c:658
+#: lib/rpmchecksig.c:664
 #, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: ошибка headerGetEntry\n"
 
-#: lib/rpmchecksig.c:747
+#: lib/rpmchecksig.c:753
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Подписи нет (RPM v1.0)\n"
 
-#: lib/rpmchecksig.c:855
+#: lib/rpmchecksig.c:861
 #, fuzzy, c-format
 msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 "только подписи версии 3 могут быть проверены, пропускается подпись версии %u"
 
-#: lib/rpmchecksig.c:1021
+#: lib/rpmchecksig.c:1027
 msgid "NOT OK"
 msgstr "НЕ ОК"
 
-#: lib/rpmchecksig.c:1022 lib/rpmchecksig.c:1036
+#: lib/rpmchecksig.c:1028 lib/rpmchecksig.c:1042
 msgid " (MISSING KEYS:"
 msgstr " (ОТСУТСТВУЮТ КЛЮЧИ:"
 
-#: lib/rpmchecksig.c:1024 lib/rpmchecksig.c:1038
+#: lib/rpmchecksig.c:1030 lib/rpmchecksig.c:1044
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:1025 lib/rpmchecksig.c:1039
+#: lib/rpmchecksig.c:1031 lib/rpmchecksig.c:1045
 msgid " (UNTRUSTED KEYS:"
 msgstr " (НЕТ ДОВЕРИЯ К КЛЮЧАМ:"
 
-#: lib/rpmchecksig.c:1027 lib/rpmchecksig.c:1041
+#: lib/rpmchecksig.c:1033 lib/rpmchecksig.c:1047
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:1035
+#: lib/rpmchecksig.c:1041
 msgid "OK"
 msgstr "ОК"
 
@@ -3236,80 +3241,80 @@ msgstr ""
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/signature.c:297
+#: lib/signature.c:303
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/signature.c:307
+#: lib/signature.c:313
 #, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
-#: lib/signature.c:319
+#: lib/signature.c:325
 #, c-format
 msgid "sigh pad(%d): BAD, read %d bytes\n"
 msgstr ""
 
-#: lib/signature.c:328
+#: lib/signature.c:334
 #, c-format
 msgid "sigh sigSize(%d): BAD, fstat(2) failed\n"
 msgstr ""
 
-#: lib/signature.c:365
+#: lib/signature.c:371
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr "Подпись: размер(%d)+заполнение(%d)\n"
 
 #. @=boundsread@
-#: lib/signature.c:461 lib/signature.c:589 lib/signature.c:898
-#: lib/signature.c:937
+#: lib/signature.c:467 lib/signature.c:595 lib/signature.c:904
+#: lib/signature.c:943
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Невозможно выполнить %s: %s\n"
 
-#: lib/signature.c:477
+#: lib/signature.c:483
 msgid "pgp failed\n"
 msgstr "ошибка pgp\n"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:484
+#: lib/signature.c:490
 msgid "pgp failed to write signature\n"
 msgstr "ошибка pgp при записи подписи\n"
 
-#: lib/signature.c:490
+#: lib/signature.c:496
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr "Размер подписи PGP: %d\n"
 
 #. @=boundswrite@
-#: lib/signature.c:508 lib/signature.c:637
+#: lib/signature.c:514 lib/signature.c:643
 msgid "unable to read the signature\n"
 msgstr "невозможно прочесть подпись\n"
 
-#: lib/signature.c:513
+#: lib/signature.c:519
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr "Получено %d байт подписи PGP\n"
 
-#: lib/signature.c:606
+#: lib/signature.c:612
 #, fuzzy, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "запуск не удался\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:613
+#: lib/signature.c:619
 msgid "gpg failed to write signature\n"
 msgstr "ошибка gpg при записи подписи\n"
 
-#: lib/signature.c:619
+#: lib/signature.c:625
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr "Размер подписи GPG: %d\n"
 
-#: lib/signature.c:642
+#: lib/signature.c:648
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr "Получено %d байт подписи GPG\n"
@@ -3319,58 +3324,58 @@ msgstr "Получено %d байт подписи GPG\n"
 #. Currently the calling function (rpm.c:main) is checking this and
 #. * doing a better job.  This section should never be accessed.
 #.
-#: lib/signature.c:942 lib/signature.c:995
+#: lib/signature.c:948 lib/signature.c:1001
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Неверная спецификация %%_signature в макрофайле\n"
 
-#: lib/signature.c:975
+#: lib/signature.c:981
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_gpg_name\" в вашем макрофайле\n"
 
-#: lib/signature.c:989
+#: lib/signature.c:995
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Вы должны установить \"%%_pgp_name\" в вашем макрофайле\n"
 
-#: lib/signature.c:1037
+#: lib/signature.c:1043
 msgid "Header+Payload size: "
 msgstr "размер Заголовка и Содержимого:"
 
-#: lib/signature.c:1078
+#: lib/signature.c:1084
 msgid "MD5 digest: "
 msgstr "дайджест MD5:"
 
-#: lib/signature.c:1138
+#: lib/signature.c:1144
 msgid "Header SHA1 digest: "
 msgstr "дайджест SHA1 заголовка:"
 
-#: lib/signature.c:1217 lib/signature.c:1400
+#: lib/signature.c:1223 lib/signature.c:1406
 msgid "Header "
 msgstr "Заголовок "
 
-#: lib/signature.c:1284
+#: lib/signature.c:1290
 #, fuzzy
 msgid " signature: "
 msgstr "подпись DSA V3: "
 
-#: lib/signature.c:1406
+#: lib/signature.c:1412
 #, fuzzy
 msgid " DSA signature: "
 msgstr "подпись DSA V3: "
 
-#: lib/signature.c:1488
+#: lib/signature.c:1494
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Проверка подписи: НЕПРАВИЛЬНЫЕ ПАРАМЕТРЫ\n"
 
-#: lib/signature.c:1519
+#: lib/signature.c:1525
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Контр. сумма MD5 повреждена: НЕ ПОДДЕРЖИВАЕТСЯ\n"
 
-#: lib/signature.c:1523
+#: lib/signature.c:1529
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Подпись: НЕИЗВЕСТНО (%d)\n"
@@ -3598,40 +3603,40 @@ msgstr "удалено окружение базы данных %s/%s\n"
 msgid "opening  db environment %s/%s %s\n"
 msgstr "открывается окружение базы данных %s/%s %s\n"
 
-#: rpmdb/db3.c:794
+#: rpmdb/db3.c:819
 #, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "закрыт индекс базы данных %s/%s\n"
 
-#: rpmdb/db3.c:863
+#: rpmdb/db3.c:888
 #, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "проверен индекс базы данных %s/%s\n"
 
-#: rpmdb/db3.c:1002
+#: rpmdb/db3.c:1031
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1107
+#: rpmdb/db3.c:1136
 #, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "открывается индекс базы данных %s/%s %s mode=0x%x\n"
 
-#: rpmdb/db3.c:1345
+#: rpmdb/db3.c:1378
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "невозможно получить блокировку %s на %s/%s\n"
 
-#: rpmdb/db3.c:1347
+#: rpmdb/db3.c:1380
 msgid "exclusive"
 msgstr "исключительный"
 
-#: rpmdb/db3.c:1347
+#: rpmdb/db3.c:1380
 msgid "shared"
 msgstr "разделяемый"
 
-#: rpmdb/db3.c:1351
+#: rpmdb/db3.c:1384
 #, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "заблокирован индекс базы данных %s/%s\n"

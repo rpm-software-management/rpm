@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-12 21:01-0500\n"
+"POT-Creation-Date: 2005-07-04 15:03-0400\n"
 "PO-Revision-Date: 1998-05-02 21:41:47-0400\n"
 "Last-Translator: Raimo Koski <rkoski@pp.weppi.fi>\n"
 "Language-Team: Finnish <linux@sot.com>\n"
@@ -555,7 +555,7 @@ msgstr ""
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead  ep‰onnistui\n"
 
-#: build/files.c:1793 lib/rpmchecksig.c:601
+#: build/files.c:1793 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
@@ -755,7 +755,7 @@ msgstr "%s:n kirjoitus ei onnistu"
 msgid "Could not open %s: %s\n"
 msgstr "%s:n avaus ep‰onnistui\n"
 
-#: build/pack.c:646 lib/psm.c:1632
+#: build/pack.c:646 lib/psm.c:1638
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
@@ -785,7 +785,7 @@ msgstr "%s:n kirjoitus ei onnistu"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: build/pack.c:739 lib/psm.c:1901
+#: build/pack.c:739 lib/psm.c:1907
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -1645,12 +1645,12 @@ msgstr ""
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:413 lib/signature.c:270
+#: lib/package.c:413 lib/signature.c:276
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:427 lib/signature.c:284
+#: lib/package.c:427 lib/signature.c:290
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
@@ -1719,12 +1719,12 @@ msgid ""
 msgstr ""
 "t‰m‰ versio RPM:st‰ tukee vain suuremmman kuin 3 versionumeron paketteja"
 
-#: lib/package.c:811 lib/rpmchecksig.c:229 lib/rpmchecksig.c:759
+#: lib/package.c:811 lib/rpmchecksig.c:229 lib/rpmchecksig.c:765
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature ep‰onnistui\n"
 
-#: lib/package.c:818 lib/rpmchecksig.c:236 lib/rpmchecksig.c:767
+#: lib/package.c:818 lib/rpmchecksig.c:236 lib/rpmchecksig.c:773
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ei allekirjoitusta saatavilla\n"
@@ -1734,7 +1734,7 @@ msgstr "%s: Ei allekirjoitusta saatavilla\n"
 msgid "%s: headerRead failed: %s"
 msgstr "%s: readLead  ep‰onnistui\n"
 
-#: lib/package.c:993 lib/rpmchecksig.c:116 lib/rpmchecksig.c:676
+#: lib/package.c:993 lib/rpmchecksig.c:116 lib/rpmchecksig.c:682
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: readLead  ep‰onnistui\n"
@@ -2450,51 +2450,56 @@ msgstr ""
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "virhe: ohitan %s:n, siirto ep‰onnistui - %s\n"
 
-#: lib/psm.c:925
+#: lib/psm.c:926
+#, fuzzy, c-format
+msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
+msgstr "skriptin ajo ep‰onnistui"
+
+#: lib/psm.c:930
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "skriptin ajo ep‰onnistui"
 
-#: lib/psm.c:1358
+#: lib/psm.c:1364
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "paketti %s-%s-%s  sis‰lt‰‰ jaettuja tiedostoja\n"
 
-#: lib/psm.c:1535
+#: lib/psm.c:1541
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1644
+#: lib/psm.c:1650
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "%s:n kirjoitus ei onnistu"
 
-#: lib/psm.c:1722
+#: lib/psm.c:1728
 #, fuzzy, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
 
-#: lib/psm.c:1723
+#: lib/psm.c:1729
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1909
+#: lib/psm.c:1915
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "en voinut avata %s: %s"
 
-#: lib/psm.c:1912
+#: lib/psm.c:1918
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "pgp ep‰onnistui"
 
-#: lib/psm.c:2100
+#: lib/psm.c:2106
 #, c-format
 msgid "Attempting to mark %s as installed in score board(%u).\n"
 msgstr ""
 
-#: lib/psm.c:2133
+#: lib/psm.c:2139
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""
@@ -2633,7 +2638,7 @@ msgstr "%s: avaus ei onnistunut\n"
 msgid "%s: Fwrite failed: %s\n"
 msgstr "%s: readLead  ep‰onnistui\n"
 
-#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:741
+#: lib/rpmchecksig.c:209 lib/rpmchecksig.c:747
 #, fuzzy, c-format
 msgid "%s: not an rpm package\n"
 msgstr "virhe: %s ei vaikuta RPM paketilta\n"
@@ -2648,73 +2653,73 @@ msgstr "%s: En voi allekirjoittaa v1.0 RPM:‰‰\n"
 msgid "%s: Can't re-sign v2 packaging\n"
 msgstr "%s: En voi uudelleen allekirjoittaa v2.0 RPM:‰‰\n"
 
-#: lib/rpmchecksig.c:332
+#: lib/rpmchecksig.c:338
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:362
+#: lib/rpmchecksig.c:368
 #, fuzzy, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: readLead  ep‰onnistui\n"
 
-#: lib/rpmchecksig.c:368
+#: lib/rpmchecksig.c:374
 #, fuzzy, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmReadSignature ep‰onnistui\n"
 
-#: lib/rpmchecksig.c:596
+#: lib/rpmchecksig.c:602
 #, fuzzy, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: readLead  ep‰onnistui\n"
 
-#: lib/rpmchecksig.c:608
+#: lib/rpmchecksig.c:614
 #, fuzzy, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: readLead  ep‰onnistui\n"
 
-#: lib/rpmchecksig.c:644
+#: lib/rpmchecksig.c:650
 #, fuzzy, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: readLead  ep‰onnistui\n"
 
-#: lib/rpmchecksig.c:658
+#: lib/rpmchecksig.c:664
 #, fuzzy, c-format
 msgid "%s: headerGetEntry failed\n"
 msgstr "%s: readLead  ep‰onnistui\n"
 
-#: lib/rpmchecksig.c:747
+#: lib/rpmchecksig.c:753
 #, c-format
 msgid "%s: No signature available (v1.0 RPM)\n"
 msgstr "%s: Ei allekirjoitusta saatavilla (v1.0 RPM)\n"
 
-#: lib/rpmchecksig.c:855
+#: lib/rpmchecksig.c:861
 #, c-format
 msgid "only V3 or V4 signatures can be verified, skipping V%u signature\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:1021
+#: lib/rpmchecksig.c:1027
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:1022 lib/rpmchecksig.c:1036
+#: lib/rpmchecksig.c:1028 lib/rpmchecksig.c:1042
 #, fuzzy
 msgid " (MISSING KEYS:"
 msgstr "(PUUTTUVAT AVAIMET)"
 
-#: lib/rpmchecksig.c:1024 lib/rpmchecksig.c:1038
+#: lib/rpmchecksig.c:1030 lib/rpmchecksig.c:1044
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:1025 lib/rpmchecksig.c:1039
+#: lib/rpmchecksig.c:1031 lib/rpmchecksig.c:1045
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:1027 lib/rpmchecksig.c:1041
+#: lib/rpmchecksig.c:1033 lib/rpmchecksig.c:1047
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:1035
+#: lib/rpmchecksig.c:1041
 msgid "OK"
 msgstr ""
 
@@ -3308,84 +3313,84 @@ msgstr ""
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/signature.c:297
+#: lib/signature.c:303
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/signature.c:307
+#: lib/signature.c:313
 #, c-format
 msgid "sigh load: BAD\n"
 msgstr ""
 
-#: lib/signature.c:319
+#: lib/signature.c:325
 #, c-format
 msgid "sigh pad(%d): BAD, read %d bytes\n"
 msgstr ""
 
-#: lib/signature.c:328
+#: lib/signature.c:334
 #, c-format
 msgid "sigh sigSize(%d): BAD, fstat(2) failed\n"
 msgstr ""
 
-#: lib/signature.c:365
+#: lib/signature.c:371
 #, c-format
 msgid "Signature: size(%d)+pad(%d)\n"
 msgstr ""
 
 #. @=boundsread@
-#: lib/signature.c:461 lib/signature.c:589 lib/signature.c:898
-#: lib/signature.c:937
+#: lib/signature.c:467 lib/signature.c:595 lib/signature.c:904
+#: lib/signature.c:943
 #, fuzzy, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "En voinut ajaa pgp:t‰"
 
-#: lib/signature.c:477
+#: lib/signature.c:483
 #, fuzzy
 msgid "pgp failed\n"
 msgstr "pgp ep‰onnistui"
 
 #. PGP failed to write signature
 #. Just in case
-#: lib/signature.c:484
+#: lib/signature.c:490
 #, fuzzy
 msgid "pgp failed to write signature\n"
 msgstr "pgp ei voinut kirjoittaa allekirjoitusta"
 
-#: lib/signature.c:490
+#: lib/signature.c:496
 #, c-format
 msgid "PGP sig size: %d\n"
 msgstr ""
 
 #. @=boundswrite@
-#: lib/signature.c:508 lib/signature.c:637
+#: lib/signature.c:514 lib/signature.c:643
 #, fuzzy
 msgid "unable to read the signature\n"
 msgstr "en voinut lukea allekirjoitusta"
 
-#: lib/signature.c:513
+#: lib/signature.c:519
 #, c-format
 msgid "Got %d bytes of PGP sig\n"
 msgstr ""
 
-#: lib/signature.c:606
+#: lib/signature.c:612
 #, fuzzy, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "%s: avaus ei onnistunut\n"
 
 #. GPG failed to write signature
 #. Just in case
-#: lib/signature.c:613
+#: lib/signature.c:619
 #, fuzzy
 msgid "gpg failed to write signature\n"
 msgstr "pgp ei voinut kirjoittaa allekirjoitusta"
 
-#: lib/signature.c:619
+#: lib/signature.c:625
 #, c-format
 msgid "GPG sig size: %d\n"
 msgstr ""
 
-#: lib/signature.c:642
+#: lib/signature.c:648
 #, c-format
 msgid "Got %d bytes of GPG sig\n"
 msgstr ""
@@ -3395,59 +3400,59 @@ msgstr ""
 #. Currently the calling function (rpm.c:main) is checking this and
 #. * doing a better job.  This section should never be accessed.
 #.
-#: lib/signature.c:942 lib/signature.c:995
+#: lib/signature.c:948 lib/signature.c:1001
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr ""
 
-#: lib/signature.c:975
+#: lib/signature.c:981
 #, fuzzy, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Sinun pit‰‰ asettaa \"pgp_name:\" rpmrc-tiedostossa"
 
-#: lib/signature.c:989
+#: lib/signature.c:995
 #, fuzzy, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
 msgstr "Sinun pit‰‰ asettaa \"pgp_name:\" rpmrc-tiedostossa"
 
-#: lib/signature.c:1037
+#: lib/signature.c:1043
 msgid "Header+Payload size: "
 msgstr ""
 
-#: lib/signature.c:1078
+#: lib/signature.c:1084
 msgid "MD5 digest: "
 msgstr ""
 
-#: lib/signature.c:1138
+#: lib/signature.c:1144
 #, fuzzy
 msgid "Header SHA1 digest: "
 msgstr "asenna paketti"
 
-#: lib/signature.c:1217 lib/signature.c:1400
+#: lib/signature.c:1223 lib/signature.c:1406
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1284
+#: lib/signature.c:1290
 #, fuzzy
 msgid " signature: "
 msgstr "%s: Ei allekirjoitusta saatavilla\n"
 
-#: lib/signature.c:1406
+#: lib/signature.c:1412
 #, fuzzy
 msgid " DSA signature: "
 msgstr "%s: Ei allekirjoitusta saatavilla\n"
 
-#: lib/signature.c:1488
+#: lib/signature.c:1494
 #, c-format
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1519
+#: lib/signature.c:1525
 #, c-format
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1523
+#: lib/signature.c:1529
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
@@ -3675,40 +3680,40 @@ msgstr ""
 msgid "opening  db environment %s/%s %s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db3.c:794
+#: rpmdb/db3.c:819
 #, fuzzy, c-format
 msgid "closed   db index       %s/%s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db3.c:863
+#: rpmdb/db3.c:888
 #, fuzzy, c-format
 msgid "verified db index       %s/%s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db3.c:1002
+#: rpmdb/db3.c:1031
 #, c-format
 msgid "unshared posix mutexes found(%d), adding DB_PRIVATE, using fcntl lock\n"
 msgstr ""
 
-#: rpmdb/db3.c:1107
+#: rpmdb/db3.c:1136
 #, fuzzy, c-format
 msgid "opening  db index       %s/%s %s mode=0x%x\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"
 
-#: rpmdb/db3.c:1345
+#: rpmdb/db3.c:1378
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "en voi saada %s lukitusta tietokantaan"
 
-#: rpmdb/db3.c:1347
+#: rpmdb/db3.c:1380
 msgid "exclusive"
 msgstr "poissulkevaa"
 
-#: rpmdb/db3.c:1347
+#: rpmdb/db3.c:1380
 msgid "shared"
 msgstr "jaettua"
 
-#: rpmdb/db3.c:1351
+#: rpmdb/db3.c:1384
 #, fuzzy, c-format
 msgid "locked   db index       %s/%s\n"
 msgstr "kokoa tietokanta uudelleen vanhasta tietokannasta"

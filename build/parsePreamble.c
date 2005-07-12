@@ -31,6 +31,7 @@ static rpmTag copyTagsDuringParse[] = {
     RPMTAG_PREFIXES,
     RPMTAG_RHNPLATFORM,
     RPMTAG_DISTTAG,
+    RPMTAG_CVSID,
     0
 };
 
@@ -515,6 +516,7 @@ static int handlePreambleTag(Spec spec, Package pkg, rpmTag tag,
     case RPMTAG_URL:
     case RPMTAG_RHNPLATFORM:
     case RPMTAG_DISTTAG:
+    case RPMTAG_CVSID:
 	SINGLE_TOKEN_ONLY;
 	/* These macros are for backward compatibility */
 	if (tag == RPMTAG_VERSION) {
@@ -779,6 +781,8 @@ static struct PreambleRec_s preambleList[] = {
     {RPMTAG_DOCDIR,		0, 0, 0, "docdir"},
     {RPMTAG_RHNPLATFORM,	0, 0, 1, "rhnplatform"},
     {RPMTAG_DISTTAG,		0, 0, 0, "disttag"},
+    {RPMTAG_CVSID,		0, 0, 0, "cvsid"},
+    {RPMTAG_SVNID,		0, 0, 0, "svnid"},
     /*@-nullassign@*/	/* LCL: can't add null annotation */
     {0, 0, 0, 0, 0}
     /*@=nullassign@*/
