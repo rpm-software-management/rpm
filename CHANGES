@@ -14,6 +14,7 @@
 	- updated de.po (#162756).
 	- added CVSId: tag and SVNId: alias (#162807).
 	- added brp-java-gcjcompile build helper.
+	- fix: java compiled with -O0 confuses debugedit (#161722).
 
 4.4 -> 4.4.1:
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.

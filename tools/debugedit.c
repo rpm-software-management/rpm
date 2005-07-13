@@ -712,8 +712,8 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		}
 	    }
 
-	  if (t->attr[i].attr == DW_AT_comp_dir &&
-	      form == DW_FORM_strp &&
+	    if (t->attr[i].attr == DW_AT_comp_dir) {
+		if (form == DW_FORM_strp &&
 	      debug_sections[DEBUG_STR].data)
 	    {
 	      char *dir;
@@ -736,6 +736,11 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		    }
 		  elf_flagdata (debug_sections[DEBUG_STR].elf_data,
 				ELF_C_SET, ELF_F_DIRTY);
+		}
+	    }
+		else if (form == DW_FORM_string) {
+			free(comp_dir);
+			comp_dir = strdup (ptr);			
 		}
 	    }
 	  else if ((t->tag == DW_TAG_compile_unit
