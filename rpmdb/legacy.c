@@ -175,21 +175,25 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
 	DIGEST_CTX ctx;
 	void * mapped;
 
-	mapped = mmap(NULL, fsize, PROT_READ, MAP_SHARED, fdno, 0);
-	if (mapped == (void *)-1) {
-	    xx = close(fdno);
-	    rc = 1;
-	    break;
-	}
+	if (fsize) {
+	    mapped = mmap(NULL, fsize, PROT_READ, MAP_SHARED, fdno, 0);
+	    if (mapped == (void *)-1) {
+		xx = close(fdno);
+		rc = 1;
+		break;
+	    }
 
 #ifdef	MADV_SEQUENTIAL
-        xx = madvise(mapped, fsize, MADV_SEQUENTIAL);
+	    xx = madvise(mapped, fsize, MADV_SEQUENTIAL);
 #endif
+	}
 
 	ctx = rpmDigestInit(PGPHASHALGO_MD5, RPMDIGEST_NONE);
-	xx = rpmDigestUpdate(ctx, mapped, fsize);
+	if (fsize)
+	    xx = rpmDigestUpdate(ctx, mapped, fsize);
 	xx = rpmDigestFinal(ctx, (void **)&md5sum, &md5len, asAscii);
-	xx = munmap(mapped, fsize);
+	if (fsize)
+	    xx = munmap(mapped, fsize);
 	xx = close(fdno);
 	break;
       }	/*@fallthrough@*/
