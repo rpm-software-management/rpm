@@ -2110,15 +2110,10 @@ static int processPackageFiles(Spec spec, Package pkg,
     /* Now process special doc, if there is one */
     if (specialDoc) {
 	if (installSpecialDoc) {
-	    static int _missing_doc_files_terminate_build = 0;
-	    static int oneshot = 0;
+	    int _missing_doc_files_terminate_build =
+		    rpmExpandNumeric("%{?_missing_doc_files_terminate_build}");
 	    int rc;
 
-	    if (!oneshot) {
-	        _missing_doc_files_terminate_build =
-		    rpmExpandNumeric("%{?_missing_doc_files_terminate_build}");
-		oneshot = 1;
-	    }
 	    rc = doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, test);
 	    if (rc && _missing_doc_files_terminate_build)
 		fl.processingFailed = rc;
@@ -2424,16 +2419,10 @@ static int checkFiles(StringBuf fileList)
 	goto exit;
     
     if (sb_stdout) {
-	static int _unpackaged_files_terminate_build = 0;
-	static int oneshot = 0;
+	int _unpackaged_files_terminate_build =
+		rpmExpandNumeric("%{?_unpackaged_files_terminate_build}");
 	const char * t;
 
-	if (!oneshot) {
-	    _unpackaged_files_terminate_build =
-		rpmExpandNumeric("%{?_unpackaged_files_terminate_build}");
-	    oneshot = 1;
-	}
-	
 	t = getStringBuf(sb_stdout);
 	if ((*t != '\0') && (*t != '\n')) {
 	    rc = (_unpackaged_files_terminate_build) ? 1 : 0;
