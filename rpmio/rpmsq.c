@@ -126,6 +126,11 @@ extern int pthread_cond_signal(pthread_cond_t *cond)
 
 #include <pthread.h>
 
+/* XXX suggested in bugzilla #159024 */
+#if PTHREAD_MUTEX_DEFAULT != PTHREAD_MUTEX_NORMAL
+  #error RPM expects PTHREAD_MUTEX_DEFAULT == PTHREAD_MUTEX_NORMAL
+#endif
+
 #ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 /*@unchecked@*/
 static pthread_mutex_t rpmsigTbl_lock = PTHREAD_MUTEX_INITIALIZER;
