@@ -1234,9 +1234,11 @@ expandMacro(MacroBuf mb)
 	/* Copy text until next macro */
 	switch(c) {
 	case '%':
-		if (*s != '%')
+		if (*s) {	/* Ensure not end-of-string. */
+		    if (*s != '%')
 			/*@switchbreak@*/ break;
-		s++;	/* skip first % in %% */
+		    s++;	/* skip first % in %% */
+		}
 		/*@fallthrough@*/
 	default:
 		SAVECHAR(mb, c);
