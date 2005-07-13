@@ -14,8 +14,8 @@ debugdir="${RPM_BUILD_ROOT}/usr/lib/debug"
 echo -n > $SOURCEFILE
 
 # Strip ELF binaries
-for f in `find $RPM_BUILD_ROOT -path "${debugdir}" -prune -o -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -exec file {} \; | \
-	sed -n -e 's/^\(.*\):[ 	]*ELF.*, not stripped/\1/p'`
+for f in `find $RPM_BUILD_ROOT ! -path "${debugdir}/*.debug" -type f \( -perm -0100 -or -perm -0010 -or -perm -0001 \) -exec file {} \; | \
+	sed -n -e 's/^\(.*\):[ 	]*.*ELF.*, not stripped/\1/p'`
 do
 	dn=$(dirname $f | sed -n -e "s#^$RPM_BUILD_ROOT##p")
 	bn=$(basename $f .debug).debug
@@ -24,9 +24,16 @@ do
 	debugfn="${debugdn}/${bn}"
 	[ -f "${debugfn}" ] && continue
 
-	mkdir -p "${debugdn}"
 	echo extracting debug info from $f
 	/usr/lib/rpm/debugedit -b "$RPM_BUILD_DIR" -d /usr/src/debug -l "$SOURCEFILE" "$f"
+
+	# A binary already copied into /usr/lib/debug doesn't get stripped,
+	# just has its file names collected and adjusted.
+	case "$dn" in
+	/usr/lib/debug/*) continue ;;
+	esac
+
+	mkdir -p "${debugdn}"
 	if test -w "$f"; then
 		eu-strip -f "${debugfn}" "$f" || :
 	else
