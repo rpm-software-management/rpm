@@ -632,6 +632,10 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     if (progArgv == NULL && script == NULL)
 	return rc;
 
+    /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
+    xx = headerNVR(h, &n, &v, &r);
+    xx = hge(h, RPMTAG_ARCH, NULL, (void **) &a, NULL);
+
     if (progArgv && strcmp(progArgv[0], "<lua>") == 0) {
 	rpmMessage(RPMMESS_DEBUG,
 		_("%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"),
@@ -641,10 +645,6 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
     }
 
     psm->sq.reaper = 1;
-
-    /* XXX FIXME: except for %verifyscript, rpmteNEVR can be used. */
-    xx = headerNVR(h, &n, &v, &r);
-    xx = hge(h, RPMTAG_ARCH, NULL, (void **) &a, NULL);
 
     /* XXX bash must have functional libtermcap.so.2 */
     if (!strcmp(n, "libtermcap"))
