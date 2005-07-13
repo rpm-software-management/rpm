@@ -120,7 +120,7 @@ static void enterChroot(dbiIndex dbi)
        /* Nothing to do, was not already in chroot */
        return;
 
-/*if (_debug)*/
+if (_debug)
 fprintf(stderr, "sql:chroot(%s)\n", dbi->dbi_root);
 
     {
@@ -148,7 +148,7 @@ static void leaveChroot(dbiIndex dbi)
        /* Nothing to do, not in chroot */
        return;
 
-/*if (_debug)*/
+if (_debug)
 fprintf(stderr, "sql:chroot(.)\n");
 
     xx = chroot(".");
