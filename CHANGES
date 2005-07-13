@@ -17,6 +17,7 @@
 	- fix: java compiled with -O0 confuses debugedit (#161722).
 	- fix: % at end-of-line overflow (#161091).
 	- *_terminate_build macros set per-pkg, not per-invocation (#161081).
+	- use perldeps.pl, phase out perl.{req,prov} (#161921).
 
 4.4 -> 4.4.1:
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.
