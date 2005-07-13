@@ -23,6 +23,7 @@
 	- fix: find-debuginfo.sh not handling set[ug]id ELF files (#100963).
 	- fix: find-debuginfo.sh kernel voo-doo tweaks (#159346).
 	- fix: initialize variables used in debug msg (#160458).
+	- permit zlib in rpm to be built with make -j (#159404).
 
 4.4 -> 4.4.1:
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.
