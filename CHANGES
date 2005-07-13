@@ -19,6 +19,7 @@
 	- *_terminate_build macros set per-pkg, not per-invocation (#161081).
 	- use perldeps.pl, phase out perl.{req,prov} (#161921).
 	- fix: make sqlite3 rpmdb endian-neutral (#159425).
+	- fix: permit sqlite3 rpmdb with chroot (#159424).
 
 4.4 -> 4.4.1:
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.

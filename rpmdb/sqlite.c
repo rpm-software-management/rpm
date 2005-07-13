@@ -108,6 +108,57 @@ union _dbswap {
 /*@unchecked@*/
 static unsigned int endian = 0x11223344;
 
+static char * sqlCwd = NULL;
+static int sqlInRoot = 0;
+
+static void enterChroot(dbiIndex dbi)
+{
+    int xx;
+    char * currDir = NULL; 
+
+    if ((dbi->dbi_root[0] == '/' && dbi->dbi_root[1] == '\0') || dbi->dbi_rpmdb->db_chrootDone || sqlInRoot)
+       /* Nothing to do, was not already in chroot */
+       return;
+
+/*if (_debug)*/
+fprintf(stderr, "sql:chroot(%s)\n", dbi->dbi_root);
+
+    {
+      int currDirLen = 0;
+
+      do {
+        currDirLen += 128;
+        currDir = xrealloc(currDir, currDirLen);
+        memset(currDir, 0, currDirLen);
+      } while (getcwd(currDir, currDirLen) == NULL && errno == ERANGE);
+    }
+
+    sqlCwd = currDir;
+    xx = chdir("/");
+    xx = chroot(dbi->dbi_root);
+assert(xx == 0);
+    sqlInRoot=1;
+}
+
+static void leaveChroot(dbiIndex dbi)
+{
+    int xx;
+
+    if ((dbi->dbi_root[0] == '/' && dbi->dbi_root[1] == '\0') || dbi->dbi_rpmdb->db_chrootDone || !sqlInRoot)
+       /* Nothing to do, not in chroot */
+       return;
+
+/*if (_debug)*/
+fprintf(stderr, "sql:chroot(.)\n");
+
+    xx = chroot(".");
+assert(xx == 0);
+    xx = chdir(sqlCwd);
+    sqlCwd = _free(sqlCwd);
+
+    sqlInRoot=0;
+}
+
 static void dbg_scp(void *ptr)
 	/*@*/
 {
@@ -392,7 +443,10 @@ assert(scp->ac <= scp->nalloc);
 	    fprintf(stderr, "sqlite3_step: BUSY %d\n", rc);
 	    /*@switchbreak@*/ break;
 	case SQLITE_ERROR:
-	    fprintf(stderr, "sqlite3_step: ERROR %d\n", rc);
+	    fprintf(stderr, "sqlite3_step: ERROR %d -- %s\n", rc, scp->cmd);
+	    fprintf(stderr, "              %s (%d)\n", 
+			sqlite3_errmsg(((SQL_DB*)dbi->dbi_db)->db), sqlite3_errcode(((SQL_DB*)dbi->dbi_db)->db));
+	    fprintf(stderr, "              cwd '%s'\n", getcwd(NULL,0));
 	    loop = 0;
 	    /*@switchbreak@*/ break;
 	case SQLITE_MISUSE:
@@ -697,6 +751,8 @@ fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, scp);
     if (scp->ldata)
 	scp->ldata = _free(scp->ldata);
 
+enterChroot(dbi);
+
     if (flags == DB_WRITECURSOR)
 	rc = sql_commitTransaction(dbi, 1);
     else
@@ -705,6 +761,8 @@ fprintf(stderr, "==> %s(%p)\n", __FUNCTION__, scp);
 /*@-kepttrans@*/
     scp = scpFree(scp);
 /*@=kepttrans@*/
+
+leaveChroot(dbi);
 
     return rc;
 }
@@ -723,6 +781,7 @@ static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
     int rc = 0;
 
     if (sqldb) {
+enterChroot(dbi);
 
 	/* Commit, don't open a new one */
 	rc = sql_commitTransaction(dbi, 1);
@@ -735,6 +794,8 @@ static int sql_close(/*@only@*/ dbiIndex dbi, unsigned int flags)
 	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi->dbi_file = _free(dbi->dbi_file);
 	dbi->dbi_db = _free(dbi->dbi_db);
+
+leaveChroot(dbi);
     }
 
     dbi = _free(dbi);
@@ -786,14 +847,14 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
      * Get the prefix/root component and directory path
      */
     root = rpmdb->db_root;
-    if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
-	root = NULL;
     home = rpmdb->db_home;
     
     dbi->dbi_root = root;
     dbi->dbi_home = home;
       
     dbfile = tagName(dbi->dbi_rpmtag);
+
+enterChroot(dbi);
 
     /*
      * Make a copy of the tagName result..
@@ -817,7 +878,7 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
      * convert the URL to a path, and add the name of the file.
      */
     /*@-mods@*/
-    urlfn = rpmGenPath(root, home, NULL);
+    urlfn = rpmGenPath(NULL, home, NULL);
     /*@=mods@*/
     (void) urlPath(urlfn, &dbhome);
 
@@ -864,6 +925,8 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, /*@out@*/ dbiIndex * dbip)
  
     urlfn = _free(urlfn);
     dbfname = _free(dbfname);
+
+leaveChroot(dbi);
    
     return rc;
 }
@@ -880,7 +943,9 @@ static int sql_sync (dbiIndex dbi, unsigned int flags)
 {
     int rc = 0;
 
+enterChroot(dbi);
     rc = sql_commitTransaction(dbi, 0);
+leaveChroot(dbi);
 
     return rc;
 }
@@ -905,6 +970,8 @@ static int sql_copen (dbiIndex dbi, /*@null@*/ DB_TXN * txnid,
 if (_debug)
 fprintf(stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, tagType(dbi->dbi_rpmtag), scp);
 
+enterChroot(dbi);
+
     /* If we're going to write, start a transaction (lock the DB) */
     if (flags == DB_WRITECURSOR)
 	rc = sql_startTransaction(dbi);
@@ -913,6 +980,8 @@ fprintf(stderr, "==> %s(%s) tag %d type %d scp %p\n", __FUNCTION__, tagName(dbi-
 	/*@-onlytrans@*/ *dbcp = dbcursor; /*@=onlytrans@*/
     else
 	/*@-kepttrans -nullstate @*/ (void) sql_cclose(dbi, dbcursor, 0); /*@=kepttrans =nullstate @*/
+
+leaveChroot(dbi);
      
     return rc;
 }
@@ -936,6 +1005,7 @@ static int sql_cdel (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     int rc = 0;
 
 dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
+enterChroot(dbi);
 
     scp->cmd = sqlite3_mprintf("DELETE FROM '%q' WHERE key=? AND value=?;",
 	dbi->dbi_subfile);
@@ -951,6 +1021,8 @@ dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
     if (rc) rpmMessage(RPMMESS_WARNING, "cdel(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
 
     scp = scpFree(scp);
+
+leaveChroot(dbi);
 
     return rc;
 }
@@ -975,6 +1047,8 @@ static int sql_cget (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
     int ix;
 
 dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
+
+enterChroot(dbi);
 
     /*
      * First determine if this is a new scan or existing scan
@@ -1127,6 +1201,8 @@ if (_debug)
 fprintf(stderr, "\tcget(%s) not found\n", dbi->dbi_subfile);
     }
 
+leaveChroot(dbi);
+
     return rc;
 }
 
@@ -1150,6 +1226,8 @@ static int sql_cput (dbiIndex dbi, /*@null@*/ DBC * dbcursor, DBT * key,
 
 dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
+enterChroot(dbi);
+
     switch (dbi->dbi_rpmtag) {
     default:
 	scp->cmd = sqlite3_mprintf("INSERT OR REPLACE INTO '%q' VALUES(?, ?);",
@@ -1169,6 +1247,8 @@ dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 
     scp = scpFree(scp);
 
+leaveChroot(dbi);
+
     return rc;
 }
 
@@ -1185,6 +1265,8 @@ static int sql_byteswapped (dbiIndex dbi)
     SCP_t scp = scpNew(dbi->dbi_db);
     int sql_rc, rc = 0;
     union _dbswap db_endian;
+
+enterChroot(dbi);
 
 /*@-nullstate@*/
     sql_rc = sqlite3_get_table(sqldb->db, "SELECT endian FROM 'db_info';",
@@ -1209,6 +1291,8 @@ assert(scp->av != NULL);
     }
 
     scp = scpFree(scp);
+
+leaveChroot(dbi);
 
     return rc;
 }
@@ -1328,6 +1412,8 @@ static int sql_stat (dbiIndex dbi, unsigned int flags)
     int rc = 0;
     long nkeys = -1;
 
+enterChroot(dbi);
+
     dbi->dbi_stats = _free(dbi->dbi_stats);
 
 /*@-sizeoftype@*/
@@ -1359,6 +1445,8 @@ assert(scp->av != NULL);
     ((DB_HASH_STAT *)(dbi->dbi_stats))->hash_nkeys = nkeys;
 
     scp = scpFree(scp);
+
+leaveChroot(dbi);
 
     return rc;
 }
