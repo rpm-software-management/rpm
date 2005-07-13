@@ -88,7 +88,7 @@ struct _sql_dbcursor_s {
 
     int count;
 
-    void * lkey;			/* Last key returned */
+    void * lkey;		/* Last key returned */
     void * ldata;		/* Last data returned */
 
     int used;
@@ -98,6 +98,12 @@ union _dbswap {
     unsigned int ui;
     unsigned char uc[4];
 };
+
+#define _DBSWAP(_a) \
+  { unsigned char _b, *_c = (_a).uc; \
+    _b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
+    _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
+  }
 
 /*@unchecked@*/
 static unsigned int endian = 0x11223344;
@@ -250,7 +256,7 @@ fprintf(stderr, "*** %s(%p)\n", __FUNCTION__, scp);
     return scp;
 }
 
-static int sql_step(SCP_t scp)
+static int sql_step(dbiIndex dbi, SCP_t scp)
 	/*@modifies scp @*/
 {
     const char * cname;
@@ -333,6 +339,7 @@ fprintf(stderr, "\t%d %s %s %g\n", i, cname, vtype, v);
 		    if (nb > 0) {
 			scp->av[scp->ac] = memcpy(xmalloc(nb), &v, nb);
 			scp->avlen[scp->ac] = nb;
+assert(dbiByteSwapped(dbi) == 0); /* Byte swap?! */
 			scp->ac++;
 		    }
 		} else
@@ -344,6 +351,13 @@ fprintf(stderr, "\t%d %s %s %d\n", i, cname, vtype, v);
 		    if (nb > 0) {
 			scp->av[scp->ac] = memcpy(xmalloc(nb), &v, nb);
 			scp->avlen[scp->ac] = nb;
+if (dbiByteSwapped(dbi) == 1)
+{
+  union _dbswap dbswap;
+  memcpy(&dbswap.ui, scp->av[scp->ac], sizeof(dbswap.ui));
+  _DBSWAP(dbswap);
+  memcpy(scp->av[scp->ac], &dbswap.ui, sizeof(dbswap.ui));
+}
 			scp->ac++;
 		    }
 		} else
@@ -355,6 +369,7 @@ fprintf(stderr, "\t%d %s %s %ld\n", i, cname, vtype, (long)v);
 		    if (nb > 0) {
 			scp->av[scp->ac] = memcpy(xmalloc(nb), &v, nb);
 			scp->avlen[scp->ac] = nb;
+assert(dbiByteSwapped(dbi) == 0); /* Byte swap?! */
 			scp->ac++;
 		    }
 		} else
@@ -403,12 +418,21 @@ static int sql_bind_key(dbiIndex dbi, SCP_t scp, int pos, DBT * key)
 {
     int rc = 0;
 
+    union _dbswap dbswap;
+
 assert(key->data != NULL);
     switch (dbi->dbi_rpmtag) {
 	case RPMDBI_PACKAGES:
 	{   unsigned int hnum;
 assert(key->size == sizeof(int_32));
 	    memcpy(&hnum, key->data, sizeof(hnum));
+
+if (dbiByteSwapped(dbi) == 1)
+{
+  memcpy(&dbswap.ui, &hnum, sizeof(dbswap.ui));
+  _DBSWAP(dbswap);
+  memcpy(&hnum, &dbswap.ui, sizeof(dbswap.ui));
+}
 	    rc = sqlite3_bind_int(scp->pStmt, pos, hnum);
 	}   /*@innerbreak@*/ break;
 	default:
@@ -421,12 +445,14 @@ assert(key->size == sizeof(int_32));
 	    case RPM_INT8_TYPE:
 	    {	unsigned char i;
 assert(key->size == sizeof(unsigned char));
+assert(dbiByteSwapped(dbi) == 0); /* Byte swap?! */
 		memcpy(&i, key->data, sizeof(i));
 	        rc = sqlite3_bind_int(scp->pStmt, pos, i);
 	    }   /*@innerbreak@*/ break;
 	    case RPM_INT16_TYPE:
 	    {	unsigned short i;
 assert(key->size == sizeof(int_16));
+assert(dbiByteSwapped(dbi) == 0); /* Byte swap?! */
 		memcpy(&i, key->data, sizeof(i));
 	        rc = sqlite3_bind_int(scp->pStmt, pos, i);
 	    }   /*@innerbreak@*/ break;
@@ -436,6 +462,13 @@ assert(key->size == sizeof(int_16));
 	    {	unsigned int i;
 assert(key->size == sizeof(int_32));
 		memcpy(&i, key->data, sizeof(i));
+
+if (dbiByteSwapped(dbi) == 1)
+{
+  memcpy(&dbswap.ui, &i, sizeof(dbswap.ui));
+  _DBSWAP(dbswap);
+  memcpy(&i, &dbswap.ui, sizeof(dbswap.ui));
+}
 	        rc = sqlite3_bind_int(scp->pStmt, pos, i);
 	    }   /*@innerbreak@*/ break;
             case RPM_STRING_TYPE:
@@ -624,8 +657,11 @@ fprintf(stderr, "\t%s(%d) type(%d) keytype %s\n", tagName(dbi->dbi_rpmtag), dbi-
 	    goto exit;
     }
 
-    sprintf(cmd, "PRAGMA synchronous = OFF;");
-    rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+    if (dbi->dbi_no_fsync) {
+	int xx;
+        sprintf(cmd, "PRAGMA synchronous = OFF;");
+        xx = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
+    }
 
 exit:
     if (rc)
@@ -911,7 +947,7 @@ dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
     rc = sql_bind_data(dbi, scp, 2, data);
     if (rc) rpmMessage(RPMMESS_WARNING, "cdel(%s) bind data %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
-    rc = sql_step(scp);
+    rc = sql_step(dbi, scp);
     if (rc) rpmMessage(RPMMESS_WARNING, "cdel(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
 
     scp = scpFree(scp);
@@ -980,7 +1016,7 @@ assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
 	    rc = sqlite3_prepare(sqldb->db, scp->cmd, strlen(scp->cmd), &scp->pStmt, &scp->pzErrmsg);
 	    if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential prepare %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
-	    rc = sql_step(scp);
+	    rc = sql_step(dbi, scp);
 	    if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sequential sql_step rc %d\n", dbi->dbi_subfile, rc);
 
 	    scp = scpResetKeys(scp);
@@ -1027,7 +1063,7 @@ assert(dbi->dbi_rpmtag == RPMDBI_PACKAGES);
     rc = sql_bind_key(dbi, scp, 1, scp->keys[scp->rx]);
     if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s)  key bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
-    rc = sql_step(scp);
+    rc = sql_step(dbi, scp);
     if (rc) rpmMessage(RPMMESS_WARNING, "cget(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
 
     rc = sqlite3_reset(scp->pStmt);
@@ -1125,7 +1161,7 @@ dbg_keyval(__FUNCTION__, dbi, dbcursor, key, data, flags);
 	rc = sql_bind_data(dbi, scp, 2, data);
 	if (rc) rpmMessage(RPMMESS_WARNING, "cput(%s) data bind %s (%d)\n", dbi->dbi_subfile, sqlite3_errmsg(sqldb->db), rc);
 
-	rc = sql_step(scp);
+	rc = sql_step(dbi, scp);
 	if (rc) rpmMessage(RPMMESS_WARNING, "cput(%s) sql_step rc %d\n", dbi->dbi_subfile, rc);
 
 	break;
