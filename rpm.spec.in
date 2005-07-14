@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.7
+Release: 0.8
 Group: System Environment/Base
 Source: ftp://jbj.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -490,7 +490,7 @@ exit 0
 %lang(wa)	%{__prefix}/*/locale/wa/LC_MESSAGES/popt.mo
 %lang(zh)	%{__prefix}/*/locale/zh/LC_MESSAGES/popt.mo
 %lang(zh_CN)	%{__prefix}/*/locale/zh_CN/LC_MESSAGES/popt.mo
-%lang(zh_TW)	%{__prefix}/*/locale/zh_CN/LC_MESSAGES/popt.mo
+%lang(zh_TW)	%{__prefix}/*/locale/zh_TW/LC_MESSAGES/popt.mo
 
 # XXX These may end up in popt-devel but it hardly seems worth the effort.
 %{__libdir}/libpopt.a
@@ -499,6 +499,22 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Wed Jul 13 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.8
+- updated de.po (#162756).
+- added CVSId: tag and SVNId: alias (#162807).
+- added brp-java-gcjcompile build helper.
+- fix: java compiled with -O0 confuses debugedit (#161722).
+- fix: % at end-of-line overflow (#161091).
+- *_terminate_build macros set per-pkg, not per-invocation (#161081).
+- use perldeps.pl, phase out perl.{req,prov} (#161921).
+- fix: make sqlite3 rpmdb endian-neutral (#159425).
+- fix: permit sqlite3 rpmdb with chroot (#159424).
+- fix: find-debuginfo.sh not handling set[ug]id ELF files (#100963).
+- fix: find-debuginfo.sh kernel voo-doo tweaks (#159346).
+- fix: initialize variables used in debug msg (#160458).
+- permit zlib in rpm to be built with make -j (#159404).
+- avoid '?' for zero length file mmap failure doing md5 (#159405).
+
 * Mon Jul  4 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.7
 - rebuild to start the rpm-4.4.2 release gears turning.
 
