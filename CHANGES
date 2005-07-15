@@ -25,6 +25,7 @@
 	- fix: initialize variables used in debug msg (#160458).
 	- permit zlib in rpm to be built with make -j (#159404).
 	- avoid '?' for zero length file mmap failure doing md5 (#159405).
+	- permit scriptlet includes from builddir for spec files w/o %setup.
 
 4.4 -> 4.4.1:
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.
