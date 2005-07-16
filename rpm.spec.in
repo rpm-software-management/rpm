@@ -20,7 +20,7 @@ Name: rpm
 %define version @VERSION@
 Version: %{version}
 %{expand: %%define rpm_version %{version}}
-Release: 0.8
+Release: 0.9
 Group: System Environment/Base
 Source: ftp://jbj.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
@@ -499,6 +499,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
+* Sat Jul 16 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.9
+- upgrade to zlib-1.2.2.4 internal.
+- macosx: avoid minigzip build failures.
+
 * Wed Jul 13 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.8
 - updated de.po (#162756).
 - added CVSId: tag and SVNId: alias (#162807).

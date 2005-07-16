@@ -1,5 +1,5 @@
 /* infback.c -- inflate using a call-back interface
- * Copyright (C) 1995-2003 Mark Adler
+ * Copyright (C) 1995-2005 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -26,7 +26,7 @@ local void fixedtables OF((struct inflate_state FAR *state))
    windowBits is in the range 8..15, and window is a user-supplied
    window and output buffer that is 2**windowBits bytes.
  */
-int ZEXPORT inflateBackInit_(z_stream FAR *strm, int windowBits, unsigned char FAR *window, const char *version, int stream_size)
+int ZEXPORT inflateBackInit_(z_streamp strm, int windowBits, unsigned char FAR *window, const char *version, int stream_size)
 {
     struct inflate_state FAR *state;
 
@@ -46,7 +46,8 @@ int ZEXPORT inflateBackInit_(z_stream FAR *strm, int windowBits, unsigned char F
                                                sizeof(struct inflate_state));
     if (state == Z_NULL) return Z_MEM_ERROR;
     Tracev((stderr, "inflate: allocated\n"));
-    strm->state = (voidpf)state;
+    strm->state = (struct internal_state FAR *)state;
+    state->dmax = 32768U;
     state->wbits = windowBits;
     state->wsize = 1U << windowBits;
     state->window = window;
@@ -232,7 +233,7 @@ local void fixedtables(struct inflate_state FAR *state)
    inflateBack() can also return Z_STREAM_ERROR if the input parameters
    are not correct, i.e. strm is Z_NULL or the state was not initialized.
  */
-int ZEXPORT inflateBack(z_stream FAR *strm, in_func in, void FAR *in_desc, out_func out, void FAR *out_desc)
+int ZEXPORT inflateBack(z_streamp strm, in_func in, void FAR *in_desc, out_func out, void FAR *out_desc)
 {
     struct inflate_state FAR *state;
     unsigned char FAR *next;    /* next input */
@@ -600,7 +601,7 @@ int ZEXPORT inflateBack(z_stream FAR *strm, in_func in, void FAR *in_desc, out_f
     return ret;
 }
 
-int ZEXPORT inflateBackEnd(z_stream FAR *strm)
+int ZEXPORT inflateBackEnd(z_streamp strm)
 {
     if (strm == Z_NULL || strm->state == Z_NULL || strm->zfree == (free_func)0)
         return Z_STREAM_ERROR;

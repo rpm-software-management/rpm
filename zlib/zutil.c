@@ -1,5 +1,5 @@
 /* zutil.c -- target dependent utility functions for the compression library
- * Copyright (C) 1995-2003 Jean-loup Gailly.
+ * Copyright (C) 1995-2005 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -9,10 +9,6 @@
 
 #ifndef NO_DUMMY_DECL
 struct internal_state      {int dummy;}; /* for buggy compilers */
-#endif
-
-#ifndef STDC
-extern void exit OF((int));
 #endif
 
 /*@observer@*/
@@ -29,12 +25,12 @@ const char * const z_errmsg[10] = {
 ""};
 
 
-const char * ZEXPORT zlibVersion()
+const char * ZEXPORT zlibVersion(void)
 {
     return ZLIB_VERSION;
 }
 
-uLong ZEXPORT zlibCompileFlags()
+uLong ZEXPORT zlibCompileFlags(void)
 {
     uLong flags;
 
@@ -79,38 +75,38 @@ uLong ZEXPORT zlibCompileFlags()
     flags += 1 << 13;
 #endif
 #ifdef NO_GZCOMPRESS
-    flags += 1 << 16;
+    flags += 1L << 16;
 #endif
 #ifdef NO_GZIP
-    flags += 1 << 17;
+    flags += 1L << 17;
 #endif
 #ifdef PKZIP_BUG_WORKAROUND
-    flags += 1 << 20;
+    flags += 1L << 20;
 #endif
 #ifdef FASTEST
-    flags += 1 << 21;
+    flags += 1L << 21;
 #endif
 #ifdef STDC
 #  ifdef NO_vsnprintf
-        flags += 1 << 25;
+        flags += 1L << 25;
 #    ifdef HAS_vsprintf_void
-        flags += 1 << 26;
+        flags += 1L << 26;
 #    endif
 #  else
 #    ifdef HAS_vsnprintf_void
-        flags += 1 << 26;
+        flags += 1L << 26;
 #    endif
 #  endif
 #else
-        flags += 1 << 24;
+        flags += 1L << 24;
 #  ifdef NO_snprintf
-        flags += 1 << 25;
+        flags += 1L << 25;
 #    ifdef HAS_sprintf_void
-        flags += 1 << 26;
+        flags += 1L << 26;
 #    endif
 #  else
 #    ifdef HAS_snprintf_void
-        flags += 1 << 26;
+        flags += 1L << 26;
 #    endif
 #  endif
 #endif
@@ -124,8 +120,7 @@ uLong ZEXPORT zlibCompileFlags()
 #  endif
 int z_verbose = verbose;
 
-void z_error (m)
-    char *m;
+void z_error (char *m)
 {
     fprintf(stderr, "%s\n", m);
     exit(1);
@@ -141,16 +136,16 @@ const char * ZEXPORT zError(int err)
 }
 
 #if defined(_WIN32_WCE)
-    /* does not exist on WCE */
+    /* The Microsoft C Run-Time Library for Windows CE doesn't have
+     * errno.  We define it as a global variable to simplify porting.
+     * Its value is always 0 and should not be used.
+     */
     int errno = 0;
 #endif
 
 #ifndef HAVE_MEMCPY
 
-void zmemcpy(dest, source, len)
-    Bytef* dest;
-    const Bytef* source;
-    uInt  len;
+void zmemcpy(Bytef* dest, const Bytef* source, uInt  len)
 {
     if (len == 0) return;
     do {
@@ -158,10 +153,7 @@ void zmemcpy(dest, source, len)
     } while (--len != 0);
 }
 
-int zmemcmp(s1, s2, len)
-    const Bytef* s1;
-    const Bytef* s2;
-    uInt  len;
+int zmemcmp(const Bytef* s1, const Bytef* s2, uInt  len)
 {
     uInt j;
 
@@ -171,9 +163,7 @@ int zmemcmp(s1, s2, len)
     return 0;
 }
 
-void zmemzero(dest, len)
-    Bytef* dest;
-    uInt  len;
+void zmemzero(Bytef* dest, uInt  len)
 {
     if (len == 0) return;
     do {

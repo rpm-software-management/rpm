@@ -26,6 +26,8 @@
 	- permit zlib in rpm to be built with make -j (#159404).
 	- avoid '?' for zero length file mmap failure doing md5 (#159405).
 	- permit scriptlet includes from builddir for spec files w/o %setup.
+	- upgrade to zlib-1.2.2.4 internal.
+	- macosx: avoid minigzip build failures.
 
 4.4 -> 4.4.1:
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.

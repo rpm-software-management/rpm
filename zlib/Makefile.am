@@ -19,12 +19,10 @@ libz_la_SOURCES = \
 noinst_PROGRAMS = example minigzip
 
 example_SOURCES = example.c
-example_LDFLAGS = -L. -lz
-example_DEPENDENCIES = libz.la
+example_LDFLAGS = .libs/libz.a
 
 minigzip_SOURCES = minigzip.c
-minigzip_LDFLAGS = -L. -lz
-minigzip_DEPENDENCIES = libz.la
+minigzip_LDFLAGS = .libs/libz.a
 
 BUILT_SOURCES = # Doxyfile zlib.lcd
 

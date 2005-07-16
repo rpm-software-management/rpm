@@ -1,5 +1,5 @@
 /* deflate.h -- internal compression state
- * Copyright (C) 1995-2002 Jean-loup Gailly
+ * Copyright (C) 1995-2004 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -49,6 +49,10 @@
 /* All codes must not exceed MAX_BITS bits */
 
 #define INIT_STATE    42
+#define EXTRA_STATE   69
+#define NAME_STATE    73
+#define COMMENT_STATE 91
+#define HCRC_STATE   103
 #define BUSY_STATE   113
 #define FINISH_STATE 666
 /* Stream status */
@@ -97,8 +101,10 @@ typedef struct internal_state {
     ulg   pending_buf_size; /* size of pending_buf */
 /*@dependent@*/
     Bytef *pending_out;  /* next pending byte to output to the stream */
-    int   pending;       /* nb of bytes in the pending buffer */
+    uInt   pending;      /* nb of bytes in the pending buffer */
     int   wrap;          /* bit 0 true for zlib, bit 1 true for gzip */
+    gz_headerp  gzhead;  /* gzip header information to write */
+    uInt   gzindex;      /* where in extra, name, or comment */
     Byte  method;        /* STORED (for zip only) or DEFLATED */
     int   last_flush;    /* value of flush param for previous deflate call */
 
@@ -259,6 +265,9 @@ typedef struct internal_state {
      * are always zero.
      */
 
+    ulg rsync_sum;      /* rolling sum of rsync window */
+    ulg rsync_chunk_end; /* next rsync sequence point */
+
 } FAR deflate_state;
 
 /* Output a byte on the stream.
@@ -283,7 +292,7 @@ void _tr_init         OF((deflate_state *s))
 int  _tr_tally        OF((deflate_state *s, unsigned dist, unsigned lc))
 	/*@modifies s @*/;
 void _tr_flush_block  OF((deflate_state *s, charf *buf, ulg stored_len,
-                          int eof))
+                          int pad, int eof))
 	/*@modifies s @*/;
 void _tr_align        OF((deflate_state *s))
 	/*@modifies s @*/;

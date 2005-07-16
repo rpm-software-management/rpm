@@ -1,5 +1,5 @@
 /* minigzip.c -- simulate gzip using the zlib compression library
- * Copyright (C) 1995-2002 Jean-loup Gailly.
+ * Copyright (C) 1995-2005 Jean-loup Gailly.
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -21,8 +21,6 @@
 #ifdef STDC
 #  include <string.h>
 #  include <stdlib.h>
-#else
-   extern void exit  OF((int));
 #endif
 
 #ifdef USE_MMAP
@@ -111,7 +109,7 @@ void error(const char *msg)
  * Compress input to output then close both files.
  */
 
-void gz_compress(FILE   *in, gzFile out)
+void gz_compress(FILE *in, gzFile out)
 {
     local char buf[BUFLEN];
     int len;
@@ -142,7 +140,7 @@ void gz_compress(FILE   *in, gzFile out)
 /* Try compressing the input file at once using mmap. Return Z_OK if
  * if success, Z_ERRNO otherwise.
  */
-int gz_compress_mmap(FILE   *in, gzFile out)
+int gz_compress_mmap(FILE *in, gzFile out)
 {
     int len;
     int err;
@@ -175,7 +173,7 @@ int gz_compress_mmap(FILE   *in, gzFile out)
 /* ===========================================================================
  * Uncompress input to output then close both files.
  */
-void gz_uncompress(gzFile in, FILE   *out)
+void gz_uncompress(gzFile in, FILE *out)
 {
     local char buf[BUFLEN];
     int len;
@@ -200,7 +198,7 @@ void gz_uncompress(gzFile in, FILE   *out)
  * Compress the given file: create a corresponding .gz file and remove the
  * original.
  */
-void file_compress(char  *file, char  *mode)
+void file_compress(char *file, char *mode)
 {
     local char outfile[MAX_NAME_LEN];
     FILE  *in;
@@ -228,7 +226,7 @@ void file_compress(char  *file, char  *mode)
 /* ===========================================================================
  * Uncompress the given file and remove the original.
  */
-void file_uncompress(char * file)
+void file_uncompress(char *file)
 {
     local char buf[MAX_NAME_LEN];
     char *infile, *outfile;
@@ -300,6 +298,8 @@ int main(int argc, char *argv[])
         break;
       argc--, argv++;
     }
+    if (outmode[3] == ' ')
+        outmode[3] = 0;
     if (argc == 0) {
         SET_BINARY_MODE(stdin);
         SET_BINARY_MODE(stdout);
