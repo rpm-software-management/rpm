@@ -499,9 +499,10 @@ exit 0
 %{__includedir}/popt.h
 
 %changelog
-* Sat Jul 16 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.9
+* Sun Jul 17 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.9
 - upgrade to zlib-1.2.2.4 internal.
 - macosx: avoid minigzip build failures.
+- upgrade to file-4.14 internal.
 
 * Wed Jul 13 2005 Jeff Johnson <jbj@jbj.org> 4.4.2-0.8
 - updated de.po (#162756).

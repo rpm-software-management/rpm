@@ -63,7 +63,7 @@
 #include "patchlevel.h"
 
 #ifndef	lint
-FILE_RCSID("@(#)$Id: magic.c,v 1.24 2004/09/27 15:28:37 christos Exp $")
+FILE_RCSID("@(#)$Id: magic.c,v 1.28 2005/06/25 15:52:14 christos Exp $")
 #endif	/* lint */
 
 #ifdef __EMX__
@@ -216,20 +216,30 @@ public const char *
 magic_file(struct magic_set *ms, const char *inname)
 {
 	int	fd = 0;
-	unsigned char buf[HOWMANY+1];	/* one extra for terminating '\0' */
-	struct stat	sb, * st = &sb;
+	int	rv = -1;
+	unsigned char *buf;
+	struct stat	sb, *st = &sb;
 	ssize_t nbytes = 0;	/* number of bytes read from a datafile */
 
-	if (file_reset(ms) == -1)
+	/*
+	 * one extra for terminating '\0', and
+	 * some overlapping space for matches near EOF
+	 */
+#define SLOP (1 + sizeof(union VALUETYPE))
+	if ((buf = malloc(HOWMANY + SLOP)) == NULL)
 		return NULL;
+
+	if (file_reset(ms) == -1)
+		goto done;
 
 	switch (file_fsmagic(ms, inname, st)) {
 	case -1:
-		return NULL;
+		goto done;
 	case 0:
 		break;
 	default:
-		return file_getbuffer(ms);
+		rv = 0;
+		goto done;
 	}
 
 #ifndef	STDIN_FILENO
@@ -241,16 +251,17 @@ magic_file(struct magic_set *ms, const char *inname)
 		/* We cannot open it, but we were able to stat it. */
 		if (sb.st_mode & 0222)
 			if (file_printf(ms, "writable, ") == -1)
-				return NULL;
+				goto done;
 		if (sb.st_mode & 0111)
 			if (file_printf(ms, "executable, ") == -1)
-				return NULL;
+				goto done;
 		if (S_ISREG(sb.st_mode))
 			if (file_printf(ms, "regular file, ") == -1)
-				return NULL;
+				goto done;
 		if (file_printf(ms, "no read permission") == -1)
-			return NULL;
-		return file_getbuffer(ms);
+			goto done;
+		rv = 0;
+		goto done;
 	}
 
 	/*
@@ -265,13 +276,11 @@ magic_file(struct magic_set *ms, const char *inname)
 		if (file_printf(ms, (ms->flags & MAGIC_MIME) ?
 		    "application/x-empty" : "empty") == -1)
 			goto done;
-		goto gotit;
 	} else if (nbytes == 1) {
 		if (file_printf(ms, "very short file (no magic)") == -1)
 			goto done;
-		goto gotit;
 	} else {
-		buf[nbytes] = '\0';	/* null-terminate it */
+		(void)memset(buf + nbytes, 0, SLOP); /* NUL terminate */
 #ifdef __EMX__
 		switch (file_os2_apptype(ms, inname, buf, nbytes)) {
 		case -1:
@@ -279,10 +288,11 @@ magic_file(struct magic_set *ms, const char *inname)
 		case 0:
 			break;
 		default:
-			goto gotit;
+			rv = 0;
+			goto done;
 		}
 #endif
-		if (file_buffer(ms, buf, (size_t)nbytes) == -1)
+		if (file_buffer(ms, fd, buf, (size_t)nbytes) == -1)
 			goto done;
 #ifdef BUILTIN_ELF
 		if (nbytes > 5) {
@@ -298,12 +308,11 @@ magic_file(struct magic_set *ms, const char *inname)
 		}
 #endif
 	}
-gotit:
-	close_and_restore(ms, inname, fd, &sb);
-	return file_getbuffer(ms);
+	rv = 0;
 done:
+	free(buf);
 	close_and_restore(ms, inname, fd, &sb);
-	return NULL;
+	return rv == 0 ? file_getbuffer(ms) : NULL;
 }
 
 
@@ -316,7 +325,7 @@ magic_buffer(struct magic_set *ms, const void *buf, size_t nb)
 	 * The main work is done here!
 	 * We have the file name and/or the data buffer to be identified. 
 	 */
-	if (file_buffer(ms, buf, nb) == -1) {
+	if (file_buffer(ms, -1, buf, nb) == -1) {
 		return NULL;
 	}
 	return file_getbuffer(ms);

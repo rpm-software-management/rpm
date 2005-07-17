@@ -28,6 +28,7 @@
 	- permit scriptlet includes from builddir for spec files w/o %setup.
 	- upgrade to zlib-1.2.2.4 internal.
 	- macosx: avoid minigzip build failures.
+	- upgrade to file-4.14 internal.
 
 4.4 -> 4.4.1:
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.

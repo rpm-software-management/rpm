@@ -39,7 +39,7 @@
 
 
 #ifndef	lint
-FILE_RCSID("@(#)$Id: softmagic.c,v 1.72 2004/11/24 17:38:25 christos Exp $")
+FILE_RCSID("@(#)$Id: softmagic.c,v 1.73 2005/03/06 05:58:22 christos Exp $")
 #endif	/* lint */
 
 private int match(struct magic_set *ms, struct magic *magic, uint32_t nmagic,
@@ -47,13 +47,13 @@ private int match(struct magic_set *ms, struct magic *magic, uint32_t nmagic,
 	/*@globals fileSystem @*/
 	/*@modifies ms, magic, fileSystem @*/;
 private int mget(struct magic_set *ms, union VALUETYPE *p, const unsigned char *s,
-    struct magic *m, size_t nbytes)
+    struct magic *m, size_t nbytes, int)
 	/*@globals fileSystem @*/
 	/*@modifies ms, p, m, fileSystem @*/;
 private int mcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 	/*@globals fileSystem @*/
-	/*@modifies ms, p, fileSystem @*/;
-private int32_t mprint(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
+	/*@modifies ms, p, m, fileSystem @*/;
+private int32_t mprint(struct magic_set *ms, union VALUETYPE *p, struct magic *m)	
 	/*@globals fileSystem @*/
 	/*@modifies ms, p, fileSystem @*/;
 private void mdebug(uint32_t offset, const char *str, size_t len)
@@ -128,15 +128,20 @@ match(struct magic_set *ms, struct magic *magic, uint32_t nmagic,
 
 	for (magindex = 0; magindex < nmagic; magindex++) {
 		/* if main entry matches, print it... */
-		int flush = !mget(ms, &p, s, &magic[magindex], nbytes);
-		switch (mcheck(ms, &p, &magic[magindex])) {
-		case -1:
-			return -1;
-		case 0:
-			flush++;
-			/*@switchbreak@*/ break;
-		default:
-			/*@switchbreak@*/ break;
+		int flush = !mget(ms, &p, s, &magic[magindex], nbytes,
+		    cont_level);
+		if (flush) {
+			if (magic[magindex].reln == '!') flush = 0;
+		} else {	
+			switch (mcheck(ms, &p, &magic[magindex])) {
+			case -1:
+				return -1;
+			case 0:
+				flush++;
+				/*@switchbreak@*/ break;
+			default:
+				/*@switchbreak@*/ break;
+			}
 		}
 		if (flush) {
 			/* 
@@ -179,14 +184,18 @@ match(struct magic_set *ms, struct magic *magic, uint32_t nmagic,
 				 */
 				cont_level = magic[magindex].cont_level;
 			}
+			oldoff = magic[magindex].offset;
 			if (magic[magindex].flag & OFFADD) {
-				oldoff=magic[magindex].offset;
-				magic[magindex].offset += ms->c.off[cont_level-1];
+				magic[magindex].offset +=
+				    ms->c.off[cont_level - 1];
 			}
-			if (!mget(ms, &p, s, &magic[magindex], nbytes))
+
+			flush = !mget(ms, &p, s, &magic[magindex], nbytes,
+			    cont_level);
+			if (flush && magic[magindex].reln != '!')
 				goto done;
 				
-			switch (mcheck(ms, &p, &magic[magindex])) {
+			switch (flush ? 1 : mcheck(ms, &p, &magic[magindex])) {
 			case -1:
 				return -1;
 			case 0:
@@ -222,9 +231,7 @@ match(struct magic_set *ms, struct magic *magic, uint32_t nmagic,
 					return -1;
 			}
 done:
-			if (magic[magindex].flag & OFFADD) {
-				 magic[magindex].offset = oldoff;
-			}
+			magic[magindex].offset = oldoff;
 		}
 		firstline = 0;
 		returnval = 1;
@@ -288,10 +295,10 @@ mprint(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
   	case FILE_PSTRING:
   	case FILE_BESTRING16:
   	case FILE_LESTRING16:
-		if (m->reln == '=') {
+		if (m->reln == '=' || m->reln == '!') {
 			if (file_printf(ms, m->desc, m->value.s) == -1)
 				return -1;
-			t = m->offset + strlen(m->value.s);
+			t = m->offset + m->vallen;
 		}
 		else {
 			if (*m->value.s == '\0') {
@@ -325,6 +332,11 @@ mprint(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 			return -1;
 		t = m->offset + strlen(p->s);
 		break;
+	case FILE_SEARCH:
+	  	if (file_printf(ms, m->desc, m->value.s) == -1)
+			return -1;
+		t = m->offset + m->vallen;
+		break;
 
 	default:
 		file_error(ms, 0, "invalid m->type (%d) in mprint()", m->type);
@@ -344,7 +356,7 @@ mconvert(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 	switch (m->type) {
 	case FILE_BYTE:
 		if (m->mask)
-			switch (m->mask_op&0x7F) {
+			switch (m->mask_op & 0x7F) {
 			case FILE_OPAND:
 				p->b &= m->mask;
 				/*@innerbreak@*/ break;
@@ -375,7 +387,7 @@ mconvert(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 		return 1;
 	case FILE_SHORT:
 		if (m->mask)
-			switch (m->mask_op&0x7F) {
+			switch (m->mask_op & 0x7F) {
 			case FILE_OPAND:
 				p->h &= m->mask;
 				/*@innerbreak@*/ break;
@@ -408,7 +420,7 @@ mconvert(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 	case FILE_DATE:
 	case FILE_LDATE:
 		if (m->mask)
-			switch (m->mask_op&0x7F) {
+			switch (m->mask_op & 0x7F) {
 			case FILE_OPAND:
 				p->l &= m->mask;
 				/*@innerbreak@*/ break;
@@ -599,6 +611,7 @@ mconvert(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 			p->l = ~p->l;
 		return 1;
 	case FILE_REGEX:
+	case FILE_SEARCH:
 		return 1;
 	default:
 		file_error(ms, 0, "invalid type %d in mconvert()", m->type);
@@ -625,15 +638,17 @@ mcopy(struct magic_set *ms, union VALUETYPE *p, int type, int indir,
 		 * offset is interpreted as last line to search,
 		 * (starting at 1), not as bytes-from start-of-file
 		 */
-		unsigned char *b, *last = NULL;
+		char *b, *c, *last = NULL;
 		if ((p->buf = strdup((const char *)s)) == NULL) {
 			file_oomem(ms);
 			return -1;
 		}
-		for (b = (unsigned char *)p->buf; offset &&
-		    (b = (unsigned char *)strchr((char *)b, '\n')) != NULL;
-		    offset--, s++)
+		for (b = p->buf; offset && 
+		    ((b = strchr(c = b, '\n')) || (b = strchr(c, '\r')));
+		    offset--, b++) {
 			last = b;
+			if (b[0] == '\r' && b[1] == '\n') b++;
+		}
 		if (last != NULL)
 			*last = '\0';
 		return 0;
@@ -682,12 +697,419 @@ mcopy(struct magic_set *ms, union VALUETYPE *p, int type, int indir,
 
 private int
 mget(struct magic_set *ms, union VALUETYPE *p, const unsigned char *s,
-    struct magic *m, size_t nbytes)
+    struct magic *m, size_t nbytes, int cont_level)
 {
 	uint32_t offset = m->offset;
 
 	if (mcopy(ms, p, m->type, m->flag & INDIR, s, offset, nbytes) == -1)
 		return -1;
+
+	if ((ms->flags & MAGIC_DEBUG) != 0) {
+		mdebug(offset, (char *)(void *)p, sizeof(union VALUETYPE));
+		file_mdump(m);
+	}
+
+	if (m->flag & INDIR) {
+		int off = m->in_offset;
+		if (m->in_op & FILE_OPINDIRECT) {
+			const union VALUETYPE *q =
+			    ((const union VALUETYPE *)(s + offset + off));
+			switch (m->in_type) {
+			case FILE_BYTE:
+				off = q->b;
+				break;
+			case FILE_SHORT:
+				off = q->h;
+				break;
+			case FILE_BESHORT:
+				off = (short)((q->hs[0]<<8)|(q->hs[1]));
+				break;
+			case FILE_LESHORT:
+				off = (short)((q->hs[1]<<8)|(q->hs[0]));
+				break;
+			case FILE_LONG:
+				off = q->l;
+				break;
+			case FILE_BELONG:
+				off = (int32_t)((q->hl[0]<<24)|(q->hl[1]<<16)|
+						 (q->hl[2]<<8)|(q->hl[3]));
+				break;
+			case FILE_LELONG:
+				off = (int32_t)((q->hl[3]<<24)|(q->hl[2]<<16)|
+						 (q->hl[1]<<8)|(q->hl[0]));
+				break;
+			}
+		}
+		switch (m->in_type) {
+		case FILE_BYTE:
+			if (nbytes < (offset + 1)) return 0;
+			if (off) {
+				switch (m->in_op & 0x3F) {
+				case FILE_OPAND:
+					offset = p->b & off;
+					/*@innerbreak@*/ break;
+				case FILE_OPOR:
+					offset = p->b | off;
+					/*@innerbreak@*/ break;
+				case FILE_OPXOR:
+					offset = p->b ^ off;
+					/*@innerbreak@*/ break;
+				case FILE_OPADD:
+					offset = p->b + off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMINUS:
+					offset = p->b - off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMULTIPLY:
+					offset = p->b * off;
+					/*@innerbreak@*/ break;
+				case FILE_OPDIVIDE:
+					offset = p->b / off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMODULO:
+					offset = p->b % off;
+					/*@innerbreak@*/ break;
+				}
+			} else
+				offset = p->b;
+			if (m->in_op & FILE_OPINVERSE)
+				offset = ~offset;
+			break;
+		case FILE_BESHORT:
+			if (nbytes < (offset + 2))
+				return 0;
+			if (off) {
+				switch (m->in_op & 0x7F) {
+				case FILE_OPAND:
+					offset = (short)((p->hs[0]<<8)|
+							 (p->hs[1])) &
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPOR:
+					offset = (short)((p->hs[0]<<8)|
+							 (p->hs[1])) |
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPXOR:
+					offset = (short)((p->hs[0]<<8)|
+							 (p->hs[1])) ^
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPADD:
+					offset = (short)((p->hs[0]<<8)|
+							 (p->hs[1])) +
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMINUS:
+					offset = (short)((p->hs[0]<<8)|
+							 (p->hs[1])) -
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMULTIPLY:
+					offset = (short)((p->hs[0]<<8)|
+							 (p->hs[1])) *
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPDIVIDE:
+					offset = (short)((p->hs[0]<<8)|
+							 (p->hs[1])) /
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMODULO:
+					offset = (short)((p->hs[0]<<8)|
+							 (p->hs[1])) %
+						 off;
+					/*@innerbreak@*/ break;
+				}
+			} else
+				offset = (short)((p->hs[0]<<8)|
+						 (p->hs[1]));
+			if (m->in_op & FILE_OPINVERSE)
+				offset = ~offset;
+			break;
+		case FILE_LESHORT:
+			if (nbytes < (offset + 2))
+				return 0;
+			if (off) {
+				switch (m->in_op & 0x7F) {
+				case FILE_OPAND:
+					offset = (short)((p->hs[1]<<8)|
+							 (p->hs[0])) &
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPOR:
+					offset = (short)((p->hs[1]<<8)|
+							 (p->hs[0])) |
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPXOR:
+					offset = (short)((p->hs[1]<<8)|
+							 (p->hs[0])) ^
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPADD:
+					offset = (short)((p->hs[1]<<8)|
+							 (p->hs[0])) +
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMINUS:
+					offset = (short)((p->hs[1]<<8)|
+							 (p->hs[0])) -
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMULTIPLY:
+					offset = (short)((p->hs[1]<<8)|
+							 (p->hs[0])) *
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPDIVIDE:
+					offset = (short)((p->hs[1]<<8)|
+							 (p->hs[0])) /
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMODULO:
+					offset = (short)((p->hs[1]<<8)|
+							 (p->hs[0])) %
+						 off;
+					/*@innerbreak@*/ break;
+				}
+			} else
+				offset = (short)((p->hs[1]<<8)|
+						 (p->hs[0]));
+			if (m->in_op & FILE_OPINVERSE)
+				offset = ~offset;
+			break;
+		case FILE_SHORT:
+			if (nbytes < (offset + 2))
+				return 0;
+			if (off) {
+				switch (m->in_op & 0x7F) {
+				case FILE_OPAND:
+					offset = p->h & off;
+					/*@innerbreak@*/ break;
+				case FILE_OPOR:
+					offset = p->h | off;
+					/*@innerbreak@*/ break;
+				case FILE_OPXOR:
+					offset = p->h ^ off;
+					/*@innerbreak@*/ break;
+				case FILE_OPADD:
+					offset = p->h + off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMINUS:
+					offset = p->h - off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMULTIPLY:
+					offset = p->h * off;
+					/*@innerbreak@*/ break;
+				case FILE_OPDIVIDE:
+					offset = p->h / off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMODULO:
+					offset = p->h % off;
+					/*@innerbreak@*/ break;
+				}
+			}
+			else
+				offset = p->h;
+			if (m->in_op & FILE_OPINVERSE)
+				offset = ~offset;
+			break;
+		case FILE_BELONG:
+			if (nbytes < (offset + 4))
+				return 0;
+			if (off) {
+				switch (m->in_op & 0x7F) {
+				case FILE_OPAND:
+					offset = (int32_t)((p->hl[0]<<24)|
+							 (p->hl[1]<<16)|
+							 (p->hl[2]<<8)|
+							 (p->hl[3])) &
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPOR:
+					offset = (int32_t)((p->hl[0]<<24)|
+							 (p->hl[1]<<16)|
+							 (p->hl[2]<<8)|
+							 (p->hl[3])) |
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPXOR:
+					offset = (int32_t)((p->hl[0]<<24)|
+							 (p->hl[1]<<16)|
+							 (p->hl[2]<<8)|
+							 (p->hl[3])) ^
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPADD:
+					offset = (int32_t)((p->hl[0]<<24)|
+							 (p->hl[1]<<16)|
+							 (p->hl[2]<<8)|
+							 (p->hl[3])) +
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMINUS:
+					offset = (int32_t)((p->hl[0]<<24)|
+							 (p->hl[1]<<16)|
+							 (p->hl[2]<<8)|
+							 (p->hl[3])) -
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMULTIPLY:
+					offset = (int32_t)((p->hl[0]<<24)|
+							 (p->hl[1]<<16)|
+							 (p->hl[2]<<8)|
+							 (p->hl[3])) *
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPDIVIDE:
+					offset = (int32_t)((p->hl[0]<<24)|
+							 (p->hl[1]<<16)|
+							 (p->hl[2]<<8)|
+							 (p->hl[3])) /
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMODULO:
+					offset = (int32_t)((p->hl[0]<<24)|
+							 (p->hl[1]<<16)|
+							 (p->hl[2]<<8)|
+							 (p->hl[3])) %
+						 off;
+					/*@innerbreak@*/ break;
+				}
+			} else
+				offset = (int32_t)((p->hl[0]<<24)|
+						 (p->hl[1]<<16)|
+						 (p->hl[2]<<8)|
+						 (p->hl[3]));
+			if (m->in_op & FILE_OPINVERSE)
+				offset = ~offset;
+			break;
+		case FILE_LELONG:
+			if (nbytes < (offset + 4))
+				return 0;
+			if (off) {
+				switch (m->in_op & 0x7F) {
+				case FILE_OPAND:
+					offset = (int32_t)((p->hl[3]<<24)|
+							 (p->hl[2]<<16)|
+							 (p->hl[1]<<8)|
+							 (p->hl[0])) &
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPOR:
+					offset = (int32_t)((p->hl[3]<<24)|
+							 (p->hl[2]<<16)|
+							 (p->hl[1]<<8)|
+							 (p->hl[0])) |
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPXOR:
+					offset = (int32_t)((p->hl[3]<<24)|
+							 (p->hl[2]<<16)|
+							 (p->hl[1]<<8)|
+							 (p->hl[0])) ^
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPADD:
+					offset = (int32_t)((p->hl[3]<<24)|
+							 (p->hl[2]<<16)|
+							 (p->hl[1]<<8)|
+							 (p->hl[0])) +
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMINUS:
+					offset = (int32_t)((p->hl[3]<<24)|
+							 (p->hl[2]<<16)|
+							 (p->hl[1]<<8)|
+							 (p->hl[0])) -
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMULTIPLY:
+					offset = (int32_t)((p->hl[3]<<24)|
+							 (p->hl[2]<<16)|
+							 (p->hl[1]<<8)|
+							 (p->hl[0])) *
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPDIVIDE:
+					offset = (int32_t)((p->hl[3]<<24)|
+							 (p->hl[2]<<16)|
+							 (p->hl[1]<<8)|
+							 (p->hl[0])) /
+						 off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMODULO:
+					offset = (int32_t)((p->hl[3]<<24)|
+							 (p->hl[2]<<16)|
+							 (p->hl[1]<<8)|
+							 (p->hl[0])) %
+						 off;
+					/*@innerbreak@*/ break;
+				}
+			} else
+				offset = (int32_t)((p->hl[3]<<24)|
+						 (p->hl[2]<<16)|
+						 (p->hl[1]<<8)|
+						 (p->hl[0]));
+			if (m->in_op & FILE_OPINVERSE)
+				offset = ~offset;
+			break;
+		case FILE_LONG:
+			if (nbytes < (offset + 4))
+				return 0;
+			if (off) {
+				switch (m->in_op & 0x7F) {
+				case FILE_OPAND:
+					offset = p->l & off;
+					/*@innerbreak@*/ break;
+				case FILE_OPOR:
+					offset = p->l | off;
+					/*@innerbreak@*/ break;
+				case FILE_OPXOR:
+					offset = p->l ^ off;
+					/*@innerbreak@*/ break;
+				case FILE_OPADD:
+					offset = p->l + off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMINUS:
+					offset = p->l - off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMULTIPLY:
+					offset = p->l * off;
+					/*@innerbreak@*/ break;
+				case FILE_OPDIVIDE:
+					offset = p->l / off;
+					/*@innerbreak@*/ break;
+				case FILE_OPMODULO:
+					offset = p->l % off;
+					/*@innerbreak@*/ break;
+			/*	case TOOMANYSWITCHBLOCKS:
+			 *		ugh = p->eye % m->strain;
+			 *		rub;
+			 *	case BEER:
+			 *		off = p->tab & m->in_gest;
+			 *		sleep;
+			 */
+				}
+			} else
+				offset = p->l;
+			if (m->in_op & FILE_OPINVERSE)
+				offset = ~offset;
+			break;
+		}
+
+		if (m->flag & INDIROFFADD) offset += ms->c.off[cont_level-1];
+		if (mcopy(ms, p, m->type, 0, s, offset, nbytes) == -1)
+			return -1;
+		m->offset = offset;
+
+		if ((ms->flags & MAGIC_DEBUG) != 0) {
+			mdebug(offset, (char *)(void *)p,
+			    sizeof(union VALUETYPE));
+			file_mdump(m);
+		}
+	}
 
 	/* Verify we have enough data to match magic type */
 	switch (m->type) {
@@ -718,374 +1140,23 @@ mget(struct magic_set *ms, union VALUETYPE *p, const unsigned char *s,
 
 		case FILE_STRING:
 		case FILE_PSTRING:
+		case FILE_SEARCH:
 			if (nbytes < (offset + m->vallen))
 				return 0;
 			break;
+		default: break;
 	}
 
-	if ((ms->flags & MAGIC_DEBUG) != 0) {
-		mdebug(offset, (char *)(void *)p, sizeof(union VALUETYPE));
-		file_mdump(m);
-	}
-
-	if (m->flag & INDIR) {
-		switch (m->in_type) {
-		case FILE_BYTE:
-			if (m->in_offset) {
-				switch (m->in_op&0x7F) {
-				case FILE_OPAND:
-					offset = p->b & m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPOR:
-					offset = p->b | m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPXOR:
-					offset = p->b ^ m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPADD:
-					offset = p->b + m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMINUS:
-					offset = p->b - m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMULTIPLY:
-					offset = p->b * m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPDIVIDE:
-					offset = p->b / m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMODULO:
-					offset = p->b % m->in_offset;
-					/*@innerbreak@*/ break;
-				}
-			} else
-				offset = p->b;
-			if (m->in_op & FILE_OPINVERSE)
-				offset = ~offset;
-			break;
-		case FILE_BESHORT:
-			if (m->in_offset) {
-				switch (m->in_op & 0x7F) {
-				case FILE_OPAND:
-					offset = (short)((p->hs[0]<<8)|
-							 (p->hs[1])) &
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPOR:
-					offset = (short)((p->hs[0]<<8)|
-							 (p->hs[1])) |
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPXOR:
-					offset = (short)((p->hs[0]<<8)|
-							 (p->hs[1])) ^
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPADD:
-					offset = (short)((p->hs[0]<<8)|
-							 (p->hs[1])) +
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMINUS:
-					offset = (short)((p->hs[0]<<8)|
-							 (p->hs[1])) -
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMULTIPLY:
-					offset = (short)((p->hs[0]<<8)|
-							 (p->hs[1])) *
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPDIVIDE:
-					offset = (short)((p->hs[0]<<8)|
-							 (p->hs[1])) /
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMODULO:
-					offset = (short)((p->hs[0]<<8)|
-							 (p->hs[1])) %
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				}
-			} else
-				offset = (short)((p->hs[0]<<8)|
-						 (p->hs[1]));
-			if (m->in_op & FILE_OPINVERSE)
-				offset = ~offset;
-			break;
-		case FILE_LESHORT:
-			if (m->in_offset) {
-				switch (m->in_op & 0x7F) {
-				case FILE_OPAND:
-					offset = (short)((p->hs[1]<<8)|
-							 (p->hs[0])) &
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPOR:
-					offset = (short)((p->hs[1]<<8)|
-							 (p->hs[0])) |
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPXOR:
-					offset = (short)((p->hs[1]<<8)|
-							 (p->hs[0])) ^
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPADD:
-					offset = (short)((p->hs[1]<<8)|
-							 (p->hs[0])) +
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMINUS:
-					offset = (short)((p->hs[1]<<8)|
-							 (p->hs[0])) -
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMULTIPLY:
-					offset = (short)((p->hs[1]<<8)|
-							 (p->hs[0])) *
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPDIVIDE:
-					offset = (short)((p->hs[1]<<8)|
-							 (p->hs[0])) /
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMODULO:
-					offset = (short)((p->hs[1]<<8)|
-							 (p->hs[0])) %
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				}
-			} else
-				offset = (short)((p->hs[1]<<8)|
-						 (p->hs[0]));
-			if (m->in_op & FILE_OPINVERSE)
-				offset = ~offset;
-			break;
-		case FILE_SHORT:
-			if (m->in_offset) {
-				switch (m->in_op & 0x7F) {
-				case FILE_OPAND:
-					offset = p->h & m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPOR:
-					offset = p->h | m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPXOR:
-					offset = p->h ^ m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPADD:
-					offset = p->h + m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMINUS:
-					offset = p->h - m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMULTIPLY:
-					offset = p->h * m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPDIVIDE:
-					offset = p->h / m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMODULO:
-					offset = p->h % m->in_offset;
-					/*@innerbreak@*/ break;
-				}
-			}
-			else
-				offset = p->h;
-			if (m->in_op & FILE_OPINVERSE)
-				offset = ~offset;
-			break;
-		case FILE_BELONG:
-			if (m->in_offset) {
-				switch (m->in_op & 0x7F) {
-				case FILE_OPAND:
-					offset = (int32_t)((p->hl[0]<<24)|
-							 (p->hl[1]<<16)|
-							 (p->hl[2]<<8)|
-							 (p->hl[3])) &
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPOR:
-					offset = (int32_t)((p->hl[0]<<24)|
-							 (p->hl[1]<<16)|
-							 (p->hl[2]<<8)|
-							 (p->hl[3])) |
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPXOR:
-					offset = (int32_t)((p->hl[0]<<24)|
-							 (p->hl[1]<<16)|
-							 (p->hl[2]<<8)|
-							 (p->hl[3])) ^
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPADD:
-					offset = (int32_t)((p->hl[0]<<24)|
-							 (p->hl[1]<<16)|
-							 (p->hl[2]<<8)|
-							 (p->hl[3])) +
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMINUS:
-					offset = (int32_t)((p->hl[0]<<24)|
-							 (p->hl[1]<<16)|
-							 (p->hl[2]<<8)|
-							 (p->hl[3])) -
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMULTIPLY:
-					offset = (int32_t)((p->hl[0]<<24)|
-							 (p->hl[1]<<16)|
-							 (p->hl[2]<<8)|
-							 (p->hl[3])) *
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPDIVIDE:
-					offset = (int32_t)((p->hl[0]<<24)|
-							 (p->hl[1]<<16)|
-							 (p->hl[2]<<8)|
-							 (p->hl[3])) /
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMODULO:
-					offset = (int32_t)((p->hl[0]<<24)|
-							 (p->hl[1]<<16)|
-							 (p->hl[2]<<8)|
-							 (p->hl[3])) %
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				}
-			} else
-				offset = (int32_t)((p->hl[0]<<24)|
-						 (p->hl[1]<<16)|
-						 (p->hl[2]<<8)|
-						 (p->hl[3]));
-			if (m->in_op & FILE_OPINVERSE)
-				offset = ~offset;
-			break;
-		case FILE_LELONG:
-			if (m->in_offset) {
-				switch (m->in_op & 0x7F) {
-				case FILE_OPAND:
-					offset = (int32_t)((p->hl[3]<<24)|
-							 (p->hl[2]<<16)|
-							 (p->hl[1]<<8)|
-							 (p->hl[0])) &
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPOR:
-					offset = (int32_t)((p->hl[3]<<24)|
-							 (p->hl[2]<<16)|
-							 (p->hl[1]<<8)|
-							 (p->hl[0])) |
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPXOR:
-					offset = (int32_t)((p->hl[3]<<24)|
-							 (p->hl[2]<<16)|
-							 (p->hl[1]<<8)|
-							 (p->hl[0])) ^
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPADD:
-					offset = (int32_t)((p->hl[3]<<24)|
-							 (p->hl[2]<<16)|
-							 (p->hl[1]<<8)|
-							 (p->hl[0])) +
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMINUS:
-					offset = (int32_t)((p->hl[3]<<24)|
-							 (p->hl[2]<<16)|
-							 (p->hl[1]<<8)|
-							 (p->hl[0])) -
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMULTIPLY:
-					offset = (int32_t)((p->hl[3]<<24)|
-							 (p->hl[2]<<16)|
-							 (p->hl[1]<<8)|
-							 (p->hl[0])) *
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPDIVIDE:
-					offset = (int32_t)((p->hl[3]<<24)|
-							 (p->hl[2]<<16)|
-							 (p->hl[1]<<8)|
-							 (p->hl[0])) /
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMODULO:
-					offset = (int32_t)((p->hl[3]<<24)|
-							 (p->hl[2]<<16)|
-							 (p->hl[1]<<8)|
-							 (p->hl[0])) %
-						 m->in_offset;
-					/*@innerbreak@*/ break;
-				}
-			} else
-				offset = (int32_t)((p->hl[3]<<24)|
-						 (p->hl[2]<<16)|
-						 (p->hl[1]<<8)|
-						 (p->hl[0]));
-			if (m->in_op & FILE_OPINVERSE)
-				offset = ~offset;
-			break;
-		case FILE_LONG:
-			if (m->in_offset) {
-				switch (m->in_op & 0x7F) {
-				case FILE_OPAND:
-					offset = p->l & m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPOR:
-					offset = p->l | m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPXOR:
-					offset = p->l ^ m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPADD:
-					offset = p->l + m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMINUS:
-					offset = p->l - m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMULTIPLY:
-					offset = p->l * m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPDIVIDE:
-					offset = p->l / m->in_offset;
-					/*@innerbreak@*/ break;
-				case FILE_OPMODULO:
-					offset = p->l % m->in_offset;
-					/*@innerbreak@*/ break;
-			/*	case TOOMANYSWITCHBLOCKS:
-			 *		ugh = p->eye % m->strain;
-			 *		rub;
-			 *	case BEER:
-			 *		off = p->tab & m->in_gest;
-			 *		sleep;
-			 */
-				}
-			} else
-				offset = p->l;
-			if (m->in_op & FILE_OPINVERSE)
-				offset = ~offset;
-			break;
+	if (m->type == FILE_SEARCH) {
+		p->buf = malloc(m->mask + m->vallen);
+		if (p->buf == NULL) {
+			file_error(ms, errno, "Cannot allocate search buffer");
+			return 0;
 		}
-
-		if (mcopy(ms, p, m->type, 0, s, offset, nbytes) == -1)
-			return -1;
-
-		if ((ms->flags & MAGIC_DEBUG) != 0) {
-			mdebug(offset, (char *)(void *)p,
-			    sizeof(union VALUETYPE));
-			file_mdump(m);
-		}
+		(void)memcpy(p->buf, s + offset, m->mask + m->vallen);
 	}
 	if (!mconvert(ms, p, m))
-	  return 0;
+		return 0;
 	return 1;
 }
 
@@ -1179,7 +1250,9 @@ mcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 		regex_t rx;
 		char errmsg[512];
 
-		rc = regcomp(&rx, m->value.s, REG_EXTENDED|REG_NOSUB);
+		rc = regcomp(&rx, m->value.s,
+		    REG_EXTENDED|REG_NOSUB|REG_NEWLINE|
+		    ((m->mask & STRING_IGNORE_LOWERCASE) ? REG_ICASE : 0));
 		if (rc) {
 			free(p->buf);
 			regerror(rc, &rx, errmsg, sizeof(errmsg));
@@ -1193,6 +1266,31 @@ mcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 			free(p->buf);
 			return !rc;
 		}
+	}
+	case FILE_SEARCH:
+	{
+		/*
+		 * search for a string in a certain range
+		 */
+		unsigned char *a = (unsigned char*)m->value.s;
+		unsigned char *b = (unsigned char*)p->buf;
+		int len = m->vallen;
+		int range = 0;
+		l = 0;
+		v = 0;
+		while (++range <= m->mask) {
+			while (len-- > 0 && (v = *b++ - *a++) == 0)
+				/*@innercontinue@*/ continue;
+			if (!v) {
+				m->offset += range-1;
+				/*@loopbreak@*/ break;
+			}
+			len = m->vallen;
+			a = (unsigned char*)m->value.s;
+			b = (unsigned char*)p->buf + range;
+		}
+		free(p->buf);
+		break;
 	}
 	default:
 		file_error(ms, 0, "invalid type %d in mcheck()", m->type);

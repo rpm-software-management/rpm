@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT
 AC_CONFIG_SRCDIR([src/file.c])
-AM_INIT_AUTOMAKE(file, 4.12)
+AM_INIT_AUTOMAKE(file, 4.14)
 AM_CONFIG_HEADER([config.h])
 dnl AM_MAINTAINER_MODE
 
@@ -129,6 +129,13 @@ AC_CHECK_FUNCS(mmap strerror strtoul mbrtowc mkstemp getopt_long utimes utime wc
 
 dnl Checks for libraries
 AC_CHECK_LIB(z,gzopen)
+
+# XXX Choose /usr/lib or /usr/lib64 for library installs.
+MARK64=
+case "${target_cpu}" in
+x86_64*|powerpc64*|ppc64*|sparc64*|s390x*)        MARK64=64 ;;
+esac
+AC_SUBST(MARK64)
 
 AC_CONFIG_FILES([Makefile src/Makefile magic/Makefile doc/Makefile python/Makefile])
 AC_OUTPUT
