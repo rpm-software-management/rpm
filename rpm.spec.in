@@ -41,7 +41,7 @@ BuildRequires: beecrypt-devel >= 4.1.2
 Requires: beecrypt >= 4.1.2
 
 BuildRequires: neon-devel
-BuildRequires: sqlite3-devel
+BuildRequires: sqlite-devel
 
 # XXX Red Hat 5.2 has not bzip2 or python
 %if %{with_bzip2}
@@ -199,6 +199,8 @@ gzip -9n apidocs/man/man*/* || :
 { cd $RPM_BUILD_ROOT
   rm -f .%{__prefix}/lib/rpm/{Specfile.pm,cpanflute,cpanflute2,rpmdiff,rpmdiff.cgi,sql.prov,sql.req,tcl.req}
   rm -rf .%{__mandir}/{fr,ko}
+  rm -f .%{__bindir}/rpm{e,i,u}
+  rm -f .%{__libdir}/rpm{popt,rc}
 %if %{with_python_subpackage}
   rm -f .%{__libdir}/python%{with_python_version}/site-packages/*.{a,la}
   rm -f .%{__libdir}/python%{with_python_version}/site-packages/rpm/*.{a,la}
