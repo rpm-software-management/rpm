@@ -22,7 +22,7 @@ Version: %{version}
 %{expand: %%define rpm_version %{version}}
 Release: 0.9
 Group: System Environment/Base
-Source: ftp://jbj.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
+Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
 License: GPL
 Conflicts: patch < 2.5
 %ifos linux
@@ -73,7 +73,7 @@ Group: Development/Libraries
 Requires: rpm = %{rpm_version}-%{release}
 Requires: beecrypt >= 4.1.2
 Requires: neon-devel
-Requires: sqlite3-devel
+Requires: sqlite-devel
 
 %description devel
 This package contains the RPM C library and header files. These

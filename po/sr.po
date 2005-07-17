@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-07-04 15:03-0400\n"
+"POT-Creation-Date: 2005-07-17 11:08-0400\n"
 "PO-Revision-Date: 2004-02-29 07:48+0500\n"
 "Last-Translator: unknown\n"
 "Language-Team: unknown\n"
@@ -110,7 +110,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:113 tools/rpmcache.c:525 tools/rpmdeps.c:35 tools/rpmgraph.c:277
+#: rpmqv.c:113 tools/rpmcache.c:525 tools/rpmdeps.c:35 tools/rpmgraph.c:275
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
@@ -357,7 +357,7 @@ msgstr "nedostaju argumenti za proveru"
 msgid "no arguments given"
 msgstr "nedostaju argumenti za upit"
 
-#: build/build.c:140 build/pack.c:511
+#: build/build.c:140 build/pack.c:510
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "Ne mogu da otvorim %s za èitanje: %s"
@@ -581,34 +581,34 @@ msgstr "Datoteka nije pronaðena na serveru"
 msgid "Could not open %%files file %s: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/files.c:1965 build/pack.c:156
+#: build/files.c:1965 build/pack.c:155
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:2362
+#: build/files.c:2357
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/files.c:2374 build/parsePrep.c:50
+#: build/files.c:2369 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2418
+#: build/files.c:2413
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "gre¹ka potrage za paketom %s\n"
 
-#: build/files.c:2441
+#: build/files.c:2430
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2469
+#: build/files.c:2458
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "neuspelo otvaranje %s: %s"
@@ -662,136 +662,136 @@ msgstr "neuspelo èitanje: %s (%d)"
 msgid "cpio_copy read failed: %s\n"
 msgstr "neuspelo èitanje: %s (%d)"
 
-#: build/pack.c:222 build/pack.c:236
+#: build/pack.c:221 build/pack.c:235
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/pack.c:229
+#: build/pack.c:228
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/pack.c:243
+#: build/pack.c:242
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/pack.c:250 build/pack.c:257
+#: build/pack.c:249 build/pack.c:256
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/pack.c:265
+#: build/pack.c:264
 #, fuzzy, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/pack.c:280
+#: build/pack.c:279
 #, fuzzy, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim datoteku %s\n"
 
-#: build/pack.c:309
+#: build/pack.c:308
 #, fuzzy, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/pack.c:319
+#: build/pack.c:318
 #, fuzzy, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "Neuspelo èitanje %s: %s."
 
-#: build/pack.c:328 build/pack.c:557
+#: build/pack.c:327 build/pack.c:556
 #, fuzzy, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Neuspeo 'readLead'\n"
 
-#: build/pack.c:360
+#: build/pack.c:359
 #, fuzzy, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "gre¹ka: èini se da %s nije RPM paket\n"
 
-#: build/pack.c:365
+#: build/pack.c:364
 #, fuzzy, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "gre¹ka kod uzimanja sloga %s iz %s"
 
-#: build/pack.c:499
+#: build/pack.c:498
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:518
+#: build/pack.c:517
 #, fuzzy
 msgid "Unable to write temp header\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:528
+#: build/pack.c:527
 msgid "Bad CSA data\n"
 msgstr ""
 
-#: build/pack.c:564
+#: build/pack.c:563
 #, fuzzy
 msgid "Unable to write final header\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:584
+#: build/pack.c:583
 #, fuzzy, c-format
 msgid "Generating signature: %d\n"
 msgstr "napravi PGP potpis"
 
-#: build/pack.c:602
+#: build/pack.c:601
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:610
+#: build/pack.c:609
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "neuspelo otvaranje %s\n"
 
-#: build/pack.c:646 lib/psm.c:1638
+#: build/pack.c:645 lib/psm.c:1638
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:661
+#: build/pack.c:660
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:672
+#: build/pack.c:671
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:686
+#: build/pack.c:685
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:696
+#: build/pack.c:695
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:702
+#: build/pack.c:701
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/pack.c:739 lib/psm.c:1907
+#: build/pack.c:738 lib/psm.c:1907
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
 
-#: build/pack.c:812
+#: build/pack.c:811
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:829
+#: build/pack.c:828
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
@@ -866,128 +866,128 @@ msgstr "neuspelo otvaranje %s: %s"
 msgid "line %d: Second %%files list\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: build/parsePreamble.c:244
+#: build/parsePreamble.c:245
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:249
+#: build/parsePreamble.c:250
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:254
+#: build/parsePreamble.c:255
 #, fuzzy, c-format
 msgid "OS is excluded: %s\n"
 msgstr "Pribavljam %s\n"
 
-#: build/parsePreamble.c:259
+#: build/parsePreamble.c:260
 #, fuzzy, c-format
 msgid "OS is not included: %s\n"
 msgstr "%s: Neuspelo otvaranje\n"
 
-#: build/parsePreamble.c:282
+#: build/parsePreamble.c:283
 #, fuzzy, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "\"%s\" odreðuje vi¹e paketa\n"
 
-#: build/parsePreamble.c:311
+#: build/parsePreamble.c:312
 #, fuzzy, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "gre¹ka: ne mogu da otvorim %s%s/packages.rpm\n"
 
-#: build/parsePreamble.c:374
+#: build/parsePreamble.c:375
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/parsePreamble.c:392
+#: build/parsePreamble.c:393
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Ne mogu da upi¹em %s"
 
-#: build/parsePreamble.c:405
+#: build/parsePreamble.c:406
 #, fuzzy, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "(nepoznat tip)"
 
-#: build/parsePreamble.c:450
+#: build/parsePreamble.c:451
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePreamble.c:490
+#: build/parsePreamble.c:491
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:498
+#: build/parsePreamble.c:499
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePreamble.c:522 build/parsePreamble.c:529
+#: build/parsePreamble.c:524 build/parsePreamble.c:531
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: build/parsePreamble.c:590 build/parseSpec.c:472
+#: build/parsePreamble.c:592 build/parseSpec.c:472
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:603
+#: build/parsePreamble.c:605
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "preme¹tanja moraju poèeti znakom '/'"
 
-#: build/parsePreamble.c:615
+#: build/parsePreamble.c:617
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "preme¹tanja moraju poèeti znakom '/'"
 
-#: build/parsePreamble.c:627
+#: build/parsePreamble.c:629
 #, fuzzy, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: build/parsePreamble.c:667 build/parsePreamble.c:678
+#: build/parsePreamble.c:669 build/parsePreamble.c:680
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: build/parsePreamble.c:704
+#: build/parsePreamble.c:706
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "nedostaje arhitektura za %s na %s:%d"
 
-#: build/parsePreamble.c:713
+#: build/parsePreamble.c:715
 #, fuzzy, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "fatalna gre¹ka: "
 
-#: build/parsePreamble.c:815
+#: build/parsePreamble.c:819
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:882
+#: build/parsePreamble.c:886
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "      Opcije odrednice paketa:"
 
-#: build/parsePreamble.c:888
+#: build/parsePreamble.c:892
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "privremena baza podataka %s veæ postoji"
 
-#: build/parsePreamble.c:917
+#: build/parsePreamble.c:921
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "pogre¹an broj paketa: %s\n"
 
-#: build/parsePreamble.c:939
+#: build/parsePreamble.c:943
 msgid "Spec file can't use BuildRoot\n"
 msgstr ""
 
@@ -1930,7 +1930,7 @@ msgstr ""
 "ukloni sve pakete koji odgovaraju <paketu> (normalno, javlja se gre¹ka ako "
 "<paket> oznaèava vi¹e paketa)"
 
-#: lib/poptI.c:182 tools/rpmgraph.c:274
+#: lib/poptI.c:182 tools/rpmgraph.c:272
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
@@ -2356,7 +2356,7 @@ msgstr "instaliraj paket"
 msgid "don't verify files in package"
 msgstr "instaliraj paket"
 
-#: lib/poptQV.c:340 lib/poptQV.c:343 tools/rpmgraph.c:268
+#: lib/poptQV.c:340 lib/poptQV.c:343 tools/rpmgraph.c:266
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "nemoj proveravati zavisnosti paketa"
@@ -2419,7 +2419,7 @@ msgstr "upit nad paketom koji ima <datoteku>"
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr ""
 
-#: lib/psm.c:637
+#: lib/psm.c:641
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr "nemoj izvr¹iti nijednu fazu"
@@ -4067,32 +4067,32 @@ msgstr "(nepoznat tip)"
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr ""
 
-#: rpmio/macro.c:1295 rpmio/macro.c:1312
+#: rpmio/macro.c:1297 rpmio/macro.c:1314
 #, fuzzy, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Ne mogu da otvorim datoteku %s: "
 
-#: rpmio/macro.c:1353
+#: rpmio/macro.c:1355
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/macro.c:1510
+#: rpmio/macro.c:1512
 #, fuzzy, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "paket %s nije naðen u %s"
 
-#: rpmio/macro.c:1846
+#: rpmio/macro.c:1848
 msgid "Target buffer overflow\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:2052 rpmio/macro.c:2058
+#: rpmio/macro.c:2054 rpmio/macro.c:2060
 #, fuzzy, c-format
 msgid "File %s: %s\n"
 msgstr "neuspelo otvaranje %s: %s"
 
-#: rpmio/macro.c:2061
+#: rpmio/macro.c:2063
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
@@ -4225,7 +4225,7 @@ msgstr "gre¹ka: FTP port mora biti broj\n"
 msgid "failed to create %s: %s\n"
 msgstr "neuspelo kreiranje %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:270
+#: tools/rpmcache.c:515 tools/rpmgraph.c:268
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "proveri potpis u paketu"

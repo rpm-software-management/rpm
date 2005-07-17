@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-07-04 15:03-0400\n"
+"POT-Creation-Date: 2005-07-17 11:08-0400\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -111,7 +111,7 @@ msgstr "Opbygningstilvalg med [ <spec-fil> | <tararkiv> | <kildepakke> ]:"
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:113 tools/rpmcache.c:525 tools/rpmdeps.c:35 tools/rpmgraph.c:277
+#: rpmqv.c:113 tools/rpmcache.c:525 tools/rpmdeps.c:35 tools/rpmgraph.c:275
 #, fuzzy
 msgid "Common options for all rpm modes and executables:"
 msgstr "Fælles tilvalg for alle rpm-tilstande:"
@@ -353,7 +353,7 @@ msgstr "ingen parametre angivet ved verifikation"
 msgid "no arguments given"
 msgstr "ingen parametre angivet ved forespørgsel"
 
-#: build/build.c:140 build/pack.c:511
+#: build/build.c:140 build/pack.c:510
 msgid "Unable to open temp file.\n"
 msgstr "Kunne ikke åbne midlertidig fil.\n"
 
@@ -574,34 +574,34 @@ msgstr "Fil ikke fundet med glob: %s\n"
 msgid "Could not open %%files file %s: %s\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:1965 build/pack.c:156
+#: build/files.c:1965 build/pack.c:155
 #, c-format
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:2362
+#: build/files.c:2357
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2374 build/parsePrep.c:50
+#: build/files.c:2369 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:2418
+#: build/files.c:2413
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: build/files.c:2441
+#: build/files.c:2430
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2469
+#: build/files.c:2458
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
@@ -657,136 +657,136 @@ msgstr "cpio_copy-skrivning mislykkedes: %s\n"
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy-læsning mislykkedes: %s\n"
 
-#: build/pack.c:222 build/pack.c:236
+#: build/pack.c:221 build/pack.c:235
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "Kunne ikke åbne 'PreIn'-fil: %s\n"
 
-#: build/pack.c:229
+#: build/pack.c:228
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "Kunne ikke åbne 'PreUn'-fil: %s\n"
 
-#: build/pack.c:243
+#: build/pack.c:242
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "Kunne ikke åbne 'PostIn'-fil: %s\n"
 
-#: build/pack.c:250 build/pack.c:257
+#: build/pack.c:249 build/pack.c:256
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "Kunne ikke åbne 'PostUn'-fil: %s\n"
 
-#: build/pack.c:265
+#: build/pack.c:264
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "Kunne ikke åbne 'VerifyScript'-fil: %s\n"
 
-#: build/pack.c:280
+#: build/pack.c:279
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "Kunne ikke åbne skriptfilen Trigger: %s\n"
 
-#: build/pack.c:309
+#: build/pack.c:308
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: åbn %s: %s\n"
 
-#: build/pack.c:319
+#: build/pack.c:318
 #, c-format
 msgid "readRPM: read %s: %s\n"
 msgstr "readRPM: læs %s: %s\n"
 
-#: build/pack.c:328 build/pack.c:557
+#: build/pack.c:327 build/pack.c:556
 #, fuzzy, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: Fread mislykkedes: %s\n"
 
-#: build/pack.c:360
+#: build/pack.c:359
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s er ikke nogen RPM-pakke\n"
 
-#: build/pack.c:365
+#: build/pack.c:364
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: læser hoved fra %s\n"
 
-#: build/pack.c:499
+#: build/pack.c:498
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "Kunne ikke læse hoved fra %s: %s\n"
 
-#: build/pack.c:518
+#: build/pack.c:517
 #, fuzzy
 msgid "Unable to write temp header\n"
 msgstr "Kunne ikke skrive hoved til %s: %s\n"
 
-#: build/pack.c:528
+#: build/pack.c:527
 msgid "Bad CSA data\n"
 msgstr "Ugyldige CSA-data\n"
 
-#: build/pack.c:564
+#: build/pack.c:563
 #, fuzzy
 msgid "Unable to write final header\n"
 msgstr "Kunne ikke skrive hoved til %s: %s\n"
 
-#: build/pack.c:584
+#: build/pack.c:583
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Genererer signatur: %d\n"
 
-#: build/pack.c:602
+#: build/pack.c:601
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "Kunne ikke læse hoved fra %s: %s\n"
 
-#: build/pack.c:610
+#: build/pack.c:609
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Kunne ikke åbne %s: %s\n"
 
-#: build/pack.c:646 lib/psm.c:1638
+#: build/pack.c:645 lib/psm.c:1638
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunne ikke skrive pakke: %s\n"
 
-#: build/pack.c:661
+#: build/pack.c:660
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Kunne ikke åbne sigtarget %s: %s\n"
 
-#: build/pack.c:672
+#: build/pack.c:671
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Kunne ikke læse hoved fra %s: %s\n"
 
-#: build/pack.c:686
+#: build/pack.c:685
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Kunne ikke skrive hoved til %s: %s\n"
 
-#: build/pack.c:696
+#: build/pack.c:695
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Kunne ikke læse pakkeindhold fra %s: %s\n"
 
-#: build/pack.c:702
+#: build/pack.c:701
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kunne ikke skrive pakkeindhold til %s: %s\n"
 
-#: build/pack.c:739 lib/psm.c:1907
+#: build/pack.c:738 lib/psm.c:1907
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
 
-#: build/pack.c:812
+#: build/pack.c:811
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Kunne ikke generere filnavn til oprettelse af pakke %s: %s\n"
 
-#: build/pack.c:829
+#: build/pack.c:828
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kan ikke oprette %s: %s\n"
@@ -861,128 +861,128 @@ msgstr "linie %d: Fejl ved tolkning af %%files: %s\n"
 msgid "line %d: Second %%files list\n"
 msgstr "linie %d: Anden '%%files'-liste\n"
 
-#: build/parsePreamble.c:244
+#: build/parsePreamble.c:245
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Arkitekturen er ekskluderet: %s\n"
 
-#: build/parsePreamble.c:249
+#: build/parsePreamble.c:250
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Arkitekturen er ikke inkluderet: %s\n"
 
-#: build/parsePreamble.c:254
+#: build/parsePreamble.c:255
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS er ekskluderet: %s\n"
 
-#: build/parsePreamble.c:259
+#: build/parsePreamble.c:260
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS is ikke inkluderet: %s\n"
 
-#: build/parsePreamble.c:282
+#: build/parsePreamble.c:283
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "'%s'-felt skal være tilstede i pakke : %s\n"
 
-#: build/parsePreamble.c:311
+#: build/parsePreamble.c:312
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Flere '%s'-indgange i pakke: %s\n"
 
-#: build/parsePreamble.c:374
+#: build/parsePreamble.c:375
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Kunne ikke åbne ikon %s: %s\n"
 
-#: build/parsePreamble.c:392
+#: build/parsePreamble.c:393
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Kunne ikke læse ikon %s: %s\n"
 
-#: build/parsePreamble.c:405
+#: build/parsePreamble.c:406
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Ukendt ikontype: %s\n"
 
-#: build/parsePreamble.c:450
+#: build/parsePreamble.c:451
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "linie %d: Ugyldigt tilvalg %s: %s\n"
 
-#: build/parsePreamble.c:490
+#: build/parsePreamble.c:491
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "linie %d: Forkert udformet mærke: %s\n"
 
 #. Empty field
-#: build/parsePreamble.c:498
+#: build/parsePreamble.c:499
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "linie %d: Tomt mærke: %s\n"
 
-#: build/parsePreamble.c:522 build/parsePreamble.c:529
+#: build/parsePreamble.c:524 build/parsePreamble.c:531
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "linie %d: Ugyldigt tegn '-' i %s: %s\n"
 
-#: build/parsePreamble.c:590 build/parseSpec.c:472
+#: build/parsePreamble.c:592 build/parseSpec.c:472
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot kan ikke være \"/\": %s\n"
 
-#: build/parsePreamble.c:603
+#: build/parsePreamble.c:605
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "linie %d: Præfikser kan ikke ende på \"/\": %s\n"
 
-#: build/parsePreamble.c:615
+#: build/parsePreamble.c:617
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "linie %d: Docdir skal starte med '/': %s\n"
 
-#: build/parsePreamble.c:627
+#: build/parsePreamble.c:629
 #, c-format
 msgid "line %d: Epoch/Serial field must be a number: %s\n"
 msgstr "linie %d: Epoch/Serial-felter skal være et nummer: %s\n"
 
-#: build/parsePreamble.c:667 build/parsePreamble.c:678
+#: build/parsePreamble.c:669 build/parsePreamble.c:680
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "linie %d: Ugyldig %s: angivere: %s\n"
 
-#: build/parsePreamble.c:704
+#: build/parsePreamble.c:706
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "linie %d: Ugyldigt 'BuildArchitecture'-format: %s\n"
 
-#: build/parsePreamble.c:713
+#: build/parsePreamble.c:715
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Intern fejl: Falsk mærke %d\n"
 
-#: build/parsePreamble.c:815
+#: build/parsePreamble.c:819
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:882
+#: build/parsePreamble.c:886
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Ugyldig pakkeangivelse: %s\n"
 
-#: build/parsePreamble.c:888
+#: build/parsePreamble.c:892
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Pakken eksisterer allerede: %s\n"
 
-#: build/parsePreamble.c:917
+#: build/parsePreamble.c:921
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "linie %d: Ukendt mærke: %s\n"
 
-#: build/parsePreamble.c:939
+#: build/parsePreamble.c:943
 msgid "Spec file can't use BuildRoot\n"
 msgstr "Spec-fil kan ikke bruge BuildRoot\n"
 
@@ -1917,7 +1917,7 @@ msgstr ""
 "fjern alle pakker, som passer med <pakke> (normalt ville det medføre en "
 "fejl, hvis <pakke> angav flere pakker)"
 
-#: lib/poptI.c:182 tools/rpmgraph.c:274
+#: lib/poptI.c:182 tools/rpmgraph.c:272
 msgid "use anaconda \"presentation order\""
 msgstr ""
 
@@ -2327,7 +2327,7 @@ msgstr "verificér ikke filerne i pakke"
 msgid "don't verify files in package"
 msgstr "verificér ikke filerne i pakke"
 
-#: lib/poptQV.c:340 lib/poptQV.c:343 tools/rpmgraph.c:268
+#: lib/poptQV.c:340 lib/poptQV.c:343 tools/rpmgraph.c:266
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
@@ -2389,7 +2389,7 @@ msgstr "kildepakke indeholder ingen .spec-fil\n"
 msgid "%s: waitpid(%d) rc %d status %x secs %u.%03u\n"
 msgstr ""
 
-#: lib/psm.c:637
+#: lib/psm.c:641
 #, fuzzy, c-format
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr "kører postinstallations-skript (hvis det findes)\n"
@@ -4046,32 +4046,32 @@ msgstr "Ukendt tilvalg %c i %s(%s)\n"
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursionsdybde(%d) overskrider maks(%d)\n"
 
-#: rpmio/macro.c:1295 rpmio/macro.c:1312
+#: rpmio/macro.c:1297 rpmio/macro.c:1314
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Uafsluttet %c: %s\n"
 
-#: rpmio/macro.c:1353
+#: rpmio/macro.c:1355
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Et %% efterfølges af en makro, der ikke kan tolkes\n"
 
-#: rpmio/macro.c:1510
+#: rpmio/macro.c:1512
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Makroen %%%.*s blev ikke fundet, overspringer\n"
 
-#: rpmio/macro.c:1846
+#: rpmio/macro.c:1848
 msgid "Target buffer overflow\n"
 msgstr "Overløb i målbuffer\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:2052 rpmio/macro.c:2058
+#: rpmio/macro.c:2054 rpmio/macro.c:2060
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/macro.c:2061
+#: rpmio/macro.c:2063
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s er mindre end %u byte\n"
@@ -4193,7 +4193,7 @@ msgstr "url-port skal være et tal\n"
 msgid "failed to create %s: %s\n"
 msgstr "kunne ikke oprette %s: %s\n"
 
-#: tools/rpmcache.c:515 tools/rpmgraph.c:270
+#: tools/rpmcache.c:515 tools/rpmgraph.c:268
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "verificér pakkesignatur"
