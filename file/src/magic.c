@@ -184,7 +184,9 @@ private void
 close_and_restore(const struct magic_set *ms, const char *name, int fd,
     const struct stat *sb)
 {
-	(void) close(fd);
+	/* XXX Avoid closing stdin/stdout/stderr. */
+	if (fd > 2)
+		(void) close(fd);
 	if (fd != STDIN_FILENO && (ms->flags & MAGIC_PRESERVE_ATIME) != 0) {
 		/*
 		 * Try to restore access, modification times if read it.

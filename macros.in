@@ -1,7 +1,7 @@
 #/*! \page config_macros Default configuration: @RPMCONFIGDIR@/macros
 # \verbatim
 #
-# $Id: macros.in,v 1.154.2.5 2005/07/17 18:58:29 jbj Exp $
+# $Id: macros.in,v 1.154.2.6 2005/07/21 01:45:44 jbj Exp $
 #
 # This is a global RPM configuration file. All changes made here will
 # be lost when the rpm package is upgraded. Any per-system configuration
@@ -430,10 +430,10 @@ print (t)\
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
 # helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
-#%__perl_provides	@RPMCONFIGDIR@/perldeps.pl --provides
-#%__perl_requires	@RPMCONFIGDIR@/perldeps.pl --requires
-%__perl_provides	@RPMCONFIGDIR@/perl.prov
-%__perl_requires	@RPMCONFIGDIR@/perl.req
+%__perl_provides	@RPMCONFIGDIR@/perldeps.pl --provides
+%__perl_requires	@RPMCONFIGDIR@/perldeps.pl --requires
+#%__perl_provides	@RPMCONFIGDIR@/perl.prov
+#%__perl_requires	@RPMCONFIGDIR@/perl.req
 
 %__python_provides	@RPMCONFIGDIR@/pythondeps.sh --provides
 %__python_requires	@RPMCONFIGDIR@/pythondeps.sh --requires
@@ -726,7 +726,22 @@ print (t)\
 %_rollback_transaction_on_failure	0
 
 #	Verify digest/signature flags for various rpm modes:
-#	     1	--nohdrchk	if set, don't check rpmdb headers
+#	0x30300 (_RPMVSF_NODIGESTS)    --nohdrchk      if set, don't check digest(s)
+#	0xc0c00 (_RPMVSF_NOSIGNATURES) --nosignature   if set, don't check signature(s)
+#	0xf0000 (_RPMVSF_NOPAYLOAD)    --nolegacy      if set, check header+payload (if possible)
+#	0x00f00 (_RPMVSF_NOHEADER)     --nohdrchk      if set, don't check rpmdb headers
+#
+#	For example, the value 0xf0c00 (=0xf0000+0xc0c00) disables legacy
+#	digest/signature checking, disables signature checking, but attempts
+#	digest checking, also when retrieving headers from the database.
+#
+#	You also can do:
+#	 >>> hex(rpm._RPMVSF_NOSIGNATURES)
+#	 '0xc0c00'
+#	or:
+#	 >>> hex(rpm._RPMVSF_NOSIGNATURES|rpm._RPMVSF_NOPAYLOAD)
+#	 '0xf0c00'
+#	at the python prompt for example, after "import rpm".
 #
 #	The checking overhead is ~11ms per header for digests/signatures;
 #	each header from the database is checked only when first encountered
