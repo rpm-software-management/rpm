@@ -32,6 +32,7 @@
 	- fix: magic_file() closes stdin when given directory path.
 	- use perldeps.pl, phase out perl.{req,prov} (again).
 	- document __vsflags (#147489).
+	- release rpm-4.4.2.
 
 4.4 -> 4.4.1:
 	- force *.py->*.pyo byte code compilation with brp-python-bytecompile.
