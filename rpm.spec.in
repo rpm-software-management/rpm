@@ -22,7 +22,7 @@ Version: %{version}
 %{expand: %%define rpm_version %{version}}
 Release: 1
 Group: System Environment/Base
-Source: ftp://wraptastic.org/pub/rpm-devel/rpm-%{rpm_version}.tar.gz
+Source: rpm-%{rpm_version}.tar.gz
 License: GPL
 Conflicts: patch < 2.5
 %ifos linux
