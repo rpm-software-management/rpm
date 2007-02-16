@@ -371,7 +371,11 @@ static ssize_t fdRead(void * cookie, /*@out@*/ char * buf, size_t count)
 /*@-boundswrite@*/
     /* HACK: flimsy wiring for davRead */
     if (fd->req != NULL) {
+#ifdef WITH_NEON
 	rc = davRead(fd, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
+#else
+	rc = -1;
+#endif
 	/* XXX Chunked davRead EOF. */
 	if (rc == 0)
 	    fd->bytesRemain = 0;
@@ -404,9 +408,13 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
     fdstat_enter(fd, FDSTAT_WRITE);
 /*@-boundsread@*/
     /* HACK: flimsy wiring for davWrite */
-    if (fd->req != NULL)
+    if (fd->req != NULL) {
+#ifdef WITH_NEON
 	rc = davWrite(fd, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
-    else
+#else
+	return -1;
+#endif
+    } else
 	rc = write(fdno, buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
 /*@=boundsread@*/
     fdstat_exit(fd, FDSTAT_WRITE, rc);
@@ -455,9 +463,13 @@ static int fdClose( /*@only@*/ void * cookie)
     fdstat_enter(fd, FDSTAT_CLOSE);
     /* HACK: flimsy wiring for davClose */
 /*@-branchstate@*/
-    if (fd->req != NULL)
+    if (fd->req != NULL) {
+#ifdef WITH_NEON
 	rc = davClose(fd);
-    else
+#else
+	return -1;
+#endif
+    } else
 	rc = ((fdno >= 0) ? close(fdno) : -2);
 /*@=branchstate@*/
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
@@ -2029,6 +2041,56 @@ exit:
 }
 /*@=nullstate@*/
 
+#ifndef WITH_NEON
+/*@-nullstate@*/        /* FIX: u->{ctrl,data}->url undef after XurlLink. */
+static /*@null@*/ FD_t httpOpen(const char * url, /*@unused@*/ int flags,
+                /*@unused@*/ mode_t mode, /*@out@*/ urlinfo * uret)
+        /*@globals internalState @*/
+        /*@modifies *uret, internalState @*/
+{
+    urlinfo u = NULL;
+    FD_t fd = NULL;
+
+#if 0   /* XXX makeTempFile() heartburn */
+    assert(!(flags & O_RDWR));
+#endif
+    if (urlSplit(url, &u))
+        goto exit;
+
+    if (u->ctrl == NULL)
+        u->ctrl = fdNew("persist ctrl (httpOpen)");
+    if (u->ctrl->nrefs > 2 && u->data == NULL)
+        u->data = fdNew("persist data (httpOpen)");
+
+    if (u->ctrl->url == NULL)
+        fd = fdLink(u->ctrl, "grab ctrl (httpOpen persist ctrl)");
+    else if (u->data->url == NULL)
+        fd = fdLink(u->data, "grab ctrl (httpOpen persist data)");
+    else
+        fd = fdNew("grab ctrl (httpOpen)");
+
+    if (fd) {
+        fdSetIo(fd, ufdio);
+        fd->ftpFileDoneNeeded = 0;
+        fd->rd_timeoutsecs = httpTimeoutSecs;
+        fd->contentLength = fd->bytesRemain = -1;
+        fd->url = urlLink(u, "url (httpOpen)");
+        fd = fdLink(fd, "grab data (httpOpen)");
+        fd->urlType = URL_IS_HTTP;
+    }
+
+exit:
+/*@-boundswrite@*/
+    if (uret)
+        *uret = u;
+/*@=boundswrite@*/
+    /*@-refcounttrans@*/
+    return fd;
+    /*@=refcounttrans@*/
+}
+/*@=nullstate@*/
+#endif
+
 static /*@null@*/ FD_t ufdOpen(const char * url, int flags, mode_t mode)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies fileSystem, internalState @*/
@@ -2067,7 +2129,11 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
     case URL_IS_HKP:
+#ifdef WITH_NEON
 	fd = davOpen(url, flags, mode, &u);
+#else
+	fd = httpOpen(url, flags, mode, &u);
+#endif
 	if (fd == NULL || u == NULL)
 	    break;
 
@@ -2075,7 +2141,11 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 		?  ((flags & O_APPEND) ? "PUT" :
 		   ((flags & O_CREAT) ? "PUT" : "PUT"))
 		: "GET");
+#ifdef WITH_NEON
 	u->openError = davReq(fd, cmd, path);
+#else
+	u->openError = httpReq(fd, cmd, path);
+#endif
 	if (u->openError < 0) {
 	    /* XXX make sure that we can exit through ufdClose */
 	    fd = fdLink(fd, "error ctrl (ufdOpen HTTP)");

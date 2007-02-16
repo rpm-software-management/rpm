@@ -93,7 +93,9 @@ int Mkdir (const char * path, mode_t mode)
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+#ifdef WITH_NEON
 	return davMkdir(path, mode);
+#endif
 	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
@@ -151,7 +153,9 @@ int Rmdir (const char * path)
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+#ifdef WITH_NEON
 	return davRmdir(path);
+#endif
 	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
@@ -182,7 +186,9 @@ int Rename (const char * oldpath, const char * newpath)
     switch (oldut) {
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+#ifdef WITH_NEON
 	return davRename(oldpath, newpath);
+#endif
 	/*@notreached@*/ break;
     case URL_IS_FTP:		/* XXX WRONG WRONG WRONG */
     case URL_IS_PATH:
@@ -280,7 +286,9 @@ int Unlink(const char * path) {
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+#ifdef WITH_NEON
 	return davUnlink(path);
+#endif
 	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
@@ -1282,7 +1290,9 @@ fprintf(stderr, "*** Stat(%s,%p)\n", path, st);
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+#ifdef WITH_NEON
 	return davStat(path, st);
+#endif
 	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
@@ -1311,7 +1321,9 @@ fprintf(stderr, "*** Lstat(%s,%p)\n", path, st);
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
+#ifdef WITH_NEON
 	return davLstat(path, st);
+#endif
 	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
@@ -1489,7 +1501,9 @@ fprintf(stderr, "*** Opendir(%s)\n", path);
 	/*@notreached@*/ break;
     case URL_IS_HTTPS:	
     case URL_IS_HTTP:
+#ifdef WITH_NEON
 	return davOpendir(path);
+#endif
 	/*@notreached@*/ break;
     case URL_IS_PATH:
 	path = lpath;
@@ -1515,8 +1529,10 @@ fprintf(stderr, "*** Readdir(%p)\n", (void *)dir);
 	return NULL;
     if (ISAVMAGIC(dir))
 	return avReaddir(dir);
+#ifdef WITH_NEON
     if (ISDAVMAGIC(dir))
 	return davReaddir(dir);
+#endif
     return readdir(dir);
 }
 
@@ -1528,7 +1544,9 @@ fprintf(stderr, "*** Closedir(%p)\n", (void *)dir);
 	return 0;
     if (ISAVMAGIC(dir))
 	return avClosedir(dir);
+#ifdef WITH_NEON
     if (ISDAVMAGIC(dir))
 	return davClosedir(dir);
+#endif
     return closedir(dir);
 }

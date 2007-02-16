@@ -9,6 +9,8 @@
 #include <pthread.h>
 #endif
 
+#ifdef WITH_NEON
+
 #include "ne_alloc.h"
 #include "ne_auth.h"
 #include "ne_basic.h"
@@ -26,6 +28,8 @@
 #include "ne_socket.h"
 #include "ne_string.h"
 #include "ne_utils.h"
+
+#endif /* WITH_NEON */
 
 #include <rpmio_internal.h>
 
@@ -60,6 +64,8 @@ _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
     if (p != NULL)	free((void *)p);
     return NULL;
 }
+
+#ifdef WITH_NEON
 
 /* =============================================================== */
 static int davFree(urlinfo u)
@@ -1370,6 +1376,8 @@ fprintf(stderr, "*** davReadlink(%s) rc %d\n", path, rc);
 }
 #endif	/* NOTYET */
 
+#endif /* WITH_NEON */
+
 /* =============================================================== */
 /*@unchecked@*/
 int avmagicdir = 0x3607113;
@@ -1493,6 +1501,8 @@ fprintf(stderr, "*** avOpendir(%s)\n", path);
 /*@=kepttrans@*/
 }
 /*@=boundswrite@*/
+
+#ifdef WITH_NEON
 
 /* =============================================================== */
 /*@unchecked@*/
@@ -1661,4 +1671,6 @@ fprintf(stderr, "*** davOpendir(%s)\n", path);
     return (DIR *) avdir;
 /*@=kepttrans@*/
 }
+
+#endif /* WITH_NEON */
 /*@=modfilesys@*/
