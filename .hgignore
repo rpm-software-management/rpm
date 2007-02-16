@@ -91,6 +91,7 @@ tools/rpmgraph
 popt/test1
 popt/test2
 popt/test3
+popt/popt-*tar.gz
 
 lua/lua/.dirstamp
 lua/lua/lua
