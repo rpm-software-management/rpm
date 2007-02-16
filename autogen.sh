@@ -26,8 +26,8 @@ case $libtoolize in
     esac
 esac
 
-[ "`$libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" && exit 1
-[ "`autoconf --version | head -1`" != "$ACV" ] && echo "$USAGE" && exit 1
+[ "`$libtoolize --version | head -1`" != "$LTV" ] && echo "$USAGE" # && exit 1
+[ "`autoconf --version | head -1`" != "$ACV" ] && echo "$USAGE" # && exit 1
 [ "`automake --version | head -1 | sed -e 's/1\.4[a-z]/1.4/'`" != "$AMV" ] && echo "$USAGE" # && exit 1
 
 myopts=
