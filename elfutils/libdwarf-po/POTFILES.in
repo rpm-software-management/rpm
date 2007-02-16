@@ -1,7 +1,0 @@
-libdwarf/dwarf_elf_init.c
-libdwarf/dwarf_errmsg.c
-libdwarf/dwarf_errno.c
-libdwarf/dwarf_error.c
-libdwarf/dwarf_finish.c
-libdwarf/dwarf_get_elf.c
-libdwarf/dwarf_init.c

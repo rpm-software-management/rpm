@@ -1,5 +1,0 @@
-libasm/asm_begin.c
-libasm/asm_abort.c
-libasm/asm_end.c
-libasm/asm_error.c
-libasm/asm_getelf.c

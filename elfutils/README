@@ -1,6 +1,0 @@
-Fundamental design decision:
-
-- the sizes of external and internal types are assumed to be the same.
-  This leaves byte ordering aside.  While assuming this the code can be
-  greatly simplified and speed increases.  Since no change violating this
-  assumption is in sight this is believed to be a worthwhile optimization.
