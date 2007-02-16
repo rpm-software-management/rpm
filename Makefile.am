@@ -230,26 +230,6 @@ noconfig:
 	find . -name "Makefile" -exec rm {} \; 
 	rm -f *gz *rpm config.*
 
-.PHONY: archive
-archive: 
-	@cvs -d `cat CVS/Root` diff 2>&1 > /dev/null || { \
-	    echo " " ; \
-	    echo "==> Please resolve differences between the repository and" ; \
-	    echo "==> your rpm check out before tagging." ; \
-	    echo " " ; \
-	    cvs -n up ; \
-	    echo " " ; \
-	    exit 1 ; \
-	}
-	@cvs -d `cat CVS/Root` -Q tag -F $(CVSTAG) .
-	@make dist
-	@echo " "
-	@echo "The final archive is ./rpm-$(VERSION).tar.gz."
-
-.PHONY:	nextsrpm
-nextsrpm: all archive
-	@sudo ./rpm -ta rpm-$(VERSION).tar.gz
-
 .PHONY:	doxygen
 doxygen @WITH_APIDOCS_TARGET@: Doxyfile rpmpopt-@VERSION@
 	rm -rf $@
