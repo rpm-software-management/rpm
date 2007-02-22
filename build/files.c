@@ -1677,7 +1677,7 @@ static int addFile(FileList fl, const char * diskURL,
 	} else
 	    i = fl->fileListRecsUsed;
 
-	if (S_ISREG(flp->fl_mode) && i >= fl->fileListRecsUsed)
+	if (!(flp->flags & RPMFILE_EXCLUDE) && S_ISREG(flp->fl_mode) && i >= fl->fileListRecsUsed) 
 	    fl->totalFileSize += flp->fl_size;
     }
 
