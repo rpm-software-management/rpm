@@ -744,7 +744,7 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, alKey * keyp)
 
     /*@-branchstate@*/ /* FIX: ret is a problem */
     for (found = 0, ret = NULL;
-	 die <= al->dirs + al->numDirs && dieCompare(die, dieNeedle) == 0;
+	 die < al->dirs + al->numDirs && dieCompare(die, dieNeedle) == 0;
 	 die++)
     {
 
