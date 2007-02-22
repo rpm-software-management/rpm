@@ -39,6 +39,9 @@ int rpmvercmp(const char * a, const char * b)
 	while (*one && !xisalnum(*one)) one++;
 	while (*two && !xisalnum(*two)) two++;
 
+	/* If we ran to the end of either, we are finished with the loop */
+	if (!(*one && *two)) break;
+
 	str1 = one;
 	str2 = two;
 
@@ -64,9 +67,13 @@ int rpmvercmp(const char * a, const char * b)
 	*str2 = '\0';
 /*@=boundswrite@*/
 
+	/* this cannot happen, as we previously tested to make sure that */
+	/* the first string has a non-null segment */
+	if (one == str1) return -1;	/* arbitrary */
+
 	/* take care of the case where the two version segments are */
 	/* different types: one numeric, the other alpha (i.e. empty) */
-	if (one == str1) return -1;	/* arbitrary */
+	/* numeric segments are always newer than alpha segments */
 	/* XXX See patch #60884 (and details) from bugzilla #50977. */
 	if (two == str2) return (isnum ? 1 : -1);
 
