@@ -121,13 +121,17 @@ sub process_file {
     }
 
     # not everyone puts the package name of the file as the first
-    # package name so we report all namespaces as if they were
-    # provided packages (really ugly).
+    # package name so we report all namespaces except some common
+    # false positives as if they were provided packages (really ugly).
 
     if (m/^\s*package\s+([_:a-zA-Z0-9]+)\s*;/) {
       $package=$1;
       undef $version;
-      $require{$package}=undef;
+      if ($package eq 'main') {
+        undef $package;
+      } else {
+        $require{$package}=undef;
+      }
     }
 
     # after we found the package name take the first assignment to

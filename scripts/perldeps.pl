@@ -150,6 +150,10 @@ sub add_provide {
   return if(exists($self->{'provides_check'}->{$params{'-provide'}}));
 
   #
+  # Skip some common false positives
+  return if $params{'-provide'} eq 'main';
+
+  #
   # Created dependency object
   my $dep = new Dependency "provide", $params{-provide};
   $dep->filename($params{-filename});
