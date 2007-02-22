@@ -27,7 +27,7 @@
  */
 /*
  * file.h - definitions for file(1) program
- * @(#)$Id: file.h,v 1.68 2005/06/25 15:52:14 christos Exp $
+ * @(#)$Id: file.h,v 1.72 2005/10/17 15:36:22 christos Exp $
  */
 
 #ifndef __file_h__
@@ -39,6 +39,7 @@
 
 #include <stdio.h>	/* Include that here, to make sure __P gets defined */
 #include <errno.h>
+#include <fcntl.h>	/* For open and flags */
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif
@@ -194,8 +195,11 @@ struct magic {
 		uint16_t h;
 		uint32_t l;
 		char s[MAXstring];
+		struct {
 /*@relnull@*/
-		char *buf;
+			char *buf;
+			size_t buflen;
+		} search;
 		uint8_t hs[2];	/* 2 bytes of a fixed-endian "short" */
 		uint8_t hl[4];	/* 4 bytes of a fixed-endian "long" */
 	} value;		/* either number or string */
@@ -240,6 +244,7 @@ struct magic_set {
 	size_t len;
 	size_t size;
 	/* Printable buffer */
+/*@only@*/
 	char *pbuf;
 	size_t psize;
     } o;
@@ -295,9 +300,9 @@ protected void file_badseek(struct magic_set *ms)
 	/*@modifies ms @*/;
 protected void file_oomem(struct magic_set *ms)
 	/*@modifies ms @*/;
-protected void file_error(struct magic_set *ms, int, const char *, ...)
+protected void file_error(struct magic_set *ms, int, /*@null@*/ const char *, ...)
 	/*@modifies ms @*/;
-protected void file_magwarn(struct magic_set *ms, const char *, ...)
+protected void file_magwarn(struct magic_set *ms, /*@null@*/ const char *, ...)
 	/*@globals fileSystem @*/
 	/*@modifies fileSystem @*/;
 protected void file_mdump(struct magic *m)
@@ -323,8 +328,16 @@ extern char *sys_errlist[];
 #define strtoul(a, b, c)	strtol(a, b, c)
 #endif
 
+#if 0 /* HACK -- we have snprintf and I don't want to plumb the autofoo */
+int snprintf(char *, size_t, const char *, ...);
+#endif
+
 #if defined(HAVE_MMAP) && defined(HAVE_SYS_MMAN_H) && !defined(QUICK)
 #define QUICK
+#endif
+
+#ifndef O_BINARY
+#define O_BINARY	0
 #endif
 
 #define FILE_RCSID(id) \

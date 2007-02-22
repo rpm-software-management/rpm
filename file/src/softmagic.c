@@ -1,3 +1,8 @@
+/*@-compdef@*/
+/*@-evalorder@*/
+/*@-sizeoftype@*/
+/*@-uniondef@*/
+/*@-usereleased@*/
 /*
  * Copyright (c) Ian F. Darwin 1986-1995.
  * Software written by Ian F. Darwin and others;
@@ -39,7 +44,7 @@
 
 
 #ifndef	lint
-FILE_RCSID("@(#)$Id: softmagic.c,v 1.73 2005/03/06 05:58:22 christos Exp $")
+FILE_RCSID("@(#)$Id: softmagic.c,v 1.76 2005/10/17 19:04:36 christos Exp $")
 #endif	/* lint */
 
 private int match(struct magic_set *ms, struct magic *magic, uint32_t nmagic,
@@ -47,10 +52,10 @@ private int match(struct magic_set *ms, struct magic *magic, uint32_t nmagic,
 	/*@globals fileSystem @*/
 	/*@modifies ms, magic, fileSystem @*/;
 private int mget(struct magic_set *ms, union VALUETYPE *p, const unsigned char *s,
-    struct magic *m, size_t nbytes, int)
+    struct magic *m, size_t nbytes, unsigned int cont_level)
 	/*@globals fileSystem @*/
 	/*@modifies ms, p, m, fileSystem @*/;
-private int mcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
+private int mymcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 	/*@globals fileSystem @*/
 	/*@modifies ms, p, m, fileSystem @*/;
 private int32_t mprint(struct magic_set *ms, union VALUETYPE *p, struct magic *m)	
@@ -133,7 +138,7 @@ match(struct magic_set *ms, struct magic *magic, uint32_t nmagic,
 		if (flush) {
 			if (magic[magindex].reln == '!') flush = 0;
 		} else {	
-			switch (mcheck(ms, &p, &magic[magindex])) {
+			switch (mymcheck(ms, &p, &magic[magindex])) {
 			case -1:
 				return -1;
 			case 0:
@@ -195,7 +200,7 @@ match(struct magic_set *ms, struct magic *magic, uint32_t nmagic,
 			if (flush && magic[magindex].reln != '!')
 				goto done;
 				
-			switch (flush ? 1 : mcheck(ms, &p, &magic[magindex])) {
+			switch (flush ? 1 : mymcheck(ms, &p, &magic[magindex])) {
 			case -1:
 				return -1;
 			case 0:
@@ -639,25 +644,26 @@ mcopy(struct magic_set *ms, union VALUETYPE *p, int type, int indir,
 		 * (starting at 1), not as bytes-from start-of-file
 		 */
 		char *b, *c, *last = NULL;
-		if ((p->buf = strdup((const char *)s)) == NULL) {
+		if ((p->search.buf = strdup((const char *)s)) == NULL) {
 			file_oomem(ms);
 			return -1;
 		}
-		for (b = p->buf; offset && 
-		    ((b = strchr(c = b, '\n')) || (b = strchr(c, '\r')));
+		for (b = p->search.buf; offset && 
+		    ((b = strchr(c = b, '\n')) != NULL || (b = strchr(c, '\r')) != NULL);
 		    offset--, b++) {
 			last = b;
 			if (b[0] == '\r' && b[1] == '\n') b++;
 		}
 		if (last != NULL)
 			*last = '\0';
+		p->search.buflen = last - p->search.buf;
 		return 0;
 	}
 
 	if (indir == 0 && (type == FILE_BESTRING16 || type == FILE_LESTRING16))
 	{
-		const char *src = s + offset;
-		const char *esrc = s + nbytes;
+		const unsigned char *src = s + offset;
+		const unsigned char *esrc = s + nbytes;
 		char *dst = p->s, *edst = &p->s[sizeof(p->s) - 1];
 
 		if (type == FILE_BESTRING16)
@@ -691,13 +697,14 @@ mcopy(struct magic_set *ms, union VALUETYPE *p, int type, int indir,
 	 * might even cause problems
 	 */
 	if (nbytes < sizeof(*p))
-		(void)memset(((char *)p) + nbytes, '\0', sizeof(*p) - nbytes);
+		(void)memset(((char *)(void *)p) + nbytes, '\0',
+		    sizeof(*p) - nbytes);
 	return 0;
 }
 
 private int
 mget(struct magic_set *ms, union VALUETYPE *p, const unsigned char *s,
-    struct magic *m, size_t nbytes, int cont_level)
+    struct magic *m, size_t nbytes, unsigned int cont_level)
 {
 	uint32_t offset = m->offset;
 
@@ -713,7 +720,7 @@ mget(struct magic_set *ms, union VALUETYPE *p, const unsigned char *s,
 		int off = m->in_offset;
 		if (m->in_op & FILE_OPINDIRECT) {
 			const union VALUETYPE *q =
-			    ((const union VALUETYPE *)(s + offset + off));
+			    ((const void *)(s + offset + off));
 			switch (m->in_type) {
 			case FILE_BYTE:
 				off = q->b;
@@ -1148,12 +1155,18 @@ mget(struct magic_set *ms, union VALUETYPE *p, const unsigned char *s,
 	}
 
 	if (m->type == FILE_SEARCH) {
-		p->buf = malloc(m->mask + m->vallen);
-		if (p->buf == NULL) {
+		size_t mlen = m->mask + m->vallen;
+		size_t flen = nbytes - offset;
+		if (flen < mlen)
+			mlen = flen;
+		p->search.buflen = mlen;
+		p->search.buf = malloc(mlen + 1);
+		if (p->search.buf == NULL) {
 			file_error(ms, errno, "Cannot allocate search buffer");
 			return 0;
 		}
-		(void)memcpy(p->buf, s + offset, m->mask + m->vallen);
+		(void)memcpy(p->search.buf, s + offset, mlen);
+		p->search.buf[mlen] = '\0';
 	}
 	if (!mconvert(ms, p, m))
 		return 0;
@@ -1161,7 +1174,7 @@ mget(struct magic_set *ms, union VALUETYPE *p, const unsigned char *s,
 }
 
 private int
-mcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
+mymcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 {
 	uint32_t l = m->value.l;
 	uint32_t v;
@@ -1250,20 +1263,23 @@ mcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 		regex_t rx;
 		char errmsg[512];
 
+		if (p->search.buf == NULL)
+			return 0;
+
 		rc = regcomp(&rx, m->value.s,
 		    REG_EXTENDED|REG_NOSUB|REG_NEWLINE|
 		    ((m->mask & STRING_IGNORE_LOWERCASE) ? REG_ICASE : 0));
 		if (rc) {
-			free(p->buf);
-			regerror(rc, &rx, errmsg, sizeof(errmsg));
+			free(p->search.buf);
+			p->search.buf = NULL;
+			(void) regerror(rc, &rx, errmsg, sizeof(errmsg));
 			file_error(ms, 0, "regex error %d, (%s)", rc, errmsg);
 			return -1;
 		} else {
-/*@-immediatetrans -moduncon -noeffectuncon @*/	/* regfree annotate bogus only @*/
-			rc = regexec(&rx, p->buf, 0, 0, 0);
-			regfree(&rx);
-/*@=immediatetrans =moduncon =noeffectuncon @*/
-			free(p->buf);
+/*@i@*/			rc = regexec(&rx, p->search.buf, 0, 0, 0);
+/*@i@*/			regfree(&rx);
+			free(p->search.buf);
+			p->search.buf = NULL;
 			return !rc;
 		}
 	}
@@ -1273,23 +1289,31 @@ mcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 		 * search for a string in a certain range
 		 */
 		unsigned char *a = (unsigned char*)m->value.s;
-		unsigned char *b = (unsigned char*)p->buf;
-		int len = m->vallen;
-		int range = 0;
+		unsigned char *b = (unsigned char*)p->search.buf;
+		size_t len, slen = m->vallen;
+		size_t range = 0;
+		if (slen > sizeof(m->value.s))
+			slen = sizeof(m->value.s);
 		l = 0;
 		v = 0;
+		if (b == NULL)
+			return 0;
+		len = slen;
 		while (++range <= m->mask) {
 			while (len-- > 0 && (v = *b++ - *a++) == 0)
 				/*@innercontinue@*/ continue;
 			if (!v) {
-				m->offset += range-1;
+				m->offset += range - 1;
 				/*@loopbreak@*/ break;
 			}
-			len = m->vallen;
+			if (range + slen >= p->search.buflen)
+				/*@loopbreak@*/ break;
+			len = slen;
 			a = (unsigned char*)m->value.s;
-			b = (unsigned char*)p->buf + range;
+			b = (unsigned char*)p->search.buf + range;
 		}
-		free(p->buf);
+		free(p->search.buf);
+		p->search.buf = NULL;
 		break;
 	}
 	default:
@@ -1374,3 +1398,8 @@ mcheck(struct magic_set *ms, union VALUETYPE *p, struct magic *m)
 
 	return matched;
 }
+/*@=usereleased@*/
+/*@=uniondef@*/
+/*@=sizeoftype@*/
+/*@=evalorder@*/
+/*@=compdef@*/ 
