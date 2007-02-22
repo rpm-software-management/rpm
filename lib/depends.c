@@ -1294,14 +1294,12 @@ int rpmtsOrder(rpmts ts)
 	    switch (rpmteType(p)) {
 	    case TR_REMOVED:
 		/* Skip if not %preun/%postun requires or legacy prereq. */
-		if (isInstallPreReq(Flags)
-		 || !( isErasePreReq(Flags) || isLegacyPreReq(Flags) ) )
+		if (!( isErasePreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    case TR_ADDED:
 		/* Skip if not %pre/%post requires or legacy prereq. */
-		if (isErasePreReq(Flags)
-		 || !( isInstallPreReq(Flags) || isLegacyPreReq(Flags) ) )
+		if (!( isInstallPreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    /*@innercontinue@*/ continue;
 		/*@switchbreak@*/ break;
 	    }
