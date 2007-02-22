@@ -599,7 +599,6 @@ INPUT                  = @top_srcdir@/Doxyheader \
                          @top_srcdir@/python/rpmte-py.h \
                          @top_srcdir@/python/rpmts-py.c \
                          @top_srcdir@/python/rpmts-py.h \
-                         @top_srcdir@/tools/dump.c \
                          @top_srcdir@/tools/dumpdb.c \
                          @top_srcdir@/tools/javadeps.c \
                          @top_srcdir@/tools/rpmcache.c \
