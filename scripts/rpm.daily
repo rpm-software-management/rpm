@@ -1,4 +1,4 @@
 #!/bin/sh
 
-rpm -qa --qf '%{name}-%{version}-%{release}.%{arch}.rpm\n' 2>&1 \
-	| sort > /var/log/rpmpkgs
+/bin/rpm -qa --qf '%{name}-%{version}-%{release}.%{arch}.rpm\n' 2>&1 \
+	| /bin/sort > /var/log/rpmpkgs
