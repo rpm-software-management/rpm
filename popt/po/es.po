@@ -12,7 +12,7 @@ msgstr ""
 "Last-Translator: Leandro Lucarella <luca@linuxmendoza.org.ar>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
 #: popt.c:35
