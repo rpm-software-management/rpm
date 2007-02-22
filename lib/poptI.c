@@ -16,8 +16,7 @@ extern time_t get_date(const char * p, void * now);	/* XXX expedient lies */
 /*@unchecked@*/
 struct rpmInstallArguments_s rpmIArgs = {
     0,			/* transFlags */
-			/* probFilter */
-    (RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
+    0,			/* probFilter */
     0,			/* installInterfaceFlags */
     0,			/* eraseInterfaceFlags */
     0,			/* qva_flags */
