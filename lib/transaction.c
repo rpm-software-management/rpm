@@ -815,6 +815,9 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 		    /*@innercontinue@*/ continue;
 		if (strncmp(dn, *nsp, dnlen))
 		    /*@innercontinue@*/ continue;
+		/* Insure that only the netsharedpath basename is compared. */
+		if ((s = strchr((*nsp) + dnlen, '/')) != NULL && s[1] != '\0')
+		    /*@innercontinue@*/ continue;
 		if (strncmp(bn, (*nsp) + dnlen, bnlen))
 		    /*@innercontinue@*/ continue;
 		len = dnlen + bnlen;
