@@ -8,7 +8,7 @@ db_dist="${base_path}../db/dist"
 rm -f config.cache
 
 # XXX edit CFLAGS= ... out of invocation args ???
-ARGS="`echo $* | sed -e 's% [^ ]*CFLAGS=[^ ]*%%' -e 's% -[^-][^ ]*%%g' -e 's%--cache-file=.*$%%'`"
+ARGS="`echo $* | sed -e 's% [^ ]*CFLAGS=[^ ]*%%' -e 's% -[^-][^ ]*%%g' -e 's% --param=[^ ]*%%g' -e 's%--cache-file=.*$%%'`"
 
 CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure $ARGS \
 	--enable-shared --enable-static --enable-rpc \
