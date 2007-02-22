@@ -37,7 +37,7 @@ static rpmlock rpmlock_new(/*@unused@*/ const char *rootdir)
 
 	/* XXX oneshot to determine path for fcntl lock. */
 	if (rpmlock_path == NULL) {
-	    char * t = rpmExpand(rpmlock_path_default, NULL);
+	    char * t = rpmGenPath(rootdir, rpmlock_path_default, NULL);
 	    if (t == NULL || *t == '\0' || *t == '%')
 		t = RPMLOCK_PATH;
 	    rpmlock_path = xstrdup(t);
@@ -129,7 +129,7 @@ void *rpmtsAcquireLock(rpmts ts)
 	const char *rootDir = rpmtsRootDir(ts);
 	rpmlock lock;
 
-	if (!rootDir)
+	if (!rootDir || rpmtsChrootDone(ts))
 		rootDir = "/";
 	lock = rpmlock_new(rootDir);
 /*@-branchstate@*/
