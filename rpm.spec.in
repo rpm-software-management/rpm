@@ -270,11 +270,8 @@ exit 0
 
 %files
 %defattr(-,root,root)
-%doc RPM-PGP-KEY RPM-GPG-KEY BETA-GPG-KEY CHANGES GROUPS doc/manual/[a-z]*
+%doc CHANGES GROUPS doc/manual/[a-z]*
 # XXX comment these lines out if building with rpm that knows not %pubkey attr
-%pubkey RPM-PGP-KEY
-%pubkey RPM-GPG-KEY
-%pubkey BETA-GPG-KEY
 %attr(0755, @RPMUSER@, @RPMGROUP@)	/bin/rpm
 
 %ifos linux
