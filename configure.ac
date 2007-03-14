@@ -621,13 +621,7 @@ dnl AmigaOS and IXEmul have a fork() dummy
   esac
 
 AM_GNU_GETTEXT
-dnl TVM:
-dnl horrible *temporary* hack to make sure that if we found gettext() in
-dnl -lintl that we add -lintl *back* to $LIBS.
-dnl
-dnl if test X$gt_cv_func_gettext_libintl = Xyes ; then
-dnl     LIBS="-lintl $LIBS"
-dnl fi
+AM_GNU_GETTEXT([external])
 
 dnl Checks for header files we can live without.
 AC_HEADER_STDC
