@@ -1,8 +1,0 @@
-.deps
-.depend
-.libs
-*.la
-*.lo
-dumprpm
-showdb
-showdb2
