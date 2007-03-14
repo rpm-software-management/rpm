@@ -7,7 +7,7 @@ LINT = splint
 EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	RPM-GPG-KEY RPM-PGP-KEY BETA-GPG-KEY \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
-	config.site db db3/configure gendiff installplatform platform* \
+	config.site db db3/configure installplatform platform* \
 	xmlspec/Makefile xmlspec/*.c xmlspec/*.h \
 	xmlspec/examples/*.sh xmlspec/examples/*.lst \
 	xmlspec/examples/*.xmlspec \
@@ -43,7 +43,6 @@ rpmbindir = `echo $(bindir) | sed -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
 bin_PROGRAMS =		rpm2cpio
-bin_SCRIPTS =		gendiff
 
 pkglibdir =		@RPMCONFIGDIR@
 pkglib_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
