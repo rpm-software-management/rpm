@@ -724,37 +724,57 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		}
 	    }
 
-	    if (t->attr[i].attr == DW_AT_comp_dir) {
-		if (form == DW_FORM_strp &&
-	      debug_sections[DEBUG_STR].data)
-	    {
-	      char *dir;
-	      
-	      dir = debug_sections[DEBUG_STR].data
-		    + do_read_32_relocated (ptr);
-	      free (comp_dir);
-	      comp_dir = strdup (dir);
-
-	      if (phase == 1 && dest_dir && has_prefix (dir, base_dir))
-		{
-		  base_len = strlen (base_dir);
-		  dest_len = strlen (dest_dir);
+	  if (t->attr[i].attr == DW_AT_comp_dir)
+	  {
+	      if ( form == DW_FORM_string )
+	      {
+		  free (comp_dir);
+		  comp_dir = strdup (ptr);
 		  
-		  memcpy (dir, dest_dir, dest_len);
-		  if (dest_len < base_len)
-		    {
-		      memmove (dir + dest_len, dir + base_len,
-			       strlen (dir + base_len) + 1);
-		    }
-		  elf_flagdata (debug_sections[DEBUG_STR].elf_data,
-				ELF_C_SET, ELF_F_DIRTY);
-		}
-	    }
-		else if (form == DW_FORM_string) {
-			free(comp_dir);
-			comp_dir = strdup (ptr);			
-		}
-	    }
+		  if (phase == 1 && dest_dir && has_prefix (ptr, base_dir))
+		  {
+		      base_len = strlen (base_dir);
+		      dest_len = strlen (dest_dir);
+		      
+		      memcpy (ptr, dest_dir, dest_len);
+		      if (dest_len < base_len)
+		      {
+			  memset(ptr + dest_len, '/',
+				 base_len - dest_len);
+			  
+		      }
+		      elf_flagdata (debug_sections[DEBUG_INFO].elf_data,
+				    ELF_C_SET, ELF_F_DIRTY);
+		  }
+	      }
+	  
+	      else if (form == DW_FORM_strp &&
+		       debug_sections[DEBUG_STR].data)
+	      {
+		  char *dir;
+
+		  dir = debug_sections[DEBUG_STR].data
+		      + do_read_32_relocated (ptr);
+
+		  free (comp_dir);
+		  comp_dir = strdup (dir);
+
+		  if (phase == 1 && dest_dir && has_prefix (dir, base_dir))
+		  {
+		      base_len = strlen (base_dir);
+		      dest_len = strlen (dest_dir);
+		  
+		      memcpy (dir, dest_dir, dest_len);
+		      if (dest_len < base_len)
+		      {
+			  memmove (dir + dest_len, dir + base_len,
+				   strlen (dir + base_len) + 1);
+		      }
+		      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
+				    ELF_C_SET, ELF_F_DIRTY);
+		  }
+	      }
+	  }
 	  else if ((t->tag == DW_TAG_compile_unit
 		    || t->tag == DW_TAG_partial_unit)
 		   && t->attr[i].attr == DW_AT_name
