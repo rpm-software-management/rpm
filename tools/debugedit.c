@@ -1039,7 +1039,7 @@ edit_dwarf2 (DSO *dso)
 		  break;
 		case EM_PPC:
 		case EM_PPC64:
-		  if (rtype != R_PPC_ADDR32 || rtype != R_PPC_UADDR32)
+		  if (rtype != R_PPC_ADDR32 && rtype != R_PPC_UADDR32)
 		    goto fail;
 		  break;
 		case EM_S390:
