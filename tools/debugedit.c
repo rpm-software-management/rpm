@@ -372,38 +372,43 @@ canonicalize_path (const char *s, char *d)
       if (s[0] == '.' && (s[1] == 0 || IS_DIR_SEPARATOR (s[1])))
 	{
 	  s ++;
-	  if (*s)
-	    s++;
-	  else if (d > droot)
+	  if (!*s && d > droot)
 	    d--;
 	}
 
       else if (s[0] == '.' && s[1] == '.'
 	       && (s[2] == 0 || IS_DIR_SEPARATOR (s[2])))
 	{
-	  char *pre = d-1; /* includes slash */
+	  char *pre = d - 1; /* includes slash */
 	  while (droot < pre && IS_DIR_SEPARATOR (*pre))
 	    pre--;
 	  if (droot <= pre && ! IS_DIR_SEPARATOR (*pre))
 	    {
-	      d = pre;
-	      while (droot < d && ! IS_DIR_SEPARATOR (*d))
-		d--;
-	      /* d now points to the slash */
-	      if (droot < d)
-		d++;
-	      s += 2;
-	      if (*s)
-		s++;
-	      else if (d > droot)
-		d--;
+	      while (droot < pre && ! IS_DIR_SEPARATOR (*pre))
+		pre--;
+	      /* pre now points to the slash */
+	      if (droot < pre)
+		pre++;
+	      if (pre + 3 == d && pre[0] == '.' && pre[1] == '.')
+		{
+		  *d++ = *s++;
+		  *d++ = *s++;
+		}
+	      else
+		{
+		  d = pre;
+		  s += 2;
+		  if (*s)
+		    while (IS_DIR_SEPARATOR (*s))
+		      s++;
+		  else if (d > droot)
+		    d--;
+		}
 	    }
 	  else
 	    {
 	      *d++ = *s++;
 	      *d++ = *s++;
-	      if (*s)
-		*d++ = *s++;
 	    }
 	}
 
