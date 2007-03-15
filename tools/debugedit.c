@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2002, 2003 Red Hat, Inc.
+/* Copyright (C) 2001, 2002, 2003, 2005 Red Hat, Inc.
    Written by Alexander Larsson <alexl@redhat.com>, 2002
    Based on code by Jakub Jelinek <jakub@redhat.com>, 2001.
 
@@ -343,13 +343,11 @@ no_memory:
 #define IS_DIR_SEPARATOR(c) ((c)=='/')
 
 static char *
-canonicalize_path (char *s, char *d)
+canonicalize_path (const char *s, char *d)
 {
   char *rv = d;
-  char *sroot, *droot;
-
-  if (d == 0)
-    rv = d = s;
+  const char *sroot;
+  char *droot;
 
   if (IS_DIR_SEPARATOR (*s))
     {
@@ -600,6 +598,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
       unsigned char *srcptr, *buf = NULL;
       size_t base_len = strlen (base_dir);
       size_t dest_len = strlen (dest_dir);
+      size_t shrank = 0;
 
       if (dest_len == base_len)
 	abs_file_cnt = 0;
@@ -611,27 +610,40 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	}
       else
 	ptr = srcptr = dir;
+      unsigned char *srcstart=srcptr;
       while (*srcptr != 0)
 	{
 	  size_t len = strlen (srcptr) + 1;
+	  const unsigned char *readptr = srcptr;
 
 	  if (*srcptr == '/' && has_prefix (srcptr, base_dir))
 	    {
-	      memcpy (ptr, dest_dir, dest_len);
 	      if (dest_len < base_len)
-		{
-		  memmove (ptr + dest_len, srcptr + base_len,
-			   len - base_len);
-		  ptr += dest_len - base_len;
 		  ++abs_dir_cnt;
+	      memcpy (ptr, dest_dir, dest_len);
+	      ptr += dest_len;
+	      readptr += base_len;
 		}
+	  srcptr += len;
+
+	  shrank += srcptr - readptr;
+	  canonicalize_path (readptr, ptr);
+	  len = strlen (ptr) + 1;
+	  shrank -= len;
+	  ptr += len;
+
 	      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
 			    ELF_C_SET, ELF_F_DIRTY);
 	    }
-	  else if (ptr != srcptr)
-	    memmove (ptr, srcptr, len);
-	  srcptr += len;
-	  ptr += len;
+
+      if (shrank > 0)
+	{
+	  if (--shrank == 0)
+	    error (EXIT_FAILURE, 0,
+		   "canonicalization unexpectedly shrank by one character");
+	  memset (ptr, 'X', shrank);
+	  ptr += shrank;
+	  *ptr++ = '\0';
 	}
 
       if (abs_dir_cnt + abs_file_cnt != 0)
