@@ -8,6 +8,8 @@ syntax: glob
 *.la
 *.a
 *.gmo
+tags
+cscope.out
 POTFILES
 Doxyfile
 Makefile
