@@ -844,7 +844,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
     }
 #endif
 
-    if (!stopUninstall) {
+    if (numPackages && !stopUninstall) {
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_REVERSE));
 
 	/* Drop added/available package indices and dependency sets. */
