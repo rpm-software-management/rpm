@@ -437,6 +437,7 @@ fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
 
     pid = fork();
     if (pid < (pid_t) 0) {		/* fork failed.  */
+	sq->child = (pid_t)-1;
 /*@-bounds@*/
 	xx = close(sq->pipes[0]);
 	xx = close(sq->pipes[1]);
