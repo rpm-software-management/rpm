@@ -1392,7 +1392,7 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	: (int *)(fi->bnl + fi->fc);
 /*@=dependenttrans@*/
 
-    fi->apath = xmalloc(fi->fc * sizeof(*fi->apath) + apathlen);
+    fi->apath = xmalloc(fi->fc * sizeof(*fi->apath) + apathlen + 1);
     a = (char *)(fi->apath + fi->fc);
     *a = '\0';
 
