@@ -206,7 +206,10 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	   directory for this run */
 
 	if (*arg != '/') {
-	    (void)getcwd(buf, BUFSIZ);
+	    if (!getcwd(buf, BUFSIZ)) {
+		rpmError(RPMERR_STAT, "getcwd failed: %m\n");
+		return 1;
+	    }
 	    strcat(buf, "/");
 	    strcat(buf, arg);
 	} else 
@@ -225,7 +228,11 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     specut = urlPath(specURL, &specFile);
     if (*specFile != '/') {
 	char *s = alloca(BUFSIZ);
-	(void)getcwd(s, BUFSIZ);
+	if (!getcwd(s, BUFSIZ)) {
+	    rpmError(RPMERR_STAT, "getcwd failed: %m\n");
+	    rc = 1;
+	    goto exit;
+	}
 	strcat(s, "/");
 	strcat(s, arg);
 	specURL = s;
