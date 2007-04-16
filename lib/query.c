@@ -222,7 +222,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    continue;
 
 	/* If not querying %ghost, skip ghost files. */
-	if (!(qva->qva_fflags & RPMFILE_GHOST) && (fflags & RPMFILE_GHOST))
+	if ((qva->qva_fflags & RPMFILE_GHOST) && (fflags & RPMFILE_GHOST))
 	    continue;
 
 /*@-boundswrite@*/
