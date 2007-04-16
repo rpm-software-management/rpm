@@ -1006,11 +1006,23 @@ static int parseForSimple(/*@unused@*/Spec spec, Package pkg, char * buf,
 	    res = 1;
 	} else {
 	/* XXX WATCHOUT: buf is an arg */
-	    {	const char *ddir, *n, *v;
-
-		(void) headerNVR(pkg->header, &n, &v, NULL);
-
-		ddir = rpmGetPath("%{_docdir}/", n, "-", v, NULL);
+	   {
+		static char *_docdir_fmt= 0;
+		static int oneshot = 0;
+		const char *ddir, *fmt, *errstr;
+		if (!oneshot) {
+		    _docdir_fmt = rpmExpand("%{?_docdir_fmt}", NULL);
+		    if (!_docdir_fmt || !*_docdir_fmt)
+			_docdir_fmt = "%{NAME}-%{VERSION}";
+		    oneshot = 1;
+		}
+		fmt = headerSprintf(pkg->header, _docdir_fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+		if (!fmt) {
+		    rpmError(RPMERR_BADSPEC, _("illegal _docdir_fmt: %s\n"), errstr);
+		    fl->processingFailed = 1;
+		    res = 1;
+		}
+		ddir = rpmGetPath("%{_docdir}/", fmt, NULL);
 		strcpy(buf, ddir);
 		ddir = _free(ddir);
 	    }
