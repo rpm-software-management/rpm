@@ -268,7 +268,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 
 	xx = headerVerifyInfo(1, dl, info, &entry->info, 1);
 	if (xx != -1 ||
-	    !(entry->info.tag == RPMTAG_HEADERSIGNATURES
+	    !((entry->info.tag == RPMTAG_HEADERSIGNATURES || entry->info.tag == RPMTAG_HEADERIMAGE)
 	   && entry->info.type == RPM_BIN_TYPE
 	   && entry->info.count == REGION_TAG_COUNT))
 	{
@@ -583,6 +583,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	if (gpg_path && *gpg_path != '\0')
 	    (void) dosetenv("GNUPGHOME", gpg_path, 1);
 /*@=boundsread@*/
+	(void) dosetenv("LC_ALL", "C", 1);
 
 	unsetenv("MALLOC_CHECK_");
 	cmd = rpmExpand("%{?__gpg_sign_cmd}", NULL);
