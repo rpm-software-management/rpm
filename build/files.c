@@ -2135,7 +2135,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	fl.isDir = 0;
 	fl.inFtw = 0;
 	fl.currentFlags = 0;
-	fl.currentVerifyFlags = 0;
+	fl.currentVerifyFlags = fl.defVerifyFlags;
 
 	fl.noGlob = 0;
  	fl.devtype = 0;
