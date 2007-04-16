@@ -624,7 +624,7 @@ int main(int argc, const char ** argv)
     switch (bigMode) {
 #ifdef	IAM_RPMDB
     case MODE_INITDB:
-	(void) rpmtsInitDB(ts, 0644);
+	ec = rpmtsInitDB(ts, 0644);
 	break;
 
     case MODE_REBUILDDB:

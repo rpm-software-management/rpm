@@ -1119,7 +1119,7 @@ int main(int argc, const char ** argv)
 	break;
 
       case MODE_INITDB:
-	rpmdbInit(rootdir, 0644);
+	ec = rpmdbInit(rootdir, 0644);
 	break;
 
       case MODE_CHECKSIG:
