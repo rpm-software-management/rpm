@@ -1472,7 +1472,7 @@ assert(psm->mi == NULL);
 		fi->striplen = (xx ? strlen(p) + 1 : 1);
 	    }
 	    fi->mapflags =
-		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID | (fi->mapflags & CPIO_SBIT_CHECK);
 	
 	    if (headerIsEntry(fi->h, RPMTAG_ORIGBASENAMES))
 		rpmfiBuildFNames(fi->h, RPMTAG_ORIGBASENAMES, &fi->apath, NULL);

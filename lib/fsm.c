@@ -2127,6 +2127,11 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	/*@notreached@*/ break;
 
     case FSM_UNLINK:
+	if (fsm->mapFlags & CPIO_SBIT_CHECK) {
+	    struct stat stb;
+	    if (Lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0)
+		chmod(fsm->path, stb.st_mode & 0777);
+	}
 	rc = Unlink(fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmMessage(RPMMESS_DEBUG, " %8s (%s) %s\n", cur,

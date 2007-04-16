@@ -187,6 +187,13 @@ static int handleInstInstalledFiles(const rpmts ts,
 	if (XFA_SKIPPING(fi->actions[fileNum]))
 	    continue;
 
+	if (!(fi->mapflags & CPIO_SBIT_CHECK)) {
+	    int_16 omode = rpmfiFMode(otherFi);
+	    if (S_ISREG(omode) && (omode & 06000) != 0) {
+		fi->mapflags |= CPIO_SBIT_CHECK;
+	    }
+	}
+
 	if (rpmfiCompare(otherFi, fi)) {
 	    int rConflicts;
 
@@ -1846,6 +1853,20 @@ rpmMessage(RPMMESS_DEBUG, _("computing file dispositions\n"));
 	case TR_REMOVED:
 	    /*@switchbreak@*/ break;
 	}
+	/* check for s-bit files to be removed */
+	if (rpmteType(p) == TR_REMOVED) {
+	    fi = rpmfiInit(fi, 0);
+	    while ((i = rpmfiNext(fi)) >= 0) {
+		int_16 mode;
+		if (XFA_SKIPPING(fi->actions[i]))
+		    continue;
+		(void) rpmfiSetFX(fi, i);
+		mode = rpmfiFMode(fi);
+		if (S_ISREG(mode) && (mode & 06000) != 0) {
+		    fi->mapflags |= CPIO_SBIT_CHECK;
+		}
+	    }
+	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
     }
     pi = rpmtsiFree(pi);
@@ -2091,6 +2112,7 @@ assert(psm != NULL);
 		{
 		    char * fstates = fi->fstates;
 		    fileAction * actions = fi->actions;
+		    int mapflags = fi->mapflags;
 		    rpmte savep;
 
 		    fi->fstates = NULL;
@@ -2109,6 +2131,8 @@ assert(psm != NULL);
 			fi->fstates = fstates;
 			fi->actions = _free(fi->actions);
 			fi->actions = actions;
+			if (mapflags & CPIO_SBIT_CHECK)
+			    fi->mapflags |= CPIO_SBIT_CHECK;
 			p->fi = fi;
 		    }
 		}
