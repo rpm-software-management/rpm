@@ -341,6 +341,7 @@ uncompressbuf(struct magic_set *ms, int fd, size_t method,
 		file_error(ms, errno, "cannot create pipe");	
 		return 0;
 	}
+	pid2 = (pid_t)-1;
 	switch ((pid1=fork())) {
 	case 0:	/* child */
 		(void) close(0);
@@ -382,7 +383,7 @@ uncompressbuf(struct magic_set *ms, int fd, size_t method,
 			 * fork again, to avoid blocking because both
 			 * pipes filled
 			 */
-			switch (fork()) {
+			switch ((pid2 = fork())) {
 			case 0: /* child */
 				(void)close(fdout[0]);
 				if (swrite(fdin[1], old, n) != n) {
@@ -439,7 +440,8 @@ err:
 			(void) close(fdin[1]);
 		(void) close(fdout[0]);
 		waitpid(pid1, NULL, 0);
-		waitpid(pid2, NULL, 0);
+		if (pid2 != (pid_t)-1)
+			waitpid(pid2, NULL, 0);
 		return n;
 	}
 	/*@notreached@*/
