@@ -116,6 +116,10 @@ static int copyFile(FD_t *sfdp, const char **sfnp,
 	rpmError(RPMERR_FREAD, _("%s: Fread failed: %s\n"), *sfnp, Fstrerror(*sfdp));
 	goto exit;
     }
+    if (Fflush(*tfdp) != 0) {
+	rpmError(RPMERR_FWRITE, _("%s: Fflush failed: %s\n"), *tfnp,
+	    Fstrerror(*tfdp));
+    }
 
     rc = 0;
 
