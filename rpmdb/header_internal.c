@@ -22,7 +22,7 @@ char ** headerGetLangs(Header h)
     if ((table = (char **)xcalloc((count+1), sizeof(char *))) == NULL)
 	return NULL;
 
-    for (i = 0, e = *s; i < count > 0; i++, e += strlen(e)+1)
+    for (i = 0, e = *s; i < count; i++, e += strlen(e)+1)
 	table[i] = e;
     table[count] = NULL;
 
