@@ -3164,6 +3164,7 @@ int Fileno(FD_t fd)
 {
     int i, rc = -1;
 
+    if (fd == NULL) return -1;
     if (fd->req != NULL)
 	rc = 123456789;	/* HACK: https has no steenkin fileno. */
     else
