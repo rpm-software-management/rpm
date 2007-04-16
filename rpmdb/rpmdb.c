@@ -906,6 +906,8 @@ int rpmdbSync(rpmdb db)
 	int xx;
 	if (db->_dbi[dbix] == NULL)
 	    continue;
+	if (db->_dbi[dbix]->dbi_no_dbsync)
+	    continue;
     	xx = dbiSync(db->_dbi[dbix], 0);
 	if (xx && rc == 0) rc = xx;
     }
