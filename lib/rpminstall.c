@@ -599,6 +599,10 @@ if (fileURL[0] == '=') {
 	    eiu->numFailed++;
 	    goto exit;
 	    /*@notreached@*/ /*@switchbreak@*/ break;
+	default:
+	    eiu->numFailed++;
+	    goto exit;
+	    /*@notreached@*/ /*@switchbreak@*/ break;
 	}
 
 	eiu->numRPMS++;
