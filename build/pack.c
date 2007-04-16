@@ -138,7 +138,7 @@ static /*@only@*/ /*@null@*/ StringBuf addFileToTagAux(Spec spec,
     FILE * f;
     FD_t fd;
 
-    fn = rpmGetPath("%{_builddir}/%{?_buildsubdir:%{_buildsubdir}/}", file, NULL);
+    fn = rpmGetPath("%{_builddir}/%{?buildsubdir:%{buildsubdir}/}", file, NULL);
 
     fd = Fopen(fn, "r.ufdio");
     if (fn != buf) fn = _free(fn);

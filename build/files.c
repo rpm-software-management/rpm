@@ -1942,7 +1942,7 @@ static int processPackageFiles(Spec spec, Package pkg,
 	if (*pkg->fileFile == '/') {
 	    ffn = rpmGetPath(pkg->fileFile, NULL);
 	} else {
-	    /* XXX FIXME: add %{_buildsubdir} */
+	    /* XXX FIXME: add %{buildsubdir} */
 	    ffn = rpmGetPath("%{_builddir}/",
 		(spec->buildSubdir ? spec->buildSubdir : "") ,
 		"/", pkg->fileFile, NULL);
