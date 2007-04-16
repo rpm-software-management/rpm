@@ -801,7 +801,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	sigp = rpmtsSignature(ts);
 
 	/* XXX RSA needs the hash_algo, so decode early. */
-	if (sigtag == RPMSIGTAG_RSA) {
+	if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP) {
 	    xx = headerGetEntry(sigh, sigtag, &sigtype, &sig, &siglen);
 	    xx = pgpPrtPkts(sig, siglen, dig, 0);
 	    sig = headerFreeData(sig, sigtype);
