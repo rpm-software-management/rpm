@@ -16,7 +16,7 @@ INCLUDES = -I$(srcdir)/include -I$(srcdir)/local -I$(includedir)
 
 lua_lua_SOURCES = lua/lua.c
 lua_lua_CFLAGS = -DLUA_USERCONFIG='"$(srcdir)/local/userconfig.c"'
-lua_lua_LDADD = $(LDADD) -L/usr/lib -lreadline -lhistory -lncurses
+lua_lua_LDADD = $(LDADD) -lncurses
 luac_luac_SOURCES = luac/luac.c luac/print.c lopcodes.c
 luac_luac_CFLAGS = -DLUA_OPNAMES
 

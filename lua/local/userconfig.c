@@ -9,6 +9,8 @@
 	{"rex", luaopen_rex}, \
 	{"luapath", luapath},
 
+#if 0
+
 #define lua_readline	myreadline
 #define lua_saveline	mysaveline
 
@@ -45,6 +47,7 @@ static void mysaveline (lua_State *L, const char *s) {
     }
   }
 }
+#endif
 
 static int luapath(lua_State *L)
 {
