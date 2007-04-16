@@ -1415,7 +1415,7 @@ int Glob_pattern_p (const char * pattern, int quote)
 	case '*':
 	    return (1);
 	case '\\':
-	    if (quote && p[1] != '\0')
+	    if (quote && *p != '\0')
 		p++;
 	    continue;
 
