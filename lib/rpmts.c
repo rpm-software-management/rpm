@@ -1475,6 +1475,11 @@ uint_32 rpmtsSetColor(rpmts ts, uint_32 color)
     return ocolor;
 }
 
+uint_32 rpmtsPrefColor(rpmts ts)
+{
+    return (ts != NULL ? ts->prefcolor : 0);
+}
+
 rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
 {
     rpmop op = NULL;
@@ -1554,6 +1559,7 @@ rpmts rpmtsCreate(void)
     ts->delta = 5;
 
     ts->color = rpmExpandNumeric("%{?_transaction_color}");
+    ts->prefcolor = rpmExpandNumeric("%{?_prefer_color}")?:2;
 
     ts->numRemovedPackages = 0;
     ts->allocedRemovedPackages = ts->delta;

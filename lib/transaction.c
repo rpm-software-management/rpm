@@ -122,6 +122,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	/*@modifies ts, fi, rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     uint_32 tscolor = rpmtsColor(ts);
+    uint_32 prefcolor = rpmtsPrefColor(ts);
     uint_32 otecolor, tecolor;
     uint_32 oFColor, FColor;
     const char * altNEVR = NULL;
@@ -201,11 +202,11 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    /* Resolve file conflicts to prefer Elf64 (if not forced). */
 	    if (tscolor != 0 && FColor != 0 && FColor != oFColor)
 	    {
-		if (oFColor & 0x2) {
+		if (oFColor & prefcolor) {
 		    fi->actions[fileNum] = FA_SKIPCOLOR;
 		    rConflicts = 0;
 		} else
-		if (FColor & 0x2) {
+		if (FColor & prefcolor) {
 		    fi->actions[fileNum] = FA_CREATE;
 		    rConflicts = 0;
 		}
@@ -460,6 +461,7 @@ static void handleOverlappedFiles(const rpmts ts,
     if (fi != NULL)
     while ((i = rpmfiNext(fi)) >= 0) {
 	uint_32 tscolor = rpmtsColor(ts);
+	uint_32 prefcolor = rpmtsPrefColor(ts);
 	uint_32 oFColor, FColor;
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
@@ -572,19 +574,19 @@ assert(otherFi != NULL);
 		rConflicts = reportConflicts;
 		/* Resolve file conflicts to prefer Elf64 (if not forced) ... */
 		if (tscolor != 0) {
-		    if (FColor & 0x2) {
-			/* ... last Elf64 file is installed ... */
+		    if (FColor & prefcolor) {
+			/* ... last file of preferred colour is installed ... */
 			if (!XFA_SKIPPING(fi->actions[i])) {
 			    /* XXX static helpers are order dependent. Ick. */
 			    if (strcmp(fn, "/usr/sbin/libgcc_post_upgrade")
 			     && strcmp(fn, "/usr/sbin/glibc_post_upgrade"))
-				otherFi->actions[otherFileNum] = FA_SKIP;
+				otherFi->actions[otherFileNum] = FA_SKIPCOLOR;
 			}
 			fi->actions[i] = FA_CREATE;
 			rConflicts = 0;
 		    } else
-		    if (oFColor & 0x2) {
-			/* ... first Elf64 file is installed ... */
+		    if (oFColor & prefcolor) {
+			/* ... first file of preferred colour is installed ... */
 			if (XFA_SKIPPING(fi->actions[i]))
 			    otherFi->actions[otherFileNum] = FA_CREATE;
 			fi->actions[i] = FA_SKIPCOLOR;
