@@ -77,6 +77,7 @@ enum FCOLOR_e {
     RPMFC_PYTHON		= (1 << 26),
     RPMFC_PHP			= (1 << 27),
     RPMFC_TCL			= (1 << 28),
+    RPMFC_MONO                  = (1 << 6),
 
     RPMFC_WHITE			= (1 << 29),
     RPMFC_INCLUDE		= (1 << 30),

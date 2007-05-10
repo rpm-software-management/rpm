@@ -20,7 +20,7 @@ EXTRA_DIST = \
 	sql.prov sql.req tcl.req tgpg trpm u_pkg.sh \
 	vpkg-provides.sh vpkg-provides2.sh \
 	macros.perl* macros.python* \
-	macros.php* find-*.php find-php-*
+	macros.php* find-*.php find-php-* mono-find*
 
 installprefix = $(DESTDIR)
 
@@ -36,6 +36,7 @@ config_SCRIPTS = \
 	cpanflute cpanflute2 Specfile.pm find-provides.perl \
 	find-requires.perl freshen.sh get_magic.pl getpo.sh http.req \
 	magic.prov magic.req perldeps.pl perl.prov perl.req pythondeps.sh \
+	mono-find-requires mono-find-provides \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
 	sql.prov sql.req tcl.req tgpg trpm u_pkg.sh \

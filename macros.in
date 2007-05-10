@@ -438,6 +438,9 @@ print (t)\
 %__python_provides	@RPMCONFIGDIR@/pythondeps.sh --provides
 %__python_requires	@RPMCONFIGDIR@/pythondeps.sh --requires
 
+%__mono_provides        @RPMCONFIGDIR@/mono-find-provides %{_builddir}/%{?buildsubdir} %{buildroot} %{_libdir}
+%__mono_requires        @RPMCONFIGDIR@/mono-find-requires %{_builddir}/%{?buildsubdir} %{buildroot} %{_libdir}
+
 #
 # fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
 # These macros are necessary only for legacy compatibility, and have moved

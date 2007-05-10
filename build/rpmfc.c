@@ -458,6 +458,10 @@ static struct rpmfcTokens_s rpmfcTokens[] = {
   /* XXX "python 2.3 byte-compiled" */
   { "python ",			RPMFC_PYTHON|RPMFC_INCLUDE },
 
+  /* XXX .NET executables and libraries.  file(1) cannot differ from win32 
+   * executables unfortunately :( */
+  { "PE executable",            RPMFC_MONO|RPMFC_INCLUDE },
+
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
   { "Zip archive data",		RPMFC_COMPRESSED|RPMFC_ARCHIVE|RPMFC_INCLUDE },
@@ -730,6 +734,11 @@ static int rpmfcSCRIPT(rpmfc fc)
 	if (is_executable)
 #endif
 	    xx = rpmfcHelper(fc, 'R', "python");
+    }
+    if (fc->fcolor->vals[fc->ix] & RPMFC_MONO) {
+        xx = rpmfcHelper(fc, 'P', "mono");
+        if (is_executable)
+            xx = rpmfcHelper(fc, 'R', "mono");
     }
 
     return 0;
@@ -1059,6 +1068,7 @@ static struct rpmfcApplyTbl_s rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL) },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PYTHON) },
+    { rpmfcSCRIPT,      RPMFC_MONO },
     { NULL, 0 }
 };
 
