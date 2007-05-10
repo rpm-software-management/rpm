@@ -430,10 +430,10 @@ print (t)\
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
 # helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
-%__perl_provides	@RPMCONFIGDIR@/perldeps.pl --provides
-%__perl_requires	@RPMCONFIGDIR@/perldeps.pl --requires
-#%__perl_provides	@RPMCONFIGDIR@/perl.prov
-#%__perl_requires	@RPMCONFIGDIR@/perl.req
+#%__perl_provides	@RPMCONFIGDIR@/perldeps.pl --provides
+#%__perl_requires	@RPMCONFIGDIR@/perldeps.pl --requires
+%__perl_provides	@RPMCONFIGDIR@/perl.prov
+%__perl_requires	@RPMCONFIGDIR@/perl.req
 
 %__python_provides	@RPMCONFIGDIR@/pythondeps.sh --provides
 %__python_requires	@RPMCONFIGDIR@/pythondeps.sh --requires
