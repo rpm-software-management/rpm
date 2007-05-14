@@ -1,0 +1,29 @@
+4.4.2.1
+-------
+- merge rest of applicable Suse + RH patches
+- uninternationalize RPMMESS_DEBUG strings to ease translator work
+
+4.5 and beyond
+--------------
+Janitorial work:
+- clean up old junk like workarounds of -95 era (g)libc bugs etc
+- use glib/glibc (string manipulation, memory handling etc) facilities instead 
+  of internal versions from -95 era 
+- audit and clean up user visible strings
+- clean up the build process (auto*-stuff, compiler warnings)
+- refactor those 800+ line monster functions into something more digestable
+- split popt to separate project
+- remove internal file/libmagic?
+- remove internal lua?
+
+API:
+- proper separation of exported and private headers to clean up the API
+- package verification API (instead of just printing out letters)
+- proper package build API (python)
+- proper separation of rpm-cli and lib functionality
+- eliminate need for headerGetEntry() where it makes sense (eg changelogs)
+
+Build:
+- grammar for specfiles, rpm macros 
+- support adding dep handlers per file type/class/extension without patching rpm
+
