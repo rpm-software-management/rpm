@@ -3773,7 +3773,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
     dbpath = rootdbpath = rpmGetPath(prefix, tfn, NULL);
     if (!(prefix[0] == '/' && prefix[1] == '\0'))
-	dbpath += strlen(prefix);
+	dbpath += strlen(prefix) - 1;
     tfn = _free(tfn);
 
     /*@-nullpass@*/
@@ -3796,7 +3796,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
     newdbpath = newrootdbpath = rpmGetPath(prefix, tfn, NULL);
     if (!(prefix[0] == '/' && prefix[1] == '\0'))
-	newdbpath += strlen(prefix);
+	newdbpath += strlen(prefix) - 1;
     tfn = _free(tfn);
 
     rpmMessage(RPMMESS_DEBUG, _("rebuilding database %s into %s\n"),
