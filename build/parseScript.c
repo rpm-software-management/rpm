@@ -283,6 +283,7 @@ int parseScript(Spec spec, int parsePart)
     stripTrailingBlanksStringBuf(sb);
     p = getStringBuf(sb);
 
+#ifdef WITH_LUA
     if (!strcmp(progArgv[0], "<lua>")) {
 	rpmlua lua = NULL; /* Global state. */
 	if (rpmluaCheckScript(lua, p, partname) != RPMRC_OK) {
@@ -291,7 +292,9 @@ int parseScript(Spec spec, int parsePart)
 	}
 	(void) rpmlibNeedsFeature(pkg->header,
 				  "BuiltinLuaScripts", "4.2.2-1");
-    } else if (progArgv[0][0] == '<') {
+    } else
+#endif
+    if (progArgv[0][0] == '<') {
 	rpmError(RPMERR_BADSPEC,
 		 _("line %d: unsupported internal script: %s\n"),
 		 spec->lineNum, progArgv[0]);

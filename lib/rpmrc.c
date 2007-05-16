@@ -1883,7 +1883,9 @@ int rpmReadConfigFiles(const char * file, const char * target)
     }
 
     /* Force Lua state initialization */
+#ifdef WITH_LUA
     (void)rpmluaGetPrintBuffer(NULL);
+#endif
 
     return 0;
 }
