@@ -6,12 +6,14 @@
   exit 1
 }
 
-: ${DIFF:=diff -p}
+: ${DIFF:=diff}
+: ${GENDIFF_DIFF_ARGS:=-up}
+: ${GENDIFF_DIFF_CHANGELOG_ARGS:=-U0}
 
 find $1 \( -name "*$2" -o -name ".*$2" \) -print |
 while read f; do
-    U=-u
-    [ "`basename $f`" = "ChangeLog$2" ] && U=-U0
+    U="${GENDIFF_DIFF_ARGS}"
+    [ "`basename $f`" = "ChangeLog$2" ] && U="${GENDIFF_DIFF_CHANGELOG_ARGS}"
 #    ${DIFF} ${U} $f `echo $f | sed s/$2\$//`
     if [ -r "$f" ]; then
 	${DIFF} ${U} "${f}" "${f%$2}"
