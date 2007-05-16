@@ -1577,7 +1577,7 @@ rpmMessage(RPMMESS_DEBUG, _("sanity checking %d elements\n"), rpmtsNElements(ts)
 
     /* Run pre-transaction scripts, but only if there are no known
      * problems up to this point. */
-    if (!((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS)
+    if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_TEST))
      	  || (ts->probs->numProblems &&
 		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs))))) {
 	rpmMessage(RPMMESS_DEBUG, _("running pre-transaction scripts\n"));
@@ -2302,68 +2302,70 @@ assert(psm != NULL);
     if (rollbackOnFailure && rollbackTransaction != NULL)
 	rollbackTransaction = rpmtsFree(rollbackTransaction);
 
-    rpmMessage(RPMMESS_DEBUG, _("running post-transaction scripts\n"));
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	int haspostscript;
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+	rpmMessage(RPMMESS_DEBUG, _("running post-transaction scripts\n"));
+	pi = rpmtsiInit(ts);
+	while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
+	    int haspostscript;
 
-	if ((fi = rpmtsiFi(pi)) == NULL)
-	    continue;	/* XXX can't happen */
+	    if ((fi = rpmtsiFi(pi)) == NULL)
+		continue;	/* XXX can't happen */
 
-	haspostscript = (fi->posttrans != NULL ? 1 : 0);
-	p->fi = rpmfiFree(p->fi);
+	    haspostscript = (fi->posttrans != NULL ? 1 : 0);
+	    p->fi = rpmfiFree(p->fi);
 
-	/* If no post-transaction script, then don't bother. */
-	if (!haspostscript)
-	    continue;
+	    /* If no post-transaction script, then don't bother. */
+	    if (!haspostscript)
+		continue;
 
-	p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
-			rpmteKey(p), ts->notifyData);
-	p->h = NULL;
-	if (rpmteFd(p) != NULL) {
-	    rpmVSFlags ovsflags = rpmtsVSFlags(ts);
-	    rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
-	    rpmRC rpmrc;
-	    ovsflags = rpmtsSetVSFlags(ts, vsflags);
-	    rpmrc = rpmReadPackageFile(ts, rpmteFd(p),
-			rpmteNEVR(p), &p->h);
-	    vsflags = rpmtsSetVSFlags(ts, ovsflags);
-	    switch (rpmrc) {
-	    default:
-		p->fd = ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE,
-				0, 0, rpmteKey(p), ts->notifyData);
-		p->fd = NULL;
-		/*@switchbreak@*/ break;
-	    case RPMRC_NOTTRUSTED:
-	    case RPMRC_NOKEY:
-	    case RPMRC_OK:
-		/*@switchbreak@*/ break;
+	    p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
+			    rpmteKey(p), ts->notifyData);
+	    p->h = NULL;
+	    if (rpmteFd(p) != NULL) {
+		rpmVSFlags ovsflags = rpmtsVSFlags(ts);
+		rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
+		rpmRC rpmrc;
+		ovsflags = rpmtsSetVSFlags(ts, vsflags);
+		rpmrc = rpmReadPackageFile(ts, rpmteFd(p),
+			    rpmteNEVR(p), &p->h);
+		vsflags = rpmtsSetVSFlags(ts, ovsflags);
+		switch (rpmrc) {
+		default:
+		    p->fd = ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE,
+				    0, 0, rpmteKey(p), ts->notifyData);
+		    p->fd = NULL;
+		    /*@switchbreak@*/ break;
+		case RPMRC_NOTTRUSTED:
+		case RPMRC_NOKEY:
+		case RPMRC_OK:
+		    /*@switchbreak@*/ break;
+		}
 	    }
-	}
 
-	if (rpmteFd(p) != NULL) {
-	    p->fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
-	    if (p->fi != NULL)	/* XXX can't happen */
-		p->fi->te = p;
+	    if (rpmteFd(p) != NULL) {
+		p->fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
+		if (p->fi != NULL)	/* XXX can't happen */
+		    p->fi->te = p;
 /*@-compdef -usereleased@*/	/* p->fi->te undefined */
-	    psm = rpmpsmNew(ts, p, p->fi);
+		psm = rpmpsmNew(ts, p, p->fi);
 /*@=compdef =usereleased@*/
 assert(psm != NULL);
-	    psm->scriptTag = RPMTAG_POSTTRANS;
-	    psm->progTag = RPMTAG_POSTTRANSPROG;
-	    xx = rpmpsmStage(psm, PSM_SCRIPT);
-	    psm = rpmpsmFree(psm);
+		psm->scriptTag = RPMTAG_POSTTRANS;
+		psm->progTag = RPMTAG_POSTTRANSPROG;
+		xx = rpmpsmStage(psm, PSM_SCRIPT);
+		psm = rpmpsmFree(psm);
 
 /*@-noeffectuncon -compdef -usereleased @*/
-	    (void) ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
-			      rpmteKey(p), ts->notifyData);
+		(void) ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
+				  rpmteKey(p), ts->notifyData);
 /*@=noeffectuncon =compdef =usereleased @*/
-	    p->fd = NULL;
-	    p->fi = rpmfiFree(p->fi);
-	    p->h = headerFree(p->h);
+		p->fd = NULL;
+		p->fi = rpmfiFree(p->fi);
+		p->h = headerFree(p->h);
+	    }
 	}
+	pi = rpmtsiFree(pi);
     }
-    pi = rpmtsiFree(pi);
 
     rpmtsFreeLock(lock);
 
