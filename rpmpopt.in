@@ -37,12 +37,12 @@ rpm	alias --scripts --qf '\
 	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
 rpm	alias --setperms -q --qf '[\[ -L %{FILENAMES:shescape} \] || chmod %7.7{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
-		   --pipe "grep -v \(none\) | sed 's/chmod .../chmod /' | sh" \
+		   --pipe "grep -v \(none\) | grep '^. -L ' | sed 's/chmod .../chmod /' | sh" \
 	--POPTdesc=$"set permissions of files in a package"
 
 rpm	alias --setugids -q --qf \
         '[ch %{FILEUSERNAME:shescape} %{FILEGROUPNAME:shescape} %{FILENAMES:shescape}\n]' \
-        --pipe "(echo 'ch() { chown -- \"$1\" \"$3\";chgrp -- \"$2\" \"$3\"; }';grep -v \(none\))|sh" \
+        --pipe "(echo 'ch() { chown -h -- \"$1\" \"$3\";chgrp -h -- \"$2\" \"$3\"; }';grep '^ch '|grep -v \(none\))|sh" \
 	--POPTdesc=$"set user/group ownership of files in a package"
 
 rpm	alias --conflicts	--qf \
