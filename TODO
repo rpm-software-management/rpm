@@ -11,6 +11,7 @@ Janitorial work:
   of internal versions from -95 era 
 - audit and clean up user visible strings
 - clean up the build process (auto*-stuff, compiler warnings)
+- use mkstemp() instead of mktemp() everywhere
 - refactor those 800+ line monster functions into something more digestable
 - split popt to separate project
 - remove internal file/libmagic?
@@ -27,3 +28,6 @@ Build:
 - grammar for specfiles, rpm macros 
 - support adding dep handlers per file type/class/extension without patching rpm
 
+Python:
+- audit error handling in bindings (eg ts.addInstall() does not report back
+  failures from rpmtsAddInstallElement())
