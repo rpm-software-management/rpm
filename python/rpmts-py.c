@@ -224,6 +224,7 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args, PyObject * kwds)
     char * how = "u";	/* XXX default to upgrade element if missing */
     int isUpgrade = 0;
     char * kwlist[] = {"header", "key", "how", NULL};
+    int rc = 0;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O|s:AddInstall", kwlist,
     	    &hdr_Type, &h, &key, &how))
@@ -248,7 +249,12 @@ fprintf(stderr, "*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->
     if (how && !strcmp(how, "a"))
 	rpmtsAddAvailableElement(s->ts, hdrGetHeader(h), key);
     else
-	rpmtsAddInstallElement(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
+	rc = rpmtsAddInstallElement(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
+    if (rc) {
+	PyErr_SetString(pyrpmError, "adding package to transaction failed");
+	return NULL;
+    }
+	
 
     /* This should increment the usage count for me */
     if (key)
