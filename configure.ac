@@ -479,6 +479,10 @@ AC_CHECK_HEADER([beecrypt/beecrypt.h], [
     WITH_BEECRYPT_INCLUDE="-I\${top_srcdir}/${WITH_BEECRYPT_SUBDIR}"
     WITH_BEECRYPT_LIB="\${top_builddir}/${WITH_BEECRYPT_SUBDIR}/libbeecrypt.la"
   fi
+
+   if test -z "${WITH_BEECRYPT_LIB}" ; then
+       AC_MSG_ERROR([rpm requires beecrypt]) 
+   fi
 ])
 AC_SUBST(WITH_BEECRYPT_SUBDIR)
 AC_SUBST(WITH_BEECRYPT_INCLUDE)
