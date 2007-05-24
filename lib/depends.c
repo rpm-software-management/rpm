@@ -158,6 +158,12 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     hcolor = hGetColor(h);
     pkgKey = RPMAL_NOMATCH;
 
+    /* Check for supported payload format */
+    if (headerCheckPayload(h) != RPMRC_OK) {
+	ec = 1;
+	goto exit;
+    }
+
     /* XXX Always add source headers. */
     isSource = headerIsEntry(h, RPMTAG_SOURCEPACKAGE);
     if (isSource) {

@@ -1064,4 +1064,36 @@ exit:
     sigh = rpmFreeSignature(sigh);
     return rc;
 }
+
+/**
+ * Check for supported payload format in header.
+ * @param h		header to check
+ * @return		RPMRC_OK if supported, RPMRC_FAIL otherwise
+ */
+rpmRC headerCheckPayload(Header h) {
+    rpmRC rc = RPMRC_FAIL;
+    int xx;
+    const char *payloadfmt = NULL;
+
+    xx = headerGetEntry(h, RPMTAG_PAYLOADFORMAT, NULL, 
+			(void **)&payloadfmt, NULL);
+    if (payloadfmt && strncmp(payloadfmt, "cpio", strlen("cpio")) == 0) {
+	rc = RPMRC_OK;
+    } else {
+        const char *nevra = hGetNEVRA(h, NULL);
+        if (strncmp(payloadfmt, "drpm", strlen("drpm")) == 0) {
+            rpmMessage(RPMMESS_ERROR,
+                     _("%s is a Delta RPM and cannot be directly installed\n"),
+                     nevra);
+        } else {
+            rpmMessage(RPMMESS_ERROR, 
+                     _("Unsupported payload (%s) in package %s\n"),
+                     payloadfmt, nevra);
+        } 
+        nevra = _free(nevra);
+    }
+    return rc;
+}
+
+
 /*@=bounds@*/

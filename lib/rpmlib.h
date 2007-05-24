@@ -893,6 +893,13 @@ typedef /*@abstract@*/ /*@refcounted@*/ struct rpmpsm_s * rpmpsm;
 int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 	/*@modifies *iv @*/;
 
+/**
+ * Check for supported payload format in header.
+ * @param h		header to check
+ * @return		RPMRC_OK if supported, RPMRC_FAIL otherwise
+ */
+rpmRC headerCheckPayload(Header h);
+
 /** 
  * Check header consistency, performing headerGetEntry() the hard way.
  *  

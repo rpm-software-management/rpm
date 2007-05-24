@@ -283,7 +283,10 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
 
-    (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
+    if (rpmtsAddInstallElement(ts, h, NULL, 0, NULL)) {
+	rpmrc = RPMRC_FAIL;
+	goto exit;
+    }
 
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
     h = headerFree(h);
