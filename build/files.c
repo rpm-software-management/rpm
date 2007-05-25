@@ -2481,8 +2481,9 @@ int processBinaryFiles(Spec spec, int installSpecialDoc, int test)
      * and duplicated files.
      */
     
-    if (res == 0)  {
-	if (checkFiles(check_fileList) > 0)
+    
+    if (checkFiles(check_fileList) > 0) {
+	if (res == 0)
 	    res = 1;
     }
     
