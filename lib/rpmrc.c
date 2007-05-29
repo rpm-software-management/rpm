@@ -953,20 +953,28 @@ static inline int RPMClass(void)
 {
 	int cpu;
 	unsigned int tfms, junk, cap, capamd;
+	struct sigaction oldsa;
 	
+	sigaction(SIGILL, NULL, &oldsa);
 	signal(SIGILL, model3);
 	
-	if (sigsetjmp(jenv, 1))
+	if (sigsetjmp(jenv, 1)) {
+		sigaction(SIGILL, &oldsa, NULL);
 		return 3;
+	}
 		
-	if (cpuid_eax(0x000000000)==0)
+	if (cpuid_eax(0x000000000)==0) {
+		sigaction(SIGILL, &oldsa, NULL);
 		return 4;
+	}
 
 	cpuid(0x00000001, &tfms, &junk, &junk, &cap);
 	cpuid(0x80000001, &junk, &junk, &junk, &capamd);
 	
 	cpu = (tfms>>8)&15;
 	
+	sigaction(SIGILL, &oldsa, NULL);
+
 	if (cpu < 6)
 		return cpu;
 		
