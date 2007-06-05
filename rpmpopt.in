@@ -89,6 +89,9 @@ rpm	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VER
 	--pipe "sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-45s %-s\n\", $1, substr($0,length($1)+2))}' " \
 	--POPTdesc=$"list package(s) by install time, most recent first"
 
+rpm	alias --dupes   --qf '%|SOURCERPM?{%{name}.%{arch}}:{%|ARCH?{%{name}}:{%{name}-%{version}}|}|\n' --pipe "sort | uniq -d" \
+	--POPTdesc=$"list duplicated packages"
+
 rpm	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
 	--POPTdesc=$"list all files from each package"
 
@@ -368,6 +371,9 @@ rpmq	alias --triggers --triggerscripts \
 rpmq	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VERSION}-%{RELEASE} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
 	--pipe "sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-45s %-s\n\", $1, substr($0,length($1)+2))}' " \
 	--POPTdesc=$"list package(s) by install time, most recent first"
+
+rpmq	alias --dupes   --qf '%|SOURCERPM?{%{name}.%{arch}}:{%|ARCH?{%{name}}:{%{name}-%{version}}|}|\n' --pipe "sort | uniq -d" \
+	--POPTdesc=$"list duplicated packages"
 
 rpmq	alias --filesbypkg --qf '[%-25{=NAME} %{FILENAMES}\n]' \
 	--POPTdesc=$"list all files from each package"
