@@ -1081,14 +1081,14 @@ rpmRC headerCheckPayload(Header h) {
 	rc = RPMRC_OK;
     } else {
         const char *nevra = hGetNEVRA(h, NULL);
-        if (strncmp(payloadfmt, "drpm", strlen("drpm")) == 0) {
+        if (payloadfmt && strncmp(payloadfmt, "drpm", strlen("drpm")) == 0) {
             rpmMessage(RPMMESS_ERROR,
                      _("%s is a Delta RPM and cannot be directly installed\n"),
                      nevra);
         } else {
             rpmMessage(RPMMESS_ERROR, 
                      _("Unsupported payload (%s) in package %s\n"),
-                     payloadfmt, nevra);
+                     payloadfmt ? payloadfmt : "none", nevra);
         } 
         nevra = _free(nevra);
     }

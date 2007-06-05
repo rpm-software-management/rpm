@@ -158,8 +158,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     hcolor = hGetColor(h);
     pkgKey = RPMAL_NOMATCH;
 
-    /* Check for supported payload format */
-    if (headerCheckPayload(h) != RPMRC_OK) {
+    /* Check for supported payload format if it's a package */
+    if (key && headerCheckPayload(h) != RPMRC_OK) {
 	ec = 1;
 	goto exit;
     }
