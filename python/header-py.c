@@ -538,6 +538,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     case RPMTAG_CONFLICTFLAGS:
     case RPMTAG_CONFLICTVERSION:
     case RPMTAG_CHANGELOGTIME:
+    case RPMTAG_FILEVERIFYFLAGS:
 	forceArray = 1;
 	break;
     case RPMTAG_SUMMARY:
