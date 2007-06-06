@@ -39,7 +39,7 @@ run_diff() {
 }
 
 builddir=`pwd`
-srcdir=$builddir
+[ -z "$srcdir" ] && srcdir=$builddir
 cd ${srcdir}
 test1=${builddir}/test1
 echo "Running tests in `pwd`"
