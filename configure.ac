@@ -276,7 +276,7 @@ addlib() {
 }
 
 #=================
-# Check for zlib library. Prefer internal, otherwise external.
+# Check for zlib library. 
 
 WITH_ZLIB_SUBDIR=
 WITH_ZLIB_INCLUDE=
@@ -285,7 +285,7 @@ WITH_ZLIB_LIB=
 if test -z "${WITH_ZLIB_LIB}" ; then
   for zlib in z gz ; do
    AC_CHECK_LIB(${zlib}, gzread, 
-	[LIBS="$LIBS -l${zlib}"; break], 
+	[WITH_ZLIB_LIB="-l${zlib}"; break], 
 	[if test ${zlib} = gz; then 
 	    AC_MSG_ERROR([sorry rpm requires libz.a or libgz.a (from the zlib package)]) 
 	 fi]
@@ -295,6 +295,10 @@ if test -z "${WITH_ZLIB_LIB}" ; then
 dnl zlib-1.0.4 has not gzseek
   AC_CHECK_LIB(${zlib}, gzseek, [AC_DEFINE(HAVE_GZSEEK, 1, [Define as 1 if your zlib has gzseek()])])
 fi
+
+AC_SUBST(WITH_ZLIB_SUBDIR)
+AC_SUBST(WITH_ZLIB_INCLUDE)
+AC_SUBST(WITH_ZLIB_LIB)
 
 #=================
 # Check for bzip2 library. Prefer external, otherwise none.
