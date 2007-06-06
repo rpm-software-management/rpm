@@ -9,6 +9,9 @@ AM_INIT_AUTOMAKE([foreign])
 dnl Set of available languages.
 ALL_LINGUAS="cs da de fi fr gl is ja ko no pl pt pt_BR ro ru sk sl sr sv tr"
 
+AC_AIX
+AC_MINIX
+
 dnl Checks for programs.
 AC_PROG_CXX
 AC_PROG_AWK
@@ -17,11 +20,9 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
+AC_PROG_LIBTOOL
 AC_PROG_YACC
 
-AC_AIX
-AC_MINIX
 AS=${AS-as}
 AC_SUBST(AS)
 if test "$ac_cv_c_compiler_gnu" = yes; then
