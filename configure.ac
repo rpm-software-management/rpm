@@ -281,17 +281,6 @@ addlib() {
 WITH_ZLIB_SUBDIR=
 WITH_ZLIB_INCLUDE=
 WITH_ZLIB_LIB=
-if test -d zlib ; then
-  WITH_ZLIB_SUBDIR=zlib
-  addlib \${top_builddir}/zlib
-  WITH_ZLIB_INCLUDE="-I\${top_srcdir}/${WITH_ZLIB_SUBDIR}"
-  INCPATH="$INCPATH -I\${top_srcdir}/${WITH_ZLIB_SUBDIR}"
-  WITH_ZLIB_LIB="\${top_builddir}/${WITH_ZLIB_SUBDIR}/libz.la"
-  AC_DEFINE(HAVE_GZSEEK, 1, [Define as 1 if your zlib has gzseek()])
-fi
-AC_SUBST(WITH_ZLIB_SUBDIR)
-AC_SUBST(WITH_ZLIB_INCLUDE)
-AC_SUBST(WITH_ZLIB_LIB)
 
 if test -z "${WITH_ZLIB_LIB}" ; then
   for zlib in z gz ; do
@@ -624,7 +613,7 @@ dnl AmigaOS and IXEmul have a fork() dummy
 	;;
   esac
 
-AM_GNU_GETTEXT
+AM_GNU_GETTEXT_VERSION([0.11.2])
 AM_GNU_GETTEXT([external])
 
 dnl Checks for header files we can live without.
@@ -1343,7 +1332,7 @@ dnl XXX this causes popt to depend on zlib et al
 dnl # XXX Propagate -lucb to popt ...
 dnl export LIBS INCPATH CONFIG_SITE
 
-AC_CONFIG_SUBDIRS(popt zlib file sqlite db3)
+AC_CONFIG_SUBDIRS(popt file)
 
 AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile

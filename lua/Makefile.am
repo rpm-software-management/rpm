@@ -88,7 +88,7 @@ local/linit.lch: local/linit.lua
 #		local/linit.c \
 #		lib/lstrlib.c \
 #
-LUA_SPLINT_SOURCES = \
+LUA_SPLINT_SRCS = \
 		lua/lua.c \
 		include/lauxlib.h \
 		include/lua.h \
@@ -146,9 +146,9 @@ LUA_SPLINT_SOURCES = \
 
 .PHONY:	sources
 sources:
-	@echo $(LUA_SPLINT_SOURCES:%=lua/%)
+	@echo $(LUA_SPLINT_SRCS:%=lua/%)
 
 .PHONY:	lint
 lint:
-	$(LINT) $(DEFS) $(INCLUDES) $(LUA_SPLINT_SOURCES)
+	$(LINT) $(DEFS) $(INCLUDES) $(LUA_SPLINT_SRCS)
 
