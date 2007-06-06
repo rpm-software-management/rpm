@@ -1,9 +1,8 @@
 AC_INIT(popt.h)
 AC_CANONICAL_SYSTEM
 AC_PREREQ(2.12)
-AC_CONFIG_HEADERS
+AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE(popt, 1.10.2)
-AM_CONFIG_HEADER(config.h)
 
 ALL_LINGUAS="cs da de es eu_ES fi fr gl hu id is it ja ko no pl pt pt_BR ro ru sk sl sr sv tr uk wa zh zh_CN zh_TW"
 
@@ -87,11 +86,12 @@ AC_CHECK_FUNC(setreuid, [], [
 AC_CHECK_FUNCS(getuid geteuid mtrace __secure_getenv setregid strerror)
 
 
-AM_GNU_GETTEXT
+AM_GNU_GETTEXT_VERSION([0.11.2])
+AM_GNU_GETTEXT([external])
 
 POPT_SOURCE_PATH="`pwd`"
 AC_DEFINE_UNQUOTED(POPT_SOURCE_PATH, "$POPT_SOURCE_PATH",
 	[Full path to popt top_srcdir.])
 AC_SUBST(POPT_SOURCE_PATH)
 
-AC_OUTPUT([Doxyfile Makefile intl/Makefile po/Makefile.in])
+AC_OUTPUT([Doxyfile Makefile po/Makefile.in])

@@ -5,11 +5,10 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 LINT = splint
 
 EXTRA_DIST = autogen.sh CHANGES $(man_MANS) popt.spec \
-	testit.sh test-poptrc test3-data/0* \
-	po/*.in po/*.po po/popt.pot \
+	testit.sh test-poptrc test3-data \
 	popt.ps
 
-SUBDIRS = intl po
+SUBDIRS = po
 
 INCLUDES = -I. -I$(top_srcdir)
 

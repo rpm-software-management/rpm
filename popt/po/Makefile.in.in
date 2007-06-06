@@ -22,14 +22,14 @@ VPATH = @srcdir@
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
-datadir = @datadir@
+datadir = @datarootdir@
 localedir = $(datadir)/locale
 gettextsrcdir = $(datadir)/gettext/po
 
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 MKINSTALLDIRS = @MKINSTALLDIRS@
-mkinstalldirs = $(SHELL) `case "$(MKINSTALLDIRS)" in /*) echo "$(MKINSTALLDIRS)" ;; *) echo "$(top_builddir)/mkinstalldirs" ;; esac`
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 
 CC = @CC@
 GMSGFMT = @GMSGFMT@
