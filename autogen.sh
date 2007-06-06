@@ -3,14 +3,14 @@
 export CFLAGS
 export LDFLAGS
 
-LTV="libtoolize (GNU libtool) 1.5.18"
-ACV="autoconf (GNU Autoconf) 2.59"
-AMV="automake (GNU automake) 1.9.5"
+LTV="libtoolize (GNU libtool) 1.5.22"
+ACV="autoconf (GNU Autoconf) 2.61"
+AMV="automake (GNU automake) 1.10"
 USAGE="
 This script documents the versions of the tools I'm using to build rpm:
-	libtool-1.5.18
-	autoconf-2.59
-	automake-1.9.5
+	libtool-1.5.22
+	autoconf-2.61
+	automake-1.10
 Simply edit this script to change the libtool/autoconf/automake versions
 checked if you need to, as rpm should build (and has built) with all
 recent versions of libtool/autoconf/automake.
@@ -35,6 +35,12 @@ if [ X"$@" = X  -a "X`uname -s`" = "XDarwin" -a -d /opt/local ]; then
     export myopts="--prefix=/usr --disable-nls"
     export CPPFLAGS="-I${myprefix}/include"
 fi
+
+# XXX add missing config.rpath, kludgery around what's apparently 
+# gettext related stuff...
+for d in . popt file; do
+    touch $d/config.rpath
+done
 
 if [ -d popt ]; then
     (echo "--- popt"; cd popt; ./autogen.sh --noconfigure "$@")
