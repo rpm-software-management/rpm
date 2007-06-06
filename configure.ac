@@ -27,6 +27,8 @@ AS=${AS-as}
 AC_SUBST(AS)
 if test "$ac_cv_c_compiler_gnu" = yes; then
     CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
+    dnl XXX TODO: check if the compiler supports this
+    CFLAGS="$CFLAGS -fno-strict-aliasing"
 fi
 export CFLAGS
 
