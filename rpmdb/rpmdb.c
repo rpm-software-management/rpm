@@ -3404,11 +3404,11 @@ DBT * data;
     Header h;
     int i, xx;
 
-    if (db == NULL) return 0;
+    if (db == NULL) return 1;
 
     mi = rpmdbInitIterator(db, RPMTAG_BASENAMES, NULL, 0);
     if (mi == NULL)	/* XXX should  never happen */
-	return 0;
+	return 1;
 
 key = &mi->mi_key;
 data = &mi->mi_data;
@@ -3435,7 +3435,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
     if ((i = rpmdbGetIteratorCount(mi)) == 0) {
 	mi = rpmdbFreeIterator(mi);
-	return 0;
+	return 1;
     }
     fpc = fpCacheCreate(i);
 
