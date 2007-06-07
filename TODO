@@ -2,6 +2,8 @@
 -------
 - merge rest of applicable Suse + RH patches
 - uninternationalize RPMMESS_DEBUG strings to ease translator work
+- deal with included file-4.10 vulnerabilities
+- check whether gcc supports -fno-strict-aliasing instead of blindly using
 
 4.5 and beyond
 --------------
@@ -11,11 +13,14 @@ Janitorial work:
   of internal versions from -95 era 
 - audit and clean up user visible strings
 - clean up the build process (auto*-stuff, compiler warnings)
+- fix toplevel "make distcheck"
 - use mkstemp() instead of mktemp() everywhere
 - refactor those 800+ line monster functions into something more digestable
 - split popt to separate project
+- update gettext
 - remove internal file/libmagic?
 - remove internal lua?
+- review, update included README, INSTALL etc docs
 
 API:
 - proper separation of exported and private headers to clean up the API
@@ -31,3 +36,4 @@ Build:
 Python:
 - audit error handling in bindings (eg ts.addInstall() does not report back
   failures from rpmtsAddInstallElement())
+- see if rpmdb can be made to look like pep-0249 
