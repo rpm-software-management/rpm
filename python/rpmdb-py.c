@@ -126,7 +126,7 @@ rpmdb_Match (rpmdbObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
     }
 
-    return rpmmi_Wrap( rpmdbInitIterator(s->db, tag, key, len) );
+    return rpmmi_Wrap( rpmdbInitIterator(s->db, tag, key, len), (PyObject *)s);
 }
 
 /**

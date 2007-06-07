@@ -1397,7 +1397,7 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 	}
     }
 
-    return rpmmi_Wrap( rpmtsInitIterator(s->ts, tag, key, len) );
+    return rpmmi_Wrap( rpmtsInitIterator(s->ts, tag, key, len), (PyObject*)s);
 }
 
 /** \ingroup py_c
