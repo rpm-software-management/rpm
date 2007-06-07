@@ -2272,7 +2272,15 @@ int processSourceFiles(Spec spec)
     struct FileList_s fl;
     char *s, **files, **fp;
     Package pkg;
+    static char *_srcdefattr;
+    static int oneshot;
 
+    if (!oneshot) {
+	_srcdefattr = rpmExpand("%{?_srcdefattr}", NULL);
+	if (_srcdefattr && !*_srcdefattr)
+	    _srcdefattr = _free(_srcdefattr);
+	oneshot = 1;
+    }
     sourceFiles = newStringBuf();
 
     /* XXX
@@ -2323,6 +2331,15 @@ int processSourceFiles(Spec spec)
 
     spec->sourceCpioList = NULL;
 
+    /* Init the file list structure */
+    memset(&fl, 0, sizeof(fl));
+    if (_srcdefattr) {
+	char *a = xmalloc(strlen(_srcdefattr) + 9 + 1);
+	strcpy(a, "%defattr ");
+	strcpy(a + 9, _srcdefattr);
+	parseForAttr(a, &fl);
+	a = _free(a);
+    }
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
     fl.processingFailed = 0;
     fl.fileListRecsUsed = 0;
@@ -2371,8 +2388,20 @@ int processSourceFiles(Spec spec)
 	    fl.processingFailed = 1;
 	}
 
-	flp->uname = getUname(flp->fl_uid);
-	flp->gname = getGname(flp->fl_gid);
+	if (fl.def_ar.ar_fmodestr) {
+	    flp->fl_mode &= S_IFMT;
+	    flp->fl_mode |= fl.def_ar.ar_fmode;
+	}
+	if (fl.def_ar.ar_user) {
+	    flp->uname = getUnameS(fl.def_ar.ar_user);
+	} else {
+	    flp->uname = getUname(flp->fl_uid);
+	}
+	if (fl.def_ar.ar_group) {
+	    flp->gname = getGnameS(fl.def_ar.ar_group);
+	} else {
+	    flp->gname = getGname(flp->fl_gid);
+	}
 	flp->langs = xstrdup("");
 	
 	fl.totalFileSize += flp->fl_size;
@@ -2396,6 +2425,7 @@ int processSourceFiles(Spec spec)
 
     sourceFiles = freeStringBuf(sourceFiles);
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
+    freeAttrRec(&fl.def_ar);
     return fl.processingFailed;
 }
 
