@@ -3435,7 +3435,7 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 
     if ((i = rpmdbGetIteratorCount(mi)) == 0) {
 	mi = rpmdbFreeIterator(mi);
-	return 1;
+	return 0;
     }
     fpc = fpCacheCreate(i);
 
