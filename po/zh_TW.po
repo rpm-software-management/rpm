@@ -1524,7 +1524,7 @@ msgstr "使用者組 %s 不存在 - 現使用 root 代替\n"
 #: lib/fsm.c:1350
 #, c-format
 msgid "%s directory created with perms %04o, no context.\n"
-msgstr "建立的 %s 目錄附有 perms %04o, 無上下文 %s。\n"
+msgstr "建立的 %s 目錄附有 perms %04o, 無上下文。\n"
 
 #: lib/fsm.c:1354
 #, c-format
