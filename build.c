@@ -87,8 +87,13 @@ static int isSpecFile(const char * specfile)
 	    /*@switchbreak@*/ break;
 /*@-boundsread@*/
 	default:
+#if 0
 	    if (checking && !(isprint(*s) || isspace(*s))) return 0;
 	    /*@switchbreak@*/ break;
+#else
+	    if (checking && !(isprint(*s) || isspace(*s)) && *(unsigned char *)s < 32) return 0;
+	    /*@switchbreak@*/ break;
+#endif
 /*@=boundsread@*/
 	}
     }
