@@ -62,25 +62,20 @@ int rpmVersionCompare(Header first, Header second)
 {
     const char * one, * two;
     int_32 * epochOne, * epochTwo;
+    static int_32 zero = 0;
     int rc;
 
     if (!headerGetEntry(first, RPMTAG_EPOCH, NULL, (void **) &epochOne, NULL))
-	epochOne = NULL;
+	epochOne = &zero;
     if (!headerGetEntry(second, RPMTAG_EPOCH, NULL, (void **) &epochTwo, NULL))
-	epochTwo = NULL;
+	epochTwo = &zero;
 
-    if (epochOne != NULL && epochTwo == NULL)
-	return 1;
-    else if (epochOne == NULL && epochTwo != NULL)
-	return -1;
-    else if (epochOne != NULL && epochTwo != NULL) {
 /*@-boundsread@*/
 	if (*epochOne < *epochTwo)
 	    return -1;
 	else if (*epochOne > *epochTwo)
 	    return 1;
 /*@=boundsread@*/
-    }
 
     rc = headerGetEntry(first, RPMTAG_VERSION, NULL, (void **) &one, NULL);
     rc = headerGetEntry(second, RPMTAG_VERSION, NULL, (void **) &two, NULL);
