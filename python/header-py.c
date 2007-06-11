@@ -1065,6 +1065,9 @@ PyObject * labelCompare (PyObject * self, PyObject * args)
 			&e1, &v1, &r1, &e2, &v2, &r2))
 	return NULL;
 
+    if (e1 == NULL)	e1 = "0";
+    if (e2 == NULL)	e2 = "0";
+
     rc = compare_values(e1, e2);
     if (!rc) {
 	rc = compare_values(v1, v2);
