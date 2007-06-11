@@ -201,9 +201,12 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	if ((this = rpmteDS(p, RPMTAG_NAME)) == NULL)
 	    continue;	/* XXX can't happen */
 
-	/* If newer NEVR was previously added, then skip adding older. */
+	/* 
+ 	 * On upgrade, if newer NEVR was previously added, 
+ 	 * then skip adding older. 
+ 	 */
 	rc = rpmdsCompare(newChk, this);
-	if (rc != 0) {
+	if (upgrade && rc != 0) {
 	    const char * pkgNEVR = rpmdsDNEVR(this);
 	    const char * addNEVR = rpmdsDNEVR(oldChk);
 	    if (rpmIsVerbose())
@@ -215,9 +218,12 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    break;
 	}
 
-	/* If older NEVR was previously added, then replace old with new. */
+	/*
+ 	 * On upgrade, if older NEVR was previously added, 
+ 	 * then replace old with new. 
+ 	 */
 	rc = rpmdsCompare(oldChk, this);
-	if (rc != 0) {
+	if (upgrade && rc != 0) {
 	    const char * pkgNEVR = rpmdsDNEVR(this);
 	    const char * addNEVR = rpmdsDNEVR(newChk);
 	    if (rpmIsVerbose())
