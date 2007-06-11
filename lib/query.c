@@ -663,14 +663,22 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     }	break;
 
     case RPMQV_PACKAGE:
-	/* XXX HACK to get rpmdbFindByLabel out of the API */
+    {
+	int matches = 0;
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
-	if (qva->qva_mi == NULL) {
+	while (rpmdbNextIterator(qva->qva_mi) != NULL) {
+	    matches++;
+	}
+	if (! matches) {
 	    rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
 	    res = 1;
-	} else
+	} else {
+	    qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
 	    res = rpmcliShowMatches(qva, ts);
+	}
 	break;
+    }
+    
     }
     /*@=branchstate@*/
    
