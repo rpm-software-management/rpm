@@ -862,9 +862,10 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 
 		if (sigp->version != 3 && sigp->version != 4) {
 		    rpmError(RPMERR_SIGVFY,
-		_("only V3 or V4 signatures can be verified, skipping V%u signature\n"),
-			sigp->version);
-		    continue;
+		_("skipping package %s with unverifiable V%u signature\n"),
+			fn, sigp->version);
+		    res++;
+		    goto exit;
 		}
 		/*@switchbreak@*/ break;
 	    case RPMSIGTAG_SHA1:

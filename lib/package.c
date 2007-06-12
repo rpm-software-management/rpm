@@ -542,11 +542,12 @@ verifyinfo_exit:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_WARNING,
-		_("only V3 and V4 signatures can be verified, skipping V%u signature\n"),
+	    rpmMessage(RPMMESS_ERROR,
+		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
 	    rpmtsCleanDig(ts);
-	    goto verifyinfo_exit;
+	    rc = RPMRC_FAIL;
+	    goto exit;
 	}
 
 	ildl[0] = htonl(ril);
@@ -582,11 +583,12 @@ verifyinfo_exit:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_WARNING,
-		_("only V3 and V4 signatures can be verified, skipping V%u signature\n"),
+	    rpmMessage(RPMMESS_ERROR,
+		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
 	    rpmtsCleanDig(ts);
-	    goto verifyinfo_exit;
+	    rc = RPMRC_FAIL;
+	    goto exit;
 	}
 	/*@fallthrough@*/
     case RPMTAG_SHA1HEADER:
@@ -916,10 +918,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_WARNING,
-		_("only V3 and V4 signatures can be verified, skipping V%u signature\n"),
-		dig->signature.version);
-	    rc = RPMRC_OK;	/* XXX return header w/o verify */
+	    rpmMessage(RPMMESS_ERROR,
+		_("skipping package %s with unverifiable V%u signature\n"),
+		fn, dig->signature.version);
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
     {	void * uh = NULL;
@@ -942,10 +944,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
 	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_WARNING,
-		_("only V3 and V4 signatures can be verified, skipping V%u signature\n"),
-		dig->signature.version);
-	    rc = RPMRC_OK;	/* XXX return header w/o verify */
+	    rpmMessage(RPMMESS_ERROR,
+		_("skipping package %s with unverifiable V%u signature\n"), 
+		fn, dig->signature.version);
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 	/*@fallthrough@*/
@@ -974,10 +976,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
 
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmMessage(RPMMESS_WARNING,
-		_("only V3 and V4 signatures can be verified, skipping V%u signature\n"),
-		dig->signature.version);
-	    rc = RPMRC_OK;	/* XXX return header w/o verify */
+	    rpmMessage(RPMMESS_ERROR,
+		_("skipping package %s with unverifiable V%u signature\n"),
+		fn, dig->signature.version);
+	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 	/*@fallthrough@*/
