@@ -174,6 +174,9 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 
 	if (rpmrc == RPMRC_OK || gi->flags & RPMGI_NOMANIFEST)
 	    break;
+	if (errno == ENOENT) {
+	    break;
+	}
 
 	/* Not a header, so try for a manifest. */
 	gi->argv[gi->i] = NULL;		/* Mark the insertion point */
