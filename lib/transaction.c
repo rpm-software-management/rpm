@@ -2113,9 +2113,24 @@ assert(psm != NULL);
 		psm->fi = rpmfiFree(psm->fi);
 		{
 		    char * fstates = fi->fstates;
+                    sharedFileInfo replaced;
 		    fileAction * actions = fi->actions;
+		    sharedFileInfo replaced = fi->replaced;
 		    int mapflags = fi->mapflags;
 		    rpmte savep;
+		    int numSaved = 0;
+
+		    if (replaced != NULL) {
+                        for (replaced; replaced->otherPkg; replaced++) {
+                            numShared++;
+                        }
+                        if (numShared > 0) {
+                            replaced = xcalloc(numShared + 1, 
+                                               sizeof(*fi->replaced));
+                            memcpy(replaced, fi->replaced, 
+                                   sizeof(*fi->replaced) * (numShared + 1));
+                        }
+                    }
 
 		    fi->fstates = NULL;
 		    fi->actions = NULL;
@@ -2133,6 +2148,8 @@ assert(psm != NULL);
 			fi->fstates = fstates;
 			fi->actions = _free(fi->actions);
 			fi->actions = actions;
+                        if (replaced != NULL)
+                            fi->replaced = replaced;
 			if (mapflags & CPIO_SBIT_CHECK)
 			    fi->mapflags |= CPIO_SBIT_CHECK;
 			p->fi = fi;
