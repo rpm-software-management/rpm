@@ -124,6 +124,28 @@ static inline /*@null@*/ const char * queryHeader(Header h, const char * qfmt)
     return str;
 }
 
+/**
+ */
+static void flushBuffer(char ** tp, char ** tep, int nonewline)
+	/*@ modifies *tp, *tep @*/
+{
+    char *t, *te;
+
+    t = *tp;
+    te = *tep;
+    if (te > t) {
+	if (!nonewline) {
+	    *te++ = '\n';
+	    *te = '\0';
+	}
+	rpmMessage(RPMMESS_NORMAL, "%s", t);
+	te = t;
+	*t = '\0';
+    }
+    *tp = t;
+    *tep = te;
+}
+
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 {
     int scareMem = 0;
@@ -131,7 +153,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     char * t, * te;
     char * prefix = NULL;
     int rc = 0;		/* XXX FIXME: need real return code */
-    int nonewline = 0;
     int i;
 
     te = t = xmalloc(BUFSIZ);
@@ -141,7 +162,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 
     if (qva->qva_queryFormat != NULL) {
 	const char * str = queryHeader(h, qva->qva_queryFormat);
-	nonewline = 1;
 	/*@-branchstate@*/
 	if (str) {
 	    size_t tb = (te - t);
@@ -157,6 +177,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    /*@=usereleased@*/
 /*@=boundswrite@*/
 	    str = _free(str);
+	    flushBuffer(&t, &te, 1);
 	}
 	/*@=branchstate@*/
     }
@@ -304,31 +325,13 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 			_("package has neither file owner or id lists\n"));
 	    }
 	}
-/*@-branchstate@*/
-	if (te > t) {
-/*@-boundswrite@*/
-	    *te++ = '\n';
-	    *te = '\0';
-	    rpmMessage(RPMMESS_NORMAL, "%s", t);
-	    te = t;
-	    *t = '\0';
-/*@=boundswrite@*/
-	}
-/*@=branchstate@*/
+	flushBuffer(&t, &te, 0);
     }
 	    
     rc = 0;
 
 exit:
-    if (te > t) {
-	if (!nonewline) {
-/*@-boundswrite@*/
-	    *te++ = '\n';
-	    *te = '\0';
-/*@=boundswrite@*/
-	}
-	rpmMessage(RPMMESS_NORMAL, "%s", t);
-    }
+    flushBuffer(&t, &te, 0);
     t = _free(t);
 
     fi = rpmfiFree(fi);
