@@ -26,11 +26,21 @@
  */
 #include "file.h"
 #include "magic.h"
-#include <assert.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
+#if defined(HAVE_LIMITS_H)
+#include <limits.h>
+#endif
+#ifndef SIZE_T_MAX
+#ifdef __LP64__
+#define SIZE_T_MAX (size_t)0xfffffffffffffffffU
+#else
+#define SIZE_T_MAX (size_t)0xffffffffU
+#endif
+#endif
 
 #ifndef	lint
 FILE_RCSID("@(#)$Id: funcs.c,v 1.14 2005/01/07 19:17:27 christos Exp $")
@@ -165,9 +175,12 @@ file_getbuffer(struct magic_set *ms)
 		return ms->o.buf;
 
  	len = ms->o.size - ms->o.left;
- 	/* * 4 is for octal representation, + 1 is for NUL */
- 	psize = len * 4 + 1;
- 	assert(psize > len);
+	/* * 4 is for octal representation, + 1 is for NUL */
+	if (len > (SIZE_T_MAX - 1) / 4) {
+		file_oomem(ms);
+		return NULL;
+	}
+	psize = len * 4 + 1;
  	if (ms->o.psize < psize) {
  		if ((pbuf = realloc(ms->o.pbuf, psize)) == NULL) {
  			file_oomem(ms);
