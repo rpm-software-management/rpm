@@ -1689,8 +1689,11 @@ rpmMessage(RPMMESS_DEBUG, _("computing %d file fingerprints\n"), totalFileCount)
 	const char * rootDir = rpmtsRootDir(ts);
 	xx = chdir("/");
 	/*@-superuser -noeffect @*/
-	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
+	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
+	    /* opening db before chroot not optimal, see rhbz#103852 c#3 */
+	    xx = rpmdbOpenAll(ts->rdb);
 	    xx = chroot(rootDir);
+	}
 	/*@=superuser =noeffect @*/
 	(void) rpmtsSetChrootDone(ts, 1);
     }
