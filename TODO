@@ -1,7 +1,6 @@
 4.4.2.1
 -------
 - merge rest of applicable Suse + RH patches
-- uninternationalize RPMMESS_DEBUG strings to ease translator work
 - deal with included file-4.10 vulnerabilities
 - check whether gcc supports -fno-strict-aliasing instead of blindly using
 
@@ -21,6 +20,7 @@ Janitorial work:
 - remove internal file/libmagic?
 - remove internal lua?
 - review, update included README, INSTALL etc docs
+- uninternationalize RPMMESS_DEBUG strings to ease translator work
 
 API:
 - proper separation of exported and private headers to clean up the API

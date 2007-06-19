@@ -241,7 +241,7 @@ struct magic_set {
 	char *buf;
 /*@dependent@*/ /*@relnull@*/
 	char *ptr;
-	size_t len;
+	size_t left;
 	size_t size;
 	/* Printable buffer */
 /*@only@*/
