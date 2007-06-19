@@ -830,28 +830,6 @@ static struct badDeps_s {
 /*@observer@*/ /*@null@*/ const char * pname;
 /*@observer@*/ /*@null@*/ const char * qname;
 } badDeps[] = {
-    { "libtermcap", "bash" },
-    { "modutils", "vixie-cron" },
-    { "ypbind", "yp-tools" },
-    { "ghostscript-fonts", "ghostscript" },
-    /* 7.2 only */
-    { "libgnomeprint15", "gnome-print" },
-    { "nautilus", "nautilus-mozilla" },
-    /* 7.1 only */
-    { "arts", "kdelibs-sound" },
-    /* 7.0 only */
-    { "pango-gtkbeta-devel", "pango-gtkbeta" },
-    { "XFree86", "Mesa" },
-    { "compat-glibc", "db2" },
-    { "compat-glibc", "db1" },
-    { "pam", "initscripts" },
-    { "initscripts", "sysklogd" },
-    /* 6.2 */
-    { "egcs-c++", "libstdc++" },
-    /* 6.1 */
-    { "pilot-link-devel", "pilot-link" },
-    /* 5.2 */
-    { "pam", "pamconfig" },
     { NULL, NULL }
 };
 #else
