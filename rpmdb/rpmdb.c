@@ -795,6 +795,22 @@ static struct rpmdb_s dbTemplate = {
 };
 /*@=fullinitblock@*/
 
+static int isTemporaryDB(int rpmtag) 
+{
+    int rc = 0;
+    switch (rpmtag) {
+    case RPMDBI_AVAILABLE:
+    case RPMDBI_ADDED:
+    case RPMDBI_REMOVED:
+    case RPMDBI_DEPENDS:
+	rc = 1;
+	break;
+    default:
+	break;
+    }
+    return rc;
+}
+
 int rpmdbOpenAll(rpmdb db)
 {
     int dbix;
@@ -805,6 +821,9 @@ int rpmdbOpenAll(rpmdb db)
     if (dbiTags != NULL)
     for (dbix = 0; dbix < dbiTagsMax; dbix++) {
 	if (db->_dbi[dbix] != NULL)
+	    continue;
+	/* Filter out temporary databases */
+	if (isTemporaryDB(dbiTags[dbix])) 
 	    continue;
 	(void) dbiOpen(db, dbiTags[dbix], db->db_flags);
     }
@@ -1040,16 +1059,8 @@ static int openDatabase(/*@null@*/ const char * prefix,
 	    int rpmtag;
 
 	    /* Filter out temporary databases */
-	    switch ((rpmtag = dbiTags[dbix])) {
-	    case RPMDBI_AVAILABLE:
-	    case RPMDBI_ADDED:
-	    case RPMDBI_REMOVED:
-	    case RPMDBI_DEPENDS:
+	    if (isTemporaryDB((rpmtag = dbiTags[dbix])))
 		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
-	    default:
-		/*@switchbreak@*/ break;
-	    }
 
 	    dbi = dbiOpen(db, rpmtag, 0);
 	    if (dbi == NULL) {
@@ -2670,14 +2681,11 @@ memset(data, 0, sizeof(*data));
 /*@=boundsread@*/
 
 	    /*@-branchstate@*/
-	    switch (rpmtag) {
 	    /* Filter out temporary databases */
-	    case RPMDBI_AVAILABLE:
-	    case RPMDBI_ADDED:
-	    case RPMDBI_REMOVED:
-	    case RPMDBI_DEPENDS:
+	    if (isTemporaryDB(rpmtag)) 
 		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
+
+	    switch (rpmtag) {
 	    case RPMDBI_PACKAGES:
 		dbi = dbiOpen(db, rpmtag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
@@ -3071,14 +3079,11 @@ memset(data, 0, sizeof(*data));
 	    rpmtag = dbiTags[dbix];
 /*@=boundsread@*/
 
-	    switch (rpmtag) {
 	    /* Filter out temporary databases */
-	    case RPMDBI_AVAILABLE:
-	    case RPMDBI_ADDED:
-	    case RPMDBI_REMOVED:
-	    case RPMDBI_DEPENDS:
+	    if (isTemporaryDB(rpmtag)) 
 		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
+
+	    switch (rpmtag) {
 	    case RPMDBI_PACKAGES:
 		dbi = dbiOpen(db, rpmtag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
@@ -3653,16 +3658,8 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    int rpmtag;
 
 	    /* Filter out temporary databases */
-	    switch ((rpmtag = dbiTags[i])) {
-	    case RPMDBI_AVAILABLE:
-	    case RPMDBI_ADDED:
-	    case RPMDBI_REMOVED:
-	    case RPMDBI_DEPENDS:
+	    if (isTemporaryDB((rpmtag = dbiTags[i])))
 		continue;
-		/*@notreached@*/ /*@switchbreak@*/ break;
-	    default:
-		/*@switchbreak@*/ break;
-	    }
 
 	    base = tagName(rpmtag);
 	    sprintf(ofilename, "%s/%s/%s", prefix, olddbpath, base);
