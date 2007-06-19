@@ -1072,7 +1072,7 @@ exit:
  * @param h		header to check
  * @return		RPMRC_OK if supported, RPMRC_FAIL otherwise
  */
-rpmRC headerCheckPayload(Header h) {
+rpmRC headerCheckPayloadFormat(Header h) {
     rpmRC rc = RPMRC_FAIL;
     int xx;
     const char *payloadfmt = NULL;

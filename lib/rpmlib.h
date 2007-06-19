@@ -898,7 +898,7 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
  * @param h		header to check
  * @return		RPMRC_OK if supported, RPMRC_FAIL otherwise
  */
-rpmRC headerCheckPayload(Header h);
+rpmRC headerCheckPayloadFormat(Header h);
 
 /** 
  * Check header consistency, performing headerGetEntry() the hard way.
