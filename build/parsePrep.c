@@ -61,18 +61,20 @@ static int checkOwners(const char * urlfn)
  * @param strip		patch level (i.e. patch -p argument)
  * @param db		saved file suffix (i.e. patch --suffix argument)
  * @param reverse	include -R?
+ * @param fuzz		include -F?
  * @param removeEmpties	include -E?
  * @return		expanded %patch macro (NULL on error)
  */
 /*@-boundswrite@*/
-/*@observer@*/ static char *doPatch(Spec spec, int c, int strip, const char *db,
-		     int reverse, int removeEmpties)
+/*@observer@*/ 
+static char *doPatch(Spec spec, int c, int strip, const char *db,
+		     int reverse, int removeEmpties, int fuzz)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     const char *fn, *urlfn;
     static char buf[BUFSIZ];
-    char args[BUFSIZ];
+    char args[BUFSIZ], *t = args;
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
     int urltype;
@@ -89,20 +91,22 @@ static int checkOwners(const char * urlfn)
 
     urlfn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
-    args[0] = '\0';
+    *t = '\0';
     if (db) {
 #if HAVE_OLDPATCH_21 == 0
-	strcat(args, "-b ");
+	t = stpcpy(t, "-b ");
 #endif
-	strcat(args, "--suffix ");
-	strcat(args, db);
+	t = stpcpy( stpcpy(t, "--suffix "), db);
     }
-    if (reverse) {
-	strcat(args, " -R");
+    if (fuzz) {
+	t = stpcpy(t, " -F");
+	sprintf(t, "%d", fuzz);
+	t += strlen(t);
     }
-    if (removeEmpties) {
-	strcat(args, " -E");
-    }
+    if (reverse)
+	t = stpcpy(t, " -R");
+    if (removeEmpties)
+	t = stpcpy(t, " -E");
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!spec->force && (isCompressed(urlfn, &compressed) || checkOwners(urlfn))) {
@@ -448,7 +452,7 @@ static int doPatchMacro(Spec spec, char *line)
 		fileSystem, internalState  @*/
 {
     char *opt_b;
-    int opt_P, opt_p, opt_R, opt_E;
+    int opt_P, opt_p, opt_R, opt_E, opt_F;
     char *s;
     char buf[BUFSIZ], *bp;
     int patch_nums[1024];  /* XXX - we can only handle 1024 patches! */
@@ -496,6 +500,23 @@ static int doPatchMacro(Spec spec, char *line)
 			spec->lineNum, spec->line);
 		return RPMERR_BADSPEC;
 	    }
+	} else if (!strncmp(s, "-F", strlen("-F"))) {
+	    /* fuzz factor */
+	    const char * fnum = NULL;
+	    char * end = NULL;
+
+	    if (! strchr(" \t\n", s[2])) {
+		fnum = s + 2;
+	    } else {
+		fnum = strtok(NULL, " \t\n");
+	    }
+	    opt_F = (fnum ? strtol(fnum, &end, 10) : 0);
+	    if (! opt_F || *end) {
+		rpmError(RPMERR_BADSPEC,
+			_("line %d: Bad arg to %%patch -F: %s\n"),
+			spec->lineNum, spec->line);
+		return RPMERR_BADSPEC;
+	    }
 	} else if (!strncmp(s, "-p", sizeof("-p")-1)) {
 	    /* unfortunately, we must support -pX */
 	    if (! strchr(" \t\n", s[2])) {
@@ -534,14 +555,14 @@ static int doPatchMacro(Spec spec, char *line)
     /* All args processed */
 
     if (! opt_P) {
-	s = doPatch(spec, 0, opt_p, opt_b, opt_R, opt_E);
+	s = doPatch(spec, 0, opt_p, opt_b, opt_R, opt_E, opt_F);
 	if (s == NULL)
 	    return RPMERR_BADSPEC;
 	appendLineStringBuf(spec->prep, s);
     }
 
     for (x = 0; x < patch_index; x++) {
-	s = doPatch(spec, patch_nums[x], opt_p, opt_b, opt_R, opt_E);
+	s = doPatch(spec, patch_nums[x], opt_p, opt_b, opt_R, opt_E, opt_F);
 	if (s == NULL)
 	    return RPMERR_BADSPEC;
 	appendLineStringBuf(spec->prep, s);
