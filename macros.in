@@ -771,78 +771,8 @@ print (t)\
 # XXX	Note: that there cannot be any whitespace within the string "p>q",
 #	and that both p and q are package names (i.e. no version/release).
 #
-#%_dependency_whiteout_5_2		\
-#	pam>pamconfig
-#%_dependency_whiteout_6_1		\
-#	pilot-link-devel>pilot-link
-#%_dependency_whiteout_6_2		\
-#	egcs-c++>libstdc++
-%_dependency_whiteout_7_0		\
-	pango-gtkbeta-devel>pango-gtkbeta\
-	XFree86>Mesa			\
-	compat-glibc>db2		\
-	compat-glibc>db1		\
-	pam>initscripts			\
-	initscripts>sysklogd
-%_dependency_whiteout_7_1		\
-	arts>kdelibs-sound
-%_dependency_whiteout_7_2		\
-	libgnomeprint15>gnome-print	\
-	nautilus>nautilus-mozilla	\
-	tcl>postgresql-tcl
-#%_dependency_whiteout_8_0		\
-#	perl>perl-Parse-RecDescent	\
-#	XFree86-libs>XFree86-Mesa-libGL	\
-#	perl>perl-Filter		\
-#	perl>mrtg			\
-#	perl>mod_perl			\
-#	mysql>perl-DBD-MySQL		\
-#	ghostscript>gimp-print		\
-#	arts>kde2-compat		\
-#	perl-Date-Calc>perl-Bit-Vector	\
-#	glibc-debug>glibc-devel
-
-%_dependency_whiteout_8_0		\
-	mysql>perl-DBD-MySQL		\
-	perl>perl-Filter		\
-	perl>mrtg			\
-	perl>mod_perl			\
-	perl-Date-Calc>perl-Bit-Vector	\
-
-%_dependency_whiteout_fc3		\
-	coreutils>pam			\
-	nautilus>nautilus-cd-burner	\
-	aspell>aspell-en		\
-	kernel>initscripts		\
-	kernel-smp>initscripts		\
-	xorg-x11-libs>xorg-x11-Mesa-libGL \
-	openldap>cyrus-sasl-md5		\
-	openldap>cyrus-sasl		\
-	openjade>docbook-dtds		\
-	gtk+>gdk-pixbuf			\
-	xorg-x11>xinitrc		\
-	gnome-python2>gnome-python2-bonobo \
-	httpd-suexec>httpd		\
-	xemacs-sumo>apel-xemacs		\
-	php>php-pear			\
-	openoffice.org-libs>openoffice.org
 
 %_dependency_whiteout			\
-	libtermcap>bash			\
-	modutils>vixie-cron		\
-	ypbind>yp-tools			\
-	ghostscript-fonts>ghostscript	\
-	%{?_dependency_whiteout_fc3}	\
-	%{?_dependency_whiteout_fc2}	\
-	%{?_dependency_whiteout_fc1}	\
-	%{?_dependency_whiteout_9}	\
-	%{?_dependency_whiteout_8_0}	\
-	%{?_dependency_whiteout_7_2}	\
-	%{?_dependency_whiteout_7_1}	\
-	%{?_dependency_whiteout_7_0}	\
-	%{?_dependency_whiteout_6_2}	\
-	%{?_dependency_whiteout_6_1}	\
-	%{?_dependency_whiteout_5_2}	\
 	%{nil}
 
 #
