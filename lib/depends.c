@@ -306,7 +306,7 @@ addheader:
 
     /* On upgrade, erase older packages of same color (if any). */
 
-    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, rpmteN(p), 0);
+    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
     while((oh = rpmdbNextIterator(mi)) != NULL) {
 
 	/* Ignore colored packages not in our rainbow. */
@@ -348,7 +348,7 @@ addheader:
 	if (Name[0] == '/')
 	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
 	else
-	    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, Name, 0);
 
 	xx = rpmdbPruneIterator(mi,
 	    ts->removedPackages, ts->numRemovedPackages, 1);
