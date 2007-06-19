@@ -2116,7 +2116,6 @@ assert(psm != NULL);
 		psm->fi = rpmfiFree(psm->fi);
 		{
 		    char * fstates = fi->fstates;
-                    sharedFileInfo replaced;
 		    fileAction * actions = fi->actions;
 		    sharedFileInfo replaced = fi->replaced;
 		    int mapflags = fi->mapflags;
