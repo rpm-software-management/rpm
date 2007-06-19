@@ -1353,7 +1353,7 @@ dnl export LIBS INCPATH CONFIG_SITE
 
 AC_CONFIG_SUBDIRS(popt file db3)
 
-AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt rpm.spec
+AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
 	scripts/Makefile scripts/brp-redhat
 	scripts/macros.perl scripts/macros.php scripts/macros.python
