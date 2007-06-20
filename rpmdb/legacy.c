@@ -170,7 +170,7 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
     switch(ut) {
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
-#if HAVE_MMAP
+#ifdef HAVE_MMAP
       if (pid == 0) {
 	DIGEST_CTX ctx;
 	void * mapped;

@@ -944,7 +944,7 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
     if (rc) goto exit;
 
     if (writeData && S_ISREG(st->st_mode)) {
-#if HAVE_MMAP
+#ifdef HAVE_MMAP
 	char * rdbuf = NULL;
 	void * mapped = (void *)-1;
 	size_t nmapped;
@@ -954,7 +954,7 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 	if (rc) goto exit;
 
 	/* XXX unbuffered mmap generates *lots* of fdio debugging */
-#if HAVE_MMAP
+#ifdef HAVE_MMAP
 	nmapped = 0;
 	mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, Fileno(fsm->rfd), 0);
 	if (mapped != (void *)-1) {
@@ -970,7 +970,7 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 	left = st->st_size;
 
 	while (left) {
-#if HAVE_MMAP
+#ifdef HAVE_MMAP
 	  if (mapped != (void *)-1) {
 	    fsm->rdnb = nmapped;
 	  } else
@@ -988,7 +988,7 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
 	    left -= fsm->wrnb;
 	}
 
-#if HAVE_MMAP
+#ifdef HAVE_MMAP
 /*@-branchstate@*/
 	if (mapped != (void *)-1) {
 	    xx = msync(mapped, nmapped, MS_ASYNC);
