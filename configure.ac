@@ -80,12 +80,10 @@ dnl	LDFLAGS_STATIC="-all"
 dnl to attempt static executables using libtool. Otherwise
 dnl	LDFLAGS_STATIC=""
 dnl
-with_selinuxval=no
 AC_MSG_CHECKING(flag used by libtool to link rpm)
 if test X"$GCC" = Xyes ; then
 	case "$target" in
-		*-*-linux*)	LDFLAGS_STATIC="-all-static"
-				with_selinuxval=yes ;;
+		*-*-linux*)	LDFLAGS_STATIC="-all-static" ;;
 		*-*-solaris*)	LDFLAGS_STATIC="-static";;
 		*-*-hpux*)	LDFLAGS_STATIC="-static";;
 		*-*-darwin*)	LDFLAGS_STATIC="";; # Mac OS X does not do static binaries.
@@ -932,6 +930,10 @@ elif test $withval = yes -a $__DOXYGEN = no ; then
 fi
 
 WITH_SELINUX_LIB=
+with_selinuxval=no
+case "$target" in
+    *-*-linux*) with_selinuxval=yes ;;
+esac
 withval=${with_selinuxval}
 AC_ARG_WITH(selinux, [  --with-selinux          build with selinux support ])
 if test $withval != no ; then
