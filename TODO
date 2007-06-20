@@ -1,8 +1,6 @@
 4.4.2.1
 -------
 - merge rest of applicable Suse + RH patches
-- deal with included file-4.10 vulnerabilities
-- check whether gcc supports -fno-strict-aliasing instead of blindly using
 
 4.5 and beyond
 --------------
@@ -17,8 +15,8 @@ Janitorial work:
 - refactor those 800+ line monster functions into something more digestable
 - split popt to separate project
 - update gettext
+- update internal bdb (stale lock detection etc)
 - remove internal file/libmagic?
-- remove internal lua?
 - review, update included README, INSTALL etc docs
 - uninternationalize RPMMESS_DEBUG strings to ease translator work
 
@@ -37,3 +35,4 @@ Python:
 - audit error handling in bindings (eg ts.addInstall() does not report back
   failures from rpmtsAddInstallElement())
 - see if rpmdb can be made to look like pep-0249 
+
