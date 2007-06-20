@@ -459,7 +459,7 @@ static int doPatchMacro(Spec spec, char *line)
     int patch_index, x;
 
     memset(patch_nums, 0, sizeof(patch_nums));
-    opt_P = opt_p = opt_R = opt_E = 0;
+    opt_P = opt_p = opt_R = opt_E = opt_F = 0;
     opt_b = NULL;
     patch_index = 0;
 
