@@ -27,8 +27,19 @@ AS=${AS-as}
 AC_SUBST(AS)
 if test "$ac_cv_c_compiler_gnu" = yes; then
     CFLAGS="$CFLAGS -fPIC -DPIC -D_GNU_SOURCE -D_REENTRANT -Wall -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes -Wno-char-subscripts"
-    dnl XXX TODO: check if the compiler supports this
-    CFLAGS="$CFLAGS -fno-strict-aliasing"
+    cflags_to_try="-fno-strict-aliasing"
+    AC_MSG_CHECKING([supported compiler flags])
+    old_cflags=$CFLAGS
+    echo
+    for flag in $cflags_to_try; do
+        CFLAGS="$CFLAGS $flag"
+        AC_TRY_COMPILE(, [return 0;], [
+                echo "   $flag"
+                RPMCFLAGS="$RPMCFLAGS $flag"
+        ])
+        CFLAGS=$old_cflags
+    done
+    CFLAGS="$CFLAGS $RPMCFLAGS"
 fi
 export CFLAGS
 
