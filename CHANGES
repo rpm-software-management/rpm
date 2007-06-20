@@ -1,3 +1,104 @@
+4.4.2 -> 4.4.2.1:
+	- remove internal sqlite, zlib, gettext
+	- remove obsolete utilities
+	- remove vendor gpg keys
+	- fix spec parenthesis parsing 
+	- allow building without neon
+	- disable hkp lookup by default
+	- re-enable file-conflicts detection (rhbz#151609)
+	- fix potential segfault in available file provides checking
+	- fix Requires(pre,postun) (rh#155700)
+	- fix db build wrt newer CFLAGS
+	- fix popt CHARSET for various languages (rhbz#172155)
+	- fix install size calculation with excludes in manifest (rhbz#89661)
+	- use full path in the rpm cronjob (rhbz#174211)
+	- sync internal libmagic, fix security issues
+	- filter out incorrect perl(main) provides (rhbz#177960)
+	- fix scriptlet deadlock (rhbz#146549)
+	- fix netshared path comparison (rhbz#52725)
+	- make fcntl lock sensitive to --root (rhbz#151255)
+	- fix rpmvercomp for strings with trailing null segments (rhbz#178798)
+	- fix doxygen generation (rhbz#187714)
+	- fix potential segfault if no rpmlock_path defined (rhbz#231146)
+	- fix for thinko in debugedit on ppc
+	- fix debugedit wrt OOo
+	- fix debugedit with ../../ in paths
+	- fix various other issues in debugedit (rhbz#205339)
+	- allow customisable diff and use -p by default (rhbz#146981)
+	- handle fork failure
+	- fix a typo causing compiler warning (susebz#178055)
+	- fix a %{buildsubdir} typo/thinko
+	- fix uncompress waitpid logic to shut up the compiler (susebz#160434)
+	- add support for %{_docdir} macro (rhbz#125514)
+	- fix segfault on rpmbuild with empty file list
+	- allow --ignoresize for erase operations
+	- don't attempt to execute empty transaction (susebz#43267)
+	- don't segfault if Fileno() is called with NULL
+	- abort build if cwd not determinable
+	- fix --noghost query option (rhbz#103207)
+	- fix off-by-one error in glob 
+	- check rpmtsInitDB() return value
+	- build internal Lua without readline support
+	- make rpmdbSync obey the no_dbsync flag
+	- fix package verification for packages with header+payload RSA but
+	  no header-only RSA
+	- drop any s-bits early when deleting files (susebz#50376, rhbz#125517)
+	- fix handling of old packages that use HEADERIMAGE
+	- catch disk-space errors when writing signed packages
+	- fix default verify flags for %doc (rhbz#235353)
+	- fix debugedit for relative paths (rhbz#232222)
+	- add configurable preferable elf colour policy (rhbz#235757)
+	- python: always treat changelog as list
+	- use older perl helper scripts by default
+	- add mono req/provides support
+	- remove SELinux context verification (rhbz#193488)
+	- fix building without Lua support
+	- fix --rebuilddb with --root option
+	- fix --setperms and --setugids with uninstalled packages
+	- don't run pre- and posttrans scripts in test mode
+	- dbmatch keys can be unicode objects also (rhbz#219008)
+	- gendiff: let diff arguments be specified in the environment 
+	- gendiff: emit diff headers (rhbz#237561)
+	- improved error messages in verification of unreadable files
+	- python: raise exception if tsAdd fails
+	- check for supported package payload format (rhbz#140052)
+	- fail build if beecrypt headers not found
+	- build: check unpackaged files even if other errors are present
+	- restore SIGILL handler in machine detection code
+	- add --dupes popt alias for detecting duplicate packages in rpmdb
+	- fix typo in check-prereq (rhbz#203182)
+	- python: fix rpm.te Key() refcount (rhbz#182063)
+	- python: always treat fileverifyflags as list
+	- disable strict aliasing if compiler supports it (type-punning warns)
+	- add zh_TW translation
+	- add support for srcdefattr macro (susebz#48870, rhbz#125515)
+	- detect python 2.5 automatically in configure
+	- python: reference counting for match-iterators (rhbz#241751)
+	- updated fi translation
+	- fix format string errors in de translation
+	- allow characters > 127 that don't fit the current locale in spec
+	- treat null epoch equal to zero epoch in freshen (rhbz#143301)
+	- python: treat null epoch equal to zero labelCompare (rhbz#227860)
+	- permit installing multiple package versions with -i (rhbz#213399)
+	- fix <name>.<arch> query output for non-installed package (rhbz#124016)
+	- updated pl translation
+	- don't read packages with non-verifiable signatures (rhbz#239557)
+	- don't try to open non-existent file twice in query
+	- flush query format buffer before listing files (rhbz#212833)
+	- check all header strings to resize buffer (rhbz#212833)
+	- don't segfault on a header without RPMTAG_NAME (rhbz#239557)
+	- fix file status for replaced files (rhbz#237478)
+	- make %_signature default to gpg instead of none
+	- don't skip directories in fingerprinting (rhbz#140055, 223639, ...)
+	- remove vendor, release specific dependency whitouts 
+	- remove upstream spec files for rpm and popt
+	- don't open temporary databases in rpmdbOpenAll()
+	- open non-temporary db's before chroot (rhbz#103952, 173285)
+	- don't treat provides as implicit obsoletes (rhbz#111071, ...)
+	- fix CVE-2007-1536, CVE-2007-2799 in internal libmagic
+	- support specifying fuzz factor to %patch (rhbz#243720)
+	
+
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
 	- sqlite3: revert cClose scoping, data is freed in cClose unlike db4.
