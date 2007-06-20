@@ -206,7 +206,6 @@ dnl
 if test "$cross_compiling" = "yes"; then
     MYPATH=":"
 else
-#    MYPATH="/bin:/usr/bin:/usr/local/bin:$PATH:/sbin:/usr/sbin:/usr/local/sbin:/opt/gnu/bin"
     MYPATH=$PATH
 fi
 
@@ -232,7 +231,6 @@ AC_MSG_CHECKING(checking whether id supports -u)
 	__ID_U="%{__id} -u"
 	AC_MSG_RESULT(yes)
     else
-dnl XXX Watchout for square brackets fed to m4.
 	__ID_U="%{__id} | %{__sed} 's/[[^=]]*=\\\\([[0-9]][[0-9]]*\\\\).*$/\\\\1/'"
 	AC_MSG_RESULT(no)
     fi
@@ -816,15 +814,6 @@ dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_FUNC_VPRINTF
 
-dnl XXX AC_FUNC_MEMCMP
-dnl XXX AC_FUNC_MMAP
-dnl XXX AC_TYPE_SIGNAL
-dnl XXX AC_FUNC_STRCOLL
-dnl XXX AC_FUNC_STRFTIME
-dnl XXX AC_FUNC_UTIME_NULL
-dnl XXX AC_FUNC_FORK([])
-dnl XXX AC_CHECK_FUNCS(gethostname mkdir mkfifo rmdir select uname)
-
 AC_CHECK_FUNCS(basename getcwd getwd inet_aton mtrace putenv realpath setenv)
 AC_CHECK_FUNCS(stpcpy stpncpy strcspn)
 AC_CHECK_FUNCS(strdup strndup strerror strtol strtoul strspn strstr)
@@ -991,7 +980,6 @@ fi
 
 AC_CHECK_FUNCS(setlocale)
 
-dnl XXX Solaris <= 2.6 only permits 8 chars in password.
 AC_CHECK_FUNCS(getpassphrase)
 
 AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT, 1, [Define if you have the getmntent() function]), [
