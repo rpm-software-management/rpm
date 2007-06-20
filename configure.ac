@@ -837,32 +837,6 @@ AC_CHECK_FUNCS(ftok)
 
 AC_CHECK_FUNCS(mkstemp)
 
-dnl
-dnl XXX Regex replacement isn't known to be needed yet.
-dnl
-dnl AC_ARG_WITH(regex, [  --with-regex            use the GNU regex library ],
-dnl     [rpm_cv_regex=yes],
-dnl     [AC_CHECK_FUNCS(regcomp, rpm_cv_regex=no, rpm_cv_regex=yes)])
-dnl 
-dnl if test $rpm_cv_regex = no ; then
-dnl     AC_MSG_CHECKING(whether the regexp library is broken)
-dnl     AC_RUN_IFELSE([AC_LANG_SOURCE([[
-dnl #include <unistd.h>
-dnl #include <regex.h>
-dnl main() { regex_t blah ; exit(regcomp(&blah, "foo.*bar", REG_NOSUB) || regexec (&blah, "foobar", 0, NULL, 0)); }]])],[dnl     rpm_cv_regex_broken=no],[rpm_cv_regex_broken=yes],[rpm_cv_regex_broken=yes])
-dnl     AC_MSG_RESULT([$rpm_cv_regex_broken])
-dnl     if test $rpm_cv_regex_broken = yes ; then
-dnl 	    echo "   --> using the included GNU regex instead." >&AS_MESSAGE_FD([])
-dnl 	    rpm_cv_regex=yes
-dnl     fi
-dnl fi
-dnl 
-dnl if test $rpm_cv_regex = yes; then
-dnl     AC_DEFINE(USE_GNU_REGEX, 1)
-dnl     AC_LIBOBJ(regex)
-dnl fi
-
-dnl
 dnl XXX Glob *is* broken on linux with libc5, solaris and possibly aix when
 dnl %files gets something like
 dnl	/usr/*/locale/*/LC_MESSAGES/*.mo
@@ -870,39 +844,10 @@ dnl (Note: more than one asterisk in glob pattern.)
 dnl
 dnl XXX Glob is "fixed" in glibc-2.3.3-61, but the cost is that
 dnl dangling symlinks are no longer globbed. Always use the internal glob.
-dnl
-#AC_ARG_WITH(glob, [  --with-glob             use the internal GNU glob ],
-#    [rpm_cv_glob=yes],
-#    [AC_CHECK_FUNCS(glob, rpm_cv_glob=no, rpm_cv_glob=yes)])
-#
-#if test $rpm_cv_glob = no ; then
-#    AC_CACHE_CHECK([for GNU extensions to glob], rpm_cv_glob_ext, [
-#    rm -f t
-#    mkdir t
-#    mkdir t/p
-#    touch t/p/foo.8
-#    AC_RUN_IFELSE([AC_LANG_SOURCE([[
-##include <unistd.h>
-##include <sys/stat.h>
-##include <glob.h>
-#main() {
-#  glob_t gl ;
-#  gl.gl_stat = stat;
-#  exit(glob("t/*/*.8", GLOB_PERIOD, NULL, &gl) || gl.gl_pathc < 1);
-#} ]])],[rpm_cv_glob_ext=yes],[rpm_cv_glob_ext=no],[rpm_cv_glob_ext=no])
-#    rm -r t
-#    ])
-#    if test "$rpm_cv_glob_ext" = no ; then
-#	echo "    --> using the included GNU glob instead." >&AS_MESSAGE_FD([])
-#	rpm_cv_glob=yes
-#    fi
-#fi
-#
-#if test "$rpm_cv_glob" = yes; then
-    AC_DEFINE(USE_GNU_GLOB, 1, [Use the included glob.c?])
-    AC_LIBOBJ(glob)
-    AC_LIBOBJ(fnmatch)
-#fi
+AC_DEFINE(USE_GNU_GLOB, 1, [Use the included glob.c?])
+AC_LIBOBJ(glob)
+AC_LIBOBJ(fnmatch)
+
 dnl
 dnl Auto-detect which python bindings should be built.
 dnl
@@ -1337,7 +1282,6 @@ AC_DEFINE_UNQUOTED(FINDPROVIDES, "$FINDPROVIDES",
 AC_SUBST(FINDPROVIDES)
 
 testdir="`pwd`/tests"
-dnl AC_DEFINE_UNQUOTED(testdir, "$testdir")
 AC_SUBST(testdir)
 
 AC_SUBST(INCPATH)
