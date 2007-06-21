@@ -1134,6 +1134,9 @@ fi
 if echo "$build_os" | grep '.*-gnulibc1' > /dev/null ; then
 	build_os=`echo "${build_os}" | sed 's/-gnulibc1$//'`
 fi
+if echo "$build_os" | grep '.*-gnueabi' > /dev/null ; then
+	build_os=`echo "${build_os}" | sed 's/-gnueabi$//'`
+fi
 if echo "$build_os" | grep '.*-gnu' > /dev/null ; then
 	build_os=`echo "${build_os}" | sed 's/-gnu$//'`
 fi
@@ -1205,10 +1208,7 @@ s390x*)		RPMCANONCOLOR=3; RPMCANONARCH=s390x ;;
 s390*)		RPMCANONCOLOR=0; RPMCANONARCH=s390 ;;
 powerpc64*|ppc64*)	RPMCANONCOLOR=3; RPMCANONARCH=ppc64 ;;
 powerpc*|ppc*)	RPMCANONCOLOR=0; RPMCANONARCH=ppc ;;
-armv3l*)	RPMCANONCOLOR=0; RPMCANONARCH=armv3l ;;
-armv4l*)	RPMCANONCOLOR=0; RPMCANONARCH=armv4l ;;
-armv4b*)	RPMCANONCOLOR=0; RPMCANONARCH=armv4b ;;
-arm*)		RPMCANONCOLOR=0; RPMCANONARCH="${build_cpu}" ;;
+arm*)		RPMCANONCOLOR=0; RPMCANONARCH=arm ;;
 mipsel*)	RPMCANONCOLOR=0; RPMCANONARCH=mipsel ;;
 mips*)		RPMCANONCOLOR=0; RPMCANONARCH=mips ;;
 m68k*)		RPMCANONCOLOR=0; RPMCANONARCH=m68k ;;

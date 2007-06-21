@@ -58,9 +58,13 @@ optflags: hppa2.0 -O2 -g -mpa-risc-1-0
 optflags: mips -O2 -g
 optflags: mipsel -O2 -g
 
-optflags: armv3l -O2 -g -fsigned-char -fomit-frame-pointer -march=armv3
-optflags: armv4b -O2 -g -fsigned-char -fomit-frame-pointer -march=armv4
-optflags: armv4l -O2 -g -fsigned-char -fomit-frame-pointer -march=armv4
+optflags: armv3l -O2 -g -march=armv3
+optflags: armv4b -O2 -g -march=armv4
+optflags: armv4l -O2 -g -march=armv4
+optflags: armv4tl -O2 -g -march=armv4t
+optflags: armv5tel -O2 -g -march=armv5te
+optflags: armv5tejl -O2 -g -march=armv5te
+optflags: armv6l -O2 -g -march=armv6
 
 optflags: atarist -O2 -g -fomit-frame-pointer
 optflags: atariste -O2 -g -fomit-frame-pointer
@@ -124,6 +128,9 @@ arch_canon:	mipsel:	mipsel	11
 arch_canon:	armv3l: armv3l	12
 arch_canon:     armv4b:	armv4b 	12
 arch_canon:     armv4l:	armv4l 	12
+arch_canon:     armv5tel: armv5tel 	12
+arch_canon:     armv5tejl: armv5tejl 	12
+arch_canon:     armv6l: armv6l 	12
 
 arch_canon:	m68kmint: m68kmint	13
 arch_canon:	atarist: m68kmint	13
@@ -218,6 +225,14 @@ buildarchtranslate: ppcpseries: ppc
 buildarchtranslate: ppc64iseries: ppc64
 buildarchtranslate: ppc64pseries: ppc64
 
+buildarchtranslate: armv3l: armv3l
+buildarchtranslate: armv4b: armv4b
+buildarchtranslate: armv4l: armv4l
+buildarchtranslate: armv4tl: armv4tl
+buildarchtranslate: armv5tel: armv5tel
+buildarchtranslate: armv5tejl: armv4tejl
+buildarchtranslate: armv6l: armv6l
+
 buildarchtranslate: atarist: m68kmint
 buildarchtranslate: atariste: m68kmint
 buildarchtranslate: ataritt: m68kmint
@@ -291,6 +306,10 @@ arch_compat: hppa1.0: parisc
 arch_compat: parisc: noarch
 
 arch_compat: armv4b: noarch
+arch_compat: armv6l: armv5tejl
+arch_compat: armv5tejl: armv5tel
+arch_compat: armv5tel: armv4tl
+arch_compat: armv4tl: armv4l
 arch_compat: armv4l: armv3l
 arch_compat: armv3l: noarch
 
@@ -381,9 +400,13 @@ buildarch_compat: ppc64iseries: ppc64
 buildarch_compat: mips: noarch
 buildarch_compat: mipsel: noarch
 
-buildarch_compat: armv3l: noarch
 buildarch_compat: armv4b: noarch
-buildarch_compat: armv4l: noarch
+buildarch_compat: armv6l: armv5tejl
+buildarch_compat: armv5tejl: armv5tel
+buildarch_compat: armv5tel: armv4tl
+buildarch_compat: armv4tl: armv4l
+buildarch_compat: armv4l: armv3l
+buildarch_compat: armv3l: noarch
 
 buildarch_compat: hppa2.0: hppa1.2
 buildarch_compat: hppa1.2: hppa1.1

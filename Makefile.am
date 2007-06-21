@@ -159,6 +159,12 @@ install-data-local:
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/athlon ;;\
 	alpha*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/alpha ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/alphaev6 ;;\
+	arm*)	$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv3l ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4l ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv4tl ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5tel ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv5tejl ;\
+		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/armv6l ;;\
 	sparc*) $(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparc ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv8 ;\
 		$(mkinstalldirs) $(DESTDIR)$(pkgsrcdir)/RPMS/sparcv9 ;\

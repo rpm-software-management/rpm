@@ -1190,6 +1190,10 @@ done \
 #
 %ix86   i386 i486 i586 i686 pentium3 pentium4 athlon
 
+#------------------------------------------------------------------------------
+# arch macro for all supported ARM processors
+%arm	armv3l armv4b armv4l armv4tl armv5tel armv5tejl armv6l
+
 #------------------------------------------------------------------------
 # Use in %install to generate locale specific file lists. For example,
 #
