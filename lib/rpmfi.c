@@ -1335,7 +1335,6 @@ if (fi->actions == NULL)
     xx = hge(h, RPMTAG_FILEINODES, NULL, (void **) &fi->finodes, NULL);
     xx = hge(h, RPMTAG_FILECONTEXTS, NULL, (void **) &fi->fcontexts, NULL);
 
-    fi->replaced = NULL;
     fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
     xx = hge(h, RPMTAG_FILEUSERNAME, NULL, (void **) &fi->fuser, NULL);
