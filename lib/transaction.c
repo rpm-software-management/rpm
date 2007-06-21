@@ -2120,7 +2120,7 @@ assert(psm != NULL);
 		    sharedFileInfo replaced = fi->replaced;
 		    int mapflags = fi->mapflags;
 		    rpmte savep;
-		    int numSaved = 0;
+		    int numShared = 0;
 
 		    if (replaced != NULL) {
                         for (replaced; replaced->otherPkg; replaced++) {
