@@ -2136,6 +2136,7 @@ assert(psm != NULL);
 
 		    fi->fstates = NULL;
 		    fi->actions = NULL;
+		    fi->replaced = NULL;
 /*@-nullstate@*/ /* FIX: fi->actions is NULL */
 		    fi = rpmfiFree(fi);
 /*@=nullstate@*/
