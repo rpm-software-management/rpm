@@ -12,7 +12,6 @@
 	- fix popt CHARSET for various languages (rhbz#172155)
 	- fix install size calculation with excludes in manifest (rhbz#89661)
 	- use full path in the rpm cronjob (rhbz#174211)
-	- sync internal libmagic, fix security issues
 	- filter out incorrect perl(main) provides (rhbz#177960)
 	- fix scriptlet deadlock (rhbz#146549)
 	- fix netshared path comparison (rhbz#52725)
@@ -97,7 +96,13 @@
 	- don't treat provides as implicit obsoletes (rhbz#111071, ...)
 	- fix CVE-2007-1536, CVE-2007-2799 in internal libmagic
 	- support specifying fuzz factor to %patch (rhbz#243720)
-	
+	- enable ordering on erase mode
+	- transaction ordering fixes (rhbz#196590, 202540, 202542, ...)
+	- added IPv4/6 and EPSV support
+	- remove hardcoded /var/log/lastlog kludgery
+	- don't mmap large files (rhbz#139539, 177616)
+	- detect and provide a requirement for DT_GNU_HASH
+	- ARM architecture update 
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
