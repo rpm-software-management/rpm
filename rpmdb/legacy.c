@@ -167,6 +167,11 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
 	goto exit;
     }
 
+    /* file to large (32 MB), do not mmap file */
+    if (fsize > (size_t) 32*1024*1024)
+      if (ut == URL_IS_PATH || ut == URL_IS_UNKNOWN)
+	ut = URL_IS_DASH; /* force fd io */
+
     switch(ut) {
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
