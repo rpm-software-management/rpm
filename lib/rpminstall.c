@@ -839,14 +839,12 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia,
 	ps = rpmpsFree(ps);
     }
 
-#ifdef	NOTYET
     if (!stopUninstall && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
 	if (rpmtsOrder(ts)) {
 	    numFailed += numPackages;
 	    stopUninstall = 1;
 	}
     }
-#endif
 
     if (numPackages && !stopUninstall) {
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_REVERSE));
