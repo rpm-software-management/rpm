@@ -12,6 +12,11 @@
 
 #if HAVE_GELF_H
 #include <gelf.h>
+
+#if !defined(DT_GNU_HASH)
+#define	DT_GNU_HASH		0x6ffffef5
+#endif
+
 #endif
 
 #include "debug.h"
@@ -780,6 +785,8 @@ static int rpmfcELF(rpmfc fc)
     int isDSO;
     int gotSONAME = 0;
     int gotDEBUG = 0;
+    int gotHASH = 0;
+    int gotGNUHASH = 0;
     static int filter_GLIBC_PRIVATE = 0;
     static int oneshot = 0;
 
@@ -952,6 +959,12 @@ static int rpmfcELF(rpmfc fc)
 		    default:
 			/*@innercontinue@*/ continue;
 			/*@notreached@*/ /*@switchbreak@*/ break;
+                    case DT_HASH:    
+			gotHASH= 1;
+			/*@innercontinue@*/ continue;
+                    case DT_GNU_HASH:
+			gotGNUHASH= 1;
+			/*@innercontinue@*/ continue;
                     case DT_DEBUG:    
 			gotDEBUG = 1;
 			/*@innercontinue@*/ continue;
@@ -1007,6 +1020,18 @@ assert(s != NULL);
 	}
     }
     /*@=branchstate =uniondef @*/
+
+    /* For DSOs which use the .gnu_hash section and don't have a .hash
+     * section, we need to ensure that we have a new enough glibc. */ 
+    if (gotGNUHASH && !gotHASH) {
+        ds = rpmdsSingle(RPMTAG_REQUIRENAME, "rtld(GNU_HASH)", "", 
+                         RPMSENSE_FIND_REQUIRES);
+        rpmdsMerge(&fc->requires, ds);
+        buf[0] = '\0';
+        t = buf;
+        rpmfcSaveArg(&fc->ddict, rpmfcFileDep(t, fc->ix, ds));
+        ds = rpmdsFree(ds);
+    }
 
     /* For DSO's, provide the basename of the file if DT_SONAME not found. */
     if (!fc->skipProv && isDSO && !gotDEBUG && !gotSONAME) {
