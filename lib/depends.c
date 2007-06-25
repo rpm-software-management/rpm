@@ -1411,7 +1411,14 @@ rescan:
 	(void) rpmteSetDegree(q, 0);
 	tsbytes += rpmtePkgFileSize(q);
 
-	ordering[orderingCount] = rpmteAddedKey(q);
+	switch (rpmteType(q)) {
+	case TR_ADDED:
+            ordering[orderingCount] = rpmteAddedKey(q);
+            /*@switchbreak@*/ break;
+	case TR_REMOVED:
+            ordering[orderingCount] = RPMAL_NOMATCH;
+            /*@switchbreak@*/ break;
+        }
 	orderingCount++;
 	qlen--;
 	loopcheck--;
@@ -1608,7 +1615,7 @@ rescan:
 	    continue;
 
 	j = needle->orIndex;
-	if ((q = ts->order[j]) == NULL)
+	if ((q = ts->order[j]) == NULL || needle->pkgKey == RPMAL_NOMATCH)
 	    continue;
 
 	newOrder[newOrderCount++] = q;
