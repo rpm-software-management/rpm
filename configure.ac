@@ -827,7 +827,8 @@ dnl point, but should offer good performance improvements, check after
 dnl 4.4.2.1...
 dnl AC_FUNC_MMAP
 
-AC_CHECK_FUNCS(basename getcwd getwd inet_aton mtrace putenv realpath setenv)
+AC_CHECK_FUNCS(basename getaddrinfo getcwd getnameinfo getwd inet_aton)
+AC_CHECK_FUNCS(mtrace putenv realpath setenv)
 AC_CHECK_FUNCS(stpcpy stpncpy strcspn)
 AC_CHECK_FUNCS(strdup strndup strerror strtol strtoul strspn strstr)
 

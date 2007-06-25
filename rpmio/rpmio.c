@@ -9,6 +9,10 @@
 # include <machine/types.h>
 #endif
 
+#if HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
+
 #include <netinet/in.h>
 #include <arpa/inet.h>		/* XXX for inet_aton and HP-UX */
 
@@ -762,6 +766,7 @@ const char *urlStrerror(const char *url)
     return retstr;
 }
 
+#if !defined(HAVE_GETADDRINFO)
 #if !defined(USE_ALT_DNS) || !USE_ALT_DNS 
 static int mygethostbyname(const char * host,
 		/*@out@*/ struct in_addr * address)
@@ -812,14 +817,50 @@ static int getHostAddress(const char * host, /*@out@*/ struct in_addr * address)
 }
 /*@=compdef@*/
 /*@=boundsread@*/
+#endif
 
 static int tcpConnect(FD_t ctrl, const char * host, int port)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies ctrl, fileSystem, internalState @*/
 {
-    struct sockaddr_in sin;
     int fdno = -1;
     int rc;
+#ifdef	HAVE_GETADDRINFO
+    struct addrinfo hints, *res, *res0;
+    char pbuf[NI_MAXSERV];
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    sprintf(pbuf, "%d", port);
+    pbuf[sizeof(pbuf)-1] = '\0';
+    rc = FTPERR_FAILED_CONNECT;
+    if (getaddrinfo(host, pbuf, &hints, &res0) == 0) {
+	for (res = res0; res != NULL; res= res->ai_next) {
+	    if ((fdno = socket(res->ai_family, res->ai_socktype, res->ai_protocol)) < 0)
+		continue;
+	    if (connect(fdno, res->ai_addr, res->ai_addrlen) < 0) {
+		close(fdno);
+		continue;
+	    }
+	    /* success */
+	    rc = 0;
+	    if (_ftp_debug) {
+		char hbuf[NI_MAXHOST];
+		getnameinfo(res->ai_addr, res->ai_addrlen, hbuf, sizeof(hbuf),
+				NULL, 0, NI_NUMERICHOST);
+		fprintf(stderr,"++ connect [%s]:%d on fdno %d\n",
+				/*@-unrecog@*/ hbuf /*@=unrecog@*/, port, fdno);
+	    }
+	    break;
+	}
+	freeaddrinfo(res0);
+    }
+    if (rc < 0)
+	goto errxit;
+
+#else	/* HAVE_GETADDRINFO */			    
+    struct sockaddr_in sin;
 
 /*@-boundswrite@*/
     memset(&sin, 0, sizeof(sin));
@@ -854,6 +895,7 @@ fprintf(stderr,"++ connect %s:%d on fdno %d\n",
 inet_ntoa(sin.sin_addr)
 /*@=unrecog =moduncon =evalorderuncon @*/ ,
 (int)ntohs(sin.sin_port), fdno);
+#endif	/* HAVE_GETADDRINFO */
 
     fdSetFdno(ctrl, (fdno >= 0 ? fdno : -1));
     return 0;
@@ -1186,12 +1228,17 @@ errxit2:
 int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 {
     urlinfo u = data->url;
+#if !defined(HAVE_GETADDRINFO)
     struct sockaddr_in dataAddress;
+#endif	/* HAVE_GETADDRINFO */
+    char remoteIP[NI_MAXHOST];
     char * cmd;
     int cmdlen;
     char * passReply;
     char * chptr;
     int rc;
+    int epsv;
+    int port;
 
 /*@-boundswrite@*/
     URLSANE(u);
@@ -1226,8 +1273,35 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	data->contentLength = cl;
     }
 
+    epsv = 0;
     passReply = NULL;
-    rc = ftpCommand(u, &passReply, "PASV", NULL);
+#ifdef HAVE_GETNAMEINFO
+    rc = ftpCommand(u, &passReply, "EPSV", NULL);
+    if (rc==0) {
+#ifdef HAVE_GETADDRINFO
+	struct sockaddr_storage ss;
+#else /* HAVE_GETADDRINFO */
+	struct sockaddr_in ss;
+#endif /* HAVE_GETADDRINFO */
+	int size;
+	/* we need to know IP of remote host */
+	size=sizeof(ss);
+	if ((getpeername(fdFileno(c2f(u->ctrl)), (struct sockaddr *)&ss, &size) == 0) &&
+			(getnameinfo((struct sockaddr *)&ss, size, remoteIP, sizeof(remoteIP),
+				NULL, 0, NI_NUMERICHOST) == 0))
+		epsv++;
+	else {
+		/* abort EPSV and fall back to PASV */
+		rc = ftpCommand(u, &passReply, "ABOR", NULL);
+		if (rc) {
+		    rc = FTPERR_PASSIVE_ERROR;
+		    goto errxit;
+		}
+	}
+    }
+    if (epsv==0)
+#endif /* HAVE_GETNAMEINFO */
+        rc = ftpCommand(u, &passReply, "PASV", NULL);
     if (rc) {
 	rc = FTPERR_PASSIVE_ERROR;
 	goto errxit;
@@ -1242,6 +1316,15 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
     if (*chptr != ')') return FTPERR_PASSIVE_ERROR;
     *chptr-- = '\0';
 
+    if (epsv) {
+	int i;
+        if(sscanf(passReply,"%*c%*c%*c%d%*c",&i) != 1) {
+	   rc = FTPERR_PASSIVE_ERROR;
+	   goto errxit;
+	}
+	port = i;
+    } else {
+ 
     while (*chptr && *chptr != ',') chptr--;
     if (*chptr != ',') return FTPERR_PASSIVE_ERROR;
     chptr--;
@@ -1253,13 +1336,11 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
        port number portion */
 
     {	int i, j;
-	memset(&dataAddress, 0, sizeof(dataAddress));
-	dataAddress.sin_family = AF_INET;
 	if (sscanf(chptr, "%d,%d", &i, &j) != 2) {
 	    rc = FTPERR_PASSIVE_ERROR;
 	    goto errxit;
 	}
-	dataAddress.sin_port = htons((((unsigned)i) << 8) + j);
+	port = (((unsigned)i) << 8) + j;
     }
 
     chptr = passReply;
@@ -1267,9 +1348,75 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	if (*chptr == ',') *chptr = '.';
     }
 /*@=boundswrite@*/
+    sprintf(remoteIP, "%s", passReply);
+    } /* if (epsv) */
+
+#ifdef HAVE_GETADDRINFO
+    {
+        struct addrinfo hints, *res, *res0;
+	char pbuf[NI_MAXSERV];
+
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_NUMERICHOST;
+	sprintf(pbuf, "%d", port);
+	pbuf[sizeof(pbuf)-1] = '\0';
+	if (getaddrinfo(remoteIP, pbuf, &hints, &res0)) {
+	    rc = FTPERR_PASSIVE_ERROR;
+	    goto errxit;
+	}
+
+	for (res = res0; res != NULL; res = res->ai_next) {
+	    rc = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+	    fdSetFdno(data, (rc >= 0 ? rc : -1));
+	    if (rc < 0) {
+	        if (res->ai_next)
+		    continue;
+		else {
+		    rc = FTPERR_FAILED_CONNECT;
+		    freeaddrinfo(res0);
+		    goto errxit;
+		}
+	    }
+	    data = fdLink(data, "open data (ftpReq)");
+
+	    /* XXX setsockopt SO_LINGER */
+	    /* XXX setsockopt SO_KEEPALIVE */
+	    /* XXX setsockopt SO_TOS IPTOS_THROUGHPUT */
+	    
+	    {
+		int criterr = 0;
+	        while (connect(fdFileno(data), res->ai_addr, res->ai_addrlen) < 0) {
+	            if (errno == EINTR)
+		        continue;
+		    criterr++;
+		}
+		if (criterr) {
+		    if (res->ai_addr) {
+		        fdClose(data);
+		        continue;
+		    } else {
+		        rc = FTPERR_PASSIVE_ERROR;
+		        freeaddrinfo(res0);
+		        goto errxit;
+		    }
+		}
+	    }
+	    /* success */
+	    rc = 0;
+	    break;
+	}
+	freeaddrinfo(res0);
+    }
+	    
+#else /* HAVE_GETADDRINFO */
+    memset(&dataAddress, 0, sizeof(dataAddress));
+    dataAddress.sin_family = AF_INET;
+    dataAddress.sin_port = htons(port);
 
     /*@-moduncon@*/
-    if (!inet_aton(passReply, &dataAddress.sin_addr)) {
+    if (!inet_aton(remoteIP, &dataAddress.sin_addr)) {
 	rc = FTPERR_PASSIVE_ERROR;
 	goto errxit;
     }
@@ -1297,6 +1444,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 	goto errxit;
     }
     /*@=internalglobs@*/
+#endif /* HAVE_GETADDRINFO */
 
 if (_ftp_debug)
 fprintf(stderr, "-> %s", cmd);
@@ -1610,6 +1758,7 @@ static int httpReq(FD_t ctrl, const char * httpCmd, const char * httpArg)
     urlinfo u;
     const char * host;
     const char * path;
+    char hthost[NI_MAXHOST];
     int port;
     int rc;
     char * req;
@@ -1622,6 +1771,10 @@ assert(ctrl != NULL);
 
     if (((host = (u->proxyh ? u->proxyh : u->host)) == NULL))
 	return FTPERR_BAD_HOSTNAME;
+    if (strchr(host, ':'))
+	sprintf(hthost, "[%s]", host);
+    else
+	strcpy(hthost, host);
 
     if ((port = (u->proxyp > 0 ? u->proxyp : u->port)) < 0) port = 80;
     path = (u->proxyh || u->proxyp > 0) ? u->url : httpArg;
@@ -1651,7 +1804,7 @@ Host: y:z\r\n\
 Accept: text/plain\r\n\
 Transfer-Encoding: chunked\r\n\
 \r\n\
-") + strlen(httpCmd) + strlen(path) + sizeof(VERSION) + strlen(host) + 20;
+") + strlen(httpCmd) + strlen(path) + sizeof(VERSION) + strlen(hthost) + 20;
 
 /*@-boundswrite@*/
     req = alloca(len);
@@ -1665,7 +1818,7 @@ Host: %s:%d\r\n\
 Accept: text/plain\r\n\
 Transfer-Encoding: chunked\r\n\
 \r\n\
-",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, host, port);
+",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, hthost, port);
 } else {
     sprintf(req, "\
 %s %s HTTP/1.%d\r\n\
@@ -1673,7 +1826,7 @@ User-Agent: rpm/%s\r\n\
 Host: %s:%d\r\n\
 Accept: text/plain\r\n\
 \r\n\
-",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, host, port);
+",	httpCmd, path, (u->httpVersion ? 1 : 0), VERSION, hthost, port);
 }
 /*@=boundswrite@*/
 

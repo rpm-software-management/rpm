@@ -433,6 +433,8 @@ urltype urlPath(const char * url, const char ** pathp)
 /*
  * Split URL into components. The URL can look like
  *	scheme://user:password@host:port/path
+  * or as in RFC2732 for IPv6 address
+  *    service://user:password@[ip:v6:ad:dr:es:s]:port/path
  */
 /*@-bounds@*/
 /*@-modfilesys@*/
@@ -489,8 +491,14 @@ int urlSplit(const char * url, urlinfo *uret)
     }
     /*@=branchstate@*/
 
-    /* Look for ...host:port */
+    /* Look for ...host:port or [v6addr]:port*/
     fe = f = s;
+    if (strchr(fe, '[') && strchr(fe, ']'))
+    {
+	    fe = strchr(f, ']');
+	    *f++ = '\0';
+	    *fe++ = '\0';
+    }
     while (*fe && *fe != ':') fe++;
     if (*fe == ':') {
 	*fe++ = '\0';
