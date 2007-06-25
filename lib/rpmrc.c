@@ -1334,27 +1334,6 @@ static void defaultMachine(/*@out@*/ const char ** arch,
 	}
 #	endif
 
-#	if defined(__linux__) && defined(__powerpc__)
-	{
-	    unsigned pvr = 0;
-	    __sighandler_t oldh = signal(SIGILL, mfspr_ill);
-	    if (setjmp(mfspr_jmpbuf) == 0) {
-		__asm__ __volatile__ ("mfspr %0, 287" : "=r" (pvr));
-	    }
-	    signal(SIGILL, oldh);
-
-	    if ( pvr ) {
-		pvr >>= 16;
-		if ( pvr >= 0x40)
-		    strcpy(un.machine, "ppcpseries");
-		else if ( (pvr == 0x36) || (pvr == 0x37) )
-		    strcpy(un.machine, "ppciseries");
-		else
-		    strcpy(un.machine, "ppc");
-	    }
-	}
-#	endif
-
 	/* the uname() result goes through the arch_canon table */
 	canon = lookupInCanonTable(un.machine,
 				   tables[RPM_MACHTABLE_INSTARCH].canons,
