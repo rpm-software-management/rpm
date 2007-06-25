@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.4 foreign
 
 LINT = splint
 
-EXTRA_DIST = CHANGES CREDITS Doxyheader GROUPS README.amiga INSTALL \
+EXTRA_DIST = CHANGES ChangeLog CREDITS Doxyheader GROUPS README.amiga INSTALL \
 	autodeps/none autodeps/*.prov autodeps/*.req autogen.sh \
 	config.site db db3/configure installplatform platform* \
 	po/*.in po/*.po po/rpm.pot \
@@ -244,3 +244,6 @@ cscope:
 	@CSCOPE@ -b -R
 
 cref: ctags cscope
+
+ChangeLog:
+	hg log -v > ChangeLog
