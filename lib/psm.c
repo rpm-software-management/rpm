@@ -650,10 +650,6 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 
     psm->sq.reaper = 1;
 
-    /* XXX bash must have functional libtermcap.so.2 */
-    if (!strcmp(n, "libtermcap"))
-	ldconfig_done = 0;
-
     /*
      * If a successor node, and ldconfig was just run, don't bother.
      */
