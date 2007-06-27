@@ -180,7 +180,7 @@ extern struct poptOption * poptHelpOptionsI18N;
 #define POPT_AUTOHELP { NULL, '\0', POPT_ARG_INCLUDE_TABLE, poptHelpOptions, \
 			0, "Help options:", NULL },
 
-#define POPT_TABLEEND { NULL, '\0', 0, 0, 0, NULL, NULL }
+#define POPT_TABLEEND { NULL, '\0', 0, NULL, 0, NULL, NULL }
 /*@}*/
 
 /** \ingroup popt
