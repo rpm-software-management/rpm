@@ -680,10 +680,12 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     case RPMQV_PACKAGE:
     {
 	int matches = 0;
-	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
-	while (rpmdbNextIterator(qva->qva_mi) != NULL) {
+	rpmdbMatchIterator mi;
+	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
+	while (rpmdbNextIterator(mi) != NULL) {
 	    matches++;
 	}
+	rpmdbFreeIterator(mi);
 	if (! matches) {
 	    rpmError(RPMERR_QUERYINFO, _("package %s is not installed\n"), arg);
 	    res = 1;
