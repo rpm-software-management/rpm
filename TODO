@@ -7,6 +7,7 @@ Janitorial work:
 - audit and clean up user visible strings
 - clean up the build process (auto*-stuff, compiler warnings)
 - fix toplevel "make distcheck"
+- have "make check" do something useful (use James' test-harness?)
 - use mkstemp() instead of mktemp() everywhere
 - refactor those 800+ line monster functions into something more digestable
 - split popt to separate project
