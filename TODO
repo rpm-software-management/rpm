@@ -16,6 +16,8 @@ Janitorial work:
 - remove internal file/libmagic?
 - review, update included README, INSTALL etc docs
 - uninternationalize RPMMESS_DEBUG strings to ease translator work
+- macroize hardcoded directories like docDirs 
+- get rid of static "1024 entries is enough for everybody" buffers
 
 API:
 - proper separation of exported and private headers to clean up the API
