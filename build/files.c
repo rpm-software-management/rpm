@@ -2029,6 +2029,7 @@ static int processPackageFiles(Spec spec, Package pkg,
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/doc");
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/man");
     fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/info");
+    fl.docDirs[fl.docDirCount++] = xstrdup("/usr/share/gtk-doc/html");
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_docdir}", NULL);
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_mandir}", NULL);
     fl.docDirs[fl.docDirCount++] = rpmGetPath("%{_infodir}", NULL);
