@@ -1440,7 +1440,8 @@ static void rpmSetVarArch(int var, const char * val, const char * arch)
 	}
     }
 
-    next->value = xstrdup(val);		/* XXX memory leak, hard to plug */
+    next->value = _free(next->value);
+    next->value = xstrdup(val);
     next->arch = (arch ? xstrdup(arch) : NULL);
 }
 

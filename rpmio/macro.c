@@ -1998,8 +1998,10 @@ rpmInitMacros(MacroContext mc, const char * macrofiles)
 	    continue;
 
 	/* Read macros from each file. */
-	for (i = 0; i < ac; i++)
+	for (i = 0; i < ac; i++) {
 	    (void) rpmLoadMacroFile(mc, av[i]);
+	    av[i] = _free(av[i]);
+	}
 	av = _free(av);
     }
     mfiles = _free(mfiles);
