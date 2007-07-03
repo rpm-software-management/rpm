@@ -293,6 +293,7 @@ static int davConnect(urlinfo u)
 if (_dav_debug)
 fprintf(stderr, "*** Connect to %s:%d failed(%d):\n\t%s\n",
 		   u->host, u->port, rc, ne_get_error(u->sess));
+	u = urlLink(u, __FUNCTION__);   /* XXX error exit refcount adjustment */
 	break;
     }
 
