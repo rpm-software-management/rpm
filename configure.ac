@@ -1287,9 +1287,6 @@ AC_DEFINE_UNQUOTED(FINDPROVIDES, "$FINDPROVIDES",
 	[Full path to find-provides script (usually /usr/lib/rpm/find-provides)])
 AC_SUBST(FINDPROVIDES)
 
-testdir="`pwd`/tests"
-AC_SUBST(testdir)
-
 AC_SUBST(INCPATH)
 AC_SUBST(LIBMISC)
 
@@ -1308,7 +1305,6 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt
 	scripts/Makefile scripts/brp-redhat
 	scripts/macros.perl scripts/macros.php scripts/macros.python
 	tools/Makefile
-	tests/Makefile tests/rpmrc tests/macros tests/hello-test/Makefile
 	misc/Makefile po/Makefile.in
 	doc/Makefile
 	doc/manual/Makefile
