@@ -38,6 +38,7 @@ convertdb1_SOURCES =	convertdb1.c
 debugedit_SOURCES =	debugedit.c hashtab.c
 debugedit_LDADD =	@LDFLAGS_STATIC@ \
 	@WITH_LIBELF_LIB@ \
+	@WITH_BEECRYPT_LIB@ \
 	@WITH_POPT_LIB@
 
 javadeps_SOURCES =	javadeps.c

@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2002, 2003, 2005 Red Hat, Inc.
+/* Copyright (C) 2001, 2002, 2003, 2005, 2007 Red Hat, Inc.
    Written by Alexander Larsson <alexl@redhat.com>, 2002
    Based on code by Jakub Jelinek <jakub@redhat.com>, 2001.
 
@@ -36,6 +36,8 @@
 #include <gelf.h>
 #include <dwarf.h>
 
+#include <beecrypt/beecrypt.h>
+
 #include "hashtab.h"
 
 #define DW_TAG_partial_unit 0x3c
@@ -43,7 +45,8 @@
 char *base_dir = NULL;
 char *dest_dir = NULL;
 char *list_file = NULL;
-int list_file_fd = -1; 
+int list_file_fd = -1;
+int do_build_id = 0;
 
 typedef unsigned int uint_32;
 typedef unsigned short uint_16;
@@ -1217,6 +1220,8 @@ static struct poptOption optionsTable[] = {
       "directory to rewrite base-dir into", NULL },
     { "list-file",  'l', POPT_ARG_STRING, &list_file, 0,
       "file where to put list of source and header file names", NULL },
+    { "build-id",  'i', POPT_ARG_NONE, &do_build_id, 0,
+      "recompute build ID note and print ID on stdout", NULL },
       POPT_AUTOHELP
     { NULL, 0, 0, NULL, 0, NULL, NULL }
 };
@@ -1295,6 +1300,126 @@ error_out:
   return NULL;
 }
 
+/* Compute a fresh build ID bit-string from the editted file contents.  */
+static void
+handle_build_id (DSO *dso, Elf_Data *build_id,
+		 size_t build_id_offset, size_t build_id_size)
+{
+  hashFunctionContext ctx;
+  const hashFunction *hf = NULL;
+  int i = hashFunctionCount ();
+
+  while (i-- > 0)
+    {
+      hf = hashFunctionGet (i);
+      if (hf != NULL && hf->digestsize == build_id_size)
+	break;
+    }
+  if (hf == NULL)
+    {
+      fprintf (stderr, "Cannot handle %Zu-byte build ID\n", build_id_size);
+      exit (1);
+    }
+
+  if (elf_update (dso->elf, ELF_C_NULL) < 0)
+    {
+      fprintf (stderr, "Failed to update file: %s\n",
+	       elf_errmsg (elf_errno ()));
+      exit (1);
+    }
+
+  /* Clear the old bits so they do not affect the new hash.  */
+  memset ((char *) build_id->d_buf + build_id_offset, 0, build_id_offset);
+
+  hashFunctionContextInit (&ctx, hf);
+
+  /* Slurp the relevant header bits and section contents and feed them
+     into the hash function.  The only bits we ignore are the offset
+     fields in ehdr and shdrs, since the semantically identical ELF file
+     could be written differently if it doesn't change the phdr layout.
+     We always use the GElf (i.e. Elf64) formats for the bits to hash
+     since it is convenient.  It doesn't matter whether this is an Elf32
+     or Elf64 object, only that we are consistent in what bits feed the
+     hash so it comes out the same for the same file contents.  */
+  {
+    inline void process (const void *data, size_t size);
+    inline void process (const void *data, size_t size)
+    {
+      memchunk chunk = { .data = (void *) data, .size = size };
+      hashFunctionContextUpdateMC (&ctx, &chunk);
+    }
+
+    union
+    {
+      GElf_Ehdr ehdr;
+      GElf_Phdr phdr;
+      GElf_Shdr shdr;
+    } u;
+    Elf_Data x = { .d_version = EV_CURRENT, .d_buf = &u };
+
+    x.d_type = ELF_T_EHDR;
+    x.d_size = sizeof u.ehdr;
+    u.ehdr = dso->ehdr;
+    u.ehdr.e_phoff = u.ehdr.e_shoff = 0;
+    if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
+      {
+      bad:
+	fprintf (stderr, "Failed to compute header checksum: %s\n",
+		 elf_errmsg (elf_errno ()));
+	exit (1);
+      }
+
+    x.d_type = ELF_T_PHDR;
+    x.d_size = sizeof u.phdr;
+    for (i = 0; i < dso->ehdr.e_phnum; ++i)
+      {
+	if (gelf_getphdr (dso->elf, i, &u.phdr) == NULL)
+	  goto bad;
+	if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
+	  goto bad;
+	process (x.d_buf, x.d_size);
+      }
+
+    x.d_type = ELF_T_SHDR;
+    x.d_size = sizeof u.shdr;
+    for (i = 0; i < dso->ehdr.e_shnum; ++i)
+      if (dso->scn[i] != NULL)
+	{
+	  u.shdr = dso->shdr[i];
+	  u.shdr.sh_offset = 0;
+	  if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
+	    goto bad;
+	  process (x.d_buf, x.d_size);
+
+	  if (u.shdr.sh_type != SHT_NOBITS)
+	    {
+	      Elf_Data *d = elf_rawdata (dso->scn[i], NULL);
+	      if (d == NULL)
+		goto bad;
+	      process (d->d_buf, d->d_size);
+	    }
+	}
+  }
+
+  hashFunctionContextDigest (&ctx, (byte *) build_id->d_buf + build_id_offset);
+  hashFunctionContextFree (&ctx);
+
+  elf_flagdata (build_id, ELF_C_SET, ELF_F_DIRTY);
+
+  /* Now format the build ID bits in hex to print out.  */
+  {
+    const unsigned char * id = build_id->d_buf + build_id_offset;
+    char hex[build_id_size * 2 + 1];
+    int n = snprintf (hex, 3, "%02" PRIx8, id[0]);
+    assert (n == 2);
+    for (i = 1; i < build_id_size; ++i)
+      {
+	n = snprintf (&hex[i * 2], 3, "%02" PRIx8, id[i]);
+	assert (n == 2);
+      }
+    puts (hex);
+  }
+}
 
 int
 main (int argc, char *argv[])
@@ -1307,7 +1432,9 @@ main (int argc, char *argv[])
   const char **args;
   struct stat stat_buf;
   char *p;
-  
+  Elf_Data *build_id = NULL;
+  size_t build_id_offset = 0, build_id_size = 0;
+
   optCon = poptGetContext("debugedit", argc, (const char **)argv,
 			  optionsTable, 0);
   
@@ -1410,12 +1537,51 @@ main (int argc, char *argv[])
 #endif
 	  if (strcmp (name, ".debug_info") == 0)
 	    edit_dwarf2 (dso);
-	  
+
+	  break;
+	case SHT_NOTE:
+	  if (do_build_id
+	      && build_id == NULL && (dso->shdr[i].sh_flags & SHF_ALLOC))
+	    {
+	      /* Look for a build-ID note here.  */
+	      Elf_Data *data = elf_rawdata (elf_getscn (dso->elf, i), NULL);
+	      Elf32_Nhdr nh;
+	      Elf_Data dst =
+		{
+		  .d_version = EV_CURRENT, .d_type = ELF_T_NHDR,
+		  .d_buf = &nh, .d_size = sizeof nh
+		};
+	      Elf_Data src = dst;
+	      src.d_buf = data->d_buf;
+	      assert (sizeof (Elf32_Nhdr) == sizeof (Elf64_Nhdr));
+	      while (data->d_buf + data->d_size - src.d_buf > (int) sizeof nh
+		     && elf32_xlatetom (&dst, &src, dso->ehdr.e_ident[EI_DATA]))
+		{
+		  Elf32_Word len = sizeof nh + nh.n_namesz;
+		  len = (len + 3) & ~3;
+
+		  if (nh.n_namesz == sizeof "GNU" && nh.n_type == 3
+		      && !memcmp (src.d_buf + sizeof nh, "GNU", sizeof "GNU"))
+		    {
+		      build_id = data;
+		      build_id_offset = src.d_buf + len - data->d_buf;
+		      build_id_size = nh.n_descsz;
+		      break;
+		    }
+
+		  len += nh.n_descsz;
+		  len = (len + 3) & ~3;
+		  src.d_buf += len;
+		}
+	    }
 	  break;
 	default:
 	  break;
 	}
     }
+
+  if (do_build_id && build_id != NULL)
+    handle_build_id (dso, build_id, build_id_offset, build_id_size);
 
   if (elf_update (dso->elf, ELF_C_WRITE) < 0)
     {
