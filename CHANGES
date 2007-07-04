@@ -103,6 +103,17 @@
 	- don't mmap large files (rhbz#139539, 177616)
 	- detect and provide a requirement for DT_GNU_HASH
 	- ARM architecture update 
+	- update popt version for clean upgradability
+	- remove hardcoded libtermcap vs bash kludge
+	- updated Russian man pages (rhbz#185620)
+	- fix a sparse warning in popt.h (rhbz#202005)
+	- disable broken "make check" tests
+	- treat /usr/share/gtk-doc/html/ as a docdir
+	- plug some minor memory leaks
+	- use --wildcards with tar for compatibility with tar >= 1.15.91
+	- fix segfault on errors if neon transport is used (rhbz#220392)
+	- new buildroot sanity checker scripts check-buildroot and check-rpaths
+	- new debugedit option for recomputing build ID
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.

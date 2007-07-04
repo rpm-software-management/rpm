@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-25 16:24+0300\n"
+"POT-Creation-Date: 2007-07-04 15:15+0300\n"
 "PO-Revision-Date: 2007-06-29 23:42+0200\n"
 "Last-Translator: Piotr Drąg <raven@pmail.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -594,22 +594,22 @@ msgstr "Nie można otworzyć pliku %s dla %%files: %s\n"
 msgid "line: %s\n"
 msgstr "wiersz: %s\n"
 
-#: build/files.c:2386
+#: build/files.c:2387
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Błędny plik: %s: %s\n"
 
-#: build/files.c:2410 build/parsePrep.c:50
+#: build/files.c:2411 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Błędny użytkownik/grupa: %s\n"
 
-#: build/files.c:2455
+#: build/files.c:2456
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Szukanie niespakietowanych plików: %s\n"
 
-#: build/files.c:2472
+#: build/files.c:2473
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -618,7 +618,7 @@ msgstr ""
 "Znaleziono zainstalowane (ale niespakietowane) pliki:\n"
 "%s"
 
-#: build/files.c:2500
+#: build/files.c:2501
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Przetwarzanie plików: %s-%s-%s\n"
@@ -757,7 +757,7 @@ msgstr "Nie można ponownie wczytać nagłówka podpisu.\n"
 msgid "Could not open %s: %s\n"
 msgstr "Nie można otworzyć %s: %s\n"
 
-#: build/pack.c:645 lib/psm.c:1649
+#: build/pack.c:645 lib/psm.c:1645
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie można zapisać pakietu: %s\n"
@@ -787,7 +787,7 @@ msgstr "Nie można odczytać danych z %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie można zapisać danych do %s: %s\n"
 
-#: build/pack.c:738 lib/psm.c:1918
+#: build/pack.c:738 lib/psm.c:1914
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
@@ -2357,80 +2357,80 @@ msgstr "%s: waitpid(%d) rc %d stan %x sekundy %u.%03u\n"
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr "%s: %s(%s-%s-%s.%s) uruchamianie skryptu <lua>.\n"
 
-#: lib/psm.c:663
+#: lib/psm.c:659
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr "%s: %s(%s-%s-%s.%s) pomijanie nadmiarowego \"%s\".\n"
 
-#: lib/psm.c:671
+#: lib/psm.c:667
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr "%s: %s(%s-%s-%s.%s) %ssynchroniczne uruchomienie skryptu\n"
 
-#: lib/psm.c:883
+#: lib/psm.c:879
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr "%s: %s(%s-%s-%s.%s)\texecv(%s) PID %d\n"
 
-#: lib/psm.c:918
+#: lib/psm.c:914
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Nie można rozdzielić %s: %s\n"
 
-#: lib/psm.c:929
+#: lib/psm.c:925
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "skrypt %s(%s-%s-%s.%s) nie powiódł się, waitpid(%d) rc %d: %s\n"
 
-#: lib/psm.c:936
+#: lib/psm.c:932
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
 msgstr "skrypt %s(%s-%s-%s.%s) nie powiódł się, sygnał %d\n"
 
-#: lib/psm.c:940
+#: lib/psm.c:936
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr "skrypt %s(%s-%s-%s.%s) nie powiódł się, stan wyjścia %d\n"
 
-#: lib/psm.c:1375
+#: lib/psm.c:1371
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "%s: %s ma %d plików, test = %d\n"
 
-#: lib/psm.c:1552
+#: lib/psm.c:1548
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: skrypt %s nie powiódł się (%d), pomijanie %s\n"
 
-#: lib/psm.c:1661
+#: lib/psm.c:1657
 msgid "Unable to reload signature header\n"
 msgstr "Nie można ponownie wczytać nagłówka podpisu\n"
 
-#: lib/psm.c:1739
+#: lib/psm.c:1735
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozpakowanie archiwum nie powiodło się%s%s: %s\n"
 
-#: lib/psm.c:1740
+#: lib/psm.c:1736
 msgid " on file "
 msgstr " na pliku "
 
-#: lib/psm.c:1926
+#: lib/psm.c:1922
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s nie powiódł się na pliku %s: %s\n"
 
-#: lib/psm.c:1929
+#: lib/psm.c:1925
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s nie powiodło się: %s\n"
 
-#: lib/psm.c:2117
+#: lib/psm.c:2113
 #, c-format
 msgid "Attempting to mark %s as installed in score board(%u).\n"
 msgstr "Próba oznakowania %s jako zainstalowanego w tablicy punktów(%u).\n"
 
-#: lib/psm.c:2150
+#: lib/psm.c:2146
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr "Próba oznakowania %s jako usuniętego w tablicy punktów(0x%x).\n"
@@ -2537,7 +2537,7 @@ msgstr "numer rekordu pakietu: %u\n"
 msgid "record %u could not be read\n"
 msgstr "nie można odczytać rekordu %u\n"
 
-#: lib/query.c:688 lib/rpminstall.c:800
+#: lib/query.c:690 lib/rpminstall.c:800
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -2546,7 +2546,7 @@ msgstr "pakiet %s nie jest zainstalowany\n"
 msgid "(added files)"
 msgstr "(dodane pliki)"
 
-#: lib/rpmal.c:856
+#: lib/rpmal.c:857
 msgid "(added provide)"
 msgstr "(dodany zasób)"
 
@@ -3050,26 +3050,26 @@ msgstr "brak architektury dla %s w %s:%d\n"
 msgid "bad option '%s' at %s:%d\n"
 msgstr "błędna opcja \"%s\" w %s:%d\n"
 
-#: lib/rpmrc.c:1562
+#: lib/rpmrc.c:1563
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Nieznany system: %s\n"
 
-#: lib/rpmrc.c:1563
+#: lib/rpmrc.c:1564
 msgid "Please contact rpm-maint@lists.rpm.org\n"
 msgstr "Proszę skontaktować się z rpm-maint@lists.rpm.org\n"
 
-#: lib/rpmrc.c:1800
+#: lib/rpmrc.c:1801
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr "Nie można rozwinąć %s\n"
 
-#: lib/rpmrc.c:1805
+#: lib/rpmrc.c:1806
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr "Nie można odczytać %s, HOME jest za duże.\n"
 
-#: lib/rpmrc.c:1822
+#: lib/rpmrc.c:1823
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr "Nie można otworzyć %s do odczytania: %s.\n"
@@ -4017,12 +4017,12 @@ msgid "Target buffer overflow\n"
 msgstr "Przepełnienie bufora docelowego\n"
 
 #. XXX Fstrerror
-#: rpmio/macro.c:2054 rpmio/macro.c:2060
+#: rpmio/macro.c:2056 rpmio/macro.c:2062
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Plik %s: %s\n"
 
-#: rpmio/macro.c:2063
+#: rpmio/macro.c:2065
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy niż %u bajtów\n"
@@ -4260,4 +4260,3 @@ msgstr "użyj bazy danych w KATALOGU"
 #: ../rpmpopt:410 ../rpmpopt:418
 msgid "DIRECTORY"
 msgstr "KATALOG"
-

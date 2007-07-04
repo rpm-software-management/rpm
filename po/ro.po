@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-19 14:34+0300\n"
+"POT-Creation-Date: 2007-07-04 15:15+0300\n"
 "PO-Revision-Date: 1999-04-10 12:00+EST\n"
 "Last-Translator: Cristian Gafton <gafton@redhat.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -569,29 +569,29 @@ msgstr ""
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:2386
+#: build/files.c:2387
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
-#: build/files.c:2410 build/parsePrep.c:50
+#: build/files.c:2411 build/parsePrep.c:50
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2455
+#: build/files.c:2456
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr ""
 
-#: build/files.c:2472
+#: build/files.c:2473
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2500
+#: build/files.c:2501
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr ""
@@ -730,7 +730,7 @@ msgstr ""
 msgid "Could not open %s: %s\n"
 msgstr ""
 
-#: build/pack.c:645 lib/psm.c:1649
+#: build/pack.c:645 lib/psm.c:1645
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr ""
@@ -760,7 +760,7 @@ msgstr ""
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:738 lib/psm.c:1918
+#: build/pack.c:738 lib/psm.c:1914
 #, c-format
 msgid "Wrote: %s\n"
 msgstr ""
@@ -975,66 +975,71 @@ msgstr ""
 msgid "Bad source: %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:86
+#: build/parsePrep.c:88
 #, c-format
 msgid "No patch number %d\n"
 msgstr ""
 
-#: build/parsePrep.c:183
+#: build/parsePrep.c:187
 #, c-format
 msgid "No source number %d\n"
 msgstr ""
 
-#: build/parsePrep.c:205
+#: build/parsePrep.c:209
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:311
+#: build/parsePrep.c:315
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:326
+#: build/parsePrep.c:330
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:344
+#: build/parsePrep.c:348
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:486
+#: build/parsePrep.c:490
 #, c-format
 msgid "line %d: Need arg to %%patch -b: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:495
+#: build/parsePrep.c:499
 #, c-format
 msgid "line %d: Need arg to %%patch -z: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:507
+#: build/parsePrep.c:516
+#, c-format
+msgid "line %d: Bad arg to %%patch -F: %s\n"
+msgstr ""
+
+#: build/parsePrep.c:528
 #, c-format
 msgid "line %d: Need arg to %%patch -p: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:514
+#: build/parsePrep.c:535
 #, c-format
 msgid "line %d: Bad arg to %%patch -p: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:521
+#: build/parsePrep.c:542
 msgid "Too many patches!\n"
 msgstr ""
 
-#: build/parsePrep.c:525
+#: build/parsePrep.c:546
 #, c-format
 msgid "line %d: Bad arg to %%patch: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:561
+#: build/parsePrep.c:582
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -1421,21 +1426,21 @@ msgid ""
 "breadth)\n"
 msgstr ""
 
-#: lib/depends.c:1444
+#: lib/depends.c:1451
 #, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr ""
 
-#: lib/depends.c:1517
+#: lib/depends.c:1524
 msgid "LOOP:\n"
 msgstr ""
 
-#: lib/depends.c:1552
+#: lib/depends.c:1559
 msgid "========== continuing tsort ...\n"
 msgstr ""
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1557
+#: lib/depends.c:1564
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1480,7 +1485,7 @@ msgstr ""
 msgid "failed to stat %s: %s\n"
 msgstr ""
 
-#: lib/fs.c:157 rpmio/url.c:554
+#: lib/fs.c:157 rpmio/url.c:562
 #, c-format
 msgid "failed to open %s: %s\n"
 msgstr ""
@@ -2312,80 +2317,80 @@ msgstr ""
 msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 msgstr ""
 
-#: lib/psm.c:663
+#: lib/psm.c:659
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) skipping redundant \"%s\".\n"
 msgstr ""
 
-#: lib/psm.c:671
+#: lib/psm.c:667
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:883
+#: lib/psm.c:879
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:918
+#: lib/psm.c:914
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:929
+#: lib/psm.c:925
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr ""
 
-#: lib/psm.c:936
+#: lib/psm.c:932
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
 msgstr ""
 
-#: lib/psm.c:940
+#: lib/psm.c:936
 #, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr ""
 
-#: lib/psm.c:1375
+#: lib/psm.c:1371
 #, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr ""
 
-#: lib/psm.c:1552
+#: lib/psm.c:1548
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1661
+#: lib/psm.c:1657
 msgid "Unable to reload signature header\n"
 msgstr ""
 
-#: lib/psm.c:1739
+#: lib/psm.c:1735
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1740
+#: lib/psm.c:1736
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:1926
+#: lib/psm.c:1922
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:1929
+#: lib/psm.c:1925
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
 
-#: lib/psm.c:2117
+#: lib/psm.c:2113
 #, c-format
 msgid "Attempting to mark %s as installed in score board(%u).\n"
 msgstr ""
 
-#: lib/psm.c:2150
+#: lib/psm.c:2146
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""
@@ -2492,7 +2497,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:688 lib/rpminstall.c:800
+#: lib/query.c:690 lib/rpminstall.c:800
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2501,7 +2506,7 @@ msgstr ""
 msgid "(added files)"
 msgstr ""
 
-#: lib/rpmal.c:856
+#: lib/rpmal.c:857
 msgid "(added provide)"
 msgstr ""
 
@@ -2634,37 +2639,37 @@ msgstr ""
 msgid "%s skipped due to missingok flag\n"
 msgstr ""
 
-#: lib/rpmfi.c:803
+#: lib/rpmfi.c:801
 msgid "========== relocations\n"
 msgstr ""
 
-#: lib/rpmfi.c:807
+#: lib/rpmfi.c:805
 #, c-format
 msgid "%5d exclude  %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:810
+#: lib/rpmfi.c:808
 #, c-format
 msgid "%5d relocate %s -> %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:944
+#: lib/rpmfi.c:942
 #, c-format
 msgid "excluding %s %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:954
+#: lib/rpmfi.c:952
 #, c-format
 msgid "relocating %s to %s\n"
 msgstr ""
 
-#: lib/rpmfi.c:1046
+#: lib/rpmfi.c:1044
 #, c-format
 msgid "relocating directory %s to %s\n"
 msgstr ""
 
 #: lib/rpmgi.c:81 lib/rpminstall.c:124 lib/rpminstall.c:480
-#: lib/rpminstall.c:615 lib/rpminstall.c:1043 lib/rpmts.c:643
+#: lib/rpminstall.c:615 lib/rpminstall.c:1041 lib/rpmts.c:643
 #: tools/rpmgraph.c:121 tools/rpmgraph.c:158
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2677,7 +2682,7 @@ msgstr ""
 
 #. XXX rpminstall will need RPMMESS_ERROR
 #: lib/rpmgi.c:628 lib/rpminstall.c:659 lib/rpminstall.c:834
-#: lib/rpminstall.c:1269 lib/transaction.c:1033 tools/rpmgraph.c:196
+#: lib/rpminstall.c:1267 lib/transaction.c:1031 tools/rpmgraph.c:196
 msgid "Failed dependencies:\n"
 msgstr ""
 
@@ -2731,7 +2736,7 @@ msgstr ""
 msgid "skipping %s - transfer failed - %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:499 lib/rpminstall.c:897 tools/rpmgraph.c:141
+#: lib/rpminstall.c:499 lib/rpminstall.c:895 tools/rpmgraph.c:141
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
@@ -2785,28 +2790,28 @@ msgstr ""
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:881
+#: lib/rpminstall.c:879
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:887
+#: lib/rpminstall.c:885
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:1263 lib/transaction.c:1026
+#: lib/rpminstall.c:1261 lib/transaction.c:1024
 #, c-format
 msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 msgstr ""
 
-#: lib/rpminstall.c:1294 lib/transaction.c:1077
+#: lib/rpminstall.c:1292 lib/transaction.c:1075
 msgid "Cleaning up repackaged packages:\n"
 msgstr ""
 
 #. @innercontinue@
 #. XXX can't happen
-#: lib/rpminstall.c:1301 lib/transaction.c:1083
+#: lib/rpminstall.c:1299 lib/transaction.c:1081
 #, c-format
 msgid "\tRemoving %s:\n"
 msgstr ""
@@ -3001,26 +3006,26 @@ msgstr ""
 msgid "bad option '%s' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:1583
+#: lib/rpmrc.c:1563
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1584
-msgid "Please contact rpm-list@redhat.com\n"
+#: lib/rpmrc.c:1564
+msgid "Please contact rpm-maint@lists.rpm.org\n"
 msgstr ""
 
-#: lib/rpmrc.c:1821
+#: lib/rpmrc.c:1801
 #, c-format
 msgid "Cannot expand %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1826
+#: lib/rpmrc.c:1806
 #, c-format
 msgid "Cannot read %s, HOME is too large.\n"
 msgstr ""
 
-#: lib/rpmrc.c:1843
+#: lib/rpmrc.c:1823
 #, c-format
 msgid "Unable to open %s for reading: %s.\n"
 msgstr ""
@@ -3326,38 +3331,38 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr ""
 
 #. @innercontinue@
-#: lib/transaction.c:937
+#: lib/transaction.c:935
 #, c-format
 msgid "excluding directory %s\n"
 msgstr ""
 
-#: lib/transaction.c:1024
+#: lib/transaction.c:1022
 msgid "Transaction failed...rolling back\n"
 msgstr ""
 
-#: lib/transaction.c:1044
+#: lib/transaction.c:1042
 msgid "Could not order auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1134
+#: lib/transaction.c:1132
 msgid "Getting repackaged header from transaction element\n"
 msgstr ""
 
 #. Get the index of possible repackaged packages
-#: lib/transaction.c:1159
+#: lib/transaction.c:1157
 #, c-format
 msgid "\tLooking for %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1163
+#: lib/transaction.c:1161
 msgid "\tMatches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1167
+#: lib/transaction.c:1165
 msgid "\tNo matches found.\n"
 msgstr ""
 
-#: lib/transaction.c:1180
+#: lib/transaction.c:1178
 msgid "\tRepackaged package not found!.\n"
 msgstr ""
 
@@ -3368,38 +3373,38 @@ msgstr ""
 #. * would be found.
 #. * XXX:  Should Match NAC!
 #.
-#: lib/transaction.c:1201
+#: lib/transaction.c:1199
 msgid "\tREMOVETID matched INSTALLTID.\n"
 msgstr ""
 
-#: lib/transaction.c:1203
+#: lib/transaction.c:1201
 #, c-format
 msgid "\t\tName:  %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1226
+#: lib/transaction.c:1224
 #, c-format
 msgid "\tRepackaged Package was %s...\n"
 msgstr ""
 
-#: lib/transaction.c:1270
+#: lib/transaction.c:1268
 msgid "Adding install element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1279
+#: lib/transaction.c:1277
 msgid "Could not get install element database instance!\n"
 msgstr ""
 
-#: lib/transaction.c:1292
+#: lib/transaction.c:1290
 msgid "Could not get header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1302
+#: lib/transaction.c:1300
 #, c-format
 msgid "\tAdded repackaged package header: %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1304 lib/transaction.c:1315
+#: lib/transaction.c:1302 lib/transaction.c:1313
 #, c-format
 msgid "\tAdded from install element %s.\n"
 msgstr ""
@@ -3407,46 +3412,46 @@ msgstr ""
 #. Add the header as an erase element, we did not
 #. * have a repackaged package
 #.
-#: lib/transaction.c:1313
+#: lib/transaction.c:1311
 msgid "\tAdded erase element.\n"
 msgstr ""
 
-#: lib/transaction.c:1322
+#: lib/transaction.c:1320
 msgid "Could not get repackaged header for auto-rollback transaction!\n"
 msgstr ""
 
-#: lib/transaction.c:1329
+#: lib/transaction.c:1327
 msgid "Add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1337
+#: lib/transaction.c:1335
 msgid "\tFound existing upgrade element.\n"
 msgstr ""
 
-#: lib/transaction.c:1338
+#: lib/transaction.c:1336
 #, c-format
 msgid "\tNot adding erase element for %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1355
+#: lib/transaction.c:1353
 #, c-format
 msgid "\tAdded repackaged package %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1357
+#: lib/transaction.c:1355
 #, c-format
 msgid "\tAdded from erase element %s.\n"
 msgstr ""
 
-#: lib/transaction.c:1362
+#: lib/transaction.c:1360
 msgid "Could not add erase element to auto-rollback transaction.\n"
 msgstr ""
 
-#: lib/transaction.c:1368
+#: lib/transaction.c:1366
 msgid "\tNo repackaged package...nothing to do.\n"
 msgstr ""
 
-#: lib/transaction.c:1374
+#: lib/transaction.c:1372
 msgid "Failure reading repackaged package!\n"
 msgstr ""
 
@@ -3458,12 +3463,12 @@ msgstr ""
 #. * For packages being removed:
 #. * - count files.
 #.
-#: lib/transaction.c:1497
+#: lib/transaction.c:1495
 #, c-format
 msgid "sanity checking %d elements\n"
 msgstr ""
 
-#: lib/transaction.c:1583
+#: lib/transaction.c:1581
 msgid "running pre-transaction scripts\n"
 msgstr ""
 
@@ -3475,7 +3480,7 @@ msgstr ""
 #. * calling fpLookupList only once. I'm not sure that the speedup is
 #. * worth the trouble though.
 #.
-#: lib/transaction.c:1657
+#: lib/transaction.c:1655
 #, c-format
 msgid "computing %d file fingerprints\n"
 msgstr ""
@@ -3483,31 +3488,31 @@ msgstr ""
 #. ===============================================
 #. * Compute file disposition for each package in transaction set.
 #.
-#: lib/transaction.c:1741
+#: lib/transaction.c:1739
 msgid "computing file dispositions\n"
 msgstr ""
 
-#: lib/transaction.c:1934
+#: lib/transaction.c:1932
 msgid "Creating auto-rollback transaction\n"
 msgstr ""
 
-#: lib/transaction.c:2088
+#: lib/transaction.c:2086
 msgid "Add failed.  Could not read package header.\n"
 msgstr ""
 
-#: lib/transaction.c:2171
+#: lib/transaction.c:2170
 msgid "Add failed in rpmpsmStage().\n"
 msgstr ""
 
-#: lib/transaction.c:2215
+#: lib/transaction.c:2214
 msgid "Add failed.  Could not get file list.\n"
 msgstr ""
 
-#: lib/transaction.c:2264
+#: lib/transaction.c:2263
 msgid "Erase failed failed in rpmpsmStage().\n"
 msgstr ""
 
-#: lib/transaction.c:2325
+#: lib/transaction.c:2324
 msgid "running post-transaction scripts\n"
 msgstr ""
 
@@ -3954,69 +3959,69 @@ msgid "Target buffer overflow\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/macro.c:2054 rpmio/macro.c:2060
+#: rpmio/macro.c:2056 rpmio/macro.c:2062
 #, c-format
 msgid "File %s: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:2063
+#: rpmio/macro.c:2065
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
-#: rpmio/rpmio.c:690
+#: rpmio/rpmio.c:694
 msgid "Success"
 msgstr ""
 
-#: rpmio/rpmio.c:713
+#: rpmio/rpmio.c:717
 msgid "Bad server response"
 msgstr ""
 
-#: rpmio/rpmio.c:715
+#: rpmio/rpmio.c:719
 msgid "Server I/O error"
 msgstr ""
 
-#: rpmio/rpmio.c:717
+#: rpmio/rpmio.c:721
 msgid "Server timeout"
 msgstr ""
 
-#: rpmio/rpmio.c:719
+#: rpmio/rpmio.c:723
 msgid "Unable to lookup server host address"
 msgstr ""
 
-#: rpmio/rpmio.c:721
+#: rpmio/rpmio.c:725
 msgid "Unable to lookup server host name"
 msgstr ""
 
-#: rpmio/rpmio.c:723
+#: rpmio/rpmio.c:727
 msgid "Failed to connect to server"
 msgstr ""
 
-#: rpmio/rpmio.c:725
+#: rpmio/rpmio.c:729
 msgid "Failed to establish data connection to server"
 msgstr ""
 
-#: rpmio/rpmio.c:727
+#: rpmio/rpmio.c:731
 msgid "I/O error to local file"
 msgstr ""
 
-#: rpmio/rpmio.c:729
+#: rpmio/rpmio.c:733
 msgid "Error setting remote server to passive mode"
 msgstr ""
 
-#: rpmio/rpmio.c:731
+#: rpmio/rpmio.c:735
 msgid "File not found on server"
 msgstr ""
 
-#: rpmio/rpmio.c:733
+#: rpmio/rpmio.c:737
 msgid "Abort in progress"
 msgstr ""
 
-#: rpmio/rpmio.c:737
+#: rpmio/rpmio.c:741
 msgid "Unknown or unexpected error"
 msgstr ""
 
-#: rpmio/rpmio.c:1432
+#: rpmio/rpmio.c:1580
 #, c-format
 msgid "logging into %s as %s, pw %s\n"
 msgstr ""
@@ -4071,12 +4076,12 @@ msgstr ""
 msgid "error: %sport must be a number\n"
 msgstr ""
 
-#: rpmio/url.c:502
+#: rpmio/url.c:510
 msgid "url port must be a number\n"
 msgstr ""
 
 #. XXX Fstrerror
-#: rpmio/url.c:574
+#: rpmio/url.c:582
 #, c-format
 msgid "failed to create %s: %s\n"
 msgstr ""
