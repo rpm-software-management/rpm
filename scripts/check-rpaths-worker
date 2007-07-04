@@ -1,0 +1,158 @@
+#! /bin/bash
+
+# Copyright (C) 2004 Enrico Scholz <enrico.scholz@informatik.tu-chemnitz.de>
+#  
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#  
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#  
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+
+fail=
+already_shown=0
+
+# effect of this expression is obviously:
+# * match paths beginning with:
+#   - $SOMETHING/<something>/..
+#   - /<something>/..
+# * but not paths beginning with
+#   - $SOMETHING/..
+#   - $SOMETHING/../../../.....
+BADNESS_EXPR_32='\(\(\$[^/]\+\)\?\(/.*\)\?/\(\([^.][^/]*\)\|\(\.[^./][^/]*\)\|\(\.\.[^/]\+\)\)\)/\.\.\(/.*\)\?$'
+
+function showHint()
+{
+    test "$already_shown" -eq 0 || return
+    already_shown=1
+    
+    cat <<EOF >&2
+*******************************************************************************
+*
+* WARNING: 'check-rpaths' detected a broken RPATH and will cause 'rpmbuild'
+*          to fail. To ignore these errors, you can set the '\$QA_RPATHS'
+*          environment variable which is a bitmask allowing the values
+*          below. The current value of QA_RPATHS is $(printf '0x%04x' $QA_RPATHS).
+*
+*    0x0001 ... standard RPATHs (e.g. /usr/lib); such RPATHs are a minor
+*               issue but are introducing redundant searchpaths without
+*               providing a benefit. They can also cause errors in multilib
+*               environments.
+*    0x0002 ... invalid RPATHs; these are RPATHs which are neither absolute
+*               nor relative filenames and can therefore be a SECURITY risk
+*    0x0004 ... insecure RPATHs; these are relative RPATHs which are a
+*               SECURITY risk
+*    0x0008 ... the special '\$ORIGIN' RPATHs are appearing after other
+*               RPATHs; this is just a minor issue but usually unwanted
+*    0x0010 ... the RPATH is empty; there is no reason for such RPATHs
+*               and they cause unneeded work while loading libraries
+*    0x0020 ... an RPATH references '..' of an absolute path; this will break
+*               the functionality when the path before '..' is a symlink
+*          
+*
+* Examples:
+* - to ignore standard and empty RPATHs, execute 'rpmbuild' like
+*   \$ QA_RPATHS=\$[ 0x0001|0x0010 ] rpmbuild my-package.src.rpm
+* - to check existing files, set \$RPM_BUILD_ROOT and execute check-rpaths like
+*   \$ RPM_BUILD_ROOT=<top-dir> /usr/lib/rpm/check-rpaths
+*  
+* 'check-rpaths' is part of 'rpmdevtools'.
+*
+*******************************************************************************
+EOF
+}
+
+function msg()
+{
+    local val=$1
+    local cmp=$2
+    local msg=
+    local fail=
+    local code
+
+    test $[ $val & $cmp ] -ne 0 || return 0
+
+    code=$(printf '%04x' $cmp)
+    if test $[ $val & ~$QA_RPATHS ] -eq 0; then
+	msg="WARNING"
+    else
+	showHint
+	msg="ERROR  "
+	fail=1
+    fi
+
+    shift 2
+    echo "$msg $code: $@" >&2
+
+    test -z "$fail"
+}
+
+: ${QA_RPATHS:=0}
+old_IFS=$IFS
+
+for i; do
+    pos=0
+    rpath=$(readelf -d "$i" 2>/dev/null | LANG=C grep '(RPATH).*:') || continue
+    rpath=$(echo "$rpath" | LANG=C sed -e 's!.*(RPATH).*: \[\(.*\)\]!\1!p;d')
+    tmp=aux:$rpath:/lib/aux || :
+    IFS=:
+    set -- $tmp
+    IFS=$old_IFS
+    shift
+
+    allow_ORIGIN=1
+    for j; do
+	new_allow_ORIGIN=0
+
+	if test -z "$j"; then
+	    badness=16
+	elif expr match "$j" "$BADNESS_EXPR_32" >/dev/null; then
+	    badness=32
+	else
+	    case "$j" in
+	        (/lib/*|/usr/lib/*|/usr/X11R6/lib/*|/usr/local/lib/*)
+		    badness=0;;
+	        (/lib64/*|/usr/lib64/*|/usr/X11R6/lib64/*|/usr/local/lib64/*)
+		    badness=0;;
+
+		(\$ORIGIN|\${ORIGINX}|\$ORIGIN/*|\${ORIGINX}/*)
+		    test $allow_ORIGIN -eq 0 && badness=8 || {
+			badness=0
+			new_allow_ORIGIN=1
+		    }
+		    ;;
+		(/*\$PLATFORM*|/*\${PLATFORM}*|/*\$LIB*|/*\${LIB}*)
+		    badness=0;;
+	    	
+	        (/lib|/usr/lib|/usr/X11R6/lib)
+		    badness=1;;
+	        (/lib64|/usr/lib64|/usr/X11R6/lib64)
+		    badness=1;;
+	    	
+	        (.*)
+		    badness=4;;
+	        (*) badness=2;;
+	    esac
+	fi
+
+	allow_ORIGIN=$new_allow_ORIGIN
+
+	base=${i##$RPM_BUILD_ROOT}
+	msg "$badness"  1 "file '$base' contains a standard rpath '$j' in [$rpath]"  || fail=1
+	msg "$badness"  2 "file '$base' contains an invalid rpath '$j' in [$rpath]"  || fail=1
+	msg "$badness"  4 "file '$base' contains an insecure rpath '$j' in [$rpath]" || fail=1
+	msg "$badness"  8 "file '$base' contains the \$ORIGIN rpath specifier at the wrong position in [$rpath]" || fail=1
+	msg "$badness" 16 "file '$base' contains an empty rpath in [$rpath]"         || fail=1
+	msg "$badness" 32 "file '$base' contains an rpath referencing '..' of an absolute path [$rpath]" || fail=2
+	let ++pos
+    done
+done
+
+test -z "$fail"
