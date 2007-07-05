@@ -102,7 +102,6 @@ splint:
 	    -load lib/rpmlib.lcd \
 	    -load rpmdb/rpmdb.lcd \
 	    -load rpmio/rpmio.lcd \
-	    -load popt/popt.lcd \
 		$(DEFS) $(INCLUDES) rpmqv.c $(rpmb_SOURCES)
 
 .PHONY:	lint
@@ -113,8 +112,7 @@ lint:
 		`make -s sources -C rpmdb` \
 		`make -s sources -C rpmio` \
 		`make -s sources -C beecrypt` \
-		`make -s sources -C file/src` \
-		`make -s sources -C popt`
+		`make -s sources -C file/src`
 
 CVSTAG = r$(subst .,-,$(VERSION))
 

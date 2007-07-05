@@ -650,9 +650,6 @@ AC_CHECK_HEADERS(bzlib.h libio.h zlib.h)
 AC_CHECK_HEADERS(err.h mcheck.h)
 AC_CHECK_HEADERS(pthread.h)
 
-dnl popt w float/double needs.
-AC_CHECK_HEADERS(float.h)
-
 AC_CHECK_HEADERS(glob.h)
 
 dnl statfs portability fiddles.
@@ -1294,11 +1291,7 @@ AC_SUBST(RPM)
 
 AC_SUBST(OBJDUMP)
 
-dnl XXX this causes popt to depend on zlib et al
-dnl # XXX Propagate -lucb to popt ...
-dnl export LIBS INCPATH CONFIG_SITE
-
-AC_CONFIG_SUBDIRS(popt file db3)
+AC_CONFIG_SUBDIRS(file db3)
 
 AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt
 	rpmio/Makefile rpmdb/Makefile lib/Makefile build/Makefile
@@ -1318,7 +1311,7 @@ AC_CONFIG_FILES([ Doxyfile Makefile rpmrc macros platform rpmpopt
 	python/rpm/Makefile
  	lua/Makefile
   ])
-AC_CONFIG_COMMANDS([default],[[	echo timestamp > popt/stamp-h.in
+AC_CONFIG_COMMANDS([default],[[	
 	echo timestamp > stamp-h.in
   
 ]],[[]])

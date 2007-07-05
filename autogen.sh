@@ -38,27 +38,12 @@ fi
 
 # XXX add missing config.rpath, kludgery around what's apparently 
 # gettext related stuff...
-for d in . popt file; do
+for d in . file; do
     touch $d/config.rpath
 done
 
-if [ -d popt ]; then
-    (echo "--- popt"; cd popt; ./autogen.sh --noconfigure "$@")
-fi
-if [ -d zlib ]; then
-    (echo "--- zlib"; cd zlib; ./autogen.sh --noconfigure "$@")
-fi
-if [ -d beecrypt ]; then
-    (echo "--- beecrypt"; cd beecrypt; ./autogen.sh --noconfigure "$@")
-fi
-if [ -d elfutils ]; then
-    (echo "--- elfutils"; cd elfutils; ./autogen.sh --noconfigure "$@")
-fi
 if [ -d file ]; then
     (echo "--- file"; cd file; ./autogen.sh --noconfigure "$@")
-fi
-if [ -d neon ]; then
-    (echo "--- neon"; cd neon; ./autogen.sh "$@")
 fi
 
 echo "--- rpm"
