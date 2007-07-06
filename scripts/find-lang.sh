@@ -85,7 +85,7 @@ while test $# -gt 0 ; do
     esac
 done    
 
-find $TOP_DIR -type f|sed '
+find $TOP_DIR -type f -or -type l|sed '
 s:'"$TOP_DIR"'::
 '"$ALL_NAME$MO"'s:\(.*/share/locale/\)\([^/_]\+\)\(.*\.mo$\):%lang(\2) \1\2\3:
 '"$NO_ALL_NAME$MO"'s:\(.*/share/locale/\)\([^/_]\+\)\(.*/'"$NAME"'\.mo$\):%lang(\2) \1\2\3:
