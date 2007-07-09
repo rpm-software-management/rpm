@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-04 15:15+0300\n"
+"POT-Creation-Date: 2007-07-09 12:55+0300\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -751,7 +751,7 @@ msgstr "Kunne ikke læse hoved fra %s: %s\n"
 msgid "Could not open %s: %s\n"
 msgstr "Kunne ikke åbne %s: %s\n"
 
-#: build/pack.c:645 lib/psm.c:1645
+#: build/pack.c:645 lib/psm.c:1640
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunne ikke skrive pakke: %s\n"
@@ -781,7 +781,7 @@ msgstr "Kunne ikke læse pakkeindhold fra %s: %s\n"
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kunne ikke skrive pakkeindhold til %s: %s\n"
 
-#: build/pack.c:738 lib/psm.c:1914
+#: build/pack.c:738 lib/psm.c:1909
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
@@ -1455,32 +1455,32 @@ msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "fjerne %s-%s-%s \"%s\" fra tsort-relationer.\n"
 
 #. Record all relations.
-#: lib/depends.c:1263
+#: lib/depends.c:1265
 msgid "========== recording tsort relations\n"
 msgstr "========== gemmer tsort-relationer\n"
 
 #. T4. Scan for zeroes.
-#: lib/depends.c:1355
+#: lib/depends.c:1357
 msgid ""
 "========== tsorting packages (order, #predecessors, #succesors, tree, depth, "
 "breadth)\n"
 msgstr ""
 
-#: lib/depends.c:1451
+#: lib/depends.c:1453
 #, fuzzy, c-format
 msgid "========== successors only (%d bytes)\n"
 msgstr "========== kun efterfølgere (præsentationsrækkefølge)\n"
 
-#: lib/depends.c:1524
+#: lib/depends.c:1526
 msgid "LOOP:\n"
 msgstr "LØKKE:\n"
 
-#: lib/depends.c:1559
+#: lib/depends.c:1561
 msgid "========== continuing tsort ...\n"
 msgstr "========== fortsætter tsort ...\n"
 
 #. Return no. of packages that could not be ordered.
-#: lib/depends.c:1564
+#: lib/depends.c:1566
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr ""
@@ -1732,12 +1732,12 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread mislykkedes: %s\n"
 
-#: lib/package.c:1088
+#: lib/package.c:1095
 #, fuzzy, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s kunne ikke installeres\n"
 
-#: lib/package.c:1092
+#: lib/package.c:1099
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
@@ -2428,73 +2428,73 @@ msgstr ""
 msgid "%s: %s(%s-%s-%s.%s) %ssynchronous scriptlet start\n"
 msgstr ""
 
-#: lib/psm.c:879
+#: lib/psm.c:874
 #, c-format
 msgid "%s: %s(%s-%s-%s.%s)\texecv(%s) pid %d\n"
 msgstr ""
 
-#: lib/psm.c:914
+#: lib/psm.c:909
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
 
-#: lib/psm.c:925
+#: lib/psm.c:920
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "overspringer installation af %s-%s-%s, %%pre-småskript fejlede rc %d\n"
 
-#: lib/psm.c:932
+#: lib/psm.c:927
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, signal %d\n"
 msgstr ""
 "kørsel af småskriptet %s fra %s-%s-%s mislykkedes, afslutningsstatus %d\n"
 
-#: lib/psm.c:936
+#: lib/psm.c:931
 #, fuzzy, c-format
 msgid "%s(%s-%s-%s.%s) scriptlet failed, exit status %d\n"
 msgstr ""
 "kørsel af småskriptet %s fra %s-%s-%s mislykkedes, afslutningsstatus %d\n"
 
-#: lib/psm.c:1371
+#: lib/psm.c:1366
 #, fuzzy, c-format
 msgid "%s: %s has %d files, test = %d\n"
 msgstr "pakke: %s-%s-%s filer test = %d\n"
 
-#: lib/psm.c:1548
+#: lib/psm.c:1543
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr ""
 
-#: lib/psm.c:1657
+#: lib/psm.c:1652
 #, fuzzy
 msgid "Unable to reload signature header\n"
 msgstr "Kunne ikke læse hoved fra %s: %s\n"
 
-#: lib/psm.c:1735
+#: lib/psm.c:1730
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: lib/psm.c:1736
+#: lib/psm.c:1731
 msgid " on file "
 msgstr " for fil "
 
-#: lib/psm.c:1922
+#: lib/psm.c:1917
 #, fuzzy, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "kunne ikke åbne %s: %s\n"
 
-#: lib/psm.c:1925
+#: lib/psm.c:1920
 #, fuzzy, c-format
 msgid "%s failed: %s\n"
 msgstr "%s mislykkedes\n"
 
-#: lib/psm.c:2113
+#: lib/psm.c:2108
 #, c-format
 msgid "Attempting to mark %s as installed in score board(%u).\n"
 msgstr ""
 
-#: lib/psm.c:2146
+#: lib/psm.c:2141
 #, c-format
 msgid "Attempting to mark %s as erased in score board(0x%x).\n"
 msgstr ""
