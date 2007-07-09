@@ -1234,9 +1234,11 @@ int rpmtsOrder(rpmts ts)
     int qlen;
     int i, j;
 
-#ifdef	DYING
+    /*
+     * XXX FIXME: this gets needlesly called twice on normal usage patterns,
+     * should track the need for generating the index somewhere
+     */
     rpmalMakeIndex(ts->addedPackages);
-#endif
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
