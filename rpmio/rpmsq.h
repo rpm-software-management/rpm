@@ -58,7 +58,7 @@ extern rpmsq rpmsqQueue;
 extern sigset_t rpmsqCaught;
 
 #ifdef __cplusplus
-{
+extern "C" {
 #endif
 
 /**
