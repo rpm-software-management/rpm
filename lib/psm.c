@@ -827,13 +827,8 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	    /* make sure we don't close stdin/stderr/stdout by mistake! */
 	    if (ofdno > STDERR_FILENO && ofdno != sfdno)
 		xx = Fclose (out);
-	    if (sfdno > STDERR_FILENO)
+	    if (sfdno > STDERR_FILENO && ofdno != sfdno)
 		xx = Fclose (scriptFd);
-	    else {
-/*@-usereleased@*/
-		xx = Fclose(out);
-/*@=usereleased@*/
-	    }
 	}
 
 	{   const char *ipath = rpmExpand("PATH=%{_install_script_path}", NULL);
