@@ -114,6 +114,8 @@
 	- fix segfault on errors if neon transport is used (rhbz#220392)
 	- new buildroot sanity checker scripts check-buildroot and check-rpaths
 	- new debugedit option for recomputing build ID
+	- fix including exported headers from C++
+	- fix ordering with --nodeps
 
 4.4.1 -> 4.4.2:
 	- start 4.4.2 devel.
