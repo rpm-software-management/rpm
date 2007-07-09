@@ -10,6 +10,8 @@
  *	Copyright (C) The Internet Society (1998).  All Rights Reserved.
  */
 
+#include <string.h>
+
 #if !defined(_BEECRYPT_API_H)
 /*@-redef@*/
 typedef unsigned char byte;
@@ -1314,9 +1316,9 @@ int pgpIsPkt(const byte * p)
 	return 0;
 
     if (val & 0x40)
-	tag = (val & 0x3f);
+	tag = (pgpTag)(val & 0x3f);
     else
-	tag = (val >> 2) & 0xf;
+	tag = (pgpTag)((val >> 2) & 0xf);
 
     switch (tag) {
     case PGPTAG_MARKER:
