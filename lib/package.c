@@ -1079,6 +1079,13 @@ rpmRC headerCheckPayloadFormat(Header h) {
 
     xx = headerGetEntry(h, RPMTAG_PAYLOADFORMAT, NULL, 
 			(void **)&payloadfmt, NULL);
+    /* 
+     * XXX Ugh, rpm 3.x packages don't have payload format tag. Instead
+     * of blinly allowing, should check somehow (HDRID existence or... ?)
+     */
+    if (!payloadfmt)
+	return RPMRC_OK;
+
     if (payloadfmt && strncmp(payloadfmt, "cpio", strlen("cpio")) == 0) {
 	rc = RPMRC_OK;
     } else {
