@@ -63,8 +63,6 @@ function showHint()
 * - to check existing files, set \$RPM_BUILD_ROOT and execute check-rpaths like
 *   \$ RPM_BUILD_ROOT=<top-dir> /usr/lib/rpm/check-rpaths
 *  
-* 'check-rpaths' is part of 'rpmdevtools'.
-*
 *******************************************************************************
 EOF
 }
