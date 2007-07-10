@@ -1283,7 +1283,7 @@ int ftpReq(FD_t data, const char * ftpCmd, const char * ftpArg)
 #else /* HAVE_GETADDRINFO */
 	struct sockaddr_in ss;
 #endif /* HAVE_GETADDRINFO */
-	int size;
+	socklen_t size;
 	/* we need to know IP of remote host */
 	size=sizeof(ss);
 	if ((getpeername(fdFileno(c2f(u->ctrl)), (struct sockaddr *)&ss, &size) == 0) &&
