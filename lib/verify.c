@@ -32,7 +32,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     rpmVerifyAttrs flags = rpmfiVFlags(fi);
     const char * fn = rpmfiFN(fi);
     const char * rootDir = rpmtsRootDir(ts);
-    int selinuxEnabled = rpmtsSELinuxEnabled(ts);
     struct stat sb;
     int rc;
 
@@ -257,7 +256,6 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	/*@globals h_errno, fileSystem, internalState @*/
 	/*@modifies ts, fi, fileSystem, internalState  @*/
 {
-    int selinuxEnabled = rpmtsSELinuxEnabled(ts);
     rpmVerifyAttrs verifyResult = 0;
     /*@-type@*/ /* FIX: union? */
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
