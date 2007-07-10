@@ -454,7 +454,7 @@ rpmfi_subscript(rpmfiObject * s, PyObject * key)
 
 /*@unchecked@*/ /*@observer@*/
 static PyMappingMethods rpmfi_as_mapping = {
-        (inquiry) rpmfi_length,		/* mp_length */
+        (lenfunc) rpmfi_length,		/* mp_length */
         (binaryfunc) rpmfi_subscript,	/* mp_subscript */
         (objobjargproc)0,		/* mp_ass_subscript */
 };

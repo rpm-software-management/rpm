@@ -196,7 +196,7 @@ rpmdb_subscript(rpmdbObject * s, PyObject * key)
  */
 /*@unchecked@*/ /*@observer@*/
 static PyMappingMethods rpmdb_as_mapping = {
-	(inquiry) rpmdb_length,		/* mp_length */
+	(lenfunc) rpmdb_length,		/* mp_length */
 	(binaryfunc) rpmdb_subscript,	/* mp_subscript */
 	(objobjargproc)0,		/* mp_ass_subscript */
 };

@@ -641,7 +641,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
  */
 /*@unchecked@*/ /*@observer@*/
 static PyMappingMethods hdr_as_mapping = {
-	(inquiry) 0,			/* mp_length */
+	(lenfunc) 0,			/* mp_length */
 	(binaryfunc) hdr_subscript,	/* mp_subscript */
 	(objobjargproc)0,		/* mp_ass_subscript */
 };

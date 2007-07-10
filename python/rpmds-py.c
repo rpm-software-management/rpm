@@ -506,7 +506,7 @@ rpmds_subscript(rpmdsObject * s, PyObject * key)
 }
 
 static PyMappingMethods rpmds_as_mapping = {
-        (inquiry) rpmds_length,		/* mp_length */
+        (lenfunc) rpmds_length,		/* mp_length */
         (binaryfunc) rpmds_subscript,	/* mp_subscript */
         (objobjargproc)0,		/* mp_ass_subscript */
 };
