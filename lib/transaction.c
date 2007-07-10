@@ -2121,7 +2121,7 @@ assert(psm != NULL);
 		    int numShared = 0;
 
 		    if (replaced != NULL) {
-                        for (replaced; replaced->otherPkg; replaced++) {
+                        for (; replaced->otherPkg; replaced++) {
                             numShared++;
                         }
                         if (numShared > 0) {
