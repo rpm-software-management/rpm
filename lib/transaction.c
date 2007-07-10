@@ -1022,7 +1022,7 @@ static rpmRC _rpmtsRollback(rpmts rollbackTransaction)
     rpmMessage(RPMMESS_NORMAL, _("Transaction failed...rolling back\n"));
     rpmMessage(RPMMESS_NORMAL,
 	_("Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"),
-                        numAdded, numRemoved, ctime(&tid), tid);
+                        numAdded, numRemoved, ctime((time_t*) &tid), tid);
 
     /* Check the transaction to see if it is doable */
     rc = rpmtsCheck(rollbackTransaction);
