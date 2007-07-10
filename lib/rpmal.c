@@ -468,7 +468,7 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
 	const char * DN;
 	int origNumDirs;
 	int first;
-	int i;
+	int i = 0;
 
 	/* XXX FIXME: We ought to relocate the directory list here */
 

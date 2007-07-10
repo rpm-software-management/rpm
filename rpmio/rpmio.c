@@ -3186,7 +3186,7 @@ FD_t Fopen(const char *path, const char *fmode)
     char stdio[20], other[20];
     const char *end = NULL;
     mode_t perms = 0666;
-    int flags;
+    int flags = 0;
     FD_t fd;
 
     if (path == NULL || fmode == NULL)

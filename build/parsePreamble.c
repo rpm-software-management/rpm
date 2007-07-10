@@ -871,7 +871,7 @@ int parsePreamble(Spec spec, int initialPackage)
     int nextPart;
     int rc, xx;
     char *name, *linep;
-    int flag;
+    int flag = 0;
     Package pkg;
     char NVR[BUFSIZ];
     char lang[BUFSIZ];
