@@ -325,7 +325,7 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
 {
     pgpDig dig;
-    unsigned char buf[8*BUFSIZ];
+    char buf[8*BUFSIZ];
     int_32 * ei = (int_32 *) uh;
 /*@-boundsread@*/
     int_32 il = ntohl(ei[0]);
