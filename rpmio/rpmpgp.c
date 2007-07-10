@@ -859,7 +859,7 @@ int pgpPrtComment(pgpTag tag, const byte *h, unsigned int hlen)
 	if (*h >= ' ' && *h <= 'z') {
 	    if (_print)
 		fprintf(stderr, "%s", (const char *)h);
-	    j = strlen(h);
+	    j = strlen((const char*)h);
 	    while (h[j] == '\0')
 		j++;
 	} else {
