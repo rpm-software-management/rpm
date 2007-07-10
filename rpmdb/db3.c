@@ -324,7 +324,7 @@ static int db_init(dbiIndex dbi, const char * dbhome,
  /* 4.1: dbenv->set_data_dir(???) */
  /* 4.1: dbenv->set_encrypt(???) */
 
-    dbenv->set_errcall(dbenv, rpmdb->db_errcall);
+    dbenv->set_errcall(dbenv, (void *) rpmdb->db_errcall);
     dbenv->set_errfile(dbenv, rpmdb->db_errfile);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
     /*@=noeffectuncon@*/
@@ -841,7 +841,7 @@ static int db3close(/*@only@*/ dbiIndex dbi, /*@unused@*/ unsigned int flags)
 	if (rc || dbenv == NULL) goto exit;
 
 	/*@-noeffectuncon@*/ /* FIX: annotate db3 methods */
-	dbenv->set_errcall(dbenv, rpmdb->db_errcall);
+	dbenv->set_errcall(dbenv, (void *) rpmdb->db_errcall);
 	dbenv->set_errfile(dbenv, rpmdb->db_errfile);
 	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
  /*	dbenv->set_paniccall(???) */
