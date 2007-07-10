@@ -556,7 +556,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     {	int mybase = 10;
 	const char * myarg = arg;
 	char * end = NULL;
-	unsigned iid;
+	unsigned long iid;
 
 	/* XXX should be in strtoul */
 	if (*myarg == '0') {
@@ -650,7 +650,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     {	int mybase = 10;
 	const char * myarg = arg;
 	char * end = NULL;
-	unsigned recOffset;
+	unsigned long recOffset;
 
 	/* XXX should be in strtoul */
 	if (*myarg == '0') {
