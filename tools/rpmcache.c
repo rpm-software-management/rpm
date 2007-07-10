@@ -16,6 +16,7 @@ const char *__progname;
 #include "rpmts.h"
 
 #include "debug.h"
+#include "misc.h"
 
 static int _debug = 0;
 
