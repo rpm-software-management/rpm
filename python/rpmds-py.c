@@ -254,7 +254,7 @@ rpmds_iternext(rpmdsObject * s)
 	if (N != NULL) N = xstrdup(N);
 	if (EVR != NULL) EVR = xstrdup(EVR);
 /*@=branchstate@*/
-	result = rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
+	result = (PyObject *) rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
     } else
 	s->active = 0;
 
