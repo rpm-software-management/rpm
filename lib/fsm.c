@@ -902,7 +902,6 @@ static int writeFile(/*@special@*/ /*@partial@*/ FSM_t fsm, int writeData)
     struct stat * ost = &fsm->osb;
     char * symbuf = NULL;
     int left;
-    int xx;
     int rc;
 
     st->st_size = (writeData ? ost->st_size : 0);

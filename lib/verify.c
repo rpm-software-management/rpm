@@ -474,7 +474,6 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 
 int rpmcliVerify(rpmts ts, QVA_t qva, const char ** argv)
 {
-    const char * arg;
     rpmVSFlags vsflags, ovsflags;
     int ec = 0;
 

@@ -1244,7 +1244,6 @@ assert(xx != -1);	/* XXX figger a proper return path. */
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	const char * ftype;
 	int_16 mode = (fmode ? fmode[fc->ix] : 0);
-	char dbuf[1024];
 
 	s = argv[fc->ix];
 assert(s != NULL);

@@ -157,7 +157,6 @@ int domd5(const char * fn, unsigned char * digest, int asAscii, size_t *fsizep)
     pid_t pid = 0;
     int rc = 0;
     int fdno;
-    int xx;
 
 /*@-globs -internalglobs -mods @*/
     fdno = open_dso(path, &pid, &fsize);
