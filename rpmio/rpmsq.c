@@ -371,9 +371,9 @@ int rpmsqEnable(int signum, /*@null@*/ rpmsqAction_t handler)
 		(void) sigemptyset (&sa.sa_mask);
 		sa.sa_flags = SA_SIGINFO;
 #if defined(__LCLINT__)	/* XXX glibc has union to track handler prototype. */
-		sa.sa_handler = (handler != NULL ? handler : tbl->handler);
+		sa.sa_handler = (void*)(handler != NULL ? handler : tbl->handler);
 #else
-		sa.sa_sigaction = (handler != NULL ? handler : tbl->handler);
+		sa.sa_sigaction = (void*)(handler != NULL ? handler : tbl->handler);
 #endif
 		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0) {
 		    SUB_REF(tbl);
