@@ -350,7 +350,7 @@ PyTypeObject rpmps_Type = {
 	(initproc) rpmps_init,		/* tp_init */
 	(allocfunc) rpmps_alloc,	/* tp_alloc */
 	(newfunc) rpmps_new,		/* tp_new */
-	rpmps_free,			/* tp_free */
+	(freefunc) rpmps_free,		/* tp_free */
 	0,				/* tp_is_gc */
 #endif
 };

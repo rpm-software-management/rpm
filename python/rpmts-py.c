@@ -1678,7 +1678,7 @@ PyTypeObject rpmts_Type = {
 	(initproc) rpmts_init,		/* tp_init */
 	(allocfunc) rpmts_alloc,	/* tp_alloc */
 	(newfunc) rpmts_new,		/* tp_new */
-	rpmts_free,			/* tp_free */
+	(freefunc) rpmts_free,		/* tp_free */
 	0,				/* tp_is_gc */
 #endif
 };

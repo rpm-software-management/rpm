@@ -586,7 +586,7 @@ PyTypeObject rpmfi_Type = {
 	(initproc) rpmfi_init,		/* tp_init */
 	(allocfunc) rpmfi_alloc,	/* tp_alloc */
 	(newfunc) rpmfi_new,		/* tp_new */
-	rpmfi_free,			/* tp_free */
+	(freefunc) rpmfi_free,		/* tp_free */
 	0,				/* tp_is_gc */
 #endif
 };

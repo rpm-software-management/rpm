@@ -572,9 +572,9 @@ PyTypeObject rpmfts_Type = {
 	0,				/* tp_descr_set */
 	offsetof(rpmftsObject, md_dict),/* tp_dictoffset */
 	(initproc) rpmfts_init,		/* tp_init */
-	rpmfts_alloc,			/* tp_alloc */
-	rpmfts_new,			/* tp_new */
-	rpmfts_free,			/* tp_free */
+	(allocfunc) rpmfts_alloc,	/* tp_alloc */
+	(newfunc) rpmfts_new,		/* tp_new */
+	(freefunc) rpmfts_free,		/* tp_free */
 	0,				/* tp_is_gc */
 };
 /*@=fullinitblock@*/
