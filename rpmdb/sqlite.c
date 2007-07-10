@@ -374,7 +374,7 @@ fprintf(stderr, "sqlite3_step: DONE scp %p [%d:%d] av %p avlen %p\n", scp, scp->
 		    const void * v = sqlite3_column_blob(scp->pStmt, i);
 		    nb = sqlite3_column_bytes(scp->pStmt, i);
 if (_debug)
-fprintf(stderr, "\t%d %s %s %p[%d]\n", i, cname, vtype, v, nb);
+fprintf(stderr, "\t%d %s %s %p[%zd]\n", i, cname, vtype, v, nb);
 		    if (nb > 0) {
 			void * t = xmalloc(nb);
 			scp->av[scp->ac] = memcpy(t, v, nb);

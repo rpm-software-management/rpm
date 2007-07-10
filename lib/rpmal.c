@@ -344,7 +344,7 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
 
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "--- die[%5d] %p [%3d] %s\n", (die - al->dirs), die, die->dirNameLen, die->dirName);
+fprintf(stderr, "--- die[%5ld] %p [%3d] %s\n", (die - al->dirs), die, die->dirNameLen, die->dirName);
 /*@=modfilesys@*/
 
 	    last = die->numFiles;
@@ -357,7 +357,7 @@ fprintf(stderr, "--- die[%5d] %p [%3d] %s\n", (die - al->dirs), die, die->dirNam
 		if (i < die->numFiles) {
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%x) %s <- %s\n", die->files, die->numFiles, fie, fie->baseName, fie+1, (fie+1)->baseName, ((die->numFiles - i) * sizeof(*fie)), fie->baseName, (fie+1)->baseName);
+fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%lx) %s <- %s\n", die->files, die->numFiles, fie, fie->baseName, fie+1, (fie+1)->baseName, ((die->numFiles - i) * sizeof(*fie)), fie->baseName, (fie+1)->baseName);
 /*@=modfilesys@*/
 
 /*@-bounds@*/
@@ -366,7 +366,7 @@ fprintf(stderr, "\t%p[%3d] memmove(%p:%p,%p:%p,0x%x) %s <- %s\n", die->files, di
 		}
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%x) %p [%3d] %s\n", die->files, die->numFiles, die->files + die->numFiles, sizeof(*fie), fie->baseName, fie->baseNameLen, fie->baseName);
+fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%lx) %p [%3d] %s\n", die->files, die->numFiles, die->files + die->numFiles, sizeof(*fie), fie->baseName, fie->baseNameLen, fie->baseName);
 /*@=modfilesys@*/
 		memset(die->files + die->numFiles, 0, sizeof(*fie)); /* overkill */
 
@@ -383,7 +383,7 @@ fprintf(stderr, "\t%p[%3d] memset(%p,0,0x%x) %p [%3d] %s\n", die->files, die->nu
 	    if ((die - al->dirs) < al->numDirs) {
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "    die[%5d] memmove(%p,%p,0x%x)\n", (die - al->dirs), die, die+1, ((al->numDirs - (die - al->dirs)) * sizeof(*die)));
+fprintf(stderr, "    die[%5ld] memmove(%p,%p,0x%lx)\n", (die - al->dirs), die, die+1, ((al->numDirs - (die - al->dirs)) * sizeof(*die)));
 /*@=modfilesys@*/
 
 /*@-bounds@*/
@@ -393,7 +393,7 @@ fprintf(stderr, "    die[%5d] memmove(%p,%p,0x%x)\n", (die - al->dirs), die, die
 
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "    die[%5d] memset(%p,0,0x%x)\n", al->numDirs, al->dirs + al->numDirs, sizeof(*die));
+fprintf(stderr, "    die[%5d] memset(%p,0,0x%lx)\n", al->numDirs, al->dirs + al->numDirs, sizeof(*die));
 /*@=modfilesys@*/
 	    memset(al->dirs + al->numDirs, 0, sizeof(*al->dirs)); /* overkill */
 	}

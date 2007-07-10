@@ -63,7 +63,7 @@ rpmfts_debug (const char * msg, rpmftsObject * s)
     if (msg)
 	fprintf(stderr, "*** %s(%p)", msg, s);
     if (s)
-	fprintf(stderr, " %d %d ftsp %p fts %p\n", s->ob_refcnt, s->active, s->ftsp, s->fts);
+	fprintf(stderr, " %zd %d ftsp %p fts %p\n", s->ob_refcnt, s->active, s->ftsp, s->fts);
 }
 
 static int
