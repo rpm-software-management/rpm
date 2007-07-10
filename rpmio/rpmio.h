@@ -599,7 +599,7 @@ typedef enum ftperrCode_e {
 /**
  */
 /*@-redecl@*/
-/*@observer@*/ const char *const ftpStrerror(int errorNumber)
+/*@observer@*/ const char * ftpStrerror(int errorNumber)
 	/*@*/;
 /*@=redecl@*/
 

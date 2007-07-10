@@ -19,7 +19,7 @@ static int noDeps = 1;
 
 static rpmVSFlags vsflags = 0;
 
-static inline /*@observer@*/ const char * const identifyDepend(int_32 f)
+static inline /*@observer@*/ const char * identifyDepend(int_32 f)
 	/*@*/
 {
     if (isLegacyPreReq(f))

@@ -211,14 +211,14 @@ extern "C" {
  * @param a		file stage
  * @return		formatted string
  */
-/*@observer@*/ const char *const fileStageString(fileStage a)	/*@*/;
+/*@observer@*/ const char * fileStageString(fileStage a)	/*@*/;
 
 /**
  * Return formatted string representation of file disposition.
  * @param a		file dispostion
  * @return		formatted string
  */
-/*@observer@*/ const char *const fileActionString(fileAction a)	/*@*/;
+/*@observer@*/ const char * fileActionString(fileAction a)	/*@*/;
 /*@=exportlocal@*/
 
 /**

@@ -132,7 +132,7 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
  * @param rc		error code
  * @return		formatted error string
  */
-/*@observer@*/ const char *const cpioStrerror(int rc)
+/*@observer@*/ const char * cpioStrerror(int rc)
 	/*@*/;
 
 #ifdef __cplusplus

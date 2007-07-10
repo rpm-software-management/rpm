@@ -1081,7 +1081,7 @@ int tagType(int tag)
  * @return		tag name, "(unknown)" on not found
  */
 /*@-redecl@*/
-/*@observer@*/ extern const char *const tagName(int tag)
+/*@observer@*/ extern const char * tagName(int tag)
 	/*@*/;
 /*@=redecl@*/
 

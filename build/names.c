@@ -205,7 +205,7 @@ gid_t getGidS(const char *gname)
 }
 /*@=boundswrite@*/
 
-int_32 *const getBuildTime(void)
+int_32 * getBuildTime(void)
 {
     static int_32 buildTime[1];
 
@@ -217,7 +217,7 @@ int_32 *const getBuildTime(void)
 }
 
 /*@-boundswrite@*/
-const char *const buildHost(void)
+const char * buildHost(void)
 {
     static char hostname[1024];
     static int oneshot = 0;

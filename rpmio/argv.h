@@ -61,7 +61,7 @@ int argiCount(/*@null@*/ const ARGI_t argi)
  * @return		argi array data address
  */
 /*@null@*/
-const ARGint_t argiData(/*@null@*/ const ARGI_t argi)
+ARGint_t argiData(/*@null@*/ const ARGI_t argi)
 	/*@*/;
 
 /**
@@ -78,7 +78,7 @@ int argvCount(/*@null@*/ const ARGV_t argv)
  * @return		argv array data address
  */
 /*@null@*/
-const ARGV_t argvData(/*@null@*/ const ARGV_t argv)
+ARGV_t argvData(/*@null@*/ const ARGV_t argv)
 	/*@*/;
 
 /**

@@ -193,7 +193,7 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
     return 0;
 }
 
-const char *const cpioStrerror(int rc)
+const char * cpioStrerror(int rc)
 {
     static char msg[256];
     char *s;

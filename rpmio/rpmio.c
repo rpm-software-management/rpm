@@ -687,7 +687,7 @@ fprintf(stderr, "*** read: fd %p rc %d EOF errno %d %s \"%s\"\n", fd, rc, errno,
 /* =============================================================== */
 /* Support for FTP/HTTP I/O.
  */
-const char *const ftpStrerror(int errorNumber)
+const char * ftpStrerror(int errorNumber)
 {
     switch (errorNumber) {
     case 0:

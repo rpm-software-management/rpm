@@ -626,7 +626,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
  */
 /*@-redef@*/
 /*@observer@*/
-const char *const rpmfiTypeString(rpmfi fi)
+const char * rpmfiTypeString(rpmfi fi)
 	/*@*/;
 /*@=redef@*/
 

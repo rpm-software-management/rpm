@@ -32,7 +32,7 @@ int tagType(int tag)
     return tagtype;
 }
 
-const char *const tagName(int tag)
+const char * tagName(int tag)
 {
     static char nameBuf[128];	/* XXX yuk */
     char *s;

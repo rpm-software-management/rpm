@@ -484,7 +484,7 @@ rpmfi rpmfiInitD(rpmfi fi, int dx)
  * @return		string to identify a file type
  */
 static /*@observer@*/
-const char *const ftstring (fileTypes ft)
+const char * ftstring (fileTypes ft)
 	/*@*/
 {
     switch (ft) {
@@ -628,7 +628,7 @@ fileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 /*@=boundsread@*/
 
 /*@observer@*/
-const char *const rpmfiTypeString(rpmfi fi)
+const char * rpmfiTypeString(rpmfi fi)
 {
     switch(rpmteType(fi->te)) {
     case TR_ADDED:	return " install";

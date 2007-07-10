@@ -68,7 +68,7 @@ int argiCount(ARGI_t argi)
     return nvals;
 }
 
-const ARGint_t argiData(const ARGI_t argi)
+ARGint_t argiData(const ARGI_t argi)
 {
     ARGint_t vals = NULL;
     if (argi && argi->nvals > 0)
@@ -85,7 +85,7 @@ int argvCount(const ARGV_t argv)
     return argc;
 }
 
-const ARGV_t argvData(const ARGV_t argv)
+ARGV_t argvData(const ARGV_t argv)
 {
 /*@-retalias -temptrans @*/
     return argv;

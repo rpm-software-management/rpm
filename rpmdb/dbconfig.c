@@ -458,7 +458,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 /*@=bounds@*/
 
 /*@-boundswrite@*/
-const char *const prDbiOpenFlags(int dbflags, int print_dbenv_flags)
+const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 {
     static char buf[256];
     struct poptOption *opt;

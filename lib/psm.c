@@ -450,7 +450,7 @@ static char * SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
  * @param tag		scriptlet tag
  * @return		name of scriptlet
  */
-static /*@observer@*/ const char * const tag2sln(int tag)
+static /*@observer@*/ const char * tag2sln(int tag)
 	/*@*/
 {
     switch (tag) {
@@ -1207,7 +1207,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     return rc;
 }
 
-/*@observer@*/ static const char *const pkgStageString(pkgStage a)
+/*@observer@*/ static const char * pkgStageString(pkgStage a)
 	/*@*/
 {
     switch(a) {
