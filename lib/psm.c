@@ -171,7 +171,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     sharedFileInfo sfi;
     rpmdbMatchIterator mi;
     Header h;
-    unsigned int * offsets;
+    int * offsets;
     unsigned int prev;
     int num, xx;
 
