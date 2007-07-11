@@ -340,7 +340,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, const char ** msg)
     indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
     entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
     const void * sig = NULL;
-    const char * b;
+    unsigned const char * b;
     rpmVSFlags vsflags = rpmtsVSFlags(ts);
     int siglen = 0;
     int blen;
@@ -748,7 +748,7 @@ exit:
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
     pgpDig dig;
-    byte buf[8*BUFSIZ];
+    char buf[8*BUFSIZ];
     ssize_t count;
     struct rpmlead * l = alloca(sizeof(*l));
     Header sigh = NULL;
