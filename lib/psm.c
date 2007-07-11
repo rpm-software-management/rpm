@@ -380,7 +380,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 			+ fi->fc * sizeof(*fi->dil)
 			+ speclen + sourcelen);
 	/*@-dependenttrans@*/
-	fi->dil = (int *)(fi->dnl + fi->dc);
+	fi->dil = (unsigned int *)(fi->dnl + fi->dc);
 	/*@=dependenttrans@*/
 	memset(fi->dil, 0, fi->fc * sizeof(*fi->dil));
 	fi->dil[i] = 1;

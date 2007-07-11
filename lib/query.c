@@ -221,7 +221,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	fn = rpmfiFN(fi);
 /*@-bounds@*/
 	{   static char hex[] = "0123456789abcdef";
-	    const char * s = rpmfiMD5(fi);
+	    unsigned const char * s = rpmfiMD5(fi);
 	    char * p = fmd5;
 	    int j;
 	    for (j = 0; j < 16; j++) {
