@@ -936,7 +936,7 @@ fprintf(stderr, "*** rpmts_PgpPrtPkts(%p) ts %p\n", s, s->ts);
 	PyErr_SetString(pyrpmError, "pgpPrtPkts takes a string of octets");
 	return NULL;
     }
-    pkt = PyString_AsString(blob);
+    pkt = (unsigned char *)PyString_AsString(blob);
     pktlen = PyString_Size(blob);
 
     rc = pgpPrtPkts(pkt, pktlen, NULL, 1);
@@ -973,7 +973,7 @@ fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
 	PyErr_SetString(pyrpmError, "PgpImportPubkey takes a string of octets");
 	return NULL;
     }
-    pkt = PyString_AsString(blob);
+    pkt = (unsigned char *)PyString_AsString(blob);
     pktlen = PyString_Size(blob);
 
     rc = rpmcliImportPubkey(s->ts, pkt, pktlen);
