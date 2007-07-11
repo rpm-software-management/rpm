@@ -645,7 +645,7 @@ assert(otherFi != NULL);
 	    }
 		
 	    /* Here is a pre-existing modified config file that needs saving. */
-	    {	char md5sum[50];
+	    {	unsigned char md5sum[50];
 		const unsigned char * MD5 = rpmfiMD5(fi);
 		if (!domd5(fn, md5sum, 0, NULL) && memcmp(MD5, md5sum, 16)) {
 		    fi->actions[i] = FA_BACKUP;
