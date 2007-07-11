@@ -2105,8 +2105,8 @@ assert(psm->mi == NULL);
 		 * score entry.
 		 */
 		rpmMessage(RPMMESS_DEBUG,
-		    _("Attempting to mark %s as installed in score board(%u).\n"),
-		    rpmteN(psm->te), (unsigned) score);
+		    _("Attempting to mark %s as installed in score board(%p).\n"),
+		    rpmteN(psm->te), score);
 		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
 		if (se != NULL) se->installed = 1;
 	    }
@@ -2138,8 +2138,8 @@ assert(psm->mi == NULL);
 		 * score entry.
 		 */
 		rpmMessage(RPMMESS_DEBUG,
-		    _("Attempting to mark %s as erased in score board(0x%x).\n"),
-		    rpmteN(psm->te), (unsigned) score);
+		    _("Attempting to mark %s as erased in score board(%p).\n"),
+		    rpmteN(psm->te), score);
 		se = rpmtsScoreGetEntry(score, rpmteN(psm->te));
 		if (se != NULL) se->erased = 1;
 	    }
