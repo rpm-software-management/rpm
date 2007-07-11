@@ -805,7 +805,7 @@ int fsmMapAttrs(FSM_t fsm)
 	     */
 	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOMD5)) {
 		fsm->fmd5sum = (fi->fmd5s ? fi->fmd5s[i] : NULL);
-		fsm->md5sum = (fi->md5s ? (fi->md5s + (16 * i)) : NULL);
+		fsm->md5sum = (char *)(fi->md5s ? (fi->md5s + (16 * i)) : NULL);
 	    } else {
 		fsm->fmd5sum = NULL;
 		fsm->md5sum = NULL;
