@@ -49,8 +49,11 @@
 #else
 #define TIMEOUT_SECS 5
 #endif
+
+#ifdef NOTYET
 /*@unchecked@*/
 static int httpTimeoutSecs = TIMEOUT_SECS;
+#endif
 
 /**
  * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
