@@ -1029,7 +1029,8 @@ static int i18nTag(Header h, int_32 tag, /*@out@*/ rpmTagType * type,
 	    const char * n;
 	    char * mk;
 	    size_t nb = sizeof("()");
-	    int xx = headerNVR(h, &n, NULL, NULL);
+	    int xx;
+	    xx = headerNVR(h, &n, NULL, NULL);
 	    if (tn)	nb += strlen(tn);
 	    if (n)	nb += strlen(n);
 	    mk = alloca(nb);
