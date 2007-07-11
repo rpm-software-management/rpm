@@ -627,7 +627,7 @@ int fdFileno(/*@null@*/ void * cookie)
  * @return		0 on success
  */
 int rpmioSlurp(const char * fn,
-                /*@out@*/ const unsigned char ** bp, /*@out@*/ ssize_t * blenp)
+                /*@out@*/ const unsigned char ** bp, /*@out@*/ size_t * blenp)
         /*@globals h_errno, fileSystem, internalState @*/
         /*@modifies *bp, *blenp, fileSystem, internalState @*/;
 
