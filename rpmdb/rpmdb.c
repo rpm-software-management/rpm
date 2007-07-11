@@ -2794,7 +2794,7 @@ if (dbiByteSwapped(dbi) == 1)
 		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
 			pgpDig dig = pgpNewDig();
 			const byte * pkt;
-			ssize_t pktlen;
+			size_t pktlen;
 
 			if (b64decode(rpmvals[i], (void **)&pkt, &pktlen))
 			    /*@innercontinue@*/ continue;
@@ -3255,7 +3255,7 @@ data->size = 0;
 		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
 			pgpDig dig = pgpNewDig();
 			const byte * pkt;
-			ssize_t pktlen;
+			size_t pktlen;
 
 			if (b64decode(rpmvals[i], (void **)&pkt, &pktlen))
 			    /*@innercontinue@*/ continue;
