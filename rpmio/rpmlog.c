@@ -99,8 +99,10 @@ void rpmlogOpen (/*@unused@*/ const char *ident, /*@unused@*/ int option,
 /*@unchecked@*/
 static unsigned rpmlogMask = RPMLOG_UPTO( RPMLOG_NOTICE );
 
+#ifdef NOTYET
 /*@unchecked@*/
 static /*@unused@*/ unsigned rpmlogFacility = RPMLOG_USER;
+#endif
 
 int rpmlogSetMask (int mask)
 	/*@globals rpmlogMask @*/
@@ -167,7 +169,9 @@ static void vrpmlog (unsigned code, const char *fmt, va_list ap)
 {
     unsigned pri = RPMLOG_PRI(code);
     unsigned mask = RPMLOG_MASK(pri);
+#ifdef NOTYET
     /*@unused@*/ unsigned fac = RPMLOG_FAC(code);
+#endif
     char *msgbuf, *msg;
     int msgnb = BUFSIZ, nb;
     FILE * msgout = (_stdlog ? _stdlog : stderr);
