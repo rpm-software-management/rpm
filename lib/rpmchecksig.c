@@ -806,7 +806,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 
 	/* XXX RSA needs the hash_algo, so decode early. */
 	if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP) {
-	    xx = headerGetEntry(sigh, sigtag, &sigtype, &sig, &siglen);
+	    xx = headerGetEntry(sigh, sigtag, &sigtype, (void **)&sig, &siglen);
 	    xx = pgpPrtPkts(sig, siglen, dig, 0);
 	    sig = headerFreeData(sig, sigtype);
 	    /* XXX assume same hash_algo in header-only and header+payload */
