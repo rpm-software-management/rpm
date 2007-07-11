@@ -151,7 +151,7 @@ fprintf(stderr, "*** rpmrc_ass_subscript(%p[%s], %p[%s], %p[%s])\n", s, lbl(s), 
 
 /*@unchecked@*/ /*@observer@*/
 static PyMappingMethods rpmrc_as_mapping = {
-    rpmrc_length,		/* mp_length */
+    (lenfunc) rpmrc_length,		/* mp_length */
     rpmrc_subscript,		/* mp_subscript */
     rpmrc_ass_subscript,		/* mp_ass_subscript */
 };
