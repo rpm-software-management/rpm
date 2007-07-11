@@ -399,7 +399,7 @@ static void * fsmThread(void * arg)
 {
     FSM_t fsm = arg;
 /*@-unqualifiedtrans@*/
-    return ((void *) fsmStage(fsm, fsm->nstage));
+    return ((void *) ((long) fsmStage(fsm, fsm->nstage)));
 /*@=unqualifiedtrans@*/
 }
 
