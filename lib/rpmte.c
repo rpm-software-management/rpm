@@ -301,7 +301,7 @@ const char * rpmteO(rpmte te)
 
 int rpmteIsSource(rpmte te)
 {
-    return (te != NULL ? te->isSource : NULL);
+    return (te != NULL ? te->isSource : 0);
 }
 
 uint_32 rpmteColor(rpmte te)
