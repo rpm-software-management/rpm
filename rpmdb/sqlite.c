@@ -425,7 +425,7 @@ assert(dbiByteSwapped(dbi) == 0); /* Byte swap?! */
 		    }
 		} else
 		if (!strcmp(vtype, "text")) {
-		    const char * v = sqlite3_column_text(scp->pStmt, i);
+		    const char * v = (const char *) sqlite3_column_text(scp->pStmt, i);
 		    nb = strlen(v) + 1;
 if (_debug)
 fprintf(stderr, "\t%d %s %s \"%s\"\n", i, cname, vtype, v);
