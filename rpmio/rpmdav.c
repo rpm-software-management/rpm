@@ -1417,7 +1417,7 @@ struct dirent * avReaddir(DIR * dir)
     dp = (struct dirent *) avdir->data;
     av = (const char **) (dp + 1);
     ac = avdir->size;
-    dt = (char *) (av + (ac + 1));
+    dt = (unsigned char *) (av + (ac + 1));
     i = avdir->offset + 1;
 
 /*@-boundsread@*/
@@ -1470,7 +1470,7 @@ fprintf(stderr, "*** avOpendir(%s)\n", path);
 /*@-abstract@*/
     dp = (struct dirent *) (avdir + 1);
     av = (const char **) (dp + 1);
-    dt = (char *) (av + (ac + 1));
+    dt = (unsigned char *) (av + (ac + 1));
     t = (char *) (dt + ac + 1);
 /*@=abstract@*/
 
