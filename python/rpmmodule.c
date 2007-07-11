@@ -459,7 +459,7 @@ void init_rpm(void)
 
     REGISTER_ENUM(RPMDBI_PACKAGES);
 
-    REGISTER_ENUM(RPMAL_NOMATCH);
+    REGISTER_ENUM((int)RPMAL_NOMATCH);
 }
 
 /*@}*/
