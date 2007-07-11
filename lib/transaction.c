@@ -1254,7 +1254,7 @@ static rpmRC _rpmtsAddRollbackElement(rpmts rollbackTransaction,
 {
     Header h   = NULL;
     Header rph = NULL;
-    char * rpn;	
+    const char * rpn;	
     unsigned int db_instance = 0;
     rpmtsi pi;  	
     rpmte p;
