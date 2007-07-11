@@ -24,6 +24,7 @@
 
 #include "misc.h"	/* XXX stripTrailingChar */
 #include "rpmmacro.h"	/* XXX rpmCleanPath */
+#include "legacy.h"
 
 #include "debug.h"
 
