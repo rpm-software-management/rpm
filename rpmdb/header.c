@@ -562,7 +562,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 		    return -1;
 		*it = htonl(*it);
 	    }
-	    t = (char *) it;
+	    t = (unsigned char *) it;
 	}   /*@switchbreak@*/ break;
 	case RPM_INT16_TYPE:
 	{   int_16 * it = (int_16 *) t;
@@ -571,7 +571,7 @@ static int regionSwab(/*@null@*/ indexEntry entry, int il, int dl,
 		    return -1;
 		*it = htons(*it);
 	    }
-	    t = (char *) it;
+	    t = (unsigned char *) it;
 	}   /*@switchbreak@*/ break;
 /*@=bounds@*/
 	default:
@@ -712,14 +712,14 @@ static /*@only@*/ /*@null@*/ void * doHeaderUnload(Header h,
     pad = 0;
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	const char * src;
-char *t;
+	unsigned char *t;
 	int count;
 	int rdlen;
 
 	if (entry->data == NULL || entry->length <= 0)
 	    continue;
 
-t = te;
+	t = (unsigned char*)te;
 	pe->tag = htonl(entry->info.tag);
 	pe->type = htonl(entry->info.type);
 	pe->count = htonl(entry->info.count);
@@ -1423,7 +1423,7 @@ static int copyEntry(const indexEntry entry,
 	    entryInfo pe = (entryInfo) (ei + 2);
 	    /*@=castexpose@*/
 /*@-boundsread@*/
-	    char * dataStart = (char *) (pe + ntohl(ei[0]));
+	    unsigned char * dataStart = (unsigned char *) (pe + ntohl(ei[0]));
 /*@=boundsread@*/
 	    int_32 rdl = -entry->info.offset;	/* negative offset */
 	    int_32 ril = rdl/sizeof(*pe);
@@ -1449,7 +1449,7 @@ static int copyEntry(const indexEntry entry,
 	    pe = (entryInfo) memcpy(ei + 2, pe, (ril * sizeof(*pe)));
 	    /*@=castexpose@*/
 
-	    dataStart = (char *) memcpy(pe + ril, dataStart, rdl);
+	    dataStart = (unsigned char *) memcpy(pe + ril, dataStart, rdl);
 	    /*@=sizeoftype@*/
 /*@=bounds@*/
 
