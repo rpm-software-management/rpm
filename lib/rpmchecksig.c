@@ -571,7 +571,7 @@ static int rpmcliImportPubkeys(const rpmts ts,
 {
     const char * fn;
     const unsigned char * pkt = NULL;
-    ssize_t pktlen = 0;
+    size_t pktlen = 0;
     char * t = NULL;
     int res = 0;
     rpmRC rpmrc;

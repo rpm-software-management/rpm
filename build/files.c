@@ -1780,7 +1780,7 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     const char * fn = NULL;
     const char * apkt = NULL;
     const unsigned char * pkt = NULL;
-    ssize_t pktlen = 0;
+    size_t pktlen = 0;
     int absolute = 0;
     int rc = 1;
     int xx;
