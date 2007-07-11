@@ -183,7 +183,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 	goto exit;
 
     memset(block, 0, sizeof(block));
-    if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
+    if ((xx = timedRead(fd, (void *)block, sizeof(block))) != sizeof(block)) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
 	goto exit;
@@ -220,7 +220,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
     pe = (entryInfo) &ei[2];
 /*@=bounds@*/
     dataStart = (unsigned char *) (pe + il);
-    if ((xx = timedRead(fd, (char *)pe, nb)) != nb) {
+    if ((xx = timedRead(fd, (void *)pe, nb)) != nb) {
 	(void) snprintf(buf, sizeof(buf),
 		_("sigh blob(%d): BAD, read returned %d\n"), (int)nb, xx);
 	goto exit;
@@ -320,7 +320,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type,
 	int_32 * archSize = NULL;
 
 	/* Position at beginning of header. */
-	if (pad && (xx = timedRead(fd, (char *)block, pad)) != pad) {
+	if (pad && (xx = timedRead(fd, (void *)block, pad)) != pad) {
 	    (void) snprintf(buf, sizeof(buf),
 		_("sigh pad(%d): BAD, read %d bytes\n"), pad, xx);
 	    goto exit;
@@ -505,7 +505,7 @@ static int makePGPSignature(const char * file, int_32 * sigTagp,
 	rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
-	    rc = timedRead(fd, *pktp, *pktlenp);
+	    rc = timedRead(fd, (void *)*pktp, *pktlenp);
 	    if (sigfile) (void) unlink(sigfile);
 	    (void) Fclose(fd);
 	}
@@ -635,7 +635,7 @@ static int makeGPGSignature(const char * file, int_32 * sigTagp,
 	rc = 0;
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
-	    rc = timedRead(fd, *pktp, *pktlenp);
+	    rc = timedRead(fd, (void *)*pktp, *pktlenp);
 	    if (sigfile) (void) unlink(sigfile);
 	    (void) Fclose(fd);
 	}
