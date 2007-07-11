@@ -28,6 +28,7 @@
 
 #include "lua.h"
 #include "lauxlib.h"
+#include "lposix.h"
 
 /*@access DIR @*/
 

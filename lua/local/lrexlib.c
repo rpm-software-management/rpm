@@ -9,6 +9,7 @@
 
 #include "lua.h"
 #include "lauxlib.h"
+#include "lrexlib.h"
 
 /*@access regex_t @*/
 
