@@ -41,8 +41,6 @@ PyObject * rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kw
 	/*@*/;
 PyObject * rpmReadHeaders (FD_t fd)
 	/*@*/;
-PyObject * rhnLoad(PyObject * self, PyObject * args, PyObject * kwds)
-	/*@*/;
 PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 	/*@*/;
 
