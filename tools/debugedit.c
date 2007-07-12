@@ -1407,7 +1407,7 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
 
   /* Now format the build ID bits in hex to print out.  */
   {
-    const unsigned char * id = build_id->d_buf + build_id_offset;
+    const unsigned char * id = (unsigned char *) build_id->d_buf + build_id_offset;
     char hex[build_id_size * 2 + 1];
     int n = snprintf (hex, 3, "%02" PRIx8, id[0]);
     assert (n == 2);
@@ -1553,24 +1553,26 @@ main (int argc, char *argv[])
 	      Elf_Data src = dst;
 	      src.d_buf = data->d_buf;
 	      assert (sizeof (Elf32_Nhdr) == sizeof (Elf64_Nhdr));
-	      while (data->d_buf + data->d_size - src.d_buf > (int) sizeof nh
+	      while ((char *) data->d_buf + data->d_size - 
+		     (char *) src.d_buf > (int) sizeof nh
 		     && elf32_xlatetom (&dst, &src, dso->ehdr.e_ident[EI_DATA]))
 		{
 		  Elf32_Word len = sizeof nh + nh.n_namesz;
 		  len = (len + 3) & ~3;
 
 		  if (nh.n_namesz == sizeof "GNU" && nh.n_type == 3
-		      && !memcmp (src.d_buf + sizeof nh, "GNU", sizeof "GNU"))
+		      && !memcmp ((char *) src.d_buf + sizeof nh, "GNU", sizeof "GNU"))
 		    {
 		      build_id = data;
-		      build_id_offset = src.d_buf + len - data->d_buf;
+		      build_id_offset = (char *) src.d_buf + len - 
+					(char *) data->d_buf;
 		      build_id_size = nh.n_descsz;
 		      break;
 		    }
 
 		  len += nh.n_descsz;
 		  len = (len + 3) & ~3;
-		  src.d_buf += len;
+		  src.d_buf = (char *) src.d_buf + len;
 		}
 	    }
 	  break;
