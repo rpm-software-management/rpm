@@ -507,18 +507,18 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
   value = 1;
   while (*ptr != 0)
     {
-      ptr = strchr ((char *)ptr, 0) + 1;
+      ptr = (unsigned char *) strchr ((char *)ptr, 0) + 1;
       ++value;
     }
 
   dirt = (unsigned char **) alloca (value * sizeof (unsigned char *));
-  dirt[0] = ".";
+  dirt[0] = (unsigned char *) ".";
   dirt_cnt = 1;
   ptr = dir;
   while (*ptr != 0)
     {
       dirt[dirt_cnt++] = ptr;
-      ptr = strchr ((char *)ptr, 0) + 1;
+      ptr = (unsigned char *) strchr ((char *)ptr, 0) + 1;
     }
   ptr++;
 
@@ -528,8 +528,8 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
       char *s, *file;
       size_t file_len, dir_len;
 
-      file = ptr;
-      ptr = strchr ((char *)ptr, 0) + 1;
+      file = (char *) ptr;
+      ptr = (unsigned char *) strchr ((char *)ptr, 0) + 1;
       value = read_uleb128 (ptr);
 
       if (value >= dirt_cnt)
@@ -758,7 +758,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	      {
 		  char *dir;
 
-		  dir = debug_sections[DEBUG_STR].data
+		  dir = (char *) debug_sections[DEBUG_STR].data
 		      + do_read_32_relocated (ptr);
 
 		  free (comp_dir);
@@ -788,7 +788,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	    {
 	      char *name;
 	      
-	      name = debug_sections[DEBUG_STR].data
+	      name = (char *) debug_sections[DEBUG_STR].data
 		     + do_read_32_relocated (ptr);
 	      if (*name == '/' && comp_dir == NULL)
 		{
@@ -852,7 +852,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	      ptr += 4;
 	      break;
 	    case DW_FORM_string:
-	      ptr = strchr ((char *)ptr, '\0') + 1;
+	      ptr = (unsigned char *) strchr ((char *)ptr, '\0') + 1;
 	      break;
 	    case DW_FORM_indirect:
 	      form = read_uleb128 (ptr);
