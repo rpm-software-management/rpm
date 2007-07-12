@@ -1143,8 +1143,8 @@ int pgpPrtPkts(const byte * pkts, unsigned int pktlen, pgpDig dig, int printing)
 /*@-boundswrite@*/
 pgpArmor pgpReadPkts(const char * fn, const byte ** pkt, size_t * pktlen)
 {
-    const byte * b = NULL;
-    size_t blen;
+    byte * b = NULL;
+    ssize_t blen;
     const char * enc = NULL;
     const char * crcenc = NULL;
     byte * dec;

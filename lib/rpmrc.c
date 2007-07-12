@@ -14,6 +14,7 @@
 #define __power_pc() 0
 #endif
 
+#include <rpmio_internal.h>
 #include <rpmlib.h>
 #include <rpmmacro.h>
 #include <rpmlua.h>
@@ -783,7 +784,7 @@ static int rpmPlatform(const char * platform)
 		rpmGlobalMacroContext, fileSystem, internalState @*/
 {
     char *cpu = NULL, *vendor = NULL, *os = NULL, *gnu = NULL;
-    char * b = NULL;
+    byte * b = NULL;
     ssize_t blen = 0;
     int init_platform = 0;
     char * p, * pe;
@@ -796,7 +797,7 @@ static int rpmPlatform(const char * platform)
 	goto exit;
     }
 
-    p = b;
+    p = (char *)b;
     for (pe = p; p && *p; p = pe) {
 	pe = strchr(p, '\n');
 	if (pe)

@@ -1779,8 +1779,8 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
     const char * buildURL = "%{_builddir}/%{?buildsubdir}/";
     const char * fn = NULL;
     const char * apkt = NULL;
-    const unsigned char * pkt = NULL;
-    size_t pktlen = 0;
+    byte * pkt = NULL;
+    ssize_t pktlen = 0;
     int absolute = 0;
     int rc = 1;
     int xx;
@@ -1800,7 +1800,7 @@ static int processMetadataFile(Package pkg, FileList fl, const char * fileURL,
 	goto exit;
 	/*@notreached@*/ break;
     case RPMTAG_PUBKEYS:
-	if ((rc = pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
+	if ((rc = pgpReadPkts(fn, (const byte **)&pkt, (size_t *)&pktlen)) <= 0) {
 	    rpmError(RPMERR_BADSPEC, _("%s: public key read failed.\n"), fn);
 	    goto exit;
 	}

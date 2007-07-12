@@ -3392,7 +3392,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 /*@=bounds@*/
 
 /*@-boundswrite@*/
-int rpmioSlurp(const char * fn, const byte ** bp, size_t * blenp)
+int rpmioSlurp(const char * fn, byte ** bp, ssize_t * blenp)
 {
     static ssize_t blenmax = (32 * BUFSIZ);
     ssize_t blen = 0;
