@@ -234,7 +234,7 @@ int fpEqual(const void * key1, const void * key2)
 
 /*@-bounds@*/
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
-		  const char ** baseNames, const int * dirIndexes, 
+		  const char ** baseNames, const uint_32 * dirIndexes, 
 		  int fileCount, fingerPrint * fpList)
 {
     int i;
@@ -270,7 +270,7 @@ void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList)
     HFD_t hfd = headerFreeData;
     const char ** baseNames, ** dirNames;
     rpmTagType bnt, dnt;
-    int_32 * dirIndexes;
+    uint_32 * dirIndexes;
     int fileCount;
     int xx;
 

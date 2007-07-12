@@ -140,7 +140,7 @@ int fpEqual(const void * key1, const void * key2)
  * @retval fpList	pointer to array of finger prints
  */
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
-		  const char ** baseNames, const int * dirIndexes, 
+		  const char ** baseNames, const uint_32 * dirIndexes, 
 		  int fileCount, fingerPrint * fpList)
 	/*@modifies cache, *fpList @*/;
 

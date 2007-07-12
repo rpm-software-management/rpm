@@ -1283,7 +1283,7 @@ if (rc == 0)
     if (allMatches != NULL)
     while (i < allMatches->count) {
 	const char ** baseNames, ** dirNames;
-	int_32 * dirIndexes;
+	uint_32 * dirIndexes;
 	unsigned int offset = dbiIndexRecordOffset(allMatches, i);
 	unsigned int prevoff;
 	Header h;
@@ -3447,8 +3447,8 @@ if (key->size == 0) key->size++;	/* XXX "/" fixup. */
 	const char ** baseNames;
 	const char ** fullBaseNames;
 	rpmTagType bnt, dnt;
-	int_32 * dirIndexes;
-	int_32 * fullDirIndexes;
+	uint_32 * dirIndexes;
+	uint_32 * fullDirIndexes;
 	fingerPrint * fps;
 	dbiIndexItem im;
 	int start;

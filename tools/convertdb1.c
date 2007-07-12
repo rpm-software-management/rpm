@@ -133,7 +133,7 @@ static void compressFilelist(Header h)
     char ** fileNames;
     const char ** dirNames;
     const char ** baseNames;
-    int_32 * dirIndexes;
+    uint_32 * dirIndexes;
     rpmTagType fnt;
     int count;
     int i, xx;

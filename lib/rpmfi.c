@@ -671,8 +671,8 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int numValid;
     const char ** baseNames;
     const char ** dirNames;
-    int_32 * dirIndexes;
-    int_32 * newDirIndexes;
+    uint_32 * dirIndexes;
+    uint_32 * newDirIndexes;
     int_32 fileCount;
     int_32 dirCount;
     uint_32 mydColor = rpmExpandNumeric("%{?_autorelocate_dcolor}");
