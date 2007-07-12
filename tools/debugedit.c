@@ -706,7 +706,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
   int i;
   uint_32 list_offs;
   int found_list_offs;
-  unsigned char *comp_dir;
+  char *comp_dir;
   
   comp_dir = NULL;
   list_offs = 0;
