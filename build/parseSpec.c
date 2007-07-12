@@ -660,9 +660,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootURL,
 	(void) headerAddEntry(pkg->header, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
 	(void) headerAddEntry(pkg->header, RPMTAG_ARCH,
 		RPM_STRING_TYPE, arch, 1);
-	if (!headerIsEntry(pkg->header, RPMTAG_RHNPLATFORM))
-	    (void) headerAddEntry(pkg->header, RPMTAG_RHNPLATFORM,
-		RPM_STRING_TYPE, arch, 1);
 	(void) headerAddEntry(pkg->header, RPMTAG_PLATFORM,
 		RPM_STRING_TYPE, platform, 1);
 

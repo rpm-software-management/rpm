@@ -413,7 +413,7 @@ typedef enum rpmTag_e {
 /*@-enummemuse@*/
     RPMTAG_SHA1RHN		= 1130, /*!< internal - obsolete */
 /*@=enummemuse@*/
-    RPMTAG_RHNPLATFORM		= 1131,	/* s */
+    RPMTAG_RHNPLATFORM		= 1131,	/*!< s deprecated */
     RPMTAG_PLATFORM		= 1132,	/* s */
     RPMTAG_PATCHESNAME		= 1133, /*!< placeholder (SuSE) */
     RPMTAG_PATCHESFLAGS		= 1134, /*!< placeholder (SuSE) */
