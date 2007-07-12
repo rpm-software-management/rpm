@@ -37,7 +37,7 @@ static rpmlock rpmlock_new(/*@unused@*/ const char *rootdir)
 
 	/* XXX oneshot to determine path for fcntl lock. */
 	if (rpmlock_path == NULL) {
-	    char * t = rpmGenPath(rootdir, rpmlock_path_default, NULL);
+	    const char * t = rpmGenPath(rootdir, rpmlock_path_default, NULL);
 	    if (t == NULL || *t == '\0' || *t == '%')
 		t = strdup(RPMLOCK_PATH);
 	    rpmlock_path = xstrdup(t);

@@ -463,7 +463,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     int forceArray = 0;
     int freeData = 0;
     char * str;
-    struct headerSprintfExtension_s * ext = NULL;
+    const struct headerSprintfExtension_s * ext = NULL;
     const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
 
     if (PyCObject_Check (item))

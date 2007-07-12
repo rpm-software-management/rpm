@@ -432,7 +432,7 @@ rpmfts_debug(__FUNCTION__, s);
     if (s->md_dict == NULL)
 	goto fail;
     if (type->tp_name) {
-	char * name;
+	const char * name;
 	if ((name = strrchr(type->tp_name, '.')) != NULL)
 	    name++;
 	else
