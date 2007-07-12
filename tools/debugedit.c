@@ -622,7 +622,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	  size_t len = strlen ((char *)srcptr) + 1;
 	  const unsigned char *readptr = srcptr;
 
-	  if (*srcptr == '/' && has_prefix (srcptr, base_dir))
+	  if (*srcptr == '/' && has_prefix ((char *)srcptr, base_dir))
 	    {
 	      if (dest_len < base_len)
 		  ++abs_dir_cnt;
@@ -633,7 +633,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	  srcptr += len;
 
 	  shrank += srcptr - readptr;
-	  canonicalize_path (readptr, ptr);
+	  canonicalize_path ((char *)readptr, (char *)ptr);
 	  len = strlen ((char *)ptr) + 1;
 	  shrank -= len;
 	  ptr += len;
@@ -669,7 +669,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	{
 	  size_t len = strlen ((char *)srcptr) + 1;
 
-	  if (*srcptr == '/' && has_prefix (srcptr, base_dir))
+	  if (*srcptr == '/' && has_prefix ((char *)srcptr, base_dir))
 	    {
 	      memcpy (ptr, dest_dir, dest_len);
 	      if (dest_len < base_len)
@@ -737,7 +737,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		  free (comp_dir);
 		  comp_dir = strdup ((char *)ptr);
 		  
-		  if (phase == 1 && dest_dir && has_prefix (ptr, base_dir))
+		  if (phase == 1 && dest_dir && has_prefix ((char *)ptr, base_dir))
 		  {
 		      base_len = strlen (base_dir);
 		      dest_len = strlen (dest_dir);
