@@ -507,7 +507,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
   value = 1;
   while (*ptr != 0)
     {
-      ptr = strchr (ptr, 0) + 1;
+      ptr = strchr ((char *)ptr, 0) + 1;
       ++value;
     }
 
@@ -518,7 +518,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
   while (*ptr != 0)
     {
       dirt[dirt_cnt++] = ptr;
-      ptr = strchr (ptr, 0) + 1;
+      ptr = strchr ((char *)ptr, 0) + 1;
     }
   ptr++;
 
@@ -529,7 +529,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
       size_t file_len, dir_len;
 
       file = ptr;
-      ptr = strchr (ptr, 0) + 1;
+      ptr = strchr ((char *)ptr, 0) + 1;
       value = read_uleb128 (ptr);
 
       if (value >= dirt_cnt)
@@ -853,7 +853,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	      ptr += 4;
 	      break;
 	    case DW_FORM_string:
-	      ptr = strchr (ptr, '\0') + 1;
+	      ptr = strchr ((char *)ptr, '\0') + 1;
 	      break;
 	    case DW_FORM_indirect:
 	      form = read_uleb128 (ptr);
