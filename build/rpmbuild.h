@@ -484,7 +484,7 @@ int parseSpec(rpmts ts, const char * specFile,
 		/*@null@*/ const char * buildRootURL,
 		int recursing,
 		/*@null@*/ const char * passPhrase,
-		/*@null@*/ char * cookie,
+		/*@null@*/ const char * cookie,
 		int anyarch, int force)
 	/*@globals rpmGlobalMacroContext, h_errno, fileSystem, internalState @*/
 	/*@modifies ts, rpmGlobalMacroContext, fileSystem, internalState @*/;
