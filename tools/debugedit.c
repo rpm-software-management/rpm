@@ -539,7 +539,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	  return 1;
 	}
       file_len = strlen (file);
-      dir_len = strlen (dirt[value]);
+      dir_len = strlen ((char *)dirt[value]);
       s = malloc (comp_dir_len + 1 + file_len + 1 + dir_len + 1);
       if (s == NULL)
 	{
@@ -619,7 +619,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
       unsigned char *srcstart=srcptr;
       while (*srcptr != 0)
 	{
-	  size_t len = strlen (srcptr) + 1;
+	  size_t len = strlen ((char *)srcptr) + 1;
 	  const unsigned char *readptr = srcptr;
 
 	  if (*srcptr == '/' && has_prefix (srcptr, base_dir))
@@ -634,7 +634,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 
 	  shrank += srcptr - readptr;
 	  canonicalize_path (readptr, ptr);
-	  len = strlen (ptr) + 1;
+	  len = strlen ((char *)ptr) + 1;
 	  shrank -= len;
 	  ptr += len;
 
@@ -667,7 +667,7 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 
       while (*srcptr != 0)
 	{
-	  size_t len = strlen (srcptr) + 1;
+	  size_t len = strlen ((char *)srcptr) + 1;
 
 	  if (*srcptr == '/' && has_prefix (srcptr, base_dir))
 	    {
@@ -735,7 +735,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	      if ( form == DW_FORM_string )
 	      {
 		  free (comp_dir);
-		  comp_dir = strdup (ptr);
+		  comp_dir = strdup ((char *)ptr);
 		  
 		  if (phase == 1 && dest_dir && has_prefix (ptr, base_dir))
 		  {
