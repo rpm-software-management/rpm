@@ -240,7 +240,7 @@ struct FDIO_s {
  * fread(3) clone.
  */
 /*@-incondefs@*/
-size_t Fread(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd)
+ssize_t Fread(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd)
 	/*@globals fileSystem @*/
 	/*@modifies fd, *buf, fileSystem @*/
 	/*@requires maxSet(buf) >= (nmemb - 1) @*/
@@ -251,7 +251,7 @@ size_t Fread(/*@out@*/ void * buf, size_t size, size_t nmemb, FD_t fd)
  * fwrite(3) clone.
  */
 /*@-incondefs@*/
-size_t Fwrite(const void * buf, size_t size, size_t nmemb, FD_t fd)
+ssize_t Fwrite(const void * buf, size_t size, size_t nmemb, FD_t fd)
 	/*@globals fileSystem @*/
 	/*@modifies fd, fileSystem @*/
 	/*@requires maxRead(buf) >= nmemb @*/;

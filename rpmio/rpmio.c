@@ -2821,7 +2821,7 @@ const char *Fstrerror(FD_t fd)
 #define	FDIOVEC(_fd, _vec)	\
   ((fdGetIo(_fd) && fdGetIo(_fd)->_vec) ? fdGetIo(_fd)->_vec : NULL)
 
-size_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd) {
+ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd) {
     fdio_read_function_t _read;
     int rc;
 
@@ -2843,7 +2843,7 @@ DBGIO(fd, (stderr, "==> Fread(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned
     return rc;
 }
 
-size_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
+ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
 {
     fdio_write_function_t _write;
     int rc;
