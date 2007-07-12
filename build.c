@@ -139,7 +139,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
 	specDir = rpmGetPath("%{_specdir}", NULL);
 
-	tmpSpecFile = rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
+	tmpSpecFile = (char *) rpmGetPath("%{_specdir}/", "rpm-spec.XXXXXX", NULL);
 #if defined(HAVE_MKSTEMP)
 	(void) close(mkstemp(tmpSpecFile));
 #else
