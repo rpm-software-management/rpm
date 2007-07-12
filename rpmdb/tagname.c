@@ -12,8 +12,8 @@
 static int tagcmp(const void * a, const void * b)
         /*@*/
 {
-    const headerTagTableEntry aptr = a;
-    const headerTagTableEntry bptr = b;
+    const headerTagTableEntry aptr = (const headerTagTableEntry) a;
+    const headerTagTableEntry bptr = (const headerTagTableEntry) b;
     return (aptr->val - bptr->val);
 }
 
