@@ -307,7 +307,7 @@ void rpmalDel(rpmal al, alKey pkgKey)
 
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "*** del %p[%d]\n", al->list, pkgNum);
+fprintf(stderr, "*** del %p[%d]\n", al->list, (int) pkgNum);
 /*@=modfilesys@*/
 
     /* Delete directory/file info entries from added package list. */
@@ -449,7 +449,7 @@ alKey rpmalAdd(rpmal * alistp, alKey pkgKey, fnpyKey key,
 
 /*@-modfilesys@*/
 if (_rpmal_debug)
-fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, pkgNum, tscolor);
+fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
 /*@=modfilesys@*/
 
     alp->provides = rpmdsLink(provides, "Provides (rpmalAdd)");
@@ -667,7 +667,7 @@ void rpmalMakeIndex(rpmal al)
 {
     availableIndex ai;
     availablePackage alp;
-    int i;
+    intptr_t i;
 
     if (al == NULL || al->list == NULL) return;
     ai = &al->index;

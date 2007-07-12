@@ -84,7 +84,7 @@ typedef /*@abstract@*/ void * alKey;
  * An added/available package retrieval index.
  */
 /*@-mutrep@*/
-typedef /*@abstract@*/ int alNum;
+typedef /*@abstract@*/ intptr_t alNum;
 /*@=mutrep@*/
 
 /** \ingroup rpmtrans
