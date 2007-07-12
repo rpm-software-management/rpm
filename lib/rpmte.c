@@ -543,7 +543,7 @@ void rpmteColorDS(rpmte te, rpmTag tag)
     rpmds ds = rpmteDS(te, tag);
     char deptype = 'R';
     char mydt;
-    const int_32 * ddict;
+    const uint_32 * ddict;
     int_32 * colors;
     int_32 * refs;
     int_32 val;

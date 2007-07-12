@@ -152,7 +152,7 @@ const char * rpmfiFN(rpmfi fi)
     return FN;
 }
 
-int_32 rpmfiFFlags(rpmfi fi)
+uint_32 rpmfiFFlags(rpmfi fi)
 {
     int_32 FFlags = 0;
 
@@ -165,7 +165,7 @@ int_32 rpmfiFFlags(rpmfi fi)
     return FFlags;
 }
 
-int_32 rpmfiVFlags(rpmfi fi)
+uint_32 rpmfiVFlags(rpmfi fi)
 {
     int_32 VFlags = 0;
 
@@ -321,11 +321,11 @@ const char * rpmfiFContext(rpmfi fi)
     return fcontext;
 }
 
-int_32 rpmfiFDepends(rpmfi fi, const int_32 ** fddictp)
+int_32 rpmfiFDepends(rpmfi fi, const uint_32 ** fddictp)
 {
     int fddictx = -1;
     int fddictn = 0;
-    const int_32 * fddict = NULL;
+    const uint_32 * fddict = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 /*@-boundsread@*/
@@ -1729,7 +1729,7 @@ void rpmfiBuildFDeps(Header h, rpmTag tagN,
     char deptype = 'R';
     char mydt;
     const char * DNEVR;
-    const int_32 * ddict;
+    const uint_32 * ddict;
     unsigned ix;
     int ndx;
 

@@ -6,6 +6,7 @@ Janitorial work:
   of internal versions from -95 era 
 - audit and clean up user visible strings
 - clean up the build process (auto*-stuff, compiler warnings)
+- audit int_32 vs uint_32 etc sanity in the interfaces
 - fix toplevel "make distcheck"
 - have "make check" do something useful (use James' test-harness?)
 - use mkstemp() instead of mktemp() everywhere

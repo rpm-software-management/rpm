@@ -307,7 +307,7 @@ extern const char * rpmfiFN(/*@null@*/ rpmfi fi)
  * @param fi		file info set
  * @return		current file flags, 0 on invalid
  */
-int_32 rpmfiFFlags(/*@null@*/ rpmfi fi)
+uint_32 rpmfiFFlags(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -315,7 +315,7 @@ int_32 rpmfiFFlags(/*@null@*/ rpmfi fi)
  * @param fi		file info set
  * @return		current file verify flags, 0 on invalid
  */
-int_32 rpmfiVFlags(/*@null@*/ rpmfi fi)
+uint_32 rpmfiVFlags(/*@null@*/ rpmfi fi)
 	/*@*/;
 
 /**
@@ -421,7 +421,7 @@ extern const char * rpmfiFContext(/*@null@*/ rpmfi fi)
  * @return		no. of file depends entries, 0 on invalid
  */
 int_32 rpmfiFDepends(/*@null@*/ rpmfi fi,
-		/*@out@*/ /*@null@*/ const int_32 ** fddictp)
+		/*@out@*/ /*@null@*/ const uint_32 ** fddictp)
 	/*@modifies *fddictp @*/;
 
 /**
