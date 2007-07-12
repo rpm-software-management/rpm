@@ -616,7 +616,6 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	}
       else
 	ptr = srcptr = dir;
-      unsigned char *srcstart=srcptr;
       while (*srcptr != 0)
 	{
 	  size_t len = strlen ((char *)srcptr) + 1;
