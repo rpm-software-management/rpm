@@ -377,15 +377,12 @@ static void hdr_dealloc(hdrObject * s)
 long tagNumFromPyObject (PyObject *item)
 {
     char * str;
-    int i;
 
     if (PyInt_Check(item)) {
 	return PyInt_AsLong(item);
     } else if (PyString_Check(item)) {
 	str = PyString_AsString(item);
-	for (i = 0; i < rpmTagTableSize; i++)
-	    if (!xstrcasecmp(rpmTagTable[i].name + 7, str)) break;
-	if (i < rpmTagTableSize) return rpmTagTable[i].val;
+	return tagValue(str);
     }
     return -1;
 }
