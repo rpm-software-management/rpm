@@ -759,7 +759,6 @@ print (t)\
 %_vsflags_install	%{__vsflags}
 %_vsflags_query		%{__vsflags}
 %_vsflags_rebuilddb	%{__vsflags}
-%_vsflags_up2date	%{__vsflags}
 %_vsflags_verify	%{__vsflags}
 
 #	Relations between package names that cause dependency loops

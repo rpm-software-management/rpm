@@ -1596,7 +1596,7 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     rpmtsObject * s = (void *) PyObject_New(rpmtsObject, subtype);
 
     char * rootDir = "/";
-    int vsflags = rpmExpandNumeric("%{?_vsflags_up2date}");
+    int vsflags = rpmExpandNumeric("%{?__vsflags}");
     char * kwlist[] = {"rootdir", "vsflags", 0};
 
     if (_rpmts_debug < 0)
